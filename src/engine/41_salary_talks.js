@@ -14,23 +14,23 @@ function salAsk(p,off){ const b=salBasis(p); initPers(p); const amb=p.pers.amb;
   const want=b.enough&&b.war>=1?.03+b.war*.045+(amb-12)*.007:(amb-12)*.003;
   /* 예비 FA는 시장을 알고 있어 조금 더 부른다 */
   const pf=preFA(p)&&b.war>=1?.05:0;
-  const lim=!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)?Math.max(off,preCap(p)):Infinity; return round5(Math.min(lim,Math.max(off,off*(1+clamp(want+pf,0,.45))))); }
+  const lim=!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)?Math.max(off,preCap(p)):Infinity; return round5(Math.min(lim,Math.max(off,off*(1+clamp(want+pf,0,.45))*agSalMul(p)))); }
 function salTalkInit(){ const C=G.contract; if(!C||C.neg)return; C.y=G.year; C.neg={};
   for(const id of C.ended){ const p=G.players[id]; if(!p||p.newSal==null)continue; const off=p.newSal; C.neg[id]={off,ask:salAsk(p,off),cur:null,st:'open',wk:-1}; } }
 function salNeg(id){ const C=G.contract; if(!C)return null; salTalkInit(); return C.neg&&C.neg[id]||null; }
 /* 단장이 금액을 제시한다. 한 선수에게는 한 주에 한 번. 요구액에 가까우면 받아들이고, 아니면 요구액을 조금 낮춰 답한다 */
 function salOffer(id,amt,force){ const C=G.contract; const p=G.players[id]; const n=salNeg(id); if(!C||C.done||!p||!n)return '협상 대상이 아닙니다.'; if(n.st!=='open')return `${p.name}와(과)는 이미 ${n.st==='ok'?'합의했습니다':'연봉조정 중입니다'}.`;
-  amt=round5(+amt); const wk=Math.floor(G.day/7); if(!force&&n.wk===wk&&amt<n.ask)return `${p.name} 측: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 만나시죠.`;
-  n.wk=wk; n.cur=amt; initPers(p); const tol=.01+(p.pers.loy-4)*.002;
-  if(amt>=n.ask*(1-tol)){ n.st='ok'; p.newSal=amt; if(amt>=n.ask)p.mor=clamp((p.mor??60)+2,0,100); if(preFA(p)&&amt>=preFAPremium(p,n.off)*.98){ p.prem=G.year; p.mor=clamp((p.mor??60)+3,0,100); } return `${p.name}: ${money(amt)}에 합의했습니다.`; }
-  const prev=n.ask; n.ask=round5(Math.max(amt,n.ask-(n.ask-amt)*.25)); return `${p.name} 측: ${money(amt)}으로는 어렵습니다. ${n.ask<prev?`${money(n.ask)}이면 사인하겠습니다.`:`${money(n.ask)}을 원합니다.`}`; }
+  amt=round5(+amt); const wk=Math.floor(G.day/7); if(!force&&n.wk===wk&&amt<n.ask)return `${agWho(p)}: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 만나시죠.`;
+  n.wk=wk; n.cur=amt; initPers(p); const ag=hasAgent(p)?agentOf(p):null; const tol=.01+(p.pers.loy-4)*.002+(ag?(agRel(ag)-50)/2000:0);
+  if(amt>=n.ask*(1-tol)){ n.st='ok'; p.newSal=amt; if(amt>=n.ask)p.mor=clamp((p.mor??60)+2,0,100); if(preFA(p)&&amt>=preFAPremium(p,n.off)*.98){ p.prem=G.year; p.mor=clamp((p.mor??60)+3,0,100); } if(ag&&amt>=n.ask)agRelAdd(ag,1,`${p.name} 연봉 합의`); return `${ag?agWho(p):p.name}: ${money(amt)}에 합의했습니다.`; }
+  const prev=n.ask; n.ask=round5(Math.max(amt,n.ask-(n.ask-amt)*.25)); return `${agWho(p)}: ${money(amt)}으로는 어렵습니다. ${n.ask<prev?`${money(n.ask)}이면 사인하겠습니다.`:`${money(n.ask)}을 원합니다.`}`; }
 /* 산정안 일괄 제시: 아직 한 번도 제시하지 않은 선수에게 구단 산정안을 낸다 */
 function salOfferAll(){ salTalkInit(); const C=G.contract; let ok=0, no=0; for(const id of Object.keys(C.neg)){ const n=C.neg[id]; if(n.st!=='open'||n.cur!=null)continue; const r=salOffer(+id,n.off,true); if(C.neg[id].st==='ok')ok++; else no++; void r; }
   return `산정안을 제시했습니다. ${ok}명 합의${no?`, ${no}명은 더 원합니다`:''}.`; }
 /* 1월 10일: 조건이 맞지 않는 3년차 이상 선수는 연봉조정을 신청할 수 있다 */
 function salArbFile(){ const C=G.contract; if(!C||C.done||!C.neg)return; const L=[];
   for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||n.st!=='open'||(p.svc||0)<ARB_SVC)continue; const club=n.cur??n.off; initPers(p);
-    if(n.ask/club-1>=.05&&R()<.35+(p.pers.amb-10)*.03){ n.st='arb'; n.arb={club,player:n.ask}; L.push(p); } }
+    if(n.ask/club-1>=.05&&R()<.35+(p.pers.amb-10)*.03+(hasAgent(p)&&agentOf(p).style==='hard'?.12:0)){ n.st='arb'; n.arb={club,player:n.ask}; L.push(p); } }
   if(L.length)mail('운영팀',`연봉조정 신청 ${L.length}명`,`${L.map(p=>`${p.name}: 구단 ${money(C.neg[p.id].arb.club)} / 선수 ${money(C.neg[p.id].arb.player)}`).join('\n')}\n\nKBO 연봉조정위원회는 두 금액 중 하나만 고릅니다. 1월 20일에 결정이 나옵니다. 그 전에 선수안을 받아들이면 신청은 취하됩니다. 실제 리그에서 선수가 이긴 경우는 20번 중 2번입니다.`,{kind:'연봉',imp:true,acts:[{l:'연봉 협상 보기',a:'go',v:'transfer:contract'}]}); }
 /* 조정위원회: 직전 성적이 좋고 요구가 크지 않을수록 선수가 이길 가능성이 조금 오른다(그래도 대부분 구단이 이긴다) */
 function salArbDecide(){ const C=G.contract; if(!C||!C.neg)return; const out=[];

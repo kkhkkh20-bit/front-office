@@ -184,13 +184,15 @@ function extForm(p){
   const e=UI.ext&&UI.ext.id===p.id?UI.ext:{id:p.id,years:4,annual:round5(p.sal*1.3),msg:''};
   UI.ext=e;
   const min=round5(Math.max(MIN_SAL,e.annual*.4)), max=round5(Math.max(e.annual*2.2,500));
+  const ag=hasAgent(p)?agentOf(p):null;
   return `<section class="card"><div class="eyebrow">비FA 다년계약 제안 · ${ctText(p)}</div>
+    ${ag?`<div class="tgm" style="margin:6px 0">${agAv(ag)}<div><b>${esc(ag.name)} 에이전트 · ${esc(ag.firm)}</b><span class="agl">${agLine(ag)}</span><span class="small muted">${esc((AG_STYLE[ag.style]||AG_STYLE.rel).d)}${agExtTestMarket(p)?' FA를 1년 앞둔 대어라 시장 평가를 받아 보려 합니다.':''}</span></div></div>`:'<p class="small muted">에이전트 없이 선수 본인과 협상합니다.</p>'}
     <label class="small" for="extA">연봉 <b class="num" id="extAv">${money(e.annual)}</b></label>
     <input type="range" id="extA" min="${min}" max="${max}" step="5" value="${e.annual}" data-a="extA" data-v="${p.id}">
     <div class="seg">${[2,3,4,5,6].map(y=>`<button data-a="extY" data-v="${p.id}:${y}" class="${e.years===y?'on':''}">${y}년</button>`).join('')}</div>
     <p class="small muted"><span id="extTot">총액 ${money(e.annual*e.years)}</span> · 합의하면 다음 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p>
     ${e.msg?`<div class="note ${e.ok?'good':''}">${esc(e.msg)}</div>`:''}
-    <button class="btn primary" data-a="extOffer" data-v="${p.id}">제안하기</button></section>`;
+    ${p.extCounter&&p.extCounter.until>=G.day?`<button class="btn primary" data-a="extAcc" data-v="${p.id}">역제안 수락 (${p.extCounter.years}년 연 ${money(p.extCounter.annual)})</button> `:''}<button class="btn ${p.extCounter&&p.extCounter.until>=G.day?'':'primary'}" data-a="extOffer" data-v="${p.id}">제안하기</button></section>`;
 }
 
 

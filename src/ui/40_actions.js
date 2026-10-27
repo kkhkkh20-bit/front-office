@@ -277,6 +277,7 @@ const A={
   unoffer(v){delete G.fa.offers[+v];UI.offer=null;UI.sheet=null;save();render();},
   extA(v,el){ if(!UI.ext)return; UI.ext.annual=+el.value; UI.ext.msg=''; const a=document.getElementById('extAv'), t=document.getElementById('extTot'); if(a)a.textContent=money(UI.ext.annual); if(t)t.textContent='총액 '+money(UI.ext.annual*UI.ext.years); },
   extY(v){ const [,y]=v.split(':').map(Number); if(UI.ext){UI.ext.years=y;UI.ext.msg='';} renderSheet(); },
+  extAcc(v){ const p=G.players[+v]; const c=p&&p.extCounter; if(!c)return; const r=offerExtension(+v,c.annual,c.years,true); if(UI.ext){ UI.ext.msg=r.msg; UI.ext.ok=r.ok; } save(); render(); },
   extOffer(v){ const e=UI.ext; if(!e)return; const r=offerExtension(+v,e.annual,e.years); e.msg=r.msg; e.ok=r.ok; save(); render(); },
   mkt(v,el){G.marketing=+el.value;save();render();},
   askNew(){UI.confirmNew=true;render();},

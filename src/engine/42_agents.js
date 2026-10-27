@@ -76,3 +76,12 @@ function agLastLook(id){ const F=G.fa; const p=G.players[id]; const mk=F&&F.mk&&
   const o={annual:mk.ll.annual,years:mk.ll.years}; F.offers[id]=o; delete mk.ll; mk.done=true; faSign(p,[{tid:G.user,...o}]); agRelAdd(agentOf(p),2,'라스트 룩 수용'); return `${p.name}과(와) ${o.years}년 연 ${money(o.annual)}에 계약했습니다.`; }
 /* 지금 최고 조건에 맞추기: 다른 구단 최고 제안보다 조금 높게(같은 기간) 다시 제시한다 */
 function agMatchOffer(id){ const p=G.players[id]; const ai=Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).sort((a,b)=>offScore(b)-offScore(a))[0]; if(!p||!ai)return null; return {annual:round5(ai.annual*1.02),years:ai.years}; }
+
+/* 에이전트가 있는 선수: 이미 배정됐거나, 1군급(능력 48+)·연봉 1억 이상·등록 4년차 이상. 그 밖의 어린 선수는 본인이 직접 협상한다 */
+function hasAgent(p){ if(!p||p.foreign)return false; return p.agId!=null||ovr(p)>=48||(p.sal||0)>=100||(p.svc||0)>=4; }
+function agWho(p){ if(!hasAgent(p))return `${p.name} 본인`; const ag=agentOf(p); return `${ag.name} 에이전트(${ag.firm})`; }
+/* 연봉 협상은 순탄하다: 스타일·친분 효과를 40%만 반영 */
+function agSalMul(p){ return hasAgent(p)?1+(agWantMul(agentOf(p))-1)*.4:1; }
+/* 다년계약은 까다롭다: 스타일·친분을 그대로 반영하고, FA가 1년 남은 대어는 경매형·대형 에이전트가 시장을 보자고 버틴다 */
+function agExtMul(p){ if(!hasAgent(p))return 1; const ag=agentOf(p); let m=agWantMul(ag); const near=(p.svc||0)>=faSvc(p)-1&&!p.faC; if(near&&ovr(p)>=54)m*=ag.style==='auction'?1.08:ag.size==='big'?1.05:1.02; return m; }
+function agExtTestMarket(p){ if(!hasAgent(p))return false; const ag=agentOf(p); return (p.svc||0)>=faSvc(p)-1&&!p.faC&&ovr(p)>=56&&(ag.style==='auction'||ag.size==='big')&&agRel(ag)<65; }

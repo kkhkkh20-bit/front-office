@@ -60,18 +60,28 @@ function extDemand(p,years){
   return round5(marketSal(base)*near*yadj*(1-((p.mor??60)-60)/400)*(p.pers&&p.pers.loy>=15?.95:1));
 }
 function canExtend(p){ return p&&p.team===G.user&&!p.foreign&&!p.extNext&&!(p.joinY>G.year)&&(!p.faC||p.yrs<=1)&&p.age<=34&&!p.prospect&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id)); }
-function offerExtension(id,annual,years){
+function offerExtension(id,annual,years,acc){
   const p=G.players[id]; if(!canExtend(p))return {ok:false,msg:'다년계약을 제안할 수 없는 선수입니다.'};
   const wk=Math.floor(G.day/7);
-  if(p.extTried===wk)return {ok:false,msg:`${p.name} 측: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
-  const d=extDemand(p,years);
-  if(annual>=d*.98){ const now=G.rolled===G.year&&G.day>=KD(11,1);
+  const who=agWho(p); const ag=hasAgent(p)?agentOf(p):null;
+  if(acc&&p.extCounter&&p.extCounter.until>=G.day&&annual>=p.extCounter.annual&&years===p.extCounter.years){ delete p.extCounter; p.extTried=null; annual=Math.max(annual,0); }
+  else if(p.extTried===wk)return {ok:false,msg:`${who}: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
+  const d=round5(extDemand(p,years)*agExtMul(p));
+  /* 강경형·대형 에이전트는 원하는 기간보다 짧으면 받지 않는다 */
+  const wantY=p.age<=29?4:p.age<=32?3:2; if(ag&&(ag.style==='hard'||ag.size==='big')&&years<wantY-1){ p.extTried=wk; return {ok:false,msg:`${who}: ${years}년으로는 이야기가 안 됩니다. 최소 ${wantY-1}년은 보장해 주셔야 합니다.`}; }
+  /* FA를 1년 앞둔 대어: 시장 평가를 받아 보겠다며 요구보다 확실히 높아야 움직인다 */
+  const mkt=agExtTestMarket(p); if(mkt&&annual<d*1.08){ p.extTried=wk; if(annual<d*.85)agRelAdd(ag,-1,`${p.name} 다년계약 낮은 제안`); return {ok:false,msg:`${who}: 선수가 FA 시장 평가를 받아 보고 싶어 합니다. 연 ${money(round5(d*1.08))} 이상이 아니면 시즌 뒤 시장에 나가겠습니다.`}; }
+  /* 에이전트는 첫 제안을 그대로 받지 않는다: 요구에 가까우면 조금 올린 역제안을 낸다(그 자리에서 수락 가능) */
+  if(ag&&!acc&&annual>=d*.9&&annual<d*(ag.style==='fast'?1:1.04)&&!(p.extCounter&&p.extCounter.y===G.year)){ const c=round5(d*(ag.style==='hard'?1.06:ag.style==='fast'?1.01:1.04)); p.extCounter={annual:c,years,until:G.day+7,y:G.year}; return {ok:false,counter:true,msg:`${who}: 거의 다 왔습니다. ${years}년 연 ${money(c)}(총 ${money(c*years)})이면 바로 사인하겠습니다.`}; }
+  if(annual>=d*.98||acc){ delete p.extCounter; const now=G.rolled===G.year&&G.day>=KD(11,1);
     if(now){ p.sal=annual; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; } else p.extNext={annual,years}; story(p,`비FA 다년계약 ${years}년 연 ${money(annual)}`,'move');
     addLog(`${p.name}와(과) 비FA 다년계약 ${years}년 연 ${money(annual)}(총 ${money(annual*years)})에 합의했습니다.`);
-    return {ok:true,msg:`${p.name} 측이 ${years}년 연 ${money(annual)}에 합의했습니다. ${now?'바로 적용됩니다.':'다음 시즌부터 적용됩니다.'}`}; }
-  p.extTried=wk;
-  const hint=round5(d*(1+hn('x'+G.year,p.id)*.04));
-  return {ok:false,msg:`${p.name} 측: 연 ${money(hint)} 안팎은 되어야 생각해 보겠다는 반응입니다.`};
+    if(ag){ agRelAdd(ag,3,`${p.name} 다년계약`); agDealAdd(p,G.user); }
+    return {ok:true,msg:`${who}: ${years}년 연 ${money(annual)}에 합의했습니다. ${now?'바로 적용됩니다.':'다음 시즌부터 적용됩니다.'}`}; }
+  p.extTried=wk; if(ag&&annual<d*.8)agRelAdd(ag,-2,`${p.name} 다년계약 무리한 제안`);
+  /* 에이전트는 정확한 하한 대신 조금 높여 부른다(친하면 더 정확히) */
+  const pad=ag?(agRel(ag)>=60?.01:agRel(ag)>=40?.03:.06):.02; const hint=round5(d*(1+pad+hn('x'+G.year,p.id)*.03));
+  return {ok:false,msg:`${who}: ${years}년이면 연 ${money(hint)} 안팎은 되어야 생각해 보겠습니다.${ag&&ag.style==='hard'?' 그 아래로는 내려가지 않습니다.':''}`};
 }
 function keepScore(p){ return ovr(p)+Math.max(0,p.pot-ovr(p))*(p.age<=22?.4:p.age<=24?.28:.1)+(p.faC?3:0)+(p.age>=26&&p.age<=33?1.2:0); }
 function trimCands(n){ return domestic(G.user).filter(p=>!p.ys&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id))).sort((a,b)=>keepScore(a)-keepScore(b)).slice(0,n); }
