@@ -22,6 +22,7 @@
 | `src/ui.js` | 화면 그리기와 사용자 동작 |
 | `src/kart.js` | 경기장 선수 그림(Kenney Sports Pack에서 추출한 벡터) |
 | `src/campus.js` | 구단 훈련장 전경(시설 단계와 선수 위치) |
+| `src/rig.js` | 그래픽 중계의 투구 장면(관절 인형 선수의 투구·스윙) |
 | `vendor/` | 외부 라이브러리(faces.js, lz-string) |
 | `build.sh` | 위 파일을 묶어 `index.html`을 만듭니다 |
 | `index.html` | 빌드 결과물. 이 파일 하나로 실행됩니다 |

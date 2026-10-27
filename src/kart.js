@@ -9,4 +9,6 @@ function kPlayer(o){ const S=o.S, D=o.D; const arm=KART.a; let arms, extra='';
   else { arms=`<g transform="translate(-1 -9)">${kpp(arm,S,D)}</g><g transform="translate(-1 9)">${kpp(arm,S,D)}</g>`; }
   let glove=''; if(o.glove&&!o.bat){ const gy=o.pose==='set'?0:(o.glove==='L'?-9:9), gx=o.pose==='set'?16:19; glove=`<circle cx="${gx}" cy="${gy}" r="4.3" fill="#8a5a2b" stroke="#4a2c12" stroke-width="1"/><path d="M${gx-2} ${gy-1.5} q2 -1.5 4 0" stroke="#c48a4f" stroke-width=".8" fill="none"/>`; }
   const helm=o.helm?`<circle cx="0.5" cy="0" r="8.6" fill="${o.helm}" stroke="#fff8" stroke-width=".9"/><path d="M6.5 -5.5 Q11 0 6.5 5.5" fill="none" stroke="${o.helm}" stroke-width="3.2" stroke-linecap="round"/><circle cx="-2" cy="-3" r="2.2" fill="#fff3"/>`:'';
-  return `<g transform="rotate(${o.rot||0})">${arms}${kpp(KART.b[o.v||0],S,D)}${helm}${glove}${extra}</g>`; }
+  if(o.bat)return `<g transform="rotate(${o.rot||0})"><g class="kswing">${arms}${extra}</g>${kpp(KART.b[o.v||0],S,D)}${helm}</g>`;
+  if(o.pose==='set')return `<g transform="rotate(${o.rot||0})"><g class="kthrow">${arms}${glove}</g>${kpp(KART.b[o.v||0],S,D)}${helm}</g>`;
+  return `<g transform="rotate(${o.rot||0})"><g class="karms">${arms}${glove}</g>${kpp(KART.b[o.v||0],S,D)}${helm}${extra}</g>`; }

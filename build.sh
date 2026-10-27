@@ -18,6 +18,7 @@ cd "$(dirname "$0")"
   echo '<script>'
   cat src/kart.js
   cat src/campus.js
+  cat src/rig.js
   cat src/ui.js
   echo '</script>'
 } > index.html

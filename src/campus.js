@@ -4,12 +4,16 @@ let CPID=0;
 /* 선수 한 명: 위에서 본 그림 + 클릭 영역 + 상태 표시. anim은 SVG 애니메이션 조각 */
 function cpPlayer(p,x,y,o={}){ const id='cp'+(++CPID); const u=CAMP_UNI[o.uni||'a'];
   const badge=p.inj?`<g transform="translate(9 -14)"><circle r="5.5" fill="#d6333f" stroke="#fff" stroke-width="1"/><path d="M-3 0h6M0 -3v6" stroke="#fff" stroke-width="1.8"/></g>`:p.tired?`<g transform="translate(9 -14)"><circle r="5.5" fill="#e0a100" stroke="#fff" stroke-width="1"/><text y="2.6" text-anchor="middle" font-size="7" font-weight="700" fill="#111">z</text></g>`:p.hot?`<g transform="translate(9 -14)"><circle r="5.5" fill="#1fa463" stroke="#fff" stroke-width="1"/><path d="M-2.5 1.5 0 -2 2.5 1.5" fill="none" stroke="#fff" stroke-width="1.6"/></g>`:'';
-  return `<g class="cpp" data-pid="${p.id}" transform="translate(${x} ${y})" tabindex="0" role="button" aria-label="${p.name}">
+  const act=o.act?` ${o.act}`:''; const sty=o.act?` style="--ad:${o.dur||2.6}s;--dl:${o.dl!=null?o.dl:-((p.id*0.37)%2).toFixed(2)}s"`:'';
+  return `<g class="cpp${act}" data-pid="${p.id}" transform="translate(${x} ${y})" tabindex="0" role="button" aria-label="${p.name}"${sty}>
     ${o.anim||''}<g transform="scale(${o.s||.62})"><ellipse cx="1" cy="2" rx="14" ry="12" fill="#0003"/><g transform="rotate(${o.rot||0})">${kPlayer({...u,v:p.v%5,rot:0,helm:o.helm?u.H:null,glove:o.glove,bat:o.bat,pose:o.pose})}</g></g>${badge}
     <text class="cpn" y="${o.ny||19}">${p.name}</text></g>`; }
 function cpWalk(path,dur,begin){ return `<animateMotion dur="${dur}s" begin="${begin||0}s" repeatCount="indefinite" rotate="auto" path="${path}"/>`; }
 function cpBob(d){ return `<animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;0 -2;0 0" dur="${d||1.2}s" repeatCount="indefinite"/>`; }
 
+/* 투구와 타격이 맞물리는 공: 투수 손을 떠나(56%) 타자에게 닿고(72%), 맞은 공은 멀리 날아간다 */
+function cpPitchBall(px,py,hx,hy,fx,fy,dur,r){ const rr=r||3; return `<circle r="${rr}" fill="#fff" opacity="0"><animateMotion dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.56;0.72;1" keyPoints="0;0;1;1" calcMode="linear" path="M${px} ${py} L${hx} ${hy}"/><animate attributeName="opacity" dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.55;0.56;0.72;0.73;1" values="0;0;1;1;0;0"/></circle>`
+  +(fx!=null?`<circle r="${rr}" fill="#fff" opacity="0"><animateMotion dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.73;0.97;1" keyPoints="0;0;1;1" calcMode="linear" path="M${hx} ${hy} Q${(hx+fx)/2} ${Math.min(hy,fy)-120} ${fx} ${fy}"/><animate attributeName="opacity" dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.72;0.73;0.96;0.97;1" values="0;0;1;1;0;0"/></circle>`:''); }
 function plotFrame(x,y,w,h,title,lv,max,bld,key){ const pips=[1,2,3].map(i=>`<rect x="${x+w-46+i*12}" y="${y+7}" width="9" height="4" rx="1" fill="${i<=lv?'#4fd27c':bld&&i===lv+1?'#e0a100':'#ffffff33'}"/>`).join('');
   return `<g class="plot" data-k="${key}" data-b="${x},${y},${w},${h}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="#ffffff22"/>
     <rect x="${x}" y="${y}" width="${w}" height="18" rx="6" fill="#0b1218cc"/><text class="pt" x="${x+8}" y="${y+13}">${title}</text>${max?pips:''}</g>`; }
@@ -43,9 +47,9 @@ function renderFarm(S){ CPID=0; const P=S.players; const g=[];
     if(lv>=2){ g.push([[x+20,y+40],[x+w-20,y+40],[x+24,y+250],[x+w-24,y+250]].map(([lx,ly])=>`<g><circle cx="${lx}" cy="${ly}" r="14" fill="#fff7d6" opacity=".18"/><rect x="${lx-6}" y="${ly-3}" width="12" height="6" rx="1" fill="#f3f0e0" stroke="#555"/></g>`).join('')
       +`<rect x="${x+26}" y="${y+150}" width="44" height="12" fill="#a9824f"/><rect x="${x+w-70}" y="${y+150}" width="44" height="12" fill="#a9824f"/><text class="pl" x="${x+48}" y="${y+175}" text-anchor="middle">불펜</text>`); }
     const F=by('fut'); const sp=[[cx,cy-56,90],[cx+50,cy-68,135],[cx+26,cy-112,100],[cx-26,cy-112,80],[cx-50,cy-68,45],[cx-120,cy-150,60],[cx,cy-196,90],[cx+120,cy-150,120]];
-    F.slice(0,8).forEach((p,i)=>{ const [px,py,r]=sp[i]; g.push(cpPlayer(p,px,py,{uni:'f',rot:r,glove:'L',pose:i===0?'set':null})); });
-    if(F[8]) g.push(cpPlayer(F[8],cx-15,cy-2,{uni:'f',bat:'R',helm:1}));
-    g.push(`<circle r="2.6" fill="#fff"><animateMotion dur="1.8s" repeatCount="indefinite" path="M${cx} ${cy-56} L${cx-6} ${cy-6}"/></circle>`);
+    F.slice(0,8).forEach((p,i)=>{ const [px,py,r]=sp[i]; g.push(cpPlayer(p,px,py,{uni:'f',rot:r,glove:'L',pose:i===0?'set':null,act:i===0?'th':null,dur:2.8,dl:0})); });
+    if(F[8]) g.push(cpPlayer(F[8],cx-15,cy-2,{uni:'f',bat:'R',helm:1,act:'sw',dur:2.8,dl:0}));
+    if(F[0]&&F[8]) g.push(cpPitchBall(cx+4,cy-58,cx-8,cy-8,cx+90,cy-190,2.8,2.6));
     if(lv>=3) g.push(`<rect x="${x+w-112}" y="${y+26}" width="90" height="22" fill="#0a0d10" stroke="#3a4652"/><text x="${x+w-67}" y="${y+41}" text-anchor="middle" class="sb">${S.futNote||'퓨처스 훈련'}</text>`);
     if(F.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">벤치 ${F.length-9}명</text>`); }
 
@@ -57,11 +61,11 @@ function renderFarm(S){ CPID=0; const P=S.players; const g=[];
 
   row('indoor',592,392,'실내 연습장',['없음','간이 연습장','실내 연습장','실내 훈련동'],(x,y,w,h,lv)=>{ const bw=lv===1?w-200:lv===2?w-60:w-20; g.push(bldg(x+10,y+28,bw,h-48,'#3f8f55'));
     const cages=lv===1?2:lv===2?4:5; for(let i=0;i<cages;i++){ const cx=x+22+i*70, cy=y+40; g.push(`<rect x="${cx}" y="${cy}" width="52" height="${h-74}" fill="#00000022" stroke="#ffffff55" stroke-dasharray="3 2"/><rect x="${cx+20}" y="${cy+8}" width="12" height="8" fill="#555"/>`);
-      const p=by('indoor')[i]; if(p){ g.push(cpPlayer(p,cx+22,cy+h-98,{bat:'R',helm:1,uni:p.uni||'a'})); g.push(`<circle r="2.2" fill="#fff"><animateMotion dur="${1.3+i*.2}s" repeatCount="indefinite" path="M${cx+26} ${cy+16} L${cx+26} ${cy+h-100}"/></circle>`); } } },16,322);
+      const p=by('indoor')[i]; if(p){ const d=(1.6+i*.25).toFixed(2); g.push(cpPlayer(p,cx+22,cy+h-98,{bat:'R',helm:1,uni:p.uni||'a',act:'sw',dur:d,dl:0})); g.push(cpPitchBall(cx+26,cy+16,cx+26,cy+h-108,cx+26+(i%2?-14:14),cy+20,d,2.2)); } } },16,322);
 
   row('weight',16,214,'웨이트·컨디셔닝',['없음','기본 웨이트장','컨디셔닝 센터','퍼포먼스 센터'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#39424c'));
     const n=2+lv*2; for(let i=0;i<n;i++){ const ex=x+28+(i%4)*40, ey=y+46+Math.floor(i/4)*58; g.push(`<rect x="${ex}" y="${ey}" width="26" height="8" rx="2" fill="#20262c"/><rect x="${ex-4}" y="${ey-2}" width="4" height="12" fill="#8b939b"/><rect x="${ex+26}" y="${ey-2}" width="4" height="12" fill="#8b939b"/>`); }
-    by('weight').slice(0,4).forEach((p,i)=>g.push(cpPlayer(p,x+40+(i%2)*80,y+86+Math.floor(i/2)*60,{rot:90,anim:cpBob(1+i*.15)})));
+    by('weight').slice(0,4).forEach((p,i)=>g.push(`<rect x="${x+40+(i%2)*80-16}" y="${y+86+Math.floor(i/2)*60-2}" width="32" height="4" rx="2" fill="#8b939b"><animate attributeName="width" values="32;24;32" dur="${(1.5+i*.2).toFixed(1)}s" repeatCount="indefinite"/><animate attributeName="x" values="${x+40+(i%2)*80-16};${x+40+(i%2)*80-12};${x+40+(i%2)*80-16}" dur="${(1.5+i*.2).toFixed(1)}s" repeatCount="indefinite"/></rect>`+cpPlayer(p,x+40+(i%2)*80,y+86+Math.floor(i/2)*60,{rot:90,act:'lift',dur:(1.5+i*.2).toFixed(1),dl:0})));
     if(lv>=2)g.push(`<rect x="${x+w-50}" y="${y+40}" width="30" height="80" rx="4" fill="#2a6f97"/><text class="pl" x="${x+w-35}" y="${y+135}" text-anchor="middle">러닝 트랙</text>`); });
 
   row('rehab',262,214,'재활·회복 센터',['없음','물리치료실','재활센터(수중)','회복 센터'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#e6ebef'));
@@ -76,23 +80,25 @@ function renderFarm(S){ CPID=0; const P=S.players; const g=[];
     g.push(`<circle cx="${x+50}" cy="${y+110}" r="16" fill="#a9824f"/><rect x="${x+w-46}" y="${y+60}" width="10" height="100" fill="#00000055" stroke="#ffffff77"/>
       <rect x="${x+w-64}" y="${y+40}" width="40" height="14" rx="2" fill="#0b1218"/><rect x="${x+w-62}" y="${y+42}" width="36" height="10" fill="#4fd27c"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></rect>
       ${lv>=2?`<g fill="#e0a100">${[[x+20,y+40],[x+20,y+170],[x+90,y+40]].map(([a,b])=>`<rect x="${a}" y="${b}" width="8" height="6"/><circle cx="${a+4}" cy="${b+3}" r="1.6" fill="#d6333f"/>`).join('')}</g>`:''}`);
-    const p=by('lab')[0]; if(p){ g.push(cpPlayer(p,x+50,y+110,{rot:0,pose:'set',glove:'L'})); g.push(`<circle r="2.4" fill="#fff"><animateMotion dur="1.1s" repeatCount="indefinite" path="M${x+60} ${y+110} L${x+w-42} ${y+110}"/></circle>`); }
+    const p=by('lab')[0]; if(p){ g.push(cpPlayer(p,x+50,y+110,{rot:0,pose:'set',glove:'L',act:'th',dur:2.2,dl:0})); g.push(cpPitchBall(x+60,y+108,x+w-42,y+110,null,null,2.2,2.4)); g.push(`<text class="pl" x="${x+w-41}" y="${y+170}" text-anchor="middle"><tspan>${140+(p.id%9)}km/h</tspan></text>`); }
     const q=by('lab')[1]; if(q)g.push(cpPlayer(q,x+60,y+170,{rot:-90,anim:cpBob(2)})); });
 
   row('dorm',754,230,'선수 숙소·식당',['없음','기숙사','기숙사·식당','선수촌'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#d9c7a6'));
     const rooms=lv*4; for(let i=0;i<rooms;i++)g.push(`<rect x="${x+18+(i%4)*28}" y="${y+36+Math.floor(i/4)*26}" width="22" height="20" fill="#c3ad86" stroke="#a48f6a"/>`);
     if(lv>=2)g.push(`<rect x="${x+20}" y="${y+130}" width="${w-40}" height="36" fill="#efe4cf"/><text class="pl dk" x="${x+w/2}" y="${y+182}" text-anchor="middle">식당</text>`);
-    by('dorm').forEach((p,i)=>g.push(cpPlayer(p,0,0,{uni:'y',anim:cpWalk(`M${x+24+i*20} ${y+h-30} L${x+w-24} ${y+h-30} L${x+w-24} ${y+120} L${x+24+i*20} ${y+120} Z`,12+i*2,-i*3)}))); });
+    by('dorm').forEach((p,i)=>g.push(cpPlayer(p,0,0,{uni:'y',act:'ar',dur:.5,anim:cpWalk(`M${x+24+i*20} ${y+h-30} L${x+w-24} ${y+h-30} L${x+w-24} ${y+120} L${x+24+i*20} ${y+120} Z`,12+i*2,-i*3)}))); });
 
   /* 도로를 오가는 선수 */
-  by('road').forEach((p,i)=>g.push(cpPlayer(p,0,0,{uni:'f',anim:cpWalk(`M${30+i*60} 352 H970 V354 H${30+i*60}`,26+i*4,-i*7)})));
+  by('road').forEach((p,i)=>g.push(cpPlayer(p,0,0,{uni:'f',act:'ar',dur:.5,anim:cpWalk(`M${30+i*60} 352 H970 V354 H${30+i*60}`,26+i*4,-i*7)})));
   return `<svg class="campus" viewBox="0 0 1000 690" xmlns="http://www.w3.org/2000/svg">${g.join('')}</svg>`; }
 /* 1군 홈구장: 큰 구장 + 클럽하우스 + 구단 버스 */
 function renderHome(S){ CPID=0; const P=S.players; const g=[]; const by=k=>P.filter(p=>p.where===k);
   g.push(`<rect width="1000" height="690" fill="#3c8a4f"/><rect x="0" y="0" width="724" height="690" fill="#2a3138"/>`);
   { const x=16,y=16,w=692,h=658; g.push(plotFrame(x,y,w,h,`${S.stadName||'홈구장'} · 1군 ${by('main').length+by('club').length}명`,0,0,null,'main'));
     const cx=x+w/2, cy=y+h-60;
-    g.push(`<path d="M${cx} ${cy+46} L${x+6} ${y+250} Q${cx} ${y-120} ${x+w-6} ${y+250} Z" fill="#5d6670"/>${[...Array(26)].map((_,i)=>`<path d="M${cx} ${cy+46} L${x+6+i*26.6} ${y+250-Math.sin(i/25*Math.PI)*340} " stroke="#4c545c" stroke-width="1"/>`).join('')}
+    const tc=S.teamCol||'#CE0E2D';
+    g.push(`<path d="M${cx} ${cy+46} L${x+6} ${y+250} Q${cx} ${y-120} ${x+w-6} ${y+250} Z" fill="#5d6670"/>${[0,1,2,3,4,5].map(i=>`<path d="M${x+14+i*5} ${y+250-i*2} Q${cx} ${y-108+i*12} ${x+w-14-i*5} ${y+250-i*2}" fill="none" stroke="${i%2?tc:'#6f7a85'}" stroke-width="5" opacity="${i%2?.55:.7}"/>`).join('')}${[...Array(26)].map((_,i)=>`<path d="M${cx} ${cy+46} L${x+6+i*26.6} ${y+250-Math.sin(i/25*Math.PI)*340} " stroke="#4c545c" stroke-width="1"/>`).join('')}
+      <rect x="${cx-70}" y="${y+2}" width="140" height="10" rx="2" fill="${tc}" opacity=".85"/>${[x+70,x+w-70].map(lx=>`<g><rect x="${lx-3}" y="${y+150}" width="6" height="40" fill="#3a4652"/><rect x="${lx-16}" y="${y+140}" width="32" height="12" rx="2" fill="#d8dde2"/><circle cx="${lx}" cy="${y+146}" r="26" fill="#fff8d0" opacity=".12"/></g>`).join('')}
       <path d="M${cx} ${cy+20} L${x+40} ${y+262} Q${cx} ${y-40} ${x+w-40} ${y+262} Z" fill="#2f8a45"/>${[...Array(12)].map((_,i)=>`<path d="M${cx} ${cy} L${x+40+i*52} ${y+70} L${x+66+i*52} ${y+70} Z" fill="#ffffff08"/>`).join('')}
       <path d="M${x+40} ${y+262} Q${cx} ${y-40} ${x+w-40} ${y+262}" fill="none" stroke="#c9d3da" stroke-width="2"/>
       <path d="M${cx} ${cy} L${cx+120} ${cy-120} L${cx} ${cy-240} L${cx-120} ${cy-120} Z" fill="#a9824f"/><path d="M${cx} ${cy-16} L${cx+92} ${cy-112} L${cx} ${cy-208} L${cx-92} ${cy-112} Z" fill="#2f8a45"/>
@@ -104,11 +110,19 @@ function renderHome(S){ CPID=0; const P=S.players; const g=[]; const by=k=>P.fil
       <rect x="${cx-90}" y="${y+40}" width="180" height="44" rx="4" fill="#0a0d10" stroke="#3a4652"/><text x="${cx}" y="${y+60}" text-anchor="middle" class="sb">${S.mainNote||'훈련 중'}</text><text x="${cx}" y="${y+76}" text-anchor="middle" class="pl">${S.board||''}</text>`);
     const M=by('main'); const pit=M.filter(p=>p.isP), bat=M.filter(p=>!p.isP);
     const spots=[[cx+92,cy-124,135],[cx+50,cy-200,100],[cx-50,cy-200,80],[cx-92,cy-124,45],[cx-220,cy-300,60],[cx,cy-370,90],[cx+220,cy-300,120],[cx,cy+20,-90]];
-    const fld=bat.slice(0,8); fld.forEach((p,i)=>{ const [px,py,r]=spots[i]; g.push(cpPlayer(p,px,py,{rot:r,glove:'L',s:.8,anim:i>3&&i<7?cpBob(2.4+i*.3):''})); });
-    if(pit[0]) g.push(cpPlayer(pit[0],cx,cy-112,{rot:90,pose:'set',glove:'L',s:.8}));
-    const bt=bat[8]; if(bt){ g.push(cpPlayer(bt,cx-30,cy-6,{rot:0,bat:'R',helm:1,s:.8})); }
-    g.push(`<circle r="3.2" fill="#fff"><animateMotion dur="2.4s" repeatCount="indefinite" path="M${cx} ${cy-112} L${cx-10} ${cy-10} Q${cx+120} ${cy-380} ${cx+260} ${cy-420}"/></circle>`);
-    pit.slice(1,4).forEach((p,i)=>g.push(cpPlayer(p,x+96+i*26,y+330-i*26,{rot:20,pose:'set',glove:'L',s:.7})));
+    const fld=bat.slice(0,8); fld.forEach((p,i)=>{ const [px,py,r]=spots[i];
+      if(i>=4&&i<7){ const dx=(i===4?-1:i===6?1:0)*40, dy=i===5?-30:-20; g.push(cpPlayer(p,0,0,{rot:r,glove:'L',s:.8,act:'ar',dur:.45,anim:`<animateMotion dur="5.2s" repeatCount="indefinite" keyTimes="0;0.4;0.6;1" keyPoints="0;1;1;0" calcMode="linear" path="M${px} ${py} L${px+dx} ${py+dy}"/>`})); }
+      else g.push(cpPlayer(p,px,py,{rot:r,glove:'L',s:.8})); });
+    if(pit[0]) g.push(cpPlayer(pit[0],cx,cy-112,{rot:90,pose:'set',glove:'L',s:.8,act:'th',dur:2.6,dl:0}));
+    const bt=bat[8]; if(bt){ g.push(cpPlayer(bt,cx-30,cy-6,{rot:0,bat:'R',helm:1,s:.8,act:'sw',dur:2.6,dl:0})); }
+    if(bt) g.push(`<path d="M${cx-58} ${cy+14} L${cx-58} ${cy-30} Q${cx} ${cy-62} ${cx+58} ${cy-30} L${cx+58} ${cy+14}" fill="#00000026" stroke="#e8edf1" stroke-width="1.6" stroke-dasharray="3 2"/><text class="pl" x="${cx-64}" y="${cy-30}" text-anchor="end">타격 케이지</text>`);
+    if(pit[0]) g.push(`<path d="M${cx-14} ${cy-96} h22 v4 h-18 v8 h-4z" fill="#1d242b" stroke="#e8edf1" stroke-width="1"/><g transform="translate(${cx+22} ${cy-122})"><rect x="-6" y="-6" width="12" height="12" rx="2" fill="#8a8f96"/>${[[-3,-2],[1,-3],[2,2],[-2,3]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="1.6" fill="#fff"/>`).join('')}</g>`);
+    if(pit[0]&&bt) g.push(cpPitchBall(cx,cy-104,cx-14,cy-12,cx+120,cy-360,2.6,3.2));
+    /* 펑고: 1루 라인 쪽 코치가 내야수에게 땅볼을 쳐 준다 */
+    if(fld[1]){ const fx=cx+104, fy=cy-74; g.push(`<g transform="translate(${fx} ${fy})"><circle r="6" fill="#1d242b" stroke="#fff" stroke-width="1"/><text class="pl" y="16" text-anchor="middle">코치</text></g><circle r="2.6" fill="#fff"><animateMotion dur="3.4s" repeatCount="indefinite" keyTimes="0;0.2;0.55;1" keyPoints="0;0;1;1" calcMode="linear" path="M${fx} ${fy} L${spots[1][0]} ${spots[1][1]+6}"/></circle><circle r="2.6" fill="#fff"><animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite" keyTimes="0;0.2;0.55;1" keyPoints="0;0;1;1" calcMode="linear" path="M${fx} ${fy} L${spots[2][0]} ${spots[2][1]+6}"/></circle>`); }
+    pit.slice(1,3).forEach((p,i)=>g.push(cpPlayer(p,x+96+i*30,y+330-i*30,{rot:20,pose:'set',glove:'L',s:.7,act:'th',dur:2.2+i*.4})));
+    /* 외야 워닝트랙을 뛰는 투수들 */
+    pit.slice(3,6).forEach((p,i)=>g.push(cpPlayer(p,0,0,{s:.62,act:'ar',dur:.4,ny:16,anim:`<animateMotion dur="${16+i*2}s" begin="${-i*5}s" repeatCount="indefinite" path="M${x+60} ${y+262} Q${cx} ${y-24} ${x+w-60} ${y+262} Q${cx} ${y-24} ${x+60} ${y+262}"/>`})));
     const bench=bat.slice(9).concat(pit.slice(4)); bench.slice(0,5).forEach((p,i)=>g.push(cpPlayer(p,cx+92+i*22,cy+19,{rot:-90,s:.55,ny:16})));
     if(bench.length>5)g.push(`<text class="pl" x="${cx+140}" y="${cy+60}" text-anchor="middle">벤치 외 ${bench.length-5}명</text>`); }
   /* 클럽하우스: 지친 1군 선수가 쉬는 곳 */
