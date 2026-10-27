@@ -23,22 +23,25 @@ function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k)_tcC={k,m:{}}; if(_
   const tr=gmTrait(t.id); const money=(t.indie?1.5:t.owner==='profit'?1.25:t.owner==='win'?.85:1)*(ci.over>0?1.25:1)*(contend?.9:1.1)*(tr==='miser'?1.3:tr==='data'?1.15:tr==='gambler'?.9:1);
   const v={contend,money,H:contend?2:4,now:contend?1.15:.8,rk}; _tcC.m[t.id]=v; return v; }
 function pSlot(p){ return p.isP?(isSPr(p)?'SP':'RP'):p.pos; }
+/* 트레이드 평가 중 상대가 내주는 주전 자리: 같은 자리 선수를 받으면 그 빈자리를 메우므로 '쓸모없는 영입'으로 깎지 않는다 */
+let _evOut=null;
 function roleFactor(t,p,dir){ const L=leagueSlots()[t.id]; const k=pSlot(p); const sl=L&&L[k]; if(!sl)return 1;
-  if(dir==='out'){ const starter=sl.ps.some(q=>q.id===p.id); if(!starter)return 1; return teamCtx(t).contend?1.45:1.25; }
+  if(dir==='out'){ const starter=sl.ps.some(q=>q.id===p.id); if(!starter)return 1; return teamCtx(t).contend?1.38:1.22; }
+  if(_evOut&&_evOut.has(k))return 1.05;
   const base=k==='SP'?(sl.ps.length<5?30:Math.min(...sl.ps.map(spV))):k==='RP'?(sl.ps.length<4?30:Math.min(...sl.ps.map(penV))):sl.v;
   const up=slotGain(k,p)-base; if(up>0)return 1+Math.min(.35,up/20); return p.age<=23?.85:.6; }
 /* 성장 예측은 불확실하다: 지금 능력보다 높게 잡힌 몫은 깎아서 본다(유망주 한 명에 주전을 내주지 않도록).
    보류 기간이 끝난 뒤에도 KBO는 원 소속 구단 잔류가 많아 그 뒤 가치도 일부 인정한다 */
 function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const cur=ovr(p);
-  for(let i=0;i<c.H;i++){ let o=projO(p,i); if(o>cur)o=cur+(o-cur)*(i===0?.75:.6); const d=Math.pow(.85,i); const w=seasonWorth(o)*(i===0?c.now:1)*d;
-    if(i>=ny){ v+=w*.4; continue; }
+  for(let i=0;i<c.H;i++){ let o=projO(p,i); if(o>cur)o=cur+(o-cur)*(i===0?.75:i<=1?.55:.45); /* 먼 미래 성장일수록 더 불확실하다 */ const d=Math.pow(.8,i); const w=seasonWorth(o)*(i===0?c.now:1)*d; /* KBO 구단은 먼 미래보다 지금을 더 친다 */
+    if(i>=ny){ v+=w*.55; continue; }
     const sal=p.faC||p.foreign?p.sal/100:Math.min(seasonWorth(o),p.sal/100*Math.pow(1.3,i)); v+=w-sal*c.money*d; }
   if(v>0)v*=roleFactor(t,p,dir);
   const gt=gmTrait(t.id); if(v>0){ if(gt==='prospect'&&p.age<=24)v*=1.22; if(gt==='gambler'&&dir==='in'&&ovr(p)>=60)v*=1.15; if(gt==='data'){ const cd=condOf(p); v*=1-cd*.02; } }
   const m=G.mgr[t.id]; if(m&&v>0){ if(m.youth>=65&&p.age<=25)v*=1.1; if(m.small>=65&&!p.isP&&p.r.spd>=60)v*=1.06; if(m.pen>=65&&p.isP&&!isSP(p))v*=1.08; }
   if(v>0&&p.mor!=null&&p.mor<30)v*=dir==='in'?.92:.85;
   if(v>0&&dir==='in'&&ovr(p)<40&&p.age<=24)v*=.8; /* 아직 1군 근처에도 못 온 유망주는 불확실하다 */
-  if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.5:.62):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다 */
+  if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.45:.55):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다 */
   if(v>0&&milFree(p)&&p.age>=26)v*=.85;
   if(p.injOut>20)v-=Math.abs(v)*.2;
   if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?(t.mode==='rebuild'?0:.6):starter?(c.contend?seasonWorth(projO(p,0))*.7:seasonWorth(projO(p,0))*.25):.4; v=Math.max(v,fl); }
@@ -48,15 +51,16 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
     if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); }
   return v; }
 function stackIn(vals){ const pos=vals.filter(x=>x>0).sort((a,b)=>b-a), neg=vals.filter(x=>x<=0); const w=[1,.62,.42,.3,.25]; return sum(pos.map((x,i)=>x*(w[i]??.25)))+sum(neg); }
-function tradeNeed(t,outVal){ const tr=gmTrait(t.id); let n=1.2+Math.max(0,outVal)*.08-(t.rel-50)/15*(tr==='loyal'?2:1); if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
+function tradeNeed(t,outVal){ const tr=gmTrait(t.id); let n=.9+Math.max(0,outVal)*.075-(t.rel-50)/15*(tr==='loyal'?2:1); if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
 function trueVal(p){ const o=ovr(p); const eff=p.age<=25?o+Math.max(0,p.pot-o)*.6:p.age>=32?o-(p.age-31)*1.3:o; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 function tradeOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=tradeDL(); return true; }
 function evalTrade(tid,give,get){
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
-  const inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1))), outV=sum(get.map(id=>tval(t,P(id),'out')));
+  _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
+  let inV, outV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1))); outV=sum(get.map(id=>tval(t,P(id),'out'))); } finally { _evOut=null; }
   const theirN=rosterN(tid)+give.length-get.filter(id=>!P(id).ys).length;
-  let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?1.5:0)-(hit.length?.6:0); if(t.mode!=='rebuild'&&get.some(id=>P(id)&&P(id).aiListed))need=Math.max(need,.3); if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
+  let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?1.5:0)-(hit.length?.6:0); /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,-.3); if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPay(tid)+sum(give.map(id=>P(id).sal))-sum(get.map(id=>P(id).sal));
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,outV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
@@ -93,10 +97,20 @@ function proposeTrade(tid,give,get){
   }
   const gap=e.need-e.gain; if(!ni.free&&!isCtr)nt.neg++; nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
   for(const id of give){ const q=G.players[id]; if(q&&R()<.12){ q.mor=clamp((q.mor??60)-4,0,100); if(R()<.5)wire('루머',`${q.name}, ${t.city} ${t.nick}와(과) 트레이드 대상으로 거론됐다는 소문`,{ref:q.id}); } } if(gmTrait(tid)==='hard'&&nt.neg>=3)t.rel=clamp(t.rel-1,0,100);
-  if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다. (친분 -2)`}; }
-  const co=counterOffer(tid,give,get); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get)]=G.day; if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다. 이렇게 하시면 응하겠습니다.`,counters:co};
+  const why=tradeWhyNot(t,give,get);
+  if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''} (친분 -2)`}; }
+  const co=counterOffer(tid,give,get); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get)]=G.day; if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.`,counters:co};
   const cand=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72})).filter(x=>x.v>=gap*.8).sort((a,b)=>a.v-b.v)[0];
   if(cand)nt.ctr[tsig([...give,cand.p.id],get)]=G.day;
-  return {ok:false,msg:`${gmn}: 조금 부족합니다.${cand?` ${cand.p.name}(${posLabel(cand.p)})을(를) 얹어 주면 응하겠습니다.`:' 받는 선수를 줄여 주세요.'}`,want:cand?cand.p.id:null};
+  return {ok:false,msg:`${gmn}: 조금 부족합니다.${why?` ${why}`:''}${cand?` ${cand.p.name}(${posLabel(cand.p)})을(를) 얹어 주면 응하겠습니다.`:' 받는 선수를 줄여 주세요.'}`,want:cand?cand.p.id:null};
 }
 
+
+/* 거절 이유를 한마디로: 상대 구단 사정(리빌딩·우승 경쟁·연봉)과 맞지 않는 선수를 내밀 때 */
+function tradeWhyNot(t,give,get){ const P=id=>G.players[id]; const g=give.map(P).filter(Boolean), o=get.map(P).filter(Boolean); if(!g.length)return '';
+  const ag=sum(g.map(p=>p.age))/g.length, gs=sum(g.map(p=>p.sal)), os=sum(o.map(p=>p.sal)); const ctx=teamCtx(t);
+  if(t.mode==='rebuild'&&(ag>=29||gs>os*1.3+100))return '저희는 리빌딩 중이라 나이 많고 연봉 큰 선수는 부담입니다. 젊은 선수를 원합니다.';
+  if(ctx.contend&&g.every(p=>ovr(p)<ovr(o[0]||p)-3))return '저희는 지금 순위 싸움 중이라 당장 뛸 선수가 필요합니다.';
+  if(gs>os+300&&(t.owner==='profit'||capPay(t.id)+gs-os>capOf(G.year)*.95))return `연봉을 ${money(gs-os)} 더 떠안는 건 어렵습니다.`;
+  if(o.some(p=>p.aiListed&&p.aiWhy==='room')&&g.every(p=>p.age>=26))return '저희가 내놓은 건 자리가 없는 유망주라, 받는 쪽도 앞으로 클 선수였으면 합니다.';
+  return ''; }
