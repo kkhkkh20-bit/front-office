@@ -1197,6 +1197,41 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .rcp-c b{font-size:12px;padding:0 4px}
 .rcp-m,.rcp-x{background:none;border:0;color:var(--muted,#9aa7b4);font-size:11px;padding:2px 4px;cursor:pointer;min-width:22px;min-height:22px}
 .rcp-m:disabled{opacity:.25;cursor:default}.rcp-x:hover{color:#ff7b72}
+/* 캘린더 */
+.calbtn{margin-right:2px}
+.cal-nav{margin-bottom:8px}.cal-ttl{font:700 17px var(--f-num,inherit)}
+.cal-w,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-w span{font-size:11px;color:var(--muted,#9aa7b4);text-align:center;padding:2px 0}
+.cal-c{min-height:92px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.02);padding:4px;display:flex;flex-direction:column;gap:3px;text-align:left;color:inherit;cursor:pointer;overflow:hidden;font:inherit}
+.cal-c.nil{border:0;background:none;cursor:default}
+.cal-c.past{opacity:.62}.cal-c.mon .cal-n{color:#8592a0}
+.cal-c.today{border-color:var(--acc,#e2434b);box-shadow:inset 0 0 0 1px var(--acc,#e2434b)}
+.cal-c.sel{background:rgba(90,169,255,.12);border-color:#5aa9ff}
+.cal-n{font:700 12px var(--f-num,inherit)}
+.cal-g{display:flex;align-items:center;gap:3px;font-size:11px;white-space:nowrap;overflow:hidden}
+.cal-g i{font-style:normal;overflow:hidden;text-overflow:ellipsis}.cal-g b{margin-left:auto;font:700 11px var(--f-num,inherit)}
+.cal-g.w b{color:#3fd07f}.cal-g.l b{color:#ff6b6b}
+.cal-e{font-size:10.5px;line-height:1.25;border-left:3px solid var(--ec);padding-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-more{font-size:10px;color:var(--muted,#9aa7b4)}
+.cal-leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:11px;color:var(--muted,#9aa7b4)}
+.cal-leg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}.cal-leg i.g{background:#c8d2dc}
+.cal-dg{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:8px;margin:6px 0}
+.cal-dg>div{display:flex;flex-direction:column;flex:1}
+.cal-dl{list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:5px}
+.cal-dl li{display:flex;align-items:center;gap:8px;font-size:14px}.cal-dl li i{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
+.cal-up{display:flex;flex-direction:column;gap:4px}
+.cal-ur{display:grid;grid-template-columns:62px 64px 1fr;gap:8px;align-items:center;background:none;border:0;border-bottom:1px solid var(--line);padding:6px 2px;color:inherit;text-align:left;cursor:pointer;font:inherit}
+@media (max-width:600px){ .cal-c{min-height:58px;padding:3px}.cal-e{font-size:0;border-left-width:0;padding:0;height:4px;border-radius:2px;background:var(--ec)}.cal-g i{display:none}.cal-g b{font-size:10px}.cal-more{display:none} }
+/* 진행 표시 띠 */
+#dtick{position:fixed;left:50%;top:64px;transform:translate(-50%,-8px);opacity:0;pointer-events:none;z-index:60;transition:opacity .25s,transform .25s;max-width:calc(100vw - 24px)}
+#dtick.on{opacity:1;transform:translate(-50%,0)}
+.dt-in{display:flex;gap:4px;background:rgba(10,15,19,.92);border:1px solid var(--line);border-radius:10px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.4);overflow:hidden}
+.dt-c{display:flex;flex-direction:column;align-items:center;min-width:38px;padding:3px 4px;border-radius:6px;color:#7d8a96;transition:background .12s,color .12s}
+.dt-c i{font-style:normal;font-size:10px}.dt-c b{font:700 12px var(--f-num,inherit)}.dt-c em{font-style:normal;font-size:10px;height:12px}
+.dt-c em.w{color:#3fd07f}.dt-c em.l{color:#ff6b6b}.dt-c em.ev{color:#5aa9ff}
+.dt-c.done{color:#e8edf2}.dt-c.cur{background:var(--acc,#e2434b);color:#fff}.dt-c.cur em{color:#fff}
+.dt-c.gap{justify-content:center}
+@media (prefers-reduced-motion:reduce){ #dtick{display:none} }
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -5548,7 +5583,7 @@ const recStr=r=>`${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''}`;
 function liveHidden(){ if(!G||!G.live)return false; const g=G.games[G.live.i]; return g&&G.live.upto<g.line.a.length+g.line.h.length; }
 function myRec(){ const r=Object.assign({},G.sea.rec[G.user]); if(liveHidden()){ const g=G.games[G.live.i]; if(!/차전/.test(g.kind||'')){ if(g.res==='승')r.w--; else if(g.res==='패')r.l--; else r.t--; } } return r; }
 function myRank(){ return liveHidden()?'-':standingsNow().findIndex(x=>x.tid===G.user)+1; }
-const ICO={mail:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>',brief:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12h.01"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M22 13a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>',users:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>',trophy:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg>',wallet:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>',ff:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>'};
+const ICO={cal:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',mail:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>',brief:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12h.01"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M22 13a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>',users:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>',trophy:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg>',wallet:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>',ff:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>'};
 const wide=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:980px)').matches;
 function rcol(v){ return v>=75?'var(--r75)':v>=65?'var(--r65)':v>=55?'var(--r55)':v>=50?'var(--r50)':v>=45?'var(--r45)':v>=35?'var(--r35)':'var(--r20)'; }
 /* 글 속 선수·구단 이름을 누를 수 있게 */
@@ -5605,7 +5640,7 @@ const tb=(tid,label)=>`<span class="tname">${badge(tid,18)}${label??tname(tid)}<
 const TCOL=new Proxy({},{get:(o,code)=>{ const p=TPAL[code]; return p?[p[0],p[3],p[2]]:undefined; }});
 function setTeamVars(t){ const r=document.documentElement.style; const c=t&&TCOL[t.code]; const h=t?t.hue:212;
   r.setProperty('--team',c?c[0]:hslHex(h,52,34)); r.setProperty('--team-hi',c?c[1]:hslHex(h,60,50)); r.setProperty('--team-dk',c?c[2]:hslHex(h,42,16)); }
-const TITLE={home:'홈',inbox:'소식함',roster:'선수단',trade:'트레이드',transfer:'영입·계약',scout:'스카우팅',train:'훈련',staff:'스태프',league:'리그',club:'구단·재정'};
+const TITLE={cal:'캘린더',home:'홈',inbox:'소식함',roster:'선수단',trade:'트레이드',transfer:'영입·계약',scout:'스카우팅',train:'훈련',staff:'스태프',league:'리그',club:'구단·재정'};
 function metaChips(){ const t=team(G.user); const per=period(); const ci=capInfo(G.user); const r=myRec(); const c=[];
   if(per==='season'||per==='post')c.push(`<span class="chipn"><b>${r.w}-${r.l}${r.t?'-'+r.t:''}</b> · ${myRank()}위</span>`);
   if(!G.unemp){ const b=budget(); const R=G.roomSeen; if(!R||R.y!==G.year){ G.roomSeen={y:G.year,v:b.roomGoal,d:G.day,dv:0}; } else if(R.d!==G.day){ const dv=b.roomGoal-R.v; G.roomSeen={y:G.year,v:b.roomGoal,d:G.day,dv:Math.abs(dv)>=5000?dv:0}; } const dv=G.roomSeen.dv||0;
@@ -5635,7 +5670,7 @@ function render(){
   <div class="mainc">
    <header class="top"><div class="gut"><div class="tbar wrap">
      <div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:`${esc(t.city)} ${esc(t.nick)}<i class="cb-v">▾</i>`}</b><span>${wide()?dstr(G.day):`${dobj(G.day).y}.${dsh(G.day)} ${WD[dobj(G.day).w]}`} · ${PERIOD[per]}</span></div></div>
-     ${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 2주가 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="adv" data-v="next" ${b?'disabled':''} aria-label="한 경기 진행">1경기</button><button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="다음 소식이 올 때까지, 최대 한 주 진행합니다"><b>계속</b><i>${esc(b?nextLabel():'다음 소식까지')}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행">하루</button><button class="continue" data-a="adv" data-v="next" ${b?'disabled':''}><span class="cl"><b>${per==='post'?'다음 경기':'계속'}</b><i>${esc(nextLabel())}</i></span>${ICO.ff}</button>`}</div>
+     ${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 2주가 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="adv" data-v="next" ${b?'disabled':''} aria-label="한 경기 진행">1경기</button><button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="다음 소식이 올 때까지, 최대 한 주 진행합니다"><b>계속</b><i>${esc(b?nextLabel():'다음 소식까지')}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행">하루</button><button class="continue" data-a="adv" data-v="next" ${b?'disabled':''}><span class="cl"><b>${per==='post'?'다음 경기':'계속'}</b><i>${esc(nextLabel())}</i></span>${ICO.ff}</button>`}</div>
    </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}</header>
    <div class="gut"><div class="wrap">
      <div class="subhead"><h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
@@ -5655,7 +5690,7 @@ function tabBody(){
   if(UI.tab==='roster')G.tutFlags.roster=true;
   if(!TITLE[UI.tab])UI.tab='home';
   if(G.unemp&&!['home','inbox','league'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요.</p><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
-  return {home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,league:leagueView,club:clubView}[UI.tab]();
+  return {cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,league:leagueView,club:clubView}[UI.tab]();
 }
 function anySave(){ try{ const m=meta(); return SLOT_IDS.some(n=>m.slots&&m.slots[n]); }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+(m.slots[n]?slotSize(n):0),0); const rows=SLOT_IDS.filter(n=>m.slots[n]||n===SLOT_IDS.find(k=>!m.slots[k])||UI.slotAll).map(n=>{ const s=m.slots[n]; const cur=G&&m.active===n;
@@ -5753,7 +5788,7 @@ function nextGameText(){
 function calendarCard(){
   const per=period(); const la=G.lastAdv; const hid=liveHidden();
   const ng=per==='season'||per==='pre'?nextGameText():'';
-  return `<section class="card"><div class="row between"><h2 class="sec">일정</h2><span class="small muted">${dstr(G.day)}</span></div>
+  return `<section class="card"><div class="row between"><h2 class="sec">일정</h2><span class="row"><span class="small muted">${dstr(G.day)}</span><button class="btn small" data-a="calOpen">캘린더</button></span></div>
     ${ng?`<p class="small">다음 경기 <b>${ng}</b></p>`:''}
     <div class="log">${upcoming().map(([n,t])=>`<p><span class="ticker">D-${n-G.day}</span> ${dmd(n)} · ${t}</p>`).join('')}</div>
     ${la&&la.days?`<p class="small muted">지난 진행 ${la.days}일${la.w+la.l&&!hid?` · ${la.w}승 ${la.l}패`:''}${G.stops.length?' · 중요한 소식이 와서 멈췄습니다':''}</p>`:'<p class="small muted">오른쪽 위 계속 버튼을 누르면 다음 일정까지 시간이 흐릅니다.</p>'}
@@ -7917,6 +7952,61 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
     <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
     <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 감독의 육성 성향. 4) 2군 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 
+/* ===== 구단 캘린더 (FM 일정 화면 방식) =====
+   한 달을 월~일 격자로 보여 준다. 칸마다 우리 경기(상대·홈원정·결과)와 마감·리그 행사·우리 일(결정 기한, 부상 복귀 등)을 표시하고,
+   날짜를 누르면 아래에 그날의 자세한 내용과 '이 날까지 진행' 버튼이 나온다.
+   진행 버튼을 누르면 지나간 날짜가 화면 위에서 하루씩 넘어가는 띠로 보인다(FM의 진행 표시처럼) */
+const CAL_K={dl:{c:'#ff6b6b',l:'마감'},lg:{c:'#5aa9ff',l:'리그'},me:{c:'#ffb547',l:'우리 일'},pl:{c:'#9be27a',l:'선수'}};
+/* 해마다 같은 날짜에 돌아오는 일정 */
+const CAL_FIX=[[1,8,'연봉 미계약 점검','me'],[1,10,'연봉조정 신청 마감','dl'],[1,20,'연봉조정 결정 · 입대일','lg'],[1,24,'FA 시장 사실상 마감','dl'],[7,31,'트레이드 마감','dl'],[8,15,'외국인 등록 마감','dl'],[11,2,'FA 공시','lg'],[11,6,'FA 협상 시작','lg'],[12,1,'연봉 협상 시작','me']];
+function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
+  for(const [m,dd,l,k] of CAL_FIX)if(o.m===m&&o.d===dd)out.push({k,t:l});
+  if(c&&c.y===o.y){ const L=[[c.camp,'스프링캠프 시작','lg'],[c.campEnd,'캠프 종료','lg'],[c.exh,'시범경기 시작','lg'],[c.open,'정규시즌 개막','lg'],[c.asg,'올스타전','lg'],[c.draft,'신인 드래프트','dl'],[c.end,'정규시즌 종료','lg']]; for(const [n,t,k] of L)if(n===d)out.push({k,t}); }
+  /* 우리 일: 결정 기한, 트레이드 제안 기한, 우선 제안·라스트 룩 기한 */
+  for(const e of (G.evs||[]))if(!e.done&&e.exp===d)out.push({k:'me',t:`결정 기한: ${e.title}`});
+  for(const of of (G.offers||[]))if(of.exp===d)out.push({k:'me',t:`트레이드 제안 기한: ${tshort(of.from)}`});
+  if(G.fa){ for(const id in (G.fa.pitch||{})){ const x=G.fa.pitch[id]; const p=G.players[id]; if(p&&x.until===d)out.push({k:'me',t:`우선 제안 기한: ${p.name}`}); }
+    for(const id in (G.fa.mk||{})){ const x=G.fa.mk[id]; const p=G.players[id]; if(!p||p.team!=null)continue; if(x.ll&&x.ll.until===d)out.push({k:'dl',t:`라스트 룩 기한: ${p.name}`}); else if(!x.done&&x.next===d&&(G.fa.offers[id]||p.faFrom===G.user))out.push({k:'me',t:`시장 보고: ${p.name}`}); } }
+  /* 우리 선수: 부상 복귀 예정, 전역 */
+  if(d>G.day&&d-G.day<=120)for(const p of playersOf(G.user)){ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 부상 복귀 예정`}); }
+  for(const p of Object.values(G.players)){ if(p.team!==G.user&&!(p.mil&&p.mil.tid===G.user))continue; if(p.mil&&p.mil.until===d)out.push({k:'pl',t:`${p.name} 전역`}); }
+  return out; }
+/* 그날 우리 경기 */
+function calGame(d){ const c=G.cal; let m=null, kind='';
+  if(c&&c.sched[d])m=c.sched[d].find(x=>x.includes(G.user));
+  const log=(G.sea&&G.sea.ulog||[]).find(x=>x.d===d);
+  if(!m&&log){ m=[log.h,log.a]; kind=log.k||''; }
+  if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
+  return {home,op,kind,res:log?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }
+function calView(){ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
+  const first=dnum(ym.y,ym.m,1); const w0=(dobj(first).w+6)%7; /* 월요일 시작 */ const last=dnum(ym.m===12?ym.y+1:ym.y,ym.m===12?1:ym.m+1,1)-1;
+  const sel=UI.calSel!=null&&dobj(UI.calSel).m===ym.m&&dobj(UI.calSel).y===ym.y?UI.calSel:(now.y===ym.y&&now.m===ym.m?G.day:first);
+  let cells=''; for(let i=0;i<w0;i++)cells+='<div class="cal-c nil"></div>';
+  for(let d=first;d<=last;d++){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d);
+    const gch=g?`<span class="cal-g${g.res?(g.res.r==='승'?' w':g.res.r==='패'?' l':' t'):''}">${badge(g.op,14)}<i>${g.home?'vs':'@'} ${esc(tshort(g.op))}</i>${g.res?`<b>${g.res.my}:${g.res.op}</b>`:''}</span>`:'';
+    const evh=ev.slice(0,2).map(e=>`<span class="cal-e" style="--ec:${CAL_K[e.k].c}">${esc(e.t)}</span>`).join('')+(ev.length>2?`<span class="cal-more">+${ev.length-2}</span>`:'');
+    cells+=`<button class="cal-c${d===G.day?' today':''}${d<G.day?' past':''}${d===sel?' sel':''}${o.w===1?' mon':''}" data-a="calDay" data-v="${d}" aria-label="${o.m}월 ${o.d}일"><span class="cal-n">${o.d}</span>${gch}${evh}</button>`; }
+  const pm=ym.m===1?{y:ym.y-1,m:12}:{y:ym.y,m:ym.m-1}, nm=ym.m===12?{y:ym.y+1,m:1}:{y:ym.y,m:ym.m+1};
+  const nav=`<div class="row between cal-nav"><button class="btn small" data-a="calMon" data-v="${pm.y}:${pm.m}">◀ ${pm.m}월</button><b class="cal-ttl">${ym.y}년 ${ym.m}월</b><span class="row"><button class="btn small" data-a="calMon" data-v="${now.y}:${now.m}">오늘</button><button class="btn small" data-a="calMon" data-v="${nm.y}:${nm.m}">${nm.m}월 ▶</button></span></div>`;
+  const leg=`<div class="cal-leg">${Object.values(CAL_K).map(x=>`<span><i style="background:${x.c}"></i>${x.l}</span>`).join('')}<span><i class="g"></i>우리 경기</span></div>`;
+  return `<section class="card">${nav}<div class="cal-w">${['월','화','수','목','금','토','일'].map(x=>`<span>${x}</span>`).join('')}</div><div class="cal-grid">${cells}</div>${leg}</section>${calDetail(sel)}${calUpcoming()}`; }
+function calDetail(d){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d); const dd=d-G.day;
+  let gh=''; if(g){ const sp=d>G.day&&d-G.day<=6?(()=>{ try{ const L=projStarters(G.user,6); const k=nextGames(8).findIndex(x=>x.d===d); const s=k>=0&&L[k]?L[k].sp:null; return s?` · 예상 선발 ${esc(s.name)}`:''; }catch(e){ return ''; } })():'';
+    gh=`<div class="cal-dg">${badge(g.op,28)}<div><b>${g.kind?esc(g.kind)+' · ':''}${g.home?'홈':'원정'} ${g.home?'vs':'@'} ${esc(tname(g.op))}</b><span class="small muted">${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:d<G.day?'결과 기록 없음':`예정${sp}`}</span></div>${g.gi>=0&&G.games[g.gi]?`<button class="btn small" data-a="openGame" data-v="${g.gi}">박스스코어</button>`:''}</div>`; }
+  return `<section class="card"><div class="row between"><h2 class="sec">${o.m}월 ${o.d}일 ${WD[o.w]}요일</h2><span class="small muted">${dd===0?'오늘':dd>0?`D-${dd}`:`${-dd}일 전`}</span></div>
+    ${gh}${ev.length?`<ul class="cal-dl">${ev.map(e=>`<li><i style="background:${CAL_K[e.k].c}"></i>${esc(e.t)}</li>`).join('')}</ul>`:(g?'':'<p class="small muted">일정이 없습니다.</p>')}
+    ${d>G.day?`<div class="row"><button class="btn primary" data-a="advTo" data-v="${d}" ${blocker()?'disabled':''}>이 날까지 진행</button><span class="small muted">중요한 소식이나 결정할 일이 생기면 그 전에 멈춥니다.</span></div>`:''}</section>`; }
+/* 다가오는 주요 일정 30일: 마감은 빨간 D-day */
+function calUpcoming(){ const L=[]; for(let d=G.day+1;d<=G.day+45&&L.length<10;d++){ for(const e of calEvents(d))if(e.k==='dl'||e.k==='lg'||e.k==='me')L.push({d,...e}); }
+  return L.length?`<section class="card"><h2 class="sec">다가오는 일정</h2><div class="cal-up">${L.slice(0,10).map(x=>`<button class="cal-ur" data-a="calJump" data-v="${x.d}"><span class="ticker" style="${x.k==='dl'?'color:#ff6b6b':''}">D-${x.d-G.day}</span><span>${dmd(x.d)}</span><b>${esc(x.t)}</b></button>`).join('')}</div></section>`:''; }
+/* 진행 표시: 지나간 날짜를 하루씩 넘기는 띠(FM의 날짜 진행처럼). 화면을 막지 않고 1초쯤 뒤 사라진다 */
+function dayTick(d0){ const d1=G.day; if(!(d1>d0))return; try{ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return; }catch(e){}
+  let el=document.getElementById('dtick'); if(!el){ el=document.createElement('div'); el.id='dtick'; el.setAttribute('aria-hidden','true'); document.body.appendChild(el); }
+  let days=[]; for(let d=d0+1;d<=d1;d++)days.push(d); if(days.length>14)days=days.slice(0,6).concat([null],days.slice(-6));
+  el.innerHTML=`<div class="dt-in">${days.map(d=>{ if(d==null)return '<span class="dt-c gap">…</span>'; const o=dobj(d); const g=calGame(d); const ev=calEvents(d).filter(e=>e.k==='dl'||e.k==='lg'); return `<span class="dt-c"><i>${WD[o.w]}</i><b>${o.m}/${o.d}</b>${g&&g.res?`<em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r}</em>`:ev.length?'<em class="ev">●</em>':'<em></em>'}</span>`; }).join('')}</div>`;
+  el.className='on'; const cs=[...el.querySelectorAll('.dt-c')]; const step=Math.max(45,Math.min(110,700/cs.length));
+  cs.forEach((c,i)=>setTimeout(()=>{ cs.forEach(x=>x.classList.remove('cur')); c.classList.add('cur','done'); },i*step));
+  clearTimeout(dayTick._t); dayTick._t=setTimeout(()=>{ el.className=''; },cs.length*step+900); }
 /* ---------- 역사·시상 ---------- */
 function histView(){
   const ys=Object.keys(G.awards||{}).map(Number).sort((a,b)=>b-a); const y=UI.hy&&G.awards&&G.awards[UI.hy]?UI.hy:ys[0];
@@ -9095,10 +9185,18 @@ const A={
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
   start(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='home';save();render();window.scrollTo(0,0);},
-  adv(v,el){ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; advance(v); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.res||G.live||G.stops.length||G.dig){ closeSheets(); UI.tab='home'; UI.mail=null; } save(); render(); window.scrollTo(0,0); },
+  adv(v,el){ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.res||G.live||G.stops.length||G.dig){ closeSheets(); UI.tab='home'; UI.mail=null; } save(); render(); window.scrollTo(0,0); },
+  calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
+  calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
+  calDay(v){ UI.calSel=+v; render(); const el=document.querySelector('.cal-dg,.cal-dl'); if(el&&!wide())el.scrollIntoView({block:'center',behavior:'smooth'}); },
+  calJump(v){ const o=dobj(+v); UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); },
+  /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
+  advTo(v){ const T=+v; if(!(T>G.day))return; if(G.res&&!G.live)G.res=null; const d0=G.day; let g=0; const ev0=(G.evs||[]).filter(e=>!e.done).length;
+    while(G.day<T&&g++<200){ if(blocker())break; advance('day'); if(G.stops.length||(G.evs||[]).filter(e=>!e.done).length>ev0||G.live)break; if(G.res)G.res=null; }
+    save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
-  watchNext(){ if(G.res&&!G.live)G.res=null; if(blocker()){ render(); return; } advance('next'); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i]; if(g&&g.pbp&&g.pbp.length)A.cast(G.res.i); },
+  watchNext(){ if(G.res&&!G.live)G.res=null; if(blocker()){ render(); return; } const d0=G.day; advance('next'); setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i]; if(g&&g.pbp&&g.pbp.length)A.cast(G.res.i); },
   smon(v){ UI.smon=+v; render(); },
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },

@@ -112,10 +112,18 @@ const A={
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
   start(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='home';save();render();window.scrollTo(0,0);},
-  adv(v,el){ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; advance(v); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.res||G.live||G.stops.length||G.dig){ closeSheets(); UI.tab='home'; UI.mail=null; } save(); render(); window.scrollTo(0,0); },
+  adv(v,el){ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.res||G.live||G.stops.length||G.dig){ closeSheets(); UI.tab='home'; UI.mail=null; } save(); render(); window.scrollTo(0,0); },
+  calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
+  calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
+  calDay(v){ UI.calSel=+v; render(); const el=document.querySelector('.cal-dg,.cal-dl'); if(el&&!wide())el.scrollIntoView({block:'center',behavior:'smooth'}); },
+  calJump(v){ const o=dobj(+v); UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); },
+  /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
+  advTo(v){ const T=+v; if(!(T>G.day))return; if(G.res&&!G.live)G.res=null; const d0=G.day; let g=0; const ev0=(G.evs||[]).filter(e=>!e.done).length;
+    while(G.day<T&&g++<200){ if(blocker())break; advance('day'); if(G.stops.length||(G.evs||[]).filter(e=>!e.done).length>ev0||G.live)break; if(G.res)G.res=null; }
+    save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
-  watchNext(){ if(G.res&&!G.live)G.res=null; if(blocker()){ render(); return; } advance('next'); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i]; if(g&&g.pbp&&g.pbp.length)A.cast(G.res.i); },
+  watchNext(){ if(G.res&&!G.live)G.res=null; if(blocker()){ render(); return; } const d0=G.day; advance('next'); setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i]; if(g&&g.pbp&&g.pbp.length)A.cast(G.res.i); },
   smon(v){ UI.smon=+v; render(); },
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },

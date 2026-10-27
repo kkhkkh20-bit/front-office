@@ -15,7 +15,7 @@ function nextGameText(){
 function calendarCard(){
   const per=period(); const la=G.lastAdv; const hid=liveHidden();
   const ng=per==='season'||per==='pre'?nextGameText():'';
-  return `<section class="card"><div class="row between"><h2 class="sec">일정</h2><span class="small muted">${dstr(G.day)}</span></div>
+  return `<section class="card"><div class="row between"><h2 class="sec">일정</h2><span class="row"><span class="small muted">${dstr(G.day)}</span><button class="btn small" data-a="calOpen">캘린더</button></span></div>
     ${ng?`<p class="small">다음 경기 <b>${ng}</b></p>`:''}
     <div class="log">${upcoming().map(([n,t])=>`<p><span class="ticker">D-${n-G.day}</span> ${dmd(n)} · ${t}</p>`).join('')}</div>
     ${la&&la.days?`<p class="small muted">지난 진행 ${la.days}일${la.w+la.l&&!hid?` · ${la.w}승 ${la.l}패`:''}${G.stops.length?' · 중요한 소식이 와서 멈췄습니다':''}</p>`:'<p class="small muted">오른쪽 위 계속 버튼을 누르면 다음 일정까지 시간이 흐릅니다.</p>'}
