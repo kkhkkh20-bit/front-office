@@ -14,8 +14,8 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const pool=[];
   for(const p of all){
     if(p.foreign)continue;
-    if(p.extNext){ p.sal=p.extNext.annual; p.yrs=p.extNext.years; p.faC=true; p.ext=true; delete p.extNext; continue; }
-    if(p.faC){ p.yrs--; if(p.yrs>0)continue; p.faC=false; p.ext=false; }
+    if(p.extNext){ p.sal=p.extNext.annual; p.yrs=p.extNext.years; p.cyrs=p.extNext.years; p.faC=true; p.ext=true; delete p.extNext; continue; }
+    if(p.faC){ p.yrs--; if(p.yrs>0)continue; p.faC=false; p.ext=false; delete p.cyrs; }
     const elig=p.svc>=faSvc(p)&&(p.lastFA==null||G.year-p.lastFA>=4)&&p.age<=37;
     /* 자격이 있어도 신청은 선수 몫: 시장 가치가 낮거나 나이가 많으면 신청하지 않고 남는다 */
     const o2=ovr(p); let dp=o2>=58?.97:o2>=52?.82:o2>=47?.45:o2>=42?.18:.05; if(p.age>=35)dp*=.5; if(p.faSkip)dp+=.1;
@@ -88,7 +88,7 @@ function faSign(p,offers){
   const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id];
   for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*rnd(.96,1.04); if(sc>bs){bs=sc;best=o;} }
   if(!best)best=offers.find(o=>o.tid!==G.user)||offers[0];
-  const from=p.faFrom; p.team=best.tid; p.sal=best.annual; p.yrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
+  const from=p.faFrom; p.team=best.tid; p.sal=best.annual; p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(best.annual)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(best.annual)}`,'move');
   if(best.tid!==from){ if(G.fa){ G.fa.outN=G.fa.outN||{}; G.fa.outN[best.tid]=(G.fa.outN[best.tid]||0)+1; }

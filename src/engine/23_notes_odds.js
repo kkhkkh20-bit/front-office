@@ -80,7 +80,7 @@ function staffNotes(p){ // 선수 카드 상단 스태프 의견
   if((p.fat||0)>=60)L.push({w:'트레이너',t:`피로가 ${Math.round(p.fat)}까지 쌓였습니다. 감독이 쉬게 할 가능성이 큽니다.`});
   else if(p.injOut>0)L.push({w:'의무팀',t:`부상으로 약 ${p.injOut}일 더 쉬어야 합니다.`});
   else if(p.injHist&&p.injHist.length>=3)L.push({w:'의무팀',t:`부상 이력이 ${p.injHist.length}번 있습니다. 관리가 필요합니다.`});
-  if(!p.foreign){ const v=estVal(p); const left=p.faC?Math.max(1,p.yrs):null; L.push({w:'운영팀',t:(v>=4&&p.sal<5000?'연봉 대비 가치가 높습니다. ':v<0?'연봉 대비 활약이 부족하다는 평가입니다. ':'')+(left?`계약 ${left}년 남았습니다.`:Math.max(0,FA_SVC-p.svc)?`FA까지 ${Math.max(0,FA_SVC-p.svc)}년.`:'올해 FA 자격을 얻습니다.')}); }
+  if(!p.foreign){ const v=estVal(p); const left=p.faC?Math.max(1,p.yrs):null; L.push({w:'운영팀',t:(v>=4&&p.sal<5000?'연봉 대비 가치가 높습니다. ':v<0?'연봉 대비 활약이 부족하다는 평가입니다. ':'')+(left?`${ctText(p)}입니다.`:Math.max(0,faSvc(p)-p.svc)?`${ctText(p)}.`:'올해 FA 자격을 얻습니다.')}); }
   return L.filter(x=>x.t).slice(0,5); }
 
 /* ===== 선수 이야기(커리어 연표) ===== */

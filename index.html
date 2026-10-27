@@ -2171,8 +2171,8 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const pool=[];
   for(const p of all){
     if(p.foreign)continue;
-    if(p.extNext){ p.sal=p.extNext.annual; p.yrs=p.extNext.years; p.faC=true; p.ext=true; delete p.extNext; continue; }
-    if(p.faC){ p.yrs--; if(p.yrs>0)continue; p.faC=false; p.ext=false; }
+    if(p.extNext){ p.sal=p.extNext.annual; p.yrs=p.extNext.years; p.cyrs=p.extNext.years; p.faC=true; p.ext=true; delete p.extNext; continue; }
+    if(p.faC){ p.yrs--; if(p.yrs>0)continue; p.faC=false; p.ext=false; delete p.cyrs; }
     const elig=p.svc>=faSvc(p)&&(p.lastFA==null||G.year-p.lastFA>=4)&&p.age<=37;
     /* 자격이 있어도 신청은 선수 몫: 시장 가치가 낮거나 나이가 많으면 신청하지 않고 남는다 */
     const o2=ovr(p); let dp=o2>=58?.97:o2>=52?.82:o2>=47?.45:o2>=42?.18:.05; if(p.age>=35)dp*=.5; if(p.faSkip)dp+=.1;
@@ -2245,7 +2245,7 @@ function faSign(p,offers){
   const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id];
   for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*rnd(.96,1.04); if(sc>bs){bs=sc;best=o;} }
   if(!best)best=offers.find(o=>o.tid!==G.user)||offers[0];
-  const from=p.faFrom; p.team=best.tid; p.sal=best.annual; p.yrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
+  const from=p.faFrom; p.team=best.tid; p.sal=best.annual; p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(best.annual)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(best.annual)}`,'move');
   if(best.tid!==from){ if(G.fa){ G.fa.outN=G.fa.outN||{}; G.fa.outN[best.tid]=(G.fa.outN[best.tid]||0)+1; }
@@ -2778,7 +2778,7 @@ function capWarnUser(){ const ci=capInfo(G.user); const t=team(G.user); if(ci.ov
 /* 하한(2027년~)에 못 미치는 AI 구단은 주축 선수 연봉을 올려(다년계약) 하한을 맞춘다 */
 function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.year); let gap=fl*1.02-capPay(tid); if(gap<=0)return; const t=team(tid);
   const ps=domestic(tid).filter(p=>!isRookie(p)&&!p.ys&&!(p.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,8); const tot=sum(ps.map(p=>ovr(p)));
-  for(const p of ps){ const add=round5(gap*ovr(p)/tot); p.sal=round5(p.sal+add); if(!p.faC){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); } }
+  for(const p of ps){ const add=round5(gap*ovr(p)/tot); p.sal=round5(p.sal+add); if(!p.faC){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; } }
   wire('구단',`${t.city} ${t.nick}, 연봉 하한 맞추려 주축 선수들과 다년계약`,{tid}); }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
 /* 12월 이사회: 다음 해 상한을 정한다. 상한 가까이 붙은 구단이 많으면(연봉 인플레이션) 크게 올린다 */
@@ -2858,7 +2858,7 @@ function offerExtension(id,annual,years){
   if(p.extTried===wk)return {ok:false,msg:`${p.name} 측: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
   const d=extDemand(p,years);
   if(annual>=d*.98){ const now=G.rolled===G.year&&G.day>=KD(11,1);
-    if(now){ p.sal=annual; p.yrs=years; p.faC=true; p.ext=true; } else p.extNext={annual,years}; story(p,`비FA 다년계약 ${years}년 연 ${money(annual)}`,'move');
+    if(now){ p.sal=annual; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; } else p.extNext={annual,years}; story(p,`비FA 다년계약 ${years}년 연 ${money(annual)}`,'move');
     addLog(`${p.name}와(과) 비FA 다년계약 ${years}년 연 ${money(annual)}(총 ${money(annual*years)})에 합의했습니다.`);
     return {ok:true,msg:`${p.name} 측이 ${years}년 연 ${money(annual)}에 합의했습니다. ${now?'바로 적용됩니다.':'다음 시즌부터 적용됩니다.'}`}; }
   p.extTried=wk;
@@ -2880,6 +2880,18 @@ function needScore(tid,p){ const d=depth(tid); const o=ovr(p);
   if(p.isP){ const arr=isSPr(p)?d.sp.map(spV):d.pen.map(penV); return arr.length&&o>Math.min(...arr)+2?1:0; }
   return d.start.length&&o>Math.min(...d.start.map(x=>ovr(x)))+2?1:0; }
 
+/* 계약 표기: "FA 4년 중 2년차", 보류권은 "3시즌 뒤 FA". 전체 연수(p.cyrs)는 계약 때 기록하고, 예전 저장은 FA 체결 연도로 거꾸로 계산한다 */
+function ctSeason(){ return G.rolled===G.year?G.year+1:G.year; }
+function ctInfo(p){ if(!p||!p.faC)return null; const left=Math.max(1,p.yrs||1); let tot=p.cyrs;
+  if(!tot)tot=!p.ext&&p.lastFA!=null?left+Math.max(1,ctSeason()-p.lastFA)-1:left;
+  tot=Math.max(tot,left); return {tot,k:tot-left+1,left,last:left===1}; }
+function ctText(p){ const c=ctInfo(p); if(c){ const kind=p.ext?'다년':'FA'; return c.tot===1?`${kind} 1년 계약`:c.last?`${kind} ${c.tot}년 중 마지막 해`:`${kind} ${c.tot}년 중 ${c.k}년차`; }
+  if(p.extNext)return `다년 ${p.extNext.years}년 합의`; if(p.foreign)return '1년 계약';
+  const n=Math.max(0,faSvc(p)-(p.svc||0)); const off=G.rolled===G.year;
+  /* 등록 연수를 채운 선수: 재자격(직전 FA 후 4시즌)이 남았으면 그만큼, 아니면 이번(다음) 시즌 뒤 */
+  const m=n>0?n:p.lastFA!=null?Math.max(1,p.lastFA+4-ctSeason()+1):1;
+  if(n===0&&p.age>37)return '단년 계약';
+  return m>=2?`${m}시즌 뒤 FA`:off?'다음 시즌 뒤 FA':'올 시즌 뒤 FA'; }
 /* ===== 새 게임 ===== */
 function buildWorld(){ const userTid=0;
   G={ver:4,year:2026,day:0,user:userTid,teams:[],players:{},nextId:1,history:[],log:[],lg:{},lineup:{},mail:[],stops:[],games:[],offers:[],mgr:{},mmarket:[],med:{prev:1,hosp:'none'},spend:{mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0},intl:{us:1,la:0,jp:0,tw:0,au:0},fac:{lv:2,build:null},devProg:[],ovs:[],tut:{step:0,done:false},tutFlags:{},
@@ -2900,7 +2912,7 @@ function buildWorld(){ const userTid=0;
   }
   G.year=2025;
   for(const p of Object.values(G.players)){ const f=p.svc<4?.45:p.svc<7?.7:1; p.sal=round5(marketSal(ovr(p))*f);
-    if(p.svc>=FA_SVC){ if(R()<.6){ p.faC=true; p.yrs=ri(1,4); p.lastFA=2025-(4-p.yrs)-ri(0,2); p.faN=1; } else p.svc=FA_SVC-1-ri(0,5); } } /* 시작 시점 FA 계약은 남은 연수에 맞춰 체결 연도를 흩어 놓는다: 재자격 시기가 한 해에 몰리지 않는다 */
+    if(p.svc>=FA_SVC){ if(R()<.6){ p.faC=true; p.yrs=ri(1,4); p.cyrs=4; p.lastFA=2025-(4-p.yrs)-ri(0,2); p.faN=1; } else p.svc=FA_SVC-1-ri(0,5); } } /* 시작 시점 FA 계약은 남은 연수에 맞춰 체결 연도를 흩어 놓는다: 재자격 시기가 한 해에 몰리지 않는다 */
   for(const t of G.teams){ const target=(t.indie?8600:11100*Math.pow(t.market,.8))*rnd(.92,1.08); const ps=domestic(t.id); const cur=sum(ps.map(p=>p.sal));
     ps.forEach(p=>p.sal=round5(p.sal*target/cur));
     /* 보류권 선수는 연차별 상한을 넘지 않게 하고, 넘친 몫은 FA 계약 선수 쪽으로 돌린다 */
@@ -2923,7 +2935,7 @@ function buildWorld(){ const userTid=0;
   /* 자격을 채운 선수는 대부분 이미 FA 계약을 맺은 것으로 본다(남은 연수를 흩어 재자격 시기가 한 해에 몰리지 않게). 나머지는 예비 FA.
      실제 KBO는 해마다 FA 자격 취득자 20~30명 수준이므로 예비 FA가 한 해에 몰리지 않게 일부는 한두 해 뒤로 미룬다 */
   for(const p of Object.values(G.players)){ if(p.foreign||p.faC)continue;
-    if(p.svc>=faSvc(p)){ if(R()<.75){ p.faC=true; p.yrs=ri(1,4); p.lastFA=2025-(4-p.yrs)-ri(0,1); p.faN=1; } else p.svc=faSvc(p)-1; }
+    if(p.svc>=faSvc(p)){ if(R()<.75){ p.faC=true; p.yrs=ri(1,4); p.cyrs=4; p.lastFA=2025-(4-p.yrs)-ri(0,1); p.faN=1; } else p.svc=faSvc(p)-1; }
     if(!p.faC&&p.svc===faSvc(p)-1&&R()<.45)p.svc=faSvc(p)-1-ri(1,2); }
   // 시즌을 치르고 나이 든 뒤의 능력으로 연봉을 다시 매긴다. FA 계약 선수는 계약 당시 웃돈이 조금 남아 있다
   for(const p of Object.values(G.players)){ if(p.foreign||p.team==null)continue; const f=nonFaF(p,!p.faC&&p.svc>=faSvc(p)); let v=marketSal(ovr(p))*f; if(p.faC)v*=rnd(1,1.3)*(p.yrs>=3?1.05:1); p.sal=round5(clamp(v,MIN_SAL,2500)); }
@@ -3567,7 +3579,7 @@ function staffNotes(p){ // 선수 카드 상단 스태프 의견
   if((p.fat||0)>=60)L.push({w:'트레이너',t:`피로가 ${Math.round(p.fat)}까지 쌓였습니다. 감독이 쉬게 할 가능성이 큽니다.`});
   else if(p.injOut>0)L.push({w:'의무팀',t:`부상으로 약 ${p.injOut}일 더 쉬어야 합니다.`});
   else if(p.injHist&&p.injHist.length>=3)L.push({w:'의무팀',t:`부상 이력이 ${p.injHist.length}번 있습니다. 관리가 필요합니다.`});
-  if(!p.foreign){ const v=estVal(p); const left=p.faC?Math.max(1,p.yrs):null; L.push({w:'운영팀',t:(v>=4&&p.sal<5000?'연봉 대비 가치가 높습니다. ':v<0?'연봉 대비 활약이 부족하다는 평가입니다. ':'')+(left?`계약 ${left}년 남았습니다.`:Math.max(0,FA_SVC-p.svc)?`FA까지 ${Math.max(0,FA_SVC-p.svc)}년.`:'올해 FA 자격을 얻습니다.')}); }
+  if(!p.foreign){ const v=estVal(p); const left=p.faC?Math.max(1,p.yrs):null; L.push({w:'운영팀',t:(v>=4&&p.sal<5000?'연봉 대비 가치가 높습니다. ':v<0?'연봉 대비 활약이 부족하다는 평가입니다. ':'')+(left?`${ctText(p)}입니다.`:Math.max(0,faSvc(p)-p.svc)?`${ctText(p)}.`:'올해 FA 자격을 얻습니다.')}); }
   return L.filter(x=>x.t).slice(0,5); }
 
 /* ===== 선수 이야기(커리어 연표) ===== */
@@ -3920,7 +3932,7 @@ function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=d
     if(c.type==='grow')why.push(`${x.p.age}세, ${x.rp.ofp!=null?`잠재력 ${x.rp.ofp} 전망(${x.rp.who||'스카우트'})`:'잠재력은 아직 관찰이 부족합니다'}. 지금 능력 ${x.rp.cur}.`);
     const h=curLine(x.p); if(h)why.push(x.p.isP?(h.outs?`올해 ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:''):(h.pa?`올해 ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`:''));
     if(x.p.listed||x.p.aiListed)why.push(`${tshort(x.t.id)}이(가) 트레이드 매물로 내놓은 선수입니다.`);
-    const cy=ctrlYears(x.p); const cost=`연봉 ${money(x.p.sal)} · ${x.p.faC?`계약 ${x.p.yrs}년 남음`:`FA까지 ${cy}년`}`;
+    const cost=`연봉 ${money(x.p.sal)} · ${ctText(x.p)}`;
     const cur=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln?d.ln[k]:null; const push=cur&&cur.id!==x.p.id?cur:null;
     const blk=playersOf(G.user).filter(q=>!q.foreign&&q.age<=24&&fits(q)&&(scoutReport(q).ofp||0)>=52).sort((a,b)=>(scoutReport(b).ofp||0)-(scoutReport(a).ofp||0))[0]||null;
     out.push({id:x.p.id,tid:x.t.id,give:give||[],why:why.filter(Boolean),cost,push:push?push.id:null,blk:blk?blk.id:null,k}); }
@@ -4218,7 +4230,7 @@ function talk(id,kind){
   if(kind==='contract'){ d=1;
     if(p.foreign)line='재계약은 성적으로 말씀드리겠습니다.';
     else if(p.faC&&p.yrs>1)line='계약 기간이 남았으니 야구에만 집중하겠습니다.';
-    else if(p.svc>=faSvc(p)-2)line=`FA까지 ${Math.max(0,faSvc(p)-p.svc)}년 남았습니다. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`;
+    else if(p.svc>=faSvc(p)-2)line=`${Math.max(0,faSvc(p)-p.svc)<=1?'이번 시즌이 끝나면 FA입니다':`${Math.max(0,faSvc(p)-p.svc)}시즌 뒤에 FA입니다`}. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`;
     else line=p.age<=24?'아직은 1군에서 자리 잡는 게 먼저입니다.':'좋은 대우를 받으려면 성적부터 내야죠.'; }
   if(kind==='ask'){ d=2; line=moraleWhy(p); }
   if(d<0&&p.pers.temp>=15)d*=1.4;
@@ -4611,7 +4623,7 @@ function ovsFA(pool){ for(const id of [...pool]){ const p=G.players[id]; if(!p||
 function abroadYear(){ for(const a of G.abroad||[]){ if(a.back||a.foreign)continue; let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue;
     const b=a.lg==='MLB'?-6:-2; const ok=ovr(p)>=(a.lg==='MLB'?62:57); const line=p.isP?simPit(p,ok?ri(200,500):ri(30,150),b):simBat(p,ok?ri(250,560):ri(40,160),b); line.y=G.year; line.lvl=ok?a.lg:(a.lg==='MLB'?'트리플A':'NPB 2군'); a.lines.push(line);
     try{ develop(p); }catch(e){} p.age++; a.age=p.age; a.pj=JSON.stringify(p); const yrsIn=G.year-a.y;
-    if(yrsIn>=a.yrs&&(!ok||p.age>=33||R()<.45)){ a.back=true; a.backY=G.year; p.svc=(p.svc||0)+yrsIn; G.players[p.id]=p; p.team=a.from; p.sal=round5(Math.max(marketSal(ovr(p)),p.sal)); p.yrs=ri(1,3); p.faC=true; p.joinY=undefined; p.mor=70; delete p.ovsOffer; story(p,`${a.lg} 생활을 마치고 ${tname(a.from)} 복귀`,'move');
+    if(yrsIn>=a.yrs&&(!ok||p.age>=33||R()<.45)){ a.back=true; a.backY=G.year; p.svc=(p.svc||0)+yrsIn; G.players[p.id]=p; p.team=a.from; p.sal=round5(Math.max(marketSal(ovr(p)),p.sal)); p.yrs=ri(1,3); p.cyrs=p.yrs; p.faC=true; p.ext=false; p.joinY=undefined; p.mor=70; delete p.ovsOffer; story(p,`${a.lg} 생활을 마치고 ${tname(a.from)} 복귀`,'move');
       wire('해외',`${p.name}, ${a.lg} ${yrsIn}년 마치고 ${tshort(a.from)} 복귀`,{tid:a.from,ref:p.id}); if(a.from===G.user)news('선수',`${p.name}, 친정 복귀`,`${a.lg}에서 ${yrsIn}년을 뛰고 돌아왔습니다. 연봉 ${money(p.sal)} · ${p.yrs}년 계약.`,2,{ref:p.id,fanW:1.5}); } } }
 /* 대체 외국인 관찰 명단 */
 function fwatchOn(id){ G.fwatch=G.fwatch||[]; return G.fwatch.some(w=>w.id===id); }
@@ -8099,7 +8111,7 @@ function tradeMood(tid,give,get){
   const lv=x>=3?{l:'받아들일 것 같습니다',c:'var(--good)'}:x>=0?{l:'긍정적으로 검토할 것 같습니다',c:'var(--r50)'}:x>=-4?{l:'조금 더 원할 것 같습니다',c:'var(--warn)'}:x>=-12?{l:'많이 부족하다고 볼 것 같습니다',c:'var(--r35)'}:{l:'불쾌하게 여길 수 있습니다',c:'var(--bad)'};
   return {...lv,w:Math.round(clamp((x+14)/20,0.03,1)*100),sd};
 }
-function tContract(p){ if(p.faC)return `FA계약 ${Math.max(1,p.yrs)}년 남음`; if(p.extNext)return '다년계약 합의'; const n=Math.max(0,faSvc(p)-p.svc); return n>=2?`FA까지 ${n}시즌`:n===1?'이번 시즌 뛰면 FA':(p.team==null&&G.fa&&(G.fa.pool||[]).includes(p.id))?'FA 시장':(G.last&&G.last.y>=G.year)?'FA 자격 취득':'시즌 끝나면 FA'; }
+function tContract(p){ if(!p.faC&&!p.extNext&&p.team==null&&G.fa&&(G.fa.pool||[]).includes(p.id))return 'FA 시장'; const t=ctText(p); return t==='올 시즌 뒤 FA'&&G.last&&G.last.y>=G.year?'FA 자격 취득':t; }
 function trow(p,side,on,hot){ const rp=scoutReport(p); const tag=hot?`<em class="good">상대 관심 · ${esc(hot)}</em>`:p.aiListed?'<em class="warn">매물</em>':'';
   const flags=(p.injOut>0?' · <b class="bad">부상</b>':'')+(p.mor!=null&&p.mor<35?' · <b class="warn">불만</b>':'');
   return `<div class="trw${on?' on':''}"><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.age}세</small></b><i>${money(p.sal)} · ${tContract(p)}${flags}</i>${tag?`<i>${tag}</i>`:''}</span></button><span class="trw-r">${rchip(rp.cur)}${rchip(rp.ofp)}</span><button class="tc-i trw-b${on?' on':''}" data-a="tpick" data-v="${side}:${p.id}">${on?'빼기':(side==='give'?'보내기':'받기')}</button></div>`; }
@@ -8154,7 +8166,7 @@ function extBody(){
   const done=domestic(G.user).filter(p=>p.extNext);
   return `<p class="small muted">FA가 되기 전에 핵심 선수를 묶어 둘 수 있습니다. 선수는 자기 실력을 알고 요구하므로, 스카우트 평가가 높을수록 비쌉니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p>
     ${done.length?`<div class="note good">합의 완료: ${done.map(p=>`${esc(p.name)} ${p.extNext.years}년 연 ${money(p.extNext.annual)}`).join(', ')}</div>`:''}
-    ${cgrid(c,p=>({sub:`${p.age}세 · ${p.svc}년차`,foot:`<b class="num">${money(p.sal)}</b><span>FA까지 ${Math.max(0,faSvc(p)-p.svc)}년</span><button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`}))}`;
+    ${cgrid(c,p=>({sub:`${p.age}세 · ${p.svc}년차`,foot:`<b class="num">${money(p.sal)}</b><span>${ctText(p)}</span><button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`}))}`;
 }
 function standingsTable(order){
   return `<table><thead><tr><th>순위 · 구단</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th></tr></thead><tbody>${order.map((o,i)=>`<tr class="${o.tid===G.user?'me':''}"><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}"><span class="ticker">${i+1}</span>${badge(o.tid,18)}${tname(o.tid)}</button></td><td>${o.w}</td><td>${o.l}</td><td>${o.t||0}</td><td>${o.w+o.l?fmt3(o.w/(o.w+o.l)):'-'}</td><td>${i?((order[0].w-o.w-(order[0].l-o.l))/2).toFixed(1):'-'}</td></tr>`).join('')}</tbody></table>`;
@@ -8449,7 +8461,7 @@ function statTable(p){
   return `<table><thead><tr><th>시즌</th><th>구단</th><th class="key">OPS</th><th class="key">WAR</th><th>경기</th><th>타석</th><th>타율</th><th>출루율</th><th>장타율</th><th>안타</th><th>2루타</th><th>3루타</th><th>홈런</th><th>타점</th><th>득점</th><th>도루</th><th>볼넷</th><th>삼진</th><th>볼삼비</th><th>BABIP</th></tr></thead><tbody>${all.map(h=>{const r=bRate(h); return `<tr><td>${h.y2?`${h.y}~${String(h.y2).slice(2)}`:h.y}</td><td>${lab(h)}</td><td class="key">${h.pa?fmt3(r.ops):'-'}</td><td class="key">${h.tot?h.war.toFixed(1):h.pre?'-':wOf(h,p).toFixed(1)}</td><td>${h.g||0}</td><td>${h.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.obp)}</td><td>${fmt3(r.slg)}</td><td>${h.h}</td><td>${h.d}</td><td>${h.tr}</td><td>${h.hr}</td><td>${h.rbi}</td><td>${h.r}</td><td>${h.sb}</td><td>${h.bb}</td><td>${h.so}</td><td>${h.so?(h.bb/h.so).toFixed(2):'-'}</td><td>${babipOf(h)!=null?fmt3(babipOf(h)):'-'}</td></tr>`}).join('')}</tbody></table>`;
 }
 function keyBar(p,rp,isFA,isFM){ const cur=p.fdPool?null:rp.cur, pot=p.fdPool?null:rp.ofp; const fg=p.fdPool?fdGrade(p):null; const sal=isFM?p.ask:isFA&&p.ask?p.ask.annual:p.sal;
-  const ct=p.prospect?'드래프트 대상':p.fdPool?tContract(p):isFM?`요구 · ${Math.round(p.ask/USD)}만 달러`:isFA?`FA 요구 ${p.ask?p.ask.years+'년':''}`:p.extNext?`다년 합의 ${p.extNext.years}년`:p.faC?`${p.ext?'다년':'FA'} 잔여 ${p.yrs}년`:p.foreign?'1년 계약':`FA까지 ${Math.max(0,faSvc(p)-p.svc)}년`;
+  const ct=p.prospect?'드래프트 대상':p.fdPool?tContract(p):isFM?`요구 · ${Math.round(p.ask/USD)}만 달러`:isFA?`FA 요구 ${p.ask?p.ask.years+'년':''}`:ctText(p);
   const box=(l,v,c,sub)=>`<div class="kb"><span>${l}</span><b style="color:${c}">${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
   return `<div class="kbar">${box(fg?'추정 등급':'현재',fg?fg.g:cur??'?',fg?fg.c:cur!=null?rcol(cur):'var(--muted)',fg?'스카우트 추정 · 지명 후 공개':rp.exact?'정확':'추정')}${box('잠재력',fg?(fg.up?'↑':'-'):pot??'?',pot!=null?rcol(pot):'var(--muted)',pot==null?(p.fdPool?(fg&&fg.up?'성장 여지 있음':'지명 후 공개'):'알 수 없음'):pot-(cur||0)>=8?'성장 여지 큼':pot-(cur||0)>=3?'조금 더 성장':p.age>=33?'하락 시작':p.age>=29?'전성기':'거의 완성')}${box('연봉',p.prospect?'-':money(sal||0),'#e8ecf3',ct)}</div>${valueLine(p,rp)}`; }
 /* 현재 전력·잠재력 예상·구단 기여를 나눠 보여 준다. 우리 젊은 선수는 스카우트와 감독의 시각을 함께 */
@@ -8555,7 +8567,7 @@ function renderSheet0(){
    ${p.prospect?`<section class="card"><div class="row between"><span class="eyebrow">아마추어 프로필</span><button class="btn small${(G.shortlist||[]).includes(p.id)?' primary':''}" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 선수':'☆ 관심 표시'}</button></div><dl class="kv"><dt>학교</dt><dd>${esc(p.school||'-')} (${p.college?'대학 4년':'고교 3년'})</dd><dt>체격</dt><dd>${p.ht||'-'}cm · ${p.wt||'-'}kg</dd><dt>${p.isP?'최고 구속':'1루 도달'}</dt><dd>${p.isP?(p.amVelo||veloOf(p))+'km/h':(p.amRun||runOf(p))+'초'}</dd><dt>언론 순위</dt><dd>${p.press||'-'}위</dd><dt>의료 기록</dt><dd>${p.amInj?esc(p.amInj):'특이 사항 없음'}</dd>${(()=>{const sc=bestScout(p.region); return sc&&sc.skill>=3?`<dt>면담 평가</dt><dd>${esc(persText(p))}</dd>`:'';})()}</dl><div class="eyebrow">학년별 기록</div>${amYearTable(p)}${amNotes(p).map(t=>`<p class="small amn">${esc(t)}</p>`).join('')}</section>`:''}
    ${p.prospect||isFM?reportCard(p):''}
    ${hideOvr(p)&&!p.prospect?trackCard(p):''}
-   ${!p.prospect&&!isFM?`<dl class="kv"><dt>연봉</dt><dd>${money(p.sal)}</dd><dt>계약</dt><dd>${p.extNext?`다년 합의(${p.extNext.years}년, 다음 시즌부터)`:p.faC?`${p.ext?'비FA 다년':'FA'} 계약 잔여 ${p.yrs}년`:p.foreign?'1년':'단년'}</dd>${p.foreign?'':`<dt>등록 연차</dt><dd>${p.svc}년 (FA 자격 ${faSvc(p)}시즌 · ${p.college?'대졸':'고졸'})</dd><dt>샐러리캡 산정</dt><dd>${isRookie(p)?'신인이라 제외':'포함'}</dd>`}</dl>`:''}
+   ${!p.prospect&&!isFM?`<dl class="kv"><dt>연봉</dt><dd>${money(p.sal)}</dd><dt>계약</dt><dd>${p.extNext?`다년 합의(${p.extNext.years}년, 다음 시즌부터)`:p.faC?`${ctText(p)} · ${ctSeason()+Math.max(1,p.yrs)-1}시즌까지`:p.foreign?'1년':`단년 · ${ctText(p)}`}</dd>${p.foreign?'':`<dt>등록 연차</dt><dd>${p.svc}년 (FA 자격 ${faSvc(p)}시즌 · ${p.college?'대졸':'고졸'})</dd><dt>샐러리캡 산정</dt><dd>${isRookie(p)?'신인이라 제외':'포함'}</dd>`}</dl>`:''}
    ${!hasM&&!(p.team!=null&&p.team!==G.user)?actions:''}
    `:''}
    ${T==='abil'?`
@@ -8622,7 +8634,7 @@ function extForm(p){
   const e=UI.ext&&UI.ext.id===p.id?UI.ext:{id:p.id,years:4,annual:round5(p.sal*1.3),msg:''};
   UI.ext=e;
   const min=round5(Math.max(MIN_SAL,e.annual*.4)), max=round5(Math.max(e.annual*2.2,500));
-  return `<section class="card"><div class="eyebrow">비FA 다년계약 제안 · FA까지 ${Math.max(0,faSvc(p)-p.svc)}년</div>
+  return `<section class="card"><div class="eyebrow">비FA 다년계약 제안 · ${ctText(p)}</div>
     <label class="small" for="extA">연봉 <b class="num" id="extAv">${money(e.annual)}</b></label>
     <input type="range" id="extA" min="${min}" max="${max}" step="5" value="${e.annual}" data-a="extA" data-v="${p.id}">
     <div class="seg">${[2,3,4,5,6].map(y=>`<button data-a="extY" data-v="${p.id}:${y}" class="${e.years===y?'on':''}">${y}년</button>`).join('')}</div>

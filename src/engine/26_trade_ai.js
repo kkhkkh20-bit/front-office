@@ -53,7 +53,7 @@ function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=d
     if(c.type==='grow')why.push(`${x.p.age}세, ${x.rp.ofp!=null?`잠재력 ${x.rp.ofp} 전망(${x.rp.who||'스카우트'})`:'잠재력은 아직 관찰이 부족합니다'}. 지금 능력 ${x.rp.cur}.`);
     const h=curLine(x.p); if(h)why.push(x.p.isP?(h.outs?`올해 ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:''):(h.pa?`올해 ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`:''));
     if(x.p.listed||x.p.aiListed)why.push(`${tshort(x.t.id)}이(가) 트레이드 매물로 내놓은 선수입니다.`);
-    const cy=ctrlYears(x.p); const cost=`연봉 ${money(x.p.sal)} · ${x.p.faC?`계약 ${x.p.yrs}년 남음`:`FA까지 ${cy}년`}`;
+    const cost=`연봉 ${money(x.p.sal)} · ${ctText(x.p)}`;
     const cur=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln?d.ln[k]:null; const push=cur&&cur.id!==x.p.id?cur:null;
     const blk=playersOf(G.user).filter(q=>!q.foreign&&q.age<=24&&fits(q)&&(scoutReport(q).ofp||0)>=52).sort((a,b)=>(scoutReport(b).ofp||0)-(scoutReport(a).ofp||0))[0]||null;
     out.push({id:x.p.id,tid:x.t.id,give:give||[],why:why.filter(Boolean),cost,push:push?push.id:null,blk:blk?blk.id:null,k}); }

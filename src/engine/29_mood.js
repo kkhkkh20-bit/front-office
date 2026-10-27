@@ -88,7 +88,7 @@ function talk(id,kind){
   if(kind==='contract'){ d=1;
     if(p.foreign)line='재계약은 성적으로 말씀드리겠습니다.';
     else if(p.faC&&p.yrs>1)line='계약 기간이 남았으니 야구에만 집중하겠습니다.';
-    else if(p.svc>=faSvc(p)-2)line=`FA까지 ${Math.max(0,faSvc(p)-p.svc)}년 남았습니다. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`;
+    else if(p.svc>=faSvc(p)-2)line=`${Math.max(0,faSvc(p)-p.svc)<=1?'이번 시즌이 끝나면 FA입니다':`${Math.max(0,faSvc(p)-p.svc)}시즌 뒤에 FA입니다`}. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`;
     else line=p.age<=24?'아직은 1군에서 자리 잡는 게 먼저입니다.':'좋은 대우를 받으려면 성적부터 내야죠.'; }
   if(kind==='ask'){ d=2; line=moraleWhy(p); }
   if(d<0&&p.pers.temp>=15)d*=1.4;

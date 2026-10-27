@@ -66,7 +66,7 @@ function offerExtension(id,annual,years){
   if(p.extTried===wk)return {ok:false,msg:`${p.name} 측: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
   const d=extDemand(p,years);
   if(annual>=d*.98){ const now=G.rolled===G.year&&G.day>=KD(11,1);
-    if(now){ p.sal=annual; p.yrs=years; p.faC=true; p.ext=true; } else p.extNext={annual,years}; story(p,`비FA 다년계약 ${years}년 연 ${money(annual)}`,'move');
+    if(now){ p.sal=annual; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; } else p.extNext={annual,years}; story(p,`비FA 다년계약 ${years}년 연 ${money(annual)}`,'move');
     addLog(`${p.name}와(과) 비FA 다년계약 ${years}년 연 ${money(annual)}(총 ${money(annual*years)})에 합의했습니다.`);
     return {ok:true,msg:`${p.name} 측이 ${years}년 연 ${money(annual)}에 합의했습니다. ${now?'바로 적용됩니다.':'다음 시즌부터 적용됩니다.'}`}; }
   p.extTried=wk;
@@ -88,3 +88,15 @@ function needScore(tid,p){ const d=depth(tid); const o=ovr(p);
   if(p.isP){ const arr=isSPr(p)?d.sp.map(spV):d.pen.map(penV); return arr.length&&o>Math.min(...arr)+2?1:0; }
   return d.start.length&&o>Math.min(...d.start.map(x=>ovr(x)))+2?1:0; }
 
+/* 계약 표기: "FA 4년 중 2년차", 보류권은 "3시즌 뒤 FA". 전체 연수(p.cyrs)는 계약 때 기록하고, 예전 저장은 FA 체결 연도로 거꾸로 계산한다 */
+function ctSeason(){ return G.rolled===G.year?G.year+1:G.year; }
+function ctInfo(p){ if(!p||!p.faC)return null; const left=Math.max(1,p.yrs||1); let tot=p.cyrs;
+  if(!tot)tot=!p.ext&&p.lastFA!=null?left+Math.max(1,ctSeason()-p.lastFA)-1:left;
+  tot=Math.max(tot,left); return {tot,k:tot-left+1,left,last:left===1}; }
+function ctText(p){ const c=ctInfo(p); if(c){ const kind=p.ext?'다년':'FA'; return c.tot===1?`${kind} 1년 계약`:c.last?`${kind} ${c.tot}년 중 마지막 해`:`${kind} ${c.tot}년 중 ${c.k}년차`; }
+  if(p.extNext)return `다년 ${p.extNext.years}년 합의`; if(p.foreign)return '1년 계약';
+  const n=Math.max(0,faSvc(p)-(p.svc||0)); const off=G.rolled===G.year;
+  /* 등록 연수를 채운 선수: 재자격(직전 FA 후 4시즌)이 남았으면 그만큼, 아니면 이번(다음) 시즌 뒤 */
+  const m=n>0?n:p.lastFA!=null?Math.max(1,p.lastFA+4-ctSeason()+1):1;
+  if(n===0&&p.age>37)return '단년 계약';
+  return m>=2?`${m}시즌 뒤 FA`:off?'다음 시즌 뒤 FA':'올 시즌 뒤 FA'; }

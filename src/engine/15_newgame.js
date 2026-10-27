@@ -18,7 +18,7 @@ function buildWorld(){ const userTid=0;
   }
   G.year=2025;
   for(const p of Object.values(G.players)){ const f=p.svc<4?.45:p.svc<7?.7:1; p.sal=round5(marketSal(ovr(p))*f);
-    if(p.svc>=FA_SVC){ if(R()<.6){ p.faC=true; p.yrs=ri(1,4); p.lastFA=2025-(4-p.yrs)-ri(0,2); p.faN=1; } else p.svc=FA_SVC-1-ri(0,5); } } /* 시작 시점 FA 계약은 남은 연수에 맞춰 체결 연도를 흩어 놓는다: 재자격 시기가 한 해에 몰리지 않는다 */
+    if(p.svc>=FA_SVC){ if(R()<.6){ p.faC=true; p.yrs=ri(1,4); p.cyrs=4; p.lastFA=2025-(4-p.yrs)-ri(0,2); p.faN=1; } else p.svc=FA_SVC-1-ri(0,5); } } /* 시작 시점 FA 계약은 남은 연수에 맞춰 체결 연도를 흩어 놓는다: 재자격 시기가 한 해에 몰리지 않는다 */
   for(const t of G.teams){ const target=(t.indie?8600:11100*Math.pow(t.market,.8))*rnd(.92,1.08); const ps=domestic(t.id); const cur=sum(ps.map(p=>p.sal));
     ps.forEach(p=>p.sal=round5(p.sal*target/cur));
     /* 보류권 선수는 연차별 상한을 넘지 않게 하고, 넘친 몫은 FA 계약 선수 쪽으로 돌린다 */
@@ -41,7 +41,7 @@ function buildWorld(){ const userTid=0;
   /* 자격을 채운 선수는 대부분 이미 FA 계약을 맺은 것으로 본다(남은 연수를 흩어 재자격 시기가 한 해에 몰리지 않게). 나머지는 예비 FA.
      실제 KBO는 해마다 FA 자격 취득자 20~30명 수준이므로 예비 FA가 한 해에 몰리지 않게 일부는 한두 해 뒤로 미룬다 */
   for(const p of Object.values(G.players)){ if(p.foreign||p.faC)continue;
-    if(p.svc>=faSvc(p)){ if(R()<.75){ p.faC=true; p.yrs=ri(1,4); p.lastFA=2025-(4-p.yrs)-ri(0,1); p.faN=1; } else p.svc=faSvc(p)-1; }
+    if(p.svc>=faSvc(p)){ if(R()<.75){ p.faC=true; p.yrs=ri(1,4); p.cyrs=4; p.lastFA=2025-(4-p.yrs)-ri(0,1); p.faN=1; } else p.svc=faSvc(p)-1; }
     if(!p.faC&&p.svc===faSvc(p)-1&&R()<.45)p.svc=faSvc(p)-1-ri(1,2); }
   // 시즌을 치르고 나이 든 뒤의 능력으로 연봉을 다시 매긴다. FA 계약 선수는 계약 당시 웃돈이 조금 남아 있다
   for(const p of Object.values(G.players)){ if(p.foreign||p.team==null)continue; const f=nonFaF(p,!p.faC&&p.svc>=faSvc(p)); let v=marketSal(ovr(p))*f; if(p.faC)v*=rnd(1,1.3)*(p.yrs>=3?1.05:1); p.sal=round5(clamp(v,MIN_SAL,2500)); }
