@@ -225,3 +225,11 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .dt-c.done{color:#e8edf2}.dt-c.cur{background:var(--acc,#e2434b);color:#fff}.dt-c.cur em{color:#fff}
 .dt-c.gap{justify-content:center}
 @media (prefers-reduced-motion:reduce){ #dtick{display:none} }
+/* 앞으로의 경기 */
+.ug{display:flex;flex-direction:column}
+.ug-r{display:grid;grid-template-columns:58px 1fr auto auto;gap:10px;align-items:center;padding:7px 4px;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.ug-r.nx{background:rgba(226,67,75,.08)}
+.ug-d{display:flex;gap:5px;align-items:baseline}.ug-d b{font:700 14px var(--f-num,inherit)}.ug-d i{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4)}
+.ug-o{display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden}.ug-o i{font-style:normal;font-size:11px}
+.ug-s{white-space:nowrap}
+@media (max-width:600px){ .ug-r{grid-template-columns:48px 1fr auto}.ug-s{display:none} }

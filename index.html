@@ -1232,6 +1232,14 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .dt-c.done{color:#e8edf2}.dt-c.cur{background:var(--acc,#e2434b);color:#fff}.dt-c.cur em{color:#fff}
 .dt-c.gap{justify-content:center}
 @media (prefers-reduced-motion:reduce){ #dtick{display:none} }
+/* 앞으로의 경기 */
+.ug{display:flex;flex-direction:column}
+.ug-r{display:grid;grid-template-columns:58px 1fr auto auto;gap:10px;align-items:center;padding:7px 4px;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.ug-r.nx{background:rgba(226,67,75,.08)}
+.ug-d{display:flex;gap:5px;align-items:baseline}.ug-d b{font:700 14px var(--f-num,inherit)}.ug-d i{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4)}
+.ug-o{display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden}.ug-o i{font-style:normal;font-size:11px}
+.ug-s{white-space:nowrap}
+@media (max-width:600px){ .ug-r{grid-template-columns:48px 1fr auto}.ug-s{display:none} }
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -7209,7 +7217,7 @@ function homeView(){
   if(G.unemp)return unempView()+[miniStand(),newsCard()].filter(Boolean).join('');
   faCelebrate(); const dO=UI.open.homeDesk??false;
   const desk=G.gameOver?'':`<details class="moreg" data-k="homeDesk" data-lazy="${dO?0:1}" ${dO?'open':''}><summary><span>전력 요약</span><i>자리별 전력 순위 · 추천 트레이드 · 사람들과의 관계</i></summary><div class="moreb">${dO?[deskCard(),relStrip()].filter(Boolean).join(''):''}</div></details>`;
-  const today=[resultHome(),liveCard(),digestCard(),todoCard(),decisionCard(),tutCard(),offersCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard(),nextCard(),desk].filter(Boolean).join('');
+  const today=[resultHome(),liveCard(),digestCard(),todoCard(),decisionCard(),tutCard(),offersCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard(),nextCard(),upcomingGames(10),desk].filter(Boolean).join('');
   const league=[miniStand(),formCard(),newsCard()].filter(Boolean).join('');
   const moreBody=[myLeaders(),clubCard(),calendarCard()].filter(Boolean).join('');
   const o=UI.open.homeMore??false;
@@ -7217,7 +7225,7 @@ function homeView(){
   const gh=t=>`<h2 class="grp-t">${t}</h2>`;
   if(wide())return `${stripBar()}<div class="homeg"><div class="col">${gh('오늘 할 일')}${today}</div><div class="col">${gh('리그 현황')}${league}${more}</div></div>`;
   const todo=[todoCard(),decisionCard(),tutCard(),offersCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean).join('');
-  const games=[resultHome(),liveCard(),digestCard(),nextCard()].filter(Boolean).join('');
+  const games=[resultHome(),liveCard(),digestCard(),nextCard(),upcomingGames(10)].filter(Boolean).join('');
   if(G.res&&UI._hres!==G.res.i+':'+G.day){ UI._hres=G.res.i+':'+G.day; UI.it=UI.it||{}; UI.it.home='game'; } /* 경기가 막 끝나면 경기 탭을 먼저 */
   const ht=inTabs('home',[['today','할 일'],...(games?[['game','경기']]:[]),['league','리그'],['team','우리 팀']]);
   return `${stripBar()}${ht.bar}${ht.cur==='today'?todo:ht.cur==='game'?games:ht.cur==='league'?[miniStand(),newsCard()].filter(Boolean).join(''):[desk,teamIdCard(),formCard(),myLeaders(),clubCard()].filter(Boolean).join('')}`;
@@ -7989,7 +7997,8 @@ function calView(){ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m};
   const pm=ym.m===1?{y:ym.y-1,m:12}:{y:ym.y,m:ym.m-1}, nm=ym.m===12?{y:ym.y+1,m:1}:{y:ym.y,m:ym.m+1};
   const nav=`<div class="row between cal-nav"><button class="btn small" data-a="calMon" data-v="${pm.y}:${pm.m}">◀ ${pm.m}월</button><b class="cal-ttl">${ym.y}년 ${ym.m}월</b><span class="row"><button class="btn small" data-a="calMon" data-v="${now.y}:${now.m}">오늘</button><button class="btn small" data-a="calMon" data-v="${nm.y}:${nm.m}">${nm.m}월 ▶</button></span></div>`;
   const leg=`<div class="cal-leg">${Object.values(CAL_K).map(x=>`<span><i style="background:${x.c}"></i>${x.l}</span>`).join('')}<span><i class="g"></i>우리 경기</span></div>`;
-  return `<section class="card">${nav}<div class="cal-w">${['월','화','수','목','금','토','일'].map(x=>`<span>${x}</span>`).join('')}</div><div class="cal-grid">${cells}</div>${leg}</section>${calDetail(sel)}${calUpcoming()}`; }
+  const ug=upcomingGames(10).replace('<button class="btn small" data-a="calOpen">캘린더</button>','');
+  return `<section class="card">${nav}<div class="cal-w">${['월','화','수','목','금','토','일'].map(x=>`<span>${x}</span>`).join('')}</div><div class="cal-grid">${cells}</div>${leg}</section>${calDetail(sel)}${ug}${calUpcoming()}`; }
 function calDetail(d){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d); const dd=d-G.day;
   let gh=''; if(g){ const sp=d>G.day&&d-G.day<=6?(()=>{ try{ const L=projStarters(G.user,6); const k=nextGames(8).findIndex(x=>x.d===d); const s=k>=0&&L[k]?L[k].sp:null; return s?` · 예상 선발 ${esc(s.name)}`:''; }catch(e){ return ''; } })():'';
     gh=`<div class="cal-dg">${badge(g.op,28)}<div><b>${g.kind?esc(g.kind)+' · ':''}${g.home?'홈':'원정'} ${g.home?'vs':'@'} ${esc(tname(g.op))}</b><span class="small muted">${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:d<G.day?'결과 기록 없음':`예정${sp}`}</span></div>${g.gi>=0&&G.games[g.gi]?`<button class="btn small" data-a="openGame" data-v="${g.gi}">박스스코어</button>`:''}</div>`; }
@@ -8007,6 +8016,14 @@ function dayTick(d0){ const d1=G.day; if(!(d1>d0))return; try{ if(window.matchMe
   el.className='on'; const cs=[...el.querySelectorAll('.dt-c')]; const step=Math.max(45,Math.min(110,700/cs.length));
   cs.forEach((c,i)=>setTimeout(()=>{ cs.forEach(x=>x.classList.remove('cur')); c.classList.add('cur','done'); },i*step));
   clearTimeout(dayTick._t); dayTick._t=setTimeout(()=>{ el.className=''; },cs.length*step+900); }
+/* 앞으로의 경기: 일정표 순서대로 다음 10경기(같은 상대 연전은 묶어서 몇 번째 경기인지 표시) */
+function upcomingGames(n){ const per=period(); if(per!=='season'&&per!=='post'&&per!=='pre')return ''; const L=nextGames(n||10); if(!L.length)return '';
+  let sp=[]; try{ sp=projStarters(G.user,5)||[]; }catch(e){}
+  const st=G.sea&&G.sea.rec; let order=[]; try{ order=standingsNow(); }catch(e){}
+  const runs=[]; for(const x of L){ const r=runs[runs.length-1]; if(r&&r.op===x.op&&r.home===x.home&&!x.ps&&x.d-r.last<=2){ r.n++; r.last=x.d; x.si=r.n; x.run=r; } else { const nr={op:x.op,home:x.home,n:1,last:x.d}; runs.push(nr); x.si=1; x.run=nr; } }
+  const rows=L.map((x,i)=>{ const o=dobj(x.d); const rk=order.findIndex(q=>q.tid===x.op)+1; const r=st&&st[x.op]; const s=sp[i]&&sp[i].sp;
+    return `<button class="ug-r${i===0?' nx':''}" data-a="calJump" data-v="${x.d}"><span class="ug-d"><b>${o.m}/${o.d}</b><i>${WD[o.w]}</i></span><span class="ug-o">${x.home?'vs':'@'} ${badge(x.op,18)} <b>${esc(tshort(x.op))}</b>${x.ps?` <span class="pill acc">${esc(x.ps)}</span>`:x.run.n>1?` <i class="muted">${x.run.n}연전 ${x.si}</i>`:''}</span><span class="ug-m small muted">${rk&&per!=='pre'?`${rk}위${r?` · ${r.w}-${r.l}`:''}`:''}</span><span class="ug-s small">${s?`선발 ${esc(s.name)}`:''}</span></button>`; }).join('');
+  return `<section class="card"><div class="row between"><h2 class="sec">앞으로의 경기</h2><button class="btn small" data-a="calOpen">캘린더</button></div><div class="ug">${rows}</div><p class="small muted">선발은 로테이션 순번과 휴식일로 본 예상입니다. 줄을 누르면 캘린더에서 그날을 엽니다.</p></section>`; }
 /* ---------- 역사·시상 ---------- */
 function histView(){
   const ys=Object.keys(G.awards||{}).map(Number).sort((a,b)=>b-a); const y=UI.hy&&G.awards&&G.awards[UI.hy]?UI.hy:ys[0];
