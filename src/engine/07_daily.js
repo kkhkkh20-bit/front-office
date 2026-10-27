@@ -89,6 +89,7 @@ function processDay(){
   if(day===KD(11,2))faAnnounce();
   if(G.fa&&G.fa.open&&!G.fa.closed&&day>=G.fa.openDay)faDay(day);
   if(day===KD(12,1)){ contractStart(); aiCapAll(); capWarnUser(); }
+  try{ salTalkDaily(day); }catch(e){}
   if(day===KD(12,10)){ try{ capCouncil(); }catch(e){} }
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();

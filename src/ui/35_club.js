@@ -149,21 +149,42 @@ function finTable(f){
     <dt class="tot">순이익</dt><dd class="tot" style="color:${f.net>=0?'var(--good)':'var(--bad)'}">${f.net>=0?'+':''}${money(f.net)}</dd>${f.selfC?`<dt>적자 자체 충당(보유 현금)</dt><dd>${money(f.selfC)}</dd>`:''}${f.div?`<dt>투자사 배당(80억 초과분의 절반)</dt><dd>${money(f.div)}</dd>`:''}
     <dt>관중</dt><dd>${Math.round(f.att/1e4)}만 명</dd>${f.supCap?`<dt>모기업 적자 보전 한도</dt><dd>${money(f.supCap)}</dd>`:''}<dt>시즌 후 보유 현금</dt><dd>${money(f.cash)}</dd></dl>`;
 }
+/* 국내 선수 연봉 협상 표: 직전 성적 → 구단 산정안 → 선수 요구 → 단장 제시 */
+function salTalkView(ended){ salTalkInit(); const C=G.contract; const wk=Math.floor(G.day/7);
+  const L=ended.map(p=>({p,n:C.neg[p.id],b:salBasis(p)})).filter(x=>x.n).sort((a,b)=>({open:0,arb:1,ok:2}[a.n.st]-{open:0,arb:1,ok:2}[b.n.st])||((b.n.ask-b.n.off)-(a.n.ask-a.n.off)));
+  const open=L.filter(x=>x.n.st==='open'), fresh=open.filter(x=>x.n.cur==null);
+  const row=({p,n,b})=>{ const d=(n.st==='ok'?p.newSal:(n.cur??n.off))-p.sal; const lock=n.wk===wk;
+    const mid=round5((Math.max(n.cur??n.off,n.off)+n.ask)/2);
+    const st=n.st==='ok'?`<span class="pill good">합의 ${money(p.newSal)}</span>`:n.st==='arb'?`<span class="pill warn">연봉조정 · 구단 ${money(n.arb.club)} / 선수 ${money(n.arb.player)}</span>`:n.cur==null?'<span class="pill">미제시</span>':`<span class="pill bad">미합의 · 요구 ${money(n.ask)}</span>`;
+    const acts=n.st==='open'?(lock?`<span class="small muted">이번 주 협상 끝</span><button class="btn small primary" data-a="salOff" data-v="${p.id}:${n.ask}">요구 수용 ${money(n.ask)}</button>`:`${n.cur==null?`<button class="btn small" data-a="salOff" data-v="${p.id}:${n.off}">산정안 ${money(n.off)}</button>`:''}${n.ask>(n.cur??n.off)&&mid<n.ask?`<button class="btn small" data-a="salOff" data-v="${p.id}:${mid}">중간안 ${money(mid)}</button>`:''}<button class="btn small primary" data-a="salOff" data-v="${p.id}:${n.ask}">요구 수용 ${money(n.ask)}</button>`)
+      :n.st==='arb'?`<button class="btn small primary" data-a="salArbAccept" data-v="${p.id}">선수안 수용 ${money(n.arb.player)}</button>`:'';
+    return `<div class="salr"><div class="salr-h"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button><span class="small muted">${posLabel(p)} · ${p.age}세 · ${p.svc}년차${(p.svc||0)>=ARB_SVC?' · 조정 신청 가능':''}</span>${st}</div>
+      <div class="salr-b"><span><i>직전 시즌</i><b>${b.h?(()=>{ const t=statLine(b.h,p); return /WAR/.test(t)?t:`${t} · WAR ${b.war.toFixed(1)}`; })():'1군 기록 없음'}</b><em>${b.band} · 인상 상한 +${b.cap}%</em></span><span><i>연봉</i><b class="num">${money(p.sal)} → ${money(n.st==='ok'?p.newSal:(n.cur??n.off))}</b><em class="${d>0?'warn':d<0?'good':''}">${d>=0?'+':''}${p.sal?Math.round(d/p.sal*100):0}% · 산정안 ${money(n.off)}</em></span></div>
+      <div class="row salr-a">${acts}<button class="btn small danger" data-a="relNow" data-v="${p.id}">방출</button></div></div>`; };
+  return `<div class="eyebrow">국내 선수 연봉 협상 · 미합의 ${open.length}명</div>
+    ${fresh.length?`<button class="btn primary block" data-a="salOffAll">구단 산정안으로 ${fresh.length}명에게 일괄 제시</button>`:''}
+    <details class="frule"><summary class="small">연봉 산정 기준 보기</summary><div class="small">
+      <p><b>1. 직전 시즌 1군 WAR로 인상 폭 상한을 정합니다.</b> WAR 0 이하 +10%, 1이면 +45%, 2이면 +80%, 3이면 +115%, 5 이상이면 +190%까지. 1군 표본이 적으면(타자 120타석, 투수 25이닝 미만) 15% 안에서만 움직입니다.</p>
+      <p><b>2. 같은 연차·능력의 보류권 기준액 쪽으로 맞춥니다.</b> FA 시장가의 3년 미만 14%, 6년 미만 22%, FA 직전 32%. 연차별 최고 기록(4년차 5억 등)을 넘지 않습니다.</p>
+      <p><b>3. 잘한 선수는 깎지 않습니다.</b> WAR 3 이상 5% 이상 인상, 2 이상 동결 이상. 부진하면 3억 미만 30%, 3억 이상 40%까지 삭감할 수 있습니다.</p>
+      <p><b>4. 선수는 성적이 좋을수록, 야망이 클수록 산정안보다 더 원합니다.</b> 한 선수와는 한 주에 한 번 협상합니다. 거절하면 요구액을 조금씩 낮춥니다.</p>
+      <p><b>5. 연봉조정:</b> 1월 10일까지 합의하지 못한 3년차 이상 선수는 신청할 수 있고, 1월 20일 조정위원회가 구단안과 선수안 중 하나를 고릅니다. 실제 KBO에서 조정위원회까지 간 20건 중 선수가 이긴 것은 2번(2002 류지현, 2021 주권)입니다. 조정에서 진 선수는 기분이 크게 떨어집니다.</p></div></details>
+    <div class="salrs">${L.filter(x=>x.n.st!=='ok').map(row).join('')||'<p class="small muted">모든 국내 선수와 합의했습니다. 위의 "연봉 계약 확정"을 누르면 끝납니다.</p>'}</div>
+    ${(()=>{ const ok=L.filter(x=>x.n.st==='ok'); return ok.length?`<details class="frule"><summary class="small">합의 완료 ${ok.length}명 · 합계 ${money(sum(ok.map(x=>x.p.newSal)))}</summary><div class="salok">${ok.map(({p,b})=>`<div class="salok-r"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="small muted">${posLabel(p)} · WAR ${b.war.toFixed(1)}</span><span class="num">${money(p.sal)} → <b>${money(p.newSal)}</b></span></div>`).join('')}</div></details>`:''; })()}`; }
 function contractView(){
   const C=G.contract;
   const ended=C.ended.map(id=>G.players[id]).filter(Boolean).sort((a,b)=>b.newSal-a.newSal);
   const fEnd=C.foreignEnd.map(id=>G.players[id]).filter(Boolean);
-  const raise=sum(ended.map(p=>p.newSal-p.sal));
+  salTalkInit(); const raise=sum(ended.map(p=>{ const n=C.neg&&C.neg[p.id]; return (n?(n.st==='ok'?p.newSal:(n.cur??n.off)):p.newSal)-p.sal; }));
   return `
   <section class="card hero" data-k="연봉협상">
-    <div class="eyebrow">연봉 협상 · 1월 31일 마감</div>
-    <p>계약이 끝난 국내 선수 ${ended.length}명, 외국인 ${fEnd.length}명의 재계약안입니다. 최근 1군 기록을 기준으로 산정했습니다. 남길 수 없는 선수는 방출하세요.</p>
-    <p class="small">국내 선수 인상 총액 <b class="num">${raise>=0?'+':''}${money(raise)}</b></p>
+    <div class="eyebrow">연봉 협상 · 1월 10일 연봉조정 신청 · 1월 31일 마감</div>
+    <p>국내 선수 ${ended.length}명은 직전 시즌 성적으로 구단이 산정한 연봉안을 단장이 제시하고, 외국인 ${fEnd.length}명은 재계약 여부를 정합니다. 1월 31일까지 계약하지 못한 선수는 구단의 마지막 제시액에 사인합니다.</p>
+    <p class="small">국내 선수 인상 총액(현재 합의·제시 기준) <b class="num">${raise>=0?'+':''}${money(raise)}</b></p>
     ${UI.ctMsg?`<div class="note ${/넘습니다|거절/.test(UI.ctMsg)?'bad':''}">${esc(UI.ctMsg)}</div>`:''}
     <button class="btn primary block" data-a="confirmContracts">연봉 계약 확정</button>
     ${fEnd.length?`<div class="eyebrow">외국인 재계약</div>${(()=>{ const f=fReCapInfo(); const keep=fEnd.filter(p=>!C.foreignDrop.includes(p.id)); const dRaise=sum(keep.map(p=>p.newSal-p.sal)); let room=null; try{ room=budget().roomGoal; }catch(e){}
   return f?`<p class="small ${f.over>0?'bad':''}"><b>외국인 선수 3명 총액 ${money(f.tot)} / 리그 한도 ${money(f.cap)}</b> (${Math.round(f.tot/USD)}만 / ${Math.round(f.cap/USD)}만 달러)${f.over>0?` · ${money(f.over)} 초과: 결별하거나 깎아서 협상해야 확정됩니다`:''}</p><p class="small">재계약 인상 합계 <b class="${dRaise>0?'bad':'good'}">${dRaise>=0?'+':''}${money(dRaise)}</b>${room!=null?` · 예산 여유 ${money(room)} → <b class="${room-dRaise<0?'bad':''}">${money(room-dRaise)}</b>${room-dRaise<0?' (구단주 지원 한도를 넘습니다)':''}`:''}</p>`:''; })()}<p class="small muted">잘한 선수는 더 달라고 합니다(최대 1.7배). 재계약은 100만 달러 상한이 없지만 3명 총액 한도가 있습니다. "15% 깎아 협상"은 한 번만 할 수 있고, 거절당하면 그 선수는 떠납니다. 결별한 선수 중 쓸 만한 선수는 시장에 나와 다른 구단이 데려갈 수 있습니다.</p><div class="list">${fEnd.map(p=>{const drop=C.foreignDrop.includes(p.id); return `<div class="item" style="cursor:default"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${statLine(curLine(p),p)}</span><span class="rt"><span class="num">${money(p.sal)} → <b>${money(p.newSal)}</b></span><br>${!drop&&!(C.fneg||{})[p.id]?`<button class="btn small" data-a="fneg" data-v="${p.id}">15% 깎아 협상</button> `:''}${p.fleft?'<span class="pill bad">떠남</span>':`<button class="btn small ${drop?'':'danger'}" data-a="fdrop" data-v="${p.id}">${drop?'재계약으로 변경':'결별'}</button>`}</span></div>`}).join('')}</div>`:''}
-    <div class="eyebrow">국내 선수 연봉안</div>
-    <div class="list">${ended.map(p=>{const d=p.newSal-p.sal; return `<div class="item" style="cursor:default"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${statLine(curLine(p),p)}</span><span class="rt"><span class="num">${money(p.sal)} → <b>${money(p.newSal)}</b></span><br><span class="pill ${d>0?'warn':d<0?'good':''}">${d>0?'+':''}${Math.round(d/p.sal*100)}%</span> <button class="btn small danger" data-a="relNow" data-v="${p.id}">방출</button></span></div>`}).join('')}</div>
+    ${salTalkView(ended)}
   </section>`;
 }
