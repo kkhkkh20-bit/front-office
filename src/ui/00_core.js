@@ -2,7 +2,6 @@
 function wOf(h,p){ return warPub(h,p); }
 const SAVE='danjang-v4';
 const UI={open:{},mail:null,mf:'all',talkMsg:null,tab:'home',sheet:null,posSheet:null,game:null,seg:'bat',lseg:'stand',lf:{team:'all',kind:'bat',sort:'war'},trade:{tid:null,give:[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'},leagueTeam:null,confirmNew:false,offer:null,ext:null,fmsg:'',confirmRel:null};
-try{ if(localStorage.getItem('gmCastCam')==='0')UI.castCam=false; }catch(e){}
 /* 저장: 슬롯 3개, lz-string 압축 */
 const SLOTS=3, META='danjang-meta';
 function meta(){ try{ const m=JSON.parse(localStorage.getItem(META)||'null'); if(m)return m; }catch(e){} return {active:1,slots:{}}; }

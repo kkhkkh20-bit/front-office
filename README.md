@@ -22,7 +22,6 @@
 | `src/html/` | 문서 머리말(`head.html`)과 본문 틀(`body.html`) |
 | `src/css/` | 화면 스타일. 뒤 번호 파일이 앞 규칙을 덮습니다 |
 | `src/engine/` | 게임 규칙과 시뮬레이션: 규정, 기록, 경기, 하루 진행, 스토브리그, 드래프트, 외국인, 연봉, 트레이드, 재정, 병역, 코치·감독, 구장 등 41개 |
-| `src/gfx/` | 그림: 선수 스프라이트(`kart.js`, Kenney Sports Pack), 훈련장 전경(`campus.js`), 투구 장면 관절 인형(`rig.js`) |
 | `src/ui/` | 화면과 동작: 홈, 소식함, 선수단, 트레이드, 영입·계약, 훈련, 스태프, 리그, 구단·재정, 중계, 선수 정보, 동작(`40_actions.js`), 결재(`41_guard_boot.js`) 등 42개 |
 | `vendor/` | 외부 라이브러리(faces.js, lz-string) |
 | `build.sh` | 위 파일을 묶어 `index.html`과 검사용 `dist/engine.js`를 만듭니다 |

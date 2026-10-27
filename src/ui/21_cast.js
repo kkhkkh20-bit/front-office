@@ -55,7 +55,7 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
     <button class="x" style="margin-left:auto" data-a="castClose" aria-label="중계 닫기">×</button></div>
   <div class="cs-body"><div class="cs-stage" id="cs-stage">${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-ball" id="cs-ball"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-bn" id="cs-bn"></div></div>
     <div class="cs-side"><div class="cs-vs" id="cs-vs"></div><div class="cs-log" id="cs-log"></div></div></div>
-  <div class="cs-ctl"><div class="cs-mode">${[['all','전체'],['hl','하이라이트'],['risp','득점권']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}<button class="cs-camt${UI.castCam!==false?' on':''}" data-a="castCamT" aria-pressed="${UI.castCam!==false}">투구 장면</button></div>
+  <div class="cs-ctl"><div class="cs-mode">${[['all','전체'],['hl','하이라이트'],['risp','득점권']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}</div>
     <div class="cs-btns"><button data-a="castStep" data-v="-1" aria-label="이전 타석">◀</button><button class="pri" id="cs-play" data-a="castPlay">${c.play?'일시정지':'재생'}</button><button data-a="castStep" data-v="1" aria-label="다음 타석">▶</button><button data-a="castInn">다음 회</button><button data-a="castSpd" id="cs-spd">${sp}배속</button><button data-a="castEnd">끝</button></div></div>
   </div>`; }
 /* 필드 카드: 얼굴 + 이름 + 능력치 하나 */
@@ -80,7 +80,7 @@ function cSide(g,k){ const L=g.pbp; const v=document.getElementById('cs-vs'), lg
   lg.innerHTML=L.slice(Math.max(0,k-8),k).reverse().map((y,i)=>`<p class="${i===0?'cur':''}${y[6]?' run':''}"><span>${cHalfTxt(y[0])}</span>${esc(pbpText(y))}</p>`).join('')||'<p class="muted">플레이볼</p>'; }
 function cSit(st,x){ const el=document.getElementById('cs-sit'); if(!el)return; const risp=!!(st.bases[1]||st.bases[2]); const late=st.half>=16&&Math.abs(st.sa-st.sh)<=2;
   const t=risp&&st.bases[0]&&st.bases[1]&&st.bases[2]?'만루 찬스':risp?'득점권 찬스':late?'승부처':''; el.textContent=t; el.className='cs-sit'+(t&&x&&typeof x[1]==='number'?' on':''); }
-function cDraw(k,ms){ camHide(); const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; const st=k>=L.length?{...pbpState(g,L.length-1),bases:[0,0,0]}:cBefore(g,k);
+function cDraw(k,ms){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; const st=k>=L.length?{...pbpState(g,L.length-1),bases:[0,0,0]}:cBefore(g,k);
   cSync(k>=L.length?[]:cTargets(g,k,st),ms); if(k>=L.length){ st.sa=g.as; st.sh=g.hs; } cBoard(g,st,null); cSide(g,k); cSit(st,L[k]); c.wp=k>=L.length?(g.hs>g.as?1:0):wpHome(st); try{ if(k>=L.length){ const bar=document.getElementById('cs-wpa'); if(bar)bar.style.width=(c.wp*100)+'%'; const tx=document.getElementById('cs-wpt'); if(tx)tx.textContent=`${tshort(g.hs>g.as?g.home:g.away)} 승리`; } else cWp(g,st,null); }catch(e){}
   cCap(''); if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&k<L.length?'일시정지':'재생'; }
 /* 연출 */
@@ -146,10 +146,8 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   else if(o==='1B'){ if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,44+rnd()*10); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,46); } flight=650; kind='안타'; }
   else if(o==='OUT'||o==='DP'){ const r=rnd(); const pool=o==='DP'?['SS','2B','3B','SS','2B']:r<.45?['SS','2B','3B','1B','SS','2B','P']:r<.85?['LF','CF','RF','CF']:['SS','2B','3B','1B'];
     opos=pool[Math.floor(rnd()*pool.length)]; const base=CFP[opos]; spot=[base[0]+rnd()*8-4,base[1]+rnd()*6-3]; arc=['LF','CF','RF'].includes(opos)||(r>=.85&&rnd()<.5); flight=arc?950:520; kind=arc?(['LF','CF','RF'].includes(opos)?'뜬공 아웃':'직선타 아웃'):(o==='DP'?'병살타':'땅볼 아웃'); }
-  const cam=UI.castCam!==false&&!!document.getElementById('cs-stage');
-  if(cam){ const ck=o==='HR'?'hr':o==='K'||o==='BB'?null:(o==='OUT'||o==='DP')?(arc?(['LF','CF','RF'].includes(opos)?'fly':'line'):'gb'):(['2B','3B'].includes(o)&&arc?'deep':arc?'line':(o==='1B'?'gb':'line'));
-    try{ await camAtBat(g,k,x,b,o==='K'?'K':o==='BB'?'BB':'in',{kind:ck},mulberry((g.day*31+k*17+3)|0)); }catch(e){ camHide(); throw e; } }
-  else { const pc=st.querySelector('.cc.pit'); if(pc){ pc.classList.remove('th'); void pc.offsetWidth; pc.classList.add('th'); } await cSleep(220); await cBall(CFP.P,[50,88],300,false); cBallHide(); if(bat&&o!=='BB'&&!(o==='K'&&rnd()<.3)){ bat.classList.remove('sw'); void bat.offsetWidth; bat.classList.add('sw'); } }
+  const cam=false;
+  { const pc=st.querySelector('.cc.pit'); if(pc){ pc.classList.remove('th'); void pc.offsetWidth; pc.classList.add('th'); } await cSleep(220); await cBall(CFP.P,[50,88],300,false); cBallHide(); if(bat&&o!=='BB'&&!(o==='K'&&rnd()<.3)){ bat.classList.remove('sw'); void bat.offsetWidth; bat.classList.add('sw'); } }
   cCap('');
   const after=x[5], runs=x[6], outsA=x[4];
   const fieldCards=[...st.querySelectorAll('.cc.df')].filter(el=>!el.classList.contains('gone'));

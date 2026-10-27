@@ -16,10 +16,11 @@ function newSalary(p){
   const pf=perfOvr(p,2); const base=pf==null?ovr(p):pf;
   if(p.foreign&&p.kept&&p.kept.y===G.year)return p.kept.sal;
   if(p.foreign){ if(p.foreign==='아시아')return round5(clamp(100+(base-44)*16,p.sal*.8,p.sal+10*USD)); return round5(clamp(300+(base-46)*62,p.sal*.7,p.sal*1.7)); }
-  /* FA 전에는 보류권 때문에 시장가보다 훨씬 낮다: 3년 미만 35%, 6년 미만 50%, FA 직전 60%. 연차별 상한은 KBO 최고 기록 수준(4년차 5억 등) */
-  /* FA 자격이 있어도 신청하지 않고 남은 선수는 여전히 보류 선수다: 시장가의 55%, 인상 50% 이내, 7억 상한 */
+  /* FA 전에는 보류권 때문에 시장가보다 훨씬 낮다(NONFA_F). 실제 KBO: 3년차 필승조 평균자책점 1점대 → 1억2천, 첫 주전 시즌 → 1억 안팎,
+     4년차 MVP급(김도영) → 5억이 최고 기록. 연차별 상한(PRE_CAP)은 그 최고 기록 수준이다 */
+  /* FA 자격이 있어도 신청하지 않고 남은 선수는 여전히 보류 선수다: 인상 50% 이내, 7억 상한 */
   const skip=p.svc>=faSvc(p)&&!p.faC&&!p.ext;
-  const f=p.svc<3?.3:p.svc<6?.4:p.svc<faSvc(p)?.5:skip?.55:1;
+  const f=nonFaF(p,skip);
   /* 연봉 삭감 한도: 3억 이상 40%, 그 아래 30%까지 깎을 수 있다 */
   const lo=p.sal*(p.sal>=300?.6:.7);
   /* 올해 1군 표본이 적으면(120타석·25이닝 미만) 시장가가 아니라 올해 기여로 소폭만 움직인다 */
@@ -35,6 +36,9 @@ function newSalary(p){
 }
 /* 보류권 선수 연봉 상한(다음 시즌 기준). FA 전에는 5억을 넘기 어렵다(김도영 4년차 5억이 최고 수준). 마지막 해만 6~7억까지 */
 const PRE_CAP=[30,80,150,300,400,500,600,700];
+/* 보류권 연봉 비율: 시장가(marketSal) 대비. 3년 미만 14%, 6년 미만 22%, FA 직전 32%, FA 미신청 잔류 45% */
+const NONFA_F=[.14,.22,.32,.45];
+function nonFaF(p,skip){ if(p.faC||p.ext)return 1; if(skip)return NONFA_F[3]; return p.svc<3?NONFA_F[0]:p.svc<6?NONFA_F[1]:p.svc<faSvc(p)?NONFA_F[2]:1; }
 function preCap(p){ return PRE_CAP[clamp(p.svc||0,0,PRE_CAP.length-1)]; }
 function faAsk(p){
   const pf=perfOvr(p,3); const base=pf==null?ovr(p):pf*.7+ovr(p)*.3;

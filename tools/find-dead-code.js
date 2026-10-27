@@ -2,7 +2,7 @@
 const fs=require('fs'), path=require('path'), acorn=require('acorn'), walk=require('acorn-walk');
 const R=require('path').join(__dirname,'..','src')+'/';
 const ls=d=>fs.readdirSync(R+d).filter(f=>f.endsWith('.js')).sort().map(f=>R+d+'/'+f);
-const groups=[ls('engine'), [R+'gfx/kart.js',R+'gfx/campus.js',R+'gfx/rig.js',...ls('ui')]];
+const groups=[ls('engine'), [...ls('gfx'),...ls('ui')]];
 const KEEP=new Set((process.env.KEEP||'').split(',').filter(Boolean));
 const apply=process.argv.includes('--apply');
 function load(){ return groups.map(fl=>{ let off=0, text=''; const map=[]; for(const f of fl){ const t=fs.readFileSync(f,'utf8'); map.push({f,s:off,e:off+t.length}); text+=t; off+=t.length; } return {text,map,ast:acorn.parse(text,{ecmaVersion:'latest',sourceType:'script',ranges:true})}; }); }
