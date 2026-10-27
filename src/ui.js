@@ -2401,18 +2401,19 @@ function schedView(){
     <p class="small muted">월요일은 휴식일입니다. 결과를 누르면 최근 경기의 박스스코어를 볼 수 있습니다(최근 25경기 보관). 정규시즌 1~5위가 와일드카드·준플레이오프·플레이오프·한국시리즈로 이어지는 가을야구에 나갑니다.</p>`)
    +(G.ps?csec('포스트시즌',psBody()):'');
 }
-function facView(){
-  const lv=facLv(G.user); const b=G.fac&&G.fac.build; const nx=lv+1;
-  const rows=FAC.slice(1).map((f,i)=>`<div class="facrow${i+1===lv?' on':''}"><b>${i+1}단계</b><span>${f.l}</span><span>성장 ×${f.g.toFixed(2)}</span><span>노화 ×${f.d.toFixed(2)}</span><span class="num">연 ${money(FAC_UPKEEP[i+1])}</span></div>`).join('');
-  const league=G.teams.map(t=>({t,lv:facLv(t.id)})).sort((a,b)=>b.lv-a.lv);
-  return csec('훈련 시설',`<p class="small muted">1·2군 훈련장, 실내 연습장, 트레이닝·재활 센터, 영상 분석 장비를 묶은 시설 수준입니다. 시설이 좋을수록 젊은 선수가 잠재력을 더 많이 채우고, 30대 선수의 하락이 느려집니다. 효과는 매년 겨울 성장 시기에 반영됩니다.</p>
-    <dl class="tsum"><div><dt>현재</dt><dd>${lv}단계 · ${FAC[lv].l}</dd></div><div><dt>연 유지비</dt><dd class="num">${money(FAC_UPKEEP[lv])}</dd></div><div><dt>리그 순위</dt><dd class="num">${league.filter(x=>x.lv>lv).length+1}위 / 10</dd></div></dl>
-    <div class="facs">${rows}</div>
-    ${b?`<div class="note">${b.lv}단계 공사 중 · ${dmd(b.done)} 완공 예정</div>`:lv<5?`<div class="row between"><span class="small">${nx}단계 공사비 <b class="num">${money(FAC_COST[nx])}</b> · 공사 기간 ${FAC_DAYS[nx]}일 · 보유 자금 ${money(team(G.user).cash)}</span><button class="btn primary" data-a="buildFac">${nx}단계 공사 시작</button></div>`:'<p class="small">최고 단계입니다.</p>'}
+function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Object.keys(F.bld).length;
+  const league=G.teams.map(x=>({x,lv:facLv(x.id)})); const rk=league.filter(q=>q.lv>F.lv).length+1;
+  const card=k=>{ const D=FACI[k], lv=F.it[k], b=F.bld[k], nx=lv+1;
+    const pips=[1,2,3].map(i=>`<i class="${i<=lv?'on':''}${b&&i===b.lv?' bld':''}"></i>`).join('');
+    return `<div class="tcard fci" style="cursor:default"><div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><div style="min-width:0"><b>${D.l}</b><div class="small muted">${D.lv[lv]}</div></div><span class="fpip" title="${lv}/3단계">${pips}</span></div>
+      <p class="dnote">${esc(D.d)}</p>
+      <div class="tc-ft">${b?`<span class="pill warn">${D.lv[b.lv]} 공사 중 · ${dmd(b.done)} 완공</span>`:lv>=3?'<span class="pill good">최고 단계</span>':`<span class="small">다음: <b>${D.lv[nx]}</b> · 공사비 <b class="num">${money(D.c[nx])}</b> · ${D.days[nx]}일 · 유지비 연 ${money(D.up[nx])}</span><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||t.cash<D.c[nx]?'disabled':''}>공사</button>`}</div></div>`; };
+  return csec('훈련·육성 시설',`<p class="small muted">실제 구단의 2군 훈련장·재활센터·트래킹 장비 투자를 항목별로 나눴습니다. 공사비는 구단 보유 자금에서 바로 나가고, 완공되면 유지비가 매년 듭니다. 공사는 동시에 2곳까지 할 수 있습니다. 성장 효과는 매년 겨울 성장 때 반영되고, 부상·회복 효과는 바로 적용됩니다.</p>
+    <dl class="tsum"><div><dt>종합 등급</dt><dd>${F.lv}단계 · 리그 ${rk}위</dd></div><div><dt>연 유지비</dt><dd class="num">${money(facUpkeep())}</dd></div><div><dt>보유 자금</dt><dd class="num">${money(t.cash)}</dd></div><div><dt>공사 중</dt><dd>${nb}/2</dd></div></dl>
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
-    <div class="eyebrow">성장에 영향을 주는 것</div>
-    <p class="small muted">1) 출전 시간: 1군 주전으로 많이 뛸수록 잘 큽니다(퓨처스 출전은 60%만 인정). 2) 훈련 시설. 3) 감독의 육성 성향. 4) 2군 연수 프로그램. 선수마다 조기 완성형, 대기만성형, 정체형, 기술형 베테랑 같은 숨은 성장 유형이 있고, 능력 있는 스카우트일수록 정확히 알려 줍니다.</p>`);
-}
+    <div class="tgrid">${FACK.map(card).join('')}</div>
+    <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
+    <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(퓨처스 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 감독의 육성 성향. 4) 2군 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 
 /* ---------- 역사·시상 ---------- */
 function histView(){
@@ -2736,12 +2737,18 @@ function draftHist(ys){ const y=UI.dhy&&ys.includes(UI.dhy)?UI.dhy:ys[0]; const 
     <div class="eyebrow">이 해 최고 선수 10명</div>${tbl(best)}`); }
 function draftPage(){ const ys=draftYears(); const it=ys.length?inTabs('dr',[['now',G.draft&&!G.draft.done?'드래프트 진행':'올해 드래프트'],['hist','지난 드래프트 성적표']]):null;
   return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):draftBoard()); }
-function dataPage(){ const lv=dataLv(G.user); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
-  return csec('전력분석·데이터팀',`<p class="small muted">상대 선수와 우리 경기를 분석하는 프런트 조직입니다. 수준을 올리면 다른 구단 선수 평가가 정확해지고, 수비 위치·투구 계획이 좋아져 실점이 조금 줄며, 매달 분석 보고가 자세해집니다. 비용은 하루 단위로 쌓여 결산 때 나갑니다.</p>
-    <div class="seg">${DATA.map((x,i)=>`<button data-a="setData" data-v="${i}" class="${lv===i?'on':''}">${x.l}</button>`).join('')}</div>
-    <div class="tcard" style="cursor:default;margin-top:8px"><b>${DATA[lv].l} · ${DATA[lv].c?'연 '+money(DATA[lv].c):'무료'}</b><p class="dnote">${esc(DATA[lv].d)}</p>
-      <dl class="tsum"><div><dt>다른 구단 선수 평가 오차</dt><dd>${lv?`-${Math.round((1-DATA[lv].sdm)*100)}%`:'기본'}</dd></div><div><dt>타구 처리율(BABIP 억제)</dt><dd>${DATA[lv].bab?`-${(DATA[lv].bab*1000).toFixed(0)}리`:'없음'}</dd></div><div><dt>월간 분석 보고</dt><dd>${['없음','기본','상세','상세+가을야구 확률'][lv]}</dd></div></dl></div>
-    ${last?`<div class="eyebrow" style="margin-top:10px">최근 보고 · ${dsh(last.day)}</div><p class="small" style="white-space:pre-line">${esc(last.body)}</p>`:''}`,`<span class="small muted">${DATA[lv].l}</span>`); }
+function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarket(); const stars=k=>'★'.repeat(k)+'<i class="off">'+'★'.repeat(5-k)+'</i>';
+  const pw=r=>anaPow(r); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
+  const card=(a,mine)=>`<div class="tcard anc" style="cursor:default"><div class="row between" style="flex-wrap:nowrap"><div style="min-width:0">${avImg({persona:'staff',pid:a.id,name:a.name,age:a.age})}<b> ${esc(a.name)}</b> <span class="small muted">${a.age}세 · 연 ${money(a.sal)}</span></div><span class="anstar">${stars(a.skill)}</span></div>
+    ${mine?`<div class="row" style="gap:6px;margin-top:6px"><select data-a="anaRole" data-v="${a.id}" aria-label="역할">${Object.entries(AROLE).map(([k,r])=>`<option value="${k}" ${a.role===k?'selected':''}>${r.l}</option>`).join('')}</select>${G.day-a.since<30?'<span class="pill warn">적응 중</span>':''}<button class="btn small" data-a="anaFire" data-v="${a.id}" style="margin-left:auto">정리</button></div>`
+      :`<p class="small muted" style="margin:6px 0">${AROLE[a.role].l} 전문</p><button class="btn small primary" data-a="anaHire" data-v="${a.id}" ${L.length>=ANA_MAX?'disabled':''}>채용</button>`}</div>`;
+  const it=inTabs('ana',[['mine',`우리 분석원 ${L.length}/${ANA_MAX}`],['mk','채용 후보'],['rep','분석 보고']],'mine');
+  const eff=`<dl class="tsum"><div><dt>상대 전력분석</dt><dd>${pw('opp').toFixed(1)} · 실점 억제</dd></div><div><dt>트래킹 데이터</dt><dd>${pw('trk').toFixed(1)} · 평가 오차 -${Math.round((1-E.sdm)*100)}%</dd></div><div><dt>영상 분석</dt><dd>${pw('vid').toFixed(1)} · 타격 공략</dd></div></dl>`;
+  const body=it.cur==='mk'?`<p class="small muted">매달 1일 후보가 일부 바뀝니다. 능력 별이 높을수록 연봉이 높습니다(★1 3천만 ~ ★5 1.7억).</p><div class="tgrid">${M.map(a=>card(a,false)).join('')}</div>`
+    :it.cur==='rep'?(last?`<div class="eyebrow">${dsh(last.day)} 보고</div><p class="small" style="white-space:pre-line">${esc(last.body)}</p>`:'<p class="small muted">시즌 중 매달 말 보고가 옵니다.</p>')
+    :`${eff}<p class="small muted">역할마다 가장 뛰어난 분석원의 능력이 가장 크게, 두 번째는 60%, 세 번째는 30%만 반영됩니다. 새로 오거나 역할을 바꾼 분석원은 30일 동안 절반만 일합니다.</p>${L.length?`<div class="tgrid">${L.map(a=>card(a,true)).join('')}</div>`:'<p class="small muted">분석원이 없습니다. 채용 후보에서 뽑으세요.</p>'}
+      <div class="eyebrow" style="margin-top:8px">역할</div><div class="list">${Object.entries(AROLE).map(([k,r])=>`<div class="item" style="cursor:default"><span class="nm"><b>${r.l}</b></span><span class="sub">${esc(r.d)}</span></div>`).join('')}</div>`;
+  return csec('전력분석·데이터팀',it.bar+body,`<span class="small muted">연 ${money(anaSal())}</span>`); }
 function scoutTeamPage(){ return csec('스카우트 팀',scoutBody(),`<span class="small muted">${G.scouts.length}/${SCOUT_MAX}</span>`); }
 /* 예전 '스카우팅' 탭: 드래프트는 영입·계약, 스카우트 팀은 스태프, 해외 스카우트망은 외국인 화면으로 옮겼다 */
 function scoutView(){ return transferView(); }
@@ -3560,7 +3567,9 @@ const A={
   openGame(v){ UI.sheet=null; UI.posSheet=null; UI.game=+v; UI.gtab='box'; renderSheet(); },
   offerYes(v){ offerMailDone(v); const r=answerOffer(v,true); note('트레이드',r.msg); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
   offerNo(v){ offerMailDone(v); answerOffer(v,false); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
-  setData(v){ setData(+v); save(); render(); },
+  buildFacItem(v){ UI.facMsg=buildFacItem(v)||null; save(); render(); },
+  anaHire(v){ UI.cMsg=hireAna(v)||null; save(); render(); },
+  anaFire(v){ fireAna(v); save(); render(); },
   camp(v){ if(G.camp){G.camp.focus=v; G.camp.seen=true; save(); render();} },
   confirmContracts(){ const r=confirmContracts(); UI.ctMsg=r||''; save(); render(); },
   fneg(v){ UI.ctMsg=fReNeg(+v); save(); render(); },
@@ -3729,6 +3738,7 @@ const GUARD={
   offer(v){ const id=+v; const p=G.players[id]; if(!p||!G.fa||p.faFrom===G.user||G.fa.offers[id]||faOutBlocked(G.user,p))return null; const o=UI.offer&&UI.offer.id===id?UI.offer:p.ask; const g=COMP[p.faGrade]; const ps=p.faPrevSal||0;
     const comp=p.faGrade==='C'?`보상금 ${money(Math.round(ps*1.5))}`:`보호 ${g.prot}명 밖 선수 1명 + ${money(ps*g.withP)}, 또는 선수 없이 ${money(ps*g.cash)} (상대 구단 선택)`;
     return {subj:`FA ${p.name} 영입 제안`,kind:'FA',lines:[`${posLabel(p)} · ${p.age}세 · ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`,`제시 ${o.years}년 · 연 ${money(o.annual)} · 총 ${money(o.annual*o.years)}`,`계약하면 보상: ${comp}`,'보상금은 올해 결산 지출로 잡혀 예산 여유가 그만큼 줄어듭니다.'],warn:'선수가 받아들이면 바로 계약되고 되돌릴 수 없습니다. 첫 제안 때만 묻습니다.'}; },
+  buildFacItem(v){ facInit(); const D=FACI[v]; if(!D)return null; const lv=G.fac.it[v]; if(lv>=3||G.fac.bld[v])return null; const c=D.c[lv+1]; return {subj:`${D.l} 공사: ${D.lv[lv+1]}`,kind:'시설',lines:[`공사비 ${money(c)} (보유 자금 ${money(team(G.user).cash)}에서 바로 지출)`,`공사 기간 ${D.days[lv+1]}일 · 완공 후 유지비 연 ${money(D.up[lv+1])}`,D.d],warn:'시작하면 되돌릴 수 없습니다.'}; },
   stadBuild(v){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===v); if(!it)return null; const lv=S.lv[v]; if(lv>=5||(S.build||[]).some(b=>b.k===v))return null; const per=period(); if(per==='season'||per==='post')return null;
     const c=STAD_COST[lv+1]; if(team(G.user).cash<c)return null; return {subj:`${it.l} ${lv+1}단계 공사`,kind:'구장',lines:[`공사비 ${money(c)} (보유 자금 ${money(team(G.user).cash)} → ${money(team(G.user).cash-c)})`,`공사 ${STAD_DAYS[lv+1]}일 · 유지비 연 +${money(STAD_UP[lv+1]-STAD_UP[lv])}`],warn:'공사비는 바로 나가고 되돌릴 수 없습니다.'}; },
   protSubmit(v){ const c=(G.comp||[]).find(x=>x.id===v); if(!c||!UI.prot)return null; const g=COMP[c.grade]; const ids=UI.prot.ids||[]; if(ids.length>g.prot)return null; const out=compPool(G.user).filter(q=>!ids.includes(q.id)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4);
@@ -3776,13 +3786,14 @@ A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); cons
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF'].includes(a))return;
+  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole'].includes(a))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||!e.target.closest('[data-stop]')){ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; renderSheet(); } } return; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; const a=el.dataset.a;
   if(a==='tsel'||a==='mkt')A[a](el.dataset.v,el,e);
   if(a==='lfTeam'){UI.lf.team=el.value;render();}
+  if(a==='anaRole'){ setAnaRole(el.dataset.v,el.value); save(); render(); return; }
   if(a==='recF'){ UI.rec=Object.assign({k:'SS',type:'now',age:'',sal:''},UI.rec||{}); UI.rec[el.dataset.v]=el.value; UI._rec=null; render(); }
   if(a==='findTeam'){UI.findTeam=el.value;render();}
   if(a==='findSort'){UI.findSort=el.value;render();}
