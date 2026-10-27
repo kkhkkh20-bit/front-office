@@ -2,8 +2,8 @@
 function wOf(h,p){ return warPub(h,p); }
 const SAVE='danjang-v4';
 const UI={open:{},mail:null,mf:'all',talkMsg:null,tab:'home',sheet:null,posSheet:null,game:null,seg:'bat',lseg:'stand',lf:{team:'all',kind:'bat',sort:'war'},trade:{tid:null,give:[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'},leagueTeam:null,confirmNew:false,offer:null,ext:null,fmsg:'',confirmRel:null};
-/* 저장: 슬롯 3개, lz-string 압축 */
-const SLOTS=3, META='danjang-meta';
+/* 저장: 슬롯 10개, lz-string 압축. 브라우저 저장 공간(보통 5MB 안팎)을 넘으면 저장 오류를 띄우고 파일 내보내기를 권한다 */
+const SLOTS=10, META='danjang-meta'; const SLOT_IDS=Array.from({length:SLOTS},(_,i)=>i+1);
 function meta(){ try{ const m=JSON.parse(localStorage.getItem(META)||'null'); if(m)return m; }catch(e){} return {active:1,slots:{}}; }
 function setMeta(m){ try{localStorage.setItem(META,JSON.stringify(m));}catch(e){} }
 const slotKey=n=>`${SAVE}-s${n}`;

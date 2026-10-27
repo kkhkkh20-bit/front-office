@@ -19,7 +19,7 @@ function buildWorld(){ const userTid=0;
   G.year=2025;
   for(const p of Object.values(G.players)){ const f=p.svc<4?.45:p.svc<7?.7:1; p.sal=round5(marketSal(ovr(p))*f);
     if(p.svc>=FA_SVC){ if(R()<.6){ p.faC=true; p.yrs=ri(1,4); p.lastFA=2025-(4-p.yrs)-ri(0,2); p.faN=1; } else p.svc=FA_SVC-1-ri(0,5); } } /* 시작 시점 FA 계약은 남은 연수에 맞춰 체결 연도를 흩어 놓는다: 재자격 시기가 한 해에 몰리지 않는다 */
-  for(const t of G.teams){ const target=(t.indie?8600:12300*Math.pow(t.market,.8))*rnd(.92,1.08); const ps=domestic(t.id); const cur=sum(ps.map(p=>p.sal));
+  for(const t of G.teams){ const target=(t.indie?8600:11100*Math.pow(t.market,.8))*rnd(.92,1.08); const ps=domestic(t.id); const cur=sum(ps.map(p=>p.sal));
     ps.forEach(p=>p.sal=round5(p.sal*target/cur));
     /* 보류권 선수는 연차별 상한을 넘지 않게 하고, 넘친 몫은 FA 계약 선수 쪽으로 돌린다 */
     let over=0; for(const p of ps){ if(!p.faC&&p.svc<faSvc(p)){ const c=PRE_CAP[clamp((p.svc||0)-1,0,PRE_CAP.length-1)]; if(p.sal>c){ over+=p.sal-c; p.sal=c; } } }
@@ -38,10 +38,14 @@ function buildWorld(){ const userTid=0;
   G.history.push({y:2025,order:st,champ:st[0].tid,runner:st[1].tid});
   for(const p of Object.values(G.players)){ p.svc++; p.injOut=0; develop(p); delete p.lastStart; delete p.lastApp; delete p.prevApp; }
   /* 시작 시점에는 'FA 자격을 채웠지만 신청하지 않고 남은 선수' 같은 특수한 경우를 만들지 않는다: FA 계약이 없는 선수는 많아야 예비 FA(올 시즌 뒤 자격) */
-  for(const p of Object.values(G.players)){ if(p.foreign||p.faC)continue; if(p.svc>=faSvc(p))p.svc=faSvc(p)-1; else if(p.svc===faSvc(p)-1&&R()<.15)p.svc=faSvc(p)-1-ri(1,2); }
+  /* 자격을 채운 선수는 대부분 이미 FA 계약을 맺은 것으로 본다(남은 연수를 흩어 재자격 시기가 한 해에 몰리지 않게). 나머지는 예비 FA.
+     실제 KBO는 해마다 FA 자격 취득자 20~30명 수준이므로 예비 FA가 한 해에 몰리지 않게 일부는 한두 해 뒤로 미룬다 */
+  for(const p of Object.values(G.players)){ if(p.foreign||p.faC)continue;
+    if(p.svc>=faSvc(p)){ if(R()<.75){ p.faC=true; p.yrs=ri(1,4); p.lastFA=2025-(4-p.yrs)-ri(0,1); p.faN=1; } else p.svc=faSvc(p)-1; }
+    if(!p.faC&&p.svc===faSvc(p)-1&&R()<.45)p.svc=faSvc(p)-1-ri(1,2); }
   // 시즌을 치르고 나이 든 뒤의 능력으로 연봉을 다시 매긴다. FA 계약 선수는 계약 당시 웃돈이 조금 남아 있다
   for(const p of Object.values(G.players)){ if(p.foreign||p.team==null)continue; const f=nonFaF(p,!p.faC&&p.svc>=faSvc(p)); let v=marketSal(ovr(p))*f; if(p.faC)v*=rnd(1,1.3)*(p.yrs>=3?1.05:1); p.sal=round5(clamp(v,MIN_SAL,2500)); }
-  for(const t of G.teams){ const target=(t.indie?8600:12300*Math.pow(t.market,.8))*rnd(.92,1.05); const ps=domestic(t.id); const cur=sum(ps.map(p=>p.sal)); const k=clamp(target/Math.max(1,cur),.9,1.3); ps.forEach(p=>p.sal=round5(Math.min(2600,p.sal*(p.faC?k:1+(k-1)*.4))));
+  for(const t of G.teams){ const target=(t.indie?8600:11100*Math.pow(t.market,.8))*rnd(.92,1.05); const ps=domestic(t.id); const cur=sum(ps.map(p=>p.sal)); const k=clamp(target/Math.max(1,cur),.9,1.3); ps.forEach(p=>p.sal=round5(Math.min(2600,p.sal*(p.faC?k:1+(k-1)*.4))));
     const fl=floorOf(G.year)*1.1, now=sum(ps.map(p=>p.sal)); if(now<fl){ const top=[...ps].sort((a,b)=>ovr(b)-ovr(a)).slice(0,10); const ts=sum(top.map(p=>p.sal)); const kk=(ts+fl-now)/Math.max(1,ts); top.forEach(p=>p.sal=round5(p.sal*kk)); } }
   /* 보류권 선수 연봉 상한(연차별 KBO 최고 수준). 넘친 몫은 FA 계약 선수에게 돌려 팀 연봉 규모는 유지한다 */
   for(const t of G.teams){ const ps=domestic(t.id); let over=0; for(const p of ps){ if(!p.faC){ const c=p.svc<faSvc(p)?preCap(p):700; if(p.sal>c){ over+=p.sal-c; p.sal=c; } } } const fc=ps.filter(p=>p.faC); const fs=sum(fc.map(p=>p.sal)); if(fs>0&&over>0)fc.forEach(p=>p.sal=round5(Math.max(p.sal,Math.min(p.sal*(1+over/fs),marketSal(ovr(p))*1.3,2500)))); }

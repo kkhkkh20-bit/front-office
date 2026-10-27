@@ -13,7 +13,12 @@ const ysN=tid=>playersOf(tid).filter(p=>p.ys).length;
 const FA_SVC=8; // 고졸 8시즌, 대졸 7시즌 (2022시즌 종료 후 적용)
 const faSvc=p=>p&&p.college?7:FA_SVC;
 const DRAFT_ROUNDS=11, DRAFT_POOL=140;
-const BONUS=[250,120,70,50,40,35,30,30,30,30,30];
+/* 신인 계약금(백만원): 실제 2025~2026 신인 계약 기준.
+   1라운드는 순번별(1·2순위 5억, 3순위 4억, 4~5순위 3억, 6순위 2.6억, 7~8순위 2.2억, 9~10순위 2억, 최대어 1순위는 6.5억 안팎),
+   2라운드 1.5~1.6억, 3라운드 1.2억, 4라운드 9천만, 이후 1천만 원씩 내려가 10라운드 이후 3천만 원. 신인 연봉은 최저 연봉 */
+const BONUS1=[500,500,400,300,300,260,220,220,200,200];
+const BONUS=[250,155,115,85,75,65,55,50,40,30,30];
+function bonusOf(rd,no,p){ if(rd===1){ let b=BONUS1[(no||10)-1]??200; if(no===1&&p&&p.press&&p.press<=2)b*=1.3; return round5(b); } return round5((BONUS[rd-1]??30)*(rd<=3?1+(5-(no||5))*.008:1)); }
 const SCOUT_SAL=[0,60,90,130,180,250];
 const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
@@ -120,7 +125,8 @@ const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
 const payroll=tid=>sum(domestic(tid).map(p=>p.sal));
 function capPay(tid){ const s=domestic(tid).filter(p=>!isRookie(p)).map(p=>p.sal).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign);
-function marketSal(o){ return Math.round(Math.min(3000,30+Math.pow(Math.max(0,o-37),2)*3.0)*capOf(G.year)/15117); }
+/* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 강백호 4년 100억, 박찬호 4년 80억) */
+function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*3.0:1617+(o-60)*95; return Math.round(Math.min(3000,v)*capOf(G.year)/15117); }
 const round5=v=>Math.max(MIN_SAL,Math.round(v/5)*5);
 const veloOf=p=>Math.round(137+(p.r.stf-20)/60*17+p.velo);
 const runOf=p=>(4.62-(p.r.spd-20)/60*.6+p.velo*.02).toFixed(2);

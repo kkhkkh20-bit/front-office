@@ -42,11 +42,12 @@ function tabBody(){
   if(G.unemp&&!['home','inbox','league'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요.</p><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
   return {home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,league:leagueView,club:clubView}[UI.tab]();
 }
-function anySave(){ try{ const m=meta(); return [1,2,3].some(n=>m.slots&&m.slots[n]); }catch(e){ return false; } }
-function slotsCard(start){ const m=meta(); const rows=[1,2,3].map(n=>{ const s=m.slots[n]; const cur=G&&m.active===n;
+function anySave(){ try{ const m=meta(); return SLOT_IDS.some(n=>m.slots&&m.slots[n]); }catch(e){ return false; } }
+function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+(m.slots[n]?slotSize(n):0),0); const rows=SLOT_IDS.filter(n=>m.slots[n]||n===SLOT_IDS.find(k=>!m.slots[k])||UI.slotAll).map(n=>{ const s=m.slots[n]; const cur=G&&m.active===n;
     return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.over?' · 경질됨':''} · ${slotSize(n)}KB`:'비어 있음'}</div></div>
       <div class="row">${s&&!cur?`<button class="btn small primary" data-a="slotLoad" data-v="${n}">이어하기</button>`:''}${start?`<button class="btn small" data-a="slotNew" data-v="${n}">${s?'덮어쓰고 새 게임':'새 게임'}</button>`:''}${s&&!cur?`<button class="btn small danger" data-a="slotDel" data-v="${n}">삭제</button>`:''}</div></div>`; }).join('');
-  return `<section class="card"><h2 class="sec">저장 슬롯</h2><div class="slots">${rows}</div>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
+  const filled=SLOT_IDS.filter(n=>m.slots[n]).length;
+  return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted">슬롯은 ${SLOTS}개까지입니다. 브라우저 저장 공간은 보통 5MB 안팎이라, 오래 진행한 게임을 여러 개 두면 공간이 모자랄 수 있습니다. 그때는 설정의 "파일로 내보내기"로 보관하세요.</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
 function exportCard(){ return `<section class="card"><h2 class="sec">내보내기 · 불러오기</h2>
   <p class="small muted">진행 상황은 이 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니, 가끔 내보내 두세요. 다른 기기에서는 내보낸 코드를 붙여 넣어 이어 할 수 있습니다.</p>
   <div class="row"><button class="btn" data-a="expFile">파일로 내보내기</button><button class="btn" data-a="expCode">코드 만들기</button><label class="btn">파일 불러오기<input type="file" accept=".txt,.json" data-a="impFile" style="display:none"></label></div>

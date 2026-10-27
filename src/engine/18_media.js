@@ -59,7 +59,9 @@ function setGoals(intro,first){ prInit(); const t=team(G.user); const proj=G.pro
   const base=projSupport(); const sup=G.supPlan&&G.supPlan.y===G.year?Math.round(G.supPlan.gf*100)/100:Math.round(clamp(base*(ow==='profit'?.85:ow==='pr'?1:1.15)+.05,.2,1)*100)/100; /* 1월에 정한 지원 목표를 그대로 쓴다 */ const fan=ow==='pr'?60:ow==='win'?45:50;
   const youth=t.mode==='rebuild'||ow==='profit'?1:0;
   G.goals={y:G.year,rank,sup,fan,youth,v:2};
-  const lines=[`정규시즌 ${rank}위 이내`,`모기업 적자 보전을 한도의 ${Math.round(sup*100)}% 이하로`,`팬 여론 ${fan} 이상 유지`]; if(youth)lines.push('24세 이하 선수 1명 이상을 1군 주전급(규정 타석 절반 또는 80이닝)으로');
+  /* FA 영입 자금을 받으며 약속한 목표가 있으면 올 시즌 목표에 얹는다 */
+  { const P=(G.pitchCommit||[]).filter(c=>c.y===G.year); for(const c of P){ if(c.k==='rank')G.goals.rank=Math.max(1,G.goals.rank-c.v); if(c.k==='fan')G.goals.fan=Math.min(80,G.goals.fan+c.v); if(c.k==='sup')G.goals.sup=Math.max(.1,Math.round((G.goals.sup-c.v)*100)/100); } if(P.length)G.goals.pitch=P.map(c=>c.l); }
+  const lines=[`정규시즌 ${G.goals.rank}위 이내`,`모기업 적자 보전을 한도의 ${Math.round(G.goals.sup*100)}% 이하로`,`팬 여론 ${G.goals.fan} 이상 유지`]; if(G.goals.pitch)lines.push(`(FA 영입 때 약속: ${G.goals.pitch.join(', ')})`); if(youth)lines.push('24세 이하 선수 1명 이상을 1군 주전급(규정 타석 절반 또는 80이닝)으로');
   mail('구단주실',`${G.year} 시즌 구단 목표`,`${intro?intro+'\n\n':''}구단주께서 올 시즌 목표를 정하셨습니다.\n\n${lines.map((l,i)=>`${i+1}. ${l}`).join('\n')}\n\n전력분석팀 예상 순위는 ${proj}위입니다. ${OWNER[ow].msg} 매달 말 구단주께서 진행 상황을 보고받으십니다.`,{imp:true,kind:'구단주',acts:[{l:'목표 보기',a:'go',v:'club:owner'}]});
 }
 function goalStatus(){ const g=G.goals; if(!g||g.y!==G.year)return null; const t=team(G.user); const per=period();

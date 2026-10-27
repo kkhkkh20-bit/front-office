@@ -76,9 +76,9 @@ function renderSheet0(){
   const isFM=p.foreign&&p.team==null&&(G.fmarket||[]).includes(p.id);
   const d=G.draft; const canPick=p.prospect&&d&&!d.done&&d.picks[d.cur].tid===G.user;
   let actions='';
-  if(canPick)actions=`<button class="btn primary block" data-a="pick" data-v="${p.id}">${d.picks[d.cur].rd}라운드 ${d.picks[d.cur].no}순위로 지명</button>`;
+  if(canPick)actions=`<button class="btn primary block" data-a="pick" data-v="${p.id}">${d.picks[d.cur].rd}라운드 ${d.picks[d.cur].no}순위로 지명 · 계약금 약 ${money(bonusOf(d.picks[d.cur].rd,d.picks[d.cur].no,p))}</button>`;
   if(p.fdPool&&G.fd&&!G.fd.done){ const fk=G.fd.picks[G.fd.cur]; actions=`<div class="row" style="gap:6px">${fk&&fk.tid===G.user&&G.fd.open!==false?`<button class="btn primary" style="flex:1" data-a="fdPick" data-v="${p.id}">${fk.rd}라운드 ${fk.no}번째로 지명</button>`:''}<button class="btn" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button></div>`; }
-  if(isFA)actions=negPanel(p)+offerForm(p)+(UI.faMsg&&UI.faMsg.id===p.id?`<div class="note">${esc(UI.faMsg.t)}</div>`:'');
+  if(isFA)actions=negPanel(p)+offerForm(p)+pitchCard(p)+(UI.faMsg&&UI.faMsg.id===p.id?`<div class="note">${esc(UI.faMsg.t)}</div>`:'');
   if(isFM){ const err=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; const mid=per==='season'; const repl=mid&&(G.sea.repl[G.user]||0)>=F_REPL_MAX;
     actions=`<section class="card"><p class="small">요구 연봉 <b class="num">${money(p.ask)}</b> (약 ${Math.round(p.ask/USD)}만 달러)${mid?` · 남은 기간분 ${money(Math.round(p.ask*remainFrac()))}`:''}</p>${err||repl?`<div class="note bad">${repl?'이번 시즌 외국인 교체 횟수를 다 썼습니다.':esc(err)}</div>`:''}<button class="btn primary block" data-a="signF" data-v="${p.id}" ${err||repl?'disabled':''}>계약하기</button>${UI.fmsg?`<div class="note">${esc(UI.fmsg)}</div>`:''}</section>`; }
   if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ actions=tradeOpen()?`<button class="btn block" data-a="toTrade" data-v="${p.id}">데려오기 협상</button>`:'<p class="small muted">트레이드 기간이 아닙니다.</p>'; }
@@ -193,3 +193,18 @@ function extForm(p){
     <button class="btn primary" data-a="extOffer" data-v="${p.id}">제안하기</button></section>`;
 }
 
+
+/* FA 영입 설득 카드: 근거 2개까지, 약속(선택), 승인 가능성 */
+function pitchCard(p){ if(G.unemp||team(G.user).indie)return ''; const I=pitchInfo(p.id); if(!I)return ''; const st=UI.pitch&&UI.pitch.id===p.id?UI.pitch:(UI.pitch={id:p.id,args:[],cmts:[]});
+  const B=bossOf(G.user); const t=team(G.user); const od=pitchOdds(p.id,st.args,st.cmts);
+  const lv=v=>v>=.7?'강함':v>=.4?'보통':v>0?'약함':'해당 없음';
+  const argB=Object.entries(PITCH_ARG).map(([k,a])=>`<button class="pa${st.args.includes(k)?' on':''}" data-a="pitchArg" data-v="${k}" ${I.S[k]<=0?'disabled':''}><b>${a.l}</b><span>${a.d}</span><em>근거 ${lv(I.S[k])} · 회장 관심 ${I.w[k]>=.9?'높음':I.w[k]>=.5?'보통':'낮음'}</em></button>`).join('');
+  const cmtB=Object.entries(PITCH_CMT).map(([k,c])=>`<label class="chk"><input type="checkbox" data-a="pitchCmt" data-v="${k}" ${st.cmts.includes(k)?'checked':''}> ${c.l}</label>`).join('');
+  const blocked=!I.capOK?`샐러리캡을 넘습니다(남은 캡 ${money(I.capRoom)}).`:I.done?'올해 이미 보고했습니다.':!ownAskLeft()?'이번 달에는 이미 구단주에게 요청했습니다.':'';
+  return `<section class="card pitch"><div class="row between"><h3 class="sec">구단주 설득: 영입 자금 요청</h3><span class="small muted">${esc(B.own.name)} 회장 · ${OWNER[t.owner].label} · 신뢰 ${t.trust}</span></div>
+    <p class="small">요구 연봉 <b>${money(I.amt)}</b> · 지금 예산 여유 ${money(I.room)}${I.need>0?` · <b class="bad">${money(I.need)} 부족</b>`:' · 예산 안에서 가능'} · 남은 캡 ${money(I.capRoom)}</p>
+    <p class="small muted">${I.slot} 리그 ${I.rank}위 자리${I.gap>0?`, 지금 주전보다 능력 +${Math.round(I.gap)}`:''}. 근거를 2개까지 고르세요. 근거의 힘은 실제 기록·나이·순위로 정해지고, 회장 성향에 맞는 근거가 잘 먹힙니다.</p>
+    <div class="pag">${argB}</div>
+    <div class="eyebrow" style="margin-top:6px">약속(선택) · 다음 시즌 구단주 목표에 들어갑니다</div><div class="row" style="gap:10px;flex-wrap:wrap">${cmtB}</div>
+    <div class="row between" style="margin-top:8px"><span class="small">승인 가능성 <b>${Math.round(od*100)}%</b> · ${oddsTxt(od)}</span><button class="btn primary small" data-a="pitchGo" data-v="${p.id}" ${blocked||!st.args.length?'disabled':''}>회장에게 보고</button></div>
+    ${blocked?`<p class="small bad">${blocked}</p>`:''}${UI.pitchMsg&&UI.pitchMsg.id===p.id?`<div class="note">${esc(UI.pitchMsg.t)}</div>`:''}</section>`; }

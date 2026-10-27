@@ -138,3 +138,41 @@ function starPower(p){ let s=0; for(const a of (p.aw||[])){ const y=+String(a).s
   const f=(G.feats||[]).filter(x=>x.pid===p.id&&x.maj&&x.y>=G.year-1).length; s+=f*8; const h=seasonTotal(p,G.year,'1군'); if(h){ const w=warOf(h,p); if(w>=4)s+=(w-3)*5; } if(p.foreign)s*=.6; return Math.round(s); }
 function teamStar(tid){ const L=playersOf(tid??G.user).map(p=>({p,s:starPower(p)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,3); return {v:sum(L.map(x=>x.s)),L}; }
 
+/* ===== FA 영입 설득: 꼭 잡아야 하는 FA를 위해 구단주에게 근거를 들고 가서 자금을 받아 온다 =====
+   샐러리캡(경쟁균형세 상한) 안에서만 요청할 수 있다. 근거는 실제 데이터로 힘이 정해지고, 구단주 성향마다 귀에 들어오는 근거가 다르다.
+   목표를 약속하면 승인 가능성이 오르지만, 그 약속은 다음 시즌 구단주 목표에 그대로 들어간다 */
+const PITCH_ARG={
+  win:{l:'전력 보강',d:'이 자리가 약점이고, 이 선수가 오면 순위가 오른다'},
+  star:{l:'흥행·마케팅',d:'스타가 오면 관중·광고·상품 수입이 오른다'},
+  value:{l:'계약 가치',d:'나이와 기량을 보면 이 금액이 오히려 싸다'},
+  keep:{l:'우리 선수 지키기',d:'떠나면 전력과 팬심을 함께 잃는다'}};
+const PITCH_W={win:{win:1,star:.45,value:.35,keep:.6},profit:{win:.35,star:.55,value:1,keep:.45},pr:{win:.5,star:1,value:.3,keep:.9}};
+const PITCH_CMT={rank:{l:'시즌 목표 순위 한 계단 상향',v:1},fan:{l:'팬 여론 목표 +5',v:5},sup:{l:'모기업 적자 보전 목표 5%p 축소',v:.05}};
+function pitchInfo(pid){ const p=G.players[pid]; const t=team(G.user); if(!p||!p.ask)return null; const amt=p.ask.annual;
+  const capRoom=capOf(G.year)-capPay(G.user); const capOK=amt<=capRoom; let room=0; try{ room=budget().roomGoal; }catch(e){}
+  const k=pSlot(p); const sr=slotRanks(G.user)[k]; const cur=k==='SP'||k==='RP'?null:depth(G.user).ln[k]; const gap=cur?ovr(p)-ovr(cur):ovr(p)-50;
+  const own=p.faFrom===G.user; const S={
+    win:clamp((sr.rank-2)/7,0,1)*clamp((gap+2)/9,0,1)*(uRank()<=7?1:.7),
+    star:clamp((ovr(p)-53)/10,0,1)+(p.aw&&p.aw.length?.15:0)+(p.fr?.1:0),
+    value:clamp((31-p.age)/6,0,1)*clamp(1.15-amt/Math.max(1,faWorth(t,p)),0,1)+(p.age<=28?.15:0),
+    keep:own?(p.fr?1:.6):0};
+  for(const x in S)S[x]=Math.round(clamp(S[x],0,1)*100)/100;
+  const w=PITCH_W[t.owner]||PITCH_W.win; return {p,amt,capOK,capRoom,room,need:Math.max(0,amt-room),S,w,own,done:(G.pitched||{})[pid]===G.year,slot:SLOTK[k]||posLabel(p),rank:sr.rank,gap}; }
+function pitchOdds(pid,args,cmts){ const I=pitchInfo(pid); if(!I)return 0; const t=team(G.user); let o=ownOdds(I.amt,{k:'fa',pid});
+  for(const a of (args||[]).slice(0,2))o+=.22*(I.w[a]||0)*(I.S[a]||0);
+  for(const c of (cmts||[]))o+=c==='rank'?(t.owner==='win'?.12:.06):c==='fan'?(t.owner==='pr'?.1:.04):c==='sup'?(t.owner==='profit'?.12:.05):0;
+  return clamp(o,.03,.95); }
+function ownerPitch(pid,args,cmts){ const I=pitchInfo(pid); const t=team(G.user); const B=bossOf(G.user); if(!I)return '대상 선수가 없습니다.';
+  if(t.indie)return '독립구단이라 모기업 지원이 없습니다.'; if(!I.capOK)return `샐러리캡 안에서만 요청할 수 있습니다. 남은 캡 ${money(I.capRoom)}, 필요 ${money(I.amt)}.`;
+  if(I.done)return '이 선수 건은 올해 이미 구단주에게 보고했습니다.'; if(!ownAskLeft())return '이번 달에는 이미 구단주에게 요청했습니다.';
+  args=(args||[]).filter(a=>PITCH_ARG[a]).slice(0,2); cmts=(cmts||[]).filter(c=>PITCH_CMT[c]); if(!args.length)return '설득할 근거를 하나 이상 고르세요.';
+  const pr=pitchOdds(pid,args,cmts); const ok=R()<pr; (G.pitched=G.pitched||{})[pid]=G.year; const o=dobj(G.day);
+  const best=[...args].sort((a,b)=>I.w[b]*I.S[b]-I.w[a]*I.S[a])[0]; const weak=args.filter(a=>I.S[a]<.35);
+  const g={y:G.year,mk:o.y*100+o.m,d:G.day,amt:I.amt,pur:{k:'fa',pid},ok,by:'gm',st:ok?'open':'no',until:KD(12,31),pitch:{args,cmts}}; grants().unshift(g); if(G.grants.length>40)G.grants.length=40;
+  if(ok){ grantApply(I.amt); const ny=G.year+(period()==='off'||period()==='post'?1:0); for(const c of cmts)(G.pitchCommit=G.pitchCommit||[]).push({y:ny,k:c,v:PITCH_CMT[c].v,l:PITCH_CMT[c].l});
+    mail('구단주실',`구단주 승인: FA ${I.p.name} 영입 자금 ${money(I.amt)}`,`${B.own.name} 회장: "${PITCH_ARG[best].l} 이야기가 설득력 있었습니다. ${I.p.name}을(를) 꼭 잡으세요."\n\n올해 모기업 지원 한도가 ${money(I.amt)} 늘었습니다.${cmts.length?`\n약속한 목표: ${cmts.map(c=>PITCH_CMT[c].l).join(', ')}. 다음 시즌 구단주 목표에 들어갑니다.`:''}\n영입하지 못하면 구단주 신뢰가 깎입니다.`,{kind:'구단주',imp:true,acts:[{l:'FA 시장',a:'go',v:'transfer:fa'}]});
+    return `승인: ${money(I.amt)}을(를) 받았습니다.`; }
+  t.trust=clamp(t.trust-1,0,100);
+  const why=weak.length?`${weak.map(a=>PITCH_ARG[a].l).join(', ')} 근거가 약합니다.`:t.owner==='profit'?'숫자로 보면 아직 확신이 안 섭니다.':t.owner==='win'?'그 돈이면 다른 데 쓰는 게 낫겠습니다.':'지금은 때가 아닙니다.';
+  mail('구단주실',`구단주 반려: FA ${I.p.name} 영입 자금`,`${B.own.name} 회장: "${why}" 구단주 신뢰 -1.`,{kind:'구단주'});
+  return `반려: ${why}`; }

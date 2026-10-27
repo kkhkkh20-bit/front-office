@@ -70,7 +70,7 @@ function faDay(day){
     for(const t of G.teams){ if((t.id===G.user&&!G.unemp)||ai[t.id])continue; const own=t.id===p.faFrom;
       /* 애매한 선수는 원소속 구단도 서두르지 않는다: 시장 반응을 본 뒤(협상 50일 이후) 낮춰 부른다 */
       if(own&&po<50&&since<50)continue;
-      let it=faInterest(t,p); if(!own)it*=po<52?.35:.7; if(it>0&&R()<it*.1){ const w=faWorth(t,p)*(own&&po<50?.65:1); ai[t.id]={annual:round5(Math.min(p.ask.annual*rnd(.85,1.12),w)),years:own&&po<50?1:clamp(p.ask.years+ri(-1,1),1,6)}; } }
+      let it=faInterest(t,p); if(!own)it*=po<52?.35:.7; if(it>0&&R()<it*.1){ const w=faWorth(t,p)*(own&&po<50?.65:1); ai[t.id]={annual:round5(Math.min(p.ask.annual*rnd(.85,1.12),w)),years:own&&po<50?1:clamp(p.ask.years+ri(-1,0)+(p.age<=28&&po>=62&&R()<.3?1:0),1,p.age<=28&&po>=62?5:4)}; } }
     if(p.faFrom!==G.user&&!G.unemp&&!F.offers[id]&&!F.warned[id]&&((G.shortlist||[]).includes(id)||mreqOpen('fa').some(r=>r.data&&r.data.pid===id))&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`관심 FA ${p.name}에게 ${tname(+k0)}이(가) 제안했습니다(연 ${money(ai[k0].annual)} · ${ai[k0].years}년). 잡으려면 서둘러 조건을 제시하세요.`,id); }
     if(p.faFrom===G.user&&!F.offers[id]&&!F.warned[id]&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`우리 FA ${p.name}에게 ${tname(+k0)}이(가) 먼저 제안했습니다. 잡으려면 FA 시장에서 조건을 제시하세요.`,id); }
     const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years}));

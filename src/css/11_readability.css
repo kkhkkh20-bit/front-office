@@ -167,3 +167,8 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 @media(max-width:420px){.salr-b{grid-template-columns:minmax(0,1fr)}}
 .salok{display:grid}.salok-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line);font-size:13px}
 .salr-fa{margin:4px 0 0;color:#c9b6ff}
+.pitch .pag{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}
+.pitch .pa{display:grid;gap:2px;text-align:left;padding:7px 9px;border:1px solid var(--line2);border-radius:4px;background:#0b1014;color:var(--ink);cursor:pointer}
+.pitch .pa b{font-size:13px}.pitch .pa span{font-size:11px;color:var(--muted)}.pitch .pa em{font-style:normal;font-size:11px;color:#c9b6ff}
+.pitch .pa.on{border-color:var(--acc);background:rgba(79,140,255,.12)}.pitch .pa:disabled{opacity:.45;cursor:default}
+@media(max-width:420px){.pitch .pag{grid-template-columns:minmax(0,1fr)}}
