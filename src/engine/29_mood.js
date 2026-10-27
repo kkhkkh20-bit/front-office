@@ -60,11 +60,7 @@ function mgrWantForeign(){ const m=G.mgr[G.user]; if(!m)return null; const rk=sl
   want.style=style; return {want,txt:want.isP?`${SLOTK[want.k]}이(가) 급합니다. ${style}이면 좋겠습니다. 우리 ${SLOTK[want.k]}은(는) 리그 ${rk[want.k].rank}위입니다.`:`${SLOTK[want.k]} 쪽 타자를 원합니다. ${style}이면 좋겠습니다. 지금 우리 ${SLOTK[want.k]}은(는) 리그 ${rk[want.k].rank}위입니다.`}; }
 function mgrFitF(p,W){ if(!W||!W.want||!p)return false; if(W.want.isP!==!!p.isP)return false; if(p.isP)return W.want.k==='SP'?isSPr(p):true; return p.pos===W.want.k||(W.want.k==='DH'&&['1B','LF','RF'].includes(p.pos))||subsOf(p).includes(W.want.k); }
 function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감독이 없습니다.'}; mgrAttr(m); const nm=m.name; let a='';
-  if(topic==='now'){ const r=G.sea&&G.sea.rec?G.sea.rec[G.user]:null; const st=period()==='season'?standingsNow():null; const rk=st?st.findIndex(x=>x.tid===G.user)+1:null; const d=depth(G.user);
-    const inj=playersOf(G.user).filter(p=>p.injOut>0&&ovr(p)>=50).slice(0,3); const tired=period()==='season'?playersOf(G.user).filter(p=>(p.fat||0)>=60).slice(0,3):[];
-    const cold=d.start.map(p=>({p,h:seasonTotal(p,G.year,'1군')})).filter(x=>x.h&&x.h.pa>=60&&bRate(x.h).ops<.62).slice(0,2);
-    const R=slotRanks(G.user); const weak=PSLOTS.filter(k=>k!=='DH').sort((x,y)=>R[y].rank-R[x].rank).slice(0,2);
-    a=`${rk?`${r.w}승 ${r.l}패, ${rk}위입니다. `:''}가장 약한 자리는 ${weak.map(k=>`${SLOTK[k]}(리그 ${R[k].rank}위)`).join(', ')}입니다.${inj.length?` 부상: ${inj.map(p=>`${p.name} ${p.injOut}일`).join(', ')}.`:''}${tired.length?` 지친 선수: ${tired.map(p=>p.name).join(', ')}.`:''}${cold.length?` 타격이 안 풀리는 주전: ${cold.map(x=>`${x.p.name}(OPS ${fmt3(bRate(x.h).ops)})`).join(', ')}.`:''} 분위기는 ${m.rel>=60?'괜찮습니다':m.rel>=40?'나쁘지 않습니다':'솔직히 무겁습니다'}.`; }
+  if(topic==='now'){ a=mgrNowTalk(m); }
   else if(topic==='foreign'){ const W=mgrWantForeign(); a=W?W.txt:''; G.mgrWant=W&&W.want?{y:G.year,day:G.day,...W.want}:null;
     const L=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)&&mgrFitF(p,W)).sort((x,y)=>{ const v=r=>(r.ofp??r.cur+6)+r.cur*.2; return v(scoutReport(y))-v(scoutReport(x)); }).slice(0,3);
     if(L.length)a+=` 시장에서 눈에 띄는 건 ${L.map(p=>`${p.name}(${posLabel(p)}, ${p.nat||''})`).join(', ')} 정도입니다.`; }
@@ -73,6 +69,7 @@ function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감�
   else if(topic==='young'){ const ys=playersOf(G.user).filter(p=>!p.foreign&&p.age<=24).map(p=>({p,rp:scoutReport(p)})).sort((x,y)=>(y.rp.ofp||0)-(x.rp.ofp||0)).slice(0,3);
     const up=x=>{ const h=seasonTotal(x.p,G.year,'1군'); return !!(h&&(x.p.isP?h.outs>=45:h.pa>=60)); }; const inU=ys.filter(up), outU=ys.filter(x=>!up(x));
     a=ys.length?`눈여겨보는 선수는 ${ys.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}입니다.${inU.length?` ${inU.map(x=>x.p.name).join(', ')}은(는) 이미 1군에서 자리를 잡아 가고 있습니다.`:''}${outU.length?` ${outU.map(x=>x.p.name).join(', ')}은(는) ${m.youth>=60?'기회를 더 주고 싶습니다.':'아직 1군에서 쓰기엔 이릅니다.'}`:''}`:'당장 1군에 올릴 만한 젊은 선수는 안 보입니다.'; }
+  if(topic!=='now')a=mvWrap(m,topic,a);
   const wk=Math.floor(G.day/7); let rel=''; if(G.mgrTalkW!==wk){ G.mgrTalkW=wk; m.rel=clamp(m.rel+1,0,100); rel=' (자주 의논해 주셔서 감독 관계 +1)'; }
   (G.mgrChat=G.mgrChat||[]).unshift({d:G.day,t:topic,a:a.replace(/^/,'')}); if(G.mgrChat.length>8)G.mgrChat.length=8; return {a:`${nm} 감독: "${a}"${rel}`}; }
 function talk(id,kind){
