@@ -39,7 +39,7 @@ function teamCard(t){
   </div>`;
 }
 function scoutCard(s,btn){
-  return `<div class="tcard" style="cursor:default"><div class="tc-top">${avImg({id:s.fid??s.id,name:s.name,team:null,mor:66})}<div class="tc-id"><b>${esc(s.name)}${obTag(s.ob)}</b><span>${SROLE[s.role||'am']} · ${(s.role==='intl'?IREG[s.region].l:s.region)} 담당 · 연봉 ${money(s.sal)}</span></div>
+  return `<div class="tcard" style="cursor:default"><div class="tc-top">${avImg({id:s.fid??s.id,name:s.name,team:null,mor:66})}<div class="tc-id"><b>${esc(s.name)}${obTag(s.ob)}</b><span>${SROLE[s.role||'am']} · ${(s.role==='intl'?IREG[s.region].l:s.region)} 담당 · 연봉 ${money(s.sal)}</span>${s.car||s.spec?`<span class="small muted">${s.age?`${s.age}세 · `:''}${esc(s.car||'')}${s.spec?` <span class="pill acc">${SC_SPEC[s.spec]}</span>`:''}</span>`:''}</div>
     <div class="tc-rt"><div><span>능력</span><b class="stars">${'★'.repeat(s.skill)}<i>${'★'.repeat(5-s.skill)}</i></b></div></div></div>
     <p class="dnote">${['','오차가 매우 큽니다.','오차가 큰 편입니다.','평균적인 눈썰미입니다.','정확한 편입니다. 면담 평가도 가능합니다.','리그 최고 수준의 눈입니다.'][s.skill]}${s.skill>=3?' 담당 지역 선수 면담 평가를 받을 수 있습니다.':''}</p>
     <div class="tc-ft">${btn}</div></div>`;
