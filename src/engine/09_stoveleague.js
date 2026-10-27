@@ -194,9 +194,9 @@ function newYear(){
 }
 function aiWeekly(){
   const per=period();
-  if(per==='season'&&G.day<=KD(8,15)) for(const t of G.teams) if(t.id!==G.user) aiForeignReview(t.id);
+  if(per==='season'&&G.day<=foreignDL()) for(const t of G.teams) if(t.id!==G.user) aiForeignReview(t.id);
   blockDaily(); aiBlockWeekly(); try{ marketWeek(); }catch(e){} try{ fBidWeek(); }catch(e){} try{ mlbHype(); }catch(e){} try{ fwatchWeek(); }catch(e){} try{ facWeek(); }catch(e){} try{ climateWeek(); }catch(e){} try{ mreqWeek(); }catch(e){} try{ mgrRelWeek(); if(period()==='season'&&G.day>=G.cal.open+7)mpickPlan(); }catch(e){} try{ grantCheck(); ownerPush(); }catch(e){}
-  const dl=per==='season'&&G.day>=KD(7,1)&&G.day<=KD(7,31); if(tradeOpen()&&per!=='post'&&!G.unemp){ const pr=domestic(G.user).some(p=>p.listed)?.65:dl?.7:per==='season'?.45:.25; for(let i=0;i<(dl?2:1);i++)if(R()<pr&&(G.offers||[]).length<3)aiOffer(); }
+  const dl=per==='season'&&G.day>=KD(7,1)&&G.day<=tradeDL(); if(tradeOpen()&&per!=='post'&&!G.unemp){ const pr=domestic(G.user).some(p=>p.listed)?.65:dl?.7:per==='season'?.45:.25; for(let i=0;i<(dl?2:1);i++)if(R()<pr&&(G.offers||[]).length<3)aiOffer(); }
 }
 /* 단장의 압박: 예상보다 성적이 나쁘거나 승부사 기질이면 트레이드로 살길을 찾는다 (0~1) */
 function gmHeat(tid){ const t=team(tid); let h=gmTrait(tid)==='gambler'?.25:0; const per=period();

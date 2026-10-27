@@ -83,21 +83,6 @@ function raceCard(){
   return `<section class="card"><div class="row between"><h2 class="sec">리그 판도</h2><span class="small muted">남은 경기 ${left} · 남은 일정을 400번 모의 진행</span></div>
     ${groups.map(([z,arr])=>`<div class="zone"><div class="eyebrow">${z}</div>${arr.map(o=>{ const x=om.get(o.tid); const i=order.indexOf(o); return `<button class="race${o.tid===G.user?' me':''}" data-a="lteamGo" data-v="${o.tid}"><span class="rk">${i+1}</span>${badge(o.tid,20)}<b>${tshort(o.tid)}</b><span class="num rcd">${wlStr(o)}</span><span class="num gb">${i?gbStr(gbOf(top,o)):'-'}</span><span class="bar"><i style="width:${Math.max(2,x.ps*100)}%"></i></span><span class="num ppc">${pct(x.ps)}</span>${strkPill(o.tid)}</button>`; }).join('')}</div>`).join('')}
     <p class="small muted">막대는 가을야구(5위 안) 진출 확률입니다. 지금 성적과 개막 전 전력 평가를 섞은 팀 전력으로 남은 경기를 모의 진행한 결과이고, 실제 결과와 다를 수 있습니다.</p></section>`; }
-function myDiag(){
-  const S=allStrength(); const keys=FIELDK.concat(['SP','RP']); const lab=k=>k==='SP'?'선발진':k==='RP'?'불펜':POSK[k];
-  const rk=k=>{ const vals=G.teams.map(t=>S[t.id][k]).filter(v=>v!=null); const me=S[G.user][k]; if(me==null)return null; return {r:vals.filter(v=>v>me).length+1,n:vals.length,v:me,avg:Math.round(avg(vals))}; };
-  const rows=keys.map(k=>({k,x:rk(k)})).filter(o=>o.x);
-  const strong=[...rows].sort((a,b)=>a.x.r-b.x.r||b.x.v-a.x.v).slice(0,2), weak=[...rows].sort((a,b)=>b.x.r-a.x.r||a.x.v-b.x.v).slice(0,2);
-  const ps=rosterList(G.user); const ag=avg(ps.map(p=>p.age)); const lgAg=avg(Object.values(G.players).filter(p=>p.team!=null&&!(p.joinY>G.year)).map(p=>p.age));
-  const ci=capInfo(G.user); const faN=domestic(G.user).filter(p=>!p.faC&&Math.max(0,faSvc(p)-p.svc)===0||p.faC&&p.yrs<=1).length;
-  const pros=domestic(G.user).filter(p=>p.age<=23).map(p=>({p,rp:scoutReport(p)})).filter(x=>x.rp.ofp!=null).sort((a,b)=>b.rp.ofp-a.rp.ofp).slice(0,3);
-  const odds=playoffOdds(); const me=odds?odds.find(o=>o.tid===G.user):null;
-  const bar=o=>`<div class="pr"><span>${lab(o.k)}</span><span class="pbar"><i style="width:${(o.x.n-o.x.r+1)/o.x.n*100}%;background:${o.x.r<=3?'var(--good)':o.x.r>=o.x.n-2?'var(--bad)':'var(--warn)'}"></i></span><b class="num">${o.x.r}위</b><i class="num">${o.x.v} (평균 ${o.x.avg})</i></div>`;
-  return `<section class="card"><div class="row between"><h2 class="sec">${badge(G.user,18)} 우리 구단 진단</h2>${me?`<span class="small">가을야구 확률 <b>${pct(me.ps)}</b></span>`:''}</div>
-    <dl class="tsum"><div><dt>강점</dt><dd>${strong.map(o=>`${lab(o.k)} ${o.x.r}위`).join(' · ')||'-'}</dd></div><div><dt>약점</dt><dd>${weak.map(o=>`${lab(o.k)} ${o.x.r}위`).join(' · ')||'-'}</dd></div><div><dt>평균 나이</dt><dd>${ag.toFixed(1)}세 <span class="muted">(리그 ${lgAg.toFixed(1)})</span></dd></div></dl>
-    <div class="eyebrow">포지션별 주전 평가 · 10개 구단 중 순위</div><div class="prs">${rows.map(bar).join('')}</div>
-    <dl class="tsum"><div><dt>연봉 캡</dt><dd>${money(ci.pay)} / ${money(ci.cap)}</dd></div><div><dt>올해 FA·계약 만료</dt><dd>${faN}명</dd></div><div><dt>유망주(23세 이하)</dt><dd>${pros.map(x=>`<button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> ${x.rp.ofp}`).join(' · ')||'-'}</dd></div></dl>
-    <p class="small muted">숫자는 포지션별 주전의 현재 능력(오버롤)입니다. 잠재력은 우리 선수만 보입니다.</p></section>`; }
 function powerMap(){
   const S=allStrength(); const keys=FIELDK.concat(['SP','RP']); const lab=k=>k==='SP'?'선발':k==='RP'?'불펜':POSS[k];
   const {order,live}=standOrder(); const odds=playoffOdds(); const om=new Map((odds||[]).map(o=>[o.tid,o]));
@@ -108,7 +93,6 @@ function powerMap(){
     ${order.map((o,i)=>{ const t=team(o.tid); const cv=coverOf(o.tid); const x=om.get(o.tid); return `<tr class="${o.tid===G.user?'me':''}"><td class="stk"><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,16)}${tshort(o.tid)}</button></td>${live?`<td>${i+1}</td><td>${x?pct(x.ps):'-'}</td>`:''}${keys.map(k=>cell(S[o.tid][k])).join('')}<td class="tx">${o.tid===G.user?'-':sell(t)}</td><td class="tx">${o.tid===G.user?'-':cv.sc?esc(cv.sc.name):'<span class="muted">없음</span>'}</td></tr>`; }).join('')}
     </tbody></table></div>
     <p class="small muted">색이 진할수록 강합니다. 담당 스카우트가 있는 지역 구단은 선수 잠재력까지 보입니다. 트레이드 성향은 가을야구 확률로 짐작한 것입니다.</p></section>`; }
-function boardView(){ const t=inTabs('board',[['race','리그 판도'],['me','우리 구단 진단'],['map','구단별 전력 지도']]); return t.bar+(t.cur==='race'?raceCard():t.cur==='me'?myDiag():powerMap()); }
 
 /* ---------- 소식함 서랍: 옆에서 열고 바로 다음 메일 ---------- */
 function mailFilter(f){ const isTask=m=>m.imp&&!(m.kind==='트레이드'&&/원한다/.test(m.subj)&&!(G.offers||[]).some(o=>o.id===m.oid));

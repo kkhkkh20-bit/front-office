@@ -1,7 +1,7 @@
 /* ---------- 트레이드 센터 ---------- */
 function gmAv(tid,expr){ const g=gmOf(tid); if(!g)return ''; return avImg({persona:'gm',pid:g.id,team:tid,age:g.age,female:g.f,expr:expr||null,name:g.name}); }
 function relBar(r){ return `<span class="relb" title="친분 ${r}"><i style="width:${r}%;background:${r>=65?'#3fbf6a':r>=45?'#e6b93b':'#e0564f'}"></i></span>`; }
-function deadlineBanner(){ const per=period(); if(per!=='season')return ''; const end=KD(7,31); const d=end-G.day; if(d<0||d>30)return '';
+function deadlineBanner(){ const per=period(); if(per!=='season')return ''; const end=tradeDL(); const d=end-G.day; if(d<0||d>30)return '';
   return `<div class="dlb${d<=7?' hot':''}"><b>${d===0?'오늘 트레이드 마감':`트레이드 마감 D-${d}`}</b><span>7월 31일 자정까지${d<=7?' · 제안이 몰리는 시기입니다':''}</span></div>`; }
 function vsBanner(short){ if(!tradeOpen())return ''; const o=seriesOpp(); if(o==null)return ''; const g=gmOf(o); if(short)return `<div class="vsb sm">${badge(o,16)}<span><b>이번 상대 ${esc(tshort(o))}</b> · 횟수 제한 없이 협상 가능</span><button class="btn small" data-a="tpartnerGo" data-v="${o}">협상</button></div>`; return `<div class="vsb">${badge(o,22)}<div><b>이번 상대 구단: ${esc(tshort(o))}</b><span>${g?esc(g.name)+' 단장이 경기장에 와 있습니다. 이 구단과는 횟수 제한 없이 협상할 수 있습니다.':'이 구단과는 횟수 제한 없이 협상할 수 있습니다.'}</span></div><button class="btn small primary" data-a="tpartnerGo" data-v="${o}">협상하기</button></div>`; }
 function negChip(tid){ const ni=negInfo(tid); return ni.free?`<span class="negc free">맞대결 중 · 협상 제한 없음</span>`:`<span class="negc ${ni.left?'':'out'}">이번 달 협상 <b>${ni.left}</b>/${ni.cap}${ni.left?'':` · ${ni.next} 재개`}</span>`; }

@@ -64,10 +64,10 @@ ol.story li:first-child{border-top:0}ol.story li.best .sy b{color:var(--warn)}
 .race .rk{color:var(--dim);font:600 12px var(--f-num)}.race .rcd,.race .gb{color:var(--muted);font-size:13px;text-align:right}.race .ppc{text-align:right;font-weight:700}
 .race .bar{height:8px;background:#ffffff10;border-radius:4px;overflow:hidden}.race .bar i{display:block;height:100%;background:var(--team-hi);border-radius:4px}
 @media (max-width:520px){ .race{grid-template-columns:16px 20px 58px 30px minmax(30px,1fr) 46px;} .race .rcd,.race .strk{display:none} }
-.prs{display:grid;gap:3px}
+
 .pr{display:grid;grid-template-columns:48px minmax(40px,1fr) 34px 92px;gap:8px;align-items:center;font-size:13px}
 .pr>span:first-child{color:var(--muted)}.pr i{font-style:normal;color:var(--muted);font-size:12px}
-.pbar{height:8px;background:#ffffff10;border-radius:4px;overflow:hidden}.pbar i{display:block;height:100%;border-radius:4px}
+
 table.pmap td,table.pmap th{text-align:center;padding:5px 6px;font-size:13px}
 table.pmap td.hm{font:700 13px var(--f-num);color:#fff;background:color-mix(in srgb,var(--c) 55%,transparent)!important}
 table.pmap td.hm.q{background:transparent!important;color:var(--dim)}
@@ -80,17 +80,17 @@ table.mst td.ppc{font-weight:700}
 
 /* 서랍·탭·도움말 */
 .sheet.drawer{max-width:520px}
-.sheet.drawer.wide2{max-width:960px}
-.dl-2{display:grid;grid-template-columns:330px minmax(0,1fr);gap:10px;align-items:start;min-height:0}
-.dl-2>.dl-list{margin:0;max-height:calc(100vh - 150px);overflow-y:auto;border:1px solid var(--line);border-radius:4px}
-.dl-r{display:grid;gap:8px;position:sticky;top:0;max-height:calc(100vh - 150px);overflow-y:auto}
-.dl-list{margin:0 calc(-1 * max(12px,env(safe-area-inset-left,0px)))}
+
+
+
+
+
 .drawer .item.mail .sub{display:none}.drawer .item.mail{padding:8px 12px}
-.dl-nav{position:sticky;bottom:0;display:flex;gap:6px;background:var(--bg);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);z-index:2}
-.dl-nav .btn{flex:1;min-width:0;padding:8px 6px}
+
+
 .dl-empty{display:grid;gap:10px;justify-items:center;padding:40px 10px;text-align:center}
-.dl-read .card{border:0;padding:4px 0;background:none}.dl-read .card>.row.between:first-child{margin:0 0 4px;background:none;border:0;padding:0}
-.dl-read .mailbody p{font-size:16px;line-height:1.7}
+
+
 .hint{display:none!important}body.help .hint{display:block!important}
 .helpbtn{border:1px solid var(--line2);background:var(--panel2);color:var(--muted);width:24px;height:24px;border-radius:50%;font:700 12px var(--f-num);cursor:pointer;padding:0}
 .helpbtn.on{background:transparent;color:var(--acc);border-color:var(--acc)}

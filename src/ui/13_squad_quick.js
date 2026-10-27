@@ -20,7 +20,7 @@ function myRosterSheet(){ const d=depth(G.user); const tro=tradeOpen(); const rk
     <div class="sheet-head"><div><div class="eyebrow">${esc(tname(G.user))}</div><h2 class="sec">우리 팀 현황</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${teamStatusBox()}
     <div class="eyebrow">포지션별 리그 순위 <span class="muted">(10개 구단 중)</span></div>
-    <div class="slotbar">${PSLOTS.map(k=>`<span class="sl ${rkCls(rk[k].rank)}"><span>${SLOTS_S[k]}</span><b>${rk[k].rank}위</b></span>`).join('')}</div>
+    ${slotBar(rk)}
     ${tro?'<p class="small muted">선수 옆 "트레이드"를 누르면 트레이드 협상 화면에 내줄 선수로 올라갑니다.</p>':''}
     <div class="eyebrow">타순</div>${order.map((p,i)=>row(p,`${i+1}번 ${POSS[posOf[p.id]]||''}`)).join('')}
     <div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>row(p,`${i+1}선발`)).join('')}

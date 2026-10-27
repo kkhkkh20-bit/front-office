@@ -35,7 +35,6 @@ function pcard(p,o){ o=o||{}; const rp=o.rp||scoutReport(p); const hid=hideOvr(p
 
 /* ---------- 포지션 표시와 감독 라인업 ---------- */
 function posChips(p){ const go=k=>p.team===G.user?` data-a="posSheet" data-v="${k}" title="${k==='P'?'투수진':POSK[k]} 후보 보기"`:''; if(p.isP)return `<span class="pp main"${go('P')}>${posLabel(p)}</span>`; return `<span class="pp main"${go(p.pos)}>${POSS[p.pos]}</span>${subsOf(p).map(k=>`<span class="pp"${go(k)}>${POSS[k]}</span>`).join('')}`; }
-function posText(p){ if(p.isP)return posLabel(p); const s=subsOf(p); return POSK[p.pos]+(s.length?` · 서브 ${s.map(k=>POSS[k]).join('·')}`:''); }
 function useText(p){ const u=p.use&&p.use.y===G.year?p.use:null; if(!u||!u.g)return '이번 시즌 선발 출장 없음';
   const ps=Object.entries(u.pos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${POSS[k]||k} ${n}`).join(' · ');
   const sl=Object.entries(u.slot).sort((a,b)=>b[1]-a[1])[0];

@@ -49,7 +49,6 @@ function starPanel(){ const T=teamStar(G.user); const L=T.L;
     <p class="small muted">최근 3년 수상(MVP 40, 신인왕 20, 골든글러브 15), 올해·작년 대기록, 올해 WAR 4 이상 활약이 스타 파워가 됩니다. 상위 3명 합계가 유니폼·광고 수입으로 이어지고, 홍보를 중시하는 구단주는 스타가 생기면 신뢰를 더 줍니다. 외국인은 60%만 반영됩니다.</p>`); }
 
 /* ---------- FA 보상 절차: 보호선수 명단 · 보상선수 지명 ---------- */
-function gradeWhy(p){ const n=p.faN||(p.lastFA!=null?1:0); if(p.age>=35)return '만 35세 이상'; if(n>=2)return `${n+1}번째 FA`; if(n===1)return `두 번째 FA (지난 FA ${p.faPrevGrade||'A·B'}등급)`; return p.faRank?`3년 평균 연봉 구단 ${p.faRank.tm}위 · 리그 ${p.faRank.lg}위`:''; }
 function compRuleTxt(){ return `A등급(3년 평균 연봉 구단 3위·리그 30위 이내): 보호선수 외 1명 + 직전 연봉 200%, 또는 선수 없이 300%. B등급(구단 10위·리그 60위 이내, 또는 두 번째 FA): 보호선수 외 1명 + 100%, 또는 200%. 보호선수는 A 20명, B 25명입니다(소속선수 한도 ${ROSTER_MAX}명).`+'  C등급(그 밖, 만 35세 이상, 세 번째 이상 FA): 선수 없이 150%. 외국인, 올해 신인, 군 복무 중인 선수, 이번 겨울 FA 계약 선수는 저절로 보호됩니다. FA 자격은 고졸 8시즌, 대졸 7시즌입니다.'; }
 function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.user); if(!L.length)return '';
   const open=L.filter(c=>c.stage!=='done'); const done=L.filter(c=>c.stage==='done').slice(0,6);

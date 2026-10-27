@@ -39,7 +39,6 @@ function acqTag(p){ const a=acqOf(p); return a?`<i class="acq ${ACQC[a.k]||''}" 
 function wpaMap(g){ const L=g.pbp||[]; const S={}; for(let k=0;k<L.length;k++){ const x=L[k]; if(typeof x[1]!=='number')continue; const b=cBefore(g,k); const a={sa:x[7],sh:x[8],outs:x[4],bases:x[4]>=3?[0,0,0]:x[5],half:x[0]};
     if(x[4]>=3){ a.half=x[0]+1; a.outs=0; a.bases=[0,0,0]; } let d=(k===L.length-1?(g.hs>g.as?1:g.hs<g.as?0:.5):wpHome(a))-wpHome(b); if(x[0]%2===0)d=-d; S[x[1]]=(S[x[1]]||0)+d; S[x[2]]=(S[x[2]]||0)-d; }
   return S; }
-function boxOf(g,id){ for(const s of ['h','a']){ const B=g.box&&g.box[s]; if(!B)continue; const b=B.bat.find(x=>x.id===id); if(b)return {s,b}; const q=B.pit.find(x=>x.id===id); if(q)return {s,q}; } return null; }
 function batToday(b){ return `${b.ab}타수 ${b.h}안타${b.hr?` ${b.hr}홈런`:''}${b.rbi?` ${b.rbi}타점`:''}${b.bb?` ${b.bb}볼넷`:''}${b.so?` ${b.so}삼진`:''}`; }
 function pitToday(q){ return `${Math.floor(q.outs/3)}${q.outs%3?'.'+q.outs%3:''}이닝 ${q.pc||0}구 ${q.er}자책${q.so?` ${q.so}K`:''}${q.d?` · ${q.d}`:''}`; }
 /* 경기 중: 우리 타선 띠 */

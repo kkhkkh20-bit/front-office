@@ -62,10 +62,6 @@ function tradeMood(tid,give,get){
   return {...lv,w:Math.round(clamp((x+14)/20,0.03,1)*100),sd};
 }
 function tContract(p){ if(p.faC)return `FA계약 ${Math.max(1,p.yrs)}년 남음`; if(p.extNext)return '다년계약 합의'; const n=Math.max(0,faSvc(p)-p.svc); return n>=2?`FA까지 ${n}시즌`:n===1?'이번 시즌 뛰면 FA':(p.team==null&&G.fa&&(G.fa.pool||[]).includes(p.id))?'FA 시장':(G.last&&G.last.y>=G.year)?'FA 자격 취득':'시즌 끝나면 FA'; }
-function tcard(p,side,on,hot){
-  return pcard(p,{act:'tpick',v:side+':'+p.id,on,mark:on?(side==='give'?'보냄':'받음'):'+ 추가',
-    tags:hot?`<span class="pill good">상대 관심 · ${esc(hot)}</span>`:p.aiListed?'<span class="pill warn">매물</span>':'',foot:`<b class="num">${money(p.sal)}</b><span>${tContract(p)}</span>${p.injOut>0?'<span class="pill bad">부상</span>':''}${p.mor!=null&&p.mor<35?'<span class="pill warn">불만</span>':''}<button class="tc-i" data-a="player" data-v="${p.id}">상세</button>`});
-}
 function trow(p,side,on,hot){ const rp=scoutReport(p); const tag=hot?`<em class="good">상대 관심 · ${esc(hot)}</em>`:p.aiListed?'<em class="warn">매물</em>':'';
   const flags=(p.injOut>0?' · <b class="bad">부상</b>':'')+(p.mor!=null&&p.mor<35?' · <b class="warn">불만</b>':'');
   return `<div class="trw${on?' on':''}"><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.age}세</small></b><i>${money(p.sal)} · ${tContract(p)}${flags}</i>${tag?`<i>${tag}</i>`:''}</span></button><span class="trw-r">${rchip(rp.cur)}${rchip(rp.ofp)}</span><button class="tc-i trw-b${on?' on':''}" data-a="tpick" data-v="${side}:${p.id}">${on?'빼기':(side==='give'?'보내기':'받기')}</button></div>`; }
@@ -115,7 +111,6 @@ function tradeView(){
   </section>`;
   return `<section class="card"><div class="eyebrow">상대 구단</div>${strip}</section><div class="tlay">${board}${poolCard}</div>`;
 }
-function prevShort(p){ const h=p.prev; if(!h)return ''; return p.isP?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`; }
 function extBody(){
   const c=domestic(G.user).filter(canExtend).sort((a,b)=>scoutReport(b).ofp-scoutReport(a).ofp).slice(0,6);
   const done=domestic(G.user).filter(p=>p.extNext);
@@ -170,17 +165,5 @@ function contractView(){
   return f?`<p class="small ${f.over>0?'bad':''}"><b>외국인 선수 3명 총액 ${money(f.tot)} / 리그 한도 ${money(f.cap)}</b> (${Math.round(f.tot/USD)}만 / ${Math.round(f.cap/USD)}만 달러)${f.over>0?` · ${money(f.over)} 초과: 결별하거나 깎아서 협상해야 확정됩니다`:''}</p><p class="small">재계약 인상 합계 <b class="${dRaise>0?'bad':'good'}">${dRaise>=0?'+':''}${money(dRaise)}</b>${room!=null?` · 예산 여유 ${money(room)} → <b class="${room-dRaise<0?'bad':''}">${money(room-dRaise)}</b>${room-dRaise<0?' (구단주 지원 한도를 넘습니다)':''}`:''}</p>`:''; })()}<p class="small muted">잘한 선수는 더 달라고 합니다(최대 1.7배). 재계약은 100만 달러 상한이 없지만 3명 총액 한도가 있습니다. "15% 깎아 협상"은 한 번만 할 수 있고, 거절당하면 그 선수는 떠납니다. 결별한 선수 중 쓸 만한 선수는 시장에 나와 다른 구단이 데려갈 수 있습니다.</p><div class="list">${fEnd.map(p=>{const drop=C.foreignDrop.includes(p.id); return `<div class="item" style="cursor:default"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${statLine(curLine(p),p)}</span><span class="rt"><span class="num">${money(p.sal)} → <b>${money(p.newSal)}</b></span><br>${!drop&&!(C.fneg||{})[p.id]?`<button class="btn small" data-a="fneg" data-v="${p.id}">15% 깎아 협상</button> `:''}${p.fleft?'<span class="pill bad">떠남</span>':`<button class="btn small ${drop?'':'danger'}" data-a="fdrop" data-v="${p.id}">${drop?'재계약으로 변경':'결별'}</button>`}</span></div>`}).join('')}</div>`:''}
     <div class="eyebrow">국내 선수 연봉안</div>
     <div class="list">${ended.map(p=>{const d=p.newSal-p.sal; return `<div class="item" style="cursor:default"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${statLine(curLine(p),p)}</span><span class="rt"><span class="num">${money(p.sal)} → <b>${money(p.newSal)}</b></span><br><span class="pill ${d>0?'warn':d<0?'good':''}">${d>0?'+':''}${Math.round(d/p.sal*100)}%</span> <button class="btn small danger" data-a="relNow" data-v="${p.id}">방출</button></span></div>`}).join('')}</div>
-  </section>`;
-}
-function faView(){
-  const F=G.fa; const ids=F.pool.filter(id=>G.players[id]&&G.players[id].team==null).sort((a,b)=>G.players[b].ask.annual-G.players[a].ask.annual);
-  const myOffers=Object.entries(F.offers); const offSum=sum(myOffers.map(([,o])=>o.annual));
-  return `<section class="card hero" data-k="FA시장">
-    <div class="eyebrow">FA 시장 · ${F.open?(G.day>=F.openDay?'협상 중':'11월 6일 협상 시작'):'11월 2일 공시'} · 1월 24일(캠프 전날) 사실상 마감</div>
-    <p>남은 FA ${ids.length}명. 선수를 눌러 스카우트 의견을 보고 조건을 제시하세요. 선수는 날마다 들어온 제안을 비교하다가 계약합니다. 관심 구단이 많을수록 빨리 결정합니다.</p>
-    <p class="small muted">A등급 영입 시 원소속 구단에 직전 연봉 200%와 보호선수 20인 외 보상선수 1명, B등급은 100%와 25인 외 1명, C등급은 150%만 내줍니다. 원소속 구단 재계약에는 보상이 없습니다.</p>
-    <p class="small">제시 중 ${myOffers.length}건 · 연 ${money(offSum)} · 성사 시 캡 산정액 최대 <b class="num">${money(capPay(G.user)+offSum)}</b> / ${money(capOf(G.year))}</p>
-    <div class="list">${ids.slice(0,30).map(id=>{const p=G.players[id]; const o=F.offers[id]; const rp=scoutReport(p); const n=Object.keys(F.ai[id]||{}).length; return `<button class="item" data-a="player" data-v="${id}"><span class="nm">${esc(p.name)} <span class="pill acc">${p.faGrade}</span>${o?' <span class="pill good">제시함</span>':''}${n?` <span class="pill">관심 ${n}곳</span>`:''}</span><span class="sub">${posLabel(p)} · ${p.age}세 · ${tshort(p.faFrom)} · ${esc(rp.arch)} · ${statLine(curLine(p),p)}</span><span class="rt num">${money(p.ask.annual)}<br><span class="small muted">${p.ask.years}년</span></span></button>`}).join('')}</div>
-    ${F.results.length?`<div class="eyebrow">최근 계약</div><div class="list">${F.results.slice(0,8).map(r=>`<div class="item" style="cursor:default"><span class="nm">${esc(r.name)} <span class="pill">${r.grade}</span></span><span class="sub">${dsh(r.day)} · ${tshort(r.from)} → <b>${tshort(r.to)}</b>${r.compPlayer?` · 보상선수 ${esc(r.compPlayer)}`:''}</span><span class="rt num">${r.years}년 ${money(r.annual)}</span></div>`).join('')}</div>`:''}
   </section>`;
 }

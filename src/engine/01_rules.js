@@ -84,7 +84,6 @@ function roleBias(tid,p){ const m=tid!=null?mgrOf(tid):null; const thr=46+(((m&&
 const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=id=>id==null?'-':team(id).city+' '+team(id).nick;
-const teamColor=t=>`hsl(${t.hue} 52% 31%)`;
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
 const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day);
 

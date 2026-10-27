@@ -58,23 +58,6 @@ function intlView(){
     <div class="eyebrow">아시아쿼터 시장</div><div class="tgrid">${['jp','tw','au'].map(card).join('')}</div>
     <p class="small muted">단계: 0 에이전트 자료 · 1 현지 통신원 · 2 전담 스카우트(적응력 확인) · 3 현지 사무소. 스카우트 팀에서 스카우트를 해외 담당으로 보내면 그 나라 정보 수준이 한 단계 더 올라갑니다(최대 3).</p>`);
 }
-function faPage(){
-  if(!faLive()){
-    const F=G.fa; const res=F&&F.results&&F.results.length?`<div class="list">${F.results.slice(0,12).map(r=>`<div class="item" style="cursor:default"><span class="nm">${esc(r.name)} <span class="pill">${r.grade}</span></span><span class="sub">${tshort(r.from)} → <b>${tshort(r.to)}</b>${r.compPlayer?` · 보상선수 ${esc(r.compPlayer)}`:''}</span><span class="rt num">${r.years}년 ${money(r.annual)}</span></div>`).join('')}</div>`:'';
-    return csec('FA 시장',`<p class="small muted">FA 시장은 포스트시즌이 끝난 뒤 11월 2일 공시, 11월 6일부터 협상이 시작됩니다. 그 전까지는 비FA 다년계약으로 우리 선수를 미리 묶어 둘 수 있습니다.</p>${res?`<div class="eyebrow">지난 FA 계약</div>${res}`:''}`);
-  }
-  const F=G.fa; const ids=F.pool.filter(id=>G.players[id]&&G.players[id].team==null).sort((a,b)=>G.players[b].ask.annual-G.players[a].ask.annual);
-  const myOffers=Object.entries(F.offers); const offSum=sum(myOffers.map(([,o])=>o.annual));
-  const cards=ids.slice(0,40).map(id=>{const p=G.players[id]; const o=F.offers[id]; const n=Object.keys(F.ai[id]||{}).length;
-    return pcard(p,{sub:`${tshort(p.faFrom)} · ${p.age}세 · ${hand(p)}`,tags:`<span class="pill acc">${p.faGrade}등급</span>${o?'<span class="pill good">제시함</span>':''}${n?`<span class="pill">관심 ${n}곳</span>`:''}`,
-      foot:`<b class="num">${money(p.ask.annual)}</b><span>요구 ${p.ask.years}년${o?` · 우리 제시 ${o.years}년 ${money(o.annual)}`:''}</span><button class="tc-i go" data-a="player" data-v="${p.id}">조건 제시</button>`});}).join('');
-  return `<section class="card hero" data-k="FA시장"><div class="eyebrow">FA 시장 · ${G.day>=F.openDay?'협상 중':'11월 6일 협상 시작'} · 1월 24일(캠프 전날) 사실상 마감</div>
-    <p>남은 FA ${ids.length}명. 선수는 날마다 들어온 제안을 비교하다가 계약합니다. 관심 구단이 많을수록 빨리 결정합니다.</p>
-    <p class="small muted">A등급 영입 시 원소속 구단에 직전 연봉 200%와 보호선수 20인 외 보상선수 1명, B등급은 100%와 25인 외 1명, C등급은 150%만 내줍니다.</p>
-    <p class="small">제시 중 ${myOffers.length}건 · 연 ${money(offSum)} · 성사 시 캡 산정액 최대 <b class="num">${money(capPay(G.user)+offSum)}</b> / ${money(capOf(G.year))}</p></section>
-    <section class="card"><div class="tgrid">${cards||'<p class="small muted">남은 FA가 없습니다.</p>'}</div></section>
-    ${F.results.length?csec('최근 계약',`<div class="list">${F.results.slice(0,8).map(r=>`<div class="item" style="cursor:default"><span class="nm">${esc(r.name)} <span class="pill">${r.grade}</span></span><span class="sub">${dsh(r.day)} · ${tshort(r.from)} → <b>${tshort(r.to)}</b>${r.compPlayer?` · 보상선수 ${esc(r.compPlayer)}`:''}</span><span class="rt num">${r.years}년 ${money(r.annual)}</span></div>`).join('')}</div>`):''}`;
-}
 function contractPage(){
   return (G.contract&&!G.contract.done?contractView():csec('연봉 협상','<p class="small muted">연봉 협상은 매년 1월에 열립니다. 계약이 끝난 선수의 재계약안이 이곳에 올라옵니다.</p>'))+csec('비FA 다년계약',extBody());
 }

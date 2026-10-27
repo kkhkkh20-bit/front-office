@@ -3,7 +3,7 @@ function upcoming(){
   const c=G.cal, y=G.year, d=G.day; const L=[];
   const add=(n,t)=>{ if(n>d)L.push([n,t]); };
   add(c.camp,'스프링캠프 시작'); add(c.campEnd,'캠프 종료'); add(c.exh,'시범경기'); add(c.open,'개막'); add(c.asg,'올스타전');
-  add(KD(7,31),'트레이드 마감'); add(KD(8,15),'외국인 등록 마감'); add(c.draft,'신인 드래프트'); add(c.end,'정규시즌 종료');
+  add(tradeDL(),'트레이드 마감'); add(foreignDL(),'외국인 등록 마감'); add(c.draft,'신인 드래프트'); add(c.end,'정규시즌 종료');
   if(G.ps&&G.ps.cur)add(G.ps.cur.days[G.ps.cur.gi],ROUNDK[G.ps.cur.round]+' '+(G.ps.cur.gi+1)+'차전');
   add(KD(11,2),'FA 공시'); add(KD(12,1),'연봉 협상 시작'); add(dnum(y+1,1,1),'새해');
   return L.sort((a,b)=>a[0]-b[0]).slice(0,3);
@@ -21,7 +21,6 @@ function calendarCard(){
     ${la&&la.days?`<p class="small muted">지난 진행 ${la.days}일${la.w+la.l&&!hid?` · ${la.w}승 ${la.l}패`:''}${G.stops.length?' · 중요한 소식이 와서 멈췄습니다':''}</p>`:'<p class="small muted">오른쪽 위 계속 버튼을 누르면 다음 일정까지 시간이 흐릅니다.</p>'}
   </section>`;
 }
-function stopsCard(){ return ''; }
 function lineScore(g,upto,cur){ // cur: 진행 중인 반 이닝 {half,r,h}
   const n=Math.max(9,g.line.a.length,g.line.h.length); const cols=[...Array(n).keys()];
   const cell=(k,i)=>{ const half=i*2+(k==='h'?1:0); if(cur&&half===cur.half)return `<b>${cur.r}</b>`; if(upto!=null&&half>=upto)return '·'; const v=g.line[k][i]; return v==null?'':v; };
@@ -57,24 +56,12 @@ function campCard(){
     <div class="seg">${Object.entries(CAMP).map(([k,l])=>`<button data-a="camp" data-v="${k}" class="${G.camp.focus===k?'on':''}">${l}</button>`).join('')}</div>
     <p class="small muted">${{balance:'젊은 선수 성장과 부상 방지를 조금씩 챙깁니다.',skill:'26세 이하 선수의 기술이 늘어납니다.',fitness:'올 시즌 부상 위험이 줄어듭니다.',game:'4월까지 경기 감각이 올라갑니다.'}[G.camp.focus]}</p></section>`;
 }
-function mailPane(id){ const m=G.mail.find(x=>x.id===id); if(!m)return '';
-  return `<section class="card"><div class="row between"><h2 class="sec">${lk(m.subj)}</h2><span class="small muted">${dsh(m.day)}</span></div>
-  <div class="row" style="flex-wrap:nowrap">${senderAv(m)}<div><b>${esc(m.from)}</b><p class="small muted">${dstr(m.day)}</p></div></div>
-  <div class="mailbody">${m.body.split('\n').filter(Boolean).map(t=>`<p>${lk(t)}</p>`).join('')}</div>
-  ${m.acts.length&&!(m.oid&&!(G.offers||[]).some(o=>o.id===m.oid))?`<div class="btns">${m.acts.map((a,i)=>`<button class="btn ${i===0?'primary':''}" data-a="mailAct" data-v="${m.id}:${i}">${esc(a.l)}</button>`).join('')}</div>`:''}</section>${m.oid&&(G.offers||[]).some(o=>o.id===m.oid)?offerOne(G.offers.find(o=>o.id===m.oid)):m.oid?'<p class="small muted">이미 답했거나 만료된 제안입니다.</p>':''}`; }
 function avImg(o,big){ const src=faceSVG(o); const nm=o==='sec'?SEC:(o.name||'?'); return src?`<img class="av${big?' big':''}" src="${src}" alt="">`:`<span class="av ini${big?' big':''}">${esc(nm.slice(0,1))}</span>`; }
 const PERSONA={'구단주실':['own',63,false],'재무팀':['staff',41,false],'홍보팀':['staff',36,true],'마케팅팀':['staff',33,true],'운영팀':['staff',44,false],'스카우트팀장':['staff',53,false],'전력분석팀':['staff',31,false],'팀 닥터 · 의무팀':['doc',49,false],'육성팀':['staff',47,false],'에이전트':['agent',45,false],'코칭스태프':['coach',50,false],'선수단':['coach',50,false]};
 function personaOf(from){ if(!G)return null; if(from&&from.startsWith('비서'))return 'sec'; if(from==='감독실'){ const m=G.mgr[G.user]; return m?{persona:'mgr',pid:m.id,team:G.user,age:m.age}:null; }
   if(from==='수석코치'||from==='코칭스태프'){ const c=G.coach&&coachesOf(G.user).hc; if(c)return {persona:'coach',pid:c.id,team:G.user,age:c.age}; }
   const x=PERSONA[from]; return x?{persona:x[0],pid:'st:'+from+':'+G.user,team:G.user,age:x[1],female:x[2]}:null; }
 function senderAv(m){ if(typeof m.face==='string'&&m.face.startsWith('ob:')){ const o=obOf(m.face.slice(3)); if(o)return obAv(o,{k:'free'}); } if(m.face!=='sec'&&typeof m.face!=='number'&&!(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])){ const pz=personaOf(m.from); if(pz)return avImg(pz); } if(m.face==='sec')return avImg('sec'); if(typeof m.face==='number'&&G.players[m.face])return avImg(G.players[m.face]); if(m.kind==='부상'&&m.ref!=null&&G.players[m.ref])return avImg(G.players[m.ref]); return `<span class="av ini">${esc((m.from||'?').replace('비서 ','').slice(0,1))}</span>`; }
-function mailItem(m){ return `<button class="item wa mail${m.read?'':' unread'}${UI.mail===m.id?' sel':''}" data-a="openMail" data-v="${m.id}">${senderAv(m)}<span class="nm">${m.imp?'<span class="pill acc">중요</span> ':''}${esc(m.subj)}</span><span class="sub">${esc(m.from)} · ${esc(m.body.split('\n')[0].slice(0,44))}</span><span class="rt small muted">${dsh(m.day)}</span></button>`; }
-function mailSheet(id){ const m=G.mail.find(x=>x.id===id); if(!m)return '';
-  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="소식">
-  <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${senderAv(m)}<div><div class="eyebrow">${esc(m.from)} · ${dstr(m.day)}</div><h2 class="sec">${lk(m.subj)}</h2></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
-  <div class="mailbody">${m.body.split('\n').filter(Boolean).map(t=>`<p>${lk(t)}</p>`).join('')}</div>
-  ${m.acts.length?`<div class="btns">${m.acts.map((a,i)=>`<button class="btn ${i===0?'primary':''}" data-a="mailAct" data-v="${m.id}:${i}">${esc(a.l)}</button>`).join('')}</div>`:''}
-  </div></div>`; }
 function tutCard(){ const t=G.tut; if(!t||t.done)return ''; const s=TUT[t.step]; if(!s||s.k==='welcome')return '';
   /* 같은 일이 '처리할 일'에 이미 있으면 안내 카드는 접는다 */
   { const W={'외국인선수':'transfer:foreign','감독':'staff:mgr','부상방지·병원':'staff:med','2군연수':'train:dev','스카우트팀':'staff:scouts'}; const key=s.go&&s.go[0]==='goWork'?W[s.go[1]]:null;
@@ -141,7 +128,6 @@ function devBody(){
   ${ov?`<div class="list">${ov}</div>`:''}
   <p class="small muted">${Object.values(OVS).map(o=>`${o.l} ${money(o.c)}: ${o.d}`).join(' ')}</p>`);
 }
-function logBody(){ return `<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,20).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`; }
 function marketingBody(){
   return `<div class="row between"><span class="small">올 시즌 예산</span><b class="num" id="mktv">${money(G.marketing)}</b></div>
     <input type="range" id="mkt" min="500" max="6000" step="250" value="${G.marketing}" data-a="mkt" aria-label="마케팅 예산">

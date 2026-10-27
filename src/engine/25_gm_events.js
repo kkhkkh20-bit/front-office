@@ -156,7 +156,7 @@ const EVH={
       p.mor=clamp(p.mor+3,0,100); return `${p.name} 기분 +3.`; },
     follow(d){ const p=evP(d.pid); if(!p)return; const L=p.l10||[]; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])); const t=ab?`${p.name} 조정 이후 최근 10경기 타율 ${fmt3(h/ab)}.`:`${p.name}은(는) 아직 1군 경기에 나오지 않았습니다.`; evResult(d.ev,t); note('경기',t,p.id); } },
   /* 외국인 선수 부진 */
-  fx:{ w:1, check(){ if(G.day>KD(8,15))return null; const L=foreignOf(G.user).filter(p=>!p.fxAsk).map(p=>{ const h=seasonTotal(p,G.year,'1군'); if(!h)return null;
+  fx:{ w:1, check(){ if(G.day>foreignDL())return null; const L=foreignOf(G.user).filter(p=>!p.fxAsk).map(p=>{ const h=seasonTotal(p,G.year,'1군'); if(!h)return null;
         if(p.isP){ if(h.outs<120)return null; const era=h.er*27/h.outs; return era>=5.4?{p,h,s:era}:null; } if(h.pa<120)return null; const ops=bRate(h).ops; return ops<.7?{p,h,s:1-ops}:null; }).filter(Boolean).sort((a,b)=>b.s-a.s); return L[0]||null; },
     make(x){ const p=x.p; p.fxAsk=G.year; evNew('fx',`외국인 ${p.name} 부진`,`${p.name}이(가) ${statLine(x.h,p)}에 머물고 있습니다. 교체 여론이 나옵니다. 교체 기한은 8월 15일입니다.`,
       [{l:'교체 후보 보기',fx:'외국인 시장으로 이동합니다. 교체하면 남은 연봉을 정산합니다.'},

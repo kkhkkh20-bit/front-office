@@ -41,19 +41,6 @@ function fullBox(g,openOpp){
     <div class="eyebrow">${tname(ms.tid)} 투수</div>${pitBox(ms)}
     <details ${openOpp?'open':''}><summary class="eyebrow" style="cursor:pointer">${badge(g.box[op].tid,16)} ${tname(g.box[op].tid)} 기록 보기</summary>${batBox(g.box[op])}${pitBox(g.box[op])}</details>`;
 }
-function resultCard(){
-  if(!G.res)return ''; const g=G.games[G.res.i]; if(!g){G.res=null;return '';}
-  const me=g.home===G.user?'h':'a'; const ms=me==='h'?g.hs:g.as, os=me==='h'?g.as:g.hs; const opp=me==='h'?g.away:g.home;
-  const r=G.sea.rec[G.user]; const rk=period()==='season'?standingsNow().findIndex(x=>x.tid===G.user)+1:null;
-  const n=(G.sea.ulog||[]).filter(x=>!/차전/.test(x.k)).length;
-  return `<section class="card hero rescard">
-    <div class="row between"><span class="eyebrow">${g.kind?esc(g.kind)+' · ':''}${dstr(g.day)}${!/차전/.test(g.kind||'')&&period()==='season'?` · 시즌 ${n}/144경기`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span></div>
-    <div class="scoreline">${badge(g.away,34)}<b>${tshort(g.away)}</b><span class="num">${g.as}</span><i>:</i><span class="num">${g.hs}</span><b>${tshort(g.home)}</b>${badge(g.home,34)}</div>
-    <p class="small muted" style="text-align:center;margin:0">${me==='h'?'홈':'원정'} 경기${g.inn>9?` · 연장 ${g.inn}회`:''}${rk?` · 시즌 ${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''} · ${rk}위`:''}</p>
-    ${fullBox(g,false)}
-    <div class="btns"><button class="btn primary" data-a="resNext">확인 · 다음 경기</button><button class="btn" data-a="resOk">확인</button></div>
-  </section>`;
-}
 function schedView(){
   const c=G.cal; const ms=[3,4,5,6,7,8,9,10]; const cm=UI.smon||Math.min(10,Math.max(3,dobj(G.day).m));
   const log=new Map((G.sea.ulog||[]).filter(x=>!/차전/.test(x.k)).map(x=>[x.d,x]));

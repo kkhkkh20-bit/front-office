@@ -44,12 +44,8 @@ const EVH_LEAD={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; cons
     if(i===0){ p.mor=clamp((p.mor??60)-12,0,100); p.susp=G.day+5; G.leadAdj={v:Math.min(12,cur+6),until:G.day+45}; news('구단',`${tshort(G.user)}, ${p.name} 출장 정지 5일 징계`,`구단이 ${p.name}에게 자체 징계를 내렸습니다.`,0,{ref:p.id}); return `${p.name}에게 출장 정지 5일 징계를 내렸습니다. 선수단이 긴장했습니다(기강 +6, 45일).`; }
     if(i===1){ p.mor=clamp((p.mor??60)-6,0,100); G.leadAdj={v:Math.min(12,cur+3),until:G.day+30}; return `${p.name}에게 벌금을 물렸습니다(기강 +3, 30일).`; }
     p.mor=clamp((p.mor??60)+2,0,100); const m=G.mgr[G.user]; if(m&&!m.interim&&m.disc>=60){ G.leadAdj={v:Math.min(12,cur+3),until:G.day+30}; return `구단은 선처했고, ${m.name} 감독이 선수단 미팅을 열어 직접 다잡았습니다(기강 +3, 30일).`; } return `${p.name}을(를) 선처했습니다. 감독도 크게 문제 삼지 않았습니다.`; } };
-/* 주장: 단장이 지정하지 않으면 감독이 정한다(한 팀에서 오래 뛴 성실한 주전) */
-function autoCaptain(tid){ const ps=domestic(tid).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&p.age>=26); if(!ps.length)return null; const sc=p=>teamTenure(p,tid).n*3+ovr(p)*.5+((p.pers&&p.pers.pro)||10)+((p.pers&&p.pers.loy)||10)*.5; return ps.sort((a,b)=>sc(b)-sc(a))[0]; }
 function captainOf(tid){ const t=team(tid); const p=t.cap!=null?G.players[t.cap]:null; if(p&&p.team===tid)return p;
   if(t.cap!=null&&tid===G.user&&!G.unemp){ const was=G.players[t.cap]; if(was)news('구단',`${tshort(tid)} 주장 ${was.name} 떠나… 선수단 술렁`,'주장이 팀을 떠나 더그아웃 분위기가 가라앉았습니다.',-1); for(const q of playersOf(tid))q.mor=clamp((q.mor??60)-2,0,100); t.cap=null; } const a=electCaptain(tid,tid===G.user&&!G.unemp?'전임 주장 이탈':''); return a; }
-function setCaptain(id){ const p=G.players[id]; if(!p||p.team!==G.user)return '우리 선수가 아닙니다.'; const t=team(G.user); const old=t.cap!=null?G.players[t.cap]:null; t.cap=id; initPers(p); p.mor=clamp(p.mor+6,0,100); if(old&&old.id!==id&&old.team===G.user)old.mor=clamp(old.mor-4,0,100);
-  chron('cap',`${p.name} 주장 임명`,p.id); news('구단',`${tshort(G.user)} 새 주장에 ${p.name}`,`${p.name}이(가) 선수단을 이끌게 됐습니다.`,1,{ref:p.id}); return ''; }
 
 function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(h)rows.push({p,h,w:warOf(h,p)}); }
   const qB=x=>!x.p.isP&&x.h.pa>=300, qP=x=>x.p.isP&&x.h.outs>=270;

@@ -90,12 +90,4 @@ function teamRating(tid){
   const sp=avg(d.sp.map(spV))*(Math.min(5,d.sp.length)/5), pen=avg(d.pen.map(penV));
   return off*.4+(sp*.65+pen*.35)*.45+def*.15;
 }
-function battingOrder(d){
-  const s=[...d.start]; const by=(f)=>s.sort((a,b)=>f(b)-f(a));
-  by(p=>p.r.con+p.r.eye+p.r.spd*.7); const top=s.splice(0,2);
-  by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3);
-  by(offV); const ord=[...top,...mid,...s];
-  const fr=[1.25,1.15,1.05,.95,.95,.9,.85,.85,.8], fb=[.7,.9,1.25,1.35,1.25,1,.95,.85,.8];
-  const m={}; ord.forEach((p,i)=>m[p.id]={r:fr[i],rbi:fb[i],slot:i+1}); return m;
-}
 

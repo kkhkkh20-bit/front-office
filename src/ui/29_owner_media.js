@@ -37,6 +37,4 @@ function mediaView(){
     ${chart}<p class="small muted">팬 여론은 관중 수입과 광고·상품 수입을 움직이고, 언론 논조는 스폰서와 구단주 평가에 영향을 줍니다. 승패, 연승·연패, 트레이드·FA 평가, 신인 활약, 외국인 부진, 감독·선수의 불만 표출이 기사가 됩니다.</p>`)
    +csec('최근 우리 구단 기사',items?`<div class="newslist">${items}</div>`:'<p class="small muted">아직 기사가 없습니다.</p>',`<button class="btn small" data-a="go" data-v="league:news">기사 전체 보기</button>`);
 }
-function headlinesCard(){ const ns=(G.news||[]).slice(0,3); if(!ns.length)return '';
-  return `<section class="card"><div class="row between"><h2 class="sec">오늘의 기사</h2><button class="btn small" data-a="go" data-v="club:media">전체 보기</button></div>${ns.map(n=>`<div class="news sm ${n.v>=2?'pos':n.v<=-2?'neg':''}"><span class="small muted">${esc(n.o)} · ${dsh(n.d)}</span><b>${esc(n.t)}</b></div>`).join('')}</section>`; }
 

@@ -9,11 +9,11 @@ function originOf(p){ if(!p||p.team!==G.user)return ''; if(p.foreign)return '외
   if(p.draft&&p.draft.tid===G.user)return `${String(p.draft.y).slice(2)}신인 ${p.draft.rd}R`;
   if(G.fd&&(G.fd.all||[]).includes(p.id))return '창단 배분'; return '자체 영입'; }
 /* 앞으로 몇 년의 예상 능력: 어리면 잠재 쪽으로, 31세부터 하락 */
-function projO(p,k){ let o=ovr(p), a=p.age; const pot=Math.max(p.pot||o,o); for(let i=0;i<k;i++){ a++; o+=a<=24?(pot-o)*.3:a<=27?(pot-o)*.22:a<=30?0:a<=33?-1.5:-3; } return o; }
+function projPlan(p,k){ let o=ovr(p), a=p.age; const pot=Math.max(p.pot||o,o); for(let i=0;i<k;i++){ a++; o+=a<=24?(pot-o)*.3:a<=27?(pot-o)*.22:a<=30?0:a<=33?-1.5:-3; } return o; }
 function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter(p=>p.team===G.user);
   if(!G.plEx||G.plEx.y!==Y)G.plEx={y:Y,ids:[]}; const EX=new Set(G.plEx.ids);
   const col=k=>{ const av=ps.filter(p=>k>0||!(p.joinY>Y)).filter(p=>!(p.joinY>Y+k)).filter(p=>k===0||!EX.has(p.id));
-    const leave=p=>p.foreign?(k>=1?'재계약':''):k>=ctrlYears(p)?'FA':''; const v=p=>projO(p,k);
+    const leave=p=>p.foreign?(k>=1?'재계약':''):k>=ctrlYears(p)?'FA':''; const v=p=>projPlan(p,k);
     const bats=av.filter(p=>!p.isP), pits=av.filter(p=>p.isP); const used=new Set(), ln={}, bk={};
     for(const pos of ['C','SS','2B','CF','3B','RF','LF','1B']){ const el=bats.filter(p=>!used.has(p.id)&&(p.pos===pos||(subsOf(p)||[]).includes(pos))).sort((a,b)=>(v(b)-(b.pos===pos?0:2))-(v(a)-(a.pos===pos?0:2))); if(el[0]){ ln[pos]=el[0]; used.add(el[0].id); } }
     { const r=bats.filter(p=>!used.has(p.id)).sort((a,b)=>v(b)-v(a)); if(r[0]){ ln.DH=r[0]; used.add(r[0].id); } }
@@ -23,7 +23,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
   const C=[0,1].map(col);
   const cls=o=>o==null?'gap':o<45?'weak':o<52?'mid':o>=60?'top':'ok';
   /* 내년 예상은 젊은 선수일수록 범위로 보여 준다(코치진 추정) */
-  const rng=(p,k)=>{ const v=projO(p,k); if(k===0||p.age+k>27)return rchip(Math.round(v)); const w=clamp((28-p.age-k)*.8,1.5,5); const m=v+hn('plr'+Y,p.id)*w*.4; return `<span class="pl-r" style="--c:${rcol(Math.round(m))}">${Math.round(m-w)}~${Math.round(m+w)}</span>`; };
+  const rng=(p,k)=>{ const v=projPlan(p,k); if(k===0||p.age+k>27)return rchip(Math.round(v)); const w=clamp((28-p.age-k)*.8,1.5,5); const m=v+hn('plr'+Y,p.id)*w*.4; return `<span class="pl-r" style="--c:${rcol(Math.round(m))}">${Math.round(m-w)}~${Math.round(m+w)}</span>`; };
   const nm=(c,p,k)=>{ const lv=c.leave(p); return `<span class="pl-pw"><button class="pl-p" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b>${rng(p,k||0)}${lv?`<em class="pl-f">${lv}</em>`:''}${p.joinY>Y?'<em class="pl-n">신인</em>':''}</button>${k?`<button class="pl-x" data-a="plEx" data-v="${p.id}" title="내년 계획에서 빼기" aria-label="${esc(p.name)} 내년 계획에서 빼기">×</button>`:''}</span>`; };
   const cell=(c,k,ci)=>{ if(k==='SP'||k==='RP'){ const L=k==='SP'?c.sp:c.rp; if(!L.length)return `<td class="gap"><span class="pl-g">빈자리</span></td>`; const a=L.reduce((t,p)=>t+c.v(p),0)/L.length; return `<td class="${cls(a)}">${nm(c,L[0],ci)}<i class="pl-s">${L.length}명 평균 ${Math.round(a)}${L.length<(k==='SP'?5:6)?' · 부족':''}</i></td>`; }
     const p=c.ln[k], b=c.bk[k]; if(!p)return `<td class="gap"><span class="pl-g">빈자리</span></td>`; return `<td class="${cls(c.v(p))}">${nm(c,p,ci)}${b?`<i class="pl-s">백업 ${esc(b.name)} ${Math.round(c.v(b))}</i>`:''}</td>`; };
@@ -31,14 +31,14 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
   /* 내년 빈자리 요약 */
   const nx=C[1]; const holes=PSLOTS.filter(k=>{ if(k==='SP'||k==='RP'){ const L=k==='SP'?nx.sp:nx.rp; return L.length<(k==='SP'?5:6)||L.reduce((t,p)=>t+nx.v(p),0)/Math.max(1,L.length)<46; } const p=nx.ln[k]; return !p||nx.v(p)<45||nx.leave(p); }).map(k=>{ const p=nx.ln[k]; return `${SLOTS_S[k]}${p&&nx.leave(p)?`(${nx.leave(p)==='FA'?'FA 예정':'외국인 재계약'})`:''}`; });
   /* 2년 뒤 위험: 노화·계약 만료·고액 장기 부담, 그리고 내부 후계 후보 */
-  const succ=k=>{ const L=ps.filter(p=>!p.foreign&&p.age<=24&&projO(p,2)>=45&&!EX.has(p.id)&&(k==='SP'?p.isP&&isSPr(p):k==='RP'?p.isP:!p.isP&&(p.pos===k||(subsOf(p)||[]).includes(k)))).filter(p=>!(nx.ln[k]&&nx.ln[k].id===p.id)).sort((a,b)=>projO(b,2)-projO(a,2)); return L[0]||null; };
+  const succ=k=>{ const L=ps.filter(p=>!p.foreign&&p.age<=24&&projPlan(p,2)>=45&&!EX.has(p.id)&&(k==='SP'?p.isP&&isSPr(p):k==='RP'?p.isP:!p.isP&&(p.pos===k||(subsOf(p)||[]).includes(k)))).filter(p=>!(nx.ln[k]&&nx.ln[k].id===p.id)).sort((a,b)=>projPlan(b,2)-projPlan(a,2)); return L[0]||null; };
   const risk=[]; for(const k of PSLOTS){ if(k==='DH')continue; const p=k==='SP'?nx.sp[0]:k==='RP'?nx.rp[0]:nx.ln[k]; if(!p)continue; const r=[];
     if(p.age+2>=33)r.push(`${p.age+2}세가 됨`); if(!p.foreign&&ctrlYears(p)===2)r.push('2년 뒤 FA'); if(p.sal>=1500&&p.age>=31&&(p.faC&&p.yrs>=3))r.push(`연 ${money(p.sal)} 계약이 남음`);
     if(!r.length)continue; const s2=succ(k); risk.push(`<li><b>${SLOTS_S[k]}</b> ${esc(p.name)}: ${r.join(' · ')} → ${s2?`후계 후보 ${esc(s2.name)}(${s2.age}세, 2년 뒤 ${rng(s2,2)})`:'<span class="bad">내부 후계자 없음</span>'}</li>`); }
   /* 연봉 전망: 확정(남은 다년·FA 계약)과 예상(보류권 선수 연봉 협상)을 나눈다 */
   const fr=p=>p.svc<3?.35:p.svc<6?.55:p.svc<faSvc(p)?.78:1;
   const pay=k=>{ const D=ps.filter(p=>!p.foreign&&!p.prospect&&!(p.joinY>Y+k)&&!(k>0&&EX.has(p.id))); let fix=0,est=0,fa=0,faN=0;
-    for(const p of D){ if(k===0){ fix+=p.sal; continue; } const cy=ctrlYears(p); if(p.faC&&p.yrs>k){ fix+=p.sal; continue; } if(!p.faC&&cy>k){ est+=round5(marketSal(projO(p,k))*Math.min(1,fr({svc:(p.svc||0)+k,college:p.college}))); continue; } if(projO(p,k)>=50){ fa+=round5(marketSal(projO(p,k))); faN++; } }
+    for(const p of D){ if(k===0){ fix+=p.sal; continue; } const cy=ctrlYears(p); if(p.faC&&p.yrs>k){ fix+=p.sal; continue; } if(!p.faC&&cy>k){ est+=round5(marketSal(projPlan(p,k))*Math.min(1,fr({svc:(p.svc||0)+k,college:p.college}))); continue; } if(projPlan(p,k)>=50){ fa+=round5(marketSal(projPlan(p,k))); faN++; } }
     return {fix,est,fa,faN,cap:capOf(Y+k)}; };
   const PY=[0,1,2].map(pay);
   const payT=`<div class="tw"><table class="pl-pay"><thead><tr><th></th>${PY.map((_,k)=>`<th>${Y+k}</th>`).join('')}</tr></thead><tbody>

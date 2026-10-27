@@ -97,9 +97,6 @@ function cTrailClear(){ const sv=document.getElementById('cs-trail'); if(sv)sv.i
 async function cBanner(g,half){ const el=document.getElementById('cs-bn'); if(!el)return; const at=half%2?g.home:g.away;
   el.innerHTML=`<div>${badge(at,40)}<b>${cHalfTxt(half)}</b><span>${esc(tname(at))} 공격</span></div>`; el.className='cs-bn on'; sfx('bong',.55); await cSleep(850); el.className='cs-bn'; await cSleep(150); }
 /* 볼 수 있는 장면 고르기 */
-async function cVsx(g,k,x){ const el=document.getElementById('cs-bn'); if(!el)return; const b=G.players[x[1]], p=G.players[x[2]]; if(!b||!p)return;
-  const one=(q,isP,cls)=>`<div class="vx ${cls}">${avImg(q,true)}<b>${esc(q.name)}</b>${rchip(scoutReport(q).cur)}<span>${isP?`ERA ${eraAt(g,k,q.id)}`:avgOpsAt(g,k,q.id)}</span><i>오늘 ${cToday(g,k,q.id,isP)}</i></div>`;
-  el.innerHTML=`<div class="vxw">${one(b,false,'l')}<em>VS</em>${one(p,true,'r')}</div>`; el.className='cs-bn vs on'; await cSleep(1300); el.className='cs-bn vs'; await cSleep(150); }
 function cKeep(g,k,mode){ if(mode==='all')return true; const L=g.pbp; const x=L[k]; if(typeof x[1]!=='number')return false; const b=cBefore(g,k); const risp=!!(b.bases[1]||b.bases[2]);
   if(mode==='risp')return risp; return x[6]>0||['HR','3B','2B','DP'].includes(x[3])||(x[3]==='K'&&risp)||k===L.length-1||(x[4]>=3&&b.half>=16&&Math.abs(x[7]-x[8])<=1); }
 function cTargets(g,k,st){ const L=g.pbp; const half=st.half; const top=half%2===0; const dT=top?g.home:g.away, oT=top?g.away:g.home;
@@ -128,7 +125,6 @@ function cBall(from,to,ms,arc){ const b=document.getElementById('cs-ball'); if(!
 function cBallHide(){ const b=document.getElementById('cs-ball'); if(b)b.getAnimations().forEach(a=>a.cancel()); }
 const cPolar=(th,d)=>[50+d*Math.sin(th*Math.PI/180),89-d*Math.cos(th*Math.PI/180)];
 const cDist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
-async function cRunner(el,from,to,msPer){ if(!el)return; for(let i=from+1;i<=to;i++){ cPlace(el,CPATH[i],msPer); await cSleep(msPer); } }
 async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; const x=L[k]; const b=cBefore(g,k); const st=document.getElementById('cs-stage'); if(!st)return;
   const card=key=>st.querySelector(`.cc[data-k="${key}"]`);
   if(x[1]==='PC'){ const top=x[0]%2===0; const dug=CDUG[top?'h':'a']; const old=cPit(g,k); const oc=old&&card('d'+old);

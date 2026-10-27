@@ -17,14 +17,6 @@ function fdBoard(myPicks,ci,justId){ const bats=myPicks.filter(p=>!p.isP), pits=
     <div class="fdh2"><span>지명타자</span>${slot('DH')}${bench.length?`<span>벤치</span>${bench.map(p=>`<button class="fpp${p.id===justId?' just':''}" data-a="player" data-v="${p.id}"><i>${SLK[p.pos]}</i><b>${esc(p.name)}</b>${rchip(Math.round(ovr(p)))}</button>`).join('')}`:''}</div>
     <div class="row between fdpgh" style="margin-top:8px"><b class="small">투수진 ${pits.length}/${FD_TGT.P}</b><span class="small muted">보직은 감독이 체력·투구를 보고 정합니다</span></div>
     <div class="fdpg">${P.map(pc).join('')}${empties?`<button class="fpp empty" data-a="fdSlot" data-v="P"><i>투수 빈자리</i><b>${empties}명 더 · 찾기</b></button>`:''}</div></section>`; }
-/* 구단별 지명 현황: 지명된 선수는 능력이 공개된다 */
-function fdTeamsView(){ const F=G.fd; const rounds=Math.max(1,...F.picks.filter(x=>x.pid).map(x=>x.rd)); const order=F.order;
-  const avgO=tid=>{ const L=F.picks.filter(x=>x.tid===tid&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); return L.length?L.reduce((a,p)=>a+ovr(p),0)/L.length:0; };
-  const rk=[...order].sort((a,b)=>avgO(b)-avgO(a));
-  const rows=[]; for(let r=1;r<=rounds;r++)rows.push(`<tr><th>${r}R</th>${order.map(tid=>{ const x=F.picks.find(q=>q.rd===r&&q.tid===tid); const q=x&&x.pid?G.players[x.pid]:null; return `<td class="${tid===G.user?'me':''}">${q?`<button class="lnk" data-a="player" data-v="${q.id}">${esc(q.name)}</button><i>${q.isP?'투수':SLK[q.pos]} ${rchip(Math.round(ovr(q)))}</i>`:'<span class="muted">-</span>'}</td>`; }).join('')}</tr>`);
-  return `<section class="card"><h2 class="sec">구단별 지명 평균 능력</h2><div class="fdrk">${rk.map((t,i)=>{ const a=avgO(t); return `<span class="${t===G.user?'me':''}">${a?i+1:'-'} ${badge(t,16)} ${esc(tshort(t))} <b>${a?a.toFixed(1):'-'}</b></span>`; }).join('')}</div>
-    <p class="small muted keep">지명된 선수는 능력이 공개됩니다. 다른 구단이 기록만 보고 누구를 잘 뽑았는지 비교해 보세요.</p></section>
-  <section class="card"><h2 class="sec">라운드별 지명</h2><div class="tw"><table class="dres"><thead><tr><th></th>${order.map(t=>`<th>${badge(t,18)}<br>${esc(tshort(t))}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div></section>`; }
 /* 창단 직후: 구단주 환영과 재정 전망, 그다음 드래프트 */
 function fdWaitView(){ const t=team(G.user); const B=bossOf(G.user); const f=fdFin(); const ok=f.avail>=f.cap, mid=f.avail>=f.cap*.75;
   const row=(l,v,c)=>`<div class="row between"><span>${l}</span><b class="num ${c||''}">${v}</b></div>`;
@@ -144,5 +136,3 @@ function homeView(){
   return `${stripBar()}${ht.bar}${ht.cur==='today'?todo:ht.cur==='game'?games:ht.cur==='league'?[miniStand(),newsCard()].filter(Boolean).join(''):[desk,teamIdCard(),formCard(),myLeaders(),clubCard()].filter(Boolean).join('')}`;
 }
 
-/* 소식함: 업무 분리, 날짜별 묶음 */
-function mailGroups(list){ let last=null; const out=[]; for(const m of list){ if(m.day!==last){ last=m.day; out.push(`<div class="mday">${dmd(m.day)} ${WD[dobj(m.day).w]}</div>`); } out.push(mailItem(m)); } return out.join(''); }

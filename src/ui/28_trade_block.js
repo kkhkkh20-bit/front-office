@@ -19,20 +19,6 @@ function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
     <p class="small muted keep">급매로 표시하면 제안이 더 자주 오지만, 상대도 우리가 급한 걸 알고 조금 덜 줍니다.</p></section>`:`  <section class="card"><div class="row between"><h2 class="sec">다른 구단 매물 ${ai.length}명</h2><div class="chips">${[['all','전체'],['urg','급매'],['p','투수'],['b','야수']].map(([k,l])=>`<button data-a="blkF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div></div>
     ${PGb.items.join('')||'<p class="small muted">조건에 맞는 매물이 없습니다.</p>'}${PGb.bar}
     <p class="small muted keep">매물로 나온 선수는 그 구단이 정리하고 싶은 선수라 시세보다 싸게 거래됩니다. 급매는 더 쌉니다. 매물 등록은 최대 6주 동안 유지됩니다.</p></section>`); }
-function blockView(){
-  const mine=domestic(G.user).filter(p=>p.listed);
-  const offs=(G.offers||[]).filter(o=>o.blk);
-  const offCard=o=>{ const t=team(o.from); const p=G.players[o.get[0]]; if(!p)return '';
-    return `<section class="card blkoff"><div class="row between"><div class="row">${badge(t.id,28)}<div><b>${tname(t.id)}</b><div class="small muted">관계 ${t.rel} · ${dmd(o.exp)}까지${o.more?' · 조건 조정 끝':''}</div></div></div><span class="small">→ <b>${esc(p.name)}</b> 영입 희망</span></div>
-      <div class="eyebrow">받는 선수</div><div class="tgrid">${o.give.map(id=>G.players[id]?pcard(G.players[id],{foot:rosterFoot(G.players[id])}):'').join('')}</div>
-      <div class="btns"><button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button><button class="btn" data-a="offerMore" data-v="${o.id}" ${o.more?'disabled':''}>조건 더 올려 달라</button><button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div>
-      ${UI.blkMsg&&UI.blkMsg.id===o.id?`<div class="note">${esc(UI.blkMsg.t)}</div>`:''}</section>`; };
-  const ai=Object.values(G.players).filter(p=>p.aiListed&&p.team!=null&&p.team!==G.user);
-  return csec('우리 매물',`<p class="small muted">선수를 매물로 내놓고 원하는 대가를 정하면, 관심 있는 구단이 매주 제안을 보냅니다. 제안마다 한 번은 "조건을 더 올려 달라"고 할 수 있습니다. 대신 거절하고 제안을 거둬 갈 수도 있습니다. 매물로 내놓은 선수는 자기가 매물이라는 걸 압니다.${tradeOpen()?'':' <b>지금은 트레이드 기간이 아닙니다.</b>'}</p>
-      ${mine.length?`<div class="tgrid">${mine.map(p=>pcard(p,{foot:`${rosterFoot(p)}<select data-a="blkWant" data-v="${p.id}" aria-label="원하는 대가">${Object.entries(WANT).map(([k,l])=>`<option value="${k}" ${(p.lw||'any')===k?'selected':''}>${l}</option>`).join('')}</select><button class="tc-i" data-a="blkOff" data-v="${p.id}">내리기</button>`})).join('')}</div>`:'<p class="small muted">매물로 내놓은 선수가 없습니다. 선수 상세에서 "트레이드 매물로 등록"를 누르세요.</p>'}`)
-   +csec(`받은 제안 ${offs.length}건`,offs.length?offs.map(offCard).join(''):'<p class="small muted">아직 제안이 없습니다.</p>')
-   +csec('다른 구단 매물',ai.length?`<p class="small muted">다른 구단이 내놓은 선수입니다. 리빌딩 구단은 베테랑을, 우승 경쟁 구단은 자리가 없는 유망주를 내놓습니다. 매물로 나온 선수는 구단이 정리하고 싶은 선수라 시세보다 훨씬 싸게 데려올 수 있습니다. 그 구단이 관심 있는 우리 선수를 함께 보내면 더 쉽게 성사됩니다.</p><div class="tgrid">${ai.map(p=>pcard(p,{sub:`${tshort(p.team)} · ${posLabel(p)} · ${p.age}세 · ${hand(p)}`,tags:`<span class="pill warn">${esc(listWant(p))}</span>`,foot:`${intLine(p.team,true)}${rosterFoot(p)}<button class="tc-i go" data-a="toTrade" data-v="${p.id}">트레이드 협상</button>`})).join('')}</div>`:'<p class="small muted">이번 주에 나온 매물이 없습니다.</p>');
-}
 function negPanel(p){ const F=G.fa; if(!F||!F.neg)return ''; const n=F.neg[p.id]; const ag=agentOf(p);
   const log=n?n.log.slice(-8).map(x=>x.w==='구단'?`<div class="chat me"><span>우리 제안</span><b>${x.y}년 연 ${money(x.a)}${x.acc?' (역제안 수락)':''}</b></div>`:`<div class="chat ag"><span>${esc(ag.name)}</span><p>${esc(x.t)}</p></div>`).join(''):'';
   return `<section class="card"><div class="row between"><span class="eyebrow">에이전트 협상 · ${esc(ag.name)} (${esc(ag.firm)})</span><span class="small muted">${ag.style==='hard'?'깐깐한 협상가':ag.style==='soft'?'유연한 편':'보통'}${n?` · 협상 ${n.rounds}/4회 · 분위기 ${n.mood}`:''}</span></div>

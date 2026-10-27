@@ -49,7 +49,7 @@ function refreshFMarket(n,drop){
     const aMin=Math.round(min*.2), bMin=Math.round(min*.3), pMin=Math.round(min*.42);
     if(asiaN<aMin)G.fmarket.push(newForeign('아시아',{market:true}).id); else if(pitN<pMin)G.fmarket.push(newForeign('용병',{isP:true,market:true}).id); else if(batN<bMin)G.fmarket.push(newForeign('용병',{isP:false,market:true}).id); else G.fmarket.push(newForeign('용병',{market:true}).id); }
 }
-function foreignOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=KD(8,15); return G.day>=KD(12,1)||per==='pre'; }
+function foreignOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=foreignDL(); return G.day>=KD(12,1)||per==='pre'; }
 function foreignCheck(tid,p,excludeId){
   const fs=foreignOf(tid).filter(x=>x.id!==excludeId);
   if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; return ''; }

@@ -42,15 +42,6 @@ function fieldSVG(tid,interactive,inline){
     ${inline&&UI.fpos?'<rect x="0" y="0" width="360" height="330" fill="transparent" data-a="fpos" data-v=""></rect>':''}${Object.keys(FPOS).map(node).join('')}
   </svg>`;
 }
-function sqTable(groups,pit){
-  if((UI.rview||'card')==='card')return sqCards(groups);
-  const head=pit?['선수','역할','나이','현재','잠재력','기분','ERA','이닝','WAR','연봉']:['선수','포지션','나이','현재','잠재력','기분','OPS','홈런','WAR','연봉'];
-  const row=(p,pos)=>{ const rp=scoutReport(p); const h=curLine(p); const m=p.mor??60;
-    const st=p.isP?[h&&h.outs?pRate(h).era.toFixed(2):'-',h?ipStr(h.outs):'-']:[h&&h.pa?fmt3(bRate(h).ops):'-',h?h.hr:'-'];
-    const tags=[p.injOut>0||p.susp>G.day?`<span class="pill bad">${outTxt(p)}</span>`:'',p.foreign?'<span class="pill">외국인</span>':'',isRookie(p)?'<span class="pill acc">신인</span>':'',p.listed?'<span class="pill warn">명단</span>':''].join('');
-    return `<tr class="click" data-a="player" data-v="${p.id}"><td><span class="pn">${avImg(p)}<span>${esc(p.name)} ${tags}</span></span></td><td>${pos||posLabel(p)}</td><td>${p.age}</td><td>${rchip(rp.cur)}</td><td>${rchip(rp.ofp)}</td><td><span class="mood" style="--c:${m>=65?'var(--good)':m>=45?'var(--r50)':m>=30?'var(--warn)':'var(--bad)'}" title="${moodLabel(m)}"></span></td><td>${st[0]}</td><td>${st[1]}</td><td>${h?wOf(h,p).toFixed(1):'-'}</td><td>${money(p.sal)}</td></tr>`; };
-  return `<div class="tw"><table class="sqt"><thead><tr>${head.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${groups.filter(g=>g[1].length).map(([g,arr,posf])=>`<tr class="grp"><td colspan="10">${g} · ${arr.length}명</td></tr>`+arr.map(p=>row(p,posf?posf(p):null)).join('')).join('')}</tbody></table></div>`;
-}
 function rosterView(){
   const tid=UI.rosterTeam??G.user; const own=tid===G.user; const t=team(tid);
   const d=depth(tid); const rv=UI.rview||'table';

@@ -75,14 +75,6 @@ function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감�
     a=ys.length?`눈여겨보는 선수는 ${ys.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}입니다.${inU.length?` ${inU.map(x=>x.p.name).join(', ')}은(는) 이미 1군에서 자리를 잡아 가고 있습니다.`:''}${outU.length?` ${outU.map(x=>x.p.name).join(', ')}은(는) ${m.youth>=60?'기회를 더 주고 싶습니다.':'아직 1군에서 쓰기엔 이릅니다.'}`:''}`:'당장 1군에 올릴 만한 젊은 선수는 안 보입니다.'; }
   const wk=Math.floor(G.day/7); let rel=''; if(G.mgrTalkW!==wk){ G.mgrTalkW=wk; m.rel=clamp(m.rel+1,0,100); rel=' (자주 의논해 주셔서 감독 관계 +1)'; }
   (G.mgrChat=G.mgrChat||[]).unshift({d:G.day,t:topic,a:a.replace(/^/,'')}); if(G.mgrChat.length>8)G.mgrChat.length=8; return {a:`${nm} 감독: "${a}"${rel}`}; }
-/* 선수단 미팅: 개별 면담 대신 팀 전체에 한 번에 말한다. 2주에 한 번 */
-const TEAMTALK={cheer:'격려',push:'분발 촉구',rest:'부담 덜어 주기'};
-function teamTalk(k){ if(G.ttDay!=null&&G.day-G.ttDay<14)return `선수단 미팅은 2주에 한 번 할 수 있습니다(${dmd(G.ttDay+14)}부터).`; const ps=playersOf(G.user); const m=G.mgr[G.user]; const r=G.sea&&G.sea.rec?G.sea.rec[G.user]:null; const bad=r&&r.l>r.w+3;
-  G.ttDay=G.day; let msg='';
-  if(k==='cheer'){ ps.forEach(p=>p.mor=clamp((p.mor??60)+(bad?4:2),0,100)); msg=`선수들 표정이 밝아졌습니다. 기분 +${bad?4:2}.`; }
-  else if(k==='push'){ const ok=(m?m.rel:50)>=45&&R()<.65; ps.forEach(p=>p.mor=clamp((p.mor??60)-2,0,100)); if(ok){ G.form={until:G.day+10,b:.5}; msg='선수단이 긴장했습니다. 열흘간 집중력이 올라갑니다. 기분 -2.'; } else msg='선수들이 받아들이지 못했습니다. 기분 -2.'; }
-  else { ps.forEach(p=>{ p.mor=clamp((p.mor??60)+1,0,100); p.fat=Math.max(0,(p.fat||0)-8); }); msg='훈련 강도를 낮췄습니다. 피로가 줄고 기분 +1.'; }
-  return msg; }
 function talk(id,kind){
   const p=G.players[id]; if(!p||p.team!==G.user)return {msg:'우리 선수만 면담할 수 있습니다.'};
   initPers(p); const wk=Math.floor(G.day/7);

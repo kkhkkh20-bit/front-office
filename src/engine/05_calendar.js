@@ -9,6 +9,8 @@ const dsh=n=>{const o=dobj(n);return `${o.m}/${o.d}`;};
 function onOrAfter(y,m,d,w){ let n=dnum(y,m,d); while(dobj(n).w!==w)n++; return n; }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 const KD=(m,d)=>dnum(G.year,m,d);
+/* 시즌 주요 마감일(KBO 규정): 트레이드 7월 31일, 외국인 선수 등록·교체 8월 15일 */
+const tradeDL=()=>KD(7,31), foreignDL=()=>KD(8,15);
 
 /* ===== 시즌 일정: 3연전·2연전, 월요일 휴식, 올스타 휴식기 ===== */
 function buildCalendar(y){
