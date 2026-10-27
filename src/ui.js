@@ -94,7 +94,7 @@ function render(){
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
   try{ annCheck(); }catch(e){}
-  setTimeout(()=>{ try{ document.querySelectorAll('.chips').forEach(el=>el.classList.toggle('ovf',el.scrollWidth>el.clientWidth+2)); }catch(e){} },0);
+  setTimeout(()=>{ try{ campAfter(); if(UI.facFocus){ const el=document.getElementById('fci-'+UI.facFocus); UI.facFocus=null; if(el){ el.scrollIntoView({block:'center'}); el.classList.add('flash'); } } }catch(e){} try{ document.querySelectorAll('.chips').forEach(el=>el.classList.toggle('ovf',el.scrollWidth>el.clientWidth+2)); }catch(e){} },0);
   if(UI.tab==='roster'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.roster=true; } if(G.tut&&!G.tut.done){ try{ tutTick(); }catch(e){} }
   const t=team(G.user); setTeamVars(t);
   const per=period(); const unread=G.mail.filter(mailNeeds).length; const b=blockNow();
@@ -389,7 +389,7 @@ const BNAV=['home','inbox','roster','trade','league'];
 const SUBS={
   trade:[['block','트레이드 블록'],['table','협상 테이블'],['market','추천·선수 찾기'],['gms','단장들']],
   transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약']],
-  staff:[['mgr','감독'],['coach','코치진'],['scouts','스카우트'],['data','전력분석'],['dev','육성'],['fac','시설'],['med','의무·병역']],
+  staff:[['camp','훈련장'],['mgr','감독'],['coach','코치진'],['scouts','스카우트'],['data','전력분석'],['dev','육성'],['fac','시설'],['med','의무·병역']],
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['news','뉴스·팬'],['hist','역사']],
   club:[['owner','구단주·목표'],['fin','재정'],['stad','구장'],['chron','연대기'],['set','설정']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
@@ -2075,7 +2075,6 @@ function quickActs(p){
   if(p.prospect){ if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); }
   else if(p.team===G.user&&!(p.joinY>G.year)){
     b.push(`<button class="btn small" data-a="jump" data-v="bond">면담</button>`);
-    if(!p.foreign&&p.age>=23&&team(G.user).cap!==p.id)b.push(`<button class="btn small" data-a="setCap" data-v="${p.id}">주장 임명</button>`);
     if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 카드로</button>`); }
     if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">블록 내리기</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">트레이드 블록</button>`);
     if(entryOn()&&!p.ys)b.push(`<button class="btn small" data-a="${p.e1?'reqDown':'reqUp'}" data-v="${p.id}">${p.e1?'말소 요청':'1군 요청'}</button>`);
@@ -2405,13 +2404,13 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
   const league=G.teams.map(x=>({x,lv:facLv(x.id)})); const rk=league.filter(q=>q.lv>F.lv).length+1;
   const card=k=>{ const D=FACI[k], lv=F.it[k], b=F.bld[k], nx=lv+1;
     const pips=[1,2,3].map(i=>`<i class="${i<=lv?'on':''}${b&&i===b.lv?' bld':''}"></i>`).join('');
-    return `<div class="tcard fci" style="cursor:default"><div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><div style="min-width:0"><b>${D.l}</b><div class="small muted">${D.lv[lv]}</div></div><span class="fpip" title="${lv}/3단계">${pips}</span></div>
+    return `<div class="tcard fci" id="fci-${k}" style="cursor:default"><div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><div style="min-width:0"><b>${D.l}</b><div class="small muted">${D.lv[lv]}</div></div><span class="fpip" title="${lv}/3단계">${pips}</span></div>
       <p class="dnote">${esc(D.d)}</p>
       <div class="tc-ft">${b?`<span class="pill warn">${D.lv[b.lv]} 공사 중 · ${dmd(b.done)} 완공</span>`:lv>=3?'<span class="pill good">최고 단계</span>':`<span class="small">다음: <b>${D.lv[nx]}</b> · 공사비 <b class="num">${money(D.c[nx])}</b> · ${D.days[nx]}일 · 유지비 연 ${money(D.up[nx])}</span><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||t.cash<D.c[nx]?'disabled':''}>공사</button>`}</div></div>`; };
   return csec('훈련·육성 시설',`<p class="small muted">실제 구단의 2군 훈련장·재활센터·트래킹 장비 투자를 항목별로 나눴습니다. 공사비는 구단 보유 자금에서 바로 나가고, 완공되면 유지비가 매년 듭니다. 공사는 동시에 2곳까지 할 수 있습니다. 성장 효과는 매년 겨울 성장 때 반영되고, 부상·회복 효과는 바로 적용됩니다.</p>
     <dl class="tsum"><div><dt>종합 등급</dt><dd>${F.lv}단계 · 리그 ${rk}위</dd></div><div><dt>연 유지비</dt><dd class="num">${money(facUpkeep())}</dd></div><div><dt>보유 자금</dt><dd class="num">${money(t.cash)}</dd></div><div><dt>공사 중</dt><dd>${nb}/2</dd></div></dl>
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
-    <div class="tgrid">${FACK.map(card).join('')}</div>
+    <div class="tgrid">${FACK.map(card).join('')}${(()=>{ const bl=busLv(); return `<div class="tcard fci" id="fci-bus" style="cursor:default"><div class="row between" style="flex-wrap:nowrap"><div><b>구단 버스</b><div class="small muted">${BUS[bl].l}</div></div><span class="fpip">${[1,2].map(i=>`<i class="${i<=bl?'on':''}"></i>`).join('')}</span></div><p class="dnote">원정 경기 이동 피로를 바꿉니다. 일반 버스는 원정 피로 +10%, 우등 +2%, 리무진 -6%(다른 구단은 우등 기준).</p><div class="tc-ft">${bl>=2?'<span class="pill good">최고 등급</span>':`<span class="small">${BUS[bl+1].l} 구입 <b class="num">${money(BUS[bl+1].c)}</b> · 운영비 연 ${money(BUS[bl+1].up)}</span><button class="btn small primary" data-a="buyBus" data-v="${bl+1}" ${t.cash<BUS[bl+1].c?'disabled':''}>구입</button>`}</div></div>`; })()}</div>
     <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
     <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(퓨처스 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 감독의 육성 성향. 4) 2군 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 
@@ -2737,6 +2736,46 @@ function draftHist(ys){ const y=UI.dhy&&ys.includes(UI.dhy)?UI.dhy:ys[0]; const 
     <div class="eyebrow">이 해 최고 선수 10명</div>${tbl(best)}`); }
 function draftPage(){ const ys=draftYears(); const it=ys.length?inTabs('dr',[['now',G.draft&&!G.draft.done?'드래프트 진행':'올해 드래프트'],['hist','지난 드래프트 성적표']]):null;
   return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):draftBoard()); }
+/* ---------- 구단 훈련장 전경: 시설 단계와 선수 위치를 한 장에 ---------- */
+function campData(){ facInit(); const per=period(); const inSea=per==='season'||per==='post'; const camp=G.camp&&!G.camp.done;
+  const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid));
+  const out=[]; const used=new Set(); const put=(p,w)=>{ if(used.has(p.id))return; used.add(p.id); const c=condOf(p);
+    out.push({id:p.id,name:fname(p),v:p.id,where:w,inj:p.injOut>0,tired:(p.fat||0)>=60,hot:c>=3}); };
+  ps.filter(p=>p.injOut>0).forEach(p=>put(p,'rehab'));
+  ps.filter(p=>devIds.has(p.id)&&!used.has(p.id)).forEach((p,i)=>put(p,facOf('lab')>0&&(p.isP||i%2)?'lab':'indoor'));
+  if(inSea){ ps.filter(p=>p.e1&&!used.has(p.id)).forEach(p=>put(p,'main')); const f=ps.filter(p=>!used.has(p.id)&&!isAway(p));
+    f.slice(0,12).forEach(p=>put(p,'fut')); f.filter(p=>!used.has(p.id)).forEach((p,i)=>put(p,p.age<=23&&i%3===0?'dorm':i%2?'weight':'indoor')); }
+  else { const f=ps.filter(p=>!used.has(p.id)&&!isAway(p)); f.forEach((p,i)=>put(p,camp?(i%3===0?'weight':i%3===1?'indoor':'fut'):(p.age<=23&&i%4===0?'dorm':i%2?'weight':'indoor'))); }
+  const B=Object.keys(G.fac.bld||{})[0]; const bb=B?G.fac.bld[B]:null; const dur=bb?FACI[B].days[bb.lv]:1;
+  const P=tpal(team(G.user)); CAMP_UNI.a={S:'#f2f4f6',D:P[0],H:P[0]};
+  return {lv:G.fac.it,bld:B||null,pct:bb?clamp(1-(bb.done-G.day)/dur,0,1):0,bus:busLv(),players:out,
+    mainNote:per==='season'?(G.cal.sched[G.day]?'경기 전 훈련':'휴식일 훈련'):per==='post'?'가을야구 준비':camp?'스프링캠프(해외)':'비시즌',futNote:inSea?'퓨처스 경기':'자율 훈련'}; }
+function campView(){ const S=campData(); const c=k=>S.players.filter(p=>p.where===k).length; const inj=S.players.filter(p=>p.inj).length, tired=S.players.filter(p=>p.tired).length, hot=S.players.filter(p=>p.hot).length;
+  const B=S.bld?`<span class="chip">공사 중 <b>${FACI[S.bld].l} ${Math.round(S.pct*100)}%</b></span>`:'';
+  return `<section class="card campc"><div class="row between"><h2 class="sec">${esc(team(G.user).city)} 훈련장</h2><span class="small muted">${UI.cz?'선수를 누르면 선수 카드, 시설을 누르면 공사 화면':'구역을 누르면 크게 봅니다'}</span></div>
+    <div class="cpchips"><span class="chip">1군 <b>${c('main')}</b></span><span class="chip">2군 <b>${c('fut')}</b></span><span class="chip">훈련·연수 <b>${c('indoor')+c('weight')+c('lab')}</b></span><span class="chip r">부상 <b>${inj}</b></span><span class="chip y">피로 <b>${tired}</b></span><span class="chip g">상승세 <b>${hot}</b></span>${B}</div>
+    ${UI.cz?'<button class="btn small" data-a="campZoom" data-v="">전체 보기</button>':''}
+    <div class="campst" id="campst">${renderCampus(S)}</div>
+    <p class="small muted">선수 위치는 오늘 상태 기준입니다: 1군 엔트리는 홈구장, 나머지는 2군 구장·훈련 시설, 부상자는 재활센터, 2군 연수 대상은 피칭·타격 랩. 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`+leadCard(); }
+function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=cl.cap; const m=G.mgr[G.user]; const ld=c?leadOf(c):null; const adj=G.leadAdj&&G.leadAdj.until>G.day?G.leadAdj:null;
+  const band={loose:['bad','느슨함','집중력이 떨어지고 기행이 잦아집니다'],ok:['','보통','큰 영향은 없습니다'],good:['good','알맞음','선수들이 집중하고 분위기가 좋습니다'],rigid:['warn','너무 엄격','경직된 플레이가 나오고 젊은 선수 불만이 쌓입니다']}[cl.band];
+  const can=!(G.capTalk&&G.day-G.capTalk<30);
+  return `<section class="card"><div class="row between"><h2 class="sec">선수단 리더십</h2><span class="pill ${band[0]}">기강 ${cl.S} · ${band[1]}</span></div>
+    ${c?`<div class="row" style="flex-wrap:nowrap;gap:10px;align-items:center"><button class="pm" data-a="player" data-v="${c.id}">${avImg(c)}<span><b>주장 ${esc(c.name)}</b><i>${posLabel(c)} · ${c.age}세 · 선수단 투표로 선출</i></span></button></div>
+      <dl class="tsum"><div><dt>리더십 성향</dt><dd>${LEADSTY(ld.str)}</dd></div><div><dt>선수단 영향력</dt><dd>${ld.cha>=14?'큼':ld.cha>=9?'보통':'작음'}</dd></div><div><dt>감독 규율</dt><dd>${m&&m.disc!=null?(m.disc>=65?'엄격':m.disc>=40?'보통':'느슨'):'-'}</dd></div></dl>`:'<p class="small muted">주장이 없습니다. 스프링캠프 때 선수단 투표로 뽑습니다.</p>'}
+    <div class="clbar"><i style="left:${cl.S}%"></i><span class="z l">느슨</span><span class="z g">알맞음</span><span class="z r">엄격</span></div>
+    <p class="small">${band[2]}. 기강은 주장 성향 60%, 감독 규율 40%로 정해집니다${adj?` · 단장 요청 반영 중(${adj.v>0?'+':''}${adj.v}, ${dmd(adj.until)}까지)`:''}.</p>
+    <div class="row" style="gap:6px"><button class="btn small" data-a="capTalk" data-v="1" ${can&&c?'':'disabled'}>주장 면담: 기강 다잡기</button><button class="btn small" data-a="capTalk" data-v="-1" ${can&&c?'':'disabled'}>주장 면담: 분위기 풀어 주기</button></div>
+    ${UI.capMsg?`<div class="note">${esc(UI.capMsg)}</div>`:''}</section>`; }
+function campAfter(){ const svg=document.querySelector('#campst svg.campus'); if(svg&&UI.cz)svg.setAttribute('viewBox',UI.cz.join(' ')); }
+function campZoomTo(to){ const svg=document.querySelector('#campst svg.campus'); const fr=UI.cz||[0,0,1000,690]; UI.cz=to; if(!svg){ render(); return; } const t0=performance.now(); const tgt=to||[0,0,1000,690];
+  (function step(t){ const k=Math.min(1,(t-t0)/320), e=1-Math.pow(1-k,3); svg.setAttribute('viewBox',fr.map((a,i)=>a+(tgt[i]-a)*e).join(' ')); if(k<1)requestAnimationFrame(step); else render(); })(t0); }
+function campClick(e){ const svg=e.target.closest('svg.campus'); if(!svg)return false; const pl=e.target.closest('.cpp'); if(pl){ A.player(+pl.dataset.pid); return true; }
+  const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  const g=[...svg.querySelectorAll('.plot')].find(x=>{ const [a,b,w,h]=x.dataset.b.split(',').map(Number); return q.x>=a&&q.x<=a+w&&q.y>=b&&q.y<=b+h; }); if(!g)return true;
+  if(!UI.cz){ const [a,b,w,h]=g.dataset.b.split(',').map(Number); campZoomTo([a-8,b-8,w+16,h+16]); return true; }
+  const k=g.dataset.k; if(k==='main')A.go('club:stad'); else { UI.facFocus=k; A.go('staff:fac'); } return true; }
+document.addEventListener('click',e=>{ if(UI.tab==='staff'&&e.target.closest&&e.target.closest('#campst')){ if(campClick(e)){ e.preventDefault(); e.stopPropagation(); } } },true);
 function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarket(); const stars=k=>'★'.repeat(k)+'<i class="off">'+'★'.repeat(5-k)+'</i>';
   const pw=r=>anaPow(r); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
   const card=(a,mine)=>`<div class="tcard anc" style="cursor:default"><div class="row between" style="flex-wrap:nowrap"><div style="min-width:0">${avImg({persona:'staff',pid:a.id,name:a.name,age:a.age})}<b> ${esc(a.name)}</b> <span class="small muted">${a.age}세 · 연 ${money(a.sal)}</span></div><span class="anstar">${stars(a.skill)}</span></div>
@@ -2759,6 +2798,7 @@ function staffView(){
     dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('2군 연수',devBody(),`<span class="small muted">${(G.devProg||[]).length}/6</span>`),
     coach:coachView,
     scouts:scoutTeamPage,
+    camp:campView,
     data:dataPage,
     fac:facView,
     mil:milView,
@@ -3568,6 +3608,9 @@ const A={
   offerYes(v){ offerMailDone(v); const r=answerOffer(v,true); note('트레이드',r.msg); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
   offerNo(v){ offerMailDone(v); answerOffer(v,false); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
   buildFacItem(v){ UI.facMsg=buildFacItem(v)||null; save(); render(); },
+  capTalk(v){ UI.capMsg=captainTalk(+v); G._cl=null; save(); render(); },
+  campZoom(v){ campZoomTo(null); },
+  buyBus(v){ UI.facMsg=buyBus(v)||null; save(); render(); },
   anaHire(v){ UI.cMsg=hireAna(v)||null; save(); render(); },
   anaFire(v){ fireAna(v); save(); render(); },
   camp(v){ if(G.camp){G.camp.focus=v; G.camp.seen=true; save(); render();} },

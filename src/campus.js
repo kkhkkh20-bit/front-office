@@ -1,0 +1,109 @@
+/* 구단 훈련장 전경: 시설 단계와 선수 상황을 한 장의 지도에 그린다 */
+let CAMP_UNI={a:{S:'#f2f4f6',D:'#CE0E2D',H:'#CE0E2D'},f:{S:'#9aa4ad',D:'#4b5560',H:'#4b5560'},r:{S:'#5b8fd6',D:'#2c4f80',H:'#2c4f80'},y:{S:'#e8eef3',D:'#6b7a88',H:'#6b7a88'}};
+let CPID=0;
+/* 선수 한 명: 위에서 본 그림 + 클릭 영역 + 상태 표시. anim은 SVG 애니메이션 조각 */
+function cpPlayer(p,x,y,o={}){ const id='cp'+(++CPID); const u=CAMP_UNI[o.uni||'a'];
+  const badge=p.inj?`<g transform="translate(9 -14)"><circle r="5.5" fill="#d6333f" stroke="#fff" stroke-width="1"/><path d="M-3 0h6M0 -3v6" stroke="#fff" stroke-width="1.8"/></g>`:p.tired?`<g transform="translate(9 -14)"><circle r="5.5" fill="#e0a100" stroke="#fff" stroke-width="1"/><text y="2.6" text-anchor="middle" font-size="7" font-weight="700" fill="#111">z</text></g>`:p.hot?`<g transform="translate(9 -14)"><circle r="5.5" fill="#1fa463" stroke="#fff" stroke-width="1"/><path d="M-2.5 1.5 0 -2 2.5 1.5" fill="none" stroke="#fff" stroke-width="1.6"/></g>`:'';
+  return `<g class="cpp" data-pid="${p.id}" transform="translate(${x} ${y})" tabindex="0" role="button" aria-label="${p.name}">
+    ${o.anim||''}<g transform="scale(${o.s||.62})"><ellipse cx="1" cy="2" rx="14" ry="12" fill="#0003"/><g transform="rotate(${o.rot||0})">${kPlayer({...u,v:p.v%5,rot:0,helm:o.helm?u.H:null,glove:o.glove,bat:o.bat,pose:o.pose})}</g></g>${badge}
+    <text class="cpn" y="${o.ny||19}">${p.name}</text></g>`; }
+function cpWalk(path,dur,begin){ return `<animateMotion dur="${dur}s" begin="${begin||0}s" repeatCount="indefinite" rotate="auto" path="${path}"/>`; }
+function cpBob(d){ return `<animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;0 -2;0 0" dur="${d||1.2}s" repeatCount="indefinite"/>`; }
+
+function plotFrame(x,y,w,h,title,lv,max,bld,key){ const pips=[1,2,3].map(i=>`<rect x="${x+w-46+i*12}" y="${y+7}" width="9" height="4" rx="1" fill="${i<=lv?'#4fd27c':bld&&i===lv+1?'#e0a100':'#ffffff33'}"/>`).join('');
+  return `<g class="plot" data-k="${key}" data-b="${x},${y},${w},${h}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="#ffffff22"/>
+    <rect x="${x}" y="${y}" width="${w}" height="18" rx="6" fill="#0b1218cc"/><text class="pt" x="${x+8}" y="${y+13}">${title}</text>${max?pips:''}</g>`; }
+
+/* 공사 중: 비계 무늬 + 크레인 + 진행 막대 */
+function construction(x,y,w,h,pct,label){ const pid='hatch'+x+y;
+  return `<defs><pattern id="${pid}" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#c8a35a"/><rect width="5" height="10" fill="#2b2b2b"/></pattern></defs>
+  <rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-44}" fill="#8d7a5a"/><rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-44}" fill="none" stroke="url(#${pid})" stroke-width="5"/>
+  <g transform="translate(${x+w*.62} ${y+h*.45})"><rect x="-4" y="-4" width="8" height="8" fill="#e0a100"/><g><line x1="0" y1="0" x2="${-w*.45}" y2="-6" stroke="#e0a100" stroke-width="4"/><line x1="0" y1="0" x2="${w*.18}" y2="3" stroke="#e0a100" stroke-width="4"/><rect x="${w*.18-6}" y="-2" width="10" height="10" fill="#555"/><line x1="${-w*.38}" y1="-5" x2="${-w*.38}" y2="18" stroke="#ddd" stroke-width="1"/><rect x="${-w*.38-7}" y="18" width="14" height="8" fill="#9aa4ad"/>
+    <animateTransform attributeName="transform" type="rotate" values="-8;14;-8" dur="7s" repeatCount="indefinite"/></g></g>
+  <rect x="${x+12}" y="${y+h-14}" width="${w-24}" height="6" rx="3" fill="#ffffff22"/><rect x="${x+12}" y="${y+h-14}" width="${(w-24)*pct}" height="6" rx="3" fill="#e0a100"/>
+  <text class="pl" x="${x+w/2}" y="${y+h-19}" text-anchor="middle">${label}</text>`; }
+
+function emptyLot(x,y,w,h,txt){ return `<rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-36}" fill="#5f7d4a" stroke="#d9d2bd" stroke-dasharray="4 3"/><text class="pl" x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle">${txt}</text>`; }
+/* 지붕을 걷어낸 건물: 벽 두께 + 바닥 */
+function bldg(x,y,w,h,floor){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${floor}" stroke="#d8dde2" stroke-width="5"/><rect x="${x+w/2-9}" y="${y+h-3}" width="18" height="6" fill="${floor}"/>`; }
+
+function renderCampus(S){ CPID=0; const P=S.players; const g=[];
+  const by=k=>P.filter(p=>p.where===k);
+  /* 바탕: 잔디·도로·주차장 */
+  g.push(`<rect width="1000" height="700" fill="#3c8a4f"/>${[...Array(14)].map((_,i)=>`<rect x="${i*72}" width="36" height="700" fill="#ffffff07"/>`).join('')}
+    <path d="M0 352 H1000 M440 352 V700 M640 352 V700 M820 352 V700" stroke="#8b939b" stroke-width="16" fill="none"/><path d="M0 352 H1000 M440 352 V700 M640 352 V700 M820 352 V700" stroke="#ffffff55" stroke-width="1" stroke-dasharray="8 8" fill="none"/>
+    ${[...Array(9)].map((_,i)=>`<rect x="${470+i*16}" y="604" width="11" height="20" rx="2" fill="${['#c94b4b','#3b6fb6','#e7e7e7','#2e2e2e','#d9b440'][i%5]}"/>`).join('')}<rect x="455" y="596" width="165" height="36" fill="none" stroke="#ffffff44"/>`);
+
+  /* 홈구장(1군) */
+  { const x=600,y=16,w=384,h=322; g.push(plotFrame(x,y,w,h,`홈구장 · 1군 ${by('main').length}명`,0,0,null,'main'));
+    const cx=x+w/2, cy=y+h-34;
+    g.push(`<path d="M${cx} ${cy+20} L${x+14} ${y+120} Q${cx} ${y-40} ${x+w-14} ${y+120} Z" fill="#5d6670"/>
+      <path d="M${cx} ${cy} L${x+40} ${y+128} Q${cx} ${y+10} ${x+w-40} ${y+128} Z" fill="#2f8a45"/>${[...Array(8)].map((_,i)=>`<path d="M${cx} ${cy} L${x+40+i*38} ${y+40} L${x+59+i*38} ${y+40} Z" fill="#ffffff08"/>`).join('')}
+      <path d="M${cx} ${cy} L${cx+62} ${cy-62} L${cx} ${cy-124} L${cx-62} ${cy-62} Z" fill="#a9824f"/><path d="M${cx} ${cy-8} L${cx+48} ${cy-58} L${cx} ${cy-106} L${cx-48} ${cy-58} Z" fill="#2f8a45"/>
+      <circle cx="${cx}" cy="${cy-58}" r="10" fill="#a9824f"/>${[[cx+62,cy-62],[cx,cy-124],[cx-62,cy-62]].map(b=>`<rect x="${b[0]-4}" y="${b[1]-4}" width="8" height="8" fill="#fff" transform="rotate(45 ${b[0]} ${b[1]})"/>`).join('')}<path d="M${cx-5} ${cy-3} h10 v4 l-5 4 l-5 -4z" fill="#fff"/>
+      <rect x="${x+w-120}" y="${y+24}" width="96" height="24" fill="#0a0d10" stroke="#3a4652"/><text x="${x+w-72}" y="${y+40}" text-anchor="middle" class="sb">${S.mainNote||'훈련 중'}</text>`);
+    const M=by('main'); const spots=[[cx,cy-58,90],[cx+52,cy-70,135],[cx+28,cy-118,100],[cx-28,cy-118,80],[cx-52,cy-70,45],[cx-118,cy-160,60],[cx,cy-205,90],[cx+118,cy-160,120]];
+    M.slice(0,8).forEach((p,i)=>{ const [px,py,r]=spots[i]; g.push(cpPlayer(p,px,py,{rot:r,glove:'L',pose:i===0?'set':null,anim:i>4?cpBob(2.4+i*.3):''})); });
+    if(M[8]) g.push(cpPlayer(M[8],cx-16,cy-2,{rot:0,bat:'R',helm:1}));
+    /* 타격 훈련 공 */
+    g.push(`<circle r="2.6" fill="#fff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M${cx} ${cy-58} L${cx-6} ${cy-6} Q${cx+60} ${cy-200} ${cx+140} ${cy-210}"/></circle>`);
+    if(M.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">더그아웃·불펜 ${M.length-9}명</text>`); }
+
+  /* 2군 구장 */
+  { const x=16,y=16,w=420,h=322, lv=S.lv.fut; g.push(plotFrame(x,y,w,h,`2군 구장 · ${['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv]}`,lv,3,S.bld==='fut','fut'));
+    const cx=x+w/2, cy=y+h-30; const grass=lv>=1?'#2f8a45':'#7d8f4e', stripe=lv>=1?'#ffffff0c':'#6b5a3a40';
+    if(lv>=3)g.push(`<path d="M${cx} ${cy+16} L${x+12} ${y+118} Q${cx} ${y-30} ${x+w-12} ${y+118} Z" fill="#5d6670"/>`);
+    g.push(`<path d="M${cx} ${cy} L${x+34} ${y+124} Q${cx} ${y+16} ${x+w-34} ${y+124} Z" fill="${grass}"/>${lv>=1?[...Array(8)].map((_,i)=>`<path d="M${cx} ${cy} L${x+34+i*44} ${y+40} L${x+56+i*44} ${y+40} Z" fill="${stripe}"/>`).join(''):`<g fill="#8a7650" opacity=".55">${[...Array(18)].map((_,i)=>`<ellipse cx="${x+60+(i*53)%320}" cy="${y+70+(i*37)%180}" rx="${8+i%4*3}" ry="${4+i%3*2}"/>`).join('')}</g>`}
+      <path d="M${cx} ${cy} L${cx+60} ${cy-60} L${cx} ${cy-120} L${cx-60} ${cy-60} Z" fill="#a9824f"/><path d="M${cx} ${cy-8} L${cx+46} ${cy-56} L${cx} ${cy-102} L${cx-46} ${cy-56} Z" fill="${grass}"/><circle cx="${cx}" cy="${cy-56}" r="9" fill="#a9824f"/>`);
+    if(lv>=2){ g.push([[x+20,y+40],[x+w-20,y+40],[x+24,y+250],[x+w-24,y+250]].map(([lx,ly])=>`<g><circle cx="${lx}" cy="${ly}" r="14" fill="#fff7d6" opacity=".18"/><rect x="${lx-6}" y="${ly-3}" width="12" height="6" rx="1" fill="#f3f0e0" stroke="#555"/></g>`).join('')
+      +`<rect x="${x+26}" y="${y+150}" width="44" height="12" fill="#a9824f"/><rect x="${x+w-70}" y="${y+150}" width="44" height="12" fill="#a9824f"/><text class="pl" x="${x+48}" y="${y+175}" text-anchor="middle">불펜</text>`); }
+    const F=by('fut'); const sp=[[cx,cy-56,90],[cx+50,cy-68,135],[cx+26,cy-112,100],[cx-26,cy-112,80],[cx-50,cy-68,45],[cx-120,cy-150,60],[cx,cy-196,90],[cx+120,cy-150,120]];
+    F.slice(0,8).forEach((p,i)=>{ const [px,py,r]=sp[i]; g.push(cpPlayer(p,px,py,{uni:'f',rot:r,glove:'L',pose:i===0?'set':null})); });
+    if(F[8]) g.push(cpPlayer(F[8],cx-15,cy-2,{uni:'f',bat:'R',helm:1}));
+    g.push(`<circle r="2.6" fill="#fff"><animateMotion dur="1.8s" repeatCount="indefinite" path="M${cx} ${cy-56} L${cx-6} ${cy-6}"/></circle>`);
+    if(lv>=3) g.push(`<rect x="${x+w-112}" y="${y+26}" width="90" height="22" fill="#0a0d10" stroke="#3a4652"/><text x="${x+w-67}" y="${y+41}" text-anchor="middle" class="sb">${S.futNote||'퓨처스 훈련'}</text>`);
+    if(F.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">벤치 ${F.length-9}명</text>`); }
+
+  /* 아래 줄 시설들 */
+  const row=(key,x,w,title,lvNames,draw)=>{ const y=370,h=226, lv=S.lv[key]; g.push(plotFrame(x,y,w,h,title,lv,3,S.bld===key,key)); g.push(`<text class="pl" x="${x+8}" y="${y+h-4}">${lvNames[lv]}</text>`);
+    if(S.bld===key&&lv===0){ g.push(construction(x,y,w,h,S.pct,`${lvNames[1]} 공사 중 · ${Math.round(S.pct*100)}%`)); return; }
+    if(lv===0){ g.push(emptyLot(x,y,w,h,'빈 부지 · 눌러서 공사')); return; }
+    draw(x,y,w,h,lv); if(S.bld===key)g.push(`<rect x="${x+12}" y="${y+h-12}" width="${w-24}" height="5" rx="2" fill="#ffffff22"/><rect x="${x+12}" y="${y+h-12}" width="${(w-24)*S.pct}" height="5" rx="2" fill="#e0a100"/><text class="pl" x="${x+w-14}" y="${y+h-16}" text-anchor="end">${lvNames[lv+1]} 증축 중</text>`); };
+
+  row('indoor',16,210,'실내 연습장',['없음','간이 연습장','실내 연습장','실내 훈련동'],(x,y,w,h,lv)=>{ const bw=lv===1?w-70:w-20; g.push(bldg(x+10,y+28,bw,h-48,'#3f8f55'));
+    const cages=lv===1?1:lv===2?2:3; for(let i=0;i<cages;i++){ const cx=x+22+i*62, cy=y+40; g.push(`<rect x="${cx}" y="${cy}" width="52" height="${h-74}" fill="#00000022" stroke="#ffffff55" stroke-dasharray="3 2"/><rect x="${cx+20}" y="${cy+8}" width="12" height="8" fill="#555"/>`);
+      const p=by('indoor')[i]; if(p){ g.push(cpPlayer(p,cx+22,cy+h-98,{bat:'R',helm:1,uni:p.uni||'a'})); g.push(`<circle r="2.2" fill="#fff"><animateMotion dur="${1.3+i*.2}s" repeatCount="indefinite" path="M${cx+26} ${cy+16} L${cx+26} ${cy+h-100}"/></circle>`); } } });
+
+  row('weight',236,196,'웨이트·컨디셔닝',['없음','기본 웨이트장','컨디셔닝 센터','퍼포먼스 센터'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#39424c'));
+    const n=2+lv*2; for(let i=0;i<n;i++){ const ex=x+28+(i%4)*40, ey=y+46+Math.floor(i/4)*58; g.push(`<rect x="${ex}" y="${ey}" width="26" height="8" rx="2" fill="#20262c"/><rect x="${ex-4}" y="${ey-2}" width="4" height="12" fill="#8b939b"/><rect x="${ex+26}" y="${ey-2}" width="4" height="12" fill="#8b939b"/>`); }
+    by('weight').slice(0,4).forEach((p,i)=>g.push(cpPlayer(p,x+40+(i%2)*80,y+86+Math.floor(i/2)*60,{rot:90,anim:cpBob(1+i*.15)})));
+    if(lv>=2)g.push(`<rect x="${x+w-50}" y="${y+40}" width="30" height="80" rx="4" fill="#2a6f97"/><text class="pl" x="${x+w-35}" y="${y+135}" text-anchor="middle">러닝 트랙</text>`); });
+
+  row('rehab',452,180,'재활·회복 센터',['없음','물리치료실','재활센터(수중)','회복 센터'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#e6ebef'));
+    if(lv>=2){ g.push(`<rect x="${x+22}" y="${y+40}" width="${w-44}" height="70" rx="10" fill="#4fa3d8"/><rect x="${x+22}" y="${y+40}" width="${w-44}" height="70" rx="10" fill="none" stroke="#bfe3f7" stroke-width="3"/>`); }
+    g.push([0,1,2].map(i=>`<rect x="${x+24+i*46}" y="${y+130}" width="30" height="48" rx="3" fill="#cfd8de" stroke="#9aa4ad"/>`).join(''));
+    if(lv>=3)g.push(`<circle cx="${x+w-36}" cy="${y+58}" r="12" fill="#9fd8f0" stroke="#fff"/><text class="pl dk" x="${x+w-36}" y="${y+84}" text-anchor="middle">냉각</text>`);
+    const RH=by('rehab'); if(RH.length>4)g.push(`<text class="pl dk" x="${x+w-16}" y="${y+h-26}" text-anchor="end">외 ${RH.length-4}명</text>`);
+    RH.slice(0,4).forEach((p,i)=>{ if(i===0&&lv>=2)g.push(`<g><circle cx="${x+70}" cy="${y+76}" r="10" fill="none" stroke="#fff" opacity=".6"><animate attributeName="r" values="8;22" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".7;0" dur="2.4s" repeatCount="indefinite"/></circle></g>`+cpPlayer(p,x+70,y+76,{uni:'r',rot:90,anim:`<animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;30 0;0 0" dur="8s" repeatCount="indefinite"/>`,ny:20}));
+      else g.push(cpPlayer(p,x+39+((i-(lv>=2?1:0))%3)*46,y+152,{uni:'r',rot:90,ny:28})); }); });
+
+  row('lab',652,160,'피칭·타격 랩',['없음','랩소도·영상','트래킹 랩','바이오메카닉스 랩'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#2c3440'));
+    g.push(`<circle cx="${x+50}" cy="${y+110}" r="16" fill="#a9824f"/><rect x="${x+w-46}" y="${y+60}" width="10" height="100" fill="#00000055" stroke="#ffffff77"/>
+      <rect x="${x+w-64}" y="${y+40}" width="40" height="14" rx="2" fill="#0b1218"/><rect x="${x+w-62}" y="${y+42}" width="36" height="10" fill="#4fd27c"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></rect>
+      ${lv>=2?`<g fill="#e0a100">${[[x+20,y+40],[x+20,y+170],[x+90,y+40]].map(([a,b])=>`<rect x="${a}" y="${b}" width="8" height="6"/><circle cx="${a+4}" cy="${b+3}" r="1.6" fill="#d6333f"/>`).join('')}</g>`:''}`);
+    const p=by('lab')[0]; if(p){ g.push(cpPlayer(p,x+50,y+110,{rot:0,pose:'set',glove:'L'})); g.push(`<circle r="2.4" fill="#fff"><animateMotion dur="1.1s" repeatCount="indefinite" path="M${x+60} ${y+110} L${x+w-42} ${y+110}"/></circle>`); }
+    const q=by('lab')[1]; if(q)g.push(cpPlayer(q,x+60,y+170,{rot:-90,anim:cpBob(2)})); });
+
+  row('dorm',842,142,'선수 숙소·식당',['없음','기숙사','기숙사·식당','선수촌'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#d9c7a6'));
+    const rooms=lv*4; for(let i=0;i<rooms;i++)g.push(`<rect x="${x+18+(i%4)*28}" y="${y+36+Math.floor(i/4)*26}" width="22" height="20" fill="#c3ad86" stroke="#a48f6a"/>`);
+    if(lv>=2)g.push(`<rect x="${x+20}" y="${y+130}" width="${w-40}" height="36" fill="#efe4cf"/><text class="pl dk" x="${x+w/2}" y="${y+182}" text-anchor="middle">식당</text>`);
+    by('dorm').forEach((p,i)=>g.push(cpPlayer(p,0,0,{uni:'y',anim:cpWalk(`M${x+24+i*20} ${y+h-30} L${x+w-24} ${y+h-30} L${x+w-24} ${y+120} L${x+24+i*20} ${y+120} Z`,12+i*2,-i*3)}))); });
+
+  /* 구단 버스: 원정 이동 피로 관리 */
+  { const bl=S.bus||0; const bx=640, by2=636; const col=bl>=2?'#1b2a44':bl>=1?'#3b4f6b':'#8a8f96';
+    g.push(`<g class="plot" data-k="bus" data-b="600,620,240,60"><g><rect x="${bx}" y="${by2}" width="${bl>=2?150:120}" height="30" rx="6" fill="${col}" stroke="#ffffff55"/><rect x="${bx+8}" y="${by2+5}" width="${bl>=2?132:102}" height="8" rx="2" fill="#9fd8f0aa"/><rect x="${bx+4}" y="${by2+20}" width="${bl>=2?142:112}" height="4" fill="#CE0E2D"/>
+      ${bl>=2?`<text x="${bx+75}" y="${by2+46}" class="pl" text-anchor="middle">리무진 버스 · 원정 피로 -15%</text>`:bl>=1?`<text x="${bx+60}" y="${by2+46}" class="pl" text-anchor="middle">우등 버스 · 원정 피로 -8%</text>`:`<text x="${bx+60}" y="${by2+46}" class="pl" text-anchor="middle">일반 버스</text>`}
+      <animateTransform attributeName="transform" type="translate" values="0 0;0 0;-240 0;-240 0;0 0" keyTimes="0;.4;.55;.9;1" dur="20s" repeatCount="indefinite"/></g></g>`); }
+  /* 도로를 오가는 선수 */
+  by('road').forEach((p,i)=>g.push(cpPlayer(p,0,0,{anim:cpWalk(`M${30+i*60} 352 H970 V354 H${30+i*60}`,26+i*4,-i*7)})));
+  return `<svg class="campus" viewBox="0 0 1000 690" xmlns="http://www.w3.org/2000/svg">${g.join('')}</svg>`; }
