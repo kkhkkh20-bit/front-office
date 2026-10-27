@@ -37,7 +37,7 @@ function resultHome(){
     ${pf.length?`<div class="pfs">${pf.join('')}</div>`:''}
     ${others}
     ${(()=>{ try{ return fanLinesHtml(gameFanLines(g),'팬 반응'); }catch(e){ return ''; } })()}
-    <div class="btns3">${g.pbp&&g.pbp.length?`<button class="btn primary" data-a="cast" data-v="${G.res.i}">그래픽 중계</button><button class="btn" data-a="watch" data-v="${G.res.i}">문자 중계</button>`:''}<button class="btn" data-a="openGame" data-v="${G.res.i}">박스스코어</button><button class="btn primary" data-a="resNext" ${blockNow()?'disabled':''}>다음 경기</button></div>
+    <div class="btns3">${g.pbp&&g.pbp.length?`<button class="btn primary" data-a="cast" data-v="${G.res.i}">그래픽 중계</button><button class="btn" data-a="watch" data-v="${G.res.i}">문자 중계</button>`:''}<button class="btn" data-a="openGame" data-v="${G.res.i}">박스스코어</button><button class="btn" data-a="resNext" ${blockNow()?'disabled':''}>다음 경기</button><button class="btn primary" data-a="watchNext" ${blockNow()?'disabled':''}>다음 경기 중계로 보기</button></div>
   </section>`;
 }
 function otherScores(day,skip){

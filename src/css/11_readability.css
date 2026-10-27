@@ -182,3 +182,11 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 /* 컨디션 화살표 */
 .cnd.ca{display:inline-flex;align-items:center;justify-content:center;color:var(--cc);margin-left:4px;vertical-align:-1px;width:14px;height:14px}
 .cnd.ca svg{display:block;transition:none}
+/* 선수 표 열 설정 */
+.rcp-bar{margin:-4px 0 6px}
+.rcp{border:1px solid var(--line);border-radius:10px;padding:10px;margin:0 0 10px;display:flex;flex-direction:column;gap:8px}
+.rcp-on,.rcp-off{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.rcp-c{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:8px;padding:2px 4px;background:rgba(255,255,255,.03)}
+.rcp-c b{font-size:12px;padding:0 4px}
+.rcp-m,.rcp-x{background:none;border:0;color:var(--muted,#9aa7b4);font-size:11px;padding:2px 4px;cursor:pointer;min-width:22px;min-height:22px}
+.rcp-m:disabled{opacity:.25;cursor:default}.rcp-x:hover{color:#ff7b72}
