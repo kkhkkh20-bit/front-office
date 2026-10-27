@@ -166,3 +166,4 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .salr-a{gap:6px;flex-wrap:wrap}.salr-a .danger{margin-left:auto}
 @media(max-width:420px){.salr-b{grid-template-columns:minmax(0,1fr)}}
 .salok{display:grid}.salok-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line);font-size:13px}
+.salr-fa{margin:4px 0 0;color:#c9b6ff}

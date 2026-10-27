@@ -16,12 +16,13 @@ function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상�
   wire('코치',`${tshort(G.user)}, ${tshort(tid)} ${CROLE[role].l} ${c.name} 영입${T.promo?` (${CROLE[toRole].l} 승격)`:''}`,{tid}); addLog(`${tname(tid)}에서 ${c.name} 코치를 ${CROLE[toRole].l}로 데려왔습니다. 연 ${money(T.sal)}${T.comp?` · 보상금 ${money(T.comp)}`:''}.`);
   return `${c.name} 코치가 ${CROLE[toRole].l}로 합류합니다. 연 ${money(T.sal)} 2년${T.comp?`, ${tshort(tid)}에 보상금 ${money(T.comp)}`:''}. ${tshort(tid)} 단장 친분 -${T.comp?2:4}.`; }
 
-/* ===== FA 등급제 (2021 FA부터): 3년 평균 연봉의 구단 내·리그 순위, 나이, FA 횟수로 정한다 ===== */
+/* ===== FA 등급제 (2021 FA부터): 최근 3년 연봉의 구단 내·리그 순위, 나이, FA 횟수로 정한다 =====
+   순위를 셀 때 기존 FA 계약 선수는 빼고, 2025년 1월 이사회 개정으로 비FA 다년계약 선수도 뺀다(계약 마지막 해에는 포함).
+   보상: A 직전 연봉 200%+보호 20인 외 1명 또는 300%, B 100%+보호 25인 외 1명 또는 200%, C 150%(선수 없음) */
 function avgSal3(p){ const H=(p.salH||[]).slice(-3); return H.length?avg(H.map(x=>x.s)):p.sal; }
 function faGradeOf(p,all){ if(p.age>=35)return 'C'; const n=p.faN||(p.lastFA!=null?1:0); if(n>=2)return 'C'; if(n===1)return p.faPrevGrade==='C'?'C':'B';
-  /* 실제 KBO 등급은 계약금을 뺀 연봉으로 매긴다. FA 계약 선수 연봉은 계약금 몫(약 40%)을 빼고 비교한다 */
-  const gs=q=>avgSal3(q)*(q.lastFA!=null&&q.faC&&!q.ext?.6:1);
-  const D=all.filter(q=>!q.foreign); const v=gs(p); const lg=D.filter(q=>gs(q)>v).length+1; const tm=D.filter(q=>q.team===p.team&&gs(q)>v).length+1; p.faRank={lg,tm};
+  const gs=q=>avgSal3(q);
+  const D=all.filter(q=>!q.foreign&&(q.id===p.id||!(q.faC&&!q.ext)&&!(q.ext&&q.faC&&(q.yrs||0)>1))); const v=gs(p); const lg=D.filter(q=>gs(q)>v).length+1; const tm=D.filter(q=>q.team===p.team&&gs(q)>v).length+1; p.faRank={lg,tm};
   if(tm<=3&&lg<=30)return 'A'; if(tm<=10&&lg<=60)return 'B'; return 'C'; }
 /* 실제 KBO는 소속선수 65명 중 A 20명·B 25명을 보호한다. 이 게임 등록 상한은 40명이라 같은 비율(약 31%·38%)로 줄인다 */
 const COMP={A:{prot:20,kbo:20,withP:2,cash:3},B:{prot:25,kbo:25,withP:1,cash:2},C:{prot:0,kbo:0,withP:0,cash:1.5}};

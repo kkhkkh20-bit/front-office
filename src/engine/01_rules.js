@@ -3,7 +3,8 @@ const REG=['수도권','영남','호남·충청'];
 /* 경쟁균형세 상한: 2026~2028년은 KBO 이사회 결정(매년 5%). 2029년부터는 게임 안 이사회가 매년 12월 리그 연봉 상황을 보고 정한다 */
 function capOf(y){ if(y<=2026)return 14397; if(y===2027)return 15117; if(y===2028)return 15873; if(typeof G!=='undefined'&&G&&G.capY){ if(G.capY[y])return G.capY[y]; const ks=Object.keys(G.capY).map(Number).filter(k=>k<y).sort((a,b)=>b-a); if(ks.length)return Math.round(G.capY[ks[0]]*Math.pow(1.03,y-ks[0])); } return Math.round(15873*Math.pow(1.03,y-2028)); }
 function floorOf(y){ return Math.round(6065*capOf(y)/14397); }
-const MIN_SAL=30;            // 3,000만원 (금액 단위: 백만원)
+let MIN_SAL=30;              // 최저 연봉 3,000만원(금액 단위: 백만원). 2027년부터 3,300만원(2026년 1월 KBO 이사회)
+function syncMinSal(){ MIN_SAL=(typeof G!=='undefined'&&G&&G.year>=2027)?33:30; }
 const ROSTER_MAX=68, ROSTER_MIN=45; // KBO 소속선수 한도: 2025년까지 65명, 2026년 68명으로 확대
 /* 1군 엔트리(KBO 2026: 29명, 8월 25일부터 4명 확대, 말소 후 10일 뒤 재등록)와 육성선수 */
 const ENTRY_BASE=29, ENTRY_EXP=4, YS_MAX=15;

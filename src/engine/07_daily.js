@@ -50,7 +50,7 @@ function userRank(){ try{ const st=standingsNow(); return st.findIndex(x=>x.tid=
 /* 시즌 제한(현재 꺼 둠): 켜면 첫 시즌을 마치고 스토브리그 직전에서 멈춘다 */
 const GAME_VER='0.9'; const DEMO={on:false,seasons:1}; /* 무료 정식 공개: 시즌 제한 없음 */
 function demoOver(){ return DEMO.on&&G.year>=(G.startY||2026)+DEMO.seasons-1&&!G.unemp; }
-function processDay(){
+function processDay(){ syncMinSal();
   if(G.demoEnd)return;
   G.day++; const day=G.day, o=dobj(day);
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }

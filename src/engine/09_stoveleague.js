@@ -124,13 +124,17 @@ function faClose(){
 /* 1월 10일: 우리 구단 출신 미계약 FA가 있으면 알린다 */
 function faUnsignedNote(){ const F=G.fa; if(!F||F.closed)return; const L=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom===G.user); if(!L.length)return;
   stop('FA',`우리 구단 출신 미계약 FA ${L.length}명: ${L.map(p=>`${p.name}(요구 ${p.ask.years}년 연 ${money(p.ask.annual)})`).join(', ')}. 스프링캠프 전날(1월 24일)까지 아무 데서도 계약하지 못하면 은퇴합니다. 잡으려면 FA 시장에서 제안하세요.`); }
+/* 다른 구단의 예비 FA 대우: 팀 연봉 상위 핵심이고 붙잡을 생각이 있으면 프리미엄을 얹는다(돈 사정이 나쁘면 못 한다) */
+function aiPreFA(p){ if(!preFA(p)||p.newSal==null)return; const t=team(p.team); if(!t||t.cash<-3000||p.age>=33)return;
+  const ps=domestic(p.team).filter(q=>!q.ys); const rk=ps.filter(q=>ovr(q)>ovr(p)).length+1; if(rk>8||ovr(p)<52)return;
+  if(p.newSal<preCap(p)&&R()<(t.mode==='contend'?.75:.5)){ p.newSal=preFAPremium(p,p.newSal); p.mor=clamp((p.mor??60)+3,0,100); p.prem=G.year; } }
 function contractStart(){
   const ended=[], foreignEnd=[];
   for(const p of Object.values(G.players)){
     if(p.team==null||p.joinY>G.year)continue;
     if(p.foreign){ p.newSal=newSalary(p); if(p.team===G.user)foreignEnd.push(p.id); else { const pf=perfOf(seasonTotal(p,G.year,'1군'),p.isP); if(p.age>=35||pf==null||pf<50)delete G.players[p.id]; else { p.sal=p.newSal; p.rsy=(p.rsy||0)+1; if(p.foreign==='용병'){ const yb=foreignOf(p.team).filter(x=>x.foreign==='용병'); if(sum(yb.map(x=>x.sal))>fCap(p.team)){ const w=[...yb].sort((a,b)=>ovr(a)-ovr(b))[0]; delete G.players[w.id]; } } } } continue; }
     if(p.faC)continue;
-    p.newSal=newSalary(p); if(p.team===G.user)ended.push(p.id); else { p.sal=p.newSal; delete p.newSal; }
+    p.newSal=newSalary(p); if(p.team===G.user)ended.push(p.id); else { aiPreFA(p); p.sal=p.newSal; delete p.newSal; }
   }
   G.contract={ended,foreignEnd,foreignDrop:[],released:[],done:false}; salTalkInit();
   /* AI 구단: 기량이 크게 떨어진 고액 연봉 베테랑은 정리한다 */
@@ -151,7 +155,7 @@ function fReNeg(id){ const C=G.contract; const p=G.players[id]; if(!C||!p||C.don
 function confirmContracts(){
   const C=G.contract; if(!C||C.done)return; { const f=fReCapInfo(); if(f&&f.over>0)return `외국인 3명 연봉 총액이 한도를 ${money(f.over)} 넘습니다. 한 명과 결별하거나 금액을 낮춰 협상하세요.`; }
   salTalkClose();
-  for(const id of C.ended){ const p=G.players[id]; if(p&&p.newSal!=null){p.sal=p.newSal; delete p.newSal;} }
+  for(const id of C.ended){ const p=G.players[id]; if(p&&p.newSal!=null){p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal;} }
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p)continue; if(C.foreignDrop.includes(id)){ addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다.`); if(!p.fleft&&ovr(p)>=55&&p.age<=33){ delete p.newSal; p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); G.fmarket=(G.fmarket||[]).concat(p.id); } else delete G.players[id]; } else { p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; } }
   C.done=true; addLog('연봉 계약을 마쳤습니다.');
 }
@@ -177,7 +181,7 @@ function newYear(){
   const before={}; for(const p of domestic(G.user))before[p.id]=ovr(p);
   for(const p of Object.values(G.players)) if(p.team!=null) develop(p);
   if(G.draftClass)for(const id of G.draftClass){ const p=G.players[id]; if(p&&p.prospect)delete G.players[id]; }
-  G.year++;
+  G.year++; syncMinSal(); for(const p of Object.values(G.players))if(p.team!=null&&!p.foreign&&p.sal<MIN_SAL)p.sal=MIN_SAL;
   milNewYear();
   for(const p of Object.values(G.players)){ p.injOut=0; delete p.lastStart; delete p.lastApp; delete p.prevApp; }
   for(const t of G.teams){ if(t.id!==G.user){ trimRoster(t.id,64); fillRoster(t.id,56);} t.rot=0; }

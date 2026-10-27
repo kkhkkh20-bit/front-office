@@ -12,7 +12,9 @@ function salBasis(p){ const yh=G.contract&&G.contract.y!=null?G.contract.y:(dobj
 function salAsk(p,off){ const b=salBasis(p); initPers(p); const amb=p.pers.amb;
   if(off<p.sal)return round5(Math.max(off,p.sal*(b.war>=.5?1:.94)));
   const want=b.enough&&b.war>=1?.03+b.war*.045+(amb-12)*.007:(amb-12)*.003;
-  return round5(Math.max(off,off*(1+clamp(want,0,.4)))); }
+  /* 예비 FA는 시장을 알고 있어 조금 더 부른다 */
+  const pf=preFA(p)&&b.war>=1?.05:0;
+  const lim=!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)?Math.max(off,preCap(p)):Infinity; return round5(Math.min(lim,Math.max(off,off*(1+clamp(want+pf,0,.45))))); }
 function salTalkInit(){ const C=G.contract; if(!C||C.neg)return; C.y=G.year; C.neg={};
   for(const id of C.ended){ const p=G.players[id]; if(!p||p.newSal==null)continue; const off=p.newSal; C.neg[id]={off,ask:salAsk(p,off),cur:null,st:'open',wk:-1}; } }
 function salNeg(id){ const C=G.contract; if(!C)return null; salTalkInit(); return C.neg&&C.neg[id]||null; }
@@ -20,7 +22,7 @@ function salNeg(id){ const C=G.contract; if(!C)return null; salTalkInit(); retur
 function salOffer(id,amt,force){ const C=G.contract; const p=G.players[id]; const n=salNeg(id); if(!C||C.done||!p||!n)return '협상 대상이 아닙니다.'; if(n.st!=='open')return `${p.name}와(과)는 이미 ${n.st==='ok'?'합의했습니다':'연봉조정 중입니다'}.`;
   amt=round5(+amt); const wk=Math.floor(G.day/7); if(!force&&n.wk===wk&&amt<n.ask)return `${p.name} 측: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 만나시죠.`;
   n.wk=wk; n.cur=amt; initPers(p); const tol=.01+(p.pers.loy-4)*.002;
-  if(amt>=n.ask*(1-tol)){ n.st='ok'; p.newSal=amt; if(amt>=n.ask)p.mor=clamp((p.mor??60)+2,0,100); return `${p.name}: ${money(amt)}에 합의했습니다.`; }
+  if(amt>=n.ask*(1-tol)){ n.st='ok'; p.newSal=amt; if(amt>=n.ask)p.mor=clamp((p.mor??60)+2,0,100); if(preFA(p)&&amt>=preFAPremium(p,n.off)*.98){ p.prem=G.year; p.mor=clamp((p.mor??60)+3,0,100); } return `${p.name}: ${money(amt)}에 합의했습니다.`; }
   const prev=n.ask; n.ask=round5(Math.max(amt,n.ask-(n.ask-amt)*.25)); return `${p.name} 측: ${money(amt)}로는 어렵습니다. ${n.ask<prev?`${money(n.ask)}이면 사인하겠습니다.`:`${money(n.ask)}를 원합니다.`}`; }
 /* 산정안 일괄 제시: 아직 한 번도 제시하지 않은 선수에게 구단 산정안을 낸다 */
 function salOfferAll(){ salTalkInit(); const C=G.contract; let ok=0, no=0; for(const id of Object.keys(C.neg)){ const n=C.neg[id]; if(n.st!=='open'||n.cur!=null)continue; const r=salOffer(+id,n.off,true); if(C.neg[id].st==='ok')ok++; else no++; void r; }
@@ -41,3 +43,5 @@ function salTalkClose(){ const C=G.contract; if(!C||!C.neg)return; if(Object.val
   for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||n.st!=='open')continue; const v=n.cur??n.off; p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
 function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n)stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); }
   if(day===KD(1,10))salArbFile(); if(day===KD(1,20))salArbDecide(); }
+/* 예비 FA 보상금 미리 보기: 지금 연봉 순위로 등급을 어림하고, 이 금액을 내년 연봉으로 주면 떠날 때 받는 보상금을 계산한다 */
+function preFAComp(p,amt){ let g='C'; try{ g=faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null)); }catch(e){} const c=COMP[g]; return {g,cash:Math.round(amt*c.cash),withP:Math.round(amt*c.withP)}; }

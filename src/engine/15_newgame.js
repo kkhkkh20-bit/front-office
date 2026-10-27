@@ -37,7 +37,8 @@ function buildWorld(){ const userTid=0;
   updateLg(2025); try{ featSeason(2025); }catch(e){} const st=standingsNow();
   G.history.push({y:2025,order:st,champ:st[0].tid,runner:st[1].tid});
   for(const p of Object.values(G.players)){ p.svc++; p.injOut=0; develop(p); delete p.lastStart; delete p.lastApp; delete p.prevApp; }
-  for(const p of Object.values(G.players)) if(!p.foreign&&!p.faC&&p.svc>=FA_SVC-1&&R()<.15) p.svc=FA_SVC-1-ri(1,2);
+  /* 시작 시점에는 'FA 자격을 채웠지만 신청하지 않고 남은 선수' 같은 특수한 경우를 만들지 않는다: FA 계약이 없는 선수는 많아야 예비 FA(올 시즌 뒤 자격) */
+  for(const p of Object.values(G.players)){ if(p.foreign||p.faC)continue; if(p.svc>=faSvc(p))p.svc=faSvc(p)-1; else if(p.svc===faSvc(p)-1&&R()<.15)p.svc=faSvc(p)-1-ri(1,2); }
   // 시즌을 치르고 나이 든 뒤의 능력으로 연봉을 다시 매긴다. FA 계약 선수는 계약 당시 웃돈이 조금 남아 있다
   for(const p of Object.values(G.players)){ if(p.foreign||p.team==null)continue; const f=nonFaF(p,!p.faC&&p.svc>=faSvc(p)); let v=marketSal(ovr(p))*f; if(p.faC)v*=rnd(1,1.3)*(p.yrs>=3?1.05:1); p.sal=round5(clamp(v,MIN_SAL,2500)); }
   for(const t of G.teams){ const target=(t.indie?8600:12300*Math.pow(t.market,.8))*rnd(.92,1.05); const ps=domestic(t.id); const cur=sum(ps.map(p=>p.sal)); const k=clamp(target/Math.max(1,cur),.9,1.3); ps.forEach(p=>p.sal=round5(Math.min(2600,p.sal*(p.faC?k:1+(k-1)*.4))));
