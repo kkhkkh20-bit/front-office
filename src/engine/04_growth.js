@@ -18,7 +18,7 @@ function develop(p){
   const gap=Math.max(0,p.pot-o); let base=0;
   if(age<=T.grow){
     const rate=p.dt==='early'?(age<=22?.34:.24):p.dt==='late'?(age<=24?.08:.26):p.dt==='stall'?.07:.2;
-    base=gap*rate*rnd(.65,1.35)*play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p)+N(0,1);
+    const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p); base=gap*rate*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
     if(R()<.05*play*fac.g)p.pot+=ri(3,7);
@@ -26,6 +26,10 @@ function develop(p){
     if(p.dt==='late'&&age>=25)p.pot+=rnd(0,1.5);
   } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g:0); }
   else { base=-(age-T.fall+1)*.85*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); if(age<T.fall)base=N(-.2,1); }
+  /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
+     퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
+  if(age<=31&&!p.foreign){ const x=R(), st=p.dt==='stall'; const dn=st?.17:.11, up=st?.02:.06;
+    if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=31&&age>T.grow)base+=rnd(.4,1.8)*play;
   for(const k in p.r){

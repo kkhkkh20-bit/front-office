@@ -137,12 +137,12 @@ function applyGame(day,hid,aid,g,ps){
       if(p.isP){ p.prevApp=p.lastApp; p.lastApp=day; p.lastPc=x.pc; if(id===s.sp?.id)p.lastStart=day;
         p.fat=clamp((p.fat||0)+(x.pc*(id===s.sp?.id?.55:.9)+(id===s.sp?.id?0:6))*bm,0,100); if(!ps)p.wear=(p.wear||0)+x.pc/15; if(!ps){ (p.l10=p.l10||[]).push([x.outs,x.er,x.h,x.bb,x.so]); if(p.l10.length>10)p.l10.shift(); }
         if(!ps){ const h=lineFor(p,y,s.tid,'1군'); const o={g:1,gs:id===s.sp?.id?1:0,outs:x.outs,h:x.h,hr:x.hr,bb:x.bb,so:x.so,er:x.er,w:g.dec.w===id?1:0,l:g.dec.l===id?1:0,sv:g.dec.sv===id?1:0,hld:(g.dec.hld||[]).includes(id)?1:0}; addTo(h,o); }
-        const risk=p.inj*(id===s.sp?.id?.022:.005)*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/50)*(id===s.sp?.id?1+Math.max(0,(x.pc||0)-100)/60:1); if(R()<risk)injure(p,day);
+        /* 부상 빈도: KBO 구단당 시즌 부상 이탈 7~10건 수준. 부상 병동(체질 .3 이상)은 해마다 한두 번 빠진다 */ const risk=p.inj*(id===s.sp?.id?.075:.026)*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/50)*(id===s.sp?.id?1+Math.max(0,(x.pc||0)-100)/60:1); if(R()<risk)injure(p,day);
       } else {
         if(!ps){ const h=lineFor(p,y,s.tid,'1군'); addTo(h,Object.assign({g:1},x)); h.pos=s.posOf[id]||h.pos||p.pos; }
         if(!ps){ const i=s.order.findIndex(q=>q.id===id); if(i>=0){ const u=(p.use&&p.use.y===y)?p.use:(p.use={y,g:0,pos:{},slot:{}}); u.g++; const ps_=s.posOf[id]||'DH'; u.pos[ps_]=(u.pos[ps_]||0)+1; u.slot[i+1]=(u.slot[i+1]||0)+1; } }
         if(s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm,0,100); if(!ps){ p.wear=(p.wear||0)+1; (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3]); if(p.l10.length>10)p.l10.shift(); } }
-        if(R()<p.inj*.0045*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60))injure(p,day);
+        if(R()<p.inj*.026*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60))injure(p,day);
       }
     }
   }
@@ -152,7 +152,7 @@ function applyGame(day,hid,aid,g,ps){
 }
 function injure(p,day){
   let days=ri(5,35); if(R()<.3)days=ri(36,120); days=Math.max(3,Math.round(days*recMult(p)));
-  p.injOut=days; p.injHist.push({y:G.year,days,d:G.day}); if(days>=30)story(p,`부상으로 약 ${days}일 이탈`,'inj');
+  p.injOut=days; p.injHist.push({y:G.year,days,d:G.day}); if(days>=40)p.inj=Math.min(.45,p.inj+.02); /* 큰 부상은 재발 위험을 남긴다 */ if(days>=30)story(p,`부상으로 약 ${days}일 이탈`,'inj');
   if(days>90&&R()<(p.team===G.user&&G.med.hosp==='a'?.18:.35)){ const d=ri(2,5); for(const k in p.r)p.r[k]=clamp(p.r[k]-d*rnd(.5,1.2),20,80); roundR(p); }
   if(p.team===G.user&&days>=30&&period()==='season'&&(ovr(p)>=55||p.sal>=800))news('선수',`${tshort(G.user)} 악재, ${p.name} 장기 이탈`,`${p.name}이(가) 부상으로 한 달 넘게 빠집니다. 전력 공백이 불가피합니다.`,-1,{ref:p.id});
   if(p.team===G.user){ const H=HOSP[G.med.hosp]; const msg=`${p.name}(${posLabel(p)})이(가) 부상으로 ${H.dx?'':'약 '}${days}일 이탈합니다.${H.c?` ${H.name}에서 치료합니다.`:''}${H.dx?` 정밀 검진 결과 재발 위험은 ${p.inj>.24?'높은':p.inj>.15?'보통':'낮은'} 편입니다.`:''}`; p.mor=clamp((p.mor||60)-4,0,100); days>=10?stop('부상',msg,p.id):note('부상',msg,p.id); }

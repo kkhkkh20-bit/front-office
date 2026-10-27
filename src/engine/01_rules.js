@@ -111,7 +111,7 @@ function newPlayer(o){
   const th=isP?(R()<.28?'좌':'우'):(['C','2B','3B','SS'].includes(pos)?'우':R()<.24?'좌':'우'); /* 포수·내야(1루 제외)는 우투만 */
   const bt=isP?th:(th==='좌'?'좌':R()<.3?'좌':R()<.06?'양':'우');
   const p={id:G.nextId++,name:o.name||genName(),age:o.age,isP,pos,r:genRatings(isP,o.base,pos),pot:0,
-    inj:clamp(N(.14,.07),.03,.42),injOut:0,team:o.team??null,sal:MIN_SAL,yrs:0,faC:false,ext:false,svc:o.svc||0,lastFA:null,
+    inj:injRoll(),injOut:0,team:o.team??null,sal:MIN_SAL,yrs:0,faC:false,ext:false,svc:o.svc||0,lastFA:null,
     hist:[],injHist:[],draft:null,region:o.region||pick(REG),college:!!o.college,dev:!!o.dev,
     foreign:o.foreign||null,nat:o.nat||null,th,bt,velo:N(0,1.3)};
   setOvr(p,o.base);
@@ -131,3 +131,6 @@ const round5=v=>Math.max(MIN_SAL,Math.round(v/5)*5);
 const veloOf=p=>Math.round(137+(p.r.stf-20)/60*17+p.velo);
 const runOf=p=>(4.62-(p.r.spd-20)/60*.6+p.velo*.02).toFixed(2);
 
+
+/* 부상 체질: 대부분 보통이고, 7%는 해마다 다치는 '부상 병동', 12%는 거의 안 다치는 '강철 체력'이다 */
+function injRoll(){ const x=R(); return x<.07?rnd(.28,.42):x<.19?rnd(.03,.07):clamp(N(.14,.055),.05,.28); }
