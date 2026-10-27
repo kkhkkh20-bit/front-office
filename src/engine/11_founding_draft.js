@@ -81,7 +81,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
     setGoals(`창단 드래프트로 선수단이 꾸려졌습니다. 전력분석팀은 외국인 선수 영입 전 기준으로 우리를 10개 구단 중 ${pr}위 전력으로 봅니다. 창단 첫해이니 구단주도 무리한 목표는 잡지 않았습니다.`,true); G.goals.fd=true;
     news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`전문가들은 창단 드래프트를 마친 ${tname(G.user)}을(를) ${pr}위 전력으로 봅니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
   try{ const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]); const P=L.map(x=>G.players[x.pid]); const nP=domestic(G.user).filter(p=>p.isP).length, nB=domestic(G.user).length-nP;
-    mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세, 능력 ${Math.round(ovr(p))})`; }).join('\n')}\n\n능력은 50이 리그 평균, 60 이상이 주전 상위권입니다. 투수 보직은 감독이 정합니다.`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
+    mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 75 이상이 주전 상위권입니다. 투수 보직은 감독이 정합니다.`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
   try{ if(G.tut&&!G.tut.done){ G.tut.step=0; sendTut(); } }catch(err){}
   chron('found',`창단 드래프트로 선수단 구성 · 1라운드 ${(()=>{ const x=F.picks.find(q=>q.tid===G.user&&q.rd===1); const p=x&&G.players[x.pid]; return p?p.name:'-'; })()}`);
   stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 외국인 선수와 감독을 정하세요.`); }
@@ -111,7 +111,7 @@ function seasonReview(y){ const tid=G.user; const ps=playersOf(tid); const W=p=>
 function fdReview(){ const F=G.fd; if(!F||!F.picks||G.fdRev)return; G.fdRev=true; const y0=G.startY||G.year-3;
   const mine=F.picks.filter(x=>x.tid===G.user&&x.pid).slice(0,8).map(x=>{ const p=G.players[x.pid]; if(!p)return {x,gone:true}; const war=sum(p.hist.filter(h=>h.lvl==='1군'&&h.y>=y0&&h.t===G.user).map(h=>warOf(h,p))); return {x,p,war,now:Math.round(ovr(p))}; });
   const all=F.picks.filter(x=>x.pid&&G.players[x.pid]).map(x=>{ const p=G.players[x.pid]; return {x,p,war:sum(p.hist.filter(h=>h.lvl==='1군'&&h.y>=y0).map(h=>warOf(h,p)))}; }).sort((a,b)=>b.war-a.war);
-  const steal=all.find(z=>z.x.rd>=5); const L=mine.map(z=>z.gone?`${z.x.rd}라운드 · 은퇴 또는 정리`:`${z.x.rd}라운드 ${z.p.name}: 지명 때 ${z.x.o0??'-'} → 지금 ${z.now} · 우리 팀 WAR ${z.war.toFixed(1)}${z.p.team!==G.user?' (지금은 다른 구단)':''}`);
+  const steal=all.find(z=>z.x.rd>=5); const L=mine.map(z=>z.gone?`${z.x.rd}라운드 · 은퇴 또는 정리`:`${z.x.rd}라운드 ${z.p.name}: 지명 때 ${dv(z.x.o0??'-')} → 지금 ${dv(z.now)} · 우리 팀 WAR ${z.war.toFixed(1)}${z.p.team!==G.user?' (지금은 다른 구단)':''}`);
   mail('스카우트팀장','창단 드래프트 3년 회고',`창단 드래프트 뒤 3시즌이 지났습니다. 우리 상위 지명 선수들입니다.\n\n${L.join('\n')}\n\n리그 전체 최고 성과: ${all[0]?`${all[0].p.name}(${tshort(all[0].x.tid)} ${all[0].x.rd}라운드) WAR ${all[0].war.toFixed(1)}`:'-'}${steal?`\n최고의 스틸: ${steal.p.name}(${tshort(steal.x.tid)} ${steal.x.rd}라운드) WAR ${steal.war.toFixed(1)}`:''}`,{kind:'업무',imp:true}); }
 function draftedBy(tid){ return G.draft?G.draft.picks.filter(x=>x.tid===tid&&x.pid>0).length:0; }
 function rosterProj(tid){ return rosterN(tid)+draftedBy(tid); }

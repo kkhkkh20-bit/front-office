@@ -47,7 +47,7 @@ function ovrSnap(){ if(G.unemp)return; G.ovr0={y:G.year,m:Object.fromEntries(pla
 function growSnap(){ if(G.unemp)return; const tid=G.user; const pr=playersOf(tid).filter(p=>p.age<=24&&!p.foreign).map(p=>p.pot).sort((a,b)=>b-a).slice(0,10); const o=dobj(G.day);
   (G.tgrow=G.tgrow||[]).push({y:o.y,m:o.m,r1:+teamRating(tid).toFixed(2),pot:pr.length?+(pr.reduce((a,b)=>a+b,0)/pr.length).toFixed(2):0,tid}); G.tgrow=G.tgrow.filter(x=>x.tid===tid).slice(-60); }
 function milWarn(){ const L=domestic(G.user).filter(p=>{ milInit(p); return milFree(p)&&!(p.mil&&(p.mil.app||p.mil.until))&&p.age>=27; }); if(!L.length)return;
-  stop('병역',`해가 바뀌면 현역으로 입대하는 선수(27세 미필): ${L.map(p=>`${p.name}(${posLabel(p)}, 능력 ${Math.round(ovr(p))})`).join(', ')}. 1월 20일 입대해 1년 6개월 동안 빠집니다. 대체 선수를 미리 구하세요.`,L[0].id); }
+  stop('병역',`해가 바뀌면 현역으로 입대하는 선수(27세 미필): ${L.map(p=>`${p.name}(${posLabel(p)}, 능력 ${dvo(p)})`).join(', ')}. 1월 20일 입대해 1년 6개월 동안 빠집니다. 대체 선수를 미리 구하세요.`,L[0].id); }
 /* 올림픽 */
 const olyYear=y=>y>=2028&&(y-2028)%4===0;
 function olySquad(){ const ps=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year));

@@ -29,7 +29,7 @@ function fieldSVG(tid,interactive,inline){
       <text class="pl" x="${bx+46}" y="${by+13}">${pos==='P'?'다음 선발':POSS[pos]}${off?' *':''}</text>
       <text class="pn" x="${bx+46}" y="${by+28}">${esc(name)}</text>
       <text class="ps" x="${bx+46}" y="${by+40}">${stat}</text>
-      ${ov!=null?`<rect x="${bx+90}" y="${by+17}" width="24" height="16" rx="2" fill="${rcol(ov)}"></rect><text class="ovt" x="${bx+102}" y="${by+29}" text-anchor="middle">${ov}</text>`:''}
+      ${ov!=null?`<rect x="${bx+90}" y="${by+17}" width="24" height="16" rx="2" fill="${rcol(ov)}"></rect><text class="ovt" x="${bx+102}" y="${by+29}" text-anchor="middle">${dv(ov)}</text>`:''}
       ${salP&&ov!=null?(()=>{ const L=condLv(salP); return `<g transform="translate(${bx+102} ${by+41}) rotate(${L.deg})" style="color:${L.c}"><title>컨디션 ${L.l}</title><path d="M-4.5 0h7M0.5 -3.5 4 0 0.5 3.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g>`; })():''}
       ${no?`<circle class="ord" cx="${bx+4}" cy="${by+5}" r="8"></circle><text class="ordt" x="${bx+4}" y="${by+8.5}" text-anchor="middle">${no}</text>`:''}
       ${cnt?`<circle class="bd" cx="${bx+114}" cy="${by+4}" r="8"></circle><text class="bdt" x="${bx+114}" y="${by+7.5}" text-anchor="middle">+${cnt}</text>`:''}

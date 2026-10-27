@@ -65,7 +65,7 @@ function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감�
     const L=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)&&mgrFitF(p,W)).sort((x,y)=>{ const v=r=>(r.ofp??r.cur+6)+r.cur*.2; return v(scoutReport(y))-v(scoutReport(x)); }).slice(0,3);
     if(L.length)a+=` 시장에서 눈에 띄는 건 ${L.map(p=>`${p.name}(${posLabel(p)}, ${p.nat||''})`).join(', ')} 정도입니다.`; }
   else if(topic==='need'){ const R=slotRanks(G.user); const k=PSLOTS.filter(x=>x!=='DH').sort((x,y)=>R[y].rank-R[x].rank)[0]; const d=depth(G.user); const cur=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k];
-    a=`${SLOTK[k]}입니다. 리그 ${R[k].rank}위${cur?`이고 지금은 ${cur.name}(${Math.round(ovr(cur))})이(가) 맡고 있습니다`:''}. ${m.youth>=60?'내부에서 키울 선수가 있으면 기회를 주겠지만, ':''}트레이드든 외국인이든 한 명 있으면 확 달라집니다.`; }
+    a=`${SLOTK[k]}입니다. 리그 ${R[k].rank}위${cur?`이고 지금은 ${cur.name}(${dvo(cur)})이(가) 맡고 있습니다`:''}. ${m.youth>=60?'내부에서 키울 선수가 있으면 기회를 주겠지만, ':''}트레이드든 외국인이든 한 명 있으면 확 달라집니다.`; }
   else if(topic==='young'){ const ys=playersOf(G.user).filter(p=>!p.foreign&&p.age<=24).map(p=>({p,rp:scoutReport(p)})).sort((x,y)=>(y.rp.ofp||0)-(x.rp.ofp||0)).slice(0,3);
     const up=x=>{ const h=seasonTotal(x.p,G.year,'1군'); return !!(h&&(x.p.isP?h.outs>=45:h.pa>=60)); }; const inU=ys.filter(up), outU=ys.filter(x=>!up(x));
     a=ys.length?`눈여겨보는 선수는 ${ys.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}입니다.${inU.length?` ${inU.map(x=>x.p.name).join(', ')}은(는) 이미 1군에서 자리를 잡아 가고 있습니다.`:''}${outU.length?` ${outU.map(x=>x.p.name).join(', ')}은(는) ${m.youth>=60?'기회를 더 주고 싶습니다.':'아직 1군에서 쓰기엔 이릅니다.'}`:''}`:'당장 1군에 올릴 만한 젊은 선수는 안 보입니다.'; }

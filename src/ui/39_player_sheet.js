@@ -18,9 +18,9 @@ function keyBar(p,rp,isFA,isFM){ const cur=p.fdPool?null:rp.cur, pot=p.fdPool?nu
 function valueLine(p,rp){ if(p.prospect||p.fdPool||p.team==null)return ''; const L=[];
   const hs=p.hist.filter(h=>h.lvl==='1군'&&h.t===p.team&&h.y>=(G.startY||0)); const ys=[...new Set(hs.map(h=>h.y))]; const w=sum(ys.map(y=>{ const h=seasonTotal(p,y,'1군'); return h&&h.t===p.team?wOf(h,p):0; }));
   L.push(`<span><i>구단 기여</i>${ys.length?`${esc(tshort(p.team))} ${ys.length}시즌 · 1군 WAR <b>${w.toFixed(1)}</b>`:`${esc(tshort(p.team))} 첫 시즌`}</span>`);
-  if(p.team===G.user&&!p.foreign&&p.age<=25){ if(rp.ofp!=null)L.push(`<span><i>스카우트</i>잠재력 ${rp.ofp} 전망 · 확신 ${esc(rp.conf||'보통')}</span>`);
+  if(p.team===G.user&&!p.foreign&&p.age<=25){ if(rp.ofp!=null)L.push(`<span><i>스카우트</i>잠재력 ${dv(rp.ofp)} 전망 · 확신 ${esc(rp.conf||'보통')}</span>`);
     try{ const d=depth(G.user); const k=pSlot(p); const st=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k]; const reg=[...d.start,...d.sp,...d.pen.slice(0,4)].some(x=>x.id===p.id);
-      const v=reg?'주전으로 씁니다':st&&ovr(st)-ovr(p)>=6?`지금은 ${esc(st.name)}(${Math.round(ovr(st))}) 뒤입니다. 1군 기용은 어렵다고 봅니다`:st?`${esc(st.name)}(${Math.round(ovr(st))})와 경쟁할 수 있다고 봅니다`:'기회를 줄 수 있다고 봅니다'; L.push(`<span><i>감독</i>${v}</span>`); }catch(e){} }
+      const v=reg?'주전으로 씁니다':st&&ovr(st)-ovr(p)>=6?`지금은 ${esc(st.name)}(${dvo(st)}) 뒤입니다. 1군 기용은 어렵다고 봅니다`:st?`${esc(st.name)}(${dvo(st)})와 경쟁할 수 있다고 봅니다`:'기회를 줄 수 있다고 봅니다'; L.push(`<span><i>감독</i>${v}</span>`); }catch(e){} }
   return `<div class="vline">${L.join('')}</div>`; }
 function reportCard(p,noTools){
   const rp=scoutReport(p);
@@ -31,7 +31,7 @@ function reportCard(p,noTools){
   const bar=t=>{ const w=v=>Math.round((v-20)/60*100); const fut=rp.ofp!=null&&t.fut>t.cur; return `<div class="tool" style="--c:${rcol(t.cur)};--c2:${rcol(t.fut)}"><span>${TOOLK[t.k]}</span>${rchip(t.cur)}<span class="track"><span class="mid"></span>${fut?`<span class="fut" style="width:${w(t.fut)}%"></span>`:''}<span class="now" style="width:${w(t.cur)}%"></span></span>${fut?rchip(t.fut):'<span></span>'}</div>`; };
   return `<section class="card">
     <div class="row between"><h2 class="sec">스카우트 리포트</h2><span class="small muted">${esc(rp.who)} · 정확도 ${rp.conf}</span></div>
-    <div class="tiles"><div class="tile"><span class="g" style="color:${rcol(rp.cur)}">${rp.cur}</span><span class="l">현재 종합</span></div><div class="tile key"><span class="g" style="color:${rp.ofp!=null?rcol(rp.ofp):'var(--muted)'}">${rp.ofp??'?'}</span><span class="l">잠재력</span></div><div class="tile"><span class="g" style="font-size:16px">${rp.risk}</span><span class="l">위험도</span></div>${rp.eta?`<div class="tile"><span class="g" style="font-size:16px">${rp.eta}년</span><span class="l">1군 도달 예상</span></div>`:''}</div>
+    <div class="tiles"><div class="tile"><span class="g" style="color:${rcol(rp.cur)}">${dv(rp.cur)}</span><span class="l">현재 종합</span></div><div class="tile key"><span class="g" style="color:${rp.ofp!=null?rcol(rp.ofp):'var(--muted)'}">${dv(rp.ofp??'?')}</span><span class="l">잠재력</span></div><div class="tile"><span class="g" style="font-size:16px">${rp.risk}</span><span class="l">위험도</span></div>${rp.eta?`<div class="tile"><span class="g" style="font-size:16px">${rp.eta}년</span><span class="l">1군 도달 예상</span></div>`:''}</div>
     ${rp.role?`<p class="small"><span class="muted">장래 역할</span> <b>${esc(rp.role)}</b></p>`:''}
     ${noTools?'':`<div class="tools">${rp.tools.map(bar).join('')}</div>
     <p class="small muted">20~80 척도, 50이 1군 평균. 왼쪽 숫자는 현재, 오른쪽은 스카우트가 보는 미래입니다.</p>`}

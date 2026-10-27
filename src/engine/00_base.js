@@ -11,6 +11,12 @@ const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
 const sum=a=>a.reduce((s,x)=>s+x,0);
 const r5=x=>Math.round(x/5)*5;
 const rr=x=>Math.floor(x)+(R()<x-Math.floor(x)?1:0);
+/* 능력치 화면 표시: 내부 계산은 20~80 스카우트 척도 그대로 두고, 보여 줄 때만 100점 척도로 바꾼다.
+   1군 평균(51)=63, 상급(58)=73, 대박(65)=84, 초대형(72)=95, 유망주 평균(24)=42 */
+const DV_PTS=[[20,30],[24,42],[35,52],[45,58],[51,63],[58,73],[65,84],[72,95],[78,100]];
+function dvRaw(x){ if(x<=DV_PTS[0][0])return DV_PTS[0][1]; for(let i=1;i<DV_PTS.length;i++){ const [a,b]=DV_PTS[i-1],[c,d]=DV_PTS[i]; if(x<=c)return b+(x-a)*(d-b)/(c-a); } return 100; }
+function dv(x){ return typeof x==='number'&&isFinite(x)?Math.round(dvRaw(x)):x; }
+function dvo(p){ return p?dv(ovr(p)):'-'; }
 function hn(a,b){ // 고정된 정규 잡음: 같은 평가자·같은 선수면 같은 오차
   let h=2166136261>>>0;const s=a+'|'+b;
   for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}

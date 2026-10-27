@@ -19,7 +19,7 @@ function pactPropose(ids){ const m=G.mgr[G.user]; if(!m||m.interim)return '감�
   const d=depth(G.user); const t=ids.map(id=>{ const p=G.players[id]; const k=pSlot(p); const st=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k]; const gap=st&&st.id!==p.id?ovr(st)-ovr(p):0;
     const ch=clamp(.7+(m.rel-60)/100+(m.youth-50)/90-(m.ego-50)/120-Math.max(0,gap)*.035,.08,.95); const r=R();
     const lv=r<ch?'full':r<ch+.25?'part':'no'; const b=lv==='full'?4:lv==='part'?1.6:0;
-    const why=lv==='full'?`"${p.name}에게 꾸준히 기회를 주겠습니다."`:lv==='part'?`"${st?`${st.name}(${Math.round(ovr(st))})와 차이가 있어서`:'아직은'} 대타·대수비나 승부가 기운 경기 위주로 쓰겠습니다."`:`"지금 ${p.name}(${Math.round(ovr(p))})로는 ${st?`${st.name}(${Math.round(ovr(st))}) 자리를`:'1군 자리를'} 맡기기 어렵습니다. 2군에서 더 보겠습니다."`;
+    const why=lv==='full'?`"${p.name}에게 꾸준히 기회를 주겠습니다."`:lv==='part'?`"${st?`${st.name}(${dvo(st)})와 차이가 있어서`:'아직은'} 대타·대수비나 승부가 기운 경기 위주로 쓰겠습니다."`:`"지금 ${p.name}(${dvo(p)})로는 ${st?`${st.name}(${dvo(st)}) 자리를`:'1군 자리를'} 맡기기 어렵습니다. 2군에서 더 보겠습니다."`;
     const h=seasonTotal(p,G.year,'1군'); return {id,lv,b,why,s0:{pa:h?h.pa:0,outs:h?h.outs:0}}; });
   G.pact={y:G.year,on:true,day:G.day,mid:m.id,t,log:[]};
   return t.map(x=>`${G.players[x.id].name}: ${x.lv==='full'?'합의':x.lv==='part'?'부분 합의':'거절'} · ${x.why}`).join('\n'); }

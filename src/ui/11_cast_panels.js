@@ -15,7 +15,7 @@ function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const b
   let pitch=''; try{ const d=detailOf(p,scoutReport(p)); const ars=d.groups.find(gx=>gx[0]==='구종'); const best=ars?[...ars[1]].sort((a,c)=>c[1]-a[1])[0]:null; pitch=`직구 평균 ${veloOf(p)}·최고 ${veloMax(p)}km${best?` · ${best[0].replace(' · 결정구','')}`:''}`; }catch(e){}
   const nx=cNext(g,x[0],bid).map(n=>{ const q=G.players[n.id]; return q?`${cOrderNo(g,x[0],n.id)}번 ${esc(fname(q))}`:''; }).filter(Boolean).join(' · ');
   const risp=!!(st.bases[1]||st.bases[2]); const late=st.half>=14&&Math.abs(st.sa-st.sh)<=2;
-  return `<div class="ab ${risp?'risp':''}${late?' late':''}"><button class="ab-b" data-a="castPlayer" data-v="${bid}"><span class="ab-f">${avImg(b,true)}<b class="ab-o" style="--c:${rcol(ov)}">${ov??'-'}</b><span class="ab-res" id="cs-abr"></span></span>
+  return `<div class="ab ${risp?'risp':''}${late?' late':''}"><button class="ab-b" data-a="castPlayer" data-v="${bid}"><span class="ab-f">${avImg(b,true)}<b class="ab-o" style="--c:${rcol(ov)}">${dv(ov??'-')}</b><span class="ab-res" id="cs-abr"></span></span>
       <span class="ab-t"><em>${no?no+'번 타자':'타자'} · ${posLabel(b)} · ${hand(b)} ${acqTag(b)}</em><b>${esc(b.name)}</b><span class="ab-s">${r?`타율 <strong>${fmt3(r.avg)}</strong> · ${h.hr}홈런 · OPS ${fmt3(r.ops)}`:'시즌 기록 없음'}</span><span class="ab-pk">${cChips(g,k,bid)}</span></span></button>
     <button class="ab-p" data-a="castPlayer" data-v="${pid}">${avImg(p)}<span><em>투수 · ${p.th==='좌'?'좌완':'우완'} ${acqTag(p)}</em><b>${esc(fname(p))}</b><span>${rchip(pv)} ERA ${eraAt(g,k,pid)}</span><span>${esc(pitch)}</span><span>오늘 ${cToday(g,k,pid,true)}</span></span></button>
     ${nx?`<div class="ab-nx">대기 ${nx}</div>`:''}</div>`; }

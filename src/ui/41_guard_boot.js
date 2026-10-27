@@ -30,7 +30,7 @@ const GUARD={
   stadBuild(v){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===v); if(!it)return null; const lv=S.lv[v]; if(lv>=5||(S.build||[]).some(b=>b.k===v))return null; const per=period(); if(per==='season'||per==='post')return null;
     const c=STAD_COST[lv+1]; if(team(G.user).cash<c)return null; return {subj:`${it.l} ${lv+1}단계 공사`,kind:'구장',lines:[`공사비 ${money(c)} (보유 현금 ${money(team(G.user).cash)} → ${money(team(G.user).cash-c)})`,`공사 ${STAD_DAYS[lv+1]}일 · 유지비 연 +${money(STAD_UP[lv+1]-STAD_UP[lv])}`],warn:'공사비는 바로 나가고 되돌릴 수 없습니다.'}; },
   protSubmit(v){ const c=(G.comp||[]).find(x=>x.id===v); if(!c||!UI.prot)return null; const g=COMP[c.grade]; const ids=UI.prot.ids||[]; if(ids.length>g.prot)return null; const out=compPool(G.user).filter(q=>!ids.includes(q.id)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4);
-    return {subj:`보호선수 ${ids.length}명 명단 제출`,kind:'FA',lines:[`${tshort(c.from)}이(가) 명단 밖에서 1명을 데려가거나 보상금을 받습니다.`,`명단 밖 주요 선수: ${out.map(q=>`${q.name}(${posLabel(q)}, ${Math.round(ovr(q))})`).join(', ')||'없음'}`],warn:'제출하면 바꿀 수 없습니다.'}; },
+    return {subj:`보호선수 ${ids.length}명 명단 제출`,kind:'FA',lines:[`${tshort(c.from)}이(가) 명단 밖에서 1명을 데려가거나 보상금을 받습니다.`,`명단 밖 주요 선수: ${out.map(q=>`${q.name}(${posLabel(q)}, ${dvo(q)})`).join(', ')||'없음'}`],warn:'제출하면 바꿀 수 없습니다.'}; },
   jobYes(v){ const tid=+v; const t=team(tid); const o=G.last&&G.last.order?G.last.order.findIndex(x=>x.tid===tid)+1:0; return {subj:`${t.city} ${t.nick} 단장 취임`,kind:'경력',lines:[`지난 시즌 ${o||'-'}위 · ${needText(tid)}`,'선수단·감독·코치진·재정은 이 구단 것을 그대로 이어받습니다.'],warn:'취임하면 되돌릴 수 없습니다.'}; },
   retireGM(){ return G.unemp?{subj:'단장 경력 마치기',kind:'경력',lines:[`명성 ${G.rep} · 야인 ${Math.floor((G.day-(G.unemp.since??G.day))/30)}개월`],warn:'경력을 마치면 이 게임은 끝납니다. 새 게임은 시작 화면에서 할 수 있습니다.'}:null; },
   nsPick(v){ const o=NEWSTAD.find(x=>x.k===v); if(!o)return null; return {subj:`신구장 ${o.l}(${o.cap.toLocaleString('ko-KR')}석) 착공`,kind:'구장',lines:[`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자).`,'공사 3년 · 개장 후 시설 4단계 이상 · 개장 초 관중 크게 증가'],warn:'착공하면 되돌릴 수 없습니다.'}; },
@@ -63,7 +63,7 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
   try{ const d=depth(G.user); const inS=d.start.some(x=>x.id===p.id), inSP=d.sp.some(x=>x.id===p.id), inP=d.pen.slice(0,4).some(x=>x.id===p.id);
     role=inS?`주전 ${posLabel(p)}`:inSP?'선발 로테이션':inP?'필승조':p.isP?'불펜 경쟁':'백업·대타';
     const rk=slotRanks(G.user)[k]; const others=k==='SP'?d.sp.filter(x=>x.id!==p.id):k==='RP'?d.pen.filter(x=>x.id!==p.id):[d.ln[k],...d.bench.filter(x=>x.pos===k)].filter(x=>x&&x.id!==p.id); const o2=others[0];
-    why=`우리 ${SLOTK[k]||posLabel(p)} 리그 ${rk.rank}위.${o2?` 기존 ${o2.name}(${Math.round(ovr(o2))})${ovr(p)>ovr(o2)+1?'보다 낫습니다':ovr(p)<ovr(o2)-1?'의 뒤를 받칩니다':'와 비슷한 수준으로 경쟁합니다'}.`:''}`;
+    why=`우리 ${SLOTK[k]||posLabel(p)} 리그 ${rk.rank}위.${o2?` 기존 ${o2.name}(${dvo(o2)})${ovr(p)>ovr(o2)+1?'보다 낫습니다':ovr(p)<ovr(o2)-1?'의 뒤를 받칩니다':'와 비슷한 수준으로 경쟁합니다'}.`:''}`;
     blk=playersOf(G.user).filter(q=>q.id!==p.id&&!q.foreign&&q.age<=24&&pSlot(q)===k&&(scoutReport(q).ofp||0)>=52).slice(0,2); }catch(e){}
   const risk=[p.inj>=.2?'부상이 잦은 편':'',p.foreign&&p.adapt!=null&&p.adapt<45?'한국 적응 변수':'',p.age>=33?`${p.age}세, 하락 시작 나이`:''].filter(Boolean);
   const h=curLine(p); const stat=h?(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:''):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'')):'';
