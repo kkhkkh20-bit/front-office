@@ -47,7 +47,7 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
     <rect x="38" y="86.2" width="4.4" height="5.8" class="box"/><rect x="57.6" y="86.2" width="4.4" height="5.8" class="box"/><circle cx="31" cy="93" r="1.5" class="odc"/><circle cx="69" cy="93" r="1.5" class="odc"/>
     <line x1="1.5" y1="43.5" x2="1.5" y2="36" class="pole2"/><line x1="98.5" y1="43.5" x2="98.5" y2="36" class="pole2"/>
     ${CBS.map((b,i)=>`<rect id="cs-b${i}" x="${b[0]-1.7}" y="${b[1]-1.7}" width="3.4" height="3.4" transform="rotate(45 ${b[0]} ${b[1]})" class="base"/>`).join('')}<path d="M48.4 88 h3.2 v1.4 l-1.6 1.5 l-1.6 -1.5z" class="base"/></svg>`;
-  const sp=c.spd||1, md=c.mode||'all';
+  const sp=c.spd||1, md=c.mode==='all'?'all':'hl'; /* 기본은 하이라이트, 득점권 모드는 없앴다 */
   return `<div class="cast" data-g="${c.g}" role="dialog" aria-label="그래픽 중계">
   <div class="cs-top">
     <div class="cs-board"><span class="cs-tm">${badge(g.away,24)}<i>${esc(tshort(g.away))}</i><b id="cs-sa">0</b></span><span class="cs-mid"><b id="cs-inn">1회초</b><span class="cs-cnt"><span id="cs-O"><i></i><i></i></span><em id="cs-on">0아웃</em></span></span><span class="cs-tm r"><b id="cs-sh">0</b><i>${esc(tshort(g.home))}</i>${badge(g.home,24)}</span></div>
@@ -55,8 +55,8 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
     <button class="x" style="margin-left:auto" data-a="castClose" aria-label="중계 닫기">×</button></div>
   <div class="cs-body"><div class="cs-stage" id="cs-stage">${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-ball" id="cs-ball"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-bn" id="cs-bn"></div></div>
     <div class="cs-side"><div class="cs-vs" id="cs-vs"></div><div class="cs-log" id="cs-log"></div></div></div>
-  <div class="cs-ctl"><div class="cs-mode">${[['all','전체'],['hl','하이라이트'],['risp','득점권']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}</div>
-    <div class="cs-btns"><button data-a="castStep" data-v="-1" aria-label="이전 타석">◀</button><button class="pri" id="cs-play" data-a="castPlay">${c.play?'일시정지':'재생'}</button><button data-a="castStep" data-v="1" aria-label="다음 타석">▶</button><button data-a="castInn">다음 회</button><button data-a="castSpd" id="cs-spd">${sp}배속</button><button data-a="castEnd">끝</button></div></div>
+  <div class="cs-ctl"><div class="cs-mode">${[['hl','하이라이트'],['all','전체 보기']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}</div>
+    <div class="cs-btns"><button data-a="castStep" data-v="-1" aria-label="이전 타석">◀</button><button data-a="castStep" data-v="1" aria-label="다음 타석">▶</button><button data-a="castSpd" id="cs-spd">${sp}배속</button><button data-a="castEnd">결과 바로 보기</button><button class="pri" data-a="castClose">나가기</button></div></div>
   </div>`; }
 /* 필드 카드: 얼굴 + 이름 + 능력치 하나 */
 function cCard(key,id,cls,lab,col,t){ const p=G.players[id]; const el=document.createElement('button'); el.className='cc '+cls; el.dataset.k=key; el.dataset.a='castPlayer'; el.dataset.v=id; el.style.setProperty('--tc',col);
