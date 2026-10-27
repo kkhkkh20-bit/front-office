@@ -2,9 +2,9 @@
    리그의 국내 선수 전원을 한데 모아 10개 구단이 지그재그 순서로 25라운드를 지명한다. 26번째부터는 자동 배분.
    계약(연봉·남은 기간)은 선수를 따라간다. 외국인 선수는 따로 영입한다 */
 const FD_ROUNDS=25;
-/* 단장이 직접 뽑는 라운드(기본 10). 그 뒤 우리 지명은 스카우트 추천(빈 포지션 우선)으로 자동 진행하고 드래프트를 한 번에 끝낸다 */
-const FD_MAN=10, FD_MAN_OPT=[5,10,15,25];
-function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; const nx=F.picks.slice(F.cur).find(x=>x.tid===G.user); return !nx||nx.rd>(F.man||FD_ROUNDS); }
+/* 창단 드래프트는 10라운드 직접 지명. 끝나면 단장이 고른다: 나머지를 스카우트에게 맡기거나(빈 포지션 우선 자동 지명), 5라운드 더 뽑는다 */
+const FD_MAN=10, FD_MORE=5;
+function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; const nx=F.picks.slice(F.cur).find(x=>x.tid===G.user); return !!nx&&nx.rd>(F.man||FD_ROUNDS); }
 const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
@@ -68,7 +68,7 @@ function fdPick(pid){ const F=G.fd; if(!F||F.done)return '드래프트가 없습
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid))(F.lost=F.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,nm:p.name});
   if(F.cur>=F.picks.length)fdFinish(); return ''; }
 /* 한 번에 한 명씩: 실시간 드래프트 진행용 */
-function fdStep(){ const F=G.fd; if(!F||F.done||F.open===false)return null; const pk=F.picks[F.cur]; if(!pk)return null; if(fdManDone()){ fdAdvance(false); return null; } if(pk.tid===G.user)return 'user'; const id=fdBest(pk.tid,false); if(id==null){ fdFinish(); return null; } fdPick(id); return {pk,pid:id}; }
+function fdStep(){ const F=G.fd; if(!F||F.done||F.open===false)return null; const pk=F.picks[F.cur]; if(!pk)return null; if(fdManDone())return null; if(pk.tid===G.user)return 'user'; const id=fdBest(pk.tid,false); if(id==null){ fdFinish(); return null; } fdPick(id); return {pk,pid:id}; }
 function amStep(){ const d=G.draft; if(!d||d.done)return null; const pk=d.picks[d.cur]; if(!pk)return null; if(pk.tid===G.user)return 'user'; const id=aiDraftPick(pk.tid); if(!id){ finishDraft(); return null; } if(id===-1){ passCurrent(); return {pk,pass:true}; } doPick(id); return {pk,pid:id}; }
 function fdAdvance(stopAtUser){ const F=G.fd; let g=0; while(F&&!F.done&&g++<400){ const pk=F.picks[F.cur]; if(pk.tid===G.user&&stopAtUser)return; const id=fdBest(pk.tid,pk.tid===G.user); if(id==null){ fdFinish(); break; } if(pk.tid===G.user)pk.auto=true; fdPick(id); } }
 function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동 배분: 구단 국내 선수 52명까지 지그재그 */

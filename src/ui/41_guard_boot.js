@@ -32,7 +32,7 @@ const GUARD={
   relNow(v){ const p=G.players[+v]; if(!p)return null; const cost=p.faC?Math.round(p.sal*p.yrs*.5):0; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),cost?`남은 계약 정산금 ${money(cost)}`:'정산금 없음'],warn:'방출하면 되돌릴 수 없습니다.'}; },
   adv(v){ if(G.fOkY===G.year||period()!=='pre'||G.day<G.cal.open-35||blocker()||!G.mgr[G.user])return null; const f=foreignOf(G.user); const m=f.filter(p=>p.foreign==='용병').length, as=f.filter(p=>p.foreign==='아시아').length; if(m>=3&&as>=1)return null;
     UI._advT=0; return {subj:'외국인 선수 자리가 비어 있습니다',kind:'외국인',lines:[`외국인 ${m}/3 · 아시아쿼터 ${as}/1`,'빈 자리는 시즌 중에도 채울 수 있지만, 좋은 후보는 다른 구단이 먼저 데려갑니다.','그대로 진행하려면 결재, 먼저 채우려면 반려 후 영입 → 외국인 시장으로 가세요.'],warn:'이번 시즌에는 다시 묻지 않습니다.'}; },
-  fdAuto(){ const F=G.fd; if(!F||F.done)return null; const n=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; if(n<2)return null;
+  fdAuto(){ const F=G.fd; if(!F||F.done)return null; const n=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; if(n<2||fdManDone())return null;
     return {subj:`남은 ${n}번 지명을 자동으로`,kind:'드래프트',lines:[`우리 남은 지명 ${n}번을 스카우트 추천대로 뽑습니다.`,'관심 선수(★)가 남아 있으면 먼저 고릅니다.','끝나면 지명 결과를 소식함으로 보고합니다.'],warn:'자동 지명은 되돌릴 수 없습니다.'}; },
   fdPick(v){ const p=G.players[+v]; const M=fdMoney(); if(!p||!M||p.sal<=M.room-M.W)return null;
     return {subj:`${p.name} 지명: 연봉 한도 확인`,kind:'드래프트',lines:[`${p.name} 연봉 ${money(p.sal)} · ${tContract(p)}`,`지명 후 국내 연봉 ${money(M.spent+p.sal)} / 한도 ${money(M.lim)}`,`남은 지명 ${Math.max(0,M.left-1)}번과 자동 배분 ${M.autoN}명(약 ${money(M.W)})을 더하면 한도를 넘을 수 있습니다.`,M.capBound?'샐러리캡을 넘기면 시즌 끝에 초과분의 30%를 경쟁균형세로 냅니다.':'재정 여력을 넘기면 적자가 나고 구단주 신뢰가 떨어집니다.'],warn:'그래도 지명하려면 결재하세요.'}; },

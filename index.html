@@ -2488,9 +2488,9 @@ function fdWelcome(){ const t=team(G.user); const B=bossOf(G.user); const f=fdFi
    리그의 국내 선수 전원을 한데 모아 10개 구단이 지그재그 순서로 25라운드를 지명한다. 26번째부터는 자동 배분.
    계약(연봉·남은 기간)은 선수를 따라간다. 외국인 선수는 따로 영입한다 */
 const FD_ROUNDS=25;
-/* 단장이 직접 뽑는 라운드(기본 10). 그 뒤 우리 지명은 스카우트 추천(빈 포지션 우선)으로 자동 진행하고 드래프트를 한 번에 끝낸다 */
-const FD_MAN=10, FD_MAN_OPT=[5,10,15,25];
-function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; const nx=F.picks.slice(F.cur).find(x=>x.tid===G.user); return !nx||nx.rd>(F.man||FD_ROUNDS); }
+/* 창단 드래프트는 10라운드 직접 지명. 끝나면 단장이 고른다: 나머지를 스카우트에게 맡기거나(빈 포지션 우선 자동 지명), 5라운드 더 뽑는다 */
+const FD_MAN=10, FD_MORE=5;
+function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; const nx=F.picks.slice(F.cur).find(x=>x.tid===G.user); return !!nx&&nx.rd>(F.man||FD_ROUNDS); }
 const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
@@ -2554,7 +2554,7 @@ function fdPick(pid){ const F=G.fd; if(!F||F.done)return '드래프트가 없습
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid))(F.lost=F.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,nm:p.name});
   if(F.cur>=F.picks.length)fdFinish(); return ''; }
 /* 한 번에 한 명씩: 실시간 드래프트 진행용 */
-function fdStep(){ const F=G.fd; if(!F||F.done||F.open===false)return null; const pk=F.picks[F.cur]; if(!pk)return null; if(fdManDone()){ fdAdvance(false); return null; } if(pk.tid===G.user)return 'user'; const id=fdBest(pk.tid,false); if(id==null){ fdFinish(); return null; } fdPick(id); return {pk,pid:id}; }
+function fdStep(){ const F=G.fd; if(!F||F.done||F.open===false)return null; const pk=F.picks[F.cur]; if(!pk)return null; if(fdManDone())return null; if(pk.tid===G.user)return 'user'; const id=fdBest(pk.tid,false); if(id==null){ fdFinish(); return null; } fdPick(id); return {pk,pid:id}; }
 function amStep(){ const d=G.draft; if(!d||d.done)return null; const pk=d.picks[d.cur]; if(!pk)return null; if(pk.tid===G.user)return 'user'; const id=aiDraftPick(pk.tid); if(!id){ finishDraft(); return null; } if(id===-1){ passCurrent(); return {pk,pass:true}; } doPick(id); return {pk,pid:id}; }
 function fdAdvance(stopAtUser){ const F=G.fd; let g=0; while(F&&!F.done&&g++<400){ const pk=F.picks[F.cur]; if(pk.tid===G.user&&stopAtUser)return; const id=fdBest(pk.tid,pk.tid===G.user); if(id==null){ fdFinish(); break; } if(pk.tid===G.user)pk.auto=true; fdPick(id); } }
 function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동 배분: 구단 국내 선수 52명까지 지그재그 */
@@ -5448,7 +5448,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
     return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
     <h2 class="ts-h">${UI.newSlot?`슬롯 ${UI.newSlot} · `:''}어떻게 시작할까요</h2><div class="mbg">
       <button class="mbig" data-a="smode" data-v="take"><em>현실적인 시작</em><b>단장 취임</b><span>10개 구단 중 하나의 단장으로 부임합니다. 지금 선수단과 계약, 재정을 그대로 이어받아 고쳐 나갑니다.</span></button>
-      <button class="mbig mfd" data-a="smode" data-v="fd"><em>드래프트 게임</em><b>창단 드래프트</b><span>리그 국내 선수 전원을 한데 모아 10개 구단이 25라운드에 걸쳐 새로 뽑습니다. 단장은 주전급을 뽑는 앞 10라운드만 직접 지명하고 나머지는 자동입니다. 능력치는 숨겨져 있고 기록으로 고릅니다. 빈 포지션을 채워 가며 처음부터 내 팀을 만듭니다.</span></button>
+      <button class="mbig mfd" data-a="smode" data-v="fd"><em>드래프트 게임</em><b>창단 드래프트</b><span>리그 국내 선수 전원을 한데 모아 10개 구단이 25라운드에 걸쳐 새로 뽑습니다. 단장은 주전급을 뽑는 앞 10라운드를 직접 지명하고, 나머지는 스카우트에게 맡기거나 더 뽑을 수 있습니다. 능력치는 숨겨져 있고 기록으로 고릅니다. 빈 포지션을 채워 가며 처음부터 내 팀을 만듭니다.</span></button>
     </div>${foot}</div></div>`; }
   UI.smode='fd'; const fd=true;
   return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
@@ -6783,11 +6783,8 @@ function fdWaitView(){ const t=team(G.user); const B=bossOf(G.user); const f=fdF
     <div style="height:6px"></div>${f.otherRows.map(x=>row(x[0],'-'+money(x[1]),'bad')).join('')}${row('<b>선수 연봉 외 지출</b>','-'+money(f.other),'bad')}
     <div style="height:6px"></div>${row(t.indie?'모기업 지원':'모기업 지원 한도',t.indie?'없음':money(f.sup))}${row('보유 현금',money(f.cash))}</details>
     <div class="note ${ok?'':mid?'warn':'bad'}" style="margin-top:8px">국내 선수 예산 여유 <b>${money(Math.max(0,f.avail))}</b> · 샐러리캡 ${money(f.cap)}. ${ok?'캡까지 채워도 버틸 수 있습니다.':mid?'캡을 꽉 채우면 적자입니다. 여력 안쪽으로 뽑는 게 안전합니다.':'비싼 선수를 여럿 뽑으면 적자가 납니다. 연봉 대비 기록이 좋은 선수를 찾아야 합니다.'} 모기업 지원을 한도까지 받는다고 가정한 값입니다. 드래프트가 끝나면 구단주가 올해 지원 목표를 정하고, 그 기준으로 예산 여유가 화면 위 예산 여유로 표시됩니다.</div></section>
-  <section class="card"><h2 class="sec">다음 단계: 창단 드래프트</h2><p class="small">리그 국내 선수 전원을 10개 구단이 ${FD_ROUNDS}라운드에 걸쳐 나눕니다. 단장은 주전급을 뽑는 앞 ${FD_MAN}라운드만 직접 지명하고, 나머지는 스카우트 추천으로 자동 지명됩니다(직접 지명 라운드는 바꿀 수 있습니다). 시작하면 먼저 후보를 둘러볼 시간이 있고, 준비되면 1라운드를 엽니다.</p>
+  <section class="card"><h2 class="sec">다음 단계: 창단 드래프트</h2><p class="small">리그 국내 선수 전원을 10개 구단이 ${FD_ROUNDS}라운드에 걸쳐 나눕니다. 단장은 주전급을 뽑는 앞 ${FD_MAN}라운드를 직접 지명합니다. 그다음 나머지를 스카우트에게 맡길지, ${FD_MORE}라운드 더 뽑을지 고릅니다. 시작하면 먼저 후보를 둘러볼 시간이 있고, 준비되면 1라운드를 엽니다.</p>
     <button class="btn primary block" data-a="fdBegin">창단 드래프트 열기</button></section>`; }
-/* 직접 지명 라운드: 그 뒤 우리 지명은 자동. 이미 지난 라운드는 고를 수 없다 */
-function fdManPick(){ const F=G.fd; const man=F.man||FD_ROUNDS; const pk=F.picks[F.cur]; const cr=pk?pk.rd:1;
-  return `<span class="tk-sp" title="이 라운드까지 직접 뽑고, 이후 우리 지명은 스카우트 추천(빈 포지션 우선)으로 자동 진행합니다"><i class="muted small">직접 지명</i>${FD_MAN_OPT.filter(n=>n>=cr||n===man).map(n=>`<button data-a="fdMan" data-v="${n}" class="${n===man?'on':''}">${n===FD_ROUNDS?'전체':n+'R'}</button>`).join('')}</span>`; }
 /* ---------- 창단 드래프트 화면 ---------- */
 function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===false; const mine=!pre&&pk&&pk.tid===G.user;
   const myPicks=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean);
@@ -6826,7 +6823,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
     <div class="chips"><span class="seg sm" style="display:inline-flex"><button data-a="fdV" data-v="rec" class="${UI.fdV!=='trk'?'on':''}">기록</button><button data-a="fdV" data-v="trk" class="${UI.fdV==='trk'?'on':''}">측정</button></span><button data-a="fdS" data-v="rec" class="${so==='rec'?'on':''}">추천순</button><button data-a="fdS" data-v="grd" class="${so==='grd'?'on':''}">등급순${so==='grd'?(dir?'▲':'▼'):''}</button><button data-a="fdY" class="${young?'on':''}">24세 이하</button><button data-a="fdO" class="${onlyS?'on':''}">관심만 ${[...sl].filter(id=>G.players[id]&&G.players[id].fdPool).length||''}</button><button data-a="fdHide" class="${hide?'on':''}">남은 선수만</button></div>
     <p class="small muted keep">${ly}시즌 기록 · 글자는 스카우트 추정 등급(틀릴 수 있음, S 75+ · A 65+ · B 55+ · C 50+ · D 45+, 능력 50이 리그 평균) · 회색 줄은 이미 지명된 선수 · 열 제목으로 정렬</p>
     <div class="fdt-w"><table class="fdt"><thead><tr><th class="c0">선수</th>${hd(COLS[0][0],COLS[0][1])}${hd('sal','연봉')}${COLS.slice(1).map(c=>hd(c[0],c[1])).join('')}<th>계약</th><th>전 소속</th></tr></thead><tbody>${shown.map(trow).join('')}</tbody></table></div>
-    ${L.length>shown.length?`<button class="btn block" data-a="fdMore">${Math.min(60,L.length-shown.length)}명 더 보기 (${shown.length}/${L.length})</button>`:''}</section>`;
+    ${L.length>shown.length?`<button class="btn block" data-a="fdListMore">${Math.min(60,L.length-shown.length)}명 더 보기 (${shown.length}/${L.length})</button>`:''}</section>`;
   const tab=UI.fdTab==='team'?'team':'list';
   const miss=(()=>{ const {ln}=fdLineupOf(myPicks.filter(p=>!p.isP)); return ['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length; })(); const pitN=myPicks.filter(p=>p.isP).length;
   return `${UI.fdMsg?`<div class="note bad">${esc(UI.fdMsg)}</div>`:''}<div class="seg fdseg"><button data-a="fdTab" data-v="list" class="${tab==='list'?'on':''}">후보 선수</button><button data-a="fdTab" data-v="team" class="${tab==='team'?'on':''}">우리 팀 <i class="fdsg">빈자리 ${miss+Math.max(0,FD_TGT.P-pitN)}</i></button></div>
@@ -6841,13 +6838,14 @@ function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user;
 function fdMoneyLine(){ const M=fdMoney(); if(!M)return ''; const c=M.room-M.W<0?'bad':M.room-M.W<M.lim*.1?'warn':'good';
   return `<div class="tk0"><span>국내 연봉 <b>${money(M.spent)}</b> / 한도 <b>${money(M.lim)}</b><i>${M.capBound?'샐러리캡':'재정 여력'}</i></span><span>예산 여유 <b class="${c}">${money(M.room)}</b></span>${M.left?`<span>남은 지명 ${M.left}번 · 1명당 약 <b>${money(M.per)}</b></span>`:''}<span class="muted" title="지명이 끝나면 남은 선수 ${M.autoN}명이 자동 배분됩니다(약 ${money(M.W)}). 외국인 4명 예산 ${money(M.fres)}은 따로 잡아 두었습니다.${M.res?` 감독·코치 빈자리 채용비 ${money(M.res.vac)}와 운영 여유분 ${money(M.res.cush)}도 한도에서 미리 뺐습니다.`:''}">자동 배분 ${M.autoN}명(${money(M.W)}) 포함 · 외국인 예산·감독·코치 채용비 별도</span></div>`; }
 /* 드래프트 상황판: 화면 위에 고정. 목록을 보면서 다른 구단 지명을 같이 본다 */
-function fdTicker(){ const F=G.fd; if(!F||F.done)return ''; const pk=F.picks[F.cur]; const pre=F.open===false; const mine=!pre&&pk&&pk.tid===G.user;
-  if(!pre&&!mine&&pk&&!(UI.dl&&UI.dl.kind==='fd')&&!UI.dlAuto&&!UI.rev){ UI.dlAuto=1; setTimeout(()=>{ UI.dlAuto=0; const p2=G.fd&&G.fd.picks[G.fd.cur]; if(G.fd&&!G.fd.done&&G.fd.open!==false&&p2&&p2.tid!==G.user&&!(UI.dl&&UI.dl.kind==='fd')&&!UI.rev)dliveStart('fd'); },700); }
+function fdTicker(){ const F=G.fd; if(!F||F.done)return ''; const pk=F.picks[F.cur]; const pre=F.open===false; const ask=fdManDone(); const mine=!pre&&!ask&&pk&&pk.tid===G.user;
+  if(!pre&&!mine&&!ask&&pk&&!(UI.dl&&UI.dl.kind==='fd')&&!UI.dlAuto&&!UI.rev){ UI.dlAuto=1; setTimeout(()=>{ UI.dlAuto=0; const p2=G.fd&&G.fd.picks[G.fd.cur]; if(G.fd&&!G.fd.done&&G.fd.open!==false&&p2&&p2.tid!==G.user&&!(UI.dl&&UI.dl.kind==='fd')&&!UI.rev)dliveStart('fd'); },700); }
   const L=UI.dl&&UI.dl.kind==='fd'?UI.dl:null; const on=!!(L&&L.on); const top=L&&L.feed&&L.feed[0]; const st=L&&L.stolen&&L.stolen[0]; const fresh=st&&top&&st.pid===top.pid;
   const k=F.picks.slice(F.cur).findIndex(x=>x.tid===G.user); const sp=UI.dspeed||'norm';
   let r1;
-  if(pre){ const first=F.picks.findIndex(x=>x.tid===G.user)+1; r1=`<b>지명 전 탐색 시간</b><span class="muted">우리 첫 지명 ${first}번째</span>${fdManPick()}<button class="btn small primary" data-a="fdOpen">1라운드 시작</button>`; }
-  else if(mine){ const rec=fdUserRec(1)[0]; r1=`<b class="good">우리 차례 · ${pk.rd}라운드 ${pk.no}번째</b>${rec?`<button class="btn small primary" data-a="fdRec">추천 ${esc(rec.name)} 지명</button>`:''}<button class="btn small" data-a="fdAutoN" data-v="5" title="우리 지명 5번을 스카우트 추천대로 뽑고 다시 멈춥니다">5번 자동</button><button class="btn small" data-a="fdAuto" title="남은 우리 지명을 스카우트 추천대로 모두 뽑고 드래프트를 끝냅니다">여기부터 맡기기</button>${fdManPick()}`; }
+  if(pre){ const first=F.picks.findIndex(x=>x.tid===G.user)+1; r1=`<b>지명 전 탐색 시간</b><span class="muted">우리 첫 지명 ${first}번째</span><button class="btn small primary" data-a="fdOpen">1라운드 시작</button>`; }
+  else if(ask){ const left=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; r1=`<b class="good">${F.man}라운드 직접 지명을 마쳤습니다</b><span class="muted">남은 우리 지명 ${left}번은 주로 2군·백업 자원입니다</span><button class="btn small primary" data-a="fdAuto" title="빈 포지션을 먼저 채우는 스카우트 추천으로 남은 지명을 모두 뽑고 드래프트를 끝냅니다">나머지 스카우트에게 맡기기</button><button class="btn small" data-a="fdPlus">${Math.min(FD_ROUNDS,F.man+FD_MORE)}라운드까지 더 뽑기</button>`; }
+  else if(mine){ const rec=fdUserRec(1)[0]; r1=`<b class="good">우리 차례 · ${pk.rd}라운드 ${pk.no}번째</b>${rec?`<button class="btn small primary" data-a="fdRec">추천 ${esc(rec.name)} 지명</button>`:''}<button class="btn small" data-a="fdAutoN" data-v="5" title="우리 지명 5번을 스카우트 추천대로 뽑고 다시 멈춥니다">5번 자동</button><button class="btn small" data-a="fdAuto" title="남은 우리 지명을 스카우트 추천대로 모두 뽑고 드래프트를 끝냅니다">여기부터 맡기기</button><span class="muted">${F.man||FD_ROUNDS}라운드까지 직접 지명</span>`; }
   else r1=`${on?'<span class="dl-dot"></span>':''}${badge(pk.tid,18)}<b>${esc(tshort(pk.tid))} 지명 중 · ${pk.rd}-${pk.no}</b><span class="muted">우리 차례까지 ${k<0?'-':k}번</span><span class="tk-sp"><button data-a="dlSpdC" class="on">속도 ${({slow:'느리게',norm:'보통',fast:'빠르게'})[sp]}</button>${on?'<button data-a="dlStop">멈춤</button>':'<button data-a="fdAdv">진행</button>'}</span>`;
   const r2=fresh?`<div class="tk2 steal"><b>뺏겼습니다</b><span>${esc(st.tg)} <button class="lnk" data-a="player" data-v="${st.pid}">${esc(st.nm)}</button>을(를) ${esc(tshort(st.tid))}이(가) ${st.rd}-${st.no}에 지명</span>${top.o!=null?rchip(top.o):''}</div>`
     :top?`<div class="tk2">${badge(top.tid,16)}<i>${top.rd}-${top.no}</i><button class="lnk" data-a="player" data-v="${top.pid}">${esc(top.nm)}</button><span class="muted">${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}</span>${top.me?'<em class="good">우리 지명</em>':top.o!=null?rchip(top.o):''}${L.stN?`<span class="tk-l">놓친 관심 ${L.stN}명</span>`:''}</div>`:'';
@@ -8702,7 +8700,8 @@ const A={
   revClose(){ UI.fdJust=UI.rev?UI.rev.pid:null; UI.rev=null; render(); if(G.fd&&!G.fd.done&&G.fd.picks[G.fd.cur]&&G.fd.picks[G.fd.cur].tid!==G.user)setTimeout(()=>dliveStart('fd'),250); },
   fdRec(){ const p=fdUserRec(1)[0]; if(p)A.fdPick(p.id); },
   fdAdv(){ dliveStart('fd'); },
-  fdMan(v){ const F=G.fd; if(!F||F.done)return; F.man=+v||FD_ROUNDS; save(); render(); try{ toast(F.man>=FD_ROUNDS?'모든 라운드를 직접 지명합니다.':`${F.man}라운드까지 직접 지명하고, 이후는 자동으로 진행합니다.`); }catch(e){} },
+  fdListMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
+  fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
   fdV(v){ UI.fdV=v; if(!['rec','grd','sal','age'].includes(UI.fdS))UI.fdS='rec'; render(); },
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
@@ -8985,7 +8984,7 @@ const GUARD={
   relNow(v){ const p=G.players[+v]; if(!p)return null; const cost=p.faC?Math.round(p.sal*p.yrs*.5):0; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),cost?`남은 계약 정산금 ${money(cost)}`:'정산금 없음'],warn:'방출하면 되돌릴 수 없습니다.'}; },
   adv(v){ if(G.fOkY===G.year||period()!=='pre'||G.day<G.cal.open-35||blocker()||!G.mgr[G.user])return null; const f=foreignOf(G.user); const m=f.filter(p=>p.foreign==='용병').length, as=f.filter(p=>p.foreign==='아시아').length; if(m>=3&&as>=1)return null;
     UI._advT=0; return {subj:'외국인 선수 자리가 비어 있습니다',kind:'외국인',lines:[`외국인 ${m}/3 · 아시아쿼터 ${as}/1`,'빈 자리는 시즌 중에도 채울 수 있지만, 좋은 후보는 다른 구단이 먼저 데려갑니다.','그대로 진행하려면 결재, 먼저 채우려면 반려 후 영입 → 외국인 시장으로 가세요.'],warn:'이번 시즌에는 다시 묻지 않습니다.'}; },
-  fdAuto(){ const F=G.fd; if(!F||F.done)return null; const n=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; if(n<2)return null;
+  fdAuto(){ const F=G.fd; if(!F||F.done)return null; const n=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; if(n<2||fdManDone())return null;
     return {subj:`남은 ${n}번 지명을 자동으로`,kind:'드래프트',lines:[`우리 남은 지명 ${n}번을 스카우트 추천대로 뽑습니다.`,'관심 선수(★)가 남아 있으면 먼저 고릅니다.','끝나면 지명 결과를 소식함으로 보고합니다.'],warn:'자동 지명은 되돌릴 수 없습니다.'}; },
   fdPick(v){ const p=G.players[+v]; const M=fdMoney(); if(!p||!M||p.sal<=M.room-M.W)return null;
     return {subj:`${p.name} 지명: 연봉 한도 확인`,kind:'드래프트',lines:[`${p.name} 연봉 ${money(p.sal)} · ${tContract(p)}`,`지명 후 국내 연봉 ${money(M.spent+p.sal)} / 한도 ${money(M.lim)}`,`남은 지명 ${Math.max(0,M.left-1)}번과 자동 배분 ${M.autoN}명(약 ${money(M.W)})을 더하면 한도를 넘을 수 있습니다.`,M.capBound?'샐러리캡을 넘기면 시즌 끝에 초과분의 30%를 경쟁균형세로 냅니다.':'재정 여력을 넘기면 적자가 나고 구단주 신뢰가 떨어집니다.'],warn:'그래도 지명하려면 결재하세요.'}; },
