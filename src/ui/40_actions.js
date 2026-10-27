@@ -36,6 +36,7 @@ const A={
   revClose(){ UI.fdJust=UI.rev?UI.rev.pid:null; UI.rev=null; render(); if(G.fd&&!G.fd.done&&G.fd.picks[G.fd.cur]&&G.fd.picks[G.fd.cur].tid!==G.user)setTimeout(()=>dliveStart('fd'),250); },
   fdRec(){ const p=fdUserRec(1)[0]; if(p)A.fdPick(p.id); },
   fdAdv(){ dliveStart('fd'); },
+  fdMan(v){ const F=G.fd; if(!F||F.done)return; F.man=+v||FD_ROUNDS; save(); render(); try{ toast(F.man>=FD_ROUNDS?'모든 라운드를 직접 지명합니다.':`${F.man}라운드까지 직접 지명하고, 이후는 자동으로 진행합니다.`); }catch(e){} },
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
   fdV(v){ UI.fdV=v; if(!['rec','grd','sal','age'].includes(UI.fdS))UI.fdS='rec'; render(); },
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
