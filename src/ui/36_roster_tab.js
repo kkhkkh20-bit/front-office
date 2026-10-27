@@ -30,6 +30,7 @@ function fieldSVG(tid,interactive,inline){
       <text class="pn" x="${bx+46}" y="${by+28}">${esc(name)}</text>
       <text class="ps" x="${bx+46}" y="${by+40}">${stat}</text>
       ${ov!=null?`<rect x="${bx+90}" y="${by+17}" width="24" height="16" rx="2" fill="${rcol(ov)}"></rect><text class="ovt" x="${bx+102}" y="${by+29}" text-anchor="middle">${ov}</text>`:''}
+      ${salP&&ov!=null?(()=>{ const L=condLv(salP); return `<g transform="translate(${bx+102} ${by+41}) rotate(${L.deg})" style="color:${L.c}"><title>컨디션 ${L.l}</title><path d="M-4.5 0h7M0.5 -3.5 4 0 0.5 3.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g>`; })():''}
       ${no?`<circle class="ord" cx="${bx+4}" cy="${by+5}" r="8"></circle><text class="ordt" x="${bx+4}" y="${by+8.5}" text-anchor="middle">${no}</text>`:''}
       ${cnt?`<circle class="bd" cx="${bx+114}" cy="${by+4}" r="8"></circle><text class="bdt" x="${bx+114}" y="${by+7.5}" text-anchor="middle">+${cnt}</text>`:''}
     </g>`; };
@@ -82,7 +83,7 @@ function rosterView(){
   const filt=`<div class="chips">${chipsP.map(([k,l])=>`<button data-a="rpos" data-v="${k}" class="${pf===k?'on':''}">${l}${k!=='all'?` <i class="cnt">${playersOf(tid).filter(p=>vis(p)&&(seg==='bat'?!p.isP&&p.pos===k:p.isP&&(k==='SP'?isSPr(p):!isSPr(p)))).length}</i>`:''}</button>`).join('')}</div>`;
   UI._own=own;
   const body=rv==='card'?sqCards(groups):rosterTable(groups,seg==='pit');
-  return head+it.bar+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 능력 옆 ▲▼는 최근 컨디션</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}
+  return head+it.bar+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section>`;
 }
 function statBasis(){ const per=period(); return per==='season'||per==='post'?`${G.year} 1군 성적 (2군는 F)`:`${G.year-1} 성적 기준`; }

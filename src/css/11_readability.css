@@ -179,3 +179,6 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .agm{display:flex;flex-direction:column;gap:4px;min-width:0}
 .agl{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .faroom .agl{margin:3px 0}
+/* 컨디션 화살표 */
+.cnd.ca{display:inline-flex;align-items:center;justify-content:center;color:var(--cc);margin-left:4px;vertical-align:-1px;width:14px;height:14px}
+.cnd.ca svg{display:block;transition:none}

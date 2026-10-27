@@ -62,7 +62,11 @@ const rkCls=r=>r<=3?'hi':r<=7?'md':'lo';
 function pMini(p,tag){ const rp=scoutReport(p); const h=curLine(p); const st=!h?'기록 없음':p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)}`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)}`:'-');
   return `<button class="pm" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)}${p.team!=null&&team(p.team).cap===p.id?' <em class="capb">C</em>':''}${p.fr&&p.fr.tid===p.team?' <em class="frb">프랜차이즈</em>':''}</b><i>${posLabel(p)} · ${p.age}세 · ${st}</i><i>${money(p.sal)} · ${tContract(p)}</i></span><span class="pm-o">${rchip(rp.cur)}${condChip(p)}</span></button>`; }
 function outTxt(p){ return p.injOut>0?`부상 ${p.injOut}일`:p.susp>G.day?`출장 정지 ${p.susp-G.day}일`:isAway(p)?'군 복무':'출전 불가'; }
-function condChip(p){ const c=condOf(p); if(Math.abs(c)<2)return ''; return `<i class="cnd ${c>0?'up':'dn'}" title="컨디션 ${c>0?'+':''}${c}">${c>0?'▲':'▼'}${Math.abs(c)}</i>`; }
+/* 컨디션 화살표(FM 방식): 시즌 폼·최근 흐름·기분·피로를 합친 값(-5~+5)을 다섯 단계 방향으로 보여 준다 */
+const CND=[{min:2,deg:-90,c:'#3fd07f',l:'최상'},{min:1,deg:-45,c:'#9be27a',l:'좋음'},{min:-1,deg:0,c:'#9aa7b4',l:'보통'},{min:-2,deg:45,c:'#ffb547',l:'나쁨'},{min:-99,deg:90,c:'#ff6b6b',l:'최악'}];
+function condLv(p){ const c=condOf(p); return {c,...CND.find(x=>c>=x.min)}; }
+function condChip(p){ if(!p||p.team==null)return ''; const L=condLv(p); const f=p.sf&&p.sf.y===G.year?(p.sf.v*.5+(p.sf.m||0)):0;
+  return `<i class="cnd ca" style="--cc:${L.c}" title="컨디션 ${L.l} (${L.c>0?'+':''}${L.c}) · 폼 ${f>=0?'+':''}${f.toFixed(1)} · 기분 ${Math.round(p.mor??60)} · 피로 ${Math.round(p.fat||0)}"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" style="transform:rotate(${L.deg}deg)"><path d="M1.5 6h8M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></i>`; }
 function roomAfter(give,get){ const b0=budget(); const sv=[]; const mv=(id,t)=>{ const p=G.players[id]; if(!p)return; sv.push([p,p.team]); p.team=t; };
   const other=get.length&&G.players[get[0]]?G.players[get[0]].team:-9; give.forEach(id=>mv(id,other)); get.forEach(id=>mv(id,G.user));
   let b1=b0; try{ b1=budget(); }finally{ sv.reverse().forEach(([p,t])=>p.team=t); } return {before:Math.round(b0.roomGoal),after:Math.round(b1.roomGoal),dE:Math.round(b1.E-b0.E),dI:Math.round(b1.I-b0.I)}; }
