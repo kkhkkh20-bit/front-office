@@ -172,3 +172,10 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .pitch .pa b{font-size:13px}.pitch .pa span{font-size:11px;color:var(--muted)}.pitch .pa em{font-style:normal;font-size:11px;color:#c9b6ff}
 .pitch .pa.on{border-color:var(--acc);background:rgba(79,140,255,.12)}.pitch .pa:disabled{opacity:.45;cursor:default}
 @media(max-width:420px){.pitch .pag{grid-template-columns:minmax(0,1fr)}}
+/* FA 에이전트 명단 */
+.agdir{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.agr{display:flex;gap:10px;align-items:flex-start;padding:8px;border:1px solid var(--line);border-radius:10px}
+.agr .av,.agr img,.agr svg{flex:0 0 auto}
+.agm{display:flex;flex-direction:column;gap:4px;min-width:0}
+.agl{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.faroom .agl{margin:3px 0}

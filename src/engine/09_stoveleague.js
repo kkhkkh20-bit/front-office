@@ -32,7 +32,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const mine=retired.filter(r=>r.team===G.user);
   stop('스토브리그',`스토브리그가 시작되었습니다. 은퇴 ${retired.length}명(우리 ${mine.length}명), FA 자격 ${pool.length}명(우리 ${declared.length}명). 11월 2일 FA 공시, 6일부터 협상, 12월 1일 연봉 협상이 시작됩니다.`);
 }
-function faAnnounce(){ if(!G.fa)return; G.fa.open=true; const mine=G.fa.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user).length;
+function faAnnounce(){ if(!G.fa)return; G.fa.open=true; try{ agYear(); agPitch(); }catch(e){} const mine=G.fa.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user).length;
   stop('FA',`FA 승인 선수 ${G.fa.pool.length}명이 공시되었습니다. 우리 구단 ${mine}명. 다른 구단 FA는 구단마다 ${faCapN()}명까지 영입할 수 있습니다(KBO 규약 제173조). 11월 6일부터 모든 구단과 협상합니다. 영입·계약 → FA 시장에서 조건을 제시하세요.`); }
 function faCapN(){ const F=G.fa; return F&&F.cap?F.cap:(F&&F.pool&&F.pool.length>20?3:2); }
 function faOutN(tid){ const F=G.fa; return F&&F.outN?(F.outN[tid]||0):0; }
@@ -53,7 +53,7 @@ function faInterest(t,p){
   if(p.ask.annual>room*1.5)return 0;
   /* 연봉 총액이 낮은 구단(하한 근처)은 돈을 쓸 이유가 있다 */
   const low=(capPay(t.id)<capOf(G.year)*.5?.22:capPay(t.id)<capOf(G.year)*.65?.1:0)+(t.cash>6000?.08:0);
-  return compF*clamp(.12+low+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(playersOf(t.id).length>=39?.25:0),0,1)*debt;
+  return compF*clamp(.12+low+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(playersOf(t.id).length>=39?.25:0),0,1)*debt;
 }
 function faDay(day){
   const F=G.fa; const since=day-F.openDay;
@@ -76,8 +76,10 @@ function faDay(day){
     const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years}));
     const uo=F.offers[id]; if(uo){ offers.push({tid:G.user,annual:uo.annual,years:uo.years}); faAgentPing(id); }
     if(!offers.length)continue;
+    /* 대어: 시장 확인 라운드를 다 돌기 전에는 사인하지 않는다 */
+    const mk=agMk(p); if(mk&&!mk.done){ agShopTick(p,mk,ai,day); if(!mk.done)continue; }
     const ng=F.neg&&F.neg[id];
-    const pr=(.04+since*.006+(offers.length>=2?.04:0)+(p.ask.annual<500?.03:0))*(ovr(p)>=52||offers.length>=2?1:.45)+(ng&&ng.deal?.35:ng&&ng.hot?.08:0);
+    const pr=mk&&mk.done?1:(.04+since*.006+(offers.length>=2?.04:0)+(p.ask.annual<500?.03:0))*(ovr(p)>=52||offers.length>=2?1:.45)+(ng&&ng.deal?.35:ng&&ng.hot?.08:0);
     if(R()<pr)faSign(p,offers);
   }
 }
@@ -86,8 +88,10 @@ function faSign(p,offers){
   let best=null,bs=-1;
   const home=1.08+((p.pers?p.pers.loy:10)-10)/100+((p.mor??60)-60)/300;
   const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id];
-  for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*rnd(.96,1.04); if(sc>bs){bs=sc;best=o;} }
+  const ag=agentOf(p); const relK=(agRel(ag)-50)/1000*(ag.size==='big'?2:1)*(ag.style==='rel'?2:1); const shop=agShopN(p)>0;
+  for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*(o.tid===G.user?1+relK:1)*(1+agDealBonus(ag,o.tid)*.25)*(shop?rnd(.985,1.015):rnd(.96,1.04)); if(sc>bs){bs=sc;best=o;} }
   if(!best)best=offers.find(o=>o.tid!==G.user)||offers[0];
+  try{ agDealAdd(p,best.tid); const ag=agentOf(p); if(best.tid===G.user)agRelAdd(ag,5,`${p.name} 계약`); else if(G.fa.offers[p.id])agRelAdd(ag,1,`${p.name} 끝까지 경쟁`); }catch(e){}
   const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`,'move');

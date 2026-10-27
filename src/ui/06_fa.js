@@ -1,5 +1,14 @@
 /* ---------- FA 센터 ---------- */
-function agentAv(p,expr){ const ag=agentOf(p); return avImg({persona:'agent',pid:'ag:'+ag.name+ag.firm,age:46,female:u01('agf',p.id)>.8,expr:expr||null,name:ag.name}); }
+function agAv(ag,expr){ return avImg({persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:expr||null,name:ag.name}); }
+function agentAv(p,expr){ return agAv(agentOf(p),expr); }
+/* 에이전트 소개 한 줄: 규모 · 스타일 · 친분 · 우리와 계약 실적 */
+function agLine(ag){ const st=AG_STYLE[ag.style]||AG_STYLE.rel; const r=agRel(ag); const dl=(ag.deals&&ag.deals[G.user])||0;
+  return `<span class="pill ${ag.size==='big'?'acc':''}">${AG_SIZE[ag.size]}</span><span class="pill" title="${esc(st.d)}">${st.l}</span><span class="pill ${r>=60?'good':r<40?'bad':''}">친분 ${r} · ${agRelLab(r)}</span>${dl?`<span class="small muted">우리와 계약 ${dl}건</span>`:''}`; }
+function agClients(ag){ const F=G.fa; if(!F)return []; return F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&agentOf(p)===ag).sort((a,b)=>ovr(b)-ovr(a)); }
+/* 에이전트 명단: 이번 겨울 누가 어떤 고객을 맡았는지, 우리와 친분은 어떤지 */
+function agDirCard(){ const A=agInit(); const rows=A.map(ag=>{ const cl=agClients(ag); return `<div class="agr">${agAv(ag)}<div class="agm"><b>${esc(ag.name)} <span class="small muted">${esc(ag.firm)}</span></b><span class="agl">${agLine(ag)}</span><span class="small">${cl.length?`이번 겨울 고객 ${cl.length}명: ${cl.slice(0,4).map(p=>`<button class="lnk" data-a="faSel" data-v="${p.id}">${esc(p.name)}</button>`).join(', ')}${cl.length>4?' 등':''}`:'<span class="muted">이번 겨울 FA 고객 없음</span>'}</span></div></div>`; }).join('');
+  return `<section class="card"><div class="row between"><h2 class="sec">에이전트</h2><span class="small muted">친분이 높으면 요구가 낮아지고, 우선 제안·라스트 룩을 받습니다</span></div><div class="agdir">${rows}</div>
+    <details class="frule"><summary class="small">에이전트 규칙 보기</summary><p class="small muted">대형 에이전시는 대어를 많이 맡고 자존심이 셉니다. 낮은 제안, 역제안 무시, 협상 결렬은 친분을 크게 깎습니다. 친분이 높거나 우리와 계약을 여러 번 한 에이전트는 협상이 열리기 전에 고객을 먼저 보여 줍니다(우선 제안). 대어 FA는 바로 사인하지 않고 4~6일마다 다른 구단 제안을 모아 다시 묻는 시장 확인 라운드를 거칩니다(대어 3라운드, 준척 2라운드, 경매형은 1라운드 더, 실속형은 1라운드 덜). 마지막 라운드에서 우리 제안이 조금 밀리면, 친한 에이전트는 같은 조건을 맞출 기회(라스트 룩)를 줍니다. 친분은 해마다 조금씩 보통으로 돌아옵니다.</p></details></section>`; }
 function faHeat(id){ return Object.keys((G.fa&&G.fa.ai[id])||{}).length; }
 function faBig(p){ const o=G.fa.offers[p.id]; const ai=Object.keys(G.fa.ai[p.id]||{}).map(Number); const rp=scoutReport(p); const h=curLine(p);
   const st=!h?'기록 없음':p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'-');
@@ -9,7 +18,12 @@ function faBig(p){ const o=G.fa.offers[p.id]; const ai=Object.keys(G.fa.ai[p.id]
     ${o?`<div class="note good">우리 제시 ${o.years}년 연 ${money(o.annual)}</div>`:''}
     <button class="btn small ${UI.faSel===p.id?'':'primary'}" data-a="faSel" data-v="${p.id}">${UI.faSel===p.id?'협상실 닫기':'협상실 열기'}</button></div>`; }
 function faRoom(p){ const ag=agentOf(p); const n=G.fa.neg&&G.fa.neg[p.id]; const expr=n?(n.counter?'flat':n.hot||n.deal?'smile':n.mood<40?'angry':null):null; const ai=Object.keys(G.fa.ai[p.id]||{}).map(Number); const b=budget();
-  return `<section class="card faroom"><div class="tgm">${agentAv(p,expr)}<div><b>${esc(ag.name)} 에이전트 · ${esc(ag.firm)}</b><span class="small muted">${ag.style==='hard'?'깐깐한 협상가':ag.style==='soft'?'유연한 편':'보통'} · ${esc(p.name)} 담당${ai.length?` · 경쟁 구단 ${ai.length}곳: ${ai.map(t=>esc(tshort(t))).join(', ')}`:''}</span></div></div>
+  const mk=G.fa.mk&&G.fa.mk[p.id]; const need=agShopN(p); const st=AG_STYLE[ag.style]||AG_STYLE.rel;
+  const mkTxt=need?(mk&&mk.done?'시장 확인 끝 · 곧 결정':mk&&mk.ll?`라스트 룩 · ${dsh(mk.ll.until)}까지 ${mk.ll.years}년 연 ${money(mk.ll.annual)}`:`시장 확인 ${mk?mk.round:0}/${need}라운드${mk&&mk.next?` · 다음 보고 ${dsh(mk.next)}`:''}`):'조건이 맞으면 바로 결정하는 선수';
+  return `<section class="card faroom"><div class="tgm">${agentAv(p,expr)}<div><b>${esc(ag.name)} 에이전트 · ${esc(ag.firm)}</b><span class="agl">${agLine(ag)}</span><span class="small muted">${esc(st.d)} · ${esc(p.name)} 담당${ai.length?` · 경쟁 구단 ${ai.length}곳: ${ai.map(t=>esc(tshort(t))).join(', ')}`:''}</span></div></div>
+    <div class="note ${mk&&mk.ll?'warn':''}">${mkTxt}${need?` <span class="small muted">· ${agTier(p)==='star'?'대어':'준척'} FA는 바로 사인하지 않고 다른 구단 제안을 받아 본 뒤 결정합니다</span>`:''}</div>
+    ${mk&&mk.ll?`<div class="row"><button class="btn primary" data-a="faLL" data-v="${p.id}">라스트 룩 맞추기 (${mk.ll.years}년 연 ${money(mk.ll.annual)})</button></div>`:''}
+    ${G.fa.pitch&&G.fa.pitch[p.id]&&G.day<=G.fa.pitch[p.id].until?`<div class="row"><button class="btn primary" data-a="agPitchOk" data-v="${p.id}">우선 제안 수락 (${G.fa.pitch[p.id].years}년 연 ${money(G.fa.pitch[p.id].annual)})</button></div>`:''}
     ${UI.faMsg&&UI.faMsg.id===p.id?`<div class="note">${esc(UI.faMsg.t)}</div>`:''}
     <div class="row">${budgetTag(Math.round(((UI.offer&&UI.offer.id===p.id?UI.offer:(G.fa.offers[p.id]||p.ask)).annual)*b.rem))}<span class="small muted">예산 여유 ${money(b.roomGoal)}</span></div>
     ${offerForm(p)}${negPanel(p)}</section>`; }
@@ -30,6 +44,7 @@ function faCenter0(){ const F=G.fa;
   const ours=ids.map(id=>G.players[id]).filter(p=>p.faFrom===G.user);
   return `<div class="fahero live"><b>FA 시장 ${open?`협상 ${d1}일째`:`협상 시작까지 ${d1}일`}</b><span>${open?`캠프 전 마감까지 ${Math.max(0,left)}일 · `:''} 남은 FA ${ids.length}명 · 계약 ${signed}건 · 우리 제시 ${mine}건 · 예산 여유 ${money(b.roomGoal)}</span></div>
     ${sel?faRoom(sel):''}
+    ${agDirCard()}
     <section class="card"><div class="row between"><h2 class="sec">빅 네임</h2><span class="small muted">선수는 매일 제안을 비교하다가 계약합니다. 관심 구단이 많을수록 빨리 결정합니다.</span></div><div class="fabg">${ids.filter(id=>G.players[id]&&ovr(G.players[id])>=55).slice(0,3).map(id=>faBig(G.players[id])).join('')||'<p class="small muted">능력 55 이상인 대어는 남아 있지 않습니다.</p>'}</div></section>
     ${ours.length?`<section class="card"><h2 class="sec">우리 구단 FA · 잔류 협상</h2><div class="fl">${ours.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">요구 ${p.ask.years}년 ${money(p.ask.annual)} · 관심 ${faHeat(p.id)}곳</span><button class="tc-i go" data-a="faSel" data-v="${p.id}">협상</button></div>`).join('')}</div></section>`:''}
     <section class="card"><div class="row between"><h2 class="sec">전체 FA</h2><div class="chips">${[['all','전체'],['H','타자'],['P','투수'],['gA','A등급'],['gB','B등급'],['gC','C등급']].map(([k,l])=>`<button data-a="faPos" data-v="${k}" class="${pf===k?'on':''}">${l}</button>`).join('')}</div></div>

@@ -21,8 +21,8 @@ function relPeople(){
   const out=[
     {k:'fan',name:'팬',role:`${t.city} ${t.nick} 팬덤`,av:{persona:'staff',pid:'fan'+G.user,team:G.user,age:24,female:true,expr:relEx(fan),name:'팬'},rel:fan,rl:'여론',lab:fanLabel(fan),sub:`구단 인기 ${Math.round(t.pop*100)}`},
     {k:'press',name:'언론',role:'야구 담당 기자단',av:{persona:'agent',pid:'press'+G.user,team:G.user,age:38,expr:relEx(pr),name:'언론'},rel:pr,rl:'논조',lab:pressLabel(pr),sub:`최근 기사 ${(G.news||[]).filter(n=>n.d>=G.day-14).length}건`}];
-  if(G.fa&&G.fa.neg&&faLive())for(const id in G.fa.neg){ const n=G.fa.neg[id]; const p=G.players[id]; if(!p||p.team!=null||n.closed)continue; const ag=agentOf(p);
-    out.push({k:'ag:'+id,name:ag.name,role:`${ag.firm} · ${p.name} 담당`,av:{persona:'agent',pid:'ag'+id,age:45,expr:relEx(n.mood),name:ag.name},rel:Math.round(n.mood),rl:'분위기',lab:n.mood>=60?'우호적':n.mood>=40?'신중함':'냉랭함',sub:ag.style==='hard'?'강성 에이전트':ag.style==='soft'?'유연한 편':'보통'}); }
+  for(const ag of agInit()){ const cl=faLive()?agClients(ag):[]; const dl=(ag.deals&&ag.deals[G.user])||0; if(!cl.length&&!dl&&agRel(ag)===50)continue; const r=agRel(ag);
+    out.push({k:'agt:'+ag.id,name:ag.name,role:`${ag.firm} · ${AG_SIZE[ag.size]}${cl.length?` · FA 고객 ${cl.length}명`:''}`,av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:relEx(r),name:ag.name},rel:r,rl:'친분',lab:agRelLab(r),sub:(AG_STYLE[ag.style]||AG_STYLE.rel).l+' 에이전트'}); }
   return [['구단 수뇌부',top],['현장 · 코칭스태프',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out]];
 }
 function relKey(x){ return x.k.startsWith('p:')?['player',x.k.slice(2)]:['person',x.k]; }
@@ -105,10 +105,10 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     fx=['스폰서(광고) 수입','시즌 결산 때 구단주 신뢰에 직접 반영 (50 기준 10점당 신뢰 1)'];
     recent=(G.news||[]).slice(0,3).map(n=>`<div class="ps-r small">${dsh(n.d)} · ${esc(n.o)} · ${esc(n.t)}</div>`).join('');
     acts=[btn('언론·여론','go','club:media',1)]; }
-  else if(k.startsWith('ag:')){ const id=+k.slice(3); const p=G.players[id]; const ag=agentOf(p); const n=negOf(id);
-    info=`<p class="small">${esc(ag.firm)} · ${esc(p.name)} 담당 · ${ag.style==='hard'?'강성':ag.style==='soft'?'유연':'보통'}</p><p class="small">협상 ${n.rounds}/4회 사용</p>`;
-    moves=['요구에 가까운 제시는 분위기를 올리고, 큰 차이는 크게 떨어뜨립니다','25 아래로 떨어지면 우리와의 협상을 끝냅니다'];
-    fx=['역제안을 줄지, 협상을 접을지'];
+  else if(k.startsWith('agt:')){ const ag=agById(+k.slice(4)); const cl=faLive()?agClients(ag):[]; const lg=(ag.log||[]).slice(-4).reverse();
+    info=`<p class="small">${esc(ag.firm)} · ${AG_SIZE[ag.size]} · ${(AG_STYLE[ag.style]||AG_STYLE.rel).l}</p><p class="small muted">${esc((AG_STYLE[ag.style]||AG_STYLE.rel).d)}</p><p class="small">우리와 계약 ${(ag.deals&&ag.deals[G.user])||0}건${cl.length?` · 이번 겨울 고객 ${cl.map(p=>esc(p.name)).join(', ')}`:''}</p>${lg.length?`<p class="small muted">최근: ${lg.map(x=>`${esc(x.t)} ${x.v>0?'+':''}${x.v}`).join(' · ')}</p>`:''}`;
+    moves=['요구에 가까운 제시, 역제안 수용, 계약 성사는 친분을 올립니다','낮은 제안, 역제안 무시, 협상 결렬은 친분을 깎습니다(대형 에이전시는 1.5배)'];
+    fx=['요구 기준(친하면 낮게)','우선 제안·라스트 룩','다른 구단 제안을 얼마나 정확히 알려 주는지'];
     acts=[btn('협상실','faOpen',id,1)]; }
   const d=relDelta(k);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">

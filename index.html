@@ -1179,6 +1179,13 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .pitch .pa b{font-size:13px}.pitch .pa span{font-size:11px;color:var(--muted)}.pitch .pa em{font-style:normal;font-size:11px;color:#c9b6ff}
 .pitch .pa.on{border-color:var(--acc);background:rgba(79,140,255,.12)}.pitch .pa:disabled{opacity:.45;cursor:default}
 @media(max-width:420px){.pitch .pag{grid-template-columns:minmax(0,1fr)}}
+/* FA 에이전트 명단 */
+.agdir{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.agr{display:flex;gap:10px;align-items:flex-start;padding:8px;border:1px solid var(--line);border-radius:10px}
+.agr .av,.agr img,.agr svg{flex:0 0 auto}
+.agm{display:flex;flex-direction:column;gap:4px;min-width:0}
+.agl{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.faroom .agl{margin:3px 0}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -2199,7 +2206,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const mine=retired.filter(r=>r.team===G.user);
   stop('스토브리그',`스토브리그가 시작되었습니다. 은퇴 ${retired.length}명(우리 ${mine.length}명), FA 자격 ${pool.length}명(우리 ${declared.length}명). 11월 2일 FA 공시, 6일부터 협상, 12월 1일 연봉 협상이 시작됩니다.`);
 }
-function faAnnounce(){ if(!G.fa)return; G.fa.open=true; const mine=G.fa.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user).length;
+function faAnnounce(){ if(!G.fa)return; G.fa.open=true; try{ agYear(); agPitch(); }catch(e){} const mine=G.fa.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user).length;
   stop('FA',`FA 승인 선수 ${G.fa.pool.length}명이 공시되었습니다. 우리 구단 ${mine}명. 다른 구단 FA는 구단마다 ${faCapN()}명까지 영입할 수 있습니다(KBO 규약 제173조). 11월 6일부터 모든 구단과 협상합니다. 영입·계약 → FA 시장에서 조건을 제시하세요.`); }
 function faCapN(){ const F=G.fa; return F&&F.cap?F.cap:(F&&F.pool&&F.pool.length>20?3:2); }
 function faOutN(tid){ const F=G.fa; return F&&F.outN?(F.outN[tid]||0):0; }
@@ -2220,7 +2227,7 @@ function faInterest(t,p){
   if(p.ask.annual>room*1.5)return 0;
   /* 연봉 총액이 낮은 구단(하한 근처)은 돈을 쓸 이유가 있다 */
   const low=(capPay(t.id)<capOf(G.year)*.5?.22:capPay(t.id)<capOf(G.year)*.65?.1:0)+(t.cash>6000?.08:0);
-  return compF*clamp(.12+low+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(playersOf(t.id).length>=39?.25:0),0,1)*debt;
+  return compF*clamp(.12+low+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(playersOf(t.id).length>=39?.25:0),0,1)*debt;
 }
 function faDay(day){
   const F=G.fa; const since=day-F.openDay;
@@ -2243,8 +2250,10 @@ function faDay(day){
     const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years}));
     const uo=F.offers[id]; if(uo){ offers.push({tid:G.user,annual:uo.annual,years:uo.years}); faAgentPing(id); }
     if(!offers.length)continue;
+    /* 대어: 시장 확인 라운드를 다 돌기 전에는 사인하지 않는다 */
+    const mk=agMk(p); if(mk&&!mk.done){ agShopTick(p,mk,ai,day); if(!mk.done)continue; }
     const ng=F.neg&&F.neg[id];
-    const pr=(.04+since*.006+(offers.length>=2?.04:0)+(p.ask.annual<500?.03:0))*(ovr(p)>=52||offers.length>=2?1:.45)+(ng&&ng.deal?.35:ng&&ng.hot?.08:0);
+    const pr=mk&&mk.done?1:(.04+since*.006+(offers.length>=2?.04:0)+(p.ask.annual<500?.03:0))*(ovr(p)>=52||offers.length>=2?1:.45)+(ng&&ng.deal?.35:ng&&ng.hot?.08:0);
     if(R()<pr)faSign(p,offers);
   }
 }
@@ -2253,8 +2262,10 @@ function faSign(p,offers){
   let best=null,bs=-1;
   const home=1.08+((p.pers?p.pers.loy:10)-10)/100+((p.mor??60)-60)/300;
   const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id];
-  for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*rnd(.96,1.04); if(sc>bs){bs=sc;best=o;} }
+  const ag=agentOf(p); const relK=(agRel(ag)-50)/1000*(ag.size==='big'?2:1)*(ag.style==='rel'?2:1); const shop=agShopN(p)>0;
+  for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===G.user&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*(o.tid===G.user?1+relK:1)*(1+agDealBonus(ag,o.tid)*.25)*(shop?rnd(.985,1.015):rnd(.96,1.04)); if(sc>bs){bs=sc;best=o;} }
   if(!best)best=offers.find(o=>o.tid!==G.user)||offers[0];
+  try{ agDealAdd(p,best.tid); const ag=agentOf(p); if(best.tid===G.user)agRelAdd(ag,5,`${p.name} 계약`); else if(G.fa.offers[p.id])agRelAdd(ag,1,`${p.name} 끝까지 경쟁`); }catch(e){}
   const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`,'move');
@@ -3408,28 +3419,29 @@ function aiBlockWeekly(){ if(!tradeOpen())return;
       if(pk){ pk.aiListed=true; pk.aiWhy=why; pk.aiLd=G.day; } }
     for(const p of ds.filter(q=>q.aiListed)){ p.aiUrg=p.aiWhy==='sal'&&ci.pay>ci.cap||heat>=.6||(G.day-(p.aiLd||G.day)>35); } } }
 /* FA 에이전트 */
-const AGF=['한빛스포츠','리드매니지먼트','넥스트에이전시','스타플러스','베이스라인'];
-function agentOf(p){ if(!p.agent)p.agent={name:genName(),firm:AGF[Math.floor(u01('ag',p.id)*AGF.length)],style:u01('ags',p.id)<.3?'hard':u01('ags',p.id)>.8?'soft':'normal'}; return p.agent; }
-function negOf(id){ const F=G.fa; F.neg=F.neg||{}; return F.neg[id]||(F.neg[id]={rounds:0,mood:60,log:[],counter:null,closed:false,warned:false}); }
+function negOf(id){ const F=G.fa; F.neg=F.neg||{}; if(!F.neg[id]){ const ag=G.players[id]?agentOf(G.players[id]):null; F.neg[id]={rounds:0,mood:clamp(Math.round(50+(agRel(ag)-50)*.6),25,85),log:[],counter:null,closed:false,warned:false}; } return F.neg[id]; }
 const offScore=o=>o.annual*(1+.06*(o.years-1));
 function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; const ag=agentOf(p); const n=negOf(id);
   if(faOutBlocked(G.user,p))return {msg:`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(KBO 규약 제173조). 이미 ${faOutN(G.user)}명을 데려왔습니다.`};
   if(n.closed)return {msg:`${ag.name} 에이전트가 더 이상 우리와 협상하지 않습니다.`};
-  if(n.rounds>=4)return {msg:'협상 횟수(4회)를 다 썼습니다. 지금 조건이 마지막입니다.'};
+  const RM=agRoundsMax(p); if(n.rounds>=RM)return {msg:`협상 횟수(${RM}회)를 다 썼습니다. 지금 조건이 마지막입니다.`};
+  /* 대형 에이전트의 역제안을 무시하고 더 낮게 부르면 기분이 상한다 */
+  if(n.counter&&ag.size==='big'&&offScore(o)<offScore(n.counter)*.97){ n.mood=clamp(n.mood-6,0,100); agRelAdd(ag,-2,`${p.name} 역제안 무시`); }
   n.rounds++; n.log.push({d:G.day,w:'구단',a:o.annual,y:o.years});
   const ai=Object.values(F.ai[id]||{}); const bestAI=ai.length?Math.max(...ai.map(offScore)):0;
-  const want=offScore(p.ask)*(ag.style==='hard'?1.06:ag.style==='soft'?.95:1)*(1+.03*ai.length)*(p.faFrom===G.user?.95:1);
+  const want=offScore(p.ask)*agWantMul(ag)*(1+.03*ai.length)*(p.faFrom===G.user?.95:1); const mk=agMk(p); const shop=mk&&!mk.done;
   const r=offScore(o)/Math.max(want*.97,bestAI*1.01); let t;
   F.offers[id]={annual:o.annual,years:o.years};
-  if(r>=1){ n.hot=true; n.counter=null; n.mood=clamp(n.mood+8,0,100); t=`좋은 조건입니다. 선수에게 바로 전하겠습니다. ${ai.length?'다른 구단 제안과 비교해 곧 답을 드리겠습니다.':'큰 변수가 없으면 사인할 것 같습니다.'}`; }
-  else if(r>=.9){ const k=1/r*rnd(.99,1.03); n.counter={annual:Math.min(round5(o.annual*k),round5(p.ask.annual*1.15)),years:Math.max(o.years,ag.style==='hard'?p.ask.years:o.years)}; n.mood=clamp(n.mood-2,0,100);
+  if(r>=1){ n.hot=true; n.counter=null; n.mood=clamp(n.mood+8,0,100); t=shop?`좋은 조건입니다. 다만 선수가 시장 반응을 끝까지 보고 싶어 합니다(시장 확인 ${mk.round}/${mk.need}라운드). 다른 구단 제안을 받아 보고 ${mk.next?dsh(mk.next):'며칠 뒤'}에 다시 말씀드리겠습니다.`:`좋은 조건입니다. 선수에게 바로 전하겠습니다. ${ai.length?'다른 구단 제안과 비교해 곧 답을 드리겠습니다.':'큰 변수가 없으면 사인할 것 같습니다.'}`;
+    if(r<1.15)agRelAdd(ag,1,`${p.name} 성의 있는 제안`); }
+  else if(r>=.9){ const k=1/r*rnd(.99,1.03); n.counter={annual:Math.min(round5(o.annual*k),round5(p.ask.annual*1.15)),years:Math.max(o.years,ag.style==='hard'||ag.size==='big'?p.ask.years:o.years)}; n.mood=clamp(n.mood-2,0,100);
     t=`조금만 더 맞춰 주시면 됩니다. ${n.counter.years}년 연 ${money(n.counter.annual)}이면 선수를 설득해 보겠습니다.${ai.length?` 다른 구단에서도 ${ai.length}곳이 제안을 넣었습니다.`:''}`; }
-  else if(r>=.75){ n.counter=null; n.mood=clamp(n.mood-10,0,100); t=`솔직히 차이가 큽니다. 선수 기대치는 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준입니다.`; }
-  else { n.counter=null; n.mood=clamp(n.mood-25,0,100); t='선수가 실망했습니다. 이 조건으로는 이야기하기 어렵습니다.'; }
-  if(n.mood<25){ n.closed=true; delete F.offers[id]; t+=' 우리 구단과의 협상을 접겠다고 합니다.'; p.mor=clamp((p.mor??60)-10,0,100); }
+  else if(r>=.75){ n.counter=null; n.mood=clamp(n.mood-(ag.style==='hard'?13:10),0,100); agRelAdd(ag,-1,`${p.name} 낮은 제안`); t=`솔직히 차이가 큽니다. 선수 기대치는 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준입니다.`; }
+  else { n.counter=null; n.mood=clamp(n.mood-(ag.style==='hard'?30:25),0,100); agRelAdd(ag,-4,`${p.name} 무리한 제안`); t=`선수가 실망했습니다. 이 조건으로는 이야기하기 어렵습니다.${ag.size==='big'?' 저희 회사 고객 전체를 이런 식으로 대하신다면 곤란합니다.':''}`; }
+  if(n.mood<25){ n.closed=true; delete F.offers[id]; t+=' 우리 구단과의 협상을 접겠다고 합니다.'; p.mor=clamp((p.mor??60)-10,0,100); agRelAdd(ag,-6,`${p.name} 협상 결렬`); }
   n.log.push({d:G.day,w:'에이전트',t}); return {msg:`${ag.name}(${ag.firm}): ${t}`}; }
-function faAcceptCounter(id){ const n=negOf(id); if(!n.counter)return '역제안이 없습니다.'; const c=n.counter; G.fa.offers[id]={annual:c.annual,years:c.years}; n.log.push({d:G.day,w:'구단',a:c.annual,y:c.years,acc:true}); n.counter=null; n.deal=true; n.hot=true; n.log.push({d:G.day,w:'에이전트',t:'감사합니다. 선수에게 바로 사인을 권하겠습니다.'}); return `역제안을 받아들였습니다. ${G.players[id].name}이(가) 곧 답을 줄 것입니다.`; }
-function faAgentPing(id){ const n=negOf(id); const p=G.players[id]; if(n.warned||!G.fa.offers[id]||n.closed)return; const ai=Object.values(G.fa.ai[id]||{}); if(!ai.length)return; const b=ai.sort((a,c)=>offScore(c)-offScore(a))[0];
+function faAcceptCounter(id){ const n=negOf(id); if(!n.counter)return '역제안이 없습니다.'; const c=n.counter; G.fa.offers[id]={annual:c.annual,years:c.years}; n.log.push({d:G.day,w:'구단',a:c.annual,y:c.years,acc:true}); n.counter=null; n.deal=true; n.hot=true; agRelAdd(agentOf(G.players[id]),2,`${G.players[id].name} 역제안 수용`); n.log.push({d:G.day,w:'에이전트',t:'감사합니다. 선수에게 바로 사인을 권하겠습니다.'}); return `역제안을 받아들였습니다. ${G.players[id].name}이(가) 곧 답을 줄 것입니다.`; }
+function faAgentPing(id){ const n=negOf(id); const p=G.players[id]; if(n.warned||!G.fa.offers[id]||n.closed||agShopN(p))return; /* 대어는 시장 보고 라운드로 알린다 */ const ai=Object.values(G.fa.ai[id]||{}); if(!ai.length)return; const b=ai.sort((a,c)=>offScore(c)-offScore(a))[0];
   if(offScore(b)>offScore(G.fa.offers[id])){ n.warned=true; const ag=agentOf(p); const mo=G.fa.offers[id]; const ea=round5(b.annual*rnd(.97,1.03)); const why=b.years>mo.years&&b.annual<=mo.annual?'연봉은 비슷하지만 계약 기간이 더 깁니다':'조건이 더 좋습니다'; const cmp=`다른 구단 약 ${b.years}년 총 ${money(ea*b.years)}(연 ${money(ea)}) / 우리 ${mo.years}년 총 ${money(mo.annual*mo.years)}(연 ${money(mo.annual)})`;
     n.log.push({d:G.day,w:'에이전트',t:`다른 구단 제안이 ${why}. ${cmp}.`});
     mail(`${ag.name} 에이전트`,`${p.name} 건: 경쟁 제안이 들어왔습니다`,`${ag.firm} ${ag.name}입니다. ${p.name}에게 들어온 다른 구단 제안이 ${why}.\n${cmp}\n\n조건을 올리실지 알려 주십시오.`,{imp:true,kind:'FA',ref:id,acts:[{l:'선수 보기',a:'player',v:id}]}); } }
@@ -5106,6 +5118,84 @@ function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if
   if(day===KD(1,10))salArbFile(); if(day===KD(1,20))salArbDecide(); }
 /* 예비 FA 보상금 미리 보기: 지금 연봉 순위로 등급을 어림하고, 이 금액을 내년 연봉으로 주면 떠날 때 받는 보상금을 계산한다 */
 function preFAComp(p,amt){ let g='C'; try{ g=faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null)); }catch(e){} const c=COMP[g]; return {g,cash:Math.round(amt*c.cash),withP:Math.round(amt*c.withP)}; }
+/* ===== FA 에이전트: 리그에 고정된 에이전트 명단 =====
+   실제 KBO도 대형 에이전시 몇 곳이 대어 FA 대부분을 맡는다. 에이전트는 해마다 같은 사람이라 단장과의 친분과 거래 실적이 쌓인다.
+   - 규모: 대형(big)은 대어 고객이 많고 자존심이 세다. 함부로 대하면 친분이 크게 깎이고, 친하면 우선 제안과 라스트 룩을 준다
+   - 스타일: 경매형(시장을 끝까지 돌린다) / 강경형(요구액을 잘 안 깎는다) / 실속형(조건이 맞으면 빨리 끝낸다) / 관계형(친분을 크게 본다)
+   - 친분(rel, 0~100, 기본 50): 요구 기준, 협상 분위기, 동점일 때 선택, 정보를 얼마나 정확히 알려 주는지에 영향
+   - 거래 실적(deals): 계약을 많이 한 구단에 먼저 연락한다 */
+const AG_FIRMS=[
+  {firm:'스타플러스',size:'big',style:'auction'},{firm:'리드매니지먼트',size:'big',style:'hard'},
+  {firm:'한빛스포츠',size:'mid',style:'rel'},{firm:'넥스트에이전시',size:'mid',style:'fast'},{firm:'베이스라인',size:'mid',style:'auction'},
+  {firm:'더그아웃파트너스',size:'small',style:'fast'},{firm:'다이아몬드스포츠',size:'small',style:'rel'},{firm:'원팀매니지먼트',size:'small',style:'hard'}];
+const AG_SIZE={big:'대형 에이전시',mid:'중견 에이전시',small:'개인 에이전트'};
+const AG_STYLE={
+  auction:{l:'경매형',d:'시장을 끝까지 돌려 가장 높은 값을 찾습니다. 다른 구단 제안을 지렛대로 씁니다.',want:1.03,shop:1},
+  hard:{l:'강경형',d:'요구액에서 잘 물러서지 않습니다. 낮은 제안에 크게 실망합니다.',want:1.06,shop:0},
+  fast:{l:'실속형',d:'조건이 맞으면 오래 끌지 않고 빨리 끝냅니다.',want:.98,shop:-1},
+  rel:{l:'관계형',d:'구단과의 친분과 그동안의 거래를 크게 봅니다.',want:1,shop:0}};
+function agInit(){ if(G.agents&&G.agents.length)return G.agents;
+  G.agents=AG_FIRMS.map((f,i)=>({id:i,name:genName(),firm:f.firm,size:f.size,style:f.style,rel:50,deals:{},since:G.year,female:u01('agf',i+77)>.8}));
+  return G.agents; }
+function agById(id){ return agInit()[id]||null; }
+/* 선수에게 에이전트 배정: 대어일수록 대형 에이전시로 간다. 한 번 정하면 바뀌지 않는다 */
+function agentOf(p){ const A=agInit(); if(p.agId!=null&&A[p.agId])return A[p.agId];
+  const o=ovr(p); const w=A.map(a=>a.size==='big'?(o>=58?3.2:o>=52?1.1:.25):a.size==='mid'?1:(o<50?1.4:.45)); const tot=sum(w); let x=u01('agp',p.id)*tot, k=0;
+  for(;k<A.length-1;k++){ x-=w[k]; if(x<0)break; } p.agId=k; delete p.agent; return A[k]; }
+function agRel(ag){ return ag?Math.round(ag.rel??50):50; }
+function agRelAdd(ag,d,why){ if(!ag||!d)return; const big=ag.size==='big'; const v=d<0&&big?d*1.5:d; ag.rel=clamp((ag.rel??50)+v,0,100); (ag.log=ag.log||[]).push({y:G.year,d:G.day,v:Math.round(v),t:why||''}); if(ag.log.length>30)ag.log.shift(); }
+function agRelLab(r){ return r>=75?'각별함':r>=60?'친함':r>=40?'보통':r>=25?'서먹함':'불편함'; }
+/* 친분이 요구 기준에 주는 영향: 친하면 덜 부르고, 불편하면 더 부른다. 관계형은 두 배, 대형은 1.5배 */
+function agWantMul(ag){ const r=agRel(ag); const k=(ag.style==='rel'?2:1)*(ag.size==='big'?1.5:1); return (AG_STYLE[ag.style]||AG_STYLE.rel).want*(1-(r-50)/50*.035*k); }
+/* 시장 확인 라운드 수: 대어일수록 많다(타구단 제시를 받아 보고 다시 묻는 과정) */
+function agTier(p){ const o=ovr(p), a=(p.ask0||(p.ask&&p.ask.annual)||0); return o>=60||a>=1200?'star':o>=55||a>=600?'big':'normal'; }
+function agShopN(p){ const t=agTier(p); if(t==='normal')return 0; const ag=agentOf(p); return Math.max(1,(t==='star'?3:2)+(AG_STYLE[ag.style]||{}).shop); }
+function agRoundsMax(p){ const t=agTier(p); return t==='star'?6:t==='big'?5:4; }
+/* 거래 실적: 계약을 많이 한 구단일수록 그 에이전트 고객에게 관심을 먼저 받는다(AI 관심도 가산) */
+function agDealBonus(ag,tid){ return Math.min(3,(ag&&ag.deals&&ag.deals[tid])||0)*.04; }
+function agDealAdd(p,tid){ const ag=agentOf(p); ag.deals=ag.deals||{}; ag.deals[tid]=(ag.deals[tid]||0)+1; }
+/* 해마다 FA 공시 때 친분은 조금씩 보통으로 돌아온다 */
+function agYear(){ for(const a of agInit()){ a.rel=Math.round(50+((a.rel??50)-50)*.85); } }
+/* 우선 제안: 친하거나 거래를 많이 한 에이전트는 협상 시작 전에 고객 한 명을 먼저 보여 준다. 경매형은 하지 않는다 */
+function agPitch(){ const F=G.fa; if(!F||G.unemp)return; F.pitch={};
+  for(const ag of agInit()){ if(ag.style==='auction')continue; const r=agRel(ag), dl=(ag.deals&&ag.deals[G.user])||0; if(r<65&&!(dl>=2&&r>=50))continue;
+    const c=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom!==G.user&&agentOf(p)===ag&&!faOutBlocked(G.user,p)&&ovr(p)>=50).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!c)continue;
+    const disc=r>=80?.94:r>=65?.97:1; const o={annual:round5(c.ask.annual*disc),years:c.ask.years,until:F.openDay+1,ag:ag.id}; F.pitch[c.id]=o;
+    mail(`${ag.name} 에이전트`,`[우선 제안] ${c.name} 건`,`${ag.firm} ${ag.name}입니다. 협상이 열리기 전에 단장님께 먼저 말씀드립니다.\n\n${c.name}(${posLabel(c)}, ${c.age}세, ${c.faGrade}등급, 원소속 ${tshort(c.faFrom)})\n${o.years}년 연 ${money(o.annual)}이면 시장에 내놓지 않고 바로 사인하겠습니다. ${disc<1?`요구액(연 ${money(c.ask.annual)})보다 낮춘 조건입니다. `:''}${dstr(o.until)}까지만 유효합니다.\n\n${r>=65?'그동안의 관계를 생각해서 드리는 기회입니다.':'저희와 거래를 많이 해 주셔서 먼저 연락드립니다.'}`,{imp:true,kind:'FA',ref:c.id,face:null,acts:[{l:'이 조건으로 계약',a:'agPitchOk',v:c.id},{l:'선수 보기',a:'player',v:c.id}]}); } }
+function agPitchOk(id){ const F=G.fa; const p=G.players[id]; const o=F&&F.pitch&&F.pitch[id]; if(!p||!o||p.team!=null)return '이미 끝난 제안입니다.'; if(G.day>o.until)return '우선 제안 기한이 지났습니다.'; if(faOutBlocked(G.user,p))return `다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다.`;
+  delete F.pitch[id]; faSign(p,[{tid:G.user,annual:o.annual,years:o.years}]); agRelAdd(agById(o.ag),3,'우선 제안 수락'); return `${p.name}과(와) ${o.years}년 연 ${money(o.annual)}에 계약했습니다.`; }
+/* 시장 확인 라운드: 대어는 바로 사인하지 않는다. 4~6일마다 다른 구단 제안을 모아 다시 묻고, 라운드를 다 돌면 가장 좋은 조건과 계약한다 */
+function agMk(p){ const F=G.fa; F.mk=F.mk||{}; const need=agShopN(p); if(!need)return null; return F.mk[p.id]||(F.mk[p.id]={round:0,need,next:null,done:false}); }
+/* 다른 구단 제안이 얼마나 정확히 전달되는지는 친분에 달렸다 */
+function agTell(ag,b){ const r=agRel(ag); if(!b)return '아직 다른 구단 제안은 없습니다.';
+  if(r>=60)return `${tname(b.tid)}이(가) ${b.years}년 총 ${money(b.annual*b.years)}(연 ${money(b.annual)})을 제시했습니다.`;
+  if(r>=40)return `다른 구단 한 곳이 ${b.years}년 연 ${money(round5(b.annual*rnd(.97,1.03)))} 안팎을 제시했습니다.`;
+  return '다른 구단에서 더 나은 조건이 들어왔다고만 말씀드리겠습니다.'; }
+function agShopTick(p,mk,ai,day){ const F=G.fa; const id=p.id; if(mk.next==null){ mk.next=day+ri(3,5); return; } if(day<mk.next)return;
+  const offs=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})); const uo=F.offers[id];
+  if(!offs.length&&!uo){ mk.next=day+3; return; } /* 제안이 하나도 없으면 라운드를 세지 않는다 */
+  const ag=agentOf(p); mk.round++; mk.next=day+ri(4,6);
+  /* 다른 구단은 경쟁을 보고 조건을 올리기도 한다(자기 평가액의 112%까지) */
+  const top0=[...offs,...(uo?[{tid:G.user,...uo}]:[])].sort((a,b)=>offScore(b)-offScore(a))[0];
+  for(const o of offs){ const t=team(o.tid); if(!t||top0.tid===o.tid)continue; if(R()<(ag.style==='auction'?.6:.45)){ const cap=faWorth(t,p)*1.12; const na=round5(Math.min(cap,Math.max(o.annual,top0.annual*(top0.years>o.years?1.04:1.01)*rnd(1,1.05)))); if(na>o.annual){ ai[o.tid].annual=na; if(top0.years>o.years&&R()<.5)ai[o.tid].years=Math.min(o.years+1,top0.years); } } }
+  const best=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).sort((a,b)=>offScore(b)-offScore(a))[0]||null;
+  const last=mk.round>=mk.need; const mine=uo||p.faFrom===G.user;
+  if(mine&&!G.unemp){ const ahead=uo&&(!best||offScore(uo)>=offScore(best));
+    const n=negOf(id); const body=`${ag.firm} ${ag.name}입니다. ${p.name} 건 시장 보고(${mk.round}/${mk.need}라운드)입니다.\n\n${ahead?'지금은 단장님 제안이 가장 좋습니다.':agTell(ag,best)}\n${uo?`우리 구단 제안: ${uo.years}년 총 ${money(uo.annual*uo.years)}(연 ${money(uo.annual)})`:'우리 구단은 아직 제안하지 않았습니다.'}\n\n${last?(ahead?'선수와 상의해 곧 결정하겠습니다.':'이번이 마지막 라운드입니다. 곧 결정합니다.'):(ahead?'다른 구단 반응을 한 번 더 보겠습니다. 조건을 지키시면 유리합니다.':`다음 보고는 ${dsh(mk.next)}입니다. 조건을 올리실지 알려 주십시오.`)}`;
+    n.log.push({d:day,w:'에이전트',t:`시장 보고 ${mk.round}/${mk.need}: ${ahead?'우리 제안이 가장 좋음':agTell(ag,best)}`});
+    const acts=[{l:'협상실 열기',a:'faOpen',v:id}]; if(!ahead&&best&&agRel(ag)>=40)acts.push({l:'최고 조건에 맞추기',a:'faMatch',v:id});
+    mail(`${ag.name} 에이전트`,`${p.name} 건: 시장 보고 ${mk.round}/${mk.need}`,body,{imp:!ahead,kind:'FA',ref:id,acts}); }
+  if(!last)return;
+  /* 라스트 룩: 친한 에이전트는 마지막에 우리에게 같은 조건을 맞출 기회를 준다(대형은 친분 60, 그 외 55 이상) */
+  if(uo&&best&&!mk.ll&&offScore(uo)<offScore(best)&&offScore(uo)>=offScore(best)*.9&&agRel(ag)>=(ag.size==='big'?60:55)&&!G.unemp){
+    mk.ll={until:day+2,annual:round5(best.annual*1.01),years:best.years}; mk.next=day+2;
+    mail(`${ag.name} 에이전트`,`[라스트 룩] ${p.name} 건`,`${ag.firm} ${ag.name}입니다. 그동안의 관계를 생각해 마지막 기회를 드립니다.\n${dsh(mk.ll.until)}까지 ${mk.ll.years}년 연 ${money(mk.ll.annual)}(총 ${money(mk.ll.annual*mk.ll.years)})을 맞춰 주시면 단장님 구단과 사인하겠습니다.`,{imp:true,kind:'FA',ref:id,acts:[{l:'이 조건으로 맞추기',a:'faLL',v:id},{l:'협상실 열기',a:'faOpen',v:id}]}); return; }
+  mk.done=true; }
+/* 라스트 룩 수락 */
+function agLastLook(id){ const F=G.fa; const p=G.players[id]; const mk=F&&F.mk&&F.mk[id]; if(!p||p.team!=null||!mk||!mk.ll)return '이미 끝난 제안입니다.'; if(G.day>mk.ll.until)return '기한이 지났습니다.';
+  const o={annual:mk.ll.annual,years:mk.ll.years}; F.offers[id]=o; delete mk.ll; mk.done=true; faSign(p,[{tid:G.user,...o}]); agRelAdd(agentOf(p),2,'라스트 룩 수용'); return `${p.name}과(와) ${o.years}년 연 ${money(o.annual)}에 계약했습니다.`; }
+/* 지금 최고 조건에 맞추기: 다른 구단 최고 제안보다 조금 높게(같은 기간) 다시 제시한다 */
+function agMatchOffer(id){ const p=G.players[id]; const ai=Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).sort((a,b)=>offScore(b)-offScore(a))[0]; if(!p||!ai)return null; return {annual:round5(ai.annual*1.02),years:ai.years}; }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -5827,7 +5917,16 @@ function cmpView(){ const L=nextGames(1); const def=L.length?L[0].op:standOrder(
     <div class="cmp-hd"><span>${badge(G.user,22)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,22)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div>
     <div class="cmp-rows">${rows}</div><p class="small muted">숫자는 자리별 전력(현재 능력 기준), 순위는 10개 구단 중 순위입니다. 자리를 누르면 그 자리 보강 트레이드를 찾습니다.</p></section>${help}`; }
 /* ---------- FA 센터 ---------- */
-function agentAv(p,expr){ const ag=agentOf(p); return avImg({persona:'agent',pid:'ag:'+ag.name+ag.firm,age:46,female:u01('agf',p.id)>.8,expr:expr||null,name:ag.name}); }
+function agAv(ag,expr){ return avImg({persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:expr||null,name:ag.name}); }
+function agentAv(p,expr){ return agAv(agentOf(p),expr); }
+/* 에이전트 소개 한 줄: 규모 · 스타일 · 친분 · 우리와 계약 실적 */
+function agLine(ag){ const st=AG_STYLE[ag.style]||AG_STYLE.rel; const r=agRel(ag); const dl=(ag.deals&&ag.deals[G.user])||0;
+  return `<span class="pill ${ag.size==='big'?'acc':''}">${AG_SIZE[ag.size]}</span><span class="pill" title="${esc(st.d)}">${st.l}</span><span class="pill ${r>=60?'good':r<40?'bad':''}">친분 ${r} · ${agRelLab(r)}</span>${dl?`<span class="small muted">우리와 계약 ${dl}건</span>`:''}`; }
+function agClients(ag){ const F=G.fa; if(!F)return []; return F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&agentOf(p)===ag).sort((a,b)=>ovr(b)-ovr(a)); }
+/* 에이전트 명단: 이번 겨울 누가 어떤 고객을 맡았는지, 우리와 친분은 어떤지 */
+function agDirCard(){ const A=agInit(); const rows=A.map(ag=>{ const cl=agClients(ag); return `<div class="agr">${agAv(ag)}<div class="agm"><b>${esc(ag.name)} <span class="small muted">${esc(ag.firm)}</span></b><span class="agl">${agLine(ag)}</span><span class="small">${cl.length?`이번 겨울 고객 ${cl.length}명: ${cl.slice(0,4).map(p=>`<button class="lnk" data-a="faSel" data-v="${p.id}">${esc(p.name)}</button>`).join(', ')}${cl.length>4?' 등':''}`:'<span class="muted">이번 겨울 FA 고객 없음</span>'}</span></div></div>`; }).join('');
+  return `<section class="card"><div class="row between"><h2 class="sec">에이전트</h2><span class="small muted">친분이 높으면 요구가 낮아지고, 우선 제안·라스트 룩을 받습니다</span></div><div class="agdir">${rows}</div>
+    <details class="frule"><summary class="small">에이전트 규칙 보기</summary><p class="small muted">대형 에이전시는 대어를 많이 맡고 자존심이 셉니다. 낮은 제안, 역제안 무시, 협상 결렬은 친분을 크게 깎습니다. 친분이 높거나 우리와 계약을 여러 번 한 에이전트는 협상이 열리기 전에 고객을 먼저 보여 줍니다(우선 제안). 대어 FA는 바로 사인하지 않고 4~6일마다 다른 구단 제안을 모아 다시 묻는 시장 확인 라운드를 거칩니다(대어 3라운드, 준척 2라운드, 경매형은 1라운드 더, 실속형은 1라운드 덜). 마지막 라운드에서 우리 제안이 조금 밀리면, 친한 에이전트는 같은 조건을 맞출 기회(라스트 룩)를 줍니다. 친분은 해마다 조금씩 보통으로 돌아옵니다.</p></details></section>`; }
 function faHeat(id){ return Object.keys((G.fa&&G.fa.ai[id])||{}).length; }
 function faBig(p){ const o=G.fa.offers[p.id]; const ai=Object.keys(G.fa.ai[p.id]||{}).map(Number); const rp=scoutReport(p); const h=curLine(p);
   const st=!h?'기록 없음':p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'-');
@@ -5837,7 +5936,12 @@ function faBig(p){ const o=G.fa.offers[p.id]; const ai=Object.keys(G.fa.ai[p.id]
     ${o?`<div class="note good">우리 제시 ${o.years}년 연 ${money(o.annual)}</div>`:''}
     <button class="btn small ${UI.faSel===p.id?'':'primary'}" data-a="faSel" data-v="${p.id}">${UI.faSel===p.id?'협상실 닫기':'협상실 열기'}</button></div>`; }
 function faRoom(p){ const ag=agentOf(p); const n=G.fa.neg&&G.fa.neg[p.id]; const expr=n?(n.counter?'flat':n.hot||n.deal?'smile':n.mood<40?'angry':null):null; const ai=Object.keys(G.fa.ai[p.id]||{}).map(Number); const b=budget();
-  return `<section class="card faroom"><div class="tgm">${agentAv(p,expr)}<div><b>${esc(ag.name)} 에이전트 · ${esc(ag.firm)}</b><span class="small muted">${ag.style==='hard'?'깐깐한 협상가':ag.style==='soft'?'유연한 편':'보통'} · ${esc(p.name)} 담당${ai.length?` · 경쟁 구단 ${ai.length}곳: ${ai.map(t=>esc(tshort(t))).join(', ')}`:''}</span></div></div>
+  const mk=G.fa.mk&&G.fa.mk[p.id]; const need=agShopN(p); const st=AG_STYLE[ag.style]||AG_STYLE.rel;
+  const mkTxt=need?(mk&&mk.done?'시장 확인 끝 · 곧 결정':mk&&mk.ll?`라스트 룩 · ${dsh(mk.ll.until)}까지 ${mk.ll.years}년 연 ${money(mk.ll.annual)}`:`시장 확인 ${mk?mk.round:0}/${need}라운드${mk&&mk.next?` · 다음 보고 ${dsh(mk.next)}`:''}`):'조건이 맞으면 바로 결정하는 선수';
+  return `<section class="card faroom"><div class="tgm">${agentAv(p,expr)}<div><b>${esc(ag.name)} 에이전트 · ${esc(ag.firm)}</b><span class="agl">${agLine(ag)}</span><span class="small muted">${esc(st.d)} · ${esc(p.name)} 담당${ai.length?` · 경쟁 구단 ${ai.length}곳: ${ai.map(t=>esc(tshort(t))).join(', ')}`:''}</span></div></div>
+    <div class="note ${mk&&mk.ll?'warn':''}">${mkTxt}${need?` <span class="small muted">· ${agTier(p)==='star'?'대어':'준척'} FA는 바로 사인하지 않고 다른 구단 제안을 받아 본 뒤 결정합니다</span>`:''}</div>
+    ${mk&&mk.ll?`<div class="row"><button class="btn primary" data-a="faLL" data-v="${p.id}">라스트 룩 맞추기 (${mk.ll.years}년 연 ${money(mk.ll.annual)})</button></div>`:''}
+    ${G.fa.pitch&&G.fa.pitch[p.id]&&G.day<=G.fa.pitch[p.id].until?`<div class="row"><button class="btn primary" data-a="agPitchOk" data-v="${p.id}">우선 제안 수락 (${G.fa.pitch[p.id].years}년 연 ${money(G.fa.pitch[p.id].annual)})</button></div>`:''}
     ${UI.faMsg&&UI.faMsg.id===p.id?`<div class="note">${esc(UI.faMsg.t)}</div>`:''}
     <div class="row">${budgetTag(Math.round(((UI.offer&&UI.offer.id===p.id?UI.offer:(G.fa.offers[p.id]||p.ask)).annual)*b.rem))}<span class="small muted">예산 여유 ${money(b.roomGoal)}</span></div>
     ${offerForm(p)}${negPanel(p)}</section>`; }
@@ -5858,6 +5962,7 @@ function faCenter0(){ const F=G.fa;
   const ours=ids.map(id=>G.players[id]).filter(p=>p.faFrom===G.user);
   return `<div class="fahero live"><b>FA 시장 ${open?`협상 ${d1}일째`:`협상 시작까지 ${d1}일`}</b><span>${open?`캠프 전 마감까지 ${Math.max(0,left)}일 · `:''} 남은 FA ${ids.length}명 · 계약 ${signed}건 · 우리 제시 ${mine}건 · 예산 여유 ${money(b.roomGoal)}</span></div>
     ${sel?faRoom(sel):''}
+    ${agDirCard()}
     <section class="card"><div class="row between"><h2 class="sec">빅 네임</h2><span class="small muted">선수는 매일 제안을 비교하다가 계약합니다. 관심 구단이 많을수록 빨리 결정합니다.</span></div><div class="fabg">${ids.filter(id=>G.players[id]&&ovr(G.players[id])>=55).slice(0,3).map(id=>faBig(G.players[id])).join('')||'<p class="small muted">능력 55 이상인 대어는 남아 있지 않습니다.</p>'}</div></section>
     ${ours.length?`<section class="card"><h2 class="sec">우리 구단 FA · 잔류 협상</h2><div class="fl">${ours.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">요구 ${p.ask.years}년 ${money(p.ask.annual)} · 관심 ${faHeat(p.id)}곳</span><button class="tc-i go" data-a="faSel" data-v="${p.id}">협상</button></div>`).join('')}</div></section>`:''}
     <section class="card"><div class="row between"><h2 class="sec">전체 FA</h2><div class="chips">${[['all','전체'],['H','타자'],['P','투수'],['gA','A등급'],['gB','B등급'],['gC','C등급']].map(([k,l])=>`<button data-a="faPos" data-v="${k}" class="${pf===k?'on':''}">${l}</button>`).join('')}</div></div>
@@ -5889,8 +5994,8 @@ function relPeople(){
   const out=[
     {k:'fan',name:'팬',role:`${t.city} ${t.nick} 팬덤`,av:{persona:'staff',pid:'fan'+G.user,team:G.user,age:24,female:true,expr:relEx(fan),name:'팬'},rel:fan,rl:'여론',lab:fanLabel(fan),sub:`구단 인기 ${Math.round(t.pop*100)}`},
     {k:'press',name:'언론',role:'야구 담당 기자단',av:{persona:'agent',pid:'press'+G.user,team:G.user,age:38,expr:relEx(pr),name:'언론'},rel:pr,rl:'논조',lab:pressLabel(pr),sub:`최근 기사 ${(G.news||[]).filter(n=>n.d>=G.day-14).length}건`}];
-  if(G.fa&&G.fa.neg&&faLive())for(const id in G.fa.neg){ const n=G.fa.neg[id]; const p=G.players[id]; if(!p||p.team!=null||n.closed)continue; const ag=agentOf(p);
-    out.push({k:'ag:'+id,name:ag.name,role:`${ag.firm} · ${p.name} 담당`,av:{persona:'agent',pid:'ag'+id,age:45,expr:relEx(n.mood),name:ag.name},rel:Math.round(n.mood),rl:'분위기',lab:n.mood>=60?'우호적':n.mood>=40?'신중함':'냉랭함',sub:ag.style==='hard'?'강성 에이전트':ag.style==='soft'?'유연한 편':'보통'}); }
+  for(const ag of agInit()){ const cl=faLive()?agClients(ag):[]; const dl=(ag.deals&&ag.deals[G.user])||0; if(!cl.length&&!dl&&agRel(ag)===50)continue; const r=agRel(ag);
+    out.push({k:'agt:'+ag.id,name:ag.name,role:`${ag.firm} · ${AG_SIZE[ag.size]}${cl.length?` · FA 고객 ${cl.length}명`:''}`,av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:relEx(r),name:ag.name},rel:r,rl:'친분',lab:agRelLab(r),sub:(AG_STYLE[ag.style]||AG_STYLE.rel).l+' 에이전트'}); }
   return [['구단 수뇌부',top],['현장 · 코칭스태프',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out]];
 }
 function relKey(x){ return x.k.startsWith('p:')?['player',x.k.slice(2)]:['person',x.k]; }
@@ -5973,10 +6078,10 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     fx=['스폰서(광고) 수입','시즌 결산 때 구단주 신뢰에 직접 반영 (50 기준 10점당 신뢰 1)'];
     recent=(G.news||[]).slice(0,3).map(n=>`<div class="ps-r small">${dsh(n.d)} · ${esc(n.o)} · ${esc(n.t)}</div>`).join('');
     acts=[btn('언론·여론','go','club:media',1)]; }
-  else if(k.startsWith('ag:')){ const id=+k.slice(3); const p=G.players[id]; const ag=agentOf(p); const n=negOf(id);
-    info=`<p class="small">${esc(ag.firm)} · ${esc(p.name)} 담당 · ${ag.style==='hard'?'강성':ag.style==='soft'?'유연':'보통'}</p><p class="small">협상 ${n.rounds}/4회 사용</p>`;
-    moves=['요구에 가까운 제시는 분위기를 올리고, 큰 차이는 크게 떨어뜨립니다','25 아래로 떨어지면 우리와의 협상을 끝냅니다'];
-    fx=['역제안을 줄지, 협상을 접을지'];
+  else if(k.startsWith('agt:')){ const ag=agById(+k.slice(4)); const cl=faLive()?agClients(ag):[]; const lg=(ag.log||[]).slice(-4).reverse();
+    info=`<p class="small">${esc(ag.firm)} · ${AG_SIZE[ag.size]} · ${(AG_STYLE[ag.style]||AG_STYLE.rel).l}</p><p class="small muted">${esc((AG_STYLE[ag.style]||AG_STYLE.rel).d)}</p><p class="small">우리와 계약 ${(ag.deals&&ag.deals[G.user])||0}건${cl.length?` · 이번 겨울 고객 ${cl.map(p=>esc(p.name)).join(', ')}`:''}</p>${lg.length?`<p class="small muted">최근: ${lg.map(x=>`${esc(x.t)} ${x.v>0?'+':''}${x.v}`).join(' · ')}</p>`:''}`;
+    moves=['요구에 가까운 제시, 역제안 수용, 계약 성사는 친분을 올립니다','낮은 제안, 역제안 무시, 협상 결렬은 친분을 깎습니다(대형 에이전시는 1.5배)'];
+    fx=['요구 기준(친하면 낮게)','우선 제안·라스트 룩','다른 구단 제안을 얼마나 정확히 알려 주는지'];
     acts=[btn('협상실','faOpen',id,1)]; }
   const d=relDelta(k);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
@@ -7686,7 +7791,7 @@ function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
     <p class="small muted keep">매물로 나온 선수는 그 구단이 정리하고 싶은 선수라 시세보다 싸게 거래됩니다. 급매는 더 쌉니다. 매물 등록은 최대 6주 동안 유지됩니다.</p></section>`); }
 function negPanel(p){ const F=G.fa; if(!F||!F.neg)return ''; const n=F.neg[p.id]; const ag=agentOf(p);
   const log=n?n.log.slice(-8).map(x=>x.w==='구단'?`<div class="chat me"><span>우리 제안</span><b>${x.y}년 연 ${money(x.a)}${x.acc?' (역제안 수락)':''}</b></div>`:`<div class="chat ag"><span>${esc(ag.name)}</span><p>${esc(x.t)}</p></div>`).join(''):'';
-  return `<section class="card"><div class="row between"><span class="eyebrow">에이전트 협상 · ${esc(ag.name)} (${esc(ag.firm)})</span><span class="small muted">${ag.style==='hard'?'깐깐한 협상가':ag.style==='soft'?'유연한 편':'보통'}${n?` · 협상 ${n.rounds}/4회 · 분위기 ${n.mood}`:''}</span></div>
+  return `<section class="card"><div class="row between"><span class="eyebrow">에이전트 협상 · ${esc(ag.name)} (${esc(ag.firm)})</span><span class="small muted">${(AG_STYLE[ag.style]||AG_STYLE.rel).l} · 친분 ${agRel(ag)}${n?` · 협상 ${n.rounds}/${agRoundsMax(p)}회 · 분위기 ${n.mood}`:''}</span></div>
     ${n?`<span class="gauge"><i style="width:${n.mood}%;background:${n.mood>=60?'var(--good)':n.mood>=35?'var(--warn)':'var(--bad)'}"></i></span>`:''}
     ${log?`<div class="chats">${log}</div>`:'<p class="small muted">아직 제안하지 않았습니다. 조건을 내면 에이전트가 바로 답합니다. 너무 낮은 조건을 계속 내면 협상이 깨집니다.</p>'}
     ${n&&n.counter?`<div class="row"><button class="btn primary" data-a="faAccept" data-v="${p.id}">역제안 수락 (${n.counter.years}년 연 ${money(n.counter.annual)})</button></div>`:''}
@@ -8905,6 +9010,9 @@ const A={
   stampOff(){ UI.stamp=null; render(); },
   faSel(v){ UI.faSel=UI.faSel===+v?null:+v; UI.offer=null; render(); if(UI.faSel){ const el=document.querySelector('.faroom'); if(el)el.scrollIntoView({block:'start'}); } },
   faPos(v){ UI.faPos=v; render(); },
+  agPitchOk(v){ const r=agPitchOk(+v); note('FA',r); UI.faMsg={id:+v,t:r}; save(); render(); },
+  faLL(v){ const r=agLastLook(+v); note('FA',r); UI.faMsg={id:+v,t:r}; save(); render(); },
+  faMatch(v){ const id=+v; const o=agMatchOffer(id); UI.faSel=id; if(!o){ UI.faMsg={id,t:'맞출 다른 구단 제안이 없습니다.'}; A.go('transfer:fa'); return; } const r=faNegotiate(id,o); UI.faMsg={id,t:r.msg}; save(); A.go('transfer:fa'); },
   faOpen(v){ UI.faSel=+v; UI.offer=null; A.go('transfer:fa'); },
   myRos(){ UI.myRos=true; renderSheet(); },
   csort(v){ UI.csort=v; render(); },
@@ -8990,6 +9098,10 @@ const GUARD={
   hireMgr(v){ const [id,y,c]=v.split(':'); const m=(G.mmarket||[]).find(x=>x.id===id); if(!m)return null; const cur=G.mgr[G.user]; const cl=c==='1'&&m.clan&&m.clan.length?m.clan:null; const b=budget();
     return {subj:`${m.name} 감독 선임`,kind:'감독',lines:[`계약 ${y}년 · 연봉 ${money(m.sal)}`,cl?`사단 코치 ${cl.length}명 함께 영입 · 연봉 합계 ${money(sum(cl.map(x=>x.sal)))}`:'',`지금 예산 여유 ${money(b.roomGoal)} (올해 남은 기간 연봉 약 ${money(Math.round((m.sal+(cl?sum(cl.map(x=>x.sal)):0))*b.rem))}${cl?` + 밀려나는 코치 정산금 ${money(clanSev(m))}`:''} 추가)`,cur&&!cur.interim?`현 ${cur.name} 감독은 경질되고 잔여 연봉 약 ${money(Math.round(cur.sal*Math.max(0,cur.yrs-.5)))}을 냅니다.`:'감독 자리가 비어 있습니다.'],warn:'선임하면 되돌릴 수 없습니다.'}; },
   extOffer(v){ const e=UI.ext; const p=G.players[+v]; if(!e||!p)return null; return {subj:`${p.name} 비FA 다년계약 제안`,kind:'연봉',lines:[`${e.years}년 · 연 ${money(e.annual)} · 총 ${money(e.annual*e.years)}`,`지금 연봉 ${money(p.sal)}`],warn:'선수가 받아들이면 바로 확정되고 되돌릴 수 없습니다.'}; },
+  agPitchOk(v){ const id=+v; const p=G.players[id]; const o=G.fa&&G.fa.pitch&&G.fa.pitch[id]; if(!p||!o||p.team!=null)return null; const g=COMP[p.faGrade]; const ps=p.faPrevSal||0;
+    const comp=p.faGrade==='C'?`보상금 ${money(Math.round(ps*1.5))}`:`보호 ${g.prot}명 밖 선수 1명 + ${money(ps*g.withP)}, 또는 선수 없이 ${money(ps*g.cash)} (상대 구단 선택)`;
+    return {subj:`FA ${p.name} 우선 제안 수락`,kind:'FA',lines:[`${posLabel(p)} · ${p.age}세 · ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`,`${o.years}년 · 연 ${money(o.annual)} · 총 ${money(o.annual*o.years)}`,`보상: ${comp}`],warn:'결재하면 바로 계약되고 되돌릴 수 없습니다.'}; },
+  faLL(v){ const id=+v; const p=G.players[id]; const mk=G.fa&&G.fa.mk&&G.fa.mk[id]; if(!p||!mk||!mk.ll)return null; return {subj:`${p.name} 라스트 룩`,kind:'FA',lines:[`${mk.ll.years}년 · 연 ${money(mk.ll.annual)} · 총 ${money(mk.ll.annual*mk.ll.years)}`,p.faFrom===G.user?'우리 구단 FA 잔류':`보상 대상: ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`],warn:'결재하면 바로 계약됩니다.'}; },
   offer(v){ const id=+v; const p=G.players[id]; if(!p||!G.fa||p.faFrom===G.user||G.fa.offers[id]||faOutBlocked(G.user,p))return null; const o=UI.offer&&UI.offer.id===id?UI.offer:p.ask; const g=COMP[p.faGrade]; const ps=p.faPrevSal||0;
     const comp=p.faGrade==='C'?`보상금 ${money(Math.round(ps*1.5))}`:`보호 ${g.prot}명 밖 선수 1명 + ${money(ps*g.withP)}, 또는 선수 없이 ${money(ps*g.cash)} (상대 구단 선택)`;
     return {subj:`FA ${p.name} 영입 제안`,kind:'FA',lines:[`${posLabel(p)} · ${p.age}세 · ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`,`제시 ${o.years}년 · 연 ${money(o.annual)} · 총 ${money(o.annual*o.years)}`,`계약하면 보상: ${comp}`,'보상금은 올해 결산 지출로 잡혀 예산 여유가 그만큼 줄어듭니다.'],warn:'선수가 받아들이면 바로 계약되고 되돌릴 수 없습니다. 첫 제안 때만 묻습니다.'}; },
