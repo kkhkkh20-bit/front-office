@@ -16,7 +16,7 @@ function pcRec(p,hid){ // 성적 블록: 큰 숫자 하나 + 보조 한 줄
   else { h=curLine(p); if(h)tag=(h.y===G.year?'올해':h.y+'')+(h.lvl==='퓨처스'?' 2군':''); }
   if(!h||(p.isP?!h.outs:!h.pa))return `<div class="pc-rec"><span class="pc-l">성적</span><b class="pc-big muted">-</b><span class="pc-s">기록 없음</span></div>`;
   if(p.isP){ const o=h.outs, era=(h.er||0)*27/o, k9=h.so*27/o; const c=era<=3.3?'var(--good)':era<=4.2?'var(--r50)':era>=5.8?'var(--bad)':'var(--ink)';
-    const sub=hid?`${ipStr(o)}이닝 · K/9 ${k9.toFixed(1)}`:`${ipStr(o)}이닝${h.sv?` · ${h.sv}세`:h.hld?` · ${h.hld}홀`:` · ${h.w||0}승`} · WAR ${wOf(h,p).toFixed(1)}`;
+    const sub=hid?`${ipStr(o)}이닝 · K/9 ${k9.toFixed(1)}`:`${ipStr(o)}이닝${h.sv?` · ${h.sv}세이브`:h.hld?` · ${h.hld}홀드`:` · ${h.w||0}승`} · WAR ${wOf(h,p).toFixed(1)}`;
     return `<div class="pc-rec"><span class="pc-l">${tag} ERA</span><b class="pc-big" style="color:${c}">${era.toFixed(2)}</b><span class="pc-s">${sub}</span></div>`; }
   const r=bRate(h); const c=r.ops>=.9?'var(--good)':r.ops>=.78?'var(--r50)':r.ops<.62?'var(--bad)':'var(--ink)';
   const sub=hid?`${fmt3(r.avg)} · ${h.hr}홈런 · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'}`:`${fmt3(r.avg)} · ${h.hr}홈런 · WAR ${wOf(h,p).toFixed(1)}`;
@@ -43,7 +43,7 @@ function bLine(p){ const h=seasonTotal(p,G.year,'1군'); if(!h||!h.pa){ const l=
   const r=bRate(h); const c=r.ops>=.9?'var(--good)':r.ops>=.78?'var(--r50)':r.ops<.62?'var(--bad)':'inherit';
   return `<b class="num">${fmt3(r.avg)}</b> · OPS <b class="num" style="color:${c}">${fmt3(r.ops)}</b> · ${h.hr}홈런 ${h.rbi}타점${h.sb?` ${h.sb}도루`:''}`; }
 function pLine(p){ const h=seasonTotal(p,G.year,'1군'); if(!h||!h.outs)return '<span class="muted">이번 시즌 기록 없음</span>'; const r=pRate(h); const c=r.era<=3.3?'var(--good)':r.era<=4.2?'var(--r50)':r.era>=5.8?'var(--bad)':'inherit';
-  return `ERA <b class="num" style="color:${c}">${r.era.toFixed(2)}</b> · ${ipStr(h.outs)}이닝 · ${h.w||0}승 ${h.l||0}패${h.sv?` ${h.sv}세`:''}${h.hld?` ${h.hld}홀`:''} · 탈삼진 ${h.so}`; }
+  return `ERA <b class="num" style="color:${c}">${r.era.toFixed(2)}</b> · ${ipStr(h.outs)}이닝 · ${h.w||0}승 ${h.l||0}패${h.sv?` ${h.sv}세이브`:''}${h.hld?` ${h.hld}홀드`:''} · 탈삼진 ${h.so}`; }
 function l10Text(p){ const L=p.l10||[]; if(!L.length)return '';
   if(p.isP){ const o=sum(L.map(x=>x[0])), er=sum(L.map(x=>x[1])); if(!o)return ''; const era=er*27/o; return `최근 ${L.length}경기 ERA <b style="color:${era<=3.3?'var(--good)':era>=5.8?'var(--bad)':'inherit'}">${era.toFixed(2)}</b>`; }
   const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),hr=sum(L.map(x=>x[2])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)); if(!ab)return '';

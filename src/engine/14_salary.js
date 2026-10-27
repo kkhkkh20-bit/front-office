@@ -26,10 +26,10 @@ function newSalary(p){
   /* 올해 1군 표본이 적으면(120타석·25이닝 미만) 시장가가 아니라 올해 기여로 소폭만 움직인다 */
   const h=seasonTotal(p,G.year,'1군'); const enough=h&&(p.isP?h.outs>=75:h.pa>=120); const war=h?warOf(h,p):0;
   if(!enough){ const fu=seasonTotal(p,G.year,'퓨처스'); const fw=fu?warOf(fu,p):0; return round5(Math.max(MIN_SAL,clamp(p.sal*(1+clamp(war*.15+fw*.05,-.1,.15)),lo,p.sal*1.15))); }
-  /* 인상 폭 상한은 올해 WAR로 정한다: WAR 0이면 +10%, 1이면 +45%, 3이면 +115%, 5 이상이면 +190% */
-  const up=war<=0?1.0:1+clamp(.1+war*.35,.1,1.9);
-  /* 잘한 선수는 깎지 않는다: WAR 3 이상 +5% 이상, 2 이상 동결 이상, 1 이상 최대 -10%, 0 이상 최대 -20% */
-  const lo2=war>=3?p.sal*1.05:war>=2?p.sal:war>=1?p.sal*.9:war>=0?p.sal*.8:lo;
+  /* 인상 폭 상한은 올해 WAR로 정한다: WAR 0 이하 동결, 0.5면 +20%, 1이면 +40%, 3이면 +120%, 5 이상이면 +190% */
+  const up=war<=0?1.0:1+clamp(war*.4,.03,1.9);
+  /* 잘한 선수는 깎지 않고 올려 준다: WAR 3 이상 +15% 이상, 2 이상 +8% 이상, 1 이상 동결 이상, 0 이상 최대 -15% */
+  const lo2=war>=3?p.sal*1.15:war>=2?p.sal*1.08:war>=1?p.sal:war>=0?p.sal*.85:lo;
   const v=round5(clamp(marketSal(base)*f,Math.max(lo,lo2),Math.max(p.sal*up,lo2)));
   if(skip)return round5(Math.min(v,Math.max(p.sal,Math.min(700,p.sal*1.5))));
   return p.svc<faSvc(p)&&!p.faC?Math.min(v,Math.max(p.sal,preCap(p))):v;

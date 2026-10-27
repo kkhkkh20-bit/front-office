@@ -13,7 +13,7 @@ const mailNeeds=m=>!m.read&&(m.imp||m.kind==='업무'||(m.acts&&m.acts.length>0)
 function inboxView(){
   const f=UI.mf||'all'; const all=mailFilter(f).slice(0,150);
   /* 지난 정보: 7일이 지났고 이미 읽은 메일은 접어 둔다 */
-  const isOld=m=>m.read&&G.day-m.day>7; const oldN=f==='all'?all.filter(isOld).length:0; let list=f==='all'&&!UI.ibOld?all.filter(m=>!isOld(m)):all;
+  const isOld=m=>m.read&&G.day-m.day>7&&m.id!==UI.ibSel&&m.id!==UI.mailFocus; /* 지금 열어 본 메일은 읽음 처리돼도 접지 않는다 */ const oldN=f==='all'?all.filter(isOld).length:0; let list=f==='all'&&!UI.ibOld?all.filter(m=>!isOld(m)):all;
   /* 같은 곳에서 온 같은 제목 소식은 가장 최근 것 하나로 묶는다 */
   { const seen={}; UI._ibDup={}; list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read))return true; const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; }); }
   const oldBtn=oldN?`<button class="btn block ib-old" data-a="ibOld">${UI.ibOld?'지난 소식 접기':`지난 소식 ${oldN}건 펼치기 (일주일 지난 읽은 소식)`}</button>`:'';
