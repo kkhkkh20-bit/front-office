@@ -1,0 +1,43 @@
+/* ---------- 트레이드 매물 ---------- */
+/* 트레이드 매물 센터: 받은 제안 → 우리 매물 → 다른 구단 매물. 매물끼리 맞교환 후보를 바로 보여 준다 */
+function blockCenter(){ const open=tradeOpen(); const OS=(G.offers||[]);
+  const mine=domestic(G.user).filter(p=>p.listed); const f=UI.blkF||'all';
+  const ai=Object.values(G.players).filter(p=>p.aiListed&&p.team!=null&&p.team!==G.user).filter(p=>f==='all'||(f==='urg'&&p.aiUrg)||(f==='p'&&p.isP)||(f==='b'&&!p.isP)).sort((a,b)=>(b.aiUrg?1:0)-(a.aiUrg?1:0)||ovr(b)-ovr(a));
+  const sw={}; if(open)for(const q of ai)for(const m of mine){ try{ const e=evalTrade(q.team,[m.id],[q.id]); if(e.ok){ (sw[q.id]=sw[q.id]||[]).push(m); } }catch(err){} }
+  const pRow=(p,right,extra)=>`<div class="bk-r">${avImg(p)}<button class="bk-m" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b><i>${posLabel(p)} · ${p.age}세 · ${esc(tContract(p))}</i>${extra||''}</button><span class="bk-o">${rchip(Math.round(scoutReport(p).cur))}<em>${money(p.sal)}</em></span>${right||''}</div>`;
+  const offs=OS.map(o=>{ const t=team(o.from); const nm=ids=>ids.map(id=>G.players[id]?`${esc(G.players[id].name)} ${rchip(Math.round(scoutReport(G.players[id]).cur))}`:'').join(' · ');
+    return `<div class="bk-of">${badge(o.from,24)}<div class="bk-om"><b>${esc(tshort(o.from))}${o.blk?' · 매물 제안':''}</b><span>받기 ${nm(o.give)}</span><span>주기 ${nm(o.get)}</span><i>${dmd(o.exp)}까지${gmHeat(o.from)>=.4?' · 단장이 급합니다':''}</i></div><div class="bk-ob"><button class="btn small primary" data-a="offerYes" data-v="${o.id}">수락</button>${o.blk?`<button class="btn small" data-a="offerMore" data-v="${o.id}" ${o.more?'disabled':''}>더 올려 달라</button>`:''}<button class="btn small" data-a="offerNo" data-v="${o.id}">거절</button></div>${UI.blkMsg&&UI.blkMsg.id===o.id?`<div class="note">${esc(UI.blkMsg.t)}</div>`:''}</div>`; }).join('');
+  const cand=domestic(G.user).filter(p=>!p.listed&&!p.ys&&!(p.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a));
+  const mineRows=mine.map(p=>{ const n=OS.filter(o=>o.get.includes(p.id)).length; return pRow(p,`<div class="bk-c"><select data-a="blkWant" data-v="${p.id}" aria-label="원하는 대가">${Object.entries(WANT).map(([k,l])=>`<option value="${k}" ${(p.lw||'any')===k?'selected':''}>${l}</option>`).join('')}</select><button class="bk-u${p.urgent?' on':''}" data-a="blkUrg" data-v="${p.id}">${p.urgent?'급매 중':'급매'}</button><button class="tc-i" data-a="blkOff" data-v="${p.id}">내리기</button></div>`,n?`<span class="pill acc">제안 ${n}건</span>`:''); }).join('');
+  const aiRowsA=ai.map(p=>{ const days=G.day-(p.aiLd||G.day); const s2=sw[p.id]||[];
+    return pRow(p,`<div class="bk-c"><button class="btn small primary" data-a="toTrade" data-v="${p.id}">제안하기</button>${s2.length?`<button class="btn small" data-a="blkSwap" data-v="${p.id}:${s2[0].id}">${esc(s2[0].name)}과(와) 맞교환</button>`:''}</div>`,`<span class="bk-t">${badge(p.team,14)} ${esc(tshort(p.team))}${p.aiUrg?' <em class="bk-urg">급매</em>':''} <span class="pill">${BLKWHY[p.aiWhy]||'매물'}</span> <span class="small muted">${days}일째</span></span>${s2.length?`<span class="small good">우리 매물 ${esc(s2.map(m=>m.name).join(', '))}와(과) 맞교환 가능</span>`:''}`); });
+  const PGb=pager('blk'+f,aiRowsA,8);
+  const bt=inTabs('blkv',[['off',`받은 제안 ${OS.length}`],['mine',`우리 매물 ${mine.length}`],['lg',`다른 구단 매물 ${ai.length}`]],OS.length?'off':'lg');
+  return `${!open?'<div class="note">지금은 트레이드 기간이 아닙니다. 매물 정리는 미리 해 둘 수 있습니다.</div>':deadlineBanner()}`+bt.bar+(bt.cur==='off'?`  <section class="card"><div class="row between"><h2 class="sec">받은 제안 ${OS.length}건</h2></div>${offs||'<p class="small muted">받은 제안이 없습니다. 선수를 매물로 내놓으면 관심 있는 구단이 제안을 보냅니다.</p>'}</section>`:bt.cur==='mine'?`  <section class="card"><div class="row between"><h2 class="sec">우리 매물 ${mine.length}명</h2></div>
+    ${mineRows||'<p class="small muted">매물로 내놓은 선수가 없습니다.</p>'}
+    <div class="row" style="gap:6px;margin-top:6px"><select id="blkAddSel" aria-label="매물로 내놓을 선수">${cand.map(p=>`<option value="${p.id}">${esc(p.name)} · ${posLabel(p)} · ${Math.round(ovr(p))} · ${money(p.sal)}</option>`).join('')}</select><button class="btn small" data-a="blkAdd">매물로 등록</button></div>
+    <p class="small muted keep">급매로 표시하면 제안이 더 자주 오지만, 상대도 우리가 급한 걸 알고 조금 덜 줍니다.</p></section>`:`  <section class="card"><div class="row between"><h2 class="sec">다른 구단 매물 ${ai.length}명</h2><div class="chips">${[['all','전체'],['urg','급매'],['p','투수'],['b','야수']].map(([k,l])=>`<button data-a="blkF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div></div>
+    ${PGb.items.join('')||'<p class="small muted">조건에 맞는 매물이 없습니다.</p>'}${PGb.bar}
+    <p class="small muted keep">매물로 나온 선수는 그 구단이 정리하고 싶은 선수라 시세보다 싸게 거래됩니다. 급매는 더 쌉니다. 매물 등록은 최대 6주 동안 유지됩니다.</p></section>`); }
+function blockView(){
+  const mine=domestic(G.user).filter(p=>p.listed);
+  const offs=(G.offers||[]).filter(o=>o.blk);
+  const offCard=o=>{ const t=team(o.from); const p=G.players[o.get[0]]; if(!p)return '';
+    return `<section class="card blkoff"><div class="row between"><div class="row">${badge(t.id,28)}<div><b>${tname(t.id)}</b><div class="small muted">관계 ${t.rel} · ${dmd(o.exp)}까지${o.more?' · 조건 조정 끝':''}</div></div></div><span class="small">→ <b>${esc(p.name)}</b> 영입 희망</span></div>
+      <div class="eyebrow">받는 선수</div><div class="tgrid">${o.give.map(id=>G.players[id]?pcard(G.players[id],{foot:rosterFoot(G.players[id])}):'').join('')}</div>
+      <div class="btns"><button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button><button class="btn" data-a="offerMore" data-v="${o.id}" ${o.more?'disabled':''}>조건 더 올려 달라</button><button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div>
+      ${UI.blkMsg&&UI.blkMsg.id===o.id?`<div class="note">${esc(UI.blkMsg.t)}</div>`:''}</section>`; };
+  const ai=Object.values(G.players).filter(p=>p.aiListed&&p.team!=null&&p.team!==G.user);
+  return csec('우리 매물',`<p class="small muted">선수를 매물로 내놓고 원하는 대가를 정하면, 관심 있는 구단이 매주 제안을 보냅니다. 제안마다 한 번은 "조건을 더 올려 달라"고 할 수 있습니다. 대신 거절하고 제안을 거둬 갈 수도 있습니다. 매물로 내놓은 선수는 자기가 매물이라는 걸 압니다.${tradeOpen()?'':' <b>지금은 트레이드 기간이 아닙니다.</b>'}</p>
+      ${mine.length?`<div class="tgrid">${mine.map(p=>pcard(p,{foot:`${rosterFoot(p)}<select data-a="blkWant" data-v="${p.id}" aria-label="원하는 대가">${Object.entries(WANT).map(([k,l])=>`<option value="${k}" ${(p.lw||'any')===k?'selected':''}>${l}</option>`).join('')}</select><button class="tc-i" data-a="blkOff" data-v="${p.id}">내리기</button>`})).join('')}</div>`:'<p class="small muted">매물로 내놓은 선수가 없습니다. 선수 상세에서 "트레이드 매물로 등록"를 누르세요.</p>'}`)
+   +csec(`받은 제안 ${offs.length}건`,offs.length?offs.map(offCard).join(''):'<p class="small muted">아직 제안이 없습니다.</p>')
+   +csec('다른 구단 매물',ai.length?`<p class="small muted">다른 구단이 내놓은 선수입니다. 리빌딩 구단은 베테랑을, 우승 경쟁 구단은 자리가 없는 유망주를 내놓습니다. 매물로 나온 선수는 구단이 정리하고 싶은 선수라 시세보다 훨씬 싸게 데려올 수 있습니다. 그 구단이 관심 있는 우리 선수를 함께 보내면 더 쉽게 성사됩니다.</p><div class="tgrid">${ai.map(p=>pcard(p,{sub:`${tshort(p.team)} · ${posLabel(p)} · ${p.age}세 · ${hand(p)}`,tags:`<span class="pill warn">${esc(listWant(p))}</span>`,foot:`${intLine(p.team,true)}${rosterFoot(p)}<button class="tc-i go" data-a="toTrade" data-v="${p.id}">트레이드 협상</button>`})).join('')}</div>`:'<p class="small muted">이번 주에 나온 매물이 없습니다.</p>');
+}
+function negPanel(p){ const F=G.fa; if(!F||!F.neg)return ''; const n=F.neg[p.id]; const ag=agentOf(p);
+  const log=n?n.log.slice(-8).map(x=>x.w==='구단'?`<div class="chat me"><span>우리 제안</span><b>${x.y}년 연 ${money(x.a)}${x.acc?' (역제안 수락)':''}</b></div>`:`<div class="chat ag"><span>${esc(ag.name)}</span><p>${esc(x.t)}</p></div>`).join(''):'';
+  return `<section class="card"><div class="row between"><span class="eyebrow">에이전트 협상 · ${esc(ag.name)} (${esc(ag.firm)})</span><span class="small muted">${ag.style==='hard'?'깐깐한 협상가':ag.style==='soft'?'유연한 편':'보통'}${n?` · 협상 ${n.rounds}/4회 · 분위기 ${n.mood}`:''}</span></div>
+    ${n?`<span class="gauge"><i style="width:${n.mood}%;background:${n.mood>=60?'var(--good)':n.mood>=35?'var(--warn)':'var(--bad)'}"></i></span>`:''}
+    ${log?`<div class="chats">${log}</div>`:'<p class="small muted">아직 제안하지 않았습니다. 조건을 내면 에이전트가 바로 답합니다. 너무 낮은 조건을 계속 내면 협상이 깨집니다.</p>'}
+    ${n&&n.counter?`<div class="row"><button class="btn primary" data-a="faAccept" data-v="${p.id}">역제안 수락 (${n.counter.years}년 연 ${money(n.counter.annual)})</button></div>`:''}
+    ${n&&n.closed?'<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.</div>':''}</section>`; }
+

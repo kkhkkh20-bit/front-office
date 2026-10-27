@@ -1,0 +1,44 @@
+/* 소식함 페이지 */
+.ib-chips{align-items:center}.ib-n{margin-left:auto;padding:0 4px}
+.ib2{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start}
+.ib-list{position:sticky;top:var(--ibtop,120px);max-height:calc(100vh - var(--ibtop,120px) - 12px);overflow-y:auto;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.ib-list .mday{position:sticky;top:0;z-index:1}
+.mrow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;padding:7px 10px;background:none;border:0;border-left:3px solid transparent;border-top:1px solid var(--line);color:var(--muted);text-align:left;font:13px var(--f-ui);cursor:pointer}
+.mrow .av{width:26px;height:26px;font-size:11px}
+.mrow-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow-d{font-size:11px;color:var(--dim)}
+.mrow.unread{color:var(--ink,#e8eef3);font-weight:600}
+.mrow.unread .mrow-t::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--team-hi,#4fa3ff);margin-right:6px;vertical-align:middle}
+.mrow-imp{display:inline-block;width:6px;height:6px;background:var(--warn);margin-right:5px;vertical-align:middle}
+.mrow:hover{background:rgba(255,255,255,.04)}
+.mrow.cur{background:rgba(255,255,255,.07);border-left-color:var(--team-hi,#4fa3ff);color:var(--ink,#e8eef3)}
+.mfeed{display:grid;gap:10px;min-width:0}
+.mfeed>.mday{background:none;border:0;padding:8px 2px 0}
+.mfc{scroll-margin-top:var(--ibtop,120px);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:4px;padding:12px 14px;background:var(--panel);display:grid;gap:8px;min-width:0}
+.mfc.unread{border-left-color:var(--team-hi,#4fa3ff)}
+.mfc.flash{animation:mfl 1.4s ease-out}
+@keyframes mfl{0%{box-shadow:0 0 0 2px var(--team-hi,#4fa3ff)}100%{box-shadow:0 0 0 0 transparent}}
+.mfc-h{display:flex;gap:10px;align-items:center;min-width:0}
+.mfc-t{display:grid;gap:2px;min-width:0}
+.mfc-s{font-size:16px;line-height:1.35}
+.mfc .mailbody{gap:0}.mfc .mailbody p{margin:0 0 .55em;font-size:14px;line-height:1.7}.mfc .mailbody p:last-child{margin:0}
+.mfc .btns{margin:0}
+.mfc>section.card{margin:0}
+@media (max-width:979px){.mfc{padding:11px 12px}}
+.itabs{overflow-x:auto;scrollbar-width:none}.itabs::-webkit-scrollbar{display:none}.itabs button{flex:1 0 auto;white-space:nowrap;padding:6px 10px}
+@media(max-width:600px){.itabs.wrapt{flex-wrap:wrap;overflow:visible}.itabs.wrapt button{flex:1 1 30%;padding:6px 6px}}
+/* 코치진 */
+.cgr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.cg{display:grid;justify-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:3px;padding:6px 2px}.cg span{font-size:11px;color:var(--muted)}.cg b{font:700 18px var(--f-num)}
+.cg .gA{color:var(--good)}.cg .gB{color:var(--r50,#8fd18f)}.cg .gC{color:var(--warn)}.cg .gD{color:var(--bad)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.csl{display:grid;gap:6px;align-content:start;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+.csl.empty{border-style:dashed}
+.csl-h{display:flex;justify-content:space-between;gap:6px;align-items:center}.csl-h b{font-size:13px;color:var(--muted)}
+.csl-n{font-size:16px;font-weight:600}
+.csl-s{display:flex;gap:12px}.cst{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--muted)}.cst i{font-style:normal;font-size:11px}.cst i.up{color:var(--good)}.cst i.dn{color:var(--bad)}
+.clan{display:grid;gap:4px;margin:6px 0;padding:8px;border:1px dashed var(--line2);border-radius:3px}
+.clan-c{display:grid;grid-template-columns:84px minmax(0,1fr) 34px 8px 34px;gap:6px;align-items:center;font-size:13px}.clan-c>b:first-child{color:var(--muted);font-weight:500}.clan-c i{color:var(--dim);font-style:normal;text-align:center}.clan-c .rc{width:34px;min-width:0}.clan-c.hd em{font-style:normal;font-size:11px;color:var(--dim);text-align:center}
+@media (min-width:980px){.ib2 .mfeed:not(.one){padding-bottom:45vh}}.ib-nav{margin-bottom:8px}.mrow.cur{background:var(--panel2);box-shadow:inset 3px 0 0 var(--team-hi,#4fa3ff)}
+@media (max-width:520px){.cgr{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:980px){.content>section.card>.lus:not(.two){grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,auto);grid-auto-flow:column}}

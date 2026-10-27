@@ -1,0 +1,68 @@
+/* FM식 하위 탭과 메뉴 */
+.subtabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--line);margin:2px 0 4px;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{flex:none;position:relative;border:0;background:none;color:var(--muted);padding:9px 14px 10px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.subtabs button:hover{color:var(--ink)}
+.subtabs button.on{color:var(--ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--team-hi)}
+.sdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:6px;vertical-align:2px}
+.rail button .sdot{margin-left:auto}
+.bnav .in{grid-template-columns:repeat(6,1fr)}
+.menu-grid{display:grid;gap:8px}
+.menu-sec{background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.menu-h{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;color:var(--ink)}
+.menu-h.on{box-shadow:inset 3px 0 0 var(--team-hi);background:#ffffff0a}
+.menu-h .sdot{margin-left:auto}
+.menu-subs{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 10px 40px}
+.menu-subs button{border:1px solid var(--line2);background:var(--panel2);color:var(--muted);border-radius:3px;padding:5px 10px;font-size:13px;cursor:pointer}
+.menu-subs button:hover{color:var(--ink)}
+.tc-i.go{border-color:var(--acc);color:#fff;background:var(--acc)}
+.tc-i:disabled{opacity:.4;cursor:not-allowed}
+
+/* 드래프트 보드 */
+.dhead .dnow{font:700 24px/1.1 var(--f-num)}
+.dlog{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.dlog span{flex:none;display:flex;align-items:center;gap:5px;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:4px 8px;font-size:12px}
+.dlog i{font-style:normal;color:var(--muted);font-family:var(--f-num)}.dlog em{font-style:normal;color:var(--muted);font-size:11px}
+.dfilt{gap:6px}
+.dcard .tc-id span{font-size:12px}
+.dcard.star{box-shadow:inset 3px 0 0 var(--warn)}
+.dnote{margin:0;font-size:13px;line-height:1.5;color:var(--ink);opacity:.92}.dnote b{color:var(--muted);font-weight:500;margin-right:4px}
+.bad-t{color:var(--bad)}
+.tc-i.on{color:var(--warn);border-color:var(--warn)}
+.dres{font-size:12px}.dres td,.dres th{white-space:nowrap;text-align:left;vertical-align:top;padding:5px 7px}.dres th{font-weight:500;color:var(--muted)}
+.dres td i{display:block;font-style:normal;color:var(--muted);font-size:11px}.dres td.me{background:#ffffff0c;box-shadow:inset 0 0 0 1px var(--team-hi)}
+
+/* 카드 공용 보강 */
+.seg.sm button{white-space:nowrap;min-width:44px}
+.grp-h{display:flex;align-items:baseline;gap:8px;margin:6px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.grp-h span{font-weight:700;font-size:14px}.grp-h i{font-style:normal;color:var(--muted);font-size:12px}
+.teamc{border-top:3px solid var(--th)}
+.teamc.me{box-shadow:inset 0 0 0 1px var(--team-hi)}
+.teamc-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.teamc-top span{display:grid;justify-items:center;gap:2px;background:#0b1014;border-radius:3px;padding:5px 2px;min-width:0}
+.teamc-top .av{width:36px;height:36px}.teamc-top b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.teamc-top i{font-style:normal;font-size:11px;color:var(--muted)}
+.relbar{flex:1;height:6px;background:#0b1014;border:1px solid var(--line);border-radius:2px;overflow:hidden}.relbar i{display:block;height:100%;background:var(--r50)}
+.stars{font-size:13px;color:var(--warn);letter-spacing:1px}.stars i{font-style:normal;color:#2a3642}
+.mgrc{gap:6px}.mgrc .item{border:0;padding:0;background:none}
+.tcols2{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@media(min-width:980px){.tcols2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.dcard .tc-st{white-space:normal}
+
+/* 해외 스카우트망 */
+.pill.net0{color:#9aa6b2;background:#ffffff0d}.pill.net1{color:var(--warn);background:#e3b44c1c}.pill.net2{color:#9cc4f2;background:#3d7cc726}.pill.net3{color:var(--good);background:#4fc27c1c}
+.netrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.netrow .tc-i{margin-left:auto}
+.cap-line{display:grid;gap:3px;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:7px 9px;font-size:13px}
+
+/* 경기 결과 */
+.rescard .scoreline{display:flex;align-items:center;justify-content:center;gap:10px;font-size:16px}
+.rescard .scoreline .num{font:700 34px/1 var(--f-num)}.rescard .scoreline i{font-style:normal;color:var(--muted);font-size:24px}
+.hl{display:flex;flex-wrap:wrap;gap:6px}.hl span{background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:4px 8px;font-size:13px}
+table.box{font-size:13px}table.box td,table.box th{white-space:nowrap;padding:5px 7px;text-align:right}table.box td:nth-child(-n+2),table.box th:nth-child(-n+2){text-align:left}
+table.box tr.hot td{background:#4fc27c12}table.box tr.tot td{font-weight:700;border-top:1px solid var(--line2)}
+.evs summary{cursor:pointer}
+/* 일정 */
+.sched{display:grid;gap:3px}
+.srow{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:8px;align-items:center;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:6px 9px;font-size:13px}
+.srow[data-a]{cursor:pointer}.srow[data-a]:hover{border-color:var(--line2)}
+.srow.today{box-shadow:inset 3px 0 0 var(--team-hi)}.srow.up{opacity:.85}
+.srow .sd i{font-style:normal;color:var(--muted);font-size:11px}.srow .so{display:flex;align-items:center;gap:5px;min-width:0}
