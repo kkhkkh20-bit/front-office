@@ -39,7 +39,7 @@ const A={
   fdListMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
-  fdV(v){ UI.fdV=v; UI.fdS=''; UI.fdD=0; render(); },
+  fdV(v){ UI.fdV=v; render(); }, /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },
   annPlayer(v){ (UI.annQ||[]).shift(); annRender(); A.player(+v); },

@@ -8412,9 +8412,9 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const n1=v=>v==null||Number.isNaN(v)?'-':v.toFixed(1), n2=v=>v==null||Number.isNaN(v)?'-':v.toFixed(2), f3=v=>v==null||Number.isNaN(v)?'-':fmt3(v), pc=v=>v==null?'-':Math.round(v)+'%';
   const td=(v,cls)=>`<td class="${cls||''}">${v}</td>`;
   const sOK=x=>x.s&&(isP?x.s.n>=10:x.s.n>=30);
-  let COL;
-  if(V==='rec'){ /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
-    COL=isP?[
+  let COL, CR, CS, CD;
+  { /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
+    CR=isP?[
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3?'hi':''),`${ly} 1군 WAR`),
       c('g','경기',x=>x.s?x.s.g:0,x=>td(x.s?`${x.s.g}${x.s.gs?`<i class="sm">(${x.s.gs})</i>`:''}`:'-'),'괄호는 선발 등판'),
       c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
@@ -8423,8 +8423,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('k9','K/9',x=>sOK(x)?x.s.k9:-99,x=>td(sOK(x)?n1(x.s.k9):'-'),'9이닝당 삼진'),
       c('bb9','BB/9',x=>sOK(x)?-x.s.h.bb*9/x.s.n:-99,x=>td(sOK(x)?n1(x.s.h.bb*9/x.s.n):'-'),'9이닝당 볼넷'),
       c('w','승-패',x=>x.s?(x.s.h.w||0):0,x=>td(x.s?`${x.s.h.w||0}-${x.s.h.l||0}${x.s.h.sv?`<i class="sm"> ${x.s.h.sv}세</i>`:x.s.h.hld?`<i class="sm"> ${x.s.h.hld}홀</i>`:''}`:'-')),
-      ...[ly-1,ly-2].map(yy=>c('y'+yy,`${String(yy).slice(2)} ERA`,x=>{ const h=yl(x,yy); return h?-h.er*27/h.outs:-99; },x=>{ const h=yl(x,yy); return td(h?`${n2(h.er*27/h.outs)}<i class="sm"> ${ipStr(h.outs)}</i>`:'-','yr'); },`${yy}년 1군 ERA와 이닝`)),
-      c('t3','3년 ERA',x=>{ const t=T3(x); return t&&t.outs>=30?-t.er*27/t.outs:-99; },x=>{ const t=T3(x); return td(t&&t.outs>=30?`<b>${n2(t.er*27/t.outs)}</b>`:'-'); },`${ly-2}~${ly} 1군 합계`)]
+]
     :[
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3?'hi':''),`${ly} 1군 WAR`),
       c('pa','타석',x=>x.s?x.s.n:0,x=>td(x.s?x.s.n:'-')),
@@ -8434,18 +8433,17 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
       c('hr','홈런',x=>x.s?x.s.hr:-1,x=>td(x.s?x.s.hr:'-')),
       c('sb','도루',x=>x.s?x.s.sb:-1,x=>td(x.s?x.s.sb:'-')),
-      ...[ly-1,ly-2].map(yy=>c('y'+yy,`${String(yy).slice(2)} OPS`,x=>{ const h=yl(x,yy); return h?bRate(h).ops:-99; },x=>{ const h=yl(x,yy); return td(h?`${f3(bRate(h).ops)}<i class="sm"> ${h.pa}</i>`:'-','yr'); },`${yy}년 1군 OPS와 타석`)),
-      c('t3','3년 OPS',x=>{ const t=T3(x); return t&&t.pa>=100?bRate(t).ops:-99; },x=>{ const t=T3(x); return td(t&&t.pa>=100?`<b>${f3(bRate(t).ops)}</b>`:'-'); },`${ly-2}~${ly} 1군 합계`)]; }
-  else if(V==='sc'){ /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
-    COL=[c('tavg','툴 평균',x=>tavg(x),x=>`<td class="fdtv" style="--c:${rcol(tavg(x))}"><b>${dv(tavg(x))}</b></td>`,'아래 툴 숫자의 평균. 정렬용'),
+]; }
+  { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
+    CS=[c('tavg','툴 평균',x=>tavg(x),x=>`<td class="fdtv" style="--c:${rcol(tavg(x))}"><b>${dv(tavg(x))}</b></td>`,'아래 툴 숫자의 평균. 정렬용'),
       ...(isP?[c('velo','구속',x=>fdScoutTools(x.p).velo,x=>td(`${fdScoutTools(x.p).velo}<i class="sm"> ${veloMax(x.p)}</i>`),'직구 평균 · 최고(km)')]:[]),
       ...TO.map(([k,l])=>c('t:'+k,l,x=>tv(x,k),x=>`<td class="fdtv" style="--c:${rcol(tv(x,k))}">${dv(tv(x,k))}</td>`)),
       ...(isP?[c('pit','구종',x=>arsenal(x.p,tv(x,'stf')).length,x=>{ const A=arsenal(x.p,tv(x,'stf')); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),
       c('body','체격',x=>fdScoutTools(x.p).ht,x=>{ const S=fdScoutTools(x.p); return td(`${S.ht}<i class="sm">/${S.wt}</i>`); },'키(cm)/몸무게(kg)'),
       c('sop','스카우트 의견',x=>0,x=>`<td class="op">${esc(fdScoutLine(x.p))}</td>`)]; }
-  else { /* 데이터팀: 실제 세부 데이터(최근 3년 합산 기준, 측정은 지난해) · 한 줄 의견 */
+  { /* 데이터팀: 실제 세부 데이터(최근 3년 합산 기준, 측정은 지난해) · 한 줄 의견 */
     const dOK=ANA;
-    COL=isP?[
+    CD=isP?[
       c('dk','삼진%',x=>D(x)?D(x).k:-1,x=>td(D(x)?pc(D(x).k):'-'),'상대 타자 중 삼진 비율(3년)'),
       c('db','볼넷%',x=>D(x)?-D(x).bb:-99,x=>td(D(x)?pc(D(x).bb):'-'),'볼넷 비율(3년)'),
       c('dh','피홈런/9',x=>D(x)?-D(x).hr9:-99,x=>td(D(x)?n2(D(x).hr9):'-'),'9이닝당 피홈런(3년)'),
@@ -8460,12 +8458,12 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('dbp','BABIP',x=>D(x)&&D(x).babip!=null?D(x).babip:-1,x=>{ const v=D(x)&&D(x).babip; return td(v==null?'-':f3(v),v==null?'':v>=.345?'lk':v<=.265?'ul':''); },`${ly} 인플레이 타구 안타 비율. .340 이상은 운이 섞였을 수 있음`),
       ...(dOK?[c('dev','타구속도',x=>evOf(x.p),x=>td(evOf(x.p)),'평균 타구속도 km(지난해)'),c('dhh','강한타구%',x=>trackOf(x.p).hh,x=>td(pc(trackOf(x.p).hh)),'150km 이상 타구 비율'),c('dwh','헛스윙%',x=>-trackOf(x.p).whiff,x=>td(pc(trackOf(x.p).whiff)),'스윙 중 헛스윙'),c('dch','볼 스윙%',x=>-trackOf(x.p).chase,x=>td(pc(trackOf(x.p).chase)),'볼에 방망이가 나간 비율'),c('drun','1루 도달',x=>-trackOf(x.p).run,x=>td(n2(trackOf(x.p).run)),'초')]:[]),
       c('dop','데이터팀 의견',x=>0,x=>`<td class="op">${esc(fdDataLine(x.p,ly))}</td>`)]; }
-  const so2=COL.some(z=>z.k===so)?so:COL[0].k;
+  COL={rec:CR,sc:CS,dt:CD}[V]; const ALLC=[...CR,...CS,...CD]; const so2=ALLC.some(z=>z.k===so&&z.k!=='sop'&&z.k!=='dop')?so:'war';
   /* 능력 필터(스카우트 툴 60 이상) · 빈자리 */
   const AB=new Set(UI.fdAb||[]); const abK=TO.map(t=>t[0]).concat(isP?['velo']:[]);
   L=L.filter(x=>{ for(const k of AB){ if(!abK.includes(k))continue; if(k==='velo'){ if(fdScoutTools(x.p).velo<148)return false; } else if((tv(x,k)||0)<60)return false; } return true; });
   if(UI.fdNeed){ const {ln}=fdLineupOf(myPicks.filter(p=>!p.isP)); const need=new Set(['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k])); const pN=myPicks.filter(p=>p.isP).length<FD_TGT.P; L=L.filter(x=>x.t||(x.p.isP?pN:(need.has(x.p.pos)||(subsOf(x.p)||[]).some(k=>need.has(k))))); }
-  const scol=COL.find(z=>z.k===so2); L.sort((a,b)=>((scol.sv(b)??-1e9)-(scol.sv(a)??-1e9))*(dir?-1:1)||a.p.id-b.p.id);
+  const scol=ALLC.find(z=>z.k===so2); L.sort((a,b)=>((scol.sv(b)??-1e9)-(scol.sv(a)??-1e9))*(dir?-1:1)||a.p.id-b.p.id);
   const more=UI.fdMore||60; const shown=L.slice(0,more);
   const hd=z=>`<th><button data-a="fdS" data-v="${z.k}" class="${so2===z.k?'on':''}">${z.h}${so2===z.k?(dir?'▲':'▼'):''}</button>${z.tip?`<i class="ti" tabindex="0" title="${esc(z.tip)}" data-tip="${esc(z.tip)}">i</i>`:''}</th>`;
   const trow=x=>{ const p=x.p; const lv=x.s&&x.s.lvl===2; const t=x.t; const me=t&&t.tid===G.user; const r=RK[p.id]||0;
@@ -8474,9 +8472,9 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
     return `<tr class="${lv?'f2':''}${!t&&sl.has(p.id)?' st':''}${t?(me?' gone me':' gone'):''}"><th><div class="fdn">${lead}<button class="fdnm" data-a="player" data-v="${p.id}"><b>${esc(p.name)}${!t&&r>=.1?`<em class="rkp ${r>=.6?'r3':r>=.3?'r2':'r1'}" title="다음 우리 차례 전에 다른 구단이 지명할 확률">${Math.round(r*100)}%</em>`:''}</b><i>${p.age}세 · ${p.isP?(isSPr(p)?'선발':'불펜'):SLK[p.pos]||posLabel(p)} · <span class="${!t&&MM&&p.sal>MM.room-MM.W?'lo':''}">${money(p.sal)}</span>${lv?' · 2군':''}${isAway(p)?' · 군':''}</i></button>${tail}</div></th>${COL.map(z=>z.td(x)).join('')}</tr>`; };
   const abChips=`<div class="chips fdab"><span class="small muted">스카우트 능력 필터</span>${abK.map(k=>`<button data-a="fdAb" data-v="${k}" class="${AB.has(k)?'on':''}">${k==='velo'?'구속 148km+':`${({pow:'파워',con:'컨택',eye:'선구',def:'수비',spd:'주력',ctl:'제구',stf:'구위',sta:'체력'})[k]} 좋음`}</button>`).join('')}<button data-a="fdY" class="${young?'on':''}">24세 이하</button><button data-a="fdNeed" class="${UI.fdNeed?'on':''}">우리 빈자리만</button><button data-a="fdO" class="${onlyS?'on':''}">관심 ${[...sl].filter(id=>G.players[id]&&G.players[id].fdPool).length||''}</button></div>`;
   const vtab=`<div class="seg fdvt"><button data-a="fdV" data-v="rec" class="${V==='rec'?'on':''}">성적</button><button data-a="fdV" data-v="sc" class="${V==='sc'?'on':''}">스카우트</button><button data-a="fdV" data-v="dt" class="${V==='dt'?'on':''}">데이터팀</button></div>`;
-  const vnote=V==='rec'?`${ly} 1군(없으면 2군) 기록 · ${String(ly-1).slice(2)}·${String(ly-2).slice(2)}년은 1군 기록 · 3년은 1군 합계`:V==='sc'?'스카우트가 눈과 스피드건으로 본 툴(60이 1군 평균쯤)과 체격. 기록은 보지 않습니다':ANA?'데이터팀이 실제 기록과 트래킹으로 본 세부 데이터. 툴은 보지 않습니다':'분석원이 없어 기록에서 계산한 지표만 있습니다(트래킹 데이터와 데이터팀 의견 일부 없음)';
+  const vnote=V==='rec'?`${ly} 시즌 기록(1군, 없으면 2군) · 지난 시즌들은 선수 카드의 '최근 3년'에서`:V==='sc'?'스카우트가 눈과 스피드건으로 본 툴(60이 1군 평균쯤)과 체격. 기록은 보지 않습니다':ANA?'데이터팀이 실제 기록과 트래킹으로 본 세부 데이터. 툴은 보지 않습니다':'분석원이 없어 기록에서 계산한 지표만 있습니다(트래킹 데이터와 데이터팀 의견 일부 없음)';
   const listPane=`<section class="card">${F.done?'':fdPosBoardH(gk,f)}<div class="fdgk"><b>${isP?'투수':'야수'} ${f==='all'?'전체':({SP:'선발형',RP:'불펜형',OF:'외야'})[f]||SLK[f]||f}</b> <span class="muted">${L.length}명</span></div>
-    ${abChips}${vtab}<p class="small muted keep fdvn">${vnote} · ⓘ에 설명 · 열 제목을 누르면 정렬 · 이름 옆 %는 다음 우리 차례 전에 뺏길 확률</p>
+    ${abChips}${vtab}<p class="small muted keep fdvn"><b class="fdso">정렬: ${scol.h} ${dir?'▲':'▼'}</b> · 탭을 바꿔도 같은 선수·같은 순서이고 보이는 정보만 바뀝니다 · ${vnote} · ⓘ에 설명 · 이름 옆 %는 다음 우리 차례 전에 뺏길 확률</p>
     <div class="fdt-w"><table class="fdt v-${V}"><thead><tr><th class="c0">선수</th>${COL.map(hd).join('')}</tr></thead><tbody>${shown.map(trow).join('')}</tbody></table></div>
     ${L.length>shown.length?`<button class="btn block" data-a="fdListMore">${Math.min(60,L.length-shown.length)}명 더 보기 (${shown.length}/${L.length})</button>`:''}</section>`;
   const tab=UI.fdTab==='team'?'team':'list';
@@ -10537,7 +10535,7 @@ const A={
   fdListMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
-  fdV(v){ UI.fdV=v; UI.fdS=''; UI.fdD=0; render(); },
+  fdV(v){ UI.fdV=v; render(); }, /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },
   annPlayer(v){ (UI.annQ||[]).shift(); annRender(); A.player(+v); },
