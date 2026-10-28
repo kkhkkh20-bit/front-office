@@ -58,6 +58,8 @@ function processDay(){ syncMinSal();
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
   if(o.d===1)try{ freeAiMonthly(); sponMonthly(); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
+  if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
+  if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();
   recoverAll(1);

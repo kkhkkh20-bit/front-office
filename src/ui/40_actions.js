@@ -16,7 +16,7 @@ function devForm(p){
   ${ovsOpen()&&p.age<=27?`<div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+' 신청됨':''}</div><div class="talk">${Object.entries(OVS).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('')}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
-function closeSheets(){UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
+function closeSheets(){UI.cer=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
 const A={
   dlSpd(v){ UI.dspeed=v; render(); },
   dlStop(){ dliveStop(); },
@@ -186,6 +186,10 @@ const A={
   sponRej(v){ toast(sponReject(+v)); render(); },
   sponCnt(v){ const [id,p]=String(v).split(':'); toast(sponCounter(+id,+p)); render(); },
   mvF(v){ const [k,x]=String(v).split(':'); UI.mvf=UI.mvf||{}; if(k==='t')UI.mvf.t=x||null; else UI.mvf.tm=x===''?null:+x; render(); },
+  cerOpen(v){ const [y,k]=String(v).split(':'); if(!G.awards||!G.awards[+y]||!awShown(G.awards[+y],k))return toast('아직 발표 전입니다.'); if(G.cerNew&&G.cerNew.y===+y&&G.cerNew.k===k)G.cerNew.seen=true; UI.cer={y:+y,k,i:0,rev:false}; renderSheet(); },
+  cerRev(){ if(UI.cer){ UI.cer.rev=true; renderSheet(); } },
+  cerNext(){ if(UI.cer){ UI.cer.i++; UI.cer.rev=false; renderSheet(); } },
+  cerAll(){ if(UI.cer){ UI.cer.i=99; renderSheet(); } },
   rcolTg(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=rcolKeys(pit).slice(); const i=L.indexOf(v); if(i>=0){ if(L.length<=1)return; L.splice(i,1); } else L.push(v); rcolLoad()[k]=L; rcolSave(); render(); },
   rcolMv(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const [c,d]=v.split(':'); const L=rcolKeys(pit).slice(); const i=L.indexOf(c), j=i+(+d); if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; rcolLoad()[k]=L; rcolSave(); render(); },
   rsort(v){ const k=UI.seg==='pit'?'pit':'bat'; UI.rs=UI.rs||{}; if(!v){UI.rs[k]=null;} else { const c=UI.rs[k]; UI.rs[k]={k:v,dir:c&&c.k===v?-c.dir:-1}; } render(); },

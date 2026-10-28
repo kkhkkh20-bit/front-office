@@ -5,8 +5,8 @@ function histView(){
   const who=x=>x?`<button class="lnk" ${G.players[x.id]?`data-a="player" data-v="${x.id}"`:''}>${esc(x.name)}</button> <span class="small muted">${tshort(x.t)} · ${esc(x.line)}</span>`:'-';
   const ggName=k=>k.startsWith('OF')?'외야수':k==='P'?'투수':POSK[k];
   const aw=A?`<div class="chips">${ys.map(v=>`<button data-a="hy" data-v="${v}" class="${v===y?'on':''}">${v}</button>`).join('')}</div>
-    <div class="awd"><div><span class="pill warn">MVP</span> ${who(A.mvp)}</div><div><span class="pill acc">신인왕</span> ${who(A.roy)}</div></div>
-    <div class="eyebrow">골든글러브</div><div class="list">${['P','C','1B','2B','3B','SS','OF0','OF1','OF2','DH'].filter(k=>A.gg[k]).map(k=>`<div class="item" style="cursor:default"><span class="nm">${ggName(k)}</span><span class="sub">${who(A.gg[k])}</span></div>`).join('')}</div>`
+    <div class="awd"><div><span class="pill warn">MVP</span> ${awShown(A,'mvp')?who(A.mvp):`<span class="muted">${dmd(KD(11,24))} 시상식에서 발표</span>`}</div><div><span class="pill acc">신인왕</span> ${awShown(A,'mvp')?who(A.roy):'<span class="muted">발표 전</span>'}</div>${A.cand&&awShown(A,'mvp')?`<button class="btn small" data-a="cerOpen" data-v="${y}:mvp">시상식 다시 보기</button>`:''}</div>
+    <div class="eyebrow">골든글러브</div>${awShown(A,'gg')?`<div class="list">${['P','C','1B','2B','3B','SS','OF0','OF1','OF2','DH'].filter(k=>A.gg[k]).map(k=>`<div class="item" style="cursor:default"><span class="nm">${ggName(k)}</span><span class="sub">${who(A.gg[k])}</span></div>`).join('')}</div>${A.cand?`<button class="btn small" data-a="cerOpen" data-v="${y}:gg">골든글러브 시상식 다시 보기</button>`:''}`:`<p class="small muted">${dmd(KD(12,9))} 골든글러브 시상식에서 발표합니다.</p>`}`
     :'<p class="small muted">첫 시즌이 끝나면 시상 결과가 쌓입니다.</p>';
   const actives=Object.values(G.players).filter(p=>p.team!=null&&p.hist.some(h=>h.lvl==='1군')).map(p=>{ const c=careerOf(p); return {name:p.name,id:p.id,t:p.team,isP:p.isP,war:c.war,h:c.h,hr:c.hr,w:c.w,sv:c.sv,act:true}; });
   const all=actives.concat((G.legends||[]).map(r=>({name:r.name,isP:r.isP,war:r.war,h:r.h,hr:r.hr,w:r.w,sv:r.sv,act:false,y:r.y})));

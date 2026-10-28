@@ -1316,6 +1316,31 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .mvl .mvd{margin-left:auto;font-size:13px}
 .mvt td{vertical-align:top}.mvt tr.me td{background:color-mix(in srgb,var(--acc,#4a8) 8%,transparent)}
 .mv-st{margin-bottom:6px}
+/* 시상식 */
+.sheet.cer{background:radial-gradient(120% 80% at 50% 0%,color-mix(in srgb,#d4a017 18%,var(--bg,#111)) 0%,var(--bg,#111) 60%)}
+.cer-lab{display:flex;align-items:baseline;gap:10px;margin:4px 0 10px}.cer-lab h3{margin:0;font-size:22px;letter-spacing:-.01em}
+.cer-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:12px}
+.cer-c{position:relative;display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line,#333);border-radius:10px;background:var(--card,#1a1a1a);animation:cerIn .45s ease both;animation-delay:var(--d)}
+.cer-c.me{border-color:var(--acc,#4a8)}
+.cer-i{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}.cer-i b{font-size:16px}
+.cer-list.rev .cer-c.lose{opacity:.55;transform:scale(.97);transition:all .5s}
+.cer-c.win{border-color:#d4a017;box-shadow:0 0 0 2px #d4a01755,0 0 28px #d4a01766;animation:cerWin .9s cubic-bezier(.2,1.4,.4,1) both;animation-delay:var(--d)}
+.cer-tro{position:absolute;top:-10px;right:-8px;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a0,#d4a017 60%,#8a6400);box-shadow:0 2px 8px #0008;animation:cerPop .6s .5s both}
+.cer-bar{position:relative;height:16px;border-radius:8px;background:var(--line,#333);overflow:hidden;margin-top:4px}
+.cer-bar i{position:absolute;inset:0 auto 0 0;width:var(--w);background:linear-gradient(90deg,#8a6400,#d4a017);animation:cerBar 1.1s ease both;animation-delay:calc(var(--d) + .2s)}
+.cer-c:not(.win) .cer-bar i{background:var(--dim,#777)}
+.cer-bar em{position:relative;font-style:normal;font-size:11px;padding-left:6px;line-height:16px;color:#fff;text-shadow:0 1px 2px #000}
+.cer-q{padding:10px 12px;border-left:3px solid #d4a017;margin:6px 0 12px;background:color-mix(in srgb,#d4a017 8%,transparent);border-radius:4px;animation:cerIn .5s 1s both}
+.cer-go{animation:cerPulse 1.6s infinite}
+.cer-sum{display:grid;gap:8px;margin-bottom:12px}.cer-sr{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px;border-bottom:1px solid var(--line,#333)}
+.cer-sr .eyebrow{width:70px}.cer-w{font-weight:700}.cer-w i{font-style:normal;font-weight:400;opacity:.65;font-size:12px}.cer-w.me{color:#e8b923}
+.cer-home{border-color:#d4a017}
+@keyframes cerIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes cerWin{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1.03)}}
+@keyframes cerPop{from{transform:scale(0) rotate(-30deg)}to{transform:scale(1) rotate(0)}}
+@keyframes cerBar{from{width:0}to{width:var(--w)}}
+@keyframes cerPulse{0%,100%{box-shadow:0 0 0 0 #d4a01766}50%{box-shadow:0 0 0 8px #d4a01700}}
+@media (prefers-reduced-motion:reduce){.cer-c,.cer-c.win,.cer-bar i,.cer-tro,.cer-q,.cer-go{animation:none}}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -2085,6 +2110,8 @@ function processDay(){ syncMinSal();
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
   if(o.d===1)try{ freeAiMonthly(); sponMonthly(); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
+  if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
+  if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();
   recoverAll(1);
@@ -2330,7 +2357,7 @@ function settlement(){
   if(!G.unemp){ const psr=ps.champ===G.user?' · 한국시리즈 우승':ps.runner===G.user?' · 한국시리즈 준우승':ps.poLose===G.user?' · 플레이오프 진출':ps.spoLose===G.user?' · 준플레이오프 진출':ps.wcLose===G.user?' · 와일드카드 진출':''; chron('season',`${uo.w}승 ${uo.l}패${uo.t?` ${uo.t}무`:''} ${rank}위${psr}`); }
   try{ franchiseCheck(); }catch(e){}
   try{ if(!G.unemp)seasonReview(y); }catch(e){}
-  storySeason(y); const awards=seasonAwards(y); try{ featSeason(y); mgrEyeReport(); starAwardsNews(); }catch(e){}
+  storySeason(y); const awards=seasonAwards(y); try{ featSeason(y); mgrEyeReport(); }catch(e){}
   G.history.push({y,order,champ:ps.champ,runner:ps.runner,user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
   { const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(G.cal.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 마지막 달(9·10월) 잔여 경기도 결산에 넣는다 */
   try{ tsArchive(y); }catch(e){}
@@ -3723,23 +3750,44 @@ const EVH_LEAD={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; cons
 function captainOf(tid){ const t=team(tid); const p=t.cap!=null?G.players[t.cap]:null; if(p&&p.team===tid)return p;
   if(t.cap!=null&&tid===G.user&&!G.unemp){ const was=G.players[t.cap]; if(was)news('구단',`${tshort(tid)} 주장 ${was.name} 떠나… 선수단 술렁`,'주장이 팀을 떠나 더그아웃 분위기가 가라앉았습니다.',-1); for(const q of playersOf(tid))q.mor=clamp((q.mor??60)-2,0,100); t.cap=null; } const a=electCaptain(tid,tid===G.user&&!G.unemp?'전임 주장 이탈':''); return a; }
 
+/* ===== 시상: 정규시즌이 끝나면 후보와 투표를 정하고, 발표는 실제 일정대로 한다
+   MVP·신인왕은 11월 24일 KBO 시상식(기자단 125명 투표), 골든글러브는 12월 9일(288명 투표).
+   투표는 WAR에 홈런·승수 같은 눈에 띄는 기록, 팀 성적, 기자 표심의 흔들림이 섞여 WAR 1위가 지는 '수상 논란'도 나온다 */
+function awVote(cands,voters,seed){ if(!cands.length)return []; const sc=cands.map(c=>c.s); const mx=Math.max(...sc); const ex=sc.map(v=>Math.exp((v-mx)*1.6)); const tot=sum(ex);
+  const raw=ex.map(e=>voters*e/tot); const fl=raw.map(Math.floor); let left=voters-sum(fl); raw.map((r,i)=>[r-fl[i],i]).sort((p,q)=>q[0]-p[0]).slice(0,left).forEach(([,i])=>fl[i]++);
+  cands.forEach((c,i)=>c.v=fl[i]); return cands.sort((p,q)=>q.v-p.v); }
+function awCand(x,extra){ const rk=(()=>{ try{ return G.ps.order.findIndex(o=>o.tid===x.p.team); }catch(e){ return 5; } })();
+  const big=x.p.isP?(x.h.w||0)*.06+(x.h.sv||0)*.03+(x.h.so||0)*.002:(x.h.hr||0)*.045+(x.h.rbi||0)*.008+(x.h.sb||0)*.005;
+  return {id:x.p.id,name:x.p.name,t:x.p.team,line:statLine(x.h,x.p),w:+x.w.toFixed(1),s:x.w+big+(rk>=0&&rk<=2?.35:0)+N(0,.45)+(extra||0)}; }
 function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(h)rows.push({p,h,w:warOf(h,p)}); }
   const qB=x=>!x.p.isP&&x.h.pa>=300, qP=x=>x.p.isP&&x.h.outs>=270;
-  const A={y,gg:{}};
-  const mv=rows.filter(x=>qB(x)||qP(x)).sort((a,b)=>b.w-a.w)[0]; if(mv){ A.mvp={id:mv.p.id,name:mv.p.name,t:mv.p.team,line:statLine(mv.h,mv.p)}; addAward(mv.p,`${y} MVP`); }
-  const rk=rows.filter(x=>x.p.age<=26&&!x.p.foreign&&(x.h.pa>=150||x.h.outs>=150)&&!x.p.hist.some(h=>h.lvl==='1군'&&h.y<y&&((h.pa||0)>=60||(h.outs||0)>=90))).sort((a,b)=>b.w-a.w)[0];
-  if(rk){ A.roy={id:rk.p.id,name:rk.p.name,t:rk.p.team,line:statLine(rk.h,rk.p)}; addAward(rk.p,`${y} 신인왕`); }
-  for(const pos of ['C','1B','2B','3B','SS','DH']){ const c=rows.filter(x=>!x.p.isP&&x.h.pos===pos&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w)[0]; if(c){ A.gg[pos]={id:c.p.id,name:c.p.name,t:c.p.team,line:statLine(c.h,c.p)}; addAward(c.p,`${y} 골든글러브(${POSS[pos]})`); } }
-  rows.filter(x=>!x.p.isP&&['LF','CF','RF'].includes(x.h.pos)&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w).slice(0,3).forEach((c,i)=>{ A.gg['OF'+i]={id:c.p.id,name:c.p.name,t:c.p.team,line:statLine(c.h,c.p)}; addAward(c.p,`${y} 골든글러브(외야수)`); });
-  const pg=rows.filter(qP).sort((a,b)=>b.w-a.w)[0]; if(pg){ A.gg.P={id:pg.p.id,name:pg.p.name,t:pg.p.team,line:statLine(pg.h,pg.p)}; addAward(pg.p,`${y} 골든글러브(투수)`); }
+  const A={y,gg:{},cand:{gg:{}},pend:{mvp:true,gg:true}};
+  A.cand.mvp=awVote(rows.filter(x=>qB(x)||qP(x)).sort((a,b)=>b.w-a.w).slice(0,6).map(x=>awCand(x)),125);
+  A.cand.roy=awVote(rows.filter(x=>x.p.age<=26&&!x.p.foreign&&(x.h.pa>=150||x.h.outs>=150)&&!x.p.hist.some(h=>h.lvl==='1군'&&h.y<y&&((h.pa||0)>=60||(h.outs||0)>=90))).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x)),125);
+  for(const pos of ['C','1B','2B','3B','SS','DH']){ const L=rows.filter(x=>!x.p.isP&&x.h.pos===pos&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x,pos!=='DH'?((x.p.r.def||50)-50)*.02:0)); if(L.length)A.cand.gg[pos]=awVote(L,288); }
+  { const L=rows.filter(x=>!x.p.isP&&['LF','CF','RF'].includes(x.h.pos)&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w).slice(0,7).map(x=>awCand(x,((x.p.r.def||50)-50)*.02)); if(L.length){ awVote(L,288*3); L.forEach(c=>c.v=Math.min(288,Math.round(c.v*.98))); A.cand.gg.OF=L.sort((p,q)=>q.v-p.v); } }
+  { const L=rows.filter(qP).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x)); if(L.length)A.cand.gg.P=awVote(L,288); }
+  /* 수상자(발표 전까지 비공개) */
+  const pick=c=>c&&c[0]?{id:c[0].id,name:c[0].name,t:c[0].t,line:c[0].line,v:c[0].v}:null;
+  A.mvp=pick(A.cand.mvp); A.roy=pick(A.cand.roy);
+  for(const k of ['C','1B','2B','3B','SS','DH','P'])if(A.cand.gg[k])A.gg[k]=pick(A.cand.gg[k]);
+  if(A.cand.gg.OF)A.cand.gg.OF.slice(0,3).forEach((c,i)=>{ A.gg['OF'+i]={id:c.id,name:c.name,t:c.t,line:c.line,v:c.v}; });
   (G.awards=G.awards||{})[y]=A;
-  const mine=[A.mvp,A.roy,...Object.values(A.gg)].filter(x=>x&&x.t===G.user);
-  for(const x of mine){ const p=G.players[x.id]; if(p)p.mor=clamp((p.mor??60)+6,0,100); }
-  if(A.mvp&&A.mvp.t===G.user)news('선수',`${A.mvp.name}, ${y} 정규시즌 MVP`,`${tname(G.user)}의 ${A.mvp.name}이(가) ${A.mvp.line}(으)로 MVP를 차지했습니다.`,3,{ref:A.mvp.id,fanW:2});
-  if(A.roy&&A.roy.t===G.user)news('선수',`${A.roy.name}, ${y} 신인왕`,`${tname(G.user)} 육성의 결실입니다.`,2,{ref:A.roy.id});
-  const gg=Object.values(A.gg).filter(x=>x.t===G.user); if(gg.length)news('선수',`${tshort(G.user)} 골든글러브 ${gg.length}명 배출`,`${gg.map(x=>x.name).join(', ')}이(가) 수상했습니다.`,gg.length>=3?2:1);
-  mail('홍보팀',`${y} KBO 시상 결과`,`MVP: ${A.mvp?`${A.mvp.name}(${tshort(A.mvp.t)})`:'-'}\n신인왕: ${A.roy?`${A.roy.name}(${tshort(A.roy.t)})`:'-'}\n골든글러브: ${Object.entries(A.gg).map(([k,x])=>`${k.startsWith('OF')?'외야':k==='P'?'투수':POSS[k]} ${x.name}(${tshort(x.t)})`).join(', ')}\n\n우리 구단 수상: ${mine.length?mine.map(x=>x.name).join(', '):'없음'}`,{kind:'기록',acts:[{l:'역사·시상 보기',a:'go',v:'league:hist'}]});
+  const mineC=[...(A.cand.mvp||[]).slice(0,5),...(A.cand.roy||[]).slice(0,3)].filter(c=>c.t===G.user);
+  mail('홍보팀',`${y} KBO 시상식 후보 발표`,`MVP 후보: ${(A.cand.mvp||[]).slice(0,5).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n신인왕 후보: ${(A.cand.roy||[]).slice(0,3).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n\nMVP·신인왕은 ${dmd(KD(11,24))} KBO 시상식, 골든글러브는 ${dmd(KD(12,9))}에 발표됩니다.${mineC.length?`\n우리 구단 후보: ${mineC.map(c=>c.name).join(', ')}`:''}`,{kind:'기록'});
   return A; }
+/* 발표 시점에만 수상자를 공개한다 */
+function awShown(A,k){ return A&&!(A.pend&&A.pend[k]); }
+function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A||!A.pend||!A.pend[k])return; A.pend[k]=false;
+  const lst=k==='mvp'?[['MVP',A.mvp,A.cand.mvp],['신인왕',A.roy,A.cand.roy]]:Object.entries(A.gg).map(([pos,x])=>[`골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x,pos.startsWith('OF')?A.cand.gg.OF:A.cand.gg[pos]]);
+  const mine=[];
+  for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; if(p){ addAward(p,`${y} ${lab}`); if(p.team===G.user){ p.mor=clamp((p.mor??60)+6,0,100); mine.push(x.name+' '+lab); } }
+    /* WAR 1위가 표에서 졌으면 논란 기사 */
+    if(C&&C.length>1&&k==='mvp'){ const top=[...C].sort((a,b)=>b.w-a.w)[0]; if(top.id!==x.id&&top.w-C[0].w>=.8)news('기록',`${lab} 수상 논란: WAR 1위 ${top.name} 대신 ${x.name}`,`WAR ${top.w}의 ${top.name}이(가) ${C.find(c=>c.id===top.id).v}표에 그쳤습니다. 기자단 표심이 눈에 띄는 기록 쪽으로 기울었다는 분석입니다.`,0); } }
+  if(k==='mvp'){ if(A.mvp)news('선수',`${A.mvp.name}, ${y} 정규시즌 MVP`,`${tname(A.mvp.t)}의 ${A.mvp.name}이(가) 1위표 ${A.mvp.v}표를 받아 MVP를 차지했습니다. ${A.mvp.line}.`,A.mvp.t===G.user?3:0,{ref:A.mvp.id,fanW:A.mvp.t===G.user?2:0});
+    if(A.roy)news('선수',`${A.roy.name}, ${y} 신인왕`,`${tname(A.roy.t)}의 ${A.roy.name}이(가) ${A.roy.v}표로 신인왕에 올랐습니다.`,A.roy.t===G.user?2:0,{ref:A.roy.id}); }
+  else { const gg=Object.values(A.gg).filter(x=>x.t===G.user); news('선수',`${y} 골든글러브: ${tshort(G.user)} ${gg.length}명 수상`,gg.length?`${gg.map(x=>x.name).join(', ')}이(가) 황금장갑을 꼈습니다.`:'우리 구단은 수상자를 내지 못했습니다.',gg.length>=3?2:gg.length?1:-1); try{ starAwardsNews(); }catch(e){} }
+  G.cerNew={y,k}; mail('홍보팀',`${y} ${k==='mvp'?'KBO 시상식(MVP·신인왕)':'골든글러브 시상식'}`,`오늘 ${k==='mvp'?'KBO 시상식':'골든글러브 시상식'}이 열렸습니다.${mine.length?` 우리 구단 수상: ${mine.join(', ')}.`:' 우리 구단 수상자는 없습니다.'}\n\n시상식 화면에서 후보와 투표 결과를 확인할 수 있습니다.`,{imp:true,kind:'기록',acts:[{l:'시상식 보기',a:'cerOpen',v:`${y}:${k}`}]}); }
 /* 창단 드래프트 게임: 같은 구단 번호라도 창단 이전 기록은 우리 구단 기록이 아니다 */
 function fdMine(p){ if(!G.fd||!G.startY)return null; let war=0; const ys=new Set(); for(const h of p.hist){ if(h.lvl!=='1군'||h.t!==G.user||h.y<G.startY)continue; war+=warOf(h,p); ys.add(h.y); } return ys.size?{war:+war.toFixed(1),ys:ys.size}:null; }
 function retireRecord(p){ const c=careerOf(p); const aw=p.aw||[];
@@ -7673,14 +7721,14 @@ function homeView(){
   if(G.unemp)return unempView()+[miniStand(),newsCard()].filter(Boolean).join('');
   faCelebrate(); const dO=UI.open.homeDesk??false;
   const desk=G.gameOver?'':`<details class="moreg" data-k="homeDesk" data-lazy="${dO?0:1}" ${dO?'open':''}><summary><span>전력 요약</span><i>자리별 전력 순위 · 추천 트레이드 · 사람들과의 관계</i></summary><div class="moreb">${dO?[deskCard(),relStrip()].filter(Boolean).join(''):''}</div></details>`;
-  const today=[resultHome(),liveCard(),digestCard(),todoCard(),decisionCard(),tutCard(),offersCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard(),nextCard(),upcomingGames(10),desk].filter(Boolean).join('');
+  const today=[cerHomeCard(),resultHome(),liveCard(),digestCard(),todoCard(),decisionCard(),tutCard(),offersCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard(),nextCard(),upcomingGames(10),desk].filter(Boolean).join('');
   const league=[miniStand(),mvHomeCard(),formCard(),newsCard()].filter(Boolean).join('');
   const moreBody=[myLeaders(),clubCard(),calendarCard()].filter(Boolean).join('');
   const o=UI.open.homeMore??false;
   const more=moreBody?`<details class="moreg" data-k="homeMore" ${o?'open':''}><summary><span>더 보기</span><i>우리 팀 주요 선수 · 구단 상태 · 일정</i></summary><div class="moreb">${moreBody}</div></details>`:'';
   const gh=t=>`<h2 class="grp-t">${t}</h2>`;
   if(wide())return `${stripBar()}<div class="homeg"><div class="col">${gh('오늘 할 일')}${today}</div><div class="col">${gh('리그 현황')}${league}${more}</div></div>`;
-  const todo=[todoCard(),decisionCard(),tutCard(),offersCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean).join('');
+  const todo=[cerHomeCard(),todoCard(),decisionCard(),tutCard(),offersCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean).join('');
   const games=[resultHome(),liveCard(),digestCard(),nextCard(),upcomingGames(10)].filter(Boolean).join('');
   if(G.res&&UI._hres!==G.res.i+':'+G.day){ UI._hres=G.res.i+':'+G.day; UI.it=UI.it||{}; UI.it.home='game'; } /* 경기가 막 끝나면 경기 탭을 먼저 */
   const ht=inTabs('home',[['today','할 일'],...(games?[['game','경기']]:[]),['league','리그'],['team','우리 팀']]);
@@ -8065,7 +8113,7 @@ function seasonSummary(){
   const H=[...G.history].reverse(); if(!H.length)return '';
   const who=x=>x?`${esc(x.name)} <span class="muted">${tshort(x.t)}</span>`:'-';
   return csec('연도별 시즌 요약',`<div class="tw"><table class="ssum"><thead><tr><th>연도</th><th>우승</th><th>준우승</th><th>정규 1위</th><th>MVP</th><th>신인왕</th><th>우리 팀</th></tr></thead><tbody>${H.map(h=>{ const A=(G.awards||{})[h.y]; const ui=h.order.findIndex(o=>o.tid===G.user); const uo=h.order[ui];
-    return `<tr class="${h.champ===G.user?'me':''}"><td>${h.y}</td><td>${badge(h.champ,16)} ${tshort(h.champ)}</td><td>${h.runner!=null?tshort(h.runner):'-'}</td><td>${tshort(h.order[0].tid)}</td><td>${A?who(A.mvp):'-'}</td><td>${A?who(A.roy):'-'}</td><td>${G.startY!=null&&h.y<G.startY?'<span class="muted">창단 전</span>':`${ui+1}위${uo?` · ${uo.w}-${uo.l}`:''}${h.champ===G.user?' · 우승':''}`}</td></tr>`; }).join('')}</tbody></table></div>`); }
+    return `<tr class="${h.champ===G.user?'me':''}"><td>${h.y}</td><td>${badge(h.champ,16)} ${tshort(h.champ)}</td><td>${h.runner!=null?tshort(h.runner):'-'}</td><td>${tshort(h.order[0].tid)}</td><td>${A&&awShown(A,'mvp')?who(A.mvp):A?'발표 전':'-'}</td><td>${A&&awShown(A,'mvp')?who(A.roy):A?'발표 전':'-'}</td><td>${G.startY!=null&&h.y<G.startY?'<span class="muted">창단 전</span>':`${ui+1}위${uo?` · ${uo.w}-${uo.l}`:''}${h.champ===G.user?' · 우승':''}`}</td></tr>`; }).join('')}</tbody></table></div>`); }
 
 /* ---------- C: 트레이드 비교판 ---------- */
 function tradeInsight(tid,give,get){
@@ -8498,8 +8546,8 @@ function histView(){
   const who=x=>x?`<button class="lnk" ${G.players[x.id]?`data-a="player" data-v="${x.id}"`:''}>${esc(x.name)}</button> <span class="small muted">${tshort(x.t)} · ${esc(x.line)}</span>`:'-';
   const ggName=k=>k.startsWith('OF')?'외야수':k==='P'?'투수':POSK[k];
   const aw=A?`<div class="chips">${ys.map(v=>`<button data-a="hy" data-v="${v}" class="${v===y?'on':''}">${v}</button>`).join('')}</div>
-    <div class="awd"><div><span class="pill warn">MVP</span> ${who(A.mvp)}</div><div><span class="pill acc">신인왕</span> ${who(A.roy)}</div></div>
-    <div class="eyebrow">골든글러브</div><div class="list">${['P','C','1B','2B','3B','SS','OF0','OF1','OF2','DH'].filter(k=>A.gg[k]).map(k=>`<div class="item" style="cursor:default"><span class="nm">${ggName(k)}</span><span class="sub">${who(A.gg[k])}</span></div>`).join('')}</div>`
+    <div class="awd"><div><span class="pill warn">MVP</span> ${awShown(A,'mvp')?who(A.mvp):`<span class="muted">${dmd(KD(11,24))} 시상식에서 발표</span>`}</div><div><span class="pill acc">신인왕</span> ${awShown(A,'mvp')?who(A.roy):'<span class="muted">발표 전</span>'}</div>${A.cand&&awShown(A,'mvp')?`<button class="btn small" data-a="cerOpen" data-v="${y}:mvp">시상식 다시 보기</button>`:''}</div>
+    <div class="eyebrow">골든글러브</div>${awShown(A,'gg')?`<div class="list">${['P','C','1B','2B','3B','SS','OF0','OF1','OF2','DH'].filter(k=>A.gg[k]).map(k=>`<div class="item" style="cursor:default"><span class="nm">${ggName(k)}</span><span class="sub">${who(A.gg[k])}</span></div>`).join('')}</div>${A.cand?`<button class="btn small" data-a="cerOpen" data-v="${y}:gg">골든글러브 시상식 다시 보기</button>`:''}`:`<p class="small muted">${dmd(KD(12,9))} 골든글러브 시상식에서 발표합니다.</p>`}`
     :'<p class="small muted">첫 시즌이 끝나면 시상 결과가 쌓입니다.</p>';
   const actives=Object.values(G.players).filter(p=>p.team!=null&&p.hist.some(h=>h.lvl==='1군')).map(p=>{ const c=careerOf(p); return {name:p.name,id:p.id,t:p.team,isP:p.isP,war:c.war,h:c.h,hr:c.hr,w:c.w,sv:c.sv,act:true}; });
   const all=actives.concat((G.legends||[]).map(r=>({name:r.name,isP:r.isP,war:r.war,h:r.h,hr:r.hr,w:r.w,sv:r.sv,act:false,y:r.y})));
@@ -9062,7 +9110,7 @@ function resultBody0(){
     <div class="months">${(L.months||[]).map(x=>`<div><span>${x.m}</span><b>${x.w}-${x.l}${x.t?`-${x.t}`:''}</b></div>`).join('')}${(()=>{ const M=L.months||[]; if(!M.length)return ''; const w=sum(M.map(x=>x.w)), l=sum(M.map(x=>x.l)), t=sum(M.map(x=>x.t||0)); return `<div class="tot"><span>합계</span><b>${w}-${l}${t?`-${t}`:''}</b></div>`; })()}</div>
     <p class="small">구단주 신뢰 ${tr.before} → <b>${tr.after}</b> <span class="pill ${tr.delta>=0?'good':'bad'}">${tr.delta>=0?'+':''}${tr.delta}</span></p>
     ${L.notes.map(n=>`<div class="note bad">${esc(n)}</div>`).join('')}
-    ${L.awards?`<div class="eyebrow">시상</div><p class="small">MVP ${L.awards.mvp?esc(L.awards.mvp.name)+'('+tshort(L.awards.mvp.t)+')':'-'} · 신인왕 ${L.awards.roy?esc(L.awards.roy.name)+'('+tshort(L.awards.roy.t)+')':'-'} · 우리 골든글러브 ${Object.values(L.awards.gg).filter(x=>x.t===G.user).map(x=>esc(x.name)).join(', ')||'없음'}</p>`:''}
+    ${L.awards&&awShown(L.awards,'mvp')?`<div class="eyebrow">시상</div><p class="small">MVP ${L.awards.mvp?esc(L.awards.mvp.name)+'('+tshort(L.awards.mvp.t)+')':'-'} · 신인왕 ${L.awards.roy?esc(L.awards.roy.name)+'('+tshort(L.awards.roy.t)+')':'-'} · 우리 골든글러브 ${!awShown(L.awards,'gg')?'12월 발표':Object.values(L.awards.gg).filter(x=>x.t===G.user).map(x=>esc(x.name)).join(', ')||'없음'}</p>`:''}
     ${L.goals&&L.goals.length?`<div class="eyebrow">구단주 목표 평가</div><div class="list">${L.goals.map(g=>`<div class="item" style="cursor:default"><span class="nm">${esc(g)}</span></div>`).join('')}</div>`:''}${L.pr?`<p class="small">시즌 말 팬 여론 ${L.pr.fan} · 언론 논조 ${L.pr.press}</p>`:''}
     <div class="eyebrow">포스트시즌</div><div class="list">${psRow('와일드카드',ps.wc)}${psRow('준플레이오프',ps.spo)}${psRow('플레이오프',ps.po)}${psRow('한국시리즈',ps.ks)}</div>
     <p class="small muted">포스트시즌 입장 수입 ${money(L.gate)} 중 운영비를 뺀 ${money(L.pool)}을 배당. 정규시즌 1위 20%, 나머지는 우승 50%, 준우승 24%, 플레이오프 14%, 준플레이오프 9%, 와일드카드 3%.</p>
@@ -9409,6 +9457,7 @@ function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
   if(UI.cast&&UI.sheet==null&&!UI.menu){ const ex=el.querySelector('.cast'); if(!ex||+ex.dataset.g!==UI.cast.g){ el.innerHTML=castSheet(); castMount(); } return; }
+  if(UI.cer&&UI.sheet==null&&!UI.menu){ el.innerHTML=cerSheet(); return; }
   if(UI.menu){ el.innerHTML=menuSheet(); return; }
   if(UI.teamSh!=null&&UI.sheet==null){ el.innerHTML=teamSheet(UI.teamSh); return; }
   if(UI.myRos&&UI.sheet==null){ G.tutFlags=G.tutFlags||{}; G.tutFlags.roster=true; el.innerHTML=myRosterSheet(); return; }
@@ -9577,7 +9626,7 @@ function devForm(p){
   ${ovsOpen()&&p.age<=27?`<div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+' 신청됨':''}</div><div class="talk">${Object.entries(OVS).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('')}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
-function closeSheets(){UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
+function closeSheets(){UI.cer=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
 const A={
   dlSpd(v){ UI.dspeed=v; render(); },
   dlStop(){ dliveStop(); },
@@ -9747,6 +9796,10 @@ const A={
   sponRej(v){ toast(sponReject(+v)); render(); },
   sponCnt(v){ const [id,p]=String(v).split(':'); toast(sponCounter(+id,+p)); render(); },
   mvF(v){ const [k,x]=String(v).split(':'); UI.mvf=UI.mvf||{}; if(k==='t')UI.mvf.t=x||null; else UI.mvf.tm=x===''?null:+x; render(); },
+  cerOpen(v){ const [y,k]=String(v).split(':'); if(!G.awards||!G.awards[+y]||!awShown(G.awards[+y],k))return toast('아직 발표 전입니다.'); if(G.cerNew&&G.cerNew.y===+y&&G.cerNew.k===k)G.cerNew.seen=true; UI.cer={y:+y,k,i:0,rev:false}; renderSheet(); },
+  cerRev(){ if(UI.cer){ UI.cer.rev=true; renderSheet(); } },
+  cerNext(){ if(UI.cer){ UI.cer.i++; UI.cer.rev=false; renderSheet(); } },
+  cerAll(){ if(UI.cer){ UI.cer.i=99; renderSheet(); } },
   rcolTg(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=rcolKeys(pit).slice(); const i=L.indexOf(v); if(i>=0){ if(L.length<=1)return; L.splice(i,1); } else L.push(v); rcolLoad()[k]=L; rcolSave(); render(); },
   rcolMv(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const [c,d]=v.split(':'); const L=rcolKeys(pit).slice(); const i=L.indexOf(c), j=i+(+d); if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; rcolLoad()[k]=L; rcolSave(); render(); },
   rsort(v){ const k=UI.seg==='pit'?'pit':'bat'; UI.rs=UI.rs||{}; if(!v){UI.rs[k]=null;} else { const c=UI.rs[k]; UI.rs[k]={k:v,dir:c&&c.k===v?-c.dir:-1}; } render(); },
@@ -10113,4 +10166,28 @@ function movesView(){ const W=mvWindow(); const st=mvStatus(); UI.mvf=UI.mvf||{}
     +csec('전체 기록',`<div class="chips"><button data-a="mvF" data-v="t:" class="${!f.t?'on':''}">전체</button>${MV_TYPES.map(k=>`<button data-a="mvF" data-v="t:${k}" class="${f.t===k?'on':''}">${k}</button>`).join('')}</div>
       <div class="chips"><button data-a="mvF" data-v="tm:" class="${f.tm==null?'on':''}">모든 구단</button>${G.teams.map(t=>`<button data-a="mvF" data-v="tm:${t.id}" class="${f.tm===t.id?'on':''}">${esc(tshort(t.id))}</button>`).join('')}</div>
       ${all.length?all.map(m=>mvLine(m)).join(''):'<p class="small muted">기록이 없습니다.</p>'}`); }
+/* ---------- 시상식 연출: 후보 소개 → 수상자 발표(득표 막대) → 소감 → 전체 결과 ---------- */
+function cerStages(A,k){ if(k==='mvp')return [['MVP',A.cand.mvp||[],1],['신인왕',A.cand.roy||[],1]].filter(s=>s[1].length);
+  const P=[['투수','P'],['포수','C'],['1루수','1B'],['2루수','2B'],['3루수','3B'],['유격수','SS'],['외야수','OF'],['지명타자','DH']];
+  return P.filter(([,c])=>A.cand.gg[c]&&A.cand.gg[c].length).map(([l,c])=>[l,A.cand.gg[c],c==='OF'?3:1]); }
+function cerQuote(c,lab,k){ const p=G.players[c.id]; const mine=c.t===G.user; const m=mgrOf(c.t);
+  const L=[`"${lab}은(는) 혼자 받는 상이 아닙니다. 함께 뛴 동료들 덕분입니다."`,`"${m&&!m.interim?m.name+' 감독님이 믿고 기회를 주셨습니다. ':''}더 잘하라는 뜻으로 알겠습니다."`,`"응원해 주신 ${tshort(c.t)} 팬들께 이 상을 바칩니다."`];
+  if(mine&&!G.unemp)L.push(`"단장님과 프런트가 뒤에서 많이 챙겨 주셨습니다. 감사합니다."`); if(p&&p.age<=23)L.push('"어릴 때 꿈꾸던 무대입니다. 아직 실감이 안 납니다."'); if(p&&p.age>=33)L.push('"이 나이에 이 상을 받을 줄 몰랐습니다. 후배들에게 길을 보여 주고 싶습니다."');
+  return L[Math.floor(u01('cq'+c.id,lab)*L.length)]; }
+function cerCard(c,i,st,rev,tot){ const p=G.players[c.id]; const win=rev&&i<st[2]; const pct=Math.round(c.v/tot*100);
+  return `<div class="cer-c${win?' win':''}${rev&&!win?' lose':''}${c.t===G.user?' me':''}" style="--d:${i*120}ms">${p?avImg(p):'<span class="av ini">?</span>'}<div class="cer-i"><b>${esc(c.name)}</b><span class="small">${badge(c.t,14)} ${esc(tshort(c.t))}</span><span class="small muted">${esc(c.line)}</span>
+    ${rev?`<div class="cer-bar"><i style="--w:${pct}%"></i><em>${c.v}표</em></div>`:''}</div>${win?'<span class="cer-tro" aria-hidden="true"></span>':''}</div>`; }
+function cerSheet(){ const C=UI.cer; const A=G.awards&&G.awards[C.y]; if(!A)return ''; const S=cerStages(A,C.k); const title=C.k==='mvp'?`${C.y} KBO 시상식`:`${C.y} 골든글러브 시상식`;
+  let body;
+  if(C.i>=S.length){ /* 전체 결과 */
+    body=`<div class="cer-sum">${S.map(st=>`<div class="cer-sr"><span class="eyebrow">${st[0]}</span>${st[1].slice(0,st[2]).map(c=>`<span class="cer-w${c.t===G.user?' me':''}">${esc(c.name)} <i>${esc(tshort(c.t))} · ${c.v}표</i></span>`).join('')}</div>`).join('')}</div>
+      <div class="row" style="justify-content:flex-end"><button class="btn primary" data-a="closeSheet">닫기</button></div>`; }
+  else { const st=S[C.i]; const tot=st[2]>1?288:(C.k==='mvp'?125:288); const rev=!!C.rev; const L=rev?st[1]:[...st[1]].sort((a,b)=>a.name.localeCompare(b.name));
+    const w=st[1][0];
+    body=`<div class="cer-stage"><div class="cer-lab"><span>${C.i+1} / ${S.length}</span><h3>${st[0]}${st[2]>1?` (${st[2]}명)`:''}</h3><span class="small muted">${rev?`투표 결과 · 유효표 ${tot}표`:'후보'}</span></div>
+      <div class="cer-list${rev?' rev':''}">${L.map((c,i)=>cerCard(c,i,st,rev,tot)).join('')}</div>
+      ${rev&&w?`<div class="cer-q"><span class="pill warn">수상 소감</span> ${esc(w.name)}: ${esc(cerQuote(w,st[0],C.k))}</div>`:''}
+      <div class="row" style="justify-content:space-between"><button class="btn small" data-a="cerAll">결과 한눈에</button>${rev?`<button class="btn primary" data-a="cerNext">${C.i+1<S.length?'다음 부문':'전체 결과'}</button>`:`<button class="btn primary cer-go" data-a="cerRev">수상자 발표</button>`}</div></div>`; }
+  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut cer" data-stop="1" role="dialog" aria-label="${esc(title)}"><div class="sheet-head"><div><div class="eyebrow">${C.k==='mvp'?'MVP · 신인왕':'포지션별 최고 선수'}</div><h2 class="sec">${esc(title)}</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>${body}</div></div>`; }
+function cerHomeCard(){ const c=G.cerNew; if(!c||c.seen||!G.awards||!G.awards[c.y])return ''; return `<section class="card cer-home"><div class="row between"><div><div class="eyebrow">오늘의 행사</div><b>${c.y} ${c.k==='mvp'?'KBO 시상식':'골든글러브 시상식'}</b></div><button class="btn primary" data-a="cerOpen" data-v="${c.y}:${c.k}">시상식 보기</button></div></section>`; }
 </script>
