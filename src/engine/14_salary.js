@@ -48,9 +48,10 @@ function nonFaF(p,skip){ if(p.faC||p.ext)return 1; if(skip)return NONFA_F[3]; re
 function preCap(p){ return PRE_CAP[clamp(p.svc||0,0,PRE_CAP.length-1)]; }
 function faAsk(p){
   const pf=perfOvr(p,3); const base=pf==null?ovr(p):pf*.7+ovr(p)*.3;
-  const af=p.age<30?1.15:p.age<=32?1:p.age<=34?.85:.65;
+  const af=p.age<30?1.15:p.age<=31?1.05:p.age<=33?.9:p.age<=34?.8:.65;
   const years=p.age<=28&&base>=62?5:p.age<=31?4:p.age<=33?(base>=55?4:3):p.age<=35?(base>=55?3:2):1;
-  return {annual:round5(marketSal(base)*1.05*af*faMktNow()),years};
+  /* 거품이 껴도 연평균은 30억(2026년 기준, 상한이 오르면 같이 오름) 안에서 멈춘다 */
+  return {annual:round5(Math.min(marketSal(base)*1.05*af*faMktNow(),3000*capOf(G.year)/14397)),years};
 }
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
 function faMktOf(y){ G.faMkt=G.faMkt||{}; if(G.faMkt[y]!=null)return G.faMkt[y]; const prev=G.faMkt[y-1]!=null?G.faMkt[y-1]:1.08;

@@ -32,7 +32,7 @@ function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const s
   if(M.k==='mgr'){ const q=meetTopics(M).find(x=>x[0]===v); if(v.startsWith('fp:')){ const p=G.players[+v.slice(3)]; say('me',`${p?p.name:'이 선수'} 어떻게 보세요?`); say('them',mgrOnForeign(p)); save(); return; }
     say('me',q?q[1]:'');
     if(v==='cand'){ const W=mgrWantForeign(); const sc=x=>{ const r=scoutReport(x); return (r.ofp??r.cur+6)+r.cur*.2+(mgrFitF(x,W)?4:0); };
-      const L=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)).sort((a,b)=>sc(b)-sc(a)).slice(0,3);
+      const M0=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)).sort((a,b)=>sc(b)-sc(a)); const fit=M0.filter(p=>mgrFitF(p,W)); const L=W&&W.want?[...fit.slice(0,2),...M0.filter(p=>!fit.slice(0,2).includes(p))].slice(0,3):M0.slice(0,3); /* 원하는 유형을 먼저, 그다음 눈에 띄는 다른 선수 */
       if(!L.length){ say('them','지금 시장에 마음에 드는 후보가 없습니다. 스카우트에게 더 찾아보라고 하시죠.'); save(); return; }
       say('them',`스카우트 명단에서 제 눈에 들어온 후보 ${L.length}명입니다.`); for(const p of L)say('them',`${p.name} (${posLabel(p)}, ${p.age}세, ${p.prevLvl||p.nat||''}): ${mgrOnForeign(p)}`); save(); return; }
     const r=mgrTalk(v); const ch=G.mgrChat&&G.mgrChat[0]; say('them',ch&&ch.d===G.day&&ch.t===v?ch.a:r.a||'...'); if(/관계 \+1/.test(r.a||''))say('sys','자주 의논해 주셔서 감독 관계 +1'); save(); return; }

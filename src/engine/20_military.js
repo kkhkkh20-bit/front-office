@@ -8,7 +8,7 @@ function milInit(p){ if(p.mil!==undefined||p.foreign)return; const a=p.age; cons
   p.mil=a>=28?(u<.9?{done:true}:u<.95?{exempt:true}:null):a>=25?(u<.55?{done:true}:u<.6?{exempt:true}:null):a>=22?(u<.2?{done:true}:null):null; }
 function milText(p){ if(p.foreign)return '해당 없음'; const m=p.mil; if(!m)return `미필 · ${G.year+Math.max(0,27-p.age)}년까지 입대`; if(m.exempt)return '면제(체육요원)'; if(m.done)return '군필';
   if(m.until>G.day)return `${m.unit} 복무 중 · ${dmd(m.until)} 전역`; if(m.until)return `${m.unit} 입대 예정 · ${dmd(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
-function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; story(p,`${unit} 입대 (${dmd(from)})`,'mil'); p.e1=false; if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
+function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ cn.st='ok'; cn.mil=true; p.newSal=p.sal; } story(p,`${unit} 입대 (${dmd(from)})`,'mil'); p.e1=false; if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
 function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; if(p.mil&&p.mil.app)return '이미 지원했습니다.'; const w=sangmuWave(); if(!w)return '상무 지원 기간이 아닙니다(3~4월, 9~10월).'; if(p.age>27)return '상무 지원은 27세까지입니다(게임 규칙).';
   p.mil={app:w}; addLog(`${p.name}이(가) 상무에 지원했습니다.`); return ''; }
 function sangmuWave(){ const d=G.day; if(d>=KD(9,1)&&d<KD(10,15))return 'dec'; if(d>=KD(3,1)&&d<KD(4,15))return 'jun'; return null; }

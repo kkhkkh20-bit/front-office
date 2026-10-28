@@ -20,7 +20,7 @@ function mreqWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||G.gameOver||G.unem
   if(G.fa&&G.fa.open&&!G.fa.closed&&!mreqs().some(r=>r.k==='fa'&&r.y===G.year))C.push(['fa',null,3]);
   if(!C.length||R()>.45)return; let x=R()*sum(C.map(c=>Math.max(.2,c[2]))); for(const c of C){ x-=Math.max(.2,c[2]); if(x<=0){ mreqMake(c[0],c[1]); return; } } }
 function mreqMake(k,d){ const m=G.mgr[G.user]; const nm=mgrSays(m);
-  if(k==='slot'){ const sk=d.k; const cur=slotRanks(G.user)[sk]; const rv=cur.v;
+  if(k==='slot'){ if(G.day-(G.mgrReqD??-99)<45)return; G.mgrReqD=G.day; const sk=d.k; const cur=slotRanks(G.user)[sk]; const rv=cur.v;
     const cands=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)&&pSlot(p)===sk&&ovr(p)>=rv+4&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,8);
     const t=cands.find(p=>{ try{ return findPackages(p.id).length>0; }catch(e){ return false; } })||null; const until=Math.min(G.day+30,tradeDL());
     const r=mreqAdd('slot',{sk,rank:d.r,v:rv,target:t?t.id:null},until);

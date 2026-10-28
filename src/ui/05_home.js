@@ -11,7 +11,7 @@ function digestCard(){ const D=G.dig; if(!D||!D.games||!D.games.length||G.res)re
   rows.sort((a,b)=>b.sc-a.sc); const B=rows.filter(x=>!x.isP), P=rows.filter(x=>x.isP); const hot=[...B.slice(0,2),...P.slice(0,1)].filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc), cold=[B[B.length-1],P[P.length-1]].filter(x=>x&&x.sc<0&&!hot.includes(x));
   const li=x=>`<button class="dg-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.t}</i></span></button>`;
   const inj=playersOf(G.user).filter(p=>p.injOut>=5).slice(0,3);
-  return `<section class="card digest"><div class="row between"><span class="eyebrow">${dmd(D.from)} ~ ${dmd(D.to)} · ${gs.length}경기</span><span class="pill ${w>l?'good':w<l?'bad':''}">${w}승 ${l}패</span></div>
+  return `<section class="card digest"><div class="row between"><span class="eyebrow">${dmd(D.from)} ~ ${dmd(D.to)} · ${gs.length}경기</span><span class="pill ${w>l?'good':w<l?'bad':''}">${w}승 ${l}패${gs.length-w-l>0?` ${gs.length-w-l}무`:''}</span></div>
     <h2 class="sec">${(()=>{ const n=gs.length, span=D.to-D.from+1; const per=span>=5?'한 주':n<=1?'':'며칠'; if(n<=1)return w>l?'승리':w<l?'패배':'무승부'; return w>l?'좋은 흐름':w<l?`아쉬운 ${per}`:'반타작'; })()} · ${D.rk&&rk?(rk<D.rk?`${D.rk}위 → <b>${rk}위</b>`:rk>D.rk?`${D.rk}위 → <b class="bad">${rk}위</b>`:`${rk}위 유지`):''}</h2>
     <div class="dg-gs">${chips}</div>
     ${(()=>{ const A=(G.autoLog||[]).filter(x=>x.d>=D.from&&x.d<=D.to); return A.length?`<p class="small"><b>자동 처리 ${A.length}건</b> · ${A.map(x=>`${esc(x.t)}: ${esc(x.c)}${x.r?` (${esc(x.r.replace(/\.$/,''))})`:''}`).join(' / ')}</p>`:''; })()}

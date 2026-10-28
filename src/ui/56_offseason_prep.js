@@ -34,7 +34,7 @@ function opzMoney(){ let b; try{ b=budget(); }catch(e){ return null; } const C=G
   const faB=(G.spend&&G.spend.faB)||0; const fRow=b.exp.find(x=>x[2]==='for'); const fA=fRow?fRow[1]:0; const fL=fRow&&/배정/.test(fRow[0])?'외국인 배정 예산':'외국인';
   const d=[`국내 연봉 ${money(b.ci.all)}(다년·FA 계약 ${multi.length}명 ${money(mSal)})`,faB?`계약금 지급 ${money(faB)}`:'',`${fL} ${money(fA)}`,pend.length?`연봉 협상 미확정 ${pend.length}명(산정안 기준 ${dR>=0?'+':''}${money(dR)})`:''].filter(Boolean).join(' · ');
   const room=b.roomGoal;
-  return {k:'fin',l:`${sy}시즌 지출`,st:room<0?'warn':pend.length?'act':'ok',d,sub:`예산 여유 ${money(room)}${room<0?'(구단주 목표 초과)':''} · 지출 합계 ${money(b.E)} · 예상 수입 ${money(b.I)}`,b:[['go','club:fin','재정'],...(pend.length?[['go','transfer:contract','연봉 협상']]:[])]}; }
+  return {k:'fin',l:`${sy}시즌 지출`,st:room<0||(pend.length&&room-dR<0)?'warn':pend.length?'act':'ok',d,sub:`예산 여유 ${money(room)}${room<0?'(구단주 목표 초과)':''}${pend.length&&dR?` → 연봉 확정 후 약 ${money(room-dR)}${room-dR<0?'(목표 초과)':''}`:''} · 지출 합계 ${money(b.E)} · 예상 수입 ${money(b.I)}`,b:[['go','club:fin','재정'],...(pend.length?[['go','transfer:contract','연봉 협상']]:[])]}; }
 function offPrepRows(){ const R=[]; const f=(fn)=>{ try{ const x=fn(); if(Array.isArray(x))R.push(...x.filter(Boolean)); else if(x)R.push(x); }catch(e){} };
   f(opzSpon); f(opzCoach); f(opzForeign); f(opzRoster); f(opzMoney); return R; }
 const OPZ_ST={ok:['good','정리됨'],act:['acc','진행 중'],warn:['warn','확인 필요']};
