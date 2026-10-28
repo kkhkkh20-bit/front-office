@@ -95,6 +95,6 @@ function curLine(p){ // 이번 시즌 합계(1군 우선), 없으면 지난 시�
 function statLine(h,p){ if(!h)return '기록 없음';
   const lv=h.lvl==='퓨처스'?'2군 ':'';
   if(p.isP){ const r=pRate(h); return `${lv}ERA ${h.outs?r.era.toFixed(2):'-'} · ${ipStr(h.outs)}이닝 · WAR ${warOf(h,p).toFixed(1)}${h.sv?` · ${h.sv}세이브`:h.hld?` · ${h.hld}홀드`:h.gs?` · ${h.w}승`:''}`; }
-  const r=bRate(h); return `${lv}OPS ${h.pa?fmt3(r.ops):'-'} · ${h.hr}홈런 · WAR ${warOf(h,p).toFixed(1)}`; }
+  const r=bRate(h); return `${lv}OPS ${h.pa?fmt3(r.ops):'-'} · ${h.hr}홈런 · WAR ${warOf(h,p).toFixed(1)}${h.e?` · 실책 ${h.e}`:''}`; }
 
 

@@ -1,7 +1,11 @@
 /* ===== 경기: 타석·주자·투수 교체 ===== */
 const LGP={bb:.083,k:.198,hr:.024,babip:.312};
 const comb=(pb,pp,pl)=>{ const x=pb*pp/pl, y=(1-pb)*(1-pp)/(1-pl); return x/(x+y); };
-const bz=()=>({pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0});
+const bz=()=>({pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0,e:0});
+/* 실책을 범한 야수: 타구가 많이 가는 자리(유격수·3루·2루)일수록, 그 자리 수비력이 낮을수록 잦다 */
+const ERRW={SS:1.5,'3B':1.2,'2B':1,'1B':.5,C:.5,LF:.35,CF:.35,RF:.35}, ERRN={SS:60,'2B':60,CF:63,C:56,'3B':52,'1B':49,LF:47,RF:46}; /* 실제 KBO 자리별 실책 비율에 맞춘 무게, 자리별 보통 수비력 */
+function errFielder(fs){ const L=[]; let t=0; for(const p of fs.order){ const k=fs.posOf[p.id]; if(!k||!ERRW[k])continue; const w=ERRW[k]*clamp(1+(ERRN[k]-fieldV(p,k))/12,.35,3); L.push([p,k,w]); t+=w; }
+  let x=R()*t; for(const e of L){ x-=e[2]; if(x<=0)return e; } return L[L.length-1]||null; }
 const pz=()=>({outs:0,h:0,hr:0,bb:0,so:0,er:0,pc:0,bf:0});
 function relAvail(p,day){ const ae=mgrPush(p.team); if(!healthy(p)||p.lastApp===day||(p.fat||0)>72+(ae-50)*.4)return false;
   const cd=consecDays(p,day); /* 연투: 이틀은 보통, 3연투는 밀어붙이는 감독만, 4연투는 강행군 감독만 */
@@ -103,7 +107,7 @@ function simGame(day,hid,aid,ps){
       else { xb.ab++;
         if(o==='K'){ xb.so++; xp.so++; outs++; xp.outs++; }
         else if(o==='OUT'){
-          if(R()<.024*clamp(1+(DEF0-fs.defv)/22,.4,2.2)){ xp.h+=0; ueInn=true; if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
+          if(R()<.024*clamp(1+(DEF0-fs.defv)/22,.4,2.2)){ xp.h+=0; ueInn=true; { const ef=errFielder(fs); if(ef){ const eb=fs.box.get(ef[0].id); if(eb)eb.e=(eb.e||0)+1; if(ev.length<400)ev.push({h:half,t:`실책: ${POSK[ef[1]]||ef[1]} ${ef[0].name}`}); } } if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
           else if(base[0]&&outs<2&&R()<.11*dpF(b,p,fs)){ dp=true; outs+=2; xp.outs+=2; base[0]=null; }
           else { outs++; xp.outs++; if(outs<3&&base[2]&&R()<.4+runAdj(base[2],fs)){ sc.push(base[2]); base[2]=null; } if(outs<3&&base[1]&&!base[2]&&R()<.3){ base[2]=base[1]; base[1]=null; } }
         } else { xb.h++; xp.h++; hh++;
