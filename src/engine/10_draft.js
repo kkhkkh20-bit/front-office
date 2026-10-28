@@ -33,10 +33,14 @@ function makeDraftClass(){
     if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
     for(const p of top.filter(q=>q.ready)){ amHistory(p,rnd(14.5,19.5)); if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
   // 언론 평가: 눈에 보이는 성적과 체격·구속만으로 매긴 순위
-  const ps=cls.map(id=>G.players[id]).map(p=>{ const h=p.am; let s;
-    if(p.isP){ const r=pRate(h); s=-r.era*6+(h.so/Math.max(1,h.outs/3))*9*1.4+(p.amVelo-140)*1.2; }
+  /* 투수와 타자는 척도가 달라 각자 안에서 표준점수로 바꾼 뒤 합친다(그래야 언론 상위권에 투수와 타자가 섞인다) */
+  const raw=cls.map(id=>G.players[id]).map(p=>{ const h=p.am; let s;
+    if(p.isP){ const r=pRate(h); s=-r.era*6+(h.so/Math.max(1,h.outs/3))*9*1.4+((p.amVelo||veloOf(p))-140)*1.2; }
     else { const r=bRate(h); s=r.ops*55+h.hr*.8+h.sb*.15; }
-    return {p,s:s+(p.ht-180)*.15+N(0,2.5)}; }).sort((a,b)=>b.s-a.s);
+    return {p,s:s+(p.ht-180)*.15}; });
+  const zs=grp=>{ const L=raw.filter(x=>!!x.p.isP===grp); const m=L.reduce((a,x)=>a+x.s,0)/Math.max(1,L.length); const sd=Math.sqrt(L.reduce((a,x)=>a+(x.s-m)**2,0)/Math.max(1,L.length))||1; L.forEach(x=>x.z=(x.s-m)/sd+(grp?.15:0)); };
+  zs(true); zs(false);
+  const ps=raw.map(x=>({p:x.p,s:x.z+N(0,.25)})).sort((a,b)=>b.s-a.s);
   ps.forEach((x,i)=>x.p.press=i+1);
   G.draftClass=cls;
 }
@@ -89,3 +93,13 @@ function fdWelcome(){ const t=team(G.user); const B=bossOf(G.user); const f=fdFi
   const verdict=f.avail>=f.cap?`국내 선수 연봉으로 샐러리캡(${money(f.cap)})까지 써도 버틸 수 있습니다.`:f.avail>=f.cap*.75?`국내 선수 연봉은 ${money(f.avail)} 안쪽이 안전합니다. 샐러리캡(${money(f.cap)})을 꽉 채우면 적자입니다.`:`국내 선수 연봉에 쓸 수 있는 돈은 ${money(Math.max(0,f.avail))} 정도입니다. 샐러리캡(${money(f.cap)})보다 한참 적으니, 비싼 선수를 여럿 뽑으면 적자가 납니다.`;
   mail('구단주실',`${B.own.name} 회장: 창단을 함께해 주셔서 반갑습니다`,`${tname(G.user)} 창단 단장으로 와 주셔서 반갑습니다. ${OWNVOICE[t.owner]}\n\n올해 구단 재정 전망입니다.\n${L.map(x=>'· '+x).join('\n')}\n\n${verdict}\n\n리그가 국내 선수 전원을 다시 나누는 창단 드래프트를 엽니다. 선수 연봉과 계약은 그대로 따라오니 재정을 보면서 뽑아 주세요. 준비되면 시작하겠습니다.`,{kind:'구단주',imp:false,acts:[{l:'창단 드래프트 시작',a:'fdBegin'}]});
   addLog(`${tname(G.user)} 창단 단장으로 부임했습니다.`); }
+
+/* 드래프트 언론 보도: 6월 15일 '최대어 TOP 10', 8월 25일 '1라운드 모의 지명'. 언론 순위는 눈에 보이는 성적·구속·체격으로 매긴 것이라 잠재력과 다를 수 있다 */
+function draftPressLine(p){ const h=p.am; if(!h)return ''; if(p.isP){ const r=pRate(h); return `ERA ${r.era.toFixed(2)} · 탈삼진 ${h.so}${p.amVelo?` · 최고 ${p.amVelo}km`:''}`; } const r=bRate(h); return `OPS ${fmt3(r.ops)} · 홈런 ${h.hr}${h.sb>=10?` · 도루 ${h.sb}`:''}`; }
+function draftPressNews(day){ if(G.unemp||!G.draftClass||!G.draftClass.length||(G.draft&&!G.draft.done&&G.draft.y===G.year))return;
+  const cls=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.press).sort((a,b)=>a.press-b.press);
+  if(day===KD(6,15)&&cls.length){ const L=cls.slice(0,10).map((p,i)=>`${i+1}. ${p.name}(${p.school||p.region}, ${posLabel(p)}) ${draftPressLine(p)}`);
+    news('드래프트',`${G.year} 신인 드래프트 최대어 TOP 10`,`언론이 꼽은 올해 드래프트 상위 10명입니다. 고교·대학 기록과 구속·체격 같은 눈에 보이는 것으로 매긴 순위라, 프로에서 얼마나 클지는 구단 스카우트의 판단이 다를 수 있습니다.\n\n${L.join('\n')}`,0); }
+  if(day===KD(8,25)&&cls.length){ const O=draftPickOrder(); const pool=[...cls]; const L=[]; for(const pk of O){ const p=pool.shift(); if(!p)break; L.push(`${pk.no}순위 ${tshort(pk.tid)}: ${p.name}(${p.school||p.region}, ${posLabel(p)})`); }
+    const mine=O.find(x=>x.tid===G.user);
+    news('드래프트',`${G.year} 신인 드래프트 1라운드 모의 지명`,`지난 시즌 순위 역순으로 정해진 1라운드 순서에, 언론 순위대로 뽑는다고 가정한 예상입니다. 실제로는 구단마다 스카우트 평가와 필요한 자리가 달라 순서가 바뀝니다.\n\n${L.join('\n')}${mine?`\n\n${tname(G.user)}은(는) 1라운드 ${mine.no}순위입니다.`:''}`,0); } }
