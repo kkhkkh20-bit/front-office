@@ -21,7 +21,7 @@ cat src/engine/*.js > dist/engine.js   # 노드 시뮬레이션 검사용 엔진
   cat dist/engine.js
   echo '</script>'
   echo '<script>'
-  cat src/gfx/kart.js src/gfx/campus.js
+  cat src/gfx/kart.js src/gfx/campus.js src/gfx/iso.js
   cat src/ui/*.js
   echo '</script>'
 } > index.html
