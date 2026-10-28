@@ -2,7 +2,7 @@
 function tradeInsight(tid,give,get){
   if(!give.length&&!get.length)return '';
   const c=tradeCompare(tid,give,get); const keys=FIELDK.concat(['SP','RP']); const lab=k=>k==='SP'?'선발':k==='RP'?'불펜':POSS[k];
-  const cell=(b,a)=>{ if(b==null&&a==null)return '<td class="muted">-</td>'; const d=(a??0)-(b??0); return `<td class="${d>=3?'up':d<=-3?'dn':''}">${a??'-'}${d?`<i>${d>0?'+':''}${d}</i>`:''}</td>`; };
+  const cell=(b,a)=>{ if(b==null&&a==null)return '<td class="muted">-</td>'; const A=a==null?null:dv(a), Bv=b==null?null:dv(b); const d=(A??0)-(Bv??0); return `<td class="${d>=3?'up':d<=-3?'dn':''}">${A??'-'}${d?`<i>${d>0?'+':''}${d}</i>`:''}</td>`; };
   const tbl=`<div class="tw"><table class="tcmp"><thead><tr><th></th>${keys.map(k=>`<th>${lab(k)}</th>`).join('')}</tr></thead><tbody>
     <tr><td>${badge(G.user,16)} 우리</td>${keys.map(k=>cell(c.my[0][k],c.my[1][k])).join('')}</tr>
     <tr><td>${badge(tid,16)} 상대</td>${keys.map(k=>cell(c.th[0][k],c.th[1][k])).join('')}</tr></tbody></table></div>`;
@@ -86,7 +86,7 @@ function raceCard(){
 function powerMap(){
   const S=allStrength(); const keys=FIELDK.concat(['SP','RP']); const lab=k=>k==='SP'?'선발':k==='RP'?'불펜':POSS[k];
   const {order,live}=standOrder(); const odds=playoffOdds(); const om=new Map((odds||[]).map(o=>[o.tid,o]));
-  const cell=v=>v==null?'<td class="hm q">?</td>':`<td class="hm" style="--c:${rcol(v)}">${v}</td>`;
+  const cell=v=>v==null?'<td class="hm q">?</td>':`<td class="hm" style="--c:${rcol(v)}">${dv(v)}</td>`;
   const sell=t=>{ const o=om.get(t.id); if(!live||!o)return t.mode==='contend'?'우승 도전':'리빌딩'; return o.ps>=.6?'영입 쪽(우승 도전)':o.ps<=.1?'판매 쪽(정리)':'관망'; };
   return `<section class="card"><div class="row between"><h2 class="sec">구단별 전력 지도</h2><span class="small muted">포지션별 주전 평가 · 구단 이름을 누르면 선수단</span></div>
     <div class="tw"><table class="pmap"><thead><tr><th class="stk">구단</th>${live?'<th>순위</th><th>가을야구</th>':''}${keys.map(k=>`<th>${lab(k)}</th>`).join('')}<th>트레이드 성향</th><th>담당 스카우트</th></tr></thead><tbody>

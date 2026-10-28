@@ -23,7 +23,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
   const C=[0,1].map(col);
   const cls=o=>o==null?'gap':o<45?'weak':o<52?'mid':o>=60?'top':'ok';
   /* 내년 예상은 젊은 선수일수록 범위로 보여 준다(코치진 추정) */
-  const rng=(p,k)=>{ const v=projPlan(p,k); if(k===0||p.age+k>27)return rchip(Math.round(v)); const w=clamp((28-p.age-k)*.8,1.5,5); const m=v+hn('plr'+Y,p.id)*w*.4; return `<span class="pl-r" style="--c:${rcol(Math.round(m))}">${Math.round(m-w)}~${Math.round(m+w)}</span>`; };
+  const rng=(p,k)=>{ const v=projPlan(p,k); if(k===0||p.age+k>27)return rchip(Math.round(v)); const w=clamp((28-p.age-k)*.8,1.5,5); const m=v+hn('plr'+Y,p.id)*w*.4; return `<span class="pl-r" style="--c:${rcol(Math.round(m))}">${dv(m-w)}~${dv(m+w)}</span>`; };
   const nm=(c,p,k)=>{ const lv=c.leave(p); return `<span class="pl-pw"><button class="pl-p" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b>${rng(p,k||0)}${lv?`<em class="pl-f">${lv}</em>`:''}${p.joinY>Y?'<em class="pl-n">신인</em>':''}</button>${k?`<button class="pl-x" data-a="plEx" data-v="${p.id}" title="내년 계획에서 빼기" aria-label="${esc(p.name)} 내년 계획에서 빼기">×</button>`:''}</span>`; };
   const cell=(c,k,ci)=>{ if(k==='SP'||k==='RP'){ const L=k==='SP'?c.sp:c.rp; if(!L.length)return `<td class="gap"><span class="pl-g">빈자리</span></td>`; const a=L.reduce((t,p)=>t+c.v(p),0)/L.length; return `<td class="${cls(a)}">${nm(c,L[0],ci)}<i class="pl-s">${L.length}명 평균 ${Math.round(a)}${L.length<(k==='SP'?5:6)?' · 부족':''}</i></td>`; }
     const p=c.ln[k], b=c.bk[k]; if(!p)return `<td class="gap"><span class="pl-g">빈자리</span></td>`; return `<td class="${cls(c.v(p))}">${nm(c,p,ci)}${b?`<i class="pl-s">백업 ${esc(b.name)} ${Math.round(c.v(b))}</i>`:''}</td>`; };
@@ -88,7 +88,7 @@ function teamGrowCard(){ const T=(G.tgrow||[]).slice(-24); if(T.length<2)return 
   const a=T[0], b=T[T.length-1];
   return csec('팀 성장 추이',`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="팀 전력과 유망주 잠재 추이">${line(r1,'var(--tc,#e0564f)')}${line(r2,'var(--good)')}</svg>
     <div class="row between small"><span>${a.y}.${a.m}</span><span>${b.y}.${b.m}</span></div>
-    <p class="small"><b style="color:var(--tc,#e0564f)">1군 전력</b> ${a.r1.toFixed(1)} → <b>${b.r1.toFixed(1)}</b> · <b style="color:var(--good)">유망주 상위 10명 잠재</b> ${a.pot.toFixed(1)} → <b>${b.pot.toFixed(1)}</b></p>`); }
+    <p class="small"><b style="color:var(--tc,#e0564f)">1군 전력</b> ${dvRaw(a.r1).toFixed(1)} → <b>${dvRaw(b.r1).toFixed(1)}</b> · <b style="color:var(--good)">유망주 상위 10명 잠재</b> ${dvRaw(a.pot).toFixed(1)} → <b>${dvRaw(b.pot).toFixed(1)}</b></p>`); }
 function lineupCard(tid){
   const d=depth(tid); const order=orderList(d.start); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k; const m=G.mgr[tid];
   const row=(p,i)=>{ const pos=posOf[p.id]; const off=pos!=='DH'&&pos!==p.pos;

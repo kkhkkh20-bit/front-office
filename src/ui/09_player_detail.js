@@ -25,7 +25,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
 function radarSVG(ax,showFut){ const n=ax.length, cx=110, cy=104, R=78; const pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n, r=R*clamp((v-20)/60,0,1); return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; };
   const ring=v=>ax.map((_,i)=>pt(i,v).map(x=>x.toFixed(1)).join(',')).join(' ');
   const poly=k=>ax.map((a,i)=>pt(i,a[k]).map(x=>x.toFixed(1)).join(',')).join(' ');
-  const lab=ax.map((a,i)=>{ const [x,y]=pt(i,92); const anc=Math.abs(x-cx)<8?'middle':x>cx?'start':'end'; return `<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="${anc}" class="rd-l">${a[0]} <tspan fill="${rcol(Math.round(a[1]))}" font-weight="800">${Math.round(a[1])}</tspan></text>`; }).join('');
+  const lab=ax.map((a,i)=>{ const [x,y]=pt(i,92); const anc=Math.abs(x-cx)<8?'middle':x>cx?'start':'end'; return `<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="${anc}" class="rd-l">${a[0]} <tspan fill="${rcol(Math.round(a[1]))}" font-weight="800">${dv(a[1])}</tspan></text>`; }).join('');
   return `<svg class="radar" viewBox="-30 0 280 208" role="img" aria-label="능력치 레이더">
     ${[35,50,65,80].map(v=>`<polygon points="${ring(v)}" fill="none" stroke="${v===50?'#55606e':'#2a333e'}" stroke-dasharray="${v===50?'3 3':''}"/>`).join('')}
     ${ax.map((_,i)=>{ const [x,y]=pt(i,80); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#2a333e"/>`; }).join('')}
