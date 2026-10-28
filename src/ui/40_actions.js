@@ -65,7 +65,8 @@ const A={
   stadPrice(v){ stadOf(G.user).price=+v; save(); render(); },
   stadBuild(v){ UI.stadMsg=stadStart(v); save(); render(); },
   openMail(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; if(!mailFilter(UI.mf||'all').some(x=>x.id===v))UI.mf='all'; UI.mailFocus=v; UI.tab='inbox'; closeSheets(); save(); render(); },
-  mailJump(v){ if(!v)return; if(wide()&&UI.tab==='inbox'){ UI.ibSel=v; const m=G.mail.find(x=>x.id===v); if(m)m.read=true; save(); render(); window.scrollTo(0,0); return; } const el=document.getElementById('m-'+v); if(!el)return; el.scrollIntoView({block:'start',behavior:'smooth'}); ibMark(v); },
+  mailJump(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; UI.ibSel=v; if(!wide()){ if(!UI.ibOpen)UI.ibY=window.scrollY; UI.ibOpen=v; } UI.tab='inbox'; save(); render(); if(!wide())window.scrollTo(0,0); },
+  ibBack(){ UI.ibOpen=null; render(); },
   inbox(){ UI.tab='inbox'; closeSheets(); render(); window.scrollTo(0,0); },
   itab(v){ const [k,t]=v.split(':'); UI.it=UI.it||{}; UI.it[k]=t; render(); },
   pgGo(v){ const i=v.lastIndexOf(':'); const k=v.slice(0,i), n=+v.slice(i+1); UI.pg=UI.pg||{}; UI.pg[k]=Math.max(0,n); render(); const el=document.querySelector(`[data-pg="${k}"]`); if(el)el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); },
@@ -76,7 +77,7 @@ const A={
   mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(a&&A[a.a])A[a.a](a.v); else render(); },
   evPick(v){ sfx('confirm',.6); const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); evPick(id,+i); save(); if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ A.go('transfer:foreign'); return; } render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
-  mf(v){ UI.mf=v; render(); window.scrollTo(0,0); },
+  mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; render(); window.scrollTo(0,0); const L=document.querySelector('.ibx-list'); if(L)L.scrollTop=0; },
   goWork(v){ const g=GW[v]||['home']; A.go(g.join(':')); },
   go(v){ v=String(v); UI.it=UI.it||{}; if(v==='staff:mil'||v==='roster:mil'){ UI.it.roster='mil'; UI.rosterTeam=null; return A.tab('roster'); } if(v==='staff:camp'||v==='staff:dev')v='train:'+v.split(':')[1]; else if(v==='staff:lead')v='train:lead'; else if(v==='staff:fac'||v==='train:fac'){ UI.it.inv='train'; v='club:inv'; } else if(v==='club:stad'){ UI.it.inv='home'; v='club:inv'; } else if(v==='club:bus'){ UI.it.inv='bus'; v='club:inv'; } if(v==='scout'||v==='scout:draft')v='transfer:draft'; else if(v==='scout:scouts')v='staff:scouts'; else if(v==='scout:intl'){ UI.it=UI.it||{}; UI.it.fview='net'; UI.it.fviewa='net'; v='transfer:foreign'; }
     { const [t0,s0]=String(v).split(':'); const par=ALIAS[t0]&&ALIAS[t0][s0]; UI.it=UI.it||{}; if(par)UI.it['mg_'+t0+'_'+par]=s0; }

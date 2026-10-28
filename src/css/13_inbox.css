@@ -1,0 +1,73 @@
+/* ===== 소식함 (FM 수신함 구조) ===== */
+/* 상단 바: 분류 탭 + 안 읽음 */
+.ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
+.ibx-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.ibx-tabs::-webkit-scrollbar{display:none}
+.ibx-tabs button{flex:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font:500 14px var(--f-ui);padding:10px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:-1px}
+.ibx-tabs button:hover{color:var(--ink)}
+.ibx-tabs button.on{color:var(--ink);border-bottom-color:var(--team-hi,#4fa3ff);font-weight:600}
+.ibx-tabs button i{font-style:normal;font-size:11px;font-weight:600;min-width:18px;padding:0 5px;line-height:17px;border-radius:9px;background:#ffffff14;color:var(--ink);text-align:center}
+.ibx-tabs button.hot i{background:var(--warn);color:#1a1405}
+.ibx-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);padding:6px 0}
+.ibx-meta b{color:var(--ink)}
+.ibx-meta .lnk{font-size:12px}
+.ibx-key{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:3px;padding:1px 6px;cursor:help}
+
+/* 2단: 목록 + 본문 */
+.ibx{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:14px;align-items:start}
+.ibx-list{background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow-y:auto;position:sticky;top:var(--ibtop,120px);max-height:calc(100vh - var(--ibtop,120px) - 16px);overscroll-behavior:contain}
+.ibx-list.m{position:static;max-height:none;overflow:visible}
+.ibx-day{position:sticky;top:0;z-index:1;padding:6px 12px;font:600 11px var(--f-ui);letter-spacing:.02em;color:var(--dim);background:var(--head,#1f2a35);border-bottom:1px solid var(--line)}
+.ibr{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:9px 12px 9px 10px;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #ffffff08;color:var(--muted);text-align:left;cursor:pointer;font:inherit}
+.ibr .av{width:32px;height:32px;font-size:12px}
+.ibr:hover{background:#ffffff06}
+.ibr.cur{background:var(--panel2);border-left-color:var(--team-hi,#4fa3ff)}
+.ibr-m{display:grid;gap:2px;min-width:0}
+.ibr-top{display:flex;align-items:center;gap:6px;min-width:0}
+.ibr-from{font-size:12px;font-weight:500;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ibr-d{margin-left:auto;font-size:11px;color:var(--dim);flex:none}
+.ibr-s{font-size:13.5px;line-height:1.35;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ibr-tag{flex:none;font-size:10px;font-weight:600;color:var(--warn);border:1px solid #e3b44c55;border-radius:2px;padding:0 4px;line-height:15px}
+/* 안 읽음: 굵은 글씨 + 왼쪽 점 하나로만 표시 */
+.ibr.unread .ibr-s{color:var(--ink);font-weight:600}
+.ibr.unread .ibr-from{color:var(--ink)}
+.ibr.unread .ibr-from::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acc,#3d8bfd);margin-right:6px;vertical-align:1px}
+.ibr.need:not(.cur){border-left-color:var(--warn)}
+
+/* 본문 */
+.ibx-read{min-width:0}
+.ibm{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 20px 20px;display:grid;gap:14px;min-width:0}
+.ibm.unread,.ibm.rd{border-left:1px solid var(--line)}
+.ibm-h{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:start;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.ibm-h>.av{width:44px;height:44px;font-size:15px}
+.ibm-t{display:grid;gap:4px;min-width:0}
+.ibm-from{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.ibm-from b{color:var(--ink);font-weight:600}
+.ibm-s{margin:0;font:600 18px/1.4 var(--f-ui);color:var(--ink);overflow-wrap:anywhere}
+.ibm-d{font-size:12px;color:var(--dim)}
+.ibm-nav{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);white-space:nowrap}
+.ibm-nav .btn{min-width:32px;padding:4px 8px}
+.ibm .mailbody{display:block;max-width:68ch;font-size:14.5px;line-height:1.75;color:#d6dee5}
+.ibm .mailbody p{margin:0 0 .7em}.ibm .mailbody p:last-child{margin:0}
+.ibm-acts{display:flex;gap:8px;flex-wrap:wrap}
+.ibm-acts .btn{width:auto;min-width:120px}
+.ibm>section.card{margin:0}
+.ibx-empty{text-align:center;padding:40px 16px}
+
+/* 모바일: 목록 화면과 본문 화면을 나눈다 */
+.ibx-mback{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}
+@media (max-width:979px){
+  .ibx-bar{margin:0 -4px 10px}
+  .ibx-tabs button{padding:10px 10px 9px;font-size:13.5px}
+  .ibx-meta{width:100%;justify-content:space-between;padding:4px 4px 8px}
+  .ibr{padding:11px 12px 11px 10px}
+  .ibm{padding:14px 14px 16px}
+  .ibm-h{grid-template-columns:36px minmax(0,1fr)}
+  .ibm-h>.av{width:36px;height:36px}
+  .ibm-nav{grid-column:1/-1;justify-content:flex-end;margin-top:-4px}
+  .ibm-s{font-size:16.5px}
+  .ibm-acts .btn{flex:1 1 140px}
+}
+/* 트레이드 제안 의견 버튼: 한 줄로 */
+.ibm .oadv-b{display:flex;flex-wrap:wrap;gap:6px}.ibm .oadv-b>.btn{width:auto;flex:0 0 auto}.ibm .oadv-b>.oadv-r{flex:1 1 100%}
+.ibm .oadv>.btn{width:auto;justify-self:start}

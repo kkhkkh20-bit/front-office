@@ -96,8 +96,6 @@ function powerMap(){
     <p class="small muted">색이 진할수록 강합니다. 담당 스카우트가 있는 지역 구단은 선수 잠재력까지 보입니다. 트레이드 성향은 가을야구 확률로 짐작한 것입니다.</p></section>`; }
 
 /* ---------- 소식함 서랍: 옆에서 열고 바로 다음 메일 ---------- */
-function mailFilter(f){ const isTask=m=>m.imp&&!(m.kind==='트레이드'&&/원한다/.test(m.subj)&&!(G.offers||[]).some(o=>o.id===m.oid));
-  return G.mail.filter(m=>f==='all'||(f==='task'&&isTask(m))||(f==='unread'&&!m.read)||(f==='player'&&typeof m.face==='number')); }
 /* ---------- 도움말 문장 접기 ---------- */
 function toast(t){ let el=document.getElementById('toast'); if(!el){ el=document.createElement('div'); el.id='toast'; el.setAttribute('role','status'); document.body.appendChild(el); } el.textContent=t; try{ josaFix(el); }catch(e){} el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),2400); }
 /* 설명 문단은 기본으로 보인다. 익숙해지면 ? 버튼으로 숨긴다 */
