@@ -38,28 +38,31 @@ function aiBlockWeekly(){ if(!tradeOpen())return;
 function negOf(id){ const F=G.fa; F.neg=F.neg||{}; if(!F.neg[id]){ const ag=G.players[id]?agentOf(G.players[id]):null; F.neg[id]={rounds:0,mood:clamp(Math.round(50+(agRel(ag)-50)*.6),25,85),log:[],counter:null,closed:false,warned:false}; } return F.neg[id]; }
 const offScore=o=>o.annual*(1+.06*(o.years-1));
 function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; const ag=agentOf(p); const n=negOf(id);
+  const T=o.terms?{...o.terms}:null; const D=T?termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}):null; if(T)o={annual:Math.round(termsVal(T,D)),years:T.years,terms:T};
   if(faOutBlocked(G.user,p))return {msg:`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(KBO 규약 제173조). 이미 ${faOutN(G.user)}명을 데려왔습니다.`};
   if(n.closed)return {msg:`${ag.name} 에이전트가 더 이상 우리와 협상하지 않습니다.`};
   const RM=agRoundsMax(p); if(n.rounds>=RM)return {msg:`협상 횟수(${RM}회)를 다 썼습니다. 지금 조건이 마지막입니다.`};
   /* 대형 에이전트의 역제안을 무시하고 더 낮게 부르면 기분이 상한다 */
   if(n.counter&&ag.size==='big'&&offScore(o)<offScore(n.counter)*.97){ n.mood=clamp(n.mood-6,0,100); agRelAdd(ag,-2,`${p.name} 역제안 무시`); }
-  n.rounds++; n.log.push({d:G.day,w:'구단',a:o.annual,y:o.years});
+  n.rounds++; n.log.push({d:G.day,w:'구단',a:o.annual,y:o.years,...(T?{tm:T}:{})});
   const ai=Object.values(F.ai[id]||{}); const bestAI=ai.length?Math.max(...ai.map(offScore)):0;
   const want=offScore(p.ask)*agWantMul(ag)*(1+.03*ai.length)*(p.faFrom===G.user?.95:1); const mk=agMk(p); const shop=mk&&!mk.done;
   /* 요구 기준과 다른 구단 최고 제안(원소속 정·친분까지 반영한 점수)을 모두 넘어야 한다 */
   const rv=faBestOf(p,Object.entries(F.ai[id]||{}).map(([tid,x])=>({tid:+tid,annual:x.annual,years:x.years}))); const r=Math.min(offScore(o)/(want*.97),rv?faScore(p,{tid:G.user,...o})/(faScore(p,rv)*1.01):9); void bestAI; let t;
-  F.offers[id]={annual:o.annual,years:o.years};
+  F.offers[id]={annual:o.annual,years:o.years,...(T?{terms:T}:{})};
   if(r>=1){ n.hot=true; n.counter=null; n.mood=clamp(n.mood+8,0,100); t=shop?`좋은 조건입니다. 다만 선수가 시장 반응을 끝까지 보고 싶어 합니다(시장 확인 ${mk.round}/${mk.need}라운드). 다른 구단 제안을 받아 보고 ${mk.next?dsh(mk.next):'며칠 뒤'}에 다시 말씀드리겠습니다.`:`좋은 조건입니다. 선수에게 바로 전하겠습니다. ${ai.length?'다른 구단 제안과 비교해 곧 답을 드리겠습니다.':'큰 변수가 없으면 사인할 것 같습니다.'}`;
     if(r<1.15)agRelAdd(ag,1,`${p.name} 성의 있는 제안`); }
   else if(r>=.9){ const k=1/r*rnd(.99,1.03); n.counter={annual:Math.min(round5(o.annual*k),round5(p.ask.annual*1.15)),years:Math.max(o.years,ag.style==='hard'||ag.size==='big'?p.ask.years:o.years)}; n.mood=clamp(n.mood-2,0,100);
-    t=`조금만 더 맞춰 주시면 됩니다. ${n.counter.years}년 연 ${money(n.counter.annual)}이면 선수를 설득해 보겠습니다.${ai.length?` 다른 구단에서도 ${ai.length}곳이 제안을 넣었습니다.`:''}`; }
-  else if(r>=.75){ n.counter=null; n.mood=clamp(n.mood-(ag.style==='hard'?13:10),0,100); agRelAdd(ag,-1,`${p.name} 낮은 제안`); t=`솔직히 차이가 큽니다. 선수 기대치는 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준입니다.`; }
+    if(T)n.counter.terms=termsFit(T,D,n.counter.annual,n.counter.years);
+    t=`조금만 더 맞춰 주시면 됩니다. ${T?termsTxt(n.counter.terms,true):`${n.counter.years}년 연 ${money(n.counter.annual)}`}이면 선수를 설득해 보겠습니다.${ai.length?` 다른 구단에서도 ${ai.length}곳이 제안을 넣었습니다.`:''}`; }
+  else if(r>=.75){ n.counter=null; n.mood=clamp(n.mood-(ag.style==='hard'?13:10),0,100); agRelAdd(ag,-1,`${p.name} 낮은 제안`); t=`솔직히 차이가 큽니다. 선수 기대치는 ${T?termsTxt(D,true)+(D.role===0?` · ${roleSet(p)[0]}`:'')+(D.ntc?' · 트레이드 거부권':''):`${p.ask.years}년 연 ${money(p.ask.annual)}`} 수준입니다.`; }
   else { n.counter=null; n.mood=clamp(n.mood-(ag.style==='hard'?30:25),0,100); agRelAdd(ag,-4,`${p.name} 무리한 제안`); t=`선수가 실망했습니다. 이 조건으로는 이야기하기 어렵습니다.${ag.size==='big'?' 저희 회사 고객 전체를 이런 식으로 대하신다면 곤란합니다.':''}`; }
+  if(T&&r<1){ if(T.role!=null&&D.role!=null&&T.role>D.role)t+=` 무엇보다 선수는 ${roleSet(p)[D.role]}을(를) 원합니다.`; if(D.ntc&&!T.ntc)t+=' 트레이드 거부권 조항도 빠져 있습니다.'; }
   if(n.mood<25){ n.closed=true; delete F.offers[id]; t+=' 우리 구단과의 협상을 접겠다고 합니다.'; p.mor=clamp((p.mor??60)-10,0,100); agRelAdd(ag,-6,`${p.name} 협상 결렬`); }
   n.log.push({d:G.day,w:'에이전트',t}); return {msg:`${ag.name}(${ag.firm}): ${t}`}; }
-function faAcceptCounter(id){ const n=negOf(id); if(!n.counter)return '역제안이 없습니다.'; const c=n.counter; const p=G.players[id]; G.fa.offers[id]={annual:c.annual,years:c.years}; n.log.push({d:G.day,w:'구단',a:c.annual,y:c.years,acc:true}); n.counter=null; n.deal=true; n.hot=true; agRelAdd(agentOf(p),2,`${p.name} 역제안 수용`);
+function faAcceptCounter(id){ const n=negOf(id); if(!n.counter)return '역제안이 없습니다.'; const c=n.counter; const p=G.players[id]; G.fa.offers[id]={annual:c.annual,years:c.years,...(c.terms?{terms:c.terms}:{})}; n.log.push({d:G.day,w:'구단',a:c.annual,y:c.years,acc:true,...(c.terms?{tm:c.terms}:{})}); n.counter=null; n.deal=true; n.hot=true; agRelAdd(agentOf(p),2,`${p.name} 역제안 수용`);
   /* 에이전트가 낸 조건을 받아들였고 지금 우리가 가장 앞서면 그 자리에서 사인한다(약속을 지킨다) */
-  const ai=Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})); const rival=faBestOf(p,ai); const mine={tid:G.user,annual:c.annual,years:c.years};
+  const ai=Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})); const rival=faBestOf(p,ai); const mine={tid:G.user,annual:c.annual,years:c.years,...(c.terms?{terms:c.terms}:{})};
   if(!rival||faScore(p,mine)>=faScore(p,rival)){ n.log.push({d:G.day,w:'에이전트',t:'감사합니다. 선수가 바로 사인하겠다고 합니다.'}); if(G.fa.mk&&G.fa.mk[id])G.fa.mk[id].done=true; faSign(p,[mine]); return `역제안을 받아들였습니다. ${p.name}이(가) 바로 계약서에 사인했습니다.`; }
   n.log.push({d:G.day,w:'에이전트',t:`감사합니다. 다만 ${rival.tid===p.faFrom?'원소속 구단':'다른 구단'} 조건과 비교해 최종 결정하겠습니다.`}); return `역제안을 받아들였습니다. 다만 ${p.name} 측은 다른 구단 조건과 비교해 최종 결정하겠다고 합니다.`; }
 function faAgentPing(id){ const n=negOf(id); const p=G.players[id]; if(n.warned||!G.fa.offers[id]||n.closed||agShopN(p))return; /* 대어는 시장 보고 라운드로 알린다 */ const ai=Object.values(G.fa.ai[id]||{}); if(!ai.length)return; const b=ai.sort((a,c)=>offScore(c)-offScore(a))[0];

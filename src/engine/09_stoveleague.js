@@ -101,15 +101,17 @@ function faSign(p,offers){
   try{ agDealAdd(p,best.tid); const ag=agentOf(p); if(best.tid===G.user)agRelAdd(ag,5,`${p.name} 계약`); else if(G.fa.offers[p.id])agRelAdd(ag,1,`${p.name} 끝까지 경쟁`); }catch(e){}
   if(best.tid===G.user&&G.faFund&&!G.faFund.done)G.faFund.used=true;
   const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
-  const rec={id:p.id,name:p.name,from,to:best.tid,annual:best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null};
+  const BT=best.tid===G.user&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); }
+  const rec={id:p.id,name:p.name,from,to:best.tid,annual:BT?BT.annual+Math.round((BT.bonus||0)/best.years):best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null,...(BT?{terms:BT}:{})};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`,'move');
   if(best.tid!==from){ if(G.fa){ G.fa.outN=G.fa.outN||{}; G.fa.outN[best.tid]=(G.fa.outN[best.tid]||0)+1; }
     try{ compStart(p,from,best.tid,rec); }catch(e){}
   }
-  if(best.tid===G.user&&!G.unemp)chron('fa',from===G.user?`FA ${p.name} 잔류 (${best.years}년 연 ${money(best.annual)})`:`FA ${p.name} 영입 (${best.years}년 연 ${money(best.annual)})`,p.id); else if(from===G.user&&best.tid!==G.user&&!G.unemp)chron('fa',`FA ${p.name}, ${tshort(best.tid)}로 이적`,p.id);
+  if(best.tid===G.user&&!G.unemp)chron('fa',from===G.user?`FA ${p.name} 잔류 (${best.years}년 연 ${money(rec.annual)})`:`FA ${p.name} 영입 (${best.years}년 연 ${money(rec.annual)})`,p.id); else if(from===G.user&&best.tid!==G.user&&!G.unemp)chron('fa',`FA ${p.name}, ${tshort(best.tid)}로 이적`,p.id);
   const userOffered=!!G.fa.offers[p.id];
   delete G.fa.offers[p.id]; G.fa.pool=G.fa.pool.filter(x=>x!==p.id); G.fa.results.unshift(rec); prFA(rec); try{ if(rec.to===G.user&&from!==G.user&&rec.annual>=700)ivRequest('fa_sign',{pid:p.id}); else if(from===G.user&&rec.to!==G.user&&rec.annual>=500)ivRequest('fa_lost',{pid:p.id}); }catch(e){} mvLog('FA',p,from,rec.to,`${from===rec.to?'잔류 ':''}${rec.years}년 연 ${money(rec.annual)}`,rec.annual*rec.years);
-  const t=rec.to===G.user?(from===G.user?`${p.name}와(과) ${rec.years}년 연 ${money(rec.annual)}에 잔류 계약했습니다.`:`FA ${p.name}을(를) ${rec.years}년 연 ${money(rec.annual)}에 영입했습니다.${rec.compPlayer?` 보상선수로 ${rec.compPlayer}이(가) 떠났습니다.`:''}${rec.compCash?` 보상금 ${money(rec.compCash)}.`:''}`)
+  const tx=rec.terms?termsTxt(rec.terms,false):`${rec.years}년 연 ${money(rec.annual)}`;
+  const t=rec.to===G.user?(from===G.user?`${p.name}와(과) 잔류 계약했습니다. ${tx}.`:`FA ${p.name}을(를) 영입했습니다. ${tx}.${rec.compPlayer?` 보상선수로 ${rec.compPlayer}이(가) 떠났습니다.`:''}${rec.compCash?` 보상금 ${money(rec.compCash)}.`:''}`)
     :from===G.user?`${p.name}이(가) ${tname(rec.to)}와(과) 계약했습니다(${rec.years}년 연 ${money(rec.annual)}).${rec.compPlayer?` 보상선수로 ${rec.compPlayer}을(를) 받았습니다.`:''}`
     :`${tname(rec.to)}이(가) FA ${p.name}(${p.faGrade}등급)을 ${rec.years}년 연 ${money(rec.annual)}에 잡았습니다.${userOffered?' 우리 제안은 밀렸습니다.':''}`;
   if(rec.to===G.user)addLog(t);
@@ -242,6 +244,7 @@ function answerOffer(id,yes){
   G.offers=G.offers.filter(x=>x.id!==id);
   if(!yes){ addLog(`${tname(o.from)}의 트레이드 제안을 거절했습니다.`); return {ok:true,msg:'거절했습니다.'}; }
   if(!tradeOpen())return {ok:false,msg:'트레이드 기간이 아닙니다.'};
+  { const nt=ntcOf(o.get); if(nt)return {ok:false,msg:`${nt.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다.`}; }
   if([...o.give,...o.get].some(id=>!G.players[id]))return {ok:false,msg:'선수 상황이 바뀌어 성사되지 않았습니다.'};
   if(o.give.some(id=>G.players[id].team!==o.from)||o.get.some(id=>G.players[id].team!==G.user))return {ok:false,msg:'선수 상황이 바뀌어 성사되지 않았습니다.'};
   const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const grade=tradeGrade(o.from,o.get,o.give);

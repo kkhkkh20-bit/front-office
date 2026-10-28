@@ -29,7 +29,7 @@ function faRoom(p){ const ag=agentOf(p); const n=G.fa.neg&&G.fa.neg[p.id]; const
     ${G.fa.pitch&&G.fa.pitch[p.id]&&G.day<=G.fa.pitch[p.id].until?`<div class="row"><button class="btn primary" data-a="agPitchOk" data-v="${p.id}">우선 제안 수락 (${G.fa.pitch[p.id].years}년 연 ${money(G.fa.pitch[p.id].annual)})</button></div>`:''}
     ${(()=>{ if(UI.faMsg&&UI.faMsg.d==null)UI.faMsg.d=G.day; return UI.faMsg&&UI.faMsg.id===p.id&&UI.faMsg.d===G.day?`<div class="note">${esc(UI.faMsg.t)}</div>`:''; })()}
     <div class="row">${budgetTag(Math.round(((UI.offer&&UI.offer.id===p.id?UI.offer:(G.fa.offers[p.id]||p.ask)).annual)*b.rem))}<span class="small muted">예산 여유 ${money(b.roomGoal)}</span></div>
-    ${offerForm(p)}${negPanel(p)}</section>`; }
+    ${ngtDoor('fa',p)}${negPanel(p)}</section>`; }
 function faCelebrate(){ const F=G.fa; if(!F||!F.results)return; G.faCel=G.faCel||[]; const r=F.results.find(x=>x.to===G.user&&x.from!==G.user&&!G.faCel.includes(x.id+':'+x.day)); if(!r)return;
   G.faCel.push(r.id+':'+r.day); if(G.faCel.length>40)G.faCel.splice(0,10); UI.stamp={title:'FA 영입',msg:`${r.name} · ${r.years}년 연 ${money(r.annual)}${r.compPlayer?` · 보상선수 ${r.compPlayer} 이탈`:''}`}; sfx('cheer_big',.7); }
 function faCenter(){ return compView()+faCenter0(); }

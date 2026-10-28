@@ -16,7 +16,7 @@ function devForm(p){
   ${ovsOpen()&&p.age<=27?`<div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+' 신청됨':''}</div><div class="talk">${Object.entries(OVS).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('')}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
-function closeSheets(){ if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
+function closeSheets(){ UI.ngt=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
 const A={
   dlSpd(v){ UI.dspeed=v; render(); },
   dlStop(){ dliveStop(); },
@@ -42,6 +42,13 @@ const A={
   fdV(v){ UI.fdV=v; render(); }, /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
   meetOpen(v){ const [h,ask]=String(v).split('|'); const [k,id]=h.split(':'); meetOpen(k,id!=null?+id:null,{ask}); },
   meetDo(v){ meetDo(v); renderSheet(); },
+  ngtOpen(v){ const [k,id]=String(v).split(':'); UI._ngtY=0; ngtOpen(k,+id); },
+  ngtSet(v){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=s?s.scrollTop:0; ngtSet(v); renderSheet(); },
+  ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=s?s.scrollTop:0; const D=ngtDemand(N); N.T={...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years}; if(N.k==='ext')N.T.role=null; renderSheet(); },
+  ngtSubmit(){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=0; ngtSubmit(); save(); render(); renderSheet(); },
+  ngtCounter(){ UI._ngtY=0; ngtCounter(); save(); render(); renderSheet(); },
+  ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },
+  ngtClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.ngt=null; renderSheet(); render(); },
   meetClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.meet=null; renderSheet(); render(); },
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },

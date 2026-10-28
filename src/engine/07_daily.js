@@ -157,7 +157,7 @@ function finMonth(m){ if(G.unemp||G.gameOver||(G.fd&&!G.fd.done))return; const n
   mail('재무팀',`${m}월 재정 보고: 예산 여유 ${dr>=0?'+':''}${money(dr)}`,`지난달 대비 올해 예산 여유가 ${money(p.room)}에서 ${money(now.room)}(으)로 ${dr>=0?'늘었':'줄었'}습니다. 보유 현금은 ${money(p.cash)} → ${money(now.cash)}입니다.\n\n${ln.length?'바뀐 항목\n'+ln.join('\n'):'항목별 변화는 크지 않습니다.'}\n\n예산 여유는 올해 예상 수입과 구단주 지원 목표에서 올해 예상 지출을 뺀 값입니다. 선수 영입·코치 고용·시설 공사가 지출 예상을 늘리고, 성적과 관중이 수입 예상을 바꿉니다.`,{kind:'재정',acts:[{l:'재정 보기',a:'go',v:'club:fin'}]}); }
 function monthReport(m){
   const S=G.sea; const r=S.rec[G.user]; const prev=S.mark||{w:0,l:0,t:0};
-  try{ pactMonth(m); }catch(e){}
+  try{ pactMonth(m); }catch(e){} try{ rolePromCheck(m); }catch(e){}
   try{ dataReport(m); }catch(e){}
   const mw=r.w-prev.w, ml=r.l-prev.l; S.months.push({m:m+'월',w:mw,l:ml,t:(r.t||0)-(prev.t||0)}); S.mark={w:r.w,l:r.l,t:r.t};
   const best=domestic(G.user).concat(foreignOf(G.user)).map(p=>({p,h:seasonTotal(p,G.year,'1군')})).filter(x=>x.h).sort((a,b)=>warOf(b.h,b.p)-warOf(a.h,a.p))[0];
