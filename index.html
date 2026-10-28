@@ -6751,6 +6751,33 @@ function faAppeal(p,tid){ const C=faCtx(); const P=[]; const t=team(tid);
   const f=1+sum(P.map(x=>x[1])); return {f:clamp(f,.8,1.3),parts:P.filter(x=>Math.abs(x[1])>=.005)}; }
 /* 연고 출신 스타: 구단 연고 지역 출신 주전급(능력 64 이상)이 있으면 팬 인기가 더 오른다(최대 +0.03) */
 function localStarPop(tid){ const t=team(tid); if(!t.region)return 0; const n=playersOf(tid).filter(p=>!p.foreign&&p.region===t.region&&ovr(p)>=64).length; return Math.min(.03,n*.008); }
+/* ===== 테스트 도구: 가을야구 직전으로 이동 =====
+   남은 정규시즌을 실제 경기로 끝까지 치르고, 정규시즌이 끝난 직후(와일드카드 결정전 전)에 멈춘다.
+   그사이 결정은 기본값으로 자동 처리한다(트레이드 제안 거절, 이벤트 기본 선택, 인터뷰 첫 답변 등). */
+function devAutoStep(){ G.live=null; G.res=null;
+  if(G.fdWait){ G.fdWait=false; fdStart(); } if(G.fd&&!G.fd.done){ G.fd.open=true; fdAdvance(false); }
+  if(G.draft&&!G.draft.done)advanceDraft(false);
+  for(const o of [...(G.offers||[])])try{ answerOffer(o.id,false); }catch(e){}
+  for(const e of (G.evs||[]))if(!e.done)try{ evPick(e.id,e.def??0,true); }catch(err){}
+  for(const j of (G.jobs||[]))if(!j.done)try{ jobAnswer(j.tid,false); }catch(e){}
+  if(G.iv&&!G.iv.done){ let g=0; while(!G.iv.done&&g++<10)ivAnswer(0); }
+  const b=blocker()||'';
+  if(b.includes('보상'))(G.comp||[]).forEach(c=>{ try{ compAuto(c); }catch(e){} });
+  else if(b.includes('로스터'))trimCands(rosterN(G.user)-ROSTER_MAX).forEach(p=>releasePlayer(p.id));
+  else if(b.includes('연봉'))try{ salOfferAll(); }catch(e){}
+  else if(b.includes('감독')){ if(!G.mmarket||!G.mmarket.length)refreshMgrMarket(); hireMgr(G.mmarket[0].id,2); }
+  else if(b.includes('외국인')){ for(const id of [...(G.fmarket||[])]){ const p=G.players[id]; if(p&&!foreignCheck(G.user,p))signForeign(G.user,id); } }
+  return b; }
+function devToPostseason(){ const y=G.year; const stuck={}; let g=0, last='';
+  while(g++<600){ if(G.ps&&G.ps.seeds&&!G.ps.done&&G.sea&&G.sea.y===y)break; if(G.gameOver||G.unemp)return '경질 또는 야인 상태라 이동할 수 없습니다.'; if(G.ps&&G.ps.done&&G.sea.y===y)return '올해 가을야구는 이미 끝났습니다.';
+    const b=devAutoStep(); if(b&&blocker()){ stuck[b]=(stuck[b]||0)+1; if(stuck[b]>5)return `진행이 멈췄습니다: ${b}`; }
+    last=dstr(G.day); advance('day'); }
+  G.live=null; G.res=null; G.stops=[]; const st=G.ps&&G.ps.order; const rk=st?st.findIndex(x=>x.tid===G.user)+1:0;
+  return `정규시즌을 끝까지 치렀습니다(${dstr(G.day)}). 우리 구단 ${rk}위${G.ps&&G.ps.seeds.includes(G.user)?' · 가을야구 진출':' · 가을야구 탈락'}.`; }
+/* 테스트용: 우리 구단을 1번 시드로(한국시리즈 직행). 순위표는 그대로 두고 대진만 바꾼다 */
+function devSeedUser(){ const P=G.ps; if(!P||P.done||!P.seeds)return '가을야구 직전에만 쓸 수 있습니다.'; if(P.round!=='wc'||(P.cur&&P.cur.gi>0))return '이미 가을야구가 시작됐습니다.';
+  const s=P.seeds.filter(t=>t!==G.user); s.unshift(G.user); P.seeds=s.slice(0,5); P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],G.day+2); G.devSeed=G.year;
+  return '테스트: 우리 구단을 1번 시드(한국시리즈 직행)로 바꿨습니다.'; }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -9989,7 +10016,7 @@ function clubView(){
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
-    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
+    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
     ${UI.confirmNew?`<div class="note bad">지금 구단을 포기하고 새로 시작합니다. 저장된 진행이 지워집니다.</div><div class="row"><button class="btn danger" data-a="newgame">새로 시작</button><button class="btn" data-a="cancelNew">취소</button></div>`:`<button class="btn" data-a="askNew">새 게임</button>`}</section>`}; const h=mergedBody('club',s,H0);
   return subTabs('club')+h;
 }
@@ -10806,6 +10833,8 @@ const A={
   offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
   offerCounter(v){ const o=(G.offers||[]).find(x=>String(x.id)===String(v)); if(!o)return toast('끝난 제안입니다.'); UI.trade={tid:o.from,give:[...o.get],get:[...o.give],cash:0,msg:'',seg:'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
   champSeen(){ if(G.champNew)G.champNew.seen=true; save(); render(); },
+  devPS(){ toast('정규시즌을 끝까지 치르는 중입니다…'); setTimeout(()=>{ const r=devToPostseason(); UI.devMsg=r; save(); render(); toast(r); },60); },
+  devSeed(){ const r=devSeedUser(); UI.devMsg=r; save(); render(); toast(r); },
   rcolTg(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=rcolKeys(pit).slice(); const i=L.indexOf(v); if(i>=0){ if(L.length<=1)return; L.splice(i,1); } else L.push(v); rcolLoad()[k]=L; rcolSave(); render(); },
   rcolMv(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const [c,d]=v.split(':'); const L=rcolKeys(pit).slice(); const i=L.indexOf(c), j=i+(+d); if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; rcolLoad()[k]=L; rcolSave(); render(); },
   rsort(v){ const k=UI.seg==='pit'?'pit':'bat'; UI.rs=UI.rs||{}; if(!v){UI.rs[k]=null;} else { const c=UI.rs[k]; UI.rs[k]={k:v,dir:c&&c.k===v?-c.dir:-1}; } render(); },
@@ -11340,4 +11369,10 @@ function prestigeCard(){ const v=clubPrestige(G.user); const L=G.teams.map(t=>({
     <p class="small">${v}점 · 리그 ${i+1}위 (1위 ${esc(tshort(L[0].t))} ${L[0].v}점). 명성이 높을수록 FA·외국인 선수·스카우트와 분석원이 우리 구단을 더 원하고, 스폰서 가치도 오릅니다.</p>
     <div class="pres-parts">${P.map(([l,x])=>`<span class="pill ${x>0?'good':'bad'}">${esc(l)} ${x>0?'+':''}${Math.round(x)}</span>`).join('')}</div>
     <p class="small muted">우승은 2년 동안 크게, 그 뒤 10년 동안 조금씩 명성에 남습니다. 성적이 나쁘면 해마다 깎입니다.</p></section>`; }
+/* 테스트 도구 카드(구단·재정 → 설정) */
+function devCard(){ const P=G.ps; const ready=P&&P.seeds&&!P.done&&P.round==='wc'&&!(P.cur&&P.cur.gi>0);
+  return `<section class="card"><h2 class="sec">테스트 도구</h2>
+    <p class="small muted">남은 정규시즌을 실제 경기로 끝까지 치르고 가을야구 직전에 멈춥니다. 그사이 결정은 기본값으로 자동 처리됩니다(트레이드 제안 거절, 이벤트 기본 선택 등). 되돌릴 수 없으니 필요하면 먼저 저장 슬롯을 복사해 두세요.</p>
+    ${UI.devMsg?`<div class="note">${esc(UI.devMsg)}</div>`:''}
+    <div class="btns"><button class="btn" data-a="devPS" ${ready?'disabled':''}>가을야구 직전으로 이동</button><button class="btn" data-a="devSeed" ${ready&&G.ps.seeds[0]!==G.user?'':'disabled'} title="순위표는 그대로 두고 가을야구 대진만 바꿉니다">우리 구단 1번 시드로(테스트)</button></div></section>`; }
 </script>
