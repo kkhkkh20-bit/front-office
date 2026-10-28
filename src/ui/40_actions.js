@@ -4,7 +4,7 @@ function bondCard(p){
   return `<section class="card"><div class="row between"><span class="eyebrow">선수와의 관계</span><span class="pill ${moodClass(m)}">기분 ${moodLabel(m)}</span></div>
   <p class="small">${esc(moraleWhy(p))}</p>
   <p class="small muted">코치진이 본 성향: ${esc(persText(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
-  <details class="frule"${UI.talkMsg&&UI.talkMsg.id===p.id?' open':''}><summary class="small">개인 면담</summary><div class="talk">${Object.entries(TALK).map(([k,l])=>`<button class="btn small" data-a="talk" data-v="${p.id}:${k}">${l}</button>`).join('')}</div></details>
+  ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${p.talkWk===Math.floor(G.day/7)?'이번 주에는 이미 이야기를 나눴습니다':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
   </section>`;
 }
@@ -40,6 +40,9 @@ const A={
   fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
   fdV(v){ UI.fdV=v; render(); }, /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
+  meetOpen(v){ const [h,ask]=String(v).split('|'); const [k,id]=h.split(':'); meetOpen(k,id!=null?+id:null,{ask}); },
+  meetDo(v){ meetDo(v); renderSheet(); },
+  meetClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.meet=null; renderSheet(); render(); },
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },
   annPlayer(v){ (UI.annQ||[]).shift(); annRender(); A.player(+v); },
@@ -91,7 +94,7 @@ const A={
   setIntl(v){ const [r,l]=v.split(':'); G.intl[r]=+l; addLog(`${IREG[r].l} 스카우트망을 ${INET[+l].l} 단계로 조정했습니다.`); save(); render(); },
   signFc(v){ const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg2=err;render();return;} UI.fmsg2=''; signForeign(G.user,p.id); save(); render(); },
   tutSkip(){ tutSkip(); save(); render(); },
-  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1'); UI.confirmFire=false; save(); render(); },
+  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1'); UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ UI.confirmFire=true; render(); }, fireCancel(){ UI.confirmFire=false; render(); },
   fireMgr(){ fireMgr(); UI.confirmFire=false; save(); render(); },
   renewMgr(v){ renewMgr(v||2); save(); render(); },

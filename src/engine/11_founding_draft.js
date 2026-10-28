@@ -105,7 +105,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
     mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 75 이상이 주전 상위권입니다. 투수 보직은 감독이 정합니다.`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
   try{ if(G.tut&&!G.tut.done){ G.tut.step=0; sendTut(); } }catch(err){}
   chron('found',`창단 드래프트로 선수단 구성 · 1라운드 ${(()=>{ const x=F.picks.find(q=>q.tid===G.user&&q.rd===1); const p=x&&G.players[x.pid]; return p?p.name:'-'; })()}`);
-  stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 외국인 선수와 감독을 정하세요.`); }
+  stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 감독을 먼저 선임하고, 감독과 상의해 외국인 선수를 뽑으세요.`); }
 /* 창단 직후 기본 운영안: 의무·스카우트·2군 연수를 비서가 기본값으로 채워 둔다. 단장은 감독·외국인 선수와 전력 보강에 집중한다 */
 function foundDefaults(){ const done=[], acts=[];
   if(!G.medSet){ G.medSet=true; done.push(`의무: 부상 방지 ${G.med.prev}단계 · 병원 제휴 ${G.med.hosp==='none'?'없음':G.med.hosp}`); acts.push({l:'의무 운영',a:'goWork',v:'부상방지·병원'}); }
@@ -115,7 +115,8 @@ function foundDefaults(){ const done=[], acts=[];
   if(!(G.devProg||[]).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&p.pot-ovr(p)>=6).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a))).slice(0,2);
     for(const p of L){ const k=p.isP?(p.r.ctl<p.r.stf?'ctl':'stf'):(p.r.con<p.r.pow?'bat':'pow'); setDev(p.id,k); done.push(`2군 연수: ${p.name}(${posLabel(p)}, ${p.age}세) ${DEVP[k].l}`); }
     if(L.length)acts.push({l:'2군 연수',a:'goWork',v:'2군연수'}); }
-  if(done.length)mail(`비서 ${SEC}`,'기본 운영안을 채워 두었습니다',`창단 직후라 손이 덜 가도록 운영 기본안을 적용했습니다. 모두 언제든 바꿀 수 있습니다.\n\n${done.join('\n')}\n\n단장님은 감독 선임과 외국인 선수 구성, 약한 자리 보강부터 챙기시면 됩니다.`,{kind:'업무',face:'sec',acts:acts.slice(0,3)}); }
+  if(!G.mgr[G.user])acts.unshift({l:'감독 선임',a:'goWork',v:'감독'});
+  if(done.length)mail(`비서 ${SEC}`,'기본 운영안을 채워 두었습니다',`창단 직후라 손이 덜 가도록 운영 기본안을 적용했습니다. 모두 언제든 바꿀 수 있습니다.\n\n${done.join('\n')}\n\n단장님은 감독부터 선임하시고, 새 감독과 상의해 외국인 선수를 구성하시면 됩니다.`,{kind:'업무',face:'sec',acts:acts.slice(0,3)}); }
 /* 시즌 회고: 우리 선수 중심으로 영입 기대와 실제 기여, 트레이드 결과, 젊은 선수, 내년 공백을 한 장에 */
 function seasonReview(y){ const tid=G.user; const ps=playersOf(tid); const W=p=>{ const h=seasonTotal(p,y,'1군'); const w=h?warOf(h,p):0; return Math.abs(w)<.05?0:w; }; const L=[];
   const top=ps.map(p=>({p,w:W(p)})).sort((a,b)=>b.w-a.w).slice(0,3); if(top.length)L.push('[올해의 선수] '+top.map(x=>`${x.p.name}(${posLabel(x.p)}) WAR ${x.w.toFixed(1)}`).join(', '));

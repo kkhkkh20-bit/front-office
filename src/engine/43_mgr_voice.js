@@ -44,7 +44,7 @@ function mvSummary(m,S){ const v=mgrVoice(m);
   if(S.rank==null){ const a=`${SLOTK[S.strong]}(리그 ${S.strongRank}위)`, w=S.weak.map(x=>`${SLOTK[x.k]}(${x.rank}위)`).join('·');
     if(S.per==='pre')return {data:`개막 전 전력 순위로 보면 ${a}이(가) 강점이고 ${w}이(가) 약점입니다.`,fire:`우리 ${a} 보셨습니까? 약한 데는 ${w}뿐입니다.`,warm:`${a} 쪽은 든든하고, ${w} 쪽 애들이 부담을 좀 느끼고 있습니다.`,old:`강점 ${a}, 약점 ${w}.`,calm:`개막 전입니다. 강점은 ${a}, 걱정은 ${w}입니다.`}[v];
     return `시즌은 끝났습니다. 지금 전력으로는 ${a}이(가) 가장 좋고 ${w}이(가) 약합니다.`; }
-  const pos=S.rank<=5?(S.gb5>=3?`6위와 ${S.gb5}경기 차`:`6위와 ${Math.max(0,S.gb5)}경기 차밖에 안 납니다`):`5위와 ${S.gb5}경기 차`;
+  const pos=S.rank<=5?(S.gb5>=3?`6위와 ${S.gb5}경기 차`:`6위와 ${Math.max(0,S.gb5)}경기 차밖에 안 되는 상황`):`5위와 ${S.gb5}경기 차`;
   const rec=`${S.w}승 ${S.l}패${S.t?` ${S.t}무`:''}`; const l10=`최근 10경기 ${S.l10w}승 ${S.l10l}패`; const sk=S.streak>=3?`${S.streak}연승`:S.streak<=-3?`${-S.streak}연패`:'';
   const rs=S.rd; const px=S.w+S.l>0?(()=>{ const L=(G.sea.tl&&G.sea.tl[G.user])||[]; const r=sum(L.map(x=>x[1])), a=sum(L.map(x=>x[2])); return r+a>0?Math.pow(r,1.83)/(Math.pow(r,1.83)+Math.pow(a,1.83)):.5; })():.5; const act=S.w/Math.max(1,S.w+S.l);
   return {

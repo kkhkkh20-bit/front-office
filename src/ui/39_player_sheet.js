@@ -62,6 +62,7 @@ function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
+  if(UI.meet&&!UI.menu){ el.innerHTML=meetSheet(); const lg=el.querySelector('#mt-log'); if(lg)lg.scrollTop=lg.scrollHeight; return; }
   if(UI.cast&&UI.sheet==null&&!UI.menu){ const ex=el.querySelector('.cast'); if(!ex||+ex.dataset.g!==UI.cast.g){ el.innerHTML=castSheet(); castMount(); } return; }
   if(UI.cer&&UI.sheet==null&&!UI.menu){ el.innerHTML=cerSheet(); return; }
   if(UI.ivSh&&UI.sheet==null&&!UI.menu){ el.innerHTML=ivSheet(); return; }

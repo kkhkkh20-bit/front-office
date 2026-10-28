@@ -1665,6 +1665,24 @@ body.help .hi-i{display:none}
 #tipb::before{content:"";position:absolute;top:-6px;left:calc(var(--ax,50%) - 6px);width:10px;height:10px;background:inherit;border-left:1px solid var(--line2,#334250);border-top:1px solid var(--line2,#334250);transform:rotate(45deg)}
 #tipb.up::before{top:auto;bottom:-6px;transform:rotate(225deg)}
 .fdt .ti{cursor:pointer}
+/* 면담 화면 */
+.sheet.meet{display:flex;flex-direction:column;max-width:620px;overflow:hidden;padding-bottom:0}.sheet.meet>.sheet-head{flex:none}
+.mt-h{display:flex;gap:12px;align-items:center}.mt-h>.av{width:56px;height:56px}.mt-h h2{margin:0}
+.mt-log{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:10px;padding:12px 2px}
+.mt-l{display:flex;gap:8px;align-items:flex-end;max-width:88%;flex:none}
+.mt-l p{margin:0;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.55}
+.mt-l.them p{background:var(--panel2,#1a232c);border:1px solid var(--line);border-bottom-left-radius:4px}
+.mt-l.me{margin-left:auto;flex-direction:row-reverse}.mt-l.me p{background:#3d8bfd2e;border:1px solid #3d8bfd66;border-bottom-right-radius:4px}
+.mt-av .av{width:32px;height:32px}
+.mt-sys{align-self:center;flex:none;font-size:12px;color:var(--warn);background:#e3b44c14;border-radius:10px;padding:3px 10px}
+.mt-opts{flex:none;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));max-height:44vh;overflow-y:auto;background:var(--bg)}.mt-opts>.eyebrow{flex:1 1 100%}
+.mt-o{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:1px;flex:1 1 auto;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.mt-o:hover{border-color:var(--acc)}.mt-o b{font-size:13.5px;font-weight:600}.mt-o i{font-style:normal;font-size:12px;color:var(--muted)}
+.mt-o[disabled]{opacity:.45;cursor:default}.mt-o.end{flex:1 1 100%;text-align:center;color:var(--muted)}
+.mt-door{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;width:100%;padding:10px 12px;margin:8px 0;border:1px solid var(--line);border-radius:8px;background:var(--panel2,#1a232c)}
+.mt-door:hover{border-color:var(--acc)}.mt-door>.av{width:44px;height:44px}.mt-door span{display:grid;gap:2px;min-width:0}.mt-door b{font-size:14.5px}.mt-door i{font-style:normal;font-size:12px;color:var(--muted)}.mt-door em{font-style:normal;font-size:22px;color:var(--muted)}
+.btn.mt-go{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;margin-top:6px}.btn.mt-go .av{width:32px;height:32px}.btn.mt-go span{display:grid}.btn.mt-go i{font-style:normal;font-size:12px;color:var(--muted);font-weight:400}
+.card.mgrf{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}.card.mgrf>.av{width:44px;height:44px}.card.mgrf.warn{grid-template-columns:1fr;border-color:#e3b44c66}.card.mgrf p{margin:4px 0 8px}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -2446,7 +2464,7 @@ function processDay(){ syncMinSal();
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
   try{ stDaily(); }catch(e){}
   try{ ivDaily(); }catch(e){}
-  try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){}
+  try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){}
   if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
   if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
@@ -3166,7 +3184,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
     mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 75 이상이 주전 상위권입니다. 투수 보직은 감독이 정합니다.`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
   try{ if(G.tut&&!G.tut.done){ G.tut.step=0; sendTut(); } }catch(err){}
   chron('found',`창단 드래프트로 선수단 구성 · 1라운드 ${(()=>{ const x=F.picks.find(q=>q.tid===G.user&&q.rd===1); const p=x&&G.players[x.pid]; return p?p.name:'-'; })()}`);
-  stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 외국인 선수와 감독을 정하세요.`); }
+  stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 감독을 먼저 선임하고, 감독과 상의해 외국인 선수를 뽑으세요.`); }
 /* 창단 직후 기본 운영안: 의무·스카우트·2군 연수를 비서가 기본값으로 채워 둔다. 단장은 감독·외국인 선수와 전력 보강에 집중한다 */
 function foundDefaults(){ const done=[], acts=[];
   if(!G.medSet){ G.medSet=true; done.push(`의무: 부상 방지 ${G.med.prev}단계 · 병원 제휴 ${G.med.hosp==='none'?'없음':G.med.hosp}`); acts.push({l:'의무 운영',a:'goWork',v:'부상방지·병원'}); }
@@ -3176,7 +3194,8 @@ function foundDefaults(){ const done=[], acts=[];
   if(!(G.devProg||[]).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&p.pot-ovr(p)>=6).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a))).slice(0,2);
     for(const p of L){ const k=p.isP?(p.r.ctl<p.r.stf?'ctl':'stf'):(p.r.con<p.r.pow?'bat':'pow'); setDev(p.id,k); done.push(`2군 연수: ${p.name}(${posLabel(p)}, ${p.age}세) ${DEVP[k].l}`); }
     if(L.length)acts.push({l:'2군 연수',a:'goWork',v:'2군연수'}); }
-  if(done.length)mail(`비서 ${SEC}`,'기본 운영안을 채워 두었습니다',`창단 직후라 손이 덜 가도록 운영 기본안을 적용했습니다. 모두 언제든 바꿀 수 있습니다.\n\n${done.join('\n')}\n\n단장님은 감독 선임과 외국인 선수 구성, 약한 자리 보강부터 챙기시면 됩니다.`,{kind:'업무',face:'sec',acts:acts.slice(0,3)}); }
+  if(!G.mgr[G.user])acts.unshift({l:'감독 선임',a:'goWork',v:'감독'});
+  if(done.length)mail(`비서 ${SEC}`,'기본 운영안을 채워 두었습니다',`창단 직후라 손이 덜 가도록 운영 기본안을 적용했습니다. 모두 언제든 바꿀 수 있습니다.\n\n${done.join('\n')}\n\n단장님은 감독부터 선임하시고, 새 감독과 상의해 외국인 선수를 구성하시면 됩니다.`,{kind:'업무',face:'sec',acts:acts.slice(0,3)}); }
 /* 시즌 회고: 우리 선수 중심으로 영입 기대와 실제 기여, 트레이드 결과, 젊은 선수, 내년 공백을 한 장에 */
 function seasonReview(y){ const tid=G.user; const ps=playersOf(tid); const W=p=>{ const h=seasonTotal(p,y,'1군'); const w=h?warOf(h,p):0; return Math.abs(w)<.05?0:w; }; const L=[];
   const top=ps.map(p=>({p,w:W(p)})).sort((a,b)=>b.w-a.w).slice(0,3); if(top.length)L.push('[올해의 선수] '+top.map(x=>`${x.p.name}(${posLabel(x.p)}) WAR ${x.w.toFixed(1)}`).join(', '));
@@ -4841,8 +4860,8 @@ function note(kind,t,ref){ mail(FROM[kind]||'프런트',headline(t),t,{ref,kind,
 /* ===== 비서 업무 안내(튜토리얼) ===== */
 const TUT=[
   {k:'welcome',title:'취임 인사',subj:'단장님, 취임을 축하드립니다',body:`비서 ${SEC}입니다. 구단에 보고되는 소식은 이 소식함으로 보내 드리겠습니다.\n\n하루 흐름은 간단합니다. 홈 화면에서 처리할 일을 확인하고, 화면 오른쪽 위 계속 버튼으로 시간을 넘기세요. 시즌 중에는 계속을 누르면 중요한 소식이 생기거나 한 주가 끝날 때까지 경기를 몰아서 진행하고, 홈 맨 위에 그 기간 성적과 잘한·부진한 선수를 정리해 보여 드립니다. 한 경기씩 보려면 1경기 버튼을 누르세요. 중요한 일이 생기면 진행이 멈추고 홈의 처리할 일에 올라옵니다.\n\n개막 전까지 정리할 일이 몇 가지 있습니다. 하나씩 안내해 드리겠습니다.`,check:()=>true},
-  {k:'foreign',title:'외국인 선수 구성',subj:'외국인 선수를 구성하세요',body:'외국인 선수 네 자리가 모두 비어 있습니다. 외국인 선수 3명과 아시아쿼터 1명을 채울 수 있습니다.\n\n보통은 선발 투수 2명과 타자 1명으로 구성합니다. 규정상 3명을 모두 투수나 모두 타자로 채울 수는 없습니다. 신규 계약은 1인 100만 달러, 아시아쿼터는 20만 달러까지이고, 외국인 선수 3명 합계는 400만 달러를 넘을 수 없습니다.\n\n화면 위쪽에서 외국인과 아시아쿼터 탭이 나뉩니다. 후보 정보가 얼마나 정확한지는 그 나라에 우리 스카우트망이 얼마나 있느냐에 달려 있습니다. 지금은 미국에만 현지 통신원이 있고, 나머지 지역은 에이전트 자료뿐입니다. 스카우팅 메뉴의 해외 스카우트망에서 지역별로 늘릴 수 있습니다.\n\n지난 리그 기록은 리그 수준 차이를 감안해서 보세요.',btn:'외국인 후보 보기',go:['goWork','외국인선수'],check:()=>{const f=foreignOf(G.user); return f.filter(p=>p.foreign==='용병').length>=3&&f.some(p=>p.foreign==='아시아');},prog:()=>{const f=foreignOf(G.user); return `외국인 ${f.filter(p=>p.foreign==='용병').length}/3 · 아시아쿼터 ${f.filter(p=>p.foreign==='아시아').length}/1`;}},
-  {k:'mgr',title:'감독 선임',subj:'감독 자리가 비어 있습니다',body:'전임 감독의 계약이 끝나 사령탑이 빈자리입니다. 개막 전까지 반드시 감독을 선임해야 합니다.\n\n감독마다 성향이 다릅니다. 스몰볼 감독은 도루와 작전을 많이 쓰고, 불펜을 적극 쓰는 감독은 선발을 일찍 내립니다. 육성형 감독은 젊은 선수 성장을 돕고, 장악력이 강한 감독은 선수단 분위기를 안정시킵니다. 연봉이 높을수록 경기 운영 능력이 좋은 편입니다. 감독을 뽑은 뒤에는 홈의 감독실에서 팀 상황과 원하는 외국인 선수를 자주 물어보세요. 감독이 원한 유형은 외국인 시장에 "감독 선호"로 표시됩니다.',btn:'감독 후보 보기',go:['goWork','감독'],check:()=>!!G.mgr[G.user]},
+  {k:'mgr',title:'감독 선임',subj:'감독 자리가 비어 있습니다',body:'사령탑이 빈자리입니다. 외국인 선수보다 감독을 먼저 정하시길 권합니다. 감독이 와야 어떤 외국인이 필요한지 함께 상의할 수 있습니다. 개막 전까지는 반드시 선임해야 합니다.\n\n감독마다 성향이 다릅니다. 스몰볼 감독은 도루와 작전을 많이 쓰고, 불펜을 적극 쓰는 감독은 선발을 일찍 내립니다. 육성형 감독은 젊은 선수 성장을 돕고, 장악력이 강한 감독은 선수단 분위기를 안정시킵니다. 연봉이 높을수록 경기 운영 능력이 좋은 편입니다. 감독을 뽑은 뒤에는 홈의 감독실에서 팀 상황과 원하는 외국인 선수를 자주 물어보세요. 감독이 원한 유형은 외국인 시장에 "감독 선호"로 표시됩니다.',btn:'감독 후보 보기',go:['goWork','감독'],check:()=>!!G.mgr[G.user]},
+  {k:'foreign',title:'외국인 선수 구성',subj:'외국인 선수를 구성하세요',body:'외국인 선수 네 자리가 모두 비어 있습니다. 외국인 선수 3명과 아시아쿼터 1명을 채울 수 있습니다.\n\n감독실에 들러 어떤 유형이 필요한지 먼저 물어보세요. 후보 카드의 감독 의견 버튼을 누르면 감독이 그 선수를 어떻게 보는지 들을 수 있습니다.\n\n보통은 선발 투수 2명과 타자 1명으로 구성합니다. 규정상 3명을 모두 투수나 모두 타자로 채울 수는 없습니다. 신규 계약은 1인 100만 달러, 아시아쿼터는 20만 달러까지이고, 외국인 선수 3명 합계는 400만 달러를 넘을 수 없습니다.\n\n화면 위쪽에서 외국인과 아시아쿼터 탭이 나뉩니다. 후보 정보가 얼마나 정확한지는 그 나라에 우리 스카우트망이 얼마나 있느냐에 달려 있습니다. 지금은 미국에만 현지 통신원이 있고, 나머지 지역은 에이전트 자료뿐입니다. 스카우팅 메뉴의 해외 스카우트망에서 지역별로 늘릴 수 있습니다.\n\n지난 리그 기록은 리그 수준 차이를 감안해서 보세요.',btn:'외국인 후보 보기',go:['goWork','외국인선수'],check:()=>{const f=foreignOf(G.user); return f.filter(p=>p.foreign==='용병').length>=3&&f.some(p=>p.foreign==='아시아');},prog:()=>{const f=foreignOf(G.user); return `외국인 ${f.filter(p=>p.foreign==='용병').length}/3 · 아시아쿼터 ${f.filter(p=>p.foreign==='아시아').length}/1`;}},
   {k:'med',from:'팀 닥터 · 의무팀',title:'의무 체계',subj:'부상 방지 프로그램과 병원 제휴를 정해 주세요',body:'의무팀에서 올 시즌 운영안을 올렸습니다. 부상 방지 프로그램 단계가 높을수록 부상이 줄고, 제휴 병원이 좋을수록 재활 기간이 짧아집니다. 종합 스포츠의학센터와 제휴하면 정밀 검진으로 선수의 부상 체질도 알 수 있습니다.\n\n비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.',btn:'의무 운영안 보기',go:['goWork','부상방지·병원'],check:()=>!!G.medSet},
   {k:'dev',from:'육성팀',title:'2군 연수',subj:'2군 연수 프로그램에 보낼 선수를 정해 주세요',body:'육성팀입니다. 2군 선수들을 집중 훈련 프로그램에 배정할 수 있습니다. 최대 6명까지 가능하고, 배정한 선수는 매주 해당 능력이 조금씩 오릅니다. 1군에서 뛰는 선수는 효과가 절반입니다.\n\n가을과 겨울에는 일본 교육리그, 호주리그 파견, 미국 연수 같은 해외 연수도 보낼 수 있습니다.\n\n선수를 누르면 정보 화면 아래쪽에서 프로그램을 고를 수 있습니다.',btn:'2군 연수 보기',go:['goWork','2군연수'],check:()=>(G.devProg||[]).length>=1},
   {k:'scout',from:'스카우트팀장',title:'스카우트 공백',subj:'스카우트 담당 지역에 공백이 있습니다',body:'스카우트팀장입니다. 스카우트는 한 사람이 한 가지 업무만 맡습니다. 아마추어(지역 고교·대학 선수), 프로(그 지역 연고 구단 선수), 해외(외국인 선수 시장) 중 하나입니다. 최대 6명까지 둘 수 있으니, 드래프트를 위해 먼저 수도권·영남·호남·충청 세 지역에 아마추어 스카우트를 배치해 주세요. 업무를 바꾸면 30일 동안 적응 기간이 있습니다.',btn:'스카우트 팀 보기',go:['goWork','스카우트팀'],check:()=>new Set(G.scouts.filter(s=>(s.role||'am')==='am').map(s=>s.region)).size>=3},
@@ -5943,7 +5962,7 @@ function mvSummary(m,S){ const v=mgrVoice(m);
   if(S.rank==null){ const a=`${SLOTK[S.strong]}(리그 ${S.strongRank}위)`, w=S.weak.map(x=>`${SLOTK[x.k]}(${x.rank}위)`).join('·');
     if(S.per==='pre')return {data:`개막 전 전력 순위로 보면 ${a}이(가) 강점이고 ${w}이(가) 약점입니다.`,fire:`우리 ${a} 보셨습니까? 약한 데는 ${w}뿐입니다.`,warm:`${a} 쪽은 든든하고, ${w} 쪽 애들이 부담을 좀 느끼고 있습니다.`,old:`강점 ${a}, 약점 ${w}.`,calm:`개막 전입니다. 강점은 ${a}, 걱정은 ${w}입니다.`}[v];
     return `시즌은 끝났습니다. 지금 전력으로는 ${a}이(가) 가장 좋고 ${w}이(가) 약합니다.`; }
-  const pos=S.rank<=5?(S.gb5>=3?`6위와 ${S.gb5}경기 차`:`6위와 ${Math.max(0,S.gb5)}경기 차밖에 안 납니다`):`5위와 ${S.gb5}경기 차`;
+  const pos=S.rank<=5?(S.gb5>=3?`6위와 ${S.gb5}경기 차`:`6위와 ${Math.max(0,S.gb5)}경기 차밖에 안 되는 상황`):`5위와 ${S.gb5}경기 차`;
   const rec=`${S.w}승 ${S.l}패${S.t?` ${S.t}무`:''}`; const l10=`최근 10경기 ${S.l10w}승 ${S.l10l}패`; const sk=S.streak>=3?`${S.streak}연승`:S.streak<=-3?`${-S.streak}연패`:'';
   const rs=S.rd; const px=S.w+S.l>0?(()=>{ const L=(G.sea.tl&&G.sea.tl[G.user])||[]; const r=sum(L.map(x=>x[1])), a=sum(L.map(x=>x[2])); return r+a>0?Math.pow(r,1.83)/(Math.pow(r,1.83)+Math.pow(a,1.83)):.5; })():.5; const act=S.w/Math.max(1,S.w+S.l);
   return {
@@ -6788,6 +6807,14 @@ function devToPostseason(){ const y=G.year; const stuck={}; let g=0, last='';
 function devSeedUser(){ const P=G.ps; if(!P||P.done||!P.seeds)return '가을야구 직전에만 쓸 수 있습니다.'; if(P.round!=='wc'||(P.cur&&P.cur.gi>0))return '이미 가을야구가 시작됐습니다.';
   const s=P.seeds.filter(t=>t!==G.user); s.unshift(G.user); P.seeds=s.slice(0,5); P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],G.day+2); G.devSeed=G.year;
   return '테스트: 우리 구단을 1번 시드(한국시리즈 직행)로 바꿨습니다.'; }
+/* ---------- 감독이 먼저 찾아온다: 시즌 중 2~3주에 한 번 단장실 방문, 비시즌엔 외국인 구성 상의 ---------- */
+function mgrVisit(){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp||G.gameOver)return; const per=period(); const last=G.mgrVisitD??-99;
+  if(per==='season'){ if(G.day-last<14||R()>.12)return; G.mgrVisitD=G.day; mgrAttr(m);
+    const a=mgrNowTalk(m); if(!a)return;
+    mail('감독실',`${m.name} 감독이 단장실에 들렀습니다`,`${m.name} 감독: "${a}"\n\n더 이야기하려면 감독실로 가세요. 자주 의논할수록 감독과의 관계가 좋아집니다.`,{kind:'감독',acts:[{l:'감독실 들어가기',a:'meetOpen',v:'mgr'}]}); return; }
+  if(!foreignOpen()||per==='post')return; const yb=foreignOf(G.user).filter(p=>p.foreign==='용병').length; if(yb>=3||G.day-last<20)return;
+  const W=mgrWantForeign(); if(!W||!W.want)return; G.mgrVisitD=G.day;
+  mail('감독실',`${m.name} 감독: "외국인 이야기 좀 하시죠"`,`${m.name} 감독: "${W.txt} 후보 명단을 같이 보면서 정하고 싶습니다."\n\n외국인 ${yb}/3명. 감독실에서 후보별 의견을 들을 수 있습니다.`,{kind:'감독',acts:[{l:'감독실에서 후보 상의',a:'meetOpen',v:'mgr|cand'},{l:'외국인 후보 보기',a:'goWork',v:'외국인선수'}]}); }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -7250,7 +7277,7 @@ function mgrChatCard(compact){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)
   const T=[['now','지금 팀 상황은?'],['foreign','어떤 외국인을 원하나?'],['need','가장 급한 자리는?'],['young','눈여겨보는 젊은 선수는?']];
   const tt=G.ttDay!=null&&G.day-G.ttDay<14;
   return `<section class="card mchat"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${MV[mgrVoice(m)].l} · 관계 ${m.rel}</span></div>${compact?'':`<p class="small muted keep">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
-    <div class="chips">${T.map(([k,l])=>`<button data-a="mgrAsk" data-v="${k}">${l}</button>`).join('')}</div>
+    ${meetDoor('mgr')}
     ${C.length?`<div class="mc-l">${C.map(c=>`<div class="mc-a"><i>${dsh(c.d)}${G.day-c.d>30?' (지난 답변, 다시 물어보세요)':''} · ${esc((T.find(x=>x[0]===c.t)||['',''])[1])}</i><p>${esc(c.a)}</p></div>`).join('')}</div>`:'<p class="small muted">자주 물어볼수록 감독과의 관계가 좋아집니다(한 주에 한 번 반영).</p>'}
     
     ${UI.mgrMsg?`<div class="note">${esc(UI.mgrMsg)}</div>`:''}</section>`; }
@@ -7840,9 +7867,7 @@ function ownerAskView(){ const t=team(G.user); if(t.indie)return csec('구단주
   const btn=(l,v,amt,pur)=>{ const o=ownOdds(amt,pur); return `<button class="oa" data-a="ownAsk" data-v="${v}" ${left?'':'disabled'}><b>${l}</b><span>${money(amt)} · ${oddsTxt(o)}</span></button>`; };
   const H=grants().slice(0,8);
   return csec('구단주에게 요청',`<p class="small">지금 예산 여유 <b>${money(b.roomGoal)}</b> · 올해 추가 지원 ${money(grantAmt())} · 구단주 신뢰 ${t.trust}</p>
-    <div class="oag">${amts.map(a=>btn(`운영비 증액`,`gen:${a}`,a,null)).join('')}
-      ${faL.map(p=>btn(`FA ${esc(p.name)} 영입 자금`,`fa:${p.id}`,p.ask.annual,{k:'fa',pid:p.id})).join('')}
-      ${bad.map(p=>btn(`외국인 ${esc(p.name)} 교체 자금`,`frep:${p.id}`,round5(Math.max(500,p.sal*.6)),{k:'frep',pid:p.id})).join('')}</div>
+    ${meetDoor('own')}
     <p class="small muted">${left?'한 달에 한 번 요청할 수 있습니다.':'이번 달에는 이미 요청했습니다.'} 승인 여부는 구단주 신뢰, 성향(${OWNER[t.owner].label}), 순위, 요청 금액과 목적에 따라 달라집니다. 반려되면 신뢰 -1, 한 해에 자주 요청할수록 승인이 어려워집니다. 목적을 정해 받은 돈은 그 목적을 이루면 신뢰가 오르고, 못 이루면 깎입니다. 구단주가 먼저 스타 FA 영입이나 7월 우승 보강을 주문하며 돈을 내놓기도 합니다.</p>
     ${H.length?`<div class="eyebrow" style="margin-top:8px">요청·지원 기록</div><div class="rql">${H.map(grantLine).join('')}</div>`:''}`); }
 function reqHomeCard(){ const M=mreqs().filter(r=>r.st==='open'); const O=grants().filter(g=>g.st==='open'&&g.pur); if(!M.length&&!O.length)return '';
@@ -9818,11 +9843,14 @@ function foreignView(){
     ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(foreignOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)}${G.gmSince===G.year?' <span class="muted">(첫 시즌: 규정 한도만큼 구단주가 미리 배정)</span>':' <span class="muted">(지난 시즌 리그 평균 외국인 지출 기준)</span>'}</p>`; })()}
     ${UI.fmsg2?`<div class="note bad">${esc(UI.fmsg2)}</div>`:''}</section>`;
   const mine=(asia?as:yb).map(p=>pcard(p,{sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)}`,tags:p.fy===G.year||p.fy===G.year+1?'<span class="pill">KBO 첫 시즌</span>':'',foot:`<b class="num">${money(p.sal)}</b><span>${Math.round(p.sal/USD)}만 달러 · ${p.rsy?`재계약 ${p.rsy}년차`:'첫 계약'}</span><button class="tc-i" data-a="player" data-v="${p.id}">상세</button><button class="tc-i" data-a="relNow" data-v="${p.id}">방출</button>`})).join('');
+  const mg=G.mgr[G.user]; const hasMgr=!!(mg&&!mg.interim&&!G.unemp);
+  const mgrBox=asia?'':hasMgr?(()=>{ const W=mgrWantForeign(); return `<section class="card mgrf">${meetWho({k:'mgr'}).av}<div><span class="eyebrow">${esc(mg.name)} 감독의 요청</span><p class="small">${esc(W?W.txt:'')}</p><div class="row"><button class="btn small primary" data-a="meetOpen" data-v="mgr|cand">감독실에서 후보 상의하기</button></div></div></section>`; })()
+    :`<section class="card mgrf warn"><div><span class="eyebrow">감독이 아직 없습니다</span><p class="small">감독을 먼저 뽑으면 어떤 외국인이 필요한지 감독과 상의하고, 후보마다 감독 의견을 들을 수 있습니다. 외국인 선수는 감독이 쓰는 선수입니다.</p><div class="row"><button class="btn small primary" data-a="goWork" data-v="감독">감독 후보 보기</button></div></div></section>`;
   const cards=market.map(({p,rp})=>{ const err=open?foreignCheck(G.user,p):'영입 기간이 아닙니다.'; const repl=mid&&used>=F_REPL_MAX; const pay=mid?Math.round(p.ask*remainFrac()):p.ask;
     const srcP=p.fsrc==='scout'?((p.fknow||[]).includes(G.user)?(G.day<(p.fpub||0)?'<span class="pill good">우리 스카우트 발굴 · 아직 우리만 앎</span>':'<span class="pill">우리 발굴 · 소문 퍼짐</span>'):'<span class="pill">다른 구단 발굴 · 소문으로 앎</span>'):'<span class="pill">에이전트 제안</span>';
     return pcard(p,{rp,sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)} · ${esc(p.prevLvl||'')}${lgLv(p.prevLvl)?`(${lgLv(p.prevLvl)})`:''}`,
       tags:(G.mgrWant&&G.mgrWant.y===G.year&&mgrFitF(p,{want:G.mgrWant})?`<span class="pill good" title="감독이 원한 유형: ${esc(G.mgrWant.style||'')}">감독 선호</span>`:'')+srcP+(p.flaw?`<span class="pill bad">${FFLAW[p.flaw]}</span>`:'')+netPill(origOf(p))+(p.inj>.24&&rp.sd<=7.5&&p.flaw!=='inj'?'<span class="pill bad">부상 체질</span>':'')+(()=>{ const n=fInterest(p); return n>=2?`<span class="pill bad">인기 · ${n}개 구단 관심</span>`:n===1?'<span class="pill">1개 구단 관심</span>':''; })()+(p.ask0&&p.ask>p.ask0?`<span class="pill warn">몸값 +${Math.round((p.ask/p.ask0-1)*100)}%</span>`:''),
-      foot:`<b class="num">${money(p.ask)}</b><span>${Math.round(p.ask/USD)}만 달러${mid?` · 실지급 ${money(pay)}`:''}</span>${err||repl?`<span class="pill bad" title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':fErrShort(err)}</span>`:''}${fBudgetTag(pay)}<span class="tc-bt"><button class="tc-i${fwatchOn(p.id)?' on':''}" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 중':'관찰'}</button><button class="tc-i ${err||repl?'':'go'}" data-a="signFc" data-v="${p.id}" ${err||repl?'disabled':''}>계약</button></span>`}); });
+      foot:`<b class="num">${money(p.ask)}</b><span>${Math.round(p.ask/USD)}만 달러${mid?` · 실지급 ${money(pay)}`:''}</span>${err||repl?`<span class="pill bad" title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':fErrShort(err)}</span>`:''}${fBudgetTag(pay)}<span class="tc-bt">${hasMgr?`<button class="tc-i" data-a="meetOpen" data-v="mgr|fp:${p.id}">감독 의견</button>`:''}<button class="tc-i${fwatchOn(p.id)?' on':''}" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 중':'관찰'}</button><button class="tc-i ${err||repl?'':'go'}" data-a="signFc" data-v="${p.id}" ${err||repl?'disabled':''}>계약</button></span>`}); });
   const fchips=[['all','전체'],...(!asia?[['p','투수'],['b','타자']]:[]),...regs.map(r=>[r,IREG[r].l])];
   const full=asia?as.length>=1:yb.length>=3; const ft=inTabs('fview'+(asia?'a':''),[['market',`후보 ${market.length}`],['mine',`우리 선수 ${asia?as.length+'/1':yb.length+'/3'}`],['watch','관찰 명단'],['net','스카우트망'],['rule','규정']],full?'mine':'market');
   const mineS=`<section class="card"><div class="row between"><h2 class="sec">우리 ${asia?'아시아쿼터':'외국인 선수'}</h2><span class="small muted">${asia?as.length+'/1':yb.length+'/3'}</span></div>${mine?`<div class="tgrid">${mine}</div>`:'<p class="small muted">아직 없습니다.</p>'}</section>`;
@@ -9832,7 +9860,7 @@ function foreignView(){
     <div class="chips">${[['rk','스카우트 추천순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div></div>
     <p class="small muted">후보는 능력치 대신 지난 리그 기록과 스카우트 의견으로 판단합니다. 스카우트망이 넓은 지역일수록 의견(유형·장래 역할·메모)이 정확합니다. 지난 리그 기록은 리그 수준 차이를 감안해서 보세요. 영입하면 우리 코치진이 능력치를 정확히 파악합니다.</p>
     <div class="tgrid">${PG.items.join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}</div>${PG.bar}</section>`;
-  return tabs+ft.bar+(ft.cur==='net'?intlView():ft.cur==='market'?mkS:ft.cur==='mine'?mineS:ft.cur==='watch'?(fwatchBox(asia)||'<section class="card"><p class="small muted">관찰 명단이 비어 있습니다. 후보 목록에서 관찰을 눌러 두면 여기서 비교합니다.</p></section>'):summary);
+  return tabs+ft.bar+(ft.cur==='net'?intlView():ft.cur==='market'?mgrBox+mkS:ft.cur==='mine'?mineS:ft.cur==='watch'?(fwatchBox(asia)||'<section class="card"><p class="small muted">관찰 명단이 비어 있습니다. 후보 목록에서 관찰을 눌러 두면 여기서 비교합니다.</p></section>'):summary);
 }
 
 function intlView(){
@@ -10481,6 +10509,7 @@ function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
+  if(UI.meet&&!UI.menu){ el.innerHTML=meetSheet(); const lg=el.querySelector('#mt-log'); if(lg)lg.scrollTop=lg.scrollHeight; return; }
   if(UI.cast&&UI.sheet==null&&!UI.menu){ const ex=el.querySelector('.cast'); if(!ex||+ex.dataset.g!==UI.cast.g){ el.innerHTML=castSheet(); castMount(); } return; }
   if(UI.cer&&UI.sheet==null&&!UI.menu){ el.innerHTML=cerSheet(); return; }
   if(UI.ivSh&&UI.sheet==null&&!UI.menu){ el.innerHTML=ivSheet(); return; }
@@ -10655,7 +10684,7 @@ function bondCard(p){
   return `<section class="card"><div class="row between"><span class="eyebrow">선수와의 관계</span><span class="pill ${moodClass(m)}">기분 ${moodLabel(m)}</span></div>
   <p class="small">${esc(moraleWhy(p))}</p>
   <p class="small muted">코치진이 본 성향: ${esc(persText(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
-  <details class="frule"${UI.talkMsg&&UI.talkMsg.id===p.id?' open':''}><summary class="small">개인 면담</summary><div class="talk">${Object.entries(TALK).map(([k,l])=>`<button class="btn small" data-a="talk" data-v="${p.id}:${k}">${l}</button>`).join('')}</div></details>
+  ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${p.talkWk===Math.floor(G.day/7)?'이번 주에는 이미 이야기를 나눴습니다':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
   </section>`;
 }
@@ -10691,6 +10720,9 @@ const A={
   fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
   fdV(v){ UI.fdV=v; render(); }, /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
+  meetOpen(v){ const [h,ask]=String(v).split('|'); const [k,id]=h.split(':'); meetOpen(k,id!=null?+id:null,{ask}); },
+  meetDo(v){ meetDo(v); renderSheet(); },
+  meetClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.meet=null; renderSheet(); render(); },
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },
   annPlayer(v){ (UI.annQ||[]).shift(); annRender(); A.player(+v); },
@@ -10742,7 +10774,7 @@ const A={
   setIntl(v){ const [r,l]=v.split(':'); G.intl[r]=+l; addLog(`${IREG[r].l} 스카우트망을 ${INET[+l].l} 단계로 조정했습니다.`); save(); render(); },
   signFc(v){ const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg2=err;render();return;} UI.fmsg2=''; signForeign(G.user,p.id); save(); render(); },
   tutSkip(){ tutSkip(); save(); render(); },
-  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1'); UI.confirmFire=false; save(); render(); },
+  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1'); UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ UI.confirmFire=true; render(); }, fireCancel(){ UI.confirmFire=false; render(); },
   fireMgr(){ fireMgr(); UI.confirmFire=false; save(); render(); },
   renewMgr(v){ renewMgr(v||2); save(); render(); },
@@ -11396,4 +11428,61 @@ function devCard(){ const P=G.ps; const ready=P&&P.seeds&&!P.done&&P.round==='wc
     <p class="small muted">남은 정규시즌을 실제 경기로 끝까지 치르고 가을야구 직전에 멈춥니다. 그사이 결정은 기본값으로 자동 처리됩니다(트레이드 제안 거절, 이벤트 기본 선택 등). 되돌릴 수 없으니 필요하면 먼저 저장 슬롯을 복사해 두세요.</p>
     ${UI.devMsg?`<div class="note">${esc(UI.devMsg)}</div>`:''}
     <div class="btns"><button class="btn" data-a="devPS" ${ready?'disabled':''}>가을야구 직전으로 이동</button><button class="btn" data-a="devSeed" ${ready&&G.ps.seeds[0]!==G.user?'':'disabled'} title="순위표는 그대로 두고 가을야구 대진만 바꿉니다">우리 구단 1번 시드로(테스트)</button></div></section>`; }
+/* ---------- 면담 화면: 구단주 집무실 · 감독실 · 선수 면담 ----------
+   상대 얼굴과 대화 말풍선, 아래에 꺼낼 이야기(화제)를 고른다. 결과(승인·반려, 관계·기분 변화)는 대화 속에 한 줄로 남는다 */
+const MEET_PL={praise:'요즘 정말 잘해 주고 있어. 고맙다.',push:'솔직히 지금보다 더 해 줘야 한다.',promise:'감독님께 출전 기회를 건의해 보겠네.',contract:'계약 이야기를 좀 해 볼까.',ask:'요즘 고민 있나? 편하게 말해 봐.'};
+function meetWho(M){ const t=team(G.user);
+  if(M.k==='own'){ const B=bossOf(G.user); return {name:B.own.name,role:'구단주 · 모기업 회장',place:'구단주 집무실',av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name}),rel:`신뢰 ${Math.round(t.trust)}`}; }
+  if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m)return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · ${MV[mgrVoice(m)].l}`,place:'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${m.rel}`}; }
+  const p=G.players[M.id]; if(!p)return null; return {name:p.name,role:`${posLabel(p)} · ${p.age}세`,place:'선수 면담실',av:avImg(p),rel:`기분 ${Math.round(p.mor??60)}`}; }
+function meetGreet(M){ const t=team(G.user);
+  if(M.k==='own'){ const tr=t.trust; return tr>=70?'단장, 잘 왔소. 요즘 분위기가 좋더군. 앉으시오.':tr>=45?'앉으시오. 무슨 일로 왔소?':tr>=25?'바쁘니 용건만 간단히 합시다.':'...할 말이 있으면 해 보시오. 내 인내심도 한계가 있소.'; }
+  if(M.k==='mgr'){ const m=G.mgr[G.user]; const v=mgrVoice(m); return M.first?`${m.name}입니다. 믿고 맡겨 주셔서 감사합니다. ${v==='data'?'자료부터 같이 보시죠.':v==='fire'?'바로 이기는 팀 만들겠습니다.':v==='warm'?'선수들 잘 챙기겠습니다.':v==='old'?'기본부터 다시 세우겠습니다.':'차근차근 맞춰 가겠습니다.'} ${foreignOf(G.user).filter(p=>p.foreign==='용병').length<3?'외국인 선수 구성부터 상의드릴까요?':'선수들부터 직접 보겠습니다.'}`:m.rel>=60?'단장님, 들어오세요. 편하게 말씀하시죠.':m.rel>=35?'오셨습니까. 무슨 일로?':'...네, 말씀하시죠.'; }
+  const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
+function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
+  M.log.push({w:'them',t:meetGreet(M)}); UI.meet=M; if(o.ask)meetDo(o.ask); renderSheet(); }
+function meetBadF(){ return foreignOf(G.user).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=60&&pRate(h).era>5):(h.pa>=100&&bRate(h).ops<.700)); }); }
+function frepAmt(p){ return round5(Math.max(500,p.sal*.6)); }
+/* 꺼낼 수 있는 이야기 */
+function meetTopics(M){ const t=team(G.user);
+  if(M.k==='own'){ if(t.indie)return [['rep','근황 보고']]; const left=ownAskLeft(); const L=[['rep','근황 보고']];
+    for(const a of [1000,2000,3000])L.push([`gen:${a}`,`운영비 ${money(a)} 증액 요청`,oddsTxt(ownOdds(a,null)),!left]);
+    const faL=G.fa&&G.fa.open&&!G.fa.closed?G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null).sort((a,c)=>ovr(c)-ovr(a)).slice(0,3):[]; for(const p of faL)L.push([`fa:${p.id}`,`FA ${p.name} 영입 자금 요청`,`${money(p.ask.annual)} · ${oddsTxt(ownOdds(p.ask.annual,{k:'fa',pid:p.id}))}`,!left]);
+    for(const p of meetBadF())L.push([`frep:${p.id}`,`외국인 ${p.name} 교체 자금 요청`,`${money(frepAmt(p))} · ${oddsTxt(ownOdds(frepAmt(p),{k:'frep',pid:p.id}))}`,!left]);
+    return L; }
+  if(M.k==='mgr')return [['now','지금 팀 상황은 어떻습니까?'],['foreign','외국인은 어떤 선수가 필요합니까?'],['cand','시장에 나온 외국인 후보들 어떻게 보세요?'],['need','가장 급한 자리는 어디입니까?'],['young','눈여겨보는 젊은 선수 있습니까?']];
+  return Object.entries(TALK).map(([k,l])=>[k,l]); }
+function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const say=(w,x)=>M.log.push({w,t:x});
+  if(M.k==='own'){ if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',g?`${g.rank.cur?`지금 ${g.rank.cur}위군. `:''}올해 목표는 ${g.rank.t}위 안이오. ${g.rank.cur&&g.rank.cur<=g.rank.t?'지금처럼만 하시오.':'더 분발해야 하오.'}${t.owner==='profit'?' 그리고 적자는 꼭 줄이시오.':t.owner==='pr'?' 팬들 반응도 늘 보고 있소.':''}`:'시즌이 시작되면 다시 이야기합시다.'); return; }
+    const [k,x]=v.split(':'); const p=k==='gen'?null:G.players[+x]; const amt=k==='gen'?+x:k==='fa'?p.ask.annual:frepAmt(p); const tr0=t.trust;
+    say('me',k==='gen'?`회장님, 운영비 ${money(amt)} 증액을 요청드립니다. 전력 보강과 운영에 꼭 필요합니다.`:k==='fa'?`FA ${p.name} 선수를 잡으려면 ${money(amt)}이(가) 필요합니다. 도와주십시오.`:`외국인 ${p.name}이(가) 기대에 못 미칩니다. 교체할 선수를 데려오려면 ${money(amt)}이(가) 필요합니다.`);
+    const r=k==='gen'?ownerAsk(amt,null):ownerAsk(amt,{k,pid:+x}); if(!/^(승인|반려)/.test(r)){ say('sys',r); return; } const ok=/^승인/.test(r);
+    say('them',ok?(t.owner==='win'?'좋소. 대신 결과로 보여 주시오.':t.owner==='profit'?'...이번만이오. 돈 쓴 만큼 벌어 오시오.':'알겠소. 팬들을 실망시키지 마시오.'):(t.owner==='profit'?'지금 적자부터 줄이세요.':t.owner==='win'?'성적으로 먼저 증명하시오.':'지금은 때가 아니오.'));
+    say('sys',ok?`승인: ${money(amt)} 지원${k==='fa'?' (목적대로 쓰지 않으면 신뢰가 깎입니다)':''}`:`반려 · 구단주 신뢰 ${Math.round(t.trust-tr0)}`); save(); return; }
+  if(M.k==='mgr'){ const q=meetTopics(M).find(x=>x[0]===v); if(v.startsWith('fp:')){ const p=G.players[+v.slice(3)]; say('me',`${p?p.name:'이 선수'} 어떻게 보세요?`); say('them',mgrOnForeign(p)); save(); return; }
+    say('me',q?q[1]:'');
+    if(v==='cand'){ const W=mgrWantForeign(); const sc=x=>{ const r=scoutReport(x); return (r.ofp??r.cur+6)+r.cur*.2+(mgrFitF(x,W)?4:0); };
+      const L=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)).sort((a,b)=>sc(b)-sc(a)).slice(0,3);
+      if(!L.length){ say('them','지금 시장에 마음에 드는 후보가 없습니다. 스카우트에게 더 찾아보라고 하시죠.'); save(); return; }
+      say('them',`스카우트 명단에서 제 눈에 들어온 후보 ${L.length}명입니다.`); for(const p of L)say('them',`${p.name} (${posLabel(p)}, ${p.age}세, ${p.prevLvl||p.nat||''}): ${mgrOnForeign(p)}`); save(); return; }
+    const r=mgrTalk(v); const ch=G.mgrChat&&G.mgrChat[0]; say('them',ch&&ch.d===G.day&&ch.t===v?ch.a:r.a||'...'); if(/관계 \+1/.test(r.a||''))say('sys','자주 의논해 주셔서 감독 관계 +1'); save(); return; }
+  const p=G.players[M.id]; say('me',MEET_PL[v]||TALK[v]); const r=talk(M.id,v); say('them',(r.msg||'').replace(/^[^:]+: "(.*)"$/,'$1')); if(r.d)say('sys',`${p.name} 기분 ${r.d>0?'+':''}${Math.round(r.d)}`); save(); }
+/* 감독이 보는 외국인 후보 한 명: 원하는 유형과 맞는지 + 감독 눈으로 본 실력 + 감독 성향 */
+function mgrOnForeign(p,short){ const m=G.mgr[G.user]; if(!m||!p)return '...'; mgrAttr(m); const W=mgrWantForeign(); const fit=mgrFitF(p,W);
+  const est=ovr(p)+hn('mof'+m.id,p.id)*(2+(85-(m.eye||50))/6); /* 감독 안목이 낮을수록 오차가 크다(안목 60이면 표준편차 약 6) */ const lv=est>=63?'1군에서 바로 통할 실력입니다':est>=57?'쓸 만한 선수입니다':est>=52?'우리 리그에서 버틸지 반반입니다':'우리 팀에 큰 도움은 안 될 것 같습니다';
+  const tyk=mgrType(m).k; const sty=!p.isP&&(tyk==='dfn'||tyk==='combo_d')?(p.r.def>=58?' 수비가 돼서 좋습니다.':' 수비가 불안해서 걱정입니다.'):!p.isP&&(tyk==='big'||tyk==='bat'||tyk==='combo_o')?(p.r.pow>=60?' 한 방이 있어서 마음에 듭니다.':''):p.isP&&tyk==='pen_all'&&!isSPr(p)?' 불펜이 두꺼워지는 건 환영입니다.':p.isP&&(tyk==='sp_care')&&isSPr(p)?' 긴 이닝 막아 줄 선발이면 좋겠습니다.':'';
+  const want=W&&W.want?(fit?'딱 제가 원하던 유형입니다. ':`저는 ${W.want.isP?(W.want.k==='SP'?'선발':'불펜'):SLOTK[W.want.k]||W.want.k} 쪽이 더 급하다고 봅니다. `):'';
+  const age=p.age>=34?' 다만 나이가 있어서 한 시즌을 버틸지 걱정입니다.':p.age<=26?' 젊어서 적응만 하면 더 좋아질 수 있습니다.':'';
+  return short?`${fit?'원하던 유형, ':''}${lv}`:`${want}${lv}.${sty}${age}`; }
+function meetSheet(){ const M=UI.meet; const W=meetWho(M); if(!W)return ''; const T=meetTopics(M);
+  const log=M.log.map(x=>x.w==='sys'?`<div class="mt-sys">${esc(x.t)}</div>`:`<div class="mt-l ${x.w}">${x.w==='them'?`<span class="mt-av">${W.av}</span>`:''}<p>${esc(x.t)}</p></div>`).join('');
+  const own=M.k==='own'&&!team(G.user).indie; const left=own?ownAskLeft():1;
+  return `<div class="scrim" data-a="meetClose"><div class="sheet gut meet" data-stop="1" role="dialog" aria-label="${esc(W.place)}">
+    <div class="sheet-head"><div class="mt-h">${W.av}<div><span class="eyebrow">${esc(W.place)}</span><h2 class="sec">${esc(W.name)}</h2><span class="small muted">${esc(W.role)} · ${esc(W.rel)}</span></div></div><button class="x" data-a="meetClose" aria-label="닫기">×</button></div>
+    <div class="mt-log" id="mt-log">${log}</div>
+    <div class="mt-opts"><span class="eyebrow">꺼낼 이야기${own&&!left?' · 이번 달 지원 요청은 이미 했습니다':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}<button class="mt-o end" data-a="meetClose"><b>면담 마치기</b></button></div></div></div>`; }
+/* 면담 입구: 상대 얼굴 + 들어가기 */
+function meetDoor(k){ const W=meetWho({k}); if(!W)return ''; const t=team(G.user);
+  const sub=k==='own'?(ownAskLeft()?'운영비 증액 · FA 영입 자금 · 외국인 교체 자금 · 근황 보고':'이번 달 지원 요청은 이미 했습니다 · 근황 보고는 가능'):'팀 상황 · 원하는 외국인 · 외국인 후보 의견 · 급한 자리 · 젊은 선수';
+  return `<button class="mt-door" data-a="meetOpen" data-v="${k}">${W.av}<span><b>${k==='own'?'구단주 집무실로 가기':'감독실 들어가기'}</b><i>${esc(W.name)} · ${esc(W.rel)}</i><i>${sub}</i></span><em>›</em></button>`; }
 </script>
