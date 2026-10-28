@@ -42,7 +42,7 @@ function dliveStart(kind){ if(UI.dl&&UI.dl.on)return; const o=UI.dl&&UI.dl.kind=
 function dlTargets(kind){ const m=new Map(); (G.shortlist||[]).forEach(id=>m.set(id,'관심 선수')); return m; }
 function dliveTick(){ const L=UI.dl; if(!L||!L.on||!G)return; const T=dlTargets(L.kind); const r=L.kind==='fd'?fdStep():amStep();
   if(!r||r==='user'){ L.on=false; L.just=null; save(); render(); return; }
-  L.just=r.pid||null; if(r.pid){ const p=G.players[r.pid]; const tg=T.get(r.pid)||null; L.feed.unshift({tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,pid:r.pid,nm:p?p.name:'',pos:p?(L.kind==='fd'&&p.isP?'투수':posLabel(p)):'',age:p?p.age:null,tg,o:L.kind==='fd'&&p?Math.round(ovr(p)):null}); L.feed=L.feed.slice(0,12);
+  L.just=r.pid||null; if(r.pid){ const p=G.players[r.pid]; const tg=T.get(r.pid)||null; L.feed.unshift({tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,pid:r.pid,nm:p?p.name:'',pos:p?(L.kind==='fd'&&p.isP?'투수':posLabel(p)):'',age:p?p.age:null,tg,o:L.kind==='fd'&&p?fdEstOf(p):null}); L.feed=L.feed.slice(0,12);
     if(tg){ (L.stolen=L.stolen||[]).unshift({nm:p?p.name:'',tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,tg,pid:r.pid}); L.stolen=L.stolen.slice(0,20); L.stN=(L.stN||0)+1; } }
   render(); L.t=setTimeout(dliveTick,DSPD[UI.dspeed||'norm']); }
 function dlFeedAdd(kind,pk,pid){ if(!UI.dl||UI.dl.kind!==kind)UI.dl={on:false,kind,feed:[]}; const p=G.players[pid]; UI.dl.feed.unshift({tid:pk.tid,rd:pk.rd,no:pk.no,pid,nm:p?p.name:'',pos:p?posLabel(p):'',age:p?p.age:null,tg:null,me:true}); UI.dl.feed=UI.dl.feed.slice(0,12); }
@@ -50,23 +50,7 @@ function dliveStop(){ const L=UI.dl; if(L){ L.on=false; clearTimeout(L.t); } sav
 function dliveBox(kind){ if(!(UI.dl&&UI.dl.kind===kind)&&!UI.dlAuto&&!UI.rev&&!(kind==='fd'&&G.fd&&G.fd.open===false)){ UI.dlAuto=1; setTimeout(()=>{ UI.dlAuto=0; const d=kind==='fd'?G.fd:G.draft; if(d&&!d.done&&d.picks[d.cur]&&d.picks[d.cur].tid!==G.user&&!(UI.dl&&UI.dl.kind===kind))dliveStart(kind); },800); } const L=UI.dl&&UI.dl.kind===kind?UI.dl:null; const on=L&&L.on; const sp=UI.dspeed||'norm';
   const f=L&&L.feed&&L.feed.length?L.feed:[]; const top=f[0];
   return `<div class="dlive ${on?'on':''}">${on?'<span class="dl-dot"></span>':''}<div class="dl-h"><b>${on?'지명 진행 중':'다른 구단 지명'}</b><span class="chips">${[['slow','느리게'],['norm','보통'],['fast','빠르게']].map(([k,l])=>`<button data-a="dlSpd" data-v="${k}" class="${sp===k?'on':''}">${l}</button>`).join('')}${on?'<button data-a="dlStop">멈춤</button><button data-a="dlSkip">우리 차례로</button>':''}</span></div>
-    ${top?`<div class="dl-now ${on?'flash':''}">${badge(top.tid,30)}<div><i>${top.rd}-${top.no} · ${esc(tshort(top.tid))}</i><b>${esc(top.nm)}</b><span>${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}${top.me?' · <em class="good">우리 지명</em>':''}</span></div>${top.o!=null&&!top.me?`<div class="dl-o"><i>실제 능력</i>${rchip(top.o)}</div>`:''}</div>`:''}
+    ${top?`<div class="dl-now ${on?'flash':''}">${badge(top.tid,30)}<div><i>${top.rd}-${top.no} · ${esc(tshort(top.tid))}</i><b>${esc(top.nm)}</b><span>${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}${top.me?' · <em class="good">우리 지명</em>':''}</span></div>${top.o!=null&&!top.me?`<div class="dl-o"><i>우리 추정</i>${fdEstChip(top.o)}</div>`:''}</div>`:''}
     ${L&&L.stolen&&L.stolen.length?(()=>{ const x=L.stolen[0]; const fresh=top&&top.pid===x.pid; return `<div class="dl-steal ${fresh?'fresh':''}"><b>${fresh?'뺏겼습니다':'최근 놓친 선수'}</b><span>${esc(x.tg)} <button class="lnk" data-a="player" data-v="${x.pid}">${esc(x.nm)}</button>을(를) ${esc(tshort(x.tid))}이(가) ${x.rd}라운드 ${x.no}번째로 지명</span><i>이번 드래프트에서 노리던 선수 ${L.stN}명을 놓쳤습니다</i></div>`; })():''}
-    ${f.length>1?`<div class="dl-feed">${f.slice(1,8).map(x=>`<span class="${x.tg?'tg':''}${x.me?' me':''}">${badge(x.tid,14)}<i>${x.rd}-${x.no}</i>${esc(x.nm)}<em>${esc(x.pos)}</em>${x.o!=null&&!x.me?rchip(x.o):''}</span>`).join('')}</div>`:''}</div>`; }
-/* ---------- 지명 후 능력 공개(복권 긁기) ---------- */
-function revMake(pid,pk,n){ const p=G.players[pid]; if(!p)return null; const pool=(G.fd?G.fd.pool:[]).map(id=>G.players[id]).filter(Boolean);
-  const potE=q=>{ const o=ovr(q); return q.age>=29?Math.min(Math.max(q.pot,o),o+Math.max(0,31-q.age)*2):Math.max(q.pot,o); };
-  const o=ovr(p), pe=potE(p); const rc=1+pool.filter(q=>ovr(q)>o).length, rpt=1+pool.filter(q=>potE(q)>pe).length; const best=Math.min(rc,rpt);
-  void best; const v=rc<=2?{k:'jack',t:'대박'}:rc<=8?{k:'good',t:'좋은 지명'}:rc<=25?{k:'ok',t:'무난'}:{k:'bad',t:'아쉬움'};
-  /* 잠재력은 정답 대신 코치진 추정 범위로 보여 준다. 나이가 어릴수록 범위가 넓다 */
-  const w=p.age>=29?0:clamp((29-p.age)*1.1,2,8), mid=pe+hn('rvp',pid)*w*.5; const lo=Math.max(Math.round(o),Math.round(mid-w)), hi=Math.max(lo,Math.round(mid+w));
-  return {pid,rd:pk.rd,no:pk.no,n,cur:Math.round(o),pot:Math.round(pe),plo:lo,phi:hi,rc,rpt,tot:pool.length+1,v,open:false}; }
-function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; if(!p){ UI.rev=null; return ''; }
-  const box=(l,v,rk)=>`<div class="rv-b ${R.open?'op':''}"><span>${l}</span><b style="${R.open?`color:${rcol(v)}`:''}">${R.open?dv(v):'?'}</b>${R.open?`<i>남은 후보 중 ${rk}위</i>`:'<i>&nbsp;</i>'}</div>`;
-  const top=R.open?Object.entries(p.r).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k,v])=>`${TOOLK[k]||k} ${dv(v)}`).join(' · '):'';
-  return `<div class="rv-w"><div class="rv ${R.open?'op':''} ${R.open?'v-'+R.v.k:''}">
-    <div class="eyebrow">${R.rd}라운드 ${R.no}번째 · 전체 ${R.n}순위 지명</div>
-    <div class="row" style="flex-wrap:nowrap">${avImg(p,true)}<div><h2 class="sec" style="font-size:24px">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.fdFrom!=null?` · 전 ${esc(tshort(p.fdFrom))}`:''}</p></div></div>
-    ${!R.open&&R.g0?`<p class="small muted" style="text-align:center">스카우트 추정 등급 ${R.g0}</p>`:''}<div class="rv-row">${box('현재 능력',R.cur,R.rc)}${R.plo==null?box('잠재력',R.pot,R.rpt):`<div class="rv-b ${R.open?'op':''}"><span>잠재력 추정</span><b style="${R.open?`color:${rcol(Math.round((R.plo+R.phi)/2))}`:''}">${R.open?(R.plo===R.phi?`${dv(R.plo)}`:`${dv(R.plo)}~${dv(R.phi)}`):'?'}</b>${R.open?`<i>${R.plo===R.phi?'완성형':'코치진 추정 범위'}</i>`:'<i>&nbsp;</i>'}</div>`}</div><p class="small muted" style="text-align:center;margin:4px 0 0">능력 63 1군 평균 · 69 주전급 · 84 이상 리그 상위</p>
-    ${R.open?`<div class="rv-v">${R.v.t}</div>${R.g0?`<p class="small" style="text-align:center">스카우트 추정 ${R.g0}등급 → 실제 ${GRD(R.cur)}등급${R.g0===GRD(R.cur)?' (적중)':'SABCDEF'.indexOf(GRD(R.cur))<'SABCDEF'.indexOf(R.g0)?' (기대 이상)':' (기대 이하)'}</p>`:''}<p class="small">지명 시점 남은 후보 ${R.tot}명 기준(현재 능력)${top?` · 강점 ${top}`:''}</p>${R.plo!==R.phi?'<p class="small muted">잠재력이 맞았는지는 3년 뒤 창단 드래프트 회고에서 평가합니다.</p>':''}<button class="btn primary block" data-a="revClose">계속</button>`:`<button class="btn primary block rv-go" data-a="revOpen">능력 확인</button>`}
-  </div></div>`; }
+    ${f.length>1?`<div class="dl-feed">${f.slice(1,8).map(x=>`<span class="${x.tg?'tg':''}${x.me?' me':''}">${badge(x.tid,14)}<i>${x.rd}-${x.no}</i>${esc(x.nm)}<em>${esc(x.pos)}</em>${x.o!=null&&!x.me?fdEstChip(x.o):''}</span>`).join('')}</div>`:''}</div>`; }
+/* 지명 직후 카드(revMake·revView)는 55_fd_eval.js: 실제 능력 대신 스카우트 추정만 보여 준다 */
