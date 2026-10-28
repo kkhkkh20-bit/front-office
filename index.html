@@ -3084,6 +3084,11 @@ function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(
    스카우트 발굴: 구단 스카우트가 직접 찾은 선수. 처음엔 찾은 구단만 알고, 시간이 지나면 소문이 나서 다른 구단도 알게 된다.
    해외 스카우트망과 파견 스카우트 수준이 높을수록 더 자주, 더 좋은 선수를 찾는다 */
 const FFLAW={inj:'부상 이력',age:'나이 많음',adapt:'적응 우려'};
+/* 외국인 후보의 직전 리그 수준(KBO 기준). 같은 성적이라도 위쪽 리그 선수가 더 좋은 선수다 */
+const LG_LV={'MLB':['KBO보다 훨씬 높음','같은 성적이면 훨씬 좋은 선수입니다. 다만 출전이 적어 표본이 작습니다.'],'트리플A':['KBO와 비슷','성적을 거의 그대로 믿어도 됩니다.'],'NPB 2군':['KBO와 비슷','성적을 거의 그대로 믿어도 됩니다.'],
+  '도미니카 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],'베네수엘라 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],'CPBL':['KBO보다 낮음','성적을 꽤 깎아서 보세요.'],
+  '더블A':['KBO보다 낮음','성적을 꽤 깎아서 보세요. 같은 OPS라도 트리플A·MLB 선수보다 약합니다.'],'멕시코리그':['KBO보다 낮음(타자 리그)','타고투저 리그라 타격 성적을 크게 깎아서 보세요.'],'독립리그':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.'],'ABL':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.']};
+const lgLv=l=>(LG_LV[l]||['',''])[0];
 function newForeign(kind,opts){
   opts=opts||{};
   const asia=kind==='아시아'; const src=opts.src||(opts.market?'agent':null); const flv=opts.flv||0; const mineFind=src==='scout'&&opts.finder===G.user;
@@ -3092,7 +3097,9 @@ function newForeign(kind,opts){
   const isP=opts.isP??(R()<.65);
   let base=asia?clamp(N(48.5,4),40,60):reg==='la'?clamp(N(53,6),43,69):clamp(N(54,5),44,69);
   if(src==='scout')base=clamp(base+flv*1.3+(R()<.07*flv?ri(3,6):0),40,72);
-  const lvl=asia?{jp:['NPB 2군',-1],tw:['CPBL',4],au:['ABL',6]}[reg]:reg==='la'?pick([['멕시코리그',5],['도미니카 윈터리그',3],['베네수엘라 윈터리그',3]]):(()=>{ const w=wpick({AAA:5,AA:2,IND:1,MLB:src==='scout'?.15:.3}); return {AAA:['트리플A',2],AA:['더블A',4],IND:['독립리그',5],MLB:['MLB',-6]}[w]; })();
+  /* 리그 수준 보정(KBO=0, 양수=쉬운 리그라 같은 선수도 성적이 좋게 나온다). KBO는 대략 트리플A 수준으로 본다.
+     MLB와 더블A의 차이를 크게 둬서 '같은 OPS'라도 MLB 쪽이 훨씬 좋은 선수가 되게 한다(MLE: 더블A→MLB OPS 약 0.75배) */
+  const lvl=asia?{jp:['NPB 2군',1],tw:['CPBL',5],au:['ABL',8]}[reg]:reg==='la'?pick([['멕시코리그',7],['도미니카 윈터리그',3],['베네수엘라 윈터리그',3]]):(()=>{ const w=wpick({AAA:5,AA:2,IND:1,MLB:src==='scout'?.15:.3}); return {AAA:['트리플A',1],AA:['더블A',7],IND:['독립리그',8],MLB:['MLB',-12]}[w]; })();
   if(lvl[0]==='더블A'||lvl[0]==='독립리그')base=clamp(base-1.5,40,72);
   /* 좋아 보이는 선수일수록 이유가 있다 */
   const fp=lvl[0]==='MLB'||base>=63?.7:base>=58?.28:.1; const flaw=R()<fp?pick(['inj','inj','age','adapt']):null;
@@ -3100,8 +3107,10 @@ function newForeign(kind,opts){
   const p=newPlayer({age,isP,base,pot:base+(age<28?ri(0,3):0),team:opts.team??null,foreign:asia?'아시아':'용병',nat:FN[nk].nat,name:genFName(nk)});
   p.orig=reg; p.adapt=Math.round(clamp(N(50,13),20,80)); if(flaw==='adapt')p.adapt=ri(16,30); if(flaw==='inj')p.inj=clamp(.3+R()*.12,.3,.42); if(flaw)p.flaw=flaw;
   p.prevLvl=lvl[0];
-  p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,ri(150,420),lvl[1])):Object.assign({lvl:lvl[0]},simBat(p,ri(280,520),lvl[1]));
-  p.prev.g=isP?ri(18,40):Math.round(p.prev.pa/4.1); if(lvl[0]==='MLB'){ p.prev.g=isP?ri(8,30):ri(20,70); }
+  /* MLB 출신은 대부분 백업·콜업 선수라 출전이 적다(경기 수와 타석·이닝을 맞춘다) */
+  const mlb=lvl[0]==='MLB'; const mg=mlb?(isP?ri(10,32):ri(25,80)):0;
+  p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,mlb?Math.round(mg*rnd(2.6,4.2)):ri(150,420),lvl[1])):Object.assign({lvl:lvl[0]},simBat(p,mlb?Math.round(mg*rnd(2.4,3.6)):ri(280,520),lvl[1]));
+  p.prev.g=mlb?mg:isP?ri(18,40):Math.round(p.prev.pa/4.1);
   p.ask=fAsk(p); if(reg==='la')p.ask=round5(p.ask*.8); if(lvl[0]==='MLB')p.ask=round5(Math.min(F_NEW_CAP,p.ask*1.2)); if(flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
   if(src){ p.fsrc=src; p.fday=G.day; if(src==='scout'){ p.fknow=[opts.finder]; p.fpub=G.day+ri(14,45)-(base>=60?10:0); } else p.fpub=G.day; }
   return p;
@@ -3619,7 +3628,7 @@ function scoutReport0(p){
     if(p.age>=32)notes.push('하락세가 시작될 나이입니다. 장기 계약은 신중해야 합니다.');
     { const dh=dtHint(p,sd); if(dh&&(p.age<=30||p.dt==='vet'))notes.push(dh); }
     if(!p.prospect&&!p.foreign){ const pf=perfOvr(p,2); if(pf!=null){ if(pf-cur>=8)notes.push('최근 기록은 실력보다 운이 따른 면이 있습니다. 기록만 보고 비싸게 사면 위험합니다.'); else if(cur-pf>=8)notes.push('기록보다 실력이 좋습니다. 반등을 기대할 만합니다.'); } }
-    if(p.foreign&&p.prev&&!p.team){ notes.push(`${p.prevLvl} 기록은 리그 수준 차이를 감안해야 합니다.`); const lv=intlLv(origOf(p)); if(lv>=2&&p.adapt!=null){ if(p.adapt>=62)notes.push('성격이 밝고 생활 적응력이 좋아 첫해부터 제 실력을 낼 것으로 봅니다.'); else if(p.adapt<=38)notes.push('낯선 환경에 예민한 편입니다. 첫 시즌 적응에 애를 먹을 수 있습니다.'); else notes.push('적응력은 평범한 수준입니다.'); } }
+    if(p.foreign&&p.prev&&!p.team){ notes.push(LG_LV[p.prevLvl]?`${p.prevLvl}: ${LG_LV[p.prevLvl][0]}. ${LG_LV[p.prevLvl][1]}`:`${p.prevLvl} 기록은 리그 수준 차이를 감안해야 합니다.`); const lv=intlLv(origOf(p)); if(lv>=2&&p.adapt!=null){ if(p.adapt>=62)notes.push('성격이 밝고 생활 적응력이 좋아 첫해부터 제 실력을 낼 것으로 봅니다.'); else if(p.adapt<=38)notes.push('낯선 환경에 예민한 편입니다. 첫 시즌 적응에 애를 먹을 수 있습니다.'); else notes.push('적응력은 평범한 수준입니다.'); } }
     if(p.inj>.24&&sd<=7.5)notes.push('잔부상이 잦은 체질입니다. 부상 위험이 높습니다.');
     if(p.prospect&&p.amLevel&&sc&&sc.skill>=4)notes.push(`아마추어 기록은 ${p.amLevel}니다.`);
   } else notes.push(p.foreign&&!p.team?'에이전트가 보낸 영상과 기록뿐이라 실제 기량과 잠재력은 불확실합니다. 해외 스카우트망을 넓히면 정확해집니다.':p.prospect?'이 지역을 맡은 스카우트가 없어 잠재력은 판단하지 못했습니다.':'스카우트가 없어 잠재력은 판단하지 못했습니다.');
@@ -8800,7 +8809,7 @@ function statCells(p){ // 신인·외국인 후보: 능력치 대신 기록 5칸
 /* 선수 카드: 능력치와 성적이 핵심, 나머지는 한 줄 */
 function pcRec(p,hid){ // 성적 블록: 큰 숫자 하나 + 보조 한 줄
   let h, tag='';
-  if(hid){ h=p.prospect?p.am:p.prev; tag=p.prospect?'아마추어 통산':(p.prevLvl||'지난 시즌'); }
+  if(hid){ h=p.prospect?p.am:p.prev; tag=p.prospect?'아마추어 통산':(p.prevLvl?`${p.prevLvl}${lgLv(p.prevLvl)?` · ${lgLv(p.prevLvl)}`:''}`:'지난 시즌'); }
   else { h=curLine(p); if(h)tag=(h.y===G.year?'올해':h.y+'')+(h.lvl==='퓨처스'?' 2군':''); }
   if(!h||(p.isP?!h.outs:!h.pa))return `<div class="pc-rec"><span class="pc-l">성적</span><b class="pc-big muted">-</b><span class="pc-s">기록 없음</span></div>`;
   if(p.isP){ const o=h.outs, era=(h.er||0)*27/o, k9=h.so*27/o; const c=era<=3.3?'var(--good)':era<=4.2?'var(--r50)':era>=5.8?'var(--bad)':'var(--ink)';
@@ -9366,7 +9375,7 @@ function foreignView(){
   const mine=(asia?as:yb).map(p=>pcard(p,{sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)}`,tags:p.fy===G.year||p.fy===G.year+1?'<span class="pill">KBO 첫 시즌</span>':'',foot:`<b class="num">${money(p.sal)}</b><span>${Math.round(p.sal/USD)}만 달러 · ${p.rsy?`재계약 ${p.rsy}년차`:'첫 계약'}</span><button class="tc-i" data-a="player" data-v="${p.id}">상세</button><button class="tc-i" data-a="relNow" data-v="${p.id}">방출</button>`})).join('');
   const cards=market.map(({p,rp})=>{ const err=open?foreignCheck(G.user,p):'영입 기간이 아닙니다.'; const repl=mid&&used>=F_REPL_MAX; const pay=mid?Math.round(p.ask*remainFrac()):p.ask;
     const srcP=p.fsrc==='scout'?((p.fknow||[]).includes(G.user)?(G.day<(p.fpub||0)?'<span class="pill good">우리 스카우트 발굴 · 아직 우리만 앎</span>':'<span class="pill">우리 발굴 · 소문 퍼짐</span>'):'<span class="pill">다른 구단 발굴 · 소문으로 앎</span>'):'<span class="pill">에이전트 제안</span>';
-    return pcard(p,{rp,sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)} · ${esc(p.prevLvl||'')}`,
+    return pcard(p,{rp,sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)} · ${esc(p.prevLvl||'')}${lgLv(p.prevLvl)?`(${lgLv(p.prevLvl)})`:''}`,
       tags:(G.mgrWant&&G.mgrWant.y===G.year&&mgrFitF(p,{want:G.mgrWant})?`<span class="pill good" title="감독이 원한 유형: ${esc(G.mgrWant.style||'')}">감독 선호</span>`:'')+srcP+(p.flaw?`<span class="pill bad">${FFLAW[p.flaw]}</span>`:'')+netPill(origOf(p))+(p.inj>.24&&rp.sd<=7.5&&p.flaw!=='inj'?'<span class="pill bad">부상 체질</span>':'')+(()=>{ const n=fInterest(p); return n>=2?`<span class="pill bad">인기 · ${n}개 구단 관심</span>`:n===1?'<span class="pill">1개 구단 관심</span>':''; })()+(p.ask0&&p.ask>p.ask0?`<span class="pill warn">몸값 +${Math.round((p.ask/p.ask0-1)*100)}%</span>`:''),
       foot:`<b class="num">${money(p.ask)}</b><span>${Math.round(p.ask/USD)}만 달러${mid?` · 실지급 ${money(pay)}`:''}</span>${err||repl?`<span class="pill bad" title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':fErrShort(err)}</span>`:''}${fBudgetTag(pay)}<span class="tc-bt"><button class="tc-i${fwatchOn(p.id)?' on':''}" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 중':'관찰'}</button><button class="tc-i ${err||repl?'':'go'}" data-a="signFc" data-v="${p.id}" ${err||repl?'disabled':''}>계약</button></span>`}); });
   const fchips=[['all','전체'],...(!asia?[['p','투수'],['b','타자']]:[]),...regs.map(r=>[r,IREG[r].l])];

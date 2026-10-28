@@ -12,7 +12,7 @@ function statCells(p){ // 신인·외국인 후보: 능력치 대신 기록 5칸
 /* 선수 카드: 능력치와 성적이 핵심, 나머지는 한 줄 */
 function pcRec(p,hid){ // 성적 블록: 큰 숫자 하나 + 보조 한 줄
   let h, tag='';
-  if(hid){ h=p.prospect?p.am:p.prev; tag=p.prospect?'아마추어 통산':(p.prevLvl||'지난 시즌'); }
+  if(hid){ h=p.prospect?p.am:p.prev; tag=p.prospect?'아마추어 통산':(p.prevLvl?`${p.prevLvl}${lgLv(p.prevLvl)?` · ${lgLv(p.prevLvl)}`:''}`:'지난 시즌'); }
   else { h=curLine(p); if(h)tag=(h.y===G.year?'올해':h.y+'')+(h.lvl==='퓨처스'?' 2군':''); }
   if(!h||(p.isP?!h.outs:!h.pa))return `<div class="pc-rec"><span class="pc-l">성적</span><b class="pc-big muted">-</b><span class="pc-s">기록 없음</span></div>`;
   if(p.isP){ const o=h.outs, era=(h.er||0)*27/o, k9=h.so*27/o; const c=era<=3.3?'var(--good)':era<=4.2?'var(--r50)':era>=5.8?'var(--bad)':'var(--ink)';

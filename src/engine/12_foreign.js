@@ -6,6 +6,11 @@ function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(
    스카우트 발굴: 구단 스카우트가 직접 찾은 선수. 처음엔 찾은 구단만 알고, 시간이 지나면 소문이 나서 다른 구단도 알게 된다.
    해외 스카우트망과 파견 스카우트 수준이 높을수록 더 자주, 더 좋은 선수를 찾는다 */
 const FFLAW={inj:'부상 이력',age:'나이 많음',adapt:'적응 우려'};
+/* 외국인 후보의 직전 리그 수준(KBO 기준). 같은 성적이라도 위쪽 리그 선수가 더 좋은 선수다 */
+const LG_LV={'MLB':['KBO보다 훨씬 높음','같은 성적이면 훨씬 좋은 선수입니다. 다만 출전이 적어 표본이 작습니다.'],'트리플A':['KBO와 비슷','성적을 거의 그대로 믿어도 됩니다.'],'NPB 2군':['KBO와 비슷','성적을 거의 그대로 믿어도 됩니다.'],
+  '도미니카 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],'베네수엘라 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],'CPBL':['KBO보다 낮음','성적을 꽤 깎아서 보세요.'],
+  '더블A':['KBO보다 낮음','성적을 꽤 깎아서 보세요. 같은 OPS라도 트리플A·MLB 선수보다 약합니다.'],'멕시코리그':['KBO보다 낮음(타자 리그)','타고투저 리그라 타격 성적을 크게 깎아서 보세요.'],'독립리그':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.'],'ABL':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.']};
+const lgLv=l=>(LG_LV[l]||['',''])[0];
 function newForeign(kind,opts){
   opts=opts||{};
   const asia=kind==='아시아'; const src=opts.src||(opts.market?'agent':null); const flv=opts.flv||0; const mineFind=src==='scout'&&opts.finder===G.user;
@@ -14,7 +19,9 @@ function newForeign(kind,opts){
   const isP=opts.isP??(R()<.65);
   let base=asia?clamp(N(48.5,4),40,60):reg==='la'?clamp(N(53,6),43,69):clamp(N(54,5),44,69);
   if(src==='scout')base=clamp(base+flv*1.3+(R()<.07*flv?ri(3,6):0),40,72);
-  const lvl=asia?{jp:['NPB 2군',-1],tw:['CPBL',4],au:['ABL',6]}[reg]:reg==='la'?pick([['멕시코리그',5],['도미니카 윈터리그',3],['베네수엘라 윈터리그',3]]):(()=>{ const w=wpick({AAA:5,AA:2,IND:1,MLB:src==='scout'?.15:.3}); return {AAA:['트리플A',2],AA:['더블A',4],IND:['독립리그',5],MLB:['MLB',-6]}[w]; })();
+  /* 리그 수준 보정(KBO=0, 양수=쉬운 리그라 같은 선수도 성적이 좋게 나온다). KBO는 대략 트리플A 수준으로 본다.
+     MLB와 더블A의 차이를 크게 둬서 '같은 OPS'라도 MLB 쪽이 훨씬 좋은 선수가 되게 한다(MLE: 더블A→MLB OPS 약 0.75배) */
+  const lvl=asia?{jp:['NPB 2군',1],tw:['CPBL',5],au:['ABL',8]}[reg]:reg==='la'?pick([['멕시코리그',7],['도미니카 윈터리그',3],['베네수엘라 윈터리그',3]]):(()=>{ const w=wpick({AAA:5,AA:2,IND:1,MLB:src==='scout'?.15:.3}); return {AAA:['트리플A',1],AA:['더블A',7],IND:['독립리그',8],MLB:['MLB',-12]}[w]; })();
   if(lvl[0]==='더블A'||lvl[0]==='독립리그')base=clamp(base-1.5,40,72);
   /* 좋아 보이는 선수일수록 이유가 있다 */
   const fp=lvl[0]==='MLB'||base>=63?.7:base>=58?.28:.1; const flaw=R()<fp?pick(['inj','inj','age','adapt']):null;
@@ -22,8 +29,10 @@ function newForeign(kind,opts){
   const p=newPlayer({age,isP,base,pot:base+(age<28?ri(0,3):0),team:opts.team??null,foreign:asia?'아시아':'용병',nat:FN[nk].nat,name:genFName(nk)});
   p.orig=reg; p.adapt=Math.round(clamp(N(50,13),20,80)); if(flaw==='adapt')p.adapt=ri(16,30); if(flaw==='inj')p.inj=clamp(.3+R()*.12,.3,.42); if(flaw)p.flaw=flaw;
   p.prevLvl=lvl[0];
-  p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,ri(150,420),lvl[1])):Object.assign({lvl:lvl[0]},simBat(p,ri(280,520),lvl[1]));
-  p.prev.g=isP?ri(18,40):Math.round(p.prev.pa/4.1); if(lvl[0]==='MLB'){ p.prev.g=isP?ri(8,30):ri(20,70); }
+  /* MLB 출신은 대부분 백업·콜업 선수라 출전이 적다(경기 수와 타석·이닝을 맞춘다) */
+  const mlb=lvl[0]==='MLB'; const mg=mlb?(isP?ri(10,32):ri(25,80)):0;
+  p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,mlb?Math.round(mg*rnd(2.6,4.2)):ri(150,420),lvl[1])):Object.assign({lvl:lvl[0]},simBat(p,mlb?Math.round(mg*rnd(2.4,3.6)):ri(280,520),lvl[1]));
+  p.prev.g=mlb?mg:isP?ri(18,40):Math.round(p.prev.pa/4.1);
   p.ask=fAsk(p); if(reg==='la')p.ask=round5(p.ask*.8); if(lvl[0]==='MLB')p.ask=round5(Math.min(F_NEW_CAP,p.ask*1.2)); if(flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
   if(src){ p.fsrc=src; p.fday=G.day; if(src==='scout'){ p.fknow=[opts.finder]; p.fpub=G.day+ri(14,45)-(base>=60?10:0); } else p.fpub=G.day; }
   return p;
