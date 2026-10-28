@@ -3,7 +3,7 @@
    열 폭을 재서 화면에 들어가는 만큼씩 묶고 '◀ 1/3 ▶'로 넘긴다. 넓은 화면은 그대로 둔다 */
 const TWP_W=600;
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
-  document.querySelectorAll('.tw').forEach((tw,ix)=>{ if(tw.closest('.cs-bg'))return; const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
+  document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg'))return; const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
     tw.querySelectorAll(':scope > .twpg').forEach(x=>x.remove()); tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tw.classList.remove('twp');
     if(!narrow||tb.scrollWidth<=tw.clientWidth+4)return;
     const hr=tb.tHead.rows[tb.tHead.rows.length-1]; const H=[...hr.cells]; const n=H.length; if(n<3||H.some(c=>c.colSpan>1))return;
@@ -15,7 +15,8 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const show=new Set([0,...pages[pg]]);
     for(const r of rows)[...r.cells].forEach((c,i)=>{ if(!show.has(i))c.classList.add('twh'); });
     tw.classList.add('twp');
-    const lab=i=>{ const a=H[pages[i][0]].innerText.trim(), b=H[pages[i][pages[i].length-1]].innerText.trim(); return a===b||!b?a:`${a} ~ ${b}`; };
+    const hn0=c=>{ const e=c.querySelector('button')||c; const t=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(); return t||e.innerText.split('\n')[0].trim(); };
+    const lab=i=>{ const a=hn0(H[pages[i][0]]), b=hn0(H[pages[i][pages[i].length-1]]); return a===b||!b?a:`${a} ~ ${b}`; };
     const bar=document.createElement('div'); bar.className='twpg';
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
     const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.twPg[key]=pg+d; twPager(); };

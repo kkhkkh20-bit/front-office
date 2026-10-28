@@ -10,7 +10,7 @@ function statTable(p){
   }
   return `<table><thead><tr><th>시즌</th><th>구단</th><th class="key">OPS</th><th class="key">WAR</th><th>경기</th><th>타석</th><th>타율</th><th>출루율</th><th>장타율</th><th>안타</th><th>2루타</th><th>3루타</th><th>홈런</th><th>타점</th><th>득점</th><th>도루</th><th>볼넷</th><th>삼진</th><th>볼삼비</th><th>BABIP</th></tr></thead><tbody>${all.map(h=>{const r=bRate(h); return `<tr><td>${h.y2?`${h.y}~${String(h.y2).slice(2)}`:h.y}</td><td>${lab(h)}</td><td class="key">${h.pa?fmt3(r.ops):'-'}</td><td class="key">${h.tot?h.war.toFixed(1):h.pre?'-':wOf(h,p).toFixed(1)}</td><td>${h.g||0}</td><td>${h.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.obp)}</td><td>${fmt3(r.slg)}</td><td>${h.h}</td><td>${h.d}</td><td>${h.tr}</td><td>${h.hr}</td><td>${h.rbi}</td><td>${h.r}</td><td>${h.sb}</td><td>${h.bb}</td><td>${h.so}</td><td>${h.so?(h.bb/h.so).toFixed(2):'-'}</td><td>${babipOf(h)!=null?fmt3(babipOf(h)):'-'}</td></tr>`}).join('')}</tbody></table>`;
 }
-function keyBar(p,rp,isFA,isFM){ const cur=p.fdPool?null:rp.cur, pot=p.fdPool?null:rp.ofp; const fg=p.fdPool?fdGrade(p):null; const sal=isFM?p.ask:isFA&&p.ask?p.ask.annual:p.sal;
+function keyBar(p,rp,isFA,isFM){ if(p.fdPool&&G.fd)return fdKeyBar(p); const cur=p.fdPool?null:rp.cur, pot=p.fdPool?null:rp.ofp; const fg=p.fdPool?fdGrade(p):null; const sal=isFM?p.ask:isFA&&p.ask?p.ask.annual:p.sal;
   const ct=p.prospect?'드래프트 대상':p.fdPool?tContract(p):isFM?`요구 · ${Math.round(p.ask/USD)}만 달러`:isFA?`FA 요구 ${p.ask?p.ask.years+'년':''}`:ctText(p);
   const box=(l,v,c,sub,st)=>`<div class="kb"><span>${l}</span><b style="color:${c}">${v}</b>${st||''}${sub?`<i>${sub}</i>`:''}</div>`;
   return `<div class="kbar">${box(fg?'추정 등급':'현재',fg?fg.g:dv(cur)??'?',fg?fg.c:cur!=null?rcol(cur):'var(--muted)',fg?'스카우트 추정 · 지명 후 공개':rp.exact?'정확':'추정',fg||cur==null?'':starsH(dv(cur)))}${box('잠재력',fg?(fg.up?'↑':'-'):dv(pot)??'?',pot!=null?rcol(pot):'var(--muted)',pot==null?(p.fdPool?(fg&&fg.up?'성장 여지 있음':'지명 후 공개'):'알 수 없음'):pot-(cur||0)>=8?'성장 여지 큼':pot-(cur||0)>=3?'조금 더 성장':p.age>=33?'하락 시작':p.age>=29?'전성기':'거의 완성',fg||pot==null?'':starsH(dv(pot)))}${box('연봉',p.prospect?'-':money(sal||0),'#e8ecf3',ct)}</div>${valueLine(p,rp)}`; }
@@ -32,7 +32,7 @@ function reportCard(p,noTools){
   return `<section class="card">
     <div class="row between"><h2 class="sec">스카우트 리포트</h2><span class="small muted">${esc(rp.who)} · 정확도 ${rp.conf}</span></div>
     <div class="tiles"><div class="tile"><span class="g" style="color:${rcol(rp.cur)}">${dv(rp.cur)}</span><span class="l">현재 종합</span></div><div class="tile key"><span class="g" style="color:${rp.ofp!=null?rcol(rp.ofp):'var(--muted)'}">${dv(rp.ofp??'?')}</span><span class="l">잠재력</span></div><div class="tile"><span class="g" style="font-size:16px">${rp.risk}</span><span class="l">위험도</span></div>${rp.eta?`<div class="tile"><span class="g" style="font-size:16px">${rp.eta}년</span><span class="l">1군 도달 예상</span></div>`:''}</div>
-    ${rp.role?`<p class="small"><span class="muted">장래 역할</span> <b>${esc(rp.role)}</b></p>`:''}
+    ${rp.role&&!p.fdPool?`<p class="small"><span class="muted">장래 역할</span> <b>${esc(rp.role)}</b></p>`:''}
     ${noTools?'':`<div class="tools">${rp.tools.map(bar).join('')}</div>
     <p class="small muted">20~80 척도, 50이 1군 평균. 왼쪽 숫자는 현재, 오른쪽은 스카우트가 보는 미래입니다.</p>`}
     <div class="quote">${rp.notes.map(n=>`<p>${esc(n)}</p>`).join('')}</div>
@@ -112,7 +112,7 @@ function renderSheet0(){
     <h2 class="sec" style="font-size:24px">${esc(p.name)}${condChip(p)}</h2>${p.aw&&p.aw.length?`<div class="row" style="gap:4px;margin:2px 0">${p.aw.slice(-6).map(a=>`<span class="awp">${awArt(a,18)}${esc(a)}</span>`).join('')}</div>`:''}
     <p class="small muted">${posLabel(p)} · ${p.age}세 · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.rd}R ${p.draft.no}순위`:''}${p.dev?' · 육성선수 출신':''}</p></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
    ${keyBar(p,rp,isFA,isFM)}
-   <div class="row"><span class="pill acc">${esc(rp.arch)}</span>${rp.role?`<span class="pill">장래 ${esc(rp.role)}</span>`:''}${status}</div>
+   <div class="row">${p.fdPool?'':`<span class="pill acc">${esc(rp.arch)}</span>`}${rp.role&&!p.fdPool?`<span class="pill">장래 ${esc(rp.role)}</span>`:''}${status}</div>
    ${quickActs(p)}
    ${tabBar}
    ${T==='sum'?`
@@ -224,3 +224,9 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
     const r=bRate(h), bp=(h.h-h.hr)/Math.max(1,h.ab-h.so-h.hr); return `<tr><td>${x.y}</td><td>${x.lvl===1?'1군':'2군'}</td><td class="num">${fmt3(r.ops)}</td><td class="num">${fmt3(r.avg)}</td><td class="num">${h.hr}</td><td class="num ${bp>=.34?'lk':bp<=.27?'ul':''}">${fmt3(bp)}</td><td class="num">${h.pa}</td></tr>`; };
   return `<div class="r3"><div class="eyebrow">최근 ${R.length}년</div><table class="r3t"><thead><tr><th>시즌</th><th></th>${p.isP?'<th>ERA</th><th>FIP</th><th>ERA−FIP</th><th>이닝</th>':'<th>OPS</th><th>타율</th><th>홈런</th><th>BABIP</th><th>타석</th>'}</tr></thead><tbody>${R.map(row).join('')}</tbody></table>
     <p class="small muted">${p.isP?'ERA−FIP가 크게 음수면 운이 좋았던 해, 양수면 불운했던 해입니다.':'BABIP(인플레이 타구 안타 비율)가 .340을 넘으면 운이 좋았던 해, .270 아래면 불운했던 해일 수 있습니다.'} 한 해만 튀면 거품, 해마다 비슷하면 실력입니다.</p></div>`; }
+
+/* 창단 드래프트 후보: 종합 등급 대신 스카우트(툴)·데이터팀(기록) 의견을 나란히 */
+function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
+  const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
+  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg${p.isP?'':' · 컨택·선구안은 추정 오차 큼'}`)}${box('데이터팀 · 기록',d?d.it.map(([l,v])=>`${l} ${pctW(v)}`).slice(2).join(' · '):dataLv(G.user)<1?'분석원 없음':'기록 부족',d?[d.lv===2?'2군 기록':'',d.small?'표본 적음':'',d.luck?d.luck[0]:''].filter(Boolean).join(' · ')||`${d.ys}시즌 기록 기준`:'')}${box('연봉',money(p.sal||0),tContract(p))}</div>
+    <div class="fdop">${S.L.map(t=>`<span class="ftl${t.vis?'':' fz'}" style="--c:${rcol(t.v)}">${t.l} <b>${dv(t.v)}</b>${t.vis?'':'?'}</span>`).join('')}${d?d.it.map(([l,v])=>`<span class="dt-i"><i>${l}</i><b style="color:${pctC(v)}">${pctW(v)}</b></span>`).join(''):''}</div>`; }
