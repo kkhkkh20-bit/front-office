@@ -73,10 +73,11 @@ function ivBuild(k,d){ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.n
   return (Q[k]||Q.preseason).map(([q,opts])=>({q,opts:opts.map(([tone,t,fx])=>({tone,t,fx}))})); }
 const IV_TOPIC={fa_sign:'FA 영입',fa_lost:'FA 이탈',trade:'트레이드',injury:'주축 부상',preseason:'미디어데이',deadline:'트레이드 마감',season_end:'시즌 결산',streak_win:'연승'};
 function ivRequest(k,d){ if(G.unemp)return; d=d||{}; const cur=G.iv; if(cur&&!cur.done&&cur.exp>=G.day)return; if(cur&&G.day-cur.day<8&&!['preseason','season_end','deadline'].includes(k))return;
-  const outlet=pick(OUTLETS.slice(0,4)), rep=pick(REPORTERS); const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return;
-  G.iv={id:(G.ivSeq=(G.ivSeq||0)+1),k,d,outlet,rep,qs,i:0,ans:[],exp:G.day+5,done:false,day:G.day};
+  const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return;
+  G.iv={id:(G.ivSeq=(G.ivSeq||0)+1),k,d,outlet,rep,repId:R0.id,qs,i:0,ans:[],exp:G.day+5,done:false,day:G.day};
   mail('홍보팀',`[인터뷰 요청] ${outlet}: ${IV_TOPIC[k]||'현안'}`,`${outlet} ${rep} 기자가 ${IV_TOPIC[k]||'현안'} 관련 단장 인터뷰를 요청했습니다. 질문은 3개입니다.\n\n답변에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 5일 안에 응하지 않으면 '단장 침묵' 기사가 나갑니다.`,{imp:true,kind:'언론',acts:[{l:'인터뷰 참여하기',a:'ivOpen',v:G.iv.id},{l:'정중히 거절',a:'ivSkip',v:G.iv.id}]}); }
-function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]; const o=q&&q.opts[j]; if(!o)return null; const fx=o.fx; prInit();
+function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]; const o=q&&q.opts[j]; if(!o)return null; const R0=repById(v.repId); const fx=Object.assign({},o.fx,{fan:repMul(R0,o.fx.fan),press:repMul(R0,o.fx.press)}); prInit();
+  repRel(R0,['회피','비판','압박','냉정','노코멘트'].includes(o.tone)?-2:['솔직','설명','신중','감사','반성'].includes(o.tone)?2:1,`인터뷰 답변(${o.tone})`);
   G.pr.fan=clamp(G.pr.fan+fx.fan,0,100); G.pr.press=clamp(G.pr.press+fx.press,0,100);
   if(fx.mor){ const p=G.players[fx.mor[0]]; if(p)p.mor=clamp((p.mor??60)+fx.mor[1],0,100); }
   if(fx.mgr){ const m=G.mgr[G.user]; if(m&&!m.interim)m.rel=clamp(m.rel+fx.mgr,0,100); }
@@ -87,7 +88,7 @@ function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]
   if(v.i>=v.qs.length){ v.done=true; const big=v.ans.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0];
     news('언론',`${tshort(G.user)} 단장 "${big.a.replace(/^"|"$/g,'').slice(0,30)}${big.a.length>32?'…':''}"`,`${v.outlet} ${v.rep} 기자와의 인터뷰에서 ${IV_TOPIC[v.k]} 관련 질문에 답했습니다. ${v.ans.map(x=>x.a).join(' ')}`,0,{outlet:v.outlet}); }
   return o; }
-function ivSkip(){ const v=G.iv; if(!v||v.done)return; v.done=true; v.skip=true; news('언론',`${tshort(G.user)} 단장, ${IV_TOPIC[v.k]} 질문에 침묵`,'구단은 공식 입장을 내지 않았습니다. 팬들 사이에서 답답하다는 반응이 나옵니다.',-1,{outlet:v.outlet}); }
+function ivSkip(){ const v=G.iv; if(!v||v.done)return; v.done=true; v.skip=true; repRel(repById(v.repId),-4,'인터뷰 거절'); news('언론',`${tshort(G.user)} 단장, ${IV_TOPIC[v.k]} 질문에 침묵`,'구단은 공식 입장을 내지 않았습니다. 팬들 사이에서 답답하다는 반응이 나옵니다.',-1,{outlet:v.outlet}); }
 /* 공약 점검: 결산 때(가을야구·우승), 2월 1일(FA 큰손) */
 function ivPromCheck(when){ const L=G.ivProm||[]; if(!L.length)return; const y=when==='season'?G.year:G.year-1; const keep=[];
   for(const p of L){ if(when==='season'&&(p.k==='ps'||p.k==='champ')&&p.y===y){ const ok=p.k==='ps'?!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)):!!(G.ps&&G.ps.champ===G.user);
@@ -119,4 +120,5 @@ function ivDaily(){ const o=dobj(G.day); if(G.unemp)return;
   if(o.m===8&&o.d===1)ivRequest('deadline',{});
   if(o.m===11&&o.d===3&&G.last&&G.last.y===G.year)ivRequest('season_end',{});
   if(o.m===2&&o.d===1)try{ ivPromCheck('feb'); }catch(e){}
-  if(o.w===3)try{ ivNewsWeekly(); }catch(e){} }
+  if(o.w===3)try{ ivNewsWeekly(); }catch(e){}
+  if(o.w===5&&o.d%2===0)try{ pressTips(); }catch(e){} }

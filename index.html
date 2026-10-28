@@ -1373,6 +1373,14 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .cal-plan.k-scout{background:color-mix(in srgb,#d4a017 30%,transparent)}.cal-plan.k-farm{background:color-mix(in srgb,#5a8 25%,transparent)}
 .gpl{margin:10px 0;padding:10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:8px}
 .gpl-r{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.gpl-r>.small{min-width:120px;opacity:.8}
+/* 인물 카드 공통 */
+.pcard{display:grid;gap:10px;margin:10px 0;padding:10px;border:1px solid var(--line,#333);border-radius:10px;background:color-mix(in srgb,var(--card,#181b20) 60%,transparent)}
+.pc-sec{display:grid;gap:4px}
+.pab{display:grid;grid-template-columns:110px 1fr 34px;gap:8px;align-items:center;font-size:13px}
+.pab i{display:block;height:8px;border-radius:4px;background:var(--line,#333);overflow:hidden}.pab i b{display:block;height:100%}
+.pab em{font-style:normal;text-align:right;font-weight:700}
+.pc-tr{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.pc-li{display:grid;grid-template-columns:110px 1fr;gap:8px}
+@media (max-width:480px){.pab,.pc-li{grid-template-columns:90px 1fr 30px}.pc-li{grid-template-columns:90px 1fr}}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -6103,10 +6111,11 @@ function ivBuild(k,d){ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.n
   return (Q[k]||Q.preseason).map(([q,opts])=>({q,opts:opts.map(([tone,t,fx])=>({tone,t,fx}))})); }
 const IV_TOPIC={fa_sign:'FA 영입',fa_lost:'FA 이탈',trade:'트레이드',injury:'주축 부상',preseason:'미디어데이',deadline:'트레이드 마감',season_end:'시즌 결산',streak_win:'연승'};
 function ivRequest(k,d){ if(G.unemp)return; d=d||{}; const cur=G.iv; if(cur&&!cur.done&&cur.exp>=G.day)return; if(cur&&G.day-cur.day<8&&!['preseason','season_end','deadline'].includes(k))return;
-  const outlet=pick(OUTLETS.slice(0,4)), rep=pick(REPORTERS); const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return;
-  G.iv={id:(G.ivSeq=(G.ivSeq||0)+1),k,d,outlet,rep,qs,i:0,ans:[],exp:G.day+5,done:false,day:G.day};
+  const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return;
+  G.iv={id:(G.ivSeq=(G.ivSeq||0)+1),k,d,outlet,rep,repId:R0.id,qs,i:0,ans:[],exp:G.day+5,done:false,day:G.day};
   mail('홍보팀',`[인터뷰 요청] ${outlet}: ${IV_TOPIC[k]||'현안'}`,`${outlet} ${rep} 기자가 ${IV_TOPIC[k]||'현안'} 관련 단장 인터뷰를 요청했습니다. 질문은 3개입니다.\n\n답변에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 5일 안에 응하지 않으면 '단장 침묵' 기사가 나갑니다.`,{imp:true,kind:'언론',acts:[{l:'인터뷰 참여하기',a:'ivOpen',v:G.iv.id},{l:'정중히 거절',a:'ivSkip',v:G.iv.id}]}); }
-function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]; const o=q&&q.opts[j]; if(!o)return null; const fx=o.fx; prInit();
+function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]; const o=q&&q.opts[j]; if(!o)return null; const R0=repById(v.repId); const fx=Object.assign({},o.fx,{fan:repMul(R0,o.fx.fan),press:repMul(R0,o.fx.press)}); prInit();
+  repRel(R0,['회피','비판','압박','냉정','노코멘트'].includes(o.tone)?-2:['솔직','설명','신중','감사','반성'].includes(o.tone)?2:1,`인터뷰 답변(${o.tone})`);
   G.pr.fan=clamp(G.pr.fan+fx.fan,0,100); G.pr.press=clamp(G.pr.press+fx.press,0,100);
   if(fx.mor){ const p=G.players[fx.mor[0]]; if(p)p.mor=clamp((p.mor??60)+fx.mor[1],0,100); }
   if(fx.mgr){ const m=G.mgr[G.user]; if(m&&!m.interim)m.rel=clamp(m.rel+fx.mgr,0,100); }
@@ -6117,7 +6126,7 @@ function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]
   if(v.i>=v.qs.length){ v.done=true; const big=v.ans.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0];
     news('언론',`${tshort(G.user)} 단장 "${big.a.replace(/^"|"$/g,'').slice(0,30)}${big.a.length>32?'…':''}"`,`${v.outlet} ${v.rep} 기자와의 인터뷰에서 ${IV_TOPIC[v.k]} 관련 질문에 답했습니다. ${v.ans.map(x=>x.a).join(' ')}`,0,{outlet:v.outlet}); }
   return o; }
-function ivSkip(){ const v=G.iv; if(!v||v.done)return; v.done=true; v.skip=true; news('언론',`${tshort(G.user)} 단장, ${IV_TOPIC[v.k]} 질문에 침묵`,'구단은 공식 입장을 내지 않았습니다. 팬들 사이에서 답답하다는 반응이 나옵니다.',-1,{outlet:v.outlet}); }
+function ivSkip(){ const v=G.iv; if(!v||v.done)return; v.done=true; v.skip=true; repRel(repById(v.repId),-4,'인터뷰 거절'); news('언론',`${tshort(G.user)} 단장, ${IV_TOPIC[v.k]} 질문에 침묵`,'구단은 공식 입장을 내지 않았습니다. 팬들 사이에서 답답하다는 반응이 나옵니다.',-1,{outlet:v.outlet}); }
 /* 공약 점검: 결산 때(가을야구·우승), 2월 1일(FA 큰손) */
 function ivPromCheck(when){ const L=G.ivProm||[]; if(!L.length)return; const y=when==='season'?G.year:G.year-1; const keep=[];
   for(const p of L){ if(when==='season'&&(p.k==='ps'||p.k==='champ')&&p.y===y){ const ok=p.k==='ps'?!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)):!!(G.ps&&G.ps.champ===G.user);
@@ -6149,7 +6158,8 @@ function ivDaily(){ const o=dobj(G.day); if(G.unemp)return;
   if(o.m===8&&o.d===1)ivRequest('deadline',{});
   if(o.m===11&&o.d===3&&G.last&&G.last.y===G.year)ivRequest('season_end',{});
   if(o.m===2&&o.d===1)try{ ivPromCheck('feb'); }catch(e){}
-  if(o.w===3)try{ ivNewsWeekly(); }catch(e){} }
+  if(o.w===3)try{ ivNewsWeekly(); }catch(e){}
+  if(o.w===5&&o.d%2===0)try{ pressTips(); }catch(e){} }
 /* ===== 단장 일정: 경기 직관·스카우팅 출장·2군 방문 =====
    단장은 모든 경기를 보지 않는다. 결과는 보고로 받고, 볼 경기를 골라 경기장에 간다(혼자, 구단주와, 사장과).
    경기가 없는 날이나 시즌 중 다른 날에는 고교 대회를 보러 가거나 2군을 찾는다.
@@ -6192,6 +6202,26 @@ function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.
 function gmFarmVisit(){ const d=depth(G.user); const F=[...d.futB,...d.futP].filter(p=>!p.ys); for(const p of F)p.mor=clamp((p.mor??60)+2,0,100);
   const best=F.filter(p=>p.age<=24).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a))).slice(0,3);
   mail('단장 노트','2군 방문',`2군 선수 ${F.length}명의 기분이 올랐습니다(+2).\n가장 크게 자라고 있는 선수: ${best.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세, 현재 ${dvo(p)})`).join(', ')||'-'}\n2군 감독: "단장님이 직접 오시니 선수들 눈빛이 다릅니다."`,{kind:'육성'}); }
+/* ===== 기자단: 기자도 인물이다 =====
+   기자마다 소속 매체·성향(우호·중립·비판)·전문 분야·영향력·단장과의 관계가 있다.
+   인터뷰에 성실히 응하면 관계가 오르고, 거절·회피·공격적 답변은 관계를 깎는다.
+   비판 성향 기자는 나쁜 답을 더 크게 쓰고, 우호 기자는 좋은 답을 더 크게 쓴다. 영향력이 클수록 효과가 크다.
+   관계 70 이상 기자는 가끔 다른 구단 동향을 귀띔해 준다 */
+const PR_STYLE={fr:{l:'우호적',d:'구단 사정을 이해해 주는 편입니다. 좋은 말은 크게, 나쁜 말은 작게 씁니다.'},ne:{l:'중립',d:'들은 대로 씁니다.'},cr:{l:'비판적',d:'프런트를 날카롭게 봅니다. 실수 하나를 크게 씁니다.'}};
+const PR_FIELD=['현장 취재','데이터 분석','이적 시장','구단 경영','인물 기획'];
+function pressInit(){ if(G.reporters&&G.reporters.length)return G.reporters; const L=G.reporters=[];
+  REPORTERS.forEach((n,i)=>L.push({id:'rp'+i,name:n,outlet:OUTLETS[i%4],age:ri(27,55),female:/서진|하람|가은|세라/.test(n),style:pick(['fr','ne','ne','cr','cr']),field:pick(PR_FIELD),inf:ri(1,5),rel:50,iv:0,last:null}));
+  return L; }
+function repById(id){ return pressInit().find(r=>r.id===id); }
+function repPick(){ const L=pressInit(); return L[Math.floor(R()*L.length)]; }
+function repMul(r,v){ if(!r)return v; const s=r.style==='cr'?(v<0?1.5:.7):r.style==='fr'?(v>0?1.4:.7):1; return Math.round(v*s*(.8+r.inf*.1)); }
+function repRel(r,d,why){ if(!r)return; r.rel=clamp(r.rel+d,0,100); r.last={d:G.day,dv:d,why}; }
+/* 귀띔: 관계 좋은 기자가 다른 구단이 노리는 자리와 우리 선수를 알려 준다(2주에 한 번 정도) */
+function pressTips(){ if(G.unemp)return; const r=pressInit().filter(x=>x.rel>=70).sort(()=>R()-.5)[0]; if(!r||R()>.5)return;
+  const t=pick(G.teams.filter(x=>x.id!==G.user)); let txt=''; try{ const SR=slotRanks(t.id); const k=PSLOTS.filter(s=>s!=='DH').sort((a,b)=>SR[b].rank-SR[a].rank)[0];
+    const mine=playersOf(G.user).filter(p=>pSlot(p)===k||(k==='SP'&&isSPr(p))||(k==='RP'&&p.isP&&!isSPr(p))).sort((a,b)=>ovr(b)-ovr(a))[0];
+    txt=`${tname(t.id)}이(가) ${SLOTK[k]} 보강을 서두르고 있습니다.${mine?` 우리 ${mine.name}을(를) 눈여겨본다는 얘기가 있습니다.`:''}`; }catch(e){ return; }
+  mail(`${r.outlet} ${r.name} 기자`,`[귀띔] ${tshort(t.id)} 동향`,`"단장님께만 드리는 얘기입니다." ${txt}\n\n(관계 ${Math.round(r.rel)} 기자의 비공식 정보입니다. 기사로는 아직 나가지 않았습니다.)`,{kind:'언론'}); }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -6716,7 +6746,7 @@ function scoutBody(){
     return `<select data-a="sAssign" data-v="${s.id}" aria-label="담당 업무">${os.map(([v,l])=>`<option value="${v}" ${v===cur?'selected':''}>${l}</option>`).join('')}</select>`; };
   return `<p class="small muted">스카우트 한 명은 한 가지 업무만 맡습니다. 투수 감별·타자 감별 특기가 있으면 그 유형 선수를 볼 때 능력이 한 단계 높습니다. 아마추어는 그 지역 고교·대학 선수(드래프트), 프로는 그 지역 연고 구단 선수, 해외는 그 나라 외국인 시장을 봅니다. 해외 담당을 보내면 그 나라 정보 수준이 한 단계 올라갑니다. 업무를 바꾸면 30일 동안 적응 기간이라 능력이 1 낮게 적용됩니다. 최대 ${SCOUT_MAX}명.</p>
     ${matrix}
-    <div class="tgrid">${G.scouts.map(s=>scoutCard(s,`${opt(s)}${G.day-(s.since??-999)<30?`<span class="pill warn">적응 중 · ${dmd(s.since+30)}까지</span>`:''}<span class="small muted">충성도 ${Math.round(stAttr(s).loy)} · 야망 ${s.amb}</span><button class="tc-i" data-a="fireScout" data-v="${s.id}">계약 해지</button>`)).join('')||'<p class="small muted">스카우트가 없습니다.</p>'}</div>
+    <div class="tgrid">${G.scouts.map(s=>scoutCard(s,`${opt(s)}${G.day-(s.since??-999)<30?`<span class="pill warn">적응 중 · ${dmd(s.since+30)}까지</span>`:''}<span class="small muted">충성도 ${Math.round(stAttr(s).loy)} · 야망 ${s.amb}</span><button class="tc-i" data-a="person" data-v="sc:${s.id}">인물 카드</button><button class="tc-i" data-a="fireScout" data-v="${s.id}">계약 해지</button>`)).join('')||'<p class="small muted">스카우트가 없습니다.</p>'}</div>
     <div class="eyebrow">고용 ${G.scouts.length}/${SCOUT_MAX}명 · ${stPrestigeLine()}</div>
     ${(()=>{ const f=UI.scF||'all'; return `<div class="row between"><span class="small muted">영입 후보 ${scoutMkt().length}명 · 매달 일부가 바뀝니다</span><div class="chips">${[['all','전체'],['P','투수 감별'],['B','타자 감별'],['hi','능력 4 이상']].map(([k,l])=>`<button data-a="scF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div></div>`; })()}
     <div class="tgrid">${scoutMkt().filter(s=>{ const f=UI.scF||'all'; return f==='all'||(f==='hi'?s.skill>=4:s.spec===f); }).sort((a,b)=>b.skill-a.skill||a.sal-b.sal).map(s=>scoutCard(s,stMktInfo(s)+`<button class="tc-i go" data-a="hireScout" data-v="${s.id}:0" ${G.scouts.length>=SCOUT_MAX?'disabled':''}>제안 · 연 ${money(s.sal||0)}</button><button class="tc-i" data-a="hireScout" data-v="${s.id}:0.2" ${G.scouts.length>=SCOUT_MAX?'disabled':''}>20% 더 · ${money(round5(s.sal*1.2))}</button>`)).join('')}</div>${stOtherView('sc')}`;
@@ -7005,7 +7035,8 @@ function relPeople(){
     {k:'press',name:'언론',role:'야구 담당 기자단',av:{persona:'agent',pid:'press'+G.user,team:G.user,age:38,expr:relEx(pr),name:'언론'},rel:pr,rl:'논조',lab:pressLabel(pr),sub:`최근 기사 ${(G.news||[]).filter(n=>n.d>=G.day-14).length}건`}];
   for(const ag of agInit()){ const cl=faLive()?agClients(ag):[]; const dl=(ag.deals&&ag.deals[G.user])||0; if(!cl.length&&!dl&&agRel(ag)===50)continue; const r=agRel(ag);
     out.push({k:'agt:'+ag.id,name:ag.name,role:`${ag.firm} · ${AG_SIZE[ag.size]}${cl.length?` · FA 고객 ${cl.length}명`:''}`,av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:relEx(r),name:ag.name},rel:r,rl:'친분',lab:agRelLab(r),sub:(AG_STYLE[ag.style]||AG_STYLE.rel).l+' 에이전트'}); }
-  return [['구단 수뇌부',top],['현장 · 코칭스태프',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out]];
+  const reps=pressInit().map(r=>({k:'rep:'+r.id,name:r.name,role:`${r.outlet} 기자`,av:{persona:'agent',pid:r.id+r.name,age:r.age,female:r.female,expr:relEx(r.rel),name:r.name},rel:Math.round(r.rel),rl:'관계',lab:relLabel(r.rel),sub:`${PR_STYLE[r.style].l} · ${r.field}`}));
+  return [['구단 수뇌부',top],['현장 · 코칭스태프',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out],['기자단',reps]];
 }
 function relKey(x){ return x.k.startsWith('p:')?['player',x.k.slice(2)]:['person',x.k]; }
 function dChip(k){ const d=relDelta(k); return d?`<i class="rd ${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</i>`:''; }
@@ -7044,7 +7075,7 @@ function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); con
   return `<section class="card relstrip"><div class="row between"><h2 class="sec">관계</h2><button class="btn small" data-a="go" data-v="club:rel">관계도</button></div>
     <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${x.rel}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
 /* 인물 카드 시트 */
-function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)return '';
+function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)x=personX(k); if(!x)return '';
   const t=team(G.user); const sec=(h,b)=>b?`<div class="ps-s"><div class="eyebrow">${h}</div>${b}</div>`:''; const li=a=>`<ul class="ps-l">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`;
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
   let info='', moves=[], fx=[], acts=[], recent='';
@@ -7096,7 +7127,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
     <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${d>0?'+':''}${d}`:''}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span></div>`}
-    ${info}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
+    ${personTop(k)}${info}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
 
 /* ---------- OB·레전드 ---------- */
@@ -9189,7 +9220,7 @@ document.addEventListener('click',e=>{ if(UI.tab==='train'&&e.target.closest&&e.
 function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarket(); const stars=k=>'★'.repeat(k)+'<i class="off">'+'★'.repeat(5-k)+'</i>';
   const pw=r=>anaPow(r); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
   const card=(a,mine)=>`<div class="tcard anc" style="cursor:default"><div class="row between" style="flex-wrap:nowrap"><div style="min-width:0">${avImg({persona:'staff',pid:a.id,name:a.name,age:a.age})}<b> ${esc(a.name)}</b> <span class="small muted">${a.age}세 · 연 ${money(a.sal)}</span></div><span class="anstar">${stars(a.skill)}</span></div>
-    ${mine?`<div class="row" style="gap:6px;margin-top:6px"><select data-a="anaRole" data-v="${a.id}" aria-label="역할">${Object.entries(AROLE).map(([k,r])=>`<option value="${k}" ${a.role===k?'selected':''}>${r.l}</option>`).join('')}</select>${G.day-a.since<30?'<span class="pill warn">적응 중</span>':''}<span class="small muted">충성도 ${Math.round(stAttr(a).loy)}</span><button class="btn small" data-a="anaFire" data-v="${a.id}" style="margin-left:auto">계약 해지</button></div>`
+    ${mine?`<div class="row" style="gap:6px;margin-top:6px"><select data-a="anaRole" data-v="${a.id}" aria-label="역할">${Object.entries(AROLE).map(([k,r])=>`<option value="${k}" ${a.role===k?'selected':''}>${r.l}</option>`).join('')}</select>${G.day-a.since<30?'<span class="pill warn">적응 중</span>':''}<span class="small muted">충성도 ${Math.round(stAttr(a).loy)}</span><button class="btn small" data-a="person" data-v="an:${a.id}">카드</button><button class="btn small" data-a="anaFire" data-v="${a.id}" style="margin-left:auto">계약 해지</button></div>`
       :`<p class="small muted" style="margin:6px 0">${AROLE[a.role].l} 전문${a.car?` · ${esc(a.car)}`:''}</p>${stMktInfo(a)}<div class="row" style="gap:6px"><button class="btn small primary" data-a="anaHire" data-v="${a.id}:0" ${L.length>=ANA_MAX?'disabled':''}>제안 · 연 ${money(a.sal)}</button><button class="btn small" data-a="anaHire" data-v="${a.id}:0.2" ${L.length>=ANA_MAX?'disabled':''}>20% 더 · ${money(round5(a.sal*1.2))}</button></div>`}</div>`;
   const it=inTabs('ana',[['mine',`우리 분석원 ${L.length}/${ANA_MAX}`],['mk','채용 후보'],['rep','분석 보고']],'mine');
   const eff=`<dl class="tsum"><div><dt>상대 전력분석</dt><dd>${pw('opp').toFixed(1)} · 실점 억제</dd></div><div><dt>트래킹 데이터</dt><dd>${pw('trk').toFixed(1)} · 평가 오차 -${Math.round((1-E.sdm)*100)}%</dd></div><div><dt>영상 분석</dt><dd>${pw('vid').toFixed(1)} · 타격 공략</dd></div></dl>`;
@@ -10530,13 +10561,45 @@ function stOtherView(kind){ stInit(); const open=stPoachOpen(); const P=G.stPo&&
   L.sort((a,b)=>b.s.skill-a.s.skill||a.s.loy-b.s.loy);
   return `<div class="eyebrow" style="margin-top:14px">다른 구단 ${kind==='sc'?'스카우트':'분석원'} (능력 3 이상)</div>
     <p class="small muted">${open?`비시즌(11~1월)에는 연봉을 25%나 50% 올려 데려올 수 있습니다. 구단당 한 번, 비시즌 ${3-P.n}번 남음. 시도하면 그 구단과 관계가 3 떨어집니다.`:'다른 구단 스태프는 11월~1월에만 데려올 수 있습니다.'} 충성도가 높거나 위상이 높은 구단에 있는 사람은 잘 움직이지 않습니다.</p>
-    <div class="tw"><table class="stt"><thead><tr><th>이름</th><th>구단</th><th>능력</th><th>${kind==='sc'?'담당':'역할'}</th><th>충성도</th><th>연봉</th><th></th></tr></thead><tbody>${L.slice(0,14).map(({s,tid})=>`<tr><td>${esc(s.name)} <span class="small muted">${s.age}세</span></td><td>${badge(tid,14)} ${esc(tshort(tid))}</td><td>${'★'.repeat(s.skill)}</td><td class="small">${kind==='sc'?esc((SROLE[s.role||'am']||'')+' '+(s.region||'')):esc(AROLE[s.role].l)}</td><td class="num">${Math.round(s.loy)}</td><td class="num">${money(s.sal)}</td><td>${open&&!P.t.includes(tid)&&P.n<3?`<button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.25">+25% · ${money(round5(s.sal*1.25))}</button><button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.5">+50% · ${money(round5(s.sal*1.5))}</button>`:''}</td></tr>`).join('')}</tbody></table></div>`; }
+    <div class="tw"><table class="stt"><thead><tr><th>이름</th><th>구단</th><th>능력</th><th>${kind==='sc'?'담당':'역할'}</th><th>충성도</th><th>연봉</th><th></th></tr></thead><tbody>${L.slice(0,14).map(({s,tid})=>`<tr><td><button class="lnk" data-a="person" data-v="ost:${kind}:${tid}:${s.id}">${esc(s.name)}</button> <span class="small muted">${s.age}세</span></td><td>${badge(tid,14)} ${esc(tshort(tid))}</td><td>${'★'.repeat(s.skill)}</td><td class="small">${kind==='sc'?esc((SROLE[s.role||'am']||'')+' '+(s.region||'')):esc(AROLE[s.role].l)}</td><td class="num">${Math.round(s.loy)}</td><td class="num">${money(s.sal)}</td><td>${open&&!P.t.includes(tid)&&P.n<3?`<button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.25">+25% · ${money(round5(s.sal*1.25))}</button><button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.5">+50% · ${money(round5(s.sal*1.5))}</button>`:''}</td></tr>`).join('')}</tbody></table></div>`; }
 /* ---------- 단장 인터뷰 화면 ---------- */
 function ivSheet(){ const v=G.iv; if(!v)return ''; const fxT=fx=>{ const L=[]; if(fx.fan)L.push(`팬 여론 ${fx.fan>0?'+':''}${fx.fan}`); if(fx.press)L.push(`언론 ${fx.press>0?'+':''}${fx.press}`); if(fx.mor){ const p=G.players[fx.mor[0]]; if(p)L.push(`${p.name} 기분 ${fx.mor[1]>0?'+':''}${fx.mor[1]}`); } if(fx.mgr)L.push(`감독 관계 ${fx.mgr>0?'+':''}${fx.mgr}`); if(fx.team)L.push(`선수단 기분 ${fx.team>0?'+':''}${fx.team}`); if(fx.young)L.push(`젊은 선수 기분 +${fx.young}`); if(fx.prom)L.push(`공약: ${{ps:'가을야구',champ:'우승',fa:'FA 영입'}[fx.prom]}`); return L.join(' · '); };
   const hist=v.ans.map(a=>`<div class="iv-q"><span class="iv-who">${esc(v.rep)} 기자</span>${esc(a.q)}</div><div class="iv-a"><span class="iv-who">단장 · ${esc(a.tone)}</span>${esc(a.a)}<em>${esc(fxT(a.fx))}</em></div>`).join('');
   const q=v.qs[v.i];
   const body=v.done?`<div class="iv-end"><b>인터뷰가 끝났습니다.</b><p class="small">${esc(v.outlet)}에 기사가 나갑니다. 공약을 했다면 시즌 뒤 다시 평가받습니다.</p><button class="btn primary" data-a="closeSheet">닫기</button></div>`
     :`<div class="iv-q now"><span class="iv-who">${esc(v.rep)} 기자 · ${v.i+1}/${v.qs.length}</span>${esc(q.q)}</div><div class="iv-opts">${q.opts.map((o,j)=>`<button class="iv-o" data-a="ivAns" data-v="${j}"><span class="pill">${esc(o.tone)}</span>${esc(o.t)}</button>`).join('')}</div>`;
-  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut iv" data-stop="1" role="dialog" aria-label="인터뷰"><div class="sheet-head"><div><div class="eyebrow">${esc(v.outlet)} · ${esc(IV_TOPIC[v.k]||'인터뷰')}</div><h2 class="sec">단장 인터뷰</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut iv" data-stop="1" role="dialog" aria-label="인터뷰"><div class="sheet-head"><div><div class="eyebrow">${esc(v.outlet)} · ${esc(IV_TOPIC[v.k]||'인터뷰')} · ${(()=>{ const r=repById(v.repId); return r?`<button class="lnk" data-a="person" data-v="rep:${r.id}">${esc(r.name)} 기자</button> (${PR_STYLE[r.style].l}, 관계 ${Math.round(r.rel)})`:''; })()}</div><h2 class="sec">단장 인터뷰</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     <p class="small muted">답변 말투와 내용에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 현재 팬 여론 ${Math.round(G.pr.fan)} · 언론 논조 ${Math.round(G.pr.press)}</p>${hist}${body}</div></div>`; }
+/* ---------- 모든 인물 카드: 능력 · 성격 · 관계 ----------
+   관계도에 있는 사람(구단주·사장·감독·코치·다른 구단 단장·에이전트)에 더해 스카우트·전력분석원·기자·다른 구단 감독·다른 구단 스태프도
+   같은 카드 형식으로 연다. 카드 위쪽에 능력(막대), 성격(특징), 관계(단장과의 수치와 주변 인물)를 공통으로 보여 준다 */
+function pcBar(l,v,inv){ const c=Math.round(clamp(v,0,100)); return `<div class="pab"><span>${esc(l)}</span><i><b style="width:${c}%;background:${inv?rcol(20+(100-c)*.6):rcol(20+c*.6)}"></b></i><em class="num">${c}</em></div>`; }
+const sk100=s=>Math.round(20+s*16); /* 별 1~5 → 100점 척도 */
+function personX(k){ const [kind,a,b]=String(k).split(':');
+  if(kind==='sc'||kind==='an'){ const s=(kind==='sc'?G.scouts:anaList()).find(x=>x.id===a); if(!s)return null; stAttr(s);
+    return {k,name:s.name,role:kind==='sc'?`스카우트 · ${SROLE[s.role||'am']} ${s.role==='intl'?IREG[s.region].l:s.region||''}`:`전력분석원 · ${AROLE[s.role].l}`,av:{persona:'staff',pid:s.id,team:G.user,age:s.age,name:s.name},rel:Math.round(s.loy),rl:'충성도',lab:s.loy>=70?'구단 사람':s.loy>=40?'자리 잡음':'아직 손님',sub:`${s.age}세 · 연 ${money(s.sal)}${s.car?' · '+s.car:''}`}; }
+  if(kind==='rep'){ const r=repById(a); if(!r)return null; return {k,name:r.name,role:`${r.outlet} 기자 · ${r.field}`,av:{persona:'agent',pid:r.id+r.name,age:r.age,female:r.female,expr:relEx(r.rel),name:r.name},rel:Math.round(r.rel),rl:'관계',lab:relLabel(r.rel),sub:`${PR_STYLE[r.style].l} · 영향력 ${'★'.repeat(r.inf)}`}; }
+  if(kind==='omgr'){ const m=G.mgr[+a]; if(!m)return null; mgrFix(m); return {k,name:m.name,role:`${tname(+a)} 감독`,av:{persona:'mgr',pid:m.id,team:+a,age:m.age,name:m.name},rel:null,lab:mgrType(m).n,sub:m.career||''}; }
+  if(kind==='ost'){ const L=stInit()[+b]; const s=L&&(a==='sc'?L.sc:L.an).find(x=>x.id===String(k).split(':')[3]); if(!s)return null; stAttr(s);
+    return {k,name:s.name,role:`${tname(+b)} ${a==='sc'?'스카우트':'전력분석원'}`,av:{persona:'staff',pid:s.id,team:+b,age:s.age,name:s.name},rel:null,lab:`구단 충성도 ${Math.round(s.loy)}`,sub:`${s.age}세 · 연 ${money(s.sal)}`}; }
+  return null; }
+/* 카드 공통 상단: 능력·성격·관계 */
+function personTop(k){ const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[];
+  if(kind==='own'){ const w=OWNER[t.owner].w; ab=[['순위 중시',w[0]*100],['재정 중시',w[2]*100],['여론 중시',w[3]*100]]; pe=[[OWNER[t.owner].label,OWNTRAIT[t.owner]]]; li=[['사장',bossOf(G.user).ceo.name+' (예산 집행 창구)'],['단장',`신뢰 ${Math.round(t.trust)}`]]; }
+  else if(kind==='ceo'){ const B=bossOf(G.user); const c=u01('ceoP',B.ceo.id); ab=[['예산 재량',40+c*40],['현장 이해',30+u01('ceoQ',B.ceo.id)*50]]; pe=[[c>.5?'진취적':'보수적',c>.5?'투자에 비교적 열려 있습니다.':'지출 하나하나를 따집니다.']]; li=[['구단주',bossOf(G.user).own.name+'의 뜻을 전합니다']]; }
+  else if(kind==='mgr'||kind==='omgr'){ const m=kind==='mgr'?G.mgr[G.user]:G.mgr[+a]; if(m){ mgrAttr(m); const ty=mgrType(m);
+      ab=[['작전(스몰볼)',m.small],['수비 중시',m.dfn],['불펜 운용',m.pen],['육성',m.youth],['장악력',m.disc],['운영',m.tac],['안목',m.eye],['휴식 관리',m.rest],['투수 혹사',m.arm,1]];
+      pe=[[ty.n,ty.d],[`말투 · ${({data:'데이터형',fire:'열혈형',warm:'온정형',old:'원로형',calm:'침착형'})[mgrVoice(m)]||'침착형'}`,'인터뷰와 면담에서 이 말투로 말합니다.'],[m.ego>=70?'고집 셈':m.ego<=35?'유연함':'보통 고집',m.ego>=70?'단장 지시를 잘 받아들이지 않습니다.':'단장 지시를 비교적 받아들입니다.'],...(m.fame>=70?[['스타 감독','이름값으로 팬과 언론의 관심을 끕니다.']]:[])];
+      if(kind==='mgr'&&G.coach){ const C=coachesOf(G.user); const cl=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name); if(cl.length)li.push(['감독 사단',cl.join(', ')]); }
+      if(kind==='mgr'){ const fav=playersOf(G.user).filter(p=>p.promise&&p.promise.until>=G.day).map(p=>p.name); if(fav.length)li.push(['출전 약속한 선수',fav.join(', ')]); } } }
+  else if(kind==='c'){ const c=coachesOf(G.user)[a]; if(c){ ab=[['지도력',c.sk],['육성',c.dv]]; const h=u01('cpers',c.id); pe=[[h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다.':h<.66?'선수와 대화를 많이 합니다.':'훈련량이 많고 목소리가 큽니다.']]; } }
+  else if(kind==='gm'){ const g=gmOf(+a); if(g){ pe=[[GMT[g.trait].l,GMT[g.trait].d]]; ab=[['협상력',45+u01('gmN',g.id)*45],['선수 보는 눈',40+(9-(team(+a).scoutSd||6))*8]]; li=[['구단',tname(+a)],['단장과 친분',String(team(+a).rel)]]; } }
+  else if(kind==='agt'){ const ag=agById(+a); if(ag){ const st=AG_STYLE[ag.style]||AG_STYLE.rel; pe=[[st.l,st.d],[AG_SIZE[ag.size],ag.size==='big'?'대형 고객이 많고 자존심이 셉니다.':'고객 수가 적고 실속을 챙깁니다.']]; ab=[['협상력',ag.size==='big'?80:ag.size==='mid'?62:48],['시장 정보',ag.size==='big'?75:55]];
+      const cl=(faLive()?agClients(ag):[]).map(p=>p.name); if(cl.length)li.push(['FA 고객',cl.join(', ')]); li.push(['우리와 계약',`${(ag.deals&&ag.deals[G.user])||0}건`]); } }
+  else if(kind==='sc'||kind==='an'||kind==='ost'){ const x=personX(k); const s=kind==='ost'?((stInit()[+String(k).split(':')[2]]||{})[a==='sc'?'sc':'an']||[]).find(z=>z.id===String(k).split(':')[3]):(kind==='sc'?G.scouts:anaList()).find(z=>z.id===a); if(s){
+      ab=[['실력',sk100(s.skill)],['경험(나이)',clamp((s.age-25)*2.2,10,95)]]; pe=[[s.amb>=65?'야망가':s.amb<=35?'안정 추구':'보통',s.amb>=65?'더 큰 구단을 원합니다. 다른 구단 제안에 흔들리기 쉽습니다.':s.amb<=35?'지금 자리에 만족하는 편입니다.':'조건이 좋으면 움직입니다.'],...(s.spec?[[SC_SPEC[s.spec],'그 유형 선수를 볼 때 한 단계 정확합니다.']]:[]),...(s.region?[[`${s.region} 연고`,'연고 지역 구단을 선호합니다.']]:[])];
+      li=[['소속',kind==='ost'?tname(+String(k).split(':')[2]):tname(G.user)],['근속 충성도',String(Math.round(s.loy))]]; void x; } }
+  else if(kind==='rep'){ const r=repById(a); if(r){ ab=[['영향력',r.inf*20],['단장과 관계',r.rel]]; pe=[[PR_STYLE[r.style].l,PR_STYLE[r.style].d],[r.field,'주로 다루는 분야입니다.']]; if(r.last)li.push(['최근 변화',`${dsh(r.last.d)} ${r.last.why} ${r.last.dv>0?'+':''}${r.last.dv}`]); li.push(['인터뷰',`관계 70 이상이면 다른 구단 동향을 귀띔해 줍니다.`]); } }
+  if(!ab.length&&!pe.length&&!li.length)return '';
+  return `<div class="pcard">${ab.length?`<div class="pc-sec"><div class="eyebrow">능력</div>${ab.map(([l,v,inv])=>pcBar(l,v,inv)).join('')}</div>`:''}${pe.length?`<div class="pc-sec"><div class="eyebrow">성격</div>${pe.map(([l,d])=>`<div class="pc-tr"><span class="pill">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}${li.length?`<div class="pc-sec"><div class="eyebrow">관계</div>${li.map(([l,d])=>`<div class="pc-li"><span class="small muted">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}</div>`; }
 </script>
