@@ -84,7 +84,7 @@ function settlement(){
     if(t.id===G.user){ const sp=sponSettle(y,ps); if(sp.base)inc.push(['스폰서 계약',sp.base]); if(sp.bonus)inc.push(['스폰서 성과 보너스',sp.bonus]); } else { if(t.indie)inc.push(['메인 스폰서',10500]); inc.push(['스폰서',sponAI(t.id)]); } if(S.compIn>0)inc.push(['FA 보상금 수령',S.compIn]);
     if(share[t.id])inc.push(['포스트시즌 배당금',share[t.id]]);
     if(champBonus)inc.push(['모기업 우승 보너스',champBonus]);
-    const scoutCost=t.id===G.user?sum(G.scouts.map(s=>s.sal))+600:1500;
+    const scoutCost=t.id===G.user?sum(G.scouts.map(s=>s.sal))+600:(G.lgStaff&&G.lgStaff[t.id]?stAiPay(G.lgStaff[t.id])+600:1500); /* AI도 실제 고용한 스태프 연봉만큼 */
     const exp=[['국내 선수 연봉',ci.all],['외국인 선수 연봉',G.sea.fspend[t.id]||0],['구단 운영비',t.indie?19000:24000],['스카우트 운영',scoutCost],['마케팅',mkt]];
     if(tax)exp.push(['경쟁균형세(야구발전기금)',tax]);
     { const bn=G.sea.bonus&&G.sea.bonus[t.id]; if(bn)exp.push(['신인 계약금',bn]); }
