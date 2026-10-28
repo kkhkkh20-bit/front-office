@@ -1381,6 +1381,7 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .pab em{font-style:normal;text-align:right;font-weight:700}
 .pc-tr{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.pc-li{display:grid;grid-template-columns:110px 1fr;gap:8px}
 @media (max-width:480px){.pab,.pc-li{grid-template-columns:90px 1fr 30px}.pc-li{grid-template-columns:90px 1fr}}
+.tcash{margin:8px 0;padding:8px 10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:6px}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -1521,7 +1522,8 @@ const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
 const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 function fCap(tid){ return F_TOTAL_CAP+10*USD*sum(foreignOf(tid).filter(x=>x.foreign==='용병').map(x=>x.rsy||0)); }
-const F_REPL_MAX=2;          // 시즌 중 외국인 교체 횟수 (게임 설정)
+const F_REPL_MAX=2;
+const fReplLeft=tid=>period()!=='season'?F_REPL_MAX:Math.max(0,F_REPL_MAX-((G.sea&&G.sea.repl&&G.sea.repl[tid])||0)); /* 시즌 중 남은 외국인 교체 횟수 */          // 시즌 중 외국인 교체 횟수 (게임 설정)
 
 const TEAM_DEF=[
   {city:'서울',nick:'코메츠',code:'SC',hue:241,market:1.25,region:'수도권'},
@@ -3323,39 +3325,45 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   /* 연봉이 부담스러워도 주전급은 공짜로 내주지 않는다(다른 구단에 팔 수 있으므로) */
   if(dir==='out'){ const core=domestic(t.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).some(q=>q.id===p.id); const w0=seasonWorth(projO(p,0));
     /* 팀 핵심(상위 6명)은 연봉과 상관없이 쉽게 내주지 않는다. 젊으면 더 비싸다 */
-    if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); }
+    if(p.aiListed){} else if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); } /* 매물로 내놓은 선수는 핵심 보호 하한을 두지 않는다 */
   return v; }
 function stackIn(vals){ const pos=vals.filter(x=>x>0).sort((a,b)=>b-a), neg=vals.filter(x=>x<=0); const w=[1,.62,.42,.3,.25]; return sum(pos.map((x,i)=>x*(w[i]??.25)))+sum(neg); }
 function tradeNeed(t,outVal){ const tr=gmTrait(t.id); let n=.9+Math.max(0,outVal)*.075-(t.rel-50)/15*(tr==='loyal'?2:1); if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
 function trueVal(p){ const o=ovr(p); const eff=p.age<=25?o+Math.max(0,p.pot-o)*.6:p.age>=32?o-(p.age-31)*1.3:o; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 function tradeOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=tradeDL(); return true; }
-function evalTrade(tid,give,get){
+/* 현금: 백만 원 단위. 돈을 중시하는 구단(독립·수익형 구단주·캡 초과·리빌딩)일수록 가치가 크다 */
+function cashVal(t,cash){ return cash>0?cash/100*teamCtx(t).money*.9:0; }
+/* 부족분을 메우는 데 필요한 현금(100만 원 단위, 1천만 원 단위로 올림) */
+function cashFor(t,gap){ if(!(gap>0))return 0; return Math.ceil(gap/(teamCtx(t).money*.9)*100/10)*10; }
+function evalTrade(tid,give,get,cash){ cash=cash||0;
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
   _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
-  let inV, outV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1))); outV=sum(get.map(id=>tval(t,P(id),'out'))); } finally { _evOut=null; }
+  let inV, outV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)))+cashVal(t,cash); outV=sum(get.map(id=>tval(t,P(id),'out'))); } finally { _evOut=null; }
   const theirN=rosterN(tid)+give.length-get.filter(id=>!P(id).ys).length;
-  let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?1.5:0)-(hit.length?.6:0); /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,-.3); if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
+  let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?1.5:0)-(hit.length?.6:0); /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-.9:-.3); /* 급매는 손해를 조금 보더라도 넘긴다 */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPay(tid)+sum(give.map(id=>P(id).sal))-sum(get.map(id=>P(id).sal));
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,outV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
   if(tid!==G.user){ const nT=(G.trades||[]).filter(x=>x.y===G.year&&x.with===tid).length; if(nT)need+=Math.max(1.5,outV)*.25*nT;
-    const core=new Set(domestic(tid).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id)))need+=Math.max(1,outV)*.2; }
+    const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id)))need+=Math.max(1,outV)*.2; }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */
   { const outs=get.map(id=>tval(t,P(id),'out')).filter(x=>x>0); const ins=give.map(id=>tval(t,P(id),'in')); const topO=outs.length?Math.max(...outs):0, topI=ins.length?Math.max(...ins):0;
     if(topO>=3&&give.length>get.length&&topI<topO*.75)need+=(topO*.75-topI)*1.3; }
   const gain=inV-outV; return {gain,need,ok:gain>=need,theirN,theirPay,inV,outV,hit};
 }
-function proposeTrade(tid,give,get){
-  const t=team(tid);
+function proposeTrade(tid,give,get,cash){
+  const t=team(tid); cash=Math.max(0,Math.round(cash||0));
   if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
   if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
+  if(cash>3000)return {ok:false,msg:'현금은 한 번에 30억 원까지 얹을 수 있습니다.'};
+  if(cash>0&&!get.length)return {ok:false,msg:'현금만 주고 선수를 받지 않는 거래는 할 수 없습니다.'};
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드 대상에서 뺐습니다(게임 단순화).'};
-  const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get);
+  const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash);
   const isCtr=nt.ctr&&nt.ctr[sig]===G.day; /* 상대가 직접 낸 역제안·보완안은 횟수·중복 제한 없이 받는다 */
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
   if(!isCtr&&!ni.left)return {ok:false,msg:`${gmn}: 이번 달은 더 시간을 내기 어렵습니다. ${ni.next}에 다시 연락 주십시오.${ni.free?'':' (우리와 맞대결하는 기간에는 경기장에서 따로 만날 수 있습니다)'}`,closed:true};
-  const e=evalTrade(tid,give,get);
+  const e=evalTrade(tid,give,get,cash);
   if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
   if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
   if(e.theirPay>capOf(G.year)&&e.theirPay>capPay(tid))return {ok:false,msg:`${t.city} ${t.nick} 단장: 샐러리캡 때문에 연봉을 더 떠안을 수 없습니다.`};
@@ -3367,7 +3375,8 @@ function proposeTrade(tid,give,get){
     chron('trade',`${tshort(tid)}와(과) 트레이드: ${give.map(id=>G.players[id]?G.players[id].name:'').join('·')} 보내고 ${get.map(id=>G.players[id]?G.players[id].name:'').join('·')} 받음`);
     G.trades.push({y:G.year,d:G.day,with:tid,give:give.map(id=>G.players[id].name),get:get.map(id=>G.players[id].name),diff,revealed:false,gi:[...get],go:[...give],snap,grade});
     t.rel=clamp(t.rel+2,0,100); prTrade(give,get,tid); give.forEach(id=>mvLog('트레이드',G.players[id],G.user,tid)); try{ if(give.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} get.forEach(id=>mvLog('트레이드',G.players[id],tid,G.user));
-    addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}`);
+    if(cash>0){ payOut(G.user,cash,'etc'); payIn(tid,cash); }
+    addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash?` + 현금 ${money(cash)}`:''} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}`);
     mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}(관계 ${mv.r>0?'+':''}${mv.r}).`:''}`};
   }
   const gap=e.need-e.gain; if(!ni.free&&!isCtr)nt.neg++; nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
@@ -3377,7 +3386,8 @@ function proposeTrade(tid,give,get){
   const co=counterOffer(tid,give,get); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get)]=G.day; if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.`,counters:co};
   const cand=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72})).filter(x=>x.v>=gap*.8).sort((a,b)=>a.v-b.v)[0];
   if(cand)nt.ctr[tsig([...give,cand.p.id],get)]=G.day;
-  return {ok:false,msg:`${gmn}: 조금 부족합니다.${why?` ${why}`:''}${cand?` ${cand.p.name}(${posLabel(cand.p)})을(를) 얹어 주면 응하겠습니다.`:' 받는 선수를 줄여 주세요.'}`,want:cand?cand.p.id:null};
+  const cashNeed=cashFor(t,gap); const cTxt=cashNeed&&cashNeed+cash<=3000?` 아니면 현금 ${money(cashNeed+cash)}을(를) 얹어도 됩니다.`:'';
+  return {ok:false,msg:`${gmn}: 조금 부족합니다.${why?` ${why}`:''}${cand?` ${cand.p.name}(${posLabel(cand.p)})을(를) 얹어 주면 응하겠습니다.`:' 받는 선수를 줄여 주세요.'}${cTxt}`,want:cand?cand.p.id:null,cashAsk:cashNeed?cashNeed+cash:null};
 }
 
 
@@ -3509,7 +3519,7 @@ function prMonth(m){ prInit(); if(G.unemp)return; const st=standingsNow(); const
   if(y&&!(G.sea.youthNews||[]).includes(y.p.id)){ (G.sea.youthNews=G.sea.youthNews||[]).push(y.p.id); news('선수',`${nm}의 새 얼굴 ${y.p.name}`,`${y.p.age}세 ${y.p.name}이(가) ${statLine(y.h,y.p)}(으)로 활약 중입니다. 구단 육성의 성과라는 평가입니다.`,2,{ref:y.p.id,fanW:1.5}); }
   // 외국인 부진
   for(const p of foreignOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const bad=p.isP?(h.outs>=90&&pRate(h).era>=6):(h.pa>=120&&bRate(h).ops<.66);
-    if(bad&&!(G.sea.fbad||[]).includes(p.id)){ (G.sea.fbad=G.sea.fbad||[]).push(p.id); news('선수',`${nm} 외국인 ${p.name}, 계속되는 부진`,`${p.name}이(가) ${statLine(h,p)}에 그치고 있습니다. 교체 여부를 두고 프런트의 결단이 필요하다는 목소리가 큽니다.`,-2,{ref:p.id}); } }
+    if(bad&&!(G.sea.fbad||[]).includes(p.id)){ (G.sea.fbad=G.sea.fbad||[]).push(p.id); news('선수',`${nm} 외국인 ${p.name}, 계속되는 부진`,`${p.name}이(가) ${statLine(h,p)}에 그치고 있습니다. ${fReplLeft(G.user)>0&&G.day<=foreignDL()?'교체 여부를 두고 프런트의 결단이 필요하다는 목소리가 큽니다.':'교체 카드를 모두 써서 남은 시즌을 함께 갈 수밖에 없습니다. 반등이 절실합니다.'}`,-2,{ref:p.id}); } }
   // 육성 기조와 성적
   if(G.policy&&G.policy.k==='youth'&&rk>=8)news('분석',`'육성'이냐 '포기'냐… ${nm} 리빌딩 논란`,`하위권에서 유망주 기용을 늘리는 ${nm}의 운영을 두고 팬들 사이에서 의견이 갈립니다.`,-1,{fanW:1.5});
   // 이달의 선수
@@ -3902,13 +3912,13 @@ function asstOpinion(tid,give,get){ // 우리 부단장 의견: 스카우트 평
   const young=gv.find(p=>p.age<=23&&(scoutReport(p).ofp||0)>=60); if(young)L.push(`잠재력이 큰 ${young.name}을(를) 내주는 것은 신중해야 합니다.`);
   const unk=gt.find(p=>scoutReport(p).cur==null); if(unk)L.push(`${unk.name}은(는) 우리 스카우트가 본 적이 없어 평가가 불확실합니다.`);
   return L.slice(0,3); }
-function tradeHint(tid,give,get){ // 상대가 무엇을 더 원할지 짐작(관계가 나쁘면 못 읽음)
-  if(!give.length&&!get.length)return null; const t=team(tid); const e=evalTrade(tid,give,get); const gap=e.need-e.gain; if(gap<=0)return null;
+function tradeHint(tid,give,get,cash){ // 상대가 무엇을 더 원할지 짐작(관계가 나쁘면 못 읽음)
+  if(!give.length&&!get.length)return null; const t=team(tid); const e=evalTrade(tid,give,get,cash); const gap=e.need-e.gain; if(gap<=0)return null;
   if(t.rel<35)return {txt:'관계가 낮아 상대가 무엇을 원하는지 읽기 어렵습니다.'};
   const sd=1.2+Math.max(0,75-t.rel)/10;
   const add=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72+hn('th'+tid+G.year,p.id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0];
   const drop=get.length>1?get.map(id=>({p:G.players[id],v:tval(t,G.players[id],'out')+hn('td'+tid+G.year,id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0]:null;
-  return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12}; }
+  const cn=cashFor(t,gap+hn('tc'+tid+G.year,G.day)*sd*.3); return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12,cash:cn&&cn+(cash||0)<=3000?cn+(cash||0):null}; }
 
 function draftPickOrder(){ // 드래프트 전: 지금 순위의 역순 1라운드
   const st=period()==='season'||period()==='post'?standingsNow():(G.history.length?G.history[G.history.length-1].order:standingsNow()); return [...st].reverse().map((o,i)=>({tid:o.tid,rd:1,no:i+1})); }
@@ -4213,7 +4223,7 @@ const EVH={
       p.mor=clamp(p.mor+3,0,100); return `${p.name} 기분 +3.`; },
     follow(d){ const p=evP(d.pid); if(!p)return; const L=p.l10||[]; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])); const t=ab?`${p.name} 조정 이후 최근 10경기 타율 ${fmt3(h/ab)}.`:`${p.name}은(는) 아직 1군 경기에 나오지 않았습니다.`; evResult(d.ev,t); note('경기',t,p.id); } },
   /* 외국인 선수 부진 */
-  fx:{ w:1, check(){ if(G.day>foreignDL())return null; const L=foreignOf(G.user).filter(p=>!p.fxAsk).map(p=>{ const h=seasonTotal(p,G.year,'1군'); if(!h)return null;
+  fx:{ w:1, check(){ if(G.day>foreignDL()||fReplLeft(G.user)<=0)return null; const L=foreignOf(G.user).filter(p=>!p.fxAsk).map(p=>{ const h=seasonTotal(p,G.year,'1군'); if(!h)return null;
         if(p.isP){ if(h.outs<120)return null; const era=h.er*27/h.outs; return era>=5.4?{p,h,s:era}:null; } if(h.pa<120)return null; const ops=bRate(h).ops; return ops<.7?{p,h,s:1-ops}:null; }).filter(Boolean).sort((a,b)=>b.s-a.s); return L[0]||null; },
     make(x){ const p=x.p; p.fxAsk=G.year; evNew('fx',`외국인 ${p.name} 부진`,`${p.name}이(가) ${statLine(x.h,p)}에 머물고 있습니다. 교체 여론이 나옵니다. 교체 기한은 8월 15일입니다.`,
       [{l:'교체 후보 보기',fx:'외국인 시장으로 이동합니다. 교체하면 남은 연봉을 정산합니다.'},
@@ -4362,7 +4372,7 @@ function negTurn(tid){ G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={}); con
 /* 맞대결: 오늘(쉬는 날이면 내일) 우리와 경기하는 구단은 경기장에서 만나므로 횟수 제한이 없다 */
 function seriesOpp(){ const c=G.cal; if(!c||!c.sched)return null; for(const d of [G.day,G.day+1]){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(G.user)); return m?(m[0]===G.user?m[1]:m[0]):null; } return null; }
 function negInfo(tid){ const c=negTurn(tid); const free=seriesOpp()===tid; const o=dobj(G.day); const nx=o.m===12?1:o.m+1; const cap=negCap(tid); return {used:c.neg,cap,left:free?99:Math.max(0,cap-c.neg),free,next:`${nx}월 1일`}; }
-const tsig=(give,get)=>[...give].sort((a,b)=>a-b).join(',')+'|'+[...get].sort((a,b)=>a-b).join(',');
+const tsig=(give,get,cash)=>[...give].sort((a,b)=>a-b).join(',')+'|'+[...get].sort((a,b)=>a-b).join(',')+(cash>0?'|c'+cash:'');
 /* 트레이드 기록과 성적표 */
 const warSoFar=(p,y)=>{ const h=seasonTotal(p,y,'1군'); return h?warOf(h,p):0; };
 function tradeSnap(ids){ const o={}; for(const id of ids){ const p=G.players[id]; if(p)o[id]=warSoFar(p,G.year); } return o; }
@@ -4993,7 +5003,7 @@ function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[];
     if(pickL.length){ for(const q of pickL)G.fwatch.push({id:q.id,since:G.day,k:0,auto:true}); mail('스카우트팀장','관찰 명단에 후보를 올렸습니다',`${pickL.map(q=>`${q.name}(${posLabel(q)}, ${q.nat||''}, ${q.age}세 · 요구 ${Math.round(q.ask/USD)}만 달러)`).join('\n')}\n\n${W&&W.want?'감독이 원하는 유형':'우리 팀에 필요한 유형'}이라 지켜보겠습니다. 매주 보고가 쌓이면 평가가 정확해집니다. 필요 없으면 관찰 명단에서 빼 주세요(스카우트가 올린 후보는 3명까지).`,{kind:'외국인',acts:[{l:'관찰 명단',a:'go',v:'transfer:watch'}]}); } } }catch(e){}
   if(out.length)mail('스카우트팀장','관찰 명단 변동',out.join('.\n')+'.',{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
   // 우리 외국인이 흔들리면 대체 후보를 올린다
-  if(period()!=='season'||G.day>foreignDL()||G.day<G.cal.open+30)return; for(const p of foreignOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); const bad=p.injOut>=30||(h&&(p.isP?(h.outs>=90&&pRate(h).era>5.6):(h.pa>=120&&bRate(h).ops<.680)));
+  if(period()!=='season'||G.day>foreignDL()||G.day<G.cal.open+30||fReplLeft(G.user)<=0)return; for(const p of foreignOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); const bad=p.injOut>=30||(h&&(p.isP?(h.outs>=90&&pRate(h).era>5.6):(h.pa>=120&&bRate(h).ops<.680)));
     if(!bad||p.fwarn===G.year*100+dobj(G.day).m)continue; p.fwarn=G.year*100+dobj(G.day).m; const alt=(G.fwatch||[]).map(w=>G.players[w.id]).filter(q=>q&&q.isP===p.isP&&q.foreign===p.foreign);
     mail('스카우트팀장',`${p.name} 교체 검토`,`${p.name}이(가) ${p.injOut>=30?`부상으로 약 ${p.injOut}일 빠집니다`:'부진합니다'}. ${alt.length?`관찰 명단의 ${p.isP?'투수':'타자'} 후보: ${alt.map(q=>q.name).join(', ')}.`:'관찰 명단에 같은 유형 후보가 없습니다. 외국인 시장에서 후보를 관찰 명단에 올려 두세요.'}`,{imp:!!alt.length,kind:'외국인',ref:p.id,acts:[...alt.slice(0,2).map(q=>({l:`${q.name} 보기`,a:'player',v:q.id})),{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); } }
 
@@ -5025,7 +5035,7 @@ function mreqWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||G.gameOver||G.unem
   if(per==='season'&&tradeOpen()&&!open.some(r=>r.k==='slot')&&!mreqs().some(r=>r.k==='slot'&&r.day>G.day-50)){ const rk=slotRanks(G.user); const w=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0];
     if(w&&w.r>=8)C.push(['slot',w,1.2+(m.ego-50)/60]); }
   if(per==='season'&&G.day>G.cal.open+25&&!open.some(r=>r.k==='out')){ const bad=domestic(G.user).filter(p=>{ if(p.ys||p.age<29)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(h.outs>=60&&pRate(h).era>6):(h.pa>=90&&bRate(h).ops<.600); }).sort((a,b)=>b.sal-a.sal)[0]; if(bad&&!mreqs().some(r=>r.k==='out'&&r.data.pid===bad.id))C.push(['out',bad,.8+(m.disc-50)/80]); }
-  if(per==='season'&&G.day<=foreignDL()&&!open.some(r=>r.k==='frep')){ const f=foreignOf(G.user).find(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=90&&pRate(h).era>5.4):(h.pa>=130&&bRate(h).ops<.690)); }); if(f)C.push(['frep',f,1]); }
+  if(per==='season'&&G.day<=foreignDL()&&fReplLeft(G.user)>0&&!open.some(r=>r.k==='frep')){ const f=foreignOf(G.user).find(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=90&&pRate(h).era>5.4):(h.pa>=130&&bRate(h).ops<.690)); }); if(f)C.push(['frep',f,1]); }
   if(G.day>=KD(8,20)&&G.day<KD(9,10)&&!mreqs().some(r=>r.k==='draft'&&r.y===G.year))C.push(['draft',null,3]);
   if(G.fa&&G.fa.open&&!G.fa.closed&&!mreqs().some(r=>r.k==='fa'&&r.y===G.year))C.push(['fa',null,3]);
   if(!C.length||R()>.45)return; let x=R()*sum(C.map(c=>Math.max(.2,c[2]))); for(const c of C){ x-=Math.max(.2,c[2]); if(x<=0){ mreqMake(c[0],c[1]); return; } } }
@@ -5069,7 +5079,7 @@ EVH.mreq={ pick(e,i){ const r=mreqs().find(x=>x.id===e.data.rid); const m=G.mgr[
 function mreqCheck(){ const m=G.mgr[G.user]; if(!m)return; for(const r of mreqs()){ if(r.st!=='open')continue; let ok=false, fail=false;
     if(r.k==='slot'){ const cur=slotRanks(G.user)[r.data.sk]; const got=r.data.target&&G.players[r.data.target]&&G.players[r.data.target].team===G.user; ok=got||cur.v>=r.data.v+3; if(!ok&&G.day>r.until)fail=true; }
     else if(r.k==='out'){ const p=G.players[r.data.pid]; ok=!p||p.team!==G.user; if(!ok&&G.day>r.until){ r.st='half'; continue; } }
-    else if(r.k==='frep'){ const p=G.players[r.data.pid]; ok=!p||p.team!==G.user; if(!ok&&G.day>r.until)fail=true; }
+    else if(r.k==='frep'){ const p=G.players[r.data.pid]; ok=!p||p.team!==G.user; if(!ok&&fReplLeft(G.user)<=0){ r.st='void'; continue; } if(!ok&&G.day>r.until)fail=true; } /* 교체 횟수를 다 쓰면 요청은 없던 일이 된다 */
     else if(r.k==='fa'){ const p=G.players[r.data.pid]; ok=p&&p.team===G.user; if(!ok&&(p&&p.team!=null&&p.team!==G.user||G.fa&&G.fa.closed))fail=true; }
     else if(r.k==='draft'){ if(G.draft&&G.draft.done&&G.draft.y===G.year){ const mine=G.draft.picks.filter(x=>x.tid===G.user&&x.pid>0&&x.rd<=2).map(x=>G.players[x.pid]).filter(Boolean); ok=mine.some(p=>draftFit(p,r.data.pol)); fail=!ok; } }
     const gain={slot:6,out:4,frep:5,fa:7,draft:4}[r.k], loss={slot:5,out:0,frep:4,fa:4,draft:1}[r.k];
@@ -8076,7 +8086,7 @@ function inboxView(){
   { const seen={}; UI._ibDup={}; list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read))return true; const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; }); }
   const oldBtn=oldN?`<button class="btn block ib-old" data-a="ibOld">${UI.ibOld?'지난 소식 접기':`지난 소식 ${oldN}건 펼치기 (일주일 지난 읽은 소식)`}</button>`:'';
   const unread=G.mail.filter(m=>!m.read).length, tasks=mailFilter('task').filter(m=>!m.read).length;
-  const chips=`<div class="chips ib-chips">${[['all','전체'],['task',`업무${tasks?` ${tasks}`:''}`],['unread','안 읽음'],['player','선수']].map(([k,l])=>`<button data-a="mf" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div><div class="row between" style="margin:4px 0 6px"><span class="ib-n small muted">안 읽음 <b id="ib-unread">${unread}</b></span>${unread?'<button class="btn small" data-a="readAll">모두 읽음</button>':''}</div>`;
+  const chips=(wide()?'<p class="small muted ib-key">스페이스바: 안 읽은 소식을 하나씩 열고, 다 읽으면 계속 진행합니다</p>':'')+`<div class="chips ib-chips">${[['all','전체'],['task',`업무${tasks?` ${tasks}`:''}`],['unread','안 읽음'],['player','선수']].map(([k,l])=>`<button data-a="mf" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div><div class="row between" style="margin:4px 0 6px"><span class="ib-n small muted">안 읽음 <b id="ib-unread">${unread}</b></span>${unread?'<button class="btn small" data-a="readAll">모두 읽음</button>':''}</div>`;
   if(!list.length)return chips+`<section class="card"><p class="muted">${oldN?'새 소식이 없습니다.':'소식이 없습니다.'}</p></section>`+oldBtn;
   if(UI.mailFocus){ const ix=list.findIndex(m=>m.id===UI.mailFocus); if(ix<0&&f==='all'&&!UI.ibOld&&all.some(m=>m.id===UI.mailFocus)){ UI.ibOld=true; return inboxView(); } if(ix>=0){ UI.pg=UI.pg||{}; UI.pg['ib'+f+(UI.ibOld?'o':'')]=Math.floor(ix/(wide()?12:5)); } }
   const PG=pager('ib'+f+(UI.ibOld?'o':''),list,wide()?12:5); const list0=list; void list0;
@@ -8110,6 +8120,11 @@ function inboxWire(){ if(!_ibOn){ _ibOn=true; addEventListener('scroll',()=>{ if
   setTimeout(ibScan,60); }
 function ibStep(d){ if(wide()&&document.querySelector('.mfeed.one')){ const ids=[...document.querySelectorAll('.ib-list .mrow')].map(e=>e.dataset.mid); const i=ids.indexOf(UI.ibSel); const n=ids[i+d]; if(n)A.mailJump(n); return; } const cards=[...document.querySelectorAll('.mfeed .mfc')]; if(!cards.length)return; const T=ibTop(); let i=cards.findIndex(el=>el.getBoundingClientRect().bottom>T+50); if(i<0)i=0; const r=cards[i].getBoundingClientRect(); const al=Math.abs(r.top-T-8)<30; const n=d>0?(r.top>T+40?i:i+1):(al?i-1:i); const el=cards[Math.max(0,Math.min(cards.length-1,n))]; el.scrollIntoView({block:'start',behavior:'smooth'}); }
 
+
+/* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
+function ibSpace(){ const L=mailFilter(UI.mf||'all'); const u=L.find(m=>!m.read)||(UI.mf&&UI.mf!=='all'?mailFilter('all').find(m=>!m.read):null);
+  if(u){ if(UI.mf&&UI.mf!=='all'&&!L.includes(u))UI.mf='all'; if(wide())A.mailJump(u.id); else { A.openMail(u.id); setTimeout(()=>{ const el=document.getElementById('m-'+u.id); if(el)el.scrollIntoView({block:'start'}); },60); } return; }
+  const b=document.querySelector('button.continue:not([disabled])'); if(b){ b.click(); return; } const bl=blocker(); if(bl)toast(bl); }
 /* ---------- 그림 에셋: 트로피·메달·사건 아이콘 (직접 그린 SVG) ---------- */
 let ARTN=0;
 const ART={
@@ -8444,8 +8459,8 @@ function tradeInsight(tid,give,get){
   const tbl=`<div class="tw"><table class="tcmp"><thead><tr><th></th>${keys.map(k=>`<th>${lab(k)}</th>`).join('')}</tr></thead><tbody>
     <tr><td>${badge(G.user,16)} 우리</td>${keys.map(k=>cell(c.my[0][k],c.my[1][k])).join('')}</tr>
     <tr><td>${badge(tid,16)} 상대</td>${keys.map(k=>cell(c.th[0][k],c.th[1][k])).join('')}</tr></tbody></table></div>`;
-  const op=asstOpinion(tid,give,get); const hint=tradeHint(tid,give,get);
-  const hintH=hint?(hint.txt?`<p class="small muted">${esc(hint.txt)}</p>`:`<div class="thint">${hint.big?'<span class="small">차이가 커서 한두 명으로는 어려워 보입니다.</span>':''}${hint.add?`<span class="small">상대는 <b>${esc(hint.add.name)}</b>(${posLabel(hint.add)})을(를) 더 얹으면 받아들일 것 같습니다.</span><button class="btn small" data-a="tpick" data-v="give:${hint.add.id}">얹기</button>`:''}${hint.drop?`<span class="small">또는 받을 선수에서 <b>${esc(hint.drop.name)}</b>을(를) 빼면 될 것 같습니다.</span><button class="btn small" data-a="tpick" data-v="get:${hint.drop.id}">빼기</button>`:''}${!hint.add&&!hint.drop&&!hint.big?'<span class="small muted">맞춰 줄 만한 선수가 보이지 않습니다.</span>':''}</div>`):'';
+  const cash0=UI.trade&&UI.trade.tid===tid?(UI.trade.cash||0):0; const op=asstOpinion(tid,give,get); const hint=tradeHint(tid,give,get,cash0);
+  const hintH=hint?(hint.txt?`<p class="small muted">${esc(hint.txt)}</p>`:`<div class="thint">${hint.big?'<span class="small">차이가 커서 한두 명으로는 어려워 보입니다.</span>':''}${hint.add?`<span class="small">상대는 <b>${esc(hint.add.name)}</b>(${posLabel(hint.add)})을(를) 더 얹으면 받아들일 것 같습니다.</span><button class="btn small" data-a="tpick" data-v="give:${hint.add.id}">얹기</button>`:''}${(hint.cash?`<span class="small">또는 현금 <b>${money(hint.cash)}</b>을(를) 얹으면 받아들일 것 같습니다.</span><button class="btn small" data-a="tcash" data-v="${hint.cash}">현금 얹기</button>`:'')}${hint.drop?`<span class="small">또는 받을 선수에서 <b>${esc(hint.drop.name)}</b>을(를) 빼면 될 것 같습니다.</span><button class="btn small" data-a="tpick" data-v="get:${hint.drop.id}">빼기</button>`:''}${!hint.add&&!hint.drop&&!hint.big?'<span class="small muted">맞춰 줄 만한 선수가 보이지 않습니다.</span>':''}</div>`):'';
   const mv=mgrTradeView(tid,give,get);
   const medH=get.map(id=>G.players[id]).filter(Boolean).map(p=>{ const r=medReport(p); return `<div class="medrow"><b>${esc(p.name)}</b> <span class="pill ${r.c}">${r.g}</span>${r.L.map(t=>`<div class="small">${esc(t)}</div>`).join('')}${r.note?`<div class="small muted">${r.note}</div>`:''}</div>`; }).join('');
   return `<div class="tins">${dealMoney(give,get)}${mv?`<p class="small">${esc(mv.txt)}</p>`:''}<div class="eyebrow">포지션별 주전 평가 (트레이드 후, 괄호 숫자는 변화)</div>${tbl}
@@ -9356,9 +9371,9 @@ function gamesView(){
   return csec('우리 경기',`<div class="list">${G.games.slice(0,30).map((g,i)=>{ const home=g.home===G.user; const op=home?g.away:g.home; return `<button class="item wa" data-a="openGame" data-v="${i}">${badge(op,26)}<span class="nm"><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span> ${home?'vs':'@'} ${tname(op)}${g.kind?` <span class="small muted">${esc(g.kind)}</span>`:''}</span><span class="sub">${dmd(g.day)}${g.inn>9?` · 연장 ${g.inn}회`:''}</span><span class="rt num">${home?g.hs:g.as} : ${home?g.as:g.hs}</span></button>`; }).join('')}</div>`);
 }
 
-function tradeMood(tid,give,get){
+function tradeMood(tid,give,get,cash){
   if(!give.length&&!get.length)return null;
-  const t=team(tid); const e=evalTrade(tid,give,get);
+  const t=team(tid); const e=evalTrade(tid,give,get,cash);
   const sd=1.2+Math.max(0,75-t.rel)/10; // 관계가 좋을수록 상대 속내를 정확히 읽는다
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');
   const x=e.gain-e.need+hn('tm'+tid+'|'+key,G.year)*sd;
@@ -9385,7 +9400,7 @@ function tradeView(){
   const dPay=sum(gt.map(p=>p.sal))-sum(gv.map(p=>p.sal));
   const capAfter=capPay(G.user)+dPay, cap=capOf(G.year);
   const myN=playersOf(G.user).length-gv.length+gt.length, thN=playersOf(tr.tid).length+gv.length-gt.length;
-  const mood=tradeMood(tr.tid,tr.give,tr.get);
+  const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
   const board=`<section class="card tboard">
     <div class="tgm">${gmAv(t.id,mood?(mood.l.includes('받아들일')?'smile':mood.l.includes('긍정')?null:mood.l.includes('조금')?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))} · ${esc(gmOf(t.id).name)} 단장</b><span class="small muted">${GMT[gmOf(t.id).trait].l} · 친분 ${t.rel}(${relLabel(t.rel)}) · ${esc(needText(t.id))}</span></div></div>
@@ -9399,7 +9414,8 @@ function tradeView(){
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
     ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>`<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}</span><button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button></div>`).join('')}</div>`:''}
     ${tradeInsight(tr.tid,tr.give,tr.get)}
-    ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get); const isC=nt.ctr&&nt.ctr[sg]===G.day; const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}`; })()}
+    ${gt.length?`<div class="tcash"><span class="small">현금 얹기</span><div class="chips">${[0,100,300,500,1000,2000,3000].map(v=>`<button data-a="tcash" data-v="${v}" class="${(tr.cash||0)===v?'on':''}">${v?money(v):'없음'}</button>`).join('')}</div><span class="small muted">KBO도 선수와 현금을 섞은 트레이드가 있습니다. 돈을 중시하는 구단(독립구단·수익형 구단주·샐러리캡 초과·리빌딩)일수록 현금을 높게 칩니다. 예산 여유에서 빠집니다.</span></div>`:''}
+    ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0); const isC=nt.ctr&&nt.ctr[sg]===G.day; const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}`; })()}
   </section>`;
   const side=tr.side||'get', seg=tr.seg||'bat', sort=tr.sort||'cur';
   let pool=(side==='get'?domestic(tr.tid):domestic(G.user)).filter(p=>ok(p)&&(seg==='bat'?!p.isP:p.isP)).map(p=>({p,rp:scoutReport(p)}));
@@ -10193,7 +10209,8 @@ const A={
   tsort(v){UI.trade.sort=v;render();},
   tpick(v){const [side,id]=v.split(':');const arr=UI.trade[side];const i=arr.indexOf(+id);i>=0?arr.splice(i,1):arr.push(+id);UI.trade.msg='';UI.trade.want=null;render();},
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.msg='';UI.trade.want=null;render();},
-  tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get);tr.msg=r.msg;tr.ok=r.ok;tr.want=r.want||null;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
+  tcash(v){ UI.trade.cash=+v||0; render(); },
+  tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get,tr.cash||0);tr.msg=r.msg;tr.ok=r.ok;tr.want=r.want||null;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];tr.cash=0;UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
   tcounter(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; tr.give=[...c.give]; tr.get=[...c.get]; tr.counters=null; A.tpropose(); },
   stampOff(){ UI.stamp=null; render(); },
   faSel(v){ UI.faSel=UI.faSel===+v?null:+v; UI.offer=null; render(); if(UI.faSel){ const el=document.querySelector('.faroom'); if(el)el.scrollIntoView({block:'start'}); } },
@@ -10384,6 +10401,8 @@ document.addEventListener('keydown',e=>{
   if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; } if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
   if(e.key==='Escape'&&(UI.sheet!=null||UI.posSheet||UI.game!=null||UI.menu))closeSheets();
   if(UI.tab==='inbox'&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
+  /* 소식함: 스페이스바로 안 읽은 소식을 하나씩 열고, 다 읽었으면 계속 진행 */
+  if(e.key===' '&&UI.tab==='inbox'&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!(e.target.matches&&e.target.matches('input,select,textarea,button'))){ e.preventDefault(); ibSpace(); return; }
   if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('g.pos[data-a],.tcard[data-a]')){ e.preventDefault(); const a=e.target.dataset.a; A[a](e.target.dataset.v); }
 });
 

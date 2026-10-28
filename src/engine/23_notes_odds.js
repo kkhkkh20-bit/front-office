@@ -52,13 +52,13 @@ function asstOpinion(tid,give,get){ // 우리 부단장 의견: 스카우트 평
   const young=gv.find(p=>p.age<=23&&(scoutReport(p).ofp||0)>=60); if(young)L.push(`잠재력이 큰 ${young.name}을(를) 내주는 것은 신중해야 합니다.`);
   const unk=gt.find(p=>scoutReport(p).cur==null); if(unk)L.push(`${unk.name}은(는) 우리 스카우트가 본 적이 없어 평가가 불확실합니다.`);
   return L.slice(0,3); }
-function tradeHint(tid,give,get){ // 상대가 무엇을 더 원할지 짐작(관계가 나쁘면 못 읽음)
-  if(!give.length&&!get.length)return null; const t=team(tid); const e=evalTrade(tid,give,get); const gap=e.need-e.gain; if(gap<=0)return null;
+function tradeHint(tid,give,get,cash){ // 상대가 무엇을 더 원할지 짐작(관계가 나쁘면 못 읽음)
+  if(!give.length&&!get.length)return null; const t=team(tid); const e=evalTrade(tid,give,get,cash); const gap=e.need-e.gain; if(gap<=0)return null;
   if(t.rel<35)return {txt:'관계가 낮아 상대가 무엇을 원하는지 읽기 어렵습니다.'};
   const sd=1.2+Math.max(0,75-t.rel)/10;
   const add=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72+hn('th'+tid+G.year,p.id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0];
   const drop=get.length>1?get.map(id=>({p:G.players[id],v:tval(t,G.players[id],'out')+hn('td'+tid+G.year,id)*sd*.4})).filter(x=>x.v>=gap*.9).sort((a,b)=>a.v-b.v)[0]:null;
-  return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12}; }
+  const cn=cashFor(t,gap+hn('tc'+tid+G.year,G.day)*sd*.3); return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12,cash:cn&&cn+(cash||0)<=3000?cn+(cash||0):null}; }
 
 function draftPickOrder(){ // 드래프트 전: 지금 순위의 역순 1라운드
   const st=period()==='season'||period()==='post'?standingsNow():(G.history.length?G.history[G.history.length-1].order:standingsNow()); return [...st].reverse().map((o,i)=>({tid:o.tid,rd:1,no:i+1})); }

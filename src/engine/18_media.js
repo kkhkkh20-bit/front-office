@@ -34,7 +34,7 @@ function prMonth(m){ prInit(); if(G.unemp)return; const st=standingsNow(); const
   if(y&&!(G.sea.youthNews||[]).includes(y.p.id)){ (G.sea.youthNews=G.sea.youthNews||[]).push(y.p.id); news('선수',`${nm}의 새 얼굴 ${y.p.name}`,`${y.p.age}세 ${y.p.name}이(가) ${statLine(y.h,y.p)}(으)로 활약 중입니다. 구단 육성의 성과라는 평가입니다.`,2,{ref:y.p.id,fanW:1.5}); }
   // 외국인 부진
   for(const p of foreignOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const bad=p.isP?(h.outs>=90&&pRate(h).era>=6):(h.pa>=120&&bRate(h).ops<.66);
-    if(bad&&!(G.sea.fbad||[]).includes(p.id)){ (G.sea.fbad=G.sea.fbad||[]).push(p.id); news('선수',`${nm} 외국인 ${p.name}, 계속되는 부진`,`${p.name}이(가) ${statLine(h,p)}에 그치고 있습니다. 교체 여부를 두고 프런트의 결단이 필요하다는 목소리가 큽니다.`,-2,{ref:p.id}); } }
+    if(bad&&!(G.sea.fbad||[]).includes(p.id)){ (G.sea.fbad=G.sea.fbad||[]).push(p.id); news('선수',`${nm} 외국인 ${p.name}, 계속되는 부진`,`${p.name}이(가) ${statLine(h,p)}에 그치고 있습니다. ${fReplLeft(G.user)>0&&G.day<=foreignDL()?'교체 여부를 두고 프런트의 결단이 필요하다는 목소리가 큽니다.':'교체 카드를 모두 써서 남은 시즌을 함께 갈 수밖에 없습니다. 반등이 절실합니다.'}`,-2,{ref:p.id}); } }
   // 육성 기조와 성적
   if(G.policy&&G.policy.k==='youth'&&rk>=8)news('분석',`'육성'이냐 '포기'냐… ${nm} 리빌딩 논란`,`하위권에서 유망주 기용을 늘리는 ${nm}의 운영을 두고 팬들 사이에서 의견이 갈립니다.`,-1,{fanW:1.5});
   // 이달의 선수

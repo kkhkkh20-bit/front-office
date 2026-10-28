@@ -18,7 +18,7 @@ function inboxView(){
   { const seen={}; UI._ibDup={}; list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read))return true; const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; }); }
   const oldBtn=oldN?`<button class="btn block ib-old" data-a="ibOld">${UI.ibOld?'지난 소식 접기':`지난 소식 ${oldN}건 펼치기 (일주일 지난 읽은 소식)`}</button>`:'';
   const unread=G.mail.filter(m=>!m.read).length, tasks=mailFilter('task').filter(m=>!m.read).length;
-  const chips=`<div class="chips ib-chips">${[['all','전체'],['task',`업무${tasks?` ${tasks}`:''}`],['unread','안 읽음'],['player','선수']].map(([k,l])=>`<button data-a="mf" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div><div class="row between" style="margin:4px 0 6px"><span class="ib-n small muted">안 읽음 <b id="ib-unread">${unread}</b></span>${unread?'<button class="btn small" data-a="readAll">모두 읽음</button>':''}</div>`;
+  const chips=(wide()?'<p class="small muted ib-key">스페이스바: 안 읽은 소식을 하나씩 열고, 다 읽으면 계속 진행합니다</p>':'')+`<div class="chips ib-chips">${[['all','전체'],['task',`업무${tasks?` ${tasks}`:''}`],['unread','안 읽음'],['player','선수']].map(([k,l])=>`<button data-a="mf" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div><div class="row between" style="margin:4px 0 6px"><span class="ib-n small muted">안 읽음 <b id="ib-unread">${unread}</b></span>${unread?'<button class="btn small" data-a="readAll">모두 읽음</button>':''}</div>`;
   if(!list.length)return chips+`<section class="card"><p class="muted">${oldN?'새 소식이 없습니다.':'소식이 없습니다.'}</p></section>`+oldBtn;
   if(UI.mailFocus){ const ix=list.findIndex(m=>m.id===UI.mailFocus); if(ix<0&&f==='all'&&!UI.ibOld&&all.some(m=>m.id===UI.mailFocus)){ UI.ibOld=true; return inboxView(); } if(ix>=0){ UI.pg=UI.pg||{}; UI.pg['ib'+f+(UI.ibOld?'o':'')]=Math.floor(ix/(wide()?12:5)); } }
   const PG=pager('ib'+f+(UI.ibOld?'o':''),list,wide()?12:5); const list0=list; void list0;
@@ -52,3 +52,8 @@ function inboxWire(){ if(!_ibOn){ _ibOn=true; addEventListener('scroll',()=>{ if
   setTimeout(ibScan,60); }
 function ibStep(d){ if(wide()&&document.querySelector('.mfeed.one')){ const ids=[...document.querySelectorAll('.ib-list .mrow')].map(e=>e.dataset.mid); const i=ids.indexOf(UI.ibSel); const n=ids[i+d]; if(n)A.mailJump(n); return; } const cards=[...document.querySelectorAll('.mfeed .mfc')]; if(!cards.length)return; const T=ibTop(); let i=cards.findIndex(el=>el.getBoundingClientRect().bottom>T+50); if(i<0)i=0; const r=cards[i].getBoundingClientRect(); const al=Math.abs(r.top-T-8)<30; const n=d>0?(r.top>T+40?i:i+1):(al?i-1:i); const el=cards[Math.max(0,Math.min(cards.length-1,n))]; el.scrollIntoView({block:'start',behavior:'smooth'}); }
 
+
+/* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
+function ibSpace(){ const L=mailFilter(UI.mf||'all'); const u=L.find(m=>!m.read)||(UI.mf&&UI.mf!=='all'?mailFilter('all').find(m=>!m.read):null);
+  if(u){ if(UI.mf&&UI.mf!=='all'&&!L.includes(u))UI.mf='all'; if(wide())A.mailJump(u.id); else { A.openMail(u.id); setTimeout(()=>{ const el=document.getElementById('m-'+u.id); if(el)el.scrollIntoView({block:'start'}); },60); } return; }
+  const b=document.querySelector('button.continue:not([disabled])'); if(b){ b.click(); return; } const bl=blocker(); if(bl)toast(bl); }

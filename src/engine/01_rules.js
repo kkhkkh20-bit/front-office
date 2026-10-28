@@ -24,7 +24,8 @@ const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
 const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 function fCap(tid){ return F_TOTAL_CAP+10*USD*sum(foreignOf(tid).filter(x=>x.foreign==='용병').map(x=>x.rsy||0)); }
-const F_REPL_MAX=2;          // 시즌 중 외국인 교체 횟수 (게임 설정)
+const F_REPL_MAX=2;
+const fReplLeft=tid=>period()!=='season'?F_REPL_MAX:Math.max(0,F_REPL_MAX-((G.sea&&G.sea.repl&&G.sea.repl[tid])||0)); /* 시즌 중 남은 외국인 교체 횟수 */          // 시즌 중 외국인 교체 횟수 (게임 설정)
 
 const TEAM_DEF=[
   {city:'서울',nick:'코메츠',code:'SC',hue:241,market:1.25,region:'수도권'},
