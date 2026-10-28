@@ -32,9 +32,9 @@ function buildWorld(){ const userTid=0;
   G.cal=buildCalendar(2025); G.day=G.cal.open-1;
   G.sea={y:2025,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},mark:null};
   for(const t of G.teams){ for(const isP of [true,true,false]){ const p=newForeign('용병',{isP}); while(foreignCheck(t.id,p)&&p.ask>300)p.ask=round5(p.ask*.85); signForeign(t.id,p.id);} signForeign(t.id,newForeign('아시아').id); }
-  G.stops=[];
+  G.stops=[]; rollForm(); /* 2025 시즌도 컨디션·타구 운이 걸린 채로 치른다 */
   let pd=null; for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false); applyGame(d,h,a,g,false);} if(dobj(d).w===0)futuresWeek(); }
-  updateLg(2025); try{ featSeason(2025); }catch(e){} const st=standingsNow();
+  updateLg(2025); try{ featSeason(2025); }catch(e){} try{ genPastSeasons(); }catch(e){ console.error(e); } const st=standingsNow();
   G.history.push({y:2025,order:st,champ:st[0].tid,runner:st[1].tid}); G.iv=null;
   for(const p of Object.values(G.players)){ p.svc++; p.injOut=0; /* 사전 시뮬의 진행 중 부상 상태는 지운다(부상 이력 injHist만 남긴다) */ delete p.injFx; delete p.injK; delete p.reInj; delete p.ld; delete p.armw; delete p.lsS; develop(p); delete p.lastStart; delete p.lastApp; delete p.prevApp; }
   /* 시작 시점에는 'FA 자격을 채웠지만 신청하지 않고 남은 선수' 같은 특수한 경우를 만들지 않는다: FA 계약이 없는 선수는 많아야 예비 FA(올 시즌 뒤 자격) */

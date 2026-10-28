@@ -31,7 +31,7 @@ const A={
   fdHide(){ UI.fdHide=!(UI.fdHide==null?true:UI.fdHide); UI.fdMore=60; render(); },
   dlSpdC(){ const o=['slow','norm','fast']; const i=o.indexOf(UI.dspeed||'norm'); A.dlSpd(o[(i+1)%3]); },
   fdTab(v){ UI.fdTab=v; render(); window.scrollTo(0,0); },
-  fdSlot(v){ UI.fdTab='list'; if(v==='P'){ UI.fdG='P'; UI.fdF='all'; } else { UI.fdG='B'; UI.fdF=v==='DH'?'all':v; } UI.fdMore=60; if(!['rec','age','sal','grd'].includes(UI.fdS))UI.fdS='rec'; render(); const el=document.querySelector('.fdt-w'); if(el)el.closest('.card').scrollIntoView({behavior:'smooth',block:'start'}); },
+  fdSlot(v){ UI.fdTab='list'; if(v==='P'){ UI.fdG='P'; UI.fdF='all'; } else { UI.fdG='B'; UI.fdF=v==='DH'?'all':v; } UI.fdMore=60; if(!['rec','age','sal','grd','ana','risk'].includes(UI.fdS))UI.fdS='rec'; render(); const el=document.querySelector('.fdt-w'); if(el)el.closest('.card').scrollIntoView({behavior:'smooth',block:'start'}); },
   revOpen(){ if(UI.rev){ UI.rev.open=true; render(); } },
   revClose(){ UI.fdJust=UI.rev?UI.rev.pid:null; UI.rev=null; render(); if(G.fd&&!G.fd.done&&G.fd.picks[G.fd.cur]&&G.fd.picks[G.fd.cur].tid!==G.user)setTimeout(()=>dliveStart('fd'),250); },
   fdRec(){ const p=fdUserRec(1)[0]; if(p)A.fdPick(p.id); },
@@ -56,7 +56,7 @@ const A={
   fdAutoN(v){ const F=G.fd; if(!F||F.done)return; let n=+v||5, g=0; while(!F.done&&g++<500){ const pk=F.picks[F.cur]; if(!pk)break; if(pk.tid!==G.user){ fdAdvance(true); continue; } if(n<=0)break; const id=fdBest(G.user,true); if(id==null){ fdFinish(); break; } pk.auto=true; fdPick(id); n--; }
     UI.rev=null; save(); render(); try{ toast(F.done?'창단 드래프트가 끝났습니다.':'자동 지명을 마쳤습니다. 다시 우리 차례입니다.'); }catch(e){} },
   fdF(v){ UI.fdF=v; UI.fdMore=60; render(); }, fdS(v){ if(UI.fdS===v&&v!=='rec')UI.fdD=UI.fdD?0:1; else { UI.fdS=v; UI.fdD=0; } UI.fdMore=60; render(); },
-  fdG(v){ UI.fdG=v; UI.fdF='all'; if(!['rec','age','sal','grd'].includes(UI.fdS))UI.fdS='rec'; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
+  fdG(v){ UI.fdG=v; UI.fdF='all'; if(!['rec','age','sal','grd','ana','risk'].includes(UI.fdS))UI.fdS='rec'; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdTop(){ UI.fdTop=!UI.fdTop; render(); }, fdNeed(){ UI.fdNeed=!UI.fdNeed; render(); }, fdPol(v){ G.fdPol=v; save(); render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   nsTalk(){ UI.stadMsg=newStadTalk(); save(); render(); },
   nsPick(v){ UI.stadMsg=newStadPick(v); save(); render(); },
   retireGM(){ retireGM(); save(); render(); },

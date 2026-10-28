@@ -118,6 +118,7 @@ function renderSheet0(){
    ${T==='sum'?`
    ${staffCardP(p)}
    ${tiles?`<div><div class="eyebrow" style="margin-bottom:6px">${h.y} ${h.lvl==='퓨처스'?'2군':'1군'} 성적</div><div class="tiles">${tiles.map(t=>`<div class="tile${t[2]?' key':''}" data-a="recGo" data-v="${p.isP?'pit':'bat'}:${({OPS:'ops',WAR:'war',타율:'avg',홈런:'hr',타점:'rbi',ERA:'era',이닝:'ip',탈삼진:'so',세이브:'sv',홀드:'hld',승:'w'})[t[0]]||'war'}" role="button" title="리그 순위 보기"><span class="g">${t[1]}</span><span class="l">${t[0]}</span></div>`).join('')}</div></div>`:''}
+   ${!p.prospect&&h?recent3(p,h.y):''}
    ${p.prospect?`<section class="card"><div class="row between"><span class="eyebrow">아마추어 프로필</span><button class="btn small${(G.shortlist||[]).includes(p.id)?' primary':''}" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 선수':'☆ 관심 표시'}</button></div><dl class="kv"><dt>학교</dt><dd>${esc(p.school||'-')} (${p.college?'대학 4년':'고교 3년'})</dd><dt>체격</dt><dd>${p.ht||'-'}cm · ${p.wt||'-'}kg</dd><dt>${p.isP?'최고 구속':'1루 도달'}</dt><dd>${p.isP?(p.amVelo||veloOf(p))+'km/h':(p.amRun||runOf(p))+'초'}</dd><dt>언론 순위</dt><dd>${p.press||'-'}위</dd><dt>의료 기록</dt><dd>${p.amInj?esc(p.amInj):'특이 사항 없음'}</dd>${(()=>{const sc=bestScout(p.region); return sc&&sc.skill>=3?`<dt>면담 평가</dt><dd>${esc(persText(p))}</dd>`:'';})()}</dl><div class="eyebrow">학년별 기록</div>${amYearTable(p)}${amNotes(p).map(t=>`<p class="small amn">${esc(t)}</p>`).join('')}</section>`:''}
    ${p.prospect||isFM?reportCard(p):''}
    ${hideOvr(p)&&!p.prospect?trackCard(p):''}
@@ -216,3 +217,10 @@ function pitchCard(p){ if(G.unemp||team(G.user).indie)return ''; const I=pitchIn
     <div class="eyebrow" style="margin-top:6px">약속(선택) · 다음 시즌 구단주 목표에 들어갑니다</div><div class="row" style="gap:10px;flex-wrap:wrap">${cmtB}</div>
     <div class="row between" style="margin-top:8px"><span class="small">승인 가능성 <b>${Math.round(od*100)}%</b> · ${oddsTxt(od)}</span><button class="btn primary small" data-a="pitchGo" data-v="${p.id}" ${blocked||!st.args.length?'disabled':''}>회장에게 보고</button></div>
     ${blocked?`<p class="small bad">${blocked}</p>`:''}${UI.pitchMsg&&UI.pitchMsg.id===p.id?`<div class="note">${esc(UI.pitchMsg.t)}</div>`:''}</section>`; }
+
+/* 최근 3년 한눈에: 한 해 기록의 운(컨디션·타구 운)을 걸러 보게 한다 */
+function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
+  const row=x=>{ const h=x.h; if(p.isP){ const ip=h.outs/3, era=h.er*9/ip, fip=(13*(h.hr||0)+3*h.bb-2*h.so)/ip+3.2; const d=era-fip; return `<tr><td>${x.y}</td><td>${x.lvl===1?'1군':'2군'}</td><td class="num">${era.toFixed(2)}</td><td class="num">${fip.toFixed(2)}</td><td class="num ${d<=-.6?'lk':d>=.6?'ul':''}">${d>0?'+':''}${d.toFixed(2)}</td><td class="num">${ipStr(h.outs)}</td></tr>`; }
+    const r=bRate(h), bp=(h.h-h.hr)/Math.max(1,h.ab-h.so-h.hr); return `<tr><td>${x.y}</td><td>${x.lvl===1?'1군':'2군'}</td><td class="num">${fmt3(r.ops)}</td><td class="num">${fmt3(r.avg)}</td><td class="num">${h.hr}</td><td class="num ${bp>=.34?'lk':bp<=.27?'ul':''}">${fmt3(bp)}</td><td class="num">${h.pa}</td></tr>`; };
+  return `<div class="r3"><div class="eyebrow">최근 ${R.length}년</div><table class="r3t"><thead><tr><th>시즌</th><th></th>${p.isP?'<th>ERA</th><th>FIP</th><th>ERA−FIP</th><th>이닝</th>':'<th>OPS</th><th>타율</th><th>홈런</th><th>BABIP</th><th>타석</th>'}</tr></thead><tbody>${R.map(row).join('')}</tbody></table>
+    <p class="small muted">${p.isP?'ERA−FIP가 크게 음수면 운이 좋았던 해, 양수면 불운했던 해입니다.':'BABIP(인플레이 타구 안타 비율)가 .340을 넘으면 운이 좋았던 해, .270 아래면 불운했던 해일 수 있습니다.'} 한 해만 튀면 거품, 해마다 비슷하면 실력입니다.</p></div>`; }

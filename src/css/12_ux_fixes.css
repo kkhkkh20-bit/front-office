@@ -106,3 +106,16 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
   .dgroups .dt-t{grid-column:2}
   .dradar svg.radar{max-width:240px}
 }
+/* 창단 드래프트: 운 표시 */
+.fdt td.lk{color:var(--warn)}.fdt td.ul{color:#7fb8ff}
+.fdt td.rk3{color:var(--bad);font-weight:700}.fdt td.rk2{color:var(--warn);font-weight:600}.fdt td.rk1{color:var(--muted)}
+.tk-rec,.tk-del{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}.tk-rec{color:var(--muted);font-size:12.5px}
+.fdpol{font-size:12px;padding:4px 6px;max-width:190px}
+.tk2.risk{color:var(--warn)}.tk2.risk em{font-style:normal;font-weight:700;color:var(--bad);margin-left:2px}
+.r3{margin:10px 0}.r3t{width:100%;border-collapse:collapse;font-size:13px}.r3t th{font-weight:500;color:var(--dim);text-align:right;padding:3px 6px;border-bottom:1px solid var(--line)}.r3t th:first-child,.r3t th:nth-child(2){text-align:left}
+.r3t td{padding:4px 6px;border-bottom:1px solid #ffffff08;text-align:right}.r3t td:first-child,.r3t td:nth-child(2){text-align:left;color:var(--muted)}
+.r3t td.lk{color:var(--warn)}.r3t td.ul{color:#7fb8ff}
+.tk2.risk{flex-wrap:wrap}.tk2.risk button,.tk2.risk em{white-space:nowrap}
+.rk-i{white-space:nowrap;margin-right:10px}
+/* 중계 화면 배경 그림(조명 등)이 선수 카드 클릭을 가로채지 않게 */
+.cs-bg{pointer-events:none}
