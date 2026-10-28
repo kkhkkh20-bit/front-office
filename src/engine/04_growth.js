@@ -2,7 +2,7 @@
 /* ===== 성장과 노화 =====
  성장 유형(숨김): norm 정상형, early 조기 완성형, late 대기만성형, stall 정체형, vet 기술형(신체는 늙어도 기술이 는다)
  성장 속도 = 남은 잠재력 × 유형별 나이 곡선 × 출전 시간 × 훈련 시설 × 감독 육성 성향 */
-const DT={norm:{l:'정상 성장형',grow:27,peak:30,fall:31},early:{l:'조기 완성형',grow:24,peak:27,fall:29},late:{l:'대기만성형',grow:29,peak:32,fall:33},stall:{l:'정체형',grow:25,peak:29,fall:30},vet:{l:'기술형 베테랑',grow:27,peak:30,fall:31}};
+const DT={norm:{l:'정상 성장형',grow:27,peak:31,fall:32},early:{l:'조기 완성형',grow:24,peak:28,fall:30},late:{l:'대기만성형',grow:29,peak:33,fall:34},stall:{l:'정체형',grow:25,peak:29,fall:31},vet:{l:'기술형 베테랑',grow:27,peak:31,fall:32}};
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
@@ -25,7 +25,7 @@ function develop(p){
     if(R()<(p.dt==='stall'?.12:.05))p.pot-=ri(3,8);
     if(p.dt==='late'&&age>=25)p.pot+=rnd(0,1.5);
   } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g:0); }
-  else { base=-(age-T.fall+1)*.85*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); if(age<T.fall)base=N(-.2,1); }
+  else { base=-(age-T.fall+1)*.6*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=35?-2.4:-3.4); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
   if(age<=31&&!p.foreign){ const x=R(), st=p.dt==='stall'; const dn=st?.17:.11, up=st?.02:.06;
@@ -35,7 +35,7 @@ function develop(p){
   for(const k in p.r){
     let dk=base+N(0,(p.foreign?2.2:1.0)*(k==='eye'||k==='ctl'?.6:1));
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
-      dk-=PHYS[k]*(age-T.fall+2)*.35*fac.d;
+      dk-=PHYS[k]*(age-T.fall+2)*.24*fac.d;
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=34)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
     p.r[k]=clamp(p.r[k]+dk,20,80);
