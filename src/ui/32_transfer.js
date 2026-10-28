@@ -3,7 +3,7 @@ function fErrShort(e){ e=e||''; return /3명까지|1명까지/.test(e)?'자리 �
 /* ---------- 영입·계약 ---------- */
 function transferView(){
   const s=curSub('transfer');
-  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,contract:contractPage,draft:draftPage}[s]||faCenter)()+(UI.stamp?stampView():'');
+  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,contract:contractPage,draft:draftPage,moves:movesView}[s]||faCenter)()+(UI.stamp?stampView():'');
 }
 function netPill(r){ const lv=intlLv(r); return `<span class="pill net${lv}" title="${esc(INET[lv].d)}">${IREG[r].l} · ${INET[lv].l}</span>`; }
 function foreignView(){

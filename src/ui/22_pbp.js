@@ -71,7 +71,7 @@ function rankChart(compact){
 }
 
 /* 뉴스: 얼굴과 종류 */
-const NKC={선수:'acc',경기:'',분석:'warn',트레이드:'good',FA:'good',팬:'',구단:'bad'};
+const NKC={이적:'good',선수:'acc',경기:'',분석:'warn',트레이드:'good',FA:'good',팬:'',구단:'bad'};
 function newsItem(n,full){ const nw=(n.id||0)>newsSeen(); const p=n.ref!=null?G.players[n.ref]:null;
   return `<div class="news ${n.v>=2?'pos':n.v<=-2?'neg':''}${full?'':' sm'}${p?' wf':''}"${p?` data-a="player" data-v="${p.id}" role="button" tabindex="0"`:''}>${p?avImg(p):''}<div><span class="small muted">${nw?'<i class="nwdot"></i>':''}${n.k?`<span class="pill tag ${NKC[n.k]||''}" data-a="nk" data-v="${esc(n.k)}">${esc(n.k)}</span> `:''}${esc(n.o)} · ${dsh(n.d)}</span><b>${lk(n.t)}</b>${n.b?`<p class="small">${lk(n.b)}</p>`:''}${full?(()=>{ const C=newsComments(n); const o=(UI.nco||{})[n.id]; return `<button class="ncm-b" data-a="nco" data-v="${n.id}">댓글 ${C.length}${o?' 접기':''}</button>${o?`<div class="fcms">${C.map(cmtRow).join('')}</div>`:C[0]?`<p class="ncm1"><b>${esc(C[0].nick)}</b> ${lk(C[0].t)}</p>`:''}`; })():''}</div></div>`; }
 

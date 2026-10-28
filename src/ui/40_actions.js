@@ -185,6 +185,7 @@ const A={
   sponAcc(v){ toast(sponAccept(+v)); render(); },
   sponRej(v){ toast(sponReject(+v)); render(); },
   sponCnt(v){ const [id,p]=String(v).split(':'); toast(sponCounter(+id,+p)); render(); },
+  mvF(v){ const [k,x]=String(v).split(':'); UI.mvf=UI.mvf||{}; if(k==='t')UI.mvf.t=x||null; else UI.mvf.tm=x===''?null:+x; render(); },
   rcolTg(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=rcolKeys(pit).slice(); const i=L.indexOf(v); if(i>=0){ if(L.length<=1)return; L.splice(i,1); } else L.push(v); rcolLoad()[k]=L; rcolSave(); render(); },
   rcolMv(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const [c,d]=v.split(':'); const L=rcolKeys(pit).slice(); const i=L.indexOf(c), j=i+(+d); if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; rcolLoad()[k]=L; rcolSave(); render(); },
   rsort(v){ const k=UI.seg==='pit'?'pit':'bat'; UI.rs=UI.rs||{}; if(!v){UI.rs[k]=null;} else { const c=UI.rs[k]; UI.rs[k]={k:v,dir:c&&c.k===v?-c.dir:-1}; } render(); },

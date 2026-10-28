@@ -21,7 +21,7 @@ EVH.fovs={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.ovsOffer)return '
 /* 떠나는 선수를 해외파 명단으로 옮긴다 (국내 선수는 나중에 돌아올 수 있다) */
 function ovsLeave(p,lg,club,yrs,amt,how,fee){ const from=p.team??p.faFrom; G.abroad=G.abroad||[];
   const rec={id:p.id,name:p.name,isP:p.isP,pos:posLabel(p),foreign:p.foreign||null,from,lg,club,how,yrs,amt,y:G.year,age:p.age,lines:[],fee:fee||0,back:false,pj:p.foreign?null:JSON.stringify(p)};
-  G.abroad.unshift(rec); if(G.abroad.length>120)G.abroad.length=120;
+  G.abroad.unshift(rec); if(G.abroad.length>120)G.abroad.length=120; mvLog('해외 진출',p,from,null,`${club}(${lg}) ${yrs}년`);
   for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; if(G.fa&&G.fa.pool)G.fa.pool=G.fa.pool.filter(x=>x!==p.id); delete G.players[p.id];
   const t=`${p.name}, ${club} 구단(${lg})과 ${yrs}년 계약${how==='포스팅'?` · 포스팅 비용 ${money(fee)}`:''}`; wire(lg==='MLB'?'해외':'해외',t,{tid:from});
   try{ featAdd('ovs',null,`${p.name} ${how==='외국인'?'역수출':'해외 진출'} · ${club}(${lg}) ${yrs}년 ${amt*yrs}만 달러`,{tid:from,name:p.name,maj:lg==='MLB'}); }catch(e){}
@@ -67,7 +67,7 @@ function abroadYear(){ for(const a of G.abroad||[]){ if(a.back||a.foreign)contin
     const b=a.lg==='MLB'?-6:-2; const ok=ovr(p)>=(a.lg==='MLB'?62:57); const line=p.isP?simPit(p,ok?ri(200,500):ri(30,150),b):simBat(p,ok?ri(250,560):ri(40,160),b); line.y=G.year; line.lvl=ok?a.lg:(a.lg==='MLB'?'트리플A':'NPB 2군'); a.lines.push(line);
     try{ develop(p); }catch(e){} p.age++; a.age=p.age; a.pj=JSON.stringify(p); const yrsIn=G.year-a.y;
     if(yrsIn>=a.yrs&&(!ok||p.age>=33||R()<.45)){ a.back=true; a.backY=G.year; p.svc=(p.svc||0)+yrsIn; G.players[p.id]=p; p.team=a.from; p.sal=round5(Math.max(marketSal(ovr(p)),p.sal)); p.yrs=ri(1,3); p.cyrs=p.yrs; p.faC=true; p.ext=false; p.joinY=undefined; p.mor=70; delete p.ovsOffer; story(p,`${a.lg} 생활을 마치고 ${tname(a.from)} 복귀`,'move');
-      wire('해외',`${p.name}, ${a.lg} ${yrsIn}년 마치고 ${tshort(a.from)} 복귀`,{tid:a.from,ref:p.id}); if(a.from===G.user)news('선수',`${p.name}, 친정 복귀`,`${a.lg}에서 ${yrsIn}년을 뛰고 돌아왔습니다. 연봉 ${money(p.sal)} · ${p.yrs}년 계약.`,2,{ref:p.id,fanW:1.5}); } } }
+      wire('해외',`${p.name}, ${a.lg} ${yrsIn}년 마치고 ${tshort(a.from)} 복귀`,{tid:a.from,ref:p.id}); mvLog('해외 복귀',p,null,a.from,`${a.lg} ${yrsIn}년 · 연 ${money(p.sal)}`,p.sal*p.yrs); if(a.from===G.user)news('선수',`${p.name}, 친정 복귀`,`${a.lg}에서 ${yrsIn}년을 뛰고 돌아왔습니다. 연봉 ${money(p.sal)} · ${p.yrs}년 계약.`,2,{ref:p.id,fanW:1.5}); } } }
 /* 대체 외국인 관찰 명단 */
 function fwatchOn(id){ G.fwatch=G.fwatch||[]; return G.fwatch.some(w=>w.id===id); }
 function fwatchToggle(id){ G.fwatch=G.fwatch||[]; if(fwatchOn(id)){ const w=G.fwatch.find(x=>x.id===id); if(w&&w.auto)(G.fwNo=G.fwNo||[]).push(id); G.fwatch=G.fwatch.filter(x=>x.id!==id); return '관찰 명단에서 뺐습니다.'; } if(G.fwatch.length>=8)return '관찰 명단은 8명까지입니다.'; G.fwatch.push({id,since:G.day,k:0}); return '관찰 명단에 올렸습니다. 매주 스카우트 보고가 쌓여 평가가 정확해집니다.'; }

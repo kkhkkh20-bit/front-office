@@ -9,7 +9,7 @@ const NAV=[['home','홈','home'],['inbox','소식함','mail'],['roster','선수�
 const BNAV=['home','inbox','roster','trade','transfer'];
 const SUBS={
   trade:[['block','트레이드 매물'],['table','트레이드 협상'],['market','추천·선수 찾기'],['gms','단장']],
-  transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약']],
+  transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약'],['moves','이적 현황']],
   train:[['camp','훈련장'],['dev','육성'],['lead','리더십']],
   staff:[['mgr','감독'],['coach','코치진'],['scouts','스카우트'],['data','전력분석'],['med','의무']],
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['news','뉴스·팬'],['hist','역사']],

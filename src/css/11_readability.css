@@ -303,3 +303,9 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .spo-n i{display:block;font-style:normal;font-size:11px;opacity:.65}
 @media (max-width:480px){.spo-top{grid-template-columns:1fr 1fr 1fr}.spo-top b{font-size:15px}.spo-n{grid-template-columns:1fr 1fr}}
 .spt th,.spt td{text-align:left}.spt td.num{text-align:right}
+/* 이적 현황 */
+.mvl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--line,#2a2a2a);cursor:pointer}
+.mvl:first-of-type{border-top:0}.mvl.me{background:color-mix(in srgb,var(--acc,#4a8) 8%,transparent)}
+.mvl .mvd{margin-left:auto;font-size:13px}
+.mvt td{vertical-align:top}.mvt tr.me td{background:color-mix(in srgb,var(--acc,#4a8) 8%,transparent)}
+.mv-st{margin-bottom:6px}

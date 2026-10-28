@@ -107,7 +107,7 @@ function faSign(p,offers){
   }
   if(best.tid===G.user&&!G.unemp)chron('fa',from===G.user?`FA ${p.name} 잔류 (${best.years}년 연 ${money(best.annual)})`:`FA ${p.name} 영입 (${best.years}년 연 ${money(best.annual)})`,p.id); else if(from===G.user&&best.tid!==G.user&&!G.unemp)chron('fa',`FA ${p.name}, ${tshort(best.tid)}로 이적`,p.id);
   const userOffered=!!G.fa.offers[p.id];
-  delete G.fa.offers[p.id]; G.fa.pool=G.fa.pool.filter(x=>x!==p.id); G.fa.results.unshift(rec); prFA(rec);
+  delete G.fa.offers[p.id]; G.fa.pool=G.fa.pool.filter(x=>x!==p.id); G.fa.results.unshift(rec); prFA(rec); mvLog('FA',p,from,rec.to,`${from===rec.to?'잔류 ':''}${rec.years}년 연 ${money(rec.annual)}`,rec.annual*rec.years);
   const t=rec.to===G.user?(from===G.user?`${p.name}와(과) ${rec.years}년 연 ${money(rec.annual)}에 잔류 계약했습니다.`:`FA ${p.name}을(를) ${rec.years}년 연 ${money(rec.annual)}에 영입했습니다.${rec.compPlayer?` 보상선수로 ${rec.compPlayer}이(가) 떠났습니다.`:''}${rec.compCash?` 보상금 ${money(rec.compCash)}.`:''}`)
     :from===G.user?`${p.name}이(가) ${tname(rec.to)}와(과) 계약했습니다(${rec.years}년 연 ${money(rec.annual)}).${rec.compPlayer?` 보상선수로 ${rec.compPlayer}을(를) 받았습니다.`:''}`
     :`${tname(rec.to)}이(가) FA ${p.name}(${p.faGrade}등급)을 ${rec.years}년 연 ${money(rec.annual)}에 잡았습니다.${userOffered?' 우리 제안은 밀렸습니다.':''}`;
@@ -250,7 +250,7 @@ function answerOffer(id,yes){
   try{ frBacklash(o.get); }catch(e){}
   chron('trade',`${tshort(o.from)}와(과) 트레이드: ${o.get.map(id=>G.players[id]?G.players[id].name:'').join('·')} 보내고 ${o.give.map(id=>G.players[id]?G.players[id].name:'').join('·')} 받음`);
   G.trades.push({y:G.year,d:G.day,with:o.from,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade});
-  t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); G.offers=(G.offers||[]).filter(x=>!x.get.some(id=>o.get.includes(id))&&!x.give.some(id=>o.give.includes(id)));
+  t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user)); o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from)); G.offers=(G.offers||[]).filter(x=>!x.get.some(id=>o.get.includes(id))&&!x.give.some(id=>o.give.includes(id)));
   mgrTradeApply(mv); churnCheck(); mpickTraded(o.get); addLog(`${tname(o.from)}의 제안을 받아들였습니다: ${o.get.map(id=>G.players[id].name).join(', ')} ↔ ${o.give.map(id=>G.players[id].name).join(', ')}`);
   return {ok:true,grade,msg:'트레이드가 성사되었습니다.'};
 }
