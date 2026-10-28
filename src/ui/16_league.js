@@ -78,7 +78,7 @@ function leaderTiles(rows,y){
 }
 
 /* ---------- 리그: 경기 결과(스코어보드) ---------- */
-function scoreHub(){ const t=inTabs('sres',[['mine','우리 경기'],['day','날짜별 결과'],['cal','월별 일정']]); return t.bar+(t.cur==='mine'?gamesView():t.cur==='day'?scoreView():schedView()); }
+function scoreHub(){ const t=inTabs('sres',[['mine','우리 경기'],['day','날짜별 결과'],['cal','월별 일정']],G.games.length?'mine':'cal'); /* 개막 전에는 일정부터 */ return t.bar+(t.cur==='mine'?gamesView():t.cur==='day'?scoreView():schedView()); }
 function scoreView(){
   const days=[...new Set(G.teams.flatMap(t=>tlOf(t.id).map(x=>x[5])))].sort((a,b)=>a-b);
   if(!days.length)return csec('날짜별 결과','<p class="small muted">아직 치른 경기가 없습니다.</p>');
@@ -99,9 +99,9 @@ function newsView(){
   const head=`<div class="seg">${[['news','기사'],['fans','팬 게시판'],['wire','리그 소식']].map(([k,l])=>`<button data-a="nseg" data-v="${k}" class="${seg===k?'on':''}">${l}</button>`).join('')}</div>`;
   if(seg==='fans')return head+fanBoard();
   if(seg==='wire'){ const W=G.wire||[];
-    return head+csec('리그 소식',W.length?`<div class="list">${W.slice(0,80).map(w=>`<div class="item wa" ${w.ref!=null&&G.players[w.ref]?`data-a="player" data-v="${w.ref}"`:'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):'<span class="av ini">KBO</span>'}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>`:'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'); }
+    return head+csec('리그 소식',W.length?(()=>{ const P=pager('wire',W.slice(0,120),20); return `<div class="list">${P.items.map(w=>`<div class="item wa" ${w.ref!=null&&G.players[w.ref]?`data-a="player" data-v="${w.ref}"`:'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):'<span class="av ini">KBO</span>'}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>${P.bar}`; })():'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'); }
   const kinds=[...new Set((G.news||[]).map(n=>n.k).filter(Boolean))]; const ns=(G.news||[]).filter(n=>!UI.nk||n.k===UI.nk);
   const kc=`<div class="chips"><button data-a="nk" data-v="" class="${!UI.nk?'on':''}">전체</button>${kinds.map(k=>`<button data-a="nk" data-v="${esc(k)}" class="${UI.nk===k?'on':''}">${esc(k)}</button>`).join('')}</div>`;
-  return head+csec('기사',kc+(ns.length?`<div class="newslist">${ns.slice(0,60).map(n=>newsItem(n,true)).join('')}</div>`:'<p class="small muted">기사가 없습니다.</p>'),`<button class="btn small" data-a="go" data-v="club:media">여론 현황</button>`);
+  return head+csec('기사',kc+(ns.length?(()=>{ const P=pager('news'+(UI.nk||''),ns.slice(0,120),12); return `<div class="newslist">${P.items.map(n=>newsItem(n,true)).join('')}</div>${P.bar}`; })():'<p class="small muted">기사가 없습니다.</p>'),`<button class="btn small" data-a="go" data-v="club:media">여론 현황</button>`);
 }
 

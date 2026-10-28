@@ -18,7 +18,7 @@ function prestigeCard(){ const v=clubPrestige(G.user); const L=G.teams.map(t=>({
     <p class="small muted">우승은 2년 동안 크게, 그 뒤 10년 동안 조금씩 명성에 남습니다. 성적이 나쁘면 해마다 깎입니다.</p></section>`; }
 /* 테스트 도구 카드(구단·재정 → 설정) */
 function devCard(){ const P=G.ps; const ready=P&&P.seeds&&!P.done&&P.round==='wc'&&!(P.cur&&P.cur.gi>0);
-  return `<section class="card"><h2 class="sec">테스트 도구</h2>
-    <p class="small muted">남은 정규시즌을 실제 경기로 끝까지 치르고 가을야구 직전에 멈춥니다. 그사이 결정은 기본값으로 자동 처리됩니다(트레이드 제안 거절, 이벤트 기본 선택 등). 되돌릴 수 없으니 필요하면 먼저 저장 슬롯을 복사해 두세요.</p>
+  return `<section class="card"><details class="devd"${UI.devMsg?' open':''}><summary><b>테스트 도구</b> <span class="small muted">개발·점검용</span></summary>
+    <p class="small muted tipme">남은 정규시즌을 실제 경기로 끝까지 치르고 가을야구 직전에 멈춥니다. 그사이 결정은 기본값으로 자동 처리됩니다(트레이드 제안 거절, 이벤트 기본 선택 등). 되돌릴 수 없으니 필요하면 먼저 저장 슬롯을 복사해 두세요.</p>
     ${UI.devMsg?`<div class="note">${esc(UI.devMsg)}</div>`:''}
-    <div class="btns"><button class="btn" data-a="devPS" ${ready?'disabled':''}>가을야구 직전으로 이동</button><button class="btn" data-a="devSeed" ${ready&&G.ps.seeds[0]!==G.user?'':'disabled'} title="순위표는 그대로 두고 가을야구 대진만 바꿉니다">우리 구단 1번 시드로(테스트)</button></div></section>`; }
+    <div class="btns"><button class="btn" data-a="devPS" ${ready?'disabled':''}>가을야구 직전으로 이동</button><button class="btn" data-a="devSeed" ${ready&&G.ps.seeds[0]!==G.user?'':'disabled'} title="순위표는 그대로 두고 가을야구 대진만 바꿉니다">우리 구단 1번 시드로(테스트)</button></div></details></section>`; }

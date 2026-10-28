@@ -36,9 +36,8 @@ function quickActs(p){
   if(p.prospect){ if(d&&!d.done&&d.picks[d.cur].tid===G.user)b.push(`<button class="btn small primary" data-a="pick" data-v="${p.id}">지명</button>`); b.push(`<button class="btn small" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button>`); }
   else if(p.team===G.user&&!(p.joinY>G.year)){
     b.push(`<button class="btn small" data-a="jump" data-v="bond">면담</button>`);
-    if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드에 내놓기</button>`); }
-    if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">매물 해제</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">매물로 등록</button>`);
-    if(entryOn()&&!p.ys)b.push(`<button class="btn small" data-a="${p.e1?'reqDown':'reqUp'}" data-v="${p.id}">${p.e1?'말소 요청':'1군 요청'}</button>`);
+    if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 협상에 넣기</button>`); }
+    if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">매물 목록에서 빼기</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">매물 목록에 올리기</button>`);
     if(canExtend(p))b.push(`<button class="btn small" data-a="jump" data-v="ext">연장 협상</button>`);
   } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ if(tradeOpen()){ b.push(`<button class="btn small primary" data-a="findT" data-v="${p.id}">얻을 조건 보기</button>`); b.push(`<button class="btn small" data-a="toTrade" data-v="${p.id}">데려오기 협상</button>`); } b.push(`<button class="btn small" data-a="pwatch" data-v="${p.id}">${(G.pwatch||[]).includes(p.id)?'관심 해제':'관심 선수'}</button>`); }
   return b.length?`<div class="qacts">${b.join('')}</div>`:''; }
@@ -101,10 +100,14 @@ function toast(t){ let el=document.getElementById('toast'); if(!el){ el=document
 /* 설명 문단은 기본으로 보인다. 익숙해지면 ? 버튼으로 숨긴다 */
 function helpOn(){ try{ return localStorage.getItem('danjang-help')==='1'; }catch(e){ return false; } } /* 기본은 설명을 접고 ⓘ로 */
 /* 설명 문단은 화면에서 접고 ⓘ로 바꾼다: 같은 카드의 제목 옆에 ⓘ 하나, 누르면 말풍선. '?' 버튼을 켜면 예전처럼 펼쳐 보인다 */
-function markHints(root){ if(!root)return; root.querySelectorAll('p.small.muted, p.muted.small, .row.between > span.small.muted, .row.between > div > span.small.muted').forEach(el=>{ if(el.tagName==='SPAN'&&((el.textContent||'').trim().length<40||el.closest('.item,.mrow,.ibr,.fdt,table')))return; if(el.dataset.hk)return; if(el.closest('.mailbody,.news,.dl-empty,.td,.quote,.fdtip-none'))return; const t=(el.textContent||'').trim(); if(el.classList.contains('keep')&&!el.classList.contains('tipme'))return; if(/없습니다|수 없|아닙니다|만 시작|기한|마감/.test(t)&&!el.classList.contains('tipme'))return; if(t.length<24)return;
+function markHints(root){ if(!root)return; root.querySelectorAll('p.small.muted, p.muted.small, .row.between > span.small.muted, .row.between > div > span.small.muted, p.small.expl, p.tipme, details.frule').forEach(el=>{ if(el.tagName==='DETAILS'){ if(el.dataset.hk||el.closest('.mailbody,.sheet.ngt,.sheet.meet')||el.querySelector('button,input,select,a,table'))return; } if(el.tagName==='SPAN'&&((el.textContent||'').trim().length<40||el.closest('.item,.mrow,.ibr,.fdt,table')))return; if(el.dataset.hk)return; if(el.closest('.mailbody,.news,.dl-empty,.td,.quote,.fdtip-none'))return; const t=(el.textContent||'').trim(); if(el.classList.contains('keep')&&!el.classList.contains('tipme'))return; if(/없습니다|수 없|아닙니다|만 시작|기한|마감/.test(t)&&!el.classList.contains('tipme'))return; if(t.length<24)return;
     el.dataset.hk='1'; el.classList.add('hint'); const box=el.closest('section,.card,.fdl-main,.sheet')||el.parentElement; let h=box&&[...box.querySelectorAll('h2.sec,h2,h3,.eyebrow')].find(x=>!x.closest('table')&&(x.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING));
     if(h){ let ic=h.querySelector(':scope > .hi-i'); if(!ic){ ic=document.createElement('button'); ic.type='button'; ic.className='hi-i'; ic.textContent='i'; ic.setAttribute('aria-label','설명 보기'); ic.dataset.tip=''; h.appendChild(ic); } ic.dataset.tip=(ic.dataset.tip?ic.dataset.tip+'\n\n':'')+t; }
-    else { const ic=document.createElement('button'); ic.type='button'; ic.className='hi-i solo'; ic.textContent='i'; ic.setAttribute('aria-label','설명 보기'); ic.dataset.tip=t; el.parentNode.insertBefore(ic,el); } }); }
+    else { const ic=document.createElement('button'); ic.type='button'; ic.className='hi-i solo'; ic.textContent='i'; ic.setAttribute('aria-label','설명 보기'); ic.dataset.tip=t; el.parentNode.insertBefore(ic,el); } });
+  /* 설명만 있던 카드가 비어 보이지 않게: 제목 말고 남는 내용이 없으면 설명을 그대로 펼친다 */
+  root.querySelectorAll('section.card').forEach(sec=>{ const H=[...sec.querySelectorAll('.hint')].filter(h=>h.closest('section.card')===sec); if(!H.length)return;
+    const rest=[...sec.children].filter(c=>!c.matches('h2,h3,.eyebrow,.hint,.hi-i')&&!(c.matches('.row.between')&&!c.querySelector('button:not(.hi-i),input,select,b,.pill,.num')));
+    if(rest.length)return; H.forEach(h=>h.classList.remove('hint')); sec.querySelectorAll('.hi-i').forEach(i=>{ if(i.closest('section.card')===sec)i.remove(); }); }); }
 /* 말풍선: ⓘ(.hi-i)와 표 머리글 ⓘ(.ti)를 누르면 근처에 뜨고, 다른 곳을 누르면 닫힌다 */
 function tipShow(el){ let b=document.getElementById('tipb'); if(!b){ b=document.createElement('div'); b.id='tipb'; b.setAttribute('role','tooltip'); document.body.appendChild(b); }
   if(b._for===el&&b.classList.contains('on')){ tipHide(); return; } b._for=el; b._y=scrollY; b.textContent=el.dataset.tip||el.getAttribute('title')||''; b.classList.add('on');
@@ -116,7 +119,8 @@ if(typeof document!=='undefined'){ document.addEventListener('click',e=>{ const 
 /* ---------- 화면 안 탭 ---------- */
 function inTabs(key,tabs,def){ const cur=(UI.it||{})[key]||def||tabs[0][0]; const ok=tabs.some(t=>t[0]===cur)?cur:tabs[0][0];
   const wrapT=tabs.length>=5||tabs.reduce((a,t)=>a+String(t[1]).replace(/<[^>]*>/g,'').length,0)>20;
-  return {cur:ok,bar:`<div class="seg itabs${wrapT?' wrapt':''}">${tabs.map(([k,l])=>`<button data-a="itab" data-v="${key}:${k}" class="${ok===k?'on':''}">${l}</button>`).join('')}</div>`}; }
+  const nc=tabs.length<=4?tabs.length:tabs.length===6?3:tabs.length===5?3:4; /* 휴대폰: 남는 탭 하나가 다음 줄에 홀로 떨어지지 않게 열 수를 맞춘다 */
+  return {cur:ok,bar:`<div class="seg itabs${wrapT?' wrapt':''}" style="--nc:${nc}">${tabs.map(([k,l])=>`<button data-a="itab" data-v="${key}:${k}" class="${ok===k?'on':''}">${l}</button>`).join('')}</div>`}; }
 
 /* 긴 목록은 쪽으로 나눈다: 스크롤 대신 넘기기 */
 function pager(key,arr,per){ UI.pg=UI.pg||{}; const n=Math.max(1,Math.ceil(arr.length/per)); let i=Math.min(UI.pg[key]||0,n-1); if(i<0)i=0;

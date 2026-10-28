@@ -32,7 +32,7 @@ function nextCard(){
     ${x.ps?'':`<div class="nsps">${spc(mySP,G.user)}${spc(thSP,x.op)}</div><p class="small muted">로테이션 순번과 휴식일로 본 예상입니다. 부상·피로로 바뀔 수 있습니다.</p>`}
     ${weak}
     ${(()=>{ const o=UI.open.nxCmp??wide(); return `<details class="moreg" data-k="nxCmp" ${o?'open':''}><summary><span>전력 비교</span><i>자리별 주전 비교 · 누르면 상세</i></summary><div class="moreb">${cmpView(x.op,true)}<button class="btn small" data-a="cmpT" data-v="${x.op}">자세히 · 다른 구단과 비교</button></div></details>`; })()}
-    ${L.length>1?`<div class="fx">${L.slice(1).map(y=>`<span>${dsh(y.d)} ${y.home?'vs':'@'} ${badge(y.op,16)}${tshort(y.op)}</span>`).join('')}</div>`:''}
+
   </section>`;
 }
 /* ---------- 실시간 드래프트: 다른 구단 지명을 한 명씩 보여 준다 ---------- */

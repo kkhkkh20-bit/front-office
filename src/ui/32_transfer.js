@@ -64,6 +64,6 @@ function intlView(){
     <p class="small muted">단계: 0 에이전트 자료 · 1 현지 통신원 · 2 전담 스카우트(적응력 확인) · 3 현지 사무소. 스카우트 팀에서 스카우트를 해외 담당으로 보내면 그 나라 정보 수준이 한 단계 더 올라갑니다(최대 3).</p>`);
 }
 function contractPage(){
-  return (G.contract&&!G.contract.done?contractView():csec('연봉 협상','<p class="small muted">연봉 협상은 매년 1월에 열립니다. 계약이 끝난 선수의 재계약안이 이곳에 올라옵니다.</p>'))+csec('비FA 다년계약',extBody());
+  return (G.contract&&!G.contract.done?contractView():'')+csec('비FA 다년계약',extBody())+(G.contract&&!G.contract.done?'':'<p class="small muted keep" style="margin:4px 2px">연봉 협상은 시즌이 끝난 뒤 12월~1월에 이곳에서 열립니다.</p>');
 }
 

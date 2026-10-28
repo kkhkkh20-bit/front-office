@@ -21,7 +21,7 @@ function meetTopics(M){ const t=team(G.user);
     for(const p of meetBadF())L.push([`frep:${p.id}`,`외국인 ${p.name} 교체 자금 요청`,`${money(frepAmt(p))} · ${oddsTxt(ownOdds(frepAmt(p),{k:'frep',pid:p.id}))}`,!left]);
     return L; }
   if(M.k==='mgr')return [['now','지금 팀 상황은 어떻습니까?'],['foreign','외국인은 어떤 선수가 필요합니까?'],['cand','시장에 나온 외국인 후보들 어떻게 보세요?'],['need','가장 급한 자리는 어디입니까?'],['young','눈여겨보는 젊은 선수 있습니까?']];
-  return Object.entries(TALK).map(([k,l])=>[k,l]); }
+  const used=G.players[M.id]&&G.players[M.id].talkWk===Math.floor(G.day/7); return Object.entries(TALK).map(([k,l])=>[k,l,null,used]); }
 function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const say=(w,x)=>M.log.push({w,t:x});
   if(M.k==='own'){ if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',g?`${g.rank.cur?`지금 ${g.rank.cur}위군. `:''}올해 목표는 ${g.rank.t}위 안이오. ${g.rank.cur&&g.rank.cur<=g.rank.t?'지금처럼만 하시오.':'더 분발해야 하오.'}${t.owner==='profit'?' 그리고 적자는 꼭 줄이시오.':t.owner==='pr'?' 팬들 반응도 늘 보고 있소.':''}`:'시즌이 시작되면 다시 이야기합시다.'); return; }
     const [k,x]=v.split(':'); const p=k==='gen'?null:G.players[+x]; const amt=k==='gen'?+x:k==='fa'?p.ask.annual:frepAmt(p); const tr0=t.trust;
@@ -50,7 +50,7 @@ function meetSheet(){ const M=UI.meet; const W=meetWho(M); if(!W)return ''; cons
   return `<div class="scrim" data-a="meetClose"><div class="sheet gut meet" data-stop="1" role="dialog" aria-label="${esc(W.place)}">
     <div class="sheet-head"><div class="mt-h">${W.av}<div><span class="eyebrow">${esc(W.place)}</span><h2 class="sec">${esc(W.name)}</h2><span class="small muted">${esc(W.role)} · ${esc(W.rel)}</span></div></div><button class="x" data-a="meetClose" aria-label="닫기">×</button></div>
     <div class="mt-log" id="mt-log">${log}</div>
-    <div class="mt-opts"><span class="eyebrow">꺼낼 이야기${own&&!left?' · 이번 달 지원 요청은 이미 했습니다':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}<button class="mt-o end" data-a="meetClose"><b>면담 마치기</b></button></div></div></div>`; }
+    <div class="mt-opts"><span class="eyebrow">꺼낼 이야기${own&&!left?' · 이번 달 지원 요청은 이미 했습니다':''}${M.k==='pl'&&T.every(x=>x[3])?' · 이번 주에는 이미 이야기를 나눴습니다. 다음 주에 다시 부르세요':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}<button class="mt-o end" data-a="meetClose"><b>면담 마치기</b></button></div></div></div>`; }
 /* 면담 입구: 상대 얼굴 + 들어가기 */
 function meetDoor(k){ const W=meetWho({k}); if(!W)return ''; const t=team(G.user);
   const sub=k==='own'?(ownAskLeft()?'운영비 증액 · FA 영입 자금 · 외국인 교체 자금 · 근황 보고':'이번 달 지원 요청은 이미 했습니다 · 근황 보고는 가능'):'팀 상황 · 원하는 외국인 · 외국인 후보 의견 · 급한 자리 · 젊은 선수';

@@ -83,7 +83,7 @@ function policyCard(m){
     <p class="small muted">실제 운영: <b>${leanTxt}</b>. 고집이 센 감독일수록, 본래 성향과 다른 지시일수록, 관계가 나쁠수록 덜 따릅니다. 2주에 한 번 바꿀 수 있습니다.${cd?` 다음 변경 ${dmd(p.day+14)}.`:''}</p>
     ${UI.polMsg?`<div class="note">${esc(UI.polMsg)}</div>`:''}</section>`;
 }
-function mgrChatCard(compact){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return ''; const C=(G.mgrChat||[]).filter(c=>!compact||G.day-c.d<=14).slice(0,compact?1:4);
+function mgrChatCard(compact){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return ''; const C=(G.mgrChat||[]).filter(c=>!compact||G.day-c.d<=14).slice(0,1); /* 지난 대화는 감독실에서: 화면에는 가장 최근 답 하나만 */
   const T=[['now','지금 팀 상황은?'],['foreign','어떤 외국인을 원하나?'],['need','가장 급한 자리는?'],['young','눈여겨보는 젊은 선수는?']];
   const tt=G.ttDay!=null&&G.day-G.ttDay<14;
   return `<section class="card mchat"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${MV[mgrVoice(m)].l} · 관계 ${m.rel}</span></div>${compact?'':`<p class="small muted keep">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
@@ -96,7 +96,7 @@ function pactCard(m){ const P=G.pact&&G.pact.y===G.year&&G.pact.on?G.pact:null; 
   const cur=P?`<ul class="rec-w">${P.t.map(x=>{ const p=G.players[x.id]; return p?`<li><b>${esc(p.name)}</b> ${x.lv==='full'?'<span class="pill good">합의</span>':x.lv==='part'?'<span class="pill warn">부분 합의</span>':'<span class="pill bad">거절</span>'} ${esc(x.why)}</li>`:''; }).join('')}</ul>${P.log.length?`<p class="small muted">최근 점검: ${esc(P.log[P.log.length-1].m)}월 · ${esc(P.log[P.log.length-1].L.join(' / '))}</p>`:''}<div class="row"><button class="btn small" data-a="pactEnd">합의 끝내기</button></div>`:'';
   const pick=cands.length?`<div class="chips">${cands.map(p=>`<button data-a="pactSel" data-v="${p.id}" class="${sel.includes(p.id)?'on':''}">${esc(p.name)} <i>${posLabel(p)} ${p.age}세</i></button>`).join('')}</div><div class="row"><button class="btn small primary" data-a="pactGo" ${sel.length?'':'disabled'}>감독과 합의하기 (${sel.length}/2)</button></div>`:'<p class="small muted">기회를 줄 만한 25세 이하 비주전 선수가 없습니다.</p>';
   return `<section class="card"><div class="row between"><span class="eyebrow">유망주 기회 합의</span><span class="small muted">감독 관계 ${m.rel} · 육성 ${m.youth??'-'}</span></div>
-    <p class="small">1군 기회를 줄 유망주를 2명까지 정해 감독과 합의합니다. 감독은 실력 차이와 성향에 따라 받아들이거나 일부만 받아들이고, 매달 근거와 함께 보고합니다. 결과만으로 감독을 자동 평가하지 않습니다.</p>
+    <p class="small expl">1군 기회를 줄 유망주를 2명까지 정해 감독과 합의합니다. 감독은 실력 차이와 성향에 따라 받아들이거나 일부만 받아들이고, 매달 근거와 함께 보고합니다. 결과만으로 감독을 자동 평가하지 않습니다.</p>
     ${cur}${P?`<div class="eyebrow" style="margin-top:8px">대상 다시 정하기</div>`:''}${pick}${UI.pactMsg?`<div class="note">${esc(UI.pactMsg).replace(/\n/g,'<br>')}</div>`:''}</section>`; }
 function mgrBody(){
   const m=G.mgr[G.user];

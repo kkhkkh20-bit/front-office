@@ -77,6 +77,7 @@ const A={
   openMail(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; if(!mailFilter(UI.mf||'all').some(x=>x.id===v))UI.mf='all'; UI.mailFocus=v; UI.tab='inbox'; closeSheets(); save(); render(); },
   mailJump(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; UI.ibSel=v; UI._ibDay=G.day; if(!wide()){ if(!UI.ibOpen)UI.ibY=window.scrollY; UI.ibOpen=v; } UI.tab='inbox'; save(); render(); if(!wide())window.scrollTo(0,0); },
   ibBack(){ UI.ibOpen=null; render(); },
+  ibMore(){ UI.ibN=(UI.ibN||40)+40; render(); },
   inbox(){ UI.tab='inbox'; closeSheets(); render(); window.scrollTo(0,0); },
   itab(v){ const [k,t]=v.split(':'); UI.it=UI.it||{}; UI.it[k]=t; render(); },
   pgGo(v){ const i=v.lastIndexOf(':'); const k=v.slice(0,i), n=+v.slice(i+1); UI.pg=UI.pg||{}; UI.pg[k]=Math.max(0,n); render(); const el=document.querySelector(`[data-pg="${k}"]`); if(el)el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); },

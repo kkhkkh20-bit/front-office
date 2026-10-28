@@ -55,7 +55,7 @@ function inboxView(){
   const W=wide(); if(!sel&&W){ const u=list.find(m=>!m.read); sel=(u||list[0]).id; } UI.ibSel=sel||null;
   const si=ids.indexOf(sel);
   const nav=sel?`<div class="ibm-nav"><button class="btn small" data-a="mailJump" data-v="${ids[si-1]||''}" ${si>0?'':'disabled'} aria-label="이전 소식">◀</button><span>${si+1}/${ids.length}</span><button class="btn small" data-a="mailJump" data-v="${ids[si+1]||''}" ${si<ids.length-1?'':'disabled'} aria-label="다음 소식">▶</button></div>`:'';
-  let last=null; const rows=list.map(m=>{ let h=''; if(m.day!==last){ last=m.day; h=`<div class="ibx-day">${ibDay(m.day)}</div>`; } return h+mailRow(m,m.id===sel); }).join('');
+  const lim=UI.ibN||40; const more=list.length>lim?`<button class="btn small block ibx-more" data-a="ibMore">이전 소식 더 보기 (${list.length-lim}건)</button>`:''; let last=null; const rows=list.slice(0,Math.max(lim,ids.indexOf(sel)+1)).map(m=>{ let h=''; if(m.day!==last){ last=m.day; h=`<div class="ibx-day">${ibDay(m.day)}</div>`; } return h+mailRow(m,m.id===sel); }).join('')+more;
   if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=list[ids.indexOf(UI.ibOpen)]; setTimeout(()=>ibMark(m.id),50);
       return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav)}`; }
     UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}</nav>`; }

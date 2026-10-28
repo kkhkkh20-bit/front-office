@@ -44,7 +44,7 @@ function relMap(groups){ const by={}; for(const [,L] of groups)for(const x of L)
       <clipPath id="rmc${i}"><circle cx="${n.px.toFixed(1)}" cy="${n.py.toFixed(1)}" r="${n.s}"/></clipPath>
       <text x="${(n.gm?n.px+n.s+6:n.px).toFixed(1)}" y="${(n.gm?n.py+4:n.py+n.s+14).toFixed(1)}" text-anchor="${n.gm?'start':'middle'}" class="rm-l">${esc(lab)}${n.x.rel!=null?` <tspan fill="${relCol(n.x.rel)}">${n.x.rel}</tspan>`:''}</text></g>`; };
   const t=team(G.user);
-  return `<svg class="relmap" style="max-width:520px" viewBox="0 0 400 432" role="img" aria-label="관계 지도">
+  return `<svg class="relmap" style="max-width:520px" viewBox="-28 0 456 432" role="img" aria-label="관계 지도">
     <ellipse cx="${cx}" cy="${cy}" rx="96" ry="105" fill="none" stroke="#2a333e" stroke-dasharray="2 4"/>
     <text x="8" y="18" class="rm-g">구단 안</text><text x="392" y="18" text-anchor="end" class="rm-g">다른 구단 단장</text>
     ${nodes.map(line).join('')}

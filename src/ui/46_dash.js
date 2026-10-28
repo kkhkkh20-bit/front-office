@@ -4,9 +4,9 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
   const tile=(lab,val,sub,go,cls,meter)=>`<button class="dtl ${cls||''}" data-a="go" data-v="${go}"><span class="dtl-l">${lab}</span><b class="dtl-v num">${val}</b>${meter!=null?`<span class="dtl-m"><i style="width:${clamp(meter,0,100)}%"></i></span>`:''}<span class="dtl-s">${sub}</span></button>`;
   { const {order,live}=standOrder(); const i=order.findIndex(o=>o.tid===G.user); const o=order[i];
     if(o&&(live||G.startY!==G.year||(G.history.length&&G.history[G.history.length-1].y>=G.year))){ const gb=i>0?gbOf(order[0],o):0, g5=order[4]?gbOf(order[4],o):0; T.push(tile(live?'순위':'지난 시즌',`${i+1}위`,`${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''}${live?(i===0?' · 선두':` · 1위와 ${gb.toFixed(1)}`)+(i>=5?` · 5위와 ${g5.toFixed(1)}`:''):''}`,'league:stand',i<5?'good':i>=8?'bad':'')); }
-    else T.push(tile('전력 평가','-','개막 전','league:stand')); }
+    else { const pr=(G.proj||[]).indexOf(G.user); T.push(tile('전력 평가',pr>=0?`예상 ${pr+1}위`:'-','개막 전 전력분석팀 예상','league:stand')); } }
   { let nx=null; try{ const L=nextGames(1); if(L&&L[0])nx=L[0]; }catch(e){}
-    if(nx&&(per==='season'||per==='post'||per==='pre')){ const op=nx.op, home=nx.home; T.push(tile("다음 경기",`${home?"vs":"@"} ${esc(team(op).nick)}`,`${dsh(nx.d)} ${WD[dobj(nx.d).w]} · ${home?'홈':'원정'}`,'cal')); }
+    if(nx&&(per==='season'||per==='post'||per==='pre')){ const op=nx.op, home=nx.home; if(!wide())T.push(tile("다음 경기",`${home?"vs":"@"} ${esc(team(op).nick)}`,`${dsh(nx.d)} ${WD[dobj(nx.d).w]} · ${home?'홈':'원정'}`,'cal')); }
     else { let ev=null; try{ ev=calUpcomingList(1)[0]||null; }catch(e){} T.push(tile('다음 일정',ev?dsh(ev.d):'-',ev?esc(ev.t):'예정된 일정 없음','cal')); } }
   { const ps=playersOf(G.user).filter(p=>p.e1||!entryOn()); const mor=ps.length?sum(ps.map(p=>p.mor??60))/ps.length:60; const fat=ps.length?sum(ps.map(p=>p.fat||0))/ps.length:0;
     T.push(tile('팀 분위기',Math.round(mor),`${mor>=65?'좋음':mor>=50?'보통':mor>=38?'가라앉음':'나쁨'} · 평균 피로 ${Math.round(fat)}`,'roster',mor>=65?'good':mor<45?'bad':'',mor)); }
