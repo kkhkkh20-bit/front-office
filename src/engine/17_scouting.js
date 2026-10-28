@@ -32,19 +32,20 @@ function scoutReport(p){ // KBO 소속 선수는 현재 능력(오버롤)을 정
   return Object.assign({},r,{who,sc,cur,ofp,tools,arch:archetype(tv,p),role:ofp!=null?roleOf(ofp,p):null,notes,risk:r.risk||'판단 불가',conf:own?r.conf:ofp!=null?r.conf||'보통':'현재 능력만',exact:true});
 }
 function scoutReport0(p){
-  const own=p.team===G.user&&!p.prospect; let sc=null, sd, who, futKnown=true;
+  const own=p.team===G.user&&!p.prospect; let sc=null, sd, who, futKnown=true, bias=0;
   if(p.prospect){ sc=bestScout(p.region); const mo=dobj(G.day).m; sd=scSd(sc,p)*(mo<=5?1.35:mo<=8?1.12:1); futKnown=!!sc; who=sc?`${sc.name} 스카우트(${p.region})`:'담당 스카우트 없음'; if(p.gmSeen===G.year){ sd=sc?sd*.7:SCOUT_SD[2]; futKnown=true; who+=' · 단장 직접 관찰'; } }
   else if(own){ sc=bestScout(); sd=sc?Math.min(3,scSd(sc,p)):3.5; who='코치진·스카우트 합동'; }
-  else if(p.foreign&&p.team==null){ const r=origOf(p), lv=intlLv(r); sd=INET[lv].sd*(1-fwatchK(p.id)/100*.7); futKnown=lv>=1||fwatchK(p.id)>=40; const isc=G.scouts.find(s=>s.role==='intl'&&s.region===r); who=`${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 스카우트 파견`:''}`; sc={id:'intl'+r+lv,skill:lv+1,name:IREG[r].l}; }
+  else if(p.foreign&&p.team==null){ const r=origOf(p), lv=intlLv(r); sd=INET[lv].sd*(1-fwatchK(p.id)/100*.7); futKnown=lv>=1||fwatchK(p.id)>=40; const isc=G.scouts.find(s=>s.role==='intl'&&s.region===r); who=`${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 스카우트 파견`:''}`; sc={id:'intl'+r+lv,skill:lv+1,name:IREG[r].l};
+    /* 툴 평가는 실전 감각(p.sx)을 못 본다. 현지 사무소와 오래 지켜본 관찰 명단 선수만 일부 보인다 */ bias=-(p.sx||0)*(lv>=3?.6:1)*(1-fwatchK(p.id)/100*.6); }
   else if(p.team!=null){ const cv=coverOf(p.team); const pub=publicP(p);
     if(!cv.sc||(!pub&&cv.sc.skill<3))return {who:cv.sc?`${cv.sc.name} 스카우트(${cv.reg})`:`${cv.reg} 담당 스카우트 없음`,sc:null,sd:99,conf:'없음',cur:null,ofp:null,tools:[],arch:'평가 없음',role:null,notes:[cv.sc?'1군 기록이 없는 2군 선수라 능력 3 이상 스카우트만 파악할 수 있습니다.':`${cv.reg} 지역을 맡은 스카우트가 없어 이 구단 선수는 평가하지 못했습니다. 기록만 볼 수 있습니다.`],risk:'판단 불가',eta:null,unseen:true};
     sc=cv.sc; sd=scSd(sc,p)*.8*anaEff(G.user).sdm; futKnown=false; who=`${sc.name} 스카우트(${cv.reg} 프로 담당)`; }
   else { sc=bestScout(); sd=(sc?scSd(sc,p)*.8:SCOUT_SD[0])*anaEff(G.user).sdm; futKnown=!!sc; who=sc?`${sc.name} 스카우트(프로 담당)`:'스카우트 없음'; }
   const key=(sc?sc.id:'none')+(own?'own':'')+G.year+(p.prospect&&p.gmSeen===G.year?'g':'');
   const gap=Math.max(0,p.pot-ovr(p));
-  const tools=Object.keys(p.r).map(k=>{ const n=hn('t'+k+key,p.id)*sd*.8; const cur=clamp(r5(p.r[k]+n),20,80); const fut=clamp(r5(p.r[k]+gap*(p.age<=26?1:0)+n+hn('u'+k+key,p.id)*sd*.4),20,80); return {k,cur,fut:futKnown?Math.max(cur,fut):cur}; });
-  const cur=clamp(r5(ovr(p)+hn('c'+key,p.id)*sd*.55),20,80);
-  let ofp=futKnown?clamp(Math.max(cur,r5(p.pot+hn('f'+key,p.id)*sd)),20,80):null;
+  const tools=Object.keys(p.r).map(k=>{ const n=hn('t'+k+key,p.id)*sd*.8+bias; const cur=clamp(r5(p.r[k]+n),20,80); const fut=clamp(r5(p.r[k]+gap*(p.age<=26?1:0)+n+hn('u'+k+key,p.id)*sd*.4),20,80); return {k,cur,fut:futKnown?Math.max(cur,fut):cur}; });
+  const cur=clamp(r5(ovr(p)+bias+hn('c'+key,p.id)*sd*.55),20,80);
+  let ofp=futKnown?clamp(Math.max(cur,r5(p.pot+bias+hn('f'+key,p.id)*sd)),20,80):null;
   if(ofp!=null&&!p.prospect&&p.age>=29)ofp=Math.min(ofp,cur+Math.max(0,31-p.age)*2);
   const tv={}; tools.forEach(t=>tv[t.k]=t.cur);
   const arch=archetype(tv,p);

@@ -13,7 +13,8 @@ function gmCard(t,full){ const g=gmOf(t.id); if(!g)return ''; const c=(G.gmc||{}
     <div class="gmc-r"><span class="small muted">친분</span>${relBar(t.rel)}<b>${t.rel}</b><span class="small muted">${relLabel(t.rel)}</span></div>
     <p class="gmc-n">${esc(needText(t.id))}</p>${intLine(t.id)}<div class="gmc-q">${negChip(t.id)}</div>
     ${full?`<p class="small muted">${esc(GMT[g.trait].d)} ${esc(g.car)} · ${g.since}년부터 재임</p>`:''}
-    <div class="row"><button class="btn small primary" data-a="tpartnerGo" data-v="${t.id}">트레이드 협상</button><button class="btn small" data-a="gmCall" data-v="${t.id}" ${c.call!=null&&c.call>G.day-14?'disabled':''}>안부 연락</button><button class="btn small" data-a="gmMeal" data-v="${t.id}" ${c.meal!=null&&c.meal>G.day-30?'disabled':''}>식사 (1천만)</button></div></div>`; }
+    <div class="row"><button class="btn small primary" data-a="tpartnerGo" data-v="${t.id}">트레이드 협상</button><button class="btn small" data-a="gmCall" data-v="${t.id}" ${c.call!=null&&c.call>G.day-14?'disabled':''}>안부 연락${c.call!=null&&c.call>G.day-14?` (${c.call+14-G.day}일 뒤)`:''}</button><button class="btn small" data-a="gmMeal" data-v="${t.id}" ${c.meal!=null&&c.meal>G.day-30?'disabled':''}>식사 (1천만)${c.meal!=null&&c.meal>G.day-30?` · ${c.meal+30-G.day}일 뒤`:''}</button></div>
+    ${UI.gmRes&&UI.gmRes.t===t.id?`<div class="note ${UI.gmRes.ok?'good':'warn'} gmc-res">${lk(UI.gmRes.m)}</div>`:''}</div>`; }
 function feedList(n){ const W=(G.wire||[]).filter(w=>['트레이드','루머','단장'].includes(w.k)).slice(0,n);
   return W.length?`<div class="feed">${W.map(w=>`<div class="fd"><span class="pill ${w.k==='트레이드'?'acc':w.k==='단장'?'warn':''}">${w.k}</span><span>${lk(w.t)}</span><i>${dsh(w.d)}</i></div>`).join('')}</div>`:'<p class="small muted">아직 소식이 없습니다.</p>'; }
 /* 조건을 주고 스카우트 보고를 받는다 */

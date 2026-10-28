@@ -6,10 +6,18 @@ function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(
    스카우트 발굴: 구단 스카우트가 직접 찾은 선수. 처음엔 찾은 구단만 알고, 시간이 지나면 소문이 나서 다른 구단도 알게 된다.
    해외 스카우트망과 파견 스카우트 수준이 높을수록 더 자주, 더 좋은 선수를 찾는다 */
 const FFLAW={inj:'부상 이력',age:'나이 많음',adapt:'적응 우려'};
-/* 외국인 후보의 직전 리그 수준(KBO 기준). 같은 성적이라도 위쪽 리그 선수가 더 좋은 선수다 */
-const LG_LV={'MLB':['KBO보다 훨씬 높음','같은 성적이면 훨씬 좋은 선수입니다. 다만 출전이 적어 표본이 작습니다.'],'트리플A':['KBO와 비슷','성적을 거의 그대로 믿어도 됩니다.'],'NPB 2군':['KBO와 비슷','성적을 거의 그대로 믿어도 됩니다.'],
-  '도미니카 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],'베네수엘라 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],'CPBL':['KBO보다 낮음','성적을 꽤 깎아서 보세요.'],
-  '더블A':['KBO보다 낮음','성적을 꽤 깎아서 보세요. 같은 OPS라도 트리플A·MLB 선수보다 약합니다.'],'멕시코리그':['KBO보다 낮음(타자 리그)','타고투저 리그라 타격 성적을 크게 깎아서 보세요.'],'독립리그':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.'],'ABL':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.']};
+/* 직전 리그 수준 보정(KBO=0). [타자, 투수]: 양수면 KBO보다 쉬운 리그라 같은 선수도 성적이 좋게 나온다.
+   KBO는 대략 트리플A 수준. 기준(능력 60): 타자 OPS 트리플A .85 · 더블A .92 · MLB .72(MLE 더블A→MLB 약 0.78배),
+   투수 ERA 트리플A 3.6 · 더블A 2.9 · MLB 5.2 안팎. 멕시코리그·CPBL은 타고투저, NPB 2군은 투고타저 */
+const LG_ADJ={'MLB':[-12,-26],'트리플A':[1,1],'더블A':[7,13],'독립리그':[8,15],'멕시코리그':[8,-4],'도미니카 윈터리그':[3,5],'베네수엘라 윈터리그':[3,5],
+  'NPB 1군':[-7,-12],'NPB 2군':[-1,6],'일본 독립리그':[8,14],'CPBL':[7,2],'ABL':[9,11]};
+/* 화면에 보여 줄 리그 수준(KBO 기준). 같은 성적이라도 위쪽 리그 선수가 더 좋은 선수다 */
+const LG_LV={'MLB':['KBO보다 훨씬 높음','같은 성적이면 훨씬 좋은 선수입니다. 다만 출전이 적어 표본이 작습니다.'],'트리플A':['KBO와 비슷','성적을 거의 그대로 믿어도 됩니다.'],
+  'NPB 1군':['KBO보다 높음','같은 성적이면 더 좋은 선수입니다. 투고타저 리그라 투수 성적은 조금 깎아서 보세요.'],'NPB 2군':['KBO와 비슷(투고타저)','타자 성적은 조금 얹어서, 투수 성적은 깎아서 보세요.'],
+  '도미니카 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],'베네수엘라 윈터리그':['KBO보다 조금 낮음','성적을 조금 깎아서 보세요.'],
+  'CPBL':['KBO보다 낮음(타고투저)','타자 성적은 크게 깎아서 보세요. 투수 성적은 리그 타고 탓에 덜 깎아도 됩니다.'],
+  '더블A':['KBO보다 낮음','성적을 꽤 깎아서 보세요. 같은 성적이라도 트리플A·MLB 선수보다 약합니다.'],'멕시코리그':['KBO보다 낮음(극단적 타고투저)','타자 성적은 크게 깎아서 보세요. 투수는 ERA가 높아도 실력이 나쁘지 않을 수 있습니다.'],
+  '독립리그':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.'],'일본 독립리그':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.'],'ABL':['KBO보다 많이 낮음','성적을 크게 깎아서 보세요.']};
 const lgLv=l=>(LG_LV[l]||['',''])[0];
 function newForeign(kind,opts){
   opts=opts||{};
@@ -19,19 +27,23 @@ function newForeign(kind,opts){
   const isP=opts.isP??(R()<.65);
   let base=asia?clamp(N(48.5,4),40,60):reg==='la'?clamp(N(53,6),43,69):clamp(N(54,5),44,69);
   if(src==='scout')base=clamp(base+flv*1.3+(R()<.07*flv?ri(3,6):0),40,72);
-  /* 리그 수준 보정(KBO=0, 양수=쉬운 리그라 같은 선수도 성적이 좋게 나온다). KBO는 대략 트리플A 수준으로 본다.
-     MLB와 더블A의 차이를 크게 둬서 '같은 OPS'라도 MLB 쪽이 훨씬 좋은 선수가 되게 한다(MLE: 더블A→MLB OPS 약 0.75배) */
-  const lvl=asia?{jp:['NPB 2군',1],tw:['CPBL',5],au:['ABL',8]}[reg]:reg==='la'?pick([['멕시코리그',7],['도미니카 윈터리그',3],['베네수엘라 윈터리그',3]]):(()=>{ const w=wpick({AAA:5,AA:2,IND:1,MLB:src==='scout'?.15:.3}); return {AAA:['트리플A',1],AA:['더블A',7],IND:['독립리그',8],MLB:['MLB',-12]}[w]; })();
+  /* 리그 수준 보정은 LG_ADJ(타자·투수 따로). 일본은 1군·2군·독립리그로 나눈다 */
+  const lvl=[asia?{jp:wpick({'NPB 1군':.1,'NPB 2군':.55,'일본 독립리그':.35}),tw:'CPBL',au:'ABL'}[reg]:reg==='la'?pick(['멕시코리그','도미니카 윈터리그','베네수엘라 윈터리그']):{AAA:'트리플A',AA:'더블A',IND:'독립리그',MLB:'MLB'}[wpick({AAA:5,AA:2,IND:1,MLB:src==='scout'?.15:.3})]];
+  lvl.push(...LG_ADJ[lvl[0]]);
+  if(lvl[0]==='NPB 1군')base=clamp(base+5,40,66); if(lvl[0]==='일본 독립리그')base=clamp(base-1.5,40,60);
   if(lvl[0]==='더블A'||lvl[0]==='독립리그')base=clamp(base-1.5,40,72);
   /* 좋아 보이는 선수일수록 이유가 있다 */
   const fp=lvl[0]==='MLB'||base>=63?.7:base>=58?.28:.1; const flaw=R()<fp?pick(['inj','inj','age','adapt']):null;
   const age=flaw==='age'?ri(33,35):ri(25,32);
   const p=newPlayer({age,isP,base,pot:base+(age<28?ri(0,3):0),team:opts.team??null,foreign:asia?'아시아':'용병',nat:FN[nk].nat,name:genFName(nk)});
+  /* 실전 감각(숨은 값): 툴(능력치 측정)로는 안 보이고 경기 기록에만 묻어나는 부분. 스카우트는 툴을 보고, 기록은 실전을 보여 준다.
+     그래서 스카우트 평가만 믿으면 '툴은 좋은데 실전에서 약한 선수'를 고르기도 하고, 기록을 잘 읽으면 스카우트가 낮게 본 진짜를 건진다 */
+  { const sx=Math.round(clamp(N(0,3.2),-6,6)*10)/10; if(sx){ for(const k in p.r)p.r[k]=clamp(p.r[k]+sx,20,80); p.pot=clamp(p.pot+sx,20,80); roundR(p); } p.sx=sx; }
   p.orig=reg; p.adapt=Math.round(clamp(N(50,13),20,80)); if(flaw==='adapt')p.adapt=ri(16,30); if(flaw==='inj')p.inj=clamp(.3+R()*.12,.3,.42); if(flaw)p.flaw=flaw;
   p.prevLvl=lvl[0];
   /* MLB 출신은 대부분 백업·콜업 선수라 출전이 적다(경기 수와 타석·이닝을 맞춘다) */
   const mlb=lvl[0]==='MLB'; const mg=mlb?(isP?ri(10,32):ri(25,80)):0;
-  p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,mlb?Math.round(mg*rnd(2.6,4.2)):ri(150,420),lvl[1])):Object.assign({lvl:lvl[0]},simBat(p,mlb?Math.round(mg*rnd(2.4,3.6)):ri(280,520),lvl[1]));
+  p.prev=isP?Object.assign({lvl:lvl[0]},simPit(p,mlb?Math.round(mg*rnd(2.6,4.2)):ri(150,420),lvl[2])):Object.assign({lvl:lvl[0]},simBat(p,mlb?Math.round(mg*rnd(2.4,3.6)):ri(280,520),lvl[1]));
   p.prev.g=mlb?mg:isP?ri(18,40):Math.round(p.prev.pa/4.1);
   p.ask=fAsk(p); if(reg==='la')p.ask=round5(p.ask*.8); if(lvl[0]==='MLB')p.ask=round5(Math.min(F_NEW_CAP,p.ask*1.2)); if(flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
   if(src){ p.fsrc=src; p.fday=G.day; if(src==='scout'){ p.fknow=[opts.finder]; p.fpub=G.day+ri(14,45)-(base>=60?10:0); } else p.fpub=G.day; }
@@ -82,7 +94,7 @@ function signForeign(tid,id){
 function releaseForeign(id){ const p=G.players[id]; if(!p)return; mvLog('방출',p,p.team,null,'외국인 선수'); if(p.team===G.user)addLog(`외국인 선수 ${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 지급합니다.`); for(const k in G.lineup)if(G.lineup[k]===id)delete G.lineup[k]; delete G.players[id]; }
 /* 외국인 시장은 10개 구단이 함께 쓴다. 구단마다 스카우트 오차를 안고 후보를 평가한다 */
 function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병'); if(yb.length<3){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1; return {kind:'용병',isP:needP?true:needB?false:null}; } if(!fs.some(x=>x.foreign==='아시아'))return {kind:'아시아',isP:null}; return null; }
-function fScoreBy(tid,q){ const t=team(tid); return ovr(q)+hn('fv'+tid,q.id)*(t.scoutSd||6)*.6-q.ask/600; }
+function fScoreBy(tid,q){ const t=team(tid); return ovr(q)-(q.team==null?(q.sx||0)*.9:0)+hn('fv'+tid,q.id)*(t.scoutSd||6)*.6-q.ask/600; }
 function aiForeignPick(tid){ const nd=fNeed(tid); if(!nd)return null; const L=(G.fmarket||[]).map(id=>G.players[id]).filter(q=>q&&q.team==null&&fKnows(tid,q)&&q.foreign===nd.kind&&(nd.isP==null||q.isP===nd.isP)&&!foreignCheck(tid,q)); return L.sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a))[0]||null; }
 function fInterest(q){ if(!q||q.team!=null)return 0; let n=0; for(const t of G.teams){ if(t.id===G.user)continue; const nd=fNeed(t.id); if(!nd||!fKnows(t.id,q)||nd.kind!==q.foreign||(nd.isP!=null&&nd.isP!==q.isP))continue;
     const L=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&fKnows(t.id,x)&&x.foreign===nd.kind&&(nd.isP==null||x.isP===nd.isP)).sort((a,b)=>fScoreBy(t.id,b)-fScoreBy(t.id,a)).slice(0,3); if(L.includes(q))n++; } return n; }

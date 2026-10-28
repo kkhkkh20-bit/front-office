@@ -12,11 +12,11 @@ function personX(k){ const [kind,a,b]=String(k).split(':');
     return {k,name:s.name,role:`${tname(+b)} ${a==='sc'?'스카우트':'전력분석원'}`,av:{persona:'staff',pid:s.id,team:+b,age:s.age,name:s.name},rel:null,lab:`구단 충성도 ${Math.round(s.loy)}`,sub:`${s.age}세 · 연 ${money(s.sal)}`}; }
   return null; }
 /* 카드 공통 상단: 능력·성격·관계 */
-function personTop(k){ const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[];
+function personTop(k){ const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[], sty='';
   if(kind==='own'){ const w=OWNER[t.owner].w; ab=[['순위 중시',w[0]*100],['재정 중시',w[2]*100],['여론 중시',w[3]*100]]; pe=[[OWNER[t.owner].label,OWNTRAIT[t.owner]]]; li=[['사장',bossOf(G.user).ceo.name+' (예산 집행 창구)'],['단장',`신뢰 ${Math.round(t.trust)}`]]; }
   else if(kind==='ceo'){ const B=bossOf(G.user); const c=u01('ceoP',B.ceo.id); ab=[['예산 재량',40+c*40],['현장 이해',30+u01('ceoQ',B.ceo.id)*50]]; pe=[[c>.5?'진취적':'보수적',c>.5?'투자에 비교적 열려 있습니다.':'지출 하나하나를 따집니다.']]; li=[['구단주',bossOf(G.user).own.name+'의 뜻을 전합니다']]; }
   else if(kind==='mgr'||kind==='omgr'){ const m=kind==='mgr'?G.mgr[G.user]:G.mgr[+a]; if(m){ mgrAttr(m); const ty=mgrType(m);
-      ab=[['작전(스몰볼)',m.small],['수비 중시',m.dfn],['불펜 운용',m.pen],['육성',m.youth],['장악력',m.disc],['운영',m.tac],['안목',m.eye],['휴식 관리',m.rest],['투수 혹사',m.arm,1]];
+      ab=[['장악력',m.disc],['운영',m.tac],['안목',m.eye],['휴식 관리',m.rest]]; sty=mgrStyleBox(m);
       pe=[[ty.n,ty.d],[`말투 · ${({data:'데이터형',fire:'열혈형',warm:'온정형',old:'원로형',calm:'침착형'})[mgrVoice(m)]||'침착형'}`,'인터뷰와 면담에서 이 말투로 말합니다.'],[m.ego>=70?'고집 셈':m.ego<=35?'유연함':'보통 고집',m.ego>=70?'단장 지시를 잘 받아들이지 않습니다.':'단장 지시를 비교적 받아들입니다.'],...(m.fame>=70?[['스타 감독','이름값으로 팬과 언론의 관심을 끕니다.']]:[])];
       if(kind==='mgr'&&G.coach){ const C=coachesOf(G.user); const cl=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name); if(cl.length)li.push(['감독 사단',cl.join(', ')]); }
       if(kind==='mgr'){ const fav=playersOf(G.user).filter(p=>p.promise&&p.promise.until>=G.day).map(p=>p.name); if(fav.length)li.push(['출전 약속한 선수',fav.join(', ')]); } } }
@@ -29,4 +29,4 @@ function personTop(k){ const [kind,a]=String(k).split(':'); const t=team(G.user)
       li=[['소속',kind==='ost'?tname(+String(k).split(':')[2]):tname(G.user)],['근속 충성도',String(Math.round(s.loy))]]; void x; } }
   else if(kind==='rep'){ const r=repById(a); if(r){ ab=[['영향력',r.inf*20],['단장과 관계',r.rel]]; pe=[[PR_STYLE[r.style].l,PR_STYLE[r.style].d],[r.field,'주로 다루는 분야입니다.']]; if(r.last)li.push(['최근 변화',`${dsh(r.last.d)} ${r.last.why} ${r.last.dv>0?'+':''}${r.last.dv}`]); li.push(['인터뷰',`관계 70 이상이면 다른 구단 동향을 귀띔해 줍니다.`]); } }
   if(!ab.length&&!pe.length&&!li.length)return '';
-  return `<div class="pcard">${ab.length?`<div class="pc-sec"><div class="eyebrow">능력</div>${ab.map(([l,v,inv])=>pcBar(l,v,inv)).join('')}</div>`:''}${pe.length?`<div class="pc-sec"><div class="eyebrow">성격</div>${pe.map(([l,d])=>`<div class="pc-tr"><span class="pill">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}${li.length?`<div class="pc-sec"><div class="eyebrow">관계</div>${li.map(([l,d])=>`<div class="pc-li"><span class="small muted">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}</div>`; }
+  return `<div class="pcard">${sty?`<div class="pc-sec"><div class="eyebrow">성향</div>${sty}</div>`:''}${ab.length?`<div class="pc-sec"><div class="eyebrow">능력</div>${ab.map(([l,v,inv])=>pcBar(l,v,inv)).join('')}</div>`:''}${pe.length?`<div class="pc-sec"><div class="eyebrow">성격</div>${pe.map(([l,d])=>`<div class="pc-tr"><span class="pill">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}${li.length?`<div class="pc-sec"><div class="eyebrow">관계</div>${li.map(([l,d])=>`<div class="pc-li"><span class="small muted">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}</div>`; }

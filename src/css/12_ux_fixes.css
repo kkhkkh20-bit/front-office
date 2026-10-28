@@ -77,3 +77,32 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
   /* 순위 그래프: 화면 폭에 맞춰 그린다 */
   .rcw{overflow:visible}.rcw .rchart{min-width:0}
 }
+/* 감독 카드: 성향 눈금 · 능력 막대 */
+.mlab{margin:10px 0 4px}
+.msty{display:grid;gap:6px}
+.msty-r{display:grid;grid-template-columns:64px minmax(0,1fr) 64px;align-items:center;gap:8px;font-size:12px;color:var(--dim)}
+.msty-r span:last-child{text-align:right}
+.msty-r span.on{color:var(--ink);font-weight:600}
+.msty-t{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,#ffffff1a,#ffffff08 50%,#ffffff1a)}
+.msty-t::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--line2)}
+.msty-t i{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--acc,#3d8bfd);box-shadow:0 0 0 2px var(--panel)}
+.mabil{display:grid;gap:6px}
+.mabil-r{display:grid;grid-template-columns:64px 40px minmax(0,1fr);align-items:center;gap:8px;font-size:13px}
+.mabil-r .track{height:6px;border-radius:3px;background:#ffffff10;position:relative;overflow:hidden}
+.mabil-r .track .now{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.mpers{margin:8px 0 0}.mpers .bad{color:var(--bad)}
+/* 선수 능력치: FM처럼 '이름 … 숫자' 한 줄씩, 여러 칸으로 촘촘하게 */
+.dgroups{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px 20px}
+.dgroups>.dg{all:unset;box-sizing:border-box;display:grid;gap:0;align-content:start;min-width:0}
+.dgroups>.dg>.eyebrow{margin:0 0 3px;padding-bottom:3px;border-bottom:1px solid var(--line)}
+.dgroups .dt{display:grid;grid-template-columns:minmax(0,1fr) auto 56px;gap:8px;align-items:center;padding:3px 0;border:0;border-bottom:1px solid #ffffff07;background:none;border-radius:0;font-size:13px;min-height:24px}
+.dgroups .dt>span:first-child{color:#c9d1dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dgroups .dt .rchip,.dgroups .dt>b{min-width:30px;text-align:center;font-size:12.5px;padding:1px 4px}
+.dgroups .dt-t{grid-column:2 / span 2;text-align:right;font-size:12.5px;color:var(--ink)}
+@media (max-width:600px){
+  .dgroups{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+  .dgroups .dt{grid-template-columns:minmax(0,1fr) auto;gap:6px;font-size:12.5px;min-height:22px;padding:2px 0}
+  .dgroups .dt .track{display:none}
+  .dgroups .dt-t{grid-column:2}
+  .dradar svg.radar{max-width:240px}
+}
