@@ -40,3 +40,6 @@ nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;wh
   .seg.itabs>button,.chips button,.tc-i,.btn.small,.chipn.lk,th.sortable,.helpbtn,li>button,td>button.lnk,td.small>button.lnk{min-height:36px!important}
   th.sortable{height:36px}
 }
+@media (max-width:600px){ .dtiles{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.mvt td,.mvt th{text-align:left;white-space:normal;vertical-align:top}
+@media (max-width:620px){ .mvt{min-width:0!important;width:100%} .mvt thead{display:none} .mvt tr{display:grid;grid-template-columns:1fr;padding:6px 0;border-top:1px solid var(--line,#2a2a2a)} .mvt td{padding:2px 4px} .mvt td:nth-child(2)::before{content:'영입 ';opacity:.6} .mvt td:nth-child(3)::before{content:'이탈 ';opacity:.6} .mvt td:nth-child(4)::before{content:'FA 잔류 ';opacity:.6} }
