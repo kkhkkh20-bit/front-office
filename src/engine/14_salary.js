@@ -89,10 +89,10 @@ function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;
   if(p.foreign){ releaseForeign(id); return; }
   const cost=p.faC?Math.round(p.sal*p.yrs*.5):0; payOut(G.user,cost,'rel');
-  addLog(`${p.name}을(를) 방출했습니다.${cost?` 남은 계약 정산금 ${money(cost)}.`:''}`); story(p,`${tname(p.team)}에서 방출`,'move');
+  addLog(`${p.name}을(를) 방출했습니다.${cost?` 남은 계약 정산금 ${money(cost)}.`:''} 다른 구단과 계약할 때까지 무적 선수로 남습니다.`);
   if(G.contract){ G.contract.ended=G.contract.ended.filter(x=>x!==id); }
   for(const k in G.lineup) if(G.lineup[k]===id)delete G.lineup[k];
-  delete G.players[id];
+  toFree(p,`${tname(G.user)}에서 방출`); /* 바로 은퇴하지 않고 무적 선수로 남는다 */
 }
 function needScore(tid,p){ const d=depth(tid); const o=ovr(p);
   if(p.isP){ const arr=isSPr(p)?d.sp.map(spV):d.pen.map(penV); return arr.length&&o>Math.min(...arr)+2?1:0; }

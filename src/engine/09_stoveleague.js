@@ -121,10 +121,12 @@ function faClose(){
     { const fl=floorOf(G.year); const lt=G.teams.filter(x=>x.id!==G.user&&x.id!==from&&capPay(x.id)<fl&&rosterN(x.id)<ROSTER_MAX&&!faOutBlocked(x.id,p)).sort((a,b)=>capPay(a.id)-capPay(b.id))[0];
       if(lt&&p.age<=35&&ovr(p)>=42){ const an=round5(Math.max(low,Math.min(p.ask.annual,(fl-capPay(lt.id))*.6))); faSign(p,[{tid:lt.id,annual:an,years:Math.min(2,p.ask.years)}]); continue; } }
     /* 아무도 찾지 않은 선수: 유니폼을 벗는다 */
+    F.pool=F.pool.filter(x=>x!==id);
+    if(p.age<=35&&ovr(p)>=33){ toFree(p,'FA 미계약 · 무적 선수'); gone++; continue; } /* 2년 동안 다른 구단을 기다린다 */
     wire('FA',`${p.name}(${p.age}세)이(가) 새 팀을 찾지 못하고 은퇴했습니다.`,{ref:p.id}); if(from===G.user)note('FA',`우리 구단 출신 FA ${p.name}이(가) 계약하지 못하고 은퇴했습니다.`);
-    try{ p.team=from; obFromPlayer(p,null); p.team=null; }catch(e){} delete G.players[id]; F.pool=F.pool.filter(x=>x!==id); gone++; }
+    try{ p.team=from; obFromPlayer(p,null); p.team=null; }catch(e){} delete G.players[id]; gone++; }
   F.closed=true; F.cheapN=cheap; F.retN=gone;
-  note('FA',`FA 시장이 사실상 끝났습니다. 스프링캠프 전까지 계약하지 못한 선수 중 ${cheap}명은 원소속 구단과 1년 헐값 계약했고, ${gone}명은 유니폼을 벗었습니다.`); }
+  note('FA',`FA 시장이 사실상 끝났습니다. 스프링캠프 전까지 계약하지 못한 선수 중 ${cheap}명은 원소속 구단과 1년 헐값 계약했고, ${gone}명은 무적 선수로 남거나 은퇴했습니다. 무적 선수는 2년 안에 계약하지 못하면 은퇴합니다.`); }
 /* 1월 10일: 우리 구단 출신 미계약 FA가 있으면 알린다 */
 function faUnsignedNote(){ const F=G.fa; if(!F||F.closed)return; const L=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom===G.user); if(!L.length)return;
   stop('FA',`우리 구단 출신 미계약 FA ${L.length}명: ${L.map(p=>`${p.name}(요구 ${p.ask.years}년 연 ${money(p.ask.annual)})`).join(', ')}. 스프링캠프 전날(1월 24일)까지 아무 데서도 계약하지 못하면 은퇴합니다. 잡으려면 FA 시장에서 제안하세요.`); }

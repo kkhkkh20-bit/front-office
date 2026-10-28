@@ -2016,8 +2016,9 @@ function processDay(){ syncMinSal();
   if(G.demoEnd)return;
   G.day++; const day=G.day, o=dobj(day);
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }
-  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); }
+  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ freeYear(); }catch(e){} }
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
+  if(o.d===1)try{ freeAiMonthly(); }catch(e){}
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();
   recoverAll(1);
@@ -2401,10 +2402,12 @@ function faClose(){
     { const fl=floorOf(G.year); const lt=G.teams.filter(x=>x.id!==G.user&&x.id!==from&&capPay(x.id)<fl&&rosterN(x.id)<ROSTER_MAX&&!faOutBlocked(x.id,p)).sort((a,b)=>capPay(a.id)-capPay(b.id))[0];
       if(lt&&p.age<=35&&ovr(p)>=42){ const an=round5(Math.max(low,Math.min(p.ask.annual,(fl-capPay(lt.id))*.6))); faSign(p,[{tid:lt.id,annual:an,years:Math.min(2,p.ask.years)}]); continue; } }
     /* 아무도 찾지 않은 선수: 유니폼을 벗는다 */
+    F.pool=F.pool.filter(x=>x!==id);
+    if(p.age<=35&&ovr(p)>=33){ toFree(p,'FA 미계약 · 무적 선수'); gone++; continue; } /* 2년 동안 다른 구단을 기다린다 */
     wire('FA',`${p.name}(${p.age}세)이(가) 새 팀을 찾지 못하고 은퇴했습니다.`,{ref:p.id}); if(from===G.user)note('FA',`우리 구단 출신 FA ${p.name}이(가) 계약하지 못하고 은퇴했습니다.`);
-    try{ p.team=from; obFromPlayer(p,null); p.team=null; }catch(e){} delete G.players[id]; F.pool=F.pool.filter(x=>x!==id); gone++; }
+    try{ p.team=from; obFromPlayer(p,null); p.team=null; }catch(e){} delete G.players[id]; gone++; }
   F.closed=true; F.cheapN=cheap; F.retN=gone;
-  note('FA',`FA 시장이 사실상 끝났습니다. 스프링캠프 전까지 계약하지 못한 선수 중 ${cheap}명은 원소속 구단과 1년 헐값 계약했고, ${gone}명은 유니폼을 벗었습니다.`); }
+  note('FA',`FA 시장이 사실상 끝났습니다. 스프링캠프 전까지 계약하지 못한 선수 중 ${cheap}명은 원소속 구단과 1년 헐값 계약했고, ${gone}명은 무적 선수로 남거나 은퇴했습니다. 무적 선수는 2년 안에 계약하지 못하면 은퇴합니다.`); }
 /* 1월 10일: 우리 구단 출신 미계약 FA가 있으면 알린다 */
 function faUnsignedNote(){ const F=G.fa; if(!F||F.closed)return; const L=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom===G.user); if(!L.length)return;
   stop('FA',`우리 구단 출신 미계약 FA ${L.length}명: ${L.map(p=>`${p.name}(요구 ${p.ask.years}년 연 ${money(p.ask.annual)})`).join(', ')}. 스프링캠프 전날(1월 24일)까지 아무 데서도 계약하지 못하면 은퇴합니다. 잡으려면 FA 시장에서 제안하세요.`); }
@@ -2877,7 +2880,7 @@ function fillRoster(tid,min){
 function trimRoster(tid,max){
   let ps=playersOf(tid).filter(p=>!p.foreign&&!p.ys); const out=[]; max=(max||ROSTER_MAX)-foreignOf(tid).length;
   const keep=p=>keepScore(p)+(team(tid).mode==='contend'?(p.age>=26?1:0):(p.age<=24?1:0));
-  while(ps.length>max){ ps.sort((a,b)=>keep(a)-keep(b)); const p=ps.shift(); out.push(p); if(p.age<=24&&!p.faC&&p.pot-ovr(p)>=8&&ysN(tid)<YS_MAX){ p.ys=true; p.e1=false; p.sal=MIN_SAL; } else delete G.players[p.id]; }
+  while(ps.length>max){ ps.sort((a,b)=>keep(a)-keep(b)); const p=ps.shift(); out.push(p); if(p.age<=24&&!p.faC&&p.pot-ovr(p)>=8&&ysN(tid)<YS_MAX){ p.ys=true; p.e1=false; p.sal=MIN_SAL; } else if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출`); else delete G.players[p.id]; }
   return out;
 }
 /* 스카우트 특기: 투수 감별·타자 감별은 그 유형 선수를 볼 때 능력이 한 단계 높다. 경력은 성격 묘사용 */
@@ -3024,10 +3027,10 @@ function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;
   if(p.foreign){ releaseForeign(id); return; }
   const cost=p.faC?Math.round(p.sal*p.yrs*.5):0; payOut(G.user,cost,'rel');
-  addLog(`${p.name}을(를) 방출했습니다.${cost?` 남은 계약 정산금 ${money(cost)}.`:''}`); story(p,`${tname(p.team)}에서 방출`,'move');
+  addLog(`${p.name}을(를) 방출했습니다.${cost?` 남은 계약 정산금 ${money(cost)}.`:''} 다른 구단과 계약할 때까지 무적 선수로 남습니다.`);
   if(G.contract){ G.contract.ended=G.contract.ended.filter(x=>x!==id); }
   for(const k in G.lineup) if(G.lineup[k]===id)delete G.lineup[k];
-  delete G.players[id];
+  toFree(p,`${tname(G.user)}에서 방출`); /* 바로 은퇴하지 않고 무적 선수로 남는다 */
 }
 function needScore(tid,p){ const d=depth(tid); const o=ovr(p);
   if(p.isP){ const arr=isSPr(p)?d.sp.map(spV):d.pen.map(penV); return arr.length&&o>Math.min(...arr)+2?1:0; }
@@ -5446,6 +5449,32 @@ function mvWrap(m,topic,a){ const v=mgrVoice(m); if(m.rel<35)return a;
   const pre={data:{foreign:'시장 자료를 봤습니다. ',need:'숫자로 보면 답은 하나입니다. ',young:'트래킹 수치까지 보고 말씀드립니다. '},fire:{foreign:'이기려면 외국인이 터져야 합니다. ',need:'돌려 말 안 하겠습니다. ',young:'저는 실력 있으면 나이 안 봅니다. '},warm:{foreign:'새로 오는 선수도 우리 식구가 되는 거니까요. ',need:'애들이 버티고는 있지만, ',young:'제가 제일 아끼는 얘기네요. '},old:{foreign:'',need:'',young:'어린 선수는 기본부터입니다. '},calm:{foreign:'',need:'',young:''}}[v]||{};
   const post={data:{young:' 다만 2군 기록은 표본이 작아서 조심해서 봐야 합니다.'},fire:{need:' 이번 주 안에 답 주십시오.'},warm:{young:' 기회만 받으면 해낼 녀석들입니다.'},old:{young:' 서두르면 망칩니다.'},calm:{}}[v]||{};
   return (pre[topic]||'')+a+(post[topic]||''); }
+/* ===== 자유계약(무적) 선수 =====
+   방출되거나 FA 시장에서 팀을 찾지 못한 선수는 바로 은퇴하지 않고 무적 선수로 남는다.
+   어느 구단이든 연봉을 낮춰 데려갈 수 있고(외국인 등록 마감 8월 15일 이후 시즌 중에는 등록 불가),
+   마지막 계약이 끝난 뒤 2년 동안 계약하지 못하거나 38세가 되면 은퇴한다 */
+const FREE_YEARS=2;
+function toFree(p,why){ if(!p)return; p.team=null; if(p.freeSince==null)p.freeSince=G.year; p.freeDay=G.day; p.faC=false; p.ext=false; p.yrs=0;
+  delete p.cyrs; delete p.extNext; delete p.ys; delete p.role; delete p.faFrom; delete p.ask; delete p.listed; delete p.aiListed; p.injOut=Math.min(p.injOut||0,60);
+  if(why)story(p,why,'move'); }
+function isFree(p){ return !!p&&p.team==null&&p.freeSince!=null&&!p.foreign&&!p.prospect&&!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
+function freeList(){ return Object.values(G.players).filter(isFree); }
+/* 무적 선수의 요구 연봉: 시장가의 35%와 직전 연봉의 60% 중 낮은 쪽, 최저연봉 이상 */
+function freeAsk(p){ return round5(Math.max(MIN_SAL,Math.min(marketSal(ovr(p))*.35,(p.sal||MIN_SAL)*.6))); }
+function freeOpen(){ const per=period(); return !(per==='season'&&G.day>foreignDL()); }
+function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p))return '계약할 수 없는 선수입니다.'; if(!freeOpen())return '8월 15일 이후에는 시즌이 끝날 때까지 새 선수를 등록할 수 없습니다.';
+  if(rosterN(tid)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;
+  const sal=freeAsk(p); p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100);
+  story(p,`${tname(tid)}와(과) 계약 (무적 선수, 연 ${money(sal)})`,'move');
+  if(tid===G.user)addLog(`무적 선수 ${p.name}(${posLabel(p)}, ${p.age}세)과(와) 연 ${money(sal)}에 계약했습니다.`); else if(ovr(p)>=50)wire('이적',`${tname(tid)}, 무적 선수 ${p.name} 영입`,{tid,ref:p.id});
+  void yrs; return ''; }
+/* 새해: 2년 동안 계약하지 못한 선수, 38세 이상은 은퇴 */
+function freeYear(){ let n=0; for(const p of freeList()){ if(G.year-p.freeSince>=FREE_YEARS||p.age>=38||ovr(p)<26){ story(p,'무적 선수로 지내다 은퇴','move'); try{ obFromPlayer(p,null); }catch(e){} delete G.players[p.id]; n++; } } return n; }
+/* 매달 1일: 부상자가 많거나 자리가 빈 AI 구단은 쓸 만한 무적 선수를 데려간다 */
+function freeAiMonthly(){ if(!freeOpen())return; const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return;
+  for(const t of G.teams){ if(t.id===G.user)continue; const n=rosterN(t.id); if(n>=ROSTER_MAX-1)continue; const hurt=playersOf(t.id).filter(p=>p.injOut>14).length;
+    if(n>=ROSTER_MAX-4&&hurt<3)continue; const own=domestic(t.id).map(ovr).sort((a,b)=>b-a); const bar=own[Math.min(own.length-1,35)]||35;
+    const c=L.find(p=>p.team==null&&ovr(p)>=bar&&p.age<=35); if(c&&R()<.5)signFree(c.id,t.id); } }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -6208,7 +6237,7 @@ function faCenter0(){ const F=G.fa;
     const res=F&&F.results&&F.results.length?`<div class="feed">${F.results.slice(0,10).map(r=>`<div class="fd"><span class="pill">${r.grade}</span><span>${esc(r.name)} · ${esc(tshort(r.from))} → <b>${esc(tshort(r.to))}</b> ${r.years}년 ${money(r.annual)}</span><i>${dsh(r.day)}</i></div>`).join('')}</div>`:'';
     return `<div class="fahero"><b>FA 시장</b><span>포스트시즌 뒤 11월 2일 공시 · 11월 6일 협상 시작 · 1월 24일(캠프 전날) 사실상 마감</span></div>
       <section class="card"><h2 class="sec">올겨울 FA가 될 우리 선수</h2>${nx.length?`<div class="fl">${nx.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">예상 ${faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null))}등급(FA 보상 기준)</span>${canExtend(p)?`<button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`:'<span class="flx"></span>'}</div>`).join('')}</div>`:'<p class="small muted">없습니다.</p>'}<p class="small muted">FA가 되기 전에 비FA 다년계약으로 묶어 둘 수 있습니다.</p></section>
-      ${res?`<section class="card"><h2 class="sec">지난 FA 계약</h2>${res}</section>`:''}`; }
+      ${res?`<section class="card"><h2 class="sec">지난 FA 계약</h2>${res}</section>`:''}${freeCard()}`; }
   const ids=F.pool.filter(id=>G.players[id]&&G.players[id].team==null).sort((a,b)=>G.players[b].ask.annual-G.players[a].ask.annual);
   const open=G.day>=F.openDay; const d1=open?G.day-F.openDay+1:F.openDay-G.day; const left=KD(1,24)>G.day?KD(1,24)-G.day:dnum(G.year+1,1,24)-G.day;
   const mine=Object.keys(F.offers).length; const signed=F.results.length; const b=budget();
@@ -6223,9 +6252,14 @@ function faCenter0(){ const F=G.fa;
     <section class="card"><div class="row between"><h2 class="sec">전체 FA</h2><div class="chips">${[['all','전체'],['H','타자'],['P','투수'],['gA','A등급'],['gB','B등급'],['gC','C등급']].map(([k,l])=>`<button data-a="faPos" data-v="${k}" class="${pf===k?'on':''}">${l}</button>`).join('')}</div></div>
       <div class="fl">${list.slice(0,40).map(p=>{ const o=F.offers[p.id]; return `<div class="flr">${pMini(p)}<span class="small"><span class="pill acc">${p.faGrade}</span> ${p.ask.years}년 ${money(p.ask.annual)}${faHeat(p.id)?` · <b style="color:#ffb547">경쟁 ${faHeat(p.id)}</b>`:''}${o?' · <b style="color:#6fe39a">제시함</b>':''}</span><button class="tc-i ${o?'':'go'}" data-a="faSel" data-v="${p.id}">협상</button></div>`; }).join('')||'<p class="small muted">조건에 맞는 FA가 없습니다.</p>'}</div>
       <p class="small muted">${compRuleTxt()}</p></section>
-    <section class="card"><h2 class="sec">FA 계약 소식</h2>${F.results.length?`<div class="feed">${F.results.slice(0,14).map(r=>`<div class="fd"><span class="pill ${r.to===G.user?'good':''}">${r.grade}</span><span>${esc(r.name)} · ${esc(tshort(r.from))} → <b>${badge(r.to,14)} ${esc(tshort(r.to))}</b> ${r.years}년 ${money(r.annual)}${r.kind==='cheap'?' <span class="pill warn">헐값</span>':''}${r.ask0&&r.kind!=='cheap'&&r.annual<r.ask0*.85?` <span class="small muted">요구 ${money(r.ask0)}</span>`:''}${r.compPlayer?` · 보상 ${esc(r.compPlayer)}`:''}</span><i>${dsh(r.day)}</i></div>`).join('')}</div>`:'<p class="small muted">아직 계약 소식이 없습니다.</p>'}</section>`; }
+    <section class="card"><h2 class="sec">FA 계약 소식</h2>${F.results.length?`<div class="feed">${F.results.slice(0,14).map(r=>`<div class="fd"><span class="pill ${r.to===G.user?'good':''}">${r.grade}</span><span>${esc(r.name)} · ${esc(tshort(r.from))} → <b>${badge(r.to,14)} ${esc(tshort(r.to))}</b> ${r.years}년 ${money(r.annual)}${r.kind==='cheap'?' <span class="pill warn">헐값</span>':''}${r.ask0&&r.kind!=='cheap'&&r.annual<r.ask0*.85?` <span class="small muted">요구 ${money(r.ask0)}</span>`:''}${r.compPlayer?` · 보상 ${esc(r.compPlayer)}`:''}</span><i>${dsh(r.day)}</i></div>`).join('')}</div>`:'<p class="small muted">아직 계약 소식이 없습니다.</p>'}</section>${freeCard()}`; }
 function faHomeCard(){ if(!faLive())return ''; const F=G.fa; const ids=F.pool.filter(id=>G.players[id]&&G.players[id].team==null); if(!ids.length)return ''; const top=ids.sort((a,b)=>G.players[b].ask.annual-G.players[a].ask.annual).slice(0,3).map(id=>G.players[id]);
   return `<section class="card fahome"><div class="row between"><h2 class="sec">FA 시장 ${G.day>=F.openDay?'진행 중':'개장 임박'}</h2><button class="btn small primary" data-a="go" data-v="transfer:fa">FA 시장으로</button></div><div class="fl">${top.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">경쟁 ${faHeat(p.id)}곳</span><button class="tc-i go" data-a="faOpen" data-v="${p.id}">협상</button></div>`).join('')}</div></section>`; }
+/* 무적 선수(자유계약): 방출·FA 미계약 선수. 2년 안에 계약하지 못하면 은퇴 */
+function freeCard(){ const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); const f=UI.frF||'all'; const V=L.filter(p=>f==='all'||(f==='P'?p.isP:!p.isP)).slice(0,30); const open=freeOpen(); const full=rosterN(G.user)>=ROSTER_MAX;
+  return `<section class="card"><div class="row between"><h2 class="sec">무적 선수 ${L.length}명</h2><div class="chips">${[['all','전체'],['H','타자'],['P','투수']].map(([k,l])=>`<button data-a="frF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div></div>
+    <p class="small muted">방출되거나 FA에서 팀을 찾지 못한 선수입니다. 언제든 1년 계약으로 데려올 수 있고(8월 15일 이후 시즌 중에는 등록 불가), 마지막 계약 뒤 2년 안에 계약하지 못하면 은퇴합니다. ${full?'<b>정식 선수 자리가 꽉 찼습니다.</b>':`정식 선수 ${rosterN(G.user)}/${ROSTER_MAX}명.`}</p>
+    ${V.length?`<div class="fl">${V.map(p=>{ const left=FREE_YEARS-(G.year-p.freeSince); return `<div class="flr">${pMini(p)}<span class="small">${left<=1?'<span class="pill warn">올해가 마지막</span> ':''}요구 연 ${money(freeAsk(p))}</span><button class="tc-i go" data-a="signFree" data-v="${p.id}" ${open&&!full?'':'disabled'}>계약</button></div>`; }).join('')}</div>`:'<p class="small muted">지금은 무적 선수가 없습니다.</p>'}</section>`; }
 /* ---------- 인물 관계도 ---------- */
 const relEx=r=>r==null?null:r>=65?'smile':r<35?'angry':'flat';
 const relCol=r=>r==null?'#5b6675':r>=65?'#3fbf6a':r>=45?'#e6b93b':'#e0564f';
@@ -9416,6 +9450,8 @@ const A={
   toTrade(v){const p=G.players[+v]; if(UI.trade.tid!==p.team)UI.trade={tid:p.team,give:UI.trade.give||[],get:[],msg:'',sort:UI.trade.sort||'cur'}; if(!UI.trade.get.includes(p.id))UI.trade.get.push(p.id); UI.trade.seg=p.isP?'pit':'bat'; UI.trade.side='give'; UI.trade.msg=''; closeSheets(); A.go('trade:table');},
   toTradeGive(v){const p=G.players[+v]; if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
   anF(v){ UI.anF=v; render(); },
+  frF(v){ UI.frF=v; render(); },
+  signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
   scF(v){ UI.scF=v; render(); },
   hireScout(v){const s=scoutMkt().find(x=>x.id===v); if(s&&G.scouts.length<SCOUT_MAX){ s.since=G.day; s.role=s.role||'am';
     /* 이미 사람이 있는 자리면 같은 지역의 빈 업무, 없으면 다른 지역 빈자리로 보낸다 */
@@ -9470,6 +9506,7 @@ const GUARD={
     const comp=p.faGrade==='C'?`보상금 ${money(Math.round(ps*1.5))}`:`보호 ${g.prot}명 밖 선수 1명 + ${money(ps*g.withP)}, 또는 선수 없이 ${money(ps*g.cash)} (상대 구단 선택)`;
     return {subj:`FA ${p.name} 우선 제안 수락`,kind:'FA',lines:[`${posLabel(p)} · ${p.age}세 · ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`,`${o.years}년 · 연 ${money(o.annual)} · 총 ${money(o.annual*o.years)}`,`보상: ${comp}`],warn:'결재하면 바로 계약되고 되돌릴 수 없습니다.'}; },
   faLL(v){ const id=+v; const p=G.players[id]; const mk=G.fa&&G.fa.mk&&G.fa.mk[id]; if(!p||!mk||!mk.ll)return null; return {subj:`${p.name} 라스트 룩`,kind:'FA',lines:[`${mk.ll.years}년 · 연 ${money(mk.ll.annual)} · 총 ${money(mk.ll.annual*mk.ll.years)}`,p.faFrom===G.user?'우리 구단 FA 잔류':`보상 대상: ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`],warn:'결재하면 바로 계약됩니다.'}; },
+  signFree(v){ const p=G.players[+v]; if(!p||!isFree(p))return null; return {subj:`무적 선수 ${p.name} 계약`,kind:'선수',lines:[`${posLabel(p)} · ${p.age}세 · 능력 ${dvo(p)}`,`1년 · 연 ${money(freeAsk(p))}`,`정식 선수 ${rosterN(G.user)+1}/${ROSTER_MAX}명이 됩니다.`],warn:'계약하면 바로 등록됩니다.'}; },
   offer(v){ const id=+v; const p=G.players[id]; if(!p||!G.fa||p.faFrom===G.user||G.fa.offers[id]||faOutBlocked(G.user,p))return null; const o=UI.offer&&UI.offer.id===id?UI.offer:p.ask; const g=COMP[p.faGrade]; const ps=p.faPrevSal||0;
     const comp=p.faGrade==='C'?`보상금 ${money(Math.round(ps*1.5))}`:`보호 ${g.prot}명 밖 선수 1명 + ${money(ps*g.withP)}, 또는 선수 없이 ${money(ps*g.cash)} (상대 구단 선택)`;
     return {subj:`FA ${p.name} 영입 제안`,kind:'FA',lines:[`${posLabel(p)} · ${p.age}세 · ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`,`제시 ${o.years}년 · 연 ${money(o.annual)} · 총 ${money(o.annual*o.years)}`,`계약하면 보상: ${comp}`,'보상금은 올해 결산 지출로 잡혀 예산 여유가 그만큼 줄어듭니다.'],warn:'선수가 받아들이면 바로 계약되고 되돌릴 수 없습니다. 첫 제안 때만 묻습니다.'}; },
