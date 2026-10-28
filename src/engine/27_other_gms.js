@@ -121,9 +121,10 @@ function unempAuto(){ if(!G.unemp)return; const u=G.user;
   if(o.m===7&&o.d===1&&!(G.jobs||[]).some(j=>!j.done)){ const st=standingsNow(); const t=team(st[st.length-1-ri(0,2)].tid); if(t.id!==u&&R()<clamp((G.rep-15)/80,.08,.6)){ const og=gmOf(t.id).name; t.gm={...mkGM(t.id),name:'단장대행',interim:true}; wire('단장',`${t.city} ${t.nick}, ${og} 단장 시즌 중 경질`,{tid:t.id}); jobOffer(t.id,true); } } }
 function retireGM(){ if(!G.unemp)return; G.gameOver={y:G.year,msg:`${G.unemp.y}시즌 뒤 야인으로 지내다 단장 경력을 마쳤습니다.`}; }
 function switchTeam(tid){ const old=G.user; const ot=team(old), nt=team(tid);
-  ot.fac=(G.fac&&G.fac.lv)||3; ot.gm=mkGM(old); ot.rel=60; nt.gm=null; G.user=tid; nt.trust=55; nt.rel=50;
+  facMoveTeam(old,tid); /* 시설·공사·버스는 구단에 남는다: 떠나는 구단은 그대로 갖고, 가는 구단 것을 그대로 이어받는다 */
+  ot.gm=mkGM(old); ot.rel=60; nt.gm=null; G.user=tid; nt.trust=55; nt.rel=50;
   G.goals=null; G.policy=null; G.devProg=[]; G.ovs=[]; G.lineup={}; G.offers=[]; G.shortlist=[]; G.tsug=null; G.mentor=null; G.camp=G.camp&&!G.camp.done?G.camp:null;
-  for(const e of (G.evs||[]))if(!e.done)e.done=true; G.fac={lv:nt.fac||3,build:null}; facInit(); G.marketing=2000; G.pr={fan:55,press:50,hist:[]};
+  for(const e of (G.evs||[]))if(!e.done)e.done=true; G.marketing=2000; G.pr={fan:55,press:50,hist:[]};
   for(const p of Object.values(G.players)){ if(p.team===old){ delete p.listed; delete p.promise; } }
   G.unemp=null; G.gameOver=null; G.stops=[];
   /* 스태프는 구단에 남는다: 우리 스카우트·분석원은 옛 구단 몫으로, 새 구단의 스태프를 이어받는다 */

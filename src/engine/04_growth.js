@@ -6,7 +6,7 @@ const DT={norm:{l:'정상 성장형',grow:27,peak:31,fall:32},early:{l:'조기 �
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
-  const y=G.year; const a=seasonTotal(p,y,'1군'), f=seasonTotal(p,y,'퓨처스'); const fw=.6+(p.team===G.user?facOf('fut')*.05:0); /* 2군 구장이 좋을수록 2군 출전을 더 인정 */
+  const y=G.year; const a=seasonTotal(p,y,'1군'), f=seasonTotal(p,y,'퓨처스'); const fw=.6+(p.team===G.user?facOf('fut')*.05:facAiFut(p.team)); /* 2군 구장이 좋을수록 2군 출전을 더 인정 */
   if(p.isP){ const o=(a?a.outs:0)+(f?f.outs:0)*fw; return o>=420?1.15:o>=300?1.08:o>=180?1:o>=90?.92:.8; }
   const pa=(a?a.pa:0)+(f?f.pa:0)*fw; return pa>=450?1.15:pa>=320?1.08:pa>=200?1:pa>=100?.92:.8; }
 function develop(p){
