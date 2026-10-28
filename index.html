@@ -11933,7 +11933,7 @@ Object.assign(A,{
   rview(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; UI.rview=UI.rview||{}; UI.rview[k]=v; rcolLoad(); const P=RVIEW[v]&&RVIEW[v][1]; if(P)UI.rcols[k]=P[k].slice(); else delete UI.rcols[k]; rcolSave(); render(); }
 });
 /* 창단 직후 예산 설명: 구단 선택 화면(모기업 지원 한도), 드래프트(연봉 상한), 창단 후(지원 목표 안 여유)의 숫자가 서로 다른 기준이라는 것을 한 번 이어 준다 */
-function fdBudgetCard(){ if(!(G.fd&&G.fd.done)||G.fdBud||G.startY!==G.year||period()==='season')return ''; let b=null; try{ b=budget(); }catch(e){} if(!b)return ''; const ci=capInfo(G.user); const fsU=sum(foreignOf(G.user).map(p=>p.sal));
+function fdBudgetCard(){ if(!(G.fd&&G.fd.done)||G.fdBud||G.startY!==G.year||!(G.cal&&G.day<G.cal.open))return ''; /* 창단 첫 개막 전까지만 */ let b=null; try{ b=budget(); }catch(e){} if(!b)return ''; const ci=capInfo(G.user); const fsU=sum(foreignOf(G.user).map(p=>p.sal));
   return `<section class="card"><div class="row between"><h2 class="sec">창단 예산 정리</h2><button class="tc-i" data-a="fdBudOk">확인</button></div>
     <p class="small keep">국내 선수 연봉 ${money(ci.all)}(연봉 상한 ${money(ci.cap)}과는 별개인 실제 지출), 운영비, 외국인 배정액 ${money(Math.max(b.fR||0,fsU))}을 반영했습니다. 구단주의 지원 목표 기준으로 올해 추가로 쓸 수 있는 금액은 <b>${money(b.roomGoal)}</b>입니다.</p>
     <p class="small muted keep">구단 선택 화면의 큰 금액은 모기업이 메워 줄 수 있는 적자 한도이고, 드래프트 화면의 금액은 리그 연봉 상한(경쟁균형세 기준)입니다. 홈의 '예산 여유'는 이 지원 목표 안에서 남은 금액입니다.</p>
