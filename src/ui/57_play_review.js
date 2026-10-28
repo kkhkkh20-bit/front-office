@@ -37,7 +37,7 @@ function rebuildCard(){ if(!rebuildOn()||!(period()==='season'||period()==='post
 
 /* 구단주 신뢰: 왜 이 숫자인지 한 줄로(목표별 달성 여부) */
 function trustWhy(){ let g=null; try{ g=goalStatus(); }catch(e){} if(!g)return ''; const L=[];
-  if(g.rank.cur!=null)L.push(g.rank.ok?'성적 목표 안':'성적 목표 미달'); L.push(g.sup.ok?'지원 목표 지킴':'지원 목표 초과'); L.push(g.fan.ok?'여론 목표 안':'여론 목표 미달'); return L.join(' · '); }
+  if(g.rank.cur!=null)L.push(g.rank.ok?'성적 목표 안':'성적 목표 미달'); L.push(g.sup.ok?'지원 목표 지킴':'지원 목표 초과'); L.push(g.fan.ok?'여론 목표 안':'여론 목표 미달'); try{ const o=cwOrdLine(); if(o)L.push(o); }catch(e){} return L.join(' · '); }
 
 /* 주간 요약 진단: 기간 안 우리 경기 기록으로 가장 부진한 쪽을 찾는다 */
 function digestDiag(D){ const me=G.user; const gs=(G.games||[]).filter(g=>g.box&&g.day>=D.from&&g.day<=D.to); if(gs.length<2)return '';

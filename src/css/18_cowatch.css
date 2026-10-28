@@ -1,0 +1,19 @@
+/* ===== 동석 관람 경기 보고: 면담 화면(.meet) 말풍선을 그대로 쓰고, 위에 라인스코어, 사이에 주요 장면·선물·지시 상자 ===== */
+.sheet.cw .cw-board{flex:none;display:grid;gap:6px;padding:8px 0 6px;border-bottom:1px solid var(--line)}
+.sheet.cw .cw-board .tw{overflow-x:auto;max-width:100%}
+.sheet.cw .cw-board table.ls{font-size:12px}
+.sheet.cw .cw-board table.ls td,.sheet.cw .cw-board table.ls th{min-width:16px;padding:3px 2px}
+.cw-keys,.cw-gift,.cw-ord{align-self:stretch;flex:none;display:grid;gap:4px;padding:8px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line)}
+.cw-keys p{margin:0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.cw-keys p.me{color:var(--ink)}
+.cw-keys .ticker{margin-right:4px}
+.cw-gift{border-color:#4fc27c66;background:#4fc27c14}.cw-gift b{color:var(--good);font-size:13px}.cw-gift p{margin:0;font-size:13px;line-height:1.5}
+.cw-ord{border-color:#e3b44c66;background:#e3b44c12}.cw-ord b{font-size:14.5px}.cw-ord p{margin:0;font-size:13px;line-height:1.5}
+.cw-o{grid-template-columns:auto 1fr;column-gap:8px;align-items:center;flex:1 1 100%}
+.cw-o>b{grid-column:2}.cw-o>i{grid-column:2;line-height:1.45}
+.cw-tag{grid-row:1/span 2;align-self:start;font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cw-tag.t-sg{color:var(--warn);border-color:#e3b44c66}
+.cw-ctl{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px}
+.cw-ctl .btn{flex:1 1 auto}
+@media (max-width:420px){ .sheet.cw .mt-l{max-width:94%} }
+.cw-ord p.cw-note{font-size:12px;color:var(--muted)}

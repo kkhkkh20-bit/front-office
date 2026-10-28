@@ -5,7 +5,7 @@
    - 모기업 투자 요청(훈련 시설): 구단주 신뢰·성향·금액에 따라 승인. 거절되면 신뢰 -1, 60일 뒤 다시 요청
    - 지자체 분담 협의(구장): 승인되면 지자체가 절반을 낸다. 구단 인기·팬 여론이 높을수록 잘 된다 */
 function capexState(){ return G.capex=G.capex||{last:{}}; }
-function capexOdds(kind,c){ const t=team(G.user); if(kind==='fac'){ if(t.indie)return 0; return clamp(.3+(t.trust-50)/70+({win:.12,pr:.05,profit:-.15}[t.owner]||0)-c/30000,.05,.9); }
+function capexOdds(kind,c){ const t=team(G.user); if(kind==='fac'){ if(t.indie)return 0; return clamp(.3+(t.trust-50)/70+({win:.12,pr:.05,profit:-.15}[t.owner]||0)-c/30000+cwRapMod(),.05,.9); }
   return clamp(.35+(t.pop-1)*.4+((G.pr?G.pr.fan:55)-55)/100,.1,.8); }
 function capexAsk(kind,k){ const S=capexState(); const key=kind; if(S.last[key]!=null&&G.day-S.last[key]<60)return `다시 요청하려면 ${dmd(S.last[key]+60)}까지 기다려야 합니다.`; const t=team(G.user);
   if(kind==='fac'){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; if(lv>=3)return '이미 최고 단계입니다.'; if(G.fac.bld[k])return '이미 공사 중입니다.'; if(Object.keys(G.fac.bld).length>=2)return '공사는 동시에 2곳까지만 할 수 있습니다.'; if(t.indie)return '독립구단은 모기업이 없습니다. 보유 현금으로만 지을 수 있습니다.';
