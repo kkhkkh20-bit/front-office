@@ -1501,6 +1501,11 @@ nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;wh
 @media (max-width:600px){ .dtiles{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .mvt td,.mvt th{text-align:left;white-space:normal;vertical-align:top}
 @media (max-width:620px){ .mvt{min-width:0!important;width:100%} .mvt thead{display:none} .mvt tr{display:grid;grid-template-columns:1fr;padding:6px 0;border-top:1px solid var(--line,#2a2a2a)} .mvt td{padding:2px 4px} .mvt td:nth-child(2)::before{content:'영입 ';opacity:.6} .mvt td:nth-child(3)::before{content:'이탈 ';opacity:.6} .mvt td:nth-child(4)::before{content:'FA 잔류 ';opacity:.6} }
+/* 트레이드 제안 의견 듣기 */
+.oadv{margin:10px 0;padding:10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:8px}
+.oadv-b{display:grid;gap:6px}.oadv-r{display:flex;gap:8px;align-items:flex-start}.oadv-r .pill{flex:none}
+.oadv-r .small{white-space:pre-line;font-weight:400;line-height:1.5}
+@media (max-width:600px){.oadv-r{flex-direction:column;gap:4px}}
 </style>
 
 <div id="app"></div>
@@ -3088,7 +3093,7 @@ function scoutOf(role,key){ const s=G.scouts.filter(x=>(x.role||'am')===role&&x.
 function assignScout(id,role,key){ const s=G.scouts.find(x=>x.id===id); if(!s)return; if((s.role||'am')===role&&s.region===key)return; s.role=role; s.region=key; s.since=G.day; addLog(`${s.name} 스카우트를 ${SROLE[role]} ${role==='intl'?IREG[key].l:key} 담당으로 바꿨습니다.`); }
 function scoutLoad(){ const c={}; for(const s of G.scouts)c[(s.role||'am')+':'+s.region]=(c[(s.role||'am')+':'+s.region]||0)+1; return c; }
 /* 스카우트 후보 12명. 매달 일부가 다른 구단으로 가고 새 후보가 들어온다 */
-const SC_MKT=12; function scSkillRoll(){ return clamp(Math.round(N(2.7,1.15)),1,5); }
+const SC_MKT=12; function scSkillRoll(){ return clamp(Math.round(N(2.45,1.0)),1,5); }
 function scoutMkt(){ const mk=G.year*100+dobj(G.day).m; if(!G.scoutMarket)G.scoutMarket=[]; if(G.scoutMarketM!==mk){ G.scoutMarket=G.scoutMarket.filter(s=>s.ob||R()<.6); while(G.scoutMarket.length<SC_MKT)G.scoutMarket.push(mkScout(scSkillRoll())); G.scoutMarketM=mk; } return G.scoutMarket; }
 function refreshScoutMarket(){ G.scoutMarket=Array.from({length:SC_MKT},()=>mkScout(scSkillRoll())); G.scoutMarketM=G.year*100+dobj(G.day).m; try{ if(G.ob)G.scoutMarket=obCands('scout').slice(0,2).map(obScout).concat(G.scoutMarket); }catch(e){} }
 function offerMailDone(oid){ for(const m of G.mail) if(m.oid===oid)m.read=true; }
@@ -5430,7 +5435,7 @@ function anaPow(role,tid){ if(tid==null)tid=G.user; if(tid!==G.user||G.unemp){ c
 function anaEff(tid){ const o=anaPow('opp',tid), t=anaPow('trk',tid), v=anaPow('vid',tid); return {sdm:1-Math.min(.35,t*.045+v*.012),bab:Math.min(.007,o*.0008),bat:Math.min(.005,v*.0006),rep:clamp(Math.floor((o+v+t)/3),0,3)}; }
 function dataLv(tid){ return anaEff(tid).rep; }
 function anaSal(){ return sum(anaList().map(a=>a.sal)); }
-function anaMarket(){ const mk=G.year*100+dobj(G.day).m; if(!G.amarket||G.amarketM!==mk){ const keep=(G.amarket||[]).filter(()=>R()<.4); G.amarket=keep; while(G.amarket.length<12){ const sk=R()<.08?5:R()<.2?4:R()<.45?3:R()<.75?2:1; G.amarket.push(mkAnalyst(sk)); } G.amarketM=mk; } return G.amarket; }
+function anaMarket(){ const mk=G.year*100+dobj(G.day).m; if(!G.amarket||G.amarketM!==mk){ const keep=(G.amarket||[]).filter(()=>R()<.4); G.amarket=keep; while(G.amarket.length<12){ const sk=R()<.05?5:R()<.17?4:R()<.42?3:R()<.75?2:1; G.amarket.push(mkAnalyst(sk)); } G.amarketM=mk; } return G.amarket; }
 function hireAna(id){ const a=anaMarket().find(x=>x.id===id); if(!a)return '후보가 없습니다.'; if(anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`; a.since=G.day; G.analysts.push(a); G.amarket=G.amarket.filter(x=>x.id!==id); addLog(`${AROLE[a.role].l} 분석원 ${a.name}(능력 ${a.skill})을(를) 연 ${money(a.sal)}에 채용했습니다.`); return ''; }
 function fireAna(id){ const a=anaList().find(x=>x.id===id); if(!a)return ''; G.analysts=G.analysts.filter(x=>x.id!==id); addLog(`분석원 ${a.name}과(와) 계약을 정리했습니다.`); return ''; }
 function setAnaRole(id,role){ const a=anaList().find(x=>x.id===id); if(!a||!AROLE[role])return ''; if(a.role!==role){ a.role=role; a.since=G.day; } return ''; } /* 역할을 바꾸면 다시 30일 적응 */
@@ -6086,8 +6091,8 @@ function stDaily(){ const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e
 /* 새해: 경험이 쌓여 성장(젊을수록), 노장은 감각이 떨어지고 은퇴, 충성도 상승, 연봉은 실력에 맞춰 재계약 */
 function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...anaList().map(a=>['an',a,G.user])]; for(const tid in G.lgStaff){ for(const s of G.lgStaff[tid].sc)all.push(['sc',s,+tid]); for(const a of G.lgStaff[tid].an)all.push(['an',a,+tid]); }
   const grew=[], gone=[];
-  for(const [k,s,tid] of all){ stAttr(s); s.age++; s.loy=clamp(s.loy+12,0,100); const up=s.age<=40?.3:s.age<=50?.16:.05; if(s.skill<5&&R()<up){ s.skill++; if(tid===G.user)grew.push(s.name); }
-    if(s.age>=58&&s.skill>1&&R()<.18)s.skill--; s.sal=Math.max(s.sal,(k==='sc'?SCOUT_SAL:ANA_SAL)[s.skill]);
+  for(const [k,s,tid] of all){ stAttr(s); s.age++; s.loy=clamp(s.loy+12,0,100); const up=(s.age<=40?.2:s.age<=50?.1:.03)*(s.skill>=4?.5:1); if(s.skill<5&&R()<up){ s.skill++; if(tid===G.user)grew.push(s.name); } /* 4·5단계로 올라가기는 더 어렵다 */
+    if(s.skill>1&&R()<(s.age>=58?.25:s.age>=52?.1:.03))s.skill--; /* 감이 떨어지거나 현장과 멀어진다 */ s.sal=Math.max(s.sal,(k==='sc'?SCOUT_SAL:ANA_SAL)[s.skill]);
     if(s.age>=66||(s.age>=60&&R()<.15)){ if(tid===G.user){ if(k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s); gone.push(s.name); } else { const L=G.lgStaff[tid]; if(k==='sc')L.sc=L.sc.filter(x=>x!==s); else L.an=L.an.filter(x=>x!==s); } } }
   for(const tid in G.lgStaff)stSync(+tid);
   if(grew.length||gone.length)mail('운영팀','스태프 연간 변동',`${grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:''}${gone.length?`\n은퇴한 스태프: ${gone.join(', ')}`:''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); }
@@ -6720,6 +6725,7 @@ function offerOne(o){ { const t=team(o.from); const li=id=>{const p=G.players[id
     return `<section class="card hero"><div class="row between"><span class="eyebrow">트레이드 제안 · ${dmd(o.exp)}까지</span><span class="small muted">관계 ${t.rel}</span></div>
     <h2 class="sec">${tname(o.from)}</h2>
     <div class="tcols2"><div><div class="eyebrow">받는 선수</div><div class="tgrid">${o.give.map(li).join('')}</div></div><div><div class="eyebrow">보내는 선수</div><div class="tgrid">${o.get.map(li).join('')}</div></div></div>
+    ${offerAdvBox(o)}
     <div class="btns"><button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button><button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div></section>`; }
 }
 function campCard(){
@@ -10228,6 +10234,8 @@ const A={
   ivAns(v){ ivAnswer(+v); save(); renderSheet(); },
   gmPlan(v){ const [d,k,x]=String(v).split(':'); toast(gmPlanSet(+d,k||null,x||null)); save(); render(); },
   capex(v){ const [k,x]=String(v).split(':'); const r=capexAsk(k,x); toast(r||'공사를 시작했습니다.'); save(); render(); },
+  offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
+  offerCounter(v){ const o=(G.offers||[]).find(x=>String(x.id)===String(v)); if(!o)return toast('끝난 제안입니다.'); UI.trade={tid:o.from,give:[...o.get],get:[...o.give],cash:0,msg:'',seg:'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
   rcolTg(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=rcolKeys(pit).slice(); const i=L.indexOf(v); if(i>=0){ if(L.length<=1)return; L.splice(i,1); } else L.push(v); rcolLoad()[k]=L; rcolSave(); render(); },
   rcolMv(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const [c,d]=v.split(':'); const L=rcolKeys(pit).slice(); const i=L.indexOf(c), j=i+(+d); if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; rcolLoad()[k]=L; rcolSave(); render(); },
   rsort(v){ const k=UI.seg==='pit'?'pit':'bat'; UI.rs=UI.rs||{}; if(!v){UI.rs[k]=null;} else { const c=UI.rs[k]; UI.rs[k]={k:v,dir:c&&c.k===v?-c.dir:-1}; } render(); },
@@ -10689,4 +10697,30 @@ function personTop(k){ const [kind,a]=String(k).split(':'); const t=team(G.user)
   else if(kind==='rep'){ const r=repById(a); if(r){ ab=[['영향력',r.inf*20],['단장과 관계',r.rel]]; pe=[[PR_STYLE[r.style].l,PR_STYLE[r.style].d],[r.field,'주로 다루는 분야입니다.']]; if(r.last)li.push(['최근 변화',`${dsh(r.last.d)} ${r.last.why} ${r.last.dv>0?'+':''}${r.last.dv}`]); li.push(['인터뷰',`관계 70 이상이면 다른 구단 동향을 귀띔해 줍니다.`]); } }
   if(!ab.length&&!pe.length&&!li.length)return '';
   return `<div class="pcard">${ab.length?`<div class="pc-sec"><div class="eyebrow">능력</div>${ab.map(([l,v,inv])=>pcBar(l,v,inv)).join('')}</div>`:''}${pe.length?`<div class="pc-sec"><div class="eyebrow">성격</div>${pe.map(([l,d])=>`<div class="pc-tr"><span class="pill">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}${li.length?`<div class="pc-sec"><div class="eyebrow">관계</div>${li.map(([l,d])=>`<div class="pc-li"><span class="small muted">${esc(l)}</span><span class="small">${esc(d)}</span></div>`).join('')}</div>`:''}</div>`; }
+/* ---------- 트레이드 제안 받았을 때: 감독·전력분석팀·스카우트(메디컬)에게 의견 묻기 ----------
+   소식함에서 바로 묻고, 답이 제안 카드 아래에 쌓인다. 감독에게 먼저 물으면 존중받았다고 느껴 관계 +1(제안당 한 번) */
+function offerAdvise(o,who){ o.adv=o.adv||{}; if(o.adv[who])return; const give=o.get, get=o.give; /* 우리 기준: give=보내는 선수, get=받는 선수 */
+  const P=id=>G.players[id]; const L=[];
+  if(who==='mgr'){ const m=G.mgr[G.user]; if(!m||m.interim){ o.adv.mgr='감독이 없어 의견을 들을 수 없습니다.'; return; } const mv=mgrTradeView(o.from,give,get);
+    let t=mv?mv.txt.replace(/^.*?감독:\s*/,''):'판단은 단장님께 맡기겠습니다.'; mgrAttr(m); const ty=mgrType(m).k;
+    const inc=get.map(P).filter(Boolean); if((ty==='dfn'||ty==='combo_d')&&inc.some(p=>!p.isP&&p.r.def>=60))t+=' 수비가 되는 선수라 마음에 듭니다.'; if((ty==='pen_all')&&inc.some(p=>p.isP&&!isSPr(p)))t+=' 불펜 한 장이 더 생기는 건 언제나 환영입니다.'; if(m.youth>=65&&give.map(P).some(p=>p&&p.age<=23))t+=' 다만 어린 선수를 보내는 건 아쉽습니다.';
+    o.adv.mgr=`${m.name} 감독: "${mvWrap(m,'need',t)}"`; if(!o.advMgrRel){ o.advMgrRel=1; m.rel=clamp(m.rel+1,0,100); } return; }
+  if(who==='ana'){ const lv=dataLv(G.user); const c=tradeCompare(o.from,give,get); const ks=FIELDK.concat(['SP','RP']); const ch=[];
+    for(const k of ks){ const b=c.my[0][k], a=c.my[1][k]; if(b==null&&a==null)continue; const d=(a??35)-(b??35); if(Math.abs(d)>=2)ch.push([k,d]); }
+    ch.sort((x,y)=>Math.abs(y[1])-Math.abs(x[1]));
+    const lab=k=>k==='SP'?'선발진':k==='RP'?'불펜':POSK[k];
+    if(lv<=0){ o.adv.ana='전력분석원이 없어 깊이 있는 분석은 어렵습니다. 자리별 전력 변화만 대략 보면 '+(ch.length?ch.slice(0,2).map(([k,d])=>`${lab(k)} ${d>0?'좋아짐':'약해짐'}`).join(', '):'큰 변화가 없습니다')+'.'; return; }
+    const sal=sum(get.map(id=>P(id)?P(id).sal:0))-sum(give.map(id=>P(id)?P(id).sal:0)); const war=x=>{ const p=P(x); const h=p&&seasonTotal(p,G.year,'1군'); return h?warOf(h,p):0; };
+    const wd=sum(get.map(war))-sum(give.map(war));
+    L.push(ch.length?`자리별 주전 전력: ${ch.slice(0,lv>=2?4:2).map(([k,d])=>`${lab(k)} ${d>0?'+':''}${dv(50+d)-dv(50)}`).join(', ')}`:'자리별 주전 전력은 거의 그대로입니다.');
+    L.push(`올해 WAR 합계 ${wd>=0?'+':''}${wd.toFixed(1)} · 연봉 ${sal>=0?'+':''}${money(sal)}/년`);
+    if(lv>=2){ const yrs=id=>{ const p=P(id); return p?ctrlYears(p):0; }; L.push(`보유 기간: 받는 선수 ${get.map(yrs).join('·')}년 / 보내는 선수 ${give.map(yrs).join('·')}년`); }
+    if(lv>=3){ const U=team(G.user); const diff=stackIn(get.map(id=>tval(U,P(id),'in')))-sum(give.map(id=>tval(U,P(id),'out'))); L.push(`데이터 랩 가치 평가: ${diff>=1.5?'우리에게 유리한 거래':diff<=-1.5?'우리가 손해 보는 거래':'대체로 공정한 거래'}`); }
+    o.adv.ana=L.join('\n'); return; }
+  if(who==='sc'){ for(const id of get){ const p=P(id); if(!p)continue; const rp=scoutReport(p); const md=medReport(p);
+      L.push(`${p.name}: 현재 ${rp.cur!=null?dv(rp.cur):'?'}${rp.ofp!=null?` · 잠재 ${dv(rp.ofp)}`:' · 잠재력 판단 불가(담당 스카우트 필요)'} · 몸 상태 ${md.g}${md.L.length?` (${md.L[0]})`:''}${md.sure?'':' · 검진 정확도 낮음'}`); }
+    o.adv.sc=L.join('\n')||'받는 선수가 없습니다.'; } }
+function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div class="oadv-r"><span class="pill">${l}</span><span class="small">${esc(A[k])}</span></div>`:`<button class="btn small" data-a="offerAsk" data-v="${o.id}:${k}">${who}</button>`;
+  return `<div class="oadv"><div class="eyebrow">결정 전에 의견 듣기</div><div class="oadv-b">${row('mgr','감독','감독 의견 묻기')}${row('ana','전력분석팀','전력분석팀 분석')}${row('sc','스카우트·의무','스카우트·메디컬 확인')}</div>
+    <button class="btn small" data-a="offerCounter" data-v="${o.id}">조건 바꿔 역제안하기</button></div>`; }
 </script>
