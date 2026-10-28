@@ -3,7 +3,7 @@ function nextLabel(){ // 계속 버튼 아래 작은 글씨: 다음에 일어날
   if(blockNow())return '막힌 일 먼저';
   const per=period();
   if(per==='season'||per==='post'){ const n=nextGames(1)[0]; if(n)return `${dsh(n.d)} ${n.home?'vs':'@'} ${tshort(n.op)}`; }
-  if(per==='post'&&G.ps&&G.ps.cur){ const c=G.ps.cur; return `${ROUNDK[c.round]} ${tshort(c.hi)}·${tshort(c.lo)} (우리 경기 아님)`; }
+  if(per==='post'&&G.ps&&G.ps.cur){ const c=G.ps.cur; return `${ROUNDK[c.round]} ${tshort(c.hi)}·${tshort(c.lo)} 진행 · 우리 경기 전날 멈춤`; }
   const u=upcoming()[0]; return u?`${dsh(u[0])} ${u[1]}`:'';
 }
 function spLine(p){ if(!p)return '미정'; const h=seasonTotal(p,G.year,'1군'); return h&&h.outs?`${h.w||0}승 ${h.l||0}패 · ${pRate(h).era.toFixed(2)}`:'올해 기록 없음'; }
@@ -40,9 +40,10 @@ const DSPD={slow:1100,norm:550,fast:180};
 function dliveStart(kind){ if(UI.dl&&UI.dl.on)return; const o=UI.dl&&UI.dl.kind===kind?UI.dl:null; UI.dl={on:true,kind,feed:(o?o.feed:[])||[],stolen:o?o.stolen||[]:[],stN:o?o.stN||0:0}; dliveTick(); }
 /* 우리가 노리던 선수: 관심 표시 + 지금 우리 보드 상위 3명 */
 function dlTargets(kind){ const m=new Map(); (G.shortlist||[]).forEach(id=>m.set(id,'관심 선수')); return m; }
-function dliveTick(){ const L=UI.dl; if(!L||!L.on||!G)return; const T=dlTargets(L.kind); const r=L.kind==='fd'?fdStep():amStep();
+function dliveTick(){ const L=UI.dl; if(!L||!L.on||!G)return; const T=dlTargets(L.kind); let r=L.kind==='fd'?fdStep():amStep();
+  if(r==='user'&&L.kind==='am'){ const x=draftRestPick(); if(x)r=x; }
   if(!r||r==='user'){ L.on=false; L.just=null; save(); render(); return; }
-  L.just=r.pid||null; if(r.pid){ const p=G.players[r.pid]; const tg=T.get(r.pid)||null; L.feed.unshift({tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,pid:r.pid,nm:p?p.name:'',pos:p?(L.kind==='fd'&&p.isP?'투수':posLabel(p)):'',age:p?p.age:null,tg,o:L.kind==='fd'&&p?fdEstOf(p):null}); L.feed=L.feed.slice(0,12);
+  L.just=r.pid||null; if(r.pid){ const p=G.players[r.pid]; const tg=T.get(r.pid)||null; L.feed.unshift({me:!!r.me,tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,pid:r.pid,nm:p?p.name:'',pos:p?(L.kind==='fd'&&p.isP?'투수':posLabel(p)):'',age:p?p.age:null,tg,o:L.kind==='fd'&&p?fdEstOf(p):null}); L.feed=L.feed.slice(0,12);
     if(tg){ (L.stolen=L.stolen||[]).unshift({nm:p?p.name:'',tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,tg,pid:r.pid}); L.stolen=L.stolen.slice(0,20); L.stN=(L.stN||0)+1; } }
   render(); L.t=setTimeout(dliveTick,DSPD[UI.dspeed||'norm']); }
 function dlFeedAdd(kind,pk,pid){ if(!UI.dl||UI.dl.kind!==kind)UI.dl={on:false,kind,feed:[]}; const p=G.players[pid]; UI.dl.feed.unshift({tid:pk.tid,rd:pk.rd,no:pk.no,pid,nm:p?p.name:'',pos:p?posLabel(p):'',age:p?p.age:null,tg:null,me:true}); UI.dl.feed=UI.dl.feed.slice(0,12); }

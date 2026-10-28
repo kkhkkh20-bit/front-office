@@ -282,3 +282,9 @@ body:has(#sheet .scrim) #dtick{display:none}
 /* 잠재력 등급(스카우트 말) */
 .ptier{display:inline-block;font-size:11.5px;font-weight:600;line-height:18px;padding:0 6px;border-radius:9px;border:1px solid var(--line);white-space:nowrap;color:var(--muted)}
 .ptier.t6{color:#ffd166;border-color:#ffd16677;background:#ffd16614}.ptier.t5{color:#6fe39a;border-color:#6fe39a66}.ptier.t4{color:#5aa9ff;border-color:#5aa9ff55}.ptier.t3{color:var(--ink)}.ptier.t2,.ptier.t1,.ptier.q{color:var(--muted)}
+.oadv-pot{border-left:3px solid var(--acc,#4a8cff);padding:6px 10px;margin:0 0 10px;background:rgba(74,140,255,.06);border-radius:6px}
+.oadv-pot p{margin:4px 0 0;line-height:1.5}
+.drest{margin-top:8px}.drest .row{gap:6px;flex-wrap:wrap;margin:6px 0}
+.drest-on{margin:6px 0;padding:6px 10px;border-radius:6px;background:rgba(74,140,255,.08)}
+.curex{margin:10px 0;padding:8px 12px;border-radius:8px;background:var(--bg2,rgba(127,127,127,.06));border:1px solid var(--line,rgba(127,127,127,.18))}
+.curex ul{margin:6px 0 0;padding-left:18px}.curex li{font-size:13px;line-height:1.55;margin:3px 0}

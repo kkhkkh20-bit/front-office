@@ -7,6 +7,12 @@ const POT_T=[[66,'세계적인 선수가 될 재목','세계적 재목',6],[60,'
 function potVal(rp){ if(!rp||rp.ofp==null)return null; const sd=Math.min(8,rp.sd||0); const v=rp.ofp-Math.max(0,sd-3)*.7; return rp.cur!=null&&rp.ofp>rp.cur+1?Math.max(v,Math.min(rp.ofp,rp.cur+2)):v; }
 function potTier(v,cur){ if(v==null||isNaN(v))return null; const tf=x=>POT_T.find(t=>x>=t[0])||POT_T[POT_T.length-1]; if(cur!=null&&v<=cur+1)return {l:'지금이 거의 완성된 모습',s:'완성형',n:Math.max(1,tf(v)[3]),done:true};
   const t=tf(v); return {l:t[1],s:t[2],n:t[3]}; }
+/* 우리 쪽 추정으로 본 '더 클 여지'(진짜 잠재력은 쓰지 않는다) */
+function potGapEst(p){ try{ const rp=scoutReport(p); const v=potVal(rp); return v==null?0:Math.max(0,v-(rp.cur??ovr(p))); }catch(e){ return 0; } }
+/* 트레이드 제안이 오면 스카우트·전력분석팀이 받는 선수의 잠재력 추정을 바로 보고한다(추정일 뿐, 맞을 수도 틀릴 수도 있다) */
+function offScoutNote(o){ const L=[]; for(const id of (o.give||[])){ const p=G.players[id]; if(!p)continue; let rp; try{ rp=scoutReport(p); }catch(e){ continue; }
+    L.push(`${p.name}(${posLabel(p)}, ${p.age}세) — ${potLine(p,rp,{none:`${rp.who||'담당 스카우트 없음'}: 이 구단을 맡은 프로 스카우트가 없어 잠재력은 추정하지 못했습니다.`})}`); }
+  return L.join('\n'); }
 /* 그대로 크지 못할 수 있는 이유: 실제 상태(부상 이력·출전·시설·코치·나이)를 근거로 든다 */
 function potRisks(p){ const R0=[]; if(!p)return R0;
   const big=(p.injHist||[]).filter(i=>(i.days||0)>=120).length; if(big)R0.push(`큰 부상 이력(${big}번)이 있어 회복 정도가 변수`);
@@ -18,4 +24,6 @@ function potRisks(p){ const R0=[]; if(!p)return R0;
 function potLine(p,rp,o){ o=o||{}; rp=rp||scoutReport(p); const T=potTierP(rp,p); if(!T)return o.none||'잠재력은 아직 판단할 수 없습니다(담당 스카우트 필요).';
   const rk=T.done?[]:potRisks(p); return `${o.who===false?'':`${rp.who||'스카우트'} 평가: `}${T.l}${rp.conf?`(확신 ${rp.conf})`:''}.${rk.length&&!o.short?` 다만 ${rk.slice(0,2).join(', ')}.`:''}`; }
 /* 역할을 감안한 말: 불펜으로 보는 투수는 '세계적'이 아니라 '정상급 불펜'으로 */
-function potTierP(rp,p){ const T=potTier(potVal(rp),rp&&rp.cur); if(!T)return T; if(T.n>=5&&rp.role&&/불펜|마무리|필승/.test(rp.role))return {...T,l:'리그 최고 수준의 불펜이 될 재목',s:'정상급 불펜감',n:5}; return T; }
+const POT_M=['','2군 수준에 머물 선수','1군·2군 경계 수준까지 오를 선수','1군에서 쓸 만한 수준까지 오를 선수','1군 주전급까지 오를 선수','리그 정상급까지 오를 선수','세계적인 수준까지 오를 선수'];
+const POT_MS=['','2군 수준','경계선','1군 자원','주전급','정상급','세계적 수준'];
+function potTierP(rp,p){ let T=potTier(potVal(rp),rp&&rp.cur); if(!T)return T; if(!T.done&&p&&p.age>=27)T={...T,l:POT_M[T.n],s:POT_MS[T.n]}; /* 다 자란 나이에는 '재목'이 아니라 '어디까지 오를지'로 말한다 */ if(T.n>=5&&rp.role&&/불펜|마무리|필승/.test(rp.role))return {...T,l:p&&p.age>=27?'리그 정상급 불펜까지 오를 선수':'리그 최고 수준의 불펜이 될 재목',s:'정상급 불펜감',n:5}; return T; }

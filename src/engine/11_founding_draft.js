@@ -119,7 +119,7 @@ function foundDefaults(){ const done=[], acts=[];
   const am=G.scouts.filter(s=>(s.role||'am')==='am'); const have=new Set(am.map(s=>s.region)); const miss=REG.filter(r=>!have.has(r));
   for(const r of miss){ if(G.scouts.length>=SCOUT_MAX)break; const sc=mkScout(2); sc.region=r; sc.role='am'; sc.since=-999; G.scouts.push(sc); done.push(`스카우트: ${r} 담당 ${sc.name} 채용(연 ${money(sc.sal)})`); }
   if(miss.length)acts.push({l:'스카우트 팀',a:'goWork',v:'스카우트팀'});
-  if(!(G.devProg||[]).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&p.pot-ovr(p)>=6).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a))).slice(0,2);
+  if(!(G.devProg||[]).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&potGapEst(p)>=6).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,2);
     for(const p of L){ const k=p.isP?(p.r.ctl<p.r.stf?'ctl':'stf'):(p.r.con<p.r.pow?'bat':'pow'); setDev(p.id,k); done.push(`2군 연수: ${p.name}(${posLabel(p)}, ${p.age}세) ${DEVP[k].l}`); }
     if(L.length)acts.push({l:'2군 연수',a:'goWork',v:'2군연수'}); }
   if(!G.mgr[G.user])acts.unshift({l:'감독 선임',a:'goWork',v:'감독'});
@@ -160,6 +160,7 @@ function aiDraftPick(tid){
 function passCurrent(){ const d=G.draft; const pk=d.picks[d.cur]; pk.pid=-1; pk.pass=true; d.cur++; if(pk.tid===G.user)addLog(`${pk.rd}라운드 ${pk.no}순위 지명을 건너뛰었습니다.`); if(d.cur>=d.picks.length)finishDraft(); }
 function doPick(pid){
   const d=G.draft; const pk=d.picks[d.cur]; const p=G.players[pid];
+  if(pk.tid===G.user){ try{ const rp=scoutReport(p); if(rp.ofp!=null)p.dEst={ofp:rp.ofp,sd:rp.sd,who:rp.who}; }catch(e){} }
   p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p)}; story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
   { G.sea.bonus=G.sea.bonus||{}; G.sea.bonus[pk.tid]=(G.sea.bonus[pk.tid]||0)+p.draft.bonus; } pk.pid=pid; d.cur++;
   if(pk.tid===G.user&&pk.rd<=2&&!G.unemp)chron('draft',`신인 ${pk.rd}라운드 ${pk.no}순위 ${p.name}(${posLabel(p)}) 지명`,p.id);
@@ -176,6 +177,15 @@ function advanceDraft(stopAtUser){
   const d=G.draft;
   while(!d.done){ const pk=d.picks[d.cur]; if(pk.tid===G.user&&stopAtUser)return; const id=pk.tid===G.user?userAutoPick():aiDraftPick(pk.tid); if(!id){finishDraft();break;} if(id===-1){passCurrent();continue;} doPick(id); }
 }
+/* 남은 우리 지명 일괄 처리(3라운드부터 적용, 1·2라운드는 직접 고른다). pass: 모두 건너뛴다
+   cond: 스카우트 추천 후보의 잠재력 추정 등급이 기준(min) 이상일 때만 지명하고, 아니면 건너뛴다. 로스터가 한도에 차면 더 뽑지 않는다 */
+function draftRestSet(mode,min){ const d=G.draft; if(!d||d.done)return; d.rest=mode?{mode,min:min||3}:null; }
+function draftRestPick(){ const d=G.draft; const R0=d&&!d.done&&d.rest; const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
+  const id=userAutoPick(); let ok=false;
+  if(id&&R0.mode==='cond'&&rosterProj(G.user)<ROSTER_MAX){ const p=G.players[id]; const T=potTierP(scoutReport(p),p); ok=!!T&&T.n>=R0.min; }
+  if(pk.rd<3)return null; /* 1·2라운드는 단장이 직접 고른다 */
+  if(ok){ doPick(id); return {pk,pid:id,me:true}; }
+  if(pk.rd>=3){ passCurrent(); return {pk,pass:true}; } return null; }
 function userAutoPick(){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect); let best=null,bs=-1; const pol=G.draftPol&&G.draftPol.y===G.year?G.draftPol.k:null;
   for(const id of av){ const rp=scoutReport(G.players[id]); const v=(rp.ofp??rp.cur+8)+rp.cur*.2+(pol&&draftFit(G.players[id],pol)?4:0); if(v>bs){bs=v;best=id;} } return best; }
 

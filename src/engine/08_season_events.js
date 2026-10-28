@@ -42,6 +42,8 @@ function mkSeries(round,hi,lo,start){
   const need={wc:[1,2],spo:[3,3],po:[3,3],ks:[4,4]}[round];
   return {round,hi,lo,wh:0,wl:0,days:off.map(x=>start+x),homes,need,gi:0};
 }
+function psOursOn(d){ const P=G.ps; const s=P&&!P.done&&P.cur; return !!(s&&s.days[s.gi]===d&&(s.hi===G.user||s.lo===G.user)); }
+function psOursTxt(){ const s=G.ps&&G.ps.cur; if(!s)return '우리 경기'; const op=s.hi===G.user?s.lo:s.hi; return `${ROUNDK[s.round]} ${s.gi+1}차전(${tshort(op)}전)`; }
 const ROUNDK={wc:'와일드카드 결정전',spo:'준플레이오프',po:'플레이오프',ks:'한국시리즈'};
 function psDay(day){
   const P=G.ps, s=P.cur; if(!s||s.days[s.gi]!==day)return;

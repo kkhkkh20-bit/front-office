@@ -39,7 +39,7 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 @keyframes karms{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
 @keyframes klift{0%,100%{transform:scale(1,1)}50%{transform:scale(.72,1.18)}}
 .cc.sw .kswing{animation:kswing1 .42s ease-out forwards}.cc.th .kthrow{animation:kthrow1 .5s ease-in-out}
-@keyframes kswing1{0%{transform:rotate(0)}25%{transform:rotate(16deg)}70%{transform:rotate(-205deg)}100%{transform:rotate(-215deg)}}
+@keyframes kswing1{0%{transform:rotate(0)}25%{transform:rotate(16deg)}65%{transform:rotate(-200deg)}100%{transform:rotate(-265deg)}}
 @keyframes kthrow1{0%{transform:rotate(0)}45%{transform:rotate(55deg)}70%{transform:rotate(-75deg)}100%{transform:rotate(0)}}
 .cc.mv .kp{animation:kbob .22s infinite alternate ease-in-out}@keyframes kbob{from{transform:translateY(0) scale(1)}to{transform:translateY(-5%) scale(1.04)}}
 @media (prefers-reduced-motion:reduce){.cpp .kswing,.cpp .kthrow,.cpp .karms,.cc .kp{animation:none!important}}

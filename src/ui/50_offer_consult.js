@@ -19,8 +19,8 @@ function offerAdvise(o,who){ o.adv=o.adv||{}; if(o.adv[who])return; const give=o
     if(lv>=3){ const U=team(G.user); const diff=stackIn(get.map(id=>tval(U,P(id),'in')))-sum(give.map(id=>tval(U,P(id),'out'))); L.push(`데이터 랩 가치 평가: ${diff>=1.5?'우리에게 유리한 거래':diff<=-1.5?'우리가 손해 보는 거래':'대체로 공정한 거래'}`); }
     o.adv.ana=L.join('\n'); return; }
   if(who==='sc'){ for(const id of get){ const p=P(id); if(!p)continue; const rp=scoutReport(p); const md=medReport(p);
-      L.push(`${p.name}: 현재 ${rp.cur!=null?dv(rp.cur):'?'}${rp.ofp!=null?` · 잠재력: ${potTier(potVal(rp),rp.cur).l}`:' · 잠재력 판단 불가(담당 스카우트 필요)'} · 몸 상태 ${md.g}${md.L.length?` (${md.L[0]})`:''}${md.sure?'':' · 검진 정확도 낮음'}`); }
+      L.push(`${p.name}: 현재 ${rp.cur!=null?dv(rp.cur):'?'}${rp.ofp!=null&&potTierP(rp,p)?` · 잠재력 추정: ${potTierP(rp,p).l}(확신 ${rp.conf})`:' · 잠재력 판단 불가(담당 스카우트 필요)'} · 몸 상태 ${md.g}${md.L.length?` (${md.L[0]})`:''}${md.sure?'':' · 검진 정확도 낮음'}`); }
     o.adv.sc=L.join('\n')||'받는 선수가 없습니다.'; } }
 function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div class="oadv-r"><span class="pill">${l}</span><span class="small">${esc(A[k])}</span></div>`:`<button class="btn small" data-a="offerAsk" data-v="${o.id}:${k}">${who}</button>`;
-  return `<div class="oadv"><div class="eyebrow">결정 전에 의견 듣기</div><div class="oadv-b">${row('mgr','감독','감독 의견 묻기')}${row('ana','전력분석팀','전력분석팀 분석')}${row('sc','스카우트·의무','스카우트·메디컬 확인')}</div>
+  return `<div class="oadv">${(()=>{ let n=o.pot; if(n==null){ try{ n=o.pot=offScoutNote(o); }catch(e){ n=''; } } return n?`<div class="oadv-pot"><div class="eyebrow">스카우트 잠재력 추정 · 받는 선수</div><p class="small">${esc(n).replace(/\n/g,'<br>')}</p></div>`:''; })()}<div class="eyebrow">결정 전에 의견 듣기</div><div class="oadv-b">${row('mgr','감독','감독 의견 묻기')}${row('ana','전력분석팀','전력분석팀 분석')}${row('sc','스카우트·의무','스카우트·메디컬 확인')}</div>
     <button class="btn small" data-a="offerCounter" data-v="${o.id}">조건 바꿔 역제안하기</button></div>`; }
