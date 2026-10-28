@@ -6721,8 +6721,8 @@ function deskCard(){ const per=period(); if(G.gameOver)return ''; const rk=slotR
     ${S.length?`<div class="eyebrow">팔 만한 벤치 자원 · 매물로 내놓으면 제안이 옵니다</div><div class="sells">${S.map(x=>`<div class="sell">${pMini(x.p)}<span class="small muted">${tshort(x.t.id)} 관심</span><button class="tc-i go" data-a="listP" data-v="${x.p.id}">매물로 등록</button></div>`).join('')}</div>`:''}
   </section>`; }
 /* 전력 비교 */
-function cmpView(){ const L=nextGames(1); const def=L.length?L[0].op:standOrder().order.find(o=>o.tid!==G.user).tid;
-  const T=UI.cmpT!=null&&UI.cmpT!==G.user?UI.cmpT:def; const a=slotRanks(G.user), b=slotRanks(T);
+function cmpView(T0,mini){ const L=nextGames(1); const def=L.length?L[0].op:standOrder().order.find(o=>o.tid!==G.user).tid;
+  const T=T0!=null?T0:UI.cmpT!=null&&UI.cmpT!==G.user?UI.cmpT:def; const a=slotRanks(G.user), b=slotRanks(T);
   const chips=`<div class="chips cmpchips">${G.teams.filter(t=>t.id!==G.user).map(t=>`<button data-a="cmpT" data-v="${t.id}" class="${t.id===T?'on':''}">${badge(t.id,16)} ${tshort(t.id)}</button>`).join('')}</div>`;
   const side=(x,k)=>{ const ps=x.ps; const nm=ps.length?(k==='SP'||k==='RP'?`${esc(ps[0].name)} 외 ${ps.length-1}명`:esc(ps[0].name)):'빈자리'; const p=ps[0];
     return `<div class="cmp-s">${p?avImg(p):''}<span><b>${nm}</b><i>${x.rank}위</i></span>${rchip(Math.round(x.v))}</div>`; };
@@ -6731,6 +6731,7 @@ function cmpView(){ const L=nextGames(1); const def=L.length?L[0].op:standOrder(
   const hh=h2hOf(G.user,T);
   let help=''; if(UI.cmpK){ const k=UI.cmpK; const LL=tradeOpen()?tradeSuggest(false,k):[]; UI._tsugK=LL;
     help=`<section class="card"><div class="row between"><h2 class="sec">${SLOTK[k]} 보강 추천</h2><span class="small muted">우리 ${a[k].rank}위</span></div>${!tradeOpen()?'<p class="small muted">트레이드 기간이 아닙니다.</p>':LL.length?LL.map((x,i)=>dealCard(x,i,'k')).join(''):'<p class="small muted">이 자리를 바로 보강할 만한 조건이 보이지 않습니다.</p>'}</section>`; }
+  if(mini)return `<div class="cmp cmp-mini"><div class="cmp-hd"><span>${badge(G.user,18)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,18)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div><div class="cmp-rows">${rows}</div></div>`;
   return `<section class="card cmp"><div class="row between"><h2 class="sec">전력 비교</h2><span class="small muted">상대 전적 ${hh.w}승 ${hh.l}패${hh.t?` ${hh.t}무`:''}</span></div>${chips}
     <div class="cmp-hd"><span>${badge(G.user,22)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,22)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div>
     <div class="cmp-rows">${rows}</div><p class="small muted">숫자는 자리별 전력(현재 능력 기준), 순위는 10개 구단 중 순위입니다. 자리를 누르면 그 자리 보강 트레이드를 찾습니다.</p></section>${help}`; }
@@ -7655,11 +7656,12 @@ function nextCard(){
   const spc=(p,tid)=>`<button class="nsp" ${p?`data-a="player" data-v="${p.id}"`:''}>${p?avImg(p):'<span class="av ini">?</span>'}<span><i>${badge(tid,14)} ${tshort(tid)} 예상 선발</i><b>${p?esc(p.name):'미정'}</b><em>${spLine(p)}</em></span></button>`;
   const cv=coverOf(x.op); let weak='';
   { const ps=posStrength(rosterList(x.op)); const ks=FIELDK.concat(['SP','RP']).filter(k=>ps[k]!=null).sort((a,b)=>ps[a]-ps[b]); if(ks.length){ const k=ks[0]; weak=`<p class="small">상대 약점: <b>${k==='SP'?'선발진':k==='RP'?'불펜':POSK[k]}</b> ${dv(ps[k])}</p>`; } }
-  return `<section class="card nextc"><div class="row between"><h2 class="sec">다음 경기</h2><span class="row"><span class="small muted">${dd<=1?'내일':`${dd}일 뒤`}</span><button class="btn small" data-a="cmpT" data-v="${x.op}">전력 비교</button>${per==='season'||per==='post'||(per==='pre'&&x.d===G.cal.open&&dd<=1)?`<button class="btn small primary" data-a="watchNext" ${blockNow()?'disabled':''} title="결과를 먼저 보지 않고 그래픽 중계로 봅니다">중계로 보기</button>`:''}</span></div>
+  return `<section class="card nextc"><div class="row between"><h2 class="sec">다음 경기</h2><span class="row"><span class="small muted">${dd<=1?'내일':`${dd}일 뒤`}</span>${per==='season'||per==='post'||(per==='pre'&&x.d===G.cal.open&&dd<=1)?`<button class="btn small primary" data-a="watchNext" ${blockNow()?'disabled':''} title="결과를 먼저 보지 않고 그래픽 중계로 봅니다">중계로 보기</button>`:''}</span></div>
     <div class="nx">${badge(x.op,44)}<div><span class="eyebrow">${x.ps?esc(x.ps)+' · ':''}${dmd(x.d)} ${WD[dobj(x.d).w]} · ${x.home?'홈':'원정'}</span><b>${x.home?'vs':'@'} ${tname(x.op)}</b>
       <span class="small muted">${live&&per!=='pre'?`상대 ${ri}위 · ${wlStr(r)} · 최근 10경기 ${wlStr(l10)}${streakOf(x.op)?' · '+streakOf(x.op):''}`:'개막전'}${hh.w+hh.l+hh.t?` · 상대 전적 ${hh.w}승 ${hh.l}패${hh.t?` ${hh.t}무`:''}`:''}</span></div></div>
     ${x.ps?'':`<div class="nsps">${spc(mySP,G.user)}${spc(thSP,x.op)}</div><p class="small muted">로테이션 순번과 휴식일로 본 예상입니다. 부상·피로로 바뀔 수 있습니다.</p>`}
     ${weak}
+    ${(()=>{ const o=UI.open.nxCmp??wide(); return `<details class="moreg" data-k="nxCmp" ${o?'open':''}><summary><span>전력 비교</span><i>자리별 주전 비교 · 누르면 상세</i></summary><div class="moreb">${cmpView(x.op,true)}<button class="btn small" data-a="cmpT" data-v="${x.op}">자세히 · 다른 구단과 비교</button></div></details>`; })()}
     ${L.length>1?`<div class="fx">${L.slice(1).map(y=>`<span>${dsh(y.d)} ${y.home?'vs':'@'} ${badge(y.op,16)}${tshort(y.op)}</span>`).join('')}</div>`:''}
   </section>`;
 }
@@ -9317,8 +9319,10 @@ function rosterView(){
   const tid=UI.rosterTeam??G.user; const own=tid===G.user; const t=team(tid);
   const d=depth(tid); const rv=UI.rview||'table';
   const vis0=p=>tid===G.user||!scoutReport(p).unseen||publicP(p);
-  const RT=[['field','배치도'],['glance','한눈에'],...(tid===G.user?[['cmp','전력 비교']]:[]),['bat',`야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}`],['pit',`투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}`],...(tid===G.user?[['diag','포지션 진단'],['mil','병역']]:[])];
-  const it=inTabs('roster',RT,'field'); if(it.cur==='bat'||it.cur==='pit')UI.seg=it.cur; const seg=UI.seg==='pit'?'pit':'bat';
+  /* 탭 정리: 같은 선수를 필터만 바꿔 보여 주던 탭을 합친다. 선수 명단(야수·투수 전환) / 전력 구성(배치도·한눈에·포지션 진단) / 병역 */
+  { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='diag'){ UI.it.rdepth=r; UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
+  const RT=[['list','선수 명단'],['depth','전력 구성'],...(tid===G.user?[['mil','병역']]:[])];
+  const it=inTabs('roster',RT,'list'); const seg=UI.seg==='pit'?'pit':'bat';
   const rookies=own?Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year):[];
   const pf=(UI.rpos=UI.rpos||{bat:'all',pit:'all'})[seg];
   const cv=own?null:coverOf(tid);
@@ -9330,12 +9334,12 @@ function rosterView(){
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const head=(own?trimCard():'')+`<div class="row between wrapr"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span></div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small keep fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
+  if(it.cur==='depth'){ const dt=inTabs('rdepth',[['field','배치도'],['glance','한눈에'],...(own?[['diag','포지션 진단']]:[])],'field'); return head+it.bar+dt.bar+(dt.cur==='glance'?glanceView(tid):dt.cur==='diag'?posDiag('bat')+posDiag('pit'):fieldC); }
   if(it.cur==='glance')return head+it.bar+glanceView(tid);
   if(it.cur==='mil'&&tid===G.user)return head+it.bar+milView();
   if(it.cur==='lineup')return head+it.bar+lineupCard(tid);
   if(it.cur==='staff')return head+it.bar+staffCard(tid);
   if(it.cur==='field')return head+it.bar+fieldC;
-  if(it.cur==='cmp')return head+it.bar+cmpView();
   if(it.cur==='diag')return head+it.bar+posDiag('bat')+posDiag('pit');
   const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
   let groups;
@@ -9353,7 +9357,8 @@ function rosterView(){
   const filt=`<div class="chips">${chipsP.map(([k,l])=>`<button data-a="rpos" data-v="${k}" class="${pf===k?'on':''}">${l}${k!=='all'?` <i class="cnt">${playersOf(tid).filter(p=>vis(p)&&(seg==='bat'?!p.isP&&p.pos===k:p.isP&&(k==='SP'?isSPr(p):!isSPr(p)))).length}</i>`:''}</button>`).join('')}</div>`;
   UI._own=own;
   const body=rv==='card'?sqCards(groups):rosterTable(groups,seg==='pit');
-  return head+it.bar+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}
+  const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
+  return head+it.bar+segT+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section>`;
 }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }
@@ -9562,6 +9567,7 @@ function renderSheet0(){
   if(!G){ el.innerHTML=''; return; }
   if(UI.cast&&UI.sheet==null&&!UI.menu){ const ex=el.querySelector('.cast'); if(!ex||+ex.dataset.g!==UI.cast.g){ el.innerHTML=castSheet(); castMount(); } return; }
   if(UI.cer&&UI.sheet==null&&!UI.menu){ el.innerHTML=cerSheet(); return; }
+  if(UI.cmpSh&&UI.sheet==null&&!UI.menu){ el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="전력 비교"><div class="sheet-head"><h2 class="sec">전력 비교</h2><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>${cmpView()}</div></div>`; return; }
   if(UI.menu){ el.innerHTML=menuSheet(); return; }
   if(UI.teamSh!=null&&UI.sheet==null){ el.innerHTML=teamSheet(UI.teamSh); return; }
   if(UI.myRos&&UI.sheet==null){ G.tutFlags=G.tutFlags||{}; G.tutFlags.roster=true; el.innerHTML=myRosterSheet(); return; }
@@ -9730,7 +9736,7 @@ function devForm(p){
   ${ovsOpen()&&p.age<=27?`<div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+' 신청됨':''}</div><div class="talk">${Object.entries(OVS).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('')}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
-function closeSheets(){UI.cer=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
+function closeSheets(){UI.cer=null;UI.cmpSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
 const A={
   dlSpd(v){ UI.dspeed=v; render(); },
   dlStop(){ dliveStop(); },
@@ -9820,7 +9826,7 @@ const A={
     const r=proposeTrade(s.tid,s.give,[s.id]); UI.deskMsg=r.msg; UI.deskOk=r.ok; if(r.ok){ sfx('cheer_hit',.5); UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade}; G.tsug=null; UI.cmpK=null; if(src==='f')UI.findT=null; } save(); render(); },
   tsugEdit(v){ const [src,i]=v.split(':'); const s=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!s)return; const p=G.players[s.id]; UI.trade={tid:s.tid,give:[...s.give],get:[s.id],msg:'',seg:p&&p.isP?'pit':'bat',side:'give',sort:'cur'}; A.go('trade:table'); },
   tsugMore(){ tradeSuggest(true); UI.deskMsg=null; UI.dealOpen=null; render(); },
-  cmpT(v){ if(v!=='')UI.cmpT=+v; UI.it=UI.it||{}; UI.it.roster='cmp'; if(UI.tab!=='roster'){ UI.tab='roster'; closeSheets(); } UI.rosterTeam=null; render(); window.scrollTo(0,0); },
+  cmpT(v){ if(v!=='')UI.cmpT=+v; UI.cmpSh=true; renderSheet(); return; },
   cmpGo(v){ UI.cmpK=v; A.cmpT(''); },
   cmpK(v){ UI.cmpK=UI.cmpK===v?null:v; render(); },
   keepP(v){ keepPlayer(+v); save(); render(); },

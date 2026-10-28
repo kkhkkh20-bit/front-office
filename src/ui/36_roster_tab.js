@@ -47,8 +47,10 @@ function rosterView(){
   const tid=UI.rosterTeam??G.user; const own=tid===G.user; const t=team(tid);
   const d=depth(tid); const rv=UI.rview||'table';
   const vis0=p=>tid===G.user||!scoutReport(p).unseen||publicP(p);
-  const RT=[['field','배치도'],['glance','한눈에'],...(tid===G.user?[['cmp','전력 비교']]:[]),['bat',`야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}`],['pit',`투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}`],...(tid===G.user?[['diag','포지션 진단'],['mil','병역']]:[])];
-  const it=inTabs('roster',RT,'field'); if(it.cur==='bat'||it.cur==='pit')UI.seg=it.cur; const seg=UI.seg==='pit'?'pit':'bat';
+  /* 탭 정리: 같은 선수를 필터만 바꿔 보여 주던 탭을 합친다. 선수 명단(야수·투수 전환) / 전력 구성(배치도·한눈에·포지션 진단) / 병역 */
+  { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='diag'){ UI.it.rdepth=r; UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
+  const RT=[['list','선수 명단'],['depth','전력 구성'],...(tid===G.user?[['mil','병역']]:[])];
+  const it=inTabs('roster',RT,'list'); const seg=UI.seg==='pit'?'pit':'bat';
   const rookies=own?Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year):[];
   const pf=(UI.rpos=UI.rpos||{bat:'all',pit:'all'})[seg];
   const cv=own?null:coverOf(tid);
@@ -60,12 +62,12 @@ function rosterView(){
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const head=(own?trimCard():'')+`<div class="row between wrapr"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span></div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small keep fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
+  if(it.cur==='depth'){ const dt=inTabs('rdepth',[['field','배치도'],['glance','한눈에'],...(own?[['diag','포지션 진단']]:[])],'field'); return head+it.bar+dt.bar+(dt.cur==='glance'?glanceView(tid):dt.cur==='diag'?posDiag('bat')+posDiag('pit'):fieldC); }
   if(it.cur==='glance')return head+it.bar+glanceView(tid);
   if(it.cur==='mil'&&tid===G.user)return head+it.bar+milView();
   if(it.cur==='lineup')return head+it.bar+lineupCard(tid);
   if(it.cur==='staff')return head+it.bar+staffCard(tid);
   if(it.cur==='field')return head+it.bar+fieldC;
-  if(it.cur==='cmp')return head+it.bar+cmpView();
   if(it.cur==='diag')return head+it.bar+posDiag('bat')+posDiag('pit');
   const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
   let groups;
@@ -83,7 +85,8 @@ function rosterView(){
   const filt=`<div class="chips">${chipsP.map(([k,l])=>`<button data-a="rpos" data-v="${k}" class="${pf===k?'on':''}">${l}${k!=='all'?` <i class="cnt">${playersOf(tid).filter(p=>vis(p)&&(seg==='bat'?!p.isP&&p.pos===k:p.isP&&(k==='SP'?isSPr(p):!isSPr(p)))).length}</i>`:''}</button>`).join('')}</div>`;
   UI._own=own;
   const body=rv==='card'?sqCards(groups):rosterTable(groups,seg==='pit');
-  return head+it.bar+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}
+  const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
+  return head+it.bar+segT+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section>`;
 }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }

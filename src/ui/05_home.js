@@ -91,8 +91,8 @@ function deskCard(){ const per=period(); if(G.gameOver)return ''; const rk=slotR
     ${S.length?`<div class="eyebrow">팔 만한 벤치 자원 · 매물로 내놓으면 제안이 옵니다</div><div class="sells">${S.map(x=>`<div class="sell">${pMini(x.p)}<span class="small muted">${tshort(x.t.id)} 관심</span><button class="tc-i go" data-a="listP" data-v="${x.p.id}">매물로 등록</button></div>`).join('')}</div>`:''}
   </section>`; }
 /* 전력 비교 */
-function cmpView(){ const L=nextGames(1); const def=L.length?L[0].op:standOrder().order.find(o=>o.tid!==G.user).tid;
-  const T=UI.cmpT!=null&&UI.cmpT!==G.user?UI.cmpT:def; const a=slotRanks(G.user), b=slotRanks(T);
+function cmpView(T0,mini){ const L=nextGames(1); const def=L.length?L[0].op:standOrder().order.find(o=>o.tid!==G.user).tid;
+  const T=T0!=null?T0:UI.cmpT!=null&&UI.cmpT!==G.user?UI.cmpT:def; const a=slotRanks(G.user), b=slotRanks(T);
   const chips=`<div class="chips cmpchips">${G.teams.filter(t=>t.id!==G.user).map(t=>`<button data-a="cmpT" data-v="${t.id}" class="${t.id===T?'on':''}">${badge(t.id,16)} ${tshort(t.id)}</button>`).join('')}</div>`;
   const side=(x,k)=>{ const ps=x.ps; const nm=ps.length?(k==='SP'||k==='RP'?`${esc(ps[0].name)} 외 ${ps.length-1}명`:esc(ps[0].name)):'빈자리'; const p=ps[0];
     return `<div class="cmp-s">${p?avImg(p):''}<span><b>${nm}</b><i>${x.rank}위</i></span>${rchip(Math.round(x.v))}</div>`; };
@@ -101,6 +101,7 @@ function cmpView(){ const L=nextGames(1); const def=L.length?L[0].op:standOrder(
   const hh=h2hOf(G.user,T);
   let help=''; if(UI.cmpK){ const k=UI.cmpK; const LL=tradeOpen()?tradeSuggest(false,k):[]; UI._tsugK=LL;
     help=`<section class="card"><div class="row between"><h2 class="sec">${SLOTK[k]} 보강 추천</h2><span class="small muted">우리 ${a[k].rank}위</span></div>${!tradeOpen()?'<p class="small muted">트레이드 기간이 아닙니다.</p>':LL.length?LL.map((x,i)=>dealCard(x,i,'k')).join(''):'<p class="small muted">이 자리를 바로 보강할 만한 조건이 보이지 않습니다.</p>'}</section>`; }
+  if(mini)return `<div class="cmp cmp-mini"><div class="cmp-hd"><span>${badge(G.user,18)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,18)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div><div class="cmp-rows">${rows}</div></div>`;
   return `<section class="card cmp"><div class="row between"><h2 class="sec">전력 비교</h2><span class="small muted">상대 전적 ${hh.w}승 ${hh.l}패${hh.t?` ${hh.t}무`:''}</span></div>${chips}
     <div class="cmp-hd"><span>${badge(G.user,22)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,22)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div>
     <div class="cmp-rows">${rows}</div><p class="small muted">숫자는 자리별 전력(현재 능력 기준), 순위는 10개 구단 중 순위입니다. 자리를 누르면 그 자리 보강 트레이드를 찾습니다.</p></section>${help}`; }
