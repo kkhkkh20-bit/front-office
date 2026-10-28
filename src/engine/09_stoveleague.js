@@ -21,7 +21,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
     const o2=ovr(p); let dp=o2>=58?.97:o2>=52?.82:o2>=47?.45:o2>=42?.18:.05; if(p.age>=35)dp*=.5; if(p.faSkip)dp+=.1;
     if(elig&&R()>=dp){ p.faSkip=G.year; if(p.team===G.user)(G._faSkip=G._faSkip||[]).push(p.name); continue; }
     if(elig){ delete p.faSkip; const grade=faGradeOf(p,all);
-      p.faFrom=p.team; p.faGrade=grade; p.faPrevSal=p.sal; p.ask=faAsk(p); p.ask0=p.ask.annual; try{ agentOf(p); }catch(e){} p.team=null; pool.push(p.id);
+      p.faFrom=p.team; p.faGrade=grade; p.faPrevSal=p.sal; faMktFix(G.year); p.ask=faAsk(p); p.ask0=p.ask.annual; try{ agentOf(p); }catch(e){} p.team=null; pool.push(p.id);
       for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];
       if(p.faFrom===G.user)declared.push(p.id); }
   }
@@ -38,7 +38,7 @@ function faCapN(){ const F=G.fa; return F&&F.cap?F.cap:(F&&F.pool&&F.pool.length
 function faOutN(tid){ const F=G.fa; return F&&F.outN?(F.outN[tid]||0):0; }
 function faOutBlocked(tid,p){ return tid!==p.faFrom&&faOutN(tid)>=faCapN(); }
 /* AI 구단이 매기는 FA의 값: 요구액이 아니라 능력·나이로 정한다(인플레이션 억제) */
-function faWorth(t,p){ const pf=perfOvr(p,3); const base=pf==null?ovr(p):pf*.6+ovr(p)*.4; const af=p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55; return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94))); }
+function faWorth(t,p){ const pf=perfOvr(p,3); const base=pf==null?ovr(p):pf*.6+ovr(p)*.4; const af=p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55; return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow())); }
 function faInterest(t,p){
   const room=capOf(G.year)-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
@@ -77,7 +77,7 @@ function faDay(day){
     if(p.faFrom!==G.user&&!G.unemp&&!F.offers[id]&&!F.warned[id]&&((G.shortlist||[]).includes(id)||mreqOpen('fa').some(r=>r.data&&r.data.pid===id))&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`관심 FA ${p.name}에게 ${tname(+k0)}이(가) 제안했습니다(연 ${money(ai[k0].annual)} · ${ai[k0].years}년). 잡으려면 서둘러 조건을 제시하세요.`,id); }
     if(p.faFrom===G.user&&!F.offers[id]&&!F.warned[id]&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`우리 FA ${p.name}에게 ${tname(+k0)}이(가) 먼저 제안했습니다. 잡으려면 FA 시장에서 조건을 제시하세요.`,id); }
     const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years}));
-    const uo=F.offers[id]; if(uo){ offers.push({tid:G.user,annual:uo.annual,years:uo.years}); faAgentPing(id); }
+    const uo=F.offers[id]; if(uo){ offers.push({tid:G.user,annual:uo.annual,years:uo.years,...(uo.terms?{terms:uo.terms}:{})}); faAgentPing(id); }
     if(!offers.length)continue;
     /* 대어: 시장 확인 라운드를 다 돌기 전에는 사인하지 않는다 */
     const mk=agMk(p); if(mk&&!mk.done){ agShopTick(p,mk,ai,day); if(!mk.done)continue; }

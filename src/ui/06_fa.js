@@ -45,7 +45,7 @@ function faCenter0(){ const F=G.fa;
   const pf=UI.faPos||'all'; const list=ids.map(id=>G.players[id]).filter(p=>pf==='all'||(pf==='P'?p.isP:pf==='H'?!p.isP:p.faGrade===pf.slice(1)));
   const sel=UI.faSel&&G.players[UI.faSel]&&ids.includes(UI.faSel)?G.players[UI.faSel]:null;
   const ours=ids.map(id=>G.players[id]).filter(p=>p.faFrom===G.user);
-  return `<div class="fahero live"><b>FA 시장 ${open?`협상 ${d1}일째`:`협상 시작까지 ${d1}일`}</b><span>${open?`캠프 전 마감까지 ${Math.max(0,left)}일 · `:''} 남은 FA ${ids.length}명 · 계약 ${signed}건 · 우리 제시 ${mine}건 · 예산 여유 ${money(b.roomGoal)}</span></div>
+  return `<div class="fahero live"><b>FA 시장 ${open?`협상 ${d1}일째`:`협상 시작까지 ${d1}일`}</b><span>FA 시장 분위기 ${faMktLabel(faMktNow())}(${Math.round((faMktNow()-1)*100)>=0?'+':''}${Math.round((faMktNow()-1)*100)}%) · ${open?`캠프 전 마감까지 ${Math.max(0,left)}일 · `:''} 남은 FA ${ids.length}명 · 계약 ${signed}건 · 우리 제시 ${mine}건 · 예산 여유 ${money(b.roomGoal)}</span></div>
     ${sel?faRoom(sel):''}
     ${agDirCard()}
     <section class="card"><div class="row between"><h2 class="sec">빅 네임</h2><span class="small muted">선수는 매일 제안을 비교하다가 계약합니다. 관심 구단이 많을수록 빨리 결정합니다.</span></div><div class="fabg">${ids.filter(id=>G.players[id]&&ovr(G.players[id])>=55).slice(0,3).map(id=>faBig(G.players[id])).join('')||'<p class="small muted">능력 69 이상인 대어는 남아 있지 않습니다.</p>'}</div></section>

@@ -50,15 +50,32 @@ function faAsk(p){
   const pf=perfOvr(p,3); const base=pf==null?ovr(p):pf*.7+ovr(p)*.3;
   const af=p.age<30?1.15:p.age<=32?1:p.age<=34?.8:.6;
   const years=p.age<=30?4:p.age<=32?3:p.age<=34?2:1;
-  return {annual:round5(marketSal(base)*1.05*af),years};
+  return {annual:round5(marketSal(base)*1.05*af*faMktNow()),years};
 }
-function extDemand(p,years){
-  const pf=perfOvr(p,2); const self=p.age<=27?ovr(p)+(p.pot-ovr(p))*.5:ovr(p)-Math.max(0,p.age-31);
-  const base=pf==null?self:self*.6+pf*.4;
-  const near=p.svc>=faSvc(p)-2?1.12:p.svc>=faSvc(p)-4?1:.88;
-  const yadj=p.age<=29?1+.025*(years-1):1-.035*(years-1);
-  return round5(marketSal(base)*near*yadj*(1-((p.mor??60)-60)/400)*(p.pers&&p.pers.loy>=15?.95:1));
-}
+/* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
+function faMktOf(y){ G.faMkt=G.faMkt||{}; if(G.faMkt[y]!=null)return G.faMkt[y]; const prev=G.faMkt[y-1]!=null?G.faMkt[y-1]:1;
+  const rooms=G.teams.map(t=>Math.max(0,capOf(y)-capPay(t.id))/capOf(y)); const room=sum(rooms)/rooms.length;
+  return Math.round(clamp(1+(prev-1)*.5+((G.faMkR=G.faMkR||{})[y]??(G.faMkR[y]=clamp(N(0,1),-2.5,2.5)))*.05+clamp((room-.43)*.5,-.05,.05),.88,1.2)*1000)/1000; }
+function faMktNow(){ return G.fa&&!G.fa.closed&&G.fa.y0!=null?faMktOf(G.fa.y0):faMktOf(G.year); }
+function faMktFix(y){ G.faMkt=G.faMkt||{}; G.faMkt[y]=faMktOf(y); return G.faMkt[y]; }
+function faMktLabel(v){ return v>=1.1?'과열':v>=1.03?'뜨거움':v>.97?'보통':v>.92?'차가움':'냉각'; }
+/* 비FA 다년계약 요구의 근거: 예상 FA 시장가 × 다년 할인(안정을 사는 값). 초특급은 할인 대신 웃돈(시장 과열을 기대) */
+function extParts(p,years){ const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const ageF=p.age+ytf; initPers(p);
+  const pf=perfOvr(p,3), pf1=perfOvr(p,1); const self=p.age<=27?ovr(p)+(p.pot-ovr(p))*.4:ovr(p)-Math.max(0,p.age-31); const base=pf==null?self:self*.6+pf*.4;
+  const af=ageF<30?1.15:ageF<=32?1:ageF<=34?.8:.6; const mkt=faMktNow(); const expFA=marketSal(base)*1.05*af*mkt;
+  const elite=ovr(p)>=65&&p.age<=31; const why=[];
+  let disc;
+  if(elite&&ytf<=1){ disc=1.04+Math.max(0,mkt-1); why.push(`초특급이라 시장에 나가면 몸값이 더 뛴다고 봅니다(+${Math.round((disc-1)*100)}%)`); }
+  else { disc=elite?.95:.9; why.push(`다년 보장을 받는 대신 깎아 줌 ${Math.round((1-disc)*100)}%`);
+    if(ytf>=2){ const k=.03*Math.min(ytf-1,3); disc-=k; why.push(`FA까지 ${ytf}시즌 남음 -${Math.round(k*100)}%`); }
+    if(p.age>=31){ disc-=.04; why.push('나이 31세 이상, 안정 선호 -4%'); }
+    if(p.inj>.2){ disc-=.04; why.push('부상 이력, 안정 선호 -4%'); }
+    if(pf!=null&&pf1!=null&&Math.abs(pf1-pf)>=2){ disc-=.03; why.push('기복이 커서 내년 폼을 장담 못 함 -3%'); }
+    const pa=(p.pers.amb-12)*.006, pl=-(p.pers.loy-10)*.004; disc+=pa+pl; if(Math.abs(pa+pl)>=.015)why.push(pa+pl>0?'야망이 커서 덜 깎음':'구단 애착이 커서 더 깎음');
+    disc=clamp(disc,.72,1); }
+  const yadj=p.age<=29?1+.025*(years-1):1-.035*(years-1); const mood=1-((p.mor??60)-60)/400;
+  return {ytf,mkt,expFA:round5(expFA),disc,elite,yadj,mood,why}; }
+function extDemand(p,years){ const x=extParts(p,years); return round5(x.expFA*x.disc*x.yadj*x.mood); }
 function canExtend(p){ return p&&p.team===G.user&&!p.foreign&&!p.extNext&&!(p.joinY>G.year)&&(!p.faC||p.yrs<=1)&&p.age<=34&&!p.prospect; } /* 연봉 협상 기간에도 다년계약은 따로 제안할 수 있다 */
 function offerExtension(id,annual,years,acc,T){
   const p=G.players[id]; if(!canExtend(p))return {ok:false,msg:'다년계약을 제안할 수 없는 선수입니다.'};

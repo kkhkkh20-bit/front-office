@@ -250,3 +250,4 @@ body.help .hi-i{display:none}
   .ng-sum{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ng-acts .btn{flex:1 1 140px}.ng-acts .btn.primary{margin-left:0}
 }
+.ng-why{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--panel);display:grid;gap:4px}.ng-why p{margin:0}
