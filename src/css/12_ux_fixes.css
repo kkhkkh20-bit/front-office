@@ -197,3 +197,13 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 @media (max-width:1100px){.dtiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:600px){.dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .faap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}.faap .eyebrow{width:100%}
+/* 설명 ⓘ와 말풍선 */
+.hi-i{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:6px;padding:0;border-radius:50%;border:1px solid var(--line2,#334250);background:transparent;color:var(--muted);font:italic 700 11px/1 Georgia,serif;cursor:pointer;vertical-align:2px;flex:none}
+.hi-i:hover,.hi-i:focus-visible{color:var(--ink);border-color:var(--acc)}
+.hi-i.solo{margin:2px 0 4px}
+body.help .hi-i{display:none}
+#tipb{position:absolute;z-index:200;display:none;background:var(--panel2,#1a232c);color:var(--ink);border:1px solid var(--line2,#334250);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.55;white-space:pre-line;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#tipb.on{display:block}
+#tipb::before{content:"";position:absolute;top:-6px;left:calc(var(--ax,50%) - 6px);width:10px;height:10px;background:inherit;border-left:1px solid var(--line2,#334250);border-top:1px solid var(--line2,#334250);transform:rotate(45deg)}
+#tipb.up::before{top:auto;bottom:-6px;transform:rotate(225deg)}
+.fdt .ti{cursor:pointer}

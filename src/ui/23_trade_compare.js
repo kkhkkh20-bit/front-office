@@ -99,8 +99,19 @@ function powerMap(){
 /* ---------- 도움말 문장 접기 ---------- */
 function toast(t){ let el=document.getElementById('toast'); if(!el){ el=document.createElement('div'); el.id='toast'; el.setAttribute('role','status'); document.body.appendChild(el); } el.textContent=t; try{ josaFix(el); }catch(e){} el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),2400); }
 /* 설명 문단은 기본으로 보인다. 익숙해지면 ? 버튼으로 숨긴다 */
-function helpOn(){ try{ return localStorage.getItem('danjang-help')!=='0'; }catch(e){ return true; } }
-function markHints(root){ if(!root)return; root.querySelectorAll('p.small.muted, p.muted.small').forEach(el=>{ if(el.closest('.mailbody,.news,.dl-empty,.td,.quote'))return; const t=el.textContent||''; if(el.classList.contains('keep')||/없습니다|수 없|아닙니다|만 시작|기한|마감/.test(t))return; if(t.length>=42)el.classList.add('hint'); }); }
+function helpOn(){ try{ return localStorage.getItem('danjang-help')==='1'; }catch(e){ return false; } } /* 기본은 설명을 접고 ⓘ로 */
+/* 설명 문단은 화면에서 접고 ⓘ로 바꾼다: 같은 카드의 제목 옆에 ⓘ 하나, 누르면 말풍선. '?' 버튼을 켜면 예전처럼 펼쳐 보인다 */
+function markHints(root){ if(!root)return; root.querySelectorAll('p.small.muted, p.muted.small, .row.between > span.small.muted, .row.between > div > span.small.muted').forEach(el=>{ if(el.tagName==='SPAN'&&((el.textContent||'').trim().length<40||el.closest('.item,.mrow,.ibr,.fdt,table')))return; if(el.dataset.hk)return; if(el.closest('.mailbody,.news,.dl-empty,.td,.quote,.fdtip-none'))return; const t=(el.textContent||'').trim(); if(el.classList.contains('keep')&&!el.classList.contains('tipme'))return; if(/없습니다|수 없|아닙니다|만 시작|기한|마감/.test(t)&&!el.classList.contains('tipme'))return; if(t.length<24)return;
+    el.dataset.hk='1'; el.classList.add('hint'); const box=el.closest('section,.card,.fdl-main,.sheet')||el.parentElement; let h=box&&[...box.querySelectorAll('h2.sec,h2,h3,.eyebrow')].find(x=>!x.closest('table')&&(x.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING));
+    if(h){ let ic=h.querySelector(':scope > .hi-i'); if(!ic){ ic=document.createElement('button'); ic.type='button'; ic.className='hi-i'; ic.textContent='i'; ic.setAttribute('aria-label','설명 보기'); ic.dataset.tip=''; h.appendChild(ic); } ic.dataset.tip=(ic.dataset.tip?ic.dataset.tip+'\n\n':'')+t; }
+    else { const ic=document.createElement('button'); ic.type='button'; ic.className='hi-i solo'; ic.textContent='i'; ic.setAttribute('aria-label','설명 보기'); ic.dataset.tip=t; el.parentNode.insertBefore(ic,el); } }); }
+/* 말풍선: ⓘ(.hi-i)와 표 머리글 ⓘ(.ti)를 누르면 근처에 뜨고, 다른 곳을 누르면 닫힌다 */
+function tipShow(el){ let b=document.getElementById('tipb'); if(!b){ b=document.createElement('div'); b.id='tipb'; b.setAttribute('role','tooltip'); document.body.appendChild(b); }
+  if(b._for===el&&b.classList.contains('on')){ tipHide(); return; } b._for=el; b._y=scrollY; b.textContent=el.dataset.tip||el.getAttribute('title')||''; b.classList.add('on');
+  const r=el.getBoundingClientRect(); const W=Math.min(320,innerWidth-24); b.style.maxWidth=W+'px'; const bw=Math.min(W,b.offsetWidth); let x=r.left+r.width/2-bw/2; x=Math.max(12,Math.min(innerWidth-bw-12,x)); const below=r.bottom+b.offsetHeight+16<innerHeight;
+  b.style.left=(x+scrollX)+'px'; b.style.top=((below?r.bottom+8:r.top-b.offsetHeight-8)+scrollY)+'px'; b.classList.toggle('up',!below); b.style.setProperty('--ax',(r.left+r.width/2-x)+'px'); }
+function tipHide(){ const b=document.getElementById('tipb'); if(b){ b.classList.remove('on'); b._for=null; } }
+if(typeof document!=='undefined'){ document.addEventListener('click',e=>{ const t=e.target.closest&&e.target.closest('.hi-i,.fdt .ti'); if(t){ e.preventDefault(); e.stopPropagation(); tipShow(t); return; } if(!(e.target.closest&&e.target.closest('#tipb')))tipHide(); },true); addEventListener('scroll',()=>{ const b=document.getElementById('tipb'); if(b&&b.classList.contains('on')&&Math.abs(scrollY-(b._y||0))>40)tipHide(); },{passive:true}); }
 
 /* ---------- 화면 안 탭 ---------- */
 function inTabs(key,tabs,def){ const cur=(UI.it||{})[key]||def||tabs[0][0]; const ok=tabs.some(t=>t[0]===cur)?cur:tabs[0][0];

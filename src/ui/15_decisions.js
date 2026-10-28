@@ -70,6 +70,6 @@ function clubCard(){
   return `<section class="card"><div class="row between"><h2 class="sec">구단 상태</h2><button class="btn small" data-a="go" data-v="club:owner">구단주</button></div>
     <dl class="tsum">${g('구단주 신뢰',t.trust,25,60)}${g('팬 여론',Math.round(G.pr.fan),40,60)}${g('언론 논조',Math.round(G.pr.press),40,60)}</dl>
     ${goal}
-    <p class="small muted">자금 <b class="num">${money(t.cash)}</b> · 연봉 캡 <b class="num">${money(ci.pay)}</b> / ${money(ci.cap)}</p></section>`;
+    <p class="small muted keep">자금 <b class="num">${money(t.cash)}</b> · 연봉 캡 <b class="num">${money(ci.pay)}</b> / ${money(ci.cap)}</p></section>`;
 }
 

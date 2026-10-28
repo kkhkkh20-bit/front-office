@@ -86,7 +86,7 @@ function policyCard(m){
 function mgrChatCard(compact){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return ''; const C=(G.mgrChat||[]).filter(c=>!compact||G.day-c.d<=14).slice(0,compact?1:4);
   const T=[['now','지금 팀 상황은?'],['foreign','어떤 외국인을 원하나?'],['need','가장 급한 자리는?'],['young','눈여겨보는 젊은 선수는?']];
   const tt=G.ttDay!=null&&G.day-G.ttDay<14;
-  return `<section class="card mchat"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${MV[mgrVoice(m)].l} · 관계 ${m.rel}</span></div>${compact?'':`<p class="small muted">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
+  return `<section class="card mchat"><div class="row between"><h2 class="sec">${compact?'감독실':'감독과 대화'}</h2><span class="small muted">${esc(m.name)} 감독 · ${MV[mgrVoice(m)].l} · 관계 ${m.rel}</span></div>${compact?'':`<p class="small muted keep">${esc(m.career||'')} · ${MV[mgrVoice(m)].d}</p>`}
     <div class="chips">${T.map(([k,l])=>`<button data-a="mgrAsk" data-v="${k}">${l}</button>`).join('')}</div>
     ${C.length?`<div class="mc-l">${C.map(c=>`<div class="mc-a"><i>${dsh(c.d)}${G.day-c.d>30?' (지난 답변, 다시 물어보세요)':''} · ${esc((T.find(x=>x[0]===c.t)||['',''])[1])}</i><p>${esc(c.a)}</p></div>`).join('')}</div>`:'<p class="small muted">자주 물어볼수록 감독과의 관계가 좋아집니다(한 주에 한 번 반영).</p>'}
     
@@ -161,4 +161,4 @@ function scoutBody(){
 const MSTY=[['small','빅볼','스몰볼'],['dfn','타격 중시','수비 중시'],['pen','선발 중심','불펜 중심'],['arm','투수 보호','투수 혹사'],['youth','성적 우선','육성 우선']];
 function mgrStyleBox(m){ mgrAttr(m); return `<div class="msty">${MSTY.map(([k,a,b])=>{ const v=clamp(m[k],0,100); const side=v>=62?'r':v<=38?'l':''; return `<div class="msty-r"><span class="${side==='l'?'on':''}">${a}</span><span class="msty-t"><i style="left:${v}%"></i></span><span class="${side==='r'?'on':''}">${b}</span></div>`; }).join('')}</div>`; }
 function mgrAbilBox(m){ mgrAttr(m); return `<div class="mabil">${[['장악력',m.disc,'선수단 기강·불만 관리'],['운영',m.tac,'경기 중 판단(작전·교체 타이밍)'],['안목',m.eye,'유망주·선수 평가 정확도'],['휴식 관리',m.rest,'주전 피로·부상 관리']].map(([l,v,d])=>`<div class="mabil-r" title="${d}"><span>${l}</span>${rchip(v)}<span class="track"><span class="now" style="width:${v}%;background:${rcol(v)}"></span></span></div>`).join('')}</div>`; }
-function mgrPersLine(m){ return `<p class="small muted mpers">${m.ego>=70?'<b class="bad">고집 셈</b> · 단장 지시를 잘 안 받아들입니다':m.ego<=35?'유연함 · 단장 지시를 잘 받아들입니다':'고집 보통'} · ${m.fame>=70?'<b>스타 감독</b> · 팬 관심↑ 연봉↑':m.fame<=35?'인지도 낮음':'인지도 보통'}</p>`; }
+function mgrPersLine(m){ return `<p class="small muted mpers keep">${m.ego>=70?'<b class="bad">고집 셈</b> · 단장 지시를 잘 안 받아들입니다':m.ego<=35?'유연함 · 단장 지시를 잘 받아들입니다':'고집 보통'} · ${m.fame>=70?'<b>스타 감독</b> · 팬 관심↑ 연봉↑':m.fame<=35?'인지도 낮음':'인지도 보통'}</p>`; }
