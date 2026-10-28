@@ -30,7 +30,7 @@ function campData(){ facInit(); const per=period(); const inSea=per==='season'||
   else { const f=ps.filter(p=>!used.has(p.id)&&!isAway(p)); f.slice(0,9).forEach(p=>put(p,'fut')); f.filter(p=>!used.has(p.id)).forEach((p,i)=>put(p,camp?(i%2?'weight':'indoor'):(p.age<=23&&i%4===0?'dorm':i%2?'weight':'indoor'))); }
   const bmap=cpBuilds(); const B=Object.keys(bmap)[0]||null; /* 진행 중인 공사 전부(동시 2곳) */
   const P=tpal(team(G.user)); CAMP_UNI.a={S:'#f2f4f6',D:P[0],H:P[0]};
-  return {view:(UI.it&&UI.it.cmap)||'home',stadName:stadName(G.user),teamCol:P[0],board:per==='season'&&G.sea&&G.sea.rec?`${G.sea.rec[G.user].w}승 ${G.sea.rec[G.user].l}패`:'',lv:Object.fromEntries(FACK.map(k=>[k,facOf(k)])),bld:B,bmap,pct:B?bmap[B].pct:0,bus:busLv(),players:out,
+  return {view:(UI.it&&UI.it.cmap)||'home',stadName:stadName(G.user),teamCol:P[0],acc:cTeamCol(G.user),stad:stadIsoOpts(G.user),board:per==='season'&&G.sea&&G.sea.rec?`${G.sea.rec[G.user].w}승 ${G.sea.rec[G.user].l}패`:'',lv:Object.fromEntries(FACK.map(k=>[k,facOf(k)])),bld:B,bmap,pct:B?bmap[B].pct:0,bus:busLv(),players:out,
     mainNote:per==='season'?(G.cal.sched[G.day]?'경기 전 훈련':'휴식일 훈련'):per==='post'?'가을야구 준비':camp?'스프링캠프(해외)':pre?'시범경기 준비':'비시즌',futNote:inSea||pre?'2군 경기':'자율 훈련'}; }
 function campView(){ const ct=inTabs('cmap',[['home','1군 홈구장'],['farm','2군 훈련장']],'home'); if(UI._czv!==ct.cur){ UI._czv=ct.cur; UI.cz=null; UI.cpSel=null; } const S=campData(); const c=k=>S.players.filter(p=>p.where===k).length; const inj=S.players.filter(p=>p.inj).length, tired=S.players.filter(p=>p.tired).length, hot=S.players.filter(p=>p.hot).length;
   const B=Object.entries(S.bmap).map(([k,b])=>`<span class="chip">공사 중 <b>${FACI[k].l} ${Math.round(b.pct*100)}%</b> · ${b.left}일 남음</span>`).join('');
@@ -51,9 +51,13 @@ function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=c
 function campAfter(){ const svg=document.querySelector('#campst svg.campus'); if(svg&&UI.cz)svg.setAttribute('viewBox',UI.cz.join(' ')); cpMark(); }
 function campZoomTo(to){ const svg=document.querySelector('#campst svg.campus'); const fr=UI.cz||[0,0,1000,690]; UI.cz=to; if(!svg){ render(); return; } const t0=performance.now(); const tgt=to||[0,0,1000,690];
   (function step(t){ const k=Math.min(1,(t-t0)/320), e=1-Math.pow(1-k,3); svg.setAttribute('viewBox',fr.map((a,i)=>a+(tgt[i]-a)*e).join(' ')); if(k<1)requestAnimationFrame(step); else render(); })(t0); }
+/* 아이소 지도 클릭 판정: 앞쪽 구역부터, 건물 윤곽(data-hp)을 먼저 보고 바닥(data-poly)을 본다. 다각형이 없으면 data-b 사각형 */
+function campInPoly(s,x,y){ const v=s.trim().split(/\s+/).map(t=>t.split(',').map(Number)); let c=false; for(let i=0,j=v.length-1;i<v.length;j=i++){ const [xi,yi]=v[i],[xj,yj]=v[j]; if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c; } return c; }
+function campHit(svg,q){ const L=[...svg.querySelectorAll('.plot')].reverse();
+  return L.find(x=>x.dataset.hp&&campInPoly(x.dataset.hp,q.x,q.y))||L.find(x=>x.dataset.poly&&campInPoly(x.dataset.poly,q.x,q.y))||L.find(x=>{ if(x.dataset.poly)return false; const [a,b,w,h]=x.dataset.b.split(',').map(Number); return q.x>=a&&q.x<=a+w&&q.y>=b&&q.y<=b+h; }); }
 function campClick(e){ const svg=e.target.closest('svg.campus'); if(!svg)return false; const pl=e.target.closest('.cpp')||(UI.cz&&cpNear(svg,e)); if(pl){ cpPick({t:'p',id:+pl.dataset.pid}); return true; }
   const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(svg.getScreenCTM().inverse());
-  const g=[...svg.querySelectorAll('.plot')].find(x=>{ const [a,b,w,h]=x.dataset.b.split(',').map(Number); return q.x>=a&&q.x<=a+w&&q.y>=b&&q.y<=b+h; }); if(!g)return true;
+  const g=campHit(svg,q); if(!g)return true;
   const k=g.dataset.k; if(!UI.cz){ UI.cpSel={t:'f',k}; UI.facMsg=null; const [a,b,w,h]=g.dataset.b.split(',').map(Number); campZoomTo([a-8,b-8,w+16,h+16]); return true; }
   cpPick({t:'f',k}); return true; }
 document.addEventListener('click',e=>{ if(UI.tab==='train'&&e.target.closest&&e.target.closest('#campst')){ if(campClick(e)){ e.preventDefault(); e.stopPropagation(); } } },true);

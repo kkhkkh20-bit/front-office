@@ -1,0 +1,35 @@
+/* ---------- 아이소메트릭 그림(시안 B): 구장 외관·구단 버스·훈련장 지도·시설 썸네일 ---------- */
+svg .isot{font-family:var(--f-ui);font-weight:700;fill:#f2f4f6;paint-order:stroke;stroke:#0b0f14;stroke-linejoin:round}
+.isosvg{display:block;width:100%;height:auto}
+.isostad{margin:0 0 10px;border:1px solid var(--line);border-radius:6px;background:#141a22;overflow:hidden}
+.isostad>.isosvg{max-width:640px;margin:0 auto}
+.isocap{display:flex;flex-wrap:wrap;gap:3px 12px;padding:6px 10px 7px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+.isocap b{color:var(--ink);font-weight:700}
+.isocap em{font-style:normal}.isocap .bld{color:var(--warn)}
+/* 구단 버스 */
+.isobus{background:#141a22;border-radius:6px;padding:4px 8px;margin:6px 0 4px;max-width:420px}
+.isobusl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 8px}
+.isobusl>div{background:#141a22;border:1px solid var(--line);border-radius:5px;padding:2px 4px 4px;opacity:.55;min-width:0}
+.isobusl>div.on{opacity:1;border-color:var(--good)}
+.isobusl span{display:block;font-size:11px;text-align:center;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 시설 카드 썸네일 */
+.isoth{display:block;width:76px;height:58px;flex:none;background:#141a22;border-radius:5px}
+.fci:has(>.isoth){grid-template-columns:76px minmax(0,1fr);column-gap:10px}
+.fci>.isoth~*{grid-column:1/-1}
+.fci>.isoth+*{grid-column:2;align-self:center}
+/* 훈련장 지도(아이소) */
+.campst{background:#141a22}
+svg.campus.iso .pso{fill:none;stroke:#ffffff1c;stroke-width:1.2}
+svg.campus.iso .plot.sel .pso{stroke:#ffd24d;stroke-width:3;fill:#ffd24d10}
+svg.campus.iso .cptag .pt{font-size:12px}
+svg.campus.iso .cpn{font-size:9.5px}
+/* 인형 동작: 방망이 휘두르기, 던지기(몸 기울임), 달리기(들썩임), 바벨 들기 */
+.cpp.sw .imb{transform-box:fill-box;transform-origin:0 100%;animation:imsw var(--ad,2.6s) var(--dl,0s) infinite}
+.cpp.th .imx{transform-box:fill-box;transform-origin:50% 100%;animation:imth var(--ad,2.6s) var(--dl,0s) infinite}
+.cpp.ar .imx{animation:imar var(--ad,.5s) var(--dl,0s) infinite alternate ease-in-out}
+.cpp.lift .imb{animation:imlift var(--ad,1.6s) var(--dl,0s) infinite ease-in-out}
+@keyframes imsw{0%,58%{transform:rotate(0)}66%{transform:rotate(18deg)}74%{transform:rotate(-150deg)}82%{transform:rotate(-160deg)}100%{transform:rotate(0)}}
+@keyframes imth{0%,36%{transform:rotate(0)}50%{transform:rotate(-12deg)}60%{transform:rotate(14deg)}72%{transform:rotate(4deg)}100%{transform:rotate(0)}}
+@keyframes imar{from{transform:translateY(0)}to{transform:translateY(-1.6px)}}
+@keyframes imlift{0%,100%{transform:translateY(5px)}50%{transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.cpp .imb,.cpp .imx{animation:none!important}}
