@@ -60,6 +60,7 @@ function processDay(){ syncMinSal();
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
   try{ stDaily(); }catch(e){}
   try{ ivDaily(); }catch(e){}
+  try{ gmPlanDaily(); }catch(e){}
   if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
   if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
@@ -125,7 +126,7 @@ function playDay(day){
     const me=userRec.home===G.user?'h':'a', op=me==='h'?'a':'h';
     // 노히트 도전: 7회까지 상대 무안타
     if(!userRec.kind&&userRec.hits[op].slice(0,7).reduce((s,x)=>s+x,0)===0&&userRec.hits[op].length>=7){ userRec.kind='노히트 도전'; userRec.from=14; }
-    keepGame(userRec); ulog(userRec); G.res={i:0}; prAfterGame(userRec);
+    keepGame(userRec); ulog(userRec); G.res={i:0}; prAfterGame(userRec); try{ gmAttendResult(userRec); }catch(e){}
   }
   rankSnap(day);
 }
