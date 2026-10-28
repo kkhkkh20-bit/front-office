@@ -48,10 +48,32 @@ nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;wh
 .oadv-b{display:grid;gap:6px}.oadv-r{display:flex;gap:8px;align-items:flex-start}.oadv-r .pill{flex:none}
 .oadv-r .small{white-space:pre-line;font-weight:400;line-height:1.5}
 @media (max-width:600px){.oadv-r{flex-direction:column;gap:4px}}
-/* 모바일 긴 표: 표 안에서 세로로 스크롤하고 머리글을 고정한다(열 이름을 잃지 않게) */
-@media (max-width:600px){
-  .tw:has(> .sqt.rt){max-height:72vh;overflow:auto;overscroll-behavior:contain}
-  .tw:has(> .sqt.rt) thead th{position:sticky;top:0;z-index:2;background:var(--card,#181b20)}
-  .tw:has(> .sqt.rt) thead th:first-child{z-index:3}
-}
 .btn.tempty{margin:6px 0 0;padding:6px 10px;width:100%}
+/* 휴대폰 표 열 넘기기(ui/51_table_pager.js): 표 안 스크롤 없이 페이지 스크롤 하나로, 머리글은 화면 위에 고정 */
+.twh{display:none!important}
+.tw.twp{overflow:visible;background:none}
+.tw.twp>table{width:100%}
+.tw.twp thead th{position:sticky;top:var(--toph,56px);z-index:2;background:var(--card,#181b20)}
+.tw.twp thead th:first-child{z-index:3}
+.twpg{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:0 12px 6px;font-size:12px;color:var(--muted)}
+.twpg span{flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.twpg b{color:var(--ink);margin-right:4px}
+.twpg button{min-width:44px;height:34px;border:1px solid var(--line2,#334250);background:var(--panel2,#1a232c);color:var(--ink);border-radius:4px;font-size:13px;cursor:pointer}
+.twpg button:disabled{opacity:.35;cursor:default}
+@media (max-width:600px){ .chips{flex-wrap:wrap;overflow:visible} }
+/* 화면 밀림 방지: 끝까지 당겨도 앱 전체(상단 바·하단 메뉴)가 튕기거나 바깥 페이지로 스크롤이 넘어가지 않게, 옆으로도 밀리지 않게 */
+html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
+.sheet,.sheet .sb,.ibx-list,.menu,.cfm{overscroll-behavior:contain}
+/* 휴대폰: 옆으로 밀어야 하는 줄을 없앤다 */
+@media (max-width:600px){
+  /* 하위 탭: 폭을 나눠 쓰고, 넘치면 줄을 바꾼다 */
+  nav.subtabs,nav.subtabs.ovx{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}
+  nav.subtabs button{flex:1 1 auto;padding:9px 6px 10px;font-size:13.5px;text-align:center}
+  /* 홈 결과 띠: 지난 3경기만 세 칸으로(다음 경기는 아래 카드에 있다) */
+  .sbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
+  .sbar .sb-sep,.sbar .sb-i.nx{display:none}
+  .sbar .sb-i{display:grid;grid-template-columns:auto auto 1fr;gap:2px 5px;padding:5px 7px;min-width:0}
+  .sbar .sb-i>span:last-child{grid-column:1/-1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--muted)}
+  /* 순위 그래프: 화면 폭에 맞춰 그린다 */
+  .rcw{overflow:visible}.rcw .rchart{min-width:0}
+}

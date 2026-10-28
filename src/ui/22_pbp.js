@@ -57,7 +57,7 @@ function gameSheet(i){
 /* 순위 변동 그래프 */
 function rankChart(compact){
   const R=(G.sea&&G.sea.rh)||[]; if(R.length<3)return '';
-  const W=600,H=compact?90:220,pl=compact?6:26,pr=compact?6:52,pt=8,pb=compact?6:20; const n=R.length;
+  const W=typeof innerWidth!=='undefined'&&innerWidth<=600?Math.max(300,innerWidth-44):600,H=compact?90:220,pl=compact?6:26,pr=compact?6:52,pt=8,pb=compact?6:20; const n=R.length;
   const x=i=>pl+(W-pl-pr)*i/(n-1), y=r=>pt+(H-pt-pb)*(r-1)/9;
   const tids=compact?[G.user]:G.teams.map(t=>t.id).sort((a,b)=>(a===G.user)-(b===G.user));
   const lines=tids.map(tid=>{ const t=team(tid); const me=tid===G.user; const d=R.map((s,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(s[1][tid]).toFixed(1)}`).join(' ');

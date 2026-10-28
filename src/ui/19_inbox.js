@@ -11,6 +11,7 @@ function mailCard(m){
    목록은 한 줄 요약만, 본문은 한 통만 펼친다. 모바일은 목록 → 눌러서 본문 → '목록' 버튼으로 돌아온다 */
 const IB_KIND={squad:'부상 복귀 회복 부하 선수 감독 엔트리 결정 육성 캠프 병역 의무 코치 연수 면담 경기 bat boost',move:'트레이드 FA fa 외국인 용병 아시아 연봉 드래프트 스카우트 스토브리그',club:'구단주 재정 시설 구장 스폰서 스태프 전력분석 분석 운영 결재 일정 월간 업무 결산 새해 취임 체험판 일반',media:'언론 기록 OB 경력 포스트시즌'};
 const IB_CAT=[['all','전체'],['task','처리할 일'],['squad','선수단'],['move','이적·계약'],['club','구단 운영'],['media','언론·기록']];
+const IB_CATS={all:'전체',task:'처리',squad:'선수단',move:'이적',club:'운영',media:'언론'}; /* 휴대폰 탭 이름(한 줄에 다 들어가게) */
 function ibCat(m){ for(const k in IB_KIND)if(IB_KIND[k].split(' ').includes(m.kind))return k; return 'club'; }
 const IB_CATN={squad:'선수단',move:'이적·계약',club:'구단 운영',media:'언론·기록'};
 /* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 트레이드 제안은 뺀다) */
@@ -41,7 +42,7 @@ function inboxView(){
   { const seen={}; UI._ibDup={}; list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read))return true; const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; }); }
   const unread=G.mail.filter(m=>!m.read).length;
   const cnt=k=>mailFilter(k).filter(m=>!m.read).length;
-  const bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}">${l}${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
+  const bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
     <div class="ibx-meta"><span>안 읽음 <b id="ib-unread">${unread}</b></span>${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 차례로 열고, 다 읽으면 계속 진행 · J/K: 다음/이전">Space 다음 소식</span>':''}</div></div>`;
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'처리할 일이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const ids=list.map(m=>m.id);

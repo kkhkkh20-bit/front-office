@@ -71,3 +71,10 @@
 /* 트레이드 제안 의견 버튼: 한 줄로 */
 .ibm .oadv-b{display:flex;flex-wrap:wrap;gap:6px}.ibm .oadv-b>.btn{width:auto;flex:0 0 auto}.ibm .oadv-b>.oadv-r{flex:1 1 100%}
 .ibm .oadv>.btn{width:auto;justify-self:start}
+/* 휴대폰 소식함 탭: 짧은 이름으로 한 줄에(옆으로 밀지 않게) */
+.ibx-tabs .ibs{display:none}
+@media (max-width:600px){
+  .ibx-tabs{overflow:visible;width:100%;justify-content:space-between}
+  .ibx-tabs button{padding:10px 5px 9px;gap:4px}
+  .ibx-tabs .ibl{display:none}.ibx-tabs .ibs{display:inline}
+}
