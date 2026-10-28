@@ -17,7 +17,7 @@ function ovsApply(){
   for(const x of (G.ovs||[])){ const p=G.players[x.pid]; if(!p||p.team!==G.user)continue; const o=OVS[x.prog]; const gap=Math.max(0,p.pot-ovr(p));
     const g=rnd(.6,1.6)*Math.min(1,gap/5+.35);
     for(const k in p.r)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.3),20,80); roundR(p);
-    let msg=`${p.name}이(가) ${o.l}을 마치고 돌아왔습니다.`; if(R()<o.inj){ p.injOut=ri(10,40); msg+=` 연수 중 부상으로 약 ${p.injOut}일 재활이 필요합니다.`; } else msg+=' 코치진이 성장을 확인했습니다.';
+    let msg=`${p.name}이(가) ${o.l}을 마치고 돌아왔습니다.`; if(R()<o.inj){ p.injOut=ri(10,40); delete p.injK; msg+=` 연수 중 부상으로 약 ${p.injOut}일 재활이 필요합니다.`; } else msg+=' 코치진이 성장을 확인했습니다.';
     out.push(msg); }
   G.ovs=[]; if(out.length)mail('육성팀','해외 연수 결과',out.join('\n'),{kind:'연수'});
 }

@@ -48,3 +48,10 @@ nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;wh
 .oadv-b{display:grid;gap:6px}.oadv-r{display:flex;gap:8px;align-items:flex-start}.oadv-r .pill{flex:none}
 .oadv-r .small{white-space:pre-line;font-weight:400;line-height:1.5}
 @media (max-width:600px){.oadv-r{flex-direction:column;gap:4px}}
+/* 모바일 긴 표: 표 안에서 세로로 스크롤하고 머리글을 고정한다(열 이름을 잃지 않게) */
+@media (max-width:600px){
+  .tw:has(> .sqt.rt){max-height:72vh;overflow:auto;overscroll-behavior:contain}
+  .tw:has(> .sqt.rt) thead th{position:sticky;top:0;z-index:2;background:var(--card,#181b20)}
+  .tw:has(> .sqt.rt) thead th:first-child{z-index:3}
+}
+.btn.tempty{margin:6px 0 0;padding:6px 10px;width:100%}
