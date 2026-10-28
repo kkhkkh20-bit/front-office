@@ -349,3 +349,4 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 /* 별점 */
 .stars{position:relative;display:inline-block;font-size:13px;line-height:1;letter-spacing:1px;margin:2px 0}
 .stars .st-b{color:var(--line,#3a3a3a)}.stars .st-f{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#e8b923}
+.stt td{vertical-align:middle}.stt td:nth-child(3){color:#e8b923;letter-spacing:1px}

@@ -99,7 +99,7 @@ function powerMap(){
 function mailFilter(f){ const isTask=m=>m.imp&&!(m.kind==='트레이드'&&/원한다/.test(m.subj)&&!(G.offers||[]).some(o=>o.id===m.oid));
   return G.mail.filter(m=>f==='all'||(f==='task'&&isTask(m))||(f==='unread'&&!m.read)||(f==='player'&&typeof m.face==='number')); }
 /* ---------- 도움말 문장 접기 ---------- */
-function toast(t){ let el=document.getElementById('toast'); if(!el){ el=document.createElement('div'); el.id='toast'; el.setAttribute('role','status'); document.body.appendChild(el); } el.textContent=t; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),2400); }
+function toast(t){ let el=document.getElementById('toast'); if(!el){ el=document.createElement('div'); el.id='toast'; el.setAttribute('role','status'); document.body.appendChild(el); } el.textContent=t; try{ josaFix(el); }catch(e){} el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),2400); }
 /* 설명 문단은 기본으로 보인다. 익숙해지면 ? 버튼으로 숨긴다 */
 function helpOn(){ try{ return localStorage.getItem('danjang-help')!=='0'; }catch(e){ return true; } }
 function markHints(root){ if(!root)return; root.querySelectorAll('p.small.muted, p.muted.small').forEach(el=>{ if(el.closest('.mailbody,.news,.dl-empty,.td,.quote'))return; const t=el.textContent||''; if(el.classList.contains('keep')||/없습니다|수 없|아닙니다|만 시작|기한|마감/.test(t))return; if(t.length>=42)el.classList.add('hint'); }); }

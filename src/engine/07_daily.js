@@ -54,10 +54,11 @@ function processDay(){ syncMinSal();
   if(G.demoEnd)return;
   G.day++; const day=G.day, o=dobj(day);
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }
-  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ freeYear(); }catch(e){} }
+  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} }
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
   if(o.d===1)try{ freeAiMonthly(); sponMonthly(); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
+  try{ stDaily(); }catch(e){}
   if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
   if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}

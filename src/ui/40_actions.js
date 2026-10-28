@@ -134,7 +134,10 @@ const A={
   buildFacItem(v){ UI.facMsg=buildFacItem(v)||null; save(); render(); },
   campZoom(v){ campZoomTo(null); },
   buyBus(v){ UI.facMsg=buyBus(v)||null; save(); render(); },
-  anaHire(v){ UI.cMsg=hireAna(v)||null; save(); render(); },
+  anaHire(v){ const [aid,rz]=String(v).split(':'); const res=stOffer('an',aid,+rz||0); toast(res.msg); if(res.ok){ G.analysts.push(res.s); addLog(`${AROLE[res.s.role].l} 분석원 ${res.s.name}(능력 ${res.s.skill})을(를) 연 ${money(res.s.sal)}에 채용했습니다.`); } save(); render(); },
+  stPo(v){ const [k,t,id,r]=String(v).split(':'); toast(stPoach(k,+t,id,+r||.25)); save(); render(); },
+  stKeep(v){ const [id,f]=String(v).split(':'); toast(stKeep(id,f==='1')); save(); render(); },
+  stLet(v){ const r=stRaidFind(v); toast(r?stLeave(r):'이미 끝난 일입니다.'); save(); render(); },
   anaFire(v){ fireAna(v); save(); render(); },
   camp(v){ if(G.camp){G.camp.focus=v; G.camp.seen=true; save(); render();} },
   confirmContracts(){ const r=confirmContracts(); UI.ctMsg=r||''; save(); render(); },
@@ -190,6 +193,7 @@ const A={
   cerRev(){ if(UI.cer){ UI.cer.rev=true; renderSheet(); } },
   cerNext(){ if(UI.cer){ UI.cer.i++; UI.cer.rev=false; renderSheet(); } },
   cerAll(){ if(UI.cer){ UI.cer.i=99; renderSheet(); } },
+  sponPitch(v){ toast(sponPitch(v)); save(); render(); },
   rcolTg(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=rcolKeys(pit).slice(); const i=L.indexOf(v); if(i>=0){ if(L.length<=1)return; L.splice(i,1); } else L.push(v); rcolLoad()[k]=L; rcolSave(); render(); },
   rcolMv(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const [c,d]=v.split(':'); const L=rcolKeys(pit).slice(); const i=L.indexOf(c), j=i+(+d); if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; rcolLoad()[k]=L; rcolSave(); render(); },
   rsort(v){ const k=UI.seg==='pit'?'pit':'bat'; UI.rs=UI.rs||{}; if(!v){UI.rs[k]=null;} else { const c=UI.rs[k]; UI.rs[k]={k:v,dir:c&&c.k===v?-c.dir:-1}; } render(); },
@@ -289,10 +293,10 @@ const A={
   frF(v){ UI.frF=v; render(); },
   signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
   scF(v){ UI.scF=v; render(); },
-  hireScout(v){const s=scoutMkt().find(x=>x.id===v); if(s&&G.scouts.length<SCOUT_MAX){ s.since=G.day; s.role=s.role||'am';
+  hireScout(v){ const [sid,rz]=String(v).split(':'); const res=stOffer('sc',sid,+rz||0); toast(res.msg); if(!res.ok){ save(); render(); return; } const s=res.s; v=sid; if(s&&G.scouts.length<SCOUT_MAX){ s.since=G.day; s.role=s.role||'am';
     /* 이미 사람이 있는 자리면 같은 지역의 빈 업무, 없으면 다른 지역 빈자리로 보낸다 */
     { const L=scoutLoad(); if(L[s.role+':'+s.region]){ const fr=['am','pro'].flatMap(r=>[s.region,...REG.filter(x=>x!==s.region)].map(g=>r+':'+g)).sort((a,b)=>(b.endsWith(s.region)?1:0)-(a.endsWith(s.region)?1:0)).find(k=>!L[k]); if(fr){ const [r,g]=fr.split(':'); s.role=r; s.region=g; } } }
-    G.scouts.push(s);G.scoutMarket=G.scoutMarket.filter(x=>x.id!==v);try{obHireBonus(s.ob,'스카우트');}catch(e){}addLog(`스카우트 ${s.name}(${s.region}·능력 ${s.skill})을 영입했습니다.`);save();render();}},
+    G.scouts.push(s);try{obHireBonus(s.ob,'스카우트');}catch(e){}addLog(`스카우트 ${s.name}(${s.region}·능력 ${s.skill})을 영입했습니다.`);save();render();}},
   fireScout(v){const s=G.scouts.find(x=>x.id===v); G.scouts=G.scouts.filter(x=>x.id!==v); if(s)addLog(`스카우트 ${s.name}와(과) 계약을 끝냈습니다.`); save();render();},
   signF(v){const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg=err;renderSheet();return;} signForeign(G.user,p.id); UI.sheet=null; save(); render();},
   offA(v,el){UI.offer={id:+v,annual:+el.value,years:(UI.offer&&UI.offer.id===+v?UI.offer.years:(G.fa.offers[+v]||G.players[+v].ask).years)};

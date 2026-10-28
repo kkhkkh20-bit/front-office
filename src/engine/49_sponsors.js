@@ -34,7 +34,7 @@ function sponSign(o,silent){ const S=G.spon; const y0=sponSeason(); const inSea=
 function sponIncome(y){ const S=G.spon; if(!S)return 0; y=y??sponSeason(); let s=0; for(const k in S.c){ const c=S.c[k]; if(c.y0<=y&&c.until>=y)s+=c.amt*(c.y0===y?c.first:1); } return Math.round(s); }
 function sponOpen(k){ const c=G.spon.c[k]; const y=sponSeason(); return !c||c.until<y; }
 /* 제안: 11월 10일·12월 1일·1월 10일, 시즌 중에는 매달 1일 빈자리에 가끔 */
-function sponDaily(){ if(G.unemp)return; const S=sponInit(); const o=dobj(G.day); const t=team(G.user);
+function sponDaily(){ if(G.unemp)return; const S=sponInit(); const o=dobj(G.day); const t=team(G.user); try{ sponPitchDaily(); }catch(e){}
   S.off=S.off.filter(x=>x.exp>=G.day);
   const off=(o.m===11&&o.d===10)||(o.m===12&&o.d===1)||(o.m===1&&o.d===10)||(o.m===2&&o.d===1)||(o.m===3&&o.d===1); const sea=o.d===1&&period()==='season'&&R()<.35;
   if(!off&&!sea)return; const made=[];
@@ -62,3 +62,14 @@ function sponSettle(y,ps){ const S=G.spon; if(!S)return {base:0,bonus:0,L:[]}; l
 function sponMonthly(){ const S=G.spon; if(!S||!G.pr||G.pr.fan>=25)return; for(const k in S.c){ const c=S.c[k]; if(c.until<G.year||R()>=.06)continue; delete S.c[k]; mail('마케팅팀',`${c.co} 스폰서 계약 해지`,`팬 여론 악화로 ${c.co}이(가) ${SPON_SLOT[k].l} 계약을 해지했습니다. 남은 금액은 들어오지 않습니다.`,{kind:'스폰서',imp:true}); news('구단',`${c.co}, ${tshort(G.user)} 스폰서 철수`,'성난 팬심이 기업 이미지에도 부담이 된다는 판단입니다.',-2); break; } }
 /* AI 구단 스폰서 수입(결산용) */
 function sponAI(tid){ return Math.round(sum(Object.keys(SPON_SLOT).filter(k=>!SPON_SLOT[k].indie).map(k=>SPON_SLOT[k].b))*sponVal(tid)*.85); }
+/* 영업 활동: 단장이 마케팅팀에 빈자리 영업을 지시한다. 영업비 3천만 원, 1~2주 뒤 결과.
+   성공률은 구단 가치 지수와 단장 평판을 따른다. 자리마다 한 달에 한 번 */
+function sponPitch(slot){ const S=sponInit(); if(!SPON_SLOT[slot])return '없는 자리입니다.'; if(!sponOpen(slot))return '이미 계약된 자리입니다.';
+  S.pitch=S.pitch||[]; if(S.pitch.some(x=>x.slot===slot&&G.day-x.day<30))return '이 자리는 이미 영업 중이거나 이번 달에 시도했습니다.';
+  G.spend.etc=(G.spend.etc||0)+30; S.pitch.push({slot,day:G.day,due:G.day+ri(7,14),done:false});
+  return `마케팅팀이 ${SPON_SLOT[slot].l} 영업을 시작했습니다(영업비 3천만 원). 1~2주 뒤 결과를 보고합니다.`; }
+function sponPitchDaily(){ const S=G.spon; if(!S||!S.pitch)return; for(const x of S.pitch){ if(x.done||x.due>G.day)continue; x.done=true; if(!sponOpen(x.slot))continue;
+    const p=clamp(.45+(sponVal()-1)*.8+((G.rep??50)-50)/200,.15,.9); if(R()<p){ const n=R()<.35?2:1; const made=[]; for(let i=0;i<n;i++){ const o=sponMake(x.slot); o.amt=round5(o.amt*rnd(.92,1.02)); S.off.push(o); made.push(o); }
+      mail('마케팅팀',`영업 성과: ${SPON_SLOT[x.slot].l} 제안 ${made.length}건`,`${made.map(o=>`${o.co}(${o.ind}) ${o.yrs}년 연 ${money(o.amt)}`).join('\n')}\n\n먼저 찾아간 영업이라 기업이 먼저 보낸 제안보다 금액이 조금 낮을 수 있습니다.`,{imp:true,kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
+    else mail('마케팅팀',`영업 결과: ${SPON_SLOT[x.slot].l} 관심 기업 없음`,`여러 기업을 만났지만 지금 구단 가치(지수 ${Math.round(sponVal()*100)})로는 조건이 맞지 않았습니다. 성적과 팬 여론이 오르면 다시 시도해 보세요.`,{kind:'스폰서'}); }
+  S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); }
