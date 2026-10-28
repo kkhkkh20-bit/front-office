@@ -76,7 +76,10 @@ const INET=[{l:'에이전트 자료',c:0,sd:9.5,d:'에이전트가 보낸 영상
 const origOf=p=>p.orig||({'미국':'us','도미니카공화국':'la','베네수엘라':'la','일본':'jp','대만':'tw','호주':'au'}[p.nat]||'us');
 const intlLv=r=>Math.min(3,((G.intl&&G.intl[r])||0)+(G&&G.scouts&&G.scouts.some(s=>s.role==='intl'&&s.region===r)?1:0));
 
-function genName(){ for(let i=0;i<40;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&n[1]!==n[2])return n; } return pick(SUR)+'도윤'; }
+/* 국내 이름: 현역·은퇴 선수(OB) 이름과 겹치지 않게(하루 단위로 이름 목록을 모아 둔다) */
+let _nmSet=null, _nmDay=null;
+function nameTaken(n){ if(typeof G==='undefined'||!G||!G.players)return false; if(_nmDay!==G.day||!_nmSet){ _nmSet=new Set(Object.values(G.players).map(p=>p.name)); for(const o of (G.ob||[]))_nmSet.add(o.name); _nmDay=G.day; } return _nmSet.has(n); }
+function genName(){ for(let i=0;i<60;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return pick(SUR)+'도윤'; }
 function genFName(k){ const d=FN[k]; for(let i=0;i<30;i++){ const n=d.rev?pick(d.l)+' '+pick(d.f):pick(d.f)+' '+pick(d.l); if(!BLOCK.has(n)&&!Object.values(G.players).some(p=>p.name===n))return n; } return pick(d.f)+' '+pick(d.l); }
 function ovr(p){const r=p.r;return p.isP? r.stf*.45+r.ctl*.35+r.sta*.2 : r.con*.3+r.pow*.25+r.eye*.15+r.spd*.1+r.def*.2;}
 const offV=p=>p.r.con*.35+p.r.pow*.3+p.r.eye*.2+p.r.spd*.15;

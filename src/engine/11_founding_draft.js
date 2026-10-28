@@ -148,10 +148,14 @@ function fdReview(){ const F=G.fd; if(!F||!F.picks||G.fdRev)return; G.fdRev=true
   mail('스카우트팀장','창단 드래프트 3년 회고',`창단 드래프트 뒤 3시즌이 지났습니다. 우리 상위 지명 선수들입니다.\n\n${L.join('\n')}\n\n리그 전체 최고 성과: ${all[0]?`${all[0].p.name}(${tshort(all[0].x.tid)} ${all[0].x.rd}라운드) WAR ${all[0].war.toFixed(1)}`:'-'}${steal?`\n최고의 스틸: ${steal.p.name}(${tshort(steal.x.tid)} ${steal.x.rd}라운드) WAR ${steal.war.toFixed(1)}`:''}`,{kind:'업무',imp:true}); }
 function draftedBy(tid){ return G.draft?G.draft.picks.filter(x=>x.tid===tid&&x.pid>0).length:0; }
 function rosterProj(tid){ return rosterN(tid)+draftedBy(tid); }
+/* 포지션 필요도: 구단 안 26세 이하 유망주가 적은 자리(포수·내야·외야·선발·불펜)일수록 가산점(최대 +3) */
+function dGrp(p){ if(p.isP)return p.role==='RP'?'RP':'SP'; return p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':p.pos==='DH'?'IF':'OF'; }
+function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,OF:.2,SP:.25,RP:.2}; const L=domestic(tid).filter(p=>p.age<=26); const n=L.length||1; const o={};
+  for(const g of k){ const c=L.filter(p=>dGrp(p)===g).length; o[g]=clamp((share[g]*n-c)*.6,-2,3); } return o; }
 function aiDraftPick(tid){
   const t=team(tid); const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect);
   let best=null,bs=-1e9;
-  for(const id of av){ const p=G.players[id]; const sc=p.pot+hn('ai'+tid+G.year,id)*t.scoutSd+(ovr(p)-35)*(t.mode==='contend'?.5:.25); if(sc>bs){bs=sc;best=id;} }
+  const need=draftNeed(tid); for(const id of av){ const p=G.players[id]; const sc=p.pot+hn('ai'+tid+G.year,id)*t.scoutSd+(ovr(p)-35)*(t.mode==='contend'?.5:.25)+(need[dGrp(p)]||0); if(sc>bs){bs=sc;best=id;} }
   // 로스터가 찼으면 최하위 선수보다 나은 신인만 뽑는다
   const rd=G.draft.picks[G.draft.cur].rd;
   if(best&&rd>=3&&rosterProj(tid)>=ROSTER_MAX-2){ const worst=Math.min(...domestic(tid).map(keepScore)); const bp=G.players[best]; if(keepScore(bp)+hn('ak'+tid,best)*t.scoutSd*.5<worst+1)return -1; }

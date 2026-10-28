@@ -70,3 +70,9 @@ function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)ret
   S.inv=(S.inv||0)+x.c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k:x.k,lv:x.lv+1,c:x.c,src}); if(S.hist.length>40)S.hist.shift();
   if(x.c>=4000)wire('시설',`${t.city} ${t.nick}, ${FAC_NEWS[x.k][x.lv+1]} 착공(${money(x.c)}${src==='cap'?', 모기업 투자':''})`,{tid:t.id});
   return x.k; }
+
+/* 유지·보수를 못 해 시설이 낡는다: 가장 높은 시설 하나가 한 단계 내려간다(공사 중인 시설은 제외) */
+function facNeglect(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.it):(t.fi&&t.fi.it); if(!it)return; const bld=mine?(G.fac.bld||{}):(t.fi.bld||{});
+  const k=FACK.filter(k=>(it[k]||0)>=2&&!bld[k]).sort((a,b)=>it[b]-it[a])[0]; if(!k)return; it[k]--; 
+  if(mine){ try{ facRecalc(); }catch(e){} mail('운영팀',`${FACI[k].l} 시설이 낡았습니다`,`구단 빚이 커 유지·보수를 미뤘습니다. ${FACI[k].l}이(가) ${FACI[k].lv[it[k]]} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); }
+  else { t.fi.lv=facCalcLv(it); t.fac=t.fi.lv; wire('구단',`${t.city} ${t.nick}, 재정난에 ${FACI[k].l} 관리 소홀`,{tid:t.id}); } }

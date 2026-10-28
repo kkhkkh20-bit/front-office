@@ -2114,7 +2114,10 @@ const INET=[{l:'에이전트 자료',c:0,sd:9.5,d:'에이전트가 보낸 영상
 const origOf=p=>p.orig||({'미국':'us','도미니카공화국':'la','베네수엘라':'la','일본':'jp','대만':'tw','호주':'au'}[p.nat]||'us');
 const intlLv=r=>Math.min(3,((G.intl&&G.intl[r])||0)+(G&&G.scouts&&G.scouts.some(s=>s.role==='intl'&&s.region===r)?1:0));
 
-function genName(){ for(let i=0;i<40;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&n[1]!==n[2])return n; } return pick(SUR)+'도윤'; }
+/* 국내 이름: 현역·은퇴 선수(OB) 이름과 겹치지 않게(하루 단위로 이름 목록을 모아 둔다) */
+let _nmSet=null, _nmDay=null;
+function nameTaken(n){ if(typeof G==='undefined'||!G||!G.players)return false; if(_nmDay!==G.day||!_nmSet){ _nmSet=new Set(Object.values(G.players).map(p=>p.name)); for(const o of (G.ob||[]))_nmSet.add(o.name); _nmDay=G.day; } return _nmSet.has(n); }
+function genName(){ for(let i=0;i<60;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return pick(SUR)+'도윤'; }
 function genFName(k){ const d=FN[k]; for(let i=0;i<30;i++){ const n=d.rev?pick(d.l)+' '+pick(d.f):pick(d.f)+' '+pick(d.l); if(!BLOCK.has(n)&&!Object.values(G.players).some(p=>p.name===n))return n; } return pick(d.f)+' '+pick(d.l); }
 function ovr(p){const r=p.r;return p.isP? r.stf*.45+r.ctl*.35+r.sta*.2 : r.con*.3+r.pow*.25+r.eye*.15+r.spd*.1+r.def*.2;}
 const offV=p=>p.r.con*.35+p.r.pow*.3+p.r.eye*.2+p.r.spd*.15;
@@ -2928,6 +2931,12 @@ function settlement(){
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(80억 초과분의 절반) */
     let div=0; if(t.indie&&t.cash>8000){ div=Math.round((t.cash-8000)*.5); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
+    /* 모기업 회수: 구단에 잉여금이 쌓이면 구단주가 가져간다(돈을 쌓아 두고 놀지 않게). 50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 */
+    else if(!t.indie){ const th=Math.round(5000*EI); if(t.cash>th){ const r=t.owner==='profit'?.6:t.owner==='pr'?.45:.35; div=Math.round((t.cash-th)*r); t.cash-=div;
+      if(t.id===ME())mail('구단주실',`모기업이 잉여금 ${money(div)}을(를) 회수했습니다`,`시즌 결산 뒤 구단 보유 현금이 ${money(th)}을(를) 넘어, 넘는 부분의 ${Math.round(r*100)}%를 모기업이 가져갔습니다. 남은 현금 ${money(t.cash)}. 쓰지 않고 쌓아 둔 돈은 구단주가 회수합니다. 시설 투자나 선수 영입에 쓰면 회수되지 않습니다.`,{kind:'구단주'});
+      else if(div>=1000)wire('구단',`${t.city} ${t.nick} 모기업, 잉여금 ${money(div)} 회수`,{tid:t.id}); } }
+    /* 시설 관리: 빚이 크면 유지·보수를 미뤄 시설 하나가 한 단계 낡는다(30%) */
+    if(t.cash<-3000&&R()<.3){ try{ facNeglect(t); }catch(e){} }
     t.pop=clamp(1+(t.pop-1)*.85+(wp-.5)*.5+(mkt-2000)/45000+(ps.champ===t.id?.06:0)+(G.mgr[t.id]&&G.mgr[t.id].fame>=70?.03:0)+localStarPop(t.id),.7,1.45);
     fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,selfC:fins_self[t.id]||0,div};
   }
@@ -3522,10 +3531,14 @@ function fdReview(){ const F=G.fd; if(!F||!F.picks||G.fdRev)return; G.fdRev=true
   mail('스카우트팀장','창단 드래프트 3년 회고',`창단 드래프트 뒤 3시즌이 지났습니다. 우리 상위 지명 선수들입니다.\n\n${L.join('\n')}\n\n리그 전체 최고 성과: ${all[0]?`${all[0].p.name}(${tshort(all[0].x.tid)} ${all[0].x.rd}라운드) WAR ${all[0].war.toFixed(1)}`:'-'}${steal?`\n최고의 스틸: ${steal.p.name}(${tshort(steal.x.tid)} ${steal.x.rd}라운드) WAR ${steal.war.toFixed(1)}`:''}`,{kind:'업무',imp:true}); }
 function draftedBy(tid){ return G.draft?G.draft.picks.filter(x=>x.tid===tid&&x.pid>0).length:0; }
 function rosterProj(tid){ return rosterN(tid)+draftedBy(tid); }
+/* 포지션 필요도: 구단 안 26세 이하 유망주가 적은 자리(포수·내야·외야·선발·불펜)일수록 가산점(최대 +3) */
+function dGrp(p){ if(p.isP)return p.role==='RP'?'RP':'SP'; return p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':p.pos==='DH'?'IF':'OF'; }
+function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,OF:.2,SP:.25,RP:.2}; const L=domestic(tid).filter(p=>p.age<=26); const n=L.length||1; const o={};
+  for(const g of k){ const c=L.filter(p=>dGrp(p)===g).length; o[g]=clamp((share[g]*n-c)*.6,-2,3); } return o; }
 function aiDraftPick(tid){
   const t=team(tid); const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect);
   let best=null,bs=-1e9;
-  for(const id of av){ const p=G.players[id]; const sc=p.pot+hn('ai'+tid+G.year,id)*t.scoutSd+(ovr(p)-35)*(t.mode==='contend'?.5:.25); if(sc>bs){bs=sc;best=id;} }
+  const need=draftNeed(tid); for(const id of av){ const p=G.players[id]; const sc=p.pot+hn('ai'+tid+G.year,id)*t.scoutSd+(ovr(p)-35)*(t.mode==='contend'?.5:.25)+(need[dGrp(p)]||0); if(sc>bs){bs=sc;best=id;} }
   // 로스터가 찼으면 최하위 선수보다 나은 신인만 뽑는다
   const rd=G.draft.picks[G.draft.cur].rd;
   if(best&&rd>=3&&rosterProj(tid)>=ROSTER_MAX-2){ const worst=Math.min(...domestic(tid).map(keepScore)); const bp=G.players[best]; if(keepScore(bp)+hn('ak'+tid,best)*t.scoutSd*.5<worst+1)return -1; }
@@ -3770,8 +3783,8 @@ function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t
 /* 12월 이사회: 다음 해 상한을 정한다. 상한 가까이 붙은 구단이 많으면(연봉 인플레이션) 크게 올린다 */
 function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; if(G.capY[y])return;
   const cap=capOf(G.year); const near=G.teams.filter(t=>capPay(t.id)>=cap*.995).length; /* AI가 겨울에 98.5%까지 맞추므로 '상한에 붙었다'는 99.5% 이상만 센다 */ const over=G.teams.filter(t=>(t.capOver||0)>0).length;
-  const up=near+over>=6?.06:near+over>=4?.04:.025; G.capY[y]=Math.round(cap*(1+up));
-  const why=up>=.08?`상한에 붙은 구단이 ${near}곳, 지난 시즌 초과 구단이 ${over}곳으로 연봉 인플레이션이 커 크게 올렸습니다`:up>=.05?`상한 가까이 붙은 구단이 늘어 인상 폭을 키웠습니다`:'물가 수준만 반영했습니다';
+  const up=near+over>=6?.06:near+over>=4?.04:near+over>=2?.02:0; /* 구단들이 상한을 꽉 채울 때만 합의해서 올린다 */ G.capY[y]=Math.round(cap*(1+up));
+  if(!up){ G.capY[y]=cap; note('일정',`KBO 이사회가 ${y}년 경쟁균형세 상한을 동결했습니다. 상한에 붙은 구단이 적어 올릴 필요가 없다는 합의입니다.`); return; } const why=up>=.08?`상한에 붙은 구단이 ${near}곳, 지난 시즌 초과 구단이 ${over}곳으로 연봉 인플레이션이 커 크게 올렸습니다`:up>=.04?`상한 가까이 붙은 구단이 늘어 인상 폭을 키웠습니다`:'상한에 붙은 구단들의 요청으로 소폭 올렸습니다';
   news('리그',`KBO 이사회, ${y}년 경쟁균형세 상한 ${money(G.capY[y])}으로 ${Math.round(up*100)}% 상향`,`${why}. 하한은 ${money(floorOf(y))}입니다.`,0);
   note('일정',`KBO 이사회가 ${y}년 경쟁균형세 상한을 ${money(G.capY[y])}(${Math.round(up*100)}% 상향)로 정했습니다. ${why}.`); }
 function capInfo(tid){ const pay=capPay(tid), cap=capOf(G.year); return {pay,all:payroll(tid),cap,floor:floorOf(G.year),over:Math.max(0,pay-cap)}; }
@@ -7528,6 +7541,12 @@ function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)ret
   S.inv=(S.inv||0)+x.c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k:x.k,lv:x.lv+1,c:x.c,src}); if(S.hist.length>40)S.hist.shift();
   if(x.c>=4000)wire('시설',`${t.city} ${t.nick}, ${FAC_NEWS[x.k][x.lv+1]} 착공(${money(x.c)}${src==='cap'?', 모기업 투자':''})`,{tid:t.id});
   return x.k; }
+
+/* 유지·보수를 못 해 시설이 낡는다: 가장 높은 시설 하나가 한 단계 내려간다(공사 중인 시설은 제외) */
+function facNeglect(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.it):(t.fi&&t.fi.it); if(!it)return; const bld=mine?(G.fac.bld||{}):(t.fi.bld||{});
+  const k=FACK.filter(k=>(it[k]||0)>=2&&!bld[k]).sort((a,b)=>it[b]-it[a])[0]; if(!k)return; it[k]--; 
+  if(mine){ try{ facRecalc(); }catch(e){} mail('운영팀',`${FACI[k].l} 시설이 낡았습니다`,`구단 빚이 커 유지·보수를 미뤘습니다. ${FACI[k].l}이(가) ${FACI[k].lv[it[k]]} 수준으로 내려갔습니다. 다시 공사하면 회복됩니다.`,{kind:'시설'}); }
+  else { t.fi.lv=facCalcLv(it); t.fac=t.fi.lv; wire('구단',`${t.city} ${t.nick}, 재정난에 ${FACI[k].l} 관리 소홀`,{tid:t.id}); } }
 /* ---------- 스카우트팀장: 시기에 맞게 스카우트 배치를 제안하고, 맡기면 매달 1일 직접 배치한다 ----------
    3~9월(드래프트 시즌): 아마추어 3개 지역이 먼저. 10~2월(외국인·FA 시즌): 해외(미국·중남미)와 프로 담당이 먼저.
    프로 담당은 그 지역 다른 구단 수만큼 무게를 준다. 업무를 바꾸면 30일 적응 기간이 있어, 지금 자리도 필요한 자리면 그대로 둔다 */
@@ -11315,7 +11334,7 @@ function resultBody0(){
 }
 function finTable(f){
   return `<dl class="kv">${f.inc.map(x=>`<dt>${x[0]}</dt><dd>+${money(x[1])}</dd>`).join('')}${f.exp.map(x=>`<dt>${x[0]}</dt><dd>-${money(x[1])}</dd>`).join('')}
-    <dt class="tot">순이익</dt><dd class="tot" style="color:${f.net>=0?'var(--good)':'var(--bad)'}">${f.net>=0?'+':''}${money(f.net)}</dd>${f.selfC?`<dt>적자 자체 충당(보유 현금)</dt><dd>${money(f.selfC)}</dd>`:''}${f.div?`<dt>투자사 배당(80억 초과분의 절반)</dt><dd>${money(f.div)}</dd>`:''}
+    <dt class="tot">순이익</dt><dd class="tot" style="color:${f.net>=0?'var(--good)':'var(--bad)'}">${f.net>=0?'+':''}${money(f.net)}</dd>${f.selfC?`<dt>적자 자체 충당(보유 현금)</dt><dd>${money(f.selfC)}</dd>`:''}${f.div?`<dt>${team(G.user).indie?'투자사 배당(80억 초과분의 절반)':'모기업 잉여금 회수'}</dt><dd>${money(f.div)}</dd>`:''}
     <dt>관중</dt><dd>${Math.round(f.att/1e4)}만 명</dd>${f.supCap?`<dt>모기업 적자 보전 한도</dt><dd>${money(f.supCap)}</dd>`:''}<dt>시즌 후 보유 현금</dt><dd>${money(f.cash)}</dd></dl>`;
 }
 /* 국내 선수 연봉 협상 표: 직전 성적 → 구단 산정안 → 선수 요구 → 단장 제시 */

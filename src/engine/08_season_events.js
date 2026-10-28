@@ -107,6 +107,12 @@ function settlement(){
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(80억 초과분의 절반) */
     let div=0; if(t.indie&&t.cash>8000){ div=Math.round((t.cash-8000)*.5); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
+    /* 모기업 회수: 구단에 잉여금이 쌓이면 구단주가 가져간다(돈을 쌓아 두고 놀지 않게). 50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 */
+    else if(!t.indie){ const th=Math.round(5000*EI); if(t.cash>th){ const r=t.owner==='profit'?.6:t.owner==='pr'?.45:.35; div=Math.round((t.cash-th)*r); t.cash-=div;
+      if(t.id===ME())mail('구단주실',`모기업이 잉여금 ${money(div)}을(를) 회수했습니다`,`시즌 결산 뒤 구단 보유 현금이 ${money(th)}을(를) 넘어, 넘는 부분의 ${Math.round(r*100)}%를 모기업이 가져갔습니다. 남은 현금 ${money(t.cash)}. 쓰지 않고 쌓아 둔 돈은 구단주가 회수합니다. 시설 투자나 선수 영입에 쓰면 회수되지 않습니다.`,{kind:'구단주'});
+      else if(div>=1000)wire('구단',`${t.city} ${t.nick} 모기업, 잉여금 ${money(div)} 회수`,{tid:t.id}); } }
+    /* 시설 관리: 빚이 크면 유지·보수를 미뤄 시설 하나가 한 단계 낡는다(30%) */
+    if(t.cash<-3000&&R()<.3){ try{ facNeglect(t); }catch(e){} }
     t.pop=clamp(1+(t.pop-1)*.85+(wp-.5)*.5+(mkt-2000)/45000+(ps.champ===t.id?.06:0)+(G.mgr[t.id]&&G.mgr[t.id].fame>=70?.03:0)+localStarPop(t.id),.7,1.45);
     fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,selfC:fins_self[t.id]||0,div};
   }
