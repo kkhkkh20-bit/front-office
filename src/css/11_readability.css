@@ -350,3 +350,14 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .stars{position:relative;display:inline-block;font-size:13px;line-height:1;letter-spacing:1px;margin:2px 0}
 .stars .st-b{color:var(--line,#3a3a3a)}.stars .st-f{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#e8b923}
 .stt td{vertical-align:middle}.stt td:nth-child(3){color:#e8b923;letter-spacing:1px}
+/* 인터뷰 */
+.iv-q,.iv-a{max-width:88%;padding:10px 12px;border-radius:12px;margin:8px 0;line-height:1.5}
+.iv-q{background:var(--card,#1d2128);border:1px solid var(--line,#333);border-top-left-radius:2px}
+.iv-a{margin-left:auto;background:color-mix(in srgb,var(--acc,#4a8) 14%,transparent);border-top-right-radius:2px}
+.iv-a em{display:block;font-style:normal;font-size:12px;opacity:.75;margin-top:4px}
+.iv-q.now{animation:cerIn .35s both}
+.iv-who{display:block;font-size:11px;opacity:.65;margin-bottom:2px}
+.iv-opts{display:grid;gap:8px;margin:10px 0}
+.iv-o{display:flex;gap:8px;align-items:flex-start;text-align:left;padding:10px 12px;border:1px solid var(--line,#333);border-radius:10px;background:var(--card,#181b20);color:inherit;cursor:pointer;line-height:1.45}
+.iv-o:hover{border-color:var(--acc,#4a8)}.iv-o .pill{flex:none}
+.iv-end{padding:12px;border-top:1px solid var(--line,#333);margin-top:10px}

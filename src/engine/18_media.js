@@ -13,10 +13,11 @@ function news(kind,title,body,tone,o){ prInit(); o=o||{};
 function prDaily(won,lost){ prInit(); const P=G.pr;
   if(won)P.fan=clamp(P.fan+.32,0,100); if(lost)P.fan=clamp(P.fan-.32,0,100);
   P.press+=(50-P.press)*.012; P.fan+=(50+(team(G.user).pop-1)*30-P.fan)*.004; }
-function prAfterGame(rec){ prInit(); const S=G.sea; const won=rec.res==='승', lost=rec.res==='패';
+function prAfterGame(rec){ prInit(); const S=G.sea; const won=rec.res==='승', lost=rec.res==='패'; try{ ivNewsAfterGame(rec); }catch(e){}
   prDaily(won,lost);
   S.streak=won?(S.streak>0?S.streak+1:1):lost?(S.streak<0?S.streak-1:-1):0;
   const st=S.streak, nm=tshort(G.user);
+  if(st===8)try{ ivRequest('streak_win',{n:8}); }catch(e){}
   if(st===5||st===8||st===12)news('경기',`${nm}, ${st}연승 질주`,`${tname(G.user)}이(가) ${st}연승을 달렸습니다. 마운드와 타선이 고르게 터지면서 분위기가 살아났다는 평가입니다.`,st>=8?3:2);
   if(st===-5||st===-8||st===-12){ const n=-st; const T=[[`${nm} ${n}연패 수렁… 프런트 책임론`,`전력 보강 실패와 운영 방향을 두고 프런트를 향한 비판이 나오고 있습니다.`],[`${nm}, 끝 모를 ${n}연패`,`타선 침묵과 마운드 붕괴가 겹쳤습니다. 분위기 반전 카드가 필요하다는 목소리가 큽니다.`],[`${n}연패 ${nm}, 해법이 안 보인다`,`벤치와 프런트 모두 답을 찾지 못하고 있습니다. 팬들의 인내심도 바닥나고 있습니다.`],[`${nm} 또 졌다… ${n}연패`,`경기력 기복이 심합니다. 선수단 구성을 다시 봐야 한다는 지적이 나옵니다.`]];
     const k=Math.floor(u01('ls'+G.year,G.day)*T.length); news('경기',T[k][0],`${tname(G.user)}이(가) ${n}연패에 빠졌습니다. ${T[k][1]}`,n>=8?-3:-2); }
