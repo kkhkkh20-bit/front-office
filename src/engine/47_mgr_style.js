@@ -3,7 +3,7 @@
    타격 중시 감독은 수비가 약해도 잘 치는 선수를 쓴다. 야수 수비력은 경기에서 인플레이 타구 안타 확률과 실책에 반영된다 */
 const DEF0=53;
 const DEFW={C:.8,SS:1.4,'2B':1.1,CF:1.3,'3B':1,RF:.8,LF:.7,'1B':.5};
-function teamDefV(ln){ let s=0,w=0; for(const pos in DEFW){ const p=ln[pos]; if(!p)continue; s+=defAt(p,pos)*DEFW[pos]; w+=DEFW[pos]; } return w?s/w:DEF0; }
+function teamDefV(ln){ let s=0,w=0; for(const pos in DEFW){ const p=ln[pos]; if(!p)continue; s+=fieldV(p,pos)*DEFW[pos]; w+=DEFW[pos]; } return w?s/w:DEF0; }
 function sideDefV(fs){ const ln={}; for(const p of fs.order){ const k=fs.posOf[p.id]; if(k&&k!=='DH')ln[k]=p; } return teamDefV(ln); }
 function mgrDefW(tid){ const m=tid!=null?mgrOf(tid):null; if(!m||m.interim)return .38; mgrAttr(m); return clamp(.38+(m.dfn-50)*.005,.2,.6); }
 /* 8회 이후 1~3점 앞설 때 수비 강화 교체 */
@@ -14,7 +14,7 @@ function defSub(fs){ const m=mgrOf(fs.tid); if(!m||m.interim)return ''; mgrAttr(
       for(const q of fs.bench){ if(!healthy(q)||fs.order.includes(q)||fs.out.includes(q))continue; const g=defAt(q,pos)-defAt(p,pos); if(g>=need&&(!best||g>best.g))best={p,q,pos,g}; } }
     if(!best)break; const i=fs.order.indexOf(best.p); fs.order[i]=best.q; fs.posOf[best.q.id]=best.pos; fs.out.push(best.p); fs.bench.splice(fs.bench.indexOf(best.q),1); fs.box.set(best.q.id,bz());
     out.push(`${best.p.name} → ${best.q.name}(${POSS[best.pos]||best.pos})`); }
-  if(out.length)fs.defv=sideDefV(fs); return out.join(', '); }
+  if(out.length){ fs.defv=sideDefV(fs); sideTraits(fs); } return out.join(', '); }
 /* 유형 이름: 성향 조합으로 한 줄 요약 */
 const MTYPE={combo_d:['수비·작전 야구형','수비가 좋은 선수를 쓰고 번트·도루로 한 점을 짜냅니다. 앞서면 수비를 굳힙니다.'],combo_o:['공격 야구형','수비가 약해도 잘 치는 선수를 씁니다. 번트 없이 장타로 이깁니다.'],
   pen_all:['불펜 총력형','선발을 일찍 내리고 필승조를 연투·멀티이닝으로 쏟아붓습니다. 투수 부상 위험이 큽니다.'],sp_care:['선발 관리형','선발에게 긴 이닝을 맡기고 불펜 연투를 피합니다.'],

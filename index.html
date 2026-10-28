@@ -1548,8 +1548,8 @@ function injRoll(){ const x=R(); return x<.07?rnd(.28,.42):x<.19?rnd(.03,.07):cl
 const cc=(x,b)=>clamp((x+b-20)/60,0,1.25);
 function seasonLuck(p){ return p.sf&&p.sf.y===G.year?(p.sf.lk||0):0; }
 function batProbs(p,b){ const r=p.r; const be=b*.4, bc=b*.7;
-  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.31-cc(r.con,bc)*.17-cc(r.eye,be)*.04,.06,.36), hr:.003+Math.pow(cc(r.pow,b),1.6)*.06,
-    babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:.16+cc(r.pow,b)*.08, d3:.004+cc(r.spd,b)*.025};
+  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.31-cc(r.con,bc)*.17-cc(r.eye,be)*.04-trt(p,'k')*.002,.06,.36), hr:.003+Math.pow(cc(r.pow,b),1.6)*.06,
+    babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc(r.pow,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
 }
 function simBat(p,pa,b,slot){
   const q=batProbs(p,b||0); const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0};
@@ -1566,7 +1566,7 @@ function simBat(p,pa,b,slot){
   return o;
 }
 function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.7;
-  return {k:.10+cc(r.stf,bk)*.19, bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp(.036-cc(r.stf,b)*.012-cc(r.ctl,be)*.01,.008,.05), babip:clamp(.335-cc(r.stf,b)*.04-seasonLuck(p),.25,.36)};
+  return {k:.10+cc(r.stf,bk)*.19+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((.036-cc(r.stf,b)*.012-cc(r.ctl,be)*.01-trt(p,'mv')*.0008)*(1-gbT(p)*.08),.008,.05), babip:clamp(.335-cc(r.stf,b)*.04-trt(p,'mv')*.0008-seasonLuck(p),.25,.36)};
 }
 function simPit(p,outs,b){
   const q=pitProbs(p,b||0); const o={outs:0,h:0,hr:0,bb:0,so:0,tb:0};
@@ -1839,7 +1839,7 @@ function gameSide(tid,day){
   const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),tid);
   const sp=pickStarter(tid,d,day);
   const s={tid,order,posOf,bench,out:[],defv:teamDefV(ln),pen:d.pen.filter(p=>p!==sp),used:new Set(sp?[sp.id]:[]),cur:sp,sp,curIsSP:true,idx:0,box:new Map(),pitchers:sp?[sp.id]:[],entry:{},exit:{}};
-  if(sp)s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz()));
+  if(sp)s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz())); sideTraits(s);
   return s;
 }
 function boostOf(p){ let b=(p.team!=null&&G.coach)?coachBoost(p):0; if(p.team===G.user)b+=mgrRelBoost(p); const f=G.form; if(f&&p.team===G.user&&G.day<=f.until)b+=f.b; if(p.form&&G.day<=p.form.until)b+=p.form.b; if(p.mor!=null)b+=clamp((p.mor-60)/25,-1.6,1.2); if(p.team!=null){ b+=(mgrOf(p.team).tac-50)/60; b+=climateOf(p.team).boost; } if(p.foreign&&p.fy===G.year&&p.adapt!=null)b+=(p.adapt-50)/22;
@@ -1852,7 +1852,7 @@ function boostOf(p){ let b=(p.team!=null&&G.coach)?coachBoost(p):0; if(p.team===
 const TALENT_W=.84;
 function shrinkQ(q){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip'])o[k]=LGP[k]+(q[k]-LGP[k])*TALENT_W; return o; }
 function outcome(b,p,dv){
-  const qb=shrinkQ(batProbs(b,boostOf(b))), qp=shrinkQ(pitProbs(p,boostOf(p)));
+  const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5)), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5));
   const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0)-((dv??DEF0)-DEF0)*.0016; /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
   const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hr)return 'HR';
   if(R()<babip){ const y=R(); if(y<qb.d3)return '3B'; if(y<qb.d3+qb.d2)return '2B'; return '1B'; }
@@ -1886,10 +1886,10 @@ function simGame(day,hid,aid,ps){
     let outs=0, runs=0, hh=0; const base=[null,null,null];
     while(outs<3){
       /* 도루: KBO 2024~25 구단 평균 시즌 120~140개, 성공률 72~75%, 1위 50~65개 수준에 맞춘다. 2루 도루가 대부분이고 빠른 주자는 3루도 노린다 */
-      if(base[1]&&!base[2]&&outs<2&&base[1].r.spd>=60&&R()<(base[1].r.spd-57)*.0045*(.65+mgrOf(bs.tid).small/100*.9)){
-        const r=base[1], rb=bs.box.get(r.id); if(R()<clamp(.6+(r.r.spd-60)*.008+(G.coach?(effC(coachesOf(bs.tid).rc,bs.tid)-55)*.003:0),.45,.9)){rb.sb++;base[2]=r;base[1]=null; if(pbp.length<260)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[1]=null;outs++; if(pbp.length<260)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
-      if(base[0]&&!base[1]&&outs<2&&base[0].r.spd>=45&&R()<Math.min(.36,(base[0].r.spd-41)*.0105)*(.65+mgrOf(bs.tid).small/100*.9)){
-        const r=base[0], rb=bs.box.get(r.id); if(R()<clamp(.65+(r.r.spd-50)*.007+(G.coach?(effC(coachesOf(bs.tid).rc,bs.tid)-55)*.003:0),.4,.9)){rb.sb++;base[1]=r;base[0]=null; if(pbp.length<260)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[0]=null;outs++; if(pbp.length<260)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
+      if(base[1]&&!base[2]&&outs<2&&base[1].r.spd>=60&&R()<(base[1].r.spd-57)*.0045*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)){
+        const r=base[1], rb=bs.box.get(r.id); if(R()<clamp(.6+(r.r.spd-60)*.008+(G.coach?(effC(coachesOf(bs.tid).rc,bs.tid)-55)*.003:0)+stealAdj(r,fs),.4,.92)){rb.sb++;base[2]=r;base[1]=null; if(pbp.length<260)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[1]=null;outs++; if(pbp.length<260)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
+      if(base[0]&&!base[1]&&outs<2&&base[0].r.spd>=45&&R()<Math.min(.36,(base[0].r.spd-41)*.0105)*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)){
+        const r=base[0], rb=bs.box.get(r.id); if(R()<clamp(.65+(r.r.spd-50)*.007+(G.coach?(effC(coachesOf(bs.tid).rc,bs.tid)-55)*.003:0)+stealAdj(r,fs),.35,.92)){rb.sb++;base[1]=r;base[0]=null; if(pbp.length<260)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[0]=null;outs++; if(pbp.length<260)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
       const b=bs.order[bs.idx%bs.order.length]; bs.idx++;
       const p=fs.cur; const xb=bs.box.get(b.id), xp=fs.box.get(p.id);
       xb.pa++; xp.bf++; xp.pc+=Math.max(1,Math.round(N(3.9,1.3)));
@@ -1910,15 +1910,15 @@ function simGame(day,hid,aid,ps){
         if(o==='K'){ xb.so++; xp.so++; outs++; xp.outs++; }
         else if(o==='OUT'){
           if(R()<.018*clamp(1+(DEF0-fs.defv)/22,.4,2.2)){ xp.h+=0; if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
-          else if(base[0]&&outs<2&&R()<.11){ dp=true; outs+=2; xp.outs+=2; base[0]=null; }
-          else { outs++; xp.outs++; if(outs<3&&base[2]&&R()<.4){ sc.push(base[2]); base[2]=null; } if(outs<3&&base[1]&&!base[2]&&R()<.3){ base[2]=base[1]; base[1]=null; } }
+          else if(base[0]&&outs<2&&R()<.11*dpF(b,p,fs)){ dp=true; outs+=2; xp.outs+=2; base[0]=null; }
+          else { outs++; xp.outs++; if(outs<3&&base[2]&&R()<.4+runAdj(base[2],fs)){ sc.push(base[2]); base[2]=null; } if(outs<3&&base[1]&&!base[2]&&R()<.3){ base[2]=base[1]; base[1]=null; } }
         } else { xb.h++; xp.h++; hh++;
           if(o==='HR'){ xb.hr++; xp.hr++; sc.push(...base.filter(Boolean),b); base[0]=base[1]=base[2]=null; }
           else if(o==='3B'){ xb.tr++; sc.push(...base.filter(Boolean)); base[0]=base[1]=null; base[2]=b; }
-          else if(o==='2B'){ xb.d++; if(base[2])sc.push(base[2]); if(base[1])sc.push(base[1]); const r1=base[0]; base[0]=base[1]=base[2]=null; if(r1){ if(R()<.46+(r1.r.spd-50)*.006)sc.push(r1); else base[2]=r1; } base[1]=b; }
+          else if(o==='2B'){ xb.d++; if(base[2])sc.push(base[2]); if(base[1])sc.push(base[1]); const r1=base[0]; base[0]=base[1]=base[2]=null; if(r1){ if(R()<.46+(r1.r.spd-50)*.006+runAdj(r1,fs))sc.push(r1); else base[2]=r1; } base[1]=b; }
           else { if(base[2])sc.push(base[2]); base[2]=null;
-            if(base[1]){ if(R()<.66+(base[1].r.spd-50)*.006)sc.push(base[1]); else base[2]=base[1]; base[1]=null; }
-            if(base[0]){ if(!base[2]&&R()<.31+(base[0].r.spd-50)*.005)base[2]=base[0]; else base[1]=base[0]; base[0]=null; }
+            if(base[1]){ if(R()<.66+(base[1].r.spd-50)*.006+runAdj(base[1],fs))sc.push(base[1]); else base[2]=base[1]; base[1]=null; }
+            if(base[0]){ if(!base[2]&&R()<.31+(base[0].r.spd-50)*.005+runAdj(base[0],fs))base[2]=base[0]; else base[1]=base[0]; base[0]=null; }
             base[0]=b; }
         }
       }
@@ -1978,7 +1978,7 @@ function applyGame(day,hid,aid,g,ps){
   if(!ps){ const r=G.sea.rec; if(g.score.h>g.score.a){r[hid].w++;r[aid].l++;} else if(g.score.a>g.score.h){r[aid].w++;r[hid].l++;} else {r[hid].t++;r[aid].t++;}
     const tl=G.sea.tl||(G.sea.tl=G.teams.map(()=>[])); const sg=Math.sign(g.score.h-g.score.a); tl[hid].push([sg,g.score.h,g.score.a,1,aid,day]); tl[aid].push([-sg,g.score.a,g.score.h,0,hid,day]); }
 }
-function injure(p,day,ctx){
+function injure(p,day,ctx){ ctx=ctx||{};
   const k=injPick(p,ctx); const I=INJ[k]; let days=ri(I.d[0],I.d[1]); days=Math.max(3,Math.round(days*(I.d[0]>=240?Math.sqrt(recMult(p)):recMult(p))));
   p.injOut=days; p.injK=k; p.injHist.push({y:G.year,days,d:G.day,k}); if(days>=40)p.inj=Math.min(.45,p.inj+.02); /* 큰 부상은 재발 위험을 남긴다 */
   if(I.ucl)p.ucl=1; if(I.tj)delete p.ucl; delete p.reInj;
@@ -1990,7 +1990,7 @@ function injure(p,day,ctx){
   if(p.team===G.user){ const H=HOSP[G.med.hosp]; const len=days>=300?`약 ${Math.round(days/30)}개월`:`${H.dx?'':'약 '}${days}일`;
     const fxT=I.tj?' 복귀까지 보통 12~16개월이 걸리고, 복귀 첫해에는 제구가 흔들리는 경우가 많습니다. 구속은 떨어지는 선수가 더 많지만 젊으면 오히려 오르기도 합니다.':I.perm&&I.d[0]>=90?' 수술 뒤 예전 몸 상태를 완전히 되찾지 못할 수도 있습니다.':I.re?' 복귀 직후 재발이 잦은 부위입니다.':'';
     const msg=`${p.name}(${posLabel(p)})이(가) ${I.n}(으)로 ${len} 이탈합니다. 예상 복귀 ${ret}.${seasonOut?' 올 시즌은 사실상 끝났습니다.':''}${fxT}${H.c?` ${H.name}에서 치료합니다.`:''}${H.dx?` 정밀 검진 결과 재발 위험은 ${p.inj>.24?'높은':p.inj>.15?'보통':'낮은'} 편입니다.`:''}`;
-    p.mor=clamp((p.mor||60)-4,0,100); days>=10?stop('부상',msg,p.id):note('부상',msg,p.id); }
+    p.mor=clamp((p.mor||60)-4,0,100); days>=10&&!ctx.farm?stop('부상',msg,p.id):note('부상',(ctx.farm?'[퓨처스] ':'')+msg,p.id); }
   if(!I.surg)try{ evInjury(p,days); }catch(e){}
 }
 function gameRecord(day,hid,aid,g,kind){
@@ -2139,8 +2139,8 @@ function milestones(g,me){
 function futuresWeek(){
   if(period()!=='season')return;
   for(const t of G.teams){ const d=depth(t.id);
-    for(const p of d.futB){ const h=lineFor(p,G.year,t.id,'퓨처스'); addTo(h,Object.assign({g:3},simBat(p,ri(9,14),7))); if(!h.pos)h.pos=p.pos; }
-    for(const p of d.futP){ const o=simPit(p,isSPr(p)?ri(12,18):ri(4,8),7); o.g=isSPr(p)?1:2; o.gs=isSPr(p)?1:0; addTo(lineFor(p,G.year,t.id,'퓨처스'),o); }
+    for(const p of d.futB)if(healthy(p))futBat(p,t.id);
+    for(const p of d.futP)if(healthy(p))futPit(p,t.id);
   }
 }
 /* 월간 재정 보고: 한 달 사이 올해 예산 여유가 왜 바뀌었는지 항목별로 알려 준다 */
@@ -5636,7 +5636,7 @@ function injNow(p){ return p.injOut>0?(p.injK?injName(p.injK):'부상'):''; }
 /* 매일: 재발 위험 기간 감소, 시즌 중 1군에 없는 회복 중 선수는 2군 실전으로 조금씩 되찾는다 */
 function injDaily(){ const inSea=period()==='season';
   for(const p of Object.values(G.players)){ if(p.reInj&&p.injOut<=0){ p.reInj.left--; if(p.reInj.left<=0)delete p.reInj; }
-    if(inSea&&p.injFx&&p.injFx.length&&!(p.injOut>0)&&p.team!=null&&p.injPlay!==G.day-1&&p.injPlay!==G.day)injRecover(p,p.isP?1.3:2.2); } }
+  } void inSea; } /* 퓨처스 실전 회복은 futBat·futPit에서 실제 타석·아웃카운트로 처리한다 */
 /* ===== 투수 부하와 감독의 투수 운용 =====
    감독의 '투수 혹사' 성향에 성적 압박(성적 우선 기조, 시즌 막판 순위 싸움, 가을야구)을 더해 실제로 얼마나 밀어붙이는지 정한다.
    많이 밀어붙이는 감독은 불펜 3연투·4연투, 멀티이닝, 선발을 일찍 내리고 필승조를 계속 붙이는 운용을 한다.
@@ -5695,7 +5695,7 @@ function medRisky(p){ return medTradeF(p)<.82; }
    타격 중시 감독은 수비가 약해도 잘 치는 선수를 쓴다. 야수 수비력은 경기에서 인플레이 타구 안타 확률과 실책에 반영된다 */
 const DEF0=53;
 const DEFW={C:.8,SS:1.4,'2B':1.1,CF:1.3,'3B':1,RF:.8,LF:.7,'1B':.5};
-function teamDefV(ln){ let s=0,w=0; for(const pos in DEFW){ const p=ln[pos]; if(!p)continue; s+=defAt(p,pos)*DEFW[pos]; w+=DEFW[pos]; } return w?s/w:DEF0; }
+function teamDefV(ln){ let s=0,w=0; for(const pos in DEFW){ const p=ln[pos]; if(!p)continue; s+=fieldV(p,pos)*DEFW[pos]; w+=DEFW[pos]; } return w?s/w:DEF0; }
 function sideDefV(fs){ const ln={}; for(const p of fs.order){ const k=fs.posOf[p.id]; if(k&&k!=='DH')ln[k]=p; } return teamDefV(ln); }
 function mgrDefW(tid){ const m=tid!=null?mgrOf(tid):null; if(!m||m.interim)return .38; mgrAttr(m); return clamp(.38+(m.dfn-50)*.005,.2,.6); }
 /* 8회 이후 1~3점 앞설 때 수비 강화 교체 */
@@ -5706,7 +5706,7 @@ function defSub(fs){ const m=mgrOf(fs.tid); if(!m||m.interim)return ''; mgrAttr(
       for(const q of fs.bench){ if(!healthy(q)||fs.order.includes(q)||fs.out.includes(q))continue; const g=defAt(q,pos)-defAt(p,pos); if(g>=need&&(!best||g>best.g))best={p,q,pos,g}; } }
     if(!best)break; const i=fs.order.indexOf(best.p); fs.order[i]=best.q; fs.posOf[best.q.id]=best.pos; fs.out.push(best.p); fs.bench.splice(fs.bench.indexOf(best.q),1); fs.box.set(best.q.id,bz());
     out.push(`${best.p.name} → ${best.q.name}(${POSS[best.pos]||best.pos})`); }
-  if(out.length)fs.defv=sideDefV(fs); return out.join(', '); }
+  if(out.length){ fs.defv=sideDefV(fs); sideTraits(fs); } return out.join(', '); }
 /* 유형 이름: 성향 조합으로 한 줄 요약 */
 const MTYPE={combo_d:['수비·작전 야구형','수비가 좋은 선수를 쓰고 번트·도루로 한 점을 짜냅니다. 앞서면 수비를 굳힙니다.'],combo_o:['공격 야구형','수비가 약해도 잘 치는 선수를 씁니다. 번트 없이 장타로 이깁니다.'],
   pen_all:['불펜 총력형','선발을 일찍 내리고 필승조를 연투·멀티이닝으로 쏟아붓습니다. 투수 부상 위험이 큽니다.'],sp_care:['선발 관리형','선발에게 긴 이닝을 맡기고 불펜 연투를 피합니다.'],
@@ -5719,6 +5719,44 @@ function mgrType(m){ if(!m)return {n:'-',d:''}; mgrAttr(m); const s=(m.small-50)
 /* 성향 축 5개: 화면 표시용 */
 function mgrAxes(m){ mgrAttr(m); const ax=(v,lo,mid,hi)=>v>=62?hi:v<=38?lo:mid;
   return [['공격',ax(m.small,'빅볼','균형','스몰볼')],['수비',ax(m.dfn,'타격 중시','균형','수비 중시')],['투수 교체',ax(m.pen,'선발 중심','보통','불펜 중심')],['투수 관리',ax(m.arm,'보호형','보통','혹사형')],['기조',ax(m.youth,'성적형','균형','육성형')]]; }
+/* ===== 세부 능력: 화면에 보이는 세부 능력과 경기 시뮬레이션이 같은 값을 쓴다 =====
+   선수 상세의 세부 능력(좌·우 상대, 삼진 회피, 갭 파워, 도루, 주루 센스, 수비 범위, 포구, 송구, 병살·중계, 도루 저지,
+   무브먼트, 구종, 견제, 땅볼·뜬공 성향)은 모두 같은 고정 성향 값(trt)에서 나오고, 1군·퓨처스 경기 결과에 똑같이 반영된다 */
+const trt=(p,k,s)=>hn('dt'+k,p.id)*(s||4);
+const PITCHES=['슬라이더','커브','체인지업','포크','커터','투심','스위퍼'];
+function gbT(p){ return clamp(hn('gb',p.id),-1.6,1.6); } /* +면 땅볼형 */
+/* 구종: 상세 화면과 같은 규칙으로 고른다 */
+function arsenal(p,stfV){ const id=p.id; const velo=veloOf(p); const sp=isSPr(p); const n=sp?3+(u01('np',id)>.5?1:0):1+(u01('np',id)>.4?1:0);
+  const pool=[...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,n);
+  return [['직구',stfV+(velo-145)*.8+trt(p,'fb',3)],...pool.map(k=>[k,stfV+trt(p,'p'+k,6)])]; }
+const _ak=new Map();
+function arsenalK(p){ const key=p.r.stf+':'+(p.role||'')+':'+(p.velo||0); const c=_ak.get(p.id); if(c&&c.k===key)return c.v;
+  const best=Math.max(...arsenal(p,p.r.stf).map(x=>x[1])); const v=clamp((best-p.r.stf-4)*.0016,-.012,.025); _ak.set(p.id,{k:key,v}); return v; }
+/* 좌우 상대: 타자 쪽 절반, 투수 쪽 절반을 반영해 같은 손 대결이 불리해진다 */
+function platB(b,p){ const vsL=p.th==='좌'; const L=b.bt==='좌'?-4:b.bt==='양'?0:2, Rr=b.bt==='좌'?2:b.bt==='양'?0:-1; return vsL?L+trt(b,'vl',3):Rr+trt(b,'vr',3); }
+function platP(p,b){ const side=b.bt==='양'?(p.th==='좌'?'우':'좌'):b.bt; const Lp=p.th==='좌'?3:-2; return side==='좌'?Lp+trt(p,'vl',3):-Lp/2+trt(p,'vr',3); }
+/* 수비 쪽 세부 값 */
+const holdOf=p=>50+trt(p,'hold',8);
+function catArm(c){ return c?c.r.def+trt(c,'cat'):50; }
+const OF0=50, CA0=55, IF0=52;
+function sideTraits(fs){ let c=null, of=[], inf=[]; for(const q of fs.order){ const k=fs.posOf[q.id]; if(k==='C')c=q; else if(k==='LF'||k==='CF'||k==='RF')of.push(defAt(q,k)+(k==='RF'?3:0)+trt(q,'arm')); else if(k==='SS'||k==='2B')inf.push(defAt(q,k)+trt(q,'dp')); }
+  fs.cArm=catArm(c); fs.ofArm=of.length?sum(of)/of.length:OF0; fs.ifD=inf.length?sum(inf)/inf.length:IF0; }
+function stealTry(fs){ return clamp(1-((fs.cArm??CA0)-CA0)*.012,.6,1.4); }
+function stealAdj(r,fs){ return trt(r,'sb')*.004-((fs.cArm??CA0)-CA0)*.006-(holdOf(fs.cur)-50)*.003; }
+function runAdj(r,fs){ return trt(r,'br')*.004-((fs.ofArm??OF0)-OF0)*.005; }
+function dpF(b,p,fs){ return clamp(1+(50-b.r.spd)*.012+gbT(p)*.18+((fs.ifD??IF0)-IF0)*.008,.35,2); }
+/* 수비 범위·포구까지 넣은 개인 수비 값 */
+function fieldV(p,pos){ return defAt(p,pos)+(trt(p,'rng')+trt(p,'fld'))*.5; }
+/* ===== 퓨처스(2군) 주간 경기: 같은 확률식에 부상·투구 부하·후유증 회복까지 적용 ===== */
+function futBoost(p){ try{ return boostOf(p)*.6; }catch(e){ return 0; } }
+function futBat(p,t){ const pa=ri(9,14), games=3; const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); if(!h.pos)h.pos=p.pos;
+  if(p.injFx)injRecover(p,pa);
+  if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
+function futPit(p,t){ const sp=isSPr(p); const outs=sp?ri(12,18):ri(4,8); const o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:2; o.gs=sp?1:0; addTo(lineFor(p,G.year,t,'퓨처스'),o);
+  const pc=Math.round(outs*5.4+(o.h+o.bb)*4); if(p.injFx)injRecover(p,outs);
+  if(sp){ const cd=loadLog(p,G.day,pc,true); if(R()<p.inj*.075*pc/95*injMult(p)*loadMult(p,cd,G.day)/LOAD_NORM)injure(p,G.day,{sp:true,pc,farm:1}); }
+  else for(const [d,q] of [[G.day-2,Math.round(pc/2)],[G.day,pc-Math.round(pc/2)]]){ const cd=loadLog(p,d,q,false); if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,G.day,{pc:q,farm:1}); break; } } }
+const arsenal_=arsenal;
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -6691,7 +6729,6 @@ function abroadView(){ const A=G.abroad||[]; const f=UI.abf||'all';
       <div class="abl">${L.map(row).join('')||'<p class="small muted">아직 해외로 나간 선수가 없습니다.</p>'}</div>`); }
 
 /* ---------- 세부 능력치 · 레이더 · 성장 차트 ---------- */
-const PITCHES=['슬라이더','커브','체인지업','포크','커터','투심','스위퍼'];
 function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t.cur; tf[t.k]=t.fut; } const id=p.id; const o=(k,s)=>hn('dt'+k,id)*(s||4);
   const c=v=>clamp(Math.round(v),20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
   const G2=[];
@@ -6700,9 +6737,8 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
     G2.push(['주루',[['스피드',c(tv.spd)],['도루',c(tv.spd+o('sb'))],['주루 센스',c(tv.spd*.6+tv.eye*.4+o('br'))]]]);
     const arm=['C','RF','SS','3B'].includes(p.pos)?3:p.pos==='1B'?-4:0;
     G2.push(['수비',[['수비 범위',c(tv.def+(['SS','CF'].includes(p.pos)?2:0)+o('rng'))],['포구',c(tv.def+o('fld'))],['송구(어깨)',c(tv.def+arm+o('arm'))],p.pos==='C'?['블로킹·도루 저지',c(tv.def+o('cat'))]:['병살·중계',c(tv.def+o('dp'))]]]); }
-  else { const velo=veloOf(p); const sp=isSPr(p); const n=sp?3+(u01('np',id)>.5?1:0):1+(u01('np',id)>.4?1:0);
-    const pool=[...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,n);
-    const arsenal=[['직구',c(tv.stf+(velo-145)*.8+o('fb',3))],...pool.map(k=>[k,c(tv.stf+o('p'+k,6))])]; const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
+  else { const velo=veloOf(p);
+    const arsenal=arsenal_(p,tv.stf).map(([k,v])=>[k,c(v)]); const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
     const L=p.th==='좌'?3:-2;
     G2.push(['투구',[['구위',c(tv.stf)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv'))],['제구',c(tv.ctl)],['스태미나',c(tv.sta)],['좌타자 상대',c(tv.stf+L+o('vl',3))],['우타자 상대',c(tv.stf-L/2+o('vr',3))],['견제·수비',c(50+o('hold',8))]]]);
     G2.push(['구종',arsenal.map(([k,v])=>[k+(k===best?' · 결정구':''),v])]);

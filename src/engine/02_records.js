@@ -2,8 +2,8 @@
 const cc=(x,b)=>clamp((x+b-20)/60,0,1.25);
 function seasonLuck(p){ return p.sf&&p.sf.y===G.year?(p.sf.lk||0):0; }
 function batProbs(p,b){ const r=p.r; const be=b*.4, bc=b*.7;
-  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.31-cc(r.con,bc)*.17-cc(r.eye,be)*.04,.06,.36), hr:.003+Math.pow(cc(r.pow,b),1.6)*.06,
-    babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:.16+cc(r.pow,b)*.08, d3:.004+cc(r.spd,b)*.025};
+  return {bb:.01+cc(r.eye,be)*.145, k:clamp(.31-cc(r.con,bc)*.17-cc(r.eye,be)*.04-trt(p,'k')*.002,.06,.36), hr:.003+Math.pow(cc(r.pow,b),1.6)*.06,
+    babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc(r.pow,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
 }
 function simBat(p,pa,b,slot){
   const q=batProbs(p,b||0); const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0};
@@ -20,7 +20,7 @@ function simBat(p,pa,b,slot){
   return o;
 }
 function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.7;
-  return {k:.10+cc(r.stf,bk)*.19, bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp(.036-cc(r.stf,b)*.012-cc(r.ctl,be)*.01,.008,.05), babip:clamp(.335-cc(r.stf,b)*.04-seasonLuck(p),.25,.36)};
+  return {k:.10+cc(r.stf,bk)*.19+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((.036-cc(r.stf,b)*.012-cc(r.ctl,be)*.01-trt(p,'mv')*.0008)*(1-gbT(p)*.08),.008,.05), babip:clamp(.335-cc(r.stf,b)*.04-trt(p,'mv')*.0008-seasonLuck(p),.25,.36)};
 }
 function simPit(p,outs,b){
   const q=pitProbs(p,b||0); const o={outs:0,h:0,hr:0,bb:0,so:0,tb:0};

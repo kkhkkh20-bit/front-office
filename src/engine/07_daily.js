@@ -134,8 +134,8 @@ function milestones(g,me){
 function futuresWeek(){
   if(period()!=='season')return;
   for(const t of G.teams){ const d=depth(t.id);
-    for(const p of d.futB){ const h=lineFor(p,G.year,t.id,'퓨처스'); addTo(h,Object.assign({g:3},simBat(p,ri(9,14),7))); if(!h.pos)h.pos=p.pos; }
-    for(const p of d.futP){ const o=simPit(p,isSPr(p)?ri(12,18):ri(4,8),7); o.g=isSPr(p)?1:2; o.gs=isSPr(p)?1:0; addTo(lineFor(p,G.year,t.id,'퓨처스'),o); }
+    for(const p of d.futB)if(healthy(p))futBat(p,t.id);
+    for(const p of d.futP)if(healthy(p))futPit(p,t.id);
   }
 }
 /* 월간 재정 보고: 한 달 사이 올해 예산 여유가 왜 바뀌었는지 항목별로 알려 준다 */

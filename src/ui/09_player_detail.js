@@ -1,5 +1,4 @@
 /* ---------- 세부 능력치 · 레이더 · 성장 차트 ---------- */
-const PITCHES=['슬라이더','커브','체인지업','포크','커터','투심','스위퍼'];
 function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t.cur; tf[t.k]=t.fut; } const id=p.id; const o=(k,s)=>hn('dt'+k,id)*(s||4);
   const c=v=>clamp(Math.round(v),20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
   const G2=[];
@@ -8,9 +7,8 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
     G2.push(['주루',[['스피드',c(tv.spd)],['도루',c(tv.spd+o('sb'))],['주루 센스',c(tv.spd*.6+tv.eye*.4+o('br'))]]]);
     const arm=['C','RF','SS','3B'].includes(p.pos)?3:p.pos==='1B'?-4:0;
     G2.push(['수비',[['수비 범위',c(tv.def+(['SS','CF'].includes(p.pos)?2:0)+o('rng'))],['포구',c(tv.def+o('fld'))],['송구(어깨)',c(tv.def+arm+o('arm'))],p.pos==='C'?['블로킹·도루 저지',c(tv.def+o('cat'))]:['병살·중계',c(tv.def+o('dp'))]]]); }
-  else { const velo=veloOf(p); const sp=isSPr(p); const n=sp?3+(u01('np',id)>.5?1:0):1+(u01('np',id)>.4?1:0);
-    const pool=[...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,n);
-    const arsenal=[['직구',c(tv.stf+(velo-145)*.8+o('fb',3))],...pool.map(k=>[k,c(tv.stf+o('p'+k,6))])]; const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
+  else { const velo=veloOf(p);
+    const arsenal=arsenal_(p,tv.stf).map(([k,v])=>[k,c(v)]); const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
     const L=p.th==='좌'?3:-2;
     G2.push(['투구',[['구위',c(tv.stf)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv'))],['제구',c(tv.ctl)],['스태미나',c(tv.sta)],['좌타자 상대',c(tv.stf+L+o('vl',3))],['우타자 상대',c(tv.stf-L/2+o('vr',3))],['견제·수비',c(50+o('hold',8))]]]);
     G2.push(['구종',arsenal.map(([k,v])=>[k+(k===best?' · 결정구':''),v])]);
