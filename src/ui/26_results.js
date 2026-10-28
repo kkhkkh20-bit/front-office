@@ -67,7 +67,7 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
   return csec('훈련·육성 시설',`<p class="small muted">실제 구단의 2군 훈련장·재활센터·트래킹 장비 투자를 항목별로 나눴습니다. 실제 구단처럼 큰 시설 투자는 연간 운영 예산이 아니라 별도 재원으로 합니다. 구단 보유 현금(적립금)으로 바로 짓거나, 모기업에 투자를 요청할 수 있습니다(구단주 신뢰·성향·금액에 따라 승인, 거절되면 신뢰 -1, 60일마다 1번). 완공 뒤 유지비만 운영비에서 매년 나갑니다. 공사는 동시에 2곳까지 할 수 있습니다. 성장 효과는 매년 겨울 성장 때 반영되고, 부상·회복 효과는 바로 적용됩니다.</p>
     <dl class="tsum"><div><dt>종합 등급</dt><dd>${F.lv}단계 · 리그 ${rk}위</dd></div><div><dt>연 유지비</dt><dd class="num">${money(facUpkeep())}</dd></div><div><dt>보유 현금</dt><dd class="num">${money(t.cash)}</dd></div><div><dt>공사 중</dt><dd>${nb}/2</dd></div></dl>
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
-    <div class="tgrid">${FACK.map(card).join('')}</div>
+    <div class="tgrid">${FACK.map(card).join('')}</div>${facCompare()}
     <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
     <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 감독의 육성 성향. 4) 2군 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 

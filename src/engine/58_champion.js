@@ -32,7 +32,7 @@ function champCelebrate(){ const P=G.ps; if(G.unemp||!P||P.champ!==G.user)return
 EVH.champGift={ pick(e,i){ const t=team(G.user); const y=G.year;
   if(i===0){ t.cash+=4000; return '운영 자금 40억이 입금되었습니다.'; }
   if(i===1){ t.cash+=6000; G.faFund={y,amt:6000,used:false,due:dnum(y+1,2,1)}; return 'FA 영입 특별 자금 60억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다.'; }
-  facInit(); const L=FACK.filter(k=>G.fac.it[k]<3).sort((a,b)=>G.fac.it[a]-G.fac.it[b]).slice(0,2); for(const k of L){ G.fac.it[k]++; if(G.fac.bld)delete G.fac.bld[k]; }
+  facInit(); const L=FACK.filter(k=>G.fac.it[k]<3).sort((a,b)=>(G.fac.bld[a]?1:0)-(G.fac.bld[b]?1:0)||G.fac.it[a]-G.fac.it[b]).slice(0,2); /* 공사 중인 시설은 뒤로: 낸 공사비가 헛되지 않게 */ for(const k of L){ const b=G.fac.bld[k]; G.fac.it[k]=Math.min(3,Math.max(G.fac.it[k]+1,b?b.lv:0)); delete G.fac.bld[k]; G.fac.dn[k]=G.day; } facRecalc();
   return L.length?`${L.map(k=>`${FACI[k].l}: ${FACI[k].lv[G.fac.it[k]]}`).join(', ')}(으)로 바로 올렸습니다.`:'훈련 시설이 이미 모두 최고 단계라 운영 자금 30억으로 대신 받았습니다.'+(t.cash+=3000,''); } };
 /* FA 특별 자금: 2월 1일까지 FA를 한 명도 데려오지 않으면 절반 회수 */
 function champDaily(){ const f=G.faFund; if(!f||f.done||G.day<f.due)return; f.done=true; if(!f.used){ const t=team(G.user); t.cash-=Math.round(f.amt/2); t.trust=clamp(t.trust-2,0,100); mail('구단주실','FA 특별 자금 회수',`"FA 데려오라고 준 돈인데 한 명도 안 데려왔군요." 특별 자금의 절반 ${money(Math.round(f.amt/2))}을(를) 모기업이 돌려받았습니다. 구단주 신뢰 -2.`,{kind:'구단주'}); } }

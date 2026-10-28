@@ -1,0 +1,16 @@
+/* 훈련 시설 비교 표: 휴대폰 폭에서도 가로 스크롤 없이 8칸 */
+.fcmp{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12px;margin-top:4px}
+.fcmp th,.fcmp td{padding:5px 1px;text-align:center;border-bottom:1px solid var(--line);font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.fcmp th:first-child,.fcmp td:first-child{width:24%;text-align:left;padding-left:4px;font-family:var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fcmp th button{background:none;border:0;padding:2px 0;width:100%;color:var(--muted);font-size:11px;font-family:var(--f-ui);cursor:pointer;white-space:nowrap}
+.fcmp th button.on{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.fcmp td.fcl0{color:var(--dim)}
+.fcmp td.fcl1{background:var(--panel2)}
+.fcmp td.fcl2{background:rgba(61,139,253,.22)}
+.fcmp td.fcl3{background:rgba(61,139,253,.5);color:#fff;font-weight:700}
+.fcmp td.fcg{font-weight:700}
+.fcmp sup{font-size:9px;color:var(--warn);margin-left:1px}
+.fcmp tr.me td{border-top:1px solid var(--team-hi);border-bottom:1px solid var(--team-hi)}
+.fcmp tr.me td:first-child{font-weight:700;color:var(--team-hi)}
+.fcmp tr.fav td,.fcmp tr.frk td{color:var(--muted);font-size:11px;background:none}
+.fcmp-l{margin:0;padding-left:16px;font-size:12px;display:grid;gap:3px}
