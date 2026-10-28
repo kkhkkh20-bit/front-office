@@ -5,14 +5,14 @@
              표본이 작으면 믿지 말라고 표시하고, 타구 운(BABIP·ERA−FIP)도 짚는다. 수비와 발은 기록으로 잘 안 보인다.
    둘 다 '이 선수가 좋다'는 종합 점수는 내지 않는다 */
 function bodyOf(p){ if(!p.ht){ p.ht=Math.round(clamp((p.isP?184:179)+hn('ht',p.id)*5+(p.isP?(p.r.stf-50)*.08:(p.r.pow-50)*.06),166,198)); p.wt=Math.round(clamp(p.ht-100+hn('wt',p.id)*6+(p.isP?0:(p.r.pow-50)*.2)-(p.isP?1:3),62,118)); } return {ht:p.ht,wt:p.wt}; }
-const FD_TOOLS={B:[['pow','파워',1],['spd','스피드',1],['def','수비·어깨',1],['con','컨택',0],['eye','선구안',0]],P:[['stf','구위',1],['sta','체력',1],['ctl','제구',0]]};
+const FD_TOOLS={B:[['pow','파워',1],['con','컨택',0],['eye','선구',0],['spd','주력',1],['def','수비',1]],P:[['stf','구위',1],['ctl','제구',0],['sta','체력',1]]};
 function fdScoutSd(){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); return [7,6,5,4,3.2,2.6][clamp(sk,0,5)]; }
 function fdScoutTools(p){ const F=G.fd; const key=(F&&F.y)+':'+((G.scouts||[]).map(s=>s.id+s.skill).join(','));
-  const base=fdScoutSd(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l,vis])=>{ const sd=base*(vis?.6:1.6); const v=clamp(Math.round((p.r[k]+hn('fst'+k+key,p.id)*sd)/5)*5,20,80); return {k,l,v,vis:!!vis}; });
+  const base=fdScoutSd(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l,vis])=>{ const sd=base*(vis?.7:1); const v=clamp(Math.round((p.r[k]+hn('fst'+k+key,p.id)*sd)/5)*5,20,80); return {k,l,v,vis:!!vis}; });
   const b=bodyOf(p); const velo=p.isP?Math.round(veloOf(p)+hn('fsv'+key,p.id)*.8):null;
   return {L,velo,ht:b.ht,wt:b.wt,sd:base}; }
 /* 툴 한 줄 의견: 좋은 툴·약한 툴만 말하고 종합 평가는 하지 않는다 */
-function fdScoutLine(p){ const S=fdScoutTools(p); const vis=S.L.filter(t=>t.vis); const good=vis.filter(t=>t.v>=60).map(t=>t.l), bad=vis.filter(t=>t.v<=40).map(t=>t.l);
+function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>t.v>=60).map(t=>t.l), bad=S.L.filter(t=>t.v<=40).map(t=>t.l);
   const pre=p.isP?`${S.velo}km${S.velo>=150?'(강속구)':S.velo<=140?'(기교파)':''}`:'';
   return [pre,good.length?`${good.join('·')} 좋음`:'',bad.length?`${bad.join('·')} 약함`:''].filter(Boolean).join(' · ')||'눈에 띄는 툴 없음'; }
 /* 데이터팀: 최근 3년(없으면 지난해, 1군 우선) 기록 백분위 */
@@ -40,3 +40,16 @@ function fdPosBoard(){ const F=G.fd; if(!F)return []; const RK=fdRisk(); const o
     const dat=dataLv(G.user)>=1?L.filter(p=>{ const d=fdData(p); return d&&d.lv===1&&!d.small&&d.it[3][1]>=75; }).length:null;
     const exp=L.reduce((a,p)=>a+(RK[p.id]||0),0); out.push({k,n:L.length,tool,dat,exp}); }
   return out; }
+
+/* 데이터팀 세부 지표: 최근 3년 1군 합산(부족하면 지난해 1·2군), 지난해 운 */
+function fdDetail(p,y){ let t=fdThree(p,y); if(!t||(p.isP?t.outs<30:t.pa<60)){ const h=seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); if(h&&(p.isP?h.outs>=15:h.pa>=30))t=Object.assign({ys:1},h); else return null; }
+  const L=fdStatLine(p,y);
+  if(p.isP){ const bf=t.outs+t.h+t.bb, ip=t.outs/3; return {k:t.so/bf*100,bb:t.bb/bf*100,hr9:(t.hr||0)*9/ip,fip:(13*(t.hr||0)+3*t.bb-2*t.so)/ip+3.2,gap:L&&L.n>=15?L.era-L.fip:null,n:ip,ys:t.ys||1}; }
+  const r=bRate(t); return {k:t.so/t.pa*100,bb:t.bb/t.pa*100,iso:r.slg-r.avg,babip:L&&L.n>=60?L.babip:null,n:t.pa,ys:t.ys||1}; }
+/* 데이터팀 한 줄 의견: 세부 데이터에서 눈에 띄는 것 두세 가지와 운 */
+function fdDataLine(p,y){ const d=fdDetail(p,y); if(!d)return '기록이 부족해 판단하기 어렵습니다'; const T=trackOf(p); const ana=dataLv(G.user)>=1; const out=[];
+  if(p.isP){ if(d.k>=24)out.push('삼진을 잘 잡음'); else if(d.k<=15)out.push('삼진이 적음'); if(d.bb<=6.5)out.push('볼넷 적음'); else if(d.bb>=11)out.push('볼넷 많음'); if(d.hr9>=1.3)out.push('홈런 허용 많음'); if(ana&&T.whiff>=29)out.push('헛스윙 유도 좋음');
+    if(d.gap!=null&&d.gap<=-.7)out.push(`${y} ERA가 FIP보다 ${(-d.gap).toFixed(1)} 낮아 운이 따름`); else if(d.gap!=null&&d.gap>=.7)out.push(`${y} ERA가 FIP보다 ${d.gap.toFixed(1)} 높아 불운, 반등 여지`); }
+  else { if(ana&&T.ev>=141)out.push('타구가 강함'); else if(ana&&T.ev<=131)out.push('타구가 약함'); if(d.k<=14)out.push('삼진 적음'); else if(d.k>=24)out.push('삼진 많음'); if(d.bb>=11)out.push('볼넷 잘 고름'); if(d.iso>=.2)out.push('장타 힘 있음');
+    if(d.babip!=null&&d.babip>=.345)out.push(`${y} BABIP ${fmt3(d.babip)}로 높아 타율에 운이 섞임`); else if(d.babip!=null&&d.babip<=.265)out.push(`${y} BABIP ${fmt3(d.babip)}로 낮아 불운, 반등 여지`); }
+  if(d.n<(p.isP?60:250))out.push('표본 적음'); return out.slice(0,4).join(' · ')||'특별히 튀는 데이터 없음'; }

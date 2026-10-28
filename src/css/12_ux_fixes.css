@@ -149,3 +149,20 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 .fdt td .tg.w{color:var(--warn)}.fdt td .tg.l{color:var(--warn);background:#e3b44c1c}.fdt td .tg.u{color:#7fb8ff;background:#7fb8ff1c}
 @media (max-width:600px){.fdt thead tr.fdgrp{display:none}}
 .fdt-w.twp{max-height:none!important}
+/* 창단 드래프트 세 탭 표: 촘촘하게, 설명은 ⓘ */
+.fdt th,.fdt td{padding:5px 6px}
+.fdt thead th{white-space:nowrap}
+.fdt .ti{display:inline-grid;place-items:center;width:13px;height:13px;margin-left:3px;border-radius:50%;border:1px solid var(--line2);font:italic 600 9px/1 serif;color:var(--dim);cursor:help;vertical-align:1px}
+.fdt .ti:hover,.fdt .ti:focus{color:var(--ink);border-color:var(--acc)}
+.fdt td .sm{font-style:normal;font-size:10.5px;color:var(--dim);margin-left:1px}
+.fdt td.yr{color:var(--muted)}
+.fdt td.op{text-align:left;white-space:normal;min-width:180px;max-width:300px;font-size:12px;color:var(--muted);line-height:1.4}
+.fdt td.fdtv{color:var(--c);font-weight:600}
+.fdt tbody th{min-width:132px;max-width:160px}
+.fdnm i .lo{color:var(--bad)}
+.rkp{font-style:normal;font-size:10.5px;font-weight:700;margin-left:5px;padding:0 4px;border-radius:3px}
+.rkp.r3{color:#fff;background:var(--bad)}.rkp.r2{color:#1a1405;background:var(--warn)}.rkp.r1{color:var(--muted);background:#ffffff14}
+.fdvt{margin:8px 0 4px}.fdvn{margin:2px 0 6px}
+.fdt-w.twp>table{width:auto;min-width:100%}
+@media (max-width:600px){.fdgo{padding:3px 6px!important;font-size:12px!important;min-width:0!important}.fdt tbody th{min-width:118px}.fdnm i{white-space:normal}}
+.fdt tbody th{max-width:190px}

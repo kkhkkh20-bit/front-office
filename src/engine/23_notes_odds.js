@@ -71,8 +71,8 @@ function mockDraft(n){ // 우리 다음 순번 전까지(드래프트 전에는 
   return out; }
 
 function staffNotes(p){ // 선수 카드 상단 스태프 의견
-  if(p.fdPool&&G.fd){ /* 창단 드래프트 후보: 스카우트는 툴만, 데이터팀은 기록만. 종합 판단은 하지 않는다 */ const d=fdData(p);
-    return [{w:'스카우트',t:fdScoutLine(p)+'. 컨택·선구안·제구는 눈으로 판단하기 어려워 기록을 함께 보세요.'},{w:'데이터팀',t:d?`최근 ${d.ys}시즌 ${p.isP?'실점 억제':'타격 생산'}: 다른 후보 중 ${pctW(d.it[3][1])}(상위 ${100-d.it[3][1]}%).${d.small?' 표본이 적어 믿기 어렵습니다.':''}${d.luck?` ${d.luck[0]}(${d.luck[1]}).`:''}`:dataLv(G.user)<1?'분석원이 없어 의견이 없습니다.':'1군·2군 기록이 부족합니다.'}]; }
+  if(p.fdPool&&G.fd){ /* 창단 드래프트 후보: 스카우트는 툴만, 데이터팀은 기록만. 종합 판단은 하지 않는다 */ 
+    return [{w:'스카우트',t:fdScoutLine(p)+'.'},{w:'데이터팀',t:fdDataLine(p,G.fd.y-1)+'.'}]; }
   const own=p.team===G.user&&!p.prospect; const rp=scoutReport(p); const L=[];
   L.push({w:'스카우트',t:(rp.role?`장래 ${rp.role}. `:'')+(rp.notes&&rp.notes[0]?rp.notes[0]:'')});
   { const sn=statNotes(p); if(sn[0])L.push({w:'전력분석',t:sn[0]}); }
