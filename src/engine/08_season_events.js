@@ -107,14 +107,15 @@ function settlement(){
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(80억 초과분의 절반) */
     let div=0; if(t.indie&&t.cash>8000){ div=Math.round((t.cash-8000)*.5); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
-    /* 모기업 회수: 구단에 잉여금이 쌓이면 구단주가 가져간다(돈을 쌓아 두고 놀지 않게). 50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 */
-    else if(!t.indie){ const th=Math.round(5000*EI); if(t.cash>th){ const r=t.owner==='profit'?.6:t.owner==='pr'?.45:.35; div=Math.round((t.cash-th)*r); t.cash-=div;
-      if(t.id===ME())mail('구단주실',`모기업이 잉여금 ${money(div)}을(를) 회수했습니다`,`시즌 결산 뒤 구단 보유 현금이 ${money(th)}을(를) 넘어, 넘는 부분의 ${Math.round(r*100)}%를 모기업이 가져갔습니다. 남은 현금 ${money(t.cash)}. 쓰지 않고 쌓아 둔 돈은 구단주가 회수합니다. 시설 투자나 선수 영입에 쓰면 회수되지 않습니다.`,{kind:'구단주'});
-      else if(div>=1000)wire('구단',`${t.city} ${t.nick} 모기업, 잉여금 ${money(div)} 회수`,{tid:t.id}); } }
+    /* 모기업 지원 조정: 구단에 쓰지 않은 돈이 쌓여 있으면, 다음 시즌 모기업 지원 한도를 그만큼 줄인다(돈을 가져가지는 않는다).
+       50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 줄인다. 쌓인 돈은 구단이 그대로 쓸 수 있다 */
+    let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0;
+    if(!t.indie){ const th=Math.round(5000*EI); t.supCut=null; if(t.cash>th){ const r=t.owner==='profit'?.6:t.owner==='pr'?.45:.35; const cut=Math.min(Math.round((t.cash-th)*r),Math.round(16000*EI*.8)); t.supCut={y:y+1,amt:cut};
+      if(t.id===ME())mail('구단주실',`다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`구단 보유 현금이 ${money(t.cash)}으로 ${money(th)}을(를) 넘었습니다. 모기업은 "구단에 쓰지 않은 돈이 있으니 그만큼 지원을 줄이겠다"며 ${y+1}시즌 지원 한도를 ${money(cut)} 줄입니다. 돈을 가져가지는 않습니다. 쌓인 돈은 시설 투자나 선수 영입에 그대로 쓸 수 있습니다.`,{kind:'구단주'}); } }
     /* 시설 관리: 빚이 크면 유지·보수를 미뤄 시설 하나가 한 단계 낡는다(30%) */
     if(t.cash<-3000&&R()<.3){ try{ facNeglect(t); }catch(e){} }
     t.pop=clamp(1+(t.pop-1)*.85+(wp-.5)*.5+(mkt-2000)/45000+(ps.champ===t.id?.06:0)+(G.mgr[t.id]&&G.mgr[t.id].fame>=70?.03:0)+localStarPop(t.id),.7,1.45);
-    fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,selfC:fins_self[t.id]||0,div};
+    fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,supCut:cut0,selfC:fins_self[t.id]||0,div};
   }
   const u=team(G.user); const uo=order.find(x=>x.tid===G.user); const wp=uo.w/Math.max(1,uo.w+uo.l);
   const made=[ps.champ,ps.runner,ps.poLose,ps.spoLose,ps.wcLose].includes(G.user);
