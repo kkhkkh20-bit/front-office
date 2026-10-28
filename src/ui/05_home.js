@@ -12,12 +12,13 @@ function digestCard(){ const D=G.dig; if(!D||!D.games||!D.games.length||G.res)re
   const li=x=>`<button class="dg-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.t}</i></span></button>`;
   const inj=playersOf(G.user).filter(p=>p.injOut>=5).slice(0,3);
   return `<section class="card digest"><div class="row between"><span class="eyebrow">${dmd(D.from)} ~ ${dmd(D.to)} · ${gs.length}경기</span><span class="pill ${w>l?'good':w<l?'bad':''}">${w}승 ${l}패</span></div>
-    <h2 class="sec">${w>l?'좋은 흐름':w<l?'아쉬운 한 주':'반타작'} · ${D.rk&&rk?(rk<D.rk?`${D.rk}위 → <b>${rk}위</b>`:rk>D.rk?`${D.rk}위 → <b class="bad">${rk}위</b>`:`${rk}위 유지`):''}</h2>
+    <h2 class="sec">${(()=>{ const n=gs.length, span=D.to-D.from+1; const per=span>=5?'한 주':n<=1?'':'며칠'; if(n<=1)return w>l?'승리':w<l?'패배':'무승부'; return w>l?'좋은 흐름':w<l?`아쉬운 ${per}`:'반타작'; })()} · ${D.rk&&rk?(rk<D.rk?`${D.rk}위 → <b>${rk}위</b>`:rk>D.rk?`${D.rk}위 → <b class="bad">${rk}위</b>`:`${rk}위 유지`):''}</h2>
     <div class="dg-gs">${chips}</div>
     ${(()=>{ const A=(G.autoLog||[]).filter(x=>x.d>=D.from&&x.d<=D.to); return A.length?`<p class="small"><b>자동 처리 ${A.length}건</b> · ${A.map(x=>`${esc(x.t)}: ${esc(x.c)}${x.r?` (${esc(x.r.replace(/\.$/,''))})`:''}`).join(' / ')}</p>`:''; })()}
     ${hot.length?`<div class="eyebrow">잘한 선수</div><div class="dg-ps">${hot.map(li).join('')}</div>`:''}
     ${cold.length?`<div class="eyebrow">부진한 선수</div><div class="dg-ps">${cold.map(li).join('')}</div>`:''}
     ${inj.length?`<p class="small">부상: ${inj.map(p=>`${esc(p.name)}(${esc(injNow(p))}, ${p.injOut}일)`).join(', ')}</p>`:''}
+    ${digestDiag(D)}
     <p class="small sdesc">경기를 누르면 박스스코어를 볼 수 있습니다. 한 경기씩 보려면 위의 "1경기"를 누르세요.</p></section>`; }
 function resultHome(){
   if(!G.res||G.live)return ''; const g=G.games[G.res.i]; if(!g){G.res=null;return '';}

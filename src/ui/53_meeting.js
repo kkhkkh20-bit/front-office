@@ -41,9 +41,12 @@ function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const s
 function mgrOnForeign(p,short){ const m=G.mgr[G.user]; if(!m||!p)return '...'; mgrAttr(m); const W=mgrWantForeign(); const fit=mgrFitF(p,W);
   const est=ovr(p)+hn('mof'+m.id,p.id)*(2+(85-(m.eye||50))/6); /* 감독 안목이 낮을수록 오차가 크다(안목 60이면 표준편차 약 6) */ const lv=est>=63?'1군에서 바로 통할 실력입니다':est>=57?'쓸 만한 선수입니다':est>=52?'우리 리그에서 버틸지 반반입니다':'우리 팀에 큰 도움은 안 될 것 같습니다';
   const tyk=mgrType(m).k; const sty=!p.isP&&(tyk==='dfn'||tyk==='combo_d')?(p.r.def>=58?' 수비가 돼서 좋습니다.':' 수비가 불안해서 걱정입니다.'):!p.isP&&(tyk==='big'||tyk==='bat'||tyk==='combo_o')?(p.r.pow>=60?' 한 방이 있어서 마음에 듭니다.':''):p.isP&&tyk==='pen_all'&&!isSPr(p)?' 불펜이 두꺼워지는 건 환영입니다.':p.isP&&(tyk==='sp_care')&&isSPr(p)?' 긴 이닝 막아 줄 선발이면 좋겠습니다.':'';
-  const want=W&&W.want?(fit?'딱 제가 원하던 유형입니다. ':`저는 ${W.want.isP?(W.want.k==='SP'?'선발':'불펜'):SLOTK[W.want.k]||W.want.k} 쪽이 더 급하다고 봅니다. `):'';
+  const good=est>=57, bad=est<52; const need=W&&W.want?(W.want.isP?(W.want.k==='SP'?'선발':'불펜'):SLOTK[W.want.k]||W.want.k):'';
+  /* 원하는 유형인지(자리)와 실력 판단을 한 문장으로 잇는다: 둘이 엇갈리면 '그런데'로 이유를 붙인다 */
+  const head=!need?lv+'.':fit?(good?`딱 제가 원하던 ${need} 유형이고, ${lv}.`:bad?`${need} 유형이라 자리는 맞는데, 실력이 아쉽습니다. ${lv}.`:`${need} 유형이라 자리는 맞습니다. 다만 ${lv}.`)
+    :(good?`제가 급하다고 보는 자리는 ${need} 쪽이라 우선순위는 아닙니다. 그래도 ${lv}.`:`제가 급하다고 보는 자리는 ${need} 쪽입니다. 이 선수는 자리도 안 맞고, ${lv}.`);
   const age=p.age>=34?' 다만 나이가 있어서 한 시즌을 버틸지 걱정입니다.':p.age<=26?' 젊어서 적응만 하면 더 좋아질 수 있습니다.':'';
-  return short?`${fit?'원하던 유형, ':''}${lv}`:`${want}${lv}.${sty}${age}`; }
+  return short?`${fit?'원하던 유형, ':''}${lv}`:`${head}${sty}${age}`; }
 function meetSheet(){ const M=UI.meet; const W=meetWho(M); if(!W)return ''; const T=meetTopics(M);
   const log=M.log.map(x=>x.w==='sys'?`<div class="mt-sys">${esc(x.t)}</div>`:`<div class="mt-l ${x.w}">${x.w==='them'?`<span class="mt-av">${W.av}</span>`:''}<p>${esc(x.t)}</p></div>`).join('');
   const own=M.k==='own'&&!team(G.user).indie; const left=own?ownAskLeft():1;

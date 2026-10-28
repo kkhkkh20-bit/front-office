@@ -62,10 +62,10 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
   const id=(UI.annQ||[])[0]; const p=id!=null&&G.players[id]; if(!p||p.team!==G.user){ if(UI.annQ&&UI.annQ.length){ UI.annQ.shift(); return annRender(); } el.innerHTML=''; return; }
   const st=(p.story||[]).filter(x=>x.k==='move').slice(-1)[0]; const k=pSlot(p); let role='엔트리 경쟁', why='', blk=[];
   try{ const d=depth(G.user); const inS=d.start.some(x=>x.id===p.id), inSP=d.sp.some(x=>x.id===p.id), inP=d.pen.slice(0,4).some(x=>x.id===p.id);
-    role=inS?`주전 ${posLabel(p)}`:inSP?'선발 로테이션':inP?'필승조':p.isP?'불펜 경쟁':'백업·대타';
-    const rk=slotRanks(G.user)[k]; const others=k==='SP'?d.sp.filter(x=>x.id!==p.id):k==='RP'?d.pen.filter(x=>x.id!==p.id):[d.ln[k],...d.bench.filter(x=>x.pos===k)].filter(x=>x&&x.id!==p.id); const o2=others[0];
-    why=`우리 ${SLOTK[k]||posLabel(p)} 리그 ${rk.rank}위.${o2?` 기존 ${o2.name}(${dvo(o2)})${ovr(p)>ovr(o2)+1?'보다 낫습니다':ovr(p)<ovr(o2)-1?'의 뒤를 받칩니다':'와 비슷한 수준으로 경쟁합니다'}.`:''}`;
-    blk=playersOf(G.user).filter(q=>q.id!==p.id&&!q.foreign&&q.age<=24&&pSlot(q)===k&&(scoutReport(q).ofp||0)>=52).slice(0,2); }catch(e){}
+    role=inS?`주전 ${posLabel(p)}`:inSP?'선발 로테이션':inP?'필승조':p.isP?'불펜 경쟁':'백업·대타'; const kk=p.isP?(inSP?'SP':'RP'):k; /* 보강 이유는 실제로 맡을 자리 기준(선발로 쓰면 선발진 순위) */
+    const rk=slotRanks(G.user)[kk]; const others=kk==='SP'?d.sp.filter(x=>x.id!==p.id):kk==='RP'?d.pen.filter(x=>x.id!==p.id):[d.ln[kk],...d.bench.filter(x=>x.pos===kk)].filter(x=>x&&x.id!==p.id); const o2=others[0];
+    why=`우리 ${SLOTK[kk]||posLabel(p)} 리그 ${rk.rank}위.${o2?` 기존 ${o2.name}(${dvo(o2)})${ovr(p)>ovr(o2)+1?'보다 낫습니다':ovr(p)<ovr(o2)-1?'의 뒤를 받칩니다':'와 비슷한 수준으로 경쟁합니다'}.`:''}`;
+    blk=playersOf(G.user).filter(q=>q.id!==p.id&&!q.foreign&&q.age<=24&&(q.isP?(kk==='SP'?isSPr(q):!isSPr(q)):pSlot(q)===kk)&&(scoutReport(q).ofp||0)>=52).slice(0,2); }catch(e){}
   const risk=[medInj(p)>=.2?'메디컬: 부상이 잦은 편':'',p.foreign&&p.adapt!=null&&p.adapt<45?'한국 적응 변수':'',p.age>=33?`${p.age}세, 하락 시작 나이`:''].filter(Boolean);
   const h=curLine(p); const stat=h?(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:''):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'')):'';
   el.innerHTML=`<div class="cfm-w"><div class="cfm ann" role="dialog" aria-modal="true"><div class="cfm-h"><span>영입 발표</span><span>${dsh(G.day)}</span></div>

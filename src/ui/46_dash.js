@@ -11,7 +11,7 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
   { const ps=playersOf(G.user).filter(p=>p.e1||!entryOn()); const mor=ps.length?sum(ps.map(p=>p.mor??60))/ps.length:60; const fat=ps.length?sum(ps.map(p=>p.fat||0))/ps.length:0;
     T.push(tile('팀 분위기',Math.round(mor),`${mor>=65?'좋음':mor>=50?'보통':mor>=38?'가라앉음':'나쁨'} · 평균 피로 ${Math.round(fat)}`,'roster',mor>=65?'good':mor<45?'bad':'',mor)); }
   { const inj=playersOf(G.user).filter(p=>p.injOut>0).sort((a,b)=>ovr(b)-ovr(a)); T.push(tile('부상자',`${inj.length}명`,inj.length?`${esc(inj[0].name)}${inj[0].injK?` · ${esc(INJ[inj[0].injK].part)}`:''} ${inj[0].injOut}일${inj.length>1?` 외 ${inj.length-1}명`:''}`:'전원 정상','staff:med',inj.length>=4?'bad':inj.length?'warn':'good')); }
-  T.push(tile('구단주 신뢰',Math.round(t.trust),t.trust>=60?'안정':t.trust>=35?'보통':t.trust>=20?'불안':'위험','club:owner',t.trust>=60?'good':t.trust<30?'bad':'',t.trust));
+  T.push(tile('구단주 신뢰',Math.round(t.trust),(t.trust>=60?'안정':t.trust>=35?'보통':t.trust>=20?'불안':'위험')+(trustWhy()?' · '+trustWhy():''),'club:owner',t.trust>=60?'good':t.trust<30?'bad':'',t.trust));
   { let b=null; try{ b=budget(); }catch(e){} if(b)T.push(tile('예산 여유',money(Math.round(b.roomGoal)),b.roomGoal>=0?'지원 목표 안':'목표 초과','club:fin',b.roomGoal<0?'bad':'')); }
   if(G.pr)T.push(tile('팬 여론',Math.round(G.pr.fan),`언론 논조 ${Math.round(G.pr.press)}`,'club:owner',G.pr.fan>=60?'good':G.pr.fan<40?'bad':'',G.pr.fan));
   { const v=clubPrestige(G.user); const L=G.teams.map(x=>clubPrestige(x.id)).sort((a,b)=>b-a); T.push(tile('구단 명성',`<span class="stars-t">${starTxt(prestigeStars(v))}</span>`,`${v}점 · 리그 ${L.indexOf(v)+1}위`,'club:owner','',v)); }

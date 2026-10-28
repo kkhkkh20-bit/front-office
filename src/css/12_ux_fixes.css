@@ -272,3 +272,10 @@ body:has(#sheet .scrim) #dtick{display:none}
 @media (max-width:600px){ .continue .cl i{white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.15;font-size:10.5px;max-width:112px} }
 .tsbox .tsb-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:baseline}.tsbox .tsb-r>span:first-child{min-width:0}
 @media (max-width:600px){ .tsbox .tsb-r{grid-template-columns:1fr;gap:1px}.tsbox .tsb-r>span:last-child{font-size:12.5px;color:var(--muted)} }
+/* 전력 공백·자동 처리·리빌딩 카드 */
+.gapc{border-left:3px solid var(--bad)}.gap-r{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--line)}.gap-r>.av{width:36px;height:36px}.gap-a{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.gap-a .btn{width:auto}
+.autoc{border-left:3px solid var(--warn)}
+.reb-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:6px 0 10px}.reb-g>div{display:grid;gap:3px;align-content:start;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel2,#1a232c)}
+@media (max-width:600px){ .reb-g{grid-template-columns:1fr} }
+.dg-diag{margin-top:8px;padding:8px 10px;border:1px solid #e3b44c55;border-radius:6px;background:#e3b44c0d}.dg-diag p{margin:0 0 6px}.dg-diag .row{gap:6px;flex-wrap:wrap}.dg-diag .btn{width:auto}
+.rview{margin:0;gap:4px}.rview button{padding:4px 8px;font-size:12.5px}
