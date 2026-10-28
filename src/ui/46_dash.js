@@ -7,7 +7,7 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
     else T.push(tile('전력 평가','-','개막 전','league:stand')); }
   { let nx=null; try{ const L=nextGames(1); if(L&&L[0])nx=L[0]; }catch(e){}
     if(nx&&(per==='season'||per==='post'||per==='pre')){ const op=nx.op, home=nx.home; T.push(tile("다음 경기",`${home?"vs":"@"} ${esc(team(op).nick)}`,`${dsh(nx.d)} ${WD[dobj(nx.d).w]} · ${home?'홈':'원정'}`,'cal')); }
-    else { let ev=null; try{ ev=calUpcoming()[0]; }catch(e){} T.push(tile('다음 일정',ev?dsh(ev.d):'-',ev?esc(ev.t):'예정된 일정 없음','cal')); } }
+    else { let ev=null; try{ ev=calUpcomingList(1)[0]||null; }catch(e){} T.push(tile('다음 일정',ev?dsh(ev.d):'-',ev?esc(ev.t):'예정된 일정 없음','cal')); } }
   { const ps=playersOf(G.user).filter(p=>p.e1||!entryOn()); const mor=ps.length?sum(ps.map(p=>p.mor??60))/ps.length:60; const fat=ps.length?sum(ps.map(p=>p.fat||0))/ps.length:0;
     T.push(tile('팀 분위기',Math.round(mor),`${mor>=65?'좋음':mor>=50?'보통':mor>=38?'가라앉음':'나쁨'} · 평균 피로 ${Math.round(fat)}`,'roster',mor>=65?'good':mor<45?'bad':'',mor)); }
   { const inj=playersOf(G.user).filter(p=>p.injOut>0).sort((a,b)=>ovr(b)-ovr(a)); T.push(tile('부상자',`${inj.length}명`,inj.length?`${esc(inj[0].name)}${inj[0].injK?` · ${esc(INJ[inj[0].injK].part)}`:''} ${inj[0].injOut}일${inj.length>1?` 외 ${inj.length-1}명`:''}`:'전원 정상','staff:med',inj.length>=4?'bad':inj.length?'warn':'good')); }

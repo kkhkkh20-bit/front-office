@@ -1,0 +1,42 @@
+/* ===== 화면비 점검 반영 ===== */
+/* 폰 상단바: 날짜·시즌 문구가 버튼 밑으로 겹치지 않게 */
+.top .club>div{min-width:0;overflow:hidden}
+.top .club span{overflow:hidden;text-overflow:ellipsis}
+/* 가로로 넘치는 탭: 오른쪽 끝을 흐리게 해 더 있다는 걸 보여 준다 */
+nav.subtabs.ovx,.itabs.ovx,.tstrip.ovx{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;white-space:nowrap}
+/* 넓은 표: 스크롤 그림자로 옆에 더 있다는 걸 보여 준다 */
+.tw{background:linear-gradient(90deg,var(--card,#181b20) 30%,rgba(0,0,0,0)) left/24px 100% no-repeat local,linear-gradient(270deg,var(--card,#181b20) 30%,rgba(0,0,0,0)) right/24px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.45),transparent) left/10px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.45),transparent) right/10px 100% no-repeat scroll}
+/* 선수 명단 표 첫 열(이름) 고정 */
+.sqt.rt td:first-child,.sqt.rt th:first-child{position:sticky;left:0;z-index:1;background:var(--card,#181b20)}
+/* 1024 근처: 홈 2단이 좁아 표가 잘리므로 1180 아래에서는 1단 */
+@media (max-width:1180px){ .homeg{grid-template-columns:minmax(0,1fr)} .dtiles{grid-template-columns:repeat(4,minmax(0,1fr))} }
+/* 폰 캘린더: 날짜·홈원정 알약 줄바꿈 방지, 최소 글자 크기 */
+.cal-n,.cal-ha{white-space:nowrap}
+@media (max-width:420px){ .cal-ha{font-size:0;padding:0;width:8px;height:8px;border-radius:50%;display:inline-block} .cal-ha.a{background:transparent} .cal-nm,.cal-sc,.cal-plan{font-size:11px} }
+/* 폰 터치 영역 36px 이상 */
+@media (max-width:620px){
+  .seg.itabs>button,.chips button,.tc-i,.btn.small,.chipn.lk,th.sortable,.helpbtn,li>button{min-height:36px}
+  button.ncm-b{min-height:32px;padding:6px 8px}
+  .itabs:not(.wrapt){flex-wrap:nowrap}
+}
+/* 탭 줄바꿈 때 마지막 줄에 하나만 남지 않게 균등 배치 */
+@media (max-width:600px){ .itabs.wrapt{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr))} .itabs.wrapt button{flex:none} }
+/* 드래프트 행·재정 막대 라벨 넘침 */
+.drw{max-width:100%;box-sizing:border-box}
+.bud-bar span.mk{white-space:nowrap}
+.bud-bar{overflow:visible}
+/* 보상선수 지명: 촘촘한 목록 */
+.cp-list{display:grid;gap:4px;margin-top:6px}
+.cp-r{display:grid;grid-template-columns:minmax(80px,1fr) minmax(120px,1.4fr) auto auto auto;gap:8px;align-items:center;padding:4px 0;border-top:1px solid var(--line,#2a2a2a)}
+.cp-r .cp-n{text-align:left;font-weight:700}
+@media (max-width:520px){ .cp-r{grid-template-columns:1fr auto auto;row-gap:2px} .cp-r .small.muted{grid-column:1/-1;order:5} }
+@media (max-width:1100px){ .st-x{display:none} }
+.top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{font-style:normal}
+@media (max-width:420px){ .top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{display:none} }
+.tgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
+.tgrid>*{min-width:0}
+@media (max-width:620px){
+  .seg.itabs>button,.chips button,.tc-i,.btn.small,.chipn.lk,th.sortable,.helpbtn,li>button,td>button.lnk,td.small>button.lnk{min-height:36px!important}
+  th.sortable{height:36px}
+}
