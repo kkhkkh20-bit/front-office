@@ -1,0 +1,24 @@
+/* 다음 시즌 준비표(홈) · 시즌 회고 선수별 조치 · 외국인 재협상 위험 표시 */
+.opz .opz-h{gap:8px;flex-wrap:wrap}
+.opz-l{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.opz-r{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:6px;background:var(--panel2);min-width:0}
+.opz-r.warn{border-left-color:var(--warn)}.opz-r.act{border-left-color:var(--acc)}.opz-r.ok{border-left-color:var(--good)}
+.opz-m{min-width:0;flex:1}
+.opz-t{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.opz-d{font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+.opz-s{margin-top:1px;overflow-wrap:anywhere}
+.opz-b{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;flex:none;max-width:45%}
+.opz-f{margin-top:6px}
+.opz-risk{display:block;margin-top:4px;line-height:1.35;white-space:normal;text-align:right}
+.item>.opz-risk{grid-column:1 / -1;margin-top:2px}
+.opz-risk .bad{color:var(--bad)}.opz-risk .warn{color:var(--warn)}.opz-risk .good{color:var(--good)}
+@media (max-width:640px){.opz-r{flex-direction:column;align-items:stretch}.opz-b{max-width:none;justify-content:flex-start}.opz-risk{text-align:left}}
+.kv dd.ctm-dd i{display:block;font-style:normal;font-family:var(--f-ui);font-size:11px;color:var(--muted)}
+.rva{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.rva-r{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.rva-r:last-child{border-bottom:0}
+.rva-n{display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-width:0;flex:1 1 220px}
+.rva-n .small{overflow-wrap:anywhere}
+.rva-b{display:flex;gap:4px;flex-wrap:wrap}
+.rva-b .btn[disabled]{opacity:.45;cursor:not-allowed}
+.rva-w{flex-basis:100%}
