@@ -49,6 +49,7 @@ function injPick(p,ctx){ ctx=ctx||{}; const col=!p.isP?2:ctx.sp?0:1;
   const L=[]; for(const k in INJ){ const I=INJ[k]; let w=I.w[col]; if(!w)continue;
     if(p.pos==='C'&&(k==='knee'||k==='concus'))w*=2.2;
     if(p.isP&&(I.part==='팔꿈치'||I.part==='어깨')&&ctx.pc>100)w*=1+(ctx.pc-100)/40;
+    if(p.isP&&(I.part==='팔꿈치'||I.part==='어깨')&&ctx.load>1)w*=ctx.load*(I.d[0]>=56?1.4:1); /* 혹사당한 팔은 큰 부상으로 이어진다 */
     if(p.isP&&I.tj&&p.ucl)w*=4; /* 인대를 한 번 다친 투수는 수술로 이어지기 쉽다 */
     if(p.age>=33&&(k==='calf'||k==='achil'||k==='plantar'||k==='back'))w*=1.5;
     L.push([k,w]); }

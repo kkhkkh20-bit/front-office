@@ -66,7 +66,7 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
     const rk=slotRanks(G.user)[k]; const others=k==='SP'?d.sp.filter(x=>x.id!==p.id):k==='RP'?d.pen.filter(x=>x.id!==p.id):[d.ln[k],...d.bench.filter(x=>x.pos===k)].filter(x=>x&&x.id!==p.id); const o2=others[0];
     why=`우리 ${SLOTK[k]||posLabel(p)} 리그 ${rk.rank}위.${o2?` 기존 ${o2.name}(${dvo(o2)})${ovr(p)>ovr(o2)+1?'보다 낫습니다':ovr(p)<ovr(o2)-1?'의 뒤를 받칩니다':'와 비슷한 수준으로 경쟁합니다'}.`:''}`;
     blk=playersOf(G.user).filter(q=>q.id!==p.id&&!q.foreign&&q.age<=24&&pSlot(q)===k&&(scoutReport(q).ofp||0)>=52).slice(0,2); }catch(e){}
-  const risk=[p.inj>=.2?'부상이 잦은 편':'',p.foreign&&p.adapt!=null&&p.adapt<45?'한국 적응 변수':'',p.age>=33?`${p.age}세, 하락 시작 나이`:''].filter(Boolean);
+  const risk=[medInj(p)>=.2?'메디컬: 부상이 잦은 편':'',p.foreign&&p.adapt!=null&&p.adapt<45?'한국 적응 변수':'',p.age>=33?`${p.age}세, 하락 시작 나이`:''].filter(Boolean);
   const h=curLine(p); const stat=h?(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:''):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'')):'';
   el.innerHTML=`<div class="cfm-w"><div class="cfm ann" role="dialog" aria-modal="true"><div class="cfm-h"><span>영입 발표</span><span>${dsh(G.day)}</span></div>
     <div class="row" style="flex-wrap:nowrap;gap:12px">${avImg(p,true)}<div><h3 style="margin:0">${esc(p.name)}</h3><p class="small muted" style="margin:2px 0">${posLabel(p)} · ${p.age}세 · ${hand(p)}${st?` · ${esc(st.t)}`:''}</p>${rchip(scoutReport(p).cur)}${stat?` <span class="small">${stat}</span>`:''}</div></div>

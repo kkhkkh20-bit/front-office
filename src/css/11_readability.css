@@ -277,3 +277,8 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 /* 부상 후유증 */
 .injfx{margin:8px 0;padding:8px 10px;border-left:3px solid var(--bad,#c33);background:color-mix(in srgb,var(--bad,#c33) 6%,transparent);border-radius:4px}
 .injfx b{display:block;font-size:13px;margin-bottom:2px}
+/* 메디컬 체크 */
+.medchk{margin:10px 0;padding:8px 10px;border:1px solid var(--line,#333);border-radius:6px}
+.medchk .medrow{padding:6px 0;border-top:1px dashed var(--line,#333)}
+.medchk .medrow:first-of-type{border-top:0}
+td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}

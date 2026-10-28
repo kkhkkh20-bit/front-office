@@ -1,5 +1,5 @@
 /* ---------- B: 중계 ---------- */
-const OUTK={'1B':'안타','2B':'2루타','3B':'3루타',HR:'홈런',BB:'볼넷',K:'삼진',OUT:'범타',DP:'병살타'};
+const OUTK={'1B':'안타','2B':'2루타','3B':'3루타',HR:'홈런',BB:'볼넷',K:'삼진',OUT:'범타',DP:'병살타',SAC:'희생번트'};
 const PBPOS={C:[50,93],'1B':[71,63],'2B':[61,47],SS:[39,47],'3B':[29,63],LF:[17,27],CF:[50,13],RF:[83,27],P:[50,67]};
 function pbpState(g,k){ // k번째 기록까지 반영한 상태
   const L=g.pbp; let sa=0,sh=0,outs=0,bases=[0,0,0],cur={h:null,a:null}; let half=0;

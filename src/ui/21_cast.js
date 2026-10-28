@@ -144,6 +144,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   else if(o==='3B'){ const th=(rnd()<.5?-1:1)*(26+rnd()*14); spot=cPolar(th,70+rnd()*6); arc=true; flight=900; kind='3루타'; }
   else if(o==='2B'){ const th=(rnd()<.5?-1:1)*(10+rnd()*28); spot=cPolar(th,60+rnd()*12); arc=rnd()<.6; flight=800; kind='2루타'; }
   else if(o==='1B'){ if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,44+rnd()*10); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,46); } flight=650; kind='안타'; }
+  else if(o==='SAC'){ opos=['P','3B','1B'][Math.floor(rnd()*3)]; const base=CFP[opos]; spot=[base[0]+rnd()*4-2,base[1]+rnd()*6]; arc=false; flight=420; kind='희생번트'; }
   else if(o==='OUT'||o==='DP'){ const r=rnd(); const pool=o==='DP'?['SS','2B','3B','SS','2B']:r<.45?['SS','2B','3B','1B','SS','2B','P']:r<.85?['LF','CF','RF','CF']:['SS','2B','3B','1B'];
     opos=pool[Math.floor(rnd()*pool.length)]; const base=CFP[opos]; spot=[base[0]+rnd()*8-4,base[1]+rnd()*6-3]; arc=['LF','CF','RF'].includes(opos)||(r>=.85&&rnd()<.5); flight=arc?950:520; kind=arc?(['LF','CF','RF'].includes(opos)?'뜬공 아웃':'직선타 아웃'):(o==='DP'?'병살타':'땅볼 아웃'); }
   const cam=false;
@@ -168,7 +169,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
   else if(o==='BB'){ if(!cam)cFx('볼넷','bb'); const pr=[]; if(bat){ cPlace(bat,CBS[0],700); pr.push(cSleep(700)); } pr.push(runAll2(600)); await Promise.all(pr); }
   else {
-    const fl=nearest(spot); const flFrom=fl?posOf(fl):null; const outPlay=o==='OUT'||o==='DP';
+    const fl=nearest(spot); const flFrom=fl?posOf(fl):null; const outPlay=o==='OUT'||o==='DP'||o==='SAC';
     const chaseTo=fl?(outPlay?spot:[flFrom[0]+(spot[0]-flFrom[0])*.8,flFrom[1]+(spot[1]-flFrom[1])*.8]):null;
     if(fl&&o!=='HR')cPlace(fl,chaseTo,flight*.95);
     if(!cam)sfx('crack',1,.94+rnd()*.12); cTrail([50,88],spot,arc,flight,o==='HR'?'hr':outPlay?'out':'hit'); const pr=[cBall([50,88],spot,flight,arc)];
