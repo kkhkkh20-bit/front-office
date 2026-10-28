@@ -23,9 +23,9 @@ function makeLineup(tid,pool){
   for(const pos of ORDER){ const id=ov[pos]; const p=id&&G.players[id]; if(p&&p.team===tid&&!p.isP&&healthy(p)&&!used.has(p.id)){ln[pos]=p;used.add(p.id);} }
   // 감독은 본래 포지션과 서브 포지션을 우선한다: 전체에서 가장 잘 맞는 (자리, 선수) 쌍부터 채운다
   const fitPen=(p,pos)=>pos==='DH'?(p.pos==='C'?1:0):p.pos===pos?0:subsOf(p).includes(pos)?1.5:pos==='C'?40:pos==='1B'?6:11;
-  const lean=teamLean(tid); const pb=p=>polBonus(tid,p,lean);
+  const lean=teamLean(tid); const pb=p=>polBonus(tid,p,lean); const wD=mgrDefW(tid);
   const open=new Set(ORDER.filter(pos=>!ln[pos]));
-  const SC=new Map(); for(const p of bats){ const o=offV(p), ex=promo(p)+pb(p); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o*.62+defAt(p,pos)*.38)+ex-fitPen(p,pos); SC.set(p.id,m); }
+  const SC=new Map(); for(const p of bats){ const o=offV(p), ex=promo(p)+pb(p); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o*(1-wD)+defAt(p,pos)*wD)+ex-fitPen(p,pos); SC.set(p.id,m); }
   while(open.size){ let bp=null,bq=null,bs=-1e9;
     for(const pos of open){ if(pos==='DH'&&open.size>1)continue; for(const p of bats){ if(used.has(p.id))continue; const s=SC.get(p.id)[pos]; if(s>bs){bs=s;bp=pos;bq=p;} } }
     if(!bq)break; ln[bp]=bq; used.add(bq.id); open.delete(bp); }
@@ -35,7 +35,7 @@ function entryLimit(){ return period()==='season'&&G.day>=KD(8,25)?ENTRY_BASE+EN
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys); }
 const canUp=p=>!p.e1&&!p.ys&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
-function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; return (p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*.72+p.r.def*.28)+polBonus(tid,p,lean)+f-(p.fat||0)/25; }
+function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; return (p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+f-(p.fat||0)/25; }
 function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=teamLean(tid);
   const ps=playersOf(tid).filter(p=>!p.ys&&healthy(p)); const v=p=>entryVal(tid,p,lean);
   const bats=ps.filter(p=>!p.isP).sort((a,b)=>v(b)-v(a)), pits=ps.filter(p=>p.isP);

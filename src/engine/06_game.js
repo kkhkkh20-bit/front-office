@@ -13,8 +13,12 @@ function pickStarter(tid,d,day){
   for(let k=0;k<sp.length;k++){ const i=((t.rot||0)+k)%sp.length; const p=sp[i]; if(p.lastStart==null||day-p.lastStart>=5){ t.rot=(i+1)%sp.length; return p; } }
   return [...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0))[0];
 }
-function orderList(start){
-  const s=[...start]; const by=f=>s.sort((a,b)=>f(b)-f(a));
+function orderList(start,tid){
+  const s=[...start]; const by=f=>s.sort((a,b)=>f(b)-f(a)); const m=tid!=null?mgrOf(tid):null; const sm=m&&!m.interim?m.small:50;
+  if(sm<=38){ /* 빅볼: 출루 좋은 1번 뒤에 팀 최고 타자를 2번에 두고 장타자를 몰아 놓는다 */
+    by(p=>p.r.eye*1.2+p.r.con+p.r.spd*.3); const lead=s.splice(0,1); by(offV); const two=s.splice(0,1); by(p=>p.r.pow+p.r.con*.4); const mid=s.splice(0,3); by(offV); return [...lead,...two,...mid,...s]; }
+  if(sm>=62){ /* 스몰볼: 빠른 1번, 번트·밀어치기가 되는 2번 */
+    by(p=>p.r.spd*1.2+p.r.con+p.r.eye*.6); const lead=s.splice(0,1); by(p=>p.r.con*1.3+p.r.eye*.5-p.r.pow*.4+p.r.spd*.3); const two=s.splice(0,1); by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3); by(offV); return [...lead,...two,...mid,...s]; }
   by(p=>p.r.con+p.r.eye+p.r.spd*.7); const top=s.splice(0,2);
   by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3);
   by(offV); return [...top,...mid,...s];
@@ -25,9 +29,9 @@ function gameSide(tid,day){
   for(const pos of ORDER){ const p=ln[pos]; if(!p||ov[pos]===p.id||!bench.length)continue;
     const m=mgrOf(tid), re=m.interim?50:mgrRestEff(m); const fat=p.fat||0, thr=(pos==='C'?55:66)+(50-re)*.35; if(R()<.004+re/4000||(fat>thr&&R()<clamp((fat-thr)/30+(re-50)/150,.12,.95))){ let best=null,bs=-1e9; for(const q of bench){const s=posScore(q,pos); if(s>bs){bs=s;best=q}} ln[pos]=best; bench.splice(bench.indexOf(best),1); } }
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k;
-  const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]));
+  const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),tid);
   const sp=pickStarter(tid,d,day);
-  const s={tid,order,posOf,pen:d.pen.filter(p=>p!==sp),used:new Set(sp?[sp.id]:[]),cur:sp,sp,curIsSP:true,idx:0,box:new Map(),pitchers:sp?[sp.id]:[],entry:{},exit:{}};
+  const s={tid,order,posOf,bench,out:[],defv:teamDefV(ln),pen:d.pen.filter(p=>p!==sp),used:new Set(sp?[sp.id]:[]),cur:sp,sp,curIsSP:true,idx:0,box:new Map(),pitchers:sp?[sp.id]:[],entry:{},exit:{}};
   if(sp)s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz()));
   return s;
 }
@@ -40,9 +44,9 @@ function boostOf(p){ let b=(p.team!=null&&G.coach)?coachBoost(p):0; if(p.team===
    실제 KBO 시즌 승률 표준편차(약 0.06, 1위 0.60~0.61)에 맞춰 0.84로 둔다 */
 const TALENT_W=.84;
 function shrinkQ(q){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip'])o[k]=LGP[k]+(q[k]-LGP[k])*TALENT_W; return o; }
-function outcome(b,p){
+function outcome(b,p,dv){
   const qb=shrinkQ(batProbs(b,boostOf(b))), qp=shrinkQ(pitProbs(p,boostOf(p)));
-  const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획 */
+  const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0)-((dv??DEF0)-DEF0)*.0016; /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
   const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hr)return 'HR';
   if(R()<babip){ const y=R(); if(y<qb.d3)return '3B'; if(y<qb.d3+qb.d2)return '2B'; return '1B'; }
   return 'OUT';
@@ -71,6 +75,7 @@ function simGame(day,hid,aid,ps){
     const bs=S[bk], fs=S[opp(bk)], isBot=bk==='h', half=(inn-1)*2+(isBot?1:0);
     const lead=()=>score[bk]-score[opp(bk)];
     if(fs.cur&&needChange(fs))bringIn(fs,inn,-lead(),half);
+    if(inn>=8&&-lead()>=1&&-lead()<=3&&!fs.dsub){ fs.dsub=1; const n=defSub(fs); if(n&&ev.length<400)ev.push({h:half,t:`수비 강화: ${n}`}); }
     let outs=0, runs=0, hh=0; const base=[null,null,null];
     while(outs<3){
       /* 도루: KBO 2024~25 구단 평균 시즌 120~140개, 성공률 72~75%, 1위 50~65개 수준에 맞춘다. 2루 도루가 대부분이고 빠른 주자는 3루도 노린다 */
@@ -91,13 +96,13 @@ function simGame(day,hid,aid,ps){
           else if(r<.9){ o='OUT'; xb.ab++; outs++; xp.outs++; }
           else { o='OUT'; xb.ab++; outs++; xp.outs++; if(base[1]){ base[1]=base[0]; } base[0]=b; } } }
       if(o){ if(pbp.length<260)pbp.push([half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h]); if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+12)bringIn(fs,inn,-lead(),half); continue; }
-      o=outcome(b,p);
+      o=outcome(b,p,fs.defv);
       const PB=()=>{ if(pbp.length<260)pbp.push([half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]); };
       if(o==='BB'){ xb.bb++; xp.bb++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;
         if(o==='K'){ xb.so++; xp.so++; outs++; xp.outs++; }
         else if(o==='OUT'){
-          if(R()<.018){ xp.h+=0; if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
+          if(R()<.018*clamp(1+(DEF0-fs.defv)/22,.4,2.2)){ xp.h+=0; if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
           else if(base[0]&&outs<2&&R()<.11){ dp=true; outs+=2; xp.outs+=2; base[0]=null; }
           else { outs++; xp.outs++; if(outs<3&&base[2]&&R()<.4){ sc.push(base[2]); base[2]=null; } if(outs<3&&base[1]&&!base[2]&&R()<.3){ base[2]=base[1]; base[1]=null; } }
         } else { xb.h++; xp.h++; hh++;
@@ -182,7 +187,7 @@ function injure(p,day,ctx){
   if(!I.surg)try{ evInjury(p,days); }catch(e){}
 }
 function gameRecord(day,hid,aid,g,kind){
-  const side=k=>{ const s=g.S[k]; return {tid:s.tid,bat:s.order.map(p=>{const x=s.box.get(p.id);return {id:p.id,n:p.name,pos:s.posOf[p.id],ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,rbi:x.rbi,bb:x.bb,so:x.so,r:x.r,sb:x.sb}}),
+  const side=k=>{ const s=g.S[k]; return {tid:s.tid,bat:[...s.order,...(s.out||[])].map(p=>{const x=s.box.get(p.id);return {id:p.id,n:p.name,pos:(s.out||[]).includes(p)?null:s.posOf[p.id],ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,rbi:x.rbi,bb:x.bb,so:x.so,r:x.r,sb:x.sb}}),
     pit:s.pitchers.map(id=>{const x=s.box.get(id);const p=G.players[id];return {id,n:p?p.name:'',outs:x.outs,h:x.h,hr:x.hr,er:x.er,bb:x.bb,so:x.so,pc:x.pc,d:g.dec.w===id?'승':g.dec.l===id?'패':g.dec.sv===id?'세':(g.dec.hld||[]).includes(id)?'홀':''}})}; };
   const me=hid===G.user?'h':'a'; const ms=g.score[me], os=g.score[me==='h'?'a':'h'];
   return {day,kind,home:hid,away:aid,hs:g.score.h,as:g.score.a,line:g.line,hits:g.hits,ev:g.ev,pbp:g.pbp,box:{h:side('h'),a:side('a')},res:ms>os?'승':ms<os?'패':'무',inn:g.inn};

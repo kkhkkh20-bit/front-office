@@ -100,7 +100,7 @@ function ownerPush(){ const t=team(G.user); if(t.indie||G.gameOver||G.unemp)retu
 function uRank(){ try{ const i=standingsNow().findIndex(x=>x.tid===G.user); return i>=0?i+1:5; }catch(e){ return 5; } }
 
 /* ===== 감독과의 공생: 선수 보는 눈 · 미는 선수 · 휴식/투수 관리 성향과 단장 지시 ===== */
-function mgrAttr(m){ if(!m)return m; const k=m.id||'x'; if(m.rest==null)m.rest=Math.round(clamp(30+u01('mrest',k)*55+(m.youth-50)*.25,20,90)); if(m.arm==null)m.arm=Math.round(clamp(25+u01('marm',k)*60-(m.pen-50)*.2,20,90)); if(m.eye==null)m.eye=Math.round(clamp(m.tac*.45+(m.youth||50)*.2+m.fame*.15+u01('meye',k)*25,25,90)); return m; }
+function mgrAttr(m){ if(!m)return m; const k=m.id||'x'; if(m.rest==null)m.rest=Math.round(clamp(30+u01('mrest',k)*55+(m.youth-50)*.25,20,90)); if(m.arm==null)m.arm=Math.round(clamp(25+u01('marm',k)*60-(m.pen-50)*.2,20,90)); if(m.dfn==null)m.dfn=Math.round(clamp(22+u01('mdfn',k)*62+((m.small??50)-50)*.2,20,90)); if(m.eye==null)m.eye=Math.round(clamp(m.tac*.45+(m.youth||50)*.2+m.fame*.15+u01('meye',k)*25,25,90)); return m; }
 function mgrDir(){ return G.mgrDir=G.mgrDir||{}; }
 /* 단장 지시가 반영된 실제 성향 */
 function mgrRestEff(m){ mgrAttr(m); const d=mgrDir(); return d.rest&&d.rest.ok&&m.id===d.rest.mid?Math.max(m.rest,70):m.rest; }

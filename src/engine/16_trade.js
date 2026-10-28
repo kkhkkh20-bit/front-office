@@ -38,7 +38,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
     const sal=p.faC||p.foreign?p.sal/100:Math.min(seasonWorth(o),p.sal/100*Math.pow(1.3,i)); v+=w-sal*c.money*d; }
   if(v>0)v*=roleFactor(t,p,dir);
   const gt=gmTrait(t.id); if(v>0){ if(gt==='prospect'&&p.age<=24)v*=1.22; if(gt==='gambler'&&dir==='in'&&ovr(p)>=60)v*=1.15; if(gt==='data'){ const cd=condOf(p); v*=1-cd*.02; } }
-  const m=G.mgr[t.id]; if(m&&v>0){ if(m.youth>=65&&p.age<=25)v*=1.1; if(m.small>=65&&!p.isP&&p.r.spd>=60)v*=1.06; if(m.pen>=65&&p.isP&&!isSP(p))v*=1.08; }
+  const m=G.mgr[t.id]; if(m&&v>0){ if(m.youth>=65&&p.age<=25)v*=1.1; if(m.small>=65&&!p.isP&&p.r.spd>=60)v*=1.06; if(m.pen>=65&&p.isP&&!isSP(p))v*=1.08; mgrAttr(m); if(m.dfn>=65&&!p.isP&&p.r.def>=60)v*=1.07; if(m.dfn<=35&&!p.isP&&p.r.pow>=60)v*=1.06; }
   if(v>0&&p.mor!=null&&p.mor<30)v*=dir==='in'?.92:.85;
   if(v>0&&dir==='in'&&ovr(p)<40&&p.age<=24)v*=.8; /* 아직 1군 근처에도 못 온 유망주는 불확실하다 */
   if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.45:.55):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다 */

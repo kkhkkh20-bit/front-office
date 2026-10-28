@@ -282,3 +282,8 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 .medchk .medrow{padding:6px 0;border-top:1px dashed var(--line,#333)}
 .medchk .medrow:first-of-type{border-top:0}
 td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
+/* 감독 유형 */
+.mtype{margin:6px 0 4px;padding:8px 10px;border-radius:6px;background:color-mix(in srgb,var(--acc,#4a8) 8%,transparent)}
+.mtype b{display:block;font-size:14px;margin-bottom:2px}
+.maxes{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.maxes .pill i{font-style:normal;opacity:.65;margin-right:2px}

@@ -86,7 +86,7 @@ function mvExp(m,S){ const b=mgrBack(m), v=mgrVoice(m); const st=S.streak||0; co
   if(S.inj.length>=2)L.push(v==='old'?'부상은 핑계가 안 됩니다. 있는 선수로 이기는 게 감독 일입니다.':'부상자가 많을 땐 백업이 해 주는 경기 하나가 시즌을 살립니다.');
   if(m.youth>=65&&S.rank!=null&&S.rank>=7)L.push('순위가 이럴 때 젊은 선수들한테 경험을 주는 게 내년을 사는 길이라고 봅니다.');
   if(S.per==='pre')L.push(G.startY===G.year?(v==='fire'?'새로 모인 팀이지만 캠프 보니 해볼 만합니다.':v==='warm'?'처음 모인 애들이라 서로 이름 외우는 것부터 시작했습니다. 그래도 분위기는 좋습니다.':'창단 첫해라 아직 손발을 맞추는 중입니다. 4월 한 달은 시행착오가 있을 겁니다.'):(v==='fire'?'캠프에서 본 걸로는 작년보다 확실히 좋아졌습니다.':v==='data'?'캠프 트래킹 수치는 작년보다 좋습니다. 다만 실전은 다릅니다.':'캠프는 다치지 않고 끝내는 게 제일입니다.'));
-  const sit=L.slice(); const gen=[...(MV_BACK[b]||MV_BACK.gen),...MV_VOICE[v]]; if(m.small>=68)gen.push('우리 같은 팀은 한 점을 짜내는 야구를 해야 합니다. 번트와 도루로 흔들겠습니다.'); if(m.pen>=68)gen.push('경기는 7회부터라고 생각합니다. 필승조만 버텨 주면 이깁니다.');
+  const sit=L.slice(); const gen=[...(MV_BACK[b]||MV_BACK.gen),...MV_VOICE[v]]; if(m.dfn>=68)gen.push('수비가 흔들리면 투수도 무너집니다. 실책 하나가 3점이 됩니다. 수비 되는 선수를 먼저 쓰겠습니다.'); if(m.dfn<=32)gen.push('수비 실책 하나보다 홈런 하나가 더 큽니다. 잘 치는 선수를 빼지 않겠습니다.'); if(m.small>=68)gen.push('우리 같은 팀은 한 점을 짜내는 야구를 해야 합니다. 번트와 도루로 흔들겠습니다.'); if(m.pen>=68)gen.push('경기는 7회부터라고 생각합니다. 필승조만 버텨 주면 이깁니다.');
   const one=sit.length?mvPick(m,'es',sit):mvPick(m,'eg',gen); const two=m.rel>=70?mvPick(m,'eg2',gen.filter(x=>x!==one)):''; return [one,two].filter(Boolean).join(' '); }
 /* 단장에게 바라는 것 */
 function mvAsk(m,S){ const v=mgrVoice(m); const k=S.weak[0]; if(!k)return '';

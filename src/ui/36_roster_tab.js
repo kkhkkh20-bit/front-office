@@ -13,7 +13,7 @@ function fposList(tid,pos){ if(!pos)return '';
   const [fx,fy]=FPOS[pos]||[180,160]; const up=fy>200; const pos2=up?`bottom:${((330-(fy-26))/330*100).toFixed(1)}%`:`top:${((fy+26)/330*100).toFixed(1)}%`;
   return `<div class="fdd ${up?'up':''}" style="${pos2};--cx:${(fx/360*100).toFixed(1)}%"><div class="fdd-h"><b>${title}</b><button class="x" data-a="fpos" data-v="" aria-label="닫기">×</button></div><div class="fdd-l">${L.map(p=>row(p,!p.isP&&pos!=='DH'?`<span class="small muted">수비 ${Math.round(defAt(p,pos))}</span>`:'')).join('')||'<p class="small muted">선수가 없습니다.</p>'}</div></div>`; }
 function fieldSVG(tid,interactive,inline){
-  const d=depth(tid); const ps=playersOf(tid); const order=orderList(d.start); const t=team(tid);
+  const d=depth(tid); const ps=playersOf(tid); const order=orderList(d.start,tid); const t=team(tid);
   const next=d.sp.length?d.sp[(t.rot||0)%d.sp.length]:null;
   const node=(pos)=>{ const [x,y]=FPOS[pos];
     let name='빈자리',stat='',cnt=0,face='',no=0,off=false,ov=null;
@@ -70,7 +70,7 @@ function rosterView(){
   const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
   let groups;
   if(seg==='bat'){
-    const lineup=orderList(d.start);
+    const lineup=orderList(d.start,tid);
     const posf=p=>posOf[p.id]?POSS[posOf[p.id]]+(posOf[p.id]!==p.pos&&posOf[p.id]!=='DH'?`(${POSS[p.pos]})`:''):POSS[p.pos];
     groups=[['주전 (타순)',lineup,posf],[entryOn()?'1군 백업':'백업',d.bench],['2군',d.futB.filter(p=>!p.ys)],['육성선수',d.futB.filter(p=>p.ys)],['부상·출장 정지',d.inj.filter(p=>!p.isP)],['군 복무',awayOf(tid).filter(p=>!p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>!p.isP)]];
   } else {

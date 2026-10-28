@@ -64,7 +64,7 @@ function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; cons
   const tag=(team(p.team).cap===p.id?'<em class="capb">C</em>':'')+(p.fr&&p.fr.tid===p.team?'<em class="frb">프</em>':'')+(p.age<=24&&(rp.ofp??0)>=(rp.cur??0)+6?`<em class="potb">잠재 ${dv(rp.ofp)}</em>`:'');
   const org=own?originOf(p):'';
   return `<button class="gl-r" data-a="player" data-v="${p.id}"><span class="gl-l">${lab}</span>${avImg(p)}<span class="gl-m"><b>${esc(p.name)}${tag}</b><i>${posLabel(p)} · ${p.age}세 · ${money(p.sal)} · ${st}${org?` · <span class="org">${org}</span>`:''}</i></span><span class="gl-o">${rchip(rp.cur)}${gt}</span></button>`; }
-function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const d=depth(tid); const order=orderList(d.start); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
+function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const d=depth(tid); const order=orderList(d.start,tid); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
   const R=(p,lab,l)=>glanceRow(p,lab,own,l);
   const roles=['마무리','필승조','필승조','추격조','추격조','롱릴리프','롱릴리프'];
   const one=`<div class="gl-g"><div><div class="eyebrow">타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`,'1')).join('')}</div>
@@ -90,7 +90,7 @@ function teamGrowCard(){ const T=(G.tgrow||[]).slice(-24); if(T.length<2)return 
     <div class="row between small"><span>${a.y}.${a.m}</span><span>${b.y}.${b.m}</span></div>
     <p class="small"><b style="color:var(--tc,#e0564f)">1군 전력</b> ${dvRaw(a.r1).toFixed(1)} → <b>${dvRaw(b.r1).toFixed(1)}</b> · <b style="color:var(--good)">유망주 상위 10명 잠재</b> ${dvRaw(a.pot).toFixed(1)} → <b>${dvRaw(b.pot).toFixed(1)}</b></p>`); }
 function lineupCard(tid){
-  const d=depth(tid); const order=orderList(d.start); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k; const m=G.mgr[tid];
+  const d=depth(tid); const order=orderList(d.start,tid); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k; const m=G.mgr[tid];
   const row=(p,i)=>{ const pos=posOf[p.id]; const off=pos!=='DH'&&pos!==p.pos;
     return `<div class="lu" data-a="player" data-v="${p.id}" role="button" tabindex="0"><span class="lu-n">${i+1}</span>${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p"><span class="pp main${off?' off':''}">${POSS[pos]}</span>${off?`<i>본래 ${POSS[p.pos]}</i>`:''} <i>${hand(p)}</i></span><span class="lu-s">${bLine(p)}</span><span class="lu-u">${l10Text(p)?l10Text(p)+' · ':''}${useText(p)}</span></div>${tid===G.user?fatBar(p):(()=>{const r=scoutReport(p); return r.cur!=null?rchip(r.cur):'<span></span>';})()}</div>`; };
   const bench=d.bench.map(p=>`<div class="lu sm" data-a="player" data-v="${p.id}" role="button" tabindex="0">${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p">${posChips(p)}</span><span class="lu-s">${bLine(p)}</span><span class="lu-u">${useText(p)}</span></div></div>`).join('');
