@@ -228,5 +228,5 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
 /* 창단 드래프트 후보: 종합 등급 대신 스카우트(툴)·데이터팀(기록) 의견을 나란히 */
 function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
-  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg${p.isP?'':' · 컨택·선구안은 추정 오차 큼'}`)}${box('데이터팀 · 기록',d?d.it.map(([l,v])=>`${l} ${pctW(v)}`).slice(2).join(' · '):dataLv(G.user)<1?'분석원 없음':'기록 부족',d?[d.lv===2?'2군 기록':'',d.small?'표본 적음':'',d.luck?d.luck[0]:''].filter(Boolean).join(' · ')||`${d.ys}시즌 기록 기준`:'')}${box('연봉',money(p.sal||0),tContract(p))}</div>
-    <div class="fdop">${S.L.map(t=>`<span class="ftl${t.vis?'':' fz'}" style="--c:${rcol(t.v)}">${t.l} <b>${dv(t.v)}</b>${t.vis?'':'?'}</span>`).join('')}${d?d.it.map(([l,v])=>`<span class="dt-i"><i>${l}</i><b style="color:${pctC(v)}">${pctW(v)}</b></span>`).join(''):''}</div>`; }
+  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg${p.isP?'':' · 컨택·선구안은 추정 오차 큼'}`)}${box('데이터팀 · 기록',d?`${p.isP?'실점 억제':'타격 생산'} ${pctW(d.it[3][1])}`:dataLv(G.user)<1?'분석원 없음':'기록 부족',d?[d.lv===2?'2군 기록':'',d.small?'표본 적음':'',d.luck?d.luck[0]:''].filter(Boolean).join(' · ')||`${d.ys}시즌 기록 기준`:'')}${box('연봉',money(p.sal||0),tContract(p))}</div>
+    <div class="fdop">${S.L.map(t=>`<span class="ftl${t.vis?'':' fz'}" style="--c:${rcol(t.v)}">${t.l} <b>${dv(t.v)}</b>${t.vis?'':'?'}</span>`).join('')}</div>`; }
