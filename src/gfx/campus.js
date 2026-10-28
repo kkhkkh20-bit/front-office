@@ -4,9 +4,10 @@ let CPID=0;
 /* 선수 한 명: 위에서 본 그림 + 클릭 영역 + 상태 표시. anim은 SVG 애니메이션 조각 */
 function cpPlayer(p,x,y,o={}){ const id='cp'+(++CPID); const u=CAMP_UNI[o.uni||'a'];
   const badge=p.inj?`<g transform="translate(9 -14)"><circle r="5.5" fill="#d6333f" stroke="#fff" stroke-width="1"/><path d="M-3 0h6M0 -3v6" stroke="#fff" stroke-width="1.8"/></g>`:p.tired?`<g transform="translate(9 -14)"><circle r="5.5" fill="#e0a100" stroke="#fff" stroke-width="1"/><text y="2.6" text-anchor="middle" font-size="7" font-weight="700" fill="#111">z</text></g>`:p.hot?`<g transform="translate(9 -14)"><circle r="5.5" fill="#1fa463" stroke="#fff" stroke-width="1"/><path d="M-2.5 1.5 0 -2 2.5 1.5" fill="none" stroke="#fff" stroke-width="1.6"/></g>`:'';
+  const dev=p.dev?`<g transform="translate(-10 -14)"><rect x="-5" y="-5" width="10" height="10" rx="2" fill="#18a5b5" stroke="#fff" stroke-width="1"/><path d="M-2.5 2.5 0 -2.5 2.5 2.5" fill="none" stroke="#fff" stroke-width="1.5"/></g>`:'';
   const act=o.act?` ${o.act}`:''; const sty=o.act?` style="--ad:${o.dur||2.6}s;--dl:${o.dl!=null?o.dl:-((p.id*0.37)%2).toFixed(2)}s"`:'';
   return `<g class="cpp${act}" data-pid="${p.id}" transform="translate(${x} ${y})" tabindex="0" role="button" aria-label="${p.name}"${sty}>
-    ${o.anim||''}<g transform="scale(${o.s||.62})"><ellipse cx="1" cy="2" rx="14" ry="12" fill="#0003"/><g transform="rotate(${o.rot||0})">${kPlayer({...u,v:p.v%5,rot:0,helm:o.helm?u.H:null,glove:o.glove,bat:o.bat,pose:o.pose})}</g></g>${badge}
+    ${o.anim||''}<g transform="scale(${o.s||.62})"><ellipse cx="1" cy="2" rx="14" ry="12" fill="#0003"/><g transform="rotate(${o.rot||0})">${kPlayer({...u,v:p.v%5,rot:0,helm:o.helm?u.H:null,glove:o.glove,bat:o.bat,pose:o.pose})}</g></g>${dev}${badge}
     <text class="cpn" y="${o.ny||19}">${p.name}</text></g>`; }
 function cpWalk(path,dur,begin){ return `<animateMotion dur="${dur}s" begin="${begin||0}s" repeatCount="indefinite" rotate="auto" path="${path}"/>`; }
 function cpBob(d){ return `<animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;0 -2;0 0" dur="${d||1.2}s" repeatCount="indefinite"/>`; }
@@ -27,6 +28,8 @@ function construction(x,y,w,h,pct,label){ const pid='hatch'+x+y;
   <rect x="${x+12}" y="${y+h-14}" width="${w-24}" height="6" rx="3" fill="#ffffff22"/><rect x="${x+12}" y="${y+h-14}" width="${(w-24)*pct}" height="6" rx="3" fill="#e0a100"/>
   <text class="pl" x="${x+w/2}" y="${y+h-19}" text-anchor="middle">${label}</text>`; }
 
+/* 증축 중인 시설 아래쪽 진행 막대 + "다음 단계 · 진행률 · 남은 일수" */
+function bldBar(x,y,w,h,b,name){ return `<g class="cpbld"><rect x="${x+12}" y="${y+h-24}" width="${w-24}" height="6" rx="3" fill="#0b1218aa"/><rect x="${x+12}" y="${y+h-24}" width="${Math.max(2,(w-24)*b.pct)}" height="6" rx="3" fill="#e0a100"/><text class="pl" x="${x+w-14}" y="${y+h-29}" text-anchor="end">${name} 공사 ${Math.round(b.pct*100)}% · ${b.left}일 남음</text></g>`; }
 function emptyLot(x,y,w,h,txt){ return `<rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-36}" fill="#5f7d4a" stroke="#d9d2bd" stroke-dasharray="4 3"/><text class="pl" x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle">${txt}</text>`; }
 /* 지붕을 걷어낸 건물: 벽 두께 + 바닥 */
 function bldg(x,y,w,h,floor){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${floor}" stroke="#d8dde2" stroke-width="5"/><rect x="${x+w/2-9}" y="${y+h-3}" width="18" height="6" fill="${floor}"/>`; }
@@ -39,7 +42,7 @@ function renderFarm(S){ CPID=0; const P=S.players; const g=[];
     ${[...Array(12)].map((_,i)=>`<rect x="${40+i*16}" y="640" width="11" height="20" rx="2" fill="${['#c94b4b','#3b6fb6','#e7e7e7','#2e2e2e','#d9b440'][i%5]}"/>`).join('')}<rect x="28" y="632" width="210" height="36" fill="none" stroke="#ffffff44"/><text class="pl" x="250" y="656">2군 선수단 주차장</text>`);
 
   /* 2군 구장 */
-  { const x=16,y=16,w=560,h=322, lv=S.lv.fut; g.push(plotFrame(x,y,w,h,`2군 구장 · ${['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv]}`,lv,3,S.bld==='fut','fut'));
+  { const x=16,y=16,w=560,h=322, lv=S.lv.fut; g.push(plotFrame(x,y,w,h,`2군 구장 · ${['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv]}`,lv,3,S.bmap&&S.bmap.fut,'fut'));
     const cx=x+w/2, cy=y+h-30; const grass=lv>=1?'#2f8a45':'#7d8f4e', stripe=lv>=1?'#ffffff0c':'#6b5a3a40';
     if(lv>=3)g.push(`<path d="M${cx} ${cy+16} L${x+12} ${y+118} Q${cx} ${y-30} ${x+w-12} ${y+118} Z" fill="#5d6670"/>`);
     g.push(`<path d="M${cx} ${cy} L${x+34} ${y+124} Q${cx} ${y+16} ${x+w-34} ${y+124} Z" fill="${grass}"/>${lv>=1?[...Array(10)].map((_,i)=>`<path d="M${cx} ${cy} L${x+34+i*50} ${y+40} L${x+58+i*50} ${y+40} Z" fill="${stripe}"/>`).join(''):`<g fill="#8a7650" opacity=".55">${[...Array(18)].map((_,i)=>`<ellipse cx="${x+60+(i*53)%320}" cy="${y+70+(i*37)%180}" rx="${8+i%4*3}" ry="${4+i%3*2}"/>`).join('')}</g>`}
@@ -51,13 +54,14 @@ function renderFarm(S){ CPID=0; const P=S.players; const g=[];
     if(F[8]) g.push(cpPlayer(F[8],cx-15,cy-2,{uni:'f',bat:'R',helm:1,act:'sw',dur:2.8,dl:0}));
     if(F[0]&&F[8]) g.push(cpPitchBall(cx+4,cy-58,cx-8,cy-8,cx+90,cy-190,2.8,2.6));
     if(lv>=3) g.push(`<rect x="${x+w-112}" y="${y+26}" width="90" height="22" fill="#0a0d10" stroke="#3a4652"/><text x="${x+w-67}" y="${y+41}" text-anchor="middle" class="sb">${S.futNote||'퓨처스 훈련'}</text>`);
-    if(F.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">벤치 ${F.length-9}명</text>`); }
+    if(F.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">벤치 ${F.length-9}명</text>`);
+    if(S.bmap&&S.bmap.fut) g.push(bldBar(x+w*.62,y,w*.38,h,S.bmap.fut,['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv+1]||'')); }
 
   /* 아래 줄 시설들 */
-  const row=(key,x,w,title,lvNames,draw,Y,H)=>{ const y=Y||370,h=H||226, lv=S.lv[key]; g.push(plotFrame(x,y,w,h,title,lv,3,S.bld===key,key)); g.push(`<text class="pl" x="${x+8}" y="${y+h-4}">${lvNames[lv]}</text>`);
-    if(S.bld===key&&lv===0){ g.push(construction(x,y,w,h,S.pct,`${lvNames[1]} 공사 중 · ${Math.round(S.pct*100)}%`)); return; }
+  const row=(key,x,w,title,lvNames,draw,Y,H)=>{ const y=Y||370,h=H||226, lv=S.lv[key], b=S.bmap&&S.bmap[key]; g.push(plotFrame(x,y,w,h,title,lv,3,b,key)); g.push(`<text class="pl" x="${x+8}" y="${y+h-4}">${lvNames[lv]}</text>`);
+    if(b&&lv===0){ g.push(construction(x,y,w,h,b.pct,`${lvNames[1]} 공사 ${Math.round(b.pct*100)}% · ${b.left}일 남음`)); return; }
     if(lv===0){ g.push(emptyLot(x,y,w,h,'빈 부지 · 눌러서 공사')); return; }
-    draw(x,y,w,h,lv); if(S.bld===key)g.push(`<rect x="${x+12}" y="${y+h-12}" width="${w-24}" height="5" rx="2" fill="#ffffff22"/><rect x="${x+12}" y="${y+h-12}" width="${(w-24)*S.pct}" height="5" rx="2" fill="#e0a100"/><text class="pl" x="${x+w-14}" y="${y+h-16}" text-anchor="end">${lvNames[lv+1]} 증축 중</text>`); };
+    draw(x,y,w,h,lv); if(b)g.push(bldBar(x,y,w,h,b,lvNames[lv+1])); };
 
   row('indoor',592,392,'실내 연습장',['없음','간이 연습장','실내 연습장','실내 훈련동'],(x,y,w,h,lv)=>{ const bw=lv===1?w-200:lv===2?w-60:w-20; g.push(bldg(x+10,y+28,bw,h-48,'#3f8f55'));
     const cages=lv===1?2:lv===2?4:5; for(let i=0;i<cages;i++){ const cx=x+22+i*70, cy=y+40; g.push(`<rect x="${cx}" y="${cy}" width="52" height="${h-74}" fill="#00000022" stroke="#ffffff55" stroke-dasharray="3 2"/><rect x="${cx+20}" y="${cy+8}" width="12" height="8" fill="#555"/>`);

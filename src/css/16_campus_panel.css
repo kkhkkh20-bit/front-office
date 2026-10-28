@@ -1,0 +1,43 @@
+/* ---------- 훈련장 지도: 정보 패널(모바일은 지도 아래, 넓은 화면은 옆)·선택 강조·범례 ---------- */
+.cpwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:8px 0}
+.cpwrap .campst{margin:0}
+@media (min-width:1100px){.cpwrap{grid-template-columns:minmax(0,1fr) 290px;align-items:start}}
+.cppanel{min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13px;display:grid;gap:6px;align-content:start}
+.cppanel p{margin:0}
+.cpph{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.cpnm{font-size:22px;font-weight:800;color:#ffd24d;line-height:1.15;min-width:0;overflow-wrap:anywhere}
+.cpnm.sm{font-size:17px;color:var(--ink)}
+.cpx{all:unset;cursor:pointer;flex:none;font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:3px 8px}
+.cpx:hover{color:var(--ink)}
+.cptag{display:inline-block;justify-self:start;font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:6px;white-space:nowrap}
+.cptag.real{background:#1d4a33;color:#bdf0d2}
+.cptag.stage{background:#3a3f48;color:#cfd6de}
+.cpdl{display:grid;gap:4px;margin:0}
+.cpdl>div{display:grid;grid-template-columns:84px minmax(0,1fr);gap:8px;align-items:baseline}
+.cpdl dt{color:var(--muted);font-size:12px}.cpdl dd{margin:0;min-width:0}
+.cpdl .bad,.cppanel .bad{color:var(--bad)}.cppanel .warn{color:var(--warn)}.cppanel .good{color:var(--good)}
+.cpfat{display:inline-block;vertical-align:middle;width:70px;height:6px;border-radius:3px;background:var(--line2);overflow:hidden}
+.cpfat i{display:block;height:100%;background:var(--good)}.cpfat i.hi{background:var(--warn)}
+.cplv{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cplv .fpip{margin-top:0}
+.cpbar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;margin:4px 0 2px}
+.cpbar i{display:block;height:100%;background:var(--warn)}
+.cpbl{all:unset;cursor:pointer;display:block;padding:7px 8px;border:1px solid var(--line);border-radius:5px;margin-top:4px}
+.cpbl:hover{border-color:var(--line2);background:#ffffff06}
+.cpbtns{display:flex;flex-wrap:wrap;gap:6px}
+.cpstat{font-size:13px;padding:6px 8px;border-radius:4px;background:#0f161c;border-left:3px solid var(--good)}
+.cpstat span{display:block;font-size:11px;color:var(--muted);margin-bottom:1px}
+.cpfn{font-size:11.5px}
+.cpchipl{display:flex;flex-wrap:wrap;gap:5px}.cpchipl .chip{cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:3px 8px;font-size:12px;color:var(--ink)}
+/* 지도 위 선택 강조 */
+svg.campus .cpp.sel .cpn{fill:#ffd24d;font-weight:800}
+svg.campus .cpring{fill:#ffd24d22;stroke:#ffd24d}
+svg.campus .plot.sel>rect:first-child{stroke:#ffd24d;stroke-width:3}
+/* 범례 */
+.cpleg{margin:6px 0 4px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--ink)}
+.cplh{font-weight:700;font-size:12px;color:var(--muted);margin-bottom:4px}
+.cpleg ul{margin:0;padding:0;list-style:none;display:grid;gap:5px}
+.cpleg li{line-height:1.5}
+.cpmk{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font:700 10px/1 var(--f-ui);font-style:normal;color:#fff;vertical-align:-2px;margin:0 2px;border:1px solid #fff}
+.cpmk.inj{background:#d6333f}.cpmk.tir{background:#e0a100;color:#111}.cpmk.hot{background:#1fa463}
+.cpmk.hot::before{content:"";border:4px solid transparent;border-bottom:5px solid #fff;border-top:0;margin-top:-1px}
+.cpmk.dev{background:#18a5b5;border-radius:3px}
