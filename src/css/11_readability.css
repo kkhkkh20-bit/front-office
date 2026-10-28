@@ -292,3 +292,14 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .pbp-now b{line-height:1.5}
 .pc-an{margin-top:6px;font-size:13px;color:var(--ink,#ddd);opacity:.9}
 .cs-log .pc-an2{display:block;font-style:normal;font-size:12px;opacity:.75;margin-top:2px}
+/* 스폰서 */
+.spo-top{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.spo-top>div{padding:8px 10px;border:1px solid var(--line,#333);border-radius:6px}
+.spo-top i{display:block;font-style:normal;font-size:12px;opacity:.7}.spo-top b{font-size:18px}
+.spt td{vertical-align:top}
+.spo-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.spo{padding:10px;border:1px solid var(--line,#333);border-radius:8px;display:flex;flex-direction:column;gap:6px}
+.spo-n{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.spo-n i{display:block;font-style:normal;font-size:11px;opacity:.65}
+@media (max-width:480px){.spo-top{grid-template-columns:1fr 1fr 1fr}.spo-top b{font-size:15px}.spo-n{grid-template-columns:1fr 1fr}}
+.spt th,.spt td{text-align:left}.spt td.num{text-align:right}

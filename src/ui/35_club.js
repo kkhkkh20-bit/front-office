@@ -25,7 +25,7 @@ function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=st
   return sv.bar+csec('리그 관중',lgT+'<p class="small muted">2025년 실제 KBO는 경기당 평균 17,101명, 좌석 점유율 82.9%였습니다.</p>');
 }
 /* ---------- 구단 연대기 ---------- */
-const CHK={season:'시즌',trade:'트레이드',fa:'FA',draft:'신인 지명',found:'창단',mgr:'감독',stad:'구장',cap:'주장',award:'수상',star:'프랜차이즈',legend:'레전드',fired:'단장',join:'단장'};
+const CHK={season:'시즌',trade:'트레이드',fa:'FA',draft:'신인 지명',found:'창단',mgr:'감독',stad:'구장',cap:'주장',award:'수상',star:'프랜차이즈',legend:'레전드',fired:'단장',join:'단장',spon:'스폰서'};
 function chronView(){ const tid=G.user; const t=team(tid); const C=(G.chron||[]).filter(x=>x.tid===tid); const H=(G.history||[]).filter(h=>h.y>=2026);
   const champs=H.filter(h=>h.champ===tid).map(h=>h.y); const ps=C.filter(x=>x.k==='season'&&/진출|우승|준우승/.test(x.t)).length;
   const stars=domestic(tid).filter(p=>p.fr&&p.fr.tid===tid); const leg=(G.frLeg||[]).filter(x=>x.tid===tid); const cap=captainOf(tid);
@@ -39,7 +39,7 @@ function chronView(){ const tid=G.user; const t=team(tid); const C=(G.chron||[])
   return csec(`${esc(t.city)} ${esc(t.nick)} 연대기`,top)+csec('해마다 일어난 일',ys.length?ys.map(yc).join(''):'<p class="small muted">아직 기록이 없습니다. 시즌을 치르며 트레이드·지명·FA·수상·감독 교체가 여기에 쌓입니다.</p>'); }
 function clubView(){
   const s=curSub('club');
-  const H0={rel:relView,ob:obView,owner:()=>ownerView()+starPanel()+ownerAskView(),media:mediaView,fin:moneyView,stad:()=>stadView('now'),inv:invView,chron:chronView,
+  const H0={rel:relView,ob:obView,owner:()=>ownerView()+starPanel()+ownerAskView(),media:mediaView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),

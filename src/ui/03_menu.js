@@ -13,7 +13,7 @@ const SUBS={
   train:[['camp','훈련장'],['dev','육성'],['lead','리더십']],
   staff:[['mgr','감독'],['coach','코치진'],['scouts','스카우트'],['data','전력분석'],['med','의무']],
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['news','뉴스·팬'],['hist','역사']],
-  club:[['owner','구단주·목표'],['fin','재정'],['inv','시설 투자'],['chron','연대기'],['set','설정']]};
+  club:[['owner','구단주·목표'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['set','설정']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block'],gms:['gms','report']},
   league:{rec:['rec','feat']},club:{owner:['owner','media','rel'],chron:['chron','result','ob','log']}};
