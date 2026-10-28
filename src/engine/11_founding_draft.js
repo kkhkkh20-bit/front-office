@@ -134,7 +134,11 @@ function seasonReview(y){ const tid=G.user; const ps=playersOf(tid); const W=p=>
   if(yg.length)L.push('[성장한 젊은 선수] '+yg.map(x=>`${x.p.name}(${x.p.age}세) ${[x.d>=1?`능력 +${Math.round(x.d)}`:'',x.w>=1?`WAR ${x.w.toFixed(1)}`:''].filter(Boolean).join(' · ')}`).join(', '));
   const out=ps.filter(p=>!p.foreign&&!p.prospect&&p.svc>=faSvc(p)-1&&(p.lastFA==null||y+1-p.lastFA>=4)&&(!p.faC||p.yrs<=1)&&W(p)>=1).sort((a,b)=>W(b)-W(a)).slice(0,4);
   if(out.length)L.push('[내년 준비] FA 자격이 다가온 주축: '+out.map(p=>`${p.name}(${posLabel(p)}, WAR ${W(p).toFixed(1)})`).join(', ')+'. 다년계약이나 대체 자원을 미리 보세요.');
-  if(!L.length)return; mail('전력분석팀',`${y} 시즌 회고: 우리 선수들`,`${y} 시즌을 우리 선수 중심으로 정리했습니다.\n\n${L.join('\n\n')}\n\n구단·재정 → 연대기에 해마다 기록이 쌓입니다.`,{kind:'업무',imp:true,acts:[{l:'연대기',a:'go',v:'club:chron'},{l:'선수단 계획',a:'go',v:'roster:plan'}]}); }
+  if(!L.length)return; const m=mail('전력분석팀',`${y} 시즌 회고: 우리 선수들`,`${y} 시즌을 우리 선수 중심으로 정리했습니다.\n\n${L.join('\n\n')}\n\n아래 선수별 버튼으로 유지·재계약 검토·대체 후보 찾기를 바로 할 수 있습니다. 구단·재정 → 연대기에 해마다 기록이 쌓입니다.`,{kind:'업무',imp:true,acts:[{l:'연대기',a:'go',v:'club:chron'},{l:'선수단 계획',a:'go',v:'roster:plan'}]});
+  /* 선수별 후속 조치 버튼용 목록: 영입·트레이드로 온 선수, 성장한 젊은 선수, FA가 다가온 주축 */
+  const rv=[]; const add=(p,k)=>{ if(!p||p.team!==tid)return; const o=rv.find(x=>x.id===p.id); if(o){ if(!o.k.includes(k))o.k+=' · '+k; } else rv.push({id:p.id,k,w:Math.round(W(p)*10)/10}); };
+  nw.forEach(x=>add(x.p,x.how)); for(const t of TR.slice(0,8))(t.gi||[]).forEach(id=>add(G.players[id],'트레이드')); yg.forEach(x=>add(x.p,'성장')); out.forEach(p=>add(p,'FA 임박'));
+  if(m&&rv.length)m.rv={y,L:rv.slice(0,12)}; }
 /* 창단 드래프트 3년 뒤: 지명 당시 능력 대비 지금, 우리 유니폼을 입고 쌓은 WAR */
 function fdReview(){ const F=G.fd; if(!F||!F.picks||G.fdRev)return; G.fdRev=true; const y0=G.startY||G.year-3;
   const mine=F.picks.filter(x=>x.tid===G.user&&x.pid).slice(0,8).map(x=>{ const p=G.players[x.pid]; if(!p)return {x,gone:true}; const war=sum(p.hist.filter(h=>h.lvl==='1군'&&h.y>=y0&&h.t===G.user).map(h=>warOf(h,p))); return {x,p,war,now:Math.round(ovr(p))}; });
