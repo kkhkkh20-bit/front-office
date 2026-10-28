@@ -1867,6 +1867,49 @@ body:has(#sheet .scrim) #dtick{display:none}
 .rva-b{display:flex;gap:4px;flex-wrap:wrap}
 .rva-b .btn[disabled]{opacity:.45;cursor:not-allowed}
 .rva-w{flex-basis:100%}
+/* ---------- 훈련장 지도: 정보 패널(모바일은 지도 아래, 넓은 화면은 옆)·선택 강조·범례 ---------- */
+.cpwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:8px 0}
+.cpwrap .campst{margin:0}
+@media (min-width:1100px){.cpwrap{grid-template-columns:minmax(0,1fr) 290px;align-items:start}}
+.cppanel{min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13px;display:grid;gap:6px;align-content:start}
+.cppanel p{margin:0}
+.cpph{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.cpnm{font-size:22px;font-weight:800;color:#ffd24d;line-height:1.15;min-width:0;overflow-wrap:anywhere}
+.cpnm.sm{font-size:17px;color:var(--ink)}
+.cpx{all:unset;cursor:pointer;flex:none;font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:3px 8px}
+.cpx:hover{color:var(--ink)}
+.cptag{display:inline-block;justify-self:start;font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:6px;white-space:nowrap}
+.cptag.real{background:#1d4a33;color:#bdf0d2}
+.cptag.stage{background:#3a3f48;color:#cfd6de}
+.cpdl{display:grid;gap:4px;margin:0}
+.cpdl>div{display:grid;grid-template-columns:84px minmax(0,1fr);gap:8px;align-items:baseline}
+.cpdl dt{color:var(--muted);font-size:12px}.cpdl dd{margin:0;min-width:0}
+.cpdl .bad,.cppanel .bad{color:var(--bad)}.cppanel .warn{color:var(--warn)}.cppanel .good{color:var(--good)}
+.cpfat{display:inline-block;vertical-align:middle;width:70px;height:6px;border-radius:3px;background:var(--line2);overflow:hidden}
+.cpfat i{display:block;height:100%;background:var(--good)}.cpfat i.hi{background:var(--warn)}
+.cplv{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cplv .fpip{margin-top:0}
+.cpbar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;margin:4px 0 2px}
+.cpbar i{display:block;height:100%;background:var(--warn)}
+.cpbl{all:unset;cursor:pointer;display:block;padding:7px 8px;border:1px solid var(--line);border-radius:5px;margin-top:4px}
+.cpbl:hover{border-color:var(--line2);background:#ffffff06}
+.cpbtns{display:flex;flex-wrap:wrap;gap:6px}
+.cpstat{font-size:13px;padding:6px 8px;border-radius:4px;background:#0f161c;border-left:3px solid var(--good)}
+.cpstat span{display:block;font-size:11px;color:var(--muted);margin-bottom:1px}
+.cpfn{font-size:11.5px}
+.cpchipl{display:flex;flex-wrap:wrap;gap:5px}.cpchipl .chip{cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:3px 8px;font-size:12px;color:var(--ink)}
+/* 지도 위 선택 강조 */
+svg.campus .cpp.sel .cpn{fill:#ffd24d;font-weight:800}
+svg.campus .cpring{fill:#ffd24d22;stroke:#ffd24d}
+svg.campus .plot.sel>rect:first-child{stroke:#ffd24d;stroke-width:3}
+/* 범례 */
+.cpleg{margin:6px 0 4px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--ink)}
+.cplh{font-weight:700;font-size:12px;color:var(--muted);margin-bottom:4px}
+.cpleg ul{margin:0;padding:0;list-style:none;display:grid;gap:5px}
+.cpleg li{line-height:1.5}
+.cpmk{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font:700 10px/1 var(--f-ui);font-style:normal;color:#fff;vertical-align:-2px;margin:0 2px;border:1px solid #fff}
+.cpmk.inj{background:#d6333f}.cpmk.tir{background:#e0a100;color:#111}.cpmk.hot{background:#1fa463}
+.cpmk.hot::before{content:"";border:4px solid transparent;border-bottom:5px solid #fff;border-top:0;margin-top:-1px}
+.cpmk.dev{background:#18a5b5;border-radius:3px}
 </style>
 
 <div id="app"></div>
@@ -7277,9 +7320,10 @@ let CPID=0;
 /* 선수 한 명: 위에서 본 그림 + 클릭 영역 + 상태 표시. anim은 SVG 애니메이션 조각 */
 function cpPlayer(p,x,y,o={}){ const id='cp'+(++CPID); const u=CAMP_UNI[o.uni||'a'];
   const badge=p.inj?`<g transform="translate(9 -14)"><circle r="5.5" fill="#d6333f" stroke="#fff" stroke-width="1"/><path d="M-3 0h6M0 -3v6" stroke="#fff" stroke-width="1.8"/></g>`:p.tired?`<g transform="translate(9 -14)"><circle r="5.5" fill="#e0a100" stroke="#fff" stroke-width="1"/><text y="2.6" text-anchor="middle" font-size="7" font-weight="700" fill="#111">z</text></g>`:p.hot?`<g transform="translate(9 -14)"><circle r="5.5" fill="#1fa463" stroke="#fff" stroke-width="1"/><path d="M-2.5 1.5 0 -2 2.5 1.5" fill="none" stroke="#fff" stroke-width="1.6"/></g>`:'';
+  const dev=p.dev?`<g transform="translate(-10 -14)"><rect x="-5" y="-5" width="10" height="10" rx="2" fill="#18a5b5" stroke="#fff" stroke-width="1"/><path d="M-2.5 2.5 0 -2.5 2.5 2.5" fill="none" stroke="#fff" stroke-width="1.5"/></g>`:'';
   const act=o.act?` ${o.act}`:''; const sty=o.act?` style="--ad:${o.dur||2.6}s;--dl:${o.dl!=null?o.dl:-((p.id*0.37)%2).toFixed(2)}s"`:'';
   return `<g class="cpp${act}" data-pid="${p.id}" transform="translate(${x} ${y})" tabindex="0" role="button" aria-label="${p.name}"${sty}>
-    ${o.anim||''}<g transform="scale(${o.s||.62})"><ellipse cx="1" cy="2" rx="14" ry="12" fill="#0003"/><g transform="rotate(${o.rot||0})">${kPlayer({...u,v:p.v%5,rot:0,helm:o.helm?u.H:null,glove:o.glove,bat:o.bat,pose:o.pose})}</g></g>${badge}
+    ${o.anim||''}<g transform="scale(${o.s||.62})"><ellipse cx="1" cy="2" rx="14" ry="12" fill="#0003"/><g transform="rotate(${o.rot||0})">${kPlayer({...u,v:p.v%5,rot:0,helm:o.helm?u.H:null,glove:o.glove,bat:o.bat,pose:o.pose})}</g></g>${dev}${badge}
     <text class="cpn" y="${o.ny||19}">${p.name}</text></g>`; }
 function cpWalk(path,dur,begin){ return `<animateMotion dur="${dur}s" begin="${begin||0}s" repeatCount="indefinite" rotate="auto" path="${path}"/>`; }
 function cpBob(d){ return `<animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;0 -2;0 0" dur="${d||1.2}s" repeatCount="indefinite"/>`; }
@@ -7300,6 +7344,8 @@ function construction(x,y,w,h,pct,label){ const pid='hatch'+x+y;
   <rect x="${x+12}" y="${y+h-14}" width="${w-24}" height="6" rx="3" fill="#ffffff22"/><rect x="${x+12}" y="${y+h-14}" width="${(w-24)*pct}" height="6" rx="3" fill="#e0a100"/>
   <text class="pl" x="${x+w/2}" y="${y+h-19}" text-anchor="middle">${label}</text>`; }
 
+/* 증축 중인 시설 아래쪽 진행 막대 + "다음 단계 · 진행률 · 남은 일수" */
+function bldBar(x,y,w,h,b,name){ return `<g class="cpbld"><rect x="${x+12}" y="${y+h-24}" width="${w-24}" height="6" rx="3" fill="#0b1218aa"/><rect x="${x+12}" y="${y+h-24}" width="${Math.max(2,(w-24)*b.pct)}" height="6" rx="3" fill="#e0a100"/><text class="pl" x="${x+w-14}" y="${y+h-29}" text-anchor="end">${name} 공사 ${Math.round(b.pct*100)}% · ${b.left}일 남음</text></g>`; }
 function emptyLot(x,y,w,h,txt){ return `<rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-36}" fill="#5f7d4a" stroke="#d9d2bd" stroke-dasharray="4 3"/><text class="pl" x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle">${txt}</text>`; }
 /* 지붕을 걷어낸 건물: 벽 두께 + 바닥 */
 function bldg(x,y,w,h,floor){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${floor}" stroke="#d8dde2" stroke-width="5"/><rect x="${x+w/2-9}" y="${y+h-3}" width="18" height="6" fill="${floor}"/>`; }
@@ -7312,7 +7358,7 @@ function renderFarm(S){ CPID=0; const P=S.players; const g=[];
     ${[...Array(12)].map((_,i)=>`<rect x="${40+i*16}" y="640" width="11" height="20" rx="2" fill="${['#c94b4b','#3b6fb6','#e7e7e7','#2e2e2e','#d9b440'][i%5]}"/>`).join('')}<rect x="28" y="632" width="210" height="36" fill="none" stroke="#ffffff44"/><text class="pl" x="250" y="656">2군 선수단 주차장</text>`);
 
   /* 2군 구장 */
-  { const x=16,y=16,w=560,h=322, lv=S.lv.fut; g.push(plotFrame(x,y,w,h,`2군 구장 · ${['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv]}`,lv,3,S.bld==='fut','fut'));
+  { const x=16,y=16,w=560,h=322, lv=S.lv.fut; g.push(plotFrame(x,y,w,h,`2군 구장 · ${['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv]}`,lv,3,S.bmap&&S.bmap.fut,'fut'));
     const cx=x+w/2, cy=y+h-30; const grass=lv>=1?'#2f8a45':'#7d8f4e', stripe=lv>=1?'#ffffff0c':'#6b5a3a40';
     if(lv>=3)g.push(`<path d="M${cx} ${cy+16} L${x+12} ${y+118} Q${cx} ${y-30} ${x+w-12} ${y+118} Z" fill="#5d6670"/>`);
     g.push(`<path d="M${cx} ${cy} L${x+34} ${y+124} Q${cx} ${y+16} ${x+w-34} ${y+124} Z" fill="${grass}"/>${lv>=1?[...Array(10)].map((_,i)=>`<path d="M${cx} ${cy} L${x+34+i*50} ${y+40} L${x+58+i*50} ${y+40} Z" fill="${stripe}"/>`).join(''):`<g fill="#8a7650" opacity=".55">${[...Array(18)].map((_,i)=>`<ellipse cx="${x+60+(i*53)%320}" cy="${y+70+(i*37)%180}" rx="${8+i%4*3}" ry="${4+i%3*2}"/>`).join('')}</g>`}
@@ -7324,13 +7370,14 @@ function renderFarm(S){ CPID=0; const P=S.players; const g=[];
     if(F[8]) g.push(cpPlayer(F[8],cx-15,cy-2,{uni:'f',bat:'R',helm:1,act:'sw',dur:2.8,dl:0}));
     if(F[0]&&F[8]) g.push(cpPitchBall(cx+4,cy-58,cx-8,cy-8,cx+90,cy-190,2.8,2.6));
     if(lv>=3) g.push(`<rect x="${x+w-112}" y="${y+26}" width="90" height="22" fill="#0a0d10" stroke="#3a4652"/><text x="${x+w-67}" y="${y+41}" text-anchor="middle" class="sb">${S.futNote||'퓨처스 훈련'}</text>`);
-    if(F.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">벤치 ${F.length-9}명</text>`); }
+    if(F.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">벤치 ${F.length-9}명</text>`);
+    if(S.bmap&&S.bmap.fut) g.push(bldBar(x+w*.62,y,w*.38,h,S.bmap.fut,['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv+1]||'')); }
 
   /* 아래 줄 시설들 */
-  const row=(key,x,w,title,lvNames,draw,Y,H)=>{ const y=Y||370,h=H||226, lv=S.lv[key]; g.push(plotFrame(x,y,w,h,title,lv,3,S.bld===key,key)); g.push(`<text class="pl" x="${x+8}" y="${y+h-4}">${lvNames[lv]}</text>`);
-    if(S.bld===key&&lv===0){ g.push(construction(x,y,w,h,S.pct,`${lvNames[1]} 공사 중 · ${Math.round(S.pct*100)}%`)); return; }
+  const row=(key,x,w,title,lvNames,draw,Y,H)=>{ const y=Y||370,h=H||226, lv=S.lv[key], b=S.bmap&&S.bmap[key]; g.push(plotFrame(x,y,w,h,title,lv,3,b,key)); g.push(`<text class="pl" x="${x+8}" y="${y+h-4}">${lvNames[lv]}</text>`);
+    if(b&&lv===0){ g.push(construction(x,y,w,h,b.pct,`${lvNames[1]} 공사 ${Math.round(b.pct*100)}% · ${b.left}일 남음`)); return; }
     if(lv===0){ g.push(emptyLot(x,y,w,h,'빈 부지 · 눌러서 공사')); return; }
-    draw(x,y,w,h,lv); if(S.bld===key)g.push(`<rect x="${x+12}" y="${y+h-12}" width="${w-24}" height="5" rx="2" fill="#ffffff22"/><rect x="${x+12}" y="${y+h-12}" width="${(w-24)*S.pct}" height="5" rx="2" fill="#e0a100"/><text class="pl" x="${x+w-14}" y="${y+h-16}" text-anchor="end">${lvNames[lv+1]} 증축 중</text>`); };
+    draw(x,y,w,h,lv); if(b)g.push(bldBar(x,y,w,h,b,lvNames[lv+1])); };
 
   row('indoor',592,392,'실내 연습장',['없음','간이 연습장','실내 연습장','실내 훈련동'],(x,y,w,h,lv)=>{ const bw=lv===1?w-200:lv===2?w-60:w-20; g.push(bldg(x+10,y+28,bw,h-48,'#3f8f55'));
     const cages=lv===1?2:lv===2?4:5; for(let i=0;i<cages;i++){ const cx=x+22+i*70, cy=y+40; g.push(`<rect x="${cx}" y="${cy}" width="52" height="${h-74}" fill="#00000022" stroke="#ffffff55" stroke-dasharray="3 2"/><rect x="${cx+20}" y="${cy+8}" width="12" height="8" fill="#555"/>`);
@@ -10342,9 +10389,10 @@ function draftPage(){ const ys=draftYears(); const fdT=!!(G.fd&&G.fd.done&&G.fd.
   return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):it&&it.cur==='fd'?fdEvalView():draftBoard()); }
 /* ---------- 구단 훈련장 전경: 시설 단계와 선수 위치를 한 장에 ---------- */
 function campData(){ facInit(); const per=period(); const inSea=per==='season'||per==='post'; const camp=G.camp&&!G.camp.done;
-  const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid));
+  const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid)); const devOf=id=>(G.devProg||[]).find(x=>x.pid===id);
   const out=[]; const used=new Set(); const put=(p,w)=>{ if(used.has(p.id))return; used.add(p.id); const c=condOf(p);
-    out.push({id:p.id,name:fname(p),v:p.id,isP:p.isP,where:w==='main'&&inSea&&(p.fat||0)>=60?'club':w,inj:p.injOut>0,tired:(p.fat||0)>=60,hot:c>=3}); };
+    const d=devOf(p.id);
+    out.push({id:p.id,name:fname(p),v:p.id,isP:p.isP,where:w==='main'&&inSea&&(p.fat||0)>=60?'club':w,inj:p.injOut>0,tired:(p.fat||0)>=60,hot:c>=3,dev:d?d.prog:null}); };
   ps.filter(p=>p.injOut>0).forEach(p=>put(p,'rehab'));
   ps.filter(p=>devIds.has(p.id)&&!used.has(p.id)).forEach((p,i)=>put(p,facOf('lab')>0&&(p.isP||i%2)?'lab':'indoor'));
   const pre=per==='pre'&&!!(G.camp&&G.camp.done); /* 캠프가 끝난 뒤 개막 전(시범경기)도 1군·2군으로 나눈다 */
@@ -10352,17 +10400,18 @@ function campData(){ facInit(); const per=period(); const inSea=per==='season'||
     M.forEach(p=>put(p,'main')); const f=ps.filter(p=>!used.has(p.id)&&!isAway(p));
     f.slice(0,12).forEach(p=>put(p,'fut')); f.filter(p=>!used.has(p.id)).forEach((p,i)=>put(p,p.age<=23&&i%3===0?'dorm':i%2?'weight':'indoor')); }
   else { const f=ps.filter(p=>!used.has(p.id)&&!isAway(p)); f.slice(0,9).forEach(p=>put(p,'fut')); f.filter(p=>!used.has(p.id)).forEach((p,i)=>put(p,camp?(i%2?'weight':'indoor'):(p.age<=23&&i%4===0?'dorm':i%2?'weight':'indoor'))); }
-  const B=Object.keys(G.fac.bld||{})[0]; const bb=B?G.fac.bld[B]:null; const dur=bb?FACI[B].days[bb.lv]:1;
+  const bmap=cpBuilds(); const B=Object.keys(bmap)[0]||null; /* 진행 중인 공사 전부(동시 2곳) */
   const P=tpal(team(G.user)); CAMP_UNI.a={S:'#f2f4f6',D:P[0],H:P[0]};
-  return {view:(UI.it&&UI.it.cmap)||'home',stadName:stadName(G.user),teamCol:P[0],board:per==='season'&&G.sea&&G.sea.rec?`${G.sea.rec[G.user].w}승 ${G.sea.rec[G.user].l}패`:'',lv:G.fac.it,bld:B||null,pct:bb?clamp(1-(bb.done-G.day)/dur,0,1):0,bus:busLv(),players:out,
+  return {view:(UI.it&&UI.it.cmap)||'home',stadName:stadName(G.user),teamCol:P[0],board:per==='season'&&G.sea&&G.sea.rec?`${G.sea.rec[G.user].w}승 ${G.sea.rec[G.user].l}패`:'',lv:Object.fromEntries(FACK.map(k=>[k,facOf(k)])),bld:B,bmap,pct:B?bmap[B].pct:0,bus:busLv(),players:out,
     mainNote:per==='season'?(G.cal.sched[G.day]?'경기 전 훈련':'휴식일 훈련'):per==='post'?'가을야구 준비':camp?'스프링캠프(해외)':pre?'시범경기 준비':'비시즌',futNote:inSea||pre?'2군 경기':'자율 훈련'}; }
-function campView(){ const ct=inTabs('cmap',[['home','1군 홈구장'],['farm','2군 훈련장']],'home'); if(UI._czv!==ct.cur){ UI._czv=ct.cur; UI.cz=null; } const S=campData(); const c=k=>S.players.filter(p=>p.where===k).length; const inj=S.players.filter(p=>p.inj).length, tired=S.players.filter(p=>p.tired).length, hot=S.players.filter(p=>p.hot).length;
-  const B=S.bld?`<span class="chip">공사 중 <b>${FACI[S.bld].l} ${Math.round(S.pct*100)}%</b></span>`:'';
-  return ct.bar+`<section class="card campc"><div class="row between"><h2 class="sec">${ct.cur==='farm'?`${esc(team(G.user).city)} 2군 훈련장`:esc(stadName(G.user))}</h2><span class="small muted">${UI.cz?'선수를 누르면 선수 정보, 시설을 누르면 공사 화면':'구역을 누르면 확대, 한 번 더 누르면 시설 투자로 갑니다'}</span></div>
+function campView(){ const ct=inTabs('cmap',[['home','1군 홈구장'],['farm','2군 훈련장']],'home'); if(UI._czv!==ct.cur){ UI._czv=ct.cur; UI.cz=null; UI.cpSel=null; } const S=campData(); const c=k=>S.players.filter(p=>p.where===k).length; const inj=S.players.filter(p=>p.inj).length, tired=S.players.filter(p=>p.tired).length, hot=S.players.filter(p=>p.hot).length;
+  const B=Object.entries(S.bmap).map(([k,b])=>`<span class="chip">공사 중 <b>${FACI[k].l} ${Math.round(b.pct*100)}%</b> · ${b.left}일 남음</span>`).join('');
+  return ct.bar+`<section class="card campc"><div class="row between"><h2 class="sec">${ct.cur==='farm'?`${esc(team(G.user).city)} 2군 훈련장`:esc(stadName(G.user))}</h2><span class="small muted">${UI.cz?'선수·시설을 누르면 정보 패널에 나옵니다':'구역을 누르면 확대되고 정보 패널에 나옵니다'}</span></div>
     <div class="cpchips"><span class="chip">1군 <b>${c('main')+c('club')}</b></span><span class="chip">2군 <b>${c('fut')}</b></span><span class="chip">훈련·연수 <b>${c('indoor')+c('weight')+c('lab')}</b></span><span class="chip r">부상 <b>${inj}</b></span><span class="chip y">피로 <b>${tired}</b></span><span class="chip g">상승세 <b>${hot}</b></span>${B}</div>
     ${UI.cz?'<button class="btn small" data-a="campZoom" data-v="">전체 보기</button>':''}
-    <div class="campst" id="campst">${renderCampus(S)}</div>
-    <p class="small muted">${ct.cur==='farm'?'2군 선수와 재활·연수 선수가 지내는 별도 훈련장입니다(실제 구단처럼 홈구장과 떨어져 있습니다). 부상자는 재활센터, 2군 연수 대상은 피칭·타격 랩에 있습니다.':'1군 엔트리 선수는 홈구장에서 훈련하고, 지친 선수는 클럽하우스에서 쉽니다.'} 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`; }
+    <div class="cpwrap"><div class="campst" id="campst">${renderCampus(S)}</div>${cpPanel(S,ct.cur)}</div>
+    ${cpLegend(ct.cur)}
+    <p class="small muted">${ct.cur==='farm'?'2군 선수와 재활·연수 선수가 지내는 별도 훈련장입니다(실제 구단처럼 홈구장과 떨어져 있습니다).':'1군 엔트리 선수는 홈구장에서 훈련합니다.'} 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`; }
 function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=cl.cap; const m=G.mgr[G.user]; const ld=c?leadOf(c):null; const adj=G.leadAdj&&G.leadAdj.until>G.day?G.leadAdj:null;
   const band={loose:['bad','느슨함','집중력이 떨어지고 기행이 잦아집니다'],ok:['','보통','큰 영향은 없습니다'],good:['good','알맞음','선수들이 집중하고 분위기가 좋습니다'],rigid:['warn','너무 엄격','경직된 플레이가 나오고 젊은 선수 불만이 쌓입니다']}[cl.band];
     return `<section class="card"><div class="row between"><h2 class="sec">선수단 리더십</h2><span class="pill ${band[0]}">기강 ${cl.S} · ${band[1]}</span></div>
@@ -10371,14 +10420,14 @@ function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=c
     <div class="clbar"><i style="left:${cl.S}%"></i><span class="z l">느슨</span><span class="z g">알맞음</span><span class="z r">엄격</span></div>
     <p class="small">${band[2]}. 기강은 주장 성향 60%, 감독 규율 40%로 정해집니다${adj?` · 최근 구단 징계 영향(${adj.v>0?'+':''}${adj.v}, ${dmd(adj.until)}까지)`:''}.</p>
     <p class="small muted">선수단 기강은 주장과 감독이 관리합니다. 단장이 할 수 있는 일은 두 가지입니다: 규율 성향이 맞는 감독을 고르는 것, 그리고 사고가 나면 구단 차원의 징계(벌금·출장 정지)를 정하는 것.</p><div class="row"><button class="btn small" data-a="go" data-v="staff:mgr">감독 장악력 보기</button></div></section>`; }
-function campAfter(){ const svg=document.querySelector('#campst svg.campus'); if(svg&&UI.cz)svg.setAttribute('viewBox',UI.cz.join(' ')); }
+function campAfter(){ const svg=document.querySelector('#campst svg.campus'); if(svg&&UI.cz)svg.setAttribute('viewBox',UI.cz.join(' ')); cpMark(); }
 function campZoomTo(to){ const svg=document.querySelector('#campst svg.campus'); const fr=UI.cz||[0,0,1000,690]; UI.cz=to; if(!svg){ render(); return; } const t0=performance.now(); const tgt=to||[0,0,1000,690];
   (function step(t){ const k=Math.min(1,(t-t0)/320), e=1-Math.pow(1-k,3); svg.setAttribute('viewBox',fr.map((a,i)=>a+(tgt[i]-a)*e).join(' ')); if(k<1)requestAnimationFrame(step); else render(); })(t0); }
-function campClick(e){ const svg=e.target.closest('svg.campus'); if(!svg)return false; const pl=e.target.closest('.cpp'); if(pl){ A.player(+pl.dataset.pid); return true; }
+function campClick(e){ const svg=e.target.closest('svg.campus'); if(!svg)return false; const pl=e.target.closest('.cpp')||(UI.cz&&cpNear(svg,e)); if(pl){ cpPick({t:'p',id:+pl.dataset.pid}); return true; }
   const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(svg.getScreenCTM().inverse());
   const g=[...svg.querySelectorAll('.plot')].find(x=>{ const [a,b,w,h]=x.dataset.b.split(',').map(Number); return q.x>=a&&q.x<=a+w&&q.y>=b&&q.y<=b+h; }); if(!g)return true;
-  if(!UI.cz){ const [a,b,w,h]=g.dataset.b.split(',').map(Number); campZoomTo([a-8,b-8,w+16,h+16]); return true; }
-  const k=g.dataset.k; if(k==='club'){ return true; } if(k==='main')A.go('club:stad'); else { if(k==='bus'){ A.go('club:bus'); } else { UI.facFocus=k; A.go('train:fac'); } } return true; }
+  const k=g.dataset.k; if(!UI.cz){ UI.cpSel={t:'f',k}; UI.facMsg=null; const [a,b,w,h]=g.dataset.b.split(',').map(Number); campZoomTo([a-8,b-8,w+16,h+16]); return true; }
+  cpPick({t:'f',k}); return true; }
 document.addEventListener('click',e=>{ if(UI.tab==='train'&&e.target.closest&&e.target.closest('#campst')){ if(campClick(e)){ e.preventDefault(); e.stopPropagation(); } } },true);
 function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarket(); const stars=k=>'★'.repeat(k)+'<i class="off">'+'★'.repeat(5-k)+'</i>';
   const pw=r=>anaPow(r); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
@@ -12228,4 +12277,124 @@ Object.assign(A,{ fdBudOk(){ G.fdBud=true; save(); render(); } });
 /* 잠재력 표시: 숫자 대신 스카우트 등급 말 + 말풍선에 근거와 변수 */
 function potChip(rp,p){ if(!rp||rp.ofp==null)return '<span class="ptier q" title="담당 스카우트가 없어 잠재력을 판단할 수 없습니다">판단 불가</span>'; const T=potTierP(rp,p);
   return `<span class="ptier t${T.n}" title="${esc(p?potLine(p,rp):T.l)}">${T.s}</span>`; }
+/* ---------- 훈련장 지도 정보 패널: 선수·시설을 누르면 바로 상세와 공사 버튼, 지도 범례 ----------
+   지도 그림은 gfx/campus.js, 선수 배치는 33_scouting_train.js의 campData가 맡는다.
+   여기서는 선택 상태(UI.cpSel = {t:'p',id} | {t:'f',k})와 패널·범례·강조 표시만 다룬다. */
+
+/* 진행 중인 공사 전부: 시설 저장 구조를 읽는 곳은 이 함수 한 곳으로 모은다 */
+function cpBuilds(){ facInit(); const bl=(G.fac&&G.fac.bld)||{}; const o={};
+  for(const k of Object.keys(bl)){ const b=bl[k], D=FACI[k]; if(!b||!D)continue; const dur=D.days[b.lv]||1, left=Math.max(0,b.done-G.day);
+    o[k]={lv:b.lv,done:b.done,left,pct:clamp(1-left/dur,0,1),cap:!!b.cap}; }
+  return o; }
+
+/* 선수가 지도에서 그 자리에 있는 이유: 실제 상태(real)인지 연출(stage)인지 */
+function cpWhy(q,S){ const per=period(); const inSea=per==='season'||per==='post'||(per==='pre'&&!!(G.camp&&G.camp.done));
+  if(q.where==='rehab')return {real:true,t:'부상으로 재활·회복 센터에서 재활 중'};
+  if(q.where==='club')return {real:true,t:'1군 선수 · 피로가 쌓여 클럽하우스에서 휴식'};
+  if(q.where==='main')return {real:true,t:`1군 엔트리 · 홈구장 ${S.mainNote}`};
+  if(q.dev)return {real:true,t:`2군 연수(${DEVP[q.dev]?DEVP[q.dev].l:'육성'}) 배정 · ${q.where==='lab'?'피칭·타격 랩':'실내 연습장'}에서 훈련`,note:'연수 배정은 실제, 랩과 실내 연습장 중 어디에 그리는지는 연출입니다.'};
+  const place={fut:'2군 구장',indoor:'실내 연습장',weight:'웨이트·컨디셔닝',dorm:'선수 숙소·식당',lab:'피칭·타격 랩',road:'훈련장 도로'}[q.where]||'훈련장';
+  return {real:false,t:`${inSea?'1군 엔트리 밖 선수':'비시즌 훈련'} · ${place}${q.where==='fut'?` (${S.futNote})`:''}`,note:'어느 시설에 있는지와 동작은 연출입니다. 머리 위 표시(부상·피로·상승세)는 실제입니다.'}; }
+
+/* 시설과 관련된 운영 기록 한 줄: 지금 데이터로 셀 수 있는 것만 센다 */
+function cpFacStat(k){ const ps=playersOf(G.user); const dev=(G.devProg||[]).length; const young=ps.filter(p=>p.age<=23).length;
+  const inj30=ps.reduce((a,p)=>a+(p.injHist||[]).filter(h=>h.y===G.year&&h.d>G.day-30).length,0);
+  if(k==='rehab'){ const R=ps.filter(p=>p.injOut>0); const avg=R.length?Math.round(sum(R.map(p=>p.injOut))/R.length):0; return `지금 재활 중 ${R.length}명${R.length?`(평균 ${avg}일 남음)`:''} · 최근 30일 새 부상 ${inj30}건`; }
+  if(k==='weight')return `최근 30일 새 부상 ${inj30}건 · 30세 이상 선수 ${ps.filter(p=>p.age>=30).length}명`;
+  if(k==='lab')return `2군 연수 배정 ${dev}/6명 · 23세 이하 선수 ${young}명`;
+  if(k==='indoor')return `선수단 ${ps.length}명 · 2군 연수 배정 ${dev}/6명`;
+  if(k==='fut'){ const n=ps.filter(p=>{ const f=seasonTotal(p,G.year,'퓨처스'); return f&&((f.pa||0)>0||(f.outs||0)>0); }).length; return `올해 2군 경기에 나선 선수 ${n}명`; }
+  if(k==='dorm')return `23세 이하 선수 ${young}명`;
+  return ''; }
+
+function cpPips(lv,max,b){ return `<span class="fpip">${[...Array(max)].map((_,i)=>`<i class="${i+1<=lv?'on':''}${b&&i+1===b.lv?' bld':''}"></i>`).join('')}<em>${lv}/${max}</em></span>`; }
+function cpBar(b){ return `<div class="cpbar"><i style="width:${Math.round(b.pct*100)}%"></i></div><div class="small">진행 <b class="num">${Math.round(b.pct*100)}%</b> · 남은 <b class="num">${b.left}일</b> · ${dmd(b.done)} 완공${b.cap?' · 모기업 투자':''}</div>`; }
+
+/* 아무것도 고르지 않았을 때: 진행 중인 공사 전부 */
+function cpIdle(S){ const L=Object.entries(S.bmap);
+  return `<div class="cpph"><b>정보 패널</b></div><p class="small muted">지도에서 선수나 시설을 누르세요.</p>
+    <div class="eyebrow">진행 중인 공사 ${L.length}/2</div>
+    ${L.length?L.map(([k,b])=>`<button class="cpbl" data-a="cpSel" data-v="f:${k}"><span><b>${esc(FACI[k].l)}</b> → ${esc(FACI[k].lv[b.lv])}</span>${cpBar(b)}</button>`).join(''):'<p class="small muted">진행 중인 공사가 없습니다.</p>'}`; }
+
+function cpPlayerPanel(S,id){ const p=G.players[id]; const q=S.players.find(x=>x.id===id); if(!p||!q)return cpIdle(S);
+  const w=cpWhy(q,S); const fat=Math.round(p.fat||0); const c=condOf(p); const dv=(G.devProg||[]).find(x=>x.pid===id); const ov=(G.ovs||[]).find(x=>x.pid===id);
+  const prog=dv?`${DEVP[dv.prog]?DEVP[dv.prog].l:'2군 연수'} · ${Math.max(0,Math.floor((G.day-dv.since)/7))}주째`:ov&&OVS[ov.prog]?`${OVS[ov.prog].l}(예정)`:'없음';
+  return `<div class="cpph"><span class="cpnm">${esc(p.name)}</span><button class="cpx" data-a="cpSel" data-v="" aria-label="선택 해제">닫기</button></div>
+    <div class="small muted">${posLabel(p)} · ${p.age}세 · ${p.e1?'1군':'2군'}</div>
+    <div class="cptag ${w.real?'real':'stage'}">${w.real?'실제 상태를 반영한 자리':'자리·동작은 연출'}</div>
+    <dl class="cpdl"><div><dt>지금</dt><dd>${esc(w.t)}</dd></div>
+      <div><dt>부상</dt><dd>${p.injOut>0?`<b class="bad">${esc(injNow(p))}</b> · ${p.injOut}일 남음`:'없음'}</dd></div>
+      <div><dt>피로</dt><dd><span class="cpfat"><i class="${fat>=60?'hi':''}" style="width:${clamp(fat,0,100)}%"></i></span> <b class="num ${fat>=60?'warn':''}">${fat}</b>${fat>=60?' · 쉬어야 함':''}</dd></div>
+      <div><dt>컨디션</dt><dd class="num">${c>0?'+':''}${c}${c>=3?' · 상승세':c<=-3?' · 하락세':''}</dd></div>
+      <div><dt>육성 프로그램</dt><dd>${esc(prog)}</dd></div></dl>
+    ${w.note?`<p class="small muted">${esc(w.note)}</p>`:''}
+    <div class="row" style="gap:6px"><button class="btn small primary" data-a="player" data-v="${id}">선수 화면 열기</button></div>`; }
+
+function cpFacPanel(S,k){ const t=team(G.user);
+  if(k==='main'){ const n=S.players.filter(p=>p.where==='main').length+S.players.filter(p=>p.where==='club').length;
+    return `<div class="cpph"><span class="cpnm sm">${esc(S.stadName||'홈구장')}</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
+      <p class="small">1군 엔트리 선수가 훈련하는 곳입니다. 지금: ${esc(S.mainNote)}.</p><div class="cpstat"><span>운영 기록</span>1군 ${n}명 · 그중 피로 60 이상 ${S.players.filter(p=>p.where==='club').length}명</div>
+      <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="main">홈구장 시설 보기</button></div>`; }
+  if(k==='club'){ const C=S.players.filter(p=>p.where==='club');
+    return `<div class="cpph"><span class="cpnm sm">클럽하우스</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
+      <p class="small">시즌 중 피로가 60 이상 쌓인 1군 선수가 쉬는 곳입니다(실제 피로 수치 기준).</p>
+      <div class="cpstat"><span>운영 기록</span>지금 쉬는 1군 선수 ${C.length}명</div>
+      ${C.length?`<div class="cpchipl">${C.map(q=>`<button class="chip" data-a="cpSel" data-v="p:${q.id}">${esc(G.players[q.id].name)}</button>`).join('')}</div>`:''}`; }
+  if(k==='bus'){ const lv=busLv(), B=BUS[lv], nx=BUS[lv+1];
+    return `<div class="cpph"><span class="cpnm sm">구단 버스</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
+      <div class="cplv">${cpPips(lv,2,null)} <span>${esc(B.l)}</span></div>
+      <p class="small">원정 경기 피로 ${B.f>=0?'+':''}${Math.round(B.f*100)}%. 연 운영비 ${money(B.up)}.</p>
+      ${nx?`<p class="small">다음: <b>${esc(nx.l)}</b> · ${money(nx.c)} · 원정 피로 ${nx.f>=0?'+':''}${Math.round(nx.f*100)}%</p>`:'<p class="small good">가장 좋은 버스입니다.</p>'}
+      <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="bus">구단 버스 화면</button></div>`; }
+  const D=FACI[k]; if(!D)return cpIdle(S); const lv=facOf(k), b=S.bmap[k], nx=lv+1; const nb=Object.keys(S.bmap).length; const st=cpFacStat(k);
+  const act=b?`<div class="eyebrow">공사 중: ${esc(D.lv[b.lv])}</div>${cpBar(b)}`
+    :lv>=3?'<p class="small good">최고 단계입니다.</p>'
+    :`<dl class="cpdl"><div><dt>다음 단계</dt><dd><b>${esc(D.lv[nx])}</b></dd></div><div><dt>공사비</dt><dd class="num">${money(D.c[nx])}</dd></div><div><dt>기간</dt><dd>${D.days[nx]}일</dd></div><div><dt>유지비</dt><dd>연 ${money(D.up[nx])}</dd></div></dl>
+      <div class="cpbtns"><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||t.cash<D.c[nx]?'disabled':''}>구단 현금으로 · ${money(D.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''}>모기업 투자 요청 · ${Math.round(capexOdds('fac',D.c[nx])*100)}%</button>`}</div>
+      ${nb>=2?'<p class="small muted">동시 공사는 2곳까지입니다.</p>':t.cash<D.c[nx]?`<p class="small bad">현금 부족(보유 ${money(t.cash)})</p>`:''}`;
+  return `<div class="cpph"><span class="cpnm sm">${esc(D.l)}</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
+    <div class="cplv">${cpPips(lv,3,b)} <span>${esc(D.lv[lv])}</span></div>
+    <p class="small">${esc(D.d)}</p>
+    ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
+    ${act}
+    ${st?`<div class="cpstat"><span>운영 기록</span>${esc(st)}</div><p class="small muted cpfn">지금 기록을 센 숫자입니다. 성장·부상 변화가 이 시설 때문이라고 단정할 수는 없습니다.</p>`:''}
+    <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="${k}">시설 투자 화면</button></div>`; }
+
+function cpPanelBody(S){ const s=UI.cpSel; return !s?cpIdle(S):s.t==='p'?cpPlayerPanel(S,s.id):cpFacPanel(S,s.k); }
+function cpPanel(S){ return `<aside class="cppanel" id="cppanel" aria-live="polite">${cpPanelBody(S)}</aside>`; }
+
+/* 지도 아래 범례: 어떤 위치가 실제 상태인지 */
+function cpLegend(view){ const mk=(c,t)=>`<i class="cpmk ${c}">${t}</i>`;
+  return `<div class="cpleg"><div class="cplh">지도 읽는 법</div><ul>
+    <li><span class="cptag real">실제</span>${view==='farm'?'재활·회복 센터 = 지금 부상 중인 선수 · '+mk('dev','')+' 표시 = 2군 연수 배정 선수':'홈구장 = 1군 엔트리 · 클럽하우스 = 1군 중 피로 60 이상'}</li>
+    <li><span class="cptag real">실제</span>머리 위 표시: ${mk('inj','+')} 부상 ${mk('tir','z')} 피로 60 이상 ${mk('hot','')} 상승세 · 공사 막대 = 진행률과 남은 일수</li>
+    <li><span class="cptag stage">연출</span>${view==='farm'?'그 밖의 선수가 2군 구장·웨이트장·실내 연습장·숙소 중 어디에 있는지, 수비 위치와 동작':'누가 던지고 치는지, 수비 위치, 외야를 뛰는 투수, 벤치 자리'}</li></ul></div>`; }
+
+/* 선택 강조: 고른 선수 이름을 화면 기준 15px 정도로 키우고 맨 앞으로, 고른 시설은 테두리 */
+function cpMark(){ const svg=document.querySelector('#campst svg.campus'); if(!svg)return;
+  svg.querySelectorAll('.cpp.sel').forEach(el=>{ el.classList.remove('sel'); const n=el.querySelector('.cpn'); if(n){ n.style.fontSize=''; n.style.strokeWidth=''; if(n.dataset.y0)n.setAttribute('y',n.dataset.y0); } const r=el.querySelector('.cpring'); if(r)r.remove(); });
+  svg.querySelectorAll('.plot.sel').forEach(el=>el.classList.remove('sel'));
+  const s=UI.cpSel; if(!s)return;
+  if(s.t==='f'){ const g=svg.querySelector(`.plot[data-k="${s.k}"]`); if(g)g.classList.add('sel'); return; }
+  const el=svg.querySelector(`.cpp[data-pid="${s.id}"]`); if(!el)return;
+  const vb=svg.viewBox.baseVal; const sc=(svg.clientWidth||svg.getBoundingClientRect().width||1000)/(vb&&vb.width||1000);
+  const fs=clamp(15/sc,10,44); const n=el.querySelector('.cpn');
+  if(n){ n.dataset.y0=n.dataset.y0||n.getAttribute('y'); n.style.fontSize=fs.toFixed(1)+'px'; n.style.strokeWidth=(3.5/sc).toFixed(1)+'px'; n.setAttribute('y',(10+fs*.95).toFixed(1)); }
+  el.insertAdjacentHTML('afterbegin',`<circle class="cpring" r="${clamp(9/sc,12,26).toFixed(1)}" stroke-width="${(2.2/sc).toFixed(1)}"/>`);
+  el.classList.add('sel'); svg.appendChild(el); }
+
+/* 확대한 상태에서는 손가락이 조금 빗나가도 가장 가까운 선수를 고른다(화면 22px 안) */
+function cpNear(svg,e){ let best=null, bd=22*22;
+  svg.querySelectorAll('.cpp').forEach(el=>{ const g=el.querySelector('g')||el; const r=g.getBoundingClientRect(); const dx=r.left+r.width/2-e.clientX, dy=r.top+r.height/2-e.clientY, d=dx*dx+dy*dy; if(d<bd){ bd=d; best=el; } });
+  return best; }
+
+/* 패널만 다시 그린다(지도 애니메이션은 그대로) */
+function cpPick(sel){ UI.cpSel=sel; UI.facMsg=null; const el=document.getElementById('cppanel'); if(!el){ render(); return; }
+  el.innerHTML=cpPanelBody(campData()); cpMark();
+  try{ const r=el.getBoundingClientRect(); if(r.top>window.innerHeight-120||r.bottom<0)el.scrollIntoView({block:'nearest',behavior:'smooth'}); }catch(e){} }
+
+Object.assign(A,{
+  cpSel(v){ v=String(v||''); if(!v)return cpPick(null); const [t,x]=v.split(':'); cpPick(t==='p'?{t:'p',id:+x}:{t:'f',k:x}); },
+  cpFacGo(v){ if(v==='main')return A.go('club:stad'); if(v==='bus')return A.go('club:bus'); UI.facFocus=v; A.go('train:fac'); }
+});
 </script>

@@ -17,9 +17,10 @@ function draftPage(){ const ys=draftYears(); const fdT=!!(G.fd&&G.fd.done&&G.fd.
   return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):it&&it.cur==='fd'?fdEvalView():draftBoard()); }
 /* ---------- 구단 훈련장 전경: 시설 단계와 선수 위치를 한 장에 ---------- */
 function campData(){ facInit(); const per=period(); const inSea=per==='season'||per==='post'; const camp=G.camp&&!G.camp.done;
-  const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid));
+  const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid)); const devOf=id=>(G.devProg||[]).find(x=>x.pid===id);
   const out=[]; const used=new Set(); const put=(p,w)=>{ if(used.has(p.id))return; used.add(p.id); const c=condOf(p);
-    out.push({id:p.id,name:fname(p),v:p.id,isP:p.isP,where:w==='main'&&inSea&&(p.fat||0)>=60?'club':w,inj:p.injOut>0,tired:(p.fat||0)>=60,hot:c>=3}); };
+    const d=devOf(p.id);
+    out.push({id:p.id,name:fname(p),v:p.id,isP:p.isP,where:w==='main'&&inSea&&(p.fat||0)>=60?'club':w,inj:p.injOut>0,tired:(p.fat||0)>=60,hot:c>=3,dev:d?d.prog:null}); };
   ps.filter(p=>p.injOut>0).forEach(p=>put(p,'rehab'));
   ps.filter(p=>devIds.has(p.id)&&!used.has(p.id)).forEach((p,i)=>put(p,facOf('lab')>0&&(p.isP||i%2)?'lab':'indoor'));
   const pre=per==='pre'&&!!(G.camp&&G.camp.done); /* 캠프가 끝난 뒤 개막 전(시범경기)도 1군·2군으로 나눈다 */
@@ -27,17 +28,18 @@ function campData(){ facInit(); const per=period(); const inSea=per==='season'||
     M.forEach(p=>put(p,'main')); const f=ps.filter(p=>!used.has(p.id)&&!isAway(p));
     f.slice(0,12).forEach(p=>put(p,'fut')); f.filter(p=>!used.has(p.id)).forEach((p,i)=>put(p,p.age<=23&&i%3===0?'dorm':i%2?'weight':'indoor')); }
   else { const f=ps.filter(p=>!used.has(p.id)&&!isAway(p)); f.slice(0,9).forEach(p=>put(p,'fut')); f.filter(p=>!used.has(p.id)).forEach((p,i)=>put(p,camp?(i%2?'weight':'indoor'):(p.age<=23&&i%4===0?'dorm':i%2?'weight':'indoor'))); }
-  const B=Object.keys(G.fac.bld||{})[0]; const bb=B?G.fac.bld[B]:null; const dur=bb?FACI[B].days[bb.lv]:1;
+  const bmap=cpBuilds(); const B=Object.keys(bmap)[0]||null; /* 진행 중인 공사 전부(동시 2곳) */
   const P=tpal(team(G.user)); CAMP_UNI.a={S:'#f2f4f6',D:P[0],H:P[0]};
-  return {view:(UI.it&&UI.it.cmap)||'home',stadName:stadName(G.user),teamCol:P[0],board:per==='season'&&G.sea&&G.sea.rec?`${G.sea.rec[G.user].w}승 ${G.sea.rec[G.user].l}패`:'',lv:G.fac.it,bld:B||null,pct:bb?clamp(1-(bb.done-G.day)/dur,0,1):0,bus:busLv(),players:out,
+  return {view:(UI.it&&UI.it.cmap)||'home',stadName:stadName(G.user),teamCol:P[0],board:per==='season'&&G.sea&&G.sea.rec?`${G.sea.rec[G.user].w}승 ${G.sea.rec[G.user].l}패`:'',lv:Object.fromEntries(FACK.map(k=>[k,facOf(k)])),bld:B,bmap,pct:B?bmap[B].pct:0,bus:busLv(),players:out,
     mainNote:per==='season'?(G.cal.sched[G.day]?'경기 전 훈련':'휴식일 훈련'):per==='post'?'가을야구 준비':camp?'스프링캠프(해외)':pre?'시범경기 준비':'비시즌',futNote:inSea||pre?'2군 경기':'자율 훈련'}; }
-function campView(){ const ct=inTabs('cmap',[['home','1군 홈구장'],['farm','2군 훈련장']],'home'); if(UI._czv!==ct.cur){ UI._czv=ct.cur; UI.cz=null; } const S=campData(); const c=k=>S.players.filter(p=>p.where===k).length; const inj=S.players.filter(p=>p.inj).length, tired=S.players.filter(p=>p.tired).length, hot=S.players.filter(p=>p.hot).length;
-  const B=S.bld?`<span class="chip">공사 중 <b>${FACI[S.bld].l} ${Math.round(S.pct*100)}%</b></span>`:'';
-  return ct.bar+`<section class="card campc"><div class="row between"><h2 class="sec">${ct.cur==='farm'?`${esc(team(G.user).city)} 2군 훈련장`:esc(stadName(G.user))}</h2><span class="small muted">${UI.cz?'선수를 누르면 선수 정보, 시설을 누르면 공사 화면':'구역을 누르면 확대, 한 번 더 누르면 시설 투자로 갑니다'}</span></div>
+function campView(){ const ct=inTabs('cmap',[['home','1군 홈구장'],['farm','2군 훈련장']],'home'); if(UI._czv!==ct.cur){ UI._czv=ct.cur; UI.cz=null; UI.cpSel=null; } const S=campData(); const c=k=>S.players.filter(p=>p.where===k).length; const inj=S.players.filter(p=>p.inj).length, tired=S.players.filter(p=>p.tired).length, hot=S.players.filter(p=>p.hot).length;
+  const B=Object.entries(S.bmap).map(([k,b])=>`<span class="chip">공사 중 <b>${FACI[k].l} ${Math.round(b.pct*100)}%</b> · ${b.left}일 남음</span>`).join('');
+  return ct.bar+`<section class="card campc"><div class="row between"><h2 class="sec">${ct.cur==='farm'?`${esc(team(G.user).city)} 2군 훈련장`:esc(stadName(G.user))}</h2><span class="small muted">${UI.cz?'선수·시설을 누르면 정보 패널에 나옵니다':'구역을 누르면 확대되고 정보 패널에 나옵니다'}</span></div>
     <div class="cpchips"><span class="chip">1군 <b>${c('main')+c('club')}</b></span><span class="chip">2군 <b>${c('fut')}</b></span><span class="chip">훈련·연수 <b>${c('indoor')+c('weight')+c('lab')}</b></span><span class="chip r">부상 <b>${inj}</b></span><span class="chip y">피로 <b>${tired}</b></span><span class="chip g">상승세 <b>${hot}</b></span>${B}</div>
     ${UI.cz?'<button class="btn small" data-a="campZoom" data-v="">전체 보기</button>':''}
-    <div class="campst" id="campst">${renderCampus(S)}</div>
-    <p class="small muted">${ct.cur==='farm'?'2군 선수와 재활·연수 선수가 지내는 별도 훈련장입니다(실제 구단처럼 홈구장과 떨어져 있습니다). 부상자는 재활센터, 2군 연수 대상은 피칭·타격 랩에 있습니다.':'1군 엔트리 선수는 홈구장에서 훈련하고, 지친 선수는 클럽하우스에서 쉽니다.'} 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`; }
+    <div class="cpwrap"><div class="campst" id="campst">${renderCampus(S)}</div>${cpPanel(S,ct.cur)}</div>
+    ${cpLegend(ct.cur)}
+    <p class="small muted">${ct.cur==='farm'?'2군 선수와 재활·연수 선수가 지내는 별도 훈련장입니다(실제 구단처럼 홈구장과 떨어져 있습니다).':'1군 엔트리 선수는 홈구장에서 훈련합니다.'} 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`; }
 function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=cl.cap; const m=G.mgr[G.user]; const ld=c?leadOf(c):null; const adj=G.leadAdj&&G.leadAdj.until>G.day?G.leadAdj:null;
   const band={loose:['bad','느슨함','집중력이 떨어지고 기행이 잦아집니다'],ok:['','보통','큰 영향은 없습니다'],good:['good','알맞음','선수들이 집중하고 분위기가 좋습니다'],rigid:['warn','너무 엄격','경직된 플레이가 나오고 젊은 선수 불만이 쌓입니다']}[cl.band];
     return `<section class="card"><div class="row between"><h2 class="sec">선수단 리더십</h2><span class="pill ${band[0]}">기강 ${cl.S} · ${band[1]}</span></div>
@@ -46,14 +48,14 @@ function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=c
     <div class="clbar"><i style="left:${cl.S}%"></i><span class="z l">느슨</span><span class="z g">알맞음</span><span class="z r">엄격</span></div>
     <p class="small">${band[2]}. 기강은 주장 성향 60%, 감독 규율 40%로 정해집니다${adj?` · 최근 구단 징계 영향(${adj.v>0?'+':''}${adj.v}, ${dmd(adj.until)}까지)`:''}.</p>
     <p class="small muted">선수단 기강은 주장과 감독이 관리합니다. 단장이 할 수 있는 일은 두 가지입니다: 규율 성향이 맞는 감독을 고르는 것, 그리고 사고가 나면 구단 차원의 징계(벌금·출장 정지)를 정하는 것.</p><div class="row"><button class="btn small" data-a="go" data-v="staff:mgr">감독 장악력 보기</button></div></section>`; }
-function campAfter(){ const svg=document.querySelector('#campst svg.campus'); if(svg&&UI.cz)svg.setAttribute('viewBox',UI.cz.join(' ')); }
+function campAfter(){ const svg=document.querySelector('#campst svg.campus'); if(svg&&UI.cz)svg.setAttribute('viewBox',UI.cz.join(' ')); cpMark(); }
 function campZoomTo(to){ const svg=document.querySelector('#campst svg.campus'); const fr=UI.cz||[0,0,1000,690]; UI.cz=to; if(!svg){ render(); return; } const t0=performance.now(); const tgt=to||[0,0,1000,690];
   (function step(t){ const k=Math.min(1,(t-t0)/320), e=1-Math.pow(1-k,3); svg.setAttribute('viewBox',fr.map((a,i)=>a+(tgt[i]-a)*e).join(' ')); if(k<1)requestAnimationFrame(step); else render(); })(t0); }
-function campClick(e){ const svg=e.target.closest('svg.campus'); if(!svg)return false; const pl=e.target.closest('.cpp'); if(pl){ A.player(+pl.dataset.pid); return true; }
+function campClick(e){ const svg=e.target.closest('svg.campus'); if(!svg)return false; const pl=e.target.closest('.cpp')||(UI.cz&&cpNear(svg,e)); if(pl){ cpPick({t:'p',id:+pl.dataset.pid}); return true; }
   const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(svg.getScreenCTM().inverse());
   const g=[...svg.querySelectorAll('.plot')].find(x=>{ const [a,b,w,h]=x.dataset.b.split(',').map(Number); return q.x>=a&&q.x<=a+w&&q.y>=b&&q.y<=b+h; }); if(!g)return true;
-  if(!UI.cz){ const [a,b,w,h]=g.dataset.b.split(',').map(Number); campZoomTo([a-8,b-8,w+16,h+16]); return true; }
-  const k=g.dataset.k; if(k==='club'){ return true; } if(k==='main')A.go('club:stad'); else { if(k==='bus'){ A.go('club:bus'); } else { UI.facFocus=k; A.go('train:fac'); } } return true; }
+  const k=g.dataset.k; if(!UI.cz){ UI.cpSel={t:'f',k}; UI.facMsg=null; const [a,b,w,h]=g.dataset.b.split(',').map(Number); campZoomTo([a-8,b-8,w+16,h+16]); return true; }
+  cpPick({t:'f',k}); return true; }
 document.addEventListener('click',e=>{ if(UI.tab==='train'&&e.target.closest&&e.target.closest('#campst')){ if(campClick(e)){ e.preventDefault(); e.stopPropagation(); } } },true);
 function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarket(); const stars=k=>'★'.repeat(k)+'<i class="off">'+'★'.repeat(5-k)+'</i>';
   const pw=r=>anaPow(r); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
