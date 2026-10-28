@@ -135,7 +135,7 @@ const A={
     save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
-  watchNext(){ if(G.res&&!G.live)G.res=null; if(blocker()){ render(); return; } const d0=G.day; advance('next'); setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i]; if(g&&g.pbp&&g.pbp.length)A.cast(G.res.i); },
+  watchNext(){ if(G.res&&!G.live)G.res=null; if(blocker()){ render(); return; } const d0=G.day; advance('watch'); setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i]; if(g&&g.pbp&&g.pbp.length)A.cast(G.res.i); },
   smon(v){ UI.smon=+v; render(); },
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },

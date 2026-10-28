@@ -288,3 +288,13 @@ body:has(#sheet .scrim) #dtick{display:none}
 .drest-on{margin:6px 0;padding:6px 10px;border-radius:6px;background:rgba(74,140,255,.08)}
 .curex{margin:10px 0;padding:8px 12px;border-radius:8px;background:var(--bg2,rgba(127,127,127,.06));border:1px solid var(--line,rgba(127,127,127,.18))}
 .curex ul{margin:6px 0 0;padding-left:18px}.curex li{font-size:13px;line-height:1.55;margin:3px 0}
+/* 홈 상태 타일: 급한 항목은 두 칸, 붉은 테두리, 이유 표시 */
+.dtl.urg{grid-column:span 2;border-color:var(--bad,#d44);background:color-mix(in srgb,var(--bad,#d44) 10%,var(--card,#181b20));position:relative}
+.dtl.urg::after{content:attr(data-urg);position:absolute;top:8px;right:10px;font-size:11px;font-weight:700;color:var(--bad,#d44)}
+.dtl.urg .dtl-v{font-size:24px}
+.dtl-l{opacity:.8}.dtl-s{opacity:.92}
+.schief{margin:10px 0;padding:10px 12px;border:1px solid var(--line,#333);border-radius:8px}
+.schief ul{margin:6px 0;padding-left:18px}.schief li{margin:2px 0}.schief-auto{display:flex;gap:6px;align-items:center}
+/* 선수 기본 정보: 포지션·나이를 이름 바로 아래 크게 */
+.pinfo{margin:4px 0 0;font-size:15px;line-height:1.45;color:var(--ink,#e2e8ed)}
+.pinfo-pos{font-size:17px;color:var(--acc,#6aa8ff)}.pinfo-sub{font-size:13px;color:var(--muted);margin-left:4px}

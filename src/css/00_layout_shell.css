@@ -1,7 +1,7 @@
 /* 레이아웃: 매니지먼트 게임 화면 — 상단 구단 바와 '계속' 버튼, 넓은 화면은 왼쪽 메뉴·휴대폰은 아래 아이콘 메뉴, 내용은 헤더 띠가 붙은 촘촘한 패널과 표 */
 :root{
   --bg:#0d1217; --panel:#141b22; --panel2:#1a232c; --head:#1f2a35; --line:#26313c; --line2:#334250;
-  --ink:#e2e8ed; --muted:#8a98a6; --dim:#5d6b79;
+  --ink:#e2e8ed; --muted:#9aa7b4; --dim:#5d6b79;
   --team:#2a5f9e; --team-hi:#3d7cc7; --team-dk:#173352;
   --go:#23874a; --go-hi:#2c9a57; --acc:#3d8bfd; --acc-hi:#5a9dff;
   --good:#4fc27c; --bad:#ef6b5e; --warn:#e3b44c;

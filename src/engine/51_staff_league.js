@@ -9,9 +9,11 @@ function stInit(){ if(G.lgStaff)return G.lgStaff; const L=G.lgStaff={}; for(cons
   for(const s of G.scouts||[]){ stAttr(s); s.loy=Math.max(s.loy,ri(30,55)); } for(const a of anaList()){ stAttr(a); a.loy=Math.max(a.loy,ri(30,55)); } return L; }
 /* AI 구단 스태프 목록(없으면 만든다). 우리 구단은 G.scouts/G.analysts를 쓰므로 null */
 function stTeamL(tid){ if(tid===G.user)return null; const L=stInit(); return L[tid]=L[tid]||stMakeTeam(team(tid)); }
-function stMakeTeam(t){ const big=(t.market-1)*1.2+(t.indie?-.4:0); const sc=[], an=[]; const n1=ri(ST_SC_N[0],ST_SC_N[1]), n2=ri(ST_AN_N[0],ST_AN_N[1]);
-  for(let i=0;i<n1;i++){ const s=stAttr(mkScout(clamp(Math.round(N(2.6+big,1)),1,5))); s.loy=ri(20,70); sc.push(s); }
-  for(let i=0;i<n2;i++){ const a=stAttr(mkAnalyst(clamp(Math.round(N(2.5+big,1)),1,5))); a.loy=ri(20,70); an.push(a); }
+/* 창단 리그라 모든 구단이 우리와 같은 조건(스카우트 3명: 능력 2~3·2·2, 분석원 3명: 능력 2)에서 시작한다.
+   그 뒤 해마다 비시즌에 구단 재정·시장 규모에 따라 스태프를 늘리고 바꾼다(stAiHire) */
+function stMakeTeam(t){ const sc=[], an=[];
+  [ri(2,3),2,2].forEach(k=>{ const s=stAttr(mkScout(k)); s.loy=ri(20,70); sc.push(s); });
+  ['opp','trk','vid'].forEach(r=>{ const a=stAttr(mkAnalyst(2,r)); a.loy=ri(20,70); an.push(a); });
   return {sc,an}; }
 /* AI 구단의 스카우트 오차(scoutSd)를 실제 스카우트 실력에서 계산 */
 function stSync(tid){ const L=G.lgStaff&&G.lgStaff[tid]; if(!L)return; const sk=L.sc.map(s=>s.skill).sort((a,b)=>b-a); const v=(sk[0]||1)*.55+(sk[1]||1)*.3+(sk[2]||1)*.15; const i=Math.floor(v), f=v-i;
@@ -79,5 +81,15 @@ function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...a
   for(const [k,s,tid] of all){ stAttr(s); s.age++; s.loy=clamp(s.loy+12,0,100); const up=(s.age<=40?.2:s.age<=50?.1:.03)*(s.skill>=4?.5:1); if(s.skill<5&&R()<up){ s.skill++; if(tid===G.user)grew.push(s.name); } /* 4·5단계로 올라가기는 더 어렵다 */
     if(s.skill>1&&R()<(s.age>=58?.25:s.age>=52?.1:.03))s.skill--; /* 감이 떨어지거나 현장과 멀어진다 */ s.sal=Math.max(s.sal,(k==='sc'?SCOUT_SAL:ANA_SAL)[s.skill]);
     if(s.age>=66||(s.age>=60&&R()<.15)){ if(tid===G.user){ if(k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s); gone.push(s.name); } else { const L=G.lgStaff[tid]; if(k==='sc')L.sc=L.sc.filter(x=>x!==s); else L.an=L.an.filter(x=>x!==s); } } }
+  try{ stAiHire(); }catch(e){}
   for(const tid in G.lgStaff)stSync(+tid);
   if(grew.length||gone.length)mail('운영팀','스태프 연간 변동',`${grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:''}${gone.length?`\n은퇴한 스태프: ${gone.join(', ')}`:''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); }
+
+/* AI 구단 스태프 보강(해마다 1월): 시장이 크고 재정이 넉넉한 구단은 인원을 늘리고 더 나은 사람을 데려온다.
+   빈자리(은퇴·이적)는 채우고, 능력 1짜리는 바꾼다. 구단마다 목표 인원이 달라 해가 갈수록 차이가 생긴다 */
+function stAiHire(){ const L=stInit(); for(const tid in L){ const t=team(+tid); if(!t)continue; const S=L[tid]; const rich=(t.market-1)*2+(t.indie?-.6:0)+((t.cash||0)>3000?.5:0);
+    const tSc=clamp(3+Math.round(rich+(t.mode==='rebuild'?.5:0)),3,6), tAn=clamp(3+Math.round(rich*.8+(t.mode==='contend'?.5:0)),2,6);
+    const sk=()=>clamp(Math.round(N(2.4+rich*.6,.8)),1,5);
+    S.sc=S.sc.filter(s=>!(s.skill<=1&&R()<.5)); S.an=S.an.filter(a=>!(a.skill<=1&&R()<.5));
+    let g=0; while(S.sc.length<tSc&&g++<3&&R()<.7){ const s=stAttr(mkScout(sk())); s.loy=ri(20,60); S.sc.push(s); }
+    g=0; while(S.an.length<tAn&&g++<3&&R()<.7){ const a=stAttr(mkAnalyst(sk())); a.loy=ri(20,60); S.an.push(a); } } }
