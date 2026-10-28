@@ -274,3 +274,6 @@ a.tl,.lnk{text-decoration:none}a.tl:hover,.lnk:hover{text-decoration:underline}
 @media (max-width:600px){ .dt-c{min-width:40px;padding:3px}.dt-c em{font-size:9px}.dt-flip b{font-size:18px} }
 /* 중계 종료 버튼 줄바꿈 방지 */
 .cs-fin button{white-space:nowrap}
+/* 부상 후유증 */
+.injfx{margin:8px 0;padding:8px 10px;border-left:3px solid var(--bad,#c33);background:color-mix(in srgb,var(--bad,#c33) 6%,transparent);border-radius:4px}
+.injfx b{display:block;font-size:13px;margin-bottom:2px}

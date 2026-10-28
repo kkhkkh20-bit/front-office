@@ -78,7 +78,8 @@ function staffNotes(p){ // 선수 카드 상단 스태프 의견
   const l=p.l10||[]; if(l.length>=5){ if(p.isP){ const o=sum(l.map(x=>x[0])), er=sum(l.map(x=>x[1])); const era=o?er*27/o:0; L.push({w:'코치',t:era<=3?`최근 ${l.length}경기 평균자책점 ${era.toFixed(2)}로 공이 좋습니다.`:era>=6?`최근 ${l.length}경기 평균자책점 ${era.toFixed(2)}로 흔들리고 있습니다.`:`최근 ${l.length}경기 평균자책점 ${era.toFixed(2)}, 무난합니다.`}); }
     else { const ab=sum(l.map(x=>x[0])), hh=sum(l.map(x=>x[1])); const a=ab?hh/ab:0; L.push({w:'코치',t:a>=.33?`최근 ${l.length}경기 타율 ${fmt3(a)}로 감이 좋습니다.`:a<=.2?`최근 ${l.length}경기 타율 ${fmt3(a)}로 부진합니다.`:`최근 ${l.length}경기 타율 ${fmt3(a)}, 무난합니다.`}); } }
   if((p.fat||0)>=60)L.push({w:'트레이너',t:`피로가 ${Math.round(p.fat)}까지 쌓였습니다. 감독이 쉬게 할 가능성이 큽니다.`});
-  else if(p.injOut>0)L.push({w:'의무팀',t:`부상으로 약 ${p.injOut}일 더 쉬어야 합니다.`});
+  else if(p.injOut>0)L.push({w:'의무팀',t:`${injNow(p)}(으)로 약 ${p.injOut}일 더 쉬어야 합니다. 예상 복귀 ${injRetTxt(p)}.`});
+  else if(injFxNow(p).length){ const f=injFxText(p).find(x=>x.open); if(f)L.push({w:'의무팀',t:`${f.n} 이후 아직 몸이 완전하지 않습니다(${f.t}). 실전을 뛰면서 돌아옵니다.`}); }
   else if(p.injHist&&p.injHist.length>=3)L.push({w:'의무팀',t:`부상 이력이 ${p.injHist.length}번 있습니다. 관리가 필요합니다.`});
   if(!p.foreign){ const v=estVal(p); const left=p.faC?Math.max(1,p.yrs):null; L.push({w:'운영팀',t:(v>=4&&p.sal<5000?'연봉 대비 가치가 높습니다. ':v<0?'연봉 대비 활약이 부족하다는 평가입니다. ':'')+(left?`${ctText(p)}입니다.`:Math.max(0,faSvc(p)-p.svc)?`${ctText(p)}.`:'올해 FA 자격을 얻습니다.')}); }
   return L.filter(x=>x.t).slice(0,5); }

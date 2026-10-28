@@ -92,7 +92,8 @@ function renderSheet0(){
     parts.push(`<div class="row" style="margin-top:14px;justify-content:flex-end">${UI.confirmRel===p.id?`<button class="btn danger" data-a="release" data-v="${p.id}">정말 방출${p.faC?` (정산 ${money(Math.round(p.sal*p.yrs*.5))})`:''}</button><button class="btn" data-a="relCancel">취소</button>`:`<button class="btn danger" data-a="relAsk" data-v="${p.id}">방출</button>`}</div>`);
     actions=parts.join('');
   }
-  const status=p.injOut>0?`<span class="pill bad">부상 · 복귀까지 약 ${p.injOut}일</span>`:'';
+  const status=p.injOut>0?`<span class="pill bad">${esc(injNow(p))} · 복귀까지 약 ${p.injOut>=300?Math.round(p.injOut/30)+'개월':p.injOut+'일'} (${injRetTxt(p)})</span>`:'';
+  const injFx=injFxText(p); const injBox=injFx.length?`<div class="injfx"><b>${p.injOut>0?'부상 · 재활 중':'부상 후유증'}</b>${injFx.map(x=>`<div class="small">${x.y}년 ${esc(x.n)}: ${esc(x.t)}</div>`).join('')}<div class="small muted">회복 중인 능력은 1군·2군 실전을 뛰면서 되찾습니다. 1년 이상 걸린 부상과 수술은 일부가 돌아오지 않을 수 있습니다.</div></div>`:'';
   const meas=p.isP?`직구 평균 ${veloOf(p)}km/h · 최고 ${veloMax(p)}km/h`:`타구속도 평균 ${evOf(p)}km/h · 홈→1루 ${runOf(p)}초`;
   const tiles=h?(p.isP?[['ERA',h.outs?pRate(h).era.toFixed(2):'-',1],['WAR',wOf(h,p).toFixed(1),1],['이닝',ipStr(h.outs)],['탈삼진',h.so],[h.sv?'세이브':h.hld?'홀드':'승',h.sv||h.hld||h.w]]
     :[['OPS',h.pa?fmt3(bRate(h).ops):'-',1],['WAR',wOf(h,p).toFixed(1),1],['타율',fmt3(bRate(h).avg)],['홈런',h.hr],['타점',h.rbi]]):null;
@@ -121,14 +122,14 @@ function renderSheet0(){
    ${!hasM&&!(p.team!=null&&p.team!==G.user)?actions:''}
    `:''}
    ${T==='abil'?`
-   ${mgrOpinion(p)}${trackCard(p)}${detailCard(p)}${reportCard(p,true)}
+   ${injBox}${mgrOpinion(p)}${trackCard(p)}${detailCard(p)}${reportCard(p,true)}
    ${!p.isP?`<section class="card"><div class="row between"><span class="eyebrow">수비 위치</span>${p.use&&p.use.y===G.year&&p.use.g?`<span class="small muted">${esc(useText(p))}</span>`:''}</div><div class="posfit">${['C','1B','2B','3B','SS','LF','CF','RF'].map(k=>{ const main=p.pos===k, sub=subsOf(p).includes(k); const v=(main||sub)&&!hideOvr(p)?clamp(r5(defAt(p,k)+hn('pf'+k,p.id)*2),20,80):null; return `<div class="${main?'main':sub?'sub':''}"><span>${POSS[k]}</span>${v!=null?rchip(v):`<b class="rc q">${main||sub?'○':'-'}</b>`}<i>${main?'주':sub?'서브':''}</i></div>`; }).join('')}</div><p class="small muted">주 포지션과 서브 포지션만 감독이 무리 없이 맡깁니다. 숫자는 그 자리 수비 평가입니다.</p></section>`:''}
    ${p.team===G.user&&!(p.joinY>G.year)?`<section class="card"><div class="row between"><span class="eyebrow">컨디션</span><span class="small muted">피로 ${Math.round(p.fat||0)} · ${fatText(p)}</span></div>${fatBar(p)}<p class="small">${l10Text(p)||'최근 1군 경기 기록이 없습니다.'}</p><p class="small muted">연속 출장하면 피로가 쌓여 성적이 떨어지고 부상 위험이 커집니다. 감독은 지친 선수를 쉬게 합니다. ${p.isP?'투수는 투구 수만큼 지치고 체력(스태미나)이 좋을수록 빨리 회복합니다.':'포수는 더 빨리 지칩니다. 체력이 좋을수록 덜 지치고 빨리 회복하며, 시즌 후반 성적 하락도 적습니다.'}</p></section>`:''}
    ${growthCard(p)}
    `:''}
    ${T==='rec'?`
    <div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
-   ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.days}일`).join(' · ')}</p>`:''}
+   ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
    ${st}
