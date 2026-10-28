@@ -27,7 +27,7 @@ function foreignView(){
   const summary=`<section class="card">${rule}
     <p class="small muted">${mid?`시즌 중 교체 ${used}/${F_REPL_MAX}회, 영입하면 남은 경기 비율만큼 연봉을 냅니다. `:''}${open?'후보는 매달 1일 일부 바뀝니다. 8월 15일 이후에는 영입할 수 없습니다.':'<b>지금은 영입 기간이 아닙니다.</b> (12월~8월 15일)'}</p>
     <div class="netrow">${regs.map(netPill).join('')}<button class="tc-i" data-a="itab" data-v="fview${asia?'a':''}:net">해외 스카우트망 관리</button></div>
-    ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(foreignOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)}${G.gmSince===G.year?' <span class="muted">(첫 시즌: 규정 한도만큼 구단주가 미리 배정)</span>':' <span class="muted">(지난 시즌 리그 평균 외국인 지출 기준)</span>'}</p>`; })()}
+    ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(foreignOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)} <span class="muted">(배정 예산 안에서 영입하면 홈의 예산 여유는 그대로이고, 넘는 만큼만 줄어듭니다)</span>${G.gmSince===G.year?' <span class="muted">(첫 시즌: 규정 한도만큼 구단주가 미리 배정)</span>':' <span class="muted">(지난 시즌 리그 평균 외국인 지출 기준)</span>'}</p>`; })()}
     ${UI.fmsg2?`<div class="note bad">${esc(UI.fmsg2)}</div>`:''}</section>`;
   const mine=(asia?as:yb).map(p=>pcard(p,{sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)}`,tags:p.fy===G.year||p.fy===G.year+1?'<span class="pill">KBO 첫 시즌</span>':'',foot:`<b class="num">${money(p.sal)}</b><span>${Math.round(p.sal/USD)}만 달러 · ${p.rsy?`재계약 ${p.rsy}년차`:'첫 계약'}</span><button class="tc-i" data-a="player" data-v="${p.id}">상세</button><button class="tc-i" data-a="relNow" data-v="${p.id}">방출</button>`})).join('');
   const mg=G.mgr[G.user]; const hasMgr=!!(mg&&!mg.interim&&!G.unemp);

@@ -22,7 +22,7 @@ function pcRec(p,hid){ // 성적 블록: 큰 숫자 하나 + 보조 한 줄
   const sub=hid?`${fmt3(r.avg)} · ${h.hr}홈런 · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'}`:`${fmt3(r.avg)} · ${h.hr}홈런 · WAR ${wOf(h,p).toFixed(1)}`;
   return `<div class="pc-rec"><span class="pc-l">${tag} OPS</span><b class="pc-big" style="color:${c}">${fmt3(r.ops)}</b><span class="pc-s">${sub}</span></div>`; }
 function pcard(p,o){ o=o||{}; const rp=o.rp||scoutReport(p); const hid=hideOvr(p);
-  const ab=hid?'':`<div class="pc-ab"><span class="pc-l">능력</span>${rp.cur==null?'<b class="pc-ov q">?</b>':`<b class="pc-ov" style="--c:${rcol(rp.cur)}">${dv(rp.cur)}</b>${condChip(p)}`}<span class="pc-s">${rp.ofp!=null&&rp.ofp>rp.cur?`잠재력 <b style="color:${rcol(rp.ofp)}">${dv(rp.ofp)}</b>`:rp.ofp!=null?'완성형':'잠재력 ?'}</span></div>`;
+  const ab=hid?'':`<div class="pc-ab"><span class="pc-l">능력</span>${rp.cur==null?'<b class="pc-ov q">?</b>':`<b class="pc-ov" style="--c:${rcol(rp.cur)}">${dv(rp.cur)}</b>${condChip(p)}`}<span class="pc-s">${rp.ofp!=null?`잠재력 ${potChip(rp,p)}`:'잠재력 ?'}</span></div>`;
   const pos=p.isP?`<span class="pp main">${posLabel(p)}</span>`:`<span class="pp main"${p.team===G.user?` data-a="posSheet" data-v="${p.pos}"`:''}>${POSS[p.pos]}</span>`;
   return `<div class="tcard pc ${hid?'':cardTier(rp.cur)}${o.on?' on':''}${hid?' hid':''}" data-a="${o.act||'player'}" data-v="${o.v??p.id}" role="button" tabindex="0"${o.on!=null?` aria-pressed="${!!o.on}"`:''}>
     <div class="pc-top">${avImg(p)}<div class="pc-id"><b>${esc(p.name)}</b><span>${pos}${o.sub||`${p.age}세 · ${hand(p)}`}</span></div></div>

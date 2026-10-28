@@ -64,9 +64,9 @@ function tradeMood(tid,give,get,cash){
 function tContract(p){ if(!p.faC&&!p.extNext&&p.team==null&&G.fa&&(G.fa.pool||[]).includes(p.id))return 'FA 시장'; const t=ctText(p); return t==='올 시즌 뒤 FA'&&G.last&&G.last.y>=G.year?'FA 자격 취득':t; }
 function trow(p,side,on,hot){ const rp=scoutReport(p); const tag=hot?`<em class="good">상대 관심 · ${esc(hot)}</em>`:p.aiListed?'<em class="warn">매물</em>':'';
   const flags=(p.injOut>0?' · <b class="bad">부상</b>':'')+(p.mor!=null&&p.mor<35?' · <b class="warn">불만</b>':'');
-  return `<div class="trw${on?' on':''}"><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.age}세</small></b><i>${money(p.sal)} · ${tContract(p)}${flags}</i>${tag?`<i>${tag}</i>`:''}</span></button><span class="trw-r">${rchip(rp.cur)}${rchip(rp.ofp)}</span><button class="tc-i trw-b${on?' on':''}" data-a="tpick" data-v="${side}:${p.id}">${on?'빼기':(side==='give'?'보내기':'받기')}</button></div>`; }
+  return `<div class="trw${on?' on':''}"><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.age}세</small></b><i>${money(p.sal)} · ${tContract(p)}${flags}</i>${tag?`<i>${tag}</i>`:''}</span></button><span class="trw-r">${rchip(rp.cur)}${potChip(rp,p)}</span><button class="tc-i trw-b${on?' on':''}" data-a="tpick" data-v="${side}:${p.id}">${on?'빼기':(side==='give'?'보내기':'받기')}</button></div>`; }
 function tmini(p,side){ const rp=scoutReport(p);
-  return `<div class="tmini">${avImg(p)}<div class="tm-id"><b>${esc(p.name)}</b><span>${posLabel(p)} · ${p.age}세 · ${money(p.sal)}</span></div><span class="tm-r">${rchip(rp.cur)}${rchip(rp.ofp)}</span><button class="x" data-a="tpick" data-v="${side}:${p.id}" aria-label="${esc(p.name)} 빼기">×</button></div>`; }
+  return `<div class="tmini">${avImg(p)}<div class="tm-id"><b>${esc(p.name)}</b><span>${posLabel(p)} · ${p.age}세 · ${money(p.sal)}</span></div><span class="tm-r">${rchip(rp.cur)}${potChip(rp,p)}</span><button class="x" data-a="tpick" data-v="${side}:${p.id}" aria-label="${esc(p.name)} 빼기">×</button></div>`; }
 function tradeView(){
   const tr=UI.trade;
   if(!tradeOpen())return `<section class="card"><h2 class="sec">트레이드 기간이 아닙니다</h2><p class="small muted">7월 31일 트레이드 마감 이후에는 포스트시즌이 끝날 때까지 트레이드할 수 없습니다.</p></section>`;

@@ -44,7 +44,7 @@ function futuresReport(){ if(G.unemp)return; const y=G.year; const ps=playersOf(
   mail('육성팀',`${dobj(G.day).m}월 2군 리포트`,`육성팀입니다. 이번 달 2군 현황을 보고드립니다.\n\n${L.join('\n\n')}\n\n1군 기용은 감독 권한입니다. 콜업 후보는 감독에게 건의하거나 출전 기회를 약속하는 면담으로 밀어줄 수 있습니다.`,{kind:'육성',acts:[{l:'2군 연수 관리',a:'goWork',v:'2군연수'}]}); }
 /* 올해 시작 시점 능력(성장 표시용)과 매달 팀 성장 기록 */
 function ovrSnap(){ if(G.unemp)return; G.ovr0={y:G.year,m:Object.fromEntries(playersOf(G.user).concat(Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year)).map(p=>[p.id,ovr(p)]))}; }
-function growSnap(){ if(G.unemp)return; const tid=G.user; const pr=playersOf(tid).filter(p=>p.age<=24&&!p.foreign).map(p=>p.pot).sort((a,b)=>b-a).slice(0,10); const o=dobj(G.day);
+function growSnap(){ if(G.unemp)return; const tid=G.user; const pr=playersOf(tid).filter(p=>p.age<=24&&!p.foreign).map(p=>{ try{ const r=scoutReport(p); return r.ofp??r.cur??ovr(p); }catch(e){ return ovr(p); } }).sort((a,b)=>b-a).slice(0,10); const o=dobj(G.day);
   (G.tgrow=G.tgrow||[]).push({y:o.y,m:o.m,r1:+teamRating(tid).toFixed(2),pot:pr.length?+(pr.reduce((a,b)=>a+b,0)/pr.length).toFixed(2):0,tid}); G.tgrow=G.tgrow.filter(x=>x.tid===tid).slice(-60); }
 function milWarn(){ const L=domestic(G.user).filter(p=>{ milInit(p); return milFree(p)&&!(p.mil&&(p.mil.app||p.mil.until))&&p.age>=27; }); if(!L.length)return;
   stop('병역',`해가 바뀌면 현역으로 입대하는 선수(27세 미필): ${L.map(p=>`${p.name}(${posLabel(p)}, 능력 ${dvo(p)})`).join(', ')}. 1월 20일 입대해 1년 6개월 동안 빠집니다. 대체 선수를 미리 구하세요.`,L[0].id); }

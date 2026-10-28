@@ -9,7 +9,7 @@ function originOf(p){ if(!p||p.team!==G.user)return ''; if(p.foreign)return '외
   if(p.draft&&p.draft.tid===G.user)return `${String(p.draft.y).slice(2)}신인 ${p.draft.rd}R`;
   if(G.fd&&(G.fd.all||[]).includes(p.id))return '창단 배분'; return '자체 영입'; }
 /* 앞으로 몇 년의 예상 능력: 어리면 잠재 쪽으로, 31세부터 하락 */
-function projPlan(p,k){ let o=ovr(p), a=p.age; const pot=Math.max(p.pot||o,o); for(let i=0;i<k;i++){ a++; o+=a<=24?(pot-o)*.3:a<=27?(pot-o)*.22:a<=30?0:a<=33?-1.5:-3; } return o; }
+function projPlan(p,k){ let o=ovr(p), a=p.age; const pot=Math.max(scoutReport(p).ofp??o,o); /* 진짜 잠재력이 아니라 스카우트 추정으로 내다본다 */ for(let i=0;i<k;i++){ a++; o+=a<=24?(pot-o)*.3:a<=27?(pot-o)*.22:a<=30?0:a<=33?-1.5:-3; } return o; }
 function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter(p=>p.team===G.user);
   if(!G.plEx||G.plEx.y!==Y)G.plEx={y:Y,ids:[]}; const EX=new Set(G.plEx.ids);
   const col=k=>{ const av=ps.filter(p=>k>0||!(p.joinY>Y)).filter(p=>!(p.joinY>Y+k)).filter(p=>k===0||!EX.has(p.id));
@@ -61,7 +61,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
 function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; const h=lvl==='2'?seasonTotal(p,y,'퓨처스'):curLine(p);
   const st=!h?'기록 없음':p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'-');
   const gd=own?growDelta(p):null; const gt=gd==null||Math.abs(gd)<.5?'':`<em class="gr ${gd>0?'up':'dn'}">${gd>0?'▲':'▼'}${Math.abs(gd).toFixed(1)}</em>`;
-  const tag=(team(p.team).cap===p.id?'<em class="capb">C</em>':'')+(p.fr&&p.fr.tid===p.team?'<em class="frb">프</em>':'')+(p.age<=24&&(rp.ofp??0)>=(rp.cur??0)+6?`<em class="potb">잠재 ${dv(rp.ofp)}</em>`:'');
+  const tag=(team(p.team).cap===p.id?'<em class="capb">C</em>':'')+(p.fr&&p.fr.tid===p.team?'<em class="frb">프</em>':'')+(p.age<=24&&(rp.ofp??0)>=(rp.cur??0)+6?`<em class="potb">${potTier(rp.ofp,rp.cur).s}</em>`:'');
   const org=own?originOf(p):'';
   return `<button class="gl-r" data-a="player" data-v="${p.id}"><span class="gl-l">${lab}</span>${avImg(p)}<span class="gl-m"><b>${esc(p.name)}${tag}</b><i>${posLabel(p)} · ${p.age}세 · ${money(p.sal)} · ${st}${org?` · <span class="org">${org}</span>`:''}</i></span><span class="gl-o">${rchip(rp.cur)}${gt}</span></button>`; }
 function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const d=depth(tid); const order=orderList(d.start,tid); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;

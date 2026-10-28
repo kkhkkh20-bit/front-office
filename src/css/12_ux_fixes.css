@@ -279,3 +279,6 @@ body:has(#sheet .scrim) #dtick{display:none}
 @media (max-width:600px){ .reb-g{grid-template-columns:1fr} }
 .dg-diag{margin-top:8px;padding:8px 10px;border:1px solid #e3b44c55;border-radius:6px;background:#e3b44c0d}.dg-diag p{margin:0 0 6px}.dg-diag .row{gap:6px;flex-wrap:wrap}.dg-diag .btn{width:auto}
 .rview{margin:0;gap:4px}.rview button{padding:4px 8px;font-size:12.5px}
+/* 잠재력 등급(스카우트 말) */
+.ptier{display:inline-block;font-size:11.5px;font-weight:600;line-height:18px;padding:0 6px;border-radius:9px;border:1px solid var(--line);white-space:nowrap;color:var(--muted)}
+.ptier.t6{color:#ffd166;border-color:#ffd16677;background:#ffd16614}.ptier.t5{color:#6fe39a;border-color:#6fe39a66}.ptier.t4{color:#5aa9ff;border-color:#5aa9ff55}.ptier.t3{color:var(--ink)}.ptier.t2,.ptier.t1,.ptier.q{color:var(--muted)}
