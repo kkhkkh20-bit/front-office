@@ -12,10 +12,14 @@ function amHistory(b,lvl){ // 학년별 아마추어 기록. 어릴수록 조금
     rows.push(Object.assign({gr:i+1},x)); for(const k in tot)tot[k]+=x[k]||0; }
   b.amY=rows; b.am=tot; }
 const AM_INJ_B=['손목 골절 이력','햄스트링 부상 반복','허리 디스크 치료 이력','무릎 연골 수술 이력'];
+/* 리그 수준 유지: 해마다 신인이 은퇴 선수보다 강하면 리그 전체 능력이 계속 오른다(12시즌에 평균 +4, 60 이상 5명→50명).
+   게임 시작 때 리그 평균을 기준으로 삼고, 지금 평균이 그보다 높으면 신인 잠재력을 그만큼 낮춰(낮으면 높여) 리그 수준을 비슷하게 유지한다 */
+function lgMeanDom(){ const L=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)); return L.length?L.reduce((a,p)=>a+ovr(p),0)/L.length:null; }
+function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase==null){ G.lgBase=+m.toFixed(2); return 0; } return clamp((m-G.lgBase)*1.6,-3,6); }
 function makeDraftClass(){
-  const cls=[];
+  const cls=[]; const lvAdj=draftLevelAdj();
   for(let i=0;i<DRAFT_POOL;i++){
-    const college=R()<.3; const age=college?22:18; const T=clamp(N(44,9)+(R()<.06?rnd(4,9):0),26,79); /* 해마다 리그 상위권(60+)으로 클 재목이 7~8명 섞인다. 사실성보다 '대어'가 꾸준히 나오는 쪽을 택했다 */
+    const college=R()<.3; const age=college?22:18; const T=clamp(N(44,9)+(R()<.06?rnd(4,9):0)-lvAdj,26,79); /* 해마다 리그 상위권(60+)으로 클 재목이 7~8명 섞인다. 사실성보다 '대어'가 꾸준히 나오는 쪽을 택했다 */
     const cur=clamp(T-(27-age)*rnd(2.2,3.4),20,60);
     const b=newPlayer({age,base:cur,pot:T,college}); b.prospect=true;
     b.school=pick(SCH_CITY[b.region])+(college?pick(SCH_UN):pick(SCH_HS)); b.schoolHue=Math.floor(u01('sh',b.school)*360);

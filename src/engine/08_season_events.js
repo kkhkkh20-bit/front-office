@@ -3,7 +3,7 @@ function openingDay(){
   /* 시범경기 등판 순서를 지우고 개막전은 1선발부터 */
   for(const p of Object.values(G.players))if(p.isP&&p.team!=null){ delete p.lastStart; } for(const t of G.teams)t.rot=0;
   for(const t of G.teams) G.sea.fspend[t.id]=sum(foreignOf(t.id).map(p=>p.sal));
-  { const v=G.teams.filter(t=>t.id!==G.user).map(t=>G.sea.fspend[t.id]||0); G.lgFor=G.lgFor||{}; G.lgFor[G.year]=Math.round(sum(v)/Math.max(1,v.length)); }
+  { const v=G.teams.filter(t=>t.id!==ME()).map(t=>G.sea.fspend[t.id]||0); G.lgFor=G.lgFor||{}; G.lgFor[G.year]=Math.round(sum(v)/Math.max(1,v.length)); }
   const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})); const a=avg(rs.map(x=>x.r));
   rs.forEach(x=>team(x.id).expW=clamp(.5+(x.r-a)*.03,.36,.64));
   G.proj=rs.map(x=>({id:x.id,r:x.r+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
@@ -80,12 +80,12 @@ function settlement(){
     let tax=0; if(ci.over>0){ const n=(t.capOver||0)+1; tax=Math.round(ci.over*capRate(n)); t.capOver=n; if(n>=3)t.pickPen=G.year+1; } else t.capOver=0;
     let flo=0; if(G.year>=2027){ const under=ci.floor-ci.pay; if(under>0){ const n=(t.floorUnder||0)+1; flo=Math.round(under*floorRate(n)); t.floorUnder=n; } else t.floorUnder=0; }
     const champBonus=(ps.champ===t.id&&!t.indie)?Math.round(pool*.5*(t.owner==='profit'?.6:1)):0;
-    const inc=[['입장 수입',Math.round(att*TICKET*PRICE[S.price].m)],['구장 부대 수입',Math.max(0,Math.round(att*.0003*(S.lv.fnb-2)))+(S.lv.prem-2)*600+(S.lv.vis-2)*400],['중계권 배분',9000],['광고·상품',Math.round((2200+mkt*1.6)*t.market*t.pop*adM)]]; { const si=starIncome(t.id); if(si>0)inc.push(['스타 마케팅',si]); }
-    if(t.id===G.user){ const sp=sponSettle(y,ps); if(sp.base)inc.push(['스폰서 계약',sp.base]); if(sp.bonus)inc.push(['스폰서 성과 보너스',sp.bonus]); } else { if(t.indie)inc.push(['메인 스폰서',10500]); inc.push(['스폰서',sponAI(t.id)]); } if(S.compIn>0)inc.push(['FA 보상금 수령',S.compIn]);
+    const EI=ecoIdx(y); const inc=[['입장 수입',Math.round(att*TICKET*EI*PRICE[S.price].m)],['구장 부대 수입',Math.max(0,Math.round(att*.0003*(S.lv.fnb-2)))+(S.lv.prem-2)*600+(S.lv.vis-2)*400],['중계권 배분',Math.round(9000*EI)],['광고·상품',Math.round((2200*EI+mkt*1.6)*t.market*t.pop*adM)]]; { const si=starIncome(t.id); if(si>0)inc.push(['스타 마케팅',si]); }
+    if(t.id===G.user){ const sp=sponSettle(y,ps); if(sp.base)inc.push(['스폰서 계약',sp.base]); if(sp.bonus)inc.push(['스폰서 성과 보너스',sp.bonus]); } else { if(t.indie)inc.push(['메인 스폰서',Math.round(10500*EI)]); inc.push(['스폰서',sponAI(t.id)]); } if(S.compIn>0)inc.push(['FA 보상금 수령',S.compIn]);
     if(share[t.id])inc.push(['포스트시즌 배당금',share[t.id]]);
     if(champBonus)inc.push(['모기업 우승 보너스',champBonus]);
     const scoutCost=t.id===G.user?sum(G.scouts.map(s=>s.sal))+600:(G.lgStaff&&G.lgStaff[t.id]?stAiPay(G.lgStaff[t.id])+600:1500); /* AI도 실제 고용한 스태프 연봉만큼 */
-    const exp=[['국내 선수 연봉',ci.all],['외국인 선수 연봉',G.sea.fspend[t.id]||0],['구단 운영비',t.indie?19000:24000],['스카우트 운영',scoutCost],['마케팅',mkt]];
+    const exp=[['국내 선수 연봉',ci.all],['외국인 선수 연봉',G.sea.fspend[t.id]||0],['구단 운영비',Math.round((t.indie?19000:24000)*EI)],['스카우트 운영',scoutCost],['마케팅',mkt]];
     if(tax)exp.push(['경쟁균형세(야구발전기금)',tax]);
     { const bn=G.sea.bonus&&G.sea.bonus[t.id]; if(bn)exp.push(['신인 계약금',bn]); }
     { const due=newStadDue(t.id); if(due){ exp.push(['신구장 분담금',due]); inc.push(['모기업 신구장 출자(분담금의 70%)',Math.round(due*.7)]); stadOf(t.id).proj.paid=(stadOf(t.id).proj.paid||0)+due; } }
@@ -101,12 +101,12 @@ function settlement(){
     if(selfC>0)fins_self[t.id]=Math.round(selfC);
     /* AI 구단 부채 정리: 지원이 적자만 메우면 FA 보상금·방출 위약금으로 생긴 마이너스 현금이 영영 회복되지 않는다.
        모기업이 부채의 45%를 갚아 준다(남은 지원 한도 + 30억까지, 독립구단은 투자사 증자 60억까지). 빚이 깊으면 FA 영입을 끊고 고액 선수를 넘기므로(aiDebtDump) 2~4년이면 0 근처로 돌아온다 */
-    let relief=0; if(t.id!==G.user&&t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]))<0){ const debt=-(t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1])));
+    let relief=0; if(t.id!==ME()&&t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]))<0){ const debt=-(t.cash+sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1])));
       relief=Math.round(t.indie?Math.min(debt*.45,6000):Math.min(debt*.45,Math.max(0,supCap-support)+3000)); if(relief>0){ inc.push([t.indie?'투자사 증자(부채 정리)':'모기업 지원(부채 정리)',relief]); support+=t.indie?0:relief; } }
     const net=sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]));
     t.cash+=net;
     /* 독립구단은 이익이 쌓이면 투자사가 배당으로 가져간다(80억 초과분의 절반) */
-    let div=0; if(t.indie&&t.cash>8000){ div=Math.round((t.cash-8000)*.5); t.cash-=div; if(t.id!==G.user)wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
+    let div=0; if(t.indie&&t.cash>8000){ div=Math.round((t.cash-8000)*.5); t.cash-=div; if(t.id!==ME())wire('구단',`${t.city} ${t.nick} 투자사, 배당 ${money(div)} 회수`,{tid:t.id}); }
     t.pop=clamp(1+(t.pop-1)*.85+(wp-.5)*.5+(mkt-2000)/45000+(ps.champ===t.id?.06:0)+(G.mgr[t.id]&&G.mgr[t.id].fame>=70?.03:0)+localStarPop(t.id),.7,1.45);
     fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,selfC:fins_self[t.id]||0,div};
   }

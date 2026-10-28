@@ -7,11 +7,19 @@ function setOvs(id,prog){ { const prev=(G.ovs||[]).find(x=>x.pid===id); if(prev&
 function devWeek(){
   G.devProg=(G.devProg||[]).filter(x=>{ const p=G.players[x.pid]; return p&&p.team===G.user; });
   const m=mgrOf(G.user); const yf=1+(m.youth-50)/120;
-  for(const x of G.devProg){ const p=G.players[x.pid]; const pr=DEVP[x.prog]; if(p.age>28)continue;
-    const half=isRegular(p)?.5:1; const room=Math.max(0,p.pot-ovr(p));
-    for(const k of pr.k){ const cap=Math.max(p.pot,ovr(p))+8; if(p.r[k]>=cap)continue; p.r[k]=clamp(p.r[k]+rnd(.06,.16)*half*yf*(room>0?1:.35),20,80); }
-    roundR(p); }
+  for(const x of G.devProg){ const p=G.players[x.pid]; const pr=DEVP[x.prog]; devApply(p,pr.k,yf); }
+  try{ aiDevWeek(); }catch(e){}
 }
+/* 2군 연수 한 주 효과. 해마다 쌓이는 양에 상한(능력치 합 +6)을 두고, 목표치도 잠재력+2까지로 묶는다(겨울마다 잠재력이 현재 능력까지 올라가 천장이 사라지는 것을 막는다) */
+const DEV_YCAP=6;
+function devApply(p,keys,yf){ if(!p||p.age>28)return; if(!p.dvY||p.dvY.y!==G.year)p.dvY={y:G.year,s:0}; if(p.dvY.s>=DEV_YCAP)return;
+  const half=isRegular(p)?.5:1; const room=Math.max(0,p.pot-ovr(p));
+  for(const k of keys){ const cap=Math.max(p.pot,ovr(p))+2; if(p.r[k]>=cap)continue; const add=rnd(.06,.16)*half*yf*(room>0?1:.35); p.r[k]=clamp(p.r[k]+add,20,80); p.dvY.s+=add; }
+  roundR(p); }
+/* AI 구단도 같은 2군 연수를 돌린다: 구단마다 24세 이하 중 더 클 여지가 큰 4~6명(리빌딩이면 6명), 가장 약한 툴 둘을 집중 훈련 */
+function aiDevWeek(){ for(const t of G.teams){ if(t.id===ME())continue; const m=mgrOf(t.id); const yf=1+(((m&&m.youth)||50)-50)/120; const n=t.mode==='rebuild'?6:4;
+    const ps=domestic(t.id).filter(p=>p.age<=24&&!(p.joinY>G.year)).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a))).slice(0,n);
+    for(const p of ps){ const keys=Object.keys(p.r).filter(k=>p.isP?['stf','ctl','sta'].includes(k):['con','pow','eye','spd','def'].includes(k)).sort((a,b)=>p.r[a]-p.r[b]).slice(0,2); devApply(p,keys,yf); } } }
 function ovsApply(){
   const out=[];
   for(const x of (G.ovs||[])){ const p=G.players[x.pid]; if(!p||p.team!==G.user)continue; const o=OVS[x.prog]; const gap=Math.max(0,p.pot-ovr(p));

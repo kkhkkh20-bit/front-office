@@ -45,7 +45,7 @@ function offseasonMgr(){
   try{ obYear(); }catch(e){}
   if(G.coach)coachYear(); try{ gmTurnover(); }catch(e){}
   for(const t of G.teams){ const m=G.mgr[t.id]; if(!m)continue; m.yrs--; if(m.age)m.age++;
-    if(t.id!==G.user&&m.yrs<=0){ if(R()<.6)m.yrs=2; else { const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||mkMgr(); n.yrs=n.yrs||ri(2,3); G.mgr[t.id]=n; n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){ c.yrs=n.yrs; G.coach[t.id][c.role]=c; } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); } } }
+    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<70&&R()<.6)m.yrs=2; else { const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||mkMgr(); n.yrs=n.yrs||ri(2,3); G.mgr[t.id]=n; n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){ c.yrs=n.yrs; G.coach[t.id][c.role]=c; } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); } } }
   refreshMgrMarket();
   const m=G.mgr[G.user];
   if(m&&!m.interim&&m.yrs<=0) mail('운영팀','감독 계약이 끝납니다',`${m.name} 감독의 계약이 올해로 끝납니다. 재계약하거나 새 감독을 선임해야 합니다. 연말까지 정하지 않으면 감독 자리가 비게 됩니다.`,{imp:true,kind:'감독',acts:[{l:'2년 재계약',a:'renewMgr',v:'2'},{l:'감독 후보 보기',a:'goWork',v:'감독'}]});

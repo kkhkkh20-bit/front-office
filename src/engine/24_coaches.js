@@ -15,7 +15,7 @@ function coachesOf(tid){ return (G.coach&&G.coach[tid])||{}; }
 function effC(c,tid,k){ if(!c)return 45; const m=G.mgr[tid]; let v=c[k||'sk']; if(m&&c.clan&&c.clan===m.id)v+=6; else if(m&&(m.ego||0)>=70)v-=2; return v; }
 function clanCount(tid){ const m=G.mgr[tid]; if(!m)return 0; return Object.values(coachesOf(tid)).filter(c=>c&&c.clan===m.id).length; }
 function coachInit(){ G.coach=G.coach||{}; G.cmarket=G.cmarket||[];
-  for(const t of G.teams){ if(G.coach[t.id])continue; const C={}; const m=G.mgr[t.id]; const clan=m&&t.id!==G.user?(m.clan||(m.clan=mkClan(m))):[];
+  for(const t of G.teams){ if(G.coach[t.id])continue; const C={}; const m=G.mgr[t.id]; const clan=m&&t.id!==ME()?(m.clan||(m.clan=mkClan(m))):[];
     for(const k of CKEYS){ const cl=clan.find(c=>c.role===k); C[k]=cl||mkCoach(k); C[k].yrs=ri(1,3); }
     if(t.id===G.user){ for(const k of CKEYS)if(R()<.35)C[k]=null; }
     G.coach[t.id]=C; }
@@ -52,7 +52,7 @@ function hireClan(m,years){ // 감독과 함께 사단 코치를 데려온다
 function clanLeave(m){ // 감독이 떠나면 사단 코치 상당수가 함께 떠난다
   if(!m||!m.id)return []; const C=G.coach[G.user]; const out=[]; for(const k of CKEYS){ const c=C[k]; if(c&&c.clan===m.id&&R()<.7){ C[k]=null; out.push(`${CROLE[k].l} ${c.name}`); } } return out; }
 function coachYear(){ // 겨울: 계약 정리
-  for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ const c=C[k]; if(!c)continue; c.age++; c.yrs--; if(c.yrs<=0){ if(t.id===G.user){ C[k]=null; c.from=G.user; c.fromY=G.year; G.cmarket.push(c); } else if(R()<.55)c.yrs=ri(1,2); else { if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); } C[k]=obAiCoach(t.id,k)||mkCoach(k); if(!C[k].yrs)C[k].yrs=ri(1,3); } } } }
+  for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ const c=C[k]; if(!c)continue; c.age++; c.yrs--; if(c.yrs<=0){ if(t.id===ME()){ C[k]=null; c.from=G.user; c.fromY=G.year; G.cmarket.push(c); } else if((c.age||0)<70&&R()<.55)c.yrs=ri(1,2); else { if(c.age<62&&!c.ob){ c.yrs=0; c.clan=null; c.from=t.id; c.fromY=G.year; G.cmarket.push(c); } C[k]=obAiCoach(t.id,k)||mkCoach(k); if(!C[k].yrs)C[k].yrs=ri(1,3); } } } }
   const kept=(G.cmarket||[]).filter(c=>c.fromY===G.year); refreshCoachMarket(); G.cmarket=G.cmarket.concat(kept.filter(c=>c.age<64)); const C=G.coach[G.user]; const empty=CKEYS.filter(k=>!C[k]); if(empty.length)mail('운영팀','코치 자리가 비어 있습니다',`계약이 끝나거나 떠나서 ${empty.map(k=>CROLE[k].l).join(', ')} 자리가 비었습니다. 스태프 → 코치진에서 채워 주세요.`,{imp:true,kind:'감독',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]}); }
 function coachGrade(tid){ const C=coachesOf(tid); const g=(ks,k)=>{ const v=avg(ks.map(r=>effC(C[r],tid,k))); return {v:Math.round(v),l:v>=66?'A':v>=59?'B':v>=52?'C':'D'}; };
   return {bat:g(['bc','hc'],'sk'),pit:g(['pc','cc'],'sk'),run:g(['rc'],'sk'),def:g(['dc','cc'],'sk'),dev1:g(['pc','bc','hc'],'dv'),dev2:g(['fm','fp','fb'],'dv')}; }

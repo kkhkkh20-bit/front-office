@@ -27,7 +27,7 @@ function obFromPlayer(p,rec){ if(!G.ob)obInit(); const c=careerOf(p); let war=re
   const miss=Math.max(0,(p.svc||0)-seasons); if(miss){ seasons+=miss; war=+(war+miss*clamp((p.pot-45)/5,0,4.5)).toFixed(1); if(c.teams.size<=1&&fm===undefined)ys+=miss; } /* 기록이 남기 전(게임 시작 전) 경력은 연차와 잠재력으로 추정 */
   if(seasons<5&&war<5&&!(p.team===G.user&&ys>=3))return null; initPers(p);
   const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers}});
-  ob.mineWar=fm!==undefined?(fm?fm.war:0):rec&&rec.mine?rec.mine.war:p.team===G.user?+(war*(ys/Math.max(1,seasons))).toFixed(1):c.byTeam[G.user]?+c.byTeam[G.user].war.toFixed(1):0; ob.no=jno(p); if(rec&&rec.canRetNo)ob.canRetNo=G.legends.length-1; return ob; }
+  ob.mineWar=fm!==undefined?(fm?fm.war:0):rec&&rec.mine?rec.mine.war:p.team===G.user?+(war*(ys/Math.max(1,seasons))).toFixed(1):c.byTeam[G.user]?+c.byTeam[G.user].war.toFixed(1):0; ob.no=jno(p); if(rec&&rec.canRetNo)ob.canRetNo='p'+p.id; return ob; }
 /* 지금 어디서 무엇을 하는가 */
 function obWhere(ob){ for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.ob===ob.id)return {k:'mgr',tid:t.id,t:`${t.city} ${t.nick} 감독`}; if(t.gm&&t.gm.ob===ob.id)return {k:'gm',tid:t.id,t:`${t.city} ${t.nick} 단장`};
     const C=G.coach&&G.coach[t.id]; if(C)for(const r of CKEYS)if(C[r]&&C[r].ob===ob.id)return {k:'coach',tid:t.id,role:r,t:`${t.city} ${t.nick} ${CROLE[r].l}`}; }
@@ -47,13 +47,16 @@ function obGM(ob,tid){ const g=mkGM(tid); g.name=ob.name; g.age=ob.age; const P=
   g.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.sy?`스카우트 ${ob.sy}년`:''}${ob.sy&&ob.fy?' · ':''}${ob.fy?`프런트 ${ob.fy}년`:''}`; g.ob=ob.id; g.id='m'+ob.id; G.obFace[g.id]=ob.fid; return g; }
 /* 겨울마다: 경력 연차가 쌓이고, 능력이 자라고, 일부는 자리를 옮긴다 */
 function obYear(){ obInit(); for(const ob of G.ob){ ob.age++; const w=obWhere(ob);
-    if(w.k==='coach'){ ob.cy++; const c=G.coach[w.tid][w.role]; if(ob.age<=56){ c.sk=clamp(c.sk+ri(0,2),30,90); c.dv=clamp(c.dv+ri(0,2),30,90); } ob.sk=c.sk; ob.dv=c.dv; c.age=ob.age; }
+    if(w.k==='coach'){ ob.cy++; const c=G.coach[w.tid][w.role]; if(ob.age<=56){ c.sk=clamp(c.sk+ri(0,2),30,90); c.dv=clamp(c.dv+ri(0,2),30,90); } else if(ob.age>=61){ c.sk=clamp(c.sk-ri(0,2),30,90); c.dv=clamp(c.dv-ri(0,2),30,90); } /* 60대부터는 현장 감각이 떨어진다 */ ob.sk=c.sk; ob.dv=c.dv; c.age=ob.age; }
     else if(w.k==='mgr'){ ob.cy++; } else if(w.k==='scout'){ ob.sy++; const s=G.scouts.find(x=>x.ob===ob.id); if(s&&ob.sy%3===0&&s.skill<5)s.skill++; ob.sc=s?s.skill:ob.sc; }
     else if(w.k==='front'||ob.alt&&ob.alt.k==='front'){ ob.fy++; } else if(ob.path==='media'&&G.year>=ob.retY){ ob.my++; }
     else if(w.k==='free'&&G.year>=ob.readyY){ // 자리를 못 찾으면 일부는 다른 구단 프런트·2군으로 간다
       if(ob.path==='front'||ob.path==='scout'){ if(R()<.6){ const tid=R()<.5?ob.team:pick(G.teams).id; if(tid!==G.user)ob.alt={k:'front',tid,t:`${tshort(tid)} ${ob.path==='scout'?'스카우트':'프런트'}`}; } }
       if(ob.alt&&ob.alt.k==='front'){ ob.fy++; if(ob.path==='scout'){ ob.sy++; ob.fy--; } } }
-    if(ob.path==='media'&&ob.my>=3&&R()<.25){ ob.path='coach'; ob.log.push({y:G.year,t:'해설을 접고 지도자의 길을 택했습니다'}); } } }
+    if(ob.path==='media'&&ob.my>=3&&R()<.25){ ob.path='coach'; ob.log.push({y:G.year,t:'해설을 접고 지도자의 길을 택했습니다'}); } }
+  /* OB 명단 정리: 75세 이상, 또는 66세 이상이면서 지금 자리가 없고 우리 구단 출신·명예의 전당이 아니면 명단에서 내린다(명단이 끝없이 커지지 않게) */
+  const keep=ob=>{ if(ob.age>=75)return false; if(ob.age<66)return true; const w=obWhere(ob); if(w.k==='coach'||w.k==='mgr'||w.k==='scout')return true; if(ob.team===G.user||ob.hof||ob.retNo)return true; return false; };
+  G.ob=G.ob.filter(keep); }
 /* AI 구단이 OB를 쓰는 곳 */
 function obAiCoach(tid,role){ const L=obCands('coach').filter(o=>!(G.cmarket||[]).some(c=>c.ob===o.id&&c.role!==role)); const ob=L.length&&R()<.4?pick(L):null; if(!ob)return null; const c=obCoach(ob); c.role=role; c.yrs=ri(1,3);
   if(ob.mine)wire('코치',`${tshort(ob.team)} 출신 ${ob.name}, ${tshort(tid)} ${CROLE[role].l}로 합류`,{tid}); G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==ob.id); return c; }

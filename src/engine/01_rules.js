@@ -2,6 +2,8 @@
 const REG=['수도권','영남','호남·충청'];
 /* 경쟁균형세 상한: 2026~2028년은 KBO 이사회 결정(매년 5%). 2029년부터는 게임 안 이사회가 매년 12월 리그 연봉 상황을 보고 정한다 */
 function capOf(y){ if(y<=2026)return 14397; if(y===2027)return 15117; if(y===2028)return 15873; if(typeof G!=='undefined'&&G&&G.capY){ if(G.capY[y])return G.capY[y]; const ks=Object.keys(G.capY).map(Number).filter(k=>k<y).sort((a,b)=>b-a); if(ks.length)return Math.round(G.capY[ks[0]]*Math.pow(1.03,y-ks[0])); } return Math.round(15873*Math.pow(1.03,y-2028)); }
+/* 리그 경제 지수: 연봉 상한이 오르는 만큼 수입·운영비·지원 한도·스폰서도 같이 오른다(연봉만 오르고 수입이 고정이면 해마다 모든 구단이 적자로 몰린다) */
+function ecoIdx(y){ return Math.max(1,capOf(y??G.year)/14397); }
 function floorOf(y){ return Math.round(6065*capOf(y)/14397); }
 let MIN_SAL=30;              // 최저 연봉 3,000만원(금액 단위: 백만원). 2027년부터 3,300만원(2026년 1월 KBO 이사회)
 function syncMinSal(){ MIN_SAL=(typeof G!=='undefined'&&G&&G.year>=2027)?33:30; }

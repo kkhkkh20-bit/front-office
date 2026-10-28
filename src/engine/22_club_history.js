@@ -5,7 +5,7 @@ function careerOf(p){ const c={seasons:new Set(),teams:new Set(),pa:0,h:0,hr:0,r
   return c; }
 function addAward(p,label){ (p.aw=p.aw||[]).push(label); story(p,label,'award'); if(p.team===G.user&&!G.unemp)chron('award',`${p.name} ${label}`,p.id); }
 /* ===== 구단 연대기: 구단마다 해마다 일어난 일을 쌓는다 ===== */
-function chron(k,t,ref,tid){ tid=tid??G.user; if(tid==null)return; G.chron=G.chron||[]; G.chron.push({y:G.year,d:G.day,tid,k,t,ref:ref??null,gm:G.unemp?0:1}); if(G.chron.length>900)G.chron.splice(0,100); }
+function chron(k,t,ref,tid){ tid=tid??G.user; if(tid==null)return; G.chron=G.chron||[]; G.chron.push({y:G.year,d:G.day,tid,k,t,ref:ref??null,gm:G.unemp?0:1}); if(G.chron.length>900){ const KEEP=new Set(['found','champ','join','fired','season']); let n=0; G.chron=G.chron.filter(x=>{ if(n>=100||KEEP.has(x.k))return true; n++; return false; }); } } /* 창단·우승·취임·경질 같은 핵심 기록은 남긴다 */
 /* ===== 프랜차이즈 스타: 한 구단에서 5시즌 이상 1군을 뛰고 그 구단 통산 WAR 12 이상(또는 7시즌·WAR 8) ===== */
 function teamTenure(p,tid){ const ys=new Set(); let war=0; for(const h of p.hist){ if(h.lvl!=='1군'||h.t!==tid)continue; if((h.pa||0)>=100||(h.outs||0)>=120)ys.add(h.y); war+=warOf(h,p); } return {n:ys.size,war}; }
 function isFranchise(p){ if(!p||p.team==null||p.foreign)return false; if(p.fr&&p.fr.tid===p.team)return true; const T=teamTenure(p,p.team); return (T.n>=5&&T.war>=12)||(T.n>=7&&T.war>=8); }
@@ -98,11 +98,11 @@ function retireRecord(p){ const c=careerOf(p); const aw=p.aw||[]; const awP=awPe
     mine:fdMine(p)||(G.fd?null:c.byTeam[G.user]?{war:+c.byTeam[G.user].war.toFixed(1),ys:c.byTeam[G.user].ys.size}:null)};
   { const miss=Math.max(0,(p.svc||0)-rec.seasons); if(miss){ const add=miss*clamp((p.pot-45)/5,0,4.5); rec.seasons+=miss; rec.war=+(rec.war+add).toFixed(1); rec.est=true;
       if(p.team===G.user&&c.teams.size<=1&&!G.fd){ rec.mine=rec.mine||{war:0,ys:0}; rec.mine.war=+(rec.mine.war+add).toFixed(1); rec.mine.ys+=miss; } } } /* 게임 시작 전 경력은 연차와 잠재력으로 추정 */
-  if(rec.war>=8||rec.aw.length||awP.length){ (G.legends=G.legends||[]).push(rec); if(G.legends.length>300)G.legends.shift(); }
+  if(rec.war>=8||rec.aw.length||awP.length){ rec.pid=rec.pid??p.id; (G.legends=G.legends||[]).push(rec); if(G.legends.length>300){ const i=G.legends.findIndex(x=>!x.hof&&!x.retNo&&!x.canRetNo&&!(x.mine&&x.mine.ys)); G.legends.splice(i>=0?i:0,1); } } /* 넘치면 명예의 전당·결번·우리 구단 기록이 아닌 오래된 것부터 지운다 */
   const hof=rec.war>=38||rec.mvp>=2||rec.gg>=6||(rec.war>=30&&rec.mvp>=1);
   if(hof){ rec.hof=true; (G.hof=G.hof||[]).push(rec); mail('홍보팀',`${rec.name}, 명예의 전당 헌액`,`${rec.name}이(가) 은퇴와 함께 명예의 전당에 올랐습니다. 통산 ${rec.seasons}시즌 · WAR ${rec.war}${rec.isP?` · ${rec.w}승 ${rec.sv}세이브`:` · ${rec.h}안타 ${rec.hr}홈런`}${rec.mvp?` · MVP ${rec.mvp}회`:''}${rec.gg?` · 골든글러브 ${rec.gg}회`:''}.`,{kind:'기록'}); if(rec.mine&&rec.mine.ys>=5)news('선수',`${tshort(G.user)} 레전드 ${rec.name}, 명예의 전당으로`,`구단 역사에 남을 선수가 명예의 전당에 올랐습니다.`,2,{fanW:2}); }
   if(rec.mine&&rec.mine.ys>=(retWarT()>=60?10:8)&&rec.mine.war>=retWarT()){ rec.canRetNo=true; if(!G.ob){ mail('홍보팀',`${rec.name} 영구결번 검토`,`${rec.name}이(가) 우리 구단에서 ${rec.mine.ys}시즌 동안 WAR ${rec.mine.war}를 남기고 은퇴합니다. 등번호 ${rec.no}번을 영구결번으로 지정하면 팬들이 크게 반길 것입니다.`,{imp:true,kind:'기록',acts:[{l:`${rec.no}번 영구결번 지정`,a:'retNo',v:String(G.legends.length-1)}]}); }  }
   return rec; }
 function jno(p){ let n=1+Math.floor(u01('jno',p.id)*99); if(p.team===G.user&&G.retNos&&G.retNos.length){ const used=new Set(G.retNos.map(r=>r.no)); let g=0; while(used.has(n)&&g++<99)n=n%99+1; } return n; }
-function retireNumber(i){ const r=(G.legends||[])[+i]; if(!r||!r.canRetNo||r.retNo)return '대상이 아닙니다.'; r.retNo=true; (G.retNos=G.retNos||[]).push({name:r.name,no:r.no,y:G.year}); news('선수',`${tshort(G.user)}, ${r.name}의 ${r.no}번 영구결번`,`구단 역사에 길이 남을 이름이 됐습니다.`,3,{fanW:3}); return `${r.no}번을 영구결번으로 지정했습니다.`; }
+function retireNumber(i){ const L=G.legends||[]; const r=typeof i==='string'&&i[0]==='p'?L.find(x=>'p'+x.pid===i):L[+i]; /* 위치 대신 선수 id로 찾는다(목록이 잘려 위치가 밀려도 맞는 선수) */ if(!r||!r.canRetNo||r.retNo)return '대상이 아닙니다.'; r.retNo=true; (G.retNos=G.retNos||[]).push({name:r.name,no:r.no,y:G.year}); news('선수',`${tshort(G.user)}, ${r.name}의 ${r.no}번 영구결번`,`구단 역사에 길이 남을 이름이 됐습니다.`,3,{fanW:3}); return `${r.no}번을 영구결번으로 지정했습니다.`; }
 

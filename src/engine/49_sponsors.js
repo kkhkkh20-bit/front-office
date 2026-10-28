@@ -22,7 +22,7 @@ function sponValParts(){ const t=team(G.user); const h=G.history&&G.history.leng
   return [['시장 규모',t.market*.3-.3],['구단 인기',clamp(t.pop,0,1.6)*.25-.25],['지난 시즌 성적',h&&i>=0?(4.5-i)*.03+(h.champ===G.user?.12:0):0],['팬 여론',G.pr?(G.pr.fan-55)/250:0],['언론 논조',G.pr?(G.pr.press-50)/400:0],['스타 선수',st]]; }
 function sponMake(slot,o){ o=o||{}; const S=G.spon; const ind=pick(SPON_IND[slot]); const co=pick(SPON_CO[ind]); const v=sponVal();
   const style=o.base?'std':pick(['std','std','bonus','safe','long']); const yrs=style==='long'?3:style==='safe'?ri(1,2):ri(1,3);
-  let amt=SPON_SLOT[slot].b*v*rnd(.85,1.15)*(style==='bonus'?.82:style==='safe'?1.06:style==='long'?.95:1)*(o.renew?1.05:1);
+  let amt=SPON_SLOT[slot].b*ecoIdx()*v*rnd(.85,1.15)*(style==='bonus'?.82:style==='safe'?1.06:style==='long'?.95:1)*(o.renew?1.05:1);
   const bon=style==='bonus'?[.35,.7]:style==='safe'?[0,.1]:[.12,.3];
   const x={id:S.nid++,slot,co,ind,amt:round5(amt),yrs,ps:round5(amt*rnd(bon[0],bon[0]+.1)),champ:round5(amt*rnd(bon[1]-.05,bon[1]+.15)),img:R()<(o.base?.2:.35),style,day:G.day,exp:G.day+21,cnt:0,renew:!!o.renew};
   return x; }
@@ -62,7 +62,7 @@ function sponSettle(y,ps){ const S=G.spon; if(!S)return {base:0,bonus:0,L:[]}; l
 /* 팬 여론이 바닥이면 드물게 계약 해지 */
 function sponMonthly(){ const S=G.spon; if(!S||!G.pr||G.pr.fan>=25)return; for(const k in S.c){ const c=S.c[k]; if(c.until<G.year||R()>=.06)continue; delete S.c[k]; mail('마케팅팀',`${c.co} 스폰서 계약 해지`,`팬 여론 악화로 ${c.co}이(가) ${SPON_SLOT[k].l} 계약을 해지했습니다. 남은 금액은 들어오지 않습니다.`,{kind:'스폰서',imp:true}); news('구단',`${c.co}, ${tshort(G.user)} 스폰서 철수`,'성난 팬심이 기업 이미지에도 부담이 된다는 판단입니다.',-2); break; } }
 /* AI 구단 스폰서 수입(결산용) */
-function sponAI(tid){ return Math.round(sum(Object.keys(SPON_SLOT).filter(k=>!SPON_SLOT[k].indie).map(k=>SPON_SLOT[k].b))*sponVal(tid)*.85); }
+function sponAI(tid){ return Math.round(sum(Object.keys(SPON_SLOT).filter(k=>!SPON_SLOT[k].indie).map(k=>SPON_SLOT[k].b))*ecoIdx()*sponVal(tid)*.85); }
 /* 영업 활동: 단장이 마케팅팀에 빈자리 영업을 지시한다. 영업비 3천만 원, 1~2주 뒤 결과.
    성공률은 구단 가치 지수와 단장 평판을 따른다. 자리마다 한 달에 한 번 */
 function sponPitch(slot){ const S=sponInit(); if(!SPON_SLOT[slot])return '없는 자리입니다.'; if(!sponOpen(slot))return '이미 계약된 자리입니다.';
