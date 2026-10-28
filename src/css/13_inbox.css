@@ -37,7 +37,7 @@
 /* 본문 */
 .ibx-read{min-width:0}
 .ibm{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 20px 20px;display:grid;gap:14px;min-width:0}
-.ibm.unread,.ibm.rd{border-left:1px solid var(--line)}
+.ibm.unread,.ibm.rdm{border-left:1px solid var(--line)}
 .ibm-h{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:start;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .ibm-h>.av{width:44px;height:44px;font-size:15px}
 .ibm-t{display:grid;gap:4px;min-width:0}

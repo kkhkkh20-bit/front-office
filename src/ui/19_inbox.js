@@ -2,7 +2,7 @@
 function mailCard(m){
   const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid);
   const dup=(UI._ibDup||{})[m.id];
-  return `<article class="mfc${m.read?' rd':' unread'}" id="m-${m.id}" data-mid="${m.id}">${dup?`<span class="mfc-dup">같은 소식 ${dup.length}건 더</span>`:''}
+  return `<article class="mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">${dup?`<span class="mfc-dup">같은 소식 ${dup.length}건 더</span>`:''}
     <header class="mfc-h">${senderAv(m)}<div class="mfc-t"><div class="mfc-s">${m.imp?'<span class="pill acc">중요</span> ':''}<b>${lk(m.subj)}</b></div><span class="small muted">${esc(m.from)} · ${dsh(m.day)}</span></div></header>
     <div class="mailbody"${m.read?` data-a="mfcShow" data-v="${m.id}"`:''}>${m.body.split('\n').filter(Boolean).map(t=>`<p>${lk(t)}</p>`).join('')}</div>${m.read&&(m.body.length>60||m.body.includes('\n'))?`<button class="lnk mfc-more" data-a="mfcOpen" data-v="${m.id}">전체 보기</button>`:''}
     ${m.acts.length&&!(m.oid&&!o)?`<div class="btns mact">${m.acts.map((a,i)=>`<button class="btn ${i===0?'primary':''}" data-a="mailAct" data-v="${m.id}:${i}">${esc(a.l)}</button>`).join('')}</div>`:''}
@@ -28,7 +28,7 @@ function ibSplit(m){ let subj=m.subj, L=m.body.split('\n').filter(Boolean); cons
 function mailRow(m,cur){ const need=ibTask(m)&&!m.read; return `<button class="ibr${m.read?'':' unread'}${need?' need':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${ibTask(m)?'<span class="ibr-tag">처리</span>':''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
 function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); const dup=(UI._ibDup||{})[m.id]; const {subj,L}=ibSplit(m);
   const acts=m.acts.filter(a=>!(o&&a.a==='goWork')); /* 제안 카드가 붙은 메일은 '해당 화면으로' 대신 카드 안의 버튼을 쓴다 */
-  return `<article class="ibm mfc${m.read?' rd':' unread'}" id="m-${m.id}" data-mid="${m.id}">
+  return `<article class="ibm mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">
     <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">처리할 일</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
     ${L.length?`<div class="mailbody">${L.map(t=>`<p>${lk(t)}</p>`).join('')}</div>`:''}
     ${acts.length&&!(m.oid&&!o)?`<div class="ibm-acts">${acts.map(a=>`<button class="btn${a===acts[0]?' primary':''}" data-a="mailAct" data-v="${m.id}:${m.acts.indexOf(a)}">${esc(a.l)}</button>`).join('')}</div>`:''}
@@ -47,6 +47,8 @@ function inboxView(){
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'처리할 일이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const ids=list.map(m=>m.id);
   /* 고른 메일: 다른 화면에서 연 메일 > 목록에서 고른 메일 > (넓은 화면) 가장 위의 안 읽은 소식 */
+  /* 날짜가 바뀌면 지난번에 보던 메일 대신 새 소식부터 보여 준다 */
+  if(UI._ibDay!==G.day){ UI._ibDay=G.day; if(!UI.mailFocus){ UI.ibSel=null; UI.ibOpen=null; } }
   let sel=[UI.mailFocus,UI.ibSel].find(v=>v&&ids.includes(v));
   if(UI.mailFocus&&!sel&&G.mail.some(m=>m.id===UI.mailFocus)){ UI.mf='all'; return inboxView(); }
   if(UI.mailFocus&&sel&&!wide())UI.ibOpen=sel;

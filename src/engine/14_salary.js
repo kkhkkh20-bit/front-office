@@ -94,7 +94,9 @@ function offerExtension(id,annual,years,acc,T){
   if(annual>=d*.98||acc){ delete p.extCounter; const now=(G.rolled===G.year&&G.day>=KD(11,1))||period()==='pre'; /* 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 */
     if(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id)){ G.contract.ended=G.contract.ended.filter(x=>x!==p.id); if(G.contract.neg)delete G.contract.neg[p.id]; delete p.newSal; }
     const pay=T?T.annual:annual; const tx=T?termsTxt(T,false):`${years}년 연 ${money(annual)}(총 ${money(annual*years)})`;
-    if(now){ p.sal=pay; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; } else p.extNext={annual:pay,years}; if(T)termsApply(p,T,'ext',now?ctSeason():G.year+1); story(p,`비FA 다년계약 ${T?termsTxt(T,true):`${years}년 연 ${money(annual)}`}`,'move');
+    if(now){ p.sal=pay; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; } else p.extNext={annual:pay,years,...(T?{terms:T}:{})};
+    if(T&&now)termsApply(p,T,'ext',ctSeason()); else if(T&&T.bonus>0){ G.spend=G.spend||{}; G.spend.faB=(G.spend.faB||0)+T.bonus; } /* 다음 시즌 계약: 계약금만 지금 주고 나머지 조건은 새 계약이 시작될 때 반영 */
+    if(now&&!T)termsClear(p); story(p,`비FA 다년계약 ${T?termsTxt(T,true):`${years}년 연 ${money(annual)}`}`,'move');
     addLog(`${p.name}와(과) 비FA 다년계약에 합의했습니다. ${tx}.`);
     if(ag){ agRelAdd(ag,3,`${p.name} 다년계약`); agDealAdd(p,G.user); }
     return {ok:true,msg:`${who}: ${T?termsTxt(T,true):`${years}년 연 ${money(annual)}`}에 합의했습니다. ${now?'바로 적용됩니다.':'다음 시즌부터 적용됩니다.'}`}; }

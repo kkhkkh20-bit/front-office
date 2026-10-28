@@ -45,7 +45,7 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 @media (prefers-reduced-motion:reduce){.cpp .kswing,.cpp .kthrow,.cpp .karms,.cc .kp{animation:none!important}}
 .vsb.sm{padding:6px 10px;gap:8px;align-items:center}.vsb.sm span{font-size:12px;flex:1;min-width:0}
 .prevc button{display:grid;gap:1px;text-align:center}.prevc small{font-size:10px;color:var(--muted)}.prevc button.on small{color:inherit}
-.mfeed:not(.one) .mfc.rd:not(.open) .mailbody{max-height:3.1em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}.mfc-more{font-size:12px;margin:2px 0 4px}.mfeed.one .mfc-more{display:none}.mfc-dup{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:3px;padding:0 6px;margin-bottom:4px}
+.mfeed:not(.one) .mfc.rdm:not(.open) .mailbody{max-height:3.1em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}.mfc-more{font-size:12px;margin:2px 0 4px}.mfeed.one .mfc-more{display:none}.mfc-dup{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:3px;padding:0 6px;margin-bottom:4px}
 .tp-more{display:none;margin-left:auto;font-size:12px}@media(max-width:600px){.tpg.cmp .tmk:not(.open) .tp-g{display:none}.tp-more{display:inline}}
 .slotbar{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:3px}
 .sl{display:grid;justify-items:center;gap:1px;padding:5px 0;border-radius:3px;border:1px solid var(--line);background:#0b1014;color:var(--ink);cursor:pointer;min-width:0}

@@ -1,6 +1,6 @@
 /* ===== 트레이드 매물과 FA 에이전트 협상 ===== */
 const WANT={any:'가장 좋은 제안',prospect:'유망주',p:'투수',b:'야수',sal:'연봉 절감'};
-function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign)return; p.listed=true; p.lw=want||p.lw||'any'; }
+function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; p.listed=true; p.lw=want||p.lw||'any'; }
 function blockRemove(id){ const p=G.players[id]; if(!p)return; delete p.listed; delete p.lw; G.offers=(G.offers||[]).filter(o=>!(o.blk&&o.get.includes(id))); }
 function corePool(tid){ const t=team(tid); const ds=domestic(tid).filter(p=>!p.ys); const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
 function pickPackage(tid,budget,want,exclude){ const t=team(tid); exclude=exclude||[];

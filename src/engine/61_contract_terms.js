@@ -22,18 +22,25 @@ function termsFit(t,d,val,years){ const y=years||t.years; const T={...t,years:y}
 function termsTxt(t,short){ const L=[`${t.years}년`]; if(t.bonus)L.push(`계약금 ${money(t.bonus)}`); L.push(`연봉 ${money(t.annual)}`); if(t.opt)L.push(`옵션 연 ${money(t.opt)}`);
   if(!short){ const tot=(t.bonus||0)+t.annual*t.years; L.push(`보장 총액 ${money(tot)}${t.opt?` (옵션 포함 최대 ${money(tot+t.opt*t.years)})`:''}`); } return L.join(' · '); }
 /* 계약 반영: 계약금은 바로 지급(올해 지출), 상한 계산에는 연평균으로 들어간다. 옵션은 시즌 뒤 달성하면 지급 */
-function termsApply(p,t,from,sy){ if(!t)return; const y=Math.max(1,t.years); sy=sy??ctSeason(); const end=sy+y-1;
-  if(t.bonus>0){ G.spend=G.spend||{}; G.spend.faB=(G.spend.faB||0)+t.bonus; p.capB={a:Math.round(t.bonus/y),until:end}; }
+/* 조건은 계약한 구단에서만 유효하다(p.ctT): 방출·트레이드·보상선수로 옮기면 상한 반영·옵션·거부권·약속이 모두 끝난다 */
+function termsClear(p){ delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; }
+const ctOn=p=>p&&p.ctT!=null&&p.ctT===p.team;
+function termsApply(p,t,from,sy,noPay){ termsClear(p); if(!t)return; const y=Math.max(1,t.years); sy=sy??ctSeason(); const end=sy+y-1; p.ctT=p.team;
+  if(t.bonus>0){ if(!noPay){ G.spend=G.spend||{}; G.spend.faB=(G.spend.faB||0)+t.bonus; } p.capB={a:Math.round(t.bonus/y),until:end}; }
   if(t.opt>0)p.opt={a:t.opt,until:end}; else delete p.opt;
   if(t.ntc)p.ntc=end; else delete p.ntc;
   if(t.role===0)p.roleProm={k:0,until:sy+Math.min(y,2)-1,l:roleSet(p)[0],from:from||'fa'}; else delete p.roleProm; }
-function capBOf(p){ return p.capB&&p.capB.until>=G.year?p.capB.a:0; }
+function capBOf(p){ return ctOn(p)&&p.capB&&p.capB.until>=G.year?p.capB.a:0; }
+/* 예산 전망용 옵션 예상액: 시즌 중엔 지금 페이스로, 개막 전·비시즌엔 주전이면 달성한다고 본다 */
+function optProj(tid,y){ let s=0; for(const p of playersOf(tid)){ if(!ctOn(p)||!p.opt||p.opt.until<y)continue; const h=y===G.year?seasonTotal(p,G.year,'1군'):null; const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0;
+  const ok=h&&g>=20?(p.isP?(isSPr(p)?h.outs*144/g>=360:h.outs*144/g>=150):h.pa*144/g>=400):isRegular(p); if(ok)s+=p.opt.a; } return s; }
 /* 옵션 달성 기준: 타자 400타석, 선발 120이닝, 불펜 50이닝(규정 달성형 옵션을 단순화) */
-function optEarned(p){ if(!p.opt||p.opt.until<G.year)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(isSPr(p)?h.outs>=360:h.outs>=150):h.pa>=400; }
-function optSettle(tid){ let tot=0; const L=[]; for(const p of playersOf(tid)){ if(!p.opt||p.opt.until<G.year)continue; if(optEarned(p)){ tot+=p.opt.a; L.push(`${p.name} ${money(p.opt.a)}`); story(p,`계약 옵션 달성 (${money(p.opt.a)})`,'move'); } }
+function optEarned(p){ if(!ctOn(p)||!p.opt||p.opt.until<G.year)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(isSPr(p)?h.outs>=360:h.outs>=150):h.pa>=400; }
+function optSettle(tid){ let tot=0; const L=[]; for(const p of playersOf(tid)){ if(!ctOn(p)||!p.opt||p.opt.until<G.year)continue; if(optEarned(p)){ tot+=p.opt.a; L.push(`${p.name} ${money(p.opt.a)}`); story(p,`계약 옵션 달성 (${money(p.opt.a)})`,'move'); } }
   if(L.length&&tid===G.user)note('운영팀',`계약 옵션 지급: ${L.join(', ')}`); return tot; }
 /* 역할 약속 점검(6~9월 매달 1일): 주전 보장을 약속했는데 주전이 아니면 서운해한다 */
-function rolePromCheck(mo){ if(mo<6||mo>9||period()!=='season'||G.unemp)return; for(const p of playersOf(G.user)){ const r=p.roleProm; if(!r||r.until<G.year||p.injOut>0)continue; if(isRegular(p))continue;
+function rolePromCheck(mo){ if(mo<6||mo>9||period()!=='season'||G.unemp)return; for(const p of playersOf(G.user)){ const r=p.roleProm; if(!ctOn(p)||!r||r.until<G.year||p.injOut>0)continue; if(isRegular(p))continue;
   p.mor=clamp((p.mor??60)-6,0,100); try{ if(hasAgent(p))agRelAdd(agentOf(p),-1,`${p.name} 역할 약속 불이행`); }catch(e){}
   if(r.warn!==G.year){ r.warn=G.year; mail(hasAgent(p)?`${agentOf(p).name} 에이전트`:'선수단',`${p.name} 측: "${r.l} 약속은 어디 갔습니까"`,`계약할 때 ${r.l}을(를) 약속했는데 지금 주전으로 뛰지 못하고 있습니다. 약속이 지켜지지 않으면 매달 선수 기분이 떨어지고 에이전트와의 관계도 나빠집니다.`,{kind:'면담',imp:true,ref:p.id,acts:[{l:'선수 보기',a:'player',v:p.id},{l:'감독실 들어가기',a:'meetOpen',v:'mgr'}]}); } } }
-function ntcOf(ids){ return ids.map(id=>G.players[id]).find(p=>p&&p.ntc&&p.ntc>=G.year&&p.team===G.user)||null; }
+function ntcOf(ids){ return ids.map(id=>G.players[id]).find(p=>p&&ctOn(p)&&p.ntc&&p.ntc>=G.year&&p.team===G.user)||null; }
+const hasNtc=p=>ctOn(p)&&p.ntc>=G.year;

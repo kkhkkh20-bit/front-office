@@ -14,7 +14,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const pool=[];
   for(const p of all){
     if(p.foreign)continue;
-    if(p.extNext){ p.sal=p.extNext.annual; p.yrs=p.extNext.years; p.cyrs=p.extNext.years; p.faC=true; p.ext=true; delete p.extNext; continue; }
+    if(p.extNext){ termsClear(p); if(p.extNext.terms)termsApply(p,p.extNext.terms,'ext',G.year+1,true); p.sal=p.extNext.annual; p.yrs=p.extNext.years; p.cyrs=p.extNext.years; p.faC=true; p.ext=true; delete p.extNext; continue; }
     if(p.faC){ p.yrs--; if(p.yrs>0)continue; p.faC=false; p.ext=false; delete p.cyrs; }
     const elig=p.svc>=faSvc(p)&&(p.lastFA==null||G.year-p.lastFA>=4)&&p.age<=37;
     /* 자격이 있어도 신청은 선수 몫: 시장 가치가 낮거나 나이가 많으면 신청하지 않고 남는다 */
@@ -58,7 +58,7 @@ function faInterest(t,p){
 function faDay(day){
   const F=G.fa; const since=day-F.openDay;
   /* 협상 시작일: 미리 낸 제안에 에이전트가 답한다 */
-  if(day===F.openDay&&!G.unemp){ const pre=Object.keys(F.offers||{}).filter(id=>!(F.neg&&F.neg[id])); const L=[]; for(const id of pre){ const p=G.players[id]; if(!p||p.team!=null)continue; const o=F.offers[id]; try{ const r=faNegotiate(+id,{annual:o.annual,years:o.years}); L.push(`${p.name}: ${r.msg}`); }catch(e){} }
+  if(day===F.openDay&&!G.unemp){ const pre=Object.keys(F.offers||{}).filter(id=>!(F.neg&&F.neg[id])); const L=[]; for(const id of pre){ const p=G.players[id]; if(!p||p.team!=null)continue; const o=F.offers[id]; try{ const r=faNegotiate(+id,{annual:o.annual,years:o.years,...(o.terms?{terms:o.terms}:{})}); L.push(`${p.name}: ${r.msg}`); }catch(e){} }
     if(L.length)mail('운영팀',`미리 낸 FA 제안 ${L.length}건에 답이 왔습니다`,L.join('\n\n'),{kind:'FA',imp:true,acts:[{l:'FA 시장',a:'go',v:'transfer:fa'}]}); }
   if(day===F.openDay){ const mine=F.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user&&G.players[id].team==null); stop('FA',`오늘부터 모든 구단과 FA 협상이 열립니다.${mine.length?` 우리 FA ${mine.length}명(${mine.slice(0,4).map(id=>G.players[id].name).join(', ')}${mine.length>4?' 등':''})에게 다른 구단도 제안할 수 있습니다.`:''} 영입·계약 → FA 시장에서 조건을 제시하세요.`); }
   F.warned=F.warned||{};
@@ -99,9 +99,9 @@ function faSign(p,offers){
   for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=faScore(p,o)*(shop?1:rnd(.96,1.04)); if(sc>bs){bs=sc;best=o;} } /* 대어는 시장 보고 결과대로 결정한다 */
   if(!best)best=offers.find(o=>o.tid!==G.user)||offers[0];
   try{ agDealAdd(p,best.tid); const ag=agentOf(p); if(best.tid===G.user)agRelAdd(ag,5,`${p.name} 계약`); else if(G.fa.offers[p.id])agRelAdd(ag,1,`${p.name} 끝까지 경쟁`); }catch(e){}
-  if(best.tid===G.user&&G.faFund&&!G.faFund.done)G.faFund.used=true;
+  if(best.tid===G.user&&p.faFrom!==G.user&&G.faFund&&!G.faFund.done)G.faFund.used=true;
   const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=G.year; p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
-  const BT=best.tid===G.user&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); }
+  termsClear(p); const BT=best.tid===G.user&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); }
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:BT?BT.annual+Math.round((BT.bonus||0)/best.years):best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null,...(BT?{terms:BT}:{})};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`,'move');
   if(best.tid!==from){ if(G.fa){ G.fa.outN=G.fa.outN||{}; G.fa.outN[best.tid]=(G.fa.outN[best.tid]||0)+1; }
@@ -226,7 +226,7 @@ function gmHeat(tid){ const t=team(tid); let h=gmTrait(tid)==='gambler'?.25:0; c
 function aiOffer(){ const ts=G.teams.filter(x=>x.id!==G.user).map(t=>({t,w:gmHeat(t.id)+R()*.8})).sort((a,b)=>b.w-a.w).slice(0,3);
   for(const x of ts){ if(aiOfferFrom(x.t))return true; } return false; }
 function aiOfferFrom(t){ const U=team(G.user);
-  const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)).map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
+  const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)).map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
   if(!mine.length)return false; const listed=mine.filter(x=>x.p.listed); const tg=listed.length&&R()<.7?pick(listed):pick(mine);
   const tgU=tval(U,tg.p,'out'); // 우리가 그 선수를 내줄 때 느끼는 가치
   const core=new Set(domestic(t.id).map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id));
