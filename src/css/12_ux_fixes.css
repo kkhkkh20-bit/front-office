@@ -184,3 +184,16 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 /* 스카우트 상·중·하 */
 .fdt td.fdg{text-align:center;font-weight:700;font-size:13px}.fdt td.fdg.g2{color:var(--good)}.fdt td.fdg.g1{color:var(--muted);font-weight:500}.fdt td.fdg.g0{color:#f0a35a}
 .fdt td.fdg{font-size:14.5px!important;font-weight:800!important}
+/* 우승 카드 */
+.card.champ{border:1px solid #f2c14e88;background:linear-gradient(160deg,#f2c14e1f,transparent 55%),var(--panel);display:grid;gap:12px}
+.ch-top{display:flex;gap:14px;align-items:center}.ch-top h2{margin:2px 0;font-size:24px}.trophy{width:64px;height:64px;flex:none}
+.ch-tag{margin:0;color:#f2c14e;font-weight:600}
+.ch-mvp{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#00000022}
+.ch-mvp .av{width:44px;height:44px}.ch-mvp span{display:grid}.ch-mvp i{font-style:normal;font-size:11px;color:#f2c14e}.ch-mvp b{font-size:16px}.ch-mvp em{font-style:normal;font-size:12px;color:var(--muted)}
+.ch-news{display:grid;gap:4px;font-size:13px}.ch-fans p{margin:3px 0;font-size:13px;color:var(--muted)}
+.stars-t{color:#f2c14e;letter-spacing:1px;font-size:.8em}.stars-t.big{font-size:20px}
+.pres-parts{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.dtiles{grid-template-columns:repeat(8,minmax(0,1fr))}
+@media (max-width:1100px){.dtiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:600px){.dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.faap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}.faap .eyebrow{width:100%}
