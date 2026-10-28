@@ -9,7 +9,7 @@ const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
-function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); }
+function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
   G.lineup={}; const order=fdOrder(); const picks=[];
   for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
   G.startY=G.year; G.fd={pool:ids,all:ids.slice(),order,picks,cur:0,done:false,y:G.year,open:false,man:FD_MAN};
@@ -69,7 +69,7 @@ function fdEstAll(){ const F=G.fd; if(!F)return {}; const y=F.y-1; const P=F.poo
 function fdToolBias(p){ const r=p.r; return p.isP?(r.stf-50)*.14-(r.ctl-50)*.12+(veloOf(p)-145)*.12:(r.pow-50)*.12+(r.spd-50)*.08-(r.eye-50)*.12; }
 function fdSeenBy(tid,p){ const F=G.fd; if(!F.est||!F.ana)fdEstAll(); const o=ovr(p); const S=F.est[p.id]!=null?F.est[p.id]:o, An=F.ana[p.id]!=null?F.ana[p.id]:o;
   let sd; if(tid===G.user){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); sd=SCOUT_SD[clamp(sk,1,5)]; } else sd=team(tid).scoutSd||6;
-  const tob=o+fdToolBias(p)+hn('fdo'+tid,p.id)*sd; const sc=S*.55+tob*.45;
+  const tob=o-(p.fsx||0)*.85+fdToolBias(p)+hn('fdo'+tid,p.id)*sd; const sc=S*.55+tob*.45;
   /* 우리 추천은 스카우트 관점 그대로. 다른 구단은 스카우트와 분석팀을 반씩 섞어 본다 */
   const seen=tid===G.user?sc:sc*.5+An*.5;
   const up=Math.max(0,26-p.age)*1.3+Math.max(0,p.pot-o)*.25+hn('fdp'+tid,p.id)*sd*.4;

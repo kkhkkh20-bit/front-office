@@ -1639,6 +1639,9 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 .fdown-c .av{width:40px;height:40px}.fdown-c span{display:grid;min-width:0}.fdown-c b{font-size:15px}.fdown-c i{font-style:normal;font-size:12px;color:var(--muted)}
 .fdab{gap:4px}.fdab button{padding:4px 9px!important;font-size:12px!important;border-radius:14px!important;min-height:0!important}
 @media (max-width:600px){.fdvn .fdvx{display:none}.fdab>.small{width:100%}}
+/* 스카우트 상·중·하 */
+.fdt td.fdg{text-align:center;font-weight:700;font-size:13px}.fdt td.fdg.g2{color:var(--good)}.fdt td.fdg.g1{color:var(--muted);font-weight:500}.fdt td.fdg.g0{color:#f0a35a}
+.fdt td.fdg{font-size:14.5px!important;font-weight:800!important}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -3043,7 +3046,7 @@ const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
-function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); }
+function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
   G.lineup={}; const order=fdOrder(); const picks=[];
   for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
   G.startY=G.year; G.fd={pool:ids,all:ids.slice(),order,picks,cur:0,done:false,y:G.year,open:false,man:FD_MAN};
@@ -3103,7 +3106,7 @@ function fdEstAll(){ const F=G.fd; if(!F)return {}; const y=F.y-1; const P=F.poo
 function fdToolBias(p){ const r=p.r; return p.isP?(r.stf-50)*.14-(r.ctl-50)*.12+(veloOf(p)-145)*.12:(r.pow-50)*.12+(r.spd-50)*.08-(r.eye-50)*.12; }
 function fdSeenBy(tid,p){ const F=G.fd; if(!F.est||!F.ana)fdEstAll(); const o=ovr(p); const S=F.est[p.id]!=null?F.est[p.id]:o, An=F.ana[p.id]!=null?F.ana[p.id]:o;
   let sd; if(tid===G.user){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); sd=SCOUT_SD[clamp(sk,1,5)]; } else sd=team(tid).scoutSd||6;
-  const tob=o+fdToolBias(p)+hn('fdo'+tid,p.id)*sd; const sc=S*.55+tob*.45;
+  const tob=o-(p.fsx||0)*.85+fdToolBias(p)+hn('fdo'+tid,p.id)*sd; const sc=S*.55+tob*.45;
   /* 우리 추천은 스카우트 관점 그대로. 다른 구단은 스카우트와 분석팀을 반씩 섞어 본다 */
   const seen=tid===G.user?sc:sc*.5+An*.5;
   const up=Math.max(0,26-p.age)*1.3+Math.max(0,p.pot-o)*.25+hn('fdp'+tid,p.id)*sd*.4;
@@ -6620,13 +6623,23 @@ function recentLines(p,y,n){ const out=[]; for(let i=n-1;i>=0;i--){ const yy=y-i
    둘 다 '이 선수가 좋다'는 종합 점수는 내지 않는다 */
 function bodyOf(p){ if(!p.ht){ p.ht=Math.round(clamp((p.isP?184:179)+hn('ht',p.id)*5+(p.isP?(p.r.stf-50)*.08:(p.r.pow-50)*.06),166,198)); p.wt=Math.round(clamp(p.ht-100+hn('wt',p.id)*6+(p.isP?0:(p.r.pow-50)*.2)-(p.isP?1:3),62,118)); } return {ht:p.ht,wt:p.wt}; }
 const FD_TOOLS={B:[['pow','파워',1],['con','컨택',0],['eye','선구',0],['spd','주력',1],['def','수비',1]],P:[['stf','구위',1],['ctl','제구',0],['sta','체력',1]]};
-function fdScoutSd(){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); return [7,6,5,4,3.2,2.6][clamp(sk,0,5)]; }
-function fdScoutTools(p){ const F=G.fd; const key=(F&&F.y)+':'+((G.scouts||[]).map(s=>s.id+s.skill).join(','));
-  const base=fdScoutSd(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l,vis])=>{ const sd=base*(vis?.7:1); const v=clamp(Math.round((p.r[k]+hn('fst'+k+key,p.id)*sd)/5)*5,20,80); return {k,l,v,vis:!!vis}; });
+function fdScoutSd(){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); return [11,10,9,8,7,6][clamp(sk,0,5)]; }
+/* 스카우트 평가: 눈으로 본 툴(실전 감각은 못 봄) + 스카우트 버릇(툴마다 일정하게 후하거나 짠 정도) + 오차 → 등급(S·A·B·C·D·E·F) */
+const FD_G=v=>v>=75?'S':v>=65?'A':v>=55?'B':v>=50?'C':v>=45?'D':v>=35?'E':'F'; /* 게임 공통 등급(GRD)과 같은 기준 */
+function fdScoutTools(p){ const F=G.fd; const sc=[...(G.scouts||[])].sort((a,b)=>(b.skill||0)-(a.skill||0))[0]; const sid=sc?sc.id:'none'; const key=(F&&F.y)+':'+sid+':'+(sc?sc.skill:0);
+  const base=fdScoutSd(); const R=fdToolRef(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l])=>{ const bias=clamp(hn('fsb'+k+sid,'x')*3.5,-5,5); /* 스카우트 버릇: 툴마다 최대 ±5 */ const raw=clamp(p.r[k]-(p.fsx||0)+bias+hn('fst'+k+key,p.id)*base,20,80);
+    /* 등급은 툴마다 '1군 주전 평균이 C'가 되게 맞춘다(툴마다 분포가 달라서 그대로 쓰면 컨택은 모두 낮게 나온다) */ const r=R[(p.isP?'P':'B')+k]; const v=r?clamp(52.5+(raw-r.m)/r.sd*9,20,80):raw; return {k,l,v,raw,g:FD_G(v)}; });
   const b=bodyOf(p); const velo=p.isP?Math.round(veloOf(p)+hn('fsv'+key,p.id)*.8):null;
   return {L,velo,ht:b.ht,wt:b.wt,sd:base}; }
+const FD_GL={S:6,A:5,B:4,C:3,D:2,E:1,F:0};
+let _ftr=null; /* 저장하지 않는 계산 캐시 */
+/* 툴 기준: 1군 주전급(지난해 1군 기록이 충분한 선수)의 툴 평균·편차 */
+function fdToolRef(){ const F=G.fd; const k0=F?F.y:G.year; if(_ftr&&_ftr.k===k0)return _ftr.m; const m={}; const ly=k0-1;
+  const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });
+  for(const isP of [false,true]){ const A=P.filter(p=>p.isP===isP); if(A.length<10)continue; for(const [k] of FD_TOOLS[isP?'P':'B']){ const v=A.map(p=>p.r[k]); const mu=v.reduce((a,b)=>a+b,0)/v.length; const sd=Math.sqrt(v.reduce((a,b)=>a+(b-mu)**2,0)/v.length)||6; m[(isP?'P':'B')+k]={m:mu,sd:Math.max(4,sd)}; } }
+  _ftr={k:k0,m}; return m; }
 /* 툴 한 줄 의견: 좋은 툴·약한 툴만 말하고 종합 평가는 하지 않는다 */
-function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>t.v>=60).map(t=>t.l), bad=S.L.filter(t=>t.v<=40).map(t=>t.l);
+function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>FD_GL[t.g]>=5).map(t=>t.l), bad=S.L.filter(t=>FD_GL[t.g]<=2).map(t=>t.l);
   const pre=p.isP?`${S.velo}km${S.velo>=150?'(강속구)':S.velo<=140?'(기교파)':''}`:'';
   return [pre,good.length?`${good.join('·')} 좋음`:'',bad.length?`${bad.join('·')} 약함`:''].filter(Boolean).join(' · ')||'눈에 띄는 툴 없음'; }
 /* 데이터팀: 최근 3년(없으면 지난해, 1군 우선) 기록 백분위 */
@@ -6650,7 +6663,7 @@ const pctC=v=>v>=80?'var(--good)':v>=60?'#9ccc65':v>=40?'var(--ink)':v>=20?'#f0a
 function fdPosBoard(){ const F=G.fd; if(!F)return []; const RK=fdRisk(); const out=[]; const keys=['C','1B','2B','3B','SS','LF','CF','RF','SP','RP'];
   const pool=F.pool.map(id=>G.players[id]).filter(p=>p&&p.fdPool);
   for(const k of keys){ const L=pool.filter(p=>k==='SP'?p.isP&&isSPr(p):k==='RP'?p.isP&&!isSPr(p):!p.isP&&p.pos===k);
-    const tool=L.filter(p=>{ const S=fdScoutTools(p); return S.L.filter(t=>t.vis).some(t=>t.v>=65)||(p.isP&&S.velo>=150); }).length;
+    const tool=L.filter(p=>{ const S=fdScoutTools(p); return S.L.some(t=>FD_GL[t.g]>=5)||(p.isP&&S.velo>=150); }).length;
     const dat=dataLv(G.user)>=1?L.filter(p=>{ const d=fdData(p); return d&&d.lv===1&&!d.small&&d.it[3][1]>=75; }).length:null;
     const exp=L.reduce((a,p)=>a+(RK[p.id]||0),0); out.push({k,n:L.length,tool,dat,exp}); }
   return out; }
@@ -8416,10 +8429,11 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const cntB=left.filter(p=>!p.isP).length, cntP=left.length-cntB;
   /* 세 탭: 성적(기본, 지난 3년) · 스카우트(툴·체격·의견) · 데이터팀(세부 데이터·의견). 이름 칸에 뺏길 확률과 연봉을 함께 둔다 */
   const RK=pre||F.done?{}:fdRisk(); const ANA=dataLv(G.user)>=1; const MM=fdMoney(); const isP=gk==='P';
-  const V=['rec','sc','dt'].includes(UI.fdV)?UI.fdV:'sc';
+  const V=['rec','sc','dt'].includes(UI.fdV)?UI.fdV:'rec';
   const TO=isP?[['stf','구위'],['ctl','제구'],['sta','체력']]:[['pow','파워'],['con','컨택'],['eye','선구'],['spd','주력'],['def','수비']];
   const tv=(x,k)=>{ const z=fdScoutTools(x.p).L.find(q=>q.k===k); return z?z.v:null; };
-  const tavg=x=>{ const v=TO.map(([k])=>tv(x,k)); return v.reduce((a,b)=>a+b,0)/v.length; };
+  const tz=(x,k)=>fdScoutTools(x.p).L.find(q=>q.k===k)||{g:'C',v:50}; const tg=(x,k)=>tz(x,k).g; const GL=FD_GL;
+  const wv=x=>sOK(x)&&x.s.lvl===1?x.s.war:-5; /* 같은 등급 안에서는 작년 WAR 순 */
   const yl=(x,yy)=>{ const h1=seasonTotal(x.p,yy,'1군'); return h1&&(isP?h1.outs>=9:h1.pa>=10)?h1:null; };
   const T3=x=>x._t3!==undefined?x._t3:(x._t3=fdThree(x.p,ly));
   const D=x=>x._d!==undefined?x._d:(x._d=fdDetail(x.p,ly));
@@ -8450,10 +8464,10 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('sb','도루',x=>x.s?x.s.sb:-1,x=>td(x.s?x.s.sb:'-')),
 ]; }
   { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
-    CS=[c('tavg','툴 평균',x=>tavg(x),x=>`<td class="fdtv" style="--c:${rcol(tavg(x))}"><b>${dv(tavg(x))}</b></td>`,'아래 툴 숫자의 평균. 정렬용'),
+    CS=[
       ...(isP?[c('velo','구속',x=>fdScoutTools(x.p).velo,x=>td(`${fdScoutTools(x.p).velo}<i class="sm"> ${veloMax(x.p)}</i>`),'직구 평균 · 최고(km)')]:[]),
-      ...TO.map(([k,l])=>c('t:'+k,l,x=>tv(x,k),x=>`<td class="fdtv" style="--c:${rcol(tv(x,k))}">${dv(tv(x,k))}</td>`)),
-      ...(isP?[c('pit','구종',x=>arsenal(x.p,tv(x,'stf')).length,x=>{ const A=arsenal(x.p,tv(x,'stf')); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),
+      ...TO.map(([k,l])=>c('t:'+k,l,x=>GL[tg(x,k)]*100+wv(x),x=>{ const z=tz(x,k); return `<td class="fdg" style="color:${rcol(z.v)}">${z.g}</td>`; },`스카우트가 눈으로 본 ${l} 등급(S·A·B·C·D·E). 스카우트마다 버릇이 있고, 경기에서 드러나는 실전 감각은 못 봅니다`)),
+      ...(isP?[c('pit','구종',x=>arsenal(x.p,tz(x,'stf').raw).length,x=>{ const A=arsenal(x.p,tz(x,'stf').raw); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),
       c('body','체격',x=>fdScoutTools(x.p).ht,x=>{ const S=fdScoutTools(x.p); return td(`${S.ht}<i class="sm">/${S.wt}</i>`); },'키(cm)/몸무게(kg)'),
       c('sop','스카우트 의견',x=>0,x=>`<td class="op">${esc(fdScoutLine(x.p))}</td>`)]; }
   { /* 데이터팀: 실제 세부 데이터(최근 3년 합산 기준, 측정은 지난해) · 한 줄 의견 */
@@ -8476,7 +8490,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   COL={rec:CR,sc:CS,dt:CD}[V]; const ALLC=[...CR,...CS,...CD]; const so2=ALLC.some(z=>z.k===so&&z.k!=='sop'&&z.k!=='dop')?so:'war';
   /* 능력 필터(스카우트 툴 60 이상) · 빈자리 */
   const AB=new Set(UI.fdAb||[]); const abK=TO.map(t=>t[0]).concat(isP?['velo']:[]);
-  L=L.filter(x=>{ for(const k of AB){ if(!abK.includes(k))continue; if(k==='velo'){ if(fdScoutTools(x.p).velo<148)return false; } else if((tv(x,k)||0)<60)return false; } return true; });
+  L=L.filter(x=>{ for(const k of AB){ if(!abK.includes(k))continue; if(k==='velo'){ if(fdScoutTools(x.p).velo<148)return false; } else if(GL[tg(x,k)]<5)return false; } return true; });
   if(UI.fdNeed){ const {ln}=fdLineupOf(myPicks.filter(p=>!p.isP)); const need=new Set(['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k])); const pN=myPicks.filter(p=>p.isP).length<FD_TGT.P; L=L.filter(x=>x.t||(x.p.isP?pN:(need.has(x.p.pos)||(subsOf(x.p)||[]).some(k=>need.has(k))))); }
   const scol=ALLC.find(z=>z.k===so2); L.sort((a,b)=>((scol.sv(b)??-1e9)-(scol.sv(a)??-1e9))*(dir?-1:1)||a.p.id-b.p.id);
   const more=UI.fdMore||60; const shown=L.slice(0,more);
@@ -8485,9 +8499,9 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
     const lead=t?`<span class="fdtk">${badge(t.tid,18)}</span>`:`<button class="fds${sl.has(p.id)?' on':''}" data-a="star" data-v="${p.id}" aria-label="관심">${sl.has(p.id)?'★':'☆'}</button>`;
     const tail=t?`<span class="fdtk2"><i>${me?'우리':esc(tshort(t.tid))} ${t.rd}-${t.no}</i>${fdChip(p)}</span>`:mine?`<button class="fdgo" data-a="fdPick" data-v="${p.id}">지명</button>`:'';
     return `<tr class="${lv?'f2':''}${!t&&sl.has(p.id)?' st':''}${t?(me?' gone me':' gone'):''}"><th><div class="fdn">${lead}<button class="fdnm" data-a="player" data-v="${p.id}"><b>${esc(p.name)}${!t&&r>=.1?`<em class="rkp ${r>=.6?'r3':r>=.3?'r2':'r1'}" title="다음 우리 차례 전에 다른 구단이 지명할 확률">${Math.round(r*100)}%</em>`:''}</b><i>${p.age}세 · ${p.isP?(isSPr(p)?'선발':'불펜'):SLK[p.pos]||posLabel(p)} · <span class="${!t&&MM&&p.sal>MM.room-MM.W?'lo':''}">${money(p.sal)}</span>${lv?' · 2군':''}${isAway(p)?' · 군':''}</i></button>${tail}</div></th>${COL.map(z=>z.td(x)).join('')}</tr>`; };
-  const abChips=`<div class="chips fdab"><span class="small muted">스카우트 능력 필터</span>${abK.map(k=>`<button data-a="fdAb" data-v="${k}" class="${AB.has(k)?'on':''}">${k==='velo'?'구속 148km+':`${({pow:'파워',con:'컨택',eye:'선구',def:'수비',spd:'주력',ctl:'제구',stf:'구위',sta:'체력'})[k]} 좋음`}</button>`).join('')}<button data-a="fdY" class="${young?'on':''}">24세 이하</button><button data-a="fdNeed" class="${UI.fdNeed?'on':''}">우리 빈자리만</button><button data-a="fdO" class="${onlyS?'on':''}">관심 ${[...sl].filter(id=>G.players[id]&&G.players[id].fdPool).length||''}</button></div>`;
-  const vtab=`<div class="seg fdvt"><button data-a="fdV" data-v="sc" class="${V==='sc'?'on':''}">스카우트</button><button data-a="fdV" data-v="rec" class="${V==='rec'?'on':''}">성적</button><button data-a="fdV" data-v="dt" class="${V==='dt'?'on':''}">데이터팀</button></div>`;
-  const vnote=V==='rec'?`${ly} 시즌 기록(1군, 없으면 2군) · 지난 시즌들은 선수 카드의 '최근 3년'에서`:V==='sc'?'스카우트가 눈과 스피드건으로 본 툴(60이 1군 평균쯤)과 체격. 기록은 보지 않습니다':ANA?'데이터팀이 실제 기록과 트래킹으로 본 세부 데이터. 툴은 보지 않습니다':'분석원이 없어 기록에서 계산한 지표만 있습니다(트래킹 데이터와 데이터팀 의견 일부 없음)';
+  const abChips=`<div class="chips fdab"><span class="small muted">스카우트 평가 필터</span>${abK.map(k=>`<button data-a="fdAb" data-v="${k}" class="${AB.has(k)?'on':''}">${k==='velo'?'구속 148km+':`${({pow:'파워',con:'컨택',eye:'선구',def:'수비',spd:'주력',ctl:'제구',stf:'구위',sta:'체력'})[k]} A 이상`}</button>`).join('')}<button data-a="fdY" class="${young?'on':''}">24세 이하</button><button data-a="fdNeed" class="${UI.fdNeed?'on':''}">우리 빈자리만</button><button data-a="fdO" class="${onlyS?'on':''}">관심 ${[...sl].filter(id=>G.players[id]&&G.players[id].fdPool).length||''}</button></div>`;
+  const vtab=`<div class="seg fdvt"><button data-a="fdV" data-v="rec" class="${V==='rec'?'on':''}">성적</button><button data-a="fdV" data-v="sc" class="${V==='sc'?'on':''}">스카우트</button><button data-a="fdV" data-v="dt" class="${V==='dt'?'on':''}">데이터팀</button></div>`;
+  const vnote=V==='rec'?`${ly} 시즌 기록(1군, 없으면 2군) · 지난 시즌들은 선수 카드의 '최근 3년'에서`:V==='sc'?'스카우트가 눈과 스피드건으로 본 툴 등급(S·A·B·C·D·E, C가 1군 평균쯤)과 체격. 기록은 보지 않고, 경기에서 드러나는 실전 감각은 못 봅니다. 스카우트마다 후하게 보는 툴과 짜게 보는 툴이 있습니다':ANA?'데이터팀이 실제 기록과 트래킹으로 본 세부 데이터. 툴은 보지 않습니다':'분석원이 없어 기록에서 계산한 지표만 있습니다(트래킹 데이터와 데이터팀 의견 일부 없음)';
   const listPane=`<section class="card">${F.done?'':fdPosBoardH(gk,f)}${F.done?'':fdOwnCard(gk,f)}<div class="fdgk"><b>${isP?'투수':'야수'} ${f==='all'?'전체':({SP:'선발형',RP:'불펜형',OF:'외야'})[f]||SLK[f]||f}</b> <span class="muted">${L.length}명</span></div>
     ${abChips}${vtab}<p class="small muted keep fdvn"><b class="fdso">정렬: ${scol.h} ${dir?'▲':'▼'}</b> · 이름 옆 %는 다음 우리 차례 전에 뺏길 확률<span class="fdvx"> · 탭을 바꿔도 같은 선수·같은 순서이고 보이는 정보만 바뀝니다 · ${vnote} · ⓘ에 설명</span></p>
     <div class="fdt-w"><table class="fdt v-${V}"><thead><tr><th class="c0">선수</th>${COL.map(hd).join('')}</tr></thead><tbody>${shown.map(trow).join('')}</tbody></table></div>
@@ -10513,7 +10527,7 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
 function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
   return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${box('연봉',money(p.sal||0),tContract(p))}</div>
-    <div class="fdop">${S.L.map(t=>`<span class="ftl" style="--c:${rcol(t.v)}">${t.l} <b>${dv(t.v)}</b></span>`).join('')}</div>`; }
+    <div class="fdop">${S.L.map(t=>`<span class="ftl" style="--c:${rcol(t.v)}">${t.l} <b>${t.g}</b></span>`).join('')}</div>`; }
 /* ---------- 동작 ---------- */
 function bondCard(p){
   initPers(p); const m=p.mor;

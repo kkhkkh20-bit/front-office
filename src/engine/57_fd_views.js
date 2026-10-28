@@ -6,13 +6,23 @@
    둘 다 '이 선수가 좋다'는 종합 점수는 내지 않는다 */
 function bodyOf(p){ if(!p.ht){ p.ht=Math.round(clamp((p.isP?184:179)+hn('ht',p.id)*5+(p.isP?(p.r.stf-50)*.08:(p.r.pow-50)*.06),166,198)); p.wt=Math.round(clamp(p.ht-100+hn('wt',p.id)*6+(p.isP?0:(p.r.pow-50)*.2)-(p.isP?1:3),62,118)); } return {ht:p.ht,wt:p.wt}; }
 const FD_TOOLS={B:[['pow','파워',1],['con','컨택',0],['eye','선구',0],['spd','주력',1],['def','수비',1]],P:[['stf','구위',1],['ctl','제구',0],['sta','체력',1]]};
-function fdScoutSd(){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); return [7,6,5,4,3.2,2.6][clamp(sk,0,5)]; }
-function fdScoutTools(p){ const F=G.fd; const key=(F&&F.y)+':'+((G.scouts||[]).map(s=>s.id+s.skill).join(','));
-  const base=fdScoutSd(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l,vis])=>{ const sd=base*(vis?.7:1); const v=clamp(Math.round((p.r[k]+hn('fst'+k+key,p.id)*sd)/5)*5,20,80); return {k,l,v,vis:!!vis}; });
+function fdScoutSd(){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); return [11,10,9,8,7,6][clamp(sk,0,5)]; }
+/* 스카우트 평가: 눈으로 본 툴(실전 감각은 못 봄) + 스카우트 버릇(툴마다 일정하게 후하거나 짠 정도) + 오차 → 등급(S·A·B·C·D·E·F) */
+const FD_G=v=>v>=75?'S':v>=65?'A':v>=55?'B':v>=50?'C':v>=45?'D':v>=35?'E':'F'; /* 게임 공통 등급(GRD)과 같은 기준 */
+function fdScoutTools(p){ const F=G.fd; const sc=[...(G.scouts||[])].sort((a,b)=>(b.skill||0)-(a.skill||0))[0]; const sid=sc?sc.id:'none'; const key=(F&&F.y)+':'+sid+':'+(sc?sc.skill:0);
+  const base=fdScoutSd(); const R=fdToolRef(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l])=>{ const bias=clamp(hn('fsb'+k+sid,'x')*3.5,-5,5); /* 스카우트 버릇: 툴마다 최대 ±5 */ const raw=clamp(p.r[k]-(p.fsx||0)+bias+hn('fst'+k+key,p.id)*base,20,80);
+    /* 등급은 툴마다 '1군 주전 평균이 C'가 되게 맞춘다(툴마다 분포가 달라서 그대로 쓰면 컨택은 모두 낮게 나온다) */ const r=R[(p.isP?'P':'B')+k]; const v=r?clamp(52.5+(raw-r.m)/r.sd*9,20,80):raw; return {k,l,v,raw,g:FD_G(v)}; });
   const b=bodyOf(p); const velo=p.isP?Math.round(veloOf(p)+hn('fsv'+key,p.id)*.8):null;
   return {L,velo,ht:b.ht,wt:b.wt,sd:base}; }
+const FD_GL={S:6,A:5,B:4,C:3,D:2,E:1,F:0};
+let _ftr=null; /* 저장하지 않는 계산 캐시 */
+/* 툴 기준: 1군 주전급(지난해 1군 기록이 충분한 선수)의 툴 평균·편차 */
+function fdToolRef(){ const F=G.fd; const k0=F?F.y:G.year; if(_ftr&&_ftr.k===k0)return _ftr.m; const m={}; const ly=k0-1;
+  const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });
+  for(const isP of [false,true]){ const A=P.filter(p=>p.isP===isP); if(A.length<10)continue; for(const [k] of FD_TOOLS[isP?'P':'B']){ const v=A.map(p=>p.r[k]); const mu=v.reduce((a,b)=>a+b,0)/v.length; const sd=Math.sqrt(v.reduce((a,b)=>a+(b-mu)**2,0)/v.length)||6; m[(isP?'P':'B')+k]={m:mu,sd:Math.max(4,sd)}; } }
+  _ftr={k:k0,m}; return m; }
 /* 툴 한 줄 의견: 좋은 툴·약한 툴만 말하고 종합 평가는 하지 않는다 */
-function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>t.v>=60).map(t=>t.l), bad=S.L.filter(t=>t.v<=40).map(t=>t.l);
+function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>FD_GL[t.g]>=5).map(t=>t.l), bad=S.L.filter(t=>FD_GL[t.g]<=2).map(t=>t.l);
   const pre=p.isP?`${S.velo}km${S.velo>=150?'(강속구)':S.velo<=140?'(기교파)':''}`:'';
   return [pre,good.length?`${good.join('·')} 좋음`:'',bad.length?`${bad.join('·')} 약함`:''].filter(Boolean).join(' · ')||'눈에 띄는 툴 없음'; }
 /* 데이터팀: 최근 3년(없으면 지난해, 1군 우선) 기록 백분위 */
@@ -36,7 +46,7 @@ const pctC=v=>v>=80?'var(--good)':v>=60?'#9ccc65':v>=40?'var(--ink)':v>=20?'#f0a
 function fdPosBoard(){ const F=G.fd; if(!F)return []; const RK=fdRisk(); const out=[]; const keys=['C','1B','2B','3B','SS','LF','CF','RF','SP','RP'];
   const pool=F.pool.map(id=>G.players[id]).filter(p=>p&&p.fdPool);
   for(const k of keys){ const L=pool.filter(p=>k==='SP'?p.isP&&isSPr(p):k==='RP'?p.isP&&!isSPr(p):!p.isP&&p.pos===k);
-    const tool=L.filter(p=>{ const S=fdScoutTools(p); return S.L.filter(t=>t.vis).some(t=>t.v>=65)||(p.isP&&S.velo>=150); }).length;
+    const tool=L.filter(p=>{ const S=fdScoutTools(p); return S.L.some(t=>FD_GL[t.g]>=5)||(p.isP&&S.velo>=150); }).length;
     const dat=dataLv(G.user)>=1?L.filter(p=>{ const d=fdData(p); return d&&d.lv===1&&!d.small&&d.it[3][1]>=75; }).length:null;
     const exp=L.reduce((a,p)=>a+(RK[p.id]||0),0); out.push({k,n:L.length,tool,dat,exp}); }
   return out; }

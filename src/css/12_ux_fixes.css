@@ -181,3 +181,6 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 .fdown-c .av{width:40px;height:40px}.fdown-c span{display:grid;min-width:0}.fdown-c b{font-size:15px}.fdown-c i{font-style:normal;font-size:12px;color:var(--muted)}
 .fdab{gap:4px}.fdab button{padding:4px 9px!important;font-size:12px!important;border-radius:14px!important;min-height:0!important}
 @media (max-width:600px){.fdvn .fdvx{display:none}.fdab>.small{width:100%}}
+/* 스카우트 상·중·하 */
+.fdt td.fdg{text-align:center;font-weight:700;font-size:13px}.fdt td.fdg.g2{color:var(--good)}.fdt td.fdg.g1{color:var(--muted);font-weight:500}.fdt td.fdg.g0{color:#f0a35a}
+.fdt td.fdg{font-size:14.5px!important;font-weight:800!important}

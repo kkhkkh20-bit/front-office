@@ -229,4 +229,4 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
 function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
   return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${box('연봉',money(p.sal||0),tContract(p))}</div>
-    <div class="fdop">${S.L.map(t=>`<span class="ftl" style="--c:${rcol(t.v)}">${t.l} <b>${dv(t.v)}</b></span>`).join('')}</div>`; }
+    <div class="fdop">${S.L.map(t=>`<span class="ftl" style="--c:${rcol(t.v)}">${t.l} <b>${t.g}</b></span>`).join('')}</div>`; }
