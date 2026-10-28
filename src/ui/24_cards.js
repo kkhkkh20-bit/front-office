@@ -1,6 +1,6 @@
 /* ---------- 공용 선수 카드 ---------- */
 function amShort(p){ const h=p.am; if(!h)return ''; if(p.isP){ const o=h.outs||0; return o?`ERA ${((h.er||0)*27/o).toFixed(2)} · K/9 ${(h.so*27/o).toFixed(1)} · BB/9 ${(h.bb*27/o).toFixed(1)}`:''; } const r=bRate(h); return `OPS ${fmt3(r.ops)} · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'} · ${h.hr}홈런`; }
-const hideOvr=p=>!!(p&&(p.prospect||p.fdPool||(p.foreign&&p.team==null)));
+const hideOvr=p=>!!(p&&(p.prospect||p.fdPool||(p.foreign&&p.team==null)||fdHideNow(p))); /* 창단 드래프트 중 지명된 선수도 드래프트가 끝날 때까지 감춘다 */
 function statCells(p){ // 신인·외국인 후보: 능력치 대신 기록 5칸
   const h=p.prospect?p.am:p.prev; if(!h)return '';
   const c=(l,v,cls)=>`<div><span>${l}</span><b class="${cls||''}">${v}</b></div>`;

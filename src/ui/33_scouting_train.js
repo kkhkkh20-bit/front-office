@@ -11,8 +11,10 @@ function draftHist(ys){ const y=UI.dhy&&ys.includes(UI.dhy)?UI.dhy:ys[0]; const 
     <dl class="tsum"><div><dt>우리 지명</dt><dd class="num">${mine.length}명</dd></div><div><dt>우리 WAR 합</dt><dd class="num">${mw.toFixed(1)}</dd></div><div><dt>리그 순위</dt><dd class="num">${rk?rk+'위 · '+grade:'-'}</dd></div></dl>
     <div class="eyebrow">우리 지명자</div>${mine.length?tbl(mine):'<p class="small muted">기록이 없습니다.</p>'}
     <div class="eyebrow">이 해 최고 선수 10명</div>${tbl(best)}`); }
-function draftPage(){ const ys=draftYears(); const it=ys.length?inTabs('dr',[['now',G.draft&&!G.draft.done?'드래프트 진행':'올해 드래프트'],['hist','지난 드래프트 성적표']]):null;
-  return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):draftBoard()); }
+function draftPage(){ const ys=draftYears(); const fdT=!!(G.fd&&G.fd.done&&G.fd.picks&&G.fd.picks.some(x=>x.tid===G.user&&x.pid));
+  const tabs=[['now',G.draft&&!G.draft.done?'드래프트 진행':'올해 드래프트']]; if(ys.length)tabs.push(['hist','지난 드래프트 성적표']); if(fdT)tabs.push(['fd','창단 지명 평가']);
+  const it=tabs.length>1?inTabs('dr',tabs):null;
+  return (it?it.bar:'')+(it&&it.cur==='hist'?draftHist(ys):it&&it.cur==='fd'?fdEvalView():draftBoard()); }
 /* ---------- 구단 훈련장 전경: 시설 단계와 선수 위치를 한 장에 ---------- */
 function campData(){ facInit(); const per=period(); const inSea=per==='season'||per==='post'; const camp=G.camp&&!G.camp.done;
   const ps=playersOf(G.user).filter(p=>!p.ys||true); const devIds=new Set((G.devProg||[]).map(x=>x.pid));

@@ -47,6 +47,8 @@ function scoutReport0(p){
   const cur=clamp(r5(ovr(p)+bias+hn('c'+key,p.id)*sd*.55),20,80);
   let ofp=futKnown?clamp(Math.max(cur,r5(p.pot+bias+hn('f'+key,p.id)*sd)),20,80):null;
   if(ofp!=null&&!p.prospect&&p.age>=29)ofp=Math.min(ofp,cur+Math.max(0,31-p.age)*2);
+  /* 아마추어: 담당 스카우트마다 좋아하는 툴이 있어 그 툴이 좋아 보이면 잠재력을 후하게 보고, 선수마다 마음에 들고 안 드는 인상도 있다(관찰을 늘려도 줄지 않는 오차) */
+  if(ofp!=null&&p.prospect&&sc&&p.gmSeen!==G.year){ const pk=scoutPet(sc,p.isP); const t=tools.find(x=>x.k===pk); ofp=clamp(ofp+(t&&t.fut>=55?DC_PET_ADD:0)+hn('lk'+sc.id,p.id)*DC_LIKE_SD,20,80); }
   const tv={}; tools.forEach(t=>tv[t.k]=t.cur);
   const arch=archetype(tv,p);
   const sorted=[...tools].sort((a,b)=>b.cur-a.cur);

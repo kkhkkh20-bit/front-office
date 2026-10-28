@@ -50,7 +50,7 @@ const fdFeat=(p,L)=>p.isP?[L.k9,L.h.bb*9/L.n,(L.h.hr||0)*9/L.n,L.whip,Math.min(7
 function fdZ(A,f){ const v=A.map(f); const m=v.reduce((a,b)=>a+b,0)/v.length; const sd=Math.sqrt(v.reduce((a,b)=>a+(b-m)**2,0)/v.length)||1; return x=>(f(x)-m)/sd; }
 function fdMap(A,key,out){ const ov=A.map(x=>ovr(x.p)).sort((a,b)=>a-b); [...A].sort((a,b)=>a[key]-b[key]).forEach((x,i)=>{ out[x.p.id]=Math.round(ov[i]*10)/10; }); }
 function fdTwo(p,y){ /* 최근 2년 합산(분석팀용) */ const L=[seasonTotal(p,y,'1군'),seasonTotal(p,y-1,'1군')].filter(Boolean); if(!L.length)return null; const t=Object.assign({},L[0]); for(const h of L.slice(1))addTo(t,h); return t; }
-function fdEstAll(){ const F=G.fd; if(!F)return {}; const y=F.y-1; const P=F.pool.map(id=>G.players[id]).filter(Boolean); const grp={};
+function fdEstAll(){ const F=G.fd; if(!F)return {}; const y=F.y-1; const P=(F.all||F.pool).map(id=>G.players[id]).filter(Boolean); const grp={};
   for(const p of P){ const L=fdStatLine(p,y); const k=(p.isP?'P':'B')+(L?L.lvl:0); (grp[k]=grp[k]||[]).push({p,L}); }
   const est={}, ana={};
   for(const k in grp){ const A=grp[k]; const isP=k[0]==='P';
@@ -85,6 +85,7 @@ function fdScore(tid,p,auto,X){ X=X||fdCtx(tid); const t=team(tid); const S=fdSe
 function fdBest(tid,auto){ let best=null,bs=-1e9; const X=fdCtx(tid); for(const id of G.fd.pool){ const p=G.players[id]; if(!p||!p.fdPool)continue; const v=fdScore(tid,p,auto,X); if(v>bs){bs=v;best=id;} } return best; }
 function fdUserRec(n){ const X=fdCtx(G.user); const L=G.fd.pool.map(id=>G.players[id]).filter(p=>p&&p.fdPool).map(p=>({p,v:fdScore(G.user,p,true,X)})).sort((a,b)=>b.v-a.v); return L.slice(0,n||5).map(x=>x.p); }
 function fdPick(pid){ const F=G.fd; if(!F||F.done)return '드래프트가 없습니다.'; const pk=F.picks[F.cur]; const p=G.players[pid]; if(!pk||!p||!p.fdPool)return '지명할 수 없는 선수입니다.';
+  /* 지명 순간 우리 스카우트 추정을 남겨 둔다: 지명 직후 화면과 나중의 지명 평가가 이 값을 쓴다(실제 능력은 바로 공개하지 않는다) */ try{ fdEsd(); pk.e0=Math.round(fdSeenBy(G.user,p).sc*10)/10; if(pk.tid===G.user)pk.role=fdRole(p,pk.e0); }catch(e){}
   p.team=pk.tid; p.fdPool=false; delete p.role; p.rAdj=0; pk.pid=pid; pk.o0=Math.round(ovr(p)); pk.age0=p.age; F.pool=F.pool.filter(x=>x!==pid); F.cur++; story(p,`${G.year} 창단 드래프트 ${pk.rd}라운드 ${pk.no}번째 · ${tname(pk.tid)} 지명`,'move');
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid))(F.lost=F.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,nm:p.name});
   if(F.cur>=F.picks.length)fdFinish(); return ''; }
@@ -108,7 +109,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
     setGoals(`창단 드래프트로 선수단이 꾸려졌습니다. 전력분석팀은 외국인 선수 영입 전 기준으로 우리를 10개 구단 중 ${pr}위 전력으로 봅니다. 창단 첫해이니 구단주도 무리한 목표는 잡지 않았습니다.`,true); G.goals.fd=true;
     news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`전문가들은 창단 드래프트를 마친 ${tname(G.user)}을(를) ${pr}위 전력으로 봅니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
   try{ const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]); const P=L.map(x=>G.players[x.pid]); const nP=domestic(G.user).filter(p=>p.isP).length, nB=domestic(G.user).length-nP;
-    mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 75 이상이 주전 상위권입니다. 투수 보직은 감독이 정합니다.`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
+    mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; const r=fdRange(p); return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세) 스카우트 추정 ${fdRangeTxt(r)} · ${x.role||fdRole(p,fdE0(p,x))}`; }).join('\n')}\n\n추정 능력은 100점 기준으로 63이 1군 평균, 69가 주전급입니다. 지명 때 본 추정이라 틀릴 수 있습니다. 캠프와 실전 기록이 쌓이면 코치진 평가가 좁혀지고, 7월 1일 중간 평가와 정규시즌 뒤 평가에서 지명이 좋았는지 따져 봅니다. 투수 보직은 감독이 정합니다.`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
   try{ if(G.tut&&!G.tut.done){ G.tut.step=0; sendTut(); } }catch(err){}
   chron('found',`창단 드래프트로 선수단 구성 · 1라운드 ${(()=>{ const x=F.picks.find(q=>q.tid===G.user&&q.rd===1); const p=x&&G.players[x.pid]; return p?p.name:'-'; })()}`);
   stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 감독을 먼저 선임하고, 감독과 상의해 외국인 선수를 뽑으세요.`); }
