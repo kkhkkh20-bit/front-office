@@ -35,9 +35,9 @@ function pbpView(gi){
   return `<div class="pbp">
     <div class="pbp-top"><span class="pill ${top?'':'acc'}">${inn}회${top?'초':'말'}</span><span class="num pbp-sc">${tshort(g.away)} ${s.sa} : ${s.sh} ${tshort(g.home)}</span><span class="outs">${[0,1,2].map(i=>`<i class="${i<s.outs?'on':''}"></i>`).join('')} ${s.outs}아웃</span></div>
     <div class="pbp-main">${svg}<div class="pbp-side">
-      <div class="pbp-now ${x[6]?'run':''}"><b>${esc(pbpText(x))}</b></div>
+      ${(()=>{ const cl=pbpCall(g,k); return `<div class="pbp-now ${x[6]?'run':''}"><span class="pc-who">캐스터</span><b>${esc(cl.c)}</b>${cl.a?`<div class="pc-an"><span class="pc-who">해설</span>${esc(cl.a)}</div>`:''}</div>`; })()}
       ${bat?`<div class="pbp-vs"><button data-a="player" data-v="${bat.id}">${avImg(bat)}<span><i>타자 · ${tshort(g[atK==='h'?'home':'away'])}</i><b>${esc(bat.name)}</b><em>${avgOpsAt(g,k,bat.id)}</em></span></button>${pn?`<button data-a="player" data-v="${pn.id}">${avImg(pn)}<span><i>투수 · ${tshort(g[defK==='h'?'home':'away'])}</i><b>${esc(pn.name)}</b><em>시즌 ERA ${eraAt(g,k,pn.id)}</em></span></button>`:''}</div>`:''}
-      <div class="log">${recent.map((y,i)=>`<p class="${i===0?'cur':''}"><span class="ticker">${Math.floor(y[0]/2)+1}${y[0]%2?'말':'초'}</span> ${esc(pbpText(y))}</p>`).join('')}</div>
+      <div class="log">${recent.map((y,i)=>`<p class="${i===0?'cur':''}"><span class="ticker">${Math.floor(y[0]/2)+1}${y[0]%2?'말':'초'}</span> ${esc(pbpCall(g,k-i).c)}</p>`).join('')}</div>
     </div></div>
     ${(()=>{ const sc=top?s.sa:s.sh; const prev=L.slice(0,k+1).reverse().find(y=>y[0]<half&&typeof y[7]==='number'); const before=prev?(top?prev[7]:prev[8]):0; const hh=L.slice(0,k+1).filter(y=>y[0]===half&&['1B','2B','3B','HR'].includes(y[3])).length; return lineScore(g,half,{half,r:sc-before,h:hh}); })()}
     <div class="pbp-ctl"><button class="btn" data-a="pbpGo" data-v="${gi}:0">처음</button><button class="btn" data-a="pbpGo" data-v="${gi}:${k-1}" ${k<=0?'disabled':''}>◀ 이전</button><button class="btn primary" data-a="pbpGo" data-v="${gi}:${k+1}" ${k>=L.length-1?'disabled':''}>다음 타석 ▶</button><button class="btn" data-a="pbpGo" data-v="${gi}:${nxtInn<0?L.length-1:nxtInn}" ${k>=L.length-1?'disabled':''}>다음 이닝</button><button class="btn" data-a="pbpGo" data-v="${gi}:${L.length-1}">끝</button></div>

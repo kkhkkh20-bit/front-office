@@ -287,3 +287,8 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .mtype b{display:block;font-size:14px;margin-bottom:2px}
 .maxes{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .maxes .pill i{font-style:normal;opacity:.65;margin-right:2px}
+/* 중계 멘트 */
+.pbp-now .pc-who{display:inline-block;font-size:11px;padding:1px 6px;border-radius:3px;background:var(--line,#333);color:var(--dim,#aaa);margin-right:6px;vertical-align:1px}
+.pbp-now b{line-height:1.5}
+.pc-an{margin-top:6px;font-size:13px;color:var(--ink,#ddd);opacity:.9}
+.cs-log .pc-an2{display:block;font-style:normal;font-size:12px;opacity:.75;margin-top:2px}
