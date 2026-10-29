@@ -382,3 +382,7 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .prrep>div:first-child{min-width:0}
 .ppf{display:flex;flex-direction:column;gap:8px}.ppf label{display:flex;flex-direction:column;gap:4px}.ppf select{max-width:100%}
 .gmpl{margin:6px 0 0;padding-left:18px}.gmtags{margin-top:4px}.gmtags .pill{font-size:11px}
+/* 훈련 방향 */
+.trn .talk .btn{position:relative}
+.trn-rec{font-style:normal;font-size:10px;margin-left:4px;padding:0 4px;border-radius:6px;background:var(--acc-soft,rgba(80,120,255,.15));color:var(--acc,#4a6cf7)}
+.trn-rep{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--bg2,rgba(127,127,127,.08));display:flex;flex-direction:column;gap:2px}

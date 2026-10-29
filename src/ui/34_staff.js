@@ -1,11 +1,11 @@
 /* ---------- 스태프·육성 ---------- */
 function trainView(){ const s=curSub('train');
-  const H={camp:campView,dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('2군 연수',devBody(),`<span class="small muted">${(G.devProg||[]).length}/6</span>`),lead:leadCard};
+  const H={camp:campView,dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">2군 연수 ${(G.devProg||[]).length}/6</span>`),lead:leadCard};
   return subTabs('train')+(H[s]||campView)(); }
 function staffView(){
   const s=curSub('staff'); const m=G.mgr[G.user];
   const H0={mgr:()=>csec('감독',mgrBody(),`<span class="small muted">${m?esc(m.name):'빈자리'}</span>`),
-    dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('2군 연수',devBody(),`<span class="small muted">${(G.devProg||[]).length}/6</span>`),
+    dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">2군 연수 ${(G.devProg||[]).length}/6</span>`),
     coach:coachView,
     scouts:scoutTeamPage,
     camp:campView,
