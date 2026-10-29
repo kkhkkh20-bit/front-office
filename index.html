@@ -13546,7 +13546,7 @@ function achView(){ const T=achT(); const M=achMeta(); const N=ACH.length; const
     <div class="achts"><span class="small muted">칭호</span>${ts.length?`<div class="chips"><button class="${cur?'':'on'}" data-a="achTitle" data-v="">표시 안 함</button>${ts.map(t=>`<button class="${cur===t?'on':''}" data-a="achTitle" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div>`:'<span class="small">칭호가 있는 과제를 깨면 고를 수 있습니다. 고른 칭호는 단장 명성 옆에 붙습니다.</span>'}</div>`);
   const won=new Set(achTeamsWon(T)), wonM=new Set(achMetaTeamsWon());
   const allT=csec('전 구단 우승',`<p class="small">한 게임 안에서 10개 구단 모두 우승시키면 칭호 '전 구단 우승 단장'과 가장 큰 새 게임 혜택을 받습니다. 경질되거나 제의를 받아 구단을 옮기며 채워 갑니다.</p>
-    <div class="achteams">${G.teams.map(t=>`<div class="achtm${won.has(t.id)?' on':''}">${badge(t.id,26)}<span>${esc(t.city)}</span><i>${won.has(t.id)?`${T.titles[t.id].length}회`:wonM.has(t.id)?'다른 게임':'-'}</i></div>`).join('')}</div>
+    <div class="achteams">${G.teams.map(t=>`<div class="achtm${won.has(t.id)?' on':''}">${badge(t.id,26)}<span>${esc(t.nick)}</span><i>${won.has(t.id)?`${T.titles[t.id].length}회`:wonM.has(t.id)?'다른 게임':'-'}</i></div>`).join('')}</div>
     <p class="small muted">이 게임 ${won.size}/10 · 여러 게임 합산 ${wonM.size}/10</p>`);
   const cats=[...new Set(ACH.map(a=>a.c))];
   const item=a=>{ const h=G.ach&&G.ach[a.id], m=M.u[a.id]; let pr=''; if(a.p&&!h){ let v=null; try{ v=a.p(T); }catch(e){} if(v){ const w=Math.min(100,Math.round(v[0]/v[1]*100)); pr=`<div class="achbar"><i style="width:${w}%"></i></div><span class="small muted">${Math.min(v[0],v[1])}/${v[1]}</span>`; } }
