@@ -1908,6 +1908,14 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .gpf-in input,.gpf-in select{display:block;width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel2,#1d2730);color:inherit;font:inherit}
 .mehead{display:flex;align-items:center;gap:14px}.mehead-t{flex:1;min-width:0}.mehead .sec{margin:2px 0 6px}
 .rail .railme{margin-top:auto}.rail .railme+.railset{margin-top:0}
+
+.gpps{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.gpp{display:grid;grid-template-columns:44px 30px 44px 30px;align-items:center;gap:4px;font-size:12px}.gpp b{text-align:center;font-weight:600}.gpp .btn{padding:2px 0}
+.gpg-h{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px}
+.gpg{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.gpg-c{padding:3px;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer}.gpg-c .av{width:100%;height:auto;aspect-ratio:1}
+.gpg-c.on{border-color:var(--acc,#3d8bfd);box-shadow:0 0 0 2px var(--acc,#3d8bfd)}
+@media (max-width:520px){ .gpg{grid-template-columns:repeat(4,minmax(0,1fr))} }
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -5786,7 +5794,7 @@ function raceOf(o){ if(o==='sec')return 'asian'; const nat=o.nat; if(!o.foreign|
   if(nat==='호주')return u<.8?'white':'brown'; if(nat==='미국')return u<.5?'white':u<.8?'black':'brown'; return u<.15?'white':u<.55?'brown':'black'; }
 function moodMouth(m){ return m>=74?'smile':m>=62?'smile-closed':m>=46?null:m>=32?'straight':'angry'; }
 const ageB=a=>a==null?0:a<=23?0:a<=29?1:a<=33?2:3;
-function faceKey(o){ return o==='sec'?'sec':o.persona?'P:'+o.persona+':'+o.pid+':'+(o.team??'x')+':'+(o.expr||''):o.id+':'+(o.team??'x')+':'+(moodMouth(o.mor??60)||'n')+':'+ageB(o.age); }
+function faceKey(o){ return o==='sec'?'sec':o.persona?'P:'+o.persona+':'+o.pid+':'+(o.team??'x')+':'+(o.expr||'')+(o.female?':f':'')+(o.mod?':'+JSON.stringify(o.mod):''):o.id+':'+(o.team??'x')+':'+(moodMouth(o.mor??60)||'n')+':'+ageB(o.age); }
 function faceSVG(o){
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);
   let out='';
@@ -5799,7 +5807,9 @@ function faceSVG(o){
       else { f.accessories={id:'none'}; f.jersey={id:'jersey3'}; f.teamColors=o.persona==='doc'?['#e9eef2','#c9d3da','#7a8794']:o.persona==='own'?['#1d2733','#11161c','#c9a24a']:o.persona==='agent'?['#15191e','#0b0e11','#9aa6b2']:[dk,'#11161c',mid]; }
       if((o.age||45)>=52&&f.hair){ f.hair.color=['#8d8d8d','#a7a7a7','#6e6e6e'][Math.floor(rr()*3)]; }
       f.glasses={id:o.persona==='doc'||rr()<.22?'glasses2-black':'none'}; if(!o.female&&rr()<.5)f.facialHair={id:'none'};
-      f.fatness=(f.fatness||.3)*.8; const m0=rr()<.5?'smile-closed':'closed'; f.mouth={id:o.expr==='smile'?'smile':o.expr==='angry'?'angry':o.expr==='flat'?'straight':m0,flip:false}; }
+      f.fatness=(f.fatness||.3)*.8; const m0=rr()<.5?'smile-closed':'closed'; f.mouth={id:o.expr==='smile'?'smile':o.expr==='angry'?'angry':o.expr==='flat'?'straight':m0,flip:false}; 
+      /* 단장 얼굴 꾸미기: 고른 부위로 덮어쓴다 */
+      const M=o.mod; if(M){ if(M.hair&&f.hair)f.hair.id=M.hair; if(M.hc&&f.hair)f.hair.color=M.hc; if(M.fh)f.facialHair={id:M.fh}; if(M.gl)f.glasses={id:M.gl}; if(M.mouth)f.mouth={id:M.mouth,flip:false}; if(M.eb)f.eyebrow={id:M.eb,rotation:(f.eyebrow&&f.eyebrow.rotation)||0}; } }
     else if(o==='sec'){ f.jersey={id:'jersey3'}; f.teamColors=['#4b5b6c','#e3e9ee','#2a3642']; f.accessories={id:'none'}; f.glasses={id:'none'}; }
     else {
       const t=o.team!=null&&G.teams[o.team]?G.teams[o.team]:null;
@@ -14950,17 +14960,28 @@ Object.assign(A,{ negInfo(v){ UI.negWin=null; A.player(v); },
   negClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.negWin=null; renderSheet(); render(); } });
 /* ---------- 단장 프로필: 새 게임에서 이름·나이·출신·얼굴을 정하고, 사이드바 '단장 프로필'에서 본다 ---------- */
 function gpDefault(){ let n='김단장'; try{ n=genName(); }catch(e){} return {name:n,age:42,bg:'corp',female:false,face:'gm'+Math.floor(Math.random()*1e6)}; }
-function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:P.age||42,female:!!P.female,name:P.name||'단장'}; }
+function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:P.age||42,female:!!P.female,name:P.name||'단장',mod:P.mod||null}; }
+/* 얼굴 꾸미기: 후보 12개 중에서 고르고, 부위(머리·머리색·수염·안경·표정)를 하나씩 바꾼다 */
+const GP_PART={hair:{l:'머리',m:['short','short2','short3','crop','crop-fade','crop-fade2','short-fade','short-fade-2','middle-part','parted','messy','messy-short','spike','spike2','juice','high','tall-fade','faux-hawk','shortBangs','short-bald','curly','curly2','afro'],f:['female1','female2','female3','female4','female5','female6','female7','female8','female9','female10','female11','female12','longHair','shortBangs','middle-part','parted']},
+  hc:{l:'머리색',m:['#1a1a1a','#2b1d14','#4a3121','#6b4a2b','#8a6a43','#6e6e6e','#a7a7a7','#d0d0d0']},
+  fh:{l:'수염',m:['mustache-thin','mustache1','soul','goatee-thin','goatee1','fullgoatee','chin-strap','beard1','beard2','beard3','none'],f:['none']},
+  gl:{l:'안경',m:['glasses2-black','glasses1-secondary','glasses2-secondary','none']},
+  mouth:{l:'표정',m:['smile-closed','smile','smile2','closed','straight','side']}};
+function gpPartList(k,g){ const P=GP_PART[k]; return (g.female&&P.f)?P.f:P.m; }
 function gpSync(){ const g=UI.gp=UI.gp||gpDefault(); const n=document.getElementById('gp-name'), a=document.getElementById('gp-age'); if(n)g.name=n.value.trim().slice(0,10); if(a)g.age=+a.value||g.age; return g; }
-function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'staff',pid:g.face,age:g.age,female:g.female,name:g.name};
+function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'staff',pid:g.face,age:g.age,female:g.female,name:g.name,mod:g.mod||null}; const M=g.mod||{};
+  const seeds=UI.gpSeeds&&UI.gpSeeds.f===!!g.female?UI.gpSeeds.L:(UI.gpSeeds={f:!!g.female,L:Array.from({length:12},()=>'gm'+Math.floor(Math.random()*1e6))}).L;
+  const parts=Object.keys(GP_PART).filter(k=>gpPartList(k,g).length>1).map(k=>{ const L=gpPartList(k,g); const i=M[k]!=null?L.indexOf(M[k]):-1; return `<div class="gpp"><span>${GP_PART[k].l}</span><button class="btn small" data-a="gpPart" data-v="${k}:-1" aria-label="이전">◀</button><b>${i<0?'기본':`${i+1}/${L.length}`}</b><button class="btn small" data-a="gpPart" data-v="${k}:1" aria-label="다음">▶</button></div>`; }).join('');
   const ages=[]; for(let a=30;a<=65;a++)ages.push(a);
-  return `<div class="gpf"><div class="gpf-face">${avImg(av,true)}<button class="btn small" data-a="gpFace">다른 얼굴</button></div><div class="gpf-in">
+  return `<div class="gpf"><div class="gpf-face">${avImg(av,true)}<div class="gpps">${parts}</div>${g.mod?'<button class="lnk small" data-a="gpPartReset">꾸민 것 되돌리기</button>':''}</div><div class="gpf-in">
     <label class="small">이름<input id="gp-name" type="text" maxlength="10" value="${esc(g.name||'')}" placeholder="단장 이름" autocomplete="off"></label>
     <label class="small">나이<select id="gp-age">${ages.map(a=>`<option value="${a}" ${a===g.age?'selected':''}>${a}세</option>`).join('')}</select></label>
     <div class="small">성별</div><div class="chips"><button data-a="gpSex" data-v="m" class="${g.female?'':'on'}">남</button><button data-a="gpSex" data-v="f" class="${g.female?'on':''}">여</button></div>
     <div class="small">출신</div><div class="chips">${Object.entries(GM_BG).map(([k,l])=>`<button data-a="gpBg" data-v="${k}" class="${g.bg===k?'on':''}">${l}</button>`).join('')}</div>
     <p class="small muted">이름과 출신은 기사와 경력에 쓰입니다. 능력치 차이는 없습니다. 나이는 해마다 한 살씩 듭니다.</p>
-    ${UI.gpMsg?`<div class="note">${esc(UI.gpMsg)}</div>`:''}<button class="btn primary block" data-a="${go}">${goL}</button></div></div>`; }
+    ${UI.gpMsg?`<div class="note">${esc(UI.gpMsg)}</div>`:''}<button class="btn primary block" data-a="${go}">${goL}</button></div></div>
+  <div class="gpg-h"><span class="small">얼굴 후보: 마음에 드는 얼굴을 누르세요</span><button class="btn small" data-a="gpFace">다른 후보 12개</button></div>
+  <div class="gpg">${seeds.map(sd=>`<button class="gpg-c${sd===g.face?' on':''}" data-a="gpPick" data-v="${sd}">${avImg({persona:'staff',pid:sd,age:g.age,female:g.female,name:g.name})}</button>`).join('')}</div>`; }
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];
   return `<div class="gut"><div class="wrap" style="max-width:640px"><button class="lnk tsback" data-a="tsGo" data-v="team">← 구단 다시 고르기</button>
@@ -14979,12 +15000,15 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
   return head+card+stints+quit; }
 Object.assign(A,{
   start(v){ UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
-  gpFace(){ const g=gpSync(); g.face='gm'+Math.floor(Math.random()*1e6); render(); },
-  gpSex(v){ const g=gpSync(); g.female=v==='f'; g.face='gm'+Math.floor(Math.random()*1e6); render(); },
+  gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
+  gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; render(); },
+  gpPart(v){ const g=gpSync(); const [k,d]=String(v).split(':'); const L=gpPartList(k,g); g.mod=g.mod||{}; const i=g.mod[k]!=null?L.indexOf(g.mod[k]):-1; g.mod[k]=L[((i<0?(+d>0?-1:0):i)+ +d+L.length)%L.length]; render(); },
+  gpPartReset(){ const g=gpSync(); delete g.mod; render(); },
+  gpSex(v){ const g=gpSync(); g.female=v==='f'; g.face='gm'+Math.floor(Math.random()*1e6); delete g.mod; UI.gpSeeds=null; render(); },
   gpBg(v){ const g=gpSync(); g.bg=v; render(); },
   gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; UI.gp=null; A.startGo(UI.pickT); if(G){ G.gmP={...P,y0:G.year}; save(); render(); } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
-  gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,female:g.female,face:g.face,y0}; UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
+  gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,female:g.female,face:g.face,mod:g.mod||null,y0}; UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
   resignAsk(){ UI.rsAsk=!UI.rsAsk; render(); },
   resignGo(){ UI.rsAsk=false; const r=resignGM(); if(r){ toast(r); return; } save(); UI.tab='inbox'; UI.mf='all'; UI._ibFirst=true; render(); }
 });

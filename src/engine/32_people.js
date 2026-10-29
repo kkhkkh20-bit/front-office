@@ -7,7 +7,7 @@ function raceOf(o){ if(o==='sec')return 'asian'; const nat=o.nat; if(!o.foreign|
   if(nat==='호주')return u<.8?'white':'brown'; if(nat==='미국')return u<.5?'white':u<.8?'black':'brown'; return u<.15?'white':u<.55?'brown':'black'; }
 function moodMouth(m){ return m>=74?'smile':m>=62?'smile-closed':m>=46?null:m>=32?'straight':'angry'; }
 const ageB=a=>a==null?0:a<=23?0:a<=29?1:a<=33?2:3;
-function faceKey(o){ return o==='sec'?'sec':o.persona?'P:'+o.persona+':'+o.pid+':'+(o.team??'x')+':'+(o.expr||''):o.id+':'+(o.team??'x')+':'+(moodMouth(o.mor??60)||'n')+':'+ageB(o.age); }
+function faceKey(o){ return o==='sec'?'sec':o.persona?'P:'+o.persona+':'+o.pid+':'+(o.team??'x')+':'+(o.expr||'')+(o.female?':f':'')+(o.mod?':'+JSON.stringify(o.mod):''):o.id+':'+(o.team??'x')+':'+(moodMouth(o.mor??60)||'n')+':'+ageB(o.age); }
 function faceSVG(o){
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);
   let out='';
@@ -20,7 +20,9 @@ function faceSVG(o){
       else { f.accessories={id:'none'}; f.jersey={id:'jersey3'}; f.teamColors=o.persona==='doc'?['#e9eef2','#c9d3da','#7a8794']:o.persona==='own'?['#1d2733','#11161c','#c9a24a']:o.persona==='agent'?['#15191e','#0b0e11','#9aa6b2']:[dk,'#11161c',mid]; }
       if((o.age||45)>=52&&f.hair){ f.hair.color=['#8d8d8d','#a7a7a7','#6e6e6e'][Math.floor(rr()*3)]; }
       f.glasses={id:o.persona==='doc'||rr()<.22?'glasses2-black':'none'}; if(!o.female&&rr()<.5)f.facialHair={id:'none'};
-      f.fatness=(f.fatness||.3)*.8; const m0=rr()<.5?'smile-closed':'closed'; f.mouth={id:o.expr==='smile'?'smile':o.expr==='angry'?'angry':o.expr==='flat'?'straight':m0,flip:false}; }
+      f.fatness=(f.fatness||.3)*.8; const m0=rr()<.5?'smile-closed':'closed'; f.mouth={id:o.expr==='smile'?'smile':o.expr==='angry'?'angry':o.expr==='flat'?'straight':m0,flip:false}; 
+      /* 단장 얼굴 꾸미기: 고른 부위로 덮어쓴다 */
+      const M=o.mod; if(M){ if(M.hair&&f.hair)f.hair.id=M.hair; if(M.hc&&f.hair)f.hair.color=M.hc; if(M.fh)f.facialHair={id:M.fh}; if(M.gl)f.glasses={id:M.gl}; if(M.mouth)f.mouth={id:M.mouth,flip:false}; if(M.eb)f.eyebrow={id:M.eb,rotation:(f.eyebrow&&f.eyebrow.rotation)||0}; } }
     else if(o==='sec'){ f.jersey={id:'jersey3'}; f.teamColors=['#4b5b6c','#e3e9ee','#2a3642']; f.accessories={id:'none'}; f.glasses={id:'none'}; }
     else {
       const t=o.team!=null&&G.teams[o.team]?G.teams[o.team]:null;
