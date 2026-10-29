@@ -28,7 +28,9 @@ function makeLineup(tid,pool){
 function entryLimit(){ return period()==='season'&&G.day>=KD(8,25)?ENTRY_BASE+ENTRY_EXP:ENTRY_BASE; }
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); }
-const canUp=p=>!p.e1&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
+/* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */
+const psOk=p=>!(period()==='post'&&p.acq&&p.acq.tid===p.team&&p.acq.y===G.year&&p.acq.k!=='fd'&&p.acq.k!=='draft'&&p.acq.d>foreignDL());
+const canUp=p=>psOk(p)&&!p.e1&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
 function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; const yb=tid===G.user&&p.age<=24&&mplOn('youth')&&!p.e1&&(()=>{ const h=seasonTotal(p,G.year,'퓨처스'); return h&&(p.isP?h.outs>=30&&pRate(h).era<=3.8:h.pa>=40&&bRate(h).ops>=.76); })()?3:0; return yb+(p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+f-(p.fat||0)/25; }
 function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=teamLean(tid);
   const ps=playersOf(tid).filter(p=>!p.ys&&healthy(p)&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); const v=p=>entryVal(tid,p,lean);
@@ -41,7 +43,7 @@ function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=tea
   [...Object.values(ln),...bsel,...sp,...rp].forEach(p=>{p.e1=true;p.upDay=G.day;});
   entryManage(tid,false,true); }
 function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLimit(); const lean=teamLean(tid); const v=p=>entryVal(tid,p,lean); const moves=[];
-  for(const p of playersOf(tid))if(p.e1&&(p.injOut>3||p.ys||(p.isP&&rpPlanOf(tid,p)==='sp2'))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':'2군 선발 수업'})`); }
+  for(const p of playersOf(tid))if(p.e1&&(p.injOut>3||p.ys||(p.isP&&rpPlanOf(tid,p)==='sp2')||!psOk(p))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':!psOk(p)?'포스트시즌 등록 마감 뒤 영입':'2군 선발 수업'})`); }
   let ent=playersOf(tid).filter(p=>p.e1);
   if(ent.length>lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); ent.filter(p=>!core.has(p.id)).sort((a,b)=>v(a)-v(b)).slice(0,ent.length-lim).forEach(p=>{p.e1=false;p.downDay=G.day;moves.push(`${p.name} 말소`);}); ent=playersOf(tid).filter(p=>p.e1); }
   while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=playersOf(tid).filter(canUp);

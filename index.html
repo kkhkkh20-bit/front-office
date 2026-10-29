@@ -2536,7 +2536,9 @@ function makeLineup(tid,pool){
 function entryLimit(){ return period()==='season'&&G.day>=KD(8,25)?ENTRY_BASE+ENTRY_EXP:ENTRY_BASE; }
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); }
-const canUp=p=>!p.e1&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
+/* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */
+const psOk=p=>!(period()==='post'&&p.acq&&p.acq.tid===p.team&&p.acq.y===G.year&&p.acq.k!=='fd'&&p.acq.k!=='draft'&&p.acq.d>foreignDL());
+const canUp=p=>psOk(p)&&!p.e1&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
 function entryVal(tid,p,lean){ const f=p.sf&&p.sf.y===G.year?(p.sf.v+(p.sf.m||0))*.6:0; const yb=tid===G.user&&p.age<=24&&mplOn('youth')&&!p.e1&&(()=>{ const h=seasonTotal(p,G.year,'퓨처스'); return h&&(p.isP?h.outs>=30&&pRate(h).era<=3.8:h.pa>=40&&bRate(h).ops>=.76); })()?3:0; return yb+(p.isP?(isSPr(p)?spV(p)+2:penV(p)):offV(p)*(1-mgrDefW(tid)*.74)+p.r.def*mgrDefW(tid)*.74)+polBonus(tid,p,lean)+f-(p.fat||0)/25; }
 function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=teamLean(tid);
   const ps=playersOf(tid).filter(p=>!p.ys&&healthy(p)&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); const v=p=>entryVal(tid,p,lean);
@@ -2549,7 +2551,7 @@ function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=tea
   [...Object.values(ln),...bsel,...sp,...rp].forEach(p=>{p.e1=true;p.upDay=G.day;});
   entryManage(tid,false,true); }
 function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLimit(); const lean=teamLean(tid); const v=p=>entryVal(tid,p,lean); const moves=[];
-  for(const p of playersOf(tid))if(p.e1&&(p.injOut>3||p.ys||(p.isP&&rpPlanOf(tid,p)==='sp2'))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':'2군 선발 수업'})`); }
+  for(const p of playersOf(tid))if(p.e1&&(p.injOut>3||p.ys||(p.isP&&rpPlanOf(tid,p)==='sp2')||!psOk(p))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':!psOk(p)?'포스트시즌 등록 마감 뒤 영입':'2군 선발 수업'})`); }
   let ent=playersOf(tid).filter(p=>p.e1);
   if(ent.length>lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); ent.filter(p=>!core.has(p.id)).sort((a,b)=>v(a)-v(b)).slice(0,ent.length-lim).forEach(p=>{p.e1=false;p.downDay=G.day;moves.push(`${p.name} 말소`);}); ent=playersOf(tid).filter(p=>p.e1); }
   while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=playersOf(tid).filter(canUp);
@@ -2995,7 +2997,7 @@ function processDay(){ syncMinSal();
   if(o.d===1){ try{ growSnap(); }catch(e){} }
   if(day===c.asg)note('일정','올스타전이 열렸습니다. 후반기가 곧 시작됩니다.');
   if(day===c.draft)startDraft();
-  if(entryOn()&&period()==='season'){ const wk=o.w===1; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); }
+  if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
   if(c.sched[day])playDay(day);
   if(day===KD(9,1)||day===c.end+1){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} } /* AI 구단은 시즌 막판 하한을 다시 확인해 주축과 연장계약으로 맞춘다 */
   if(day===c.end+1)seasonEnd();
@@ -6891,7 +6893,7 @@ function isFree(p){ return !!p&&p.team==null&&p.freeSince!=null&&!p.foreign&&!p.
 function freeList(){ return Object.values(G.players).filter(isFree); }
 /* 무적 선수의 요구 연봉: 시장가의 35%와 직전 연봉의 60% 중 낮은 쪽, 최저연봉 이상 */
 function freeAsk(p){ return round5(Math.max(MIN_SAL,Math.min(marketSal(ovr(p))*.35,(p.sal||MIN_SAL)*.6))); }
-function freeOpen(){ const per=period(); return !(per==='season'&&G.day>foreignDL()); }
+function freeOpen(){ const per=period(); return !((per==='season'&&G.day>foreignDL())||per==='post'); } /* 8월 15일 뒤부터 포스트시즌이 끝날 때까지 등록 불가 */
 function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p))return '계약할 수 없는 선수입니다.'; if(!freeOpen())return '8월 15일 이후에는 시즌이 끝날 때까지 새 선수를 등록할 수 없습니다.';
   if(rosterN(tid)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;
   const sal=freeAsk(p); mvLog('무적 영입',p,null,tid,`연 ${money(sal)}`,sal); p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100);

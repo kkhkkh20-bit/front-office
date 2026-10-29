@@ -96,7 +96,7 @@ function processDay(){ syncMinSal();
   if(o.d===1){ try{ growSnap(); }catch(e){} }
   if(day===c.asg)note('일정','올스타전이 열렸습니다. 후반기가 곧 시작됩니다.');
   if(day===c.draft)startDraft();
-  if(entryOn()&&period()==='season'){ const wk=o.w===1; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); }
+  if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
   if(c.sched[day])playDay(day);
   if(day===KD(9,1)||day===c.end+1){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} } /* AI 구단은 시즌 막판 하한을 다시 확인해 주축과 연장계약으로 맞춘다 */
   if(day===c.end+1)seasonEnd();
