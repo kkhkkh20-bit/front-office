@@ -36,3 +36,13 @@
 .ibx-g.ibx-new{border-color:var(--acc,#5aa8ff)}
 .ibx-day.ibx-pinh{cursor:default;color:var(--ink);font-weight:600}
 .ibx-day.ibx-pinh{display:flex;align-items:center;gap:8px}.ibx-pinh .ibx-dn{margin-left:auto}
+
+/* 표 넘기기 중 합친 칸(빈자리 안내·버튼)은 줄바꿈해 칸 안에 머문다 */
+.tw table td.twspan,.tw table th.twspan{white-space:normal}
+.tw table td.twspan .btn{margin-top:4px;white-space:nowrap}
+
+/* 외국인 시장: 우리 스카우트 발굴 메모 */
+.pc-x .fnote{display:block;flex-basis:100%;font-size:12px;color:var(--ink);line-height:1.45;margin-top:2px}
+
+/* 동작 줄이기: 날짜 띠는 움직임 없이 보였다가 사라진다 */
+@media (prefers-reduced-motion:reduce){ #dtick{display:block!important;transition:opacity .2s;transform:translate(-50%,0)!important} #dtick .dt-flip.go{animation:none} }

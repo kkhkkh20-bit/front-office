@@ -14,8 +14,7 @@ function fanPulseDaily(){ if(G.unemp||typeof fanThreads!=='function')return; con
   S.kd=S.kd||{}; const kk=t=>(String(t.id).match(/^[a-z]+/)||['x'])[0]; /* 같은 종류(경기·연승연패·순위…)는 일주일에 한 번까지 */
   const hot=ours.filter(t=>t.hot&&!S.seen[t.id]&&t.cat!=='기사'&&!(G.day-(S.kd[kk(t)]??-99)<7)).sort((a,b)=>b.views-a.views)[0];
   if(hot&&G.day-S.last>=5){ S.seen[hot.id]=G.day; S.kd[kk(hot)]=G.day; S.last=G.day; const D=fpDelta(S); S.fan=D.f; S.press=D.p;
-    const cms=hot.cm.slice(0,4);
-    const mm=mail('홍보팀',`[팬 게시판] ${hot.title}`,`팬 게시판에 우리 구단 글이 달아오르고 있습니다. 조회 ${hot.views.toLocaleString()} · 댓글 ${hot.cm.length}.${hot.body?`\n\n${hot.body}`:''}\n\n댓글 분위기: ${fpMood(hot.cm)}\n${cms.map(fpCm).join('\n')}\n\n${D.t}`,{kind:'언론',acts:[{l:'게시판에서 보기',a:'fbOpen',v:hot.id},{l:'여론 현황',a:'go',v:'club:media'}]}); if(mm)mm.fth=hot.id;
+    const mm=mail('홍보팀',`[팬 게시판] ${hot.title}`,`팬 게시판에 우리 구단 글이 달아오르고 있습니다. 조회 ${hot.views.toLocaleString()} · 댓글 ${hot.cm.length}.${hot.body?`\n\n${hot.body}`:''}\n\n${D.t}`,{kind:'언론',acts:[{l:'게시판에서 보기',a:'fbOpen',v:hot.id},{l:'여론 현황',a:'go',v:'club:media'}]}); if(mm)mm.fth=hot.id;
     fpPrune(S); return; }
   /* 2) 주간 여론 정리 */
   const wk=Math.floor(G.day/7); const due=(per==='season'||per==='post')?(o.w===1&&wk!==S.wk):(G.day-S.last>=14&&wk!==S.wk&&o.w===1);

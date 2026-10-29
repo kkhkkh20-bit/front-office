@@ -49,6 +49,14 @@ function newForeign(kind,opts){
   if(src){ p.fsrc=src; p.fday=G.day; if(src==='scout'){ p.fknow=[opts.finder]; p.fpub=G.day+ri(14,45)-(base>=60?10:0); } else p.fpub=G.day; }
   return p;
 }
+/* 우리 스카우트가 직접 찾은 후보인가 */
+function fMineFind(p){ return !!(p&&p.fsrc==='scout'&&(p.fknow||[]).includes(G.user)&&p.fknow[0]===G.user); }
+/* 우리가 찾은 후보의 관찰 메모(외국인 시장 카드): 언제 찾았는지, 강점·약점, 한국 적응, 몸 상태, 다른 구단이 알게 되는 때 */
+function fFindNote(p,rp){ if(!fMineFind(p))return ''; const T=(rp&&rp.tools||[]).slice().sort((a,b)=>b.cur-a.cur); const nm=k=>TOOLK[k]||k;
+  const good=T.slice(0,2).filter(t=>t.cur>=55).map(t=>nm(t.k)), bad=T.slice(-1).filter(t=>t.cur<=45).map(t=>nm(t.k));
+  const ad=p.adapt>=62?'적응 빠를 성격':p.adapt<=35?'적응 우려':'적응 보통'; const body=p.inj>=.3?'부상 이력 있음':p.inj>.24?'부상 체질':'몸 상태 양호'; /* 카드의 '부상 체질' 표시와 같은 기준 */
+  const sec=G.day<(p.fpub||0)?`다른 구단은 ${dmd(p.fpub)}쯤 알게 됩니다`:'소문이 퍼져 다른 구단도 압니다';
+  return `${p.fday!=null?dmd(p.fday)+' 발굴':'우리 발굴'} · 강점 ${good.join('·')||'두드러진 툴 없음'}${bad.length?` · 약점 ${bad.join('·')}`:''} · ${ad} · ${body} · ${sec}`; }
 /* 이 구단이 이 후보를 아는가 */
 function fKnows(tid,p){ return !p||p.fsrc!=='scout'||G.day>=(p.fpub||0)||(p.fknow||[]).includes(tid); }
 function fScoutLv(tid){ if(tid===G.user)return null; const sd=team(tid).scoutSd||6; return clamp((9-sd)/1.6,0,3); }
@@ -56,7 +64,7 @@ function fScoutLv(tid){ if(tid===G.user)return null; const sd=team(tid).scoutSd|
 function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===10||o.m===11))return; G.fmarket=G.fmarket||[]; if(G.fmarket.length>=46)return; const found=[];
   if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r}); G.fmarket.push(q.id); found.push(q); } } }
   for(const t of G.teams){ if(t.id===G.user)continue; const lv=fScoutLv(t.id); if(R()<.12+lv*.05){ const q=newForeign(R()<.25?'아시아':'용병',{src:'scout',finder:t.id,flv:lv}); G.fmarket.push(q.id); } }
-  if(found.length&&!silent)mail('해외 스카우트',`발굴 보고: 새 후보 ${found.length}명`,`${found.map(q=>`${q.name}(${q.nat} · ${posLabel(q)} · ${q.age}세 · ${q.prevLvl})`).join('\n')}\n\n우리 스카우트가 직접 찾은 선수라 아직 다른 구단은 모릅니다. 소문이 나기 전에 판단하세요.`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
+  void silent; /* 발굴 소식은 보내지 않는다: 외국인 시장에서 '우리 스카우트 발굴'로 표시하고 관찰 메모를 자세히 보여 준다 */
   return found; }
 function refreshFMarket(n,drop){
   /* 에이전트 공용 후보를 최소 인원으로 유지하고, 오래 팔리지 않은 후보는 시장을 떠난다(관찰 중이면 남김) */

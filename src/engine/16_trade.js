@@ -67,7 +67,7 @@ function evalTrade(tid,give,get,cash){ cash=cash||0;
   let inV, outV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)))+cashVal(t,cash); outV=sum(get.map(id=>tval(t,P(id),'out'))); } finally { _evOut=null; }
   const theirN=rosterN(tid)+give.length-get.filter(id=>!P(id).ys).length;
   let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?1.5:0)-(hit.length?.6:0); /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-.9:-.3); /* 급매는 손해를 조금 보더라도 넘긴다 */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
-  const theirPay=capPay(tid)+sum(give.map(id=>P(id).sal))-sum(get.map(id=>P(id).sal));
+  const theirPay=capPayAs(tid,give,get); /* 연봉 차액을 더하지 않고 상위 40명을 다시 고른다 */
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,outV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
   if(tid!==G.user){ const nT=(G.trades||[]).filter(x=>x.y===G.year&&x.with===tid).length; if(nT)need+=Math.max(1.5,outV)*.25*nT;
@@ -123,7 +123,7 @@ function tradeWhyNot(t,give,get){ const P=id=>G.players[id]; const g=give.map(P)
   const ag=sum(g.map(p=>p.age))/g.length, gs=sum(g.map(p=>p.sal)), os=sum(o.map(p=>p.sal)); const ctx=teamCtx(t);
   if(t.mode==='rebuild'&&(ag>=29||gs>os*1.3+100))return '저희는 리빌딩 중이라 나이 많고 연봉 큰 선수는 부담입니다. 젊은 선수를 원합니다.';
   if(ctx.contend&&g.every(p=>ovr(p)<ovr(o[0]||p)-3))return '저희는 지금 순위 싸움 중이라 당장 뛸 선수가 필요합니다.';
-  if(gs>os+300&&(t.owner==='profit'||capPay(t.id)+gs-os>capOf(G.year)*.95))return `연봉을 ${money(gs-os)} 더 떠안는 건 어렵습니다.`;
+  if(gs>os+300&&(t.owner==='profit'||capPayAs(t.id,give,get)>capOf(G.year)*.95))return `연봉을 ${money(gs-os)} 더 떠안는 건 어렵습니다.`;
   { const bad=g.find(medRisky); if(bad)return `메디컬 검진에서 ${bad.name}의 몸 상태가 걸렸습니다. ${injDays2(bad)>=60?`최근 2년 동안 ${injDays2(bad)}일을 부상으로 빠졌습니다.`:'부상 위험이 크다는 소견입니다.'}`; }
   if(o.some(p=>p.aiListed&&p.aiWhy==='room')&&g.every(p=>p.age>=26))return '저희가 내놓은 건 자리가 없는 유망주라, 받는 쪽도 앞으로 클 선수였으면 합니다.';
   return ''; }
