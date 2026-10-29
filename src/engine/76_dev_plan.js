@@ -17,7 +17,8 @@ function trnRoom(p,k){ return trnCap(p,k)-p.r[k]; }
 function trnCoach(tid,k){ const role=(TRN.P[k]||TRN.B[k]||{}).c; try{ const C=G.coach&&G.coach[tid]; return role&&C?C[role]||null:null; }catch(e){ return null; } }
 /* 코치진 기본안과 의견: 같은 판단에서 나온다. 선수 역할·강약점·항목별 여력·감독 성향을 보고, 정답이 하나로 보이지 않게 다른 길도 함께 말한다 */
 function trnAdvice(p){ const r=p.r; const rm=k=>trnRoom(p,k); const m=p.team!=null&&G.mgr?mgrAttr(G.mgr[p.team]):null;
-  if(p.isP){ const sp=isSPr(p); const rc=rm('ctl'), rs=rm('stf'), ra=rm('sta');
+  if(p.isP){ if(p.team!=null&&rpPlanOf(p.team,p)==='sp2')return {f:'sta',t:`2군에서 선발 수업 중입니다. 선발로 등판하며 체력을 키워 긴 이닝을 던지게 하겠습니다.`};
+    const sp=isSPr(p); const rc=rm('ctl'), rs=rm('stf'), ra=rm('sta');
     if(r.ctl<r.stf-5){
       if(sp&&rc>=3)return {f:'ctl',t:`제구가 선발 정착의 걸림돌입니다. 아직 고칠 여지가 있어 제구부터 잡겠습니다. 구위를 더 키워 불펜에서 쓰는 길도 있습니다.`};
       if(rc<2.5&&rs>=2)return {f:'stf',t:`제구가 약점이지만 개선 여력이 크지 않습니다. 구위를 더 살려 불펜 자원으로 키우는 쪽이 낫다고 봅니다. 그래도 제구를 잡아 보겠다면 시간이 오래 걸립니다.`};

@@ -92,7 +92,7 @@ const FIELD=['C','1B','2B','3B','SS','LF','CF','RF'];
 /* 투수는 선발·불펜이 정해져 있지 않다. 소속 구단 감독이 체력과 성적을 보고 정하고, 시즌 중에도 바꾼다 */
 const isSPr=p=>p.isP&&(p.role?p.role==='SP':isSP(p));
 const posLabel=p=>p.isP?(p.team==null||p.fdPool||p.prospect||!p.role?'투수':(p.role==='SP'?'선발':'불펜')):POSK[p.pos];
-function roleBias(tid,p){ const m=tid!=null?mgrOf(tid):null; const thr=46+(((m&&m.pen!=null)?m.pen:50)-50)/10; return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0); }
+function roleBias(tid,p){ const thr=rpThr(tid); return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0)+rpBias(tid,p); } /* 체력 기준은 감독 성향(불펜 의존·스몰볼), 보직 계획(신인 계투 시작·단장 요청)은 77_pitch_role.js */
 const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=id=>id==null?'-':team(id).city+' '+team(id).nick;
