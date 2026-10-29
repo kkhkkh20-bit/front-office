@@ -52,7 +52,7 @@ function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by
 function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 정할 수 있습니다.'; G.trn=G.trn||{};
   if(f==='coach'){ delete G.trn[pid]; return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
-  G.trn[pid]={f,by:'gm',since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnTot(p)};
+  G.trn[pid]={f,by:'gm',since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p)};
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
   if(m&&f!==rec&&(m.ego||50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel||50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
@@ -74,12 +74,22 @@ function trnTot(p,y){ y=y??G.year; const a=seasonTotal(p,y,'1군')||{}, b=season
 const TRN_STAT={ctl:['볼넷/9이닝',h=>h.outs>=30?h.bb*27/h.outs:null,'이닝'],stf:['삼진/9이닝',h=>h.outs>=30?h.so*27/h.outs:null,'이닝'],sta:['경기당 이닝',h=>(h.g||0)>=4?h.outs/3/h.g:null,'경기'],
   con:['삼진율',h=>h.pa>=40?h.so/h.pa*100:null,'타석'],pow:['순장타율',h=>h.ab>=40?((h.d||0)+2*(h.tr||0)+3*(h.hr||0))/h.ab:null,'타석'],eye:['볼넷률',h=>h.pa>=40?h.bb/h.pa*100:null,'타석'],
   def:['경기당 실책',h=>(h.g||0)>=10?(h.e||0)/h.g:null,'경기'],spd:['경기당 도루',h=>(h.g||0)>=10?(h.sb||0)/h.g:null,'경기']};
-function trnStatLine(p,f,snap){ const S=TRN_STAT[f]; if(!S||!snap)return ''; const now=trnTot(p); const aft={}; for(const k in now)aft[k]=now[k]-(snap[k]||0);
+/* 1군·2군을 따로 남긴 기준점: 승격·강등으로 상대 수준이 바뀌면 합산 기록만으로는 훈련 효과를 읽기 어렵다 */
+function trnNum(h){ const o={}; for(const k in (h||{}))if(typeof h[k]==='number')o[k]=h[k]; return o; }
+function trnSnap(p){ return {lv:1,a:trnNum(seasonTotal(p,G.year,'1군')),b:trnNum(seasonTotal(p,G.year,'퓨처스'))}; }
+function trnStatLine(p,f,snap){ const S=TRN_STAT[f]; if(!S||!snap)return '';
   const fmt=v=>v==null?'표본 부족':f==='pow'?v.toFixed(3):f==='def'||f==='spd'?v.toFixed(2):v.toFixed(1)+(f==='con'||f==='eye'?'%':'');
-  const n=S[2]==='이닝'?`${Math.floor((aft.outs||0)/3)}이닝`:S[2]==='타석'?`${aft.pa||0}타석`:`${aft.g||0}경기`;
+  const nOf=h=>S[2]==='이닝'?`${Math.floor((h.outs||0)/3)}이닝`:S[2]==='타석'?`${h.pa||0}타석`:`${h.g||0}경기`;
+  const one=(lab,now,base,ly)=>{ const aft={}; for(const k in now)aft[k]=now[k]-(base[k]||0); if(!(S[2]==='이닝'?aft.outs:S[2]==='타석'?aft.pa:aft.g))return null;
+    let b=S[1](base), bl='집중 전'; if(b==null){ b=S[1](ly); bl='작년'; } return `${lab} ${bl} ${b==null?'기록 없음':fmt(b)} → 집중 이후 ${fmt(S[1](aft))} (${nOf(aft)})`; };
+  if(snap.lv||!Object.keys(snap).length){ const A=snap.a||{}, B=snap.b||{};
+    const L=[one('1군',trnNum(seasonTotal(p,G.year,'1군')),A,trnNum(seasonTotal(p,G.year-1,'1군'))),one('2군',trnNum(seasonTotal(p,G.year,'퓨처스')),B,trnNum(seasonTotal(p,G.year-1,'퓨처스')))].filter(Boolean);
+    return L.length?`${S[0]} · ${L.join(' / ')}`:`${S[0]}: 집중 이후 아직 경기 기록이 없습니다.`; }
+  /* 예전 저장: 1·2군 합산 기준점 */
+  const now=trnTot(p); const aft={}; for(const k in now)aft[k]=now[k]-(snap[k]||0);
   if(!(S[2]==='이닝'?aft.outs:S[2]==='타석'?aft.pa:aft.g))return `${S[0]}: 집중 이후 아직 경기 기록이 없습니다.`;
   let b=S[1](snap), bl='집중 전'; if(b==null){ const ly=trnTot(p,G.year-1); b=S[1](ly); bl='작년'; }
-  return `${S[0]} ${bl} ${b==null?'기록 없음':fmt(b)} → 집중 이후 ${fmt(S[1](aft))} (${n}, 1·2군 합산)`; }
+  return `${S[0]} ${bl} ${b==null?'기록 없음':fmt(b)} → 집중 이후 ${fmt(S[1](aft))} (${nOf(aft)}, 1·2군 합산)`; }
 /* 코치 의견 */
 function trnOpinion(p){ const L=trnLearn(p); const lr=L>=1.15?' 배우는 속도가 빠른 선수입니다.':L<=.82?' 새로 익히는 데 시간이 걸리는 선수입니다.':''; return `"${trnAdvice(p).t}${lr}"`; }
 /* 관찰 보고: 능력 변화(코치 관찰, 정확한 숫자 대신 정도) */
@@ -87,5 +97,9 @@ function trnObs(p){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; 
   const lv=d<.3?(w<4?'아직 판단하기 이릅니다':'변화가 거의 관찰되지 않습니다'):d<1?'작은 개선이 관찰됩니다':d<2?'눈에 띄게 좋아졌습니다':'확실히 달라졌습니다';
   return {w,lv,d,stat:trnStatLine(p,T.f,T.snap)}; }
 /* 새 시즌: 단장이 정한 방향은 이어 가되, 관찰 기준(능력·기록)은 새로 잡는다 */
-function trnNewYear(){ for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user){ delete G.trn[id]; continue; }
-  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={}; T.since=G.day; T.y=G.year; T.yrs=(T.yrs||0)+1; } }
+/* 새해에 관찰 기준을 새로 잡기 전, 작년 훈련 방향·기간·코치 관찰을 그 시즌 회고(연대기)에 한 줄씩 남긴다 */
+function trnYearNote(){ const y=G.year-1; const L=[]; for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user||!T||T.f==='bal')continue; const o=trnObs(p); if(!o)continue; const D=TRN[trnG(p)][T.f];
+    L.push(`${p.name}(${posLabel(p)}) ${D.l} ${o.w}주 · ${o.lv}${o.stat?` · ${o.stat}`:''}`); }
+  if(!L.length)return; G.reviews=G.reviews||{}; const R=G.reviews[y]=G.reviews[y]||{tid:G.user,L:[]}; R.L=R.L.filter(x=>!/^\[훈련 방향\]/.test(x)); R.L.push('[훈련 방향] '+L.slice(0,12).join(' / ')+(L.length>12?` 외 ${L.length-12}명`:'')); }
+function trnNewYear(){ try{ trnYearNote(); }catch(e){} for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user){ delete G.trn[id]; continue; }
+  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={lv:1,a:{},b:{}}; T.since=G.day; T.y=G.year; T.yrs=(T.yrs||0)+1; } }

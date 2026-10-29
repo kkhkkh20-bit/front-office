@@ -97,7 +97,7 @@ function jobOffer(tid,fired,terms,exp0){ const t=team(tid); terms=terms||myCOffe
 function jobsDaily(){ for(const j of G.jobs||[]){ if(j.done||G.day<j.exp)continue; jobAnswer(j.tid,false,true); } }
 function jobAnswer(tid,yes,auto){ const j=(G.jobs||[]).find(x=>x.tid===tid&&!x.done); if(!j)return '제의가 없습니다.'; j.done=true; const t=team(tid);
   if(yes){ const wasU=!!G.unemp; if(!G.unemp&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); delete G.myC.offer; for(const e of (G.evs||[]))if(!e.done&&e.k==='gmRenew'){ e.done=true; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.imp=false; } } }
-    G.gmSince=G.year; switchTeam(tid); try{ myCStart(tid,j.terms,wasU?'':'이직'); }catch(e){} for(const o of [...G.jobs])if(!o.done&&o.tid!==tid)jobAnswer(o.tid,false,true); return `${tname(tid)} 단장으로 취임했습니다. 연봉 ${money(G.myC.sal)}, ${G.myC.y0}~${G.myC.y1}년.`; }
+    G.gmSince=G.year; G.gmSinceD=G.day; switchTeam(tid); try{ myCStart(tid,j.terms,wasU?'':'이직'); }catch(e){} for(const o of [...G.jobs])if(!o.done&&o.tid!==tid)jobAnswer(o.tid,false,true); return `${tname(tid)} 단장으로 취임했습니다. 연봉 ${money(G.myC.sal)}, ${G.myC.y0}~${G.myC.y1}년.`; }
   if(t.gm&&t.gm.interim){ t.gm=mkGM(tid); t.rel=50; wire('단장',`${t.city} ${t.nick}, ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid}); }
   return auto?'':`${t.city} ${t.nick}의 제의를 거절했습니다.`; }
 /* 경질되면 야인이 된다. 시간은 계속 흐르고, 다른 구단에서 단장이 바뀔 때 명성에 따라 제의가 온다 */

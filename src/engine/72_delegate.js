@@ -23,7 +23,8 @@ function autoSalRound(first){ const C=G.contract; if(!C||C.done)return; salTalkI
 /* 외국인 재계약: 12월 3일 */
 function autoFre(){ const C=G.contract; if(!C||C.done)return; const L=[];
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||C.foreignDrop.includes(id))continue; const h=seasonTotal(p,C.y,'1군'); const war=h?warOf(h,p):0;
-    if(war>=1.5||ovr(p)>=55){ const f=foReComfort(p); const g=Math.ceil(foReFloor(p)*1.04/f/USD)*USD; const r=foReOffer(id,g,0); L.push(`${p.name}: ${r.ok?`재계약 ${usdT(g)}`:'거절(떠남)'}`); }
+    if(C.fre&&C.fre[id]&&C.fre[id].ok){ L.push(`${p.name}: 이미 재계약 합의${p.newSal?` ${usdT(p.newSal)}`:''}`); continue; }
+    if(war>=1.5||ovr(p)>=55){ const f=foReComfort(p); const g=Math.ceil(foReFloor(p)*1.04/f/USD)*USD; const r=foReOffer(id,g,0); L.push(`${p.name}: ${r.ok?`재계약 ${usdT(g)}`:`합의 실패(${String(r.msg||'').replace(/[.。]\s*$/,'').slice(0,40)})`}`); }
     else { C.foreignDrop.push(id); L.push(`${p.name}: 결별(보류권 유지)`); } }
   let g=0; while(fReCapInfo().over>0&&g++<4){ const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>ovr(a)-ovr(b))[0]; if(!k)break; C.foreignDrop.push(k.id); L.push(`${k.name}: 총액 한도로 결별`); }
   if(L.length){ autoLogAdd('외국인 재계약(운영팀)',L.join(' · ')); note('연봉',`운영팀이 외국인 재계약을 처리했습니다.\n${L.join('\n')}`); } }

@@ -17,7 +17,7 @@ function acqFromStory(p){ const nm=tname(p.team); const L=(p.story||[]).slice().
 function tbOrigin(p){ if(!p||p.team==null)return null; const A=p.acq; if(A&&A.tid===p.team)return A; if(p.draft&&p.draft.tid===p.team)return {k:'draft',y:p.draft.y,rd:p.draft.rd,no:p.draft.no,tid:p.team}; return acqFromStory(p); }
 function meSince(){ const C=G.myC; if(C&&C.tid===G.user&&C.y0!=null)return C.y0; return G.gmSince??G.startY??G.year; }
 /* 지금 단장이 데려온 선수인가: 창단 지명은 창단 해, 그 밖은 재임 시작 해 이후(지명은 그해 가을에 하므로 한 해 앞까지) */
-function mineOf(p){ const o=tbOrigin(p); if(!o||o.tid!==G.user)return false; return o.y>=meSince()-1; }
+function mineOf(p){ const o=tbOrigin(p); if(!o||o.tid!==G.user)return false; if(o.d!=null&&G.gmSinceD!=null)return o.d>=G.gmSinceD; /* 취임한 날 이후 데려온 선수만(전임 단장의 영입 제외) */ return o.y>=meSince(); }
 function originLabel(o){ if(!o)return '물려받은 선수'; const k=o.k; return k==='fd'?(o.auto?`${o.y} 창단 배분`:`${o.y} 창단 드래프트${o.rd?` ${o.rd}라운드`:''}`):k==='draft'?`${o.y} 신인 드래프트${o.rd?` ${o.rd}라운드`:''}`:k==='트레이드'?`${o.y} 트레이드${o.from!=null?`(${tshort(o.from)})`:''}`:`${o.y} ${ACQ_K[k]||k}`; }
 function originCat(p){ const o=tbOrigin(p); if(!o||!mineOf(p))return '물려받음'; return ACQ_K[o.k]||'기타'; }
 /* 우리 팀에서 쌓은 WAR(데려온 해부터) */
