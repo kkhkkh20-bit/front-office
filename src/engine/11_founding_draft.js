@@ -86,7 +86,7 @@ function fdBest(tid,auto){ let best=null,bs=-1e9; const X=fdCtx(tid); for(const 
 function fdUserRec(n){ const X=fdCtx(G.user); const L=G.fd.pool.map(id=>G.players[id]).filter(p=>p&&p.fdPool).map(p=>({p,v:fdScore(G.user,p,true,X)})).sort((a,b)=>b.v-a.v); return L.slice(0,n||5).map(x=>x.p); }
 function fdPick(pid){ const F=G.fd; if(!F||F.done)return '드래프트가 없습니다.'; const pk=F.picks[F.cur]; const p=G.players[pid]; if(!pk||!p||!p.fdPool)return '지명할 수 없는 선수입니다.';
   /* 지명 순간 우리 스카우트 추정을 남겨 둔다: 지명 직후 화면과 나중의 지명 평가가 이 값을 쓴다(실제 능력은 바로 공개하지 않는다) */ try{ fdEsd(); pk.e0=Math.round(fdSeenBy(G.user,p).sc*10)/10; if(pk.tid===G.user)pk.role=fdRole(p,pk.e0); }catch(e){}
-  p.team=pk.tid; p.fdPool=false; delete p.role; p.rAdj=0; pk.pid=pid; pk.o0=Math.round(ovr(p)); pk.age0=p.age; F.pool=F.pool.filter(x=>x!==pid); F.cur++; story(p,`${G.year} 창단 드래프트 ${pk.rd}라운드 ${pk.no}번째 · ${tname(pk.tid)} 지명`,'move');
+  p.team=pk.tid; p.fdPool=false; delete p.role; p.rAdj=0; pk.pid=pid; pk.o0=Math.round(ovr(p)); pk.age0=p.age; acqStamp(p,'fd',pk.tid,{rd:pk.rd,no:pk.no}); F.pool=F.pool.filter(x=>x!==pid); F.cur++; story(p,`${G.year} 창단 드래프트 ${pk.rd}라운드 ${pk.no}번째 · ${tname(pk.tid)} 지명`,'move');
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid))(F.lost=F.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,nm:p.name});
   if(F.cur>=F.picks.length)fdFinish(); return ''; }
 /* 창단 드래프트 뒤 AI 구단 연봉 맞추기: 드래프트는 연봉을 따라가므로 어떤 구단은 상한의 50%대에 머문다.
@@ -100,7 +100,7 @@ function fdStep(){ const F=G.fd; if(!F||F.done||F.open===false)return null; cons
 function amStep(){ const d=G.draft; if(!d||d.done)return null; const pk=d.picks[d.cur]; if(!pk)return null; if(pk.tid===G.user)return 'user'; const id=aiDraftPick(pk.tid); if(!id){ finishDraft(); return null; } if(id===-1){ passCurrent(); return {pk,pass:true}; } doPick(id); return {pk,pid:id}; }
 function fdAdvance(stopAtUser){ const F=G.fd; let g=0; while(F&&!F.done&&g++<400){ const pk=F.picks[F.cur]; if(pk.tid===G.user&&stopAtUser)return; const id=fdBest(pk.tid,pk.tid===G.user); if(id==null){ fdFinish(); break; } if(pk.tid===G.user)pk.auto=true; fdPick(id); } }
 function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동 배분: 구단 국내 선수 52명까지 지그재그 */
-  let r=0, guard=0; while(F.pool.length&&guard++<80){ const seq=r%2?[...F.order].reverse():F.order; let any=false; for(const tid of seq){ if(domestic(tid).length>=52)continue; const id=fdBest(tid,true); if(id==null)break; const p=G.players[id]; p.team=tid; p.fdPool=false; F.pool=F.pool.filter(x=>x!==id); any=true; } if(!any)break; r++; }
+  let r=0, guard=0; while(F.pool.length&&guard++<80){ const seq=r%2?[...F.order].reverse():F.order; let any=false; for(const tid of seq){ if(domestic(tid).length>=52)continue; const id=fdBest(tid,true); if(id==null)break; const p=G.players[id]; p.team=tid; p.fdPool=false; acqStamp(p,'fd',tid,{auto:true}); F.pool=F.pool.filter(x=>x!==id); any=true; } if(!any)break; r++; }
   for(const id of F.pool){ const p=G.players[id]; if(!p)continue; story(p,'창단 드래프트에서 지명받지 못해 은퇴','move'); delete G.players[id]; }
   F.pool=[]; F.done=true; for(const p of Object.values(G.players)){ delete p.fdPool; delete p.fdFrom; }
   for(const t of G.teams){ if(rosterN(t.id)>ROSTER_MAX)trimRoster(t.id,ROSTER_MAX); } try{ fdAiPayFill(); }catch(e){} try{ aiCapAll(); }catch(e){} try{ foundDefaults(); }catch(err){} planSup(); G.tsug=null; try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
@@ -126,7 +126,7 @@ function foundDefaults(){ const done=[], acts=[];
   if(done.length)mail(`비서 ${SEC}`,'기본 운영안을 채워 두었습니다',`창단 직후라 손이 덜 가도록 운영 기본안을 적용했습니다. 모두 언제든 바꿀 수 있습니다.\n\n${done.join('\n')}\n\n단장님은 감독부터 선임하시고, 새 감독과 상의해 외국인 선수를 구성하시면 됩니다.`,{kind:'업무',face:'sec',acts:acts.slice(0,3)}); }
 /* 시즌 회고: 우리 선수 중심으로 영입 기대와 실제 기여, 트레이드 결과, 젊은 선수, 내년 공백을 한 장에 */
 function seasonReview(y){ const tid=G.user; const ps=playersOf(tid); const W=p=>{ const h=seasonTotal(p,y,'1군'); const w=h?warOf(h,p):0; return Math.abs(w)<.05?0:w; }; const L=[];
-  const top=ps.map(p=>({p,w:W(p)})).sort((a,b)=>b.w-a.w).slice(0,3); if(top.length)L.push('[올해의 선수] '+top.map(x=>`${x.p.name}(${posLabel(x.p)}) WAR ${x.w.toFixed(1)}`).join(', '));
+  const top=ps.map(p=>({p,w:W(p)})).sort((a,b)=>b.w-a.w).slice(0,3); if(top.length)L.push('[올해의 선수] '+top.map(x=>`${x.p.name}(${posLabel(x.p)}) WAR ${x.w.toFixed(1)}`).join(', ')); try{ L.push(...tbReviewLines(y)); }catch(e){}
   /* 이야기 문구로 계약 종류를 가른다. 영입(밖에서 온 선수)과 계약 연장(원래 우리 선수)을 섞지 않는다. 'FA'만 보고 고르면 '비FA'도 걸린다 */
   const how=t=>/창단 드래프트/.test(t)?'창단 지명':/신인 드래프트/.test(t)?'신인':/보상선수/.test(t)?'보상선수':/트레이드/.test(t)?'트레이드':/^FA 이적/.test(t)?'외부 FA':/^FA 잔류/.test(t)?'FA 재계약':/^비FA 다년계약/.test(t)?'비FA 연장':/입단 \((외국인|아시아쿼터)/.test(t)?'외국인':/무적 선수/.test(t)?'무적 선수':null;
   const ACQ=new Set(['트레이드','외부 FA','외국인','무적 선수','보상선수']), KEEP=new Set(['FA 재계약','비FA 연장']);
@@ -171,7 +171,7 @@ function passCurrent(){ const d=G.draft; const pk=d.picks[d.cur]; pk.pid=-1; pk.
 function doPick(pid){
   const d=G.draft; const pk=d.picks[d.cur]; const p=G.players[pid];
   if(pk.tid===G.user){ try{ const rp=scoutReport(p); if(rp.ofp!=null)p.dEst={ofp:rp.ofp,sd:rp.sd,who:rp.who}; }catch(e){} }
-  p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p)}; story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
+  p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p)}; acqStamp(p,'draft',pk.tid,{rd:pk.rd,no:pk.no}); story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
   { G.sea.bonus=G.sea.bonus||{}; G.sea.bonus[pk.tid]=(G.sea.bonus[pk.tid]||0)+p.draft.bonus; } pk.pid=pid; d.cur++;
   if(pk.tid===G.user&&pk.rd<=2&&!G.unemp)chron('draft',`신인 ${pk.rd}라운드 ${pk.no}순위 ${p.name}(${posLabel(p)}) 지명`,p.id);
   if(pk.tid===G.user)addLog(`${pk.rd}라운드 ${pk.no}순위로 ${p.name}(${p.college?'대졸':'고졸'}·${posLabel(p)})을(를) 지명했습니다.`);

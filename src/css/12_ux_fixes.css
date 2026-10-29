@@ -454,3 +454,9 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 @media (max-width:520px){ .gpg{grid-template-columns:repeat(4,minmax(0,1fr))} }
 
 .prsp{vertical-align:middle;margin-left:4px}
+
+/* 내가 꾸린 팀 */
+.tbc-w{overflow-x:auto}.tbc .tbc-l{font:11px sans-serif;fill:#8b97a3}.tbc .tbc-r{font:700 11px sans-serif;fill:#e8edf2}
+.tbbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:8px 0;background:#ffffff10}.tbbar i{display:block;height:100%}
+.tbleg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px}.tbleg i,.tbdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:0}
+.tbt td{vertical-align:middle}.tbl{padding:5px 0;border-bottom:1px solid #ffffff0d;font-size:13px}

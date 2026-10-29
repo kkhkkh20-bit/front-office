@@ -1,5 +1,5 @@
 /* ===== 이적 기록: 리그 모든 선수 이동을 구조화해 남긴다(이적시장 요약·주간 정리·구단별 영입/이탈) ===== */
-function mvLog(type,p,from,to,note,amt){ if(!p)return; const L=G.moves=G.moves||[]; L.unshift({y:G.year,d:G.day,t:type,pid:p.id,n:p.name,pos:posLabel(p),age:p.age,o:Math.round(ovr(p)),from:from??null,to:to??null,note:note||'',amt:amt||0}); if(L.length>600)L.length=600; }
+function mvLog(type,p,from,to,note,amt){ if(!p)return; try{ if(to!=null&&to!==from&&ACQ_K[type])acqStamp(p,type,to,{from:from??null}); }catch(e){} const L=G.moves=G.moves||[]; L.unshift({y:G.year,d:G.day,t:type,pid:p.id,n:p.name,pos:posLabel(p),age:p.age,o:Math.round(ovr(p)),from:from??null,to:to??null,note:note||'',amt:amt||0}); if(L.length>600)L.length=600; }
 /* 지금 이적시장 구간의 시작일: 시즌 중이면 개막일, 아니면 11월 1일 */
 function mvWinStart(){ const per=period(); if(per==='season'||per==='post')return G.cal.open; return G.day>=KD(11,1)?KD(11,1):dnum(G.year-1,11,1); }
 function mvWindow(){ const s=mvWinStart(); return (G.moves||[]).filter(m=>m.d>=s); }
