@@ -2,7 +2,7 @@
 function openingDay(){
   /* 시범경기 등판 순서를 지우고 개막전은 1선발부터 */
   for(const p of Object.values(G.players))if(p.isP&&p.team!=null){ delete p.lastStart; } for(const t of G.teams)t.rot=0;
-  for(const t of G.teams) G.sea.fspend[t.id]=sum(foreignOf(t.id).map(p=>p.sal));
+  for(const t of G.teams) G.sea.fspend[t.id]=sum(foreignOf(t.id).map(p=>p.sal))+fDeadOf(t.id,G.year); /* 개막 전에 방출한 선수의 보장 연봉 포함 */
   { const v=G.teams.filter(t=>t.id!==ME()).map(t=>G.sea.fspend[t.id]||0); G.lgFor=G.lgFor||{}; G.lgFor[G.year]=Math.round(sum(v)/Math.max(1,v.length)); }
   const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})); const a=avg(rs.map(x=>x.r));
   rs.forEach(x=>team(x.id).expW=clamp(.5+(x.r-a)*.03,.36,.64));

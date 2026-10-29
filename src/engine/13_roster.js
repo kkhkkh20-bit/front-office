@@ -1,6 +1,6 @@
 /* ===== 로스터 정리 ===== */
 function fillRoster(tid,min){
-  let n=playersOf(tid).length; const added=[];
+  let n=rosterN(tid); const added=[]; /* 육성선수는 빼고 정식 선수 수로 센다 */
   while(n<min){ const isP=playersOf(tid).filter(p=>p.isP).length<n*.52; const b=clamp(N(34,3),26,42);
     const p=newPlayer({age:ri(20,24),isP,base:b,pot:b+ri(0,12),team:tid,dev:true}); added.push(p); n++; }
   return added;

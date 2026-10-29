@@ -3087,7 +3087,7 @@ function standingsNow(){ const r=G.sea.rec; return G.teams.map(t=>({tid:t.id,w:r
 function openingDay(){
   /* 시범경기 등판 순서를 지우고 개막전은 1선발부터 */
   for(const p of Object.values(G.players))if(p.isP&&p.team!=null){ delete p.lastStart; } for(const t of G.teams)t.rot=0;
-  for(const t of G.teams) G.sea.fspend[t.id]=sum(foreignOf(t.id).map(p=>p.sal));
+  for(const t of G.teams) G.sea.fspend[t.id]=sum(foreignOf(t.id).map(p=>p.sal))+fDeadOf(t.id,G.year); /* 개막 전에 방출한 선수의 보장 연봉 포함 */
   { const v=G.teams.filter(t=>t.id!==ME()).map(t=>G.sea.fspend[t.id]||0); G.lgFor=G.lgFor||{}; G.lgFor[G.year]=Math.round(sum(v)/Math.max(1,v.length)); }
   const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})); const a=avg(rs.map(x=>x.r));
   rs.forEach(x=>team(x.id).expW=clamp(.5+(x.r-a)*.03,.36,.64));
@@ -3495,7 +3495,7 @@ function newYear(){
   milNewYear();
   for(const p of Object.values(G.players)){ if(!(p.injOut>45)){ p.injOut=0; delete p.injK; } delete p.lastStart; delete p.lastApp; delete p.prevApp; }
   for(const t of G.teams){ if(t.id!==ME()){ try{ aiYsPrune(t.id); }catch(e){} trimRoster(t.id,61); fillRoster(t.id,56);} t.rot=0; }
-  const added=fillRoster(G.user,ROSTER_MIN); if(added.length)addLog(`로스터 최소 인원을 맞추려고 육성선수 ${added.length}명을 등록했습니다.`);
+  const added=fillRoster(G.user,ROSTER_MIN); if(added.length)addLog(`정식 선수 최소 인원(${ROSTER_MIN}명)을 맞추려고 선수 ${added.length}명을 등록했습니다.`);
   for(const k in G.lineup){ const p=G.players[G.lineup[k]]; if(!p||p.team!==G.user)delete G.lineup[k]; }
   G.cal=buildCalendar(G.year); G.ps=null; G.camp=null; G.campInj=1; G.form=null; G.draft=null;
   G.sea={y:G.year,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},mark:null};
@@ -3990,7 +3990,10 @@ function signForeign(tid,id){
   G.fmarket=(G.fmarket||[]).filter(x=>x!==id); mvLog('외국인',p,null,tid,`${p.nat||''} ${money(p.ask)}${mid?' · 시즌 중 교체':''}`,p.ask);
   if(tid===G.user)addLog(`외국인 선수 ${p.name}(${p.nat}·${posLabel(p)})와(과) 연 ${money(p.ask)}에 계약했습니다.${mid?` 남은 기간분 ${money(cost)} 지급.`:''}`);
 }
-function releaseForeign(id){ const p=G.players[id]; if(!p)return; termsClear(p); mvLog('방출',p,p.team,null,'외국인 선수'); if(p.team===G.user)addLog(`외국인 선수 ${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 지급합니다.`); for(const k in G.lineup)if(G.lineup[k]===id)delete G.lineup[k]; delete G.players[id]; }
+/* 방출해도 남은 보장 연봉은 낸다: 개막 전(또는 결산 뒤 다음 시즌 계약)에 방출하면 그 시즌 외국인 지출에 따로 남겨 개막 때 더한다. 개막 뒤 방출은 이미 시즌 지출에 들어 있다 */
+function fDeadOf(tid,y){ const D=G.fDead; return D&&D.y===y?(D.by[tid]||0):0; }
+function fDeadAdd(tid,amt){ const y=sponSeason(); if(G.sea&&G.sea.y===y&&G.cal&&G.day>=G.cal.open)return; if(!G.fDead||G.fDead.y!==y)G.fDead={y,by:{}}; G.fDead.by[tid]=(G.fDead.by[tid]||0)+amt; }
+function releaseForeign(id){ const p=G.players[id]; if(!p)return; if(p.team!=null&&!(p.joinY>sponSeason()))fDeadAdd(p.team,p.sal||0); termsClear(p); mvLog('방출',p,p.team,null,'외국인 선수'); if(p.team===G.user)addLog(`외국인 선수 ${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 지급합니다.`); for(const k in G.lineup)if(G.lineup[k]===id)delete G.lineup[k]; delete G.players[id]; }
 /* 외국인 시장은 10개 구단이 함께 쓴다. 구단마다 스카우트 오차를 안고 후보를 평가한다 */
 function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병'); if(yb.length<3){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1; return {kind:'용병',isP:needP?true:needB?false:null}; } if(!fs.some(x=>x.foreign==='아시아'))return {kind:'아시아',isP:null}; return null; }
 function fScoreBy(tid,q){ const t=team(tid); return ovr(q)-(q.team==null?(q.sx||0)*.9:0)+hn('fv'+tid,q.id)*(t.scoutSd||6)*.6-q.ask/600; }
@@ -4022,7 +4025,7 @@ function aiForeignReview(tid){
 
 /* ===== 로스터 정리 ===== */
 function fillRoster(tid,min){
-  let n=playersOf(tid).length; const added=[];
+  let n=rosterN(tid); const added=[]; /* 육성선수는 빼고 정식 선수 수로 센다 */
   while(n<min){ const isP=playersOf(tid).filter(p=>p.isP).length<n*.52; const b=clamp(N(34,3),26,42);
     const p=newPlayer({age:ri(20,24),isP,base:b,pot:b+ri(0,12),team:tid,dev:true}); added.push(p); n++; }
   return added;
@@ -4614,7 +4617,7 @@ function goalStatus(){ const g=G.goals; if(!g||g.y!==G.year)return null; const t
 function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; return dnum(y,11,5); }
 function budget(){ const t=team(G.user); const ci=capInfo(G.user); const S=G.spend||{}; const m=G.mgr[G.user]; prInit();
   const rem=Math.max(0,finYearEnd()-G.day)/365; const acc=(spent,annual)=>Math.round((spent||0)+annual*rem);
-  const settled=G.last&&G.last.y>=G.year; const SPj=stadProj(G.user,settled); const fsNow=sum(foreignOf(G.user).map(p=>p.sal));
+  const settled=G.last&&G.last.y>=G.year; const SPj=stadProj(G.user,settled); const fsNow=sum(foreignOf(G.user).map(p=>p.sal))+fDeadOf(G.user,sponSeason()); /* 개막 전 방출 선수의 보장 연봉 포함 */
   const fs=!settled&&G.sea&&G.sea.fspend&&G.sea.fspend[G.user]!=null?G.sea.fspend[G.user]:fsNow;
   const fR=settled?((G.lgFor&&G.lgFor[G.year])||3200):(G.cal&&G.day>=G.cal.open&&G.sea&&G.sea.y===G.year)?0:fReserve(); const fsB=Math.max(fs,fR);
   const intlA=sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c));
