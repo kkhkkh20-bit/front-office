@@ -21,7 +21,7 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
       ${N&&N.dl?`<p class="warn">${dmd(N.dl)}까지 기다려 준다고 했습니다. 그 뒤에는 ${esc(tshort(N.dlT))}로 갑니다.</p>`:''}${N?`<p class="muted">이번 주 제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
     ${err?`<div class="note bad">${esc(err)}</div>`:''}
     <div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}" ${err?'disabled':''}>이 조건으로 제안</button></div>${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
-Object.assign(A,{ foRe(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
+Object.assign(A,{ foRe(v){ UI.negWin={k:'fre',id:+v}; renderSheet(); }, /* 재계약 협상도 협상 창으로 */
   foStep(v){ const [k,d]=String(v).split(':'); const F=UI.fo; if(!F)return; const p=G.players[F.id]; if(!p)return; const cap=foCap(p);
     const top=F.re?Math.round(p.newSal*2):cap; if(k==='g')F.g=clamp(F.g+(+d)*USD,MIN_SAL,top-F.i); else F.i=clamp(F.i+(+d)*USD,0,top-F.g); F.msg=''; renderSheet(); },
   foGo(v){ const F=UI.fo; if(!F||F.id!==+v)return; const r=F.re?foReOffer(+v,F.g,F.i):foOffer(+v,F.g,F.i); if(F.re){ F.msg=r.msg; save(); render(); return; } F.msg=r.msg; if(r.ok){ UI.fo=null; toast(r.msg); UI.sheet=null; save(); render(); return; } save(); renderSheet(); } });

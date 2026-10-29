@@ -18,7 +18,8 @@ function negBody(k,p){
 function negWinSheet(){ const W=UI.negWin; const p=G.players[W.id]; if(!p)return ''; const rp=scoutReport(p);
   return `<div class="scrim" data-a="negClose"><div class="sheet gut negw" data-stop="1" role="dialog" aria-label="${NEGW[W.k]}">
     <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(p)}<div><div class="eyebrow">${NEGW[W.k]}</div><h2 class="sec">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.foreign?` · ${esc(p.nat||'')}`:''} · 현재 ${rp.cur!=null?rchip(rp.cur):'?'}</p></div></div><button class="x" data-a="negClose" aria-label="닫기">×</button></div>
-    <button class="btn small" data-a="negClose">‹ 선수 정보로</button>
+    ${UI.sheet!=null?`<button class="btn small" data-a="negClose">‹ 선수 정보로</button>`:`<div class="row"><button class="btn small" data-a="negClose">닫기</button><button class="btn small" data-a="negInfo" data-v="${p.id}">선수 정보 보기</button></div>`}
     <div class="negw-body">${negBody(W.k,p)}</div></div></div>`; }
-Object.assign(A,{ negOpen(v){ const [k,id]=v.split(':'); UI.negWin={k,id:+id}; renderSheet(); },
+Object.assign(A,{ negInfo(v){ UI.negWin=null; A.player(v); },
+  negOpen(v){ const [k,id]=v.split(':'); UI.negWin={k,id:+id}; renderSheet(); },
   negClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.negWin=null; renderSheet(); render(); } });
