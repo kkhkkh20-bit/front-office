@@ -21,8 +21,9 @@ function posGain(p,pos,x){ if(pos===p.pos||!POS_F.includes(pos))return; const E=
 function posWeek(){ const per=period(); const y=G.year; const done=[];
   for(const p of Object.values(G.players)){ if(p.isP||p.team==null)continue; const u=p.use;
     if(u&&u.y===y&&u.pos){ const seen=p.useSeen&&p.useSeen.y===y?p.useSeen.pos:{}; for(const k in u.pos){ const n=u.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*posLearnRate(p)); } p.useSeen={y,pos:Object.assign({},u.pos)}; }
+    const f=p.fuse; if(f&&f.y===y&&f.pos){ const seen=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen.pos:{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*.75*posLearnRate(p)); } p.fuseSeen={y,pos:Object.assign({},f.pos)}; }
     const C=p.pconv; if(!C)continue; if(per!=='pre'&&per!=='season')continue; if(p.injOut>0)continue;
-    posGain(p,C.pos,(1.5+(!p.e1&&per==='season'?2.2:0))*posLearnRate(p));
+    posGain(p,C.pos,1.5*posLearnRate(p)); /* 훈련. 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
     if(posExp(p,C.pos)>=90){ const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
   if(done.length){ const m=G.mgr[G.user]; mail('감독실',`포지션 전환 완료 (${done.length}명)`,`${m?m.name+' 감독':'코치진'}: 전환 훈련을 마쳐 주 포지션을 바꿉니다.\n\n${done.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
 /* 단장 요청: 전환 훈련 시작·중단 */
@@ -32,9 +33,22 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
   if(v<need)return `${who}: "${p.name}은(는) ${POSK[pos]}를 맡을 만큼 몸놀림이 다양하지 않습니다. 무리입니다." (다재다능 ${dvGrade(v)}, ${POSK[pos]}는 ${dvGrade(need)} 이상 필요)`;
   if(p.age>=33)return `${who}: "이 나이에 새 자리를 익히기는 어렵습니다."`;
   p.pconv={pos,d:G.day}; let tail='';
-  if(m&&!m.interim&&m.ego>=70&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다(관계 -1).`; }
-  const wk=Math.ceil((90-posExp(p,pos))/((1.5+(p.e1?0:2.2))*posLearnRate(p)));
+  if(m&&!m.interim&&m.ego>=70&&!mplOn('listen')&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다(관계 -1).`; }
+  const wk=Math.ceil((90-posExp(p,pos))/((1.5+(p.e1?0:2))*posLearnRate(p)));
   return `${p.name}: ${POSK[pos]} 전환 훈련을 시작합니다. ${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가면 그 자리로 경기에도 나갑니다.':'2군에서 그 자리로 경기에도 나갑니다.'} 지금 속도면 약 ${wk}주 뒤 주 포지션으로 바꿀 수 있습니다.${tail}`; }
 function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
-/* 겨울: 한동안 안 뛴 자리는 감각이 조금 떨어진다(주 포지션과 완전히 익힌 자리는 그대로) */
-function posYear(){ for(const p of Object.values(G.players)){ if(p.isP||!p.pexp)continue; for(const k in p.pexp){ if(p.pexp[k]<100)p.pexp[k]=+(p.pexp[k]*.93).toFixed(1); if(p.pexp[k]<3)delete p.pexp[k]; } } }
+function posYear(){ const y=G.year-1; for(const p of Object.values(G.players)){ if(p.isP||!p.pexp)continue; const used=k=>(p.use&&p.use.y===y&&p.use.pos&&p.use.pos[k])||(p.fuse&&p.fuse.y===y&&p.fuse.pos&&p.fuse.pos[k]);
+  for(const k in p.pexp){ const e=p.pexp[k]; if(e<50&&!used(k)&&!(p.pconv&&p.pconv.pos===k))p.pexp[k]=+(e*.9).toFixed(1); if(p.pexp[k]<3)delete p.pexp[k]; } } } /* 반쯤 익히다 만 자리(숙련 50 미만)는 그해 안 뛰었으면 감각이 떨어진다. 한 번 맡을 만해진 자리는 남는다 */
+/* ===== 2군 경기: 누가 어느 자리로 뛰는지 =====
+ 2군 감독이 매주 라인업을 짠다. 전환 훈련 중인 선수를 그 자리에 먼저 넣고, 나머지는 자리별로 가장 나은 선수를 넣되 24세 이하에게 기회를 더 준다(조금씩 돌려 쓴다).
+ 선발 9명은 한 주 3경기, 나머지는 1경기 정도 나간다. 2군에서 그 자리로 뛴 경기도 숙련으로 쌓인다(1군 경기의 75%). */
+const FGPOS=['C','SS','2B','CF','3B','RF','LF','1B','DH'];
+function futLineupE(tid,list){ const used=new Set(), ln={};
+  for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos)&&!ln[c.pos]){ ln[c.pos]=p; used.add(p.id); } }
+  const nz=new Map(list.map(p=>[p.id,N(0,2.5)]));
+  for(const k of FGPOS){ if(ln[k])continue; const free=list.filter(p=>!used.has(p.id)); if(!free.length)break;
+    const sc=p=>(k==='DH'?offV(p):posScore(p,k))+(p.age<=24?3:0)-(k!=='DH'&&k!==p.pos&&posExp(p,k)<50?6:0)+nz.get(p.id);
+    const c=free.sort((a,b)=>sc(b)-sc(a))[0]; ln[k]=c; used.add(c.id); }
+  return ln; }
+function futUse(p,pos,g){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0,pos:{}}; p.fuse.g+=g; if(pos)p.fuse.pos[pos]=(p.fuse.pos[pos]||0)+g; }
+function futText(p){ const u=p.fuse&&p.fuse.y===G.year?p.fuse:null; if(!u||!u.g)return ''; const L=Object.entries(u.pos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${POSK[k]||k} ${n}`); return `2군 ${u.g}경기${L.length?' · '+L.join(' · '):''}`; }

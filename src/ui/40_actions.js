@@ -102,7 +102,7 @@ const A={
   setIntl(v){ const [r,l]=v.split(':'); G.intl[r]=+l; addLog(`${IREG[r].l} 스카우트망을 ${INET[+l].l} 단계로 조정했습니다.`); save(); render(); },
   signFc(v){ const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg2=err;render();return;} UI.fmsg2=''; signForeign(G.user,p.id); save(); render(); },
   tutSkip(){ tutSkip(); save(); render(); },
-  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1'); UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
+  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ UI.confirmFire=true; render(); }, fireCancel(){ UI.confirmFire=false; render(); },
   fireMgr(){ fireMgr(); UI.confirmFire=false; save(); render(); },
   renewMgr(v){ renewMgr(v||2); save(); render(); },

@@ -28,7 +28,7 @@ function dpF(b,p,fs){ return clamp(1+(50-b.r.spd)*.012+gbT(p)*.18+((fs.ifD??IF0)
 function fieldV(p,pos){ return defAt(p,pos)+(trt(p,'rng')+trt(p,'fld'))*.5; }
 /* ===== 퓨처스(2군) 주간 경기: 같은 확률식에 부상·투구 부하·후유증 회복까지 적용 ===== */
 function futBoost(p){ try{ return boostOf(p)*.6; }catch(e){ return 0; } }
-function futBat(p,t){ const pa=ri(9,14), games=3; const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); if(!h.pos)h.pos=p.pos;
+function futBat(p,t,pos,games){ games=games||3; const pa=games>=3?ri(9,14):ri(3,6); const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); if(pos&&pos!=='DH')futUse(p,pos,games); else futUse(p,null,games); { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
   if(p.injFx)injRecover(p,pa);
   if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
 function futPit(p,t){ const sp=isSPr(p); const outs=sp?ri(12,18):ri(4,8); const o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:2; o.gs=sp?1:0; addTo(lineFor(p,G.year,t,'퓨처스'),o);

@@ -67,7 +67,43 @@ function posCard(p){ const own=p.team===G.user&&!(p.joinY>G.year); const hid=hid
   const cells=POS_F.map(k=>{ const main=p.pos===k, e=posExp(p,k), ok=main||e>=50; const val=ok&&!hid?clamp(r5(defAt(p,k)+hn('pf'+k,p.id)*2),20,80):null;
     return `<div class="${main?'main':ok?'sub':''}${C&&C.pos===k?' conv':''}"><span>${POSS[k]}</span>${val!=null?rchip(val):`<b class="rc q">${ok?'○':e>0?Math.round(e):'-'}</b>`}<i>${main?'주':ok?`숙련 ${Math.round(e)}`:e>0?'익히는 중':''}</i></div>`; }).join('');
   const conv=own&&p.age<33?`<div class="eyebrow" style="margin-top:8px">전환 훈련 ${C?`· ${POSK[C.pos]} 숙련 ${Math.round(posExp(p,C.pos))}/90`:''}</div><div class="talk">${POS_F.filter(k=>k!==p.pos).map(k=>`<button class="btn small ${C&&C.pos===k?'on':''}" data-a="posConv" data-v="${p.id}:${k}" ${versOf(p)<POS_NEED[k]?'disabled':''}>${POSK[k]}</button>`).join('')}${C?`<button class="btn small danger" data-a="posConv" data-v="${p.id}:">멈춤</button>`:''}</div>`:'';
-  return `<section class="card"><div class="row between"><span class="eyebrow">수비 위치</span><span class="small muted">다재다능 ${hid?'?':dvGrade(v)}${p.use&&p.use.y===G.year&&p.use.g?` · ${esc(useText(p))}`:''}</span></div><div class="posfit">${cells}</div>
+  return `<section class="card"><div class="row between"><span class="eyebrow">수비 위치</span><span class="small muted">다재다능 ${hid?'?':dvGrade(v)}</span></div>${(p.use&&p.use.y===G.year&&p.use.g)||futText(p)?`<p class="small muted">${[p.use&&p.use.y===G.year&&p.use.g?'1군 '+esc(useText(p)):'',esc(futText(p))].filter(Boolean).join(' / ')}</p>`:''}<div class="posfit">${cells}</div>
   <p class="small muted">숫자는 그 자리 수비 평가입니다. 숙련 50 이상인 자리는 감독이 무리 없이 맡기고, 경기에 뛰거나 전환 훈련을 하면 숙련이 오릅니다. 다재다능이 높을수록 낯선 자리에서 덜 흔들리고 빨리 배웁니다. 어려운 자리(포수·유격수·중견수·2루수)는 다재다능이 받쳐 줘야 전환할 수 있습니다.</p>
   ${conv}${UI.posMsg&&UI.posMsg.id===p.id?`<div class="note">${esc(UI.posMsg.t)}</div>`:''}</section>`; }
 Object.assign(A,{ posConv(v){ const [id,k]=v.split(':'); const t=posConv(+id,k||null); UI.posMsg=t?{id:+id,t}:null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
+/* 선수 화면 요약: 올해 2군 기록과 2군에서 뛴 자리 */
+function fut2Card(p){ if(p.prospect||p.team==null)return ''; const y=period()==='pre'?G.year-1:G.year; const h=seasonTotal(p,y,'퓨처스'); if(!h||!(p.isP?h.outs:h.pa))return '';
+  const T=p.isP?[['경기',`${h.g||0}${h.gs?` (선발 ${h.gs})`:''}`],['ERA',pRate(h).era.toFixed(2)],['이닝',ipStr(h.outs)],['삼진',h.so],['볼넷/9',pRate(h).bb9.toFixed(1)]]
+    :[['경기',h.g||0],['타율',fmt3(bRate(h).avg)],['OPS',fmt3(bRate(h).ops)],['홈런',h.hr],['볼넷',h.bb]];
+  const ft=!p.isP&&p.fuse&&p.fuse.y===y?futText(p):''; const sp2=p.isP&&p.team!=null&&rpPlanOf(p.team,p)==='sp2';
+  return `<section class="card"><div class="row between"><span class="eyebrow">${y} 2군 성적</span>${ft||sp2?`<span class="small muted">${esc(ft||'2군 선발 수업 중')}</span>`:''}</div><div class="tiles">${T.map(t=>`<div class="tile"><b>${t[1]}</b><span>${t[0]}</span></div>`).join('')}</div></section>`; }
+/* 감독 영입 면담: 받을 약속 고르기 */
+function mplPickCard(){ const sel=UI.mplSel||[];
+  return `<section class="card"><span class="eyebrow">영입 면담: 받아 둘 약속</span><p class="small">단장은 감독에게 건의만 할 수 있고 기용 권한은 없습니다. 영입할 때 약속을 받아 두면 계약 기간 동안 지킵니다. 후보마다 그대로 수용하거나, 연봉 10%를 더 요구하거나, 거절합니다.</p>
+  <div class="chips">${Object.entries(MPL).map(([k,v])=>`<button data-a="mplSel" data-v="${k}" class="${sel.includes(k)?'on':''}">${v.l}</button>`).join('')}</div>
+  <p class="small muted">${Object.values(MPL).map(v=>`${v.l}: ${v.d}`).join(' ')}</p>${UI.mgrMsg?`<div class="note bad">${esc(UI.mgrMsg)}</div>`:''}</section>`; }
+function mplStanceBox(x){ const sel=UI.mplSel||[]; if(!sel.length)return ''; const st=sel.map(k=>[k,mplStance(x,k)]); const pay=st.filter(s=>s[1]==='pay').length;
+  return `<div class="mpl">${st.map(([k,s])=>`<div class="small"><span class="pill ${s==='ok'?'good':s==='pay'?'warn':'bad'}">${MPL_ST[s]}</span> ${MPL[k].l}</div>`).join('')}${st.some(s=>s[1]==='no')?'<div class="small muted">거절한 약속을 빼야 계약할 수 있습니다.</div>':pay?`<div class="small muted">연봉 ${money(round5(x.sal*(1+.1*pay)))}로 계약됩니다.</div>`:''}</div>`; }
+Object.assign(A,{ mplSel(v){ const s=new Set(UI.mplSel||[]); s.has(v)?s.delete(v):s.add(v); UI.mplSel=[...s]; UI.mgrMsg=''; render(); } });
+/* 선수단 > 2군: 2군 선수단이 따로 돌아가는 모습 */
+function futSquadView(tid){ const own=tid===G.user; const d=depth(tid); const vis=p=>own||!scoutReport(p).unseen||publicP(p);
+  const FL=G.futLn&&G.futLn[tid]&&period()==='season'?G.futLn[tid]:null; const B=d.futB.filter(p=>!p.ys&&vis(p)), P=d.futP.filter(p=>!p.ys&&vis(p));
+  const ln=FL?Object.fromEntries(Object.entries(FL.ln).map(([k,id])=>[k,G.players[id]]).filter(([k,p])=>p&&p.team===tid&&!p.e1&&healthy(p))):futLineup(B);
+  const inLn=new Set(Object.values(ln).map(p=>p.id)); const R=(p,l)=>glanceRow(p,l,own,'2');
+  const conv=p=>p.pconv?` ${POSS[p.pconv.pos]} 전환 중`:'';
+  const lnRows=FGPOS.filter(k=>ln[k]).map(k=>R(ln[k],`${POSS[k]}${ln[k].pconv&&ln[k].pconv.pos===k?'*':''}`)).join('');
+  const rest=B.filter(p=>!inLn.has(p.id)).map(p=>R(p,'대기')).join('');
+  const sp=P.filter(p=>isSPr(p)), rp=P.filter(p=>!isSPr(p));
+  const spRows=sp.map(p=>R(p,rpPlanOf(tid,p)==='sp2'?'수업':'선발')).join(''), rpRows=rp.map(p=>R(p,'불펜')).join('');
+  let rk=null; if(own)try{ rk=slotRanks(G.user); }catch(e){}
+  const W=own?playersOf(tid).map(p=>({p,w:callWish(p,rk)})).filter(x=>x.w):[];
+  const wish=own&&entryOn()?`<section class="card"><div class="row between"><span class="eyebrow">1군에 올려 달라는 선수</span><span class="small muted">단장은 건의만, 결정은 감독</span></div>
+    ${W.length?W.map(({p,w})=>`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${esc(w.t)}${(p.wishW||0)>3?' · 기다림이 길어져 기분이 떨어지는 중':''}</span><button class="btn small" data-a="reqUp" data-v="${p.id}">감독에게 콜업 건의</button></div>`).join(''):'<p class="small muted">지금은 없습니다. 2군에서 잘하고 1군 같은 자리와 견줄 만한 선수 가운데 욕심이 있거나 나이가 찬 선수가 올려 달라고 합니다.</p>'}
+    ${UI.entMsg?`<div class="note">${esc(UI.entMsg.t)}</div>`:''}<p class="small muted">감독이 건의를 자주 거절하면 관계가 떨어집니다. 영입 면담에서 '단장 건의 존중'을 약속받은 감독은 거의 받아들입니다. 끝내 맞지 않으면 경질할 수 있습니다.</p></section>`:'';
+  const away=playersOf(tid).filter(p=>!healthy(p)&&!p.e1&&vis(p));
+  return `${wish}<section class="card"><div class="row between"><h2 class="sec">2군 야수 ${B.length}명</h2><span class="small muted">${FL?`${dmd(FL.d)} 2군 라인업`:'예상 라인업'}</span></div>
+    <div class="eyebrow">2군 라인업</div>${lnRows||'<p class="small muted">야수가 없습니다.</p>'}${rest?`<div class="eyebrow">대기 (한 주 1경기 정도)</div>${rest}`:''}
+    <p class="small muted">자리 옆 *는 전환 훈련 중인 자리입니다. 라인업에 든 선수는 한 주 3경기에 나가고, 2군에서 뛴 자리는 숙련으로 쌓입니다. 2군 감독은 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다.</p></section>
+  <section class="card"><h2 class="sec">2군 투수 ${P.length}명</h2><div class="eyebrow">선발${sp.some(p=>rpPlanOf(tid,p)==='sp2')?' (수업 = 2군 선발 수업)':''}</div>${spRows||'<p class="small muted">없습니다.</p>'}<div class="eyebrow">불펜</div>${rpRows||'<p class="small muted">없습니다.</p>'}</section>
+  ${own&&d.futB.concat(d.futP).some(p=>p.ys)?`<section class="card"><h2 class="sec">육성선수</h2>${d.futB.concat(d.futP).filter(p=>p.ys).map(p=>R(p,'육성')).join('')}</section>`:''}
+  ${away.length?`<section class="card"><h2 class="sec">부상·재활</h2><p class="small">${away.map(p=>`${esc(p.name)}(${outTxt(p)})`).join(', ')}</p></section>`:''}`; }

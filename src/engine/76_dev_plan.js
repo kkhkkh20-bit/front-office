@@ -54,7 +54,7 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
   G.trn[pid]={f,by:'gm',since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnTot(p)};
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
-  if(m&&f!==rec&&(m.ego||50)>=70){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel||50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
+  if(m&&f!==rec&&(m.ego||50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel||50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
 /* 매주: 모든 구단 국내 선수(부상·군 복무 제외, 33세 이하) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;

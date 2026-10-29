@@ -54,9 +54,9 @@ function proleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.isP
   const m=G.mgr[G.user]; const cur=G.prole[pid]; if(cur&&cur.k===k)return '';
   if(G.proleNo&&G.proleNo[pid]>G.day)return `${m?m.name+' 감독':'감독'}이 얼마 전 거절했습니다. ${dmd(G.proleNo[pid])}부터 다시 요청할 수 있습니다.`;
   const view=m&&!m.interim?rpMgrView(p):null; const same=!view||view.k===k;
-  if(!same){ mgrFix(m); const far=k==='sp'&&p.r.sta<rpThr(G.user)-8; const s=.9-(m.ego-50)/80+(m.rel-60)/100-(far?.2:0); const ok=R()<clamp(s,.3,.97);
+  if(!same){ mgrFix(m); const far=k==='sp'&&p.r.sta<rpThr(G.user)-8; const s=.9-(m.ego-50)/80+(m.rel-60)/100-(far?.2:0)+(mplOn('listen')?.3:0); const ok=R()<clamp(s,.3,.97);
     if(!ok){ m.rel=clamp(m.rel-2,0,100); (G.proleNo=G.proleNo||{})[pid]=G.day+7; return `${m.name} 감독: "${k==='sp'?`${p.name}은(는) 아직 선발로 길게 던질 몸이 아닙니다`:k==='sp2'?`${p.name}은(는) 지금 1군 불펜에 필요합니다`:`${p.name}은(는) 선발로 키울 선수입니다`}. 조금 더 지켜봐 주십시오." 요청을 받아들이지 않았습니다(관계 -2). 7일 뒤 다시 요청할 수 있습니다.`; }
-    if(m.ego>=65)m.rel=clamp(m.rel-1,0,100); }
+    if(m.ego>=65&&!mplOn('listen'))m.rel=clamp(m.rel-1,0,100); }
   G.prole[pid]={k,d:G.day}; if(k==='sp2'){ p.role='SP'; if(p.e1){ p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); } } else if(k==='rp'){ p.role='RP'; } else if(k==='sp'){ try{ depth(G.user); }catch(e){} }
-  const tail=same?'감독도 같은 생각입니다.':m&&m.ego>=65?`${m.name} 감독이 썩 내켜하지 않지만 받아들였습니다(관계 -1).`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
+  const tail=same?'감독도 같은 생각입니다.':m&&mplOn('listen')?`${m.name} 감독이 약속대로 단장 건의를 받아들였습니다.`:m&&m.ego>=65?`${m.name} 감독이 썩 내켜하지 않지만 받아들였습니다(관계 -1).`:`${m?m.name+' 감독이':'코치진이'} 받아들였습니다.`;
   return `${p.name}: ${PROLE[k]}. ${tail}${k==='sp'&&!p.e1&&entryOn()?' 지금 2군이라 1군에 올라와야 선발로 나갑니다.':''}`; }

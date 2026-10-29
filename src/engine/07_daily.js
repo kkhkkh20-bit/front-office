@@ -109,7 +109,7 @@ function processDay(){ syncMinSal();
   try{ assocDaily(day); }catch(e){} try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
-  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(!m.read&&!m.imp&&G.day-m.day>(m.kind==='업무'||(m.acts&&m.acts.length)?14:5))m.read=true; if(m.imp&&m.kind==='일정'&&G.day-m.day>=3){ m.imp=false; m.read=true; } } /* 날짜가 지난 일정 안내는 읽음 처리 */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
+  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(!m.read&&!m.imp&&G.day-m.day>(m.kind==='업무'||(m.acts&&m.acts.length)?14:5))m.read=true; if(m.imp&&m.kind==='일정'&&G.day-m.day>=3){ m.imp=false; m.read=true; } } /* 날짜가 지난 일정 안내는 읽음 처리 */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
   tutTick();
   const nx=dobj(day+1); if(nx.d===1&&day>=c.open&&day<=c.end+1)monthReport(o.m); if(nx.d===1){ try{ finMonth(o.m); }catch(e){} }
   if(day===c.end){ const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(c.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 정규시즌 마지막 날 남은 달을 바로 마감 */
@@ -147,8 +147,11 @@ function milestones(g,me){
 }
 function futuresWeek(){
   if(period()!=='season')return;
-  for(const t of G.teams){ const d=depth(t.id);
-    for(const p of d.futB)if(healthy(p))futBat(p,t.id);
+  G.futLn=G.futLn||{};
+  for(const t of G.teams){ const d=depth(t.id); const B=d.futB.filter(healthy); const ln=futLineupE(t.id,B); const st=new Set(Object.values(ln).map(p=>p.id));
+    G.futLn[t.id]={d:G.day,ln:Object.fromEntries(Object.entries(ln).map(([k,p])=>[k,p.id]))};
+    for(const k in ln)futBat(ln[k],t.id,k,3); for(const p of B)if(!st.has(p.id))futBat(p,t.id,null,1);
+    { const FP=d.futP.filter(healthy); const rot=FP.slice().sort((a,b)=>(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,5); for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; } /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
     for(const p of d.futP)if(healthy(p))futPit(p,t.id);
   }
 }

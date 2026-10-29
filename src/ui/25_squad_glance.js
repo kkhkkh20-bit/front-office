@@ -59,7 +59,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
     <div class="eyebrow" style="margin-top:6px">국내 선수 연봉 전망</div>${payT}<p class="small muted keep">확정은 남은 다년·FA 계약, 예상은 보류권 선수의 연봉 협상 추정, FA 재계약 시는 계약이 끝나는 주축(예상 능력 62 이상)을 시장가로 잡을 때입니다.</p>
     <div class="eyebrow" style="margin-top:6px">세대 구성 (국내 선수)</div><div class="gen">${gen}</div></section>`; }
 function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; const h=lvl==='2'?seasonTotal(p,y,'퓨처스'):curLine(p);
-  const st=!h?'기록 없음':p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'-');
+  const fu=lvl==='2'&&!p.isP&&p.fuse&&p.fuse.y===y?Object.entries(p.fuse.pos).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k,n])=>`${POSS[k]||k} ${n}`).join('·'):''; const st=(!h?'기록 없음':p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'-'))+(fu?` · ${fu}`:'');
   const gd=own?growDelta(p):null; const gt=gd==null||Math.abs(gd)<.5?'':`<em class="gr ${gd>0?'up':'dn'}">${gd>0?'▲':'▼'}${Math.abs(gd).toFixed(1)}</em>`;
   const tag=(team(p.team).cap===p.id?'<em class="capb">C</em>':'')+(p.fr&&p.fr.tid===p.team?'<em class="frb">프</em>':'')+(p.age<=24&&(rp.ofp??0)>=(rp.cur??0)+6?`<em class="potb">${potTier(potVal(rp),rp.cur).s}</em>`:'');
   const org=own?originOf(p):'';
@@ -70,7 +70,7 @@ function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap()
   const one=`<div class="gl-g"><div><div class="eyebrow">타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`,'1')).join('')}</div>
     <div><div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`,'1')).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜','1')).join('')}</div></div>
     ${d.bench.length?`<div class="eyebrow">벤치</div><div class="gl-chips">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}`;
-  const fb=d.futB.filter(p=>!p.ys||own), fp=d.futP; const fl=futLineup(fb); const fstart=GPOS.filter(k=>fl[k]).map(k=>fl[k]); const forder=orderList(fstart); const fpo={}; for(const k in fl)fpo[fl[k].id]=k;
+  const fb=d.futB.filter(p=>!p.ys||own), fp=d.futP; const FL=G.futLn&&G.futLn[tid]&&period()==='season'?G.futLn[tid]:null; const fl=FL?Object.fromEntries(Object.entries(FL.ln).map(([k,id])=>[k,G.players[id]]).filter(([k,p])=>p&&p.team===tid&&!p.e1)):futLineup(fb); const fstart=GPOS.filter(k=>fl[k]).map(k=>fl[k]); const forder=orderList(fstart); const fpo={}; for(const k in fl)fpo[fl[k].id]=k;
   const fsp=[...fp].sort((a,b)=>(spV(b)+roleBias(G.user,b))-(spV(a)+roleBias(G.user,a))).slice(0,5); const fpen=fp.filter(p=>!fsp.includes(p)).sort((a,b)=>penV(b)-penV(a)).slice(0,5);
   const two=`<div class="gl-g"><div><div class="eyebrow">2군 타순</div>${forder.map((p,i)=>R(p,`${i+1} ${SLK[fpo[p.id]]||''}`,'2')).join('')||'<p class="small muted">야수가 없습니다.</p>'}</div>
     <div><div class="eyebrow">2군 선발</div>${fsp.map((p,i)=>R(p,`${i+1}선발`,'2')).join('')}<div class="eyebrow">2군 불펜</div>${fpen.map(p=>R(p,'불펜','2')).join('')}</div></div>`;
@@ -79,7 +79,7 @@ function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap()
   const glt=inTabs('gl'+(own?'':'o'),[...(own?[['st','현황']]:[]),['one','1군'],['two','2군'],...(own?[['plan','선수단 계획']]:[])],own?'st':'one');
   if(own&&glt.cur==='st')return glt.bar+`<section class="card"><h2 class="sec">우리 팀 현황</h2>${teamStatusBox()}</section>`+(awayT?csec('빠진 선수',awayT):'')+teamGrowCard();
   if(own&&glt.cur==='plan')return glt.bar+plannerCard();
-  if(glt.cur==='two')return glt.bar+csec('2군',two+`<p class="small sdesc">2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다.</p>`);
+  if(glt.cur==='two')return glt.bar+csec('2군',two+`<p class="small sdesc">${FL?`${dmd(FL.d)} 2군 라인업입니다. 2군 감독이 매주 짭니다: 전환 훈련 중인 선수는 그 자리에 먼저 넣고, 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다. 라인업에 든 선수는 한 주 3경기, 나머지는 1경기 정도 나갑니다.`:'2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다(정규시즌에는 실제 2군 라인업).'}</p>`);
   return glt.bar+csec(`1군 ${own?'감독 라인업':'예상 라인업'} <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독 · ':''}${entryOn()?playersOf(tid).filter(p=>p.e1).length+'명':''}</span>`,one,own?`<span class="small muted">▲▼ 올해 들어 능력 변화</span>`:''); }
 /* 팀 성장 추이: 매달 1군 전력과 유망주 잠재를 기록 */
 function teamGrowCard(){ const T=(G.tgrow||[]).slice(-24); if(T.length<2)return '';
