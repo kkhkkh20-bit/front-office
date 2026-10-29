@@ -19,7 +19,7 @@ function autoLogAdd(t,c,r){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t,c,r:r||
 /* 국내 연봉: 12월 5일 1차 제시(중간값), 12월 19일 남은 선수에게 다시 제시, 1월 5일 확정 */
 function autoSalRound(first){ const C=G.contract; if(!C||C.done)return; salTalkInit(); let ok=0, left=0;
   for(const id of Object.keys(C.neg||{})){ const n=C.neg[id]; if(n.st!=='open')continue; const amt=first?round5(n.off+(n.ask-n.off)*.5):(n.ask<=n.off*1.15?n.ask:round5(n.off+(n.ask-n.off)*.6)); salOffer(+id,amt,true); if(C.neg[id].st==='ok')ok++; else left++; }
-  autoLogAdd(first?'연봉 협상 1차(운영팀)':'연봉 협상 2차(운영팀)',`${ok}명 합의${left?`, ${left}명 남음`:''}`); }
+  autoLogAdd(first?'연봉 협상 1차(운영팀)':'연봉 협상 2차(운영팀)',`${ok}명 합의${left?`, ${left}명 남음`:''}`); note('연봉',`운영팀이 연봉 협상 ${first?'1차':'2차'} 제시를 했습니다. ${ok}명 합의${left?`, ${left}명은 더 원합니다`:''}. ${first?'12월 19일 한 번 더 제시하고 1월 5일에 확정합니다.':'1월 5일에 확정합니다.'}`); }
 /* 외국인 재계약: 12월 3일 */
 function autoFre(){ const C=G.contract; if(!C||C.done)return; const L=[];
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||C.foreignDrop.includes(id))continue; const h=seasonTotal(p,C.y,'1군'); const war=h?warOf(h,p):0;
@@ -34,6 +34,26 @@ function autoDaily(day){ if(!G.auto||G.unemp)return;
   if(day===KD(12,19)&&autoOn('sal'))try{ autoSalRound(false); }catch(e){}
   if(day===KD(1,5))try{ autoConfirm(); }catch(e){} }
 /* 받은 트레이드 제안: 맡겼으면 부단장이 바로 거절한다 */
-function autoTradeOffer(off){ if(!autoOn('tro'))return false; G.offers=(G.offers||[]).filter(x=>x.id!==off.id); autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')} ↔ ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}`); return true; }
+function autoTradeOffer(off){ if(!autoOn('tro'))return false; G.offers=(G.offers||[]).filter(x=>x.id!==off.id); const d=`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 주고 ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 원한 제안`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',d); mail('부단장',`${tshort(off.from)} 트레이드 제안: 부단장이 거절`,`${tname(off.from)}이(가) ${d}을 보냈고, 맡기신 대로 부단장이 정중히 거절했습니다. 직접 검토하려면 구단 > 권한에서 '받은 트레이드 제안'을 가져오세요.`,{kind:'트레이드'}); return true; }
 /* 스태프 빼가기: 맡겼으면 바로 정한다 */
-function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[])]){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(!s)continue; const m=(s.skill>=4?stKeep(r.id,true):stLeave(r)); autoLogAdd(`${s.name} 영입 제안 대응`,s.skill>=4?'붙잡음':'보내 줌',m); } }
+function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[])]){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(!s)continue; const m=(s.skill>=4?stKeep(r.id,true):stLeave(r)); autoLogAdd(`${s.name} 영입 제안 대응`,s.skill>=4?'붙잡음':'보내 줌',m); mail('운영팀',`${tshort(r.tid)}의 ${s.name} 영입 제안: 운영팀이 ${s.skill>=4?'붙잡음':'보내 줌'}`,`${m}\n맡기신 대로 운영팀이 처리했습니다(능력 4 이상은 상대 조건에 맞춰 붙잡고 그 아래는 보냅니다).`,{kind:'스태프'}); } }
+
+/* ===== 비서에게 넘기기: 알림마다 '비서에게 넘기기' 버튼. 누르면 그 업무를 앞으로 비서·팀장이 맡고, 지금 걸린 일도 바로 처리한다.
+   구단 > 권한 탭에서 언제든 다시 가져올 수 있다 ===== */
+const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀'};
+function autoNow(k){ const C=G.contract; const out=[];
+  if(k==='sal'&&C&&!C.done){ autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); }
+  if(k==='fre'&&C&&!C.done){ autoFre(); out.push('외국인 재계약을 처리했습니다'); }
+  if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
+  if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
+  if(k==='scout'){ out.push('스카우트 배치를 맡았습니다'); }
+  if(k==='ev'||k==='mgr'){ for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))){ e.deleg=true; evPick(e.id,e.def,true); } } out.push('걸려 있던 결정을 기본안으로 처리했습니다'); }
+  if(C&&!C.done&&autoOn('sal')&&(!C.foreignEnd.length||autoOn('fre'))&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
+  return out.join('. '); }
+function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 구단 > 권한에서 다시 가져올 수 있습니다.`; }
+function takeBack(k){ autoSet(k,false); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) 다시 직접 합니다.`; }
+/* 결정 한 건만 넘기기(핵심 결정 포함): 비서가 기본안으로 처리 */
+function handOffEv(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; e.deleg=true; const r=evPick(e.id,e.def,true); return `비서가 "${e.opts[e.def].l}"(으)로 처리했습니다.${r?' '+r:''}`; }
+/* 스카우트: 맡기지 않았으면 팀장이 달마다 배치 제안을 보낸다(적용은 단장이) */
+function scoutSuggest(){ if(G.scoutAuto||G.unemp)return; let P=[]; try{ P=scoutPlan().filter(x=>x.move); }catch(e){ return; } if(!P.length)return; const sig=P.map(x=>x.s.id+x.role+x.key).join('|'); if(G.scSugSig===sig)return; G.scSugSig=sig;
+  const c=scoutChief(); mail('스카우트팀',`스카우트팀장 배치 제안 ${P.length}명`,`${c?`${c.name} 팀장`:'스카우트팀장'}의 이번 달 배치 제안입니다.\n${P.map(x=>`${x.s.name}: ${scoutSlotTxt(x.role,x.key)} (${x.why})`).join('\n')}\n바꾼 스카우트는 30일 동안 적응 기간입니다.`,{kind:'스카우트',acts:[{l:'제안대로 배치',a:'scoutPlanGo',v:''}]}); if(G.mail[0])G.mail[0].auto=['scout']; }

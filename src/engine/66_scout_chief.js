@@ -22,4 +22,4 @@ function scoutSlotTxt(role,key){ return `${SROLE[role]} · ${role==='intl'?IREG[
 function scoutPlanApply(quiet){ const P=scoutPlan().filter(x=>x.move); for(const x of P)assignScout(x.s.id,x.role,x.key);
   if(P.length&&quiet){ const c=scoutChief(); mail('스카우트팀',`스카우트 배치 조정 ${P.length}명`,`${c?`${c.name} 스카우트팀장`:'스카우트팀장'}이 이번 달 배치를 바꿨습니다.\n\n${P.map(x=>`${x.s.name}: ${scoutSlotTxt(x.role,x.key)} (${x.why})`).join('\n')}\n\n바꾼 스카우트는 30일 동안 적응 기간입니다. 직접 배치하려면 스카우트팀 화면에서 '팀장에게 맡기기'를 끄세요.`,{kind:'스카우트'}); }
   return P.length; }
-function scoutAutoMonthly(){ if(!G.scoutAuto||G.unemp)return; try{ scoutPlanApply(true); }catch(e){} }
+function scoutAutoMonthly(){ if(G.unemp)return; if(!G.scoutAuto){ try{ scoutSuggest(); }catch(e){} return; } try{ scoutPlanApply(true); }catch(e){} }

@@ -171,7 +171,7 @@ function contractStart(){
   for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<44&&p.sal>=800&&!p.ys){ story(p,`${tname(t.id)}에서 방출`,'move'); wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); delete G.players[p.id]; } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
   refreshFMarket(12,99);
-  stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`);
+  stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal'];
 }
 /* 외국인 재계약: 잘한 선수는 더 달라고 한다. 3명 총액 한도(400만 달러 + 재계약 연차당 10만 달러)를 넘으면 확정할 수 없다 */
 function fReCapInfo(){ const C=G.contract; if(!C)return null; const keep=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id));
@@ -260,7 +260,7 @@ function aiOfferFrom(t){ const U=team(G.user);
   try{ off.pot=offScoutNote(off); }catch(e){}
   G.offers=(G.offers||[]).concat(off);
   if(autoTradeOffer(off))return true; /* 업무 맡기기: 부단장이 거절. 맡기지 않았으면 진행을 멈추지 않는 소식으로 보낸다(할 일 목록·만료 임박 알림에 뜬다) */
-  note('트레이드',`${tname(t.id)} 단장이 ${best.map(x=>x.p.name).join(', ')}을(를) 주고 ${tg.p.name}을(를) 원한다는 트레이드를 제안했습니다. ${off.exp<G.day+3?'트레이드 마감일까지':'3일 안에'} 답해야 합니다.${gmHeat(t.id)>=.4?' 성적 압박을 받는 단장이라 적극적입니다.':''}${off.pot?`\n\n[잠재력 추정 보고]\n${off.pot}`:''}`); if(G.mail[0])G.mail[0].oid=off.id; return true;
+  note('트레이드',`${tname(t.id)} 단장이 ${best.map(x=>x.p.name).join(', ')}을(를) 주고 ${tg.p.name}을(를) 원한다는 트레이드를 제안했습니다. ${off.exp<G.day+3?'트레이드 마감일까지':'3일 안에'} 답해야 합니다.${gmHeat(t.id)>=.4?' 성적 압박을 받는 단장이라 적극적입니다.':''}${off.pot?`\n\n[잠재력 추정 보고]\n${off.pot}`:''}`); if(G.mail[0]){ G.mail[0].oid=off.id; G.mail[0].auto=['tro']; } return true;
 }
 function answerOffer(id,yes){
   const o=(G.offers||[]).find(x=>x.id===id); if(!o)return {ok:false,msg:'제안이 없습니다.'};

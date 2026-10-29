@@ -41,7 +41,7 @@ function salArbDecide(){ const C=G.contract; if(!C||!C.neg)return; const out=[];
 /* 마감(확정): 남은 선수는 구단의 마지막 제시액에 사인한다. 조정 중이면 바로 결정한다 */
 function salTalkClose(){ const C=G.contract; if(!C||!C.neg)return; if(Object.values(C.neg).some(n=>n.st==='arb'))salArbDecide();
   for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||n.st!=='open')continue; const v=n.cur??n.off; p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
-function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n)stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); }
+function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n){ stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); if(G.mail[0])G.mail[0].auto=['sal']; } }
   if(day===KD(1,10))salArbFile(); if(day===KD(1,20))salArbDecide(); }
 /* 예비 FA 보상금 미리 보기: 지금 연봉 순위로 등급을 어림하고, 이 금액을 내년 연봉으로 주면 떠날 때 받는 보상금을 계산한다 */
 function preFAComp(p,amt){ let g='C'; try{ g=faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null)); }catch(e){} const c=COMP[g]; return {g,cash:Math.round(amt*c.cash),withP:Math.round(amt*c.withP)}; }

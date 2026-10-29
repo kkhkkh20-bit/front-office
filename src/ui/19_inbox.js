@@ -31,7 +31,7 @@ function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); c
   return `<article class="ibm mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">
     <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">처리할 일</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
     ${L.length?`<div class="mailbody">${(L.length>4?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4?`<details class="mfold"><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
-    ${m.rv?rvActsH(m):''}
+    ${m.rv?rvActsH(m):''}${handOffBtns(m)}
     ${acts.length&&!(m.oid&&!o)?`<div class="ibm-acts">${acts.map(a=>`<button class="btn${a===acts[0]?' primary':''}" data-a="mailAct" data-v="${m.id}:${m.acts.indexOf(a)}">${esc(a.l)}</button>`).join('')}</div>`:''}
     ${o?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 처리할 메일: 안 읽었고 중요하거나 업무·버튼·제안이 있는 것. 상단 숫자는 이것만 센다 */

@@ -1796,6 +1796,9 @@ body:has(#sheet .scrim) #dtick{display:none}
 .autoi{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.autoi input{margin-top:4px;flex:none;width:18px;height:18px}
 .easyp{margin-bottom:10px}.easyp .chips{margin:6px 0}
 details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;margin:4px 0}
+.authi{display:flex;justify-content:space-between;align-items:center;gap:10px}.authi>div{min-width:0}
+.ibm-acts.hand{margin-top:6px}.ibm-acts.hand .btn{font-size:12px}
+.authi>.btn{flex:none;white-space:nowrap}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -3205,7 +3208,7 @@ function contractStart(){
   for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<44&&p.sal>=800&&!p.ys){ story(p,`${tname(t.id)}에서 방출`,'move'); wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); delete G.players[p.id]; } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
   refreshFMarket(12,99);
-  stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`);
+  stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal'];
 }
 /* 외국인 재계약: 잘한 선수는 더 달라고 한다. 3명 총액 한도(400만 달러 + 재계약 연차당 10만 달러)를 넘으면 확정할 수 없다 */
 function fReCapInfo(){ const C=G.contract; if(!C)return null; const keep=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id));
@@ -3294,7 +3297,7 @@ function aiOfferFrom(t){ const U=team(G.user);
   try{ off.pot=offScoutNote(off); }catch(e){}
   G.offers=(G.offers||[]).concat(off);
   if(autoTradeOffer(off))return true; /* 업무 맡기기: 부단장이 거절. 맡기지 않았으면 진행을 멈추지 않는 소식으로 보낸다(할 일 목록·만료 임박 알림에 뜬다) */
-  note('트레이드',`${tname(t.id)} 단장이 ${best.map(x=>x.p.name).join(', ')}을(를) 주고 ${tg.p.name}을(를) 원한다는 트레이드를 제안했습니다. ${off.exp<G.day+3?'트레이드 마감일까지':'3일 안에'} 답해야 합니다.${gmHeat(t.id)>=.4?' 성적 압박을 받는 단장이라 적극적입니다.':''}${off.pot?`\n\n[잠재력 추정 보고]\n${off.pot}`:''}`); if(G.mail[0])G.mail[0].oid=off.id; return true;
+  note('트레이드',`${tname(t.id)} 단장이 ${best.map(x=>x.p.name).join(', ')}을(를) 주고 ${tg.p.name}을(를) 원한다는 트레이드를 제안했습니다. ${off.exp<G.day+3?'트레이드 마감일까지':'3일 안에'} 답해야 합니다.${gmHeat(t.id)>=.4?' 성적 압박을 받는 단장이라 적극적입니다.':''}${off.pot?`\n\n[잠재력 추정 보고]\n${off.pot}`:''}`); if(G.mail[0]){ G.mail[0].oid=off.id; G.mail[0].auto=['tro']; } return true;
 }
 function answerOffer(id,yes){
   const o=(G.offers||[]).find(x=>x.id===id); if(!o)return {ok:false,msg:'제안이 없습니다.'};
@@ -6293,7 +6296,7 @@ function salArbDecide(){ const C=G.contract; if(!C||!C.neg)return; const out=[];
 /* 마감(확정): 남은 선수는 구단의 마지막 제시액에 사인한다. 조정 중이면 바로 결정한다 */
 function salTalkClose(){ const C=G.contract; if(!C||!C.neg)return; if(Object.values(C.neg).some(n=>n.st==='arb'))salArbDecide();
   for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||n.st!=='open')continue; const v=n.cur??n.off; p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
-function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n)stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); }
+function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n){ stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); if(G.mail[0])G.mail[0].auto=['sal']; } }
   if(day===KD(1,10))salArbFile(); if(day===KD(1,20))salArbDecide(); }
 /* 예비 FA 보상금 미리 보기: 지금 연봉 순위로 등급을 어림하고, 이 금액을 내년 연봉으로 주면 떠날 때 받는 보상금을 계산한다 */
 function preFAComp(p,amt){ let g='C'; try{ g=faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null)); }catch(e){} const c=COMP[g]; return {g,cash:Math.round(amt*c.cash),withP:Math.round(amt*c.withP)}; }
@@ -6898,7 +6901,7 @@ function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 
 function stRaid(){ stInit(); const mine=[...G.scouts.map(s=>['sc',s]),...anaList().map(a=>['an',a])].map(([k,s])=>[k,stAttr(s)]).filter(([,s])=>s.skill>=3&&R()<(s.skill-2)*.09*(s.amb/60)*(1-s.loy/150));
   for(const [k,s] of mine.slice(0,2)){ const cands=G.teams.filter(t=>t.id!==G.user&&clubPrestige(t.id)>=clubPrestige(G.user)-5); const t=pick(cands.length?cands:G.teams.filter(x=>x.id!==G.user)); if(!t)continue;
     const offer=round5(s.sal*rnd(1.15,1.4)); (G.stRaid=G.stRaid||[]).push({k,id:s.id,tid:t.id,sal:offer,exp:G.day+7});
-    if(!autoOn('raid'))mail('운영팀',`${tshort(t.id)}, 우리 ${k==='sc'?'스카우트':'분석원'} ${s.name}에게 영입 제안`,`${tname(t.id)}이(가) ${s.name}(능력 ${s.skill})에게 연 ${money(offer)}을 제시했습니다(현재 ${money(s.sal)}). 구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. 충성도 ${Math.round(s.loy)}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,{imp:true,kind:'스태프',acts:[{l:`맞춰서 붙잡기(연 ${money(offer)})`,a:'stKeep',v:s.id+':1'},{l:'조금 올려 설득(+10%)',a:'stKeep',v:s.id+':0'},{l:'보내 주기',a:'stLet',v:s.id}]}); } }
+    if(!autoOn('raid'))mail('운영팀',`${tshort(t.id)}, 우리 ${k==='sc'?'스카우트':'분석원'} ${s.name}에게 영입 제안`,`${tname(t.id)}이(가) ${s.name}(능력 ${s.skill})에게 연 ${money(offer)}을 제시했습니다(현재 ${money(s.sal)}). 구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. 충성도 ${Math.round(s.loy)}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,{imp:true,kind:'스태프',acts:[{l:`맞춰서 붙잡기(연 ${money(offer)})`,a:'stKeep',v:s.id+':1'},{l:'조금 올려 설득(+10%)',a:'stKeep',v:s.id+':0'},{l:'보내 주기',a:'stLet',v:s.id}]}); if(!autoOn('raid')&&G.mail[0])G.mail[0].auto=['raid']; } }
 function stRaidAuto(){ try{ autoRaid(); }catch(e){} }
 function stRaidFind(id){ return (G.stRaid||[]).find(r=>r.id===id); }
 function stLeave(r){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); G.stRaid=(G.stRaid||[]).filter(x=>x!==r); if(!s)return ''; if(r.k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s);
@@ -7638,7 +7641,7 @@ function scoutSlotTxt(role,key){ return `${SROLE[role]} · ${role==='intl'?IREG[
 function scoutPlanApply(quiet){ const P=scoutPlan().filter(x=>x.move); for(const x of P)assignScout(x.s.id,x.role,x.key);
   if(P.length&&quiet){ const c=scoutChief(); mail('스카우트팀',`스카우트 배치 조정 ${P.length}명`,`${c?`${c.name} 스카우트팀장`:'스카우트팀장'}이 이번 달 배치를 바꿨습니다.\n\n${P.map(x=>`${x.s.name}: ${scoutSlotTxt(x.role,x.key)} (${x.why})`).join('\n')}\n\n바꾼 스카우트는 30일 동안 적응 기간입니다. 직접 배치하려면 스카우트팀 화면에서 '팀장에게 맡기기'를 끄세요.`,{kind:'스카우트'}); }
   return P.length; }
-function scoutAutoMonthly(){ if(!G.scoutAuto||G.unemp)return; try{ scoutPlanApply(true); }catch(e){} }
+function scoutAutoMonthly(){ if(G.unemp)return; if(!G.scoutAuto){ try{ scoutSuggest(); }catch(e){} return; } try{ scoutPlanApply(true); }catch(e){} }
 /* ===== 동석 관람: 구단주·사장과 홈경기를 함께 보며 가까워진다 =====
    정기 업무가 되지 않게 한 시즌 2~4번, 의미 있는 때만 초대가 온다(홈 개막전, 긴 연패, 트레이드 마감 직전, 순위 경쟁, 시즌 마지막 홈경기).
    - 초대: 소식함의 선택 이벤트(핵심 결정 아님, 진행을 막지 않음). '함께 보겠습니다' / '이번에는 어렵습니다'. 기한이 지나면 사양, 사양해도 불이익 없음
@@ -8232,7 +8235,7 @@ function autoLogAdd(t,c,r){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t,c,r:r||
 /* 국내 연봉: 12월 5일 1차 제시(중간값), 12월 19일 남은 선수에게 다시 제시, 1월 5일 확정 */
 function autoSalRound(first){ const C=G.contract; if(!C||C.done)return; salTalkInit(); let ok=0, left=0;
   for(const id of Object.keys(C.neg||{})){ const n=C.neg[id]; if(n.st!=='open')continue; const amt=first?round5(n.off+(n.ask-n.off)*.5):(n.ask<=n.off*1.15?n.ask:round5(n.off+(n.ask-n.off)*.6)); salOffer(+id,amt,true); if(C.neg[id].st==='ok')ok++; else left++; }
-  autoLogAdd(first?'연봉 협상 1차(운영팀)':'연봉 협상 2차(운영팀)',`${ok}명 합의${left?`, ${left}명 남음`:''}`); }
+  autoLogAdd(first?'연봉 협상 1차(운영팀)':'연봉 협상 2차(운영팀)',`${ok}명 합의${left?`, ${left}명 남음`:''}`); note('연봉',`운영팀이 연봉 협상 ${first?'1차':'2차'} 제시를 했습니다. ${ok}명 합의${left?`, ${left}명은 더 원합니다`:''}. ${first?'12월 19일 한 번 더 제시하고 1월 5일에 확정합니다.':'1월 5일에 확정합니다.'}`); }
 /* 외국인 재계약: 12월 3일 */
 function autoFre(){ const C=G.contract; if(!C||C.done)return; const L=[];
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||C.foreignDrop.includes(id))continue; const h=seasonTotal(p,C.y,'1군'); const war=h?warOf(h,p):0;
@@ -8247,9 +8250,29 @@ function autoDaily(day){ if(!G.auto||G.unemp)return;
   if(day===KD(12,19)&&autoOn('sal'))try{ autoSalRound(false); }catch(e){}
   if(day===KD(1,5))try{ autoConfirm(); }catch(e){} }
 /* 받은 트레이드 제안: 맡겼으면 부단장이 바로 거절한다 */
-function autoTradeOffer(off){ if(!autoOn('tro'))return false; G.offers=(G.offers||[]).filter(x=>x.id!==off.id); autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')} ↔ ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}`); return true; }
+function autoTradeOffer(off){ if(!autoOn('tro'))return false; G.offers=(G.offers||[]).filter(x=>x.id!==off.id); const d=`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 주고 ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 원한 제안`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',d); mail('부단장',`${tshort(off.from)} 트레이드 제안: 부단장이 거절`,`${tname(off.from)}이(가) ${d}을 보냈고, 맡기신 대로 부단장이 정중히 거절했습니다. 직접 검토하려면 구단 > 권한에서 '받은 트레이드 제안'을 가져오세요.`,{kind:'트레이드'}); return true; }
 /* 스태프 빼가기: 맡겼으면 바로 정한다 */
-function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[])]){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(!s)continue; const m=(s.skill>=4?stKeep(r.id,true):stLeave(r)); autoLogAdd(`${s.name} 영입 제안 대응`,s.skill>=4?'붙잡음':'보내 줌',m); } }
+function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[])]){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(!s)continue; const m=(s.skill>=4?stKeep(r.id,true):stLeave(r)); autoLogAdd(`${s.name} 영입 제안 대응`,s.skill>=4?'붙잡음':'보내 줌',m); mail('운영팀',`${tshort(r.tid)}의 ${s.name} 영입 제안: 운영팀이 ${s.skill>=4?'붙잡음':'보내 줌'}`,`${m}\n맡기신 대로 운영팀이 처리했습니다(능력 4 이상은 상대 조건에 맞춰 붙잡고 그 아래는 보냅니다).`,{kind:'스태프'}); } }
+
+/* ===== 비서에게 넘기기: 알림마다 '비서에게 넘기기' 버튼. 누르면 그 업무를 앞으로 비서·팀장이 맡고, 지금 걸린 일도 바로 처리한다.
+   구단 > 권한 탭에서 언제든 다시 가져올 수 있다 ===== */
+const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀'};
+function autoNow(k){ const C=G.contract; const out=[];
+  if(k==='sal'&&C&&!C.done){ autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); }
+  if(k==='fre'&&C&&!C.done){ autoFre(); out.push('외국인 재계약을 처리했습니다'); }
+  if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
+  if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
+  if(k==='scout'){ out.push('스카우트 배치를 맡았습니다'); }
+  if(k==='ev'||k==='mgr'){ for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))){ e.deleg=true; evPick(e.id,e.def,true); } } out.push('걸려 있던 결정을 기본안으로 처리했습니다'); }
+  if(C&&!C.done&&autoOn('sal')&&(!C.foreignEnd.length||autoOn('fre'))&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
+  return out.join('. '); }
+function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 구단 > 권한에서 다시 가져올 수 있습니다.`; }
+function takeBack(k){ autoSet(k,false); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) 다시 직접 합니다.`; }
+/* 결정 한 건만 넘기기(핵심 결정 포함): 비서가 기본안으로 처리 */
+function handOffEv(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; e.deleg=true; const r=evPick(e.id,e.def,true); return `비서가 "${e.opts[e.def].l}"(으)로 처리했습니다.${r?' '+r:''}`; }
+/* 스카우트: 맡기지 않았으면 팀장이 달마다 배치 제안을 보낸다(적용은 단장이) */
+function scoutSuggest(){ if(G.scoutAuto||G.unemp)return; let P=[]; try{ P=scoutPlan().filter(x=>x.move); }catch(e){ return; } if(!P.length)return; const sig=P.map(x=>x.s.id+x.role+x.key).join('|'); if(G.scSugSig===sig)return; G.scSugSig=sig;
+  const c=scoutChief(); mail('스카우트팀',`스카우트팀장 배치 제안 ${P.length}명`,`${c?`${c.name} 팀장`:'스카우트팀장'}의 이번 달 배치 제안입니다.\n${P.map(x=>`${x.s.name}: ${scoutSlotTxt(x.role,x.key)} (${x.why})`).join('\n')}\n바꾼 스카우트는 30일 동안 적응 기간입니다.`,{kind:'스카우트',acts:[{l:'제안대로 배치',a:'scoutPlanGo',v:''}]}); if(G.mail[0])G.mail[0].auto=['scout']; }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -8969,7 +8992,7 @@ const SUBS={
   train:[['camp','훈련장'],['dev','육성'],['lead','리더십']],
   staff:[['mgr','감독'],['coach','코치진'],['scouts','스카우트'],['data','전력분석'],['med','의무']],
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['news','뉴스·팬'],['assoc','협회'],['hist','역사']],
-  club:[['owner','구단주·목표'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['set','설정']]};
+  club:[['owner','구단주·목표'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['auth','권한'],['set','설정']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block'],gms:['gms','report']},
   league:{rec:['rec','feat']},club:{owner:['owner','media','rel'],chron:['chron','result','ob','log']}};
@@ -9873,7 +9896,7 @@ function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done); const last=(
   if(!open.length&&!last.length)return '';
   const one=e=>{ const p=e.ref!=null?G.players[e.ref]:null; const pz=p?null:personaOf(e.from);
     return `<div class="dec"><div class="dec-t">${p?avImg(p):pz?avImg(pz):'<span class="tdi">!</span>'}<div><span class="eyebrow dec-k">${evIcon(e.k)} ${EV_KEY.has(e.k)?'단장 결정':'일상 결정'} · ${dmd(e.exp)}까지${e.exp-G.day<=1?' <b class="bad">내일 자동 처리</b>':''}</span><b>${esc(e.title)}</b>${(()=>{ const L=e.sit.split('\n').filter(Boolean); return L.length>2?`<p>${lk(L[0])}</p><details class="mfold"><summary>자세히</summary><p>${L.slice(1).map(lk).join('<br>')}</p></details>`:`<p>${lk(e.sit).replace(/\n/g,'<br>')}</p>`; })()}</div></div>
-      <div class="dec-o">${e.opts.map((o,i)=>`<button class="dec-b" data-a="evPick" data-v="${e.id}:${i}"><b>${esc(o.l)}</b><span>${esc(o.fx)}</span>${i===e.def?'<i>기한이 지나면 이것으로 처리</i>':''}</button>`).join('')}</div>${!EV_KEY.has(e.k)&&EV_NAME[e.k]?`<button class="tc-i" data-a="evDeleg" data-v="${e.id}">${esc(EV_NAME[e.k])}은(는) 앞으로 비서에게 맡기기</button>`:''}</div>`; };
+      <div class="dec-o">${e.opts.map((o,i)=>`<button class="dec-b" data-a="evPick" data-v="${e.id}:${i}"><b>${esc(o.l)}</b><span>${esc(o.fx)}</span>${i===e.def?'<i>기한이 지나면 이것으로 처리</i>':''}</button>`).join('')}</div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><button class="tc-i" data-a="evHand" data-v="${e.id}">비서에게 넘기기(이번 건)</button>${!EV_KEY.has(e.k)&&EV_NAME[e.k]?`<button class="tc-i" data-a="evDeleg" data-v="${e.id}">${esc(EV_NAME[e.k])}은(는) 앞으로도 비서에게</button>`:(e.k==='mreq'||e.k==='mpick')?`<button class="tc-i" data-a="handOff" data-v="mgr">감독 요청은 앞으로도 비서에게</button>`:''}</div></div>`; };
   const done=last.map(x=>`<div class="dec-r"><b>${lk(x.t)}</b><span>결정: ${esc(x.c)}${x.auto?' (자동)':''}</span>${x.r?`<em>${lk(x.r)}</em>`:''}${x.f?`<em class="f">${lk(x.f)}</em>`:''}</div>`).join('');
   const dl=Object.keys(G.deleg||{}).filter(k=>G.deleg[k]&&EV_NAME[k]); const dlx=dl.length?`<p class="small muted" style="margin:6px 0 0">비서에게 맡긴 일: ${dl.map(k=>EV_NAME[k]).join(', ')} <button class="tc-i" data-a="evDelegOff">모두 직접 하기</button></p>`:'';
   return `<section class="card deccard">${open.map(one).join('')}${done?`<div class="dec-rs">${done}</div>`:''}${dlx}</section>`; }
@@ -10359,7 +10382,7 @@ function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); c
   return `<article class="ibm mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">
     <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">처리할 일</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
     ${L.length?`<div class="mailbody">${(L.length>4?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4?`<details class="mfold"><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
-    ${m.rv?rvActsH(m):''}
+    ${m.rv?rvActsH(m):''}${handOffBtns(m)}
     ${acts.length&&!(m.oid&&!o)?`<div class="ibm-acts">${acts.map(a=>`<button class="btn${a===acts[0]?' primary':''}" data-a="mailAct" data-v="${m.id}:${m.acts.indexOf(a)}">${esc(a.l)}</button>`).join('')}</div>`:''}
     ${o?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 처리할 메일: 안 읽었고 중요하거나 업무·버튼·제안이 있는 것. 상단 숫자는 이것만 센다 */
@@ -11708,11 +11731,11 @@ function chronView(){ const tid=G.user; const t=team(tid); const C=(G.chron||[])
   return csec(`${esc(t.city)} ${esc(t.nick)} 연대기`,top)+csec('해마다 일어난 일',ys.length?ys.map(yc).join(''):'<p class="small muted">아직 기록이 없습니다. 시즌을 치르며 트레이드·지명·FA·수상·감독 교체가 여기에 쌓입니다.</p>'); }
 function clubView(){
   const s=curSub('club');
-  const H0={rel:relView,ob:obView,owner:()=>gmCardView()+prestigeCard()+ownerView()+starPanel()+ownerAskView(),media:mediaView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,
+  const H0={auth:authView,rel:relView,ob:obView,owner:()=>gmCardView()+prestigeCard()+ownerView()+starPanel()+ownerAskView(),media:mediaView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
-    set:()=>autoCard()+`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
+    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
     ${UI.confirmNew?`<div class="note bad">지금 구단을 포기하고 새로 시작합니다. 저장된 진행이 지워집니다.</div><div class="row"><button class="btn danger" data-a="newgame">새로 시작</button><button class="btn" data-a="cancelNew">취소</button></div>`:`<button class="btn" data-a="askNew">새 게임</button>`}</section>`}; const h=mergedBody('club',s,H0);
   return subTabs('club')+h;
 }
@@ -12454,7 +12477,7 @@ const A={
   cmpK(v){ UI.cmpK=UI.cmpK===v?null:v; render(); },
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
-  start(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); try{ autoAll(UI.easyPick!==false); }catch(e){} fdWelcome(); UI.tab='home';save();render();window.scrollTo(0,0);},
+  start(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='home';save();render();window.scrollTo(0,0);},
   adv(v,el){ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.res||G.live||G.stops.length||G.dig){ closeSheets(); UI.tab='home'; UI.mail=null; } save(); render(); window.scrollTo(0,0); },
   calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
   calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
@@ -13748,20 +13771,24 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
       <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt?'good':'bad'}">${v>=tgt?'합의 가능':'모자람'}</b></div>
       ${N?`<p class="muted">제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
     ${N&&N.ok?'<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.</div>':`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
-/* ---------- 업무 맡기기 설정 · 새 게임 업무 방식 · 협상 추천 조건 ---------- */
-function autoCard(){ const on=k=>autoOn(k); const n=AUTO_AREAS.filter(([k])=>on(k)).length;
-  return `<section class="card"><div class="row between"><h2 class="sec">업무 맡기기</h2><span class="small muted">${n}/${AUTO_AREAS.length} 맡김</span></div>
-    <p class="small">반복 업무를 비서·팀장에게 맡길 수 있습니다. 맡기면 무난하게 처리하고, 직접 하면 더 좋은 결과를 낼 수 있습니다. 큰 결정(드래프트·트레이드 협상·FA·외국인 영입·단장 계약·협회 표결)은 항상 직접 합니다.</p>
-    <div class="row" style="gap:6px;margin:6px 0"><button class="btn small" data-a="autoAllSet" data-v="1">모두 맡기기(입문)</button><button class="btn small" data-a="autoAllSet" data-v="0">모두 직접</button></div>
-    <div class="list">${AUTO_AREAS.map(([k,l,d])=>`<label class="item autoi"><input type="checkbox" data-a="autoTog" data-v="${k}" ${on(k)?'checked':''}><span><b>${l}</b><span class="small muted" style="display:block">${d}</span></span></label>`).join('')}</div></section>`; }
-Object.assign(A,{ autoTog(v){ autoSet(v,!autoOn(v)); save(); render(); }, autoAllSet(v){ autoAll(v==='1'); save(); render(); toast(v==='1'?'반복 업무를 모두 맡겼습니다.':'모든 업무를 직접 합니다.'); },
-  easyPick(v){ UI.easyPick=v==='1'; render(); },
+/* ---------- 권한 탭(비서와 단장) · 알림의 '비서에게 넘기기' 버튼 · 협상 추천 조건 ---------- */
+function authView(){ const evK=Object.keys(EV_NAME); const dl=evK.filter(k=>G.deleg&&G.deleg[k]);
+  const row=([k,l,d])=>{ const on=autoOn(k); return `<div class="item authi"><div><b>${l}</b> <span class="pill ${on?'acc':''}">${on?`${AUTO_WHO[k]||'비서'} 담당`:'단장 직접'}</span><span class="small muted" style="display:block">${d}</span></div><button class="btn small ${on?'':'primary'}" data-a="${on?'takeBack':'handOff'}" data-v="${k}">${on?'가져오기':'넘기기'}</button></div>`; };
+  return `<section class="card"><div class="row between"><h2 class="sec">권한: 비서와 단장</h2><span class="small muted">${AUTO_AREAS.filter(([k])=>autoOn(k)).length}/${AUTO_AREAS.length} 넘김</span></div>
+    <p class="small">모든 알림은 그대로 옵니다. 알림마다 있는 '비서에게 넘기기'를 누르면 그 업무를 비서·팀장이 맡고, 여기서 언제든 다시 가져올 수 있습니다. 넘기면 무난하게 처리하고, 직접 하면 더 좋은 결과를 낼 수 있습니다. 드래프트·트레이드 협상·FA·외국인 영입·단장 계약·협회 표결은 항상 단장이 합니다.</p>
+    <div class="list">${AUTO_AREAS.map(row).join('')}</div></section>
+    ${dl.length&&!autoOn('ev')?`<section class="card"><h2 class="sec">종류별로 넘긴 일상 결정</h2><div class="list">${dl.map(k=>`<div class="item authi"><b>${esc(EV_NAME[k])}</b><button class="btn small" data-a="evTake" data-v="${k}">가져오기</button></div>`).join('')}</div></section>`:''}
+    ${(G.autoLog||[]).length?`<section class="card"><h2 class="sec">비서가 처리한 일</h2><div class="list">${G.autoLog.slice(0,12).map(x=>`<div class="item"><span class="small"><b>${esc(x.t)}</b> · ${esc(x.c)}${x.r?` <span class="muted">${esc(String(x.r).slice(0,80))}</span>`:''}</span><span class="small muted">${dsh(x.d)}</span></div>`).join('')}</div></section>`:''}`; }
+/* 메일 아래 버튼: 이 알림이 속한 업무를 비서에게 넘긴다(아직 직접 하는 업무만) */
+function handOffBtns(m){ if(G.unemp)return ''; let h='';
+  if(m.kind==='결정'){ const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(e)h+=`<button class="btn small" data-a="evHand" data-v="${e.id}">비서에게 넘기기(이번 건)</button>`; }
+  for(const k of (m.auto||[])){ if(autoOn(k))continue; if(k==='tro'&&m.oid&&!(G.offers||[]).some(o=>o.id===m.oid))continue; const a=AUTO_AREAS.find(x=>x[0]===k); if(a)h+=`<button class="btn small" data-a="handOff" data-v="${k}">${a[1]}: ${AUTO_WHO[k]||'비서'}에게 넘기기</button>`; }
+  return h?`<div class="ibm-acts hand">${h}</div>`:''; }
+Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v){ toast(takeBack(v)); save(); render(); },
+  evHand(v){ toast(handOffEv(v)); save(); render(); }, evTake(v){ if(G.deleg)delete G.deleg[v]; save(); render(); },
   foRec(v){ const F=UI.fo; const p=G.players[+v]; if(!F||!p)return; if(F.re){ const t=foReFloor(p), f=foReComfort(p); F.g=Math.max(MIN_SAL,Math.ceil((t/f-F.i*FO_INC_W)/USD)*USD); F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; renderSheet(); return; }
     const me=foAppeal(p,G.user), Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);
     if(!known){ F.g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F.i=Math.max(0,Math.min(cap-F.g,p.ask-F.g)); F.msg='경쟁 구단 조건을 아직 모릅니다. 요구액 기준(보장 85% + 인센티브 15%)으로 맞췄습니다. 한 번 제안하면 정확한 조건을 알려 줍니다.'; renderSheet(); return; }
     const tgt=Math.max(foFloor(p),best?best.v*1.01:0); let g=foNeedG(p,F.i,tgt,me.f); if(g==null){ F.i=0; g=foNeedG(p,0,tgt,me.f); }
     if(g==null){ F.msg='상한 안에서는 사인시킬 수 있는 조건이 없습니다.'; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); } });
-/* 새 게임 구단 선택 화면 위: 업무 방식 */
-const _pickTeams0=pickTeams;
-pickTeams=function(){ const e=UI.easyPick!==false; return `<div class="card easyp"><b>업무 방식</b><div class="chips"><button data-a="easyPick" data-v="1" class="${e?'on':''}">입문: 반복 업무는 비서에게</button><button data-a="easyPick" data-v="0" class="${e?'':'on'}">직접: 모든 업무를 내가</button></div><p class="small muted">연봉 협상·외국인 재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·스태프 빼가기 대응을 맡길지 정합니다. 게임 중에도 구단 > 설정에서 하나씩 바꿀 수 있습니다.</p></div>`+_pickTeams0.apply(this,arguments); };
 </script>

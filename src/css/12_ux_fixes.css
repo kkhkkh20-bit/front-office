@@ -332,3 +332,6 @@ body:has(#sheet .scrim) #dtick{display:none}
 .autoi{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.autoi input{margin-top:4px;flex:none;width:18px;height:18px}
 .easyp{margin-bottom:10px}.easyp .chips{margin:6px 0}
 details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;margin:4px 0}
+.authi{display:flex;justify-content:space-between;align-items:center;gap:10px}.authi>div{min-width:0}
+.ibm-acts.hand{margin-top:6px}.ibm-acts.hand .btn{font-size:12px}
+.authi>.btn{flex:none;white-space:nowrap}
