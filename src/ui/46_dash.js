@@ -13,7 +13,7 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
   { const inj=playersOf(G.user).filter(p=>p.injOut>0).sort((a,b)=>ovr(b)-ovr(a)); { const core=new Set(coreIds()); const ci=inj.filter(p=>core.has(p.id)&&p.injOut>=14); T.push(tile('부상자',`${inj.length}명`,inj.length?`${esc(inj[0].name)}${inj[0].injK?` · ${esc(INJ[inj[0].injK].part)}`:''} ${inj[0].injOut}일${inj.length>1?` 외 ${inj.length-1}명`:''}`:'전원 정상','staff:med',inj.length>=4||ci.length?'bad':inj.length?'warn':'good',null,ci.length?`주전 ${ci.length}명 장기 이탈`:'')); } }
   T.push(tile('구단주 신뢰',Math.round(t.trust),(t.trust>=60?'안정':t.trust>=35?'보통':t.trust>=20?'불안':'위험')+(trustWhy()?' · '+trustWhy():''),'club:owner',t.trust>=60?'good':t.trust<30?'bad':'',t.trust,t.trust<35?'신뢰 위험':''));
   { let b=null; try{ b=budget(); }catch(e){} if(b)T.push(tile('예산 여유',money(Math.round(b.roomGoal)),b.roomGoal>=0?'지원 목표 안':'목표 초과','club:fin',b.roomGoal<0?'bad':'',null,b.roomGoal<0?'예산 초과':'')); }
-  if(G.pr)T.push(tile('팬 여론',Math.round(G.pr.fan),`언론 논조 ${Math.round(G.pr.press)}`,'club:owner',G.pr.fan>=60?'good':G.pr.fan<40?'bad':'',G.pr.fan,G.pr.fan<30?'여론 악화':''));
+  if(G.pr)T.push(tile('팬 여론',Math.round(G.pr.fan),`언론 논조 ${Math.round(G.pr.press)}${prSpark()}`,'club:media',G.pr.fan>=60?'good':G.pr.fan<40?'bad':'',G.pr.fan,G.pr.fan<30?'여론 악화':''));
   { const v=clubPrestige(G.user); const L=G.teams.map(x=>clubPrestige(x.id)).sort((a,b)=>b-a); T.push(tile('구단 명성',`<span class="stars-t">${starTxt(prestigeStars(v))}</span>`,`${v}점 · 리그 ${L.indexOf(v)+1}위`,'club:owner','',v)); }
   /* 급한 항목은 앞으로, 두 칸 크기로 */ const U=T.filter(x=>/ urg"/.test(x)), N=T.filter(x=>!/ urg"/.test(x));
   return `<div class="dtiles">${U.join('')}${N.join('')}</div>`; }
@@ -27,3 +27,8 @@ function stBand(){ const {order,live}=standOrder(); if(!live||!order||!order.len
   const c5=order[4]; const my=order[me]; const gap=me>=5&&c5?`5위와 ${gbOf(c5,my).toFixed(1)}경기`:me>=0&&order[5]?`6위와 ${(-gbOf(order[5],my)).toFixed(1)}경기 앞`:'';
   const cells=order.map((o,i)=>`<button class="stb-c${o.tid===G.user?' me':''}${i===4?' cut':''}" data-a="lteamGo" data-v="${o.tid}"><span class="stb-r">${i+1}</span>${badge(o.tid,20)}<b>${esc(team(o.tid).nick)}</b><span class="stb-wl num">${o.w}-${o.l}${o.t?`-${o.t}`:''}</span><span class="stb-gb num">${i?gbStr(gbOf(top,o)):'선두'}</span></button>`).join('');
   return `<section class="card stb"><div class="stb-h"><h2 class="sec">현재 순위</h2><span class="small muted">${me>=0?`우리 ${me+1}위${gap?' · '+gap:''}`:''}</span><button class="btn small" data-a="go" data-v="league:stand">순위표</button></div><div class="stb-g">${cells}</div></section>`; }
+
+/* 팬 여론 추이(월말 기록 + 지금): 홈 타일 안의 작은 선 */
+function prSpark(){ const H=((G.pr&&G.pr.hist)||[]).slice(-7).map(x=>x.fan).concat([Math.round(G.pr.fan)]); if(H.length<3)return '';
+  const w=64,h=16, mn=Math.min(...H)-2, mx=Math.max(...H)+2; const pt=H.map((v,i)=>`${(i/(H.length-1)*w).toFixed(1)},${(h-(v-mn)/(mx-mn)*h).toFixed(1)}`).join(' '); const up=H[H.length-1]-H[0];
+  return ` <svg class="prsp" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-label="팬 여론 추이"><polyline points="${pt}" fill="none" stroke="${up>=0?'#3fd07f':'#ff6b6b'}" stroke-width="1.6"/></svg>`; }

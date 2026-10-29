@@ -167,9 +167,9 @@ function ivDaily(){ const o=dobj(G.day); if(G.unemp)return;
 function ivNewsPub(){ const Q=G.ivNewsQ||[]; if(!Q.length)return; const due=Q.filter(x=>x.day<=G.day); if(!due.length)return; G.ivNewsQ=Q.filter(x=>x.day>G.day);
   for(const x of due){ const by={}; for(const a of x.ans){ const o=a.outlet||x.outlet; (by[o]=by[o]||[]).push(a); }
     const heads=[]; for(const o in by){ const L=by[o]; const big=L.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0]; const q=big.a.replace(/^"|"$/g,''); const h=`${tshort(G.user)} ${meName()?meName()+' ':''}단장 "${q.slice(0,30)}${q.length>32?'…':''}"`;
-      news('언론',h,`${o} ${L[0].rep||x.rep} 기자${x.md?` · ${IV_TOPIC[x.k]}`:''}: ${L.map(a=>`${a.q} ${a.a}`).join(' ')}`,0,{outlet:o}); heads.push(`${o}: ${h}`); }
+      const ni=news('언론',h,`${o} ${L[0].rep||x.rep} 기자${x.md?` · ${IV_TOPIC[x.k]}`:''}: ${L.map(a=>`${a.q} ${a.a}`).join(' ')}`,big.fx.fan>=2?1:big.fx.fan<=-2?-1:0,{outlet:o}); if(ni&&!x.n0)x.n0=ni; heads.push(`${o}: ${h}`); }
     const sumFx=x.ans.reduce((s,a)=>({fan:s.fan+(a.fx.fan||0),press:s.press+(a.fx.press||0)}),{fan:0,press:0});
     const hot=x.ans.filter(a=>Math.abs(a.fx.fan)+Math.abs(a.fx.press)>=3||a.fx.prom||(a.fx.mgr||0)<0||['비판','냉정','도발','압박'].includes(a.tone));
-    mail('홍보팀',`[기사] ${IV_TOPIC[x.k]||'인터뷰'} 기사가 나왔습니다`,`${heads.join('\n')}\n\n반응: 팬 여론 ${sumFx.fan>=0?'+':''}${sumFx.fan} · 언론 논조 ${sumFx.press>=0?'+':''}${sumFx.press}.${hot.length?` 화제가 된 말: ${hot.slice(0,2).map(a=>a.a).join(' ')}`:''}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'league:news'}]});
+    mail('홍보팀',`[기사] ${IV_TOPIC[x.k]||'인터뷰'} 기사가 나왔습니다`,`${heads.join('\n')}\n\n반응: 팬 여론 ${sumFx.fan>=0?'+':''}${sumFx.fan} · 언론 논조 ${sumFx.press>=0?'+':''}${sumFx.press}.${hot.length?` 화제가 된 말: ${hot.slice(0,2).map(a=>a.a).join(' ')}`:''}${fpNewsReact(x.n0)}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'club:news'}]}); delete x.n0;
     if(x.k!=='follow'&&hot.length&&R()<.55){ (G.ivFollowQ=G.ivFollowQ||[]).push({day:G.day+1+Math.floor(R()*2),prev:{outlet:x.outlet,ans:hot}}); } } }
 function ivFollowDaily(){ const Q=G.ivFollowQ||[]; if(!Q.length)return; const due=Q.find(x=>x.day<=G.day); if(!due)return; if(G.iv&&!G.iv.done&&G.iv.exp>=G.day)return; G.ivFollowQ=Q.filter(x=>x!==due); ivRequest('follow',{prev:due.prev}); }

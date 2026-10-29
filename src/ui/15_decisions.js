@@ -62,7 +62,7 @@ function myLeaders(){
 function newsSeen(){ return G.newsSeen||0; }
 function newsCard(){ const ns=(G.news||[]).slice(0,4); if(!ns.length)return '';
   const nn=(G.news||[]).filter(n=>(n.id||0)>newsSeen()).length;
-  return `<section class="card"><div class="row between"><h2 class="sec">뉴스${nn?` <span class="cntb">${nn}</span>`:''}</h2><button class="btn small" data-a="go" data-v="league:news">전체 기사</button></div>${ns.map(n=>newsItem(n,false)).join('')}</section>`; }
+  return `<section class="card"><div class="row between"><h2 class="sec">우리 구단 기사${nn?` <span class="cntb">${nn}</span>`:''}</h2><button class="btn small" data-a="go" data-v="club:news">전체 기사</button></div>${ns.map(n=>newsItem(n,false)).join('')}</section>`; }
 function clubCard(){
   prInit(); const t=team(G.user); const ci=capInfo(G.user); const s=goalStatus();
   const g=(l,v,lo,hi)=>`<div><dt>${l}</dt><dd class="num">${v}</dd>${gauge(v,lo,hi)}</div>`;

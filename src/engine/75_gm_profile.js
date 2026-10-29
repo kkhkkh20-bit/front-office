@@ -5,6 +5,13 @@
 function meInit(){ G.me=G.me||{pp:0,iv:0,ivSkip:0,fa:0,faBig:0,faAmt:0,mgrFire:0,fRep:0,since:G.gmSince??G.year}; return G.me; }
 /* 단장 기본 정보(새 게임에서 직접 정한다): 이름·나이·출신·얼굴 */
 const GM_BG={player:'선수 출신',scout:'스카우트 출신',data:'전력분석 출신',corp:'모기업 프런트 출신'};
+/* 출신에 따른 작은 차이: 처음 취임할 때 한 번(선수 출신의 감독 관계는 감독을 선임할 때마다) */
+const GM_BGD={player:'감독을 선임할 때마다 관계 +5, 처음 팬 여론 +3',scout:'다른 구단 단장 9명과 친분 +5로 시작',data:'언론 논조 +3, 우리 전력분석원 충성도 +10으로 시작',corp:'구단주 신뢰 +5로 시작'};
+function gmBgApply(){ const P=G.gmP; if(!P||P.bgDone)return; P.bgDone=true; try{ prInit(); const t=team(G.user);
+  if(P.bg==='player'){ G.pr.fan=clamp(G.pr.fan+3,0,100); const m=G.mgr[G.user]; if(m&&!m.interim)m.rel=clamp(m.rel+5,0,100); }
+  else if(P.bg==='scout'){ for(const o of G.teams)if(o.id!==G.user)o.rel=clamp((o.rel??50)+5,0,100); }
+  else if(P.bg==='data'){ G.pr.press=clamp(G.pr.press+3,0,100); for(const a of (typeof anaList==='function'?anaList():[]))a.loy=clamp((a.loy??50)+10,0,100); }
+  else if(P.bg==='corp'){ t.trust=clamp((t.trust??55)+5,0,100); } }catch(e){} }
 function meName(){ return (G&&G.gmP&&G.gmP.name)||''; }
 function meAge(){ const P=G.gmP; return P&&P.age?P.age+(G.year-(P.y0||G.year)):null; }
 function meInc(k,n){ if(G.unemp)return; const M=meInit(); M[k]=(M[k]||0)+(n??1); }

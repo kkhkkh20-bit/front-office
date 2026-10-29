@@ -39,7 +39,11 @@ function mdMgrGoal(tid,r){ const m=G.mgr[tid]; if(!m||m.interim)return {k:null,t
   return bold?{k:'ps',t:'"평가가 낮은 건 압니다. 가을야구로 증명하겠습니다."',w:'가을야구'}:{k:null,t:'"한 계단씩 올라가는 시즌을 만들겠습니다."',w:'한 계단씩'}; }
 /* 선수 발언: 성격(욕심·충성·프로의식)과 지난 기록 */
 function mdPlayerLine(p,role){ initPers(p); const h=seasonTotal(p,G.year-1,'1군'); const P=p.pers;
-  if(role==='cap'){ return P.loy>=13?`"팬들께 받은 응원, 올해는 꼭 돌려드리겠습니다. 마지막까지 이 팀에서 웃고 싶습니다."`:P.pro>=13?`"캠프에서 선수들 몸을 잘 만들었습니다. 부상 없이 끝까지 가는 게 주장으로서 목표입니다."`:`"선수들끼리 분위기가 정말 좋습니다. 그 분위기를 시즌 끝까지 가져가겠습니다."`; }
+  const pk=L=>L[Math.floor(u01('mdl'+G.year+role,p.id)*L.length)];
+  if(role==='cap'){ return pk(P.loy>=13?[`"팬들께 받은 응원, 올해는 꼭 돌려드리겠습니다. 마지막까지 이 팀에서 웃고 싶습니다."`,`"이 유니폼을 입고 우승하는 게 꿈입니다. 올해가 그해였으면 합니다."`,`"원정 경기장에서도 우리 팬 목소리가 제일 큽니다. 그 응원에 답하겠습니다."`]
+      :P.pro>=13?[`"캠프에서 선수들 몸을 잘 만들었습니다. 부상 없이 끝까지 가는 게 주장으로서 목표입니다."`,`"작년에 부족했던 걸 겨울 내내 고쳤습니다. 숫자로 보여 드리겠습니다."`,`"주장은 말보다 행동입니다. 제일 먼저 나와서 제일 늦게 들어가겠습니다."`]
+      :P.amb>=13?[`"목표는 높게 잡았습니다. 가을 끝까지 야구하겠습니다."`,`"올해는 우리가 주인공이 될 차례입니다."`]
+      :[`"선수들끼리 분위기가 정말 좋습니다. 그 분위기를 시즌 끝까지 가져가겠습니다."`,`"고참과 어린 선수들이 잘 섞였습니다. 끈끈한 야구를 보여 드리겠습니다."`,`"한 경기 한 경기 즐기면서 하겠습니다. 결과는 따라올 겁니다."`]); }
   if(P.amb>=14){ if(p.isP)return (p.role==='SP'||(h&&h.outs>=300))?`"개인 목표는 두 자릿수 승리와 규정이닝입니다. 숨기지 않겠습니다."`:`"뒤에서 문을 잠그는 투수가 되겠습니다. 블론세이브는 없습니다."`;
     const hr=h&&h.hr||0; return hr>=15?`"${Math.ceil((hr+5)/5)*5}홈런이 목표입니다. 작년보다 더 넘기겠습니다."`:`"올해는 제 이름을 확실히 알리는 시즌으로 만들겠습니다."`; }
   if(p.age<=24)return `"형들 따라가면서 많이 배우겠습니다. 기회가 오면 놓치지 않겠습니다."`;
@@ -55,12 +59,22 @@ function mdRun(){ const open=G.cal.open; let D=G.md; if(!D||D.y!==G.year){ const
   if(cap&&cap.team===G.user)cap.mor=clamp((cap.mor??60)+2,0,100); if(rep&&rep.team===G.user){ rep.mor=clamp((rep.mor??60)+(D.res==='acc'&&rep.age<=24?6:4),0,100); }
   if(g.k&&m&&!m.interim)G.mdProm={y:G.year,k:g.k,mid:m.id,name:m.name};
   const others=G.teams.filter(t=>t.id!==G.user).map(t=>{ const x=mdMgrGoal(t.id,proj.indexOf(t.id)+1); return `${tshort(t.id)} ${x.w}`; });
-  D.out={L,fan,g:g.w,prom:g.k,fq,r,others,rep:rep&&rep.id,cap:cap&&cap.id}; D.pub=G.day+1; }
+  /* 다른 구단: 우승 후보와 몇 팀의 주장 발언, 우리를 겨냥한 한마디 */
+  const riv=[], champ=G.last&&G.last.ps?G.last.ps.champ:null; const nk=team(G.user).nick;
+  const pickT=[proj[0],proj[1],champ].filter((x,i,a)=>x!=null&&x!==G.user&&a.indexOf(x)===i).slice(0,2);
+  for(const tid of pickT){ const c=mdCaptain(tid); if(c)riv.push([`${tshort(tid)} 주장 ${c.name}`,mdPlayerLine(c,'cap')]); }
+  let jab=null; for(const t of G.teams){ if(t.id===G.user||jab)continue; const m=G.mgr[t.id]; if(!m||m.interim)continue; mgrFix(m); const bold=m.ego>=68||mgrVoice(m)==='fire'; if(!bold)continue;
+    if(champ===G.user)jab={tid:t.id,t:`"지난해 챔피언 ${nk}을(를) 끌어내리겠습니다. 그게 올해 목표입니다."`};
+    else if(r<=3&&proj.indexOf(t.id)+1>r)jab={tid:t.id,t:`"${nk}이(가) 우승 후보라던데, 붙어 보면 알 겁니다."`};
+    else if(r>=8)jab={tid:t.id,t:`"${nk} 말씀입니까? 솔직히 신경 쓰지 않습니다."`}; }
+  if(jab){ for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+1,0,100); riv.push([`${tshort(jab.tid)} ${G.mgr[jab.tid].name} 감독`,jab.t]); }
+  D.out={L,fan,g:g.w,prom:g.k,fq,r,others,riv,jab:jab?{tid:jab.tid,t:jab.t}:null,rep:rep&&rep.id,cap:cap&&cap.id}; D.pub=G.day+1; }
 function mdPub(){ const D=G.md; if(!D||!D.out||D.pubd||G.day<D.pub)return; D.pubd=true; const O=D.out;
-  news('언론',`${tshort(G.user)} ${O.L[0][0]} "${O.L[0][1].replace(/^"|"$/g,'').split('.')[0].slice(0,26)}"`,`개막 미디어데이에서 ${O.L.map(([w,t])=>`${w}: ${t}`).join(' ')}`,O.prom==='champ'?1:0);
+  const n0=news('언론',`${tshort(G.user)} ${O.L[0][0]} "${O.L[0][1].replace(/^"|"$/g,'').split('.')[0].slice(0,26)}"`,`개막 미디어데이에서 ${O.L.map(([w,t])=>`${w}: ${t}`).join(' ')}`,O.prom==='champ'?1:0);
   if(O.L[2])news('선수',`${O.L[2][0]} "${O.L[2][1].replace(/^"|"$/g,'').split('.')[0].slice(0,26)}"`,`개막 미디어데이 대표 선수로 나선 ${O.L[2][0]}: ${O.L[2][1]} 팬 질문 '${O.fq[0]}'에는 ${O.fq[1]}라고 답했습니다.`,1,{ref:O.rep});
+  if(O.jab)news('경기',`${tshort(O.jab.tid)} 감독, ${team(G.user).nick} 겨냥 "${O.jab.t.replace(/^"|"$/g,'').split('.')[0].slice(0,24)}"`,`개막 미디어데이에서 ${tname(O.jab.tid)} 감독이 ${tname(G.user)}을(를) 겨냥했습니다. ${O.jab.t} 우리 선수단은 자극을 받았습니다.`,0);
   news('언론',`10개 구단 사령탑 출사표`,`개막 미디어데이에서 각 구단 감독이 목표를 밝혔습니다. ${O.others.join(' · ')} · ${tshort(G.user)} ${O.g}.`,0);
-  mail('홍보팀','[기사] 개막 미디어데이 기사가 나왔습니다',`${O.L.map(([w,t])=>`${w}: ${t}`).join('\n')}\n\n팬 질문 '${O.fq[0]}' → ${O.fq[1]}\n\n반응: 팬 여론 +${O.fan}. 나간 선수들은 기분이 올랐습니다.${O.prom?`\n감독이 '${O.prom==='champ'?'우승':'가을야구'}'를 공언했습니다. 시즌 뒤 지켰는지 다시 기사가 납니다(전력분석팀 예상 ${O.r}위).`:''}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'league:news'}]}); }
+  mail('홍보팀','[기사] 개막 미디어데이 기사가 나왔습니다',`${O.L.map(([w,t])=>`${w}: ${t}`).join('\n')}\n\n팬 질문 '${O.fq[0]}' → ${O.fq[1]}\n\n반응: 팬 여론 +${O.fan}. 나간 선수들은 기분이 올랐습니다.${(O.riv||[]).length?`\n\n다른 구단\n${O.riv.map(([w,t])=>`${w}: ${t}`).join('\n')}${O.jab?'\n상대 감독의 도발에 우리 선수단이 자극을 받았습니다(기분 +1).':''}`:''}${O.prom?`\n감독이 '${O.prom==='champ'?'우승':'가을야구'}'를 공언했습니다. 시즌 뒤 지켰는지 다시 기사가 납니다(전력분석팀 예상 ${O.r}위).`:''}${fpNewsReact(n0)}`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'club:news'}]}); }
 /* 포스트시즌 미디어데이: 준플레이오프부터, 1차전 하루 전 */
 function mdPsRun(s){ const op=s.hi===G.user?s.lo:s.hi; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'감독대행';
   const key=playersOf(G.user).map(p=>({p,h:seasonTotal(p,G.year,'1군')})).filter(x=>x.h&&healthy(x.p)).sort((a,b)=>warOf(b.h,b.p)-warOf(a.h,a.p));
@@ -73,7 +87,7 @@ function mdPsRun(s){ const op=s.hi===G.user?s.lo:s.hi; const m=G.mgr[G.user]; co
   news('언론',`${ROUNDK[s.round]} 미디어데이: ${tshort(G.user)} "${Math.min(fin,len)}차전에서 끝낸다"`,`${who}: ${mq} ${pl.map(([a,b])=>`${a}: ${b}`).join(' ')} ${oq}`,0);
   (G.mdPsQ=G.mdPsQ||[]).push({day:G.day+1,t:`${ROUNDK[s.round]} 미디어데이`,L:[[who,mq]].concat(pl),oq}); }
 function mdPsPub(){ const Q=G.mdPsQ||[]; const due=Q.filter(x=>x.day<=G.day); if(!due.length)return; G.mdPsQ=Q.filter(x=>x.day>G.day);
-  for(const x of due)mail('홍보팀',`[기사] ${x.t} 기사가 나왔습니다`,`${x.L.map(([w,t])=>`${w}: ${t}`).join('\n')}${x.oq?`\n\n상대: ${x.oq}`:''}\n\n나간 선수들은 기분이 올랐습니다.`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'league:news'}]}); }
+  for(const x of due)mail('홍보팀',`[기사] ${x.t} 기사가 나왔습니다`,`${x.L.map(([w,t])=>`${w}: ${t}`).join('\n')}${x.oq?`\n\n상대: ${x.oq}`:''}\n\n나간 선수들은 기분이 올랐습니다.`,{kind:'언론',acts:[{l:'기사 보기',a:'go',v:'club:news'}]}); }
 function mdDaily(){ if(G.unemp||!G.cal)return; const open=G.cal.open;
   if(G.day===open-9&&!(G.md&&G.md.y===G.year))try{ mdPlan(); }catch(e){ console.error(e); }
   if(G.day===open-2)try{ mdRun(); }catch(e){ console.error(e); }

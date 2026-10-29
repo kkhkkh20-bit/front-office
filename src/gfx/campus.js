@@ -130,17 +130,25 @@ function renderHome(S){ CPID=0; const P=S.players; const g=[]; const by=k=>P.fil
     const bench=bat.slice(9).concat(pit.slice(4)); bench.slice(0,5).forEach((p,i)=>g.push(cpPlayer(p,cx+92+i*22,cy+19,{rot:-90,s:.55,ny:16})));
     if(bench.length>5)g.push(`<text class="pl" x="${cx+140}" y="${cy+60}" text-anchor="middle">벤치 외 ${bench.length-5}명</text>`); }
   /* 클럽하우스: 지친 1군 선수가 쉬는 곳 */
-  { const x=740,y=16,w=244,h=330; g.push(plotFrame(x,y,w,h,'클럽하우스',0,0,null,'club')); g.push(bldg(x+10,y+28,w-20,h-48,'#4b4036'));
-    for(let i=0;i<10;i++)g.push(`<rect x="${x+20+(i%5)*44}" y="${y+40+Math.floor(i/5)*230}" width="34" height="16" rx="2" fill="#6b5a48" stroke="#2c241d"/>`);
-    g.push(`<rect x="${x+40}" y="${y+120}" width="${w-80}" height="70" rx="6" fill="#2d6a7a"/><text class="pl" x="${x+w/2}" y="${y+210}" text-anchor="middle">휴식·치료 공간</text>`);
-    by('club').slice(0,6).forEach((p,i)=>g.push(cpPlayer(p,x+56+(i%3)*66,y+140+Math.floor(i/3)*40,{rot:90,s:.6,ny:16})));
-    if(by('club').length>6)g.push(`<text class="pl" x="${x+w-16}" y="${y+h-24}" text-anchor="end">외 ${by('club').length-6}명</text>`);
-    if(!by('club').length)g.push(`<text class="pl" x="${x+w/2}" y="${y+160}" text-anchor="middle">쉬는 선수 없음</text>`); }
+  { const x=740,y=16,w=244,h=214; g.push(plotFrame(x,y,w,h,'클럽하우스',0,0,null,'club')); g.push(bldg(x+10,y+28,w-20,h-48,'#4b4036'));
+    for(let i=0;i<10;i++)g.push(`<rect x="${x+20+(i%5)*44}" y="${y+38+Math.floor(i/5)*128}" width="34" height="14" rx="2" fill="#6b5a48" stroke="#2c241d"/>`);
+    g.push(`<rect x="${x+30}" y="${y+64}" width="${w-60}" height="78" rx="6" fill="#2d6a7a"/><text class="pl" x="${x+w/2}" y="${y+158}" text-anchor="middle">휴식·치료 공간</text>`);
+    by('club').slice(0,6).forEach((p,i)=>g.push(cpPlayer(p,x+56+(i%3)*66,y+84+Math.floor(i/3)*38,{rot:90,s:.6,ny:16})));
+    if(by('club').length>6)g.push(`<text class="pl" x="${x+w-16}" y="${y+h-20}" text-anchor="end">외 ${by('club').length-6}명</text>`);
+    if(!by('club').length)g.push(`<text class="pl" x="${x+w/2}" y="${y+108}" text-anchor="middle">쉬는 선수 없음</text>`); }
+  /* 구장 시설: 홈구장 투자 단계 + 1군도 함께 쓰는 훈련 시설 */
+  { const x=740,y=242,w=244,h=226; g.push(plotFrame(x,y,w,h,'구장·1군 시설',0,0,null,'stadfac')); g.push(`<rect x="${x+8}" y="${y+24}" width="${w-16}" height="${h-32}" rx="4" fill="#1d242b"/>`);
+    const SL=S.stLv||{}; const rows=[['관람석',SL.seat,5],['식음료·굿즈',SL.fnb,5],['프리미엄석',SL.prem,5],['전광판',SL.vis,5],['그라운드',SL.turf,5]];
+    const L2=S.lv||{}; const sh=[['웨이트',L2.weight,3],['재활·회복',L2.rehab,3],['피칭·타격 랩',L2.lab,3]];
+    const pip=(v,m,yy)=>[...Array(m)].map((_,i)=>`<rect x="${x+w-18-(m-i)*12}" y="${yy-7}" width="9" height="7" rx="1.5" fill="${i<(v||0)?'#4fd27c':'#ffffff26'}"/>`).join('');
+    rows.forEach(([l,v,m],i)=>{ const yy=y+42+i*19; g.push(`<text class="pl" x="${x+16}" y="${yy}">${l}</text>${pip(v,m,yy)}`); });
+    g.push(`<line x1="${x+16}" y1="${y+140}" x2="${x+w-16}" y2="${y+140}" stroke="#ffffff22"/><text class="pl" x="${x+16}" y="${y+154}" fill="#9fb0bf">훈련 단지 · 1군도 함께 씀</text>`);
+    sh.forEach(([l,v,m],i)=>{ const yy=y+172+i*18; g.push(`<text class="pl" x="${x+16}" y="${yy}">${l}</text>${pip(v,m,yy)}`); }); }
   /* 주차장·구단 버스 */
-  { const bl=S.bus||0; const x=740,y=362,w=244,h=312; g.push(plotFrame(x,y,w,h,'구단 버스',bl,2,null,'bus'));
-    g.push(`<rect x="${x+10}" y="${y+28}" width="${w-20}" height="${h-40}" fill="#59616a"/>${[...Array(6)].map((_,i)=>`<line x1="${x+10}" y1="${y+70+i*40}" x2="${x+60}" y2="${y+70+i*40}" stroke="#fff" stroke-width="2"/>`).join('')}`);
+  { const bl=S.bus||0; const x=740,y=480,w=244,h=194; g.push(plotFrame(x,y,w,h,'구단 버스',bl,2,null,'bus'));
+    g.push(`<rect x="${x+10}" y="${y+28}" width="${w-20}" height="${h-40}" fill="#59616a"/>${[...Array(3)].map((_,i)=>`<line x1="${x+10}" y1="${y+60+i*36}" x2="${x+60}" y2="${y+60+i*36}" stroke="#fff" stroke-width="2"/>`).join('')}`);
     const col=bl>=2?'#1b2a44':bl>=1?'#3b4f6b':'#8a8f96', L=bl>=2?150:126, txt=['일반 버스 · 원정 피로 +10%','우등 버스 · 원정 피로 +2%','리무진 버스 · 원정 피로 -6%'][bl];
-    g.push(`<g transform="translate(${x+150} ${y+90}) rotate(90)"><g><rect x="0" y="-15" width="${L}" height="30" rx="6" fill="${col}" stroke="#ffffff66"/><rect x="8" y="-11" width="${L-20}" height="8" rx="2" fill="#9fd8f0aa"/><rect x="4" y="4" width="${L-8}" height="4" fill="${S.teamCol||'#CE0E2D'}"/></g></g>
+    g.push(`<g transform="translate(${x+70} ${y+92})"><g><rect x="0" y="-15" width="${L}" height="30" rx="6" fill="${col}" stroke="#ffffff66"/><rect x="8" y="-11" width="${L-20}" height="8" rx="2" fill="#9fd8f0aa"/><rect x="4" y="4" width="${L-8}" height="4" fill="${S.teamCol||'#CE0E2D'}"/></g></g>
       <text class="pl" x="${x+w/2}" y="${y+h-20}" text-anchor="middle">${txt}</text>`); }
   return `<svg class="campus" viewBox="0 0 1000 690" xmlns="http://www.w3.org/2000/svg">${g.join('')}</svg>`; }
 

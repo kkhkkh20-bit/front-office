@@ -452,3 +452,5 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .gpg-c{padding:3px;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer}.gpg-c .av{width:100%;height:auto;aspect-ratio:1}
 .gpg-c.on{border-color:var(--acc,#3d8bfd);box-shadow:0 0 0 2px var(--acc,#3d8bfd)}
 @media (max-width:520px){ .gpg{grid-template-columns:repeat(4,minmax(0,1fr))} }
+
+.prsp{vertical-align:middle;margin-left:4px}

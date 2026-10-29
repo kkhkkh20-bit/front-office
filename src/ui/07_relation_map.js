@@ -107,12 +107,12 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     info=`<p>팬 여론 ${x.rel} · ${x.lab}. 구단 인기 ${Math.round(t.pop*100)}.</p>${g&&g.y===G.year?`<p class="small">구단주 목표: 여론 ${g.fan} 이상</p>`:''}`;
     moves=['승패와 연승·연패','트레이드·FA 평가 기사, 신인 활약, 외국인 부진','콜업 여론 같은 결정 이벤트, 팬 행사'];
     fx=['관중 수입과 광고·상품 수입','구단주 월말 평가와 시즌 목표'];
-    acts=[btn('언론·여론','go','club:media',1),btn('마케팅','go','club:mkt')]; }
+    acts=[btn('여론·기자','go','club:media',1),btn('팬 게시판','go','club:fans'),btn('마케팅','go','club:mkt')]; }
   else if(k==='press'){ info=`<p>언론 논조 ${x.rel} · ${x.lab}.</p>`;
     moves=['기사 하나하나가 논조를 움직입니다. 우호적 기사 +, 비판 기사 -','감독·선수의 불만 표출, 트레이드 평점이 기사가 됩니다'];
     fx=['스폰서(광고) 수입','시즌 결산 때 구단주 신뢰에 직접 반영 (50 기준 10점당 신뢰 1)'];
     recent=(G.news||[]).slice(0,3).map(n=>`<div class="ps-r small">${dsh(n.d)} · ${esc(n.o)} · ${esc(n.t)}</div>`).join('');
-    acts=[btn('언론·여론','go','club:media',1)]; }
+    acts=[btn('여론·기자','go','club:media',1)]; }
   else if(k.startsWith('agt:')){ const ag=agById(+k.slice(4)); const cl=faLive()?agClients(ag):[]; const lg=(ag.log||[]).slice(-4).reverse();
     info=`<p class="small">${esc(ag.firm)} · ${AG_SIZE[ag.size]} · ${(AG_STYLE[ag.style]||AG_STYLE.rel).l}</p><p class="small muted">${esc((AG_STYLE[ag.style]||AG_STYLE.rel).d)}</p><p class="small">우리와 계약 ${(ag.deals&&ag.deals[G.user])||0}건${cl.length?` · 이번 겨울 고객 ${cl.map(p=>esc(p.name)).join(', ')}`:''}</p>${lg.length?`<p class="small muted">최근: ${lg.map(x=>`${esc(x.t)} ${x.v>0?'+':''}${x.v}`).join(' · ')}</p>`:''}`;
     moves=['요구에 가까운 제시, 역제안 수용, 계약 성사는 친분을 올립니다','낮은 제안, 역제안 무시, 협상 결렬은 친분을 깎습니다(대형 에이전시는 1.5배)'];

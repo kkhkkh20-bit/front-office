@@ -56,6 +56,12 @@ function cpFacPanel(S,k){ const t=team(G.user);
     return `<div class="cpph"><span class="cpnm sm">${esc(S.stadName||'홈구장')}</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
       <p class="small">1군 엔트리 선수가 훈련하는 곳입니다. 지금: ${esc(S.mainNote)}.</p><div class="cpstat"><span>운영 기록</span>1군 ${n}명 · 그중 피로 60 이상 ${S.players.filter(p=>p.where==='club').length}명</div>
       <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="main">홈구장 시설 보기</button></div>`; }
+  if(k==='stadfac'){ const SL=S.stLv||{}; const L2=S.lv||{};
+    return `<div class="cpph"><span class="cpnm sm">구장·1군 시설</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
+      <p class="small">홈구장 투자(관람석·식음료·프리미엄석·전광판·그라운드)는 관중·수입·홈경기 부상에 쓰이고, 웨이트·재활·랩은 훈련 단지에 있지만 1군도 함께 씁니다.</p>
+      <div class="cpstat"><span>홈구장</span>${STAD_ITEMS.map(x=>`${x.l} ${SL[x.k]||0}/5`).join(' · ')}</div>
+      <div class="cpstat"><span>함께 쓰는 훈련 시설</span>웨이트 ${L2.weight||0}/3 · 재활 ${L2.rehab||0}/3 · 랩 ${L2.lab||0}/3</div>
+      <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="main">홈구장 시설 투자</button><button class="btn small" data-a="itab" data-v="cmap:farm">훈련 단지 보기</button></div>`; }
   if(k==='club'){ const C=S.players.filter(p=>p.where==='club');
     return `<div class="cpph"><span class="cpnm sm">클럽하우스</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
       <p class="small">시즌 중 피로가 60 이상 쌓인 1군 선수가 쉬는 곳입니다(실제 피로 수치 기준).</p>

@@ -89,9 +89,10 @@ function pendMailId(){ const n=ibNeedList(); if(n.length)return n[0].id;
 /* 스페이스바로 진행할 때 묻는 창: 어디까지 가는지 */
 function advTargetTxt(v){ const per=period();
   if(G.unemp)return '제의가 오거나 2주가 지날 때까지 진행합니다.';
+  if(v==='event'&&(per==='off'||per==='pre')&&!nextGames(1).some(x=>x.d<=G.day+7))return `${dmd(G.day+7)}까지 최대 7일 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`;
   if(v==='event'){ let d=G.day+1; while(d<G.day+7&&dobj(d+1).w!==1)d++; return `${dmd(d)}(${WD[dobj(d).w]}) 경기까지 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`; }
   if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
-  const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?' 비시즌·시즌 준비 기간에는 몇 주가 지날 수 있습니다.':''}`; }
+  const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
 function advAsk(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
   if(P.length)UI._pendAck=P.map(x=>x.id).join('|'); /* 여기서 보여 줬으니 진행 전 확인을 다시 묻지 않는다 */
   UI.cfm={k:'advSpace',v,doc:{subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true}}; cfmRender(); }
