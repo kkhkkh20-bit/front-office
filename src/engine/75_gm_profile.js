@@ -3,6 +3,10 @@
  '트레이드를 자주 한다', '언론 플레이를 즐긴다', '유망주를 선호한다' 같은 스타일과 별명을 붙인다. 다른 구단 단장도 같은 방식으로 기록한다.
  기록은 단장 개인을 따라간다(구단을 옮겨도 이어진다). */
 function meInit(){ G.me=G.me||{pp:0,iv:0,ivSkip:0,fa:0,faBig:0,faAmt:0,mgrFire:0,fRep:0,since:G.gmSince??G.year}; return G.me; }
+/* 단장 기본 정보(새 게임에서 직접 정한다): 이름·나이·출신·얼굴 */
+const GM_BG={player:'선수 출신',scout:'스카우트 출신',data:'전력분석 출신',corp:'모기업 프런트 출신'};
+function meName(){ return (G&&G.gmP&&G.gmP.name)||''; }
+function meAge(){ const P=G.gmP; return P&&P.age?P.age+(G.year-(P.y0||G.year)):null; }
 function meInc(k,n){ if(G.unemp)return; const M=meInit(); M[k]=(M[k]||0)+(n??1); }
 /* 다른 구단 단장 기록(사람에게 붙는다: 단장이 바뀌면 새로 시작) */
 function gmSt(tid){ const g=tid===G.user?null:team(tid).gm; if(!g)return null; g.st=g.st||{fa:0,faBig:0,mgrFire:0}; return g.st; }

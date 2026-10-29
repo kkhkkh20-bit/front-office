@@ -102,9 +102,9 @@ function jobAnswer(tid,yes,auto){ const j=(G.jobs||[]).find(x=>x.tid===tid&&!x.d
   return auto?'':`${t.city} ${t.nick}의 제의를 거절했습니다.`; }
 /* 경질되면 야인이 된다. 시간은 계속 흐르고, 다른 구단에서 단장이 바뀔 때 명성에 따라 제의가 온다 */
 function firedFlow(y,msg,kind){ gmInit(); const old=G.user; const ot=team(old);
-  let pay=''; try{ if(kind){ if(G.myC&&G.myC.tid!=null)myCEnd(kind==='leave'?'재계약 고사':'계약 만료',y); } else pay=myCFired(y); }catch(e){}
-  chron('fired',`${kind==='leave'?'재계약 고사':kind==='expire'?'계약 만료':'단장 경질'}: ${msg}`,null,old); G.unemp={y,msg,since:G.day,from:old}; ot.gm=mkGM(old); ot.rel=55;
-  wire('단장',`${tname(old)}, ${kind==='leave'?'단장 재계약 불발':kind==='expire'?'단장과 계약 만료로 결별':'단장 경질'}. 후임에 ${ot.gm.name} 단장`,{tid:old});
+  let pay=''; try{ if(kind){ if(G.myC&&G.myC.tid!=null)myCEnd(kind==='leave'?'재계약 고사':kind==='resign'?'자진 사임':'계약 만료',y); } else pay=myCFired(y); }catch(e){}
+  chron('fired',`${kind==='leave'?'재계약 고사':kind==='expire'?'계약 만료':kind==='resign'?'자진 사임':'단장 경질'}: ${msg}`,null,old); G.unemp={y,msg,since:G.day,from:old}; ot.gm=mkGM(old); ot.rel=55;
+  wire('단장',`${tname(old)}, ${kind==='leave'?'단장 재계약 불발':kind==='expire'?'단장과 계약 만료로 결별':kind==='resign'?`${meName()?meName()+' ':''}단장 자진 사임`:'단장 경질'}. 후임에 ${ot.gm.name} 단장`,{tid:old});
   mail('야인','단장직에서 물러났습니다',`${msg}${pay}\n\n이제 야인입니다. 시간은 그대로 흐르고, 다른 구단이 단장을 바꿀 때 단장 명성(${G.rep})을 보고 제의가 올 수 있습니다. 명성이 높을수록 제의가 자주 옵니다. 제의는 소식함과 홈에 뜹니다.\n\n그동안 리그 탭에서 판도를 지켜보세요. 단장 경력을 끝내려면 홈의 '단장 경력 마치기'를 누르면 됩니다.`,{imp:true,kind:'경력'});
   /* 명성이 높으면 곧바로 연락이 오기도 한다 */
   const cands=G.teams.filter(t=>t.id!==old&&!(G.jobs||[]).some(j=>!j.done&&j.tid===t.id)).map(t=>({t,rk:G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===t.id)+1:5})).sort((a,b)=>b.rk-a.rk);
@@ -124,6 +124,11 @@ function unempAuto(){ if(!G.unemp)return; const u=G.user;
   const o=dobj(G.day); if(o.d===1){ G.rep=clamp((G.rep??40)+(G.rep<50?1:0),0,100); }
   /* 7월 1일: 하위권 구단이 단장을 바꾸며 연락해 오기도 한다 */
   if(o.m===7&&o.d===1&&!(G.jobs||[]).some(j=>!j.done)){ const st=standingsNow(); const t=team(st[st.length-1-ri(0,2)].tid); if(t.id!==u&&R()<clamp((G.rep-15)/80,.08,.6)){ const og=gmOf(t.id).name; t.gm={...mkGM(t.id),name:'단장대행',interim:true}; wire('단장',`${t.city} ${t.nick}, ${og} 단장 시즌 중 경질`,{tid:t.id}); try{ news('리그',`${tshort(t.id)}, ${og} 단장 시즌 중 경질`,`최하위권으로 처진 ${tname(t.id)}이(가) 시즌 도중 ${og} 단장을 경질했습니다. 후임을 물색 중입니다.`,0); }catch(e){} jobOffer(t.id,true); } } }
+/* 자진 사임: 남은 계약 연봉은 받지 않는다. 계약 기간 중이면 명성이 조금 깎인다(시즌 중이면 더). 야인이 되어 다른 구단 제의를 기다린다 */
+function resignGM(){ if(G.unemp)return '지금은 맡은 구단이 없습니다.'; const C=myCInit(); if(!C||C.tid==null)return '지금은 맡은 구단이 없습니다.'; const left=Math.max(0,C.y1-G.year); const mid=period()==='season'||period()==='post';
+  const pen=(left>0?2:0)+(mid?3:0); G.rep=clamp((G.rep??50)-pen,0,100); try{ meInc('resign'); }catch(e){}
+  const t=team(G.user); news('언론',`${tshort(G.user)} ${meName()?meName()+' ':''}단장 자진 사임`,`${mid?'시즌 도중 ':''}${tname(G.user)} 단장이 스스로 물러났습니다.${left>0?` 계약은 ${left}년 남아 있었습니다.`:''}`,-1);
+  firedFlow(G.year,`${tname(G.user)} 단장직에서 스스로 물러났습니다.${left>0?` 남은 계약 ${left}년 치 연봉은 받지 않습니다.`:''}${pen?` 명성 -${pen}${mid?'(시즌 도중 사임)':''}.`:''}`,'resign'); void t; return ''; }
 function retireGM(){ if(!G.unemp)return; G.gameOver={y:G.year,msg:`${G.unemp.y}시즌 뒤 야인으로 지내다 단장 경력을 마쳤습니다.`}; }
 function switchTeam(tid){ const old=G.user; const ot=team(old), nt=team(tid); G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,faB:0}; /* 옛 구단에서 쓴 돈이 새 구단 결산에 섞이지 않게 */
   facMoveTeam(old,tid); /* 시설·공사·버스는 구단에 남는다: 떠나는 구단은 그대로 갖고, 가는 구단 것을 그대로 이어받는다 */

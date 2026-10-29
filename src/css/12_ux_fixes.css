@@ -434,3 +434,13 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .prr-t{display:flex;flex-direction:column;min-width:0;flex:1}.prr-t i{font-style:normal;font-size:11px;color:var(--mut,#8b97a3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prr-r{font-weight:700}.prr-r.good{color:#3fd07f}.prr-r.bad{color:#ff6b6b}
 .ppl{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+
+/* 단장 프로필 */
+.railme{display:flex;align-items:center;gap:8px;width:100%;padding:8px 14px;border:0;border-top:1px solid var(--line);background:none;color:inherit;font:inherit;cursor:pointer;text-align:left}
+.railme .av{width:26px;height:26px}.railme.on{background:rgba(255,255,255,.06)}
+.railme span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gpf{display:flex;gap:16px;flex-wrap:wrap}.gpf-face{display:flex;flex-direction:column;align-items:center;gap:8px}
+.gpf-in{flex:1;min-width:220px;display:flex;flex-direction:column;gap:8px}
+.gpf-in input,.gpf-in select{display:block;width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel2,#1d2730);color:inherit;font:inherit}
+.mehead{display:flex;align-items:center;gap:14px}.mehead-t{flex:1;min-width:0}.mehead .sec{margin:2px 0 6px}
+.rail .railme{margin-top:auto}.rail .railme+.railset{margin-top:0}

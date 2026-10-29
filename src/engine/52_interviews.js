@@ -166,7 +166,7 @@ function ivDaily(){ const o=dobj(G.day); if(G.unemp)return;
 /* 인터뷰 기사: 다음 날 매체별로 나가고, 소식함에 기사와 반응을 알린다. 화제가 된 말은 다른 매체가 후속 질문을 요청한다 */
 function ivNewsPub(){ const Q=G.ivNewsQ||[]; if(!Q.length)return; const due=Q.filter(x=>x.day<=G.day); if(!due.length)return; G.ivNewsQ=Q.filter(x=>x.day>G.day);
   for(const x of due){ const by={}; for(const a of x.ans){ const o=a.outlet||x.outlet; (by[o]=by[o]||[]).push(a); }
-    const heads=[]; for(const o in by){ const L=by[o]; const big=L.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0]; const q=big.a.replace(/^"|"$/g,''); const h=`${tshort(G.user)} 단장 "${q.slice(0,30)}${q.length>32?'…':''}"`;
+    const heads=[]; for(const o in by){ const L=by[o]; const big=L.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0]; const q=big.a.replace(/^"|"$/g,''); const h=`${tshort(G.user)} ${meName()?meName()+' ':''}단장 "${q.slice(0,30)}${q.length>32?'…':''}"`;
       news('언론',h,`${o} ${L[0].rep||x.rep} 기자${x.md?` · ${IV_TOPIC[x.k]}`:''}: ${L.map(a=>`${a.q} ${a.a}`).join(' ')}`,0,{outlet:o}); heads.push(`${o}: ${h}`); }
     const sumFx=x.ans.reduce((s,a)=>({fan:s.fan+(a.fx.fan||0),press:s.press+(a.fx.press||0)}),{fan:0,press:0});
     const hot=x.ans.filter(a=>Math.abs(a.fx.fan)+Math.abs(a.fx.press)>=3||a.fx.prom||(a.fx.mgr||0)<0||['비판','냉정','도발','압박'].includes(a.tone));
