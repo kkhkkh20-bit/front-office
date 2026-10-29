@@ -124,7 +124,7 @@ function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]
   if(o.fx.pp){ try{ const msg=pressPlay(v.repId,o.fx.pp,o.fx.pid,'iv'); if(msg)mail('홍보팀','인터뷰에서 한 말이 기사로 나갑니다',msg,{kind:'언론'}); }catch(e){} }
   v.ans.push({q:q.q,a:o.t,tone:o.tone,fx,outlet:q.outlet||v.outlet,rep:q.rep||v.rep}); v.i++;
   if(v.i>=v.qs.length){ v.done=true; try{ meInc('iv'); }catch(e){} const big=v.ans.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0];
-    (G.ivNewsQ=G.ivNewsQ||[]).push({day:G.day+1,k:v.k,outlet:v.outlet,rep:v.rep,repId:v.repId,ans:v.ans.map(a=>({...a})),md:v.k==='mediaday'||v.k==='ps_md',d:v.d}); } /* 기사는 다음 날 아침에 나간다 */
+    (G.ivNewsQ=G.ivNewsQ||[]).push({tid:G.user,day:G.day+1,k:v.k,outlet:v.outlet,rep:v.rep,repId:v.repId,ans:v.ans.map(a=>({...a})),md:v.k==='mediaday'||v.k==='ps_md',d:v.d}); } /* 기사는 다음 날 아침에 나간다 */
   return o; }
 function ivSkip(){ const v=G.iv; if(!v||v.done)return; v.done=true; v.skip=true; try{ meInc('ivSkip'); }catch(e){} repRel(repById(v.repId),-4,'인터뷰 거절'); news('언론',`${tshort(G.user)} 단장, ${IV_TOPIC[v.k]} 질문에 침묵`,'구단은 공식 입장을 내지 않았습니다. 팬들 사이에서 답답하다는 반응이 나옵니다.',-1,{outlet:v.outlet}); }
 /* 공약 점검: 결산 때(가을야구·우승), 2월 1일(FA 큰손) */
@@ -141,9 +141,9 @@ const MQ={data:{w:['"숫자대로 갔고, 숫자대로 나왔습니다."','"상�
   old:{w:['"야구는 기본입니다. 기본을 지키니 이겼습니다."','"오래 하다 보면 이런 날도 옵니다. 들뜨지 않겠습니다."'],l:['"기본이 안 됐습니다. 수비, 주루부터 다시 하겠습니다."','"한두 경기로 시즌이 끝나지 않습니다."']},
   calm:{w:['"계획한 대로 됐습니다. 다음 경기 준비하겠습니다."','"선수들이 각자 할 일을 했습니다."'],l:['"이런 날도 있습니다. 차분하게 다시 하겠습니다."','"잘못된 부분은 정리하고 넘어가겠습니다."']}};
 function ivNewsAfterGame(rec){ if(G.unemp||period()==='off')return; const m=G.mgr[G.user]; if(!m||m.interim)return; const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs;
-  const big=Math.abs(ms)>=6, close=Math.abs(ms)<=1; if(!(big||(close&&R()<.25)||R()<.06))return; const v=mgrVoice(m); const w=ms>0;
-  const q=pick(MQ[v][w?'w':'l']); const op=rec.home===G.user?rec.away:rec.home;
-  news('경기',`${m.name} 감독 "${q.replace(/^"|"$/g,'').slice(0,26)}${q.length>28?'…':''}"`,`${tshort(op)}전 ${w?'승리':'패배'}(${rec.home===G.user?rec.hs:rec.as}:${rec.home===G.user?rec.as:rec.hs}) 뒤 ${m.name} 감독: ${q}`,0);
+  const big=Math.abs(ms)>=6, close=Math.abs(ms)<=1; if(!(big||(close&&R()<.25)||R()<.06))return; const v=mgrVoice(m); const w=ms>0, dr=ms===0;
+  const q=dr?pick(['"끝까지 따라붙은 건 좋았습니다. 다음에는 잡겠습니다."','"이길 수 있던 경기라 아쉽습니다."','"비긴 것도 결과입니다. 다음 경기 준비하겠습니다."']):pick(MQ[v][w?'w':'l']); const op=rec.home===G.user?rec.away:rec.home;
+  news('경기',`${m.name} 감독 "${q.replace(/^"|"$/g,'').slice(0,26)}${q.length>28?'…':''}"`,`${tshort(op)}전 ${w?'승리':dr?'무승부':'패배'}(${rec.home===G.user?rec.hs:rec.as}:${rec.home===G.user?rec.as:rec.hs}) 뒤 ${m.name} 감독: ${q}`,0);
   /* 오늘의 선수 인터뷰 */
   try{ if(w&&rec.box){ const me=rec.home===G.user?'h':'a'; const b=rec.box[me].bat.slice().sort((a,c)=>(c.hr*3+c.h+c.rbi)-(a.hr*3+a.h+a.rbi))[0]; const p=b&&G.players[b.id]; if(p&&(b.hr>=1||b.h>=3)&&R()<.5){ initPers(p);
       const L=p.pers.amb>=13?[`"더 큰 무대에서도 통한다는 걸 보여 주고 싶습니다."`,`"오늘이 끝이 아닙니다. 더 칠 겁니다."`]:p.pers.loy>=13?[`"${tshort(G.user)} 팬들 응원 덕분입니다. 이 팀에서 오래 뛰고 싶습니다."`]:[`"앞 타자들이 잘 만들어 줘서 편하게 쳤습니다."`,`"감독님이 믿어 주셔서 부담 없이 쳤습니다."`];
@@ -165,7 +165,7 @@ function ivDaily(){ const o=dobj(G.day); if(G.unemp)return;
 
 /* 인터뷰 기사: 다음 날 매체별로 나가고, 소식함에 기사와 반응을 알린다. 화제가 된 말은 다른 매체가 후속 질문을 요청한다 */
 function ivNewsPub(){ const Q=G.ivNewsQ||[]; if(!Q.length)return; const due=Q.filter(x=>x.day<=G.day); if(!due.length)return; G.ivNewsQ=Q.filter(x=>x.day>G.day);
-  for(const x of due){ const by={}; for(const a of x.ans){ const o=a.outlet||x.outlet; (by[o]=by[o]||[]).push(a); }
+  for(const x of due){ if(x.tid!=null&&x.tid!==G.user)continue; /* 다른 구단 시절 인터뷰는 새 구단 기사로 내지 않는다 */ const by={}; for(const a of x.ans){ const o=a.outlet||x.outlet; (by[o]=by[o]||[]).push(a); }
     const heads=[]; for(const o in by){ const L=by[o]; const big=L.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0]; const q=big.a.replace(/^"|"$/g,''); const h=`${tshort(G.user)} ${meName()?meName()+' ':''}단장 "${q.slice(0,30)}${q.length>32?'…':''}"`;
       const ni=news('언론',h,`${o} ${L[0].rep||x.rep} 기자${x.md?` · ${IV_TOPIC[x.k]}`:''}: ${L.map(a=>`${a.q} ${a.a}`).join(' ')}`,big.fx.fan>=2?1:big.fx.fan<=-2?-1:0,{outlet:o}); if(ni&&!x.n0)x.n0=ni; heads.push(`${o}: ${h}`); }
     const sumFx=x.ans.reduce((s,a)=>({fan:s.fan+(a.fx.fan||0),press:s.press+(a.fx.press||0)}),{fan:0,press:0});

@@ -81,7 +81,7 @@ EVH.cwInv={ pick(e,i){ const d=e.data; if(i!==0)return `${d.who==='ceo'?'사장'
 function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=plan.x==='ceo'?'ceo':'own'; const why=plan.cw||'self'; plan.done=true;
   const t=team(G.user); const me=rec.home===G.user?'h':'a'; const ms=me==='h'?rec.hs-rec.as:rec.as-rec.hs; const tr0=t.trust;
   const L=cwUlog(); const tags=cwTags(rec,me,ms,cwStreak(L.slice(0,-1)));
-  const S={id:'cw'+rec.day+':'+rec.home+':'+rec.away,day:rec.day,gk:{d:rec.day,h:rec.home,a:rec.away},who,why,ms,res:rec.res,tags,tr0,until:G.day+3,done:false,sugg:null,gift:null};
+  const S={tid:G.user,id:'cw'+rec.day+':'+rec.home+':'+rec.away,day:rec.day,gk:{d:rec.day,h:rec.home,a:rec.away},who,why,ms,res:rec.res,tags,tr0,until:G.day+3,done:false,sugg:null,gift:null};
   S.lines=cwRemarks(rec,me,who,ms,tags);
   /* 결과에 따른 신뢰 소폭 변화: 이기면 +1(5점 차 이상 +1.5), 5점 차 이상 지면 -1. 사장과 보면 절반이 구단주에게 전해진다 */
   const d0=ms>=5?1.5:ms>0?1:ms<=-5?-1:0; const dv=who==='ceo'?d0/2:d0; t.trust=clamp(Math.round((t.trust+dv)*10)/10,0,100); S.trD=Math.round((t.trust-tr0)*10)/10;
@@ -150,7 +150,7 @@ function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const l
     const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 -2, 감독 관계 -5`,'']);
     if(fac)L.push(['fac:'+fac.k,`대형 투자: ${FACI[fac.k].l} 모기업 투자 요청`,`공사비 ${money(fac.c)} · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 -1`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
   return L; }
-function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg)return '건의할 수 있는 때가 아닙니다.'; const o=cwSuggOpts(S).find(x=>x[0]===v); if(!o)return '지금은 건의할 수 없는 일입니다.'; if(o[3])return o[3];
+function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||(S.tid!=null&&S.tid!==G.user))return '건의할 수 있는 때가 아닙니다.'; const o=cwSuggOpts(S).find(x=>x[0]===v); if(!o)return '지금은 건의할 수 없는 일입니다.'; if(o[3])return o[3];
   const t=team(G.user); const tr0=t.trust; const mod=cwMod(S); const [k,x]=v.split(':'); let ok=false, txt='';
   if(k==='ops'||k==='pay'){ const r=cwWithMod(80,mod,()=>ownerAsk(+x,null)); ok=/^승인/.test(r); txt=r; }
   else if(k==='fa'){ const r=cwWithMod(80,mod,()=>ownerAsk(G.players[+x].ask.annual,{k:'fa',pid:+x})); ok=/^승인/.test(r); txt=r; }

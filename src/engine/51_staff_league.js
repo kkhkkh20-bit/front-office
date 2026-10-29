@@ -40,7 +40,7 @@ function stOffer(kind,id,raise){ stInit(); const mkt=kind==='sc'?scoutMkt():anaM
   const sal=round5(s.sal*(1+raise)); const me=stScore(s,G.user,sal,false);
   /* 경쟁 제안이 이미 걸려 있으면(우리가 한 번 밀린 뒤) 그 조건과 다시 겨룬다. 두 번째에도 밀리면 그쪽으로 간다 */
   const B=s.bid&&s.bid.exp>=G.day?s.bid:null;
-  if(B){ if(me>B.v){ delete s.bid; } else { delete s.bid; stJoin(kind,s,B.t); return {ok:false,msg:`${s.name}은(는) 고민 끝에 ${tname(B.t)}을(를) 택했습니다(상대 연 ${money(B.sal)}). ${clubPrestige(B.t)>clubPrestige(G.user)?'구단 위상 차이를 조건으로 메우지 못했습니다.':'조건이 조금 모자랐습니다.'}`}; } }
+  if(B){ if(me>B.v){ delete s.bid; } else { delete s.bid; stJoin(kind,s,B.t,B.sal); return {ok:false,msg:`${s.name}은(는) 고민 끝에 ${tname(B.t)}을(를) 택했습니다(상대 연 ${money(B.sal)}). ${clubPrestige(B.t)>clubPrestige(G.user)?'구단 위상 차이를 조건으로 메우지 못했습니다.':'조건이 조금 모자랐습니다.'}`}; } }
   const rivals=B?[]:stInterest(s).map(t=>{ const rs=round5(s.sal*rnd(1,1.15)); return {t,sal:rs,v:stScore(s,t,rs,false)}; }).sort((a,b)=>b.v-a.v);
   if(rivals.length&&rivals[0].v>me){ const r=rivals[0]; /* 바로 뺏기지 않는다: 상대 조건을 알려 주고 3일 안에 다시 제안할 기회를 준다 */
     s.bid={t:r.t,sal:r.sal,v:r.v,k:kind,exp:G.day+3};
@@ -51,7 +51,7 @@ function stOffer(kind,id,raise){ stInit(); const mkt=kind==='sc'?scoutMkt():anaM
     return {ok:false,bid:true,msg:head+' '+tail}; }
   s.sal=sal; s.since=G.day; s.loy=20; if(kind==='sc')G.scoutMarket=G.scoutMarket.filter(x=>x.id!==id); else G.amarket=G.amarket.filter(x=>x.id!==id);
   return {ok:true,s,msg:`${s.name}이(가) 연 ${money(sal)}에 합류합니다.${rivals.length?` ${rivals.map(r=>tshort(r.t)).join('·')}도 노렸지만 우리를 택했습니다.`:''}`}; }
-function stJoin(kind,s,tid){ const L=stTeamL(tid); if(!L)return; s.since=G.day; s.loy=20; if(kind==='sc'){ G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.id!==s.id); L.sc.push(s); if(L.sc.length>ST_SC_N[1]+1)L.sc.sort((a,b)=>a.skill-b.skill).shift(); stSync(tid); }
+function stJoin(kind,s,tid,sal){ const L=stTeamL(tid); if(!L)return; if(sal)s.sal=sal; /* 경쟁 구단이 제시한 연봉으로 계약 */ s.since=G.day; s.loy=20; if(kind==='sc'){ G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.id!==s.id); L.sc.push(s); if(L.sc.length>ST_SC_N[1]+1)L.sc.sort((a,b)=>a.skill-b.skill).shift(); stSync(tid); }
   else { G.amarket=(G.amarket||[]).filter(x=>x.id!==s.id); L.an.push(s); if(L.an.length>ST_AN_N[1]+1)L.an.sort((a,b)=>a.skill-b.skill).shift(); }
   if(s.skill>=4)wire('스태프',`${tshort(tid)}, ${kind==='sc'?'스카우트':'전력분석원'} ${s.name}(능력 ${s.skill}) 영입`,{tid}); }
 /* 매달 1일: AI 구단이 시장에서 사람을 데려간다(좋은 후보부터 사라진다) */
@@ -85,8 +85,8 @@ function stKeep(id,full){ const r=stRaidFind(id); if(!r)return '이미 끝난 �
   if(full||stay>=go){ s.sal=sal; s.loy=clamp(s.loy+10,0,100); G.stRaid=G.stRaid.filter(x=>x!==r); addLog(`${s.name}을(를) 연 ${money(sal)}에 붙잡았습니다.`); return `${s.name}: "믿어 주셔서 감사합니다. 남겠습니다." 연 ${money(sal)}.`; }
   return stLeave(r); }
 /* 영입 경쟁: 기한이 지나면 경쟁 구단으로 간다 */
-function stBidExpire(){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ for(const s of [...mkt]){ if(!s.bid||s.bid.exp>=G.day)continue; const t=s.bid.t; delete s.bid; stJoin(kind,s,t); note('스태프',`${s.name}이(가) ${tname(t)}과(와) 계약했습니다. 다시 제안하지 않아 영입 경쟁이 끝났습니다.`); } } }
-function stBidDrop(id){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ const s=mkt.find(x=>x.id===id); if(s&&s.bid){ const t=s.bid.t; delete s.bid; stJoin(kind,s,t); return `${s.name} 영입을 포기했습니다. ${tshort(t)}로 갑니다.`; } } return '이미 끝난 일입니다.'; }
+function stBidExpire(){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ for(const s of [...mkt]){ if(!s.bid||s.bid.exp>=G.day)continue; const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); note('스태프',`${s.name}이(가) ${tname(t)}과(와) 계약했습니다. 다시 제안하지 않아 영입 경쟁이 끝났습니다.`); } } }
+function stBidDrop(id){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ const s=mkt.find(x=>x.id===id); if(s&&s.bid){ const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); return `${s.name} 영입을 포기했습니다. ${tshort(t)}로 갑니다.`; } } return '이미 끝난 일입니다.'; }
 function stDaily(){ try{ stBidExpire(); }catch(e){} const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e){} if((o.m===11||o.m===12)&&o.d===15){ try{ stRaid(); }catch(e){} stRaidAuto(); }
   for(const r of (G.stRaid||[]).filter(r=>r.exp<G.day)){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(s&&stScore(s,G.user,s.sal,true)>=stScore(s,r.tid,r.sal,false)){ G.stRaid=G.stRaid.filter(x=>x!==r); note('스태프',`${s.name}은(는) 고민 끝에 남기로 했습니다.`); } else note('스태프',stLeave(r)); } }
 /* 새해: 경험이 쌓여 성장(젊을수록), 노장은 감각이 떨어지고 은퇴, 충성도 상승, 연봉은 실력에 맞춰 재계약 */

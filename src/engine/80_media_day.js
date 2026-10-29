@@ -5,9 +5,9 @@
  - 감독이 '우승'이나 '가을야구'를 공언하면 시즌 뒤 지켰는지 다시 기사가 난다.
  - 포스트시즌(준플레이오프부터): 1차전 하루 전. 감독이 선수 2명을 고른다.
  단장이 직접 질문에 답하는 일은 FA 영입·이탈, 트레이드, 감독 선임·경질 직후, 시즌 결산 인터뷰로 따로 온다. */
-function mdCaptain(tid){ const t=team(tid); const c=t.capt!=null?G.players[t.capt]:null; if(c&&c.team===tid&&!c.foreign)return c;
-  const L=domestic(tid).filter(p=>p.age>=27&&!p.prospect); const sc=p=>{ initPers(p); return ovr(p)+(p.pers.pro+p.pers.loy)*.8+Math.min(p.age-27,8)*1.2+(p.isP?-6:0); };
-  const b=(L.length?L:domestic(tid)).slice().sort((a,b)=>sc(b)-sc(a))[0]; t.capt=b?b.id:null; return b||null; }
+/* 미디어데이 주장 = 선수단 투표로 뽑은 주장(t.cap). 없거나 떠났으면 그때 선출한다 */
+function mdCaptain(tid){ const t=team(tid); delete t.capt; let c=t.cap!=null?G.players[t.cap]:null; if(c&&c.team===tid&&!c.foreign)return c;
+  try{ c=electCaptain(tid,'미디어데이를 앞두고'); }catch(e){ c=null; } return c||domestic(tid).slice().sort((a,b)=>b.age-a.age)[0]||null; }
 function mdScore(tid,p){ const m=mgrOf(tid); return ovr(p)+Math.min(starPower(p),20)*.5+(p.age<=25?((m.youth??50)-50)*.12:0)+(p.e1?2:0); }
 function mdRepPool(tid){ const cap=mdCaptain(tid); return domestic(tid).filter(p=>p!==cap&&!p.prospect&&healthy(p)&&(p.e1||ovr(p)>=50||p.age<=24)).sort((a,b)=>mdScore(tid,b)-mdScore(tid,a)); }
 function mdWhy(p){ const h=seasonTotal(p,G.year-1,'1군'); if(!h)return p.age<=24?'기대주':'주축 선수';

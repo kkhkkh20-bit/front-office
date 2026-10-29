@@ -83,7 +83,7 @@ function ownerAsk(amt,pur){ const t=team(G.user); if(t.indie)return '독립구�
   t.trust=clamp(t.trust-1,0,100); mail('구단주실',`구단주 반려: ${what}`,`${B.own.name} 회장이 요청을 반려했습니다. "${t.owner==='profit'?'지금 적자부터 줄이세요.':t.owner==='win'?'성적으로 먼저 증명하세요.':'지금은 때가 아닙니다.'}" 구단주 신뢰 -1.`,{kind:'구단주'}); return `반려됐습니다. 구단주 신뢰 -1.`; }
 /* 겨울(결산 뒤)에 받은 지원금은 다음 시즌 몫이다. FA 자금 기한은 FA 시장이 닫히는 1월 24일 */
 function grantFaEnd(){ return dnum(G.year+(dobj(G.day).m>=10?1:0),1,24); }
-function grantApply(amt){ const t=team(G.user); const sy=sponSeason(); t.grant=(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt; t.grant={y:sy,amt:t.grant}; const g=G.goals; if(g&&g.y===sy){ const cap=supportCap(t); g.sup=clamp(g.sup+amt/Math.max(1,cap),0,1.5); } }
+function grantApply(amt){ const t=team(G.user); const sy=sponSeason(); const cap0=supportCap(t); t.grant=(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt; t.grant={y:sy,amt:t.grant}; const g=G.goals; if(g&&g.y===sy){ const cap1=supportCap(t); g.sup=clamp((g.sup*cap0+amt)/Math.max(1,cap1),0,1.5); } } /* 지원 목표(비율×한도)가 정확히 받은 금액만큼 늘게: 한도도 함께 늘어나므로 비율은 새 한도로 다시 계산한다 */
 /* 목적이 있는 지원금: 지켰는지 */
 function grantCheck(){ const t=team(G.user); for(const g of grants()){ if(g.st!=='open'||!g.pur)continue; let ok=false, fail=false;
     if(g.pur.k==='fa'){ const p=G.players[g.pur.pid]; ok=p&&p.team===G.user; fail=!ok&&(p&&p.team!=null&&p.team!==G.user||G.fa&&G.fa.closed||G.day>g.until); }

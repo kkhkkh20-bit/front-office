@@ -141,6 +141,7 @@ function switchTeam(tid){ const old=G.user; const ot=team(old), nt=team(tid); tr
   try{ const L=stInit(); L[old]={sc:G.scouts||[],an:anaList()}; stSync(old); const nl=L[tid]||stMakeTeam(nt); delete L[tid]; G.scouts=nl.sc; G.analysts=nl.an; }catch(e){}
   /* 옛 구단에 묶인 계약·약속·진행 중인 일은 넘어오지 않는다 */
   G.spon=null; G.capex=null; G.ivProm=[]; G.iv=null; G.stRaid=[]; G.stPo=null; G.gmPlan={};
+  G.ivNewsQ=[]; G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; } /* 인터뷰 기사 대기열·동석 관람 건의 기회·공개 약속도 옛 구단 몫이다 */
   try{ if(period()!=='off')setGoals(); }catch(e){}
   addLog(`${tname(old)}을(를) 떠나 ${tname(tid)} 단장으로 취임했습니다.`); chron('join',`새 단장 취임`,null,tid); try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
   mail('구단주실',`${nt.city} ${nt.nick} 단장 취임`,`${tname(tid)} 단장으로 취임하셨습니다. 선수단과 코치진, 감독은 그대로 이어받습니다. 재정과 목표는 이 구단 기준으로 새로 시작합니다.\n${needText(tid)}`,{kind:'경력'}); }
