@@ -15,7 +15,8 @@ function achView(){ const T=achT(); const M=achMeta(); const N=ACH.length; const
   const item=a=>{ const h=G.ach&&G.ach[a.id], m=M.u[a.id]; let pr=''; if(a.p&&!h){ let v=null; try{ v=a.p(T); }catch(e){} if(v){ const w=Math.min(100,Math.round(v[0]/v[1]*100)); pr=`<div class="achbar"><i style="width:${w}%"></i></div><span class="small muted">${Math.min(v[0],v[1])}/${v[1]}</span>`; } }
     const st=h?`<span class="pill acc">${h.y}년 달성</span>`:m?`<span class="pill">다른 게임에서 달성</span>`:'';
     return `<div class="achit${h?' on':m?' half':''}"><div class="row between"><b>${esc(a.n)}</b>${st}</div><p class="small">${esc(a.d)}</p>${pr}<p class="small muted">보상: ${esc(achRewardTxt(a.r))}</p></div>`; };
-  return head+allT+cats.map(c=>csec(c,`<div class="achlist">${ACH.filter(a=>a.c===c).map(item).join('')}</div>`)).join(''); }
+  const it=inTabs('achv',[['sum','요약'],...cats.map(c=>[c,`${c} ${ACH.filter(a=>a.c===c&&achHas(a.id)).length}/${ACH.filter(a=>a.c===c).length}`])],'sum'); /* 범주별 안쪽 탭: 한 화면에 한 범주 */
+  return it.bar+(it.cur==='sum'?head+allT:csec(it.cur,`<div class="achlist">${ACH.filter(a=>a.c===it.cur).map(item).join('')}</div>`)); }
 Object.assign(A,{ achTitle(v){ achSetTitle(v||null); render(); } });
 /* 구단 > 연대기 안쪽 탭에 붙인다 */
 try{ if(!MERGE.club.chron.includes('ach'))MERGE.club.chron.push('ach'); ALIAS.club.ach='chron'; MLBL['club:ach']='도전과제'; }catch(e){}

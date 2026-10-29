@@ -55,8 +55,9 @@ function relView(){ const groups=relPeople();
   const warn=[]; const t=team(G.user); const m=G.mgr[G.user];
   if(t.trust<25)warn.push(`구단주 신뢰 ${t.trust}: 시즌 종료 때 12 아래면 경질됩니다.`); if(m&&m.rel<35)warn.push(`감독과의 관계 ${m.rel}: 콜업·말소 요청과 운영 기조가 잘 먹히지 않습니다.`);
   const sad=groups[2][1].filter(x=>x.rel<40).length; if(sad)warn.push(`불만 선수 ${sad}명: 기분이 낮으면 경기력이 떨어집니다.`);
-  return csec('관계 지도',relMap(groups))+(warn.length?`<div class="note bad">${warn.map(esc).join('<br>')}</div>`:'')
-    +groups.filter(([,L])=>L.length).map(([h,L])=>csec(h,`<div class="rpg">${L.map(relCard).join('')}</div>`)).join(''); }
+  const G2=groups.filter(([,L])=>L.length); const it=inTabs('relv',[['map','지도'],...G2.map(([h,L])=>[h,`${h} ${L.length}`])],'map'); /* 지도와 사람 묶음을 안쪽 탭으로 */
+  const W=warn.length?`<div class="note bad">${warn.map(esc).join('<br>')}</div>`:''; const g=G2.find(([h])=>h===it.cur);
+  return it.bar+(g?csec(g[0],`<div class="rpg">${g[1].map(relCard).join('')}</div>`):csec('관계 지도',relMap(groups))+W); }
 /* 홈: 핵심 관계 한 줄 */
 function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); const pick2=k=>{ for(const [,L] of gs)for(const x of L)if(x.k===k)return x; return null; };
   const L=['own','mgr','fan','press'].map(pick2).filter(Boolean); const g=gs[3][1]; if(g.length)L.push(g[0],g[g.length-1]);
