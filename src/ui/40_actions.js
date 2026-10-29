@@ -111,7 +111,7 @@ const A={
   hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ UI.confirmFire=true; render(); }, fireCancel(){ UI.confirmFire=false; render(); },
   fireMgr(){ fireMgr(); UI.confirmFire=false; save(); render(); },
-  renewMgr(v){ renewMgr(v||2); save(); render(); },
+  renewMgr(v){ const r=renewMgr(v||2); if(r)toast(r); save(); render(); },
   setPrev(v){ G.med.prev=+v; G.medSet=true; save(); render(); },
   setHosp(v){ G.med.hosp=v; G.medSet=true; save(); render(); },
   medOk(){ G.medSet=true; save(); render(); },
