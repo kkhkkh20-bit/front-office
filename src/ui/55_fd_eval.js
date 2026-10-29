@@ -2,7 +2,7 @@
 /* 드래프트가 진행되는 동안 이미 지명된 선수(우리·다른 구단)는 능력을 공개하지 않는다 */
 let _fdAllSet=null;
 function fdAllSet(){ const F=G.fd; if(!F)return new Set(); const k=F.y+':'+(F.all||[]).length; if(!_fdAllSet||_fdAllSet.k!==k){ _fdAllSet=new Set(F.all||[]); _fdAllSet.k=k; } return _fdAllSet; }
-function fdHideNow(p){ return !!(p&&G&&G.fd&&!G.fd.done&&!p.fdPool&&p.team!=null&&p.team!==G.user&&!p.foreign&&fdAllSet().has(p.id)); } /* 우리가 지명한 선수는 바로 현재 능력이 보인다(매일 보는 코치진이 안다). 다른 구단 지명 선수는 드래프트가 끝날 때까지 숨긴다. 잠재력은 누구든 추정 */
+function fdHideNow(p){ return false; } /* 우리가 지명한 선수는 바로 현재 능력이 보인다(매일 보는 코치진이 안다). 다른 구단 지명 선수는 드래프트가 끝날 때까지 숨긴다. 잠재력은 누구든 추정 */
 /* 우리 스카우트 추정(원래 능력 단위): 지명 때 남긴 값 우선 */
 function fdEstOf(p){ if(!p||!G.fd)return null; const pk=G.fd.picks.find(x=>x.pid===p.id); if(pk&&pk.e0!=null)return pk.e0; try{ return fdSeenBy(G.user,p).sc; }catch(e){ return null; } }
 /* 추정 등급 칩: 숫자 대신 등급 글자. 실제 능력이 아니라 우리 스카우트가 본 값 */

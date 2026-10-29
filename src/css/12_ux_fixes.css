@@ -374,3 +374,5 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .fdlg{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
 .fdlg i{font-style:normal;color:var(--muted);font-size:12px;min-width:36px}.fdlg .muted{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
 .fdlg.me{background:rgba(63,184,113,.08)}.fdlogt{font-size:13px}
+.fdtrue{display:inline-flex;align-items:center;gap:4px;margin-left:4px}
+.fdtrue .fdt-l{font-size:11px;color:var(--muted);white-space:nowrap}.fdlg .fdtrue{flex:none}
