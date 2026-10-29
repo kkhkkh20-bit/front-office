@@ -63,7 +63,7 @@ function buildWorld(){ const userTid=0;
   G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
   try{ G.preview=worldPreview(); }catch(e){ G.preview=null; }
 }
-function claimTeam(userTid){ G.user=userTid; G.gmSince=G.year; delete G.preview; G.lineup={}; team(userTid).cash=4000;
+function claimTeam(userTid){ G.user=userTid; G.gmSince=G.year; G.myC=null; delete G.preview; G.lineup={}; team(userTid).cash=4000;
   if(G.scouts[2])G.scouts[2].region=TEAM_DEF[userTid].region==='수도권'?'영남':'수도권';
   for(const p of foreignOf(userTid)) delete G.players[p.id];
   G.r68=true; for(const p of Object.values(G.players)){ delete p.story; delete p.cum; delete p.fl; cumInit(p); } G.mgr[userTid]=null; refreshMgrMarket(); G.coach=null; coachInit(); for(const t of G.teams)delete t.gm; G.rep=50; G.jobs=[]; G.lgTrades=[]; G.gmc={}; gmInit(); G.ob=null; G.obFace={}; try{ obInit(); refreshCoachMarket(); refreshScoutMarket(); }catch(e){} G.mail=[]; G.stops=[]; G.spend={mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0}; G.intl={us:1,la:0,jp:0,tw:0,au:0}; G.fac={lv:2,build:null}; G.pr=null; G.news=[]; G.ownerLog=[]; prInit(); for(const p of Object.values(G.players))milInit(p);

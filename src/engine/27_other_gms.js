@@ -91,21 +91,23 @@ function gmTurnover(){ gmInit(); const st=G.last&&G.last.order?G.last.order:null
     const fire=(rk>=8&&ten>=2&&R()<.4)||(rk>=6&&ten>=4&&R()<.2)||(g.age>=64&&R()<.35); if(!fire)continue;
     const old=g.name; const want=G.unemp?R()<clamp((G.rep-10)/60,.15,.85):(G.rep>=55&&R()<.55); if(want&&!G.gameOver&&!(G.unemp&&G.unemp.from===t.id)&&!G.jobs.some(j=>!j.done)){ t.gm={...mkGM(t.id),name:'단장대행',interim:true}; jobOffer(t.id,false); wire('단장',`${t.city} ${t.nick}, ${old} 단장 경질. 후임을 물색 중입니다.`,{tid:t.id}); }
     else { const og=(()=>{ try{ return obAiGM(t.id); }catch(e){ return null; } })(); t.gm=og||mkGM(t.id); if(!og)t.rel=clamp(Math.round(N(50,6)),35,65); wire('단장',`${t.city} ${t.nick}, ${old} 단장 후임으로 ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid:t.id}); } } }
-function jobOffer(tid,fired){ const t=team(tid); G.jobs.push({tid,exp:G.day+(fired?20:12),fired:!!fired,done:false});
-  mail(`${t.city} ${t.nick} 구단주실`,`${t.city} ${t.nick} 단장직 제의`,`${t.city} ${t.nick} 구단주실입니다. 단장님의 운영을 지켜봐 왔습니다. 저희 구단의 새 단장을 맡아 주실 수 있겠습니까?\n${tname(tid)} · 지난 시즌 ${G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===tid)+1:'-'}위 · ${needText(tid)}\n수락하면 ${fired?'바로':'이번 겨울부터'} ${t.city} ${t.nick}를 맡게 되고, 지금 구단과는 작별합니다.`,
+function jobOffer(tid,fired,terms,exp0){ const t=team(tid); terms=terms||myCOffer(tid,fired); G.jobs.push({tid,exp:G.day+(fired?20:exp0?20:12),fired:!!fired,done:false,terms,exp0:!!exp0});
+  mail(`${t.city} ${t.nick} 구단주실`,`${t.city} ${t.nick} 단장직 제의`,`${t.city} ${t.nick} 구단주실입니다. 단장님의 운영을 지켜봐 왔습니다. 저희 구단의 새 단장을 맡아 주실 수 있겠습니까?${exp0?' 계약이 끝나는 때라 미리 연락드립니다.':''}\n제시 조건: 연봉 ${money(terms.sal)}, ${terms.yrs}년\n${tname(tid)} · 지난 시즌 ${G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===tid)+1:'-'}위 · ${needText(tid)}\n수락하면 ${fired?'바로':'이번 겨울부터'} ${t.city} ${t.nick}를 맡게 되고, 지금 구단과는 작별합니다.`,
     {imp:true,kind:'경력',acts:[{l:`수락: ${t.city} ${t.nick}로 이동`,a:'jobYes',v:tid},{l:'거절',a:'jobNo',v:tid}]}); }
 function jobsDaily(){ for(const j of G.jobs||[]){ if(j.done||G.day<j.exp)continue; jobAnswer(j.tid,false,true); } }
 function jobAnswer(tid,yes,auto){ const j=(G.jobs||[]).find(x=>x.tid===tid&&!x.done); if(!j)return '제의가 없습니다.'; j.done=true; const t=team(tid);
-  if(yes){ G.gmSince=G.year; switchTeam(tid); return `${tname(tid)} 단장으로 취임했습니다.`; }
+  if(yes){ const wasU=!!G.unemp; if(!G.unemp&&G.myC&&G.myC.tid!=null){ myCEnd('이직'); delete G.myC.offer; for(const e of (G.evs||[]))if(!e.done&&e.k==='gmRenew'){ e.done=true; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.imp=false; } } }
+    G.gmSince=G.year; switchTeam(tid); try{ myCStart(tid,j.terms,wasU?'':'이직'); }catch(e){} for(const o of [...G.jobs])if(!o.done&&o.tid!==tid)jobAnswer(o.tid,false,true); return `${tname(tid)} 단장으로 취임했습니다. 연봉 ${money(G.myC.sal)}, ${G.myC.y0}~${G.myC.y1}년.`; }
   if(t.gm&&t.gm.interim){ t.gm=mkGM(tid); t.rel=50; wire('단장',`${t.city} ${t.nick}, ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid}); }
   return auto?'':`${t.city} ${t.nick}의 제의를 거절했습니다.`; }
 /* 경질되면 야인이 된다. 시간은 계속 흐르고, 다른 구단에서 단장이 바뀔 때 명성에 따라 제의가 온다 */
-function firedFlow(y,msg){ gmInit(); const old=G.user; const ot=team(old);
-  chron('fired',`단장 경질: ${msg}`,null,old); G.unemp={y,msg,since:G.day,from:old}; ot.gm=mkGM(old); ot.rel=55;
-  wire('단장',`${tname(old)}, 단장 경질. 후임에 ${ot.gm.name} 단장`,{tid:old});
-  mail('야인','단장직에서 물러났습니다',`${msg}\n\n이제 야인입니다. 시간은 그대로 흐르고, 다른 구단이 단장을 바꿀 때 단장 명성(${G.rep})을 보고 제의가 올 수 있습니다. 명성이 높을수록 제의가 자주 옵니다. 제의는 소식함과 홈에 뜹니다.\n\n그동안 리그 탭에서 판도를 지켜보세요. 단장 경력을 끝내려면 홈의 '단장 경력 마치기'를 누르면 됩니다.`,{imp:true,kind:'경력'});
+function firedFlow(y,msg,kind){ gmInit(); const old=G.user; const ot=team(old);
+  let pay=''; try{ if(kind){ if(G.myC&&G.myC.tid!=null)myCEnd(kind==='leave'?'재계약 고사':'계약 만료',y); } else pay=myCFired(y); }catch(e){}
+  chron('fired',`${kind==='leave'?'재계약 고사':kind==='expire'?'계약 만료':'단장 경질'}: ${msg}`,null,old); G.unemp={y,msg,since:G.day,from:old}; ot.gm=mkGM(old); ot.rel=55;
+  wire('단장',`${tname(old)}, ${kind==='leave'?'단장 재계약 불발':kind==='expire'?'단장과 계약 만료로 결별':'단장 경질'}. 후임에 ${ot.gm.name} 단장`,{tid:old});
+  mail('야인','단장직에서 물러났습니다',`${msg}${pay}\n\n이제 야인입니다. 시간은 그대로 흐르고, 다른 구단이 단장을 바꿀 때 단장 명성(${G.rep})을 보고 제의가 올 수 있습니다. 명성이 높을수록 제의가 자주 옵니다. 제의는 소식함과 홈에 뜹니다.\n\n그동안 리그 탭에서 판도를 지켜보세요. 단장 경력을 끝내려면 홈의 '단장 경력 마치기'를 누르면 됩니다.`,{imp:true,kind:'경력'});
   /* 명성이 높으면 곧바로 연락이 오기도 한다 */
-  const cands=G.teams.filter(t=>t.id!==old).map(t=>({t,rk:G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===t.id)+1:5})).sort((a,b)=>b.rk-a.rk);
+  const cands=G.teams.filter(t=>t.id!==old&&!(G.jobs||[]).some(j=>!j.done&&j.tid===t.id)).map(t=>({t,rk:G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===t.id)+1:5})).sort((a,b)=>b.rk-a.rk);
   const n=G.rep>=70?2:G.rep>=55?1:0; for(const c of cands.slice(0,n)){ const og=gmOf(c.t.id).name; c.t.gm={...mkGM(c.t.id),name:'단장대행',interim:true}; wire('단장',`${c.t.city} ${c.t.nick}, ${og} 단장과 결별`,{tid:c.t.id}); jobOffer(c.t.id,true); } }
 /* 야인 기간: 전 소속 구단은 새 단장(AI)이 운영한다 */
 function unempAuto(){ if(!G.unemp)return; const u=G.user;

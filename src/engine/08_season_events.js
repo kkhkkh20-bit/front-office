@@ -76,13 +76,13 @@ function settlement(){
     const o=order.find(x=>x.tid===t.id); const wp=o.w/Math.max(1,o.w+o.l);
     const fanM=t.id===G.user&&G.pr?(0.9+G.pr.fan/500):1, adM=t.id===G.user&&G.pr?(0.85+G.pr.fan/333)*(0.95+G.pr.press/1000):1;
     const AT=G.sea.att&&G.sea.att[t.id]; const S=stadOf(t.id); const att=stadProj(t.id).att||Math.round(1e6*t.market*(.62+t.pop*.38+(wp-.5)*1.4)*fanM);
-    const mkt=t.id===G.user?G.marketing:2000;
+    const mkt=t.id===ME()?G.marketing:2000; /* 야인 기간 전 소속 구단은 AI 구단과 같은 방식(스폰서·마케팅)으로 결산한다 */
     const ci=capInfo(t.id);
     let tax=0; if(ci.over>0){ const n=(t.capOver||0)+1; tax=Math.round(ci.over*capRate(n)); t.capOver=n; if(n>=3)t.pickPen=G.year+1; } else t.capOver=0;
     let flo=0; if(G.year>=2027){ const under=ci.floor-ci.pay; if(under>0){ const n=(t.floorUnder||0)+1; flo=Math.round(under*floorRate(n)); t.floorUnder=n; } else t.floorUnder=0; }
     const champBonus=(ps.champ===t.id&&!t.indie)?Math.round(pool*.5*(t.owner==='profit'?.6:1)):0;
     const EI=ecoIdx(y); const inc=[['입장 수입',Math.round(att*TICKET*EI*PRICE[S.price].m)],['구장 부대 수입',Math.max(0,Math.round(att*.0003*(S.lv.fnb-2)))+(S.lv.prem-2)*600+(S.lv.vis-2)*400],['중계권 배분',Math.round(9000*EI*asRev())],['광고·상품',Math.round((2200*EI+mkt*1.6)*t.market*t.pop*adM)]]; { const si=starIncome(t.id); if(si>0)inc.push(['스타 마케팅',si]); }
-    if(t.id===G.user){ const sp=sponSettle(y,ps); if(sp.base)inc.push(['스폰서 계약',sp.base]); if(sp.bonus)inc.push(['스폰서 성과 보너스',sp.bonus]); } else { if(t.indie)inc.push(['메인 스폰서',Math.round(10500*EI)]); inc.push(['스폰서',sponAI(t.id)]); } if(S.compIn>0)inc.push(['FA 보상금 수령',S.compIn]);
+    if(t.id===ME()){ const sp=sponSettle(y,ps); if(sp.base)inc.push(['스폰서 계약',sp.base]); if(sp.bonus)inc.push(['스폰서 성과 보너스',sp.bonus]); } else { if(t.indie)inc.push(['메인 스폰서',Math.round(10500*EI)]); inc.push(['스폰서',sponAI(t.id)]); } if(S.compIn>0)inc.push(['FA 보상금 수령',S.compIn]);
     if(share[t.id])inc.push(['포스트시즌 배당금',share[t.id]]);
     if(champBonus)inc.push(['모기업 우승 보너스',champBonus]);
     const scoutCost=t.id===G.user?sum(G.scouts.map(s=>s.sal))+600:(G.lgStaff&&G.lgStaff[t.id]?stAiPay(G.lgStaff[t.id])+600:1500); /* AI도 실제 고용한 스태프 연봉만큼 */
@@ -91,8 +91,10 @@ function settlement(){
     { const bn=G.sea.bonus&&G.sea.bonus[t.id]; if(bn)exp.push(['신인 계약금',bn]); }
     { const due=newStadDue(t.id); if(due){ exp.push(['신구장 분담금',due]); inc.push(['모기업 신구장 출자(분담금의 70%)',Math.round(due*.7)]); stadOf(t.id).proj.paid=(stadOf(t.id).proj.paid||0)+due; } }
     { const up=sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2])); if(up>0)exp.push(['구장 시설 유지비',up]); }
-    if(t.id!==G.user){ const fu=aiFacUpExtra(t); if(fu>0)exp.push(['훈련 시설 유지비(증설분)',fu]); }
+    if(t.id!==ME()){ const fu=aiFacUpExtra(t); if(fu>0)exp.push(['훈련 시설 유지비(증설분)',fu]); }
     if(flo)exp.push(['하한 미달 발전기금',flo]);
+    if(t.id===ME()){ const gs=myCPay(); if(gs>0)exp.push(['단장 연봉',gs]); }
+    if(t.id===G.user&&G.unemp)G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0}; /* 야인 기간: 전 소속 구단은 AI 구단처럼 운영비 안에서 스태프·감독 비용을 처리한다(따로 더 내지 않는다) */
     if(t.id===G.user){ const S=G.spend; [['감독 연봉',S.mgr],['코치진 연봉',S.coach||0],['부상 방지 프로그램',S.med],['병원 제휴',S.hosp],['해외 연수',S.dev],['해외 스카우트망',S.intl||0],['전력분석원 연봉',S.data||0],['훈련 시설 유지비',S.fac||0],['단장 결정 지출',S.etc||0],['FA 보상금',S.comp||0],['방출 정산금',S.rel||0],['FA·다년 계약금',S.faB||0],['계약 옵션 지급',optSettle(t.id)]].forEach(x=>{ if(x[1]>0)exp.push([x[0],Math.round(x[1])]); }); if(S.compIn>0)inc.push(['FA 보상금 수령',Math.round(S.compIn)]); G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0}; }
     const gap=sum(exp.map(x=>x[1]))-sum(inc.map(x=>x[1]));
     let support=0; const supCap=supportCap(t);
@@ -159,7 +161,9 @@ function settlement(){
   try{ tsArchive(y); }catch(e){}
   G.last={y,order,ps,fins,trust:{before,after:u.trust,delta},notes,leaders,gate,pool,months:G.sea.months,goals:gy.lines,awards,pr:G.pr?{fan:Math.round(G.pr.fan),press:Math.round(G.pr.press)}:null};
   if(!G.unemp)try{ G.last.rep=repSeason(y,rank,ps.champ===G.user,ps.runner===G.user,delta); }catch(e){}
+  if(!G.unemp)try{ myCRecord(y,rank,ps,uo); }catch(e){}
   if(u.trust<12&&!G.unemp){ firedFlow(y,`구단주 신뢰가 ${u.trust}까지 떨어져 ${y}시즌을 끝으로 경질되었습니다.`); }
+  else if(!G.unemp)try{ myCSeasonEnd(y,ps); }catch(e){} /* 계약 마지막 해: 재계약 제안 또는 결별, 다른 구단 제의 */
   stop('결산',`${y}시즌 결산이 나왔습니다. ${uo.w}승 ${uo.l}패 ${rank}위, 구단주 신뢰 ${before}→${u.trust}. 신뢰 변화 내역: ${why.filter(x=>Math.abs(x[1])>=.5).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).map(x=>`${x[0]} ${x[1]>0?'+':''}${Math.round(x[1])}`).join(', ')||'변화 없음'}.`);
 }
 

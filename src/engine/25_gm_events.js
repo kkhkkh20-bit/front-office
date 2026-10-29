@@ -59,18 +59,26 @@ const EVH={
       const nm=p.name; if(p.foreign)releaseForeign(p.id); else releasePlayer(p.id); G.pr.fan=clamp(G.pr.fan+4,0,100); G.pr.press=clamp(G.pr.press+5,0,100); evFollow(21,'scandal',{pid:null,ty:e.data.ty,c:3,nm}); return `${nm}을(를) 방출했습니다. 팬 여론 +4, 언론 논조 +5.`; },
     follow(d){ const S=SCAND[d.ty]; if(d.c>=2){ const back=Math.round(S.sp*.5); G.spend.etc=Math.max(0,(G.spend.etc||0)-back); mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
       else if(d.c===0){ G.pr.fan=clamp(G.pr.fan-2,0,100); mail('마케팅팀','징계 논란이 이어집니다',`"구단이 감싼다"는 비판이 계속되고 있습니다. 팬 여론이 조금 더 떨어졌습니다.`,{kind:'재정'}); } } },
-  /* 출전 시간 불만 */
-  pt:{ w:1.2, check(){ const reg=new Set((()=>{ const d=depth(G.user); return [...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id); })());
+  /* 출전 시간 불만: 시즌 100경기가 지난 뒤에만 생긴다. 선수는 먼저 감독에게 따지고, 그게 기사로 나오면 단장이 후속 조치를 정한다.
+     감독이 스스로 수습하면(자존심이 낮을수록) 단장에게 올라오지 않고 '기회 약속' 기사로 끝난다 */
+  pt:{ w:1.2, check(){ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; if(!r||r.w+r.l+(r.t||0)<100||!G.mgr[G.user])return null;
+      const reg=new Set((()=>{ const d=depth(G.user); return [...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id); })());
       const regs=playersOf(G.user).filter(p=>reg.has(p.id)); const bar=regs.length?avg(regs.map(ovr))-4:50;
       const L=playersOf(G.user).filter(p=>{ initPers(p); return healthy(p)&&!reg.has(p.id)&&!p.ys&&(ovr(p)>=bar||p.sal>=400||(p.age>=27&&ovr(p)>=bar-3))&&p.mor<66&&!p.promise&&!p.listed&&p.age>=22&&!(p.ptDay>G.day-60); }).sort((a,b)=>ovr(b)-ovr(a)); return L[0]||null; },
-    make(p){ p.ptDay=G.day; evNew('pt',`${p.name}, 출전 시간 불만`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 면담을 요청했습니다. "${moraleWhy(p)}"\n올해 기록: ${evLine(p)}`,
-      [{l:'감독에게 기용 건의',fx:'선수 기분이 오르고 감독 관계는 조금 내려갑니다. 한 달 안에 기회를 못 얻으면 선수가 크게 실망합니다.'},
-       {l:'트레이드 명단에 올리기',fx:tradeOpen()?'선수 기분이 오르고, 다른 구단 제안이 올 수 있습니다.':'선수 기분이 오릅니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'},
-       {l:'기다리라고 설득',fx:'구단 충성심이 높은 선수는 받아들이고, 아니면 기분이 더 나빠집니다.'}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id},def:2}); },
+    make(p){ p.ptDay=G.day; const m=G.mgr[G.user]; const tn=tshort(G.user);
+      if(R()<clamp((70-m.ego)/100,.1,.45)){ p.promise={until:G.day+30}; p.mor=clamp(p.mor+5,0,100);
+        news('선수',`${tn} ${p.name}, ${m.name} 감독과 면담 뒤 "기회 받겠다"`,`출전 시간 문제로 감독실을 찾은 ${p.name}에게 ${m.name} 감독이 남은 시즌 기회를 약속했습니다. 감독이 직접 수습한 일이라 프런트 개입은 없었습니다.`,0,{ref:p.id}); return; }
+      const hot=m.ego>=65; news('선수',`${tn} ${p.name}, ${m.name} 감독과 출전 문제로 ${hot?'언쟁':'충돌'}`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 출전 시간 문제로 ${m.name} 감독을 찾아갔다가 ${hot?'고성이 오갔다는 이야기가 나옵니다':'서로 입장 차이만 확인했습니다'}. 올해 기록: ${evLine(p)}.`,-1,{ref:p.id});
+      evNew('pt',`${p.name}-${m.name} 감독 갈등: 후속 조치`,`[기사] ${tn} ${p.name}이(가) 출전 시간 문제로 ${m.name} 감독과 ${hot?'언쟁을 벌였다':'부딪쳤다'}는 기사가 났습니다.\n선수 말: "${moraleWhy(p)}"\n감독 쪽: "${hot?'기용은 감독이 정합니다. 선수가 감독실에 와서 따질 일은 아닙니다.':'팀 사정상 지금은 어렵다고 설명했습니다.'}"\n올해 기록: ${evLine(p)}`,
+      [{l:'감독 편에 서기',fx:'감독 관계가 오르고 기강이 섭니다. 선수 기분은 크게 떨어집니다.'},
+       {l:'선수 면담 뒤 감독에게 기용 건의',fx:'선수 기분이 오르고 감독 관계는 내려갑니다. 한 달 안에 기회를 못 얻으면 선수가 크게 실망합니다.'},
+       {l:'트레이드 명단에 올리기',fx:tradeOpen()?'선수 기분이 조금 오르고, 다른 구단 제안이 올 수 있습니다.':'선수 기분이 조금 오릅니다. 트레이드는 포스트시즌 뒤에 다시 열립니다.'},
+       {l:'지켜보기',fx:'둘이 알아서 풀게 둡니다. 선수 기분이 조금 떨어지고 언론은 프런트가 손 놓았다고 봅니다.'}],{ref:p.id,face:p.id,from:'홍보팀',data:{pid:p.id,hot},def:3}); },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; const m=G.mgr[G.user];
-      if(i===0){ p.promise={until:G.day+30}; p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 +8, 감독 관계 -${d}. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
-      if(i===1){ listPlayer(p.id); return `${p.name}을(를) 트레이드 명단에 올렸습니다.`; }
-      const ok=p.pers.loy>=11||R()<.35; p.mor=clamp(p.mor+(ok?6:-7),0,100); return ok?`${p.name}: "단장님 말씀을 믿고 기다리겠습니다." (기분 +6)`:`${p.name}: "말씀은 알겠지만 납득은 안 됩니다." (기분 -7)`; } },
+      if(i===0){ if(m)m.rel=clamp(m.rel+4,0,100); p.mor=clamp(p.mor-9,0,100); return `감독 관계 +4. ${p.name} 기분 -9. 선수단에는 감독 권한을 존중한다는 메시지가 갔습니다.`; }
+      if(i===1){ p.promise={until:G.day+30}; p.mor=clamp(p.mor+8,0,100); const d=m&&m.ego>=70?5:3; if(m)m.rel=clamp(m.rel-d,0,100); return `${p.name} 기분 +8, 감독 관계 -${d}. 한 달 뒤 기회를 얻었는지 알려 드립니다.`; }
+      if(i===2){ listPlayer(p.id); p.mor=clamp(p.mor+3,0,100); return `${p.name}을(를) 트레이드 명단에 올렸습니다. 기분 +3.`; }
+      p.mor=clamp(p.mor-4,0,100); prInit(); G.pr.press=clamp(G.pr.press-1,0,100); return `${p.name} 기분 -4, 언론 -1.`; } },
   /* 2군 유망주 콜업 여론 */
   call:{ w:1.1, check(){ if(!entryOn())return null;
       const L=playersOf(G.user).filter(p=>!p.e1&&!p.ys&&healthy(p)&&canUp(p)).map(p=>{ const h=seasonTotal(p,G.year,'퓨처스'); if(!h)return null;

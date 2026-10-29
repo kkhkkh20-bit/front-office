@@ -149,6 +149,7 @@ const A={
   anaHire(v){ const [aid,rz]=String(v).split(':'); const res=stOffer('an',aid,+rz||0); toast(res.msg); if(res.ok){ G.analysts.push(res.s); addLog(`${AROLE[res.s.role].l} 분석원 ${res.s.name}(능력 ${res.s.skill})을(를) 연 ${money(res.s.sal)}에 채용했습니다.`); } save(); render(); },
   stPo(v){ const [k,t,id,r]=String(v).split(':'); toast(stPoach(k,+t,id,+r||.25)); save(); render(); },
   stKeep(v){ const [id,f]=String(v).split(':'); toast(stKeep(id,f==='1')); save(); render(); },
+  stBidDrop(v){ toast(stBidDrop(v)); save(); render(); },
   stLet(v){ const r=stRaidFind(v); toast(r?stLeave(r):'이미 끝난 일입니다.'); save(); render(); },
   anaFire(v){ fireAna(v); save(); render(); },
   camp(v){ if(G.camp){G.camp.focus=v; G.camp.seen=true; save(); render();} },

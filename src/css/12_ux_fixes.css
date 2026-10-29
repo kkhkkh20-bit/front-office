@@ -302,3 +302,8 @@ body:has(#sheet .scrim) #dtick{display:none}
 /* 협회 화면: 항목 이름 위, 내용 아래 */
 .aslist{display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5}
 .aslist>div>span.muted{display:block;font-size:12px}
+/* 단장 카드 */
+.gmcard .gmc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.gmcard .gmc-grid>div{display:flex;flex-direction:column;gap:2px;background:var(--bg2,rgba(127,127,127,.08));border-radius:8px;padding:8px}
+.gmcard .gmc-grid span{font-size:12px}.gmcard .gmc-grid b{font-size:16px}.gmcard .gmc-grid i{font-style:normal}
+@media (max-width:360px){.gmcard .gmc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
