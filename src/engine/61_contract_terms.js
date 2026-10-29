@@ -42,7 +42,8 @@ function optSettle(tid){ let tot=0; const L=[]; for(const p of playersOf(tid)){ 
 function rolePromCheck(mo){ if(mo<6||mo>9||period()!=='season'||G.unemp)return; for(const p of playersOf(G.user)){ const r=p.roleProm; if(!ctOn(p)||!r||r.until<G.year||p.injOut>0)continue; if(isRegular(p))continue;
   p.mor=clamp((p.mor??60)-6,0,100); try{ if(hasAgent(p))agRelAdd(agentOf(p),-1,`${p.name} 역할 약속 불이행`); }catch(e){}
   if(r.warn!==G.year){ r.warn=G.year; mail(hasAgent(p)?`${agentOf(p).name} 에이전트`:'선수단',`${p.name} 측: "${r.l} 약속은 어디 갔습니까"`,`계약할 때 ${r.l}을(를) 약속했는데 지금 주전으로 뛰지 못하고 있습니다. 약속이 지켜지지 않으면 매달 선수 기분이 떨어지고 에이전트와의 관계도 나빠집니다.`,{kind:'면담',imp:true,ref:p.id,acts:[{l:'선수 보기',a:'player',v:p.id},{l:'감독실 들어가기',a:'meetOpen',v:'mgr'}]}); } } }
-function ntcOf(ids){ return ids.map(id=>G.players[id]).find(p=>p&&ctOn(p)&&p.ntc&&p.ntc>=G.year&&p.team===G.user)||null; }
+/* 거부권은 계약한 구단에 있는 동안 유효하다(우리 선수든 상대 선수든) */
+function ntcOf(ids){ return ids.map(id=>G.players[id]).find(p=>p&&ctOn(p)&&p.ntc&&p.ntc>=G.year)||null; }
 const hasNtc=p=>ctOn(p)&&p.ntc>=G.year;
 /* 계약 금액 표기 통일: 그 시즌 현금 지출(연봉 + 그 회계연도에 준 계약금) · 보장 총액(계약금 + 연봉×기간) · 연평균(상한 반영 = 연봉 + 계약금/기간) */
 function ctMoney(p){ if(!p||!p.faC||!ctOn(p))return null; const c=ctInfo(p); const yrs=c?c.tot:Math.max(1,p.yrs||1); const sy=ctSeason(); const B=p.capB&&p.capB.until>=sy?p.capB:null;

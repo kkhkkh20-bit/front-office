@@ -196,7 +196,7 @@ function confirmContracts(){
   salTalkClose();
   for(const id of C.ended){ const p=G.players[id]; if(p&&p.newSal!=null){p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal;} }
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p)continue; if(C.foreignDrop.includes(id)){ const free=(C.fFree||[]).includes(id)&&!p.fleft; addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${free?'보류권 해제: 다른 구단과 계약 가능':'보류권 유지: 5년간 국내 다른 구단 입단 불가'}).`);
-      if(free&&ovr(p)>=50&&p.age<=34){ delete p.newSal; delete p.fInc; p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(G.user)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid:G.user}); } else { if(!free)try{ foResAdd(p,G.user); }catch(e){} delete G.players[id]; } }
+      if(free&&ovr(p)>=50&&p.age<=34){ delete p.newSal; delete p.fInc; termsClear(p); p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(G.user)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid:G.user}); } else { if(!free)try{ foResAdd(p,G.user); }catch(e){} delete G.players[id]; } }
     else { p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; if(p.fInc){ p.ctT=p.team; p.opt={a:p.fInc,until:C.y+1}; delete p.fInc; } } }
   C.done=true; addLog('연봉 계약을 마쳤습니다.');
 }
@@ -255,7 +255,7 @@ function aiOfferFrom(t){ const U=team(G.user);
   if(!mine.length)return false; const listed=mine.filter(x=>x.p.listed); const tg=listed.length&&R()<.7?pick(listed):pick(mine);
   const tgU=tval(U,tg.p,'out'); // 우리가 그 선수를 내줄 때 느끼는 가치
   const core=new Set(domestic(t.id).map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id));
-  const pool=domestic(t.id).filter(p=>!core.has(p.id)&&healthy(p)&&!p.ys).map(p=>({p,v:tval(t,p,'out'),u:tval(U,p,'in')})).filter(x=>x.v>0&&x.u>.3).sort((a,b)=>a.v-b.v);
+  const pool=domestic(t.id).filter(p=>!core.has(p.id)&&healthy(p)&&!p.ys&&!hasNtc(p)).map(p=>({p,v:tval(t,p,'out'),u:tval(U,p,'in')})).filter(x=>x.v>0&&x.u>.3).sort((a,b)=>a.v-b.v);
   const need=tradeNeed(t,0); const cap=tg.v-need; let best=null,bu=-1;
   for(let i=0;i<pool.length;i++){ const a=pool[i]; if(a.v<=cap&&a.u>=tgU*.75&&a.u>bu){ best=[a]; bu=a.u; }
     for(let j=i+1;j<pool.length;j++){ const b=pool[j]; const tv=a.v+b.v; const uv=Math.max(a.u,b.u)+.72*Math.min(a.u,b.u); if(tv<=cap&&uv>=tgU*.8&&uv>bu){ best=[a,b]; bu=uv; } } }
@@ -273,6 +273,7 @@ function answerOffer(id,yes){
   if(!yes){ addLog(`${tname(o.from)}의 트레이드 제안을 거절했습니다.`); return {ok:true,msg:'거절했습니다.'}; }
   if(!tradeOpen())return {ok:false,msg:'트레이드 기간이 아닙니다.'};
   { const nt=ntcOf(o.get); if(nt)return {ok:false,msg:`${nt.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다.`}; }
+  { const nt=ntcOf(o.give); if(nt)return {ok:false,msg:`${tname(o.from)} ${nt.name}은(는) 트레이드 거부권이 있어 데려올 수 없습니다.`}; }
   if([...o.give,...o.get].some(id=>!G.players[id]))return {ok:false,msg:'선수 상황이 바뀌어 성사되지 않았습니다.'};
   if(o.give.some(id=>G.players[id].team!==o.from)||o.get.some(id=>G.players[id].team!==G.user))return {ok:false,msg:'선수 상황이 바뀌어 성사되지 않았습니다.'};
   const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const grade=tradeGrade(o.from,o.get,o.give);
