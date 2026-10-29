@@ -13,7 +13,7 @@ function cpWhy(q,S){ const per=period(); const inSea=per==='season'||per==='post
   if(q.where==='rehab')return {real:true,t:'부상으로 재활·회복 센터에서 재활 중'};
   if(q.where==='club')return {real:true,t:'1군 선수 · 피로가 쌓여 클럽하우스에서 휴식'};
   if(q.where==='main')return {real:true,t:`1군 엔트리 · 홈구장 ${S.mainNote}`};
-  if(q.dev)return {real:true,t:`2군 연수(${DEVP[q.dev]?DEVP[q.dev].l:'육성'}) 배정 · ${q.where==='lab'?'피칭·타격 랩':'실내 연습장'}에서 훈련`,note:'연수 배정은 실제, 랩과 실내 연습장 중 어디에 그리는지는 연출입니다.'};
+  if(q.dev)return {real:true,t:`훈련 방향(${DEVP[q.dev]?DEVP[q.dev].l:'육성'}) · ${q.where==='lab'?'피칭·타격 랩':'실내 연습장'}에서 훈련`,note:'연수 배정은 실제, 랩과 실내 연습장 중 어디에 그리는지는 연출입니다.'};
   const place={fut:'2군 구장',indoor:'실내 연습장',weight:'웨이트·컨디셔닝',dorm:'선수 숙소·식당',lab:'피칭·타격 랩',road:'훈련장 도로'}[q.where]||'훈련장';
   return {real:false,t:`${inSea?'1군 엔트리 밖 선수':'비시즌 훈련'} · ${place}${q.where==='fut'?` (${S.futNote})`:''}`,note:'어느 시설에 있는지와 동작은 연출입니다. 머리 위 표시(부상·피로·상승세)는 실제입니다.'}; }
 
@@ -49,7 +49,7 @@ function cpPlayerPanel(S,id){ const p=G.players[id]; const q=S.players.find(x=>x
       <div><dt>컨디션</dt><dd class="num">${c>0?'+':''}${c}${c>=3?' · 상승세':c<=-3?' · 하락세':''}</dd></div>
       <div><dt>육성 프로그램</dt><dd>${esc(prog)}</dd></div></dl>
     ${w.note?`<p class="small muted">${esc(w.note)}</p>`:''}
-    <div class="row" style="gap:6px"><button class="btn small primary" data-a="player" data-v="${id}">선수 화면 열기</button></div>`; }
+    <div class="row" style="gap:6px"><button class="btn small primary" data-a="player" data-v="${id}">선수 정보 열기</button></div>`; }
 
 function cpFacPanel(S,k){ const t=team(G.user);
   if(k==='main'){ const n=S.players.filter(p=>p.where==='main').length+S.players.filter(p=>p.where==='club').length;
@@ -87,7 +87,7 @@ function cpPanel(S){ return `<aside class="cppanel" id="cppanel" aria-live="poli
 /* 지도 아래 범례: 어떤 위치가 실제 상태인지 */
 function cpLegend(view){ const mk=(c,t)=>`<i class="cpmk ${c}">${t}</i>`;
   return `<div class="cpleg"><div class="cplh">지도 읽는 법</div><ul>
-    <li><span class="cptag real">실제</span>${view==='farm'?'재활·회복 센터 = 지금 부상 중인 선수 · '+mk('dev','')+' 표시 = 2군 연수 배정 선수':'홈구장 = 1군 엔트리 · 클럽하우스 = 1군 중 피로 60 이상'}</li>
+    <li><span class="cptag real">실제</span>${view==='farm'?'재활·회복 센터 = 지금 부상 중인 선수 · '+mk('dev','')+' 표시 = 해외 연수 신청 선수':'홈구장 = 1군 엔트리 · 클럽하우스 = 1군 중 피로 60 이상'}</li>
     <li><span class="cptag real">실제</span>머리 위 표시: ${mk('inj','+')} 부상 ${mk('tir','z')} 피로 60 이상 ${mk('hot','')} 상승세 · 공사 막대 = 진행률과 남은 일수</li>
     <li><span class="cptag stage">연출</span>${view==='farm'?'그 밖의 선수가 2군 구장·웨이트장·실내 연습장·숙소 중 어디에 있는지, 수비 위치와 동작':'누가 던지고 치는지, 수비 위치, 외야를 뛰는 투수, 벤치 자리'}</li></ul></div>`; }
 

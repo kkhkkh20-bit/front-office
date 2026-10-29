@@ -74,7 +74,7 @@ function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감�
   else if(topic==='young'){ const ys=playersOf(G.user).filter(p=>!p.foreign&&p.age<=24).map(p=>({p,rp:scoutReport(p)})).sort((x,y)=>(y.rp.ofp||0)-(x.rp.ofp||0)).slice(0,3);
     const up=x=>{ const h=seasonTotal(x.p,G.year,'1군'); return !!(h&&(x.p.isP?h.outs>=45:h.pa>=60)); }; const inU=ys.filter(up), outU=ys.filter(x=>!up(x));
     a=ys.length?`눈여겨보는 선수는 ${ys.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}입니다.${inU.length?` ${inU.map(x=>x.p.name).join(', ')}은(는) 이미 1군에서 자리를 잡아 가고 있습니다.`:''}${outU.length?` ${outU.map(x=>x.p.name).join(', ')}은(는) ${m.youth>=60?'기회를 더 주고 싶습니다.':'아직 1군에서 쓰기엔 이릅니다.'}`:''}`:'당장 1군에 올릴 만한 젊은 선수는 안 보입니다.'; }
-  if(topic!=='now')a=mvWrap(m,topic,a);
+  if(topic!=='now'){ a=mvWrap(m,topic,a); const LT=(G.mgrLast=G.mgrLast||{})[topic]; if(LT&&LT.a===a&&G.day-LT.d<=14)a=`${dmd(LT.d)}에 말씀드린 것과 같습니다. 그사이 달라진 게 없습니다. 요약하면, ${a}`; G.mgrLast[topic]={d:G.day,a:LT&&LT.a===a?LT.a:a}; } /* 같은 질문을 또 하면 지난번 답과 같다고 짧게 말한다 */
   const wk=Math.floor(G.day/7); let rel=''; if(G.mgrTalkW!==wk){ G.mgrTalkW=wk; m.rel=clamp(m.rel+1,0,100); rel=' (자주 의논해 주셔서 감독 관계 +1)'; }
   (G.mgrChat=G.mgrChat||[]).unshift({d:G.day,t:topic,a:a.replace(/^/,'')}); if(G.mgrChat.length>8)G.mgrChat.length=8; return {a:`${nm} 감독: "${a}"${rel}`}; }
 function talk(id,kind){
