@@ -75,10 +75,10 @@ function rosterView(){
   if(seg==='bat'){
     const lineup=orderList(d.start,tid);
     const posf=p=>posOf[p.id]?POSS[posOf[p.id]]+(posOf[p.id]!==p.pos&&posOf[p.id]!=='DH'?`(${POSS[p.pos]})`:''):POSS[p.pos];
-    groups=[['주전 (타순)',lineup,posf],[entryOn()?'1군 백업':'백업',d.bench],['2군',d.futB.filter(p=>!p.ys)],['육성선수',d.futB.filter(p=>p.ys)],['부상·출장 정지',d.inj.filter(p=>!p.isP)],['군 복무',awayOf(tid).filter(p=>!p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>!p.isP)]];
+    groups=[['주전 (타순)',lineup,posf],[entryOn()?'1군 백업':'백업',d.bench],['부상·출장 정지',d.inj.filter(p=>!p.isP)],['군 복무',awayOf(tid).filter(p=>!p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>!p.isP)]];
   } else {
     const role=arr=>p=>arr===d.pen?(arr.indexOf(p)===0?'마무리':arr.indexOf(p)<4?'필승조':'추격조'):arr===d.sp?(arr.indexOf(p)+1)+'선발':posLabel(p);
-    groups=[['선발 로테이션',d.sp,role(d.sp)],[entryOn()?'1군 불펜':'불펜',d.pen,role(d.pen)],['2군',d.futP.filter(p=>!p.ys)],['육성선수',d.futP.filter(p=>p.ys)],['부상·출장 정지',d.inj.filter(p=>p.isP)],['군 복무',awayOf(tid).filter(p=>p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>p.isP)]];
+    groups=[['선발 로테이션',d.sp,role(d.sp)],[entryOn()?'1군 불펜':'불펜',d.pen,role(d.pen)],['부상·출장 정지',d.inj.filter(p=>p.isP)],['군 복무',awayOf(tid).filter(p=>p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>p.isP)]];
   }
   const keep=p=>vis(p)&&(pf==='all'||(seg==='bat'?p.pos===pf:(pf==='SP'?isSPr(p):!isSPr(p))));
   groups=groups.map(([g,arr,f])=>[g,arr.filter(keep),f]);
@@ -86,8 +86,10 @@ function rosterView(){
   const filt=`<div class="chips">${chipsP.map(([k,l])=>`<button data-a="rpos" data-v="${k}" class="${pf===k?'on':''}">${l}${k!=='all'?` <i class="cnt">${playersOf(tid).filter(p=>vis(p)&&(seg==='bat'?!p.isP&&p.pos===k:p.isP&&(k==='SP'?isSPr(p):!isSPr(p)))).length}</i>`:''}</button>`).join('')}</div>`;
   UI._own=own;
   const body=rv==='card'?sqCards(groups):rosterTable(groups,seg==='pit');
+  const f2=(seg==='bat'?d.futB:d.futP).filter(vis); const f2n=f2.filter(p=>!p.ys).length, ysn=f2.filter(p=>p.ys).length; /* 2군·육성선수는 2군 탭에서 따로 본다 */
+  const futLink=f2.length?`<button class="btn small block r2link" data-a="itab" data-v="roster:fut">2군 ${seg==='bat'?'야수':'투수'} ${f2n}명${ysn?` · 육성선수 ${ysn}명`:''}은 2군 탭에서 보기 ›</button>`:'';
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  return head+it.bar+segT+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}
+  return head+it.bar+segT+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section>`;
 }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }
