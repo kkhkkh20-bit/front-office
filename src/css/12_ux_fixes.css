@@ -302,3 +302,18 @@ body:has(#sheet .scrim) #dtick{display:none}
 /* 협회 화면: 항목 이름 위, 내용 아래 */
 .aslist{display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5}
 .aslist>div>span.muted{display:block;font-size:12px}
+
+/* 도전과제 */
+.achtt{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:9px;font-size:11.5px;font-weight:600;background:var(--acc,#3b82f6);color:#fff;vertical-align:middle}
+.achts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.achteams{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:8px 0}
+.achtm{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:1px solid var(--line,#2a323d);border-radius:8px;opacity:.55;font-size:11.5px;text-align:center}
+.achtm.on{opacity:1;border-color:var(--acc,#3b82f6)}
+.achtm i{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4)}
+.achlist{display:flex;flex-direction:column;gap:8px}
+.achit{padding:9px 10px;border:1px solid var(--line,#2a323d);border-radius:8px;opacity:.75}
+.achit.on{opacity:1;border-color:var(--acc,#3b82f6)}
+.achit.half{opacity:.9}
+.achit p{margin:3px 0 0}
+.achbar{height:5px;border-radius:3px;background:var(--line,#2a323d);margin:6px 0 2px;overflow:hidden}
+.achbar i{display:block;height:100%;background:var(--acc,#3b82f6)}
