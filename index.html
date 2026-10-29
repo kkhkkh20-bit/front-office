@@ -7077,9 +7077,9 @@ function ivBuild(k,d){ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.n
   return (Q[k]||Q.preseason).map(([q,opts])=>({q,opts:opts.map(([tone,t,fx])=>({tone,t,fx}))})); }
 const IV_TOPIC={fa_sign:'FA 영입',fa_lost:'FA 이탈',trade:'트레이드',injury:'주축 부상',preseason:'미디어데이',deadline:'트레이드 마감',season_end:'시즌 결산',streak_win:'연승'};
 function ivRequest(k,d){ if(G.unemp)return; d=d||{}; const cur=G.iv; if(cur&&!cur.done&&cur.exp>=G.day)return; if(cur&&G.day-cur.day<8&&!['preseason','season_end','deadline'].includes(k))return;
-  const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return;
+  const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return; { const pq=ivPPQ(); if(pq)qs.push(pq); } /* 마지막 질문: 언론 플레이 기회 */
   G.iv={id:(G.ivSeq=(G.ivSeq||0)+1),k,d,outlet,rep,repId:R0.id,qs,i:0,ans:[],exp:G.day+5,done:false,day:G.day};
-  mail('홍보팀',`[인터뷰 요청] ${outlet}: ${IV_TOPIC[k]||'현안'}`,`${outlet} ${rep} 기자가 ${IV_TOPIC[k]||'현안'} 관련 단장 인터뷰를 요청했습니다. 질문은 3개입니다.\n\n답변에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 5일 안에 응하지 않으면 '단장 침묵' 기사가 나갑니다.`,{imp:true,kind:'언론',acts:[{l:'인터뷰 참여하기',a:'ivOpen',v:G.iv.id},{l:'정중히 거절',a:'ivSkip',v:G.iv.id}]}); }
+  mail('홍보팀',`[인터뷰 요청] ${outlet}: ${IV_TOPIC[k]||'현안'}`,`${outlet} ${rep} 기자가 ${IV_TOPIC[k]||'현안'} 관련 단장 인터뷰를 요청했습니다. 질문은 ${qs.length}개입니다.\n\n답변에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 5일 안에 응하지 않으면 '단장 침묵' 기사가 나갑니다.`,{imp:true,kind:'언론',acts:[{l:'인터뷰 참여하기',a:'ivOpen',v:G.iv.id},{l:'정중히 거절',a:'ivSkip',v:G.iv.id}]}); }
 function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]; const o=q&&q.opts[j]; if(!o)return null; const R0=repById(v.repId); const fx=Object.assign({},o.fx,{fan:repMul(R0,o.fx.fan),press:repMul(R0,o.fx.press)}); prInit();
   repRel(R0,['회피','비판','압박','냉정','노코멘트'].includes(o.tone)?-2:['솔직','설명','신중','감사','반성'].includes(o.tone)?2:1,`인터뷰 답변(${o.tone})`);
   G.pr.fan=clamp(G.pr.fan+fx.fan,0,100); G.pr.press=clamp(G.pr.press+fx.press,0,100);
@@ -7088,6 +7088,7 @@ function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]
   if(fx.team)for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+fx.team,0,100);
   if(fx.young)for(const p of playersOf(G.user).filter(p=>p.age<=24))p.mor=clamp((p.mor??60)+fx.young,0,100);
   if(fx.prom){ const Y=sponSeason(); (G.ivProm=G.ivProm||[]).push({k:fx.prom,y:Y,d:G.day}); }
+  if(o.fx.pp){ try{ const msg=pressPlay(v.repId,o.fx.pp,o.fx.pid,'iv'); if(msg)mail('홍보팀','인터뷰에서 한 말이 기사로 나갑니다',msg,{kind:'언론'}); }catch(e){} }
   v.ans.push({q:q.q,a:o.t,tone:o.tone,fx}); v.i++;
   if(v.i>=v.qs.length){ v.done=true; const big=v.ans.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0];
     news('언론',`${tshort(G.user)} 단장 "${big.a.replace(/^"|"$/g,'').slice(0,30)}${big.a.length>32?'…':''}"`,`${v.outlet} ${v.rep} 기자와의 인터뷰에서 ${IV_TOPIC[v.k]} 관련 질문에 답했습니다. ${v.ans.map(x=>x.a).join(' ')}`,0,{outlet:v.outlet}); }
@@ -8385,7 +8386,7 @@ function repContact(id,kind){ const r=repById(id); if(!r)return '기자를 찾�
   return ''; }
 
 /* ---------- 언론 플레이 ---------- */
-const PP_COOL=30, PP_MIN_REL=60; /* 기자 친분은 50에서 시작하므로, 먼저 가까워져야 언론 플레이를 부탁할 수 있다 */
+const PP_COOL=30, PP_MIN_REL=40; /* 내가 먼저 연락할 때: 친분 40 미만이면 거절, 60 이상이면 호의적으로 써 줄 가능성이 크다. 친분은 인터뷰 응답과 단독 정보 제공으로 쌓인다 */
 function ppReady(){ return G.ppLast==null||G.day-G.ppLast>=PP_COOL; }
 /* 기자가 어떻게 써 주나: 친분·성향·언론사 논조 */
 function ppFrame(r){ const O=outletOf(r.outlet); const s=r.rel+O.lean*8+(r.style==='fr'?10:r.style==='cr'?-12:0)+N(0,8); return s>=62?'good':s>=45?'flat':'bad'; }
@@ -8393,8 +8394,8 @@ function ppTargets(){ const L=[]; const add=p=>{ if(p&&p.team!==G.user&&!p.forei
   for(const id of (G.shortlist||[]))add(G.players[id]); if(G.fa&&!G.fa.closed)for(const id of (G.fa.pool||[]).slice(0,15))add(G.players[id]);
   Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12).forEach(add); return L.slice(0,24); }
 function ppFA(p){ return !!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
-function pressPlay(repId,kind,pid){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const r=repById(repId); if(!r)return '기자를 고르세요.'; if(!ppReady())return `언론 플레이는 30일에 한 번입니다. ${dmd(G.ppLast+PP_COOL)}부터 다시 할 수 있습니다.`;
-  if(r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 친분 ${PP_MIN_REL} 이상인 기자에게만 부탁할 수 있습니다(지금 ${r.rel}).`;
+function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const r=repById(repId); if(!r)return '기자를 고르세요.'; if(!ppReady())return `언론 플레이는 30일에 한 번입니다. ${dmd(G.ppLast+PP_COOL)}부터 다시 할 수 있습니다.`;
+  if(via!=='iv'&&r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 친분이 ${PP_MIN_REL} 이상이어야 먼저 연락한 이야기를 받아 줍니다(지금 ${r.rel}). 이 기자의 인터뷰 요청에 성실히 응하거나 단독 정보를 주면 가까워집니다.`;
   const O=outletOf(r.outlet); const fr=ppFrame(r); const k=.7+O.reach*.12; const t=team(G.user); const B=bossOf(G.user); G.ppLast=G.day; G.pledges=G.pledges||[]; prInit();
   const fanD=(b)=>{ const v=Math.round(b*k*(fr==='good'?1.2:fr==='bad'?.5:1)); G.pr.fan=clamp(G.pr.fan+v,0,100); return v; };
   if(kind==='sign'){ const p=G.players[pid]; if(!p||p.team===G.user)return '대상 선수를 고르세요.'; const fa=ppFA(p); const star=ovr(p)>=60;
@@ -8426,6 +8427,20 @@ function ppDaily(){ if(!G.pledges||G.unemp)return; prInit(); for(const g of G.pl
   G.pledges=G.pledges.filter(g=>!g.done||G.day-g.until<120).slice(0,12); }
 /* 지목된 선수의 호감: FA 때 우리 구단 매력에 더해진다 */
 function ppFond(p,tid){ return p&&p.fond&&p.fond.tid===tid&&G.day<=p.fond.until?p.fond.v:0; }
+
+/* 단독 정보 주기: 내가 먼저 연락해 기자에게 특종거리를 준다. 그 기자와는 가까워지고, 다른 매체 기자들은 조금 서운해한다(기자마다 30일에 한 번) */
+function repScoop(id){ if(G.unemp)return ''; const r=repById(id); if(!r)return '기자를 고르세요.'; G.repc=G.repc||{}; const c=G.repc[id]=G.repc[id]||{};
+  if(c.scoop!=null&&c.scoop>G.day-30)return `${r.name} 기자에게는 ${dmd(c.scoop+30)}부터 다시 단독을 줄 수 있습니다.`; c.scoop=G.day;
+  const dim=r.rel>60?Math.max(.35,1-(r.rel-60)/40):1; const d=Math.max(2,Math.round(ri(4,7)*dim*(r.style==='cr'?.75:1))); repRel(r,d,'단독 정보 제공');
+  for(const o of pressInit())if(o.outlet!==r.outlet)repRel(o,-1,'다른 매체에 단독을 줌');
+  news('구단',`[단독] ${tshort(G.user)}, 내부 운영 계획 공개`,`${r.outlet} ${r.name} 기자가 ${tname(G.user)} 프런트의 시즌 운영 계획을 단독으로 전했습니다.`,0,{outlet:r.outlet,by:r.name});
+  return `${r.outlet} ${r.name} 기자에게 단독 정보를 줬습니다. 친분 +${d}(${r.rel}). 다른 매체 기자들은 조금 서운해합니다(-1).`; }
+/* 인터뷰 마지막 질문: 하고 싶은 말(언론 플레이). 기자가 먼저 청한 자리라 친분 기준이 없다(30일 간격은 같다) */
+function ivPPQ(){ if(G.unemp||!ppReady())return null; const opts=[{tone:'없음',t:'"오늘은 여기까지 하겠습니다."',fx:{fan:0,press:0}}];
+  const tgt=(G.shortlist||[]).map(id=>G.players[id]).find(p=>p&&p.team!==G.user&&!p.foreign&&!p.prospect)||(G.fa&&!G.fa.closed?(G.fa.pool||[]).map(id=>G.players[id]).filter(Boolean).sort((a,b)=>ovr(b)-ovr(a))[0]:null);
+  if(tgt)opts.push({tone:'영입 의지',t:`"${tgt.name} 선수, 꼭 데려오겠습니다."`,fx:{fan:0,press:0,pp:'sign',pid:tgt.id}});
+  opts.push({tone:'투자 선언',t:'"올해는 과감하게 투자하겠습니다."',fx:{fan:0,press:0,pp:'invest'}});
+  return {q:'끝으로 팬들께 따로 하실 말씀이 있습니까?',opts}; }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -13968,22 +13983,22 @@ Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v
     if(g==null){ F.msg='상한 안에서는 사인시킬 수 있는 조건이 없습니다.'; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); } });
 /* ---------- 구단 > 언론·여론: 언론사와 기자, 친분 쌓기, 언론 플레이 ---------- */
 function pressCards(){ if(G.unemp)return ''; const L=pressInit(); const c=G.repc||{};
-  const rep=r=>{ const cc=c[r.id]||{}; const callOk=!(cc.call!=null&&cc.call>G.day-14), mealOk=!(cc.meal!=null&&cc.meal>G.day-30);
-    return `<div class="prrep"><div><b>${esc(r.name)}</b> <span class="small muted">${PR_STYLE[r.style].l} · ${esc(r.field)} · 영향력 ${'★'.repeat(r.inf)}</span><span class="small" style="display:block">친분 <b>${r.rel}</b>${r.rel>=PP_MIN_REL?' · 언론 플레이 가능':''}${r.last?` <span class="muted">(${esc(r.last.why)} ${r.last.dv>0?'+':''}${r.last.dv})</span>`:''}</span></div>
-      <div class="row" style="gap:4px;flex:none"><button class="btn small" data-a="repCall" data-v="${r.id}" ${callOk?'':'disabled'}>전화</button><button class="btn small" data-a="repMeal" data-v="${r.id}" ${mealOk?'':'disabled'}>식사</button></div></div>`; };
+  const rep=r=>{ const cc=c[r.id]||{}; const scOk=!(cc.scoop!=null&&cc.scoop>G.day-30);
+    return `<div class="prrep"><div><b>${esc(r.name)}</b> <span class="small muted">${PR_STYLE[r.style].l} · ${esc(r.field)} · 영향력 ${'★'.repeat(r.inf)}</span><span class="small" style="display:block">친분 <b>${r.rel}</b>${r.rel>=60?' · 호의적으로 써 줄 가능성 큼':r.rel>=PP_MIN_REL?'':' · 먼저 연락한 이야기는 거절'}${r.last?` <span class="muted">(${esc(r.last.why)} ${r.last.dv>0?'+':''}${r.last.dv})</span>`:''}</span></div>
+      <button class="btn small" data-a="repScoop" data-v="${r.id}" ${scOk?'':'disabled'} title="이 기자에게 특종거리를 줍니다. 친분이 오르고 다른 매체 기자는 조금 서운해합니다">단독 주기</button></div>`; };
   const outs=Object.keys(OUTLET_DEF).map(n=>{ const O=OUTLET_DEF[n]; return `<div class="prout"><div class="row between"><b>${esc(n)}</b><span class="small muted">${OUTLET_LEAN[O.lean]} · ${esc(O.field)} · 영향력 ${'★'.repeat(O.reach)}</span></div><p class="small muted">${esc(O.d)}</p>${L.filter(r=>r.outlet===n).map(rep).join('')}</div>`; }).join('');
-  const ok=L.filter(r=>r.rel>=PP_MIN_REL); const S=UI.pp||(UI.pp={k:'sign',rep:ok[0]?ok[0].id:'',pid:''}); const T=ppTargets(); const ready=ppReady();
+  const ok=L.slice().sort((a,b)=>b.rel-a.rel); const S=UI.pp||(UI.pp={k:'sign',rep:ok[0]?ok[0].id:'',pid:''}); const T=ppTargets(); const ready=ppReady();
   const pl=(G.pledges||[]).slice(0,5).map(g=>{ const p=g.pid!=null?G.players[g.pid]:null; const st=g.done?(g.ok?'<span class="pill good">지킴</span>':'<span class="pill bad">못 지킴</span>'):`<span class="pill">${dmd(g.until)}까지</span>`; return `<div class="row between small"><span>${g.k==='sign'?`영입 의지: ${p?esc(p.name):'-'}`:'투자 선언'}</span>${st}</div>`; }).join('');
-  const play=`<p class="small">친분 ${PP_MIN_REL} 이상인 기자를 통해 단장의 메시지를 기사로 낼 수 있습니다. 30일에 한 번. 기자의 성향과 친분, 언론사 논조에 따라 호의적으로 실리기도, 비꼬듯 실리기도 합니다.</p>
-    ${ok.length?`<div class="ppf"><label class="small">기자<select data-a="ppRep">${ok.map(r=>`<option value="${r.id}" ${S.rep===r.id?'selected':''}>${esc(r.outlet)} ${esc(r.name)} (친분 ${r.rel})</option>`).join('')}</select></label>
+  const play=`<p class="small">내가 먼저 기자에게 연락해 메시지를 기사로 낼 수 있습니다(30일에 한 번). 친분 ${PP_MIN_REL} 미만인 기자는 거절하고, 친분이 높을수록 호의적으로 써 줍니다. 인터뷰 요청이 오면 마지막 질문에서 같은 말을 할 수도 있습니다(친분 기준 없음).</p>
+    ${ok.length?`<div class="ppf"><label class="small">기자<select data-a="ppRep">${ok.map(r=>`<option value="${r.id}" ${S.rep===r.id?'selected':''}>${esc(r.outlet)} ${esc(r.name)} (친분 ${r.rel}${r.rel<PP_MIN_REL?' · 거절할 것':''})</option>`).join('')}</select></label>
       <div class="chips"><button data-a="ppK" data-v="sign" class="${S.k==='sign'?'on':''}">"○○를 데려오겠다"</button><button data-a="ppK" data-v="invest" class="${S.k==='invest'?'on':''}">"올해 투자하겠다"</button></div>
       ${S.k==='sign'?`<label class="small">선수<select data-a="ppPid"><option value="">고르세요</option>${T.map(p=>`<option value="${p.id}" ${String(S.pid)===String(p.id)?'selected':''}>${esc(p.name)} · ${posLabel(p)} · ${p.team!=null?esc(tshort(p.team)):'FA'}</option>`).join('')}</select></label>
         <p class="small muted">팬 기대가 오르고, 지목된 선수가 우리에게 호감을 갖습니다(FA 때 유리). 다른 구단 소속이면 그 구단 단장이 불쾌해하고 트레이드 값을 더 부릅니다. 기한 안에 못 데려오면 팬과 언론이 돌아섭니다.</p>`
         :`<p class="small muted">팬 여론이 오르지만 구단주가 지적할 수 있습니다(수익형 구단주는 신뢰 -4). 다음 개막까지 연봉 규모를 5% 이상 늘리지 못하면 팬이 실망하고 구단주 신뢰도 깎입니다.</p>`}
-      <button class="btn primary block" data-a="ppGo" ${ready?'':'disabled'}>${ready?'기사 내기':`${dmd(G.ppLast+PP_COOL)}부터 가능`}</button></div>`:`<p class="small muted">아직 친분 ${PP_MIN_REL} 이상인 기자가 없습니다. 위에서 전화·식사로 먼저 가까워지세요.</p>`}
+      <button class="btn primary block" data-a="ppGo" ${ready?'':'disabled'}>${ready?'기사 내기':`${dmd(G.ppLast+PP_COOL)}부터 가능`}</button></div>`:''}
     ${UI.ppMsg?`<div class="note">${esc(UI.ppMsg)}</div>`:''}${pl?`<div class="list" style="margin-top:6px">${pl}</div>`:''}`;
-  return csec('언론사와 기자',`<p class="small muted">기사는 언론사 소속 기자 이름으로 나갑니다. 비판적인 매체는 나쁜 소식을, 우호적인 매체는 좋은 소식을 더 크게 키웁니다. 전화(2주에 한 번)와 식사(한 달에 한 번, 1천만 원)로 기자와 가까워질 수 있습니다.</p>${outs}`)+csec('언론 플레이',play); }
-Object.assign(A,{ repCall(v){ toast(repContact(v,'call')); save(); render(); }, repMeal(v){ toast(repContact(v,'meal')); save(); render(); },
+  return csec('언론사와 기자',`<p class="small muted">기사는 언론사 소속 기자 이름으로 나갑니다. 비판적인 매체는 나쁜 소식을, 우호적인 매체는 좋은 소식을 더 크게 키웁니다. 친분은 인터뷰 요청에 응하고 성실하게 답할수록 오르고, 거절하면 내려갑니다. 내가 먼저 '단독'을 주면 그 기자와는 가까워지고 다른 매체 기자는 조금 서운해합니다.</p>${outs}`)+csec('언론 플레이',play); }
+Object.assign(A,{ repScoop(v){ toast(repScoop(v)); save(); render(); },
   ppK(v){ UI.pp=UI.pp||{}; UI.pp.k=v; UI.ppMsg=''; render(); },
   ppGo(){ const S=UI.pp||{}; if(S.k==='sign'&&!S.pid){ UI.ppMsg='데려오겠다고 밝힐 선수를 고르세요.'; render(); return; } UI.ppMsg=pressPlay(S.rep,S.k,+S.pid); save(); render(); } });
 </script>

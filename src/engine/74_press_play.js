@@ -28,7 +28,7 @@ function repContact(id,kind){ const r=repById(id); if(!r)return '기자를 찾�
   return ''; }
 
 /* ---------- 언론 플레이 ---------- */
-const PP_COOL=30, PP_MIN_REL=60; /* 기자 친분은 50에서 시작하므로, 먼저 가까워져야 언론 플레이를 부탁할 수 있다 */
+const PP_COOL=30, PP_MIN_REL=40; /* 내가 먼저 연락할 때: 친분 40 미만이면 거절, 60 이상이면 호의적으로 써 줄 가능성이 크다. 친분은 인터뷰 응답과 단독 정보 제공으로 쌓인다 */
 function ppReady(){ return G.ppLast==null||G.day-G.ppLast>=PP_COOL; }
 /* 기자가 어떻게 써 주나: 친분·성향·언론사 논조 */
 function ppFrame(r){ const O=outletOf(r.outlet); const s=r.rel+O.lean*8+(r.style==='fr'?10:r.style==='cr'?-12:0)+N(0,8); return s>=62?'good':s>=45?'flat':'bad'; }
@@ -36,8 +36,8 @@ function ppTargets(){ const L=[]; const add=p=>{ if(p&&p.team!==G.user&&!p.forei
   for(const id of (G.shortlist||[]))add(G.players[id]); if(G.fa&&!G.fa.closed)for(const id of (G.fa.pool||[]).slice(0,15))add(G.players[id]);
   Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12).forEach(add); return L.slice(0,24); }
 function ppFA(p){ return !!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
-function pressPlay(repId,kind,pid){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const r=repById(repId); if(!r)return '기자를 고르세요.'; if(!ppReady())return `언론 플레이는 30일에 한 번입니다. ${dmd(G.ppLast+PP_COOL)}부터 다시 할 수 있습니다.`;
-  if(r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 친분 ${PP_MIN_REL} 이상인 기자에게만 부탁할 수 있습니다(지금 ${r.rel}).`;
+function pressPlay(repId,kind,pid,via){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const r=repById(repId); if(!r)return '기자를 고르세요.'; if(!ppReady())return `언론 플레이는 30일에 한 번입니다. ${dmd(G.ppLast+PP_COOL)}부터 다시 할 수 있습니다.`;
+  if(via!=='iv'&&r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 친분이 ${PP_MIN_REL} 이상이어야 먼저 연락한 이야기를 받아 줍니다(지금 ${r.rel}). 이 기자의 인터뷰 요청에 성실히 응하거나 단독 정보를 주면 가까워집니다.`;
   const O=outletOf(r.outlet); const fr=ppFrame(r); const k=.7+O.reach*.12; const t=team(G.user); const B=bossOf(G.user); G.ppLast=G.day; G.pledges=G.pledges||[]; prInit();
   const fanD=(b)=>{ const v=Math.round(b*k*(fr==='good'?1.2:fr==='bad'?.5:1)); G.pr.fan=clamp(G.pr.fan+v,0,100); return v; };
   if(kind==='sign'){ const p=G.players[pid]; if(!p||p.team===G.user)return '대상 선수를 고르세요.'; const fa=ppFA(p); const star=ovr(p)>=60;
@@ -69,3 +69,17 @@ function ppDaily(){ if(!G.pledges||G.unemp)return; prInit(); for(const g of G.pl
   G.pledges=G.pledges.filter(g=>!g.done||G.day-g.until<120).slice(0,12); }
 /* 지목된 선수의 호감: FA 때 우리 구단 매력에 더해진다 */
 function ppFond(p,tid){ return p&&p.fond&&p.fond.tid===tid&&G.day<=p.fond.until?p.fond.v:0; }
+
+/* 단독 정보 주기: 내가 먼저 연락해 기자에게 특종거리를 준다. 그 기자와는 가까워지고, 다른 매체 기자들은 조금 서운해한다(기자마다 30일에 한 번) */
+function repScoop(id){ if(G.unemp)return ''; const r=repById(id); if(!r)return '기자를 고르세요.'; G.repc=G.repc||{}; const c=G.repc[id]=G.repc[id]||{};
+  if(c.scoop!=null&&c.scoop>G.day-30)return `${r.name} 기자에게는 ${dmd(c.scoop+30)}부터 다시 단독을 줄 수 있습니다.`; c.scoop=G.day;
+  const dim=r.rel>60?Math.max(.35,1-(r.rel-60)/40):1; const d=Math.max(2,Math.round(ri(4,7)*dim*(r.style==='cr'?.75:1))); repRel(r,d,'단독 정보 제공');
+  for(const o of pressInit())if(o.outlet!==r.outlet)repRel(o,-1,'다른 매체에 단독을 줌');
+  news('구단',`[단독] ${tshort(G.user)}, 내부 운영 계획 공개`,`${r.outlet} ${r.name} 기자가 ${tname(G.user)} 프런트의 시즌 운영 계획을 단독으로 전했습니다.`,0,{outlet:r.outlet,by:r.name});
+  return `${r.outlet} ${r.name} 기자에게 단독 정보를 줬습니다. 친분 +${d}(${r.rel}). 다른 매체 기자들은 조금 서운해합니다(-1).`; }
+/* 인터뷰 마지막 질문: 하고 싶은 말(언론 플레이). 기자가 먼저 청한 자리라 친분 기준이 없다(30일 간격은 같다) */
+function ivPPQ(){ if(G.unemp||!ppReady())return null; const opts=[{tone:'없음',t:'"오늘은 여기까지 하겠습니다."',fx:{fan:0,press:0}}];
+  const tgt=(G.shortlist||[]).map(id=>G.players[id]).find(p=>p&&p.team!==G.user&&!p.foreign&&!p.prospect)||(G.fa&&!G.fa.closed?(G.fa.pool||[]).map(id=>G.players[id]).filter(Boolean).sort((a,b)=>ovr(b)-ovr(a))[0]:null);
+  if(tgt)opts.push({tone:'영입 의지',t:`"${tgt.name} 선수, 꼭 데려오겠습니다."`,fx:{fan:0,press:0,pp:'sign',pid:tgt.id}});
+  opts.push({tone:'투자 선언',t:'"올해는 과감하게 투자하겠습니다."',fx:{fan:0,press:0,pp:'invest'}});
+  return {q:'끝으로 팬들께 따로 하실 말씀이 있습니까?',opts}; }

@@ -73,9 +73,9 @@ function ivBuild(k,d){ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.n
   return (Q[k]||Q.preseason).map(([q,opts])=>({q,opts:opts.map(([tone,t,fx])=>({tone,t,fx}))})); }
 const IV_TOPIC={fa_sign:'FA 영입',fa_lost:'FA 이탈',trade:'트레이드',injury:'주축 부상',preseason:'미디어데이',deadline:'트레이드 마감',season_end:'시즌 결산',streak_win:'연승'};
 function ivRequest(k,d){ if(G.unemp)return; d=d||{}; const cur=G.iv; if(cur&&!cur.done&&cur.exp>=G.day)return; if(cur&&G.day-cur.day<8&&!['preseason','season_end','deadline'].includes(k))return;
-  const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return;
+  const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return; { const pq=ivPPQ(); if(pq)qs.push(pq); } /* 마지막 질문: 언론 플레이 기회 */
   G.iv={id:(G.ivSeq=(G.ivSeq||0)+1),k,d,outlet,rep,repId:R0.id,qs,i:0,ans:[],exp:G.day+5,done:false,day:G.day};
-  mail('홍보팀',`[인터뷰 요청] ${outlet}: ${IV_TOPIC[k]||'현안'}`,`${outlet} ${rep} 기자가 ${IV_TOPIC[k]||'현안'} 관련 단장 인터뷰를 요청했습니다. 질문은 3개입니다.\n\n답변에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 5일 안에 응하지 않으면 '단장 침묵' 기사가 나갑니다.`,{imp:true,kind:'언론',acts:[{l:'인터뷰 참여하기',a:'ivOpen',v:G.iv.id},{l:'정중히 거절',a:'ivSkip',v:G.iv.id}]}); }
+  mail('홍보팀',`[인터뷰 요청] ${outlet}: ${IV_TOPIC[k]||'현안'}`,`${outlet} ${rep} 기자가 ${IV_TOPIC[k]||'현안'} 관련 단장 인터뷰를 요청했습니다. 질문은 ${qs.length}개입니다.\n\n답변에 따라 팬 여론·언론 논조·선수 기분·감독과의 관계가 달라집니다. 5일 안에 응하지 않으면 '단장 침묵' 기사가 나갑니다.`,{imp:true,kind:'언론',acts:[{l:'인터뷰 참여하기',a:'ivOpen',v:G.iv.id},{l:'정중히 거절',a:'ivSkip',v:G.iv.id}]}); }
 function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]; const o=q&&q.opts[j]; if(!o)return null; const R0=repById(v.repId); const fx=Object.assign({},o.fx,{fan:repMul(R0,o.fx.fan),press:repMul(R0,o.fx.press)}); prInit();
   repRel(R0,['회피','비판','압박','냉정','노코멘트'].includes(o.tone)?-2:['솔직','설명','신중','감사','반성'].includes(o.tone)?2:1,`인터뷰 답변(${o.tone})`);
   G.pr.fan=clamp(G.pr.fan+fx.fan,0,100); G.pr.press=clamp(G.pr.press+fx.press,0,100);
@@ -84,6 +84,7 @@ function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]
   if(fx.team)for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+fx.team,0,100);
   if(fx.young)for(const p of playersOf(G.user).filter(p=>p.age<=24))p.mor=clamp((p.mor??60)+fx.young,0,100);
   if(fx.prom){ const Y=sponSeason(); (G.ivProm=G.ivProm||[]).push({k:fx.prom,y:Y,d:G.day}); }
+  if(o.fx.pp){ try{ const msg=pressPlay(v.repId,o.fx.pp,o.fx.pid,'iv'); if(msg)mail('홍보팀','인터뷰에서 한 말이 기사로 나갑니다',msg,{kind:'언론'}); }catch(e){} }
   v.ans.push({q:q.q,a:o.t,tone:o.tone,fx}); v.i++;
   if(v.i>=v.qs.length){ v.done=true; const big=v.ans.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0];
     news('언론',`${tshort(G.user)} 단장 "${big.a.replace(/^"|"$/g,'').slice(0,30)}${big.a.length>32?'…':''}"`,`${v.outlet} ${v.rep} 기자와의 인터뷰에서 ${IV_TOPIC[v.k]} 관련 질문에 답했습니다. ${v.ans.map(x=>x.a).join(' ')}`,0,{outlet:v.outlet}); }
