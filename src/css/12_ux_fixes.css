@@ -328,3 +328,7 @@ body:has(#sheet .scrim) #dtick{display:none}
 .fo .fo-in b{font-size:17px}.fo .fo-in i{font-style:normal}.fo .fo-in .row{gap:4px;flex-wrap:wrap}
 .fo .fo-cmp{display:flex;flex-direction:column;gap:4px;margin:8px 0;padding:8px;border-radius:8px;border:1px solid var(--line,rgba(127,127,127,.25))}
 .fo b.good{color:var(--good,#3fb871)}.fo b.bad{color:var(--bad,#e5534b)}
+/* 업무 맡기기·설명 접기 */
+.autoi{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.autoi input{margin-top:4px;flex:none;width:18px;height:18px}
+.easyp{margin-bottom:10px}.easyp .chips{margin:6px 0}
+details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;margin:4px 0}

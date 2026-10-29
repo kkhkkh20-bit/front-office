@@ -20,7 +20,7 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
       <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt?'good':'bad'}">${v>=tgt?'사인 가능':known||!best?'모자람':'경쟁 조건에 따라 다름'}</b></div>
       ${N&&N.dl?`<p class="warn">${dmd(N.dl)}까지 기다려 준다고 했습니다. 그 뒤에는 ${esc(tshort(N.dlT))}로 갑니다.</p>`:''}${N?`<p class="muted">이번 주 제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
     ${err?`<div class="note bad">${esc(err)}</div>`:''}
-    <button class="btn primary block" data-a="foGo" data-v="${p.id}" ${err?'disabled':''}>이 조건으로 제안</button>${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
+    <div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}" ${err?'disabled':''}>이 조건으로 제안</button></div>${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
 Object.assign(A,{ foRe(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
   foStep(v){ const [k,d]=String(v).split(':'); const F=UI.fo; if(!F)return; const p=G.players[F.id]; if(!p)return; const cap=foCap(p);
     const top=F.re?Math.round(p.newSal*2):cap; if(k==='g')F.g=clamp(F.g+(+d)*USD,MIN_SAL,top-F.i); else F.i=clamp(F.i+(+d)*USD,0,top-F.g); F.msg=''; renderSheet(); },
@@ -40,4 +40,4 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
     <div class="fo-cmp small"><div class="row between"><span>남고 싶은 마음(적응·재계약 연차·충성)</span><b>${f>=1?'+':''}${Math.round((f-1)*100)}%</b></div>
       <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt?'good':'bad'}">${v>=tgt?'합의 가능':'모자람'}</b></div>
       ${N?`<p class="muted">제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
-    ${N&&N.ok?'<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.</div>':`<button class="btn primary block" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
+    ${N&&N.ok?'<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.</div>':`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
