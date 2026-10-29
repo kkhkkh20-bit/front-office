@@ -30,3 +30,9 @@
   .fdt td.fdg{font-size:13px!important;min-width:26px}
   .fdt td{min-width:0}
 }
+
+/* 소식함 맨 위 '안 읽은 소식' 묶음 */
+.ibr[data-tkd]{display:none}
+.ibx-g.ibx-new{border-color:var(--acc,#5aa8ff)}
+.ibx-day.ibx-pinh{cursor:default;color:var(--ink);font-weight:600}
+.ibx-day.ibx-pinh{display:flex;align-items:center;gap:8px}.ibx-pinh .ibx-dn{margin-left:auto}

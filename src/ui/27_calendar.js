@@ -55,9 +55,9 @@ function calUpcoming(){ const L=calUpcomingList(10);
 /* 날짜가 넘어가는 동안: 아직 지나가지 않은 날의 경기 결과·소식은 숨겼다가 그날이 지나갈 때 하나씩 보여 준다 */
 function tkHide(){ const T=UI._tk; return T&&Date.now()<T.until?T.show:Infinity; }
 function tkAt(d){ return d>tkHide()?` data-tkd="${d}"`:''; }
-function tkShow(d){ if(UI._tk)UI._tk.show=d; const L=document.querySelector('.ibx-list'); const end=L&&L.scrollTop+L.clientHeight>=L.scrollHeight-40;
+function tkShow(d){ if(UI._tk)UI._tk.show=d; const L=document.querySelector('.ibx-list'); const top=L&&L.scrollTop<=40;
   let any=false; document.querySelectorAll('[data-tkd]').forEach(el=>{ if(+el.dataset.tkd<=d){ el.removeAttribute('data-tkd'); el.classList.add('tk-in'); any=true; } });
-  if(any&&L){ const c=L.querySelector('.ibr.cur'); if(c)ibShowCur(L,c,false); else if(end)L.scrollTop=L.scrollHeight; } }
+  if(any&&L){ const c=L.querySelector('.ibr.cur'); if(c)ibShowCur(L,c,false); else if(top)L.scrollTop=0; } }
 function tkDone(){ UI._tk=null; tkShow(1e9); }
 function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } try{ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){ tkDone(); return; } }catch(e){}
   let el=document.getElementById('dtick'); if(!el){ el=document.createElement('div'); el.id='dtick'; el.setAttribute('aria-hidden','true'); document.body.appendChild(el); }

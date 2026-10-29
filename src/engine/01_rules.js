@@ -57,7 +57,10 @@ const OWNER={
 };
 const SUR='김이박최정강조윤장임한오서신권황안송류홍전고문손양배백허남심노하곽성차주우구민유나진지엄채원천방공현함변염여추도소석선설마길연위표명기반왕금옥육인맹제모탁국'.split('');
 const G1='민서준도현우지성태재승동진영상형규호원석한세윤건시유은하주경범정희용인수기종'.split('');
-const G2='호준우민혁수현진훈석빈원성규찬결율환섭철영욱범기완택열균식겸후언'.split('');
+const G2='호준우민혁수현진훈석빈원성규찬결율환섭철영욱범완택열균식겸후언'.split(''); /* '기'로 끝나는 이름(지기·경기·성기·종기…)은 낱말처럼 읽혀 뺐다 */
+/* 낱말처럼 읽히는 이름(성 뒤 두 글자): 야구·구단 용어와 헷갈리거나 어색한 것 */
+const GBAD=new Set(['시민','주민','도민','주식','지식','인식','한식','정식','시식','종식','수식','하수','호수','승수','인수','기준','기수','기원','기성','기우','수준','정수','정원','인원','동원','경영','경호','주석','재석','성원','재원','세수','정석','시원','용수']);
+const nameBad=n=>typeof n==='string'&&n.length===3&&(GBAD.has(n.slice(1))||n[2]==='기');
 const BLOCK=new Set(['김현수','박찬호','이승엽','류현진','이대호','양현종','김광현','최정','강백호','이정후','김도영','구자욱','박병호','오지환','손아섭','안우진','문동주','원태인','노시환','김하성','송성문','최원태','박세웅','고영표','김원중','구승민','정수빈','박해민','김태균','이종범','선동열','장성호','양의지','강민호','나성범','최형우','김재환','한유섬','고우석','정우영','김혜성','이용규','카일 하트','에릭 페디','케이시 켈리','라이언 와이스']);
 const FN={
   us:{nat:'미국',f:['제이크','라이언','타일러','카일','브랜든','조시','코디','에릭','데릭','맷','닉','크리스','저스틴','오스틴','케빈','트래비스','브렛','코너','헌터','잭'],l:['존슨','밀러','데이비스','윌리엄스','스미스','브라운','우드','켈러','리드','쿡','벨','파커','모리스','헤이스','그레이','스톤','웰스','포터','반스','하퍼']},
@@ -81,7 +84,7 @@ const intlLv=r=>Math.min(3,((G.intl&&G.intl[r])||0)+(G&&G.scouts&&G.scouts.some(
 /* 국내 이름: 현역·은퇴 선수(OB) 이름과 겹치지 않게(하루 단위로 이름 목록을 모아 둔다) */
 let _nmSet=null, _nmDay=null;
 function nameTaken(n){ if(typeof G==='undefined'||!G||!G.players)return false; if(_nmDay!==G.day||!_nmSet){ _nmSet=new Set(Object.values(G.players).map(p=>p.name)); for(const o of (G.ob||[]))_nmSet.add(o.name); _nmDay=G.day; } return _nmSet.has(n); }
-function genName(){ for(let i=0;i<60;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return pick(SUR)+'도윤'; }
+function genName(){ for(let i=0;i<60;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&!nameBad(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return pick(SUR)+'도윤'; }
 function genFName(k){ const d=FN[k]; for(let i=0;i<30;i++){ const n=d.rev?pick(d.l)+' '+pick(d.f):pick(d.f)+' '+pick(d.l); if(!BLOCK.has(n)&&!Object.values(G.players).some(p=>p.name===n))return n; } return pick(d.f)+' '+pick(d.l); }
 function ovr(p){const r=p.r;return p.isP? r.stf*.45+r.ctl*.35+r.sta*.2 : r.con*.3+r.pow*.25+r.eye*.15+r.spd*.1+r.def*.2;}
 const offV=p=>p.r.con*.35+p.r.pow*.3+p.r.eye*.2+p.r.spd*.15;

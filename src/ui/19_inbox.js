@@ -54,18 +54,25 @@ function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); c
     ${o?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 처리할 메일: 안 읽었고 중요하거나 업무·버튼·제안이 있는 것. 상단 숫자는 이것만 센다 */
 const mailNeeds=m=>!m.read&&(m.imp||m.kind==='업무'||(m.acts&&m.acts.length>0)||!!m.oid);
-/* ===== 소식함(FM 수신함 방식) =====
- - 소식은 시간 순서로 아래에 계속 쌓인다(가장 새 소식이 맨 아래). 날짜별로 묶고, 날짜 머리를 누르면 그 날짜를 접고 편다.
+/* ===== 소식함 =====
+ - 맨 위 '안 읽은 소식' 묶음: 안 읽은 소식을 확인할 소식부터, 같은 종류 안에서는 최신부터. 읽어도 그날(또는 소식함을 다시 열 때)까지는 그 자리에 둔다(읽는 중에 목록이 움직이지 않게).
+ - 그 아래는 최신 날짜부터 날짜별로 묶는다. 날짜 머리를 누르면 그 날짜를 접고 편다.
  - 접기는 단장만 한다. 시간이 지났다고 저절로 접거나 읽음 처리하지 않는다. 접힌 날짜에 안 읽은 소식이 있으면 머리에 표시된다.
  - 저절로 소식을 골라 열지 않는다(고른 것만 읽음). 날짜가 바뀌어도 보던 위치를 지킨다.
- - 스페이스바(와 '계속' 버튼): 확인할 소식(안 읽은 중요·업무·버튼·제안 소식)이 있으면 가장 오래된 것부터 연다. 없으면 진행한다. */
+ - 스페이스바(와 '계속' 버튼): 화면 위에서부터 안 읽은 소식을 연다(확인할 소식 먼저). 다 읽었으면 진행한다. */
 function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
   list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep)return true; const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
-  return list.slice().reverse(); } /* G.mail은 새 소식이 앞: 화면은 오래된 것부터 */
+  return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
 /* 반드시 확인할 소식: 안 읽었고, 답이 필요하거나(살아 있는 제안·인터뷰) 중요 표시·업무 소식. 단순히 '선수 보기' 버튼만 있는 소식은 넣지 않는다 */
 const ibMust=m=>!m.read&&!mailDone(m)&&(ibTask(m)||m.kind==='업무');
-function ibNeedList(){ return G.mail.filter(ibMust).slice().reverse(); }
+function ibNeedList(){ return G.mail.filter(ibMust); } /* 최신부터(화면 순서) */
+/* 스페이스바·'안 읽음'이 여는 순서: 확인할 소식 먼저, 그다음 나머지 안 읽은 소식(각각 최신부터) = 화면 맨 위 묶음 순서 */
+function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).concat(u.filter(m=>!ibMust(m))); }
+/* 맨 위 묶음에 고정할 소식: 지금 안 읽은 소식 + 이번에 소식함을 연 뒤(같은 날) 읽은 소식 */
+function ibPinned(list){ let S=UI._ibStk; if(!S||S.day!==G.day||UI._ibFirst)S=UI._ibStk={day:G.day,g:{}};
+  for(const m of list)if(!m.read&&S.g[m.id]==null)S.g[m.id]=ibMust(m)?0:1;
+  const P=list.filter(m=>S.g[m.id]!=null); return P.filter(m=>S.g[m.id]===0).concat(P.filter(m=>S.g[m.id]===1)); }
 function ibFolds(){ return G.ibFold=G.ibFold||{}; }
 function inboxView(){
   if(!['all','task','squad','move','club','media'].includes(UI.mf))UI.mf='all'; const f=UI.mf;
@@ -75,24 +82,26 @@ function inboxView(){
   const bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
     <div class="ibx-meta">${unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${need?`<button class="lnk ibx-need" data-a="ibNeedGo">확인할 소식 ${need}건</button>`:''}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · J/K: 다음/이전">Space 다음 소식·진행</span>':''}</div></div>`;
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
-  const ids=list.map(m=>m.id); const W=wide();
-  let sel=[UI.mailFocus,UI.ibSel].find(v=>v&&ids.includes(v));
+  const pin=ibPinned(list); const pinS=new Set(pin.map(m=>m.id)); const rest=list.filter(m=>!pinS.has(m.id));
+  const all0=pin.concat(rest).map(m=>m.id); const W=wide();
+  let sel=[UI.mailFocus,UI.ibSel].find(v=>v&&all0.includes(v));
   if(UI.mailFocus&&!sel&&G.mail.some(m=>m.id===UI.mailFocus)){ UI.mf='all'; return inboxView(); }
   if(UI.mailFocus&&sel&&!W)UI.ibOpen=sel; UI.ibSel=sel||null;
-  const si=sel?ids.indexOf(sel):-1;
+  /* 지난 소식은 최근 lim건까지(고른 소식이 그보다 뒤면 거기까지), 나머지는 맨 아래 '더 보기' */
+  const lim=UI.ibN||80; const ri=sel?rest.findIndex(m=>m.id===sel):-1; const cut=Math.max(lim,ri+1); const shown=rest.slice(0,cut);
+  const more=rest.length>cut?`<button class="btn small block ibx-more" data-a="ibMore">이전 소식 더 보기 (${rest.length-cut}건)</button>`:'';
+  const order=pin.concat(shown); const ids=order.map(m=>m.id); UI._ibOrder=ids; const si=sel?ids.indexOf(sel):-1;
   const nav=sel?`<div class="ibm-nav"><button class="btn small" data-a="mailJump" data-v="${ids[si-1]||''}" ${si>0?'':'disabled'} aria-label="이전 소식">◀</button><span>${si+1}/${ids.length}</span><button class="btn small" data-a="mailJump" data-v="${ids[si+1]||''}" ${si<ids.length-1?'':'disabled'} aria-label="다음 소식">▶</button></div>`:'';
-  /* 오래된 소식은 더 보기로: 최근 lim건(고른 소식이 그보다 앞이면 거기까지) */
-  const lim=UI.ibN||80; const from=Math.max(0,Math.min(list.length-lim,si>=0?si:list.length)); const shown=list.slice(from);
-  const more=from>0?`<button class="btn small block ibx-more" data-a="ibMore">이전 소식 더 보기 (${from}건)</button>`:'';
   const groups=[]; for(const m of shown){ const g=groups[groups.length-1]; if(g&&g.d===m.day)g.L.push(m); else groups.push({d:m.day,L:[m]}); }
-  const rows=more+groups.map(g=>{ const fold=!!F[g.d]&&!(sel&&g.L.some(m=>m.id===sel)); const u=g.L.filter(m=>!m.read).length, nd=g.L.filter(ibMust).length;
-    return `<div class="ibx-g${fold?' fold':''}"${sel&&g.L.some(m=>m.id===sel)?'':tkAt(g.d)}><button class="ibx-day" data-a="ibFold" data-v="${g.d}" aria-expanded="${!fold}"><span class="ibx-car">${fold?'▸':'▾'}</span>${ibDay(g.d)}<span class="ibx-dn">${g.L.length}건${u?` · <b class="${nd?'warn':''}">안 읽음 ${u}</b>`:''}</span></button>${fold?'':g.L.map(m=>mailRow(m,m.id===sel)).join('')}</div>`; }).join('');
-  if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=list[ids.indexOf(UI.ibOpen)];
+  const pu=pin.filter(m=>!m.read).length, pn=pin.filter(ibMust).length;
+  const pinH=pin.length?`<div class="ibx-g ibx-new"><div class="ibx-day ibx-pinh">안 읽은 소식<span class="ibx-dn">${pu?`<b class="${pn?'warn':''}">${pu}건</b>${pn?` · 확인할 소식 ${pn}`:''}`:'모두 읽음'}</span></div>${pin.map(m=>mailRow(m,m.id===sel).replace('<button ',`<button ${tkAt(m.day)} `)).join('')}</div>`:'';
+  const rows=pinH+groups.map(g=>{ const fold=!!F[g.d]&&!(sel&&g.L.some(m=>m.id===sel)); const u=g.L.filter(m=>!m.read).length, nd=g.L.filter(ibMust).length;
+    return `<div class="ibx-g${fold?' fold':''}"${sel&&g.L.some(m=>m.id===sel)?'':tkAt(g.d)}><button class="ibx-day" data-a="ibFold" data-v="${g.d}" aria-expanded="${!fold}"><span class="ibx-car">${fold?'▸':'▾'}</span>${ibDay(g.d)}<span class="ibx-dn">${g.L.length}건${u?` · <b class="${nd?'warn':''}">안 읽음 ${u}</b>`:''}</span></button>${fold?'':g.L.map(m=>mailRow(m,m.id===sel)).join('')}</div>`; }).join('')+more;
+  if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=order[ids.indexOf(UI.ibOpen)];
       return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav)}`; }
-    UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}<div class="ibx-end">가장 최근 소식입니다 · ${ibDay(G.day)}</div></nav>`; }
-  const pane=si>=0?mailCard(list[si],nav):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
-  const end=`<div class="ibx-end">가장 최근 소식입니다 · ${ibDay(G.day)}</div>`;
-  return bar+`<div class="ibx"><div class="ibx-lw"><nav class="ibx-list" aria-label="소식 목록">${rows}${end}</nav><button class="ibx-up" data-a="ibUnreadGo" hidden>안 읽은 소식 ↑</button><button class="ibx-down" data-a="ibDown" hidden>최신 소식으로 ↓</button></div><div class="ibx-read">${pane}</div></div>`;
+    UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}</nav>`; }
+  const pane=si>=0?mailCard(order[si],nav):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
+  return bar+`<div class="ibx"><div class="ibx-lw"><nav class="ibx-list" aria-label="소식 목록">${rows}</nav><button class="ibx-up" data-a="ibTop" hidden>맨 위로 ↑</button></div><div class="ibx-read">${pane}</div></div>`;
 }
 /* 화면에 보인 메일은 읽음으로. 다시 그리지 않고 표시만 바꾼다 */
 let _ibSave=null, _ibOn=false, _ibRaf=0;
@@ -111,16 +120,16 @@ function ibFit(){ const X=document.querySelector('.ibx'); if(!X)return; const to
 if(!window._ibFitOn){ window._ibFitOn=1; window.addEventListener('resize',()=>{ if(UI&&UI.tab==='inbox'&&wide())ibFit(); }); }
 function inboxWire(){ document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
   const L=document.querySelector('.ibx-list'); if(!L)return; const n=G.mail.length;
-  if(wide()){ ibFit(); /* 목록 칸 스크롤: 처음 열면 맨 아래(최신), 그 뒤로는 보던 위치를 지키고, 맨 아래를 보던 중에 새 소식이 오면 따라 내려간다 */
-    const atEnd=UI._ibEnd!==false; if(UI._ibFirst||(atEnd&&UI._ibCnt!==n)){ L.scrollTop=L.scrollHeight; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
+  if(wide()){ ibFit(); /* 목록 칸 스크롤: 처음 열면 맨 위(안 읽은 소식·최신), 그 뒤로는 보던 위치를 지키고, 맨 위를 보던 중에 새 소식이 오면 맨 위에 머문다 */
+    const atTop=UI._ibAtTop!==false; if(UI._ibFirst||(atTop&&UI._ibCnt!==n)){ L.scrollTop=0; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
     const c=L.querySelector('.ibr.cur'); if(c&&(f||UI._ibToCur)){ UI._ibToCur=false; ibShowCur(L,c,true); }
-    const dn=document.querySelector('.ibx-down'), up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibEnd=L.scrollTop+L.clientHeight>=L.scrollHeight-24; if(dn)dn.hidden=UI._ibEnd; if(up){ const lt=L.getBoundingClientRect().top; const n=[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length+[...L.querySelectorAll('.ibx-g.fold .ibx-dn b')].length; up.hidden=!n; up.textContent=`안 읽은 소식 ${n}건 ↑`; } }; L.onscroll=upd; upd();
-  } else if(!UI.ibOpen){ if(UI._ibFirst||(UI.ibY==null&&UI._ibCnt!==n))window.scrollTo(0,document.documentElement.scrollHeight); else if(UI.ibY!=null&&!f){ window.scrollTo(0,UI.ibY); UI.ibY=null; } }
+    const up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibAtTop=L.scrollTop<=24; if(up){ const lt=L.getBoundingClientRect().top; const k=[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length; up.hidden=L.scrollTop<200&&!k; up.textContent=k?`안 읽은 소식 ${k}건 ↑`:'맨 위로 ↑'; } }; L.onscroll=upd; upd();
+  } else if(!UI.ibOpen){ if(UI._ibFirst||(UI.ibY==null&&UI._ibCnt!==n))window.scrollTo(0,0); else if(UI.ibY!=null&&!f){ window.scrollTo(0,UI.ibY); UI.ibY=null; } }
   UI._ibFirst=false; UI._ibCnt=n; }
-function ibStep(d){ const ids=ibList(UI.mf||'all').map(m=>m.id).filter(id=>document.querySelector(`.ibr[data-mid="${id}"]`)||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
+function ibStep(d){ const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>document.querySelector(`.ibr[data-mid="${id}"]`)||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
 function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
-  const n=ibNeedList(); const u=n.length?n:G.mail.filter(m=>!m.read).slice().reverse(); if(u.length){ const m=u[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
+  const u=ibUnreadOrder(); if(u.length){ const m=u[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
   if(G.live){ toast('경기를 먼저 끝까지 보세요.'); return; } const bl=blocker(); if(bl&&!G.res){ toast(bl); UI.tab='home'; render(); return; }
   const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); const v=b?b.dataset.v:'next';
   /* 특별한 소식(남은 결정·제안·중요 소식)이 없으면 묻지 않고 바로 진행한다. 설정에서 '진행 전에 묻기'를 켜면 매번 묻는다 */
