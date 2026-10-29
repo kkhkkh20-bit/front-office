@@ -28,6 +28,7 @@ const MAIL_DONE=[
   [/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/,()=>!faLive()],
   [/외국인 선수를 구성/,()=>foreignOf(G.user).length>=3||period()==='season'],
   [/트레이드 마감|마감 보강안/,()=>!tradeOpen()],
+  [/참석 선수 확인/,()=>!G.md||!!G.md.res||G.day>=G.md.day],
   [/내일 직관|개막합니다/,(m)=>G.day>m.day+1]];
 const mailDoneShow=m=>(m.imp||m.kind==='업무'||m.kind==='결정'||(m.acts&&m.acts.length>0)||!!m.oid)&&mailDone(m);
 function mailDone(m){ if(m.done)return true;

@@ -217,6 +217,7 @@ const A={
   cerAll(){ if(UI.cer){ UI.cer.i=99; renderSheet(); } },
   sponPitch(v){ toast(sponPitch(v)); save(); render(); },
   ivOpen(v){ const iv=G.iv; if(!iv||iv.id!==+v)return toast('지난 인터뷰 요청입니다.'); if(iv.done&&!iv.ans.length)return toast('이미 거절한 인터뷰입니다.'); if(iv.exp<G.day&&!iv.done)return toast('기한이 지났습니다.'); UI.ivSh=true; renderSheet(); },
+  mdRep(v){ toast(mdSuggest(v)); save(); render(); },
   ivSkip(v){ if(G.iv&&G.iv.id===+v&&!G.iv.done){ ivSkip(); toast('인터뷰를 거절했습니다. 단장 침묵 기사가 나갑니다.'); save(); render(); } },
   ivAns(v){ ivAnswer(+v); save(); renderSheet(); },
   gmPlan(v){ const [d,k,x]=String(v).split(':'); toast(gmPlanSet(+d,k||null,x||null)); save(); render(); },
