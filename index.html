@@ -1958,6 +1958,18 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-guide{padding:24px 18px}
 .ibx-meta .ibx-need{color:var(--warn);font-weight:600}
 .continue.need{box-shadow:inset 0 0 0 2px var(--warn)}
+.ibr-tag.done{color:var(--dim);border-color:var(--line)}
+/* 넓은 화면: 창 높이에 맞춘 두 칸(각자 스크롤). 화면 밖으로 잘리지 않는다 */
+@media (min-width:980px){
+  .ibx{align-items:stretch}
+  .ibx-lw{position:relative;min-height:0;height:100%}
+  .ibx-lw .ibx-list{position:static;max-height:none;height:100%}
+  .ibx-read{height:100%;overflow-y:auto;overscroll-behavior:contain;padding-bottom:12px}
+}
+.ibx-end{padding:14px 12px 18px;text-align:center;font-size:12px;color:var(--dim)}
+.ibx-list.m .ibx-end{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.ibx-down{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:12px;box-shadow:0 4px 14px #0006;cursor:pointer}
+.ibx-down[hidden]{display:none}
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%);max-height:calc(100vh - 32px);overflow-y:auto}
 .fde-ts{display:flex;flex-wrap:wrap;gap:6px}
@@ -8847,123 +8859,151 @@ function kPlayer(o){ /* 좌타자는 우타자 그림을 좌우로 뒤집는다:
   if(o.bat)return `<g transform="rotate(${o.rot||0})"><g class="kswing">${arms}${extra}</g>${kpp(KART.b[o.v||0],S,D)}${helm}</g>`;
   if(o.pose==='set')return `<g transform="rotate(${o.rot||0})"><g class="kthrow">${arms}${glove}</g>${kpp(KART.b[o.v||0],S,D)}${helm}</g>`;
   return `<g transform="rotate(${o.rot||0})"><g class="karms">${arms}${glove}</g>${kpp(KART.b[o.v||0],S,D)}${helm}${extra}</g>`; }
-/* 구단 훈련장 전경(아이소메트릭, 시안 B): 시설 단계와 선수 상황을 한 장의 지도에 그린다.
-   그림 조각은 gfx/iso.js. 지도는 viewBox 0 0 1000 690 고정(확대는 33_scouting_train.js의 campZoomTo).
-   구역(.plot)마다 data-b(확대 범위), data-poly(바닥 마름모), data-hp(건물 윤곽)를 남겨 클릭 판정에 쓴다 */
+/* 구단 훈련장 전경: 시설 단계와 선수 상황을 한 장의 지도에 그린다 */
 let CAMP_UNI={a:{S:'#f2f4f6',D:'#CE0E2D',H:'#CE0E2D'},f:{S:'#9aa4ad',D:'#4b5560',H:'#4b5560'},r:{S:'#5b8fd6',D:'#2c4f80',H:'#2c4f80'},y:{S:'#e8eef3',D:'#6b7a88',H:'#6b7a88'}};
 let CPID=0;
-/* 선수 한 명: 아이소 인형 + 클릭 영역 + 상태 표시. 발 위치가 (x, y). anim은 SVG 애니메이션 조각 */
-function cpPlayer(p,x,y,o={}){ CPID++; const u=CAMP_UNI[o.uni||'a'];
-  const badge=p.inj?`<g transform="translate(8 -30)"><circle r="5.5" fill="#d6333f" stroke="#fff" stroke-width="1"/><path d="M-3 0h6M0 -3v6" stroke="#fff" stroke-width="1.8"/></g>`:p.tired?`<g transform="translate(8 -30)"><circle r="5.5" fill="#e0a100" stroke="#fff" stroke-width="1"/><text y="2.6" text-anchor="middle" font-size="7" font-weight="700" fill="#111">z</text></g>`:p.hot?`<g transform="translate(8 -30)"><circle r="5.5" fill="#1fa463" stroke="#fff" stroke-width="1"/><path d="M-2.5 1.5 0 -2 2.5 1.5" fill="none" stroke="#fff" stroke-width="1.6"/></g>`:'';
-  const dev=p.dev?`<g transform="translate(-8 -30)"><rect x="-5" y="-5" width="10" height="10" rx="2" fill="#18a5b5" stroke="#fff" stroke-width="1"/><path d="M-2.5 2.5 0 -2.5 2.5 2.5" fill="none" stroke="#fff" stroke-width="1.5"/></g>`:'';
+/* 선수 한 명: 위에서 본 그림 + 클릭 영역 + 상태 표시. anim은 SVG 애니메이션 조각 */
+function cpPlayer(p,x,y,o={}){ const id='cp'+(++CPID); const u=CAMP_UNI[o.uni||'a'];
+  const badge=p.inj?`<g transform="translate(9 -14)"><circle r="5.5" fill="#d6333f" stroke="#fff" stroke-width="1"/><path d="M-3 0h6M0 -3v6" stroke="#fff" stroke-width="1.8"/></g>`:p.tired?`<g transform="translate(9 -14)"><circle r="5.5" fill="#e0a100" stroke="#fff" stroke-width="1"/><text y="2.6" text-anchor="middle" font-size="7" font-weight="700" fill="#111">z</text></g>`:p.hot?`<g transform="translate(9 -14)"><circle r="5.5" fill="#1fa463" stroke="#fff" stroke-width="1"/><path d="M-2.5 1.5 0 -2 2.5 1.5" fill="none" stroke="#fff" stroke-width="1.6"/></g>`:'';
+  const dev=p.dev?`<g transform="translate(-10 -14)"><rect x="-5" y="-5" width="10" height="10" rx="2" fill="#18a5b5" stroke="#fff" stroke-width="1"/><path d="M-2.5 2.5 0 -2.5 2.5 2.5" fill="none" stroke="#fff" stroke-width="1.5"/></g>`:'';
   const act=o.act?` ${o.act}`:''; const sty=o.act?` style="--ad:${o.dur||2.6}s;--dl:${o.dl!=null?o.dl:-((p.id*0.37)%2).toFixed(2)}s"`:'';
-  return `<g class="cpp${act}" data-pid="${p.id}" transform="translate(${isoN(x)} ${isoN(y)})" tabindex="0" role="button" aria-label="${p.name}"${sty}>
-    ${o.anim||''}<g transform="scale(${o.s||1.15})">${isoMan(0,0,{c:u.S,d:u.D,h:o.helm?u.H:u.D,bat:o.bat,bar:o.bar,glove:o.glove})}</g>${dev}${badge}
-    <text class="cpn" y="${o.ny||12}">${p.name}</text></g>`; }
-function cpWalk(path,dur,begin){ return `<animateMotion dur="${dur}s" begin="${begin||0}s" repeatCount="indefinite" path="${path}"/>`; }
+  return `<g class="cpp${act}" data-pid="${p.id}" transform="translate(${x} ${y})" tabindex="0" role="button" aria-label="${p.name}"${sty}>
+    ${o.anim||''}<g transform="scale(${o.s||.62})"><ellipse cx="1" cy="2" rx="14" ry="12" fill="#0003"/><g transform="rotate(${o.rot||0})">${kPlayer({...u,v:p.v%5,rot:0,helm:o.helm?u.H:null,glove:o.glove,bat:o.bat,pose:o.pose})}</g></g>${dev}${badge}
+    <text class="cpn" y="${o.ny||19}">${p.name}</text></g>`; }
+function cpWalk(path,dur,begin){ return `<animateMotion dur="${dur}s" begin="${begin||0}s" repeatCount="indefinite" rotate="auto" path="${path}"/>`; }
 function cpBob(d){ return `<animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;0 -2;0 0" dur="${d||1.2}s" repeatCount="indefinite"/>`; }
-/* 화면 점 목록 → 닫힌 경로 */
-function cpPath(pts,close){ return 'M'+pts.map(p=>isoN(p[0])+' '+isoN(p[1])).join(' L')+(close?' Z':''); }
 
 /* 투구와 타격이 맞물리는 공: 투수 손을 떠나(56%) 타자에게 닿고(72%), 맞은 공은 멀리 날아간다 */
-function cpPitchBall(px,py,hx,hy,fx,fy,dur,r){ const rr=r||3; return `<circle r="${rr}" fill="#fff" opacity="0"><animateMotion dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.56;0.72;1" keyPoints="0;0;1;1" calcMode="linear" path="M${isoN(px)} ${isoN(py)} L${isoN(hx)} ${isoN(hy)}"/><animate attributeName="opacity" dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.55;0.56;0.72;0.73;1" values="0;0;1;1;0;0"/></circle>`
-  +(fx!=null?`<circle r="${rr}" fill="#fff" opacity="0"><animateMotion dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.73;0.97;1" keyPoints="0;0;1;1" calcMode="linear" path="M${isoN(hx)} ${isoN(hy)} Q${isoN((hx+fx)/2)} ${isoN(Math.min(hy,fy)-120)} ${isoN(fx)} ${isoN(fy)}"/><animate attributeName="opacity" dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.72;0.73;0.96;0.97;1" values="0;0;1;1;0;0"/></circle>`:''); }
+function cpPitchBall(px,py,hx,hy,fx,fy,dur,r){ const rr=r||3; return `<circle r="${rr}" fill="#fff" opacity="0"><animateMotion dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.56;0.72;1" keyPoints="0;0;1;1" calcMode="linear" path="M${px} ${py} L${hx} ${hy}"/><animate attributeName="opacity" dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.55;0.56;0.72;0.73;1" values="0;0;1;1;0;0"/></circle>`
+  +(fx!=null?`<circle r="${rr}" fill="#fff" opacity="0"><animateMotion dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.73;0.97;1" keyPoints="0;0;1;1" calcMode="linear" path="M${hx} ${hy} Q${(hx+fx)/2} ${Math.min(hy,fy)-120} ${fx} ${fy}"/><animate attributeName="opacity" dur="${dur}s" repeatCount="indefinite" keyTimes="0;0.72;0.73;0.96;0.97;1" values="0;0;1;1;0;0"/></circle>`:''); }
+function plotFrame(x,y,w,h,title,lv,max,bld,key){ const pips=[1,2,3].map(i=>`<rect x="${x+w-46+i*12}" y="${y+7}" width="9" height="4" rx="1" fill="${i<=lv?'#4fd27c':bld&&i===lv+1?'#e0a100':'#ffffff33'}"/>`).join('');
+  return `<g class="plot" data-k="${key}" data-b="${x},${y},${w},${h}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="#ffffff22"/>
+    <rect x="${x}" y="${y}" width="${w}" height="18" rx="6" fill="#0b1218cc"/><text class="pt" x="${x+8}" y="${y+13}">${title}</text>${max?pips:''}</g>`; }
 
-/* 클릭 구역: 바닥 다각형(poly)과 건물 윤곽(hp). 선택 강조는 첫 다각형(.pso) 테두리 */
-function cpBox(pts,m){ const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]); const a=Math.min(...xs)-m, b=Math.min(...ys)-m; return [a,b,Math.max(...xs)+m-a,Math.max(...ys)+m-b].map(v=>Math.round(v)); }
-function cpPts(pts){ return pts.map(p=>isoN(p[0])+','+isoN(p[1])).join(' '); }
-function isoPlot(key,poly,hp,tag){ const bb=cpBox(poly.concat(hp||[],tag?[[tag[0]-80,tag[1]+44],[tag[0]+80,tag[1]+44]]:[]),10);
-  return `<g class="plot" data-k="${key}" data-b="${bb.join(',')}" data-poly="${cpPts(poly)}"${hp?` data-hp="${cpPts(hp)}"`:''}><polygon class="pso" points="${cpPts(poly)}"/></g>`; }
-/* 마름모 위로 높이 h만큼 솟은 윤곽(육각형) */
-function cpRaise(top,right,bottom,left,h){ return [[top[0],top[1]-h],[right[0],right[1]-h],right,bottom,left,[left[0],left[1]-h]]; }
-/* 구역 이름표: 이름 + 단계 칸 + 둘째 줄 */
-function cpTag(x,y,title,lv,max,bld,sub){ const tw=[...title].reduce((a,c)=>a+(/[가-힣]/.test(c)?11.2:5.6),0); const pw=max?max*11+6:0; const w=tw+pw+16;
-  const pips=max?[...Array(max)].map((_,i)=>`<rect x="${isoN(x-w/2+tw+12+i*11)}" y="${y-3}" width="8" height="4" rx="1" fill="${i+1<=lv?'#4fd27c':bld&&i+1===lv+1?'#e0a100':'#ffffff33'}"/>`).join(''):'';
-  return `<g class="cptag"><rect x="${isoN(x-w/2)}" y="${y-12}" width="${isoN(w)}" height="17" rx="4" fill="#0b1218e0" stroke="#ffffff26"/><text class="pt" x="${isoN(x-w/2+8)}" y="${y+1}">${title}</text>${pips}${sub?`<text class="pl" x="${isoN(x)}" y="${y+18}" text-anchor="middle">${sub}</text>`:''}</g>`; }
+/* 공사 중: 비계 무늬 + 크레인 + 진행 막대 */
+function construction(x,y,w,h,pct,label){ const pid='hatch'+x+y;
+  return `<defs><pattern id="${pid}" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#c8a35a"/><rect width="5" height="10" fill="#2b2b2b"/></pattern></defs>
+  <rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-44}" fill="#8d7a5a"/><rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-44}" fill="none" stroke="url(#${pid})" stroke-width="5"/>
+  <g transform="translate(${x+w*.62} ${y+h*.45})"><rect x="-4" y="-4" width="8" height="8" fill="#e0a100"/><g><line x1="0" y1="0" x2="${-w*.45}" y2="-6" stroke="#e0a100" stroke-width="4"/><line x1="0" y1="0" x2="${w*.18}" y2="3" stroke="#e0a100" stroke-width="4"/><rect x="${w*.18-6}" y="-2" width="10" height="10" fill="#555"/><line x1="${-w*.38}" y1="-5" x2="${-w*.38}" y2="18" stroke="#ddd" stroke-width="1"/><rect x="${-w*.38-7}" y="18" width="14" height="8" fill="#9aa4ad"/>
+    <animateTransform attributeName="transform" type="rotate" values="-8;14;-8" dur="7s" repeatCount="indefinite"/></g></g>
+  <rect x="${x+12}" y="${y+h-14}" width="${w-24}" height="6" rx="3" fill="#ffffff22"/><rect x="${x+12}" y="${y+h-14}" width="${(w-24)*pct}" height="6" rx="3" fill="#e0a100"/>
+  <text class="pl" x="${x+w/2}" y="${y+h-19}" text-anchor="middle">${label}</text>`; }
 
-/* ===== 2군 훈련장 ===== 세계 좌표 원점 (460,150), 땅 u 0~520 × v 0~420 */
-const FARM_LOT={fut:[6,6,288,250],weight:[6,284,146,130],indoor:[322,6,192,134],rehab:[156,284,140,130],lab:[322,146,192,110],dorm:[322,284,192,130]};
-const FARM_NM={fut:'2군 구장',indoor:'실내 연습장',weight:'웨이트·컨디셔닝',rehab:'재활·회복 센터',lab:'피칭·타격 랩',dorm:'선수 숙소·식당'};
-function renderFarm(S){ CPID=0; const P=S.players; const g=[], pl=[], top=[], plots=[]; const by=k=>P.filter(p=>p.where===k); const col=S.acc||S.teamCol||'#d6333f';
-  const OX=460, OY=150, W=(u,v,h)=>isoXY(OX,OY,u,v,h);
-  g.push(`<rect width="1000" height="690" fill="${ISO.bg}"/>`+isoTile(OX,OY,-8,-8,536,436,ISO.plaza)+isoTile(OX,OY,300,-8,16,436,ISO.road)+isoTile(OX,OY,-8,262,536,16,ISO.road)
-    +`<g transform="${isoMT(OX,OY,0)}"><path d="M308 -8V428M-8 270H528" stroke="#ffffff38" stroke-width="1" stroke-dasharray="8 8" vector-effect="non-scaling-stroke" fill="none"/></g>`);
-  for(const k of ['fut','weight','indoor','rehab','lab','dorm']){ const [u,v,du,dv]=FARM_LOT[k]; const lv=S.lv[k]||0, b=S.bmap&&S.bmap[k]; const D=FACI[k];
-    const c0=W(u,v), c1=W(u+du,v), c2=W(u+du,v+dv), c3=W(u,v+dv);
-    g.push(isoTile(OX,OY,u,v,du,dv,ISO.lot));
-    const s=Math.min(du/100,dv/70), cu=u+(du-100*s)/2, cv=v+(dv-70*s)/2; const [bx,by0]=W(cu,cv); const pt=(a,c)=>[bx+s*(a-c), by0+s*(a+c)/2];
-    let hp=null;
-    if(k==='fut'){ const F=Math.min(du,dv)-18, fu=u+(du-F)/2, fv=v+(dv-F)/2; const [fx,fy]=W(fu,fv); g.push(isoFarmField(fx,fy,F,lv,col));
-      const FP=(a,c)=>isoFieldPt(fx,fy,F,a,c); const Fp=by('fut');
-      const sp=[[17,17],[31,9],[36,23],[23,36],[9,31],[34,64],[62,62],[64,34]];
-      Fp.slice(0,8).forEach((p,i)=>{ const [x,y]=FP(...sp[i]); pl.push(cpPlayer(p,x,y,{uni:'f',glove:1,act:i===0?'th':null,dur:2.8,dl:0})); });
-      if(Fp[8]){ const [x,y]=FP(3,9); pl.push(cpPlayer(Fp[8],x,y,{uni:'f',bat:1,helm:1,act:'sw',dur:2.8,dl:0})); }
-      if(Fp[0]&&Fp[8]){ const m=FP(17,17), h=FP(4,8), f=FP(60,70); pl.push(cpPitchBall(m[0],m[1]-16,h[0]+4,h[1]-10,f[0],f[1]-6,2.8,2.6)); }
-      if(Fp.length>9){ const [x,y]=FP(16,1); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="middle">벤치 ${Fp.length-9}명</text>`); } }
-    else { g.push(`<g transform="translate(${isoN(bx)} ${isoN(by0)}) scale(${isoN(s*100)/100})">${isoBuilding(k,lv,{lot:false,col,bld:b?b.pct:null})}</g>`);
-      if(lv>0||b){ const H=(k==='dorm'?46:k==='indoor'?36:30)*s; hp=cpRaise(pt(8,8),pt(96,8),pt(96,40),pt(8,40),H); }
-      if(lv===0&&!b){ const [x,y]=pt(50,36); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="middle">빈 부지 · 눌러서 공사</text>`); }
-      if(lv>0){ /* 앞마당 선수 */
-        if(k==='indoor'){ const cages=[0,2,4,5][lv]; const L=by('indoor'); L.slice(0,cages).forEach((p,i)=>{ const [x,y]=pt(16+i*17,54); pl.push(cpPlayer(p,x,y,{bat:1,helm:1,uni:p.uni||'a',act:'sw',dur:(1.6+i*.25).toFixed(2),dl:0})); });
-          if(L.length>cages){ const [x,y]=pt(4,66); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="middle">외 ${L.length-cages}명</text>`); } }
-        if(k==='weight'){ const L=by('weight'); L.slice(0,4).forEach((p,i)=>{ const [x,y]=pt(14+i*20,54); pl.push(cpPlayer(p,x,y,{bar:1,act:'lift',dur:(1.5+i*.2).toFixed(1),dl:0})); });
-          if(L.length>4){ const [x,y]=pt(4,68); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="middle">외 ${L.length-4}명</text>`); } }
-        if(k==='rehab'){ const R=by('rehab'); let j=0; R.slice(0,4).forEach((p,i)=>{ if(i===0&&lv>=2){ const [x,y]=pt(78,23); pl.push(`<ellipse cx="${isoN(x)}" cy="${isoN(y)}" rx="8" ry="4" fill="none" stroke="#fff" opacity=".6"><animate attributeName="rx" values="6;18" dur="2.4s" repeatCount="indefinite"/><animate attributeName="ry" values="3;9" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".7;0" dur="2.4s" repeatCount="indefinite"/></ellipse>`+cpPlayer(p,x,y,{uni:'r'})); return; }
-            const [x,y]=pt(16+j*18,54); j++; pl.push(cpPlayer(p,x,y,{uni:'r'})); });
-          if(R.length>4){ const [x,y]=pt(4,68); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="middle">외 ${R.length-4}명</text>`); } }
-        if(k==='lab'){ const L=by('lab'); const p=L[0]; if(p){ const [x,y]=pt(30,54); pl.push(cpPlayer(p,x,y,{glove:1,act:'th',dur:2.2,dl:0})); const t=lv>=2?pt(66,22):pt(66,50); pl.push(cpPitchBall(x+4,y-16,t[0],t[1]-8,null,null,2.2,2.4)); top.push(`<text class="pl" x="${isoN(t[0])}" y="${isoN(t[1]+14)}" text-anchor="middle">${140+(p.id%9)}km/h</text>`); }
-          const q=L[1]; if(q){ const [x,y]=pt(52,62); pl.push(cpPlayer(q,x,y,{anim:cpBob(2)})); } }
-        if(k==='dorm'){ by('dorm').forEach((p,i)=>{ const loop=[pt(8+i*6,46),pt(92,46),pt(92,64),pt(8+i*6,64)]; pl.push(cpPlayer(p,0,0,{uni:'y',act:'ar',dur:.5,anim:cpWalk(cpPath(loop,true),12+i*2,-i*3)})); }); } } }
-    plots.push(isoPlot(k,[c0,c1,c2,c3],hp,[c2[0],c2[1]-(b?52:30)]));
-    /* 이름표·공사 막대: 부지 앞 모서리 아래 */
-    const tx=c2[0], ty=c2[1]-(b?52:30); top.push(cpTag(tx,ty,FARM_NM[k],lv,3,b,D?D.lv[lv]:''));
-    if(b)top.push(isoBar(tx,ty+36,150,b.pct,`${D.lv[b.lv]} 공사 ${Math.round(b.pct*100)}% · ${b.left}일 남음`,10)); }
+/* 증축 중인 시설 아래쪽 진행 막대 + "다음 단계 · 진행률 · 남은 일수" */
+function bldBar(x,y,w,h,b,name){ return `<g class="cpbld"><rect x="${x+12}" y="${y+h-24}" width="${w-24}" height="6" rx="3" fill="#0b1218aa"/><rect x="${x+12}" y="${y+h-24}" width="${Math.max(2,(w-24)*b.pct)}" height="6" rx="3" fill="#e0a100"/><text class="pl" x="${x+w-14}" y="${y+h-29}" text-anchor="end">${name} 공사 ${Math.round(b.pct*100)}% · ${b.left}일 남음</text></g>`; }
+function emptyLot(x,y,w,h,txt){ return `<rect x="${x+8}" y="${y+26}" width="${w-16}" height="${h-36}" fill="#5f7d4a" stroke="#d9d2bd" stroke-dasharray="4 3"/><text class="pl" x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle">${txt}</text>`; }
+/* 지붕을 걷어낸 건물: 벽 두께 + 바닥 */
+function bldg(x,y,w,h,floor){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${floor}" stroke="#d8dde2" stroke-width="5"/><rect x="${x+w/2-9}" y="${y+h-3}" width="18" height="6" fill="${floor}"/>`; }
+
+function renderFarm(S){ CPID=0; const P=S.players; const g=[];
+  const by=k=>P.filter(p=>p.where===k);
+  /* 바탕: 잔디·도로·주차장 */
+  g.push(`<rect width="1000" height="700" fill="#3c8a4f"/>${[...Array(14)].map((_,i)=>`<rect x="${i*72}" width="36" height="700" fill="#ffffff07"/>`).join('')}
+    <path d="M0 352 H1000 M246 352 V610 M492 352 V610 M738 352 V610 M0 618 H1000" stroke="#8b939b" stroke-width="16" fill="none"/><path d="M0 352 H1000 M246 352 V610 M492 352 V610 M738 352 V610 M0 618 H1000" stroke="#ffffff55" stroke-width="1" stroke-dasharray="8 8" fill="none"/>
+    ${[...Array(12)].map((_,i)=>`<rect x="${40+i*16}" y="640" width="11" height="20" rx="2" fill="${['#c94b4b','#3b6fb6','#e7e7e7','#2e2e2e','#d9b440'][i%5]}"/>`).join('')}<rect x="28" y="632" width="210" height="36" fill="none" stroke="#ffffff44"/><text class="pl" x="250" y="656">2군 선수단 주차장</text>`);
+
+  /* 2군 구장 */
+  { const x=16,y=16,w=560,h=322, lv=S.lv.fut; g.push(plotFrame(x,y,w,h,`2군 구장 · ${['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv]}`,lv,3,S.bmap&&S.bmap.fut,'fut'));
+    const cx=x+w/2, cy=y+h-30; const grass=lv>=1?'#2f8a45':'#7d8f4e', stripe=lv>=1?'#ffffff0c':'#6b5a3a40';
+    if(lv>=3)g.push(`<path d="M${cx} ${cy+16} L${x+12} ${y+118} Q${cx} ${y-30} ${x+w-12} ${y+118} Z" fill="#5d6670"/>`);
+    g.push(`<path d="M${cx} ${cy} L${x+34} ${y+124} Q${cx} ${y+16} ${x+w-34} ${y+124} Z" fill="${grass}"/>${lv>=1?[...Array(10)].map((_,i)=>`<path d="M${cx} ${cy} L${x+34+i*50} ${y+40} L${x+58+i*50} ${y+40} Z" fill="${stripe}"/>`).join(''):`<g fill="#8a7650" opacity=".55">${[...Array(18)].map((_,i)=>`<ellipse cx="${x+60+(i*53)%320}" cy="${y+70+(i*37)%180}" rx="${8+i%4*3}" ry="${4+i%3*2}"/>`).join('')}</g>`}
+      <path d="M${cx} ${cy} L${cx+60} ${cy-60} L${cx} ${cy-120} L${cx-60} ${cy-60} Z" fill="#a9824f"/><path d="M${cx} ${cy-8} L${cx+46} ${cy-56} L${cx} ${cy-102} L${cx-46} ${cy-56} Z" fill="${grass}"/><circle cx="${cx}" cy="${cy-56}" r="9" fill="#a9824f"/>`);
+    if(lv>=2){ g.push([[x+20,y+40],[x+w-20,y+40],[x+24,y+250],[x+w-24,y+250]].map(([lx,ly])=>`<g><circle cx="${lx}" cy="${ly}" r="14" fill="#fff7d6" opacity=".18"/><rect x="${lx-6}" y="${ly-3}" width="12" height="6" rx="1" fill="#f3f0e0" stroke="#555"/></g>`).join('')
+      +`<rect x="${x+26}" y="${y+150}" width="44" height="12" fill="#a9824f"/><rect x="${x+w-70}" y="${y+150}" width="44" height="12" fill="#a9824f"/><text class="pl" x="${x+48}" y="${y+175}" text-anchor="middle">불펜</text>`); }
+    const F=by('fut'); const sp=[[cx,cy-56,90],[cx+50,cy-68,135],[cx+26,cy-112,100],[cx-26,cy-112,80],[cx-50,cy-68,45],[cx-120,cy-150,60],[cx,cy-196,90],[cx+120,cy-150,120]];
+    F.slice(0,8).forEach((p,i)=>{ const [px,py,r]=sp[i]; g.push(cpPlayer(p,px,py,{uni:'f',rot:r,glove:'L',pose:i===0?'set':null,act:i===0?'th':null,dur:2.8,dl:0})); });
+    if(F[8]) g.push(cpPlayer(F[8],cx-15,cy-2,{uni:'f',bat:'R',helm:1,act:'sw',dur:2.8,dl:0}));
+    if(F[0]&&F[8]) g.push(cpPitchBall(cx+4,cy-58,cx-8,cy-8,cx+90,cy-190,2.8,2.6));
+    if(lv>=3) g.push(`<rect x="${x+w-112}" y="${y+26}" width="90" height="22" fill="#0a0d10" stroke="#3a4652"/><text x="${x+w-67}" y="${y+41}" text-anchor="middle" class="sb">${S.futNote||'퓨처스 훈련'}</text>`);
+    if(F.length>9) g.push(`<text class="pl" x="${x+16}" y="${y+h-10}">벤치 ${F.length-9}명</text>`);
+    if(S.bmap&&S.bmap.fut) g.push(bldBar(x+w*.62,y,w*.38,h,S.bmap.fut,['낡은 공용 구장','천연잔디','조명·불펜 개선','퓨처스 전용 구장'][lv+1]||'')); }
+
+  /* 아래 줄 시설들 */
+  const row=(key,x,w,title,lvNames,draw,Y,H)=>{ const y=Y||370,h=H||226, lv=S.lv[key], b=S.bmap&&S.bmap[key]; g.push(plotFrame(x,y,w,h,title,lv,3,b,key)); g.push(`<text class="pl" x="${x+8}" y="${y+h-4}">${lvNames[lv]}</text>`);
+    if(b&&lv===0){ g.push(construction(x,y,w,h,b.pct,`${lvNames[1]} 공사 ${Math.round(b.pct*100)}% · ${b.left}일 남음`)); return; }
+    if(lv===0){ g.push(emptyLot(x,y,w,h,'빈 부지 · 눌러서 공사')); return; }
+    draw(x,y,w,h,lv); if(b)g.push(bldBar(x,y,w,h,b,lvNames[lv+1])); };
+
+  row('indoor',592,392,'실내 연습장',['없음','간이 연습장','실내 연습장','실내 훈련동'],(x,y,w,h,lv)=>{ const bw=lv===1?w-200:lv===2?w-60:w-20; g.push(bldg(x+10,y+28,bw,h-48,'#3f8f55'));
+    const cages=lv===1?2:lv===2?4:5; for(let i=0;i<cages;i++){ const cx=x+22+i*70, cy=y+40; g.push(`<rect x="${cx}" y="${cy}" width="52" height="${h-74}" fill="#00000022" stroke="#ffffff55" stroke-dasharray="3 2"/><rect x="${cx+20}" y="${cy+8}" width="12" height="8" fill="#555"/>`);
+      const p=by('indoor')[i]; if(p){ const d=(1.6+i*.25).toFixed(2); g.push(cpPlayer(p,cx+22,cy+h-98,{bat:'R',helm:1,uni:p.uni||'a',act:'sw',dur:d,dl:0})); g.push(cpPitchBall(cx+26,cy+16,cx+26,cy+h-108,cx+26+(i%2?-14:14),cy+20,d,2.2)); } } },16,322);
+
+  row('weight',16,214,'웨이트·컨디셔닝',['없음','기본 웨이트장','컨디셔닝 센터','퍼포먼스 센터'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#39424c'));
+    const n=2+lv*2; for(let i=0;i<n;i++){ const ex=x+28+(i%4)*40, ey=y+46+Math.floor(i/4)*58; g.push(`<rect x="${ex}" y="${ey}" width="26" height="8" rx="2" fill="#20262c"/><rect x="${ex-4}" y="${ey-2}" width="4" height="12" fill="#8b939b"/><rect x="${ex+26}" y="${ey-2}" width="4" height="12" fill="#8b939b"/>`); }
+    by('weight').slice(0,4).forEach((p,i)=>g.push(`<rect x="${x+40+(i%2)*80-16}" y="${y+86+Math.floor(i/2)*60-2}" width="32" height="4" rx="2" fill="#8b939b"><animate attributeName="width" values="32;24;32" dur="${(1.5+i*.2).toFixed(1)}s" repeatCount="indefinite"/><animate attributeName="x" values="${x+40+(i%2)*80-16};${x+40+(i%2)*80-12};${x+40+(i%2)*80-16}" dur="${(1.5+i*.2).toFixed(1)}s" repeatCount="indefinite"/></rect>`+cpPlayer(p,x+40+(i%2)*80,y+86+Math.floor(i/2)*60,{rot:90,act:'lift',dur:(1.5+i*.2).toFixed(1),dl:0})));
+    if(lv>=2)g.push(`<rect x="${x+w-50}" y="${y+40}" width="30" height="80" rx="4" fill="#2a6f97"/><text class="pl" x="${x+w-35}" y="${y+135}" text-anchor="middle">러닝 트랙</text>`); });
+
+  row('rehab',262,214,'재활·회복 센터',['없음','물리치료실','재활센터(수중)','회복 센터'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#e6ebef'));
+    if(lv>=2){ g.push(`<rect x="${x+22}" y="${y+40}" width="${w-44}" height="70" rx="10" fill="#4fa3d8"/><rect x="${x+22}" y="${y+40}" width="${w-44}" height="70" rx="10" fill="none" stroke="#bfe3f7" stroke-width="3"/>`); }
+    g.push([0,1,2].map(i=>`<rect x="${x+24+i*46}" y="${y+130}" width="30" height="48" rx="3" fill="#cfd8de" stroke="#9aa4ad"/>`).join(''));
+    if(lv>=3)g.push(`<circle cx="${x+w-36}" cy="${y+58}" r="12" fill="#9fd8f0" stroke="#fff"/><text class="pl dk" x="${x+w-36}" y="${y+84}" text-anchor="middle">냉각</text>`);
+    const RH=by('rehab'); if(RH.length>4)g.push(`<text class="pl dk" x="${x+w-16}" y="${y+h-26}" text-anchor="end">외 ${RH.length-4}명</text>`);
+    RH.slice(0,4).forEach((p,i)=>{ if(i===0&&lv>=2)g.push(`<g><circle cx="${x+70}" cy="${y+76}" r="10" fill="none" stroke="#fff" opacity=".6"><animate attributeName="r" values="8;22" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".7;0" dur="2.4s" repeatCount="indefinite"/></circle></g>`+cpPlayer(p,x+70,y+76,{uni:'r',rot:90,anim:`<animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;30 0;0 0" dur="8s" repeatCount="indefinite"/>`,ny:20}));
+      else g.push(cpPlayer(p,x+39+((i-(lv>=2?1:0))%3)*46,y+152,{uni:'r',rot:90,ny:28})); }); });
+
+  row('lab',508,214,'피칭·타격 랩',['없음','랩소도·영상','트래킹 랩','바이오메카닉스 랩'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#2c3440'));
+    g.push(`<circle cx="${x+50}" cy="${y+110}" r="16" fill="#a9824f"/><rect x="${x+w-46}" y="${y+60}" width="10" height="100" fill="#00000055" stroke="#ffffff77"/>
+      <rect x="${x+w-64}" y="${y+40}" width="40" height="14" rx="2" fill="#0b1218"/><rect x="${x+w-62}" y="${y+42}" width="36" height="10" fill="#4fd27c"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></rect>
+      ${lv>=2?`<g fill="#e0a100">${[[x+20,y+40],[x+20,y+170],[x+90,y+40]].map(([a,b])=>`<rect x="${a}" y="${b}" width="8" height="6"/><circle cx="${a+4}" cy="${b+3}" r="1.6" fill="#d6333f"/>`).join('')}</g>`:''}`);
+    const p=by('lab')[0]; if(p){ g.push(cpPlayer(p,x+50,y+110,{rot:0,pose:'set',glove:'L',act:'th',dur:2.2,dl:0})); g.push(cpPitchBall(x+60,y+108,x+w-42,y+110,null,null,2.2,2.4)); g.push(`<text class="pl" x="${x+w-41}" y="${y+170}" text-anchor="middle"><tspan>${140+(p.id%9)}km/h</tspan></text>`); }
+    const q=by('lab')[1]; if(q)g.push(cpPlayer(q,x+60,y+170,{rot:-90,anim:cpBob(2)})); });
+
+  row('dorm',754,230,'선수 숙소·식당',['없음','기숙사','기숙사·식당','선수촌'],(x,y,w,h,lv)=>{ g.push(bldg(x+10,y+28,w-20,h-48,'#d9c7a6'));
+    const rooms=lv*4; for(let i=0;i<rooms;i++)g.push(`<rect x="${x+18+(i%4)*28}" y="${y+36+Math.floor(i/4)*26}" width="22" height="20" fill="#c3ad86" stroke="#a48f6a"/>`);
+    if(lv>=2)g.push(`<rect x="${x+20}" y="${y+130}" width="${w-40}" height="36" fill="#efe4cf"/><text class="pl dk" x="${x+w/2}" y="${y+182}" text-anchor="middle">식당</text>`);
+    by('dorm').forEach((p,i)=>g.push(cpPlayer(p,0,0,{uni:'y',act:'ar',dur:.5,anim:cpWalk(`M${x+24+i*20} ${y+h-30} L${x+w-24} ${y+h-30} L${x+w-24} ${y+120} L${x+24+i*20} ${y+120} Z`,12+i*2,-i*3)}))); });
+
   /* 도로를 오가는 선수 */
-  by('road').forEach((p,i)=>{ const a=W(0,270), z=W(520,270); pl.push(cpPlayer(p,0,0,{uni:'f',act:'ar',dur:.5,anim:cpWalk(`M${isoN(a[0]+i*24)} ${isoN(a[1]+i*12)} L${isoN(z[0])} ${isoN(z[1])} L${isoN(a[0]+i*24)} ${isoN(a[1]+i*12)}`,26+i*4,-i*7)})); });
-  return `<svg class="campus iso" viewBox="0 0 1000 690" xmlns="http://www.w3.org/2000/svg">${g.join('')}${plots.join('')}${pl.join('')}${top.join('')}</svg>`; }
-
-/* ===== 1군 홈구장 ===== 구장(실제 구장 단계 반영) + 클럽하우스 + 구단 버스 */
-function renderHome(S){ CPID=0; const P=S.players; const g=[], pl=[], top=[], plots=[]; const by=k=>P.filter(p=>p.where===k); const col=S.acc||S.teamCol||'#d6333f';
-  g.push(`<rect width="1000" height="690" fill="${ISO.bg}"/>`);
-  /* 구장: 지역 좌표(필드 뒤 모서리 100,40)를 SC배 */
-  const SC=2.7, TX=86, TY=180; const loc=(x,y)=>[TX+SC*x, TY+SC*y]; const hp=(a,b)=>loc(100+a-b,40+(a+b)/2);
-  g.push(`<g transform="translate(${TX} ${TY}) scale(${SC})">${isoStadium(Object.assign({},S.stad||{},{col,fs:4,proj:null}))}</g>`);
-  { const T=34, c0=hp(-T,-T), c1=hp(88,-T), c2=hp(88,88), c3=hp(-T,88); plots.push(isoPlot('main',[c0,c1,c2,c3],cpRaise(c0,c1,c2,c3,70*SC),[c2[0],c2[1]+16]));
-    top.push(cpTag(c2[0],c2[1]+16,`${S.stadName||'홈구장'} · 1군 ${by('main').length+by('club').length}명`,0,0,null,`${S.mainNote||''}${S.board?' · '+S.board:''}`)); }
-  const M=by('main'); const pit=M.filter(p=>p.isP), bat=M.filter(p=>!p.isP);
-  const spots=[[35,11],[42,27],[27,42],[11,35],[38,68],[66,66],[68,38],[2.5,2.5]];
-  const fld=bat.slice(0,8); fld.forEach((p,i)=>{ const [x,y]=hp(...spots[i]);
-    if(i>=4&&i<7){ const d=i===4?[-6,4]:i===6?[4,-6]:[5,5]; const [x2,y2]=hp(spots[i][0]+d[0],spots[i][1]+d[1]); pl.push(cpPlayer(p,0,0,{glove:1,s:1.25,act:'ar',dur:.45,anim:`<animateMotion dur="5.2s" repeatCount="indefinite" keyTimes="0;0.4;0.6;1" keyPoints="0;1;1;0" calcMode="linear" path="M${isoN(x)} ${isoN(y)} L${isoN(x2)} ${isoN(y2)}"/>`})); }
-    else pl.push(cpPlayer(p,x,y,{glove:1,s:1.25})); });
-  const md=hp(17,17), hm=hp(4,8);
-  if(pit[0])pl.push(cpPlayer(pit[0],md[0],md[1],{glove:1,s:1.25,act:'th',dur:2.6,dl:0}));
-  const bt=bat[8]; if(bt){ const [x,y]=hp(3,9); pl.push(cpPlayer(bt,x,y,{bat:1,helm:1,s:1.25,act:'sw',dur:2.6,dl:0})); }
-  if(pit[0]&&bt){ const f=hp(58,72); pl.push(cpPitchBall(md[0]+3,md[1]-20,hm[0]+4,hm[1]-12,f[0],f[1]-8,2.6,3.2)); }
-  /* 펑고: 3루 파울 지역의 코치가 유격수·3루수에게 땅볼 */
-  if(fld[2]||fld[3]){ const [cx,cy]=hp(2.5,20); pl.push(isoMan(cx,cy,{c:'#1d242b',d:'#0b0f14',s:1.2})+`<text class="pl" x="${isoN(cx)}" y="${isoN(cy+12)}" text-anchor="middle">코치</text>`);
-    [[2,0],[3,1.7]].forEach(([i,dl])=>{ if(!fld[i])return; const [tx,ty]=hp(...spots[i]); pl.push(`<circle r="2.8" fill="#fff"><animateMotion dur="3.4s" begin="${dl}s" repeatCount="indefinite" keyTimes="0;0.2;0.55;1" keyPoints="0;0;1;1" calcMode="linear" path="M${isoN(cx+3)} ${isoN(cy-14)} L${isoN(tx)} ${isoN(ty-4)}"/></circle>`); }); }
-  /* 불펜(1루 쪽 파울 지역) */
-  pit.slice(1,3).forEach((p,i)=>{ const [x,y]=hp(60+i*9,2.6); pl.push(cpPlayer(p,x,y,{glove:1,s:1.15,act:'th',dur:2.2+i*.4})); });
-  /* 외야 워닝트랙을 뛰는 투수들 */
-  const trk=[hp(76,9),hp(76.5,76.5),hp(9,76)]; pit.slice(3,6).forEach((p,i)=>pl.push(cpPlayer(p,0,0,{s:1.1,act:'ar',dur:.4,anim:`<animateMotion dur="${16+i*2}s" begin="${-i*5}s" repeatCount="indefinite" path="${cpPath([trk[0],trk[1],trk[2],trk[1],trk[0]])}"/>`})));
-  /* 3루 쪽 파울 지역 벤치 */
-  const bench=bat.slice(9).concat(pit.slice(6)); bench.slice(0,5).forEach((p,i)=>{ const [x,y]=hp(2.6,44+i*6); pl.push(cpPlayer(p,x,y,{s:1.05})); });
-  if(bench.length>5){ const [x,y]=hp(1,76); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="middle">벤치 외 ${bench.length-5}명</text>`); }
+  by('road').forEach((p,i)=>g.push(cpPlayer(p,0,0,{uni:'f',act:'ar',dur:.5,anim:cpWalk(`M${30+i*60} 352 H970 V354 H${30+i*60}`,26+i*4,-i*7)})));
+  return `<svg class="campus" viewBox="0 0 1000 690" xmlns="http://www.w3.org/2000/svg">${g.join('')}</svg>`; }
+/* 1군 홈구장: 큰 구장 + 클럽하우스 + 구단 버스 */
+function renderHome(S){ CPID=0; const P=S.players; const g=[]; const by=k=>P.filter(p=>p.where===k);
+  g.push(`<rect width="1000" height="690" fill="#3c8a4f"/><rect x="0" y="0" width="724" height="690" fill="#2a3138"/>`);
+  { const x=16,y=16,w=692,h=658; g.push(plotFrame(x,y,w,h,`${S.stadName||'홈구장'} · 1군 ${by('main').length+by('club').length}명`,0,0,null,'main'));
+    const cx=x+w/2, cy=y+h-60;
+    const tc=S.teamCol||'#CE0E2D';
+    g.push(`<path d="M${cx} ${cy+46} L${x+6} ${y+250} Q${cx} ${y-120} ${x+w-6} ${y+250} Z" fill="#5d6670"/>${[0,1,2,3,4,5].map(i=>`<path d="M${x+14+i*5} ${y+250-i*2} Q${cx} ${y-108+i*12} ${x+w-14-i*5} ${y+250-i*2}" fill="none" stroke="${i%2?tc:'#6f7a85'}" stroke-width="5" opacity="${i%2?.55:.7}"/>`).join('')}${[...Array(26)].map((_,i)=>`<path d="M${cx} ${cy+46} L${x+6+i*26.6} ${y+250-Math.sin(i/25*Math.PI)*340} " stroke="#4c545c" stroke-width="1"/>`).join('')}
+      <rect x="${cx-70}" y="${y+2}" width="140" height="10" rx="2" fill="${tc}" opacity=".85"/>${[x+70,x+w-70].map(lx=>`<g><rect x="${lx-3}" y="${y+150}" width="6" height="40" fill="#3a4652"/><rect x="${lx-16}" y="${y+140}" width="32" height="12" rx="2" fill="#d8dde2"/><circle cx="${lx}" cy="${y+146}" r="26" fill="#fff8d0" opacity=".12"/></g>`).join('')}
+      <path d="M${cx} ${cy+20} L${x+40} ${y+262} Q${cx} ${y-40} ${x+w-40} ${y+262} Z" fill="#2f8a45"/>${[...Array(12)].map((_,i)=>`<path d="M${cx} ${cy} L${x+40+i*52} ${y+70} L${x+66+i*52} ${y+70} Z" fill="#ffffff08"/>`).join('')}
+      <path d="M${x+40} ${y+262} Q${cx} ${y-40} ${x+w-40} ${y+262}" fill="none" stroke="#c9d3da" stroke-width="2"/>
+      <path d="M${cx} ${cy} L${cx+120} ${cy-120} L${cx} ${cy-240} L${cx-120} ${cy-120} Z" fill="#a9824f"/><path d="M${cx} ${cy-16} L${cx+92} ${cy-112} L${cx} ${cy-208} L${cx-92} ${cy-112} Z" fill="#2f8a45"/>
+      <circle cx="${cx}" cy="${cy-112}" r="16" fill="#a9824f"/><rect x="${cx-5}" y="${cy-113}" width="10" height="2" fill="#fff"/>${[[cx+120,cy-120],[cx,cy-240],[cx-120,cy-120]].map(b=>`<rect x="${b[0]-6}" y="${b[1]-6}" width="12" height="12" fill="#fff" transform="rotate(45 ${b[0]} ${b[1]})"/>`).join('')}<path d="M${cx-8} ${cy-5} h16 v6 l-8 6 l-8 -6z" fill="#fff"/>
+      <path d="M${cx} ${cy} L${x+40} ${y+262} M${cx} ${cy} L${x+w-40} ${y+262}" stroke="#e4eaee" stroke-width="1.2" opacity=".7"/>
+      <rect x="${cx-200}" y="${cy+8}" width="120" height="22" rx="3" fill="#1d242b" stroke="#ffffff33"/><text class="pl" x="${cx-140}" y="${cy+44}" text-anchor="middle">3루 더그아웃</text>
+      <rect x="${cx+80}" y="${cy+8}" width="120" height="22" rx="3" fill="#1d242b" stroke="#ffffff33"/><text class="pl" x="${cx+140}" y="${cy+44}" text-anchor="middle">1루 더그아웃</text>
+      <rect x="${x+70}" y="${y+300}" width="70" height="16" fill="#a9824f" transform="rotate(-45 ${x+105} ${y+308})"/><text class="pl" x="${x+86}" y="${y+346}">불펜</text>
+      <rect x="${cx-90}" y="${y+40}" width="180" height="44" rx="4" fill="#0a0d10" stroke="#3a4652"/><text x="${cx}" y="${y+60}" text-anchor="middle" class="sb">${S.mainNote||'훈련 중'}</text><text x="${cx}" y="${y+76}" text-anchor="middle" class="pl">${S.board||''}</text>`);
+    const M=by('main'); const pit=M.filter(p=>p.isP), bat=M.filter(p=>!p.isP);
+    const spots=[[cx+92,cy-124,135],[cx+50,cy-200,100],[cx-50,cy-200,80],[cx-92,cy-124,45],[cx-220,cy-300,60],[cx,cy-370,90],[cx+220,cy-300,120],[cx,cy+20,-90]];
+    const fld=bat.slice(0,8); fld.forEach((p,i)=>{ const [px,py,r]=spots[i];
+      if(i>=4&&i<7){ const dx=(i===4?-1:i===6?1:0)*40, dy=i===5?-30:-20; g.push(cpPlayer(p,0,0,{rot:r,glove:'L',s:.8,act:'ar',dur:.45,anim:`<animateMotion dur="5.2s" repeatCount="indefinite" keyTimes="0;0.4;0.6;1" keyPoints="0;1;1;0" calcMode="linear" path="M${px} ${py} L${px+dx} ${py+dy}"/>`})); }
+      else g.push(cpPlayer(p,px,py,{rot:r,glove:'L',s:.8})); });
+    if(pit[0]) g.push(cpPlayer(pit[0],cx,cy-112,{rot:90,pose:'set',glove:'L',s:.8,act:'th',dur:2.6,dl:0}));
+    const bt=bat[8]; if(bt){ g.push(cpPlayer(bt,cx-30,cy-6,{rot:0,bat:'R',helm:1,s:.8,act:'sw',dur:2.6,dl:0})); }
+    if(bt) g.push(`<path d="M${cx-58} ${cy+14} L${cx-58} ${cy-30} Q${cx} ${cy-62} ${cx+58} ${cy-30} L${cx+58} ${cy+14}" fill="#00000026" stroke="#e8edf1" stroke-width="1.6" stroke-dasharray="3 2"/><text class="pl" x="${cx-64}" y="${cy-30}" text-anchor="end">타격 케이지</text>`);
+    if(pit[0]) g.push(`<path d="M${cx-14} ${cy-96} h22 v4 h-18 v8 h-4z" fill="#1d242b" stroke="#e8edf1" stroke-width="1"/><g transform="translate(${cx+22} ${cy-122})"><rect x="-6" y="-6" width="12" height="12" rx="2" fill="#8a8f96"/>${[[-3,-2],[1,-3],[2,2],[-2,3]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="1.6" fill="#fff"/>`).join('')}</g>`);
+    if(pit[0]&&bt) g.push(cpPitchBall(cx,cy-104,cx-14,cy-12,cx+120,cy-360,2.6,3.2));
+    /* 펑고: 1루 라인 쪽 코치가 내야수에게 땅볼을 쳐 준다 */
+    if(fld[1]){ const fx=cx+104, fy=cy-74; g.push(`<g transform="translate(${fx} ${fy})"><circle r="6" fill="#1d242b" stroke="#fff" stroke-width="1"/><text class="pl" y="16" text-anchor="middle">코치</text></g><circle r="2.6" fill="#fff"><animateMotion dur="3.4s" repeatCount="indefinite" keyTimes="0;0.2;0.55;1" keyPoints="0;0;1;1" calcMode="linear" path="M${fx} ${fy} L${spots[1][0]} ${spots[1][1]+6}"/></circle><circle r="2.6" fill="#fff"><animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite" keyTimes="0;0.2;0.55;1" keyPoints="0;0;1;1" calcMode="linear" path="M${fx} ${fy} L${spots[2][0]} ${spots[2][1]+6}"/></circle>`); }
+    pit.slice(1,3).forEach((p,i)=>g.push(cpPlayer(p,x+96+i*30,y+330-i*30,{rot:20,pose:'set',glove:'L',s:.7,act:'th',dur:2.2+i*.4})));
+    /* 외야 워닝트랙을 뛰는 투수들 */
+    pit.slice(3,6).forEach((p,i)=>g.push(cpPlayer(p,0,0,{s:.62,act:'ar',dur:.4,ny:16,anim:`<animateMotion dur="${16+i*2}s" begin="${-i*5}s" repeatCount="indefinite" path="M${x+60} ${y+262} Q${cx} ${y-24} ${x+w-60} ${y+262} Q${cx} ${y-24} ${x+60} ${y+262}"/>`})));
+    const bench=bat.slice(9).concat(pit.slice(4)); bench.slice(0,5).forEach((p,i)=>g.push(cpPlayer(p,cx+92+i*22,cy+19,{rot:-90,s:.55,ny:16})));
+    if(bench.length>5)g.push(`<text class="pl" x="${cx+140}" y="${cy+60}" text-anchor="middle">벤치 외 ${bench.length-5}명</text>`); }
   /* 클럽하우스: 지친 1군 선수가 쉬는 곳 */
-  { const CX=800, CY=150, s=1.3; const pt=(a,c)=>[CX+s*(a-c), CY+s*(a+c)/2]; const c0=pt(0,0), c1=pt(100,0), c2=pt(100,70), c3=pt(0,70);
-    g.push(`<g transform="translate(${CX} ${CY}) scale(${s})">${isoBuilding('club',1,{col})}</g>`);
-    plots.push(isoPlot('club',[c0,c1,c2,c3],cpRaise(pt(8,8),pt(82,8),pt(82,38),pt(8,38),24*s),[c2[0],c2[1]+16]));
-    const C=by('club'); C.slice(0,6).forEach((p,i)=>{ const [x,y]=pt(16+(i%3)*22,50+Math.floor(i/3)*12); pl.push(cpPlayer(p,x,y,{s:1.1})); });
-    if(C.length>6){ const [x,y]=pt(96,66); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="end">외 ${C.length-6}명</text>`); }
-    if(!C.length){ const [x,y]=pt(50,56); top.push(`<text class="pl" x="${isoN(x)}" y="${isoN(y)}" text-anchor="middle">쉬는 선수 없음</text>`); }
-    top.push(cpTag(c2[0],c2[1]+16,'클럽하우스',0,0,null,'휴식·치료 공간')); }
+  { const x=740,y=16,w=244,h=330; g.push(plotFrame(x,y,w,h,'클럽하우스',0,0,null,'club')); g.push(bldg(x+10,y+28,w-20,h-48,'#4b4036'));
+    for(let i=0;i<10;i++)g.push(`<rect x="${x+20+(i%5)*44}" y="${y+40+Math.floor(i/5)*230}" width="34" height="16" rx="2" fill="#6b5a48" stroke="#2c241d"/>`);
+    g.push(`<rect x="${x+40}" y="${y+120}" width="${w-80}" height="70" rx="6" fill="#2d6a7a"/><text class="pl" x="${x+w/2}" y="${y+210}" text-anchor="middle">휴식·치료 공간</text>`);
+    by('club').slice(0,6).forEach((p,i)=>g.push(cpPlayer(p,x+56+(i%3)*66,y+140+Math.floor(i/3)*40,{rot:90,s:.6,ny:16})));
+    if(by('club').length>6)g.push(`<text class="pl" x="${x+w-16}" y="${y+h-24}" text-anchor="end">외 ${by('club').length-6}명</text>`);
+    if(!by('club').length)g.push(`<text class="pl" x="${x+w/2}" y="${y+160}" text-anchor="middle">쉬는 선수 없음</text>`); }
   /* 주차장·구단 버스 */
-  { const bl=S.bus||0; const BX=840, BY=372, s=.78; const L=[140,160,176][bl], Wd=[46,50,52][bl], H=[54,58,60][bl]; const pt=(a,c,h)=>[BX+s*(a-c), BY+s*((a+c)/2-(h||0))];
-    const pu=-22, pv=-30, pdu=L+44, pdv=Wd+48;
-    g.push(`<g transform="translate(${BX} ${BY}) scale(${s})">${isoTile(0,0,pu,pv,pdu,pdv,ISO.road)}<g transform="${isoMT(0,0,0)}"><path d="M${pu} ${pv+8}H${pu+pdu}M${pu} ${pv+pdv-8}H${pu+pdu}" stroke="#ffffff55" stroke-width="1.2" vector-effect="non-scaling-stroke" stroke-dasharray="14 8"/></g>${isoBus(bl,{col})}</g>`);
-    const c2=pt(pu+pdu,pv+pdv); plots.push(isoPlot('bus',[pt(pu,pv),pt(pu+pdu,pv),pt(pu+pdu,pv+pdv),pt(pu,pv+pdv)],cpRaise(pt(0,0),pt(L,0),pt(L,Wd),pt(0,Wd),(H+7)*s),[c2[0]-30,c2[1]+16]));
-    top.push(cpTag(c2[0]-30,c2[1]+16,'구단 버스',bl,2,null,['일반 버스 · 원정 피로 +10%','우등 버스 · 원정 피로 +2%','리무진 버스 · 원정 피로 -6%'][bl])); }
-  return `<svg class="campus iso" viewBox="0 0 1000 690" xmlns="http://www.w3.org/2000/svg">${g.join('')}${plots.join('')}${pl.join('')}${top.join('')}</svg>`; }
+  { const bl=S.bus||0; const x=740,y=362,w=244,h=312; g.push(plotFrame(x,y,w,h,'구단 버스',bl,2,null,'bus'));
+    g.push(`<rect x="${x+10}" y="${y+28}" width="${w-20}" height="${h-40}" fill="#59616a"/>${[...Array(6)].map((_,i)=>`<line x1="${x+10}" y1="${y+70+i*40}" x2="${x+60}" y2="${y+70+i*40}" stroke="#fff" stroke-width="2"/>`).join('')}`);
+    const col=bl>=2?'#1b2a44':bl>=1?'#3b4f6b':'#8a8f96', L=bl>=2?150:126, txt=['일반 버스 · 원정 피로 +10%','우등 버스 · 원정 피로 +2%','리무진 버스 · 원정 피로 -6%'][bl];
+    g.push(`<g transform="translate(${x+150} ${y+90}) rotate(90)"><g><rect x="0" y="-15" width="${L}" height="30" rx="6" fill="${col}" stroke="#ffffff66"/><rect x="8" y="-11" width="${L-20}" height="8" rx="2" fill="#9fd8f0aa"/><rect x="4" y="4" width="${L-8}" height="4" fill="${S.teamCol||'#CE0E2D'}"/></g></g>
+      <text class="pl" x="${x+w/2}" y="${y+h-20}" text-anchor="middle">${txt}</text>`); }
+  return `<svg class="campus" viewBox="0 0 1000 690" xmlns="http://www.w3.org/2000/svg">${g.join('')}</svg>`; }
 
 function renderCampus(S){ return S.view==='farm'?renderFarm(S):renderHome(S); }
 /* ===== 아이소메트릭 그림(시안 B): 구장 외관·구단 버스·훈련시설 =====
@@ -10938,8 +10978,31 @@ const IB_CAT=[['all','전체'],['task','처리할 일'],['squad','선수단'],['
 const IB_CATS={all:'전체',task:'처리',squad:'선수단',move:'이적',club:'운영',media:'언론'}; /* 휴대폰 탭 이름(한 줄에 다 들어가게) */
 function ibCat(m){ for(const k in IB_KIND)if(IB_KIND[k].split(' ').includes(m.kind))return k; return 'club'; }
 const IB_CATN={squad:'선수단',move:'이적·계약',club:'구단 운영',media:'언론·기록'};
-/* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 트레이드 제안은 뺀다) */
-function ibTask(m){ if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); /* 살아 있는 트레이드 제안 */
+/* 이미 처리된 일인가: 결정(이벤트)이 끝났거나, 소식이 알린 상황이 해결됐으면 '처리됨'. 안 읽음 표시는 그대로 두고 '확인할 소식'에서만 뺀다 */
+const MAIL_DONE=[
+  [/감독 자리가 비어/,()=>{ const m=G.mgr[G.user]; return !!(m&&!m.interim); }],
+  [/코치 자리가 비어/,()=>!!G.coach&&!CKEYS.some(k=>!coachesOf(G.user)[k])],
+  [/창단 드래프트(가 끝|: 모든)/,()=>!!(G.fd&&G.fd.done)],
+  [/스폰서 제안/,()=>!(G.spon&&G.spon.off&&G.spon.off.length)],
+  [/상무 지원 기간/,()=>!sangmuWave()],
+  [/연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청/,()=>!G.contract||!!G.contract.done],
+  [/신인 드래프트가 열립니다/,()=>!G.draft||!!G.draft.done],
+  [/스프링캠프가 시작/,()=>!G.camp||!!G.camp.done||!!G.camp.seen],
+  [/보호선수 명단|보상선수 지명/,()=>!(G.comp||[]).some(c=>(c.stage==='protect'&&c.to===G.user)||(c.stage==='pick'&&c.from===G.user))],
+  [/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/,()=>!faLive()],
+  [/외국인 선수를 구성/,()=>foreignOf(G.user).length>=3||period()==='season'],
+  [/트레이드 마감|마감 보강안/,()=>!tradeOpen()],
+  [/내일 직관|개막합니다/,(m)=>G.day>m.day+1]];
+const mailDoneShow=m=>(m.imp||m.kind==='업무'||m.kind==='결정'||(m.acts&&m.acts.length>0)||!!m.oid)&&mailDone(m);
+function mailDone(m){ if(m.done)return true;
+  for(const a of (m.acts||[])){ if(a.a==='evPick'){ const id=String(a.v).split(':')[0]; const e=(G.evs||[]).find(x=>x.id===id); return !e||!!e.done; }
+    if(a.a==='faOpen'||(a.a==='player'&&/관심 FA|우리 FA|시장 보고/.test(m.subj))){ const p=G.players[+a.v]; if(p&&(p.team!=null||!(G.fa&&!G.fa.closed)))return true; } }
+  if(m.oid)return !(G.offers||[]).some(o=>o.id===m.oid);
+  if(/^\[인터뷰 요청\]/.test(m.subj))return !(G.iv&&!G.iv.done&&m.day>=G.iv.day);
+  for(const [re,f] of MAIL_DONE)if(re.test(m.subj)){ try{ return !!f(m); }catch(e){ return false; } }
+  return false; }
+/* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 일은 뺀다) */
+function ibTask(m){ if(mailDone(m))return false; if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); /* 살아 있는 트레이드 제안 */
   if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); /* 아직 응하지 않은 인터뷰 */
   return m.imp&&!m.read&&!(m.kind==='트레이드'&&/원한다/.test(m.subj)); } /* 아직 확인하지 않은 결재·중요 소식 */
 function mailFilter(f){ return G.mail.filter(m=>f==='all'||(f==='task'?ibTask(m):f==='unread'?!m.read:f==='player'?typeof m.face==='number':ibCat(m)===f)); }
@@ -10949,11 +11012,11 @@ function ibSplit(m){ let subj=m.subj, L=m.body.split('\n').filter(Boolean); cons
     if(subj.endsWith('…')){ const i=L[0].search(/[.!?](\s|$)/); subj=i>0&&i<90?L[0].slice(0,i):L[0].length<=90?L[0].replace(/[.]$/,''):subj; }
     const rest=L[0].slice(subj.replace(/…$/,'').length).replace(/^[.!?]\s*/,'').trim(); if(L[0].startsWith(subj.replace(/…$/,''))){ if(rest)L[0]=rest; else L.shift(); } }
   return {subj,L}; }
-function mailRow(m,cur){ const need=ibTask(m)&&!m.read; return `<button class="ibr${m.read?'':' unread'}${need?' need':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${ibTask(m)?'<span class="ibr-tag">처리</span>':''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
+function mailRow(m,cur){ const need=ibTask(m)&&!m.read; return `<button class="ibr${m.read?'':' unread'}${need?' need':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${ibTask(m)?'<span class="ibr-tag">처리</span>':mailDoneShow(m)?'<span class="ibr-tag done">처리됨</span>':''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
 function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); const dup=(UI._ibDup||{})[m.id]; const {subj,L}=ibSplit(m);
-  const acts=m.acts.filter(a=>!(o&&a.a==='goWork')); /* 제안 카드가 붙은 메일은 '해당 화면으로' 대신 카드 안의 버튼을 쓴다 */
+  const dn=mailDoneShow(m); const acts=m.acts.filter(a=>!(o&&a.a==='goWork')&&!(dn&&/^(evPick|ivOpen|ivSkip|faOpen|faMatch)$/.test(a.a))); /* 끝난 결정·인터뷰·FA 건은 버튼 대신 '처리됨' */ /* 제안 카드가 붙은 메일은 '해당 화면으로' 대신 카드 안의 버튼을 쓴다 */
   return `<article class="ibm mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">
-    <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">처리할 일</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
+    <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">처리할 일</span>':mailDoneShow(m)?'<span class="pill">처리됨</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
     ${L.length?`<div class="mailbody">${(L.length>4?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4?`<details class="mfold"><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${m.rv?rvActsH(m):''}${handOffBtns(m)}
     ${acts.length&&!(m.oid&&!o)?`<div class="ibm-acts">${acts.map(a=>`<button class="btn${a===acts[0]?' primary':''}" data-a="mailAct" data-v="${m.id}:${m.acts.indexOf(a)}">${esc(a.l)}</button>`).join('')}</div>`:''}
@@ -10970,7 +11033,7 @@ function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const k
   return list.slice().reverse(); } /* G.mail은 새 소식이 앞: 화면은 오래된 것부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
 /* 반드시 확인할 소식: 안 읽었고, 답이 필요하거나(살아 있는 제안·인터뷰) 중요 표시·업무 소식. 단순히 '선수 보기' 버튼만 있는 소식은 넣지 않는다 */
-const ibMust=m=>!m.read&&(ibTask(m)||m.kind==='업무');
+const ibMust=m=>!m.read&&!mailDone(m)&&(ibTask(m)||m.kind==='업무');
 function ibNeedList(){ return G.mail.filter(ibMust).slice().reverse(); }
 function ibFolds(){ return G.ibFold=G.ibFold||{}; }
 function inboxView(){
@@ -10979,7 +11042,7 @@ function inboxView(){
   const cnt=k=>mailFilter(k).filter(m=>!m.read).length; const F=ibFolds();
   const days=[...new Set(list.map(m=>m.day))]; const foldN=days.filter(d=>F[d]).length;
   const bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
-    <div class="ibx-meta"><span>안 읽음 <b id="ib-unread">${unread}</b></span>${need?`<button class="lnk ibx-need" data-a="ibNeedGo">확인할 소식 ${need}건</button>`:''}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 확인할 소식이 있으면 그 소식을 열고, 없으면 진행 · J/K: 다음/이전">Space 확인·진행</span>':''}</div></div>`;
+    <div class="ibx-meta"><span>안 읽음 <b id="ib-unread">${unread}</b></span>${need?`<button class="lnk ibx-need" data-a="ibNeedGo">확인할 소식 ${need}건</button>`:''}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · J/K: 다음/이전">Space 다음 소식·진행</span>':''}</div></div>`;
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'처리할 일이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const ids=list.map(m=>m.id); const W=wide();
   let sel=[UI.mailFocus,UI.ibSel].find(v=>v&&ids.includes(v));
@@ -10995,9 +11058,10 @@ function inboxView(){
     return `<div class="ibx-g${fold?' fold':''}"><button class="ibx-day" data-a="ibFold" data-v="${g.d}" aria-expanded="${!fold}"><span class="ibx-car">${fold?'▸':'▾'}</span>${ibDay(g.d)}<span class="ibx-dn">${g.L.length}건${u?` · <b class="${nd?'warn':''}">안 읽음 ${u}</b>`:''}</span></button>${fold?'':g.L.map(m=>mailRow(m,m.id===sel)).join('')}</div>`; }).join('');
   if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=list[ids.indexOf(UI.ibOpen)];
       return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav)}`; }
-    UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}</nav>`; }
-  const pane=si>=0?mailCard(list[si],nav):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 확인할 소식이 있을 때는 가장 오래된 것부터 열고, 없으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
-  return bar+`<div class="ibx"><nav class="ibx-list" aria-label="소식 목록">${rows}</nav><div class="ibx-read">${pane}</div></div>`;
+    UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}<div class="ibx-end">가장 최근 소식입니다 · ${ibDay(G.day)}</div></nav>`; }
+  const pane=si>=0?mailCard(list[si],nav):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
+  const end=`<div class="ibx-end">가장 최근 소식입니다 · ${ibDay(G.day)}</div>`;
+  return bar+`<div class="ibx"><div class="ibx-lw"><nav class="ibx-list" aria-label="소식 목록">${rows}${end}</nav><button class="ibx-down" data-a="ibDown" hidden>최신 소식으로 ↓</button></div><div class="ibx-read">${pane}</div></div>`;
 }
 /* 화면에 보인 메일은 읽음으로. 다시 그리지 않고 표시만 바꾼다 */
 let _ibSave=null, _ibOn=false, _ibRaf=0;
@@ -11009,18 +11073,22 @@ function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m||m.read)return; m.
   if(!nb){ const d=document.querySelector('.bnav [data-v=inbox] .dot'); if(d)d.remove(); }
   clearTimeout(_ibSave); _ibSave=setTimeout(()=>save(),700); }
 function ibTop(){ const t=document.querySelector('.top'); return t?t.offsetHeight:60; }
+/* 넓은 화면: 소식함이 창 아래 끝까지 딱 맞게(목록·본문이 각자 스크롤). 목록이 창 밖으로 잘려 보이지 않게 실제 위치로 높이를 잰다 */
+function ibFit(){ const X=document.querySelector('.ibx'); if(!X)return; const top=X.getBoundingClientRect().top+window.scrollY; X.style.height=Math.max(320,window.innerHeight-top-14)+'px'; }
+if(!window._ibFitOn){ window._ibFitOn=1; window.addEventListener('resize',()=>{ if(UI&&UI.tab==='inbox'&&wide())ibFit(); }); }
 function inboxWire(){ document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
   const L=document.querySelector('.ibx-list'); if(!L)return; const n=G.mail.length;
-  if(wide()){ /* 목록 칸 스크롤: 처음 열면 맨 아래(최신), 그 뒤로는 보던 위치를 지키고, 맨 아래를 보던 중에 새 소식이 오면 따라 내려간다 */
+  if(wide()){ ibFit(); /* 목록 칸 스크롤: 처음 열면 맨 아래(최신), 그 뒤로는 보던 위치를 지키고, 맨 아래를 보던 중에 새 소식이 오면 따라 내려간다 */
     const atEnd=UI._ibEnd!==false; if(UI._ibFirst||(atEnd&&UI._ibCnt!==n)){ L.scrollTop=L.scrollHeight; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
     const c=L.querySelector('.ibr.cur'); if(c&&(f||UI._ibToCur)){ UI._ibToCur=false; const a=c.offsetTop, b=a+c.offsetHeight; if(a<L.scrollTop||b>L.scrollTop+L.clientHeight)L.scrollTop=a-L.clientHeight/3; }
-    L.onscroll=()=>{ UI._ibLS=L.scrollTop; UI._ibEnd=L.scrollTop+L.clientHeight>=L.scrollHeight-24; };
+    const dn=document.querySelector('.ibx-down'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibEnd=L.scrollTop+L.clientHeight>=L.scrollHeight-24; if(dn)dn.hidden=UI._ibEnd; }; L.onscroll=upd; upd();
   } else if(!UI.ibOpen){ if(UI._ibFirst||(UI.ibY==null&&UI._ibCnt!==n))window.scrollTo(0,document.documentElement.scrollHeight); else if(UI.ibY!=null&&!f){ window.scrollTo(0,UI.ibY); UI.ibY=null; } }
   UI._ibFirst=false; UI._ibCnt=n; }
 function ibStep(d){ const ids=ibList(UI.mf||'all').map(m=>m.id).filter(id=>document.querySelector(`.ibr[data-mid="${id}"]`)||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
-function ibSpace(){ const n=ibNeedList(); if(n.length){ const m=n[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
-  const b=document.querySelector('button.continue:not([disabled])'); if(b){ A.adv(b.dataset.v,null,true); return; } const bl=blocker(); if(bl)toast(bl); }
+function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
+  const n=ibNeedList(); const u=n.length?n:G.mail.filter(m=>!m.read).slice().reverse(); if(u.length){ const m=u[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
+  const b=document.querySelector('button.continue:not([disabled])'); if(b){ b.click(); return; } /* 버튼 클릭과 같은 경로(개막 전 확인 등)를 거친다 */ const bl=blocker(); if(bl)toast(bl); }
 /* ---------- 그림 에셋: 트로피·메달·사건 아이콘 (직접 그린 SVG) ---------- */
 let ARTN=0;
 const ART={
@@ -13030,6 +13098,7 @@ const A={
   inbox(){ UI.tab='inbox'; UI._ibFirst=true; UI.ibOpen=null; closeSheets(); render(); },
   ibFold(v){ const F=ibFolds(); const d=+v; if(F[d])delete F[d]; else F[d]=true; save(); render(); },
   ibFoldOld(){ const F=ibFolds(); if(Object.keys(F).length){ G.ibFold={}; } else { const days=[...new Set(ibList(UI.mf||'all').map(m=>m.day))]; days.slice(0,-1).forEach(d=>F[d]=true); } save(); render(); },
+  ibDown(){ const L=document.querySelector('.ibx-list'); if(L)L.scrollTo({top:L.scrollHeight,behavior:'smooth'}); },
   ibNeedGo(){ const n=ibNeedList(); if(!n.length)return; UI.mf='all'; A.mailJump(n[0].id); },
   itab(v){ const [k,t]=v.split(':'); UI.it=UI.it||{}; UI.it[k]=t; render(); },
   pgGo(v){ const i=v.lastIndexOf(':'); const k=v.slice(0,i), n=+v.slice(i+1); UI.pg=UI.pg||{}; UI.pg[k]=Math.max(0,n); render(); const el=document.querySelector(`[data-pg="${k}"]`); if(el)el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); },
@@ -13431,7 +13500,7 @@ document.addEventListener('keydown',e=>{
   if(UI.tab==='inbox'&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
   /* 소식함: 스페이스바로 안 읽은 소식을 하나씩 열고, 다 읽었으면 계속 진행 */
   /* 스페이스바(어느 화면에서나): 확인할 소식이 있으면 그 소식으로, 없으면 진행 */
-  if(e.key===' '&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!UI.ngt&&!UI.meet&&!UI.negWin&&!UI.cast&&!UI.title&&!(e.target.matches&&e.target.matches('input,select,textarea,button,summary,[contenteditable]'))){ e.preventDefault(); ibSpace(); return; }
+  if(e.key===' '&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!UI.ngt&&!UI.meet&&!UI.negWin&&!UI.cast&&!UI.title&&!(e.target.matches&&e.target.matches('input,select,textarea,summary,[contenteditable]'))){ e.preventDefault(); if(e.repeat)return; /* 누르고 있어도 한 번만. 포커스된 버튼(계속 등)을 스페이스바가 직접 누르지 않게 막는다 */ if(e.target.blur&&e.target.matches&&e.target.matches('button'))e.target.blur(); ibSpace(); return; }
   if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('g.pos[data-a],.tcard[data-a]')){ e.preventDefault(); const a=e.target.dataset.a; A[a](e.target.dataset.v); }
 });
 

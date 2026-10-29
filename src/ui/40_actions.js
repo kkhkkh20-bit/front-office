@@ -81,6 +81,7 @@ const A={
   inbox(){ UI.tab='inbox'; UI._ibFirst=true; UI.ibOpen=null; closeSheets(); render(); },
   ibFold(v){ const F=ibFolds(); const d=+v; if(F[d])delete F[d]; else F[d]=true; save(); render(); },
   ibFoldOld(){ const F=ibFolds(); if(Object.keys(F).length){ G.ibFold={}; } else { const days=[...new Set(ibList(UI.mf||'all').map(m=>m.day))]; days.slice(0,-1).forEach(d=>F[d]=true); } save(); render(); },
+  ibDown(){ const L=document.querySelector('.ibx-list'); if(L)L.scrollTo({top:L.scrollHeight,behavior:'smooth'}); },
   ibNeedGo(){ const n=ibNeedList(); if(!n.length)return; UI.mf='all'; A.mailJump(n[0].id); },
   itab(v){ const [k,t]=v.split(':'); UI.it=UI.it||{}; UI.it[k]=t; render(); },
   pgGo(v){ const i=v.lastIndexOf(':'); const k=v.slice(0,i), n=+v.slice(i+1); UI.pg=UI.pg||{}; UI.pg[k]=Math.max(0,n); render(); const el=document.querySelector(`[data-pg="${k}"]`); if(el)el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); },
