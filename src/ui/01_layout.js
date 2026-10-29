@@ -96,7 +96,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
     return `<div class="gut"><div class="wrap ts-wrap"><div class="ts">
       <div class="ts-bg" aria-hidden="true">${TEAM_DEF.map((d,i)=>badge(i,30)).join('')}</div>
       <div class="kicker">한국 프로야구형 가상 리그 · 단장 시뮬레이션</div><h1>단장의 시간</h1>
-      <p class="ts-sub">경기는 감독이 합니다. 단장은 선수를 모으고, 팀을 만들고, 돈을 지킵니다.</p>
+      <p class="ts-sub">경기는 감독이 합니다. 단장은 선수를 모으고, 팀을 만들고, 돈을 지킵니다.</p>${achStartLine()}
       <div class="ts-menu">
         ${canCont?`<button class="tsb primary" data-a="tsCont"><b>이어하기</b><span>슬롯 ${m.active}${tn?` · ${esc(tn)}`:''}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="tsb ${canCont?'':'primary'}" data-a="tsGo" data-v="team"><b>새 게임</b><span>창단 드래프트로 처음부터 팀을 만듭니다</span></button>
