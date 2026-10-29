@@ -23,7 +23,7 @@ function curExplain(p,rp){ rp=rp||scoutReport(p); const c=rp.cur; if(c==null)ret
   if(top.length)L.push(`강점: ${top.map(t=>`${TOOLK[t.k]} ${dv(t.cur)}(${toolLv(t.cur)})`).join(', ')}. ${GOOD[top[0].k]||''}`);
   else if(ts.length)L.push(`뚜렷한 강점은 없습니다. 가장 나은 툴은 ${TOOLK[ts[0].k]} ${dv(ts[0].cur)}(${toolLv(ts[0].cur)})입니다.`);
   if(low.length)L.push(`약점: ${low.map(t=>`${TOOLK[t.k]} ${dv(t.cur)}(${toolLv(t.cur)})`).join(', ')}. ${BAD[low[0].k]||''}`);
-  const pj=projKBO(p,c,sd); if(pj)L.push(`올해 KBO 예상: ${pj.txt} (가운데 ${pj.mid}). ${pj.y}시즌 1군 ${pj.n}명의 실제 기록에서 같은 능력대 선수들이 낸 범위${sd?'에 평가 오차를 더한 폭':''}입니다.`);
+  const pj=projKBO(p,c,sd); if(pj)L.push(`올해 리그 예상: ${pj.txt} (가운데 ${pj.mid}). ${pj.y}시즌 1군 ${pj.n}명의 실제 기록에서 같은 능력대 선수들이 낸 범위${sd?'에 평가 오차를 더한 폭':''}입니다.`);
   if(p.team!==G.user){ try{ const k=p.isP?(isSPr(p)?'SP':'RP'):pSlot(p); const d=depth(G.user); const mine=k==='SP'?d.sp:k==='RP'?d.pen.slice(0,4):[d.ln[k]].filter(Boolean); const w=mine.filter(Boolean).sort((a,b)=>ovr(a)-ovr(b))[0];
       if(w){ const df=c-Math.round(ovr(w)); L.push(`우리 ${SLOTK[k]||posLabel(p)} ${k==='SP'||k==='RP'?'가장 약한 투수':'주전'} ${w.name}(${dvo(w)})보다 ${df>0?'+':''}${df}${df>=2?' — 바로 전력이 오릅니다':df<=-2?' — 주전보다 못합니다':' — 비슷한 수준입니다'}.`); } }catch(e){} }
   L.push(sd?`평가 오차 약 ±${Math.max(1,Math.round(sd))}(정확도 ${rp.conf}). ${p.foreign&&p.team==null?'관찰 명단에 올리고 해외 스카우트망을 넓히면 줄어듭니다.':'담당 스카우트 능력과 트래킹 분석원이 좋을수록 줄어듭니다.'}`:'');

@@ -22,7 +22,7 @@ function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=st
       if(N.stage==='talk')return head+`<div class="note">협상 중 · ${dmd(N.res)}쯤 결과</div>`;
       if(N.stage==='plan')return head+`<div class="note good">시와 합의했습니다. 규모를 고르세요.</div><div class="stad-l">${NEWSTAD.map(o=>`<div class="stad-i"><b>${o.l} · ${o.cap.toLocaleString('ko-KR')}석</b><p class="small sdesc">${o.d} 공사 3년, 개장 후 시설은 모두 4단계 이상.</p><button class="btn small primary" data-a="nsPick" data-v="${o.k}">${o.l}으로 착공</button></div>`).join('')}</div>`;
       return head+`<div class="note">${NEWSTAD.find(o=>o.k===N.k).l} 신구장 공사 중 · ${dmd(N.done)} ${dobj(N.done).y}년 개장 예정 · 분담금 ${money(N.paid||0)} / ${money(N.cost)} 납부 · 공사 기간 관중 수요 -2%</div>`; })());
-  return sv.bar+csec('리그 관중',lgT+'<p class="small muted">2025년 실제 KBO는 경기당 평균 17,101명, 좌석 점유율 82.9%였습니다.</p>');
+  return sv.bar+csec('리그 관중',lgT+'<p class="small muted">2025년 실제 한국 프로야구는 경기당 평균 17,101명, 좌석 점유율 82.9%였습니다.</p>');
 }
 /* ---------- 구단 연대기 ---------- */
 const CHK={season:'시즌',trade:'트레이드',fa:'FA',draft:'신인 지명',found:'창단',mgr:'감독',stad:'구장',cap:'주장',award:'수상',star:'프랜차이즈',legend:'레전드',fired:'단장',join:'단장',spon:'스폰서'};
@@ -95,7 +95,7 @@ function tradeView(){
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
     ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>`<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}</span><button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button></div>`).join('')}</div>`:''}
     ${tradeInsight(tr.tid,tr.give,tr.get)}
-    ${gt.length?`<div class="tcash"><span class="small">현금 얹기</span><div class="chips">${[0,100,300,500,1000,2000,3000].map(v=>`<button data-a="tcash" data-v="${v}" class="${(tr.cash||0)===v?'on':''}">${v?money(v):'없음'}</button>`).join('')}</div><span class="small muted">KBO도 선수와 현금을 섞은 트레이드가 있습니다. 돈을 중시하는 구단(독립구단·수익형 구단주·샐러리캡 초과·리빌딩)일수록 현금을 높게 칩니다. 예산 여유에서 빠집니다.</span></div>`:''}
+    ${gt.length?`<div class="tcash"><span class="small">현금 얹기</span><div class="chips">${[0,100,300,500,1000,2000,3000].map(v=>`<button data-a="tcash" data-v="${v}" class="${(tr.cash||0)===v?'on':''}">${v?money(v):'없음'}</button>`).join('')}</div><span class="small muted">실제 한국 프로야구도 선수와 현금을 섞은 트레이드가 있습니다. 돈을 중시하는 구단(독립구단·수익형 구단주·샐러리캡 초과·리빌딩)일수록 현금을 높게 칩니다. 예산 여유에서 빠집니다.</span></div>`:''}
     ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0); const isC=nt.ctr&&nt.ctr[sg]===G.day; const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}`; })()}
   </section>`;
   const side=tr.side||'get', seg=tr.seg||'bat', sort=tr.sort||'cur';
@@ -169,10 +169,10 @@ function salTalkView(ended){ salTalkInit(); const C=G.contract; const wk=Math.fl
     <details class="frule"><summary class="small">연봉 산정 기준 보기</summary><div class="small">
       <p><b>1. 직전 시즌 1군 WAR로 인상 폭 상한을 정합니다.</b> WAR 0 이하 +10%, 1이면 +45%, 2이면 +80%, 3이면 +115%, 5 이상이면 +190%까지. 1군 표본이 적으면(타자 120타석, 투수 25이닝 미만) 15% 안에서만 움직입니다.</p>
       <p><b>2. 같은 연차·능력의 보류권 기준액 쪽으로 맞춥니다.</b> FA 시장가의 3년 미만 14%, 6년 미만 22%, FA 직전 32%. 연차별 최고 기록(4년차 5억 등)을 넘지 않습니다.</p>
-      <p><b>3. 잘한 선수는 깎지 않습니다.</b> WAR 3 이상 5% 이상 인상, 2 이상 동결 이상. 부진하면 깎습니다. KBO 규약의 삭감 제한은 2008년에 없어졌고, 구단 관행상 3억 미만은 최대 40%, 3억 이상은 최대 50%까지 깎습니다(김도영 5억→2.5억).</p>
+      <p><b>3. 잘한 선수는 깎지 않습니다.</b> WAR 3 이상 5% 이상 인상, 2 이상 동결 이상. 부진하면 깎습니다. 실제 한국 프로야구 규약의 삭감 제한은 2008년에 없어졌고, 구단 관행상 3억 미만은 최대 40%, 3억 이상은 최대 50%까지 깎습니다(김도영 5억→2.5억).</p>
       <p><b>예비 FA:</b> 다음 시즌 뒤 FA가 되는 선수입니다. 실제 구단들은 핵심 예비 FA의 마지막 보류 시즌 연봉을 크게 올리곤 합니다. 붙잡겠다는 신호이면서, 떠나면 받는 보상금(직전 연봉 × A등급 2배+선수 또는 3배, B등급 1배+선수 또는 2배, C등급 1.5배)을 키우는 계산입니다. 다른 구단도 핵심 예비 FA에게는 이렇게 합니다. 최저 연봉은 2027년부터 3,300만 원입니다.</p>
       <p><b>4. 선수는 성적이 좋을수록, 야망이 클수록 산정안보다 더 원합니다.</b> 한 선수와는 한 주에 한 번 협상합니다. 거절하면 요구액을 조금씩 낮춥니다.</p>
-      <p><b>5. 연봉조정:</b> 1월 10일까지 합의하지 못한 3년차 이상 선수는 신청할 수 있고, 1월 20일 조정위원회가 구단안과 선수안 중 하나를 고릅니다. 실제 KBO에서 조정위원회까지 간 20건 중 선수가 이긴 것은 2번(2002 류지현, 2021 주권)입니다. 조정에서 진 선수는 기분이 크게 떨어집니다.</p></div></details>
+      <p><b>5. 연봉조정:</b> 1월 10일까지 합의하지 못한 3년차 이상 선수는 신청할 수 있고, 1월 20일 조정위원회가 구단안과 선수안 중 하나를 고릅니다. 실제 한국 프로야구에서 조정위원회까지 간 20건 중 선수가 이긴 것은 2번(2002 류지현, 2021 주권)입니다. 조정에서 진 선수는 기분이 크게 떨어집니다.</p></div></details>
     <div class="salrs">${L.filter(x=>x.n.st!=='ok').map(row).join('')||'<p class="small muted">모든 국내 선수와 합의했습니다. 위의 "연봉 계약 확정"을 누르면 끝납니다.</p>'}</div>
     ${(()=>{ const ok=L.filter(x=>x.n.st==='ok'); return ok.length?`<details class="frule"><summary class="small">합의 완료 ${ok.length}명 · 합계 ${money(sum(ok.map(x=>x.p.newSal)))}</summary><div class="salok">${ok.map(({p,b})=>`<div class="salok-r"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="small muted">${posLabel(p)} · WAR ${b.war.toFixed(1)}</span><span class="num">${money(p.sal)} → <b>${money(p.newSal)}</b></span></div>`).join('')}</div></details>`:''; })()}`; }
 function contractView(){

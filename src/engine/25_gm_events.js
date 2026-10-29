@@ -46,9 +46,9 @@ const EVH={
       const w=L.map(p=>(p.pers.pro<8?3:1)*(p.pers.temp>=14?2:1)); let x=R()*sum(w), pk=L[0]; for(let i=0;i<L.length;i++){ x-=w[i]; if(x<=0){ pk=L[i]; break; } }
       return {p:pk,ty:wpick({gamble:.3,drink:.35,sns:.35})}; },
     make(d){ const p=d.p, S=SCAND[d.ty]; prInit(); G.pr.fan=clamp(G.pr.fan-S.fan,0,100); G.pr.press=clamp(G.pr.press-S.press,0,100); G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+S.sp;
-      if(S.kbo)p.susp=G.day+gDays(S.kbo); story(p,`${S.t}로 KBO 징계${S.kbo?` (출장정지 ${S.kbo}경기)`:' (제재금)'}`,'inj'); news('구단',`${tshort(G.user)} ${p.name}, ${S.t} 파문`,`${S.d} KBO 상벌위원회는 ${S.kbo?`출장정지 ${S.kbo}경기와 `:''}제재금을 부과했습니다. 후원사 일부가 광고를 중단해 약 ${money(S.sp)}의 손실이 예상됩니다.`,-3,{ref:p.id});
-      evNew('scandal',`${p.name} ${S.t}: 구단 징계를 정해 주세요`,`${p.name}(${posLabel(p)}, ${p.age}세) ${S.d}\nKBO 징계: ${S.kbo?`출장정지 ${S.kbo}경기 + 제재금`:'제재금'}\n후원 손실 약 ${money(S.sp)}, 팬 여론 -${S.fan}, 언론 논조 -${S.press}가 이미 반영됐습니다. 구단 자체 징계 수위에 따라 여론과 후원사 반응이 달라집니다.`,
-        [{l:'KBO 징계만 따르기',fx:'선수 기분은 지키지만 "봐주기" 비판으로 팬 여론과 언론 논조가 더 떨어집니다.'},
+      if(S.kbo)p.susp=G.day+gDays(S.kbo); story(p,`${S.t}로 ${ASSOC.s} 징계${S.kbo?` (출장정지 ${S.kbo}경기)`:' (제재금)'}`,'inj'); news('구단',`${tshort(G.user)} ${p.name}, ${S.t} 파문`,`${S.d} KBO 상벌위원회는 ${S.kbo?`출장정지 ${S.kbo}경기와 `:''}제재금을 부과했습니다. 후원사 일부가 광고를 중단해 약 ${money(S.sp)}의 손실이 예상됩니다.`,-3,{ref:p.id});
+      evNew('scandal',`${p.name} ${S.t}: 구단 징계를 정해 주세요`,`${p.name}(${posLabel(p)}, ${p.age}세) ${S.d}\n${ASSOC.s} 징계: ${S.kbo?`출장정지 ${S.kbo}경기 + 제재금`:'제재금'}\n후원 손실 약 ${money(S.sp)}, 팬 여론 -${S.fan}, 언론 논조 -${S.press}가 이미 반영됐습니다. 구단 자체 징계 수위에 따라 여론과 후원사 반응이 달라집니다.`,
+        [{l:'협회 징계만 따르기',fx:'선수 기분은 지키지만 "봐주기" 비판으로 팬 여론과 언론 논조가 더 떨어집니다.'},
          {l:`자체 징계 추가 (벌금·출장정지 ${S.club}경기)`,fx:'여론은 조금 더 떨어지고 선수 기분이 내려갑니다. 무난한 선택입니다.'},
          {l:'시즌 아웃 (무기한 출장정지)',fx:'올 시즌 더 쓸 수 없습니다. 여론이 회복되고, 후원사 일부가 돌아올 수 있습니다.'},
          {l:'방출',fx:'남은 연봉은 그대로 주고 팀을 떠납니다. 여론은 가장 빨리 회복됩니다.'}],{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id,ty:d.ty},def:1,exp:4}); },

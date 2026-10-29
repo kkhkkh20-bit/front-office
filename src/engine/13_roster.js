@@ -68,12 +68,6 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.
 /* 빚이 깊은 AI 구단(현금 -40억 아래): 모기업이 허리띠를 졸라맨다. 고액 베테랑을 여유 있는 구단에 넘겨 상위 40명 연봉을 상한의 80%까지 낮춘다(방출 위약금은 빚을 늘리므로 트레이드만) */
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME()||t.cash>=-4000)continue; t.mode='rebuild'; n+=aiCapFix(t.id,.8,true,3); } return n; }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
-/* 12월 이사회: 다음 해 상한을 정한다. 상한 가까이 붙은 구단이 많으면(연봉 인플레이션) 크게 올린다 */
-function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; if(G.capY[y])return;
-  const cap=capOf(G.year); const near=G.teams.filter(t=>capPay(t.id)>=cap*.995).length; /* AI가 겨울에 98.5%까지 맞추므로 '상한에 붙었다'는 99.5% 이상만 센다 */ const over=G.teams.filter(t=>(t.capOver||0)>0).length;
-  const up=near+over>=6?.06:near+over>=4?.04:near+over>=2?.02:0; /* 구단들이 상한을 꽉 채울 때만 합의해서 올린다 */ G.capY[y]=Math.round(cap*(1+up));
-  if(!up){ G.capY[y]=cap; note('일정',`KBO 이사회가 ${y}년 경쟁균형세 상한을 동결했습니다. 상한에 붙은 구단이 적어 올릴 필요가 없다는 합의입니다.`); return; } const why=up>=.08?`상한에 붙은 구단이 ${near}곳, 지난 시즌 초과 구단이 ${over}곳으로 연봉 인플레이션이 커 크게 올렸습니다`:up>=.04?`상한 가까이 붙은 구단이 늘어 인상 폭을 키웠습니다`:'상한에 붙은 구단들의 요청으로 소폭 올렸습니다';
-  news('리그',`KBO 이사회, ${y}년 경쟁균형세 상한 ${money(G.capY[y])}으로 ${Math.round(up*100)}% 상향`,`${why}. 하한은 ${money(floorOf(y))}입니다.`,0);
-  note('일정',`KBO 이사회가 ${y}년 경쟁균형세 상한을 ${money(G.capY[y])}(${Math.round(up*100)}% 상향)로 정했습니다. ${why}.`); }
+/* 경쟁균형세 상한 결정(capCouncil)은 68_assoc.js의 실행위원회·이사회로 옮겼다 */
 function capInfo(tid){ const pay=capPay(tid), cap=capOf(G.year); return {pay,all:payroll(tid),cap,floor:floorOf(G.year),over:Math.max(0,pay-cap)}; }
 

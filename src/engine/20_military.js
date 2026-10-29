@@ -62,7 +62,7 @@ function olySquad(){ const ps=Object.values(G.players).filter(p=>p.team!=null&&!
   const v=p=>ovr(p)+hn('oly'+G.year,p.id)*2.5; const P=ps.filter(p=>p.isP).sort((a,b)=>v(b)-v(a)).slice(0,12), B=ps.filter(p=>!p.isP).sort((a,b)=>v(b)-v(a)).slice(0,12); return P.concat(B); }
 function oly(d){ if(!olyYear(G.year))return; const y=G.year;
   if(d===KD(6,10)){ const sq=olySquad(); G.oly={y,ids:sq.map(p=>p.id)}; const mine=sq.filter(p=>p.team===G.user);
-    mail('운영팀',`${y} 올림픽 야구 대표팀 발표`,`KBO 선수 24명이 뽑혔습니다. 우리 구단: ${mine.map(p=>`${p.name}${milFree(p)?'(미필)':''}`).join(', ')||'없음'}.\n\n올림픽은 7월 15~20일 열립니다. 대표 선수는 7월 13일부터 22일까지 팀을 떠납니다. 동메달 이상이면 미필 선수는 체육요원으로 병역 특례를 받습니다.`,{imp:mine.length>0,kind:'병역'});
+    mail('운영팀',`${y} 올림픽 야구 대표팀 발표`,`리그 선수 24명이 뽑혔습니다. 우리 구단: ${mine.map(p=>`${p.name}${milFree(p)?'(미필)':''}`).join(', ')||'없음'}.\n\n올림픽은 7월 15~20일 열립니다. 대표 선수는 7월 13일부터 22일까지 팀을 떠납니다. 동메달 이상이면 미필 선수는 체육요원으로 병역 특례를 받습니다.`,{imp:mine.length>0,kind:'병역'});
     for(const p of mine)p.mor=clamp((p.mor??60)+6,0,100); }
   if(G.oly&&G.oly.y===y&&d===KD(7,13))for(const id of G.oly.ids){ const p=G.players[id]; if(p){ p.ntFrom=d; p.ntAway=KD(7,22); p.e1=false; } }
   if(G.oly&&G.oly.y===y&&d===KD(7,21)&&!G.oly.res){ const sq=G.oly.ids.map(id=>G.players[id]).filter(Boolean); const str=avg(sq.map(ovr));

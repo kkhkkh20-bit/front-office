@@ -11,7 +11,7 @@ function milView(){
     ${UI.milMsg?`<div class="note">${esc(UI.milMsg)}</div>`:''}`)
    +(serving.length||pending.length?csec('복무 중 · 입대 예정',`<div class="tgrid">${serving.concat(pending).map(p=>pcard(p,{sub:`${p.age}세`,tags:`<span class="pill ${p.mil.unit==='상무'?'good':'warn'}">${p.mil.unit}</span>`,stat:esc(milText(p)),foot:rosterFoot(p)})).join('')}</div>`):'')
    +csec('미필 선수',free.length?`<div class="tgrid">${(UI.milAll?free:free.slice(0,8)).map(card).join('')}</div>${free.length>8?`<button class="btn block" data-a="milAll" style="margin-top:8px">${UI.milAll?'접기':`나머지 ${free.length-8}명 더 보기 (나이 어린 순)`}</button>`:''}`:'<p class="small muted">미필 선수가 없습니다.</p>')
-   +csec('올림픽',`<p class="small expl">${oy?`다음 올림픽 야구: <b>${oy}년 7월</b>${oy===2028?' (LA, 다저스타디움, 6개국)':' (게임 가정)'}`:'예정 없음'}. 6월 10일에 KBO 선수 24명이 대표로 뽑히고, 7월 13~22일 팀을 떠납니다. 동메달 이상이면 대표팀의 미필 선수는 체육요원으로 병역 특례를 받습니다. 아시안게임 특례는 넣지 않았습니다.</p>${G.oly&&G.oly.res?`<p class="small muted">${G.oly.y} 결과: ${G.oly.res}</p>`:''}`);
+   +csec('올림픽',`<p class="small expl">${oy?`다음 올림픽 야구: <b>${oy}년 7월</b>${oy===2028?' (LA, 다저스타디움, 6개국)':' (게임 가정)'}`:'예정 없음'}. 6월 10일에 리그 선수 24명이 대표로 뽑히고, 7월 13~22일 팀을 떠납니다. 동메달 이상이면 대표팀의 미필 선수는 체육요원으로 병역 특례를 받습니다. 아시안게임 특례는 넣지 않았습니다.</p>${G.oly&&G.oly.res?`<p class="small muted">${G.oly.y} 결과: ${G.oly.res}</p>`:''}`);
 }
 function ownerView(){
   prInit(); const t=team(G.user); const s=goalStatus(); const g=G.goals; const ow=OWNER[t.owner];

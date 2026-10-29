@@ -298,3 +298,7 @@ body:has(#sheet .scrim) #dtick{display:none}
 /* 선수 기본 정보: 포지션·나이를 이름 바로 아래 크게 */
 .pinfo{margin:4px 0 0;font-size:15px;line-height:1.45;color:var(--ink,#e2e8ed)}
 .pinfo-pos{font-size:17px;color:var(--acc,#6aa8ff)}.pinfo-sub{font-size:13px;color:var(--muted);margin-left:4px}
+
+/* 협회 화면: 항목 이름 위, 내용 아래 */
+.aslist{display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5}
+.aslist>div>span.muted{display:block;font-size:12px}
