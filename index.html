@@ -1866,6 +1866,8 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .trn-seg button i{font-style:normal;margin-left:2px;opacity:.8}
 .trn-bar{position:sticky;top:0;z-index:5;display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:8px 10px;margin:6px 0;border-radius:10px;background:var(--card,#1b2230);border:1px solid var(--acc,#4a6cf7)}
 .trn-bar span{margin-right:auto;font-size:13px}
+.negw-body{margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.negdoor{margin-top:6px}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -12736,6 +12738,7 @@ function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
   if(UI.ngt&&!UI.menu){ const sc=el.querySelector('.ng-rows'); const top=sc?sc.scrollTop:0; el.innerHTML=ngtSheet(); const s2=el.querySelector('.sheet.ngt'); if(s2&&UI._ngtY!=null)s2.scrollTop=UI._ngtY; return; }
+  if(UI.negWin&&!UI.menu&&G.players[UI.negWin.id]){ const sc=el.querySelector('.sheet.negw'); const y=sc?sc.scrollTop:0; el.innerHTML=negWinSheet(); const s2=el.querySelector('.sheet.negw'); if(s2&&sc)s2.scrollTop=y; return; }
   if(UI.meet&&!UI.menu){ el.innerHTML=meetSheet(); const lg=el.querySelector('#mt-log'); if(lg)lg.scrollTop=lg.scrollHeight; return; }
   if(UI.sheet==null&&UI.game==null&&!UI.posSheet&&cwSheetOn()){ el.innerHTML=cwSheet(); const lg=el.querySelector('#mt-log'); if(lg)lg.scrollTop=lg.scrollHeight; return; } /* 동석 관람 */
   if(UI.cast&&UI.sheet==null&&!UI.menu){ const ex=el.querySelector('.cast'); if(!ex||+ex.dataset.g!==UI.cast.g){ el.innerHTML=castSheet(); castMount(); } return; }
@@ -12757,14 +12760,13 @@ function renderSheet0(){
   let actions='';
   if(canPick)actions=`<button class="btn primary block" data-a="pick" data-v="${p.id}">${d.picks[d.cur].rd}라운드 ${d.picks[d.cur].no}순위로 지명 · 계약금 약 ${money(bonusOf(d.picks[d.cur].rd,d.picks[d.cur].no,p))}</button>`;
   if(p.fdPool&&G.fd&&!G.fd.done){ const fk=G.fd.picks[G.fd.cur]; actions=`<div class="row" style="gap:6px">${fk&&fk.tid===G.user&&G.fd.open!==false?`<button class="btn primary" style="flex:1" data-a="fdPick" data-v="${p.id}">${fk.rd}라운드 ${fk.no}번째로 지명</button>`:''}<button class="btn" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button></div>`; }
-  if(isFA)actions=negPanel(p)+ngtDoor('fa',p)+pitchCard(p)+(UI.faMsg&&UI.faMsg.id===p.id?`<div class="note">${esc(UI.faMsg.t)}</div>`:'');
+  if(isFA)actions=''; /* 협상은 위쪽 '협상 창 열기'에서 */
   if(isFM){ const err=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; const mid=per==='season'; const repl=mid&&(G.sea.repl[G.user]||0)>=F_REPL_MAX;
-    actions=foPanel(p); }
+    actions=''; }
   if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ actions=tradeOpen()?`<button class="btn block" data-a="toTrade" data-v="${p.id}">데려오기 협상</button>`:'<p class="small muted">트레이드 기간이 아닙니다.</p>'; }
   if(isFM)actions+=`<div class="row"><button class="btn" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 명단에서 빼기':'대체 후보 관찰 명단에 올리기'}</button>${fwatchOn(p.id)?`<span class="small muted">스카우트 파악도 ${fwatchK(p.id)}% · 능력 오차 약 ±${Math.max(1,Math.round(rp.sd||0))}</span>`:''}</div>${UI.fwMsg?`<p class="small muted">${esc(UI.fwMsg)}</p>`:''}`;
   if(p.team===G.user&&!(p.joinY>G.year)){
     const parts=[];
-    if(p.foreign&&G.contract&&!G.contract.done&&G.contract.foreignEnd.includes(p.id)&&!G.contract.foreignDrop.includes(p.id))parts.push(foRePanel(p)); /* 외국인 재계약 협상(보류권) */
     parts.push(entryForm(p));
     if(!p.foreign&&p.age<=30)parts.push(devForm(p));
     if(canExtend(p))parts.push('<div id="s-ext"></div>'+`<section class="card"><div class="eyebrow">비FA 다년계약 · ${ctText(p)}</div>${p.extCounter&&p.extCounter.until>=G.day?`<p class="small">역제안이 와 있습니다: ${esc(p.extCounter.terms?termsTxt(p.extCounter.terms,true):`${p.extCounter.years}년 연 ${money(p.extCounter.annual)}`)}</p>`:''}${ngtDoor('ext',p)}<p class="small muted">시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p></section>`);
@@ -12791,6 +12793,7 @@ function renderSheet0(){
    ${keyBar(p,rp,isFA,isFM)}
    <div class="row">${p.fdPool||fdHideNow(p)?'':`<span class="pill acc">${esc(rp.arch)}</span>`}${rp.role&&!p.fdPool&&!fdHideNow(p)?`<span class="pill">${p.foreign?'올해 예상':'장래'} ${esc(rp.role)}</span>`:''}${status}</div>
    ${quickActs(p)}
+   ${isFA?negDoor('fa',p):isFM?negDoor('fm',p):p.team===G.user&&p.foreign&&G.contract&&!G.contract.done&&G.contract.foreignEnd.includes(p.id)&&!G.contract.foreignDrop.includes(p.id)?negDoor('fre',p):''}
    ${tabBar}
    ${T==='sum'?`
    ${staffCardP(p)}
@@ -12926,7 +12929,7 @@ function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH
   ${H.length?`<p class="small muted">지난 연수: ${H.map(h=>`${h.y} ${esc(h.k)}(${T[h.t]||''})`).join(', ')}</p>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
-function closeSheets(){ UI.ngt=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
+function closeSheets(){ UI.ngt=null; UI.negWin=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
 const A={
   dlSpd(v){ UI.dspeed=v; render(); },
   dlStop(){ dliveStop(); },
@@ -13383,6 +13386,7 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
 document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details[data-k]')){ UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); } } },true);
 document.addEventListener('keydown',e=>{
   if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; } if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
+  if(e.key==='Escape'&&UI.negWin&&!UI.ngt&&!UI.meet){ UI.negWin=null; renderSheet(); render(); return; }
   if(e.key==='Escape'&&(UI.ngt||UI.meet)){ UI.ngt=null; UI.meet=null; renderSheet(); render(); return; }
   if(e.key==='Escape'&&(UI.sheet!=null||UI.posSheet||UI.game!=null||UI.menu))closeSheets();
   if(UI.tab==='inbox'&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
@@ -14506,4 +14510,28 @@ function cmpCard(p){ if(p.team!==G.user||p.prospect||!p.rh)return ''; const y0=p
   const ar=k=>{ const d=p.r[k]-R0[k]; return d>=.5?'<em class="gr up">▲</em>':d<=-.5?'<em class="gr dn">▼</em>':'<em class="gr">-</em>'; };
   return `<section class="card"><div class="row between"><span class="eyebrow">${y0===G.year?'올 시즌 시작과 비교':'지난 시즌 시작과 비교'}</span><span class="small muted">${y0}년 1월 기준</span></div>
   <div class="cmpt">${ks.map(k=>`<div><span>${OVS_TOOLN[k]}</span>${ar(k)}</div>`).join('')}</div></section>`; }
+/* ===== 협상 창: 선수 정보와 따로 띄운다 =====
+ 선수 정보 화면에는 협상 상태 한 줄과 '협상 창 열기'만 두고, 길어지는 협상 패널(FA·외국인 영입·외국인 재계약)은 별도 창에서 한다.
+ 협상 창을 닫으면 선수 정보로 돌아간다. 계약 조건을 한 줄씩 정하는 '협상 테이블'은 이 창에서 연다. */
+const NEGW={fa:'FA 협상',fm:'외국인 영입 협상',fre:'외국인 재계약 협상'};
+function negSummary(k,p){
+  if(k==='fa'){ const o=G.fa&&G.fa.offers[p.id]; const n=G.fa&&G.fa.neg?G.fa.neg[p.id]:null; return o?`지금 우리 제안: ${o.terms?termsTxt(o.terms,true):`${o.years}년 연 ${money(o.annual)}`}${n&&n.deal?' · 합의':''}`:`요구 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준 · 아직 제안 전`; }
+  if(k==='fm'){ const R=foRivals(p); return `요구 ${usdT(p.ask)} 수준${R.length?` · 관심 구단 ${R.length}곳`:''}${p.fneg?' · 협상 중':''}`; }
+  if(k==='fre'){ const N=((G.contract||{}).fre||{})[p.id]; return `재계약 기준선 근처 ${usdT(Math.round(foReFloor(p)/USD)*USD)}${N?' · 협상 중':''}`; }
+  return ''; }
+function negDoor(k,p){ return `<button class="mt-door negdoor" data-a="negOpen" data-v="${k}:${p.id}">${avImg(p)}<span><b>${NEGW[k]} 창 열기</b><i>${esc(negSummary(k,p))}</i></span><em>›</em></button>`; }
+function negBody(k,p){
+  if((k==='fa'||k==='fm')&&p.team!=null)return `<div class="note good">${p.team===G.user?'계약을 마쳤습니다.':`${esc(tname(p.team))}과(와) 계약했습니다.`}</div>${UI.faMsg&&UI.faMsg.id===p.id?`<div class="note">${esc(UI.faMsg.t)}</div>`:''}`;
+  if(k==='fre'){ const C=G.contract; if(!C||C.done||!C.foreignEnd.includes(p.id)||C.foreignDrop.includes(p.id))return '<div class="note">재계약 협상이 끝났습니다.</div>'; }
+  if(k==='fa')return negPanel(p)+ngtDoor('fa',p)+pitchCard(p)+(UI.faMsg&&UI.faMsg.id===p.id?`<div class="note">${esc(UI.faMsg.t)}</div>`:'');
+  if(k==='fm')return foPanel(p);
+  if(k==='fre')return foRePanel(p);
+  return ''; }
+function negWinSheet(){ const W=UI.negWin; const p=G.players[W.id]; if(!p)return ''; const rp=scoutReport(p);
+  return `<div class="scrim" data-a="negClose"><div class="sheet gut negw" data-stop="1" role="dialog" aria-label="${NEGW[W.k]}">
+    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(p)}<div><div class="eyebrow">${NEGW[W.k]}</div><h2 class="sec">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.foreign?` · ${esc(p.nat||'')}`:''} · 현재 ${rp.cur!=null?rchip(rp.cur):'?'}</p></div></div><button class="x" data-a="negClose" aria-label="닫기">×</button></div>
+    <button class="btn small" data-a="negClose">‹ 선수 정보로</button>
+    <div class="negw-body">${negBody(W.k,p)}</div></div></div>`; }
+Object.assign(A,{ negOpen(v){ const [k,id]=v.split(':'); UI.negWin={k,id:+id}; renderSheet(); },
+  negClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.negWin=null; renderSheet(); render(); } });
 </script>
