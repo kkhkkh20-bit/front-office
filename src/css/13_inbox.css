@@ -78,3 +78,13 @@
   .ibx-tabs button{padding:10px 5px 9px;gap:4px}
   .ibx-tabs .ibl{display:none}.ibx-tabs .ibs{display:inline}
 }
+/* 날짜 묶음(접기는 단장만) */
+.ibx-g{border-bottom:1px solid var(--line)}
+button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:left;border:0;cursor:pointer}
+.ibx-car{width:12px;color:var(--muted)}
+.ibx-dn{margin-left:auto;font-weight:500;color:var(--dim)}
+.ibx-dn b{color:var(--acc,#3d8bfd)}.ibx-dn b.warn{color:var(--warn)}
+.ibx-g.fold button.ibx-day{opacity:.85}
+.ibx-guide{padding:24px 18px}
+.ibx-meta .ibx-need{color:var(--warn);font-weight:600}
+.continue.need{box-shadow:inset 0 0 0 2px var(--warn)}
