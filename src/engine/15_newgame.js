@@ -70,7 +70,7 @@ function claimTeam(userTid){ G.user=userTid; G.gmSince=G.year; G.myC=null; delet
   for(const p of Object.values(G.players)){ if(p.team!=null){ p.mor=clamp(Math.round(N(62,9)),30,88);} }
   addLog(`${tname(userTid)} 단장에 취임했습니다. ${OWNER[team(userTid).owner].msg}`); chron('join','단장 취임',null,userTid);
   mail('구단주실','구단주 서신',`${tname(userTid)}의 새 단장을 맡아 주셔서 감사합니다. ${OWNER[team(userTid).owner].msg} 기대 승률은 약 ${fmt3(team(userTid).expW)}입니다. 구단 운영을 믿고 맡기겠습니다.`,{kind:'구단주'});
-  planSup(); try{ ovrSnap(); growSnap(); }catch(e){}
+  planSup(); try{ ovrSnap(); growSnap(); rhSnap(); }catch(e){}
   try{ const b=budget(); const ci=capInfo(userTid); if(b.roomGoal<0||ci.over>0){ team(userTid).tight=G.year;
     mail('운영팀','재정 압박 구단입니다',`올해 예상 지출이 구단주가 정한 지원 한도를 ${money(-Math.min(0,b.roomGoal))} 넘습니다.${ci.over>0?` 연봉 총액(${money(ci.pay)})이 샐러리캡(${money(ci.cap)})도 ${money(ci.over)} 넘어 경쟁균형세가 붙습니다.`:''}\n\n이 구단의 첫 과제는 연봉 정리입니다. 고액 연봉 선수를 트레이드하거나, 외국인 선수 몸값을 낮추거나, 구단주에게 지원을 요청할 수 있습니다. 한도를 넘긴 채 시즌을 마치면 구단주 신뢰가 떨어집니다.`,{kind:'재정',acts:[{l:'재정 보기',a:'go',v:'club:fin'}]}); } }catch(e){}
   sendTut(); tutTick(); G.stops=[];

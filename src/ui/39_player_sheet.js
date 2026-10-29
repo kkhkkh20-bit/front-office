@@ -132,7 +132,7 @@ function renderSheet0(){
    ${!hasM&&!(p.team!=null&&p.team!==G.user)?actions:''}
    `:''}
    ${T==='abil'?`
-   ${injBox}${mgrOpinion(p)}${trackCard(p)}${detailCard(p)}${roleCard(p)}${trnCard(p)}${reportCard(p,true)}
+   ${injBox}${mgrOpinion(p)}${trackCard(p)}${detailCard(p)}${cmpCard(p)}${roleCard(p)}${trnCard(p)}${reportCard(p,true)}
    ${!p.isP?posCard(p):''}
    ${p.team===G.user&&!(p.joinY>G.year)?`<section class="card"><div class="row between"><span class="eyebrow">컨디션</span><span class="small muted">피로 ${Math.round(p.fat||0)} · ${fatText(p)}</span></div>${fatBar(p)}<p class="small">${l10Text(p)||'최근 1군 경기 기록이 없습니다.'}${p.isP?`</p><p class="small">투구 부하: ${esc(loadText(p))}`:''}</p><p class="small muted">연속 출장하면 피로가 쌓여 성적이 떨어지고 부상 위험이 커집니다. 감독은 지친 선수를 쉬게 합니다. ${p.isP?'투수는 투구 수만큼 지치고 체력(스태미나)이 좋을수록 빨리 회복합니다.':'포수는 더 빨리 지칩니다. 체력이 좋을수록 덜 지치고 빨리 회복하며, 시즌 후반 성적 하락도 적습니다.'}</p></section>`:''}
    ${growthCard(p)}

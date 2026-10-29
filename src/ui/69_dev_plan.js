@@ -33,7 +33,7 @@ function trnEnvBox(p){ const f=tbFactors(p,isRegular(p)?new Set([p.id]):null); c
     ['훈련 시설',`${esc(facEff(p).l)} · ${lv(f.fac,1.04,.97)}`],
     ['코치 수준',lv(f.coach,1.08,.97)],
     ['감독 육성 성향',m?`${esc(m.name)} ${m.youth}`:'감독 없음']];
-  return `<div class="trn-env"><b>성장 환경</b>${L.map(([k,v])=>`<div class="small"><span class="muted">${k}</span> ${v}</div>`).join('')}<div class="small muted">올해 일반 훈련 성장: ${tg>=3?'많이 쌓임':tg>=1.5?'보통':tg>0.3?'조금':'아직 거의 없음'}</div></div>`; }
+  return `<div class="trn-env"><b>성장 환경</b>${L.map(([k,v])=>`<div class="small"><span class="muted">${k}</span> ${v}</div>`).join('')}<div class="small muted">올해 일반 훈련 성장: ${tg>=1.2?'많이 쌓임':tg>=.6?'보통':tg>=.15?'조금':'아직 거의 없음'}</div></div>`; }
 /* 운영 > 육성 > 해외 연수 */
 function ovsBody(){ const y=G.year; const T={big:'크게 늘어 옴',good:'성장 확인',flat:'변화 없음',form:'폼 흐트러짐',inj:'부상'};
   const fk=G.fall&&G.fall.y===y?G.fall.k:undefined; const fo=fallOpen();
@@ -107,3 +107,9 @@ function futSquadView(tid){ const own=tid===G.user; const d=depth(tid); const vi
   <section class="card"><h2 class="sec">2군 투수 ${P.length}명</h2><div class="eyebrow">선발${sp.some(p=>rpPlanOf(tid,p)==='sp2')?' (수업 = 2군 선발 수업)':''}</div>${spRows||'<p class="small muted">없습니다.</p>'}<div class="eyebrow">불펜</div>${rpRows||'<p class="small muted">없습니다.</p>'}</section>
   ${own&&d.futB.concat(d.futP).some(p=>p.ys)?`<section class="card"><h2 class="sec">육성선수</h2>${d.futB.concat(d.futP).filter(p=>p.ys).map(p=>R(p,'육성')).join('')}</section>`:''}
   ${away.length?`<section class="card"><h2 class="sec">부상·재활</h2><p class="small">${away.map(p=>`${esc(p.name)}(${outTxt(p)})`).join(', ')}</p></section>`:''}`; }
+/* 지난 시즌과 비교: 무엇이 올랐고 내렸는지만(화살표) */
+function cmpCard(p){ if(p.team!==G.user||p.prospect||!p.rh)return ''; const y0=p.rh[G.year-1]?G.year-1:p.rh[G.year]?G.year:null; if(y0==null)return ''; const R0=p.rh[y0];
+  const ks=(p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def']).filter(k=>R0[k]!=null);
+  const ar=k=>{ const d=p.r[k]-R0[k]; return d>=.5?'<em class="gr up">▲</em>':d<=-.5?'<em class="gr dn">▼</em>':'<em class="gr">-</em>'; };
+  return `<section class="card"><div class="row between"><span class="eyebrow">${y0===G.year?'올 시즌 시작과 비교':'지난 시즌 시작과 비교'}</span><span class="small muted">${y0}년 1월 기준</span></div>
+  <div class="cmpt">${ks.map(k=>`<div><span>${OVS_TOOLN[k]}</span>${ar(k)}</div>`).join('')}</div></section>`; }

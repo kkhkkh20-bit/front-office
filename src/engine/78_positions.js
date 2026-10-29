@@ -52,3 +52,5 @@ function futLineupE(tid,list){ const used=new Set(), ln={};
   return ln; }
 function futUse(p,pos,g){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0,pos:{}}; p.fuse.g+=g; if(pos)p.fuse.pos[pos]=(p.fuse.pos[pos]||0)+g; }
 function futText(p){ const u=p.fuse&&p.fuse.y===G.year?p.fuse:null; if(!u||!u.g)return ''; const L=Object.entries(u.pos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${POSK[k]||k} ${n}`); return `2군 ${u.g}경기${L.length?' · '+L.join(' · '):''}`; }
+/* 해마다 1월 1일(겨울 성장 뒤) 능력치를 남겨 둔다: 선수 화면에서 지난 시즌과 비교 */
+function rhSnap(){ const y=G.year; for(const p of Object.values(G.players)){ if(p.team==null||p.prospect)continue; p.rh=p.rh||{}; p.rh[y]=Object.assign({},p.r); for(const k of Object.keys(p.rh))if(+k<y-2)delete p.rh[k]; } }
