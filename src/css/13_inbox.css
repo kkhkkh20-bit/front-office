@@ -101,3 +101,14 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-down{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:12px;box-shadow:0 4px 14px #0006;cursor:pointer}
 .ibx-down[hidden]{display:none}
 .back2ib{margin-right:10px;border-color:var(--team-hi,#4fa3ff)}
+
+/* 고른 소식: 목록에서 분명히 보이게 */
+.ibr.cur{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 22%,var(--panel2,#1d2730));border-left:3px solid var(--team-hi,#4fa3ff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--team-hi,#4fa3ff) 55%,transparent)}
+.ibr.cur .ibr-s,.ibr.cur .ibr-from{color:#fff}
+.ibr.flash{animation:ibFlash .9s ease-out}
+@keyframes ibFlash{0%{box-shadow:inset 0 0 0 2px var(--team-hi,#4fa3ff),0 0 14px color-mix(in srgb,var(--team-hi,#4fa3ff) 60%,transparent)}100%{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--team-hi,#4fa3ff) 55%,transparent)}}
+@media (prefers-reduced-motion:reduce){ .ibr.flash{animation:none} }
+
+.ibx-up{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:3;border:1px solid var(--acc,#3d8bfd);background:#0f1720;color:#fff;border-radius:999px;padding:5px 12px;font:600 12px inherit;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.ibx-ur b{color:var(--acc,#3d8bfd)}
+.ibr:not(.unread) .ibr-s{color:var(--mut,#8b97a3)}

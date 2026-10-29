@@ -404,3 +404,33 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .trn-bar span{margin-right:auto;font-size:13px}
 .negw-body{margin-top:10px;display:flex;flex-direction:column;gap:10px}
 .negdoor{margin-top:6px}
+
+/* 날짜가 넘어가는 동안 아직 안 지나간 날의 결과·소식은 숨겼다가 차례로 보인다 */
+.sb-i[data-tkd]{visibility:hidden}
+.ibx-g[data-tkd]{display:none}
+.tk-in{animation:tkIn .35s ease-out}
+@keyframes tkIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.dt-c em.rs{opacity:0;transition:opacity .2s}
+.dt-c.done em.rs{opacity:1}
+@media (prefers-reduced-motion:reduce){ .tk-in{animation:none} }
+
+/* 홈 순위 띠 */
+.stb{padding:10px 12px;margin:0 0 12px}
+.stb-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}.stb-h .sec{margin:0}.stb-h .btn{margin-left:auto}
+.stb-g{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+.stb-c{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.02);color:inherit;font:inherit;cursor:pointer;min-width:0}
+.stb-c b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stb-r{font:700 11px var(--f-num,inherit);color:var(--mut,#8b97a3)}
+.stb-wl{font-size:11px}.stb-gb{font-size:10px;color:var(--mut,#8b97a3)}
+.stb-c.me{border-color:var(--acc,#e2434b);background:rgba(226,67,75,.14)}.stb-c.me .stb-r{color:#fff}
+.stb-c.cut::after{content:'';position:absolute;right:-3px;top:4px;bottom:4px;border-right:2px dashed rgba(255,255,255,.35)}
+@media (max-width:760px){ .stb-g{grid-template-columns:repeat(5,minmax(0,1fr))} .stb-c.cut::after{display:none} .stb-c:nth-child(-n+5){box-shadow:inset 0 -2px 0 rgba(63,208,127,.5)} }
+
+/* 기자 목록: 누르면 기자 카드 */
+.prout2{margin:8px 0}.prout2-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.prr-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.prr{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.02);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.prr:hover{border-color:var(--acc,#e2434b)}.prr .av{width:30px;height:30px;flex:none}
+.prr-t{display:flex;flex-direction:column;min-width:0;flex:1}.prr-t i{font-style:normal;font-size:11px;color:var(--mut,#8b97a3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prr-r{font-weight:700}.prr-r.good{color:#3fd07f}.prr-r.bad{color:#ff6b6b}
+.ppl{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}

@@ -197,13 +197,13 @@ function homeView(){
   const o=UI.open.homeMore??false;
   const more=moreBody?`<details class="moreg" data-k="homeMore" ${o?'open':''}><summary><span>더 보기</span><i>우리 팀 주요 선수 · 구단 상태 · 일정</i></summary><div class="moreb">${moreBody}</div></details>`:'';
   const gh=t=>`<h2 class="grp-t">${t}</h2>`;
-  if(wide())return `${stripBar()}${dashTiles()}<div class="homeg"><div class="col">${gh('오늘')}${today}</div><div class="col">${gh('리그 현황')}${league}${more}</div></div>`;
+  if(wide())return `${stripBar()}${dashTiles()}${stBand()}<div class="homeg"><div class="col">${gh('오늘')}${today}</div><div class="col">${gh('리그 현황')}${league}${more}</div></div>`;
   const todo=[cerHomeCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),todoCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean).join('');
   const games=[resultHome(),liveCard(),digestCard(),nextCard(),upcomingGames(10)].filter(Boolean).join('');
   if(G.res&&UI._hres!==G.res.i+':'+G.day){ UI._hres=G.res.i+':'+G.day; UI.it=UI.it||{}; UI.it.home='game'; } /* 경기가 막 끝나면 경기 탭을 먼저 */
   const ht=inTabs('home',[['today','할 일'],...(games?[['game','경기']]:[]),['league','리그'],['team','우리 팀']]);
   const prep=G.fd&&G.fd.done&&G.gmSince===G.year&&G.cal&&G.day<G.cal.open?fdSteps(3):''; /* 창단 첫해 개막 전: 진행 표시 3단계 */
-  return `${prep}${stripBar()}${champHomeCard()}${ht.cur==='today'?dashTiles():''}${ht.bar}${ht.cur==='today'?todo:ht.cur==='game'?games:ht.cur==='league'?[miniStand(),mvHomeCard(),newsCard()].filter(Boolean).join(''):[desk,teamIdCard(),formCard(),myLeaders(),clubCard()].filter(Boolean).join('')}`;
+  return `${prep}${stripBar()}${champHomeCard()}${ht.cur==='today'?stBand()+dashTiles():''}${ht.bar}${ht.cur==='today'?todo:ht.cur==='game'?games:ht.cur==='league'?[miniStand(),mvHomeCard(),newsCard()].filter(Boolean).join(''):[desk,teamIdCard(),formCard(),myLeaders(),clubCard()].filter(Boolean).join('')}`;
 }
 
 

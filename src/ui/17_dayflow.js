@@ -13,7 +13,7 @@ function stripBar(){ // 지난 3경기 + 다음 2경기
   const past=(G.sea.ulog||[]).slice(-3); const nx=per==='post'?nextGames(2):projStarters(G.user,2);
   if(!past.length&&!nx.length)return '';
   const pc=x=>{ const home=x.h===G.user; const op=home?x.a:x.h; const ms=home?x.hs:x.as, os=home?x.as:x.hs; const gi=G.games.findIndex(g=>g.day===x.d&&(g.home===G.user||g.away===G.user));
-    return `<button class="sb-i ${x.res==='승'?'w':x.res==='패'?'l':''}" ${gi>=0?`data-a="openGame" data-v="${gi}"`:''}><span class="sb-d">${dsh(x.d)}</span><b>${x.res}</b><span class="num">${ms}:${os}</span><span>${home?'vs':'@'} ${tshort(op)}</span></button>`; };
+    return `<button class="sb-i ${x.res==='승'?'w':x.res==='패'?'l':''}"${tkAt(x.d)} ${gi>=0?`data-a="openGame" data-v="${gi}"`:''}><span class="sb-d">${dsh(x.d)}</span><b>${x.res}</b><span class="num">${ms}:${os}</span><span>${home?'vs':'@'} ${tshort(op)}</span></button>`; };
   const nc=x=>{ const os=x.sp!==undefined?oppSP(x.op,x.d):null; return `<div class="sb-i nx"><span class="sb-d">${dsh(x.d)} ${WD[dobj(x.d).w]}</span><span>${x.home?'vs':'@'} ${badge(x.op,14)}${tshort(x.op)}</span>${x.sp!==undefined?`<span class="sb-sp">${x.sp?esc(x.sp.name):'미정'} <i>vs</i> ${os?esc(os.name):'미정'}</span>`:''}</div>`; };
   return `<div class="sbar" aria-label="지난 경기와 다음 경기">${past.map(pc).join('')}${nx.length?'<span class="sb-sep"></span>':''}${nx.map(nc).join('')}</div>`;
 }

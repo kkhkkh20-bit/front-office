@@ -78,6 +78,7 @@ const A={
   mailJump(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; UI.ibSel=v; UI._ibToCur=true; UI._ibDay=G.day; if(!wide()){ if(!UI.ibOpen)UI.ibY=window.scrollY; UI.ibOpen=v; } UI.tab='inbox'; save(); render(); if(!wide())window.scrollTo(0,0); },
   ibBack(){ UI.ibOpen=null; render(); },
   ibMore(){ UI.ibN=(UI.ibN||80)+80; UI._ibLS=0; UI._ibEnd=false; render(); },
+  ibUnreadGo(){ const u=G.mail.filter(m=>!m.read).slice().reverse(); const n=ibNeedList(); const m=(n[0]||u[0]); if(!m)return toast('안 읽은 소식이 없습니다.'); UI.mf='all'; const F=ibFolds(); if(F[m.day])delete F[m.day]; A.mailJump(m.id); },
   ibReturn(){ const id=UI.fromMail; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; if(id&&G.mail.some(m=>m.id===id)){ UI.ibSel=id; UI._ibToCur=true; if(!wide())UI.ibOpen=id; } closeSheets(); render(); },
   inbox(){ UI.fromMail=null; UI.tab='inbox'; UI._ibFirst=true; UI.ibOpen=null; closeSheets(); render(); },
   ibFold(v){ const F=ibFolds(); const d=+v; if(F[d])delete F[d]; else F[d]=true; save(); render(); },
@@ -87,7 +88,7 @@ const A={
   itab(v){ const [k,t]=v.split(':'); UI.it=UI.it||{}; UI.it[k]=t; render(); },
   pgGo(v){ const i=v.lastIndexOf(':'); const k=v.slice(0,i), n=+v.slice(i+1); UI.pg=UI.pg||{}; UI.pg[k]=Math.max(0,n); render(); const el=document.querySelector(`[data-pg="${k}"]`); if(el)el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); },
   help(){ const on=!helpOn(); try{ localStorage.setItem('danjang-help',on?'1':'0'); }catch(e){} render(); try{ toast(on?'설명을 화면에 펼쳐 보입니다.':'설명을 접었습니다. 제목 옆 i를 누르면 볼 수 있습니다.'); }catch(e){} },
-  nk(v){ UI.nk=v; UI.nseg='news'; A.go('league:news'); },
+  nk(v){ UI.nk=v; A.go('club:news'); },
   recGo(v){ const [seg,k]=v.split(':'); UI.lrec=seg; UI.ls=UI.ls||{}; UI.ls[seg]={k,dir:['era','whip','bb9'].includes(k)?1:-1}; A.go('league:rec'); },
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
   mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(a&&A[a.a])A[a.a](a.v); else render(); if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
@@ -95,7 +96,7 @@ const A={
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
   goWork(v){ const g=GW[v]||['home']; A.go(g.join(':')); },
-  go(v){ v=String(v); UI.it=UI.it||{}; if(v==='staff:mil'||v==='roster:mil'){ UI.it.roster='mil'; UI.rosterTeam=null; return A.tab('roster'); } if(v==='club:set'||v==='club:auth')v='cfg:'+v.split(':')[1]; if(v==='train'||v==='train:camp'||v==='train:dev'||v==='train:lead')v='staff:'+(v.split(':')[1]||'camp'); else if(v==='staff:fac'||v==='train:fac'){ UI.it.inv='train'; v='club:inv'; } else if(v==='club:stad'){ UI.it.inv='home'; v='club:inv'; } else if(v==='club:bus'){ UI.it.inv='bus'; v='club:inv'; } if(v==='scout'||v==='scout:draft')v='transfer:draft'; else if(v==='scout:scouts')v='staff:scouts'; else if(v==='scout:intl'){ UI.it=UI.it||{}; UI.it.fview='net'; UI.it.fviewa='net'; v='transfer:foreign'; }
+  go(v){ v=String(v); UI.it=UI.it||{}; if(v==='league:news')v='club:news'; if(v==='league:fans')v='club:fans'; if(v==='staff:mil'||v==='roster:mil'){ UI.it.roster='mil'; UI.rosterTeam=null; return A.tab('roster'); } if(v==='club:set'||v==='club:auth')v='cfg:'+v.split(':')[1]; if(v==='train'||v==='train:camp'||v==='train:dev'||v==='train:lead')v='staff:'+(v.split(':')[1]||'camp'); else if(v==='staff:fac'||v==='train:fac'){ UI.it.inv='train'; v='club:inv'; } else if(v==='club:stad'){ UI.it.inv='home'; v='club:inv'; } else if(v==='club:bus'){ UI.it.inv='bus'; v='club:inv'; } if(v==='scout'||v==='scout:draft')v='transfer:draft'; else if(v==='scout:scouts')v='staff:scouts'; else if(v==='scout:intl'){ UI.it=UI.it||{}; UI.it.fview='net'; UI.it.fviewa='net'; v='transfer:foreign'; }
     { const [t0,s0]=String(v).split(':'); const par=ALIAS[t0]&&ALIAS[t0][s0]; UI.it=UI.it||{}; if(par)UI.it['mg_'+t0+'_'+par]=s0; }
     { const IG={'club:mkt':['club:fin','fin','bud'],'league:abroad':['league:hist','histv','abroad'],'league:teams':['league:stand','stand','map'],'trade:find':['trade:market','mkv','find'],'trade:req':['trade:market','mkv','req'],'transfer:watch':['transfer:foreign','fview','watch'],'transfer:net':['transfer:foreign','fview','net'],'league:find':['trade:market','mkv','find']}; if(IG[v]){ UI.it=UI.it||{}; UI.it[IG[v][1]]=IG[v][2]; v=IG[v][0]; } }
     if(v==='roster:plan'){ UI.it=UI.it||{}; UI.it.gl='plan'; v='roster:glance'; }
@@ -130,7 +131,7 @@ const A={
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='train'){ A.go('staff:camp'); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
   start(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='inbox'; UI._ibFirst=true; save();render();window.scrollTo(0,0);}, /* 소식함이 게임의 중심: 시작하면 소식함 */
-  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
+  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; UI._tk={show:d0,until:Date.now()+3000}; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
     if(G.res||G.live){ closeSheets(); UI.tab='home'; UI.mail=null; } else if(G.stops.length){ /* 중요한 소식으로 멈추면 홈이 아니라 소식함에서 그 소식을 연다 */ const sm=G.stops.find(s=>s&&s.id&&G.mail.some(m=>m.id===s.id)); closeSheets(); UI.mail=null; if(sm){ UI.mf='all'; UI.tab='inbox'; UI.ibSel=sm.id; UI._ibToCur=true; sm.read=true; if(!wide())UI.ibOpen=sm.id; } else UI.tab='inbox'; } else { /* 멈출 소식이 없어도 소식함으로: 새 소식(한 주 정리 포함)을 거기서 본다 */ closeSheets(); UI.mail=null; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; UI._ibEnd=true; UI.ibSel=null; UI.ibOpen=null; } save(); render(); window.scrollTo(0,0); },
   calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
   calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
@@ -265,6 +266,7 @@ const A={
   nseg(v){ UI.nseg=v; UI.fbo=null; render(); },
   ibOld(){ UI.ibOld=!UI.ibOld; render(); },
   milAll(){ UI.milAll=!UI.milAll; render(); },
+  fbOpen(v){ UI.fbo=v; UI.fbf='all'; A.go('club:fans'); },
   fbo(v){ UI.fbo=UI.fbo===v?null:v; render(); },
   fbf(v){ UI.fbf=v; UI.fbo=null; render(); },
   nco(v){ UI.nco=UI.nco||{}; UI.nco[v]=!UI.nco[v]; render(); },

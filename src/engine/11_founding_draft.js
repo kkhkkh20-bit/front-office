@@ -115,7 +115,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
   stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 감독을 먼저 선임하고, 감독과 상의해 외국인 선수를 뽑으세요.`); }
 /* 창단 직후 기본 운영안: 의무·스카우트·2군 연수를 비서가 기본값으로 채워 둔다. 단장은 감독·외국인 선수와 전력 보강에 집중한다 */
 function foundDefaults(){ const done=[], acts=[];
-  if(!G.medSet){ G.medSet=true; done.push(`의무: 부상 방지 ${G.med.prev}단계 · 병원 제휴 ${G.med.hosp==='none'?'없음':G.med.hosp}`); acts.push({l:'의무 운영',a:'goWork',v:'부상방지·병원'}); }
+  if(!G.medSet){ G.medSet=true; done.push(`부상 관리: 부상 방지 ${G.med.prev}단계 · 병원 제휴 ${G.med.hosp==='none'?'없음':G.med.hosp}`); acts.push({l:'의무 운영',a:'goWork',v:'부상방지·병원'}); }
   const am=G.scouts.filter(s=>(s.role||'am')==='am'); const have=new Set(am.map(s=>s.region)); const miss=REG.filter(r=>!have.has(r));
   for(const r of miss){ if(G.scouts.length>=SCOUT_MAX)break; const sc=mkScout(2); sc.region=r; sc.role='am'; sc.since=-999; G.scouts.push(sc); done.push(`스카우트: ${r} 담당 ${sc.name} 채용(연 ${money(sc.sal)})`); }
   if(miss.length)acts.push({l:'스카우트 팀',a:'goWork',v:'스카우트팀'});

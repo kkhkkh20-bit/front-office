@@ -21,3 +21,9 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
 function coreIds(){ return playersOf(G.user).filter(p=>!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,13).map(p=>p.id); }
 /* FM식 별점: 100점 척도 → 별 5개(반 개 단위) */
 function starsH(v){ if(v==null||isNaN(v))return ''; const n=clamp(Math.round((v-30)/14*2)/2,.5,5); return `<span class="stars" title="별 ${n}개" aria-label="별 ${n}개"><span class="st-b">★★★★★</span><span class="st-f" style="width:${n/5*100}%">★★★★★</span></span>`; }
+
+/* 홈 순위 띠: 10개 구단 순위를 한 줄(좁으면 두 줄)로. 점선 앞 5개 팀이 가을야구 */
+function stBand(){ const {order,live}=standOrder(); if(!live||!order||!order.length)return ''; const top=order[0]; const me=order.findIndex(o=>o.tid===G.user);
+  const c5=order[4]; const my=order[me]; const gap=me>=5&&c5?`5위와 ${gbOf(c5,my).toFixed(1)}경기`:me>=0&&order[5]?`6위와 ${(-gbOf(order[5],my)).toFixed(1)}경기 앞`:'';
+  const cells=order.map((o,i)=>`<button class="stb-c${o.tid===G.user?' me':''}${i===4?' cut':''}" data-a="lteamGo" data-v="${o.tid}"><span class="stb-r">${i+1}</span>${badge(o.tid,20)}<b>${esc(team(o.tid).nick)}</b><span class="stb-wl num">${o.w}-${o.l}${o.t?`-${o.t}`:''}</span><span class="stb-gb num">${i?gbStr(gbOf(top,o)):'선두'}</span></button>`).join('');
+  return `<section class="card stb"><div class="stb-h"><h2 class="sec">현재 순위</h2><span class="small muted">${me>=0?`우리 ${me+1}위${gap?' · '+gap:''}`:''}</span><button class="btn small" data-a="go" data-v="league:stand">순위표</button></div><div class="stb-g">${cells}</div></section>`; }

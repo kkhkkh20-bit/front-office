@@ -97,6 +97,12 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     fx=['친분이 높을수록 같은 선수를 덜 비싸게 넘깁니다','친분 70 이상이면 월 협상 1회 추가, 30 미만이면 1회 감소','친분 35 미만이면 상대가 원하는 것을 읽기 어렵습니다'];
     const tr=(G.trades||[]).filter(z=>z.with===tid).slice(-3).reverse(); recent=tr.map(z=>`<div class="ps-r small">${z.y} ${dsh(z.d)} · 보냄 ${esc(z.give.join(', ')||'없음')} ↔ 받음 ${esc(z.get.join(', ')||'없음')}</div>`).join('');
     acts=[btn('트레이드 협상','tpartnerGo',tid,1),`<button class="btn" data-a="gmCall" data-v="${tid}" ${c.call!=null&&c.call>G.day-14?'disabled':''}>안부 연락</button>`,`<button class="btn" data-a="gmMeal" data-v="${tid}" ${c.meal!=null&&c.meal>G.day-30?'disabled':''}>식사 (1천만)</button>`]; }
+  else if(k.startsWith('rep:')){ const r=repById(k.slice(4)); if(r){ const O=OUTLET_DEF[r.outlet]||{};
+    info=`<p class="small">${esc(r.outlet)} · ${OUTLET_LEAN[O.lean]||''} · ${esc(O.d||'')}</p><p class="small">${PR_STYLE[r.style].l}: ${esc(PR_STYLE[r.style].d)} · 주로 ${esc(r.field)} · 영향력 ${'★'.repeat(r.inf)}</p>${repActs(r)}`;
+    moves=['인터뷰 요청에 응하고 성실하게 답하면 오르고, 거절·회피하면 내려갑니다','단독을 주면 크게 오르고, 다른 매체 기자는 조금 내려갑니다'];
+    fx=['친분이 높을수록 우리 기사를 호의적으로 씁니다',`친분 ${PP_MIN_REL} 미만이면 언론 플레이를 거절합니다`,'관계 70 이상이면 인터뷰 때 다른 구단 동향을 귀띔해 줍니다'];
+    recent=(G.news||[]).filter(n=>n.o===r.outlet).slice(0,3).map(n=>`<div class="ps-r small">${dsh(n.d)} · ${esc(n.t)}</div>`).join('');
+    acts=[btn('기자 목록','go','club:media')]; } }
   else if(k==='fan'){ const g=G.goals;
     info=`<p>팬 여론 ${x.rel} · ${x.lab}. 구단 인기 ${Math.round(t.pop*100)}.</p>${g&&g.y===G.year?`<p class="small">구단주 목표: 여론 ${g.fan} 이상</p>`:''}`;
     moves=['승패와 연승·연패','트레이드·FA 평가 기사, 신인 활약, 외국인 부진','콜업 여론 같은 결정 이벤트, 팬 행사'];
