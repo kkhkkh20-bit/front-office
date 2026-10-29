@@ -462,3 +462,16 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .tbt td{vertical-align:middle}.tbl{padding:5px 0;border-bottom:1px solid #ffffff0d;font-size:13px}
 
 .trn-gr{color:var(--mut,#8b97a3);margin-left:6px}.trn-gr b{font-weight:700}.trn-gr .gA{color:#3fd07f}.trn-gr .gB{color:#8fd16a}.trn-gr .gC{color:#e8edf2}.trn-gr .gD{color:#f0a020}.trn-gr .gE{color:#ff6b6b}
+
+/* 드래프트 상황판: 휴대폰에서는 한 줄 요약, 맡기기는 눌러서 펼침, 통째로 접기 */
+.fdm1,.tk-delb,.tk-minb{display:none}
+@media (max-width:700px){
+  .tk{gap:3px;padding:0 0 4px}
+  .tk1{font-size:13px;gap:4px 6px}.tk1>.muted{display:none}
+  .tk-delb{display:inline-flex}.tk1 .tk-del{display:none}.tk1 .tk-del.open{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+  .tk-minb{display:inline-flex;margin-left:auto;border:1px solid var(--line);background:none;color:var(--mut,#9aa7b4);border-radius:6px;font:inherit;font-size:12px;padding:3px 8px}
+  .fdm3{display:none}.fdm1{display:block;font-size:12px;color:var(--mut,#9aa7b4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fdm1 b{color:var(--ink,#e8edf2);font-size:13px}.fdm1 b.good{color:var(--good,#3fb871)}.fdm1 b.warn{color:var(--warn,#e0a23a)}.fdm1 b.bad{color:var(--bad,#e5534b)}
+  .tk2{font-size:12px;min-height:28px;padding:3px 7px;white-space:nowrap;overflow:hidden}.tk2 .muted{overflow:hidden;text-overflow:ellipsis}
+  .tk-log{font-size:12px}
+  .tk.min>:not(.tk1){display:none}
+}

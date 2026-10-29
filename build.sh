@@ -24,5 +24,7 @@ cat src/engine/*.js > dist/engine.js   # 노드 시뮬레이션 검사용 엔진
   cat src/gfx/kart.js src/gfx/campus.js src/gfx/iso.js
   cat src/ui/*.js
   echo '</script>'
+  echo '</body>'
+  echo '</html>'
 } > index.html
 echo "index.html 생성: $(wc -c < index.html) bytes"
