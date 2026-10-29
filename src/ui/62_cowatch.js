@@ -19,7 +19,7 @@ function cwSheet(){ const S=G.cwS; if(!S)return ''; const g=cwGame(S); const W=c
   /* (a) 건의 결과 */
   if(S.sugg&&S.sugg.k!=='none'){ F.push(cwBubble('me',`${S.sugg.l}을(를) 건의드립니다.`)); F.push(cwBubble('them',S.sugg.say,W.av)); F.push(cwBubble('sys',`${S.sugg.txt}${S.sugg.mod?` (오늘 경기 보정 ${S.sugg.mod>0?'+':''}${Math.round(S.sugg.mod*100)}%p 반영)`:''}`)); }
   /* (b) 구단주 지시: 건의를 마친 뒤 보여 준다 */
-  const O=S.ord; if(S.done&&O){ F.push(cwBubble('them',O.say,W.av)); F.push(`<div class="cw-ord"><span class="eyebrow">구단주 지시</span><b>${esc(O.t)}</b><p>${esc(O.crit)}</p><p class="cw-note">달성하면 신뢰 +2 · 친밀도 +3, 못 하면 신뢰 -1${O.k==='young'?' · 감독과의 유망주 기회 합의(스태프 → 감독)나 콜업 요청으로 도울 수 있습니다':O.k==='att'?' · 입장료는 구장 화면에서 바꿀 수 있습니다':O.k==='ext'?' · 선수 정보의 관리 탭에서 다년계약을 제안합니다':''}</p></div>`); }
+  const O=S.ord; if(S.done&&O){ F.push(cwBubble('them',O.say,W.av)); F.push(`<div class="cw-ord"><span class="eyebrow">구단주 지시</span><b>${esc(O.t)}</b><p>${esc(O.crit)}</p><p class="cw-note">달성하면 신뢰 +2 · 친밀도 +3, 못 하면 신뢰 -1${O.k==='young'?' · 감독과의 유망주 기회 합의(스태프·육성 → 감독)나 콜업 요청으로 도울 수 있습니다':O.k==='att'?' · 입장료는 구장 화면에서 바꿀 수 있습니다':O.k==='ext'?' · 선수 정보의 관리 탭에서 다년계약을 제안합니다':''}</p></div>`); }
   else if(S.done&&!O&&cwOrd()){ F.push(cwBubble('them',`지난번에 말한 것(${cwOrd().t})부터 잘 챙기시오.`,W.av)); }
   let ctl='';
   if(!S.done){ const L=cwSuggOpts(S); const mod=cwMod(S);

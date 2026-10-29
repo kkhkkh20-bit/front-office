@@ -1,5 +1,6 @@
 /* ---------- 스태프·육성 ---------- */
-function trainView(){ const s=curSub('train');
+function trainView(){ /* 예전 '훈련' 메뉴: 스태프·육성 > 훈련·육성으로 옮김 */ const s=curSub('train'); UI.tab='staff'; UI.sub=UI.sub||{}; UI.sub.staff=s; UI.it=UI.it||{}; UI.it.mg_staff_train=s; return staffView();
+  /* 아래는 쓰지 않음 */
   const H={camp:campView,dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">${(G.ovs||[]).length?`해외 연수 ${(G.ovs||[]).length}명`:''}</span>`),lead:leadCard};
   return subTabs('train')+(H[s]||campView)(); }
 function staffView(){
@@ -11,6 +12,7 @@ function staffView(){
     camp:campView,
     data:dataPage,
     fac:facView,
+    lead:leadCard,
     mil:milView,
     med:()=>csec('부상 방지·병원',medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
   return subTabs('staff')+h;
