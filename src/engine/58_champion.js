@@ -47,6 +47,7 @@ function faAppeal(p,tid){ const C=faCtx(); const P=[]; const t=team(tid);
   const r=C.rank[tid]||5.5; const cont=.04*(5.5-r)/4.5*(p.age>=30?1.6:1); P.push(['우승 가능성',cont]);
   let pt=0; const s=C.slot[tid]||{}; if(p.isP){ if(isSPr(p))pt=spV(p)>s.SP5+1?.04:spV(p)<s.SP5-6?-.03:0; } else { const inc=s[p.pos]; pt=inc==null?.04:ovr(p)>inc+2?.04:ovr(p)<inc-5?-.05:0; } P.push(['주전 기회',pt*(p.age<=29?1.3:1)]);
   if(p.region&&t.region===p.region)P.push([`연고(${p.region} 출신)`,.06]);
+  { const fv=ppFond(p,tid); if(fv)P.push(['단장의 공개 구애',fv/250]); }
   const f=1+sum(P.map(x=>x[1])); return {f:clamp(f,.8,1.3),parts:P.filter(x=>Math.abs(x[1])>=.005)}; }
 /* 연고 출신 스타: 구단 연고 지역 출신 주전급(능력 64 이상)이 있으면 팬 인기가 더 오른다(최대 +0.03) */
 function localStarPop(tid){ const t=team(tid); if(!t.region)return 0; const n=playersOf(tid).filter(p=>!p.foreign&&p.region===t.region&&ovr(p)>=64).length; return Math.min(.03,n*.008); }

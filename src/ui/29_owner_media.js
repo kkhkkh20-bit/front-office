@@ -32,9 +32,9 @@ function mediaView(){
   prInit(); const P=G.pr; const f=Math.round(P.fan), pr=Math.round(P.press);
   const hist=P.hist.slice(-12);
   const chart=hist.length?`<div class="prchart">${hist.map(x=>`<div><i class="f" style="height:${x.fan*.8}px"></i><i class="p" style="height:${x.press*.8}px"></i><span>${x.m.split('.')[1]}</span></div>`).join('')}</div><p class="small muted"><span class="lg f"></span>팬 여론 <span class="lg p"></span>언론 논조 (월말 기준)</p>`:'';
-  const items=(G.news||[]).slice(0,3).map(n=>`<div class="news ${n.v>=2?'pos':n.v<=-2?'neg':''}"${n.ref!=null&&G.players[n.ref]?` data-a="player" data-v="${n.ref}" role="button" tabindex="0"`:''}><div class="row between"><span class="small muted">${esc(n.o)} · ${dsh(n.d)}</span><span class="tone">${n.v>=2?'호평':n.v>0?'우호':n.v<=-2?'혹평':n.v<0?'비판':'중립'}</span></div><b>${lk(n.t)}</b><p class="small">${lk(n.b)}</p></div>`).join('');
+  const items=(G.news||[]).slice(0,3).map(n=>`<div class="news ${n.v>=2?'pos':n.v<=-2?'neg':''}"${n.ref!=null&&G.players[n.ref]?` data-a="player" data-v="${n.ref}" role="button" tabindex="0"`:''}><div class="row between"><span class="small muted">${esc(n.o)}${n.by?` ${esc(n.by)} 기자`:''} · ${dsh(n.d)}</span><span class="tone">${n.v>=2?'호평':n.v>0?'우호':n.v<=-2?'혹평':n.v<0?'비판':'중립'}</span></div><b>${lk(n.t)}</b><p class="small">${lk(n.b)}</p></div>`).join('');
   return csec('여론 현황',`<dl class="tsum"><div><dt>팬 여론</dt><dd class="num">${f}</dd>${gauge(f,40,60)}</div><div><dt>언론 논조</dt><dd class="num">${pr}</dd>${gauge(pr,40,60)}</div><div><dt>구단 인기</dt><dd class="num">${Math.round(team(G.user).pop*100)}</dd></div></dl>
     ${chart}<p class="small muted">팬 여론은 관중 수입과 광고·상품 수입을 움직이고, 언론 논조는 스폰서와 구단주 평가에 영향을 줍니다. 승패, 연승·연패, 트레이드·FA 평가, 신인 활약, 외국인 부진, 감독·선수의 불만 표출이 기사가 됩니다.</p>`)
-   +csec('최근 우리 구단 기사',items?`<div class="newslist">${items}</div>`:'<p class="small muted">아직 기사가 없습니다.</p>',`<button class="btn small" data-a="go" data-v="league:news">기사 전체 보기</button>`);
+   +pressCards()+csec('최근 우리 구단 기사',items?`<div class="newslist">${items}</div>`:'<p class="small muted">아직 기사가 없습니다.</p>',`<button class="btn small" data-a="go" data-v="league:news">기사 전체 보기</button>`);
 }
 

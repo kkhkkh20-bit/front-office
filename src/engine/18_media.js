@@ -3,11 +3,13 @@
 const OUTLETS=['스포츠한빛','데일리 베이스볼','야구일보','더그아웃 매거진','팬 커뮤니티'];
 function prInit(){ if(!G.pr)G.pr={fan:55,press:50,hist:[]}; if(!G.news)G.news=[]; if(!G.ownerLog)G.ownerLog=[]; }
 function news(kind,title,body,tone,o){ prInit(); o=o||{};
-  const outlet=o.outlet||(kind==='팬'?'팬 커뮤니티':OUTLETS[Math.floor(u01('out'+title,G.day)*4)]);
+  const outlet=o.outlet||(kind==='팬'?'팬 커뮤니티':outletPick(title)); /* 영향력이 큰 매체가 더 자주 쓴다 */
   if((G.news||[]).some(x=>x.t===title&&G.day-x.d<30))return null; /* 같은 제목 기사는 한 달 안에 다시 내지 않는다 */
   const it={d:G.day,o:outlet,t:title,b:body,v:tone,k:kind,ref:o.ref??null,id:(G.newsSeq=(G.newsSeq||0)+1)};
+  if(o.by)it.by=o.by; else { const rp0=kind==='팬'?null:outletRep(outlet); if(rp0)it.by=rp0.name; }
   G.news.unshift(it); if(G.news.length>80)G.news.length=80;
-  G.pr.press=clamp(G.pr.press+tone*1.7,0,100); G.pr.fan=clamp(G.pr.fan+tone*(o.fanW??1),0,100);
+  const om=kind==='팬'?1:outletMul(outlet,tone); /* 비판 매체는 나쁜 소식을, 우호 매체는 좋은 소식을 키운다. 영향력이 클수록 크게 */
+  G.pr.press=clamp(G.pr.press+tone*1.7*om,0,100); G.pr.fan=clamp(G.pr.fan+tone*(o.fanW??1)*om,0,100);
   if(o.mail)mail('홍보팀',`[${outlet}] ${title}`,`${body}\n\n홍보팀 의견: ${tone>=2?'구단에 우호적인 기사입니다. 팬 반응도 좋습니다.':tone<=-2?'부정적인 기사입니다. 여론이 나빠지고 구단주실도 이 기사를 봤을 것입니다.':'참고하실 기사입니다.'}`,{kind:'언론',ref:o.ref??null});
   return it; }
 function prDaily(won,lost){ prInit(); const P=G.pr;

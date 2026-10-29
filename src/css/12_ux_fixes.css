@@ -376,3 +376,8 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .fdlg.me{background:rgba(63,184,113,.08)}.fdlogt{font-size:13px}
 .fdtrue{display:inline-flex;align-items:center;gap:4px;margin-left:4px}
 .fdtrue .fdt-l{font-size:11px;color:var(--muted);white-space:nowrap}.fdlg .fdtrue{flex:none}
+/* 언론사·기자·언론 플레이 */
+.prout{border:1px solid var(--line);border-radius:8px;padding:8px;margin:8px 0}
+.prrep{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.prrep>div:first-child{min-width:0}
+.ppf{display:flex;flex-direction:column;gap:8px}.ppf label{display:flex;flex-direction:column;gap:4px}.ppf select{max-width:100%}

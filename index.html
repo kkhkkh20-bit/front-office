@@ -1840,6 +1840,11 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .fdlg.me{background:rgba(63,184,113,.08)}.fdlogt{font-size:13px}
 .fdtrue{display:inline-flex;align-items:center;gap:4px;margin-left:4px}
 .fdtrue .fdt-l{font-size:11px;color:var(--muted);white-space:nowrap}.fdlg .fdtrue{flex:none}
+/* 언론사·기자·언론 플레이 */
+.prout{border:1px solid var(--line);border-radius:8px;padding:8px;margin:8px 0}
+.prrep{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.prrep>div:first-child{min-width:0}
+.ppf{display:flex;flex-direction:column;gap:8px}.ppf label{display:flex;flex-direction:column;gap:4px}.ppf select{max-width:100%}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -2831,7 +2836,7 @@ function processDay(){ syncMinSal();
   if(day===KD(12,1)){ contractStart(); aiCapAll(); try{ aiDebtDump(); }catch(e){} capWarnUser(); }
   try{ salTalkDaily(day); }catch(e){}
   if(day===KD(12,10)){ try{ capCouncil(); }catch(e){} }
-  try{ assocDaily(day); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
+  try{ assocDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
   if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(!m.read&&!m.imp&&G.day-m.day>(m.kind==='업무'||(m.acts&&m.acts.length)?14:5))m.read=true; if(m.imp&&m.kind==='일정'&&G.day-m.day>=3){ m.imp=false; m.read=true; } } /* 날짜가 지난 일정 안내는 읽음 처리 */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} devWeek(); if(period()==='season')updateLg(G.year); }
@@ -4136,6 +4141,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.45:.55):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다 */
   if(v>0&&milFree(p)&&p.age>=26)v*=.85;
   if(v>0)v*=medTradeF(p); /* 부상 체질·최근 부상·후유증·인대 이력·팔 부하 */
+  if(v>0&&dir==='out'&&p.pledged&&p.pledged.tid===G.user&&G.day<=p.pledged.until&&p.team===t.id)v*=1.12; /* 우리 단장이 공개적으로 원한 선수: 값을 더 부른다 */
   if(p.injOut>20)v-=Math.abs(v)*(p.injOut>150?.55:p.injOut>60?.32:.2); /* 수술·장기 재활 선수는 값이 크게 깎인다 */
   if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?(t.mode==='rebuild'?0:.6):starter?(c.contend?seasonWorth(projO(p,0))*.7:seasonWorth(projO(p,0))*.25):.4; v=Math.max(v,fl); }
   /* 연봉이 부담스러워도 주전급은 공짜로 내주지 않는다(다른 구단에 팔 수 있으므로) */
@@ -4322,11 +4328,13 @@ function statLine(h,p){ if(!h)return '기록 없음';
 const OUTLETS=['스포츠한빛','데일리 베이스볼','야구일보','더그아웃 매거진','팬 커뮤니티'];
 function prInit(){ if(!G.pr)G.pr={fan:55,press:50,hist:[]}; if(!G.news)G.news=[]; if(!G.ownerLog)G.ownerLog=[]; }
 function news(kind,title,body,tone,o){ prInit(); o=o||{};
-  const outlet=o.outlet||(kind==='팬'?'팬 커뮤니티':OUTLETS[Math.floor(u01('out'+title,G.day)*4)]);
+  const outlet=o.outlet||(kind==='팬'?'팬 커뮤니티':outletPick(title)); /* 영향력이 큰 매체가 더 자주 쓴다 */
   if((G.news||[]).some(x=>x.t===title&&G.day-x.d<30))return null; /* 같은 제목 기사는 한 달 안에 다시 내지 않는다 */
   const it={d:G.day,o:outlet,t:title,b:body,v:tone,k:kind,ref:o.ref??null,id:(G.newsSeq=(G.newsSeq||0)+1)};
+  if(o.by)it.by=o.by; else { const rp0=kind==='팬'?null:outletRep(outlet); if(rp0)it.by=rp0.name; }
   G.news.unshift(it); if(G.news.length>80)G.news.length=80;
-  G.pr.press=clamp(G.pr.press+tone*1.7,0,100); G.pr.fan=clamp(G.pr.fan+tone*(o.fanW??1),0,100);
+  const om=kind==='팬'?1:outletMul(outlet,tone); /* 비판 매체는 나쁜 소식을, 우호 매체는 좋은 소식을 키운다. 영향력이 클수록 크게 */
+  G.pr.press=clamp(G.pr.press+tone*1.7*om,0,100); G.pr.fan=clamp(G.pr.fan+tone*(o.fanW??1)*om,0,100);
   if(o.mail)mail('홍보팀',`[${outlet}] ${title}`,`${body}\n\n홍보팀 의견: ${tone>=2?'구단에 우호적인 기사입니다. 팬 반응도 좋습니다.':tone<=-2?'부정적인 기사입니다. 여론이 나빠지고 구단주실도 이 기사를 봤을 것입니다.':'참고하실 기사입니다.'}`,{kind:'언론',ref:o.ref??null});
   return it; }
 function prDaily(won,lost){ prInit(); const P=G.pr;
@@ -7339,6 +7347,7 @@ function faAppeal(p,tid){ const C=faCtx(); const P=[]; const t=team(tid);
   const r=C.rank[tid]||5.5; const cont=.04*(5.5-r)/4.5*(p.age>=30?1.6:1); P.push(['우승 가능성',cont]);
   let pt=0; const s=C.slot[tid]||{}; if(p.isP){ if(isSPr(p))pt=spV(p)>s.SP5+1?.04:spV(p)<s.SP5-6?-.03:0; } else { const inc=s[p.pos]; pt=inc==null?.04:ovr(p)>inc+2?.04:ovr(p)<inc-5?-.05:0; } P.push(['주전 기회',pt*(p.age<=29?1.3:1)]);
   if(p.region&&t.region===p.region)P.push([`연고(${p.region} 출신)`,.06]);
+  { const fv=ppFond(p,tid); if(fv)P.push(['단장의 공개 구애',fv/250]); }
   const f=1+sum(P.map(x=>x[1])); return {f:clamp(f,.8,1.3),parts:P.filter(x=>Math.abs(x[1])>=.005)}; }
 /* 연고 출신 스타: 구단 연고 지역 출신 주전급(능력 64 이상)이 있으면 팬 인기가 더 오른다(최대 +0.03) */
 function localStarPop(tid){ const t=team(tid); if(!t.region)return 0; const n=playersOf(tid).filter(p=>!p.foreign&&p.region===t.region&&ovr(p)>=64).length; return Math.min(.03,n*.008); }
@@ -8346,6 +8355,77 @@ function mgrMidSeason(){ if(period()!=='season')return; const st=standingsNow();
 /* 야인 기간: 전 소속 구단 스카우트·분석원 빈자리를 채운다(다른 AI 구단처럼) */
 function unempStaff(){ if(!G.unemp)return; try{ const mk=scoutMkt(); while((G.scouts||[]).length<4&&mk.length){ const s=mk.sort((a,b)=>b.skill-a.skill)[0]; G.scoutMarket=G.scoutMarket.filter(x=>x!==s); s.since=G.day; s.role=s.role||'am'; G.scouts.push(s); } }catch(e){}
   try{ const am=anaMarket(); while(anaList().length<2&&am.length){ const a=am.sort((x,y)=>y.skill-x.skill)[0]; G.amarket=(G.amarket||[]).filter(x=>x!==a); a.since=G.day; G.analysts.push(a); } }catch(e){} }
+/* ===== 언론사 · 기자 친분 · 언론 플레이 =====
+ 언론사마다 논조·분야·영향력이 있고, 기자는 한 언론사에 속한다(언론사당 2명). 기사는 그 언론사 기자 이름으로 나가고,
+ 같은 사건도 어느 매체가 쓰느냐에 따라 여론 효과가 달라진다(비판 매체는 나쁜 소식을 키우고, 우호 매체는 좋은 소식을 키운다).
+ 단장은 기자와 먼저 친분을 쌓고(전화·식사), 친한 기자를 통해 언론 플레이를 할 수 있다.
+ - 영입 의지 공개: "○○를 데려오겠다". 팬은 기대하고, 지목된 선수는 우리에게 호감이 생긴다(FA 때 우리 구단 매력).
+   다른 구단 소속 선수를 공개적으로 원하면 그 구단 단장은 불쾌해하고, 우리와 트레이드할 때 값을 더 부른다.
+   기한 안에 데려오면 '약속 지킨 단장', 못 데려오면 '말만 앞선 단장'으로 팬과 언론이 돌아선다.
+ - 투자 선언: "올해 투자하겠다". 팬 여론이 오르지만, 돈 이야기를 먼저 꺼낸 단장을 구단주가 지적하기도 한다(수익형 구단주는 크게).
+   다음 개막까지 연봉 규모를 5% 이상 늘리지 못하면 팬이 실망하고 구단주 신뢰도 깎인다.
+ 기자가 써 주는 방식(호의적/그대로/비꼬아서)은 친분·기자 성향·언론사 논조에 따라 다르다. 언론 플레이는 30일에 한 번. */
+const OUTLET_DEF={
+  '스포츠한빛':{lean:1,field:'현장 취재',reach:4,d:'현장 소식을 가장 빨리 전합니다. 구단에 대체로 우호적입니다.'},
+  '데일리 베이스볼':{lean:0,field:'데이터 분석',reach:3,d:'기록과 데이터로 씁니다. 논조는 중립입니다.'},
+  '야구일보':{lean:-1,field:'구단 경영·이적 시장',reach:5,d:'가장 영향력이 큰 매체입니다. 프런트를 날카롭게 봅니다.'},
+  '더그아웃 매거진':{lean:1,field:'인물 기획',reach:2,d:'선수·인물 이야기를 깊게 다룹니다. 우호적이지만 영향력은 작습니다.'}};
+const OUTLET_LEAN={1:'우호적',0:'중립',[-1]:'비판적'};
+function outletOf(name){ return OUTLET_DEF[name]||{lean:0,field:'',reach:3,d:''}; }
+/* 일반 기사: 영향력이 큰 매체가 더 자주 쓴다. 기사 효과 배율(논조·영향력) */
+function outletPick(seed){ const K=Object.keys(OUTLET_DEF); const w=K.map(k=>OUTLET_DEF[k].reach); let x=u01('out'+seed,G.day)*sum(w); for(let i=0;i<K.length;i++){ x-=w[i]; if(x<0)return K[i]; } return K[0]; }
+function outletMul(name,tone){ const O=outletOf(name); if(!tone)return 1; let m=.8+O.reach*.08; if(tone<0&&O.lean<0)m*=1.3; else if(tone>0&&O.lean>0)m*=1.2; else if(O.lean&&Math.sign(tone)!==O.lean)m*=.8; return m; }
+function outletRep(name){ const L=pressInit().filter(r=>r.outlet===name); return L.length?L[Math.floor(u01('rp'+name,G.day)*L.length)]:null; }
+
+/* ---------- 기자 친분 쌓기 ---------- */
+function repContact(id,kind){ const r=repById(id); if(!r)return '기자를 찾을 수 없습니다.'; G.repc=G.repc||{}; const c=G.repc[id]=G.repc[id]||{};
+  const dim=r.rel>60?Math.max(.3,1-(r.rel-60)/40):1; const sty=r.style==='cr'?.7:r.style==='fr'?1.2:1;
+  if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return `${r.name} 기자와는 ${dmd(c.call+14)}부터 다시 통화할 수 있습니다.`; c.call=G.day; const d=Math.max(1,Math.round(ri(1,3)*dim*sty)); repRel(r,d,'단장 전화'); return `${r.outlet} ${r.name} 기자와 통화했습니다. 친분 +${d}(${r.rel}).`; }
+  if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return `${r.name} 기자와 식사는 ${dmd(c.meal+30)}부터 가능합니다.`; c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.max(1,Math.round(ri(3,6)*dim*sty)); repRel(r,d,'단장과 식사'); return `${r.outlet} ${r.name} 기자와 저녁을 먹었습니다(1천만 원). 친분 +${d}(${r.rel}).${r.style==='cr'?' 비판적인 기자라 쉽게 가까워지지는 않습니다.':''}`; }
+  return ''; }
+
+/* ---------- 언론 플레이 ---------- */
+const PP_COOL=30, PP_MIN_REL=60; /* 기자 친분은 50에서 시작하므로, 먼저 가까워져야 언론 플레이를 부탁할 수 있다 */
+function ppReady(){ return G.ppLast==null||G.day-G.ppLast>=PP_COOL; }
+/* 기자가 어떻게 써 주나: 친분·성향·언론사 논조 */
+function ppFrame(r){ const O=outletOf(r.outlet); const s=r.rel+O.lean*8+(r.style==='fr'?10:r.style==='cr'?-12:0)+N(0,8); return s>=62?'good':s>=45?'flat':'bad'; }
+function ppTargets(){ const L=[]; const add=p=>{ if(p&&p.team!==G.user&&!p.foreign&&!p.prospect&&!L.includes(p))L.push(p); };
+  for(const id of (G.shortlist||[]))add(G.players[id]); if(G.fa&&!G.fa.closed)for(const id of (G.fa.pool||[]).slice(0,15))add(G.players[id]);
+  Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12).forEach(add); return L.slice(0,24); }
+function ppFA(p){ return !!(G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(p.id)); }
+function pressPlay(repId,kind,pid){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const r=repById(repId); if(!r)return '기자를 고르세요.'; if(!ppReady())return `언론 플레이는 30일에 한 번입니다. ${dmd(G.ppLast+PP_COOL)}부터 다시 할 수 있습니다.`;
+  if(r.rel<PP_MIN_REL)return `${r.name} 기자가 "그런 얘기는 기사로 쓰기 어렵습니다"라며 거절했습니다. 친분 ${PP_MIN_REL} 이상인 기자에게만 부탁할 수 있습니다(지금 ${r.rel}).`;
+  const O=outletOf(r.outlet); const fr=ppFrame(r); const k=.7+O.reach*.12; const t=team(G.user); const B=bossOf(G.user); G.ppLast=G.day; G.pledges=G.pledges||[]; prInit();
+  const fanD=(b)=>{ const v=Math.round(b*k*(fr==='good'?1.2:fr==='bad'?.5:1)); G.pr.fan=clamp(G.pr.fan+v,0,100); return v; };
+  if(kind==='sign'){ const p=G.players[pid]; if(!p||p.team===G.user)return '대상 선수를 고르세요.'; const fa=ppFA(p); const star=ovr(p)>=60;
+    const v=fr==='good'?12:fr==='flat'?8:5; p.fond={tid:G.user,v,until:G.day+150};
+    const fd=fanD(star?4:2); let other='';
+    if(!fa&&p.team!=null){ const ot=team(p.team); ot.rel=clamp((ot.rel??50)-6,0,100); p.pledged={tid:G.user,until:G.day+60}; other=` ${tshort(p.team)} ${gmOf(p.team)?gmOf(p.team).name+' 단장':'구단'}은 "남의 선수를 공개적으로 거론하는 건 결례"라며 불쾌해합니다(친분 -6). 60일 동안 우리와의 트레이드에서 이 선수 값을 더 부릅니다.`; }
+    const until=fa?(KD(1,24)>G.day?KD(1,24):G.day+60):G.day+120; G.pledges.unshift({k:'sign',pid,day:G.day,until,rep:r.id,done:false});
+    const title=fr==='bad'?`${tshort(G.user)} 단장, "${p.name} 데려온다" 큰소리…현실성은?`:`${tshort(G.user)} 단장 "${p.name}, 꼭 데려오겠다"`;
+    news('언론',title,`${r.outlet} ${r.name} 기자 단독. ${tname(G.user)} 단장이 ${p.team!=null?`${tshort(p.team)} `:'FA '}${p.name}(${posLabel(p)}, ${p.age}세) 영입 의지를 밝혔습니다.${fr==='bad'?' 다만 기사 논조는 회의적입니다.':''}`,fr==='bad'?-1:fr==='good'?2:1,{outlet:r.outlet,by:r.name,ref:p.id});
+    if(fr==='bad')G.pr.press=clamp(G.pr.press-2,0,100);
+    return `${r.outlet} ${r.name} 기자를 통해 ${p.name} 영입 의지를 밝혔습니다(${fr==='good'?'호의적으로 실림':fr==='flat'?'그대로 실림':'비꼬듯 실림'}). 팬 여론 ${fd>=0?'+':''}${fd}. ${p.name}이(가) 우리 구단에 호감을 갖습니다(+${v}).${other} ${dmd(until)}까지 데려오지 못하면 '말만 앞선 단장'이 됩니다.`; }
+  if(kind==='invest'){ const base=capPay(G.user); const fd=fanD(5); G.pr.press=clamp(G.pr.press+(fr==='bad'?-1:1),0,100);
+    const open=G.cal&&G.cal.open>G.day?G.cal.open:G.day+150; G.pledges.unshift({k:'invest',base,day:G.day,until:open,rep:r.id,done:false});
+    let own=''; if(!t.indie){ if(t.owner==='profit'){ t.trust=clamp(t.trust-4,0,100); own=`구단주 신뢰 -4. ${B.own.name} 회장: "돈 이야기는 내가 먼저 합니다. 지갑은 단장 것이 아닙니다."`; }
+      else if(t.owner==='pr'){ t.trust=clamp(t.trust+1,0,100); own=`구단주 신뢰 +1. ${B.own.name} 회장: "화제가 되는 건 좋습니다. 말한 만큼 보여 주세요."`; }
+      else { own=`${B.own.name} 회장: "성적으로 돌려받겠다는 뜻이라면 좋습니다. 그 말 책임지세요."`; }
+      mail('구단주실',`투자 선언 기사에 대한 구단주 반응`,own,{kind:'구단주'}); }
+    news('언론',fr==='bad'?`${tshort(G.user)} 단장 '투자 선언'…구단주 지갑은 열릴까`:`${tshort(G.user)} 단장 "올해 과감히 투자하겠다"`,`${r.outlet} ${r.name} 기자. ${tname(G.user)} 단장이 전력 보강을 위한 투자를 예고했습니다.`,fr==='bad'?-1:1,{outlet:r.outlet,by:r.name});
+    return `${r.outlet} ${r.name} 기자를 통해 투자를 선언했습니다. 팬 여론 +${fd}. ${own} ${dmd(open)}까지 연봉 규모를 5% 이상 늘리지 못하면 팬이 실망합니다.`; }
+  return ''; }
+/* 약속 점검: 매일 */
+function ppDaily(){ if(!G.pledges||G.unemp)return; prInit(); for(const g of G.pledges){ if(g.done)continue; const r=repById(g.rep);
+    if(g.k==='sign'){ const p=G.players[g.pid]; const ok=p&&p.team===G.user; if(!ok&&G.day<=g.until&&p)continue; g.done=true; g.ok=ok;
+      if(ok){ G.pr.fan=clamp(G.pr.fan+3,0,100); G.rep=clamp((G.rep??50)+1,0,100); if(r)repRel(r,2,'약속 이행'); news('언론',`${tshort(G.user)} 단장, ${p.name} 영입 약속 지켰다`,`공개적으로 원했던 ${p.name}을(를) 결국 데려왔습니다.`,2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined,ref:p.id}); }
+      else { G.pr.fan=clamp(G.pr.fan-5,0,100); G.pr.press=clamp(G.pr.press-2,0,100); if(r)repRel(r,-3,'약속 불이행'); news('언론',`'${p?p.name:'영입'} 데려온다'던 ${tshort(G.user)} 단장, 결국 빈손`,`공개적으로 영입 의지를 밝혔지만 성사되지 않았습니다. 말만 앞선다는 비판이 나옵니다.`,-2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); } }
+    else if(g.k==='invest'){ if(G.day<g.until)continue; g.done=true; const now=capPay(G.user); g.ok=now>=g.base*1.05; const t=team(G.user);
+      if(g.ok){ G.pr.fan=clamp(G.pr.fan+2,0,100); news('언론',`${tshort(G.user)}, 투자 선언 지켰다`,`연봉 규모를 ${Math.round((now/g.base-1)*100)}% 늘려 개막을 맞습니다.`,1,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); }
+      else { G.pr.fan=clamp(G.pr.fan-7,0,100); t.trust=clamp(t.trust-2,0,100); news('언론',`'투자하겠다'던 ${tshort(G.user)}, 연봉 규모는 제자리`,`단장의 투자 선언과 달리 연봉 규모가 거의 늘지 않았습니다.`,-2,{outlet:r?r.outlet:undefined,by:r?r.name:undefined}); } } }
+  G.pledges=G.pledges.filter(g=>!g.done||G.day-g.until<120).slice(0,12); }
+/* 지목된 선수의 호감: FA 때 우리 구단 매력에 더해진다 */
+function ppFond(p,tid){ return p&&p.fond&&p.fond.tid===tid&&G.day<=p.fond.until?p.fond.v:0; }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -10877,7 +10957,7 @@ function rankChart(compact){
 /* 뉴스: 얼굴과 종류 */
 const NKC={이적:'good',선수:'acc',경기:'',분석:'warn',트레이드:'good',FA:'good',팬:'',구단:'bad'};
 function newsItem(n,full){ const nw=(n.id||0)>newsSeen(); const p=n.ref!=null?G.players[n.ref]:null;
-  return `<div class="news ${n.v>=2?'pos':n.v<=-2?'neg':''}${full?'':' sm'}${p?' wf':''}"${p?` data-a="player" data-v="${p.id}" role="button" tabindex="0"`:''}>${p?avImg(p):''}<div><span class="small muted">${nw?'<i class="nwdot"></i>':''}${n.k?`<span class="pill tag ${NKC[n.k]||''}" data-a="nk" data-v="${esc(n.k)}">${esc(n.k)}</span> `:''}${esc(n.o)} · ${dsh(n.d)}</span><b>${lk(n.t)}</b>${n.b?`<p class="small">${lk(n.b)}</p>`:''}${full?(()=>{ const C=newsComments(n); const o=(UI.nco||{})[n.id]; return `<button class="ncm-b" data-a="nco" data-v="${n.id}">댓글 ${C.length}${o?' 접기':''}</button>${o?`<div class="fcms">${C.map(cmtRow).join('')}</div>`:C[0]?`<p class="ncm1"><b>${esc(C[0].nick)}</b> ${lk(C[0].t)}</p>`:''}`; })():''}</div></div>`; }
+  return `<div class="news ${n.v>=2?'pos':n.v<=-2?'neg':''}${full?'':' sm'}${p?' wf':''}"${p?` data-a="player" data-v="${p.id}" role="button" tabindex="0"`:''}>${p?avImg(p):''}<div><span class="small muted">${nw?'<i class="nwdot"></i>':''}${n.k?`<span class="pill tag ${NKC[n.k]||''}" data-a="nk" data-v="${esc(n.k)}">${esc(n.k)}</span> `:''}${esc(n.o)}${n.by?` ${esc(n.by)} 기자`:''} · ${dsh(n.d)}</span><b>${lk(n.t)}</b>${n.b?`<p class="small">${lk(n.b)}</p>`:''}${full?(()=>{ const C=newsComments(n); const o=(UI.nco||{})[n.id]; return `<button class="ncm-b" data-a="nco" data-v="${n.id}">댓글 ${C.length}${o?' 접기':''}</button>${o?`<div class="fcms">${C.map(cmtRow).join('')}</div>`:C[0]?`<p class="ncm1"><b>${esc(C[0].nick)}</b> ${lk(C[0].t)}</p>`:''}`; })():''}</div></div>`; }
 
 /* 연도별 시즌 요약 */
 function seasonSummary(){
@@ -11421,10 +11501,10 @@ function mediaView(){
   prInit(); const P=G.pr; const f=Math.round(P.fan), pr=Math.round(P.press);
   const hist=P.hist.slice(-12);
   const chart=hist.length?`<div class="prchart">${hist.map(x=>`<div><i class="f" style="height:${x.fan*.8}px"></i><i class="p" style="height:${x.press*.8}px"></i><span>${x.m.split('.')[1]}</span></div>`).join('')}</div><p class="small muted"><span class="lg f"></span>팬 여론 <span class="lg p"></span>언론 논조 (월말 기준)</p>`:'';
-  const items=(G.news||[]).slice(0,3).map(n=>`<div class="news ${n.v>=2?'pos':n.v<=-2?'neg':''}"${n.ref!=null&&G.players[n.ref]?` data-a="player" data-v="${n.ref}" role="button" tabindex="0"`:''}><div class="row between"><span class="small muted">${esc(n.o)} · ${dsh(n.d)}</span><span class="tone">${n.v>=2?'호평':n.v>0?'우호':n.v<=-2?'혹평':n.v<0?'비판':'중립'}</span></div><b>${lk(n.t)}</b><p class="small">${lk(n.b)}</p></div>`).join('');
+  const items=(G.news||[]).slice(0,3).map(n=>`<div class="news ${n.v>=2?'pos':n.v<=-2?'neg':''}"${n.ref!=null&&G.players[n.ref]?` data-a="player" data-v="${n.ref}" role="button" tabindex="0"`:''}><div class="row between"><span class="small muted">${esc(n.o)}${n.by?` ${esc(n.by)} 기자`:''} · ${dsh(n.d)}</span><span class="tone">${n.v>=2?'호평':n.v>0?'우호':n.v<=-2?'혹평':n.v<0?'비판':'중립'}</span></div><b>${lk(n.t)}</b><p class="small">${lk(n.b)}</p></div>`).join('');
   return csec('여론 현황',`<dl class="tsum"><div><dt>팬 여론</dt><dd class="num">${f}</dd>${gauge(f,40,60)}</div><div><dt>언론 논조</dt><dd class="num">${pr}</dd>${gauge(pr,40,60)}</div><div><dt>구단 인기</dt><dd class="num">${Math.round(team(G.user).pop*100)}</dd></div></dl>
     ${chart}<p class="small muted">팬 여론은 관중 수입과 광고·상품 수입을 움직이고, 언론 논조는 스폰서와 구단주 평가에 영향을 줍니다. 승패, 연승·연패, 트레이드·FA 평가, 신인 활약, 외국인 부진, 감독·선수의 불만 표출이 기사가 됩니다.</p>`)
-   +csec('최근 우리 구단 기사',items?`<div class="newslist">${items}</div>`:'<p class="small muted">아직 기사가 없습니다.</p>',`<button class="btn small" data-a="go" data-v="league:news">기사 전체 보기</button>`);
+   +pressCards()+csec('최근 우리 구단 기사',items?`<div class="newslist">${items}</div>`:'<p class="small muted">아직 기사가 없습니다.</p>',`<button class="btn small" data-a="go" data-v="league:news">기사 전체 보기</button>`);
 }
 
 /* 포지션별 리그 순위 칸: click이면 누르면 전력 비교로 간다 */
@@ -12236,7 +12316,7 @@ function curExBox(p,rp){ let L=null; try{ L=curExplain(p,rp); }catch(e){} return
 function reportCard(p,noTools){
   const rp=scoutReport(p);
   if(hideOvr(p))return `<section class="card"><div class="row between"><h2 class="sec">스카우트 의견</h2><span class="small muted">${fdHideNow(p)?'우리 스카우트 추정':`${esc(rp.who)} · 정확도 ${rp.conf}`}</span></div>
-    <div class="row">${p.team!=null&&team(p.team).cap===p.id?'<span class="pill good">주장</span>':''}${p.team!=null&&!p.foreign&&p.region&&team(p.team).region===p.region?`<span class="pill good" title="구단 연고 지역(${esc(p.region)}) 출신. 팬 인기가 더 오르고 FA·재계약 때 이 구단을 조금 더 원합니다">연고 출신</span>`:''}${p.team!=null&&isFranchise(p)?`<span class="pill acc">${esc(tshort(p.team))} 프랜차이즈 스타 · ${teamTenure(p,p.team).n}시즌</span>`:''}${fdHideNow(p)?`<span class="pill">예상 역할 ${esc(fdRole(p,fdEstOf(p)))}</span>`:`<span class="pill acc">${esc(rp.arch)}</span>${p.foreign?(rp.role?`<span class="pill">올해 예상 ${esc(rp.role)}</span>`:''):rp.role?`<span class="pill">장래 ${esc(rp.role)}</span>`:'<span class="pill">잠재력 판단 불가</span>'}<span class="pill ${rp.risk==='높음'?'bad':rp.risk==='낮음'?'good':''}">위험도 ${rp.risk}</span>`}${rp.eta?`<span class="pill">1군까지 약 ${rp.eta}년</span>`:''}</div>
+    <div class="row">${(()=>{ const fv=ppFond(p,G.user); return fv&&p.team!==G.user?`<span class="pill good" title="단장이 언론을 통해 공개적으로 원한 선수입니다. FA 때 우리 구단을 더 좋게 봅니다">우리 구단에 호감 +${fv}</span>`:''; })()}${p.team!=null&&team(p.team).cap===p.id?'<span class="pill good">주장</span>':''}${p.team!=null&&!p.foreign&&p.region&&team(p.team).region===p.region?`<span class="pill good" title="구단 연고 지역(${esc(p.region)}) 출신. 팬 인기가 더 오르고 FA·재계약 때 이 구단을 조금 더 원합니다">연고 출신</span>`:''}${p.team!=null&&isFranchise(p)?`<span class="pill acc">${esc(tshort(p.team))} 프랜차이즈 스타 · ${teamTenure(p,p.team).n}시즌</span>`:''}${fdHideNow(p)?`<span class="pill">예상 역할 ${esc(fdRole(p,fdEstOf(p)))}</span>`:`<span class="pill acc">${esc(rp.arch)}</span>${p.foreign?(rp.role?`<span class="pill">올해 예상 ${esc(rp.role)}</span>`:''):rp.role?`<span class="pill">장래 ${esc(rp.role)}</span>`:'<span class="pill">잠재력 판단 불가</span>'}<span class="pill ${rp.risk==='높음'?'bad':rp.risk==='낮음'?'good':''}">위험도 ${rp.risk}</span>`}${rp.eta?`<span class="pill">1군까지 약 ${rp.eta}년</span>`:''}</div>
     <div class="quote">${(fdHideNow(p)?[fdScoutLine(p),fdDataLine(p,G.fd.y-1)]:p.prospect&&draftClaim(p)?[draftClaimTxt(draftClaim(p))+'. 스카우트 의견이라 틀릴 수 있습니다.',...rp.notes]:rp.notes).map(n=>`<p>${esc(n)}</p>`).join('')}</div>${p.foreign?curExBox(p,rp):''}
     <p class="small muted">${p.fdPool||fdHideNow(p)?'창단 드래프트 선수는 능력치가 공개되지 않습니다. 지난 시즌 기록과 나이, 스카우트 의견으로 판단하세요. 지명되면(우리든 다른 구단이든) 현재 능력은 바로 공개되고, 잠재력은 추정으로 남습니다.':p.prospect?'아마추어 선수는 능력치를 알 수 없습니다. 학년별 기록과 스카우트 의견으로 판단하세요. 지명하면 우리 코치진이 능력치를 파악합니다.':'영입 전에는 능력치를 알 수 없습니다. 지난 리그 기록과 스카우트 의견으로 판단하세요.'}</p></section>`;
   const bar=t=>{ const w=v=>Math.round((v-20)/60*100); const fut=rp.ofp!=null&&t.fut>t.cur; return `<div class="tool" style="--c:${rcol(t.cur)};--c2:${rcol(t.fut)}"><span>${TOOLK[t.k]}</span>${rchip(t.cur)}<span class="track"><span class="mid"></span>${fut?`<span class="fut" style="width:${w(t.fut)}%"></span>`:''}<span class="now" style="width:${w(t.cur)}%"></span></span>${fut?'<span class="small muted">성장 예상</span>':'<span></span>'}</div>`; };
@@ -12890,7 +12970,7 @@ A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); if(c
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT'].includes(a))return;
+  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||!e.target.closest('[data-stop]')){ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
@@ -12909,6 +12989,7 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='fdPol'){ A.fdPol(el.value); }
   if(a==='fdSsel'){ UI.fdS=el.value; UI.fdD=0; UI.fdMore=60; render(); }
   if(a==='fdLogT'){ UI.fdLogT=el.value; render(); }
+  if(a==='ppRep'||a==='ppPid'){ UI.pp=UI.pp||{}; if(a==='ppRep')UI.pp.rep=el.value; else UI.pp.pid=el.value; UI.ppMsg=''; render(); }
   if(a==='lfSort'){UI.lf.sort=el.value;render();} });
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if(!el)return;
   if(el.dataset.a==='offA')A.offA(el.dataset.v,el);
@@ -13885,4 +13966,24 @@ Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v
     if(!known){ F.g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F.i=Math.max(0,Math.min(cap-F.g,p.ask-F.g)); F.msg='경쟁 구단 조건을 아직 모릅니다. 요구액 기준(보장 85% + 인센티브 15%)으로 맞췄습니다. 한 번 제안하면 정확한 조건을 알려 줍니다.'; renderSheet(); return; }
     const tgt=Math.max(foFloor(p),best?best.v*1.01:0); let g=foNeedG(p,F.i,tgt,me.f); if(g==null){ F.i=0; g=foNeedG(p,0,tgt,me.f); }
     if(g==null){ F.msg='상한 안에서는 사인시킬 수 있는 조건이 없습니다.'; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); } });
+/* ---------- 구단 > 언론·여론: 언론사와 기자, 친분 쌓기, 언론 플레이 ---------- */
+function pressCards(){ if(G.unemp)return ''; const L=pressInit(); const c=G.repc||{};
+  const rep=r=>{ const cc=c[r.id]||{}; const callOk=!(cc.call!=null&&cc.call>G.day-14), mealOk=!(cc.meal!=null&&cc.meal>G.day-30);
+    return `<div class="prrep"><div><b>${esc(r.name)}</b> <span class="small muted">${PR_STYLE[r.style].l} · ${esc(r.field)} · 영향력 ${'★'.repeat(r.inf)}</span><span class="small" style="display:block">친분 <b>${r.rel}</b>${r.rel>=PP_MIN_REL?' · 언론 플레이 가능':''}${r.last?` <span class="muted">(${esc(r.last.why)} ${r.last.dv>0?'+':''}${r.last.dv})</span>`:''}</span></div>
+      <div class="row" style="gap:4px;flex:none"><button class="btn small" data-a="repCall" data-v="${r.id}" ${callOk?'':'disabled'}>전화</button><button class="btn small" data-a="repMeal" data-v="${r.id}" ${mealOk?'':'disabled'}>식사</button></div></div>`; };
+  const outs=Object.keys(OUTLET_DEF).map(n=>{ const O=OUTLET_DEF[n]; return `<div class="prout"><div class="row between"><b>${esc(n)}</b><span class="small muted">${OUTLET_LEAN[O.lean]} · ${esc(O.field)} · 영향력 ${'★'.repeat(O.reach)}</span></div><p class="small muted">${esc(O.d)}</p>${L.filter(r=>r.outlet===n).map(rep).join('')}</div>`; }).join('');
+  const ok=L.filter(r=>r.rel>=PP_MIN_REL); const S=UI.pp||(UI.pp={k:'sign',rep:ok[0]?ok[0].id:'',pid:''}); const T=ppTargets(); const ready=ppReady();
+  const pl=(G.pledges||[]).slice(0,5).map(g=>{ const p=g.pid!=null?G.players[g.pid]:null; const st=g.done?(g.ok?'<span class="pill good">지킴</span>':'<span class="pill bad">못 지킴</span>'):`<span class="pill">${dmd(g.until)}까지</span>`; return `<div class="row between small"><span>${g.k==='sign'?`영입 의지: ${p?esc(p.name):'-'}`:'투자 선언'}</span>${st}</div>`; }).join('');
+  const play=`<p class="small">친분 ${PP_MIN_REL} 이상인 기자를 통해 단장의 메시지를 기사로 낼 수 있습니다. 30일에 한 번. 기자의 성향과 친분, 언론사 논조에 따라 호의적으로 실리기도, 비꼬듯 실리기도 합니다.</p>
+    ${ok.length?`<div class="ppf"><label class="small">기자<select data-a="ppRep">${ok.map(r=>`<option value="${r.id}" ${S.rep===r.id?'selected':''}>${esc(r.outlet)} ${esc(r.name)} (친분 ${r.rel})</option>`).join('')}</select></label>
+      <div class="chips"><button data-a="ppK" data-v="sign" class="${S.k==='sign'?'on':''}">"○○를 데려오겠다"</button><button data-a="ppK" data-v="invest" class="${S.k==='invest'?'on':''}">"올해 투자하겠다"</button></div>
+      ${S.k==='sign'?`<label class="small">선수<select data-a="ppPid"><option value="">고르세요</option>${T.map(p=>`<option value="${p.id}" ${String(S.pid)===String(p.id)?'selected':''}>${esc(p.name)} · ${posLabel(p)} · ${p.team!=null?esc(tshort(p.team)):'FA'}</option>`).join('')}</select></label>
+        <p class="small muted">팬 기대가 오르고, 지목된 선수가 우리에게 호감을 갖습니다(FA 때 유리). 다른 구단 소속이면 그 구단 단장이 불쾌해하고 트레이드 값을 더 부릅니다. 기한 안에 못 데려오면 팬과 언론이 돌아섭니다.</p>`
+        :`<p class="small muted">팬 여론이 오르지만 구단주가 지적할 수 있습니다(수익형 구단주는 신뢰 -4). 다음 개막까지 연봉 규모를 5% 이상 늘리지 못하면 팬이 실망하고 구단주 신뢰도 깎입니다.</p>`}
+      <button class="btn primary block" data-a="ppGo" ${ready?'':'disabled'}>${ready?'기사 내기':`${dmd(G.ppLast+PP_COOL)}부터 가능`}</button></div>`:`<p class="small muted">아직 친분 ${PP_MIN_REL} 이상인 기자가 없습니다. 위에서 전화·식사로 먼저 가까워지세요.</p>`}
+    ${UI.ppMsg?`<div class="note">${esc(UI.ppMsg)}</div>`:''}${pl?`<div class="list" style="margin-top:6px">${pl}</div>`:''}`;
+  return csec('언론사와 기자',`<p class="small muted">기사는 언론사 소속 기자 이름으로 나갑니다. 비판적인 매체는 나쁜 소식을, 우호적인 매체는 좋은 소식을 더 크게 키웁니다. 전화(2주에 한 번)와 식사(한 달에 한 번, 1천만 원)로 기자와 가까워질 수 있습니다.</p>${outs}`)+csec('언론 플레이',play); }
+Object.assign(A,{ repCall(v){ toast(repContact(v,'call')); save(); render(); }, repMeal(v){ toast(repContact(v,'meal')); save(); render(); },
+  ppK(v){ UI.pp=UI.pp||{}; UI.pp.k=v; UI.ppMsg=''; render(); },
+  ppGo(){ const S=UI.pp||{}; if(S.k==='sign'&&!S.pid){ UI.ppMsg='데려오겠다고 밝힐 선수를 고르세요.'; render(); return; } UI.ppMsg=pressPlay(S.rep,S.k,+S.pid); save(); render(); } });
 </script>
