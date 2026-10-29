@@ -12,7 +12,7 @@ function gmCard(t,full){ const g=gmOf(t.id); if(!g)return ''; const c=(G.gmc||{}
   return `<div class="gmc"><div class="gmc-h">${gmAv(t.id)}<div><b>${badge(t.id,16)} ${esc(t.city+' '+t.nick)}${g.ob?obTag(g.ob):''}</b><span>${g.interim?'단장대행 체제':`${esc(g.name)} 단장 · ${g.age}세`}</span></div><span class="pill ${g.trait==='hard'||g.trait==='miser'?'warn':g.trait==='loyal'?'good':'acc'}">${GMT[g.trait].l}</span></div>
     <div class="gmc-r"><span class="small muted">친분</span>${relBar(t.rel)}<b>${t.rel}</b><span class="small muted">${relLabel(t.rel)}</span></div>
     <p class="gmc-n">${esc(needText(t.id))}</p>${intLine(t.id)}<div class="gmc-q">${negChip(t.id)}</div>
-    ${full?`<p class="small muted">${esc(GMT[g.trait].d)} ${esc(g.car)} · ${g.since}년부터 재임</p>`:''}
+    ${full?`<p class="small muted">${esc(GMT[g.trait].d)} ${esc(g.car)} · ${g.since}년부터 재임</p>`:''}${(()=>{ const T=g.interim?[]:aiGmTags(t.id); return T.length?`<div class="chips gmtags">${T.map(x=>`<span class="pill" title="${esc(x.d)}">${esc(x.l)}</span>`).join('')}</div>`:''; })()}
     <div class="row"><button class="btn small primary" data-a="tpartnerGo" data-v="${t.id}">트레이드 협상</button><button class="btn small" data-a="gmCall" data-v="${t.id}" ${c.call!=null&&c.call>G.day-14?'disabled':''}>안부 연락${c.call!=null&&c.call>G.day-14?` (${c.call+14-G.day}일 뒤)`:''}</button><button class="btn small" data-a="gmMeal" data-v="${t.id}" ${c.meal!=null&&c.meal>G.day-30?'disabled':''}>식사 (1천만)${c.meal!=null&&c.meal>G.day-30?` · ${c.meal+30-G.day}일 뒤`:''}</button></div>
     ${UI.gmRes&&UI.gmRes.t===t.id?`<div class="note ${UI.gmRes.ok?'good':'warn'} gmc-res">${lk(UI.gmRes.m)}</div>`:''}</div>`; }
 function feedList(n){ const W=(G.wire||[]).filter(w=>['트레이드','루머','단장'].includes(w.k)).slice(0,n);

@@ -381,3 +381,4 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .prrep{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
 .prrep>div:first-child{min-width:0}
 .ppf{display:flex;flex-direction:column;gap:8px}.ppf label{display:flex;flex-direction:column;gap:4px}.ppf select{max-width:100%}
+.gmpl{margin:6px 0 0;padding-left:18px}.gmtags{margin-top:4px}.gmtags .pill{font-size:11px}

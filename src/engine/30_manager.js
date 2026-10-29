@@ -60,7 +60,7 @@ function hireMgr(id,years,withClan){
   for(const p of playersOf(G.user)){ initPers(p); p.mor=clamp(p.mor+(m.disc-50)/10+(m.fame>=70?3:0),0,100); }
   return '';
 }
-function fireMgr(){ const cur=G.mgr[G.user]; if(!cur||cur.interim)return; if(G.coach){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); } const pay=Math.round(cur.sal*Math.max(0,cur.yrs-.5)); G.spend.mgr+=pay;
+function fireMgr(){ const cur=G.mgr[G.user]; if(!cur||cur.interim)return; try{ meInc('mgrFire'); }catch(e){} if(G.coach){ const gone=clanLeave(cur); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); } const pay=Math.round(cur.sal*Math.max(0,cur.yrs-.5)); G.spend.mgr+=pay;
   addLog(`${cur.name} 감독을 경질했습니다. 잔여 연봉 ${money(pay)}.`); chron('mgr',`${cur.name} 감독 경질`);
   G.mgr[G.user]={id:'interim',name:'수석코치(감독대행)',age:50,small:50,pen:50,youth:50,disc:42,tac:45,sal:150,yrs:1,career:'감독대행',interim:true};
   for(const p of playersOf(G.user))p.mor=clamp(p.mor-4,0,100);

@@ -50,7 +50,7 @@ function prMonth(m){ prInit(); if(G.unemp)return; const st=standingsNow(); const
 function prTrade(give,get,partner){ prInit(); const v=ids=>sum(ids.map(id=>{const p=G.players[id]; if(!p)return 0; const h=seasonTotal(p,G.year,'1군')||seasonTotal(p,G.year-1,'1군'); return h?Math.max(-1,warOf(h,p)):0;}));
   const d=v(get)-v(give); const gn=give.map(id=>G.players[id]&&G.players[id].name).filter(Boolean).join(', '), tn=get.map(id=>G.players[id]&&G.players[id].name).filter(Boolean).join(', ');
   const tone=d>=2?2:d>=.7?1:d<=-2?-2:d<=-.7?-1:0;
-  news('트레이드',tone>=1?`${tshort(G.user)}, 트레이드로 전력 보강`:tone<=-1?`${tshort(G.user)} 트레이드에 물음표`:`${tshort(G.user)}-${tshort(partner)} 트레이드 단행`,
+  news('트레이드',tone>=1?`${meCall()}, 트레이드로 전력 보강`:tone<=-1?`${meCall()}의 트레이드에 물음표`:`${tshort(G.user)}-${tshort(partner)} 트레이드 단행`,
     `${tname(G.user)}이(가) ${tname(partner)}와(과) 트레이드했습니다. ${gn||'없음'}을(를) 보내고 ${tn||'없음'}을(를) 받았습니다. ${tone>=1?'당장 전력에 도움이 되는 거래라는 평가입니다.':tone<=-1?'기록상으로는 손해라는 시각이 많습니다. 숨은 의도가 있는지 지켜봐야 합니다.':'득실은 시간이 지나야 알 수 있다는 평가입니다.'}`,tone,{mail:true});
 }
 function prFA(rec){ if(rec.to!==G.user||rec.from===G.user)return; const big=rec.annual>=1500; news('FA',`${tshort(G.user)}, FA ${rec.name} 영입`,`${tname(G.user)}이(가) FA ${rec.name}와(과) ${rec.years}년 연 ${money(rec.annual)}에 계약했습니다.${big?' 대형 계약으로 팬들의 기대가 큽니다.':''}`,big?3:1,{fanW:big?2:1}); }

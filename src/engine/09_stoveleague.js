@@ -118,7 +118,7 @@ function faSign(p,offers){
   termsClear(p); const BT=best.tid===G.user&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); }
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:BT?BT.annual+Math.round((BT.bonus||0)/best.years):best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null,...(BT?{terms:BT}:{})};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`,'move');
-  if(best.tid!==from){ if(G.fa){ G.fa.outN=G.fa.outN||{}; G.fa.outN[best.tid]=(G.fa.outN[best.tid]||0)+1; }
+  if(best.tid!==from){ try{ gmInc(best.tid,'fa'); if(rec.annual*best.years>=6000)gmInc(best.tid,'faBig'); }catch(e){} /* 단장 프로필: 외부 FA, 총액 60억 이상은 대형 */ if(G.fa){ G.fa.outN=G.fa.outN||{}; G.fa.outN[best.tid]=(G.fa.outN[best.tid]||0)+1; }
     try{ compStart(p,from,best.tid,rec); }catch(e){}
   }
   if(best.tid===G.user&&!G.unemp)chron('fa',from===G.user?`FA ${p.name} 잔류 (${ctRecShort(rec)})`:`FA ${p.name} 영입 (${ctRecShort(rec)})`,p.id); else if(from===G.user&&best.tid!==G.user&&!G.unemp)chron('fa',`FA ${p.name}, ${tshort(best.tid)}로 이적`,p.id);

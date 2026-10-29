@@ -9,11 +9,11 @@ function mgrNew(tid,act){ const n=(!act&&(()=>{ try{ return obAiMgr(tid); }catch
 /* 시즌 뒤: 성적이 나쁜 AI 구단 감독 경질(계약 기간이 남아 있어도) */
 function mgrFireOff(){ const st=G.last&&G.last.order; if(!st)return; for(const t of G.teams){ if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m)continue; const rk=st.findIndex(o=>o.tid===t.id)+1;
     if(m.act){ if(rk<=5||R()<.35){ delete m.act; m.yrs=3; /* 아래 해마다 1년 빼는 처리 뒤 2년 */ news('리그',`${tshort(t.id)}, ${m.name} 감독대행 정식 감독 승격`,`시즌 중 지휘봉을 잡은 ${m.name} 감독대행이 ${rk}위로 시즌을 마치고 2년 계약으로 정식 감독이 됐습니다.`,0); } else { const old=m.name; const n=mgrNew(t.id,false); n.yrs++; news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${old} 감독대행 체제로 ${rk}위에 그친 ${tname(t.id)}이(가) ${n.name} 감독을 선임했습니다(${n.yrs-1}년).`,0); wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); } continue; }
-    if(m.yrs<=0)continue; const p=rk>=9?.5:rk>=7?.22:0; if(!p||R()>=p)continue; const old=m.name; const n=mgrNew(t.id,false); n.yrs++;
+    if(m.yrs<=0)continue; const p=rk>=9?.5:rk>=7?.22:0; if(!p||R()>=p)continue; const old=m.name; const n=mgrNew(t.id,false); n.yrs++; try{ gmInc(t.id,'mgrFire'); }catch(e){}
     news('리그',`${tshort(t.id)}, ${old} 감독 경질 · 후임 ${n.name}`,`${rk}위로 시즌을 마친 ${tname(t.id)}이(가) 계약 기간이 남은 ${old} 감독을 경질하고 ${n.name} 감독(${n.yrs-1}년)을 선임했습니다.`,0); wire('감독',`${tname(t.id)}, ${old} 감독 경질 · ${n.name} 감독 선임`,{tid:t.id,x:{mid:n.id,hire:1}}); } }
 /* 시즌 중(6·7·8월 1일): 최하위권 AI 구단은 감독대행 체제로 바꾸기도 한다 */
 function mgrMidSeason(){ if(period()!=='season')return; const st=standingsNow(); for(const x of st.slice(-2)){ const t=team(x.tid); if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m||m.act)continue; const r=G.sea.rec[t.id]; if(!r||r.w+r.l<40||r.w/(r.w+r.l)>=.42||R()>=.2)continue;
-    const old=m.name; const self=R()<.5; const n=mgrNew(t.id,true);
+    const old=m.name; const self=R()<.5; const n=mgrNew(t.id,true); try{ gmInc(t.id,'mgrFire'); }catch(e){}
     news('리그',`${tshort(t.id)} ${old} 감독 ${self?'자진 사퇴':'경질'}, ${n.name} 감독대행 체제`,`${r.w}승 ${r.l}패로 최하위권에 머문 ${tname(t.id)}의 ${old} 감독이 ${self?'성적 부진의 책임을 지고 물러났습니다':'경질됐습니다'}. 남은 시즌은 ${n.name} 감독대행이 이끕니다.`,0);
     wire('감독',`${tname(t.id)}, ${old} 감독 ${self?'자진 사퇴':'경질'} · ${n.name} 감독대행`,{tid:t.id,x:{fire:1,nm:old}}); } }
 /* 야인 기간: 전 소속 구단 스카우트·분석원 빈자리를 채운다(다른 AI 구단처럼) */

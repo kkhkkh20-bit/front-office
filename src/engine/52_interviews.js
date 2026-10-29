@@ -86,10 +86,10 @@ function ivAnswer(j){ const v=G.iv; if(!v||v.done)return null; const q=v.qs[v.i]
   if(fx.prom){ const Y=sponSeason(); (G.ivProm=G.ivProm||[]).push({k:fx.prom,y:Y,d:G.day}); }
   if(o.fx.pp){ try{ const msg=pressPlay(v.repId,o.fx.pp,o.fx.pid,'iv'); if(msg)mail('홍보팀','인터뷰에서 한 말이 기사로 나갑니다',msg,{kind:'언론'}); }catch(e){} }
   v.ans.push({q:q.q,a:o.t,tone:o.tone,fx}); v.i++;
-  if(v.i>=v.qs.length){ v.done=true; const big=v.ans.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0];
+  if(v.i>=v.qs.length){ v.done=true; try{ meInc('iv'); }catch(e){} const big=v.ans.slice().sort((a,b)=>Math.abs(b.fx.fan)+Math.abs(b.fx.press)-Math.abs(a.fx.fan)-Math.abs(a.fx.press))[0];
     news('언론',`${tshort(G.user)} 단장 "${big.a.replace(/^"|"$/g,'').slice(0,30)}${big.a.length>32?'…':''}"`,`${v.outlet} ${v.rep} 기자와의 인터뷰에서 ${IV_TOPIC[v.k]} 관련 질문에 답했습니다. ${v.ans.map(x=>x.a).join(' ')}`,0,{outlet:v.outlet}); }
   return o; }
-function ivSkip(){ const v=G.iv; if(!v||v.done)return; v.done=true; v.skip=true; repRel(repById(v.repId),-4,'인터뷰 거절'); news('언론',`${tshort(G.user)} 단장, ${IV_TOPIC[v.k]} 질문에 침묵`,'구단은 공식 입장을 내지 않았습니다. 팬들 사이에서 답답하다는 반응이 나옵니다.',-1,{outlet:v.outlet}); }
+function ivSkip(){ const v=G.iv; if(!v||v.done)return; v.done=true; v.skip=true; try{ meInc('ivSkip'); }catch(e){} repRel(repById(v.repId),-4,'인터뷰 거절'); news('언론',`${tshort(G.user)} 단장, ${IV_TOPIC[v.k]} 질문에 침묵`,'구단은 공식 입장을 내지 않았습니다. 팬들 사이에서 답답하다는 반응이 나옵니다.',-1,{outlet:v.outlet}); }
 /* 공약 점검: 결산 때(가을야구·우승), 2월 1일(FA 큰손) */
 function ivPromCheck(when){ const L=G.ivProm||[]; if(!L.length)return; const y=when==='season'?G.year:G.year-1; const keep=[];
   for(const p of L){ if(when==='season'&&(p.k==='ps'||p.k==='champ')&&p.y===y){ const ok=p.k==='ps'?!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)):!!(G.ps&&G.ps.champ===G.user);

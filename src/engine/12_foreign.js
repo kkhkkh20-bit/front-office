@@ -87,7 +87,7 @@ function signForeign(tid,id){
   story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
   const cost=Math.round(p.ask*remainFrac());
   if(mid||G.day>=G.cal.open){ G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+cost; }
-  if(mid)G.sea.repl[tid]=(G.sea.repl[tid]||0)+1;
+  if(mid){ G.sea.repl[tid]=(G.sea.repl[tid]||0)+1; try{ gmInc(tid,'fRep'); }catch(e){} }
   G.fmarket=(G.fmarket||[]).filter(x=>x!==id); mvLog('외국인',p,null,tid,`${p.nat||''} ${money(p.ask)}${mid?' · 시즌 중 교체':''}`,p.ask);
   if(tid===G.user)addLog(`외국인 선수 ${p.name}(${p.nat}·${posLabel(p)})와(과) 연 ${money(p.ask)}에 계약했습니다.${mid?` 남은 기간분 ${money(cost)} 지급.`:''}`);
 }
