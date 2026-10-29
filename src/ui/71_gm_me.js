@@ -47,7 +47,7 @@ Object.assign(A,{
   gpPartReset(){ const g=gpSync(); delete g.mod; render(); },
   gpSex(v){ const g=gpSync(); g.female=v==='f'; g.face='gm'+Math.floor(Math.random()*1e6); delete g.mod; UI.gpSeeds=null; render(); },
   gpBg(v){ const g=gpSync(); g.bg=v; render(); },
-  gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; UI.gp=null; A.startGo(UI.pickT); if(G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('game_start',{bg:P.bg,start_team:G.user}); }catch(e){} } },
+  gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; UI.gp=null; A.startGo(UI.pickT); if(G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age}); }catch(e){} } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
   gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,female:g.female,face:g.face,mod:g.mod||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
   resignAsk(){ UI.rsAsk=!UI.rsAsk; render(); },
