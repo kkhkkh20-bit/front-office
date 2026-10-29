@@ -102,7 +102,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
         ${canCont?`<button class="tsb primary" data-a="tsCont"><b>이어하기</b><span>슬롯 ${m.active}${tn?` · ${esc(tn)}`:''}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="tsb ${canCont?'':'primary'}" data-a="tsGo" data-v="team"><b>새 게임</b><span>창단 드래프트로 처음부터 팀을 만듭니다</span></button>
         ${anySave()?`<button class="tsb" data-a="tsGo" data-v="slots"><b>저장 슬롯</b><span>불러오기 · 덮어쓰기 · 삭제</span></button>`:''}
-      </div><p class="ts-ver">버전 ${GAME_VER} · 무료 게임</p>${typeof TELE!=='undefined'&&(TELE.ph||TELE.ga)&&teleOn()?'<p class="small muted">게임 개선을 위해 익명 플레이 기록을 수집합니다. 설정 > 게임 설정에서 끌 수 있습니다.</p>':''}
+      </div><p class="ts-ver">버전 ${GAME_VER} · 무료 게임</p>${typeof TELE!=='undefined'&&TELE&&(TELE.ph||TELE.ga)&&teleOn()?'<p class="small muted">게임 개선을 위해 익명 플레이 기록을 수집합니다. 설정 > 게임 설정에서 끌 수 있습니다.</p>':''}
       ${inFrame()?`<p class="small ts-warn">iPhone·iPad의 Safari는 이 화면 안에서 저장이 지워질 수 있습니다. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a>를 권하고, 가끔 설정의 "파일로 내보내기"로 백업하세요.</p>`:''}</div>${foot}${creditsLine()}</div></div>`; }
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}</div></div>`;
   if(st==='mode'&&false){ ensureWorld();

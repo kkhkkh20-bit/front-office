@@ -64,7 +64,10 @@ function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
     const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
-function trnCost(p){ const D=p.trD; if(!D||(D.y!==G.year&&D.y!==G.year-1))return null; const ks=TRN_TOOLS[trnG(p)].filter(k=>!(k in D.by)&&k in p.r); if(!ks.length)return null; const per=D.s*1.1/ks.length; const o={}; ks.forEach(k=>o[k]=per); delete p.trD; return o; }
+/* 겨울 기회비용: 집중 훈련으로 얻은 만큼(×1.1) 같은 묶음의 다른 항목 성장이 준다.
+   항목마다 '다른 항목이 얻은 양'에 비례해 깎으므로, 여러 항목을 돌아가며 집중해도 전체 비용은 같다(돌려 막기로 비용을 피할 수 없음) */
+function trnCost(p){ const D=p.trD; if(!D||(D.y!==G.year&&D.y!==G.year-1))return null; const ks=TRN_TOOLS[trnG(p)].filter(k=>k in p.r); if(ks.length<2||!(D.s>0))return null;
+  const o={}; for(const k of ks){ const v=D.s*1.1*(D.s-(D.by[k]||0))/D.s/(ks.length-1); if(v>0)o[k]=v; } delete p.trD; return Object.keys(o).length?o:null; }
 /* 경기 기록 합(1군 + 2군) */
 function trnTot(p,y){ y=y??G.year; const a=seasonTotal(p,y,'1군')||{}, b=seasonTotal(p,y,'퓨처스')||{}; const o={}; for(const k of new Set([...Object.keys(a),...Object.keys(b)]))if(typeof (a[k]??b[k])==='number')o[k]=(a[k]||0)+(b[k]||0); return o; }
 /* 집중 항목과 관련된 기록: 이전(시즌 시작~집중 시작) → 이후(집중 시작~지금) */

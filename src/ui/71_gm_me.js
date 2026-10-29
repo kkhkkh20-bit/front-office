@@ -53,3 +53,6 @@ Object.assign(A,{
   resignAsk(){ UI.rsAsk=!UI.rsAsk; render(); },
   resignGo(){ UI.rsAsk=false; const r=resignGM(); if(r){ toast(r); return; } save(); UI.tab='inbox'; UI.mf='all'; UI._ibFirst=true; render(); }
 });
+
+/* 설정 > 진행 방식 (A는 40_actions에서 만들어지므로 그 뒤 파일에서 붙인다) */
+Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });

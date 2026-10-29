@@ -1924,6 +1924,8 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .tbbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:8px 0;background:#ffffff10}.tbbar i{display:block;height:100%}
 .tbleg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px}.tbleg i,.tbdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:0}
 .tbt td{vertical-align:middle}.tbl{padding:5px 0;border-bottom:1px solid #ffffff0d;font-size:13px}
+
+.trn-gr{color:var(--mut,#8b97a3);margin-left:6px}.trn-gr b{font-weight:700}.trn-gr .gA{color:#3fd07f}.trn-gr .gB{color:#8fd16a}.trn-gr .gC{color:#e8edf2}.trn-gr .gD{color:#f0a020}.trn-gr .gE{color:#ff6b6b}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -8829,7 +8831,10 @@ function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
     const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
-function trnCost(p){ const D=p.trD; if(!D||(D.y!==G.year&&D.y!==G.year-1))return null; const ks=TRN_TOOLS[trnG(p)].filter(k=>!(k in D.by)&&k in p.r); if(!ks.length)return null; const per=D.s*1.1/ks.length; const o={}; ks.forEach(k=>o[k]=per); delete p.trD; return o; }
+/* 겨울 기회비용: 집중 훈련으로 얻은 만큼(×1.1) 같은 묶음의 다른 항목 성장이 준다.
+   항목마다 '다른 항목이 얻은 양'에 비례해 깎으므로, 여러 항목을 돌아가며 집중해도 전체 비용은 같다(돌려 막기로 비용을 피할 수 없음) */
+function trnCost(p){ const D=p.trD; if(!D||(D.y!==G.year&&D.y!==G.year-1))return null; const ks=TRN_TOOLS[trnG(p)].filter(k=>k in p.r); if(ks.length<2||!(D.s>0))return null;
+  const o={}; for(const k of ks){ const v=D.s*1.1*(D.s-(D.by[k]||0))/D.s/(ks.length-1); if(v>0)o[k]=v; } delete p.trD; return Object.keys(o).length?o:null; }
 /* 경기 기록 합(1군 + 2군) */
 function trnTot(p,y){ y=y??G.year; const a=seasonTotal(p,y,'1군')||{}, b=seasonTotal(p,y,'퓨처스')||{}; const o={}; for(const k of new Set([...Object.keys(a),...Object.keys(b)]))if(typeof (a[k]??b[k])==='number')o[k]=(a[k]||0)+(b[k]||0); return o; }
 /* 집중 항목과 관련된 기록: 이전(시즌 시작~집중 시작) → 이후(집중 시작~지금) */
@@ -9747,7 +9752,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
         ${canCont?`<button class="tsb primary" data-a="tsCont"><b>이어하기</b><span>슬롯 ${m.active}${tn?` · ${esc(tn)}`:''}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="tsb ${canCont?'':'primary'}" data-a="tsGo" data-v="team"><b>새 게임</b><span>창단 드래프트로 처음부터 팀을 만듭니다</span></button>
         ${anySave()?`<button class="tsb" data-a="tsGo" data-v="slots"><b>저장 슬롯</b><span>불러오기 · 덮어쓰기 · 삭제</span></button>`:''}
-      </div><p class="ts-ver">버전 ${GAME_VER} · 무료 게임</p>${typeof TELE!=='undefined'&&(TELE.ph||TELE.ga)&&teleOn()?'<p class="small muted">게임 개선을 위해 익명 플레이 기록을 수집합니다. 설정 > 게임 설정에서 끌 수 있습니다.</p>':''}
+      </div><p class="ts-ver">버전 ${GAME_VER} · 무료 게임</p>${typeof TELE!=='undefined'&&TELE&&(TELE.ph||TELE.ga)&&teleOn()?'<p class="small muted">게임 개선을 위해 익명 플레이 기록을 수집합니다. 설정 > 게임 설정에서 끌 수 있습니다.</p>':''}
       ${inFrame()?`<p class="small ts-warn">iPhone·iPad의 Safari는 이 화면 안에서 저장이 지워질 수 있습니다. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a>를 권하고, 가끔 설정의 "파일로 내보내기"로 백업하세요.</p>`:''}</div>${foot}${creditsLine()}</div></div>`; }
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}</div></div>`;
   if(st==='mode'&&false){ ensureWorld();
@@ -11457,7 +11462,9 @@ function ibStep(d){ const ids=ibList(UI.mf||'all').map(m=>m.id).filter(id=>docum
 function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
   const n=ibNeedList(); const u=n.length?n:G.mail.filter(m=>!m.read).slice().reverse(); if(u.length){ const m=u[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
   if(G.live){ toast('경기를 먼저 끝까지 보세요.'); return; } const bl=blocker(); if(bl&&!G.res){ toast(bl); UI.tab='home'; render(); return; }
-  const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); advAsk(b?b.dataset.v:'next'); /* 진행 전에 어디까지 가는지 묻고, 스페이스바를 한 번 더 누르면 진행 */ }
+  const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); const v=b?b.dataset.v:'next';
+  /* 특별한 소식(남은 결정·제안·중요 소식)이 없으면 묻지 않고 바로 진행한다. 설정에서 '진행 전에 묻기'를 켜면 매번 묻는다 */
+  let P=[]; try{ P=pendItems(); }catch(e){} if(G.advAsk||P.length){ advAsk(v); return; } A.adv(v); }
 /* 경기 정리를 소식으로(진행한 기간): 진행이 끝나면 소식함 맨 아래에 경기 결과와 잘한·부진한 선수를 남긴다(홈의 주간 정리와 같은 내용) */
 function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
   const gs=D.games.map(d=>G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user))).filter(Boolean);
@@ -12781,7 +12788,7 @@ function clubBody(s){
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
-    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard()+teleCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
+    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+advSetCard()+slotsCard(false)+exportCard()+teleCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
     ${UI.confirmNew?`<div class="note bad">지금 구단을 포기하고 새로 시작합니다. 저장된 진행이 지워집니다.</div><div class="row"><button class="btn danger" data-a="newgame">새로 시작</button><button class="btn" data-a="cancelNew">취소</button></div>`:`<button class="btn" data-a="askNew">새 게임</button>`}</section>`}; const h=mergedBody('club',s,H0);
   return h;
 }
@@ -12932,6 +12939,9 @@ function contractView(){
     ${salTalkView(ended)}
   </section>`;
 }
+
+/* 진행 설정: 스페이스바·계속 버튼으로 진행할 때 확인 창 */
+function advSetCard(){ const on=!!G.advAsk; return `<section class="card"><div class="row between"><h2 class="sec">진행 방식</h2><button class="btn small" data-a="advAskTog">${on?'묻지 않기':'매번 묻기'}</button></div><p class="small muted">${on?'지금: 진행할 때마다 어디까지 갈지 확인 창을 띄웁니다.':'지금: 남은 결정·트레이드 제안·안 읽은 중요 소식이 없으면 묻지 않고 바로 진행합니다. 있으면 진행 전에 알려 줍니다.'}</p></section>`; }
 /* ---------- 선수단 탭: 야구장 배치도 ---------- */
 const FPOS={CF:[180,40],LF:[62,92],RF:[298,92],SS:[118,152],'2B':[242,152],'3B':[62,212],'1B':[298,212],P:[180,240],C:[180,298],DH:[60,298]};
 const fname=p=>{ let n=p.name.includes(' ')?p.name.split(' ').pop():p.name; return n.length>4?n.slice(0,4):n; };
@@ -14946,7 +14956,7 @@ function trnListBody(){ const ps=domestic(G.user).filter(p=>p.age<=33&&!(p.joinY
   const pend=UI.trnPend||{}; const nP=Object.keys(pend).length;
   const row=p=>{ const T=G.trn&&G.trn[p.id]; const mine=T&&T.by==='gm'; const rec=trnCoachPick(p); const cur=mine?T.f:rec; const pk=pend[p.id]; const D=TRN[trnG(p)]; const o=mine?trnObs(p):null;
     const sel=pk||cur;
-    return `<div class="trn-row${pk?' pend':''}"><div class="trn-h"><button class="nm lnk" data-a="trnOpen" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button>
+    return `<div class="trn-row${pk?' pend':''}"><div class="trn-h"><button class="nm lnk" data-a="trnOpen" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="trn-gr small">${TRN_TOOLS[trnG(p)].filter(k=>k in p.r).map(k=>`${TOOLK[k]||k} <b class="g${dvGrade(p.r[k])}">${dvGrade(p.r[k])}</b>`).join(' · ')}</span>
       <span class="small">${mine?'<span class="pill good">단장 요청</span>':'<span class="pill">코치진</span>'} 지금 <b>${D[cur].l}</b>${o?` · ${o.w}주 · ${esc(o.lv)}`:''}</span></div>
       <div class="seg trn-seg">${Object.entries(D).map(([k,v])=>`<button data-a="trnPick" data-v="${p.id}:${k}" class="${sel===k?'on':''}">${v.l}${k===rec?'<i>·</i>':''}</button>`).join('')}</div></div>`; };
   const bar=nP?`<div class="trn-bar"><span>${nP}명 바꿈</span><button class="btn small" data-a="trnPendClear">되돌리기</button><button class="btn small primary" data-a="trnApply">감독에게 제안하기</button></div>`:'';
@@ -15130,6 +15140,9 @@ Object.assign(A,{
   resignAsk(){ UI.rsAsk=!UI.rsAsk; render(); },
   resignGo(){ UI.rsAsk=false; const r=resignGM(); if(r){ toast(r); return; } save(); UI.tab='inbox'; UI.mf='all'; UI._ibFirst=true; render(); }
 });
+
+/* 설정 > 진행 방식 (A는 40_actions에서 만들어지므로 그 뒤 파일에서 붙인다) */
+Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });
 /* ---------- 플레이 기록(익명, 테스트용) ----------
  테스트 배포 때 '단장을 만들고 어디까지, 몇 년 차까지 하는지'와 어느 기능을 쓰는지, 어디서 막히는지를 보기 위한 기록.
  - TELE.ph에 PostHog 프로젝트 키(phc_…)를 넣어야 켜진다. 비어 있으면 아무것도 보내지 않는다(GA4 측정 ID도 넣을 수 있다).
@@ -15142,11 +15155,11 @@ Object.assign(A,{
  3) 화면: screen(어느 화면에서 어느 화면으로, 머문 초)
  4) 세션: session_start · session_end(플레이 시간, 읽은 소식 수, 진행 횟수, 마지막 화면과 게임 날짜)
  5) 오류: js_error(메시지, 위치, 화면, 게임 날짜) */
-const TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
-const TELE_GA=TELE.ga; /* 예전 이름 호환 */
+var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
+var TELE_GA=TELE.ga; /* 예전 이름 호환 */
 function teleOn(){ if(!TELE.ph&&!TELE.ga)return false; const m=meta(); return m.tele!==false; }
 function teleUid(){ try{ let u=localStorage.getItem('dsj_uid'); if(!u){ u='u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem('dsj_uid',u); } return u; }catch(e){ return 'anon'; } }
-const TS={q:[],ready:false,fail:false,t0:Date.now(),reads:0,adv:0,space:0,acts:0,err:0,scr:null,scrT:Date.now()};
+var TS={q:[],ready:false,fail:false,t0:Date.now(),reads:0,adv:0,space:0,acts:0,err:0,scr:null,scrT:Date.now()};
 function teleBase(){ const b={ver:typeof GAME_VER!=='undefined'?GAME_VER:'',tab:UI&&UI.tab||'',sub:UI&&UI.tab&&UI.sub?UI.sub[UI.tab]||'':''};
   try{ if(G){ b.game_year=G.year; b.game_date=dobj(G.day).m+'/'+dobj(G.day).d; b.period=period(); b.gm_year=(G.year-((G.gmP&&G.gmP.y0)||G.startY||G.year))+1; b.team=G.user; b.unemp=!!G.unemp; b.gm_bg=G.gmP?G.gmP.bg:''; } }catch(e){} return b; }
 function teleLoad(){ if(window._teleL||!teleOn())return; window._teleL=1;

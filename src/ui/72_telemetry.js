@@ -10,11 +10,11 @@
  3) 화면: screen(어느 화면에서 어느 화면으로, 머문 초)
  4) 세션: session_start · session_end(플레이 시간, 읽은 소식 수, 진행 횟수, 마지막 화면과 게임 날짜)
  5) 오류: js_error(메시지, 위치, 화면, 게임 날짜) */
-const TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
-const TELE_GA=TELE.ga; /* 예전 이름 호환 */
+var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
+var TELE_GA=TELE.ga; /* 예전 이름 호환 */
 function teleOn(){ if(!TELE.ph&&!TELE.ga)return false; const m=meta(); return m.tele!==false; }
 function teleUid(){ try{ let u=localStorage.getItem('dsj_uid'); if(!u){ u='u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem('dsj_uid',u); } return u; }catch(e){ return 'anon'; } }
-const TS={q:[],ready:false,fail:false,t0:Date.now(),reads:0,adv:0,space:0,acts:0,err:0,scr:null,scrT:Date.now()};
+var TS={q:[],ready:false,fail:false,t0:Date.now(),reads:0,adv:0,space:0,acts:0,err:0,scr:null,scrT:Date.now()};
 function teleBase(){ const b={ver:typeof GAME_VER!=='undefined'?GAME_VER:'',tab:UI&&UI.tab||'',sub:UI&&UI.tab&&UI.sub?UI.sub[UI.tab]||'':''};
   try{ if(G){ b.game_year=G.year; b.game_date=dobj(G.day).m+'/'+dobj(G.day).d; b.period=period(); b.gm_year=(G.year-((G.gmP&&G.gmP.y0)||G.startY||G.year))+1; b.team=G.user; b.unemp=!!G.unemp; b.gm_bg=G.gmP?G.gmP.bg:''; } }catch(e){} return b; }
 function teleLoad(){ if(window._teleL||!teleOn())return; window._teleL=1;
