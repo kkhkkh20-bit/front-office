@@ -33,7 +33,7 @@ function advance(mode){
     if(mode==='event'){ const D=G.dig; D.to=G.day;
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); if(g&&/차전/.test(g.kind||''))break; G.res=null; }
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
-      { const op=(G.evs||[]).filter(e=>!e.done); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; stop('결정',`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다: ${last.title}`); break; } } if((G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
+      { const op=(G.evs||[]).filter(e=>!e.done); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if((G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length&&dobj(G.day+1).w===1)break; /* 다음 날이 월요일(휴식일)이면 한 주 정리 */
       if(D.games.length===0&&days>=14&&period()!=='season')break;
       if(G.unemp&&days>=14)break;
