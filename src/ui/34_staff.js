@@ -44,7 +44,7 @@ function coachOther(role,srt){ const C=coachesOf(G.user); const SF={tot:c=>-(c.s
     ${(()=>{ const P=pager('cpo',L.slice(0,40),wide()?12:6); return `<div class="cgrid" data-pg="cpo">${P.items.map(card).join('')}</div>${P.bar}`; })()}`; }
 function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); const mode=UI.cmode||'free';
   const srt=UI.csort||'tot'; const SF={tot:c=>-(c.sk+c.dv),sk:c=>-c.sk,dv:c=>-c.dv,sal:c=>c.sal}; const otherN=G.teams.filter(t=>t.id!==G.user).reduce((a,t)=>a+CKEYS.filter(k=>G.coach&&G.coach[t.id]&&G.coach[t.id][k]).length,0);
-  const modeBar=''; const _mb=`<div class="seg"><button data-a="cmode" data-v="free" class="${mode==='free'?'on':''}">자유 계약 후보 ${(G.cmarket||[]).length}</button><button data-a="cmode" data-v="other" class="${mode==='other'?'on':''}">다른 구단 코치 ${otherN}</button></div>`;
+  const modeBar=''; const _mb=`<div class="seg"><button data-a="cmode" data-v="free" class="${mode==='free'?'on':''}">채용 후보 ${(G.cmarket||[]).length}</button><button data-a="cmode" data-v="other" class="${mode==='other'?'on':''}">다른 구단 코치 ${otherN}</button></div>`;
   const M=G.cmarket||[]; const L=M.filter(c=>role==='all'||c.role===role).sort((a,b)=>SF[srt](a)-SF[srt](b));
   const chips=`<div class="chips">${[['all','전체'],...CKEYS.map(k=>[k,CROLE[k].l])].map(([k,l])=>`<button data-a="crole" data-v="${k}" class="${role===k?'on':''}">${l} <i class="cnt">${k==='all'?M.length:M.filter(c=>c.role===k).length}</i>${k!=='all'&&!C[k]?' <i class="cnt" style="background:var(--bad)">빈자리</i>':''}</button>`).join('')}</div>
     <div class="chips">${[['tot','종합순'],['sk','지도력순'],['dv','육성력순'],['sal','연봉 낮은 순']].map(([k,l])=>`<button data-a="csort" data-v="${k}" class="${srt===k?'on':''}">${l}</button>`).join('')}</div>
@@ -64,7 +64,7 @@ function coachView(){ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=
     <p class="small">${m?`${esc(m.name)} 감독 사단 코치 <b>${cn}명</b>${cn?' · 사단 코치는 지도·육성 +6':''}${(m.ego||0)>=70?' · 고집 센 감독이라 사단 밖 코치는 -2':''}`:'감독이 없습니다.'}</p>
     <p class="small muted">지도력은 1군 경기력(투수·타격·주루·수비)에, 육성력은 선수 성장 속도에 반영됩니다. 1군에서 많이 뛴 선수는 1군 코치, 나머지는 2군 코치진이 키웁니다. 비어 있는 자리는 낮은 수준으로 계산됩니다.</p></section>`;
   const cs=coachesOf(G.user); const vac1=CKEYS.some(k=>CROLE[k].g===1&&!cs[k]), vac2=CKEYS.some(k=>CROLE[k].g===2&&!cs[k]);
-  const it=inTabs('coach',[['g1',`1군 코치${vac1?' · 빈자리':''}`],['g2',`2군 코치${vac2?' · 빈자리':''}`],['mk',`자유 계약 후보 ${(G.cmarket||[]).length}`],['po','다른 구단 코치']],!vac1&&vac2?'g2':'g1');
+  const it=inTabs('coach',[['g1',`1군 코치${vac1?' · 빈자리':''}`],['g2',`2군 코치${vac2?' · 빈자리':''}`],['mk',`채용 후보 ${(G.cmarket||[]).length}`],['po','다른 구단']],!vac1&&vac2?'g2':'g1');
   const body=it.cur==='mk'||it.cur==='po'?(UI.cmode=it.cur==='po'?'other':'free',coachMarket()):`<div class="cgrid">${CKEYS.filter(k=>CROLE[k].g===(it.cur==='g2'?2:1)).map(coachSlot).join('')}</div>`;
   return sumC+it.bar+(UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+body; }
 /* 감독 후보의 사단 */
