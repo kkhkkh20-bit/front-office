@@ -158,6 +158,7 @@ const A={
   salOffAll(){ UI.ctMsg=salOfferAll(); save(); render(); },
   salArbAccept(v){ const C=G.contract; const n=C&&C.neg&&C.neg[+v]; const p=G.players[+v]; if(n&&p&&n.st==='arb'){ n.st='ok'; p.newSal=n.arb.player; p.mor=clamp((p.mor??60)+2,0,100); UI.ctMsg=`${p.name}: 선수안 ${money(n.arb.player)}을 받아들여 연봉조정 신청이 취하됐습니다.`; } save(); render(); },
   fneg(v){ UI.ctMsg=fReNeg(+v); save(); render(); },
+  ffree(v){ const id=+v; const C=G.contract; if(!C)return; const a=C.fFree=C.fFree||[]; const i=a.indexOf(id); i>=0?a.splice(i,1):a.push(id); save(); render(); },
   fdrop(v){const id=+v; const a=G.contract.foreignDrop; const i=a.indexOf(id); i>=0?a.splice(i,1):a.push(id); save(); render();},
   relAsk(v){UI.confirmRel=+v;renderSheet();},
   relCancel(){UI.confirmRel=null;renderSheet();},

@@ -51,3 +51,27 @@ function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]
 /* AI 구단은 우리와 협상 중인(기다려 주는) 선수를 그 기간에는 데려가지 않는다 */
 function foHeld(q){ return q&&q.fneg&&q.fneg.dl&&q.fneg.dl>=G.day; }
 const usdT=v=>`${Math.round(v/USD)}만 달러`;
+
+/* ===== 우리 외국인 선수 재계약과 보류권 =====
+ 실제 규정(외국인 선수 고용 규정 '독점 교섭 기간: 보류권'): 원소속 구단이 재계약을 제안했는데 선수가 받아들이지 않으면 5년 동안 국내 다른 구단에 입단할 수 없다.
+ 원소속 구단이 동의(보류권 해제)하면 다른 구단과 계약할 수 있다. 그래서 재계약 협상의 경쟁 상대는 국내 구단이 아니라 해외(일본·미국) 제안뿐이다.
+ - 재계약은 1인 100만 달러 상한이 없고, 3명 총액 한도만 있다.
+ - 선수는 국내에 남으려면 우리와 계약해야 하므로, 해외 제안이 없으면 요구액보다 조금 낮아도 받아들인다(적응력·충성심이 높을수록).
+ - 결별할 때 보류권을 쥐고 있으면 그 선수는 해외로 떠나고, 풀어 주면 시장에 나와 다른 구단이 데려갈 수 있다. */
+function foReOut(p){ const C=G.contract; const y=C?C.y:G.year; if(p.fout&&p.fout.y===y)return p.fout; const h=seasonTotal(p,y,'1군'); const war=h?warOf(h,p):0; let o=null;
+  if(war>=3&&p.age<=33&&R()<.55)o={k:R()<.7?'일본':'미국',v:Math.round(p.newSal*rnd(1.05,1.45))};
+  else if(war>=1.5&&p.age<=32&&R()<.25)o={k:R()<.6?'일본':'대만',v:Math.round(p.newSal*rnd(.8,1.05))};
+  p.fout=o?Object.assign(o,{y}):{y,none:true}; return p.fout; }
+function foReComfort(p){ initPers(p); return clamp(1+((p.adapt||50)-50)/500+(p.rsy||0)*.01+((p.pers.loy||10)-10)*.004,.95,1.12); }
+function foReFloor(p){ initPers(p); const O=foReOut(p); const stay=p.newSal*clamp(.9-((p.pers.loy||10)-10)*.01-((p.adapt||50)-50)/1000,.78,.95); return Math.max(stay,O&&!O.none?O.v*.97:0); }
+function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.done||!p||!C.foreignEnd.includes(id))return {ok:false,msg:'재계약 기간이 아닙니다.'};
+  if(C.foreignDrop.includes(id))return {ok:false,msg:'이미 결별하기로 한 선수입니다.'}; C.fre=C.fre||{}; const N=C.fre[id]=C.fre[id]||{n:0,mood:70};
+  if(N.ok)return {ok:false,msg:'이미 합의했습니다.'}; if(N.n>=3)return {ok:false,msg:'재계약 제안은 세 번까지입니다.'};
+  g=Math.round(g); i=Math.round(Math.max(0,i)); N.n++; const f=foReComfort(p); const v=foVal(g,i)*f; const target=foReFloor(p); const O=foReOut(p);
+  const out=O&&!O.none?`${O.k} 구단이 ${usdT(O.v)} 수준을 제시했다고 합니다.`:'해외 제안은 없다고 합니다. 국내 다른 구단은 보류권 때문에 접촉할 수 없습니다.';
+  if(v>=target){ N.ok=true; p.newSal=g; if(i>0)p.fInc=i; else delete p.fInc; return {ok:true,msg:`${p.name} 측이 재계약에 합의했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}. ${O&&!O.none?out:''}`}; }
+  const r=v/target; N.mood-=r<.85?15:r<.95?6:2;
+  if(N.mood<40||N.n>=3){ C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return {ok:false,msg:`${p.name} 측이 재계약을 거절했습니다. ${out} 보류권은 우리에게 있으니 5년 동안 국내 다른 구단에는 갈 수 없고, ${O&&!O.none?O.k+'로':'해외로'} 떠납니다.`}; }
+  const need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD; return {ok:false,need,msg:`${p.name} 측: 보장 ${usdT(need)}(${money(need)})${i?` + 인센티브 ${usdT(i)}`:''} 이상이면 사인하겠다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; }
+/* 보류 명단: 보류권을 쥐고 결별한 외국인(5년간 국내 다른 구단 입단 불가) */
+function foResAdd(p,tid){ G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year); G.fRes.unshift({name:p.name,pos:posLabel(p),nat:p.nat,tid,y:G.year,until:G.year+5}); if(G.fRes.length>40)G.fRes.length=40; }
