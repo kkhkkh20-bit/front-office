@@ -4,6 +4,8 @@ function perfOf(h,isP){
   if(isP){ if(h.outs<75)return null; return clamp(35+(6.2-pRate(h).era)/3.2*33,20,80); }
   if(h.pa<120)return null; return clamp(35+(bRate(h).ops-.55)/.35*30,20,80);
 }
+/* 한 구단에서 낸 기록만(이적 전후를 나눈다) */
+function seasonTotalT(p,y,lvl,tid){ const hs=p.hist.filter(h=>h.y===y&&!h.y2&&(!lvl||h.lvl===lvl)&&h.t===tid); if(!hs.length)return null; const tot=Object.assign({},hs[0]); for(const h of hs.slice(1))addTo(tot,h); tot.pos=hs[hs.length-1].pos; tot.t=tid; return tot; }
 function seasonTotal(p,y,lvl){ const hs=p.hist.filter(h=>h.y===y&&!h.y2&&(!lvl||h.lvl===lvl)); if(!hs.length)return null; const tot=Object.assign({},hs[0]); for(const h of hs.slice(1))addTo(tot,h); tot.pos=hs[hs.length-1].pos; tot.t=hs[hs.length-1].t; return tot; }
 function perfOvr(p,n){
   const ys=[...new Set(p.hist.filter(h=>h.lvl==='1군').map(h=>h.y))].slice(-n);

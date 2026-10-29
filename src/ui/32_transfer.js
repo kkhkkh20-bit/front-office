@@ -7,7 +7,7 @@ function transferView(){
 }
 function netPill(r){ const lv=intlLv(r); return `<span class="pill net${lv}" title="${esc(INET[lv].d)}">${IREG[r].l} · ${INET[lv].l}</span>`; }
 function foreignView(){
-  const fs=foreignOf(G.user); const yb=fs.filter(p=>p.foreign==='용병'); const as=fs.filter(p=>p.foreign==='아시아'); const tot=sum(yb.map(p=>p.sal));
+  const fs=foreignOf(G.user); const yb=fs.filter(p=>p.foreign==='용병'); const as=fs.filter(p=>p.foreign==='아시아'); const tot=sum(yb.map(fCommit));
   const per=period(); const mid=per==='season'; const used=G.sea.repl[G.user]||0; const open=foreignOpen();
   const ff=Object.assign({t:'yb',r:'all',s:'rk'},UI.ff||{}); const asia=ff.t==='asia';
   const regs=Object.keys(IREG).filter(r=>IREG[r].asia===asia);

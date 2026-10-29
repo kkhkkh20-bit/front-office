@@ -14,7 +14,7 @@ function teamBuildView(){ if(G.unemp)return csec('내가 꾸린 팀','<p class="
       ${R.map((x,i)=>{ const cx=R.length===1?w/2:px(i), cy=py(x.rank); return `<circle cx="${cx}" cy="${cy}" r="${x.ch===1?7:5}" fill="${x.ch===1?'#f0c040':x.live?'#0c1117':'var(--team-hi,#4fa3ff)'}" stroke="var(--team-hi,#4fa3ff)" stroke-width="2"/><text x="${cx}" y="${cy-10}" text-anchor="middle" class="tbc-r">${x.rank}위${x.ch===1?' 우승':''}</text><text x="${cx}" y="${h-6}" text-anchor="middle" class="tbc-l">${x.y}${x.live?' 진행 중':''}</text>`; }).join('')}</svg></div>`; })():'<p class="small muted">첫 시즌을 마치면 순위 변화가 그려집니다.</p>';
   /* 2) 지금 선수단은 어디서 왔나 + 올 시즌 WAR 비중 */
   const ps=playersOf(G.user).filter(p=>!p.prospect); const by={}; const wy=period()==='season'||period()==='post'?G.year:G.year-1;
-  for(const p of ps){ const c=originCat(p); const h=seasonTotal(p,wy,'1군'); const w=h&&h.t===G.user?Math.max(0,warOf(h,p)):0; (by[c]=by[c]||{n:0,w:0,L:[]}); by[c].n++; by[c].w+=w; by[c].L.push(p); }
+  for(const p of ps){ const c=originCat(p); const h=seasonTotalT(p,wy,'1군',G.user); const w=h?Math.max(0,warOf(h,p)):0; (by[c]=by[c]||{n:0,w:0,L:[]}); by[c].n++; by[c].w+=w; by[c].L.push(p); }
   const tw=Object.values(by).reduce((a,x)=>a+x.w,0); const cats=TB_CAT.filter(c=>by[c]);
   const bar=tw>0?`<div class="tbbar">${cats.filter(c=>by[c].w>0).map(c=>`<i style="width:${by[c].w/tw*100}%;background:${TB_COL[c]}" title="${c} WAR ${by[c].w.toFixed(1)}"></i>`).join('')}</div>`:'';
   const legend=`<div class="tbleg">${cats.map(c=>`<span><i style="background:${TB_COL[c]}"></i>${c} <b>${by[c].n}명</b>${tw>0?` · WAR ${Math.round(by[c].w/tw*100)}%`:''}</span>`).join('')}</div>`;

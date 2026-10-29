@@ -25,6 +25,8 @@ const SCOUT_SAL=[0,60,90,130,180,250];
 const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
 const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
+/* 외국인 선수 한 명이 총액 한도에 차지하는 금액: 보장 연봉 + 아직 유효한 인센티브(신규·재계약·화면이 모두 이 계산을 쓴다) */
+function fCommit(p){ return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=G.year?(p.opt.a||0):0); }
 function fCap(tid){ return F_TOTAL_CAP+10*USD*sum(foreignOf(tid).filter(x=>x.foreign==='용병').map(x=>x.rsy||0)); }
 const F_REPL_MAX=2;
 const fReplLeft=tid=>period()!=='season'?F_REPL_MAX:Math.max(0,F_REPL_MAX-((G.sea&&G.sea.repl&&G.sea.repl[tid])||0)); /* 시즌 중 남은 외국인 교체 횟수 */          // 시즌 중 외국인 교체 횟수 (게임 설정)

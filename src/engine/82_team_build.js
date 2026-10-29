@@ -21,7 +21,7 @@ function mineOf(p){ const o=tbOrigin(p); if(!o||o.tid!==G.user)return false; if(
 function originLabel(o){ if(!o)return '물려받은 선수'; const k=o.k; return k==='fd'?(o.auto?`${o.y} 창단 배분`:`${o.y} 창단 드래프트${o.rd?` ${o.rd}라운드`:''}`):k==='draft'?`${o.y} 신인 드래프트${o.rd?` ${o.rd}라운드`:''}`:k==='트레이드'?`${o.y} 트레이드${o.from!=null?`(${tshort(o.from)})`:''}`:`${o.y} ${ACQ_K[k]||k}`; }
 function originCat(p){ const o=tbOrigin(p); if(!o||!mineOf(p))return '물려받음'; return ACQ_K[o.k]||'기타'; }
 /* 우리 팀에서 쌓은 WAR(데려온 해부터) */
-function warWithUs(p){ const o=tbOrigin(p); const y0=o?o.y:G.year-10; let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotal(p,y,'1군'); if(!h||h.t!==G.user)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }
+function warWithUs(p){ const o=tbOrigin(p); const y0=o?o.y:G.year-10; let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',G.user); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }
 function tbLogAdd(pid,t){ const L=G.tbLog=G.tbLog||[]; L.unshift({y:G.year,d:G.day,pid,t}); if(L.length>120)L.length=120; }
 const TB_MS=[{k:'w10',isP:true,v:h=>h.w||0,n:10,t:'10승'},{k:'sv20',isP:true,v:h=>h.sv||0,n:20,t:'20세이브'},{k:'hr20',isP:false,v:h=>h.hr||0,n:20,t:'20홈런'},{k:'hld20',isP:true,v:h=>h.hld||0,n:20,t:'20홀드'}];
 function tbPrev(p,ms){ for(let y=G.year-1;y>=G.year-25;y--){ const h=seasonTotal(p,y,'1군'); if(h&&ms.v(h)>=ms.n)return true; } return false; }
@@ -35,7 +35,7 @@ function tbWeek(){ if(G.unemp||period()!=='season')return; const out=[];
     mail('전력분석팀',`[내 팀] ${t}`,`${originLabel(O)}로 데려온 ${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${x.first?'프로 데뷔 첫':'올 시즌'} ${x.ms.t}을(를) 달성했습니다.${O&&O.o0!=null?`\n데려올 때 능력 ${dv(O.o0)} → 지금 ${dv(now)}.`:''}\n\n단장님이 꾸린 선수입니다. 구단 > 연대기 > 내가 꾸린 팀에서 모아 볼 수 있습니다.`,{kind:'선수',ref:p.id,face:p.id,acts:[{l:'선수 정보',a:'player',v:p.id},{l:'내가 꾸린 팀',a:'go',v:'club:build'}]}); }
   if(out.length>2)tbLogAdd(null,`그 밖에 ${out.slice(2).map(x=>`${x.p.name} ${x.ms.t}`).join(', ')}`); }
 /* 시즌 회고에 붙일 줄: 내가 꾸린 선수 WAR, 처음 주전이 된 선수 */
-function tbReviewLines(y){ const ps=playersOf(G.user); const W=p=>{ const h=seasonTotal(p,y,'1군'); return h?warOf(h,p):0; }; const L=[];
+function tbReviewLines(y){ const ps=playersOf(G.user); const W=p=>{ const h=seasonTotalT(p,y,'1군',G.user); return h?warOf(h,p):0; }; const L=[];
   const mine=ps.filter(mineOf).map(p=>({p,w:W(p)})).filter(x=>x.w>=.5).sort((a,b)=>b.w-a.w);
   const all=ps.map(W).reduce((a,b)=>a+Math.max(0,b),0), mw=mine.reduce((a,x)=>a+Math.max(0,x.w),0);
   if(mine.length)L.push(`[내가 꾸린 선수] 팀 WAR의 ${all>0?Math.round(mw/all*100):0}%. `+mine.slice(0,6).map(x=>`${x.p.name}(${originLabel(tbOrigin(x.p))}) WAR ${x.w.toFixed(1)}`).join(' / '));

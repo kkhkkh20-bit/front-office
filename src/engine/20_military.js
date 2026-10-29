@@ -2,13 +2,14 @@
  KBO 실제: 상무(국군체육부대) 복무 1년 6개월, 복무 중 퓨처스리그 출전 가능. 올림픽 동메달 이상은 체육요원 편입.
  게임 규칙: 만 28세가 되는 해까지 입대하지 않으면 현역으로 입대한다. 상무 지원은 9~10월(12월 입대)과 3~4월(6월 입대) 두 번. 올림픽은 2028 LA 이후 4년마다 열린다고 가정. */
 const MIL_DAYS=548, SANGMU_SLOTS=14;
-const isAway=p=>!!((p.mil&&p.mil.until&&p.mil.until>G.day)||(p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day));
+const milServing=p=>!!(p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day); /* 실제 입대일부터 전역일 전까지만 복무 중 */
+const isAway=p=>!!(milServing(p)||(p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day));
 const milFree=p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt||p.mil.until));
 function milInit(p){ if(p.mil!==undefined||p.foreign)return; const a=p.age; const u=u01('mil',p.id);
   p.mil=a>=28?(u<.9?{done:true}:u<.95?{exempt:true}:null):a>=25?(u<.55?{done:true}:u<.6?{exempt:true}:null):a>=22?(u<.2?{done:true}:null):null; }
 function milText(p){ if(p.foreign)return '해당 없음'; const m=p.mil; if(!m)return `미필 · ${G.year+Math.max(0,27-p.age)}년까지 입대`; if(m.exempt)return '면제(체육요원)'; if(m.done)return '군필';
-  if(m.until>G.day)return `${m.unit} 복무 중 · ${dmd(m.until)} 전역`; if(m.until)return `${m.unit} 입대 예정 · ${dmd(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
-function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ cn.st='ok'; cn.mil=true; p.newSal=p.sal; } story(p,`${unit} 입대 (${dmd(from)})`,'mil'); p.e1=false; if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
+  if(m.until&&m.from<=G.day&&m.until>G.day)return `${m.unit} 복무 중 · ${dmd(m.until)} 전역`; if(m.until&&m.from>G.day)return `${m.unit} 입대 예정 · ${dmd(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
+function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ cn.st='ok'; cn.mil=true; p.newSal=p.sal; } story(p,`${unit} 입대 (${dmd(from)})`,'mil'); if(from<=G.day)p.e1=false; /* 엔트리는 입대일에 뺀다(합격 발표 때 빼지 않는다) */ if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
 function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; if(p.mil&&p.mil.app)return '이미 지원했습니다.'; const w=sangmuWave(); if(!w)return '상무 지원 기간이 아닙니다(3~4월, 9~10월).'; if(p.age>27)return '상무 지원은 27세까지입니다(게임 규칙).';
   p.mil={app:w}; addLog(`${p.name}이(가) 상무에 지원했습니다.`); return ''; }
 function sangmuWave(){ const d=G.day; if(d>=KD(9,1)&&d<KD(10,15))return 'dec'; if(d>=KD(3,1)&&d<KD(4,15))return 'jun'; return null; }
@@ -25,6 +26,7 @@ function milDaily(){ const d=G.day;
     if(mo.length||mn.length)mail('운영팀','상무 합격자 발표',`${mo.length?`합격: ${mo.map(p=>p.name).join(', ')} (${dmd(from)} 입대)`:'합격자 없음'}${mn.length?`\n불합격: ${mn.map(p=>p.name).join(', ')}. 다음 지원 기간에 다시 지원하거나 현역으로 입대해야 합니다.`:''}`,{imp:true,kind:'병역'});
     if(mo.some(p=>ovr(p)>=52))news('선수',`${tshort(G.user)} 주축 ${mo.find(p=>ovr(p)>=52).name} 상무 합격`,`전력 공백은 불가피하지만 1년 6개월 뒤 돌아올 자원입니다.`,-1); }
   try{ milRetWarn(d); }catch(e){}
+  for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.from===d){ p.e1=false; if(p.team===G.user)addLog(`${p.name} ${m.unit} 입대. 전역 예정 ${dmd(m.until)}.`); } }
   for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until===d){ p.mil={done:true,unit:m.unit}; story(p,`${m.unit} 전역`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} 전역`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다. 정식 로스터 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
   for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX)try{ trimRoster(t.id,ROSTER_MAX); }catch(e){} }
   oly(d); }

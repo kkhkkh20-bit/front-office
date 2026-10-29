@@ -17,3 +17,16 @@
 .cw-ctl .btn{flex:1 1 auto}
 @media (max-width:420px){ .sheet.cw .mt-l{max-width:94%} }
 .cw-ord p.cw-note{font-size:12px;color:var(--muted)}
+
+/* 창단 드래프트 후보 표(휴대폰): 이름 칸을 줄이고 숫자 칸을 최대한 많이 보이게 */
+@media (max-width:600px){
+  .fdt th,.fdt td{padding:5px 3px}
+  .fdt thead th{font-size:11px}
+  .fdt tbody th,.fdt thead th.c0{min-width:0!important;max-width:150px;padding-left:2px}
+  .fdn{gap:2px}.fds{min-width:16px;font-size:13px;padding:0}
+  .fdnm b{font-size:12.5px;white-space:nowrap}.fdnm i{font-size:10px;white-space:nowrap!important;letter-spacing:-.2px}
+  .rkp{font-size:9.5px;margin-left:3px;padding:0 3px}
+  .fdgo{padding:3px 5px!important;font-size:11px!important}
+  .fdt td.fdg{font-size:13px!important;min-width:26px}
+  .fdt td{min-width:0}
+}

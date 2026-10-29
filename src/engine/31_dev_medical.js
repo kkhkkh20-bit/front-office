@@ -19,10 +19,13 @@ function ovsElig(p){ return !!p&&!p.foreign&&!p.prospect&&p.age<=30&&!(p.injOut>
 /* 예전 2군 연수 배정은 훈련 방향 요청으로 바꾼다 */
 function setDev(id,prog){ if(!prog)return ''; const D=DEVP[prog]; if(!D)return ''; trnSet(id,D.to); return ''; }
 function setOvs(id,prog){ const prev=(G.ovs||[]).find(x=>x.pid===id); if(prev&&prev.go)return '이미 떠났습니다.';
-  if(prev&&OVS[prev.prog])G.spend.dev=Math.max(0,(G.spend.dev||0)-OVS[prev.prog].c); /* 떠나기 전에 바꾸거나 취소하면 돌려받는다 */
-  G.ovs=(G.ovs||[]).filter(x=>x.pid!==id); if(!prog)return '';
-  const o=OVS[prog], p=G.players[id]; if(!o||!p)return ''; if(!ovsOpen(prog))return `${o.l} 신청 기간이 아닙니다(9월 1일~${o.close[0]}월 ${o.close[1]}일).`; if(!ovsElig(p))return '보낼 수 없는 선수입니다(30세 이하 국내 선수, 부상·입대 예정 제외).';
-  if(G.ovs.filter(x=>x.prog===prog).length>=o.lim)return `${o.l}은(는) ${o.lim}명까지입니다.`;
+  const refund=()=>{ if(prev&&OVS[prev.prog])G.spend.dev=Math.max(0,(G.spend.dev||0)-OVS[prev.prog].c); G.ovs=(G.ovs||[]).filter(x=>x.pid!==id); }; /* 떠나기 전에 바꾸거나 취소하면 돌려받는다 */
+  if(!prog){ refund(); return ''; } if(prev&&prev.prog===prog)return '';
+  /* 새 신청이 되는지 먼저 확인: 안 되면 기존 예약과 비용은 그대로 둔다 */
+  const keep=prev?' 기존 예약은 그대로 둡니다.':'';
+  const o=OVS[prog], p=G.players[id]; if(!o||!p)return '없는 프로그램입니다.'; if(!ovsOpen(prog))return `${o.l} 신청 기간이 아닙니다(9월 1일~${o.close[0]}월 ${o.close[1]}일).${keep}`; if(!ovsElig(p))return `보낼 수 없는 선수입니다(30세 이하 국내 선수, 부상·입대 예정 제외).${keep}`;
+  if((G.ovs||[]).filter(x=>x.prog===prog&&x.pid!==id).length>=o.lim)return `${o.l}은(는) ${o.lim}명까지입니다.${keep}`;
+  refund();
   G.ovs.push({pid:id,prog}); G.spend.dev=(G.spend.dev||0)+o.c; addLog(`${p.name}을(를) ${o.l}에 보냅니다(1인 ${money(o.c)}, 동행 코치·직원 비용 ${money(o.fix)}은 출발 때 한 번).`); return ''; }
 function setFall(k){ if(!fallOpen())return '가을 교육리그 참가 신청 기간이 아닙니다(9월 1일~10월 10일).'; const y=G.year; const prev=G.fall&&G.fall.y===y?G.fall.k:null; if(prev)G.spend.dev=Math.max(0,(G.spend.dev||0)-FALL[prev].c);
   G.fall={y,k:k||null}; if(!k)return ''; G.spend.dev=(G.spend.dev||0)+FALL[k].c; addLog(`가을 교육리그: ${FALL[k].l} 참가(${money(FALL[k].c)}).`); return ''; }
