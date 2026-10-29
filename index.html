@@ -1812,6 +1812,27 @@ details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;mar
 }
 /* 가로로 넘치는 표: 오른쪽에 더 있다는 그림자 */
 .fdt-w{background:linear-gradient(90deg,var(--panel,#181d24) 30%,transparent) left/24px 100% no-repeat local,linear-gradient(270deg,var(--panel,#181d24) 30%,transparent) right/24px 100% no-repeat local,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.45),transparent) right/12px 100% no-repeat scroll}
+/* 구단 카드 요약 줄: 세부(재정·구장)는 모든 화면 폭에서 '자세히'로 */
+.tp-sum{margin:6px 0 2px;font-size:14px;font-weight:600}
+.tpg.cmp .tmk:not(.open) .tp-g{display:none}.tpg.cmp .tp-more{display:inline}
+/* 창단 진행 표시 */
+.fdsteps{display:flex;gap:6px;list-style:none;margin:6px 0 12px;padding:0;counter-reset:none}
+.fdsteps li{flex:1;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);font-size:13px;color:var(--muted);min-width:0}
+.fdsteps li b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--panel2,rgba(127,127,127,.15));font-size:12px;flex:none}
+.fdsteps li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fdsteps li.on{color:var(--text,#e2e8ed);border-color:var(--acc,#4a7dff)}.fdsteps li.on b{background:var(--acc,#4a7dff);color:#fff}
+.fdsteps li.done b{background:var(--good,#3fb871);color:#fff}
+/* 글자 크기·여백: 모바일 주요 설명 14px, 보조 13px */
+@media (max-width:620px){
+  .card p.small:not(.muted){font-size:14px;line-height:1.6}
+  .card p.small.muted{font-size:13px;line-height:1.55}
+  section.card+section.card{margin-top:12px}
+}
+/* 시작 화면: 구장 선화 배경, 제목 굵기(기본 글꼴일 때도 굵게), 크레딧 접기 */
+.ts{isolation:isolate}
+.ts::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.13;pointer-events:none;background:no-repeat center 62%/min(560px,96%) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' fill='none' stroke='%23e8dcb0' stroke-width='2'%3E%3Cpath d='M200 285 L40 125 Q200 -40 360 125 Z'/%3E%3Cpath d='M200 270 L135 205 L200 140 L265 205 Z'/%3E%3Cpath d='M200 285 L200 270 M40 125 L135 205 M360 125 L265 205'/%3E%3Ccircle cx='200' cy='208' r='9'/%3E%3Cpath d='M70 120 Q200 10 330 120' stroke-dasharray='4 6'/%3E%3Cpath d='M20 60 L20 20 M380 60 L380 20 M10 20 L30 20 M370 20 L390 20'/%3E%3C/svg%3E")}
+.ts h1{font-weight:800;font-synthesis:none}
+details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:pointer;list-style:none}details.credits>summary::-webkit-details-marker{display:none}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -8783,6 +8804,7 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
     const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=x.fin||{}; const ok=f.avail>=f.cap, mid=f.avail>=f.cap*.75; const age=G0Y()-(STAD_BUILT[x.tid]||2000);
       return `<div class="tmk" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
         <div class="tp-r ${ok?'hi':mid?'mid':'lo'}"><i>캡까지 쓰면</i><b style="font-size:18px">${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>선수 연봉에 쓸 수 있는 돈 ${eok(Math.max(0,f.avail||0))}</span></div></div>
+        <p class="tp-sum">${(()=>{ const o=ORD.indexOf(x.tid)+1; return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', o<=3?'지명 빠름':o>=8?'지명 늦음':'지명 중간', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
         <div class="tp-g"><span><i>창단 지명 순서</i><b>1라운드 ${ORD.indexOf(x.tid)+1}번째</b></span><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
           <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>
@@ -8792,7 +8814,7 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
   return `<p class="small muted">예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
     <div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
 function inFrame(){ try{ return window.self!==window.top; }catch(e){ return true; } }
-function creditsLine(){ return `<p class="small muted keep" style="text-align:center;margin-top:6px">크레딧: 선수 얼굴 faces.js (ZenGM, Apache License 2.0) · 경기장 선수 그림 Kenney Sports Pack (CC0) · 저장 압축 lz-string (MIT) · 글꼴 Noto Sans KR, Black Han Sans, Barlow Condensed (SIL OFL) · 구단·선수·인물은 모두 가상입니다.</p>`; }
+function creditsLine(){ return `<details class="credits"><summary class="small muted">크레딧·라이선스</summary><p class="small muted keep" style="text-align:center;margin-top:6px">크레딧: 선수 얼굴 faces.js (ZenGM, Apache License 2.0) · 경기장 선수 그림 Kenney Sports Pack (CC0) · 저장 압축 lz-string (MIT) · 글꼴 Noto Sans KR, Black Han Sans, Barlow Condensed (SIL OFL) · 구단·선수·인물은 모두 가상입니다.</p></details>`; }
 function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.slots&&m.slots[m.active]; const canCont=!!(G||act);
   const foot=`<p class="small muted" style="margin-top:14px">구단과 선수는 모두 가상입니다. 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
   const back=(v,l)=>`<button class="lnk tsback" data-a="tsGo" data-v="${v}">← ${l}</button>`;
@@ -8816,7 +8838,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
     </div>${foot}</div></div>`; }
   UI.smode='fd'; const fd=true;
   return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
-  <h2 class="ts-h">${fd?'창단 드래프트 · 함께할 구단을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
+  ${fdSteps(1)}<h2 class="ts-h">${fd?'창단 드래프트 · 함께할 구단을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
 
   ${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)} <button class="lnk" data-a="tsGo" data-v="slots">저장 슬롯 보기</button></div>`:''}<section class="card">${pickTeams()}</section>${foot}</div></div>`;
 }
@@ -8826,6 +8848,9 @@ function gameOverView(){
   <button class="btn primary" data-a="newgame">새 구단 맡기</button></div>`;
 }
 
+
+/* 창단 진행 표시: 구단 선택 → 창단 드래프트 → 시즌 준비 */
+function fdSteps(cur){ const S=['구단 선택','드래프트','시즌 준비']; return `<ol class="fdsteps">${S.map((l,i)=>`<li class="${i+1<cur?'done':i+1===cur?'on':''}"><b>${i+1}</b><span>${l}</span></li>`).join('')}</ol>`; }
 /* ---------- 업무 탭 ---------- */
 function upcoming(){
   const c=G.cal, y=G.year, d=G.day; const L=[];
@@ -10169,7 +10194,7 @@ function fdBoard(myPicks,ci,justId){ const bats=myPicks.filter(p=>!p.isP), pits=
 /* 창단 직후: 구단주 환영과 재정 전망, 그다음 드래프트 */
 function fdWaitView(){ const t=team(G.user); const B=bossOf(G.user); const f=fdFin(); const ok=f.avail>=f.cap, mid=f.avail>=f.cap*.75;
   const row=(l,v,c)=>`<div class="row between"><span>${l}</span><b class="num ${c||''}">${v}</b></div>`;
-  return `<section class="card hero"><div class="eyebrow">${tname(G.user)} 창단</div><div class="row" style="flex-wrap:nowrap;gap:12px">${badge(G.user,48)}<div><h2 class="sec">${esc(B.own.name)} 회장이 반깁니다</h2><p class="small">"${esc(OWNVOICE[t.owner])}"</p></div></div></section>
+  return `${fdSteps(2)}<section class="card hero"><div class="eyebrow">${tname(G.user)} 창단</div><div class="row" style="flex-wrap:nowrap;gap:12px">${badge(G.user,48)}<div><h2 class="sec">${esc(B.own.name)} 회장이 반깁니다</h2><p class="small">"${esc(OWNVOICE[t.owner])}"</p></div></div></section>
   <section class="card"><h2 class="sec">올해 재정 전망</h2>
     <details class="frule"><summary class="small">항목별 수입·지출 보기</summary>
     ${f.inc.map(x=>row(x[0],money(x[1]))).join('')}${row('<b>예상 수입 합계</b>',money(f.I))}
@@ -10208,9 +10233,9 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   { /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
     CR=isP?[
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3?'hi':''),`${ly} 1군 WAR`),
-      c('g','경기',x=>x.s?x.s.g:0,x=>td(x.s?`${x.s.g}${x.s.gs?`<i class="sm">(${x.s.gs})</i>`:''}`:'-'),'괄호는 선발 등판'),
-      c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
       c('era','ERA',x=>sOK(x)?-x.s.era:-99,x=>td(sOK(x)?n2(x.s.era):'-')),
+      c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
+      c('g','경기',x=>x.s?x.s.g:0,x=>td(x.s?`${x.s.g}${x.s.gs?`<i class="sm">(${x.s.gs})</i>`:''}`:'-'),'괄호는 선발 등판'),
       c('whip','WHIP',x=>sOK(x)?-x.s.whip:-99,x=>td(sOK(x)?n2(x.s.whip):'-'),'이닝당 안타+볼넷'),
       c('k9','K/9',x=>sOK(x)?x.s.k9:-99,x=>td(sOK(x)?n1(x.s.k9):'-'),'9이닝당 삼진'),
       c('bb9','BB/9',x=>sOK(x)?-x.s.h.bb*9/x.s.n:-99,x=>td(sOK(x)?n1(x.s.h.bb*9/x.s.n):'-'),'9이닝당 볼넷'),
@@ -10218,12 +10243,12 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
 ]
     :[
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3?'hi':''),`${ly} 1군 WAR`),
+      c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
+      c('hr','홈런',x=>x.s?x.s.hr:-1,x=>td(x.s?x.s.hr:'-')),
       c('pa','타석',x=>x.s?x.s.n:0,x=>td(x.s?x.s.n:'-')),
       c('avg','타율',x=>sOK(x)?x.s.avg:-99,x=>td(sOK(x)?f3(x.s.avg):'-')),
       c('obp','출루',x=>sOK(x)?x.s.obp:-99,x=>td(sOK(x)?f3(x.s.obp):'-')),
       c('slg','장타',x=>sOK(x)?x.s.slg:-99,x=>td(sOK(x)?f3(x.s.slg):'-')),
-      c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
-      c('hr','홈런',x=>x.s?x.s.hr:-1,x=>td(x.s?x.s.hr:'-')),
       c('sb','도루',x=>x.s?x.s.sb:-1,x=>td(x.s?x.s.sb:'-')),
 ]; }
   { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
@@ -10340,7 +10365,8 @@ function homeView(){
   const games=[resultHome(),liveCard(),digestCard(),nextCard(),upcomingGames(10)].filter(Boolean).join('');
   if(G.res&&UI._hres!==G.res.i+':'+G.day){ UI._hres=G.res.i+':'+G.day; UI.it=UI.it||{}; UI.it.home='game'; } /* 경기가 막 끝나면 경기 탭을 먼저 */
   const ht=inTabs('home',[['today','할 일'],...(games?[['game','경기']]:[]),['league','리그'],['team','우리 팀']]);
-  return `${stripBar()}${champHomeCard()}${ht.cur==='today'?dashTiles():''}${ht.bar}${ht.cur==='today'?todo:ht.cur==='game'?games:ht.cur==='league'?[miniStand(),mvHomeCard(),newsCard()].filter(Boolean).join(''):[desk,teamIdCard(),formCard(),myLeaders(),clubCard()].filter(Boolean).join('')}`;
+  const prep=G.fd&&G.fd.done&&G.gmSince===G.year&&G.cal&&G.day<G.cal.open?fdSteps(3):''; /* 창단 첫해 개막 전: 진행 표시 3단계 */
+  return `${prep}${stripBar()}${champHomeCard()}${ht.cur==='today'?dashTiles():''}${ht.bar}${ht.cur==='today'?todo:ht.cur==='game'?games:ht.cur==='league'?[miniStand(),mvHomeCard(),newsCard()].filter(Boolean).join(''):[desk,teamIdCard(),formCard(),myLeaders(),clubCard()].filter(Boolean).join('')}`;
 }
 
 

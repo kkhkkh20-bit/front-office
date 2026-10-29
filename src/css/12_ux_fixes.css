@@ -348,3 +348,24 @@ details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;mar
 }
 /* 가로로 넘치는 표: 오른쪽에 더 있다는 그림자 */
 .fdt-w{background:linear-gradient(90deg,var(--panel,#181d24) 30%,transparent) left/24px 100% no-repeat local,linear-gradient(270deg,var(--panel,#181d24) 30%,transparent) right/24px 100% no-repeat local,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.45),transparent) right/12px 100% no-repeat scroll}
+/* 구단 카드 요약 줄: 세부(재정·구장)는 모든 화면 폭에서 '자세히'로 */
+.tp-sum{margin:6px 0 2px;font-size:14px;font-weight:600}
+.tpg.cmp .tmk:not(.open) .tp-g{display:none}.tpg.cmp .tp-more{display:inline}
+/* 창단 진행 표시 */
+.fdsteps{display:flex;gap:6px;list-style:none;margin:6px 0 12px;padding:0;counter-reset:none}
+.fdsteps li{flex:1;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);font-size:13px;color:var(--muted);min-width:0}
+.fdsteps li b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--panel2,rgba(127,127,127,.15));font-size:12px;flex:none}
+.fdsteps li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fdsteps li.on{color:var(--text,#e2e8ed);border-color:var(--acc,#4a7dff)}.fdsteps li.on b{background:var(--acc,#4a7dff);color:#fff}
+.fdsteps li.done b{background:var(--good,#3fb871);color:#fff}
+/* 글자 크기·여백: 모바일 주요 설명 14px, 보조 13px */
+@media (max-width:620px){
+  .card p.small:not(.muted){font-size:14px;line-height:1.6}
+  .card p.small.muted{font-size:13px;line-height:1.55}
+  section.card+section.card{margin-top:12px}
+}
+/* 시작 화면: 구장 선화 배경, 제목 굵기(기본 글꼴일 때도 굵게), 크레딧 접기 */
+.ts{isolation:isolate}
+.ts::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.13;pointer-events:none;background:no-repeat center 62%/min(560px,96%) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' fill='none' stroke='%23e8dcb0' stroke-width='2'%3E%3Cpath d='M200 285 L40 125 Q200 -40 360 125 Z'/%3E%3Cpath d='M200 270 L135 205 L200 140 L265 205 Z'/%3E%3Cpath d='M200 285 L200 270 M40 125 L135 205 M360 125 L265 205'/%3E%3Ccircle cx='200' cy='208' r='9'/%3E%3Cpath d='M70 120 Q200 10 330 120' stroke-dasharray='4 6'/%3E%3Cpath d='M20 60 L20 20 M380 60 L380 20 M10 20 L30 20 M370 20 L390 20'/%3E%3C/svg%3E")}
+.ts h1{font-weight:800;font-synthesis:none}
+details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:pointer;list-style:none}details.credits>summary::-webkit-details-marker{display:none}
