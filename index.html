@@ -1831,6 +1831,13 @@ details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;mar
 .ts::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.13;pointer-events:none;background:no-repeat center 62%/min(560px,96%) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' fill='none' stroke='%23e8dcb0' stroke-width='2'%3E%3Cpath d='M200 285 L40 125 Q200 -40 360 125 Z'/%3E%3Cpath d='M200 270 L135 205 L200 140 L265 205 Z'/%3E%3Cpath d='M200 285 L200 270 M40 125 L135 205 M360 125 L265 205'/%3E%3Ccircle cx='200' cy='208' r='9'/%3E%3Cpath d='M70 120 Q200 10 330 120' stroke-dasharray='4 6'/%3E%3Cpath d='M20 60 L20 20 M380 60 L380 20 M10 20 L30 20 M370 20 L390 20'/%3E%3C/svg%3E")}
 .ts h1{font-weight:800;font-synthesis:none}
 details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:pointer;list-style:none}details.credits>summary::-webkit-details-marker{display:none}
+/* 창단 드래프트 지명 기록 */
+.tk-log{font-size:13px;margin:4px 0 0;align-self:flex-start}
+.fdlog{margin-top:6px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--panel2,rgba(127,127,127,.06))}
+.fdlog-l{max-height:42vh;overflow-y:auto;display:flex;flex-direction:column;margin-top:4px}
+.fdlg{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
+.fdlg i{font-style:normal;color:var(--muted);font-size:12px;min-width:36px}.fdlg .muted{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.fdlg.me{background:rgba(63,184,113,.08)}.fdlogt{font-size:13px}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -10321,7 +10328,14 @@ function fdTicker(){ const F=G.fd; if(!F||F.done)return ''; const pk=F.picks[F.c
   const r2=fresh?`<div class="tk2 steal"><b>뺏겼습니다</b><span>${esc(st.tg)} <button class="lnk" data-a="player" data-v="${st.pid}">${esc(st.nm)}</button>을(를) ${esc(tshort(st.tid))}이(가) ${st.rd}-${st.no}에 지명</span>${top.o!=null?fdEstChip(top.o):''}</div>`
     :top?`<div class="tk2">${badge(top.tid,16)}<i>${top.rd}-${top.no}</i><button class="lnk" data-a="player" data-v="${top.pid}">${esc(top.nm)}</button><span class="muted">${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}</span>${top.me?'<em class="good">우리 지명</em>':top.o!=null?fdEstChip(top.o):''}${L.stN?`<span class="tk-l">놓친 관심 ${L.stN}명</span>`:''}</div>`:'';
   const risk=(()=>{ if(pre||ask)return ''; const RK=fdRisk(); const S=(G.shortlist||[]).map(id=>G.players[id]).filter(p=>p&&p.fdPool&&(RK[p.id]||0)>=.35).sort((a,b)=>RK[b.id]-RK[a.id]).slice(0,4); if(!S.length)return ''; return `<div class="tk2 risk"><b>${mine?'지금 안 뽑으면':'우리 차례 전에'} 빠질 수 있는 관심 선수</b>${S.map(p=>`<span class="rk-i"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><em>${Math.round(RK[p.id]*100)}%</em></span>`).join('')}</div>`; })();
-  return `<div class="tk"><div class="tk1">${r1}</div>${fdMoneyLine()}${risk}${r2}</div>`; }
+  return `<div class="tk"><div class="tk1">${r1}</div>${fdMoneyLine()}${risk}${r2}${fdPickLog()}</div>`; }
+/* 지명 기록: 지금까지 나온 지명을 펼쳐 본다(최근 순, 구단별로 거르기) */
+function fdPickLog(){ const F=G.fd; if(!F)return ''; const done=F.picks.slice(0,F.cur).filter(x=>x.pid&&G.players[x.pid]); if(!done.length)return '';
+  const open=!!UI.fdLog; const ft=UI.fdLogT??'all'; const btn=`<button class="lnk tk-log" data-a="fdLog">지명 기록 ${open?'접기':'펼치기'} (${done.length}명)</button>`; if(!open)return btn;
+  const L=done.filter(x=>ft==='all'||(ft==='other'?x.tid!==G.user:x.tid===+ft)).slice().reverse();
+  const tsel=`<select class="fdlogt" data-a="fdLogT" aria-label="구단"><option value="all" ${ft==='all'?'selected':''}>모든 구단</option><option value="other" ${ft==='other'?'selected':''}>다른 구단만</option>${G.teams.map(t=>`<option value="${t.id}" ${String(ft)===String(t.id)?'selected':''}>${esc(tshort(t.id))}${t.id===G.user?' (우리)':''}</option>`).join('')}</select>`;
+  const row=x=>{ const p=G.players[x.pid]; const me=x.tid===G.user; return `<div class="fdlg${me?' me':''}">${badge(x.tid,16)}<i>${x.rd}-${x.no}</i><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="muted">${esc(posLabel(p))} · ${p.age}세 · ${money(p.sal)}</span>${me?'<em class="good">우리</em>':fdChip(p)}</div>`; };
+  return `${btn}<div class="fdlog"><div class="row between">${tsel}<span class="small muted">${L.length}명 · 최근 순</span></div><div class="fdlog-l">${L.map(row).join('')||'<p class="small muted">없습니다.</p>'}</div></div>`; }
 function fdPolSel(){ const v=G.fdPol||'need'; return `<select class="fdpol" data-a="fdPol" aria-label="맡길 때 방침" title="스카우트에게 맡길 때 무엇을 먼저 볼지">${Object.entries(FD_POL).map(([k,l])=>`<option value="${k}" ${v===k?'selected':''}>맡길 방침: ${l}</option>`).join('')}</select>`; }
 function teamIdCard(){ const tid=G.user; if(G.unemp)return ''; const cap=captainOf(tid); const st=domestic(tid).filter(p=>p.fr&&p.fr.tid===tid).sort((a,b)=>ovr(b)-ovr(a)); const C=(G.chron||[]).filter(x=>x.tid===tid); const last=C.filter(x=>x.k!=='season').slice(-3).reverse();
   const champs=(G.history||[]).filter(h=>h.y>=2026&&h.champ===tid).length; const yrs=G.gmSince!=null?G.year-G.gmSince+1:1;
@@ -12462,7 +12476,7 @@ const A={
   fdAutoN(v){ const F=G.fd; if(!F||F.done)return; let n=+v||5, g=0; while(!F.done&&g++<500){ const pk=F.picks[F.cur]; if(!pk)break; if(pk.tid!==G.user){ fdAdvance(true); continue; } if(n<=0)break; const id=fdBest(G.user,true); if(id==null){ fdFinish(); break; } pk.auto=true; fdPick(id); n--; }
     UI.rev=null; save(); render(); try{ toast(F.done?'창단 드래프트가 끝났습니다.':'자동 지명을 마쳤습니다. 다시 우리 차례입니다.'); }catch(e){} },
   fdF(v){ UI.fdF=v; UI.fdMore=60; render(); }, fdPos(v){ const [g,k]=String(v).split(':'); if(UI.fdG!==g){ UI.fdG=g; UI.fdS=''; UI.fdD=0; UI.fdAb=[]; } UI.fdF=k; UI.fdMore=60; render(); }, fdAb(v){ const a=new Set(UI.fdAb||[]); a.has(v)?a.delete(v):a.add(v); UI.fdAb=[...a]; UI.fdMore=60; render(); }, fdS(v){ if(UI.fdS===v&&v!=='rec')UI.fdD=UI.fdD?0:1; else { UI.fdS=v; UI.fdD=0; } UI.fdMore=60; render(); },
-  fdG(v){ UI.fdG=v; UI.fdF='all'; UI.fdS=''; UI.fdAb=[]; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdFilt(){ UI.fdFiltOpen=!UI.fdFiltOpen; render(); }, fdTop(){ UI.fdTop=!UI.fdTop; render(); }, fdNeed(){ UI.fdNeed=!UI.fdNeed; render(); }, fdPol(v){ G.fdPol=v; save(); render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
+  fdG(v){ UI.fdG=v; UI.fdF='all'; UI.fdS=''; UI.fdAb=[]; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdLog(){ UI.fdLog=!UI.fdLog; render(); }, fdLogT(v,el){ UI.fdLogT=el&&el.value!=null?el.value:v; render(); }, fdFilt(){ UI.fdFiltOpen=!UI.fdFiltOpen; render(); }, fdTop(){ UI.fdTop=!UI.fdTop; render(); }, fdNeed(){ UI.fdNeed=!UI.fdNeed; render(); }, fdPol(v){ G.fdPol=v; save(); render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   nsTalk(){ UI.stadMsg=newStadTalk(); save(); render(); },
   nsPick(v){ UI.stadMsg=newStadPick(v); save(); render(); },
   retireGM(){ retireGM(); save(); render(); },
@@ -12839,7 +12853,7 @@ A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); if(c
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel'].includes(a))return;
+  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT'].includes(a))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||!e.target.closest('[data-stop]')){ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
@@ -12857,6 +12871,7 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='rosterTeam'){UI.rosterTeam=+el.value;render();window.scrollTo(0,0);}
   if(a==='fdPol'){ A.fdPol(el.value); }
   if(a==='fdSsel'){ UI.fdS=el.value; UI.fdD=0; UI.fdMore=60; render(); }
+  if(a==='fdLogT'){ UI.fdLogT=el.value; render(); }
   if(a==='lfSort'){UI.lf.sort=el.value;render();} });
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if(!el)return;
   if(el.dataset.a==='offA')A.offA(el.dataset.v,el);

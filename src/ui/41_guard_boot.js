@@ -93,7 +93,7 @@ A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); if(c
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel'].includes(a))return;
+  if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT'].includes(a))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||!e.target.closest('[data-stop]')){ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
@@ -111,6 +111,7 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='rosterTeam'){UI.rosterTeam=+el.value;render();window.scrollTo(0,0);}
   if(a==='fdPol'){ A.fdPol(el.value); }
   if(a==='fdSsel'){ UI.fdS=el.value; UI.fdD=0; UI.fdMore=60; render(); }
+  if(a==='fdLogT'){ UI.fdLogT=el.value; render(); }
   if(a==='lfSort'){UI.lf.sort=el.value;render();} });
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if(!el)return;
   if(el.dataset.a==='offA')A.offA(el.dataset.v,el);

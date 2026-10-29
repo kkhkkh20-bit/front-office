@@ -367,3 +367,10 @@ details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;mar
 .ts::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.13;pointer-events:none;background:no-repeat center 62%/min(560px,96%) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' fill='none' stroke='%23e8dcb0' stroke-width='2'%3E%3Cpath d='M200 285 L40 125 Q200 -40 360 125 Z'/%3E%3Cpath d='M200 270 L135 205 L200 140 L265 205 Z'/%3E%3Cpath d='M200 285 L200 270 M40 125 L135 205 M360 125 L265 205'/%3E%3Ccircle cx='200' cy='208' r='9'/%3E%3Cpath d='M70 120 Q200 10 330 120' stroke-dasharray='4 6'/%3E%3Cpath d='M20 60 L20 20 M380 60 L380 20 M10 20 L30 20 M370 20 L390 20'/%3E%3C/svg%3E")}
 .ts h1{font-weight:800;font-synthesis:none}
 details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:pointer;list-style:none}details.credits>summary::-webkit-details-marker{display:none}
+/* 창단 드래프트 지명 기록 */
+.tk-log{font-size:13px;margin:4px 0 0;align-self:flex-start}
+.fdlog{margin-top:6px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--panel2,rgba(127,127,127,.06))}
+.fdlog-l{max-height:42vh;overflow-y:auto;display:flex;flex-direction:column;margin-top:4px}
+.fdlg{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
+.fdlg i{font-style:normal;color:var(--muted);font-size:12px;min-width:36px}.fdlg .muted{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.fdlg.me{background:rgba(63,184,113,.08)}.fdlogt{font-size:13px}
