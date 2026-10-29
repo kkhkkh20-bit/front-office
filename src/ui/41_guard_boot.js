@@ -150,6 +150,4 @@ document.addEventListener('keydown',e=>{
   if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('g.pos[data-a],.tcard[data-a]')){ e.preventDefault(); const a=e.target.dataset.a; A[a](e.target.dataset.v); }
 });
 
-G=load(); if(G){ try{migrateDraft();}catch(e){} } UI.title=true; UI.sstep='main';
-let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
-render();
+/* 부팅(저장 불러오기·첫 화면)은 모든 화면 파일이 읽힌 뒤 실행되도록 99_boot.js로 옮겼다 */

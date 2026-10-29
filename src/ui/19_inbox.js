@@ -1,12 +1,4 @@
 /* ---------- 소식함 페이지: 왼쪽 목록, 오른쪽 본문이 이어지는 피드 ---------- */
-function mailCard(m){
-  const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid);
-  const dup=(UI._ibDup||{})[m.id];
-  return `<article class="mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">${dup?`<span class="mfc-dup">같은 소식 ${dup.length}건 더</span>`:''}
-    <header class="mfc-h">${senderAv(m)}<div class="mfc-t"><div class="mfc-s">${m.imp?'<span class="pill acc">중요</span> ':''}<b>${lk(m.subj)}</b></div><span class="small muted">${esc(m.from)} · ${dsh(m.day)}</span></div></header>
-    <div class="mailbody"${m.read?` data-a="mfcShow" data-v="${m.id}"`:''}>${m.body.split('\n').filter(Boolean).map(t=>`<p>${lk(t)}</p>`).join('')}</div>${m.read&&(m.body.length>60||m.body.includes('\n'))?`<button class="lnk mfc-more" data-a="mfcOpen" data-v="${m.id}">전체 보기</button>`:''}
-    ${m.acts.length&&!(m.oid&&!o)?`<div class="btns mact">${m.acts.map((a,i)=>`<button class="btn ${i===0?'primary':''}" data-a="mailAct" data-v="${m.id}:${i}">${esc(a.l)}</button>`).join('')}</div>`:''}
-    ${o?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* ---------- 소식함(FM 수신함 구조): 분류 탭 · 왼쪽 목록(보낸 사람/제목/날짜) · 오른쪽 본문 ----------
    목록은 한 줄 요약만, 본문은 한 통만 펼친다. 모바일은 목록 → 눌러서 본문 → '목록' 버튼으로 돌아온다 */
 const IB_KIND={squad:'부상 복귀 회복 부하 선수 감독 엔트리 결정 육성 캠프 병역 의무 코치 연수 면담 경기 bat boost',move:'트레이드 FA fa 외국인 용병 아시아 연봉 드래프트 스카우트 스토브리그',club:'구단주 재정 시설 구장 스폰서 스태프 전력분석 분석 운영 결재 일정 월간 업무 결산 새해 취임 체험판 일반',media:'언론 기록 OB 경력 포스트시즌'};

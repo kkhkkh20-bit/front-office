@@ -1,0 +1,26 @@
+name: 점검
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 점검 도구 설치
+        working-directory: tools
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: 전체 점검(빠르게)
+        env:
+          QUICK: "1"
+          NODE_PATH: tools/node_modules
+        run: bash tools/check.sh
