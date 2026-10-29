@@ -81,12 +81,26 @@ function pendItems(){ const L=[]; const ev=(G.evs||[]).filter(e=>!e.done); const
   const im=(G.mail||[]).filter(m=>m.imp&&!m.read&&G.day-(m.day||0)<=14); if(im.length)L.push({id:'m'+im.map(m=>m.id).join(','),t:`읽지 않은 중요 소식 ${im.length}건: ${im.slice(0,2).map(m=>m.subj).join(', ')}${im.length>2?' 외':''}`});
   return L; }
 function pendDoc(){ if(G.unemp||blocker())return null; const L=pendItems(); if(!L.length)return null; const sig=L.map(x=>x.id).join('|'); if(UI._pendAck===sig)return null;
-  UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); },onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
+  UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ const id=pendMailId(); if(id){ UI.mf='all'; A.openMail(id); return; } UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); } /* 확인하러 가기: 그 소식을 소식함에서 연다 */,onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
+/* 확인할 일이 담긴 소식: 안 읽은 확인할 소식 → 끝나지 않은 결정 → 살아 있는 트레이드 제안 순 */
+function pendMailId(){ const n=ibNeedList(); if(n.length)return n[0].id;
+  const ev=(G.evs||[]).filter(e=>!e.done); for(const e of ev){ const m=G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(e.id))); if(m)return m.id; }
+  const of=(G.offers||[]).filter(o=>!o.blk); for(const o of of){ const m=G.mail.find(m=>m.oid===o.id); if(m)return m.id; } return null; }
+/* 스페이스바로 진행할 때 묻는 창: 어디까지 가는지 */
+function advTargetTxt(v){ const per=period();
+  if(G.unemp)return '제의가 오거나 2주가 지날 때까지 진행합니다.';
+  if(v==='event'){ let d=G.day+1; while(d<G.day+7&&dobj(d+1).w!==1)d++; return `${dmd(d)}(${WD[dobj(d).w]}) 경기까지 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`; }
+  if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
+  const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?' 비시즌·시즌 준비 기간에는 몇 주가 지날 수 있습니다.':''}`; }
+function advAsk(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
+  if(P.length)UI._pendAck=P.map(x=>x.id).join('|'); /* 여기서 보여 줬으니 진행 전 확인을 다시 묻지 않는다 */
+  UI.cfm={k:'advSpace',v,doc:{subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true}}; cfmRender(); }
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
   el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3>${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
 for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
+A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
 A.cfmNo=function(){ const c=UI.cfm; UI.cfm=null; cfmRender(); if(c&&c.doc&&c.doc.noGo)c.doc.noGo(); };
 A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); if(c.doc.onOk)c.doc.onOk(); const n0=c.doc.chk?c.doc.chk():null; UI._cfmWhy=null; UI._cfmPass=true; try{ A[c.k](c.v); }finally{ UI._cfmPass=false; }
   if(c.doc.noMail){ save(); return; } const done=c.doc.chk?c.doc.chk()>n0:true; const m=mail('운영팀',`결재 ${done?'완료':'(불발)'}: ${c.doc.subj}`,c.doc.lines.filter(Boolean).join('\n')+(c.doc.chk&&!done?`\n\n${UI._cfmWhy||'상대 구단이 받아들이지 않아 성사되지 않았습니다.'}`:''),{kind:'결재'}); m.read=true; save(); };
@@ -94,7 +108,7 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
   if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
-  if(a==='closeSheet'){ if(e.target.closest('.x')||!e.target.closest('[data-stop]')){ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
+  if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; const a=el.dataset.a;
@@ -127,7 +141,10 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&(UI.sheet!=null||UI.posSheet||UI.game!=null||UI.menu))closeSheets();
   if(UI.tab==='inbox'&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
   /* 소식함: 스페이스바로 안 읽은 소식을 하나씩 열고, 다 읽었으면 계속 진행 */
-  /* 스페이스바(어느 화면에서나): 확인할 소식이 있으면 그 소식으로, 없으면 진행 */
+  if(UI.cfm&&(e.key===' '||e.key==='Enter')&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.cfmOk(); return; } /* 확인 창: 스페이스바·엔터 = 진행 */
+  if(UI.cfm&&e.key==='Escape'){ A.cfmNo(); return; }
+  if(e.key===' '&&UI.ivSh&&G.iv&&G.iv.done){ e.preventDefault(); closeSheets(); render(); return; } /* 끝난 인터뷰는 스페이스바로 닫기 */
+  /* 스페이스바(어느 화면에서나): 안 읽은 소식이 있으면 차례로 열고, 없으면 어디까지 진행할지 묻는다 */
   if(e.key===' '&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!UI.ngt&&!UI.meet&&!UI.negWin&&!UI.cast&&!UI.title&&!(e.target.matches&&e.target.matches('input,select,textarea,summary,[contenteditable]'))){ e.preventDefault(); if(e.repeat)return; /* 누르고 있어도 한 번만. 포커스된 버튼(계속 등)을 스페이스바가 직접 누르지 않게 막는다 */ if(e.target.blur&&e.target.matches&&e.target.matches('button'))e.target.blur(); ibSpace(); return; }
   if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('g.pos[data-a],.tcard[data-a]')){ e.preventDefault(); const a=e.target.dataset.a; A[a](e.target.dataset.v); }
 });

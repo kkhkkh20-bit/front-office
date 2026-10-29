@@ -124,4 +124,16 @@ function ibStep(d){ const ids=ibList(UI.mf||'all').map(m=>m.id).filter(id=>docum
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
 function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
   const n=ibNeedList(); const u=n.length?n:G.mail.filter(m=>!m.read).slice().reverse(); if(u.length){ const m=u[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
-  const b=document.querySelector('button.continue:not([disabled])'); if(b){ b.click(); return; } /* 버튼 클릭과 같은 경로(개막 전 확인 등)를 거친다 */ const bl=blocker(); if(bl)toast(bl); }
+  if(G.live){ toast('경기를 먼저 끝까지 보세요.'); return; } const bl=blocker(); if(bl&&!G.res){ toast(bl); UI.tab='home'; render(); return; }
+  const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); advAsk(b?b.dataset.v:'next'); /* 진행 전에 어디까지 가는지 묻고, 스페이스바를 한 번 더 누르면 진행 */ }
+/* 경기 정리를 소식으로(진행한 기간): 진행이 끝나면 소식함 맨 아래에 경기 결과와 잘한·부진한 선수를 남긴다(홈의 주간 정리와 같은 내용) */
+function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
+  const gs=D.games.map(d=>G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user))).filter(Boolean);
+  const w=gs.filter(g=>g.res==='승').length, l=gs.filter(g=>g.res==='패').length; const rk=userRank();
+  const L=gs.map(g=>{ const home=g.home===G.user; const ms=home?g.hs:g.as, os=home?g.as:g.hs; return `${dsh(g.day)} ${home?'vs':'@'} ${tshort(home?g.away:g.home)} ${g.res} ${ms}:${os}`; });
+  const rows=[]; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-a[i]);
+    if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3,t:`${ipStr(d.outs)}이닝 ${d.er}자책`}); }
+    else { if(d.pa<5)continue; const ops=d.ab?(d.h+d.bb)/Math.max(1,d.pa)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} OPS ${fmt3(ops)}`}); } }
+  rows.sort((a,b)=>b.sc-a.sc); const hot=rows.filter(x=>x.sc>0).slice(0,3), cold=rows.filter(x=>x.sc<0).slice(-2).reverse();
+  const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,[`${dmd(D.from)}~${dmd(D.to)} ${gs.length}경기 ${w}승 ${l}패. 지금 ${rk}위입니다.`,...L,hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'',cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''].filter(Boolean).join('\n'),{kind:'경기',acts:[{l:'홈에서 자세히',a:'tab',v:'home'},{l:'순위 보기',a:'go',v:'league:stand'}]});
+  return m; }

@@ -5,8 +5,8 @@ const ICO2={dumbbell:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><p
  club:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/></svg>',
  cog:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
  menu:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>'};
-const NAV=[['home','홈','home'],['inbox','소식함','mail'],['roster','선수단','users'],['trade','트레이드','swap'],['transfer','영입·계약','brief'],['staff','스태프·육성','clip'],['league','리그','trophy'],['club','구단·재정','club']];
-const BNAV=['home','inbox','roster','trade','transfer'];
+const NAV=[['inbox','소식함','mail'],['home','홈','home'],['roster','선수단','users'],['trade','트레이드','swap'],['transfer','영입·계약','brief'],['staff','스태프·육성','clip'],['league','리그','trophy'],['club','구단·재정','club']];
+const BNAV=['inbox','home','roster','trade','transfer'];
 const SUBS={
   trade:[['block','트레이드 매물'],['table','트레이드 협상'],['market','추천·선수 찾기'],['gms','단장']],
   transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약'],['moves','이적 현황']],

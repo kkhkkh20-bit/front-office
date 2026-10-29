@@ -100,3 +100,4 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-list.m .ibx-end{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
 .ibx-down{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:12px;box-shadow:0 4px 14px #0006;cursor:pointer}
 .ibx-down[hidden]{display:none}
+.back2ib{margin-right:10px;border-color:var(--team-hi,#4fa3ff)}

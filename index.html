@@ -1970,6 +1970,7 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-list.m .ibx-end{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
 .ibx-down{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:12px;box-shadow:0 4px 14px #0006;cursor:pointer}
 .ibx-down[hidden]{display:none}
+.back2ib{margin-right:10px;border-color:var(--team-hi,#4fa3ff)}
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%);max-height:calc(100vh - 32px);overflow-y:auto}
 .fde-ts{display:flex;flex-wrap:wrap;gap:6px}
@@ -9311,7 +9312,7 @@ function render(){
      ${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 2주가 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="adv" data-v="next" ${b?'disabled':''} aria-label="한 경기 진행" title="다음 경기 하나만 진행"><span class="st-l">1경기</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="다음 소식이 올 때까지, 최대 한 주 진행합니다. 확인할 소식이 있으면 그 소식부터 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub('다음 소식까지'))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="next" ${b?'disabled':''}><span class="cl"><b>${per==='post'?'다음 경기':'계속'}</b><i>${esc(b?nextLabel():contSub(nextLabel()))}</i></span>${ICO.ff}</button>`}</div>
    </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}</header>
    <div class="gut"><div class="wrap">
-     <div class="subhead"><h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
+     <div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
      <main class="content">${tabBody()}</main>
    </div></div>
   </div>
@@ -9578,8 +9579,8 @@ const ICO2={dumbbell:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><p
  club:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/></svg>',
  cog:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
  menu:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>'};
-const NAV=[['home','홈','home'],['inbox','소식함','mail'],['roster','선수단','users'],['trade','트레이드','swap'],['transfer','영입·계약','brief'],['staff','스태프·육성','clip'],['league','리그','trophy'],['club','구단·재정','club']];
-const BNAV=['home','inbox','roster','trade','transfer'];
+const NAV=[['inbox','소식함','mail'],['home','홈','home'],['roster','선수단','users'],['trade','트레이드','swap'],['transfer','영입·계약','brief'],['staff','스태프·육성','clip'],['league','리그','trophy'],['club','구단·재정','club']];
+const BNAV=['inbox','home','roster','trade','transfer'];
 const SUBS={
   trade:[['block','트레이드 매물'],['table','트레이드 협상'],['market','추천·선수 찾기'],['gms','단장']],
   transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약'],['moves','이적 현황']],
@@ -11088,7 +11089,19 @@ function ibStep(d){ const ids=ibList(UI.mf||'all').map(m=>m.id).filter(id=>docum
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
 function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
   const n=ibNeedList(); const u=n.length?n:G.mail.filter(m=>!m.read).slice().reverse(); if(u.length){ const m=u[0]; UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
-  const b=document.querySelector('button.continue:not([disabled])'); if(b){ b.click(); return; } /* 버튼 클릭과 같은 경로(개막 전 확인 등)를 거친다 */ const bl=blocker(); if(bl)toast(bl); }
+  if(G.live){ toast('경기를 먼저 끝까지 보세요.'); return; } const bl=blocker(); if(bl&&!G.res){ toast(bl); UI.tab='home'; render(); return; }
+  const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); advAsk(b?b.dataset.v:'next'); /* 진행 전에 어디까지 가는지 묻고, 스페이스바를 한 번 더 누르면 진행 */ }
+/* 경기 정리를 소식으로(진행한 기간): 진행이 끝나면 소식함 맨 아래에 경기 결과와 잘한·부진한 선수를 남긴다(홈의 주간 정리와 같은 내용) */
+function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
+  const gs=D.games.map(d=>G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user))).filter(Boolean);
+  const w=gs.filter(g=>g.res==='승').length, l=gs.filter(g=>g.res==='패').length; const rk=userRank();
+  const L=gs.map(g=>{ const home=g.home===G.user; const ms=home?g.hs:g.as, os=home?g.as:g.hs; return `${dsh(g.day)} ${home?'vs':'@'} ${tshort(home?g.away:g.home)} ${g.res} ${ms}:${os}`; });
+  const rows=[]; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-a[i]);
+    if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3,t:`${ipStr(d.outs)}이닝 ${d.er}자책`}); }
+    else { if(d.pa<5)continue; const ops=d.ab?(d.h+d.bb)/Math.max(1,d.pa)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} OPS ${fmt3(ops)}`}); } }
+  rows.sort((a,b)=>b.sc-a.sc); const hot=rows.filter(x=>x.sc>0).slice(0,3), cold=rows.filter(x=>x.sc<0).slice(-2).reverse();
+  const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,[`${dmd(D.from)}~${dmd(D.to)} ${gs.length}경기 ${w}승 ${l}패. 지금 ${rk}위입니다.`,...L,hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'',cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''].filter(Boolean).join('\n'),{kind:'경기',acts:[{l:'홈에서 자세히',a:'tab',v:'home'},{l:'순위 보기',a:'go',v:'league:stand'}]});
+  return m; }
 /* ---------- 그림 에셋: 트로피·메달·사건 아이콘 (직접 그린 SVG) ---------- */
 let ARTN=0;
 const ART={
@@ -13097,7 +13110,8 @@ const A={
   mailJump(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; UI.ibSel=v; UI._ibToCur=true; UI._ibDay=G.day; if(!wide()){ if(!UI.ibOpen)UI.ibY=window.scrollY; UI.ibOpen=v; } UI.tab='inbox'; save(); render(); if(!wide())window.scrollTo(0,0); },
   ibBack(){ UI.ibOpen=null; render(); },
   ibMore(){ UI.ibN=(UI.ibN||80)+80; UI._ibLS=0; UI._ibEnd=false; render(); },
-  inbox(){ UI.tab='inbox'; UI._ibFirst=true; UI.ibOpen=null; closeSheets(); render(); },
+  ibReturn(){ const id=UI.fromMail; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; if(id&&G.mail.some(m=>m.id===id)){ UI.ibSel=id; UI._ibToCur=true; if(!wide())UI.ibOpen=id; } closeSheets(); render(); },
+  inbox(){ UI.fromMail=null; UI.tab='inbox'; UI._ibFirst=true; UI.ibOpen=null; closeSheets(); render(); },
   ibFold(v){ const F=ibFolds(); const d=+v; if(F[d])delete F[d]; else F[d]=true; save(); render(); },
   ibFoldOld(){ const F=ibFolds(); if(Object.keys(F).length){ G.ibFold={}; } else { const days=[...new Set(ibList(UI.mf||'all').map(m=>m.day))]; days.slice(0,-1).forEach(d=>F[d]=true); } save(); render(); },
   ibDown(){ const L=document.querySelector('.ibx-list'); if(L)L.scrollTo({top:L.scrollHeight,behavior:'smooth'}); },
@@ -13108,7 +13122,7 @@ const A={
   nk(v){ UI.nk=v; UI.nseg='news'; A.go('league:news'); },
   recGo(v){ const [seg,k]=v.split(':'); UI.lrec=seg; UI.ls=UI.ls||{}; UI.ls[seg]={k,dir:['era','whip','bb9'].includes(k)?1:-1}; A.go('league:rec'); },
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
-  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(a&&A[a.a])A[a.a](a.v); else render(); },
+  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(a&&A[a.a])A[a.a](a.v); else render(); if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
   evPick(v){ sfx('confirm',.6); const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); evPick(id,+i); save(); if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ A.go('transfer:foreign'); return; } render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
@@ -13147,8 +13161,9 @@ const A={
   cmpK(v){ UI.cmpK=UI.cmpK===v?null:v; render(); },
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='train'){ A.go('staff:camp'); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
-  start(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='home';save();render();window.scrollTo(0,0);},
-  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.res||G.live||G.stops.length||G.dig){ closeSheets(); UI.tab='home'; UI.mail=null; } save(); render(); window.scrollTo(0,0); },
+  start(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='inbox'; UI._ibFirst=true; save();render();window.scrollTo(0,0);}, /* 소식함이 게임의 중심: 시작하면 소식함 */
+  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
+    if(G.res||G.live){ closeSheets(); UI.tab='home'; UI.mail=null; } else if(G.stops.length){ /* 중요한 소식으로 멈추면 홈이 아니라 소식함에서 그 소식을 연다 */ const sm=G.stops.find(s=>s&&s.id&&G.mail.some(m=>m.id===s.id)); closeSheets(); UI.mail=null; if(sm){ UI.mf='all'; UI.tab='inbox'; UI.ibSel=sm.id; UI._ibToCur=true; sm.read=true; if(!wide())UI.ibOpen=sm.id; } else UI.tab='inbox'; } else { /* 멈출 소식이 없어도 소식함으로: 새 소식(한 주 정리 포함)을 거기서 본다 */ closeSheets(); UI.mail=null; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; UI._ibEnd=true; UI.ibSel=null; UI.ibOpen=null; } save(); render(); window.scrollTo(0,0); },
   calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
   calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
   calDay(v){ UI.calSel=+v; render(); const el=document.querySelector('.cal-dg,.cal-dl'); if(el&&!wide())el.scrollIntoView({block:'center',behavior:'smooth'}); },
@@ -13364,7 +13379,7 @@ const A={
   askNew(){UI.confirmNew=true;render();},
   cancelNew(){UI.confirmNew=false;render();},
   newgame(){ save(); G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
-  slotLoad(v){ if(G)save(); const m=meta(); const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){UI.slotMsg='불러오지 못했습니다.';render();return;} m.active=+v; setMeta(m); G=g; try{migrateDraft();}catch(e){} UI.tab='home'; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
+  slotLoad(v){ if(G)save(); const m=meta(); const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){UI.slotMsg='불러오지 못했습니다.';render();return;} m.active=+v; setMeta(m); G=g; try{migrateDraft();}catch(e){} UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
   slotNew(v){ if(G)save(); UI.newSlot=+v; const m=meta(); m.active=+v; setMeta(m); G=null; UI.slotMsg=''; UI.title=true; UI.sstep='team'; render(); window.scrollTo(0,0); },
   slotDel(v){ const m=meta(); if(UI.delAsk!==+v){ UI.delAsk=+v; UI.slotMsg=`슬롯 ${v}을(를) 지우려면 삭제를 한 번 더 누르세요.`; render(); return; } try{localStorage.removeItem(slotKey(+v));}catch(e){} delete m.slots[+v]; setMeta(m); UI.delAsk=null; UI.slotMsg=`슬롯 ${v}을(를) 지웠습니다.`; render(); },
   async expFile(){ const code=LZString.compressToBase64(JSON.stringify(G)); if(!DL){ try{ const blob=new Blob([code],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`danjang-${G.year}.txt`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); UI.impMsg='파일을 내려받았습니다. 내려받기가 막혀 있으면 "코드 만들기"를 쓰세요.'; }catch(err){ UI.impMsg='이 화면에서는 파일 저장을 쓸 수 없습니다. "코드 만들기"를 쓰세요.'; } render(); return; } if(false){ render(); return; }
@@ -13455,12 +13470,26 @@ function pendItems(){ const L=[]; const ev=(G.evs||[]).filter(e=>!e.done); const
   const im=(G.mail||[]).filter(m=>m.imp&&!m.read&&G.day-(m.day||0)<=14); if(im.length)L.push({id:'m'+im.map(m=>m.id).join(','),t:`읽지 않은 중요 소식 ${im.length}건: ${im.slice(0,2).map(m=>m.subj).join(', ')}${im.length>2?' 외':''}`});
   return L; }
 function pendDoc(){ if(G.unemp||blocker())return null; const L=pendItems(); if(!L.length)return null; const sig=L.map(x=>x.id).join('|'); if(UI._pendAck===sig)return null;
-  UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); },onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
+  UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ const id=pendMailId(); if(id){ UI.mf='all'; A.openMail(id); return; } UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); } /* 확인하러 가기: 그 소식을 소식함에서 연다 */,onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
+/* 확인할 일이 담긴 소식: 안 읽은 확인할 소식 → 끝나지 않은 결정 → 살아 있는 트레이드 제안 순 */
+function pendMailId(){ const n=ibNeedList(); if(n.length)return n[0].id;
+  const ev=(G.evs||[]).filter(e=>!e.done); for(const e of ev){ const m=G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(e.id))); if(m)return m.id; }
+  const of=(G.offers||[]).filter(o=>!o.blk); for(const o of of){ const m=G.mail.find(m=>m.oid===o.id); if(m)return m.id; } return null; }
+/* 스페이스바로 진행할 때 묻는 창: 어디까지 가는지 */
+function advTargetTxt(v){ const per=period();
+  if(G.unemp)return '제의가 오거나 2주가 지날 때까지 진행합니다.';
+  if(v==='event'){ let d=G.day+1; while(d<G.day+7&&dobj(d+1).w!==1)d++; return `${dmd(d)}(${WD[dobj(d).w]}) 경기까지 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`; }
+  if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
+  const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?' 비시즌·시즌 준비 기간에는 몇 주가 지날 수 있습니다.':''}`; }
+function advAsk(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
+  if(P.length)UI._pendAck=P.map(x=>x.id).join('|'); /* 여기서 보여 줬으니 진행 전 확인을 다시 묻지 않는다 */
+  UI.cfm={k:'advSpace',v,doc:{subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true}}; cfmRender(); }
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
   el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3>${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
 for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
+A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
 A.cfmNo=function(){ const c=UI.cfm; UI.cfm=null; cfmRender(); if(c&&c.doc&&c.doc.noGo)c.doc.noGo(); };
 A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); if(c.doc.onOk)c.doc.onOk(); const n0=c.doc.chk?c.doc.chk():null; UI._cfmWhy=null; UI._cfmPass=true; try{ A[c.k](c.v); }finally{ UI._cfmPass=false; }
   if(c.doc.noMail){ save(); return; } const done=c.doc.chk?c.doc.chk()>n0:true; const m=mail('운영팀',`결재 ${done?'완료':'(불발)'}: ${c.doc.subj}`,c.doc.lines.filter(Boolean).join('\n')+(c.doc.chk&&!done?`\n\n${UI._cfmWhy||'상대 구단이 받아들이지 않아 성사되지 않았습니다.'}`:''),{kind:'결재'}); m.read=true; save(); };
@@ -13468,7 +13497,7 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
   if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
-  if(a==='closeSheet'){ if(e.target.closest('.x')||!e.target.closest('[data-stop]')){ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
+  if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; const a=el.dataset.a;
@@ -13501,7 +13530,10 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&(UI.sheet!=null||UI.posSheet||UI.game!=null||UI.menu))closeSheets();
   if(UI.tab==='inbox'&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
   /* 소식함: 스페이스바로 안 읽은 소식을 하나씩 열고, 다 읽었으면 계속 진행 */
-  /* 스페이스바(어느 화면에서나): 확인할 소식이 있으면 그 소식으로, 없으면 진행 */
+  if(UI.cfm&&(e.key===' '||e.key==='Enter')&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.cfmOk(); return; } /* 확인 창: 스페이스바·엔터 = 진행 */
+  if(UI.cfm&&e.key==='Escape'){ A.cfmNo(); return; }
+  if(e.key===' '&&UI.ivSh&&G.iv&&G.iv.done){ e.preventDefault(); closeSheets(); render(); return; } /* 끝난 인터뷰는 스페이스바로 닫기 */
+  /* 스페이스바(어느 화면에서나): 안 읽은 소식이 있으면 차례로 열고, 없으면 어디까지 진행할지 묻는다 */
   if(e.key===' '&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!UI.ngt&&!UI.meet&&!UI.negWin&&!UI.cast&&!UI.title&&!(e.target.matches&&e.target.matches('input,select,textarea,summary,[contenteditable]'))){ e.preventDefault(); if(e.repeat)return; /* 누르고 있어도 한 번만. 포커스된 버튼(계속 등)을 스페이스바가 직접 누르지 않게 막는다 */ if(e.target.blur&&e.target.matches&&e.target.matches('button'))e.target.blur(); ibSpace(); return; }
   if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('g.pos[data-a],.tcard[data-a]')){ e.preventDefault(); const a=e.target.dataset.a; A[a](e.target.dataset.v); }
 });
