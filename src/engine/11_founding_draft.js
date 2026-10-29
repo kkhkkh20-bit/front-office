@@ -119,9 +119,9 @@ function foundDefaults(){ const done=[], acts=[];
   const am=G.scouts.filter(s=>(s.role||'am')==='am'); const have=new Set(am.map(s=>s.region)); const miss=REG.filter(r=>!have.has(r));
   for(const r of miss){ if(G.scouts.length>=SCOUT_MAX)break; const sc=mkScout(2); sc.region=r; sc.role='am'; sc.since=-999; G.scouts.push(sc); done.push(`스카우트: ${r} 담당 ${sc.name} 채용(연 ${money(sc.sal)})`); }
   if(miss.length)acts.push({l:'스카우트 팀',a:'goWork',v:'스카우트팀'});
-  if(!(G.devProg||[]).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&potGapEst(p)>=6).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,2);
-    for(const p of L){ const k=p.isP?(p.r.ctl<p.r.stf?'ctl':'stf'):(p.r.con<p.r.pow?'bat':'pow'); setDev(p.id,k); done.push(`2군 연수: ${p.name}(${posLabel(p)}, ${p.age}세) ${DEVP[k].l}`); }
-    if(L.length)acts.push({l:'2군 연수',a:'goWork',v:'2군연수'}); }
+  if(!Object.keys(G.trn||{}).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&potGapEst(p)>=6).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,2);
+    for(const p of L){ const k=p.isP?(p.r.ctl<p.r.stf?'ctl':'stf'):(p.r.con<p.r.pow?'bat':'pow'); setDev(p.id,k); done.push(`훈련 방향: ${p.name}(${posLabel(p)}, ${p.age}세) ${DEVP[k].l}`); }
+    if(L.length)acts.push({l:'선수 육성',a:'goWork',v:'2군연수'}); }
   if(!G.mgr[G.user])acts.unshift({l:'감독 선임',a:'goWork',v:'감독'});
   if(done.length)mail(`비서 ${SEC}`,'기본 운영안을 채워 두었습니다',`창단 직후라 손이 덜 가도록 운영 기본안을 적용했습니다. 모두 언제든 바꿀 수 있습니다.\n\n${done.join('\n')}\n\n단장님은 감독부터 선임하시고, 새 감독과 상의해 외국인 선수를 구성하시면 됩니다.`,{kind:'업무',face:'sec',acts:acts.slice(0,3)}); }
 /* 시즌 회고: 우리 선수 중심으로 영입 기대와 실제 기여, 트레이드 결과, 젊은 선수, 내년 공백을 한 장에 */

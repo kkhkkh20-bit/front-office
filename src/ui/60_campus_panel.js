@@ -22,8 +22,8 @@ function cpFacStat(k){ const ps=playersOf(G.user); const dev=(G.devProg||[]).len
   const inj30=ps.reduce((a,p)=>a+(p.injHist||[]).filter(h=>h.y===G.year&&h.d>G.day-30).length,0);
   if(k==='rehab'){ const R=ps.filter(p=>p.injOut>0); const avg=R.length?Math.round(sum(R.map(p=>p.injOut))/R.length):0; return `지금 재활 중 ${R.length}명${R.length?`(평균 ${avg}일 남음)`:''} · 최근 30일 새 부상 ${inj30}건`; }
   if(k==='weight')return `최근 30일 새 부상 ${inj30}건 · 30세 이상 선수 ${ps.filter(p=>p.age>=30).length}명`;
-  if(k==='lab')return `2군 연수 배정 ${dev}/6명 · 23세 이하 선수 ${young}명`;
-  if(k==='indoor')return `선수단 ${ps.length}명 · 2군 연수 배정 ${dev}/6명`;
+  if(k==='lab')return `훈련 방향 요청 ${Object.keys(G.trn||{}).length}명 · 23세 이하 선수 ${young}명`;
+  if(k==='indoor')return `선수단 ${ps.length}명 · 해외 연수 ${(G.ovs||[]).length}명`;
   if(k==='fut'){ const n=ps.filter(p=>{ const f=seasonTotal(p,G.year,'퓨처스'); return f&&((f.pa||0)>0||(f.outs||0)>0); }).length; return `올해 2군 경기에 나선 선수 ${n}명`; }
   if(k==='dorm')return `23세 이하 선수 ${young}명`;
   return ''; }

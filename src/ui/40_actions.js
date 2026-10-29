@@ -8,12 +8,12 @@ function bondCard(p){
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
   </section>`;
 }
-function devForm(p){
-  const cur=(G.devProg||[]).find(x=>x.pid===p.id); const ov=(G.ovs||[]).find(x=>x.pid===p.id);
-  const progs=Object.entries(DEVP).filter(([,v])=>v.P===p.isP);
-  return `<section class="card"><div class="eyebrow">2군 연수 프로그램 ${cur?'· '+DEVP[cur.prog].l+' 진행 중':''}</div>
-  <div class="talk"><button class="btn small ${!cur?'on':''}" data-a="devSet" data-v="${p.id}:">없음</button>${progs.map(([k,v])=>`<button class="btn small ${cur&&cur.prog===k?'on':''}" data-a="devSet" data-v="${p.id}:${k}">${v.l}</button>`).join('')}</div>
-  ${ovsOpen()&&p.age<=27?`<div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+' 신청됨':''}</div><div class="talk">${Object.entries(OVS).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('')}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:''}
+function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH||[]).slice(-3);
+  const T={big:'크게 늘어 옴',good:'성장 확인',flat:'변화 없음',form:'폼 흐트러짐',inj:'부상'};
+  const btns=Object.entries(OVS).filter(([k])=>ovsOpen(k)).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('');
+  return `<section class="card"><div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+(ov.go?' 진행 중':' 신청됨'):''}</div>
+  ${ov&&ov.go?'':btns?`<div class="talk">${btns}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:'<p class="small muted">신청은 9월 1일부터 받습니다(호주리그 11월 10일, 미국·일본 연수 11월 30일까지).</p>'}
+  ${H.length?`<p class="small muted">지난 연수: ${H.map(h=>`${h.y} ${esc(h.k)}(${T[h.t]||''})`).join(', ')}</p>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
 function closeSheets(){ UI.ngt=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
@@ -112,7 +112,8 @@ const A={
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0}; save(); render(); },
   devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },
   devOff(v){ setDev(+v,null); save(); render(); },
-  ovsSet(v){ const [id,k]=v.split(':'); UI.devMsg=setOvs(+id,k||null); save(); render(); },
+  ovsSet(v){ const [id,k]=v.split(':'); UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
+  fallSet(v){ UI.devMsg=setFall(v||null); save(); render(); },
   listP(v){ listPlayer(+v); save(); render(); },
   tsugGo(v){ const [src,i]=v.split(':'); const s=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!s||!tsugValid(s)){ UI.deskMsg='상황이 바뀌어 다시 찾아야 합니다.'; UI.deskOk=false; render(); return; }
     const r=proposeTrade(s.tid,s.give,[s.id]); UI.deskMsg=r.msg; UI.deskOk=r.ok; if(r.ok){ sfx('cheer_hit',.5); UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade}; G.tsug=null; UI.cmpK=null; if(src==='f')UI.findT=null; } save(); render(); },

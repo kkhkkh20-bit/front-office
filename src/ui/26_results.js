@@ -69,5 +69,5 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
     <div class="tgrid">${FACK.map(card).join('')}</div>${facCompare()}
     <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
-    <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 감독의 육성 성향. 4) 2군 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
+    <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 코치 수준과 감독의 육성 성향. 4) 잠재력과 성장 의지. 5) 훈련 방향과 해외 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 

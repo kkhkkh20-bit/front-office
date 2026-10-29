@@ -1850,6 +1850,8 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .trn .talk .btn{position:relative}
 .trn-rec{font-style:normal;font-size:10px;margin-left:4px;padding:0 4px;border-radius:6px;background:var(--acc-soft,rgba(80,120,255,.15));color:var(--acc,#4a6cf7)}
 .trn-rep{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--bg2,rgba(127,127,127,.08));display:flex;flex-direction:column;gap:2px}
+.trn-env{margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid var(--line,rgba(127,127,127,.2));display:flex;flex-direction:column;gap:2px}
+.trn-env .muted{display:inline-block;min-width:84px}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -2843,10 +2845,10 @@ function processDay(){ syncMinSal();
   if(day===KD(12,1)){ contractStart(); aiCapAll(); try{ aiDebtDump(); }catch(e){} capWarnUser(); }
   try{ salTalkDaily(day); }catch(e){}
   if(day===KD(12,10)){ try{ capCouncil(); }catch(e){} }
-  try{ assocDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
+  try{ assocDaily(day); }catch(e){} try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
-  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(!m.read&&!m.imp&&G.day-m.day>(m.kind==='업무'||(m.acts&&m.acts.length)?14:5))m.read=true; if(m.imp&&m.kind==='일정'&&G.day-m.day>=3){ m.imp=false; m.read=true; } } /* 날짜가 지난 일정 안내는 읽음 처리 */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} devWeek(); try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
+  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(!m.read&&!m.imp&&G.day-m.day>(m.kind==='업무'||(m.acts&&m.acts.length)?14:5))m.read=true; if(m.imp&&m.kind==='일정'&&G.day-m.day>=3){ m.imp=false; m.read=true; } } /* 날짜가 지난 일정 안내는 읽음 처리 */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
   tutTick();
   const nx=dobj(day+1); if(nx.d===1&&day>=c.open&&day<=c.end+1)monthReport(o.m); if(nx.d===1){ try{ finMonth(o.m); }catch(e){} }
   if(day===c.end){ const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(c.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 정규시즌 마지막 날 남은 달을 바로 마감 */
@@ -3299,7 +3301,6 @@ function newYear(){
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){}
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
-  ovsApply();
   if(G.mgr[G.user]&&G.mgr[G.user].yrs<=0&&!G.mgr[G.user].interim){ const m=G.mgr[G.user]; G.mgr[G.user]=null; mail('운영팀','감독 계약 종료',`${m.name} 감독과의 계약이 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.`,{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.mgr[G.user]&&G.mgr[G.user].interim){ G.mgr[G.user]=null; mail('운영팀','감독대행 체제 종료','감독대행 체제가 끝났습니다. 개막 전까지 새 감독을 선임해야 합니다.',{imp:true,kind:'감독',acts:[{l:'감독 후보 보기',a:'goWork',v:'감독'}]}); }
   if(G.tut&&!G.tut.done)G.tut.done=true; /* 비서 업무 안내는 창단 첫해에만 */
@@ -3602,9 +3603,9 @@ function foundDefaults(){ const done=[], acts=[];
   const am=G.scouts.filter(s=>(s.role||'am')==='am'); const have=new Set(am.map(s=>s.region)); const miss=REG.filter(r=>!have.has(r));
   for(const r of miss){ if(G.scouts.length>=SCOUT_MAX)break; const sc=mkScout(2); sc.region=r; sc.role='am'; sc.since=-999; G.scouts.push(sc); done.push(`스카우트: ${r} 담당 ${sc.name} 채용(연 ${money(sc.sal)})`); }
   if(miss.length)acts.push({l:'스카우트 팀',a:'goWork',v:'스카우트팀'});
-  if(!(G.devProg||[]).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&potGapEst(p)>=6).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,2);
-    for(const p of L){ const k=p.isP?(p.r.ctl<p.r.stf?'ctl':'stf'):(p.r.con<p.r.pow?'bat':'pow'); setDev(p.id,k); done.push(`2군 연수: ${p.name}(${posLabel(p)}, ${p.age}세) ${DEVP[k].l}`); }
-    if(L.length)acts.push({l:'2군 연수',a:'goWork',v:'2군연수'}); }
+  if(!Object.keys(G.trn||{}).length){ const L=domestic(G.user).filter(p=>p.age<=23&&!p.e1&&potGapEst(p)>=6).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,2);
+    for(const p of L){ const k=p.isP?(p.r.ctl<p.r.stf?'ctl':'stf'):(p.r.con<p.r.pow?'bat':'pow'); setDev(p.id,k); done.push(`훈련 방향: ${p.name}(${posLabel(p)}, ${p.age}세) ${DEVP[k].l}`); }
+    if(L.length)acts.push({l:'선수 육성',a:'goWork',v:'2군연수'}); }
   if(!G.mgr[G.user])acts.unshift({l:'감독 선임',a:'goWork',v:'감독'});
   if(done.length)mail(`비서 ${SEC}`,'기본 운영안을 채워 두었습니다',`창단 직후라 손이 덜 가도록 운영 기본안을 적용했습니다. 모두 언제든 바꿀 수 있습니다.\n\n${done.join('\n')}\n\n단장님은 감독부터 선임하시고, 새 감독과 상의해 외국인 선수를 구성하시면 됩니다.`,{kind:'업무',face:'sec',acts:acts.slice(0,3)}); }
 /* 시즌 회고: 우리 선수 중심으로 영입 기대와 실제 기여, 트레이드 결과, 젊은 선수, 내년 공백을 한 장에 */
@@ -5379,7 +5380,7 @@ const TUT=[
   {k:'mgr',title:'감독 선임',subj:'감독 자리가 비어 있습니다',body:'사령탑이 빈자리입니다. 외국인 선수보다 감독을 먼저 정하시길 권합니다. 감독이 와야 어떤 외국인이 필요한지 함께 상의할 수 있습니다. 개막 전까지는 반드시 선임해야 합니다.\n\n감독마다 성향이 다릅니다. 스몰볼 감독은 도루와 작전을 많이 쓰고, 불펜을 적극 쓰는 감독은 선발을 일찍 내립니다. 육성형 감독은 젊은 선수 성장을 돕고, 장악력이 강한 감독은 선수단 분위기를 안정시킵니다. 연봉이 높을수록 경기 운영 능력이 좋은 편입니다. 감독을 뽑은 뒤에는 홈의 감독실에서 팀 상황과 원하는 외국인 선수를 자주 물어보세요. 감독이 원한 유형은 외국인 시장에 "감독 선호"로 표시됩니다.',btn:'감독 후보 보기',go:['goWork','감독'],check:()=>!!G.mgr[G.user]},
   {k:'foreign',title:'외국인 선수 구성',subj:'외국인 선수를 구성하세요',body:'외국인 선수 네 자리가 모두 비어 있습니다. 외국인 선수 3명과 아시아쿼터 1명을 채울 수 있습니다.\n\n감독실에 들러 어떤 유형이 필요한지 먼저 물어보세요. 후보 카드의 감독 의견 버튼을 누르면 감독이 그 선수를 어떻게 보는지 들을 수 있습니다.\n\n보통은 선발 투수 2명과 타자 1명으로 구성합니다. 규정상 3명을 모두 투수나 모두 타자로 채울 수는 없습니다. 신규 계약은 1인 100만 달러, 아시아쿼터는 20만 달러까지이고, 외국인 선수 3명 합계는 400만 달러를 넘을 수 없습니다.\n\n화면 위쪽에서 외국인과 아시아쿼터 탭이 나뉩니다. 후보 정보가 얼마나 정확한지는 그 나라에 우리 스카우트망이 얼마나 있느냐에 달려 있습니다. 지금은 미국에만 현지 통신원이 있고, 나머지 지역은 에이전트 자료뿐입니다. 스카우팅 메뉴의 해외 스카우트망에서 지역별로 늘릴 수 있습니다.\n\n지난 리그 기록은 리그 수준 차이를 감안해서 보세요.',btn:'외국인 후보 보기',go:['goWork','외국인선수'],check:()=>{const f=foreignOf(G.user); return f.filter(p=>p.foreign==='용병').length>=3&&f.some(p=>p.foreign==='아시아');},prog:()=>{const f=foreignOf(G.user); return `외국인 ${f.filter(p=>p.foreign==='용병').length}/3 · 아시아쿼터 ${f.filter(p=>p.foreign==='아시아').length}/1`;}},
   {k:'med',from:'팀 닥터 · 의무팀',title:'의무 체계',subj:'부상 방지 프로그램과 병원 제휴를 정해 주세요',body:'의무팀에서 올 시즌 운영안을 올렸습니다. 부상 방지 프로그램 단계가 높을수록 부상이 줄고, 제휴 병원이 좋을수록 재활 기간이 짧아집니다. 종합 스포츠의학센터와 제휴하면 정밀 검진으로 선수의 부상 체질도 알 수 있습니다.\n\n비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.',btn:'의무 운영안 보기',go:['goWork','부상방지·병원'],check:()=>!!G.medSet},
-  {k:'dev',from:'육성팀',title:'2군 연수',subj:'2군 연수 프로그램에 보낼 선수를 정해 주세요',body:'육성팀입니다. 2군 선수들을 집중 훈련 프로그램에 배정할 수 있습니다. 최대 6명까지 가능하고, 배정한 선수는 매주 해당 능력이 조금씩 오릅니다. 1군에서 뛰는 선수는 효과가 절반입니다.\n\n가을과 겨울에는 일본 교육리그, 호주리그 파견, 미국 연수 같은 해외 연수도 보낼 수 있습니다.\n\n선수를 누르면 정보 화면 아래쪽에서 프로그램을 고를 수 있습니다.',btn:'2군 연수 보기',go:['goWork','2군연수'],check:()=>(G.devProg||[]).length>=1},
+  {k:'dev',from:'육성팀',title:'선수 육성',subj:'훈련 방향과 해외 연수 안내',body:'육성팀입니다. 선수들의 훈련 주안점(구위·제구·장타·수비 등)은 감독과 코치진이 상의해 정합니다. 단장님은 선수 정보의 능력 탭에서 바꿔 달라고 요청할 수 있습니다.\n\n성장 속도는 1군 출장, 잠재력과 성장 의지, 훈련 시설, 코치 수준에 따라 다릅니다.\n\n가을에는 교육리그(일본 미야자키·국내 울산)와 호주리그 파견, 미국·일본 단기 연수 같은 해외 연수를 보낼 수 있습니다. 돈이 들고 결과는 선수마다 크게 갈립니다.',btn:'선수 육성 보기',go:['goWork','2군연수'],check:()=>Object.keys(G.trn||{}).length>=1},
   {k:'scout',from:'스카우트팀장',title:'스카우트 공백',subj:'스카우트 담당 지역에 공백이 있습니다',body:'스카우트팀장입니다. 스카우트는 한 사람이 한 가지 업무만 맡습니다. 아마추어(지역 고교·대학 선수), 프로(그 지역 연고 구단 선수), 해외(외국인 선수 시장) 중 하나입니다. 최대 6명까지 둘 수 있으니, 드래프트를 위해 먼저 수도권·영남·호남·충청 세 지역에 아마추어 스카우트를 배치해 주세요. 업무를 바꾸면 30일 동안 적응 기간이 있습니다.',btn:'스카우트 팀 보기',go:['goWork','스카우트팀'],check:()=>new Set(G.scouts.filter(s=>(s.role||'am')==='am').map(s=>s.region)).size>=3},
   {k:'lineup',from:'코칭스태프',title:'배치 확인',subj:'감독이 정한 선수단 배치를 확인해 주세요',body:'선수단 탭에서 야구장 그림으로 포지션별 주전을 볼 수 있습니다. 주전 기용과 타순, 투수 운용은 감독 권한입니다. 단장은 선수 구성과 감독 선임으로 팀을 바꿉니다. 자리를 누르면 그 포지션 후보를 비교해 볼 수 있습니다.',btn:'선수단 보기',go:['tab','roster'],check:()=>!!(G.tutFlags&&G.tutFlags.roster)||(G.cal&&G.day>G.cal.open+7)},
   {k:'go',title:'캠프 준비',subj:'개막 준비가 끝났습니다',body:'기본 업무 안내는 여기까지입니다. 홈의 처리할 일에 남은 항목(코치 빈자리 등)이 있으면 마저 정리하고 시간을 넘겨 보세요. 1월 25일에 스프링캠프가 시작되면 훈련 방향을 정해 주셔야 합니다.\n\n그 밖에 비FA 다년계약과 트레이드는 영입·계약 메뉴, 마케팅 예산은 구단·재정 메뉴에서 언제든 볼 수 있습니다.',btn:'캠프까지 넘기기',go:['adv','next'],check:()=>G.day>=G.cal.camp},
@@ -5572,37 +5573,92 @@ function resignMgr(){ const cur=G.mgr[G.user]; if(!cur||cur.interim)return; if(G
   wire('감독',`${tname(G.user)}, ${cur.name} 감독 자진 사퇴`,{tid:G.user,x:{fire:1,nm:cur.name}}); }
 const mgrOf=tid=>G.mgr[tid]||{small:50,pen:50,youth:50,disc:45,tac:45};
 
-/* ===== 2군 연수 ===== */
-const DEVP={bat:{l:'타격 집중',k:['con','eye'],P:false},pow:{l:'장타력 강화',k:['pow'],P:false},run:{l:'주루·수비',k:['spd','def'],P:false},stf:{l:'구위 강화',k:['stf'],P:true},ctl:{l:'제구 교정',k:['ctl'],P:true},sta:{l:'체력·선발 전환',k:['sta'],P:true}};
-const OVS={jp:{l:'일본 교육리그',c:50,d:'가을 교육리그에서 실전 경험을 쌓습니다.',inj:.02},au:{l:'호주리그 파견',c:80,d:'겨울 동안 호주 프로리그에서 뜁니다. 실전이 많지만 부상 위험이 조금 있습니다.',inj:.06},us:{l:'미국 연수',c:120,d:'미국 훈련 시설에서 기술과 체계를 배웁니다.',inj:.01}};
-function ovsOpen(){ const per=period(); return per==='off'||per==='post'||(per==='season'&&G.day>=KD(9,1)); }
-function setDev(id,prog){ G.devProg=(G.devProg||[]).filter(x=>x.pid!==id); if(prog){ if(G.devProg.length>=6)return '2군 연수는 6명까지입니다.'; G.devProg.push({pid:id,prog,since:G.day}); } return ''; }
-function setOvs(id,prog){ { const prev=(G.ovs||[]).find(x=>x.pid===id); if(prev&&OVS[prev.prog])G.spend.dev=Math.max(0,(G.spend.dev||0)-OVS[prev.prog].c); } /* 떠나기 전에 바꾸거나 취소하면 비용을 돌려받는다 */ G.ovs=(G.ovs||[]).filter(x=>x.pid!==id); if(prog){ if(G.ovs.length>=4)return '해외 연수는 4명까지입니다.'; G.ovs.push({pid:id,prog}); G.spend.dev+=OVS[prog].c; addLog(`${G.players[id].name}을(를) ${OVS[prog].l}에 보냅니다(비용 ${money(OVS[prog].c)}).`); } return ''; }
-function devWeek(){
-  G.devProg=(G.devProg||[]).filter(x=>{ const p=G.players[x.pid]; return p&&p.team===G.user; });
-  const m=mgrOf(G.user); const yf=1+(m.youth-50)/120;
-  for(const x of G.devProg){ const p=G.players[x.pid]; const pr=DEVP[x.prog]; devApply(p,pr.k,yf); }
-  try{ aiDevWeek(); }catch(e){}
-}
-/* 2군 연수 한 주 효과. 해마다 쌓이는 양에 상한(능력치 합 +6)을 두고, 목표치도 잠재력+2까지로 묶는다(겨울마다 잠재력이 현재 능력까지 올라가 천장이 사라지는 것을 막는다) */
-const DEV_YCAP=6;
-function devApply(p,keys,yf){ if(!p||p.age>28)return; if(!p.dvY||p.dvY.y!==G.year)p.dvY={y:G.year,s:0}; if(p.dvY.s>=DEV_YCAP)return;
-  const half=isRegular(p)?.5:1; const room=Math.max(0,p.pot-ovr(p));
-  for(const k of keys){ const cap=Math.max(p.pot,ovr(p))+2; if(p.r[k]>=cap)continue; const add=rnd(.06,.16)*half*yf*(room>0?1:.35); p.r[k]=clamp(p.r[k]+add,20,80); p.dvY.s+=add; }
-  roundR(p); }
-/* AI 구단도 같은 2군 연수를 돌린다: 구단마다 24세 이하 중 더 클 여지가 큰 4~6명(리빌딩이면 6명), 가장 약한 툴 둘을 집중 훈련 */
-function aiDevWeek(){ for(const t of G.teams){ if(t.id===ME())continue; const m=mgrOf(t.id); const yf=1+(((m&&m.youth)||50)-50)/120; const n=t.mode==='rebuild'?6:4;
-    const ps=domestic(t.id).filter(p=>p.age<=24&&!(p.joinY>G.year)).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a))).slice(0,n);
-    for(const p of ps){ const keys=Object.keys(p.r).filter(k=>p.isP?['stf','ctl','sta'].includes(k):['con','pow','eye','spd','def'].includes(k)).sort((a,b)=>p.r[a]-p.r[b]).slice(0,2); devApply(p,keys,yf); } } }
-function ovsApply(){
-  const out=[];
-  for(const x of (G.ovs||[])){ const p=G.players[x.pid]; if(!p||p.team!==G.user)continue; const o=OVS[x.prog]; const gap=Math.max(0,p.pot-ovr(p));
-    const g=rnd(.6,1.6)*Math.min(1,gap/5+.35);
-    for(const k in p.r)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.3),20,80); roundR(p);
-    let msg=`${p.name}이(가) ${o.l}을 마치고 돌아왔습니다.`; if(R()<o.inj){ p.injOut=ri(10,40); delete p.injK; msg+=` 연수 중 부상으로 약 ${p.injOut}일 재활이 필요합니다.`; } else msg+=' 코치진이 성장을 확인했습니다.';
-    out.push(msg); }
-  G.ovs=[]; if(out.length)mail('육성팀','해외 연수 결과',out.join('\n'),{kind:'연수'});
-}
+/* ===== 일반 훈련과 해외 연수 =====
+ 일반 훈련: 모든 구단 28세 이하 국내 선수가 시즌 준비~정규시즌 동안 매주 조금씩 큰다. 속도를 정하는 것:
+   1군 출장(주전은 훈련 시간이 적어 절반, 대신 겨울 성장에서 출전량으로 보상), 잠재력 여지와 성장 의지(프로의식·야망), 훈련 시설, 코치 수준, 감독의 육성 성향.
+   어디에 주안점을 둘지는 감독·코치진이 정하고, 단장이 바꿔 달라고 요청할 수 있다(76_dev_plan.js).
+ 해외 연수(프로젝트): 돈이 들고, 모든 구단이 보내지는 않는다. 결과가 크게 갈린다(크게 늘어 오는 선수, 그대로인 선수, 다치거나 폼이 흐트러지는 선수).
+   실제 운영을 따라 나눴다.
+   · 가을 교육리그(구단 단위, 10월 중순~11월 중순): 일본 미야자키 피닉스 교육리그 또는 국내 울산 교육리그. 실전 위주, 결과 차이가 작다.
+   · 호주리그 파견(개인, 11월 중순부터 약 10주): 코치·트레이너 동행. 실전이 많고 부상 위험이 조금 있다.
+   · 미국 피칭·타격 랩 단기 연수(개인, 12월 약 한 달): 크게 느는 경우가 가장 많지만, 강한 훈련으로 다치는 경우도 가장 많다. 어린 선수일수록 효과가 크다.
+   · 일본 대학·연구소 연수(개인, 12월): 투구·타격 메커니즘. 제구·컨택 쪽. */
+const DEVP={bat:{l:'타격 집중',k:['con','eye'],P:false,to:'con'},pow:{l:'장타력 강화',k:['pow'],P:false,to:'pow'},run:{l:'주루·수비',k:['spd','def'],P:false,to:'def'},stf:{l:'구위 강화',k:['stf'],P:true,to:'stf'},ctl:{l:'제구 교정',k:['ctl'],P:true,to:'ctl'},sta:{l:'체력·선발 전환',k:['sta'],P:true,to:'sta'}}; /* 예전 2군 연수(저장 호환용): 훈련 방향으로 옮긴다 */
+const FALL={jp:{l:'일본 미야자키 교육리그',c:300,d:'일본 프로 구단 2·3군과 한 달 실전. 상대 수준이 높아 효과가 조금 더 큽니다.',g:1.25},ul:{l:'국내 울산 교육리그',c:60,d:'국내에서 여는 가을 리그. 비용이 적고 이동 부담이 없습니다.',g:1}};
+const OVS={abl:{l:'호주리그 파견',c:30,fix:100,lim:6,P:['stf','sta'],B:['con','pow'],big:.10,good:.45,inj:.06,form:.05,close:[11,10],go:[11,15],end:[2,1],d:'11월 중순부터 약 10주 호주 프로리그에서 뜁니다. 실전 경기가 많고, 코치·트레이너가 함께 갑니다.'},
+  us:{l:'미국 피칭·타격 랩 연수',c:50,fix:100,lim:5,P:['stf','ctl'],B:['pow'],big:.18,good:.30,inj:.11,form:.08,close:[11,30],go:[12,1],end:[1,5],d:'12월 한 달 미국 훈련 시설에서 데이터 기반 훈련을 받습니다. 크게 느는 경우가 가장 많지만 강한 훈련으로 다치는 경우도 가장 많습니다. 어릴수록 효과가 큽니다.'},
+  jpl:{l:'일본 대학·연구소 연수',c:30,fix:50,lim:4,P:['ctl'],B:['con','eye'],big:.13,good:.36,inj:.02,form:.10,close:[11,30],go:[12,1],end:[1,5],d:'12월 일본 대학·스포츠과학 연구소에서 투구·타격 메커니즘을 다듬습니다. 다치는 경우는 드물지만 폼을 바꾸다 흐트러지기도 합니다.'}};
+function ovsOpen(k){ const d=dobj(G.day); if(d.m<9)return false; if(!k)return Object.keys(OVS).some(x=>ovsOpen(x)); const c=OVS[k].close; return d.m<c[0]||(d.m===c[0]&&d.d<=c[1]); }
+function fallOpen(){ const d=dobj(G.day); return d.m===9||(d.m===10&&d.d<=10); }
+function ovsElig(p){ return !!p&&!p.foreign&&!p.prospect&&p.age<=30&&!(p.injOut>0)&&!(p.mil&&p.mil.from<=G.day+60&&(p.mil.until||0)>G.day); }
+/* 예전 2군 연수 배정은 훈련 방향 요청으로 바꾼다 */
+function setDev(id,prog){ if(!prog)return ''; const D=DEVP[prog]; if(!D)return ''; trnSet(id,D.to); return ''; }
+function setOvs(id,prog){ const prev=(G.ovs||[]).find(x=>x.pid===id); if(prev&&prev.go)return '이미 떠났습니다.';
+  if(prev&&OVS[prev.prog])G.spend.dev=Math.max(0,(G.spend.dev||0)-OVS[prev.prog].c); /* 떠나기 전에 바꾸거나 취소하면 돌려받는다 */
+  G.ovs=(G.ovs||[]).filter(x=>x.pid!==id); if(!prog)return '';
+  const o=OVS[prog], p=G.players[id]; if(!o||!p)return ''; if(!ovsOpen(prog))return `${o.l} 신청 기간이 아닙니다(9월 1일~${o.close[0]}월 ${o.close[1]}일).`; if(!ovsElig(p))return '보낼 수 없는 선수입니다(30세 이하 국내 선수, 부상·입대 예정 제외).';
+  if(G.ovs.filter(x=>x.prog===prog).length>=o.lim)return `${o.l}은(는) ${o.lim}명까지입니다.`;
+  G.ovs.push({pid:id,prog}); G.spend.dev=(G.spend.dev||0)+o.c; addLog(`${p.name}을(를) ${o.l}에 보냅니다(1인 ${money(o.c)}, 동행 코치·직원 비용 ${money(o.fix)}은 출발 때 한 번).`); return ''; }
+function setFall(k){ if(!fallOpen())return '가을 교육리그 참가 신청 기간이 아닙니다(9월 1일~10월 10일).'; const y=G.year; const prev=G.fall&&G.fall.y===y?G.fall.k:null; if(prev)G.spend.dev=Math.max(0,(G.spend.dev||0)-FALL[prev].c);
+  G.fall={y,k:k||null}; if(!k)return ''; G.spend.dev=(G.spend.dev||0)+FALL[k].c; addLog(`가을 교육리그: ${FALL[k].l} 참가(${money(FALL[k].c)}).`); return ''; }
+function devWeek(){ if((G.devProg||[]).length){ for(const x of G.devProg){ const p=G.players[x.pid]; if(p&&p.team===G.user&&DEVP[x.prog])try{ trnSet(p.id,DEVP[x.prog].to); }catch(e){} } G.devProg=[]; } }
+/* 일반 훈련(모든 구단): 해마다 한 선수당 능력치 합 +4까지 */
+/* 능력치는 0.1 단위로 반올림되므로 아주 작은 주간 성장은 확률로 0.1씩 붙인다(기댓값은 같다) */
+function addR(p,k,a){ const t=a*10, f=Math.floor(t); const n=f+(R()<t-f?1:0); const v=clamp(Math.round(p.r[k]*10+n)/10,20,80); const d=v-p.r[k]; p.r[k]=v; return d; }
+const TB_YCAP=4, TB_K=.006;
+function tbFactors(p,regSet){ const room=Math.max(0,p.pot-ovr(p)); initPers(p); const m=p.team!=null?mgrOf(p.team):null;
+  return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:clamp(.75+((p.pers.pro+p.pers.amb)/2-4)/16*.5,.7,1.3), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
+function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
+  for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.age>28||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
+    if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
+    if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;
+    const f=tbFactors(p,regs[p.team]); const amt=TB_K*f.play*f.room*f.will*f.fac*f.coach*f.mgr*f.age*rnd(.6,1.4); const ks=TRN_TOOLS[trnG(p)]; const cap=Math.max(p.pot,ovr(p))+2;
+    for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } } }
+/* 연수 결과: 크게 늘거나, 조금 늘거나, 그대로거나, 다치거나 폼이 흐트러진다 */
+const jB=w=>{ const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<11172&&c%28>0; }; const jIGa=w=>w+(jB(w)?'이':'가'), jEulReul=w=>w+(jB(w)?'을':'를');
+const OVS_TOOLN={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
+function ovsRoll(p,o,coachDv){ const L=trnLearn(p); const room=Math.max(0,p.pot-ovr(p)); const ag=p.age<=22?1.3:p.age<=25?1:p.age<=27?.75:.5;
+  const big=o.big*ag*L*clamp(room/6,.3,1.3)*(1+((coachDv||50)-50)/150), inj=o.inj*clamp((p.inj||.15)/.15,.6,2), form=o.form, good=o.good;
+  const ks=o[p.isP?'P':'B']; const k=ks[Math.floor(R()*ks.length)]; const sc=Math.min(1,room/6+.4); const v0=p.isP?veloOf(p):null; const x=R(); let r;
+  if(x<inj){ p.injOut=ri(14,60); delete p.injK; r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${p.injOut}일 재활이 필요합니다.`}; }
+  else if(x<inj+form){ p.r[k]=clamp(p.r[k]-rnd(1,3),20,80); r={t:'form',k,txt:`${jEulReul(OVS_TOOLN[k])} 손보다 폼이 흐트러졌습니다. 다시 잡는 데 시간이 걸립니다.`}; }
+  else if(x<inj+form+big){ p.r[k]=clamp(p.r[k]+rnd(4,8)*sc,20,80); p.pot=Math.min(80,p.pot+rnd(1,4)); const v1=p.isP?veloOf(p):null; r={t:'big',k,txt:k==='stf'&&v1>v0?`직구 평균 ${v0}km/h에서 ${v1}km/h로 올라 돌아왔습니다.`:`${jIGa(OVS_TOOLN[k])} 확실히 달라져 돌아왔습니다.`}; }
+  else if(x<inj+form+big+good){ for(const kk of ks)p.r[kk]=clamp(p.r[kk]+rnd(1,2.5)*sc*1.4/ks.length,20,80); r={t:'good',k,txt:`${ks.map(z=>OVS_TOOLN[z]).join('·')}에서 성장이 확인됐습니다.`}; }
+  else r={t:'flat',k,txt:'큰 변화는 없었습니다.'};
+  roundR(p); (p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t}); return r; }
+function fallRoll(tid,k){ const F=FALL[k]; const L=[]; const ps=domestic(tid).filter(p=>p.age<=25&&!(p.injOut>0)&&!(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)).sort((a,b)=>ovr(a)-ovr(b)).slice(0,22);
+  for(const p of ps){ const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
+    if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); }
+  return {n:ps.length,hot:L}; }
+/* 다른 구단: 구단마다 육성 투자 성향이 있고, 그해 형편(현금·리빌딩)에 따라 정한다. 안 보내는 구단도 있다 */
+function ovsAiPlan(){ const out={fall:{},abl:{},us:{},jpl:{}};
+  for(const t of G.teams){ if(t.id===ME())continue; const lean=hn('ovsL',t.id)*.6+(t.mode==='rebuild'?.25:0)+(t.cash>3000?.15:t.cash<0?-.35:0)+N(0,.15);
+    const fk=lean>.15?(hn('ovsF',t.id)>0?'jp':'ul'):lean>-.25?'ul':null; if(fk){ out.fall[t.id]=fk; t.cash-=FALL[fk].c; }
+    const used=new Set(); const young=domestic(t.id).filter(p=>p.age<=25&&ovsElig(p)).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a)));
+    const pickN=(k,n)=>{ if(n<=0)return; const o=OVS[k]; const L=young.filter(p=>!used.has(p.id)&&(k!=='us'||p.isP||R()<.3)).slice(0,n).map(p=>p.id); if(L.length){ L.forEach(i=>used.add(i)); out[k][t.id]=L; t.cash-=o.c*L.length+o.fix; } };
+    pickN('abl',lean>-.1?ri(2,6):0); pickN('us',lean>.25?ri(2,5):0); pickN('jpl',lean>.35&&R()<.5?ri(2,3):0); }
+  return out; }
+const md=(d,a)=>d.m===a[0]&&d.d===a[1];
+function ovsFin(k){ const y=G.year; const out=[]; const C=G.coach&&G.coach[G.user]; const cd=C?(k==='abl'?(C.fm||C.fp||{}).dv:(C.pc||{}).dv):50;
+  for(const x of (G.ovs||[]).filter(x=>x.prog===k)){ const p=G.players[x.pid]; if(!p||p.team!==G.user)continue; const r=ovsRoll(p,OVS[k],cd); out.push(`${p.name}: ${r.txt}`); }
+  G.ovs=(G.ovs||[]).filter(x=>x.prog!==k);
+  if(out.length&&!G.unemp)mail('육성팀',`${OVS[k].l} 결과`,out.join('\n')+'\n\n연수 결과는 선수마다 크게 갈립니다. 어린 선수, 배우는 속도가 빠른 선수, 더 클 여지가 큰 선수일수록 크게 늘 가능성이 높고, 부상 체질이면 다칠 위험이 큽니다.',{kind:'연수'});
+  const A=G.ovsAi&&(G.ovsAi.y===y||G.ovsAi.y===y-1)?G.ovsAi:null; const hot=[];
+  if(A&&A[k]){ for(const t in A[k])for(const id of A[k][t]){ const p=G.players[id]; if(!p||p.team!==+t)continue; const r=ovsRoll(p,OVS[k],50); if(r.t==='big')hot.push(`${tshort(+t)} ${p.name}: ${r.txt}`); else if(r.t==='inj')hot.push(`${tshort(+t)} ${p.name}: 연수 중 부상(약 ${p.injOut}일)`); } A[k]={}; }
+  if(hot.length)news('리그',`${OVS[k].l}에서 돌아온 선수들`,hot.slice(0,5).join('\n'),0); }
+/* 날짜: 10/11 교육리그 개막 · 11/15 교육리그 결과·호주 출국 · 12/1 미국·일본 연수 출발 · 1/5 미국·일본 결과 · 2/1 호주 결과 */
+function tabDaily(day){ const d=dobj(day); const y=G.year;
+  if(md(d,[10,11])){ G.ovsAi=ovsAiPlan(); G.ovsAi.y=y; const f=G.ovsAi.fall; const jp=Object.keys(f).filter(t=>f[t]==='jp').map(t=>tshort(+t)), ul=Object.keys(f).filter(t=>f[t]==='ul').map(t=>tshort(+t));
+    const me=!G.unemp&&G.fall&&G.fall.y===y&&G.fall.k; if(me==='jp')jp.push(tshort(G.user)); if(me==='ul')ul.push(tshort(G.user)); const rest=G.teams.length-jp.length-ul.length;
+    news('리그','가을 교육리그 개막',[jp.length?`일본 미야자키 피닉스 교육리그: ${jp.join(', ')}.`:'',ul.length?`국내 울산 교육리그: ${ul.join(', ')}.`:'',rest>0?`나머지 ${rest}개 구단은 자체 마무리 훈련을 합니다.`:''].filter(Boolean).join(' '),0); }
+  if(md(d,[11,15])){ const A=G.ovsAi&&G.ovsAi.y===y?G.ovsAi:null;
+    if(A)for(const t in A.fall){ try{ fallRoll(+t,A.fall[t]); }catch(e){} }
+    const me=!G.unemp&&G.fall&&G.fall.y===y&&G.fall.k; if(me){ const r=fallRoll(G.user,me); mail('육성팀',`${FALL[me].l} 결과`,`${r.n}명이 ${FALL[me].l}를 마쳤습니다. 대부분 실전 감각을 이어 가는 정도의 작은 성장입니다.${r.hot.length?`\n눈에 띄게 좋아진 선수: ${r.hot.join(', ')}.`:''}`,{kind:'연수'}); }
+    const L=A?Object.entries(A.abl).map(([t,ids])=>`${tshort(+t)} ${ids.length}명`):[]; const mine=(G.ovs||[]).filter(x=>x.prog==='abl'); if(mine.length)L.push(`${tshort(G.user)} ${mine.length}명`);
+    if(L.length)news('리그','호주리그 파견 선수단 출국',`${L.join(', ')}이(가) 호주 프로리그로 떠났습니다. 약 10주 동안 실전을 치르고 돌아옵니다.`,0); }
+  for(const k in OVS)if(md(d,OVS[k].go)){ const mine=(G.ovs||[]).filter(x=>x.prog===k); mine.forEach(x=>x.go=true); if(mine.length)G.spend.dev=(G.spend.dev||0)+OVS[k].fix; }
+  if(md(d,[1,5])){ ovsFin('us'); ovsFin('jpl'); }
+  if(md(d,[2,1]))ovsFin('abl'); }
 
 /* ===== 부상 방지와 병원 ===== */
 const PREV=[{l:'없음',c:0,m:1},{l:'기본',c:500,m:.9},{l:'강화',c:1200,m:.8},{l:'최고 수준',c:2200,m:.7}];
@@ -8513,27 +8569,53 @@ function trnLearn(p){ initPers(p); return clamp(.7+(p.pers.pro-4)/16*.5+hn('lrn'
 function trnCap(p,k){ return clamp(Math.max(p.pot,ovr(p))+hn('tc'+k,p.id)*6+(k==='ctl'||k==='eye'?-1:0),25,80); }
 function trnRoom(p,k){ return trnCap(p,k)-p.r[k]; }
 function trnCoach(tid,k){ const role=(TRN.P[k]||TRN.B[k]||{}).c; try{ const C=G.coach&&G.coach[tid]; return role&&C?C[role]||null:null; }catch(e){ return null; } }
-/* 코치 기본안: 선수 역할·강약점·여력을 보고 정한다 */
-function trnCoachPick(p){ const r=p.r;
-  if(p.isP){ const sp=isSPr?isSPr(p):r.sta>=47; const rc=trnRoom(p,'ctl'), rs=trnRoom(p,'stf');
-    if(sp&&r.ctl<r.stf-5&&rc>=3)return 'ctl'; if(!sp&&r.stf>=r.ctl&&rs>=2)return 'stf'; if(r.ctl<r.stf-8&&rc<3&&rs>=2)return 'stf';
-    if(!sp&&p.age<=25&&r.sta<47&&r.stf>=50&&trnRoom(p,'sta')>=4)return 'sta'; if(rc>=4&&r.ctl<50)return 'ctl'; return 'bal'; }
-  const bat=(r.con+r.pow)/2; if(r.def<45&&bat>=52&&trnRoom(p,'def')>=3)return 'def'; if(p.age<=25&&trnRoom(p,'pow')>=5&&r.pow<r.con)return 'pow';
-  if(r.eye<45&&trnRoom(p,'eye')>=3)return 'eye'; if(r.con<45&&trnRoom(p,'con')>=3)return 'con'; return 'bal'; }
+/* 코치진 기본안과 의견: 같은 판단에서 나온다. 선수 역할·강약점·항목별 여력·감독 성향을 보고, 정답이 하나로 보이지 않게 다른 길도 함께 말한다 */
+function trnAdvice(p){ const r=p.r; const rm=k=>trnRoom(p,k); const m=p.team!=null&&G.mgr?mgrAttr(G.mgr[p.team]):null;
+  if(p.isP){ const sp=isSPr(p); const rc=rm('ctl'), rs=rm('stf'), ra=rm('sta');
+    if(r.ctl<r.stf-5){
+      if(sp&&rc>=3)return {f:'ctl',t:`제구가 선발 정착의 걸림돌입니다. 아직 고칠 여지가 있어 제구부터 잡겠습니다. 구위를 더 키워 불펜에서 쓰는 길도 있습니다.`};
+      if(rc<2.5&&rs>=2)return {f:'stf',t:`제구가 약점이지만 개선 여력이 크지 않습니다. 구위를 더 살려 불펜 자원으로 키우는 쪽이 낫다고 봅니다. 그래도 제구를 잡아 보겠다면 시간이 오래 걸립니다.`};
+      if(!sp&&rc>=5)return {f:'ctl',t:`불펜에서 볼넷이 많습니다. 제구를 잡을 여지가 커서 제구부터 하겠습니다. 구위를 키우면 짧은 이닝에서 더 강해질 수는 있습니다.`};
+      if(!sp)return {f:'stf',t:`불펜형이고 구위가 강점입니다. 강점을 더 키우겠습니다. 제구는 조금씩만 나아질 겁니다.`};
+      return {f:'bal',t:`제구가 약하지만 고칠 여지도, 구위를 더 올릴 여지도 크지 않습니다. 고르게 훈련하겠습니다.`}; }
+    if(r.stf<r.ctl-5){
+      if(rs>=3)return {f:'stf',t:`구위보다 제구가 나은 투수입니다. 구위를 끌어올릴 여지가 있어 구위부터 하겠습니다. 제구를 더 다듬어 맞혀 잡는 쪽으로 가는 길도 있습니다.`};
+      if(ra>=3)return {f:'sta',t:`구위는 크게 늘기 어렵습니다. 체력을 키워 긴 이닝을 맡기는 쪽으로 가겠습니다.`};
+      return {f:'bal',t:`구위가 약하지만 더 늘 여지가 크지 않습니다. 지금 가진 제구로 승부하도록 고르게 훈련하겠습니다.`}; }
+    if(!sp&&r.sta<47){
+      if(p.age<=25&&ra>=4&&r.stf>=50)return {f:'sta',t:`불펜에서 던지지만 체력을 키우면 선발로 돌려볼 만합니다. 그동안 구위 성장은 조금 늦어집니다.`};
+      if(rs>=2)return {f:'stf',t:`짧게 던지는 게 맞는 투수입니다. 구위를 다듬겠습니다.`}; }
+    return {f:'bal',t:`고르게 갖춘 투수입니다. 굳이 한쪽에 몰기보다 균형 훈련이 무난합니다.`}; }
+  const bat=(r.con+r.pow)/2; const dw=m&&m.dfn>=65; /* 수비를 중시하는 감독은 수비 약점을 더 일찍 메우려 한다 */
+  if(r.def<(dw?50:45)&&bat>=(dw?48:52)){
+    if(rm('def')>=3)return {f:'def',t:`방망이 때문에 계속 쓰고 싶은데 수비가 불안합니다.${dw?' 감독님도 수비를 중시합니다.':''} 수비 훈련으로 메우겠습니다. 대신 타격 훈련 시간이 줄어듭니다.`};
+    return {f:pow0(p)?'pow':'con',t:`수비는 크게 늘기 어렵습니다. 타격을 더 살리고 지명타자나 1루로 쓰는 방법이 낫다고 봅니다.`}; }
+  if(p.age<=25&&r.pow<r.con-6){
+    if(rm('pow')>=5)return {f:'pow',t:`맞히는 재주는 있는데 힘이 아직입니다. 장타를 키워 중심 타자로 키우겠습니다. 당장 타율은 조금 손해 볼 수 있습니다.`};
+    return {f:r.eye<50&&rm('eye')>=2?'eye':'con',t:`장타 여력은 크지 않습니다. 컨택과 선구로 출루형 타자를 만드는 쪽이 현실적입니다.`}; }
+  if(r.eye<45){
+    if(rm('eye')>=3)return {f:'eye',t:`공을 고르는 눈이 부족합니다. 선구를 잡으면 출루가 오를 겁니다. 선구는 원래 천천히 느는 항목입니다.`};
+    return {f:'bal',t:`선구가 약하지만 잘 안 느는 유형입니다. 장점인 타격을 고르게 살리겠습니다.`}; }
+  if(r.con<45&&rm('con')>=3)return {f:'con',t:`삼진이 많습니다. 컨택부터 잡겠습니다. 장타를 키워 한 방이 있는 타자로 가는 길도 있습니다.`};
+  return {f:'bal',t:`특별한 약점이 없습니다. 당장 생산성을 높일지(컨택), 장기적으로 타격 유형을 만들지(장타·선구) 정하시면 됩니다.`}; }
+const pow0=p=>p.r.pow>=p.r.con;
+function trnCoachPick(p){ return trnAdvice(p).f; }
 function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by==='gm'?T.f:trnCoachPick(p); }
 /* 단장 지정(또는 코치에게 돌려주기) */
 function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 정할 수 있습니다.'; G.trn=G.trn||{};
-  if(f==='coach'){ delete G.trn[pid]; return `${p.name}의 훈련 방향을 코치에게 맡겼습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
+  if(f==='coach'){ delete G.trn[pid]; return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
   G.trn[pid]={f,by:'gm',since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnTot(p)};
-  const m=G.mgr[G.user]; return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:''}`; }
+  const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
+  if(m&&f!==rec&&(m.ego||50)>=70){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel||50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
+  return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
 /* 매주: 모든 구단 국내 선수(부상·군 복무 제외, 33세 이하) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
   for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.age>33||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const c=trnCoach(p.team,f); const cf=.85+((c?c.dv:50)-50)/100*.8; const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:.35;
-    const add=.05*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); p.r[k]=clamp(p.r[k]+add,20,80);
-    if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=add; p.trD.by[k]=(p.trD.by[k]||0)+add; roundR(p); } }
+    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
+    if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
 function trnCost(p){ const D=p.trD; if(!D||(D.y!==G.year&&D.y!==G.year-1))return null; const ks=TRN_TOOLS[trnG(p)].filter(k=>!(k in D.by)&&k in p.r); if(!ks.length)return null; const per=D.s*1.1/ks.length; const o={}; ks.forEach(k=>o[k]=per); delete p.trD; return o; }
 /* 경기 기록 합(1군 + 2군) */
@@ -8548,20 +8630,8 @@ function trnStatLine(p,f,snap){ const S=TRN_STAT[f]; if(!S||!snap)return ''; con
   if(!(S[2]==='이닝'?aft.outs:S[2]==='타석'?aft.pa:aft.g))return `${S[0]}: 집중 이후 아직 경기 기록이 없습니다.`;
   let b=S[1](snap), bl='집중 전'; if(b==null){ const ly=trnTot(p,G.year-1); b=S[1](ly); bl='작년'; }
   return `${S[0]} ${bl} ${b==null?'기록 없음':fmt(b)} → 집중 이후 ${fmt(S[1](aft))} (${n}, 1·2군 합산)`; }
-/* 코치 의견: 강약점·여력·학습 능력으로, 정답이 하나로 보이지 않게 두 갈래를 함께 말한다 */
-function trnOpinion(p){ return trnOpinion0(p).replace(/ +"$/,'"'); }
-function trnOpinion0(p){ const r=p.r, L=trnLearn(p); const lr=L>=1.15?'배우는 속도가 빠른 선수입니다.':L<=.82?'새로 익히는 데 시간이 걸리는 선수입니다.':'';
-  const rm=k=>trnRoom(p,k); const big=k=>rm(k)>=5, small=k=>rm(k)<2.5;
-  if(p.isP){ const sp=isSPr?isSPr(p):r.sta>=47;
-    if(r.ctl<r.stf-5)return `"제구가 ${sp?'선발 정착':'1군 정착'}의 걸림돌입니다. ${small('ctl')?'다만 제구는 개선 여력이 크지 않아, 구위를 더 살려 불펜으로 쓰는 방법도 있습니다.':big('ctl')?'제구는 아직 고칠 여지가 충분해 보입니다.':'제구를 잡으면 선발로 쓸 가능성이 커지고, 구위를 키우면 강한 불펜이 됩니다.'} ${lr}"`;
-    if(r.stf<r.ctl-5)return `"제구로 버티는 투수입니다. ${big('stf')?'구위를 끌어올릴 여지가 있습니다.':'구위는 크게 늘기 어려워, 체력을 키워 긴 이닝을 맡기는 쪽도 생각해 볼 만합니다.'} ${lr}"`;
-    if(!sp&&r.sta<47)return `"불펜형입니다. ${big('sta')&&p.age<=25?'체력을 키우면 선발로 돌려볼 만합니다.':'지금처럼 짧게 던지는 게 맞아 보입니다. 구위를 다듬는 쪽이 낫습니다.'} ${lr}"`;
-    return `"고르게 갖춘 투수입니다. 굳이 한쪽에 몰기보다 균형 훈련이 무난합니다. ${lr}"`; }
-  const bat=(r.con+r.pow)/2;
-  if(r.def<45&&bat>=52)return `"방망이 때문에 계속 쓰고 싶은데 수비가 불안합니다. ${big('def')?'수비 훈련으로 메울 여지가 있습니다. 대신 타격 훈련 시간이 줄어듭니다.':'수비는 크게 늘기 어려워, 타격을 더 살리고 지명타자로 쓰는 방법도 있습니다.'} ${lr}"`;
-  if(p.age<=25&&r.pow<r.con-6)return `"맞히는 재주는 있는데 힘이 아직입니다. ${big('pow')?'장타를 키우면 중심 타자로 자랄 수 있습니다. 당장 타율은 조금 손해 볼 수 있습니다.':'장타 여력은 크지 않아 컨택과 선구로 출루형을 만드는 쪽이 현실적입니다.'} ${lr}"`;
-  if(r.eye<45)return `"공을 고르는 눈이 부족합니다. ${big('eye')?'선구를 잡으면 출루가 오를 겁니다.':'선구는 잘 안 느는 유형이라, 장점인 타격을 살리는 편이 낫습니다.'} ${lr}"`;
-  return `"특별한 약점이 없습니다. 당장 생산성을 높일지(컨택), 장기적으로 타격 유형을 만들지(장타·선구) 정하시면 됩니다. ${lr}"`; }
+/* 코치 의견 */
+function trnOpinion(p){ const L=trnLearn(p); const lr=L>=1.15?' 배우는 속도가 빠른 선수입니다.':L<=.82?' 새로 익히는 데 시간이 걸리는 선수입니다.':''; return `"${trnAdvice(p).t}${lr}"`; }
 /* 관찰 보고: 능력 변화(코치 관찰, 정확한 숫자 대신 정도) */
 function trnObs(p){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; const D=TRN[trnG(p)][T.f]; const k=D.k[0]; const d=p.r[k]-(T.base[k]??p.r[k]); const w=Math.floor((G.day-T.since)/7);
   const lv=d<.3?(w<4?'아직 판단하기 이릅니다':'변화가 거의 관찰되지 않습니다'):d<1?'작은 개선이 관찰됩니다':d<2?'눈에 띄게 좋아졌습니다':'확실히 달라졌습니다';
@@ -9234,17 +9304,8 @@ function medBody(){
   ${G.medSet?'':'<button class="btn primary block" data-a="medOk">이대로 운영</button>'}`;
 }
 function devBody(){
-  const rows=(G.devProg||[]).map(x=>{const p=G.players[x.pid]; return p?`<div class="item wa" style="cursor:default">${avImg(p)}<button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${DEVP[x.prog].l} · ${Math.max(0,Math.floor((G.day-x.since)/7))}주째${isRegular(p)?' · 1군 출전 중(효과 절반)':''}</span><span class="rt"><button class="btn small danger" data-a="devOff" data-v="${p.id}">해제</button></span></div>`:''}).join('');
-  const cands=domestic(G.user).filter(p=>p.age<=26&&!(G.devProg||[]).some(x=>x.pid===p.id)).map(p=>({p,rp:scoutReport(p)})).sort((a,b)=>((b.rp.ofp||0)-b.rp.cur)-((a.rp.ofp||0)-a.rp.cur)).slice(0,8);
-  const full=(G.devProg||[]).length>=6;
-  const ov=(G.ovs||[]).map(x=>{const p=G.players[x.pid]; return p?`<div class="item wa" style="cursor:default">${avImg(p)}<span class="nm">${esc(p.name)}</span><span class="sub">${OVS[x.prog].l} · 1월 1일 결과 발표</span></div>`:''}).join('');
-  const dv=inTabs('devv',[['trn','훈련 방향'],['on',`2군 연수 ${(G.devProg||[]).length}/6`],['rec','연수 추천'],['ovs','해외 연수']],'trn');
-  if(dv.cur==='trn')return dv.bar+trnListBody();
-  return dv.bar+(dv.cur==='on'?`<p class="small muted">배정한 선수는 매주 해당 능력이 조금씩 오릅니다. 1군에서 뛰는 선수는 효과가 절반이고, 감독의 육성 성향도 영향을 줍니다. 추천 선수 아래 버튼을 누르면 바로 배정됩니다(최대 6명).</p>${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}
-  ${(G.devProg||[]).length?`<div class="eyebrow">배정 중</div>${cgrid((G.devProg||[]).map(x=>G.players[x.pid]).filter(Boolean),p=>{const x=G.devProg.find(q=>q.pid===p.id); return {tags:`<span class="pill good">${DEVP[x.prog].l} · ${Math.max(0,Math.floor((G.day-x.since)/7))}주째</span>`,foot:`${rosterFoot(p)}<button class="tc-i" data-a="devOff" data-v="${p.id}">해제</button>`};})}`:''}`||'':dv.cur==='rec'?`  <div class="eyebrow">추천 대상 (스카우트가 본 성장 여지 순)</div>
-  ${cgrid(cands.map(x=>x.p),p=>({foot:`<div class="devpick">${Object.entries(DEVP).filter(([k,v])=>v.P===!!p.isP).map(([k,v])=>`<button class="tc-i" data-a="devSet" data-v="${p.id}:${k}" ${full?'disabled':''}>${v.l}</button>`).join('')}</div>`}))}`:`  <div class="eyebrow">해외 연수 ${ovsOpen()?'· 신청 가능':'· 9월부터 신청'}</div>
-  ${ov?`<div class="list">${dv(ov)}</div>`:''}
-  <p class="small muted">${Object.values(OVS).map(o=>`${o.l} ${money(o.c)}: ${o.d}`).join(' ')}</p>`);
+  const dv=inTabs('devv',[['trn','훈련 방향'],['ovs',`해외 연수${(G.ovs||[]).length?' '+(G.ovs||[]).length+'명':''}`]],'trn');
+  return dv.bar+(dv.cur==='ovs'?ovsBody():trnListBody());
 }
 function marketingBody(){
   return `<div class="row between"><span class="small">올 시즌 예산</span><b class="num" id="mktv">${money(G.marketing)}</b></div>
@@ -11472,7 +11533,7 @@ function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Obj
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
     <div class="tgrid">${FACK.map(card).join('')}</div>${facCompare()}
     <div class="eyebrow" style="margin-top:8px">성장에 영향을 주는 것</div>
-    <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 감독의 육성 성향. 4) 2군 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
+    <p class="small muted">1) 출전 시간: 1군에서 많이 뛸수록 잘 큽니다(2군 출전은 2군 구장 수준에 따라 60~75% 인정). 2) 시설. 3) 코치 수준과 감독의 육성 성향. 4) 잠재력과 성장 의지. 5) 훈련 방향과 해외 연수. 선수마다 숨은 성장 유형이 있습니다.</p>`); }
 
 /* ===== 구단 캘린더 (FM 일정 화면 방식) =====
    한 달을 월~일 격자로 보여 준다. 칸마다 우리 경기(상대·홈원정·결과)와 마감·리그 행사·우리 일(결정 기한, 부상 복귀 등)을 표시하고,
@@ -11939,12 +12000,12 @@ function scoutTeamPage(){ return csec('스카우트 팀',scoutBody(),`<span clas
 function scoutView(){ return transferView(); }
 /* ---------- 스태프·육성 ---------- */
 function trainView(){ const s=curSub('train');
-  const H={camp:campView,dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">2군 연수 ${(G.devProg||[]).length}/6</span>`),lead:leadCard};
+  const H={camp:campView,dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">${(G.ovs||[]).length?`해외 연수 ${(G.ovs||[]).length}명`:''}</span>`),lead:leadCard};
   return subTabs('train')+(H[s]||campView)(); }
 function staffView(){
   const s=curSub('staff'); const m=G.mgr[G.user];
   const H0={mgr:()=>csec('감독',mgrBody(),`<span class="small muted">${m?esc(m.name):'빈자리'}</span>`),
-    dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">2군 연수 ${(G.devProg||[]).length}/6</span>`),
+    dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">${(G.ovs||[]).length?`해외 연수 ${(G.ovs||[]).length}명`:''}</span>`),
     coach:coachView,
     scouts:scoutTeamPage,
     camp:campView,
@@ -12528,7 +12589,7 @@ function renderSheet0(){
     const parts=[];
     if(p.foreign&&G.contract&&!G.contract.done&&G.contract.foreignEnd.includes(p.id)&&!G.contract.foreignDrop.includes(p.id))parts.push(foRePanel(p)); /* 외국인 재계약 협상(보류권) */
     parts.push(entryForm(p));
-    if(!p.foreign&&p.age<=28)parts.push(devForm(p));
+    if(!p.foreign&&p.age<=30)parts.push(devForm(p));
     if(canExtend(p))parts.push('<div id="s-ext"></div>'+`<section class="card"><div class="eyebrow">비FA 다년계약 · ${ctText(p)}</div>${p.extCounter&&p.extCounter.until>=G.day?`<p class="small">역제안이 와 있습니다: ${esc(p.extCounter.terms?termsTxt(p.extCounter.terms,true):`${p.extCounter.years}년 연 ${money(p.extCounter.annual)}`)}</p>`:''}${ngtDoor('ext',p)}<p class="small muted">시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p></section>`);
     else if(UI.ext&&UI.ext.id===p.id&&UI.ext.msg)parts.push(`<div class="note ${UI.ext.ok?'good':''}">${esc(UI.ext.msg)}</div>`);
     parts.push(`<div class="row" style="margin-top:14px;justify-content:flex-end">${UI.confirmRel===p.id?`<button class="btn danger" data-a="release" data-v="${p.id}">정말 방출${p.faC?` (정산 ${money(Math.round(p.sal*p.yrs*.5))})`:''}</button><button class="btn" data-a="relCancel">취소</button>`:`<button class="btn danger" data-a="relAsk" data-v="${p.id}">방출</button>`}</div>`);
@@ -12679,12 +12740,12 @@ function bondCard(p){
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
   </section>`;
 }
-function devForm(p){
-  const cur=(G.devProg||[]).find(x=>x.pid===p.id); const ov=(G.ovs||[]).find(x=>x.pid===p.id);
-  const progs=Object.entries(DEVP).filter(([,v])=>v.P===p.isP);
-  return `<section class="card"><div class="eyebrow">2군 연수 프로그램 ${cur?'· '+DEVP[cur.prog].l+' 진행 중':''}</div>
-  <div class="talk"><button class="btn small ${!cur?'on':''}" data-a="devSet" data-v="${p.id}:">없음</button>${progs.map(([k,v])=>`<button class="btn small ${cur&&cur.prog===k?'on':''}" data-a="devSet" data-v="${p.id}:${k}">${v.l}</button>`).join('')}</div>
-  ${ovsOpen()&&p.age<=27?`<div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+' 신청됨':''}</div><div class="talk">${Object.entries(OVS).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('')}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:''}
+function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH||[]).slice(-3);
+  const T={big:'크게 늘어 옴',good:'성장 확인',flat:'변화 없음',form:'폼 흐트러짐',inj:'부상'};
+  const btns=Object.entries(OVS).filter(([k])=>ovsOpen(k)).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('');
+  return `<section class="card"><div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+(ov.go?' 진행 중':' 신청됨'):''}</div>
+  ${ov&&ov.go?'':btns?`<div class="talk">${btns}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:'<p class="small muted">신청은 9월 1일부터 받습니다(호주리그 11월 10일, 미국·일본 연수 11월 30일까지).</p>'}
+  ${H.length?`<p class="small muted">지난 연수: ${H.map(h=>`${h.y} ${esc(h.k)}(${T[h.t]||''})`).join(', ')}</p>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
 function closeSheets(){ UI.ngt=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;renderSheet();}
@@ -12783,7 +12844,8 @@ const A={
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0}; save(); render(); },
   devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },
   devOff(v){ setDev(+v,null); save(); render(); },
-  ovsSet(v){ const [id,k]=v.split(':'); UI.devMsg=setOvs(+id,k||null); save(); render(); },
+  ovsSet(v){ const [id,k]=v.split(':'); UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
+  fallSet(v){ UI.devMsg=setFall(v||null); save(); render(); },
   listP(v){ listPlayer(+v); save(); render(); },
   tsugGo(v){ const [src,i]=v.split(':'); const s=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!s||!tsugValid(s)){ UI.deskMsg='상황이 바뀌어 다시 찾아야 합니다.'; UI.deskOk=false; render(); return; }
     const r=proposeTrade(s.tid,s.give,[s.id]); UI.deskMsg=r.msg; UI.deskOk=r.ok; if(r.ok){ sfx('cheer_hit',.5); UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade}; G.tsug=null; UI.cmpK=null; if(src==='f')UI.findT=null; } save(); render(); },
@@ -13826,8 +13888,8 @@ function cpFacStat(k){ const ps=playersOf(G.user); const dev=(G.devProg||[]).len
   const inj30=ps.reduce((a,p)=>a+(p.injHist||[]).filter(h=>h.y===G.year&&h.d>G.day-30).length,0);
   if(k==='rehab'){ const R=ps.filter(p=>p.injOut>0); const avg=R.length?Math.round(sum(R.map(p=>p.injOut))/R.length):0; return `지금 재활 중 ${R.length}명${R.length?`(평균 ${avg}일 남음)`:''} · 최근 30일 새 부상 ${inj30}건`; }
   if(k==='weight')return `최근 30일 새 부상 ${inj30}건 · 30세 이상 선수 ${ps.filter(p=>p.age>=30).length}명`;
-  if(k==='lab')return `2군 연수 배정 ${dev}/6명 · 23세 이하 선수 ${young}명`;
-  if(k==='indoor')return `선수단 ${ps.length}명 · 2군 연수 배정 ${dev}/6명`;
+  if(k==='lab')return `훈련 방향 요청 ${Object.keys(G.trn||{}).length}명 · 23세 이하 선수 ${young}명`;
+  if(k==='indoor')return `선수단 ${ps.length}명 · 해외 연수 ${(G.ovs||[]).length}명`;
   if(k==='fut'){ const n=ps.filter(p=>{ const f=seasonTotal(p,G.year,'퓨처스'); return f&&((f.pa||0)>0||(f.outs||0)>0); }).length; return `올해 2군 경기에 나선 선수 ${n}명`; }
   if(k==='dorm')return `23세 이하 선수 ${young}명`;
   return ''; }
@@ -14150,23 +14212,52 @@ function trnCard(p){ if(p.team!==G.user||p.foreign||p.prospect||(p.joinY>G.year)
   const T=G.trn&&G.trn[p.id]; const mine=T&&T.by==='gm'; const rec=trnCoachPick(p); const f=mine?T.f:rec; const D=TRN[trnG(p)];
   const c=trnCoachOf(p,f); const role=(D[f]&&D[f].c)||(p.isP?'pc':'bc');
   const chips=Object.entries(D).map(([k,v])=>`<button class="btn small ${f===k?'on':''}" data-a="trnSet" data-v="${p.id}:${k}">${v.l}${k===rec?'<i class="trn-rec">코치안</i>':''}</button>`).join('');
-  const o=trnObs(p); const dvp=(G.devProg||[]).find(x=>x.pid===p.id);
-  return `<section class="card trn"><div class="row between"><span class="eyebrow">훈련 방향</span><span class="small muted">${mine?'단장 지정':'코치진 계획'}</span></div>
-  <div class="talk">${chips}${mine?`<button class="btn small" data-a="trnSet" data-v="${p.id}:coach">코치에게 맡기기</button>`:''}</div>
+  const o=trnObs(p);
+  return `<section class="card trn"><div class="row between"><span class="eyebrow">훈련 방향</span><span class="small muted">${mine?'단장 요청':'감독·코치진 계획'}</span></div>
+  <div class="talk">${chips}${mine?`<button class="btn small" data-a="trnSet" data-v="${p.id}:coach">코치진 계획으로</button>`:''}</div>
   <p class="small">담당: ${c?`<b>${esc(c.name)}</b> ${CROLE[role]?CROLE[role].l:''} · 육성력 ${c.dv}`:`${CROLE[role]?CROLE[role].l:'코치'} 공석`}</p>
-  <div class="mop"><b>코치 의견</b><span>${esc(trnOpinion(p))}</span>${!mine&&rec!=='bal'?`<span class="small muted">따로 정하지 않으면 코치진 계획(${D[rec].l} 집중)대로 갑니다.</span>`:''}</div>
+  <div class="mop"><b>코치 의견</b><span>${esc(trnOpinion(p))}</span>${!mine&&rec!=='bal'?`<span class="small muted">따로 요청하지 않으면 감독·코치진 계획(${D[rec].l} 집중)대로 갑니다.</span>`:''}</div>
   ${o?`<div class="trn-rep"><b>최근 보고</b><div class="small">${D[T.f].l} 집중 ${o.w}주 · ${esc(o.lv)}</div>${o.stat?`<div class="small muted">경기 기록: ${esc(o.stat)}</div>`:''}<div class="small muted">능력 변화는 코치 관찰이고, 경기 기록은 운과 상대에 따라 따로 움직입니다.</div></div>`:''}
-  ${dvp?`<p class="small muted">2군 연수(${DEVP[dvp.prog].l})는 이와 별도로 진행됩니다.</p>`:''}
+  ${p.age<=28?trnEnvBox(p):''}
   <p class="small muted">한 항목에 집중하면 몇 주~몇 달에 걸쳐 그 항목이 오르고, 겨울 성장 때 다른 항목의 오름폭이 그만큼 줄어듭니다. 항목마다 늘 수 있는 여력이 달라 약점 보완이 늘 정답은 아닙니다.${p.isP?' 체력 집중은 부상 위험을 조금 낮추고, 구위 집중은 조금 높입니다.':' 수비 집중은 포지션 전환과 별개입니다.'}</p>
   ${UI.trnMsg&&UI.trnMsg.id===p.id?`<div class="note">${esc(UI.trnMsg.t)}</div>`:''}</section>`; }
 /* 운영 > 육성: 우리 선수 훈련 방향 한눈에 */
 function trnListBody(){ const ps=domestic(G.user).filter(p=>p.age<=33&&!(p.joinY>G.year)).sort((a,b)=>(a.isP-b.isP)||(ovr(b)-ovr(a)));
   const row=p=>{ const T=G.trn&&G.trn[p.id]; const mine=T&&T.by==='gm'; const f=mine?T.f:trnCoachPick(p); const D=TRN[trnG(p)][f]; const o=mine?trnObs(p):null;
-    return `<button class="item" data-a="trnOpen" data-v="${p.id}"><span class="nm">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></span><span class="sub">${mine?'<span class="pill good">단장</span> ':'<span class="pill">코치</span> '}${D.l}${f==='bal'?'':' 집중'}${o?` · ${o.w}주 · ${esc(o.lv)}`:''}</span></button>`; };
+    return `<button class="item" data-a="trnOpen" data-v="${p.id}"><span class="nm">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></span><span class="sub">${mine?'<span class="pill good">단장</span> ':'<span class="pill">코치진</span> '}${D.l}${f==='bal'?'':' 집중'}${o?` · ${o.w}주 · ${esc(o.lv)}`:''}</span></button>`; };
   const n=Object.keys(G.trn||{}).length;
-  return `<p class="small muted">선수마다 집중 항목을 하나 정합니다. 정하지 않은 선수는 담당 코치가 정한 계획대로 갑니다(다른 구단도 같은 방식). 지금 단장이 정한 선수 ${n}명. 선수를 누르면 능력 탭에서 코치 의견과 최근 보고를 볼 수 있습니다.</p>
+  return `<p class="small muted">훈련의 주안점은 감독과 코치진이 상의해 선수마다 하나씩 정합니다(다른 구단도 같은 방식). 단장은 바꿔 달라고 요청할 수 있습니다. 지금 단장이 요청한 선수 ${n}명. 선수를 누르면 능력 탭에서 코치 의견과 최근 보고를 볼 수 있습니다.</p>
   <div class="eyebrow">야수</div><div class="list">${ps.filter(p=>!p.isP).map(row).join('')}</div>
   <div class="eyebrow">투수</div><div class="list">${ps.filter(p=>p.isP).map(row).join('')}</div>`; }
 Object.assign(A,{ trnSet(v){ const [id,f]=v.split(':'); const t=trnSet(+id,f); UI.trnMsg=t?{id:+id,t}:null; save(); if(UI.sheet!=null)renderSheet(); render(); },
   trnOpen(v){ UI.ptab='abil'; A.player(v); } });
+/* 성장 환경: 일반 훈련 속도를 정하는 것들 */
+function trnEnvBox(p){ const f=tbFactors(p,isRegular(p)?new Set([p.id]):null); const g=potGapEst(p); const lv=(v,a,b)=>v>=a?'좋음':v>=b?'보통':'아쉬움';
+  const m=G.mgr[G.user]; const tg=p.tg&&p.tg.y===G.year?p.tg.s:0;
+  const L=[['1군 출장',isRegular(p)?'주전: 훈련 시간이 적은 대신 겨울 성장 때 출전량으로 큽니다':'훈련 시간이 많아 주중 훈련 효과가 큽니다'],
+    ['잠재력 여지',g>=8?'많음(스카우트 추정)':g>=4?'보통(스카우트 추정)':g>=1?'적음(스카우트 추정)':'거의 없음(스카우트 추정)'],
+    ['성장 의지',f.will>=1.1?'강함':f.will>=.92?'보통':'약함'],
+    ['훈련 시설',`${esc(facEff(p).l)} · ${lv(f.fac,1.04,.97)}`],
+    ['코치 수준',lv(f.coach,1.08,.97)],
+    ['감독 육성 성향',m?`${esc(m.name)} ${m.youth}`:'감독 없음']];
+  return `<div class="trn-env"><b>성장 환경</b>${L.map(([k,v])=>`<div class="small"><span class="muted">${k}</span> ${v}</div>`).join('')}<div class="small muted">올해 일반 훈련 성장: ${tg>=3?'많이 쌓임':tg>=1.5?'보통':tg>0.3?'조금':'아직 거의 없음'}</div></div>`; }
+/* 운영 > 육성 > 해외 연수 */
+function ovsBody(){ const y=G.year; const T={big:'크게 늘어 옴',good:'성장 확인',flat:'변화 없음',form:'폼 흐트러짐',inj:'부상'};
+  const fk=G.fall&&G.fall.y===y?G.fall.k:undefined; const fo=fallOpen();
+  const fall=`<section class="card"><div class="row between"><span class="eyebrow">가을 교육리그 · 구단 단위</span><span class="small muted">${fo?'10월 10일까지 신청':'신청 9월 1일~10월 10일'}</span></div>
+    <p class="small">25세 이하 선수 20명 안팎이 10월 중순부터 한 달 실전을 치릅니다. 대부분 작은 성장이고, 가끔 눈에 띄게 좋아지는 선수가 나옵니다.</p>
+    ${fo?`<div class="talk">${Object.entries(FALL).map(([k,v])=>`<button class="btn small ${fk===k?'on':''}" data-a="fallSet" data-v="${k}">${v.l} ${money(v.c)}</button>`).join('')}<button class="btn small ${fk===null?'on':''}" data-a="fallSet" data-v="">불참(자체 마무리 훈련)</button></div>`:`<p class="small muted">올해: ${fk?FALL[fk].l:fk===null?'불참':'정하지 않음(불참)'}</p>`}
+    <p class="small muted">${Object.values(FALL).map(v=>`${v.l}: ${v.d}`).join(' ')}</p></section>`;
+  const used=new Set((G.ovs||[]).map(x=>x.pid));
+  const prog=Object.entries(OVS).map(([k,o])=>{ const mine=(G.ovs||[]).filter(x=>x.prog===k); const open=ovsOpen(k);
+    const cands=open&&mine.length<o.lim?domestic(G.user).filter(p=>ovsElig(p)&&p.age<=27&&!used.has(p.id)&&(k!=='us'||p.isP||p.r.pow<60)).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,6):[];
+    return `<section class="card"><div class="row between"><span class="eyebrow">${o.l}</span><span class="small muted">1인 ${money(o.c)} · 동행 ${money(o.fix)} · ${o.lim}명까지</span></div>
+      <p class="small">${o.d}</p>
+      ${mine.length?`<div class="list">${mine.map(x=>{ const p=G.players[x.pid]; return p?`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${x.go?'연수 중':'출발 대기'}</span>${x.go?'':`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`}</div>`:''; }).join('')}</div>`:''}
+      ${cands.length?`<div class="eyebrow">추천 후보(더 클 여지가 큰 순)</div><div class="list">${cands.map(p=>`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><button class="btn small" data-a="ovsSet" data-v="${p.id}:${k}">보내기</button></div>`).join('')}</div>`:open?'':`<p class="small muted">신청 기간: 9월 1일~${o.close[0]}월 ${o.close[1]}일</p>`}</section>`; }).join('');
+  const A=G.ovsAi&&G.ovsAi.y===y?G.ovsAi:null;
+  const lg=A?`<section class="card"><span class="eyebrow">올해 다른 구단</span>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const f=A.fall[t.id]; const a=(A.abl[t.id]||[]).length, u=(A.us[t.id]||[]).length, j=(A.jpl[t.id]||[]).length; const L=[f?(f==='jp'?'미야자키':'울산'):'교육리그 불참',a?`호주 ${a}명`:'',u?`미국 ${u}명`:'',j?`일본 연수 ${j}명`:''].filter(Boolean); return `<div class="small"><b>${esc(tshort(t.id))}</b> ${L.join(' · ')}</div>`; }).join('')}</section>`:'';
+  const past=domestic(G.user).filter(p=>(p.ovsH||[]).length).flatMap(p=>p.ovsH.map(h=>({p,h}))).sort((a,b)=>b.h.y-a.h.y).slice(0,10);
+  const ps=past.length?`<section class="card"><span class="eyebrow">지난 연수 결과</span>${past.map(({p,h})=>`<div class="small">${h.y} ${esc(h.k)} · ${esc(p.name)}: ${T[h.t]||''}</div>`).join('')}</section>`:'';
+  return `${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}<p class="small muted">해외 연수는 돈이 드는 프로젝트입니다. 모든 구단이 보내지는 않고, 결과도 선수마다 크게 갈립니다. 어린 선수, 배우는 속도가 빠른 선수, 더 클 여지가 큰 선수일수록 크게 늘 가능성이 높고, 부상 체질이면 다칠 위험이 큽니다.</p>${fall}${prog}${lg}${ps}`; }
 </script>

@@ -119,17 +119,8 @@ function medBody(){
   ${G.medSet?'':'<button class="btn primary block" data-a="medOk">이대로 운영</button>'}`;
 }
 function devBody(){
-  const rows=(G.devProg||[]).map(x=>{const p=G.players[x.pid]; return p?`<div class="item wa" style="cursor:default">${avImg(p)}<button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${DEVP[x.prog].l} · ${Math.max(0,Math.floor((G.day-x.since)/7))}주째${isRegular(p)?' · 1군 출전 중(효과 절반)':''}</span><span class="rt"><button class="btn small danger" data-a="devOff" data-v="${p.id}">해제</button></span></div>`:''}).join('');
-  const cands=domestic(G.user).filter(p=>p.age<=26&&!(G.devProg||[]).some(x=>x.pid===p.id)).map(p=>({p,rp:scoutReport(p)})).sort((a,b)=>((b.rp.ofp||0)-b.rp.cur)-((a.rp.ofp||0)-a.rp.cur)).slice(0,8);
-  const full=(G.devProg||[]).length>=6;
-  const ov=(G.ovs||[]).map(x=>{const p=G.players[x.pid]; return p?`<div class="item wa" style="cursor:default">${avImg(p)}<span class="nm">${esc(p.name)}</span><span class="sub">${OVS[x.prog].l} · 1월 1일 결과 발표</span></div>`:''}).join('');
-  const dv=inTabs('devv',[['trn','훈련 방향'],['on',`2군 연수 ${(G.devProg||[]).length}/6`],['rec','연수 추천'],['ovs','해외 연수']],'trn');
-  if(dv.cur==='trn')return dv.bar+trnListBody();
-  return dv.bar+(dv.cur==='on'?`<p class="small muted">배정한 선수는 매주 해당 능력이 조금씩 오릅니다. 1군에서 뛰는 선수는 효과가 절반이고, 감독의 육성 성향도 영향을 줍니다. 추천 선수 아래 버튼을 누르면 바로 배정됩니다(최대 6명).</p>${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}
-  ${(G.devProg||[]).length?`<div class="eyebrow">배정 중</div>${cgrid((G.devProg||[]).map(x=>G.players[x.pid]).filter(Boolean),p=>{const x=G.devProg.find(q=>q.pid===p.id); return {tags:`<span class="pill good">${DEVP[x.prog].l} · ${Math.max(0,Math.floor((G.day-x.since)/7))}주째</span>`,foot:`${rosterFoot(p)}<button class="tc-i" data-a="devOff" data-v="${p.id}">해제</button>`};})}`:''}`||'':dv.cur==='rec'?`  <div class="eyebrow">추천 대상 (스카우트가 본 성장 여지 순)</div>
-  ${cgrid(cands.map(x=>x.p),p=>({foot:`<div class="devpick">${Object.entries(DEVP).filter(([k,v])=>v.P===!!p.isP).map(([k,v])=>`<button class="tc-i" data-a="devSet" data-v="${p.id}:${k}" ${full?'disabled':''}>${v.l}</button>`).join('')}</div>`}))}`:`  <div class="eyebrow">해외 연수 ${ovsOpen()?'· 신청 가능':'· 9월부터 신청'}</div>
-  ${ov?`<div class="list">${dv(ov)}</div>`:''}
-  <p class="small muted">${Object.values(OVS).map(o=>`${o.l} ${money(o.c)}: ${o.d}`).join(' ')}</p>`);
+  const dv=inTabs('devv',[['trn','훈련 방향'],['ovs',`해외 연수${(G.ovs||[]).length?' '+(G.ovs||[]).length+'명':''}`]],'trn');
+  return dv.bar+(dv.cur==='ovs'?ovsBody():trnListBody());
 }
 function marketingBody(){
   return `<div class="row between"><span class="small">올 시즌 예산</span><b class="num" id="mktv">${money(G.marketing)}</b></div>
