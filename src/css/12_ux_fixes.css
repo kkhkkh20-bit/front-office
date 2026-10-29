@@ -322,3 +322,9 @@ body:has(#sheet .scrim) #dtick{display:none}
 .achit p{margin:3px 0 0}
 .achbar{height:5px;border-radius:3px;background:var(--line,#2a323d);margin:6px 0 2px;overflow:hidden}
 .achbar i{display:block;height:100%;background:var(--acc,#3b82f6)}
+/* 외국인 협상 */
+.fo .fo-in{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.fo .fo-in>div{display:flex;flex-direction:column;gap:3px;background:var(--bg2,rgba(127,127,127,.08));border-radius:8px;padding:8px}
+.fo .fo-in b{font-size:17px}.fo .fo-in i{font-style:normal}.fo .fo-in .row{gap:4px;flex-wrap:wrap}
+.fo .fo-cmp{display:flex;flex-direction:column;gap:4px;margin:8px 0;padding:8px;border-radius:8px;border:1px solid var(--line,rgba(127,127,127,.25))}
+.fo b.good{color:var(--good,#3fb871)}.fo b.bad{color:var(--bad,#e5534b)}
