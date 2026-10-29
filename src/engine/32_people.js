@@ -7,7 +7,11 @@ function raceOf(o){ if(o==='sec')return 'asian'; const nat=o.nat; if(!o.foreign|
   if(nat==='호주')return u<.8?'white':'brown'; if(nat==='미국')return u<.5?'white':u<.8?'black':'brown'; return u<.15?'white':u<.55?'brown':'black'; }
 function moodMouth(m){ return m>=74?'smile':m>=62?'smile-closed':m>=46?null:m>=32?'straight':'angry'; }
 const ageB=a=>a==null?0:a<=23?0:a<=29?1:a<=33?2:3;
-function faceKey(o){ return o==='sec'?'sec':o.persona?'P:'+o.persona+':'+o.pid+':'+(o.team??'x')+':'+(o.expr||'')+(o.female?':f':'')+(o.mod?':'+JSON.stringify(o.mod):''):o.id+':'+(o.team??'x')+':'+(moodMouth(o.mor??60)||'n')+':'+ageB(o.age); }
+const ageP=a=>a==null?1:a<40?0:a<50?1:a<60?2:3; /* 단장·감독·코치 얼굴 나이 구간 */
+const grayB=a=>a==null||a<35?0:Math.min(a,41)-34; /* 35세부터 해마다 흰머리 단계 */
+function faceKey(o){ return o==='sec'?'sec':o.persona?'P:'+o.persona+':'+o.pid+':'+(o.team??'x')+':'+(o.expr||'')+(o.female?':f':'')+':a'+ageP(o.age)+(o.mod?':'+JSON.stringify(o.mod):''):o.id+':'+(o.team??'x')+':'+(moodMouth(o.mor??60)||'n')+':'+ageB(o.age)+':g'+grayB(o.age); }
+/* 머리색을 회색 쪽으로 섞는다(k: 0~1) */
+function grayMix(hex,k){ const m=/^#?([0-9a-f]{6})$/i.exec(hex||''); if(!m)return hex; const n=parseInt(m[1],16); const c=[n>>16&255,n>>8&255,n&255].map(v=>Math.round(v+(168-v)*k)); return '#'+c.map(v=>v.toString(16).padStart(2,'0')).join(''); }
 function faceSVG(o){
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);
   let out='';
@@ -18,9 +22,15 @@ function faceSVG(o){
     if(o.persona){ const t=o.team!=null&&G.teams[o.team]?G.teams[o.team]:null; const rr=seededRand('pz'+o.pid); const tp=t?tpal(t):null; const dk=t?tp[2]:'#26313c', mid=t?tp[0]:'#4b5b6c';
       if(o.persona==='mgr'||o.persona==='coach'){ f.teamColors=[mid,mid,tp&&tp[1]!=='#ffffff'?tp[1]:'#f2f4f6']; f.jersey={id:t?['baseball','baseball2','baseball3','baseball4'][t.id%4]:'baseball'}; f.accessories={id:'hat'}; }
       else { f.accessories={id:'none'}; f.jersey={id:'jersey3'}; f.teamColors=o.persona==='doc'?['#e9eef2','#c9d3da','#7a8794']:o.persona==='own'?['#1d2733','#11161c','#c9a24a']:o.persona==='agent'?['#15191e','#0b0e11','#9aa6b2']:[dk,'#11161c',mid]; }
-      if((o.age||45)>=52&&f.hair){ f.hair.color=['#8d8d8d','#a7a7a7','#6e6e6e'][Math.floor(rr()*3)]; }
+      if((o.age||45)>=52&&f.hair){ const rg=seededRand('pg'+o.pid); f.hair.color=['#8d8d8d','#a7a7a7','#6e6e6e'][Math.floor(rg()*3)]; } /* 따로 뽑아야 나이가 들어도 안경·수염이 바뀌지 않는다 */
       f.glasses={id:o.persona==='doc'||rr()<.22?'glasses2-black':'none'}; if(!o.female&&rr()<.5)f.facialHair={id:'none'};
       f.fatness=(f.fatness||.3)*.8; const m0=rr()<.5?'smile-closed':'closed'; f.mouth={id:o.expr==='smile'?'smile':o.expr==='angry'?'angry':o.expr==='flat'?'straight':m0,flip:false}; 
+      /* 나이 들수록 주름: 40대 눈가, 50대 팔자·이마, 60대 이상 더 깊게(사람마다 정해진 모양) */
+      { const ap=ageP(o.age), ra=seededRand('pa'+o.pid);
+        if(ap===0){ f.eyeLine={id:'none'}; f.smileLine={id:'none',size:1}; f.miscLine={id:'none'}; }
+        else if(ap===1){ f.eyeLine={id:ra()<.6?'line1':'none'}; f.smileLine={id:ra()<.3?'line1':'none',size:1}; f.miscLine={id:'none'}; }
+        else if(ap===2){ f.eyeLine={id:['line1','line2','line3'][Math.floor(ra()*3)]}; f.smileLine={id:['line1','line2'][Math.floor(ra()*2)],size:1}; f.miscLine={id:ra()<.5?'forehead1':'none'}; }
+        else { f.eyeLine={id:['line3','line4','line5','line6'][Math.floor(ra()*4)]}; f.smileLine={id:['line2','line3','line4'][Math.floor(ra()*3)],size:1}; f.miscLine={id:['forehead2','forehead3','forehead4','chin1'][Math.floor(ra()*4)]}; } }
       /* 단장 얼굴 꾸미기: 고른 부위로 덮어쓴다 */
       const M=o.mod; if(M){ if(M.hair&&f.hair)f.hair.id=M.hair; if(M.hc&&f.hair)f.hair.color=M.hc; if(M.fh)f.facialHair={id:M.fh}; if(M.gl)f.glasses={id:M.gl}; if(M.mouth)f.mouth={id:M.mouth,flip:false}; if(M.eb)f.eyebrow={id:M.eb,rotation:(f.eyebrow&&f.eyebrow.rotation)||0}; } }
     else if(o==='sec'){ f.jersey={id:'jersey3'}; f.teamColors=['#4b5b6c','#e3e9ee','#2a3642']; f.accessories={id:'none'}; f.glasses={id:'none'}; }
@@ -34,6 +44,8 @@ function faceSVG(o){
       const mm=moodMouth(o.mor??60); if(mm)f.mouth={id:mm,flip:false};
       /* 나이에 따라 얼굴이 변한다: 해가 갈수록 눈가·이마 주름이 생긴다 */
       const ab=ageB(o.age), ra=seededRand('age'+o.id);
+      /* 35세부터 흰머리: 선수마다 잘 세는 정도가 다르다(절반쯤은 거의 안 셈) */
+      { const gb=grayB(o.age); const gp=u01('gray',o.id); if(gb&&gp>.45&&f.hair&&f.hair.color)f.hair.color=grayMix(f.hair.color,Math.min(.75,gb*.12*(gp+.4))); }
       if(ab===0){ f.eyeLine={id:'none'}; f.smileLine={id:'none',size:1}; f.miscLine={id:ra()<.12?'freckles1':'none'}; }
       else if(ab===1){ f.eyeLine={id:ra()<.4?'line1':'none'}; f.smileLine={id:'none',size:1}; f.miscLine={id:'none'}; }
       else if(ab===2){ f.eyeLine={id:['line1','line2'][Math.floor(ra()*2)]}; f.smileLine={id:'line1',size:1}; f.miscLine={id:ra()<.35?'forehead1':'none'}; }

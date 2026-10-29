@@ -1,6 +1,6 @@
 /* ---------- 단장 프로필: 새 게임에서 이름·나이·출신·얼굴을 정하고, 사이드바 '단장 프로필'에서 본다 ---------- */
 function gpDefault(){ let n='김단장'; try{ n=genName(); }catch(e){} return {name:n,age:42,bg:'corp',female:false,face:'gm'+Math.floor(Math.random()*1e6)}; }
-function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:P.age||42,female:!!P.female,name:P.name||'단장',mod:P.mod||null}; }
+function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:(G&&G.gmP===P?meAge():null)||P.age||42,female:!!P.female,name:P.name||'단장',mod:P.mod||null}; }
 /* 얼굴 꾸미기: 후보 12개 중에서 고르고, 부위(머리·머리색·수염·안경·표정)를 하나씩 바꾼다 */
 const GP_PART={hair:{l:'머리',m:['short','short2','short3','crop','crop-fade','crop-fade2','short-fade','short-fade-2','middle-part','parted','messy','messy-short','spike','spike2','juice','high','tall-fade','faux-hawk','shortBangs','short-bald','curly','curly2','afro'],f:['female1','female2','female3','female4','female5','female6','female7','female8','female9','female10','female11','female12','longHair','shortBangs','middle-part','parted']},
   hc:{l:'머리색',m:['#1a1a1a','#2b1d14','#4a3121','#6b4a2b','#8a6a43','#6e6e6e','#a7a7a7','#d0d0d0']},
