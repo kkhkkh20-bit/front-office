@@ -14,7 +14,7 @@ function polBonus(tid,p,lean){ if(lean==null)lean=teamLean(tid); const pa=tid===
   if(lean>0){ const gap=Math.max(0,p.pot-ovr(p)); return pa+lean*(p.age<=24?3+gap*.18:p.age<=26?1.5:p.age>=31?-1:0); }
   return pa-lean*(p.age>=28?1.5:p.age<=23?-1.5:0); }
 /* 감독과의 유망주 기회 합의: 단장이 대상을 정하고 감독이 받아들인 만큼 기용에 반영된다. 매달 감독이 근거와 함께 보고한다 */
-function pactB(p){ const P=G.pact; if(!P||P.y!==G.year||!P.on)return 0; const x=P.t.find(t=>t.id===p.id); return x?x.b:0; }
+function pactB(p){ const P=G.pact; if(!P||P.y!==G.year||!P.on)return 0; const m=G.mgr[G.user]; if(!m||(P.mid!=null&&P.mid!==m.id))return 0; /* 합의는 그 감독과 한 것: 감독이 바뀌면 끝난다 */ const x=P.t.find(t=>t.id===p.id); return x?x.b:0; }
 function pactPropose(ids){ const m=G.mgr[G.user]; if(!m||m.interim)return '감독이 없습니다.'; mgrAttr(m); ids=ids.filter(id=>G.players[id]&&G.players[id].team===G.user).slice(0,2); if(!ids.length)return '대상 선수를 고르세요.';
   const d=depth(G.user); const t=ids.map(id=>{ const p=G.players[id]; const k=pSlot(p); const st=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k]; const gap=st&&st.id!==p.id?ovr(st)-ovr(p):0;
     const ch=clamp(.7+(m.rel-60)/100+(m.youth-50)/90-(m.ego-50)/120-Math.max(0,gap)*.035+(mplOn('youth')?.25:0),.08,.97); /* 영입 때 '유망주 기회 보장'을 약속받았으면 특정 선수 합의도 잘 받아들인다 */ const r=R();
