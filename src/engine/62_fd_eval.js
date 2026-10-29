@@ -20,7 +20,7 @@ function fdKnow(p){ const F=G.fd; if(!F||!F.done)return {k:0,camp:false,exact:fa
   const mid=G.day>=KD(7,1); const exact=(camp&&f>=1)||mid; return {k:exact?1:clamp((camp?.3:0)+.7*f,0,1),camp,exact,s,f}; }
 /* 우리 창단 지명 선수의 능력: 확정 전에는 범위(원래 능력 단위). 우리 지명 선수가 아니면 null */
 function fdRange(p){ const pk=p&&fdPickOf(p.id); if(!pk)return null; const o=ovr(p); const K=fdKnow(p);
-  if(K.exact)return {exact:true,lo:o,hi:o,mid:o,k:1,K,stage:'확정'};
+  if(K.exact||p.team===G.user)return {exact:true,lo:o,hi:o,mid:o,k:1,K,stage:'확정'};
   const e0=fdE0(p,pk); const mid=e0+(o-e0)*K.k; const w=Math.max(1.2,fdEsd()*1.15*(1-K.k)+.8);
   const smp=p.isP?(K.s.outs>=3?`실전 ${ipStr(Math.round(K.s.outs))}이닝`:''):(K.s.pa>=1?`실전 ${Math.round(K.s.pa)}타석`:'');
   const stage=!G.fd.done?'지명 직후 · 스카우트 추정':[K.camp?'캠프 관찰':'',smp].filter(Boolean).join(' · ')||'지명 직후 · 스카우트 추정';

@@ -1,5 +1,5 @@
 /* 창단 드래프트 화면의 선수 칩: 지명된 선수도 실제 능력 대신 우리 스카우트 추정 등급만 보여 준다 */
-function fdChip(p){ return fdEstChip(fdEstOf(p)); }
+function fdChip(p){ if(p&&p.team===G.user&&!p.fdPool)return `<b class="rc fde-g fde-real" style="--c:${rcol(ovr(p))}" title="실제 현재 능력(우리 선수라 공개). 잠재력은 추정입니다">${GRD(ovr(p))}</b>`; return fdEstChip(fdEstOf(p)); }
 /* ---------- 창단 드래프트: 우리 팀 빈자리 보드 ---------- */
 const FDPOS={C:[50,90],'1B':[85,62],'2B':[68,36],SS:[32,36],'3B':[15,62],LF:[14,14],CF:[50,10],RF:[86,14]};
 function fdLineupOf(list){ const used=new Set(), ln={}; const KS=['C','SS','2B','CF','3B','RF','LF','1B'];
