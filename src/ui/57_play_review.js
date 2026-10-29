@@ -15,7 +15,7 @@ function gapCard(){ if(period()!=='season'&&period()!=='pre')return ''; const L=
 
 function autoCard(){ const seen=G.autoSeen??-1; const A=(G.autoLog||[]).filter(x=>x.d>seen&&G.day-x.d<=14); /* 2주가 지난 보고는 홈에서 내린다(주간 요약·결정 기록에는 남는다) */ if(!A.length)return '';
   return `<section class="card autoc"><div class="row between"><h2 class="sec">자동 처리된 일 ${A.length}건</h2><button class="tc-i" data-a="autoSeen">확인</button></div>
-    <ul class="rec-w">${A.slice(0,5).map(x=>`<li><b>${esc(x.t)}</b> → ${esc(x.c)} <span class="small muted">${dmd(x.d)} · 기한이 지나 기본안으로 처리${x.r?` · ${esc(String(x.r).replace(/\n/g,' ').slice(0,80))}`:''}</span></li>`).join('')}</ul>
+    <ul class="rec-w">${A.slice(0,5).map(x=>`<li><b>${esc(x.t)}</b> → ${esc(x.c)} <span class="small muted">${dmd(x.d)} · ${x.why==='deleg'?'비서에게 맡겨 처리':x.k==='auto'?'맡긴 업무(운영팀·부단장·팀장)가 처리':x.why==='exp'?'기한이 지나 기본안으로 처리':'자동 처리'}${x.r?` · ${esc(String(x.r).replace(/\n/g,' ').slice(0,80))}`:''}</span></li>`).join('')}</ul>
     <p class="small muted keep">시즌 방향·핵심 선수 처분 같은 핵심 결정은 나타날 때와 기한 하루 전에 진행을 멈춥니다. 일상 결정은 메일의 '앞으로 맡기기'로 비서에게 넘길 수 있습니다.</p></section>`; }
 
 /* 리빌딩: 마감 방향을 '정리'로 고른 해 */

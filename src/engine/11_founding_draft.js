@@ -127,15 +127,21 @@ function foundDefaults(){ const done=[], acts=[];
 /* 시즌 회고: 우리 선수 중심으로 영입 기대와 실제 기여, 트레이드 결과, 젊은 선수, 내년 공백을 한 장에 */
 function seasonReview(y){ const tid=G.user; const ps=playersOf(tid); const W=p=>{ const h=seasonTotal(p,y,'1군'); const w=h?warOf(h,p):0; return Math.abs(w)<.05?0:w; }; const L=[];
   const top=ps.map(p=>({p,w:W(p)})).sort((a,b)=>b.w-a.w).slice(0,3); if(top.length)L.push('[올해의 선수] '+top.map(x=>`${x.p.name}(${posLabel(x.p)}) WAR ${x.w.toFixed(1)}`).join(', '));
-  const how=t=>/창단 드래프트/.test(t)?'창단 지명':/트레이드/.test(t)?'트레이드':/FA/.test(t)?'FA':/외국인|아시아쿼터/.test(t)?'외국인':/드래프트/.test(t)?'신인':'영입';
-  const nw=ps.map(p=>{ const st=(p.story||[]).filter(x=>x.y===y&&x.k==='move'); return st.length?{p,how:how(st[st.length-1].t)}:null; }).filter(x=>x&&x.how!=='신인'&&x.how!=='창단 지명');
+  /* 이야기 문구로 계약 종류를 가른다. 영입(밖에서 온 선수)과 계약 연장(원래 우리 선수)을 섞지 않는다. 'FA'만 보고 고르면 '비FA'도 걸린다 */
+  const how=t=>/창단 드래프트/.test(t)?'창단 지명':/신인 드래프트/.test(t)?'신인':/보상선수/.test(t)?'보상선수':/트레이드/.test(t)?'트레이드':/^FA 이적/.test(t)?'외부 FA':/^FA 잔류/.test(t)?'FA 재계약':/^비FA 다년계약/.test(t)?'비FA 연장':/입단 \((외국인|아시아쿼터)/.test(t)?'외국인':/무적 선수/.test(t)?'무적 선수':null;
+  const ACQ=new Set(['트레이드','외부 FA','외국인','무적 선수','보상선수']), KEEP=new Set(['FA 재계약','비FA 연장']);
+  const kinds=p=>(p.story||[]).filter(x=>x.y===y&&x.k==='move').map(x=>how(x.t)).filter(Boolean);
+  const nw=ps.map(p=>{ const K=kinds(p).filter(k=>ACQ.has(k)); return K.length?{p,how:K[K.length-1]}:null; }).filter(Boolean);
+  const kp=ps.map(p=>{ const K=kinds(p).filter(k=>KEEP.has(k)); return K.length&&!nw.some(x=>x.p===p)?{p,how:K[K.length-1]}:null; }).filter(Boolean);
+  if(kp.length)L.push('[붙잡은 선수] '+kp.map(x=>({...x,w:W(x.p)})).sort((a,b)=>b.w-a.w).slice(0,6).map(x=>`${x.p.name}(${x.how}, 연봉 ${money(x.p.sal)}) WAR ${x.w.toFixed(1)}`).join(' / '));
   if(nw.length){ const rows=nw.map(x=>({...x,w:W(x.p)})).sort((a,b)=>b.w-a.w); L.push('[올해 영입한 선수] '+rows.slice(0,6).map(x=>`${x.p.name}(${x.how}, 연봉 ${money(x.p.sal)}) WAR ${x.w.toFixed(1)}${x.w>=1?` · 1WAR당 ${money(Math.round(x.p.sal/x.w))}`:x.w<0.3?' · 기대 이하':''}`).join(' / ')); }
   const TR=(G.trades||[]).filter(t=>t.y===y&&t.gi); for(const t of TR.slice(0,8)){ const r=tradeReport(t); if(r)L.push(`[트레이드] ${tshort(t.with)}와(과): 받은 ${t.get.join(', ')} WAR ${r.got.toFixed(1)} · 준 ${t.give.join(', ')} WAR ${r.gave.toFixed(1)} → ${r.net>=0.5?'이득':r.net<=-0.5?'손해':'비슷'}`); }
   const f0=G.fut0&&G.fut0.y===y?G.fut0.m:{}; const yg=ps.filter(p=>!p.foreign&&p.age<=25).map(p=>({p,d:f0[p.id]!=null?ovr(p)-f0[p.id]:0,w:W(p)})).filter(x=>x.d>=2||x.w>=1).sort((a,b)=>(b.d+b.w*2)-(a.d+a.w*2)).slice(0,3);
   if(yg.length)L.push('[성장한 젊은 선수] '+yg.map(x=>`${x.p.name}(${x.p.age}세) ${[x.d>=1?`능력 +${Math.round(x.d)}`:'',x.w>=1?`WAR ${x.w.toFixed(1)}`:''].filter(Boolean).join(' · ')}`).join(', '));
   const out=ps.filter(p=>!p.foreign&&!p.prospect&&p.svc>=faSvc(p)-1&&(p.lastFA==null||y+1-p.lastFA>=4)&&(!p.faC||p.yrs<=1)&&W(p)>=1).sort((a,b)=>W(b)-W(a)).slice(0,4);
   if(out.length)L.push('[내년 준비] FA 자격이 다가온 주축: '+out.map(p=>`${p.name}(${posLabel(p)}, WAR ${W(p).toFixed(1)})`).join(', ')+'. 다년계약이나 대체 자원을 미리 보세요.');
-  if(!L.length)return; const m=mail('전력분석팀',`${y} 시즌 회고: 우리 선수들`,`${y} 시즌을 우리 선수 중심으로 정리했습니다.\n\n${L.join('\n\n')}\n\n아래 선수별 버튼으로 유지·재계약 검토·대체 후보 찾기를 바로 할 수 있습니다. 구단·재정 → 연대기에 해마다 기록이 쌓입니다.`,{kind:'업무',imp:true,acts:[{l:'연대기',a:'go',v:'club:chron'},{l:'선수단 계획',a:'go',v:'roster:plan'}]});
+  if(!L.length)return; G.reviews=G.reviews||{}; G.reviews[y]={tid,L:L.slice()}; { const ks=Object.keys(G.reviews).map(Number).sort((a,b)=>a-b); while(ks.length>40)delete G.reviews[ks.shift()]; } /* 소식함은 오래된 것부터 지워지므로 연대기에 따로 남긴다 */
+  const m=mail('전력분석팀',`${y} 시즌 회고: 우리 선수들`,`${y} 시즌을 우리 선수 중심으로 정리했습니다.\n\n${L.join('\n\n')}\n\n아래 선수별 버튼으로 유지·재계약 검토·대체 후보 찾기를 바로 할 수 있습니다. 이 회고는 구단 > 연대기의 해당 시즌에도 그대로 남습니다.`,{kind:'업무',imp:true,acts:[{l:'연대기',a:'go',v:'club:chron'},{l:'선수단 계획',a:'go',v:'roster:plan'}]});
   /* 선수별 후속 조치 버튼용 목록: 영입·트레이드로 온 선수, 성장한 젊은 선수, FA가 다가온 주축 */
   const rv=[]; const add=(p,k)=>{ if(!p||p.team!==tid)return; const o=rv.find(x=>x.id===p.id); if(o){ if(!o.k.includes(k))o.k+=' · '+k; } else rv.push({id:p.id,k,w:Math.round(W(p)*10)/10}); };
   nw.forEach(x=>add(x.p,x.how)); for(const t of TR.slice(0,8))(t.gi||[]).forEach(id=>add(G.players[id],'트레이드')); yg.forEach(x=>add(x.p,'성장')); out.forEach(p=>add(p,'FA 임박'));

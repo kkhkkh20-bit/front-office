@@ -46,7 +46,7 @@ function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=d
       let sc=c.type==='now'?now:c.type==='cheap'?now-p.sal/150:(p.age<=25?fut*1.2+(25-p.age)*.6:-99);
       if(c.type!=='grow'&&now<1)continue; if(c.type==='grow'&&(p.age>25||fut<2))continue; C.push({p,t,now,fut,rp,sc}); } }
   C.sort((a,b)=>b.sc-a.sc); const out=[]; const open=tradeOpen();
-  for(const x of C.slice(0,30)){ if(out.length>=3)break; const give=open?buildPackage(x.t,x.p,core):null; if(open&&!give)continue;
+  const fl=[]; for(const x of C.slice(0,30)){ if(out.length>=3)break; const give=open?buildPackage(x.t,x.p,core):null; if(open&&!give){ fl.push(x); continue; }
     const why=[]; const r1=k==='SP'||k==='RP'?null:rankWith(k,slotGain(k,x.p));
     if(c.type==='now')why.push(`지금 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다${r1?`(리그 ${rk.rank}위 → ${r1}위)`:''}.`);
     if(c.type==='cheap')why.push(`연봉 ${money(x.p.sal)}으로 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다.`);
@@ -57,7 +57,12 @@ function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=d
     const cur=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln?d.ln[k]:null; const push=cur&&cur.id!==x.p.id?cur:null;
     const blk=playersOf(G.user).filter(q=>!q.foreign&&q.age<=24&&fits(q)&&(scoutReport(q).ofp||0)>=52).sort((a,b)=>(scoutReport(b).ofp||0)-(scoutReport(a).ofp||0))[0]||null;
     out.push({id:x.p.id,tid:x.t.id,give:give||[],why:why.filter(Boolean),cost,push:push?push.id:null,blk:blk?blk.id:null,k}); }
-  let hint=''; if(!out.length){ hint=c.sal&&c.age?'조건이 좁습니다. 나이나 연봉 한도를 하나 풀어 보세요.':c.type==='grow'?'지금은 조건에 맞는 성장형 후보가 없습니다. 관찰을 이어가며 겨울에 다시 보겠습니다.':'조건에 맞으면서 상대가 내줄 만한 후보가 없습니다. 조건을 바꾸거나 관찰을 이어가겠습니다.'; }
+  let hint=''; if(!out.length){ const TN=RTYPE[c.type]||'요청'; const lim=[c.age?`${c.age}세 이하`:'',c.sal?`연봉 ${money(c.sal)} 이하`:''].filter(Boolean).join('·');
+    if(!C.length){ hint=c.type==='grow'?`25세 이하이면서 우리 ${SLOTK[k]}보다 크게 자랄 것으로 보이는 선수가 다른 구단에 없습니다${lim?`(${lim} 조건 포함)`:''}. 관찰을 이어가며 겨울에 다시 보겠습니다.`
+        :`지금 우리 ${SLOTK[k]}(리그 ${rk.rank}위)보다 나은 선수가 다른 구단에 없습니다${lim?`(${lim} 조건 포함)`:''}.${rk.rank<=3?' 이미 리그 상위권 자리라 보강 여지가 작습니다.':lim?' 조건을 하나 풀면 후보가 생길 수 있습니다.':''}`; }
+    else if(!open){ hint=`${TN} 후보 ${C.length}명은 있지만 지금은 트레이드 기간이 아닙니다.`; }
+    else { const x=fl[0]; const nmx=`${x.p.name}(${tshort(x.t.id)})`; const g2=buildPackage(x.t,x.p,new Set()); const coreIn=g2?g2.filter(id=>core.has(id)).map(id=>G.players[id]&&G.players[id].name).filter(Boolean):[];
+      hint=`${TN} 후보 ${C.length}명은 있습니다(예: ${nmx}). 하지만 우리 핵심 선수를 빼고는 상대 요구를 맞출 수 없습니다.${coreIn.length?` ${coreIn.join(', ')}을(를) 넣으면 ${tshort(x.t.id)}이(가) 검토합니다.`:' 핵심 선수를 넣어도 맞추기 어렵습니다.'}${C.length>1?` 다른 후보 ${Math.min(C.length,30)-1}명도 같은 이유로 묶음이 맞지 않았습니다.`:''}`; } }
   return {list:out,hint,open,rank:rk.rank}; }
 function slotGain(k,p){ return k==='SP'?spV(p):k==='RP'?penV(p):posScore(p,k); }
 function tradeSuggest(force,only){ if(!tradeOpen())return [];
