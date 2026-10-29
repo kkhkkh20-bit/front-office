@@ -8927,6 +8927,8 @@ const pow0=p=>p.r.pow>=p.r.con;
 function trnCoachPick(p){ return trnAdvice(p).f; }
 function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by==='gm'?T.f:trnCoachPick(p); }
 /* 단장 지정(또는 코치에게 돌려주기) */
+/* 여러 선수 훈련 방향을 한꺼번에: 선수별 화면과 같은 뜻으로 적용한다(고른 집중 항목은 코치 추천과 같아도 단장 요청으로 고정. 코치진 계획으로 돌리려면 'coach') */
+function trnSetMany(P){ const L=[]; for(const id in (P||{})){ const p=G.players[+id]; if(!p)continue; const t=trnSet(+id,P[id]); if(t)L.push(t); } return L; }
 function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 정할 수 있습니다.'; G.trn=G.trn||{};
   if(f==='coach'){ delete G.trn[pid]; return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
@@ -9018,7 +9020,7 @@ function rpWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return; G.
       else if(x.k==='sp2'){ if(p.r.sta>=thr||y-x.y>=2){ delete G.rplan[p.id]; if(t.id===G.user)grad.push(p); } else if(p.age>25){ delete G.rplan[p.id]; } } /* 체력이 선발 기준에 닿거나 두 시즌을 채우면 수업을 마치고 선발 경쟁에 들어간다 */
       else if(x.k==='auto'&&x.y<y)delete G.rplan[p.id]; } }
   /* 2군 선발 수업 중이면 2군에서 선발로 나간다 */
-  for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p))addR(p,'sta',.05*clamp(trnRoom(p,'sta')/8,.2,1)); } } /* 선발로 길게 던지며 체력이 붙는다 */
+  for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p)&&!milServing(p))addR(p,'sta',.05*clamp(trnRoom(p,'sta')/8,.2,1)); } } /* 선발로 길게 던지며 체력이 붙는다 */
   if(myNew.length){ const m=G.mgr[G.user]; const L=myNew.map(p=>{ const k=G.rplan[p.id].k; return `${p.name}(${p.age}세): ${k==='sp2'?'2군 선발 수업':k==='rp'?'계투로 시작':'선발 경쟁'} · ${rpWhy(p,G.user)}`; });
     mail('감독실',`신인 투수 보직 계획 (${myNew.length}명)`,`${m?m.name+' 감독':'코치진'}: 신인 투수들은 이렇게 시작하려 합니다.\n\n${L.join('\n')}\n\n체력이 붙고 내용이 좋아지면 언제든 바꿉니다. 다르게 쓰고 싶으시면 선수 정보 육성 탭의 '보직'에서 말씀해 주십시오.`,{kind:'감독',acts:myNew.slice(0,4).map(p=>({l:p.name,a:'player',v:p.id}))}); }
   if(grad.length){ const m=G.mgr[G.user]; mail('감독실',`2군 선발 수업 마침 (${grad.length}명)`,`${m?m.name+' 감독':'코치진'}: ${grad.map(p=>`${p.name}(${p.r.sta>=rpThr(G.user)?'선발 체력 기준 도달':'두 시즌 수업 완료'})`).join(', ')}의 2군 선발 수업을 마칩니다. 이제부터 체력과 투구 내용으로 다른 투수들과 선발 자리를 다툽니다. 선발 5명에 들지 못하면 불펜에서 기회를 봅니다.`,{kind:'감독',acts:grad.slice(0,4).map(p=>({l:p.name,a:'player',v:p.id}))}); }
@@ -9074,7 +9076,7 @@ function posWeek(){ const per=period(); const y=G.year; const done=[];
 /* 단장 요청: 전환 훈련 시작·중단 */
 function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP)return '우리 야수만 정할 수 있습니다.'; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'코치진';
   if(!pos){ if(!p.pconv)return ''; const k=p.pconv.pos; delete p.pconv; return `${p.name}의 ${POSK[k]} 전환 훈련을 멈춥니다. 지금까지 익힌 숙련도는 남습니다.`; }
-  if(!POS_F.includes(pos)||pos===p.pos)return ''; const v=versOf(p), need=POS_NEED[pos];
+  if(!POS_F.includes(pos)||pos===p.pos)return ''; if(p.pconv&&p.pconv.pos===pos)return `${p.name}은(는) 이미 ${POSK[pos]} 전환 훈련 중입니다.`; /* 같은 전환을 다시 눌러도 바뀌는 것이 없다(감독 반응도 다시 없음) */ const v=versOf(p), need=POS_NEED[pos];
   if(v<need)return `${who}: "${p.name}은(는) ${POSK[pos]}를 맡을 만큼 몸놀림이 다양하지 않습니다. 무리입니다." (다재다능 ${dvGrade(v)}, ${POSK[pos]}는 ${dvGrade(need)} 이상 필요)`;
   if(p.age>=33)return `${who}: "이 나이에 새 자리를 익히기는 어렵습니다."`;
   p.pconv={pos,d:G.day}; let tail='';
@@ -15096,9 +15098,9 @@ function trnListBody(){ const ps=domestic(G.user).filter(p=>p.age<=33&&!(p.joinY
   ${UI.trnApplyMsg?`<div class="note">${esc(UI.trnApplyMsg).replace(/\n/g,'<br>')}</div>`:''}${bar}
   ${(()=>{ const mineL=ps.filter(p=>G.trn&&G.trn[p.id]&&G.trn[p.id].by==='gm'); const v=inTabs('trnv',[['B',`야수 ${ps.filter(p=>!p.isP).length}`],['P',`투수 ${ps.filter(p=>p.isP).length}`],['M',`단장 요청 ${mineL.length}`]],'B');
     const L=v.cur==='M'?mineL:ps.filter(p=>v.cur==='P'?p.isP:!p.isP); return v.bar+`<div class="trn-list">${L.map(row).join('')||'<p class="small muted">없습니다.</p>'}</div>`; })()}${nP>3?bar:''}`; }
-Object.assign(A,{ trnPick(v){ const [id,f]=v.split(':'); const p=G.players[+id]; if(!p)return; const T=G.trn&&G.trn[p.id]; const cur=T&&T.by==='gm'?T.f:trnCoachPick(p); UI.trnPend=UI.trnPend||{}; if(f===cur)delete UI.trnPend[id]; else UI.trnPend[id]=f; UI.trnApplyMsg=''; render(); },
+Object.assign(A,{ trnPick(v){ const [id,f]=v.split(':'); const p=G.players[+id]; if(!p)return; const T=G.trn&&G.trn[p.id]; const cur=T&&T.by==='gm'?T.f:null; UI.trnPend=UI.trnPend||{}; if(f===cur)delete UI.trnPend[id]; else UI.trnPend[id]=f; /* 코치 추천과 같은 항목을 골라도 단장 요청으로 고정(선수별 화면과 같은 뜻) */ UI.trnApplyMsg=''; render(); },
   trnPendClear(){ UI.trnPend={}; render(); },
-  trnApply(){ const P=UI.trnPend||{}; const L=[]; for(const id in P){ const p=G.players[+id]; if(!p)continue; const f=P[id]; const t=f===trnCoachPick(p)?trnSet(+id,'coach'):trnSet(+id,f); if(t)L.push(t); } UI.trnPend={}; UI.trnApplyMsg=L.join('\n'); save(); render(); } });
+  trnApply(){ const L=trnSetMany(UI.trnPend||{}); UI.trnPend={}; UI.trnApplyMsg=L.join('\n'); save(); render(); } });
 Object.assign(A,{ trnSet(v){ const [id,f]=v.split(':'); const t=trnSet(+id,f); UI.trnMsg=t?{id:+id,t}:null; save(); if(UI.sheet!=null)renderSheet(); render(); },
   trnOpen(v){ A.player(v); UI.ptab='dev'; renderSheet(); } });
 /* 성장 환경: 일반 훈련 속도를 정하는 것들 */

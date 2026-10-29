@@ -27,9 +27,9 @@ function trnListBody(){ const ps=domestic(G.user).filter(p=>p.age<=33&&!(p.joinY
   ${UI.trnApplyMsg?`<div class="note">${esc(UI.trnApplyMsg).replace(/\n/g,'<br>')}</div>`:''}${bar}
   ${(()=>{ const mineL=ps.filter(p=>G.trn&&G.trn[p.id]&&G.trn[p.id].by==='gm'); const v=inTabs('trnv',[['B',`야수 ${ps.filter(p=>!p.isP).length}`],['P',`투수 ${ps.filter(p=>p.isP).length}`],['M',`단장 요청 ${mineL.length}`]],'B');
     const L=v.cur==='M'?mineL:ps.filter(p=>v.cur==='P'?p.isP:!p.isP); return v.bar+`<div class="trn-list">${L.map(row).join('')||'<p class="small muted">없습니다.</p>'}</div>`; })()}${nP>3?bar:''}`; }
-Object.assign(A,{ trnPick(v){ const [id,f]=v.split(':'); const p=G.players[+id]; if(!p)return; const T=G.trn&&G.trn[p.id]; const cur=T&&T.by==='gm'?T.f:trnCoachPick(p); UI.trnPend=UI.trnPend||{}; if(f===cur)delete UI.trnPend[id]; else UI.trnPend[id]=f; UI.trnApplyMsg=''; render(); },
+Object.assign(A,{ trnPick(v){ const [id,f]=v.split(':'); const p=G.players[+id]; if(!p)return; const T=G.trn&&G.trn[p.id]; const cur=T&&T.by==='gm'?T.f:null; UI.trnPend=UI.trnPend||{}; if(f===cur)delete UI.trnPend[id]; else UI.trnPend[id]=f; /* 코치 추천과 같은 항목을 골라도 단장 요청으로 고정(선수별 화면과 같은 뜻) */ UI.trnApplyMsg=''; render(); },
   trnPendClear(){ UI.trnPend={}; render(); },
-  trnApply(){ const P=UI.trnPend||{}; const L=[]; for(const id in P){ const p=G.players[+id]; if(!p)continue; const f=P[id]; const t=f===trnCoachPick(p)?trnSet(+id,'coach'):trnSet(+id,f); if(t)L.push(t); } UI.trnPend={}; UI.trnApplyMsg=L.join('\n'); save(); render(); } });
+  trnApply(){ const L=trnSetMany(UI.trnPend||{}); UI.trnPend={}; UI.trnApplyMsg=L.join('\n'); save(); render(); } });
 Object.assign(A,{ trnSet(v){ const [id,f]=v.split(':'); const t=trnSet(+id,f); UI.trnMsg=t?{id:+id,t}:null; save(); if(UI.sheet!=null)renderSheet(); render(); },
   trnOpen(v){ A.player(v); UI.ptab='dev'; renderSheet(); } });
 /* 성장 환경: 일반 훈련 속도를 정하는 것들 */

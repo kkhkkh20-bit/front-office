@@ -29,7 +29,7 @@ function posWeek(){ const per=period(); const y=G.year; const done=[];
 /* 단장 요청: 전환 훈련 시작·중단 */
 function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP)return '우리 야수만 정할 수 있습니다.'; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'코치진';
   if(!pos){ if(!p.pconv)return ''; const k=p.pconv.pos; delete p.pconv; return `${p.name}의 ${POSK[k]} 전환 훈련을 멈춥니다. 지금까지 익힌 숙련도는 남습니다.`; }
-  if(!POS_F.includes(pos)||pos===p.pos)return ''; const v=versOf(p), need=POS_NEED[pos];
+  if(!POS_F.includes(pos)||pos===p.pos)return ''; if(p.pconv&&p.pconv.pos===pos)return `${p.name}은(는) 이미 ${POSK[pos]} 전환 훈련 중입니다.`; /* 같은 전환을 다시 눌러도 바뀌는 것이 없다(감독 반응도 다시 없음) */ const v=versOf(p), need=POS_NEED[pos];
   if(v<need)return `${who}: "${p.name}은(는) ${POSK[pos]}를 맡을 만큼 몸놀림이 다양하지 않습니다. 무리입니다." (다재다능 ${dvGrade(v)}, ${POSK[pos]}는 ${dvGrade(need)} 이상 필요)`;
   if(p.age>=33)return `${who}: "이 나이에 새 자리를 익히기는 어렵습니다."`;
   p.pconv={pos,d:G.day}; let tail='';

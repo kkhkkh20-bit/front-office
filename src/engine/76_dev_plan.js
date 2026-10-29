@@ -49,6 +49,8 @@ const pow0=p=>p.r.pow>=p.r.con;
 function trnCoachPick(p){ return trnAdvice(p).f; }
 function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by==='gm'?T.f:trnCoachPick(p); }
 /* 단장 지정(또는 코치에게 돌려주기) */
+/* 여러 선수 훈련 방향을 한꺼번에: 선수별 화면과 같은 뜻으로 적용한다(고른 집중 항목은 코치 추천과 같아도 단장 요청으로 고정. 코치진 계획으로 돌리려면 'coach') */
+function trnSetMany(P){ const L=[]; for(const id in (P||{})){ const p=G.players[+id]; if(!p)continue; const t=trnSet(+id,P[id]); if(t)L.push(t); } return L; }
 function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 정할 수 있습니다.'; G.trn=G.trn||{};
   if(f==='coach'){ delete G.trn[pid]; return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
