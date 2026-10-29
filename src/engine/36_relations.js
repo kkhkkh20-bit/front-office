@@ -67,7 +67,7 @@ function mreqCheck(){ const m=G.mgr[G.user]; if(!m)return; for(const r of mreqs(
     else if(fail){ r.st='fail'; r.end=G.day; m.rel=clamp(m.rel-loss,0,100); if(loss)mail('감독실',`${m.name} 감독: "약속은 어떻게 된 겁니까"`,`${MREQK[r.k]}이(가) 지켜지지 않았습니다. 감독 관계 -${loss}.`,{kind:'감독',imp:true}); } } }
 
 /* ===== 구단주와의 소통: 단장이 돈을 요청하고, 구단주가 먼저 주문하기도 한다 ===== */
-function grants(){ return G.grants=G.grants||[]; }
+function grants(){ const L=G.grants=G.grants||[]; for(const g of L)if(g.an==null)g.an=G.acqSeq||0; return L; } /* an: 지원금을 받을 때까지의 영입 순번(그 뒤 영입만 '목적대로 씀'으로 센다) */
 function grantAmt(y){ return sum(grants().filter(g=>g.y===(y??G.year)&&g.ok).map(g=>g.amt)); }
 function ownAskLeft(){ const o=dobj(G.day); const mk=o.y*100+o.m; return grants().some(g=>g.mk===mk&&g.by==='gm')?0:1; }
 /* 성사 가능성: 신뢰, 구단주 성향, 순위, 목적 */
@@ -88,7 +88,7 @@ function grantApply(amt){ const t=team(G.user); const sy=sponSeason(); const cap
 function grantCheck(){ const t=team(G.user); for(const g of grants()){ if(g.st!=='open'||!g.pur)continue; let ok=false, fail=false;
     if(g.pur.k==='fa'){ const p=G.players[g.pur.pid]; ok=p&&p.team===G.user; fail=!ok&&(p&&p.team!=null&&p.team!==G.user||G.fa&&G.fa.closed||G.day>g.until); }
     else if(g.pur.k==='frep'){ const p=G.players[g.pur.pid]; ok=!p||p.team!==G.user; fail=!ok&&G.day>g.until; }
-    else if(g.pur.k==='boost'){ ok=(G.trades||[]).some(x=>x.y===G.year&&x.d>=g.d)||foreignOf(G.user).some(p=>p.fy===G.year&&(p.story||[]).some(s=>s.d>=g.d)); fail=!ok&&G.day>g.until; }
+    else if(g.pur.k==='boost'){ ok=Object.values(G.players).some(p=>p.team===G.user&&p.acq&&p.acq.tid===G.user&&p.acq.k!=='fd'&&p.acq.k!=='draft'&&(p.acq.n!=null?p.acq.n>(g.an||0):p.acq.d>g.d)); /* 자금을 받은 뒤 실제로 데려온 선수(트레이드·FA·외국인·무적 영입 등)가 있어야 한다 */ fail=!ok&&G.day>g.until; }
     if(ok){ g.st='done'; t.trust=clamp(t.trust+(g.by==='own'?4:2),0,100); note('구단주',`구단주가 지원한 돈이 목적대로 쓰였습니다. 구단주 신뢰 +${g.by==='own'?4:2}.`); }
     else if(fail){ g.st='fail'; t.trust=clamp(t.trust-(g.by==='own'?4:3),0,100); mail('구단주실','구단주: "그 돈은 어디에 썼습니까"',`지원 목적(${g.pur.k==='fa'?'FA 영입':g.pur.k==='frep'?'외국인 교체':'전력 보강'})이 이뤄지지 않았습니다. 구단주 신뢰 -${g.by==='own'?4:3}.`,{kind:'구단주',imp:true}); } } }
 /* 구단주가 먼저: FA 기간 스타 영입 주문, 7월 우승 보강 자금 */

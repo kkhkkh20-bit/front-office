@@ -5,7 +5,7 @@
  - 시즌 뒤 회고: 내가 꾸린 선수 WAR 순위와 이번 시즌 처음 주전이 된 선수.
  - 구단 > 연대기 > 내가 꾸린 팀: 순위 변화, 지금 선수단이 어디서 왔는지, 핵심 선수, 기록 연표 */
 const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이드','FA':'외부 FA','외국인':'외국인','보상선수':'보상선수','무적 영입':'무적 선수','해외 복귀':'해외 복귀'};
-function acqStamp(p,k,tid,o){ if(!p||tid==null)return; p.acq=Object.assign({k,y:G.year,d:G.day,tid,o0:Math.round(ovr(p)),age0:p.age},o||{}); }
+function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},o||{}); }
 /* 예전 저장: 이야기 기록에서 온 길을 찾는다 */
 function acqFromStory(p){ const nm=tname(p.team); const L=(p.story||[]).slice().reverse();
   for(const s of L){ const t=s.t||''; if(!t.includes(nm)&&!/트레이드|FA 이적|보상선수|입단 \(|무적 선수/.test(t))continue;

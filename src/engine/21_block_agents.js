@@ -49,7 +49,7 @@ function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; const ag=agentO
   const want=offScore(p.ask)*agWantMul(ag)*(1+.03*ai.length)*(p.faFrom===G.user?.95:1); const mk=agMk(p); const shop=mk&&!mk.done;
   /* 요구 기준과 다른 구단 최고 제안(원소속 정·친분까지 반영한 점수)을 모두 넘어야 한다 */
   const rv=faBestOf(p,Object.entries(F.ai[id]||{}).map(([tid,x])=>({tid:+tid,annual:x.annual,years:x.years}))); const r=Math.min(offScore(o)/(want*.97),rv?faScore(p,{tid:G.user,...o})/(faScore(p,rv)*1.01):9); void bestAI; let t;
-  F.offers[id]={annual:o.annual,years:o.years,...(T?{terms:T}:{})};
+  F.offers[id]={annual:o.annual,years:o.years,...(T?{terms:T}:{})}; if(r<.9)F.offers[id].rej=true; /* 선수가 거절한 조건(역제안도 없음)은 그대로 계약되지 않는다 */
   if(r>=1){ n.hot=true; n.counter=null; n.mood=clamp(n.mood+8,0,100); t=shop?`좋은 조건입니다. 다만 선수가 시장 반응을 끝까지 보고 싶어 합니다(시장 확인 ${mk.round}/${mk.need}라운드). 다른 구단 제안을 받아 보고 ${mk.next?dsh(mk.next):'며칠 뒤'}에 다시 말씀드리겠습니다.`:`좋은 조건입니다. 선수에게 바로 전하겠습니다. ${ai.length?'다른 구단 제안과 비교해 곧 답을 드리겠습니다.':'큰 변수가 없으면 사인할 것 같습니다.'}`;
     if(r<1.15)agRelAdd(ag,1,`${p.name} 성의 있는 제안`); }
   else if(r>=.9){ const k=1/r*rnd(.99,1.03); n.counter={annual:Math.min(round5(o.annual*k),round5(p.ask.annual*1.15)),years:Math.max(o.years,ag.style==='hard'||ag.size==='big'?p.ask.years:o.years)}; n.mood=clamp(n.mood-2,0,100);
