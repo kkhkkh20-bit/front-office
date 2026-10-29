@@ -217,7 +217,9 @@ function fdPosBoardH(gk,f){ const B=fdPosBoard(); const nm={SP:'선발',RP:'불�
     const filled=g==='P'?(x.k==='SP'?sp>=6:rp>=7):!!ln[x.k];
     return `<button class="fpc${cur===v?' on':''}${filled?' ok':' need'}" data-a="fdPos" data-v="${cur===v?g+':all':v}" title="남은 후보 ${x.n}명 · 다음 우리 차례 전에 약 ${x.exp.toFixed(1)}명 빠질 예상"><b>${nm[x.k]||SLK[x.k]}</b>${own?`<span class="own">${own}</span>`:'<span class="emp">빈자리</span>'}${x.exp>=1.5?'<em>급함</em>':''}</button>`; };
   const all=(g,l)=>`<button class="fpc all${cur===g+':all'?' on':''}" data-a="fdPos" data-v="${g}:all"><b>${l} 전체</b></button>`;
-  return `<div class="fpcs">${all('B','야수')}${B.filter(x=>!['SP','RP'].includes(x.k)).map(chip).join('')}<span class="fpc-sep"></span>${all('P','투수')}${B.filter(x=>['SP','RP'].includes(x.k)).map(chip).join('')}</div>`; }
+  /* 야수/투수를 먼저 고르고, 그 그룹의 포지션만 칩으로 보인다(모바일에서 칩이 화면 밖으로 밀리지 않게) */
+  const isP=gk==='P'; const seg=`<div class="seg fpseg"><button data-a="fdPos" data-v="B:all" class="${isP?'':'on'}">야수</button><button data-a="fdPos" data-v="P:all" class="${isP?'on':''}">투수 <i class="fdsg">선발 ${sp}/6 · 불펜 ${rp}/7</i></button></div>`;
+  return `${seg}<div class="fpcs">${isP?all('P','투수')+B.filter(x=>['SP','RP'].includes(x.k)).map(chip).join(''):all('B','야수')+B.filter(x=>!['SP','RP'].includes(x.k)).map(chip).join('')}</div>`; }
 /* 고른 포지션에 우리 선수가 이미 있으면 위에 크게 보여 준다 */
 function fdOwnCard(gk,f){ if(gk==='P'||f==='all'||f==='OF'||f==='DH')return ''; const F=G.fd; const my=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const {ln}=fdLineupOf(my.filter(p=>!p.isP)); const p=ln[f]; if(!p)return '';
   const L=fdStatLine(p,F.y-1); return `<div class="fdown"><span class="eyebrow">우리 ${SLK[f]}</span><button class="fdown-c" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)}</b><i>${p.age}세 · ${money(p.sal)}${L?` · ${F.y-1} ${L.lvl===1?'':'2군 '}OPS ${fmt3(L.ops)} · WAR ${(L.war||0).toFixed(1)}`:''}</i></span>${fdChip(p)}</button><span class="small muted">이미 채운 자리입니다. 아래는 백업·경쟁 후보입니다.</span></div>`; }

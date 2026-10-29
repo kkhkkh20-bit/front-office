@@ -342,10 +342,8 @@ details.mfold>summary{cursor:pointer;color:var(--acc,#4a7dff);font-size:13px;mar
 .fdm3 b.good{color:var(--good,#3fb871)}.fdm3 b.warn{color:var(--warn,#e0a23a)}.fdm3 b.bad{color:var(--bad,#e5534b)}
 .tk0m{margin:6px 0 2px}
 .fdq{margin:6px 0 4px}.fdab{margin:0 0 6px}
-@media (max-width:760px){
-  .fpcs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;mask-image:linear-gradient(90deg,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
-  .fpcs::-webkit-scrollbar{display:none}.fpcs .fpc{flex:none}
-}
+.fpseg{margin:0 0 6px}.fpseg button{flex:1}
+@media (max-width:760px){ .fpcs{gap:4px}.fpcs .fpc{padding:3px 8px;font-size:12px} }
 /* 가로로 넘치는 표: 오른쪽에 더 있다는 그림자 */
 .fdt-w{background:linear-gradient(90deg,var(--panel,#181d24) 30%,transparent) left/24px 100% no-repeat local,linear-gradient(270deg,var(--panel,#181d24) 30%,transparent) right/24px 100% no-repeat local,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.45),transparent) right/12px 100% no-repeat scroll}
 /* 구단 카드 요약 줄: 세부(재정·구장)는 모든 화면 폭에서 '자세히'로 */
