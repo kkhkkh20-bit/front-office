@@ -106,7 +106,7 @@ function cwGift(tags){ const c=cwSt(); if(c.gift>=2)return null; const t=team(G.
   const bld=G.fac&&G.fac.bld?Object.keys(G.fac.bld).filter(k=>G.fac.bld[k].c&&!G.fac.bld[k].cap):[]; const why=tags.length?CW_TAGL[tags[0]]:'승리';
   const r=R(); const k=bld.length&&r<.35?'fac':t.owner==='win'?(r<.6?'ops':'bonus'):t.owner==='profit'?(r<.7?'bonus':'ops'):(r<.6?'bonus':'ops');
   if(k==='fac'){ const b=G.fac.bld[bld[0]]; const amt=Math.round(b.c*.3); t.cash+=amt; const nm=(typeof FACI!=='undefined'&&FACI[bld[0]]&&FACI[bld[0]].l)||'시설'; return {k,t:`구단주 선물(${why}): 진행 중인 ${nm} 공사비의 30%인 ${money(amt)}을(를) 모기업이 대신 냈습니다. 구단 보유 현금 +${money(amt)}.`}; }
-  if(k==='ops'){ const amt=300; const o=dobj(G.day); grants().unshift({y:G.year,mk:o.y*100+o.m,d:G.day,amt,pur:null,ok:true,by:'own',kind:'gift',st:'done',until:null}); grantApply(amt); return {k,t:`구단주 선물(${why}): 운영비 ${money(amt)} 추가 지원. 올해 모기업 지원 한도와 지원 목표가 그만큼 늘었습니다.`}; }
+  if(k==='ops'){ const amt=300; const o=dobj(G.day); grantAdd({y:G.year,mk:o.y*100+o.m,d:G.day,amt,pur:null,ok:true,by:'own',kind:'gift',st:'done',until:null}); grantApply(amt); return {k,t:`구단주 선물(${why}): 운영비 ${money(amt)} 추가 지원. 올해 모기업 지원 한도와 지원 목표가 그만큼 늘었습니다.`}; }
   for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+3,0,100); return {k:'bonus',t:`구단주 선물(${why}): ${B.own.name} 회장이 선수단 격려금을 개인적으로 냈습니다(구단 예산과 별개). 1군 선수단 기분 +3.`}; }
 
 /* 구단주 한두 마디: 결과 한 줄 + 실제 기록에서 고른 한 줄(겉으로 보이는 것만, 성향에 따라 다르게) */

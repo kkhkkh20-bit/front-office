@@ -11,7 +11,7 @@ function blocker(){
   if(cp)return cp.stage==='protect'?`${cp.name} 영입 보상: 보호선수 명단을 먼저 제출하세요.`:`${cp.name} 이적 보상: 보상선수(또는 보상금)를 먼저 고르세요.`;
   const per=period();
   if(per==='pre'&&G.day>=G.cal.open-1&&!G.mgr[G.user])return '감독이 없습니다. 스태프·육성 → 감독에서 감독을 선임해야 개막할 수 있습니다.';
-  if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)){ const n=rosterN(G.user);
+  if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done)){ const n=rosterN(G.user); /* 포스트시즌도 같은 등록 규정 */
     if(n>ROSTER_MAX){ const L=milReturns(7); return `로스터가 ${n}명입니다. ${ROSTER_MAX}명 이하로 줄여야 진행할 수 있습니다.${L.length?` 7일 안에 군 복귀 ${L.length}명(${milRetTxt(L)})이 더 있어, 복귀까지 고려하면 ${n+L.length-ROSTER_MAX}자리를 비워야 다시 막히지 않습니다.`:''}`; }
     const d=depth(G.user); if(d.start.length<9)return '건강한 야수가 9명이 안 됩니다.'; if(d.sp.length+d.pen.length<8)return '건강한 투수가 부족합니다.'; }
   return '';

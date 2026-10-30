@@ -41,7 +41,7 @@ function reportCard(p,noTools){
 }
 function entryForm(p){
   const on=entryOn(); let st;
-  if(p.ys)st=`<b>육성선수</b> · 정식 로스터(40명) 밖에서 2군 경기에 나갑니다.`;
+  if(p.ys)st=`<b>육성선수</b> · 정식 로스터(${ROSTER_MAX}명) 밖에서 2군 경기에 나갑니다.`;
   else if(!on)st='시즌 중이 아니라 1군 엔트리가 없습니다.';
   else if(p.e1)st=`<b>1군 등록</b> · ${p.upDay!=null?dmd(p.upDay)+' 등록':''}`;
   else st=`<b>2군</b>${p.downDay!=null?` · ${dmd(p.downDay)} 말소 · ${G.day-p.downDay>=10?'재등록 가능':dmd(p.downDay+10)+'부터 재등록 가능'}`:''}`;
