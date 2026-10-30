@@ -517,3 +517,10 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 @keyframes fdpulse{0%,100%{box-shadow:0 0 0 0 rgba(61,139,255,.55)}50%{box-shadow:0 0 0 8px rgba(61,139,255,0)}}
 @media (prefers-reduced-motion:reduce){.fd-gob{animation:none}}
 @media (max-width:600px){ .fd-go{flex-direction:column;align-items:stretch;gap:8px} .fd-got>span{display:none} .fd-gob{width:100%} }
+/* 능력치 변화(FM 화살표) */
+.dtv{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.dar{font-style:normal;font-size:10.5px;font-weight:800;line-height:1}
+.dar.up{color:#3ddc84}.dar.dn{color:#ff6b6b}
+.dt .track .gain{position:absolute;top:0;bottom:0;background:#3ddc84;box-shadow:0 0 6px #3ddc84aa}
+.dt .track .loss{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#ff6b6b55 0 3px,transparent 3px 6px)}
+.dleg{margin:6px 0 0}

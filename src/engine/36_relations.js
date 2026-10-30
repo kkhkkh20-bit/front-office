@@ -139,7 +139,7 @@ function mgrRelWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||period()!=='seas
 /* ===== 스타 파워: 수상·기록·활약이 마케팅 수입이 된다 ===== */
 function starPower(p){ let s=0; for(const a of (p.aw||[])){ const y=+String(a).slice(0,4); const age=G.year-y; if(age>2||isNaN(y))continue; const w=age===0?1:age===1?.7:.4;
     s+=(a.includes('MVP')?40:a.includes('신인왕')?20:a.includes('골든')?15:5)*w; }
-  const f=(G.feats||[]).filter(x=>x.pid===p.id&&x.maj&&x.y>=G.year-1).length; s+=f*8; const h=seasonTotal(p,G.year,'1군'); if(h){ const w=warOf(h,p); if(w>=4)s+=(w-3)*5; } if(p.foreign)s*=.6; return Math.round(s); }
+  const f=(G.feats||[]).filter(x=>x.pid===p.id&&x.maj&&x.y>=G.year-1).length; s+=f*8; const h=seasonTotal(p,G.year,'1군'); if(h){ const w=warOf(h,p); if(w>=4)s+=(w-3)*5; } if(p.hype&&p.hype.until>=G.day)s+=p.hype.v||0; /* 언론 플레이로 띄운 선수 */ if(p.foreign)s*=.6; return Math.round(s); }
 function teamStar(tid){ const L=playersOf(tid??G.user).map(p=>({p,s:starPower(p)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,3); return {v:sum(L.map(x=>x.s)),L}; }
 
 /* ===== FA 영입 설득: 꼭 잡아야 하는 FA를 위해 구단주에게 근거를 들고 가서 자금을 받아 온다 =====

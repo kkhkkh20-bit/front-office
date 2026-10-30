@@ -590,6 +590,19 @@ T('[외국인·FA] 결산 뒤 겨울에도 지출을 늘리면 예산 여유가 
 T('[외국인·FA] 외국인 재계약 거절 문구의 조사(일본으로)(외국인·FA 플레이 점검)',()=>{ const C=reNow(); const id=C.foreignEnd.find(i=>!C.foreignDrop.includes(i)); const p=G.players[id]; p.fout={y:C.y,k:'일본',v:Math.round(p.newSal*2)}; let r;
   for(let i=0;i<3;i++){ r=foReOffer(id,MIN_SAL,0); if(C.foreignDrop.includes(id))break; } ok(r&&!r.msg.includes('일본로')&&r.msg.includes('일본으로'),'문구: '+(r&&r.msg)); });
 
+T('[스타] 능력치 변화: 우리 선수는 매달 능력치를 남기고, 약 6개월 전과 비교한 변화를 낸다(FM 화살표)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.isP); rSnapAll(); ok(p.rS&&p.rS.length&&p.rS[p.rS.length-1].d===G.day,'이번 달 기록이 남지 않음');
+  p.rS=[{d:G.day-400,r:{...p.r,con:p.r.con-9}},{d:G.day-200,r:{...p.r,con:p.r.con-3,pow:p.r.pow+2}},{d:G.day-30,r:{...p.r}}]; const D=rDelta(p); ok(D&&D.from===G.day-200,'기준 시점이 6개월 전쯤이 아님: '+(D&&G.day-D.from));
+  ok(Math.abs(D.d.con-3)<1e-9&&Math.abs(D.d.pow+2)<1e-9,'변화량이 틀림: '+JSON.stringify(D.d)); const q=Object.values(G.players).find(x=>x.team!=null&&x.team!==G.user); rSnapAll(); ok(!q.rS,'다른 구단 선수까지 기록함'); });
+T('[스타] 개인 타이틀: 홈런왕·타격왕·평균자책점왕 등을 정하고 수상 경력에 남긴다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+50); const y=G.year; const T0=seasonTitles(y);
+  const hrMax=Math.max(...Object.values(G.players).filter(p=>!p.isP).map(p=>{ const h=seasonTotal(p,y,'1군'); return h?h.hr||0:0; })); const hr=T0.find(t=>t.k==='홈런왕'); ok(hr&&hr.v===hrMax,'홈런왕이 최다 홈런이 아님: '+(hr&&hr.v)+' / '+hrMax);
+  const w=G.players[hr.ids[0]]; ok((w.aw||[]).includes(y+' 홈런왕'),'수상 경력에 없음'); const era=T0.find(t=>t.k==='평균자책점왕'); ok(era,'평균자책점왕 없음'); const ep=G.players[era.ids[0]]; const eh=seasonTotal(ep,y,'1군'); const gp=(G.sea.rec[ep.team].w+G.sea.rec[ep.team].l+(G.sea.rec[ep.team].t||0)); ok(eh.outs>=gp*3,'규정이닝 미달 투수가 평균자책점왕');
+  ok(['타격왕','타점왕','도루왕','다승왕','탈삼진왕','세이브왕'].every(k=>T0.some(t=>t.k===k)),'빠진 타이틀: '+T0.map(t=>t.k).join(',')); });
+T('[스타] 시즌 중 타이틀 경쟁 기사가 나오고, 우리 선수가 경쟁 중이면 따로 알린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+50); const n0=(G.news||[]).length, m0=G.mail.length; const p=playersOf(G.user).find(q=>!q.isP&&seasonTotal(q,G.year,'1군'));
+  const h=p.hist.find(x=>x.y===G.year&&x.lvl==='1군'&&!x.y2); h.hr=(h.hr||0)+60; titleRaceNews(); const N=JSON.stringify((G.news||[]).slice(0,(G.news||[]).length-n0+1)); ok(N.includes('경쟁'),'타이틀 경쟁 기사가 없음'); const M=JSON.stringify(G.mail.slice(0,G.mail.length-m0+1)); ok(M.includes(p.name),'우리 선수가 홈런 1위인데 알림이 없음'); });
+T('[스타] 언론 플레이로 우리 선수 띄우기: 스타성이 오르고, 띄운 뒤 부진하면 거품 역풍이 분다',()=>{ fresh(); const r=pressInit()[0]; r.rel=80; const p=playersOf(G.user).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; const s0=starPower(p);
+  const msg=pressPlay(r.id,'hype',p.id); ok(p.hype&&p.hype.until>G.day,'띄우기가 기록되지 않음: '+msg); ok(starPower(p)>s0,'스타성이 오르지 않음'); const f0=G.pr.fan; const h0=hypeForm; hypeForm=()=>'bad'; try{ G.day+=50; ppDaily(); }finally{ hypeForm=h0; }
+  const N=JSON.stringify((G.news||[]).slice(0,4)); ok(N.includes('거품'),'부진했는데 역풍 기사가 없음'); ok(G.pr.fan<f0,'팬 여론이 떨어지지 않음'); ok(!(p.hype&&p.hype.until>=G.day&&p.hype.v>0),'거품 뒤에도 스타성 보너스가 남음'); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }

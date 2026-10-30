@@ -161,7 +161,7 @@ function settlement(){
   try{ if(!G.unemp&&typeof teleEv==='function')teleEv('season_end',{rank,champ:ps.champ===G.user?1:0,ps:P.seeds&&P.seeds.includes(G.user)?1:0,trust:team(G.user).trust}); }catch(e){}
   try{ franchiseCheck(); }catch(e){}
   try{ if(!G.unemp)seasonReview(y); }catch(e){}
-  storySeason(y); const awards=seasonAwards(y); try{ featSeason(y); mgrEyeReport(); }catch(e){} try{ ivPromCheck('season'); }catch(e){}
+  storySeason(y); const awards=seasonAwards(y); try{ seasonTitles(y); }catch(e){} try{ featSeason(y); mgrEyeReport(); }catch(e){} try{ ivPromCheck('season'); }catch(e){}
   G.history.push({y,order,champ:ps.champ,runner:ps.runner,user:{w:uo.w,l:uo.l,t:uo.t,rank,net:fin.net,trust:u.trust}});
   { const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(G.cal.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 마지막 달(9·10월) 잔여 경기도 결산에 넣는다 */
   try{ tsArchive(y); }catch(e){}
