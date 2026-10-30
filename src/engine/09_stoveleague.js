@@ -42,6 +42,8 @@ function faAnnounce(){ if(!G.fa)return; G.fa.open=true; try{ agYear(); agPitch()
 function faCapN(){ const F=G.fa; return F&&F.cap?F.cap:(F&&F.pool&&F.pool.length>20?3:2); }
 function faOutN(tid){ const F=G.fa; return F&&F.outN?(F.outN[tid]||0):0; }
 function faOutBlocked(tid,p){ return tid!==p.faFrom&&faOutN(tid)>=faCapN(); }
+/* 우리 제안이 살아 있는지: 선수가 거절한 조건(rej)이나 외부 FA 한도에 걸린 제안은 없는 것과 같다 */
+function faOfferLive(id){ const F=G.fa; const o=F&&F.offers&&F.offers[id]; const p=G.players[id]; return !!(o&&!o.rej&&p&&!faOutBlocked(G.user,p)); }
 /* AI 구단이 매기는 FA의 값: 요구액이 아니라 능력·나이로 정한다(인플레이션 억제) */
 /* AI 구단의 비FA 다년계약: 상한 여유가 있으면 FA를 앞둔(또는 막 자격을 얻은) 핵심 선수를 미리 묶는다(실제 KBO의 비FA 다년계약 흐름).
    선수풀이 작아 시장에 내보내면 잡기 어렵다는 계산이다. 새 계약은 다음 시즌부터(extNext) */
@@ -79,7 +81,7 @@ function faDay(day){
   if(day===F.openDay){ const mine=F.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user&&G.players[id].team==null); stop('FA',`오늘부터 모든 구단과 FA 협상이 열립니다.${mine.length?` 우리 FA ${mine.length}명(${mine.slice(0,4).map(id=>G.players[id].name).join(', ')}${mine.length>4?' 등':''})에게 다른 구단도 제안할 수 있습니다.`:''} 영입·계약 → FA 시장에서 조건을 제시하세요.`); }
   F.warned=F.warned||{};
   if(day===F.openDay&&!G.unemp){ const top=F.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.faFrom!==G.user).sort((a,b)=>ovr(b)-ovr(a)).slice(0,5);
-    if(top.length)mail('스카우트팀장','FA 시장 개장: 주요 선수 5명',top.map((p,i)=>`${i+1}. ${p.name} (${posLabel(p)}, ${p.age}세, ${p.faGrade}등급, 원소속 ${tshort(p.faFrom)}) · 요구 연 ${money(p.ask.annual)} ${p.ask.years}년`).join('\n')+'\n\n관심 선수로 별표를 해 두면 다른 구단이 제안할 때 바로 알려 드립니다.',{kind:'FA',acts:[{l:'FA 시장',a:'goWork',v:'FA시장'}]}); }
+    if(top.length)mail('스카우트팀장',`FA 시장 개장: 주요 선수 ${top.length}명`,top.map((p,i)=>`${i+1}. ${p.name} (${posLabel(p)}, ${p.age}세, ${p.faGrade}등급, 원소속 ${tshort(p.faFrom)}) · 요구 연 ${money(p.ask.annual)} ${p.ask.years}년`).join('\n')+'\n\n관심 선수로 별표를 해 두면 다른 구단이 제안할 때 바로 알려 드립니다.',{kind:'FA',acts:[{l:'FA 시장',a:'goWork',v:'FA시장'}]}); }
   /* 찾는 구단이 없으면 요구액이 매주 내려간다(최초 요구의 40%까지) */
   if(since>0&&since%7===0)for(const id of F.pool){ const p=G.players[id]; if(!p||p.team!=null)continue; const ai=F.ai[id]||{}; if(Object.keys(ai).length||F.offers[id])continue; const a0=p.ask0||p.ask.annual; const na=round5(Math.max(a0*.4,MIN_SAL,p.ask.annual*.9)); if(na<p.ask.annual){ p.ask.annual=na; if(since>=35)p.ask.years=Math.min(p.ask.years,since>=50&&p.age>=33?1:2); } }
   for(const id of [...F.pool]){
@@ -90,10 +92,11 @@ function faDay(day){
       /* 애매한 선수는 원소속 구단도 서두르지 않는다: 시장 반응을 본 뒤(협상 50일 이후) 낮춰 부른다 */
       if(own&&po<50&&since<50)continue;
       let it=faInterest(t,p); if(!own)it*=po<52?.35:.7; if(it>0&&R()<it*.1){ const w=faWorth(t,p)*(own&&po<50?.65:1); ai[t.id]={annual:round5(Math.min(p.ask.annual*rnd(.92,1.15),w)),years:own&&po<50?(p.age<=30?2:1):clamp(p.ask.years+ri(-1,0)+(p.age<=28&&po>=62&&R()<.3?1:0),p.age<=31?2:1,p.age<=28&&po>=62?5:4)}; } } /* 서른 안팎까지는 보통 2년 이상 보장한다(1+1 포함) */
-    if(p.faFrom!==G.user&&!G.unemp&&!F.offers[id]&&!F.warned[id]&&((G.shortlist||[]).includes(id)||mreqOpen('fa').some(r=>r.data&&r.data.pid===id))&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`관심 FA ${p.name}에게 ${tname(+k0)}이(가) 제안했습니다(연 ${money(ai[k0].annual)} · ${ai[k0].years}년). 잡으려면 서둘러 조건을 제시하세요.`,id); }
-    if(p.faFrom===G.user&&!F.offers[id]&&!F.warned[id]&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`우리 FA ${p.name}에게 ${tname(+k0)}이(가) 먼저 제안했습니다. 잡으려면 FA 시장에서 조건을 제시하세요.`,id); }
+    const live=faOfferLive(id);
+    if(p.faFrom!==G.user&&!G.unemp&&!live&&!F.warned[id]&&((G.shortlist||[]).includes(id)||mreqOpen('fa').some(r=>r.data&&r.data.pid===id))&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`관심 FA ${p.name}에게 ${tname(+k0)}이(가) 제안했습니다(연 ${money(ai[k0].annual)} · ${ai[k0].years}년). 잡으려면 서둘러 조건을 제시하세요.`,id); }
+    if(p.faFrom===G.user&&!live&&!F.warned[id]&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`우리 FA ${p.name}에게 ${tname(+k0)}이(가) 먼저 제안했습니다. 잡으려면 FA 시장에서 조건을 제시하세요.`,id); }
     const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years}));
-    const uo=F.offers[id]; if(uo&&!uo.rej){ offers.push({tid:G.user,annual:uo.annual,years:uo.years,...(uo.terms?{terms:uo.terms}:{})}); faAgentPing(id); }
+    const uo=F.offers[id]; if(live){ offers.push({tid:G.user,annual:uo.annual,years:uo.years,...(uo.terms?{terms:uo.terms}:{})}); faAgentPing(id); }
     if(!offers.length)continue;
     /* 대어: 시장 확인 라운드를 다 돌기 전에는 사인하지 않는다 */
     const mk=agMk(p); if(mk&&!mk.done){ agShopTick(p,mk,ai,day); if(!mk.done)continue; }
@@ -121,15 +124,17 @@ function faSign(p,offers){
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:BT?BT.annual+Math.round((BT.bonus||0)/best.years):best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null,...(BT?{terms:BT}:{})};
   story(p,best.tid===from?`FA 잔류 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`:`FA 이적 · ${tname(best.tid)} ${best.years}년 연 ${money(p.sal)}`,'move');
   if(best.tid!==from){ try{ gmInc(best.tid,'fa'); if(rec.annual*best.years>=6000)gmInc(best.tid,'faBig'); }catch(e){} /* 단장 프로필: 외부 FA, 총액 60억 이상은 대형 */ if(G.fa){ G.fa.outN=G.fa.outN||{}; G.fa.outN[best.tid]=(G.fa.outN[best.tid]||0)+1; }
+    if(best.tid===G.user&&!G.unemp&&faOutN(G.user)>=faCapN()){ const gone=Object.keys(G.fa.offers).map(Number).filter(x=>x!==p.id&&G.players[x]&&G.players[x].faFrom!==G.user); gone.forEach(x=>delete G.fa.offers[x]); /* 외부 FA 한도를 채웠다: 남은 외부 FA 제안은 효력이 없다 */
+      if(gone.length)stop('FA',`외부 FA 영입 한도(${faCapN()}명)를 채웠습니다. 다른 구단 FA에게 낸 제안 ${gone.length}건(${gone.map(x=>G.players[x].name).join(', ')})은 효력이 없어 거둬들였습니다. 우리 FA 잔류 협상은 계속할 수 있습니다.`); }
     try{ compStart(p,from,best.tid,rec); }catch(e){}
   }
   if(best.tid===G.user&&!G.unemp)chron('fa',from===G.user?`FA ${p.name} 잔류 (${ctRecShort(rec)})`:`FA ${p.name} 영입 (${ctRecShort(rec)})`,p.id); else if(from===G.user&&best.tid!==G.user&&!G.unemp)chron('fa',`FA ${p.name}, ${tshort(best.tid)}로 이적`,p.id);
-  const userOffered=!!G.fa.offers[p.id];
+  const uo0=G.fa.offers[p.id]; const userOffered=!!uo0; const whyLost=!uo0?'':uo0.rej?' 우리 제안은 선수가 이미 거절한 조건이었습니다.':faOutBlocked(G.user,p)?` 우리 구단은 외부 FA 영입 한도(${faCapN()}명)를 채워 계약할 수 없었습니다.`:' 우리 제안은 밀렸습니다.';
   delete G.fa.offers[p.id]; G.fa.pool=G.fa.pool.filter(x=>x!==p.id); G.fa.results.unshift(rec); prFA(rec); try{ if(rec.to===G.user&&from!==G.user&&rec.annual>=700)ivRequest('fa_sign',{pid:p.id}); else if(from===G.user&&rec.to!==G.user&&rec.annual>=500)ivRequest('fa_lost',{pid:p.id}); }catch(e){} mvLog('FA',p,from,rec.to,`${from===rec.to?'잔류 ':''}${ctRecShort(rec)}`,rec.terms?ctRecMoney(rec).tot:rec.annual*rec.years);
   const tx=rec.terms?`${termsTxt(rec.terms,true)} · ${ctRecMoney(rec).txt}`:`${rec.years}년 연 ${money(rec.annual)}`;
   const t=rec.to===G.user?(from===G.user?`${p.name}와(과) 잔류 계약했습니다. ${tx}.`:`FA ${p.name}을(를) 영입했습니다. ${tx}.${rec.compPlayer?` 보상선수로 ${rec.compPlayer}이(가) 떠났습니다.`:''}${rec.compCash?` 보상금 ${money(rec.compCash)}.`:''}`)
-    :from===G.user?`${p.name}이(가) ${tname(rec.to)}와(과) 계약했습니다(${rec.years}년 연 ${money(rec.annual)}).${rec.compPlayer?` 보상선수로 ${rec.compPlayer}을(를) 받았습니다.`:''}`
-    :`${tname(rec.to)}이(가) FA ${p.name}(${p.faGrade}등급)을 ${rec.years}년 연 ${money(rec.annual)}에 잡았습니다.${userOffered?' 우리 제안은 밀렸습니다.':''}`;
+    :from===G.user?`${p.name}이(가) ${tname(rec.to)}와(과) 계약했습니다(${rec.years}년 연 ${money(rec.annual)}).${rec.compPlayer?` 보상선수로 ${rec.compPlayer}을(를) 받았습니다.`:''}${rec.compCash?` ${rec.grade}등급 보상금 ${money(rec.compCash)}을(를) 받았습니다(결산에 반영).`:''}`
+    :`${tname(rec.to)}이(가) FA ${p.name}(${p.faGrade}등급)을 ${rec.years}년 연 ${money(rec.annual)}에 잡았습니다.${whyLost}`;
   if(rec.to===G.user)addLog(t);
   if(rec.to===G.user||from===G.user||userOffered)stop('FA',t,p.id); else if(rec.grade!=='C'||rec.annual>=500)wire('FA',t,{ref:p.id,tid:rec.to});
   delete p.faFrom; delete p.ask;
@@ -138,7 +143,7 @@ function faClose(){
   const F=G.fa; let cheap=0, gone=0;
   for(const id of [...F.pool]){ const p=G.players[id]; if(!p||p.team!=null)continue;
     const ai=F.ai[id]||{}; const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).filter(o=>!faOutBlocked(o.tid,p));
-    if(F.offers[id])offers.push(Object.assign({tid:G.user},F.offers[id]));
+    if(F.offers[id]&&!F.offers[id].rej&&!faOutBlocked(G.user,p))offers.push(Object.assign({tid:G.user},F.offers[id])); /* 선수가 거절한 조건·한도에 걸린 제안은 마감 때도 계약되지 않는다 */
     if(offers.length){ faSign(p,offers); continue; }
     const from=p.faFrom, t=team(from); const low=round5(Math.max(MIN_SAL,Math.min((p.faPrevSal||p.sal)*.5,marketSal(ovr(p))*.45)));
     /* 원소속 AI 구단이 쓸모를 인정하면 헐값 계약으로 붙잡는다(실제 2025년 하주석 1년 1억1천만원 등). 20대는 1+1처럼 2년으로 묶는 경우가 많다 */
@@ -188,9 +193,13 @@ function fReNeg(id){ const C=G.contract; const p=G.players[id]; if(!C||!p||C.don
   if(R()<ch){ p.newSal=off; return `${p.name} 측이 ${money(off)}에 동의했습니다. (요구액 ${money(ask)})`; }
   C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return `${p.name} 측이 거절했습니다. ${star?'일본 구단에서 더 좋은 조건을 받았다고 합니다.':'다른 리그를 알아보겠다고 합니다.'} 결별로 처리됩니다. 보류권은 우리에게 있어 국내 다른 구단에는 갈 수 없습니다.`; }
 /* 외국인 재계약 마무리(한 구단): 결별은 보류권 처리, 합의한 인센티브는 계약 옵션으로. 계약 확정과 이직 인계가 같은 처리를 쓴다 */
+/* 협상하지 않고 둔 외국인: 해외 제안이 요구액보다 확실히 좋으면 그쪽으로 떠난다(협상하면 그 이상을 줘야 하므로, 방치가 더 싸지 않게) */
+function fReIdleOut(p){ const O=foReOut(p); return O&&!O.none&&O.v*.97>p.newSal?O:null; }
 function fReFinish(C,tid){ const me=tid===G.user;
-  for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||p.team!==tid)continue; if(C.foreignDrop.includes(id)){ const free=(C.fFree||[]).includes(id)&&!p.fleft; if(me)addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${free?'보류권 해제: 다른 구단과 계약 가능':'보류권 유지: 5년간 국내 다른 구단 입단 불가'}).`);
-      if(free&&ovr(p)>=50&&p.age<=34){ delete p.newSal; delete p.fInc; termsClear(p); p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(tid)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid}); } else { if(!free)try{ foResAdd(p,tid); }catch(e){} delete G.players[id]; } }
+  for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||p.team!==tid)continue;
+    if(!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok)){ const O=fReIdleOut(p); if(O){ if(me)addLog(`외국인 선수 ${p.name}이(가) 재계약 협상 없이 ${O.k} 구단 제안(${usdT(O.v)})을 받아들여 떠났습니다(보류권 유지: 5년간 국내 다른 구단 입단 불가).`); try{ foResAdd(p,tid); }catch(e){} delete G.players[id]; continue; } }
+    if(C.foreignDrop.includes(id)){ const free=(C.fFree||[]).includes(id)&&!p.fleft; const mkt=free&&ovr(p)>=50&&p.age<=34; if(me)addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${!free?'보류권 유지: 5년간 국내 다른 구단 입단 불가':mkt?'보류권 해제: 다른 구단과 계약 가능':'보류권은 풀었지만 국내에서 찾는 구단이 없어 해외로 떠났습니다'}).`);
+      if(mkt){ delete p.newSal; delete p.fInc; termsClear(p); p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(tid)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid}); } else { if(!free)try{ foResAdd(p,tid); }catch(e){} delete G.players[id]; } }
     else { if(p.newSal!=null)p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; delete p.fleft; if(p.fInc){ p.ctT=p.team; p.opt={a:p.fInc,until:C.y+1}; delete p.fInc; } } } }
 /* 이직할 때: 떠나는 구단의 남은 연봉 협상은 그 구단(이제 AI)이 정리하고, 새 구단은 이미 연봉을 마친 상태로 시작한다 */
 function contractHandOff(oldTid){ const C=G.contract; if(!C||C.done)return; try{ salTalkClose(); }catch(e){}

@@ -42,7 +42,7 @@ function ngtResOf(N){ const p=G.players[N.id]; if(N.res)return N.res;
 function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const p=G.players[N.id]; const nx=R.next!=null?`다음 제안은 ${dsh(R.next)}부터 할 수 있습니다(한 선수와 한 주에 한 번).`:'';
   const c=N.k==='ext'?p.extCounter:N.k==='fa'?(G.fa&&G.fa.neg&&G.fa.neg[p.id]||{}).counter:null;
   const M={ok:['good','합의',R.sub||'계약이 확정됐습니다.'],
-    counter:['warn','역제안',`에이전트가 조건을 내놓았습니다. 아래 '역제안 수락'을 누르면 ${N.k==='fa'?'우리 제안이 그 조건으로 바뀝니다':'바로 계약됩니다'}${N.k==='ext'&&c&&c.until?` · ${dsh(c.until)}까지 유효`:''}. 다시 제안해도 됩니다.`],
+    counter:['warn','역제안',`에이전트가 조건을 내놓았습니다. 아래 '역제안 수락'을 누르면 ${N.k==='fa'?'우리 제안이 그 조건으로 바뀌고, 지금 우리 조건이 가장 좋으면 그 자리에서 사인합니다':'바로 계약됩니다'}${N.k==='ext'&&c&&c.until?` · ${dsh(c.until)}까지 유효`:''}. 다시 제안해도 됩니다.`],
     no:['bad','거절',N.k==='sal'?'선수가 요구액을 조금 낮춰 답했습니다(위 말풍선). 요구액 이상이면 바로 합의됩니다.':N.k==='fa'?'역제안도 없습니다. 조건을 올려 다시 제안할 수 있습니다.':nx],
     market:['bad','거절 · FA 시장을 보겠다고 합니다',nx],
     locked:['bad','이번 주 협상은 끝났습니다',N.k==='sal'?'요구액 이상이면 지금도 바로 합의됩니다. 더 낮게 부르려면 다음 주에 다시 하세요.':nx],
@@ -97,7 +97,7 @@ function ngtCounter(){ const N=UI.ngt; const p=G.players[N.id];
   const c=p.extCounter; if(!c)return; const r=offerExtension(p.id,c.annual,c.years,true,c.terms||null); N.msg=r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,next:r.next}:null; if(r.ok){ UI.stamp={title:'다년계약 합의',msg:`${p.name} · ${c.terms?termsTxt(c.terms,true):`${c.years}년 연 ${money(c.annual)}`} · ${r.now?'바로 적용':'다음 시즌부터 적용'}`}; UI.ngt=null; } }
 /* 입구 버튼: 지금 우리 제안 요약 */
 function ngtDoor(k,p){ const o=k==='fa'?G.fa.offers[p.id]:null; const ag=hasAgent(p)?agentOf(p):null;
-  const cur=o?(o.terms?termsTxt(o.terms,true):`${o.years}년 연 ${money(o.annual)}`):null;
+  const cur=o?(o.terms?termsTxt(o.terms,true):`${o.years}년 연 ${money(o.annual)}`)+(o.rej?' (선수가 거절함)':''):null;
   return `<button class="mt-door" data-a="ngtOpen" data-v="${k}:${p.id}">${ag?agAv(ag):avImg(p)}<span><b>협상 테이블 열기</b><i>${ag?`${esc(ag.name)} 에이전트 · ${esc(ag.firm)}`:`${esc(p.name)} 본인과 협상`}</i><i>${cur?`지금 우리 제안: ${esc(cur)}`:k==='fa'?`요구 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준`:'기간 · 계약금 · 연봉 · 옵션을 정해 제안합니다'}</i></span><em>›</em></button>`; }
 /* 슬라이더: 움직이는 동안은 숫자만, 놓으면 다시 그린다 */
 function ngtRange(el,fin){ const N=UI.ngt; if(!N)return; const f=el.dataset.ngr; N.T[f]=f==='annual'?Math.max(MIN_SAL,+el.value):+el.value; if(fin){ renderSheet(); return; } const o=document.getElementById('ngv-'+f); if(o)o.textContent=money(N.T[f]); }

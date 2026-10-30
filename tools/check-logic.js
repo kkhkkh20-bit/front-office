@@ -4,7 +4,7 @@
  주의: 시나리오는 큰 백틱 문자열 안에 있다. 안쪽에서 백틱을 쓰지 말고, 정규식의 \[ 같은 역슬래시는 두 번 써야 한다(한 번이면 사라져 엉뚱한 정규식이 된다). 가능하면 includes·startsWith를 쓴다. */
 const fs=require('fs'), path=require('path');
 const ENGINE=path.join(__dirname,'..','dist','engine.js'); if(!fs.existsSync(ENGINE)){ console.error('dist/engine.js가 없습니다. bash build.sh를 먼저 실행하세요.'); process.exit(2); }
-{ let a=11; Math.random=()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+{ let a=11; globalThis.__seed=v=>{ a=v; }; /* 통계 시나리오가 같은 난수로 비교할 수 있게 */ Math.random=()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 const results=[]; const T=(name,fn)=>results.push({name,fn});
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
@@ -554,7 +554,7 @@ T('마무리캠프: 26세 이하와 주전이 아닌 30세 이하만 가고, 단
   const cnt=foc=>{ let n=0; for(let i=0;i<4;i++)for(const t of G.teams)for(const p of campWho(t.id,'fall'))if(p.isP){ const b=(p.addP||[]).length; campGrow(p,'fall',foc); n+=(p.addP||[]).length-b; } return n; }; const a=cnt('skill'), b=cnt('pitch'); ok(b>a*2,'구종 개발 '+b+'개 · 기술 훈련 '+a+'개'); });
 
 T('성장: 능력은 잠재력을 넘지 못하고(잠재력 자체는 오르내림), 같은 환경에서도 프로의식·야망이 높을수록 더 크고 낮으면 일찍 꺾인다',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&q.age<=23&&!q.prospect); ok(base,'준비 실패');
-  const snap=JSON.stringify(base), save={age:base.age}; const run=(pro,amb)=>{ let tot=0, over=0; for(let i=0;i<40;i++){ const p=Object.assign(JSON.parse(snap),{id:base.id}); p.pers.pro=pro; p.pers.amb=amb; p.dt='norm'; p.pot=ovr(p)+10; G.players[p.id]=p; const o=ovr(p); develop(p); if(ovr(p)>Math.max(p.pot,o)+.06)over++; tot+=ovr(p)-o; } G.players[base.id]=base; return {g:tot/40,over}; };
+  const snap=JSON.stringify(base), save={age:base.age}; const run=(pro,amb)=>{ __seed(99); /* 두 성격에 같은 난수를 써서 앞 시나리오 순서와 상관없이 성격 차이만 본다 */ let tot=0, over=0; { for(let i=0;i<80;i++){ const p=Object.assign(JSON.parse(snap),{id:base.id}); p.pers.pro=pro; p.pers.amb=amb; p.dt='norm'; p.pot=ovr(p)+10; G.players[p.id]=p; const o=ovr(p); develop(p); if(ovr(p)>Math.max(p.pot,o)+.06)over++; tot+=ovr(p)-o; } } G.players[base.id]=base; return {g:tot/80,over}; };
   const lo=run(5,5), hi=run(19,19); ok(!lo.over&&!hi.over,'잠재력을 넘김 '+lo.over+'/'+hi.over); ok(hi.g>lo.g*1.4,'프로의식·야망 높음 +'+hi.g.toFixed(2)+' · 낮음 +'+lo.g.toFixed(2));
   const a=Object.assign(JSON.parse(snap),{dt:'norm'}); a.pers.pro=5; const b=Object.assign(JSON.parse(snap),{dt:'norm'}); b.pers.pro=18; ok(dtSpan(a).fall<dtSpan(b).fall,'프로의식이 낮아도 꺾이는 나이가 같음');
   const q=domestic(G.user).find(x=>x.isP&&x.age<=25)||base; const o0=ovr(q); q.pot=o0+.5; for(let i=0;i<6;i++)campGrow(q,'spring','skill'); ok(ovr(q)<=Math.max(q.pot,o0)+.06,'캠프에서 잠재력을 넘김: '+ovr(q).toFixed(1)+' / '+q.pot); });
@@ -568,6 +568,27 @@ T('리더: 선수들은 프로의식 있는 고참을 주장으로 뽑고, 리�
   const y=domestic(tid).find(p=>p.age<=23&&!p.prospect); ok(y,'준비 실패: 젊은 선수'); y.pers.pro=5; G._cl=null; _ldC.clear(); const L=teamLeaders(tid); L.forEach(p=>{ p.pers.pro=19; leadOf(p).cha=14; }); _ldC.clear(); const good=effPro(y), gf=persGrowF(y);
   L.forEach(p=>{ p.pers.pro=4; }); _ldC.clear(); const bad=effPro(y), bf=persGrowF(y); ok(good>y.pers.pro+2&&bad<=y.pers.pro,'리더 프로의식 19일 때 '+good.toFixed(1)+' · 4일 때 '+bad.toFixed(1)+'(본인 '+y.pers.pro+')'); ok(gf>bf,'리더가 좋아도 성장 계수가 그대로');
   L.forEach(p=>{ p.pers.pro=19; }); _ldC.clear(); let up=0; for(let i=0;i<40;i++){ y.pers.pro=5; up+=proDrift(y); } ok(up>=5,'좋은 리더 밑에서 40번 중 프로의식이 '+up+'번만 오름'); });
+
+const faOpenNow=()=>{ fresh(); simTo(()=>G.fa&&!G.fa.closed&&G.day>=KD(11,8)); ok(G.fa&&!G.fa.closed,'FA 시장 준비 실패'); return G.fa.pool.map(i=>G.players[i]).filter(p=>p&&p.team==null&&p.faFrom!==G.user&&p.ask); };
+const reNow=()=>{ fresh(); simTo(()=>G.contract&&!G.contract.done&&G.contract.foreignEnd&&G.contract.foreignEnd.length&&G.day>=KD(12,2)); const C=G.contract; ok(C&&C.foreignEnd.length,'외국인 재계약 준비 실패'); return C; };
+T('[외국인·FA] 거절당한 FA 제안은 마감 때 계약되지 않는다(외국인·FA 플레이 점검)',()=>{ const L=faOpenNow(); const p=L[0]; G.fa.ai[p.id]={}; G.fa.offers[p.id]={annual:MIN_SAL,years:1,rej:true}; faClose(); ok(G.players[p.id].team!==G.user,'선수가 거절한 조건으로 우리와 계약됨: '+p.name); });
+T('[외국인·FA] 외부 FA 한도를 채우면 남은 외부 FA 제안은 정리하고 알린다(외국인·FA 플레이 점검)',()=>{ const L=faOpenNow(); const [a,b]=L; G.fa.outN={[G.user]:faCapN()-1}; G.fa.offers[b.id]={annual:b.ask.annual,years:b.ask.years};
+  const n0=G.mail.length; faSign(a,[{tid:G.user,annual:a.ask.annual,years:a.ask.years}]); ok(a.team===G.user,'준비 실패: 영입 안 됨'); ok(!G.fa.offers[b.id],'한도를 채웠는데 다른 외부 FA 제안이 그대로 남음'); const M=JSON.stringify(G.mail.slice(0,G.mail.length-n0+2)); ok(M.includes('한도')&&M.includes(b.name),'한도로 제안이 정리됐다는 알림이 없음'); });
+T('[외국인·FA] 우리 C등급 FA가 떠나면 받은 보상금을 알린다(외국인·FA 플레이 점검)',()=>{ const L=faOpenNow(); const p=L[0]; p.faFrom=G.user; p.faGrade='C'; p.faPrevSal=400; const to=G.teams.find(t=>t.id!==G.user).id; const n0=G.mail.length;
+  faSign(p,[{tid:to,annual:p.ask.annual,years:2}]); const M=JSON.stringify(G.mail.slice(0,G.mail.length-n0+2)); ok(M.includes('보상금'),'C등급 보상금 소식이 없음'); });
+T('[외국인·FA] 외국인 재계약을 그냥 두면 더 좋은 해외 제안이 있는 선수는 떠난다(외국인·FA 플레이 점검)',()=>{ const C=reNow(); const id=C.foreignEnd.find(i=>!C.foreignDrop.includes(i)); const p=G.players[id]; p.fout={y:C.y,k:'일본',v:Math.round(p.newSal*1.4)};
+  const ask=p.newSal; fReFinish(C,G.user); const q=G.players[id]; ok(!(q&&q.team===G.user&&q.sal===ask),'해외 제안(요구액의 1.4배)을 무시하고 요구액으로 자동 재계약됨'); });
+T('[외국인·FA] 재계약 기간에 결별하기로 한 외국인은 외국인 자리를 차지하지 않는다(외국인·FA 플레이 점검)',()=>{ const C=reNow(); { let g=0; while(foreignOf(G.user).filter(x=>x.foreign==='용병').length<3&&g++<5){ const q=newForeign('용병',{}); q.team=G.user; q.sal=q.ask||30000; } } /* 앞 시나리오 난수에 따라 2명일 수 있어 3명으로 채운다 */ const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'); ok(yb.length===3,'준비 실패: 용병 '+yb.length+'명');
+  const d=yb.find(x=>C.foreignEnd.includes(x.id)); ok(d,'준비 실패: 재계약 대상 용병 없음'); C.foreignDrop.push(d.id); const q=(G.fmarket||[]).map(i=>G.players[i]).find(x=>x&&x.foreign==='용병'&&x.isP===d.isP);
+  ok(q,'준비 실패: 같은 유형 후보 없음'); const e=foreignCheck(G.user,q); ok(!e.includes('3명까지'),'결별한 선수 때문에 대체 영입이 막힘: '+e); });
+T('[외국인·FA] 외국인 협상: 기다려 준 기한 처리가 AI 영입보다 먼저 돈다(외국인·FA 플레이 점검)',()=>{ fresh(); const seen=[]; const a0=aiForeignDaily, f0=foDaily; aiForeignDaily=()=>{ seen.push('ai'); }; foDaily=()=>{ seen.push('fo'); };
+  try{ marketDaily(); }finally{ aiForeignDaily=a0; foDaily=f0; } ok(seen.indexOf('fo')>=0&&seen.indexOf('fo')<seen.indexOf('ai'),'순서: '+seen.join(',')); });
+T('[외국인·FA] 보류권을 풀었어도 시장에 못 나가는 선수는 다른 구단 가능이라고 적지 않는다(외국인·FA 플레이 점검)',()=>{ const C=reNow(); const id=C.foreignEnd[0]; const p=G.players[id]; setOvr(p,44); C.foreignDrop.push(id); C.fFree=[id];
+  fReFinish(C,G.user); const l=(G.log.find(x=>x.t.includes(p.name))||{}).t||''; ok(l&&!l.includes('다른 구단과 계약 가능'),'기록: '+l); ok(!(G.fmarket||[]).includes(id),'준비 확인: 시장에 나옴'); });
+T('[외국인·FA] 결산 뒤 겨울에도 지출을 늘리면 예산 여유가 줄어든다(외국인·FA 플레이 점검)',()=>{ fresh(); simTo(()=>G.last&&G.last.y>=G.year&&G.day>=KD(11,20)); ok(G.last&&G.last.y>=G.year,'결산 전'); team(G.user).cash=0; /* 보유 현금으로 메우는 몫을 빼고 본다 */ const b1=budget().roomGoal; G.spend.etc=(G.spend.etc||0)+1000; const b2=budget().roomGoal;
+  ok(b2<=b1-900,'지출 10억을 늘렸는데 예산 여유 '+money(b1)+' → '+money(b2)); });
+T('[외국인·FA] 외국인 재계약 거절 문구의 조사(일본으로)(외국인·FA 플레이 점검)',()=>{ const C=reNow(); const id=C.foreignEnd.find(i=>!C.foreignDrop.includes(i)); const p=G.players[id]; p.fout={y:C.y,k:'일본',v:Math.round(p.newSal*2)}; let r;
+  for(let i=0;i<3;i++){ r=foReOffer(id,MIN_SAL,0); if(C.foreignDrop.includes(id))break; } ok(r&&!r.msg.includes('일본로')&&r.msg.includes('일본으로'),'문구: '+(r&&r.msg)); });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);

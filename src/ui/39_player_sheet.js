@@ -84,6 +84,7 @@ function renderSheet0(){
   if(UI.person&&UI.sheet==null){ el.innerHTML=personSheet(UI.person); return; }
   if(UI.game!=null){ el.innerHTML=gameSheet(UI.game); return; }
   if(UI.posSheet){ el.innerHTML=UI.posSheet.includes(':')?teamPosSheet(UI.posSheet):posSheet(UI.posSheet); return; }
+  if(UI.wkres&&UI.sheet==null&&!UI.menu){ el.innerHTML=wkResSheet(); return; } /* 경기 결과 정리(박스스코어·선수 정보는 그 위에 뜨고, 닫으면 돌아온다) */
   if(UI.sheet==null){ el.innerHTML=''; return; }
   const p=G.players[UI.sheet]; if(!p){UI.sheet=null; el.innerHTML=''; return;}
   const rp=scoutReport(p); const h=curLine(p); const per=period();
@@ -92,7 +93,7 @@ function renderSheet0(){
   const d=G.draft; const canPick=p.prospect&&d&&!d.done&&d.picks[d.cur].tid===G.user;
   let actions='';
   if(canPick)actions=`<button class="btn primary block" data-a="pick" data-v="${p.id}">${d.picks[d.cur].rd}라운드 ${d.picks[d.cur].no}순위로 지명 · 계약금 약 ${money(bonusOf(d.picks[d.cur].rd,d.picks[d.cur].no,p))}</button>`;
-  if(p.fdPool&&G.fd&&!G.fd.done){ const fk=G.fd.picks[G.fd.cur]; actions=`<div class="row" style="gap:6px">${fk&&fk.tid===G.user&&G.fd.open!==false?`<button class="btn primary" style="flex:1" data-a="fdPick" data-v="${p.id}">${fk.rd}라운드 ${fk.no}번째로 지명</button>`:''}<button class="btn" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button></div>`; }
+  if(p.fdPool&&G.fd&&!G.fd.done){ const fk=G.fd.picks[G.fd.cur]; actions=`<div class="row" style="gap:6px">${G.fd.open===false?`<button class="btn primary" style="flex:1" data-a="fdOpen">드래프트 시작하기 · 시작해야 지명할 수 있습니다</button>`:fk&&fk.tid===G.user?`<button class="btn primary" style="flex:1" data-a="fdPick" data-v="${p.id}">${fk.rd}라운드 ${fk.no}번째로 지명</button>`:fk?`<button class="btn" style="flex:1" disabled>지금은 ${esc(tshort(fk.tid))} 차례입니다</button>`:''}<button class="btn" data-a="star" data-v="${p.id}">${(G.shortlist||[]).includes(p.id)?'★ 관심 해제':'☆ 관심'}</button></div>`; }
   if(isFA)actions=''; /* 협상은 위쪽 '협상 창 열기'에서 */
   if(isFM){ const err=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; const mid=per==='season'; const repl=mid&&(G.sea.repl[G.user]||0)>=F_REPL_MAX;
     actions=''; }

@@ -52,17 +52,17 @@ function agTell(ag,b){ const r=agRel(ag); if(!b)return '아직 다른 구단 제
   if(r>=40)return `다른 구단 한 곳이 ${b.years}년 연 ${money(round5(b.annual*rnd(.97,1.03)))} 안팎을 제시했습니다.`;
   return '다른 구단에서 더 나은 조건이 들어왔다고만 말씀드리겠습니다.'; }
 function agShopTick(p,mk,ai,day){ const F=G.fa; const id=p.id; if(mk.next==null){ mk.next=day+ri(3,5); return; } if(day<mk.next)return;
-  const offs=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})); const uo=F.offers[id];
+  const offs=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})); const uo=faOfferLive(id)?F.offers[id]:null; /* 선수가 거절한 조건·한도에 걸린 제안은 비교 대상이 아니다 */
   if(!offs.length&&!uo){ mk.next=day+3; return; } /* 제안이 하나도 없으면 라운드를 세지 않는다 */
   const ag=agentOf(p); mk.round++; mk.next=day+ri(4,6);
   /* 다른 구단은 경쟁을 보고 조건을 올리기도 한다(자기 평가액의 112%까지) */
   const top0=[...offs,...(uo?[{tid:G.user,...uo}]:[])].sort((a,b)=>offScore(b)-offScore(a))[0];
   for(const o of offs){ const t=team(o.tid); if(!t||top0.tid===o.tid)continue; if(R()<(ag.style==='auction'?.6:.45)){ const cap=faWorth(t,p)*1.12; const na=round5(Math.min(cap,Math.max(o.annual,top0.annual*(top0.years>o.years?1.04:1.01)*rnd(1,1.05)))); if(na>o.annual){ ai[o.tid].annual=na; if(top0.years>o.years&&R()<.5)ai[o.tid].years=Math.min(o.years+1,top0.years); } } }
   const best=faBestOf(p,Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})))||null;
-  const last=mk.round>=mk.need; const mine=uo||p.faFrom===G.user;
+  const last=mk.round>=mk.need; const uoRaw=F.offers[id]; const mine=uoRaw||p.faFrom===G.user;
   const myO=uo?{tid:G.user,...uo}:null; const ahead=!!myO&&(!best||faScore(p,myO)>=faScore(p,best)); const tell=agTell(ag,best)+(best&&best.tid===p.faFrom?' 원소속 구단이라 선수 마음도 그쪽으로 조금 기웁니다.':'');
   if(mine&&!G.unemp){
-    const n=negOf(id); const body=`${ag.firm} ${ag.name}입니다. ${p.name} 건 시장 보고(${mk.round}/${mk.need}라운드)입니다.\n\n${ahead?'지금은 단장님 제안이 가장 좋습니다.':tell}\n${uo?`우리 구단 제안: ${uo.years}년 총 ${money(uo.annual*uo.years)}(연 ${money(uo.annual)})`:'우리 구단은 아직 제안하지 않았습니다.'}\n\n${last?(ahead?'선수와 상의해 곧 결정하겠습니다.':'이번이 마지막 라운드입니다. 곧 결정합니다.'):(ahead?'다른 구단 반응을 한 번 더 보겠습니다. 조건을 지키시면 유리합니다.':`다음 보고는 ${dsh(mk.next)}입니다. 조건을 올리실지 알려 주십시오.`)}`;
+    const n=negOf(id); const body=`${ag.firm} ${ag.name}입니다. ${p.name} 건 시장 보고(${mk.round}/${mk.need}라운드)입니다.\n\n${ahead?'지금은 단장님 제안이 가장 좋습니다.':tell}\n${uo?`우리 구단 제안: ${uo.years}년 총 ${money(uo.annual*uo.years)}(연 ${money(uo.annual)})`:uoRaw?(uoRaw.rej?'단장님 제안은 선수가 이미 거절한 조건이라 비교에서 뺐습니다. 조건을 올려 다시 제안해 주십시오.':'단장님 구단은 외부 FA 영입 한도를 채워 제안이 효력이 없습니다.'):'우리 구단은 아직 제안하지 않았습니다.'}\n\n${last?(ahead?'선수와 상의해 곧 결정하겠습니다.':'이번이 마지막 라운드입니다. 곧 결정합니다.'):(ahead?'다른 구단 반응을 한 번 더 보겠습니다. 조건을 지키시면 유리합니다.':`다음 보고는 ${dsh(mk.next)}입니다. 조건을 올리실지 알려 주십시오.`)}`;
     n.log.push({d:day,w:'에이전트',t:`시장 보고 ${mk.round}/${mk.need}: ${ahead?'우리 제안이 가장 좋음':tell}`});
     const acts=[{l:'협상실 열기',a:'faOpen',v:id}]; if(!ahead&&best&&agRel(ag)>=40)acts.push({l:'최고 조건에 맞추기',a:'faMatch',v:id});
     mail(`${ag.name} 에이전트`,`${p.name} 건: 시장 보고 ${mk.round}/${mk.need}`,body,{imp:!ahead,kind:'FA',ref:id,acts}); }

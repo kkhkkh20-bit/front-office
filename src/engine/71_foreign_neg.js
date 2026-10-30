@@ -71,7 +71,7 @@ function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.
   const out=O&&!O.none?`${O.k} 구단이 ${usdT(O.v)} 수준을 제시했다고 합니다.`:'해외 제안은 없다고 합니다. 국내 다른 구단은 보류권 때문에 접촉할 수 없습니다.';
   if(v>=target){ N.ok=true; p.newSal=g; if(i>0)p.fInc=i; else delete p.fInc; return {ok:true,msg:`${p.name} 측이 재계약에 합의했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}. ${O&&!O.none?out:''}`}; }
   const r=v/target; N.mood-=r<.85?15:r<.95?6:2;
-  if(N.mood<40||N.n>=3){ C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return {ok:false,msg:`${p.name} 측이 재계약을 거절했습니다. ${out} 보류권은 우리에게 있으니 5년 동안 국내 다른 구단에는 갈 수 없고, ${O&&!O.none?O.k+'로':'해외로'} 떠납니다.`}; }
+  if(N.mood<40||N.n>=3){ C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return {ok:false,msg:`${p.name} 측이 재계약을 거절했습니다. ${out} 보류권은 우리에게 있으니 5년 동안 국내 다른 구단에는 갈 수 없고, ${O&&!O.none?O.k+'으로':'해외로'} 떠납니다.`}; }
   const need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD; return {ok:false,need,msg:`${p.name} 측: 보장 ${usdT(need)}(${money(need)})${i?` + 인센티브 ${usdT(i)}`:''} 이상이면 사인하겠다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; }
 /* 보류 명단: 보류권을 쥐고 결별한 외국인(5년간 국내 다른 구단 입단 불가) */
 function foResAdd(p,tid){ G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year); G.fRes.unshift({name:p.name,pos:posLabel(p),nat:p.nat,tid,y:G.year,until:G.year+5}); if(G.fRes.length>40)G.fRes.length=40; }

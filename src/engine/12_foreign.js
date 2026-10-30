@@ -123,8 +123,8 @@ function refreshFMarket(n,drop){
     if(asiaN<aMin)G.fmarket.push(newForeign('아시아',{market:true}).id); else if(pitN<pMin)G.fmarket.push(newForeign('용병',{isP:true,market:true}).id); else if(batN<bMin)G.fmarket.push(newForeign('용병',{isP:false,market:true}).id); else G.fmarket.push(newForeign('용병',{market:true}).id); }
 }
 function foreignOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=foreignDL(); return G.day>=KD(12,1)||per==='pre'; }
-function foreignCheck(tid,p,excludeId){
-  const fs=foreignOf(tid).filter(x=>x.id!==excludeId);
+function foreignCheck(tid,p,excludeId){ const C=G.contract; const drop=tid===G.user&&C&&!C.done?(C.foreignDrop||[]):[]; /* 재계약 기간에 결별하기로 한 선수는 자리를 비운 것으로 본다(계약 확정 때 떠난다) */
+  const fs=foreignOf(tid).filter(x=>x.id!==excludeId&&!drop.includes(x.id));
   if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; return ''; }
   const yb=fs.filter(x=>x.foreign==='용병');
   if(yb.length>=3)return '외국인 선수(아시아쿼터 제외)는 3명까지입니다. 먼저 한 명을 방출하세요.';

@@ -41,7 +41,7 @@ const invDay=()=>{ const per=period();
     if(p.team!=null&&!p.foreign&&(p.yrs||0)<0)INV('계약 기간','음수 '+p.name+' '+p.yrs); }
   if(G.fa&&!G.fa.closed)for(const id of (G.fa.pool||[])){ const p=G.players[id]; if(p&&p.team!=null&&!G.fa.results?.some?.(r=>r.id===id))INV('FA 명단','소속이 있는데 FA 명단에 '+p.name); }
   for(const id of (G.fmarket||[])){ const p=G.players[id]; if(p&&p.team!=null)INV('외국인 시장','소속이 있는데 시장에 '+p.name); }
-  for(const t of G.teams){ const fs=foreignOf(t.id); if(fs.filter(p=>p.foreign==='용병').length>3||fs.filter(p=>p.foreign==='아시아').length>1)INV('외국인 수',tshort(t.id)+' 용병 '+fs.filter(p=>p.foreign==='용병').length+' · 아시아 '+fs.filter(p=>p.foreign==='아시아').length);
+  for(const t of G.teams){ const C=G.contract; const dr=t.id===G.user&&C&&!C.done?(C.foreignDrop||[]):[]; const fs=foreignOf(t.id).filter(p=>!dr.includes(p.id)); /* 재계약 기간에 결별하기로 한 선수는 계약 확정 때 떠난다 */ if(fs.filter(p=>p.foreign==='용병').length>3||fs.filter(p=>p.foreign==='아시아').length>1)INV('외국인 수',tshort(t.id)+' 용병 '+fs.filter(p=>p.foreign==='용병').length+' · 아시아 '+fs.filter(p=>p.foreign==='아시아').length);
     if(t.id!==ME()&&(per==='season'||per==='post')&&rosterN(t.id)>ROSTER_MAX)INV('로스터',tshort(t.id)+' '+rosterN(t.id)+'명 '+dstr(G.day));
     if(entryOn()&&(per==='season'||per==='post')){ const n=playersOf(t.id).filter(p=>p.e1).length; if(n>entryLimit())INV('1군 엔트리',tshort(t.id)+' '+n+'명 > '+entryLimit()+' '+dstr(G.day)+' '+per); } }
   for(const k in (G.spend||{}))if(!Number.isFinite(G.spend[k]))INV('지출','G.spend.'+k+' '+G.spend[k]); };
