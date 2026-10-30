@@ -455,6 +455,18 @@ T('[감사] 희생플라이는 팀 기록 합계에 들어가고, 안타 없이 
   p.hstk=12; featBat(p,{ab:0,bb:0,sf:1,h:0,d:0,tr:0,hr:0,rbi:1},0); ok(p.hstk===0,'희생플라이만 친 경기 뒤에도 연속 안타 '+p.hstk);
   p.hstk=12; featBat(p,{ab:0,bb:2,h:0,d:0,tr:0,hr:0,rbi:0},0); ok(p.hstk===12,'볼넷만 고른 경기에 연속 안타가 끊김'); });
 
+T('외국인 후보 조사 단계: 추정 범위가 실제 능력을 대부분 담고, 관찰이 쌓이면 범위가 좁아진다(조사 표시 개선)',()=>{ fresh(); const L=Object.values(G.players).filter(p=>p.foreign&&p.team==null); ok(L.length>=20,'준비 실패: 후보 '+L.length);
+  let n=0, hit=0, w0=0, w1=0; for(const p of L){ G.fwatch=[]; const a=fScout(p); n++; if(dvo(p)>=a.lo&&dvo(p)<=a.hi)hit++; w0+=a.hi-a.lo; G.fwatch=[{id:p.id,k:100}]; const b=fScout(p); w1+=b.hi-b.lo; ok(b.n>=a.n,'관찰했는데 조사 단계가 내려감'); }
+  G.fwatch=[]; ok(hit/n>=.7,'추정 범위 안에 든 후보 '+Math.round(hit/n*100)+'%'); ok(w1<w0*.7,'관찰 파악도 100%인데 범위가 충분히 좁아지지 않음'); });
+
+T('외국인 추천순: 기록·MLB 경력·스카우트를 합친 추천이 스카우트 평가 하나보다 실제 실력을 잘 고르고, 트리플A·MLB 출신을 앞에 둔다',()=>{ fresh(); const L=[]; for(let i=0;i<300;i++){ const p=newForeign('용병',{market:true}); const rp=scoutReport(p); L.push({p,rp,f:fScout(p,rp)}); }
+  const top=(a,k)=>[...a].sort(k).slice(0,20); const mean=a=>a.reduce((s,x)=>s+ovr(x.p),0)/a.length;
+  const A=top(L,(a,b)=>b.f.score-a.f.score), B=top(L,(a,b)=>b.rp.cur-a.rp.cur); ok(mean(A)>mean(B),'추천 상위 20명 실제 평균 '+mean(A).toFixed(1)+' ≤ 스카우트 평가순 '+mean(B).toFixed(1));
+  const sh=a=>a.filter(x=>['트리플A','MLB'].includes(x.p.prevLvl)).length/a.length; ok(sh(A)>=sh(L),'추천 상위의 트리플A·MLB 비중 '+Math.round(sh(A)*100)+'%가 후보 전체 '+Math.round(sh(L)*100)+'%보다 낮음');
+  L.forEach(x=>delete G.players[x.p.id]); });
+
+T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
