@@ -6,7 +6,7 @@ function batProbs(p,b){ const r=p.r; const be=b*.4, bc=b*.7;
     babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc(r.pow,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
 }
 function simBat(p,pa,b,slot){
-  const q=batProbs(p,b||0); const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0};
+  const q=shrinkQ(batProbs(p,b||0),TWB,QCB); /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0};
   for(let i=0;i<pa;i++){ o.pa++; const x=R();
     if(x<q.bb){o.bb++;continue} o.ab++;
     if(x<q.bb+q.k){o.so++;continue}
@@ -20,10 +20,12 @@ function simBat(p,pa,b,slot){
   return o;
 }
 function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.7;
-  return {k:.10+cc(r.stf,bk)*.19+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((.036-cc(r.stf,b)*.012-cc(r.ctl,be)*.01-trt(p,'mv')*.0008)*(1-gbT(p)*.08),.008,.05), babip:clamp(.335-cc(r.stf,b)*.04-trt(p,'mv')*.0008-seasonLuck(p),.25,.36)};
+  /* 투수 능력이 결과에 반영되는 폭: 구위는 삼진·피홈런·인플레이 타구 안타 확률, 제구는 볼넷·피홈런·안타 확률(몰린 공).
+     예전에는 구위의 피홈런·피안타 영향이 작아 평균자책점을 능력치가 32%밖에 설명하지 못했다(지금 약 50%, 리그 평균자책점은 그대로) */
+  return {k:.075+cc(r.stf,bk)*.24+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((.047-cc(r.stf,b)*.026-cc(r.ctl,be)*.016-trt(p,'mv')*.0008)*(1-gbT(p)*.08),.006,.06), babip:clamp(.36-cc(r.stf,b)*.075-cc(r.ctl,be)*.02-trt(p,'mv')*.0008-seasonLuck(p),.25,.36)};
 }
 function simPit(p,outs,b){
-  const q=pitProbs(p,b||0); const o={outs:0,h:0,hr:0,bb:0,so:0,tb:0};
+  const q=shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,so:0,tb:0};
   let guard=0;
   while(o.outs<outs&&guard++<5000){ const x=R();
     if(x<q.bb){o.bb++;continue}

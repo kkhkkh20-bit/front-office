@@ -54,7 +54,9 @@ function recView(){
   if(seg==='top')return head+leaderTiles(rows,y);
   const pit=seg==='pit'; const f=UI.lrf||{q:true,t:'all'};
   let R=rows.filter(x=>x.p.isP===pit&&(f.t==='all'||(f.t==='me'?x.h.t===G.user||x.p.team===G.user:String(x.h.t)===f.t)));
-  if(f.q)R=R.filter(x=>isQual(x,y));
+  /* 규정 기준은 비율 기록(타율·OPS·ERA 등) 순위에만 건다. 홈런·타점 같은 누적 기록은 타석 수와 관계없이 모두 보여 준다 */
+  const RATE=pit?['era','whip','k9','bb9']:['avg','bbk','babip','obp','slg','ops']; const sk=((UI.ls||{})[pit?'pit':'bat']||{k:pit?'era':'ops'}).k; const rateSort=RATE.includes(sk);
+  if(f.q&&rateSort)R=R.filter(x=>isQual(x,y));
   const nameC={k:'name',l:'선수',v:x=>x.p.name,f:x=>`<span class="pn">${wide()?avImg(x.p):''}<span>${esc(x.p.name)}${x.p.foreign?' <span class="pill">외</span>':''}</span></span>`,cls:'stk'};
   const tmC={k:'tm',l:'팀',v:x=>tshort(x.h.t??x.p.team),f:x=>badge(x.h.t??x.p.team,18)};
   const cols=pit?[nameC,tmC,{k:'role',l:'역할',v:x=>posLabel(x.p)},{k:'g',l:'경기',v:x=>x.h.g||0},{k:'ip',l:'이닝',v:x=>x.h.outs,f:x=>ipStr(x.h.outs)},{k:'era',l:'ERA',v:x=>x.r.era,f:x=>rfmt('era',x.r.era),asc:1},{k:'w',l:'승',v:x=>x.h.w||0},{k:'l',l:'패',v:x=>x.h.l||0},{k:'sv',l:'세',v:x=>x.h.sv||0},{k:'hld',l:'홀',v:x=>x.h.hld||0},{k:'so',l:'탈삼진',v:x=>x.h.so},{k:'bb',l:'볼넷',v:x=>x.h.bb,asc:1},{k:'whip',l:'WHIP',v:x=>x.r.whip,f:x=>x.r.whip.toFixed(2),asc:1},{k:'k9',l:'K/9',v:x=>x.r.k9,f:x=>x.r.k9.toFixed(1)},{k:'bb9',l:'BB/9',v:x=>x.r.bb9,f:x=>x.r.bb9.toFixed(1),asc:1},{k:'war',l:'WAR',v:x=>x.w,f:x=>rfmt('war',x.w)}]
@@ -62,10 +64,10 @@ function recView(){
   const tsel=`<select data-a="lrfT" aria-label="구단">${[['all','전체 구단'],['me','우리 구단']].concat(G.teams.filter(t=>t.id!==G.user).map(t=>[String(t.id),t.city+' '+t.nick])).map(([v,l])=>`<option value="${v}" ${f.t===v?'selected':''}>${l}</option>`).join('')}</select>`;
   const g=qualOf(G.user);
   return head+`<section class="card"><div class="row between"><h2 class="sec">${y} ${pit?'투수':'타자'} 기록</h2><span class="small muted">${R.length}명</span></div>
-    <div class="row">${tsel}<label class="chk"><input type="checkbox" data-a="lrfQ" ${f.q?'checked':''}> 규정${pit?'이닝':'타석'} 이상${y===G.year&&period()==='season'?` (${pit?Math.round(g):Math.round(g*3.1)}${pit?'이닝':'타석'})`:''}</label></div>
+    <div class="row">${tsel}<label class="chk"><input type="checkbox" data-a="lrfQ" ${f.q?'checked':''}> 비율 기록은 규정${pit?'이닝':'타석'} 이상${y===G.year&&period()==='season'?` (${pit?Math.round(g):Math.round(g*3.1)}${pit?'이닝':'타석'})`:''}</label></div>
     ${stbl(pit?'pit':'bat',cols,R,{def:pit?{k:'era',dir:1}:{k:'ops',dir:-1},num:true,limit:UI.lrAll?120:25,me:x=>x.p.team===G.user,click:x=>` data-a="player" data-v="${x.p.id}"`})}
     ${R.length>25?`<button class="btn small" data-a="lrAll">${UI.lrAll?'25명만 보기':`전체 ${Math.min(120,R.length)}명 보기`}</button>`:''}
-    <p class="small muted">머리글을 누르면 그 기록 순으로 정렬합니다. 우리 선수는 강조 표시됩니다. 규정 기준은 팀 경기 수 × 3.1타석, × 1이닝입니다.</p></section>`;
+    <p class="small muted">머리글을 누르면 그 기록 순으로 정렬합니다. 우리 선수는 강조 표시됩니다. 규정 기준(팀 경기 수 × 3.1타석, × 1이닝)은 ${pit?'ERA·WHIP·K/9·BB/9':'타율·출루율·장타율·OPS·BABIP·볼삼비'} 같은 비율 기록 순위에만 적용되고, ${pit?'승·세이브·탈삼진':'홈런·타점·안타'} 같은 누적 기록 순위에는 모든 선수가 나옵니다.</p></section>`;
 }
 function leaderTiles(rows,y){
   const B=rows.filter(x=>!x.p.isP), P=rows.filter(x=>x.p.isP); const q=x=>isQual(x,y);

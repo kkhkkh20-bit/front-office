@@ -28,8 +28,11 @@ function aiBlockWeekly(){ if(!tradeOpen())return;
     for(const p of ds){ if(p.aiListed&&G.day-(p.aiLd||G.day)>42){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } }
     const cur=ds.filter(p=>p.aiListed); const heat=gmHeat(t.id); const ci=capInfo(t.id);
     if(cur.length<2&&R()<.55){ const top3=new Set([...ds].sort((x,y)=>ovr(y)-ovr(x)).slice(0,3).map(q=>q.id)); const d=depth(t.id); const st=new Set([...d.start,...d.sp,...d.pen.slice(0,3)].map(q=>q.id)); let pk=null, why=null;
-      if(ci.pay>ci.cap*.97){ pk=ds.filter(p=>!top3.has(p.id)&&!p.aiListed).sort((x,y)=>y.sal-x.sal)[0]; why='sal'; }
-      if(!pk&&t.mode==='rebuild'){ pk=ds.filter(p=>p.age>=29&&ovr(p)>=50&&!p.aiListed).sort((x,y)=>y.sal-x.sal)[0]; why='reb'; }
+      /* 정리 대상은 '연봉이 높은 선수'가 아니라 '받는 돈만큼 못 하는 선수'다: 몸값(시장 연봉) 대비 초과분이 큰 순, 나이가 많을수록 먼저.
+         실력 좋은 고액 선수는 성적을 원하는 팀이 오히려 비싸게 사 가는 자원이라 내놓지 않는다 */
+      const mk=p=>Math.max(MIN_SAL*3,marketSal(projO(p,0))); const over=p=>p.sal/mk(p)+(p.age>=32?(p.age-31)*.15:0); /* 몸값(시장 연봉) 대비 몇 배를 받나 + 노장 가산. 금액 차보다 배율이 '거품'을 잘 가린다 */
+      if(ci.pay>ci.cap*.97){ pk=ds.filter(p=>!top3.has(p.id)&&!p.aiListed&&p.sal-mk(p)>100).sort((x,y)=>over(y)-over(x))[0]; why='sal'; }
+      if(!pk&&t.mode==='rebuild'){ pk=ds.filter(p=>p.age>=29&&ovr(p)>=50&&!p.aiListed&&over(p)>.85).sort((x,y)=>over(y)-over(x))[0]; why='reb'; }
       if(!pk&&R()<.5){ pk=ds.filter(p=>p.age<=25&&!st.has(p.id)&&p.pot-ovr(p)>=6&&!p.aiListed).sort((x,y)=>ovr(y)-ovr(x))[0]; why='room'; }
       if(!pk){ const rk=slotRanks(t.id); pk=ds.filter(p=>!st.has(p.id)&&!top3.has(p.id)&&ovr(p)>=48&&!p.aiListed&&rk[pSlot(p)]&&rk[pSlot(p)].rank<=4).sort((x,y)=>ovr(y)-ovr(x))[0]; why='dup'; }
       if(pk){ pk.aiListed=true; pk.aiWhy=why; pk.aiLd=G.day; } }

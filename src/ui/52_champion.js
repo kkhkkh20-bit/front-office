@@ -8,14 +8,14 @@ function champHomeCard(){ const c=G.champNew; if(!c||c.seen)return ''; const t=t
     ${c.mvp?`<button class="ch-mvp" data-a="player" data-v="${c.mvp.id}">${G.players[c.mvp.id]?avImg(G.players[c.mvp.id]):''}<span><i>시리즈 최우수선수</i><b>${esc(c.mvp.n)}</b><em>${esc(c.mvp.line)}</em></span></button>`:''}
     ${heads.length?`<div class="ch-news">${heads.map(n=>`<div><span class="pill">${esc(n.o||'')}</span> ${esc(n.t||'')}</div>`).join('')}</div>`:''}
     <div class="ch-fans"><span class="eyebrow">팬 커뮤니티</span>${fans.map(x=>`<p>"${esc(x)}"</p>`).join('')}</div>
-    <p class="small">선수단 기분이 크게 올랐고(+8), 팬 여론 +12 · 언론 논조 +8 · 구단주 신뢰 +3. 우승 기록은 몇 년 동안 구단 명성을 끌어올려 FA와 스태프가 우리 구단을 더 원하게 됩니다.</p>
+    <p class="small">선수단 기분이 크게 올랐고(+8), 팬 여론 +12 · 언론 논조 +8 · 구단주 신뢰 +3. 구단 인기가 올라 다음 시즌 관중·유니폼·굿즈 판매가 늘고, 우승 기록은 몇 년 동안 구단 명성을 끌어올려 FA와 스태프가 우리 구단을 더 원하게 됩니다. 사흘 뒤 도심 퍼레이드, 다음 시즌 홈 개막전에는 우승 반지 수여식이 열립니다.</p>
     <div class="btns">${ev?`<button class="btn primary" data-a="openMail" data-v="${ev.mid||''}">구단주 포상 고르기</button>`:''}<button class="btn" data-a="champSeen">확인</button></div></section>`; }
 /* 구단 명성 카드(구단·재정 → 구단주 탭 맨 위) */
 function prestigeCard(){ const v=clubPrestige(G.user); const L=G.teams.map(t=>({t:t.id,v:clubPrestige(t.id)})).sort((a,b)=>b.v-a.v); const i=L.findIndex(x=>x.t===G.user); const P=clubPrestigeParts(G.user).filter(x=>x[0]!=='기본'&&Math.abs(x[1])>=.5);
   return `<section class="card"><div class="row between"><h2 class="sec">구단 명성</h2><span class="stars-t big">${starTxt(prestigeStars(v))}</span></div>
     <p class="small">${v}점 · 리그 ${i+1}위 (1위 ${esc(tshort(L[0].t))} ${L[0].v}점). 명성이 높을수록 FA·외국인 선수·스카우트와 분석원이 우리 구단을 더 원하고, 스폰서 가치도 오릅니다.</p>
     <div class="pres-parts">${P.map(([l,x])=>`<span class="pill ${x>0?'good':'bad'}">${esc(l)} ${x>0?'+':''}${Math.round(x)}</span>`).join('')}</div>
-    <p class="small muted">우승은 2년 동안 크게, 그 뒤 10년 동안 조금씩 명성에 남습니다. 성적이 나쁘면 해마다 깎입니다.</p></section>`; }
+    <p class="small muted">우승은 2년 동안 크게, 그 뒤 10년 동안 조금씩 명성에 남고, 그보다 오래된 우승도 '명문 구단'으로 조금 남습니다. 성적이 나쁘면 해마다 깎입니다.</p></section>`; }
 /* 테스트 도구 카드(구단·재정 → 설정) */
 function devCard(){ const P=G.ps; const ready=P&&P.seeds&&!P.done&&P.round==='wc'&&!(P.cur&&P.cur.gi>0);
   return `<section class="card"><details class="devd"${UI.devMsg?' open':''}><summary><b>테스트 도구</b> <span class="small muted">개발·점검용</span></summary>

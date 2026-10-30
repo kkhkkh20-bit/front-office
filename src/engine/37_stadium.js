@@ -27,7 +27,9 @@ function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); con
   const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(S.lv.seat-2)*.04)*(1+(S.lv.vis-2)*.015)*stadAgeF(h)*(S.dome?1.06:1);
   if(noise===null){ /* 기대 관중: 3점 가우스-에르미트 근사로 매진 상한까지 반영 */ const z=1.732*.2; return Math.round(cap*(Math.min(1,f*Math.exp(-z))/6+Math.min(1,f)*2/3+Math.min(1,f*Math.exp(z))/6)); }
   const n=Math.exp(N(0,.2)); return Math.min(cap,Math.round(cap*f*n)); }
-function stadGame(day,h,a){ const att=attOf(h,a,day); const cap=stadCap(h); G.sea.att=G.sea.att||{}; const A=G.sea.att[h]||(G.sea.att[h]={n:0,sum:0,so:0,best:0});
+function stadGame(day,h,a){ const cap=stadCap(h); let att=attOf(h,a,day);
+  if(h===G.user&&!G.unemp&&G.ringY===G.year&&G.ringDone!==G.year){ G.ringDone=G.year; att=cap; /* 우승 반지 수여식: 홈 개막전 매진 */ for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)+3,0,100);
+    news('구단',`${tshort(G.user)} 우승 반지 수여식…홈 개막전 ${cap.toLocaleString('ko-KR')}석 매진`,`경기 전 지난 시즌 우승 멤버들이 반지를 받았습니다. 전광판에는 우승 순간이 다시 흘렀고, 관중석은 빈자리 없이 들어찼습니다.`,2,{fanW:2}); } G.sea.att=G.sea.att||{}; const A=G.sea.att[h]||(G.sea.att[h]={n:0,sum:0,so:0,best:0});
   A.n++; A.sum+=att; if(att>=cap)A.so++; if(att>A.best)A.best=att; return {att,so:att>=cap}; }
 function homeGames(tid,from,to){ const L=[]; for(let d=from;d<=to;d++){ const gs=G.cal.sched[d]; if(!gs)continue; for(const [h,a] of gs)if(h===tid)L.push([d,a]); } return L; }
 /* 시즌 관중·구장 수입 전망: 지금까지 실제 + 남은 홈경기 예상 */

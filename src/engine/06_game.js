@@ -52,9 +52,15 @@ function boostOf(p){ let b=(p.team!=null&&G.coach)?coachBoost(p):0; if(p.team===
    파워가 평균인 타자가 장타율 .514를 치는 식으로 기록과 능력이 어긋났다. 1과 시즌 운 0.4(FORM_K)에서 66~71%(실제 야구의 실력 설명력 수준).
    리그 평균(타율·장타율·평균자책점)은 그대로이고, 팀 승률 편차는 약 0.07 → 0.077로 조금 커진다 */
 const TALENT_W=1;
-function shrinkQ(q){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip'])o[k]=LGP[k]+(q[k]-LGP[k])*TALENT_W; return o; }
+/* 능력별 결과 폭: 실제 기록이 한 시즌에 실력을 얼마나 드러내는지(FanGraphs 안정화 지점, 반분 상관 0.7)에 맞춘다.
+   600타석 기준 실제 기대치: 타자 출루율 75%·장타율 80%·홈런 89%·타율 58%·BABIP 54%, 투수 삼진 96%·볼넷 90%·피홈런 54%·피출루 74%.
+   예전(폭 1배)에는 타자 OPS 69%·투수 피홈런 26%처럼 능력이 덜 드러났다. 폭을 넓히되 중심은 실제 타석 평균 확률(QCB·QCP)에 두고,
+   타자·투수 결합(log5)이 극단 대결에서 안타를 늘리는 만큼 QOF로 되돌려 리그 평균(타율·장타율·평균자책점)은 그대로 둔다 */
+const TWB={k:1.7,bb:1.3,hr:1.25,babip:2.0}, TWP={k:1.5,bb:1.5,hr:2.3,babip:1.4};
+const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.006,hr:-.0006};
+function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
 function outcome(b,p,dv){
-  const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5)), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5));
+  const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5),TWP,QCP,QOF);
   const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0)-((dv??DEF0)-DEF0)*.0012; /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
   const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hr)return 'HR';
   if(R()<babip){ const y=R(); if(y<qb.d3)return '3B'; if(y<qb.d3+qb.d2)return '2B'; return '1B'; }

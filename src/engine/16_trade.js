@@ -20,7 +20,7 @@ let _tcC={k:null,m:{}};
 function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k)_tcC={k,m:{}}; if(_tcC.m[t.id])return _tcC.m[t.id];
   const per=period(); const st=per==='season'&&G.day>G.cal.open+20?standingsNow():null; const rk=st?st.findIndex(x=>x.tid===t.id)+1:null;
   const contend=rk?rk<=4||(t.mode==='contend'&&rk<=6):t.mode==='contend'; const ci=capInfo(t.id);
-  const tr=gmTrait(t.id); const money=(t.indie?1.5:t.owner==='profit'?1.25:t.owner==='win'?.85:1)*(ci.over>0?1.25:1)*(contend?.9:1.1)*(tr==='miser'?1.3:tr==='data'?1.15:tr==='gambler'?.9:1);
+  const tr=gmTrait(t.id); const money=clamp((t.indie?1.5:t.owner==='profit'?1.25:t.owner==='win'?.85:1)*(ci.over>0?1.25:1)*(contend?.9:1.1)*(tr==='miser'?1.3:tr==='data'?1.15:tr==='gambler'?.9:1),.8,1.5); /* 여러 사정이 겹쳐도 연봉 부담은 1.5배까지(겹쳐서 2.2배가 되면 멀쩡한 고액 선수 값이 0이 됐다) */
   const v={contend,money,H:contend?2:4,now:contend?1.15:.8,rk}; _tcC.m[t.id]=v; return v; }
 function pSlot(p){ return p.isP?(isSPr(p)?'SP':'RP'):p.pos; }
 /* 트레이드 평가 중 상대가 내주는 주전 자리: 같은 자리 선수를 받으면 그 빈자리를 메우므로 '쓸모없는 영입'으로 깎지 않는다 */
@@ -41,12 +41,12 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   const m=G.mgr[t.id]; if(m&&v>0){ if(m.youth>=65&&p.age<=25)v*=1.1; if(m.small>=65&&!p.isP&&p.r.spd>=60)v*=1.06; if(m.pen>=65&&p.isP&&!isSP(p))v*=1.08; mgrAttr(m); if(m.dfn>=65&&!p.isP&&p.r.def>=60)v*=1.07; if(m.dfn<=35&&!p.isP&&p.r.pow>=60)v*=1.06; }
   if(v>0&&p.mor!=null&&p.mor<30)v*=dir==='in'?.92:.85;
   if(v>0&&dir==='in'&&ovr(p)<40&&p.age<=24)v*=.8; /* 아직 1군 근처에도 못 온 유망주는 불확실하다 */
-  if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.45:.55):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다 */
+  if(v>0&&dir==='out'&&(p.listed||p.aiListed))v*=p.aiListed?(p.aiUrg?.7:.8):(p.urgent?.75:.85); /* 매물로 내놓은 선수는 정리하고 싶은 선수다(그래도 헐값은 아니다) */
   if(v>0&&milFree(p)&&p.age>=26)v*=.85;
   if(v>0)v*=medTradeF(p); /* 부상 체질·최근 부상·후유증·인대 이력·팔 부하 */
   if(v>0&&dir==='out'&&p.pledged&&p.pledged.tid===G.user&&G.day<=p.pledged.until&&p.team===t.id)v*=1.12; /* 우리 단장이 공개적으로 원한 선수: 값을 더 부른다 */
   if(p.injOut>20)v-=Math.abs(v)*(p.injOut>150?.55:p.injOut>60?.32:.2); /* 수술·장기 재활 선수는 값이 크게 깎인다 */
-  if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?(t.mode==='rebuild'?0:.6):starter?(c.contend?seasonWorth(projO(p,0))*.7:seasonWorth(projO(p,0))*.25):.4; v=Math.max(v,fl); }
+  if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0))*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?(c.contend?seasonWorth(projO(p,0))*.7:seasonWorth(projO(p,0))*.25):.4; v=Math.max(v,fl); }
   /* 연봉이 부담스러워도 주전급은 공짜로 내주지 않는다(다른 구단에 팔 수 있으므로) */
   if(dir==='out'){ const core=domestic(t.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).some(q=>q.id===p.id); const w0=seasonWorth(projO(p,0));
     /* 팀 핵심(상위 6명)은 연봉과 상관없이 쉽게 내주지 않는다. 젊으면 더 비싸다 */

@@ -22,8 +22,8 @@ function stAnaPow(tid,role){ const L=G.lgStaff&&G.lgStaff[tid]; if(!L)return nul
 /* 구단 위상: 큰 시장·인기·최근 성적·단장 평판 */
 /* 구단 명성(FM의 평판): 시장·인기·최근 성적·최근 10년 우승·시설·단장 평판. FA·외국인·스태프가 행선지를 고를 때 본다 */
 function clubPrestigeParts(tid){ const t=team(tid); const P=[]; P.push(['기본',50]); P.push(['시장 규모',(t.market-1)*45]); P.push(['구단 인기',(clamp(t.pop,0,1.6)-1)*25]); if(t.indie)P.push(['모기업 없음',-8]);
-  let rs=0; const H=(G.history||[]).slice(-2); H.forEach((h,j)=>{ const i=h.order.findIndex(o=>o.tid===tid); if(i>=0)rs+=(4.5-i)*(j===H.length-1?2.2:1.2); if(h.champ===tid)rs+=j===H.length-1?8:4; }); P.push(['최근 2년 성적',rs]);
-  const old=(G.history||[]).filter(h=>h.champ===tid&&h.y>=G.year-10&&!H.includes(h)).length; if(old)P.push([`최근 10년 우승 ${old}회`,old*2.5]);
+  let rs=0; const H=(G.history||[]).slice(-2); H.forEach((h,j)=>{ const i=h.order.findIndex(o=>o.tid===tid); if(i>=0)rs+=(4.5-i)*(j===H.length-1?2.2:1.2); if(h.champ===tid)rs+=j===H.length-1?12:6; }); P.push(['최근 2년 성적',rs]);
+  const old=(G.history||[]).filter(h=>h.champ===tid&&h.y>=G.year-10&&!H.includes(h)).length; if(old)P.push([`최근 10년 우승 ${old}회`,old*3]); const anc=(G.history||[]).filter(h=>h.champ===tid&&h.y<G.year-10).length; if(anc)P.push([`명문 구단(통산 우승 ${anc}회 더)`,Math.min(6,anc*1.5)]);
   if(tid===G.user&&!G.unemp)P.push(['단장 평판',((G.rep??50)-50)*.3]); P.push(['시설',((t.fac||3)-3)*3]); return P; }
 function clubPrestige(tid){ const v=sum(clubPrestigeParts(tid).map(x=>x[1])); return Math.round(clamp(v,10,99)); }
 const prestigeStars=v=>v>=80?5:v>=67?4:v>=54?3:v>=40?2:1;
