@@ -1,6 +1,6 @@
 /* ===== 포지션 배치와 뎁스 ===== */
 /* 서브 포지션: 주 포지션별로 함께 연습해 온 자리 (선수마다 고정) */
-const SUBMAP={C:[['1B',.45]],'1B':[['LF',.35],['3B',.3],['RF',.25]],'2B':[['SS',.6],['3B',.45],['1B',.25]],'3B':[['1B',.6],['SS',.3],['2B',.35]],SS:[['2B',.85],['3B',.65]],LF:[['RF',.7],['1B',.35],['CF',.2]],CF:[['LF',.85],['RF',.8]],RF:[['LF',.7],['1B',.3],['CF',.3]]};
+const SUBMAP={C:[['1B',.2]],'1B':[['LF',.35],['3B',.3],['RF',.25]],'2B':[['SS',.6],['3B',.45],['1B',.25]],'3B':[['1B',.6],['SS',.3],['2B',.35]],SS:[['2B',.85],['3B',.65]],LF:[['RF',.7],['1B',.35],['CF',.2]],CF:[['LF',.85],['RF',.8]],RF:[['LF',.7],['1B',.3],['CF',.3]]};
 const _subC=new Map();
 /* 할 수 있는 다른 자리: 숙련도 50 이상(78_positions.js) */
 function subsOf(p){ if(p.isP)return []; const E=pexpOf(p); return Object.keys(E).filter(k=>k!==p.pos&&E[k]>=50).sort((a,b)=>E[b]-E[a]); }
@@ -29,14 +29,21 @@ function makeLineup(tid,pool){
   const used=new Set(); const ln={};
   const ov={}; const mg=G.mgr[tid]; const promo=p=>p.promise&&tid===G.user&&mg&&mg.disc<62?2:0;
   for(const pos of ORDER){ const id=ov[pos]; const p=id&&G.players[id]; if(p&&p.team===tid&&!p.isP&&healthy(p)&&!used.has(p.id)){ln[pos]=p;used.add(p.id);} }
-  // 감독은 본래 포지션과 서브 포지션을 우선한다: 전체에서 가장 잘 맞는 (자리, 선수) 쌍부터 채운다
-  const fitPen=(p,pos)=>{ if(pos==='DH')return p.pos==='C'?1:0; if(p.pos===pos)return 0; const e=(pexpOf(p)[pos]||0)/100; const b=pos==='C'?40:pos==='1B'?6:11; return e>=.5?1.5:b-(b-1.5)*e/.5; };
+  /* 감독은 이기는 배치를 찾는다: 공격(시즌 득점) + 그 자리 수비가 막는 실점(자리별 무게 DWR, 감독 수비 성향만큼)이 가장 큰 9명 조합.
+     낯선 자리는 숙련도가 낮을수록 꺼린다(fitPen). 포수는 포수·지명 말고는 거의 옮기지 않는다 */
+  const fitPen=(p,pos)=>{ if(pos==='DH')return p.pos==='C'?1:0; if(p.pos===pos)return 0; if(p.pos==='C')return 40; const e=(pexpOf(p)[pos]||0)/100; const IF=['2B','SS','3B'], OF=['LF','CF','RF']; const cross=(IF.includes(p.pos)&&OF.includes(pos))||(OF.includes(p.pos)&&IF.includes(pos))||(p.pos==='1B'&&pos!=='DH'); const b=pos==='C'?40:pos==='1B'?3:cross?16:6; return e>=.5?1:b-(b-1)*e/.5; }; /* 같은 무리(내야끼리·외야끼리) 이동은 쉽고, 내야↔외야는 경험 없이는 꺼린다 */
   const lean=teamLean(tid); const pb=p=>polBonus(tid,p,lean); const wD=mgrDefW(tid);
   const open=new Set(ORDER.filter(pos=>!ln[pos]));
-  const SC=new Map(); for(const p of bats){ const o=offV(p), ex=promo(p)+pb(p); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o*(1-wD)+defAt(p,pos)*wD)+ex-fitPen(p,pos); SC.set(p.id,m); }
+  const mf=wD/.38; const SC=new Map(); for(const p of bats){ const o=offV(p)*1.25, ex=promo(p)+pb(p); const m={}; for(const pos of ORDER)m[pos]=(pos==='DH'?o:o+(defAt(p,pos)-DAVG[pos])*DWR[pos]*mf)+ex-fitPen(p,pos); SC.set(p.id,m); }
   while(open.size){ let bp=null,bq=null,bs=-1e9;
     for(const pos of open){ if(pos==='DH'&&open.size>1)continue; for(const p of bats){ if(used.has(p.id))continue; const s=SC.get(p.id)[pos]; if(s>bs){bs=s;bp=pos;bq=p;} } }
     if(!bq)break; ln[bp]=bq; used.add(bq.id); open.delete(bp); }
+  /* 한 명씩 정하면 놓치는 배치를 바로잡는다: 두 선수 자리 맞바꾸기, 벤치 선수와 바꾸기를 더 나아지지 않을 때까지(예: 수비 좋은 우익수를 중견으로, 거포 3루수를 1루로) */
+  const fixed=new Set(ORDER.filter(pos=>ov[pos]&&ln[pos]&&ln[pos].id===ov[pos])); const sc=(p,pos)=>SC.get(p.id)?SC.get(p.id)[pos]:-1e9;
+  for(let it=0;it<6;it++){ let better=false; const P=ORDER.filter(pos=>ln[pos]&&!fixed.has(pos));
+    for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){ const a=P[i], b=P[j], x=ln[a], y=ln[b]; if(sc(y,a)+sc(x,b)>sc(x,a)+sc(y,b)+.3){ ln[a]=y; ln[b]=x; better=true; } }
+    for(const pos of P){ const x=ln[pos]; for(const q of bats){ if(used.has(q.id))continue; if(sc(q,pos)>sc(x,pos)+.3){ used.delete(x.id); used.add(q.id); ln[pos]=q; better=true; break; } } }
+    if(!better)break; }
   return ln;
 }
 function entryLimit(){ return period()==='season'&&G.day>=KD(8,25)?ENTRY_BASE+ENTRY_EXP:ENTRY_BASE; }

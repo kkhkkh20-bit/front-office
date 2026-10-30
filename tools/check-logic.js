@@ -499,6 +499,18 @@ T('자리별 대형 선수의 드묾: 포수·유격 수는 줄이지 않되, �
   ok(sh('C')<=sh('1B')*.5&&sh('SS')<=sh('1B')*.6,'최상위(종합 57 이상) 비율: 포수 '+(sh('C')*100).toFixed(1)+'% · 유격 '+(sh('SS')*100).toFixed(1)+'% · 1루 '+(sh('1B')*100).toFixed(1)+'%');
   ok(O.C/C.C<O['1B']/C['1B']-3,'같은 종합에서 포수 방망이가 1루와 비슷함'); });
 
+T('포지션 운용: 포수는 포수·지명 말고는 나가지 않고, 외야 셋 중 중견 수비가 가장 나은 선수가 중견을 맡는다',()=>{ fresh(); const me=G.user; const L=makeLineup(me); const of=['LF','CF','RF'].map(k=>L[k]); ok(of.every(Boolean),'준비 실패: 외야 3명');
+  const [a,b,c]=of; a.r.def=40; b.r.def=42; c.r.def=78; c.pexp=c.pexp||{}; c.pexp.CF=60; const cs=domestic(me).filter(q=>q.pos==='C').slice(0,3); ok(cs.length>=2,'준비 실패: 포수 '+cs.length); cs.forEach(q=>{ for(const k of ['con','pow','eye'])q.r[k]=80; });
+  const L2=makeLineup(me); ok(L2.CF===c||defAt(L2.CF,'CF')>=defAt(c,'CF')-2,'중견 수비 '+Math.round(defAt(c,'CF'))+'인 외야수 대신 '+Math.round(defAt(L2.CF,'CF'))+'가 중견');
+  for(const k in L2)if(L2[k].pos==='C')ok(k==='C'||k==='DH','포수가 '+k+'로 나감'); });
+
+T('포지션 정착: 지난 시즌 다른 자리에서 주로 뛰어 숙련이 오르면 그 자리로 굳는다(포수는 그대로)',()=>{ fresh(); const y=G.year; const ps=domestic(G.user).filter(q=>!q.isP); const s=ps.find(q=>q.pos==='SS')||ps.find(q=>q.pos!=='C'), c=ps.find(q=>q.pos==='C'); ok(s&&c,'준비 실패');
+  const to=s.pos==='2B'?'SS':'2B'; delete s.pconv; s.use={y,g:130,pos:{[to]:110,[s.pos]:20},slot:{}}; pexpOf(s)[to]=82; c.use={y,g:120,pos:{'1B':110,C:10},slot:{}}; pexpOf(c)['1B']=85; const p0=s.pos;
+  G.year++; posYear(); ok(s.pos===to,p0+' 선수가 '+to+'에서 110경기 뛰었는데 주 포지션이 '+s.pos); ok(posExp(s,p0)===100,'원래 자리 숙련이 남지 않음'); ok(c.pos==='C','포수가 '+c.pos+'로 바뀜'); });
+
+T('포지션 숙련: 낯선 자리라도 1군에서 뛴 경기만큼 숙련이 오른다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.pos==='3B')||domestic(G.user).find(q=>!q.isP&&q.pos!=='1B'); delete p.pconv; if(p.pexp)delete p.pexp['1B']; const e0=posExp(p,'1B');
+  p.use={y:G.year,g:60,pos:{'1B':60},slot:{}}; delete p.useSeen; posWeek(); ok(posExp(p,'1B')-e0>=20,'1루 60경기 뒤 숙련 '+e0+' → '+posExp(p,'1B')); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
