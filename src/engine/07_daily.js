@@ -63,6 +63,7 @@ function processDay(){ syncMinSal();
   if(o.d===1)try{ scoutAutoMonthly(); }catch(e){}
   if(o.d===1)try{ stAiStaff(); }catch(e){}
   if(o.d===1)try{ posReqMonth(); }catch(e){}
+  if(o.d===1)try{ misbehaveMonth(); }catch(e){}
   if(day===KD(11,5))try{ fcampStart(); }catch(e){} if(day===KD(11,25))try{ fcampEnd(); }catch(e){}
   try{ draftPressNews(day); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}

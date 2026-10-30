@@ -35,13 +35,13 @@ function devWeek(){ if((G.devProg||[]).length){ for(const x of G.devProg){ const
 function addR(p,k,a){ const t=a*10, f=Math.floor(t); const n=f+(R()<t-f?1:0); const v=clamp(Math.round(p.r[k]*10+n)/10,20,80); const d=v-p.r[k]; p.r[k]=v; return d; }
 const TB_YCAP=2, TB_K=.0035; /* 시즌 중 훈련은 몸을 유지하는 정도. 크게 바뀌는 건 스프링·마무리캠프(79_camps.js) */
 function tbFactors(p,regSet){ const room=Math.max(0,p.pot-ovr(p)); initPers(p); const m=p.team!=null?mgrOf(p.team):null;
-  return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:clamp(.75+((p.pers.pro+p.pers.amb)/2-4)/16*.5,.7,1.3), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
+  return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:persGrowF(p), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
 function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
   for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.age>28||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
     if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
     if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;
     const f=tbFactors(p,regs[p.team]); const amt=TB_K*f.play*f.room*f.will*f.fac*f.coach*f.mgr*f.age*rnd(.6,1.4); const ks=TRN_TOOLS[trnG(p)]; const cap=Math.max(p.pot,ovr(p))+2;
-    for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } } }
+    const o0=ovr(p); for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } if(ovr(p)>Math.max(p.pot,o0)+.05)setOvr(p,Math.max(p.pot,o0)); } } /* 잠재력은 넘을 수 없다 */
 /* 연수 결과: 크게 늘거나, 조금 늘거나, 그대로거나, 다치거나 폼이 흐트러진다 */
 const jB=w=>{ const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<11172&&c%28>0; }; const jIGa=w=>w+(jB(w)?'이':'가'), jEulReul=w=>w+(jB(w)?'을':'를');
 const OVS_TOOLN={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};

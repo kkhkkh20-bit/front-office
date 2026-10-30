@@ -9,26 +9,33 @@ function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군�
   const y=G.year; const a=seasonTotal(p,y,'1군'), f=seasonTotal(p,y,'퓨처스'); const fw=.6+(p.team===G.user?facOf('fut')*.05:facAiFut(p.team)); /* 2군 구장이 좋을수록 2군 출전을 더 인정 */
   if(p.isP){ const o=(a?a.outs:0)+(f?f.outs:0)*fw; return o>=420?1.15:o>=300?1.08:o>=180?1:o>=90?.92:.8; }
   const pa=(a?a.pa:0)+(f?f.pa:0)*fw; return pa>=450?1.15:pa>=320?1.08:pa>=200?1:pa>=100?.92:.8; }
+/* 성격이 성장을 가른다: 시설·출전·코치는 바탕이고, 프로의식(자기 관리)과 야망(더 올라가려는 마음)이 같은 환경에서도 성장을 크게 벌린다.
+   프로의식이 낮으면 덜 크고, 슬럼프가 잦고, 일찍 꺾인다. 그해 사고(늦은 귀가·지각 등)를 칠 때마다 더 깎인다 */
+function persGrowF(p){ initPers(p); const pr=p.pers.pro, am=p.pers.amb; const bad=p.badY&&p.badY.y===G.year?p.badY.n:0; return clamp(.5+(pr-4)/16*.7+(am-4)/16*.25,.5,1.45)*(1-.08*Math.min(3,bad)); }
+/* 성장 구간: 대기만성형 일부는 30대 초반에 터진다. 프로의식이 낮으면 일찍 꺾이고(초반 반짝 뒤 하락), 높으면 오래 버틴다 */
+function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro; const vl=p.dt==='late'&&u01('vlate',p.id)<.35; const g=vl?31:T.grow, pk=vl?34:T.peak, fa=vl?35:T.fall;
+  const adj=pr<=6?-3:pr<=9?-2:pr<=12?-1:pr>=17?1:0; return {grow:Math.min(g,fa+adj-1),peak:Math.min(pk,fa+adj-1),fall:fa+adj,vl}; }
 function develop(p){
-  if(!p.dt)p.dt=rollDT(); const T=DT[p.dt]; const o=ovr(p); const age=p.age;
+  if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p); const age=p.age; const pg=p.foreign?1:persGrowF(p); const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=p.team!=null?facEff(p):FAC[2];
   const yf=p.team!=null&&G.mgr?1+(mgrOf(p.team).youth-50)/150:1;
   p.devLog={y:G.year,play,fac:fac.l};
   const gap=Math.max(0,p.pot-o); let base=0;
   if(age<=T.grow){
-    const rate=p.dt==='early'?(age<=22?.34:.24):p.dt==='late'?(age<=24?.08:.26):p.dt==='stall'?.07:.2;
-    const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p); base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
+    const rate=p.dt==='early'?(age<=22?.34:.24):p.dt==='late'?(T.vl?(age<=27?.05:.14):(age<=24?.08:.26)):p.dt==='stall'?.07:.2;
+    const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p)*pg; base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
     if(R()<.05*play*fac.g)p.pot+=ri(3,7);
     if(R()<(p.dt==='stall'?.12:.05))p.pot-=ri(3,8);
     if(p.dt==='late'&&age>=25)p.pot+=rnd(0,1.5);
-  } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g:0); }
+    if(T.vl&&age>=28&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
+  } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
   else { base=-(age-T.fall+1)*.6*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=35?-2.4:-3.4); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
-  if(age<=31&&!p.foreign){ const x=R(), st=p.dt==='stall'; const dn=st?.17:.11, up=st?.02:.06;
+  if(age<=31&&!p.foreign){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
     if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=31&&age>T.grow)base+=rnd(.4,1.8)*play;
@@ -44,9 +51,10 @@ function develop(p){
   }
   if(svc==='현역')for(const k in p.r)p.r[k]=clamp(p.r[k]-rnd(.5,2.2),20,80);
   roundR(p);
+  if(ovr(p)>potCap()+.05)setOvr(p,potCap()); /* 잠재력 돌파는 없다 */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
-  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1);
+  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0));
   p.pot=clamp(Math.max(p.pot,no),20,80);
   if(p.isP&&base>0)p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();

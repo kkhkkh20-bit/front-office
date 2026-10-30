@@ -478,7 +478,7 @@ T('외국인 타자 포지션: 1루·코너 외야가 대부분이고 2루·유�
 
 T('포지션 가치: 같거나 조금 낮은 능력이라도 수비 좋은 유격·포수가 1루보다 귀하게 평가된다(구단 판단·연봉)',()=>{ fresh();
   const mk=(pos,disp,def)=>{ const p=newPlayer({age:28,isP:false,base:50,pos,team:null}); p.age=28; let raw=20; while(dv(raw)<disp)raw+=.1; setOvr(p,raw); p.r.def=def; setOvr(p,raw); return p; };
-  const fb=mk('1B',70,48), ss=mk('SS',60,62), c=mk('C',60,57); const avg=q=>G.teams.reduce((s,t)=>s+aiVal(t,q),0)/G.teams.length;
+  const fb=mk('1B',70,46), ss=mk('SS',60,66), c=mk('C',60,58); /* 구단별 평가 편차(±3)보다 차이가 크게 */ const avg=q=>G.teams.reduce((s,t)=>s+aiVal(t,q),0)/G.teams.length;
   ok(dvo(fb)-dvo(ss)>=8,'준비 실패: 종합 차이 '+(dvo(fb)-dvo(ss)));
   ok(posBest(ss).v>posBest(fb).v,'유격(종합 '+dvo(ss)+')의 포지션 가치 '+dv(posBest(ss).v)+' ≤ 1루(종합 '+dvo(fb)+') '+dv(posBest(fb).v));
   ok(avg(ss)>avg(fb),'구단 평가 평균: 유격 '+avg(ss).toFixed(1)+' ≤ 1루 '+avg(fb).toFixed(1)); ok(posBest(c).v>posBest(fb).v,'포수 포지션 가치가 1루보다 낮음');
@@ -551,6 +551,16 @@ T('마무리캠프: 26세 이하와 주전이 아닌 30세 이하만 가고, 단
   for(const p of domestic(G.user)){ if(p.prospect)continue; const want=p.age<=26||(p.age<=30&&!reg.has(p.id)); ok(W.has(p.id)===want,p.name+'('+p.age+'세, '+(reg.has(p.id)?'주전':'비주전')+') 참가 '+W.has(p.id)); }
   G.day=KD(11,5); delete G.fcamp; const n0=G.mail.length; fcampStart(); const m=G.mail.slice(0,G.mail.length-n0).find(x=>(x.acts||[]).some(a=>a.a==='fcampSet')); ok(m,'마무리캠프 방향 고르기 메일이 없음'); fcampSet('pitch'); ok(G.fcamp.focus==='pitch','방향이 바뀌지 않음');
   const cnt=foc=>{ let n=0; for(let i=0;i<4;i++)for(const t of G.teams)for(const p of campWho(t.id,'fall'))if(p.isP){ const b=(p.addP||[]).length; campGrow(p,'fall',foc); n+=(p.addP||[]).length-b; } return n; }; const a=cnt('skill'), b=cnt('pitch'); ok(b>a*2,'구종 개발 '+b+'개 · 기술 훈련 '+a+'개'); });
+
+T('성장: 능력은 잠재력을 넘지 못하고(잠재력 자체는 오르내림), 같은 환경에서도 프로의식·야망이 높을수록 더 크고 낮으면 일찍 꺾인다',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&q.age<=23&&!q.prospect); ok(base,'준비 실패');
+  const snap=JSON.stringify(base), save={age:base.age}; const run=(pro,amb)=>{ let tot=0, over=0; for(let i=0;i<40;i++){ const p=Object.assign(JSON.parse(snap),{id:base.id}); p.pers.pro=pro; p.pers.amb=amb; p.dt='norm'; p.pot=ovr(p)+10; G.players[p.id]=p; const o=ovr(p); develop(p); if(ovr(p)>Math.max(p.pot,o)+.06)over++; tot+=ovr(p)-o; } G.players[base.id]=base; return {g:tot/40,over}; };
+  const lo=run(5,5), hi=run(19,19); ok(!lo.over&&!hi.over,'잠재력을 넘김 '+lo.over+'/'+hi.over); ok(hi.g>lo.g*1.4,'프로의식·야망 높음 +'+hi.g.toFixed(2)+' · 낮음 +'+lo.g.toFixed(2));
+  const a=Object.assign(JSON.parse(snap),{dt:'norm'}); a.pers.pro=5; const b=Object.assign(JSON.parse(snap),{dt:'norm'}); b.pers.pro=18; ok(dtSpan(a).fall<dtSpan(b).fall,'프로의식이 낮아도 꺾이는 나이가 같음');
+  const q=domestic(G.user).find(x=>x.isP&&x.age<=25)||base; const o0=ovr(q); q.pot=o0+.5; for(let i=0;i<6;i++)campGrow(q,'spring','skill'); ok(ovr(q)<=Math.max(q.pot,o0)+.06,'캠프에서 잠재력을 넘김: '+ovr(q).toFixed(1)+' / '+q.pot); });
+
+T('사고: 프로의식이 낮은 선수만 사고를 치고, 우리 구단이면 징계 결정이 오며 그해 성장이 깎인다',()=>{ fresh(); G.day=KD(5,1); const ps=domestic(G.user).filter(q=>!q.prospect&&!q.foreign); ps.forEach(q=>{ initPers(q); q.pers.pro=18; delete q.badY; }); const x=ps[0]; x.pers.pro=4; x.injOut=0; delete G.misbD;
+  let n=0; for(let i=0;i<400&&!(x.badY&&x.badY.n);i++){ misbehaveMonth(); n++; } /* 한 달 확률이 2~3%라 넉넉히 */ ok(x.badY&&x.badY.n,'프로의식 4인 선수가 '+n+'달 동안 사고 없음'); ok(ps.slice(1).every(q=>!q.badY),'프로의식 높은 선수가 사고를 침');
+  ok((G.evs||[]).some(e=>e.k==='lead'&&e.data&&e.data.pid===x.id),'우리 선수 사고에 징계 결정이 없음'); const f0=persGrowF(Object.assign({},x,{badY:null})), f1=persGrowF(x); ok(f1<f0,'사고를 쳐도 성장 계수가 그대로'); });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
