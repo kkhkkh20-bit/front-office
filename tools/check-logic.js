@@ -470,6 +470,12 @@ T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자�
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
   const L=[a,b].map(p=>{ const rp=scoutReport(p); return {p,rp,fs:fScout(p,rp)}; }); L[0].fs.score=40; L[1].fs.score=60; L.sort(fSortBy('rk')); ok(L[0].p===b,'점수가 낮은 우리 발굴 후보가 추천순 맨 앞'); delete G.players[a.id]; delete G.players[b.id]; });
 
+T('외국인 타자 포지션: 1루·코너 외야가 대부분이고 2루·유격·포수는 드물며, 거포는 1루·코너 외야에 몰린다(실제 KBO 영입 비중)',()=>{ fresh(); const C={}, P={}; let n=0;
+  for(let i=0;i<1500;i++){ const p=newForeign('용병',{isP:false,market:true}); n++; C[p.pos]=(C[p.pos]||0)+1; (P[p.pos]=P[p.pos]||[]).push(p.r.pow); delete G.players[p.id]; }
+  const sh=k=>k.reduce((s,x)=>s+(C[x]||0),0)/n, mp=k=>{ const a=k.flatMap(x=>P[x]||[]); return a.reduce((s,v)=>s+v,0)/a.length; };
+  ok(sh(['1B','LF','RF'])>=.6,'1루·코너 외야 비중 '+Math.round(sh(['1B','LF','RF'])*100)+'%'); ok(sh(['2B','SS','C'])<=.12,'2루·유격·포수 비중 '+Math.round(sh(['2B','SS','C'])*100)+'%');
+  ok(mp(['1B','LF','RF'])-mp(['CF','2B','SS'])>=8,'1루·코너 외야와 중앙 수비 포지션의 장타력 차이 '+(mp(['1B','LF','RF'])-mp(['CF','2B','SS'])).toFixed(1)); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
