@@ -78,6 +78,7 @@ function processDay(){ syncMinSal();
   for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0]}; if(p.team===G.user){ const fx=injFxNow(p); note('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
   try{ injDaily(); loadDaily(); if(o.w===1&&G.day>G.cal.open)loadWeekly(); }catch(e){}
   const c=G.cal;
+  if(day===KD(2,1)||day===KD(6,1))try{ posPlanAll(); }catch(e){}
   if(day===KD(2,1))for(const t of G.teams)if(t.id!==ME()){aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);}
   if(day===KD(1,10))faUnsignedNote();
   if(day===KD(1,24)&&G.fa&&!G.fa.closed)faClose();

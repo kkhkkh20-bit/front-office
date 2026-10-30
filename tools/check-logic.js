@@ -508,8 +508,19 @@ T('포지션 정착: 지난 시즌 다른 자리에서 주로 뛰어 숙련이 �
   const to=s.pos==='2B'?'SS':'2B'; delete s.pconv; s.use={y,g:130,pos:{[to]:110,[s.pos]:20},slot:{}}; pexpOf(s)[to]=82; c.use={y,g:120,pos:{'1B':110,C:10},slot:{}}; pexpOf(c)['1B']=85; const p0=s.pos;
   G.year++; posYear(); ok(s.pos===to,p0+' 선수가 '+to+'에서 110경기 뛰었는데 주 포지션이 '+s.pos); ok(posExp(s,p0)===100,'원래 자리 숙련이 남지 않음'); ok(c.pos==='C','포수가 '+c.pos+'로 바뀜'); });
 
-T('포지션 숙련: 낯선 자리라도 1군에서 뛴 경기만큼 숙련이 오른다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.pos==='3B')||domestic(G.user).find(q=>!q.isP&&q.pos!=='1B'); delete p.pconv; if(p.pexp)delete p.pexp['1B']; const e0=posExp(p,'1B');
+T('포지션 숙련: 낯선 자리라도 1군에서 뛴 경기만큼 숙련이 오른다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.pos==='3B')||domestic(G.user).find(q=>!q.isP&&q.pos!=='1B'); delete p.pconv; p.age=25; p.vers=55; /* 배우는 속도를 보통으로(나이·다재다능에 따라 다르다) */ if(p.pexp)delete p.pexp['1B']; const e0=posExp(p,'1B');
   p.use={y:G.year,g:60,pos:{'1B':60},slot:{}}; delete p.useSeen; posWeek(); ok(posExp(p,'1B')-e0>=20,'1루 60경기 뒤 숙련 '+e0+' → '+posExp(p,'1B')); });
+
+T('자리 돌리기: 수비가 약한 유격수라도 방망이가 좋으면 감독이 수비 부담이 적은 자리로 돌리고, 거기서도 밀리면 또 옮긴다(우리 구단은 제안만)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const ps=domestic(t.id).filter(q=>!q.isP&&!q.ys);
+  const ss=ps.filter(q=>q.pos==='SS'); ok(ss.length>=2,'준비 실패: 유격수 '+ss.length); const x=ss[0], y=ss[1]; y.r.def=Math.max(y.r.def,68); for(const k of ['con','pow','eye'])x.r[k]=82; x.r.def=30; x.vers=70; x.age=26; delete x.pconv; if(x.pexp){ for(const k in x.pexp)delete x.pexp[k]; }
+  posPlanAll(); ok(x.pconv,'방망이 좋은 수비 약한 유격수를 돌리지 않음'); const k1=x.pconv.pos; ok(DSPEC[k1]<DSPEC.SS&&k1!=='C','유격에서 '+k1+'로(더 쉬운 자리여야)');
+  pexpOf(x)[k1]=95; posWeek(); ok(x.pos===k1,'전환 훈련을 마쳤는데 주 포지션이 '+x.pos); delete x.pconv;
+  const others=domestic(t.id).filter(q=>!q.isP&&q!==x&&q.pos===k1); others.forEach(q=>{ q.r.def=Math.max(q.r.def,70); for(const k of ['con','pow','eye'])q.r[k]=Math.max(q.r[k],70); });
+  posPlanAll(); if(x.pconv)ok(DSPEC[x.pconv.pos]<=DSPEC[k1],'두 번째 이동이 더 어려운 자리로: '+x.pconv.pos);
+  const me=domestic(G.user).filter(q=>!q.isP&&q.pos==='SS'); if(me.length>=2){ const a=me[0]; for(const k of ['con','pow','eye'])a.r[k]=82; a.r.def=30; a.vers=70; delete a.pconv; me[1].r.def=Math.max(me[1].r.def,68); const n0=G.mail.length; posPlanAll(); ok(!a.pconv,'우리 선수를 단장 허락 없이 전환 훈련시킴'); ok(G.mail.length>n0&&G.mail.slice(0,G.mail.length-n0).some(m=>(m.acts||[]).some(z=>z.a==='posConv')),'감독 제안 메일이 없음'); } });
+
+T('코치 계약 만료: 우리와 계약이 끝난 OB 코치를 같은 날 AI 구단이 먼저 데려가지 않는다(단장이 후보에서 볼 기회)',()=>{ const {ob,c}=obCoachSetup(); G.coach[G.user].pc=null; c.yrs=0; c.from=G.user; c.fromY=G.year; G.cmarket=(G.cmarket||[]).concat(c);
+  const other=G.teams.find(t=>t.id!==G.user).id; let took=0; for(let i=0;i<300;i++){ const r=obAiCoach(other,'pc'); if(r&&r.ob===ob.id){ took++; G.cmarket.push(c); } } ok(!took,'같은 날 AI가 우리 코치를 '+took+'번 데려감'); });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);

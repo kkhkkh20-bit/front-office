@@ -43,6 +43,20 @@ function posSettle(y){ const out=[]; for(const p of Object.values(G.players)){ i
     const tot=Object.values(u.pos).reduce((a,b)=>a+b,0); let k=null,n=0; for(const q in u.pos)if(q!=='DH'&&q!==p.pos&&u.pos[q]>n){ n=u.pos[q]; k=q; }
     if(!k||n<50||n<tot*.6||posExp(p,k)<75)continue; const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[k]; p.pos=k; story(p,`${y} ${POSK[old]}에서 ${POSK[k]}로 자리를 옮겨 정착`); if(p.team===G.user&&!G.unemp)out.push(`${p.name}: ${POSK[old]} → ${POSK[k]} (지난 시즌 ${k==='1B'?'1루':POSK[k]} 선발 ${n}경기)`); }
   if(out.length){ const m=G.mgr[G.user]; mail('감독실',`주 포지션 정착 (${out.length}명)`,`${m&&!m.interim?m.name+' 감독':'코치진'}: 지난 시즌 주로 뛴 자리를 주 포지션으로 굳힙니다.\n\n${out.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
+/* 감독의 자리 돌리기: 캠프 시작(2월 1일)과 6월 1일에 감독이 이기는 라인업을 짜 보고, 다른 자리에 넣은 주전은 그 자리 전환 훈련을 시킨다.
+   수비가 약한 유격수라도 방망이가 좋으면 3루·2루로, 거기서도 밀리면 1루·코너 외야로 옮겨 다니다 수비 부담이 적은 자리에 자리 잡는다.
+   다른 사람이 없어 원래 자리를 지키는 선수는 그대로 둔다. 포수는 돌리지 않는다. 우리 구단은 감독이 제안하고 단장이 정한다 */
+/* 한 단계 쉬운 자리: 유격→3루·2루, 2루→3루·1루, 3루→1루·코너 외야, 중견→코너 외야, 코너 외야→1루 */
+const POS_STEP={SS:['3B','2B'],'2B':['3B','1B'],'3B':['1B','LF','RF'],CF:['LF','RF'],LF:['1B'],RF:['1B']};
+function posValLearn(p,q){ const dl=p.r.def-posRaw(p.pos,q)*versF(p)*(1-.9*.85); return ovr(p)-(p.r.def-50)*.2+((POS_ADJ[q]||0)+(dl-DAVG[q])*DWR[q])/RUN_PER_OVR; } /* 그 자리를 익혔다고(숙련 90) 칠 때의 가치 */
+function posPlan(tid){ const ln=makeLineup(tid); const out=[];
+  for(const k in ln){ const p=ln[k]; if(!p||p.pos==='C'||p.pos==='DH'||p.age>=33||p.pconv)continue; let to=null;
+    if(k==='DH'){ /* 방망이로 주전인데 수비 자리가 없다: 한 단계 쉬운 자리 중 익히면 가장 나은 곳 */ const c=(POS_STEP[p.pos]||[]).filter(q=>versOf(p)>=POS_NEED[q]&&posExp(p,q)<90).sort((a,b)=>posValLearn(p,b)-posValLearn(p,a))[0]; if(c&&posValLearn(p,c)>posValAt(p,p.pos))to=c; }
+    else if(k!=='C'&&k!==p.pos&&posExp(p,k)<90&&versOf(p)>=POS_NEED[k])to=k;
+    if(to)out.push({p,k:to}); } return out; }
+function posPlanAll(){ for(const t of G.teams){ const L=posPlan(t.id); if(t.id===ME()){ if(!L.length)continue; const m=G.mgr[G.user]; if(!m)continue; const who=m.interim?'감독대행':`${m.name} 감독`;
+      mail(who,`자리 돌리기 제안 (${L.length}명)`,`${who}: 이기는 라인업을 짜 보니 이 선수들은 다른 자리에서 쓰는 편이 낫습니다. 그 자리 전환 훈련을 시키겠습니다.\n\n${L.map(x=>`${x.p.name}: ${POSK[x.p.pos]} → ${POSK[x.k]} (지금 숙련 ${Math.round(posExp(x.p,x.k))})`).join('\n')}\n\n단장님이 정하시면 시작합니다. 육성 탭에서도 정할 수 있습니다.`,{kind:'감독',acts:L.slice(0,3).map(x=>({l:`${x.p.name} ${POSK[x.k]} 훈련`,a:'posConv',v:`${x.p.id}:${x.k}`}))}); continue; }
+    for(const x of L){ x.p.pconv={pos:x.k,d:G.day}; story(x.p,`${G.year} ${POSK[x.p.pos]}에서 ${POSK[x.k]}로 전환 훈련 시작`); } } }
 function posYear(){ const y=G.year-1; try{ posSettle(y); }catch(e){} for(const p of Object.values(G.players)){ if(p.isP||!p.pexp)continue; const used=k=>(p.use&&p.use.y===y&&p.use.pos&&p.use.pos[k])||(p.fuse&&p.fuse.y===y&&p.fuse.pos&&p.fuse.pos[k]);
   for(const k in p.pexp){ const e=p.pexp[k]; if(e<50&&!used(k)&&!(p.pconv&&p.pconv.pos===k))p.pexp[k]=+(e*.9).toFixed(1); if(p.pexp[k]<3)delete p.pexp[k]; } } } /* 반쯤 익히다 만 자리(숙련 50 미만)는 그해 안 뛰었으면 감각이 떨어진다. 한 번 맡을 만해진 자리는 남는다 */
 /* ===== 2군 경기: 누가 어느 자리로 뛰는지 =====

@@ -58,7 +58,7 @@ function obYear(){ obInit(); for(const ob of G.ob){ ob.age++; const w=obWhere(ob
   const keep=ob=>{ if(ob.age>=75)return false; if(ob.age<66)return true; const w=obWhere(ob); if(w.k==='coach'||w.k==='mgr'||w.k==='scout')return true; if(ob.team===G.user||ob.hof||ob.retNo)return true; return false; };
   G.ob=G.ob.filter(keep); }
 /* AI 구단이 OB를 쓰는 곳 */
-function obAiCoach(tid,role){ const L=obCands('coach').filter(o=>!(G.cmarket||[]).some(c=>c.ob===o.id&&c.role!==role)); const ob=L.length&&R()<.4?pick(L):null; if(!ob)return null; const c=obCoach(ob); c.role=role; c.yrs=ri(1,3);
+function obAiCoach(tid,role){ const L=obCands('coach').filter(o=>!(G.cmarket||[]).some(c=>c.ob===o.id&&(c.role!==role||(c.from===ME()&&c.fromY===G.year)))); /* 이번 겨울 우리와 계약이 끝난 코치는 단장이 먼저 볼 수 있게 AI가 같은 날 바로 데려가지 않는다 */ const ob=L.length&&R()<.4?pick(L):null; if(!ob)return null; const c=obCoach(ob); c.role=role; c.yrs=ri(1,3);
   if(ob.mine)wire('코치',`${tshort(ob.team)} 출신 ${ob.name}, ${tshort(tid)} ${CROLE[role].l}로 합류`,{tid}); G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==ob.id); return c; }
 function obAiMgr(tid){ const L=obMgrCands(); if(!L.length||R()>.35)return null; const ob=L.sort((a,b)=>b.fame-a.fame)[0]; const m=obMgr(ob); m.yrs=ri(2,3); ob.log.push({y:G.year,t:`${tshort(tid)} 감독 취임`});
   wire('감독',`${tshort(tid)}, ${tshort(ob.team)} 출신 ${ob.name} 감독 선임`,{tid}); if(ob.mine)mail('홍보팀',`우리 구단 출신 ${ob.name}, ${tshort(tid)} 감독으로`,`${ob.name}이(가) ${tshort(tid)}의 새 감독이 됐습니다. ${ob.ys}시즌을 우리 유니폼을 입고 뛰었던 선수입니다.`,{kind:'OB'}); return m; }
