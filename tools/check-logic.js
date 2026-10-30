@@ -538,6 +538,11 @@ T('2군 코치진: 육성력이 좋을수록 2군에서 하는 포지션 전환�
   const run=dv=>{ for(const k of ['fm','fb'])C[k]=Object.assign(mkCoach(k),{dv}); pexpOf(p)[q]=0; p.pconv={pos:q,d:G.day}; delete p.fuseSeen; p.fuse=null; G.day=KD(4,1); posWeek(); return posExp(p,q); };
   const lo=run(30), hi=run(80); delete p.pconv; ok(hi>lo*1.2,'2군 코치 육성력 80일 때 '+hi.toFixed(1)+' · 30일 때 '+lo.toFixed(1)); });
 
+T('감독은 본 만큼만 안다: 외국인 후보는 영상·스카우트 보고서로만 판단하고(숨은 실력을 꿰뚫지 못함), 갓 부임하면 어린 선수를 아직 모른다고 말한다',()=>{ fresh(); const m=G.mgr[G.user]; const p=(G.fmarket||[]).map(id=>G.players[id]).find(q=>q&&q.team==null&&q.foreign==='용병'&&intlLv(origOf(q))<3&&!fMineFind(q)); ok(p,'준비 실패: 외국인 후보');
+  G.fwatch=[]; const e0=mgrEst(m,p); for(const k in p.r)p.r[k]=clamp(p.r[k]+8,20,95); p.sx=(p.sx||0)+8; const e1=mgrEst(m,p); ok(Math.abs(e1-e0)<2,'스카우트도 못 보는 실전 감각을 감독이 알아챔: '+e0.toFixed(1)+' → '+e1.toFixed(1));
+  ok(/영상|보고서|자료/.test(mgrOnForeign(p)),'외국인 후보를 직접 본 것처럼 말함: '+mgrOnForeign(p));
+  m.hD=G.day; m.youth=50; const a=mgrTalk('young').a; ok(/직접 보지 못했|캠프/.test(a)||!playersOf(G.user).some(q=>!q.foreign&&q.age<=24),'갓 부임한 감독이 어린 선수를 다 아는 것처럼 말함: '+a.slice(0,80)); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
