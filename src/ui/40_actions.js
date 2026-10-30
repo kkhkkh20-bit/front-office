@@ -27,7 +27,7 @@ const A={
   tsCont(){ if(G){ UI.title=false; render(); return; } const m=meta(); A.slotLoad(m.active); },
   fdPick(v){ const pk0=G.fd&&G.fd.picks[G.fd.cur]; const id=+v; const n0=G.fd?G.fd.cur+1:0; const g0=fdGrade(G.players[id]); const r=fdPick(id); UI.sheet=null; renderSheet(); if(!r&&pk0){ dlFeedAdd('fd',pk0,id); UI.rev=revMake(id,pk0,n0); if(UI.rev&&g0)UI.rev.g0=g0.g; } UI.fdMsg=r; save(); render(); },
   fdBegin(){ if(!G.fdWait)return; G.fdWait=false; G.mail.forEach(m=>{ if(m.from==='구단주실'&&(m.acts||[]).some(a=>a.a==='fdBegin')){ m.read=true; m.acts=[]; } }); fdStart(); UI.mail=null; UI.tab='home'; save(); render(); window.scrollTo(0,0); },
-  fdOpen(){ if(G.fd){ G.fd.open=true; G.stops=(G.stops||[]).filter(m=>!String(m.subj||'').startsWith('창단 드래프트: 모든')); G.mail.forEach(m=>{ if(String(m.subj||'').startsWith('창단 드래프트: 모든'))m.read=true; }); save(); render(); window.scrollTo(0,0); } },
+  fdOpen(){ if(G.fd){ G.fd.open=true; G.stops=(G.stops||[]).filter(m=>!String(m.subj||'').startsWith('창단 드래프트: 모든')); G.mail.forEach(m=>{ if(String(m.subj||'').startsWith('창단 드래프트: 모든'))m.read=true; }); closeSheets(); save(); render(); window.scrollTo(0,0); const pk=G.fd.picks[G.fd.cur]; if(pk&&pk.tid!==G.user)setTimeout(()=>dliveStart('fd'),300); /* 시작하면 다른 구단 지명이 바로 흐른다 */ } },
   fdHide(){ UI.fdHide=!(UI.fdHide==null?true:UI.fdHide); UI.fdMore=60; render(); },
   dlSpdC(){ const o=['slow','norm','fast']; const i=o.indexOf(UI.dspeed||'norm'); A.dlSpd(o[(i+1)%3]); },
   fdTab(v){ UI.fdTab=v; render(); window.scrollTo(0,0); },

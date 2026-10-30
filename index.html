@@ -1999,6 +1999,9 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .smr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
 .smb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
 .smb .good{color:var(--good)}.smb .bad{color:var(--bad)}.smb .btn.primary .good,.smb .btn.primary .bad{color:inherit}
+.fd-left{font-size:13px;font-weight:700;color:var(--acc,#3d8bff)}
+@media (max-width:600px){ .fd-got>.fd-left{display:block} }
+.fde-old{opacity:.6}.fde-rv .good{color:var(--good)}.fde-rv .bad{color:var(--bad)}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -11795,6 +11798,7 @@ function fdTicker(){ const F=G.fd; if(!F||F.done)return ''; const pk=F.picks[F.c
   if(pre){ const first=F.picks.findIndex(x=>x.tid===G.user)+1; r1=`<div class="fd-go"><div class="fd-got"><b>아직 드래프트가 시작되지 않았습니다</b><span>지금은 지명 전 탐색 시간입니다. 선수를 살펴보고 관심(☆)을 표시해 두세요. <b>시작을 눌러야 지명할 수 있습니다.</b> 우리 첫 지명은 ${first}번째입니다.</span></div><button class="btn primary fd-gob" data-a="fdOpen">드래프트 시작 (1라운드) ▶</button></div>`; } /* 작은 버튼이라 못 찾고 '왜 지명이 안 되지' 하던 문제: 크게, 설명과 함께 */
   else if(ask){ const left=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; r1=`<b class="good">${F.man}라운드 직접 지명을 마쳤습니다</b><span class="muted">남은 우리 지명 ${left}번은 주로 2군·백업 자원입니다</span>${fdPolSel()}<button class="btn small primary" data-a="fdAuto" title="고른 방침대로 스카우트가 남은 지명을 모두 뽑고 드래프트를 끝냅니다">나머지 스카우트에게 맡기기</button><button class="btn small" data-a="fdPlus">${Math.min(FD_ROUNDS,F.man+FD_MORE)}라운드까지 더 뽑기</button>`; }
   else if(mine){ r1=`<b class="good">우리 차례 · ${pk.rd}라운드 ${pk.no}번째</b><button class="btn small tk-delb${UI.tkDel?' on':''}" data-a="tkDel">맡기기 ${UI.tkDel?'▴':'▾'}</button><span class="tk-del${UI.tkDel?' open':''}">${fdPolSel()}<button class="btn small" data-a="fdAutoN" data-v="5" title="우리 지명 5번을 고른 방침대로 스카우트가 뽑고 다시 멈춥니다">5번 맡기기</button><button class="btn small" data-a="fdAuto" title="남은 우리 지명을 고른 방침대로 스카우트가 모두 뽑고 드래프트를 끝냅니다">나머지 맡기기</button></span><span class="muted">${F.man||FD_ROUNDS}라운드까지 직접 지명</span>`; }
+  else if(!on&&!UI.rev){ r1=`<div class="fd-go"><div class="fd-got"><b>${esc(tshort(pk.tid))} 차례에서 멈춰 있습니다 · ${pk.rd}-${pk.no}</b><span class="fd-left">우리 차례까지 ${k<0?'-':k}번</span></div><button class="btn primary fd-gob" data-a="fdAdv">다른 구단 지명 진행 ▶</button></div>`; } /* 멈춘 상태가 작은 '진행' 버튼뿐이라 못 찾던 문제 */
   else r1=`${on?'<span class="dl-dot"></span>':''}${badge(pk.tid,18)}<b>${esc(tshort(pk.tid))} 지명 중 · ${pk.rd}-${pk.no}</b><span class="muted">우리 차례까지 ${k<0?'-':k}번</span><span class="tk-sp"><button data-a="dlSpdC" class="on">속도 ${({slow:'느리게',norm:'보통',fast:'빠르게'})[sp]}</button>${on?'<button data-a="dlStop">멈춤</button>':'<button data-a="fdAdv">진행</button>'}</span>`;
   const r2=fresh?`<div class="tk2 steal"><b>뺏겼습니다</b><span>${esc(st.tg)} <button class="lnk" data-a="player" data-v="${st.pid}">${esc(st.nm)}</button>을(를) ${esc(tshort(st.tid))}이(가) ${st.rd}-${st.no}에 지명</span>${fdTrue(top)}</div>`
     :top?`<div class="tk2">${badge(top.tid,16)}<i>${top.rd}-${top.no}</i><button class="lnk" data-a="player" data-v="${top.pid}">${esc(top.nm)}</button><span class="muted">${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}</span>${top.me?'<em class="good">우리 지명</em>':fdTrue(top)}${L.stN?`<span class="tk-l">놓친 관심 ${L.stN}명</span>`:''}</div>`:'';
@@ -14010,7 +14014,7 @@ const A={
   tsCont(){ if(G){ UI.title=false; render(); return; } const m=meta(); A.slotLoad(m.active); },
   fdPick(v){ const pk0=G.fd&&G.fd.picks[G.fd.cur]; const id=+v; const n0=G.fd?G.fd.cur+1:0; const g0=fdGrade(G.players[id]); const r=fdPick(id); UI.sheet=null; renderSheet(); if(!r&&pk0){ dlFeedAdd('fd',pk0,id); UI.rev=revMake(id,pk0,n0); if(UI.rev&&g0)UI.rev.g0=g0.g; } UI.fdMsg=r; save(); render(); },
   fdBegin(){ if(!G.fdWait)return; G.fdWait=false; G.mail.forEach(m=>{ if(m.from==='구단주실'&&(m.acts||[]).some(a=>a.a==='fdBegin')){ m.read=true; m.acts=[]; } }); fdStart(); UI.mail=null; UI.tab='home'; save(); render(); window.scrollTo(0,0); },
-  fdOpen(){ if(G.fd){ G.fd.open=true; G.stops=(G.stops||[]).filter(m=>!String(m.subj||'').startsWith('창단 드래프트: 모든')); G.mail.forEach(m=>{ if(String(m.subj||'').startsWith('창단 드래프트: 모든'))m.read=true; }); save(); render(); window.scrollTo(0,0); } },
+  fdOpen(){ if(G.fd){ G.fd.open=true; G.stops=(G.stops||[]).filter(m=>!String(m.subj||'').startsWith('창단 드래프트: 모든')); G.mail.forEach(m=>{ if(String(m.subj||'').startsWith('창단 드래프트: 모든'))m.read=true; }); closeSheets(); save(); render(); window.scrollTo(0,0); const pk=G.fd.picks[G.fd.cur]; if(pk&&pk.tid!==G.user)setTimeout(()=>dliveStart('fd'),300); /* 시작하면 다른 구단 지명이 바로 흐른다 */ } },
   fdHide(){ UI.fdHide=!(UI.fdHide==null?true:UI.fdHide); UI.fdMore=60; render(); },
   dlSpdC(){ const o=['slow','norm','fast']; const i=o.indexOf(UI.dspeed||'norm'); A.dlSpd(o[(i+1)%3]); },
   fdTab(v){ UI.fdTab=v; render(); window.scrollTo(0,0); },
@@ -14971,7 +14975,7 @@ function fdEstOf(p){ if(!p||!G.fd)return null; const pk=G.fd.picks.find(x=>x.pid
 /* 추정 등급 칩: 숫자 대신 등급 글자. 실제 능력이 아니라 우리 스카우트가 본 값 */
 function fdEstChip(v){ return v==null?rchip(null):`<b class="rc fde-g" style="--c:${rcol(v)}" title="우리 스카우트 추정 등급. 실제 능력과 다를 수 있습니다">${GRD(v)}</b>`; }
 
-/* 지명 직후 카드: 스카우트 평가(툴 등급·오차)와 능력 추정 범위, 예상 역할. 실제 능력·순위·잘 뽑았는지는 말하지 않는다 */
+/* 지명 직후 카드: 우리 선수가 됐으니 코치진이 본 실제 능력(현재)을 공개하고, 지명 전 스카우트 평가·추정 범위와 나란히 보여 준다. 잠재력·잘 뽑았는지는 아직 말하지 않는다 */
 function revMake(pid,pk,n){ const p=G.players[pid]; if(!p)return null; return {pid,rd:pk.rd,no:pk.no,n,open:true}; }
 function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; if(!p){ UI.rev=null; return ''; }
   const S=fdScoutTools(p); const vis=new Set(FD_TOOLS[p.isP?'P':'B'].filter(t=>t[2]).map(t=>t[0]));
@@ -14981,11 +14985,12 @@ function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; i
   return `<div class="rv-w"><div class="rv fde-rv">
     <div class="eyebrow">${R.rd}라운드 ${R.no}번째 · 전체 ${R.n}순위 지명</div>
     <div class="row" style="flex-wrap:nowrap">${avImg(p,true)}<div><h2 class="sec" style="font-size:22px">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.fdFrom!=null?` · 전 ${esc(tshort(p.fdFrom))}`:''} · 연봉 ${money(p.sal||0)}</p></div></div>
-    <div><div class="eyebrow">스카우트 평가</div><div class="fde-ts">${tl}</div></div>
-    <div class="fde-bx"><div><span>현재 능력</span><b style="color:${rcol(ovr(p))}">${dv(ovr(p))} <small>${GRD(ovr(p))}</small></b><i>지명과 함께 공개</i></div><div><span>지명 때 추정</span><b>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; return e==null?'-':`${dv(e-w)}~${dv(e+w)}`; })()}</b><i>우리 스카우트</i></div><div><span>예상 역할</span><b class="fde-role">${esc(role)}</b><i>추정 기준</i></div></div>
+    ${p.team===G.user?`<div><div class="eyebrow">실제 능력 · 코치진 평가(지명 후 공개)</div><div class="fde-ts">${p.isP?`<span class="fde-t"><i>구속</i><b>${veloOf(p)}</b><em>km</em></span>`:''}${FD_TOOLS[p.isP?'P':'B'].map(([k,l])=>{ const v=Math.round(p.r[k]||0); const sg=(S.L.find(t=>t.k===k)||{}).g; const g=GRD(v); return `<span class="fde-t"><i>${l}</i><b style="color:${rcol(v)}">${dv(v)}</b><em>${g}${sg&&sg!==g?` · 추정 ${sg}`:''}</em></span>`; }).join('')}</div></div>`:''}
+    <div><div class="eyebrow">${p.team===G.user?'지명 전 스카우트 평가':'스카우트 평가'}</div><div class="fde-ts${p.team===G.user?' fde-old':''}">${tl}</div></div>
+    <div class="fde-bx"><div><span>현재 능력</span><b style="color:${rcol(ovr(p))}">${dv(ovr(p))} <small>${GRD(ovr(p))}</small></b><i>실제 · 코치진 평가</i></div><div><span>지명 전 추정</span><b>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; return e==null?'-':`${dv(e-w)}~${dv(e+w)}`; })()}</b><i>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; if(e==null)return '우리 스카우트'; const o=ovr(p); return o>e+w?'<b class="good">추정보다 좋음</b>':o<e-w?'<b class="bad">추정보다 낮음</b>':'추정 범위 안'; })()}</i></div><div><span>예상 역할</span><b class="fde-role">${esc(role)}</b><i>추정 기준</i></div></div>
     <p class="small"><b>스카우트</b> ${esc(fdScoutLine(p))}</p>
     <p class="small"><b>데이터팀</b> ${esc(dl)}</p>
-    <p class="small muted">능력 63이 1군 평균, 69가 주전급입니다. 우리 선수가 되면 현재 능력은 바로 보입니다. 잠재력은 여전히 추정입니다. 7월 1일 중간 평가와 정규시즌 뒤 평가에서 이 지명을 돌아봅니다.</p>
+    <p class="small muted">능력 63이 1군 평균, 69가 주전급입니다. 지명했으니 현재 능력은 코치진 평가로 정확히 보입니다. 잠재력(얼마나 클지)은 여전히 추정입니다. 7월 1일 중간 평가와 정규시즌 뒤 평가에서 이 지명을 돌아봅니다.</p>
     <button class="btn primary block" data-a="revClose">계속</button>
   </div></div>`; }
 
