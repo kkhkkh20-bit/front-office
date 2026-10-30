@@ -6,8 +6,9 @@ function seasonAt(g,k,id,isP){ const p=G.players[id]; if(!p)return null; const t
   if(gi>=0)for(let i=0;i<=gi;i++){ const r=G.games[i]; if(!r||!r.box||/차전/.test(r.kind||'')||dobj(r.day).y!==yr)continue; for(const sd of ['h','a']){ const S=r.box[sd]; if(!S)continue;
       if(isP){ const q=(S.pit||[]).find(x=>x.id===id); if(q){ o.outs-=q.outs||0; o.er-=q.er||0; o.h-=q.h||0; o.bb-=q.bb||0; o.so-=q.so||0; o.hr-=q.hr||0; } }
       else { const q=(S.bat||[]).find(x=>x.id===id); if(q){ o.ab-=q.ab||0; o.h-=q.h||0; o.d-=q.d||0; o.tr-=q.tr||0; o.hr-=q.hr||0; o.bb-=q.bb||0; o.so-=q.so||0; o.pa-=(q.ab||0)+(q.bb||0); } } } }
-  if(g&&g.pbp){ const L=g.pbp; let half=-1,o0=0; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[0]!==half){ half=x[0]; o0=0; } if(x[1]==='SB'||x[1]==='CS'){ o0=x[3]; continue; } if(typeof x[1]!=='number')continue;
-      if(isP&&x[2]===id){ o.outs+=Math.max(0,x[4]-o0); o.er+=x[6]||0; if(x[3]==='K')o.so++; if(x[3]==='BB')o.bb++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='HR')o.hr++; }
+  if(g&&g.pbp){ const L=g.pbp; let half=-1,o0=0,cp=null; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[0]!==half){ half=x[0]; o0=0; } if(x[1]==='PC'){ cp=x[2]; continue; } if(x[1]==='SB'||x[1]==='CS'){ if(isP&&x[1]==='CS'&&cp===id)o.outs+=Math.max(0,x[3]-o0); o0=x[3]; continue; } if(typeof x[1]!=='number')continue; cp=x[2];
+      if(isP&&Array.isArray(x[11]))o.er+=x[11].filter(z=>z===id).length;
+      if(isP&&x[2]===id){ o.outs+=Math.max(0,x[4]-o0); if(!Array.isArray(x[11]))o.er+=x[6]||0; if(x[3]==='K')o.so++; if(x[3]==='BB')o.bb++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='HR')o.hr++; }
       if(!isP&&x[1]===id){ o.pa++; if(x[3]==='BB')o.bb++; else if(x[3]!=='SAC')o.ab++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='2B')o.d++; if(x[3]==='3B')o.tr++; if(x[3]==='HR')o.hr++; if(x[3]==='K')o.so++; }
       o0=x[4]; } }
   for(const key in o)o[key]=Math.max(0,o[key]); return o; }

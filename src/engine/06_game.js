@@ -102,7 +102,7 @@ function simGame(day,hid,aid,ps){
           else { o='OUT'; xb.ab++; outs++; xp.outs++; if(base[1]){ base[1]=base[0]; } base[0]=b; } } }
       if(o){ if(pbp.length<260)pbp.push([half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h]); if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+6)bringIn(fs,inn,-lead(),half); continue; }
       o=outcome(b,p,fs.defv); let eFld=0;
-      const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld)r.push(eFld); pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id */
+      let chg=null, chgE=null, rbiN=0; const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN); pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~13번째: 실점 책임 투수들·자책 책임 투수들·타점(중계 화면이 경기 기록과 같게 계산) */
       if(o==='BB'){ xb.bb++; xp.bb++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;
         if(o==='K'){ xb.so++; xp.so++; outs++; xp.outs++; }
@@ -120,9 +120,10 @@ function simGame(day,hid,aid,ps){
             base[0]=b; }
         }
       }
+      if(sc.length&&isBot&&inn>=9&&o!=='HR'){ const need=score[opp(bk)]-score[bk]+1; if(need>=1&&sc.length>need)sc.length=need; } /* 홈런이 아닌 끝내기는 결승점까지만 인정 */
       if(sc.length){
-        const n=sc.length; sc.forEach(r=>bs.box.get(r.id).r++); if(!dp&&!eRun)xb.rbi+=n; /* 실책으로 들어온 득점은 타점이 아니다 */ if(!ueInn)for(const r of sc){ const pb=fs.box.get(resp.get(r.id)??p.id)||xp; pb.er++; } /* 득점한 주자를 내보낸 투수의 자책점 */ score[bk]+=n; runs+=n; PB();
-        const after=lead(); if(before<=0&&after>0){ wc[bk]=bs.cur; lc[opp(bk)]=fs.cur; }
+        const n=sc.length; sc.forEach(r=>bs.box.get(r.id).r++); chg=sc.map(r=>resp.get(r.id)??p.id); chgE=ueInn?[]:chg.slice(); rbiN=!dp&&!eRun?n:0; if(!dp&&!eRun)xb.rbi+=n; /* 실책으로 들어온 득점은 타점이 아니다 */ if(!ueInn)for(const r of sc){ const pb=fs.box.get(resp.get(r.id)??p.id)||xp; pb.er++; } /* 득점한 주자를 내보낸 투수의 자책점 */ score[bk]+=n; runs+=n; PB();
+        const after=lead(); if(before<=0&&after>0){ wc[bk]=bs.cur; const gr=sc[-before]; const lp=gr&&resp.has(gr.id)?G.players[resp.get(gr.id)]:null; lc[opp(bk)]=lp&&fs.pitchers.includes(lp.id)?lp:fs.cur; } /* 패전은 결승 주자를 내보낸 투수 */
         const kind={HR:n===4?'만루 홈런':`${n}점 홈런`,'3B':'3루타','2B':'2루타','1B':'적시타',BB:'밀어내기 볼넷',OUT:'희생타',K:''}[o];
         if(ev.length<400)ev.push({h:half,t:`${b.name} ${kind}${o!=='HR'?` (${n}점)`:''} · ${score.a}:${score.h}`,run:true});
         if(isBot&&inn>=9&&score.h>score.a){ walk=true; break; }

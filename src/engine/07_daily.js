@@ -104,7 +104,7 @@ function processDay(){ syncMinSal();
   if(G.ps&&G.ps.done&&G.ps.finDay===day){ settlement(); try{ stadSeasonNote(); }catch(e){} try{ draftRetro(); }catch(e){} }
   /* 스토브리그는 결산이 끝난 뒤에만 연다(포스트시즌이 길어져 결산이 11월로 밀려도 순서가 뒤집히지 않게) */
   if(day>=KD(11,1)&&dobj(day).m>=11&&G.rolled!==G.year&&G.last&&G.last.y===G.year){ offseason(); offseasonMgr(); try{ stadAI(); }catch(e){} }
-  if(day===KD(11,2))faAnnounce();
+  if(day>=KD(11,2)&&G.rolled===G.year&&G.fa&&!G.fa.open&&!G.fa.closed&&G.faAnnY!==G.year){ G.faAnnY=G.year; faAnnounce(); } /* 결산(스토브리그 시작)이 11월 2일보다 늦어도 공시한다 */
   if(G.fa&&G.fa.open&&!G.fa.closed&&day>=G.fa.openDay)faDay(day);
   if(day===KD(12,1)){ contractStart(); aiCapAll(); try{ aiDebtDump(); }catch(e){} capWarnUser(); }
   try{ salTalkDaily(day); }catch(e){}
@@ -161,12 +161,12 @@ function futuresWeek(){
   for(const p of Object.values(G.players)){ if(p.team==null||!milServing(p)||p.mil.unit!=='상무'||!healthy(p))continue; if(p.isP)futPit(p,p.team); else futBat(p,p.team,p.pos,3); }
 }
 /* 월간 재정 보고: 한 달 사이 올해 예산 여유가 왜 바뀌었는지 항목별로 알려 준다 */
-function finSnapNow(){ const b=budget(); const rows={}; for(const [l,v] of b.exp)rows['지출:'+l]=v; for(const [l,v] of b.inc)rows['수입:'+l]=v; rows['지원:구단주 지원 목표']=b.goalSup; return {d:G.day,y:G.year,room:b.roomGoal,cash:b.cash,rows}; }
+function finSnapNow(){ const b=budget(); const rows={}; for(const [l,v] of b.exp)rows['지출:'+l]=v; for(const [l,v] of b.inc)rows['수입:'+l]=v; rows['지원:구단주 지원 목표']=b.goalSup; return {d:G.day,y:G.year,st:!!(G.last&&G.last.y>=G.year),room:b.roomGoal,cash:b.cash,rows}; }
 function finDiff(a,b){ const keys=new Set([...Object.keys(a.rows),...Object.keys(b.rows)]); const out=[];
   for(const k of keys){ const v0=a.rows[k]||0, v1=b.rows[k]||0; const d=v1-v0; if(Math.abs(d)<50)continue; const [kind,l]=k.split(':'); const eff=kind==='지출'?-d:d; out.push({kind,l,v0,v1,d,eff}); }
   return out.sort((x,y)=>Math.abs(y.eff)-Math.abs(x.eff)); }
 function finMonth(m){ if(G.unemp||G.gameOver||(G.fd&&!G.fd.done))return; const now=finSnapNow(); const p=G.finSnap; G.finSnap=now;
-  if(!p||p.y!==now.y){ return; }
+  if(!p||p.y!==now.y||p.st!==now.st){ return; } /* 결산을 사이에 두면 다른 시즌 예산이라 비교하지 않는다 */
   const D=finDiff(p,now); const dr=now.room-p.room; G.finLog=(G.finLog||[]).concat([{m,y:now.y,room0:p.room,room1:now.room,cash0:p.cash,cash1:now.cash,top:D.slice(0,6)}]).slice(-14);
   if(!D.length&&Math.abs(dr)<50&&Math.abs(now.cash-p.cash)<50)return;
   const ln=D.slice(0,5).map(x=>`${x.kind==='지출'?'지출':x.kind==='수입'?'수입':'지원'} · ${x.l}: ${money(x.v0)} → ${money(x.v1)} (예산 여유 ${x.eff>=0?'+':''}${money(x.eff)})`);

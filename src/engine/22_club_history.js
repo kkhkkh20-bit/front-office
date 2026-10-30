@@ -65,9 +65,10 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   const qB=x=>!x.p.isP&&x.h.pa>=300, qP=x=>x.p.isP&&x.h.outs>=270;
   const A={y,gg:{},cand:{gg:{}},pend:{mvp:true,gg:true}};
   A.cand.mvp=awVote(rows.filter(x=>qB(x)||qP(x)).sort((a,b)=>b.w-a.w).slice(0,6).map(x=>awCand(x)),125);
-  A.cand.roy=awVote(rows.filter(x=>x.p.age<=26&&!x.p.foreign&&(x.h.pa>=150||x.h.outs>=150)&&!x.p.hist.some(h=>h.lvl==='1군'&&h.y<y&&((h.pa||0)>=60||(h.outs||0)>=90))).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x)),125);
-  for(const pos of ['C','1B','2B','3B','SS','DH']){ const L=rows.filter(x=>!x.p.isP&&x.h.pos===pos&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x,pos!=='DH'?((x.p.r.def||50)-50)*.02:0)); if(L.length)A.cand.gg[pos]=awVote(L,288); }
-  { const L=rows.filter(x=>!x.p.isP&&['LF','CF','RF'].includes(x.h.pos)&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w).slice(0,7).map(x=>awCand(x,((x.p.r.def||50)-50)*.02)); if(L.length){ awVote(L,288*3); L.forEach(c=>c.v=Math.min(288,Math.round(c.v*.98))); A.cand.gg.OF=L.sort((p,q)=>q.v-p.v); } }
+  A.cand.roy=awVote(rows.filter(x=>x.p.age<=26&&!x.p.foreign&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })() /* 이전 시즌 누적 60타석·30이닝 이내 */).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x)),125);
+  const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ let b=null,n=-1; for(const k in u.pos)if(u.pos[k]>n){ n=u.pos[k]; b=k; } if(b)return b; } return x.h.pos; }; /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
+  for(const pos of ['C','1B','2B','3B','SS','DH']){ const L=rows.filter(x=>!x.p.isP&&gpos(x)===pos&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x,pos!=='DH'?((x.p.r.def||50)-50)*.02:0)); if(L.length)A.cand.gg[pos]=awVote(L,288); }
+  { const L=rows.filter(x=>!x.p.isP&&['LF','CF','RF'].includes(gpos(x))&&(x.h.g||0)>=72).sort((a,b)=>b.w-a.w).slice(0,7).map(x=>awCand(x,((x.p.r.def||50)-50)*.02)); if(L.length){ awVote(L,288*3); L.forEach(c=>c.v=Math.min(288,Math.round(c.v*.98))); A.cand.gg.OF=L.sort((p,q)=>q.v-p.v); } }
   { const L=rows.filter(qP).sort((a,b)=>b.w-a.w).slice(0,4).map(x=>awCand(x)); if(L.length)A.cand.gg.P=awVote(L,288); }
   /* 수상자(발표 전까지 비공개) */
   const pick=c=>c&&c[0]?{id:c[0].id,name:c[0].name,t:c[0].t,line:c[0].line,v:c[0].v}:null;

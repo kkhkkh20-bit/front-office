@@ -55,21 +55,21 @@ function aiExtensions(all){ const done=[];
   return done.length; }
 function faWorth(t,p){ const pf=perfOvr(p,3); const base=pf==null?ovr(p):pf*.6+ovr(p)*.4; const af=p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55; return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
 function faInterest(t,p){
-  const room=capOf(G.year)-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
+  const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
-  if(t.id!==ME()&&capPay(t.id)+p.ask.annual*.9>capOf(G.year)*((t.id===p.faFrom?1.02:1)+(t.mode==='contend'&&t.cash>3000?.04:0)))return 0;
+  if(t.id!==ME()&&capPay(t.id)+p.ask.annual*.9>capOf(sponSeason())*((t.id===p.faFrom?1.02:1)+(t.mode==='contend'&&t.cash>3000?.04:0)))return 0;
   if(t.id!==p.faFrom&&t.cash<-3000)return 0;
   if(t.id!==p.faFrom&&ovr(p)<47)return 0;
   /* 보상 비용(보상금)을 계약 총액과 견준다: 몸값보다 보상금이 크면 외부 구단은 거의 손대지 않는다 */
   let compF=1; if(t.id!==p.faFrom){ const ps=p.faPrevSal||p.sal||0; const cc=p.faGrade==='A'?ps*2:p.faGrade==='B'?ps:ps*1.5; compF=clamp(1-cc/Math.max(1,p.ask.annual*p.ask.years*.8),.08,1);
     if(t.id!==ME()&&t.cash-cc<-2500)return 0; } /* 보상금을 내면 현금이 크게 마이너스가 되는 AI 구단은 외부 FA를 포기한다 */
-  const debt=t.id===p.faFrom&&t.id!==ME()&&(t.cash<-5000||capPay(t.id)>capOf(G.year)*1.1)?.35:1;
+  const debt=t.id===p.faFrom&&t.id!==ME()&&(t.cash<-5000||capPay(t.id)>capOf(sponSeason())*1.1)?.35:1;
   if(t.cash<-8000&&t.id!==p.faFrom)return 0;
   if(p.ask.annual>room*1.15&&t.owner==='profit')return 0;
   if(p.ask.annual>room*1.5)return 0;
   /* 연봉 총액이 낮은 구단(하한 근처)은 돈을 쓸 이유가 있다 */
-  const low=(capPay(t.id)<capOf(G.year)*.5?.22:capPay(t.id)<capOf(G.year)*.65?.1:0)+(t.cash>6000?.08:0);
-  return compF*clamp(.12+low+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(playersOf(t.id).length>=39?.25:0),0,1)*debt;
+  const low=(capPay(t.id)<capOf(sponSeason())*.5?.22:capPay(t.id)<capOf(sponSeason())*.65?.1:0)+(t.cash>6000?.08:0);
+  return compF*clamp(.12+low+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0),0,1)*debt;
 }
 function faDay(day){
   const F=G.fa; const since=day-F.openDay;
@@ -142,7 +142,7 @@ function faClose(){
     if(offers.length){ faSign(p,offers); continue; }
     const from=p.faFrom, t=team(from); const low=round5(Math.max(MIN_SAL,Math.min((p.faPrevSal||p.sal)*.5,marketSal(ovr(p))*.45)));
     /* 원소속 AI 구단이 쓸모를 인정하면 헐값 계약으로 붙잡는다(실제 2025년 하주석 1년 1억1천만원 등). 20대는 1+1처럼 2년으로 묶는 경우가 많다 */
-    if(from!==G.user&&t&&p.age<=35&&aiVal(t,p)>=1&&capPay(from)+low<=capOf(G.year)&&rosterN(from)<ROSTER_MAX){ faSign(p,[{tid:from,annual:low,years:p.age<=28?2:1}]); const r=F.results[0]; if(r&&r.id===p.id){ r.kind='cheap'; } cheap++; wire('FA',`${p.name}, 원소속 ${tname(from)}와(과) ${p.yrs}년 연 ${money(low)} 헐값 계약`,{tid:from,ref:p.id}); continue; }
+    if(from!==G.user&&t&&p.age<=35&&aiVal(t,p)>=1&&capPay(from)+low<=capOf(sponSeason())&&rosterN(from)<ROSTER_MAX){ faSign(p,[{tid:from,annual:low,years:p.age<=28?2:1}]); const r=F.results[0]; if(r&&r.id===p.id){ r.kind='cheap'; } cheap++; wire('FA',`${p.name}, 원소속 ${tname(from)}와(과) ${p.yrs}년 연 ${money(low)} 헐값 계약`,{tid:from,ref:p.id}); continue; }
     /* 연봉 하한에 못 미치는 구단은 남은 FA로 채운다 */
     { const fl=floorOf(G.year); const lt=G.teams.filter(x=>x.id!==ME()&&x.id!==from&&capPay(x.id)<fl&&rosterN(x.id)<ROSTER_MAX&&!faOutBlocked(x.id,p)).sort((a,b)=>capPay(a.id)-capPay(b.id))[0];
       if(lt&&p.age<=35&&ovr(p)>=42){ const an=round5(Math.max(low,Math.min(p.ask.annual,(fl-capPay(lt.id))*.6))); faSign(p,[{tid:lt.id,annual:an,years:p.age<=31?2:1}]); continue; } }

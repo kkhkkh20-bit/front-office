@@ -1,5 +1,5 @@
 /* ===== 올해 예산(다음 결산까지 연간 예상) ===== */
-function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; return dnum(y,11,5); }
+function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; if(y===G.year&&G.ps&&G.ps.finDay!=null)return G.ps.finDay; if(y===G.year&&G.cal&&G.cal.end)return Math.min(dnum(y,11,5),G.cal.end+30); return dnum(y,11,5); } /* 결산은 한국시리즈 이틀 뒤: 알면 그날, 모르면 정규시즌 끝 +30일로 어림 */
 function budget(){ const t=team(G.user); const ci=capInfo(G.user); const S=G.spend||{}; const m=G.mgr[G.user]; prInit();
   const rem=Math.max(0,finYearEnd()-G.day)/365; const acc=(spent,annual)=>Math.round((spent||0)+annual*rem);
   const settled=G.last&&G.last.y>=G.year; const SPj=stadProj(G.user,settled); const fsNow=sum(foreignOf(G.user).map(p=>p.sal))+fDeadOf(G.user,sponSeason()); /* 개막 전 방출 선수의 보장 연봉 포함 */
@@ -17,9 +17,10 @@ function budget(){ const t=team(G.user); const ci=capInfo(G.user); const S=G.spe
   { sponInit(); const sp=sponIncome(); if(sp>0)inc.push(['스폰서 계약',sp]); } { const si=starIncome(G.user); if(si>0)inc.push(['스타 마케팅',si]); } { const due=newStadDue(G.user); if(due)inc.push(['모기업 신구장 출자',Math.round(due*.7)]); } if((S.compIn||0)>0)inc.push(['FA 보상금 수령',Math.round(S.compIn)]); /* 결산과 같은 항목 */
   const E=sum(exp.map(x=>x[1])), I=sum(inc.map(x=>x[1])); const gap=E-I; const cap=supportCap(t);
   const g=G.goals&&G.goals.y===G.year&&!settled?G.goals:null; const plan=!g&&!settled&&G.supPlan&&G.supPlan.y===G.year?G.supPlan.gf:null; const gf=g?g.sup:plan!=null?plan:clamp((cap?Math.max(0,gap)/cap:0)*(t.owner==='profit'?.85:t.owner==='pr'?1:1.15)+.05,.2,1); const goalSup=t.indie?0:Math.round(gf*cap);
-  const support=t.indie?0:clamp(gap,0,cap);
-  return {exp,inc,E,I,gap,cap,support,goalSup,goalFrac:gf,cash:t.cash,endCash:t.cash+I+support-E,
-    roomGoal:goalSup-gap, roomCap:cap-gap, roomMax:cap-gap+Math.max(0,t.cash), rem, indie:!!t.indie, trust:t.trust,
+  const selfC=gap>0?Math.min(gap,Math.max(0,t.cash-3000)*.5):0, need=gap-selfC; /* 결산처럼 보유 현금 30억 초과분의 절반으로 적자를 먼저 메운다 */
+  const support=t.indie?0:clamp(need,0,cap);
+  return {exp,inc,E,I,gap,cap,support,selfC,goalSup,goalFrac:gf,cash:t.cash,endCash:t.cash+I+support-E,
+    roomGoal:goalSup-need, roomCap:cap-need, roomMax:cap-gap+Math.max(0,t.cash), rem, indie:!!t.indie, trust:t.trust,
     fR,fRoom:Math.max(0,fR-fs),fUsed:sum(foreignOf(G.user).filter(p=>p.foreign==='용병').map(fCommit)), fCap:fCap(G.user), aUsed:sum(foreignOf(G.user).filter(p=>p.foreign==='아시아').map(p=>p.sal)), ci}; }
 /* 외국인 선수 연봉은 어느 구단이나 미리 잡아 두는 돈이다. 단장 첫 시즌은 규정 한도(신규 외국인 3명 각 100만 달러 + 아시아쿼터 20만 달러)까지 배정하고, 이후에는 지난 시즌 리그 평균 외국인 지출을 배정한다 */
 function fReserve(){ if(G.gmSince===G.year)return 3*F_NEW_CAP+ASIA_CAP; const L=G.lgFor&&G.lgFor[G.year-1]; return L||3200; }
@@ -31,7 +32,7 @@ function foundReserve(tid){ tid=tid??G.user; const C=G.coach&&G.coach[tid]; let 
   const rem=Math.max(0,finYearEnd()-G.day)/365; const cap=supportCap(team(tid)); const cush=Math.max(1500,Math.round(cap*.08));
   return {vac:Math.round(vac*rem),cush,tot:Math.round(vac*rem)+cush}; } /* vac: 감독·코치 빈자리 채용비 */
 function planSup(){ delete G.supPlan; try{ const b=budget(); let gf=b.goalFrac; if(G.startY===G.year&&b.cap){ const want=(b.gap+foundReserve().tot)/b.cap; gf=Math.round(clamp(Math.max(gf,want),.2,1)*100)/100; } G.supPlan={y:G.year,gf}; }catch(e){} } /* 창단 첫해는 드래프트 직후 예산 여유가 마이너스로 시작하지 않게 지원 목표에 여유분을 둔다 */
-function projSupport(){ const b=budget(); if(b.indie||!b.cap)return 0; return clamp(b.gap/b.cap,0,2); }
+function projSupport(){ const b=budget(); if(b.indie||!b.cap)return 0; return clamp((b.gap-(b.selfC||0))/b.cap,0,2); }
 /* 코치진 정기 보고: 단장이 처리할 일을 골라 버튼과 함께 보낸다 */
 function staffReport(when){ if(G.unemp||!G.mgr[G.user])return; const tid=G.user; const ps=playersOf(tid); const items=[], acts=[];
   const top=ps.filter(p=>!p.foreign).sort((a,b)=>ovr(b)-ovr(a)).slice(0,10);

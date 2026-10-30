@@ -85,6 +85,7 @@ function foreignCheck(tid,p,excludeId){
   const yb=fs.filter(x=>x.foreign==='용병');
   if(yb.length>=3)return '외국인 선수(아시아쿼터 제외)는 3명까지입니다. 먼저 한 명을 방출하세요.';
   if(yb.length===2&&yb.every(x=>x.isP===p.isP))return `외국인 3명을 모두 ${p.isP?'투수':'타자'}로 채울 수 없습니다.`;
+  if(tid===G.user&&G.contract&&!G.contract.done&&p.foreign==='용병'){ const f=fReCapInfo(); if(f&&f.tot+p.ask>f.cap)return `재계약 중인 선수 조건까지 합치면 외국인 총액이 한도를 ${money(f.tot+p.ask-f.cap)} 넘습니다.`; } /* 재계약 확정 검사와 같은 기준 */
   const cap=fCap(tid); const tot=sum(yb.map(fCommit))+p.ask; if(tot>cap)return `외국인 3명 연봉 총액이 한도 ${Math.round(cap/USD)}만 달러(약 ${money(cap)})를 넘습니다.`;
   return '';
 }
@@ -102,7 +103,8 @@ function signForeign(tid,id){
 /* 방출해도 남은 보장 연봉은 낸다: 개막 전(또는 결산 뒤 다음 시즌 계약)에 방출하면 그 시즌 외국인 지출에 따로 남겨 개막 때 더한다. 개막 뒤 방출은 이미 시즌 지출에 들어 있다 */
 function fDeadOf(tid,y){ const D=G.fDead; return D&&D.y===y?(D.by[tid]||0):0; }
 function fDeadAdd(tid,amt){ const y=sponSeason(); if(G.sea&&G.sea.y===y&&G.cal&&G.day>=G.cal.open)return; if(!G.fDead||G.fDead.y!==y)G.fDead={y,by:{}}; G.fDead.by[tid]=(G.fDead.by[tid]||0)+amt; }
-function releaseForeign(id){ const p=G.players[id]; if(!p)return; if(p.team!=null&&!(p.joinY>sponSeason()))fDeadAdd(p.team,p.sal||0); termsClear(p); mvLog('방출',p,p.team,null,'외국인 선수'); if(p.team===G.user)addLog(`외국인 선수 ${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 지급합니다.`); for(const k in G.lineup)if(G.lineup[k]===id)delete G.lineup[k]; delete G.players[id]; }
+function fNextOwed(p){ if(sponSeason()===G.year)return true; /* 결산 뒤 겨울: 다음 시즌 계약(재계약 확정·이번 겨울 신규 계약)이 있는 선수만 연봉을 낸다 */ const C=G.contract; if(p.fy===sponSeason())return true; if(C&&C.y===G.year&&C.done&&(C.foreignEnd||[]).includes(p.id)&&!(C.foreignDrop||[]).includes(p.id))return true; return false; }
+function releaseForeign(id){ const p=G.players[id]; if(!p)return; if(p.team!=null&&!(p.joinY>sponSeason())&&fNextOwed(p))fDeadAdd(p.team,p.sal||0); termsClear(p); mvLog('방출',p,p.team,null,'외국인 선수'); if(p.team===G.user)addLog(`외국인 선수 ${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 지급합니다.`); for(const k in G.lineup)if(G.lineup[k]===id)delete G.lineup[k]; delete G.players[id]; }
 /* 외국인 시장은 10개 구단이 함께 쓴다. 구단마다 스카우트 오차를 안고 후보를 평가한다 */
 function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병'); if(yb.length<3){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1; return {kind:'용병',isP:needP?true:needB?false:null}; } if(!fs.some(x=>x.foreign==='아시아'))return {kind:'아시아',isP:null}; return null; }
 function fScoreBy(tid,q){ const t=team(tid); return ovr(q)-(q.team==null?(q.sx||0)*.9:0)+hn('fv'+tid,q.id)*(t.scoutSd||6)*.6-q.ask/600; }

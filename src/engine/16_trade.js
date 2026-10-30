@@ -55,7 +55,9 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
 function stackIn(vals){ const pos=vals.filter(x=>x>0).sort((a,b)=>b-a), neg=vals.filter(x=>x<=0); const w=[1,.62,.42,.3,.25]; return sum(pos.map((x,i)=>x*(w[i]??.25)))+sum(neg); }
 function tradeNeed(t,outVal){ const tr=gmTrait(t.id); let n=.9+Math.max(0,outVal)*.075-(t.rel-50)/15*(tr==='loyal'?2:1); if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
 function trueVal(p){ const o=ovr(p); const eff=p.age<=25?o+Math.max(0,p.pot-o)*.6:p.age>=32?o-(p.age-31)*1.3:o; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
-function tradeOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=tradeDL(); return true; }
+/* 한국시리즈가 끝나고 결산 전(이틀)에는 끝난 시즌 장부가 바뀌지 않게 막는다 */
+function preSettle(){ return !!(G.ps&&G.ps.done&&G.ps.finDay!=null&&G.day<G.ps.finDay&&!(G.last&&G.last.y>=G.year)); }
+function tradeOpen(){ const per=period(); if(per==='post'||preSettle())return false; if(per==='season')return G.day<=tradeDL(); return true; }
 /* 현금: 백만 원 단위. 돈을 중시하는 구단(독립·수익형 구단주·캡 초과·리빌딩)일수록 가치가 크다 */
 function cashVal(t,cash){ return cash>0?cash/100*teamCtx(t).money*.9:0; }
 /* 부족분을 메우는 데 필요한 현금(100만 원 단위, 1천만 원 단위로 올림) */

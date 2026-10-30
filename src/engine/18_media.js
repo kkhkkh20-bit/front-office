@@ -17,8 +17,8 @@ function prDaily(won,lost){ prInit(); const P=G.pr;
   P.press+=(50-P.press)*.012; P.fan+=(50+(team(G.user).pop-1)*30-P.fan)*.004; }
 function prAfterGame(rec){ prInit(); const S=G.sea; const won=rec.res==='승', lost=rec.res==='패'; try{ ivNewsAfterGame(rec); }catch(e){}
   prDaily(won,lost);
-  S.streak=won?(S.streak>0?S.streak+1:1):lost?(S.streak<0?S.streak-1:-1):0;
-  const st=S.streak, nm=tshort(G.user);
+  const reg=period()==='season'; if(reg)S.streak=won?(S.streak>0?S.streak+1:1):lost?(S.streak<0?S.streak-1:-1):0; /* 포스트시즌은 정규시즌 연승·연패에 잇지 않는다 */
+  const st=reg?S.streak:0, nm=tshort(G.user);
   if(st===8)try{ ivRequest('streak_win',{n:8}); }catch(e){}
   if(st===5||st===8||st===12)news('경기',`${nm}, ${st}연승 질주`,`${tname(G.user)}이(가) ${st}연승을 달렸습니다. 마운드와 타선이 고르게 터지면서 분위기가 살아났다는 평가입니다.`,st>=8?3:2);
   if(st===-5||st===-8||st===-12){ const n=-st; const T=[[`${nm} ${n}연패 수렁… 프런트 책임론`,`전력 보강 실패와 운영 방향을 두고 프런트를 향한 비판이 나오고 있습니다.`],[`${nm}, 끝 모를 ${n}연패`,`타선 침묵과 마운드 붕괴가 겹쳤습니다. 분위기 반전 카드가 필요하다는 목소리가 큽니다.`],[`${n}연패 ${nm}, 해법이 안 보인다`,`벤치와 프런트 모두 답을 찾지 못하고 있습니다. 팬들의 인내심도 바닥나고 있습니다.`],[`${nm} 또 졌다… ${n}연패`,`경기력 기복이 심합니다. 선수단 구성을 다시 봐야 한다는 지적이 나옵니다.`]];
@@ -68,6 +68,6 @@ function setGoals(intro,first){ prInit(); const t=team(G.user); const proj=G.pro
   mail('구단주실',`${G.year} 시즌 구단 목표`,`${intro?intro+'\n\n':''}구단주께서 올 시즌 목표를 정하셨습니다.\n\n${lines.map((l,i)=>`${i+1}. ${l}`).join('\n')}\n\n전력분석팀 예상 순위는 ${proj}위입니다. ${OWNER[ow].msg} 매달 말 구단주께서 진행 상황을 보고받으십니다.`,{imp:true,kind:'구단주',acts:[{l:'목표 보기',a:'go',v:'club:owner'}]});
 }
 function goalStatus(){ const g=G.goals; if(!g||g.y!==G.year)return null; const t=team(G.user); const per=period();
-  const st=per==='season'||per==='post'?standingsNow():null; const rk=st?st.findIndex(x=>x.tid===G.user)+1:null;
-  const proj=projSupport(); const yc=domestic(G.user).filter(p=>p.age<=24).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?h.outs>=240:h.pa>=223); }).length;
+  const st=per==='season'||per==='post'?standingsNow():null; const rk=st?st.findIndex(x=>x.tid===G.user)+1:(G.last&&G.last.y===G.year&&G.last.order?G.last.order.findIndex(o=>o.tid===G.user)+1||null:null); /* 시즌이 끝난 뒤에는 최종 순위 */
+  const proj=projSupport(); const yc=domestic(G.user).filter(p=>p.age<=24).filter(p=>{ const h=seasonTotalT(p,G.year,'1군',G.user); return h&&(p.isP?h.outs>=240:h.pa>=223); }).length;
   return {rank:{t:g.rank,cur:rk,ok:rk!=null&&rk<=g.rank},sup:{t:g.sup,cur:proj,ok:proj<=g.sup},fan:{t:g.fan,cur:Math.round(G.pr.fan),ok:G.pr.fan>=g.fan},youth:g.youth?{t:1,cur:yc,ok:yc>=1}:null}; }

@@ -360,6 +360,36 @@ T('[감사] 감독을 경질해 대행 체제가 되면 전임 감독의 육성 
 T('[감사] 해외에서 돌아온 선수의 진출 전 계약 조건은 되살아나지 않는다',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.foreign&&!q.isP); p.faC=true; p.yrs=3; termsApply(p,{years:3,bonus:900,annual:p.sal,opt:200,role:0,ntc:true},'fa',G.year,true); p.age=33;
   ovsLeave(p,'NPB','테스트',1,100,'해외 FA'); const a=G.abroad.find(x=>x.id===p.id); a.y=G.year-1; abroadYear(); const q=G.players[p.id]; ok(q&&q.team===a.from,'준비 실패: 복귀 안 함'); ok(!hasNtc(q)&&capBOf(q)===0,'해외 복귀 뒤 옛 계약 조건이 되살아남'); });
 
+/* ===== 패턴 감사(같은 값 두 곳 계산·기간 경계) ===== */
+T('[감사] 돔구장 대관 수입은 예산 전망과 결산이 같다',()=>{ fresh(); stadOf(G.user).dome=true; const proj=stadProj(G.user).ad; simTo(()=>G.last&&G.last.y===G.year); const f=G.last.fins&&(G.last.fins[G.user]||G.last.fins.find?.(x=>x.tid===G.user));
+  const inc=JSON.stringify(f||G.last.fins); const m=(f&&f.inc||[]).find(x=>x[0]==='구장 부대 수입'); ok(m,'준비 실패: 결산에 구장 부대 수입 줄 없음 '+inc.slice(0,120)); ok(m[1]>=2500,'돔 대관 수입이 결산에 없음: 전망 '+proj+' · 결산 '+m[1]); });
+
+T('[감사] 결산 뒤 겨울의 상한·지원 한도 축소는 다음 시즌 기준',()=>{ fresh(); simTo(()=>G.last&&G.last.y===G.year&&dobj(G.day).m===12&&dobj(G.day).d>=2); const t=team(G.user);
+  ok(capInfo(G.user).cap===capOf(G.year+1),'12월 상한 검사가 끝난 시즌 상한 '+capInfo(G.user).cap+'(다음 시즌 '+capOf(G.year+1)+')');
+  const c0=supportCap(t); t.supCut={y:G.year+1,amt:1000}; ok(supportCap(t)===c0-1000,'다음 시즌 지원 한도 축소가 겨울 전망에 반영 안 됨'); });
+
+T('[감사] 예산 전망도 결산처럼 보유 현금 30억 초과분으로 적자를 먼저 메운다',()=>{ fresh(); const t=team(G.user); t.cash=15000; const b=budget(); ok(b.gap>0,'준비 실패: 적자 아님');
+  const selfC=Math.min(b.gap,(t.cash-3000)*.5); ok(Math.abs(b.support-Math.min(b.cap,Math.max(0,b.gap-selfC)))<=1,'전망 지원 '+b.support+'(결산식 '+Math.min(b.cap,Math.max(0,b.gap-selfC))+')'); });
+
+T('[감사] 계약이 끝난 외국인을 겨울에 방출하면 다음 시즌 지출이 생기지 않는다',()=>{ fresh(); simTo(()=>G.last&&G.last.y===G.year&&dobj(G.day).m===11&&dobj(G.day).d>=10); const p=foreignOf(G.user).find(q=>q.foreign==='용병'&&q.fy!==G.year+1); ok(p,'준비 실패');
+  const d0=fDeadOf(G.user,G.year+1); releaseForeign(p.id); ok(fDeadOf(G.user,G.year+1)===d0,'재계약하지 않은 선수인데 다음 시즌 보장 연봉 '+(fDeadOf(G.user,G.year+1)-d0)+'이 잡힘'); });
+
+T('[감사] 외국인 재계약 기간의 신규 영입은 재계약 조건까지 합쳐 한도를 본다',()=>{ fresh(); simTo(()=>G.contract&&!G.contract.done&&G.contract.foreignEnd&&G.contract.foreignEnd.length>=2&&G.day>=KD(12,2)); const C=G.contract; const f=fReCapInfo();
+  let ks=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'); if(ks.length>=3){ const x=ks.pop(); C.foreignDrop.push(x.id); x.team=null; } ok(ks.length===2,'준비 실패: 재계약 대상 '+ks.length);
+  for(const p of ks){ p.sal=Math.round(f.cap*.25); p.newSal=Math.round(f.cap*.45); } const g=fReCapInfo(); const cand=newForeign('용병',{}); cand.isP=!ks[0].isP||!ks[1].isP; cand.ask=Math.min(F_NEW_CAP,Math.max(100,g.cap-g.tot+50)); ok(foreignCheck(G.user,cand),'재계약 조건까지 합치면 초과인데 신규 영입 검사가 통과'); });
+
+T('[감사] 와일드카드: 무승부가 나오면 1승을 안고 시작한 4위가 올라간다',()=>{ for(const seq of [['T','A'],['A','T']]){ fresh(); const [H,L]=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); const sv=mkSeries('wc',H,L,G.day); G.ps={cur:sv,res:{},seeds:[0,0,0,H,L],round:'wc',done:false};
+    const sg=simGame, ag=applyGame; let k=0; simGame=()=>{ const r=seq[k++]; return {score:r==='T'?{h:2,a:2}:(sv.homes[sv.gi]===L?{h:5,a:1}:{h:1,a:5})}; }; applyGame=()=>{};
+    try{ for(let i=0;i<2&&G.ps.round==='wc';i++)psDay(sv.days[sv.gi]); } finally { simGame=sg; applyGame=ag; } ok(G.ps.res.wc&&G.ps.res.wc[0]===H,'무승부·5위 승('+seq.join(',')+')인데 5위가 진출'); } });
+
+T('[감사] 한국시리즈 뒤 결산 전에는 트레이드·무적 영입이 닫힌다',()=>{ fresh(); G.ps={done:true,finDay:G.day+2,res:{},seeds:[]}; G.last={y:G.year-1}; const sv=G.cal.end; ok(!tradeOpen(),'결산 전인데 트레이드가 열림'); ok(!freeOpen(),'결산 전인데 무적 영입이 열림'); });
+
+T('[감사] 홈런이 아닌 끝내기는 결승점까지만 인정한다',()=>{ fresh(); const T2=G.teams.map(t=>t.id); let bad=0, wo=0;
+  for(let i=0;i<400;i++){ const g=simGame(G.day,T2[i%10],T2[(i+4)%10],false); const L=g.line.h; const last=L[L.length-1]; if(L.length>=9&&typeof last==='number'&&g.score.h>g.score.a&&last>0){ const r=g.pbp[g.pbp.length-1]; if(!r||typeof r[1]!=='number')continue; wo++; if(r[3]!=='HR'&&g.score.h-g.score.a>1)bad++; } }
+  ok(wo>0,'준비 실패: 끝내기 없음'); ok(!bad,'홈런이 아닌 끝내기로 2점 이상 이긴 경기 '+bad+'개'); });
+
+T('[감사] 8월 15일 뒤에는 육성선수를 정식으로 올릴 수 없다',()=>{ fresh(); simTo(()=>period()==='season'); const p=playersOf(G.user).find(q=>!q.foreign&&!q.faC&&q.sal<=100); toYS(p.id); G.day=KD(8,20); ok(period()==='season','준비 실패'); const r=fromYS(p.id); ok(p.ys,'마감 뒤 정식 등록이 됨: '+r); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }

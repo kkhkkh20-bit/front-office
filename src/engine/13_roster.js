@@ -37,7 +37,7 @@ function offerMailDone(oid){ for(const m of G.mail) if(m.oid===oid)m.read=true; 
 function wire(kind,t,o){ o=o||{}; const w={d:G.day,k:kind,t,tid:o.tid??null,ref:o.ref??null}; if(o.x)w.x=o.x; (G.wire=G.wire||[]).unshift(w); if(G.wire.length>150)G.wire.length=150; }
 function addLog(t){ G.log.unshift({y:G.year,d:G.day,t}); G.log=G.log.slice(0,80); }
 function updateModes(){ const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r); rs.forEach((x,i)=>team(x.id).mode=i<6?'contend':i<8&&R()<.5?'contend':'rebuild'); for(const t of G.teams){ if(G.user!=null&&t.id!==ME()&&t.cash<-5000)t.mode='rebuild'; } }
-function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.5+t.trust/100))-(t.supCut&&t.supCut.y===G.year?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
+function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.5+t.trust/100))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
 /* 상한 초과 제재(2025년 개정 규정): 1회 초과분 30%, 2회 연속 50%, 3회 연속 100% + 다음 해 1라운드 지명권 9단계 하락 */
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 /* 하한 미달(2027년~): 모자란 금액의 50%, 2회 연속 60%, 3회 연속부터 75%를 발전기금으로 낸다.
@@ -46,12 +46,12 @@ function floorRate(n){ return n>=3?.75:n===2?.6:.5; }
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */
 const ME=()=>G.unemp?-99:G.user;
-function aiCapFix(tid,frac,noRel,maxN){ const t=team(tid); if(!t||tid===ME())return 0; const cap=capOf(G.year)*(frac||.985); let n=0, guard=0;
+function aiCapFix(tid,frac,noRel,maxN){ const t=team(tid); if(!t||tid===ME())return 0; const cap=capOf(sponSeason())*(frac||.985); let n=0, guard=0;
   while(capPay(tid)>cap&&guard++<12&&n<(maxN||99)){
     const core=new Set(domestic(tid).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4).map(p=>p.id));
     const c=domestic(tid).filter(p=>!core.has(p.id)&&!isRookie(p)&&p.sal>=150&&!(p.joinY>G.year)).sort((a,b)=>aiVal(t,a)/a.sal-aiVal(t,b)/b.sal)[0];
     if(!c)break;
-    const rc=G.teams.filter(x=>x.id!==tid&&x.id!==ME()&&(x.cash||0)>-2000&&capPay(x.id)+c.sal<=capOf(G.year)*.95&&rosterN(x.id)<ROSTER_MAX-1&&aiVal(x,c)>=Math.max(.5,c.sal/400)).sort((a,b)=>(capPay(a.id))-(capPay(b.id)))[0];
+    const rc=G.teams.filter(x=>x.id!==tid&&x.id!==ME()&&(x.cash||0)>-2000&&capPayAs(x.id,[c.id],[])<=capOf(sponSeason())*.95&&rosterN(x.id)<ROSTER_MAX-1&&aiVal(x,c)>=Math.max(.5,c.sal/400)).sort((a,b)=>(capPay(a.id))-(capPay(b.id)))[0];
     if(rc){ termsClear(c); mvLog('트레이드',c,tid,rc.id,'연봉 덜어내기'); c.team=rc.id; c.listed=false; for(const k in G.lineup)if(G.lineup[k]===c.id)delete G.lineup[k]; story(c,`연봉 덜어내기 트레이드로 ${tname(rc.id)} 이적`,'move'); wire('트레이드',`${tname(tid)}, ${noRel?'적자를 줄이려':'샐러리캡 맞추려'} ${c.name}(${money(c.sal)})을 ${tname(rc.id)}로 보냄`,{tid,ref:c.id}); }
     else if(noRel)break;
     else { const cost=c.faC?Math.round(c.sal*Math.max(1,c.yrs)*.5):0; t.cash-=cost; wire('방출',`${tname(tid)}, 샐러리캡 때문에 ${c.name}(${money(c.sal)}) 방출`,{tid,ref:c.id}); if(c.age<=35&&ovr(c)>=30)toFree(c,`${tname(tid)}에서 방출(샐러리캡)`); else retireOut(c,`${tname(tid)}에서 방출된 뒤 은퇴`); } /* 로스터 정리와 같은 기준: 뛸 만한 선수는 무적 시장으로 */
@@ -69,5 +69,5 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME()||t.cash>=-4000)continue; t.mode='rebuild'; n+=aiCapFix(t.id,.8,true,3); } return n; }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
 /* 경쟁균형세 상한 결정(capCouncil)은 68_assoc.js의 실행위원회·이사회로 옮겼다 */
-function capInfo(tid){ const pay=capPay(tid), cap=capOf(G.year); return {pay,all:payroll(tid),cap,floor:floorOf(G.year),over:Math.max(0,pay-cap)}; }
+function capInfo(tid){ const pay=capPay(tid), cap=capOf(sponSeason()); return {pay,all:payroll(tid),cap,floor:floorOf(G.year),over:Math.max(0,pay-cap)}; }
 

@@ -81,8 +81,8 @@ function tradeView(){
   tr.get=tr.get.filter(id=>ok(G.players[id])&&G.players[id].team===tr.tid);
   const gv=tr.give.map(id=>G.players[id]), gt=tr.get.map(id=>G.players[id]);
   const dPay=sum(gt.map(p=>p.sal))-sum(gv.map(p=>p.sal));
-  const capAfter=capPay(G.user)+dPay, cap=capOf(G.year);
-  const myN=playersOf(G.user).length-gv.length+gt.length, thN=playersOf(tr.tid).length+gv.length-gt.length;
+  const capAfter=capPayAs(G.user,tr.get||[],tr.give||[]), cap=capOf(sponSeason()); /* 엔진과 같이 상위 40명을 다시 고른다 */
+  const myN=rosterN(G.user)-gv.filter(p=>!p.ys).length+gt.filter(p=>!p.ys).length, thN=rosterN(tr.tid)+gv.filter(p=>!p.ys).length-gt.filter(p=>!p.ys).length; /* 정식 선수 기준(육성 제외) */
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
   const board=`<section class="card tboard">
@@ -169,9 +169,9 @@ function salTalkView(ended){ salTalkInit(); const C=G.contract; const wk=Math.fl
   return `<div class="eyebrow">국내 선수 연봉 협상 · 미합의 ${open.length}명</div>
     ${fresh.length?`<button class="btn primary block" data-a="salOffAll">구단 산정안으로 ${fresh.length}명에게 일괄 제시</button>`:''}
     <details class="frule"><summary class="small">연봉 산정 기준 보기</summary><div class="small">
-      <p><b>1. 직전 시즌 1군 WAR로 인상 폭 상한을 정합니다.</b> WAR 0 이하 +10%, 1이면 +45%, 2이면 +80%, 3이면 +115%, 5 이상이면 +190%까지. 1군 표본이 적으면(타자 120타석, 투수 25이닝 미만) 15% 안에서만 움직입니다.</p>
-      <p><b>2. 같은 연차·능력의 보류권 기준액 쪽으로 맞춥니다.</b> FA 시장가의 3년 미만 14%, 6년 미만 22%, FA 직전 32%. 연차별 최고 기록(4년차 5억 등)을 넘지 않습니다.</p>
-      <p><b>3. 잘한 선수는 깎지 않습니다.</b> WAR 3 이상 5% 이상 인상, 2 이상 동결 이상. 부진하면 깎습니다. 실제 한국 프로야구 규약의 삭감 제한은 2008년에 없어졌고, 구단 관행상 3억 미만은 최대 40%, 3억 이상은 최대 50%까지 깎습니다(김도영 5억→2.5억).</p>
+      <p><b>1. 직전 시즌 1군 WAR로 인상 폭 상한을 정합니다.</b> WAR 0 이하 동결, 0.5면 +20%, 1이면 +40%, 2이면 +80%, 3이면 +120%, 5 이상이면 +190%까지. 1군 표본이 적으면(타자 120타석, 투수 25이닝 미만) 15% 안에서만 움직입니다.</p>
+      <p><b>2. 같은 연차·능력의 보류권 기준액 쪽으로 맞춥니다.</b> FA 시장가의 3년 미만 18%, 6년 미만 30%, FA 직전 42%, FA 자격을 얻고도 신청하지 않은 선수 55%. 연차별 최고 기록(4년차 5억 등)을 넘지 않습니다.</p>
+      <p><b>3. 잘한 선수는 깎지 않습니다.</b> WAR 3 이상 15% 이상 인상, 2 이상 8% 이상 인상, 1 이상 동결 이상, 0 이상은 최대 15%까지만 삭감. 그보다 부진하면 더 깎습니다. 실제 한국 프로야구 규약의 삭감 제한은 2008년에 없어졌고, 구단 관행상 3억 미만은 최대 40%, 3억 이상은 최대 50%까지 깎습니다(김도영 5억→2.5억).</p>
       <p><b>예비 FA:</b> 다음 시즌 뒤 FA가 되는 선수입니다. 실제 구단들은 핵심 예비 FA의 마지막 보류 시즌 연봉을 크게 올리곤 합니다. 붙잡겠다는 신호이면서, 떠나면 받는 보상금(직전 연봉 × A등급 2배+선수 또는 3배, B등급 1배+선수 또는 2배, C등급 1.5배)을 키우는 계산입니다. 다른 구단도 핵심 예비 FA에게는 이렇게 합니다. 최저 연봉은 2027년부터 3,300만 원입니다.</p>
       <p><b>4. 선수는 성적이 좋을수록, 야망이 클수록 산정안보다 더 원합니다.</b> 한 선수와는 한 주에 한 번 협상합니다. 거절하면 요구액을 조금씩 낮춥니다.</p>
       <p><b>5. 연봉조정:</b> 1월 10일까지 합의하지 못한 3년차 이상 선수는 신청할 수 있고, 1월 20일 조정위원회가 구단안과 선수안 중 하나를 고릅니다. 실제 한국 프로야구에서 조정위원회까지 간 20건 중 선수가 이긴 것은 2번(2002 류지현, 2021 주권)입니다. 조정에서 진 선수는 기분이 크게 떨어집니다.</p></div></details>
