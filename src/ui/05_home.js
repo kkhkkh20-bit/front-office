@@ -5,9 +5,9 @@ function digestCard(){ const D=G.dig; if(!D||!D.games||!D.games.length||G.res)re
   const w=gs.filter(x=>x.g.res==='승').length, l=gs.filter(x=>x.g.res==='패').length; const rk=userRank();
   const chips=gs.map(x=>{ const g=x.g; const home=g.home===G.user; const ms=home?g.hs:g.as, os=home?g.as:g.hs; const op=home?g.away:g.home;
     return `<button class="dg-g ${g.res==='승'?'w':g.res==='패'?'l':''}" data-a="openGame" data-v="${x.i}"><i>${dsh(g.day)}</i><b>${g.res}</b><span>${ms}:${os}</span><em>${home?'vs':'@'} ${esc(team(op).nick)}</em></button>`; }).join('');
-  const rows=[]; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-a[i]);
+  const rows=[]; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-(a[i]||0));
     if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,isP:true,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3+d.hld*.15,t:`${ipStr(d.outs)}이닝 ${d.er}자책${d.w?` ${d.w}승`:''}${d.l?` ${d.l}패`:''}${d.sv?` ${d.sv}세이브`:''}${d.hld?` ${d.hld}홀드`:''}`}); }
-    else { if(d.pa<5)continue; const ops=d.ab?(d.h+d.bb)/Math.max(1,d.pa)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,isP:false,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} ${d.rbi}타점 · OPS ${fmt3(ops)}`}); } }
+    else { if(d.pa<5)continue; const ops=d.ab?obpOf(d)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,isP:false,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} ${d.rbi}타점 · OPS ${fmt3(ops)}`}); } }
   rows.sort((a,b)=>b.sc-a.sc); const B=rows.filter(x=>!x.isP), P=rows.filter(x=>x.isP); const hot=[...B.slice(0,2),...P.slice(0,1)].filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc), cold=[B[B.length-1],P[P.length-1]].filter(x=>x&&x.sc<0&&!hot.includes(x));
   const li=x=>`<button class="dg-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.t}</i></span></button>`;
   const inj=playersOf(G.user).filter(p=>p.injOut>=5).slice(0,3);

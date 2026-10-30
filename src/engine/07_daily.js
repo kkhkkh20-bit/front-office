@@ -47,7 +47,7 @@ function advance(mode){
   return G.lastAdv;
 }
 /* 주간 요약용: 우리 선수 시즌 누적 기록 스냅숏 */
-const DIGK=['pa','ab','h','bb','hr','rbi','d','tr','sb','outs','er','so','w','l','sv','hld','g','gs'];
+const DIGK=['pa','ab','h','bb','hr','rbi','d','tr','sb','outs','er','so','w','l','sv','hld','g','gs','sf'];
 function digSnap(){ const o={}; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); o[p.id]=h?DIGK.map(k=>h[k]||0):DIGK.map(()=>0); } return o; }
 function userRank(){ try{ const st=standingsNow(); return st.findIndex(x=>x.tid===G.user)+1; }catch(e){ return 0; } }
 /* 시즌 제한(현재 꺼 둠): 켜면 첫 시즌을 마치고 스토브리그 직전에서 멈춘다 */

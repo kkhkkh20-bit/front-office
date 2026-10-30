@@ -7,7 +7,7 @@ function splitOf(tid){ const L=tlOf(tid); const f=h=>{ const r=wlOf(L.filter(x=>
 function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
 const pctStr=o=>o.w+o.l?fmt3(o.w/(o.w+o.l)):'-';
-function standOrder(){ const per=period(); if(per==='season'||per==='post')return {live:true,y:G.year,order:standingsNow()}; const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order:standingsNow()}; }
+function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:standingsNow()}; const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order:standingsNow()}; }
 const gbOf=(top,o)=>((top.w-o.w)-(top.l-o.l))/2;
 const gbStr=v=>v<=0?'-':v.toFixed(1);
 function strkPill(tid){ const s=streakOf(tid); if(!s)return ''; return `<span class="strk ${s.includes('승')?'w':s.includes('패')?'l':''}" data-a="go" data-v="league:stand">${s}</span>`; }

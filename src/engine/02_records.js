@@ -41,7 +41,9 @@ const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,so:0,er:0,w:0,l:0,sv:0,hld:0};
 function lineFor(p,y,t,lvl){ let h=p.hist.find(x=>x.y===y&&x.t===t&&x.lvl===lvl); if(!h){ h=Object.assign({y,t,lvl},p.isP?ZP:ZB); p.hist.push(h);} return h; }
 function addTo(h,o){ for(const k in o) if(k!=='y'&&k!=='t'&&typeof o[k]==='number') h[k]=(h[k]||0)+o[k]; }
 // 비율 기록
-function bRate(h){ const avg=h.ab?h.h/h.ab:0, obp=h.pa?(h.h+h.bb)/h.pa:0, slg=h.ab?(h.h+h.d+2*h.tr+3*h.hr)/h.ab:0; return {avg,obp,slg,ops:obp+slg}; }
+/* 출루율 = (안타+볼넷)/(타수+볼넷+희생플라이). 희생번트는 분모에 넣지 않는다 */
+function obpOf(h){ const d=(h.ab||0)+(h.bb||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0))/d:0; }
+function bRate(h){ const avg=h.ab?h.h/h.ab:0, obp=obpOf(h), slg=h.ab?(h.h+h.d+2*h.tr+3*h.hr)/h.ab:0; return {avg,obp,slg,ops:obp+slg}; }
 function pRate(h){ const ip=h.outs/3; return {ip,era:h.outs?h.er*27/h.outs:0,whip:h.outs?(h.h+h.bb)*3/h.outs:0,k9:h.outs?h.so*27/h.outs:0,bb9:h.outs?h.bb*27/h.outs:0}; }
 const ipStr=outs=>Math.floor(outs/3)+(outs%3?'.'+outs%3:'');
 const POS_ADJ={C:9,SS:7,'2B':3,CF:3,'3B':2,LF:-6,RF:-6,'1B':-10,DH:-15};

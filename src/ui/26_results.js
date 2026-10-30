@@ -1,19 +1,19 @@
 /* ---------- 경기 결과 확인 ---------- */
 /* 중계 시점 기록: 이 경기 시작 전 누적 + 지금 타석 직전까지의 오늘 기록. 경기 결과가 미리 새지 않게 한다 */
-function seasonAt(g,k,id,isP){ const p=G.players[id]; if(!p)return null; const tot=seasonTotal(p,G.year,'1군'); const z=isP?{outs:0,er:0,h:0,bb:0,so:0,hr:0}:{pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0};
+function seasonAt(g,k,id,isP){ const p=G.players[id]; if(!p)return null; const tot=seasonTotal(p,G.year,'1군'); const z=isP?{outs:0,er:0,h:0,bb:0,so:0,hr:0}:{pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,sf:0};
   const o=Object.assign({},z); if(tot)for(const key in z)o[key]=tot[key]||0;
   const gi=g?G.games.indexOf(g):-1; const yr=dobj(G.day).y;
   if(gi>=0)for(let i=0;i<=gi;i++){ const r=G.games[i]; if(!r||!r.box||/차전/.test(r.kind||'')||dobj(r.day).y!==yr)continue; for(const sd of ['h','a']){ const S=r.box[sd]; if(!S)continue;
       if(isP){ const q=(S.pit||[]).find(x=>x.id===id); if(q){ o.outs-=q.outs||0; o.er-=q.er||0; o.h-=q.h||0; o.bb-=q.bb||0; o.so-=q.so||0; o.hr-=q.hr||0; } }
-      else { const q=(S.bat||[]).find(x=>x.id===id); if(q){ o.ab-=q.ab||0; o.h-=q.h||0; o.d-=q.d||0; o.tr-=q.tr||0; o.hr-=q.hr||0; o.bb-=q.bb||0; o.so-=q.so||0; o.pa-=(q.ab||0)+(q.bb||0); } } } }
+      else { const q=(S.bat||[]).find(x=>x.id===id); if(q){ o.ab-=q.ab||0; o.h-=q.h||0; o.d-=q.d||0; o.tr-=q.tr||0; o.hr-=q.hr||0; o.bb-=q.bb||0; o.so-=q.so||0; o.sf-=q.sf||0; o.pa-=(q.ab||0)+(q.bb||0)+(q.sf||0); } } } }
   if(g&&g.pbp){ const L=g.pbp; let half=-1,o0=0,cp=null; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[0]!==half){ half=x[0]; o0=0; } if(x[1]==='PC'){ cp=x[2]; continue; } if(x[1]==='SB'||x[1]==='CS'){ if(isP&&x[1]==='CS'&&cp===id)o.outs+=Math.max(0,x[3]-o0); o0=x[3]; continue; } if(typeof x[1]!=='number')continue; cp=x[2];
       if(isP&&Array.isArray(x[11]))o.er+=x[11].filter(z=>z===id).length;
       if(isP&&x[2]===id){ o.outs+=Math.max(0,x[4]-o0); if(!Array.isArray(x[11]))o.er+=x[6]||0; if(x[3]==='K')o.so++; if(x[3]==='BB')o.bb++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='HR')o.hr++; }
-      if(!isP&&x[1]===id){ o.pa++; if(x[3]==='BB')o.bb++; else if(x[3]!=='SAC')o.ab++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='2B')o.d++; if(x[3]==='3B')o.tr++; if(x[3]==='HR')o.hr++; if(x[3]==='K')o.so++; }
+      if(!isP&&x[1]===id){ o.pa++; if(x[3]==='BB')o.bb++; else if(x[3]!=='SAC'&&!x[13])o.ab++; if(x[13])o.sf++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='2B')o.d++; if(x[3]==='3B')o.tr++; if(x[3]==='HR')o.hr++; if(x[3]==='K')o.so++; }
       o0=x[4]; } }
   for(const key in o)o[key]=Math.max(0,o[key]); return o; }
 function eraAt(g,k,id){ const o=seasonAt(g,k,id,true); return o&&o.outs?(o.er*27/o.outs).toFixed(2):'-'; }
-function batAt(g,k,id){ const o=seasonAt(g,k,id,false); if(!o||!o.pa)return null; const avg=o.ab?o.h/o.ab:0, obp=o.pa?(o.h+o.bb)/o.pa:0, slg=o.ab?(o.h+o.d+2*o.tr+3*o.hr)/o.ab:0; return {avg,ops:obp+slg,hr:o.hr}; }
+function batAt(g,k,id){ const o=seasonAt(g,k,id,false); if(!o||!o.pa)return null; const avg=o.ab?o.h/o.ab:0, obp=obpOf(o), slg=o.ab?(o.h+o.d+2*o.tr+3*o.hr)/o.ab:0; return {avg,ops:obp+slg,hr:o.hr}; }
 function avgOpsAt(g,k,id){ const r=batAt(g,k,id); return r?`${fmt3(r.avg)} / ${fmt3(r.ops)}`:'-'; }
 function seasonAvgOps(id){ const p=G.players[id]; if(!p)return ''; const h=seasonTotal(p,G.year,'1군'); if(!h||!h.pa)return '-'; const r=bRate(h); return `${fmt3(r.avg)} / ${fmt3(r.ops)}`; }
 function seasonEra(id){ const p=G.players[id]; if(!p)return '-'; const h=seasonTotal(p,G.year,'1군'); return h&&h.outs?pRate(h).era.toFixed(2):'-'; }

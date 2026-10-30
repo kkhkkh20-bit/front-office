@@ -46,7 +46,7 @@ function faOutBlocked(tid,p){ return tid!==p.faFrom&&faOutN(tid)>=faCapN(); }
 /* AI 구단의 비FA 다년계약: 상한 여유가 있으면 FA를 앞둔(또는 막 자격을 얻은) 핵심 선수를 미리 묶는다(실제 KBO의 비FA 다년계약 흐름).
    선수풀이 작아 시장에 내보내면 잡기 어렵다는 계산이다. 새 계약은 다음 시즌부터(extNext) */
 function aiExtensions(all){ const done=[];
-  for(const t of G.teams){ if(t.id===G.user||t.cash<-3000)continue; let room=capOf(G.year+1)*(t.mode==='contend'?1.0:.96)-capPay(t.id); let n=0;
+  for(const t of G.teams){ if(t.id===ME()||t.cash<-3000)continue; let room=capOf(G.year+1)*(t.mode==='contend'?1.0:.96)-capPay(t.id); let n=0;
     const C=all.filter(p=>p.team===t.id&&!p.foreign&&!p.extNext&&!p.faC&&!p.ext&&p.age<=33&&ovr(p)>=56&&faSvc(p)-(p.svc||0)<=1&&faSvc(p)-(p.svc||0)>=0).sort((a,b)=>ovr(b)-ovr(a));
     for(const p of C){ if(n>=2)break; const ytf=faSvc(p)-(p.svc||0); const years=p.age<=29?4:p.age<=32?3:2; const d=round5(extDemand(p,years)*(hasAgent(p)?agExtMul(p):1));
       if(d-p.sal>room)continue; if(R()>(ytf===0?.4:.28)*(t.mode==='contend'?1.2:1))continue;
@@ -170,7 +170,7 @@ function contractStart(){
   }
   G.contract={y:G.year,tid:G.user,ended,foreignEnd,foreignDrop:[],released:[],done:false}; for(const id of foreignEnd)initPers(G.players[id]); salTalkInit();
   /* AI 구단: 기량이 크게 떨어진 고액 연봉 베테랑은 정리한다 */
-  for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<44&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
+  for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<44&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
   refreshFMarket(12,99);
   stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal'];

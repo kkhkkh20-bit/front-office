@@ -43,9 +43,11 @@ function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal;
   const att=Math.round(done+rest); const n=dn+rn;
   return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(att*TICKET*ecoIdx()*PRICE[S.price].m),fnb:Math.round(att*.0003*(S.lv.fnb-2)),prem:(S.lv.prem-2)*600,ad:(S.lv.vis-2)*400+(S.dome?2500:0),
     up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; }
+/* 구장 공사 시작 가능 기간: 정규시즌이 끝난 뒤부터 2월 말까지(3월은 개막 준비) */
+function stadWindow(){ const per=period(); if(per==='season'||per==='post')return false; return !(per==='pre'&&dobj(G.day).m>=3); }
 function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=S.lv[k];
   if(lv>=5)return '이미 최고 단계입니다.'; if((S.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
-  if(period()==='season'||period()==='post')return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
+  if(!stadWindow())return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
   const c=STAD_COST[lv+1]; const t=team(G.user); if(t.cash<c)return `자금이 부족합니다. 공사비 ${money(c)}이 필요합니다.`;
   t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); G.spend.stad=(G.spend.stad||0)+c;
   addLog(`${stadName(G.user)} ${it.l} ${lv+1}단계 공사를 시작했습니다(공사비 ${money(c)}, ${STAD_DAYS[lv+1]}일).`); return ''; }
