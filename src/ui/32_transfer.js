@@ -3,7 +3,7 @@ function fErrShort(e){ e=e||''; return /3명까지|1명까지/.test(e)?'자리 �
 /* ---------- 영입·계약 ---------- */
 function transferView(){
   const s=curSub('transfer');
-  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,contract:contractPage,draft:draftPage,moves:movesView}[s]||faCenter)()+(UI.stamp?stampView():'');
+  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,contract:contractPage,draft:draftPage,moves:movesView}[s]||faCenter)();
 }
 /* 외국인 후보 조사 단계: 추정 범위와 함께 한 칸에 */
 function fsPill(p,rp,f){ f=f||fScout(p,rp); return `<span class="pill fsp ${f.cls}" title="${esc(f.d+' 근거: '+f.why.join(', '))}">${f.l}</span>`; } /* 예상·범위는 카드 왼쪽 숫자에, 여기는 조사 단계만 */

@@ -34,13 +34,29 @@ function ngtGap(N,D){ const p=G.players[N.id]; let r;
   else if(N.k==='ext')r=termsVal(N.T,D)/termsVal(D,D); else { r=N.T.annual/Math.max(1,D.annual); return r>=.99?['good','요구액에 맞췄습니다. 바로 합의됩니다']:['warn',`요구까지 ${money(D.annual-N.T.annual)} 남았습니다. 합의가 안 되면 선수가 요구를 조금 낮춰 답합니다`]; }
   const riv=N.k==='fa'&&Object.keys(G.fa.ai[p.id]||{}).length;
   return r>=1?['good',riv?'요구는 채웠습니다. 다른 구단 조건과도 비교합니다':'요구 조건을 채웠습니다']:r>=.9?['warn','조금 모자랍니다. 역제안이 올 수 있습니다']:r>=.75?['bad','차이가 큽니다. 분위기가 나빠집니다']:['bad','무리한 조건입니다. 협상이 깨질 수 있습니다']; }
+/* 제안 결과 줄: 말풍선과 따로, 합의·역제안·거절·검토 중·결렬과 다음에 할 수 있는 일을 한 줄로 못 박는다 */
+function ngtResOf(N){ const p=G.players[N.id]; if(N.res)return N.res;
+  if(N.k==='ext'&&p.extLast&&G.day-p.extLast.d<=6){ const c=p.extCounter&&p.extCounter.until>=G.day; const nx=extNextDay(p); if(p.extLast.st==='counter'&&c)return {st:'counter'}; if(nx)return {st:p.extLast.st,next:nx}; }
+  if(N.k==='fa'){ const n=G.fa&&G.fa.neg&&G.fa.neg[p.id]; if(n&&n.closed)return {st:'closed'}; }
+  return null; }
+function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const p=G.players[N.id]; const nx=R.next!=null?`다음 제안은 ${dsh(R.next)}부터 할 수 있습니다(한 선수와 한 주에 한 번).`:'';
+  const c=N.k==='ext'?p.extCounter:N.k==='fa'?(G.fa&&G.fa.neg&&G.fa.neg[p.id]||{}).counter:null;
+  const M={ok:['good','합의',R.sub||'계약이 확정됐습니다.'],
+    counter:['warn','역제안',`에이전트가 조건을 내놓았습니다. 아래 '역제안 수락'을 누르면 ${N.k==='fa'?'우리 제안이 그 조건으로 바뀝니다':'바로 계약됩니다'}${N.k==='ext'&&c&&c.until?` · ${dsh(c.until)}까지 유효`:''}. 다시 제안해도 됩니다.`],
+    no:['bad','거절',N.k==='sal'?'선수가 요구액을 조금 낮춰 답했습니다(위 말풍선). 요구액 이상이면 바로 합의됩니다.':N.k==='fa'?'역제안도 없습니다. 조건을 올려 다시 제안할 수 있습니다.':nx],
+    market:['bad','거절 · FA 시장을 보겠다고 합니다',nx],
+    locked:['bad','이번 주 협상은 끝났습니다',N.k==='sal'?'요구액 이상이면 지금도 바로 합의됩니다. 더 낮게 부르려면 다음 주에 다시 하세요.':nx],
+    wait:['warn','검토 중 · 아직 계약 아님',R.shop?`선수가 시장 반응을 보고 ${dsh(R.shop)}쯤 답합니다. 결과는 소식으로 알려 드립니다.`:'다른 구단 조건과 비교해 결정합니다. 사인하면(또는 다른 구단으로 가면) 소식으로 알려 드립니다.'],
+    closed:['bad','협상 결렬','이 에이전트는 더 이상 우리와 협상하지 않습니다.']};
+  const m=M[R.st]; if(!m)return ''; return `<div class="ng-res ${m[0]}"><b>${m[1]}</b>${m[2]?`<span>${esc(m[2])}</span>`:''}</div>`; }
 function ngtLog(N){ const p=G.players[N.id]; if(N.k!=='fa'||!G.fa||!G.fa.neg||!G.fa.neg[p.id])return ''; const ag=agentOf(p);
   let L=G.fa.neg[p.id].log.slice(); if(L.length&&L[L.length-1].w==='에이전트')L.pop(); /* 마지막 답은 위 말풍선에 이미 나온다 */ L=L.slice(-6); if(!L.length)return '';
   return `<details class="ng-log"><summary class="small muted">지난 협상 기록 ${L.length}건</summary>${L.map(x=>x.w==='구단'?`<div class="ngm me"><i>우리 제안${x.acc?' (역제안 수락)':''}</i>${esc(x.tm?termsTxt(x.tm,true):`${x.y}년 연 ${money(x.a)}`)}</div>`:`<div class="ngm ag"><i>${esc(ag.name)}</i>${esc(x.t)}</div>`).join('')}</details>`; }
 function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; const D=ngtDemand(N); const T=N.T;
   const ag=hasAgent(p)?agentOf(p):null; const fn=N.k==='fa'&&G.fa&&G.fa.neg?G.fa.neg[p.id]:null;
   const lastAg=fn&&fn.log.length&&fn.log[fn.log.length-1].w==='에이전트'?fn.log[fn.log.length-1].t:null;
-  const say=N.msg||lastAg||(N.k==='sal'?`${ag?'선수와 이야기를 나눠 봤습니다. ':''}구단 산정안은 ${money((salNeg(p.id)||{}).off||p.sal)}이지만, ${ag?'저희는':'저는'} ${money(D.annual)}은(는) 받아야 한다고 봅니다.`:`${ag?'제 의뢰인이 원하는 조건입니다. ':'제가 원하는 조건입니다. '}${termsTxt(D,true)}${D.role===0?` · ${roleSet(p)[0]}`:''}${D.ntc?' · 트레이드 거부권':''}. 이 선에서 맞춰 주시면 바로 이야기가 됩니다.`);
+  const lastExt=N.k==='ext'&&p.extLast&&G.day-p.extLast.d<=6&&ngtResOf(N)?p.extLast.t:null;
+  const say=N.msg||lastAg||lastExt||(N.k==='sal'?`${ag?'선수와 이야기를 나눠 봤습니다. ':''}구단 산정안은 ${money((salNeg(p.id)||{}).off||p.sal)}이지만, ${ag?'저희는':'저는'} ${money(D.annual)}은(는) 받아야 한다고 봅니다.`:`${ag?'제 의뢰인이 원하는 조건입니다. ':'제가 원하는 조건입니다. '}${termsTxt(D,true)}${D.role===0?` · ${roleSet(p)[0]}`:''}${D.ntc?' · 트레이드 거부권':''}. 이 선에서 맞춰 주시면 바로 이야기가 됩니다.`);
   const expr=fn?(fn.counter?'flat':fn.hot||fn.deal?'smile':fn.mood<40?'angry':null):null;
   const [gc,gt]=ngtGap(N,D);
   const tot=(T.bonus||0)+T.annual*(T.years||1); const capAvg=T.annual+Math.round((T.bonus||0)/(T.years||1)); const ci=capInfo(G.user); const b=budget();
@@ -51,6 +67,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
   const closed=fn&&fn.closed;
   return `<div class="scrim" data-a="ngtClose"><div class="sheet gut ngt" data-stop="1" role="dialog" aria-label="계약 협상">
     <div class="sheet-head"><div class="ng-h">${avImg(p)}<div><span class="eyebrow">${NGT_K[N.k]} · ${esc(posLabel(p))} · ${p.age}세</span><h2 class="sec">${esc(p.name)}</h2><span class="small muted">${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:`지금 연봉 ${money(p.sal)} · ${ctText(p)}`}</span></div></div><button class="x" data-a="ngtClose" aria-label="닫기">×</button></div>
+    ${ngtResHtml(N)}
     <div class="ng-ag">${ag?agAv(ag,expr):avImg(p)}<div class="ng-say"><span class="small muted">${ag?`${esc(ag.name)} 에이전트 · ${esc(ag.firm)} · ${esc((AG_STYLE[ag.style]||AG_STYLE.rel).l)}`:`${esc(p.name)} 본인`} · ${rounds}</span><p>${esc(say)}</p>${fn?`<span class="gauge"><i style="width:${fn.mood}%;background:${fn.mood>=60?'var(--good)':fn.mood>=35?'var(--warn)':'var(--bad)'}"></i></span>`:''}</div></div>
     ${N.k==='ext'?(()=>{ const x=extParts(p,T.years); const m=Math.round((x.mkt-1)*100); return `<div class="ng-why"><span class="eyebrow">요구액 근거 · 전력분석팀</span><p class="small">${x.ytf?`FA까지 ${x.ytf}시즌`:'지금 FA 자격'} · FA 시장 분위기 <b>${faMktLabel(x.mkt)}</b>(${m>=0?'+':''}${m}%) · 예상 FA 시장가 연 <b>${money(x.expFA)}</b></p><p class="small muted keep">${x.why.map(esc).join(' · ')}${x.yadj!==1?` · ${T.years}년 계약 기간 ${x.yadj>1?'+':''}${Math.round((x.yadj-1)*100)}%`:''}</p></div>`; })():''}
     ${ngtLog(N)}
@@ -62,7 +79,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       <div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div>
     </div>`}
     <div class="ng-acts">
-      ${closed?'<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.</div>':`<button class="btn" data-a="ngtDemand">요구 조건대로 채우기</button>${ctr?`<button class="btn" data-a="ngtCounter">역제안 수락 · ${esc(ctrTx)}</button>`:''}<button class="btn primary" data-a="ngtSubmit">제안하기</button>`}
+      ${closed?'<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.</div>':`<button class="btn" data-a="ngtDemand">요구 조건대로 채우기</button>${ctr?`<button class="btn" data-a="ngtCounter">역제안 수락 · ${esc(ctrTx)}</button>`:''}${N.k==='ext'&&extNextDay(p)?`<button class="btn primary" data-a="ngtSubmit" disabled>다음 제안 ${dsh(extNextDay(p))}부터</button>`:'<button class="btn primary" data-a="ngtSubmit">제안하기</button>'}`}
       ${N.k==='fa'&&G.fa.offers[p.id]?'<button class="btn danger" data-a="ngtWithdraw">제안 철회</button>':''}<button class="btn ng-close" data-a="ngtClose">협상 마치기</button></div></div></div>`; }
 function ngtSet(v){ const N=UI.ngt; if(!N)return; const [f,x]=v.split(':'); const T=N.T;
   if(x[0]==='='){ const val=+x.slice(1); if(f==='ntc')T.ntc=!!val; else T[f]=val; if(f==='years'&&N.k==='ext'){ N.msg=null; } }
@@ -71,12 +88,13 @@ function ngtSet(v){ const N=UI.ngt; if(!N)return; const [f,x]=v.split(':'); cons
 function ngtSubmit(){ const N=UI.ngt; const p=G.players[N.id]; const T={...N.T};
   if(N.k==='fa'){ if(faOutBlocked(G.user,p)){ N.msg=`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조).`; return; }
     if(G.day<G.fa.openDay){ const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); G.fa.offers[p.id]={annual:Math.round(termsVal(T,D)),years:T.years,terms:T}; N.msg='11월 6일 협상이 열리면 에이전트가 답합니다. 조건은 미리 넣어 두었습니다.'; return; }
-    const n0=negOf(p.id).log.length; const r=faNegotiate(p.id,{annual:T.annual,years:T.years,terms:T}); UI.faMsg={id:p.id,t:r.msg}; N.msg=negOf(p.id).log.length>n0?null:r.msg.replace(/^[^:]+: /,''); return; }
-  if(N.k==='ext'){ const r=offerExtension(p.id,T.annual,T.years,false,T); N.msg=r.msg.replace(/^[^:]+: /,''); if(r.ok){ UI.stamp={title:'다년계약 합의',msg:`${p.name} · ${termsTxt(T,true)}`}; UI.ngt=null; } return; }
-  const r=salOffer(p.id,T.annual); N.msg=r.replace(/^[^:]+: /,''); UI.ctMsg=r; if((salNeg(p.id)||{}).st==='ok')UI.ngt=null; }
+    const n0=negOf(p.id).log.length; const r=faNegotiate(p.id,{annual:T.annual,years:T.years,terms:T}); UI.faMsg={id:p.id,t:r.msg}; N.msg=negOf(p.id).log.length>n0?null:r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,shop:r.shop}:null; return; }
+  if(N.k==='ext'){ const r=offerExtension(p.id,T.annual,T.years,false,T); N.msg=r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,next:r.next??(p.extLast||{}).next}:null; if(r.ok){ UI.stamp={title:'다년계약 합의',msg:`${p.name} · ${termsTxt(T,true)} · ${r.now?'바로 적용':'다음 시즌부터 적용'}`}; UI.ngt=null; } return; }
+  const r=salOffer(p.id,T.annual); N.msg=r.replace(/^[^:]+: /,''); UI.ctMsg=r; const sn=salNeg(p.id)||{};
+  if(sn.st==='ok'){ UI.stamp={title:'연봉 합의',msg:`${p.name} · ${money(p.newSal??T.annual)}`}; UI.ngt=null; } else N.res={st:/이번 주에는/.test(r)?'locked':'no'}; }
 function ngtCounter(){ const N=UI.ngt; const p=G.players[N.id];
-  if(N.k==='fa'){ const r=faAcceptCounter(p.id); UI.faMsg={id:p.id,t:r}; N.msg=r; if(p.team===G.user)UI.ngt=null; return; }
-  const c=p.extCounter; if(!c)return; const r=offerExtension(p.id,c.annual,c.years,true,c.terms||null); N.msg=r.msg.replace(/^[^:]+: /,''); if(r.ok)UI.ngt=null; }
+  if(N.k==='fa'){ const r=faAcceptCounter(p.id); UI.faMsg={id:p.id,t:r}; N.msg=r; if(p.team===G.user){ UI.ngt=null; UI.stamp={title:'FA 계약',msg:r}; } else N.res={st:'wait'}; return; }
+  const c=p.extCounter; if(!c)return; const r=offerExtension(p.id,c.annual,c.years,true,c.terms||null); N.msg=r.msg.replace(/^[^:]+: /,''); N.res=r.st?{st:r.st,next:r.next}:null; if(r.ok){ UI.stamp={title:'다년계약 합의',msg:`${p.name} · ${c.terms?termsTxt(c.terms,true):`${c.years}년 연 ${money(c.annual)}`} · ${r.now?'바로 적용':'다음 시즌부터 적용'}`}; UI.ngt=null; } }
 /* 입구 버튼: 지금 우리 제안 요약 */
 function ngtDoor(k,p){ const o=k==='fa'?G.fa.offers[p.id]:null; const ag=hasAgent(p)?agentOf(p):null;
   const cur=o?(o.terms?termsTxt(o.terms,true):`${o.years}년 연 ${money(o.annual)}`):null;

@@ -62,7 +62,7 @@ function tcReport(){ const my=(G.trades||[]).filter(t=>t.gi).slice().reverse(); 
   <section class="card"><div class="row between"><h2 class="sec">우리 트레이드 성적표</h2><span class="small muted">평점은 거래 당시 언론 평가, WAR은 이후 실제 성적 차이</span></div>${my.length?my.map(row).join(''):'<p class="small muted">아직 트레이드 기록이 없습니다.</p>'}</section>
   <section class="card"><h2 class="sec">리그 트레이드</h2>${lg?`<div class="feed">${lg}</div>`:'<p class="small muted">아직 없습니다.</p>'}</section>`; }
 function tradeCenter(){ faCelebrate(); const s=curSub('trade'); const BODY={block:blockCenter,market:tcMarket,fa:faCenter,find:tcFind,table:()=>tradeView(),offers:blockCenter,gms:tcGms,report:tcReport}; const body=()=>mergedBody('trade',s,BODY);
-  return subTabs('trade')+(s!=='market'&&s!=='fa'&&s!=='block'?deadlineBanner():'')+(s==='gms'?vsBanner(false):'')+body()+(UI.stamp?stampView():'')+'<button class="fabtn" data-a="myRos">우리 선수단</button>'; }
+  return subTabs('trade')+(s!=='market'&&s!=='fa'&&s!=='block'?deadlineBanner():'')+(s==='gms'?vsBanner(false):'')+body()+'<button class="fabtn" data-a="myRos">우리 선수단</button>'; }
 function stampView(){ const s=UI.stamp; return `<div class="stamp-w" data-a="stampOff"><div class="stamp"><b>${esc(s.title||'거래 성사')}</b><span>${esc(s.msg)}</span>${s.grade?`<div class="sg">언론 평점 <i class="grade g${s.grade}">${s.grade}</i></div>`:''}${s.fans&&s.fans.length?fanLinesHtml(s.fans,'팬 게시판 반응'):''}<em>눌러서 닫기</em></div></div>`; }
 function unempView(){ const J=(G.jobs||[]).filter(j=>!j.done); const U=G.unemp; const days=G.day-(U.since??G.day); const mo=Math.floor(days/30);
   const odds=G.rep>=70?'자주':G.rep>=50?'가끔':G.rep>=30?'드물게':'거의 오지 않음';

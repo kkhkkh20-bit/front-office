@@ -1,7 +1,7 @@
 {
   "name": "front-office-tools",
   "private": true,
-  "description": "단장의 시간 점검 도구",
+  "description": "프런트타임 점검 도구",
   "scripts": {
     "check": "bash check.sh"
   },

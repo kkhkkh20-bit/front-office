@@ -101,7 +101,7 @@ function renderSheet0(){
   if(p.team===G.user&&!(p.joinY>G.year)){
     const parts=[];
     parts.push(entryForm(p));
-    if(canExtend(p))parts.push('<div id="s-ext"></div>'+`<section class="card"><div class="eyebrow">비FA 다년계약 · ${ctText(p)}</div>${p.extCounter&&p.extCounter.until>=G.day?`<p class="small">역제안이 와 있습니다: ${esc(p.extCounter.terms?termsTxt(p.extCounter.terms,true):`${p.extCounter.years}년 연 ${money(p.extCounter.annual)}`)}</p>`:''}${ngtDoor('ext',p)}<p class="small muted">시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p></section>`);
+    if(canExtend(p))parts.push('<div id="s-ext"></div>'+`<section class="card"><div class="eyebrow">비FA 다년계약 · ${ctText(p)}</div>${p.extCounter&&p.extCounter.until>=G.day?`<p class="small">역제안이 와 있습니다(${dsh(p.extCounter.until)}까지): ${esc(p.extCounter.terms?termsTxt(p.extCounter.terms,true):`${p.extCounter.years}년 연 ${money(p.extCounter.annual)}`)}</p>`:extNextDay(p)?`<p class="small bad">지난 제안(${dsh((p.extLast||{}).d??G.day)})은 거절됐습니다. 다음 제안은 ${dsh(extNextDay(p))}부터 할 수 있습니다.</p>`:''}${ngtDoor('ext',p)}<p class="small muted">시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p></section>`);
     else if(UI.ext&&UI.ext.id===p.id&&UI.ext.msg)parts.push(`<div class="note ${UI.ext.ok?'good':''}">${esc(UI.ext.msg)}</div>`);
     parts.push(`<div class="row" style="margin-top:14px;justify-content:flex-end">${UI.confirmRel===p.id?`<button class="btn danger" data-a="release" data-v="${p.id}">정말 방출${p.faC?` (정산 ${money(Math.round(p.sal*p.yrs*.5))})`:''}</button><button class="btn" data-a="relCancel">취소</button>`:`<button class="btn danger" data-a="relAsk" data-v="${p.id}">방출</button>`}</div>`);
     actions=parts.join('');

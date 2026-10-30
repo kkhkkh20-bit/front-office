@@ -25,7 +25,7 @@ function render(){
    </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}</header>
    <div class="gut"><div class="wrap">
      <div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
-     <main class="content">${tabBody()}</main>
+     <main class="content">${tabBody()}</main>${UI.stamp?stampView():''} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
    </div></div>
   </div>
   <nav class="bnav" aria-label="메뉴"><div class="in">${nav.filter(([k])=>BNAV.includes(k)).map(([k,l,i])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}">${ic(i)}<span>${l}</span>${(k==='inbox'&&unread)||(k!=='inbox'&&tabAlert(k))?'<span class="dot"></span>':''}</button>`).join('')}<button data-a="menu" class="${inMenu?'on':''}">${ICO2.menu}<span>메뉴</span>${menuAlert?'<span class="dot"></span>':''}</button></div></nav>
@@ -96,7 +96,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
   if(st==='main'){ const tn=act&&act.tid!=null&&TEAM_DEF[act.tid]?`${TEAM_DEF[act.tid].city} ${TEAM_DEF[act.tid].nick}`:(act&&act.name)||'';
     return `<div class="gut"><div class="wrap ts-wrap"><div class="ts">
       <div class="ts-bg" aria-hidden="true">${TEAM_DEF.map((d,i)=>badge(i,30)).join('')}</div>
-      <div class="kicker">한국 프로야구형 가상 리그 · 단장 시뮬레이션</div><h1>단장의 시간</h1>
+      <div class="kicker">한국 프로야구형 가상 리그 · 단장 시뮬레이션</div><h1>프런트타임</h1>
       <p class="ts-sub">경기는 감독이 합니다. 단장은 선수를 모으고, 팀을 만들고, 돈을 지킵니다.</p>${achStartLine()}
       <div class="ts-menu">
         ${canCont?`<button class="tsb primary" data-a="tsCont"><b>이어하기</b><span>슬롯 ${m.active}${tn?` · ${esc(tn)}`:''}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}

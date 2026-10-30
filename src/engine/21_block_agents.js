@@ -59,7 +59,7 @@ function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; if(!F||F.closed
   else { n.counter=null; n.mood=clamp(n.mood-(ag.style==='hard'?30:25),0,100); agRelAdd(ag,-4,`${p.name} 무리한 제안`); t=`선수가 실망했습니다. 이 조건으로는 이야기하기 어렵습니다.${ag.size==='big'?' 저희 회사 고객 전체를 이런 식으로 대하신다면 곤란합니다.':''}`; }
   if(T&&r<1){ if(T.role!=null&&D.role!=null&&T.role>D.role)t+=` 무엇보다 선수는 ${roleSet(p)[D.role]}을(를) 원합니다.`; if(D.ntc&&!T.ntc)t+=' 트레이드 거부권 조항도 빠져 있습니다.'; }
   if(n.mood<25){ n.closed=true; delete F.offers[id]; t+=' 우리 구단과의 협상을 접겠다고 합니다.'; p.mor=clamp((p.mor??60)-10,0,100); agRelAdd(ag,-6,`${p.name} 협상 결렬`); }
-  n.log.push({d:G.day,w:'에이전트',t}); return {msg:`${ag.name}(${ag.firm}): ${t}`}; }
+  n.log.push({d:G.day,w:'에이전트',t}); return {msg:`${ag.name}(${ag.firm}): ${t}`,st:n.closed?'closed':r>=1?'wait':n.counter?'counter':'no',shop:r>=1&&shop?(mk.next||null):null}; }
 function faAcceptCounter(id){ { const p0=G.players[id]; if(!p0||p0.team!=null||!G.fa||G.fa.closed||G.unemp)return '이미 계약했거나 협상할 수 없는 선수입니다.'; } const n=negOf(id); if(!n.counter)return '역제안이 없습니다.'; const c=n.counter; const p=G.players[id]; G.fa.offers[id]={annual:c.annual,years:c.years,...(c.terms?{terms:c.terms}:{})}; n.log.push({d:G.day,w:'구단',a:c.annual,y:c.years,acc:true,...(c.terms?{tm:c.terms}:{})}); n.counter=null; n.deal=true; n.hot=true; agRelAdd(agentOf(p),2,`${p.name} 역제안 수용`);
   /* 에이전트가 낸 조건을 받아들였고 지금 우리가 가장 앞서면 그 자리에서 사인한다(약속을 지킨다) */
   const ai=Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})); const rival=faBestOf(p,ai); const mine={tid:G.user,annual:c.annual,years:c.years,...(c.terms?{terms:c.terms}:{})};

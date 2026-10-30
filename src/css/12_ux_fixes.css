@@ -487,3 +487,10 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .pill.fsp b{font-weight:700}
 .fs-why{color:var(--muted)}
 .pvline{margin:6px 2px 0}.pvline .i{display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;border-radius:50%;border:1px solid var(--line,rgba(127,127,127,.3));font-size:11px;color:var(--muted);cursor:help}
+/* 협상 결과 줄: 합의·역제안·거절·검토 중을 말풍선과 따로 못 박는다 */
+.ng-res{display:grid;gap:2px;margin:0 0 10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);border-left-width:4px;background:var(--panel2,rgba(255,255,255,.03))}
+.ng-res b{font-size:14px}.ng-res span{font-size:12.5px;line-height:1.5;color:var(--ink2,inherit)}
+.ng-res.good{border-left-color:var(--good)}.ng-res.good b{color:var(--good)}
+.ng-res.warn{border-left-color:var(--warn)}.ng-res.warn b{color:var(--warn)}
+.ng-res.bad{border-left-color:var(--bad)}.ng-res.bad b{color:var(--bad)}
+.ng-acts .btn[disabled]{opacity:.55;cursor:not-allowed}
