@@ -290,7 +290,7 @@ T('프랜차이즈 스타를 트레이드하면 팬이 반발한다(화면 설�
   ok(G.pr.fan<f0-2,'프랜차이즈 스타를 보냈는데 팬 여론 '+f0+' → '+G.pr.fan); });
 
 /* ===== 패턴 감사(반복 처리·끝난 뒤 적용) ===== */
-T('[감사] 방출한 구단은 1년 안에 같은 선수와 다시 계약할 수 없다(연봉 깎기 반복 방지)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.foreign&&!q.faC&&q.sal>=300); ok(p,'준비 실패'); const s0=p.sal; releasePlayer(p.id); const e=signFree(p.id,G.user);
+T('[감사] 방출한 구단은 1년 안에 같은 선수와 다시 계약할 수 없다(연봉 깎기 반복 방지)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.foreign&&!q.faC&&q.sal>=300)||(()=>{ const q=playersOf(G.user).find(x=>!x.foreign&&!x.faC&&!x.ys); if(q)q.sal=300; return q; })(); /* 만든 리그에 따라 그런 선수가 없을 수 있어 연봉을 맞춘다 */ ok(p,'준비 실패'); const s0=p.sal; releasePlayer(p.id); const e=signFree(p.id,G.user);
   ok(p.team!==G.user,'방출 직후 같은 구단이 다시 계약함: 연봉 '+s0+' → '+p.sal); });
 
 T('[감사] 육성선수로 돌렸다 되돌리면 원래 연봉으로 돌아온다',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.foreign&&!q.faC&&q.sal>MIN_SAL&&q.sal<=100); ok(p,'준비 실패'); const s0=p.sal; ok(!toYS(p.id),'준비 실패: 육성 전환');
@@ -542,6 +542,15 @@ T('감독은 본 만큼만 안다: 외국인 후보는 영상·스카우트 보�
   G.fwatch=[]; const e0=mgrEst(m,p); for(const k in p.r)p.r[k]=clamp(p.r[k]+8,20,95); p.sx=(p.sx||0)+8; const e1=mgrEst(m,p); ok(Math.abs(e1-e0)<2,'스카우트도 못 보는 실전 감각을 감독이 알아챔: '+e0.toFixed(1)+' → '+e1.toFixed(1));
   ok(/영상|보고서|자료/.test(mgrOnForeign(p)),'외국인 후보를 직접 본 것처럼 말함: '+mgrOnForeign(p));
   m.hD=G.day; m.youth=50; const a=mgrTalk('young').a; ok(/직접 보지 못했|캠프/.test(a)||!playersOf(G.user).some(q=>!q.foreign&&q.age<=24),'갓 부임한 감독이 어린 선수를 다 아는 것처럼 말함: '+a.slice(0,80)); });
+
+T('스프링캠프: 모든 구단 젊은 선수가 크고, 투수는 새 구종을 익혀 오기도 한다(구종이 늘면 탈삼진 힘이 바뀐다)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user).id; const L=domestic(t).filter(p=>p.age<=24&&!p.prospect); ok(L.length>=5,'준비 실패');
+  const o0=L.reduce((a,p)=>a+ovr(p),0); campGrowAll('spring','skill'); const o1=L.reduce((a,p)=>a+ovr(p),0); ok(o1>o0,'AI 구단 젊은 선수가 캠프에서 크지 않음: '+(o1-o0).toFixed(2));
+  const q=domestic(G.user).find(x=>x.isP); const k0=arsenalK(q), n0=arsenal(q,q.r.stf).length; const k=addPitch(q,8); ok(k&&arsenal(q,q.r.stf).length===n0+1,'새 구종이 구종 목록에 없음'); ok(arsenalK(q)>=k0,'좋은 새 구종을 익혔는데 탈삼진 힘이 그대로 아래'); });
+
+T('마무리캠프: 26세 이하와 주전이 아닌 30세 이하만 가고, 단장이 훈련 방향을 고른다(구종 개발이면 새 구종이 훨씬 많다)',()=>{ fresh(); const d=depth(G.user); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); const W=new Set(campWho(G.user,'fall').map(p=>p.id));
+  for(const p of domestic(G.user)){ if(p.prospect)continue; const want=p.age<=26||(p.age<=30&&!reg.has(p.id)); ok(W.has(p.id)===want,p.name+'('+p.age+'세, '+(reg.has(p.id)?'주전':'비주전')+') 참가 '+W.has(p.id)); }
+  G.day=KD(11,5); delete G.fcamp; const n0=G.mail.length; fcampStart(); const m=G.mail.slice(0,G.mail.length-n0).find(x=>(x.acts||[]).some(a=>a.a==='fcampSet')); ok(m,'마무리캠프 방향 고르기 메일이 없음'); fcampSet('pitch'); ok(G.fcamp.focus==='pitch','방향이 바뀌지 않음');
+  const cnt=foc=>{ let n=0; for(let i=0;i<4;i++)for(const t of G.teams)for(const p of campWho(t.id,'fall'))if(p.isP){ const b=(p.addP||[]).length; campGrow(p,'fall',foc); n+=(p.addP||[]).length-b; } return n; }; const a=cnt('skill'), b=cnt('pitch'); ok(b>a*2,'구종 개발 '+b+'개 · 기술 훈련 '+a+'개'); });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);

@@ -33,7 +33,7 @@ function devWeek(){ if((G.devProg||[]).length){ for(const x of G.devProg){ const
 /* 일반 훈련(모든 구단): 해마다 한 선수당 능력치 합 +4까지 */
 /* 능력치는 0.1 단위로 반올림되므로 아주 작은 주간 성장은 확률로 0.1씩 붙인다(기댓값은 같다) */
 function addR(p,k,a){ const t=a*10, f=Math.floor(t); const n=f+(R()<t-f?1:0); const v=clamp(Math.round(p.r[k]*10+n)/10,20,80); const d=v-p.r[k]; p.r[k]=v; return d; }
-const TB_YCAP=4, TB_K=.006;
+const TB_YCAP=2, TB_K=.0035; /* 시즌 중 훈련은 몸을 유지하는 정도. 크게 바뀌는 건 스프링·마무리캠프(79_camps.js) */
 function tbFactors(p,regSet){ const room=Math.max(0,p.pot-ovr(p)); initPers(p); const m=p.team!=null?mgrOf(p.team):null;
   return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:clamp(.75+((p.pers.pro+p.pers.amb)/2-4)/16*.5,.7,1.3), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
 function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};

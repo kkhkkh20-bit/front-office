@@ -2663,7 +2663,7 @@ function develop(p){
   const gap=Math.max(0,p.pot-o); let base=0;
   if(age<=T.grow){
     const rate=p.dt==='early'?(age<=22?.34:.24):p.dt==='late'?(age<=24?.08:.26):p.dt==='stall'?.07:.2;
-    const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p); base=gap*rate*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
+    const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p); base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
     if(R()<.05*play*fac.g)p.pot+=ri(3,7);
@@ -3020,6 +3020,7 @@ function processDay(){ syncMinSal();
   if(o.d===1)try{ scoutAutoMonthly(); }catch(e){}
   if(o.d===1)try{ stAiStaff(); }catch(e){}
   if(o.d===1)try{ posReqMonth(); }catch(e){}
+  if(day===KD(11,5))try{ fcampStart(); }catch(e){} if(day===KD(11,25))try{ fcampEnd(); }catch(e){}
   try{ draftPressNews(day); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
   if(o.w===1)try{ tbWeek(); }catch(e){}
@@ -3162,7 +3163,7 @@ function campStart(){ rollForm(); try{ for(const t of G.teams)electCaptain(t.id,
 const CAMP={balance:'균형',skill:'기술 훈련',fitness:'체력·부상 방지',game:'실전 감각'};
 function campEnd(){
   if(!G.camp)return; const f=G.camp.focus; G.campInj=1; G.form=null; const ups=[];
-  for(const p of domestic(G.user)){ if(p.age<=26&&(f==='skill'||f==='balance')){ const ks=Object.keys(p.r); const n=f==='skill'?2:1; for(let i=0;i<n;i++){ const k=pick(ks); const add=f==='skill'?rnd(.8,1.8):rnd(.4,1.0); if(p.r[k]+add<=Math.max(p.pot,ovr(p))+6)p.r[k]=clamp(p.r[k]+add,20,80);} roundR(p); } }
+  const cev=campGrowAll('spring',f); /* 모든 구단 캠프 성장·구종 추가·폼 수정(79_camps.js) */
   if(f==='fitness')G.campInj=.78; if(f==='balance')G.campInj=.92;
   if(f==='game')G.form={until:dnum(G.year,4,30),b:2};
   G.camp.done=true;
@@ -3171,8 +3172,8 @@ function campEnd(){
   const snap=G.camp.snap||{}; const rows=domestic(G.user).concat(foreignOf(G.user)).filter(p=>snap[p.id]&&snap[p.id].r).map(p=>{ const S=snap[p.id]; const ch=Object.keys(p.r).map(k=>[k,Math.round((p.r[k]-(S.r[k]??p.r[k]))*10)/10]).filter(x=>Math.abs(x[1])>=.3).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])); const tot=sum(ch.map(x=>x[1])); return {p,a:Math.round(S.o),b:Math.round(ovr(p)),ch,tot}; }).filter(x=>x.ch.length);
   const up=rows.filter(x=>x.tot>0).sort((x,y)=>y.tot-x.tot), dn=rows.filter(x=>x.tot<0).sort((x,y)=>x.tot-y.tot);
   const line=x=>`${x.p.name} (${posLabel(x.p)}, ${x.p.age}세) ${x.ch.slice(0,3).map(([k,v])=>`${TOOLK[k]||k} ${v>0?'+':''}${v.toFixed(1)}`).join(', ')}${dv(x.b)!==dv(x.a)?` · 능력 ${dv(x.a)} → ${dv(x.b)}`:''}`;
-  const eff=f==='skill'?'26세 이하 선수 기술이 집중적으로 늘었습니다.':f==='fitness'?'올 시즌 부상 위험이 22% 줄었습니다.':f==='game'?'4월 말까지 경기 감각이 좋습니다.':'26세 이하 선수 성장과 부상 방지(부상 위험 -8%)를 고르게 챙겼습니다.';
-  mail('코칭스태프',`스프링캠프 결산: ${up.length?`${up.length}명 능력 상승`:'능력 변화 적음'}`,`훈련 방향: ${CAMP[f]}. ${eff}\n\n${up.length?`능력이 오른 선수 ${up.length}명\n${up.slice(0,12).map(line).join('\n')}${up.length>12?`\n외 ${up.length-12}명`:''}`:'능력이 눈에 띄게 오른 선수는 없습니다.'}${dn.length?`\n\n능력이 내린 선수 ${dn.length}명\n${dn.slice(0,6).map(line).join('\n')}`:''}\n\n훈련 방향과 캠프 훈련이 함께 반영된 수치입니다(캠프 시작일 대비).`,{kind:'캠프',imp:true,acts:[{l:'선수단 보기',a:'go',v:'roster:glance'}]});
+  const eff=f==='skill'?'젊은 선수 기술이 집중적으로 늘었습니다. 투수들은 새 구종을 익힐 기회도 많았습니다.':f==='fitness'?'올 시즌 부상 위험이 22% 줄었습니다.':f==='game'?'4월 말까지 경기 감각이 좋습니다.':'젊은 선수 성장과 부상 방지(부상 위험 -8%)를 고르게 챙겼습니다.';
+  mail('코칭스태프',`스프링캠프 결산: ${up.length?`${up.length}명 능력 상승`:'능력 변화 적음'}`,`훈련 방향: ${CAMP[f]}. ${eff}\n\n${cev.length?`눈에 띈 일\n${cev.slice(0,10).join('\n')}\n\n`:''}${up.length?`능력이 오른 선수 ${up.length}명\n${up.slice(0,12).map(line).join('\n')}${up.length>12?`\n외 ${up.length-12}명`:''}`:'능력이 눈에 띄게 오른 선수는 없습니다.'}${dn.length?`\n\n능력이 내린 선수 ${dn.length}명\n${dn.slice(0,6).map(line).join('\n')}`:''}\n\n훈련 방향과 캠프 훈련이 함께 반영된 수치입니다(캠프 시작일 대비).`,{kind:'캠프',imp:true,acts:[{l:'선수단 보기',a:'go',v:'roster:glance'}]});
 }
 function seasonEnd(){
   updateLg(G.year);
@@ -5995,7 +5996,7 @@ function devWeek(){ if((G.devProg||[]).length){ for(const x of G.devProg){ const
 /* 일반 훈련(모든 구단): 해마다 한 선수당 능력치 합 +4까지 */
 /* 능력치는 0.1 단위로 반올림되므로 아주 작은 주간 성장은 확률로 0.1씩 붙인다(기댓값은 같다) */
 function addR(p,k,a){ const t=a*10, f=Math.floor(t); const n=f+(R()<t-f?1:0); const v=clamp(Math.round(p.r[k]*10+n)/10,20,80); const d=v-p.r[k]; p.r[k]=v; return d; }
-const TB_YCAP=4, TB_K=.006;
+const TB_YCAP=2, TB_K=.0035; /* 시즌 중 훈련은 몸을 유지하는 정도. 크게 바뀌는 건 스프링·마무리캠프(79_camps.js) */
 function tbFactors(p,regSet){ const room=Math.max(0,p.pot-ovr(p)); initPers(p); const m=p.team!=null?mgrOf(p.team):null;
   return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:clamp(.75+((p.pers.pro+p.pers.amb)/2-4)/16*.5,.7,1.3), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
 function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
@@ -7255,9 +7256,10 @@ function gbT(p){ return clamp(hn('gb',p.id),-1.6,1.6); } /* +면 땅볼형 */
 /* 구종: 상세 화면과 같은 규칙으로 고른다 */
 function arsenal(p,stfV){ const id=p.id; const velo=veloOf(p); const sp=isSPr(p); const n=sp?3+(u01('np',id)>.5?1:0):1+(u01('np',id)>.4?1:0);
   const pool=[...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,n);
-  return [['직구',stfV+(velo-145)*.8+trt(p,'fb',3)],...pool.map(k=>[k,stfV+trt(p,'p'+k,6)])]; }
+  const add=(p.addP||[]).filter(x=>!pool.includes(x.k)).map(x=>[x.k,stfV+x.q]); /* 캠프에서 새로 익힌 구종 */
+  return [['직구',stfV+(velo-145)*.8+trt(p,'fb',3)],...pool.map(k=>[k,stfV+trt(p,'p'+k,6)]),...add]; }
 const _ak=new Map();
-function arsenalK(p){ const key=p.r.stf+':'+(p.role||'')+':'+(p.velo||0); const c=_ak.get(p.id); if(c&&c.k===key)return c.v;
+function arsenalK(p){ const key=p.r.stf+':'+(p.role||'')+':'+(p.velo||0)+':'+((p.addP||[]).length); const c=_ak.get(p.id); if(c&&c.k===key)return c.v;
   const best=Math.max(...arsenal(p,p.r.stf).map(x=>x[1])); const v=clamp((best-p.r.stf-4)*.0016,-.012,.025); _ak.set(p.id,{k:key,v}); return v; }
 /* 좌우 상대: 타자 쪽 절반, 투수 쪽 절반을 반영해 같은 손 대결이 불리해진다 */
 function platB(b,p){ const vsL=p.th==='좌'; const L=b.bt==='좌'?-4:b.bt==='양'?0:2, Rr=b.bt==='좌'?2:b.bt==='양'?0:-1; return vsL?L+trt(b,'vl',3):Rr+trt(b,'vr',3); }
@@ -9313,6 +9315,39 @@ function futUse(p,pos,g){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0
 function futText(p){ const u=p.fuse&&p.fuse.y===G.year?p.fuse:null; if(!u||!u.g)return ''; const L=Object.entries(u.pos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${POSK[k]||k} ${n}`); return `2군 ${u.g}경기${L.length?' · '+L.join(' · '):''}`; }
 /* 해마다 1월 1일(겨울 성장 뒤) 능력치를 남겨 둔다: 선수 화면에서 지난 시즌과 비교 */
 function rhSnap(){ const y=G.year; for(const p of Object.values(G.players)){ if(p.team==null||p.prospect)continue; p.rh=p.rh||{}; p.rh[y]=Object.assign({},p.r); for(const k of Object.keys(p.rh))if(+k<y-2)delete p.rh[k]; } }
+/* ===== 캠프: 선수가 크게 바뀌는 때 =====
+ 스프링캠프(1월 25일~3월 5일)와 마무리캠프(11월 5일~25일)는 모든 구단에서 열린다. 시즌 중 주간 훈련은 몸을 유지하는 정도로 줄였다.
+ - 성장: 젊고 잠재력 여지가 있는 선수 위주. 훈련 방향, 코치진 육성력, 훈련 시설, 성장 의지(프로의식·야망), 감독 육성 성향을 따른다(시즌 중 훈련과 같은 계수).
+ - 확 늘어나는 선수: 드물게 한 해 성장을 캠프에서 몰아서 한다(25세 이하).
+ - 구종 추가(투수): 새 구종을 익혀 온다. 잘 들면 결정구가 되고, 안 들면 그냥 하나 늘었을 뿐이다.
+ - 폼 수정(타격폼·투구폼): 크게 좋아지기도, 한동안 흔들리기도 한다.
+ - 마무리캠프는 26세 이하와 주전이 아닌 30세 이하만 간다. 주전 고참은 쉰다. 방향은 기술 훈련·구종 개발·포지션 전환 */
+const FCAMP={skill:'기술 훈련',pitch:'구종 개발',conv:'포지션 전환'};
+const CAMP_AMT={spring:{balance:.4,skill:.65,fitness:.18,game:.18},fall:{skill:.55,pitch:.32,conv:.28}}, WINTER_F=.7; /* 겨울 성장의 4분의 1을 캠프로 옮겨 한 해 총성장은 예전과 비슷하게 */
+function campFocusAi(tid,kind){ const m=mgrOf(tid); if(kind==='fall')return 'skill'; return m&&(m.youth||50)>=58?'skill':'balance'; }
+function addPitch(p,q){ const have=new Set(arsenal(p,p.r.stf).map(x=>x[0])); const L=PITCHES.filter(k=>!have.has(k)); if(!L.length)return null; const k=L[Math.floor(u01('np'+G.year+(p.addP||[]).length,p.id)*L.length)];
+  (p.addP=p.addP||[]).push({k,q:Math.round(q*10)/10,y:G.year}); return k; }
+function campGrow(p,kind,focus){ const ev=[]; if(p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
+  const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const cap=Math.max(p.pot,ovr(p))+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
+  let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5); let tot=0;
+  /* 확 늘어나는 선수 */ if(p.age<=25&&p.pot-ovr(p)>=4&&R()<(focus==='skill'?.05:.03)*f.will){ amt+=rnd(2,4); ev.push({t:'big'}); }
+  if(amt>0){ const w=ks.map(()=>.3+R()); const ws=w.reduce((a,b)=>a+b,0); ks.forEach((k,i)=>{ if(p.r[k]<cap)tot+=addR(p,k,amt*w[i]/ws*(ks.length===3?1.6:1)); }); }
+  /* 구종 추가 */ if(p.isP&&p.age<=31){ const pr=kind==='fall'?(focus==='pitch'?.2:.05):(focus==='skill'?.1:.06); const n=arsenal(p,p.r.stf).length; if(n<(isSPr(p)?6:4)&&R()<pr*clamp(f.will,.8,1.2)){ const q=N(-1.5,4)+(f.coach-1)*6; const k=addPitch(p,q); if(k)ev.push({t:'pitch',k,q}); } }
+  /* 폼 수정 */ if(p.age<=32&&R()<.045){ const k=p.isP?(R()<.5?'stf':'ctl'):(R()<.5?'con':'pow'); const good=R()<.6; const d=good?rnd(1.5,3.5):-rnd(1,2.5); const v=clamp(p.r[k]+d,20,80); const dd=v-p.r[k]; p.r[k]=v; roundR(p); tot+=dd; ev.push({t:good?'form+':'form-',k,d:dd}); }
+  /* 포지션 전환 캠프: 전환 훈련 중인 선수는 숙련이 크게 오른다 */ if(kind==='fall'&&focus==='conv'&&p.pconv)posGain(p,p.pconv.pos,18*posLearnRate(p)*(p.team!=null?posCoachF(p.team):1));
+  for(const e of ev){ if(e.t==='pitch')story(p,`${G.year} ${kind==='fall'?'마무리':'스프링'}캠프에서 ${e.k} 장착`); if(e.t==='big')story(p,`${G.year} ${kind==='fall'?'마무리':'스프링'}캠프에서 한 단계 성장`); if(e.t==='form+'||e.t==='form-')story(p,`${G.year} ${p.isP?'투구폼':'타격폼'} 수정 ${e.t==='form+'?'— 효과를 봄':'— 한동안 흔들림'}`); }
+  return ev; }
+function campWho(tid,kind){ const ps=domestic(tid).filter(p=>!p.prospect); if(kind==='spring')return ps; const d=depth(tid); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); return ps.filter(p=>p.age<=26||(p.age<=30&&!reg.has(p.id))); }
+/* 캠프 결과 문장(우리 구단 메일) */
+function campEvLine(p,e){ if(e.t==='big')return `${p.name}: 한 단계 성장했습니다`; if(e.t==='pitch')return `${p.name}: ${e.k}을(를) 새로 장착${e.q>=3?' — 결정구로 쓸 만합니다':e.q<=-2?' — 아직 실전에서 쓰기는 어렵습니다':''}`; if(e.t==='form+')return `${p.name}: ${p.isP?'투구폼':'타격폼'} 수정 효과(${TOOLK[e.k]} +${e.d.toFixed(1)})`; return `${p.name}: ${p.isP?'투구폼':'타격폼'}을 고치다 흔들림(${TOOLK[e.k]} ${e.d.toFixed(1)})`; }
+function campGrowAll(kind,userFocus){ const mine=[]; for(const t of G.teams){ const focus=t.id===ME()?userFocus:campFocusAi(t.id,kind); for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev)mine.push(campEvLine(p,e)); } } return mine; }
+/* 마무리캠프 */
+function fcampStart(){ if(G.fcamp&&G.fcamp.y===G.year)return; G.fcamp={y:G.year,focus:'skill',done:false,snap:campSnap()};
+  if(!G.unemp)mail('코칭스태프','마무리캠프 시작 (11월 25일까지)',`시즌을 마친 젊은 선수들과 주전이 아닌 선수들이 마무리캠프에 들어갑니다. 주전 고참은 쉽니다.\n\n훈련 방향을 정해 주세요. 정하지 않으면 기술 훈련으로 합니다.\n- 기술 훈련: 젊은 선수 능력이 고르게 오릅니다.\n- 구종 개발: 투수들이 새 구종을 익혀 올 가능성이 크게 오릅니다.\n- 포지션 전환: 전환 훈련 중인 선수의 숙련이 크게 오릅니다.`,{kind:'캠프',acts:Object.entries(FCAMP).map(([k,l])=>({l,a:'fcampSet',v:k}))}); }
+function fcampSet(k){ if(!G.fcamp||G.fcamp.done||!FCAMP[k])return '지금은 정할 수 없습니다.'; G.fcamp.focus=k; return `마무리캠프 훈련 방향: ${FCAMP[k]}.`; }
+function fcampEnd(){ const F=G.fcamp; if(!F||F.done||F.y!==G.year)return; const ev=campGrowAll('fall',F.focus); F.done=true; if(G.unemp)return;
+  const snap=F.snap||{}; const rows=domestic(G.user).filter(p=>snap[p.id]).map(p=>({p,a:snap[p.id].o,b:ovr(p)})).filter(x=>dv(x.b)!==dv(x.a)).sort((x,y)=>(y.b-y.a)-(x.b-x.a));
+  mail('코칭스태프',`마무리캠프 결산: ${rows.filter(x=>x.b>x.a).length}명 능력 상승`,`훈련 방향: ${FCAMP[F.focus]}.\n\n${ev.length?`눈에 띈 일\n${ev.slice(0,12).join('\n')}\n\n`:''}${rows.length?`능력이 바뀐 선수\n${rows.slice(0,12).map(x=>`${x.p.name} (${posLabel(x.p)}, ${x.p.age}세) ${dv(x.a)} → ${dv(x.b)}`).join('\n')}`:'능력이 눈에 띄게 바뀐 선수는 없습니다.'}`,{kind:'캠프',imp:true,acts:[{l:'선수단 보기',a:'go',v:'roster:glance'}]}); }
 /* ===== 감독 영입 면담: 들어올 때 약속을 받아 둔다 =====
  단장은 감독에게 건의할 수 있을 뿐 기용 권한은 없다. 그래서 영입할 때 면담으로 몇 가지를 약속받고 들어오게 할 수 있다.
  후보마다 받아들이는 정도가 다르다: 그대로 수용 / 연봉을 10% 더 주면 수용 / 거절(고집이 세고 자기 방식과 맞지 않으면).
@@ -10172,7 +10207,7 @@ function campCard(){
   if(!G.camp||G.camp.done)return '';
   return `<section class="card hero" data-k="스프링캠프"><span class="eyebrow">스프링캠프 · 3월 5일 종료</span><h2 class="sec">훈련 방향</h2>
     <div class="seg">${Object.entries(CAMP).map(([k,l])=>`<button data-a="camp" data-v="${k}" class="${G.camp.focus===k?'on':''}">${l}</button>`).join('')}</div>
-    <p class="small muted">${{balance:'젊은 선수 성장과 부상 방지를 조금씩 챙깁니다.',skill:'26세 이하 선수의 기술이 늘어납니다.',fitness:'올 시즌 부상 위험이 줄어듭니다.',game:'4월까지 경기 감각이 올라갑니다.'}[G.camp.focus]}</p></section>`;
+    <p class="small muted">${{balance:'젊은 선수 성장과 부상 방지를 조금씩 챙깁니다.',skill:'젊은 선수 기술이 집중적으로 늘고, 투수가 새 구종을 익힐 기회가 많습니다.',fitness:'올 시즌 부상 위험이 줄어듭니다.',game:'4월까지 경기 감각이 올라갑니다.'}[G.camp.focus]}</p></section>`;
 }
 function avImg(o,big){ const src=faceSVG(o); const nm=o==='sec'?SEC:(o.name||'?'); return src?`<img class="av${big?' big':''}" src="${src}" alt="">`:`<span class="av ini${big?' big':''}">${esc(nm.slice(0,1))}</span>`; }
 const PERSONA={'구단주실':['own',63,false],'재무팀':['staff',41,false],'홍보팀':['staff',36,true],'마케팅팀':['staff',33,true],'운영팀':['staff',44,false],'스카우트팀장':['staff',53,false],'전력분석팀':['staff',31,false],'팀 닥터 · 의무팀':['doc',49,false],'육성팀':['staff',47,false],'에이전트':['agent',45,false],'코칭스태프':['coach',50,false],'선수단':['coach',50,false]};
@@ -13862,7 +13897,7 @@ const A={
   nk(v){ UI.nk=v; A.go('club:news'); },
   recGo(v){ const [seg,k]=v.split(':'); UI.lrec=seg; UI.ls=UI.ls||{}; UI.ls[seg]={k,dir:['era','whip','bb9'].includes(k)?1:-1}; A.go('league:rec'); },
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
-  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(a&&a.done)return; UI.actRes=null; if(a&&A[a.a])A[a.a](a.v); else render(); if(a&&MAIL_ONCE.test(a.a)){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(/^posReq/.test(a.a))m.acts.forEach(x=>{ if(/^posReq/.test(x.a))x.done=x.done||x!==a&&'skip'; }); save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
+  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(a&&a.done)return; UI.actRes=null; if(a&&A[a.a])A[a.a](a.v); else render(); if(a&&MAIL_ONCE.test(a.a)){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
   evPick(v){ sfx('confirm',.6); const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); evPick(id,+i); save(); if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ A.go('transfer:foreign'); return; } render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
@@ -15360,8 +15395,8 @@ function posCard(p,info){ const own=p.team===G.user&&!(p.joinY>G.year); const hi
   <p class="small muted">숫자는 그 자리 수비 평가입니다. 숙련 50 이상인 자리는 감독이 무리 없이 맡기고, 경기에 뛰거나 전환 훈련을 하면 숙련이 오릅니다. 다재다능이 높을수록 낯선 자리에서 덜 흔들리고 빨리 배웁니다. 어려운 자리(포수·유격수·중견수·2루수)는 다재다능이 받쳐 줘야 전환할 수 있습니다.</p>
   ${conv}${UI.posMsg&&UI.posMsg.id===p.id?`<div class="note">${esc(UI.posMsg.t)}</div>`:''}</section>`; }
 /* 한 번 누르면 끝나는 메일 버튼: 누른 뒤 버튼 대신 결과 문구를 남긴다 */
-const MAIL_ONCE=/^(posConv|posReqOk|posReqNo)$/;
-Object.assign(A,{ posReqOk(v){ const t=posReqAnswer(+v,true); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posReqNo(v){ const t=posReqAnswer(+v,false); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posConv(v){ const [id,k]=v.split(':'); const t=posConv(+id,k||null); UI.posMsg=t?{id:+id,t}:null; UI.actRes=t||null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
+const MAIL_ONCE=/^(posConv|posReqOk|posReqNo|fcampSet)$/;
+Object.assign(A,{ fcampSet(v){ UI.actRes=fcampSet(v); save(); render(); }, posReqOk(v){ const t=posReqAnswer(+v,true); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posReqNo(v){ const t=posReqAnswer(+v,false); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posConv(v){ const [id,k]=v.split(':'); const t=posConv(+id,k||null); UI.posMsg=t?{id:+id,t}:null; UI.actRes=t||null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
 /* 선수 화면 요약: 올해 2군 기록과 2군에서 뛴 자리 */
 function fut2Card(p){ if(p.prospect||p.team==null)return ''; const y=period()==='pre'?G.year-1:G.year; const h=seasonTotal(p,y,'퓨처스'); if(!h||!(p.isP?h.outs:h.pa))return '';
   const T=p.isP?[['경기',`${h.g||0}${h.gs?` (선발 ${h.gs})`:''}`],['ERA',pRate(h).era.toFixed(2)],['이닝',ipStr(h.outs)],['삼진',h.so],['볼넷/9',pRate(h).bb9.toFixed(1)]]

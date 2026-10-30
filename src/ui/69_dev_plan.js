@@ -79,8 +79,8 @@ function posCard(p,info){ const own=p.team===G.user&&!(p.joinY>G.year); const hi
   <p class="small muted">숫자는 그 자리 수비 평가입니다. 숙련 50 이상인 자리는 감독이 무리 없이 맡기고, 경기에 뛰거나 전환 훈련을 하면 숙련이 오릅니다. 다재다능이 높을수록 낯선 자리에서 덜 흔들리고 빨리 배웁니다. 어려운 자리(포수·유격수·중견수·2루수)는 다재다능이 받쳐 줘야 전환할 수 있습니다.</p>
   ${conv}${UI.posMsg&&UI.posMsg.id===p.id?`<div class="note">${esc(UI.posMsg.t)}</div>`:''}</section>`; }
 /* 한 번 누르면 끝나는 메일 버튼: 누른 뒤 버튼 대신 결과 문구를 남긴다 */
-const MAIL_ONCE=/^(posConv|posReqOk|posReqNo)$/;
-Object.assign(A,{ posReqOk(v){ const t=posReqAnswer(+v,true); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posReqNo(v){ const t=posReqAnswer(+v,false); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posConv(v){ const [id,k]=v.split(':'); const t=posConv(+id,k||null); UI.posMsg=t?{id:+id,t}:null; UI.actRes=t||null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
+const MAIL_ONCE=/^(posConv|posReqOk|posReqNo|fcampSet)$/;
+Object.assign(A,{ fcampSet(v){ UI.actRes=fcampSet(v); save(); render(); }, posReqOk(v){ const t=posReqAnswer(+v,true); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posReqNo(v){ const t=posReqAnswer(+v,false); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posConv(v){ const [id,k]=v.split(':'); const t=posConv(+id,k||null); UI.posMsg=t?{id:+id,t}:null; UI.actRes=t||null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
 /* 선수 화면 요약: 올해 2군 기록과 2군에서 뛴 자리 */
 function fut2Card(p){ if(p.prospect||p.team==null)return ''; const y=period()==='pre'?G.year-1:G.year; const h=seasonTotal(p,y,'퓨처스'); if(!h||!(p.isP?h.outs:h.pa))return '';
   const T=p.isP?[['경기',`${h.g||0}${h.gs?` (선발 ${h.gs})`:''}`],['ERA',pRate(h).era.toFixed(2)],['이닝',ipStr(h.outs)],['삼진',h.so],['볼넷/9',pRate(h).bb9.toFixed(1)]]
