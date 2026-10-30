@@ -42,7 +42,7 @@ function trustWhy(){ let g=null; try{ g=goalStatus(); }catch(e){} if(!g)return '
 /* 주간 요약 진단: 기간 안 우리 경기 기록으로 가장 부진한 쪽을 찾는다 */
 function digestDiag(D){ const me=G.user; const gs=(G.games||[]).filter(g=>g.box&&g.day>=D.from&&g.day<=D.to); if(gs.length<2)return '';
   let spO=0,spE=0,rpO=0,rpE=0,pa=0,ob=0,tb=0,ab=0;
-  for(const g of gs){ const s=g.box[g.home===me?'h':'a']; s.pit.forEach((x,i)=>{ if(i===0){ spO+=x.outs; spE+=x.er; } else { rpO+=x.outs; rpE+=x.er; } }); for(const b of s.bat){ const bpa=(b.ab||0)+(b.bb||0); pa+=bpa; ab+=b.ab||0; ob+=(b.h||0)+(b.bb||0); tb+=(b.h||0)+(b.d||0)+2*(b.tr||0)+3*(b.hr||0); } }
+  for(const g of gs){ const s=g.box[g.home===me?'h':'a']; s.pit.forEach((x,i)=>{ if(i===0){ spO+=x.outs; spE+=x.er; } else { rpO+=x.outs; rpE+=x.er; } }); for(const b of s.bat){ const bpa=(b.ab||0)+(b.bb||0)+(b.sf||0); pa+=bpa; ab+=b.ab||0; ob+=(b.h||0)+(b.bb||0); tb+=(b.h||0)+(b.d||0)+2*(b.tr||0)+3*(b.hr||0); } }
   const spEra=spO?spE*27/spO:0, rpEra=rpO?rpE*27/rpO:0, ops=(pa?ob/pa:0)+(ab?tb/ab:0);
   const C=[]; if(spO>=27&&spEra>=5.2)C.push({k:'sp',v:(spEra-4.4)/4.4,t:`최근 선발진이 버티지 못하고 있습니다. 선발 평균자책점 ${spEra.toFixed(2)}, 경기당 ${ipStr(Math.round(spO/gs.length))}이닝.`,a:[['내부 대체 선발','posSheet','P'],['선발 트레이드 후보','go','trade:market'],['감독 의견','meetOpen','mgr']]});
   if(rpO>=15&&rpEra>=5.5)C.push({k:'rp',v:(rpEra-4.6)/4.6,t:`불펜이 흔들립니다. 불펜 평균자책점 ${rpEra.toFixed(2)}.`,a:[['불펜 자원 보기','posSheet','P'],['불펜 트레이드 후보','go','trade:market'],['감독 의견','meetOpen','mgr']]});

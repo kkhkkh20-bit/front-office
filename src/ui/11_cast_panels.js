@@ -54,7 +54,7 @@ function gmTrend(){ const G10=(G.games||[]).filter(x=>x.box&&(x.home===G.user||x
     for(const b of s.bat){ const k=b.pos||'?'; const o=pos[k]=pos[k]||{ab:0,h:0,tb:0,bb:0,sf:0}; const tb=b.h+(b.d||0)+2*(b.tr||0)+3*(b.hr||0); for(const t of [o,all]){ t.ab+=b.ab; t.h+=b.h; t.tb+=tb; t.bb+=b.bb||0; t.sf+=b.sf||0; } }
     s.pit.forEach((q,i)=>{ if(i===0){ spO+=q.outs; spE+=q.er; spN++; } else { rpO+=q.outs; rpE+=q.er; } }); }
   const ops=o=>o.ab+o.bb?obpOf(o)+(o.ab?o.tb/o.ab:0):0;
-  const P=Object.entries(pos).filter(([k,o])=>SLOTS_S[k]&&o.ab+o.bb>=18).map(([k,o])=>({k,ops:ops(o),pa:o.ab+o.bb})).sort((a,b)=>a.ops-b.ops);
+  const P=Object.entries(pos).filter(([k,o])=>SLOTS_S[k]&&o.ab+o.bb+o.sf>=18).map(([k,o])=>({k,ops:ops(o),pa:o.ab+o.bb+o.sf})).sort((a,b)=>a.ops-b.ops);
   return {n:G10.length,tops:ops(all),weak:P[0]||null,best:P[P.length-1]||null,spEra:spO?spE*27/spO:0,rpEra:rpO?rpE*27/rpO:0,spIp:spN?spO/3/spN:0}; }
 /* 연투: 같은 날짜 연속 등판 */
 function relStreak(id,day){ const days=new Set((G.games||[]).filter(x=>x.box&&(x.home===G.user||x.away===G.user)&&[...x.box.h.pit,...x.box.a.pit].some(q=>q.id===id)).map(x=>x.day)); let n=0; while(days.has(day-n))n++; return n; }

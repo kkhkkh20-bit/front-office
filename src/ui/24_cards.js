@@ -46,8 +46,8 @@ function pLine(p){ const h=seasonTotal(p,G.year,'1군'); if(!h||!h.outs)return '
   return `ERA <b class="num" style="color:${c}">${r.era.toFixed(2)}</b> · ${ipStr(h.outs)}이닝 · ${h.w||0}승 ${h.l||0}패${h.sv?` ${h.sv}세이브`:''}${h.hld?` ${h.hld}홀드`:''} · 탈삼진 ${h.so}`; }
 function l10Text(p){ const L=p.l10||[]; if(!L.length)return '';
   if(p.isP){ const o=sum(L.map(x=>x[0])), er=sum(L.map(x=>x[1])); if(!o)return ''; const era=er*27/o; return `최근 ${L.length}경기 ERA <b style="color:${era<=3.3?'var(--good)':era>=5.8?'var(--bad)':'inherit'}">${era.toFixed(2)}</b>`; }
-  const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),hr=sum(L.map(x=>x[2])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)); if(!ab)return '';
-  const ops=(h+bb)/(ab+bb)+(h+xb)/ab; const s=seasonTotal(p,G.year,'1군'); const so=s&&s.pa?bRate(s).ops:null;
+  const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),hr=sum(L.map(x=>x[2])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)),sf=sum(L.map(x=>x[6]||0)); if(!ab)return '';
+  const ops=(h+bb)/(ab+bb+sf)+(h+xb)/ab; const s=seasonTotal(p,G.year,'1군'); const so=s&&s.pa?bRate(s).ops:null;
   const tr=so==null?'':ops>so+.08?' <span class="trend up">상승</span>':ops<so-.08?' <span class="trend dn">하락</span>':'';
   return `최근 ${L.length}경기 ${fmt3(h/ab)} ${hr?hr+'홈런 ':''}OPS <b style="color:${ops>=.9?'var(--good)':ops<.6?'var(--bad)':'inherit'}">${fmt3(ops)}</b>${tr}`; }
 function fatBar(p){ const f=Math.round(p.fat||0); const c=f>=70?'var(--bad)':f>=45?'var(--warn)':'var(--good)'; return `<span class="fat" title="피로 ${f}"><i style="width:${Math.max(4,f)}%;background:${c}"></i></span>`; }

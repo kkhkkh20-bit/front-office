@@ -152,7 +152,7 @@ function simGame(day,hid,aid,ps){
     /* 세이브 상황: 3점 이내 리드, 또는 동점 주자가 누상·타석·대기 타석에 있을 때(리드 ≤ 주자 수+2) */
     const svSit=(s,id)=>{ const el=s.entry[id]; return el!=null&&el>=1&&(el<=3||el<=((s.entryR||{})[id]||0)+2); };
     /* 세이브: 끝까지 리드를 지킨 마무리. 세이브 상황에서 1이닝 이상(동점 주자 상황이면 아웃 1개 이상), 또는 리드한 채 3이닝 이상 */
-    if(fin&&fin.id!==w.id&&fin!==ws.sp){ const el=ws.entry[fin.id], o=(ws.box.get(fin.id)||{}).outs||0, tie=el!=null&&el>3&&svSit(ws,fin.id);
+    if(fin&&fin.id!==w.id&&fin!==ws.sp){ const el=ws.entry[fin.id], o=(ws.box.get(fin.id)||{}).outs||0, tie=el!=null&&el>=1&&el<=((ws.entryR||{})[fin.id]||0)+2; /* 리드 1~2점이면 주자가 없어도 동점 주자가 타석·대기 타석에 있다 */
       if(el!=null&&el>=1&&((el<=3&&o>=3)||(tie&&o>=1)||o>=9))dec.sv=fin.id; }
     /* 홀드: 세이브 상황에 나와 아웃 1개 이상을 잡고 리드를 지킨 채 내려간 중간 투수 */
     dec.hld=[]; for(const k of ['h','a']){ const s=S[k]; s.pitchers.slice(1).forEach(id=>{ if(id===dec.w||id===dec.sv||id===s.pitchers[s.pitchers.length-1])return; const xl=s.exit[id], o=(s.box.get(id)||{}).outs||0; if(svSit(s,id)&&o>=1&&xl!=null&&xl>=1)dec.hld.push(id); }); }
@@ -174,7 +174,7 @@ function applyGame(day,hid,aid,g,ps){
         /* 선발 출장: 수비 강화로 빠진 선수는 선발로 치고, 교체로 들어온 선수는 선발이 아니다 */
         const sIn=s.subIn&&s.subIn[id]!=null, sOut=s.outI&&s.outI[id]!=null;
         if(!ps){ const i=sIn?-1:sOut?s.outI[id]:s.order.findIndex(q=>q.id===id); if(i>=0){ const u=(p.use&&p.use.y===y)?p.use:(p.use={y,g:0,pos:{},slot:{}}); u.g++; const ps_=s.posOf[id]||'DH'; u.pos[ps_]=(u.pos[ps_]||0)+1; u.slot[i+1]=(u.slot[i+1]||0)+1; } }
-        if(sOut||s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm*(sIn?.3:sOut?.85:1),0,100); if(!ps&&!sIn){ p.wear=(p.wear||0)+1; (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3]); if(p.l10.length>10)p.l10.shift(); } }
+        if(sOut||s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm*(sIn?.3:sOut?.85:1),0,100); if(!ps&&!sIn){ p.wear=(p.wear||0)+1; (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3,x.sf||0]); if(p.l10.length>10)p.l10.shift(); } }
         if(R()<p.inj*.026*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60)*(sIn?.3:sOut?.85:1))injure(p,day);
         else if(p.injFx){ p.injPlay=day; injRecover(p,(x.ab||0)+(x.bb||0)); }
       }

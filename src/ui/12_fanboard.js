@@ -86,7 +86,7 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
       const bank=rk<=3?'rankTop':rk<=6?'rankMid':'rankLow'; add({id:'rk'+wk,d:wk*7,cat:'잡담',title:rk<=3?`${rk}위... 올해 진짜 다르다`:rk<=6?`현재 ${rk}위, 5강 가능하냐`:`${rk}위 실화냐`,body:'',tid:me,cm:fComments('rkc'+wk,bank,rk<=3?'pos':rk<=6?'mix':'neg',{n:rk,pos:weak},6,me,fa)}); } }catch(e){}
   /* 4) 요즘 잘하는·못하는 우리 선수 */
   try{ const wk0=Math.floor(G.day/7); const HC=G.fanHC=(G.fanHC&&G.fanHC.y===G.year)?G.fanHC:{y:G.year,w:{}};
-    if(!HC.w[wk0]){ const L=playersOf(me).filter(p=>!p.isP&&p.l10&&p.l10.length>=6).map(p=>{ const a=p.l10; const ab=sum(a.map(x=>x[0])),h=sum(a.map(x=>x[1])),bb=sum(a.map(x=>x[3])),xb=sum(a.map(x=>x[5]||0)); return {p,ops:ab?(h+bb)/(ab+bb)+(h+xb)/ab:0}; });
+    if(!HC.w[wk0]){ const L=playersOf(me).filter(p=>!p.isP&&p.l10&&p.l10.length>=6).map(p=>{ const a=p.l10; const ab=sum(a.map(x=>x[0])),h=sum(a.map(x=>x[1])),bb=sum(a.map(x=>x[3])),xb=sum(a.map(x=>x[5]||0)),sf=sum(a.map(x=>x[6]||0)); return {p,ops:ab?(h+bb)/(ab+bb+sf)+(h+xb)/ab:0}; });
       if(L.length){ const hot=[...L].sort((a,b)=>b.ops-a.ops)[0], cold=[...L].sort((a,b)=>a.ops-b.ops)[0]; HC.w[wk0]={h:hot.ops>=.95?[hot.p.id,+hot.ops.toFixed(3)]:null,c:cold.ops<.55&&cold!==hot?[cold.p.id,+cold.ops.toFixed(3)]:null};
         const ks=Object.keys(HC.w).map(Number).sort((x,y)=>y-x); ks.slice(4).forEach(k=>delete HC.w[k]); } }
     for(const [wk_,e] of Object.entries(HC.w)){ const wk=+wk_; const hp=e.h&&G.players[e.h[0]], cp=e.c&&G.players[e.c[0]];

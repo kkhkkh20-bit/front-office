@@ -75,7 +75,7 @@ function allStrength(){ const k=G.day+':'+G.games.length+':'+G.year; if(_psC.k==
 function pct(v){ return v==null?'-':v>=.995?'99%+':v<=.005&&v>0?'1% 미만':v===0?'0%':Math.round(v*100)+'%'; }
 function raceCard(){
   const per=period(); const {order,live,y}=standOrder(); const odds=playoffOdds(); const top=order[0];
-  if(!live||!odds)return csec(live?`${G.year} 현재 순위`:`${y} 최종 순위`,`<div class="tw">${standingsTable(order)}</div>${live?'<p class="small muted">가을야구 확률은 팀당 20경기를 치른 뒤부터 계산합니다.</p>':''}`);
+  if(!live||!odds)return csec(live&&per==='season'?`${G.year} 현재 순위`:`${y} 정규시즌 최종 순위`,`<div class="tw">${standingsTable(order)}</div>${live&&per==='season'?'<p class="small muted">가을야구 확률은 팀당 20경기를 치른 뒤부터 계산합니다.</p>':''}`);
   const om=new Map(odds.map(o=>[o.tid,o]));
   const zone=o=>{ const x=om.get(o.tid); return x.first>=.15?'선두 경쟁':x.ps>=.08?'가을야구 경쟁':'하위권'; };
   const groups=['선두 경쟁','가을야구 경쟁','하위권'].map(z=>[z,order.filter(o=>zone(o)===z)]).filter(g=>g[1].length);

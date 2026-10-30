@@ -36,7 +36,7 @@ function simPit(p,outs,b){
   o.er=Math.max(0,Math.round(runs*.92+N(0,Math.sqrt(runs+.5)*.35)));
   delete o.tb; return o;
 }
-const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0};
+const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0,sf:0};
 const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,so:0,er:0,w:0,l:0,sv:0,hld:0};
 function lineFor(p,y,t,lvl){ let h=p.hist.find(x=>x.y===y&&x.t===t&&x.lvl===lvl); if(!h){ h=Object.assign({y,t,lvl},p.isP?ZP:ZB); p.hist.push(h);} return h; }
 function addTo(h,o){ for(const k in o) if(k!=='y'&&k!=='t'&&typeof o[k]==='number') h[k]=(h[k]||0)+o[k]; }
@@ -67,7 +67,7 @@ function updateLg(y){
   const bl=[],pl=[];
   for(const p of Object.values(G.players)) for(const h of p.hist) if(h.y===y&&h.lvl==='1군'){ (p.isP?pl:bl).push(h); }
   const s=(a,k)=>sum(a.map(h=>h[k]||0));
-  const pa=s(bl,'pa'),ab=s(bl,'ab'),H=s(bl,'h'),bb=s(bl,'bb'),tb=s(bl,'h')+s(bl,'d')+2*s(bl,'tr')+3*s(bl,'hr');
+  const ab=s(bl,'ab'),H=s(bl,'h'),bb=s(bl,'bb'),pa=ab+bb+s(bl,'sf'),tb=s(bl,'h')+s(bl,'d')+2*s(bl,'tr')+3*s(bl,'hr');
   const outs=s(pl,'outs'),er=s(pl,'er');
   if(!G.lg)G.lg={};
   G.lg[y]={ops:pa&&ab?(H+bb)/pa+tb/ab:.72, era:outs?er*27/outs:4.5};

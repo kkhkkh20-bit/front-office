@@ -1,7 +1,7 @@
 /* ---------- 구단·재정 ---------- */
 
 /* ---------- 구장 ---------- */
-function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=stadProj(tid), A=(G.sea.att&&G.sea.att[tid])||{n:0,sum:0,so:0,best:0}; const per=period(); const can=per!=='season'&&per!=='post';
+function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=stadProj(tid), A=(G.sea.att&&G.sea.att[tid])||{n:0,sum:0,so:0,best:0}; const per=period(); const can=stadWindow();
   const occ=A.n?A.sum/A.n/cap:0;
   const lg=G.teams.map(t=>{ const x=(G.sea.att&&G.sea.att[t.id])||{n:0,sum:0,so:0}; const c=stadCap(t.id); return {t,c,avg:x.n?Math.round(x.sum/x.n):0,occ:x.n?x.sum/x.n/c:0,so:x.so,n:x.n}; }).sort((a,b)=>b.avg-a.avg||b.c-a.c);
   const top=`<dl class="tsum"><div><dt>수용 인원</dt><dd class="num">${cap.toLocaleString('ko-KR')}석</dd></div><div><dt>올해 홈 평균</dt><dd class="num">${A.n?Math.round(A.sum/A.n).toLocaleString('ko-KR')+'명':P.n?'예상 '+P.avg.toLocaleString('ko-KR')+'명':'-'}</dd></div><div><dt>좌석 점유율</dt><dd class="num">${A.n?Math.round(occ*100)+'%':'-'}</dd></div><div><dt>매진</dt><dd class="num">${A.so}회 / ${A.n}경기</dd></div></dl>

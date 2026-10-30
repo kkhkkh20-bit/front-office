@@ -35,7 +35,7 @@ function cwRapLbl(r){ return r>=70?'각별함':r>=50?'가까움':r>=30?'보통':
 function cwRapWeek(){ for(const w of ['own','ceo']){ const x=cwRapP(w); if(G.day-(x.rapD??G.day)>=60&&x.rap>30)x.rap=Math.max(30,x.rap-.5); } }
 
 /* ---------- 기록 도우미 ---------- */
-function cwRecentB(p,n){ const o={g:0,pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0}; for(const g of (G.games||[])){ if(o.g>=n)break; if(!g.box||dobj(g.day).y!==G.year)continue; const s=g.box[g.home===G.user?'h':'a']; const b=s&&s.bat.find(x=>x.id===p.id); if(!b||!(b.ab+b.bb))continue; o.g++; for(const k of ['ab','h','d','tr','hr','bb','so'])o[k]+=b[k]||0; o.pa+=b.ab+b.bb; }
+function cwRecentB(p,n){ const o={g:0,pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,sf:0}; for(const g of (G.games||[])){ if(o.g>=n)break; if(!g.box||dobj(g.day).y!==G.year)continue; const s=g.box[g.home===G.user?'h':'a']; const b=s&&s.bat.find(x=>x.id===p.id); if(!b||!(b.ab+b.bb+(b.sf||0)))continue; o.g++; for(const k of ['ab','h','d','tr','hr','bb','so','sf'])o[k]+=b[k]||0; o.pa+=b.ab+b.bb+(b.sf||0); }
   const obp=obpOf(o), slg=o.ab?(o.h+o.d+2*o.tr+3*o.hr)/o.ab:0; return Object.assign(o,{avg:o.ab?o.h/o.ab:0,ops:obp+slg}); }
 function cwUlog(){ return ((G.sea&&G.sea.ulog)||[]).filter(x=>dobj(x.d).y===G.year); }
 function cwStreak(L){ L=L||cwUlog(); let n=0; for(let i=L.length-1;i>=0;i--){ if(L[i].res==='패')n++; else break; } return n; }
