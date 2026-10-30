@@ -3124,6 +3124,7 @@ function processDay(){ syncMinSal();
   if(o.d===1&&o.m>=5&&o.m<=9&&period()==='season'){ try{ futuresReport(); }catch(e){} }
   if(o.d===1){ try{ growSnap(); }catch(e){} }
   if(day===c.asg)note('일정','올스타전이 열렸습니다. 후반기가 곧 시작됩니다.');
+  if(day===KD(3,1)&&day<c.draft)try{ draftSeasonMail(); }catch(e){}
   if(day===c.draft)startDraft();
   if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
   if(c.sched[day])playDay(day);
@@ -3779,13 +3780,21 @@ function migrateDraft(){
     for(const id of (G.draftClass||[])){ const p=G.players[id]; if(p&&p.prospect)delete G.players[id]; }
     if(G.draft&&G.draft.done&&G.draft.cls)G.draft.cls=[]; makeDraftClass(); }
 }
+/* 그해 신인 드래프트 지명 순서: 지난 시즌 순위의 역순(r2: 2라운드부터). 경쟁균형세 3회 연속 초과 구단은 1라운드(r1)에서 9단계 내려간다.
+   드래프트 날 전에도 같은 순서를 미리 알려 줄 수 있게 따로 계산한다 */
+function draftOrders(){ const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid);
+  const o1=[...order]; const pen=[]; for(const t of G.teams){ if(t.pickPen!==G.year)continue; const i=o1.indexOf(t.id); if(i<0)continue; o1.splice(i,1); o1.splice(Math.min(o1.length,i+9),0,t.id); pen.push(t.id); }
+  return {r1:o1,r2:order,pen,y:h.y}; }
+function draftNo(tid){ const o=draftOrders(); return o?{r1:o.r1.indexOf(tid)+1,r2:o.r2.indexOf(tid)+1,pen:o.pen.includes(tid),y:o.y}:null; }
+/* 3월 1일: 드래프트 시즌 시작 안내(첫 시즌 포함) */
+function draftSeasonMail(){ if(G.unemp||G.user==null)return; const n=draftNo(G.user); if(!n||!G.cal||!G.cal.draft)return; const c=scoutChief&&scoutChief();
+  mail('스카우트팀',`${G.year} 신인 드래프트: 우리는 1라운드 ${n.r1}순위`,`${dmd(G.cal.draft)}에 ${G.year} 신인 드래프트가 열립니다. 지명 순서는 지난 시즌(${n.y}) 성적의 역순이라 우리는 1라운드 ${n.r1}순위${n.r2!==n.r1?`, 2라운드부터 ${n.r2}순위`:''}입니다.${n.pen?' 경쟁균형세 3회 연속 초과로 1라운드 순서가 9단계 내려갔습니다.':''}\n\n오늘부터 드래프트 시즌입니다. ${c?`${c.name} 스카우트팀장이 `:''}아마추어 담당 스카우트를 고교·대학 선수 관찰에 보냅니다. 관찰이 쌓일수록 평가가 정확해집니다.\n영입·계약 → 신인 드래프트에서 후보 순위를 보고 관심 선수를 표시해 두세요. 지명한 신인은 내년 1월에 합류합니다.`,{kind:'업무',acts:[{l:'신인 드래프트 보기',a:'go',v:'transfer:draft'}]}); }
 function startDraft(){
-  const last=G.history[G.history.length-1].order; const order=[...last].reverse().map(o=>o.tid);
-  /* 경쟁균형세 3회 연속 초과 구단은 1라운드 지명 순서가 9단계 내려간다 */
-  const o1=[...order]; for(const t of G.teams){ if(t.pickPen!==G.year)continue; const i=o1.indexOf(t.id); if(i<0)continue; o1.splice(i,1); o1.splice(Math.min(o1.length,i+9),0,t.id); if(t.id===G.user)note('드래프트','경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 9단계 내려갔습니다.'); }
+  const D=draftOrders(); const order=D.r2, o1=D.r1;
+  if(D.pen.includes(G.user))note('드래프트','경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 9단계 내려갔습니다.');
   const picks=[]; for(let r=0;r<DRAFT_ROUNDS;r++)(r===0?o1:order).forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null}));
   G.draft={cls:G.draftClass||[],picks,cur:0,done:false,y:G.year};
-  stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명 중 ${DRAFT_ROUNDS}라운드 ${picks.length}명을 지명합니다. 순서는 지난 시즌 성적의 역순이고, 우리 첫 지명은 ${order.indexOf(G.user)+1}순위입니다. 3라운드부터는 지명을 건너뛸 수 있습니다.`);
+  stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명 중 ${DRAFT_ROUNDS}라운드 ${picks.length}명을 지명합니다. 순서는 지난 시즌 성적의 역순이고, 우리 첫 지명은 ${o1.indexOf(G.user)+1}순위입니다. 3라운드부터는 지명을 건너뛸 수 있습니다.`);
 }
 /* 드래프트 성적표: 한 해 지명자 전체의 현재 모습 */
 function draftTidOf(p){ const st=(p.story||[]).find(x=>x.k==='draft'); if(!st)return null; const t=G.teams.find(t=>st.t.includes(tname(t.id))); return t?t.id:null; }
@@ -3930,7 +3939,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
     setGoals(`창단 드래프트로 선수단이 꾸려졌습니다. 전력분석팀은 외국인 선수 영입 전 기준으로 우리를 10개 구단 중 ${pr}위 전력으로 봅니다. 창단 첫해이니 구단주도 무리한 목표는 잡지 않았습니다.`,true); G.goals.fd=true;
     news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`전문가들은 창단 드래프트를 마친 ${tname(G.user)}을(를) ${pr}위 전력으로 봅니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
   try{ const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]); const P=L.map(x=>G.players[x.pid]); const nP=domestic(G.user).filter(p=>p.isP).length, nB=domestic(G.user).length-nP;
-    mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; const r=fdRange(p); return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세) 현재 능력 ${fdRangeTxt(r)} · 지명 때 추정 ${dv(fdE0(p,x))} · ${x.role||fdRole(p,fdE0(p,x))}`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 69가 주전급입니다. 현재 능력은 우리 선수라 정확하고, 잠재력은 추정입니다. 7월 1일 중간 평가와 정규시즌 뒤 첫해 평가에서 이 지명을 돌아봅니다.`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
+    mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; const r=fdRange(p); return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세) 현재 능력 ${fdRangeTxt(r)} · 지명 때 추정 ${dv(fdE0(p,x))} · ${x.role||fdRole(p,fdE0(p,x))}`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 69가 주전급입니다. 현재 능력은 우리 선수라 정확하고, 잠재력은 추정입니다. 7월 1일 중간 평가와 정규시즌 뒤 첫해 평가에서 이 지명을 돌아봅니다.${(()=>{ const n=draftNo(G.user); return n&&G.cal&&G.cal.draft?`\n\n다음은 신인 드래프트입니다. ${dmd(G.cal.draft)}에 열리고, 지난 시즌(${n.y}) 성적 역순이라 우리는 1라운드 ${n.r1}순위입니다. 3월부터 스카우트가 고교·대학 선수를 관찰합니다.`:''; })()}`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
   try{ if(G.tut&&!G.tut.done){ G.tut.step=0; sendTut(); } }catch(err){}
   chron('found',`창단 드래프트로 선수단 구성 · 1라운드 ${(()=>{ const x=F.picks.find(q=>q.tid===G.user&&q.rd===1); const p=x&&G.players[x.pid]; return p?p.name:'-'; })()}`);
   stop('드래프트',`창단 드래프트가 끝났습니다. 우리 구단은 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&!x.auto).length}명을 직접 지명했습니다(자동 지명 ${F.picks.filter(x=>x.tid===G.user&&x.pid&&x.auto).length}명, 나머지는 자동 배분). 상위 40명 연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}${ci.over>0?` (상한 ${money(ci.over)} 초과: 시즌 끝까지 넘으면 경쟁균형세)`:''}. 이제 감독을 먼저 선임하고, 감독과 상의해 외국인 선수를 뽑으세요.`); }
@@ -7525,16 +7534,17 @@ function stOffer(kind,id,raise){ stInit(); const mkt=kind==='sc'?scoutMkt():anaM
   const sal=round5(s.sal*(1+raise)); const me=stScore(s,G.user,sal,false);
   /* 경쟁 제안이 이미 걸려 있으면(우리가 한 번 밀린 뒤) 그 조건과 다시 겨룬다. 두 번째에도 밀리면 그쪽으로 간다 */
   const B=s.bid&&s.bid.exp>=G.day?s.bid:null;
-  if(B){ if(me>B.v){ delete s.bid; } else { delete s.bid; stJoin(kind,s,B.t,B.sal); return {ok:false,msg:`${s.name}은(는) 고민 끝에 ${tname(B.t)}을(를) 택했습니다(상대 연 ${money(B.sal)}). ${clubPrestige(B.t)>clubPrestige(G.user)?'구단 위상 차이를 조건으로 메우지 못했습니다.':'조건이 조금 모자랐습니다.'}`}; } }
+  if(B){ if(me>B.v){ delete s.bid; } else { delete s.bid; stJoin(kind,s,B.t,B.sal); stResMail(kind,s,false,B.t,B.sal,true); return {ok:false,msg:`${s.name}은(는) 고민 끝에 ${tname(B.t)}을(를) 택했습니다(상대 연 ${money(B.sal)}). ${clubPrestige(B.t)>clubPrestige(G.user)?'구단 위상 차이를 조건으로 메우지 못했습니다.':'조건이 조금 모자랐습니다.'}`}; } }
   const rivals=B?[]:stInterest(s).map(t=>{ const rs=round5(s.sal*rnd(1,1.15)); return {t,sal:rs,v:stScore(s,t,rs,false)}; }).sort((a,b)=>b.v-a.v);
   if(rivals.length&&rivals[0].v>me){ const r=rivals[0]; /* 바로 뺏기지 않는다: 상대 조건을 알려 주고 3일 안에 다시 제안할 기회를 준다 */
     s.bid={t:r.t,sal:r.sal,v:r.v,k:kind,exp:G.day+3};
-    let need=null; for(let x=Math.max(raise,0)+.05;x<=1.0001;x+=.05){ const ns=round5(s.sal*(1+x)); if(stScore(s,G.user,ns,false)>r.v){ need={x:+x.toFixed(2),sal:ns}; break; } }
+    const need=stNeed(s,raise);
     const head=`${tname(r.t)}이(가) ${s.name}에게 연 ${money(r.sal)}을 제시해 그쪽으로 기울었습니다. ${clubPrestige(r.t)>clubPrestige(G.user)?'구단 위상도 그쪽이 높습니다.':''}`;
     const tail=need?`${dmd(s.bid.exp)}까지 연 ${money(need.sal)} 이상으로 다시 제안하면 우리 쪽으로 돌릴 수 있습니다.`:'연봉을 두 배로 올려도 마음을 돌리기 어렵습니다. 구단 위상 차이가 큽니다.';
-    mail('운영팀',`${s.name} 영입 경쟁: ${tshort(r.t)}이(가) 더 높은 조건`,`${head}\n${tail}\n\n답하지 않으면 ${dmd(s.bid.exp)} 뒤 ${tshort(r.t)}로 갑니다.`,{imp:true,kind:'스태프',acts:(need?[{l:`다시 제안(연 ${money(need.sal)})`,a:kind==='sc'?'hireScout':'anaHire',v:s.id+':'+need.x}]:[]).concat([{l:'포기',a:'stBidDrop',v:s.id}])});
-    return {ok:false,bid:true,msg:head+' '+tail}; }
+    /* 상대 조건은 제안한 자리에서 바로 보이고, 후보 카드에 '다시 제안·포기' 버튼이 생긴다. 소식함에는 결과(영입 완료·무산)만 남긴다 */
+    return {ok:false,bid:true,msg:head+' '+tail+' 후보 카드에서 다시 제안하거나 포기할 수 있습니다.'}; }
   s.sal=sal; s.since=G.day; s.loy=20; if(kind==='sc')G.scoutMarket=G.scoutMarket.filter(x=>x.id!==id); else G.amarket=G.amarket.filter(x=>x.id!==id);
+  stResMail(kind,s,true,G.user,sal,true,B?B.t:null);
   return {ok:true,s,msg:`${s.name}이(가) 연 ${money(sal)}에 합류합니다.${rivals.length?` ${rivals.map(r=>tshort(r.t)).join('·')}도 노렸지만 우리를 택했습니다.`:''}`}; }
 function stJoin(kind,s,tid,sal){ const L=stTeamL(tid); if(!L)return; if(sal)s.sal=sal; /* 경쟁 구단이 제시한 연봉으로 계약 */ s.since=G.day; s.loy=20; if(kind==='sc'){ G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.id!==s.id); L.sc.push(s); if(L.sc.length>ST_SC_N[1]+1)L.sc.sort((a,b)=>a.skill-b.skill).shift(); stSync(tid); }
   else { G.amarket=(G.amarket||[]).filter(x=>x.id!==s.id); L.an.push(s); if(L.an.length>ST_AN_N[1]+1)L.an.sort((a,b)=>a.skill-b.skill).shift(); }
@@ -7569,10 +7579,21 @@ function stKeep(id,full){ const r=stRaidFind(id); if(!r||G.unemp)return '이미 
   const sal=full?r.sal:round5(s.sal*1.1); const stay=stScore(s,G.user,sal,true), go=stScore(s,r.tid,r.sal,false);
   if(full||stay>=go){ s.sal=sal; s.loy=clamp(s.loy+10,0,100); G.stRaid=G.stRaid.filter(x=>x!==r); addLog(`${s.name}을(를) 연 ${money(sal)}에 붙잡았습니다.`); return `${s.name}: "믿어 주셔서 감사합니다. 남겠습니다." 연 ${money(sal)}.`; }
   return stLeave(r); }
+/* 경쟁 구단 제안을 이기려면 필요한 최소 인상률(5% 단위, 두 배까지). 이길 수 없으면 null */
+function stNeed(s,from){ const B=s&&s.bid; if(!B)return null; for(let x=Math.max(from||0,0)+.05;x<=1.0001;x+=.05){ const ns=round5(s.sal*(1+x)); if(stScore(s,G.user,ns,false)>B.v)return {x:+x.toFixed(2),sal:ns}; } return null; }
+/* 영입 결과만 소식함에: 완료·무산. 내가 바로 본 결과(seen)는 읽은 상태로 기록만 남긴다 */
+function stResMail(kind,s,won,tid,sal,seen,rival){ const role=kind==='sc'?'스카우트':'전력분석원';
+  const m=won?mail('운영팀',`${role} ${s.name} 영입 완료`,`${s.name}(능력 ${s.skill})이(가) 연 ${money(sal)}에 합류했습니다.${rival!=null?` ${tshort(rival)}과(와)의 영입 경쟁에서 이겼습니다.`:''}`,{kind:'스태프'})
+    :mail('운영팀',`${role} ${s.name} 영입 무산: ${tshort(tid)}과(와) 계약`,`${s.name}(능력 ${s.skill})이(가) ${tname(tid)}과(와) 연 ${money(sal)}에 계약했습니다.`,{kind:'스태프'});
+  if(seen&&m)m.read=true; stBidMailsDone(s); }
+/* 예전 '영입 경쟁' 메일(저장 파일에 남은 것): 경쟁이 끝났으면 읽음 처리하고 버튼을 없앤다 */
+function stBidMailsDone(s){ for(const m of (G.mail||[]).slice(0,300)){ if(!m.subj||!m.subj.includes(' 영입 경쟁: '))continue; if(s&&!m.subj.startsWith(s.name+' 영입 경쟁'))continue;
+    if(!s){ const nm=m.subj.split(' 영입 경쟁')[0]; const live=[...(G.scoutMarket||[]),...(G.amarket||[])].some(x=>x.name===nm&&x.bid&&x.bid.exp>=G.day); if(live)continue; }
+    m.read=true; m.acts=[]; m.imp=false; } }
 /* 영입 경쟁: 기한이 지나면 경쟁 구단으로 간다 */
-function stBidExpire(){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ for(const s of [...mkt]){ if(!s.bid||s.bid.exp>=G.day)continue; const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); note('스태프',`${s.name}이(가) ${tname(t)}과(와) 계약했습니다. 다시 제안하지 않아 영입 경쟁이 끝났습니다.`); } } }
-function stBidDrop(id){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ const s=mkt.find(x=>x.id===id); if(s&&s.bid){ const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); return `${s.name} 영입을 포기했습니다. ${tshort(t)}로 갑니다.`; } } return '이미 끝난 일입니다.'; }
-function stDaily(){ try{ stBidExpire(); }catch(e){} const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e){} if((o.m===11||o.m===12)&&o.d===15){ try{ stRaid(); }catch(e){} stRaidAuto(); }
+function stBidExpire(){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ for(const s of [...mkt]){ if(!s.bid||s.bid.exp>=G.day)continue; const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); stResMail(kind,s,false,t,bs,false); } } }
+function stBidDrop(id){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ const s=mkt.find(x=>x.id===id); if(s&&s.bid){ const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); stBidMailsDone(s); return `${s.name} 영입을 포기했습니다. ${tshort(t)}로 갑니다.`; } } return '이미 끝난 일입니다.'; }
+function stDaily(){ try{ stBidExpire(); }catch(e){} try{ stBidMailsDone(null); }catch(e){} const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e){} if((o.m===11||o.m===12)&&o.d===15){ try{ stRaid(); }catch(e){} stRaidAuto(); }
   for(const r of (G.stRaid||[]).filter(r=>r.exp<G.day)){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(s&&stScore(s,G.user,s.sal,true)>=stScore(s,r.tid,r.sal,false)){ G.stRaid=G.stRaid.filter(x=>x!==r); note('스태프',`${s.name}은(는) 고민 끝에 남기로 했습니다.`); } else note('스태프',stLeave(r)); } }
 /* 새해: 경험이 쌓여 성장(젊을수록), 노장은 감각이 떨어지고 은퇴, 충성도 상승, 연봉은 실력에 맞춰 재계약 */
 function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...anaList().map(a=>['an',a,G.user])]; for(const tid in G.lgStaff){ for(const s of G.lgStaff[tid].sc)all.push(['sc',s,+tid]); for(const a of G.lgStaff[tid].an)all.push(['an',a,+tid]); }
@@ -10500,7 +10521,7 @@ function scoutBody(){
     <div class="tgrid">${G.scouts.map(s=>scoutCard(s,`${opt(s)}${G.day-(s.since??-999)<30?`<span class="pill warn">적응 중 · ${dmd(s.since+30)}까지</span>`:''}<span class="small muted">충성도 ${Math.round(stAttr(s).loy)} · 야망 ${s.amb}</span><button class="tc-i" data-a="person" data-v="sc:${s.id}">인물 카드</button><button class="tc-i" data-a="fireScout" data-v="${s.id}">계약 해지</button>`)).join('')||'<p class="small muted">스카우트가 없습니다.</p>'}</div>`;
   const MK=`<div class="eyebrow">고용 ${G.scouts.length}/${SCOUT_MAX}명 · ${stPrestigeLine()}</div>
     ${(()=>{ const f=UI.scF||'all'; return `<div class="row between"><span class="small muted">채용 후보 ${scoutMkt().length}명 · 매달 일부가 바뀝니다</span><div class="chips">${[['all','전체'],['P','투수 감별'],['B','타자 감별'],['hi','능력 4 이상']].map(([k,l])=>`<button data-a="scF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div></div>`; })()}
-    <div class="tgrid">${(()=>{ const SL=scoutMkt().filter(s=>{ const f=UI.scF||'all'; return f==='all'||(f==='hi'?s.skill>=4:s.spec===f); }).sort((a,b)=>b.skill-a.skill||a.sal-b.sal); const PG=pager('scm'+(UI.scF||''),SL,6); UI._scPg=PG.bar; return PG.items; })().map(s=>scoutCard(s,stMktInfo(s)+`<button class="tc-i go" data-a="hireScout" data-v="${s.id}:0" ${G.scouts.length>=SCOUT_MAX?'disabled':''}>제안 · 연 ${money(s.sal||0)}</button><button class="tc-i" data-a="hireScout" data-v="${s.id}:0.2" ${G.scouts.length>=SCOUT_MAX?'disabled':''}>20% 더 · ${money(round5(s.sal*1.2))}</button>`)).join('')}</div>${UI._scPg||''}`;
+    <div class="tgrid">${(()=>{ const SL=scoutMkt().filter(s=>{ const f=UI.scF||'all'; return f==='all'||(f==='hi'?s.skill>=4:s.spec===f); }).sort((a,b)=>b.skill-a.skill||a.sal-b.sal); const PG=pager('scm'+(UI.scF||''),SL,6); UI._scPg=PG.bar; return PG.items; })().map(s=>scoutCard(s,stMktInfo(s)+(stBidLive(s)?stBidBtns('sc',s,'tc-i'):`<button class="tc-i go" data-a="hireScout" data-v="${s.id}:0" ${G.scouts.length>=SCOUT_MAX?'disabled':''}>제안 · 연 ${money(s.sal||0)}</button><button class="tc-i" data-a="hireScout" data-v="${s.id}:0.2" ${G.scouts.length>=SCOUT_MAX?'disabled':''}>20% 더 · ${money(round5(s.sal*1.2))}</button>`))).join('')}</div>${UI._scPg||''}`;
   return it.bar+(it.cur==='mkt'?MK:it.cur==='oth'?stOtherView('sc'):TEAM);
 }
 
@@ -13085,9 +13106,9 @@ function draftBoard(){
     </section>`;
   } else {
     const left=Math.max(0,G.cal.draft-G.day);
-    const st=standingsNow?standingsNow():[]; const myNo=st.length?[...st].reverse().findIndex(o=>o.tid===G.user)+1:null;
+    const dn=draftNo(G.user);
     head=`<section class="card hero dhead"><div class="row between"><span class="eyebrow">${G.year} 신인 드래프트 · ${dmd(G.cal.draft)}</span><span class="pill">D-${left}</span></div>
-      <p>참가 선수 ${pool.length}명 중 ${DRAFT_ROUNDS}라운드 ${DRAFT_ROUNDS*10}명이 지명됩니다. 지명 순서는 정규시즌 성적의 역순입니다.${myNo&&period()==='season'?` 지금 순위대로면 우리는 ${myNo}순위입니다.`:''}</p>
+      <p>참가 선수 ${pool.length}명 중 ${DRAFT_ROUNDS}라운드 ${DRAFT_ROUNDS*10}명이 지명됩니다. 지명 순서는 지난 시즌 성적의 역순입니다.${dn?` 우리는 1라운드 <b>${dn.r1}순위</b>${dn.r2!==dn.r1?`, 2라운드부터 ${dn.r2}순위`:''}입니다.`:''}</p>
       <details class="frule"><summary class="small">로스터·순위 안내</summary><p class="small">지금 정식 로스터는 ${rosterN(G.user)}/${ROSTER_MAX}명입니다. 지명한 신인은 내년 1월에 합류하므로, 그만큼 기존 선수를 방출해야 합니다. 3라운드부터는 지명을 건너뛸 수 있고, 다른 구단도 로스터가 차면 건너뜁니다.</p>
       <p class="small muted">언론 순위는 성적과 체격만 본 평가이고, 우리 순위는 스카우트가 직접 보고 매긴 평가입니다. 스카우트도 틀립니다. 관찰이 쌓일수록 정확해지지만, 스카우트마다 좋아하는 유형이 있어 그 버릇은 남습니다. '강력 추천'은 언론보다 훨씬 높게 보는 후보에 대한 스카우트의 주장입니다.${noScout.length?` <b>${noScout.join(', ')}</b> 지역은 담당 스카우트가 없어 잠재력이 ?로 나옵니다.`:''} 관심 표시한 선수는 지명 때 바로 고를 수 있습니다.</p>
       </details>
@@ -13257,7 +13278,7 @@ function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarke
   const pw=r=>anaPow(r); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
   const card=(a,mine)=>`<div class="tcard anc" style="cursor:default"><div class="row between" style="flex-wrap:nowrap"><div style="min-width:0">${avImg({persona:'staff',pid:a.id,name:a.name,age:a.age})}<b> ${esc(a.name)}</b> <span class="small muted">${a.age}세 · 연 ${money(a.sal)}</span></div><span class="anstar">${stars(a.skill)}</span></div>
     ${mine?`<div class="row" style="gap:6px;margin-top:6px"><select data-a="anaRole" data-v="${a.id}" aria-label="역할">${Object.entries(AROLE).map(([k,r])=>`<option value="${k}" ${a.role===k?'selected':''}>${r.l}</option>`).join('')}</select>${G.day-a.since<30?'<span class="pill warn">적응 중</span>':''}<span class="small muted">충성도 ${Math.round(stAttr(a).loy)}</span><button class="btn small" data-a="person" data-v="an:${a.id}">카드</button><button class="btn small" data-a="anaFire" data-v="${a.id}" style="margin-left:auto">계약 해지</button></div>`
-      :`<p class="small muted" style="margin:6px 0">${AROLE[a.role].l} 전문${a.car?` · ${esc(a.car)}`:''}</p>${stMktInfo(a)}<div class="row" style="gap:6px"><button class="btn small primary" data-a="anaHire" data-v="${a.id}:0" ${L.length>=ANA_MAX?'disabled':''}>제안 · 연 ${money(a.sal)}</button><button class="btn small" data-a="anaHire" data-v="${a.id}:0.2" ${L.length>=ANA_MAX?'disabled':''}>20% 더 · ${money(round5(a.sal*1.2))}</button></div>`}</div>`;
+      :`<p class="small muted" style="margin:6px 0">${AROLE[a.role].l} 전문${a.car?` · ${esc(a.car)}`:''}</p>${stMktInfo(a)}<div class="row" style="gap:6px">${stBidLive(a)?stBidBtns('an',a):`<button class="btn small primary" data-a="anaHire" data-v="${a.id}:0" ${L.length>=ANA_MAX?'disabled':''}>제안 · 연 ${money(a.sal)}</button><button class="btn small" data-a="anaHire" data-v="${a.id}:0.2" ${L.length>=ANA_MAX?'disabled':''}>20% 더 · ${money(round5(a.sal*1.2))}</button>`}</div>`}</div>`;
   const it=inTabs('ana',[['mine',`우리 분석원 ${L.length}/${ANA_MAX}`],['mk',`채용 후보 ${anaMarket().length}`],['rep','분석 보고']],'mine');
   const eff=`<dl class="tsum"><div><dt>상대 전력분석</dt><dd>${pw('opp').toFixed(1)} · 실점 억제</dd></div><div><dt>트래킹 데이터</dt><dd>${pw('trk').toFixed(1)} · 평가 오차 -${Math.round((1-E.sdm)*100)}%</dd></div><div><dt>영상 분석</dt><dd>${pw('vid').toFixed(1)} · 타격 공략</dd></div></dl>`;
   const body=it.cur==='mk'?`<p class="small muted">매달 1일 후보가 일부 바뀝니다. 다른 구단도 같은 후보를 노립니다. ${esc(stPrestigeLine())}</p>${(()=>{ const f=UI.anF||'all'; return `<div class="chips" style="margin:6px 0">${[['all','전체'],...Object.entries(AROLE).map(([k,v])=>[k,v.l]),['hi','능력 4 이상']].map(([k,l])=>`<button data-a="anF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div>`; })()}<div class="tgrid">${M.filter(a=>{ const f=UI.anF||'all'; return f==='all'||(f==='hi'?a.skill>=4:a.role===f); }).sort((a,b)=>b.skill-a.skill||a.sal-b.sal).map(a=>card(a,false)).join('')}</div>${stOtherView('an')}`
@@ -14701,6 +14722,8 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
   { let b=null; try{ b=budget(); }catch(e){} if(b)T.push(tile('예산 여유',money(Math.round(b.roomGoal)),b.roomGoal>=0?'지원 목표 안':'목표 초과','club:fin',b.roomGoal<0?'bad':'',null,b.roomGoal<0?'예산 초과':'')); }
   if(G.pr)T.push(tile('팬 여론',Math.round(G.pr.fan),`언론 논조 ${Math.round(G.pr.press)}${prSpark()}`,'club:media',G.pr.fan>=60?'good':G.pr.fan<40?'bad':'',G.pr.fan,G.pr.fan<30?'여론 악화':''));
   { const v=clubPrestige(G.user); const L=G.teams.map(x=>clubPrestige(x.id)).sort((a,b)=>b-a); T.push(tile('구단 명성',`<span class="stars-t">${starTxt(prestigeStars(v))}</span>`,`${v}점 · 리그 ${L.indexOf(v)+1}위`,'club:owner','',v)); }
+  /* 드래프트 시즌(3월 ~ 그해 신인 드래프트 전): 남은 날과 우리 1라운드 순위 */
+  { const c=G.cal; if(c&&c.draft&&G.day>=KD(3,1)&&G.day<c.draft&&!(G.draft&&G.draft.y===G.year)){ const n=draftNo(G.user); if(n)T.push(tile('신인 드래프트',`D-${c.draft-G.day}`,`${dsh(c.draft)} · 1라운드 ${n.r1}순위`,'transfer:draft','dtl-dr')); } }
   /* 급한 항목은 앞으로, 두 칸 크기로 */ const U=T.filter(x=>/ urg"/.test(x)), N=T.filter(x=>!/ urg"/.test(x));
   return `<div class="dtiles">${U.join('')}${N.join('')}</div>`; }
 /* 핵심 선수: 능력 상위 13명(부상자도 포함해서 본다) */
@@ -14721,6 +14744,10 @@ function prSpark(){ const H=((G.pr&&G.pr.hist)||[]).slice(-7).map(x=>x.fan).conc
 /* ---------- 리그 스태프 시장 화면 조각 ---------- */
 function stPrestigeLine(){ stInit(); const L=G.teams.map(t=>({t:t.id,v:clubPrestige(t.id)})).sort((a,b)=>b.v-a.v); const i=L.findIndex(x=>x.t===G.user); return `우리 구단 위상 ${clubPrestige(G.user)} (리그 ${i+1}위) · 위상은 시장 규모·인기·최근 성적·단장 평판·시설로 정해지고, 높을수록 좋은 사람이 옵니다`; }
 function stMktInfo(s){ stAttr(s); const I=stInterest(s); return `<span class="small ${I.length?'warn':'muted'}" style="display:block">야망 ${s.amb}${s.region?` · ${esc(s.region)} 연고`:''} · ${I.length?`${I.map(t=>esc(tshort(t))).join('·')}도 관심`:'경쟁 구단 없음'}</span>${s.bid&&s.bid.exp>=G.day?`<span class="small warn" style="display:block">${esc(tshort(s.bid.t))} 연 ${money(s.bid.sal)} 제시 · ${dmd(s.bid.exp)}까지 다시 제안 가능</span>`:''}`; }
+/* 영입 경쟁 중인 후보: 이기는 데 필요한 조건으로 다시 제안하거나 포기 */
+function stBidLive(s){ return !!(s&&s.bid&&s.bid.exp>=G.day); }
+function stBidBtns(kind,s,cls){ const n=stNeed(s); const a=kind==='sc'?'hireScout':'anaHire'; cls=cls||'btn small';
+  return `${n?`<button class="${cls} go primary" data-a="${a}" data-v="${s.id}:${n.x}">다시 제안 · 연 ${money(n.sal)}</button>`:`<span class="small muted">연봉을 두 배로 올려도 이기기 어렵습니다</span>`}<button class="${cls}" data-a="stBidDrop" data-v="${s.id}">포기</button>`; }
 function stOtherView(kind){ stInit(); const open=stPoachOpen(); const P=G.stPo&&G.stPo.y===sponSeason()?G.stPo:{n:0,t:[]};
   const L=[]; for(const tid in G.lgStaff){ for(const s of (kind==='sc'?G.lgStaff[tid].sc:G.lgStaff[tid].an))if(s.skill>=3)L.push({s,tid:+tid}); }
   L.sort((a,b)=>b.s.skill-a.s.skill||a.s.loy-b.s.loy);

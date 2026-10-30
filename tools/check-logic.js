@@ -654,6 +654,15 @@ T('[우승] 우승하면 다음 시즌 관중·굿즈 판매가 늘고(인기), 
   const m0=G.mail.length; G.year++; champSalesNote(); ok(JSON.stringify(G.mail.slice(0,G.mail.length-m0+1)).includes('우승 효과'),'다음 시즌 판매 증가 안내가 없음'); });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
+T('[드래프트] 첫 시즌부터 신인 드래프트 지명 순서(지난 시즌 역순)를 미리 알리고, 실제 지명 순서와 같다',()=>{ fresh(); const o=draftOrders(); ok(o&&o.r1.length===G.teams.length,'지명 순서를 미리 계산하지 못함'); const n=o.r1.indexOf(G.user)+1;
+  const fm=G.mail.find(x=>x.subj.includes('창단 드래프트 결과')); ok(fm&&fm.body.includes('1라운드 '+n+'순위'),'창단 드래프트 결과 메일에 신인 드래프트 순위 안내 없음');
+  simTo(()=>G.day>=KD(3,1)); const m=G.mail.slice(0,40).find(x=>x.subj.includes('신인 드래프트')&&x.subj.includes('순위')); ok(m&&m.subj.includes(n+'순위'),'3월 1일 드래프트 시즌 안내 메일 없음 또는 순위 틀림');
+  simTo(()=>G.draft); ok(G.draft.picks.slice(0,G.teams.length).map(x=>x.tid).join()===o.r1.join(),'미리 알린 순서와 실제 1라운드 순서가 다름'); });
+T('[스태프] 영입 경쟁은 소식함에 쌓지 않고 후보 카드에서 다시 제안하며, 결과(영입 완료·무산)만 소식함에 남는다',()=>{ fresh(); stInit(); while(G.scouts.length>=SCOUT_MAX)G.scouts.pop(); const M=scoutMkt(); const s=M[0], s2=M[1]; const rv=G.teams.find(t=>t.id!==G.user).id;
+  s._im=s2._im=G.year*100+dobj(G.day).m; s.int=[rv]; s2.int=[]; const old=stScore; stScore=(x,tid,sal)=>tid===G.user?sal/100:1e9;
+  const r=stOffer('sc',s.id,0); ok(r.bid,'경쟁 상황을 만들지 못함'); ok(!G.mail.slice(0,8).some(m=>m.subj.includes('영입 경쟁')),'영입 경쟁 메일이 소식함에 쌓임');
+  G.day+=4; stBidExpire(); stScore=old; ok(G.mail.slice(0,8).some(m=>m.subj.includes(s.name)&&m.subj.includes('무산')),'경쟁에서 진 결과(무산)가 소식함에 없음');
+  const r2=stOffer('sc',s2.id,0); ok(r2.ok,'경쟁 없는 영입 실패'); ok(G.mail.slice(0,8).some(m=>m.subj.includes(s2.name)&&m.subj.includes('영입 완료')),'영입 완료가 소식함에 없음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ for(const t of results){ try{ t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }

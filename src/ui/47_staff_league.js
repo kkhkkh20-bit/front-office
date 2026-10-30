@@ -1,6 +1,10 @@
 /* ---------- 리그 스태프 시장 화면 조각 ---------- */
 function stPrestigeLine(){ stInit(); const L=G.teams.map(t=>({t:t.id,v:clubPrestige(t.id)})).sort((a,b)=>b.v-a.v); const i=L.findIndex(x=>x.t===G.user); return `우리 구단 위상 ${clubPrestige(G.user)} (리그 ${i+1}위) · 위상은 시장 규모·인기·최근 성적·단장 평판·시설로 정해지고, 높을수록 좋은 사람이 옵니다`; }
 function stMktInfo(s){ stAttr(s); const I=stInterest(s); return `<span class="small ${I.length?'warn':'muted'}" style="display:block">야망 ${s.amb}${s.region?` · ${esc(s.region)} 연고`:''} · ${I.length?`${I.map(t=>esc(tshort(t))).join('·')}도 관심`:'경쟁 구단 없음'}</span>${s.bid&&s.bid.exp>=G.day?`<span class="small warn" style="display:block">${esc(tshort(s.bid.t))} 연 ${money(s.bid.sal)} 제시 · ${dmd(s.bid.exp)}까지 다시 제안 가능</span>`:''}`; }
+/* 영입 경쟁 중인 후보: 이기는 데 필요한 조건으로 다시 제안하거나 포기 */
+function stBidLive(s){ return !!(s&&s.bid&&s.bid.exp>=G.day); }
+function stBidBtns(kind,s,cls){ const n=stNeed(s); const a=kind==='sc'?'hireScout':'anaHire'; cls=cls||'btn small';
+  return `${n?`<button class="${cls} go primary" data-a="${a}" data-v="${s.id}:${n.x}">다시 제안 · 연 ${money(n.sal)}</button>`:`<span class="small muted">연봉을 두 배로 올려도 이기기 어렵습니다</span>`}<button class="${cls}" data-a="stBidDrop" data-v="${s.id}">포기</button>`; }
 function stOtherView(kind){ stInit(); const open=stPoachOpen(); const P=G.stPo&&G.stPo.y===sponSeason()?G.stPo:{n:0,t:[]};
   const L=[]; for(const tid in G.lgStaff){ for(const s of (kind==='sc'?G.lgStaff[tid].sc:G.lgStaff[tid].an))if(s.skill>=3)L.push({s,tid:+tid}); }
   L.sort((a,b)=>b.s.skill-a.s.skill||a.s.loy-b.s.loy);

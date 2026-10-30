@@ -40,16 +40,17 @@ function stOffer(kind,id,raise){ stInit(); const mkt=kind==='sc'?scoutMkt():anaM
   const sal=round5(s.sal*(1+raise)); const me=stScore(s,G.user,sal,false);
   /* 경쟁 제안이 이미 걸려 있으면(우리가 한 번 밀린 뒤) 그 조건과 다시 겨룬다. 두 번째에도 밀리면 그쪽으로 간다 */
   const B=s.bid&&s.bid.exp>=G.day?s.bid:null;
-  if(B){ if(me>B.v){ delete s.bid; } else { delete s.bid; stJoin(kind,s,B.t,B.sal); return {ok:false,msg:`${s.name}은(는) 고민 끝에 ${tname(B.t)}을(를) 택했습니다(상대 연 ${money(B.sal)}). ${clubPrestige(B.t)>clubPrestige(G.user)?'구단 위상 차이를 조건으로 메우지 못했습니다.':'조건이 조금 모자랐습니다.'}`}; } }
+  if(B){ if(me>B.v){ delete s.bid; } else { delete s.bid; stJoin(kind,s,B.t,B.sal); stResMail(kind,s,false,B.t,B.sal,true); return {ok:false,msg:`${s.name}은(는) 고민 끝에 ${tname(B.t)}을(를) 택했습니다(상대 연 ${money(B.sal)}). ${clubPrestige(B.t)>clubPrestige(G.user)?'구단 위상 차이를 조건으로 메우지 못했습니다.':'조건이 조금 모자랐습니다.'}`}; } }
   const rivals=B?[]:stInterest(s).map(t=>{ const rs=round5(s.sal*rnd(1,1.15)); return {t,sal:rs,v:stScore(s,t,rs,false)}; }).sort((a,b)=>b.v-a.v);
   if(rivals.length&&rivals[0].v>me){ const r=rivals[0]; /* 바로 뺏기지 않는다: 상대 조건을 알려 주고 3일 안에 다시 제안할 기회를 준다 */
     s.bid={t:r.t,sal:r.sal,v:r.v,k:kind,exp:G.day+3};
-    let need=null; for(let x=Math.max(raise,0)+.05;x<=1.0001;x+=.05){ const ns=round5(s.sal*(1+x)); if(stScore(s,G.user,ns,false)>r.v){ need={x:+x.toFixed(2),sal:ns}; break; } }
+    const need=stNeed(s,raise);
     const head=`${tname(r.t)}이(가) ${s.name}에게 연 ${money(r.sal)}을 제시해 그쪽으로 기울었습니다. ${clubPrestige(r.t)>clubPrestige(G.user)?'구단 위상도 그쪽이 높습니다.':''}`;
     const tail=need?`${dmd(s.bid.exp)}까지 연 ${money(need.sal)} 이상으로 다시 제안하면 우리 쪽으로 돌릴 수 있습니다.`:'연봉을 두 배로 올려도 마음을 돌리기 어렵습니다. 구단 위상 차이가 큽니다.';
-    mail('운영팀',`${s.name} 영입 경쟁: ${tshort(r.t)}이(가) 더 높은 조건`,`${head}\n${tail}\n\n답하지 않으면 ${dmd(s.bid.exp)} 뒤 ${tshort(r.t)}로 갑니다.`,{imp:true,kind:'스태프',acts:(need?[{l:`다시 제안(연 ${money(need.sal)})`,a:kind==='sc'?'hireScout':'anaHire',v:s.id+':'+need.x}]:[]).concat([{l:'포기',a:'stBidDrop',v:s.id}])});
-    return {ok:false,bid:true,msg:head+' '+tail}; }
+    /* 상대 조건은 제안한 자리에서 바로 보이고, 후보 카드에 '다시 제안·포기' 버튼이 생긴다. 소식함에는 결과(영입 완료·무산)만 남긴다 */
+    return {ok:false,bid:true,msg:head+' '+tail+' 후보 카드에서 다시 제안하거나 포기할 수 있습니다.'}; }
   s.sal=sal; s.since=G.day; s.loy=20; if(kind==='sc')G.scoutMarket=G.scoutMarket.filter(x=>x.id!==id); else G.amarket=G.amarket.filter(x=>x.id!==id);
+  stResMail(kind,s,true,G.user,sal,true,B?B.t:null);
   return {ok:true,s,msg:`${s.name}이(가) 연 ${money(sal)}에 합류합니다.${rivals.length?` ${rivals.map(r=>tshort(r.t)).join('·')}도 노렸지만 우리를 택했습니다.`:''}`}; }
 function stJoin(kind,s,tid,sal){ const L=stTeamL(tid); if(!L)return; if(sal)s.sal=sal; /* 경쟁 구단이 제시한 연봉으로 계약 */ s.since=G.day; s.loy=20; if(kind==='sc'){ G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.id!==s.id); L.sc.push(s); if(L.sc.length>ST_SC_N[1]+1)L.sc.sort((a,b)=>a.skill-b.skill).shift(); stSync(tid); }
   else { G.amarket=(G.amarket||[]).filter(x=>x.id!==s.id); L.an.push(s); if(L.an.length>ST_AN_N[1]+1)L.an.sort((a,b)=>a.skill-b.skill).shift(); }
@@ -84,10 +85,21 @@ function stKeep(id,full){ const r=stRaidFind(id); if(!r||G.unemp)return '이미 
   const sal=full?r.sal:round5(s.sal*1.1); const stay=stScore(s,G.user,sal,true), go=stScore(s,r.tid,r.sal,false);
   if(full||stay>=go){ s.sal=sal; s.loy=clamp(s.loy+10,0,100); G.stRaid=G.stRaid.filter(x=>x!==r); addLog(`${s.name}을(를) 연 ${money(sal)}에 붙잡았습니다.`); return `${s.name}: "믿어 주셔서 감사합니다. 남겠습니다." 연 ${money(sal)}.`; }
   return stLeave(r); }
+/* 경쟁 구단 제안을 이기려면 필요한 최소 인상률(5% 단위, 두 배까지). 이길 수 없으면 null */
+function stNeed(s,from){ const B=s&&s.bid; if(!B)return null; for(let x=Math.max(from||0,0)+.05;x<=1.0001;x+=.05){ const ns=round5(s.sal*(1+x)); if(stScore(s,G.user,ns,false)>B.v)return {x:+x.toFixed(2),sal:ns}; } return null; }
+/* 영입 결과만 소식함에: 완료·무산. 내가 바로 본 결과(seen)는 읽은 상태로 기록만 남긴다 */
+function stResMail(kind,s,won,tid,sal,seen,rival){ const role=kind==='sc'?'스카우트':'전력분석원';
+  const m=won?mail('운영팀',`${role} ${s.name} 영입 완료`,`${s.name}(능력 ${s.skill})이(가) 연 ${money(sal)}에 합류했습니다.${rival!=null?` ${tshort(rival)}과(와)의 영입 경쟁에서 이겼습니다.`:''}`,{kind:'스태프'})
+    :mail('운영팀',`${role} ${s.name} 영입 무산: ${tshort(tid)}과(와) 계약`,`${s.name}(능력 ${s.skill})이(가) ${tname(tid)}과(와) 연 ${money(sal)}에 계약했습니다.`,{kind:'스태프'});
+  if(seen&&m)m.read=true; stBidMailsDone(s); }
+/* 예전 '영입 경쟁' 메일(저장 파일에 남은 것): 경쟁이 끝났으면 읽음 처리하고 버튼을 없앤다 */
+function stBidMailsDone(s){ for(const m of (G.mail||[]).slice(0,300)){ if(!m.subj||!m.subj.includes(' 영입 경쟁: '))continue; if(s&&!m.subj.startsWith(s.name+' 영입 경쟁'))continue;
+    if(!s){ const nm=m.subj.split(' 영입 경쟁')[0]; const live=[...(G.scoutMarket||[]),...(G.amarket||[])].some(x=>x.name===nm&&x.bid&&x.bid.exp>=G.day); if(live)continue; }
+    m.read=true; m.acts=[]; m.imp=false; } }
 /* 영입 경쟁: 기한이 지나면 경쟁 구단으로 간다 */
-function stBidExpire(){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ for(const s of [...mkt]){ if(!s.bid||s.bid.exp>=G.day)continue; const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); note('스태프',`${s.name}이(가) ${tname(t)}과(와) 계약했습니다. 다시 제안하지 않아 영입 경쟁이 끝났습니다.`); } } }
-function stBidDrop(id){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ const s=mkt.find(x=>x.id===id); if(s&&s.bid){ const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); return `${s.name} 영입을 포기했습니다. ${tshort(t)}로 갑니다.`; } } return '이미 끝난 일입니다.'; }
-function stDaily(){ try{ stBidExpire(); }catch(e){} const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e){} if((o.m===11||o.m===12)&&o.d===15){ try{ stRaid(); }catch(e){} stRaidAuto(); }
+function stBidExpire(){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ for(const s of [...mkt]){ if(!s.bid||s.bid.exp>=G.day)continue; const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); stResMail(kind,s,false,t,bs,false); } } }
+function stBidDrop(id){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ const s=mkt.find(x=>x.id===id); if(s&&s.bid){ const t=s.bid.t, bs=s.bid.sal; delete s.bid; stJoin(kind,s,t,bs); stBidMailsDone(s); return `${s.name} 영입을 포기했습니다. ${tshort(t)}로 갑니다.`; } } return '이미 끝난 일입니다.'; }
+function stDaily(){ try{ stBidExpire(); }catch(e){} try{ stBidMailsDone(null); }catch(e){} const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e){} if((o.m===11||o.m===12)&&o.d===15){ try{ stRaid(); }catch(e){} stRaidAuto(); }
   for(const r of (G.stRaid||[]).filter(r=>r.exp<G.day)){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(s&&stScore(s,G.user,s.sal,true)>=stScore(s,r.tid,r.sal,false)){ G.stRaid=G.stRaid.filter(x=>x!==r); note('스태프',`${s.name}은(는) 고민 끝에 남기로 했습니다.`); } else note('스태프',stLeave(r)); } }
 /* 새해: 경험이 쌓여 성장(젊을수록), 노장은 감각이 떨어지고 은퇴, 충성도 상승, 연봉은 실력에 맞춰 재계약 */
 function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...anaList().map(a=>['an',a,G.user])]; for(const tid in G.lgStaff){ for(const s of G.lgStaff[tid].sc)all.push(['sc',s,+tid]); for(const a of G.lgStaff[tid].an)all.push(['an',a,+tid]); }
