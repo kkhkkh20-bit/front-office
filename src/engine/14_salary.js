@@ -15,7 +15,7 @@ function perfOvr(p,n){
   const w=vals.map((_,i)=>i+1); return sum(vals.map((v,i)=>v*w[i]))/sum(w);
 }
 function newSalary(p){
-  const pf=perfOvr(p,2); const base=pf==null?ovr(p):pf;
+  const pf=perfOvr(p,2); const base=(pf==null?ovr(p):pf)+(p.foreign?0:pvShift(p)); /* 국내 선수 연봉은 포지션 가치까지 */
   if(p.foreign&&p.kept&&p.kept.y===G.year)return p.kept.sal;
   if(p.foreign){ if(p.foreign==='아시아')return round5(clamp(100+(base-44)*16,p.sal*.8,p.sal+10*USD)); return round5(clamp(300+(base-46)*62,p.sal*.7,Math.max(p.sal,Math.min(p.sal*1.3,200*USD)))); }
   /* FA 전에는 보류권 때문에 시장가보다 훨씬 낮다(NONFA_F). 실제 KBO: 3년차 필승조 평균자책점 1점대 → 1억2천, 첫 주전 시즌 → 1억 안팎,
@@ -49,7 +49,7 @@ const NONFA_F=[.18,.3,.42,.55];
 function nonFaF(p,skip){ if(p.faC||p.ext)return 1; if(skip)return NONFA_F[3]; return p.svc<3?NONFA_F[0]:p.svc<6?NONFA_F[1]:p.svc<faSvc(p)?NONFA_F[2]:1; }
 function preCap(p){ return PRE_CAP[clamp(p.svc||0,0,PRE_CAP.length-1)]; }
 function faAsk(p){
-  const pf=perfOvr(p,3); const base=pf==null?ovr(p):pf*.7+ovr(p)*.3;
+  const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.7+ovr(p)*.3)+(p.foreign?0:pvShift(p));
   const af=p.age<30?1.15:p.age<=31?1.05:p.age<=33?.9:p.age<=34?.8:.65;
   const years=p.age<=28&&base>=62?5:p.age<=31?4:p.age<=33?(base>=55?4:3):p.age<=35?(base>=55?3:2):1;
   /* 거품이 껴도 연평균은 30억(2026년 기준, 상한이 오르면 같이 오름) 안에서 멈춘다 */
@@ -64,7 +64,7 @@ function faMktFix(y){ G.faMkt=G.faMkt||{}; G.faMkt[y]=faMktOf(y); return G.faMkt
 function faMktLabel(v){ return v>=1.15?'과열':v>=1.06?'뜨거움':v>.99?'보통':v>.95?'차가움':'냉각'; }
 /* 비FA 다년계약 요구의 근거: 예상 FA 시장가 × 다년 할인(안정을 사는 값). 초특급은 할인 대신 웃돈(시장 과열을 기대) */
 function extParts(p,years){ const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const ageF=p.age+ytf; initPers(p);
-  const pf=perfOvr(p,3), pf1=perfOvr(p,1); const self=p.age<=27?ovr(p)+(p.pot-ovr(p))*.4:ovr(p)-Math.max(0,p.age-31); const base=pf==null?self:self*.6+pf*.4;
+  const pf=perfOvr(p,3), pf1=perfOvr(p,1); const self=p.age<=27?ovr(p)+(p.pot-ovr(p))*.4:ovr(p)-Math.max(0,p.age-31); const base=(pf==null?self:self*.6+pf*.4)+(p.foreign?0:pvShift(p));
   const af=ageF<30?1.15:ageF<=32?1:ageF<=34?.8:.6; const mkt=faMktNow(); const expFA=marketSal(base)*1.05*af*mkt;
   const elite=ovr(p)>=65&&p.age<=31; const why=[];
   let disc;

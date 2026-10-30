@@ -1,6 +1,6 @@
 /* ===== 트레이드 ===== */
 function aiVal(t,p){
-  const o=ovr(p)+hn('o'+t.id,p.id)*3, pt=p.pot+hn('q'+t.id,p.id)*5;
+  const ps=pvShift(p); /* 같은 능력이면 유격·포수·2루가 귀하다 */ const o=ovr(p)+ps+hn('o'+t.id,p.id)*3, pt=p.pot+ps+hn('q'+t.id,p.id)*5;
   let eff=p.age<=25?o+Math.max(0,pt-o)*(t.mode==='rebuild'?.75:.5):p.age>=32?o-(p.age-31)*1.3:o;
   let v=Math.pow(Math.max(0,eff-36),1.7)/10;
   v-=(p.sal/100)*(t.owner==='profit'?.45:.3)*(p.faC?Math.max(1,p.yrs)*.6:.6);
@@ -14,7 +14,7 @@ function aiVal(t,p){
  능력(현재·잠재력·나이), 연봉과 남은 계약, 구단 형편(돈·우승 경쟁·리빌딩), 자리 필요도(주전을 내주면 비싸게), 감독 성향, 선수 불만, 컨디션을 함께 본다. */
 function condOf(p){ const f=p.sf&&p.sf.y===G.year?p.sf.v*.5+(p.sf.m||0):0; return clamp(Math.round(f*.9+((p.mor??60)-60)/25-(p.fat||0)/40),-5,5); }
 function seasonWorth(o){ return Math.pow(Math.max(0,o-40),1.6)/6; }
-function projO(p,i){ const o=ovr(p)+(i===0?condOf(p)*.3:0); const a=p.age+i; if(a<=25){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,(i+1)*.28); } if(a>=31)return o-(a-30)*1.3; return o; }
+function projO(p,i){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const a=p.age+i; if(a<=25){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,(i+1)*.28); } if(a>=31)return o-(a-30)*1.3; return o; }
 function ctrlYears(p){ if(p.foreign)return 1; if(p.faC)return Math.max(1,p.yrs||1); return clamp(faSvc(p)-(p.svc||0),1,6); }
 let _tcC={k:null,m:{}};
 function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k)_tcC={k,m:{}}; if(_tcC.m[t.id])return _tcC.m[t.id];

@@ -97,7 +97,7 @@ T('2군 코치: 2군에서만 뛴 선수의 성장 배율은 2군 코치진 육�
   const s0=coachDevMult(f1); C.bc.dv=(C.bc.dv||50)+30; ok(coachDevMult(f1)>s0,'1군 선수가 1군 타격코치 영향을 받지 않음'); });
 
 T('FA 등급: 같은 구단 동료가 먼저 FA를 선언해도 등급이 바뀌지 않는다(33833ed 리뷰)',()=>{ fresh(); simTo(()=>period()==='post'||(G.sea&&G.sea.over)); const four=domestic(G.user).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4).sort((a,b)=>a.id-b.id);
-  ok(four.length===4,'준비 실패'); const sal=[5000,4900,4800,4700]; four.forEach((q,i)=>{ q.sal=sal[i]; q.salH=[{y:G.year-2,s:sal[i]},{y:G.year-1,s:sal[i]}]; q.svc=12; q.lastFA=null; q.faN=0; q.age=30; q.faC=false; q.ext=false; q.yrs=0; delete q.extNext; delete q.faSkip; for(const k in q.r)q.r[k]=Math.max(q.r[k],70); });
+  ok(four.length===4,'준비 실패'); const sal=[5000,4900,4800,4700]; four.forEach((q,i)=>{ q.sal=sal[i]; q.salH=[{y:G.year-2,s:sal[i]},{y:G.year-1,s:sal[i]}]; q.svc=12; q.lastFA=null; q.faN=0; q.age=30; q.faC=false; q.ext=false; q.yrs=0; delete q.extNext; q.faSkip=G.year-1; /* 신청 확률을 1로(무작위로 3%가 남는 것 때문에 준비가 흔들리지 않게) */ for(const k in q.r)q.r[k]=Math.max(q.r[k],70); });
   for(const q of domestic(G.user))if(!four.includes(q)&&q.sal>=4000){ q.sal=500; q.salH=[]; }
   const X=four[3]; offseason(); ok(X.faGrade,'준비 실패: 대상 선수가 FA를 선언하지 않음'); ok(four.slice(0,3).every(q=>q.faFrom===G.user),'준비 실패: 고연봉 동료가 먼저 FA를 선언하지 않음');
   ok(X.faRank&&X.faRank.tm===4&&X.faGrade==='B','구단 연봉 4위 선수의 등급이 처리 순서 때문에 바뀜: 구단 '+(X.faRank&&X.faRank.tm)+'위 · '+X.faGrade+'등급(기대 4위 · B등급)'); });
@@ -475,6 +475,29 @@ T('외국인 타자 포지션: 1루·코너 외야가 대부분이고 2루·유�
   const sh=k=>k.reduce((s,x)=>s+(C[x]||0),0)/n, mp=k=>{ const a=k.flatMap(x=>P[x]||[]); return a.reduce((s,v)=>s+v,0)/a.length; };
   ok(sh(['1B','LF','RF'])>=.6,'1루·코너 외야 비중 '+Math.round(sh(['1B','LF','RF'])*100)+'%'); ok(sh(['2B','SS','C'])<=.12,'2루·유격·포수 비중 '+Math.round(sh(['2B','SS','C'])*100)+'%');
   ok(mp(['1B','LF','RF'])-mp(['CF','2B','SS'])>=8,'1루·코너 외야와 중앙 수비 포지션의 장타력 차이 '+(mp(['1B','LF','RF'])-mp(['CF','2B','SS'])).toFixed(1)); });
+
+T('포지션 가치: 같거나 조금 낮은 능력이라도 수비 좋은 유격·포수가 1루보다 귀하게 평가된다(구단 판단·연봉)',()=>{ fresh();
+  const mk=(pos,disp,def)=>{ const p=newPlayer({age:28,isP:false,base:50,pos,team:null}); p.age=28; let raw=20; while(dv(raw)<disp)raw+=.1; setOvr(p,raw); p.r.def=def; setOvr(p,raw); return p; };
+  const fb=mk('1B',70,48), ss=mk('SS',60,62), c=mk('C',60,57); const avg=q=>G.teams.reduce((s,t)=>s+aiVal(t,q),0)/G.teams.length;
+  ok(dvo(fb)-dvo(ss)>=8,'준비 실패: 종합 차이 '+(dvo(fb)-dvo(ss)));
+  ok(posBest(ss).v>posBest(fb).v,'유격(종합 '+dvo(ss)+')의 포지션 가치 '+dv(posBest(ss).v)+' ≤ 1루(종합 '+dvo(fb)+') '+dv(posBest(fb).v));
+  ok(avg(ss)>avg(fb),'구단 평가 평균: 유격 '+avg(ss).toFixed(1)+' ≤ 1루 '+avg(fb).toFixed(1)); ok(posBest(c).v>posBest(fb).v,'포수 포지션 가치가 1루보다 낮음');
+  ok(newSalary(ss)>=newSalary(fb)*.95,'연봉 기준이 1루 쪽으로 크게 기욺: 유격 '+newSalary(ss)+' / 1루 '+newSalary(fb)); [fb,ss,c].forEach(q=>delete G.players[q.id]); });
+
+T('포지션 가치: 수비 1점의 무게는 유격이 1루의 2배 이상이고, 1루수를 유격수로 평가하지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const lg=lgOf(G.year); const h=Object.assign({},ZB,{y:G.year,t:G.user,lvl:'1군',g:140,pa:600,ab:530,h:150,bb:60,d:30,hr:15});
+  const w=(pos,def)=>{ p.pos=pos; p.r.def=def; h.pos=pos; return warRaw(h,p); }; const ds=w('SS',70)-w('SS',50), d1=w('1B',70)-w('1B',50);
+  ok(ds>=d1*2,'유격 수비 20점 차 WAR '+ds.toFixed(2)+' / 1루 '+d1.toFixed(2)); p.pos='1B'; p.r.def=60; ok(posBest(p).pos==='1B'||posBest(p).pos==='DH','1루수의 가치 자리가 '+posBest(p).pos); });
+
+T('실책: 공이 간 자리 수비수 실력대로 난다(수비가 약한 유격수는 팀 실책을 크게 늘린다)',()=>{ fresh(); const d=depth(G.user); const ss=d.ln.SS; ok(ss,'준비 실패: 유격수 없음');
+  const fs={order:Object.values(d.ln).filter(Boolean),posOf:{}}; for(const k in d.ln)if(d.ln[k])fs.posOf[d.ln[k].id]=k; const r0=JSON.stringify(ss.r);
+  const team=def=>{ ss.r=JSON.parse(r0); ss.r.def=def; let t=0, w=0; for(const p of fs.order){ const k=fs.posOf[p.id]; if(!ERRW[k])continue; t+=ERRW[k]*errChance([p,k]); w+=ERRW[k]; } return t/w; };
+  const lo=team(32), hi=team(80); ss.r=JSON.parse(r0); ok(lo>=hi*1.4,'유격 수비 32와 80일 때 타구당 팀 실책 확률 '+(lo*1000).toFixed(1)+'‰ / '+(hi*1000).toFixed(1)+'‰(1.4배 이상이어야)'); });
+
+T('자리별 대형 선수의 드묾: 포수·유격 수는 줄이지 않되, 최상위 재능은 1루·코너보다 훨씬 드물고 포수는 같은 종합이라도 방망이가 약하다',()=>{ fresh(); const C={}, E={}, O={}; const inc=(o,k,v=1)=>o[k]=(o[k]||0)+v;
+  for(let i=0;i<4000;i++){ const b=clamp(N(47,7),25,72); const p=newPlayer({age:27,isP:false,base:b,pot:b,team:null}); inc(C,p.pos); if(ovr(p)>=57)inc(E,p.pos); inc(O,p.pos,offV(p)-ovr(p)); delete G.players[p.id]; }
+  const sh=k=>(E[k]||0)/C[k]; ok(C.C>=C['1B']*.8&&C.SS>=C['1B']*.8,'포수·유격 선수 수가 줄어듦: 포수 '+C.C+' · 유격 '+C.SS+' · 1루 '+C['1B']);
+  ok(sh('C')<=sh('1B')*.5&&sh('SS')<=sh('1B')*.6,'최상위(종합 57 이상) 비율: 포수 '+(sh('C')*100).toFixed(1)+'% · 유격 '+(sh('SS')*100).toFixed(1)+'% · 1루 '+(sh('1B')*100).toFixed(1)+'%');
+  ok(O.C/C.C<O['1B']/C['1B']-3,'같은 종합에서 포수 방망이가 1루와 비슷함'); });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);

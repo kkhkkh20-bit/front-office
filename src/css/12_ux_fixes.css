@@ -486,3 +486,4 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .fsbox.bad .fs-st i.on{background:var(--bad)}.fsbox.warn .fs-st i.on{background:var(--warn)}.fsbox .fs-st i.on{background:#9cc4f2}.fsbox.good .fs-st i.on{background:var(--good)}
 .pill.fsp b{font-weight:700}
 .fs-why{color:var(--muted)}
+.pvline{margin:6px 2px 0}.pvline .i{display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;border-radius:50%;border:1px solid var(--line,rgba(127,127,127,.3));font-size:11px;color:var(--muted);cursor:help}

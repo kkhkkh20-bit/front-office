@@ -111,14 +111,21 @@ function genRatings(isP,base,pos){
   const bump=(k,d)=>r[k]=clamp(r[k]+d,20,80);
   if(['SS','CF','2B'].includes(pos)){bump('def',6);bump('spd',5);bump('pow',-4)}
   if(['1B','LF','RF'].includes(pos)){bump('pow',5);bump('def',-5)}
-  if(pos==='C'){bump('spd',-8);bump('def',4)}
+  if(pos==='C'){bump('spd',-8);bump('def',9);bump('con',-3);bump('pow',-2)} /* 포수는 수비 부담이 커 같은 종합이라도 방망이가 약하다 */
   return r;
 }
 function setOvr(p,target){ for(let k=0;k<3;k++){ const d=target-ovr(p); for(const key in p.r){ if(key==='vit')continue; p.r[key]=clamp(p.r[key]+d,20,80);} } roundR(p); }
 function roundR(p){ for(const k in p.r)p.r[k]=Math.round(p.r[k]*10)/10; }
+/* 자리별 최상위 재능의 드묾: 포수·유격·2루·중견에서 공격과 수비를 다 갖춘 대형 선수는 드물다. 그런 재능은 대개 3루·코너 외야·1루로 옮겨 간다.
+   선수 수(공급)는 그대로 두고 위쪽 끝만 줄인다. 자리를 정하지 않고 만든 선수는 옮기고(재능 유지), 자리가 정해진 선수는 위쪽 끝을 눌러 준다.
+   TOPK: 문턱(능력 52, 화면 약 64 · 주전급)을 넘는 만큼 남는 비율. 포수가 가장 드물다 */
+const TOPK={C:.45,SS:.55,'2B':.7,CF:.75}, TOP_TH=52, TOP_MV={C:['1B','1B','LF'],SS:['3B','3B','RF'],'2B':['3B','LF','RF'],CF:['LF','RF']};
 function newPlayer(o){
   const isP=o.isP??(R()<.47);
-  const pos=isP?'P':(o.pos||pick(['C','1B','2B','3B','SS','LF','CF','RF','SS','CF','C']));
+  let pos=isP?'P':(o.pos||pick(['C','1B','2B','3B','SS','LF','CF','RF','SS','CF','C']));
+  if(!isP&&!o.foreign&&TOPK[pos]){ const t=Math.max(o.base||0,o.pot||0), k=TOPK[pos];
+    if(t>TOP_TH){ if(!o.pos&&R()<(1-k)*Math.min(1,(t-TOP_TH)/5)){ pos=pick(TOP_MV[pos]); }
+      else { const c=v=>v>TOP_TH?TOP_TH+(v-TOP_TH)*k:v; o=Object.assign({},o,{base:c(o.base),pot:o.pot!=null?c(o.pot):o.pot}); } } }
   const th=isP?(R()<.28?'좌':'우'):(['C','2B','3B','SS'].includes(pos)?'우':R()<.24?'좌':'우'); /* 포수·내야(1루 제외)는 우투만 */
   const bt=isP?th:(th==='좌'?'좌':R()<.3?'좌':R()<.06?'양':'우');
   const p={id:G.nextId++,name:o.name||genName(),age:o.age,isP,pos,r:genRatings(isP,o.base,pos),pot:0,

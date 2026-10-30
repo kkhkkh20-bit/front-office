@@ -8,7 +8,21 @@ function defAt(p,pos){
   if(pos==='DH')return 0; if(p.pos===pos)return p.r.def;
   const e=(pexpOf(p)[pos]||0)/100; return p.r.def-posRaw(p.pos,pos)*versF(p)*(1-e*.85);
 }
-const posScore=(p,pos)=>pos==='DH'?offV(p):offV(p)*.62+defAt(p,pos)*.38;
+/* 포지션 감안 가치(타자). 종합 능력(ovr)은 수비를 어느 자리든 같은 무게(0.2)로 센다. 그런데 경기에서는 유격·3루·2루·중견 수비가 실점에 훨씬 크게 작용하고,
+   자리마다 그만한 선수가 드문 정도도 다르다. 그래서 값을 매길 때(트레이드·FA·연봉·WAR)는 이 둘을 종합 능력 단위로 바꿔 더한다.
+   DWR: 그 자리 수비 1점이 시즌 실점을 몇 점 바꾸는가(엔진 식에서 계산: 인플레이 타구 안타 확률 + 자리별 실책). POS_ADJ: 자리 희소성(600타석당 득점).
+   공격 종합 1점은 600타석당 약 1.56점. 자리는 그 선수가 가장 가치 있는 곳(1루·지명은 누구나 갈 수 있다) */
+const DWR={SS:1.1,'3B':.84,'2B':.82,CF:.7,C:.67,RF:.47,LF:.43,'1B':.39}, RUN_PER_OVR=1.56;
+/* DAVG: 리그 주전의 자리별 평균 수비력(새 게임 5개에서 잰 값). 그 자리 평균보다 잘하면 플러스 */
+const DAVG={SS:57.5,'2B':57.4,CF:56.7,C:54.5,'3B':53.8,'1B':48.2,RF:46.3,LF:46.3};
+/* 수비 난이도: 같거나 쉬운 자리로는 옮길 수 있다고 본다(유격→3루·1루 쉬움, 1루→유격 안 됨). 포수는 포수만 */
+const DSPEC={SS:6,C:6,CF:5,'2B':5,'3B':4,RF:3,LF:2,'1B':1,DH:0};
+function posValAt(p,pos){ const d=pos==='DH'?0:(defAt(p,pos)-DAVG[pos])*DWR[pos]; return ovr(p)-(p.r.def-50)*.2+((POS_ADJ[pos]||0)+d)/RUN_PER_OVR; }
+const _pvC=new Map();
+function posBest(p){ if(!p||p.isP)return {pos:'P',v:p?ovr(p):0}; const k=G.day+':'+p.pos+':'+p.r.def+':'+ovr(p).toFixed(2)+':'+JSON.stringify(p.pexp||'')+':'+(p.trt||''); const c=_pvC.get(p.id); if(c&&c.k===k)return c.b;
+  let b={pos:'DH',v:posValAt(p,'DH')}; const lim=DSPEC[p.pos]??1; for(const q of ['C','SS','2B','CF','3B','RF','LF','1B']){ if(q===p.pos||(q!=='C'&&DSPEC[q]<=lim)){ const v=posValAt(p,q); if(v>b.v)b={pos:q,v}; } } if(_pvC.size>4000)_pvC.clear(); _pvC.set(p.id,{k,b}); return b; }
+const pvShift=p=>p&&!p.isP?posBest(p).v-ovr(p):0; /* 종합 능력에 더할 포지션 보정(투수 0) */
+const posScore=(p,pos)=>{ if(pos==='DH')return offV(p); const w=DWR[pos]!=null?.2+DWR[pos]*.3:.38; return offV(p)*(1-w)+defAt(p,pos)*w; }; /* 수비가 중요한 자리일수록 수비를 더 본다: 유격 .53 · 3루·2루 .45 · 중견 .41 · 포수 .4 · 코너 외야 .33 · 1루 .32 */
 const ORDER=['C','SS','CF','2B','3B','RF','LF','1B','DH'];
 function makeLineup(tid,pool){
   const bats=(pool||actOf(tid)).filter(p=>!p.isP&&healthy(p));
