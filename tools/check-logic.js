@@ -459,13 +459,16 @@ T('외국인 후보 조사 단계: 추정 범위가 실제 능력을 대부분 �
   let n=0, hit=0, w0=0, w1=0; for(const p of L){ G.fwatch=[]; const a=fScout(p); n++; if(dvo(p)>=a.lo&&dvo(p)<=a.hi)hit++; w0+=a.hi-a.lo; G.fwatch=[{id:p.id,k:100}]; const b=fScout(p); w1+=b.hi-b.lo; ok(b.n>=a.n,'관찰했는데 조사 단계가 내려감'); }
   G.fwatch=[]; ok(hit/n>=.7,'추정 범위 안에 든 후보 '+Math.round(hit/n*100)+'%'); ok(w1<w0*.7,'관찰 파악도 100%인데 범위가 충분히 좁아지지 않음'); });
 
-T('외국인 추천순: 기록·MLB 경력·스카우트를 합친 추천이 스카우트 평가 하나보다 실제 실력을 잘 고르고, 트리플A·MLB 출신을 앞에 둔다',()=>{ fresh(); const L=[]; for(let i=0;i<300;i++){ const p=newForeign('용병',{market:true}); const rp=scoutReport(p); L.push({p,rp,f:fScout(p,rp)}); }
+T('외국인 예상 능력순: 기록·MLB 경력·스카우트를 합친 예상이 스카우트 평가 하나보다 실제 실력을 잘 고르고, 트리플A·MLB 출신을 앞에 둔다',()=>{ fresh(); const L=[]; for(let i=0;i<300;i++){ const p=newForeign('용병',{market:true}); const rp=scoutReport(p); L.push({p,rp,f:fScout(p,rp)}); }
   const top=(a,k)=>[...a].sort(k).slice(0,20); const mean=a=>a.reduce((s,x)=>s+ovr(x.p),0)/a.length;
   const A=top(L,(a,b)=>b.f.score-a.f.score), B=top(L,(a,b)=>b.rp.cur-a.rp.cur); ok(mean(A)>mean(B),'추천 상위 20명 실제 평균 '+mean(A).toFixed(1)+' ≤ 스카우트 평가순 '+mean(B).toFixed(1));
   const sh=a=>a.filter(x=>['트리플A','MLB'].includes(x.p.prevLvl)).length/a.length; ok(sh(A)>=sh(L),'추천 상위의 트리플A·MLB 비중 '+Math.round(sh(A)*100)+'%가 후보 전체 '+Math.round(sh(L)*100)+'%보다 낮음');
   L.forEach(x=>delete G.players[x.p.id]); });
 
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
+
+T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
+  const L=[a,b].map(p=>{ const rp=scoutReport(p); return {p,rp,fs:fScout(p,rp)}; }); L[0].fs.score=40; L[1].fs.score=60; L.sort(fSortBy('rk')); ok(L[0].p===b,'점수가 낮은 우리 발굴 후보가 추천순 맨 앞'); delete G.players[a.id]; delete G.players[b.id]; });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
