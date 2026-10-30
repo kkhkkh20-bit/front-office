@@ -21,9 +21,9 @@ function posGain(p,pos,x){ if(pos===p.pos||!POS_F.includes(pos))return; const E=
 function posWeek(){ const per=period(); const y=G.year; const done=[];
   for(const p of Object.values(G.players)){ if(p.isP||p.team==null)continue; const u=p.use;
     if(u&&u.y===y&&u.pos){ const seen=p.useSeen&&p.useSeen.y===y?p.useSeen.pos:{}; for(const k in u.pos){ const n=u.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*posLearnRate(p)); } p.useSeen={y,pos:Object.assign({},u.pos)}; }
-    const f=p.fuse; if(f&&f.y===y&&f.pos){ const seen=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen.pos:{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*.75*posLearnRate(p)); } p.fuseSeen={y,pos:Object.assign({},f.pos)}; }
+    const f=p.fuse; if(f&&f.y===y&&f.pos){ const seen=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen.pos:{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*.75*posLearnRate(p)*(p.team!=null?posCoachF(p.team):1)); } p.fuseSeen={y,pos:Object.assign({},f.pos)}; }
     const C=p.pconv; if(!C)continue; if(per!=='pre'&&per!=='season')continue; if(p.injOut>0||milServing(p))continue; /* 군 복무 중에는 구단 훈련을 받지 못한다 */
-    posGain(p,C.pos,1.5*posLearnRate(p)); /* 훈련. 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
+    posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
     if(posExp(p,C.pos)>=90){ const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
   if(done.length){ const m=G.mgr[G.user]; mail('감독실',`포지션 전환 완료 (${done.length}명)`,`${m?m.name+' 감독':'코치진'}: 전환 훈련을 마쳐 주 포지션을 바꿉니다.\n\n${done.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
 /* 단장 요청: 전환 훈련 시작·중단 */
@@ -57,6 +57,31 @@ function posPlan(tid){ const ln=makeLineup(tid); const out=[];
 function posPlanAll(){ for(const t of G.teams){ const L=posPlan(t.id); if(t.id===ME()){ if(!L.length)continue; const m=G.mgr[G.user]; if(!m)continue; const who=m.interim?'감독대행':`${m.name} 감독`;
       mail(who,`자리 돌리기 제안 (${L.length}명)`,`${who}: 이기는 라인업을 짜 보니 이 선수들은 다른 자리에서 쓰는 편이 낫습니다. 그 자리 전환 훈련을 시키겠습니다.\n\n${L.map(x=>`${x.p.name}: ${POSK[x.p.pos]} → ${POSK[x.k]} (지금 숙련 ${Math.round(posExp(x.p,x.k))})`).join('\n')}\n\n단장님이 정하시면 시작합니다. 육성 탭에서도 정할 수 있습니다.`,{kind:'감독',acts:L.slice(0,3).map(x=>({l:`${x.p.name} ${POSK[x.k]} 훈련`,a:'posConv',v:`${x.p.id}:${x.k}`}))}); continue; }
     for(const x of L){ x.p.pconv={pos:x.k,d:G.day}; story(x.p,`${G.year} ${POSK[x.p.pos]}에서 ${POSK[x.k]}로 전환 훈련 시작`); } } }
+/* ===== 자리 도전: 선수는 1군에서 뛰고 싶고, 감독은 성적을 내야 하고, 2군 감독은 키워야 하고, 단장은 성적과 성장을 함께 챙긴다 =====
+ - 선수: 지금 자리에서 주전에 밀린 젊은 타자는 다른 자리에서 살길을 찾는다(매달 1일, 3~8월). 그 자리를 익히면 지금 그 자리 주전보다 나을 때만, 야망이 클수록 잘 나선다.
+ - 2군 감독: 몸놀림(다재다능)과 나이로 될지 판단하고 몇 주 걸릴지 본다. 2군 감독·2군 타격코치의 육성력이 전환 속도를 바꾼다.
+ - 1군 감독: 익히면 쓸지(성적) 말한다. 주전으로 쓸 만하면 반기고, 당장은 자리가 없다고도 한다.
+ - 단장(우리 구단): 허락하면 전환 훈련(2군에서 경기도 그 자리로), 기다리라고 하면 선수 기분이 내려간다. AI 구단은 2군 감독이 된다고 하면 대개 허락한다 */
+function posCoachF(tid){ const C=coachesOf(tid); const v=(effC(C.fm,tid,'dv')+effC(C.fb,tid,'dv'))/2; return clamp(.8+(v-50)/80,.75,1.3); } /* 2군 코치진 육성력 → 전환 속도 */
+function posChallenge(p,ln){ if(!p||p.isP||p.foreign||p.pos==='C'||p.pconv||p.age>=32||!healthy(p))return null; if(Object.values(ln).includes(p))return null;
+  let best=null; for(const q of POS_F){ if(q===p.pos||q==='C'||posExp(p,q)>=90||versOf(p)<POS_NEED[q])continue; const s=ln[q]; const v=posValLearn(p,q), sv=s?posValAt(s,q):-99; const g=v-sv; if(g>=1&&(!best||g>best.g))best={q,g,s}; }
+  return best; }
+function posReqWeeks(p,q,tid){ return Math.max(1,Math.ceil((90-posExp(p,q))/((1.5+2)*posLearnRate(p)*posCoachF(tid)))); }
+function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
+  for(const t of G.teams){ const ln=makeLineup(t.id);
+    for(const p of domestic(t.id)){ if(p.posReq&&G.day-p.posReq.d<150)continue; const c=posChallenge(p,ln); if(!c)continue; const amb=(p.pers&&p.pers.amb)||10; if(R()>clamp(amb/20,.15,1)*.45)continue;
+      const wk=posReqWeeks(p,c.q,t.id); const ok2=p.age<=29&&versOf(p)>=POS_NEED[c.q]+5; /* 2군 감독: 될까 */
+      const me=t.id===ME()&&!G.unemp; if(me&&mine>=2)continue; /* 우리 구단은 한 달에 두 명까지만 찾아온다 */
+      p.posReq={q:c.q,d:G.day,open:true,wk,ok2};
+      if(me){ mine++; const C=coachesOf(t.id), fm=C.fm, mg=G.mgr[t.id]; const s=c.s;
+        const mOp=mg?(c.g>=3?`${mg.name} 감독: "${POSK[c.q]}를 익히면 ${s?s.name+' 대신 ':''}주전으로 쓰겠습니다."`:`${mg.name} 감독: "익히면 ${s?s.name+'와(과) ':''}경쟁은 해 볼 만합니다. 지금 당장 쓸 자리는 아닙니다."`):'';
+        const fOp=`${fm?fm.name+' 2군 감독':'2군 코치진'}: ${ok2?`"해 볼 만합니다. 2군에서 그 자리로 뛰면 약 ${wk}주면 맡길 수 있습니다."`:`"몸놀림을 보면 쉽지 않습니다. 해 보더라도 ${wk}주 넘게 걸리고 결과는 장담 못 합니다."`}`;
+        mail(p.name,`자리 도전 요청: ${POSK[p.pos]} → ${POSK[c.q]}`,`"${POSK[p.pos]}에서는 ${(ln[p.pos]&&ln[p.pos].name)||'주전'}에게 밀려 1군에서 뛸 기회가 없습니다. ${POSK[c.q]}를 익혀서 기회를 잡고 싶습니다."\n\n${fOp}\n${mOp}\n\n허락하면 전환 훈련을 시작합니다(2군에 있으면 그 자리로 경기도 나갑니다). 기다리라고 하면 선수가 실망합니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'허락: 전환 훈련',a:'posReqOk',v:String(p.id)},{l:'지금 자리에서 기다려 달라',a:'posReqNo',v:String(p.id)}]}); continue; }
+      if(ok2||R()<.3){ p.pconv={pos:c.q,d:G.day}; p.posReq.open=false; story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[c.q]} 전환 도전`); } else p.posReq.open=false; } } }
+/* 단장의 답 */
+function posReqAnswer(id,yes){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return '우리 선수가 아닙니다.'; const r=p.posReq; if(!r||!r.open)return `${p.name}: "이미 말씀 나눴습니다."`; r.open=false;
+  if(yes){ const msg=posConv(p.id,r.q); if(p.pconv&&p.pconv.pos===r.q){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[r.q]} 전환 도전`); return msg+` ${p.name}의 기분이 좋아졌습니다.`; } return msg; }
+  const amb=(p.pers&&p.pers.amb)||10; const d=Math.round(2+amb/4); p.mor=clamp((p.mor??60)-d,0,100); return `${p.name}: "알겠습니다. 기다려 보겠습니다." (기분 -${d})`; }
 function posYear(){ const y=G.year-1; try{ posSettle(y); }catch(e){} for(const p of Object.values(G.players)){ if(p.isP||!p.pexp)continue; const used=k=>(p.use&&p.use.y===y&&p.use.pos&&p.use.pos[k])||(p.fuse&&p.fuse.y===y&&p.fuse.pos&&p.fuse.pos[k]);
   for(const k in p.pexp){ const e=p.pexp[k]; if(e<50&&!used(k)&&!(p.pconv&&p.pconv.pos===k))p.pexp[k]=+(e*.9).toFixed(1); if(p.pexp[k]<3)delete p.pexp[k]; } } } /* 반쯤 익히다 만 자리(숙련 50 미만)는 그해 안 뛰었으면 감각이 떨어진다. 한 번 맡을 만해진 자리는 남는다 */
 /* ===== 2군 경기: 누가 어느 자리로 뛰는지 =====

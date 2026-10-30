@@ -522,6 +522,22 @@ T('자리 돌리기: 수비가 약한 유격수라도 방망이가 좋으면 감
 T('코치 계약 만료: 우리와 계약이 끝난 OB 코치를 같은 날 AI 구단이 먼저 데려가지 않는다(단장이 후보에서 볼 기회)',()=>{ const {ob,c}=obCoachSetup(); G.coach[G.user].pc=null; c.yrs=0; c.from=G.user; c.fromY=G.year; G.cmarket=(G.cmarket||[]).concat(c);
   const other=G.teams.find(t=>t.id!==G.user).id; let took=0; for(let i=0;i<300;i++){ const r=obAiCoach(other,'pc'); if(r&&r.ob===ob.id){ took++; G.cmarket.push(c); } } ok(!took,'같은 날 AI가 우리 코치를 '+took+'번 데려감'); });
 
+T('자리 도전: 주전에 밀린 젊은 타자가 다른 자리를 익혀 1군에 서고 싶다고 찾아오고, 단장이 허락하면 전환 훈련·기분 상승, 기다리라 하면 실망',()=>{ fresh(); G.day=KD(4,1); const me=G.user; const ln=makeLineup(me);
+  const p=domestic(me).find(q=>!q.isP&&q.pos!=='C'&&!Object.values(ln).includes(q)&&healthy(q)); ok(p,'준비 실패: 벤치 타자 없음'); p.age=24; p.vers=72; p.pers.amb=20; for(const k of ['con','pow','eye'])p.r[k]=80; delete p.pconv; delete p.posReq;
+  const ln2=makeLineup(me); if(Object.values(ln2).includes(p)){ ok(true,''); return; } /* 방망이가 좋아져 바로 주전이면 도전할 이유가 없다 */
+  let m=null; for(let i=0;i<30&&!m;i++){ delete p.posReq; const n0=G.mail.length; posReqMonth(); m=G.mail.slice(0,G.mail.length-n0).find(x=>(x.acts||[]).some(a=>a.a==='posReqOk'&&a.v===String(p.id))); }
+  ok(m,'밀린 선수가 자리 도전을 요청하지 않음'); const q=p.posReq.q; const m0=p.mor; posReqAnswer(p.id,true); ok(p.pconv&&p.pconv.pos===q,'허락했는데 '+POSK[q]+' 전환 훈련이 시작되지 않음'); ok(p.mor>m0,'허락했는데 기분이 그대로');
+  ok(/이미/.test(posReqAnswer(p.id,true)),'같은 요청을 두 번 처리함');
+  delete p.pconv; p.posReq={q,d:G.day,open:true}; const m1=p.mor; posReqAnswer(p.id,false); ok(p.mor<m1&&!p.pconv,'기다리라 했는데 기분이 그대로거나 훈련이 시작됨'); });
+
+T('자리 도전: 주전은 찾아오지 않고, AI 구단은 2군 감독이 된다고 하면 바로 전환 훈련을 시킨다',()=>{ fresh(); G.day=KD(5,1); for(const t of G.teams){ const ln=makeLineup(t.id); for(const q of Object.values(ln))ok(!posChallenge(q,ln),'주전 '+q.name+'이(가) 자리 도전 대상'); }
+  const t=G.teams.find(x=>x.id!==G.user); const ln=makeLineup(t.id); const p=domestic(t.id).find(q=>!q.isP&&q.pos!=='C'&&!Object.values(ln).includes(q)&&healthy(q)); ok(p,'준비 실패'); p.age=23; p.vers=75; p.pers.amb=20; for(const k of ['con','pow','eye'])p.r[k]=80; delete p.pconv;
+  if(Object.values(makeLineup(t.id)).includes(p))return; let ok1=false; for(let i=0;i<30&&!ok1;i++){ delete p.posReq; delete p.pconv; posReqMonth(); ok1=!!p.pconv; } ok(ok1,'AI 구단 선수가 전환 도전을 시작하지 않음'); });
+
+T('2군 코치진: 육성력이 좋을수록 2군에서 하는 포지션 전환이 빠르다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP&&q.pos!=='C'); p.e1=false; p.age=24; p.vers=60; delete p.pexp; const q=p.pos==='3B'?'1B':'3B'; const C=G.coach[G.user]=G.coach[G.user]||{};
+  const run=dv=>{ for(const k of ['fm','fb'])C[k]=Object.assign(mkCoach(k),{dv}); pexpOf(p)[q]=0; p.pconv={pos:q,d:G.day}; delete p.fuseSeen; p.fuse=null; G.day=KD(4,1); posWeek(); return posExp(p,q); };
+  const lo=run(30), hi=run(80); delete p.pconv; ok(hi>lo*1.2,'2군 코치 육성력 80일 때 '+hi.toFixed(1)+' · 30일 때 '+lo.toFixed(1)); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
