@@ -461,7 +461,8 @@ T('외국인 후보 조사 단계: 추정 범위가 실제 능력을 대부분 �
 
 T('외국인 예상 능력순: 기록·MLB 경력·스카우트를 합친 예상이 스카우트 평가 하나보다 실제 실력을 잘 고르고, 트리플A·MLB 출신을 앞에 둔다',()=>{ fresh(); const L=[]; for(let i=0;i<300;i++){ const p=newForeign('용병',{market:true}); const rp=scoutReport(p); L.push({p,rp,f:fScout(p,rp)}); }
   const top=(a,k)=>[...a].sort(k).slice(0,20); const mean=a=>a.reduce((s,x)=>s+ovr(x.p),0)/a.length;
-  const A=top(L,(a,b)=>b.f.score-a.f.score), B=top(L,(a,b)=>b.rp.cur-a.rp.cur); ok(mean(A)>mean(B),'추천 상위 20명 실제 평균 '+mean(A).toFixed(1)+' ≤ 스카우트 평가순 '+mean(B).toFixed(1));
+  const A=top(L,(a,b)=>b.f.score-a.f.score); const cor=(f)=>{ const xs=L.map(f), ys=L.map(x=>ovr(x.p)); const mx=xs.reduce((s,v)=>s+v,0)/xs.length, my=ys.reduce((s,v)=>s+v,0)/ys.length; let a=0,b=0,c=0; xs.forEach((v,i)=>{ a+=(v-mx)*(ys[i]-my); b+=(v-mx)**2; c+=(ys[i]-my)**2; }); return a/Math.sqrt(b*c); };
+  const c1=cor(x=>x.f.score), c0=cor(x=>x.rp.cur); ok(c1>c0,'예상 능력과 실제의 상관 '+c1.toFixed(3)+' ≤ 스카우트 평가 하나 '+c0.toFixed(3)); /* 상위 몇 명 평균은 표본에 흔들려 전체 상관으로 본다 */
   const sh=a=>a.filter(x=>['트리플A','MLB'].includes(x.p.prevLvl)).length/a.length; ok(sh(A)>=sh(L),'추천 상위의 트리플A·MLB 비중 '+Math.round(sh(A)*100)+'%가 후보 전체 '+Math.round(sh(L)*100)+'%보다 낮음');
   L.forEach(x=>delete G.players[x.p.id]); });
 
@@ -558,9 +559,15 @@ T('성장: 능력은 잠재력을 넘지 못하고(잠재력 자체는 오르내
   const a=Object.assign(JSON.parse(snap),{dt:'norm'}); a.pers.pro=5; const b=Object.assign(JSON.parse(snap),{dt:'norm'}); b.pers.pro=18; ok(dtSpan(a).fall<dtSpan(b).fall,'프로의식이 낮아도 꺾이는 나이가 같음');
   const q=domestic(G.user).find(x=>x.isP&&x.age<=25)||base; const o0=ovr(q); q.pot=o0+.5; for(let i=0;i<6;i++)campGrow(q,'spring','skill'); ok(ovr(q)<=Math.max(q.pot,o0)+.06,'캠프에서 잠재력을 넘김: '+ovr(q).toFixed(1)+' / '+q.pot); });
 
-T('사고: 프로의식이 낮은 선수만 사고를 치고, 우리 구단이면 징계 결정이 오며 그해 성장이 깎인다',()=>{ fresh(); G.day=KD(5,1); const ps=domestic(G.user).filter(q=>!q.prospect&&!q.foreign); ps.forEach(q=>{ initPers(q); q.pers.pro=18; delete q.badY; }); const x=ps[0]; x.pers.pro=4; x.injOut=0; delete G.misbD;
-  let n=0; for(let i=0;i<400&&!(x.badY&&x.badY.n);i++){ misbehaveMonth(); n++; } /* 한 달 확률이 2~3%라 넉넉히 */ ok(x.badY&&x.badY.n,'프로의식 4인 선수가 '+n+'달 동안 사고 없음'); ok(ps.slice(1).every(q=>!q.badY),'프로의식 높은 선수가 사고를 침');
+T('사고: 프로의식이 낮은 선수만 사고를 치고, 우리 구단이면 징계 결정이 오며 그해 성장이 깎인다',()=>{ fresh(); G.day=KD(5,1); const ps=domestic(G.user).filter(q=>!q.prospect&&!q.foreign); ps.forEach(q=>{ initPers(q); q.pers.pro=18; delete q.badY; }); const x=ps.find(q=>q.age>=30)||ps[0]; x.age=Math.max(x.age,31); x.pers.pro=4; x.injOut=0; delete G.misbD; /* 고참은 선수단 문화에 덜 휩쓸린다(젊은 선수는 좋은 리더 밑에서 사고가 준다) */
+  let n=0; for(let i=0;i<400&&!(x.badY&&x.badY.n);i++){ misbehaveMonth(); n++; } /* 한 달 확률이 2~3%라 넉넉히 */ ok(x.badY&&x.badY.n,'프로의식 4인 선수가 '+n+'달 동안 사고 없음'); ok(ps.filter(q=>q!==x).every(q=>!q.badY),'프로의식 높은 선수가 사고를 침');
   ok((G.evs||[]).some(e=>e.k==='lead'&&e.data&&e.data.pid===x.id),'우리 선수 사고에 징계 결정이 없음'); const f0=persGrowF(Object.assign({},x,{badY:null})), f1=persGrowF(x); ok(f1<f0,'사고를 쳐도 성장 계수가 그대로'); });
+
+T('리더: 선수들은 프로의식 있는 고참을 주장으로 뽑고, 리더들의 프로의식이 젊은 선수 성장·사고·습관으로 퍼진다',()=>{ fresh(); const tid=G.user; const ps=domestic(tid).filter(p=>!p.ys&&healthy(p)&&p.age>=25); ok(ps.length>=3,'준비 실패');
+  ps.forEach(p=>{ initPers(p); p.pers.pro=5; }); const a=ps.find(p=>p.age>=28)||ps[0]; a.pers.pro=19; a.age=Math.max(a.age,30); electCaptain(tid,'점검'); ok(team(tid).cap===a.id,'프로의식 19인 고참 대신 '+(G.players[team(tid).cap]||{}).name+'(프로의식 '+((G.players[team(tid).cap]||{}).pers||{}).pro+')이 주장');
+  const y=domestic(tid).find(p=>p.age<=23&&!p.prospect); ok(y,'준비 실패: 젊은 선수'); y.pers.pro=5; G._cl=null; _ldC.clear(); const L=teamLeaders(tid); L.forEach(p=>{ p.pers.pro=19; leadOf(p).cha=14; }); _ldC.clear(); const good=effPro(y), gf=persGrowF(y);
+  L.forEach(p=>{ p.pers.pro=4; }); _ldC.clear(); const bad=effPro(y), bf=persGrowF(y); ok(good>y.pers.pro+2&&bad<=y.pers.pro,'리더 프로의식 19일 때 '+good.toFixed(1)+' · 4일 때 '+bad.toFixed(1)+'(본인 '+y.pers.pro+')'); ok(gf>bf,'리더가 좋아도 성장 계수가 그대로');
+  L.forEach(p=>{ p.pers.pro=19; }); _ldC.clear(); let up=0; for(let i=0;i<40;i++){ y.pers.pro=5; up+=proDrift(y); } ok(up>=5,'좋은 리더 밑에서 40번 중 프로의식이 '+up+'번만 오름'); });
 
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
