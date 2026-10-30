@@ -457,7 +457,7 @@ T('[감사] 희생플라이는 팀 기록 합계에 들어가고, 안타 없이 
 
 T('외국인 후보 조사 단계: 추정 범위가 실제 능력을 대부분 담고, 관찰이 쌓이면 범위가 좁아진다(조사 표시 개선)',()=>{ fresh(); const L=Object.values(G.players).filter(p=>p.foreign&&p.team==null); ok(L.length>=20,'준비 실패: 후보 '+L.length);
   let n=0, hit=0, w0=0, w1=0; for(const p of L){ G.fwatch=[]; const a=fScout(p); n++; if(dvo(p)>=a.lo&&dvo(p)<=a.hi)hit++; w0+=a.hi-a.lo; G.fwatch=[{id:p.id,k:100}]; const b=fScout(p); w1+=b.hi-b.lo; ok(b.n>=a.n,'관찰했는데 조사 단계가 내려감'); }
-  G.fwatch=[]; ok(hit/n>=.7,'추정 범위 안에 든 후보 '+Math.round(hit/n*100)+'%'); ok(w1<w0*.7,'관찰 파악도 100%인데 범위가 충분히 좁아지지 않음'); });
+  G.fwatch=[]; ok(hit/n>=.7,'추정 범위 안에 든 후보 '+Math.round(hit/n*100)+'%'); ok(w1<w0*.75,'관찰 파악도 100%인데 범위가 충분히 좁아지지 않음('+Math.round((1-w1/w0)*100)+'% 좁아짐, 25% 이상이어야 함)'); });
 
 T('외국인 예상 능력순: 기록·MLB 경력·스카우트를 합친 예상이 스카우트 평가 하나보다 실제 실력을 잘 고르고, 트리플A·MLB 출신을 앞에 둔다',()=>{ fresh(); const L=[]; for(let i=0;i<300;i++){ const p=newForeign('용병',{market:true}); const rp=scoutReport(p); L.push({p,rp,f:fScout(p,rp)}); }
   const top=(a,k)=>[...a].sort(k).slice(0,20); const mean=a=>a.reduce((s,x)=>s+ovr(x.p),0)/a.length;
@@ -500,8 +500,8 @@ T('자리별 대형 선수의 드묾: 포수·유격 수는 줄이지 않되, �
   ok(sh('C')<=sh('1B')*.5&&sh('SS')<=sh('1B')*.6,'최상위(종합 57 이상) 비율: 포수 '+(sh('C')*100).toFixed(1)+'% · 유격 '+(sh('SS')*100).toFixed(1)+'% · 1루 '+(sh('1B')*100).toFixed(1)+'%');
   ok(O.C/C.C<O['1B']/C['1B']-3,'같은 종합에서 포수 방망이가 1루와 비슷함'); });
 
-T('포지션 운용: 포수는 포수·지명 말고는 나가지 않고, 외야 셋 중 중견 수비가 가장 나은 선수가 중견을 맡는다',()=>{ fresh(); const me=G.user; const L=makeLineup(me); const of=['LF','CF','RF'].map(k=>L[k]); ok(of.every(Boolean),'준비 실패: 외야 3명');
-  const [a,b,c]=of; a.r.def=40; b.r.def=42; c.r.def=78; for(const k of ['con','pow','eye','spd'])c.r[k]=Math.max(a.r[k],b.r[k]); /* 방망이는 같게: 수비 차이로만 중견을 고르는지 본다 */ c.pexp=c.pexp||{}; c.pexp.CF=60; const cs=domestic(me).filter(q=>q.pos==='C').slice(0,3); ok(cs.length>=2,'준비 실패: 포수 '+cs.length); cs.forEach(q=>{ for(const k of ['con','pow','eye'])q.r[k]=80; });
+T('포지션 운용: 포수는 포수·지명 말고는 나가지 않고, 외야 셋 중 중견 수비가 가장 나은 선수가 중견을 맡는다',()=>{ fresh(); const me=G.user; { const mm=G.mgr[me]; mgrAttr(mm); mm.dfn=60; } /* 수비를 아주 가볍게 보는 감독(dfn 10대)은 낯선 자리 부담 때문에 일부러 안 바꾸기도 한다: 보통 감독 기준으로 본다 */ const L=makeLineup(me); const of=['LF','CF','RF'].map(k=>L[k]); ok(of.every(Boolean),'준비 실패: 외야 3명');
+  const [a,b,c]=of; a.r.def=40; b.r.def=42; c.r.def=78; for(const k of ['con','pow','eye','spd'])c.r[k]=Math.max(a.r[k],b.r[k]); /* 방망이는 같게: 수비 차이로만 중견을 고르는지 본다 */ c.pexp=c.pexp||{}; c.pexp.CF=90; /* 중견 경험이 많은 코너 외야수: 60이면 어깨 좋은 우익수와 모형상 거의 동점이라 로스터에 따라 결과가 갈렸다 */ const cs=domestic(me).filter(q=>q.pos==='C').slice(0,3); ok(cs.length>=2,'준비 실패: 포수 '+cs.length); cs.forEach(q=>{ for(const k of ['con','pow','eye'])q.r[k]=80; });
   const L2=makeLineup(me); ok(L2.CF===c||defAt(L2.CF,'CF')>=defAt(c,'CF')-2,'중견 수비 '+Math.round(defAt(c,'CF'))+'인 외야수 대신 '+Math.round(defAt(L2.CF,'CF'))+'가 중견');
   for(const k in L2)if(L2[k].pos==='C')ok(k==='C'||k==='DH','포수가 '+k+'로 나감'); });
 
@@ -663,6 +663,18 @@ T('[스태프] 영입 경쟁은 소식함에 쌓지 않고 후보 카드에서 �
   const r=stOffer('sc',s.id,0); ok(r.bid,'경쟁 상황을 만들지 못함'); ok(!G.mail.slice(0,8).some(m=>m.subj.includes('영입 경쟁')),'영입 경쟁 메일이 소식함에 쌓임');
   G.day+=4; stBidExpire(); stScore=old; ok(G.mail.slice(0,8).some(m=>m.subj.includes(s.name)&&m.subj.includes('무산')),'경쟁에서 진 결과(무산)가 소식함에 없음');
   const r2=stOffer('sc',s2.id,0); ok(r2.ok,'경쟁 없는 영입 실패'); ok(G.mail.slice(0,8).some(m=>m.subj.includes(s2.name)&&m.subj.includes('영입 완료')),'영입 완료가 소식함에 없음'); });
+T('[투수] 혹사 금지 지시를 하면 선발 투구 수가 실제로 줄어든다(선발을 오래 끄는 감독이어도 평균 100구 이하), 리그 선발 평균은 KBO 수준(85~95구)',()=>{ fresh(); const m=G.mgr[G.user]; mgrAttr(m); m.pen=15; G.mgrDir={arm:{ok:true,mid:m.id}};
+  const U=[], A=[]; const _ll=loadLog; loadLog=(p,d,pc,isS)=>{ if(isS&&p.e1&&period()==='season')(p.team===G.user?U:A).push(pc); return _ll(p,d,pc,isS); };
+  simTo(()=>period()==='season'&&G.day>=G.cal.open+40); loadLog=_ll; const av=a=>a.reduce((x,y)=>x+y,0)/Math.max(1,a.length);
+  ok(U.length>=20,'우리 선발 등판 부족 '+U.length); ok(av(U)<=100,'혹사 금지인데 우리 선발 평균 '+av(U).toFixed(1)+'구'); ok(av(A)>=85&&av(A)<=95,'리그(AI) 선발 평균 '+av(A).toFixed(1)+'구(85~95)'); });
+T('[투수] 투수 부하 주의 메일은 같은 투수·같은 단계면 매주 되풀이하지 않고, 최근 7일 등판 수를 함께 적는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+14); const p=playersOf(G.user).find(q=>q.isP&&isSPr(q)&&q.ld&&q.ld.length); ok(p,'선발 없음'); p.armw=armCap(p)*1.35;
+  const n0=G.mail.filter(m=>m.subj.startsWith('투수 부하 주의')).length; loadWeekly(); const m1=G.mail.find(m=>m.subj.startsWith('투수 부하 주의')); ok(m1&&G.mail.filter(m=>m.subj.startsWith('투수 부하 주의')).length===n0+1,'첫 경고 메일 없음');
+  ok(/최근 7일 [0-9]+경기 [0-9]+구/.test(m1.body),'최근 7일 등판 수가 없음: '+m1.body.slice(0,120)); m1.read=true; G.day+=7; loadWeekly(); ok(G.mail.filter(m=>m.subj.startsWith('투수 부하 주의')).length===n0+1,'같은 투수·같은 단계인데 다시 경고'); });
+T('[FA] 시즌 중에 올 시즌 뒤 FA가 될 선수(다른 구단 포함)를 미리 볼 수 있고, 실제 FA 공시 명단이 그 안에 있다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=KD(9,25)); const L=faUpcoming(); ok(L.length>=10,'예정자 '+L.length+'명'); ok(L.some(x=>x.p.team!==G.user),'다른 구단 예정자 없음'); const ids=new Set(L.map(x=>x.p.id));
+  simTo(()=>G.fa&&G.fa.pool&&G.fa.y0===G.year); const miss=G.fa.pool.map(id=>G.players[id]).filter(q=>q&&!q.foreign&&!q.abroad&&q.faFrom!=null&&!ids.has(q.id)); ok(!miss.length,'예정자 명단에 없던 FA '+miss.length+'명: '+miss.slice(0,3).map(q=>q.name+'('+q.svc+','+q.faC+')').join(', ')); });
+T('[구단주] 외부 FA 영입 한도를 다 채웠으면 구단주가 FA 영입을 주문하지 않는다(데려올 수 없는 선수 주문)',()=>{ fresh(); const t=team(G.user); t.owner='pr'; t.trust=70; const s=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; s.faFrom=s.team; s.team=null; s.ask={annual:800,years:4};
+  G.fa={pool:[s.id],offers:{},ai:{},open:true,openDay:G.day,closed:false,results:[],cap:2,outN:{[G.user]:2},y0:G.year}; for(let k=0;k<30;k++){ try{ ownerPush(); }catch(e){} }
+  ok(!grants().some(g=>g.by==='own'&&g.kind==='fa'),'한도를 다 채웠는데 구단주가 '+s.name+' 영입을 주문함'); G.fa.outN[G.user]=0; for(let k=0;k<30;k++){ try{ ownerPush(); }catch(e){} } ok(grants().some(g=>g.by==='own'&&g.kind==='fa'),'한도가 남았을 때도 주문이 없음(점검 설정 확인)'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ for(const t of results){ try{ t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }

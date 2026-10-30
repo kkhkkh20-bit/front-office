@@ -265,6 +265,7 @@ const A={
   ptab(v){ UI.ptab=v; renderSheet(); const sh=document.querySelector('#sheet .sheet'); if(sh)sh.scrollTop=0; },
   lsort(v){ const [id,k]=v.split(':'); UI.ls=UI.ls||{}; const c=UI.ls[id]; const asc=['era','whip','ra','hra','bb','so','name','tm','pos','role'].includes(k)&&!(id==='bat'&&k==='bb')&&!(id==='pit'&&k==='so')&&!(id==='team'&&k==='so'); UI.ls[id]={k,dir:c&&c.k===k?-c.dir:(asc?1:-1)}; render(); },
   lrec(v){ UI.lrec=v; render(); },
+  fuF(v){ UI.fuF=v; render(); }, fuAll(){ UI.fuAll=!UI.fuAll; render(); },
   lrfQ(){ UI.lrf=Object.assign({q:true,t:'all'},UI.lrf); UI.lrf.q=!UI.lrf.q; render(); },
   sbd(v){ if(v==='')return; UI.sbd=+v; render(); },
   nseg(v){ UI.nseg=v; UI.fbo=null; render(); },

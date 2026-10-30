@@ -94,3 +94,6 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 .trw{font:700 13px var(--f-num)}.trw.up{color:#6fe39a}.trw.dn{color:#ff7b72}
 .repb{height:8px;background:#1c252e;border-radius:4px;overflow:hidden}.repb i{display:block;height:100%;background:linear-gradient(90deg,#4f8fd6,#ffd24d)}
 .job{display:grid;grid-template-columns:36px minmax(0,1fr) auto auto;gap:10px;align-items:center;background:#0b1014;border-radius:5px;padding:10px;margin-top:8px}.job>div{display:grid}
+/* 올 시즌 뒤 FA 예정자(다른 구단) 행: 선수 + 팀·등급·자격 상태 */
+.flr.fur{grid-template-columns:minmax(0,1fr) minmax(0,300px)}
+@media (max-width:620px){ .flr.fur{grid-template-columns:minmax(0,1fr)} }

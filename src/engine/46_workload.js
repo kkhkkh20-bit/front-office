@@ -13,7 +13,8 @@ function pushText(v){ return v>=72?"필승조를 매일 붙이고 3·4연투도 
 function consecDays(p,day){ const L=p.ld||[]; let n=0, d=day-1; for(let i=L.length-1;i>=0;i--){ if(L[i][0]===day)continue; if(L[i][0]===d){ n++; d--; } else if(L[i][0]<d)break; } return n; }
 function pc7(p,day){ return sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[1])); }
 /* 누적 팔 부하 한도: 선발은 5일 로테이션 100구, 불펜은 이틀에 한 번 20구를 꾸준히 던질 때 한도에 닿는다 */
-function armCap(p){ const s=p.r.sta||50; return isSPr(p)?1150+(s-50)*12:540+(s-50)*6; }
+/* 선발 한도는 지금 역할이 선발이거나 최근 선발처럼 길게(60구 이상) 던진 투수(대체 선발·불펜 데이)에게 적용한다 */
+function armCap(p){ const s=p.r.sta||50; const sp=isSPr(p)||(p.ld||[]).some(x=>x[1]>=60); return sp?1150+(s-50)*12:540+(s-50)*6; }
 function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 기록: applyGame에서 투수마다 호출 */
 function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; L.push([day,pc]); if(L.length>10)L.shift();
@@ -27,12 +28,17 @@ function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.l
 function loadMult(p,cd,day){ const sp=isSPr(p); const w7=pc7(p,day);
   const a=1+(cd>=2?1:0)+(cd>=3?1.5:0)+(sp?0:Math.max(0,w7-50)/40); /* 급성: 연투, 최근 7일 투구 수 */
   const c=1+Math.max(0,armRatio(p)-.75)*4; /* 만성: 누적 팔 부하 */ return a*c; }
-const LOAD_NORM=1.27;
+/* 부상 확률 보정: 리그 평균 부하 배수로 나눈다. 퓨처스 투구 수 과다 계산(2026-10 수정) 전과 같은 투수 부상 빈도(시즌 팀당 7~10건 수준)를 유지하도록 다시 맞춘 값 */
+const LOAD_NORM=.76;
 function loadDaily(){ for(const p of Object.values(G.players)){ if(p.armw){ p.armw*=.985; if(p.armw<5)delete p.armw; } } }
 function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDays(p,day); const r=armRatio(p);
-  return `최근 7일 ${pc7(p,day)}구${cd?` · ${cd}일 연속 등판`:''} · 팔 부하 ${Math.round(r*100)}%${r>=1.3?' (위험)':r>=1.1?' (높음)':''}`; }
+  const n7=(p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).length;
+  return `최근 7일 ${n7}경기 ${pc7(p,day)}구${cd?` · ${cd}일 연속 등판`:''} · 팔 부하 ${Math.round(r*100)}%${r>=1.3?' (위험)':r>=1.1?' (높음)':''}`; }
 /* 매주 월요일: 우리 팀 부하 보고 */
-function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a)); if(!hi.length)return;
+function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
+  /* 같은 투수가 같은 단계(높음·위험)로 계속 남아 있으면 매주 되풀이하지 않는다: 새로 한도를 넘었거나 '위험'으로 올라간 투수가 있을 때만 */
+  const lv=p=>armRatio(p)>=1.3?2:1; const prev=G.loadSig||{}; const cur={}; for(const p of hi)cur[p.id]=lv(p); G.loadSig=cur; if(!hi.length)return;
+  if(!hi.some(p=>(prev[p.id]||0)<cur[p.id]))return;
   const m=G.mgr[G.user]; mail('의무팀',`투수 부하 주의 ${hi.length}명`,`누적 팔 부하가 한도를 넘은 투수입니다. 부하가 높을수록 팔꿈치·어깨 부상 위험이 커집니다.\n\n${hi.slice(0,6).map(p=>`${p.name}(${posLabel(p)}): ${loadText(p)}`).join('\n')}${m&&!m.interim?`\n\n${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}. 감독에게 '투수 관리(혹사 금지)'를 지시하면 줄일 수 있습니다.`:''}`,{kind:'의무',acts:[{l:'감독 지시',a:'goWork',v:'감독'}]}); }
 /* ===== 메디컬 체크 =====
    다른 구단 선수의 부상 체질은 우리 의무팀이 검진해야 알 수 있다. 제휴 병원 등급이 높을수록 정확하다.
