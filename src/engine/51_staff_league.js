@@ -80,7 +80,7 @@ function stRaidAuto(){ try{ autoRaid(); }catch(e){} }
 function stRaidFind(id){ return (G.stRaid||[]).find(r=>r.id===id); }
 function stLeave(r){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); G.stRaid=(G.stRaid||[]).filter(x=>x!==r); if(!s)return ''; if(r.k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s);
   s.sal=r.sal; s.loy=15; s.since=G.day; const L=stTeamL(r.tid); if(L)(r.k==='sc'?L.sc:L.an).push(s); if(r.k==='sc')stSync(r.tid); wire('스태프',`${tshort(r.tid)}, ${tshort(G.user)} ${r.k==='sc'?'스카우트':'분석원'} ${s.name} 영입`,{tid:r.tid}); addLog(`${s.name}이(가) ${tname(r.tid)}로 떠났습니다.`); return `${s.name}이(가) ${tshort(r.tid)}로 떠났습니다.`; }
-function stKeep(id,full){ const r=stRaidFind(id); if(!r)return '이미 끝난 일입니다.'; const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===id); if(!s){ G.stRaid=G.stRaid.filter(x=>x!==r); return ''; }
+function stKeep(id,full){ const r=stRaidFind(id); if(!r||G.unemp)return '이미 끝난 일입니다.'; const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===id); if(!s){ G.stRaid=G.stRaid.filter(x=>x!==r); return ''; }
   const sal=full?r.sal:round5(s.sal*1.1); const stay=stScore(s,G.user,sal,true), go=stScore(s,r.tid,r.sal,false);
   if(full||stay>=go){ s.sal=sal; s.loy=clamp(s.loy+10,0,100); G.stRaid=G.stRaid.filter(x=>x!==r); addLog(`${s.name}을(를) 연 ${money(sal)}에 붙잡았습니다.`); return `${s.name}: "믿어 주셔서 감사합니다. 남겠습니다." 연 ${money(sal)}.`; }
   return stLeave(r); }

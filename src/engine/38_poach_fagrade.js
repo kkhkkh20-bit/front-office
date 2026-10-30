@@ -31,8 +31,8 @@ function autoProt(q){ return !!(q.foreign||q.joinY>G.year||(q.draft&&q.draft.y>=
 function compPool(tid){ return domestic(tid).concat(awayOf(tid).filter(q=>!q.foreign)).filter(q=>!autoProt(q)); }
 function aiProtect(tid,n){ const t=team(tid); return compPool(tid).sort((a,b)=>aiVal(t,b)-aiVal(t,a)).slice(0,n).map(q=>q.id); }
 /* 우리 구단의 일회성 현금 지출·수입은 결산 장부(G.spend)에 올려 예산 여유와 결산에 함께 반영한다 */
-function payOut(tid,amt,key){ if(!amt)return; if(tid===G.user){ G.spend[key]=(G.spend[key]||0)+amt; } else team(tid).cash-=amt; }
-function payIn(tid,amt){ if(!amt)return; if(tid===G.user){ G.spend.compIn=(G.spend.compIn||0)+amt; } else team(tid).cash+=amt; }
+function payOut(tid,amt,key){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } else team(tid).cash-=amt; }
+function payIn(tid,amt){ if(!amt)return; if(tid===ME()){ G.spend.compIn=(G.spend.compIn||0)+amt; } else team(tid).cash+=amt; }
 function compStart(p,from,to,rec){ const g=COMP[p.faGrade]; const prev=p.faPrevSal;
   if(p.faGrade==='C'){ const cash=Math.round(prev*1.5); payOut(to,cash,'comp'); payIn(from,cash); rec.compCash=cash; return; }
   const c={id:'cp'+(G.compSeq=(G.compSeq||0)+1),pid:p.id,name:p.name,grade:p.faGrade,from,to,prev,day:G.day,stage:'protect',exp:G.day+3,prot:null,rec:rec.id,_rec:rec};

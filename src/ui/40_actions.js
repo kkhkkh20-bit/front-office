@@ -294,7 +294,7 @@ const A={
   protTog(v){ const id=+v; if(!UI.prot)return; const S=new Set(UI.prot.ids); if(S.has(id))S.delete(id); else S.add(id); UI.prot.ids=[...S]; render(); },
   protAuto(v){ const c=(G.comp||[]).find(x=>x.id===v); if(!c)return; UI.prot={id:c.id,ids:aiProtect(G.user,COMP[c.grade].prot)}; render(); },
   protSubmit(v){ const c=(G.comp||[]).find(x=>x.id===v); if(!c)return; const g=COMP[c.grade]; if((UI.prot.ids||[]).length>g.prot)return; const r=compSubmit(v,UI.prot.ids); UI.prot=null; UI.stamp={title:'보상 절차 완료',msg:r}; save(); render(); },
-  compPick(v){ const [id,pid]=v.split(':'); const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='pick')return; compResolve(c,+pid||null); UI.stamp={title:+pid?'보상선수 지명':'보상금 선택',msg:+pid?`${G.players[+pid].name}을(를) 보상선수로 데려옵니다. 보상금 ${money(c.cash)}.`:`선수 대신 보상금 ${money(c.cash)}을(를) 받습니다.`}; save(); render(); },
+  compPick(v){ const [id,pid]=v.split(':'); const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='pick'||c.from!==G.user)return; if(+pid&&!compPool(c.to).some(q=>q.id===+pid&&!c.prot.includes(q.id))){ toast('지명할 수 없는 선수입니다(보호선수이거나 소속이 바뀜).'); return; } compResolve(c,+pid||null); UI.stamp={title:+pid?'보상선수 지명':'보상금 선택',msg:+pid?`${G.players[+pid].name}을(를) 보상선수로 데려옵니다. 보상금 ${money(c.cash)}.`:`선수 대신 보상금 ${money(c.cash)}을(를) 받습니다.`}; save(); render(); },
   cmode(v){ UI.cmode=v; UI.it=UI.it||{}; UI.it.coach=v==='other'?'po':'mk'; UI.poachMsg=null; render(); },
   poach(v){ const [t,k,to]=v.split(':'); UI.poachMsg=poachCoach(+t,k,to); note('감독',UI.poachMsg); save(); render(); },
   mgrDir(v){ const [k,on]=v.split(':'); UI.dirMsg=setMgrDir(k,on==='1'); note('감독',UI.dirMsg); save(); render(); },

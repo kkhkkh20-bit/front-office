@@ -19,7 +19,7 @@ EVH.fovs={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.ovsOffer)return '
       return `설득에 실패했습니다. ${ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인')}`; }
     return ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인'); } };
 /* 떠나는 선수를 해외파 명단으로 옮긴다 (국내 선수는 나중에 돌아올 수 있다) */
-function ovsLeave(p,lg,club,yrs,amt,how,fee){ const from=p.team??p.faFrom; G.abroad=G.abroad||[];
+function ovsLeave(p,lg,club,yrs,amt,how,fee){ const from=p.team??p.faFrom; G.abroad=G.abroad||[]; termsClear(p); /* 해외로 가면 국내 계약 조건은 끝난다(돌아와도 되살아나지 않게) */
   const rec={id:p.id,name:p.name,isP:p.isP,pos:posLabel(p),foreign:p.foreign||null,from,lg,club,how,yrs,amt,y:G.year,age:p.age,lines:[],fee:fee||0,back:false,pj:p.foreign?null:JSON.stringify(p)};
   G.abroad.unshift(rec); while(G.abroad.length>120){ let i=-1; for(let j=G.abroad.length-1;j>=0;j--)if(G.abroad[j].back||G.abroad[j].foreign){ i=j; break; } G.abroad.splice(i>=0?i:G.abroad.length-1,1); } /* 넘치면 이미 돌아온 기록부터 지운다(아직 해외에 있는 선수가 사라지지 않게) */ mvLog('해외 진출',p,from,null,`${club}(${lg}) ${yrs}년`);
   for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; if(G.fa&&G.fa.pool)G.fa.pool=G.fa.pool.filter(x=>x!==p.id); delete G.players[p.id];
@@ -44,7 +44,7 @@ function postingSeason(){ G.posting=G.posting||[]; for(const p of Object.values(
       [{l:'포스팅 허락',fx:'12월 중순 결과가 나옵니다. 계약이 성사되면 포스팅 비용(계약 보장액의 약 20%)을 받고 선수는 떠납니다. 무산되면 남습니다.'},
        {l:'1년 뒤 보내 주겠다고 약속',fx:'기분이 조금 오르고 올해는 남습니다. 내년에 약속을 어기면 크게 실망하고 팬·언론도 비판합니다.'},
        {l:'거절',fx:`기분이 크게 떨어집니다${asked?' (두 번째 거절이라 더 크게)':''}. 팬 여론은 갈리고 언론은 비판적입니다.`}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id,promised},def:promised?0:2,exp:12}); } }
-EVH.post={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; prInit();
+EVH.post={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; if(p.team!==G.user||G.unemp)return `${p.name}은(는) 이제 우리 선수가 아닙니다.`; prInit();
     if(i===0){ postStart(p); return `${p.name} 포스팅을 신청했습니다. 12월 중순에 결과가 나옵니다.`; }
     if(i===1){ if(e.data.promised){ p.mor=clamp((p.mor??60)-25,0,100); G.pr.fan=clamp(G.pr.fan-3,0,100); G.pr.press=clamp(G.pr.press-4,0,100); news('언론',`${tshort(G.user)}, ${p.name}과의 약속 또 미뤄`,'약속을 어겼다는 비판이 나옵니다.',-3,{ref:p.id}); return '약속을 또 미뤘습니다. 기분 -25, 팬 여론 -3, 언론 -4.'; }
       p.postPromise=G.year+1; p.mor=clamp((p.mor??60)+3,0,100); return `${p.name}에게 내년 포스팅을 약속했습니다. 기분 +3.`; }

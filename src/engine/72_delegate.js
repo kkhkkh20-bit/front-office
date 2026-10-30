@@ -43,7 +43,7 @@ function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[]
    설정 · 권한 탭에서 언제든 다시 가져올 수 있다 ===== */
 const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀'};
 function autoNow(k){ const C=G.contract; const out=[];
-  if(k==='sal'&&C&&!C.done){ autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); }
+  if(k==='sal'&&C&&!C.done&&C.autoSalD!==Math.floor(G.day/7)){ C.autoSalD=Math.floor(G.day/7); autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); } /* 맡기기를 반복해도 강제 제시는 주 1회 */
   if(k==='fre'&&C&&!C.done){ autoFre(); out.push('외국인 재계약을 처리했습니다'); }
   if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
   if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }

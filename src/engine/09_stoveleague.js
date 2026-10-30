@@ -170,7 +170,7 @@ function contractStart(){
   }
   G.contract={y:G.year,tid:G.user,ended,foreignEnd,foreignDrop:[],released:[],done:false}; for(const id of foreignEnd)initPers(G.players[id]); salTalkInit();
   /* AI 구단: 기량이 크게 떨어진 고액 연봉 베테랑은 정리한다 */
-  for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<44&&p.sal>=800&&!p.ys){ story(p,`${tname(t.id)}에서 방출`,'move'); wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); delete G.players[p.id]; } } }
+  for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<44&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
   refreshFMarket(12,99);
   stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal'];

@@ -35,6 +35,7 @@ function seasonEnd(){
   stop('일정',`정규시즌이 끝났습니다. 우리 구단 ${st.findIndex(x=>x.tid===G.user)+1}위. 1위 ${tname(s[0])}.`);
   G.ps={seeds:s.slice(0,5),order:st,res:{},round:'wc',done:false};
   G.ps.cur=mkSeries('wc',s[3],s[4],G.day+2);
+  for(const t of G.teams)try{ entryManage(t.id,false,true); }catch(e){} /* 포스트시즌에 들어가는 날 바로 엔트리를 기본 한도로 */
 }
 function mkSeries(round,hi,lo,start){
   const off={wc:[0,1],spo:[0,1,3,4,6],po:[0,1,3,4,6],ks:[0,1,3,4,5,7,8]}[round];

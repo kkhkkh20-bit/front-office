@@ -81,6 +81,7 @@ function proposeTrade(tid,give,get,cash){
   const t=team(tid); cash=Math.max(0,Math.round(cash||0));
   if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
   if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
+  if(give.some(id=>!G.players[id]||G.players[id].team!==G.user)||get.some(id=>!G.players[id]||G.players[id].team!==tid))return {ok:false,msg:'선수 소속이 바뀌었습니다. 목록을 다시 확인하세요.'}; /* 우리 선수만 보내고 그 구단 선수만 받는다 */
   { const nt=ntcOf(give); if(nt)return {ok:false,msg:`${nt.name}은(는) 계약서에 트레이드 거부권이 있어 동의 없이 보낼 수 없습니다(${nt.ntc}년까지).`}; }
   { const nt=ntcOf(get); if(nt)return {ok:false,msg:`${tname(tid)} ${nt.name}은(는) 계약서에 트레이드 거부권이 있어 데려올 수 없습니다(${nt.ntc}년까지).`}; }
   if(cash>3000)return {ok:false,msg:'현금은 한 번에 30억 원까지 얹을 수 있습니다.'};

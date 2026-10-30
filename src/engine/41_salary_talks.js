@@ -29,18 +29,18 @@ function salOfferAll(){ salTalkInit(); const C=G.contract; let ok=0, no=0; for(c
   return `산정안을 제시했습니다. ${ok}명 합의${no?`, ${no}명은 더 원합니다`:''}.`; }
 /* 1월 10일: 조건이 맞지 않는 3년차 이상 선수는 연봉조정을 신청할 수 있다 */
 function salArbFile(){ const C=G.contract; if(!C||C.done||!C.neg)return; const L=[];
-  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||n.st!=='open'||(p.svc||0)<ARB_SVC)continue; const club=n.cur??n.off; initPers(p);
+  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='open'||(p.svc||0)<ARB_SVC)continue; const club=n.cur??n.off; initPers(p);
     if(n.ask/club-1>=.05&&R()<.35+(p.pers.amb-10)*.03+(hasAgent(p)&&agentOf(p).style==='hard'?.12:0)){ n.st='arb'; n.arb={club,player:n.ask}; L.push(p); } }
   if(L.length)mail('운영팀',`연봉조정 신청 ${L.length}명`,`${L.map(p=>`${p.name}: 구단 ${money(C.neg[p.id].arb.club)} / 선수 ${money(C.neg[p.id].arb.player)}`).join('\n')}\n\n${ASSOC.s} 연봉조정위원회는 두 금액 중 하나만 고릅니다. 1월 20일에 결정이 나옵니다. 그 전에 선수안을 받아들이면 신청은 취하됩니다. 실제 리그에서 선수가 이긴 경우는 20번 중 2번입니다.`,{kind:'연봉',imp:true,acts:[{l:'연봉 협상 보기',a:'go',v:'transfer:contract'}]}); }
 /* 조정위원회: 직전 성적이 좋고 요구가 크지 않을수록 선수가 이길 가능성이 조금 오른다(그래도 대부분 구단이 이긴다) */
 function salArbDecide(){ const C=G.contract; if(!C||!C.neg)return; const out=[];
-  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||n.st!=='arb')continue; const b=salBasis(p);
+  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='arb')continue; const b=salBasis(p);
     const pw=clamp(.06+(b.war>=3?.07:0)+(n.arb.player/n.arb.club-1<=.12?.05:0),.04,.22); const win=R()<pw; const v=win?n.arb.player:n.arb.club;
     n.st='ok'; p.newSal=v; p.mor=clamp((p.mor??60)+(win?3:-8),0,100); out.push(`${p.name}: ${win?'선수 승리':'구단 승리'} ${money(v)}`); story(p,`연봉조정 ${win?'승리':'패배'} (${money(v)})`,'move'); }
   if(out.length)mail('운영팀','연봉조정위원회 결정',`${out.join('\n')}\n\n조정에서 진 선수는 서운함이 남아 기분이 크게 떨어집니다.`,{kind:'연봉',acts:[{l:'연봉 협상 보기',a:'go',v:'transfer:contract'}]}); }
 /* 마감(확정): 남은 선수는 구단의 마지막 제시액에 사인한다. 조정 중이면 바로 결정한다 */
 function salTalkClose(){ const C=G.contract; if(!C||!C.neg)return; if(Object.values(C.neg).some(n=>n.st==='arb'))salArbDecide();
-  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||n.st!=='open')continue; const v=n.cur??n.off; p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
+  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='open')continue; const v=n.cur??n.off; p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
 function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n){ stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); if(G.mail[0])G.mail[0].auto=['sal']; } }
   if(day===KD(1,10))salArbFile(); if(day===KD(1,20))salArbDecide(); }
 /* 예비 FA 보상금 미리 보기: 지금 연봉 순위로 등급을 어림하고, 이 금액을 내년 연봉으로 주면 떠날 때 받는 보상금을 계산한다 */

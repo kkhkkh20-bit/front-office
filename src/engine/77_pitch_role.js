@@ -48,7 +48,7 @@ function rpMgrView(p){ const tid=p.team; const x=G.rplan&&G.rplan[p.id]; const k
   return {k:p.r.sta+(p.rAdj||0)/.9>=thr?'sp':'rp',t:`체력과 투구 내용으로 선발 5명을 정합니다. ${rpWhy(p,tid)}.`}; }
 function rpNow(p){ if(!p.isP)return ''; if(rpPlanOf(p.team,p)==='sp2')return '2군 선발 수업'; if(!p.e1&&entryOn())return '2군'; return p.role==='SP'?'1군 선발':'1군 계투'; }
 /* 단장 요청 */
-function proleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.isP)return '우리 투수만 정할 수 있습니다.'; if(!PROLE[k])return ''; G.prole=G.prole||{};
+function proleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.isP||G.unemp)return '우리 투수만 정할 수 있습니다.'; if(!PROLE[k])return ''; G.prole=G.prole||{};
   if(k==='auto'){ delete G.prole[pid]; return `${p.name}의 보직을 감독에게 맡겼습니다.`; }
   if(k==='sp2'&&p.age>27)return '2군 선발 수업은 27세 이하만 요청할 수 있습니다.';
   const m=G.mgr[G.user]; const cur=G.prole[pid]; if(cur&&cur.k===k)return '';

@@ -2,7 +2,7 @@
 const MREQK={slot:'보강 요청',out:'정리 요청',frep:'외국인 교체 요청',fa:'FA 영입 요청',draft:'드래프트 기조 추천'};
 function mreqs(){ return G.mreq=G.mreq||[]; }
 function mreqOpen(k){ return mreqs().filter(r=>r.st==='open'&&(!k||r.k===k)); }
-function mreqAdd(k,data,until){ const r={id:'r'+(G.mreqSeq=(G.mreqSeq||0)+1),k,day:G.day,y:G.year,until,data,st:'ask'}; mreqs().unshift(r); if(G.mreq.length>40)G.mreq.length=40; return r; }
+function mreqAdd(k,data,until){ const r={id:'r'+(G.mreqSeq=(G.mreqSeq||0)+1),k,day:G.day,y:G.year,until,data,st:'ask',mid:(G.mgr[G.user]||{}).id,tid:G.user}; mreqs().unshift(r); if(G.mreq.length>40)G.mreq.length=40; return r; }
 function mgrSays(m){ return `${m.name} 감독`; }
 function mreqAsk(r,title,sit,opts,def,face){ const m=G.mgr[G.user]; evNew('mreq',title,sit,opts,{from:'감독실',face:null,ref:face??null,data:{rid:r.id},def:def??opts.length-1,exp:7}); }
 const DPOL={P:'투수 위주',C:'포수',IF:'내야수',OF:'외야수',HS:'고졸 유망주',COL:'대졸 즉시 전력'};
@@ -56,7 +56,7 @@ EVH.mreq={ pick(e,i){ const r=mreqs().find(x=>x.id===e.data.rid); const m=G.mgr[
     if(r.k==='draft'){ if(i===0){ r.st='open'; G.draftPol={y:G.year,k:r.data.pol}; return `드래프트 기조: ${DPOL[r.data.pol]}.`; } r.st='no'; G.draftPol=null; return neg(1); }
     return ''; } };
 /* 약속을 지켰는지 */
-function mreqCheck(){ const m=G.mgr[G.user]; if(!m)return; for(const r of mreqs()){ if(r.st!=='open')continue; let ok=false, fail=false;
+function mreqCheck(){ const m=G.mgr[G.user]; if(!m)return; for(const r of mreqs()){ if(r.st!=='open')continue; if((r.mid!=null&&r.mid!==m.id)||(r.tid!=null&&r.tid!==G.user)){ r.st='void'; continue; } /* 그 감독·그 구단과 한 약속 */ let ok=false, fail=false;
     if(r.k==='slot'){ const cur=slotRanks(G.user)[r.data.sk]; const got=r.data.target&&G.players[r.data.target]&&G.players[r.data.target].team===G.user; ok=got||cur.v>=r.data.v+3; if(!ok&&G.day>r.until)fail=true; }
     else if(r.k==='out'){ const p=G.players[r.data.pid]; ok=!p||p.team!==G.user; if(!ok&&G.day>r.until){ r.st='half'; continue; } }
     else if(r.k==='frep'){ const p=G.players[r.data.pid]; ok=!p||p.team!==G.user; if(!ok&&fReplLeft(G.user)<=0){ r.st='void'; continue; } if(!ok&&G.day>r.until)fail=true; } /* 교체 횟수를 다 쓰면 요청은 없던 일이 된다 */
@@ -126,7 +126,7 @@ function mpickPlan(){ const m=G.mgr[G.user]; if(!m||m.interim)return; mgrAttr(m)
   evNew('mpick',`${m.name} 감독이 미는 선수`,`"${cands.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}. 제가 보기엔 ${cands[0].v.line.replace(/[.]$/,'')}. 올해 출전 기회와 훈련을 몰아주고 싶습니다." 감독의 선수 보는 눈(안목) ${m.eye}.`,
     [{l:'함께 밀어준다',fx:'올해 이 선수들의 성장 속도가 30% 빨라지고 기분이 오릅니다. 감독 관계 +4. 시즌 중 트레이드하면 감독이 크게 서운해합니다(-6).'},{l:'성적이 먼저다',fx:'변화 없음. 감독 관계 -2.'}],{from:'감독실',ref:cands[0].p.id,data:{ids:cands.map(x=>x.p.id)},def:0,exp:7}); }
 EVH.mpick={ pick(e,i){ const m=G.mgr[G.user]; if(!m)return ''; if(i===0){ G.mpick.back=true; m.rel=clamp(m.rel+4,0,100); for(const id of e.data.ids){ const p=G.players[id]; if(p)p.mor=clamp((p.mor??60)+5,0,100); } return '감독과 함께 밀어주기로 했습니다. 감독 관계 +4.'; } G.mpick.back=false; m.rel=clamp(m.rel-2,0,100); return '감독 관계 -2.'; } };
-function mpickMult(p){ const P=G.mpick; return P&&P.back&&P.y===G.year&&P.ids.includes(p.id)&&p.team===G.user?1.3:1; }
+function mpickMult(p){ const P=G.mpick; const m=G.mgr[G.user]; return P&&P.back&&P.y===G.year&&P.ids.includes(p.id)&&p.team===G.user&&m&&!m.interim&&(P.mid==null||P.mid===m.id)?1.3:1; } /* 그 감독이 밀던 선수: 감독이 바뀌거나 대행 체제면 끝 */
 /* 감독 안목 성적표: 예측과 실제 성장 비교 (시즌 끝에) */
 function mgrEyeReport(){ const m=G.mgr[G.user]; const P=G.mpick; if(!m||!P||P.y!==G.year||!P.ids.length)return; const L=P.ids.map(id=>G.players[id]).filter(Boolean); if(!L.length)return;
   const txt=L.map(p=>{ const h=(p.oh||[]).slice(-2); const d=h.length===2?h[1].o-h[0].o:0; return `${p.name} ${d>=0?'+':''}${d}`; }).join(', '); (G.mpickLog=G.mpickLog||[]).unshift({y:G.year,mid:m.id,txt,back:P.back}); if(G.mpickLog.length>10)G.mpickLog.length=10; }

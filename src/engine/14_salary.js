@@ -85,7 +85,7 @@ function offerExtension(id,annual,years,acc,T){
   const wk=Math.floor(G.day/7);
   const who=agWho(p); const ag=hasAgent(p)?agentOf(p):null;
   if(acc&&p.extCounter&&p.extCounter.until>=G.day&&annual>=p.extCounter.annual&&years===p.extCounter.years){ delete p.extCounter; p.extTried=null; annual=Math.max(annual,0); }
-  else if(p.extTried===wk)return {ok:false,msg:`${who}: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
+  else if((acc=false)||p.extTried===wk)return /* 유효한 역제안이 아니면 일반 제안으로 본다 */ {ok:false,msg:`${who}: 이번 주에는 더 이야기하지 않겠습니다. 다음 주에 다시 제안해 주세요.`};
   const d=round5(extDemand(p,years)*agExtMul(p));
   let D=null; if(T){ T={...T,years,role:null}; D=termsDemand(p,'ext',{annual:d,years}); annual=Math.round(termsVal(T,D)); }
   /* 강경형·대형 에이전트는 원하는 기간보다 짧으면 받지 않는다 */

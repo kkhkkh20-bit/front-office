@@ -10,13 +10,13 @@ const AI_YS_MAX=8;
 function trimRoster(tid,max){
   let ps=playersOf(tid).filter(p=>!p.foreign&&!p.ys); const out=[]; max=(max||ROSTER_MAX)-foreignOf(tid).length; const ysCap=tid===G.user?YS_MAX:AI_YS_MAX;
   const keep=p=>keepScore(p)+(team(tid).mode==='contend'?(p.age>=26?1:0):(p.age<=24?1:0));
-  while(ps.length>max){ ps.sort((a,b)=>keep(a)-keep(b)); const p=ps.shift(); out.push(p); if(p.age<=24&&!p.faC&&p.pot-ovr(p)>=8&&ysN(tid)<ysCap){ p.ys=true; p.e1=false; p.sal=MIN_SAL; } else if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출`); else delete G.players[p.id]; }
+  while(ps.length>max){ ps.sort((a,b)=>keep(a)-keep(b)); const p=ps.shift(); out.push(p); if(p.age<=24&&!p.faC&&p.pot-ovr(p)>=8&&ysN(tid)<ysCap){ p.ys=true; p.e1=false; p.sal=MIN_SAL; } else if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출`); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); }
   return out;
 }
 /* AI 구단 겨울 정리: 육성선수는 25세가 넘거나 한도를 넘으면 내보낸다(실제 구단도 해마다 10명 안팎을 정리한다).
    정식 선수는 newYear에서 61명까지 줄이고, 시즌 중 군 제대·부상 대체로 늘어나는 몫을 남겨 둔다 */
 function aiYsPrune(tid){ if(tid===ME())return 0; const ys=playersOf(tid).filter(p=>p.ys&&!p.foreign).sort((a,b)=>keepScore(b)-keepScore(a)); let n=0;
-  ys.forEach((p,i)=>{ if(p.age>=26||i>=AI_YS_MAX||p.pot<=ovr(p)+2){ if(p.age<=33&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출(육성선수 정리)`); else delete G.players[p.id]; n++; } }); return n; }
+  ys.forEach((p,i)=>{ if(p.age>=26||i>=AI_YS_MAX||p.pot<=ovr(p)+2){ if(p.age<=33&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출(육성선수 정리)`); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); n++; } }); return n; }
 /* 스카우트 특기: 투수 감별·타자 감별은 그 유형 선수를 볼 때 능력이 한 단계 높다. 경력은 성격 묘사용 */
 const SC_SPEC={P:'투수 감별',B:'타자 감별'};
 const SC_CAR=['전 프로 투수','전 프로 포수','전 프로 내야수','전 프로 외야수','고교 감독 출신','대학 코치 출신','전력분석원 출신','야구 기자 출신','해외 리그 코치 출신','독립리그 감독 출신'];
@@ -52,9 +52,9 @@ function aiCapFix(tid,frac,noRel,maxN){ const t=team(tid); if(!t||tid===ME())ret
     const c=domestic(tid).filter(p=>!core.has(p.id)&&!isRookie(p)&&p.sal>=150&&!(p.joinY>G.year)).sort((a,b)=>aiVal(t,a)/a.sal-aiVal(t,b)/b.sal)[0];
     if(!c)break;
     const rc=G.teams.filter(x=>x.id!==tid&&x.id!==ME()&&(x.cash||0)>-2000&&capPay(x.id)+c.sal<=capOf(G.year)*.95&&rosterN(x.id)<ROSTER_MAX-1&&aiVal(x,c)>=Math.max(.5,c.sal/400)).sort((a,b)=>(capPay(a.id))-(capPay(b.id)))[0];
-    if(rc){ termsClear(c); c.team=rc.id; c.listed=false; for(const k in G.lineup)if(G.lineup[k]===c.id)delete G.lineup[k]; story(c,`연봉 덜어내기 트레이드로 ${tname(rc.id)} 이적`,'move'); wire('트레이드',`${tname(tid)}, ${noRel?'적자를 줄이려':'샐러리캡 맞추려'} ${c.name}(${money(c.sal)})을 ${tname(rc.id)}로 보냄`,{tid,ref:c.id}); }
+    if(rc){ termsClear(c); mvLog('트레이드',c,tid,rc.id,'연봉 덜어내기'); c.team=rc.id; c.listed=false; for(const k in G.lineup)if(G.lineup[k]===c.id)delete G.lineup[k]; story(c,`연봉 덜어내기 트레이드로 ${tname(rc.id)} 이적`,'move'); wire('트레이드',`${tname(tid)}, ${noRel?'적자를 줄이려':'샐러리캡 맞추려'} ${c.name}(${money(c.sal)})을 ${tname(rc.id)}로 보냄`,{tid,ref:c.id}); }
     else if(noRel)break;
-    else { const cost=c.faC?Math.round(c.sal*Math.max(1,c.yrs)*.5):0; t.cash-=cost; wire('방출',`${tname(tid)}, 샐러리캡 때문에 ${c.name}(${money(c.sal)}) 방출`,{tid,ref:c.id}); if(c.age<=35&&ovr(c)>=30)toFree(c,`${tname(tid)}에서 방출(샐러리캡)`); else { story(c,`${tname(tid)}에서 방출`,'move'); delete G.players[c.id]; } } /* 로스터 정리와 같은 기준: 뛸 만한 선수는 무적 시장으로 */
+    else { const cost=c.faC?Math.round(c.sal*Math.max(1,c.yrs)*.5):0; t.cash-=cost; wire('방출',`${tname(tid)}, 샐러리캡 때문에 ${c.name}(${money(c.sal)}) 방출`,{tid,ref:c.id}); if(c.age<=35&&ovr(c)>=30)toFree(c,`${tname(tid)}에서 방출(샐러리캡)`); else retireOut(c,`${tname(tid)}에서 방출된 뒤 은퇴`); } /* 로스터 정리와 같은 기준: 뛸 만한 선수는 무적 시장으로 */
     n++; }
   return n; }
 function capWarnUser(){ const ci=capInfo(G.user); const t=team(G.user); if(ci.over<=0)return; const n=(t.capOver||0)+1;
