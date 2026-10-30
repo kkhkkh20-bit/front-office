@@ -49,8 +49,8 @@ function detailCard(p){ const rp=scoutReport(p); if(hideOvr(p)||!rp.tools||!rp.t
     const gb=dv>=1?`<span class="gain" style="left:${w(o)}%;width:${Math.max(1,w(v)-w(o))}%"></span>`:dv<=-1?`<span class="loss" style="left:${w(v)}%;width:${Math.max(1,w(o)-w(v))}%"></span>`:'';
     return `<div class="dt"><span>${esc(l)}</span><span class="dtv">${rchip(v)}${ar}</span><span class="track"><span class="mid"></span><span class="now" style="width:${w(dv>=1?o:v)}%;--c:${rcol(v)}"></span>${gb}</span></div>`; })();
   const gr=growthSVG(p);
-  return `<section class="card"><div class="row between"><h2 class="sec">능력치</h2><span class="small muted">${rp.exact?'코치진 평가':'스카우트 추정'} · 20~80, 50이 1군 평균</span></div>
-    <div class="dgrid"><div class="dradar">${radarSVG(d.radar,fut)}<p class="small muted"><span class="lg" style="background:var(--acc)"></span>현재${fut?' <span class="lg" style="background:#e6b93b"></span>잠재력(점선)':''} · 점선 고리가 1군 평균(50)</p></div>
+  return `<section class="card"><div class="row between"><h2 class="sec">능력치</h2><span class="small muted">${rp.exact?'코치진 평가':'스카우트 추정'} · 100점 만점, 63이 1군 평균</span></div>
+    <div class="dgrid"><div class="dradar">${radarSVG(d.radar,fut)}<p class="small muted"><span class="lg" style="background:var(--acc)"></span>현재${fut?' <span class="lg" style="background:#e6b93b"></span>잠재력(점선)':''} · 점선 고리가 1군 평균(63)</p></div>
       <div class="dgroups">${d.groups.map(([h,L])=>`<div class="dg"><div class="eyebrow">${h}</div>${L.map(bar).join('')}</div>`).join('')}</div></div>
     ${RT?`<p class="small muted dleg"><i class="dar up">▲</i> 오른 항목 · <i class="dar dn">▼</i> 떨어진 항목 (${RT}, 막대의 밝은 부분이 오른 만큼)</p>`:''}
     ${gr?`<div class="eyebrow" style="margin-top:10px">성장 추이</div>${gr}`:''}

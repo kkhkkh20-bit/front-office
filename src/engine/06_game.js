@@ -48,9 +48,10 @@ function boostOf(p){ let b=(p.team!=null&&G.coach)?coachBoost(p):0; if(p.team===
   if(p.wear){ const cap=p.isP?60+p.r.sta*1.3:70+(p.r.vit||52)*1.0; if(p.wear>cap)b-=Math.min(3,(p.wear-cap)/25); }
   return b; }
 /* 선수 능력 차이가 타석 결과에 반영되는 폭. 1이면 능력 그대로, 낮을수록 운의 비중이 커진다.
-   실제 KBO 시즌 승률 표준편차(약 0.06, 1위 0.60~0.63, 꼴찌 0.38~0.42)에 맞춘다.
-   FA·트레이드로 해마다 전력이 쏠리면서 편차가 커지므로 0.84에서 0.75로 낮췄다(개인 기록 1위 수준은 거의 그대로) */
-const TALENT_W=.75;
+   능력치 게임이라 능력 그대로(1) 반영한다. 0.75일 때는 한 시즌 OPS를 능력치가 45~58%밖에 설명하지 못해,
+   파워가 평균인 타자가 장타율 .514를 치는 식으로 기록과 능력이 어긋났다. 1과 시즌 운 0.4(FORM_K)에서 66~71%(실제 야구의 실력 설명력 수준).
+   리그 평균(타율·장타율·평균자책점)은 그대로이고, 팀 승률 편차는 약 0.07 → 0.077로 조금 커진다 */
+const TALENT_W=1;
 function shrinkQ(q){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip'])o[k]=LGP[k]+(q[k]-LGP[k])*TALENT_W; return o; }
 function outcome(b,p,dv){
   const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5)), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5));

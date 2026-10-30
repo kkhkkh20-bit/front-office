@@ -613,6 +613,14 @@ T('[스타] 캠페인 중에는 매달 기사가 나고, 스타가 떠오르면 
   const q=playersOf(G.user).filter(x=>!x.foreign&&x!==p)[0]; q.aw=[G.year+' 신인왕',G.year+' 골든글러브(1루수)']; const m0=G.mail.length; starCheck(); const M=JSON.stringify(G.mail.slice(0,G.mail.length-m0+1)); ok(M.includes(q.name),'스타 탄생 알림이 없음');
   const m1=G.mail.length; starCheck(); ok(G.mail.length===m1,'같은 해에 또 알림'); });
 
+T('[엔진] 능력이 성적에 정확히 반영된다: 규정타석 타자의 한 시즌 OPS를 능력치가 60% 이상 설명한다(방승환: 파워 평균인데 장타율 .514)',()=>{ const R=[];
+  for(const tid of [1,2,3]){ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players))snap[p.id]={...p.r}; return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }
+    for(const p of Object.values(G.players)){ const s=snap[p.id]; if(!s||p.isP)continue; const h=seasonTotal(p,2025,'1군'); if(!h||h.pa<446)continue; R.push({x:[1,s.con,s.pow,s.eye,s.spd],y:obpOf(h)+(h.h+h.d+2*h.tr+3*h.hr)/h.ab}); } }
+  ok(R.length>=150,'준비 실패: 규정타석 '+R.length); const n=R.length, p=5; const A=Array.from({length:p},()=>Array(p).fill(0)), b=Array(p).fill(0);
+  for(const r of R)for(let i=0;i<p;i++){ b[i]+=r.x[i]*r.y; for(let j=0;j<p;j++)A[i][j]+=r.x[i]*r.x[j]; }
+  for(let i=0;i<p;i++){ for(let j=i+1;j<p;j++){ const f=A[j][i]/A[i][i]; for(let c=i;c<p;c++)A[j][c]-=f*A[i][c]; b[j]-=f*b[i]; } } const w=Array(p).fill(0); for(let i=p-1;i>=0;i--){ let s2=b[i]; for(let c=i+1;c<p;c++)s2-=A[i][c]*w[c]; w[i]=s2/A[i][i]; }
+  const my=R.reduce((s2,r)=>s2+r.y,0)/n; let sst=0, sse=0; for(const r of R){ const pr=r.x.reduce((s2,v,i)=>s2+v*w[i],0); sst+=(r.y-my)**2; sse+=(r.y-pr)**2; } const r2=1-sse/sst; ok(r2>=.6,'능력치가 OPS를 설명하는 정도 '+(r2*100).toFixed(0)+'%(60% 이상이어야 함)'); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
