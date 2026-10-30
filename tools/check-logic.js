@@ -603,6 +603,16 @@ T('[스타] 언론 플레이로 우리 선수 띄우기: 스타성이 오르고,
   const msg=pressPlay(r.id,'hype',p.id); ok(p.hype&&p.hype.until>G.day,'띄우기가 기록되지 않음: '+msg); ok(starPower(p)>s0,'스타성이 오르지 않음'); const f0=G.pr.fan; const h0=hypeForm; hypeForm=()=>'bad'; try{ G.day+=50; ppDaily(); }finally{ hypeForm=h0; }
   const N=JSON.stringify((G.news||[]).slice(0,4)); ok(N.includes('거품'),'부진했는데 역풍 기사가 없음'); ok(G.pr.fan<f0,'팬 여론이 떨어지지 않음'); ok(!(p.hype&&p.hype.until>=G.day&&p.hype.v>0),'거품 뒤에도 스타성 보너스가 남음'); });
 
+T('[스타] 스타 마케팅 캠페인: 비용을 쓰고, 스타 파워에 비례해 스타 마케팅 수입이 늘고, 기사가 난다',()=>{ fresh(); const p=playersOf(G.user).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; p.aw=[G.year+' MVP'];
+  const i0=starIncome(G.user), e0=G.spend.etc||0, f0=G.pr.fan; const est=smEst(p,'m'); ok(est>0,'예상 수입 0'); const msg=smStart(p.id,'m'); ok(smActive(p),'캠페인이 시작되지 않음: '+msg);
+  ok((G.spend.etc||0)-e0===300,'비용이 3억이 아님: '+((G.spend.etc||0)-e0)); const add=starIncome(G.user)-i0; ok(add>0&&Math.abs(add-Math.round(est*p.smk.f))<=2,'수입 증가가 예상과 다름: '+add+' / '+Math.round(est*p.smk.f)); ok(G.pr.fan>f0,'팬 관심이 오르지 않음');
+  ok(JSON.stringify((G.news||[]).slice(0,3)).includes(p.name),'캠페인 기사가 없음'); ok(smStart(p.id,'s').includes('이미'),'같은 선수에 겹쳐 시작됨'); const d0=G.day, L0=G.last; G.day=p.smk.until+10; ok(smActive(p),'결산이 예상보다 늦어지면 결산 전에 캠페인이 끝남'); G.last={...(L0||{}),y:G.year}; ok(!smActive(p),'결산 뒤에도 캠페인 수입이 다음 해로 이어짐'); G.day=d0; G.last=L0;
+  const q=playersOf(G.user).find(x=>x!==p&&starPower(x)===0); ok(!q||smEst(q,'l')===0,'스타 파워 0인데 예상 수입이 있음'); });
+T('[스타] 캠페인 중에는 매달 기사가 나고, 스타가 떠오르면 그해 한 번 알린다',()=>{ fresh(); const p=playersOf(G.user).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; p.aw=[G.year+' MVP']; smStart(p.id,'s');
+  const n0=(G.news||[]).length; smNews(); ok((G.news||[]).length>n0&&JSON.stringify(G.news.slice(0,2)).includes(p.name),'캠페인 기간 월간 기사가 없음');
+  const q=playersOf(G.user).filter(x=>!x.foreign&&x!==p)[0]; q.aw=[G.year+' 신인왕',G.year+' 골든글러브(1루수)']; const m0=G.mail.length; starCheck(); const M=JSON.stringify(G.mail.slice(0,G.mail.length-m0+1)); ok(M.includes(q.name),'스타 탄생 알림이 없음');
+  const m1=G.mail.length; starCheck(); ok(G.mail.length===m1,'같은 해에 또 알림'); });
+
 T('스페이스바 자동 진행 설정 기본값은 "묻지 않음"',()=>{ fresh(); ok(!G.advAsk,'새 게임에서 진행 전에 묻기가 켜져 있음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }

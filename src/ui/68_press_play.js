@@ -14,6 +14,7 @@ function repActs(r){ const c=(G.repc||{})[r.id]||{}; const scOk=!(c.scoop!=null&
 Object.assign(A,{ repScoop(v){ toast(repScoop(v)); save(); render(); },
   ppRk(v){ UI.ppr=UI.ppr||{}; UI.ppr.k=UI.ppr.k===v?null:v; UI.ppMsg=''; render(); },
   ppSign(v){ const [r,pid]=String(v).split(':'); UI.ppMsg=pressPlay(r,'sign',+pid); if(UI.ppr)UI.ppr.k=null; save(); render(); },
+  smGo(v){ const [id,k]=String(v).split(':'); UI.smMsg=smStart(+id,k); save(); render(); }, /* 스타 마케팅 캠페인(구단주 화면) */
   ppHype(v){ const [r,pid]=String(v).split(':'); UI.ppMsg=pressPlay(r,'hype',+pid); if(UI.ppr)UI.ppr.k=null; save(); render(); },
   ppInvest(v){ UI.ppMsg=pressPlay(v,'invest'); if(UI.ppr)UI.ppr.k=null; save(); render(); },
   ppK(v){ UI.pp=UI.pp||{}; UI.pp.k=v; UI.ppMsg=''; render(); },

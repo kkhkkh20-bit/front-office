@@ -32,3 +32,24 @@ function titleRaceNews(){ const y=G.year; const R=[]; const hot=[];
   if(!R.length)return; const head=[...R].sort((a,b)=>a.rel-b.rel)[0];
   news('기록',`${head.lab} 경쟁: ${head.B[0].p.name} ${tfmt(head.k,head.B[0].v)} vs ${head.B[1].p.name} ${tfmt(head.k,head.B[1].v)}`,R.map(r=>`${r.lab}: ${r.B.map(x=>`${x.p.name}(${tshort(x.t)}) ${tfmt(r.k,x.v)}`).join(', ')}`).join(' / '),hot.length?1:0);
   if(hot.length)mail('홍보팀',`우리 선수 타이틀 경쟁: ${hot[0].split(' ')[0]}`,`${hot.join('\n')}\n\n타이틀 경쟁은 선수의 스타성(관중·상품 수입)과 기분을 끌어올립니다. 언론 플레이로 더 띄울 수도 있습니다(구단 → 언론·여론 → 기자).`,{kind:'기록',acts:[{l:'기록 순위',a:'go',v:'league:rec'}]}); }
+
+/* ===== 스타 마케팅 캠페인: 스타가 된 선수를 구단이 돈을 들여 밀어 준다 =====
+   유니폼·광고 수입(스타 마케팅 수입)은 스타 파워에 비례한다. 진짜 스타에게 쓰면 비용보다 많이 벌고, 이름값이 약한 선수에게 쓰면 손해다.
+   결산 연도 남은 기간만큼만 수입이 붙는다(f). 캠페인 동안 매달 기사가 나고, 팬 관심과 선수 기분이 오른다 */
+const SMK=[{k:'s',l:'기본',c:100,m:.5,fan:1},{k:'m',l:'집중',c:300,m:1,fan:3},{k:'l',l:'대대적',c:600,m:1.6,fan:5}];
+const fyNow=()=>(G.last&&G.last.y>=G.year)?G.year+1:G.year; /* 지금 장부가 잡히는 결산 연도(finYearEnd와 같은 기준) */
+function smActive(p){ return !!(p&&p.smk&&p.smk.fy===fyNow()&&p.team===G.user&&!G.unemp); } /* 결산일이 예상보다 늦어져도 그 결산까지는 유효 */
+function smEst(p,k){ const T=SMK.find(x=>x.k===k); return T&&p?Math.round(starPower(p)*14*team(G.user).market*T.m):0; } /* 1년 내내 했을 때 추가 수입 */
+function smBonus(tid){ if(tid!==G.user||G.unemp)return 0; return sum(playersOf(G.user).filter(smActive).map(p=>Math.round(smEst(p,p.smk.k)*(p.smk.f??1)))); }
+function smStart(pid,k){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const p=G.players[pid]; const T=SMK.find(x=>x.k===k); if(!p||p.team!==G.user||!T)return '우리 선수를 고르세요.';
+  if(smActive(p))return `${p.name}은(는) 이미 스타 마케팅 중입니다(${dmd(p.smk.until)}까지).`;
+  const until=finYearEnd(); const f=clamp((until-G.day)/365,0,1); const est=Math.round(smEst(p,k)*f); prInit(); G.spend.etc=(G.spend.etc||0)+T.c; p.smk={k,d:G.day,until,f,fy:fyNow()}; G.pr.fan=clamp(G.pr.fan+T.fan,0,100); p.mor=clamp((p.mor??60)+2,0,100);
+  news('구단',k==='l'?`${tshort(G.user)}, '${p.name}' 대대적 마케팅…도시 곳곳에 대형 광고`:k==='m'?`${tshort(G.user)}, ${p.name} 앞세운 마케팅 본격화`:`${tshort(G.user)}, ${p.name} 유니폼·굿즈 출시`,`구단이 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 얼굴로 내세운 마케팅을 시작했습니다.`,1,{ref:p.id,fanW:1});
+  return `${p.name} 스타 마케팅(${T.l})을 시작했습니다. 비용 ${money(T.c)}, 이번 결산까지 추가 수입 예상 ${money(est)}${est<T.c?` (비용보다 적습니다. 스타 파워 ${starPower(p)}로는 아직 이름값이 약합니다)`:''}. 팬 관심 +${T.fan}.`; }
+/* 캠페인 기간 매달(15일) 기사 */
+const SM_NEWS=[p=>[`${p.name} 유니폼, 리그 판매 상위권`,`${p.name}의 이름을 단 유니폼이 구단 매장에서 가장 많이 팔렸습니다.`],p=>[`${p.name}, 스포츠음료 광고 모델 발탁`,`${p.name}이(가) 한 스포츠음료 브랜드의 새 광고 모델이 됐습니다.`],p=>[`'${p.name} 데이' 팬 사인회 매진`,`홈경기 전 열린 ${p.name} 팬 사인회 표가 하루 만에 다 팔렸습니다.`],p=>[`${p.name} 다큐멘터리 공개`,`${p.name}의 한 시즌을 따라간 구단 제작 다큐멘터리가 공개됐습니다.`]];
+function smNews(){ if(G.unemp)return; prInit(); for(const p of playersOf(G.user).filter(smActive)){ const n=p.smk.n=(p.smk.n||0); const [t,b]=SM_NEWS[n%SM_NEWS.length](p); p.smk.n++; news('구단',t,b,1,{ref:p.id,fanW:1}); G.pr.fan=clamp(G.pr.fan+1,0,100); } }
+/* 스타 탄생: 스타 파워 25 이상이 된 우리 선수를 그해 한 번 알린다 */
+function starCheck(){ if(G.unemp||G.user==null)return; for(const p of playersOf(G.user)){ if(p.starY===G.year)continue; const s=starPower(p); if(s<25)continue; p.starY=G.year;
+  news('선수',`'대세' ${p.name}…${tshort(G.user)}의 새 얼굴`,`활약과 화제성이 쌓인 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 찾는 팬과 광고주가 늘고 있습니다.`,1,{ref:p.id,fanW:1});
+  if(!smActive(p))mail('마케팅팀',`${p.name}, 스타로 떠올랐습니다`,`${p.name}의 스타 파워가 ${s}입니다. 지금 스타 마케팅을 하면 이번 결산까지 추가 수입이 이 정도로 예상됩니다.\n${SMK.map(T=>`${T.l}(비용 ${money(T.c)}): 약 ${money(Math.round(smEst(p,T.k)*clamp((finYearEnd()-G.day)/365,0,1)))}`).join('\n')}\n\n구단 → 구단주 화면의 '스타 파워와 마케팅'에서 정할 수 있습니다.`,{kind:'구단',ref:p.id,acts:[{l:'스타 마케팅 보기',a:'go',v:'club:owner'}]}); } }

@@ -524,3 +524,8 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .dt .track .gain{position:absolute;top:0;bottom:0;background:#3ddc84;box-shadow:0 0 6px #3ddc84aa}
 .dt .track .loss{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#ff6b6b55 0 3px,transparent 3px 6px)}
 .dleg{margin:6px 0 0}
+/* 스타 마케팅 캠페인 */
+.sml{display:grid;gap:6px;margin:4px 0 8px}
+.smr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.smb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.smb .good{color:var(--good)}.smb .bad{color:var(--bad)}.smb .btn.primary .good,.smb .btn.primary .bad{color:inherit}

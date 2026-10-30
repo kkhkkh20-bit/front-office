@@ -83,7 +83,7 @@ function newStadDue(tid){ const S=stadOf(tid); const N=S.proj; if(!N||N.stage!==
 
 /* AI 구단: 돈이 넉넉하면 비시즌에 시설 하나를 손본다 */
 function stadAI(){ for(const t of G.teams){ if(t.id===G.user)continue; const S=stadOf(t.id); if(t.cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); const lv=S.lv[k]; if(lv>=4)continue; const c=STAD_COST[lv+1]; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); } }
-function starIncome(tid){ return Math.round(teamStar(tid).v*14*team(tid??G.user).market); }
+function starIncome(tid){ return Math.round(teamStar(tid).v*14*team(tid??G.user).market)+smBonus(tid??G.user); } /* 스타 마케팅 캠페인 몫 포함 */
 
 function starAwardsNews(){ const T=teamStar(G.user); const L=T.L.filter(x=>x.s>=25); if(!L.length)return; prInit(); const t=team(G.user);
   news('구단',`${t.city} ${t.nick}, ${L.map(x=>x.p.name).join('·')} 앞세운 스타 마케팅`,`수상과 활약으로 이름값이 오른 선수들의 유니폼과 광고 수요가 늘고 있습니다. 내년 스타 마케팅 수입 예상 ${money(starIncome(G.user))}.`,2,{fanW:1});

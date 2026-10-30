@@ -42,10 +42,15 @@ function mgrBondView(){ const m=G.mgr[G.user]; if(!m||m.interim)return ''; mgrAt
 function mgrOpinion(p){ const v=mgrView(p); if(!v)return ''; const m=G.mgr[G.user]; if(v.mute)return `<div class="mop"><b>감독 의견</b><span class="small muted">${esc(m.name)} 감독이 말을 아낍니다(관계 30 미만).</span></div>`;
   const pk=G.mpick&&G.mpick.y===G.year&&G.mpick.ids.includes(p.id);
   return `<div class="mop"><b>감독 의견${pk?' · <span class="pill good">감독이 미는 선수</span>':''}</b><span>"${esc(v.line)}." 잠재력 예상 <b>${potTier(v.fut,Math.round(ovr(p))).s}</b></span><span class="small muted">${esc(m.name)} 감독 · 안목 ${v.eye} (오차 ±${dvSd(v.fut,v.sd)}점). 스카우트 평가와 다르면 안목이 높은 쪽을 믿는 편이 낫습니다.</span></div>`; }
-function starPanel(){ const T=teamStar(G.user); const L=T.L;
-  return csec('스타 파워와 마케팅',`<p class="small">우리 팀 스타 파워 <b>${T.v}</b> · 올해 스타 마케팅 수입 예상 <b>${money(starIncome(G.user))}</b></p>${L.length?`<div class="intl">${L.map(x=>`<button class="pill good" data-a="player" data-v="${x.p.id}">${esc(x.p.name)} · ${x.s}</button>`).join('')}</div>`:''}
-    <p class="small muted">최근 3년 수상(MVP 40, 신인왕 20, 골든글러브 15), 올해·작년 대기록, 올해 WAR 4 이상 활약이 스타 파워가 됩니다. 상위 3명 합계가 유니폼·광고 수입으로 이어지고, 홍보를 중시하는 구단주는 스타가 생기면 신뢰를 더 줍니다. 외국인은 60%만 반영됩니다.</p>`); }
-
+function starPanel(){ const T=teamStar(G.user); const L=T.L; const f=clamp((finYearEnd()-G.day)/365,0,1);
+  /* 캠페인 후보: 스타 파워 상위 + 지금 캠페인 중인 선수 */
+  const C=[...new Set([...L.map(x=>x.p),...playersOf(G.user).filter(smActive),...playersOf(G.user).map(p=>({p,s:starPower(p)})).filter(x=>x.s>=10).sort((a,b)=>b.s-a.s).slice(0,5).map(x=>x.p)])].slice(0,6);
+  const row=p=>{ const s=starPower(p); if(smActive(p)){ const K=SMK.find(x=>x.k===p.smk.k); return `<div class="smr"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button><span class="pill good">${K.l} 캠페인 중</span><span class="small">스타 파워 ${s} · 이번 결산까지 추가 수입 약 <b>${money(Math.round(smEst(p,p.smk.k)*(p.smk.f??1)))}</b></span></div>`; }
+    return `<div class="smr"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button><span class="small muted">스타 파워 ${s}${p.hype&&p.hype.until>=G.day&&p.hype.v>0?' · 언론이 띄우는 중':''}</span><span class="smb">${SMK.map(K=>{ const e=Math.round(smEst(p,K.k)*f); return `<button class="btn small ${e>=K.c?'primary':''}" data-a="smGo" data-v="${p.id}:${K.k}" title="비용 ${money(K.c)} · 이번 결산까지 추가 수입 예상 ${money(e)}">${K.l} ${money(K.c)} → <b class="${e>=K.c?'good':'bad'}">+${money(e)}</b></button>`; }).join('')}</span></div>`; };
+  return csec('스타 파워와 마케팅',`<p class="small">우리 팀 스타 파워 <b>${T.v}</b> · 올해 스타 마케팅 수입 예상 <b>${money(starIncome(G.user))}</b>${smBonus(G.user)?` (캠페인 몫 ${money(smBonus(G.user))})`:''}</p>
+    ${C.length?`<div class="eyebrow">스타 마케팅 캠페인</div><div class="sml">${C.map(row).join('')}</div><p class="small muted">버튼의 숫자는 비용 → 이번 결산까지 추가 수입 예상입니다. 수입은 스타 파워에 비례해서, 진짜 스타에게 쓰면 남고 이름값이 약하면 손해입니다. 결산이 가까울수록 남은 기간이 짧아 수입도 줄어듭니다. 캠페인 동안 매달 기사가 나고 팬 관심과 선수 기분이 오릅니다.</p>`:'<p class="small muted">아직 마케팅할 만한 스타가 없습니다(스타 파워 10 이상).</p>'}
+    ${UI.smMsg?`<div class="note">${esc(UI.smMsg)}</div>`:''}
+    <p class="small muted">최근 3년 수상(MVP 40, 신인왕 20, 골든글러브 15, 개인 타이틀 5), 올해·작년 대기록, 올해 WAR 4 이상 활약, 언론 플레이로 띄운 것이 스타 파워가 됩니다. 상위 3명 합계가 유니폼·광고 수입으로 이어지고, 홍보를 중시하는 구단주는 스타가 생기면 신뢰를 더 줍니다. 외국인은 60%만 반영됩니다.</p>`); }
 /* ---------- FA 보상 절차: 보호선수 명단 · 보상선수 지명 ---------- */
 function compRuleTxt(){ return `A등급(3년 평균 연봉 구단 3위·리그 30위 이내): 보호선수 외 1명 + 직전 연봉 200%, 또는 선수 없이 300%. B등급(구단 10위·리그 60위 이내, 또는 두 번째 FA): 보호선수 외 1명 + 100%, 또는 200%. 보호선수는 A 20명, B 25명입니다(소속선수 한도 ${ROSTER_MAX}명).`+'  C등급(그 밖, 만 35세 이상, 세 번째 이상 FA): 선수 없이 150%. 외국인, 올해 신인, 군 복무 중인 선수, 이번 겨울 FA 계약 선수는 저절로 보호됩니다. FA 자격은 고졸 8시즌, 대졸 7시즌입니다.'; }
 function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.user); if(!L.length)return '';

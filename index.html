@@ -1994,6 +1994,11 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .dt .track .gain{position:absolute;top:0;bottom:0;background:#3ddc84;box-shadow:0 0 6px #3ddc84aa}
 .dt .track .loss{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#ff6b6b55 0 3px,transparent 3px 6px)}
 .dleg{margin:6px 0 0}
+/* 스타 마케팅 캠페인 */
+.sml{display:grid;gap:6px;margin:4px 0 8px}
+.smr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.smb{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.smb .good{color:var(--good)}.smb .bad{color:var(--bad)}.smb .btn.primary .good,.smb .btn.primary .bad{color:inherit}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -3067,7 +3072,8 @@ function processDay(){ syncMinSal();
   if(o.d===1)try{ stAiStaff(); }catch(e){}
   if(o.d===1)try{ posReqMonth(); }catch(e){}
   if(o.d===1)try{ misbehaveMonth(); }catch(e){}
-  if(o.d===1)try{ rSnapAll(); }catch(e){} /* 능력치 변화 표시(약 6개월 전과 비교) */
+  if(o.d===1)try{ rSnapAll(); starCheck(); }catch(e){}
+  if(o.d===15)try{ smNews(); }catch(e){} /* 스타 마케팅 캠페인 기사 */ /* 능력치 변화 표시(약 6개월 전과 비교) */
   if(o.d===1&&o.m>=6&&o.m<=9&&period()==='season')try{ titleRaceNews(); }catch(e){}
   if(day===KD(11,5))try{ fcampStart(); }catch(e){} if(day===KD(11,25))try{ fcampEnd(); }catch(e){}
   try{ draftPressNews(day); }catch(e){}
@@ -6736,7 +6742,7 @@ function newStadDue(tid){ const S=stadOf(tid); const N=S.proj; if(!N||N.stage!==
 
 /* AI 구단: 돈이 넉넉하면 비시즌에 시설 하나를 손본다 */
 function stadAI(){ for(const t of G.teams){ if(t.id===G.user)continue; const S=stadOf(t.id); if(t.cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); const lv=S.lv[k]; if(lv>=4)continue; const c=STAD_COST[lv+1]; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); } }
-function starIncome(tid){ return Math.round(teamStar(tid).v*14*team(tid??G.user).market); }
+function starIncome(tid){ return Math.round(teamStar(tid).v*14*team(tid??G.user).market)+smBonus(tid??G.user); } /* 스타 마케팅 캠페인 몫 포함 */
 
 function starAwardsNews(){ const T=teamStar(G.user); const L=T.L.filter(x=>x.s>=25); if(!L.length)return; prInit(); const t=team(G.user);
   news('구단',`${t.city} ${t.nick}, ${L.map(x=>x.p.name).join('·')} 앞세운 스타 마케팅`,`수상과 활약으로 이름값이 오른 선수들의 유니폼과 광고 수요가 늘고 있습니다. 내년 스타 마케팅 수입 예상 ${money(starIncome(G.user))}.`,2,{fanW:1});
@@ -9707,6 +9713,27 @@ function titleRaceNews(){ const y=G.year; const R=[]; const hot=[];
   if(!R.length)return; const head=[...R].sort((a,b)=>a.rel-b.rel)[0];
   news('기록',`${head.lab} 경쟁: ${head.B[0].p.name} ${tfmt(head.k,head.B[0].v)} vs ${head.B[1].p.name} ${tfmt(head.k,head.B[1].v)}`,R.map(r=>`${r.lab}: ${r.B.map(x=>`${x.p.name}(${tshort(x.t)}) ${tfmt(r.k,x.v)}`).join(', ')}`).join(' / '),hot.length?1:0);
   if(hot.length)mail('홍보팀',`우리 선수 타이틀 경쟁: ${hot[0].split(' ')[0]}`,`${hot.join('\n')}\n\n타이틀 경쟁은 선수의 스타성(관중·상품 수입)과 기분을 끌어올립니다. 언론 플레이로 더 띄울 수도 있습니다(구단 → 언론·여론 → 기자).`,{kind:'기록',acts:[{l:'기록 순위',a:'go',v:'league:rec'}]}); }
+
+/* ===== 스타 마케팅 캠페인: 스타가 된 선수를 구단이 돈을 들여 밀어 준다 =====
+   유니폼·광고 수입(스타 마케팅 수입)은 스타 파워에 비례한다. 진짜 스타에게 쓰면 비용보다 많이 벌고, 이름값이 약한 선수에게 쓰면 손해다.
+   결산 연도 남은 기간만큼만 수입이 붙는다(f). 캠페인 동안 매달 기사가 나고, 팬 관심과 선수 기분이 오른다 */
+const SMK=[{k:'s',l:'기본',c:100,m:.5,fan:1},{k:'m',l:'집중',c:300,m:1,fan:3},{k:'l',l:'대대적',c:600,m:1.6,fan:5}];
+const fyNow=()=>(G.last&&G.last.y>=G.year)?G.year+1:G.year; /* 지금 장부가 잡히는 결산 연도(finYearEnd와 같은 기준) */
+function smActive(p){ return !!(p&&p.smk&&p.smk.fy===fyNow()&&p.team===G.user&&!G.unemp); } /* 결산일이 예상보다 늦어져도 그 결산까지는 유효 */
+function smEst(p,k){ const T=SMK.find(x=>x.k===k); return T&&p?Math.round(starPower(p)*14*team(G.user).market*T.m):0; } /* 1년 내내 했을 때 추가 수입 */
+function smBonus(tid){ if(tid!==G.user||G.unemp)return 0; return sum(playersOf(G.user).filter(smActive).map(p=>Math.round(smEst(p,p.smk.k)*(p.smk.f??1)))); }
+function smStart(pid,k){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const p=G.players[pid]; const T=SMK.find(x=>x.k===k); if(!p||p.team!==G.user||!T)return '우리 선수를 고르세요.';
+  if(smActive(p))return `${p.name}은(는) 이미 스타 마케팅 중입니다(${dmd(p.smk.until)}까지).`;
+  const until=finYearEnd(); const f=clamp((until-G.day)/365,0,1); const est=Math.round(smEst(p,k)*f); prInit(); G.spend.etc=(G.spend.etc||0)+T.c; p.smk={k,d:G.day,until,f,fy:fyNow()}; G.pr.fan=clamp(G.pr.fan+T.fan,0,100); p.mor=clamp((p.mor??60)+2,0,100);
+  news('구단',k==='l'?`${tshort(G.user)}, '${p.name}' 대대적 마케팅…도시 곳곳에 대형 광고`:k==='m'?`${tshort(G.user)}, ${p.name} 앞세운 마케팅 본격화`:`${tshort(G.user)}, ${p.name} 유니폼·굿즈 출시`,`구단이 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 얼굴로 내세운 마케팅을 시작했습니다.`,1,{ref:p.id,fanW:1});
+  return `${p.name} 스타 마케팅(${T.l})을 시작했습니다. 비용 ${money(T.c)}, 이번 결산까지 추가 수입 예상 ${money(est)}${est<T.c?` (비용보다 적습니다. 스타 파워 ${starPower(p)}로는 아직 이름값이 약합니다)`:''}. 팬 관심 +${T.fan}.`; }
+/* 캠페인 기간 매달(15일) 기사 */
+const SM_NEWS=[p=>[`${p.name} 유니폼, 리그 판매 상위권`,`${p.name}의 이름을 단 유니폼이 구단 매장에서 가장 많이 팔렸습니다.`],p=>[`${p.name}, 스포츠음료 광고 모델 발탁`,`${p.name}이(가) 한 스포츠음료 브랜드의 새 광고 모델이 됐습니다.`],p=>[`'${p.name} 데이' 팬 사인회 매진`,`홈경기 전 열린 ${p.name} 팬 사인회 표가 하루 만에 다 팔렸습니다.`],p=>[`${p.name} 다큐멘터리 공개`,`${p.name}의 한 시즌을 따라간 구단 제작 다큐멘터리가 공개됐습니다.`]];
+function smNews(){ if(G.unemp)return; prInit(); for(const p of playersOf(G.user).filter(smActive)){ const n=p.smk.n=(p.smk.n||0); const [t,b]=SM_NEWS[n%SM_NEWS.length](p); p.smk.n++; news('구단',t,b,1,{ref:p.id,fanW:1}); G.pr.fan=clamp(G.pr.fan+1,0,100); } }
+/* 스타 탄생: 스타 파워 25 이상이 된 우리 선수를 그해 한 번 알린다 */
+function starCheck(){ if(G.unemp||G.user==null)return; for(const p of playersOf(G.user)){ if(p.starY===G.year)continue; const s=starPower(p); if(s<25)continue; p.starY=G.year;
+  news('선수',`'대세' ${p.name}…${tshort(G.user)}의 새 얼굴`,`활약과 화제성이 쌓인 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 찾는 팬과 광고주가 늘고 있습니다.`,1,{ref:p.id,fanW:1});
+  if(!smActive(p))mail('마케팅팀',`${p.name}, 스타로 떠올랐습니다`,`${p.name}의 스타 파워가 ${s}입니다. 지금 스타 마케팅을 하면 이번 결산까지 추가 수입이 이 정도로 예상됩니다.\n${SMK.map(T=>`${T.l}(비용 ${money(T.c)}): 약 ${money(Math.round(smEst(p,T.k)*clamp((finYearEnd()-G.day)/365,0,1)))}`).join('\n')}\n\n구단 → 구단주 화면의 '스타 파워와 마케팅'에서 정할 수 있습니다.`,{kind:'구단',ref:p.id,acts:[{l:'스타 마케팅 보기',a:'go',v:'club:owner'}]}); } }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -11004,10 +11031,15 @@ function mgrBondView(){ const m=G.mgr[G.user]; if(!m||m.interim)return ''; mgrAt
 function mgrOpinion(p){ const v=mgrView(p); if(!v)return ''; const m=G.mgr[G.user]; if(v.mute)return `<div class="mop"><b>감독 의견</b><span class="small muted">${esc(m.name)} 감독이 말을 아낍니다(관계 30 미만).</span></div>`;
   const pk=G.mpick&&G.mpick.y===G.year&&G.mpick.ids.includes(p.id);
   return `<div class="mop"><b>감독 의견${pk?' · <span class="pill good">감독이 미는 선수</span>':''}</b><span>"${esc(v.line)}." 잠재력 예상 <b>${potTier(v.fut,Math.round(ovr(p))).s}</b></span><span class="small muted">${esc(m.name)} 감독 · 안목 ${v.eye} (오차 ±${dvSd(v.fut,v.sd)}점). 스카우트 평가와 다르면 안목이 높은 쪽을 믿는 편이 낫습니다.</span></div>`; }
-function starPanel(){ const T=teamStar(G.user); const L=T.L;
-  return csec('스타 파워와 마케팅',`<p class="small">우리 팀 스타 파워 <b>${T.v}</b> · 올해 스타 마케팅 수입 예상 <b>${money(starIncome(G.user))}</b></p>${L.length?`<div class="intl">${L.map(x=>`<button class="pill good" data-a="player" data-v="${x.p.id}">${esc(x.p.name)} · ${x.s}</button>`).join('')}</div>`:''}
-    <p class="small muted">최근 3년 수상(MVP 40, 신인왕 20, 골든글러브 15), 올해·작년 대기록, 올해 WAR 4 이상 활약이 스타 파워가 됩니다. 상위 3명 합계가 유니폼·광고 수입으로 이어지고, 홍보를 중시하는 구단주는 스타가 생기면 신뢰를 더 줍니다. 외국인은 60%만 반영됩니다.</p>`); }
-
+function starPanel(){ const T=teamStar(G.user); const L=T.L; const f=clamp((finYearEnd()-G.day)/365,0,1);
+  /* 캠페인 후보: 스타 파워 상위 + 지금 캠페인 중인 선수 */
+  const C=[...new Set([...L.map(x=>x.p),...playersOf(G.user).filter(smActive),...playersOf(G.user).map(p=>({p,s:starPower(p)})).filter(x=>x.s>=10).sort((a,b)=>b.s-a.s).slice(0,5).map(x=>x.p)])].slice(0,6);
+  const row=p=>{ const s=starPower(p); if(smActive(p)){ const K=SMK.find(x=>x.k===p.smk.k); return `<div class="smr"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button><span class="pill good">${K.l} 캠페인 중</span><span class="small">스타 파워 ${s} · 이번 결산까지 추가 수입 약 <b>${money(Math.round(smEst(p,p.smk.k)*(p.smk.f??1)))}</b></span></div>`; }
+    return `<div class="smr"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button><span class="small muted">스타 파워 ${s}${p.hype&&p.hype.until>=G.day&&p.hype.v>0?' · 언론이 띄우는 중':''}</span><span class="smb">${SMK.map(K=>{ const e=Math.round(smEst(p,K.k)*f); return `<button class="btn small ${e>=K.c?'primary':''}" data-a="smGo" data-v="${p.id}:${K.k}" title="비용 ${money(K.c)} · 이번 결산까지 추가 수입 예상 ${money(e)}">${K.l} ${money(K.c)} → <b class="${e>=K.c?'good':'bad'}">+${money(e)}</b></button>`; }).join('')}</span></div>`; };
+  return csec('스타 파워와 마케팅',`<p class="small">우리 팀 스타 파워 <b>${T.v}</b> · 올해 스타 마케팅 수입 예상 <b>${money(starIncome(G.user))}</b>${smBonus(G.user)?` (캠페인 몫 ${money(smBonus(G.user))})`:''}</p>
+    ${C.length?`<div class="eyebrow">스타 마케팅 캠페인</div><div class="sml">${C.map(row).join('')}</div><p class="small muted">버튼의 숫자는 비용 → 이번 결산까지 추가 수입 예상입니다. 수입은 스타 파워에 비례해서, 진짜 스타에게 쓰면 남고 이름값이 약하면 손해입니다. 결산이 가까울수록 남은 기간이 짧아 수입도 줄어듭니다. 캠페인 동안 매달 기사가 나고 팬 관심과 선수 기분이 오릅니다.</p>`:'<p class="small muted">아직 마케팅할 만한 스타가 없습니다(스타 파워 10 이상).</p>'}
+    ${UI.smMsg?`<div class="note">${esc(UI.smMsg)}</div>`:''}
+    <p class="small muted">최근 3년 수상(MVP 40, 신인왕 20, 골든글러브 15, 개인 타이틀 5), 올해·작년 대기록, 올해 WAR 4 이상 활약, 언론 플레이로 띄운 것이 스타 파워가 됩니다. 상위 3명 합계가 유니폼·광고 수입으로 이어지고, 홍보를 중시하는 구단주는 스타가 생기면 신뢰를 더 줍니다. 외국인은 60%만 반영됩니다.</p>`); }
 /* ---------- FA 보상 절차: 보호선수 명단 · 보상선수 지명 ---------- */
 function compRuleTxt(){ return `A등급(3년 평균 연봉 구단 3위·리그 30위 이내): 보호선수 외 1명 + 직전 연봉 200%, 또는 선수 없이 300%. B등급(구단 10위·리그 60위 이내, 또는 두 번째 FA): 보호선수 외 1명 + 100%, 또는 200%. 보호선수는 A 20명, B 25명입니다(소속선수 한도 ${ROSTER_MAX}명).`+'  C등급(그 밖, 만 35세 이상, 세 번째 이상 FA): 선수 없이 150%. 외국인, 올해 신인, 군 복무 중인 선수, 이번 겨울 FA 계약 선수는 저절로 보호됩니다. FA 자격은 고졸 8시즌, 대졸 7시즌입니다.'; }
 function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.user); if(!L.length)return '';
@@ -15480,6 +15512,7 @@ function repActs(r){ const c=(G.repc||{})[r.id]||{}; const scOk=!(c.scoop!=null&
 Object.assign(A,{ repScoop(v){ toast(repScoop(v)); save(); render(); },
   ppRk(v){ UI.ppr=UI.ppr||{}; UI.ppr.k=UI.ppr.k===v?null:v; UI.ppMsg=''; render(); },
   ppSign(v){ const [r,pid]=String(v).split(':'); UI.ppMsg=pressPlay(r,'sign',+pid); if(UI.ppr)UI.ppr.k=null; save(); render(); },
+  smGo(v){ const [id,k]=String(v).split(':'); UI.smMsg=smStart(+id,k); save(); render(); }, /* 스타 마케팅 캠페인(구단주 화면) */
   ppHype(v){ const [r,pid]=String(v).split(':'); UI.ppMsg=pressPlay(r,'hype',+pid); if(UI.ppr)UI.ppr.k=null; save(); render(); },
   ppInvest(v){ UI.ppMsg=pressPlay(v,'invest'); if(UI.ppr)UI.ppr.k=null; save(); render(); },
   ppK(v){ UI.pp=UI.pp||{}; UI.pp.k=v; UI.ppMsg=''; render(); },

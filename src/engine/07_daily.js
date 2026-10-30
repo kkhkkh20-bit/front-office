@@ -64,7 +64,8 @@ function processDay(){ syncMinSal();
   if(o.d===1)try{ stAiStaff(); }catch(e){}
   if(o.d===1)try{ posReqMonth(); }catch(e){}
   if(o.d===1)try{ misbehaveMonth(); }catch(e){}
-  if(o.d===1)try{ rSnapAll(); }catch(e){} /* 능력치 변화 표시(약 6개월 전과 비교) */
+  if(o.d===1)try{ rSnapAll(); starCheck(); }catch(e){}
+  if(o.d===15)try{ smNews(); }catch(e){} /* 스타 마케팅 캠페인 기사 */ /* 능력치 변화 표시(약 6개월 전과 비교) */
   if(o.d===1&&o.m>=6&&o.m<=9&&period()==='season')try{ titleRaceNews(); }catch(e){}
   if(day===KD(11,5))try{ fcampStart(); }catch(e){} if(day===KD(11,25))try{ fcampEnd(); }catch(e){}
   try{ draftPressNews(day); }catch(e){}
