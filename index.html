@@ -4551,7 +4551,12 @@ function aiVal(t,p){
  능력(현재·잠재력·나이), 연봉과 남은 계약, 구단 형편(돈·우승 경쟁·리빌딩), 자리 필요도(주전을 내주면 비싸게), 감독 성향, 선수 불만, 컨디션을 함께 본다. */
 function condOf(p){ const f=p.sf&&p.sf.y===G.year?p.sf.v*.5+(p.sf.m||0):0; return clamp(Math.round(f*.9+((p.mor??60)-60)/25-(p.fat||0)/40),-5,5); }
 function seasonWorth(o){ return Math.pow(Math.max(0,o-40),1.6)/6; }
-function projO(p,i){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const a=p.age+i; if(a<=25){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,(i+1)*.28); } if(a>=31)return o-(a-30)*1.3; return o; }
+/* i시즌 뒤 예상 능력. 성장·노화는 1월 1일에 한 번에 적용되므로(develop), 개막 전·시즌 중의 '올해(i=0)'는 지금 능력 그대로다.
+   예전에는 올해 값에도 노화(30세 넘은 나이 × 1.3)와 성장을 미리 반영해, 33세 주전은 올해 값이 4점 깎이고 21세 유망주는 부풀려졌다.
+   그 결과 AI 구단이 주전 베테랑을 어린 백업과 바꿔 줘서 첫 시즌부터 손쉽게 전력을 끌어올릴 수 있었다. 시즌이 끝난 뒤(포스트시즌·비시즌)에는 다음 해 성장·노화가 한 번 남아 있다 */
+function projO(p,i){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const per=period(); const k=i+(per==='off'||per==='post'?1:0); if(k<=0)return o;
+  if(p.age+k<=26){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,k*.28); }
+  const old=Math.max(0,Math.min(k,p.age+k-30)); /* 앞으로 31세 이상으로 보낼 해 수 */ return o-old*1.3; }
 function ctrlYears(p){ if(p.foreign)return 1; if(p.faC)return Math.max(1,p.yrs||1); return clamp(faSvc(p)-(p.svc||0),1,6); }
 let _tcC={k:null,m:{}};
 function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k)_tcC={k,m:{}}; if(_tcC.m[t.id])return _tcC.m[t.id];
@@ -4583,7 +4588,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   if(v>0)v*=medTradeF(p); /* 부상 체질·최근 부상·후유증·인대 이력·팔 부하 */
   if(v>0&&dir==='out'&&p.pledged&&p.pledged.tid===G.user&&G.day<=p.pledged.until&&p.team===t.id)v*=1.12; /* 우리 단장이 공개적으로 원한 선수: 값을 더 부른다 */
   if(p.injOut>20)v-=Math.abs(v)*(p.injOut>150?.55:p.injOut>60?.32:.2); /* 수술·장기 재활 선수는 값이 크게 깎인다 */
-  if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0))*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?(c.contend?seasonWorth(projO(p,0))*.7:seasonWorth(projO(p,0))*.25):.4; v=Math.max(v,fl); }
+  if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0))*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?seasonWorth(projO(p,0))*(c.contend?.8:t.mode==='rebuild'?.3:.6):.4; /* 주전은 연봉이 많아도 그 자리 전력이라 쉽게 내주지 않는다(리빌딩 구단만 정리). 예전 .25는 고액 주전을 어린 백업 하나와 바꿔 줬다 */ v=Math.max(v,fl); }
   /* 연봉이 부담스러워도 주전급은 공짜로 내주지 않는다(다른 구단에 팔 수 있으므로) */
   if(dir==='out'){ const core=domestic(t.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).some(q=>q.id===p.id); const w0=seasonWorth(projO(p,0));
     /* 팀 핵심(상위 6명)은 연봉과 상관없이 쉽게 내주지 않는다. 젊으면 더 비싸다 */
@@ -4599,6 +4604,10 @@ function tradeOpen(){ const per=period(); if(per==='post'||preSettle())return fa
 function cashVal(t,cash){ return cash>0?cash/100*teamCtx(t).money*.9:0; }
 /* 부족분을 메우는 데 필요한 현금(100만 원 단위, 1천만 원 단위로 올림) */
 function cashFor(t,gap){ if(!(gap>0))return 0; return Math.ceil(gap/(teamCtx(t).money*.9)*100/10)*10; }
+/* 그 구단의 지금 주전: 선발 라인업 9명(제 포지션이 아니어도), 선발 로테이션, 불펜 상위 4명. 포지션별 1순위만 보던 판정은 다른 자리에서 뛰는 주전을 놓쳤다 */
+let _stC={k:'',m:{}};
+function startersOf(tid){ const k=G.year+':'+G.day+':'+(G.trades||[]).length; if(_stC.k!==k)_stC={k,m:{}}; if(_stC.m[tid])return _stC.m[tid]; let S=new Set();
+  try{ const d=depth(tid); S=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].filter(Boolean).map(p=>p.id)); }catch(e){} return _stC.m[tid]=S; }
 function evalTrade(tid,give,get,cash){ cash=cash||0;
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
@@ -4610,10 +4619,19 @@ function evalTrade(tid,give,get,cash){ cash=cash||0;
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,outV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
   if(tid!==G.user){ const nT=(G.trades||[]).filter(x=>x.y===G.year&&x.with===tid).length; if(nT)need+=Math.max(1.5,outV)*.25*nT;
+    /* 리그 전체 눈치: 한 시즌에 우리가 트레이드를 많이 할수록(세 번째부터) 다른 단장들도 값을 올린다. KBO는 구단당 한 해 트레이드가 몇 건 안 된다 */
+    { const nA=(G.trades||[]).filter(x=>x.y===G.year).length; if(nA>=2)need+=Math.max(1.5,outV)*.12*(nA-1); }
     const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id)))need+=Math.max(1,outV)*.2; }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */
   { const outs=get.map(id=>tval(t,P(id),'out')).filter(x=>x>0); const ins=give.map(id=>tval(t,P(id),'in')); const topO=outs.length?Math.max(...outs):0, topI=ins.length?Math.max(...ins):0;
     if(topO>=3&&give.length>get.length&&topI<topO*.75)need+=(topO*.75-topI)*1.3; }
+  /* 올해 전력: 리빌딩이 아닌 구단은 주전을 내줄 때 올해 당장 그만큼 뛸 선수를 받아야 한다(연봉이 부담스러워도 순위 싸움을 포기하지 않는다).
+     없으면 고액 주전을 어린 백업 하나와 바꿔 줘서, 첫 시즌부터 연봉만 떠안으면 손쉽게 전력을 끌어올릴 수 있었다. 매물로 내놓은 선수는 예외 */
+  { const reb=t.mode==='rebuild'; const k=teamCtx(t).contend?.8:reb?.6:.7; const S=startersOf(t.id); const st=get.map(P).filter(q=>q&&!q.aiListed&&S.has(q.id)&&(!reb||q.age<=28)); /* 리빌딩 구단은 서른 넘은 주전은 정리하지만 젊은 주전은 지킨다 */
+    if(st.length){ const nowOut=Math.max(...st.map(q=>seasonWorth(projO(q,0)))); const nowIn=Math.max(0,...give.map(id=>P(id)?seasonWorth(projO(P(id),0)):0)); if(nowIn<nowOut*k)need+=(nowOut*k-nowIn)*1.3; } }
+  /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
+     예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
+  if(!get.some(id=>P(id)&&P(id).aiListed))need=Math.max(need,-Math.max(0,outV)*.1);
   const gain=inV-outV; return {gain,need,ok:gain>=need,theirN,theirPay,inV,outV,hit};
 }
 function proposeTrade(tid,give,get,cash){
