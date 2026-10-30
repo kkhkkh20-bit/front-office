@@ -54,7 +54,7 @@ GitHub에 올리면 `.github/workflows/check.yml`이 빠른 점검을 자동으�
 
 ## 배포
 
-- **itch.io**: `index.html` 하나를 올리고 "This file will be played in the browser"를 켭니다. 화면 1280×800, Mobile friendly, Fullscreen button 권장.
+- **itch.io**: `index.html`을 zip으로 묶어 올리고(Kind of project: HTML) "This file will be played in the browser"를 켭니다. 화면 1280×800, Mobile friendly, Fullscreen button. 화면이 800px보다 길어서 **Enable scrollbars를 반드시 켭니다**(끄면 아래가 잘리고 스크롤이 안 됨). 저장은 플레이어 브라우저의 localStorage(`danjang-*`)에 남아 파일을 다시 올려도 이어집니다.
 - **플레이 기록(선택)**: `src/ui/72_telemetry.js`의 `TELE`에 분석 서비스 키를 넣으면 익명 플레이 기록(시작 퍼널, 몇 년 차까지 했는지, 기능 사용, 화면 이동, 오류)을 보냅니다. 비어 있으면 아무것도 보내지 않습니다. 이름·얼굴·저장 내용은 보내지 않고, 플레이어는 설정에서 끌 수 있습니다.
 
 ## 크레딧
