@@ -48,6 +48,12 @@ const QUICK=process.env.QUICK==='1';
       const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP&&(q.hist||[]).some(h=>h.lvl==='1군'&&h.pa>=100)); let sh=null; if(p){ A.player(p.id); const t=document.querySelector('#sheet'); sh=!!t&&/wRC\+/.test(t.innerText); closeSheets(); }
       UI.fdG=ov[0]; UI.fdV=ov[1]; render(); return {fd,sh}; });
     if(r){ if(!r.fd)add('wRC+','창단 드래프트 타자 기록표에 wRC+ 열이 없음'); if(r.sh===false)add('wRC+','선수 정보 창에 wRC+가 없음'); } }
+  /* 지명 직후 카드: 실제 툴 숫자의 색이 그 툴 등급 글자의 색과 같아야 한다(스카우트 등급과 같은 기준·같은 색) */
+  { const r=await ev(()=>{ if(!G.fd)return null; const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP); if(!p)return null; const t0=p.team; p.team=G.user; UI.rev={pid:p.id,rd:1,no:1,n:1,open:true}; render();
+      const C={S:'r75',A:'r65',B:'r55',C:'r50',D:'r45',E:'r35',F:'r20'}; const box=document.querySelector('.fde-rv .fde-ts:not(.fde-old)'); const bad=[];
+      if(box)for(const sp of box.querySelectorAll('.fde-t')){ const em=sp.querySelector('em'), b=sp.querySelector('b'); const L=(em&&em.innerText||'').trim()[0]; if(!C[L])continue; if(!(b.getAttribute('style')||'').includes('--'+C[L]))bad.push(sp.querySelector('i').innerText+' '+L+' '+b.getAttribute('style')); }
+      UI.rev=null; p.team=t0; render(); return {has:!!box,bad}; });
+    if(r){ if(!r.has)add('지명 카드','실제 능력 툴 칸이 없음'); if(r.bad.length)add('지명 카드','실제 툴 숫자 색이 등급 색과 다름: '+r.bad.join(', ')); } }
   /* 시작을 누르면 다른 구단 지명이 저절로 흘러가야 한다(멈춰 있으면 '진행'을 눌러야 했던 문제) */
   { const first=await ev(()=>{ if(!G.fd||G.fd.open!==false)return null; const pk=G.fd.picks[0]; A.fdOpen(); return pk&&pk.tid!==G.user; }); if(first){ await pg.waitForTimeout(1500); const r=await ev(()=>({on:!!(UI.dl&&UI.dl.on),cur:G.fd.cur})); if(!r.on&&!r.cur)add('드래프트 진행','시작했는데 다른 구단 지명이 흐르지 않음'); await ev(()=>{ try{ dliveStop(); }catch(e){} }); } }
   /* 휴대폰: 위에 고정된 드래프트 상황판이 화면을 너무 많이 차지하지 않는지(우리 차례 기준) */
@@ -137,9 +143,19 @@ const QUICK=process.env.QUICK==='1';
   { where='백업 권유'; const r=await ev(()=>{ const f0=inFrame; inFrame=()=>true; try{ G.bkAt=G.day-61; closeSheets(); A.tab('home'); const on=!!document.querySelector('.blk.bkn'); A.bkLater(); const off=!document.querySelector('.blk.bkn'); G.bkAt=G.day; A.expCode(); const set=G.bkAt===G.day; UI.expCode=null; return {on,off,set}; } finally { inFrame=f0; render(); } });
     if(r){ if(!r.on)add('백업 권유','다른 사이트 안에서 60일이 지났는데 백업 권유가 안 뜸'); if(!r.off)add('백업 권유',"'나중에'를 눌러도 안 닫힘"); if(!r.set)add('백업 권유','내보내기를 해도 백업 날짜가 기록되지 않음'); } }
   /* 저장은 몰아서(0.7초) 한다: 하루 진행·버튼마다 압축 저장(수백 ms)을 하면 굼떴다. 탭을 숨기면 바로 저장한다. 코드 내보내기는 복사 버튼으로 */
-  { where='저장 몰아 하기'; const r=await ev(async()=>{ saveNow(); const k=slotKey(meta().active||1); const a=localStorage.getItem(k); G.day+=0; G._svProbe=(G._svProbe||0)+1; save(); const b=localStorage.getItem(k); await new Promise(z=>setTimeout(z,900)); const c=localStorage.getItem(k);
+  { where='저장 몰아 하기'; const r=await ev(async()=>{ saveNow(); const k=slotKey(meta().active||1); const a=localStorage.getItem(k); G.day+=0; G._svProbe=(G._svProbe||0)+1; save(); const b=localStorage.getItem(k); let c=b; for(let i=0;i<30&&c===b;i++){ await new Promise(z=>setTimeout(z,100)); c=localStorage.getItem(k); }
       G._svProbe++; save(); saveFlush(); const d=localStorage.getItem(k); delete G._svProbe; saveNow(); return {same:a===b,changed:b!==c,flushed:c!==d}; });
     if(r){ if(!r.same)add('저장','save()가 바로 저장함(몰아 하기가 안 됨)'); if(!r.changed)add('저장','0.9초가 지나도 저장되지 않음'); if(!r.flushed)add('저장','탭을 숨길 때(saveFlush) 남은 저장이 끝나지 않음'); } }
+  /* 저장 압축: LZ 대신 deflate(브라우저 기본 압축·fflate)로 바꿔 저장 한 번에 화면이 굳는 시간을 줄인다. 옛 LZ 저장도 그대로 열려야 하고,
+     몰아 저장(비동기)이 끝나기 전에 바로 저장(saveNow)이 끼어들어도 마지막 상태가 남아야 한다 */
+  { where='저장 압축'; const r=await ev(async()=>{ const k=slotKey(meta().active||1); saveNow(); const s=localStorage.getItem(k); const g=unpack(s); const fmt=s&&s[0]==='\u0001';
+      const back=!!g&&g.day===G.day&&g.year===G.year&&Object.keys(g.players).length===Object.keys(G.players).length;
+      const lz=LZString.compressToUTF16(JSON.stringify(G)); const g2=unpack(lz); const old=!!g2&&g2.day===G.day;
+      const J=JSON.stringify(G); let t=performance.now(); LZString.compressToUTF16(J); const tLZ=performance.now()-t; t=performance.now(); saveStore(); const tNew=performance.now()-t;
+      G._zProbe=1; save(); await new Promise(z=>setTimeout(z,750)); G._zProbe=2; saveNow(); await new Promise(z=>setTimeout(z,600)); const g3=unpack(localStorage.getItem(k)); const last=!!g3&&g3._zProbe===2; delete G._zProbe; saveNow();
+      return {fmt,back,old,tLZ:Math.round(tLZ),tNew:Math.round(tNew),last}; });
+    if(r){ if(!r.fmt)add('저장 압축','새 압축 형식으로 저장되지 않음'); if(!r.back)add('저장 압축','저장한 것을 다시 읽지 못함'); if(!r.old)add('저장 압축','옛 LZ 저장을 읽지 못함');
+      if(r.tNew>r.tLZ*.6)add('저장 압축',`저장이 충분히 빨라지지 않음(LZ ${r.tLZ}ms · 새 방식 ${r.tNew}ms)`); if(!r.last)add('저장 압축','몰아 저장이 늦게 끝나며 더 새 저장을 덮어씀'); console.log('  저장 압축:',r.tLZ+'ms → '+r.tNew+'ms'); } }
   { where='코드 복사'; const r=await ev(async()=>{ closeSheets(); A.go('cfg:set'); A.expCode(); await new Promise(z=>setTimeout(z,100)); const b=!!document.querySelector('[data-a="expCopy"]'); const p=!!document.querySelector('[data-a="impPaste"]'); UI.expCode=null; render(); return {b,p}; });
     if(r){ if(!r.b)add('코드 복사','코드를 만들어도 복사 버튼이 없음'); if(!r.p)add('코드 복사','붙여넣기 버튼이 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);

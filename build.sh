@@ -16,6 +16,9 @@ cat src/engine/*.js > dist/engine.js   # 노드 시뮬레이션 검사용 엔진
   echo '<script id="lz">'
   echo '/* 저장 압축: lz-string (c) 2013 pieroxy, MIT License — https://github.com/pieroxy/lz-string */'
   cat vendor/lz-string.min.js
+  echo
+  echo '/* 저장 압축(deflate): fflate 0.8.2 (c) 2020 Arjun Barrett, MIT License — https://github.com/101arrowz/fflate */'
+  cat vendor/fflate.min.js
   echo '</script>'
   echo '<script id="engine">'
   cat dist/engine.js

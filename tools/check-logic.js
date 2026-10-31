@@ -727,6 +727,14 @@ T('[기록] wRC+: 리그 평균 타자는 100 안팎, 잘 치면 100보다 높�
   const B=Object.values(G.players).filter(p=>!p.isP).map(p=>({p,h:seasonTotal(p,y,'1군')})).filter(x=>x.h&&x.h.pa>=80); ok(B.length>=40,'준비 실패: 타자 '+B.length);
   const W=B.map(x=>({w:wrcPlus(x.h,y),pa:x.h.pa,ops:bRate(x.h).ops})); const avgW=W.reduce((a,x)=>a+x.w*x.pa,0)/W.reduce((a,x)=>a+x.pa,0);
   ok(avgW>=90&&avgW<=110,'타석 가중 평균 wRC+ '+avgW.toFixed(1)); const hi=W.slice().sort((a,b)=>b.ops-a.ops)[0], lo=W.slice().sort((a,b)=>a.ops-b.ops)[0]; ok(hi.w>130&&lo.w<70,'OPS 최고 '+hi.ops.toFixed(3)+' wRC+ '+hi.w+' · 최저 '+lo.ops.toFixed(3)+' wRC+ '+lo.w); });
+T('창단 드래프트: 지명 뒤 공개하는 실제 툴 등급은 스카우트 등급과 같은 기준이다(추정 A → 실제 C처럼 기준 차이로 어긋나지 않게)',()=>{ DEMO.on=false; newGame(6); fdStart();
+  const P=Object.values(G.players).filter(p=>p.fdPool); const out=[];
+  for(const isP of [false,true]) for(const [k,l] of FD_TOOLS[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); if(A.length<20)continue; let dNew=0,dOld=0;
+    for(const p of A){ const sg=fdScoutTools(p).L.find(t=>t.k===k).g; dNew+=FD_GL[sg]-FD_GL[fdToolTrue(p,k).g]; dOld+=FD_GL[sg]-FD_GL[FD_G(p.r[k])]; }
+    out.push(l+' 새 '+(dNew/A.length).toFixed(2)+' 옛 '+(dOld/A.length).toFixed(2)); ok(Math.abs(dNew/A.length)<=.8,l+': 스카우트와 실제 등급 평균 차이 '+(dNew/A.length).toFixed(2)); }
+  const pw=P.find(p=>!p.isP); const a=fdToolTrue(pw,'pow'); ok(a.v>=20&&a.v<=80&&FD_G(a.v)===a.g,'등급 계산');
+  /* 스카우트 버릇: 우리 지명 선수가 쌓이면 툴별로 후하게/짜게 보는 경향을 알려 준다 */
+  fdAdvance(false); let g=0; while(G.fd&&!G.fd.done&&g++<500)fdAdvance(true); const H=fdScoutHabit(); ok(Array.isArray(H)&&H.every(x=>x.n>=3&&Math.abs(x.m)>=.5),'버릇 목록 '+JSON.stringify(H).slice(0,200)); ok(typeof fdScoutHabitTxt()==='string','버릇 문구'); });
 T('[기록] wRC+: 창단 드래프트 기록에도 들어가고, 퓨처스 기록은 퓨처스 리그 평균 기준으로 계산한다',()=>{ DEMO.on=false; newGame(6); fdStart(); const y=G.year-1;
   const P=Object.values(G.players).filter(p=>p.fdPool&&!p.isP); const one=P.map(p=>({p,s:fdStatLine(p,y)})).filter(x=>x.s&&x.s.lvl===1&&x.s.n>=150); ok(one.length>=10,'준비 실패: 1군 기록 '+one.length);
   ok(one.every(x=>typeof x.s.wrc==='number'),'창단 드래프트 기록에 wrc 없음');

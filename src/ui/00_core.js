@@ -7,19 +7,37 @@ const SLOTS=10, META='danjang-meta'; const SLOT_IDS=Array.from({length:SLOTS},(_
 function meta(){ try{ const m=JSON.parse(localStorage.getItem(META)||'null'); if(m)return m; }catch(e){} return {active:1,slots:{}}; }
 function setMeta(m){ try{localStorage.setItem(META,JSON.stringify(m));}catch(e){} }
 const slotKey=n=>`${SAVE}-s${n}`;
-function packG(){ for(const p of Object.values(G.players)){ if(p.team==null){ delete p.l10; delete p.use; } } return LZString.compressToUTF16(JSON.stringify(G)); }
-function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&g.ver===4?g:null; }catch(e){ return null; } }
+/* 저장 형식: '\u0001' + 원래 바이트 길이(15비트 두 글자) + deflate(raw) 바이트를 15비트씩 글자로 담는다(0xD800 아래 글자만 써서 브라우저 저장소에서 깨지지 않게).
+   예전 LZ 저장('\u0001'로 시작하지 않음)과 아주 옛날 JSON 저장('{')도 그대로 읽는다. LZ는 시즌이 쌓이면 한 번에 0.8초 넘게 걸려 화면이 굳었다 */
+const ZMK='\u0001';
+function z15(u){ const n=u.length, out=new Uint16Array(Math.ceil(n*8/15)+3); out[0]=((n>>>15)&0x7fff)+32; out[1]=(n&0x7fff)+32; let acc=0,bits=0,o=2;
+  for(let i=0;i<n;i++){ acc=(acc<<8)|u[i]; bits+=8; if(bits>=15){ bits-=15; out[o++]=((acc>>>bits)&0x7fff)+32; acc&=(1<<bits)-1; } } if(bits)out[o++]=((acc<<(15-bits))&0x7fff)+32;
+  let s=ZMK; for(let i=0;i<o;i+=8192)s+=String.fromCharCode.apply(null,out.subarray(i,Math.min(o,i+8192))); return s; }
+function unz15(s){ const n=((s.charCodeAt(1)-32)<<15)|(s.charCodeAt(2)-32), u=new Uint8Array(n); let acc=0,bits=0,k=0;
+  for(let i=3;i<s.length&&k<n;i++){ acc=(acc<<15)|(s.charCodeAt(i)-32); bits+=15; while(bits>=8&&k<n){ bits-=8; u[k++]=(acc>>>bits)&255; } acc&=(1<<bits)-1; } return u; }
+let ZERR=''; const ZOK=typeof fflate!=='undefined'&&typeof TextEncoder!=='undefined';
+function prepG(){ for(const p of Object.values(G.players)){ if(p.team==null){ delete p.l10; delete p.use; } } return JSON.stringify(G); }
+function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:3})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
+async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
+function packG(){ return packJ(prepG()); }
+function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:s[0]===ZMK?new TextDecoder().decode(fflate.inflateSync(unz15(s))):LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&g.ver===4?g:null; }catch(e){ return null; } }
 let SAVE_ERR='';
 /* 저장은 몰아서 한다: 저장 한 번에 압축(LZ)이 수백 ms 걸리고 시즌이 쌓일수록 길어져, 하루 진행·버튼마다 바로 저장하면 게임이 굼떠졌다.
    save()는 0.7초 안에 들어온 요청을 한 번으로 묶고, 슬롯 바꾸기·내보내기·처음 화면 같은 곳은 saveNow()로 바로 저장한다.
    탭을 닫거나 숨기면(pagehide·visibilitychange) 남은 저장을 바로 끝낸다 */
 let _svT=null;
-function save(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStore(); },700); }
+function save(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStoreAsync(); },700); }
 function saveNow(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(_svT){ clearTimeout(_svT); _svT=null; } saveStore(); }
-function saveFlush(){ if(_svT){ clearTimeout(_svT); _svT=null; saveStore(); } }
+function saveFlush(){ if(_svT||_svBusy){ if(_svT)clearTimeout(_svT); _svT=null; saveStore(); } } /* 몰아 저장이 압축 중이어도 탭을 닫을 땐 바로 저장한다 */
 try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')saveFlush(); }); window.addEventListener('beforeunload',saveFlush); }catch(e){}
-function saveStore(){ if(!G)return; const m=meta(); const n=m.active||1;
-  try{ localStorage.setItem(slotKey(n),packG()); m.slots[n]={tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; setMeta(m); SAVE_ERR=''; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; } }
+/* 저장 순번: 늦게 끝난 몰아 저장(비동기)이 그사이 바로 저장한 더 새 상태를 덮지 않게 한다 */
+let _svSeq=0, _svBusy=false;
+function slotInfo(){ return {tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; }
+function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); const m=meta(); m.slots[n]=info; setMeta(m); SAVE_ERR=''; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; } }
+function saveStore(){ if(!G)return; const n=meta().active||1; ++_svSeq; _svBusy=false; writeSlot(n,packG(),slotInfo()); }
+async function saveStoreAsync(){ if(!G)return; const n=meta().active||1, seq=++_svSeq, g=G, info=slotInfo(); _svBusy=true; let data=null;
+  try{ data=await packJAsync(prepG()); }catch(e){ data=null; }
+  if(seq!==_svSeq||G!==g)return; _svBusy=false; if(data==null){ saveStore(); return; } writeSlot(n,data,info); }
 function load(){ const m=meta();
   try{ const old=localStorage.getItem(SAVE); if(old&&!Object.keys(m.slots).length){ const g=unpack(old); if(g){ localStorage.setItem(slotKey(1),LZString.compressToUTF16(old)); m.active=1; m.slots[1]={tid:g.user,name:'',date:'',y:g.year,at:Date.now()}; setMeta(m); localStorage.removeItem(SAVE); return g; } } }catch(e){}
   try{ return unpack(localStorage.getItem(slotKey(m.active||1))); }catch(e){ return null; } }

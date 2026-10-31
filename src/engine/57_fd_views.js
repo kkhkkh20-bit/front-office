@@ -15,6 +15,13 @@ function fdScoutTools(p){ const F=G.fd; const sc=[...(G.scouts||[])].sort((a,b)=
   const b=bodyOf(p); const velo=p.isP?Math.round(veloOf(p)+hn('fsv'+key,p.id)*.8):null;
   return {L,velo,ht:b.ht,wt:b.wt,sd:base}; }
 const FD_GL={S:6,A:5,B:4,C:3,D:2,E:1,F:0};
+/* 실제 툴 등급: 스카우트 등급과 같은 기준(1군 주전 평균이 C)으로 매긴다. 지명 뒤 '추정 A → 실제 C'처럼 기준이 달라 비교가 틀어지던 문제 */
+/* 스카우트 버릇 확인: 지금까지 우리가 지명해 실제 능력이 드러난 선수로 툴별 '추정 등급 − 실제 등급' 평균을 낸다(3명 이상, 반 등급 이상 차이만) */
+function fdScoutHabit(){ const F=G.fd; if(!F)return []; const D={}; for(const pk of F.picks){ if(pk.tid!==G.user||!pk.pid)continue; const p=G.players[pk.pid]; if(!p||p.team!==G.user)continue; const S=fdScoutTools(p);
+    for(const t of S.L){ const d=D[t.k]||(D[t.k]={l:t.l,s:0,n:0}); d.s+=FD_GL[t.g]-FD_GL[fdToolTrue(p,t.k).g]; d.n++; } }
+  return Object.entries(D).map(([k,d])=>({k,l:d.l,n:d.n,m:d.s/d.n})).filter(x=>x.n>=3&&Math.abs(x.m)>=.5).sort((a,b)=>Math.abs(b.m)-Math.abs(a.m)); }
+function fdScoutHabitTxt(){ const H=fdScoutHabit(); if(!H.length)return ''; return H.map(x=>`${x.l} ${x.m>0?'후하게':'짜게'} 봄(평균 ${x.m>0?'+':''}${x.m.toFixed(1)}등급, ${x.n}명)`).join(' · '); }
+function fdToolTrue(p,k){ const R=fdToolRef(); const r=R[(p.isP?'P':'B')+k]; const raw=p.r[k]||0; const v=r?clamp(52.5+(raw-r.m)/r.sd*9,20,80):raw; return {v,g:FD_G(v)}; }
 let _ftr=null; /* 저장하지 않는 계산 캐시 */
 /* 툴 기준: 1군 주전급(지난해 1군 기록이 충분한 선수)의 툴 평균·편차 */
 function fdToolRef(){ const F=G.fd; const k0=F?F.y:G.year; if(_ftr&&_ftr.k===k0)return _ftr.m; const m={}; const ly=k0-1;
