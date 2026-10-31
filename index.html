@@ -2700,15 +2700,17 @@ function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=tea
   const bsel=(c?[c]:[]).concat(bench.filter(p=>p!==c)).slice(0,5);
   [...Object.values(ln),...bsel,...sp,...rp].forEach(p=>{p.e1=true;p.upDay=G.day;});
   entryManage(tid,false,true); }
+/* 엔트리 사유에 붙일 2군 기록 한 줄 */
+function futLn(p){ const h=seasonTotal(p,G.year,'퓨처스'); if(!h)return ''; return p.isP?(h.outs>=9?` · 2군 ERA ${pRate(h).era.toFixed(2)}`:''):(h.pa>=15?` · 2군 ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`:''); }
 function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLimit(); const lean=teamLean(tid); const v=p=>entryVal(tid,p,lean); const moves=[];
   for(const p of playersOf(tid))if(p.e1&&(p.injOut>3||p.ys||(p.isP&&rpPlanOf(tid,p)==='sp2')||!psOk(p))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':!psOk(p)?'포스트시즌 등록 마감 뒤 영입':'2군 선발 수업'})`); }
   let ent=playersOf(tid).filter(p=>p.e1);
-  if(ent.length>lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); ent.filter(p=>!core.has(p.id)).sort((a,b)=>v(a)-v(b)).slice(0,ent.length-lim).forEach(p=>{p.e1=false;p.downDay=G.day;moves.push(`${p.name} 말소`);}); ent=playersOf(tid).filter(p=>p.e1); }
+  if(ent.length>lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); ent.filter(p=>!core.has(p.id)).sort((a,b)=>v(a)-v(b)).slice(0,ent.length-lim).forEach(p=>{p.e1=false;p.downDay=G.day;moves.push(`${p.name} 말소(엔트리 인원 초과 · 기용 순위 낮음)`);}); ent=playersOf(tid).filter(p=>p.e1); }
   while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=playersOf(tid).filter(canUp);
-    const c=pool.filter(p=>p.isP===needP).sort((a,b)=>v(b)-v(a))[0]||pool.sort((a,b)=>v(b)-v(a))[0]; if(!c)break; c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업`); }
+    const c=pool.filter(p=>p.isP===needP).sort((a,b)=>v(b)-v(a))[0]||pool.sort((a,b)=>v(b)-v(a))[0]; if(!c)break; c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(${c.isP?'투수':'야수'} 빈자리 보충${futLn(c)})`); }
   if(weekly){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
     for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7).sort((a,b)=>v(a)-v(b))[0]; const inn=playersOf(tid).filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
-      if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소 · ${inn.name} 콜업`); } } }
+      if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   if(tid===G.user&&moves.length&&!quiet)note('엔트리',`감독이 1군 엔트리를 조정했습니다: ${moves.join(', ')}.`); }
 function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p.team!==G.user)return '대상이 아닙니다.'; if(!entryOn())return '시즌 중에만 엔트리를 바꿀 수 있습니다.'; if(!m)return '감독이 없습니다.';
   if(up&&!canUp(p))return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':!healthy(p)?'부상 중입니다.':`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`;
@@ -3070,7 +3072,7 @@ function injure(p,day,ctx){ ctx=ctx||{};
   if(p.team===G.user&&days>=30&&!ctx.farm&&ovr(p)>=58)try{ ivRequest('injury',{pid:p.id,days}); }catch(e){}
 }
 function gameRecord(day,hid,aid,g,kind){
-  const side=k=>{ const s=g.S[k]; return {tid:s.tid,bat:[...s.order,...(s.out||[])].map((p,i)=>{const x=s.box.get(p.id);return {id:p.id,n:p.name,o:s.outI&&s.outI[p.id]!=null?s.outI[p.id]:i,pos:(s.out||[]).includes(p)?null:s.posOf[p.id],ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,rbi:x.rbi,bb:x.bb,so:x.so,r:x.r,sb:x.sb,sf:x.sf||0}}),
+  const side=k=>{ const s=g.S[k]; return {tid:s.tid,bat:[...s.order,...(s.out||[])].map((p,i)=>{const x=s.box.get(p.id);return {id:p.id,n:p.name,o:s.outI&&s.outI[p.id]!=null?s.outI[p.id]:i,pos:(s.out||[]).includes(p)?null:s.posOf[p.id],ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,rbi:x.rbi,bb:x.bb,so:x.so,r:x.r,sb:x.sb,sf:x.sf||0,e:x.e||0}}),
     pit:s.pitchers.map(id=>{const x=s.box.get(id);const p=G.players[id];return {id,n:p?p.name:'',outs:x.outs,h:x.h,hr:x.hr,er:x.er,bb:x.bb,so:x.so,pc:x.pc,d:g.dec.w===id?'승':g.dec.l===id?'패':g.dec.sv===id?'세':(g.dec.hld||[]).includes(id)?'홀':''}})}; };
   const me=hid===G.user?'h':'a'; const ms=g.score[me], os=g.score[me==='h'?'a':'h'];
   return {day,kind,home:hid,away:aid,hs:g.score.h,as:g.score.a,line:g.line,hits:g.hits,ev:g.ev,pbp:g.pbp,box:{h:side('h'),a:side('a')},res:ms>os?'승':ms<os?'패':'무',inn:g.inn};
@@ -10552,7 +10554,7 @@ try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('v
 /* 저장 순번: 늦게 끝난 몰아 저장(비동기)이 그사이 바로 저장한 더 새 상태를 덮지 않게 한다 */
 let _svSeq=0, _svBusy=false;
 function slotInfo(){ return {tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; }
-function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); const m=meta(); m.slots[n]=info; setMeta(m); SAVE_ERR=''; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; } }
+function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); const m=meta(); const memo=m.slots[n]&&m.slots[n].memo; m.slots[n]=info; if(memo&&info&&info.memo==null)info.memo=memo; /* 슬롯 메모는 저장해도 남긴다 */ setMeta(m); SAVE_ERR=''; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; } }
 function saveStore(){ if(!G)return; const n=meta().active||1; ++_svSeq; _svBusy=false; writeSlot(n,packG(),slotInfo()); }
 async function saveStoreAsync(){ if(!G)return; const n=meta().active||1, seq=++_svSeq, g=G, info=slotInfo(); _svBusy=true; let data=null;
   try{ data=await packJAsync(prepG()); }catch(e){ data=null; }
@@ -10681,7 +10683,7 @@ function tabBody(){
 function unempCfg(){ return patchCard()+`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard(); }
 function anySave(){ try{ const m=meta(); return SLOT_IDS.some(n=>m.slots&&m.slots[n]); }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+(m.slots[n]?slotSize(n):0),0); const rows=SLOT_IDS.filter(n=>m.slots[n]||n===SLOT_IDS.find(k=>!m.slots[k])||UI.slotAll).map(n=>{ const s=m.slots[n]; const cur=G&&m.active===n;
-    return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.over?' · 경질됨':''} · ${slotSize(n)}KB`:'비어 있음'}</div></div>
+    return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.over?' · 경질됨':''} · ${slotSize(n)}KB${s.at?` · 저장 ${new Date(s.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`:''}`:'비어 있음'}</div>${s?`<input class="slot-memo" data-a="slotMemo" data-v="${n}" maxlength="30" placeholder="메모(예: 외국인 교체 전)" value="${esc(s.memo||'')}" aria-label="슬롯 ${n} 메모">`:''}</div>
       <div class="row">${s&&cur?`<button class="btn small" data-a="slotCopy" title="지금 진행 상황을 빈 슬롯에 따로 저장해 둡니다. 계속 진행하는 곳은 이 슬롯입니다">빈 슬롯에 따로 저장</button>`:''}${s&&!cur?`<button class="btn small primary" data-a="slotLoad" data-v="${n}">이어하기</button>`:''}${start?`<button class="btn small" data-a="slotNew" data-v="${n}">${s?'덮어쓰고 새 게임':'새 게임'}</button>`:''}${s&&!cur?`<button class="btn small danger" data-a="slotDel" data-v="${n}">삭제</button>`:''}</div></div>`; }).join('');
   const filled=SLOT_IDS.filter(n=>m.slots[n]).length;
   return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted">슬롯은 ${SLOTS}개까지입니다. 브라우저 저장 공간은 보통 5MB 안팎이라, 오래 진행한 게임을 여러 개 두면 공간이 모자랄 수 있습니다. 그때는 설정의 "파일로 내보내기"로 보관하세요.</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
@@ -10806,8 +10808,9 @@ function lineScore(g,upto,cur){ // cur: 진행 중인 반 이닝 {half,r,h}
   const n=Math.max(9,g.line.a.length,g.line.h.length); const cols=[...Array(n).keys()];
   const cell=(k,i)=>{ const half=i*2+(k==='h'?1:0); if(cur&&half===cur.half)return `<b>${cur.r}</b>`; if(upto!=null&&half>=upto)return '·'; const v=g.line[k][i]; return v==null?'':v; };
   const tot=(k)=>{ if(upto==null)return [k==='h'?g.hs:g.as, sum(g.hits[k])]; let r=0,h=0; for(let i=0;i<n;i++){ const half=i*2+(k==='h'?1:0); if(half<upto){ const v=g.line[k][i]; if(typeof v==='number')r+=v; h+=g.hits[k][i]||0; } else if(cur&&half===cur.half){ r+=cur.r; h+=cur.h; } } return [r,h]; };
-  const row=(k,tid)=>{ const [r,h]=tot(k); return `<tr class="${tid===G.user?'me':''}"><td>${tshort(tid)}</td>${cols.map(i=>`<td>${cell(k,i)}</td>`).join('')}<td class="key">${r}</td><td>${h}</td></tr>`; };
-  return `<div class="tw"><table class="ls"><thead><tr><th></th>${cols.map(i=>`<th>${i+1}</th>`).join('')}<th class="key">R</th><th>H</th></tr></thead><tbody>${row('a',g.away)}${row('h',g.home)}</tbody></table></div>`;
+  const showE=upto==null&&g.box&&g.box.h&&g.box.h.bat&&g.box.h.bat.some(b=>b.e!=null); const eOf=k=>sum((g.box[k].bat||[]).map(b=>b.e||0)); /* 실책: 그 팀 야수가 범한 수 */
+  const row=(k,tid)=>{ const [r,h]=tot(k); return `<tr class="${tid===G.user?'me':''}"><td>${tshort(tid)}</td>${cols.map(i=>`<td>${cell(k,i)}</td>`).join('')}<td class="key">${r}</td><td>${h}</td>${showE?`<td>${eOf(k)}</td>`:''}</tr>`; };
+  return `<div class="tw"><table class="ls"><thead><tr><th></th>${cols.map(i=>`<th>${i+1}</th>`).join('')}<th class="key">R</th><th>H</th>${showE?'<th title="실책">E</th>':''}</tr></thead><tbody>${row('a',g.away)}${row('h',g.home)}</tbody></table></div>`;
 }
 function liveCard(){
   if(!G.live)return ''; const g=G.games[G.live.i]; if(!g){G.live=null;return '';}
@@ -12654,7 +12657,7 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
   <div class="cs-body"><div class="cs-stage" id="cs-stage">${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-pitch" id="cs-pitch" aria-live="polite"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-bn" id="cs-bn"></div></div>
     <div class="cs-side"><div class="cs-vs" id="cs-vs"></div><div class="cs-log" id="cs-log"></div></div></div>
   <div class="cs-ctl"><div class="cs-mode">${[['hl','하이라이트'],['all','전체 보기']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}</div>
-    <div class="cs-btns"><button data-a="castStep" data-v="-1" aria-label="이전 타석">◀</button><button data-a="castStep" data-v="1" aria-label="다음 타석">▶</button><button data-a="castSpd" id="cs-spd">${sp}배속</button><button data-a="castEnd">결과 바로 보기</button><button class="pri" data-a="castClose">나가기</button></div></div>
+    <div class="cs-btns"><button data-a="castPlay" id="cs-play" aria-label="일시정지·재생">${UI.cast&&UI.cast.play===false?'재생':'일시정지'}</button><button data-a="castWin" title="승부를 가른 점수가 난 타석으로">결승점</button><button data-a="castStep" data-v="-1" aria-label="이전 타석">◀</button><button data-a="castStep" data-v="1" aria-label="다음 타석">▶</button><button data-a="castSpd" id="cs-spd">${sp}배속</button><button data-a="castEnd">결과 바로 보기</button><button class="pri" data-a="castClose">나가기</button></div></div>
   </div>`; }
 /* 필드 카드: 얼굴 + 이름 + 능력치 하나 */
 function cCard(key,id,cls,lab,col,t){ const p=G.players[id]; const el=document.createElement('button'); el.className='cc '+cls; el.dataset.k=key; el.dataset.a='castPlayer'; el.dataset.v=id; el.style.setProperty('--tc',col);
@@ -12814,6 +12817,8 @@ async function castLoop(){ if(CT.run)return; CT.run=true; const my=CT.tok;
       await cAnim(c.k); c.k++; } }
   catch(e){} finally{ if(my===CT.tok)CT.run=false; } }
 function castMount(){ const c=UI.cast; if(!c)return; CT.tok++; CT.run=false; requestAnimationFrame(()=>{ cDraw(c.k,0); if(c.play)castLoop(); }); }
+/* 결승점: 이긴 팀이 마지막으로 앞서기 시작한 타석(그 뒤로 다시 따라잡히지 않음) */
+function castWinIdx(g){ const L=g.pbp||[]; if(!L.length||g.hs===g.as)return -1; const W=g.hs>g.as?'h':'a'; let last=-1, prev=0; for(let i=0;i<L.length;i++){ const a=L[i][7], h=L[i][8]; const lead=h>a?'h':a>h?'a':''; if(lead===W&&prev!==W)last=i; prev=lead||'t'; } return last; }
 function castJump(k,play){ const c=UI.cast; const L=G.games[c.g].pbp; c.k=clamp(k,0,L.length); c.lastHalf=null; CT.tok++; CT.run=false; cBallHide(); cTrailClear(); cDraw(c.k,250); if(play!=null)c.play=play; if(c.play&&c.k<L.length)castLoop(); else { sndStop('amb'); sndStop('chant'); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; } }
 
 
@@ -13230,12 +13235,12 @@ function seasonEra(id){ const p=G.players[id]; if(!p)return '-'; const h=seasonT
 function hBadge(id,isP){ const p=G.players[id]; if(!p)return ''; const h=isP?p.th:p.bt; if(!h)return ''; return `<em class="cc-h sm ${h==='좌'?'l':h==='양'?'s':'r'}">${h}${isP?'투':'타'}</em>`; }
 function batBox(s,mine){
   const t=s.bat.reduce((a,x)=>{ for(const k of ['ab','h','d','tr','hr','rbi','r','bb','so','sb'])a[k]=(a[k]||0)+(x[k]||0); return a; },{});
-  return `<div class="tw"><table class="box"><thead><tr><th class="opt">#</th><th class="stk">타자</th><th>타수</th><th class="key">안타</th><th class="opt">2루타</th><th class="opt">3루타</th><th>홈런</th><th class="key">타점</th><th>득점</th><th>볼넷</th><th>삼진</th><th class="opt">도루</th><th class="opt">시즌 타율/OPS</th></tr></thead><tbody>
+  return `<div class="tw"><table class="box"><thead><tr><th class="opt">#</th><th class="stk">타자</th><th>타수</th><th class="key">안타</th><th class="opt">2루타</th><th class="opt">3루타</th><th>홈런</th><th class="key">타점</th><th>득점</th><th>볼넷</th><th>삼진</th><th class="opt">도루</th><th class="opt" title="이 경기 기록이 아니라 지금까지의 시즌 누적">현재 시즌 타율/OPS</th></tr></thead><tbody>
     ${s.bat.map((x,i)=>`<tr class="${x.h>=3||x.hr?'hot':x.ab>=3&&!x.h?'cold':''}"><td class="opt">${i+1}</td><td class="stk"><button class="lnk" data-a="player" data-v="${x.id}">${esc(x.n)}</button> ${hBadge(x.id,false)} <span class="muted">${POSS[x.pos]||''}</span></td><td>${x.ab}</td><td class="key">${x.h}</td><td class="opt">${x.d||0}</td><td class="opt">${x.tr||0}</td><td class="${x.hr?'bhl':''}">${x.hr}</td><td class="key${x.rbi?' bhl':''}">${x.rbi}</td><td>${x.r}</td><td>${x.bb}</td><td>${x.so}</td><td class="opt">${x.sb||0}</td><td class="muted opt">${seasonAvgOps(x.id)}</td></tr>`).join('')}
-    <tr class="tot"><td class="opt"></td><td class="stk">합계</td><td>${t.ab}</td><td class="key">${t.h}</td><td class="opt">${t.d}</td><td class="opt">${t.tr}</td><td>${t.hr}</td><td class="key">${t.rbi}</td><td>${t.r}</td><td>${t.bb}</td><td>${t.so}</td><td class="opt">${t.sb}</td><td class="opt"></td></tr></tbody></table></div>`;
+    <tr class="tot"><td class="opt"></td><td class="stk">합계</td><td>${t.ab}</td><td class="key">${t.h}</td><td class="opt">${t.d}</td><td class="opt">${t.tr}</td><td>${t.hr}</td><td class="key">${t.rbi}</td><td>${t.r}</td><td>${t.bb}</td><td>${t.so}</td><td class="opt">${t.sb}</td><td class="opt"></td></tr></tbody></table></div>${(()=>{ const E=s.bat.filter(x=>x.e); return E.length?`<p class="small">실책: ${E.map(x=>`${esc(x.n)}${x.e>1?' '+x.e+'개':''}`).join(', ')}</p>`:''; })()}`;
 }
 function pitBox(s){
-  return `<div class="tw"><table class="box"><thead><tr><th class="stk">투수</th><th></th><th class="key">이닝</th><th>투구수</th><th>피안타</th><th class="opt">피홈런</th><th>볼넷</th><th>삼진</th><th class="key">실점</th><th class="opt">시즌 ERA</th></tr></thead><tbody>
+  return `<div class="tw"><table class="box"><thead><tr><th class="stk">투수</th><th></th><th class="key">이닝</th><th>투구수</th><th>피안타</th><th class="opt">피홈런</th><th>볼넷</th><th>삼진</th><th class="key" title="자책점(실책으로 난 점수는 빠짐)">자책</th><th class="opt" title="지금까지의 시즌 누적">현재 시즌 ERA</th></tr></thead><tbody>
     ${s.pit.map(q=>`<tr><td class="stk"><button class="lnk" data-a="player" data-v="${q.id}">${esc(q.n)}</button> ${hBadge(q.id,true)}</td><td>${q.d?`<span class="pill ${q.d==='승'?'good':q.d==='패'?'bad':'acc'}">${q.d}</span>`:''}</td><td class="key">${ipStr(q.outs)}</td><td class="${q.pc>=100?'warn':''}">${q.pc}</td><td>${q.h}</td><td class="opt">${q.hr||0}</td><td>${q.bb}</td><td>${q.so}</td><td class="key">${q.er}</td><td class="muted opt">${seasonEra(q.id)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 function fullBox(g,openOpp){
@@ -13848,17 +13853,19 @@ function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=st
     <p class="small sdesc">시즌 예상 관중 ${P.att.toLocaleString('ko-KR')}명(홈 ${P.n}경기) · 표값 수입 ${money(P.ticket)}${P.fnb+P.prem+P.ad>0?` · 구장 부대 수입 ${money(P.fnb+P.prem+P.ad)}`:''}${P.up?` · 시설 유지비 ${money(P.up)}`:''}</p>`;
   const price=`<div class="eyebrow">티켓 가격</div><div class="chips">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div><p class="small sdesc">${PRICE[S.price].l}: ${PRICE[S.price].d} 언제든 바꿀 수 있고, 다음 홈경기부터 반영됩니다.</p>`;
   const yr=x=>x.ticket+x.fnb+x.prem+x.ad; const base=yr(stadProj(tid,true)); const gain={}; for(const it of STAD_ITEMS){ if(it.k==='turf'){ gain.turf=null; continue; } const lv=S.lv[it.k]; if(lv>=5){ gain[it.k]=0; continue; } S.lv[it.k]=lv+1; try{ gain[it.k]=Math.round(yr(stadProj(tid,true))-base); }finally{ S.lv[it.k]=lv; } }
-  const gtxt=k=>gain[k]==null?'홈경기 부상 약 5% 감소':`연 수입 약 +${money(gain[k])}${k==='seat'?' · 팬 여론 상승':''}${(k==='seat'||k==='vis')&&gain[k]<200?' (매진이 잦아 효과 작음)':''}`;
+  const gtxt=k=>{ if(gain[k]==null)return '홈경기 부상 약 5% 감소'; const lv=S.lv[k], nx=lv+1; const up=nx<=5?STAD_UP[nx]-STAD_UP[lv]:0, net=gain[k]-up; const pay=net>0&&nx<=5?STAD_COST[nx]/net:null;
+    return `연 수입 약 +${money(gain[k])}${k==='prem'?'(일반석 300석 감소분 반영)':''} · 연 순수익 ${net>=0?'+':''}${money(net)}${pay?` · 회수 약 ${pay<1?'1년 안':pay.toFixed(1)+'년'}`:' · 돈으로는 회수 어려움'}${k==='seat'?' · 팬 여론 상승':''}${(k==='seat'||k==='vis')&&gain[k]<200?' (매진이 잦아 효과 작음)':''}`; }; /* 올해 예상 관중 기준, 효과가 이어진다고 가정(공사 기간 제외) */
+  const premise='<p class="small muted">수입 효과는 올해 예상 관중·가격 기준이고, 그 효과가 이어진다고 보고 셈한 값입니다(공사 기간·팬 여론 변화 제외).</p>';
   const items=STAD_ITEMS.map(it=>{ const lv=S.lv[it.k]; const b=(S.build||[]).find(x=>x.k===it.k); const nx=lv+1;
-    return `<div class="stad-i"><div class="row between"><b>${it.l}</b><span class="lvdots">${[1,2,3,4,5].map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</span></div><p class="small sdesc">${it.d}</p>
+    return `<div class="stad-i"><div class="row between"><b>${it.l}</b><span class="lvdots">${[1,2,3,4,5].map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</span></div><p class="small sdesc">${it.d}${it.k==='prem'?` 단계마다 일반석 300석이 줄고(지금 수용 ${stadCap(tid).toLocaleString('ko-KR')}석) 프리미엄석 수입이 생깁니다.`:''}</p>
       <div class="row between"><span class="small">${b?`${b.lv}단계 공사 중 · ${dmd(b.done)} 완공`:lv>=5?'최고 단계':`${nx}단계 공사비 <b class="num">${money(STAD_COST[nx])}</b> · ${STAD_DAYS[nx]}일 · 유지비 연 +${money(STAD_UP[nx]-STAD_UP[lv])} · 효과: ${gtxt(it.k)}`}</span>${!b&&lv<5?`<span class="row" style="gap:4px;flex-direction:column;align-items:flex-end"><button class="btn small${can?' primary':''}" data-a="stadBuild" data-v="${it.k}" ${can?'':'disabled'}>구단 현금으로 · ${money(STAD_COST[nx])}</button><button class="btn small" data-a="capex" data-v="stad:${it.k}" ${stadWindow()?'':'disabled title="공사는 10월~2월에만 할 수 있어 협의도 그때 합니다"'}>지자체 분담 협의 · ${Math.round(capexOdds('stad',STAD_COST[nx])*100)}%</button>${can?'':`<span class="small muted">${!stadWindow()?'공사는 10월~2월에만':team(G.user).cash<STAD_COST[nx]?'현금 부족':'공사 불가'}</span>`}</span>`:''}</div></div>`; }).join('');
   const lgT=`<table class="tbl"><thead><tr><th>구단</th><th class="num">평균</th><th class="num">점유율</th><th class="num">매진</th></tr></thead><tbody>${lg.map(x=>`<tr class="${x.t.id===tid?'me':''}"><td>${badge(x.t.id,16)} ${esc(tshort(x.t.id))}</td><td class="num">${x.n?x.avg.toLocaleString('ko-KR'):'-'}</td><td class="num">${x.n?Math.round(x.occ*100)+'%':'-'}</td><td class="num">${x.so}</td></tr>`).join('')}</tbody></table>`;
   const sv={cur:part||'now',bar:''};
   if(sv.cur==='now')return sv.bar+csec(esc(stadName(tid)),stadIsoPic(tid)+top+price);
-  if(sv.cur==='fac')return sv.bar+csec('구장 시설',`<p class="small muted">구장은 시 소유이고 구단이 임대해 운영합니다. 공사는 시즌이 끝난 뒤(10월~2월)에 시작할 수 있고, 공사비는 보유 현금에서 바로 나갑니다.</p><p class="small">보유 현금 <b class="num">${money(team(tid).cash)}</b>${can?'':' · 지금은 시즌 중이라 공사를 시작할 수 없습니다.'}</p>${UI.stadMsg?`<div class="note bad">${esc(UI.stadMsg)}</div>`:''}<div class="stad-l">${items}</div>`);
+  if(sv.cur==='fac')return sv.bar+csec('구장 시설',`<p class="small muted">구장은 시 소유이고 구단이 임대해 운영합니다. 공사는 시즌이 끝난 뒤(10월~2월)에 시작할 수 있고, 공사비는 보유 현금에서 바로 나갑니다.</p><p class="small">보유 현금 <b class="num">${money(team(tid).cash)}</b>${can?'':' · 지금은 시즌 중이라 공사를 시작할 수 없습니다.'}</p>${UI.stadMsg?`<div class="note bad">${esc(UI.stadMsg)}</div>`:''}<div class="stad-l">${premise}${items}</div>`);
   if(sv.cur==='new')return sv.bar+csec('신구장',(()=>{ const N=S.proj; const age=G.year-stadBuilt(tid); const head=(N?stadIsoPic(tid):'')+`<p class="small">${esc(stadName(tid))} · ${stadBuilt(tid)}년 개장(${age}년째)${age>=30?' · <b class="bad">노후 구장: 관중 수요 -4%</b>':age<3?' · 새 구장 효과로 관중 증가':''}</p>`;
       if(!N){ if(age<20)return head+'<p class="small sdesc">개장 20년이 지나야 신구장을 추진할 수 있습니다.</p>'; if(S.retry&&G.year<S.retry)return head+`<p class="small sdesc">협상이 결렬됐습니다. ${S.retry}년에 다시 시도할 수 있습니다.</p>`;
-        return head+`<p class="small sdesc expl">시와 협상해 새 구장을 짓습니다. 시가 공사비 대부분을 내고 구단은 분담금(90억~160억)을 3년에 나눠 냅니다. 분담금의 70%는 모기업이 출자합니다. 협상은 6개월 걸리고, 구단주 신뢰·연고 시장 크기·단장 명성에 따라 성사 가능성이 달라집니다. 구단주 신뢰 45 이상 필요.</p><button class="btn primary" data-a="nsTalk">시에 신구장 협상 제안</button>`; }
+        return head+`<p class="small sdesc expl">시와 협상해 새 구장을 짓습니다. 시가 공사비 대부분을 내고 구단은 분담금(90억~160억)을 3년에 나눠 냅니다. <b>모기업 출연(70%)을 빼면 구단 실부담은 약 27억~48억, 해마다 9억~16억</b>입니다. 분담금의 70%는 모기업이 출자합니다. 협상은 6개월 걸리고, 구단주 신뢰·연고 시장 크기·단장 명성에 따라 성사 가능성이 달라집니다. 구단주 신뢰 45 이상 필요.</p><button class="btn primary" data-a="nsTalk">시에 신구장 협상 제안</button>`; }
       if(N.stage==='talk')return head+`<div class="note">협상 중 · ${dmd(N.res)}쯤 결과</div>`;
       if(N.stage==='plan')return head+`<div class="note good">시와 합의했습니다. 규모를 고르세요.</div><div class="stad-l">${NEWSTAD.map(o=>`<div class="stad-i"><b>${o.l} · ${o.cap.toLocaleString('ko-KR')}석</b><p class="small sdesc">${o.d} 공사 3년, 개장 후 시설은 모두 4단계 이상.</p><button class="btn small primary" data-a="nsPick" data-v="${o.k}">${o.l}으로 착공</button></div>`).join('')}</div>`;
       return head+`<div class="note">${NEWSTAD.find(o=>o.k===N.k).l} 신구장 공사 중 · ${dmd(N.done)} ${dobj(N.done).y}년 개장 예정 · 분담금 ${money(N.paid||0)} / ${money(N.cost)} 납부 · 공사 기간 관중 수요 -2%</div>`; })());
@@ -14771,6 +14778,7 @@ const A={
   castClose(noCw){ sndStopAll(); CT.tok++; CT.run=false; UI.cast=null; UI.castRet=null; renderSheet(); const cw=UI.cwAfter; UI.cwAfter=null; if(!noCw&&cw&&G.cwS&&G.cwS.id===cw)A.cwOpen(); }, /* 함께 본 경기: 중계를 닫으면 동석 결과 */
   castPlay(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; if(c.k>=L.length)c.k=0; c.play=!c.play; CT.tok++; CT.run=false; cBallHide(); if(c.play)castLoop(); else { cDraw(c.k,250); sndStop('amb'); sndStop('chant'); } const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play?'일시정지':'재생'; },
   castStep(v){ const c=UI.cast; if(c)castJump(c.k+(+v),true); },
+  castWin(){ const c=UI.cast; if(!c)return; const i=castWinIdx(G.games[c.g]); if(i<0)return toast('결승점을 찾지 못했습니다(무승부이거나 기록이 짧음).'); castJump(i,false); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; },
   castInn(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; const h=L[Math.min(c.k,L.length-1)][0]; const i=L.findIndex((y,j)=>j>c.k&&y[0]!==h); castJump(i<0?L.length:i); },
   castSpd(){ const c=UI.cast; if(!c)return; c.spd=c.spd===1?2:c.spd===2?4:1; UI.castSpd=c.spd; const b=document.getElementById('cs-spd'); if(b)b.textContent=c.spd+'배속'; },
   castMode(v){ const c=UI.cast; if(!c)return; c.mode=v; UI.castMode=v; document.querySelectorAll('.cs-mode button').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); if(c.play){ CT.tok++; CT.run=false; cBallHide(); castLoop(); } },
@@ -15042,7 +15050,8 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='fdLogT'){ UI.fdLogT=el.value; render(); }
   if(a==='ppRep'||a==='ppPid'){ UI.pp=UI.pp||{}; if(a==='ppRep')UI.pp.rep=el.value; else UI.pp.pid=el.value; UI.ppMsg=''; render(); }
   if(a==='lfSort'){UI.lf.sort=el.value;render();}
-  if(a==='findName'||a==='findAge'||a==='findSal'||a==='findMil'){ UI[a]=el.value; render(); } });
+  if(a==='findName'||a==='findAge'||a==='findSal'||a==='findMil'){ UI[a]=el.value; render(); }
+  if(a==='slotMemo'){ const m=meta(); const n=+el.dataset.v; if(m.slots[n]){ m.slots[n].memo=el.value.slice(0,30); setMeta(m); } } });
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if(!el)return;
   if(el.dataset.a==='offA')A.offA(el.dataset.v,el);
   if(el.dataset.a==='extA')A.extA(el.dataset.v,el);
@@ -15885,7 +15894,8 @@ Object.assign(A,{
 function scoutChiefBox(){ const c=scoutChief(); if(!c)return ''; const P=scoutPlan(); const mv=P.filter(x=>x.move); const sea=scoutDraftSea()?'드래프트 시즌(3월~신인 드래프트): 아마추어 관찰이 먼저입니다.':'외국인·FA 시즌(드래프트 뒤~2월): 해외와 프로 담당이 먼저입니다.';
   return `<div class="schief"><div class="row between"><b>스카우트팀장 ${esc(c.name)} ${'★'.repeat(effSkill(c))}</b><label class="small schief-auto"><input type="checkbox" data-a="scoutAuto" ${G.scoutAuto?'checked':''}> 팀장에게 맡기기(매달 1일 배치)</label></div>
     <p class="small">${sea}</p>
-    ${mv.length?`<ul class="small">${mv.map(x=>`<li>${esc(x.s.name)}: ${esc(scoutSlotTxt(x.s.role||'am',x.s.region))} → <b>${esc(scoutSlotTxt(x.role,x.key))}</b> <span class="muted">${esc(x.why)}</span></li>`).join('')}</ul><button class="btn small primary" data-a="scoutPlanGo">제안대로 배치(${mv.length}명)</button> <span class="small muted">바꾼 스카우트는 30일 적응 기간</span>`:'<p class="small muted">지금 배치가 팀장 생각과 같습니다.</p>'}</div>`; }
+    ${mv.length?`<ul class="small">${mv.map(x=>{ const or=x.s.role||'am', ok=x.s.region; const still=G.scouts.some(o=>o!==x.s&&(o.role||'am')===or&&o.region===ok&&!mv.some(m=>m.s===o))||mv.some(m=>m.role===or&&m.key===ok);
+      return `<li>${esc(x.s.name)}: ${esc(scoutSlotTxt(or,ok))} → <b>${esc(scoutSlotTxt(x.role,x.key))}</b> <span class="muted">${esc(x.why)}</span><br><span class="muted">비는 곳: ${still?'없음(다른 스카우트가 맡음)':`${esc(scoutSlotTxt(or,ok))} 관찰 공백`} · 적응: ${dmd(G.day+30)}까지 정확도 한 단계 낮게 일함</span></li>`; }).join('')}</ul><button class="btn small primary" data-a="scoutPlanGo">제안대로 배치(${mv.length}명)</button> <span class="small muted">바꾼 스카우트는 30일 적응 기간</span>`:'<p class="small muted">지금 배치가 팀장 생각과 같습니다.</p>'}</div>`; }
 Object.assign(A,{ scoutPlanGo(){ const n=scoutPlanApply(false); UI.toast&&0; save(); render(); }, scoutAuto(v,el){ G.scoutAuto=!G.scoutAuto; if(G.scoutAuto)scoutPlanApply(true); save(); render(); } });
 /* ---------- 동석 관람 경기 보고: 구단주·사장과 함께 본 홈경기 ----------
    한 화면: 라인스코어, 주요 장면 몇 줄, 구단주 한두 마디(면담 화면 말풍선), 신뢰·친밀도 변화와 선물,
@@ -16001,7 +16011,7 @@ function gmCardView(){ if(G.unemp)return ''; const C=myCInit(); if(!C)return '';
       <div><span class="muted">연봉</span><b>${money(C.sal)}</b></div>
       <div><span class="muted">계약</span><b>${C.y0}~${C.y1}</b><i class="small ${left<=0?'warn':'muted'}">${left<=0?'올해 만료':`${left}년 남음`}</i></div>
       <div><span class="muted">명성</span><b>${G.rep??50}</b><i class="small muted">${esc(repLabel(G.rep??50))}</i></div>
-      <div><span class="muted">통산</span><b>${S.n}시즌</b><i class="small muted">${S.w}승 ${S.l}패 · 승률 ${fmt3(S.pct)}</i></div>
+      <div><span class="muted">통산(마친 시즌)</span><b>${S.n}시즌</b><i class="small muted">${S.w}승 ${S.l}패 · 승률 ${fmt3(S.pct)}${(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; return r&&(r.w+r.l)&&!G.unemp?` · 올해 ${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''} 진행 중`:''; })()}</i></div>
       <div><span class="muted">우승</span><b>${S.ch}회</b><i class="small muted">준우승 ${S.ru} · 가을야구 ${S.ps}</i></div>
       <div><span class="muted">통산 연봉</span><b>${money(C.earn)}</b><i class="small muted">맡은 구단 ${Math.max(1,S.teams)}곳</i></div>
     </div>${chT}
@@ -16487,6 +16497,14 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-02c',d:'11월 2일',t:'시설·스카우트·경기 복기·저장',items:[
+    '구장 시설에 연 순수익과 회수 기간, 계산 전제(올해 예상 관중 기준)를 보여 줍니다. 프리미엄석은 단계마다 일반석 300석이 준다고 적었고, 신구장은 구단 실부담(약 27억~48억)을 본문에 적었습니다.',
+    '스카우트팀장 배치안에 비게 되는 담당과 적응이 끝나는 날짜를 함께 보여 줍니다.',
+    '박스스코어 이닝 표에 실책(E), 실책한 선수를 붙였고 투수 칸은 자책점으로 표시합니다. 시즌 성적 칸은 현재 누적임을 적었습니다.',
+    '중계에 일시정지·재생 버튼과 결승점으로 바로 가기를 넣었습니다.',
+    '감독의 엔트리 변경 소식에 이유(인원 초과·빈자리 보충·2군 기록)를 붙였습니다.',
+    '저장 슬롯에 메모를 달 수 있고 저장 시각이 나옵니다. 단장 통산은 마친 시즌 기준이며 진행 중인 시즌 성적을 따로 보여 줍니다.'
+  ]},
   {id:'2026-11-02b',d:'11월 2일',t:'후보·위험·스폰서 표시',items:[
     '계약 전 외국인 후보는 잠재력 대신 올해 역할을 보여 주고, 목록에 선발형·불펜형을 붙였습니다.',
     '선수 정보의 위험도를 평가 불확실성과 건강 위험으로 나눴습니다.',

@@ -247,6 +247,16 @@ const QUICK=process.env.QUICK==='1';
       const q=domestic(G.user)[0]; A.player(q.id); const tx2=(document.querySelector('#sheet')||{}).textContent||''; const risk={h:/건강 위험/.test(tx2),u:/평가 불확실성/.test(tx2),old:/위험도/.test(tx2)}; closeSheets();
       const S=sponInit(); const k=Object.keys(SPON_SLOT).find(x=>!SPON_SLOT[x].indie); const keep=S.c[k]; delete S.c[k]; const al=subAlert('club','spon'); UI.tab='club'; UI.sub=Object.assign({},UI.sub||{},{club:'spon'}); render(); const why=/스폰서 자리가 비어/.test((document.querySelector('#app')||{}).textContent||''); if(keep)S.c[k]=keep; UI.tab='home'; render(); return {fx,risk,al,why}; });
     if(r){ if(r.fx&&(!r.fx.role||r.fx.grow))add('외국인 후보','계약 전 외국인 후보에 올해 역할 대신 성장 여지 문구'); if(!r.risk.h||!r.risk.u||r.risk.old)add('위험 표시','위험도가 평가 불확실성·건강 위험으로 나뉘지 않음'); if(!r.al||!r.why)add('스폰서','스폰서 빈자리 알림·이유가 없음'); } }
+  /* 시설·스카우트 배치(외부 리뷰 B): 시설은 연 순수익·회수 기간과 계산 전제, 스카우트 배치안은 비는 곳·적응 완료일 */
+  { where='시설·스카우트'; const r=await ev(()=>{ const tx=stadView('fac').replace(/<[^>]+>/g,' '); const fac=/연 순수익/.test(tx)&&/회수/.test(tx)&&/예상 관중/.test(tx);
+      return {fac}; });
+    if(r&&!r.fac)add('시설','구장 시설에 연 순수익·회수 기간·계산 전제가 없음'); }
+  /* 경기 복기·저장·경력(외부 리뷰 B): 박스스코어 실책·자책, 중계 일시정지·결승점, 슬롯 메모 유지, 경력은 마친 시즌 기준 */
+  { where='복기·저장'; const r=await ev(()=>{ const g={home:0,away:1,hs:4,as:3,line:{a:[0,1,0,2,0,0,0,0,0],h:[0,0,1,0,0,0,0,2,1]},hits:{a:[1,1,1,1,1,1,1,1,1],h:[1,1,1,1,1,1,1,1,1]},box:{h:{bat:[{e:1}],pit:[]},a:{bat:[{e:0}],pit:[]}},pbp:[[0,1,2,'1B',0,[0,0,0],0,1,0],[1,1,2,'HR',0,[0,0,0],0,1,2],[0,1,2,'HR',0,[0,0,0],0,3,2],[1,1,2,'2B',0,[0,0,0],0,3,4]]};
+      const ls=lineScore(g); const eCol=/title="실책">E</.test(ls); const wi=typeof castWinIdx==='function'?castWinIdx(g):-2; const pb=pitBox({pit:[]}); const er=/자책/.test(pb);
+      const m=meta(); const n=m.active; const keep=m.slots[n]&&m.slots[n].memo; if(m.slots[n]){ m.slots[n].memo='점검 메모'; setMeta(m); } saveNow(); const memo=(meta().slots[n]||{}).memo; const m2=meta(); if(m2.slots[n]){ m2.slots[n].memo=keep; setMeta(m2); }
+      const gm=typeof gmCardView==='function'?gmCardView():''; return {eCol,wi,er,memo}; });
+    if(r){ if(!r.eCol)add('박스스코어','이닝 표에 실책(E)이 없음'); if(r.wi!==3)add('중계','결승점 위치를 못 찾음: '+r.wi); if(!r.er)add('박스스코어','투수 표에 자책점 표시가 없음'); if(r.memo!=='점검 메모')add('저장 슬롯','저장하면 슬롯 메모가 사라짐'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

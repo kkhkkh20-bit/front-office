@@ -33,7 +33,7 @@ try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('v
 /* 저장 순번: 늦게 끝난 몰아 저장(비동기)이 그사이 바로 저장한 더 새 상태를 덮지 않게 한다 */
 let _svSeq=0, _svBusy=false;
 function slotInfo(){ return {tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; }
-function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); const m=meta(); m.slots[n]=info; setMeta(m); SAVE_ERR=''; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; } }
+function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); const m=meta(); const memo=m.slots[n]&&m.slots[n].memo; m.slots[n]=info; if(memo&&info&&info.memo==null)info.memo=memo; /* 슬롯 메모는 저장해도 남긴다 */ setMeta(m); SAVE_ERR=''; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; } }
 function saveStore(){ if(!G)return; const n=meta().active||1; ++_svSeq; _svBusy=false; writeSlot(n,packG(),slotInfo()); }
 async function saveStoreAsync(){ if(!G)return; const n=meta().active||1, seq=++_svSeq, g=G, info=slotInfo(); _svBusy=true; let data=null;
   try{ data=await packJAsync(prepG()); }catch(e){ data=null; }

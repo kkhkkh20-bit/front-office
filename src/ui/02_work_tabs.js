@@ -25,8 +25,9 @@ function lineScore(g,upto,cur){ // cur: 진행 중인 반 이닝 {half,r,h}
   const n=Math.max(9,g.line.a.length,g.line.h.length); const cols=[...Array(n).keys()];
   const cell=(k,i)=>{ const half=i*2+(k==='h'?1:0); if(cur&&half===cur.half)return `<b>${cur.r}</b>`; if(upto!=null&&half>=upto)return '·'; const v=g.line[k][i]; return v==null?'':v; };
   const tot=(k)=>{ if(upto==null)return [k==='h'?g.hs:g.as, sum(g.hits[k])]; let r=0,h=0; for(let i=0;i<n;i++){ const half=i*2+(k==='h'?1:0); if(half<upto){ const v=g.line[k][i]; if(typeof v==='number')r+=v; h+=g.hits[k][i]||0; } else if(cur&&half===cur.half){ r+=cur.r; h+=cur.h; } } return [r,h]; };
-  const row=(k,tid)=>{ const [r,h]=tot(k); return `<tr class="${tid===G.user?'me':''}"><td>${tshort(tid)}</td>${cols.map(i=>`<td>${cell(k,i)}</td>`).join('')}<td class="key">${r}</td><td>${h}</td></tr>`; };
-  return `<div class="tw"><table class="ls"><thead><tr><th></th>${cols.map(i=>`<th>${i+1}</th>`).join('')}<th class="key">R</th><th>H</th></tr></thead><tbody>${row('a',g.away)}${row('h',g.home)}</tbody></table></div>`;
+  const showE=upto==null&&g.box&&g.box.h&&g.box.h.bat&&g.box.h.bat.some(b=>b.e!=null); const eOf=k=>sum((g.box[k].bat||[]).map(b=>b.e||0)); /* 실책: 그 팀 야수가 범한 수 */
+  const row=(k,tid)=>{ const [r,h]=tot(k); return `<tr class="${tid===G.user?'me':''}"><td>${tshort(tid)}</td>${cols.map(i=>`<td>${cell(k,i)}</td>`).join('')}<td class="key">${r}</td><td>${h}</td>${showE?`<td>${eOf(k)}</td>`:''}</tr>`; };
+  return `<div class="tw"><table class="ls"><thead><tr><th></th>${cols.map(i=>`<th>${i+1}</th>`).join('')}<th class="key">R</th><th>H</th>${showE?'<th title="실책">E</th>':''}</tr></thead><tbody>${row('a',g.away)}${row('h',g.home)}</tbody></table></div>`;
 }
 function liveCard(){
   if(!G.live)return ''; const g=G.games[G.live.i]; if(!g){G.live=null;return '';}

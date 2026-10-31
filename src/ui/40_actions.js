@@ -248,6 +248,7 @@ const A={
   castClose(noCw){ sndStopAll(); CT.tok++; CT.run=false; UI.cast=null; UI.castRet=null; renderSheet(); const cw=UI.cwAfter; UI.cwAfter=null; if(!noCw&&cw&&G.cwS&&G.cwS.id===cw)A.cwOpen(); }, /* 함께 본 경기: 중계를 닫으면 동석 결과 */
   castPlay(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; if(c.k>=L.length)c.k=0; c.play=!c.play; CT.tok++; CT.run=false; cBallHide(); if(c.play)castLoop(); else { cDraw(c.k,250); sndStop('amb'); sndStop('chant'); } const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play?'일시정지':'재생'; },
   castStep(v){ const c=UI.cast; if(c)castJump(c.k+(+v),true); },
+  castWin(){ const c=UI.cast; if(!c)return; const i=castWinIdx(G.games[c.g]); if(i<0)return toast('결승점을 찾지 못했습니다(무승부이거나 기록이 짧음).'); castJump(i,false); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; },
   castInn(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; const h=L[Math.min(c.k,L.length-1)][0]; const i=L.findIndex((y,j)=>j>c.k&&y[0]!==h); castJump(i<0?L.length:i); },
   castSpd(){ const c=UI.cast; if(!c)return; c.spd=c.spd===1?2:c.spd===2?4:1; UI.castSpd=c.spd; const b=document.getElementById('cs-spd'); if(b)b.textContent=c.spd+'배속'; },
   castMode(v){ const c=UI.cast; if(!c)return; c.mode=v; UI.castMode=v; document.querySelectorAll('.cs-mode button').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); if(c.play){ CT.tok++; CT.run=false; cBallHide(); castLoop(); } },
