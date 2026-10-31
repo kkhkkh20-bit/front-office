@@ -1,6 +1,23 @@
 /* ===== 트레이드 ===== */
+/* ===== AI 단장이 보는 능력: 실제 능력 + 최근 성적에 섞인 운 =====
+   AI 단장·감독도 능력치를 직접 보지는 못한다. 스카우트 평가와 함께 올해(가중 1)·작년(0.5) 1군 성적을 본다.
+   운: 실제 성적 - 그 능력이면 기대되는 성적. 타자 OPS(기대 = -0.2346 + 0.01943 × 공격 능력), 투수 ERA(기대 = 13.85 - 0.1885 × 종합)·FIP(12.17 - 0.1616 × 종합).
+   계수는 엔진으로 두 시즌을 돌려 맞췄다(규정 근처 타자 196명 OPS~공격 r=.90, 80이닝 이상 투수 100명 ERA~종합 r=-.70).
+   표본이 클수록 더 믿는다(타자 타석/(타석+200), 투수 이닝/(이닝+60)). 남의 팀 선수는 성적 비중 최대 60%, 자기 팀 선수는 매일 보니 35%.
+   데이터형 단장은 운에 덜 흔들리고(절반) ERA 대신 FIP를 본다. 우리 구단 평가(사용자 쪽)는 실제 능력 기준 그대로 */
+let _lkC={k:'',m:new Map()};
+function statLuck(p){ const k=G.year+':'+G.day; if(_lkC.k!==k)_lkC={k,m:new Map()}; if(_lkC.m.has(p.id))return _lkC.m.get(p.id); let r=null;
+  try{ let num=0,num2=0,den=0; const o=ovr(p);
+    for(const [y,wt] of [[G.year,1],[G.year-1,.5]]){ const h=seasonTotal(p,y,'1군'); if(!h)continue;
+      if(p.isP){ const ip=(h.outs||0)/3; if(ip<5)continue; const era=(h.er||0)*27/h.outs, fip=(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*(h.so||0))/ip+3.1; num+=(era-(13.85-.1885*o))*ip*wt; num2+=(fip-(12.17-.1616*o))*ip*wt; den+=ip*wt; }
+      else { const pa=h.pa||0; if(pa<20)continue; const ops=bRate(h).ops; num+=(ops-(-.2346+.01943*offV(p)))*pa*wt; den+=pa*wt; } }
+    if(den>0)r=p.isP?{d:-(num/den)/.1885,dF:-(num2/den)/.1616,rel:den/(den+60)}:{d:(num/den)*40.9,dF:(num/den)*40.9,rel:den/(den+200)};
+  }catch(e){}
+  _lkC.m.set(p.id,r); return r; }
+function seenDelta(t,p){ if(!t||!p||t.id===G.user||t.id===ME())return 0; const L=statLuck(p); if(!L)return 0; const tr=gmTrait(t.id);
+  const w=(p.team===t.id?.35:.6)*(tr==='data'?.5:1)*L.rel; return clamp((tr==='data'?L.dF:L.d)*w,-8,8); }
 function aiVal(t,p){
-  const ps=pvShift(p); /* 같은 능력이면 유격·포수·2루가 귀하다 */ const o=ovr(p)+ps+hn('o'+t.id,p.id)*3, pt=p.pot+ps+hn('q'+t.id,p.id)*5;
+  const ps=pvShift(p); /* 같은 능력이면 유격·포수·2루가 귀하다 */ const o=ovr(p)+ps+hn('o'+t.id,p.id)*3+seenDelta(t,p), pt=p.pot+ps+hn('q'+t.id,p.id)*5;
   let eff=p.age<=25?o+Math.max(0,pt-o)*(t.mode==='rebuild'?.75:.5):p.age>=32?o-(p.age-31)*1.3:o;
   let v=Math.pow(Math.max(0,eff-36),1.7)/10;
   v-=(p.sal/100)*(t.owner==='profit'?.45:.3)*(p.faC?Math.max(1,p.yrs)*.6:.6);
@@ -37,8 +54,8 @@ function roleFactor(t,p,dir){ const L=leagueSlots()[t.id]; const k=pSlot(p); con
   const up=slotGain(k,p)-base; if(up>0)return 1+Math.min(.35,up/20); return p.age<=23?.85:.6; }
 /* 성장 예측은 불확실하다: 지금 능력보다 높게 잡힌 몫은 깎아서 본다(유망주 한 명에 주전을 내주지 않도록).
    보류 기간이 끝난 뒤에도 KBO는 원 소속 구단 잔류가 많아 그 뒤 가치도 일부 인정한다 */
-function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const cur=ovr(p);
-  for(let i=0;i<c.H;i++){ let o=projO(p,i); if(o>cur)o=cur+(o-cur)*(i===0?.75:i<=1?.55:.45); /* 먼 미래 성장일수록 더 불확실하다 */ const d=Math.pow(.8,i); const w=seasonWorth(o)*(i===0?c.now:1)*d; /* KBO 구단은 먼 미래보다 지금을 더 친다 */
+function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p); let v=0; const sd=seenDelta(t,p); const cur=ovr(p)+sd; /* sd: AI 단장 눈에 보이는 능력(성적의 운 반영) */
+  for(let i=0;i<c.H;i++){ let o=projO(p,i)+sd; if(o>cur)o=cur+(o-cur)*(i===0?.75:i<=1?.55:.45); /* 먼 미래 성장일수록 더 불확실하다 */ const d=Math.pow(.8,i); const w=seasonWorth(o)*(i===0?c.now:1)*d; /* KBO 구단은 먼 미래보다 지금을 더 친다 */
     if(i>=ny){ v+=w*.55; continue; }
     const sal=p.faC||p.foreign?p.sal/100:Math.min(seasonWorth(o),p.sal/100*Math.pow(1.3,i)); v+=w-sal*c.money*d; }
   if(v>0)v*=roleFactor(t,p,dir);
@@ -51,9 +68,9 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   if(v>0)v*=medTradeF(p); /* 부상 체질·최근 부상·후유증·인대 이력·팔 부하 */
   if(v>0&&dir==='out'&&p.pledged&&p.pledged.tid===G.user&&G.day<=p.pledged.until&&p.team===t.id)v*=1.12; /* 우리 단장이 공개적으로 원한 선수: 값을 더 부른다 */
   if(p.injOut>20)v-=Math.abs(v)*(p.injOut>150?.55:p.injOut>60?.32:.2); /* 수술·장기 재활 선수는 값이 크게 깎인다 */
-  if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0))*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?seasonWorth(projO(p,0))*(c.contend?.8:t.mode==='rebuild'?.3:.6):.4; /* 주전은 연봉이 많아도 그 자리 전력이라 쉽게 내주지 않는다(리빌딩 구단만 정리). 예전 .25는 고액 주전을 어린 백업 하나와 바꿔 줬다 */ v=Math.max(v,fl); }
+  if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0)+sd)*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?seasonWorth(projO(p,0)+sd)*(c.contend?.8:t.mode==='rebuild'?.3:.6):.4; /* 주전은 연봉이 많아도 그 자리 전력이라 쉽게 내주지 않는다(리빌딩 구단만 정리). 예전 .25는 고액 주전을 어린 백업 하나와 바꿔 줬다 */ v=Math.max(v,fl); }
   /* 연봉이 부담스러워도 주전급은 공짜로 내주지 않는다(다른 구단에 팔 수 있으므로) */
-  if(dir==='out'){ const core=domestic(t.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).some(q=>q.id===p.id); const w0=seasonWorth(projO(p,0));
+  if(dir==='out'){ const core=domestic(t.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).some(q=>q.id===p.id); const w0=seasonWorth(projO(p,0)+sd);
     /* 팀 핵심(상위 6명)은 연봉과 상관없이 쉽게 내주지 않는다. 젊으면 더 비싸다 */
     if(p.aiListed){} else if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); } /* 매물로 내놓은 선수는 핵심 보호 하한을 두지 않는다 */
   return v; }
@@ -69,8 +86,26 @@ function cashVal(t,cash){ return cash>0?cash/100*teamCtx(t).money*.9:0; }
 function cashFor(t,gap){ if(!(gap>0))return 0; return Math.ceil(gap/(teamCtx(t).money*.9)*100/10)*10; }
 /* 그 구단의 지금 주전: 선발 라인업 9명(제 포지션이 아니어도), 선발 로테이션, 불펜 상위 4명. 포지션별 1순위만 보던 판정은 다른 자리에서 뛰는 주전을 놓쳤다 */
 let _stC={k:'',m:{}};
-function startersOf(tid){ const k=G.year+':'+G.day+':'+(G.trades||[]).length; if(_stC.k!==k)_stC={k,m:{}}; if(_stC.m[tid])return _stC.m[tid]; let S=new Set();
+function startersOf(tid){ const k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length+':'+(G.acqSeq||0); /* AI끼리 트레이드·영입이 있으면 다시 계산 */ if(_stC.k!==k)_stC={k,m:{}}; if(_stC.m[tid])return _stC.m[tid]; let S=new Set();
   try{ const d=depth(tid); S=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].filter(Boolean).map(p=>p.id)); }catch(e){} return _stC.m[tid]=S; }
+/* 한 구단과 거래를 마치면 30일 동안은 그 구단과 다시 거래하지 않는다(받은 선수가 자리 잡는 걸 본다). 한 시즌 몇 건으로 막는 대신 간격을 둔다 */
+const TRADE_COOL=30;
+/* 같은 구단과는 한 시즌에 두 번까지: 그쪽 단장도 팬 여론과 받은 선수 적응을 먼저 본다 */
+const TRADE_MAX_SAME=2;
+/* 예외: 급매 매물만 받는 거래는 제한 없음(그쪽이 빨리 정리하고 싶다). 맞대결 기간(경기장에서 단장끼리 만난다)에는 30일 간격 없이 시즌 한 번 더(3번까지) */
+function tradeCool(tid,get){ if(get&&get.length&&get.every(id=>{ const q=G.players[id]; return q&&q.aiListed&&q.aiUrg; }))return null;
+  const h2h=seriesOpp()===tid; const cap=TRADE_MAX_SAME+(h2h?1:0);
+  const Y=(G.trades||[]).filter(x=>x.with===tid&&x.y===G.year); if(Y.length>=cap){ const d=Math.max(...Y.map(x=>x.d??G.day)); return {d,until:dnum(G.year+1,1,1),cap:true,n:Y.length,max:cap}; }
+  if(h2h)return null; const L=Y.filter(x=>x.d!=null&&G.day-x.d<TRADE_COOL&&G.day>=x.d); if(!L.length)return null; const d=Math.max(...L.map(x=>x.d)); return {d,until:d+TRADE_COOL}; }
+/* 예산을 넘겨 연봉을 떠안는 트레이드는 구단주 승인이 필요하다. 연봉은 한 해 치로 이번 결산에 잡힌다(budget의 국내 선수 연봉).
+   허용 폭: 성적 우선 구단주 15억·인기 10억·수익 5억, 신뢰 70 이상이면 1.5배, 50 미만이면 절반. 승인하면 신뢰 -2 */
+function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)return null; const P=id=>G.players[id];
+  const dSal=sum(get.map(id=>P(id)?P(id).sal:0))-sum(give.map(id=>P(id)?P(id).sal:0))+(cash||0); if(dSal<=0)return null; let b; try{ b=budget(); }catch(e){ return null; }
+  const room=after?b.roomGoal+dSal:b.roomGoal; const over=dSal-room; if(over<=0)return null; const t=team(G.user);
+  const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
+  if(over<=lim)return {ok:true,over,lim,dSal};
+  return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 연봉이 ${money(dSal)} 늘어 올해 예산(지원 목표)을 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
+function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 -2.`,{kind:'구단주'}); }catch(e){} }
 function evalTrade(tid,give,get,cash){ cash=cash||0;
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
@@ -91,7 +126,7 @@ function evalTrade(tid,give,get,cash){ cash=cash||0;
   /* 올해 전력: 리빌딩이 아닌 구단은 주전을 내줄 때 올해 당장 그만큼 뛸 선수를 받아야 한다(연봉이 부담스러워도 순위 싸움을 포기하지 않는다).
      없으면 고액 주전을 어린 백업 하나와 바꿔 줘서, 첫 시즌부터 연봉만 떠안으면 손쉽게 전력을 끌어올릴 수 있었다. 매물로 내놓은 선수는 예외 */
   { const reb=t.mode==='rebuild'; const k=teamCtx(t).contend?.8:reb?.6:.7; const S=startersOf(t.id); const st=get.map(P).filter(q=>q&&!q.aiListed&&S.has(q.id)&&(!reb||q.age<=28)); /* 리빌딩 구단은 서른 넘은 주전은 정리하지만 젊은 주전은 지킨다 */
-    if(st.length){ const nowOut=Math.max(...st.map(q=>seasonWorth(projO(q,0)))); const nowIn=Math.max(0,...give.map(id=>P(id)?seasonWorth(projO(P(id),0)):0)); if(nowIn<nowOut*k)need+=(nowOut*k-nowIn)*1.3; } }
+    if(st.length){ const nowOut=Math.max(...st.map(q=>seasonWorth(projO(q,0)+seenDelta(t,q)))); const nowIn=Math.max(0,...give.map(id=>P(id)?seasonWorth(projO(P(id),0)+seenDelta(t,P(id))):0)); if(nowIn<nowOut*k)need+=(nowOut*k-nowIn)*1.3; } }
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
   if(!get.some(id=>P(id)&&P(id).aiListed))need=Math.max(need,-Math.max(0,outV)*.1);
@@ -108,6 +143,8 @@ function proposeTrade(tid,give,get,cash){
   if(cash>0&&!get.length)return {ok:false,msg:'현금만 주고 선수를 받지 않는 거래는 할 수 없습니다.'};
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드 대상에서 뺐습니다(게임 단순화).'};
   const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash);
+  { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)})에 대한 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
+  { const oc=tradeOwnerCheck(give,get,cash); if(oc&&!oc.ok)return {ok:false,owner:true,msg:oc.msg}; }
   const isCtr=nt.ctr&&nt.ctr[sig]===G.day; /* 상대가 직접 낸 역제안·보완안은 횟수·중복 제한 없이 받는다 */
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
   if(!isCtr&&!ni.left)return {ok:false,msg:`${gmn}: 이번 달은 더 시간을 내기 어렵습니다. ${ni.next}에 다시 연락 주십시오.${ni.free?'':' (우리와 맞대결하는 기간에는 경기장에서 따로 만날 수 있습니다)'}`,closed:true};
@@ -125,6 +162,7 @@ function proposeTrade(tid,give,get,cash){
     t.rel=clamp(t.rel+2,0,100); prTrade(give,get,tid); give.forEach(id=>mvLog('트레이드',G.players[id],G.user,tid)); try{ if(give.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} get.forEach(id=>mvLog('트레이드',G.players[id],tid,G.user));
     if(cash>0){ payOut(G.user,cash,'etc'); payIn(tid,cash); }
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash?` + 현금 ${money(cash)}`:''} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}`);
+    { const oc=tradeOwnerCheck(give,get,cash,true); if(oc&&oc.ok&&oc.over>0)tradeOwnerOk(oc); }
     mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}(관계 ${mv.r>0?'+':''}${mv.r}).`:''}`};
   }
   const gap=e.need-e.gain; if(!ni.free&&!isCtr)nt.neg++; nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }

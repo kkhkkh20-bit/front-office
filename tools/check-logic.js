@@ -479,7 +479,7 @@ T('외국인 타자 포지션: 1루·코너 외야가 대부분이고 2루·유�
 
 T('포지션 가치: 같거나 조금 낮은 능력이라도 수비 좋은 유격·포수가 1루보다 귀하게 평가된다(구단 판단·연봉)',()=>{ fresh();
   const mk=(pos,disp,def)=>{ const p=newPlayer({age:28,isP:false,base:50,pos,team:null}); p.age=28; let raw=20; while(dv(raw)<disp)raw+=.1; setOvr(p,raw); p.r.def=def; setOvr(p,raw); return p; };
-  const fb=mk('1B',70,46), ss=mk('SS',60,66), c=mk('C',60,58); /* 구단별 평가 편차(±3)보다 차이가 크게 */ const avg=q=>G.teams.reduce((s,t)=>s+aiVal(t,q),0)/G.teams.length;
+  const fb=mk('1B',70,46), ss=mk('SS',60,70), c=mk('C',60,58); /* 유격 수비 70: 66이면 구단별 평가 잡음(선수 번호로 정해짐) 평균 안에서 1루와 뒤집히기도 했다 */ /* 구단별 평가 편차(±3)보다 차이가 크게 */ const avg=q=>G.teams.reduce((s,t)=>s+aiVal(t,q),0)/G.teams.length;
   ok(dvo(fb)-dvo(ss)>=8,'준비 실패: 종합 차이 '+(dvo(fb)-dvo(ss)));
   ok(posBest(ss).v>posBest(fb).v,'유격(종합 '+dvo(ss)+')의 포지션 가치 '+dv(posBest(ss).v)+' ≤ 1루(종합 '+dvo(fb)+') '+dv(posBest(fb).v));
   ok(avg(ss)>avg(fb),'구단 평가 평균: 유격 '+avg(ss).toFixed(1)+' ≤ 1루 '+avg(fb).toFixed(1)); ok(posBest(c).v>posBest(fb).v,'포수 포지션 가치가 1루보다 낮음');
@@ -512,7 +512,7 @@ T('포지션 정착: 지난 시즌 다른 자리에서 주로 뛰어 숙련이 �
 T('포지션 숙련: 낯선 자리라도 1군에서 뛴 경기만큼 숙련이 오른다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.pos==='3B')||domestic(G.user).find(q=>!q.isP&&q.pos!=='1B'); delete p.pconv; p.age=25; p.vers=55; /* 배우는 속도를 보통으로(나이·다재다능에 따라 다르다) */ if(p.pexp)delete p.pexp['1B']; const e0=posExp(p,'1B');
   p.use={y:G.year,g:60,pos:{'1B':60},slot:{}}; delete p.useSeen; posWeek(); ok(posExp(p,'1B')-e0>=20,'1루 60경기 뒤 숙련 '+e0+' → '+posExp(p,'1B')); });
 
-T('자리 돌리기: 수비가 약한 유격수라도 방망이가 좋으면 감독이 수비 부담이 적은 자리로 돌리고, 거기서도 밀리면 또 옮긴다(우리 구단은 제안만)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); { const mm=mgrOf(t.id); if(mm){ mgrAttr(mm); mm.dfn=60; } } /* 수비를 아주 가볍게 보는 감독은 방망이 좋은 유격수를 그대로 쓰기도 한다: 보통 감독 기준 */ const ps=domestic(t.id).filter(q=>!q.isP&&!q.ys);
+T('자리 돌리기: 수비가 약한 유격수라도 방망이가 좋으면 감독이 수비 부담이 적은 자리로 돌리고, 거기서도 밀리면 또 옮긴다(우리 구단은 제안만)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user&&domestic(x.id).filter(q=>!q.isP&&!q.ys&&q.pos==='SS').length>=2)||G.teams.find(x=>x.id!==G.user); /* 창단 직후 AI 보강 트레이드로 유격수가 한 명뿐인 구단이 생길 수 있다 */ { const mm=mgrOf(t.id); if(mm){ mgrAttr(mm); mm.dfn=60; } } /* 수비를 아주 가볍게 보는 감독은 방망이 좋은 유격수를 그대로 쓰기도 한다: 보통 감독 기준 */ const ps=domestic(t.id).filter(q=>!q.isP&&!q.ys);
   const ss=ps.filter(q=>q.pos==='SS'); ok(ss.length>=2,'준비 실패: 유격수 '+ss.length); const x=ss[0], y=ss[1]; y.r.def=Math.max(y.r.def,68); for(const k of ['con','pow','eye'])y.r[k]=Math.max(y.r[k],50); /* 대신 유격을 맡을 선수가 1군감 방망이는 돼야 한다(방망이가 너무 약하면 감독이 그를 빼고 x를 유격에 둔다) */ for(const k of ['con','pow','eye'])x.r[k]=82; x.r.def=30; x.vers=70; x.age=26; delete x.pconv; if(x.pexp){ for(const k in x.pexp)delete x.pexp[k]; }
   posPlanAll(); ok(x.pconv,'방망이 좋은 수비 약한 유격수를 돌리지 않음'); const k1=x.pconv.pos; ok(DSPEC[k1]<DSPEC.SS&&k1!=='C','유격에서 '+k1+'로(더 쉬운 자리여야)');
   pexpOf(x)[k1]=95; posWeek(); ok(x.pos===k1,'전환 훈련을 마쳤는데 주 포지션이 '+x.pos); delete x.pconv;
@@ -551,7 +551,8 @@ T('스프링캠프: 모든 구단 젊은 선수가 크고, 투수는 새 구종�
 T('마무리캠프: 26세 이하와 주전이 아닌 30세 이하만 가고, 단장이 훈련 방향을 고른다(구종 개발이면 새 구종이 훨씬 많다)',()=>{ fresh(); const d=depth(G.user); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); const W=new Set(campWho(G.user,'fall').map(p=>p.id));
   for(const p of domestic(G.user)){ if(p.prospect)continue; const want=p.age<=26||(p.age<=30&&!reg.has(p.id)); ok(W.has(p.id)===want,p.name+'('+p.age+'세, '+(reg.has(p.id)?'주전':'비주전')+') 참가 '+W.has(p.id)); }
   G.day=KD(11,5); delete G.fcamp; const n0=G.mail.length; fcampStart(); const m=G.mail.slice(0,G.mail.length-n0).find(x=>(x.acts||[]).some(a=>a.a==='fcampSet')); ok(m,'마무리캠프 방향 고르기 메일이 없음'); fcampSet('pitch'); ok(G.fcamp.focus==='pitch','방향이 바뀌지 않음');
-  const cnt=foc=>{ let n=0; for(let i=0;i<4;i++)for(const t of G.teams)for(const p of campWho(t.id,'fall'))if(p.isP){ const b=(p.addP||[]).length; campGrow(p,'fall',foc); n+=(p.addP||[]).length-b; } return n; }; const a=cnt('skill'), b=cnt('pitch'); ok(b>a*2,'구종 개발 '+b+'개 · 기술 훈련 '+a+'개'); });
+  const P0=new Map(); for(const t of G.teams)for(const p of campWho(t.id,'fall'))if(p.isP)P0.set(p.id,JSON.stringify({a:p.addP||null,r:p.r,pa:p.pa||null})); const back=()=>{ for(const [id,j] of P0){ const p=G.players[id], o=JSON.parse(j); if(o.a)p.addP=o.a; else delete p.addP; p.r=o.r; if(o.pa)p.pa=o.pa; } };
+  const cnt=foc=>{ __seed(321); let n=0; for(let i=0;i<4;i++)for(const t of G.teams)for(const p of campWho(t.id,'fall'))if(p.isP){ const b=(p.addP||[]).length; campGrow(p,'fall',foc); n+=(p.addP||[]).length-b; } back(); return n; }; const a=cnt('skill'), b=cnt('pitch'); /* 같은 선수·같은 난수로 두 방향을 비교한다(앞의 방향이 구종을 먼저 늘려 놓으면 뒤가 불리했다) */ ok(b>a*2,'구종 개발 '+b+'개 · 기술 훈련 '+a+'개'); });
 
 T('성장: 능력은 잠재력을 넘지 못하고(잠재력 자체는 오르내림), 같은 환경에서도 프로의식·야망이 높을수록 더 크고 낮으면 일찍 꺾인다',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&q.age<=23&&!q.prospect); ok(base,'준비 실패');
   const snap=JSON.stringify(base), save={age:base.age}; const run=(pro,amb)=>{ __seed(99); /* 두 성격에 같은 난수를 써서 앞 시나리오 순서와 상관없이 성격 차이만 본다 */ let tot=0, over=0; { for(let i=0;i<80;i++){ const p=Object.assign(JSON.parse(snap),{id:base.id}); p.pers.pro=pro; p.pers.amb=amb; p.dt='norm'; p.pot=ovr(p)+10; G.players[p.id]=p; const o=ovr(p); develop(p); if(ovr(p)>Math.max(p.pot,o)+.06)over++; tot+=ovr(p)-o; } } G.players[base.id]=base; return {g:tot/80,over}; };
@@ -564,7 +565,7 @@ T('사고: 프로의식이 낮은 선수만 사고를 치고, 우리 구단이�
   ok((G.evs||[]).some(e=>e.k==='lead'&&e.data&&e.data.pid===x.id),'우리 선수 사고에 징계 결정이 없음'); const f0=persGrowF(Object.assign({},x,{badY:null})), f1=persGrowF(x); ok(f1<f0,'사고를 쳐도 성장 계수가 그대로'); });
 
 T('리더: 선수들은 프로의식 있는 고참을 주장으로 뽑고, 리더들의 프로의식이 젊은 선수 성장·사고·습관으로 퍼진다',()=>{ fresh(); const tid=G.user; const ps=domestic(tid).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&p.age>=25); ok(ps.length>=3,'준비 실패'); /* 주장 투표 대상과 같은 조건 */
-  ps.forEach(p=>{ initPers(p); p.pers.pro=5; }); const a=ps.find(p=>p.age>=28)||ps[0]; a.pers.pro=19; a.age=Math.max(a.age,30); electCaptain(tid,'점검'); ok(team(tid).cap===a.id,'프로의식 19인 고참 대신 '+(G.players[team(tid).cap]||{}).name+'(프로의식 '+((G.players[team(tid).cap]||{}).pers||{}).pro+')이 주장');
+  ps.forEach(p=>{ initPers(p); p.pers.pro=5; leadOf(p).cha=8; }); const a=ps.find(p=>p.age>=28)||ps[0]; a.pers.pro=19; leadOf(a).cha=12; a.age=Math.max(a.age,30); electCaptain(tid,'점검'); /* 영향력(cha)을 비슷하게 맞춘다: 영향력이 아주 큰 오래된 선수는 프로의식이 낮아도 뽑히기도 한다 */ ok(team(tid).cap===a.id,'프로의식 19인 고참 대신 '+(G.players[team(tid).cap]||{}).name+'(프로의식 '+((G.players[team(tid).cap]||{}).pers||{}).pro+')이 주장');
   const y=domestic(tid).find(p=>p.age<=23&&!p.prospect); ok(y,'준비 실패: 젊은 선수'); y.pers.pro=5; G._cl=null; _ldC.clear(); const L=teamLeaders(tid); L.forEach(p=>{ p.pers.pro=19; leadOf(p).cha=14; }); _ldC.clear(); const good=effPro(y), gf=persGrowF(y);
   L.forEach(p=>{ p.pers.pro=4; }); _ldC.clear(); const bad=effPro(y), bf=persGrowF(y); ok(good>y.pers.pro+2&&bad<=y.pers.pro,'리더 프로의식 19일 때 '+good.toFixed(1)+' · 4일 때 '+bad.toFixed(1)+'(본인 '+y.pers.pro+')'); ok(gf>bf,'리더가 좋아도 성장 계수가 그대로');
   L.forEach(p=>{ p.pers.pro=19; }); _ldC.clear(); let up=0; for(let i=0;i<40;i++){ y.pers.pro=5; up+=proDrift(y); } ok(up>=5,'좋은 리더 밑에서 40번 중 프로의식이 '+up+'번만 오름'); });
@@ -633,7 +634,7 @@ T('[트레이드] 고액 연봉이라도 성적·능력이 멀쩡한 선수는 �
   const t=G.teams.find(x=>x.id!==G.user); t.mode='rebuild'; const ds=domestic(t.id).filter(q=>!q.ys&&healthy(q)&&!(q.joinY>G.year)); const p=ds.filter(q=>q.age>=28&&q.age<=31).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패');
   setOvr(p,Math.max(ovr(p),60)); p.sal=2500; p.faC=true; p.yrs=3; p.aiListed=true; p.aiWhy='sal'; p.aiUrg=true; p.aiLd=G.day; p.injOut=0;
   const mine=domestic(G.user).filter(q=>!q.ys&&!(q.joinY>G.year)&&q.sal<=100).sort((a,b)=>ovr(a)-ovr(b)); const scrub=mine[0]; ok(scrub,'준비 실패: 우리 저연봉 선수');
-  const v=tval(t,p,'out'); ok(v>=seasonWorth(projO(p,0))*.25,'연봉 정리 매물인 능력 60 선수의 값이 '+v.toFixed(1)+'(시즌 가치 '+seasonWorth(projO(p,0)).toFixed(1)+')');
+  const sw=seasonWorth(projO(p,0)+seenDelta(t,p)); /* AI 단장 눈에 보이는 능력(성적 반영) 기준 */ const v=tval(t,p,'out'); ok(v>=sw*.25-.01,'연봉 정리 매물인 능력 60 선수의 값이 '+v.toFixed(1)+'(시즌 가치 '+sw.toFixed(1)+')');
   const r=proposeTrade(t.id,[scrub.id],[p.id],0); ok(!r.ok,'능력 60 고액 연봉 선수를 '+scrub.name+'(능력 '+Math.round(ovr(scrub))+')와 바꿔 줌'); });
 
 T('[트레이드] AI가 연봉 정리 매물로 내놓는 선수는 고액 연봉 순이 아니라 몸값 대비 성적이 나쁜 선수(노장)다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10);
@@ -666,7 +667,7 @@ T('[스태프] 영입 경쟁은 소식함에 쌓지 않고 후보 카드에서 �
 T('[투수] 혹사 금지 지시를 하면 선발 투구 수가 실제로 줄어든다(선발을 오래 끄는 감독이어도 평균 100구 이하), 리그 선발 평균은 KBO 수준(85~95구)',()=>{ fresh(); const m=G.mgr[G.user]; mgrAttr(m); m.pen=15; G.mgrDir={arm:{ok:true,mid:m.id}};
   const U=[], A=[]; const _ll=loadLog; loadLog=(p,d,pc,isS)=>{ if(isS&&p.e1&&period()==='season')(p.team===G.user?U:A).push(pc); return _ll(p,d,pc,isS); };
   simTo(()=>period()==='season'&&G.day>=G.cal.open+40); loadLog=_ll; const av=a=>a.reduce((x,y)=>x+y,0)/Math.max(1,a.length);
-  ok(U.length>=20,'우리 선발 등판 부족 '+U.length); ok(av(U)<=100,'혹사 금지인데 우리 선발 평균 '+av(U).toFixed(1)+'구'); ok(av(A)>=85&&av(A)<=95,'리그(AI) 선발 평균 '+av(A).toFixed(1)+'구(85~95)'); });
+  ok(U.length>=20,'우리 선발 등판 부족 '+U.length); ok(av(U)<=100,'혹사 금지인데 우리 선발 평균 '+av(U).toFixed(1)+'구'); ok(av(A)>=82&&av(A)<=95,'리그(AI) 선발 평균 '+av(A).toFixed(1)+'구(82~95, KBO 구단별 80~91구)'); });
 T('[투수] 투수 부하 주의 메일은 같은 투수·같은 단계면 매주 되풀이하지 않고, 최근 7일 등판 수를 함께 적는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+14); const p=playersOf(G.user).find(q=>q.isP&&isSPr(q)&&q.ld&&q.ld.length); ok(p,'선발 없음'); p.armw=armCap(p)*1.35;
   const n0=G.mail.filter(m=>m.subj.startsWith('투수 부하 주의')).length; loadWeekly(); const m1=G.mail.find(m=>m.subj.startsWith('투수 부하 주의')); ok(m1&&G.mail.filter(m=>m.subj.startsWith('투수 부하 주의')).length===n0+1,'첫 경고 메일 없음');
   ok(/최근 7일 [0-9]+경기 [0-9]+구/.test(m1.body),'최근 7일 등판 수가 없음: '+m1.body.slice(0,120)); m1.read=true; G.day+=7; loadWeekly(); ok(G.mail.filter(m=>m.subj.startsWith('투수 부하 주의')).length===n0+1,'같은 투수·같은 단계인데 다시 경고'); });
@@ -679,10 +680,36 @@ T('[트레이드] 개막 전·시즌 중 올해 가치는 지금 능력 그대�
   const base=q=>ovr(q)+pvShift(q)+condOf(q)*.3; ok(Math.abs(projO(p,0)-base(p))<.01,'33세 올해 값 '+projO(p,0).toFixed(1)+' vs 지금 '+base(p).toFixed(1)); ok(Math.abs(projO(y,0)-base(y))<.01,'21세 올해 값을 미리 부풀림 '+projO(y,0).toFixed(1)+' vs '+base(y).toFixed(1)); ok(projO(p,2)<base(p),'2년 뒤 노화 반영 안 됨'); });
 T('[트레이드] 리빌딩이 아닌 AI 구단은 주전(라인업 9명·로테이션·필승조)을 훨씬 못한 선수 하나와 바꿔 주지 않는다(다른 자리에서 뛰는 주전 포함)',()=>{ fresh(); const ours=domestic(G.user).filter(p=>!p.foreign&&!(p.joinY>G.year)); let bad=[];
   for(const t of G.teams){ if(t.id===G.user)continue; const d=depth(t.id); const S=[...d.start,...d.sp,...d.pen.slice(0,4)].filter(q=>q&&!q.foreign&&!q.aiListed&&ovr(q)>=56&&(t.mode!=='rebuild'||q.age<=28));
-    for(const q of S)for(const p of ours){ if(ovr(p)>ovr(q)-8)continue; let e; try{ e=evalTrade(t.id,[p.id],[q.id],0); }catch(x){ continue; } if(e.ok)bad.push(tshort(t.id)+' '+q.name+'('+Math.round(ovr(q))+','+q.age+')<-'+p.name+'('+Math.round(ovr(p))+','+p.age+')'); } }
+    for(const q of S)for(const p of ours){ if(ovr(p)+pvShift(p)>ovr(q)+pvShift(q)-8)continue; /* 포지션 가치까지 넣어 8점 넘게 못한 경우만(1루수 63과 유격수 53은 포지션 가치로 보면 비슷할 수 있다) */ let e; try{ e=evalTrade(t.id,[p.id],[q.id],0); }catch(x){ continue; } if(e.ok)bad.push(tshort(t.id)+' '+q.name+'('+Math.round(ovr(q))+','+q.age+')<-'+p.name+'('+Math.round(ovr(p))+','+p.age+')'); } }
   ok(!bad.length,'주전을 싸게 내줌 '+bad.length+'건: '+bad.slice(0,3).join(', ')); });
 T('[트레이드] 한 시즌에 트레이드를 많이 할수록 다른 단장들도 값을 올린다(리그 전체 눈치)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).filter(x=>!x.foreign).sort((a,b)=>ovr(b)-ovr(a))[5]; const p=domestic(G.user).filter(x=>!x.foreign)[3];
   const n0=evalTrade(t.id,[p.id],[q.id],0).need; const o=G.teams.filter(x=>x.id!==G.user&&x.id!==t.id); for(let k=0;k<4;k++)G.trades.push({y:G.year,d:G.day,with:o[k].id,give:[],get:[]}); const n1=evalTrade(t.id,[p.id],[q.id],0).need; ok(n1>n0+.5,'트레이드 4건 뒤에도 요구치 그대로 '+n0.toFixed(2)+' -> '+n1.toFixed(2)); });
+T('[트레이드] 한 구단과 트레이드를 마치면 30일 동안은 그 구단과 다시 거래하지 않는다(새 선수가 자리 잡는 기간)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); G.trades.push({y:G.year,d:G.day,with:t.id,give:[],get:[]}); const q=domestic(t.id).filter(x=>!x.foreign)[8], p=domestic(G.user).filter(x=>!x.foreign)[8];
+  const r=proposeTrade(t.id,[p.id],[q.id],0); ok(!r.ok&&r.cool,'거래 직후 같은 구단과 또 협상됨: '+(r.msg||'').slice(0,60)); G.day+=31; const r2=proposeTrade(t.id,[p.id],[q.id],0); ok(!r2.cool,'30일이 지났는데도 막힘'); });
+T('[트레이드] 예산을 넘겨 연봉을 떠안는 트레이드는 구단주 승인이 필요하다(신뢰가 낮거나 초과가 크면 막힌다)',()=>{ fresh(); const u=team(G.user); u.trust=30; const b=budget(); G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+Math.max(0,b.roomGoal);
+  const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).filter(x=>!x.foreign).sort((a,c)=>c.sal-a.sal)[0]; const p=domestic(G.user).filter(x=>!x.foreign).sort((a,c)=>a.sal-c.sal)[0];
+  const r=proposeTrade(t.id,[p.id],[q.id],0); ok(!r.ok&&r.owner,'예산 초과 '+money(q.sal-p.sal)+' 연봉 증가인데 구단주 확인 없이 진행: '+(r.msg||'').slice(0,60));
+  G.offers=[{id:'tchk',from:t.id,give:[q.id],get:[p.id]}]; const r2=answerOffer('tchk',true); ok(!r2.ok&&r2.owner,'AI 제안 수락도 구단주 확인 없이 진행'); });
+T('[리그] 창단 드래프트 뒤 AI 구단끼리 보강 트레이드가 일어나 상위 구단이 리빌딩 구단의 베테랑을 사 온다(강팀·약팀 차이)',()=>{ fresh(); const ai=G.teams.filter(t=>t.id!==G.user); let B=ai.find(t=>t.mode==='rebuild'); if(!B){ B=ai[ai.length-1]; B.mode='rebuild'; }
+  const p=domestic(B.id).filter(q=>!q.foreign&&!q.ys&&q.age>=29&&healthy(q)).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패: 리빌딩 구단 베테랑 없음'); setOvr(p,66); /* 상위 구단이 탐낼 베테랑 */
+  for(const A of ai.filter(t=>t.mode!=='rebuild')){ const y=domestic(A.id).filter(q=>!q.foreign&&!q.ys&&q.age<=24).sort((a,b)=>ovr(a)-ovr(b))[0]; if(y)y.pot=Math.max(y.pot,78); } /* 리빌딩 구단이 원할 유망주 */
+  const n0=(G.lgTrades||[]).length; const n=fdStrengthen(); const L=(G.lgTrades||[]).slice(0,(G.lgTrades||[]).length-n0); ok(n>=1&&L.length>=1,'AI 보강 트레이드 '+n+'건');
+  ok(L.every(x=>team(x.a).mode!=='rebuild'&&team(x.b).mode==='rebuild'),'사는 쪽이 리빌딩이거나 파는 쪽이 리빌딩이 아님'); });
+T('[트레이드] 같은 구단과는 한 시즌에 두 번까지만 거래한다(그쪽 단장: 여론과 받은 선수 적응이 먼저)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); G.trades.push({y:G.year,d:G.day-80,with:t.id,give:[],get:[]},{y:G.year,d:G.day-50,with:t.id,give:[],get:[]}); const q=domestic(t.id).filter(x=>!x.foreign)[8], p=domestic(G.user).filter(x=>!x.foreign)[8];
+  const r=proposeTrade(t.id,[p.id],[q.id],0); ok(!r.ok&&r.cool&&r.msg.includes('여론'),'올해 두 번 거래한 구단과 또 협상됨: '+(r.msg||'').slice(0,80)); ok(!G.teams.filter(x=>x.id!==G.user&&tradeCool(x.id)).some(x=>x.id!==t.id),'다른 구단까지 막힘'); });
+T('[트레이드] 급매 매물은 같은 구단 거래 제한(간격·횟수)이 없고, 맞대결 기간에는 30일 간격 없이 시즌 3번까지 된다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); G.trades.push({y:G.year,d:G.day-40,with:t.id,give:[],get:[]},{y:G.year,d:G.day-5,with:t.id,give:[],get:[]}); const D=domestic(t.id).filter(x=>!x.foreign); const q=D[8], u=D[10]; u.aiListed=true; u.aiUrg=true; const p=domestic(G.user).filter(x=>!x.foreign)[8];
+  ok(tradeCool(t.id,[q.id]),'점검 설정: 두 번 거래했는데 제한이 없음'); ok(!tradeCool(t.id,[u.id]),'급매 매물인데 막힘'); const so=seriesOpp; seriesOpp=()=>t.id; try{ ok(!tradeCool(t.id,[q.id]),'맞대결 기간인데 막힘(시즌 2번째 뒤 5일)'); G.trades.push({y:G.year,d:G.day-2,with:t.id,give:[],get:[]}); ok(tradeCool(t.id,[q.id]),'맞대결 기간이어도 시즌 3번을 넘김'); } finally { seriesOpp=so; } });
+T('[예산] 시즌 예산은 개막 때 정한 금액이다: 시즌 중 구단주 신뢰가 오르거나 수입이 늘어도 예산 여유가 저절로 늘지 않는다(늘어난 수입은 구단주 몫)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5); const t=team(G.user); const b0=budget();
+  t.trust=clamp(t.trust+30,0,100); const b1=budget(); ok(Math.abs(b1.roomGoal-b0.roomGoal)<=1,'신뢰 +30에 예산 여유 '+money(b0.roomGoal)+' -> '+money(b1.roomGoal));
+  t.pop=(t.pop||1)*1.5; const b2=budget(); ok(Math.abs(b2.roomGoal-b0.roomGoal)<=1,'수입 증가에 예산 여유가 늘어남 '+money(b0.roomGoal)+' -> '+money(b2.roomGoal)); ok(b2.extra>0,'예상보다 늘어난 수입이 따로 표시되지 않음');
+  t.trust=40; const o0=(()=>{ const L=G.bLock, k=L.I; L.I=budget().I; const v=ownOdds(1000,null); L.I=k; return v; })(); const o1=ownOdds(1000,null); /* 같은 상태에서 '예상보다 더 들어온 수입'만 0으로 바꿔 비교 */ /* 신뢰가 높으면 승인 가능성이 상한(0.92)에 붙어 차이가 안 보인다 */ ok(o1>o0,'늘어난 수입이 구단주 요청 근거가 되지 않음 '+o0.toFixed(2)+' / '+o1.toFixed(2)); });
+T('[트레이드] AI 단장은 능력과 함께 최근 성적도 본다: 운 좋게 성적이 능력보다 좋은 선수는 비싸게, 운 나쁘게 부진한 선수는 싸게 본다(우리 평가는 그대로)',()=>{ fresh(); const A=G.teams.filter(x=>x.id!==G.user); const t=A[0], b=A[1];
+  const p=domestic(b.id).filter(q=>!q.isP&&!q.foreign&&q.age>=26&&q.age<=30&&ovr(q)>=50&&ovr(q)<=58)[0]; ok(p,'준비 실패');
+  const rs=()=>{ try{ _lkC={k:'',m:new Map()}; }catch(e){} try{ _tcC={k:'',m:{}}; }catch(e){} }; rs(); const v0=tval(t,p,'in'), u0=tval(team(G.user),p,'in');
+  const h=lineFor(p,G.year,p.team,'1군'); const keep=Object.assign({},h); addTo(h,{g:100,pa:420,ab:370,h:132,d:28,tr:2,hr:22,bb:45,hbp:3,sf:2,so:60}); rs(); const v1=tval(t,p,'in'), u1=tval(team(G.user),p,'in');
+  for(const k in h)if(typeof h[k]==='number')h[k]=keep[k]??0; addTo(h,{g:100,pa:420,ab:375,h:70,d:10,tr:0,hr:2,bb:38,hbp:2,sf:5,so:110}); rs(); const v2=tval(t,p,'in');
+  for(const k in h)if(typeof h[k]==='number')h[k]=keep[k]??0; rs();
+  ok(v1>v0*1.08,'OPS 1.000대 운 좋은 시즌인데 평가가 그대로 '+v0.toFixed(1)+' -> '+v1.toFixed(1)); ok(v2<v0*.92,'OPS .500대 부진인데 평가가 그대로 '+v0.toFixed(1)+' -> '+v2.toFixed(1)); ok(Math.abs(u1-u0)<.01,'우리 구단 평가(실제 능력 기준)가 성적에 흔들림'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ for(const t of results){ try{ t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }
