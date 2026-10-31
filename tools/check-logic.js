@@ -750,6 +750,10 @@ T('창단 드래프트 성적 탭 최근 3년: 1군 3년 합산(타석·홈런 �
   const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP&&[y-2,y-1,y].every(yy=>{ const h=seasonTotal(q,yy,'1군'); return h&&h.pa>=100; })); ok(!!p,'준비 실패');
   const L=fdStatLine3(p,y), H=[y-2,y-1,y].map(yy=>seasonTotal(p,yy,'1군')); ok(L.n===H.reduce((a,h)=>a+h.pa,0),'타석 합 '+L.n); ok(L.hr===H.reduce((a,h)=>a+h.hr,0),'홈런 합');
   ok(Math.abs(L.war-H.reduce((a,h)=>a+warPub(h,p),0))<1e-9,'WAR 합'); ok(L.wrc===wrcMulti(H),'wRC+'); ok(L.y3===3,'연수'); });
+T('투수 종합 능력: 구위·제구·체력 비중이 경기에서 실제로 WAR을 만드는 비중(구위·제구 비슷하게 크고 체력은 작다)에 맞는다',()=>{ const p={isP:true,r:{stf:60,ctl:50,sta:40}}; ok(Math.abs(ovr(p)-(60*.44+50*.44+40*.12))<1e-9,'종합 '+ovr(p));
+  /* 실측: 선발 투수 WAR을 구위·제구·체력으로 회귀하면 구위와 제구 기여가 비슷해야 한다(예전엔 구위 .62·제구 .34로 구위형 투수가 종합 능력보다 훨씬 잘했다) */
+  fresh(); const y=G.year-1; const A=Object.values(G.players).filter(q=>q.isP&&!q.foreign).map(q=>({q,h:seasonTotal(q,y,'1군')})).filter(x=>x.h&&x.h.outs>=300&&(x.h.gs||0)>=10); ok(A.length>=25,'준비 실패 '+A.length);
+  const c=olsFit(A.map(x=>[x.q.r.stf,x.q.r.ctl]),A.map(x=>warOf(x.h,x.q)),A.map(()=>1)); ok(c[1]>0&&c[2]>0&&c[2]/c[1]>=.6,'구위 '+c[1].toFixed(3)+' · 제구 '+c[2].toFixed(3)); });
 T('새 게임을 다시 만들면 이전 세계에서 계산해 둔 값(툴 기준·기대 홈런 회귀 등)을 쓰지 않는다',()=>{ DEMO.on=false; newGame(6); fdStart(); const a=fdToolRef(); newGame(3); fdStart(); const b=fdToolRef(); ok(a!==b,'이전 세계의 툴 기준을 그대로 씀'); });
 T('창단 드래프트 툴 등급: 1군 주전 평균이 C 중급(70점대)이고, S 특급은 리그에 몇 명, A 상급은 구단 간판 정도다',()=>{ DEMO.on=false; newGame(6); fdStart(); const ly=G.fd.y-1;
   const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });

@@ -86,7 +86,9 @@ let _nmSet=null, _nmDay=null;
 function nameTaken(n){ if(typeof G==='undefined'||!G||!G.players)return false; if(_nmDay!==G.day||!_nmSet){ _nmSet=new Set(Object.values(G.players).map(p=>p.name)); for(const o of (G.ob||[]))_nmSet.add(o.name); _nmDay=G.day; } return _nmSet.has(n); }
 function genName(){ for(let i=0;i<60;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&!nameBad(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return pick(SUR)+'도윤'; }
 function genFName(k){ const d=FN[k]; for(let i=0;i<30;i++){ const n=d.rev?pick(d.l)+' '+pick(d.f):pick(d.f)+' '+pick(d.l); if(!BLOCK.has(n)&&!Object.values(G.players).some(p=>p.name===n))return n; } return pick(d.f)+' '+pick(d.l); }
-function ovr(p){const r=p.r;return p.isP? r.stf*.45+r.ctl*.35+r.sta*.2 : r.con*.3+r.pow*.25+r.eye*.15+r.spd*.1+r.def*.2;}
+/* 종합 능력: 타자는 컨택·파워·선구·주력·수비가 득점에 기여하는 비중(+10 실험과 일치).
+   투수는 선발 275명(8개 세계) WAR 회귀 비중 구위 .47·제구 .46·체력 .07에 맞춰 구위 .44·제구 .44·체력 .12(체력은 선발을 맡을 수 있는지가 더 크다). 리그 평균 종합 능력은 그대로 */
+function ovr(p){const r=p.r;return p.isP? r.stf*.44+r.ctl*.44+r.sta*.12 : r.con*.3+r.pow*.25+r.eye*.15+r.spd*.1+r.def*.2;}
 const offV=p=>p.r.con*.35+p.r.pow*.3+p.r.eye*.2+p.r.spd*.15;
 const spV=p=>p.r.stf*.45+p.r.ctl*.4+p.r.sta*.15;
 const penV=p=>p.r.stf*.55+p.r.ctl*.45;
