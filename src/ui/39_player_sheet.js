@@ -212,6 +212,8 @@ function extForm(p){
     <label class="small" for="extA">연봉 <b class="num" id="extAv">${money(e.annual)}</b></label>
     <input type="range" id="extA" min="${min}" max="${max}" step="5" value="${e.annual}" data-a="extA" data-v="${p.id}">
     <div class="seg">${[2,3,4,5,6].map(y=>`<button data-a="extY" data-v="${p.id}:${y}" class="${e.years===y?'on':''}">${y}년</button>`).join('')}</div>
+    ${(()=>{ const X=extParts(p,e.years); const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const st=(period()==='season'||period()==='post')?G.year+1:sponSeason(); const en=st+e.years-1;
+      return `<div class="note ext-cmp small"><div><b>이 계약</b> ${st}~${en}년 · ${e.years>ytf?`FA가 됐을 시즌 ${e.years-ytf}년 포함`:'FA 전 시즌만 묶음'} · 보장 총액 ${money(e.annual*e.years)}(부상·성장 정체에도 그대로 나감)</div><div><b>계약하지 않으면</b> FA까지 ${ytf}시즌은 해마다 연봉 협상(성적 따라 오르내림) · FA 때 예상 몸값 연 ${money(Math.round(X.expFA))} 안팎</div></div>`; })()}
     <p class="small muted"><span id="extTot">총액 ${money(e.annual*e.years)}</span> · ${e.years}년 기준 예상 요구 연 <b>${money(est)}</b> 안팎(친분이 높을수록 정확) · 시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p>
     ${e.msg?`<div class="note ${e.ok?'good':''}">${esc(e.msg)}</div>`:''}
     ${p.extCounter&&p.extCounter.until>=G.day?`<button class="btn primary" data-a="extAcc" data-v="${p.id}">역제안 수락 (${p.extCounter.years}년 연 ${money(p.extCounter.annual)})</button> `:''}<button class="btn ${p.extCounter&&p.extCounter.until>=G.day?'':'primary'}" data-a="extOffer" data-v="${p.id}">제안하기</button></section>`;

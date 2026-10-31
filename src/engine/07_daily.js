@@ -77,7 +77,7 @@ function processDay(){ syncMinSal();
   try{ cwDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
   if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
   if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
-  dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
+  dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ fPubDaily(); }catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();
   recoverAll(1);
   if(o.w===0)for(const p of Object.values(G.players)){ if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)*.65+N(0,p.foreign?.75:.55),-2.5,2.5); }

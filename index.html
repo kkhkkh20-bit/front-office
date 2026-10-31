@@ -3164,7 +3164,7 @@ function processDay(){ syncMinSal();
   try{ cwDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
   if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
   if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
-  dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
+  dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ fPubDaily(); }catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();
   recoverAll(1);
   if(o.w===0)for(const p of Object.values(G.players)){ if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)*.65+N(0,p.foreign?.75:.55),-2.5,2.5); }
@@ -4234,6 +4234,10 @@ function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0
 /* 외국인 후보 목록 정렬: {p,rp,fs} 목록에 쓴다. 예상 능력순(rk)은 종합 추정만 본다 */
 function fSortBy(k){ const st=p=>{ const h=p.prev; if(!h)return -9; return p.isP?(h.outs?1.6-(h.er*27/h.outs)/5:-9):bRate(h).ops; };
   return ({stat:(a,b)=>st(b.p)-st(a.p),ask:(a,b)=>a.p.ask-b.p.ask,age:(a,b)=>a.p.age-b.p.age})[k]||((a,b)=>b.fs.score-a.fs.score); }
+/* 우리만 아는 발굴 후보가 곧 다른 구단에 알려질 때·알려졌을 때 알린다(기다리는 동안 기회가 어떻게 바뀌는지) */
+function fPubDaily(){ if(G.unemp)return; for(const id of (G.fmarket||[])){ const p=G.players[id]; if(!p||p.team!=null||!fMineFind(p)||p.fpub==null)continue; const d=p.fpub-G.day;
+    if(d===3)mail('스카우트팀',`독점 발굴 후보 공개 임박: ${p.name}`,`우리 스카우트가 찾은 ${p.name}(${posLabel(p)}, ${p.age}세)을 다른 구단도 3일쯤 뒤(${dmd(p.fpub)})에 알게 됩니다. 그 전에 계약하면 경쟁 없이 협상할 수 있습니다.`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
+    if(d===0)mail('스카우트팀',`${p.name} 정보가 경쟁 구단에 퍼졌습니다`,`이제 다른 구단도 ${p.name}을(를) 압니다. 관심 구단이 생기면 몸값이 오를 수 있습니다.`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); } }
 function fMineFind(p){ return !!(p&&p.fsrc==='scout'&&(p.fknow||[]).includes(G.user)&&p.fknow[0]===G.user); }
 /* 우리가 찾은 후보의 관찰 메모(외국인 시장 카드): 언제 찾았는지, 강점·약점, 한국 적응, 몸 상태, 다른 구단이 알게 되는 때 */
 function fFindNote(p,rp){ if(!fMineFind(p))return ''; const T=(rp&&rp.tools||[]).slice().sort((a,b)=>b.cur-a.cur); const nm=k=>TOOLK[k]||k;
@@ -6837,8 +6841,8 @@ function mpickPlan(){ const m=G.mgr[G.user]; if(!m||m.interim)return; mgrAttr(m)
   const cands=domestic(G.user).filter(p=>p.age<=26&&!p.ys&&!(p.joinY>G.year)).map(p=>({p,v:mgrView(p)})).filter(x=>x.v&&!x.v.mute&&x.v.fut-ovr(x.p)>=5).sort((a,b)=>(b.v.fut-ovr(b.p)*.3)-(a.v.fut-ovr(a.p)*.3)).slice(0,2);
   G.mpick={y:G.year,mid:m.id,ids:cands.map(x=>x.p.id),back:null,day:G.day}; if(!cands.length)return;
   evNew('mpick',`${m.name} 감독이 미는 선수`,`"${cands.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}. 제가 보기엔 ${cands[0].v.line.replace(/[.]$/,'')}. 올해 출전 기회와 훈련을 몰아주고 싶습니다." 감독의 선수 보는 눈(안목) ${m.eye}.`,
-    [{l:'함께 밀어준다',fx:'올해 이 선수들의 성장 속도가 30% 빨라지고 기분이 오릅니다. 감독 관계 +4. 시즌 중 트레이드하면 감독이 크게 서운해합니다(-6).'},{l:'성적이 먼저다',fx:'변화 없음. 감독 관계 -2.'}],{from:'감독실',ref:cands[0].p.id,data:{ids:cands.map(x=>x.p.id)},def:0,exp:7}); }
-EVH.mpick={ pick(e,i){ const m=G.mgr[G.user]; if(!m)return ''; if(i===0){ G.mpick.back=true; m.rel=clamp(m.rel+4,0,100); for(const id of e.data.ids){ const p=G.players[id]; if(p)p.mor=clamp((p.mor??60)+5,0,100); } return '감독과 함께 밀어주기로 했습니다. 감독 관계 +4.'; } G.mpick.back=false; m.rel=clamp(m.rel-2,0,100); return '감독 관계 -2.'; } };
+    [{l:'함께 밀어준다',fx:`올해 이 선수들의 성장 속도가 30% 빨라지고 기분이 오릅니다. 감독 관계 +4. 대신 같은 자리 경쟁자${(()=>{ const L=[]; for(const x of cands)for(const q of playersOf(G.user))if(q!==x.p&&!cands.some(c=>c.p===q)&&q.isP===x.p.isP&&pSlot(q)===pSlot(x.p)&&!q.ys&&!L.includes(q.name))L.push(q.name); return L.length?`(${L.slice(0,3).join('·')}${L.length>3?' 등':''})`:''; })()}는 출전 기회가 줄어 기분이 내려가고, 시즌 중 이 선수를 트레이드하면 감독이 크게 서운해합니다(-6).`},{l:'성적이 먼저다',fx:'변화 없음. 감독 관계 -2.'}],{from:'감독실',ref:cands[0].p.id,data:{ids:cands.map(x=>x.p.id)},def:0,exp:7}); }
+EVH.mpick={ pick(e,i){ const m=G.mgr[G.user]; if(!m)return ''; if(i===0){ G.mpick.back=true; m.rel=clamp(m.rel+4,0,100); for(const id of e.data.ids){ const p=G.players[id]; if(p)p.mor=clamp((p.mor??60)+5,0,100); } const hurt=[]; for(const id of e.data.ids){ const p=G.players[id]; if(!p)continue; for(const q of playersOf(G.user))if(q!==p&&!e.data.ids.includes(q.id)&&q.isP===p.isP&&pSlot(q)===pSlot(p)&&!q.ys){ q.mor=clamp((q.mor??60)-3,0,100); hurt.push(q.name); } } /* 같은 자리 경쟁자는 출전 기회가 줄어 기분이 내려간다 */ return '감독과 함께 밀어주기로 했습니다. 감독 관계 +4.'; } G.mpick.back=false; m.rel=clamp(m.rel-2,0,100); return '감독 관계 -2.'; } };
 function mpickMult(p){ const P=G.mpick; const m=G.mgr[G.user]; return P&&P.back&&P.y===G.year&&P.ids.includes(p.id)&&p.team===G.user&&m&&!m.interim&&(P.mid==null||P.mid===m.id)?1.3:1; } /* 그 감독이 밀던 선수: 감독이 바뀌거나 대행 체제면 끝 */
 /* 감독 안목 성적표: 예측과 실제 성장 비교 (시즌 끝에) */
 function mgrEyeReport(){ const m=G.mgr[G.user]; const P=G.mpick; if(!m||!P||P.y!==G.year||!P.ids.length)return; const L=P.ids.map(id=>G.players[id]).filter(Boolean); if(!L.length)return;
@@ -12967,8 +12971,12 @@ function tradeInsight(tid,give,get){
 
 /* 드래프트 센터: 스카우트 추천과 모의 지명 */
 function draftCenter(all,mine){
+  const mk0=mockDraft(12); const oi=mk0.findIndex(m=>m.mine); const before=new Set(mk0.slice(0,oi<0?0:oi).map(m=>m.id)); const inMock=new Set(mk0.map(m=>m.id));
+  const grp=oi<0?[['스카우트 추천',all.slice(0,3)]]:(()=>{ const g1=all.filter(x=>before.has(x.p.id)).slice(0,2), g2=all.filter(x=>!before.has(x.p.id)).slice(0,3), g3=all.filter(x=>!inMock.has(x.p.id)&&!g2.includes(x)).slice(0,2); return [['내려오면 우선 검토(앞 순번에 뽑힐 듯)',g1],['우리 순번에 남을 가능성',g2],['다음 라운드까지 기다려 볼 선수',g3]].filter(x=>x[1].length); })();
   const top=all.slice(0,3);
-  const rec=`<div class="dc-rec"><div class="eyebrow">스카우트 추천 3명</div>${top.map(x=>`<div class="dc-r"><button class="dc-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.p.age}세 · ${x.p.college?'대졸':'고졸'} · ${esc(x.p.region)}</i><em>${esc(x.rp.arch)}${x.rp.role?` · 장래 ${esc(x.rp.role)}`:''}</em></span></button><span class="dc-st small">${esc(amShort(x.p))}</span><span></span>${mine?`<button class="btn small primary" data-a="pick" data-v="${x.p.id}">지명</button>`:''}</div>`).join('')}</div>`;
+  const row=x=>`<div class="dc-r"><button class="dc-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.p.age}세 · ${x.p.college?'대졸':'고졸'} · ${esc(x.p.region)}</i><em>${esc(x.rp.arch)}${x.rp.role?` · 장래 ${esc(x.rp.role)}`:''}</em></span></button><span class="dc-st small">${esc(amShort(x.p))}</span><span></span>${mine?`<button class="btn small primary" data-a="pick" data-v="${x.p.id}">지명</button>`:''}</div>`;
+  const rec=`<div class="dc-rec">${grp.map(([t,L])=>`<div class="eyebrow">${t}</div>${L.map(row).join('')}`).join('')}</div>`;
+  const recOld=`<div class="dc-rec"><div class="eyebrow">스카우트 추천 3명</div>${top.map(x=>`<div class="dc-r"><button class="dc-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.p.age}세 · ${x.p.college?'대졸':'고졸'} · ${esc(x.p.region)}</i><em>${esc(x.rp.arch)}${x.rp.role?` · 장래 ${esc(x.rp.role)}`:''}</em></span></button><span class="dc-st small">${esc(amShort(x.p))}</span><span></span>${mine?`<button class="btn small primary" data-a="pick" data-v="${x.p.id}">지명</button>`:''}</div>`).join('')}</div>`;
   const mk=mockDraft(12); const live=G.draft&&!G.draft.done;
   const mock=mk.length?`<div class="dc-mock"><div class="eyebrow">${live?'우리 다음 순번까지 예상 지명':'1라운드 모의 드래프트'}</div><ol>${mk.map(m=>{ const p=G.players[m.id]; return `<li class="${m.mine?'me':''}"><span class="num">${m.pk.rd}-${m.pk.no}</span>${badge(m.pk.tid,16)}<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i>${posLabel(p)}</i></li>`; }).join('')}</ol><p class="small muted">우리 스카우트가 본 평가와 각 구단 성향으로 짐작한 예상입니다. 실제 지명과 다를 수 있습니다.</p></div>`:'';
   const rn=rosterN(G.user); const nw=Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year&&!p.ys).length; const tot=rn+nw;
@@ -14521,6 +14529,8 @@ function extForm(p){
     <label class="small" for="extA">연봉 <b class="num" id="extAv">${money(e.annual)}</b></label>
     <input type="range" id="extA" min="${min}" max="${max}" step="5" value="${e.annual}" data-a="extA" data-v="${p.id}">
     <div class="seg">${[2,3,4,5,6].map(y=>`<button data-a="extY" data-v="${p.id}:${y}" class="${e.years===y?'on':''}">${y}년</button>`).join('')}</div>
+    ${(()=>{ const X=extParts(p,e.years); const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const st=(period()==='season'||period()==='post')?G.year+1:sponSeason(); const en=st+e.years-1;
+      return `<div class="note ext-cmp small"><div><b>이 계약</b> ${st}~${en}년 · ${e.years>ytf?`FA가 됐을 시즌 ${e.years-ytf}년 포함`:'FA 전 시즌만 묶음'} · 보장 총액 ${money(e.annual*e.years)}(부상·성장 정체에도 그대로 나감)</div><div><b>계약하지 않으면</b> FA까지 ${ytf}시즌은 해마다 연봉 협상(성적 따라 오르내림) · FA 때 예상 몸값 연 ${money(Math.round(X.expFA))} 안팎</div></div>`; })()}
     <p class="small muted"><span id="extTot">총액 ${money(e.annual*e.years)}</span> · ${e.years}년 기준 예상 요구 연 <b>${money(est)}</b> 안팎(친분이 높을수록 정확) · 시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p>
     ${e.msg?`<div class="note ${e.ok?'good':''}">${esc(e.msg)}</div>`:''}
     ${p.extCounter&&p.extCounter.until>=G.day?`<button class="btn primary" data-a="extAcc" data-v="${p.id}">역제안 수락 (${p.extCounter.years}년 연 ${money(p.extCounter.annual)})</button> `:''}<button class="btn ${p.extCounter&&p.extCounter.until>=G.day?'':'primary'}" data-a="extOffer" data-v="${p.id}">제안하기</button></section>`;
@@ -16523,6 +16533,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-02e',d:'11월 2일',t:'다년계약 비교 · 드래프트 순번 · 외국인 발굴 알림',items:[
+    '비FA 다년계약 제안에 이 계약(기간·FA 포함 여부·보장 총액)과 계약하지 않을 때(해마다 연봉 협상·FA 예상 몸값)를 나란히 보여 줍니다.',
+    '신인 드래프트 추천을 우리 순번 기준으로 나눴습니다(내려오면 우선 검토 · 우리 순번에 남을 가능성 · 다음 라운드까지 기다려 볼 선수).',
+    '감독이 미는 선수를 함께 밀어주면 같은 자리 경쟁자는 기분이 내려갑니다. 선택지에 누가 영향을 받는지 적었습니다.',
+    '우리만 아는 외국인 발굴 후보가 곧 다른 구단에 알려질 때(3일 전)와 알려졌을 때 소식이 옵니다.'
+  ]},
   {id:'2026-11-02d',d:'11월 2일',t:'경기 성격 · 기사 분류 · 지명 후보',items:[
     '경기 결과에 역전패·역전승·완패·빈타 같은 경기 성격을 먼저 보여 주고, 팬 반응도 그 성격에 맞게 나옵니다.',
     '다른 구단 일반 기사는 홈의 우리 구단 기사에 넣지 않습니다.',

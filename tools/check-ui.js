@@ -264,6 +264,12 @@ const QUICK=process.env.QUICK==='1';
   { where='기사·경기 성격'; const r=await ev(()=>{ const o=G.teams.find(t=>t.id!==G.user); const ttl=`${tshort(o.id)} 점검 감독 "우리 페이스를 지키겠다"`; news('경기',ttl,'점검',0,{tid:o.id}); const card=newsCard(); const leak=card.includes('우리 페이스를 지키겠다'); G.news=(G.news||[]).filter(n=>n.t!==ttl);
       const me=G.user; const g={home:me,away:o.id,hs:3,as:4,line:{h:[1,0,2,0,0,0,0,0,0],a:[0,1,0,0,0,0,0,1,2]}}; const c=typeof gameChar==='function'?gameChar(g):null; return {leak,ck:c&&c.k,ct:c&&c.t}; });
     if(r){ if(r.leak)add('기사','다른 구단 일반 기사가 홈의 우리 구단 기사에 나옴'); if(r.ck!=='blown')add('경기 성격','7회까지 앞서다 진 경기를 역전패로 알리지 않음: '+r.ck); } }
+  /* 비FA 다년계약: 이 계약(기간·FA 포함·보장액)과 계약하지 않을 때를 나란히 */
+  { where='다년계약 비교'; const r=await ev(()=>{ const p=domestic(G.user).find(q=>canExtend(q)); if(!p)return null; const h=extForm(p); return {cmp:/계약하지 않으면/.test(h)&&/보장 총액/.test(h)}; });
+    if(r&&!r.cmp)add('다년계약','다년계약 제안에 계약 안 할 때와의 비교가 없음'); }
+  /* 신인 드래프트 추천: 우리 순번을 기준으로 나눠 보여 준다 */
+  { where='드래프트 추천 순번'; const r=await ev(()=>{ if(typeof draftCenter!=='function'||typeof mockDraft!=='function')return null; const mk=mockDraft(12); if(!mk.some(m=>m.mine))return null; const all=(G.draftClass||[]).map(id=>G.players[id]).filter(Boolean).map(p=>({p,rp:scoutReport(p)})); if(!all.length)return null; const h=draftCenter(all,false); return {grp:/우리 순번에 남을 가능성/.test(h)}; });
+    if(r&&!r.grp)add('드래프트 추천','추천이 우리 지명 순번을 고려하지 않음'); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
