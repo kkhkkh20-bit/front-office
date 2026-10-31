@@ -234,6 +234,14 @@ const QUICK=process.env.QUICK==='1';
   { where='표시 의미'; const r=await ev(()=>{ closeSheets(); const html=trnListBody(); const rec=/trn-rec">코치안/.test(html); (G.autoLog=G.autoLog||[]).unshift({d:G.day,t:'점검 결정',c:'기본안',r:'',k:'x',why:'exp'}); UI.tab='cfg'; UI.sub=Object.assign({},UI.sub||{},{cfg:'auth'}); render(); const why=/응답 기한이 지나 기본안/.test((document.querySelector('#app')||{}).textContent||''); G.autoLog.shift();
       UI.it=Object.assign({},UI.it||{},{relv:'map'}); const svg=relView(); const rl=/>신뢰 \d+</.test(svg); UI.tab='home'; render(); return {rec,why,rl}; });
     if(r){ if(!r.rec)add('훈련 방향','코치진 권장 표시가 점(·)뿐이라 선택처럼 보임'); if(!r.why)add('비서 처리','처리 경로(기한 만료 기본안 등)가 없음'); if(!r.rl)add('관계도','관계도 숫자에 신뢰·관계·기분 같은 이름이 없음'); } }
+  /* 판단에 필요한 연결 정보(외부 리뷰 B): 부상 관리 첫머리에 지금 부상자, 받은 트레이드 제안에 거래 뒤 요약, 국가대표에 우리 팀 영향, 달력에 대표 소집 */
+  { where='연결 정보'; const r=await ev(()=>{ const p=domestic(G.user).find(q=>!q.ys); const k0=p.injOut; p.injOut=11; const med=medBody(); p.injOut=k0; const inj=new RegExp(p.name+'[\\s\\S]*복귀까지 11일').test(med);
+      const t=G.teams.find(x=>x.id!==G.user); const o={id:'o_sum',from:t.id,give:[domestic(t.id)[0].id],get:[p.id],exp:G.day+3}; const sm=typeof offerSum==='function'?offerSum(o):''; const ofs=/거래 뒤/.test(sm)&&/연봉/.test(sm);
+      const nt=/우리 팀 영향/.test(ntView()); const x=ntUpcoming(4)[0]; const cal=x?calEvents(x.from).some(e=>/소집/.test(e.t)):true; return {inj,ofs,nt,cal}; });
+    if(r){ if(!r.inj)add('부상 관리','부상 관리에 지금 부상자 목록이 없음'); if(!r.ofs)add('트레이드 제안','받은 제안에 거래 뒤 요약이 없음'); if(!r.nt)add('국가대표','국가대표 화면에 우리 팀 영향 요약이 없음'); if(!r.cal)add('국가대표','달력에 대표 소집이 없음'); } }
+  /* 선수 찾기: 이름 일부로 찾고, 나이·연봉·병역 조건으로 좁힌다 */
+  { where='선수 찾기'; const r=await ev(()=>{ const q=Object.values(G.players).find(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)); const keep={n:UI.findName,a:UI.findAge}; UI.findName=q.name.slice(1); const h=tcFind(); const hit=h.includes(q.name); UI.findName=''; UI.findAge='23'; const h2=tcFind(); const seg=((h2.split('data-pg="find')[1]||'').split('</section>')[0]); const ages=[...seg.matchAll(/ (\d+)세 · /g)].map(m=>+m[1]); UI.findName=keep.n; UI.findAge=keep.a; return {hit,dbg:ages.join(','),old:ages.filter(a=>a>23).length,inp:/data-a="findName"/.test(h)}; });
+    if(r){ if(!r.inp||!r.hit)add('선수 찾기','이름 검색으로 선수를 찾을 수 없음'); if(r.old)add('선수 찾기','23세 이하 조건인데 나이 많은 선수가 나옴 '+r.dbg); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

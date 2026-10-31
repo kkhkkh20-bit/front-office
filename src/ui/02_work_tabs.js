@@ -109,12 +109,19 @@ function mgrBody(){
   if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+mgrChatCard(false)+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다.</p>`;
   return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다. 감독을 바꾸면 남은 계약 연봉은 그대로 나갑니다.</p>`:mv.cur==='pol'?pol:((G.mmarket||[]).length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
 }
-function medBody(){
-  return `<div class="eyebrow">부상 방지 프로그램</div>
+/* 지금 빠져 있거나 복귀 뒤 실전으로 기량을 되찾는 중인 우리 선수 */
+function injNowList(){ const L=[]; for(const p of Object.values(G.players)){ if(p.team!==G.user||p.ys)continue; const I=p.injK&&INJ[p.injK];
+    if(p.injOut>0)L.push({p,st:'out',t:`${I?I.part+' ':''}부상 · 복귀까지 ${p.injOut}일(${dmd(G.day+p.injOut)} 예상)`,n:p.injOut});
+    else { const fx=(p.injFx||[]).find(f=>f.need&&(f.got||0)<f.need); if(fx)L.push({p,st:'rec',t:`출전 가능 · ${fx.n||'부상'} 뒤 실전 회복 중 ${Math.round((fx.got||0)/fx.need*100)}%(뛰면서 기량을 되찾음)`,n:-1}); } }
+  return L.sort((a,b)=>b.n-a.n); }
+function medBody(){ const IL=injNowList();
+  return `<div class="eyebrow">지금 부상 · 회복 중 ${IL.length}명</div>${IL.length?`<div class="list">${IL.map(x=>`<button class="item" data-a="player" data-v="${x.p.id}"><span class="nm">${esc(x.p.name)} <span class="small muted">${posLabel(x.p)} · ${x.p.age}세</span> ${x.st==='out'?'<span class="pill bad">이탈</span>':'<span class="pill warn">회복 중</span>'}</span><span class="sub">${esc(x.t)}</span></button>`).join('')}</div>`:'<p class="small muted">지금 빠져 있는 선수가 없습니다.</p>'}
+  <div class="eyebrow">부상 방지 프로그램</div>
   <div class="chips prevc">${PREV.map((x,i)=>`<button data-a="setPrev" data-v="${i}" class="${G.med.prev===i?'on':''}">${x.l}<small>${x.c?`연 ${money(x.c)}`:'비용 없음'}</small></button>`).join('')}</div>
   <p class="small muted">연 ${money(PREV[G.med.prev].c)} · 경기 중 부상 위험 ${Math.round((1-PREV[G.med.prev].m)*100)}% 감소</p>
   <div class="eyebrow">제휴 병원</div>
   <div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d)}${h.rec?` 재활 기간 ${Math.round(h.rec*100)}% 단축.`:''}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
+  <p class="small">병원을 바꾸면 다음 부상부터 재활 기간이 달라집니다. 이미 다친 선수의 복귀일은 그대로입니다.</p>
   <p class="small muted">병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다. 지난 결산 이후 ${money(G.spend.med+G.spend.hosp)}.</p>
   ${G.medSet?'':'<button class="btn primary block" data-a="medOk">이대로 운영</button>'}`;
 }

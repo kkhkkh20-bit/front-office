@@ -28,16 +28,18 @@ function nextGames(n){
 }
 /* 지금 전력 예상 순위(홈 상단 타일과 오른쪽 전력 예상이 같은 값을 쓴다) */
 function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G)UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r)}; return UI._trk.R; }
+/* 승률이 같은 팀: 동률 표시(순서는 상대 전적 등 동률 기준) */
+const tieOf=(a,b)=>a&&b&&a.w===b.w&&a.l===b.l&&(a.t||0)===(b.t||0);
 function miniStand(){
   const {order,live,y}=standOrder(); if(!order||!order.length)return '';
   if(!live&&G.startY===G.year){ /* 창단 첫해 개막 전: 지난 시즌 순위는 의미가 없으니 전문가 전력 평가를 보여 준다 */
     const R=projNow();
     return `<section class="card"><div class="row between"><h2 class="sec">${ctSeason()} 전력 예상</h2><span class="small muted">현재 전력 기준 · 영입·성장에 따라 바뀜</span></div><div class="tw"><table class="mst"><tbody>${R.map((x,i)=>`<tr class="${x.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${i+1}</td><td>${badge(x.tid,16)} ${esc(tshort(x.tid))}</td></tr>`).join('')}</tbody></table></div></section>`; }
   const top=order[0]; const hasTl=tlOf(G.user).length>0&&live; const od=live?playoffOdds():null; const nar=!wide()&&!!od;
-  const rows=order.map((o,i)=>{ const l=l10Of(o.tid); return `<tr class="${o.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,18)}${tshort(o.tid)}</button></td><td class="num">${wlStr(o)}</td><td class="num">${i?gbStr(gbOf(top,o)):'-'}</td>${hasTl?`${nar?'':`<td class="num">${l.n?wlStr(l):'-'}</td>`}<td>${strkPill(o.tid)}</td>`:''}${od?`<td class="num ppc">${pct((od.find(x=>x.tid===o.tid)||{}).ps)}</td>`:''}</tr>`; }).join('');
+  const rows=order.map((o,i)=>{ const l=l10Of(o.tid); return `<tr class="${o.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${i+1}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,18)}${tshort(o.tid)}</button></td><td class="num">${wlStr(o)}</td><td class="num">${i?(tieOf(order[i-1],o)&&gbOf(top,o)===0?'동률':gbStr(gbOf(top,o))):(tieOf(o,order[1])?'동률':'-')}</td>${hasTl?`${nar?'':`<td class="num">${l.n?wlStr(l):'-'}</td>`}<td>${strkPill(o.tid)}</td>`:''}${od?`<td class="num ppc">${pct((od.find(x=>x.tid===o.tid)||{}).ps)}</td>`:''}</tr>`; }).join('');
   return `<section class="card"><div class="row between"><h2 class="sec">${live?'현재 순위':`${y} 최종 순위`}</h2><button class="btn small" data-a="go" data-v="league:stand">순위</button></div>
     <div class="tw"><table class="mst"><thead><tr><th></th><th>구단</th><th>승-패-무</th><th>차</th>${hasTl?`${nar?'':'<th>최근10</th>'}<th>연속</th>`:''}${od?'<th>가을야구</th>':''}</tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="small muted">점선 위 5개 팀이 가을야구에 나갑니다.${od?' 가을야구는 남은 일정을 모의 진행한 진출 확률입니다.':''}</p></section>`;
+    ${live&&tieOf(order[0],order[1])?`<p class="small"><b>동률 선두</b> ${esc(tshort(order[0].tid))}·${esc(tshort(order[1].tid))} 승패가 같습니다(순서는 상대 전적 기준).</p>`:''}<p class="small muted">점선 위 5개 팀이 가을야구에 나갑니다.${od?' 가을야구는 남은 일정을 모의 진행한 진출 확률입니다.':''}</p></section>`;
 }
 function formCard(){
   const per=period(); if(per!=='season'&&per!=='post')return '';

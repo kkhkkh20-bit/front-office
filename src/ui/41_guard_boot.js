@@ -143,7 +143,8 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='fdSsel'){ UI.fdS=el.value; UI.fdD=0; UI.fdMore=60; render(); }
   if(a==='fdLogT'){ UI.fdLogT=el.value; render(); }
   if(a==='ppRep'||a==='ppPid'){ UI.pp=UI.pp||{}; if(a==='ppRep')UI.pp.rep=el.value; else UI.pp.pid=el.value; UI.ppMsg=''; render(); }
-  if(a==='lfSort'){UI.lf.sort=el.value;render();} });
+  if(a==='lfSort'){UI.lf.sort=el.value;render();}
+  if(a==='findName'||a==='findAge'||a==='findSal'||a==='findMil'){ UI[a]=el.value; render(); } });
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if(!el)return;
   if(el.dataset.a==='offA')A.offA(el.dataset.v,el);
   if(el.dataset.a==='extA')A.extA(el.dataset.v,el);
