@@ -180,6 +180,17 @@ const QUICK=process.env.QUICK==='1';
       if(r.tNew>r.tLZ*.6)add('저장 압축',`저장이 충분히 빨라지지 않음(LZ ${r.tLZ}ms · 새 방식 ${r.tNew}ms)`); if(!r.last)add('저장 압축','몰아 저장이 늦게 끝나며 더 새 저장을 덮어씀'); console.log('  저장 압축:',r.tLZ+'ms → '+r.tNew+'ms'); } }
   { where='코드 복사'; const r=await ev(async()=>{ closeSheets(); A.go('cfg:set'); A.expCode(); await new Promise(z=>setTimeout(z,100)); const b=!!document.querySelector('[data-a="expCopy"]'); const p=!!document.querySelector('[data-a="impPaste"]'); UI.expCode=null; render(); return {b,p}; });
     if(r){ if(!r.b)add('코드 복사','코드를 만들어도 복사 버튼이 없음'); if(!r.p)add('코드 복사','붙여넣기 버튼이 없음'); } }
+  /* 표시 일관성(외부 리뷰): 홈 상단 전력 예상과 오른쪽 전력 예상 순위가 같아야 하고, 감독 운영 유형과 말투 이름이 겹치지 않아야 하며,
+     감독 선임 한 번에 소식함이 여러 건으로 쌓이지 않아야 한다(결재 완료 하나로 묶고, 답이 필요한 인터뷰만 따로) */
+  { where='표시 일관성'; const r=await ev(()=>{ closeSheets(); UI.tab='home'; render();
+      const tl=[...document.querySelectorAll('.dtl')].find(b=>/전력/.test((b.querySelector('.dtl-l')||{}).textContent||'')); const tv=tl?(tl.querySelector('.dtl-v').textContent.match(/(\d+)위/)||[])[1]:null;
+      const me=document.querySelector('.mst tr.me .rk'); const sv=me?me.textContent.trim():null;
+      const tyN=Object.values(MTYPE).map(x=>x[0]); const clash=Object.values(MV).map(x=>x.l).filter(l=>tyN.includes(l)||/형$/.test(l));
+      const s0=G.mailSeq||0; const c=(G.mmarket||[]).find(x=>!(x.clan||[]).length)||(G.mmarket||[])[0]; let n=-1, subj=[];
+      if(c){ UI.cfm=null; A.hireMgr(c.id+':2:1'); if(UI.cfm)A.cfmOk(); closeSheets(); const nw=G.mail.filter(m=>+String(m.id).slice(1)>s0&&!/인터뷰/.test(m.subj)); n=nw.length; subj=nw.map(m=>m.subj); }
+      render(); return {tv,sv,clash,n,subj}; });
+    if(r){ if(r.tv&&r.sv&&r.tv!==r.sv)add('전력 예상',`홈 상단 ${r.tv}위 · 오른쪽 전력 예상 ${r.sv}위`); if(r.clash.length)add('감독 표시','운영 유형과 헷갈리는 말투 이름: '+r.clash.join(', '));
+      if(r.n>1)add('소식 묶기',`감독 선임 한 번에 소식 ${r.n}건: ${r.subj.join(' / ')}`); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

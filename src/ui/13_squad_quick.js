@@ -3,7 +3,7 @@
 function teamStatusBox(){ const per=period(); const gs=goalStatus(); const ci=capInfo(G.user); let b=null; try{ b=budget(); }catch(e){}
   const st=(per==='season'||per==='post')&&G.sea&&G.sea.rec?standingsNow():null; const i=st?st.findIndex(x=>x.tid===G.user):-1; const me=i>=0?st[i]:null;
   const gb=me&&i>0?((st[0].w-me.w)+(me.l-st[0].l))/2:0; const fifth=st&&st[4]?st[4]:null; const g5=me&&fifth&&i>4?((fifth.w-me.w)+(me.l-fifth.l))/2:null;
-  const pr=G.proj?G.proj.indexOf(G.user)+1:null;
+  const pr=me?null:projNow().findIndex(x=>x.tid===G.user)+1||null; /* 홈 상단·오른쪽 전력 예상과 같은 기준 */
   const rec=me?`<b>${i+1}위</b> ${me.w}승 ${me.l}패${me.t?` ${me.t}무`:''} · 승률 ${fmt3(me.w/Math.max(1,me.w+me.l))}${i>0?` · 1위와 ${gb}경기`:''}${g5!=null?` · 5위와 ${g5}경기`:''}`:`${PERIOD[per]}${pr?` · 예상 ${pr}위`:''}`;
   const ok=x=>x?'<b class="good">달성 중</b>':'<b class="bad">미달</b>';
   const goal=gs?`목표 ${gs.rank.t}위 이내 ${gs.rank.cur!=null?ok(gs.rank.ok):''} · 지원 ${Math.round(gs.sup.cur*100)}%/${Math.round(gs.sup.t*100)}% ${ok(gs.sup.ok)} · 팬 ${gs.fan.cur}/${gs.fan.t} ${ok(gs.fan.ok)}`:'올해 목표 미정';
