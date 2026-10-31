@@ -14,6 +14,10 @@ const FB={
   win:{pos:['오늘 {p} 미쳤다 진짜','{p} 연봉 올려줘라 제발','이 맛에 야구 본다','직관 갔는데 이겼다 ㅋㅋ 집 가는 길 행복','{q} 오늘 공 좋더라','{p} 타석 들어올 때마다 뭔가 해줄 것 같음','오늘 같은 경기만 해라','{O} 상대로 이기니까 더 좋네','수훈선수 {p} 인정합니다','중계 보다가 소리 질렀다 ㅋㅋㅋ'],
        mix:['이겼으니 됐다 근데 불펜은 좀...','이긴 건 좋은데 {r} 오늘 왜 저럼','점수 차 벌릴 때 못 벌린 건 아쉽다','이겨도 불안한 이 느낌 뭐냐'],
        fun:['오늘 치킨 맛있게 먹었다','내일도 이 기세로 가자','다음 주 직관 예매 완료','응원가 아직도 귀에서 맴돈다']},
+  blown:{neg:['다 이긴 경기를 왜 놓치냐','선발이 버텨 줬는데 또 후반에','9회까지 기대했다가 이게 뭐냐','불펜 정비 안 하면 이런 경기 계속 나온다','오늘 진 건 진짜 잠 안 온다'],mix:['{p}는 잘했는데 아깝다','선발은 할 만큼 했다','그래도 7회까지는 좋았다']},
+  comeback:{pos:['이런 맛에 끝까지 본다','포기 안 한 보람 있다','오늘 뒤집은 거 진짜 크다','{p} 마지막에 해줬다'],mix:['초반은 답답했는데 결국 이겼네']},
+  rout:{neg:['오늘은 그냥 졌다 말할 게 없음','초반에 무너지니 볼 게 없었다','{O}한테 이렇게 밀리냐','점수 차 보고 그냥 껐다'],mix:['이런 날도 있지 내일 보자']},
+  nobat:{neg:['방망이가 이렇게 안 맞냐','점수를 못 내는데 어떻게 이기냐','투수들 불쌍하다 오늘','득점권에서 한 방이 없다'],mix:['{q} 혼자 고생했다']},
   loss:{neg:['{r} 오늘 왜 저럼','{r} 2군 한 번 보내라 제발','불펜 방화 언제까지 볼 거냐','치킨 시켰는데 체함','오늘 경기는 기억에서 지운다','투수 교체 타이밍 실화냐','득점권에서 한 방이 그렇게 어렵냐','{O}한테 이렇게 털릴 일이냐','타선 집단 슬럼프 아님?','이럴 거면 리빌딩이나 하자'],
        mix:['그래도 {p} 하나는 잘했다','질 수도 있지 내일 이기면 됨','144경기 중 하나일 뿐이다 진정하자','{p} 혼자 야구하네'],
        fun:['중계 끄고 산책 나감','오늘은 일찍 잔다','야구 끊는다 (내일 또 봄)']},
@@ -81,7 +85,7 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
     const sc=`${g.home===me?g.hs:g.as}:${g.home===me?g.as:g.hs}`;
     const title=won?fPick(fRng('gt'+g.day),[`${tshort(op)}전 ${sc} 승리 후기`,(vars.p?`오늘 ${vars.p} 보신 분`:'오늘 경기 총평'),`${sc} 승! 오늘 경기 총평`,`이기니까 좋네요 (${sc})`]):fPick(fRng('gt'+g.day),[`${tshort(op)}전 ${sc} 패배... 총평`,(vars.r?`${vars.r} 오늘 왜 그랬냐`:'오늘 경기 총평'),`오늘 경기 보고 화나신 분`,`${sc} 패, 할 말이 없다`]);
     add({id:'g'+g.day,d:g.day,cat:'경기',title,body:`${team(op).city} ${team(op).nick}전 ${sc} ${won?'승리':g.res==='무'?'무승부':'패배'}.${star?` ${star.p.name} ${star.b.ab}타수 ${star.b.h}안타${star.b.hr?` ${star.b.hr}홈런`:''}.`:''}`,tid:me,ref:won?star?.p.id:null,
-      cm:fComments('gc'+g.day,(g.kind&&/차전/.test(g.kind))?(won?'psWin':'psLoss'):(won?'win':'loss'),won?'pos':(g.kind&&/차전/.test(g.kind))?'mix':'neg',vars,6,me,fa),hot:Math.abs(g.hs-g.as)>=5}); }
+      cm:fComments('gc'+g.day,(g.kind&&/차전/.test(g.kind))?(won?'psWin':'psLoss'):(()=>{ const c=typeof gameChar==='function'?gameChar(g):null; return c&&['blown','comeback','rout','nobat'].includes(c.k)?c.k:(won?'win':'loss'); })(),won?'pos':(g.kind&&/차전/.test(g.kind))?'mix':'neg',vars,6,me,fa),hot:Math.abs(g.hs-g.as)>=5}); }
   /* 1-2) 포스트시즌 시리즈 결과: 올라갔는지·탈락했는지·업셋인지(정규시즌 연승·연패 글은 정규시즌 중에만) */
   try{ const P=G.ps; if(P&&P.res&&P.resD){ for(const [rd,r] of Object.entries(P.res)){ const d=P.resD[rd]; if(d==null||d<G.cal.open||(r[0]!==me&&r[1]!==me))continue;
       const won=r[0]===me, op=won?r[1]:r[0], R=ROUNDK[rd]||rd; const si=t=>{ const i=(P.seeds||[]).indexOf(t); return i<0?9:i; }; const upset=won&&si(me)>si(op); const champ=won&&rd==='ks';

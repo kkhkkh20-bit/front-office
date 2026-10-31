@@ -52,6 +52,9 @@ const QUICK=process.env.QUICK==='1';
   { const r=await ev(()=>{ if(!G.fd)return null; const ov=UI.fdV; const has=v=>{ UI.fdV=v; render(); return [...document.querySelectorAll('#app th')].some(x=>/장래성/.test(x.textContent)); }; const a=has('rec'), b=has('sc'); UI.fdV=ov; render();
       const p=Object.values(G.players).find(q=>q.fdPool&&q.age<=23); let sh=null; if(p){ A.player(p.id); sh=/장래성/.test((document.querySelector('#sheet')||{}).textContent||''); closeSheets(); } return {a,b,sh}; });
     if(r){ if(!r.a||!r.b)add('장래성','창단 드래프트 표에 장래성 열이 없음'); if(r.sh===false)add('장래성','창단 드래프트 선수 정보에 장래성이 없음'); } }
+  /* 첫 지명 도움: 우리 차례에 즉시 전력·저평가·미래 투자 후보 셋을 이유·위험과 함께(정답 아님) */
+  { const r=await ev(()=>{ if(!G.fd||typeof fdSuggest!=='function')return {none:true}; const S=fdSuggest(); return {k:S.map(x=>x.k).join(','),why:S.every(x=>x.why&&x.risk),uniq:new Set(S.map(x=>x.p.id)).size===S.length}; });
+    if(r){ if(r.none)add('드래프트 후보','창단 드래프트에 비교 후보 제안이 없음'); else { if(r.k!=='즉시 전력,저평가 후보,미래 투자')add('드래프트 후보','후보 유형이 셋이 아님: '+r.k); if(!r.why||!r.uniq)add('드래프트 후보','후보에 이유·위험이 없거나 같은 선수가 겹침'); } } }
   /* 지명 직후 카드: 실제 툴 숫자의 색이 그 툴 등급 글자의 색과 같아야 한다(스카우트 등급과 같은 기준·같은 색) */
   { const r=await ev(()=>{ if(!G.fd)return null; const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP); if(!p)return null; const t0=p.team; p.team=G.user; UI.rev={pid:p.id,rd:1,no:1,n:1,open:true}; render();
       const C={S:'r75',A:'r65',B:'r55',C:'r50',D:'r45',E:'r35',F:'r20'}; const box=document.querySelector('.fde-rv .fde-ts:not(.fde-old)'); const bad=[];
@@ -257,6 +260,10 @@ const QUICK=process.env.QUICK==='1';
       const m=meta(); const n=m.active; const keep=m.slots[n]&&m.slots[n].memo; if(m.slots[n]){ m.slots[n].memo='점검 메모'; setMeta(m); } saveNow(); const memo=(meta().slots[n]||{}).memo; const m2=meta(); if(m2.slots[n]){ m2.slots[n].memo=keep; setMeta(m2); }
       const gm=typeof gmCardView==='function'?gmCardView():''; return {eCol,wi,er,memo}; });
     if(r){ if(!r.eCol)add('박스스코어','이닝 표에 실책(E)이 없음'); if(r.wi!==3)add('중계','결승점 위치를 못 찾음: '+r.wi); if(!r.er)add('박스스코어','투수 표에 자책점 표시가 없음'); if(r.memo!=='점검 메모')add('저장 슬롯','저장하면 슬롯 메모가 사라짐'); } }
+  /* 기사 분류·경기 성격(외부 리뷰 B): 다른 구단 일반 기사는 홈의 우리 구단 기사에 넣지 않고, 역전패는 경기 성격을 먼저 */
+  { where='기사·경기 성격'; const r=await ev(()=>{ const o=G.teams.find(t=>t.id!==G.user); const ttl=`${tshort(o.id)} 점검 감독 "우리 페이스를 지키겠다"`; news('경기',ttl,'점검',0,{tid:o.id}); const card=newsCard(); const leak=card.includes('우리 페이스를 지키겠다'); G.news=(G.news||[]).filter(n=>n.t!==ttl);
+      const me=G.user; const g={home:me,away:o.id,hs:3,as:4,line:{h:[1,0,2,0,0,0,0,0,0],a:[0,1,0,0,0,0,0,1,2]}}; const c=typeof gameChar==='function'?gameChar(g):null; return {leak,ck:c&&c.k,ct:c&&c.t}; });
+    if(r){ if(r.leak)add('기사','다른 구단 일반 기사가 홈의 우리 구단 기사에 나옴'); if(r.ck!=='blown')add('경기 성격','7회까지 앞서다 진 경기를 역전패로 알리지 않음: '+r.ck); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

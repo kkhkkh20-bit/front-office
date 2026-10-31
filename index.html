@@ -1407,6 +1407,10 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 
 /* 경기 후 보고 판단 단계 */
 .gm-t{flex-wrap:wrap}.gm-sg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+
+/* 창단 드래프트 비교 후보 */
+.fdsg-r{display:grid;grid-template-columns:auto 1fr auto;gap:4px 8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}.fdsg-r>.small{grid-column:2/4}
+@media (max-width:600px){ .fdsg-r{grid-template-columns:auto 1fr}.fdsg-r>.btn{grid-column:1/3} }
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -4918,6 +4922,7 @@ function news(kind,title,body,tone,o){ prInit(); o=o||{};
   const outlet=o.outlet||(kind==='팬'?'팬 커뮤니티':outletPick(title)); /* 영향력이 큰 매체가 더 자주 쓴다 */
   if((G.news||[]).some(x=>x.t===title&&G.day-x.d<30))return null; /* 같은 제목 기사는 한 달 안에 다시 내지 않는다 */
   const it={d:G.day,o:outlet,t:title,b:body,v:tone,k:kind,ref:o.ref??null,id:(G.newsSeq=(G.newsSeq||0)+1)};
+  try{ const ut=tshort(G.user); if(o.tid!=null&&o.tid!==G.user)it.oth=true; else if(!title.includes(ut)&&!title.includes(team(G.user).nick)&&G.teams.some(x=>x.id!==G.user&&title.includes(tshort(x.id))))it.oth=true; }catch(e){} /* 다른 구단 기사: 우리 구단 기사 묶음에서 뺀다 */
   if(o.by)it.by=o.by; else { const rp0=kind==='팬'?null:outletRep(outlet); if(rp0)it.by=rp0.name; }
   G.news.unshift(it); if(G.news.length>80)G.news.length=80;
   const om=kind==='팬'?1:outletMul(outlet,tone); /* 비판 매체는 나쁜 소식을, 우호 매체는 좋은 소식을 키운다. 영향력이 클수록 크게 */
@@ -11064,6 +11069,13 @@ function digestCard(){ const D=G.dig; if(!D||!D.games||!D.games.length||G.res)re
     ${inj.length?`<p class="small">부상: ${inj.map(p=>`${esc(p.name)}(${esc(injNow(p))}, ${p.injOut}일)`).join(', ')}</p>`:''}
     ${digestDiag(D)}
     <p class="small sdesc">경기를 누르면 박스스코어를 볼 수 있습니다. 한 경기씩 보려면 위의 "1경기"를 누르세요.</p></section>`; }
+/* 경기 성격: 이닝별 점수로 리드가 어떻게 바뀌었는지 */
+function gameChar(g){ if(!g||!g.line)return null; const me=g.home===G.user?'h':'a', op=me==='h'?'a':'h'; const n=Math.max(g.line.a.length,g.line.h.length); let m=0,o=0; const cum=[]; for(let i=0;i<n;i++){ m+=+g.line[me][i]||0; o+=+g.line[op][i]||0; cum.push([m,o]); }
+  const fm=me==='h'?g.hs:g.as, fo=me==='h'?g.as:g.hs; const at7=cum[Math.min(6,cum.length-1)]||[0,0]; const late=fo-at7[1], lateM=fm-at7[0];
+  if(fm<fo&&at7[0]>at7[1])return {k:'blown',t:`역전패 · 7회까지 ${at7[0]}:${at7[1]}로 앞서다 8회 이후 ${late}실점`};
+  if(fm>fo&&at7[0]<at7[1])return {k:'comeback',t:`역전승 · 7회까지 ${at7[0]}:${at7[1]}로 뒤지다 8회 이후 ${lateM}득점`};
+  if(fm<fo&&fo-fm>=5)return {k:'rout',t:`완패 · ${fo-fm}점 차`}; if(fm>fo&&fm-fo>=5)return {k:'romp',t:`완승 · ${fm-fo}점 차`};
+  if(fm<fo&&fm<=1)return {k:'nobat',t:`빈타 · ${fm}득점`}; if(Math.abs(fm-fo)===1)return {k:'close',t:'1점 차 승부'}; return null; }
 function resultHome(){
   if(!G.res||G.live)return ''; const g=G.games[G.res.i]; if(!g){G.res=null;return '';}
   const me=g.home===G.user?'h':'a'; const ms=g.box[me];
@@ -11079,6 +11091,7 @@ function resultHome(){
     <div class="row between"><span class="eyebrow">${g.kind?esc(g.kind)+' · ':''}${dmd(g.day)} ${WD[dobj(g.day).w]}${reg?` · ${n}/144경기`:''}${g.att?` · 관중 ${g.att.toLocaleString('ko-KR')}${g.so?'(매진)':''}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span></div>
     <div class="scoreline">${badge(g.away,34)}<b class="tn2"><i>${team(g.away).city}</i>${team(g.away).nick}</b><span class="num">${g.as}</span><i>:</i><span class="num">${g.hs}</span><b class="tn2"><i>${team(g.home).city}</i>${team(g.home).nick}</b>${badge(g.home,34)}</div>
     ${lineScore(g,null)}
+    ${(()=>{ const c=gameChar(g); return c?`<p class="small gchar ${c.k==='blown'||c.k==='rout'||c.k==='nobat'?'bad':c.k==='comeback'||c.k==='romp'?'good':''}"><b>${esc(c.t)}</b></p>`:''; })()}
     ${pf.length?`<div class="pfs">${pf.join('')}</div>`:''}
     ${others}
     ${(()=>{ try{ return fanLinesHtml(gameFanLines(g),'팬 반응'); }catch(e){ return ''; } })()}
@@ -11678,6 +11691,10 @@ const FB={
   win:{pos:['오늘 {p} 미쳤다 진짜','{p} 연봉 올려줘라 제발','이 맛에 야구 본다','직관 갔는데 이겼다 ㅋㅋ 집 가는 길 행복','{q} 오늘 공 좋더라','{p} 타석 들어올 때마다 뭔가 해줄 것 같음','오늘 같은 경기만 해라','{O} 상대로 이기니까 더 좋네','수훈선수 {p} 인정합니다','중계 보다가 소리 질렀다 ㅋㅋㅋ'],
        mix:['이겼으니 됐다 근데 불펜은 좀...','이긴 건 좋은데 {r} 오늘 왜 저럼','점수 차 벌릴 때 못 벌린 건 아쉽다','이겨도 불안한 이 느낌 뭐냐'],
        fun:['오늘 치킨 맛있게 먹었다','내일도 이 기세로 가자','다음 주 직관 예매 완료','응원가 아직도 귀에서 맴돈다']},
+  blown:{neg:['다 이긴 경기를 왜 놓치냐','선발이 버텨 줬는데 또 후반에','9회까지 기대했다가 이게 뭐냐','불펜 정비 안 하면 이런 경기 계속 나온다','오늘 진 건 진짜 잠 안 온다'],mix:['{p}는 잘했는데 아깝다','선발은 할 만큼 했다','그래도 7회까지는 좋았다']},
+  comeback:{pos:['이런 맛에 끝까지 본다','포기 안 한 보람 있다','오늘 뒤집은 거 진짜 크다','{p} 마지막에 해줬다'],mix:['초반은 답답했는데 결국 이겼네']},
+  rout:{neg:['오늘은 그냥 졌다 말할 게 없음','초반에 무너지니 볼 게 없었다','{O}한테 이렇게 밀리냐','점수 차 보고 그냥 껐다'],mix:['이런 날도 있지 내일 보자']},
+  nobat:{neg:['방망이가 이렇게 안 맞냐','점수를 못 내는데 어떻게 이기냐','투수들 불쌍하다 오늘','득점권에서 한 방이 없다'],mix:['{q} 혼자 고생했다']},
   loss:{neg:['{r} 오늘 왜 저럼','{r} 2군 한 번 보내라 제발','불펜 방화 언제까지 볼 거냐','치킨 시켰는데 체함','오늘 경기는 기억에서 지운다','투수 교체 타이밍 실화냐','득점권에서 한 방이 그렇게 어렵냐','{O}한테 이렇게 털릴 일이냐','타선 집단 슬럼프 아님?','이럴 거면 리빌딩이나 하자'],
        mix:['그래도 {p} 하나는 잘했다','질 수도 있지 내일 이기면 됨','144경기 중 하나일 뿐이다 진정하자','{p} 혼자 야구하네'],
        fun:['중계 끄고 산책 나감','오늘은 일찍 잔다','야구 끊는다 (내일 또 봄)']},
@@ -11745,7 +11762,7 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
     const sc=`${g.home===me?g.hs:g.as}:${g.home===me?g.as:g.hs}`;
     const title=won?fPick(fRng('gt'+g.day),[`${tshort(op)}전 ${sc} 승리 후기`,(vars.p?`오늘 ${vars.p} 보신 분`:'오늘 경기 총평'),`${sc} 승! 오늘 경기 총평`,`이기니까 좋네요 (${sc})`]):fPick(fRng('gt'+g.day),[`${tshort(op)}전 ${sc} 패배... 총평`,(vars.r?`${vars.r} 오늘 왜 그랬냐`:'오늘 경기 총평'),`오늘 경기 보고 화나신 분`,`${sc} 패, 할 말이 없다`]);
     add({id:'g'+g.day,d:g.day,cat:'경기',title,body:`${team(op).city} ${team(op).nick}전 ${sc} ${won?'승리':g.res==='무'?'무승부':'패배'}.${star?` ${star.p.name} ${star.b.ab}타수 ${star.b.h}안타${star.b.hr?` ${star.b.hr}홈런`:''}.`:''}`,tid:me,ref:won?star?.p.id:null,
-      cm:fComments('gc'+g.day,(g.kind&&/차전/.test(g.kind))?(won?'psWin':'psLoss'):(won?'win':'loss'),won?'pos':(g.kind&&/차전/.test(g.kind))?'mix':'neg',vars,6,me,fa),hot:Math.abs(g.hs-g.as)>=5}); }
+      cm:fComments('gc'+g.day,(g.kind&&/차전/.test(g.kind))?(won?'psWin':'psLoss'):(()=>{ const c=typeof gameChar==='function'?gameChar(g):null; return c&&['blown','comeback','rout','nobat'].includes(c.k)?c.k:(won?'win':'loss'); })(),won?'pos':(g.kind&&/차전/.test(g.kind))?'mix':'neg',vars,6,me,fa),hot:Math.abs(g.hs-g.as)>=5}); }
   /* 1-2) 포스트시즌 시리즈 결과: 올라갔는지·탈락했는지·업셋인지(정규시즌 연승·연패 글은 정규시즌 중에만) */
   try{ const P=G.ps; if(P&&P.res&&P.resD){ for(const [rd,r] of Object.entries(P.res)){ const d=P.resD[rd]; if(d==null||d<G.cal.open||(r[0]!==me&&r[1]!==me))continue;
       const won=r[0]===me, op=won?r[1]:r[0], R=ROUNDK[rd]||rd; const si=t=>{ const i=(P.seeds||[]).indexOf(t); return i<0?9:i; }; const upset=won&&si(me)>si(op); const champ=won&&rd==='ks';
@@ -11984,8 +12001,8 @@ function myLeaders(){
     <div class="eyebrow">투수 · WAR</div><div class="list">${pit.map(li).join('')}</div></section>`;
 }
 function newsSeen(){ return G.newsSeen||0; }
-function newsCard(){ const ns=(G.news||[]).slice(0,4); if(!ns.length)return '';
-  const nn=(G.news||[]).filter(n=>(n.id||0)>newsSeen()).length;
+function newsCard(){ const own=(G.news||[]).filter(n=>!n.oth); const ns=own.slice(0,4); if(!ns.length)return '';
+  const nn=own.filter(n=>(n.id||0)>newsSeen()).length;
   return `<section class="card"><div class="row between"><h2 class="sec">우리 구단 기사${nn?` <span class="cntb">${nn}</span>`:''}</h2><button class="btn small" data-a="go" data-v="club:news">전체 기사</button></div>${ns.map(n=>newsItem(n,false)).join('')}</section>`; }
 function clubCard(){
   prInit(); const t=team(G.user); const ci=capInfo(G.user); const s=goalStatus();
@@ -12297,7 +12314,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const tab=UI.fdTab==='team'?'team':'list';
   const miss=(()=>{ const {ln}=fdLineupOf(myPicks.filter(p=>!p.isP)); return ['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length; })(); const pitN=myPicks.filter(p=>p.isP).length;
   return `${UI.fdMsg?`<div class="note bad">${esc(UI.fdMsg)}</div>`:''}<div class="seg fdseg"><button data-a="fdTab" data-v="list" class="${tab==='list'?'on':''}">후보 선수</button><button data-a="fdTab" data-v="team" class="${tab==='team'?'on':''}">우리 팀 <i class="fdsg">빈자리 ${miss+Math.max(0,FD_TGT.P-pitN)}</i></button></div>
-  <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${listPane}</div></div>${revView()}`; }
+  <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${mine&&!F.done&&tab==='list'?fdSuggestCard():''}${listPane}</div></div>${revView()}`; }
 /* 창단 드래프트 연봉 계산: 지금까지 쓴 돈, 쓸 수 있는 한도, 남은 지명과 자동 배분까지 감안한 1명당 여유 */
 function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user; if(!UI._fdf||UI._fdf.k!==key){ try{ UI._fdf={k:key,f:fdFin()}; }catch(e){ return null; } } const f=UI._fdf.f;
   const mine=Object.values(G.players).filter(p=>p.team===G.user&&!p.foreign); const spent=sum(mine.map(p=>p.sal));
@@ -12383,6 +12400,15 @@ function fdScoutCell(p){ const S=fdScoutTools(p); return `<td class="fdsc" title
 /* 데이터팀 칸: 항목별 순위 말(상~하)과 운 · 표본 */
 const FD_DS={'삼진 적음':'컨택','볼넷':'선구','장타력':'장타','생산력':'생산','탈삼진':'탈삼진','볼넷 억제':'제구','피홈런 억제':'피홈런','실점 억제(FIP)':'실점억제'};
 function fdDataCell(p){ const d=fdData(p); if(!d)return '<td class="muted fddt">기록 부족</td>'; return `<td class="fddt">${d.it.map(([l,v])=>`<span class="dt-i" title="${l} 상위 ${100-v}%"><i>${FD_DS[l]}</i><b style="color:${pctC(v)}">${pctW(v)}</b></span>`).join('')}${d.lv===2?'<em class="tg">2군 기록</em>':''}${d.small?'<em class="tg w">표본 적음</em>':''}${d.luck?`<em class="tg ${d.luck[0].includes('불운')?'u':'l'}" title="${esc(d.luck[1])}">${d.luck[0]}</em>`:''}</td>`; }
+function fdSuggest(){ const F=G.fd; if(!F)return []; const ly=(F.y||G.year)-1; const L=(F.all||[]).map(id=>G.players[id]).filter(p=>p&&p.fdPool); if(!L.length)return [];
+  const w3=p=>{ const T=fdThree(p,ly); return T&&T.ys>=2?warOf(T,p):null; }, w1=p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=60:h.pa>=150)?warOf(h,p):null; }, sc=p=>fdSeenBy(G.user,p).sc;
+  const used=new Set(); const take=(arr)=>{ const x=arr.find(o=>!used.has(o.p.id)); if(x)used.add(x.p.id); return x; };
+  const now=take(L.map(p=>({p,v:w3(p)})).filter(o=>o.v!=null).sort((a,b)=>b.v-a.v).map(o=>({p:o.p,k:'즉시 전력',why:`최근 3년 1군 WAR ${o.v.toFixed(1)}로 꾸준함`,risk:o.p.age>=31?`${o.p.age}세라 하락이 가까움`:`연봉 ${money(o.p.sal)}`})));
+  const W=L.map(p=>({p,w:w1(p)})).filter(o=>o.w!=null&&o.w>=1.5); const rk=(arr,f)=>{ const s=[...arr].sort((a,b)=>f(b)-f(a)); return o=>s.indexOf(o)/Math.max(1,s.length-1); }; const rw=rk(W,o=>o.w), rs=rk(W,o=>sc(o.p));
+  const und=take(W.map(o=>({p:o.p,g:rs(o)-rw(o),w:o.w})).filter(o=>o.g>.2).sort((a,b)=>b.g-a.g).map(o=>({p:o.p,k:'저평가 후보',why:`작년 WAR ${o.w.toFixed(1)}인데 스카우트 평가는 ${GRD(sc(o.p))}`,risk:'스카우트가 본 약점이 맞을 수도 있음'})));
+  const fut=take(L.filter(p=>p.age<=23).map(p=>({p,v:fdPotEst(p)})).sort((a,b)=>b.v-a.v).map(o=>({p:o.p,k:'미래 투자',why:`${o.p.age}세 · 장래성 ${GRD(o.v)}(스카우트 추정)`,risk:'1군 기록이 적어 불확실하고 크는 데 시간이 걸림'})));
+  return [now,und,fut].filter(Boolean); }
+function fdSuggestCard(){ const S=fdSuggest(); if(!S.length)return ''; return `<section class="card fdsg"><div class="row between"><h2 class="sec">이번 지명에서 비교해 볼 후보</h2><span class="small muted">정답이 아니라 고민의 출발점</span></div>${S.map(x=>`<div class="fdsg-r"><span class="pill">${x.k}</span><button class="lnk" data-a="player" data-v="${x.p.id}"><b>${esc(x.p.name)}</b> <span class="small muted">${posLabel(x.p)} · ${x.p.age}세</span></button><span class="small">${esc(x.why)}</span><span class="small muted">위험: ${esc(x.risk)}</span><button class="btn small" data-a="fdPick" data-v="${x.p.id}">지명</button></div>`).join('')}</section>`; }
 function fdSortSel(gk,so,ana){ const o=[['war','WAR(지난해)'],['risk','뺏길 확률'],['sal','연봉 낮은 순'],...(gk==='P'?[['t:velo','스카우트: 구속'],['t:stf','스카우트: 구위'],['t:sta','스카우트: 체력'],['t:ctl','스카우트: 제구(추정)']]:[['t:pow','스카우트: 파워'],['t:spd','스카우트: 발'],['t:def','스카우트: 수비'],['t:con','스카우트: 컨택(추정)']]),...(ana?(gk==='P'?[['d:3','데이터: 실점 억제'],['d:0','데이터: 탈삼진'],['d:1','데이터: 제구']]:[['d:3','데이터: 생산력'],['d:2','데이터: 장타'],['d:1','데이터: 선구'],['d:0','데이터: 컨택']]):[])];
   return `<select class="fdsort" data-a="fdSsel" aria-label="정렬">${o.map(([k,l])=>`<option value="${k}" ${so===k?'selected':''}>정렬: ${l}</option>`).join('')}</select>`; }
 /* 포지션 현황판: 남은 후보 · 툴 좋은 선수 · 기록 좋은 선수 · 다음 우리 차례 전 빠질 예상. 누르면 그 포지션만 */
@@ -16497,6 +16523,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-02d',d:'11월 2일',t:'경기 성격 · 기사 분류 · 지명 후보',items:[
+    '경기 결과에 역전패·역전승·완패·빈타 같은 경기 성격을 먼저 보여 주고, 팬 반응도 그 성격에 맞게 나옵니다.',
+    '다른 구단 일반 기사는 홈의 우리 구단 기사에 넣지 않습니다.',
+    '창단 드래프트 우리 차례에 비교해 볼 후보 셋(즉시 전력·저평가·미래 투자)을 이유와 위험과 함께 보여 줍니다. 정답이 아니라 고민의 출발점입니다.'
+  ]},
   {id:'2026-11-02c',d:'11월 2일',t:'시설·스카우트·경기 복기·저장',items:[
     '구장 시설에 연 순수익과 회수 기간, 계산 전제(올해 예상 관중 기준)를 보여 줍니다. 프리미엄석은 단계마다 일반석 300석이 준다고 적었고, 신구장은 구단 실부담(약 27억~48억)을 본문에 적었습니다.',
     '스카우트팀장 배치안에 비게 되는 담당과 적응이 끝나는 날짜를 함께 보여 줍니다.',

@@ -134,7 +134,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const tab=UI.fdTab==='team'?'team':'list';
   const miss=(()=>{ const {ln}=fdLineupOf(myPicks.filter(p=>!p.isP)); return ['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length; })(); const pitN=myPicks.filter(p=>p.isP).length;
   return `${UI.fdMsg?`<div class="note bad">${esc(UI.fdMsg)}</div>`:''}<div class="seg fdseg"><button data-a="fdTab" data-v="list" class="${tab==='list'?'on':''}">후보 선수</button><button data-a="fdTab" data-v="team" class="${tab==='team'?'on':''}">우리 팀 <i class="fdsg">빈자리 ${miss+Math.max(0,FD_TGT.P-pitN)}</i></button></div>
-  <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${listPane}</div></div>${revView()}`; }
+  <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${mine&&!F.done&&tab==='list'?fdSuggestCard():''}${listPane}</div></div>${revView()}`; }
 /* 창단 드래프트 연봉 계산: 지금까지 쓴 돈, 쓸 수 있는 한도, 남은 지명과 자동 배분까지 감안한 1명당 여유 */
 function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user; if(!UI._fdf||UI._fdf.k!==key){ try{ UI._fdf={k:key,f:fdFin()}; }catch(e){ return null; } } const f=UI._fdf.f;
   const mine=Object.values(G.players).filter(p=>p.team===G.user&&!p.foreign); const spent=sum(mine.map(p=>p.sal));
@@ -220,6 +220,15 @@ function fdScoutCell(p){ const S=fdScoutTools(p); return `<td class="fdsc" title
 /* 데이터팀 칸: 항목별 순위 말(상~하)과 운 · 표본 */
 const FD_DS={'삼진 적음':'컨택','볼넷':'선구','장타력':'장타','생산력':'생산','탈삼진':'탈삼진','볼넷 억제':'제구','피홈런 억제':'피홈런','실점 억제(FIP)':'실점억제'};
 function fdDataCell(p){ const d=fdData(p); if(!d)return '<td class="muted fddt">기록 부족</td>'; return `<td class="fddt">${d.it.map(([l,v])=>`<span class="dt-i" title="${l} 상위 ${100-v}%"><i>${FD_DS[l]}</i><b style="color:${pctC(v)}">${pctW(v)}</b></span>`).join('')}${d.lv===2?'<em class="tg">2군 기록</em>':''}${d.small?'<em class="tg w">표본 적음</em>':''}${d.luck?`<em class="tg ${d.luck[0].includes('불운')?'u':'l'}" title="${esc(d.luck[1])}">${d.luck[0]}</em>`:''}</td>`; }
+function fdSuggest(){ const F=G.fd; if(!F)return []; const ly=(F.y||G.year)-1; const L=(F.all||[]).map(id=>G.players[id]).filter(p=>p&&p.fdPool); if(!L.length)return [];
+  const w3=p=>{ const T=fdThree(p,ly); return T&&T.ys>=2?warOf(T,p):null; }, w1=p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=60:h.pa>=150)?warOf(h,p):null; }, sc=p=>fdSeenBy(G.user,p).sc;
+  const used=new Set(); const take=(arr)=>{ const x=arr.find(o=>!used.has(o.p.id)); if(x)used.add(x.p.id); return x; };
+  const now=take(L.map(p=>({p,v:w3(p)})).filter(o=>o.v!=null).sort((a,b)=>b.v-a.v).map(o=>({p:o.p,k:'즉시 전력',why:`최근 3년 1군 WAR ${o.v.toFixed(1)}로 꾸준함`,risk:o.p.age>=31?`${o.p.age}세라 하락이 가까움`:`연봉 ${money(o.p.sal)}`})));
+  const W=L.map(p=>({p,w:w1(p)})).filter(o=>o.w!=null&&o.w>=1.5); const rk=(arr,f)=>{ const s=[...arr].sort((a,b)=>f(b)-f(a)); return o=>s.indexOf(o)/Math.max(1,s.length-1); }; const rw=rk(W,o=>o.w), rs=rk(W,o=>sc(o.p));
+  const und=take(W.map(o=>({p:o.p,g:rs(o)-rw(o),w:o.w})).filter(o=>o.g>.2).sort((a,b)=>b.g-a.g).map(o=>({p:o.p,k:'저평가 후보',why:`작년 WAR ${o.w.toFixed(1)}인데 스카우트 평가는 ${GRD(sc(o.p))}`,risk:'스카우트가 본 약점이 맞을 수도 있음'})));
+  const fut=take(L.filter(p=>p.age<=23).map(p=>({p,v:fdPotEst(p)})).sort((a,b)=>b.v-a.v).map(o=>({p:o.p,k:'미래 투자',why:`${o.p.age}세 · 장래성 ${GRD(o.v)}(스카우트 추정)`,risk:'1군 기록이 적어 불확실하고 크는 데 시간이 걸림'})));
+  return [now,und,fut].filter(Boolean); }
+function fdSuggestCard(){ const S=fdSuggest(); if(!S.length)return ''; return `<section class="card fdsg"><div class="row between"><h2 class="sec">이번 지명에서 비교해 볼 후보</h2><span class="small muted">정답이 아니라 고민의 출발점</span></div>${S.map(x=>`<div class="fdsg-r"><span class="pill">${x.k}</span><button class="lnk" data-a="player" data-v="${x.p.id}"><b>${esc(x.p.name)}</b> <span class="small muted">${posLabel(x.p)} · ${x.p.age}세</span></button><span class="small">${esc(x.why)}</span><span class="small muted">위험: ${esc(x.risk)}</span><button class="btn small" data-a="fdPick" data-v="${x.p.id}">지명</button></div>`).join('')}</section>`; }
 function fdSortSel(gk,so,ana){ const o=[['war','WAR(지난해)'],['risk','뺏길 확률'],['sal','연봉 낮은 순'],...(gk==='P'?[['t:velo','스카우트: 구속'],['t:stf','스카우트: 구위'],['t:sta','스카우트: 체력'],['t:ctl','스카우트: 제구(추정)']]:[['t:pow','스카우트: 파워'],['t:spd','스카우트: 발'],['t:def','스카우트: 수비'],['t:con','스카우트: 컨택(추정)']]),...(ana?(gk==='P'?[['d:3','데이터: 실점 억제'],['d:0','데이터: 탈삼진'],['d:1','데이터: 제구']]:[['d:3','데이터: 생산력'],['d:2','데이터: 장타'],['d:1','데이터: 선구'],['d:0','데이터: 컨택']]):[])];
   return `<select class="fdsort" data-a="fdSsel" aria-label="정렬">${o.map(([k,l])=>`<option value="${k}" ${so===k?'selected':''}>정렬: ${l}</option>`).join('')}</select>`; }
 /* 포지션 현황판: 남은 후보 · 툴 좋은 선수 · 기록 좋은 선수 · 다음 우리 차례 전 빠질 예상. 누르면 그 포지션만 */

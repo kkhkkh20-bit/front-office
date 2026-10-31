@@ -20,6 +20,13 @@ function digestCard(){ const D=G.dig; if(!D||!D.games||!D.games.length||G.res)re
     ${inj.length?`<p class="small">부상: ${inj.map(p=>`${esc(p.name)}(${esc(injNow(p))}, ${p.injOut}일)`).join(', ')}</p>`:''}
     ${digestDiag(D)}
     <p class="small sdesc">경기를 누르면 박스스코어를 볼 수 있습니다. 한 경기씩 보려면 위의 "1경기"를 누르세요.</p></section>`; }
+/* 경기 성격: 이닝별 점수로 리드가 어떻게 바뀌었는지 */
+function gameChar(g){ if(!g||!g.line)return null; const me=g.home===G.user?'h':'a', op=me==='h'?'a':'h'; const n=Math.max(g.line.a.length,g.line.h.length); let m=0,o=0; const cum=[]; for(let i=0;i<n;i++){ m+=+g.line[me][i]||0; o+=+g.line[op][i]||0; cum.push([m,o]); }
+  const fm=me==='h'?g.hs:g.as, fo=me==='h'?g.as:g.hs; const at7=cum[Math.min(6,cum.length-1)]||[0,0]; const late=fo-at7[1], lateM=fm-at7[0];
+  if(fm<fo&&at7[0]>at7[1])return {k:'blown',t:`역전패 · 7회까지 ${at7[0]}:${at7[1]}로 앞서다 8회 이후 ${late}실점`};
+  if(fm>fo&&at7[0]<at7[1])return {k:'comeback',t:`역전승 · 7회까지 ${at7[0]}:${at7[1]}로 뒤지다 8회 이후 ${lateM}득점`};
+  if(fm<fo&&fo-fm>=5)return {k:'rout',t:`완패 · ${fo-fm}점 차`}; if(fm>fo&&fm-fo>=5)return {k:'romp',t:`완승 · ${fm-fo}점 차`};
+  if(fm<fo&&fm<=1)return {k:'nobat',t:`빈타 · ${fm}득점`}; if(Math.abs(fm-fo)===1)return {k:'close',t:'1점 차 승부'}; return null; }
 function resultHome(){
   if(!G.res||G.live)return ''; const g=G.games[G.res.i]; if(!g){G.res=null;return '';}
   const me=g.home===G.user?'h':'a'; const ms=g.box[me];
@@ -35,6 +42,7 @@ function resultHome(){
     <div class="row between"><span class="eyebrow">${g.kind?esc(g.kind)+' · ':''}${dmd(g.day)} ${WD[dobj(g.day).w]}${reg?` · ${n}/144경기`:''}${g.att?` · 관중 ${g.att.toLocaleString('ko-KR')}${g.so?'(매진)':''}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span></div>
     <div class="scoreline">${badge(g.away,34)}<b class="tn2"><i>${team(g.away).city}</i>${team(g.away).nick}</b><span class="num">${g.as}</span><i>:</i><span class="num">${g.hs}</span><b class="tn2"><i>${team(g.home).city}</i>${team(g.home).nick}</b>${badge(g.home,34)}</div>
     ${lineScore(g,null)}
+    ${(()=>{ const c=gameChar(g); return c?`<p class="small gchar ${c.k==='blown'||c.k==='rout'||c.k==='nobat'?'bad':c.k==='comeback'||c.k==='romp'?'good':''}"><b>${esc(c.t)}</b></p>`:''; })()}
     ${pf.length?`<div class="pfs">${pf.join('')}</div>`:''}
     ${others}
     ${(()=>{ try{ return fanLinesHtml(gameFanLines(g),'팬 반응'); }catch(e){ return ''; } })()}
