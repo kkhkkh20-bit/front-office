@@ -48,6 +48,10 @@ const QUICK=process.env.QUICK==='1';
       const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP&&(q.hist||[]).some(h=>h.lvl==='1군'&&h.pa>=100)); let sh=null; if(p){ A.player(p.id); const t=document.querySelector('#sheet'); sh=!!t&&/wRC\+/.test(t.innerText); closeSheets(); }
       UI.fdV='sc'; render(); const prof=/우리 스카우트 성향/.test((document.querySelector('#app')||document.body).innerText); UI.fdV='dt'; render(); const xh=[...document.querySelectorAll('#app th')].some(x=>/기대 홈런/.test(x.innerText)); UI.fdV='rec'; render(); const y3b=!!document.querySelector('#app [data-a="fdY3"][data-v="1"]'); A.fdY3('1'); const y3on=UI.fdY3===true&&!!document.querySelector('#app [data-a="fdY3"][data-v="1"].on'); A.fdY3('0'); UI.fdG=ov[0]; UI.fdV=ov[1]; render(); return {fd,sh,prof,xh,y3b,y3on}; });
     if(r){ if(!r.fd)add('wRC+','창단 드래프트 타자 기록표에 wRC+ 열이 없음'); if(r.sh===false)add('wRC+','선수 정보 창에 wRC+가 없음'); if(!r.prof)add('스카우트 성향','창단 드래프트 스카우트 탭에 우리 스카우트 성향이 없음'); if(!r.xh)add('기대 홈런','창단 드래프트 데이터팀 탭에 기대 홈런 열이 없음'); if(!r.y3b||!r.y3on)add('최근 3년','창단 드래프트 성적 탭의 최근 3년 전환이 없거나 안 됨'); } }
+  /* 장래성: 창단 드래프트 표(성적·스카우트)와 선수 정보에 스카우트가 본 장래 최고 능력이 보여야 젊은 유망주를 고를 수 있다 */
+  { const r=await ev(()=>{ if(!G.fd)return null; const ov=UI.fdV; const has=v=>{ UI.fdV=v; render(); return [...document.querySelectorAll('#app th')].some(x=>/장래성/.test(x.textContent)); }; const a=has('rec'), b=has('sc'); UI.fdV=ov; render();
+      const p=Object.values(G.players).find(q=>q.fdPool&&q.age<=23); let sh=null; if(p){ A.player(p.id); sh=/장래성/.test((document.querySelector('#sheet')||{}).textContent||''); closeSheets(); } return {a,b,sh}; });
+    if(r){ if(!r.a||!r.b)add('장래성','창단 드래프트 표에 장래성 열이 없음'); if(r.sh===false)add('장래성','창단 드래프트 선수 정보에 장래성이 없음'); } }
   /* 지명 직후 카드: 실제 툴 숫자의 색이 그 툴 등급 글자의 색과 같아야 한다(스카우트 등급과 같은 기준·같은 색) */
   { const r=await ev(()=>{ if(!G.fd)return null; const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP); if(!p)return null; const t0=p.team; p.team=G.user; UI.rev={pid:p.id,rd:1,no:1,n:1,open:true}; render();
       const C={S:'r75',A:'r65',B:'r55',C:'r50',D:'r45',E:'r35',F:'r20'}; const box=document.querySelector('.fde-rv .fde-ts:not(.fde-old)'); const bad=[];
@@ -197,10 +201,12 @@ const QUICK=process.env.QUICK==='1';
       if(p){ const f=fScout(p); mid=f.mid; UI.negWin={k:'fm',id:p.id}; renderSheet(); const h=(document.querySelector('.sheet.negw .sheet-head')||{}).textContent||''; neg={cur:/현재/.test(h),est:/예상/.test(h)&&h.includes(String(mid)),h:h.slice(0,160)}; UI.negWin=null;
         A.player(p.id); const tx=(document.querySelector('#sheet .sheet')||document.querySelector('.sheet')||{}).textContent||''; sh={cur:/현재 종합/.test(tx),est:tx.includes(String(mid)),tx:tx.slice(0,200)}; closeSheets(); }
       const q=domestic(G.user).find(x=>curLine(x)); const pm=q?pMini(q):''; const yr=/20\d\d(년)?( 2군)? (OPS|ERA)/.test(pm.replace(/<[^>]+>/g,''));
+      const st=typeof gmStage==='function'?[gmStage(4,5).s,gmStage(4,9).s,gmStage(10,9).s,gmStage(10,4).s].join(','):'none';
       const o=G.teams.find(t=>t.id!==G.user); const gp=domestic(o.id).sort((a,b)=>ovr(b)-ovr(a))[0]; const md=gp?tradeMood(o.id,[],[gp.id],0):null; const mk=md?md.k:null;
-      render(); return {mk,has:!!p,mid,neg,sh,yr,pm:pm.replace(/<[^>]+>/g,' ').slice(0,120)}; });
+      render(); return {st,mk,has:!!p,mid,neg,sh,yr,pm:pm.replace(/<[^>]+>/g,' ').slice(0,120)}; });
     if(r){ if(r.neg&&(r.neg.cur||!r.neg.est))add('정보 신뢰성',`외국인 후보 협상 창이 목록 예상(${r.mid})과 다른 '현재' 값을 보여 줌: ${r.neg.h}`); if(r.sh&&(r.sh.cur||!r.sh.est))add('정보 신뢰성',`외국인 후보 선수 정보가 목록 예상(${r.mid})과 다른 '현재 종합'을 보여 줌: ${r.sh.tx}`);
       if(r.mk!=null&&r.mk!=='no'&&r.mk!=='more')add('트레이드 예상','상대 에이스를 공짜로 달라는 제안이 수락 가능으로 보임: '+r.mk); if(r.mk===undefined)add('트레이드 예상','반응 예상이 세 단계(수락 가능·추가 대가 필요·거절 가능)로 나뉘지 않음');
+      if(r.st!=='관찰,점검,보강 검토,점검')add('판단 강도','경기 후 보고 판단 단계(관찰·점검·보강 검토)가 표본·기존 전력에 맞지 않음: '+r.st);
       if(!r.yr)add('기록 연도','선수 요약 줄 기록에 연도가 없음: '+r.pm); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){

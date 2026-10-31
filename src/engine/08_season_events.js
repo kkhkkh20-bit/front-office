@@ -28,7 +28,8 @@ function campEnd(){
   const up=rows.filter(x=>x.tot>0).sort((x,y)=>y.tot-x.tot), dn=rows.filter(x=>x.tot<0).sort((x,y)=>x.tot-y.tot);
   const line=x=>`${x.p.name} (${posLabel(x.p)}, ${x.p.age}세) ${x.ch.slice(0,3).map(([k,v])=>`${TOOLK[k]||k} ${v>0?'+':''}${v.toFixed(1)}`).join(', ')}${dv(x.b)!==dv(x.a)?` · 능력 ${dv(x.a)} → ${dv(x.b)}`:''}`;
   const eff=f==='skill'?'젊은 선수 기술이 집중적으로 늘었습니다. 투수들은 새 구종을 익힐 기회도 많았습니다.':f==='fitness'?'올 시즌 부상 위험이 22% 줄었습니다.':f==='game'?'4월 말까지 경기 감각이 좋습니다.':'젊은 선수 성장과 부상 방지(부상 위험 -8%)를 고르게 챙겼습니다.';
-  mail('코칭스태프',`스프링캠프 결산: ${up.length?`${up.length}명 능력 상승`:'능력 변화 적음'}`,`훈련 방향: ${CAMP[f]}. ${eff}\n\n${cev.length?`눈에 띈 일\n${cev.slice(0,10).join('\n')}\n\n`:''}${up.length?`능력이 오른 선수 ${up.length}명\n${up.slice(0,12).map(line).join('\n')}${up.length>12?`\n외 ${up.length-12}명`:''}`:'능력이 눈에 띄게 오른 선수는 없습니다.'}${dn.length?`\n\n능력이 내린 선수 ${dn.length}명\n${dn.slice(0,6).map(line).join('\n')}`:''}\n\n훈련 방향과 캠프 훈련이 함께 반영된 수치입니다(캠프 시작일 대비).`,{kind:'캠프',imp:true,acts:[{l:'선수단 보기',a:'go',v:'roster:glance'}]});
+  const hd=campHeads(up,dn,cev.ev);
+  mail('코칭스태프',`스프링캠프 결산: ${hd.length?hd[0].split(':')[1].trim().split('(')[0]+' 등 주목할 선수 '+hd.length+'명':up.length?`${up.length}명 능력 상승`:'능력 변화 적음'}`,`${hd.length?`주목할 선수\n${hd.join('\n')}\n\n`:''}훈련 방향: ${CAMP[f]}. ${eff}\n\n${cev.length?`눈에 띈 일\n${cev.slice(0,10).join('\n')}\n\n`:''}${up.length?`능력이 오른 선수 ${up.length}명\n${up.slice(0,12).map(line).join('\n')}${up.length>12?`\n외 ${up.length-12}명`:''}`:'능력이 눈에 띄게 오른 선수는 없습니다.'}${dn.length?`\n\n능력이 내린 선수 ${dn.length}명\n${dn.slice(0,6).map(line).join('\n')}`:''}\n\n훈련 방향과 캠프 훈련이 함께 반영된 수치입니다(캠프 시작일 대비).`,{kind:'캠프',imp:true,acts:[{l:'선수단 보기',a:'go',v:'roster:glance'}]});
 }
 function seasonEnd(){
   updateLg(G.year);

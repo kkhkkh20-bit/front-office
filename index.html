@@ -1404,6 +1404,9 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .pn-i{margin:10px 0 4px}
 .pn-l{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:13.5px;line-height:1.5}
 .pn-card .pn-i+.pn-i{border-top:1px solid var(--line,rgba(255,255,255,.08));padding-top:10px}
+
+/* 경기 후 보고 판단 단계 */
+.gm-t{flex-wrap:wrap}.gm-sg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -3298,7 +3301,8 @@ function campEnd(){
   const up=rows.filter(x=>x.tot>0).sort((x,y)=>y.tot-x.tot), dn=rows.filter(x=>x.tot<0).sort((x,y)=>x.tot-y.tot);
   const line=x=>`${x.p.name} (${posLabel(x.p)}, ${x.p.age}세) ${x.ch.slice(0,3).map(([k,v])=>`${TOOLK[k]||k} ${v>0?'+':''}${v.toFixed(1)}`).join(', ')}${dv(x.b)!==dv(x.a)?` · 능력 ${dv(x.a)} → ${dv(x.b)}`:''}`;
   const eff=f==='skill'?'젊은 선수 기술이 집중적으로 늘었습니다. 투수들은 새 구종을 익힐 기회도 많았습니다.':f==='fitness'?'올 시즌 부상 위험이 22% 줄었습니다.':f==='game'?'4월 말까지 경기 감각이 좋습니다.':'젊은 선수 성장과 부상 방지(부상 위험 -8%)를 고르게 챙겼습니다.';
-  mail('코칭스태프',`스프링캠프 결산: ${up.length?`${up.length}명 능력 상승`:'능력 변화 적음'}`,`훈련 방향: ${CAMP[f]}. ${eff}\n\n${cev.length?`눈에 띈 일\n${cev.slice(0,10).join('\n')}\n\n`:''}${up.length?`능력이 오른 선수 ${up.length}명\n${up.slice(0,12).map(line).join('\n')}${up.length>12?`\n외 ${up.length-12}명`:''}`:'능력이 눈에 띄게 오른 선수는 없습니다.'}${dn.length?`\n\n능력이 내린 선수 ${dn.length}명\n${dn.slice(0,6).map(line).join('\n')}`:''}\n\n훈련 방향과 캠프 훈련이 함께 반영된 수치입니다(캠프 시작일 대비).`,{kind:'캠프',imp:true,acts:[{l:'선수단 보기',a:'go',v:'roster:glance'}]});
+  const hd=campHeads(up,dn,cev.ev);
+  mail('코칭스태프',`스프링캠프 결산: ${hd.length?hd[0].split(':')[1].trim().split('(')[0]+' 등 주목할 선수 '+hd.length+'명':up.length?`${up.length}명 능력 상승`:'능력 변화 적음'}`,`${hd.length?`주목할 선수\n${hd.join('\n')}\n\n`:''}훈련 방향: ${CAMP[f]}. ${eff}\n\n${cev.length?`눈에 띈 일\n${cev.slice(0,10).join('\n')}\n\n`:''}${up.length?`능력이 오른 선수 ${up.length}명\n${up.slice(0,12).map(line).join('\n')}${up.length>12?`\n외 ${up.length-12}명`:''}`:'능력이 눈에 띄게 오른 선수는 없습니다.'}${dn.length?`\n\n능력이 내린 선수 ${dn.length}명\n${dn.slice(0,6).map(line).join('\n')}`:''}\n\n훈련 방향과 캠프 훈련이 함께 반영된 수치입니다(캠프 시작일 대비).`,{kind:'캠프',imp:true,acts:[{l:'선수단 보기',a:'go',v:'roster:glance'}]});
 }
 function seasonEnd(){
   updateLg(G.year);
@@ -3983,6 +3987,11 @@ function fdSeenBy(tid,p){ const F=G.fd; if(!F.est||!F.ana)fdEstAll(); const o=ov
   const seen=tid===G.user?sc:sc*.5+An*.5;
   const up=Math.max(0,26-p.age)*1.3+Math.max(0,p.pot-o)*.25+hn('fdp'+tid,p.id)*sd*.4;
   return {o:seen,pot:seen+Math.max(0,up),sc,an:An}; }
+/* 장래성: 스카우트가 본 장래 최고 능력(추정). 지금 능력 추정에 '앞으로 클 몫'을 더한다.
+   다 큰 선수는 지금 모습이 곧 장래이고, 어릴수록 클 몫을 가늠하기 어려워 오차가 크다(스카우트 실력에 따라 줄어듦) */
+function fdPotEst(p){ if(!G.fd||!p)return null; const S=fdSeenBy(G.user,p); const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0);
+  const yrs=Math.max(0,27-p.age); const sd=(1+yrs*.6)*(1.25-clamp(sk,1,5)*.08); const g=Math.max(0,(p.pot-ovr(p))+hn('fdpe'+G.user,p.id)*sd);
+  return S.sc+g; }
 /* 화면용: 스카우트 등급과 분석팀 등급(분석원이 있을 때만) */
 function fdViews(p){ if(!G.fd)return null; const S=fdSeenBy(G.user,p); const lv=dataLv(G.user); return {sc:S.sc,an:lv>=1?S.an:null,up:p.age<=26&&S.pot-S.o>=6}; }
 function fdSlot(p){ return p.isP?'P':p.pos; }
@@ -4529,11 +4538,11 @@ function buildWorld(){ const userTid=0; worldReset();
   for(const t of G.teams){
     const tb=N(0,1.6);
     const mk=(isP,pos)=>{ const age=clamp(Math.round(N(27,4.6)),19,37); const T=clamp(N(48+tb,7.5),30,75);
-      const cur=age<26?T-(26-age)*rnd(1.2,2.4):age<=30?T:T-(age-30)*rnd(.6,1.4)-Math.max(0,age-34)*rnd(1.2,2.2);
+      const cur=age<26?T-(26-age)*(R()<.3?rnd(.3,.9):rnd(1.0,2.0)):age<=30?T:T-(age-30)*rnd(.6,1.4)-Math.max(0,age-34)*rnd(1.2,2.2);
       return newPlayer({age,isP,pos,base:clamp(cur,22,76),pot:age<26?T+N(0,3):cur,team:t.id,svc:clamp(age-19-ri(0,3),0,18)}); };
     for(let i=0;i<14;i++)mk(true);
     // 2군 선수층: 젊은 유망주와 대기 전력 (정식 선수 약 58명)
-    for(let i=0;i<27;i++){ const age=clamp(Math.round(N(23,2.8)),19,30); const T=clamp(N(44+tb,7.5)+(R()<.06?rnd(4,9):0),28,74); const cur=clamp(age<25?T-(25-age)*rnd(1.3,2.4):T-rnd(2,6),20,52);
+    for(let i=0;i<27;i++){ const age=clamp(Math.round(N(23,2.8)),19,30); const T=clamp(N(44+tb,7.5)+(R()<.06?rnd(4,9):0),28,74); const cur=clamp(age<25?T-(25-age)*(R()<.25?rnd(.5,1.1):rnd(1.3,2.4)):T-rnd(2,6),20,56);
       newPlayer({age,isP:i<15,pos:i<15?undefined:pick(['C','1B','2B','3B','SS','LF','CF','RF','C','SS','2B','CF']),base:cur,pot:Math.max(cur,T),team:t.id,svc:clamp(age-19-ri(0,2),0,8)}); }
     bpos.forEach(pos=>mk(false,pos));
   }
@@ -9756,7 +9765,13 @@ function campGrow(p,kind,focus){ const ev=[]; if(p.injOut>0||(p.mil&&p.mil.from<
 function campWho(tid,kind){ const ps=domestic(tid).filter(p=>!p.prospect); if(kind==='spring')return ps; const d=depth(tid); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); return ps.filter(p=>p.age<=26||(p.age<=30&&!reg.has(p.id))); }
 /* 캠프 결과 문장(우리 구단 메일) */
 function campEvLine(p,e){ if(e.t==='big')return `${p.name}: 한 단계 성장했습니다`; if(e.t==='pitch')return `${p.name}: ${e.k}을(를) 새로 장착${e.q>=3?' — 결정구로 쓸 만합니다':e.q<=-2?' — 아직 실전에서 쓰기는 어렵습니다':''}`; if(e.t==='form+')return `${p.name}: ${p.isP?'투구폼':'타격폼'} 수정 효과(${TOOLK[e.k]} +${e.d.toFixed(1)})`; return `${p.name}: ${p.isP?'투구폼':'타격폼'}을 고치다 흔들림(${TOOLK[e.k]} ${e.d.toFixed(1)})`; }
-function campGrowAll(kind,userFocus){ const mine=[]; for(const t of G.teams){ const focus=t.id===ME()?userFocus:campFocusAi(t.id,kind); for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev)mine.push(campEvLine(p,e)); } } return mine; }
+function campGrowAll(kind,userFocus){ const mine=[], evs=[]; for(const t of G.teams){ const focus=t.id===ME()?userFocus:campFocusAi(t.id,kind); for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev){ mine.push(campEvLine(p,e)); evs.push({p,e}); } } } mine.ev=evs; return mine; } /* 문장 목록 + 결산 머리말용 사건(ev) */
+/* 캠프 결산 머리말: 최대 성장 · 예상 밖 부진 · 새 구종 한 명씩 */
+function campHeads(up,dn,evs){ const L=[]; const used=new Set(); const nm=p=>`${p.name}(${posLabel(p)}, ${p.age}세)`;
+  const g=up[0]; if(g){ used.add(g.p.id); L.push(`최대 성장: ${nm(g.p)} ${g.ch.slice(0,2).map(([k,v])=>`${TOOLK[k]||k} ${v>0?'+':''}${v.toFixed(1)}`).join(', ')}`); }
+  const f=(evs||[]).find(x=>x.e.t==='form-'&&!used.has(x.p.id)); const d=f?null:dn.find(x=>!used.has(x.p.id)); if(f){ used.add(f.p.id); L.push(`예상 밖 부진: ${nm(f.p)} ${f.p.isP?'투구폼':'타격폼'}을 고치다 흔들림(${TOOLK[f.e.k]} ${f.e.d.toFixed(1)})`); } else if(d){ used.add(d.p.id); L.push(`예상 밖 부진: ${nm(d.p)} ${d.ch.slice(0,2).map(([k,v])=>`${TOOLK[k]||k} ${v.toFixed(1)}`).join(', ')}`); }
+  const pc=(evs||[]).filter(x=>x.e.t==='pitch'&&!used.has(x.p.id)).sort((a,b)=>(b.e.q||0)-(a.e.q||0))[0]; if(pc)L.push(`새 구종: ${nm(pc.p)} ${pc.e.k}${pc.e.q>=3?' — 결정구로 쓸 만함':pc.e.q<=-2?' — 아직 실전 투입은 어려움':''}`);
+  return L; }
 /* 마무리캠프 */
 function fcampStart(){ if(G.fcamp&&G.fcamp.y===G.year)return; G.fcamp={y:G.year,focus:'skill',done:false,snap:campSnap()};
   if(!G.unemp)mail('코칭스태프','마무리캠프 시작 (11월 25일까지)',`시즌을 마친 젊은 선수들과 주전이 아닌 선수들이 마무리캠프에 들어갑니다. 주전 고참은 쉽니다.\n\n훈련 방향을 정해 주세요. 정하지 않으면 기술 훈련으로 합니다.\n- 기술 훈련: 젊은 선수 능력이 고르게 오릅니다.\n- 구종 개발: 투수들이 새 구종을 익혀 올 가능성이 크게 오릅니다.\n- 포지션 전환: 전환 훈련 중인 선수의 숙련이 크게 오릅니다.`,{kind:'캠프',acts:Object.entries(FCAMP).map(([k,l])=>({l,a:'fcampSet',v:k}))}); }
@@ -11570,6 +11585,11 @@ function gmTrend(){ const G10=(G.games||[]).filter(x=>x.box&&(x.home===G.user||x
   const ops=o=>o.ab+o.bb?obpOf(o)+(o.ab?o.tb/o.ab:0):0;
   const P=Object.entries(pos).filter(([k,o])=>SLOTS_S[k]&&o.ab+o.bb+o.sf>=18).map(([k,o])=>({k,ops:ops(o),pa:o.ab+o.bb+o.sf})).sort((a,b)=>a.ops-b.ops);
   return {n:G10.length,tops:ops(all),weak:P[0]||null,best:P[P.length-1]||null,spEra:spO?spE*27/spO:0,rpEra:rpO?rpE*27/rpO:0,spIp:spN?spO/3/spN:0}; }
+/* 경기 후 보고의 판단 강도: 몇 경기 표본으로 보강을 떠올리게 하지 않는다.
+   관찰(표본 부족) → 점검(10경기 넘게 이어짐, 또는 개막 전부터 약했던 자리) → 보강 검토(10경기 넘게 이어지고 전력도 리그 하위권) */
+function gmStage(n,rk){ const low=rk!=null&&rk>=8;
+  if(n<10)return low?{s:'점검',t:`${n}경기 표본 · 개막 전부터 리그 ${rk}위였던 약점이 초반에도 나타남`}:{s:'관찰',t:`${n}경기 표본이라 아직 판단하기 이릅니다`};
+  return low?{s:'보강 검토',t:`최근 ${n}경기 내내 이어지고 전력도 리그 ${rk}위`}:{s:'점검',t:`최근 ${n}경기 부진 · 전력은 리그 ${rk!=null?rk+'위':'중위권'}라 일시적일 수 있음`}; }
 /* 연투: 같은 날짜 연속 등판 */
 function relStreak(id,day){ const days=new Set((G.games||[]).filter(x=>x.box&&(x.home===G.user||x.away===G.user)&&[...x.box.h.pit,...x.box.a.pit].some(q=>q.id===id)).map(x=>x.day)); let n=0; while(days.has(day-n))n++; return n; }
 function gmMemo(g){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!me||!g.box)return ''; const op=me==='h'?'a':'h'; const S=g.pbp?wpaMap(g):{};
@@ -11598,10 +11618,11 @@ function gmMemo(g){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!m
   for(const p of fatL)tired.push(row(p,`${fatText(p)} · 피로 ${Math.round(p.fat)} ${fatBar(p)}`,'감독이 곧 쉬게 할 가능성이 큽니다.'));
   H+=sec('지친 선수',tired.slice(0,3).join(''));
   /* 최근 10경기 흐름 */
-  const T=gmTrend(); if(T){ let tr=''; const fix=(k,l)=>tradeOpen()?`<button class="tc-i go" data-a="gmFix" data-v="${k}">${l}</button>`:'';
-    if(T.weak&&T.weak.ops<T.tops-.1)tr+=`<div class="gm-t bad"><span>${SLOTS_S[T.weak.k]} 자리 OPS <b>${fmt3(T.weak.ops)}</b> <i>팀 ${fmt3(T.tops)}</i></span>${fix(T.weak.k,'보강 후보')}</div>`;
-    if(T.rpEra>=5.2||T.rpEra>=T.spEra+1.5)tr+=`<div class="gm-t bad"><span>불펜 평균자책 <b>${T.rpEra.toFixed(2)}</b> <i>선발 ${T.spEra.toFixed(2)}</i></span>${fix('RP','불펜 후보')}</div>`;
-    if(T.spIp&&T.spIp<5)tr+=`<div class="gm-t bad"><span>선발 평균 <b>${ipStr(Math.round(T.spIp*3))}이닝</b> <i>불펜 부담</i></span>${fix('SP','선발 후보')}</div>`;
+  const T=gmTrend(); if(T){ let tr=''; let RK={}; try{ RK=slotRanks(G.user); }catch(e){} const sg=k=>gmStage(T.n,RK[k]?RK[k].rank:null); const sgc=k=>sg(k).s==='보강 검토'?'bad':'';
+    const fix=(k,l)=>{ const g=sg(k); return `<span class="gm-sg"><b class="pill ${g.s==='보강 검토'?'bad':g.s==='점검'?'warn':''}">${g.s}</b> <i class="small muted">${g.t}</i></span>${g.s==='보강 검토'&&tradeOpen()?`<button class="tc-i go" data-a="gmFix" data-v="${k}">${l}</button>`:''}`; };
+    if(T.weak&&T.weak.ops<T.tops-.1)tr+=`<div class="gm-t ${sgc(T.weak.k)}"><span>${SLOTS_S[T.weak.k]} 자리 OPS <b>${fmt3(T.weak.ops)}</b> <i>팀 ${fmt3(T.tops)}</i></span>${fix(T.weak.k,'보강 후보')}</div>`;
+    if(T.rpEra>=5.2||T.rpEra>=T.spEra+1.5)tr+=`<div class="gm-t ${sgc('RP')}"><span>불펜 평균자책 <b>${T.rpEra.toFixed(2)}</b> <i>선발 ${T.spEra.toFixed(2)}</i></span>${fix('RP','불펜 후보')}</div>`;
+    if(T.spIp&&T.spIp<5)tr+=`<div class="gm-t ${sgc('SP')}"><span>선발 평균 <b>${ipStr(Math.round(T.spIp*3))}이닝</b> <i>불펜 부담</i></span>${fix('SP','선발 후보')}</div>`;
     if(!tr)tr=`<div class="gm-t"><span>팀 OPS <b>${fmt3(T.tops)}</b> · 선발 ${T.spEra.toFixed(2)} · 불펜 ${T.rpEra.toFixed(2)}</span><i class="small muted">눈에 띄는 구멍 없음</i></div>`;
     H+=sec(`최근 ${T.n}경기 흐름`,tr); }
   /* 상대 팀에서 눈에 띈 선수 */
@@ -12174,6 +12195,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   let COL, CR, CS, CD;
   { /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
     CR=isP?[
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('era','ERA',x=>sOK(x)?-x.s.era:-99,x=>td(sOK(x)?n2(x.s.era):'-')),
       c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
@@ -12184,6 +12206,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('w','승-패',x=>x.s?(x.s.h.w||0):0,x=>td(x.s?`${x.s.h.w||0}-${x.s.h.l||0}${x.s.h.sv?`<i class="sm"> ${x.s.h.sv}세</i>`:x.s.h.hld?`<i class="sm"> ${x.s.h.hld}홀</i>`:''}`:'-')),
 ]
     :[
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
       c('wrc','wRC+',x=>sOK(x)&&x.s.wrc!=null?x.s.wrc:-999,x=>td(sOK(x)&&x.s.wrc!=null?x.s.wrc:'-',sOK(x)&&x.s.wrc>=140?'hi':''),'조정 득점 창출력(리그 평균 100, 퓨처스 기록은 퓨처스 기준)'),
@@ -12196,6 +12219,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
 ]; }
   { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
     CS=[
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       ...(isP?[c('velo','구속',x=>fdScoutTools(x.p).velo,x=>td(`${fdScoutTools(x.p).velo}<i class="sm"> ${veloMax(x.p)}</i>`),'직구 평균 · 최고(km)')]:[]),
       ...TO.map(([k,l])=>c('t:'+k,l,x=>GL[tg(x,k)]*100+wv(x),x=>{ const z=tz(x,k); return `<td class="fdg" style="color:${fdGc(z.g)}">${z.g}</td>`; },`스카우트가 눈으로 본 ${l} 등급(S·A·B·C·D·E). 스카우트마다 버릇이 있고, 경기에서 드러나는 실전 감각은 못 봅니다`)),
       ...(isP?[c('pit','구종',x=>arsenal(x.p,tz(x,'stf').raw).length,x=>{ const A=arsenal(x.p,tz(x,'stf').raw); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),
@@ -14451,7 +14475,7 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
 /* 창단 드래프트 후보: 종합 등급 대신 스카우트(툴)·데이터팀(기록) 의견을 나란히 */
 function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
-  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${box('연봉',money(p.sal||0),tContract(p))}</div>
+  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,p.age<=24?'스카우트 추정 · 어려서 오차 큼':'스카우트 추정'); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
     <div class="fdop">${S.L.map(t=>`<span class="fdtg" style="--c:${fdGc(t.g)}">${t.l} <b>${t.g}</b></span>`).join('')}</div>`; }
 /* ---------- 동작 ---------- */
 function bondCard(p){
@@ -16414,6 +16438,14 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01f',d:'11월 1일',t:'장래성 · 젊은 주전',items:[
+    '창단 드래프트 표와 선수 정보에 장래성(스카우트가 본 장래 최고 능력)을 보여 줍니다. 어릴수록 오차가 큽니다.',
+    '새 게임 세계에 20대 초반부터 잘하는 선수(일찍 크는 선수)가 실제 리그처럼 더 많아졌습니다.'
+  ]},
+  {id:'2026-11-01e',d:'11월 1일',t:'경기 후 보고 · 캠프 결산',items:[
+    '경기 후 보고의 약점 진단을 관찰 · 점검 · 보강 검토 세 단계로 나눴습니다. 몇 경기 표본만으로는 보강 버튼을 띄우지 않고, 개막 전부터 약했던 자리는 그렇다고 알려 줍니다.',
+    '캠프 결산 첫머리에 최대 성장 · 예상 밖 부진 · 새 구종 선수를 먼저 보여 줍니다.'
+  ]},
   {id:'2026-11-01d',d:'11월 1일',t:'정보 신뢰성 · 기록 연도',items:[
     '계약 전 외국인 후보는 목록·선수 정보·협상 창 모두 같은 예상 능력과 범위를 보여 줍니다. 협상 창에서 다른 숫자가 정답처럼 보이던 문제를 고쳤습니다.',
     '선수 요약 줄(시장 가치·FA·트레이드 추천 등)의 기록 앞에 몇 년 기록인지 붙였습니다.',

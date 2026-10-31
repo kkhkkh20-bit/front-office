@@ -380,3 +380,6 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .pn-i{margin:10px 0 4px}
 .pn-l{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:13.5px;line-height:1.5}
 .pn-card .pn-i+.pn-i{border-top:1px solid var(--line,rgba(255,255,255,.08));padding-top:10px}
+
+/* 경기 후 보고 판단 단계 */
+.gm-t{flex-wrap:wrap}.gm-sg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}

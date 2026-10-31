@@ -488,6 +488,19 @@ T('[국가대표] 예전 저장의 올림픽 대표 기록을 국가대표 상�
 T('[감독 관계] 감독이 정리해 달라고 한 선수를 트레이드로 보내면 "주전을 내줬다"고 반대하지 않는다(요청을 들어준 것)',()=>{ fresh(); const m=G.mgr[G.user]; m.youth=50; m.ego=50;
   const p=depth(G.user).start.map(x=>G.players[x.id]).filter(Boolean).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p&&isRegular(p),'주전 선수'); const tid=G.teams.find(t=>t.id!==G.user).id;
   const r=mreqAdd('out',{pid:p.id},G.day+30); r.st='open'; p.listed=true; const v=mgrTradeView(tid,[p.id],[]); ok(v.r>=0,'관계 변화 '+v.r+' · '+v.txt); ok(!/주전/.test(v.txt),v.txt); });
+T('[캠프 결산] 첫 줄에 주목할 선수(최대 성장·예상 밖 부진·새 구종)를 먼저 보여 주고, 집계는 그 뒤에',()=>{ fresh(); campStart(); G.camp.focus='skill';
+  const _cg=campGrowAll; const ps=domestic(G.user); const a=ps.find(p=>!p.isP), b=ps.find(p=>!p.isP&&p!==a), c=ps.find(p=>p.isP);
+  campGrowAll=function(k,f){ const L=_cg(k,f); a.r.pow+=3; return Object.assign(L.concat([campEvLine(b,{t:'form-',k:'con',d:-1.2}),campEvLine(c,{t:'pitch',k:'슬라이더',q:-2})]),{ev:(L.ev||[]).concat([{p:b,e:{t:'form-',k:'con',d:-1.2}},{p:c,e:{t:'pitch',k:'슬라이더',q:-2}}])}); };
+  try{ campEnd(); }finally{ campGrowAll=_cg; } const m=G.mail.find(x=>/스프링캠프 결산/.test(x.subj)); ok(m,'결산 소식');
+  ok(/주목할 선수/.test(m.body.split('\\n\\n').slice(0,2).join('\\n')),'첫머리에 주목할 선수: '+m.body.slice(0,200));
+  ok(m.body.indexOf('최대 성장')>=0&&m.body.indexOf('최대 성장')<m.body.indexOf('능력이 오른 선수'),'최대 성장이 집계보다 앞'); ok(/예상 밖 부진: /.test(m.body),'예상 밖 부진에 폼 수정 실패 선수'); ok(/새 구종: /.test(m.body),'새 구종 습득 선수'); });
+T('[나이] 시작 세계에도 20대 초반 주전급이 있다(일찍 크는 선수): 23세 이하 1군 평균 이상 선수와 상위 50명 안의 23세 이하',()=>{ fresh(); const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool));
+  const y=P.filter(p=>p.age<=23&&ovr(p)>=53).length; const t50=[...P].sort((a,b)=>ovr(b)-ovr(a)).slice(0,50).filter(p=>p.age<=23).length; ok(y>=8,'23세 이하 주전급 '+y+'명'); ok(t50>=6,'상위 50명 중 23세 이하 '+t50+'명'); });
+T('[창단 드래프트] 장래성: 스카우트가 본 장래 최고 능력(추정)을 지명 전에 보여 주고, 젊을수록 오차가 크지만 실제 잠재력과 맞는 방향이다',()=>{ fresh(); DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
+  ok(typeof fdPotEst==='function','장래성 추정 함수'); const E=P.map(p=>({p,e:fdPotEst(p)})); ok(E.every(x=>x.e!=null&&x.e>=fdSeenBy(G.user,x.p).sc-.01),'장래성은 현재 추정 이상');
+  const cor=(L,f,g)=>{ const n=L.length, mx=L.reduce((a,x)=>a+f(x),0)/n, my=L.reduce((a,x)=>a+g(x),0)/n; let sxy=0,sx=0,sy=0; for(const x of L){ const dx=f(x)-mx, dy=g(x)-my; sxy+=dx*dy; sx+=dx*dx; sy+=dy*dy; } return sxy/Math.sqrt(sx*sy); };
+  const Y=E.filter(x=>x.p.age<=24); const c=cor(Y,x=>x.e,x=>x.p.pot); ok(c>=.6,'24세 이하 장래성 추정과 실제 잠재력 상관 '+c.toFixed(2));
+  const err=L=>Math.sqrt(L.reduce((a,x)=>a+(x.e-Math.max(x.p.pot,ovr(x.p)))**2,0)/L.length); const eY=err(Y), eO=err(E.filter(x=>x.p.age>=29)); ok(eY>eO,'젊을수록 오차가 큼: 24세 이하 '+eY.toFixed(1)+' · 29세 이상 '+eO.toFixed(1)); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
@@ -661,7 +674,7 @@ T('[트레이드] 고액 연봉이라도 성적·능력이 멀쩡한 선수는 �
 
 T('[트레이드] AI가 연봉 정리 매물로 내놓는 선수는 고액 연봉 순이 아니라 몸값 대비 성적이 나쁜 선수(노장)다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10);
   const t=G.teams.find(x=>x.id!==G.user&&x.id!==ME()); const ds=domestic(t.id).filter(q=>!q.ys&&healthy(q)&&!(q.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a)); ok(ds.length>=8,'준비 실패');
-  const star=ds[3], vet=ds[6]; for(const q of ds.slice(0,3))setOvr(q,Math.max(ovr(q),66)); /* 핵심 3명 밖의 주전 */ star.age=29; setOvr(star,62); star.sal=2600; star.faC=true; star.yrs=3; vet.age=34; setOvr(vet,50); vet.sal=1500; vet.faC=true; vet.yrs=2; for(const q of ds)if(q!==star&&q!==vet&&q.sal>1500)q.sal=900;
+  const PP=ds.slice(3).filter(q=>q.isP); const star=PP[0], vet=PP[1]; /* 투수끼리(포지션 가치 보정 pvShift가 섞이지 않게) */ for(const q of ds.slice(0,3))setOvr(q,Math.max(ovr(q),66)); /* 핵심 3명 밖의 주전 */ star.age=29; setOvr(star,62); star.pot=62; star.sal=2600; star.faC=true; star.yrs=3; vet.age=34; setOvr(vet,50); vet.pot=50; vet.sal=1500; star.hist=[]; vet.hist=[]; /* 기록이 몸값 판단(projO)에 섞이지 않게: 능력만으로 비교 */ vet.faC=true; vet.yrs=2; for(const q of ds)if(q!==star&&q!==vet&&q.sal>1500)q.sal=900;
   const ci=capInfo(t.id); const extra=Math.max(0,ci.cap*.99-ci.pay); ds.slice(0,3).forEach(q=>q.sal+=Math.round(extra/3)); /* 상한 근처로: 매물 후보가 아닌 핵심 3명에게 얹는다 */ ok(capInfo(t.id).pay>capInfo(t.id).cap*.97,'준비 실패: 상한 근처가 아님');
   let g=0; while(!ds.some(q=>q.aiListed&&q.aiWhy==='sal')&&g++<60){ for(const q of ds){ delete q.aiListed; delete q.aiWhy; } aiBlockWeekly(); }
   const L=ds.find(q=>q.aiListed&&q.aiWhy==='sal'); ok(L,'연봉 정리 매물이 안 나옴'); ok(L!==star,'능력 62 주전(연봉 26억)을 노장 대신 연봉 정리 매물로 내놓음'); ok(L.sal>marketSal(projO(L,0))*1.3,'몸값보다 크게 비싸지 않은 '+L.name+'(능력 '+Math.round(ovr(L))+', '+L.age+'세, 연봉 '+money(L.sal)+')을(를) 내놓음'); /* 그 팀에 더 심한 노장이 있으면 그 선수가 먼저다 */ });

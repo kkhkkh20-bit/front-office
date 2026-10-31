@@ -62,6 +62,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   let COL, CR, CS, CD;
   { /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
     CR=isP?[
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('era','ERA',x=>sOK(x)?-x.s.era:-99,x=>td(sOK(x)?n2(x.s.era):'-')),
       c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
@@ -72,6 +73,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('w','승-패',x=>x.s?(x.s.h.w||0):0,x=>td(x.s?`${x.s.h.w||0}-${x.s.h.l||0}${x.s.h.sv?`<i class="sm"> ${x.s.h.sv}세</i>`:x.s.h.hld?`<i class="sm"> ${x.s.h.hld}홀</i>`:''}`:'-')),
 ]
     :[
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
       c('wrc','wRC+',x=>sOK(x)&&x.s.wrc!=null?x.s.wrc:-999,x=>td(sOK(x)&&x.s.wrc!=null?x.s.wrc:'-',sOK(x)&&x.s.wrc>=140?'hi':''),'조정 득점 창출력(리그 평균 100, 퓨처스 기록은 퓨처스 기준)'),
@@ -84,6 +86,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
 ]; }
   { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
     CS=[
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       ...(isP?[c('velo','구속',x=>fdScoutTools(x.p).velo,x=>td(`${fdScoutTools(x.p).velo}<i class="sm"> ${veloMax(x.p)}</i>`),'직구 평균 · 최고(km)')]:[]),
       ...TO.map(([k,l])=>c('t:'+k,l,x=>GL[tg(x,k)]*100+wv(x),x=>{ const z=tz(x,k); return `<td class="fdg" style="color:${fdGc(z.g)}">${z.g}</td>`; },`스카우트가 눈으로 본 ${l} 등급(S·A·B·C·D·E). 스카우트마다 버릇이 있고, 경기에서 드러나는 실전 감각은 못 봅니다`)),
       ...(isP?[c('pit','구종',x=>arsenal(x.p,tz(x,'stf').raw).length,x=>{ const A=arsenal(x.p,tz(x,'stf').raw); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),

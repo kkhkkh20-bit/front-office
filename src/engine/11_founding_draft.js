@@ -81,6 +81,11 @@ function fdSeenBy(tid,p){ const F=G.fd; if(!F.est||!F.ana)fdEstAll(); const o=ov
   const seen=tid===G.user?sc:sc*.5+An*.5;
   const up=Math.max(0,26-p.age)*1.3+Math.max(0,p.pot-o)*.25+hn('fdp'+tid,p.id)*sd*.4;
   return {o:seen,pot:seen+Math.max(0,up),sc,an:An}; }
+/* 장래성: 스카우트가 본 장래 최고 능력(추정). 지금 능력 추정에 '앞으로 클 몫'을 더한다.
+   다 큰 선수는 지금 모습이 곧 장래이고, 어릴수록 클 몫을 가늠하기 어려워 오차가 크다(스카우트 실력에 따라 줄어듦) */
+function fdPotEst(p){ if(!G.fd||!p)return null; const S=fdSeenBy(G.user,p); const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0);
+  const yrs=Math.max(0,27-p.age); const sd=(1+yrs*.6)*(1.25-clamp(sk,1,5)*.08); const g=Math.max(0,(p.pot-ovr(p))+hn('fdpe'+G.user,p.id)*sd);
+  return S.sc+g; }
 /* 화면용: 스카우트 등급과 분석팀 등급(분석원이 있을 때만) */
 function fdViews(p){ if(!G.fd)return null; const S=fdSeenBy(G.user,p); const lv=dataLv(G.user); return {sc:S.sc,an:lv>=1?S.an:null,up:p.age<=26&&S.pot-S.o>=6}; }
 function fdSlot(p){ return p.isP?'P':p.pos; }

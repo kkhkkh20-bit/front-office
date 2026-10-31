@@ -33,7 +33,13 @@ function campGrow(p,kind,focus){ const ev=[]; if(p.injOut>0||(p.mil&&p.mil.from<
 function campWho(tid,kind){ const ps=domestic(tid).filter(p=>!p.prospect); if(kind==='spring')return ps; const d=depth(tid); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); return ps.filter(p=>p.age<=26||(p.age<=30&&!reg.has(p.id))); }
 /* 캠프 결과 문장(우리 구단 메일) */
 function campEvLine(p,e){ if(e.t==='big')return `${p.name}: 한 단계 성장했습니다`; if(e.t==='pitch')return `${p.name}: ${e.k}을(를) 새로 장착${e.q>=3?' — 결정구로 쓸 만합니다':e.q<=-2?' — 아직 실전에서 쓰기는 어렵습니다':''}`; if(e.t==='form+')return `${p.name}: ${p.isP?'투구폼':'타격폼'} 수정 효과(${TOOLK[e.k]} +${e.d.toFixed(1)})`; return `${p.name}: ${p.isP?'투구폼':'타격폼'}을 고치다 흔들림(${TOOLK[e.k]} ${e.d.toFixed(1)})`; }
-function campGrowAll(kind,userFocus){ const mine=[]; for(const t of G.teams){ const focus=t.id===ME()?userFocus:campFocusAi(t.id,kind); for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev)mine.push(campEvLine(p,e)); } } return mine; }
+function campGrowAll(kind,userFocus){ const mine=[], evs=[]; for(const t of G.teams){ const focus=t.id===ME()?userFocus:campFocusAi(t.id,kind); for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev){ mine.push(campEvLine(p,e)); evs.push({p,e}); } } } mine.ev=evs; return mine; } /* 문장 목록 + 결산 머리말용 사건(ev) */
+/* 캠프 결산 머리말: 최대 성장 · 예상 밖 부진 · 새 구종 한 명씩 */
+function campHeads(up,dn,evs){ const L=[]; const used=new Set(); const nm=p=>`${p.name}(${posLabel(p)}, ${p.age}세)`;
+  const g=up[0]; if(g){ used.add(g.p.id); L.push(`최대 성장: ${nm(g.p)} ${g.ch.slice(0,2).map(([k,v])=>`${TOOLK[k]||k} ${v>0?'+':''}${v.toFixed(1)}`).join(', ')}`); }
+  const f=(evs||[]).find(x=>x.e.t==='form-'&&!used.has(x.p.id)); const d=f?null:dn.find(x=>!used.has(x.p.id)); if(f){ used.add(f.p.id); L.push(`예상 밖 부진: ${nm(f.p)} ${f.p.isP?'투구폼':'타격폼'}을 고치다 흔들림(${TOOLK[f.e.k]} ${f.e.d.toFixed(1)})`); } else if(d){ used.add(d.p.id); L.push(`예상 밖 부진: ${nm(d.p)} ${d.ch.slice(0,2).map(([k,v])=>`${TOOLK[k]||k} ${v.toFixed(1)}`).join(', ')}`); }
+  const pc=(evs||[]).filter(x=>x.e.t==='pitch'&&!used.has(x.p.id)).sort((a,b)=>(b.e.q||0)-(a.e.q||0))[0]; if(pc)L.push(`새 구종: ${nm(pc.p)} ${pc.e.k}${pc.e.q>=3?' — 결정구로 쓸 만함':pc.e.q<=-2?' — 아직 실전 투입은 어려움':''}`);
+  return L; }
 /* 마무리캠프 */
 function fcampStart(){ if(G.fcamp&&G.fcamp.y===G.year)return; G.fcamp={y:G.year,focus:'skill',done:false,snap:campSnap()};
   if(!G.unemp)mail('코칭스태프','마무리캠프 시작 (11월 25일까지)',`시즌을 마친 젊은 선수들과 주전이 아닌 선수들이 마무리캠프에 들어갑니다. 주전 고참은 쉽니다.\n\n훈련 방향을 정해 주세요. 정하지 않으면 기술 훈련으로 합니다.\n- 기술 훈련: 젊은 선수 능력이 고르게 오릅니다.\n- 구종 개발: 투수들이 새 구종을 익혀 올 가능성이 크게 오릅니다.\n- 포지션 전환: 전환 훈련 중인 선수의 숙련이 크게 오릅니다.`,{kind:'캠프',acts:Object.entries(FCAMP).map(([k,l])=>({l,a:'fcampSet',v:k}))}); }

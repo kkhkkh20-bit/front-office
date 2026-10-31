@@ -56,6 +56,11 @@ function gmTrend(){ const G10=(G.games||[]).filter(x=>x.box&&(x.home===G.user||x
   const ops=o=>o.ab+o.bb?obpOf(o)+(o.ab?o.tb/o.ab:0):0;
   const P=Object.entries(pos).filter(([k,o])=>SLOTS_S[k]&&o.ab+o.bb+o.sf>=18).map(([k,o])=>({k,ops:ops(o),pa:o.ab+o.bb+o.sf})).sort((a,b)=>a.ops-b.ops);
   return {n:G10.length,tops:ops(all),weak:P[0]||null,best:P[P.length-1]||null,spEra:spO?spE*27/spO:0,rpEra:rpO?rpE*27/rpO:0,spIp:spN?spO/3/spN:0}; }
+/* 경기 후 보고의 판단 강도: 몇 경기 표본으로 보강을 떠올리게 하지 않는다.
+   관찰(표본 부족) → 점검(10경기 넘게 이어짐, 또는 개막 전부터 약했던 자리) → 보강 검토(10경기 넘게 이어지고 전력도 리그 하위권) */
+function gmStage(n,rk){ const low=rk!=null&&rk>=8;
+  if(n<10)return low?{s:'점검',t:`${n}경기 표본 · 개막 전부터 리그 ${rk}위였던 약점이 초반에도 나타남`}:{s:'관찰',t:`${n}경기 표본이라 아직 판단하기 이릅니다`};
+  return low?{s:'보강 검토',t:`최근 ${n}경기 내내 이어지고 전력도 리그 ${rk}위`}:{s:'점검',t:`최근 ${n}경기 부진 · 전력은 리그 ${rk!=null?rk+'위':'중위권'}라 일시적일 수 있음`}; }
 /* 연투: 같은 날짜 연속 등판 */
 function relStreak(id,day){ const days=new Set((G.games||[]).filter(x=>x.box&&(x.home===G.user||x.away===G.user)&&[...x.box.h.pit,...x.box.a.pit].some(q=>q.id===id)).map(x=>x.day)); let n=0; while(days.has(day-n))n++; return n; }
 function gmMemo(g){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!me||!g.box)return ''; const op=me==='h'?'a':'h'; const S=g.pbp?wpaMap(g):{};
@@ -84,10 +89,11 @@ function gmMemo(g){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!m
   for(const p of fatL)tired.push(row(p,`${fatText(p)} · 피로 ${Math.round(p.fat)} ${fatBar(p)}`,'감독이 곧 쉬게 할 가능성이 큽니다.'));
   H+=sec('지친 선수',tired.slice(0,3).join(''));
   /* 최근 10경기 흐름 */
-  const T=gmTrend(); if(T){ let tr=''; const fix=(k,l)=>tradeOpen()?`<button class="tc-i go" data-a="gmFix" data-v="${k}">${l}</button>`:'';
-    if(T.weak&&T.weak.ops<T.tops-.1)tr+=`<div class="gm-t bad"><span>${SLOTS_S[T.weak.k]} 자리 OPS <b>${fmt3(T.weak.ops)}</b> <i>팀 ${fmt3(T.tops)}</i></span>${fix(T.weak.k,'보강 후보')}</div>`;
-    if(T.rpEra>=5.2||T.rpEra>=T.spEra+1.5)tr+=`<div class="gm-t bad"><span>불펜 평균자책 <b>${T.rpEra.toFixed(2)}</b> <i>선발 ${T.spEra.toFixed(2)}</i></span>${fix('RP','불펜 후보')}</div>`;
-    if(T.spIp&&T.spIp<5)tr+=`<div class="gm-t bad"><span>선발 평균 <b>${ipStr(Math.round(T.spIp*3))}이닝</b> <i>불펜 부담</i></span>${fix('SP','선발 후보')}</div>`;
+  const T=gmTrend(); if(T){ let tr=''; let RK={}; try{ RK=slotRanks(G.user); }catch(e){} const sg=k=>gmStage(T.n,RK[k]?RK[k].rank:null); const sgc=k=>sg(k).s==='보강 검토'?'bad':'';
+    const fix=(k,l)=>{ const g=sg(k); return `<span class="gm-sg"><b class="pill ${g.s==='보강 검토'?'bad':g.s==='점검'?'warn':''}">${g.s}</b> <i class="small muted">${g.t}</i></span>${g.s==='보강 검토'&&tradeOpen()?`<button class="tc-i go" data-a="gmFix" data-v="${k}">${l}</button>`:''}`; };
+    if(T.weak&&T.weak.ops<T.tops-.1)tr+=`<div class="gm-t ${sgc(T.weak.k)}"><span>${SLOTS_S[T.weak.k]} 자리 OPS <b>${fmt3(T.weak.ops)}</b> <i>팀 ${fmt3(T.tops)}</i></span>${fix(T.weak.k,'보강 후보')}</div>`;
+    if(T.rpEra>=5.2||T.rpEra>=T.spEra+1.5)tr+=`<div class="gm-t ${sgc('RP')}"><span>불펜 평균자책 <b>${T.rpEra.toFixed(2)}</b> <i>선발 ${T.spEra.toFixed(2)}</i></span>${fix('RP','불펜 후보')}</div>`;
+    if(T.spIp&&T.spIp<5)tr+=`<div class="gm-t ${sgc('SP')}"><span>선발 평균 <b>${ipStr(Math.round(T.spIp*3))}이닝</b> <i>불펜 부담</i></span>${fix('SP','선발 후보')}</div>`;
     if(!tr)tr=`<div class="gm-t"><span>팀 OPS <b>${fmt3(T.tops)}</b> · 선발 ${T.spEra.toFixed(2)} · 불펜 ${T.rpEra.toFixed(2)}</span><i class="small muted">눈에 띄는 구멍 없음</i></div>`;
     H+=sec(`최근 ${T.n}경기 흐름`,tr); }
   /* 상대 팀에서 눈에 띈 선수 */
