@@ -86,10 +86,16 @@ function roomAfter(give,get){ const b0=budget(); const sv=[]; const mv=(id,t)=>{
 function dealMoney(give,get){ const inS=sum(get.map(id=>G.players[id]?G.players[id].sal:0)), outS=sum(give.map(id=>G.players[id]?G.players[id].sal:0)); const d=inS-outS; const ra=roomAfter(give,get); const cost=ra.before-ra.after;
   const yrs=id=>{ const p=G.players[id]; return p?ctrlYears(p):1; }; const commit=sum(get.map(id=>(G.players[id]?G.players[id].sal:0)*yrs(id)))-sum(give.map(id=>(G.players[id]?G.players[id].sal:0)*yrs(id)));
   return `<div class="deal-m"><span>연봉 ${d>=0?'+':''}${money(d)}/년</span><span class="small muted">남은 계약 총액 ${commit>=0?'+':''}${money(commit)}</span><span class="pill ${ra.after>=0?(cost>0?'warn':'good'):'bad'}" title="경쟁균형세 변화 포함">예산 여유 ${money(ra.before)} → ${money(ra.after)}</span></div>`; }
+/* 거래가 다른 자리에 만드는 공백과 거래 성격 */
+function dealSide(give,get){ const P=id=>G.players[id]; const out=give.map(P).filter(Boolean), inn=get.map(P).filter(Boolean); let d=null; try{ d=depth(G.user); }catch(e){} const L=[];
+  for(const q of out){ const r=!d?'':d.sp.some(x=>x.id===q.id)?`${d.sp.findIndex(x=>x.id===q.id)+1}선발`:d.pen.slice(0,4).some(x=>x.id===q.id)?'필승조':d.start.some(x=>x.id===q.id)?`주전 ${posLabel(q)}`:''; if(r)L.push(`${q.name} 이탈 → ${r} 대체 필요`); }
+  const dP=inn.filter(x=>x.isP).length-out.filter(x=>x.isP).length; if(dP<0)L.push(`투수 ${-dP}명 줄어듦(남은 투수가 더 자주 등판)`);
+  const avgA=a=>a.length?a.reduce((s,x)=>s+x.age,0)/a.length:0; const ai=avgA(inn), ao=avgA(out); const kind=ai>=31&&ao<=25?'올해 성적용 단기 보강(젊은 선수 → 베테랑)':ai<=25&&ao>=30?'미래 투자(베테랑 → 젊은 선수)':'';
+  return (kind?`<p class="small"><b>거래 성격</b> ${kind}</p>`:'')+(L.length?`<p class="small warn">${L.map(esc).join(' · ')}</p>`:''); }
 function dealCard(s,i,src){ const p=G.players[s.id]; if(!p)return ''; const op=asstOpinion(s.tid,s.give,[s.id]);
   return `<div class="deal"><div class="deal-h"><b>${SLOTK[s.k]} 보강${(()=>{ const q=G.players[s.id]; if(!q)return ''; const sl=pSlot(q); return sl&&sl!==s.k&&SLOTK[sl]?` <span class="small muted">(${SLOTK[sl]} 자원)</span>`:''; })()}</b><span class="small muted">리그 ${s.rank0}위${s.rank1?` → 약 ${s.rank1}위`:''}</span><span class="deal-t">${badge(s.tid,16)}${tshort(s.tid)}</span></div>
     <div class="deal-b"><div><span class="eyebrow">받는 선수</span>${pMini(p)}</div><div><span class="eyebrow">주는 선수</span>${s.give.map(id=>G.players[id]?pMini(G.players[id]):'').join('')}</div></div>
-    ${dealMoney(s.give,[s.id])}${(()=>{ const mv=mgrTradeView(s.tid,s.give,[s.id]); return mv?`<p class="deal-o">${esc(mv.txt)}</p>`:''; })()}
+    ${dealSide(s.give,[s.id])}${dealMoney(s.give,[s.id])}${(()=>{ const mv=mgrTradeView(s.tid,s.give,[s.id]); return mv?`<p class="deal-o">${esc(mv.txt)}</p>`:''; })()}
     ${op.length?`<p class="deal-o">부단장: ${esc(op.slice(0,2).join(' '))}</p>`:''}
     <div class="row"><button class="btn small primary" data-a="tsugGo" data-v="${src}:${i}">이 조건으로 제안</button><button class="btn small" data-a="tsugEdit" data-v="${src}:${i}">조건 고치기</button></div></div>`; }
 function deskCard(){ const per=period(); if(G.gameOver)return ''; const rk=slotRanks(G.user);
