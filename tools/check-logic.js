@@ -738,6 +738,12 @@ T('창단 드래프트: 눈에 보이는 툴(구위·체력·파워·주력·수
     const o=st[vis?'v':'h']; o.e+=e; o.n+=n; o.b2+=b2; per.push(l+' '+(e/n).toFixed(2)+'/'+Math.round(b2/n*100)+'%'); }
   const mv=st.v.e/st.v.n, mh=st.h.e/st.h.n, bv=st.v.b2/st.v.n; console.log('  툴 오차(평균 등급차/2등급 이상):',per.join(' · '));
   ok(mv<=.6,'보이는 툴 평균 등급 오차 '+mv.toFixed(2)); ok(bv<=.04,'보이는 툴 2등급 이상 빗나감 '+Math.round(bv*100)+'%'); ok(mh>=mv*1.6,'오차 큼 툴 '+mh.toFixed(2)+' · 보이는 툴 '+mv.toFixed(2)); });
+T('창단 드래프트 툴 등급: 1군 주전 평균이 C 중급(70점대)이고, S 특급은 리그에 몇 명, A 상급은 구단 간판 정도다',()=>{ DEMO.on=false; newGame(6); fdStart(); const ly=G.fd.y-1;
+  const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });
+  for(const isP of [false,true]) for(const [k,l] of FD_TOOLS[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); const G2={}; let sn=0; for(const p of A){ const t=fdToolTrue(p,k); G2[t.g]=(G2[t.g]||0)+1; sn+=fdToolNum(t.v); } const n=A.length, f=g=>(G2[g]||0)/n, mean=sn/n;
+    ok(mean>=72&&mean<=76,l+' 주전 평균 점수 '+mean.toFixed(1)); ok(f('S')<=.06,l+' S 비율 '+(f('S')*100).toFixed(1)+'%'); ok(f('A')+f('S')>=.03&&f('A')+f('S')<=.15,l+' A 이상 비율 '+((f('A')+f('S'))*100).toFixed(1)+'%');
+    ok(f('C')>=.25&&['S','A','B','D','E'].every(g=>f(g)<=f('C')+.04),l+' C가 가장 많은 쪽이어야 함 '+JSON.stringify(G2)); }
+  ok(FD_G(52.5)==='C'&&fdToolNum(52.5)===74,'주전 평균 = 74점 C'); ok(!/F/.test(['S','A','B','C','D','E'].map(g=>g).join('')+FD_G(5)),'F 등급이 남아 있음'); });
 T('창단 드래프트: 지명 뒤 공개하는 실제 툴 등급은 스카우트 등급과 같은 기준이다(추정 A → 실제 C처럼 기준 차이로 어긋나지 않게)',()=>{ DEMO.on=false; newGame(6); fdStart();
   const P=Object.values(G.players).filter(p=>p.fdPool); const out=[];
   for(const isP of [false,true]) for(const [k,l] of FD_TOOLS[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); if(A.length<20)continue; let dNew=0,dOld=0;

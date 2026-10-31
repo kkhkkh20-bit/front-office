@@ -48,7 +48,7 @@ function fdEvalRows(stage){ const F=G.fd; const y=F.y;
     else if(pct<=.25&&!(few&&z.n>=60)){ k='bad'; t=m?'지금까지는 기대 이하입니다':'기대 이하였습니다'; }
     else if(few&&z.n<60){ k='bad'; t=m?'1군 출전이 적어 아직 기대 이하입니다':'1군에서 자리를 잡지 못했습니다'; }
     else { k='ok'; t=m?'지명 순번만큼 하고 있습니다':'지명 순번만큼 했습니다'; }
-    const g0=FD_G(fdE0(z.p,z.x)); const gNow=FD_G(ovr(z.p));
+    const g0=GRD(fdE0(z.p,z.x)); const gNow=GRD(ovr(z.p)); /* 종합 능력 등급(게임 공통) */
     return {pid:z.p.id,nm:z.p.name,pos:posLabel(z.p),rd:z.x.rd,no:z.x.no,n:z.n,auto:!!z.x.auto,w:Math.round(z.w*10)/10,ours:Math.round(ours*10)/10,med:Math.round(med*10)/10,pct:Math.round(pct*100),k,t,g0,gNow,role:z.x.role||fdRole(z.p,fdE0(z.p,z.x)),pa:Math.round(s.pa1),outs:Math.round(s.outs1),gone:z.p.team!==G.user}; }); }
 /* 다른 구단 포함 이 시점 최고 성과(5라운드 이후 스틸) */
 function fdEvalSteal(){ const F=G.fd; const L=F.picks.filter(x=>x.pid&&x.rd>=5&&G.players[x.pid]).map(x=>({x,p:G.players[x.pid],w:fdWarY(G.players[x.pid],F.y)})).sort((a,b)=>b.w-a.w); return L[0]&&L[0].w>=1?L[0]:null; }

@@ -26,3 +26,6 @@ function hn(a,b){ // 고정된 정규 잡음: 같은 평가자·같은 선수면
   return Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
 }
 
+
+/* 종합 능력 등급(게임 공통, 원래 능력 단위): 화면과 엔진(창단 지명 평가) 모두 쓴다 */
+const GRD=v=>v>=75?'S':v>=65?'A':v>=55?'B':v>=50?'C':v>=45?'D':v>=35?'E':'F';
