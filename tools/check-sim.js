@@ -37,7 +37,7 @@ const invDay=()=>{ const per=period();
   for(const p of Object.values(G.players)){ if(!ageSeen.has(p.id))ageSeen.set(p.id,p.age); else if(p.age!==ageSeen.get(p.id)&&G.year===ageY)INV('나이','해가 바뀌지 않았는데 '+p.name+' '+ageSeen.get(p.id)+'→'+p.age+' '+dstr(G.day));
     if(p.team!=null&&!G.teams[p.team])INV('소속','없는 구단 '+p.name);
     if(p.ctT!=null&&p.ctT!==p.team&&(p.capB||p.opt||p.ntc||p.roleProm))INV('계약 조건 정리',p.name+' 계약 구단 '+p.ctT+' · 지금 '+p.team);
-    if(p.mil&&p.mil.until&&p.mil.from>G.day&&isAway(p))INV('입대','입대 전인데 복무 중 '+p.name);
+    if(p.mil&&p.mil.until&&p.mil.from>G.day&&milServing(p))INV('입대','입대 전인데 복무 중 '+p.name);
     if(p.team!=null&&!p.foreign&&(p.yrs||0)<0)INV('계약 기간','음수 '+p.name+' '+p.yrs); }
   if(G.fa&&!G.fa.closed)for(const id of (G.fa.pool||[])){ const p=G.players[id]; if(p&&p.team!=null&&!G.fa.results?.some?.(r=>r.id===id))INV('FA 명단','소속이 있는데 FA 명단에 '+p.name); }
   for(const id of (G.fmarket||[])){ const p=G.players[id]; if(p&&p.team!=null)INV('외국인 시장','소속이 있는데 시장에 '+p.name); }

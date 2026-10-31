@@ -123,6 +123,10 @@ const QUICK=process.env.QUICK==='1';
       const pop=!!document.querySelector('.pn-w'); A.patchOk(); const gone=!document.querySelector('.pn-w'); const seen=localStorage.getItem(k)===PATCH[0].id; UI.patchClosed=false; render(); const again=!!document.querySelector('.pn-w');
       UI.tab='cfg'; UI.sub=Object.assign({},UI.sub||{},{cfg:'set'}); render(); const cfg=/패치 노트/.test((document.querySelector('#app')||document.body).innerText); UI.patchTest=false; UI.tab='home'; if(keep!=null)localStorage.setItem(k,keep); render(); return {pop,gone,seen,again,cfg}; });
     if(r){ if(r.none)add('패치 노트','패치 노트가 없음'); else { if(!r.pop)add('패치 노트','안 본 업데이트가 있는데 띄우지 않음'); if(!r.gone||!r.seen)add('패치 노트','확인해도 닫히지 않거나 기록되지 않음'); if(r.again)add('패치 노트','확인한 뒤에도 다시 뜸'); if(!r.cfg)add('패치 노트','게임 설정에 패치 노트가 없음'); } } };
+  /* 국가대표 탭: 상비군(지금 뽑는다면) 명단, 최종 명단이 나오면 우리 선수 옆에 차출 거부 버튼 */
+  const ntCheck=async()=>{ where='국가대표'; const r=await ev(()=>{ if(typeof ntView==='undefined')return {none:true}; const keep={nt:G.nt,tab:UI.tab,l:UI.lseg}; UI.tab='league'; UI.lseg='nt'; render(); const txt=(document.querySelector('#app')||document.body).innerText; const proj=/상비군|예비 명단|최종 명단/.test(txt)&&document.querySelectorAll('#app table tr').length>20;
+      const S=ntSquad('ag'); const ids=S.map(x=>x.id); const mine=domestic(G.user).find(p=>!ids.includes(p.id)); if(mine)ids[0]=mine.id; G.nt={k:'ag',y:G.year,ids,wild:[],ref:[],res:null}; const d0=G.day; G.day=Math.min(G.day,KD(9,1)); render(); const btn=!!document.querySelector('[data-a="ntRefuse"]'); G.day=d0; G.nt=keep.nt; UI.tab=keep.tab; UI.lseg=keep.l; render(); return {proj,btn}; });
+    if(r){ if(r.none)add('국가대표','국가대표 화면이 없음'); else { if(!r.proj)add('국가대표','상비군 명단이 안 보임'); if(!r.btn)add('국가대표','최종 명단의 우리 선수에게 차출 거부 버튼이 없음'); } } };
   const recCheck=async label=>{ where=`${label} · 기록 순위`;
     const r=await ev(()=>{ closeSheets(); const y=G.year; const B=playerRows(y).filter(x=>!x.p.isP&&x.h.hr>0&&!isQual(x,y)).sort((a,b)=>b.h.hr-a.h.hr); const p=B[0]; if(!p)return null;
       UI.lrf={q:true,t:'all'}; UI.lrec='bat'; UI.lrAll=true; UI.ls=UI.ls||{}; const has=()=>!!document.querySelector(`#app table [data-a="player"][data-v="${p.p.id}"]`);
@@ -178,7 +182,7 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(!r.b)add('코드 복사','코드를 만들어도 복사 버튼이 없음'); if(!r.p)add('코드 복사','붙여넣기 버튼이 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
-    where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
+    where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
     await monkey('시즌 중',+process.env.MONKEY||4);
     where='시뮬 → FA'; console.log('  FA:',await sim('G.fa&&!G.fa.closed&&G.day>=KD(11,6)',600)); await crawl('스토브리그 FA');
     where='FA 협상 창'; await ev(()=>{ const id=(G.fa.pool||[]).find(i=>G.players[i]); if(id!=null)A.negOpen('fa:'+id); }); await pg.waitForTimeout(100); await ev(()=>closeSheets());

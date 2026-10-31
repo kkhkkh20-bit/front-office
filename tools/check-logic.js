@@ -468,6 +468,26 @@ T('외국인 예상 능력순: 기록·MLB 경력·스카우트를 합친 예상
 
 T('[시즌 운] 그날 컨디션·사기 같은 일시적 기세는 삼진·홈런보다 인플레이 타구 결과에 더 실린다(삼진·홈런은 실력이 빨리 드러남)',()=>{ fresh(); const p={r:{con:60,eye:55,pow:65,spd:50,stf:60,ctl:55},trt:{}}; const a=batProbs(p,0),b=batProbs(p,2),c=pitProbs(p,0),d=pitProbs(p,2); const dB=b.babip-a.babip;
   ok(a.k-b.k<dB,'타자 삼진 변화 '+(a.k-b.k).toFixed(4)+' < BABIP 변화 '+dB.toFixed(4)); ok(b.hr-a.hr<dB*.6,'타자 홈런 변화 '+(b.hr-a.hr).toFixed(4)+' < BABIP 변화의 60%'); ok(d.k-c.k<.004,'투수 삼진 변화 '+(d.k-c.k).toFixed(4)+' < .004'); });
+T('[국가대표] 아시안게임: 25세 이하 또는 입단 4년 차 이하(둘 중 하나), 와일드카드 3명은 29세 이하, 구단당 1~3명, 24명(투수 11)',()=>{ fresh(); G.year=2026;
+  ok(ntU25({age:27,draft:{y:2022}}),'27세라도 2023년 입단(4년 차)이면 자격'); ok(ntU25({age:24,draft:{y:2018}}),'입단 오래됐어도 25세 이하면 자격'); ok(!ntU25({age:27,draft:{y:2018}}),'26세 이상이고 5년 차 이상이면 자격 없음');
+  const S=ntSquad('ag'); const ps=S.map(x=>({x,p:G.players[x.id]})); ok(S.length===24,'명단 '+S.length+'명'); ok(ps.filter(o=>o.p.isP).length===11,'투수 11명');
+  const per={}; ps.forEach(o=>per[o.p.team]=(per[o.p.team]||0)+1); const cs=G.teams.map(t=>per[t.id]||0); ok(Math.max(...cs)<=3,'구단당 최대 3명: '+cs.join(',')); ok(Math.min(...cs)>=1,'구단당 최소 1명: '+cs.join(','));
+  const W=ps.filter(o=>o.x.wild); ok(W.length<=3,'와일드카드 '+W.length+'명'); ok(W.every(o=>o.p.age<=29&&!ntU25(o.p)),'와일드카드는 자격 밖·29세 이하'); ok(ps.filter(o=>!o.x.wild).every(o=>ntU25(o.p)),'와일드카드 아닌 선수는 모두 자격 있음'); });
+T('[국가대표] 예비 명단 → 최종 명단 → 소집 기간엔 소속 팀에서 빠지고 → 금메달이면 미필 선수 병역 특례 → 복귀',()=>{ fresh(); G.year=2026;
+  G.day=KD(4,15); ntDaily(G.day); ok(G.ntPre&&G.ntPre.k==='ag'&&G.ntPre.ids.length>=40,'4월 예비 명단 '+(G.ntPre?G.ntPre.ids.length:0)+'명');
+  G.day=KD(6,11); ntDaily(G.day); const N=G.nt; ok(N&&N.k==='ag'&&N.ids.length===24,'6월 최종 24명'); const inPre=N.ids.filter(id=>G.ntPre.ids.includes(id)).length; ok(inPre>=20,'최종 명단 대부분이 예비 명단에서: '+inPre);
+  const sq=N.ids.map(id=>G.players[id]); const free=sq.filter(milFree); ok(free.length>0,'미필 선수 포함');
+  G.day=KD(9,16); ntDaily(G.day); ok(sq.every(p=>isAway(p)),'소집 기간에는 소속 팀에서 빠짐'); ok(sq.every(p=>!playersOf(p.team).includes(p)),'팀 선수 목록에서 빠짐');
+  free[0].mil={unit:'상무',from:G.day+60,until:G.day+60+MIL_DAYS}; /* 입대 예정 선수도 특례 대상 */ const r=ntResult('ag',0); ok(r==='금메달','강제 금메달'); ok(free.every(p=>p.mil&&p.mil.exempt),'미필 선수 병역 특례'); ok((G.ntHist||[]).some(x=>x.k==='ag'&&x.y===2026),'지난 대회 기록');
+  G.day=KD(9,28); ntDaily(G.day); ok(sq.every(p=>!isAway(p)),'대회 끝나면 복귀'); });
+T('[국가대표] 우리 선수 차출 거부: 대체 선수가 들어오고 팬·언론 여론과 선수 사기가 떨어진다. 소집 뒤에는 거부할 수 없다',()=>{ fresh(); G.year=2026; G.day=KD(6,11); ntAnnounce('ag'); const N=G.nt;
+  let id=N.ids.find(x=>G.players[x].team===G.user); if(id==null){ const p=domestic(G.user).filter(q=>ntU25(q)&&ntBucket(q)==='P')[0]; const out=N.ids.find(x=>ntBucket(G.players[x])==='P'); N.ids[N.ids.indexOf(out)]=p.id; id=p.id; }
+  const p=G.players[id]; prInit(); const f0=G.pr.fan, m0=p.mor??60; const msg=ntRefuse(id); ok(/거부/.test(msg),msg); ok(!N.ids.includes(id)&&N.ref.includes(id),'명단에서 빠짐'); ok(N.ids.length===24,'대체 선수로 24명 유지'); ok(G.pr.fan<f0,'팬 여론 하락'); ok((p.mor??60)<m0,'선수 사기 하락');
+  const id2=N.ids.find(x=>G.players[x].team===G.user)||N.ids[0]; G.day=KD(9,16); ok(/이미|대상/.test(ntRefuse(id2)),'소집 뒤에는 거부 불가'); });
+T('[국가대표] 예전 저장의 올림픽 대표 기록을 국가대표 상태로 옮긴다',()=>{ fresh(); const ids=domestic(G.user).slice(0,3).map(p=>p.id); G.oly={y:G.year,ids:ids.slice()}; G.nt=null; const N=ntState(); ok(N&&N.k==='oly'&&N.ids.length===3,'G.oly → G.nt'); });
+T('[감독 관계] 감독이 정리해 달라고 한 선수를 트레이드로 보내면 "주전을 내줬다"고 반대하지 않는다(요청을 들어준 것)',()=>{ fresh(); const m=G.mgr[G.user]; m.youth=50; m.ego=50;
+  const p=depth(G.user).start.map(x=>G.players[x.id]).filter(Boolean).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p&&isRegular(p),'주전 선수'); const tid=G.teams.find(t=>t.id!==G.user).id;
+  const r=mreqAdd('out',{pid:p.id},G.day+30); r.st='open'; p.listed=true; const v=mgrTradeView(tid,[p.id],[]); ok(v.r>=0,'관계 변화 '+v.r+' · '+v.txt); ok(!/주전/.test(v.txt),v.txt); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
@@ -718,7 +738,7 @@ T('[구단 이름] 플레이어가 구단 별칭을 바꿀 수 있고(연고지�
   ok(!applyTeamNames([{id:a.id,city:'부산',nick:'점검트윈스'}])&&team(a.id).city===TEAM_DEF[a.id].city,'연고지가 바뀜(별칭만 바꿀 수 있어야 함)');
   resetTeamNames(); ok(tshort(a.id)===TEAM_DEF[a.id].city+' '+TEAM_DEF[a.id].nick,'기본 이름으로 안 돌아옴 '+tshort(a.id)); });
 T('[병역] 상무 지원 기간에 스카우트팀장·감독이 선수별로 추천(지원 권장·마지막 기회·보류)을 보낸다',()=>{ fresh(); const ms=domestic(G.user).filter(p=>!p.foreign&&!p.ys&&!(p.joinY>G.year)); const d=depth(G.user); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
-  const last=ms.find(p=>!reg.has(p.id)), star=ms.find(p=>reg.has(p.id)&&p!==last), dev=ms.find(p=>!reg.has(p.id)&&p!==last&&p!==star); ok(last&&star&&dev,'준비 실패');
+  const last=ms.find(p=>!reg.has(p.id)), star=ms.find(p=>reg.has(p.id)&&p!==last), dev=ms.filter(p=>!reg.has(p.id)&&p!==last&&p!==star).sort((a,b)=>ovr(a)-ovr(b))[0]; /* 확실히 1군 자리가 없는 선수(잠재력을 올려도 주전으로 안 올라오게 가장 낮은 능력) */ ok(last&&star&&dev,'준비 실패');
   for(const p of [last,star,dev]){ p.mil=null; } last.age=27; star.age=24; dev.age=23; dev.pot=Math.max(dev.pot,ovr(dev)+8);
   ok(milAdvice(last).k==='last','27세 미필이 마지막 기회로 안 나옴: '+milAdvice(last).k); ok(milAdvice(star).k==='hold','1군 주전이 보류로 안 나옴: '+milAdvice(star).k); ok(milAdvice(dev).k==='go','1군 자리 없는 23세 유망주가 지원 권장으로 안 나옴: '+milAdvice(dev).k);
   G.day=KD(9,1); const n0=G.mail.length; milDaily(); const m=G.mail.slice(0,G.mail.length-n0).find(x=>x.subj.includes('상무 지원 기간')); ok(m&&m.body.includes('추천')&&m.body.includes(dev.name)&&m.body.includes(last.name),'상무 지원 안내에 추천 명단이 없음'); });

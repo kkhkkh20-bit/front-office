@@ -28,8 +28,10 @@ function tradeCompare(tid,give,get){
 function mgrTradeView(tid,give,get){ const m=G.mgr[G.user]; if(!m||m.interim)return null; const c=tradeCompare(tid,give,get); const ks=FIELDK.concat(['SP','RP']);
   let d=0; for(const k of ks){ const b=c.my[0][k]??35, a=c.my[1][k]??35; d+=(a-b)*(k==='SP'?2:1); }
   const youngOut=give.map(id=>G.players[id]).filter(p=>p&&p.age<=24&&(scoutReport(p).ofp||0)>=58).length;
-  const regOut=give.map(id=>G.players[id]).filter(p=>p&&isRegular(p)).length;
-  let r=0; const why=[]; if(d>=6){ r+=3; why.push('전력이 좋아진다'); } else if(d<=-6){ r-=4; why.push('전력이 약해진다'); }
+  const asked=new Set(mreqs().filter(r=>r.k==='out'&&(r.st==='open'||r.st==='ask')&&r.data).map(r=>r.data.pid)); /* 감독이 정리해 달라고 한 선수: 내보내는 건 요청을 들어주는 것 */
+  const allAsked=give.length>0&&give.every(id=>asked.has(id));
+  const regOut=give.map(id=>G.players[id]).filter(p=>p&&isRegular(p)&&!asked.has(p.id)).length;
+  let r=0; const why=[]; if(d>=6){ r+=3; why.push('전력이 좋아진다'); } else if(d<=-6&&!allAsked){ r-=4; why.push('전력이 약해진다'); }
   if(regOut&&d<0){ r-=2*regOut; why.push(`주전 ${regOut}명을 내준다`); }
   if(youngOut&&m.youth>=62){ r-=3; why.push('키우던 유망주를 내준다'); }
   if(m.ego>=70&&r<0)r-=1;

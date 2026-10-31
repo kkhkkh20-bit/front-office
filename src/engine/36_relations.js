@@ -141,7 +141,7 @@ function mgrRelWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||period()!=='seas
     if(m.ego>=65&&m.rel<=15&&R()<.3){ const nm=m.name; resignMgr(); mail('감독실',`${nm} 감독 자진 사퇴`,`${nm} 감독이 "더는 함께하기 어렵다"며 물러났습니다. 수석코치가 감독대행을 맡습니다. 새 감독을 선임하세요.`,{imp:true,kind:'감독',acts:[{l:'감독 후보',a:'go',v:'staff:mgr'}]}); } } }
 /* ===== 스타 파워: 수상·기록·활약이 마케팅 수입이 된다 ===== */
 function starPower(p){ let s=0; for(const a of (p.aw||[])){ const y=+String(a).slice(0,4); const age=G.year-y; if(age>2||isNaN(y))continue; const w=age===0?1:age===1?.7:.4;
-    s+=(a.includes('MVP')?40:a.includes('신인왕')?20:a.includes('골든')?15:5)*w; }
+    s+=(a.includes('대표팀 영웅')?22:a.includes('MVP')?40:a.includes('신인왕')?20:a.includes('골든')?15:5)*w; }
   const f=(G.feats||[]).filter(x=>x.pid===p.id&&x.maj&&x.y>=G.year-1).length; s+=f*8; const h=seasonTotal(p,G.year,'1군'); if(h){ const w=warOf(h,p); if(w>=4)s+=(w-3)*5; } if(p.hype&&p.hype.until>=G.day)s+=p.hype.v||0; /* 언론 플레이로 띄운 선수 */ if(p.foreign)s*=.6; return Math.round(s); }
 function teamStar(tid){ const L=playersOf(tid??G.user).map(p=>({p,s:starPower(p)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,3); return {v:sum(L.map(x=>x.s)),L}; }
 

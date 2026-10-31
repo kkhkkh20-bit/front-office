@@ -37,7 +37,7 @@ function milDaily(){ const d=G.day;
   for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.from===d){ p.e1=false; if(p.team===G.user)addLog(`${p.name} ${m.unit} 입대. 전역 예정 ${dmd(m.until)}.`); } }
   for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until===d){ p.mil={done:true,unit:m.unit}; story(p,`${m.unit} 전역`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} 전역`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다. 정식 로스터 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
   for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX)try{ trimRoster(t.id,ROSTER_MAX); }catch(e){} }
-  oly(d); }
+  try{ ntDaily(d); }catch(e){ console.error(e); } } /* 국가대표(아시안게임·올림픽·WBC·프리미어12): 84_national.js */
 /* 곧 군에서 돌아오는 우리 선수(정식 로스터로 바로 복귀한다) */
 function milReturns(days){ return awayOf(G.user).filter(p=>!p.ys&&p.mil&&p.mil.until>G.day&&p.mil.until<=G.day+days).sort((a,b)=>a.mil.until-b.mil.until); }
 function milRetTxt(L){ return L.map(p=>`${p.name}(${posLabel(p)}, ${dmd(p.mil.until)})`).join(', '); }
@@ -72,17 +72,5 @@ function milWarn(){ const L=domestic(G.user).filter(p=>{ milInit(p); return milF
   stop('병역',`해가 바뀌면 현역으로 입대하는 선수(27세 미필): ${L.map(p=>`${p.name}(${posLabel(p)}, 능력 ${dvo(p)})`).join(', ')}. 1월 20일 입대해 1년 6개월 동안 빠집니다. 대체 선수를 미리 구하세요.`,L[0].id); }
 /* 올림픽 */
 const olyYear=y=>y>=2028&&(y-2028)%4===0;
-function olySquad(){ const ps=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year));
-  const v=p=>ovr(p)+hn('oly'+G.year,p.id)*2.5; const P=ps.filter(p=>p.isP).sort((a,b)=>v(b)-v(a)).slice(0,12), B=ps.filter(p=>!p.isP).sort((a,b)=>v(b)-v(a)).slice(0,12); return P.concat(B); }
-function oly(d){ if(!olyYear(G.year))return; const y=G.year;
-  if(d===KD(6,10)){ const sq=olySquad(); G.oly={y,ids:sq.map(p=>p.id)}; const mine=sq.filter(p=>p.team===G.user);
-    mail('운영팀',`${y} 올림픽 야구 대표팀 발표`,`리그 선수 24명이 뽑혔습니다. 우리 구단: ${mine.map(p=>`${p.name}${milFree(p)?'(미필)':''}`).join(', ')||'없음'}.\n\n올림픽은 7월 15~20일 열립니다. 대표 선수는 7월 13일부터 22일까지 팀을 떠납니다. 동메달 이상이면 미필 선수는 체육요원으로 병역 특례를 받습니다.`,{imp:mine.length>0,kind:'병역'});
-    for(const p of mine)p.mor=clamp((p.mor??60)+6,0,100); }
-  if(G.oly&&G.oly.y===y&&d===KD(7,13))for(const id of G.oly.ids){ const p=G.players[id]; if(p){ p.ntFrom=d; p.ntAway=KD(7,22); p.e1=false; } }
-  if(G.oly&&G.oly.y===y&&d===KD(7,21)&&!G.oly.res){ const sq=G.oly.ids.map(id=>G.players[id]).filter(Boolean); const str=avg(sq.map(ovr));
-    const pm=clamp(.32+(str-58)*.05,.12,.75), x=R(); const res=x<pm*.3?'금메달':x<pm*.62?'은메달':x<pm?'동메달':'노메달'; G.oly.res=res;
-    const ex=res!=='노메달'?sq.filter(p=>milFree(p)):[]; ex.forEach(p=>p.mil={exempt:true});
-    const mine=ex.filter(p=>p.team===G.user);
-    mail('운영팀',`올림픽 야구 대표팀 ${res}`,`한국 대표팀이 ${res==='노메달'?'메달을 따지 못했습니다':res+'을 땄습니다'}.${ex.length?` 미필 선수 ${ex.length}명이 체육요원으로 병역 특례를 받습니다.`:''}${mine.length?` 우리 구단: ${mine.map(p=>p.name).join(', ')}.`:''}`,{imp:true,kind:'병역'});
-    if(mine.length)news('선수',`${mine.map(p=>p.name).join('·')}, 올림픽 메달로 병역 특례`,`${tshort(G.user)}이(가) 군 공백 걱정을 덜었습니다.`,2,{fanW:1.5}); } }
+/* 올림픽 명단·결과는 국가대표(84_national.js)로 옮겼다 */
 
