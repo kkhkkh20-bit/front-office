@@ -39,7 +39,7 @@ const A={
   fdListMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
-  fdV(v){ UI.fdV=v; render(); }, /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
+  fdV(v){ UI.fdV=v; render(); }, fdY3(v){ UI.fdY3=v==='1'; render(); }, /* 성적 탭: 지난 시즌 ↔ 최근 3년(1군 합산) */ /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
   meetOpen(v){ const [h,ask]=String(v).split('|'); const [k,id]=h.split(':'); meetOpen(k,id!=null?+id:null,{ask}); },
   meetDo(v){ meetDo(v); renderSheet(); },
   ngtOpen(v){ const [k,id]=String(v).split(':'); UI._ngtY=0; ngtOpen(k,+id); },

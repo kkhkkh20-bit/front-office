@@ -43,7 +43,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   /* 지명된 선수도 목록에서 빠지지 않고 제자리에 회색으로 남는다 */
   const ALL=(F.all||Object.keys(F.est||{}).map(Number)).map(id=>G.players[id]).filter(p=>p&&(p.fdPool||TK.has(p.id)));
   const left=ALL.filter(p=>p.fdPool);
-  let L=ALL.filter(p=>posOk(p)&&(!young||p.age<=24)&&(!onlyS||sl.has(p.id))&&(!hide||p.fdPool)).map(p=>({p,t:TK.get(p.id)||null,s:fdStatLine(p,ly),v:fdScore(G.user,p,true,X)}));
+  let L=ALL.filter(p=>posOk(p)&&(!young||p.age<=24)&&(!onlyS||sl.has(p.id))&&(!hide||p.fdPool)).map(p=>({p,t:TK.get(p.id)||null,s:UI.fdY3?fdStatLine3(p,ly):fdStatLine(p,ly),v:fdScore(G.user,p,true,X)}));
   const cntB=left.filter(p=>!p.isP).length, cntP=left.length-cntB;
   /* 세 탭: 성적(기본, 지난 3년) · 스카우트(툴·체격·의견) · 데이터팀(세부 데이터·의견). 이름 칸에 뺏길 확률과 연봉을 함께 둔다 */
   const RK=pre||F.done?{}:fdRisk(); const ANA=dataLv(G.user)>=1; const MM=fdMoney(); const isP=gk==='P';
@@ -62,7 +62,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   let COL, CR, CS, CD;
   { /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
     CR=isP?[
-      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3?'hi':''),`${ly} 1군 WAR`),
+      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('era','ERA',x=>sOK(x)?-x.s.era:-99,x=>td(sOK(x)?n2(x.s.era):'-')),
       c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
       c('g','경기',x=>x.s?x.s.g:0,x=>td(x.s?`${x.s.g}${x.s.gs?`<i class="sm">(${x.s.gs})</i>`:''}`:'-'),'괄호는 선발 등판'),
@@ -72,7 +72,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('w','승-패',x=>x.s?(x.s.h.w||0):0,x=>td(x.s?`${x.s.h.w||0}-${x.s.h.l||0}${x.s.h.sv?`<i class="sm"> ${x.s.h.sv}세</i>`:x.s.h.hld?`<i class="sm"> ${x.s.h.hld}홀</i>`:''}`:'-')),
 ]
     :[
-      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3?'hi':''),`${ly} 1군 WAR`),
+      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
       c('wrc','wRC+',x=>sOK(x)&&x.s.wrc!=null?x.s.wrc:-999,x=>td(sOK(x)&&x.s.wrc!=null?x.s.wrc:'-',sOK(x)&&x.s.wrc>=140?'hi':''),'조정 득점 창출력(리그 평균 100, 퓨처스 기록은 퓨처스 기준)'),
       c('hr','홈런',x=>x.s?x.s.hr:-1,x=>td(x.s?x.s.hr:'-')),
@@ -103,6 +103,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('dk','삼진%',x=>D(x)?-D(x).k:-99,x=>td(D(x)?pc(D(x).k):'-'),'타석 중 삼진 비율(3년)'),
       c('db','볼넷%',x=>D(x)?D(x).bb:-1,x=>td(D(x)?pc(D(x).bb):'-'),'볼넷 비율(3년)'),
       c('di','순장타',x=>D(x)?D(x).iso:-1,x=>td(D(x)?f3(D(x).iso):'-'),'장타율−타율(3년). 장타 힘'),
+      c('dxh','기대 홈런',x=>{ const e=fdHrExp(x.p,ly); return e?e.hr-e.exp:-99; },x=>{ const e=fdHrExp(x.p,ly); return td(e?`${e.exp}<i class="sm"> 실제 ${e.hr}</i>`:'-',e&&e.k==='bub'?'lk':e&&e.k==='low'?'ul':''); },`${ly} 타석에서 나왔어야 할 홈런(지난 2년 기록·타구 질). 실제가 크게 많으면 거품, 적으면 반등 여지. 정렬은 실제−기대`),
       c('dbp','BABIP',x=>D(x)&&D(x).babip!=null?D(x).babip:-1,x=>{ const v=D(x)&&D(x).babip; return td(v==null?'-':f3(v),v==null?'':v>=.345?'lk':v<=.265?'ul':''); },`${ly} 인플레이 타구 안타 비율. .340 이상은 운이 섞였을 수 있음`),
       ...(dOK?[c('dev','타구속도',x=>evOf(x.p),x=>td(evOf(x.p)),'평균 타구속도 km(지난해)'),c('dhh','강한타구%',x=>trackOf(x.p).hh,x=>td(pc(trackOf(x.p).hh)),'150km 이상 타구 비율'),c('dwh','헛스윙%',x=>-trackOf(x.p).whiff,x=>td(pc(trackOf(x.p).whiff)),'스윙 중 헛스윙'),c('dch','볼 스윙%',x=>-trackOf(x.p).chase,x=>td(pc(trackOf(x.p).chase)),'볼에 방망이가 나간 비율'),c('drun','1루 도달',x=>-trackOf(x.p).run,x=>td(n2(trackOf(x.p).run)),'초')]:[]),
       c('dop','데이터팀 의견',x=>0,x=>`<td class="op">${esc(fdDataLine(x.p,ly))}</td>`)]; }
@@ -124,7 +125,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const vtab=`<div class="seg fdvt"><button data-a="fdV" data-v="rec" class="${V==='rec'?'on':''}">성적</button><button data-a="fdV" data-v="sc" class="${V==='sc'?'on':''}">스카우트</button><button data-a="fdV" data-v="dt" class="${V==='dt'?'on':''}">데이터팀</button></div>`;
   const vnote=V==='rec'?`${ly} 시즌 기록(1군, 없으면 2군) · 지난 시즌들은 선수 정보의 '최근 3년'에서`:V==='sc'?'스카우트가 눈과 스피드건으로 본 툴 등급(S·A·B·C·D·E, C가 1군 평균쯤)과 체격. 기록은 보지 않고, 경기에서 드러나는 실전 감각은 못 봅니다. 스카우트마다 후하게 보는 툴과 짜게 보는 툴이 있습니다':ANA?'데이터팀이 실제 기록과 트래킹으로 본 세부 데이터. 툴은 보지 않습니다':'분석원이 없어 기록에서 계산한 지표만 있습니다(트래킹 데이터와 데이터팀 의견 일부 없음)';
   const listPane=`<section class="card">${F.done?'':fdPosBoardH(gk,f)}${F.done?'':fdOwnCard(gk,f)}<div class="fdgk"><b>${isP?'투수':'야수'} ${f==='all'?'전체':({SP:'선발형',RP:'불펜형',OF:'외야'})[f]||SLK[f]||f}</b> <span class="muted">${L.length}명 · 정렬 ${scol.h} ${dir?'▲':'▼'}</span> <button type="button" class="hi-i" data-tip="${esc(`이름 옆 %는 다음 우리 차례 전에 다른 구단이 데려갈 확률입니다. 탭을 바꿔도 같은 선수·같은 순서이고 보이는 정보만 바뀝니다. 열 제목을 누르면 그 기준으로 정렬합니다.\n\n${vnote}${COL.some(z=>z.tip)?`\n\n[열 설명]\n${COL.filter(z=>z.tip).map(z=>`${z.h}: ${z.tip}`).join('\n')}`:''}`)}">i</button></div>
-    ${quick}${abChips}${vtab}${V==='sc'&&fdScoutProfileTxt(isP)?`<p class="small fdscp"><b>우리 스카우트 성향</b> ${esc(fdScoutProfileTxt(isP))}</p>`:''}
+    ${quick}${abChips}${vtab}${V==='rec'?`<div class="seg fdy3"><button data-a="fdY3" data-v="0" class="${UI.fdY3?'':'on'}">${ly} 시즌</button><button data-a="fdY3" data-v="1" class="${UI.fdY3?'on':''}">최근 3년(${ly-2}~${ly})</button></div>`:''}${V==='sc'&&fdScoutProfileTxt(isP)?`<p class="small fdscp"><b>우리 스카우트 성향</b> ${esc(fdScoutProfileTxt(isP))}</p>`:''}
     <div class="fdt-w"><table class="fdt v-${V}"><thead><tr><th class="c0">선수</th>${COL.map(hd).join('')}</tr></thead><tbody>${shown.map(trow).join('')}</tbody></table></div>
     ${L.length>shown.length?`<button class="btn block" data-a="fdListMore">${Math.min(60,L.length-shown.length)}명 더 보기 (${shown.length}/${L.length})</button>`:''}</section>`;
   const tab=UI.fdTab==='team'?'team':'list';

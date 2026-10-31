@@ -1,5 +1,5 @@
 /* ===== 새 게임 ===== */
-function buildWorld(){ const userTid=0;
+function buildWorld(){ const userTid=0; worldReset();
   G={ver:4,year:2026,day:0,user:userTid,teams:[],players:{},nextId:1,history:[],log:[],lg:{},lineup:{},mail:[],stops:[],games:[],offers:[],mgr:{},mmarket:[],med:{prev:1,hosp:'none'},spend:{mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0},intl:{us:1,la:0,jp:0,tw:0,au:0},fac:{lv:2,build:null},devProg:[],ovs:[],tut:{step:0,done:false},tutFlags:{},
      scouts:[],scoutMarket:[],marketing:2000,draft:null,fa:null,trades:[],last:null,gameOver:null,contract:null,fmarket:[],live:null};
   TEAM_DEF.forEach((d,i)=>G.teams.push(Object.assign({id:i,cash:4000,pop:1,trust:55,rel:50,owner:d.indie?'profit':pick(['win','profit','pr','win']),

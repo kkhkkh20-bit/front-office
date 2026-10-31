@@ -738,6 +738,19 @@ T('창단 드래프트: 눈에 보이는 툴(구위·체력·파워·주력·수
     const o=st[vis?'v':'h']; o.e+=e; o.n+=n; o.b2+=b2; per.push(l+' '+(e/n).toFixed(2)+'/'+Math.round(b2/n*100)+'%'); }
   const mv=st.v.e/st.v.n, mh=st.h.e/st.h.n, bv=st.v.b2/st.v.n; console.log('  툴 오차(평균 등급차/2등급 이상):',per.join(' · '));
   ok(mv<=.6,'보이는 툴 평균 등급 오차 '+mv.toFixed(2)); ok(bv<=.04,'보이는 툴 2등급 이상 빗나감 '+Math.round(bv*100)+'%'); ok(mh>=mv*1.6,'오차 큼 툴 '+mh.toFixed(2)+' · 보이는 툴 '+mv.toFixed(2)); });
+T('창단 드래프트 데이터팀: 능력치를 모르고도 지난 2년 기록과 타구 질(트래킹)로 기대 홈런을 내서, 한 해 홈런 거품·불운을 짚는다',()=>{ DEMO.on=false; newGame(6); fdStart(); const y=G.fd.y-1;
+  const B=Object.values(G.players).filter(p=>!p.isP&&!p.foreign).map(p=>({p,h:seasonTotal(p,y,'1군'),e:fdHrExp(p,y)})).filter(x=>x.h&&x.h.pa>=300&&x.e);
+  ok(B.length>=40,'준비 실패: '+B.length); const tal=x=>{ const o=simBat(x.p,4000,0); return o.hr/o.pa*x.h.pa; };
+  const bub=B.filter(x=>x.e.k==='bub'), low=B.filter(x=>x.e.k==='low'); ok(bub.length>=2,'거품 판정 '+bub.length+'명');
+  const m=a=>a.reduce((s,v)=>s+v,0)/Math.max(1,a.length); const gB=m(bub.map(x=>x.h.hr-tal(x))); ok(gB>=4,'거품 판정 선수의 지난해 홈런이 실력 기대보다 평균 '+gB.toFixed(1)+'개 많아야 함(4개 이상)');
+  if(low.length>=3){ const gL=m(low.map(x=>tal(x)-x.h.hr)); ok(gL>=1,'불운 판정 선수의 실력 기대가 지난해 홈런보다 평균 '+gL.toFixed(1)+'개 많아야 함'); }
+  const err=a=>m(a.map(x=>Math.abs(x.v-tal(x.x)))); const eE=err(B.map(x=>({x,v:x.e.exp}))), eH=err(B.map(x=>({x,v:x.h.hr}))); ok(eE<eH,'기대 홈런 오차 '+eE.toFixed(1)+'가 지난해 홈런 오차 '+eH.toFixed(1)+'보다 작아야 함');
+  ok(/홈런/.test(fdDataLine(bub[0].p,y)),'데이터팀 의견에 홈런 거품이 없음: '+fdDataLine(bub[0].p,y)); });
+T('창단 드래프트 성적 탭 최근 3년: 1군 3년 합산(타석·홈런 합, WAR 합, wRC+는 타석 가중)',()=>{ DEMO.on=false; newGame(6); fdStart(); const y=G.fd.y-1;
+  const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP&&[y-2,y-1,y].every(yy=>{ const h=seasonTotal(q,yy,'1군'); return h&&h.pa>=100; })); ok(!!p,'준비 실패');
+  const L=fdStatLine3(p,y), H=[y-2,y-1,y].map(yy=>seasonTotal(p,yy,'1군')); ok(L.n===H.reduce((a,h)=>a+h.pa,0),'타석 합 '+L.n); ok(L.hr===H.reduce((a,h)=>a+h.hr,0),'홈런 합');
+  ok(Math.abs(L.war-H.reduce((a,h)=>a+warPub(h,p),0))<1e-9,'WAR 합'); ok(L.wrc===wrcMulti(H),'wRC+'); ok(L.y3===3,'연수'); });
+T('새 게임을 다시 만들면 이전 세계에서 계산해 둔 값(툴 기준·기대 홈런 회귀 등)을 쓰지 않는다',()=>{ DEMO.on=false; newGame(6); fdStart(); const a=fdToolRef(); newGame(3); fdStart(); const b=fdToolRef(); ok(a!==b,'이전 세계의 툴 기준을 그대로 씀'); });
 T('창단 드래프트 툴 등급: 1군 주전 평균이 C 중급(70점대)이고, S 특급은 리그에 몇 명, A 상급은 구단 간판 정도다',()=>{ DEMO.on=false; newGame(6); fdStart(); const ly=G.fd.y-1;
   const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });
   for(const isP of [false,true]) for(const [k,l] of FD_TOOLS[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); const G2={}; let sn=0; for(const p of A){ const t=fdToolTrue(p,k); G2[t.g]=(G2[t.g]||0)+1; sn+=fdToolNum(t.v); } const n=A.length, f=g=>(G2[g]||0)/n, mean=sn/n;

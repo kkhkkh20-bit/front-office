@@ -59,7 +59,7 @@ function nameMigrate(){ if(G.nmFix>=1)return; G.nmFix=1; const M=new Map(); cons
   const fix=s=>{ if(typeof s!=='string')return s; for(const [a,b] of M)if(s.includes(a))s=s.split(a).join(b); return s; };
   for(const m of (G.mail||[])){ m.subj=fix(m.subj); m.body=fix(m.body); if(m.from)m.from=fix(m.from); }
   for(const L of [G.news,G.wire,G.log])if(Array.isArray(L))for(const x of L){ if(!x||typeof x!=='object')continue; for(const k of ['t','h','b','title','body','txt'])if(typeof x[k]==='string')x[k]=fix(x[k]); } }
-function migrateDraft(){
+function migrateDraft(){ worldReset(); /* 불러오기·가져오기 뒤 항상 부르는 자리 */
   if(!G)return; try{ mailMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ gmInit(); }catch(e){} if(!G.coach){ try{ coachInit(); }catch(e){} } if(G.goals&&!G.goals.v&&G.goals.y===G.year){ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
   for(const k in G.mgr)mgrFix(G.mgr[k]); (G.mmarket||[]).forEach(mgrFix);
   if(!G.r68){ G.r68=true; for(const t of G.teams){ if(t.id===G.user)continue; const add=fillRoster(t.id,54); for(const p of add)delete p.dev; }

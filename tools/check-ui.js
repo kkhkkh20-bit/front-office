@@ -46,8 +46,8 @@ const QUICK=process.env.QUICK==='1';
   /* wRC+: 창단 드래프트 타자 기록표와 선수 정보 창(시즌 기록·최근 3년)에도 보여야 한다 */
   { const r=await ev(()=>{ if(!G.fd)return null; const ov=[UI.fdG,UI.fdV]; UI.fdG='B'; UI.fdV='rec'; render(); const th=[...document.querySelectorAll('#app th')].map(x=>x.innerText.trim()); const fd=th.includes('wRC+');
       const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP&&(q.hist||[]).some(h=>h.lvl==='1군'&&h.pa>=100)); let sh=null; if(p){ A.player(p.id); const t=document.querySelector('#sheet'); sh=!!t&&/wRC\+/.test(t.innerText); closeSheets(); }
-      UI.fdV='sc'; render(); const prof=/우리 스카우트 성향/.test((document.querySelector('#app')||document.body).innerText); UI.fdG=ov[0]; UI.fdV=ov[1]; render(); return {fd,sh,prof}; });
-    if(r){ if(!r.fd)add('wRC+','창단 드래프트 타자 기록표에 wRC+ 열이 없음'); if(r.sh===false)add('wRC+','선수 정보 창에 wRC+가 없음'); if(!r.prof)add('스카우트 성향','창단 드래프트 스카우트 탭에 우리 스카우트 성향이 없음'); } }
+      UI.fdV='sc'; render(); const prof=/우리 스카우트 성향/.test((document.querySelector('#app')||document.body).innerText); UI.fdV='dt'; render(); const xh=[...document.querySelectorAll('#app th')].some(x=>/기대 홈런/.test(x.innerText)); UI.fdV='rec'; render(); const y3b=!!document.querySelector('#app [data-a="fdY3"][data-v="1"]'); A.fdY3('1'); const y3on=UI.fdY3===true&&!!document.querySelector('#app [data-a="fdY3"][data-v="1"].on'); A.fdY3('0'); UI.fdG=ov[0]; UI.fdV=ov[1]; render(); return {fd,sh,prof,xh,y3b,y3on}; });
+    if(r){ if(!r.fd)add('wRC+','창단 드래프트 타자 기록표에 wRC+ 열이 없음'); if(r.sh===false)add('wRC+','선수 정보 창에 wRC+가 없음'); if(!r.prof)add('스카우트 성향','창단 드래프트 스카우트 탭에 우리 스카우트 성향이 없음'); if(!r.xh)add('기대 홈런','창단 드래프트 데이터팀 탭에 기대 홈런 열이 없음'); if(!r.y3b||!r.y3on)add('최근 3년','창단 드래프트 성적 탭의 최근 3년 전환이 없거나 안 됨'); } }
   /* 지명 직후 카드: 실제 툴 숫자의 색이 그 툴 등급 글자의 색과 같아야 한다(스카우트 등급과 같은 기준·같은 색) */
   { const r=await ev(()=>{ if(!G.fd)return null; const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP); if(!p)return null; const t0=p.team; p.team=G.user; UI.rev={pid:p.id,rd:1,no:1,n:1,open:true}; render();
       const C={S:'r75',A:'r65',B:'r55',C:'r50',D:'r45',E:'r35',F:'r20'}; const box=document.querySelector('.fde-rv .fde-ts:not(.fde-old)'); const bad=[];

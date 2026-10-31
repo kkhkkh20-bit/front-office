@@ -37,10 +37,10 @@ const FD_GL={S:6,A:5,B:4,C:3,D:2,E:1,F:0};
 function fdToolTrue(p,k){ const R=fdToolRef(); const r=R[(p.isP?'P':'B')+k]; const raw=p.r[k]||0; const v=r?clamp(52.5+(raw-r.m)/r.sd*9,20,80):raw; return {v,g:FD_G(v)}; }
 let _ftr=null; /* 저장하지 않는 계산 캐시 */
 /* 툴 기준: 1군 주전급(지난해 1군 기록이 충분한 선수)의 툴 평균·편차 */
-function fdToolRef(){ const F=G.fd; const k0=F?F.y:G.year; if(_ftr&&_ftr.k===k0)return _ftr.m; const m={}; const ly=k0-1;
+function fdToolRef(){ const F=G.fd; const k0=F?F.y:G.year; if(_ftr&&_ftr.k===k0&&_ftr.g===G)return _ftr.m; /* 새 게임·불러오기로 G가 바뀌면 다시 계산 */ const m={}; const ly=k0-1;
   const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });
   for(const isP of [false,true]){ const A=P.filter(p=>p.isP===isP); if(A.length<10)continue; for(const [k] of FD_TOOLS[isP?'P':'B']){ const v=A.map(p=>p.r[k]); const mu=v.reduce((a,b)=>a+b,0)/v.length; const sd=Math.sqrt(v.reduce((a,b)=>a+(b-mu)**2,0)/v.length)||6; m[(isP?'P':'B')+k]={m:mu,sd:Math.max(4,sd)}; } }
-  _ftr={k:k0,m}; return m; }
+  _ftr={k:k0,m,g:G}; return m; }
 /* 툴 한 줄 의견: 좋은 툴·약한 툴만 말하고 종합 평가는 하지 않는다 */
 function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>FD_GL[t.g]>=5).map(t=>t.l), bad=S.L.filter(t=>FD_GL[t.g]<=2).map(t=>t.l);
   const pre=p.isP?`${S.velo}km${S.velo>=150?'(강속구)':S.velo<=142?'(기교파)':''}`:'';
@@ -76,10 +76,25 @@ function fdDetail(p,y){ let t=fdThree(p,y); if(!t||(p.isP?t.outs<30:t.pa<60)){ c
   const L=fdStatLine(p,y);
   if(p.isP){ const bf=t.outs+t.h+t.bb, ip=t.outs/3; return {k:t.so/bf*100,bb:t.bb/bf*100,hr9:(t.hr||0)*9/ip,fip:(13*(t.hr||0)+3*t.bb-2*t.so)/ip+3.2,gap:L&&L.n>=15?L.era-L.fip:null,n:ip,ys:t.ys||1}; }
   const r=bRate(t); return {k:t.so/t.pa*100,bb:t.bb/t.pa*100,iso:r.slg-r.avg,babip:L&&L.n>=60?L.babip:null,n:t.pa,ys:t.ys||1}; }
+/* 기대 홈런(데이터팀): 능력치는 모른다. 지난 2년 1군 홈런율과, 분석팀이 있으면 타구 질(강한타구%·최고 타구속도로 리그 회귀)로 지난해 타석에서 나왔어야 할 홈런을 낸다.
+   지난해 홈런이 기대보다 크게 많으면 거품, 크게 적으면 반등 여지. 한 해 기록만 보면 운(컨디션·타구 운)이 섞이므로 */
+let _xhrC=null;
+function fdXhrModel(y){ const k=y+':'+Object.keys(G.players).length; if(_xhrC&&_xhrC.k===k&&_xhrC.g===G)return _xhrC.c;
+  const B=Object.values(G.players).filter(p=>!p.isP&&!p.foreign).map(p=>({h:seasonTotal(p,y,'1군'),T:trackOf(p)})).filter(x=>x.h&&x.h.pa>=300&&x.T);
+  let c=null; if(B.length>=20){ const A=[[0,0,0],[0,0,0],[0,0,0]], b=[0,0,0]; for(const x of B){ const v=[1,x.T.hh,x.T.evmax], yv=x.h.hr/x.h.pa; for(let i=0;i<3;i++){ b[i]+=v[i]*yv; for(let j=0;j<3;j++)A[i][j]+=v[i]*v[j]; } }
+    const M=A.map((r,i)=>[...r,b[i]]); for(let i=0;i<3;i++){ let mx=i; for(let r=i+1;r<3;r++)if(Math.abs(M[r][i])>Math.abs(M[mx][i]))mx=r; [M[i],M[mx]]=[M[mx],M[i]]; if(!M[i][i])return null; for(let r=0;r<3;r++){ if(r===i)continue; const f=M[r][i]/M[i][i]; for(let j=i;j<4;j++)M[r][j]-=f*M[i][j]; } } c=M.map((r,i)=>r[3]/r[i]); }
+  _xhrC={k,c,g:G}; return c; }
+function fdHrExp(p,y){ if(!p||p.isP)return null; const h=seasonTotal(p,y,'1군'); if(!h||h.pa<250)return null;
+  let pr=null; { let hr=0,pa=0; for(const yy of [y-1,y-2]){ const t=seasonTotal(p,yy,'1군'); if(t&&t.pa){ hr+=t.hr||0; pa+=t.pa; } } if(pa>=200)pr={r:hr/pa,w:Math.min(1,pa/600)}; }
+  const ana=dataLv(G.user)>=1; let xr=null; if(ana){ const c=fdXhrModel(y), T=trackOf(p); if(c&&T)xr=Math.max(0,c[0]+c[1]*T.hh+c[2]*T.evmax); }
+  if(!pr&&xr==null)return null; const w1=pr?pr.w:0, w2=xr!=null?1:0; const rate=((pr?pr.r*w1:0)+(xr!=null?xr*w2:0))/(w1+w2);
+  const exp=rate*h.pa, d=h.hr-exp; const k=d>=Math.max(6,exp*.25)?'bub':exp>=10&&d<=-Math.max(6,exp*.3)?'low':''; /* 반등은 기대 10개 이상인 타자만(적게 치는 타자의 몇 개 차이는 판단하기 어렵다) */
+  return {exp:Math.round(exp),hr:h.hr,k,src:pr&&xr!=null?'지난 2년 기록·타구 질로 본':xr!=null?'타구 질로 본':'지난 2년 기록으로 본'}; }
 /* 데이터팀 한 줄 의견: 세부 데이터에서 눈에 띄는 것 두세 가지와 운 */
 function fdDataLine(p,y){ const d=fdDetail(p,y); if(!d)return '기록이 부족해 판단하기 어렵습니다'; const T=trackOf(p); const ana=dataLv(G.user)>=1; const out=[];
   if(p.isP){ if(d.k>=24)out.push('삼진을 잘 잡음'); else if(d.k<=15)out.push('삼진이 적음'); if(d.bb<=6.5)out.push('볼넷 적음'); else if(d.bb>=11)out.push('볼넷 많음'); if(d.hr9>=1.3)out.push('홈런 허용 많음'); if(ana&&T.whiff>=29)out.push('헛스윙 유도 좋음');
     if(d.gap!=null&&d.gap<=-.7)out.push(`${y} ERA가 FIP보다 ${(-d.gap).toFixed(1)} 낮아 운이 따름`); else if(d.gap!=null&&d.gap>=.7)out.push(`${y} ERA가 FIP보다 ${d.gap.toFixed(1)} 높아 불운, 반등 여지`); }
   else { if(ana&&T.ev>=141)out.push('타구가 강함'); else if(ana&&T.ev<=131)out.push('타구가 약함'); if(d.k<=14)out.push('삼진 적음'); else if(d.k>=24)out.push('삼진 많음'); if(d.bb>=11)out.push('볼넷 잘 고름'); if(d.iso>=.2)out.push('장타 힘 있음');
+    const X=fdHrExp(p,y); if(X&&X.k)out.unshift(X.k==='bub'?`${y} 홈런 ${X.hr}개는 ${X.src} 기대(${X.exp}개 안팎)보다 많아 거품 가능`:`${y} 홈런 ${X.hr}개는 ${X.src} 기대(${X.exp}개 안팎)보다 적어 반등 여지`);
     if(d.babip!=null&&d.babip>=.345)out.push(`${y} BABIP ${fmt3(d.babip)}로 높아 타율에 운이 섞임`); else if(d.babip!=null&&d.babip<=.265)out.push(`${y} BABIP ${fmt3(d.babip)}로 낮아 불운, 반등 여지`); }
   if(d.n<(p.isP?60:250))out.push('표본 적음'); return out.slice(0,4).join(' · ')||'특별히 튀는 데이터 없음'; }
