@@ -2007,6 +2007,13 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .fd-left{font-size:13px;font-weight:700;color:var(--acc,#3d8bff)}
 @media (max-width:600px){ .fd-got>.fd-left{display:block} }
 .fde-old{opacity:.6}.fde-rv .good{color:var(--good)}.fde-rv .bad{color:var(--bad)}
+/* 구단 이름 바꾸기 */
+.tn-l{display:grid;gap:6px;margin:8px 0}.tn-r{display:grid;grid-template-columns:20px 44px minmax(0,150px) minmax(0,1fr);gap:6px;align-items:center}
+.tn-r input{min-width:0;padding:5px 8px;font-size:13px;background:var(--bg2,#11161c);color:var(--ink);border:1px solid var(--line2);border-radius:4px}
+@media (max-width:520px){ .tn-r{grid-template-columns:20px 44px minmax(0,1fr)} .tn-r>.small{display:none} }
+/* 백업 권유 줄 */
+.blk.bkn .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.blk.bkn button{margin-left:0}
+.blk.bkn{background:#2e2a14;color:#ffe9a8;border-bottom-color:#4a4220}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -4464,6 +4471,8 @@ function buildWorld(){ const userTid=0;
      scouts:[],scoutMarket:[],marketing:2000,draft:null,fa:null,trades:[],last:null,gameOver:null,contract:null,fmarket:[],live:null};
   TEAM_DEF.forEach((d,i)=>G.teams.push(Object.assign({id:i,cash:4000,pop:1,trust:55,rel:50,owner:d.indie?'profit':pick(['win','profit','pr','win']),
     mode:'contend',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:ri(2,4)},d)));
+  /* 플레이어가 정해 둔 구단 이름(설정 → 구단 이름 바꾸기, '새 게임에도 쓰기')이 있으면 처음부터 그 이름으로 만든다(화면 쪽 teamNamesPreset) */
+  try{ if(typeof teamNamesPreset==='function'){ const L=teamNamesPreset(); if(L)applyTeamNames(L); } }catch(e){}
   const bpos=['C','C','1B','1B','2B','2B','3B','3B','SS','SS','LF','LF','CF','CF','RF','RF','3B'];
   for(const t of G.teams){
     const tb=N(0,1.6);
@@ -4536,6 +4545,16 @@ function claimTeam(userTid){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=G.day;
   sendTut(); tutTick(); G.stops=[];
 }
 function newGame(userTid){ buildWorld(); claimTeam(userTid); G.moves=[]; try{ stInit(); }catch(e){} }
+
+/* ===== 구단 이름 바꾸기 =====
+   기본은 가상 구단이다. 플레이어가 별칭을 직접 바꿀 수 있다(연고지는 고정). 실제 구단명처럼 바꾸는 것도 플레이어 몫. 엠블럼·구단색은 원래 구단 기준 그대로.
+   L: [{id,city,nick}]. 문제가 있으면 이유 문자열, 없으면 '' */
+function applyTeamNames(L){ if(!G||!G.teams||!Array.isArray(L))return '바꿀 구단이 없습니다.'; const next=G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick}));
+  for(const x of L){ const n=next.find(t=>t.id===+x.id); if(!n)continue; const c=String(x.city??'').trim(), k=String(x.nick??'').trim();
+    void c; if(!k)return '별칭을 적어 주세요.'; if(k.length>10)return '별칭은 10자까지입니다.'; if(/[<>&"'`]/.test(k))return '이름에 쓸 수 없는 기호가 있습니다.'; n.nick=k; } /* 연고지는 바꿀 수 없다(지역·시장 규모·연고 선수와 묶여 있다) */
+  const full=next.map(t=>t.city+' '+t.nick); if(new Set(full).size!==full.length)return '같은 이름의 구단이 둘 있습니다.'; if(new Set(next.map(t=>t.nick)).size!==next.length)return '별칭이 겹치는 구단이 있습니다(기사·기록에서 헷갈립니다).';
+  for(const n of next){ const t=G.teams[n.id]; t.city=n.city; t.nick=n.nick; } return ''; }
+function resetTeamNames(){ if(!G||!G.teams)return; for(const t of G.teams){ const d=TEAM_DEF[t.id]; if(d){ t.city=d.city; t.nick=d.nick; } } }
 /* ===== 트레이드 ===== */
 /* ===== AI 단장이 보는 능력: 실제 능력 + 최근 성적에 섞인 운 =====
    AI 단장·감독도 능력치를 직접 보지는 못한다. 스카우트 평가와 함께 올해(가중 1)·작년(0.5) 1군 성적을 본다.
@@ -4992,11 +5011,19 @@ function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFre
   p.mil={app:w}; addLog(`${p.name}이(가) 상무에 지원했습니다.`); return ''; }
 function sangmuWave(){ const d=G.day; if(d>=KD(9,1)&&d<KD(10,15))return 'dec'; if(d>=KD(3,1)&&d<KD(4,15))return 'jun'; return null; }
 function enlistNow(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; enlist(p,'현역',G.day+14); return ''; }
+/* 상무 추천: 스카우트팀장·감독이 선수별로 의견을 낸다.
+   last(마지막 기회): 27세 이상 미필 → 올해 상무에 못 가면 현역. hold(보류): 지금 1군 주전(라인업·로테이션·필승조)이고 26세 이하 → 빠지면 전력 공백, 내년 이후.
+   go(지원 권장): 1군 자리가 없는 23~26세 → 2군에 머무는 것보다 상무에서 경기를 뛰는 편이 낫다. wait: 그 밖(22세 이하 등). 합격은 지원자 중 기량 순 14명 */
+function milAdvice(p){ if(!p||!milFree(p))return {k:'none',who:'',why:''}; const d=depth(p.team); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].filter(Boolean).map(x=>x.id)); const o=ovr(p);
+  if(p.age>=27)return {k:'last',who:'운영팀',why:`${p.age}세: 올해 안에 입대하지 않으면 현역으로 갑니다. 상무 지원을 권합니다${o<44?'(다만 기량이 낮아 합격은 장담하기 어렵습니다)':''}.`};
+  if(reg.has(p.id))return {k:'hold',who:'감독',why:`지금 1군 ${p.isP?(isSPr(p)?'선발':'필승조'):'주전'}입니다. 빠지면 1년 6개월 공백이 생기니 ${27-p.age>=2?'1~2년 뒤':'내년'}에 보내는 게 좋겠습니다.`};
+  if(p.age>=23){ const room=Math.max(0,p.pot-o); return {k:'go',who:'스카우트팀장',why:`1군 자리가 없어 2군에 머무는 것보다 상무에서 꾸준히 뛰는 편이 낫습니다.${room>=4?` 아직 클 여지가 있어(잠재력 차이 ${Math.round(room)}) 경기 경험이 중요합니다.`:''} 전역하면 ${p.age+2}세입니다.`}; }
+  return {k:'wait',who:'스카우트팀장',why:`${p.age}세로 아직 여유가 있습니다. 1~2년 더 키워 본 뒤 보내도 됩니다.`}; }
 function milDaily(){ const d=G.day;
   if(d===KD(9,1)||d===KD(3,1)){ const w=d===KD(9,1)?'dec':'jun';
     for(const p of Object.values(G.players)){ if(p.team==null||p.team===G.user||!milFree(p)||p.mil&&p.mil.app)continue; if(p.age>=24&&p.age<=27&&R()<(p.age>=26?.7:.25))p.mil={app:w}; }
     const mine=domestic(G.user).filter(p=>milFree(p)&&p.age>=23&&p.age<=27);
-    if(mine.length)mail('운영팀',`상무 지원 기간입니다 (${w==='dec'?'12월':'6월'} 입대)`,`상무(국군체육부대) 야구단 지원을 받습니다. 복무는 1년 6개월이고, 복무 중에도 퓨처스리그에서 뛰며 기량을 유지할 수 있습니다. 현역으로 가면 1년 6개월 동안 야구를 거의 못 해 기량이 떨어집니다.\n\n우리 구단 미필 선수: ${mine.map(p=>`${p.name}(${p.age}세)`).join(', ')}\n\n${p28(mine)}지원은 ${dmd(d+44)}까지입니다.`,{imp:true,kind:'병역',acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]}); }
+    if(mine.length)mail('운영팀',`상무 지원 기간입니다 (${w==='dec'?'12월':'6월'} 입대)`,`상무(국군체육부대) 야구단 지원을 받습니다. 복무는 1년 6개월이고, 복무 중에도 퓨처스리그에서 뛰며 기량을 유지할 수 있습니다. 현역으로 가면 1년 6개월 동안 야구를 거의 못 해 기량이 떨어집니다.\n\n${milAdviceTxt(mine)}\n\n우리 구단 미필 선수: ${mine.map(p=>`${p.name}(${p.age}세)`).join(', ')}\n\n${p28(mine)}지원은 ${dmd(d+44)}까지입니다.`,{imp:true,kind:'병역',acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]}); }
   if(d===KD(10,15)||d===KD(4,15)){ const w=d===KD(10,15)?'dec':'jun'; const apps=Object.values(G.players).filter(p=>p.mil&&p.mil.app===w);
     const ranked=apps.map(p=>({p,s:ovr(p)+hn('sm'+G.year,p.id)*4+(p.injOut>30?-10:0)})).sort((a,b)=>b.s-a.s); const from=w==='dec'?KD(12,10):KD(6,10);
     const ok=[],no=[]; ranked.forEach((x,i)=>{ if(i<SANGMU_SLOTS){ enlist(x.p,'상무',from); ok.push(x.p);} else { x.p.mil=null; no.push(x.p);} });
@@ -5015,6 +5042,8 @@ function milRetTxt(L){ return L.map(p=>`${p.name}(${posLabel(p)}, ${dmd(p.mil.un
 function milRetWarn(d){ if(G.unemp)return; const per=period(); if(!(per==='season'||(per==='pre'&&d>=G.cal.open-14)))return; const L=milReturns(7); if(!L.some(p=>p.mil.until===d+7))return;
   const n=rosterN(G.user), need=n+L.length-ROSTER_MAX; if(need<=0)return;
   mail('운영팀',`군 복귀 예정 ${L.length}명 · 로스터 ${need}자리 부족`,`앞으로 7일 안에 ${milRetTxt(L)}이(가) 전역해 정식 로스터로 돌아옵니다.\n\n지금 ${n}명 + 복귀 ${L.length}명 = ${n+L.length}명(한도 ${ROSTER_MAX}명). 복귀까지 고려하면 ${need}자리를 비워야 합니다. 연봉 1억 원 이하 선수는 방출 대신 육성선수로 돌릴 수 있습니다.`,{imp:true,kind:'병역',acts:[{l:'로스터 정리',a:'tab',v:'roster'}]}); }
+function milAdviceTxt(ms){ const A=ms.map(p=>({p,a:milAdvice(p)})); const sec=(k,t)=>{ const L=A.filter(x=>x.a.k===k); return L.length?`[${t}]\n${L.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세) - ${x.a.who}: ${x.a.why}`).join('\n')}`:''; };
+  return ['코치진·스카우트 추천', sec('last','마지막 기회'), sec('go','지원 추천'), sec('hold','보류 의견')].filter(Boolean).join('\n\n'); }
 function p28(ms){ const u=ms.filter(p=>p.age>=27); return u.length?`올해 안에 입대해야 하는 선수(27세 이상): ${u.map(p=>p.name).join(', ')}. 해를 넘기면 현역으로 입대합니다.\n\n`:''; }
 function milNewYear(){ // 해가 바뀌면 28세 이상 미필은 현역 입대
   for(const p of Object.values(G.players)){ milInit(p); if(p.team==null||!milFree(p)||p.mil&&p.mil.app)continue; if(p.team!==G.user&&p.age>=20&&p.age<=24&&ovr(p)<40&&R()<.22){ enlist(p,'현역',dnum(G.year,1,20)); continue; } if(p.age>=28){ enlist(p,'현역',dnum(G.year,1,20)); if(p.team===G.user)mail('운영팀',`${p.name} 현역 입대`,`${p.name}이(가) 입대 연기 한도를 넘겨 현역으로 입대합니다(게임 규칙: 28세). 1년 6개월 뒤 돌아오지만 기량이 떨어질 수 있습니다.`,{imp:true,kind:'병역',ref:p.id}); } } }
@@ -10343,7 +10372,7 @@ const EMB={
   앵커스:'<circle cx="12" cy="5.6" r="1.5" fill="none" stroke="#fff" stroke-width="1.2"/><path d="M12 7.1v9.4M9.2 9.4h5.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="M6.4 12.2c.4 2.8 2.8 4.6 5.6 4.6s5.2-1.8 5.6-4.6" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><path d="M5.2 13.4 6.4 11.4l1.6 1.6ZM18.8 13.4l-1.2-2-1.6 1.6Z" fill="#fff"/>'
 };
 function badge(tid,sz){ const t=(G&&G.teams[tid])||TEAM_DEF[tid]; if(!t)return ''; const P=tpal(t); const c1=P[0],c2=P[1]==='#ffffff'?'#e8ecf2':P[1],c3=P[2];
-  const g=EMB[t.nick]; const big=sz>=34;
+  const g=EMB[(TEAM_DEF[t.id]||t).nick]||EMB[t.nick]; const big=sz>=34; /* 구단 이름을 바꿔도 엠블럼은 원래 구단 것 */
   const inner=g?g.replace(/C1/g,c1).replace(/C3/g,c3):`<text x="12" y="14.4" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="8.2" fill="#fff">${t.code}</text>`;
   return `<svg class="badge" width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.2 21.4 4.4V11c0 5.8-4 9.9-9.4 11.8C6.6 20.9 2.6 16.8 2.6 11V4.4Z" fill="${c3}"/><path d="M12 2.4 20.2 5.2V11c0 5-3.4 8.6-8.2 10.4C7.2 19.6 3.8 16 3.8 11V5.2Z" fill="${c1}" stroke="${c2}" stroke-width=".7"/>${big?`<path d="M3.8 15.2h16.4" stroke="${c2}" stroke-width=".35" opacity=".5"/>`:''}<g transform="translate(12 11.2) scale(${big?.86:.92}) translate(-12 -11)">${inner}</g>${big?`<text x="12" y="19.4" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="2.6" letter-spacing=".25" fill="#fff" opacity=".85">${t.code}</text>`:''}</svg>`; }
 const tb=(tid,label)=>`<span class="tname">${badge(tid,18)}${label??tname(tid)}</span>`;
@@ -10383,7 +10412,7 @@ function render(){
    <header class="top"><div class="gut"><div class="tbar wrap">
      <div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:`<i class="cb-c">${esc(t.city)} </i>${esc(t.nick)}<i class="cb-v">▾</i>`}</b><span>${wide()?dstr(G.day):`<i class="cb-y">${dobj(G.day).y}.</i>${dsh(G.day)} ${WD[dobj(G.day).w]}`}<i class="cb-p"> · ${PERIOD[per]}</i></span></div></div>
      ${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 2주가 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="adv" data-v="next" ${b?'disabled':''} aria-label="한 경기 진행" title="다음 경기 하나만 진행"><span class="st-l">1경기</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="다음 소식이 올 때까지, 최대 한 주 진행합니다. 확인할 소식이 있으면 그 소식부터 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub('다음 소식까지'))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="next" ${b?'disabled':''}><span class="cl"><b>${per==='post'?'다음 경기':'계속'}</b><i>${esc(b?nextLabel():contSub(nextLabel()))}</i></span>${ICO.ff}</button>`}</div>
-   </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}</header>
+   </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}${needBackup()?`<div class="blk bkn gut"><div class="wrap">itch처럼 다른 사이트 안에서 하면 브라우저 정리나 게임 업데이트로 저장이 지워질 수 있습니다. 가끔 파일로 내보내 두세요.<button data-a="expFile">파일로 내보내기</button><button data-a="bkLater">나중에</button></div></div>`:''}</header>
    <div class="gut"><div class="wrap">
      <div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
      <main class="content">${tabBody()}</main>${UI.stamp?stampView():''} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
@@ -10450,6 +10479,8 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
   return `<p class="small muted">예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
     <div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
 function inFrame(){ try{ return window.self!==window.top; }catch(e){ return true; } }
+/* 백업 권유: 다른 사이트 안(itch 등)에서 실행 중이면, 마지막 백업(파일·코드 내보내기)에서 게임 날짜로 60일이 지날 때마다 상단에 띄운다. '나중에'는 30일 뒤 */
+function needBackup(){ try{ if(!G||!inFrame())return false; if(G.bkAt==null){ G.bkAt=G.day; return false; } return G.day-G.bkAt>=60; }catch(e){ return false; } }
 /* 아이폰·아이패드(새 아이패드는 Mac으로 표시되므로 터치 여부로 구분) */
 function isIOS(){ try{ const u=navigator.userAgent||''; return /iPhone|iPad|iPod/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1); }catch(e){ return false; } }
 function creditsLine(){ return `<details class="credits"><summary class="small muted">크레딧·라이선스</summary><p class="small muted keep" style="text-align:center;margin-top:6px">크레딧: 선수 얼굴 faces.js (ZenGM, Apache License 2.0) · 경기장 선수 그림 Kenney Sports Pack (CC0) · 저장 압축 lz-string (MIT) · 글꼴 Noto Sans KR, Black Han Sans, Barlow Condensed (SIL OFL) · 구단·선수·인물은 모두 가상입니다.</p></details>`; }
@@ -10490,6 +10521,17 @@ function gameOverView(){
 
 /* 창단 진행 표시: 구단 선택 → 창단 드래프트 → 시즌 준비 */
 function fdSteps(cur){ const S=['구단 선택','드래프트','시즌 준비']; return `<ol class="fdsteps">${S.map((l,i)=>`<li class="${i+1<cur?'done':i+1===cur?'on':''}"><b>${i+1}</b><span>${l}</span></li>`).join('')}</ol>`; }
+
+/* ===== 구단 이름 바꾸기(설정) ===== 기본은 가상 구단. 원하면 연고지·별칭을 직접 바꾼다. '새 게임에도 쓰기'를 켜면 이 브라우저에 저장해 새 게임에도 적용 */
+const TN_KEY='fronttime-teamnames';
+function teamNamesPreset(){ try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); return o&&o.on&&Array.isArray(o.L)?o.L:null; }catch(e){ return null; } }
+function teamNameCard(){ if(!G||!G.teams)return ''; let pre=null; try{ pre=JSON.parse(localStorage.getItem(TN_KEY)||'null'); }catch(e){}
+  return `<section class="card"><h2 class="sec">구단 이름 바꾸기</h2><p class="small muted">기본은 가상 구단입니다. 별칭을 원하는 대로 바꿀 수 있습니다(10자까지). 연고지는 지역·시장 규모와 묶여 있어 바꿀 수 없습니다. 엠블럼과 구단 색은 그대로이고, 이미 나온 기사·기록의 이름은 바뀌지 않습니다.</p>
+  <div class="tn-l">${G.teams.map(t=>`<div class="tn-r">${badge(t.id,18)}<b class="tn-c">${esc(t.city)}</b><input class="tn-n" data-tn="${t.id}" data-k="nick" value="${esc(t.nick)}" maxlength="10" aria-label="별칭"><span class="small muted">${esc(TEAM_DEF[t.id].city+' '+TEAM_DEF[t.id].nick)}</span></div>`).join('')}</div>
+  <label class="chk"><input type="checkbox" data-a="tnPre" ${pre&&pre.on?'checked':''}> 새 게임에도 이 이름 쓰기(이 브라우저에 저장)</label>
+  <div class="row"><button class="btn primary" data-a="tnSave">이름 저장</button><button class="btn" data-a="tnReset">기본 이름으로</button></div>${UI.tnMsg?`<p class="small">${esc(UI.tnMsg)}</p>`:''}</section>`; }
+function tnRead(){ const L={}; document.querySelectorAll('input[data-tn]').forEach(el=>{ const id=+el.dataset.tn; (L[id]=L[id]||{id})[el.dataset.k]=el.value; }); return Object.values(L); }
+function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick}))})); }catch(e){} }
 /* ---------- 업무 탭 ---------- */
 function upcoming(){
   const c=G.cal, y=G.year, d=G.day; const L=[];
@@ -13101,7 +13143,8 @@ function milView(){
   const mine=domestic(G.user); const free=mine.filter(p=>milFree(p)).sort((a,b)=>b.age-a.age); const serving=awayOf(G.user).filter(milServing);
   const pending=Object.values(G.players).filter(p=>p.team===G.user&&p.mil&&p.mil.until&&p.mil.from>G.day);
   const w=sangmuWave();
-  const card=p=>pcard(p,{sub:`${p.age}세 · ${esc(milText(p))}`,tags:p.age>=27&&milFree(p)?'<span class="pill bad">올해 입대해야 함</span>':'',foot:`${rosterFoot(p)}${milFree(p)&&!(p.mil&&p.mil.app)?`${w&&p.age<=27?`<button class="tc-i go" data-a="sangmu" data-v="${p.id}">상무 지원</button>`:''}<button class="tc-i" data-a="enlist" data-v="${p.id}">현역 입대</button>`:''}`});
+  const MA={last:['bad','마지막 기회'],go:['good','상무 추천'],hold:['warn','보류 의견'],wait:['','여유 있음']};
+  const card=p=>{ const a=milFree(p)?milAdvice(p):null; const t=a&&MA[a.k]; return pcard(p,{sub:`${p.age}세 · ${esc(milText(p))}`,tags:(p.age>=27&&milFree(p)?'<span class="pill bad">올해 입대해야 함</span>':'')+(t&&a.k!=='last'?`<span class="pill ${t[0]}" title="${esc(a.who+': '+a.why)}">${t[1]}</span>`:''),stat:a&&a.why?`<span class="small muted">${esc(a.who)}: ${esc(a.why)}</span>`:undefined,foot:`${rosterFoot(p)}${milFree(p)&&!(p.mil&&p.mil.app)?`${w&&p.age<=27?`<button class="tc-i go" data-a="sangmu" data-v="${p.id}">상무 지원</button>`:''}<button class="tc-i" data-a="enlist" data-v="${p.id}">현역 입대</button>`:''}`}); };
   const oy=[0,1,2,3,4].map(k=>G.year+k).find(olyYear);
   return csec('병역 관리',`<p class="small muted">국내 선수는 군 복무를 해야 합니다. 상무(국군체육부대)는 1년 6개월 동안 퓨처스리그에서 뛰며 기량을 유지하고, 현역은 야구를 거의 못 해 기량이 떨어집니다. 상무는 지원자 중 기량 순으로 한 번에 ${SANGMU_SLOTS}명만 합격합니다. 28세가 되는 해까지 입대하지 않으면 현역으로 갑니다(게임 규칙). 복무 중인 선수는 로스터에서 빠졌다가 전역하면 돌아옵니다.</p>
     <dl class="tsum"><div><dt>미필</dt><dd class="num">${free.length}명</dd></div><div><dt>복무 중</dt><dd class="num">${serving.length}명</dd></div><div><dt>상무 지원</dt><dd>${w?(w==='dec'?'지금 가능 · 12월 입대':'지금 가능 · 6월 입대'):'3~4월, 9~10월'}</dd></div></dl>
@@ -13537,7 +13580,7 @@ function clubBody(s){
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
-    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+advSetCard()+slotsCard(false)+exportCard()+teleCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
+    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+advSetCard()+teamNameCard()+slotsCard(false)+exportCard()+teleCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
     ${UI.confirmNew?`<div class="note bad">지금 구단을 포기하고 새로 시작합니다. 저장된 진행이 지워집니다.</div><div class="row"><button class="btn danger" data-a="newgame">새로 시작</button><button class="btn" data-a="cancelNew">취소</button></div>`:`<button class="btn" data-a="askNew">새 게임</button>`}</section>`}; const h=mergedBody('club',s,H0);
   return h;
 }
@@ -14533,9 +14576,13 @@ const A={
   slotLoad(v){ if(G)save(); const m=meta(); const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){UI.slotMsg='불러오지 못했습니다.';render();return;} m.active=+v; setMeta(m); G=g; try{migrateDraft();}catch(e){} UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
   slotNew(v){ if(G)save(); UI.newSlot=+v; const m=meta(); m.active=+v; setMeta(m); G=null; UI.slotMsg=''; UI.title=true; UI.sstep='team'; render(); window.scrollTo(0,0); },
   slotDel(v){ const m=meta(); if(UI.delAsk!==+v){ UI.delAsk=+v; UI.slotMsg=`슬롯 ${v}을(를) 지우려면 삭제를 한 번 더 누르세요.`; render(); return; } try{localStorage.removeItem(slotKey(+v));}catch(e){} delete m.slots[+v]; setMeta(m); UI.delAsk=null; UI.slotMsg=`슬롯 ${v}을(를) 지웠습니다.`; render(); },
-  async expFile(){ const code=LZString.compressToBase64(JSON.stringify(G)); if(!DL){ try{ const blob=new Blob([code],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`danjang-${G.year}.txt`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); UI.impMsg='파일을 내려받았습니다. 내려받기가 막혀 있으면 "코드 만들기"를 쓰세요.'; }catch(err){ UI.impMsg='이 화면에서는 파일 저장을 쓸 수 없습니다. "코드 만들기"를 쓰세요.'; } render(); return; } if(false){ render(); return; }
+  async expFile(){ if(G){ G.bkAt=G.day; try{ save(); }catch(e){} } const code=LZString.compressToBase64(JSON.stringify(G)); if(!DL){ try{ const blob=new Blob([code],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`danjang-${G.year}.txt`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); UI.impMsg='파일을 내려받았습니다. 내려받기가 막혀 있으면 "코드 만들기"를 쓰세요.'; }catch(err){ UI.impMsg='이 화면에서는 파일 저장을 쓸 수 없습니다. "코드 만들기"를 쓰세요.'; } render(); return; } if(false){ render(); return; }
     try{ await DL.save({filename:`danjang-${tshort(G.user)}-${G.year}.txt`,data:code}); UI.impMsg='파일을 저장했습니다.'; }catch(err){ UI.impMsg=err&&err.code==='declined'?'파일 저장을 취소했습니다.':err&&err.code==='rate_limited'?'잠시 뒤 다시 눌러 주세요.':'파일로 저장하지 못했습니다. "코드 만들기"를 쓰세요.'; } render(); },
-  expCode(){ UI.expCode=LZString.compressToBase64(JSON.stringify(G)); render(); },
+  expCode(){ if(G)G.bkAt=G.day; UI.expCode=LZString.compressToBase64(JSON.stringify(G)); save(); render(); },
+  bkLater(){ if(G){ G.bkAt=G.day-30; save(); } render(); },
+  tnSave(){ const r=applyTeamNames(tnRead()); UI.tnMsg=r||'구단 이름을 바꿨습니다.'; if(!r){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); },
+  tnReset(){ resetTeamNames(); UI.tnMsg='기본 이름으로 되돌렸습니다.'; let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); render(); },
+  tnPre(){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on){ tnStore(false); UI.tnMsg='새 게임에는 기본 이름을 씁니다.'; } else { tnStore(true); UI.tnMsg='새 게임에도 지금 이름을 씁니다.'; } render(); },
   impCode(){ const el=document.getElementById('impCode'); const t=(el&&el.value||'').trim(); importText(t); },
 };
 /* ===== 결재: 되돌릴 수 없는 결정은 결재 문서로 한 번 더 확인하고, 결과를 소식함에 남긴다 ===== */

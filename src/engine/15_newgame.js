@@ -4,6 +4,8 @@ function buildWorld(){ const userTid=0;
      scouts:[],scoutMarket:[],marketing:2000,draft:null,fa:null,trades:[],last:null,gameOver:null,contract:null,fmarket:[],live:null};
   TEAM_DEF.forEach((d,i)=>G.teams.push(Object.assign({id:i,cash:4000,pop:1,trust:55,rel:50,owner:d.indie?'profit':pick(['win','profit','pr','win']),
     mode:'contend',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:ri(2,4)},d)));
+  /* 플레이어가 정해 둔 구단 이름(설정 → 구단 이름 바꾸기, '새 게임에도 쓰기')이 있으면 처음부터 그 이름으로 만든다(화면 쪽 teamNamesPreset) */
+  try{ if(typeof teamNamesPreset==='function'){ const L=teamNamesPreset(); if(L)applyTeamNames(L); } }catch(e){}
   const bpos=['C','C','1B','1B','2B','2B','3B','3B','SS','SS','LF','LF','CF','CF','RF','RF','3B'];
   for(const t of G.teams){
     const tb=N(0,1.6);
@@ -76,3 +78,13 @@ function claimTeam(userTid){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=G.day;
   sendTut(); tutTick(); G.stops=[];
 }
 function newGame(userTid){ buildWorld(); claimTeam(userTid); G.moves=[]; try{ stInit(); }catch(e){} }
+
+/* ===== 구단 이름 바꾸기 =====
+   기본은 가상 구단이다. 플레이어가 별칭을 직접 바꿀 수 있다(연고지는 고정). 실제 구단명처럼 바꾸는 것도 플레이어 몫. 엠블럼·구단색은 원래 구단 기준 그대로.
+   L: [{id,city,nick}]. 문제가 있으면 이유 문자열, 없으면 '' */
+function applyTeamNames(L){ if(!G||!G.teams||!Array.isArray(L))return '바꿀 구단이 없습니다.'; const next=G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick}));
+  for(const x of L){ const n=next.find(t=>t.id===+x.id); if(!n)continue; const c=String(x.city??'').trim(), k=String(x.nick??'').trim();
+    void c; if(!k)return '별칭을 적어 주세요.'; if(k.length>10)return '별칭은 10자까지입니다.'; if(/[<>&"'`]/.test(k))return '이름에 쓸 수 없는 기호가 있습니다.'; n.nick=k; } /* 연고지는 바꿀 수 없다(지역·시장 규모·연고 선수와 묶여 있다) */
+  const full=next.map(t=>t.city+' '+t.nick); if(new Set(full).size!==full.length)return '같은 이름의 구단이 둘 있습니다.'; if(new Set(next.map(t=>t.nick)).size!==next.length)return '별칭이 겹치는 구단이 있습니다(기사·기록에서 헷갈립니다).';
+  for(const n of next){ const t=G.teams[n.id]; t.city=n.city; t.nick=n.nick; } return ''; }
+function resetTeamNames(){ if(!G||!G.teams)return; for(const t of G.teams){ const d=TEAM_DEF[t.id]; if(d){ t.city=d.city; t.nick=d.nick; } } }

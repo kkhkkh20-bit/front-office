@@ -22,7 +22,7 @@ function render(){
    <header class="top"><div class="gut"><div class="tbar wrap">
      <div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:`<i class="cb-c">${esc(t.city)} </i>${esc(t.nick)}<i class="cb-v">▾</i>`}</b><span>${wide()?dstr(G.day):`<i class="cb-y">${dobj(G.day).y}.</i>${dsh(G.day)} ${WD[dobj(G.day).w]}`}<i class="cb-p"> · ${PERIOD[per]}</i></span></div></div>
      ${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 2주가 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="adv" data-v="next" ${b?'disabled':''} aria-label="한 경기 진행" title="다음 경기 하나만 진행"><span class="st-l">1경기</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="다음 소식이 올 때까지, 최대 한 주 진행합니다. 확인할 소식이 있으면 그 소식부터 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub('다음 소식까지'))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="next" ${b?'disabled':''}><span class="cl"><b>${per==='post'?'다음 경기':'계속'}</b><i>${esc(b?nextLabel():contSub(nextLabel()))}</i></span>${ICO.ff}</button>`}</div>
-   </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}</header>
+   </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}${needBackup()?`<div class="blk bkn gut"><div class="wrap">itch처럼 다른 사이트 안에서 하면 브라우저 정리나 게임 업데이트로 저장이 지워질 수 있습니다. 가끔 파일로 내보내 두세요.<button data-a="expFile">파일로 내보내기</button><button data-a="bkLater">나중에</button></div></div>`:''}</header>
    <div class="gut"><div class="wrap">
      <div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
      <main class="content">${tabBody()}</main>${UI.stamp?stampView():''} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
@@ -89,6 +89,8 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
   return `<p class="small muted">예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
     <div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
 function inFrame(){ try{ return window.self!==window.top; }catch(e){ return true; } }
+/* 백업 권유: 다른 사이트 안(itch 등)에서 실행 중이면, 마지막 백업(파일·코드 내보내기)에서 게임 날짜로 60일이 지날 때마다 상단에 띄운다. '나중에'는 30일 뒤 */
+function needBackup(){ try{ if(!G||!inFrame())return false; if(G.bkAt==null){ G.bkAt=G.day; return false; } return G.day-G.bkAt>=60; }catch(e){ return false; } }
 /* 아이폰·아이패드(새 아이패드는 Mac으로 표시되므로 터치 여부로 구분) */
 function isIOS(){ try{ const u=navigator.userAgent||''; return /iPhone|iPad|iPod/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1); }catch(e){ return false; } }
 function creditsLine(){ return `<details class="credits"><summary class="small muted">크레딧·라이선스</summary><p class="small muted keep" style="text-align:center;margin-top:6px">크레딧: 선수 얼굴 faces.js (ZenGM, Apache License 2.0) · 경기장 선수 그림 Kenney Sports Pack (CC0) · 저장 압축 lz-string (MIT) · 글꼴 Noto Sans KR, Black Han Sans, Barlow Condensed (SIL OFL) · 구단·선수·인물은 모두 가상입니다.</p></details>`; }
@@ -129,3 +131,14 @@ function gameOverView(){
 
 /* 창단 진행 표시: 구단 선택 → 창단 드래프트 → 시즌 준비 */
 function fdSteps(cur){ const S=['구단 선택','드래프트','시즌 준비']; return `<ol class="fdsteps">${S.map((l,i)=>`<li class="${i+1<cur?'done':i+1===cur?'on':''}"><b>${i+1}</b><span>${l}</span></li>`).join('')}</ol>`; }
+
+/* ===== 구단 이름 바꾸기(설정) ===== 기본은 가상 구단. 원하면 연고지·별칭을 직접 바꾼다. '새 게임에도 쓰기'를 켜면 이 브라우저에 저장해 새 게임에도 적용 */
+const TN_KEY='fronttime-teamnames';
+function teamNamesPreset(){ try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); return o&&o.on&&Array.isArray(o.L)?o.L:null; }catch(e){ return null; } }
+function teamNameCard(){ if(!G||!G.teams)return ''; let pre=null; try{ pre=JSON.parse(localStorage.getItem(TN_KEY)||'null'); }catch(e){}
+  return `<section class="card"><h2 class="sec">구단 이름 바꾸기</h2><p class="small muted">기본은 가상 구단입니다. 별칭을 원하는 대로 바꿀 수 있습니다(10자까지). 연고지는 지역·시장 규모와 묶여 있어 바꿀 수 없습니다. 엠블럼과 구단 색은 그대로이고, 이미 나온 기사·기록의 이름은 바뀌지 않습니다.</p>
+  <div class="tn-l">${G.teams.map(t=>`<div class="tn-r">${badge(t.id,18)}<b class="tn-c">${esc(t.city)}</b><input class="tn-n" data-tn="${t.id}" data-k="nick" value="${esc(t.nick)}" maxlength="10" aria-label="별칭"><span class="small muted">${esc(TEAM_DEF[t.id].city+' '+TEAM_DEF[t.id].nick)}</span></div>`).join('')}</div>
+  <label class="chk"><input type="checkbox" data-a="tnPre" ${pre&&pre.on?'checked':''}> 새 게임에도 이 이름 쓰기(이 브라우저에 저장)</label>
+  <div class="row"><button class="btn primary" data-a="tnSave">이름 저장</button><button class="btn" data-a="tnReset">기본 이름으로</button></div>${UI.tnMsg?`<p class="small">${esc(UI.tnMsg)}</p>`:''}</section>`; }
+function tnRead(){ const L={}; document.querySelectorAll('input[data-tn]').forEach(el=>{ const id=+el.dataset.tn; (L[id]=L[id]||{id})[el.dataset.k]=el.value; }); return Object.values(L); }
+function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick}))})); }catch(e){} }

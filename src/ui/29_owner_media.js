@@ -4,7 +4,8 @@ function milView(){
   const mine=domestic(G.user); const free=mine.filter(p=>milFree(p)).sort((a,b)=>b.age-a.age); const serving=awayOf(G.user).filter(milServing);
   const pending=Object.values(G.players).filter(p=>p.team===G.user&&p.mil&&p.mil.until&&p.mil.from>G.day);
   const w=sangmuWave();
-  const card=p=>pcard(p,{sub:`${p.age}세 · ${esc(milText(p))}`,tags:p.age>=27&&milFree(p)?'<span class="pill bad">올해 입대해야 함</span>':'',foot:`${rosterFoot(p)}${milFree(p)&&!(p.mil&&p.mil.app)?`${w&&p.age<=27?`<button class="tc-i go" data-a="sangmu" data-v="${p.id}">상무 지원</button>`:''}<button class="tc-i" data-a="enlist" data-v="${p.id}">현역 입대</button>`:''}`});
+  const MA={last:['bad','마지막 기회'],go:['good','상무 추천'],hold:['warn','보류 의견'],wait:['','여유 있음']};
+  const card=p=>{ const a=milFree(p)?milAdvice(p):null; const t=a&&MA[a.k]; return pcard(p,{sub:`${p.age}세 · ${esc(milText(p))}`,tags:(p.age>=27&&milFree(p)?'<span class="pill bad">올해 입대해야 함</span>':'')+(t&&a.k!=='last'?`<span class="pill ${t[0]}" title="${esc(a.who+': '+a.why)}">${t[1]}</span>`:''),stat:a&&a.why?`<span class="small muted">${esc(a.who)}: ${esc(a.why)}</span>`:undefined,foot:`${rosterFoot(p)}${milFree(p)&&!(p.mil&&p.mil.app)?`${w&&p.age<=27?`<button class="tc-i go" data-a="sangmu" data-v="${p.id}">상무 지원</button>`:''}<button class="tc-i" data-a="enlist" data-v="${p.id}">현역 입대</button>`:''}`}); };
   const oy=[0,1,2,3,4].map(k=>G.year+k).find(olyYear);
   return csec('병역 관리',`<p class="small muted">국내 선수는 군 복무를 해야 합니다. 상무(국군체육부대)는 1년 6개월 동안 퓨처스리그에서 뛰며 기량을 유지하고, 현역은 야구를 거의 못 해 기량이 떨어집니다. 상무는 지원자 중 기량 순으로 한 번에 ${SANGMU_SLOTS}명만 합격합니다. 28세가 되는 해까지 입대하지 않으면 현역으로 갑니다(게임 규칙). 복무 중인 선수는 로스터에서 빠졌다가 전역하면 돌아옵니다.</p>
     <dl class="tsum"><div><dt>미필</dt><dd class="num">${free.length}명</dd></div><div><dt>복무 중</dt><dd class="num">${serving.length}명</dd></div><div><dt>상무 지원</dt><dd>${w?(w==='dec'?'지금 가능 · 12월 입대':'지금 가능 · 6월 입대'):'3~4월, 9~10월'}</dd></div></dl>

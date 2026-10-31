@@ -710,6 +710,16 @@ T('[트레이드] AI 단장은 능력과 함께 최근 성적도 본다: 운 좋
   for(const k in h)if(typeof h[k]==='number')h[k]=keep[k]??0; addTo(h,{g:100,pa:420,ab:375,h:70,d:10,tr:0,hr:2,bb:38,hbp:2,sf:5,so:110}); rs(); const v2=tval(t,p,'in');
   for(const k in h)if(typeof h[k]==='number')h[k]=keep[k]??0; rs();
   ok(v1>v0*1.08,'OPS 1.000대 운 좋은 시즌인데 평가가 그대로 '+v0.toFixed(1)+' -> '+v1.toFixed(1)); ok(v2<v0*.92,'OPS .500대 부진인데 평가가 그대로 '+v0.toFixed(1)+' -> '+v2.toFixed(1)); ok(Math.abs(u1-u0)<.01,'우리 구단 평가(실제 능력 기준)가 성적에 흔들림'); });
+T('[구단 이름] 플레이어가 구단 별칭을 바꿀 수 있고(연고지는 고정), 겹치거나 빈 이름은 막으며, 기본 이름으로 되돌릴 수 있다',()=>{ fresh(); const a=G.teams[0], b=G.teams[1];
+  const r=applyTeamNames([{id:a.id,city:'서울',nick:'점검트윈스'},{id:b.id,city:'서울',nick:'점검베어스'}]); ok(!r,'이름 바꾸기 실패: '+r); ok(tshort(a.id)==='서울 점검트윈스'&&tshort(b.id)==='서울 점검베어스','바뀐 이름이 안 보임 '+tshort(a.id));
+  ok(applyTeamNames([{id:a.id,city:'서울',nick:'점검베어스'}]),'다른 구단과 같은 별칭을 허용함'); ok(applyTeamNames([{id:a.id,nick:''}]),'빈 별칭을 허용함'); ok(tshort(a.id)==='서울 점검트윈스','거절된 변경이 일부 반영됨');
+  ok(!applyTeamNames([{id:a.id,city:'부산',nick:'점검트윈스'}])&&team(a.id).city===TEAM_DEF[a.id].city,'연고지가 바뀜(별칭만 바꿀 수 있어야 함)');
+  resetTeamNames(); ok(tshort(a.id)===TEAM_DEF[a.id].city+' '+TEAM_DEF[a.id].nick,'기본 이름으로 안 돌아옴 '+tshort(a.id)); });
+T('[병역] 상무 지원 기간에 스카우트팀장·감독이 선수별로 추천(지원 권장·마지막 기회·보류)을 보낸다',()=>{ fresh(); const ms=domestic(G.user).filter(p=>!p.foreign&&!p.ys&&!(p.joinY>G.year)); const d=depth(G.user); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
+  const last=ms.find(p=>!reg.has(p.id)), star=ms.find(p=>reg.has(p.id)&&p!==last), dev=ms.find(p=>!reg.has(p.id)&&p!==last&&p!==star); ok(last&&star&&dev,'준비 실패');
+  for(const p of [last,star,dev]){ p.mil=null; } last.age=27; star.age=24; dev.age=23; dev.pot=Math.max(dev.pot,ovr(dev)+8);
+  ok(milAdvice(last).k==='last','27세 미필이 마지막 기회로 안 나옴: '+milAdvice(last).k); ok(milAdvice(star).k==='hold','1군 주전이 보류로 안 나옴: '+milAdvice(star).k); ok(milAdvice(dev).k==='go','1군 자리 없는 23세 유망주가 지원 권장으로 안 나옴: '+milAdvice(dev).k);
+  G.day=KD(9,1); const n0=G.mail.length; milDaily(); const m=G.mail.slice(0,G.mail.length-n0).find(x=>x.subj.includes('상무 지원 기간')); ok(m&&m.body.includes('추천')&&m.body.includes(dev.name)&&m.body.includes(last.name),'상무 지원 안내에 추천 명단이 없음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ for(const t of results){ try{ t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }

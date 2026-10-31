@@ -117,6 +117,12 @@ const QUICK=process.env.QUICK==='1';
       const st=[...svg.querySelectorAll('path')].find(e=>e.getAttribute('fill')==='#5d6670'); const L=[...svg.querySelectorAll('path')].filter(e=>e.getAttribute('stroke')==='#4c545c'); if(!st||!L.length)return {n:0};
       let bad=0; for(const e of L){ const n=e.getTotalLength(); const a=e.getPointAtLength(0), b=e.getPointAtLength(n*.97); const pt=svg.createSVGPoint(); pt.x=b.x; pt.y=b.y; if(!st.isPointInFill(pt))bad++; } return {n:L.length,bad}; });
     if(r&&r.n&&r.bad)add('홈구장 그림',`관중석 방사선 ${r.n}개 중 ${r.bad}개가 관중석 밖으로 나감`); }
+  /* 구단 이름 바꾸기(설정): 입력하고 저장하면 화면 이름이 바뀌고, 기본 이름으로 되돌릴 수 있다 */
+  { where='구단 이름 바꾸기'; const r=await ev(()=>{ closeSheets(); A.go('cfg:set'); const c=document.querySelector('input[data-tn="0"][data-k="nick"]'); if(!c)return {no:1}; c.value='점검트윈스'; A.tnSave(); const a=tshort(0); const shown=document.body.innerText.includes('점검트윈스'); A.tnReset(); return {a,shown,b:tshort(0)}; });
+    if(!r||r.no)add('구단 이름','설정에 구단 이름 바꾸기가 없음'); else { if(!/점검트윈스/.test(r.a))add('구단 이름','저장해도 이름이 안 바뀜: '+r.a); if(/점검트윈스/.test(r.b))add('구단 이름','기본 이름으로 안 돌아옴'); } }
+  /* 백업 권유: itch처럼 다른 사이트 안에서 실행 중이면 게임 날짜 60일마다 상단에 백업 권유가 뜨고, '나중에'를 누르면 닫힌다 */
+  { where='백업 권유'; const r=await ev(()=>{ const f0=inFrame; inFrame=()=>true; try{ G.bkAt=G.day-61; closeSheets(); A.tab('home'); const on=!!document.querySelector('.blk.bkn'); A.bkLater(); const off=!document.querySelector('.blk.bkn'); G.bkAt=G.day; A.expCode(); const set=G.bkAt===G.day; UI.expCode=null; return {on,off,set}; } finally { inFrame=f0; render(); } });
+    if(r){ if(!r.on)add('백업 권유','다른 사이트 안에서 60일이 지났는데 백업 권유가 안 뜸'); if(!r.off)add('백업 권유',"'나중에'를 눌러도 안 닫힘"); if(!r.set)add('백업 권유','내보내기를 해도 백업 날짜가 기록되지 않음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

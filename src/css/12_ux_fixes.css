@@ -532,3 +532,10 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .fd-left{font-size:13px;font-weight:700;color:var(--acc,#3d8bff)}
 @media (max-width:600px){ .fd-got>.fd-left{display:block} }
 .fde-old{opacity:.6}.fde-rv .good{color:var(--good)}.fde-rv .bad{color:var(--bad)}
+/* 구단 이름 바꾸기 */
+.tn-l{display:grid;gap:6px;margin:8px 0}.tn-r{display:grid;grid-template-columns:20px 44px minmax(0,150px) minmax(0,1fr);gap:6px;align-items:center}
+.tn-r input{min-width:0;padding:5px 8px;font-size:13px;background:var(--bg2,#11161c);color:var(--ink);border:1px solid var(--line2);border-radius:4px}
+@media (max-width:520px){ .tn-r{grid-template-columns:20px 44px minmax(0,1fr)} .tn-r>.small{display:none} }
+/* 백업 권유 줄 */
+.blk.bkn .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.blk.bkn button{margin-left:0}
+.blk.bkn{background:#2e2a14;color:#ffe9a8;border-bottom-color:#4a4220}
