@@ -118,6 +118,11 @@ const QUICK=process.env.QUICK==='1';
       const u0=G.unemp; UI.cfm=null; A.evPick(id+':2'); const asked=!!UI.cfm&&!G.unemp; UI.cfm=null; G.evs=G.evs.filter(e=>e.id!==id);
       const keep={u:G.unemp,tab:UI.tab}; G.unemp={since:G.day}; UI.tab='cfg'; render(); const txt=(document.querySelector('#app')||document.body).innerText; const set=/저장 슬롯/.test(txt)&&/내보내기/.test(txt); G.unemp=keep.u; UI.tab=keep.tab; render(); return {asked,set,u0:!!u0}; });
     if(r){ if(!r.asked)add('재계약','재계약 거절을 한 번 더 묻지 않고 바로 처리함'); if(!r.set)add('야인 설정','야인일 때 게임 설정(저장·불러오기)이 안 열림'); } };
+  /* 패치 노트: 안 본 업데이트가 있으면 게임 화면에서 한 번 띄우고, 확인하면 다시 뜨지 않는다. 게임 설정에서 다시 볼 수 있다 */
+  const patchCheck=async()=>{ where='패치 노트'; const r=await ev(()=>{ if(typeof PATCH==='undefined')return {none:true}; const k='fronttime-patch-seen'; const keep=localStorage.getItem(k); localStorage.removeItem(k); UI.patchTest=true; UI.patchClosed=false; UI.tab='home'; render();
+      const pop=!!document.querySelector('.pn-w'); A.patchOk(); const gone=!document.querySelector('.pn-w'); const seen=localStorage.getItem(k)===PATCH[0].id; UI.patchClosed=false; render(); const again=!!document.querySelector('.pn-w');
+      UI.tab='cfg'; UI.sub=Object.assign({},UI.sub||{},{cfg:'set'}); render(); const cfg=/패치 노트/.test((document.querySelector('#app')||document.body).innerText); UI.patchTest=false; UI.tab='home'; if(keep!=null)localStorage.setItem(k,keep); render(); return {pop,gone,seen,again,cfg}; });
+    if(r){ if(r.none)add('패치 노트','패치 노트가 없음'); else { if(!r.pop)add('패치 노트','안 본 업데이트가 있는데 띄우지 않음'); if(!r.gone||!r.seen)add('패치 노트','확인해도 닫히지 않거나 기록되지 않음'); if(r.again)add('패치 노트','확인한 뒤에도 다시 뜸'); if(!r.cfg)add('패치 노트','게임 설정에 패치 노트가 없음'); } } };
   const recCheck=async label=>{ where=`${label} · 기록 순위`;
     const r=await ev(()=>{ closeSheets(); const y=G.year; const B=playerRows(y).filter(x=>!x.p.isP&&x.h.hr>0&&!isQual(x,y)).sort((a,b)=>b.h.hr-a.h.hr); const p=B[0]; if(!p)return null;
       UI.lrf={q:true,t:'all'}; UI.lrec='bat'; UI.lrAll=true; UI.ls=UI.ls||{}; const has=()=>!!document.querySelector(`#app table [data-a="player"][data-v="${p.p.id}"]`);
@@ -173,7 +178,7 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(!r.b)add('코드 복사','코드를 만들어도 복사 버튼이 없음'); if(!r.p)add('코드 복사','붙여넣기 버튼이 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
-    where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
+    where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
     await monkey('시즌 중',+process.env.MONKEY||4);
     where='시뮬 → FA'; console.log('  FA:',await sim('G.fa&&!G.fa.closed&&G.day>=KD(11,6)',600)); await crawl('스토브리그 FA');
     where='FA 협상 창'; await ev(()=>{ const id=(G.fa.pool||[]).find(i=>G.players[i]); if(id!=null)A.negOpen('fa:'+id); }); await pg.waitForTimeout(100); await ev(()=>closeSheets());

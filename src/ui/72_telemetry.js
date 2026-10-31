@@ -10,7 +10,7 @@
  3) 화면: screen(어느 화면에서 어느 화면으로, 머문 초)
  4) 세션: session_start · session_end(플레이 시간, 읽은 소식 수, 진행 횟수, 마지막 화면과 게임 날짜)
  5) 오류: js_error(메시지, 위치, 화면, 게임 날짜) */
-var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
+var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'G-78C5MN0LHM',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
 var TELE_GA=TELE.ga; /* 예전 이름 호환 */
 function teleOn(){ if(!TELE.ph&&!TELE.ga)return false; const m=meta(); return m.tele!==false; }
 function teleUid(){ try{ let u=localStorage.getItem('dsj_uid'); if(!u){ u='u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem('dsj_uid',u); } return u; }catch(e){ return 'anon'; } }

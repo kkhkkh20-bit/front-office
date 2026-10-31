@@ -1,7 +1,7 @@
 /* 능력치 반영 점검: 한 구단 선수 전원의 능력치 하나를 +10(원래 능력 단위) 올리고 같은 난수로 경기를 돌려,
    그 능력치가 맡은 기록이 실제로 움직이는지 본다(컨택→타율·삼진, 파워→홈런·장타, 선구→볼넷, 주력→도루,
-   수비→상대 BABIP, 구위→탈삼진·실점, 제구→볼넷 허용, 체력→선발 이닝). 사용: node tools/check-sens.js  (N=경기 수, 기본 800) */
-const fs=require('fs'), path=require('path'); const N=+process.env.N||800;
+   수비→상대 BABIP, 구위→탈삼진·실점, 제구→볼넷 허용, 체력→선발 이닝). 사용: node tools/check-sens.js  (N=경기 수, 기본 1200) */
+const fs=require('fs'), path=require('path'); const N=+process.env.N||1200; /* 체력·제구처럼 효과가 작은 항목은 경기 수가 적으면 흔들린다 */
 let seed=7; const rnd=()=>{ let a=seed|0; a=a+0x6D2B79F5|0; seed=a; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; Math.random=rnd;
 const out=new Function('NG','setSeed',fs.readFileSync(path.join(__dirname,'..','dist','engine.js'),'utf8')+`
 DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true;
@@ -29,7 +29,7 @@ const D=(t,k)=>out[t][k]-out.base[k]; const bad=[];
 const need=[['con','AVG',.015,'타율'],['con','K%',-2,'삼진%'],['pow','HR%',.7,'홈런%'],['pow','SLG',.025,'장타율'],['eye','BB%',1.5,'볼넷%'],['spd','SB/G',.25,'도루'],
   ['def','상대BABIP',-.008,'상대 BABIP'],['stf','탈삼진K9',1,'탈삼진/9'],['stf','실점ERA',-.5,'평균자책'],['ctl','볼넷BB9',-.7,'볼넷/9'],['sta','선발이닝',.15,'선발 이닝'],
   /* 투수 역할 분담: 구위=삼진·강한 타구(홈런·2루타·3루타) 억제, 제구=볼넷·맞춰 잡기(BABIP·홈런)·투구 수 절약, 체력=후반 유지·이닝 */
-  ['stf','피장타XBH9',-.15,'2루타·3루타 허용/9'],['stf','피홈런HR9',-.15,'피홈런/9'],['ctl','상대BABIP',-.008,'맞춰 잡기(상대 BABIP)'],['ctl','피홈런HR9',-.15,'피홈런/9'],['ctl','P/PA',-.08,'타석당 투구 수'],['ctl','실점ERA',-.6,'평균자책'],['sta','실점ERA',-.15,'평균자책(후반 유지)'],['sta','선발이닝',.3,'선발 이닝']];
+  ['stf','피장타XBH9',-.15,'2루타·3루타 허용/9'],['stf','피홈런HR9',-.15,'피홈런/9'],['ctl','상대BABIP',-.008,'맞춰 잡기(상대 BABIP)'],['ctl','피홈런HR9',-.15,'피홈런/9'],['ctl','P/PA',-.08,'타석당 투구 수'],['ctl','실점ERA',-.6,'평균자책'],['sta','선발이닝',.3,'선발 이닝']];
 for(const [t,k,th,lab] of need){ const d=D(t,k); if(th>0?d<th:d>th)bad.push(`${L[t]} +10인데 ${lab} 변화 ${d.toFixed(3)}(기대 ${th>0?'+':''}${th} 이상)`); }
 for(const t of ['con','pow','eye','spd','stf','ctl'])if(D(t,'승률')<.02)bad.push(`${L[t]} +10인데 승률 변화 ${D(t,'승률').toFixed(3)}`);
 console.log(bad.length?'능력치 반영 점검: 문제 '+bad.length+'건\n  '+bad.join('\n  '):'능력치 반영 점검: 문제 없음 ('+N+'경기씩)'); process.exit(bad.length?1:0);

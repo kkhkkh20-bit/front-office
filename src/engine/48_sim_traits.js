@@ -4,6 +4,8 @@
 const trt=(p,k,s)=>hn('dt'+k,p.id)*(s||4);
 const PITCHES=['슬라이더','커브','체인지업','포크','커터','투심','스위퍼'];
 function gbT(p){ return clamp(hn('gb',p.id),-1.6,1.6); } /* +면 땅볼형 */
+/* 삼진 회피(세부 능력): 경기 계산의 삼진 확률과 같은 비중(컨택 .8·선구 .2)과 삼진 성향 */
+function kAvoidV(p){ return p.r.con*.8+p.r.eye*.2+trt(p,'k'); }
 /* 구종: 상세 화면과 같은 규칙으로 고른다 */
 function arsenal(p,stfV){ const id=p.id; const velo=veloSim(p); const sp=isSPr(p); const n=sp?3+(u01('np',id)>.5?1:0):1+(u01('np',id)>.4?1:0);
   const pool=[...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,n);

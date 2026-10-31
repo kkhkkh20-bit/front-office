@@ -375,3 +375,8 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .pc-tr{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.pc-li{display:grid;grid-template-columns:110px 1fr;gap:8px}
 @media (max-width:480px){.pab,.pc-li{grid-template-columns:90px 1fr 30px}.pc-li{grid-template-columns:90px 1fr}}
 .tcash{margin:8px 0;padding:8px 10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:6px}
+/* 패치 노트 */
+.pn{max-width:560px;max-height:82vh;overflow:auto}
+.pn-i{margin:10px 0 4px}
+.pn-l{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:13.5px;line-height:1.5}
+.pn-card .pn-i+.pn-i{border-top:1px solid var(--line,rgba(255,255,255,.08));padding-top:10px}

@@ -1399,6 +1399,11 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .pc-tr{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.pc-li{display:grid;grid-template-columns:110px 1fr;gap:8px}
 @media (max-width:480px){.pab,.pc-li{grid-template-columns:90px 1fr 30px}.pc-li{grid-template-columns:90px 1fr}}
 .tcash{margin:8px 0;padding:8px 10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:6px}
+/* 패치 노트 */
+.pn{max-width:560px;max-height:82vh;overflow:auto}
+.pn-i{margin:10px 0 4px}
+.pn-l{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:13.5px;line-height:1.5}
+.pn-card .pn-i+.pn-i{border-top:1px solid var(--line,rgba(255,255,255,.08));padding-top:10px}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -2559,8 +2564,8 @@ function simBat(p,pa,b,slot){
    +10 실험(1,500경기): 평균자책점 구위 -1.26 · 제구 -1.32 · 체력 -0.47(선발 +0.5이닝). 리그 평균(타율·평균자책점·득점)은 예전과 같게 맞췄다 */
 var PW={k0:.074,h0:.046,hs:.020,hc:.020,b0:.361,bs:.035,bc:.06,xs:.35,xc:.15,eff:.9,ft0:-5,fts:1,ftd:9,fm:1,l0:33,ls:.95};
 function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.7;
-  return {k:PW.k0+cc(r.stf,bk)*.24+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((PW.h0-cc(r.stf,b)*PW.hs-cc(r.ctl,be)*PW.hc-trt(p,'mv')*.0008)*(1-gbT(p)*.08),.006,.06), babip:clamp(PW.b0-cc(r.stf,b)*PW.bs-cc(r.ctl,be)*PW.bc-trt(p,'mv')*.0008-seasonLuck(p),.25,.36),
-    x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc,.6,1.4)}; /* x2: 인플레이 안타 중 2루타·3루타가 되는 비율에 곱한다 */
+  return {k:PW.k0+cc(r.stf,bk)*.24+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((PW.h0-cc(r.stf,b)*PW.hs-cc(r.ctl,be)*PW.hc-trt(p,'mv')*.0008)*(1-gbT(p)*.13),.006,.06), babip:clamp(PW.b0-cc(r.stf,b)*PW.bs-cc(r.ctl,be)*PW.bc-trt(p,'mv')*.0008+gbT(p)*.003-seasonLuck(p),.25,.36),
+    x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc-gbT(p)*.05,.6,1.4)}; /* 땅볼형: 피홈런·장타가 줄고 땅볼 안타는 조금 는다 */ /* x2: 인플레이 안타 중 2루타·3루타가 되는 비율에 곱한다 */
 }
 function simPit(p,outs,b){
   const q=shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,so:0,tb:0};
@@ -3921,11 +3926,13 @@ function fdWar(p,h){ if(p.isP||!h||!h.pa)return warRaw(h,p); const pos=h.pos||p.
 /* 트래킹 측정치: 실제 구단이 보는 수치처럼 능력에 연동되지만 측정 오차가 있다(같은 선수는 늘 같은 값) */
 /* 측정 데이터: 한 시즌 측정이라 실제 능력과 어긋남(측정 오차)이 있다. 그래도 겉 기록보다는 실력을 잘 보여 준다 */
 function trackOf(p){ if(!p)return null; const r=p.r, n=(k,s)=>hn('tr'+k,p.id)*(s||1);
-  if(p.isP){ const v=veloOf(p); return {velo:v,vmax:veloMax(p),rpm:Math.round((2080+(r.stf-20)/60*420+n('rpm',70))/10)*10,ext:Math.round((1.78+n('ext',.09)+(r.stf-50)*.001)*100)/100,whiff:Math.round(17+(r.stf-20)/60*15+n('wh',3)),gb:Math.round(clamp(44+hn('gb',p.id)*7,30,62)),csw:Math.round(25+(r.ctl-20)/60*7+(r.stf-20)/60*4+n('csw',2))}; }
-  const ev=evOf(p); return {ev,evmax:Math.round(156+(r.pow-20)/60*24+n('evm',4)),hh:Math.round(22+(r.pow-20)/60*24+(r.con-50)*.08+n('hh',4)),whiff:Math.round(31-(r.con-20)/60*18+n('bw',3.2)),chase:Math.round(36-(r.eye-20)/60*16+n('ch',3.2)),run:+runOf(p),arm:Math.round(124+(r.def-20)/60*22+(['SS','3B','RF','C'].includes(p.pos)?3:0)+n('arm',4))}; }
+  /* 트래킹은 능력치에서 나오고 개인차(측정·스타일)가 조금 붙는다. 실제 트래킹처럼 한 시즌 기록보다 실력을 잘 보여 주게 개인차를 줄였다(예전엔 홈런·삼진과 상관 0.6대로 한 시즌 기록보다 못했다).
+     헛스윙%는 구위와 결정구, CSW%(루킹+헛스윙)는 구위 중심에 제구가 더해진다. 땅볼%는 땅볼 성향(gbT)과 같은 값 */
+  if(p.isP){ const v=veloOf(p); let ak=0; try{ ak=arsenalK(p); }catch(e){ ak=0; } return {velo:v,vmax:veloMax(p),rpm:Math.round((2080+(r.stf-20)/60*420+n('rpm',45))/10)*10,ext:Math.round((1.78+n('ext',.09)+(r.stf-50)*.001)*100)/100,whiff:Math.round(17+(r.stf-20)/60*15+ak*120+n('wh',1.6)),gb:Math.round(clamp(44+hn('gb',p.id)*7,30,62)),csw:Math.round(25+(r.stf-20)/60*7+(r.ctl-20)/60*3.5+ak*60+n('csw',1))}; }
+  const ev=evOf(p); return {ev,evmax:Math.round(156+(r.pow-20)/60*24+n('evm',2)),hh:Math.round(22+(r.pow-20)/60*24+(r.con-50)*.08+n('hh',2)),whiff:Math.round(31-(r.con-20)/60*18+n('bw',1.6)),chase:Math.round(36-(r.eye-20)/60*16+n('ch',1.6)),run:+runOf(p),arm:Math.round(124+(r.def-20)/60*22+(['SS','3B','RF','C'].includes(p.pos)?3:0)+n('arm',3))}; }
 /* 최고 구속: 평균보다 4~7km 빠르다 */
 function veloMax(p){ return Math.min(161,Math.round(veloOf(p)+4+hn('vmax',p.id)*1.2)); } /* 최고 구속: 평균보다 4km 안팎 빠르고 161 넘지 않음(국내 최고 기록 160km대 초반) */
-function evOf(p){ if(!p||p.isP)return null; return Math.round(126+(p.r.pow-20)/60*17+(p.r.con-50)*.04+hn('ev',p.id)*3.2); }
+function evOf(p){ if(!p||p.isP)return null; return Math.round(126+(p.r.pow-20)/60*17+(p.r.con-50)*.04+hn('ev',p.id)*1.6); }
 /* 최근 3년 1군 합계(게임 시작 전 2023·2024 포함) */
 function fdThree(p,y){ let t=null, ys=0; for(let yy=y-2;yy<=y;yy++){ const h=seasonTotal(p,yy,'1군'); if(!h||!(p.isP?h.outs:h.pa))continue; ys++; if(!t)t=Object.assign({},h); else addTo(t,h); } if(t)t.ys=ys; return t; }
 function fdStatLine(p,y){ const h1=seasonTotal(p,y,'1군'), h2=seasonTotal(p,y,'퓨처스');
@@ -7552,6 +7559,8 @@ function mgrAxes(m){ mgrAttr(m); const ax=(v,lo,mid,hi)=>v>=62?hi:v<=38?lo:mid;
 const trt=(p,k,s)=>hn('dt'+k,p.id)*(s||4);
 const PITCHES=['슬라이더','커브','체인지업','포크','커터','투심','스위퍼'];
 function gbT(p){ return clamp(hn('gb',p.id),-1.6,1.6); } /* +면 땅볼형 */
+/* 삼진 회피(세부 능력): 경기 계산의 삼진 확률과 같은 비중(컨택 .8·선구 .2)과 삼진 성향 */
+function kAvoidV(p){ return p.r.con*.8+p.r.eye*.2+trt(p,'k'); }
 /* 구종: 상세 화면과 같은 규칙으로 고른다 */
 function arsenal(p,stfV){ const id=p.id; const velo=veloSim(p); const sp=isSPr(p); const n=sp?3+(u01('np',id)>.5?1:0):1+(u01('np',id)>.4?1:0);
   const pool=[...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,n);
@@ -10525,7 +10534,7 @@ function render(){
     const KS=['.fdt-w','#sheet .sheet']; const keep=KS.map(q=>{ const e=document.querySelector(q); return e?[e.scrollTop,e.scrollLeft]:null; });
     app.innerHTML=`<div class="dshell"><header class="dtop"><div class="gut"><div class="wrap dtbar">${badge(G.user,30)}<div class="dti"><b>${esc(t.city)} ${esc(t.nick)}</b><span>창단 드래프트${F?(F.open===false?' · 탐색 시간':pk?` · ${pk.rd}/${FD_ROUNDS}라운드`:''):' · 준비'}</span></div>
       <button class="mailbtn" data-a="inbox" aria-label="소식함">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button><button class="btn small" data-a="toTitle">처음 화면</button></div>${F&&!G.fdWait?`<div class="wrap">${fdTicker()}</div>`:''}</div></header>
-      <div class="gut"><div class="wrap"><main class="content dcontent">${G.fdWait?fdWaitView():fdView()}</main></div></div></div>`;
+      <div class="gut"><div class="wrap"><main class="content dcontent">${G.fdWait?fdWaitView():fdView()}</main></div></div></div>${patchPop()}`;
     document.body.classList.toggle('help',helpOn()); markHints(app); renderSheet(); KS.forEach((q,i)=>{ const e=document.querySelector(q); if(e&&keep[i]){ e.scrollTop=keep[i][0]; e.scrollLeft=keep[i][1]; } }); return; }
   const nav=NAV; const ic=i=>ICO[i]||ICO2[i]; const inMenu=!BNAV.includes(UI.tab); const menuAlert=NAV.some(([k])=>!BNAV.includes(k)&&tabAlert(k));
   app.innerHTML=`<div class="shell">
@@ -10537,7 +10546,7 @@ function render(){
    </div></div>${wide()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}${needBackup()?`<div class="blk bkn gut"><div class="wrap">itch처럼 다른 사이트 안에서 하면 브라우저 정리나 게임 업데이트로 저장이 지워질 수 있습니다. 가끔 파일로 내보내 두세요.<button data-a="expFile">파일로 내보내기</button><button data-a="bkLater">나중에</button></div></div>`:''}</header>
    <div class="gut"><div class="wrap">
      <div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
-     <main class="content">${tabBody()}</main>${UI.stamp?stampView():''} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
+     <main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
    </div></div>
   </div>
   <nav class="bnav" aria-label="메뉴"><div class="in">${nav.filter(([k])=>BNAV.includes(k)).map(([k,l,i])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}">${ic(i)}<span>${l}</span>${(k==='inbox'&&unread)||(k!=='inbox'&&tabAlert(k))?'<span class="dot"></span>':''}</button>`).join('')}<button data-a="menu" class="${inMenu?'on':''}">${ICO2.menu}<span>메뉴</span>${menuAlert?'<span class="dot"></span>':''}</button></div></nav>
@@ -10556,7 +10565,7 @@ function tabBody(){
   if(G.unemp&&!['home','inbox','league'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요.</p><div class="row"><button class="btn small" data-a="tab" data-v="cfg">게임 설정(저장·불러오기)</button></div><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
   return {cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,cfg:cfgView,me:meView,league:leagueView,club:clubView}[UI.tab]();
 }
-function unempCfg(){ return `<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard(); }
+function unempCfg(){ return patchCard()+`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard(); }
 function anySave(){ try{ const m=meta(); return SLOT_IDS.some(n=>m.slots&&m.slots[n]); }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+(m.slots[n]?slotSize(n):0),0); const rows=SLOT_IDS.filter(n=>m.slots[n]||n===SLOT_IDS.find(k=>!m.slots[k])||UI.slotAll).map(n=>{ const s=m.slots[n]; const cur=G&&m.active===n;
     return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.over?' · 경질됨':''} · ${slotSize(n)}KB`:'비어 있음'}</div></div>
@@ -10620,8 +10629,9 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
         ${canCont?`<button class="tsb primary" data-a="tsCont"><b>이어하기</b><span>슬롯 ${m.active}${tn?` · ${esc(tn)}`:''}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="tsb ${canCont?'':'primary'}" data-a="tsGo" data-v="team"><b>새 게임</b><span>창단 드래프트로 처음부터 팀을 만듭니다</span></button>
         ${anySave()?`<button class="tsb" data-a="tsGo" data-v="slots"><b>저장 슬롯</b><span>불러오기 · 덮어쓰기 · 삭제</span></button>`:''}
-      </div><p class="ts-ver">버전 ${GAME_VER} · 무료 게임</p>${typeof TELE!=='undefined'&&TELE&&(TELE.ph||TELE.ga)&&teleOn()?'<p class="small muted">게임 개선을 위해 익명 플레이 기록을 수집합니다. 설정 > 게임 설정에서 끌 수 있습니다.</p>':''}
+      </div><p class="ts-ver">버전 ${GAME_VER} · 무료 게임 · <button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button></p>${typeof TELE!=='undefined'&&TELE&&(TELE.ph||TELE.ga)&&teleOn()?'<p class="small muted">게임 개선을 위해 익명 플레이 기록을 수집합니다. 설정 > 게임 설정에서 끌 수 있습니다.</p>':''}
       ${inFrame()&&isIOS()?`<p class="small ts-warn">iPhone·iPad의 Safari는 이 화면 안에서 저장이 지워질 수 있습니다. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a>를 권하고, 가끔 설정의 "파일로 내보내기"로 백업하세요.</p>`:''}</div>${foot}${creditsLine()}</div></div>`; }
+  if(st==='patch')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${patchCard()}</div></div>`;
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}</div></div>`;
   if(st==='mode'&&false){ ensureWorld();
     return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
@@ -11288,7 +11298,7 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
   const c=v=>clamp(Math.round(v),20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
   const G2=[];
   if(!p.isP){ const L=p.bt==='좌'?-4:p.bt==='양'?0:2, Rr=p.bt==='좌'?2:p.bt==='양'?0:-1;
-    G2.push(['타격',[['평균 타구속도',evOf(p)+'km/h','t'],['컨택',c(tv.con)],['갭 파워',c((tv.con+tv.pow)/2+o('gap'))],['홈런 파워',c(tv.pow)],['선구안',c(tv.eye)],['삼진 회피',c(tv.con*.6+tv.eye*.4+o('k'))],['좌투수 상대',c(tv.con+L+o('vl',3))],['우투수 상대',c(tv.con+Rr+o('vr',3))]]]);
+    G2.push(['타격',[['평균 타구속도',evOf(p)+'km/h','t'],['컨택',c(tv.con)],['갭 파워',c((tv.con+tv.pow)/2+o('gap'))],['홈런 파워',c(tv.pow)],['선구안',c(tv.eye)],['삼진 회피',c(tv.con*.8+tv.eye*.2+o('k'))],['좌투수 상대',c(tv.con+L+o('vl',3))],['우투수 상대',c(tv.con+Rr+o('vr',3))]]]);
     G2.push(['주루',[['스피드',c(tv.spd)],['도루',c(tv.spd+o('sb'))],['주루 센스',c(tv.spd*.6+tv.eye*.4+o('br'))]]]);
     const arm=['C','RF','SS','3B'].includes(p.pos)?3:p.pos==='1B'?-4:0;
     G2.push(['수비',[['수비 범위',c(tv.def+(['SS','CF'].includes(p.pos)?2:0)+o('rng'))],['포구',c(tv.def+o('fld'))],['송구(어깨)',c(tv.def+arm+o('arm'))],p.pos==='C'?['블로킹·도루 저지',c(tv.def+o('cat'))]:['병살·중계',c(tv.def+o('dp'))]]]); }
@@ -13716,7 +13726,7 @@ function clubBody(s){
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
-    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+advSetCard()+teamNameCard()+slotsCard(false)+exportCard()+teleCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
+    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+advSetCard()+teamNameCard()+patchCard()+slotsCard(false)+exportCard()+teleCard()+devCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`+`<section class="card"><h2 class="sec">게임 관리</h2><p class="small muted">진행 상황은 이 브라우저의 현재 슬롯에 자동 저장됩니다(압축 저장). 선수 얼굴은 faces.js(ZenGM, Apache License 2.0), 메뉴 아이콘은 Lucide(ISC), 저장 압축은 lz-string(MIT)을 썼습니다. 효과음: 관중 함성·관중석 소리 Gregor Quendel "Free Crowd Cheering Sounds"(CC-BY 4.0, OpenGameArt), 타격음 Jordan Irwin "Thwack Sounds"(CC0), 미트·알림음 Kenney(CC0). 구단 엠블럼·경기장·트로피 그림과 오르간·사이렌 소리는 이 게임을 위해 직접 만든 것입니다.</p>
     ${UI.confirmNew?`<div class="note bad">지금 구단을 포기하고 새로 시작합니다. 저장된 진행이 지워집니다.</div><div class="row"><button class="btn danger" data-a="newgame">새로 시작</button><button class="btn" data-a="cancelNew">취소</button></div>`:`<button class="btn" data-a="askNew">새 게임</button>`}</section>`}; const h=mergedBody('club',s,H0);
   return h;
 }
@@ -16148,7 +16158,7 @@ Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!U
  3) 화면: screen(어느 화면에서 어느 화면으로, 머문 초)
  4) 세션: session_start · session_end(플레이 시간, 읽은 소식 수, 진행 횟수, 마지막 화면과 게임 날짜)
  5) 오류: js_error(메시지, 위치, 화면, 게임 날짜) */
-var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
+var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'G-78C5MN0LHM',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
 var TELE_GA=TELE.ga; /* 예전 이름 호환 */
 function teleOn(){ if(!TELE.ph&&!TELE.ga)return false; const m=meta(); return m.tele!==false; }
 function teleUid(){ try{ let u=localStorage.getItem('dsj_uid'); if(!u){ u='u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem('dsj_uid',u); } return u; }catch(e){ return 'anon'; } }
@@ -16301,6 +16311,41 @@ Object.assign(A,{
   /* 소식함의 경기 정리 소식에서 다시 열기: v = "시작일:끝일" */
   wkOpen(v){ const [f,t]=String(v).split(':').map(Number); if(!wkGames(f,t).length){ toast('그 기간 경기 기록이 더는 남아 있지 않습니다. 리그 → 일정·결과에서 볼 수 있습니다.'); return; } closeSheets(); UI.wkres={from:f,to:t,rk0:null}; renderSheet(); }
 });
+/* ---------- 패치 노트: 업데이트마다 무엇이 바뀌었는지 공지처럼 알린다 ----------
+   - PATCH 맨 앞이 가장 최근. 배포할 때마다 한 항목을 앞에 붙인다(플레이어가 느낄 변화만, 짧게).
+   - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
+   - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
+const PATCH=[
+  {id:'2026-10-31b',d:'10월 31일 저녁',t:'투수 능력치 개편 · 나이 곡선 · 데이터 연결',items:[
+    '투수 능력치의 역할을 나눴습니다. 구위는 삼진과 강한 타구(홈런·2루타·3루타) 억제, 제구는 볼넷 억제와 맞춰 잡기(피안타·피홈런 감소)·투구 수 절약, 체력은 투구 수가 늘어도 덜 지치고 이닝을 더 먹습니다.',
+    '투수 종합 능력 공식을 실제 성적 기여에 맞췄습니다(구위·제구 비중을 같게, 체력 비중은 낮게). 구위형 투수가 종합 능력보다 훨씬 잘 던지던 쏠림이 줄었습니다.',
+    '나이 곡선을 실제 KBO에 맞췄습니다. 전성기는 20대 후반이고 35세 무렵부터 크게 떨어집니다. 18세 유망주도 20대 중반에 정점에 이릅니다(진행 중인 저장은 다음 겨울 성장부터 적용).',
+    '트래킹 데이터(타구속도·강한타구%·헛스윙%·CSW% 등)가 실제 실력을 더 정확하게 보여 줍니다. 땅볼형 투수는 피홈런·장타를 더 잘 막습니다.',
+    '단장 재계약을 거절할 때 한 번 더 확인합니다. 야인일 때도 게임 설정에서 저장·불러오기를 쓸 수 있습니다.',
+    '게임 개선을 위해 익명 플레이 기록(구글 애널리틱스)을 모읍니다. 이름·저장 내용은 보내지 않고, 게임 설정에서 끌 수 있습니다.'
+  ]},
+  {id:'2026-10-31a',d:'10월 31일',t:'창단 드래프트·스카우트·기록',items:[
+    '스카우트 오차를 바로잡았습니다. 구위·체력·파워·주력·수비는 눈으로 거의 정확히 보이고, 컨택·선구·제구만 오차가 큽니다. 우리 스카우트의 성향(어느 툴을 후하게·짜게 보는지)을 지명 전에 보여 줍니다.',
+    '툴 점수와 등급을 한 기준으로 맞췄습니다. 1군 주전 평균이 74점(C 중급)이고 S 특급 · A 상급 · B 중상급 · C 중급 · D 하급 · E 최하급입니다.',
+    '데이터팀이 지난 2년 기록과 타구 질로 기대 홈런을 냅니다. 한 해 홈런 거품·불운을 짚어 줍니다. 성적 탭에서 최근 3년 합산을 볼 수 있습니다.',
+    '구속을 실제 리그에 맞췄습니다. 리그 평균 146km, 구위가 아주 높으면 155km 안팎에 최고 160km 가까이 찍습니다.',
+    'wRC+를 창단 드래프트·선수 정보·선수 카드·기록 순위에도 넣었습니다.',
+    '저장 속도를 개선했습니다. 저장할 때 화면이 멈추던 시간이 크게 줄었습니다(기존 저장 그대로 열림).',
+    '가을야구 중에는 팬 게시판에 정규시즌 연패 대신 시리즈 결과(업셋·탈락·우승) 글이 올라옵니다.',
+    '감독 경기 후 인터뷰가 상황에 따라 다양해졌습니다. 저장 코드 복사·붙여넣기 버튼을 추가했습니다.'
+  ]}
+];
+const PATCH_KEY='fronttime-patch-seen';
+function patchSeen(){ try{ return localStorage.getItem(PATCH_KEY)||''; }catch(e){ return ''; } }
+function patchMark(){ try{ localStorage.setItem(PATCH_KEY,PATCH[0].id); }catch(e){ UI.patchSeenMem=PATCH[0].id; } }
+function patchUnseen(){ const s=patchSeen()||UI.patchSeenMem||''; const i=PATCH.findIndex(x=>x.id===s); return i<0?PATCH.slice(0,2):PATCH.slice(0,i); }
+function patchBlock(x){ return `<div class="pn-i"><div class="row between"><b>${esc(x.t)}</b><span class="small muted">${esc(x.d)}</span></div><ul class="pn-l">${x.items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`; }
+/* 게임 화면에서 한 번 띄우는 공지(자동화 점검에서는 UI.patchTest일 때만) */
+function patchPop(){ if(!G||UI.title||!PATCH.length)return ''; if(navigator.webdriver&&!UI.patchTest)return ''; if(UI.patchClosed)return ''; const L=patchUnseen(); if(!L.length)return '';
+  return `<div class="rv-w pn-w"><div class="rv pn"><div class="eyebrow">업데이트 소식</div>${L.map(patchBlock).join('')}<button class="btn primary block" data-a="patchOk">확인</button></div></div>`; }
+/* 처음 화면·게임 설정용 카드 */
+function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map(patchBlock).join('')}</section>`; }
+Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); }, patchShow(){ UI.patchClosed=false; try{ localStorage.removeItem(PATCH_KEY); }catch(e){ UI.patchSeenMem=''; } render(); } });
 /* ===== 부팅: 모든 화면 파일이 읽힌 뒤 맨 마지막에 실행 =====
  앞 번호 파일에서 첫 화면을 그리면, 뒤 번호 파일의 상수(const)가 아직 만들어지지 않아 'before initialization' 오류로 화면이 빈다.
  그래서 저장 불러오기와 첫 화면 그리기는 항상 이 파일(가장 뒤)에서 한다. */

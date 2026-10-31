@@ -28,11 +28,13 @@ function fdWar(p,h){ if(p.isP||!h||!h.pa)return warRaw(h,p); const pos=h.pos||p.
 /* 트래킹 측정치: 실제 구단이 보는 수치처럼 능력에 연동되지만 측정 오차가 있다(같은 선수는 늘 같은 값) */
 /* 측정 데이터: 한 시즌 측정이라 실제 능력과 어긋남(측정 오차)이 있다. 그래도 겉 기록보다는 실력을 잘 보여 준다 */
 function trackOf(p){ if(!p)return null; const r=p.r, n=(k,s)=>hn('tr'+k,p.id)*(s||1);
-  if(p.isP){ const v=veloOf(p); return {velo:v,vmax:veloMax(p),rpm:Math.round((2080+(r.stf-20)/60*420+n('rpm',70))/10)*10,ext:Math.round((1.78+n('ext',.09)+(r.stf-50)*.001)*100)/100,whiff:Math.round(17+(r.stf-20)/60*15+n('wh',3)),gb:Math.round(clamp(44+hn('gb',p.id)*7,30,62)),csw:Math.round(25+(r.ctl-20)/60*7+(r.stf-20)/60*4+n('csw',2))}; }
-  const ev=evOf(p); return {ev,evmax:Math.round(156+(r.pow-20)/60*24+n('evm',4)),hh:Math.round(22+(r.pow-20)/60*24+(r.con-50)*.08+n('hh',4)),whiff:Math.round(31-(r.con-20)/60*18+n('bw',3.2)),chase:Math.round(36-(r.eye-20)/60*16+n('ch',3.2)),run:+runOf(p),arm:Math.round(124+(r.def-20)/60*22+(['SS','3B','RF','C'].includes(p.pos)?3:0)+n('arm',4))}; }
+  /* 트래킹은 능력치에서 나오고 개인차(측정·스타일)가 조금 붙는다. 실제 트래킹처럼 한 시즌 기록보다 실력을 잘 보여 주게 개인차를 줄였다(예전엔 홈런·삼진과 상관 0.6대로 한 시즌 기록보다 못했다).
+     헛스윙%는 구위와 결정구, CSW%(루킹+헛스윙)는 구위 중심에 제구가 더해진다. 땅볼%는 땅볼 성향(gbT)과 같은 값 */
+  if(p.isP){ const v=veloOf(p); let ak=0; try{ ak=arsenalK(p); }catch(e){ ak=0; } return {velo:v,vmax:veloMax(p),rpm:Math.round((2080+(r.stf-20)/60*420+n('rpm',45))/10)*10,ext:Math.round((1.78+n('ext',.09)+(r.stf-50)*.001)*100)/100,whiff:Math.round(17+(r.stf-20)/60*15+ak*120+n('wh',1.6)),gb:Math.round(clamp(44+hn('gb',p.id)*7,30,62)),csw:Math.round(25+(r.stf-20)/60*7+(r.ctl-20)/60*3.5+ak*60+n('csw',1))}; }
+  const ev=evOf(p); return {ev,evmax:Math.round(156+(r.pow-20)/60*24+n('evm',2)),hh:Math.round(22+(r.pow-20)/60*24+(r.con-50)*.08+n('hh',2)),whiff:Math.round(31-(r.con-20)/60*18+n('bw',1.6)),chase:Math.round(36-(r.eye-20)/60*16+n('ch',1.6)),run:+runOf(p),arm:Math.round(124+(r.def-20)/60*22+(['SS','3B','RF','C'].includes(p.pos)?3:0)+n('arm',3))}; }
 /* 최고 구속: 평균보다 4~7km 빠르다 */
 function veloMax(p){ return Math.min(161,Math.round(veloOf(p)+4+hn('vmax',p.id)*1.2)); } /* 최고 구속: 평균보다 4km 안팎 빠르고 161 넘지 않음(국내 최고 기록 160km대 초반) */
-function evOf(p){ if(!p||p.isP)return null; return Math.round(126+(p.r.pow-20)/60*17+(p.r.con-50)*.04+hn('ev',p.id)*3.2); }
+function evOf(p){ if(!p||p.isP)return null; return Math.round(126+(p.r.pow-20)/60*17+(p.r.con-50)*.04+hn('ev',p.id)*1.6); }
 /* 최근 3년 1군 합계(게임 시작 전 2023·2024 포함) */
 function fdThree(p,y){ let t=null, ys=0; for(let yy=y-2;yy<=y;yy++){ const h=seasonTotal(p,yy,'1군'); if(!h||!(p.isP?h.outs:h.pa))continue; ys++; if(!t)t=Object.assign({},h); else addTo(t,h); } if(t)t.ys=ys; return t; }
 function fdStatLine(p,y){ const h1=seasonTotal(p,y,'1군'), h2=seasonTotal(p,y,'퓨처스');
