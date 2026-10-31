@@ -31,6 +31,14 @@ const QUICK=process.env.QUICK==='1';
   /* 2) 새 게임: 실제 버튼으로 */
   where='구단 고르기'; try{ await pg.click('[data-a="tsGo"][data-v="team"]',{timeout:3000}); await pg.waitForTimeout(300); await blank(); await pg.click('[data-a="start"]',{timeout:3000}); await pg.waitForTimeout(300);
     where='단장 소개'; await blank(); await pg.fill('#gp-name','점검단장'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(600); }catch(e){ add('진행 실패',e.message); }
+  /* itch 껍데기에서 옛 저장 옮겨 오기: 저장이 없을 때 itch 주소에서 온 저장만 받는다(다른 주소·이미 저장이 있으면 무시) */
+  { where='옛 저장 옮겨 오기'; const r=await ev(()=>{ const keep={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keep[k]=localStorage.getItem(k); } localStorage.clear();
+      const items={[META]:JSON.stringify({active:1,slots:{1:{tid:3,name:'점검',date:'x',y:2027,at:1}}}),[slotKey(1)]:'점검저장'};
+      const bad=ftMigrateAccept(new MessageEvent('message',{data:{type:'ft-migrate',items},origin:'https://evil.example.com',source:window}));
+      const ok=ftMigrateAccept(new MessageEvent('message',{data:{type:'ft-migrate',items},origin:'https://html.itch.zone',source:window})); const got=localStorage.getItem(slotKey(1));
+      const again=ftMigrateAccept(new MessageEvent('message',{data:{type:'ft-migrate',items:{[META]:items[META],[slotKey(1)]:'덮어쓰기'}},origin:'https://html.itch.zone',source:window})); const after=localStorage.getItem(slotKey(1));
+      localStorage.clear(); for(const k in keep)localStorage.setItem(k,keep[k]); return {bad,ok,got,again,after}; });
+    if(r){ if(r.bad)add('옛 저장','itch가 아닌 주소에서 온 저장을 받아들임'); if(!r.ok||r.got!=='점검저장')add('옛 저장','itch에서 온 저장을 옮기지 못함'); if(r.again||r.after!=='점검저장')add('옛 저장','이미 저장이 있는데 덮어씀'); } }
   where='드래프트'; await ev(()=>{ DEMO.on=false; G.tut={done:true,step:99}; A.fdBegin(); }); await pg.waitForTimeout(400); await blank();
   /* 창단 드래프트 시작 버튼: 시작을 눌러야 지명이 되므로 크게 보여야 한다(작은 버튼이라 못 찾던 문제). 선수 정보 창에서도 시작할 수 있어야 한다 */
   { const r=await ev(()=>{ if(!G.fd||G.fd.open!==false)return null; const b=document.querySelector('.fd-gob'); const h=b?Math.round(b.getBoundingClientRect().height):0; const p=Object.values(G.players).find(q=>q.fdPool); A.player(p.id); const s=document.querySelector('#sheet [data-a="fdOpen"]'); closeSheets(); return {h,txt:b?b.innerText:'',sheet:!!s}; });

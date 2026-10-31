@@ -152,3 +152,15 @@ document.addEventListener('keydown',e=>{
 });
 
 /* 부팅(저장 불러오기·첫 화면)은 모든 화면 파일이 읽힌 뒤 실행되도록 99_boot.js로 옮겼다 */
+
+/* ===== itch 껍데기에서 옛 저장 옮겨 오기 =====
+   게임 본체를 고정 주소(Cloudflare)로 옮기면서, itch에 올리는 zip은 본체를 띄우는 껍데기만 남는다.
+   껍데기는 예전 게임과 같은 itch 주소에서 열리므로, 그쪽 브라우저 저장(danjang-로 시작하는 항목)을 읽어 한 번 보내 준다.
+   이 게임에 저장이 하나도 없을 때만 받아들인다(이미 여기서 하던 저장을 덮어쓰지 않는다) */
+function ftMigrateAccept(e){ try{ const d=e&&e.data; if(!d||d.type!=='ft-migrate'||!d.items)return false; if(e.source&&e.source!==window.parent)return false;
+    if(!/(^|\.)itch\.(zone|io)$/.test(String(e.origin||'').replace(/^https?:\/\//,'')))return false;
+    const it=d.items; const m0=meta(); if(Object.keys(m0.slots||{}).length)return false; let mm=null; try{ mm=JSON.parse(it[META]||'null'); }catch(x){} if(!mm||!mm.slots||!Object.keys(mm.slots).length)return false;
+    for(const k of Object.keys(it)){ if(/^danjang-/.test(k)&&typeof it[k]==='string')localStorage.setItem(k,it[k]); }
+    try{ window.parent.postMessage({type:'ft-migrated'},e.origin); }catch(x){}
+    try{ toast('itch에서 하던 저장을 옮겨 왔습니다. 처음 화면에서 이어하기를 누르세요.'); }catch(x){} try{ if(!G)UI.title=true; render(); }catch(x){} return true; }catch(err){ return false; } }
+window.addEventListener('message',ftMigrateAccept);
