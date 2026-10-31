@@ -191,6 +191,17 @@ const QUICK=process.env.QUICK==='1';
       render(); return {tv,sv,clash,n,subj}; });
     if(r){ if(r.tv&&r.sv&&r.tv!==r.sv)add('전력 예상',`홈 상단 ${r.tv}위 · 오른쪽 전력 예상 ${r.sv}위`); if(r.clash.length)add('감독 표시','운영 유형과 헷갈리는 말투 이름: '+r.clash.join(', '));
       if(r.n>1)add('소식 묶기',`감독 선임 한 번에 소식 ${r.n}건: ${r.subj.join(' / ')}`); } }
+  /* 정보 신뢰성(외부 리뷰): 계약 전 외국인 후보는 협상 창·선수 정보에서도 목록과 같은 '예상' 값을 보여야 한다(스카우트 툴 평가만 '현재'로 보이면 정답처럼 읽힘).
+     선수 요약 줄의 기록에는 몇 년 기록인지 붙인다 */
+  { where='정보 신뢰성'; const r=await ev(()=>{ closeSheets(); const p=(G.fmarket||[]).map(id=>G.players[id]).find(q=>q&&q.foreign&&q.team==null); let neg=null, sh=null, mid=null;
+      if(p){ const f=fScout(p); mid=f.mid; UI.negWin={k:'fm',id:p.id}; renderSheet(); const h=(document.querySelector('.sheet.negw .sheet-head')||{}).textContent||''; neg={cur:/현재/.test(h),est:/예상/.test(h)&&h.includes(String(mid)),h:h.slice(0,160)}; UI.negWin=null;
+        A.player(p.id); const tx=(document.querySelector('#sheet .sheet')||document.querySelector('.sheet')||{}).textContent||''; sh={cur:/현재 종합/.test(tx),est:tx.includes(String(mid)),tx:tx.slice(0,200)}; closeSheets(); }
+      const q=domestic(G.user).find(x=>curLine(x)); const pm=q?pMini(q):''; const yr=/20\d\d(년)?( 2군)? (OPS|ERA)/.test(pm.replace(/<[^>]+>/g,''));
+      const o=G.teams.find(t=>t.id!==G.user); const gp=domestic(o.id).sort((a,b)=>ovr(b)-ovr(a))[0]; const md=gp?tradeMood(o.id,[],[gp.id],0):null; const mk=md?md.k:null;
+      render(); return {mk,has:!!p,mid,neg,sh,yr,pm:pm.replace(/<[^>]+>/g,' ').slice(0,120)}; });
+    if(r){ if(r.neg&&(r.neg.cur||!r.neg.est))add('정보 신뢰성',`외국인 후보 협상 창이 목록 예상(${r.mid})과 다른 '현재' 값을 보여 줌: ${r.neg.h}`); if(r.sh&&(r.sh.cur||!r.sh.est))add('정보 신뢰성',`외국인 후보 선수 정보가 목록 예상(${r.mid})과 다른 '현재 종합'을 보여 줌: ${r.sh.tx}`);
+      if(r.mk!=null&&r.mk!=='no'&&r.mk!=='more')add('트레이드 예상','상대 에이스를 공짜로 달라는 제안이 수락 가능으로 보임: '+r.mk); if(r.mk===undefined)add('트레이드 예상','반응 예상이 세 단계(수락 가능·추가 대가 필요·거절 가능)로 나뉘지 않음');
+      if(!r.yr)add('기록 연도','선수 요약 줄 기록에 연도가 없음: '+r.pm); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

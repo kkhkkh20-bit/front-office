@@ -33,7 +33,7 @@ function evWeek(){ try{ aiScandalWeek(); }catch(err){} if(period()!=='season'||G
   const cands=[]; for(const k in EVH){ const h=EVH[k]; if(recent.has(k)||!h.check)continue; let d=null; try{ d=h.check(); }catch(err){} if(!d)continue; const pid=pidOf(d); if(pid!=null&&((RC[k+':'+pid]||-999)>G.day-90||(!EV_KEY.has(k)&&(RC['p:'+pid]||-999)>G.day-45)))continue; cands.push([k,d,h.w||1]); }
   if(!cands.length)return; let x=R()*sum(cands.map(c=>c[2])); for(const c of cands){ x-=c[2]; if(x<=0){ EVH[c[0]].make(c[1]); return; } } }
 const evP=id=>G.players[id];
-const evLine=p=>{ const h=curLine(p); return h?statLine(h,p):'기록 없음'; };
+const evLine=p=>{ const h=curLine(p); return h?yrTag(h)+' '+statLine(h,p):'기록 없음'; };
 function evSince(day){ return playersOf(G.user).filter(p=>(p.story||[]).some(s=>s.k==='move'&&s.y===G.year&&s.d>=day&&/이적|입단/.test(s.t))); }
 const SCAND={gamble:{t:'해외 원정 도박',kbo:30,club:20,sp:400,fan:9,press:12,d:'시즌 전 해외 전지훈련 기간에 원정 도박을 한 사실이 보도됐습니다.'},
   drink:{t:'음주 소란',kbo:10,club:10,sp:150,fan:6,press:8,d:'원정 숙소 근처 술집에서 시비 끝에 소란을 피워 경찰이 출동했습니다.'},

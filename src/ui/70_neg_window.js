@@ -15,9 +15,9 @@ function negBody(k,p){
   if(k==='fm')return foPanel(p);
   if(k==='fre')return foRePanel(p);
   return ''; }
-function negWinSheet(){ const W=UI.negWin; const p=G.players[W.id]; if(!p)return ''; const rp=scoutReport(p);
+function negWinSheet(){ const W=UI.negWin; const p=G.players[W.id]; if(!p)return ''; const rp=scoutReport(p); const cv=curView(p,rp);
   return `<div class="scrim" data-a="negClose"><div class="sheet gut negw" data-stop="1" role="dialog" aria-label="${NEGW[W.k]}">
-    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(p)}<div><div class="eyebrow">${NEGW[W.k]}</div><h2 class="sec">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.foreign?` · ${esc(p.nat||'')}`:''} · 현재 ${rp.cur!=null?rchip(rp.cur):'?'}</p></div></div><button class="x" data-a="negClose" aria-label="닫기">×</button></div>
+    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(p)}<div><div class="eyebrow">${NEGW[W.k]}</div><h2 class="sec">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.foreign?` · ${esc(p.nat||'')}`:''} · ${cv.est?'예상':'현재'} ${cv.v!=null?rchip(cv.v):'?'}${cv.est&&cv.lo!=null?` <span class="muted">범위 ${cv.lo}~${cv.hi}</span>`:''}</p></div></div><button class="x" data-a="negClose" aria-label="닫기">×</button></div>
     ${UI.sheet!=null?`<button class="btn small" data-a="negClose">‹ 선수 정보로</button>`:`<div class="row"><button class="btn small" data-a="negClose">닫기</button><button class="btn small" data-a="negInfo" data-v="${p.id}">선수 정보 보기</button></div>`}
     <div class="negw-body">${negBody(W.k,p)}</div></div></div>`; }
 Object.assign(A,{ negInfo(v){ UI.negWin=null; A.player(v); },

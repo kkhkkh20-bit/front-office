@@ -92,6 +92,8 @@ function curLine(p){ // 이번 시즌 합계(1군 우선), 없으면 지난 시�
   const h=seasonTotal(p,y,'1군'); const ok=h&&(p.isP?h.outs>=30:h.pa>=30);
   return (ok?h:null)||seasonTotal(p,y-1,'1군')||h||seasonTotal(p,y,'퓨처스')||seasonTotal(p,y-1,'퓨처스');
 }
+/* 기록 연도 표시: 화면마다 올해 기록인지 지난 기록인지 헷갈리지 않게 */
+function yrTag(h){ return h?`${h.y}${h.lvl==='퓨처스'?' 2군':''}`:''; }
 function statLine(h,p){ if(!h)return '기록 없음';
   const lv=h.lvl==='퓨처스'?'2군 ':'';
   if(p.isP){ const r=pRate(h); return `${lv}ERA ${h.outs?r.era.toFixed(2):'-'} · ${ipStr(h.outs)}이닝 · WAR ${warOf(h,p).toFixed(1)}${h.sv?` · ${h.sv}세이브`:h.hld?` · ${h.hld}홀드`:h.gs?` · ${h.w}승`:''}`; }

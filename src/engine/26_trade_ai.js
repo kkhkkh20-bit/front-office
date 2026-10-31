@@ -51,7 +51,7 @@ function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=d
     if(c.type==='now')why.push(`지금 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다${r1?`(리그 ${rk.rank}위 → ${r1}위)`:''}.`);
     if(c.type==='cheap')why.push(`연봉 ${money(x.p.sal)}으로 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다.`);
     if(c.type==='grow')why.push(`${x.p.age}세, ${x.rp.ofp!=null?`${potTier(potVal(x.rp),x.rp.cur).l}(${x.rp.who||'스카우트'} 전망)`:'잠재력은 아직 관찰이 부족합니다'}. 지금 능력 ${dv(x.rp.cur)}.`);
-    const h=curLine(x.p); if(h)why.push(x.p.isP?(h.outs?`올해 ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:''):(h.pa?`올해 ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`:''));
+    const h=curLine(x.p); if(h)why.push(x.p.isP?(h.outs?`${yrTag(h)} ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:''):(h.pa?`${yrTag(h)} ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`:''));
     if(x.p.listed||x.p.aiListed)why.push(`${tshort(x.t.id)}이(가) 트레이드 매물로 내놓은 선수입니다.`);
     const cost=`연봉 ${money(x.p.sal)} · ${ctText(x.p)}`;
     const cur=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln?d.ln[k]:null; const push=cur&&cur.id!==x.p.id?cur:null;

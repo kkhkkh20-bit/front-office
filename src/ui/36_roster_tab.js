@@ -166,5 +166,5 @@ function posDiag(seg){
 function playerRow(p,showTeam){
   const h=curLine(p); const rp=scoutReport(p);
   const tags=[p.foreign?`<span class="pill">${p.foreign==='아시아'?'아시아':'외국인'}</span>`:'',p.faC?`<span class="pill">${p.ext?'다년':'FA'} ${p.yrs}년</span>`:'',p.extNext?'<span class="pill good">다년 합의</span>':'',p.injOut>0?`<span class="pill bad">부상 ${p.injOut}일</span>`:'',isRookie(p)?'<span class="pill acc">신인</span>':'',p.team===G.user&&p.mor!=null&&p.mor<45?`<span class="pill ${moodClass(p.mor)}">${moodLabel(p.mor)}</span>`:'',p.listed?'<span class="pill warn">매물</span>':''].join(' ');
-  return `<button class="item wa" data-a="player" data-v="${p.id}">${avImg(p)}<span class="nm">${esc(p.name)} <span class="small muted">${showTeam?tshort(p.team)+' · ':''}${posLabel(p)} · ${p.age}세</span> ${tags}</span><span class="sub">${esc(rp.arch)} · ${statLine(h,p)}</span><span class="rt num">${money(p.sal)}</span></button>`;
+  return `<button class="item wa" data-a="player" data-v="${p.id}">${avImg(p)}<span class="nm">${esc(p.name)} <span class="small muted">${showTeam?tshort(p.team)+' · ':''}${posLabel(p)} · ${p.age}세</span> ${tags}</span><span class="sub">${esc(rp.arch)} · ${h?yrTag(h)+' ':''}${statLine(h,p)}</span><span class="rt num">${money(p.sal)}</span></button>`;
 }

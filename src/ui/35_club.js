@@ -60,7 +60,8 @@ function tradeMood(tid,give,get,cash){
   const sd=1.2+Math.max(0,75-t.rel)/10; // 관계가 좋을수록 상대 속내를 정확히 읽는다
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');
   const x=e.gain-e.need+hn('tm'+tid+'|'+key,G.year)*sd;
-  const lv=x>=3?{l:'받아들일 것 같습니다',c:'var(--good)'}:x>=0?{l:'긍정적으로 검토할 것 같습니다',c:'var(--r50)'}:x>=-4?{l:'조금 더 원할 것 같습니다',c:'var(--warn)'}:x>=-12?{l:'많이 부족하다고 볼 것 같습니다',c:'var(--r35)'}:{l:'불쾌하게 여길 수 있습니다',c:'var(--bad)'};
+  /* 세 단계로만: 수락 가능 · 추가 대가 필요 · 거절 가능. 경계 근처(0~3)는 예측 오차 때문에 추가 대가 쪽으로 본다 */
+  const lv=x>=3?{k:'ok',l:'수락 가능',s:'이 조건이면 받아들일 것 같습니다',c:'var(--good)'}:x>=-12?{k:'more',l:'추가 대가 필요',s:x>=0?'조금만 더 얹으면 됩니다':x>=-4?'선수 한 명 정도 더 원할 것 같습니다':'차이가 커서 큰 대가가 필요합니다',c:x>=-4?'var(--warn)':'var(--r35)'}:{k:'no',l:'거절 가능',s:'불쾌하게 여길 수 있습니다',c:'var(--bad)'};
   return {...lv,w:Math.round(clamp((x+14)/20,0.03,1)*100),sd};
 }
 function tContract(p){ if(!p.faC&&!p.extNext&&p.team==null&&G.fa&&(G.fa.pool||[]).includes(p.id))return 'FA 시장'; const t=ctText(p); return t==='올 시즌 뒤 FA'&&G.last&&G.last.y>=G.year?'FA 자격 취득':t; }
@@ -86,14 +87,14 @@ function tradeView(){
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
   const board=`<section class="card tboard">
-    <div class="tgm">${gmAv(t.id,mood?(mood.l.includes('받아들일')?'smile':mood.l.includes('긍정')?null:mood.l.includes('조금')?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))} · ${esc(gmOf(t.id).name)} 단장</b><span class="small muted">${GMT[gmOf(t.id).trait].l} · 친분 ${t.rel}(${relLabel(t.rel)}) · ${esc(needText(t.id))}</span></div></div>
+    <div class="tgm">${gmAv(t.id,mood?(mood.k==='ok'?'smile':mood.k==='more'?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))} · ${esc(gmOf(t.id).name)} 단장</b><span class="small muted">${GMT[gmOf(t.id).trait].l} · 친분 ${t.rel}(${relLabel(t.rel)}) · ${esc(needText(t.id))}</span></div></div>
     ${(()=>{ if(!interestKnown(t.id))return '<p class="small muted">친분이 35 미만이라 상대가 우리 누구를 원하는지 읽기 어렵습니다.</p>'; const L=aiInterest(t.id).map(id=>G.players[id]).filter(Boolean); return L.length?`<div class="intl"><span class="small muted">상대가 원하는 우리 선수</span>${L.map(p=>`<button class="pill ${tr.give.includes(p.id)?'acc':'good'}" data-a="tpick" data-v="give:${p.id}">${tr.give.includes(p.id)?'보냄 ':'+ '}${esc(p.name)} · ${esc(interestWhy(t.id,p))}</button>`).join('')}</div><p class="small muted">이 선수를 넣으면 상대가 20% 더 높게 쳐 주고 요구 조건도 조금 낮아집니다.</p>`:''; })()}
     <div class="tcols">
       <div><div class="eyebrow">보냄 · ${gv.length}명</div>${gv.map(p=>tmini(p,'give')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="give">우리 선수에서 고르기</button>'}</div>
       <div><div class="eyebrow">받음 · ${gt.length}명</div>${gt.map(p=>tmini(p,'get')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="get">상대 선수에서 고르기</button>'}</div>
     </div>
     <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
-    ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${t.rel} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p></div>`:''}
+    ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><p class="small" style="margin:2px 0">${mood.s}</p><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${t.rel} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p></div>`:''}
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
     ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>`<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}</span><button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button></div>`).join('')}</div>`:''}
     ${tradeInsight(tr.tid,tr.give,tr.get)}

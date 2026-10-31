@@ -80,6 +80,8 @@ function fRecEst(p){ const c=(FREC[p.prevLvl]||[])[p.isP?1:0], h=p.prev; if(!c||
 const fRelL=lg=>{ const e=FENV[lg]??2; return e<=1?'믿을 만함':e<=1.5?'보통':'흔들림 큼'; };
 /* 조사 단계(스카우트가 얼마나 봤나)와 종합 추정(스카우트 평가 + 기록 해석). 종합 추정은 두 정보를 믿을 만한 만큼 섞는다.
    예상 능력순은 종합 추정 그대로 줄 세운다(화면에 보이는 숫자와 순서가 같게). 얼마나 믿을지는 조사 단계와 범위로 본다 */
+/* 화면에 보여 줄 종합 능력: 계약 전 외국인 후보는 목록·상세·협상 창 모두 같은 '예상'(스카우트+기록 종합)과 범위를 쓴다 */
+function curView(p,rp){ rp=rp||scoutReport(p); if(p&&p.foreign&&p.team==null){ const f=fScout(p,rp); if(f.raw!=null)return {v:f.raw,est:true,lo:f.lo,hi:f.hi,sd:f.ms}; } return {v:rp?rp.cur:null,est:false,sd:rp&&!rp.exact?rp.sd:0}; }
 function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0:sd>=5.5?1:sd>=3.5?2:3; const S=FSTEP[n];
   const r=origOf(p), lv=intlLv(r), isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r), k=fwatchK(p.id), mine=fMineFind(p);
   const bf=(lv>=3?.6:1)*(1-k/100*.6)*(mine?.6:1); const ss=Math.sqrt((sd*.55)**2+(3.2*bf)**2+2.2), sc=rp.cur, rc=fRecEst(p);
