@@ -208,6 +208,28 @@ const QUICK=process.env.QUICK==='1';
       if(r.mk!=null&&r.mk!=='no'&&r.mk!=='more')add('트레이드 예상','상대 에이스를 공짜로 달라는 제안이 수락 가능으로 보임: '+r.mk); if(r.mk===undefined)add('트레이드 예상','반응 예상이 세 단계(수락 가능·추가 대가 필요·거절 가능)로 나뉘지 않음');
       if(r.st!=='관찰,점검,보강 검토,점검')add('판단 강도','경기 후 보고 판단 단계(관찰·점검·보강 검토)가 표본·기존 전력에 맞지 않음: '+r.st);
       if(!r.yr)add('기록 연도','선수 요약 줄 기록에 연도가 없음: '+r.pm); } }
+  /* 같은 선수·사람의 숫자는 화면마다 같아야 한다(외부 리뷰): 능력 레이더=능력표, 코치 수치 관계도=코치진 화면. 안 읽은 소식 연속 열기는 맨 아래부터. 입대는 결재 */
+  { where='숫자 일치'; const r=await ev(()=>{ const bad=[]; for(const p of playersOf(G.user)){ const d=detailOf(p,scoutReport(p)); const T={}; for(const [,L] of d.groups)for(const x of L)if(typeof x[1]==='number')T[x[0].replace(/ · 결정구$/,'')]=x[1];
+        const alias={'파워':'홈런 파워','주루':'스피드'}; for(const [k,v] of d.radar){ const t=T[alias[k]||k]; if(t!=null&&Math.round(v)!==t)bad.push(`${p.name} ${k} 레이더 ${Math.round(v)} · 표 ${t}`); } }
+      const s0=G.mailSeq||0; for(let i=0;i<3;i++)mail('운영팀','점검 소식 '+i,'점검',{}); const ord=ibUnreadOrder().map(m=>m.subj).filter(x=>/점검 소식/.test(x)); G.mail=G.mail.filter(m=>!/점검 소식/.test(m.subj));
+      const en=typeof GUARD!=='undefined'&&GUARD.enlist?GUARD.enlist(String((domestic(G.user).find(p=>milFree(p))||{}).id)):null;
+      return {bad:bad.slice(0,4),ord,en:!!en,canc:typeof enlistCancel==='function'}; });
+    if(r){ if(r.bad.length)add('숫자 일치','능력 레이더와 능력표가 다름: '+r.bad.join(', ')); if(r.ord.join(',')!=='점검 소식 0,점검 소식 1,점검 소식 2')add('소식 순서','안 읽은 소식을 맨 아래(오래된)부터 열지 않음: '+r.ord.join(','));
+      if(!r.en)add('입대 결재','현역 입대가 확인 없이 바로 확정됨'); if(!r.canc)add('입대 결재','입대 예약 취소가 없음'); } }
+  /* 날짜 넘김 연출: 한 주를 넘기면 경기 결과 창(시트)이 바로 열리는데, 그때도 날짜가 넘어가는 표시는 보여야 한다(휴대폰에서 안 보이던 문제) */
+  { where='날짜 넘김'; await ev(()=>{ closeSheets(); const p=domestic(G.user)[0]; A.player(p.id); dayTick(G.day-5); }); await pg.waitForTimeout(350);
+    const r=await ev(()=>{ const el=document.getElementById('dtick'); if(!el)return {none:true}; const cs=getComputedStyle(el); const v={disp:cs.display,op:+cs.opacity,z:+cs.zIndex}; closeSheets(); return v; });
+    if(r){ if(r.none||r.disp==='none'||r.op<.5)add('날짜 넘김',`시트가 열려 있으면 날짜 넘김 표시가 안 보임(${JSON.stringify(r)})`); else if(r.z<=40)add('날짜 넘김','날짜 넘김 표시가 시트 뒤에 깔림 z '+r.z); } await pg.waitForTimeout(1800); }
+  /* 주황 점: 알림이 뜬 하위 탭에 들어가면 무엇 때문인지 맨 위에 보여야 한다 */
+  { where='알림 이유'; const r=await ev(()=>{ closeSheets(); const keep=G.scouts.slice(); G.scouts=G.scouts.filter(x=>(x.role||'am')!=='am'||x.region!=='영남'); const on=subAlert('staff','scouts'); UI.tab='staff'; UI.sub=Object.assign({},UI.sub||{},{staff:'scouts'}); render(); const why=(document.querySelector('#app .alert-why')||{}).textContent||''; G.scouts=keep; UI.tab='home'; render(); return {on,why}; });
+    if(r&&r.on&&!/스카우트/.test(r.why))add('알림 이유','스카우트 탭에 주황 점이 떠도 탭 안에 이유가 없음'); }
+  /* 소식·기록 표시(외부 리뷰): 읽은 트레이드 제안도 결정할 일로 남고, 지난 '기한 내일' 경고는 지우고, 지난 시즌 기록 구단 칸에 숫자 1이 나오지 않고, 감독 안목은 감독 화면과 같은 척도 */
+  { where='소식·기록 표시'; const r=await ev(()=>{ const o={id:'o_chk',from:G.teams.find(t=>t.id!==G.user).id,get:[],give:[],exp:G.day+3,day:G.day}; G.offers=(G.offers||[]).concat([o]); const m=mail('운영팀','점검 트레이드 제안','점검',{}); m.oid='o_chk'; m.read=true;
+      const dec=typeof ibDecideList==='function'&&ibDecideList().some(x=>x.id===m.id); G.offers=G.offers.filter(x=>x.id!=='o_chk'); G.mail=G.mail.filter(x=>x.id!==m.id);
+      const w=mail('운영팀','점검 지난 결정','점검',{}); w.warn='내일까지 정하지 않으면 "A"(으)로 처리됩니다.'; w.day=G.day-9; const row=mailRow(w,false); G.mail=G.mail.filter(x=>x.id!==w.id); const stale=/기한 내일/.test(row);
+      const p=domestic(G.user).find(q=>!q.isP); const keep=p.hist; p.hist=keep.concat([Object.assign({y:G.year-3,t:p.team,lvl:'1군',pre:1},ZB,{pa:50,ab:45,h:12,g:14})]); const tb=statTable(p); p.hist=keep; const one=new RegExp('<td>'+(G.year-3)+'</td><td>1</td>').test(tb);
+      return {dec,stale,one}; });
+    if(r){ if(!r.dec)add('결정할 일','읽은 트레이드 제안이 결정할 일에서 빠짐'); if(r.stale)add('지난 기한','9일 전 소식에 아직 기한 내일 표시'); if(r.one)add('기록표','지난 시즌 기록 구단 칸에 숫자 1'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

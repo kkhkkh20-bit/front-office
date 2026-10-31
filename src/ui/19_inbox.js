@@ -30,6 +30,11 @@ function mailDone(m){ if(m.done)return true;
   if(/^\[인터뷰 요청\]/.test(m.subj))return !(G.iv&&!G.iv.done&&m.day>=G.iv.day);
   for(const [re,f] of MAIL_DONE)if(re.test(m.subj)){ try{ return !!f(m); }catch(e){ return false; } }
   return false; }
+/* 결정할 일: 읽었어도 수락·거절·선택하기 전까지 남는 일(트레이드 제안·결정 이벤트·인터뷰). 마감일 */
+function ibDecide(m){ if(mailDone(m))return false; if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'); }
+function ibDue(m){ if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return null; }
+function ibDecideList(){ return G.mail.filter(ibDecide).sort((a,b)=>(ibDue(a)??1e9)-(ibDue(b)??1e9)); } /* 마감 빠른 순 */
+function mailEvPick(m){ const a=(m.acts||[]).find(x=>x.a==='evPick'); const e=a&&(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e&&e.pick!=null&&e.opts[e.pick]?` · "${e.opts[e.pick].l}"${e.auto?'(기본안)':''}`:''; }
 /* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 일은 뺀다) */
 function ibTask(m){ if(mailDone(m))return false; if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); /* 살아 있는 트레이드 제안 */
   if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); /* 아직 응하지 않은 인터뷰 */
@@ -41,7 +46,8 @@ function ibSplit(m){ let subj=m.subj, L=m.body.split('\n').filter(Boolean); cons
     if(subj.endsWith('…')){ const i=L[0].search(/[.!?](\s|$)/); subj=i>0&&i<90?L[0].slice(0,i):L[0].length<=90?L[0].replace(/[.]$/,''):subj; }
     const rest=L[0].slice(subj.replace(/…$/,'').length).replace(/^[.!?]\s*/,'').trim(); if(L[0].startsWith(subj.replace(/…$/,''))){ if(rest)L[0]=rest; else L.shift(); } }
   return {subj,L}; }
-function mailRow(m,cur){ const need=ibTask(m)&&!m.read; return `<button class="ibr${m.read?'':' unread'}${need?' need':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${m.warn&&!mailDone(m)?'<span class="ibr-tag">기한 내일</span>':ibTask(m)?'<span class="ibr-tag">확인</span>':mailDoneShow(m)?'<span class="ibr-tag done">처리됨</span>':''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
+const warnLive=m=>!!m.warn&&!mailDone(m)&&G.day<=m.day+1; /* '내일까지' 경고는 그날·다음 날만. 이미 처리됐으면 지운다 */
+function mailRow(m,cur){ const need=ibTask(m)&&!m.read; return `<button class="ibr${m.read?'':' unread'}${need?' need':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${warnLive(m)?'<span class="ibr-tag">기한 내일</span>':ibDecide(m)&&m.read?`<span class="ibr-tag">검토 중${ibDue(m)!=null?' · D-'+Math.max(0,ibDue(m)-G.day):''}</span>`:ibTask(m)?'<span class="ibr-tag">확인</span>':mailDoneShow(m)?'<span class="ibr-tag done">처리됨</span>':''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
 function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); const dup=(UI._ibDup||{})[m.id]; const {subj,L:L0}=ibSplit(m);
   let fth=null; if(m.fth){ try{ fth=fanThreads().find(t=>t.id===m.fth)||null; }catch(e){} }
   /* 팬 게시판 소식: 댓글은 아래 게시판 블록에만 보여 준다(본문에 같은 댓글을 글로 한 번 더 쓰지 않는다) */
@@ -49,7 +55,7 @@ function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); c
   const dn=mailDoneShow(m); const doneA=m.acts.filter(a=>a.done&&a.res); const acts=m.acts.filter(a=>!a.done&&!(o&&a.a==='goWork')&&!(dn&&/^(evPick|ivOpen|ivSkip|faOpen|faMatch)$/.test(a.a))); /* 끝난 결정·인터뷰·FA 건은 버튼 대신 '처리됨' */ /* 제안 카드가 붙은 메일은 '해당 화면으로' 대신 카드 안의 버튼을 쓴다 */
   return `<article class="ibm mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">
     <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">확인할 소식</span>':mailDoneShow(m)?'<span class="pill">처리됨</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${m.day0!=null&&m.day0!==m.day?` · 처음 받은 날 ${dmd(m.day0)}`:''}${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
-    ${m.warn&&!mailDone(m)?`<div class="note warn ibm-warn">기한 임박: ${esc(m.warn)}</div>`:''}
+    ${warnLive(m)?`<div class="note warn ibm-warn">기한 임박: ${esc(m.warn)}</div>`:m.warn&&mailDone(m)?`<div class="note ibm-warn">기한이 지나 처리된 일입니다${mailEvPick(m)}. 아래는 받았던 당시 내용입니다.</div>`:''}
     ${L.length?`<div class="mailbody">${(L.length>4?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4?`<details class="mfold"><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${fth?`<div class="ibm-fth"><div class="small muted">댓글 ${fth.cm.length}개${(()=>{ try{ return ` · 분위기: ${fpMood(fth.cm)}`; }catch(e){ return ''; } })()}</div><div class="fcms">${fth.cm.map(cmtRow).join('')}</div></div>`:''}
     ${m.rv?rvActsH(m):''}${handOffBtns(m)}
@@ -71,7 +77,7 @@ function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 $
 const ibMust=m=>!m.read&&!mailDone(m)&&(ibTask(m)||m.kind==='업무');
 function ibNeedList(){ return G.mail.filter(ibMust); } /* 최신부터(화면 순서) */
 /* 스페이스바·'안 읽음'이 여는 순서: 확인할 소식 먼저, 그다음 나머지 안 읽은 소식(각각 최신부터) = 화면 맨 위 묶음 순서 */
-function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).concat(u.filter(m=>!ibMust(m))); }
+function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).concat(u.filter(m=>!ibMust(m))).reverse(); } /* 화면 맨 위 묶음의 맨 아래(가장 오래된)부터 위로 올라가며 연다 */
 /* 맨 위 묶음에 고정할 소식: 지금 안 읽은 소식 + 이번에 소식함을 연 뒤(같은 날) 읽은 소식 */
 function ibPinned(list){ let S=UI._ibStk; if(!S||S.day!==G.day||UI._ibFirst)S=UI._ibStk={day:G.day,g:{}};
   for(const m of list)if(!m.read&&S.g[m.id]==null)S.g[m.id]=ibMust(m)?0:1;
@@ -83,7 +89,7 @@ function inboxView(){
   const cnt=k=>mailFilter(k).filter(m=>!m.read).length; const F=ibFolds();
   const days=[...new Set(list.map(m=>m.day))]; const foldN=days.filter(d=>F[d]).length;
   const bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
-    <div class="ibx-meta">${unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${need?`<button class="lnk ibx-need" data-a="ibNeedGo">확인할 소식 ${need}건</button>`:''}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · J/K: 다음/이전">Space 다음 소식·진행</span>':''}</div></div>`;
+    <div class="ibx-meta">${unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${need?`<button class="lnk ibx-need" data-a="ibNeedGo">확인할 소식 ${need}건</button>`:''}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · 가장 빠른 마감 D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · J/K: 다음/이전">Space 다음 소식·진행</span>':''}</div></div>`;
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const pin=ibPinned(list); const pinS=new Set(pin.map(m=>m.id)); const rest=list.filter(m=>!pinS.has(m.id));
   const all0=pin.concat(rest).map(m=>m.id); const W=wide();

@@ -12,7 +12,7 @@ function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
   e.mid=m.id; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
-function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; e.done=true; e.pick=i;
+function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; e.done=true; e.pick=i; if(auto)e.auto=true;
   let r=''; try{ r=(EVH[e.k]&&EVH[e.k].pick(e,i))||''; }catch(err){ r=''; }
   e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${r?`\n${r}`:''}`; }
   if(auto&&!G.unemp){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t:e.title,c:e.opts[i].l,r:r||'',k:e.k,why:e.deleg?'deleg':'exp'}); if(G.autoLog.length>20)G.autoLog.length=20; } /* 자동 처리 결과는 따로 메일을 보내지 않고 주간 요약에 한 줄로 모은다 */

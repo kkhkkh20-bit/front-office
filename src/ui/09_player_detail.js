@@ -17,8 +17,8 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
   const mind=[['성실성',ps(pers.pro)],['야망',ps(pers.amb),'n'],['충성심',ps(pers.loy)],['기질 안정',ps(24-pers.temp)]];
   if(p.foreign&&p.adapt!=null)mind.push(['한국 적응력',c(p.adapt)]); if(!p.foreign&&p.team!=null)mind.push(['해외 진출 의지',c(20+mlbOf(p)*.6),'i']);
   G2.push(['성격',mind]);
-  const radar=!p.isP?[['컨택',tv.con,tf.con],['파워',tv.pow,tf.pow],['선구안',tv.eye,tf.eye],['주루',tv.spd,tf.spd],['수비',tv.def,tf.def],['체력',tv.vit,tf.vit]]
-    :[['구위',tv.stf,tf.stf],['제구',tv.ctl,tf.ctl],['스태미나',tv.sta,tf.sta],['무브먼트',(tv.stf+tv.ctl)/2,(tf.stf+tf.ctl)/2],['구속',c(20+(veloOf(p)-130)/25*60),c(20+(veloOf(p)-130)/25*60)],['결정구',Math.max(...G2[1][1].map(x=>x[1])),Math.max(...G2[1][1].map(x=>x[1]))]];
+  const radar=!p.isP?[['컨택',c(tv.con),c(tf.con)],['파워',c(tv.pow),c(tf.pow)],['선구안',c(tv.eye),c(tf.eye)],['주루',c(tv.spd),c(tf.spd)],['수비',tv.def,tf.def],['체력',c(tv.vit),c(tf.vit)]]
+    :[['구위',c(tv.stf),c(tf.stf)],['제구',c(tv.ctl),c(tf.ctl)],['스태미나',c(tv.sta),c(tf.sta)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv')),c((tf.stf+tf.ctl)/2+o('mv'))],['구속',c(20+(veloOf(p)-130)/25*60),c(20+(veloOf(p)-130)/25*60)],['결정구',Math.max(...G2[1][1].map(x=>x[1])),Math.max(...G2[1][1].map(x=>x[1]))]];
   return {groups:G2,radar}; }
 function radarSVG(ax,showFut){ const n=ax.length, cx=110, cy=104, R=78; const pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n, r=R*clamp((v-20)/60,0,1); return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; };
   const ring=v=>ax.map((_,i)=>pt(i,v).map(x=>x.toFixed(1)).join(',')).join(' ');

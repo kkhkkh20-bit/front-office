@@ -89,10 +89,11 @@ function posYear(){ const y=G.year-1; try{ posSettle(y); }catch(e){} for(const p
  선발 9명은 한 주 3경기, 나머지는 1경기 정도 나간다. 2군에서 그 자리로 뛴 경기도 숙련으로 쌓인다(1군 경기의 75%). */
 const FGPOS=['C','SS','2B','CF','3B','RF','LF','1B','DH'];
 function futLineupE(tid,list){ const used=new Set(), ln={};
-  for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos)&&!ln[c.pos]){ ln[c.pos]=p; used.add(p.id); } }
+  const realC=list.some(q=>q.pos==='C'&&!q.pconv);
+  for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos)&&!ln[c.pos]){ if(c.pos==='C'&&realC&&posExp(p,'C')<40&&(G.day+p.id)%3)continue; /* 포수는 숙련이 필요하다: 전문 포수가 있으면 전환 훈련생은 사흘에 한 번만 마스크를 쓴다 */ ln[c.pos]=p; used.add(p.id); } }
   const nz=new Map(list.map(p=>[p.id,N(0,2.5)]));
   for(const k of FGPOS){ if(ln[k])continue; const free=list.filter(p=>!used.has(p.id)); if(!free.length)break;
-    const sc=p=>(k==='DH'?offV(p):posScore(p,k))+(p.age<=24?3:0)-(k!=='DH'&&k!==p.pos&&posExp(p,k)<50?6:0)+nz.get(p.id);
+    const sc=p=>(k==='DH'?offV(p):posScore(p,k))+(p.age<=24?3:0)-(k!=='DH'&&k!==p.pos&&posExp(p,k)<50?6:0)-(k==='C'&&p.pos!=='C'&&posExp(p,'C')<40?30:0)+nz.get(p.id); /* 포수 경험이 거의 없는 선수는 전문 포수를 제치지 못한다 */
     const c=free.sort((a,b)=>sc(b)-sc(a))[0]; ln[k]=c; used.add(c.id); }
   return ln; }
 function futUse(p,pos,g){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0,pos:{}}; p.fuse.g+=g; if(pos)p.fuse.pos[pos]=(p.fuse.pos[pos]||0)+g; }

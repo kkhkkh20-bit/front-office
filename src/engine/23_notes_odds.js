@@ -131,7 +131,7 @@ const babipOf=h=>{ const d=(h.ab||0)-(h.so||0)-(h.hr||0); return d>0?(h.h-h.hr)/
 function amNotes(p){ const Y=p.amY; if(!Y||!Y.length)return []; const L=[];
   if(!p.isP){ const bk=Y.filter(x=>x.pa>=30).map(x=>x.so?x.bb/x.so:x.bb); const t=p.am; const tbk=t.so?t.bb/t.so:t.bb; const avg=t.ab?t.h/t.ab:0;
     if(bk.length>=2&&bk.every(v=>v>=.8))L.push(`학년마다 볼넷이 삼진만큼 많았습니다(볼삼비 ${tbk.toFixed(2)}). 선구안은 프로에 와서도 잘 변하지 않는 기록입니다.`);
-    else if(bk.length>=2&&bk.every(v=>v<=.35))L.push(`학년마다 삼진이 볼넷의 3배 가까이 됩니다(볼삼비 ${tbk.toFixed(2)}). 프로 투수를 상대로 고전할 수 있습니다.`);
+    else if(bk.length>=2&&bk.every(v=>v<=.35)){ const rt=t.bb?t.so/t.bb:null; L.push(`학년마다 삼진이 볼넷보다 훨씬 많습니다(삼진 ${t.so} · 볼넷 ${t.bb}${rt?`, 약 ${rt.toFixed(1)}배`:''}). 프로 투수를 상대로 고전할 수 있습니다.`); }
     if(avg>=.36&&tbk<.5)L.push('타율은 높지만 볼삼비가 낮아, 이 타율이 프로에서 유지될지는 의문입니다.');
     if(Y.length>=3){ const a=Y[Y.length-1], b=Y[Y.length-2]; const o=x=>bRate(x).ops; if(o(a)-o(b)>=.15)L.push('마지막 학년에 기록이 크게 뛰었습니다. 성장인지 한 해 반짝인지 지켜봐야 합니다.'); } }
   else { const t=p.am; const k9=t.outs?t.so*27/t.outs:0, b9=t.outs?t.bb*27/t.outs:0; const b9s=Y.filter(x=>x.outs>=45).map(x=>x.bb*27/x.outs); const era=t.outs?(t.er||0)*27/t.outs:0;

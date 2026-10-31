@@ -11,7 +11,7 @@ function relPeople(){
   const field=[];
   if(m)field.push({k:'mgr',name:m.name,role:m.interim?'감독대행':'1군 감독',av:{persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name},rel:m.rel,rl:'관계',lab:relLabel(m.rel),sub:m.fame>=70?'스타 감독':m.ego>=70?'고집 센 편':'무난한 성격'});
   for(const r of CKEYS){ const c=C[r]; if(!c)continue; const clan=m&&c.clan===m.id;
-    field.push({k:'c:'+r,name:c.name,role:CROLE[r].l,av:{persona:'coach',pid:c.id,team:G.user,age:c.age,name:c.name},rel:null,lab:clan?'감독 사단':'구단 코치',sub:`지도 ${c.sk} · 육성 ${c.dv}`}); }
+    field.push({k:'c:'+r,name:c.name,role:CROLE[r].l,av:{persona:'coach',pid:c.id,team:G.user,age:c.age,name:c.name},rel:null,lab:clan?'감독 사단':'구단 코치',sub:`지도 ${dv(effC(c,G.user,'sk'))} · 육성 ${dv(effC(c,G.user,'dv'))}`}); }
   const mine=playersOf(G.user).filter(p=>!p.ys);
   const core=[...mine].sort((a,b)=>ovr(b)-ovr(a)).slice(0,6); const sad=mine.filter(p=>(p.mor??60)<40&&!core.includes(p)).sort((a,b)=>(a.mor??60)-(b.mor??60)).slice(0,4);
   const pl=[...core,...sad].map(p=>({k:'p:'+p.id,name:p.name,role:`${posLabel(p)} · ${p.age}세${p.promise&&p.promise.until>=G.day?' · 약속 중':''}`,av:p,rel:Math.round(p.mor??60),rl:'기분',lab:moodLabel(p.mor??60),sub:core.includes(p)?'핵심 전력':'불만 선수'}));
@@ -76,7 +76,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('구단주에게 요청','go','club:owner',1),btn('재정','go','club:fin')]; }
   else if(k==='ceo'){ const B=bossOf(G.user); const b=budget();
     info=`<p>${esc(B.ceo.car)}. 구단주의 뜻을 단장에게 전하고, 연봉·운영비 집행을 맡습니다.</p><p class="small">올해 예산 여유 <b>${money(b.roomGoal)}</b> · 지원 한도 ${money(supportCap(t))}</p>`;
-    moves=['사장과의 관계는 따로 수치가 없습니다. 구단주 신뢰가 오르면 사장이 쓸 수 있는 돈(지원 한도)도 커집니다'];
+    moves=['친밀도: 홈경기를 함께 보면 오르고(이기면 더), 60일 넘게 함께 보지 않으면 조금씩 내려갑니다(30 아래로는 안 내려감)','친밀도는 구단주에게 올리는 요청(운영비·시설 투자)의 승인 확률에 반영됩니다(구단주 친밀도 70%, 사장 30%)','지원 한도 자체는 구단주 신뢰를 따릅니다'];
     fx=['예산을 넘겨 쓰면 구단주 재정 평가가 나빠집니다'];
     acts=[btn('재정','go','club:fin',1),btn('구단주·목표','go','club:owner')]; }
   else if(k==='mgr'){ const m=G.mgr[G.user]; const C=coachesOf(G.user); const clan=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name);
@@ -86,7 +86,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('감독·요청','go','staff:mreq',1),btn('코치진','go','staff:coach')];
     recent=(G.mail||[]).filter(x=>x.from==='감독실').slice(0,3).map(x=>`<div class="ps-r small">${dsh(x.day)} · ${esc(x.subj)}</div>`).join(''); }
   else if(k.startsWith('c:')){ const r=k.slice(2); const c=coachesOf(G.user)[r]; const m=G.mgr[G.user];
-    info=`<p class="small">${esc(c.car)} · ${c.age}세 · 연봉 ${money(c.sal)}</p><p>${esc(CROLE[r].d)}</p><p class="small">지도력 ${c.sk} · 육성 ${c.dv}</p>`;
+    info=`<p class="small">${esc(c.car)} · ${c.age}세 · 연봉 ${money(c.sal)}</p><p>${esc(CROLE[r].d)}</p><p class="small">지도력 ${dv(effC(c,G.user,'sk'))} · 육성 ${dv(effC(c,G.user,'dv'))}(코치진 화면과 같은 값, 감독 궁합 반영)</p>`;
     moves=[c.clan&&m&&c.clan===m.id?`${m.name} 감독 사단입니다. 감독이 바뀌면 함께 떠날 수 있습니다`:'감독 사단이 아닌 구단 코치입니다'];
     fx=[CROLE[r].g===2?'2군 선수 성장 속도':'1군 경기력과 성장 속도'];
     acts=[btn('코치진','go','staff:coach',1)]; }

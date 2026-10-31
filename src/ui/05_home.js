@@ -56,7 +56,11 @@ const TODO={
   'staff:mgr':['감독이 없습니다','개막 전에 감독을 선임해야 합니다'],
   'staff:coach':['코치 자리가 비어 있습니다','스태프·육성 → 코치진에서 채우세요'],
   'staff:med':['부상 관리 체계를 정하지 않았습니다','부상 방지 투자와 지정 병원'],
-  'staff:mil':['상무 지원 기간입니다','입대 대상 선수를 확인하세요']};
+  'staff:mil':['상무 지원 기간입니다','입대 대상 선수를 확인하세요'],
+  'trade:block':['트레이드 제안이 와 있습니다','받은 제안에 답하세요'],'staff:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요'],'train:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요']};
+/* 주황 점이 뜬 하위 탭 안에서 그 이유를 맨 위에 보여 준다 */
+function alertWhy(tab,k){ if(!subAlert(tab,k))return ''; let t=TODO[tab+':'+k]; if(!t)return ''; if(tab+':'+k==='staff:scouts'){ const have=new Set(G.scouts.filter(s=>(s.role||'am')==='am').map(s=>s.region)); const miss=['수도권','영남','호남·충청'].filter(r=>!have.has(r)); t=[`아마추어 스카우트 담당 지역 ${miss.length}곳이 비어 있습니다`,`${miss.join('·')} 담당이 없으면 그 지역 드래프트 후보를 제대로 못 봅니다. 아래에서 배치하거나 채용하세요`]; }
+  return `<div class="note warn alert-why"><b>${esc(t[0])}</b> · ${esc(t[1])}</div>`; }
 /* ---------- 전력 요약: 전력 한눈에 + 추천 트레이드 ---------- */
 const SLOTS_S={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜'};
 const rkCls=r=>r<=3?'hi':r<=7?'md':'lo';

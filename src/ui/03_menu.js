@@ -24,9 +24,10 @@ const MFOLD={'trade:find':'선수 찾기','trade:report':'트레이드 성적표
 /* 합쳐진 메뉴는 세로로 쌓지 않고 안쪽 탭으로 나눈다: 한 화면에 한 주제 */
 const MLBL={'staff:camp':'훈련장','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
 function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter(k=>H[k]); if(!ks.length)return H[SUBS[tab][0][0]]?H[SUBS[tab][0][0]]():'';
-  if(ks.length===1)return H[ks[0]]();
+  const why=ks.map(k=>{ try{ return alertWhy(tab,k); }catch(e){ return ''; } }).join('');
+  if(ks.length===1)return why+H[ks[0]]();
   const lab=k=>MLBL[tab+':'+k]||MFOLD[tab+':'+k]||((SUBS[tab].find(x=>x[0]===k)||[])[1])||k;
-  const it=inTabs(`mg_${tab}_${s}`,ks.map(k=>[k,lab(k)]),s); return it.bar+H[it.cur](); }
+  const it=inTabs(`mg_${tab}_${s}`,ks.map(k=>[k,lab(k)]),s); return why+it.bar+H[it.cur](); }
 const GW={구장:['club','stad'],감독:['staff','mgr'],코치진:['staff','coach'],외국인선수:['transfer','foreign'],'부상방지·병원':['staff','med'],'2군연수':['staff','dev'],트레이드:['trade','block'],병역:['staff','mil'],비FA다년계약:['transfer','contract'],드래프트후보:['transfer','draft'],스카우트팀:['staff','scouts'],해외스카우트망:['scout','intl'],전력분석:['staff','data'],마케팅:['club','mkt'],일지:['club','log'],연봉협상:['transfer','contract'],신인드래프트:['transfer','draft'],FA시장:['transfer','fa'],시즌결산:['club','result'],스프링캠프:['train','dev'],순위:['league','stand']};
 function curSub(tab){ if(tab==='league')return (ALIAS.league[UI.lseg]||UI.lseg); UI.sub=UI.sub||{}; const raw=UI.sub[tab]||SUBS[tab][0][0]; return (ALIAS[tab]&&ALIAS[tab][raw])||raw; }
 function faLive(){ return !!(G.fa&&!G.fa.closed&&G.day>=KD(11,1)); }
