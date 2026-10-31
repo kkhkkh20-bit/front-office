@@ -2,7 +2,7 @@
 /* ===== 성장과 노화 =====
  성장 유형(숨김): norm 정상형, early 조기 완성형, late 대기만성형, stall 정체형, vet 기술형(신체는 늙어도 기술이 는다)
  성장 속도 = 남은 잠재력 × 유형별 나이 곡선 × 출전 시간 × 훈련 시설 × 감독 육성 성향 */
-const DT={norm:{l:'정상 성장형',grow:27,peak:31,fall:32},early:{l:'조기 완성형',grow:24,peak:28,fall:30},late:{l:'대기만성형',grow:29,peak:33,fall:34},stall:{l:'정체형',grow:25,peak:29,fall:31},vet:{l:'기술형 베테랑',grow:27,peak:31,fall:32}};
+const DT={norm:{l:'정상 성장형',grow:26,peak:29,fall:31},early:{l:'조기 완성형',grow:23,peak:27,fall:29},late:{l:'대기만성형',grow:28,peak:31,fall:33},stall:{l:'정체형',grow:24,peak:28,fall:30},vet:{l:'기술형 베테랑',grow:26,peak:30,fall:31}};
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
@@ -13,7 +13,7 @@ function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군�
    프로의식이 낮으면 덜 크고, 슬럼프가 잦고, 일찍 꺾인다. 그해 사고(늦은 귀가·지각 등)를 칠 때마다 더 깎인다 */
 function persGrowF(p){ initPers(p); const pr=effPro(p), am=p.pers.amb; /* 리더들이 만든 선수단 문화가 반영된 프로의식 */ const bad=p.badY&&p.badY.y===G.year?p.badY.n:0; return clamp(.5+(pr-4)/16*.7+(am-4)/16*.25,.5,1.45)*(1-.08*Math.min(3,bad)); }
 /* 성장 구간: 대기만성형 일부는 30대 초반에 터진다. 프로의식이 낮으면 일찍 꺾이고(초반 반짝 뒤 하락), 높으면 오래 버틴다 */
-function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro; const vl=p.dt==='late'&&u01('vlate',p.id)<.35; const g=vl?31:T.grow, pk=vl?34:T.peak, fa=vl?35:T.fall;
+function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro; const vl=p.dt==='late'&&u01('vlate',p.id)<.35; const g=vl?30:T.grow, pk=vl?33:T.peak, fa=vl?34:T.fall;
   const adj=pr<=6?-3:pr<=9?-2:pr<=12?-1:pr>=17?1:0; return {grow:Math.min(g,fa+adj-1),peak:Math.min(pk,fa+adj-1),fall:fa+adj,vl}; }
 function develop(p){
   try{ proDrift(p); }catch(e){}
@@ -24,7 +24,7 @@ function develop(p){
   p.devLog={y:G.year,play,fac:fac.l};
   const gap=Math.max(0,p.pot-o); let base=0;
   if(age<=T.grow){
-    const rate=p.dt==='early'?(age<=22?.34:.24):p.dt==='late'?(T.vl?(age<=27?.05:.14):(age<=24?.08:.26)):p.dt==='stall'?.07:.2;
+    const rate=clamp((p.dt==='early'?1.25:p.dt==='late'?(T.vl&&age<=26?.35:.85):p.dt==='stall'?.35:1)/(T.grow-age+1.5),.04,.65); /* 남은 성장 연수에 맞춰 조금씩: 18세 1순위도 20대 중반에 정점(예전엔 남은 잠재력의 20~34%를 해마다 채워 20~21세에 리그 정상급이 됐다) */
     const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p)*pg; base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
@@ -33,7 +33,7 @@ function develop(p){
     if(p.dt==='late'&&age>=25)p.pot+=rnd(0,1.5);
     if(T.vl&&age>=28&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
   } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
-  else { base=-(age-T.fall+1)*.6*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=35?-2.4:-3.4); if(age<T.fall)base=N(-.2,1); }
+  else { base=-(age-T.fall+1)*.6*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=34?-2.4:-3.6)-(age>=35?.8:0); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
   if(age<=31&&!p.foreign){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */

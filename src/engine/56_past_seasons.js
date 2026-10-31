@@ -2,7 +2,7 @@
    2025 시즌은 실제 경기로 치르고, 그 앞 두 해는 같은 확률식으로 타석·이닝을 하나하나 시뮬해 만든다.
    해마다 컨디션(커리어 하이·부진)과 타구 운이 다르게 걸리므로, 한 해 기록만 보면 거품이나 저평가가 섞이고
    여러 해를 보면 실력이 드러난다. 나이에 따라 그때의 능력은 지금과 다르다(젊으면 낮고, 노장은 높았다) */
-function pastShift(p,ago){ const a=p.age; return a<=23?-3*ago:a<=26?-1.8*ago:a<=29?-.6*ago:a>=34?1.6*ago:a>=31?.7*ago:0; }
+function pastShift(p,ago){ const a=p.age; return a<=23?-2.6*ago:a<=25?-1.6*ago:a<=28?-.4*ago:a>=34?1.6*ago:a>=30?.8*ago:0; }
 function genPastSeasons(){ const Y=2025; G.lg=G.lg||{}; for(const y of [Y-2,Y-1])if(!G.lg[y]&&G.lg[Y])G.lg[y]=Object.assign({},G.lg[Y]);
   const sf0={};
   for(const p of Object.values(G.players)){ if(p.foreign||p.prospect||p.team==null)continue; const svc=p.svc||0; const base=p.hist.filter(h=>h.y===Y);

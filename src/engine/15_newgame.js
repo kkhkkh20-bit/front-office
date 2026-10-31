@@ -10,11 +10,11 @@ function buildWorld(){ const userTid=0; worldReset();
   for(const t of G.teams){
     const tb=N(0,1.6);
     const mk=(isP,pos)=>{ const age=clamp(Math.round(N(27,4.6)),19,37); const T=clamp(N(48+tb,7.5),30,75);
-      const cur=age<27?T-(27-age)*rnd(1.8,3.2):age<=31?T:T-(age-31)*rnd(.9,1.9);
-      return newPlayer({age,isP,pos,base:clamp(cur,22,76),pot:age<27?T+N(0,3):cur,team:t.id,svc:clamp(age-19-ri(0,3),0,18)}); };
+      const cur=age<26?T-(26-age)*rnd(1.2,2.4):age<=30?T:T-(age-30)*rnd(.6,1.4)-Math.max(0,age-34)*rnd(1.2,2.2);
+      return newPlayer({age,isP,pos,base:clamp(cur,22,76),pot:age<26?T+N(0,3):cur,team:t.id,svc:clamp(age-19-ri(0,3),0,18)}); };
     for(let i=0;i<14;i++)mk(true);
     // 2군 선수층: 젊은 유망주와 대기 전력 (정식 선수 약 58명)
-    for(let i=0;i<27;i++){ const age=clamp(Math.round(N(23,2.8)),19,30); const T=clamp(N(44+tb,7.5)+(R()<.06?rnd(4,9):0),28,74); const cur=clamp(age<26?T-(26-age)*rnd(1.6,2.8):T-rnd(2,6),20,52);
+    for(let i=0;i<27;i++){ const age=clamp(Math.round(N(23,2.8)),19,30); const T=clamp(N(44+tb,7.5)+(R()<.06?rnd(4,9):0),28,74); const cur=clamp(age<25?T-(25-age)*rnd(1.3,2.4):T-rnd(2,6),20,52);
       newPlayer({age,isP:i<15,pos:i<15?undefined:pick(['C','1B','2B','3B','SS','LF','CF','RF','C','SS','2B','CF']),base:cur,pot:Math.max(cur,T),team:t.id,svc:clamp(age-19-ri(0,2),0,8)}); }
     bpos.forEach(pos=>mk(false,pos));
   }

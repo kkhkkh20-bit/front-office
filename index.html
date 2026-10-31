@@ -2740,7 +2740,7 @@ function teamRating(tid){
 /* ===== 성장과 노화 =====
  성장 유형(숨김): norm 정상형, early 조기 완성형, late 대기만성형, stall 정체형, vet 기술형(신체는 늙어도 기술이 는다)
  성장 속도 = 남은 잠재력 × 유형별 나이 곡선 × 출전 시간 × 훈련 시설 × 감독 육성 성향 */
-const DT={norm:{l:'정상 성장형',grow:27,peak:31,fall:32},early:{l:'조기 완성형',grow:24,peak:28,fall:30},late:{l:'대기만성형',grow:29,peak:33,fall:34},stall:{l:'정체형',grow:25,peak:29,fall:31},vet:{l:'기술형 베테랑',grow:27,peak:31,fall:32}};
+const DT={norm:{l:'정상 성장형',grow:26,peak:29,fall:31},early:{l:'조기 완성형',grow:23,peak:27,fall:29},late:{l:'대기만성형',grow:28,peak:31,fall:33},stall:{l:'정체형',grow:24,peak:28,fall:30},vet:{l:'기술형 베테랑',grow:26,peak:30,fall:31}};
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
@@ -2751,7 +2751,7 @@ function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군�
    프로의식이 낮으면 덜 크고, 슬럼프가 잦고, 일찍 꺾인다. 그해 사고(늦은 귀가·지각 등)를 칠 때마다 더 깎인다 */
 function persGrowF(p){ initPers(p); const pr=effPro(p), am=p.pers.amb; /* 리더들이 만든 선수단 문화가 반영된 프로의식 */ const bad=p.badY&&p.badY.y===G.year?p.badY.n:0; return clamp(.5+(pr-4)/16*.7+(am-4)/16*.25,.5,1.45)*(1-.08*Math.min(3,bad)); }
 /* 성장 구간: 대기만성형 일부는 30대 초반에 터진다. 프로의식이 낮으면 일찍 꺾이고(초반 반짝 뒤 하락), 높으면 오래 버틴다 */
-function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro; const vl=p.dt==='late'&&u01('vlate',p.id)<.35; const g=vl?31:T.grow, pk=vl?34:T.peak, fa=vl?35:T.fall;
+function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro; const vl=p.dt==='late'&&u01('vlate',p.id)<.35; const g=vl?30:T.grow, pk=vl?33:T.peak, fa=vl?34:T.fall;
   const adj=pr<=6?-3:pr<=9?-2:pr<=12?-1:pr>=17?1:0; return {grow:Math.min(g,fa+adj-1),peak:Math.min(pk,fa+adj-1),fall:fa+adj,vl}; }
 function develop(p){
   try{ proDrift(p); }catch(e){}
@@ -2762,7 +2762,7 @@ function develop(p){
   p.devLog={y:G.year,play,fac:fac.l};
   const gap=Math.max(0,p.pot-o); let base=0;
   if(age<=T.grow){
-    const rate=p.dt==='early'?(age<=22?.34:.24):p.dt==='late'?(T.vl?(age<=27?.05:.14):(age<=24?.08:.26)):p.dt==='stall'?.07:.2;
+    const rate=clamp((p.dt==='early'?1.25:p.dt==='late'?(T.vl&&age<=26?.35:.85):p.dt==='stall'?.35:1)/(T.grow-age+1.5),.04,.65); /* 남은 성장 연수에 맞춰 조금씩: 18세 1순위도 20대 중반에 정점(예전엔 남은 잠재력의 20~34%를 해마다 채워 20~21세에 리그 정상급이 됐다) */
     const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p)*pg; base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
@@ -2771,7 +2771,7 @@ function develop(p){
     if(p.dt==='late'&&age>=25)p.pot+=rnd(0,1.5);
     if(T.vl&&age>=28&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
   } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
-  else { base=-(age-T.fall+1)*.6*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=35?-2.4:-3.4); if(age<T.fall)base=N(-.2,1); }
+  else { base=-(age-T.fall+1)*.6*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=34?-2.4:-3.6)-(age>=35?.8:0); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
   if(age<=31&&!p.foreign){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
@@ -4516,11 +4516,11 @@ function buildWorld(){ const userTid=0; worldReset();
   for(const t of G.teams){
     const tb=N(0,1.6);
     const mk=(isP,pos)=>{ const age=clamp(Math.round(N(27,4.6)),19,37); const T=clamp(N(48+tb,7.5),30,75);
-      const cur=age<27?T-(27-age)*rnd(1.8,3.2):age<=31?T:T-(age-31)*rnd(.9,1.9);
-      return newPlayer({age,isP,pos,base:clamp(cur,22,76),pot:age<27?T+N(0,3):cur,team:t.id,svc:clamp(age-19-ri(0,3),0,18)}); };
+      const cur=age<26?T-(26-age)*rnd(1.2,2.4):age<=30?T:T-(age-30)*rnd(.6,1.4)-Math.max(0,age-34)*rnd(1.2,2.2);
+      return newPlayer({age,isP,pos,base:clamp(cur,22,76),pot:age<26?T+N(0,3):cur,team:t.id,svc:clamp(age-19-ri(0,3),0,18)}); };
     for(let i=0;i<14;i++)mk(true);
     // 2군 선수층: 젊은 유망주와 대기 전력 (정식 선수 약 58명)
-    for(let i=0;i<27;i++){ const age=clamp(Math.round(N(23,2.8)),19,30); const T=clamp(N(44+tb,7.5)+(R()<.06?rnd(4,9):0),28,74); const cur=clamp(age<26?T-(26-age)*rnd(1.6,2.8):T-rnd(2,6),20,52);
+    for(let i=0;i<27;i++){ const age=clamp(Math.round(N(23,2.8)),19,30); const T=clamp(N(44+tb,7.5)+(R()<.06?rnd(4,9):0),28,74); const cur=clamp(age<25?T-(25-age)*rnd(1.3,2.4):T-rnd(2,6),20,52);
       newPlayer({age,isP:i<15,pos:i<15?undefined:pick(['C','1B','2B','3B','SS','LF','CF','RF','C','SS','2B','CF']),base:cur,pot:Math.max(cur,T),team:t.id,svc:clamp(age-19-ri(0,2),0,8)}); }
     bpos.forEach(pos=>mk(false,pos));
   }
@@ -8094,7 +8094,7 @@ function capexAsk(kind,k){ const S=capexState(); const key=kind; if(S.last[key]!
    2025 시즌은 실제 경기로 치르고, 그 앞 두 해는 같은 확률식으로 타석·이닝을 하나하나 시뮬해 만든다.
    해마다 컨디션(커리어 하이·부진)과 타구 운이 다르게 걸리므로, 한 해 기록만 보면 거품이나 저평가가 섞이고
    여러 해를 보면 실력이 드러난다. 나이에 따라 그때의 능력은 지금과 다르다(젊으면 낮고, 노장은 높았다) */
-function pastShift(p,ago){ const a=p.age; return a<=23?-3*ago:a<=26?-1.8*ago:a<=29?-.6*ago:a>=34?1.6*ago:a>=31?.7*ago:0; }
+function pastShift(p,ago){ const a=p.age; return a<=23?-2.6*ago:a<=25?-1.6*ago:a<=28?-.4*ago:a>=34?1.6*ago:a>=30?.8*ago:0; }
 function genPastSeasons(){ const Y=2025; G.lg=G.lg||{}; for(const y of [Y-2,Y-1])if(!G.lg[y]&&G.lg[Y])G.lg[y]=Object.assign({},G.lg[Y]);
   const sf0={};
   for(const p of Object.values(G.players)){ if(p.foreign||p.prospect||p.team==null)continue; const svc=p.svc||0; const base=p.hist.filter(h=>h.y===Y);
@@ -10552,9 +10552,11 @@ function tabBody(){
   if(G.gameOver&&(UI.tab==='inbox'||UI.tab==='home'))return gameOverView();
   if(UI.tab==='roster')G.tutFlags.roster=true;
   if(!TITLE[UI.tab])UI.tab='home';
-  if(G.unemp&&!['home','inbox','league'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요.</p><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
+  if(G.unemp&&UI.tab==='cfg')return unempCfg(); /* 야인이어도 저장·불러오기·내보내기는 쓸 수 있어야 한다 */
+  if(G.unemp&&!['home','inbox','league'].includes(UI.tab))return csec('야인입니다',`<p>지금은 맡은 구단이 없습니다. 리그 탭에서 판도를 보고, 제의가 오면 홈에서 답하세요.</p><div class="row"><button class="btn small" data-a="tab" data-v="cfg">게임 설정(저장·불러오기)</button></div><button class="btn primary" data-a="tab" data-v="home">홈으로</button>`);
   return {cal:calView,home:homeView,inbox:inboxView,roster:rosterView,trade:tradeCenter,transfer:transferView,scout:scoutView,train:trainView,staff:staffView,cfg:cfgView,me:meView,league:leagueView,club:clubView}[UI.tab]();
 }
+function unempCfg(){ return `<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+slotsCard(false)+exportCard(); }
 function anySave(){ try{ const m=meta(); return SLOT_IDS.some(n=>m.slots&&m.slots[n]); }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+(m.slots[n]?slotSize(n):0),0); const rows=SLOT_IDS.filter(n=>m.slots[n]||n===SLOT_IDS.find(k=>!m.slots[k])||UI.slotAll).map(n=>{ const s=m.slots[n]; const cur=G&&m.active===n;
     return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.over?' · 경질됨':''} · ${slotSize(n)}KB`:'비어 있음'}</div></div>
@@ -14759,6 +14761,11 @@ const GUARD={
   protSubmit(v){ const c=(G.comp||[]).find(x=>x.id===v); if(!c||!UI.prot)return null; const g=COMP[c.grade]; const ids=UI.prot.ids||[]; if(ids.length>g.prot)return null; const out=compPool(G.user).filter(q=>!ids.includes(q.id)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4);
     return {subj:`보호선수 ${ids.length}명 명단 제출`,kind:'FA',lines:[`${tshort(c.from)}이(가) 명단 밖에서 1명을 데려가거나 보상금을 받습니다.`,`명단 밖 주요 선수: ${out.map(q=>`${q.name}(${posLabel(q)}, ${dvo(q)})`).join(', ')||'없음'}`],warn:'제출하면 바꿀 수 없습니다.'}; },
   jobYes(v){ const tid=+v; const t=team(tid); const o=G.last&&G.last.order?G.last.order.findIndex(x=>x.tid===tid)+1:0; return {subj:`${t.city} ${t.nick} 단장 취임`,kind:'경력',lines:[`지난 시즌 ${o||'-'}위 · ${needText(tid)}`,'선수단·감독·코치진·재정은 이 구단 것을 그대로 이어받습니다.'],warn:'취임하면 되돌릴 수 없습니다.'}; },
+  /* 단장 재계약: 거절(구단을 떠남)과, 신뢰가 낮을 때 인상 요구(제안을 거둘 수 있음)는 결재로 한 번 더 묻는다. 버튼이 밀려 잘못 누르는 일이 있었다 */
+  evPick(v){ const [id,i0]=String(v).split(':'); const i=+i0; const e=(G.evs||[]).find(x=>String(x.id)===id); if(!e||e.done||e.k!=='gmRenew')return null; const tr=team(G.user)?team(G.user).trust:50;
+    if(i===2)return {subj:'단장 재계약 거절',kind:'경력',lines:[`${tname(G.user)}과(와)의 계약이 이번 시즌으로 끝납니다.`,'구단을 떠나 야인이 되고, 명성에 따라 다른 구단 제의를 기다립니다.'],warn:'거절하면 되돌릴 수 없습니다.'};
+    if(i===1&&tr<55)return {subj:'단장 연봉 인상 요구',kind:'경력',lines:[`구단주 신뢰 ${tr}: 신뢰가 낮으면 구단주가 제안을 거두고 계약이 끝날 수 있습니다.`],warn:'제안이 거둬지면 구단을 떠나게 됩니다.'};
+    return null; },
   retireGM(){ return G.unemp?{subj:'단장 경력 마치기',kind:'경력',lines:[`명성 ${G.rep} · 야인 ${Math.floor((G.day-(G.unemp.since??G.day))/30)}개월`],warn:'경력을 마치면 이 게임은 끝납니다. 새 게임은 시작 화면에서 할 수 있습니다.'}:null; },
   nsPick(v){ const o=NEWSTAD.find(x=>x.k===v); if(!o)return null; return {subj:`신구장 ${o.l}(${o.cap.toLocaleString('ko-KR')}석) 착공`,kind:'구장',lines:[`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자).`,'공사 3년 · 개장 후 시설 4단계 이상 · 개장 초 관중 크게 증가'],warn:'착공하면 되돌릴 수 없습니다.'}; },
   relNow(v){ const p=G.players[+v]; if(!p)return null; const cost=p.faC?Math.round(p.sal*p.yrs*.5):0; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),...(p.foreign&&period()==='season'?[G.day>foreignDL()?`대체 외국인 등록 마감(${dsh(foreignDL())})이 지나 올해는 대체 선수를 데려올 수 없습니다.`:fReplLeft(G.user)<=0?`이번 시즌 외국인 교체 ${F_REPL_MAX}회를 다 써서 대체 선수를 데려올 수 없습니다.`:`대체 외국인을 데려올 수 있습니다(남은 교체 ${fReplLeft(G.user)}회, ${dsh(foreignDL())}까지).`]:[]),p.foreign?'올해 연봉은 이미 지출로 잡혀 있어 돌려받지 못합니다.':cost?`남은 계약 정산금 ${money(cost)}`:'정산금 없음'],warn:'방출하면 되돌릴 수 없습니다.'}; },

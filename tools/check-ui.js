@@ -113,6 +113,11 @@ const QUICK=process.env.QUICK==='1';
     } finally { window.streakOf=oS; G.day=keep.day; G.ps=keep.ps; } });
     if(r){ if(r.streak.length)add('팬 게시판','가을야구 중에도 정규시즌 연승·연패 글이 올라옴: '+r.streak.join(' / ')); if(r.rank.length)add('팬 게시판','정규시즌이 끝났는데 순위 글이 올라옴: '+r.rank.join(' / '));
       if(!r.ps.some(t=>/업셋/.test(t)))add('팬 게시판','와일드카드 업셋 글이 없음'); if(!r.ps.some(t=>/탈락/.test(t)))add('팬 게시판','준플레이오프 탈락 글이 없음'); } };
+  /* 되돌릴 수 없는 단장 결정: 재계약 거절은 결재로 한 번 더 묻는다(버튼이 밀려 잘못 눌러 사임하던 문제). 야인이어도 게임 설정(저장·불러오기)은 열려야 한다 */
+  const gmCheck=async()=>{ where='단장 재계약·야인 설정'; const r=await ev(()=>{ const id='t_gm'; (G.evs=G.evs||[]).push({id,k:'gmRenew',t:'재계약 제안',b:'',opts:[{l:'수락',fx:''},{l:'연봉 인상 요구(+15%)',fx:''},{l:'재계약 거절',fx:''}],d:G.day,exp:G.day+14,def:0,done:false});
+      const u0=G.unemp; UI.cfm=null; A.evPick(id+':2'); const asked=!!UI.cfm&&!G.unemp; UI.cfm=null; G.evs=G.evs.filter(e=>e.id!==id);
+      const keep={u:G.unemp,tab:UI.tab}; G.unemp={since:G.day}; UI.tab='cfg'; render(); const txt=(document.querySelector('#app')||document.body).innerText; const set=/저장 슬롯/.test(txt)&&/내보내기/.test(txt); G.unemp=keep.u; UI.tab=keep.tab; render(); return {asked,set,u0:!!u0}; });
+    if(r){ if(!r.asked)add('재계약','재계약 거절을 한 번 더 묻지 않고 바로 처리함'); if(!r.set)add('야인 설정','야인일 때 게임 설정(저장·불러오기)이 안 열림'); } };
   const recCheck=async label=>{ where=`${label} · 기록 순위`;
     const r=await ev(()=>{ closeSheets(); const y=G.year; const B=playerRows(y).filter(x=>!x.p.isP&&x.h.hr>0&&!isQual(x,y)).sort((a,b)=>b.h.hr-a.h.hr); const p=B[0]; if(!p)return null;
       UI.lrf={q:true,t:'all'}; UI.lrec='bat'; UI.lrAll=true; UI.ls=UI.ls||{}; const has=()=>!!document.querySelector(`#app table [data-a="player"][data-v="${p.p.id}"]`);
@@ -168,7 +173,7 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(!r.b)add('코드 복사','코드를 만들어도 복사 버튼이 없음'); if(!r.p)add('코드 복사','붙여넣기 버튼이 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
-    where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
+    where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
     await monkey('시즌 중',+process.env.MONKEY||4);
     where='시뮬 → FA'; console.log('  FA:',await sim('G.fa&&!G.fa.closed&&G.day>=KD(11,6)',600)); await crawl('스토브리그 FA');
     where='FA 협상 창'; await ev(()=>{ const id=(G.fa.pool||[]).find(i=>G.players[i]); if(id!=null)A.negOpen('fa:'+id); }); await pg.waitForTimeout(100); await ev(()=>closeSheets());

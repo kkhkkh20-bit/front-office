@@ -704,7 +704,7 @@ T('[예산] 시즌 예산은 개막 때 정한 금액이다: 시즌 중 구단�
   t.pop=(t.pop||1)*1.5; const b2=budget(); ok(Math.abs(b2.roomGoal-b0.roomGoal)<=1,'수입 증가에 예산 여유가 늘어남 '+money(b0.roomGoal)+' -> '+money(b2.roomGoal)); ok(b2.extra>0,'예상보다 늘어난 수입이 따로 표시되지 않음');
   t.trust=40; const o0=(()=>{ const L=G.bLock, k=L.I; L.I=budget().I; const v=ownOdds(1000,null); L.I=k; return v; })(); const o1=ownOdds(1000,null); /* 같은 상태에서 '예상보다 더 들어온 수입'만 0으로 바꿔 비교 */ /* 신뢰가 높으면 승인 가능성이 상한(0.92)에 붙어 차이가 안 보인다 */ ok(o1>o0,'늘어난 수입이 구단주 요청 근거가 되지 않음 '+o0.toFixed(2)+' / '+o1.toFixed(2)); });
 T('[트레이드] AI 단장은 능력과 함께 최근 성적도 본다: 운 좋게 성적이 능력보다 좋은 선수는 비싸게, 운 나쁘게 부진한 선수는 싸게 본다(우리 평가는 그대로)',()=>{ fresh(); const A=G.teams.filter(x=>x.id!==G.user); const t=A[0], b=A[1];
-  const p=domestic(b.id).filter(q=>!q.isP&&!q.foreign&&q.age>=26&&q.age<=30&&ovr(q)>=50&&ovr(q)<=58)[0]; ok(p,'준비 실패');
+  const p=A.slice(1).flatMap(x=>domestic(x.id)).filter(q=>!q.isP&&!q.foreign&&q.age>=25&&q.age<=31&&ovr(q)>=48&&ovr(q)<=60)[0]; ok(p,'준비 실패'); /* 나이 곡선을 바꿔도 대상이 있게 여러 구단에서 찾는다 */
   const rs=()=>{ try{ _lkC={k:'',m:new Map()}; }catch(e){} try{ _tcC={k:'',m:{}}; }catch(e){} }; rs(); const v0=tval(t,p,'in'), u0=tval(team(G.user),p,'in');
   const h=lineFor(p,G.year,p.team,'1군'); const keep=Object.assign({},h); addTo(h,{g:100,pa:420,ab:370,h:132,d:28,tr:2,hr:22,bb:45,hbp:3,sf:2,so:60}); rs(); const v1=tval(t,p,'in'), u1=tval(team(G.user),p,'in');
   for(const k in h)if(typeof h[k]==='number')h[k]=keep[k]??0; addTo(h,{g:100,pa:420,ab:375,h:70,d:10,tr:0,hr:2,bb:38,hbp:2,sf:5,so:110}); rs(); const v2=tval(t,p,'in');
@@ -754,6 +754,12 @@ T('투수 종합 능력: 구위·제구·체력 비중이 경기에서 실제로
   /* 실측: 선발 투수 WAR을 구위·제구·체력으로 회귀하면 구위와 제구 기여가 비슷해야 한다(예전엔 구위 .62·제구 .34로 구위형 투수가 종합 능력보다 훨씬 잘했다) */
   fresh(); const y=G.year-1; const A=Object.values(G.players).filter(q=>q.isP&&!q.foreign).map(q=>({q,h:seasonTotal(q,y,'1군')})).filter(x=>x.h&&x.h.outs>=300&&(x.h.gs||0)>=10); ok(A.length>=25,'준비 실패 '+A.length);
   const c=olsFit(A.map(x=>[x.q.r.stf,x.q.r.ctl]),A.map(x=>warOf(x.h,x.q)),A.map(()=>1)); ok(c[1]>0&&c[2]>0&&c[2]/c[1]>=.6,'구위 '+c[1].toFixed(3)+' · 제구 '+c[2].toFixed(3)); });
+T('[나이] 전성기는 20대 후반(실제 KBO처럼 20대 중반에도 리그 정상급이 있고, 30대 초반까지 유지, 35세 전후 급락): 시작 세계 상위 선수 나이 분포',()=>{ DEMO.on=false; newGame(6); fdStart();
+  const L=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,60); const f=t=>L.filter(t).length/L.length;
+  ok(f(p=>p.age<=25)>=.12,'25세 이하 '+(f(p=>p.age<=25)*100).toFixed(0)+'%'); ok(f(p=>p.age>=32)<=.2,'32세 이상 '+(f(p=>p.age>=32)*100).toFixed(0)+'%'); ok(f(p=>p.age>=35)<=.05,'35세 이상 '+(f(p=>p.age>=35)*100).toFixed(0)+'%'); });
+T('[나이] 18세 1라운드급 유망주도 해마다 조금씩 커서 20대 중반에 정점(20~21세에 바로 리그 정상급이 되지 않는다)',()=>{ fresh(); const A=[]; for(let i=0;i<120;i++){ const p=newPlayer({age:18,base:40,pot:68,isP:i%2===0}); p.dt='norm'; p.prospect=false; A.push(p); }
+  const at=a=>A.reduce((s,p)=>s+ovr(p),0)/A.length; const pot=A.reduce((s,p)=>s+p.pot,0)/A.length; const M={}; for(let a=18;a<=27;a++){ M[a]=at(); for(const p of A){ try{ develop(p); }catch(e){ p.age++; } } }
+  const fr=(M[21]-M[18])/Math.max(.1,M[26]-M[18]); ok(fr<=.5,'18~21세에 18~26세 성장의 '+(fr*100).toFixed(0)+'%를 끝냄(절반 이하여야 함) · 평균 '+[18,21,24,26].map(a=>a+'세 '+M[a].toFixed(1)).join(' ')); ok(M[26]-M[24]>=.5,'24~26세에도 자라야 함'); for(const p of A)delete G.players[p.id]; });
 T('새 게임을 다시 만들면 이전 세계에서 계산해 둔 값(툴 기준·기대 홈런 회귀 등)을 쓰지 않는다',()=>{ DEMO.on=false; newGame(6); fdStart(); const a=fdToolRef(); newGame(3); fdStart(); const b=fdToolRef(); ok(a!==b,'이전 세계의 툴 기준을 그대로 씀'); });
 T('창단 드래프트 툴 등급: 1군 주전 평균이 C 중급(70점대)이고, S 특급은 리그에 몇 명, A 상급은 구단 간판 정도다',()=>{ DEMO.on=false; newGame(6); fdStart(); const ly=G.fd.y-1;
   const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });
