@@ -273,6 +273,9 @@ const QUICK=process.env.QUICK==='1';
   /* 추천 트레이드의 다른 자리 공백·예산 이름(외부 리뷰 B) */
   { where='트레이드 공백·예산'; const r=await ev(()=>{ const d=depth(G.user); const sp=d.sp[4]||d.sp[0]; const o=G.teams.find(t=>t.id!==G.user); const q=domestic(o.id).find(x=>!x.isP); const h=typeof dealSide==='function'?dealSide([sp.id],[q.id]):''; UI.tab='home'; render(); const tx=(document.querySelector('#app')||{}).textContent||''; return {gap:/선발 대체 필요/.test(h),bud:/상한 잔여/.test(tx)}; });
     if(r){ if(!r.gap)add('추천 트레이드','선발을 내주는 거래에 선발 공백 안내가 없음'); if(!r.bud)add('예산','홈 예산 여유 타일에 연봉 상한 잔여·현금이 없음'); } }
+  /* 선수단 계획 합계·캡 여유, 코치 후보 성격(외부 리뷰 B) */
+  { where='계획·코치'; const r=await ev(()=>{ const tx=plannerCard().replace(/<[^>]+>/g,' '); UI.tab='staff'; UI.sub=Object.assign({},UI.sub||{},{staff:'coach'}); UI.it=Object.assign({},UI.it||{},{mg_staff_coach:'coach'}); render(); const tc=(document.querySelector('#app')||{}).textContent||''; UI.tab='home'; render(); return {plan:/캡 여유/.test(tx),coach:/후보$|후보 ·|강한 후보|메우는 후보/.test(tc)}; });
+    if(r){ if(!r.plan)add('선수단 계획','내년 연봉 합계·캡 여유가 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

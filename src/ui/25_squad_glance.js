@@ -45,12 +45,13 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
     <tr><th>확정 연봉</th>${PY.map(x=>`<td>${money(x.fix)}</td>`).join('')}</tr>
     <tr><th>예상(연봉 협상)</th>${PY.map((x,k)=>`<td>${k?money(x.est):'-'}</td>`).join('')}</tr>
     <tr><th>FA 재계약 시</th>${PY.map((x,k)=>`<td>${k&&x.faN?`${money(x.fa)} <i class="muted">(${x.faN}명)</i>`:'-'}</td>`).join('')}</tr>
-    <tr><th>샐러리캡</th>${PY.map(x=>`<td>${money(x.cap)}</td>`).join('')}</tr></tbody></table></div>`;
+    <tr><th>샐러리캡</th>${PY.map(x=>`<td>${money(x.cap)}</td>`).join('')}</tr>
+    <tr><th>예상 합계 · 캡 여유</th>${PY.map((x,k)=>{ const t=x.fix+(k?x.est:0); const r=x.cap-t; return `<td>${money(t)} · <b class="${r<0?'bad':''}">${r>=0?'여유 ':'초과 '}${money(Math.abs(r))}</b></td>`; }).join('')}</tr></tbody></table></div><p class="small muted">예상 합계 = 확정 + 연봉 협상 예상(FA 재계약은 뺌). 캡 산입 예외(신인 등)는 반영하지 않은 대략값입니다.</p>`;
   const exL=G.plEx.ids.map(id=>G.players[id]).filter(Boolean);
   /* 세대 구성 */
   const dom=ps.filter(p=>!p.foreign&&!(p.joinY>Y)); const st=[['성장기','~23세',p=>p.age<=23],['도약기','24~26세',p=>p.age>=24&&p.age<=26],['전성기','27~31세',p=>p.age>=27&&p.age<=31],['노장','32세~',p=>p.age>=32]];
   const gen=st.map(([l,a,f])=>{ const L=dom.filter(f); const g=L.filter(p=>ovr(p)>=52).length; return `<div class="gen-c"><b>${l}</b><i>${a}</i><span>${L.length}명</span><em>1군급 ${g}</em></div>`; }).join('');
-  return `<section class="card"><div class="row between"><h2 class="sec">선수단 계획</h2><span class="small muted">숫자는 그해 예상 능력</span></div>
+  return `<section class="card"><div class="row between"><h2 class="sec">선수단 계획</h2><span class="small muted">프런트 예상 배치(감독 실제 기용과 다를 수 있음) · 숫자는 그해 예상 능력</span></div>
     <div class="tw"><table class="pl-t"><thead><tr><th></th>${[0,1].map(k=>`<th>${Y+k} ${k===0?'(올해)':'(내년)'}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
     <p class="small ${holes.length?'':'good'} keep">${holes.length?`내년 보강이 필요한 자리: <b>${holes.join(' · ')}</b>`:'내년까지 모든 자리가 채워져 있습니다.'}</p>
     ${exL.length?`<p class="small keep">내년 계획에서 뺀 선수: ${exL.map(p=>esc(p.name)).join(', ')} <button class="tc-i" data-a="plExClear">되돌리기</button></p>`:''}

@@ -51,7 +51,8 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
     <p class="small muted">자리마다 4~5명이 있고, 매달 초 새 후보가 들어오고 일부는 떠납니다. 겨울에는 다른 구단에서 정리된 코치도 시장에 나옵니다.</p>`;
   const cmpT=(c,cur)=>{ const f=(x,k)=>dv(effC(x,G.user,k)); const a=f(c,'sk')-f(cur,'sk'), b=f(c,'dv')-f(cur,'dv'); const s=v=>`${v>0?'+':''}${v}`; return `현 ${esc(cur.name)} 대비 지도 ${s(a)} · 육성 ${s(b)}`; }; /* 우리 팀에 왔을 때 실효값끼리 같은 척도로 */
   const card=c=>{ const cur=C[c.role];
-    return `<div class="csl"><div class="csl-h"><b>${CROLE[c.role].l}</b>${cur?`<span class="small muted">${cmpT(c,cur)}</span>`:'<span class="pill bad">빈자리</span>'}</div>
+    const kind=c.dv-c.sk>=12?'유망주 성장에 강한 후보':c.sk-c.dv>=12?'즉시 전력(경기력) 지도에 강한 후보':c.sal<=Math.min(...(G.cmarket||[]).filter(x=>x.role===c.role).map(x=>x.sal))?'낮은 비용으로 자리를 메우는 후보':'';
+    return `<div class="csl"><div class="csl-h"><b>${CROLE[c.role].l}</b>${cur?`<span class="small muted">${cmpT(c,cur)}</span>`:'<span class="pill bad">빈자리</span>'}</div>${kind?`<p class="small muted" style="margin:2px 0">${kind}${CROLE[c.role].g===2?' · 2군 코치의 육성력은 2군에서 뛰는 선수 성장에, 지도력은 2군 경기력에 쓰입니다':''}</p>`:''}
     <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null})}${esc(c.name)} <span class="small muted">${c.age}세</span>${c.star?' <span class="pill acc">스타 코치</span>':''}${obTag(c.ob)}${c.res===G.user?' <span class="pill warn">우선 협상</span>':''}${c.age<=41?' <span class="pill">젊은 지도자</span>':''}${c.from!=null&&c.from!==G.user&&G.teams[c.from]?` <span class="pill">전 ${esc(tshort(c.from))}</span>`:''}</div><div class="csl-s">${coachStats({...c,clan:null},G.user)}</div>
     <div class="small muted">${esc(c.car)} · 연 ${money(c.sal)}</div>
     <div class="row"><button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년 계약</button></div></div>`; };
@@ -62,7 +63,7 @@ function coachView(){ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=
   const gc=(l,x)=>`<div class="cg"><span>${l}</span><b class="g${x.l}">${x.l}</b></div>`;
   const sumC=`<section class="card"><div class="row between"><h2 class="sec">코치진</h2><span class="small muted">연봉 합계 ${money(coachSal(G.user))}${empty?` · <b style="color:var(--bad)">빈자리 ${empty}</b>`:''}</span></div>
     <div class="cgr">${gc('타격',g.bat)}${gc('투수',g.pit)}${gc('주루',g.run)}${gc('수비',g.def)}${gc('1군 육성',g.dev1)}${gc('2군 육성',g.dev2)}</div>
-    <p class="small">${m?`${esc(m.name)} 감독 사단 코치 <b>${cn}명</b>${cn?' · 사단 코치는 지도·육성 +6':''}${(m.ego||0)>=70?' · 고집 센 감독이라 사단 밖 코치는 -2(카드 숫자에 이미 반영)':''}`:'감독이 없습니다.'}</p>
+    <p class="small">${m?`${esc(m.name)} 감독 사단 코치 <b>${cn}명</b>${cn?` · 사단 코치는 지도·육성 +6 · 감독이 바뀌면 사단 코치 ${cn}명(${Object.values(coachesOf(G.user)).filter(c=>c&&c.clan===m.id).map(c=>esc(c.name)).join('·')})이 함께 떠날 수 있고 +6도 사라집니다`:''}${(m.ego||0)>=70?' · 고집 센 감독이라 사단 밖 코치는 -2(카드 숫자에 이미 반영)':''}`:'감독이 없습니다.'}</p>
     <p class="small muted">지도력은 1군 경기력(투수·타격·주루·수비)에, 육성력은 선수 성장 속도에 반영됩니다. 선수 성장에는 그해 1군·2군 출전 비율만큼 1군 코치와 2군 코치진의 육성력이 섞여 들어갑니다(2군에서만 뛰면 2군 코치진). 비어 있는 자리는 낮은 수준으로 계산됩니다.</p></section>`;
   const cs=coachesOf(G.user); const vac1=CKEYS.some(k=>CROLE[k].g===1&&!cs[k]), vac2=CKEYS.some(k=>CROLE[k].g===2&&!cs[k]);
   const it=inTabs('coach',[['g1',`1군 코치${vac1?' · 빈자리':''}`],['g2',`2군 코치${vac2?' · 빈자리':''}`],['mk',`채용 후보 ${(G.cmarket||[]).length}`],['po','다른 구단']],!vac1&&vac2?'g2':'g1');
