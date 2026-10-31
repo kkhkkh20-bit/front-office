@@ -45,6 +45,7 @@ function subAlert(tab,k){
     'train:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),
     'staff:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),
     'staff:med':!G.medSet,
+    'club:spon':(()=>{ try{ const S=sponInit(); return Object.keys(SPON_SLOT).some(k=>!SPON_SLOT[k].indie&&sponOpen(k)); }catch(e){ return false; } })(),
     'staff:mil':!!sangmuWave()&&domestic(G.user).some(p=>milFree(p)&&p.age>=27&&!(p.mil&&p.mil.app))};
   return !!A2[tab+':'+k];
 }

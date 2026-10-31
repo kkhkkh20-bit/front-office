@@ -152,11 +152,11 @@ function posDiag(seg){
   if(seg==='bat'){
     cells=['C','1B','2B','3B','SS','LF','CF','RF','DH'].map(pos=>{ const p=me.ln[pos]; const rk=rankOf(d=>d.ln[pos]?posScore(d.ln[pos],pos):0);
       const bk=pos==='DH'?0:ps.filter(q=>!q.isP&&q.pos===pos&&(!p||q.id!==p.id)).length; const h=p?curLine(p):null; const rp=p?scoutReport(p):null;
-      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i>리그 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchip(rp.cur):''} ${h&&h.pa?'OPS '+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
+      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i title="주전 능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchip(rp.cur):''} ${h&&h.pa?yrTag(h)+' OPS '+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
   } else {
     const spR=rankOf(d=>avg(d.sp.slice(0,5).map(spV))), rpR=rankOf(d=>avg(d.pen.slice(0,5).map(penV))), clR=rankOf(d=>d.pen[0]?penV(d.pen[0]):0);
     const era=arr=>{ const hs=arr.map(curLine).filter(h=>h&&h.outs); const o=sum(hs.map(h=>h.outs)); return o?(sum(hs.map(h=>h.er))*27/o).toFixed(2):'-'; };
-    const cell=(l,rk,n,s,b)=>`<div class="dg" style="--rc:${rc(rk)}"><span class="dg-h"><b>${l}</b><i>리그 ${rk}위</i></span><span class="dg-n">${n}</span><span class="dg-s">${s}</span><span class="dg-b">${b}</span></div>`;
+    const cell=(l,rk,n,s,b)=>`<div class="dg" style="--rc:${rc(rk)}"><span class="dg-h"><b>${l}</b><i title="능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${n}</span><span class="dg-s">${s}</span><span class="dg-b">${b}</span></div>`;
     cells=[cell('선발진',spR,`${me.sp.length}명 로테이션`,`ERA ${era(me.sp)}`,`2군 선발형 ${me.futP.filter(isSP).length}명`),
       cell('불펜',rpR,`${me.pen.length}명`,`ERA ${era(me.pen)}`,`필승조 ${me.pen.slice(1,4).map(p=>esc(p.name)).join(', ')}`),
       cell('마무리',clR,me.pen[0]?esc(me.pen[0].name):'없음',me.pen[0]?`${rchip(scoutReport(me.pen[0]).cur)} ${(curLine(me.pen[0])||{}).sv||0}세이브`:'',' ')];

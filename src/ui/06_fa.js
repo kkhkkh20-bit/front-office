@@ -66,7 +66,7 @@ function freeCard(){ const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); const f=UI.f
 function faUpcomingCard(U){ const all=Object.values(G.players).filter(q=>q.team!=null); const L=U.filter(x=>x.p.team!==G.user);
   const f=UI.fuF||'all'; const R=L.filter(x=>f==='all'||(f==='P'?x.p.isP:f==='H'?!x.p.isP:f==='sure'?x.sure&&x.dp>=.8:true)).map(x=>({...x,g:faGradeOf(x.p,all)})).sort((a,b)=>b.p.sal-a.p.sal);
   const st=x=>{ if(x.why==='end')return 'FA 계약 만료'; if(x.why==='re')return '자격 보유(지난번 미신청)'; if(x.sure)return '등록일수 충족'; const h=seasonTotal(x.p,G.year,'1군')||{};
-    return `등록일수 필요(${x.p.isP?`${h.g||0}/40경기 · ${ipStr(h.outs||0)}/90이닝`:`${h.g||0}/85경기 · ${h.pa||0}/260타석`})`; };
+    return `등록일수 필요(${x.p.isP?`${h.g||0}/40경기 또는 ${ipStr(h.outs||0)}/90이닝`:`${h.g||0}/85경기 또는 ${h.pa||0}/260타석`} · 하나만 채우면 됨)`; };
   const dl=x=>x.dp>=.8?['신청 유력','good']:x.dp>=.34?['반반','warn']:['잔류 유력','muted'];
   const nA=R.filter(x=>x.g==='A').length, nB=R.filter(x=>x.g==='B').length; const b=budget(); const lim=UI.fuAll?R.length:15;
   return `<section class="card"><div class="row between"><h2 class="sec">올 시즌 뒤 FA 예정자 · 다른 구단</h2><span class="small muted">${L.length}명 · 예상 A등급 ${nA} · B등급 ${nB}</span></div>
