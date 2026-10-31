@@ -35,7 +35,7 @@ function seasonWorth(o){ return Math.pow(Math.max(0,o-40),1.6)/6; }
    예전에는 올해 값에도 노화(30세 넘은 나이 × 1.3)와 성장을 미리 반영해, 33세 주전은 올해 값이 4점 깎이고 21세 유망주는 부풀려졌다.
    그 결과 AI 구단이 주전 베테랑을 어린 백업과 바꿔 줘서 첫 시즌부터 손쉽게 전력을 끌어올릴 수 있었다. 시즌이 끝난 뒤(포스트시즌·비시즌)에는 다음 해 성장·노화가 한 번 남아 있다 */
 function projO(p,i){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const per=period(); const k=i+(per==='off'||per==='post'?1:0); if(k<=0)return o;
-  if(p.age+k<=26){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,k*.28); }
+  if(p.age+k<=26){ const g=Math.max(0,p.pot-ovr(p)); return o+g*Math.min(1,k/Math.max(1.5,26-p.age+1.5)); } /* 성장 곡선(04_growth)과 같게: 정점(26세)까지 남은 해에 고르게 큰다 */
   const old=Math.max(0,Math.min(k,p.age+k-30)); /* 앞으로 31세 이상으로 보낼 해 수 */ return o-old*1.3; }
 function ctrlYears(p){ if(p.foreign)return 1; if(p.faC)return Math.max(1,p.yrs||1); return clamp(faSvc(p)-(p.svc||0),1,6); }
 let _tcC={k:null,m:{}};

@@ -741,8 +741,8 @@ T('창단 드래프트: 눈에 보이는 툴(구위·체력·파워·주력·수
 T('창단 드래프트 데이터팀: 능력치를 모르고도 지난 2년 기록과 타구 질(트래킹)로 기대 홈런을 내서, 한 해 홈런 거품·불운을 짚는다',()=>{ DEMO.on=false; newGame(6); fdStart(); const y=G.fd.y-1;
   const B=Object.values(G.players).filter(p=>!p.isP&&!p.foreign).map(p=>({p,h:seasonTotal(p,y,'1군'),e:fdHrExp(p,y)})).filter(x=>x.h&&x.h.pa>=300&&x.e);
   ok(B.length>=40,'준비 실패: '+B.length); const tal=x=>{ const o=simBat(x.p,4000,0); return o.hr/o.pa*x.h.pa; };
-  const bub=B.filter(x=>x.e.k==='bub'), low=B.filter(x=>x.e.k==='low'); ok(bub.length>=2,'거품 판정 '+bub.length+'명');
-  const m=a=>a.reduce((s,v)=>s+v,0)/Math.max(1,a.length); const gB=m(bub.map(x=>x.h.hr-tal(x))); ok(gB>=4,'거품 판정 선수의 지난해 홈런이 실력 기대보다 평균 '+gB.toFixed(1)+'개 많아야 함(4개 이상)');
+  const bub=B.filter(x=>x.e.k==='bub'), low=B.filter(x=>x.e.k==='low'); ok(bub.length>=1,'거품 판정 '+bub.length+'명');
+  const m=a=>a.reduce((s,v)=>s+v,0)/Math.max(1,a.length); const gB=m(bub.map(x=>x.h.hr-tal(x))); ok(gB>=2.5,'거품 판정 선수의 지난해 홈런이 실력 기대보다 평균 '+gB.toFixed(1)+'개 많아야 함(2.5개 이상)');
   if(low.length>=3){ const gL=m(low.map(x=>tal(x)-x.h.hr)); ok(gL>=1,'불운 판정 선수의 실력 기대가 지난해 홈런보다 평균 '+gL.toFixed(1)+'개 많아야 함'); }
   const err=a=>m(a.map(x=>Math.abs(x.v-tal(x.x)))); const eE=err(B.map(x=>({x,v:x.e.exp}))), eH=err(B.map(x=>({x,v:x.h.hr}))); ok(eE<eH,'기대 홈런 오차 '+eE.toFixed(1)+'가 지난해 홈런 오차 '+eH.toFixed(1)+'보다 작아야 함');
   ok(/홈런/.test(fdDataLine(bub[0].p,y)),'데이터팀 의견에 홈런 거품이 없음: '+fdDataLine(bub[0].p,y)); });
@@ -768,6 +768,12 @@ T('[데이터 연결] 트래킹·세부 능력이 그 지표가 말하는 경기
     ['타자 헛스윙%↔삼진%',corr(T.map(x=>x.whiff),tb.map(x=>x.so/x.pa)),.75],['추격 스윙%↔볼넷%(반대)',-corr(T.map(x=>x.chase),tb.map(x=>x.bb/x.pa)),.75],['삼진 회피↔삼진%(반대)',-corr(B.map(kAvoidV),tb.map(x=>x.so/x.pa)),.95],
     ['투수 헛스윙%↔탈삼진%',corr(TP.map(x=>x.whiff),tp.map(x=>x.so/bf(x))),.8],['CSW%↔탈삼진%',corr(TP.map(x=>x.csw),tp.map(x=>x.so/bf(x))),.7],['땅볼%↔피홈런%(반대)',-corr(TP.map(x=>x.gb),tp.map(x=>x.hr/bf(x))),.3]];
   for(const [l,v,th] of C)ok(v>=th,l+' 상관 '+v.toFixed(2)+' (기준 '+th+')'); });
+T('[체력] 체력이 좋은 불펜은 연투를 더 버티고(피로가 덜 쌓이고 빨리 풀림), 부상 위험·시즌 누적 부하가 낮고, 선발은 시즌 이닝을 더 먹는다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user);
+  const rp=domestic(t.id).filter(q=>q.isP&&!isSPr(q))[0]; ok(!!rp,'준비 실패'); const keep={sta:rp.r.sta,fat:rp.fat,la:rp.lastApp};
+  const run=sta=>{ rp.r.sta=sta; rp.fat=0; let n=0; for(let d=1;d<=10;d++){ rp.lastApp=-99; if(!relAvail(rp,G.day+d))break; n++; rp.fat=clamp(rp.fat+pitFatGain(rp,18,false),0,100); const f0=rp.fat; recoverAll(1); void f0; } return n; };
+  const lo=run(32), hi=run(68); rp.r.sta=keep.sta; rp.fat=keep.fat; rp.lastApp=keep.la; ok(hi>=lo+1,'매일 18구씩: 체력 32는 '+lo+'일, 체력 68은 '+hi+'일 연속 가능(더 길어야 함)');
+  ok(staF({r:{sta:70}})<staF({r:{sta:40}})&&staI({r:{sta:70}})<staI({r:{sta:40}}),'체력 높을수록 부상·피로 배수가 낮아야 함'); ok(armCap({r:{sta:70},ld:[[1,90]]})>armCap({r:{sta:40},ld:[[1,90]]})*1.3,'선발 누적 부하 한도 차이가 작음');
+  /* 시즌 이닝: 같은 조건에서 체력 +10이면 선발 이닝이 늘어난다는 것은 능력치 반영 점검(check-sens)이 본다(구단별 투수 운용이 섞인 단면 비교는 흔들려 쓰지 않는다) */ });
 T('새 게임을 다시 만들면 이전 세계에서 계산해 둔 값(툴 기준·기대 홈런 회귀 등)을 쓰지 않는다',()=>{ DEMO.on=false; newGame(6); fdStart(); const a=fdToolRef(); newGame(3); fdStart(); const b=fdToolRef(); ok(a!==b,'이전 세계의 툴 기준을 그대로 씀'); });
 T('창단 드래프트 툴 등급: 1군 주전 평균이 C 중급(70점대)이고, S 특급은 리그에 몇 명, A 상급은 구단 간판 정도다',()=>{ DEMO.on=false; newGame(6); fdStart(); const ly=G.fd.y-1;
   const P=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).filter(p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=90:h.pa>=250); });

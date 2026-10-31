@@ -14,7 +14,7 @@ function consecDays(p,day){ const L=p.ld||[]; let n=0, d=day-1; for(let i=L.leng
 function pc7(p,day){ return sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[1])); }
 /* 누적 팔 부하 한도: 선발은 5일 로테이션 100구, 불펜은 이틀에 한 번 20구를 꾸준히 던질 때 한도에 닿는다 */
 /* 선발 한도는 지금 역할이 선발이거나 최근 선발처럼 길게(60구 이상) 던진 투수(대체 선발·불펜 데이)에게 적용한다 */
-function armCap(p){ const s=p.r.sta||50; const sp=isSPr(p)||(p.ld||[]).some(x=>x[1]>=60); return sp?1150+(s-50)*12:540+(s-50)*6; }
+function armCap(p){ const s=p.r.sta||50; const sp=isSPr(p)||(p.ld||[]).some(x=>x[1]>=60); return sp?1150+(s-50)*18:540+(s-50)*9; } /* 체력이 좋을수록 시즌 누적 부하를 더 견딘다 */
 function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 기록: applyGame에서 투수마다 호출 */
 function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; L.push([day,pc]); if(L.length>10)L.shift();

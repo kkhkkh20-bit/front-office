@@ -24,7 +24,7 @@ function simBat(p,pa,b,slot){
    - 제구: 볼넷, 맞춰 잡기(몰린 공이 줄어 피홈런·인플레이 안타 감소), 투구 수 절약(06_game 투구 수)
    - 체력: 투구 수가 늘수록 떨어지는 구위·제구를 늦게·덜 떨어지게(06_game 경기 중 피로), 선발 투구 수 한도
    +10 실험(1,500경기): 평균자책점 구위 -1.26 · 제구 -1.32 · 체력 -0.47(선발 +0.5이닝). 리그 평균(타율·평균자책점·득점)은 예전과 같게 맞췄다 */
-var PW={k0:.074,h0:.046,hs:.020,hc:.020,b0:.361,bs:.035,bc:.06,xs:.35,xc:.15,eff:.9,ft0:-5,fts:1,ftd:9,fm:1,l0:33,ls:.95};
+var PW={k0:.074,h0:.046,hs:.020,hc:.020,b0:.361,bs:.035,bc:.06,xs:.35,xc:.15,eff:.9,ft0:-5,fts:1,ftd:9,fm:1,l0:30,ls:.95};
 function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.7;
   return {k:PW.k0+cc(r.stf,bk)*.24+arsenalK(p), bb:clamp(.15-cc(r.ctl,be)*.13,.025,.16), hr:clamp((PW.h0-cc(r.stf,b)*PW.hs-cc(r.ctl,be)*PW.hc-trt(p,'mv')*.0008)*(1-gbT(p)*.13),.006,.06), babip:clamp(PW.b0-cc(r.stf,b)*PW.bs-cc(r.ctl,be)*PW.bc-trt(p,'mv')*.0008+gbT(p)*.003-seasonLuck(p),.25,.36),
     x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc-gbT(p)*.05,.6,1.4)}; /* 땅볼형: 피홈런·장타가 줄고 땅볼 안타는 조금 는다 */ /* x2: 인플레이 안타 중 2루타·3루타가 되는 비율에 곱한다 */
