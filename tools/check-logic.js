@@ -727,6 +727,11 @@ T('[기록] wRC+: 리그 평균 타자는 100 안팎, 잘 치면 100보다 높�
   const B=Object.values(G.players).filter(p=>!p.isP).map(p=>({p,h:seasonTotal(p,y,'1군')})).filter(x=>x.h&&x.h.pa>=80); ok(B.length>=40,'준비 실패: 타자 '+B.length);
   const W=B.map(x=>({w:wrcPlus(x.h,y),pa:x.h.pa,ops:bRate(x.h).ops})); const avgW=W.reduce((a,x)=>a+x.w*x.pa,0)/W.reduce((a,x)=>a+x.pa,0);
   ok(avgW>=90&&avgW<=110,'타석 가중 평균 wRC+ '+avgW.toFixed(1)); const hi=W.slice().sort((a,b)=>b.ops-a.ops)[0], lo=W.slice().sort((a,b)=>a.ops-b.ops)[0]; ok(hi.w>130&&lo.w<70,'OPS 최고 '+hi.ops.toFixed(3)+' wRC+ '+hi.w+' · 최저 '+lo.ops.toFixed(3)+' wRC+ '+lo.w); });
+T('[기록] wRC+: 창단 드래프트 기록에도 들어가고, 퓨처스 기록은 퓨처스 리그 평균 기준으로 계산한다',()=>{ DEMO.on=false; newGame(6); fdStart(); const y=G.year-1;
+  const P=Object.values(G.players).filter(p=>p.fdPool&&!p.isP); const one=P.map(p=>({p,s:fdStatLine(p,y)})).filter(x=>x.s&&x.s.lvl===1&&x.s.n>=150); ok(one.length>=10,'준비 실패: 1군 기록 '+one.length);
+  ok(one.every(x=>typeof x.s.wrc==='number'),'창단 드래프트 기록에 wrc 없음');
+  const fut=P.map(p=>(p.hist||[]).find(h=>h.y===y&&h.lvl==='퓨처스'&&h.pa>=100)).filter(Boolean); if(fut.length>=8){ const a=fut.reduce((s,h)=>s+wrcPlus(h,y)*h.pa,0)/fut.reduce((s,h)=>s+h.pa,0); ok(a>=80&&a<=120,'퓨처스 타석 가중 wRC+ '+a.toFixed(1)); }
+  ok(wrcMulti([])==null,'빈 기록 통산 wRC+'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ for(const t of results){ try{ t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }
