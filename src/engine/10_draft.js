@@ -41,7 +41,7 @@ function makeDraftClass(){
   // 언론 평가: 눈에 보이는 성적과 체격·구속만으로 매긴 순위
   /* 투수와 타자는 척도가 달라 각자 안에서 표준점수로 바꾼 뒤 합친다(그래야 언론 상위권에 투수와 타자가 섞인다) */
   const raw=cls.map(id=>G.players[id]).map(p=>{ const h=p.am; let s;
-    if(p.isP){ const r=pRate(h); s=-r.era*6+(h.so/Math.max(1,h.outs/3))*9*1.4+((p.amVelo||veloOf(p))-140)*1.2; }
+    if(p.isP){ const r=pRate(h); s=-r.era*6+(h.so/Math.max(1,h.outs/3))*9*1.4+((p.amVelo||veloOf(p))-143)*1.2; }
     else { const r=bRate(h); s=r.ops*55+h.hr*.8+h.sb*.15; }
     return {p,s:s+(p.ht-180)*.15}; });
   const zs=grp=>{ const L=raw.filter(x=>!!x.p.isP===grp); const m=L.reduce((a,x)=>a+x.s,0)/Math.max(1,L.length); const sd=Math.sqrt(L.reduce((a,x)=>a+(x.s-m)**2,0)/Math.max(1,L.length))||1; L.forEach(x=>x.z=(x.s-m)/sd+(grp?.15:0)); };

@@ -23,7 +23,7 @@ function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; i
     <div class="fde-bx"><div><span>현재 능력</span><b style="color:${rcol(ovr(p))}">${dv(ovr(p))} <small>${GRD(ovr(p))}</small></b><i>실제 · 코치진 평가</i></div><div><span>지명 전 추정</span>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; return e==null?'<b>-</b>':`<b style="color:${rcol(e)}">${dv(e-w)}~${dv(e+w)}</b>`; })()}<i>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; if(e==null)return '우리 스카우트'; const o=ovr(p); return o>e+w?'<b class="good">추정보다 좋음</b>':o<e-w?'<b class="bad">추정보다 낮음</b>':'추정 범위 안'; })()}</i></div><div><span>예상 역할</span><b class="fde-role">${esc(role)}</b><i>추정 기준</i></div></div>
     <p class="small"><b>스카우트</b> ${esc(fdScoutLine(p))}</p>
     <p class="small"><b>데이터팀</b> ${esc(dl)}</p>
-    ${p.team===G.user&&fdScoutHabitTxt()?`<p class="small"><b>스카우트 버릇</b> 지금까지 우리 지명 선수 기준: ${esc(fdScoutHabitTxt())}</p>`:''}
+    ${fdScoutProfileTxt(p.isP)?`<p class="small"><b>우리 스카우트 성향</b> ${esc(fdScoutProfileTxt(p.isP))}</p>`:''}
     <p class="small muted">능력 63이 1군 평균, 69가 주전급입니다. 지명했으니 현재 능력은 코치진 평가로 정확히 보입니다. 잠재력(얼마나 클지)은 여전히 추정입니다. 7월 1일 중간 평가와 정규시즌 뒤 평가에서 이 지명을 돌아봅니다.</p>
     <button class="btn primary block" data-a="revClose">계속</button>
   </div></div>`; }

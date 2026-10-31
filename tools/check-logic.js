@@ -680,7 +680,7 @@ T('[트레이드] 개막 전·시즌 중 올해 가치는 지금 능력 그대�
   const base=q=>ovr(q)+pvShift(q)+condOf(q)*.3; ok(Math.abs(projO(p,0)-base(p))<.01,'33세 올해 값 '+projO(p,0).toFixed(1)+' vs 지금 '+base(p).toFixed(1)); ok(Math.abs(projO(y,0)-base(y))<.01,'21세 올해 값을 미리 부풀림 '+projO(y,0).toFixed(1)+' vs '+base(y).toFixed(1)); ok(projO(p,2)<base(p),'2년 뒤 노화 반영 안 됨'); });
 T('[트레이드] 리빌딩이 아닌 AI 구단은 주전(라인업 9명·로테이션·필승조)을 훨씬 못한 선수 하나와 바꿔 주지 않는다(다른 자리에서 뛰는 주전 포함)',()=>{ fresh(); const ours=domestic(G.user).filter(p=>!p.foreign&&!(p.joinY>G.year)); let bad=[];
   for(const t of G.teams){ if(t.id===G.user)continue; const d=depth(t.id); const S=[...d.start,...d.sp,...d.pen.slice(0,4)].filter(q=>q&&!q.foreign&&!q.aiListed&&ovr(q)>=56&&(t.mode!=='rebuild'||q.age<=28));
-    for(const q of S)for(const p of ours){ if(ovr(p)+pvShift(p)>ovr(q)+pvShift(q)-8)continue; /* 포지션 가치까지 넣어 8점 넘게 못한 경우만(1루수 63과 유격수 53은 포지션 가치로 보면 비슷할 수 있다) */ let e; try{ e=evalTrade(t.id,[p.id],[q.id],0); }catch(x){ continue; } if(e.ok)bad.push(tshort(t.id)+' '+q.name+'('+Math.round(ovr(q))+','+q.age+')<-'+p.name+'('+Math.round(ovr(p))+','+p.age+')'); } }
+    for(const q of S)for(const p of ours){ const sv=x=>ovr(x)+pvShift(x)+seenDelta(t,x); if(sv(p)>sv(q)-8)continue; /* 포지션 가치와 그 단장이 기록으로 본 차이(seenDelta)까지 넣어 8점 넘게 못한 경우만(1루수 63과 유격수 53은 포지션 가치로 보면 비슷할 수 있다) */ let e; try{ e=evalTrade(t.id,[p.id],[q.id],0); }catch(x){ continue; } if(e.ok)bad.push(tshort(t.id)+' '+q.name+'('+Math.round(ovr(q))+','+q.age+')<-'+p.name+'('+Math.round(ovr(p))+','+p.age+')'); } }
   ok(!bad.length,'주전을 싸게 내줌 '+bad.length+'건: '+bad.slice(0,3).join(', ')); });
 T('[트레이드] 한 시즌에 트레이드를 많이 할수록 다른 단장들도 값을 올린다(리그 전체 눈치)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).filter(x=>!x.foreign).sort((a,b)=>ovr(b)-ovr(a))[5]; const p=domestic(G.user).filter(x=>!x.foreign)[3];
   const n0=evalTrade(t.id,[p.id],[q.id],0).need; const o=G.teams.filter(x=>x.id!==G.user&&x.id!==t.id); for(let k=0;k<4;k++)G.trades.push({y:G.year,d:G.day,with:o[k].id,give:[],get:[]}); const n1=evalTrade(t.id,[p.id],[q.id],0).need; ok(n1>n0+.5,'트레이드 4건 뒤에도 요구치 그대로 '+n0.toFixed(2)+' -> '+n1.toFixed(2)); });
@@ -727,14 +727,26 @@ T('[기록] wRC+: 리그 평균 타자는 100 안팎, 잘 치면 100보다 높�
   const B=Object.values(G.players).filter(p=>!p.isP).map(p=>({p,h:seasonTotal(p,y,'1군')})).filter(x=>x.h&&x.h.pa>=80); ok(B.length>=40,'준비 실패: 타자 '+B.length);
   const W=B.map(x=>({w:wrcPlus(x.h,y),pa:x.h.pa,ops:bRate(x.h).ops})); const avgW=W.reduce((a,x)=>a+x.w*x.pa,0)/W.reduce((a,x)=>a+x.pa,0);
   ok(avgW>=90&&avgW<=110,'타석 가중 평균 wRC+ '+avgW.toFixed(1)); const hi=W.slice().sort((a,b)=>b.ops-a.ops)[0], lo=W.slice().sort((a,b)=>a.ops-b.ops)[0]; ok(hi.w>130&&lo.w<70,'OPS 최고 '+hi.ops.toFixed(3)+' wRC+ '+hi.w+' · 최저 '+lo.ops.toFixed(3)+' wRC+ '+lo.w); });
+T('구속: 리그 평균 직구가 실제 KBO(2025~26년 146km 안팎)와 비슷하고, 구위가 아주 높으면(90 이상) 155km 넘게 던지고 최고 160 가까이 찍는다',()=>{ fresh();
+  const P=Object.values(G.players).filter(p=>p.isP&&p.team!=null&&!p.prospect); const V=P.map(p=>({v:veloOf(p),mx:veloMax(p),s:dv(p.r.stf)})); const avg=V.reduce((a,x)=>a+x.v,0)/V.length;
+  ok(avg>=145&&avg<=147.5,'리그 평균 구속 '+avg.toFixed(1)); const n155=V.filter(x=>x.mx>=155).length/V.length; ok(n155>=.04,'최고 155km 이상 투수 '+(n155*100).toFixed(1)+'%');
+  /* 구위 90(원래 능력 약 69.5)인 투수: 구속 보정이 0일 때 */ const q={r:{stf:69.5},velo:0,id:'x'}; ok(veloOf(q)>=154,'구위 90 평균 구속 '+veloOf(q)); ok(veloOf(q)+4>=158,'구위 90 최고 구속 '+(veloOf(q)+4)); ok(V.every(x=>x.mx<=161),'최고 구속 161 초과');
+  /* 경기 계산(직구 구종 점수)은 그대로: 구속 표시만 바뀐다 */ const p=P[0]; ok(Math.abs(arsenal(p,p.r.stf)[0][1]-(p.r.stf+(137+(p.r.stf-20)/60*17+(p.velo||0)-145)*.8+trt(p,'fb',3)))<1e-9,'직구 점수 변함'); });
+T('창단 드래프트: 눈에 보이는 툴(구위·체력·파워·주력·수비)은 스카우트 등급이 정확하고, 오차 큼 표시 툴(제구·컨택·선구)만 크게 틀린다',()=>{ DEMO.on=false; newGame(6); fdStart();
+  const P=Object.values(G.players).filter(p=>p.fdPool); const st={v:{e:0,n:0,b2:0},h:{e:0,n:0,b2:0}}; const per=[];
+  for(const isP of [false,true]) for(const [k,l,vis] of FD_TOOLS[isP?'P':'B']){ let e=0,n=0,b2=0; for(const p of P.filter(q=>q.isP===isP)){ const d=Math.abs(FD_GL[fdScoutTools(p).L.find(t=>t.k===k).g]-FD_GL[fdToolTrue(p,k).g]); e+=d; n++; if(d>=2)b2++; }
+    const o=st[vis?'v':'h']; o.e+=e; o.n+=n; o.b2+=b2; per.push(l+' '+(e/n).toFixed(2)+'/'+Math.round(b2/n*100)+'%'); }
+  const mv=st.v.e/st.v.n, mh=st.h.e/st.h.n, bv=st.v.b2/st.v.n; console.log('  툴 오차(평균 등급차/2등급 이상):',per.join(' · '));
+  ok(mv<=.6,'보이는 툴 평균 등급 오차 '+mv.toFixed(2)); ok(bv<=.04,'보이는 툴 2등급 이상 빗나감 '+Math.round(bv*100)+'%'); ok(mh>=mv*1.6,'오차 큼 툴 '+mh.toFixed(2)+' · 보이는 툴 '+mv.toFixed(2)); });
 T('창단 드래프트: 지명 뒤 공개하는 실제 툴 등급은 스카우트 등급과 같은 기준이다(추정 A → 실제 C처럼 기준 차이로 어긋나지 않게)',()=>{ DEMO.on=false; newGame(6); fdStart();
   const P=Object.values(G.players).filter(p=>p.fdPool); const out=[];
   for(const isP of [false,true]) for(const [k,l] of FD_TOOLS[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); if(A.length<20)continue; let dNew=0,dOld=0;
     for(const p of A){ const sg=fdScoutTools(p).L.find(t=>t.k===k).g; dNew+=FD_GL[sg]-FD_GL[fdToolTrue(p,k).g]; dOld+=FD_GL[sg]-FD_GL[FD_G(p.r[k])]; }
     out.push(l+' 새 '+(dNew/A.length).toFixed(2)+' 옛 '+(dOld/A.length).toFixed(2)); ok(Math.abs(dNew/A.length)<=.8,l+': 스카우트와 실제 등급 평균 차이 '+(dNew/A.length).toFixed(2)); }
   const pw=P.find(p=>!p.isP); const a=fdToolTrue(pw,'pow'); ok(a.v>=20&&a.v<=80&&FD_G(a.v)===a.g,'등급 계산');
-  /* 스카우트 버릇: 우리 지명 선수가 쌓이면 툴별로 후하게/짜게 보는 경향을 알려 준다 */
-  fdAdvance(false); let g=0; while(G.fd&&!G.fd.done&&g++<500)fdAdvance(true); const H=fdScoutHabit(); ok(Array.isArray(H)&&H.every(x=>x.n>=3&&Math.abs(x.m)>=.5),'버릇 목록 '+JSON.stringify(H).slice(0,200)); ok(typeof fdScoutHabitTxt()==='string','버릇 문구'); });
+  /* 스카우트 성향(지명 전에 공개): 알려 준 버릇이 실제로 후보 전체에서 스카우트 등급과 실제 등급의 평균 차이와 맞아야 한다 */
+  const S=fdScoutProfile(); ok(S&&S.B.length===5&&S.P.length===3,'성향 없음'); for(const isP of [false,true]) for(const t of S[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); const m=A.reduce((a,p)=>a+fdScoutTools(p).L.find(x=>x.k===t.k).v-fdToolTrue(p,t.k).v,0)/A.length;
+    ok(Math.abs(m-t.b)<=2.5,t.l+': 알려 준 버릇 '+t.b.toFixed(1)+' · 실제 평균 차이 '+m.toFixed(1)); } ok(/스카우트 기록/.test(fdScoutProfileTxt(false)),'성향 문구'); });
 T('[기록] wRC+: 창단 드래프트 기록에도 들어가고, 퓨처스 기록은 퓨처스 리그 평균 기준으로 계산한다',()=>{ DEMO.on=false; newGame(6); fdStart(); const y=G.year-1;
   const P=Object.values(G.players).filter(p=>p.fdPool&&!p.isP); const one=P.map(p=>({p,s:fdStatLine(p,y)})).filter(x=>x.s&&x.s.lvl===1&&x.s.n>=150); ok(one.length>=10,'준비 실패: 1군 기록 '+one.length);
   ok(one.every(x=>typeof x.s.wrc==='number'),'창단 드래프트 기록에 wrc 없음');

@@ -18,6 +18,10 @@ const FB={
        mix:['그래도 {p} 하나는 잘했다','질 수도 있지 내일 이기면 됨','144경기 중 하나일 뿐이다 진정하자','{p} 혼자 야구하네'],
        fun:['중계 끄고 산책 나감','오늘은 일찍 잔다','야구 끊는다 (내일 또 봄)']},
   psWin:{pos:['이게 가을야구지 소름 돋았다','{p} 큰 경기에 강하네','한 경기만 더 가자','오늘 직관 간 사람 평생 자랑해라','{q} 오늘 미쳤다 진짜'],mix:['이겼지만 내일이 더 중요하다','긴장돼서 끝까지 못 봤다','불펜만 버텨 주면 된다'],fun:['목 다 쉬었다','내일 연차 냈다']},
+  psAdv:{pos:['{R} 통과! 이 기세로 끝까지 가자','{O} 잡고 올라간다','가을에 강한 팀 맞네','다음 시리즈도 이렇게만 하자','선수들 표정이 정규시즌이랑 다르다'],mix:['올라간 건 좋은데 투수 소모가 걱정','다음 상대가 훨씬 세다, 방심 금지'],fun:['다음 시리즈 표 구한 사람?']},
+  psUpset:{pos:['업셋 실화냐 ㅋㅋㅋ','{O} 상대로 업셋 미쳤다','정규시즌 막판 연패는 다 잊었다','이게 가을야구지','하위 시드의 반란 제대로 보여 줬다'],mix:['업셋은 좋은데 다음은 더 세다','투수 다 쓰고 올라가서 걱정이긴 함'],fun:['단톡방 난리 났다']},
+  psOut:{neg:['여기서 끝이네...','{R}에서 탈락, 아쉽다','결국 투수 깊이 차이','큰 경기 경험이 부족했다'],mix:['그래도 가을야구 맛은 봤다','여기까지 온 것도 잘했다','선수들 한 해 고생 많았다','내년엔 더 높은 곳에서 시작하자','스토브리그에서 보강 제대로 하자']},
+  psChamp:{pos:['우승이다!!!','이 순간을 위해 응원했다','올해 선수들 전부 레전드','단장님 감독님 다 고생했다','평생 기억할 시즌'],fun:['내일 출근 못 함']},
   psLoss:{neg:['가을에 이렇게 무너지면 어떡하냐','{r} 큰 경기에서 왜 저래','여기까지 와서 이렇게 지냐','단기전은 투수 교체가 전부인데','오늘 경기는 두고두고 생각날 듯'],mix:['그래도 여기까지 온 게 어디냐','아직 끝난 거 아니다 다음 경기 이기자','올해 정말 고생 많았다','{p} 혼자 끝까지 싸웠다'],fun:['오늘은 말없이 잔다','내년 가을에 다시 보자']},
   wstreak:{pos:['{n}연승 실화냐 ㅋㅋ','이 기세면 가을야구 간다','연승할 때는 뭘 해도 됨','요즘 야구 볼 맛 난다','작년이랑 완전 다른 팀이네'],mix:['연승 끝나면 연패 올까 봐 무섭다']},
   lstreak:{neg:['{n}연패... 프런트 책임론 나와야 함','연패 끊을 생각은 있냐','분위기 너무 안 좋다','감독이랑 단장 둘 다 뭐 하냐','이 정도면 선수단 문제 맞음'],mix:['이럴 때 에이스가 끊어줘야 하는데','연패는 언젠가 끝난다... 언젠가']},
@@ -78,10 +82,16 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
     const title=won?fPick(fRng('gt'+g.day),[`${tshort(op)}전 ${sc} 승리 후기`,(vars.p?`오늘 ${vars.p} 보신 분`:'오늘 경기 총평'),`${sc} 승! 오늘 경기 총평`,`이기니까 좋네요 (${sc})`]):fPick(fRng('gt'+g.day),[`${tshort(op)}전 ${sc} 패배... 총평`,(vars.r?`${vars.r} 오늘 왜 그랬냐`:'오늘 경기 총평'),`오늘 경기 보고 화나신 분`,`${sc} 패, 할 말이 없다`]);
     add({id:'g'+g.day,d:g.day,cat:'경기',title,body:`${team(op).city} ${team(op).nick}전 ${sc} ${won?'승리':g.res==='무'?'무승부':'패배'}.${star?` ${star.p.name} ${star.b.ab}타수 ${star.b.h}안타${star.b.hr?` ${star.b.hr}홈런`:''}.`:''}`,tid:me,ref:won?star?.p.id:null,
       cm:fComments('gc'+g.day,(g.kind&&/차전/.test(g.kind))?(won?'psWin':'psLoss'):(won?'win':'loss'),won?'pos':(g.kind&&/차전/.test(g.kind))?'mix':'neg',vars,6,me,fa),hot:Math.abs(g.hs-g.as)>=5}); }
-  /* 2) 연승·연패 */
-  try{ const st=streakOf(me)||''; const m=st.match(/(\d+)\s*(연승|연패)/); if(m&&+m[1]>=3){ const w=m[2]==='연승'; const k=`s${G.day}`; add({id:'st'+G.day,d:G.day,cat:'잡담',title:w?`${m[1]}연승 실화냐`:`${m[1]}연패... 다들 괜찮으세요`,body:'',tid:me,cm:fComments('stc'+G.day,w?'wstreak':'lstreak',w?'pos':'neg',{n:m[1]},6,me,fa),hot:true}); } }catch(e){}
-  /* 3) 이번 주 순위 */
-  try{ const wk=Math.floor(G.day/7); const order=standingsNow(); const rk=order.findIndex(x=>x.tid===me)+1; const gp=(G.sea.rec[me].w+G.sea.rec[me].l);
+  /* 1-2) 포스트시즌 시리즈 결과: 올라갔는지·탈락했는지·업셋인지(정규시즌 연승·연패 글은 정규시즌 중에만) */
+  try{ const P=G.ps; if(P&&P.res&&P.resD){ for(const [rd,r] of Object.entries(P.res)){ const d=P.resD[rd]; if(d==null||d<G.cal.open||(r[0]!==me&&r[1]!==me))continue;
+      const won=r[0]===me, op=won?r[1]:r[0], R=ROUNDK[rd]||rd; const si=t=>{ const i=(P.seeds||[]).indexOf(t); return i<0?9:i; }; const upset=won&&si(me)>si(op); const champ=won&&rd==='ks';
+      const bank=champ?'psChamp':!won?'psOut':upset?'psUpset':'psAdv';
+      add({id:'ps'+G.year+rd,d,cat:'경기',title:champ?`한국시리즈 우승!!! ${r[2]}승 ${r[3]}패`:!won?`${R} ${r[3]}승 ${r[2]}패 탈락... 올 시즌 총평`:upset?`${R} 업셋! ${tshort(op)} 잡았다 (${r[2]}승 ${r[3]}패)`:`${R} 통과! (${r[2]}승 ${r[3]}패)`,
+        body:`${R}: ${tname(r[0])} ${r[2]}승 ${r[3]}패로 승리.`,tid:me,hot:true,cm:fComments('psc'+G.year+rd,bank,won?'pos':'mix',{R,O:team(op).nick},7,me,fa)}); } } }catch(e){ console.error(e); }
+  /* 2) 연승·연패: 정규시즌 중에만(시즌이 끝나면 정규시즌 마지막 흐름 이야기를 계속 올리지 않는다) */
+  if(period()==='season')try{ const st=streakOf(me)||''; const m=st.match(/(\d+)\s*(연승|연패)/); if(m&&+m[1]>=3){ const w=m[2]==='연승'; const k=`s${G.day}`; add({id:'st'+G.day,d:G.day,cat:'잡담',title:w?`${m[1]}연승 실화냐`:`${m[1]}연패... 다들 괜찮으세요`,body:'',tid:me,cm:fComments('stc'+G.day,w?'wstreak':'lstreak',w?'pos':'neg',{n:m[1]},6,me,fa),hot:true}); } }catch(e){}
+  /* 3) 이번 주 순위(정규시즌 중에만) */
+  if(period()==='season')try{ const wk=Math.floor(G.day/7); const order=standingsNow(); const rk=order.findIndex(x=>x.tid===me)+1; const gp=(G.sea.rec[me].w+G.sea.rec[me].l);
     if(gp>=10){ const T2=gmTrend(); const weak=T2&&T2.weak?SLOTS_S[T2.weak.k]:'';
       const bank=rk<=3?'rankTop':rk<=6?'rankMid':'rankLow'; add({id:'rk'+wk,d:wk*7,cat:'잡담',title:rk<=3?`${rk}위... 올해 진짜 다르다`:rk<=6?`현재 ${rk}위, 5강 가능하냐`:`${rk}위 실화냐`,body:'',tid:me,cm:fComments('rkc'+wk,bank,rk<=3?'pos':rk<=6?'mix':'neg',{n:rk,pos:weak},6,me,fa)}); } }catch(e){}
   /* 4) 요즘 잘하는·못하는 우리 선수 */

@@ -9,18 +9,25 @@ const FD_TOOLS={B:[['pow','파워',1],['con','컨택',0],['eye','선구',0],['sp
 function fdScoutSd(){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0); return [11,10,9,8,7,6][clamp(sk,0,5)]; }
 /* 스카우트 평가: 눈으로 본 툴(실전 감각은 못 봄) + 스카우트 버릇(툴마다 일정하게 후하거나 짠 정도) + 오차 → 등급(S·A·B·C·D·E·F) */
 const FD_G=v=>v>=75?'S':v>=65?'A':v>=55?'B':v>=50?'C':v>=45?'D':v>=35?'E':'F'; /* 게임 공통 등급(GRD)과 같은 기준 */
+/* 스카우트 버릇(등급 단위, 1등급 ≈ 9~10): 눈에 보이는 툴은 작고(±3) 오차 큼 툴은 크다(±7) */
+function fdScoutBias(k,vis,sid){ return vis?clamp(hn('fsb'+k+sid,'x')*1.5,-3,3):clamp(hn('fsb'+k+sid,'x')*4.5,-7,7); }
+/* 우리 스카우트 성향: 지난 리포트와 실제 결과를 맞춰 본 기록이라 지명 전에 안다(실제 구단도 스카우트의 버릇을 알고 보정한다) */
+function fdScoutProfile(){ const sc=[...(G.scouts||[])].sort((a,b)=>(b.skill||0)-(a.skill||0))[0]; if(!sc)return null; const sid=sc.id; const base=fdScoutSd();
+  const one=isP=>FD_TOOLS[isP?'P':'B'].map(([k,l,vis])=>{ const b=fdScoutBias(k,vis,sid); const a=Math.abs(b); return {k,l,vis:!!vis,b,txt:a<1.5?'정확':(a<4?'약간 ':'')+(b>0?'후하게 봄':'짜게 봄')}; });
+  return {name:sc.name,skill:sc.skill||0,hid:base>=10?'큼':base>=8?'보통':'작은 편',B:one(false),P:one(true)}; }
+function fdScoutProfileTxt(isP){ const S=fdScoutProfile(); if(!S)return ''; const L=S[isP?'P':'B']; const lean=L.filter(t=>t.txt!=='정확').map(t=>`${t.l} ${t.txt}`); const ok=L.filter(t=>t.txt==='정확').map(t=>t.l);
+  return `${S.name} 스카우트 기록: ${lean.length?lean.join(' · '):'눈에 띄는 버릇 없음'}${ok.length?` · ${ok.join('·')} 정확`:''}. 컨택·선구·제구 판단 오차 ${S.hid}`; }
 function fdScoutTools(p){ const F=G.fd; const sc=[...(G.scouts||[])].sort((a,b)=>(b.skill||0)-(a.skill||0))[0]; const sid=sc?sc.id:'none'; const key=(F&&F.y)+':'+sid+':'+(sc?sc.skill:0);
-  const base=fdScoutSd(); const R=fdToolRef(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l])=>{ const bias=clamp(hn('fsb'+k+sid,'x')*3.5,-5,5); /* 스카우트 버릇: 툴마다 최대 ±5 */ const raw=clamp(p.r[k]-(p.fsx||0)+bias+hn('fst'+k+key,p.id)*base,20,80);
-    /* 등급은 툴마다 '1군 주전 평균이 C'가 되게 맞춘다(툴마다 분포가 달라서 그대로 쓰면 컨택은 모두 낮게 나온다) */ const r=R[(p.isP?'P':'B')+k]; const v=r?clamp(52.5+(raw-r.m)/r.sd*9,20,80):raw; return {k,l,v,raw,g:FD_G(v)}; });
+  const base=fdScoutSd(); const R=fdToolRef(); const L=(FD_TOOLS[p.isP?'P':'B']).map(([k,l,vis])=>{
+    /* 등급 단위(1군 주전 평균이 52.5, 주전 편차 1개가 9)로 계산한다. 눈에 보이는 툴(구위·체력·파워·주력·수비)은 스피드건·눈으로 거의 정확히 보이고,
+       컨택·선구·제구는 실전 감각(fsx, 숨은 값)이 섞여 눈으로 판단하기 어려워 오차가 크다(화면의 '오차 큼'). 이전에는 모든 툴의 오차가 같아 표시와 실제가 달랐다 */
+    const r=R[(p.isP?'P':'B')+k]; const sd0=r?r.sd:9, m0=r?r.m:52.5; const z=(p.r[k]-m0)/sd0*9;
+    const bias=fdScoutBias(k,vis,sid); /* 스카우트 버릇: 툴마다 일정하게 후하거나 짜게 */
+    const sx=vis?0:(p.fsx||0)/sd0*9; const v=clamp(52.5+z-sx+bias+hn('fst'+k+key,p.id)*base*(vis?.3:.95),20,80); const raw=m0+(v-52.5)/9*sd0; return {k,l,v,raw,g:FD_G(v)}; });
   const b=bodyOf(p); const velo=p.isP?Math.round(veloOf(p)+hn('fsv'+key,p.id)*.8):null;
   return {L,velo,ht:b.ht,wt:b.wt,sd:base}; }
 const FD_GL={S:6,A:5,B:4,C:3,D:2,E:1,F:0};
 /* 실제 툴 등급: 스카우트 등급과 같은 기준(1군 주전 평균이 C)으로 매긴다. 지명 뒤 '추정 A → 실제 C'처럼 기준이 달라 비교가 틀어지던 문제 */
-/* 스카우트 버릇 확인: 지금까지 우리가 지명해 실제 능력이 드러난 선수로 툴별 '추정 등급 − 실제 등급' 평균을 낸다(3명 이상, 반 등급 이상 차이만) */
-function fdScoutHabit(){ const F=G.fd; if(!F)return []; const D={}; for(const pk of F.picks){ if(pk.tid!==G.user||!pk.pid)continue; const p=G.players[pk.pid]; if(!p||p.team!==G.user)continue; const S=fdScoutTools(p);
-    for(const t of S.L){ const d=D[t.k]||(D[t.k]={l:t.l,s:0,n:0}); d.s+=FD_GL[t.g]-FD_GL[fdToolTrue(p,t.k).g]; d.n++; } }
-  return Object.entries(D).map(([k,d])=>({k,l:d.l,n:d.n,m:d.s/d.n})).filter(x=>x.n>=3&&Math.abs(x.m)>=.5).sort((a,b)=>Math.abs(b.m)-Math.abs(a.m)); }
-function fdScoutHabitTxt(){ const H=fdScoutHabit(); if(!H.length)return ''; return H.map(x=>`${x.l} ${x.m>0?'후하게':'짜게'} 봄(평균 ${x.m>0?'+':''}${x.m.toFixed(1)}등급, ${x.n}명)`).join(' · '); }
 function fdToolTrue(p,k){ const R=fdToolRef(); const r=R[(p.isP?'P':'B')+k]; const raw=p.r[k]||0; const v=r?clamp(52.5+(raw-r.m)/r.sd*9,20,80):raw; return {v,g:FD_G(v)}; }
 let _ftr=null; /* 저장하지 않는 계산 캐시 */
 /* 툴 기준: 1군 주전급(지난해 1군 기록이 충분한 선수)의 툴 평균·편차 */
@@ -30,7 +37,7 @@ function fdToolRef(){ const F=G.fd; const k0=F?F.y:G.year; if(_ftr&&_ftr.k===k0)
   _ftr={k:k0,m}; return m; }
 /* 툴 한 줄 의견: 좋은 툴·약한 툴만 말하고 종합 평가는 하지 않는다 */
 function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>FD_GL[t.g]>=5).map(t=>t.l), bad=S.L.filter(t=>FD_GL[t.g]<=2).map(t=>t.l);
-  const pre=p.isP?`${S.velo}km${S.velo>=150?'(강속구)':S.velo<=140?'(기교파)':''}`:'';
+  const pre=p.isP?`${S.velo}km${S.velo>=150?'(강속구)':S.velo<=142?'(기교파)':''}`:'';
   return [pre,good.length?`${good.join('·')} 좋음`:'',bad.length?`${bad.join('·')} 약함`:''].filter(Boolean).join(' · ')||'눈에 띄는 툴 없음'; }
 /* 데이터팀: 최근 3년(없으면 지난해, 1군 우선) 기록 백분위 */
 function fdDataAll(){ const F=G.fd; if(!F)return {}; const k=F.y+':'+F.pool.length; if(F._dv&&F._dv.k===k)return F._dv.m; const y=F.y-1; const m={};

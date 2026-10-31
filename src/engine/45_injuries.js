@@ -60,12 +60,12 @@ function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team===G.user?({a:.6,b
   const hit=(s,a,permF)=>{ if(p.r[s]==null||a<=0)return; const b=p.r[s]; p.r[s]=clamp(b-a,20,80); const real=b-p.r[s]; const pm=real*permF; fx.L[s]=(fx.L[s]||0)+real-pm; fx.P[s]=(fx.P[s]||0)+pm; };
   if(I.tj){ /* 토미존: 구속은 새 기준선이 되고, 제구·구위는 복귀 첫해에 실전을 던지며 되찾는다 */
     const young=p.age<=28, gain=R()<(young?.46:.3); const dv=gain?rnd(.4,2):-rnd(.4,2.8); /* km/h */
-    p.velo+=dv*.5; const ds=dv*.5*60/17; p.r.stf=clamp(p.r.stf+ds,20,80); fx.v=Math.round(dv*10)/10;
+    p.velo+=dv*.5; const ds=dv*.5/VELO_K; p.r.stf=clamp(p.r.stf+ds,20,80); fx.v=Math.round(dv*10)/10;
     hit('stf',rnd(1.5,3),0); hit("ctl",rnd(3,6),0); fx.need=360;
     const fail=.08+Math.max(0,p.age-30)*.03; if(R()<fail*hosp){ hit('stf',rnd(4,8),1); hit('ctl',rnd(1,3),1); fx.fail=true; }
   } else if(I.fx){ const long=days>=365; let pf=(I.perm||0)+(long?rnd(.15,.35):0); pf=clamp(pf*hosp,0,1);
     for(const s in I.fx){ if(p.isP!==(s==='stf'||s==='ctl'||s==='sta'))continue; hit(s,rnd(I.fx[s][0],I.fx[s][1]),pf); }
-    if(p.isP&&I.fx.stf&&(I.part==='어깨')&&pf>0){ fx.v=-Math.round(sum(Object.values(fx.P))*17/60*10)/10; } }
+    if(p.isP&&I.fx.stf&&(I.part==='어깨')&&pf>0){ fx.v=-Math.round(sum(Object.values(fx.P))*VELO_K*10)/10; } }
   roundR(p);
   for(const s in fx.P)if(fx.P[s]>0)p.pot=Math.max(ovr(p),p.pot-fx.P[s]*.5);
   const has=Object.values(fx.L).some(x=>x>.05);
