@@ -5,7 +5,7 @@ function authView(){ const evK=Object.keys(EV_NAME); const dl=evK.filter(k=>G.de
     <p class="small">모든 알림은 그대로 옵니다. 알림마다 있는 '비서에게 넘기기'를 누르면 그 업무를 비서·팀장이 맡고, 여기서 언제든 다시 가져올 수 있습니다. 넘기면 무난하게 처리하고, 직접 하면 더 좋은 결과를 낼 수 있습니다. 드래프트·트레이드 협상·FA·외국인 영입·단장 계약·협회 표결은 항상 단장이 합니다.</p>
     <div class="list">${AUTO_AREAS.map(row).join('')}</div></section>
     ${dl.length&&!autoOn('ev')?`<section class="card"><h2 class="sec">종류별로 넘긴 일상 결정</h2><div class="list">${dl.map(k=>`<div class="item authi"><b>${esc(EV_NAME[k])}</b><button class="btn small" data-a="evTake" data-v="${k}">가져오기</button></div>`).join('')}</div></section>`:''}
-    ${(G.autoLog||[]).length?`<section class="card"><h2 class="sec">비서가 처리한 일</h2><div class="list">${G.autoLog.slice(0,12).map(x=>`<div class="item"><span class="small"><b>${esc(x.t)}</b> · ${esc(x.c)}${x.r?` <span class="muted">${esc(String(x.r).slice(0,80))}</span>`:''}</span><span class="small muted">${dsh(x.d)}</span></div>`).join('')}</div></section>`:''}`; }
+    ${(G.autoLog||[]).length?`<section class="card"><h2 class="sec">비서가 처리한 일</h2><div class="list">${G.autoLog.slice(0,12).map(x=>`<div class="item"><span class="small"><b>${esc(x.t)}</b> · ${esc(x.c)} <span class="pill">${x.why==='exp'?'응답 기한이 지나 기본안 적용':'위임 설정에 따라 처리'}</span>${x.r?` <span class="muted">${esc(String(x.r).slice(0,80))}</span>`:''}</span><span class="small muted">${dsh(x.d)}</span></div>`).join('')}</div></section>`:''}`; }
 /* 메일 아래 버튼: 이 알림이 속한 업무를 비서에게 넘긴다(아직 직접 하는 업무만) */
 function handOffBtns(m){ if(G.unemp)return ''; let h='';
   if(m.kind==='결정'){ const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(e)h+=`<button class="btn small" data-a="evHand" data-v="${e.id}">비서에게 넘기기(이번 건)</button>`; }

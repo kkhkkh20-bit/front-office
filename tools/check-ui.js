@@ -230,6 +230,10 @@ const QUICK=process.env.QUICK==='1';
       const p=domestic(G.user).find(q=>!q.isP); const keep=p.hist; p.hist=keep.concat([Object.assign({y:G.year-3,t:p.team,lvl:'1군',pre:1},ZB,{pa:50,ab:45,h:12,g:14})]); const tb=statTable(p); p.hist=keep; const one=new RegExp('<td>'+(G.year-3)+'</td><td>1</td>').test(tb);
       return {dec,stale,one}; });
     if(r){ if(!r.dec)add('결정할 일','읽은 트레이드 제안이 결정할 일에서 빠짐'); if(r.stale)add('지난 기한','9일 전 소식에 아직 기한 내일 표시'); if(r.one)add('기록표','지난 시즌 기록 구단 칸에 숫자 1'); } }
+  /* 표시 의미(외부 리뷰): 훈련 방향의 코치진 권장 표시는 '코치안'으로 분명히, 비서 처리 내역에는 처리 경로, 관계도 숫자에는 무슨 수치인지 */
+  { where='표시 의미'; const r=await ev(()=>{ closeSheets(); const html=trnListBody(); const rec=/trn-rec">코치안/.test(html); (G.autoLog=G.autoLog||[]).unshift({d:G.day,t:'점검 결정',c:'기본안',r:'',k:'x',why:'exp'}); UI.tab='cfg'; UI.sub=Object.assign({},UI.sub||{},{cfg:'auth'}); render(); const why=/응답 기한이 지나 기본안/.test((document.querySelector('#app')||{}).textContent||''); G.autoLog.shift();
+      UI.it=Object.assign({},UI.it||{},{relv:'map'}); const svg=relView(); const rl=/>신뢰 \d+</.test(svg); UI.tab='home'; render(); return {rec,why,rl}; });
+    if(r){ if(!r.rec)add('훈련 방향','코치진 권장 표시가 점(·)뿐이라 선택처럼 보임'); if(!r.why)add('비서 처리','처리 경로(기한 만료 기본안 등)가 없음'); if(!r.rl)add('관계도','관계도 숫자에 신뢰·관계·기분 같은 이름이 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

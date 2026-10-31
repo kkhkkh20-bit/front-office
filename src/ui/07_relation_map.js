@@ -14,7 +14,8 @@ function relPeople(){
     field.push({k:'c:'+r,name:c.name,role:CROLE[r].l,av:{persona:'coach',pid:c.id,team:G.user,age:c.age,name:c.name},rel:null,lab:clan?'감독 사단':'구단 코치',sub:`지도 ${dv(effC(c,G.user,'sk'))} · 육성 ${dv(effC(c,G.user,'dv'))}`}); }
   const mine=playersOf(G.user).filter(p=>!p.ys);
   const core=[...mine].sort((a,b)=>ovr(b)-ovr(a)).slice(0,6); const sad=mine.filter(p=>(p.mor??60)<40&&!core.includes(p)).sort((a,b)=>(a.mor??60)-(b.mor??60)).slice(0,4);
-  const pl=[...core,...sad].map(p=>({k:'p:'+p.id,name:p.name,role:`${posLabel(p)} · ${p.age}세${p.promise&&p.promise.until>=G.day?' · 약속 중':''}`,av:p,rel:Math.round(p.mor??60),rl:'기분',lab:moodLabel(p.mor??60),sub:core.includes(p)?'핵심 전력':'불만 선수'}));
+  const capP=G.players[team(G.user).cap]; const capL=capP&&capP.team===G.user&&!core.includes(capP)&&!sad.includes(capP)?[capP]:[];
+  const pl=[...capL,...core,...sad].map(p=>({k:'p:'+p.id,name:p.name,role:`${posLabel(p)} · ${p.age}세${p.promise&&p.promise.until>=G.day?' · 약속 중':''}`,av:p,rel:Math.round(p.mor??60),rl:'기분',lab:moodLabel(p.mor??60),sub:(team(G.user).cap===p.id?'주장 · ':'')+(core.includes(p)?'핵심 전력':capL.includes(p)?'선수단 영향력':'불만 선수')}));
   const gms=G.teams.filter(x=>x.id!==G.user).map(x=>{ const g=gmOf(x.id); const ni=negInfo(x.id);
     return {k:'gm:'+x.id,name:g?g.name:'단장대행',role:`${x.city} ${x.nick} 단장`,av:g?{persona:'gm',pid:g.id,team:x.id,age:g.age,female:g.f,expr:relEx(x.rel),name:g.name}:{name:'?'},rel:x.rel,rl:'친분',lab:relLabel(x.rel),sub:`${g?GMT[g.trait].l:''}${g&&g.ob&&obOf(g.ob)&&obOf(g.ob).mine?' · 우리 구단 출신':''} · ${ni.free?'맞대결 중':`협상 ${ni.left}/${ni.cap}`}`,tid:x.id}; }).sort((a,b)=>b.rel-a.rel);
   const fan=Math.round(G.pr.fan), pr=Math.round(G.pr.press);
@@ -42,7 +43,7 @@ function relMap(groups){ const by={}; for(const [,L] of groups)for(const x of L)
     return `<g class="rm-n" data-a="${a}" data-v="${v}"><circle cx="${n.px.toFixed(1)}" cy="${n.py.toFixed(1)}" r="${n.s+2.5}" fill="#0f141a" stroke="${relCol(n.x.rel)}" stroke-width="2.5"/>
       ${src?`<image href="${src}" x="${(n.px-n.s).toFixed(1)}" y="${(n.py-n.s).toFixed(1)}" width="${n.s*2}" height="${n.s*2}" clip-path="url(#rmc${i})"/>`:''}
       <clipPath id="rmc${i}"><circle cx="${n.px.toFixed(1)}" cy="${n.py.toFixed(1)}" r="${n.s}"/></clipPath>
-      <text x="${(n.gm?n.px+n.s+6:n.px).toFixed(1)}" y="${(n.gm?n.py+4:n.py+n.s+14).toFixed(1)}" text-anchor="${n.gm?'start':'middle'}" class="rm-l">${esc(lab)}${n.x.rel!=null?` <tspan fill="${relCol(n.x.rel)}">${n.x.rel}</tspan>`:''}</text></g>`; };
+      <text x="${(n.gm?n.px+n.s+6:n.px).toFixed(1)}" y="${(n.gm?n.py+4:n.py+n.s+14).toFixed(1)}" text-anchor="${n.gm?'start':'middle'}" class="rm-l">${esc(lab)}${n.x.rel!=null?` <tspan fill="${relCol(n.x.rel)}">${n.x.rl?esc(n.x.rl)+' ':''}${n.x.rel}</tspan>`:''}</text></g>`; };
   const t=team(G.user);
   return `<svg class="relmap" style="max-width:520px" viewBox="-28 0 456 432" role="img" aria-label="관계 지도">
     <ellipse cx="${cx}" cy="${cy}" rx="96" ry="105" fill="none" stroke="#2a333e" stroke-dasharray="2 4"/>
