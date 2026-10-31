@@ -466,6 +466,8 @@ T('외국인 예상 능력순: 기록·MLB 경력·스카우트를 합친 예상
   const sh=a=>a.filter(x=>['트리플A','MLB'].includes(x.p.prevLvl)).length/a.length; ok(sh(A)>=sh(L),'추천 상위의 트리플A·MLB 비중 '+Math.round(sh(A)*100)+'%가 후보 전체 '+Math.round(sh(L)*100)+'%보다 낮음');
   L.forEach(x=>delete G.players[x.p.id]); });
 
+T('[시즌 운] 그날 컨디션·사기 같은 일시적 기세는 삼진·홈런보다 인플레이 타구 결과에 더 실린다(삼진·홈런은 실력이 빨리 드러남)',()=>{ fresh(); const p={r:{con:60,eye:55,pow:65,spd:50,stf:60,ctl:55},trt:{}}; const a=batProbs(p,0),b=batProbs(p,2),c=pitProbs(p,0),d=pitProbs(p,2); const dB=b.babip-a.babip;
+  ok(a.k-b.k<dB,'타자 삼진 변화 '+(a.k-b.k).toFixed(4)+' < BABIP 변화 '+dB.toFixed(4)); ok(b.hr-a.hr<dB*.6,'타자 홈런 변화 '+(b.hr-a.hr).toFixed(4)+' < BABIP 변화의 60%'); ok(d.k-c.k<.004,'투수 삼진 변화 '+(d.k-c.k).toFixed(4)+' < .004'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

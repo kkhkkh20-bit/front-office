@@ -60,7 +60,7 @@ const TALENT_W=1;
    600타석 기준 실제 기대치: 타자 출루율 75%·장타율 80%·홈런 89%·타율 58%·BABIP 54%, 투수 삼진 96%·볼넷 90%·피홈런 54%·피출루 74%.
    예전(폭 1배)에는 타자 OPS 69%·투수 피홈런 26%처럼 능력이 덜 드러났다. 폭을 넓히되 중심은 실제 타석 평균 확률(QCB·QCP)에 두고,
    타자·투수 결합(log5)이 극단 대결에서 안타를 늘리는 만큼 QOF로 되돌려 리그 평균(타율·장타율·평균자책점)은 그대로 둔다 */
-const TWB={k:1.7,bb:1.3,hr:1.25,babip:2.0}, TWP={k:1.5,bb:1.5,hr:2.3,babip:1.4};
+const TWB={k:2.0,bb:1.3,hr:1.25,babip:2.0}, TWP={k:1.5,bb:1.5,hr:2.3,babip:1.4};
 const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.006,hr:-.0006};
 function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
 function outcome(b,p,dv,fp){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */

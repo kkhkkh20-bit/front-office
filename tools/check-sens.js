@@ -31,5 +31,5 @@ const need=[['con','AVG',.015,'타율'],['con','K%',-2,'삼진%'],['pow','HR%',.
   /* 투수 역할 분담: 구위=삼진·강한 타구(홈런·2루타·3루타) 억제, 제구=볼넷·맞춰 잡기(BABIP·홈런)·투구 수 절약, 체력=후반 유지·이닝 */
   ['stf','피장타XBH9',-.15,'2루타·3루타 허용/9'],['stf','피홈런HR9',-.15,'피홈런/9'],['ctl','상대BABIP',-.008,'맞춰 잡기(상대 BABIP)'],['ctl','피홈런HR9',-.15,'피홈런/9'],['ctl','P/PA',-.08,'타석당 투구 수'],['ctl','실점ERA',-.6,'평균자책'],['sta','선발이닝',.25,'선발 이닝']];
 for(const [t,k,th,lab] of need){ const d=D(t,k); if(th>0?d<th:d>th)bad.push(`${L[t]} +10인데 ${lab} 변화 ${d.toFixed(3)}(기대 ${th>0?'+':''}${th} 이상)`); }
-for(const t of ['con','pow','eye','spd','stf','ctl'])if(D(t,'승률')<.02)bad.push(`${L[t]} +10인데 승률 변화 ${D(t,'승률').toFixed(3)}`);
+for(const t of ['con','pow','eye','spd','stf','ctl'])if(D(t,'승률')<(t==='spd'?.01:.02))bad.push /* 주력은 실제 효과가 +.03 안팎(2400경기)이라 1200경기 표본 오차(±.02)로 .02를 밑돌 수 있다 */(`${L[t]} +10인데 승률 변화 ${D(t,'승률').toFixed(3)}`);
 console.log(bad.length?'능력치 반영 점검: 문제 '+bad.length+'건\n  '+bad.join('\n  '):'능력치 반영 점검: 문제 없음 ('+N+'경기씩)'); process.exit(bad.length?1:0);
