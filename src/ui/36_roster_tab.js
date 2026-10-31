@@ -94,16 +94,17 @@ function rosterView(){
 }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }
 function statBasis(){ return statY()===G.year&&period()!=='off'?`${G.year} 1군 성적 (F 표시는 2군 기록)`:`${statY()} 성적 기준`; }
-const RCOL_B=[['g','경기'],['pa','타석'],['avg','타율'],['obp','출루율'],['slg','장타율'],['ops','OPS'],['hr','홈런'],['rbi','타점'],['sb','도루'],['bb','볼넷'],['so','삼진'],['bbk','볼삼비'],['war','WAR']];
+const RCOL_B=[['g','경기'],['pa','타석'],['avg','타율'],['obp','출루율'],['slg','장타율'],['ops','OPS'],['wrc','wRC+'],['hr','홈런'],['rbi','타점'],['sb','도루'],['bb','볼넷'],['so','삼진'],['bbk','볼삼비'],['war','WAR']];
 const RCOL_P=[['g','경기'],['gs','선발'],['ip','이닝'],['era','ERA'],['whip','WHIP'],['w','승'],['l','패'],['sv','세'],['hld','홀'],['so','탈삼진'],['bb','볼넷'],['k9','K/9'],['bb9','BB/9'],['war','WAR']];
 function rline(p){ const y=statY(); return seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); }
 function rstat(p,k){ const h=rline(p); if(!h)return null;
   if(k==='war')return wOf(h,p);
   if(p.isP){ const r=pRate(h); return {g:h.g||0,gs:h.gs||0,ip:h.outs,era:h.outs?r.era:null,whip:h.outs?r.whip:null,w:h.w||0,l:h.l||0,sv:h.sv||0,hld:h.hld||0,so:h.so,bb:h.bb,k9:h.outs?r.k9:null,bb9:h.outs?r.bb9:null,h:h.h||0,hra:h.hr||0,fip:h.outs?(13*(h.hr||0)+3*h.bb-2*h.so)/(h.outs/3)+3.2:null}[k]; }
-  const r=bRate(h); return {g:h.g||0,pa:h.pa,avg:h.pa?r.avg:null,obp:h.pa?r.obp:null,slg:h.pa?r.slg:null,ops:h.pa?r.ops:null,hr:h.hr,rbi:h.rbi,sb:h.sb,bb:h.bb,so:h.so,bbk:h.so?h.bb/h.so:(h.bb?9:null),h:h.h||0,d:h.d||0,r:h.r||0,cs:h.cs||0}[k]; }
+  if(k==='wrc')return h.pa?wrcPlus(h,h.y):null; const r=bRate(h); return {g:h.g||0,pa:h.pa,avg:h.pa?r.avg:null,obp:h.pa?r.obp:null,slg:h.pa?r.slg:null,ops:h.pa?r.ops:null,hr:h.hr,rbi:h.rbi,sb:h.sb,bb:h.bb,so:h.so,bbk:h.so?h.bb/h.so:(h.bb?9:null),h:h.h||0,d:h.d||0,r:h.r||0,cs:h.cs||0}[k]; }
 function rfmt(k,v,p){ if(v==null)return '-';
   if(['avg','obp','slg','ops'].includes(k)){ const s=fmt3(v); if(k==='ops'){ const c=v>=.9?'var(--good)':v>=.78?'var(--r50)':v<.62?'var(--bad)':'inherit'; return `<b style="color:${c}">${s}</b>`; } return s; }
   if(k==='era'){ const c=v<=3.3?'var(--good)':v<=4.2?'var(--r50)':v>=5.8?'var(--bad)':'inherit'; return `<b style="color:${c}">${v.toFixed(2)}</b>`; }
+  if(k==='wrc'){ const c=v>=140?'var(--good)':v>=115?'var(--r50)':v<75?'var(--bad)':'inherit'; return `<b style="color:${c}">${v}</b>`; }
   if(k==='bbk')return `<span style="color:${v>=.8?'var(--good)':v<=.3?'var(--bad)':'inherit'}">${v.toFixed(2)}</span>`; if(k==='k9'||k==='bb9')return v.toFixed(1);
   if(k==='whip'||k==='fip')return v.toFixed(2); if(k==='ip')return ipStr(v); if(k==='war')return `<b style="color:${v>=3?'var(--good)':v<0?'var(--bad)':'inherit'}">${v.toFixed(1)}</b>`; return v; }
 /* ===== 선수 표 열 설정: 사용자가 보이는 열과 순서를 고른다(브라우저에 저장) ===== */

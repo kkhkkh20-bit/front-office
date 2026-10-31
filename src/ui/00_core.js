@@ -10,7 +10,15 @@ const slotKey=n=>`${SAVE}-s${n}`;
 function packG(){ for(const p of Object.values(G.players)){ if(p.team==null){ delete p.l10; delete p.use; } } return LZString.compressToUTF16(JSON.stringify(G)); }
 function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&g.ver===4?g:null; }catch(e){ return null; } }
 let SAVE_ERR='';
-function save(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(!G)return; const m=meta(); const n=m.active||1;
+/* 저장은 몰아서 한다: 저장 한 번에 압축(LZ)이 수백 ms 걸리고 시즌이 쌓일수록 길어져, 하루 진행·버튼마다 바로 저장하면 게임이 굼떠졌다.
+   save()는 0.7초 안에 들어온 요청을 한 번으로 묶고, 슬롯 바꾸기·내보내기·처음 화면 같은 곳은 saveNow()로 바로 저장한다.
+   탭을 닫거나 숨기면(pagehide·visibilitychange) 남은 저장을 바로 끝낸다 */
+let _svT=null;
+function save(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStore(); },700); }
+function saveNow(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(_svT){ clearTimeout(_svT); _svT=null; } saveStore(); }
+function saveFlush(){ if(_svT){ clearTimeout(_svT); _svT=null; saveStore(); } }
+try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')saveFlush(); }); window.addEventListener('beforeunload',saveFlush); }catch(e){}
+function saveStore(){ if(!G)return; const m=meta(); const n=m.active||1;
   try{ localStorage.setItem(slotKey(n),packG()); m.slots[n]={tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; setMeta(m); SAVE_ERR=''; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; } }
 function load(){ const m=meta();
   try{ const old=localStorage.getItem(SAVE); if(old&&!Object.keys(m.slots).length){ const g=unpack(old); if(g){ localStorage.setItem(slotKey(1),LZString.compressToUTF16(old)); m.active=1; m.slots[1]={tid:g.user,name:'',date:'',y:g.year,at:Date.now()}; setMeta(m); localStorage.removeItem(SAVE); return g; } } }catch(e){}

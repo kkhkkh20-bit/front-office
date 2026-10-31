@@ -720,6 +720,13 @@ T('[병역] 상무 지원 기간에 스카우트팀장·감독이 선수별로 �
   for(const p of [last,star,dev]){ p.mil=null; } last.age=27; star.age=24; dev.age=23; dev.pot=Math.max(dev.pot,ovr(dev)+8);
   ok(milAdvice(last).k==='last','27세 미필이 마지막 기회로 안 나옴: '+milAdvice(last).k); ok(milAdvice(star).k==='hold','1군 주전이 보류로 안 나옴: '+milAdvice(star).k); ok(milAdvice(dev).k==='go','1군 자리 없는 23세 유망주가 지원 권장으로 안 나옴: '+milAdvice(dev).k);
   G.day=KD(9,1); const n0=G.mail.length; milDaily(); const m=G.mail.slice(0,G.mail.length-n0).find(x=>x.subj.includes('상무 지원 기간')); ok(m&&m.body.includes('추천')&&m.body.includes(dev.name)&&m.body.includes(last.name),'상무 지원 안내에 추천 명단이 없음'); });
+T('[인터뷰] 경기 뒤 감독 인터뷰는 경기 내용(선발 호투·영웅 타자·연승 등)을 담고, 같은 말을 되풀이하지 않는다',()=>{ fresh(); simTo(()=>G.games&&G.games.length>=3); const rec=G.games.find(g=>g.res==='승')||G.games[0]; const me=rec.home===G.user?'h':'a'; const m=G.mgr[G.user];
+  const sp=rec.box[me].pit[0]; sp.outs=24; sp.er=0; sp.so=9; const Q=[]; for(let i=0;i<20;i++)Q.push(mgrGameQuote(rec,m)); const uniq=new Set(Q).size;
+  ok(uniq>=12,'같은 경기 20번에 서로 다른 말 '+uniq+'개'); ok(Q.filter(q=>q.includes(sp.n)).length>=10,'8이닝 무실점 선발('+sp.n+')을 거의 언급하지 않음: '+Q[0]); });
+T('[기록] wRC+: 리그 평균 타자는 100 안팎, 잘 치면 100보다 높고 못 치면 낮다(가중출루율 기반, 리그 득점 환경 보정)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+40); const y=G.year;
+  const B=Object.values(G.players).filter(p=>!p.isP).map(p=>({p,h:seasonTotal(p,y,'1군')})).filter(x=>x.h&&x.h.pa>=80); ok(B.length>=40,'준비 실패: 타자 '+B.length);
+  const W=B.map(x=>({w:wrcPlus(x.h,y),pa:x.h.pa,ops:bRate(x.h).ops})); const avgW=W.reduce((a,x)=>a+x.w*x.pa,0)/W.reduce((a,x)=>a+x.pa,0);
+  ok(avgW>=90&&avgW<=110,'타석 가중 평균 wRC+ '+avgW.toFixed(1)); const hi=W.slice().sort((a,b)=>b.ops-a.ops)[0], lo=W.slice().sort((a,b)=>a.ops-b.ops)[0]; ok(hi.w>130&&lo.w<70,'OPS 최고 '+hi.ops.toFixed(3)+' wRC+ '+hi.w+' · 최저 '+lo.ops.toFixed(3)+' wRC+ '+lo.w); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ for(const t of results){ try{ t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }

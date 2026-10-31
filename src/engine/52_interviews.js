@@ -140,9 +140,32 @@ const MQ={data:{w:['"숫자대로 갔고, 숫자대로 나왔습니다."','"상�
   warm:{w:['"애들이 너무 고생했습니다. 오늘은 칭찬만 하고 싶습니다."','"서로 믿고 했더니 결과가 나왔습니다."'],l:['"선수들 탓하지 마십시오. 제가 더 잘했어야 합니다."','"오늘 힘들었을 텐데 끝까지 잘 버텨 줬습니다."']},
   old:{w:['"야구는 기본입니다. 기본을 지키니 이겼습니다."','"오래 하다 보면 이런 날도 옵니다. 들뜨지 않겠습니다."'],l:['"기본이 안 됐습니다. 수비, 주루부터 다시 하겠습니다."','"한두 경기로 시즌이 끝나지 않습니다."']},
   calm:{w:['"계획한 대로 됐습니다. 다음 경기 준비하겠습니다."','"선수들이 각자 할 일을 했습니다."'],l:['"이런 날도 있습니다. 차분하게 다시 하겠습니다."','"잘못된 부분은 정리하고 넘어가겠습니다."']}};
+/* 경기 뒤 감독 한마디: 말투(감독 성향)별 첫마디 + 그 경기에서 실제로 있었던 일(역전·연장·선발 호투·붕괴·영웅 타자·불펜·빈타·연승·연패) + 맺음말.
+   최근 한 말(14개)은 피한다. 예전에는 말투·승패마다 두 문장뿐이라 기사가 복붙처럼 보였다 */
+const MQ2={data:{w:['결과는 따라왔습니다.','예상한 흐름대로 갔습니다.','숫자가 말해 주는 경기였습니다.','준비한 대로 확률 싸움을 이겼습니다.'],l:['과정은 나쁘지 않았습니다.','확률 싸움에서 이번엔 졌습니다.','한 경기 표본으로 판단하지 않겠습니다.','타구 질은 나쁘지 않았는데 결과가 안 따라왔습니다.'],e:['데이터로 다시 보고 오겠습니다.','다음 상대 분석은 이미 끝났습니다.','매치업만 맞추면 됩니다.']},
+  fire:{w:['이게 우리 야구입니다!','선수들이 미쳤습니다!','오늘 같은 날이 계속돼야 합니다!','끝까지 물고 늘어졌습니다!'],l:['이런 경기는 용납 못 합니다.','변명하지 않겠습니다.','정신 차려야 합니다.','오늘은 할 말이 없습니다.'],e:['내일은 다를 겁니다.','팬들께 이런 야구 보여 드리겠습니다!','이 기세 그대로 갑니다!']},
+  warm:{w:['애들이 정말 고생했습니다.','오늘은 칭찬만 하고 싶습니다.','서로 믿고 했더니 결과가 나왔습니다.','다들 끝까지 집중해 줬습니다.'],l:['선수들 탓하지 마십시오.','끝까지 잘 버텨 줬습니다.','오늘은 제가 부족했습니다.','다들 힘들었을 텐데 고생했습니다.'],e:['오늘은 푹 쉬게 하겠습니다.','선수들 믿고 갑니다.','고개 숙일 필요 없습니다.']},
+  old:{w:['기본을 지키니 이겼습니다.','들뜨지 않겠습니다.','야구는 기본입니다.','오래 하다 보면 이런 날도 옵니다.'],l:['기본이 안 됐습니다.','한두 경기로 시즌 안 끝납니다.','수비, 주루부터 다시 하겠습니다.','기본기에서 졌습니다.'],e:['내일도 기본부터 하겠습니다.','시즌은 깁니다.','한 경기 한 경기 하겠습니다.']},
+  calm:{w:['계획한 대로 됐습니다.','각자 할 일을 했습니다.','차분하게 잘 풀어 갔습니다.','준비한 게 잘 맞았습니다.'],l:['이런 날도 있습니다.','잘못된 부분은 정리하겠습니다.','차분하게 다시 하겠습니다.','오늘 경기는 오늘로 끝내겠습니다.'],e:['다음 경기 준비하겠습니다.','흔들리지 않겠습니다.','하던 대로 하겠습니다.']}};
+function mgrGameQuote(rec,m){ const v=mgrVoice(m); const V=MQ2[v]||MQ2.calm; const me=rec.home===G.user?'h':'a', op=me==='h'?'a':'h'; const my=rec.box&&rec.box[me]; const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs; const w=ms>0, dr=ms===0;
+  const myR=rec.home===G.user?rec.hs:rec.as; const C=[]; /* [우선순위, 문장] */
+  try{ const L=rec.line||{}; const cum=k=>{ let s=0; return (L[k]||[]).slice(0,6).reduce((a,x)=>a+(+x||0),0); }; const d6=cum(me)-cum(op); if(w&&d6<0)C.push([9,'뒤지고 있어도 뒤집을 수 있다는 걸 보여 줬습니다.']); if(!w&&!dr&&d6>0)C.push([9,'앞서다가 내준 게 너무 아쉽습니다.']); }catch(e){}
+  if((rec.inn||9)>9)C.push([8,w?`연장 ${rec.inn}회까지 간 경기를 잡아서 더 값집니다.`:`연장까지 가서 진 게 아쉽습니다.`]);
+  const sp=my&&my.pit&&my.pit[0]; if(sp){ const ip=Math.floor(sp.outs/3)+(sp.outs%3?`.${sp.outs%3}`:''); if(sp.outs>=21||(sp.outs>=18&&sp.er<=1))C.push([10,w?`${sp.n} 선수가 ${ip}이닝을 ${sp.er?`${sp.er}실점으로`:'무실점으로'} 막아 준 게 결정적이었습니다.`:`${sp.n} 선수가 ${ip}이닝을 잘 던졌는데 승리를 못 챙겨 줘서 미안합니다.`]);
+    else if(sp.er>=5&&sp.outs<=15)C.push([7,w?`선발이 일찍 무너졌는데도 뒤에서 잘 막아 줬습니다.`:`선발이 초반에 무너지면서 어려운 경기가 됐습니다.`]); }
+  const hero=my&&my.bat?my.bat.slice().sort((a,c)=>(c.hr*3+c.h+c.rbi)-(a.hr*3+a.h+a.rbi))[0]:null; if(hero&&(hero.hr>=2||hero.rbi>=4||hero.h>=4))C.push([w?9:5,w?`${hero.n} 선수가 ${hero.hr?`${hero.hr}홈런 `:''}${hero.rbi}타점으로 경기를 가져왔습니다.`:`${hero.n} 선수 혼자 분전했는데 받쳐 주지 못했습니다.`]);
+  if(my&&my.pit&&my.pit.length>=3&&w&&Math.abs(ms)<=2&&my.pit.slice(1).every(x=>!x.er))C.push([6,'불펜이 끝까지 한 점도 안 줬습니다.']);
+  if(!w&&!dr&&myR<=1)C.push([6,'방망이가 전혀 터지지 않았습니다.']); if(w&&ms>=7)C.push([5,'타선이 골고루 터졌습니다.']); if(!w&&!dr&&ms<=-7)C.push([5,'완패입니다. 인정하겠습니다.']);
+  const st=(G.sea&&G.sea.streak)||0; const ns=w?(st>0?st+1:1):(!dr?(st<0?st-1:-1):0); if(ns>=3)C.push([7,`${ns}연승이지만 들뜨지 않겠습니다.`]); if(ns<=-3)C.push([7,`${-ns}연패, 빨리 끊어야 합니다.`]); if(w&&st<=-3)C.push([8,`${-st}연패를 끊어서 다행입니다.`]);
+  try{ const rk=uRank(); if(period()==='season'&&rk===1&&w)C.push([3,'1위 자리, 쉽게 내주지 않겠습니다.']); }catch(e){}
+  C.sort((a,b)=>b[0]-a[0]); const H=G.mqHist=G.mqHist||[]; let q='';
+  for(let t=0;t<8;t++){ const a=dr?pick(['끝까지 따라붙은 건 좋았습니다.','이길 수 있던 경기라 아쉽습니다.','비긴 것도 결과입니다.']):pick(V[w?'w':'l']);
+    const mid=C.length?(C.length>1&&R()<.35?[C[0][1],C[1][1]]:[(R()<.8?C[0]:C[Math.floor(R()*C.length)])[1]]):[]; const e=R()<.5?pick(V.e):'';
+    q='"'+[a,...mid,e].filter(Boolean).join(' ')+'"'; if(!H.includes(q))break; }
+  H.unshift(q); if(H.length>14)H.length=14; return q; }
 function ivNewsAfterGame(rec){ if(G.unemp||period()==='off')return; const m=G.mgr[G.user]; if(!m||m.interim)return; const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs;
   const big=Math.abs(ms)>=6, close=Math.abs(ms)<=1; if(!(big||(close&&R()<.25)||R()<.06))return; const v=mgrVoice(m); const w=ms>0, dr=ms===0;
-  const q=dr?pick(['"끝까지 따라붙은 건 좋았습니다. 다음에는 잡겠습니다."','"이길 수 있던 경기라 아쉽습니다."','"비긴 것도 결과입니다. 다음 경기 준비하겠습니다."']):pick(MQ[v][w?'w':'l']); const op=rec.home===G.user?rec.away:rec.home;
+  const q=mgrGameQuote(rec,m); void v; const op=rec.home===G.user?rec.away:rec.home;
   news('경기',`${m.name} 감독 "${q.replace(/^"|"$/g,'').slice(0,26)}${q.length>28?'…':''}"`,`${tshort(op)}전 ${w?'승리':dr?'무승부':'패배'}(${rec.home===G.user?rec.hs:rec.as}:${rec.home===G.user?rec.as:rec.hs}) 뒤 ${m.name} 감독: ${q}`,0);
   /* 오늘의 선수 인터뷰 */
   try{ if(w&&rec.box){ const me=rec.home===G.user?'h':'a'; const b=rec.box[me].bat.slice().sort((a,c)=>(c.hr*3+c.h+c.rbi)-(a.hr*3+a.h+a.rbi))[0]; const p=b&&G.players[b.id]; if(p&&(b.hr>=1||b.h>=3)&&R()<.5){ initPers(p);
@@ -151,7 +174,7 @@ function ivNewsAfterGame(rec){ if(G.unemp||period()==='off')return; const m=G.mg
 /* 매주: 불만 선수 인터뷰, 다른 구단 감독 발언 */
 function ivNewsWeekly(){ if(G.unemp)return; const sad=playersOf(G.user).filter(p=>(p.mor??60)<30&&ovr(p)>=50).sort((a,b)=>(a.mor??60)-(b.mor??60))[0];
   if(sad&&R()<.5){ initPers(sad); const t=sad.pers.amb>=12?'"뛸 수 있는 팀에서 뛰고 싶습니다."':'"요즘 마음이 편하지 않습니다. 구단과 얘기해 보겠습니다."'; news('선수',`${sad.name}, 공개 불만 "${t.replace(/^"|"$/g,'').slice(0,20)}…"`,`${sad.name}이(가) 인터뷰에서 ${t}라고 말했습니다. 구단 내부 분위기에 물음표가 붙습니다.`,-1,{ref:sad.id}); }
-  if(period()==='season'&&R()<.35){ const t=pick(G.teams.filter(x=>x.id!==G.user)); const m=mgrOf(t.id); if(m&&!m.interim){ const ty=mgrType(m); news('경기',`${tshort(t.id)} ${m.name} 감독 "${ty.k==='small'||ty.k==='combo_d'?'한 점씩 짜내는 우리 야구를 하겠다':ty.k==='big'||ty.k==='combo_o'?'시원하게 치는 야구로 간다':'우리 페이스를 지키겠다'}"`,`${tname(t.id)}의 ${m.name} 감독(${ty.n})이 취재진에게 남은 시즌 운영 방향을 밝혔습니다.`,0); } } }
+  if(period()==='season'&&R()<.35){ const t=pick(G.teams.filter(x=>x.id!==G.user)); const m=mgrOf(t.id); if(m&&!m.interim){ const ty=mgrType(m); news('경기',`${tshort(t.id)} ${m.name} 감독 "${pick(ty.k==='small'||ty.k==='combo_d'?['한 점씩 짜내는 우리 야구를 하겠다','번트 하나, 도루 하나가 순위를 바꾼다','작은 야구가 강한 야구다']:ty.k==='big'||ty.k==='combo_o'?['시원하게 치는 야구로 간다','점수는 방망이로 낸다','홈런 군단 소리 듣게 하겠다']:['우리 페이스를 지키겠다','순위표는 9월에 보겠다','부상만 없으면 충분히 올라간다','불펜 운용이 남은 시즌의 열쇠다'])}"`,`${tname(t.id)}의 ${m.name} 감독(${ty.n})이 취재진에게 남은 시즌 운영 방향을 밝혔습니다.`,0); } } }
 /* 정기 인터뷰 요청 일정 */
 function ivDaily(){ const o=dobj(G.day); if(G.unemp)return;
   if(G.iv&&!G.iv.done&&G.iv.exp<G.day){ ivSkip(); G.iv.lapse=true; } /* 기한 안에 응하지 않으면 거절과 같게 처리(단장 침묵 기사) */

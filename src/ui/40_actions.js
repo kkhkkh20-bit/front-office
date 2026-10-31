@@ -23,7 +23,7 @@ const A={
   dlSkip(){ const L=UI.dl; if(L){ L.on=false; clearTimeout(L.t); } if(G.fd&&!G.fd.done)fdAdvance(true); else if(G.draft&&!G.draft.done)advanceDraft(true); save(); render(); },
   smode(v){ UI.smode=v; UI.sstep='team'; render(); window.scrollTo(0,0); },
   tsGo(v){ UI.sstep=v; if(v==='main'){ UI.newSlot=null; UI.slotMsg=''; } render(); window.scrollTo(0,0); },
-  toTitle(){ save(); closeSheets(); UI.title=true; UI.sstep='main'; render(); window.scrollTo(0,0); },
+  toTitle(){ saveNow(); closeSheets(); UI.title=true; UI.sstep='main'; render(); window.scrollTo(0,0); },
   tsCont(){ if(G){ UI.title=false; render(); return; } const m=meta(); A.slotLoad(m.active); },
   fdPick(v){ const pk0=G.fd&&G.fd.picks[G.fd.cur]; const id=+v; const n0=G.fd?G.fd.cur+1:0; const g0=fdGrade(G.players[id]); const r=fdPick(id); UI.sheet=null; renderSheet(); if(!r&&pk0){ dlFeedAdd('fd',pk0,id); UI.rev=revMake(id,pk0,n0); if(UI.rev&&g0)UI.rev.g0=g0.g; } UI.fdMsg=r; save(); render(); },
   fdBegin(){ if(!G.fdWait)return; G.fdWait=false; G.mail.forEach(m=>{ if(m.from==='구단주실'&&(m.acts||[]).some(a=>a.a==='fdBegin')){ m.read=true; m.acts=[]; } }); fdStart(); UI.mail=null; UI.tab='home'; save(); render(); window.scrollTo(0,0); },
@@ -253,7 +253,7 @@ const A={
   castBox(){ const gi=UI.cast?UI.cast.g:null; A.castClose(); if(gi!=null)A.openGame(gi); },
   castPlayer(v){ const c=UI.cast; if(!c)return; c.play=false; CT.tok++; CT.run=false; UI.castRet=c; UI.cast=null; A.player(v); },
   watch(v){ UI.sheet=null; UI.posSheet=null; UI.game=+v; UI.gtab='pbp'; UI.pbp={g:+v,k:0}; renderSheet(); },
-  slotCopy(){ if(!G)return; save(); const m=meta(); const to=SLOT_IDS.find(n=>!m.slots[n]); if(!to){ UI.slotMsg=`빈 슬롯이 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.`; render(); return; } try{ localStorage.setItem(slotKey(to),localStorage.getItem(slotKey(m.active))); m.slots[to]=Object.assign({},m.slots[m.active],{at:Date.now()}); setMeta(m); UI.slotMsg=`슬롯 ${to}에 지금 상황(${dstr(G.day)})을 따로 저장했습니다. 계속 진행하는 곳은 슬롯 ${m.active}입니다.`; }catch(e){ UI.slotMsg='저장 공간이 부족해 따로 저장하지 못했습니다.'; } render(); },
+  slotCopy(){ if(!G)return; saveNow(); const m=meta(); const to=SLOT_IDS.find(n=>!m.slots[n]); if(!to){ UI.slotMsg=`빈 슬롯이 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.`; render(); return; } try{ localStorage.setItem(slotKey(to),localStorage.getItem(slotKey(m.active))); m.slots[to]=Object.assign({},m.slots[m.active],{at:Date.now()}); setMeta(m); UI.slotMsg=`슬롯 ${to}에 지금 상황(${dstr(G.day)})을 따로 저장했습니다. 계속 진행하는 곳은 슬롯 ${m.active}입니다.`; }catch(e){ UI.slotMsg='저장 공간이 부족해 따로 저장하지 못했습니다.'; } render(); },
   slotAll(){ UI.slotAll=!UI.slotAll; render(); },
   dview(v){ UI.dview=v; render(); },
   tpOpen(v,el){ const c=el&&el.closest('.tmk'); if(c){ c.classList.toggle('open'); el.textContent=c.classList.contains('open')?'접기':'자세히'; } },
@@ -354,13 +354,17 @@ const A={
   mkt(v,el){G.marketing=+el.value;save();render();},
   askNew(){UI.confirmNew=true;render();},
   cancelNew(){UI.confirmNew=false;render();},
-  newgame(){ save(); G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
-  slotLoad(v){ if(G)save(); const m=meta(); const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){UI.slotMsg='불러오지 못했습니다.';render();return;} m.active=+v; setMeta(m); G=g; try{migrateDraft();}catch(e){} UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
-  slotNew(v){ if(G)save(); UI.newSlot=+v; const m=meta(); m.active=+v; setMeta(m); G=null; UI.slotMsg=''; UI.title=true; UI.sstep='team'; render(); window.scrollTo(0,0); },
+  newgame(){ saveNow(); G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
+  slotLoad(v){ if(G)saveNow(); const m=meta(); const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){UI.slotMsg='불러오지 못했습니다.';render();return;} m.active=+v; setMeta(m); G=g; try{migrateDraft();}catch(e){} UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
+  slotNew(v){ if(G)saveNow(); UI.newSlot=+v; const m=meta(); m.active=+v; setMeta(m); G=null; UI.slotMsg=''; UI.title=true; UI.sstep='team'; render(); window.scrollTo(0,0); },
   slotDel(v){ const m=meta(); if(UI.delAsk!==+v){ UI.delAsk=+v; UI.slotMsg=`슬롯 ${v}을(를) 지우려면 삭제를 한 번 더 누르세요.`; render(); return; } try{localStorage.removeItem(slotKey(+v));}catch(e){} delete m.slots[+v]; setMeta(m); UI.delAsk=null; UI.slotMsg=`슬롯 ${v}을(를) 지웠습니다.`; render(); },
-  async expFile(){ if(G){ G.bkAt=G.day; try{ save(); }catch(e){} } const code=LZString.compressToBase64(JSON.stringify(G)); if(!DL){ try{ const blob=new Blob([code],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`danjang-${G.year}.txt`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); UI.impMsg='파일을 내려받았습니다. 내려받기가 막혀 있으면 "코드 만들기"를 쓰세요.'; }catch(err){ UI.impMsg='이 화면에서는 파일 저장을 쓸 수 없습니다. "코드 만들기"를 쓰세요.'; } render(); return; } if(false){ render(); return; }
+  async expFile(){ if(G){ G.bkAt=G.day; try{ saveNow(); }catch(e){} } const code=LZString.compressToBase64(JSON.stringify(G)); if(!DL){ try{ const blob=new Blob([code],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`danjang-${G.year}.txt`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); UI.impMsg='파일을 내려받았습니다. 내려받기가 막혀 있으면 "코드 만들기"를 쓰세요.'; }catch(err){ UI.impMsg='이 화면에서는 파일 저장을 쓸 수 없습니다. "코드 만들기"를 쓰세요.'; } render(); return; } if(false){ render(); return; }
     try{ await DL.save({filename:`danjang-${tshort(G.user)}-${G.year}.txt`,data:code}); UI.impMsg='파일을 저장했습니다.'; }catch(err){ UI.impMsg=err&&err.code==='declined'?'파일 저장을 취소했습니다.':err&&err.code==='rate_limited'?'잠시 뒤 다시 눌러 주세요.':'파일로 저장하지 못했습니다. "코드 만들기"를 쓰세요.'; } render(); },
-  expCode(){ if(G)G.bkAt=G.day; UI.expCode=LZString.compressToBase64(JSON.stringify(G)); save(); render(); },
+  expCode(){ if(G)G.bkAt=G.day; UI.expCode=LZString.compressToBase64(JSON.stringify(G)); saveNow(); render(); A.expCopy(true); }, /* 만들자마자 자동 복사도 시도 */
+  async expCopy(auto){ const t=UI.expCode||''; if(!t)return; let ok=false; try{ if(navigator.clipboard&&navigator.clipboard.writeText){ await navigator.clipboard.writeText(t); ok=true; } }catch(e){ ok=false; /* 권한이 막힌 곳(일부 iframe)은 아래 방식으로 */ }
+    if(!ok){ const el=document.getElementById('expCodeBox'); if(el){ el.focus(); el.select(); try{ ok=document.execCommand('copy'); }catch(e){ ok=false; } } }
+    toast(ok?'코드를 복사했습니다. 메모장이나 메신저에 붙여 넣어 보관하세요.':(auto?'코드를 만들었습니다. 코드 복사하기를 눌러 주세요.':'자동 복사가 막혀 있습니다. 코드 칸이 선택돼 있으니 Ctrl+C(휴대폰은 길게 눌러 복사)로 복사하세요.')); },
+  async impPaste(){ const el=document.getElementById('impCode'); let t=''; try{ if(navigator.clipboard&&navigator.clipboard.readText)t=await navigator.clipboard.readText(); }catch(e){ t=''; } if(t&&el){ el.value=t.trim(); toast('붙여 넣었습니다. 코드로 불러오기를 누르세요.'); } else { if(el)el.focus(); toast('브라우저가 붙여넣기를 막았습니다. 칸을 눌러 Ctrl+V(휴대폰은 길게 눌러 붙여넣기)로 넣어 주세요.'); } },
   bkLater(){ if(G){ G.bkAt=G.day-30; save(); } render(); },
   tnSave(){ const r=applyTeamNames(tnRead()); UI.tnMsg=r||'구단 이름을 바꿨습니다.'; if(!r){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); },
   tnReset(){ resetTeamNames(); UI.tnMsg='기본 이름으로 되돌렸습니다.'; let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); render(); },

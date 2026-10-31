@@ -52,9 +52,9 @@ function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+(
 function exportCard(){ return `<section class="card"><h2 class="sec">내보내기 · 불러오기</h2>
   <p class="small muted">진행 상황은 이 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니, 가끔 내보내 두세요. 다른 기기에서는 내보낸 코드를 붙여 넣어 이어 할 수 있습니다.</p>
   <div class="row"><button class="btn" data-a="expFile">파일로 내보내기</button><button class="btn" data-a="expCode">코드 만들기</button><label class="btn">파일 불러오기<input type="file" accept=".txt,.json" data-a="impFile" style="display:none"></label></div>
-  ${UI.expCode?`<textarea class="code" readonly>${UI.expCode}</textarea><p class="small muted">이 코드를 복사해 보관하세요. 길이 ${Math.round(UI.expCode.length/1024)}KB.</p>`:''}
+  ${UI.expCode?`<textarea class="code" id="expCodeBox" readonly>${UI.expCode}</textarea><div class="row"><button class="btn primary" data-a="expCopy">코드 복사하기</button><span class="small muted">길이 ${Math.round(UI.expCode.length/1024)}KB · 복사해서 메모장·메신저 '나에게 보내기' 등에 보관하세요.</span></div>`:''}
   <textarea class="code" id="impCode" placeholder="내보낸 코드를 여기에 붙여 넣으세요"></textarea>
-  <button class="btn primary" data-a="impCode">코드로 불러오기 (현재 슬롯에 덮어씀)</button>
+  <div class="row"><button class="btn" data-a="impPaste">붙여넣기</button><button class="btn primary" data-a="impCode">코드로 불러오기 (현재 슬롯에 덮어씀)</button></div>
   ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`; }
 function importText(t){ let g=null; try{ g=JSON.parse(t[0]==='{'?t:LZString.decompressFromBase64(t)); }catch(e){} if(!g||g.ver!==4){ UI.impMsg='코드를 읽지 못했습니다. 내보낸 코드 전체를 붙여 넣었는지 확인하세요.'; render(); return; } G=g; try{migrateDraft();}catch(e){} save(); UI.impMsg='불러왔습니다.'; UI.tab='home'; render(); }
 function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G;

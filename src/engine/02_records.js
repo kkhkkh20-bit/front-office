@@ -65,6 +65,16 @@ function warRaw(h,p){
   const bat=(ops/lg.ops-1)*h.pa*.16, rep=20*h.pa/600, adj=(POS_ADJ[pos]||0)*h.pa/600, def=pos==='DH'||!DWR[pos]?0:(defAt(p,pos)-DAVG[pos])*DWR[pos]*h.pa/600; /* 그 자리 수비가 실제로 막은 실점(유격이 1루의 약 3배) */
   return (bat+rep+adj+def)/10;
 }
+/* ===== wRC+ (조정 득점 창출력) =====
+   wOBA(가중출루율) = (0.69×볼넷 + 0.89×단타 + 1.27×2루타 + 1.62×3루타 + 2.10×홈런) / (타수 + 볼넷 + 희생플라이). 가중치는 FanGraphs 표준 근삿값.
+   wRC+ = 100 × ((wOBA - 리그 wOBA) / wOBA 스케일 + 리그 타석당 득점) / 리그 타석당 득점. 스케일 = 리그 wOBA / 리그 출루율.
+   구장 보정은 넣지 않았다. 100이 리그 평균, 150이면 평균보다 득점 기여가 50% 많다 */
+function wobaOf(h){ const ab=h.ab||0, bb=h.bb||0, sf=h.sf||0, den=ab+bb+sf; if(!den)return null; const s1=(h.h||0)-(h.d||0)-(h.tr||0)-(h.hr||0); return (.69*bb+.89*s1+1.27*(h.d||0)+1.62*(h.tr||0)+2.10*(h.hr||0))/den; }
+let _lgbC={k:'',m:{}};
+function lgBat(y){ const L0=G.lg&&G.lg[y]; if(L0&&L0.woba&&y<G.year)return L0; const k=G.year+':'+G.day+':'+(G.games?G.games.length:0); if(_lgbC.k!==k)_lgbC={k,m:{}}; if(_lgbC.m[y])return _lgbC.m[y];
+  let ab=0,bb=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!=='1군'||x.y2)continue; ab+=x.ab||0; bb+=x.bb||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; } }
+  const T={ab,bb,sf,h,d,tr,hr}; const pa=ab+bb+sf; const woba=wobaOf(T)||.32, obp=pa?(h+bb)/pa:.33; const o={woba,scale:Math.max(.8,woba/Math.max(.2,obp)),rpa:pa&&r?r/pa:.12}; _lgbC.m[y]=o; return o; }
+function wrcPlus(h,y){ if(!h||!h.pa)return null; const w=wobaOf(h); if(w==null)return null; const L=lgBat(y??h.y); return Math.round(100*((w-L.woba)/L.scale+L.rpa)/L.rpa); }
 function updateLg(y){
   const bl=[],pl=[];
   for(const p of Object.values(G.players)) for(const h of p.hist) if(h.y===y&&h.lvl==='1군'){ (p.isP?pl:bl).push(h); }
@@ -72,6 +82,6 @@ function updateLg(y){
   const ab=s(bl,'ab'),H=s(bl,'h'),bb=s(bl,'bb'),pa=ab+bb+s(bl,'sf'),tb=s(bl,'h')+s(bl,'d')+2*s(bl,'tr')+3*s(bl,'hr');
   const outs=s(pl,'outs'),er=s(pl,'er');
   if(!G.lg)G.lg={};
-  G.lg[y]={ops:pa&&ab?(H+bb)/pa+tb/ab:.72, era:outs?er*27/outs:4.5};
+  G.lg[y]={ops:pa&&ab?(H+bb)/pa+tb/ab:.72, era:outs?er*27/outs:4.5}; try{ _lgbC={k:'',m:{}}; const W=lgBat(y); Object.assign(G.lg[y],{woba:W.woba,scale:W.scale,rpa:W.rpa}); }catch(e){} /* wRC+ 기준(시즌이 끝나면 고정) */
 }
 
