@@ -1410,6 +1410,8 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 
 /* 창단 드래프트 비교 후보 */
 
+
+.tbk .tile .small{display:block;margin-top:2px;line-height:1.35}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -4029,7 +4031,7 @@ function fdAdvance(stopAtUser){ const F=G.fd; let g=0; while(F&&!F.done&&g++<400
 function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동 배분: 구단 국내 선수 52명까지 지그재그 */
   let r=0, guard=0; while(F.pool.length&&guard++<80){ const seq=r%2?[...F.order].reverse():F.order; let any=false; for(const tid of seq){ if(domestic(tid).length>=52)continue; const id=fdBest(tid,true); if(id==null)break; const p=G.players[id]; p.team=tid; p.fdPool=false; acqStamp(p,'fd',tid,{auto:true}); F.pool=F.pool.filter(x=>x!==id); any=true; } if(!any)break; r++; }
   for(const id of F.pool){ const p=G.players[id]; if(!p)continue; story(p,'창단 드래프트에서 지명받지 못해 은퇴','move'); delete G.players[id]; }
-  F.pool=[]; F.done=true; for(const p of Object.values(G.players)){ delete p.fdPool; delete p.fdFrom; }
+  F.pool=[]; F.done=true; for(const p of Object.values(G.players)){ delete p.fdPool; delete p.fdFrom; } try{ tbTakeSnap(); }catch(e){}
   for(const t of G.teams){ if(rosterN(t.id)>ROSTER_MAX)trimRoster(t.id,ROSTER_MAX); } try{ fdAiPayFill(); }catch(e){} try{ aiCapAll(); }catch(e){} try{ fdStrengthen(); }catch(e){} try{ foundDefaults(); }catch(err){} planSup(); G.tsug=null; try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
   const mine=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const ci=capInfo(G.user);
   try{ G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); const pr=G.proj.indexOf(G.user)+1;
@@ -6065,7 +6067,7 @@ function switchTeam(tid){ const old=G.user; const ot=team(old), nt=team(tid); tr
   G.spon=null; G.capex=null; G.ivProm=[]; G.iv=null; G.stRaid=[]; G.stPo=null; G.gmPlan={};
   try{ leaveTeamState(old); compHandOff(old); }catch(e){} /* 인터뷰 기사 대기열·동석 관람 건의 기회·공개 약속도 옛 구단 몫이다 */
   try{ if(period()!=='off')setGoals(); }catch(e){}
-  try{ userLogRebuild(tid); }catch(e){}
+  try{ userLogRebuild(tid); }catch(e){} try{ tbTakeSnap(); }catch(e){}
   addLog(`${tname(old)}을(를) 떠나 ${tname(tid)} 단장으로 취임했습니다.`); chron('join',`새 단장 취임`,null,tid); try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
   mail('구단주실',`${nt.city} ${nt.nick} 단장 취임`,`${tname(tid)} 단장으로 취임하셨습니다. 선수단과 코치진, 감독은 그대로 이어받습니다. 재정과 목표는 이 구단 기준으로 새로 시작합니다.\n${needText(tid)}`,{kind:'경력'}); }
 
@@ -10079,7 +10081,22 @@ function fpNewsReact(n){ if(!n||typeof newsComments!=='function')return ''; try{
  - 구단 > 연대기 > 내가 꾸린 팀: 순위 변화, 지금 선수단이 어디서 왔는지, 핵심 선수, 기록 연표 */
 const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이드','FA':'외부 FA','외국인':'외국인','보상선수':'보상선수','무적 영입':'무적 선수','해외 복귀':'해외 복귀'};
 function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; let w0; try{ if(k!=='fd'&&k!=='draft'){ const y=period()==='season'||period()==='post'?G.year:G.year-1; const h=seasonTotal(p,y,'1군'); if(h)w0=Math.round(warOf(h,p)*10)/10; } }catch(e){}
-  p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{}); }
+  p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{});
+  if(tid===G.user&&!G.unemp){ const L=G.mineL=G.mineL||[]; L.push({id:p.id,o:Object.assign({},p.acq)}); if(L.length>400)L.splice(0,L.length-400); } } /* 내가 데려온 선수: 떠나도 재임 성과에 남긴다 */
+/* 취임 당시 주전 9자리(창단 구단은 창단 드래프트가 끝난 때): 나이·인원. 재임 성과의 비교 기준 */
+function tbTakeSnap(){ if(G.user==null||G.unemp)return; let d=null; try{ d=depth(G.user); }catch(e){ return; } const ln=d.start||[]; G.tbSnap={tid:G.user,y:G.year,d:G.day,age:ln.length?Math.round(ln.reduce((a,p)=>a+p.age,0)/ln.length*10)/10:null,n:playersOf(G.user).filter(p=>!p.prospect).length}; }
+/* 재임 기간에 데려온 선수 전부(지금 우리 선수 + 떠난 선수). 떠난 선수는 우리 팀에서 쌓은 WAR만 */
+function tbMineAll(){ const out=[], seen=new Set(); const since=G.gmSinceD;
+  for(const p of playersOf(G.user)){ if(!mineOf(p))continue; seen.add(p.id); out.push({p,o:tbOrigin(p),gone:false}); }
+  for(const x of (G.mineL||[])){ if(seen.has(x.id)||x.o.tid!==G.user||(since!=null&&x.o.d!=null&&x.o.d<since))continue; const p=G.players[x.id]; if(!p||p.team===G.user)continue; seen.add(x.id); out.push({p,o:x.o,gone:true}); }
+  return out; }
+function warWithT(p,tid,y0){ let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',tid); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }
+/* 요약 줄: 물려받은 선수·내가 데려온 선수, 주전 평균 나이(취임 당시 대비), 이번 시즌 뒤 계약 결정(주전급 FA 예정), 주전 9자리 구성 */
+function tbKpi(){ const ps=playersOf(G.user).filter(p=>!p.prospect); const mine=ps.filter(mineOf).length; let d=null; try{ d=depth(G.user); }catch(e){} const ln=d?d.start:[];
+  const age=ln.length?ln.reduce((a,p)=>a+p.age,0)/ln.length:null; const S=G.tbSnap&&G.tbSnap.tid===G.user?G.tbSnap:null;
+  const reg=new Set(d?[...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id):[]); let fa=[]; try{ fa=faUpcoming().filter(x=>x.p.team===G.user&&reg.has(x.p.id)).map(x=>x.p); }catch(e){}
+  const comp={inh:0,dr:0,ext:0}; for(const p of ln){ const c=originCat(p); if(c==='물려받음')comp.inh++; else if(c==='창단 지명'||c==='신인 지명')comp.dr++; else comp.ext++; }
+  return {n:ps.length,inh:ps.length-mine,mine,age,age0:S?S.age:null,fa,comp,ln:ln.length}; }
 /* 지명 경로: 단장이 직접 / 자동(진행을 넘겨 스카우트 순위대로) / 조건 위임 */
 const ACQ_HOW={gm:'직접 지명',auto:'자동 지명',rule:'조건 위임 지명'};
 /* 데려올 때의 판단: 지명은 우리 스카우트 추정, 트레이드·FA는 직전 시즌 WAR */
@@ -16600,13 +16617,20 @@ function teamBuildView(){ if(G.unemp)return csec('내가 꾸린 팀','<p class="
   const legend=`<div class="tbleg">${cats.map(c=>`<span><i style="background:${TB_COL[c]}"></i>${c} <b>${by[c].n}명</b>${tw>0?` · WAR ${Math.round(by[c].w/tw*100)}%`:''}</span>`).join('')}</div>`;
   const mineN=ps.filter(mineOf).length;
   /* 3) 핵심 선수: 내가 꾸린 선수, 우리 팀에서 쌓은 WAR 순 */
-  const core=ps.filter(mineOf).map(p=>({p,o:tbOrigin(p),W:warWithUs(p)})).sort((a,b)=>b.W.sum-a.W.sum).slice(0,12);
-  const rows=core.map(x=>`<tr><td><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> <span class="muted small">${posLabel(x.p)} · ${x.p.age}세</span></td><td><span class="tbdot" style="background:${TB_COL[ACQ_K[x.o.k]]||'#888'}"></span>${esc(originLabel(x.o))}</td><td class="num">${x.o.o0!=null?`${dv(x.o.o0)} → ${dv(Math.round(ovr(x.p)))}`:dv(Math.round(ovr(x.p)))}${acqJudge(x.o)?`<span class="small muted" style="display:block">그때 판단: ${esc(acqJudge(x.o))}</span>`:''}</td><td class="num">${x.W.sum.toFixed(1)}</td><td class="num small muted">${x.W.best&&x.W.best.w>=.5?`${x.W.best.y} ${x.W.best.w.toFixed(1)}`:'-'}</td></tr>`).join('');
+  const core=tbMineAll().map(x=>({p:x.p,o:x.o,gone:x.gone,W:x.gone?warWithT(x.p,G.user,x.o.y):warWithUs(x.p)})).sort((a,b)=>b.W.sum-a.W.sum).slice(0,14);
+  const stOf=x=>{ if(x.gone)return `<span class="muted">떠남${x.p.team!=null?` · ${esc(tshort(x.p.team))}`:x.p.overseas||x.p.abroad?' · 해외':''}</span>`; let r=''; try{ r=squadRole(x.p); }catch(e){} return esc(r||'-'); };
+  const rows=core.map(x=>`<tr><td><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> <span class="muted small">${posLabel(x.p)} · ${x.p.age}세</span></td><td><span class="tbdot" style="background:${TB_COL[ACQ_K[x.o.k]]||'#888'}"></span>${esc(originLabel(x.o))}</td><td class="num">${x.o.o0!=null?`${dv(x.o.o0)} → ${dv(Math.round(ovr(x.p)))}`:dv(Math.round(ovr(x.p)))}${acqJudge(x.o)?`<span class="small muted" style="display:block">그때 판단: ${esc(acqJudge(x.o))}</span>`:''}</td><td class="num">${x.W.sum.toFixed(1)}</td><td class="num small muted">${x.W.best&&x.W.best.w>=.5?`${x.W.best.y} ${x.W.best.w.toFixed(1)}`:'-'}</td><td class="small">${stOf(x)}</td><td class="small">${x.gone?'-':esc(tContract(x.p))}</td></tr>`).join('');
   /* 4) 기록 연표 */
   const log=(G.tbLog||[]).slice(0,20).map(e=>`<div class="tbl"><span class="muted small">${e.y} ${dsh(e.d)}</span> ${e.pid!=null&&G.players[e.pid]?`<button class="lnk" data-a="player" data-v="${e.pid}">${esc(e.t)}</button>`:esc(e.t)}</div>`).join('');
-  return csec('순위 변화',`<p class="small muted">${y0}년부터 단장 · ${S.length}시즌 마침</p>${chart}`)
+  const K=tbKpi(); const tl=(l,v,sub)=>`<div class="tile"><span class="g">${v}</span><span class="l">${l}</span>${sub?`<span class="small muted">${sub}</span>`:''}</div>`;
+  const kpi=`<div class="tiles tbk">${tl('취임 당시 선수 / 현재',`${K.inh} / ${K.n}명`,`내가 데려온 선수 ${K.mine}명`)}${tl('주전 평균 나이',K.age!=null?K.age.toFixed(1)+'세':'-',K.age0!=null&&K.age!=null?`취임 당시 ${K.age0.toFixed(1)}세(${K.age-K.age0>=0?'+':''}${(K.age-K.age0).toFixed(1)})`:'')}${tl('이번 시즌 뒤 계약 결정',`${K.fa.length}명`,K.fa.length?K.fa.slice(0,4).map(p=>`${esc(p.name)}(${posLabel(p)})`).join(' · '):'주전급 FA 예정자 없음')}</div>`;
+  const comp=K.ln?`<div class="tbbar">${[['물려받음',K.comp.inh],['신인 지명',K.comp.dr],['트레이드',K.comp.ext]].filter(x=>x[1]).map(([c,v])=>`<i style="width:${v/K.ln*100}%;background:${TB_COL[c]}"></i>`).join('')}</div><p class="small">주전 ${K.ln}자리: 물려받은 선수 <b>${K.comp.inh}</b> · 직접 지명 <b>${K.comp.dr}</b> · 외부 영입 <b>${K.comp.ext}</b></p><p class="small muted">취임할 때는 주전이 모두 물려받은 선수(창단 구단은 모두 창단 지명)였습니다. 감독의 지금 라인업 기준.</p>`:'';
+  const H=new Map((G.history||[]).filter(h=>h.user).map(h=>[h.y,h])); const CS=((G.myC&&G.myC.seas)||[]).slice().reverse();
+  const mineW=(tid,y)=>{ let s=0; const seen=new Set(); for(const x of (G.mineL||[])){ if(x.o.tid!==tid||x.o.y>y||seen.has(x.id))continue; seen.add(x.id); const p=G.players[x.id]; const h=p&&seasonTotalT(p,y,'1군',tid); if(h)s+=warOf(h,p); } return s; };
+  const seasT=CS.length?`<div class="tw"><table class="mst"><thead><tr><th>시즌</th><th>구단</th><th>순위</th><th>성적</th><th>데려온 선수 WAR</th><th>시즌 손익</th><th>구단주 신뢰</th></tr></thead><tbody>${CS.map(x=>{ const h=H.get(x.y); const hu=h&&h.user?h.user:null; return `<tr><td>${x.y}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.rank}위${x.ch===1?' 우승':x.ch===2?' 준우승':''}</td><td>${x.w}승 ${x.l}패</td><td class="num">${mineW(x.tid,x.y).toFixed(1)}</td><td class="num">${hu?`${hu.net>=0?'+':''}${money(hu.net)}`:'-'}</td><td class="num">${hu?hu.trust:'-'}</td></tr>`; }).join('')}</tbody></table></div><p class="small muted">데려온 선수 WAR은 그 시즌까지 이 구단에서 직접 데려온 선수들이 그해 1군에서 쌓은 WAR 합입니다.</p>`:'<p class="small muted">첫 시즌을 마치면 쌓입니다.</p>';
+  return kpi+csec('순위 변화',`<p class="small muted">${y0}년부터 단장 · ${S.length}시즌 마침</p>${chart}`)+csec('주전 구성',comp)+csec('재임 시즌별 성과',seasT)
     +csec('지금 선수단은 어디서 왔나',`<p class="small">${ps.length}명 중 <b>${mineN}명</b>이 단장님이 데려온 선수입니다${tw>0?` (${wy} 시즌 WAR 기준 비중)`:''}.</p>${bar}${legend}`)
-    +csec('내가 꾸린 핵심 선수',core.length?`<div class="tw"><table class="mst tbt"><thead><tr><th>선수</th><th>데려온 길</th><th>능력 그때 → 지금</th><th>우리 팀 WAR</th><th>최고 시즌</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="small muted">아직 데려온 선수가 없습니다. 드래프트·트레이드·FA로 선수를 데려오면 여기에 쌓입니다.</p>')
+    +csec('내가 꾸린 핵심 선수 · 영입 성과',core.length?`<div class="tw"><table class="mst tbt"><thead><tr><th>선수</th><th>데려온 길</th><th>능력 그때 → 지금</th><th>우리 팀 WAR</th><th>최고 시즌</th><th>상태</th><th>계약</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="small muted">아직 데려온 선수가 없습니다. 드래프트·트레이드·FA로 선수를 데려오면 여기에 쌓입니다.</p>')
     +csec('자란 순간',log||'<p class="small muted">내가 꾸린 선수가 10승·20홈런·20세이브를 하거나 처음 주전이 되면 여기에 남습니다.</p>'); }
 /* ---------- 경기 결과 정리 창 ----------
    스페이스바(다음 일까지)로 며칠을 넘기면 경기가 소식 한 통으로만 지나가서 와닿지 않았다.
@@ -16669,6 +16693,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01l',d:'11월 1일',t:'내가 꾸린 팀 · 재임 성과',items:[
+    '내가 꾸린 팀 맨 위에 요약을 붙였습니다: 취임 당시 선수가 지금 몇 명 남았는지, 주전 평균 나이(취임 당시 대비), 이번 시즌 뒤 계약을 정해야 할 주전급 선수.',
+    '주전 9자리가 물려받은 선수·직접 지명·외부 영입 중 어디서 왔는지, 재임 시즌별 순위·성적·데려온 선수 WAR·시즌 손익·구단주 신뢰를 보여 줍니다.',
+    '핵심 선수 표에 지금 역할과 계약 상태를 붙였고, 내가 데려왔다가 떠난 선수도 우리 팀에서 쌓은 WAR과 함께 남깁니다(이번 업데이트 뒤 영입부터).'
+  ]},
   {id:'2026-11-01k',d:'11월 1일',t:'구단 이동 · 야인 경력',items:[
     '시즌 중 구단을 옮기면 최근 경기·월별 성적·상세 경기를 새 구단 기록으로 다시 만듭니다(옛 구단 경기가 섞여 "승 1:2"처럼 보이던 문제). 달력 선택과 열린 경기도 정리합니다.',
     '단장직 제의와 취임 확인에 지금 순위, 연봉 상한 대비, 장기 부상, 내년 예상 연봉 총액, 구단주 성향을 적습니다. 야인일 때 온 제의에는 작별 대신 경력을 다시 시작한다고 씁니다.',

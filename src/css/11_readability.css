@@ -386,3 +386,5 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 
 /* 창단 드래프트 비교 후보 */
 
+
+.tbk .tile .small{display:block;margin-top:2px;line-height:1.35}

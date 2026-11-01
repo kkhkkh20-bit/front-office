@@ -296,6 +296,9 @@ const QUICK=process.env.QUICK==='1';
   /* 야인이어도 단장 탭(경력·재임 기간 결산)은 볼 수 있다 */
   { where='야인 경력'; const r=await ev(()=>{ const u0=G.unemp, t0=UI.tab, c0=G.myC; G.unemp={y:G.year,msg:'점검',since:G.day,from:G.user}; G.myC=Object.assign({},c0||{},{tid:null,stints:[{tid:G.user,y0:G.year-1,y1:G.year,how:'경질'}],seas:[{y:G.year-1,tid:G.user,rank:4,w:75,l:64,ch:0}]}); UI.tab='me'; let h=''; try{ h=tabBody(); }finally{ G.unemp=u0; UI.tab=t0; G.myC=c0; } return {blk:/야인입니다/.test(h),car:/시즌별 경력/.test(h)}; });
     if(r&&(r.blk||!r.car))add('야인 경력','야인 상태에서 단장 경력 화면을 볼 수 없음: '+JSON.stringify(r)); }
+  /* 내가 꾸린 팀: 요약 줄(취임 당시 선수·주전 나이·계약 결정), 주전 구성, 재임 시즌별 성과, 영입 성과에 상태·계약 */
+  { where='재임 성과'; const r=await ev(()=>{ const h=teamBuildView(); return {k:/취임 당시 선수/.test(h)&&/주전 평균 나이/.test(h)&&/계약 결정/.test(h),c:/주전 구성/.test(h),s:/재임 시즌별 성과/.test(h),st:/<th>상태<\/th>/.test(h)&&/<th>계약<\/th>/.test(h)}; });
+    if(r&&(!r.k||!r.c||!r.s||!r.st))add('재임 성과','내가 꾸린 팀에 요약·주전 구성·시즌별 성과·상태 칸이 없음: '+JSON.stringify(r)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

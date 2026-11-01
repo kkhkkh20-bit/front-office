@@ -6,7 +6,22 @@
  - 구단 > 연대기 > 내가 꾸린 팀: 순위 변화, 지금 선수단이 어디서 왔는지, 핵심 선수, 기록 연표 */
 const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이드','FA':'외부 FA','외국인':'외국인','보상선수':'보상선수','무적 영입':'무적 선수','해외 복귀':'해외 복귀'};
 function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; let w0; try{ if(k!=='fd'&&k!=='draft'){ const y=period()==='season'||period()==='post'?G.year:G.year-1; const h=seasonTotal(p,y,'1군'); if(h)w0=Math.round(warOf(h,p)*10)/10; } }catch(e){}
-  p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{}); }
+  p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{});
+  if(tid===G.user&&!G.unemp){ const L=G.mineL=G.mineL||[]; L.push({id:p.id,o:Object.assign({},p.acq)}); if(L.length>400)L.splice(0,L.length-400); } } /* 내가 데려온 선수: 떠나도 재임 성과에 남긴다 */
+/* 취임 당시 주전 9자리(창단 구단은 창단 드래프트가 끝난 때): 나이·인원. 재임 성과의 비교 기준 */
+function tbTakeSnap(){ if(G.user==null||G.unemp)return; let d=null; try{ d=depth(G.user); }catch(e){ return; } const ln=d.start||[]; G.tbSnap={tid:G.user,y:G.year,d:G.day,age:ln.length?Math.round(ln.reduce((a,p)=>a+p.age,0)/ln.length*10)/10:null,n:playersOf(G.user).filter(p=>!p.prospect).length}; }
+/* 재임 기간에 데려온 선수 전부(지금 우리 선수 + 떠난 선수). 떠난 선수는 우리 팀에서 쌓은 WAR만 */
+function tbMineAll(){ const out=[], seen=new Set(); const since=G.gmSinceD;
+  for(const p of playersOf(G.user)){ if(!mineOf(p))continue; seen.add(p.id); out.push({p,o:tbOrigin(p),gone:false}); }
+  for(const x of (G.mineL||[])){ if(seen.has(x.id)||x.o.tid!==G.user||(since!=null&&x.o.d!=null&&x.o.d<since))continue; const p=G.players[x.id]; if(!p||p.team===G.user)continue; seen.add(x.id); out.push({p,o:x.o,gone:true}); }
+  return out; }
+function warWithT(p,tid,y0){ let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',tid); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }
+/* 요약 줄: 물려받은 선수·내가 데려온 선수, 주전 평균 나이(취임 당시 대비), 이번 시즌 뒤 계약 결정(주전급 FA 예정), 주전 9자리 구성 */
+function tbKpi(){ const ps=playersOf(G.user).filter(p=>!p.prospect); const mine=ps.filter(mineOf).length; let d=null; try{ d=depth(G.user); }catch(e){} const ln=d?d.start:[];
+  const age=ln.length?ln.reduce((a,p)=>a+p.age,0)/ln.length:null; const S=G.tbSnap&&G.tbSnap.tid===G.user?G.tbSnap:null;
+  const reg=new Set(d?[...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id):[]); let fa=[]; try{ fa=faUpcoming().filter(x=>x.p.team===G.user&&reg.has(x.p.id)).map(x=>x.p); }catch(e){}
+  const comp={inh:0,dr:0,ext:0}; for(const p of ln){ const c=originCat(p); if(c==='물려받음')comp.inh++; else if(c==='창단 지명'||c==='신인 지명')comp.dr++; else comp.ext++; }
+  return {n:ps.length,inh:ps.length-mine,mine,age,age0:S?S.age:null,fa,comp,ln:ln.length}; }
 /* 지명 경로: 단장이 직접 / 자동(진행을 넘겨 스카우트 순위대로) / 조건 위임 */
 const ACQ_HOW={gm:'직접 지명',auto:'자동 지명',rule:'조건 위임 지명'};
 /* 데려올 때의 판단: 지명은 우리 스카우트 추정, 트레이드·FA는 직전 시즌 WAR */

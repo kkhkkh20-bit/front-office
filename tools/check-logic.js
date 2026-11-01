@@ -555,6 +555,10 @@ T('[구단 이동] 야인에게 온 제의에는 지금 구단과 작별한다�
   ok(!/작별/.test(m.body)&&/다시 시작/.test(m.body),'야인 문구 '+m.body.slice(-80)); ok(typeof jobBrief==='function','제의 요약 없음'); const b=jobBrief(tid).join(' '); ok(/상한/.test(b)&&/장기 부상/.test(b)&&/내년/.test(b)&&/구단주/.test(b),'제의 요약 '+b); });
 T('[야인 경력] 물러날 때 재임 구단의 마지막 시즌 결산과 사유를 경력에 보관한다',()=>{ fresh(); simTo(()=>G.year>=2027&&period()==='pre'); const tid=G.user; ok(G.last&&G.last.fins&&G.last.fins[tid],'결산 없음');
   firedFlow(G.year,'점검'); const st=G.myC.stints[0]; ok(st&&st.tid===tid&&st.how,'퇴임 기록'); ok(st.fin&&st.fin.y===G.last.y&&st.fin.f&&Array.isArray(st.fin.f.inc),'퇴임 시점 결산 보관 '+JSON.stringify(st.fin||null).slice(0,80)); });
+T('[재임 성과] 내가 데려온 선수는 떠나도 재임 성과 목록에 남고, 주전 9자리 구성과 취임 당시 주전 나이를 기록한다',()=>{ fresh(); ok(G.tbSnap&&G.tbSnap.tid===G.user&&G.tbSnap.age>0,'창단 뒤 취임 당시 기록 '+JSON.stringify(G.tbSnap||null));
+  const L=G.mineL||[]; ok(L.length>=20,'데려온 선수 기록 '+L.length); const p=L.map(x=>G.players[x.id]).find(q=>q&&q.team===G.user); const to=G.teams.find(t=>t.id!==G.user).id; p.team=to; ok(tbMineAll().some(x=>x.p===p&&x.gone),'떠난 선수가 목록에서 빠짐'); p.team=G.user;
+  const K=tbKpi(); ok(K.comp.inh+K.comp.dr+K.comp.ext===K.ln&&K.ln>=8,'주전 구성 '+JSON.stringify(K.comp)); ok(K.age>0,'주전 평균 나이');
+  const tid=G.teams.find(t=>t.id!==G.user).id; G.jobs=[]; jobOffer(tid,true); jobAnswer(tid,true); ok(G.tbSnap.tid===tid,'이직 뒤 취임 당시 기록'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
