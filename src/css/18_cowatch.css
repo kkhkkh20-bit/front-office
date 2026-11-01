@@ -52,3 +52,22 @@
 
 /* 코치 세부 능력 */
 .cab-t{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}.cab summary{cursor:pointer}.cab-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;margin:6px 0}.cab-r{display:flex;justify-content:space-between;align-items:center;font-size:12px}.cab-r.dom span{font-weight:700}
+
+/* 선수별 장기 연봉표 */
+.cg-w{max-height:520px;overflow:auto}.cg{border-collapse:separate;border-spacing:0;font-size:12px;min-width:520px}.cg th,.cg td{padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:left}
+.cg thead th{position:sticky;top:0;background:var(--panel);z-index:2}.cg tbody th,.cg tfoot th{position:sticky;left:0;background:var(--panel);z-index:1;font-weight:600}.cg tfoot td,.cg tfoot th{position:sticky;bottom:0;background:var(--panel);border-top:1px solid var(--line);font-weight:700}
+.cg-c.fix{font-weight:600}.cg-c.est{color:var(--muted);font-style:italic}.cg-c.fa{color:var(--warn)}.cg-c.none,.cg-c.neg{color:var(--muted)}.cg-m{font-style:normal;font-size:10px;padding:0 4px;border-radius:4px;border:1px solid var(--line);margin-left:3px}
+.cg-k{font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--line)}.cg-k.est{font-style:italic;color:var(--muted)}.cg-k.fa{color:var(--warn)}
+/* 리그 분포 산점도 */
+.ds-w{width:100%;overflow-x:auto}.ds{width:100%;min-width:320px;height:auto;display:block}.ds .gr{stroke:var(--line);stroke-width:1}.ds .md{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.7}.ds .tk,.ds .al{fill:var(--muted);font-size:11px}.ds .al{font-size:12px}
+.ds-p circle{fill:var(--muted);opacity:.35;stroke:var(--panel);stroke-width:1.5}.ds-p.w circle{fill:var(--warn);opacity:.9}.ds-p.me circle{fill:var(--acc);opacity:1}.ds-p .hit{fill:transparent;stroke:none;opacity:1}.ds-p text{fill:var(--ink);font-size:11px;paint-order:stroke;stroke:var(--panel);stroke-width:3}.ds-p{cursor:pointer}.ds-p:hover circle:not(.hit){opacity:1;r:6}
+.ds-k{display:inline-flex;align-items:center;gap:4px;margin-right:8px}.ds-k i{width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--muted);opacity:.5}.ds-k i.me{background:var(--acc);opacity:1}.ds-k i.w{background:var(--warn);opacity:1}
+
+/* 구단 지표 차트 */
+.gl-b.w{fill:var(--acc)}.gl-b.l{fill:var(--bad);opacity:.75}.gl-b.t{fill:var(--muted)}.gl-l{fill:none;stroke:var(--acc);stroke-width:2}.gl-d{fill:var(--acc);stroke:var(--panel);stroke-width:2}.ds-k i.lsq{background:var(--bad);opacity:.75;border-radius:2px}
+/* 리그 백분위 */
+.pct{margin:4px 0 12px}.pct-r{display:grid;grid-template-columns:minmax(84px,30%) 1fr 48px 36px;align-items:center;gap:8px;font-size:12px;padding:3px 0}.pct-r.off{opacity:.5}
+.pct-b{position:relative;height:6px;background:var(--line);border-radius:3px}.pct-b i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;opacity:.55}.pct-b em{position:absolute;top:50%;transform:translate(-50%,-50%);min-width:22px;height:20px;line-height:20px;border-radius:10px;color:#fff;font-style:normal;font-size:11px;font-weight:700;text-align:center;border:2px solid var(--panel)}
+.pct-r>b{text-align:right;font-variant-numeric:tabular-nums}.pct-r>i{font-style:normal;font-size:10px;color:var(--muted)}
+
+.ds{max-width:680px;margin-left:auto;margin-right:auto}

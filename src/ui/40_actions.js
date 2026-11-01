@@ -17,7 +17,7 @@ function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH
   ${H.length?`<p class="small muted">지난 연수: ${H.map(h=>`${h.y} ${esc(h.k)}(${T[h.t]||''})`).join(', ')}</p>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
-function closeSheets(){ const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
+function closeSheets(){ const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
 const A={
   dlSpd(v){ UI.dspeed=v; render(); },
   dlStop(){ dliveStop(); },
@@ -221,6 +221,14 @@ const A={
   ysNow(v){ const r=toYS(+v); if(r)UI.trimMsg=r; save(); render(); },
   setPol(v){ const r=setPolicy(v); UI.polMsg=r.msg; save(); render(); },
   rcolCfg(){ UI.rcolOpen=!UI.rcolOpen; render(); },
+  cgSort(v){ UI.cgS=v; render(); },
+  dsSet(v){ const [k,x]=v.split(':'); if(k==='G'){ UI.dsG=x; UI.dsAx=null; UI.dsMin=null; } else if(k==='Y')UI.dsY=x==='prev'?'prev':null; else if(k==='L')UI.dsLv=x; else if(k==='M')UI.dsMin=+x; render(); },
+  pcmpTg(v){ const id=+v; UI.pcmp=UI.pcmp||[]; const i=UI.pcmp.indexOf(id); if(i>=0)UI.pcmp.splice(i,1); else { if(UI.pcmp.length>=3)UI.pcmp.shift(); UI.pcmp.push(id); } renderSheet(); },
+  pcmpOpen(){ UI.sheet=null; UI.pcmpSh=true; renderSheet(); }, pcOpt(v){ const [k,x]=v.split(':'); if(k==='sea')UI.pcSea=x==='prev'?'prev':null; else UI.pcLvl=x; renderSheet(); },
+  rvSave(){ const el=document.getElementById('rvName'); const nm=(el&&el.value||'').trim().slice(0,12); if(!nm){ toast('보기 이름을 적어 주세요.'); return; } const pit=UI.seg==='pit'; const U=rvUser(); (U[pit?'pit':'bat']=U[pit?'pit':'bat']||{})[nm]=rcolKeys(pit).slice(); rvUserSave(U); toast(`'${nm}' 보기를 저장했습니다.`); render(); },
+  rvUse(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=(rvUser()[k]||{})[v]; if(!L)return; rcolLoad(); UI.rcols[k]=L.slice(); rcolSave(); UI.rview=UI.rview||{}; UI.rview[k]='u:'+v; render(); },
+  rvDel(v){ const k=UI.seg==='pit'?'pit':'bat'; const U=rvUser(); if(U[k])delete U[k][v]; rvUserSave(U); render(); },
+  rscope(v){ UI.rscope=v; render(); }, rsea(v){ UI.rsea=v==='cur'?null:v; render(); },
   rcolReset(){ const k=UI.seg==='pit'?'pit':'bat'; rcolLoad(); delete UI.rcols[k]; rcolSave(); render(); },
   sponAcc(v){ toast(sponAccept(+v)); save(); render(); },
   sponRej(v){ toast(sponReject(+v)); save(); render(); },

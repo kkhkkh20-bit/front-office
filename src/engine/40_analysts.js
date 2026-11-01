@@ -26,4 +26,5 @@ function dataReport(m){ if(G.unemp||!anaList().length)return; const lv=dataLv(G.
     const unl=ps.filter(x=>!x.p.isP).map(x=>({p:x.p,d:bRate(x.h).ops-(.62+ (ovr(x.p)-40)*.006)})).sort((a,b)=>a.d-b.d);
     if(unl.length){ const a=unl[0], b=unl[unl.length-1]; lines.push(`능력에 비해 기록이 낮은 타자: ${a.p.name}(OPS ${fmt3(bRate(seasonTotal(a.p,G.year,'1군')).ops)}) · 능력 이상으로 잘하는 타자: ${b.p.name}`); } }
   if(lv>=3){ const d=G.sea&&G.sea.rec&&G.sea.rec[G.user]; if(d){ const st=standingsNow(); const i=st.findIndex(x=>x.tid===G.user); const po=(()=>{ try{ const o=playoffOdds(); const q=o&&o.find(x=>x.tid===G.user); return q?Math.round(q.ps*100):null; }catch(e){ return null; } })(); if(po!=null)lines.push(`데이터 랩 시뮬레이션: 가을야구 진출 확률 ${po}%`); } }
-  mail('전력분석팀',`${m}월 전력 분석 보고`,lines.join('\n')+`\n\n분석원 ${anaList().length}명 기준 보고입니다. 상대 전력분석·영상 분석 인력이 늘수록 보고가 자세해집니다.`,{kind:'분석',acts:[{l:'전력분석',a:'go',v:'staff:data'}]}); }
+  try{ const D=dataLines(); if(D.length)lines.push('',...D); }catch(e){}
+  mail('전력분석팀',`${m}월 전력 분석 보고`,lines.join('\n')+`\n\n분석원 ${anaList().length}명 기준 보고입니다. 상대 전력분석·영상 분석 인력이 늘수록 보고가 자세해집니다.`,{kind:'분석',acts:[{l:'통계에서 보기',a:'go',v:'league:stat'},{l:'전력분석',a:'go',v:'staff:data'}]}); }

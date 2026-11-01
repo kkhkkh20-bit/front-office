@@ -80,6 +80,8 @@ function rosterView(){
     const role=arr=>p=>arr===d.pen?(arr.indexOf(p)===0?'마무리':arr.indexOf(p)<4?'필승조':'추격조'):arr===d.sp?(arr.indexOf(p)+1)+'선발':posLabel(p);
     groups=[['선발 로테이션',d.sp,role(d.sp)],[entryOn()?'1군 불펜':'불펜',d.pen,role(d.pen)],['부상·출장 정지',d.inj.filter(p=>p.isP)],['군 복무',awayOf(tid).filter(p=>p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>p.isP)]];
   }
+  const f2all=(seg==='bat'?d.futB:d.futP).filter(vis); const sc=UI.rscope||'one';
+  if(sc==='two')groups=[['2군',f2all]]; else if(sc==='all')groups=groups.concat([['2군',f2all]]);
   const keep=p=>vis(p)&&(pf==='all'||(seg==='bat'?p.pos===pf:(pf==='SP'?isSPr(p):!isSPr(p))));
   groups=groups.map(([g,arr,f])=>[g,arr.filter(keep),f]);
   const chipsP=seg==='bat'?[['all','전체'],...['C','1B','2B','3B','SS','LF','CF','RF'].map(k=>[k,POSS[k]])]:[['all','전체'],['SP','선발형'],['RP','불펜형']];
@@ -87,16 +89,19 @@ function rosterView(){
   UI._own=own;
   const body=rv==='card'?sqCards(groups):rosterTable(groups,seg==='pit');
   const f2=(seg==='bat'?d.futB:d.futP).filter(vis); const f2n=f2.filter(p=>!p.ys).length, ysn=f2.filter(p=>p.ys).length; /* 2군·육성선수는 2군 탭에서 따로 본다 */
-  const futLink=f2.length?`<button class="btn small block r2link" data-a="itab" data-v="roster:fut">2군 ${seg==='bat'?'야수':'투수'} ${f2n}명${ysn?` · 육성선수 ${ysn}명`:''}은 2군 탭에서 보기 ›</button>`:'';
+  const futLink=f2.length&&sc==='one'?`<button class="btn small block r2link" data-a="itab" data-v="roster:fut">2군 ${seg==='bat'?'야수':'투수'} ${f2n}명${ysn?` · 육성선수 ${ysn}명`:''}은 2군 탭에서 보기 ›</button>`:'';
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  return head+it.bar+segT+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>${filt}${body}${futLink}
+  return head+it.bar+segT+`<section class="card"><div class="row between"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()} · 이름 옆 화살표는 컨디션(↑최상 ↗좋음 →보통 ↘나쁨 ↓최악: 시즌 폼·기분·피로)</span><div class="seg sm"><button data-a="rview" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rview" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>
+    <div class="row wrapr rscope"><div class="seg sm">${[['one','1군'],['two','2군'],['all','전체']].map(([k,l])=>`<button data-a="rscope" data-v="${k}" class="${sc===k?'on':''}">${l}</button>`).join('')}</div><div class="seg sm">${[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']].map(([k,l])=>`<button data-a="rsea" data-v="${k}" class="${(UI.rsea||'cur')===k?'on':''}">${l}</button>`).join('')}</div></div>${filt}${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section>`;
 }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }
-function statBasis(){ return statY()===G.year&&period()!=='off'?`${G.year} 1군 성적 (F 표시는 2군 기록)`:`${statY()} 성적 기준`; }
+function statBasis(){ if(UI.rsea==='car')return '통산(기록이 남은 시즌) 1군 성적 (F 표시는 2군 기록)'; const y=rSeaY(); return y===G.year&&period()!=='off'?`${G.year} 1군 성적 (F 표시는 2군 기록)`:`${y} 성적 기준 (F 표시는 2군 기록)`; }
 const RCOL_B=[['g','경기'],['pa','타석'],['avg','타율'],['obp','출루율'],['slg','장타율'],['ops','OPS'],['wrc','wRC+'],['hr','홈런'],['rbi','타점'],['sb','도루'],['bb','볼넷'],['so','삼진'],['bbk','볼삼비'],['war','WAR']];
 const RCOL_P=[['g','경기'],['gs','선발'],['ip','이닝'],['era','ERA'],['whip','WHIP'],['w','승'],['l','패'],['sv','세'],['hld','홀'],['so','탈삼진'],['bb','볼넷'],['k9','K/9'],['bb9','BB/9'],['war','WAR']];
-function rline(p){ const y=statY(); return seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); }
+function rSeaY(){ return UI.rsea==='prev'?statY()-1:statY(); }
+function carLine(p,lvl){ const hs=(p.hist||[]).filter(h=>h.lvl===lvl&&!h.y2); if(!hs.length)return null; const t=Object.assign({},hs[0]); for(const h of hs.slice(1))addTo(t,h); t.y=hs[hs.length-1].y; t.car=true; return t; }
+function rline(p){ if(UI.rsea==='car')return carLine(p,'1군')||carLine(p,'퓨처스'); const y=rSeaY(); return seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); }
 function rstat(p,k){ const h=rline(p); if(!h)return null;
   if(k==='war')return wOf(h,p);
   if(p.isP){ const r=pRate(h); return {g:h.g||0,gs:h.gs||0,ip:h.outs,era:h.outs?r.era:null,whip:h.outs?r.whip:null,w:h.w||0,l:h.l||0,sv:h.sv||0,hld:h.hld||0,so:h.so,bb:h.bb,k9:h.outs?r.k9:null,bb9:h.outs?r.bb9:null,h:h.h||0,hra:h.hr||0,fip:h.outs?(13*(h.hr||0)+3*h.bb-2*h.so)/(h.outs/3)+3.2:null}[k]; }
@@ -110,16 +115,22 @@ function rfmt(k,v,p){ if(v==null)return '-';
 /* ===== 선수 표 열 설정: 사용자가 보이는 열과 순서를 고른다(브라우저에 저장) ===== */
 const RCOL_X_B=[['h','안타'],['d','2루타'],['r','득점'],['cs','도루자']], RCOL_X_P=[['h','피안타'],['hra','피홈런'],['fip','FIP'],['arm','팔 부하']];
 const RBASE=[['cur','현재'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
-function rcolAll(pit){ return RBASE.map(([k,l])=>[k,k==='pos'&&pit?'역할':l]).concat(pit?RCOL_P:RCOL_B,pit?RCOL_X_P:RCOL_X_B,[['ct','계약'],['org','입단'],['inj','부상']]); }
+/* 능력 열: 선수 화면 스카우트 리포트와 같은 평가(우리 코치진·스카우트가 본 값). 다른 구단 선수는 담당 스카우트가 본 범위만, 못 본 선수는 '-' */
+const RCOL_AB_P=[['t_stf','구위'],['t_ctl','제구'],['t_sta','체력'],['velo','구속'],['conf','평가 확신도']], RCOL_AB_B=[['t_con','컨택'],['t_pow','파워'],['t_eye','선구'],['t_spd','주력'],['t_def','수비'],['conf','평가 확신도']];
+function rcolAll(pit){ return RBASE.map(([k,l])=>[k,k==='pos'&&pit?'역할':l]).concat(pit?RCOL_AB_P:RCOL_AB_B,pit?RCOL_P:RCOL_B,pit?RCOL_X_P:RCOL_X_B,[['ct','계약'],['org','입단'],['inj','부상']]); }
+const rTool=(rp,k)=>{ const t=(rp.tools||[]).find(x=>x.k===k); return t?t.cur:null; };
 function rcolDef(pit){ return RBASE.map(x=>x[0]).concat((pit?RCOL_P:RCOL_B).map(x=>x[0]),UI._own?['ct','org']:[]); }
 function rcolLoad(){ if(UI.rcols)return UI.rcols; try{ UI.rcols=JSON.parse(localStorage.getItem('danjang-rcols')||'null')||{}; }catch(e){ UI.rcols={}; } return UI.rcols; }
+function rvUser(){ try{ return JSON.parse(localStorage.getItem('danjang-rviewsU')||'{}')||{}; }catch(e){ return UI._rvU||(UI._rvU={}); } }
+function rvUserSave(U){ try{ localStorage.setItem('danjang-rviewsU',JSON.stringify(U)); }catch(e){ UI._rvU=U; } }
 function rcolSave(){ try{ localStorage.setItem('danjang-rcols',JSON.stringify(UI.rcols||{})); }catch(e){} }
 function rcolKeys(pit){ const c=rcolLoad()[pit?'pit':'bat']; const all=new Set(rcolAll(pit).map(x=>x[0])); const L=(c&&c.length?c:rcolDef(pit)).filter(k=>all.has(k)); return UI._own?L:L.filter(k=>!['mor','fat','ct','org'].includes(k)||k==='mor'||k==='fat'); }
 function rcolPanel(pit){ const on=rcolKeys(pit); const all=rcolAll(pit); const lab=k=>(all.find(x=>x[0]===k)||[k,k])[1];
   const off=all.filter(x=>!on.includes(x[0]));
   return `<div class="rcp"><div class="row between"><b class="small">보이는 열 · 순서</b><span class="row"><button class="tc-i" data-a="rcolReset">기본값</button><button class="tc-i" data-a="rcolCfg">닫기</button></span></div>
     <div class="rcp-on">${on.map((k,i)=>`<span class="rcp-c"><button class="rcp-m" data-a="rcolMv" data-v="${k}:-1" ${i?'':'disabled'} aria-label="${lab(k)} 앞으로">◀</button><b>${lab(k)}</b><button class="rcp-m" data-a="rcolMv" data-v="${k}:1" ${i<on.length-1?'':'disabled'} aria-label="${lab(k)} 뒤로">▶</button><button class="rcp-x" data-a="rcolTg" data-v="${k}" aria-label="${lab(k)} 숨기기">×</button></span>`).join('')}</div>
-    ${off.length?`<div class="rcp-off"><span class="small muted">숨긴 열(누르면 맨 뒤에 추가)</span>${off.map(([k,l])=>`<button class="chipn" data-a="rcolTg" data-v="${k}">+ ${l}</button>`).join('')}</div>`:''}</div>`; }
+    ${off.length?`<div class="rcp-off"><span class="small muted">숨긴 열(누르면 맨 뒤에 추가)</span>${off.map(([k,l])=>`<button class="chipn" data-a="rcolTg" data-v="${k}">+ ${l}</button>`).join('')}</div>`:''}
+    <div class="row" style="gap:6px;margin-top:6px"><input type="text" id="rvName" maxlength="12" placeholder="지금 열 구성을 내 보기로 저장(이름)" aria-label="보기 이름" style="flex:1;min-width:120px"><button class="tc-i go" data-a="rvSave">저장</button></div></div>`; }
 function rosterTable(groups,pit){
   const statL=(pit?RCOL_P:RCOL_B).concat(pit?RCOL_X_P:RCOL_X_B); const rs=UI.rs||{}; const sk=rs[pit?'pit':'bat']; const keys=rcolKeys(pit); const all=rcolAll(pit); const lab=k=>(all.find(x=>x[0]===k)||[k,k])[1];
   const th=(k,l)=>`<th data-a="rsort" data-v="${k}" class="sortable${sk&&sk.k===k?' on':''}">${l}${sk&&sk.k===k?(sk.dir<0?' ▼':' ▲'):''}</th>`;
@@ -129,15 +140,16 @@ function rosterTable(groups,pit){
     const td=k=>{ switch(k){ case 'cur':return `<td class="ovc"><span class="ovw">${rchip(rp.cur)}${condChip(p)}</span></td>`; case 'sal':return `<td class="num">${money(p.sal)}</td>`;
       case 'pos':return `<td>${grp?`<span class="muted">${grp}</span> `:''}${pos||posLabel(p)}${!p.isP&&subsOf(p).length?` <i class="f">${subsOf(p).map(k=>POSS[k]).join('·')}</i>`:''}</td>`; case 'age':return `<td>${p.age}</td>`; case 'fut':return `<td>${potChip(rp,p)}</td>`;
       case 'mor':return `<td>${mine?`<span class="mood" style="--c:${m>=65?'var(--good)':m>=45?'var(--r50)':m>=30?'var(--warn)':'var(--bad)'}" title="${moodLabel(m)}"></span>`:'-'}</td>`; case 'fat':return `<td>${mine?fatBar(p):'-'}</td>`; case 'arm':{ const r=armRatio(p), cd=consecDays(p,G.day+1); return `<td class="num ${r>=1.3?'bad':r>=1.1?'warn':''}" title="${esc(loadText(p))}">${Math.round(r*100)}%${cd>=2?` <i class="f">${cd}연투</i>`:''}</td>`; }
+      case 'velo':return `<td class="num">${p.isP?veloOf(p):'-'}</td>`; case 'conf':return `<td class="small">${esc(rp.conf||'-')}</td>`;
       case 'inj':return `<td class="small">${p.injOut>0?`${p.injOut}일 · ${dmd(G.day+p.injOut)} 복귀`:'-'}</td>`; case 'ct':return `<td class="small">${esc(tContract(p))}</td>`; case 'org':return `<td class="small"><span class="org">${esc(originOf(p))}</span></td>`;
-      default:return `<td>${rfmt(k,rstat(p,k),p)}${fut&&k===(pit?'era':'ops')?' <i class="f">F</i>':''}</td>`; } };
+      default:if(k.startsWith('t_')){ const v=rTool(rp,k.slice(2)); return `<td>${v==null?'-':rchip(v)}</td>`; } return `<td>${rfmt(k,rstat(p,k),p)}${fut&&k===(pit?'era':'ops')?' <i class="f">F</i>':''}</td>`; } };
     return `<tr class="click${fut?' fut':''}" data-a="player" data-v="${p.id}"><td><span class="pn">${avImg(p)}<span>${esc(p.name)} ${tags}</span></span></td>${keys.map(td).join('')}</tr>`; };
   const n=keys.length+1;
   const cfg=`<div class="row between rcp-bar">${UI._own?rviewBar(pit):'<span></span>'}<button class="tc-i${UI.rcolOpen?' on':''}" data-a="rcolCfg">열 설정</button></div>${UI.rcolOpen?rcolPanel(pit):''}`;
   if(!sk){ return cfg+`<div class="tw"><table class="sqt rt"><thead>${head}</thead><tbody>${groups.filter(g=>g[1].length).map(([g,arr,posf])=>`<tr class="grp"><td colspan="${n}">${g} · ${arr.length}명</td></tr>`+arr.map(p=>row(p,posf?posf(p):null)).join('')).join('')}</tbody></table></div>`; }
   const allR=[]; for(const [g,arr,posf] of groups)for(const p of arr)allR.push({p,g,pos:posf?posf(p):null});
   const rpC=new Map(); const rpv=p=>{ if(!rpC.has(p.id))rpC.set(p.id,scoutReport(p)); return rpC.get(p.id); };
-  const val=x=>{ const p=x.p; switch(sk.k){ case 'name':return p.name; case 'pos':return x.pos||posLabel(p); case 'age':return p.age; case 'cur':return rpv(p).cur; case 'fut':return rpv(p).ofp??0; case 'mor':return p.mor??60; case 'fat':return p.fat||0; case 'arm':return armRatio(p); case 'sal':return p.sal; case 'inj':return p.injOut||0; default:{ const v=rstat(p,sk.k); return v==null?null:v; } } };
+  const val=x=>{ const p=x.p; switch(sk.k){ case 'name':return p.name; case 'pos':return x.pos||posLabel(p); case 'age':return p.age; case 'cur':return rpv(p).cur; case 'fut':return rpv(p).ofp??0; case 'mor':return p.mor??60; case 'fat':return p.fat||0; case 'arm':return armRatio(p); case 'sal':return p.sal; case 'inj':return p.injOut||0; case 'velo':return p.isP?veloOf(p):null; case 'conf':return -(rpv(p).sd||99); default:{ if(sk.k.startsWith('t_'))return rTool(rpv(p),sk.k.slice(2)); const v=rstat(p,sk.k); return v==null?null:v; } } };
   const asc=['era','whip','l','bb9','fip','hra'].includes(sk.k)&&pit;
   allR.sort((a,b)=>{ const va=val(a),vb=val(b); if(va==null&&vb==null)return 0; if(va==null)return 1; if(vb==null)return -1; const c=typeof va==='string'?va.localeCompare(vb):va-vb; let s=sk.dir<0?-c:c; if(asc)s=-s; return s; });
   return cfg+`<div class="row between"><span class="small muted">${allR.length}명 · ${sk.k==='name'?'선수':lab(sk.k)} 기준 정렬</span><button class="tc-i" data-a="rsort" data-v="">기본 배치로</button></div>

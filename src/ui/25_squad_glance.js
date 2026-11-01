@@ -9,6 +9,26 @@ function originOf(p){ if(!p||p.team!==G.user)return ''; if(p.foreign)return '외
   if(p.draft&&p.draft.tid===G.user)return `${String(p.draft.y).slice(2)}신인 ${p.draft.rd}R`;
   if(G.fd&&(G.fd.all||[]).includes(p.id))return '창단 배분'; return '자체 영입'; }
 /* 앞으로 몇 년의 예상 능력: 어리면 잠재 쪽으로, 31세부터 하락 */
+/* 선수별 장기 연봉표(OOTP식): 선수와 시즌을 교차해 확정액·협상 예상·FA·미계약을 구분한다. 복무 중 시즌은 지급하지 않는 게임 규칙을 따른다 */
+function cgCell(p,k,Y){ const y=Y+k; const m=p.mil; const srv=m&&m.until&&dobj(m.from).y<=y&&dobj(m.until).y>=y; const due=!p.foreign&&milFree(p)&&G.year+Math.max(0,27-p.age)===y;
+  const tag=srv?' <i class="cg-m">복무</i>':due?' <i class="cg-m">입대 기한</i>':''; const fr=s=>s<3?.35:s<6?.55:s<faSvc(p)?.78:1;
+  if(p.foreign)return k===0?{t:'fix',v:p.sal,h:`${money(p.sal)}`}:{t:'neg',v:0,h:'재계약 협상'};
+  if(p.extNext){ if(k===0)return {t:'fix',v:srv?0:p.sal,h:`${money(p.sal)}${tag}`}; if(k<=p.extNext.years)return {t:'fix',v:srv?0:p.extNext.annual,h:`${money(p.extNext.annual)}${tag}`}; return k===p.extNext.years+1?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
+  if(p.faC){ const n=Math.max(1,p.yrs||1); if(k<n)return {t:'fix',v:srv?0:p.sal,h:`${money(p.sal)}${tag}`}; return k===n?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
+  const cy=ctrlYears(p); if(k===0)return {t:'fix',v:srv?0:p.sal,h:`${money(p.sal)}${tag}`};
+  if(k<cy){ const e=round5(marketSal(projPlan(p,k))*Math.min(1,fr((p.svc||0)+k))); const v=Math.max(MIN_SAL,e); return {t:'est',v:srv?0:v,h:`~${money(v)}${tag}`}; }
+  return k===cy?{t:'fa',v:0,h:`FA 예상${tag}`}:{t:'none',v:0,h:'미계약'}; }
+function contractGrid(){ const Y=sponSeason(); const K=[0,1,2,3]; const ps=Object.values(G.players).filter(p=>p.team===G.user&&!(p.joinY>Y));
+  const R=ps.map(p=>({p,c:K.map(k=>cgCell(p,k,Y))})); const exp=x=>{ const i=x.c.findIndex(c=>c.t==='fa'||c.t==='none'||c.t==='neg'); return i<0?9:i; };
+  const so=UI.cgS||'exp'; R.sort((a,b)=>so==='sal'?b.p.sal-a.p.sal:so==='name'?a.p.name.localeCompare(b.p.name):(exp(a)-exp(b))||(b.p.sal-a.p.sal));
+  const L={fix:'확정',est:'협상 예상',fa:'',none:'',neg:''};
+  const fix=K.map(k=>sum(R.map(x=>x.c[k].t==='fix'?x.c[k].v:0))), est=K.map(k=>sum(R.map(x=>x.c[k].t==='est'?x.c[k].v:0)));
+  const th=(k,l)=>`<th><button class="lnk" data-a="cgSort" data-v="${k}">${l}${so===k?' ▾':''}</button></th>`;
+  return `<div class="row between"><span class="small muted">눌러서 정렬 · 선수를 누르면 계약 상세</span><span class="small"><span class="cg-k fix">확정</span> <span class="cg-k est">협상 예상</span> <span class="cg-k fa">FA</span></span></div>
+  <div class="tw cg-w"><table class="cg"><thead><tr>${th('name','선수')}${th('exp','계약 만료')}${K.map(k=>`<th>${Y+k}${k===0?'':''}</th>`).join('')}</tr></thead>
+  <tfoot><tr><th>확정 합계</th><td></td>${fix.map(v=>`<td class="num">${money(v)}</td>`).join('')}</tr><tr><th>협상 예상 포함</th><td></td>${K.map(k=>`<td class="num">${money(fix[k]+est[k])}</td>`).join('')}</tr><tr><th>샐러리캡</th><td></td>${K.map(k=>`<td class="num">${money(capOf(Y+k))}</td>`).join('')}</tr></tfoot>
+  <tbody>${R.map(x=>`<tr class="click" data-a="player" data-v="${x.p.id}"><th><span class="pn">${esc(x.p.name)}</span> <i class="f">${esc(posLabel(x.p))} · ${x.p.age}세${x.p.foreign?' · 외국인':''}</i></th><td class="small">${(()=>{ const i=exp(x); return i>=9?`${Y+3} 이후`:`${Y+i-1}년까지`; })()}</td>${x.c.map(c=>`<td class="cg-c ${c.t}" title="${L[c.t]||''}">${c.h}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <p class="small muted keep">확정은 이미 정해진 연봉(다년·FA 계약, 올해 연봉), 협상 예상(~)은 보류권 선수의 연봉 협상 추정(코치진 예상 능력 기준)입니다. FA 뒤는 0원이 아니라 미계약입니다. 복무 중인 시즌은 연봉이 예산·상한에서 빠지는 게임 규칙대로 합계에서 뺍니다. 외국인은 1년 계약이라 내년부터 재계약 협상입니다.</p>`; }
 function projPlan(p,k){ let o=ovr(p), a=p.age; const pot=Math.max(scoutReport(p).ofp??o,o); /* 진짜 잠재력이 아니라 스카우트 추정으로 내다본다 */ for(let i=0;i<k;i++){ a++; o+=a<=24?(pot-o)*.3:a<=27?(pot-o)*.22:a<=30?0:a<=33?-1.5:-3; } return o; }
 function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter(p=>p.team===G.user);
   if(!G.plEx||G.plEx.y!==Y)G.plEx={y:Y,ids:[]}; const EX=new Set(G.plEx.ids);
@@ -57,7 +77,7 @@ function plannerCard(){ const Y=G.year; const ps=Object.values(G.players).filter
     ${exL.length?`<p class="small keep">내년 계획에서 뺀 선수: ${exL.map(p=>esc(p.name)).join(', ')} <button class="tc-i" data-a="plExClear">되돌리기</button></p>`:''}
     <p class="small muted keep">FA는 계약이 끝나 그해 떠날 수 있는 선수, 재계약은 1년 계약 외국인입니다. 젊은 선수의 내년 값은 코치진 추정 범위입니다. 내년 칸의 ×로 계획에서 빼면 빈자리와 연봉 전망이 다시 계산됩니다. 실제 기용이나 선수 기분에는 영향이 없습니다.</p>
     ${risk.length?`<div class="eyebrow" style="margin-top:6px">2년 뒤 위험</div><ul class="pl-risk">${risk.slice(0,6).join('')}</ul>`:''}
-    <div class="eyebrow" style="margin-top:6px">국내 선수 연봉 전망</div>${payT}<p class="small muted keep">확정은 남은 다년·FA 계약, 예상은 보류권 선수의 연봉 협상 추정, FA 재계약 시는 계약이 끝나는 주축(예상 능력 62 이상)을 시장가로 잡을 때입니다.</p>
+    <div class="eyebrow" style="margin-top:6px">국내 선수 연봉 전망</div>${payT}<details class="cg-d" data-k="cgrid"${UI.open&&UI.open.cgrid?' open':''}><summary class="small"><b>선수별 장기 연봉표</b> · 합계가 왜 바뀌는지 선수·시즌별로</summary>${UI.open&&UI.open.cgrid?contractGrid():'<p class="small muted">펼치면 계산합니다.</p>'}</details><p class="small muted keep">확정은 남은 다년·FA 계약, 예상은 보류권 선수의 연봉 협상 추정, FA 재계약 시는 계약이 끝나는 주축(예상 능력 62 이상)을 시장가로 잡을 때입니다.</p>
     <div class="eyebrow" style="margin-top:6px">세대 구성 (국내 선수)</div><div class="gen">${gen}</div></section>`; }
 function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; const h1=lvl==='2'?null:seasonTotal(p,y,'1군'); const h=lvl==='2'?seasonTotal(p,y,'퓨처스'):(h1&&(p.isP?h1.outs:h1.pa)&&period()!=='pre'?h1:curLine(p)); /* 올해 1군 기록이 있으면 표본이 적어도 올해 것을 */
   const fu=lvl==='2'&&!p.isP&&p.fuse&&p.fuse.y===y?Object.entries(p.fuse.pos).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k,n])=>`${POSS[k]||k} ${n}`).join('·'):''; const st=(!h?'기록 없음':(lvl==='2'?'':yrTag(h)+' ')+(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)} · ${ipStr(h.outs)}이닝`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)} · ${h.hr}홈런`:'-')))+(fu?` · ${fu}`:'');

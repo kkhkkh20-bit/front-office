@@ -90,7 +90,7 @@ const QUICK=process.env.QUICK==='1';
   let seed=+process.env.MSEED||12345, clicks=0; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
   const monkey=async(label,per)=>{ const list=(await ev(()=>{ const L=[]; for(const [k] of NAV){ for(const [s] of (SUBS[k]||[]))L.push(k+':'+s); } return L; }))||[];
     for(const t of list){ for(let i=0;i<per;i++){ await ev(t=>{ closeSheets(); UI.cfm=null; A.go(t); },t);
-        const r=rnd(); where=`${label} · ${t} · 누름`; const hit=await ev(([NO,r])=>{ const L=[...document.querySelectorAll('#app [data-a]')].filter(x=>!x.disabled&&x.offsetParent!==null&&!NO.includes(x.dataset.a)&&typeof A[x.dataset.a]==='function'); if(!L.length)return null; const x=L[Math.floor(r*L.length)]; const info=[x.dataset.a,x.dataset.v||'']; x.click(); return info; },[[...NO],r]);
+        const r=rnd(); where=`${label} · ${t} · 누름`; const hit=await ev(([NO,r])=>{ const L=[...document.querySelectorAll('#app [data-a]')].filter(x=>!x.disabled&&x.offsetParent!==null&&!NO.includes(x.dataset.a)&&typeof A[x.dataset.a]==='function'); if(!L.length)return null; const x=L[Math.floor(r*L.length)]; const info=[x.dataset.a,x.dataset.v||'']; if(x.click)x.click(); else x.dispatchEvent(new MouseEvent('click',{bubbles:true})); return info; },[[...NO],r]);
         if(!hit)break; clicks++; where=`${label} · ${t} · 누름 ${hit[0]}(${hit[1]})`; await pg.waitForTimeout(40); await ev(()=>{ if(UI.cfm){ UI.cfm=null; } }); await blank(5); } } await ev(()=>{ closeSheets(); UI.cfm=null; render(); }); };
   /* 계약 협상 결과가 눈에 보이는지: 선수단 화면에서 연 다년계약 협상. 거절은 결과 줄(.ng-res)과 다음 제안 가능일, 합의는 도장이 맨 위에 떠야 한다 */
   const negResult=async label=>{ where=`${label} · 다년계약 결과`;
@@ -379,6 +379,29 @@ const QUICK=process.env.QUICK==='1';
       const cal=calEvents(KD(4,14)).some(e=>/상무 지원 마감/.test(e.t)); let re=true; const m=G.mgr[G.user]; if(m&&!m.interim){ const D=mgrDir(); const k0=D.arm; D.arm={ok:false,mid:m.id,day:G.day,rel0:m.rel}; re=calEvents(G.day+30).some(e=>/재논의/.test(e.t)); if(k0)D.arm=k0; else delete D.arm; }
       return {split:/위임에 따라 처리한 일/.test(h)&&/기본안이 적용된 일/.test(h)&&/data-a="evGive"/.test(h),scale:!/능력 55 이상/.test(h)&&!/능력 4 이상/.test(h),cal,re}; });
     if(r){ if(!r.split)add('위임','위임 처리와 기한 만료 처리가 섞여 있음'); if(!r.scale)add('위임','위임 규칙의 능력 기준이 화면 척도와 다름'); if(!r.cal)add('달력','달력에 상무 지원 마감이 없음'); if(!r.re)add('달력','달력에 감독 재논의 가능일이 없음'); } }
+  /* 거래 돈 표시: 올해 연봉 변화·내년·확정 잔여 보장액을 나누고, 예산 여유가 그대로면 이유. 다년계약 협상: 연도별 지출과 계약 후 상한 합계 */
+  { where='거래 돈 표시'; const r=await ev(()=>{ const me=domestic(G.user).filter(p=>!p.ys).sort((a,b)=>b.sal-a.sal)[2]; const o=G.teams.find(t=>t.id!==G.user); const op=domestic(o.id).filter(p=>!p.ys)[0]; if(!me||!op)return null; const h=dealMoney([me.id],[op.id]);
+      let ext=true; const L=playersOf(G.user).filter(p=>canExtend(p)); if(L.length){ closeSheets(); A.player(L[0].id); A.ngtOpen('ext:'+L[0].id); const tx=(document.querySelector('#sheet')||{}).textContent||''; ext=/연도별 지출/.test(tx)&&/계약 후 상한 합계/.test(tx); UI.ngt=null; closeSheets(); }
+      return {h:/확정 잔여 보장액/.test(h)&&/내년/.test(h),ext}; });
+    if(r){ if(!r.h)add('트레이드','거래 돈 표시가 올해·내년·확정 보장액으로 나뉘지 않음'); if(!r.ext)add('다년계약','협상창에 연도별 지출·계약 후 상한 합계가 없음'); } }
+  /* 선수단 목록: 능력 열(우리 평가 범위), 표시 범위 1군/2군/전체, 성적 기준 올 시즌/지난 시즌/통산 */
+  { where='선수단 열·범위·시즌'; const r=await ev(()=>{ closeSheets(); const keep={seg:UI.seg,sc:UI.rscope,se:UI.rsea,rt:UI.rosterTeam}; UI.rosterTeam=G.user; UI.it=UI.it||{}; UI.it.roster='list';
+      const abil=['t_stf','t_ctl','velo'].every(k=>rcolAll(true).some(x=>x[0]===k))&&['t_def','t_spd','t_pow'].every(k=>rcolAll(false).some(x=>x[0]===k));
+      UI.seg='bat'; UI.rscope='one'; const h1=rosterView(); UI.rscope='all'; const h2=rosterView(); const f2=depth(G.user).futB.length; UI.rsea='prev'; const h3=rosterView();
+      Object.assign(UI,{seg:keep.seg,rscope:keep.sc,rsea:keep.se,rosterTeam:keep.rt}); return {abil,scope:/data-a="rscope"/.test(h1)&&(!f2||/2군 · \d+명/.test(h2)),sea:/data-a="rsea"/.test(h1)&&new RegExp((statY()-1)+'').test(h3)}; });
+    if(r){ if(!r.abil)add('선수단','열 설정에 능력 항목(구위·제구·구속·수비·주력·파워)이 없음'); if(!r.scope)add('선수단','1군/2군/전체 표시 범위가 없음'); if(!r.sea)add('선수단','성적 기준(올 시즌/지난 시즌/통산) 선택이 없음'); } }
+  /* 선수 비교(같은 시즌·같은 군), 열 구성을 내 보기로 저장 */
+  { where='선수 비교·보기 저장'; const r=await ev(()=>{ const L=playersOf(G.user).filter(p=>p.isP).slice(0,2); if(L.length<2||typeof pcmpView!=='function')return {cmp:false,sv:typeof rcolPanel==='function'&&/data-a="rvSave"/.test(rcolPanel(false))}; UI.pcmp=[]; L.forEach(p=>A.pcmpTg(String(p.id))); const h=pcmpView(); UI.pcmp=[];
+      return {cmp:L.every(p=>h.includes(p.name))&&/같은 시즌/.test(h)&&/평가 확신도/.test(h),sv:/data-a="rvSave"/.test(rcolPanel(false))}; });
+    if(r){ if(!r.cmp)add('선수 비교','선수 2~3명을 같은 조건으로 비교할 수 없음'); if(!r.sv)add('선수단','열 구성을 내 보기로 저장할 수 없음'); } }
+  /* 선수별 장기 연봉표, 리그 분포 산점도 */
+  { where='장기 연봉표·리그 분포'; const r=await ev(()=>{ const g=typeof contractGrid==='function'?contractGrid():''; const d=typeof distView==='function'?distView():'';
+      return {grid:/확정 합계/.test(g)&&/(협상 예상|FA|확정)/.test(g),dist:/<svg/.test(d)&&/data-a="player"/.test(d)&&/data-a="dsAx"/.test(d)}; });
+    if(r){ if(!r.grid)add('연봉표','선수별 장기 연봉표가 없음'); if(!r.dist)add('리그 분포','리그 분포 산점도가 없음'); } }
+  /* 데이터: 구단 지표(득점×실점·피타고리안·경기 흐름), 선수 리그 백분위 */
+  { where='데이터 차트'; const r=await ev(()=>{ const keepTl=G.sea&&G.sea.tl; if(G.sea)G.sea.tl=G.teams.map((t,i)=>Array.from({length:6},(_,j)=>[j%2?1:-1,3+i%4,2+j%3,j%2,(i+1)%G.teams.length,G.day])); const tv=typeof teamDataView==='function'?teamDataView():''; if(G.sea)G.sea.tl=keepTl; const p=playersOf(G.user).find(q=>!q.isP&&!hideOvr(q)); const pc=p&&typeof pctCard==='function'?pctCard(p):'';
+      return {team:/피타고리안/.test(tv)&&/득점/.test(tv),pct:/리그 백분위/.test(pc)}; });
+    if(r){ if(!r.team)add('데이터','구단 지표(득점·실점·피타고리안) 화면이 없음'); if(!r.pct)add('데이터','선수 리그 백분위 카드가 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

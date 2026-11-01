@@ -52,7 +52,7 @@ function digestDiag(D){ const me=G.user; const gs=(G.games||[]).filter(g=>g.box&
 
 /* 선수단 목적별 보기: 열 구성을 한 번에 바꾼다 */
 const RVIEW={base:['기본',null],add:['전력 보강',{bat:['cur','pos','war','ops','pa','sal'],pit:['cur','pos','war','era','ip','sal']}],reb:['리빌딩',{bat:['age','fut','cur','pos','pa','ct'],pit:['age','fut','cur','pos','ip','ct']}],pay:['연봉 정리',{bat:['sal','ct','war','age','cur'],pit:['sal','ct','war','age','cur']}],inj:['부상 대응',{bat:['inj','cur','pos','fat','war'],pit:['inj','cur','pos','fat','war']}]};
-function rviewBar(pit){ const cur=UI.rview&&UI.rview[pit?'pit':'bat']||'base'; return `<div class="chips rview">${Object.entries(RVIEW).map(([k,[l]])=>`<button data-a="rview" data-v="${k}" class="${cur===k?'on':''}">${l}</button>`).join('')}</div>`; }
+function rviewBar(pit){ const cur=UI.rview&&UI.rview[pit?'pit':'bat']||'base'; const U=(rvUser()[pit?'pit':'bat'])||{}; return `<div class="chips rview">${Object.entries(RVIEW).map(([k,[l]])=>`<button data-a="rview" data-v="${k}" class="${cur===k?'on':''}">${l}</button>`).join('')}${Object.keys(U).map(n=>`<button data-a="rvUse" data-v="${esc(n)}" class="${cur==='u:'+n?'on':''}">${esc(n)}</button><button class="rcp-x" data-a="rvDel" data-v="${esc(n)}" aria-label="${esc(n)} 보기 지우기">×</button>`).join('')}</div>`; }
 Object.assign(A,{
   autoSeen(){ G.autoSeen=G.day; save(); render(); },
   rview(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; UI.rview=UI.rview||{}; UI.rview[k]=v; rcolLoad(); const P=RVIEW[v]&&RVIEW[v][1]; if(P)UI.rcols[k]=P[k].slice(); else delete UI.rcols[k]; rcolSave(); render(); }

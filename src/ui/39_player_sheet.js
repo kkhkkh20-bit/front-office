@@ -31,6 +31,26 @@ function fsBox(p,rp){ const f=fScout(p,rp); const st=[0,1,2,3].map(i=>`<i class=
   return `<div class="fsbox ${f.cls}"><div class="fs-h"><span class="fs-st">${st}</span><b>종합 평가 신뢰도 ${fRel(f)}</b>${f.mid!=null?`<span class="fs-r">종합 추정 <b class="num">${f.mid}</b> <span class="muted">(실제는 대체로 ${f.lo}~${f.hi})</span></span>`:''}</div>${f.sc!=null||f.rec!=null?`<p class="small">${f.sc!=null?`스카우트 평가 <b class="num">${f.sc}</b>`:''}${f.sc!=null&&f.rec!=null?' · ':''}${f.rec!=null?`기록으로 본 수준 <b class="num">${f.rec}</b>`:''} <span class="muted">→ 믿을 만한 쪽에 더 무게를 둬 합쳤습니다</span></p>`:''}
     <dl class="kv fs-kv"><dt>현장 관찰</dt><dd>${k!=null?`관찰 명단 · 진행 ${k}%`:'관찰 명단 밖'} · 스카우트 정보 ${esc(f.l)}</dd><dt>종합 평가 신뢰도</dt><dd>${fRel(f)} · 스카우트 평가와 지난 리그 기록을 합친 범위 폭 ±${f.band??'-'} (관찰 진행률과 별개: 기록이 믿을 만하면 관찰이 덜 됐어도 높을 수 있습니다)</dd><dt>미확인 항목</dt><dd>${U.length?esc(U.join(' · ')):'없음'}</dd></dl>
     <p class="small fs-why">근거: ${esc(f.why.join(' · '))}</p>${f.tip?`<p class="small">${esc(f.tip)}</p>`:''}</div>`; }
+/* 선수 비교: 담은 2~3명을 같은 시즌·같은 군 기록과 같은 평가 기준으로 나란히. 추천 순위는 매기지 않는다 */
+function pcmpView(){ const P=(UI.pcmp||[]).map(id=>G.players[id]).filter(Boolean); if(!P.length)return '<p class="small muted">선수 정보 위쪽의 \'비교에 담기\'로 2~3명을 담으세요.</p>';
+  const y=UI.pcSea==='prev'?statY()-1:statY(), lv=UI.pcLvl==='퓨처스'?'퓨처스':'1군'; const anyP=P.some(p=>p.isP), anyB=P.some(p=>!p.isP);
+  const RP=new Map(P.map(p=>[p.id,scoutReport(p)])); const tl=(p,k)=>{ const t=(RP.get(p.id).tools||[]).find(x=>x.k===k); return t?rchip(t.cur):'-'; };
+  const H=p=>seasonTotal(p,y,lv); const small=(p,h)=>h&&(p.isP?(h.outs||0)<30:(h.pa||0)<60);
+  const rows=[['구단 · 포지션 · 나이',p=>`${p.team!=null?esc(tshort(p.team)):'-'} · ${esc(posLabel(p))} · ${p.age}세`],['현재',p=>{ const cv=curView(p,RP.get(p.id)); return hideOvr(p)&&!cv.est?'?':`${rchip(cv.v)}${cv.est?` <span class="small muted">${cv.lo}~${cv.hi}</span>`:''}`; }],['잠재력',p=>potChip(RP.get(p.id),p)],['평가 확신도',p=>esc(RP.get(p.id).conf||'-')]];
+  if(anyP)rows.push(['구위',p=>p.isP?tl(p,'stf'):'-'],['제구',p=>p.isP?tl(p,'ctl'):'-'],['체력',p=>p.isP?tl(p,'sta'):'-'],['구속',p=>p.isP?`${veloOf(p)}km`:'-']);
+  if(anyB)rows.push(['컨택',p=>p.isP?'-':tl(p,'con')],['파워',p=>p.isP?'-':tl(p,'pow')],['선구',p=>p.isP?'-':tl(p,'eye')],['주력',p=>p.isP?'-':tl(p,'spd')],['수비',p=>p.isP?'-':tl(p,'def')]);
+  rows.push([`${y} ${lv} 성적`,p=>{ const h=H(p); if(!h)return '<span class="muted">기록 없음</span>'; const sm=small(p,h)?' <b class="warn">적은 표본</b>':''; if(p.isP){ const r=pRate(h); return `${ipStr(h.outs||0)}이닝${sm} · ERA ${h.outs?r.era.toFixed(2):'-'} · K/9 ${h.outs?r.k9.toFixed(1):'-'} · BB/9 ${h.outs?r.bb9.toFixed(1):'-'} · WAR ${wOf(h,p).toFixed(1)}`; } const r=bRate(h); return `${h.pa}타석${sm} · 타율 ${fmt3(r.avg)} · OPS ${fmt3(r.ops)} · ${h.hr}홈런 · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'} · WAR ${wOf(h,p).toFixed(1)}`; }],
+    ['계약',p=>`${money(p.sal)} · ${esc(ctText(p))}`],['병역',p=>p.foreign?'해당 없음':esc(milText(p))]);
+  const opt=(k,v,l,cur)=>`<button data-a="pcOpt" data-v="${k}:${v}" class="${cur?'on':''}">${l}</button>`;
+  return `<div class="row wrapr"><div class="seg sm">${opt('sea','cur',`${statY()} 시즌`,UI.pcSea!=='prev')}${opt('sea','prev',`${statY()-1} 시즌`,UI.pcSea==='prev')}</div><div class="seg sm">${opt('lvl','1군','1군',lv==='1군')}${opt('lvl','퓨처스','2군',lv==='퓨처스')}</div></div>
+    <div class="tw"><table class="sqt pcmp"><thead><tr><th></th>${P.map(p=>`<th><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <button class="tc-i" data-a="pcmpTg" data-v="${p.id}" aria-label="빼기">×</button></th>`).join('')}</tr></thead><tbody>${rows.map(([l,f])=>`<tr><td class="small muted">${l}</td>${P.map(p=>`<td>${f(p)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <p class="small muted">같은 시즌·같은 군 기록만 나란히 둡니다(60타석·10이닝 미만은 적은 표본). 능력은 선수 화면 스카우트 리포트와 같은 평가이고, 다른 구단 선수는 담당 스카우트가 본 범위입니다. 순위나 추천은 매기지 않습니다.</p>`; }
+/* 리그 백분위(Baseball Savant식): 같은 시즌 1군에서 기준(타자 50타석·투수 20이닝)을 넘긴 선수 중 위치. 빨강=상위, 파랑=하위. 기록과 공개 트래킹만 쓴다 */
+function pctCard(p){ if(hideOvr(p))return ''; const y=statY(); const h=seasonTotal(p,y,'1군'); const qual=h&&(p.isP?(h.outs||0)>=60:(h.pa||0)>=50); const pool=pctPool(!!p.isP,y); if(pool.length<15)return '';
+  const V=pctVals(p,h); const M=p.isP?PCT_P:PCT_B; const col=v=>{ const t=(v-50)/50; const a=[59,111,182],m=[178,178,178],b=[210,59,59]; const c=t<0?a.map((x,i)=>Math.round(m[i]+(x-m[i])*-t)):b.map((x,i)=>Math.round(m[i]+(x-m[i])*t)); return `rgb(${c.join(',')})`; };
+  const row=([k,l,dir,trk])=>{ const v=V[k]; if(v==null||!isFinite(v)||(!trk&&!qual))return `<div class="pct-r off"><span>${l}</span><span class="pct-b"></span><b>-</b><i>${trk?'':'기준 미달'}</i></div>`; const all=pool.map(x=>x[k]).filter(x=>x!=null&&isFinite(x)); const below=all.filter(x=>dir>0?x<v:x>v).length; const pc=Math.round(below/Math.max(1,all.length)*100);
+    const fv=['ops','obp','iso'].includes(k)?fmt3(v):['era','whip','run'].includes(k)?v.toFixed(2):['k9','bb9','hr9','bbp','kp'].includes(k)?v.toFixed(1):Math.round(v); return `<div class="pct-r"><span>${l}</span><span class="pct-b"><i style="width:${pc}%;background:${col(pc)}"></i><em style="left:${pc}%;background:${col(pc)}">${pc}</em></span><b>${fv}</b><i>${trk?'트래킹':''}</i></div>`; };
+  return `<div class="pct"><div class="row between"><span class="eyebrow">${y} 리그 백분위</span><span class="small muted">1군 ${p.isP?'20이닝':'50타석'} 이상 ${pool.length}명 기준${qual?'':` · 이 선수는 기준 미달이라 기록 항목은 비움(트래킹만)`}</span></div>${M.map(row).join('')}<p class="small muted">숫자는 백분위(100에 가까울수록 리그 상위, 빨강), 오른쪽은 실제 값입니다. 삼진%·볼넷 허용처럼 낮을수록 좋은 항목은 뒤집어 계산했습니다. 트래킹 항목은 공개 측정값입니다.</p></div>`; }
 function reportCard(p,noTools){
   const rp=scoutReport(p);
   if(hideOvr(p))return `<section class="card"><div class="row between"><h2 class="sec">스카우트 의견</h2><span class="small muted">${fdHideNow(p)?'우리 스카우트 추정':p.foreign&&p.team==null?`조사 단계 · ${fScout(p,rp).l}`:`${esc(rp.who)} · 정확도 ${rp.conf}`}</span></div>${p.foreign&&p.team==null?fsBox(p,rp):''}
@@ -84,6 +104,7 @@ function renderSheet0(){
   if(UI.cast&&UI.sheet==null&&!UI.menu){ const ex=el.querySelector('.cast'); if(!ex||+ex.dataset.g!==UI.cast.g){ el.innerHTML=castSheet(); castMount(); } return; }
   if(UI.cer&&UI.sheet==null&&!UI.menu){ el.innerHTML=cerSheet(); return; }
   if(UI.ivSh&&UI.sheet==null&&!UI.menu){ el.innerHTML=ivSheet(); return; }
+  if(UI.pcmpSh&&UI.sheet==null&&!UI.menu){ el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="선수 비교"><div class="sheet-head"><h2 class="sec">선수 비교</h2><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>${pcmpView()}</div></div>`; return; }
   if(UI.cmpSh&&UI.sheet==null&&!UI.menu){ el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="전력 비교"><div class="sheet-head"><h2 class="sec">전력 비교</h2><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>${cmpView()}</div></div>`; return; }
   if(UI.menu){ el.innerHTML=menuSheet(); return; }
   if(UI.teamSh!=null&&UI.sheet==null){ el.innerHTML=teamSheet(UI.teamSh); return; }
@@ -130,7 +151,7 @@ function renderSheet0(){
   el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut" style="${pst}" role="dialog" aria-label="${esc(p.name)} 선수 정보" data-stop="1">
    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${avImg(p,true)}<div><div class="eyebrow">${where}${isFA?' · FA':''}${p.foreign&&p.team!=null?` · ${p.foreign==='아시아'?'아시아쿼터':'외국인'} · ${p.nat}`:''}</div>
     <h2 class="sec" style="font-size:24px">${esc(p.name)}${condChip(p)}</h2>${p.aw&&p.aw.length?`<div class="row" style="gap:4px;margin:2px 0">${p.aw.slice(-6).map(a=>`<span class="awp">${awArt(a,18)}${esc(a)}</span>`).join('')}</div>`:''}
-    <p class="pinfo keep"><b class="pinfo-pos">${posLabel(p)}</b>${!p.isP&&typeof subsOf==='function'&&subsOf(p).length?`<span class="pinfo-sub">(${subsOf(p).map(k=>POSK[k]||k).join('·')} 가능)</span>`:''} · <b>${p.age}세</b> · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.rd}R ${p.draft.no}순위`:''}${p.dev?' · 육성선수 출신':''}</p></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    <p class="pinfo keep"><b class="pinfo-pos">${posLabel(p)}</b>${!p.isP&&typeof subsOf==='function'&&subsOf(p).length?`<span class="pinfo-sub">(${subsOf(p).map(k=>POSK[k]||k).join('·')} 가능)</span>`:''} · <b>${p.age}세</b> · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.rd}R ${p.draft.no}순위`:''}${p.dev?' · 육성선수 출신':''}</p></div></div><button class="tc-i pcmp-b${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}" title="같은 시즌·같은 군 기준으로 2~3명을 나란히 비교">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':`비교에 담기${(UI.pcmp||[]).length?` (${(UI.pcmp||[]).length}/3)`:''}`}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i go" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
    ${keyBar(p,rp,isFA,isFM)}${posValLine(p,rp)}
    <div class="row">${p.fdPool||fdHideNow(p)?'':`<span class="pill acc">${esc(rp.arch)}</span>`}${rp.role&&!p.fdPool&&!fdHideNow(p)?`<span class="pill">${p.foreign?'올해 예상':'장래'} ${esc(rp.role)}</span>`:''}${status}</div>
    ${quickActs(p)}
@@ -155,7 +176,7 @@ function renderSheet0(){
    `:''}
    ${T==='dev'?devTab(p):''}
    ${T==='rec'?`
-   <div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
+   ${pctCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
