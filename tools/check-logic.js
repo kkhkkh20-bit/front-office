@@ -403,7 +403,7 @@ T('[감사] 세이브는 1이닝 이상(동점 주자 상황이면 아웃 1개 �
   ok(sv>20,'준비 실패: 세이브 '+sv); ok(!badS,'조건에 맞지 않는 세이브 '+badS+'건(아웃 수 부족)'); ok(!badH,'아웃 없이 받은 홀드 '+badH+'건'); ok(!miss,'세이브 조건을 채운 마무리에게 세이브가 없음 '+miss+'건(리드 1~2점 등판은 동점 주자가 타석·대기 타석에 있음)'); });
 
 T('[감사] 겨울 연봉 상한 경고는 재계약 연봉(newSal)과 다음 시즌 상한으로 본다',()=>{ fresh(); G.last=Object.assign({},G.last||{},{y:G.year}); const L=domestic(G.user).filter(p=>!isRookie(p)).sort((a,b)=>b.sal-a.sal);
-  const cap=capOf(sponSeason()); const pay0=capPay(G.user); ok(pay0<cap,'준비 실패: 이미 상한 초과'); const need=cap-pay0+500; L.slice(0,5).forEach(p=>{ p.newSal=p.sal+Math.ceil(need/5); });
+  const cap=capOf(sponSeason()); { let k=0; while(capPay(G.user)>=cap-300&&k++<40){ const q=L[k%L.length]; q.sal=Math.max(MIN_SAL,Math.round(q.sal*.7)); } } /* 세계에 따라 창단 직후 이미 상한을 넘는 경우가 있어 먼저 상한 아래로 맞춘다 */ const pay0=capPay(G.user); ok(pay0<cap,'준비 실패: 이미 상한 초과'); const need=cap-pay0+500; L.slice(0,5).forEach(p=>{ p.newSal=p.sal+Math.ceil(need/5); });
   const n0=G.mail.length; capWarnUser(); ok(G.mail.length>n0&&G.mail.slice(0,G.mail.length-n0).some(m=>(m.body||'').includes('상한')),'재계약 연봉으로 상한을 넘는데 경고가 없음'); });
 
 T('[감사] 구장 공사는 3월(개막 준비)에는 시작할 수 없다',()=>{ fresh(); G.day=KD(3,10); ok(period()==='pre','준비 실패: 3월이 시즌 준비 기간이 아님'); team(G.user).cash=999999; const S=stadOf(G.user); const k=STAD_ITEMS.find(x=>S.lv[x.k]<5).k;
@@ -562,6 +562,13 @@ T('[재임 성과] 내가 데려온 선수는 떠나도 재임 성과 목록에 
 T('[떠난 선수 기록] 리그를 떠나는 선수(은퇴·해외·방출)는 1군 시즌 기록을 보관해 나중에도 열어 볼 수 있다',()=>{ fresh(); const p=Object.values(G.players).find(q=>q.foreign&&q.hist.some(h=>h.lvl==='1군'&&(h.pa>=100||h.outs>=150))); ok(p,'준비 실패'); const id=p.id, nm=p.name;
   ok(typeof dropP==='function','보관 함수 없음'); dropP(id); ok(!G.players[id],'삭제 안 됨'); const a=G.arch&&G.arch[id]; ok(a&&a.name===nm&&a.rows.length>=1&&a.rows.every(r=>r.war!=null&&r.t!=null),'보관 '+JSON.stringify(a||null).slice(0,120));
   const q=Object.values(G.players).find(x=>x.prospect); if(q){ dropP(q.id); ok(!G.arch[q.id],'1군 기록 없는 선수까지 보관'); } });
+T('[감독 야구] 스몰볼 감독은 발 빠르고 출루하는 타자를 주전 선정에서 더 쳐주고, AI 구단도 자기 감독 야구에 맞는 선수를 더 비싸게 본다',()=>{ fresh(); const m=G.mgr[G.user]; Object.assign(m,{small:85,dfn:50,pen:50,arm:50,youth:50}); ok(typeof mgrRolesOf==='function'&&mgrRolesOf(m).includes('runSPD'),'역할 '+(typeof mgrRolesOf==='function'?mgrRolesOf(m):'-'));
+  const p=domestic(G.user).find(q=>!q.isP); const r0={...p.r}; Object.assign(p.r,{spd:76,eye:56}); const a=polBonus(G.user,p); Object.assign(p.r,{spd:40}); const b=polBonus(G.user,p); p.r=r0; ok(a-b>=1,'빠른 선수 기용 가산 '+a+' vs '+b);
+  const t=G.teams.find(x=>x.id!==G.user); const tm=G.mgr[t.id]; Object.assign(tm,{small:20,dfn:30,pen:50,arm:50,youth:50}); const q=domestic(G.user).find(x=>!x.isP&&x.r.pow<55); const q0={...q.r}; const v1=mgrFitMul(t.id,q,'in'); Object.assign(q.r,{pow:72,con:55}); const v2=mgrFitMul(t.id,q,'in'); q.r=q0; ok(v2>v1,'빅볼 구단이 장타자를 더 쳐줌 '+v1+' '+v2); });
+T('[감독 야구] 맞는 주전이 모자라면 역할 조건으로 요청하고, 그 조건을 채우는 선수를 데려오면(추천 선수가 아니어도) 들어준 것으로 본다',()=>{ fresh(); const m=G.mgr[G.user]; Object.assign(m,{small:85,dfn:50,pen:50,arm:50,youth:50}); m.rel=50; G.mreq=[]; G.mgrFitD=null;
+  for(const p of domestic(G.user))if(!p.isP)p.r.spd=Math.min(p.r.spd,45); const need=mgrNeedRole(G.user); ok(need&&/^run/.test(need.k),'필요 역할 '+JSON.stringify(need));
+  mreqMake('fit',need); const r=mreqs().find(x=>x.k==='fit'); ok(r,'요청 없음'); ok((r.data.cands||[]).length>=1&&r.data.cands.every(id=>roleOk(G.players[id],r.data.role)),'후보가 역할 조건을 채우지 않음');
+  r.st='open'; const other=Object.values(G.players).find(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&roleOk(p,r.data.role)&&!r.data.cands.includes(p.id)); ok(other,'준비 실패'); other.team=G.user; acqStamp(other,'트레이드',G.user,{from:null}); mreqCheck(); ok(r.st==='done'&&m.rel>50,'조건 충족 인정 '+r.st+' '+m.rel); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

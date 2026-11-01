@@ -71,9 +71,13 @@ function tutCard(){ const t=G.tut; if(!t||t.done)return ''; const s=TUT[t.step];
   return `<section class="card hero"><div class="row between"><span class="eyebrow">비서 업무 안내 · ${t.step}/${TUT.length-1}</span><button class="btn small" data-a="tutSkip">건너뛰기</button></div>
   <div class="row" style="flex-wrap:nowrap;align-items:center">${avImg('sec')}<div><b>${esc(s.subj)}</b>${s.prog?`<p class="small">${esc(s.prog())}</p>`:''}</div></div>
   ${s.btn?`<button class="btn primary block" data-a="${s.go[0]}" data-v="${s.go[1]}">${esc(s.btn)}</button>`:''}</section>`; }
+/* 감독이 추구하는 야구와 우리 선수단: 원하는 역할별 주전 현황(후보 감독이면 '이 감독이 오면') */
+function mgrFitBox(x,cur){ const L=mgrRolesOf(x); const ty=mgrType(x); if(!L.length)return `<p class="small"><b>추구하는 야구</b> ${esc(ty.n)} · 특정 유형 선수를 따로 찾지 않습니다.</p>`;
+  const rows=L.map(k=>{ const R0=MROLE[k]; const H=roleHave(G.user,k); return `<li><b>${R0.l}</b> 주전 ${H.length}/${R0.tgt}명${H.length?` <span class="muted">(${H.slice(0,4).map(p=>esc(p.name)).join(', ')})</span>`:''}${H.length<R0.tgt?' <span class="warn">모자람</span>':''}</li>`; }).join('');
+  const st=cur?mgrPlayStat(G.user,x):''; return `<div class="small"><b>추구하는 야구</b> ${esc(ty.n)} — 원하는 선수 역할${cur?'':'(이 감독이 오면 우리 선수단 기준)'}<ul class="small" style="margin:4px 0 4px 16px">${rows}</ul>${st?`<span class="muted">${esc(st)}</span>`:''}</div>`; }
 function mgrRow(x,act){ mgrFix(x); return `<div class="item wa" style="cursor:default">${avImg({persona:'mgr',pid:x.id,name:x.name,age:x.age,team:G.user})}<span class="nm">${esc(x.name)} <span class="small muted">${x.age}세</span>${x.fame>=70?' <span class="pill warn">스타 감독</span>':''}${obTag(x.ob)}${x.ego>=70?' <span class="pill bad">고집</span>':''}</span><span class="sub">${esc(x.career)}</span><span class="rt num">${money(x.sal)}</span></div>
   ${(()=>{ const ty=mgrType(x); return `<div class="mtype"><b>${esc(ty.n)}</b><span class="small">${esc(ty.d)}</span></div>`; })()}
-  <div class="eyebrow mlab">성향</div>${mgrStyleBox(x)}<div class="eyebrow mlab">능력</div>${mgrAbilBox(x)}${mgrPersLine(x)}${act||''}`; }
+  ${mgrFitBox(x,G.mgr[G.user]===x)}<div class="eyebrow mlab">성향</div>${mgrStyleBox(x)}<div class="eyebrow mlab">능력</div>${mgrAbilBox(x)}${mgrPersLine(x)}${act||''}`; }
 function policyCard(m){
   const p=G.policy; const lean=teamLean(G.user); const cd=p&&G.day-p.day<14;
   const leanTxt=lean>.35?'육성 쪽':lean<-.35?'성적 쪽':'균형';
