@@ -5,7 +5,7 @@ function statCells(p){ // 신인·외국인 후보: 능력치 대신 기록 5칸
   const h=p.prospect?p.am:p.prev; if(!h)return '';
   const c=(l,v,cls)=>`<div><span>${l}</span><b class="${cls||''}">${v}</b></div>`;
   if(p.isP){ const o=h.outs||0; const k9=o?h.so*27/o:0, b9=o?h.bb*27/o:0, era=o?(h.er||0)*27/o:0;
-    return `<div class="tc-tools sc5">${c('ERA',o?era.toFixed(2):'-')}${c('K/9',o?k9.toFixed(1):'-',k9>=9?'gd':k9<6?'bd':'')}${c('BB/9',o?b9.toFixed(1):'-',b9<=3?'gd':b9>=5?'bd':'')}${c('이닝',ipStr(o))}${p.prospect?c('최고 구속',(p.amVelo?p.amVelo+5:veloMax(p))+''):c('WHIP',o?((h.h+h.bb)*3/o).toFixed(2):'-')}</div>`; }
+    return `<div class="tc-tools sc5">${c('ERA',o?era.toFixed(2):'-')}${c('K/9',o?k9.toFixed(1):'-',k9>=9?'gd':k9<6?'bd':'')}${c('BB/9',o?b9.toFixed(1):'-',b9<=3?'gd':b9>=5?'bd':'')}${c('이닝',ipStr(o))}${p.prospect?c('최고 구속',amVmax(p)+''):c('WHIP',o?((h.h+h.bb)*3/o).toFixed(2):'-')}</div>`; }
   const r=bRate(h); const bk=h.so?h.bb/h.so:0;
   const ev=evOf(p)-(p.prospect?(p.college?2:5):0);
   return `<div class="tc-tools sc5">${c('타구속도',ev+'',ev>=140?'gd':ev<130?'bd':'')}${c('OPS',fmt3(r.ops),r.ops>=.9?'gd':r.ops<.65?'bd':'')}${c('홈런',h.hr)}${c('볼삼비',h.so?bk.toFixed(2):'-',bk>=.8?'gd':bk<=.3?'bd':'')}${p.prospect?c('1루',(p.amRun||runOf(p))+''):(()=>{ const w=wrcPlus(h,h.y); return c('wRC+',w==null?'-':w+'',w>=130?'gd':w!=null&&w<80?'bd':''); })()}</div>`; }

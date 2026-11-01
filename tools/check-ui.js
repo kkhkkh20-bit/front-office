@@ -351,6 +351,12 @@ const QUICK=process.env.QUICK==='1';
   /* 동률: 공동 선두가 여럿이면 모두 셈 */
   { where='공동 선두'; const r=await ev(()=>{ const keep=standOrder; const fake=G.teams.map((t,i)=>({tid:t.id,w:i<5?1:0,l:i<5?0:1,t:0})); standOrder=()=>({order:fake,live:true,y:G.year}); let h=''; try{ h=miniStand(); }catch(e){ h='ERR '+e.message; } finally{ standOrder=keep; } return {ok:/등 5개 구단 공동 선두/.test(h),h:h.slice(0,80)}; });
     if(r&&!r.ok)add('순위','5개 구단 동률인데 두 팀만 공동 선두로 표시: '+r.h); }
+  /* 드래프트: 카드와 아마 프로필의 최고 구속이 같고, 관심 목록은 내 보드(순위 이동·메모·고려 라운드·확인할 것) */
+  { where='드래프트 보드'; const r=await ev(()=>{ const pool=draftPool(); const pp=pool.find(q=>q.isP); if(pool.length<2||!pp)return null; const out={};
+      const cell=(statCells(pp).match(/최고 구속<\/span><b[^>]*>(\d+)/)||[])[1]; closeSheets(); A.player(pp.id); const sh=((document.querySelector('#sheet')||{}).textContent||''); const prof=(sh.match(/최고 구속(\d+)km/)||[])[1]; closeSheets(); out.velo=cell&&cell===prof; out.dbg=cell+'/'+prof;
+      const keep=G.shortlist; G.shortlist=[pool[0].id,pool[1].id]; UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'mine',more:20}; const h=draftBoard(); out.board=/data-a="dmemo"/.test(h)&&/data-a="drd"/.test(h)&&/data-a="dchk"/.test(h);
+      if(A.dmove){ A.dmove(pool[1].id+':-1'); out.mv=G.shortlist[0]===pool[1].id; } G.shortlist=keep; UI.df.seg='board'; return out; });
+    if(r){ if(!r.velo)add('드래프트','후보 카드와 아마 프로필의 최고 구속이 다름 '+r.dbg); if(!r.board||!r.mv)add('드래프트','관심 목록에 내 순위·메모·고려 라운드·확인할 것이 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

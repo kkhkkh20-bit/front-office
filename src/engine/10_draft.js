@@ -118,7 +118,7 @@ function fdWelcome(){ const t=team(G.user); const B=bossOf(G.user); const f=fdFi
   addLog(`${tname(G.user)} 창단 단장으로 부임했습니다.`); }
 
 /* 드래프트 언론 보도: 6월 15일 '최대어 TOP 10', 8월 25일 '1라운드 모의 지명'. 언론 순위는 눈에 보이는 성적·구속·체격으로 매긴 것이라 잠재력과 다를 수 있다 */
-function draftPressLine(p){ const h=p.am; if(!h)return ''; if(p.isP){ const r=pRate(h); return `ERA ${r.era.toFixed(2)} · 탈삼진 ${h.so}${p.amVelo?` · 최고 ${p.amVelo}km`:''}`; } const r=bRate(h); return `OPS ${fmt3(r.ops)} · 홈런 ${h.hr}${h.sb>=10?` · 도루 ${h.sb}`:''}`; }
+function draftPressLine(p){ const h=p.am; if(!h)return ''; if(p.isP){ const r=pRate(h); return `ERA ${r.era.toFixed(2)} · 탈삼진 ${h.so}${p.amVelo?` · 최고 ${amVmax(p)}km`:''}`; } const r=bRate(h); return `OPS ${fmt3(r.ops)} · 홈런 ${h.hr}${h.sb>=10?` · 도루 ${h.sb}`:''}`; }
 function draftPressNews(day){ if(G.unemp||!G.draftClass||!G.draftClass.length||(G.draft&&!G.draft.done&&G.draft.y===G.year))return;
   const cls=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.press).sort((a,b)=>a.press-b.press);
   if(day===KD(6,15)&&cls.length){ const L=cls.slice(0,10).map((p,i)=>`${i+1}. ${p.name}(${p.school||p.region}, ${posLabel(p)}) ${draftPressLine(p)}`);

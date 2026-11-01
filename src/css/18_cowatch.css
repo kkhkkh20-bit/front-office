@@ -46,3 +46,6 @@
 
 /* 동작 줄이기: 날짜 띠는 움직임 없이 보였다가 사라진다 */
 @media (prefers-reduced-motion:reduce){ #dtick{display:block!important;transition:opacity .2s;transform:translate(-50%,0)!important} #dtick .dt-flip.go{animation:none} }
+
+/* 내 드래프트 보드 */
+.dboard .dbr{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}.dboard .dbr:first-child{border-top:0}.dbr-k{min-width:20px;font-weight:700}.dbr-mv{display:flex;flex-direction:column;gap:2px}.dbr-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
