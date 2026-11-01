@@ -62,7 +62,6 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   let COL, CR, CS, CD;
   { /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
     CR=isP?[
-      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('era','ERA',x=>sOK(x)?-x.s.era:-99,x=>td(sOK(x)?n2(x.s.era):'-')),
       c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
@@ -73,7 +72,6 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('w','승-패',x=>x.s?(x.s.h.w||0):0,x=>td(x.s?`${x.s.h.w||0}-${x.s.h.l||0}${x.s.h.sv?`<i class="sm"> ${x.s.h.sv}세</i>`:x.s.h.hld?`<i class="sm"> ${x.s.h.hld}홀</i>`:''}`:'-')),
 ]
     :[
-      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
       c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
       c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
       c('wrc','wRC+',x=>sOK(x)&&x.s.wrc!=null?x.s.wrc:-999,x=>td(sOK(x)&&x.s.wrc!=null?x.s.wrc:'-',sOK(x)&&x.s.wrc>=140?'hi':''),'조정 득점 창출력(리그 평균 100, 퓨처스 기록은 퓨처스 기준)'),
@@ -86,7 +84,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
 ]; }
   { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
     CS=[
-      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'스카우트가 본 장래 최고 능력(추정). 어릴수록 오차가 큽니다'),
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'장래성: 스카우트가 본 3년 뒤 예상 능력. 젊으면 성장, 30대는 하락을 반영합니다. 어릴수록 오차가 큽니다'),
       ...(isP?[c('velo','구속',x=>fdScoutTools(x.p).velo,x=>td(`${fdScoutTools(x.p).velo}<i class="sm"> ${veloMax(x.p)}</i>`),'직구 평균 · 최고(km)')]:[]),
       ...TO.map(([k,l])=>c('t:'+k,l,x=>GL[tg(x,k)]*100+wv(x),x=>{ const z=tz(x,k); return `<td class="fdg" style="color:${fdGc(z.g)}">${z.g}</td>`; },`스카우트가 눈으로 본 ${l} 등급(S·A·B·C·D·E). 스카우트마다 버릇이 있고, 경기에서 드러나는 실전 감각은 못 봅니다`)),
       ...(isP?[c('pit','구종',x=>arsenal(x.p,tz(x,'stf').raw).length,x=>{ const A=arsenal(x.p,tz(x,'stf').raw); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),
@@ -134,7 +132,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const tab=UI.fdTab==='team'?'team':'list';
   const miss=(()=>{ const {ln}=fdLineupOf(myPicks.filter(p=>!p.isP)); return ['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length; })(); const pitN=myPicks.filter(p=>p.isP).length;
   return `${UI.fdMsg?`<div class="note bad">${esc(UI.fdMsg)}</div>`:''}<div class="seg fdseg"><button data-a="fdTab" data-v="list" class="${tab==='list'?'on':''}">후보 선수</button><button data-a="fdTab" data-v="team" class="${tab==='team'?'on':''}">우리 팀 <i class="fdsg">빈자리 ${miss+Math.max(0,FD_TGT.P-pitN)}</i></button></div>
-  <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${mine&&!F.done&&tab==='list'?fdSuggestCard():''}${listPane}</div></div>${revView()}`; }
+  <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${listPane}</div></div>${revView()}`; }
 /* 창단 드래프트 연봉 계산: 지금까지 쓴 돈, 쓸 수 있는 한도, 남은 지명과 자동 배분까지 감안한 1명당 여유 */
 function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user; if(!UI._fdf||UI._fdf.k!==key){ try{ UI._fdf={k:key,f:fdFin()}; }catch(e){ return null; } } const f=UI._fdf.f;
   const mine=Object.values(G.players).filter(p=>p.team===G.user&&!p.foreign); const spent=sum(mine.map(p=>p.sal));
@@ -220,25 +218,18 @@ function fdScoutCell(p){ const S=fdScoutTools(p); return `<td class="fdsc" title
 /* 데이터팀 칸: 항목별 순위 말(상~하)과 운 · 표본 */
 const FD_DS={'삼진 적음':'컨택','볼넷':'선구','장타력':'장타','생산력':'생산','탈삼진':'탈삼진','볼넷 억제':'제구','피홈런 억제':'피홈런','실점 억제(FIP)':'실점억제'};
 function fdDataCell(p){ const d=fdData(p); if(!d)return '<td class="muted fddt">기록 부족</td>'; return `<td class="fddt">${d.it.map(([l,v])=>`<span class="dt-i" title="${l} 상위 ${100-v}%"><i>${FD_DS[l]}</i><b style="color:${pctC(v)}">${pctW(v)}</b></span>`).join('')}${d.lv===2?'<em class="tg">2군 기록</em>':''}${d.small?'<em class="tg w">표본 적음</em>':''}${d.luck?`<em class="tg ${d.luck[0].includes('불운')?'u':'l'}" title="${esc(d.luck[1])}">${d.luck[0]}</em>`:''}</td>`; }
-function fdSuggest(){ const F=G.fd; if(!F)return []; const ly=(F.y||G.year)-1; const L=(F.all||[]).map(id=>G.players[id]).filter(p=>p&&p.fdPool); if(!L.length)return [];
-  const w3=p=>{ const T=fdThree(p,ly); return T&&T.ys>=2?warOf(T,p):null; }, w1=p=>{ const h=seasonTotal(p,ly,'1군'); return h&&(p.isP?h.outs>=60:h.pa>=150)?warOf(h,p):null; }, sc=p=>fdSeenBy(G.user,p).sc;
-  const used=new Set(); const take=(arr)=>{ const x=arr.find(o=>!used.has(o.p.id)); if(x)used.add(x.p.id); return x; };
-  const now=take(L.map(p=>({p,v:w3(p)})).filter(o=>o.v!=null).sort((a,b)=>b.v-a.v).map(o=>({p:o.p,k:'즉시 전력',why:`최근 3년 1군 WAR ${o.v.toFixed(1)}로 꾸준함`,risk:o.p.age>=31?`${o.p.age}세라 하락이 가까움`:`연봉 ${money(o.p.sal)}`})));
-  const W=L.map(p=>({p,w:w1(p)})).filter(o=>o.w!=null&&o.w>=1.5); const rk=(arr,f)=>{ const s=[...arr].sort((a,b)=>f(b)-f(a)); return o=>s.indexOf(o)/Math.max(1,s.length-1); }; const rw=rk(W,o=>o.w), rs=rk(W,o=>sc(o.p));
-  const und=take(W.map(o=>({p:o.p,g:rs(o)-rw(o),w:o.w})).filter(o=>o.g>.2).sort((a,b)=>b.g-a.g).map(o=>({p:o.p,k:'저평가 후보',why:`작년 WAR ${o.w.toFixed(1)}인데 스카우트 평가는 ${GRD(sc(o.p))}`,risk:'스카우트가 본 약점이 맞을 수도 있음'})));
-  const fut=take(L.filter(p=>p.age<=23).map(p=>({p,v:fdPotEst(p)})).sort((a,b)=>b.v-a.v).map(o=>({p:o.p,k:'미래 투자',why:`${o.p.age}세 · 장래성 ${GRD(o.v)}(스카우트 추정)`,risk:'1군 기록이 적어 불확실하고 크는 데 시간이 걸림'})));
-  return [now,und,fut].filter(Boolean); }
-function fdSuggestCard(){ const S=fdSuggest(); if(!S.length)return ''; return `<section class="card fdsg"><div class="row between"><h2 class="sec">이번 지명에서 비교해 볼 후보</h2><span class="small muted">정답이 아니라 고민의 출발점</span></div>${S.map(x=>`<div class="fdsg-r"><span class="pill">${x.k}</span><button class="lnk" data-a="player" data-v="${x.p.id}"><b>${esc(x.p.name)}</b> <span class="small muted">${posLabel(x.p)} · ${x.p.age}세</span></button><span class="small">${esc(x.why)}</span><span class="small muted">위험: ${esc(x.risk)}</span><button class="btn small" data-a="fdPick" data-v="${x.p.id}">지명</button></div>`).join('')}</section>`; }
 function fdSortSel(gk,so,ana){ const o=[['war','WAR(지난해)'],['risk','뺏길 확률'],['sal','연봉 낮은 순'],...(gk==='P'?[['t:velo','스카우트: 구속'],['t:stf','스카우트: 구위'],['t:sta','스카우트: 체력'],['t:ctl','스카우트: 제구(추정)']]:[['t:pow','스카우트: 파워'],['t:spd','스카우트: 발'],['t:def','스카우트: 수비'],['t:con','스카우트: 컨택(추정)']]),...(ana?(gk==='P'?[['d:3','데이터: 실점 억제'],['d:0','데이터: 탈삼진'],['d:1','데이터: 제구']]:[['d:3','데이터: 생산력'],['d:2','데이터: 장타'],['d:1','데이터: 선구'],['d:0','데이터: 컨택']]):[])];
   return `<select class="fdsort" data-a="fdSsel" aria-label="정렬">${o.map(([k,l])=>`<option value="${k}" ${so===k?'selected':''}>정렬: ${l}</option>`).join('')}</select>`; }
 /* 포지션 현황판: 남은 후보 · 툴 좋은 선수 · 기록 좋은 선수 · 다음 우리 차례 전 빠질 예상. 누르면 그 포지션만 */
 /* 포지션 칩 줄: 짧게 한두 줄. 우리 선수가 있으면 이름을 초록으로, 비었으면 '빈자리', 곧 바닥나면 '급함' */
+/* 급함: 아직 비어 있는 자리인데 다음 우리 차례 전에 후보가 1.5명 이상 빠질 것 같을 때만 */
+const fdUrgent=(x,filled)=>!filled&&x.exp>=1.5;
 function fdPosBoardH(gk,f){ const B=fdPosBoard(); const nm={SP:'선발',RP:'불펜'}; const F=G.fd;
   const my=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const {ln}=fdLineupOf(my.filter(p=>!p.isP)); const sp=my.filter(p=>p.isP&&isSPr(p)).length, rp=my.filter(p=>p.isP&&!isSPr(p)).length;
   const cur=(gk==='P'?'P:':'B:')+f;
   const chip=x=>{ const g=['SP','RP'].includes(x.k)?'P':'B'; const v=g+':'+x.k; const own=g==='P'?(x.k==='SP'?`${sp}/6`:`${rp}/7`):ln[x.k]?esc(ln[x.k].name):'';
     const filled=g==='P'?(x.k==='SP'?sp>=6:rp>=7):!!ln[x.k];
-    return `<button class="fpc${cur===v?' on':''}${filled?' ok':' need'}" data-a="fdPos" data-v="${cur===v?g+':all':v}" title="남은 후보 ${x.n}명 · 다음 우리 차례 전에 약 ${x.exp.toFixed(1)}명 빠질 예상"><b>${nm[x.k]||SLK[x.k]}</b>${own?`<span class="own">${own}</span>`:'<span class="emp">빈자리</span>'}${x.exp>=1.5?'<em>급함</em>':''}</button>`; };
+    return `<button class="fpc${cur===v?' on':''}${filled?' ok':' need'}" data-a="fdPos" data-v="${cur===v?g+':all':v}" title="남은 후보 ${x.n}명 · 다음 우리 차례 전에 약 ${x.exp.toFixed(1)}명 빠질 예상${fdUrgent(x,filled)?' · 아직 비어 있어 급함':''}"><b>${nm[x.k]||SLK[x.k]}</b>${own?`<span class="own">${own}</span>`:'<span class="emp">빈자리</span>'}${fdUrgent(x,filled)?'<em>급함</em>':''}</button>`; };
   const all=(g,l)=>`<button class="fpc all${cur===g+':all'?' on':''}" data-a="fdPos" data-v="${g}:all"><b>${l} 전체</b></button>`;
   /* 야수/투수를 먼저 고르고, 그 그룹의 포지션만 칩으로 보인다(모바일에서 칩이 화면 밖으로 밀리지 않게) */
   const isP=gk==='P'; const seg=`<div class="seg fpseg"><button data-a="fdPos" data-v="B:all" class="${isP?'':'on'}">야수</button><button data-a="fdPos" data-v="P:all" class="${isP?'on':''}">투수 <i class="fdsg">선발 ${sp}/6 · 불펜 ${rp}/7</i></button></div>`;

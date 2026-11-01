@@ -48,13 +48,15 @@ const QUICK=process.env.QUICK==='1';
       const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP&&(q.hist||[]).some(h=>h.lvl==='1군'&&h.pa>=100)); let sh=null; if(p){ A.player(p.id); const t=document.querySelector('#sheet'); sh=!!t&&/wRC\+/.test(t.innerText); closeSheets(); }
       UI.fdV='sc'; render(); const prof=/우리 스카우트 성향/.test((document.querySelector('#app')||document.body).innerText); UI.fdV='dt'; render(); const xh=[...document.querySelectorAll('#app th')].some(x=>/기대 홈런/.test(x.innerText)); UI.fdV='rec'; render(); const y3b=!!document.querySelector('#app [data-a="fdY3"][data-v="1"]'); A.fdY3('1'); const y3on=UI.fdY3===true&&!!document.querySelector('#app [data-a="fdY3"][data-v="1"].on'); A.fdY3('0'); UI.fdG=ov[0]; UI.fdV=ov[1]; render(); return {fd,sh,prof,xh,y3b,y3on}; });
     if(r){ if(!r.fd)add('wRC+','창단 드래프트 타자 기록표에 wRC+ 열이 없음'); if(r.sh===false)add('wRC+','선수 정보 창에 wRC+가 없음'); if(!r.prof)add('스카우트 성향','창단 드래프트 스카우트 탭에 우리 스카우트 성향이 없음'); if(!r.xh)add('기대 홈런','창단 드래프트 데이터팀 탭에 기대 홈런 열이 없음'); if(!r.y3b||!r.y3on)add('최근 3년','창단 드래프트 성적 탭의 최근 3년 전환이 없거나 안 됨'); } }
-  /* 장래성: 창단 드래프트 표(성적·스카우트)와 선수 정보에 스카우트가 본 장래 최고 능력이 보여야 젊은 유망주를 고를 수 있다 */
+  /* 장래성(3년 뒤 예상)은 스카우트 탭에만, 성적 탭에는 없다. 선수 정보에도 보인다 */
   { const r=await ev(()=>{ if(!G.fd)return null; const ov=UI.fdV; const has=v=>{ UI.fdV=v; render(); return [...document.querySelectorAll('#app th')].some(x=>/장래성/.test(x.textContent)); }; const a=has('rec'), b=has('sc'); UI.fdV=ov; render();
       const p=Object.values(G.players).find(q=>q.fdPool&&q.age<=23); let sh=null; if(p){ A.player(p.id); sh=/장래성/.test((document.querySelector('#sheet')||{}).textContent||''); closeSheets(); } return {a,b,sh}; });
-    if(r){ if(!r.a||!r.b)add('장래성','창단 드래프트 표에 장래성 열이 없음'); if(r.sh===false)add('장래성','창단 드래프트 선수 정보에 장래성이 없음'); } }
-  /* 첫 지명 도움: 우리 차례에 즉시 전력·저평가·미래 투자 후보 셋을 이유·위험과 함께(정답 아님) */
-  { const r=await ev(()=>{ if(!G.fd||typeof fdSuggest!=='function')return {none:true}; const S=fdSuggest(); return {k:S.map(x=>x.k).join(','),why:S.every(x=>x.why&&x.risk),uniq:new Set(S.map(x=>x.p.id)).size===S.length}; });
-    if(r){ if(r.none)add('드래프트 후보','창단 드래프트에 비교 후보 제안이 없음'); else { if(r.k!=='즉시 전력,저평가 후보,미래 투자')add('드래프트 후보','후보 유형이 셋이 아님: '+r.k); if(!r.why||!r.uniq)add('드래프트 후보','후보에 이유·위험이 없거나 같은 선수가 겹침'); } } }
+    if(r){ if(r.a)add('장래성','창단 드래프트 성적 탭에 장래성 열이 있음(스카우트 탭에만)'); if(!r.b)add('장래성','창단 드래프트 스카우트 탭에 장래성 열이 없음'); if(r.sh===false)add('장래성','창단 드래프트 선수 정보에 장래성이 없음'); } }
+  /* 포지션 칩 '급함': 이미 우리 선수로 채운 자리에는 붙지 않는다(3루를 채웠는데 급함으로 뜨던 문제) */
+  { const r=await ev(()=>{ if(!G.fd)return null; const okU=typeof fdUrgent==='function'&&fdUrgent({exp:3},false)&&!fdUrgent({exp:3},true); const d=document.createElement('div'); d.innerHTML=fdPosBoardH('B','all')+fdPosBoardH('P','all'); return {okU,bad:[...d.querySelectorAll('.fpc.ok')].filter(x=>/급함/.test(x.textContent)).length}; });
+    if(r&&(!r.okU||r.bad))add('드래프트 급함','채운 포지션에도 급함 표시: '+JSON.stringify(r)); }
+  /* 비교 후보 추천 카드는 뺐다(1라운드부터 엉뚱한 선수를 추천해 표 자리만 차지) */
+  { const r=await ev(()=>!!G.fd&&typeof fdSuggestCard==='function'); if(r)add('드래프트 후보','뺀 비교 후보 카드가 남아 있음'); }
   /* 지명 직후 카드: 실제 툴 숫자의 색이 그 툴 등급 글자의 색과 같아야 한다(스카우트 등급과 같은 기준·같은 색) */
   { const r=await ev(()=>{ if(!G.fd)return null; const p=Object.values(G.players).find(q=>q.fdPool&&!q.isP); if(!p)return null; const t0=p.team; p.team=G.user; UI.rev={pid:p.id,rd:1,no:1,n:1,open:true}; render();
       const C={S:'r75',A:'r65',B:'r55',C:'r50',D:'r45',E:'r35',F:'r20'}; const box=document.querySelector('.fde-rv .fde-ts:not(.fde-old)'); const bad=[];
@@ -287,7 +289,7 @@ const QUICK=process.env.QUICK==='1';
     if(r&&(!/지명/.test(r.lab)||!/추정/.test(r.j)))add('영입 판단','데려온 길에 지명 경로·그때 추정이 없음: '+JSON.stringify(r)); }
   /* 리더십 변화 이력: 주장 교체(사유·전임·기강 변화)가 리더십 화면에 쌓인다 */
   { where='리더십 이력'; const r=await ev(()=>{ team(G.user).cap=null; electCaptain(G.user,'점검'); const h=leadCard(); return {hist:/리더십 변화/.test(h),cl:/기강 \d+→\d+/.test(h)}; });
-    if(!r.hist||!r.cl)add('리더십','리더십 화면에 주장 교체 이력·기강 변화가 없음: '+JSON.stringify(r)); }
+    if(r&&(!r.hist||!r.cl))add('리더십','리더십 화면에 주장 교체 이력·기강 변화가 없음: '+JSON.stringify(r)); }
   /* 감독·코치 중도 재계약, 코치 승격 버튼 */
   { where='감독·코치 계약'; const r=await ev(()=>{ const C=G.coach[G.user]; if(!C.pc){ C.pc=mkCoach('pc'); C.pc.yrs=2; } const h=coachSlot('pc'); const mb=mgrBody(); return {pro:/수석코치로 승격/.test(h),ext:/연장/.test(h),mext:/연장/.test(mb)}; });
     if(!r.pro||!r.ext||!r.mext)add('감독·코치 계약','코치 승격·연장 또는 감독 연장 버튼이 없음: '+JSON.stringify(r)); }

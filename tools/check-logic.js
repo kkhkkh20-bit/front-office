@@ -497,11 +497,11 @@ T('[캠프 결산] 첫 줄에 주목할 선수(최대 성장·예상 밖 부진�
 T('[나이] 시작 세계에도 20대 초반 주전급이 있다(일찍 크는 선수): 새 세계 8개 평균 23세 이하 1군 평균 이상 선수와 상위 50명 안의 23세 이하',()=>{ let y=0,t50=0; const N=8; for(let r=0;r<N;r++){ DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
   y+=P.filter(p=>p.age<=23&&ovr(p)>=53).length/N; t50+=[...P].sort((a,b)=>ovr(b)-ovr(a)).slice(0,50).filter(p=>p.age<=23).length/N; } /* 새 세계 24개 측정: 평균 9.1명 · 7.0명(세계마다 3~18명으로 편차가 커서 8개 평균으로 본다). 예전 세계는 5명 · 3.7명 */
   ok(y>=6.5,'23세 이하 주전급 평균 '+y.toFixed(1)+'명'); ok(t50>=4.5,'상위 50명 중 23세 이하 평균 '+t50.toFixed(1)+'명'); });
-T('[창단 드래프트] 장래성: 스카우트가 본 장래 최고 능력(추정)을 지명 전에 보여 주고, 젊을수록 오차가 크지만 실제 잠재력과 맞는 방향이다',()=>{ fresh(); DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
-  ok(typeof fdPotEst==='function','장래성 추정 함수'); const E=P.map(p=>({p,e:fdPotEst(p)})); ok(E.every(x=>x.e!=null&&x.e>=fdSeenBy(G.user,x.p).sc-.01),'장래성은 현재 추정 이상');
+T('[창단 드래프트] 장래성(3년 뒤 예상): 젊은 선수는 지금 추정보다 높고 30대 중반은 낮으며, 24세 이하는 실제 잠재력과 맞는 방향이다',()=>{ fresh(); DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
+  ok(typeof fdPotEst==='function','장래성 추정 함수'); const E=P.map(p=>({p,e:fdPotEst(p),s:fdSeenBy(G.user,p).sc}));
+  ok(E.filter(x=>x.p.age<=25).every(x=>x.e>=x.s-.01),'25세 이하는 지금 추정 이상'); const O=E.filter(x=>x.p.age>=33); ok(O.length&&O.every(x=>x.e<x.s),'33세 이상은 지금 추정보다 낮게(하락 반영)');
   const cor=(L,f,g)=>{ const n=L.length, mx=L.reduce((a,x)=>a+f(x),0)/n, my=L.reduce((a,x)=>a+g(x),0)/n; let sxy=0,sx=0,sy=0; for(const x of L){ const dx=f(x)-mx, dy=g(x)-my; sxy+=dx*dy; sx+=dx*dx; sy+=dy*dy; } return sxy/Math.sqrt(sx*sy); };
-  const Y=E.filter(x=>x.p.age<=24); const c=cor(Y,x=>x.e,x=>x.p.pot); ok(c>=.6,'24세 이하 장래성 추정과 실제 잠재력 상관 '+c.toFixed(2));
-  const err=L=>Math.sqrt(L.reduce((a,x)=>a+(x.e-Math.max(x.p.pot,ovr(x.p)))**2,0)/L.length); const eY=err(Y), eO=err(E.filter(x=>x.p.age>=29)); ok(eY>eO,'젊을수록 오차가 큼: 24세 이하 '+eY.toFixed(1)+' · 29세 이상 '+eO.toFixed(1)); });
+  const Y=E.filter(x=>x.p.age<=24); const c=cor(Y,x=>x.e,x=>x.p.pot); ok(c>=.6,'24세 이하 장래성 추정과 실제 잠재력 상관 '+c.toFixed(2)); });
 T('[감독 지시] 거절된 지시를 바로 다시 꺼내도 관계가 또 깎이지 않는다(관계가 5 오르거나 30일 뒤 재논의)',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=60; mgrDir().arm={ok:false,mid:m.id,day:G.day,rel0:56}; m.rel=56;
   const r=setMgrDir('arm',true); ok(m.rel===56,'관계 '+m.rel); ok(/재논의/.test(r),r); ok(mgrDirWait('arm'),'버튼 대신 재논의 안내'); m.rel=61; ok(!mgrDirWait('arm'),'관계가 5 오르면 다시 지시 가능'); m.rel=56; G.day+=31; ok(!mgrDirWait('arm'),'30일 지나면 다시 지시 가능'); });
 T('[2군 포수] 전문 포수가 있으면 포수 경험이 거의 없는 선수(전환 훈련 중 포함)가 매일 마스크를 쓰지 않는다',()=>{ fresh(); const d=depth(G.user); const B=d.futB.filter(healthy); const cat=B.find(p=>p.pos==='C'); const ss=B.find(p=>p.pos==='SS'||p.pos==='2B'); ok(cat&&ss,'준비 실패');

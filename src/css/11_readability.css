@@ -385,5 +385,4 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .gm-t{flex-wrap:wrap}.gm-sg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
 
 /* 창단 드래프트 비교 후보 */
-.fdsg-r{display:grid;grid-template-columns:auto 1fr auto;gap:4px 8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}.fdsg-r>.small{grid-column:2/4}
-@media (max-width:600px){ .fdsg-r{grid-template-columns:auto 1fr}.fdsg-r>.btn{grid-column:1/3} }
+
