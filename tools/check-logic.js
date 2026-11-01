@@ -645,6 +645,11 @@ T('[창단 지명] 역할 표기는 능력 수준과 맞는다(사용자 2026-11
     for(let i=5;i<L.length;i++)ok(!/후보|경쟁|2군|백업/.test(L[i]),(p.isP?(isSPr(p)?'선발':'불펜'):'유격수')+' 표시 '+[50,57,60,64,66,70,72,77,81,86][i]+'인데 '+L[i]);
     const rk=L.map(r=>FD_ROLE_RANK(r)); for(let i=1;i<rk.length;i++)ok(rk[i]>=rk[i-1],'높은 능력의 역할이 더 낮음: '+L[i-1]+' → '+L[i]); }
 });
+T('[리그 분포] 연봉 축은 그 시즌 연봉을 쓴다: 기록이 생길 때 그해 연봉을 남기고, 나중에 연봉이 바뀌어도 지난 시즌 값은 그대로, 기록 없는 해는 비운다(사용자 문서 2026-11-01 20:06)',()=>{ fresh(); ok(typeof salOfY==='function','salOfY 없음');
+  simTo(()=>period()==='season'&&((G.sea.tl||[])[G.user]||[]).length>=5); const y=G.year; const p=playersOf(G.user).find(q=>q.hist.some(h=>h.y===y&&h.lvl==='1군')); ok(p,'기록 있는 선수 없음');
+  ok(p.salYr&&p.salYr[y]===p.sal,'그해 연봉 기록 없음'); const s0=p.sal; p.sal=s0+5000; ok(salOfY(p,y)===s0,'연봉이 바뀌자 이번 시즌 값도 바뀜: '+salOfY(p,y)+' vs '+s0); p.sal=s0;
+  ok(salOfY(p,y-5)==null,'기록 없는 해에 지금 연봉을 붙임');
+});
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

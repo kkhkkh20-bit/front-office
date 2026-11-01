@@ -76,3 +76,12 @@
 .spl{margin:4px 0 12px}.spl-h,.spl-r{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:center;font-size:12px;padding:3px 0}.spl-h{color:var(--muted);font-size:11px}
 .spl-b{position:relative;display:flex;align-items:center;height:18px;background:var(--line);border-radius:4px;overflow:hidden}.spl-b i{position:absolute;left:0;top:0;bottom:0;background:var(--acc);opacity:.35}.spl-b.r i{background:var(--ink);opacity:.22}.spl-b b{position:relative;padding-left:6px;font-variant-numeric:tabular-nums}
 .roll{margin:4px 0 12px}
+/* 리그 분포 확장: 축·포지션 선택, 관심 선수 마름모, 선택 점 테두리, 선택 요약 */
+.ds-f{display:inline-flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted)}.ds-f select{min-height:36px;font-size:13px}
+.ds-p path{fill:var(--warn);stroke:var(--panel);stroke-width:1.5}.ds-p.w:not(.me) circle.pt{display:none}
+.ds-p.sel circle.pt,.ds-p.sel path{stroke:var(--ink);stroke-width:2.5;opacity:1}.ds-p.sel circle.pt{r:6}
+.ds-k i.dia{border-radius:1px;transform:rotate(45deg);width:8px;height:8px}
+.ds-sel{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}.ds-sel p{margin:4px 0 8px}
+@media (max-width:600px){ .ds-ctl{gap:6px}.ds-f{flex:1 1 44%}.ds-f select{width:100%} }
+.ds-p circle.hit,.ds-p.me circle.hit,.ds-p.w circle.hit{fill:transparent;stroke:none;opacity:1}
+.ds-mine{margin:6px 0 4px}.chip-x{display:inline-flex;gap:2px}.ds-near{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.ds-near .tc-i,.ds-mine .tc-i{min-height:32px}

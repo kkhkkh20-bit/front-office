@@ -145,7 +145,10 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='fdAge'){ UI[el.dataset.v==='1'?'fdA1':'fdA0']=+el.value; UI.fdMore=60; render(); }
   if(a==='ppRep'||a==='ppPid'){ UI.pp=UI.pp||{}; if(a==='ppRep')UI.pp.rep=el.value; else UI.pp.pid=el.value; UI.ppMsg=''; render(); }
   if(a==='lfSort'){UI.lf.sort=el.value;render();}
-  if(a==='dsAx'){ UI.dsAx=el.value; render(); }
+  if(a==='dsAx'){ UI.dsAx=el.value||null; if(el.value){ UI.dsX=null; UI.dsYk=null; } render(); }
+  if(a==='dsX'||a==='dsYk'){ UI[a]=el.value; render(); }
+  if(a==='dsPos'){ UI.dsPos=el.value||null; UI.dsSel=null; render(); }
+  if(a==='dsMinS'){ UI.dsMin=+el.value; render(); }
   if(a==='tdT'){ UI.tdT=+el.value; render(); }
   if(a==='dmemo'){ dmemoOf(+el.dataset.v).t=el.value.slice(0,40); save(); }
   if(a==='drd'){ dmemoOf(+el.dataset.v).rd=+el.value; save(); render(); }

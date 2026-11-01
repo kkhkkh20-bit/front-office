@@ -47,7 +47,7 @@ button,input,select{font:inherit;color:inherit}
 .chipn b{color:var(--ink)}
 main.content{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-block:6px 96px}
 .bnav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#0a0f13;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.bnav .in{display:grid;grid-template-columns:repeat(6,1fr)}
+.bnav .in{display:grid;grid-template-columns:repeat(7,1fr)}@media (max-width:360px){.bnav button{font-size:10px;padding-left:0;padding-right:0}}
 .bnav button{border:0;background:none;color:var(--dim);display:grid;justify-items:center;gap:2px;padding:8px 2px 9px;font-size:11px;cursor:pointer;position:relative}
 .bnav button.on{color:var(--ink)}
 .bnav button.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:2px;background:var(--team-hi)}
