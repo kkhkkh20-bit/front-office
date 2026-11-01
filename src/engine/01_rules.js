@@ -159,6 +159,11 @@ function capPayAs(tid,inIds,outIds){ const out=new Set(outIds||[]); const L=domP
   for(const id of (inIds||[])){ const p=G.players[id]; if(p&&!p.foreign&&!isRookie(p))L.push(p.sal); } return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
 function capPayNext(tid){ const y=sponSeason(); const s=domPayOf(tid).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
+/* 계약 하나를 바꿨을 때의 상한 합계: 실제 샐러리캡과 같은 방식(선수별 금액 정렬 → 상위 40명). s는 계약이 적용되는 시즌.
+   지금 시즌(sponSeason)이면 지금 연봉 기준, 그 뒤 시즌이면 다음 시즌 기준(합의한 다음 시즌 계약·재계약 중 금액, 그 시즌까지 남는 계약금 상한 반영) */
+function capPayWith(tid,pid,amt,s){ const y0=sponSeason(); s=s??y0; const nxt=s>y0; const L=[];
+  for(const p of domPayOf(tid)){ if(p.id===pid)continue; if(nxt){ if(p.draft&&p.draft.y===s-1)continue; L.push(salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=s?p.capB.a:0)); } else { if(isRookie(p))continue; L.push(p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0)); } }
+  const so=[...L].sort((a,b)=>b-a); const base=sum(so.slice(0,40)), k40=so.length>=40?so[39]:0; if(amt!=null)L.push(amt); const tot=sum(L.sort((a,b)=>b-a).slice(0,40)); return {tot,base,cap:capOf(s),s,room:capOf(s)-base+k40}; } /* room: 이 선수 금액으로 쓸 수 있는 최대(40번째 선수를 밀어내는 몫 포함) */
 function capPay(tid){ const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign);
 /* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 강백호 4년 100억, 박찬호 4년 80억) */

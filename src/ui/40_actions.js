@@ -115,7 +115,7 @@ const A={
   fireMgr(){ fireMgr(); UI.confirmFire=false; save(); render(); },
   renewMgr(v){ const r=renewMgr(v||2); if(r)toast(r); save(); render(); },
   setPrev(v){ G.med.prev=+v; G.medSet=true; save(); render(); },
-  setHosp(v){ G.med.hosp=v; G.medSet=true; save(); render(); },
+  setHosp(v){ const L=setHospital(v); if(L&&L.length)note('의무',`재활 중인 선수 남은 기간: ${L.join(', ')}`); save(); render(); },
   medOk(){ G.medSet=true; save(); render(); },
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0}; save(); render(); },
   devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },

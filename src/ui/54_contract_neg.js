@@ -69,7 +69,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
   const expr=fn?(fn.counter?'flat':fn.hot||fn.deal?'smile':fn.mood<40?'angry':null):null;
   const [gc,gt]=ngtGap(N,D);
   const tot=(T.bonus||0)+T.annual*(T.years||1); const capAvg=T.annual+Math.round((T.bonus||0)/(T.years||1)); const ci=capInfo(G.user); const b=budget();
-  const capRoom=ci.cap-ci.pay+(p.team===G.user?p.sal+capBOf(p):0);
+  const capRoom=capPayWith(G.user,p.team===G.user?p.id:null,null,ngtSeasons(N)[0]).room; /* 실제 샐러리캡처럼 상위 40명 기준, 계약 적용 시즌 상한 */
   const ctr=N.k==='fa'?fn&&fn.counter:N.k==='ext'?(p.extCounter&&p.extCounter.until>=G.day?p.extCounter:null):null;
   const ctrTx=ctr?(ctr.terms?termsTxt(ctr.terms,true):`${ctr.years}년 연 ${money(ctr.annual)}`):'';
   const rounds=fn?`협상 ${fn.rounds}/${agRoundsMax(p)}회 · 분위기 ${fn.mood}`:N.k==='sal'?'한 주에 한 번 제시':'한 주에 한 번 제안';
@@ -87,7 +87,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       <div><i>적용 시즌</i><b class="num">${ngtSeasons(N).join('~')}</b><em>${N.k==='ext'?(period()==='season'||period()==='post'?'시즌 중 합의는 다음 시즌부터':'개막 전 합의는 다가오는 시즌부터'):'다가오는 시즌부터'}</em></div>
       <div><i>보장 총액</i><b class="num">${money(tot)}</b>${T.opt?`<em>옵션 포함 최대 ${money(tot+T.opt*T.years)}</em>`:''}${(()=>{ if(N.k!=='ext')return ''; const dt=(D.bonus||0)+D.annual*(D.years||T.years); const over=tot-dt; return over>Math.max(50,dt*.03)?`<em class="warn">요구(${money(dt)})보다 ${money(over)} 더 주는 조건</em>`:''; })()}</div>
       ${N.k==='ext'?(()=>{ const [s0]=ngtSeasons(N); const ys=Array.from({length:T.years||1},(_,i)=>s0+i); const cy=ctCashYears(T,s0); return `<div><i>연도별 현금 지출</i><b class="num small">${cy.map(x=>`${x.y} ${money(x.v)}${x.bon?`(계약금${x.sal?' 포함':''})`:''}`).join(' · ')}</b><em>${T.bonus?`계약금 ${money(T.bonus)}은 합의 때 바로 지급(${sponSeason()} 결산) · 연봉은 ${s0}시즌부터`:'계약금 없음'}${T.opt?` · 옵션 달성 시 해마다 최대 +${money(T.opt)}`:''}</em></div>`; })():''}
-      ${(()=>{ const now=p.team===G.user?p.sal+capBOf(p):0; const tot=ci.pay-now+capAvg; const over=tot-ci.cap; return `<div><i>계약 후 상한 합계</i><b class="num ${over>0?'bad':''}">${money(tot)}</b><em>상한 ${money(ci.cap)}${over>0?` · ${money(over)} 초과(경쟁균형세 대상)`:` · 여유 ${money(-over)}`}${now?` · 지금 계약(${money(now)})을 대체한 값`:''}</em></div>`; })()}
+      ${(()=>{ const [s0]=ngtSeasons(N); const W=capPayWith(G.user,p.team===G.user?p.id:null,p.foreign?null:capAvg,s0); const over=W.tot-W.cap; const d=W.tot-(p.team===G.user?capPayWith(G.user,null,null,s0).tot:W.base); return `<div><i>${W.s}시즌 예상 상한 합계(계약 후)</i><b class="num ${over>0?'bad':''}">${money(W.tot)}</b><em>${W.s}시즌 상한 ${money(W.cap)}${over>0?` · ${money(over)} 초과(경쟁균형세 대상)`:` · 여유 ${money(-over)}`} · 상위 40명 다시 계산(${d>=0?'+':''}${money(d)})</em></div>`; })()}
       <div><i>상한 반영(연평균)</i><b class="num">${money(capAvg)}</b><em class="${capAvg>capRoom?'bad':''}">상한 여유 ${money(capRoom)}</em></div>
       <div><i>올해 예산 여유</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
       <div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div>
