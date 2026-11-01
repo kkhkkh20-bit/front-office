@@ -402,6 +402,10 @@ const QUICK=process.env.QUICK==='1';
   { where='데이터 차트'; const r=await ev(()=>{ const keepTl=G.sea&&G.sea.tl; if(G.sea)G.sea.tl=G.teams.map((t,i)=>Array.from({length:6},(_,j)=>[j%2?1:-1,3+i%4,2+j%3,j%2,(i+1)%G.teams.length,G.day])); const tv=typeof teamDataView==='function'?teamDataView():''; if(G.sea)G.sea.tl=keepTl; const p=playersOf(G.user).find(q=>!q.isP&&!hideOvr(q)); const pc=p&&typeof pctCard==='function'?pctCard(p):'';
       return {team:/피타고리안/.test(tv)&&/득점/.test(tv),pct:/리그 백분위/.test(pc)}; });
     if(r){ if(!r.team)add('데이터','구단 지표(득점·실점·피타고리안) 화면이 없음'); if(!r.pct)add('데이터','선수 리그 백분위 카드가 없음'); } }
+  /* 좌우 상대 비교·이동 구간 추세 카드 */
+  { where='좌우·추세'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.isP); if(!p||typeof splitCard!=='function'||typeof rollCard!=='function')return {ok:false}; const k1=p.spl, k2=p.gl; p.spl={y:G.year,L:[60,52,15,24,6,12,2],R:[120,104,30,50,12,20,4]}; p.gl={y:G.year,g:Array.from({length:40},(_,i)=>[G.day-40+i,4,4,1,2,0,1,0])};
+      const h1=splitCard(p), h2=rollCard(p); p.spl=k1; p.gl=k2; return {ok:/좌투수/.test(h1)&&/타석/.test(h1)&&/<svg/.test(h2)}; });
+    if(r&&!r.ok)add('기록','좌우 상대 비교나 이동 구간 추세 카드가 없음'); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

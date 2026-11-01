@@ -71,3 +71,8 @@
 .pct-r>b{text-align:right;font-variant-numeric:tabular-nums}.pct-r>i{font-style:normal;font-size:10px;color:var(--muted)}
 
 .ds{max-width:680px;margin-left:auto;margin-right:auto}
+
+/* 좌우 상대 비교 */
+.spl{margin:4px 0 12px}.spl-h,.spl-r{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:center;font-size:12px;padding:3px 0}.spl-h{color:var(--muted);font-size:11px}
+.spl-b{position:relative;display:flex;align-items:center;height:18px;background:var(--line);border-radius:4px;overflow:hidden}.spl-b i{position:absolute;left:0;top:0;bottom:0;background:var(--acc);opacity:.35}.spl-b.r i{background:var(--ink);opacity:.22}.spl-b b{position:relative;padding-left:6px;font-variant-numeric:tabular-nums}
+.roll{margin:4px 0 12px}
