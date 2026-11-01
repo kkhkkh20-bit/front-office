@@ -26,3 +26,7 @@
 @media(max-width:360px){.fb-mobile-br{display:block}.fb-title{padding-left:20px;padding-right:20px}.fb-tagline{margin:18px 0 24px;font-size:17px}}
 @media(max-height:550px) and (min-width:701px){.fb-title{padding-top:24px}.fb-wordmark{max-width:350px}.fb-tagline{margin:12px 0 16px}.fb-menu{gap:6px}.fb-button{min-height:44px;padding:8px 18px}.fb-button.primary{min-height:60px}.fb-caption{margin:14px 0 0}}
 @media(prefers-reduced-motion:reduce){.fb-button{transition:none}}
+
+/* 로고 단독 구성: 부제와 슬로건 없이 메뉴와 간격 확보 */
+.fb-brand{margin-bottom:24px}
+@media(max-width:700px){.fb-brand{margin-bottom:40px}.fb-title-content>.ts-warn{margin-top:16px}}
