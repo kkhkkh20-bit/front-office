@@ -3004,12 +3004,11 @@ const TALENT_W=1;
 const TWB={k:2.0,bb:1.3,hr:1.25,babip:2.0}, TWP={k:1.5,bb:1.5,hr:2.3,babip:1.4};
 const QCB={k:.207,bb:.0825,hr:.0248,babip:.320}, QCP={k:.204,bb:.0818,hr:.025,babip:.310}, QOF={babip:-.006,hr:-.0006};
 function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k','hr','babip']){ const c=C?C[k]:LGP[k]; o[k]=clamp(c+(q[k]-c)*TALENT_W*(W?W[k]:1)+(F&&F[k]||0),.002,.6); } return o; }
-function outcome(b,p,dv,fp){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
+function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
   const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)),TWP,QCP,QOF);
-  const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0)-((dv??DEF0)-DEF0)*.0012; /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
-  const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hr)return 'HR';
-  if(R()<babip){ const y=R(), xm=qp.x2||1; if(y<qb.d3*xm)return '3B'; if(y<(qb.d3+qb.d2)*xm)return '2B'; return '1B'; }
-  return 'OUT';
+  const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
+  LBIP=null; const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hr){ LBIP=bipHR(b,p); return 'HR'; }
+  return bipResolve(b,p,babip,qb,qp,fs); /* 인플레이: 타구 유형·방향 → 그 자리 야수 수비(46b_bip) */
 }
 function simGame(day,hid,aid,ps){
   const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
@@ -3060,15 +3059,15 @@ function simGame(day,hid,aid,ps){
           else if(r<.9){ o='OUT'; xb.ab++; outs++; xp.outs++; }
           else { o='OUT'; xb.ab++; outs++; xp.outs++; if(base[1]){ base[1]=base[0]; } base[0]=b; } } }
       if(o){ if(pbp.length<260)pbp.push([half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h]); if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+6)bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
-      o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm+ttoPen(p,xp.bf)); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0; if(!ps)splAdd(b,p,o);
+      o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm+ttoPen(p,xp.bf),fs); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0; if(!ps){ splAdd(b,p,o); if(LBIP)sprAdd(b,p,o,LBIP); }
       let chg=null, chgE=null, rbiN=0, sfN=0; const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
       if(o==='BB'){ xb.bb++; xp.bb++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;
         if(o==='K'){ xb.so++; xp.so++; outs++; xp.outs++; }
         else if(o==='OUT'){
-          const eL=errLoc(fs); if(R()<errChance(eL)){ xp.h+=0; ueInn=true; eRun=true; { const ef=eL; if(ef){ eFld=ef[0].id; const eb=fs.box.get(ef[0].id); if(eb)eb.e=(eb.e||0)+1; if(ev.length<400)ev.push({h:half,t:`실책: ${POSK[ef[1]]||ef[1]} ${ef[0].name}`}); } } if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
-          else if(base[0]&&outs<2&&R()<.11*dpF(b,p,fs)){ dp=true; outs+=2; xp.outs+=2; base[0]=null; }
-          else { outs++; xp.outs++; if(outs<3&&base[2]&&R()<.4+runAdj(base[2],fs)){ sc.push(base[2]); base[2]=null; xb.ab--; xb.sf=(xb.sf||0)+1; sfN=1; } /* 2아웃 전 범타로 3루 주자가 들어오면 희생플라이: 타수가 아니다 */ if(outs<3&&base[1]&&!base[2]&&R()<.3){ base[2]=base[1]; base[1]=null; } }
+          const BT=LBIP&&LBIP.t; const eL=LBIP&&ERRW[LBIP.pos]&&fielderAt(fs,LBIP.pos)?[fielderAt(fs,LBIP.pos),LBIP.pos]:errLoc(fs); if(R()<errChance(eL)*(BT?({GB:1.75,LD:.27,FB:.44,PU:.27})[BT]:1)){ xp.h+=0; ueInn=true; eRun=true; { const ef=eL; if(ef){ eFld=ef[0].id; const eb=fs.box.get(ef[0].id); if(eb)eb.e=(eb.e||0)+1; if(ev.length<400)ev.push({h:half,t:`실책: ${POSK[ef[1]]||ef[1]} ${ef[0].name}`}); } } if(base[2])sc.push(base[2]); base[2]=base[1]; base[1]=base[0]; base[0]=b; }
+          else if(base[0]&&outs<2&&(!BT||BT==='GB')&&R()<(BT?.225:.11)*dpF(b,p,fs)){ dp=true; outs+=2; xp.outs+=2; base[0]=null; }
+          else { outs++; xp.outs++; if(outs<3&&base[2]&&R()<(BT==='PU'?0:BT==='GB'?.22:BT==='LD'?.6:BT?.9:.4)+runAdj(base[2],fs)){ sc.push(base[2]); base[2]=null; if(BT!=='GB'){ xb.ab--; xb.sf=(xb.sf||0)+1; sfN=1; } } /* 2아웃 전 범타로 3루 주자가 들어오면 희생플라이: 타수가 아니다 */ if(outs<3&&base[1]&&!base[2]&&R()<.3){ base[2]=base[1]; base[1]=null; } }
         } else { xb.h++; xp.h++; hh++;
           if(o==='HR'){ xb.hr++; xp.hr++; sc.push(...base.filter(Boolean),b); base[0]=base[1]=base[2]=null; }
           else if(o==='3B'){ xb.tr++; sc.push(...base.filter(Boolean)); base[0]=base[1]=null; base[2]=b; }
@@ -7779,6 +7778,37 @@ function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
 /* 트레이드 가치에 반영할 몸 상태 계수(AI 의무팀은 실제 체질을 안다) */
 function medTradeF(p){ let f=1-clamp((p.inj-.14)*1.3,-.05,.3); f*=1-Math.min(.2,injDays2(p)/600); if(injFxNow(p).length)f*=.92; if(p.ucl)f*=.92; if(p.isP&&armRatio(p)>=1.1)f*=.95; return f; }
 function medRisky(p){ return medTradeF(p)<.82; }
+/* ===== 타구 모델: 인플레이 타구의 유형과 방향을 먼저 정하고, 그 방향을 맡은 야수의 수비로 안타·아웃을 가른다 =====
+ - 유형: 땅볼·라인드라이브·뜬공·팝플라이. 타자 파워가 높을수록 뜬공, 컨택이 높을수록 라인드라이브, 투수 땅볼 성향(gbT)이 클수록 땅볼.
+ - 방향: 당겨치기·가운데·밀어치기. 파워가 높을수록 당겨친다. 오른쪽 타석은 당기면 3루·좌익 쪽, 왼쪽 타석은 1루·우익 쪽(양타는 투수 반대편 타석).
+ - 안타 확률: 타자·투수 결합으로 정한 인플레이 안타율(babip)을 유형별 상대 크기(라인드라이브가 가장 높고 팝플라이가 가장 낮음)로 나누고,
+   그 자리 야수 수비력이 그 자리 보통 수준(ERRN)보다 좋으면 줄고 나쁘면 는다(땅볼·뜬공은 크게, 라인드라이브는 작게).
+   유형 평균을 내면 원래 babip이 그대로 나오게 맞춰, 리그 평균(타율·장타율)은 바꾸지 않고 '누가 그 공을 받았나'가 결과를 가른다.
+ - 장타: 뜬공·라인드라이브 안타가 2루타·3루타가 되기 쉽고 땅볼 안타는 대부분 단타. 타자의 장타 성향(d2·d3)과 투수 장타 억제(x2) 평균은 그대로 */
+let LBIP=null; const BIP_K=.995; /* 실제 주전 수비 평균이 자리별 보통 수준(ERRN)보다 조금 낮아 생기는 차이를 되돌려 리그 BABIP를 예전과 같게 */
+const BIP_TF={GB:.24,LD:.68,FB:.14,PU:.02}, BIP_XB={GB:.07,LD:.26,FB:.40,PU:0}, BIP_FK={GB:.0075,LD:.003,FB:.0065,PU:.001};
+function bipMix(b,p){ const pw=cc(b.r.pow,0), cn=cc(b.r.con,0); const gb=clamp(.43-(pw-.5)*.10+hn('bgb',b.id)*.03+gbT(p)*.05,.25,.62), ld=clamp(.21+(cn-.5)*.05,.14,.28);
+  const fa=Math.max(.1,1-gb-ld), pu=fa*clamp(.24-(pw-.5)*.10+hn('bpu',b.id)*.03,.1,.36); return {GB:gb,LD:ld,FB:fa-pu,PU:pu}; }
+function bipSide(b,p){ return b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); }
+function bipDir(b){ const pw=cc(b.r.pow,0), h=hn('pull',b.id); const pull=clamp(.40+(pw-.5)*.18+h*.05,.28,.56), oppo=clamp(.25-(pw-.5)*.08-h*.03,.14,.33); const x=R(); return x<pull?'pull':x<pull+oppo?'oppo':'mid'; }
+/* 방향 → 맡는 자리. 'L3'은 3루·좌익 쪽, 'R1'은 1루·우익 쪽 */
+function bipPos(t,dir,side){ const d=dir==='mid'?'mid':(dir==='pull')===(side==='R')?'L3':'R1'; const x=R();
+  if(t==='GB')return d==='L3'?(x<.5?'3B':'SS'):d==='mid'?(x<.42?'SS':x<.84?'2B':'P'):(x<.45?'2B':'1B');
+  if(t==='PU')return d==='L3'?(x<.6?'3B':'SS'):d==='mid'?(x<.4?'SS':x<.75?'2B':'C'):(x<.6?'1B':'2B');
+  return d==='L3'?'LF':d==='mid'?'CF':'RF'; }
+function fielderAt(fs,pos){ if(!fs)return null; if(pos==='P')return fs.cur||null; for(const q of (fs.order||[]))if(fs.posOf&&fs.posOf[q.id]===pos)return q; return null; }
+function bipResolve(b,p,babip,qb,qp,fs){ const M=bipMix(b,p); let x=R(), t='PU'; for(const k of ['GB','LD','FB','PU']){ x-=M[k]; if(x<=0){ t=k; break; } }
+  const side=bipSide(b,p), pos=bipPos(t,bipDir(b),side), f=fielderAt(fs,pos); const base=ERRN[pos]||DEF0; const fv=f&&pos!=='P'?fieldV(f,pos):base;
+  const norm=M.GB*BIP_TF.GB+M.LD*BIP_TF.LD+M.FB*BIP_TF.FB+M.PU*BIP_TF.PU; const ff=clamp(1-(fv-base)*BIP_FK[t],.7,1.35);
+  const ph=clamp(babip*BIP_TF[t]/norm*ff*BIP_K,0,.95); LBIP={t,pos,side,fid:f?f.id:null};
+  if(R()>=ph)return 'OUT';
+  const hw=k=>M[k]*BIP_TF[k]; const E=(hw('GB')*BIP_XB.GB+hw('LD')*BIP_XB.LD+hw('FB')*BIP_XB.FB)/norm; const xm=(qp&&qp.x2)||1;
+  const xbP=clamp(BIP_XB[t]*((qb.d2+qb.d3)*xm)/Math.max(.01,E),0,.92); if(R()<xbP){ const tr=qb.d3/Math.max(.001,qb.d2+qb.d3); return t!=='GB'&&R()<tr*(t==='FB'?1.55:1)?'3B':'2B'; } return '1B'; }
+function bipHR(b,p){ const side=bipSide(b,p); const x=R(); const d=x<.6?'pull':x<.88?'mid':'oppo'; return {t:'FB',pos:bipPos('FB',d,side),side,hr:true}; }
+/* 방향별 타구 기록(정규시즌 1군): 타자 spr.z[자리]=[타구, 안타, 장타, 홈런], 유형 spr.t[유형]=[타구, 안타]. 투수는 맞은 타구 유형만 */
+function sprAdd(b,p,o,L){ if(!L)return; const y=G.year; const ini=x=>{ if(!x.spr||x.spr.y!==y){ if(x.spr&&x.spr.y===y-1)x.sprP=x.spr; x.spr={y,z:{},t:{}}; } return x.spr; };
+  const hit=o!=='OUT', xb=o==='2B'||o==='3B'||o==='HR'; const S=ini(b); const z=S.z[L.pos]||(S.z[L.pos]=[0,0,0,0]); z[0]++; if(hit)z[1]++; if(xb)z[2]++; if(o==='HR')z[3]++;
+  const tt=S.t[L.t]||(S.t[L.t]=[0,0]); tt[0]++; if(hit)tt[1]++; const P=ini(p); const pt=P.t[L.t]||(P.t[L.t]=[0,0]); pt[0]++; if(hit)pt[1]++; }
 /* ===== 감독 유형: 공격 작전(스몰볼·빅볼), 수비 중시·타격 중시, 투수 운용, 투수 관리, 기조 =====
    수비 중시 감독은 수비가 좋은 선수를 주전으로 쓰고, 8회 이후 근소하게 앞서면 수비 강화 교체를 한다.
    타격 중시 감독은 수비가 약해도 잘 치는 선수를 쓴다. 야수 수비력은 경기에서 인플레이 타구 안타 확률과 실책에 반영된다 */
@@ -17217,6 +17247,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01zg',d:'11월 1일',t:'경기 엔진: 타구 모델',items:[
+    '인플레이 타구마다 유형(땅볼·라인드라이브·뜬공·팝플라이)과 방향(당겨치기·가운데·밀어치기)을 먼저 정합니다. 타자 파워가 높을수록 뜬공·당겨치기, 컨택이 높을수록 라인드라이브, 땅볼형 투수일수록 땅볼이 많습니다.',
+    '그 방향을 맡은 야수의 수비력이 안타·아웃을 가릅니다(예전에는 팀 수비 평균 하나로 계산). 유격수가 약하면 유격수 쪽 땅볼이 더 빠져나가고, 중견수가 좋으면 가운데 뜬공이 더 잡힙니다. 실책은 그 공을 받은 야수에게서, 병살은 땅볼에서, 희생플라이는 뜬공·라인드라이브에서 나옵니다.',
+    '리그 평균(타율·출루율·장타율·인플레이 안타율·2루타·3루타·실책·병살·희생플라이·득점)은 같은 조건 6천 경기 측정으로 예전과 같게 맞췄습니다. 방향별 타구 기록이 쌓이기 시작합니다(타구 분포도는 다음 단계).'
+  ]},
   {id:'2026-11-01zf',d:'11월 1일',t:'기록 시스템: 상대 타자 수·좌우 상대·경기별 기록',items:[
     '투수 기록에 상대 타자 수를 남깁니다. 리그 백분위에 투수 탈삼진율(K%)·볼넷율(BB%)을 넣었습니다(이 업데이트 이후 경기부터).',
     '1군 정규시즌 타석마다 좌우 상대 기록을 남깁니다(타자는 좌투수·우투수 상대, 투수는 좌타자·우타자 상대, 양타는 투수 반대편). 선수 정보 > 기록에 좌우 상대 비교(OPS/피OPS·삼진%·볼넷%, 타석 수, 40타석 미만은 적은 표본)를 보여 주고 지난 시즌과 바꿔 볼 수 있습니다.',

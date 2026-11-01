@@ -626,6 +626,12 @@ T('[기록 시스템] 투수 상대 타자 수, 좌우 상대 기록, 우리 선
   const pp=playersOf(G.user).filter(p=>p.isP).map(p=>({p,h:seasonTotal(p,y,'1군')})).find(x=>x.h&&x.h.outs>=30); ok(pp,'준비 실패'); ok((pp.h.bf||0)>=pp.h.outs/3,'상대 타자 수 없음');
   const bq=playersOf(G.user).filter(p=>!p.isP).map(p=>({p,h:seasonTotal(p,y,'1군')})).find(x=>x.h&&x.h.pa>=40); ok(bq,'타자 준비 실패'); const S=bq.p.spl; ok(S&&S.y===y,'좌우 기록 없음'); const n=(S.L?S.L[0]:0)+(S.R?S.R[0]:0); ok(n<=bq.h.pa&&n>=bq.h.pa-8,'좌우 타석 합이 맞지 않음: '+n+'/'+bq.h.pa);
   const gl=bq.p.gl; ok(gl&&gl.y===y&&gl.g.length===bq.h.g,'경기별 기록 수가 출장 경기와 다름: '+(gl&&gl.g.length)+'/'+bq.h.g); });
+T('[타구 모델] 인플레이 타구는 유형·방향이 먼저 정해지고 그 자리 야수의 수비가 안타를 가른다(땅볼형 투수는 땅볼, 타자는 방향별 기록이 쌓임)',()=>{ fresh(); ok(typeof bipMix==='function'&&typeof bipResolve==='function','함수 없음');
+  const b=playersOf(G.user).find(q=>!q.isP), p=playersOf(G.teams.find(t=>t.id!==G.user).id).find(q=>q.isP); const keep=p.r; const g0=bipMix(b,p).GB; const id0=p.id; const hn0=hn; ok(g0>.25&&g0<.62,'땅볼 비율 범위: '+g0);
+  const fsA={cur:p,order:[],posOf:{}}; const ss=playersOf(G.teams.find(t=>t.id!==G.user).id).find(q=>!q.isP); fsA.order=[ss]; fsA.posOf[ss.id]='SS';
+  const run=v=>{ const d0=ss.r.def; ss.r.def=v; let h=0,n=0; globalThis.__seed(99); for(let i=0;i<6000;i++){ const o=bipResolve(b,p,.30,{d2:.2,d3:.02},{x2:1},fsA); if(LBIP&&LBIP.pos==='SS'){ n++; if(o!=='OUT')h++; } } ss.r.def=d0; return h/Math.max(1,n); };
+  const lo=run(35), hi=run(80); ok(hi<lo-.03,'유격수 수비가 좋아도 유격수 방향 땅볼 안타가 줄지 않음: '+lo.toFixed(3)+' → '+hi.toFixed(3));
+  simTo(()=>period()==='season'&&((G.sea.tl||[])[G.user]||[]).length>=10); const q=playersOf(G.user).find(x=>!x.isP&&x.spr&&x.spr.y===G.year); ok(q&&Object.keys(q.spr.z||{}).length>=3,'방향별 타구 기록 없음'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
