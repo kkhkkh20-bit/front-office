@@ -12,7 +12,7 @@ function mgrFireOff(){ const st=G.last&&G.last.order; if(!st)return; for(const t
     if(m.yrs<=0)continue; const p=rk>=9?.5:rk>=7?.22:0; if(!p||R()>=p)continue; const old=m.name; const n=mgrNew(t.id,false); n.yrs++; try{ gmInc(t.id,'mgrFire'); }catch(e){}
     news('리그',`${tshort(t.id)}, ${old} 감독 경질 · 후임 ${n.name}`,`${rk}위로 시즌을 마친 ${tname(t.id)}이(가) 계약 기간이 남은 ${old} 감독을 경질하고 ${n.name} 감독(${n.yrs-1}년)을 선임했습니다.`,0); wire('감독',`${tname(t.id)}, ${old} 감독 경질 · ${n.name} 감독 선임`,{tid:t.id,x:{mid:n.id,hire:1}}); } }
 /* 시즌 중(6·7·8월 1일): 최하위권 AI 구단은 감독대행 체제로 바꾸기도 한다 */
-function mgrMidSeason(){ if(period()!=='season')return; const st=standingsNow(); for(const x of st.slice(-2)){ const t=team(x.tid); if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m||m.act)continue; const r=G.sea.rec[t.id]; if(!r||r.w+r.l<40||r.w/(r.w+r.l)>=.42||R()>=.2)continue;
+function mgrMidSeason(){ if(period()!=='season')return; const st=standingsNow(); for(const x of st.filter((y,i)=>i>=st.length-2||team(y.tid).riftY===G.year)){ const t=team(x.tid); if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m||m.act)continue; const r=G.sea.rec[t.id]; const rift=t.riftY===G.year; /* 불화설이 난 구단은 하위 2위 밖이어도 감독이 바뀔 수 있다 */ if(!r||r.w+r.l<40||r.w/(r.w+r.l)>=(rift?.5:.42)||R()>=(rift?.35:.2))continue;
     const old=m.name; const self=R()<.5; const n=mgrNew(t.id,true); try{ gmInc(t.id,'mgrFire'); }catch(e){}
     news('리그',`${tshort(t.id)} ${old} 감독 ${self?'자진 사퇴':'경질'}, ${n.name} 감독대행 체제`,`${r.w}승 ${r.l}패로 최하위권에 머문 ${tname(t.id)}의 ${old} 감독이 ${self?'성적 부진의 책임을 지고 물러났습니다':'경질됐습니다'}. 남은 시즌은 ${n.name} 감독대행이 이끕니다.`,0);
     wire('감독',`${tname(t.id)}, ${old} 감독 ${self?'자진 사퇴':'경질'} · ${n.name} 감독대행`,{tid:t.id,x:{fire:1,nm:old}}); } }

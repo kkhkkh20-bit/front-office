@@ -324,6 +324,9 @@ const QUICK=process.env.QUICK==='1';
   { where='소식 자세히'; const r=await ev(()=>{ const m={id:'zz1',from:'점검',subj:'[인터뷰 요청] 점검',body:Array.from({length:8},(_,i)=>'줄 '+i).join('\n'),acts:[],day:G.day,read:false}; G.mail.unshift(m); const iv0=G.iv; G.iv={id:999,day:G.day,done:true,ans:[1]};
       const h=mailCard(m); try{ render(); }catch(e){} const rd=m.read; G.iv=iv0; G.mail.shift(); return {k:/details class="mfold" data-k="mf:zz1"/.test(h),rd}; });
     if(r&&(!r.k||!r.rd))add('소식','자세히 펼침 기억 또는 끝난 인터뷰 읽음 처리 안 됨: '+JSON.stringify(r)); }
+  /* 리그 소식: 종류별로 골라 보기(구단 사정 등) */
+  { where='리그 소식'; const r=await ev(()=>{ G.wire=G.wire||[]; G.wire.unshift({d:G.day,k:'구단 사정',t:'점검 구단 사정',tid:null}); const h=wireView(); G.wire.shift(); return /data-a="wk"/.test(h)&&/구단 사정/.test(h); });
+    if(r===false)add('리그 소식','리그 소식에 종류별 보기가 없음'); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

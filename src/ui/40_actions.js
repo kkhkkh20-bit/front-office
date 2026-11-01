@@ -193,6 +193,7 @@ const A={
   coachFind(v){ UI.crole=v; UI.it=UI.it||{}; UI.it.coach='mk'; UI.cMsg=null; UI.cfire=null; render(); },
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
+  wk(v){ UI.wk=v||null; render(); },
   extCoach(v){ const [k,a]=v.split(':'); const r=extendCoach(k,+a); toast(r||`${CROLE[k].l} 계약을 ${a}년 연장했습니다.`); save(); render(); },
   cpromAsk(v){ UI.cprom=v; render(); }, cpromCancel(){ UI.cprom=null; render(); },
   promoteCoach(v){ const r=promoteCoach(v); UI.cprom=null; UI.cMsg=typeof r==='string'?r:r.msg; toast(UI.cMsg); save(); render(); },

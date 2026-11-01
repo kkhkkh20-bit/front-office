@@ -5634,7 +5634,7 @@ function evDaily(){ if(!G.evs)return;
   const due=(G.evf||[]).filter(f=>f.day<=G.day); if(due.length){ G.evf=G.evf.filter(f=>f.day>G.day); for(const f of due){ try{ EVH[f.k]&&EVH[f.k].follow&&EVH[f.k].follow(f.data); }catch(err){} } } }
 function aiScandalWeek(){ if(period()!=='season'||R()>.025)return; const t=pick(G.teams.filter(x=>x.id!==G.user)); const L=playersOf(t.id).filter(p=>!(p.susp>G.day)); if(!L.length)return; const p=pick(L); const ty=wpick({gamble:.3,drink:.35,sns:.35}); const S=SCAND[ty];
   if(S.kbo)p.susp=G.day+gDays(S.kbo+(R()<.5?S.club:0)); story(p,`${S.t}로 징계`,'inj'); wire('징계',`${tshort(t.id)} ${p.name}, ${S.t}로 ${S.kbo?`출장정지 ${S.kbo}경기`:'제재금'} 징계`,{tid:t.id,ref:p.id}); }
-function evWeek(){ try{ aiScandalWeek(); }catch(err){} if(period()!=='season'||G.gameOver||!G.mgr[G.user])return; evInit(); if(evOpen().length)return; if(R()>.8)return;
+function evWeek(){ try{ aiScandalWeek(); }catch(err){} try{ aiTeamWeek(); }catch(err){} if(period()!=='season'||G.gameOver||!G.mgr[G.user])return; evInit(); if(evOpen().length)return; if(R()>.8)return;
   const recent=new Set(G.evlog.filter(x=>x.d>G.day-35&&x.y===G.year).map(x=>x.k));
   /* 같은 선수에게 같은 종류 일이 90일 안에 또 생기지 않게, 어떤 선수든 개인 일상 사건은 45일에 한 번 */
   const RC=G.evRecent||{}; const pidOf=d=>d&&(d.r&&d.name&&d.id!=null?d.id:d.p&&d.p.id!=null?d.p.id:d.a&&d.a.id!=null?d.a.id:null);
@@ -9448,7 +9448,7 @@ function mgrFireOff(){ const st=G.last&&G.last.order; if(!st)return; for(const t
     if(m.yrs<=0)continue; const p=rk>=9?.5:rk>=7?.22:0; if(!p||R()>=p)continue; const old=m.name; const n=mgrNew(t.id,false); n.yrs++; try{ gmInc(t.id,'mgrFire'); }catch(e){}
     news('리그',`${tshort(t.id)}, ${old} 감독 경질 · 후임 ${n.name}`,`${rk}위로 시즌을 마친 ${tname(t.id)}이(가) 계약 기간이 남은 ${old} 감독을 경질하고 ${n.name} 감독(${n.yrs-1}년)을 선임했습니다.`,0); wire('감독',`${tname(t.id)}, ${old} 감독 경질 · ${n.name} 감독 선임`,{tid:t.id,x:{mid:n.id,hire:1}}); } }
 /* 시즌 중(6·7·8월 1일): 최하위권 AI 구단은 감독대행 체제로 바꾸기도 한다 */
-function mgrMidSeason(){ if(period()!=='season')return; const st=standingsNow(); for(const x of st.slice(-2)){ const t=team(x.tid); if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m||m.act)continue; const r=G.sea.rec[t.id]; if(!r||r.w+r.l<40||r.w/(r.w+r.l)>=.42||R()>=.2)continue;
+function mgrMidSeason(){ if(period()!=='season')return; const st=standingsNow(); for(const x of st.filter((y,i)=>i>=st.length-2||team(y.tid).riftY===G.year)){ const t=team(x.tid); if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m||m.act)continue; const r=G.sea.rec[t.id]; const rift=t.riftY===G.year; /* 불화설이 난 구단은 하위 2위 밖이어도 감독이 바뀔 수 있다 */ if(!r||r.w+r.l<40||r.w/(r.w+r.l)>=(rift?.5:.42)||R()>=(rift?.35:.2))continue;
     const old=m.name; const self=R()<.5; const n=mgrNew(t.id,true); try{ gmInc(t.id,'mgrFire'); }catch(e){}
     news('리그',`${tshort(t.id)} ${old} 감독 ${self?'자진 사퇴':'경질'}, ${n.name} 감독대행 체제`,`${r.w}승 ${r.l}패로 최하위권에 머문 ${tname(t.id)}의 ${old} 감독이 ${self?'성적 부진의 책임을 지고 물러났습니다':'경질됐습니다'}. 남은 시즌은 ${n.name} 감독대행이 이끕니다.`,0);
     wire('감독',`${tname(t.id)}, ${old} 감독 ${self?'자진 사퇴':'경질'} · ${n.name} 감독대행`,{tid:t.id,x:{fire:1,nm:old}}); } }
@@ -10387,6 +10387,27 @@ function aiPlanDaily(){ const o=dobj(G.day); if(o.m===1&&o.d===10&&G.aiPlanY!==G
 function aiMgrFit(tid,m){ const L=mgrRolesOf(m); if(!L.length)return .4; return L.reduce((a,k)=>a+Math.min(1,roleHaveAs(tid,k)/MROLE[k].tgt),0)/L.length; }
 function roleHaveAs(tid,k){ const R0=MROLE[k]; return playersOf(tid).filter(p=>!p.prospect&&!p.ys&&roleOk(p,k)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,R0.bat?9:5).filter(p=>ovr(p)>=45).length; }
 function aiMgrPick(t,C){ const ab=t.gm?gmAbil(t.gm):null; const w=ab?ab.plan/100:.5; let best=C[0], bs=-1e9; for(const m of C){ const s=(m.fame||50)*.05+aiMgrFit(t.id,m)*10*w+R()*1.5; if(s>bs){ bs=s; best=m; } } return best; }
+/* ===== 다른 구단 사정: 기강 사고 · 출전 불만 · 감독 불화설 =====
+ 우리 구단처럼 다른 구단도 실제 상태에서 일이 생긴다(무작위 사건이 아님):
+ - 기강 사고: 그 구단 기강(주장 성향·감독 규율, climateOf)이 느슨할수록 잦다. 프로의식이 낮은 선수가 사고를 친다.
+ - 출전 불만: 주전급 능력인데 기회를 못 받아 기분이 크게 떨어진 선수. 심하면 트레이드를 요청해 매물로 나온다(급매).
+ - 감독 불화설: 예상보다 크게 처진 구단의 고집 센 감독. 시즌 중 경질 가능성이 커진다.
+ 리그 소식(구단 사정)에 쌓이고, 우리 전략에 쓸 만한 큰 일(트레이드 요청, 불화설)은 소식함으로도 온다 */
+function aiTeamWeek(){ if(period()!=='season'||!G.cal||G.day<G.cal.open+14)return; for(const t of G.teams){ if(t.id===ME())continue; try{ aiDisc(t); }catch(e){} try{ aiGripe(t); }catch(e){} try{ aiRift(t); }catch(e){} } }
+function aiDisc(t){ const cl=climateOf(t.id); const ch=cl.band==='loose'?.04+.1*(40-cl.S)/40:clamp(.01+(62-cl.S)*.0015,.006,.035); if(R()>=ch)return; /* 느슨할수록 잦고, 보통 구단도 한 시즌에 한두 번은 생긴다 */
+  const ps=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&((p.pers&&p.pers.pro)||10)<=11); const p=ps.length?pick(ps):null; if(!p)return;
+  const k=pick([['늦은 귀가','벌금'],['SNS 논란','벌금'],['훈련 불참','3일 출장 정지']]); p.mor=clamp((p.mor??60)-4,0,100); if(k[1]!=='벌금')p.susp=Math.max(p.susp||0,G.day+gDays(3));
+  story(p,`${G.year} ${k[0]}로 구단 징계(${k[1]})`,'inj'); wire('구단 사정',`${tshort(t.id)} ${p.name}, ${k[0]}로 구단 징계(${k[1]}) · 선수단 기강 ${cl.S}`,{tid:t.id,ref:p.id}); }
+function aiGripe(t){ const d=depth(t.id); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
+  const wasReg=q=>{ const h=seasonTotalT(q,G.year-1,'1군',t.id); return !!h&&((h.pa||0)>=300||(h.outs||0)>=240); }; /* 작년 주전이었는데 올해 밀린 선수, 또는 주전급 능력인데 기회가 없는 선수 */
+  const p=domestic(t.id).filter(q=>!q.ys&&healthy(q)&&!reg.has(q.id)&&(ovr(q)>=55||wasReg(q))&&(q.mor??60)<45&&q.gripeY!==G.year).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!p||R()>.3)return;
+  p.gripeY=G.year; const big=ovr(p)>=58||(p.mor??60)<28; if(big){ p.aiListed=true; p.aiWhy='mood'; p.aiLd=G.day; p.aiUrg=true; }
+  wire('구단 사정',`${tshort(t.id)} ${p.name}(${posLabel(p)}, ${p.age}세), 출전 기회 불만${big?' · 트레이드 요청':''}`,{tid:t.id,ref:p.id});
+  if(big&&!G.unemp)mail('전력분석팀',`${tshort(t.id)} ${p.name} 트레이드 요청`,`${tname(t.id)}의 ${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dv(Math.round(ovr(p)))})이 주전 기회를 받지 못해 트레이드를 요청했고, 구단도 매물로 내놓았습니다. 연봉 ${money(p.sal)}${p.faC?` · 남은 계약 ${p.yrs}년`:''}.\n상대가 팔아야 하는 처지라 평소보다 덜 주고 데려올 수 있습니다.`,{kind:'트레이드',acts:[{l:'선수 보기',a:'player',v:p.id}]}); }
+function aiRift(t){ if(t.riftY===G.year)return; const r=G.sea.rec[t.id]; if(!r||r.w+r.l<30)return; const m=G.mgr[t.id]; if(!m||m.interim||m.act)return; mgrFix(m);
+  const st=standingsNow(); const rk=st.findIndex(x=>x.tid===t.id)+1; const pr=(G.proj||[]).indexOf(t.id)+1; if(!pr||rk-pr<4||m.ego<62||R()>.25)return;
+  t.riftY=G.year; wire('구단 사정',`${tshort(t.id)} ${m.name} 감독과 선수단 불화설 · 예상 ${pr}위 → 지금 ${rk}위`,{tid:t.id});
+  if(!G.unemp)mail('전력분석팀',`${tshort(t.id)} 감독 불화설`,`${tname(t.id)}이(가) 시즌 전 예상(${pr}위)보다 크게 처진 ${rk}위입니다. 고집 센 ${m.name} 감독과 선수단 사이가 틀어졌다는 말이 돕니다. 시즌 중 감독 교체 가능성이 커졌고, 구단이 방향을 바꾸면 베테랑이 매물로 나올 수 있습니다.`,{kind:'트레이드'}); }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -12353,8 +12374,9 @@ function scoreView(){
 
 /* ---------- 리그: 뉴스 ---------- */
 /* 리그 소식: 다른 구단 외국인 교체·감독 선임·FA 이적 */
-function wireView(){ const W=G.wire||[];
-  return csec('리그 소식',W.length?(()=>{ const P=pager('wire',W.slice(0,120),20); return `<div class="list">${P.items.map(w=>`<div class="item wa" ${w.ref!=null&&G.players[w.ref]?`data-a="player" data-v="${w.ref}"`:'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):`<span class="av ini">${ASSOC.s}</span>`}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>${P.bar}`; })():'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'); }
+function wireView(){ const all=G.wire||[]; const ks=[...new Set(all.map(w=>w.k))]; const W=UI.wk?all.filter(w=>w.k===UI.wk):all;
+  const kc=ks.length>1?`<div class="chips"><button data-a="wk" data-v="" class="${!UI.wk?'on':''}">전체</button>${ks.map(k=>`<button data-a="wk" data-v="${esc(k)}" class="${UI.wk===k?'on':''}">${esc(k)}</button>`).join('')}</div>`:'';
+  return csec('리그 소식',kc+(W.length?(()=>{ const P=pager('wire',W.slice(0,120),20); return `<div class="list">${P.items.map(w=>`<div class="item wa" ${w.ref!=null&&G.players[w.ref]?`data-a="player" data-v="${w.ref}"`:'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):`<span class="av ini">${ASSOC.s}</span>`}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>${P.bar}`; })():'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>')); }
 /* 우리 구단 기사(구단 > 팬·언론) */
 function ourNewsView(){ G.newsSeen=Math.max(newsSeen(),...(G.news||[]).map(n=>n.id||0));
   const kinds=[...new Set((G.news||[]).map(n=>n.k).filter(Boolean))]; const ns=(G.news||[]).filter(n=>!UI.nk||n.k===UI.nk);
@@ -15022,6 +15044,7 @@ const A={
   coachFind(v){ UI.crole=v; UI.it=UI.it||{}; UI.it.coach='mk'; UI.cMsg=null; UI.cfire=null; render(); },
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
+  wk(v){ UI.wk=v||null; render(); },
   extCoach(v){ const [k,a]=v.split(':'); const r=extendCoach(k,+a); toast(r||`${CROLE[k].l} 계약을 ${a}년 연장했습니다.`); save(); render(); },
   cpromAsk(v){ UI.cprom=v; render(); }, cpromCancel(){ UI.cprom=null; render(); },
   promoteCoach(v){ const r=promoteCoach(v); UI.cprom=null; UI.cMsg=typeof r==='string'?r:r.msg; toast(UI.cMsg); save(); render(); },
@@ -16813,6 +16836,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01r',d:'11월 1일',t:'다른 구단 사정',items:[
+    '다른 구단에서도 일이 생깁니다: 기강이 느슨할수록 잦은 사고(구단 징계), 작년 주전이었거나 주전급인데 기회를 못 받는 선수의 불만과 트레이드 요청(급매로 매물), 예상보다 크게 처진 구단의 고집 센 감독 불화설(시즌 중 감독 교체 가능성 증가).',
+    '리그 소식에 구단 사정으로 쌓이고 종류별로 골라 볼 수 있습니다. 트레이드 요청·불화설처럼 우리 전략에 쓸 만한 일은 소식함으로도 옵니다.'
+  ]},
   {id:'2026-11-01q',d:'11월 1일',t:'가을야구 총력전 · 국가대표 · 소식',items:[
     '가을야구는 총력전입니다. 좋은 선발 셋으로 돌리고(4일 쉬면 등판), 탈락 위기면 에이스가 3일만 쉬고도 선발로 나옵니다(한계 투구 수는 줄어듦). 최종전 7회 이후 접전이면 선발 에이스가 불펜으로 나오고, 불펜은 연투를 더 감수합니다. 경기 기록에 남습니다.',
     '올림픽·아시안게임처럼 병역 특례가 걸린 대회는 같은 실력이면 미필 선수를 먼저 뽑아 미필 중심에 군필이 섞인 명단이 됩니다.',

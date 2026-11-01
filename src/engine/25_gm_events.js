@@ -26,7 +26,7 @@ function evDaily(){ if(!G.evs)return;
   const due=(G.evf||[]).filter(f=>f.day<=G.day); if(due.length){ G.evf=G.evf.filter(f=>f.day>G.day); for(const f of due){ try{ EVH[f.k]&&EVH[f.k].follow&&EVH[f.k].follow(f.data); }catch(err){} } } }
 function aiScandalWeek(){ if(period()!=='season'||R()>.025)return; const t=pick(G.teams.filter(x=>x.id!==G.user)); const L=playersOf(t.id).filter(p=>!(p.susp>G.day)); if(!L.length)return; const p=pick(L); const ty=wpick({gamble:.3,drink:.35,sns:.35}); const S=SCAND[ty];
   if(S.kbo)p.susp=G.day+gDays(S.kbo+(R()<.5?S.club:0)); story(p,`${S.t}로 징계`,'inj'); wire('징계',`${tshort(t.id)} ${p.name}, ${S.t}로 ${S.kbo?`출장정지 ${S.kbo}경기`:'제재금'} 징계`,{tid:t.id,ref:p.id}); }
-function evWeek(){ try{ aiScandalWeek(); }catch(err){} if(period()!=='season'||G.gameOver||!G.mgr[G.user])return; evInit(); if(evOpen().length)return; if(R()>.8)return;
+function evWeek(){ try{ aiScandalWeek(); }catch(err){} try{ aiTeamWeek(); }catch(err){} if(period()!=='season'||G.gameOver||!G.mgr[G.user])return; evInit(); if(evOpen().length)return; if(R()>.8)return;
   const recent=new Set(G.evlog.filter(x=>x.d>G.day-35&&x.y===G.year).map(x=>x.k));
   /* 같은 선수에게 같은 종류 일이 90일 안에 또 생기지 않게, 어떤 선수든 개인 일상 사건은 45일에 한 번 */
   const RC=G.evRecent||{}; const pidOf=d=>d&&(d.r&&d.name&&d.id!=null?d.id:d.p&&d.p.id!=null?d.p.id:d.a&&d.a.id!=null?d.a.id:null);
