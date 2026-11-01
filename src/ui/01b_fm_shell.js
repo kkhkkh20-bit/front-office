@@ -43,9 +43,39 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="myRos" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>
     <nav class="fm-menu" aria-label="메뉴">${menu}</nav>
-    <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` 안 읽음 ${unread}`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필',UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한',UI.tab==='cfg')}
+    <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` 안 읽음 ${unread}`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필',UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
   </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
   <div class="fmbody">${fmSide(unread)}<div class="fmmain">${topBlocks(b)}
-  <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}</div></div></div></div>
+  <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}${fmKeysSheet()}</div></div></div></div>
   </div>`; }
+/* ---------- PC 단축키(FM 기본 단축키를 우리 화면에 맞춤) ----------
+   FM24 기본: F1 도움말 · F2 홈 · F3 선수단 · F4 받은 편지함 · F5 선수 검색 · F6 관심 명단 · F7 스카우트 · F8 스태프 · F9 이적 · F10 일정, Space 계속, Backspace·←/→ 뒤로/앞으로,
+   Ctrl+S 저장 · Ctrl+T 전술 · Ctrl+R 훈련 · Ctrl+J 스태프 업무 · Ctrl+M 구단 정보 · Ctrl+L 팀 분위기, Shift+C 달력 · Shift+O 재정 · Shift+V 의료 · Shift+D 육성 · Shift+P 설정 · Shift+G 상태.
+   브라우저가 막는 키(F11 전체 화면·F12 개발 도구·Ctrl+W/N/T/Q 등)는 쓰지 않는다 */
+const FM_KEYS=[
+  ['F1','단축키 목록','keys'],['F2','홈','tab:home'],['F3','선수단','tab:roster'],['F4','소식함','tab:inbox'],['Shift+F4','리그 소식','go:league:wire'],['F5','선수 찾기','go:trade:market'],['F6','트레이드 매물','go:trade:block'],
+  ['F7','스카우트','go:staff:scouts'],['F8','스태프(코치진)','go:staff:coach'],['F9','이적 현황','go:transfer:moves'],['Ctrl+F9','FA 시장','go:transfer:fa'],['F10','일정·결과','go:league:score'],
+  ['Space','계속(안 읽은 소식이 있으면 먼저 열기)',''],['Backspace · Alt+←','뒤로','back'],['Alt+→','앞으로','fwd'],['Esc','창 닫기',''],
+  ['Ctrl+S','저장','save'],['Ctrl+T','전력 구성(라인업·배치)','x:depth'],['Ctrl+R','훈련·육성','go:staff:train'],['Ctrl+J','업무 권한(위임)','go:cfg:auth'],['Ctrl+M','구단 정보(구단주·목표)','go:club:owner'],['Ctrl+L','관계도','go:club:rel'],
+  ['Shift+C','달력','cal'],['Shift+O','재정','go:club:fin'],['Shift+W','계약(연봉)','go:transfer:contract'],['Shift+V','의료(부상 관리)','go:staff:med'],['Shift+D','육성','go:staff:train'],['Shift+P','설정','go:cfg:set'],['Shift+G','단장 프로필','tab:me'],
+  ['Ctrl+Shift+K','순위','go:league:stand'],['Ctrl+Shift+E','일정·결과','go:league:score'],['Ctrl+Shift+G','선수 기록','go:league:rec'],['Ctrl+Shift+D','구단 지표·통계','go:league:stat'],['Ctrl+Shift+B','구단 비전','go:club:owner']];
+function fmKeyName(e){ const k=e.key==='ArrowLeft'?'←':e.key==='ArrowRight'?'→':e.key.length===1?e.key.toUpperCase():e.key; return (e.ctrlKey||e.metaKey?'Ctrl+':'')+(e.shiftKey?'Shift+':'')+(e.altKey?'Alt+':'')+k; }
+function fmRun(act){ if(!act)return false; const [a,t,s]=act.split(':');
+  if(a==='keys'){ UI.fmKeys=!UI.fmKeys; render(); return true; }
+  if(a==='back'){ fmBack(); return true; } if(a==='fwd'){ fmFwd(); return true; }
+  if(a==='save'){ try{ saveNow(); note('저장','지금까지 진행을 저장했습니다.'); }catch(e){} return true; }
+  if(a==='cal'){ if(!G.unemp)A.calOpen(); return true; }
+  if(a==='x'){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; closeSheets(); render(); return true; }
+  if(G.unemp&&!['home','inbox','league','me'].includes(t))return true;
+  if(a==='tab'){ closeSheets(); A.tab(t); return true; } if(a==='go'){ closeSheets(); A.go(t+':'+s); return true; } return false; }
+function fmHotkey(e){ if(!G||UI.title||!fmOn())return false; if((G.fd&&!G.fd.done)||G.fdWait)return false; if(UI.cast||UI.cfm||UI.ngt||UI.meet||UI.negWin||UI.game!=null)return false;
+  if(e.target&&e.target.matches&&e.target.matches('input,select,textarea,[contenteditable]'))return false;
+  const nm=fmKeyName(e); let act=null;
+  if(nm==='Backspace'||nm==='Alt+←')act='back'; else if(nm==='Alt+→')act='fwd'; else { const r=FM_KEYS.find(x=>x[0]===nm); act=r&&r[2]; }
+  if(!act)return false; e.preventDefault(); if(e.repeat)return true; return fmRun(act); }
+function fmKeysSheet(){ if(!UI.fmKeys)return ''; return `<div class="scrim" data-a="fmKeysX"><div class="sheet gut fmkeys" data-stop="1" role="dialog" aria-label="단축키"><div class="sheet-head"><h2 class="sec">단축키(FM 기본 배치)</h2><button class="x" data-a="fmKeysX" aria-label="닫기">×</button></div>
+  <p class="small muted">Football Manager의 기본 단축키를 이 게임 화면에 맞췄습니다. 글자를 입력하는 칸에서는 동작하지 않고, 브라우저가 쓰는 키(F11 전체 화면·F12·Ctrl+W 등)는 그대로 둡니다.</p>
+  <div class="fmk-l">${FM_KEYS.map(([k,l])=>`<div class="fmk"><kbd>${esc(k)}</kbd><span>${esc(l)}</span></div>`).join('')}</div></div></div>`; }
+/* 마우스 뒤로·앞으로 버튼(FM처럼 화면 기록 이동) */
+if(typeof document!=='undefined')document.addEventListener('mouseup',e=>{ try{ if(!G||UI.title||!fmOn())return; if(e.button===3){ e.preventDefault(); fmBack(); } else if(e.button===4){ e.preventDefault(); fmFwd(); } }catch(x){} });
