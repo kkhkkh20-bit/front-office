@@ -382,7 +382,7 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(!r.split)add('위임','위임 처리와 기한 만료 처리가 섞여 있음'); if(!r.scale)add('위임','위임 규칙의 능력 기준이 화면 척도와 다름'); if(!r.cal)add('달력','달력에 상무 지원 마감이 없음'); if(!r.re)add('달력','달력에 감독 재논의 가능일이 없음'); } }
   /* 거래 돈 표시: 올해 연봉 변화·내년·확정 잔여 보장액을 나누고, 예산 여유가 그대로면 이유. 다년계약 협상: 연도별 지출과 계약 후 상한 합계 */
   { where='거래 돈 표시'; const r=await ev(()=>{ const me=domestic(G.user).filter(p=>!p.ys).sort((a,b)=>b.sal-a.sal)[2]; const o=G.teams.find(t=>t.id!==G.user); const op=domestic(o.id).filter(p=>!p.ys)[0]; if(!me||!op)return null; const h=dealMoney([me.id],[op.id]);
-      let ext=true; const L=playersOf(G.user).filter(p=>canExtend(p)); if(L.length){ closeSheets(); A.player(L[0].id); A.ngtOpen('ext:'+L[0].id); const tx=(document.querySelector('#sheet')||{}).textContent||''; ext=/연도별 지출/.test(tx)&&/계약 후 상한 합계/.test(tx); UI.ngt=null; closeSheets(); }
+      let ext=true; const L=playersOf(G.user).filter(p=>canExtend(p)); if(L.length){ closeSheets(); A.player(L[0].id); A.ngtOpen('ext:'+L[0].id); const tx=(document.querySelector('#sheet')||{}).textContent||''; ext=/연도별 (현금 )?지출/.test(tx)&&/계약 후 상한 합계/.test(tx); UI.ngt=null; closeSheets(); }
       return {h:/확정 잔여 보장액/.test(h)&&/내년/.test(h),ext}; });
     if(r){ if(!r.h)add('트레이드','거래 돈 표시가 올해·내년·확정 보장액으로 나뉘지 않음'); if(!r.ext)add('다년계약','협상창에 연도별 지출·계약 후 상한 합계가 없음'); } }
   /* 선수단 목록: 능력 열(우리 평가 범위), 표시 범위 1군/2군/전체, 성적 기준 올 시즌/지난 시즌/통산 */
