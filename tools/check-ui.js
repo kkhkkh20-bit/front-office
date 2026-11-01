@@ -382,7 +382,7 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(!r.split)add('위임','위임 처리와 기한 만료 처리가 섞여 있음'); if(!r.scale)add('위임','위임 규칙의 능력 기준이 화면 척도와 다름'); if(!r.cal)add('달력','달력에 상무 지원 마감이 없음'); if(!r.re)add('달력','달력에 감독 재논의 가능일이 없음'); } }
   /* 거래 돈 표시: 올해 연봉 변화·내년·확정 잔여 보장액을 나누고, 예산 여유가 그대로면 이유. 다년계약 협상: 연도별 지출과 계약 후 상한 합계 */
   { where='거래 돈 표시'; const r=await ev(()=>{ const me=domestic(G.user).filter(p=>!p.ys).sort((a,b)=>b.sal-a.sal)[2]; const o=G.teams.find(t=>t.id!==G.user); const op=domestic(o.id).filter(p=>!p.ys)[0]; if(!me||!op)return null; const h=dealMoney([me.id],[op.id]);
-      let ext=true; const L=playersOf(G.user).filter(p=>canExtend(p)); if(L.length){ closeSheets(); A.player(L[0].id); A.ngtOpen('ext:'+L[0].id); const tx=(document.querySelector('#sheet')||{}).textContent||''; ext=/연도별 (현금 )?지출/.test(tx)&&/계약 후 상한 합계/.test(tx); UI.ngt=null; closeSheets(); }
+      let ext=true; const L=playersOf(G.user).filter(p=>canExtend(p)); if(L.length){ closeSheets(); A.player(L[0].id); A.ngtOpen('ext:'+L[0].id); const tx=(document.querySelector('#sheet')||{}).textContent||''; ext=/연도별 (현금 )?지출/.test(tx)&&/상한 합계/.test(tx); UI.ngt=null; closeSheets(); }
       return {h:/확정 잔여 보장액/.test(h)&&/내년/.test(h),ext}; });
     if(r){ if(!r.h)add('트레이드','거래 돈 표시가 올해·내년·확정 보장액으로 나뉘지 않음'); if(!r.ext)add('다년계약','협상창에 연도별 지출·계약 후 상한 합계가 없음'); } }
   /* 선수단 목록: 능력 열(우리 평가 범위), 표시 범위 1군/2군/전체, 성적 기준 올 시즌/지난 시즌/통산 */
@@ -539,6 +539,14 @@ const QUICK=process.env.QUICK==='1';
       const cur=G.mgr[G.user]; if(cur&&!cur.interim&&(G.mmarket||[]).length){ const k={plv:cur.plv,yrs:cur.yrs}; cur.plv=[{y:G.year},{y:G.year}]; cur.yrs=Math.max(2,cur.yrs||0); const c2=GUARD.hireMgr?GUARD.hireMgr(G.mmarket[0].id+":2:0"):null; const txt=c2?c2.lines.join(' '):''; out.sev=!c2||txt.includes(money(mgrSevPay(cur).pay)); cur.plv=k.plv; cur.yrs=k.yrs; } else out.sev=true;
       return out; });
     if(r){ if(!r.arb)add('확인창','연봉조정 중 선수를 구단안/선수안으로 나눠 보여 주지 않음'); if(!r.sev)add('확인창','감독 교체 정산금이 실제 경질 계산과 다름'); } }
+  /* PC(FM식, 폭 1100 이상): 위 두 줄 메뉴·왼쪽 사이드바·단축키(사용자 2026-11-02 08:24·08:28) */
+  if(W>=1100){ where='PC FM식 메뉴'; const keep=await ev(()=>({tab:UI.tab,sub:JSON.stringify(UI.sub||{}),ls:UI.lseg})); await ev(()=>{ closeSheets(); A.tab('home'); });
+    const lay=await ev(()=>({top:!!document.querySelector('.fmtop .fm-menu'),side:document.querySelectorAll('.fmside button').length,dd:document.querySelectorAll('.fmdd button').length}));
+    if(lay){ if(!lay.top)add('PC 메뉴','위 큰 메뉴가 없음'); if(lay.side<15)add('PC 메뉴','왼쪽 사이드바 바로 가기가 '+lay.side+'개'); if(lay.dd<10)add('PC 메뉴','큰 메뉴 하위 펼침이 '+lay.dd+'개'); }
+    const seq=[]; for(const k of ['F3','F5','F10','Shift+O','Backspace']){ await pg.keyboard.press(k); await pg.waitForTimeout(60); seq.push(await ev(()=>UI.tab+(SUBS[UI.tab]?':'+curSub(UI.tab):''))); }
+    if(seq.join(',')!=='roster,trade:market,league:score,club:fin,league:score')add('단축키','F3·F5·F10·Shift+O·Backspace 이동 '+seq.join(','));
+    await pg.keyboard.press('F1'); await pg.waitForTimeout(80); const kk=await ev(()=>!!document.querySelector('.fmkeys')); await pg.keyboard.press('Escape'); if(!kk)add('단축키','F1 단축키 목록이 안 열림');
+    await ev(k=>{ UI.tab=k.tab; UI.sub=JSON.parse(k.sub); UI.lseg=k.ls; render(); },keep); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
