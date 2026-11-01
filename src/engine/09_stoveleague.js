@@ -70,7 +70,7 @@ function aiExtensions(all){ const done=[];
       p.extNext={annual:d,years}; room-=d-p.sal; n++; story(p,`비FA 다년계약 ${years}년 연 ${money(d)} (${tshort(t.id)})`,'move'); done.push({p,t,d,years}); } }
   for(const x of done.filter(x=>x.d>=800).slice(0,4))wire('계약',`${tname(x.t.id)}, ${x.p.name}와(과) 비FA 다년계약 ${x.years}년 총 ${money(x.d*x.years)}`,{tid:x.t.id,ref:x.p.id});
   return done.length; }
-function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const af=p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55; return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
+function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;

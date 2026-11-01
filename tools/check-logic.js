@@ -504,7 +504,7 @@ T('[창단 드래프트] 장래성(3년 뒤 예상): 젊은 선수는 지금 추
   const Y=E.filter(x=>x.p.age<=24); const c=cor(Y,x=>x.e,x=>x.p.pot); ok(c>=.6,'24세 이하 장래성 추정과 실제 잠재력 상관 '+c.toFixed(2)); });
 T('[감독 지시] 거절된 지시를 바로 다시 꺼내도 관계가 또 깎이지 않는다(관계가 5 오르거나 30일 뒤 재논의)',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=60; mgrDir().arm={ok:false,mid:m.id,day:G.day,rel0:56}; m.rel=56;
   const r=setMgrDir('arm',true); ok(m.rel===56,'관계 '+m.rel); ok(/재논의/.test(r),r); ok(mgrDirWait('arm'),'버튼 대신 재논의 안내'); m.rel=61; ok(!mgrDirWait('arm'),'관계가 5 오르면 다시 지시 가능'); m.rel=56; G.day+=31; ok(!mgrDirWait('arm'),'30일 지나면 다시 지시 가능'); });
-T('[2군 포수] 전문 포수가 있으면 포수 경험이 거의 없는 선수(전환 훈련 중 포함)가 매일 마스크를 쓰지 않는다',()=>{ fresh(); const d=depth(G.user); const B=d.futB.filter(healthy); const cat=B.find(p=>p.pos==='C'); const ss=B.find(p=>p.pos==='SS'||p.pos==='2B'); ok(cat&&ss,'준비 실패');
+T('[2군 포수] 전문 포수가 있으면 포수 경험이 거의 없는 선수(전환 훈련 중 포함)가 매일 마스크를 쓰지 않는다',()=>{ fresh(); const d=depth(G.user); const B=d.futB.filter(healthy); const ss=B.find(p=>p.pos==='SS'||p.pos==='2B'); let cat=B.find(p=>p.pos==='C'); if(!cat&&ss){ cat=B.find(p=>p!==ss&&p.pos!=='SS'&&p.pos!=='2B'); if(cat){ cat.pos='C'; (cat.pexp=cat.pexp||{}).C=95; } } /* 세계에 따라 2군에 전문 포수가 없을 수 있어 한 명을 포수로 둔다 */ ok(cat&&ss,'준비 실패');
   ss.pconv={pos:'C',d:G.day}; (ss.pexp=ss.pexp||{}).C=2; let n=0; for(let i=0;i<9;i++){ G.day++; const ln=futLineupE(G.user,B); if(ln.C===ss)n++; } ok(n<=3,'9경기 중 전환 훈련생 포수 선발 '+n+'번'); delete ss.pconv; let m=0; for(let i=0;i<5;i++){ G.day++; const ln=futLineupE(G.user,B); if(ln.C&&ln.C.pos!=='C')m++; } ok(m===0,'전환 훈련이 아닐 때 비포수가 포수로 '+m+'번'); });
 T('[기록 해설] 아마 타자 삼진·볼넷 해설은 실제 비율을 쓴다(13볼넷 98삼진을 3배 가까이라 하지 않음)',()=>{ fresh(); const p=Object.values(G.players).find(q=>!q.isP); const Y=[{pa:120,ab:110,h:30,bb:3,so:29,hr:1,d:3,tr:0},{pa:130,ab:118,h:35,bb:4,so:31,hr:2,d:4,tr:0},{pa:140,ab:126,h:40,bb:6,so:38,hr:3,d:5,tr:1}]; const am={pa:390,ab:354,h:105,bb:13,so:98,hr:6,d:12,tr:1};
   const o={amY:p.amY,am:p.am}; p.amY=Y; p.am=am; const L=amNotes(p).join(' '); p.amY=o.amY; p.am=o.am; ok(!/3배 가까이/.test(L),L); ok(/7\.5배/.test(L),'실제 비율 7.5배: '+L); });
@@ -569,6 +569,10 @@ T('[감독 야구] 맞는 주전이 모자라면 역할 조건으로 요청하�
   for(const p of domestic(G.user))if(!p.isP)p.r.spd=Math.min(p.r.spd,45); const need=mgrNeedRole(G.user); ok(need&&/^run/.test(need.k),'필요 역할 '+JSON.stringify(need));
   mreqMake('fit',need); const r=mreqs().find(x=>x.k==='fit'); ok(r,'요청 없음'); ok((r.data.cands||[]).length>=1&&r.data.cands.every(id=>roleOk(G.players[id],r.data.role)),'후보가 역할 조건을 채우지 않음');
   r.st='open'; const other=Object.values(G.players).find(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&roleOk(p,r.data.role)&&!r.data.cands.includes(p.id)); ok(other,'준비 실패'); other.team=G.user; acqStamp(other,'트레이드',G.user,{from:null}); mreqCheck(); ok(r.st==='done'&&m.rel>50,'조건 충족 인정 '+r.st+' '+m.rel); });
+T('[단장 능력] AI 단장의 선수 보는 눈·협상력·구단 설계·재정 운영이 실제 판단을 바꾼다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const g=gmOf(t.id); ok(typeof gmAbil==='function'&&gmAbil(g)&&gmAbil(g).eye>0,'능력 없음');
+  const p=Object.values(G.players).find(q=>q.team!=null&&q.team!==t.id&&!q.isP&&statLuck(q)&&Math.abs(statLuck(q).d)>=2); ok(p,'준비 실패'); g.ab.eye=90; const a=Math.abs(seenDelta(t,p)); g.ab.eye=35; const b=Math.abs(seenDelta(t,p)); ok(b>a,'눈이 좋을수록 운에 덜 속음 '+a+' '+b);
+  g.ab.neg=90; const n1=tradeNeed(t,5); g.ab.neg=35; const n2=tradeNeed(t,5); ok(n1>n2,'협상력이 높을수록 더 요구 '+n1+' '+n2);
+  const v=Object.values(G.players).filter(q=>!q.isP&&q.age>=31&&q.team!=null&&q.team!==t.id).sort((x,y)=>ovr(y)-ovr(x))[0]; /* 최저 연봉에 걸리지 않는 쓸 만한 노장 */ g.ab.money=90; const f1=faWorth(t,v); g.ab.money=35; const f2=faWorth(t,v); ok(f1<f2,'재정 운영이 좋으면 노장에게 덜 씀 '+f1+' '+f2); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
@@ -900,6 +904,7 @@ T('[기록] wRC+: 창단 드래프트 기록에도 들어가고, 퓨처스 기�
   ok(wrcMulti([])==null,'빈 기록 통산 wRC+'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
-let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ for(const t of results){ try{ t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }
+let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ const nameSeed=n=>{ let h=2166136261>>>0; for(let i=0;i<n.length;i++){ h^=n.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h|0; }; /* 시나리오마다 이름으로 난수 시작점을 정한다: 앞에 시나리오를 더해도 뒤 시나리오의 세계가 바뀌지 않게 */
+for(const t of results){ try{ globalThis.__seed(nameSeed(t.name)); t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }
 console.error=oe;
 console.log(fail?`규칙 점검: ${results.length}개 중 ${fail}개 실패`:`규칙 점검: ${results.length}개 모두 통과`); process.exit(fail?1:0);

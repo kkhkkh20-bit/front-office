@@ -4,6 +4,13 @@ const GMT={hard:{l:'강경 협상가',d:'쉽게 양보하지 않고 조건을 �
 const GMCAR=['스카우트 출신','전력분석원 출신','구단 프런트 공채','선수 출신','모기업 기획실 출신','에이전트 출신'];
 const GMTALK=['요즘 어떻게 지내십니까. 시즌 길게 보고 갑시다.','좋은 선수 있으면 저희 먼저 생각해 주십시오.','다음에 식사 한번 하시죠.','우리 감독이 요즘 불펜 걱정이 많습니다.','시장 분위기가 조용하네요. 큰 거래 하나 나올 때가 됐는데.','작년 트레이드 얘기는 이제 그만합시다. 하하.'];
 function mkGM(tid){ return {id:'m'+Math.floor(R()*1e9),name:genName(),age:ri(38,60),trait:pick(Object.keys(GMT)),car:pick(GMCAR),since:G.year,tid,f:R()<.12}; }
+/* 단장 능력(20~95): 선수 보는 눈(성적 운에 덜 속음), 협상력(트레이드 요구 수준), 구단 설계(감독 야구에 맞는 역할을 얼마나 일관되게 찾나), 재정 운영(노장 FA에 덜 씀).
+   성향(GMT)과 따로 정해지고, 성향이 한쪽을 조금 끌어올린다. 예전 저장은 단장 id로 같은 값을 만든다 */
+function gmAbil(g){ if(!g||g.interim)return null; if(!g.ab){ const u=k=>u01('gma'+k,g.id); const v=x=>Math.round(clamp(30+x*60,25,92)); g.ab={eye:v(u('e')),neg:v(u('n')),plan:v(u('p')),money:v(u('m'))};
+    const up=(k,d)=>{ g.ab[k]=Math.min(95,g.ab[k]+d); }; if(g.trait==='data')up('eye',10); if(g.trait==='hard')up('neg',12); if(g.trait==='miser')up('money',12); if(g.trait==='prospect')up('plan',6); if(g.trait==='gambler')g.ab.money=Math.max(25,g.ab.money-8); } return g.ab; }
+const gmAbOf=tid=>{ if(tid==null||tid===G.user)return null; const t=team(tid); return t&&t.gm?gmAbil(t.gm):null; };
+/* 재임 성적: 이 단장이 맡은 뒤 시즌별 순위(지난 시즌까지) */
+function gmRecord(tid){ const g=team(tid).gm; if(!g||g.interim)return null; const H=(G.history||[]).filter(h=>h.y>=g.since&&h.order); const rk=H.map(h=>h.order.findIndex(o=>o.tid===tid)+1).filter(x=>x>0); return {n:rk.length,avg:rk.length?rk.reduce((a,x)=>a+x,0)/rk.length:null,best:rk.length?Math.min(...rk):null,ch:H.filter(h=>h.champ===tid).length,ps:rk.filter(x=>x<=5).length}; }
 function gmOf(tid){ if(tid===G.user)return null; const t=team(tid); if(!t.gm)t.gm=mkGM(tid); return t.gm; }
 function gmTrait(tid){ const g=tid===G.user?null:team(tid).gm; return g&&!g.interim?g.trait:null; }
 function gmInit(){ for(const t of G.teams){ if(t.id!==G.user&&!t.gm)t.gm=mkGM(t.id); } if(G.rep==null)G.rep=50; G.gmc=G.gmc||{}; G.jobs=G.jobs||[]; G.lgTrades=G.lgTrades||[]; }

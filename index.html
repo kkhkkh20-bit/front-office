@@ -3542,7 +3542,7 @@ function aiExtensions(all){ const done=[];
       p.extNext={annual:d,years}; room-=d-p.sal; n++; story(p,`비FA 다년계약 ${years}년 연 ${money(d)} (${tshort(t.id)})`,'move'); done.push({p,t,d,years}); } }
   for(const x of done.filter(x=>x.d>=800).slice(0,4))wire('계약',`${tname(x.t.id)}, ${x.p.name}와(과) 비FA 다년계약 ${x.years}년 총 ${money(x.d*x.years)}`,{tid:x.t.id,ref:x.p.id});
   return done.length; }
-function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const af=p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55; return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
+function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ return round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); } /* 선수풀이 작아 쓸 만한 FA에는 웃돈이 붙는다 */
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
@@ -4655,7 +4655,8 @@ function statLuck(p){ const k=G.year+':'+G.day; if(_lkC.k!==k)_lkC={k,m:new Map(
   }catch(e){}
   _lkC.m.set(p.id,r); return r; }
 function seenDelta(t,p){ if(!t||!p||t.id===G.user||t.id===ME())return 0; const L=statLuck(p); if(!L)return 0; const tr=gmTrait(t.id);
-  const w=(p.team===t.id?.35:.6)*(tr==='data'?.5:1)*L.rel; return clamp((tr==='data'?L.dF:L.d)*w,-8,8); }
+  const ab=gmAbOf(t.id); const ew=ab?1.4-ab.eye/100*.8:1; /* 선수 보는 눈이 좋을수록 성적 운에 덜 속는다 */
+  const w=(p.team===t.id?.35:.6)*(tr==='data'?.5:1)*L.rel*ew; return clamp((tr==='data'?L.dF:L.d)*w,-8,8); }
 function aiVal(t,p){
   const ps=pvShift(p); /* 같은 능력이면 유격·포수·2루가 귀하다 */ const o=ovr(p)+ps+hn('o'+t.id,p.id)*3+seenDelta(t,p), pt=p.pot+ps+hn('q'+t.id,p.id)*5;
   let eff=p.age<=25?o+Math.max(0,pt-o)*(t.mode==='rebuild'?.75:.5):p.age>=32?o-(p.age-31)*1.3:o;
@@ -4715,7 +4716,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
     if(p.aiListed){} else if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); } /* 매물로 내놓은 선수는 핵심 보호 하한을 두지 않는다 */
   return v; }
 function stackIn(vals){ const pos=vals.filter(x=>x>0).sort((a,b)=>b-a), neg=vals.filter(x=>x<=0); const w=[1,.62,.42,.3,.25]; return sum(pos.map((x,i)=>x*(w[i]??.25)))+sum(neg); }
-function tradeNeed(t,outVal){ const tr=gmTrait(t.id); let n=.9+Math.max(0,outVal)*.075-(t.rel-50)/15*(tr==='loyal'?2:1); if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
+function tradeNeed(t,outVal){ const tr=gmTrait(t.id); const ab=gmAbOf(t.id); let n=.9+Math.max(0,outVal)*.075-(t.rel-50)/15*(tr==='loyal'?2:1)+(ab?(ab.neg-60)/30:0); /* 협상력이 높을수록 더 받아 내려 한다 */ if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
 function trueVal(p){ const o=ovr(p); const eff=p.age<=25?o+Math.max(0,p.pot-o)*.6:p.age>=32?o-(p.age-31)*1.3:o; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 /* 한국시리즈가 끝나고 결산 전(이틀)에는 끝난 시즌 장부가 바뀌지 않게 막는다 */
 function preSettle(){ return !!(G.ps&&G.ps.done&&G.ps.finDay!=null&&G.day<G.ps.finDay&&!(G.last&&G.last.y>=G.year)); }
@@ -5885,6 +5886,13 @@ const GMT={hard:{l:'강경 협상가',d:'쉽게 양보하지 않고 조건을 �
 const GMCAR=['스카우트 출신','전력분석원 출신','구단 프런트 공채','선수 출신','모기업 기획실 출신','에이전트 출신'];
 const GMTALK=['요즘 어떻게 지내십니까. 시즌 길게 보고 갑시다.','좋은 선수 있으면 저희 먼저 생각해 주십시오.','다음에 식사 한번 하시죠.','우리 감독이 요즘 불펜 걱정이 많습니다.','시장 분위기가 조용하네요. 큰 거래 하나 나올 때가 됐는데.','작년 트레이드 얘기는 이제 그만합시다. 하하.'];
 function mkGM(tid){ return {id:'m'+Math.floor(R()*1e9),name:genName(),age:ri(38,60),trait:pick(Object.keys(GMT)),car:pick(GMCAR),since:G.year,tid,f:R()<.12}; }
+/* 단장 능력(20~95): 선수 보는 눈(성적 운에 덜 속음), 협상력(트레이드 요구 수준), 구단 설계(감독 야구에 맞는 역할을 얼마나 일관되게 찾나), 재정 운영(노장 FA에 덜 씀).
+   성향(GMT)과 따로 정해지고, 성향이 한쪽을 조금 끌어올린다. 예전 저장은 단장 id로 같은 값을 만든다 */
+function gmAbil(g){ if(!g||g.interim)return null; if(!g.ab){ const u=k=>u01('gma'+k,g.id); const v=x=>Math.round(clamp(30+x*60,25,92)); g.ab={eye:v(u('e')),neg:v(u('n')),plan:v(u('p')),money:v(u('m'))};
+    const up=(k,d)=>{ g.ab[k]=Math.min(95,g.ab[k]+d); }; if(g.trait==='data')up('eye',10); if(g.trait==='hard')up('neg',12); if(g.trait==='miser')up('money',12); if(g.trait==='prospect')up('plan',6); if(g.trait==='gambler')g.ab.money=Math.max(25,g.ab.money-8); } return g.ab; }
+const gmAbOf=tid=>{ if(tid==null||tid===G.user)return null; const t=team(tid); return t&&t.gm?gmAbil(t.gm):null; };
+/* 재임 성적: 이 단장이 맡은 뒤 시즌별 순위(지난 시즌까지) */
+function gmRecord(tid){ const g=team(tid).gm; if(!g||g.interim)return null; const H=(G.history||[]).filter(h=>h.y>=g.since&&h.order); const rk=H.map(h=>h.order.findIndex(o=>o.tid===tid)+1).filter(x=>x>0); return {n:rk.length,avg:rk.length?rk.reduce((a,x)=>a+x,0)/rk.length:null,best:rk.length?Math.min(...rk):null,ch:H.filter(h=>h.champ===tid).length,ps:rk.filter(x=>x<=5).length}; }
 function gmOf(tid){ if(tid===G.user)return null; const t=team(tid); if(!t.gm)t.gm=mkGM(tid); return t.gm; }
 function gmTrait(tid){ const g=tid===G.user?null:team(tid).gm; return g&&!g.interim?g.trait:null; }
 function gmInit(){ for(const t of G.teams){ if(t.id!==G.user&&!t.gm)t.gm=mkGM(t.id); } if(G.rep==null)G.rep=50; G.gmc=G.gmc||{}; G.jobs=G.jobs||[]; G.lgTrades=G.lgTrades||[]; }
@@ -10336,7 +10344,7 @@ function roleGap(tid,k){ const c=G._rg&&G._rg.d===G.day?G._rg:(G._rg={d:G.day,v:
 /* 지금 가장 모자란 역할: 같은 감독이라도 선수단에 따라 달라진다(뛰는 야구 감독이어도 빠른 선수가 충분하면 출루형을 찾는다) */
 function mgrNeedRole(tid){ const L=mgrRolesOf(mgrOf(tid)); let best=null; for(const k of L){ const g=roleGap(tid,k); if(g>0&&(!best||g>best.gap))best={k,gap:g,have:MROLE[k].tgt-g}; } return best; }
 /* 영입 가치 배수: 감독 야구에 맞으면 1.05, 그 역할이 모자라면 1.15(들여올 때) */
-function mgrFitMul(tid,p,dir){ const m=G.mgr[tid]; if(!m||m.interim||!p)return 1; const L=mgrRolesOf(m); const k=L.find(x=>roleOk(p,x)); if(!k)return 1; return dir==='in'&&roleGap(tid,k)>0?1.15:1.05; }
+function mgrFitMul(tid,p,dir){ const m=G.mgr[tid]; if(!m||m.interim||!p)return 1; const L=mgrRolesOf(m); const k=L.find(x=>roleOk(p,x)); if(!k)return 1; const v=dir==='in'&&roleGap(tid,k)>0?1.15:1.05; const ab=gmAbOf(tid); return ab?1+(v-1)*clamp(ab.plan/65,.4,1.4):v; } /* AI 단장의 구단 설계 능력만큼 감독 야구를 따라 영입한다 */
 function mgrFitWhy(tid,p){ const m=G.mgr[tid]; if(!m||m.interim)return ''; const k=mgrRolesOf(m).find(x=>roleOk(p,x)); return k&&roleGap(tid,k)>0?`${m.name} 감독이 원하는 ${MROLE[k].l}(${roleTags(p,k)})`:''; }
 /* 역할 후보: 다른 구단 선수와 FA. 1군에서 쓸 만한 선수만(우리 주전 평균보다 크게 낮지 않게) */
 function roleCands(tid,k,n){ const R=MROLE[k]; let d=null; try{ d=depth(tid); }catch(e){} const base=R.bat?(d&&d.start.length?d.start.reduce((a,p)=>a+ovr(p),0)/d.start.length:50):(d&&d.sp.length?d.sp.reduce((a,p)=>a+ovr(p),0)/d.sp.length:50);
@@ -12074,6 +12082,7 @@ function intLine(tid,short){ if(!interestKnown(tid))return short?'':'<p class="s
 function gmCard(t,full){ const g=gmOf(t.id); if(!g)return ''; const c=(G.gmc||{})[t.id]||{};
   return `<div class="gmc"><div class="gmc-h">${gmAv(t.id)}<div><b>${badge(t.id,16)} ${esc(t.city+' '+t.nick)}${g.ob?obTag(g.ob):''}</b><span>${g.interim?'단장대행 체제':`${esc(g.name)} 단장 · ${g.age}세`}</span></div><span class="pill ${g.trait==='hard'||g.trait==='miser'?'warn':g.trait==='loyal'?'good':'acc'}">${GMT[g.trait].l}</span></div>
     <div class="gmc-r"><span class="small muted">친분</span>${relBar(t.rel)}<b>${t.rel}</b><span class="small muted">${relLabel(t.rel)}</span></div>
+    ${(()=>{ const ab=g.interim?null:gmAbil(g); const rc=gmRecord(t.id); return ab?`<div class="chips gmab"><span class="pill" title="높을수록 성적의 운에 덜 속습니다">보는 눈 ${ab.eye}</span><span class="pill" title="높을수록 트레이드에서 더 받아 내려 합니다">협상 ${ab.neg}</span><span class="pill" title="높을수록 감독 야구에 맞는 선수를 꾸준히 찾습니다">구단 설계 ${ab.plan}</span><span class="pill" title="높을수록 노장 FA에 덜 씁니다">재정 ${ab.money}</span></div><p class="small muted">재임 ${rc&&rc.n?`${rc.n}시즌 평균 ${rc.avg.toFixed(1)}위 · 최고 ${rc.best}위 · 가을야구 ${rc.ps}회${rc.ch?` · 우승 ${rc.ch}회`:''}`:`${g.since}년 취임 · 아직 마친 시즌 없음`}</p>`:''; })()}
     <p class="gmc-n">${esc(needText(t.id))}</p>${intLine(t.id)}<div class="gmc-q">${negChip(t.id)}</div>
     ${full?`<p class="small muted">${esc(GMT[g.trait].d)} ${esc(g.car)} · ${g.since}년부터 재임</p>`:''}${(()=>{ const T=g.interim?[]:aiGmTags(t.id); return T.length?`<div class="chips gmtags">${T.map(x=>`<span class="pill" title="${esc(x.d)}">${esc(x.l)}</span>`).join('')}</div>`:''; })()}
     <div class="row"><button class="btn small primary" data-a="tpartnerGo" data-v="${t.id}">트레이드 협상</button><button class="btn small" data-a="gmCall" data-v="${t.id}" ${c.call!=null&&c.call>G.day-14?'disabled':''}>안부 연락${c.call!=null&&c.call>G.day-14?` (${c.call+14-G.day}일 뒤)`:''}</button><button class="btn small" data-a="gmMeal" data-v="${t.id}" ${c.meal!=null&&c.meal>G.day-30?'disabled':''}>식사 (1천만)${c.meal!=null&&c.meal>G.day-30?` · ${c.meal+30-G.day}일 뒤`:''}</button></div>
@@ -15574,7 +15583,7 @@ function personTop(k){ const [kind,a]=String(k).split(':'); const t=team(G.user)
       if(kind==='mgr'&&G.coach){ const C=coachesOf(G.user); const cl=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name); if(cl.length)li.push(['감독 사단',cl.join(', ')]); }
       if(kind==='mgr'){ const fav=playersOf(G.user).filter(p=>p.promise&&p.promise.until>=G.day).map(p=>p.name); if(fav.length)li.push(['출전 약속한 선수',fav.join(', ')]); } } }
   else if(kind==='c'){ const c=coachesOf(G.user)[a]; if(c){ ab=[['지도력',c.sk],['육성',c.dv]]; const h=u01('cpers',c.id); pe=[[h<.33?'원칙형':h<.66?'소통형':'열정형',h<.33?'규율을 중시합니다.':h<.66?'선수와 대화를 많이 합니다.':'훈련량이 많고 목소리가 큽니다.']]; } }
-  else if(kind==='gm'){ const g=gmOf(+a); if(g){ pe=[[GMT[g.trait].l,GMT[g.trait].d]]; ab=[['협상력',45+u01('gmN',g.id)*45],['선수 보는 눈',40+(9-(team(+a).scoutSd||6))*8]]; li=[['구단',tname(+a)],['단장과 친분',String(team(+a).rel)]]; } }
+  else if(kind==='gm'){ const g=gmOf(+a); if(g){ pe=[[GMT[g.trait].l,GMT[g.trait].d]]; const A=gmAbil(g)||{eye:50,neg:50,plan:50,money:50}; ab=[['선수 보는 눈',A.eye],['협상력',A.neg],['구단 설계',A.plan],['재정 운영',A.money]]; const rc=gmRecord(+a); li=[['구단',tname(+a)],['단장과 친분',String(team(+a).rel)],['재임',rc&&rc.n?`${rc.n}시즌 평균 ${rc.avg.toFixed(1)}위${rc.ch?` · 우승 ${rc.ch}회`:''}`:`${g.since}년 취임`]]; } }
   else if(kind==='agt'){ const ag=agById(+a); if(ag){ const st=AG_STYLE[ag.style]||AG_STYLE.rel; pe=[[st.l,st.d],[AG_SIZE[ag.size],ag.size==='big'?'대형 고객이 많고 자존심이 셉니다.':'고객 수가 적고 실속을 챙깁니다.']]; ab=[['협상력',ag.size==='big'?80:ag.size==='mid'?62:48],['시장 정보',ag.size==='big'?75:55]];
       const cl=(faLive()?agClients(ag):[]).map(p=>p.name); if(cl.length)li.push(['FA 고객',cl.join(', ')]); li.push(['우리와 계약',`${(ag.deals&&ag.deals[G.user])||0}건`]); } }
   else if(kind==='sc'||kind==='an'||kind==='ost'){ const x=personX(k); const s=kind==='ost'?((stInit()[+String(k).split(':')[2]]||{})[a==='sc'?'sc':'an']||[]).find(z=>z.id===String(k).split(':')[3]):(kind==='sc'?G.scouts:anaList()).find(z=>z.id===a); if(s){
@@ -16770,6 +16779,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01o',d:'11월 1일',t:'단장 능력',items:[
+    '다른 구단 단장마다 능력 네 가지가 있습니다: 선수 보는 눈(높을수록 성적의 운에 덜 속음), 협상력(트레이드에서 더 받아 내려 함), 구단 설계(감독 야구에 맞는 선수를 꾸준히 찾음), 재정 운영(노장 FA에 덜 씀). 성향과 따로 정해지고 실제 판단에 쓰입니다.',
+    '트레이드 센터의 단장 카드와 인물 카드에 능력과 재임 성적(시즌 수·평균 순위·가을야구·우승)을 보여 줍니다.'
+  ]},
   {id:'2026-11-01n',d:'11월 1일',t:'감독이 추구하는 야구',items:[
     '감독마다 추구하는 야구에 따라 원하는 선수 역할이 있습니다: 스몰볼은 발 빠른 타자·출루형 테이블세터, 빅볼·타격 중시는 장타형 중심 타자·삼진형 선발, 수비 중시는 센터라인 수비수·이닝형 선발, 불펜 총력은 구위형 필승조.',
     '감독은 그 역할에 맞는 선수를 주전·보직 선정에서 조금 더 쳐줍니다(경기력 보너스는 없음). 스몰볼 감독 밑의 빠른 선수는 실제로 더 뛰고, 느린 선수로 뛰면 도루 실패가 늘어납니다.',

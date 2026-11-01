@@ -27,7 +27,7 @@ function roleGap(tid,k){ const c=G._rg&&G._rg.d===G.day?G._rg:(G._rg={d:G.day,v:
 /* 지금 가장 모자란 역할: 같은 감독이라도 선수단에 따라 달라진다(뛰는 야구 감독이어도 빠른 선수가 충분하면 출루형을 찾는다) */
 function mgrNeedRole(tid){ const L=mgrRolesOf(mgrOf(tid)); let best=null; for(const k of L){ const g=roleGap(tid,k); if(g>0&&(!best||g>best.gap))best={k,gap:g,have:MROLE[k].tgt-g}; } return best; }
 /* 영입 가치 배수: 감독 야구에 맞으면 1.05, 그 역할이 모자라면 1.15(들여올 때) */
-function mgrFitMul(tid,p,dir){ const m=G.mgr[tid]; if(!m||m.interim||!p)return 1; const L=mgrRolesOf(m); const k=L.find(x=>roleOk(p,x)); if(!k)return 1; return dir==='in'&&roleGap(tid,k)>0?1.15:1.05; }
+function mgrFitMul(tid,p,dir){ const m=G.mgr[tid]; if(!m||m.interim||!p)return 1; const L=mgrRolesOf(m); const k=L.find(x=>roleOk(p,x)); if(!k)return 1; const v=dir==='in'&&roleGap(tid,k)>0?1.15:1.05; const ab=gmAbOf(tid); return ab?1+(v-1)*clamp(ab.plan/65,.4,1.4):v; } /* AI 단장의 구단 설계 능력만큼 감독 야구를 따라 영입한다 */
 function mgrFitWhy(tid,p){ const m=G.mgr[tid]; if(!m||m.interim)return ''; const k=mgrRolesOf(m).find(x=>roleOk(p,x)); return k&&roleGap(tid,k)>0?`${m.name} 감독이 원하는 ${MROLE[k].l}(${roleTags(p,k)})`:''; }
 /* 역할 후보: 다른 구단 선수와 FA. 1군에서 쓸 만한 선수만(우리 주전 평균보다 크게 낮지 않게) */
 function roleCands(tid,k,n){ const R=MROLE[k]; let d=null; try{ d=depth(tid); }catch(e){} const base=R.bat?(d&&d.start.length?d.start.reduce((a,p)=>a+ovr(p),0)/d.start.length:50):(d&&d.sp.length?d.sp.reduce((a,p)=>a+ovr(p),0)/d.sp.length:50);

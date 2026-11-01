@@ -15,7 +15,8 @@ function statLuck(p){ const k=G.year+':'+G.day; if(_lkC.k!==k)_lkC={k,m:new Map(
   }catch(e){}
   _lkC.m.set(p.id,r); return r; }
 function seenDelta(t,p){ if(!t||!p||t.id===G.user||t.id===ME())return 0; const L=statLuck(p); if(!L)return 0; const tr=gmTrait(t.id);
-  const w=(p.team===t.id?.35:.6)*(tr==='data'?.5:1)*L.rel; return clamp((tr==='data'?L.dF:L.d)*w,-8,8); }
+  const ab=gmAbOf(t.id); const ew=ab?1.4-ab.eye/100*.8:1; /* 선수 보는 눈이 좋을수록 성적 운에 덜 속는다 */
+  const w=(p.team===t.id?.35:.6)*(tr==='data'?.5:1)*L.rel*ew; return clamp((tr==='data'?L.dF:L.d)*w,-8,8); }
 function aiVal(t,p){
   const ps=pvShift(p); /* 같은 능력이면 유격·포수·2루가 귀하다 */ const o=ovr(p)+ps+hn('o'+t.id,p.id)*3+seenDelta(t,p), pt=p.pot+ps+hn('q'+t.id,p.id)*5;
   let eff=p.age<=25?o+Math.max(0,pt-o)*(t.mode==='rebuild'?.75:.5):p.age>=32?o-(p.age-31)*1.3:o;
@@ -75,7 +76,7 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
     if(p.aiListed){} else if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); } /* 매물로 내놓은 선수는 핵심 보호 하한을 두지 않는다 */
   return v; }
 function stackIn(vals){ const pos=vals.filter(x=>x>0).sort((a,b)=>b-a), neg=vals.filter(x=>x<=0); const w=[1,.62,.42,.3,.25]; return sum(pos.map((x,i)=>x*(w[i]??.25)))+sum(neg); }
-function tradeNeed(t,outVal){ const tr=gmTrait(t.id); let n=.9+Math.max(0,outVal)*.075-(t.rel-50)/15*(tr==='loyal'?2:1); if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
+function tradeNeed(t,outVal){ const tr=gmTrait(t.id); const ab=gmAbOf(t.id); let n=.9+Math.max(0,outVal)*.075-(t.rel-50)/15*(tr==='loyal'?2:1)+(ab?(ab.neg-60)/30:0); /* 협상력이 높을수록 더 받아 내려 한다 */ if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&t.rel>=70)n-=1; return n; }
 function trueVal(p){ const o=ovr(p); const eff=p.age<=25?o+Math.max(0,p.pot-o)*.6:p.age>=32?o-(p.age-31)*1.3:o; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 /* 한국시리즈가 끝나고 결산 전(이틀)에는 끝난 시즌 장부가 바뀌지 않게 막는다 */
 function preSettle(){ return !!(G.ps&&G.ps.done&&G.ps.finDay!=null&&G.day<G.ps.finDay&&!(G.last&&G.last.y>=G.year)); }
