@@ -528,6 +528,10 @@ const QUICK=process.env.QUICK==='1';
       const a={id:-77,name:'보관투수',isP:true,pos:'선발',age:35,y:G.year,t:G.user,rows:[{y:G.year-1,t:G.user,g:2,outs:15}]}; out.nan=!/NaN/.test(archSheet(a))&&/0\.00/.test(archSheet(a));
       const q=playersOf(G.user).find(x=>!x.foreign&&!x.faC&&!x.extNext); q.extNext={annual:1000,years:4}; const cf=GUARD.relNow(String(q.id)); delete q.extNext; out.rel=!!cf&&cf.lines.some(l=>/다음 시즌 확정 계약 정산금/.test(l))&&cf.lines.some(l=>/총 방출 비용/.test(l)); render(); return out; });
     if(r){ if(!r.btn)add('이름·등번호','선수 정보에 등번호·고치기 버튼이 없음'); if(!r.box)add('이름·등번호','고치기 칸이 열리지 않음'); if(r.box&&!r.saved)add('이름·등번호','저장이 반영되지 않음'); if(r.box&&!r.shown)add('이름·등번호','저장한 이름·등번호가 화면에 안 나옴'); if(r.box&&!r.err)add('이름·등번호','겹치는 등번호 안내가 없거나 저장됨'); if(!r.nan)add('은퇴 기록','무자책 투수 ERA가 0.00이 아님'); if(!r.rel)add('방출','다음 시즌 확정 계약 정산금이 확인창에 없음'); } }
+  /* 이적 선수 추세 차트 안내(리뷰 2026-11-02 00:37 9번): 우리 구단에서 모은 경기별 기록과 시즌 전체를 나눠 적는다 */
+  { where='추세 차트 범위'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.isP); const k={gl:p.gl,hist:p.hist}; const y=G.year; const ot=G.teams.find(t=>t.id!==G.user).id; p.gl={y,g:[[G.day,80,70,20,30,8,15,3]]}; p.hist=[Object.assign({},ZB,{y,t:ot,lvl:'1군',pa:400,ab:350,h:100}),Object.assign({},ZB,{y,t:G.user,lvl:'1군',pa:80,ab:70,h:20})];
+      const h=rollCard(p); p.gl=k.gl; p.hist=k.hist; return {h}; });
+    if(r&&!(/우리 구단에서 모은 경기별 기록 80타석/.test(r.h)&&/이번 시즌 전체 480타석/.test(r.h)))add('추세 차트','이적 선수 기록 범위 안내가 없음: '+String(r.h).replace(/<[^>]+>/g,'').slice(0,80)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
