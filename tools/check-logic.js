@@ -519,6 +519,12 @@ T('[외국인 발굴] 우리만 아는 후보가 곧 알려질 때(3일 전)와 
   fPubDaily(); ok(G.mail.some(m=>/공개 임박/.test(m.subj)&&m.subj.includes(p.name)),'3일 전 알림'); G.day+=3; fPubDaily(); ok(G.mail.some(m=>/퍼졌습니다/.test(m.subj)&&m.subj.includes(p.name)),'공개 당일 알림'); });
 T('[감독이 미는 선수] 함께 밀어주면 같은 자리 경쟁자의 기분이 내려간다(얻는 것과 포기하는 것)',()=>{ fresh(); const m=G.mgr[G.user]; const ps=playersOf(G.user).filter(p=>!p.ys&&!p.isP); const a=ps.find(p=>ps.some(q=>q!==p&&pSlot(q)===pSlot(p))); ok(a,'준비 실패'); const rival=ps.find(q=>q!==a&&pSlot(q)===pSlot(a)); rival.mor=60;
   G.mpick={y:G.year,mid:m.id,ids:[a.id]}; const e={data:{ids:[a.id]}}; EVH.mpick.pick(e,0); ok(rival.mor<60,'경쟁자 기분 '+rival.mor); });
+T('[영입 경로] 창단 드래프트 자동 지명은 경로(자동)와 지명 당시 우리 추정을 남긴다',()=>{ fresh(); const L=playersOf(G.user).filter(p=>p.acq&&p.acq.k==='fd'&&!p.acq.auto); ok(L.length,'준비 실패');
+  ok(L.every(p=>p.acq.how==='auto'&&p.acq.e0!=null),'경로·추정 누락 '+JSON.stringify(L[0].acq)); ok(/자동 지명/.test(originLabel(L[0].acq)),'라벨 '+originLabel(L[0].acq)); });
+T('[트레이드 위임] 유망한 제안만 보고: 유리한 제안은 남기고 불리한 제안만 거절',()=>{ fresh(); autoSet('tro','good'); const tid=G.teams.find(t=>t.id!==G.user).id;
+  const them=domestic(tid).filter(p=>!p.prospect), us=domestic(G.user).filter(p=>!p.prospect).sort((a,b)=>ovr(b)-ovr(a)); const mk=(id,g,w)=>({id,from:tid,give:[g.id],get:[w.id],exp:G.day+3});
+  const good=them.map(g=>mk(9001,g,us[us.length-1])).sort((a,b)=>troDiff(b)-troDiff(a))[0], bad=them.map(g=>mk(9002,g,us[0])).sort((a,b)=>troDiff(a)-troDiff(b))[0]; ok(troDiff(good)>=-1&&troDiff(bad)<-1,'준비 실패 '+troDiff(good)+' '+troDiff(bad)); G.offers=[good,bad];
+  ok(autoTradeOffer(good)===false&&G.offers.some(o=>o.id===9001),'유리한 제안까지 거절'); ok(autoTradeOffer(bad)===true&&!G.offers.some(o=>o.id===9002),'불리한 제안이 남음'); autoSet('tro',false); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

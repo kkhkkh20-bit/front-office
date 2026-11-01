@@ -144,6 +144,18 @@ function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(
   /* 특별한 소식(남은 결정·제안·중요 소식)이 없으면 묻지 않고 바로 진행한다. 설정에서 '진행 전에 묻기'를 켜면 매번 묻는다 */
   let P=[]; try{ P=pendItems(); }catch(e){} if(G.advAsk||P.length){ advAsk(v); return; } A.adv(v); }
 /* 경기 정리를 소식으로(진행한 기간): 진행이 끝나면 소식함 맨 아래에 경기 결과와 잘한·부진한 선수를 남긴다(홈의 주간 정리와 같은 내용) */
+/* 분석팀 해석: 선발·불펜 자책, 실점이 몰린 투수, 득점력. 판단 강도(관찰·점검·보강 검토)는 경기 후 보고와 같은 기준 */
+function digAnalysis(gs){ let so=0,se=0,ro=0,re=0,rs=0; const by={}; for(const g of gs){ const k=g.home===G.user?'h':'a'; const P=(g.box&&g.box[k]&&g.box[k].pit)||[]; P.forEach((q,i)=>{ if(i===0){ so+=q.outs; se+=q.er; } else { ro+=q.outs; re+=q.er; const b=by[q.id]=by[q.id]||{n:q.n,er:0,o:0}; b.er+=q.er; b.o+=q.outs; } }); rs+=k==='h'?g.hs:g.as; }
+  const era=(e,o)=>o?e*27/o:0; const sE=era(se,so), rE=era(re,ro); const top=Object.values(by).sort((a,b)=>b.er-a.er)[0]; const share=top&&re?top.er/re:0; const rpg=gs.length?rs/gs.length:0;
+  let core, act='', base=`선발 ${ipStr(so)}이닝 ERA ${sE.toFixed(2)} · 불펜 ${ipStr(ro)}이닝 ERA ${rE.toFixed(2)} · 경기당 ${rpg.toFixed(1)}득점`;
+  let rk=null; try{ rk=slotRanks(G.user).RP.rank; }catch(e){} const n=(G.games||[]).filter(g=>g.box&&(g.home===G.user||g.away===G.user)&&dobj(g.day).y===G.year).length;
+  if(rE>=5.5&&rE>sE+1.5){ core='선발은 버텼는데 불펜에서 실점이 많았습니다.'; const st=typeof gmStage==='function'?gmStage(Math.min(n,10),rk):{s:'점검'};
+    act=share>=.4&&top?`${st.s} · 불펜 전체 교체보다 ${top.n} 점검을 먼저 권합니다(이 기간 불펜 자책의 ${Math.round(share*100)}%).`:`${st.s} · 실점이 여러 투수에 퍼져 있어 한 명 문제라기보다 불펜 운용을 지켜볼 때입니다.`; }
+  else if(sE>=5.5){ core='선발이 일찍 무너진 경기가 많았습니다.'; act='선발 로테이션의 최근 투구를 점검할 때입니다(표본이 적으면 관찰).'; }
+  else if(rpg<3){ core='마운드는 버텼지만 점수를 내지 못했습니다.'; act='타선 부진이 일시적인지 지켜볼 때입니다(관찰).'; }
+  else core=digWin(gs)?'투타가 고르게 제 몫을 했습니다.':'뚜렷하게 한쪽이 무너지지는 않았습니다.';
+  return {core,act,base}; }
+const digWin=gs=>gs.filter(g=>g.res==='승').length>gs.length/2;
 function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
   const gs=D.games.map(d=>G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user))).filter(Boolean);
   const w=gs.filter(g=>g.res==='승').length, l=gs.filter(g=>g.res==='패').length; const rk=userRank();
@@ -152,5 +164,7 @@ function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
     if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3,t:`${ipStr(d.outs)}이닝 ${d.er}자책`}); }
     else { if(d.pa<5)continue; const ops=d.ab?obpOf(d)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} OPS ${fmt3(ops)}`}); } }
   rows.sort((a,b)=>b.sc-a.sc); const hot=rows.filter(x=>x.sc>0).slice(0,3), cold=rows.filter(x=>x.sc<0).slice(-2).reverse();
-  const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,[`${dmd(D.from)}~${dmd(D.to)} ${gs.length}경기 ${w}승 ${l}패. 지금 ${rk}위입니다.`,...L,hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'',cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''].filter(Boolean).join('\n'),{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
+  const A=digAnalysis(gs);
+  const body=[`[이번 주 핵심] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
+  const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
   return m; }

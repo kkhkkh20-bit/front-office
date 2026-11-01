@@ -5,7 +5,12 @@
  - 시즌 뒤 회고: 내가 꾸린 선수 WAR 순위와 이번 시즌 처음 주전이 된 선수.
  - 구단 > 연대기 > 내가 꾸린 팀: 순위 변화, 지금 선수단이 어디서 왔는지, 핵심 선수, 기록 연표 */
 const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이드','FA':'외부 FA','외국인':'외국인','보상선수':'보상선수','무적 영입':'무적 선수','해외 복귀':'해외 복귀'};
-function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},o||{}); }
+function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; let w0; try{ if(k!=='fd'&&k!=='draft'){ const y=period()==='season'||period()==='post'?G.year:G.year-1; const h=seasonTotal(p,y,'1군'); if(h)w0=Math.round(warOf(h,p)*10)/10; } }catch(e){}
+  p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{}); }
+/* 지명 경로: 단장이 직접 / 자동(진행을 넘겨 스카우트 순위대로) / 조건 위임 */
+const ACQ_HOW={gm:'직접 지명',auto:'자동 지명',rule:'조건 위임 지명'};
+/* 데려올 때의 판단: 지명은 우리 스카우트 추정, 트레이드·FA는 직전 시즌 WAR */
+function acqJudge(o){ if(!o)return ''; const a=[]; if(o.e0!=null)a.push(`우리 추정 ${dv(Math.round(o.e0))}`); if(o.ep!=null)a.push(`잠재 추정 ${dv(Math.round(o.ep))}`); if(o.w0!=null)a.push(`직전 시즌 WAR ${o.w0.toFixed(1)}`); return a.join(' · '); }
 /* 예전 저장: 이야기 기록에서 온 길을 찾는다 */
 function acqFromStory(p){ const nm=tname(p.team); const L=(p.story||[]).slice().reverse();
   for(const s of L){ const t=s.t||''; if(!t.includes(nm)&&!/트레이드|FA 이적|보상선수|입단 \(|무적 선수/.test(t))continue;
@@ -18,7 +23,7 @@ function tbOrigin(p){ if(!p||p.team==null)return null; const A=p.acq; if(A&&A.ti
 function meSince(){ const C=G.myC; if(C&&C.tid===G.user&&C.y0!=null)return C.y0; return G.gmSince??G.startY??G.year; }
 /* 지금 단장이 데려온 선수인가: 창단 지명은 창단 해, 그 밖은 재임 시작 해 이후(지명은 그해 가을에 하므로 한 해 앞까지) */
 function mineOf(p){ const o=tbOrigin(p); if(!o||o.tid!==G.user)return false; if(o.d!=null&&G.gmSinceD!=null)return o.d>=G.gmSinceD; /* 취임한 날 이후 데려온 선수만(전임 단장의 영입 제외) */ return o.y>=meSince(); }
-function originLabel(o){ if(!o)return '물려받은 선수'; const k=o.k; return k==='fd'?(o.auto?`${o.y} 창단 배분`:`${o.y} 창단 드래프트${o.rd?` ${o.rd}라운드`:''}`):k==='draft'?`${o.y} 신인 드래프트${o.rd?` ${o.rd}라운드`:''}`:k==='트레이드'?`${o.y} 트레이드${o.from!=null?`(${tshort(o.from)})`:''}`:`${o.y} ${ACQ_K[k]||k}`; }
+function originLabel(o){ if(!o)return '물려받은 선수'; const k=o.k; return k==='fd'?(o.auto?`${o.y} 창단 배분`:`${o.y} 창단 드래프트${o.rd?` ${o.rd}라운드`:''}${o.how?` · ${ACQ_HOW[o.how]}`:''}`):k==='draft'?`${o.y} 신인 드래프트${o.rd?` ${o.rd}라운드`:''}${o.how?` · ${ACQ_HOW[o.how]}`:''}`:k==='트레이드'?`${o.y} 트레이드${o.from!=null?`(${tshort(o.from)})`:''}`:`${o.y} ${ACQ_K[k]||k}`; }
 function originCat(p){ const o=tbOrigin(p); if(!o||!mineOf(p))return '물려받음'; return ACQ_K[o.k]||'기타'; }
 /* 우리 팀에서 쌓은 WAR(데려온 해부터) */
 function warWithUs(p){ const o=tbOrigin(p); const y0=o?o.y:G.year-10; let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',G.user); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }

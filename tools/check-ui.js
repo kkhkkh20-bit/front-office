@@ -276,6 +276,15 @@ const QUICK=process.env.QUICK==='1';
   /* 선수단 계획 합계·캡 여유, 코치 후보 성격(외부 리뷰 B) */
   { where='계획·코치'; const r=await ev(()=>{ const tx=plannerCard().replace(/<[^>]+>/g,' '); UI.tab='staff'; UI.sub=Object.assign({},UI.sub||{},{staff:'coach'}); UI.it=Object.assign({},UI.it||{},{mg_staff_coach:'coach'}); render(); const tc=(document.querySelector('#app')||{}).textContent||''; UI.tab='home'; render(); return {plan:/캡 여유/.test(tx),coach:/후보$|후보 ·|강한 후보|메우는 후보/.test(tc)}; });
     if(r){ if(!r.plan)add('선수단 계획','내년 연봉 합계·캡 여유가 없음'); } }
+  /* 분석 보고: 핵심 → 검토할 행동 → 근거. 불펜 한 명에게 실점이 몰리면 그 투수 점검부터 */
+  { where='분석 보고'; const r=await ev(()=>{ const me=G.user; const g=()=>({home:me,away:-1,hs:3,as:7,res:'패',day:G.day,box:{h:{pit:[{id:1,n:'갑투',outs:18,er:1},{id:2,n:'을투',outs:3,er:5},{id:3,n:'병투',outs:6,er:1}]},a:{pit:[]}}}); const A=digAnalysis([g(),g(),g()]); return {core:A.core,act:A.act,base:A.base}; });
+    if(!r||!/불펜/.test(r.core)||!/을투 점검/.test(r.act)||!/ERA/.test(r.base))add('분석 보고','불펜 실점이 몰린 주에 핵심·검토 행동·근거가 없음: '+JSON.stringify(r)); }
+  /* 트레이드 위임 방식: 모두 거절 / 유망한 제안만 보고 */
+  { where='트레이드 위임'; const r=await ev(()=>{ const was=G.auto&&G.auto.tro; autoSet('tro',true); const h=authView(); autoSet('tro',was); return /유망한 제안만/.test(h); });
+    if(!r)add('트레이드 위임','받은 트레이드 제안 위임에 유망한 제안만 보고 선택이 없음'); }
+  /* 팀 빌딩: 지명 경로(직접·자동)와 그때 판단 */
+  { where='영입 판단'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>q.acq&&q.acq.k==='fd'&&!q.acq.auto); if(!p)return null; return {lab:originLabel(p.acq), j:typeof acqJudge==='function'?acqJudge(p.acq):''}; });
+    if(r&&(!/지명/.test(r.lab)||!/추정/.test(r.j)))add('영입 판단','데려온 길에 지명 경로·그때 추정이 없음: '+JSON.stringify(r)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
