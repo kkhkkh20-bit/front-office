@@ -601,6 +601,25 @@ T('[드래프트] 같은 투수의 최고 구속은 어디서나 같고, 기록�
   p.am.bb=Math.round(p.am.outs/27*7.5); const rp0=scoutReport(p); const rp=Object.assign({},rp0,{tools:rp0.tools.map(t=>t.k==='ctl'?Object.assign({},t,{cur:78}):t)}); const v=draftView(p,rp);
   ok(/기록/.test(v.obs)&&/근거/.test(v.obs),'기록과 반대인데 설명 없음: '+v.obs); ok(rp.ofp==null||/상한/.test(v.fut)&&/확신/.test(v.fut),'성장 전망 표현: '+v.fut);
   p.amInj='토미 존 수술(2학년)'; ok(riskWhy(p,rp).some(x=>/건강/.test(x)),'건강 위험 원인 없음'); p.amInj=null; });
+T('[면담] 고민 묻기는 다른 이야기를 막지 않고, 방금 진 경기를 성격대로 알아들으며, 면담 내용이 남는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3);
+  const g=G.games.find(x=>x.home===G.user||x.away===G.user); ok(g,'경기 없음'); g.day=G.day; const me=g.home===G.user?'h':'a'; const B=g.box[me]; const x=B.pit[B.pit.length-1]; const p=G.players[x.id]; ok(p,'투수 없음');
+  x.er=4; x.d='패'; initPers(p); p.pers.temp=5; p.pers.amb=10; p.tk={}; p.talkWk=null;
+  const r1=talk(p.id,'ask'); ok(/만회/.test(r1.msg),'방금 경기를 모름: '+r1.msg);
+  const r2=talk(p.id,'praise'); ok(!/이미/.test(r2.msg),'고민 묻기 뒤 칭찬이 막힘: '+r2.msg);
+  const r3=talk(p.id,'push'); ok(/이미/.test(r3.msg),'칭찬 뒤 같은 주 분발 촉구가 또 됨');
+  const r4=talk(p.id,'ask'); ok(!/이미/.test(r4.msg)&&!r4.d,'고민 묻기는 다시 할 수 있고 기분은 한 주에 한 번만');
+  ok((p.talkLog||[]).length>=2&&p.talkLog[0].a,'면담 기록 없음'); });
+T('[코치] 코치는 세부 능력이 있고, 제구 훈련은 담당 코치의 제구 지도가 성장 속도를 바꾸며, 은퇴 선수는 선수 시절 강점이 지도 강점이 된다',()=>{ fresh(); ok(typeof cAb==='function'&&typeof trnCoachV==='function','함수 없음');
+  const c=mkCoach('pc'); ok(c.ab&&c.ab.ctl!=null&&c.ab.yng!=null,'세부 능력 없음');
+  const c2=JSON.parse(JSON.stringify(c)); c2.ab.ctl=c.ab.ctl+20; ok(trnCoachV(c2,G.user,'ctl')>trnCoachV(c,G.user,'ctl'),'제구 지도가 훈련에 안 들어감');
+  const p=Object.values(G.players).find(q=>q.team!=null&&q.isP&&!q.foreign&&q.age>=30); ok(p,'준비 실패'); p.r.ctl=78; p.r.stf=40; p.r.sta=50; const ob=obFromPlayer(p,{war:20,seasons:12}); ok(ob,'OB 없음'); const a=cAb(obCoach(ob)); ok(a.ctl>a.stf+5,'제구 좋던 투수인데 제구 지도가 높지 않음: '+a.ctl+'/'+a.stf); });
+T('[훈련 보고] 집중 훈련 성과는 시작일·시작 당시 등급·지금 등급·다음 등급까지를 보여 주고, 코치 평가와 실전 확인을 나눈다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&q.age<=26&&!q.ys); ok(p,'준비 실패'); trnSet(p.id,'ctl'); const T=G.trn[p.id]; T.since=G.day-84; T.base.ctl=p.r.ctl-1.2;
+  const o=trnObs(p); ok(o&&o.since===T.since&&o.g0&&o.g1&&o.next!=null,'시작·현재 등급 없음'); ok(typeof o.real==='string'&&/기록/.test(o.real),'실전 확인 없음: '+o.real); });
+T('[감독 지시] 투수 보호 요청을 처음 거절당해도 관계(선수단 경기력)가 바로 떨어지지 않고, 같은 해 반복되면 그때 떨어진다',()=>{ fresh(); const m=G.mgr[G.user]; mgrAttr(m); m.arm=95; m.ego=95; let ref=false;
+  for(let i=0;i<80&&!ref;i++){ delete mgrDir().arm; G.dirFr=null; m.rel=50; setMgrDir('arm',true); ref=!mgrDir().arm.ok; } ok(ref,'거절 재현 실패'); ok(m.rel===50,'첫 거절에 관계가 바로 떨어짐: '+m.rel);
+  let ref2=false; for(let i=0;i<80&&!ref2;i++){ mgrDir().arm={ok:false,mid:m.id,day:G.day-31,rel0:50}; G.dirFr={y:G.year,arm:1}; m.rel=50; setMgrDir('arm',true); ref2=!mgrDir().arm.ok; } ok(ref2,'두 번째 거절 재현 실패'); ok(m.rel<50,'반복 거절인데 관계 변화 없음'); });
+T('[위임] 스태프 빼가기를 맡겨도 별 4개 이상이라도 기존 연봉의 1.5배를 넘는 조건이면 단장 승인을 받는다',()=>{ fresh(); stInit(); const s=(G.scouts||[]).find(x=>x.skill>=1); ok(s,'준비 실패'); s.skill=4; const tid=G.teams.find(t=>t.id!==G.user).id; G.stRaid=[{id:s.id,k:'sc',tid,sal:round5(s.sal*2),d:G.day}]; G.auto=G.auto||{}; G.auto.raid=true; const sal0=s.sal;
+  autoRaid(); ok(s.sal===sal0&&(G.stRaid||[]).some(r=>r.id===s.id),'한도를 넘는 인상인데 운영팀이 바로 붙잡음'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

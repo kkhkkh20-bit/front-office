@@ -142,6 +142,7 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='fdPol'){ A.fdPol(el.value); }
   if(a==='fdSsel'){ UI.fdS=el.value; UI.fdD=0; UI.fdMore=60; render(); }
   if(a==='fdLogT'){ UI.fdLogT=el.value; render(); }
+  if(a==='fdAge'){ UI[el.dataset.v==='1'?'fdA1':'fdA0']=+el.value; UI.fdMore=60; render(); }
   if(a==='ppRep'||a==='ppPid'){ UI.pp=UI.pp||{}; if(a==='ppRep')UI.pp.rep=el.value; else UI.pp.pid=el.value; UI.ppMsg=''; render(); }
   if(a==='lfSort'){UI.lf.sort=el.value;render();}
   if(a==='dmemo'){ dmemoOf(+el.dataset.v).t=el.value.slice(0,40); save(); }

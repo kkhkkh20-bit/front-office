@@ -62,7 +62,7 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
   for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.age>33||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
-    const room=trnRoom(p,k); if(room<=0)continue; const c=trnCoach(p.team,f); const cf=.85+((c?c.dv:50)-50)/100*.8; const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:.35;
+    const room=trnRoom(p,k); if(room<=0)continue; const c=trnCoach(p.team,f); const cf=.85+((c?trnCoachV(c,p.team,k):50)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:.35;
     const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
@@ -97,7 +97,10 @@ function trnOpinion(p){ const L=trnLearn(p); const lr=L>=1.15?' 배우는 속도
 /* 관찰 보고: 능력 변화(코치 관찰, 정확한 숫자 대신 정도) */
 function trnObs(p,yy){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; const D=TRN[trnG(p)][T.f]; const k=D.k[0]; const d=p.r[k]-(T.base[k]??p.r[k]); const w=Math.floor((G.day-T.since)/7);
   const lv=d<.3?(w<4?'아직 판단하기 이릅니다':'변화가 거의 관찰되지 않습니다'):d<1?'작은 개선이 관찰됩니다':d<2?'눈에 띄게 좋아졌습니다':'확실히 달라졌습니다';
-  return {w,lv,d,stat:trnStatLine(p,T.f,T.snap,yy)}; }
+  const g0=dvGrade(T.base[k]??p.r[k]), g1=dvGrade(p.r[k]); const th=[40,50,60,70].find(x=>p.r[k]<x); const next=th==null?null:Math.max(0,th-p.r[k]); /* 등급은 훈련 목록과 같은 기준 */
+  const prog=g1!==g0?`${g0} → ${g1}로 한 단계 올랐습니다`:d<.3?`${g1} 그대로`:next!=null&&next<=1.5?`${g1} 안에서 개선 · 다음 등급에 근접`:`${g1} 안에서 소폭 개선`;
+  const stat=trnStatLine(p,T.f,T.snap,yy); const none=!stat||/아직 경기 기록이 없습니다/.test(stat);
+  return {w,lv,d,stat,since:T.since,k,g0,g1,next,prog,real:none?'기록 없음(1군·2군 정규 경기 기준, 시범경기 제외)':'기록 있음(아래 경기 기록 참고)'}; }
 /* 새 시즌: 단장이 정한 방향은 이어 가되, 관찰 기준(능력·기록)은 새로 잡는다 */
 /* 새해에 관찰 기준을 새로 잡기 전, 작년 훈련 방향·기간·코치 관찰을 그 시즌 회고(연대기)에 한 줄씩 남긴다 */
 function trnYearNote(){ const y=G.year-1; const L=[]; for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user||!T||T.f==='bal')continue; const o=trnObs(p,y); if(!o)continue; const D=TRN[trnG(p)][T.f];

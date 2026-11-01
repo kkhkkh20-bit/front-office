@@ -20,6 +20,10 @@ function staffView(){
 /* ---------- 코치진 ---------- */
 function clanName(id){ if(!id)return ''; const m=Object.values(G.mgr).find(x=>x&&x.id===id)||(G.mmarket||[]).find(x=>x.id===id); return m?m.name:''; }
 function coachTag(c){ const m=G.mgr[G.user]; if(!c||!c.clan)return ''; if(m&&c.clan===m.id)return '<span class="pill good">감독 사단 +6</span>'; const n=clanName(c.clan); return n?`<span class="pill">${esc(n)} 사단</span>`:''; }
+/* 코치 카드: 잘하는 분야 태그 + 세부 능력(맡은 자리 능력 먼저) */
+function coachAbBox(c){ if(!c)return ''; const a=cAb(c); const D=CDOM[c.role]||[]; const S=cStrong(c), W=cWeak(c); const order=[...D,'yng','com','ana',...Object.keys(CAB).filter(k=>!D.includes(k)&&!['yng','com','ana'].includes(k))];
+  return `<div class="cab-t">${S.map(k=>`<span class="pill good">${CAB[k]} 강점</span>`).join('')}${W.map(k=>`<span class="pill warn">${CAB[k]} 약함</span>`).join('')}</div>
+  <details class="cab"><summary class="small">세부 능력</summary><div class="cab-g">${order.map((k,i)=>`<span class="cab-r${i<D.length?' dom':''}"><span>${CAB[k]}${i<D.length?' ·':''}</span>${rchip(a[k])}</span>`).join('')}</div><p class="small muted">· 표시는 이 자리에서 쓰는 능력입니다. 지도력은 그 능력과 데이터 분석, 육성력은 그 능력과 유망주 육성에서 나옵니다. 선수 훈련은 집중 항목의 지도 능력이 속도를 바꿉니다.</p></details>`; }
 function coachStats(c,tid){ const e=k=>effC(c,tid,k); const m=G.mgr[tid]; const why=v=>v>0?`${m?m.name+' ':''}감독 사단이라 손발이 맞아 +${v}(이미 반영된 값)`:`고집 센 ${m?m.name+' ':''}감독과 사단이 아니라 ${v}(이미 반영된 값, 기본 능력보다 낮게 일함)`; const d=k=>{ const v=e(k)-c[k]; return v?`<i class="${v>0?'up':'dn'}" title="${esc(why(v))}">${v>0?'+':''}${v}</i>`:''; };
   return `<span class="cst"><span>지도</span>${rchip(e('sk'))}${d('sk')}</span><span class="cst"><span>육성</span>${rchip(e('dv'))}${d('dv')}</span>`; }
 /* 우리 코치 연장·승격 */
@@ -32,7 +36,7 @@ function coachSlot(k){ const C=coachesOf(G.user); const c=C[k]; const r=CROLE[k]
   if(!c)return `<div class="csl empty"><div class="csl-h"><b>${r.l}</b><span class="pill bad">빈자리</span></div><p class="small muted">${r.d}</p><button class="btn small primary" data-a="coachFind" data-v="${k}">후보 보기</button></div>`;
   return `<div class="csl"><div class="csl-h"><b>${r.l}</b>${coachTag(c)}</div>
     <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user})}${esc(c.name)} <span class="small muted">${c.age}세</span></div>
-    <div class="csl-s">${coachStats(c,G.user)}</div>
+    <div class="csl-s">${coachStats(c,G.user)}</div>${coachAbBox(c)}
     <div class="small muted">${esc(c.car)} · 연 ${money(c.sal)} · 잔여 ${Math.max(0,c.yrs)}년</div>
     ${coachDealRow(k,c)}<div class="row"><button class="btn small" data-a="coachFind" data-v="${k}">교체</button>${UI.cfire===k?`<button class="btn small danger" data-a="fireCoach" data-v="${k}">정말 계약 해지</button>`:`<button class="btn small" data-a="cfireAsk" data-v="${k}">계약 해지</button>`}</div></div>`; }
 function chanceTxt(p){ return p>=.65?'응할 가능성 큼':p>=.45?'반반':p>=.25?'쉽지 않음':'거의 어려움'; }
@@ -59,7 +63,7 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
   const card=c=>{ const cur=C[c.role];
     const kind=c.dv-c.sk>=12?'유망주 성장에 강한 후보':c.sk-c.dv>=12?'즉시 전력(경기력) 지도에 강한 후보':c.sal<=Math.min(...(G.cmarket||[]).filter(x=>x.role===c.role).map(x=>x.sal))?'낮은 비용으로 자리를 메우는 후보':'';
     return `<div class="csl"><div class="csl-h"><b>${CROLE[c.role].l}</b>${cur?`<span class="small muted">${cmpT(c,cur)}</span>`:'<span class="pill bad">빈자리</span>'}</div>${kind?`<p class="small muted" style="margin:2px 0">${kind}${CROLE[c.role].g===2?' · 2군 코치의 육성력은 2군에서 뛰는 선수 성장에, 지도력은 2군 경기력에 쓰입니다':''}</p>`:''}
-    <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null})}${esc(c.name)} <span class="small muted">${c.age}세</span>${c.star?' <span class="pill acc">스타 코치</span>':''}${obTag(c.ob)}${c.res===G.user?' <span class="pill warn">우선 협상</span>':''}${c.age<=41?' <span class="pill">젊은 지도자</span>':''}${c.from!=null&&c.from!==G.user&&G.teams[c.from]?` <span class="pill">전 ${esc(tshort(c.from))}</span>`:''}</div><div class="csl-s">${coachStats({...c,clan:null},G.user)}</div>
+    <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null})}${esc(c.name)} <span class="small muted">${c.age}세</span>${c.star?' <span class="pill acc">스타 코치</span>':''}${obTag(c.ob)}${c.res===G.user?' <span class="pill warn">우선 협상</span>':''}${c.age<=41?' <span class="pill">젊은 지도자</span>':''}${c.from!=null&&c.from!==G.user&&G.teams[c.from]?` <span class="pill">전 ${esc(tshort(c.from))}</span>`:''}</div><div class="csl-s">${coachStats({...c,clan:null},G.user)}</div>${coachAbBox(c)}
     <div class="small muted">${esc(c.car)} · 연 ${money(c.sal)}</div>
     <div class="row"><button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년 계약</button></div></div>`; };
   if(mode==='other')return modeBar+`<div class="chips">${[['all','전체'],...CKEYS.map(k=>[k,CROLE[k].l])].map(([k,l])=>`<button data-a="crole" data-v="${k}" class="${role===k?'on':''}">${l}${k!=='all'&&!C[k]?' <i class="cnt" style="background:var(--bad)">빈자리</i>':''}</button>`).join('')}</div><div class="chips">${[['tot','종합순'],['sk','지도력순'],['dv','육성력순'],['sal','연봉 낮은 순']].map(([k,l])=>`<button data-a="csort" data-v="${k}" class="${srt===k?'on':''}">${l}</button>`).join('')}</div>${UI.poachMsg?`<div class="note">${esc(UI.poachMsg)}</div>`:''}`+coachOther(role,srt);

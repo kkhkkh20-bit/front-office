@@ -5,8 +5,26 @@ const CROLE={hc:{l:'수석코치',g:1,d:'감독 보좌 · 선수단 분위기'},
   fm:{l:'2군 감독',g:2,d:'2군 선수 전체 성장'},fp:{l:'2군 투수코치',g:2,d:'2군 투수 성장'},fb:{l:'2군 타격코치',g:2,d:'2군 타자 성장'}};
 const CKEYS=Object.keys(CROLE);
 const CCAR=['프랜차이즈 스타 출신','국가대표 코치 경력','미국 마이너리그 연수','일본 코치 연수','전력분석원 출신','2군에서 오래 지도','우승 코치진 출신','무명 선수 출신 지도자'];
-function mkCoach(role,o){ o=o||{}; const sk=clamp(Math.round(N(55,9)+(o.boost||0)),30,88), dv=clamp(Math.round(N(CROLE[role].g===2?57:53,10)+(o.boost||0)*.6),30,88);
-  return {id:'c'+Math.floor(R()*1e9),name:genName(),age:ri(36,63),role,sk,dv,car:pick(CCAR),sal:round5(clamp(60+(Math.max(sk,dv)-50)*4.5+N(0,12),45,320)),yrs:0,clan:o.clan||null}; }
+/* 코치 세부 능력(20~80): 자리마다 보는 능력이 다르다. 지도력(sk)·육성력(dv)은 맡은 자리의 세부 능력에서 나온다.
+   훈련 집중 항목은 그 항목의 지도 능력(60%)과 유망주 육성(40%)이 성장 속도를 정한다. 소통은 수석코치일 때 선수단 기분에, 데이터 분석은 지도력에 조금 들어간다 */
+const CAB={stf:'구위 지도',ctl:'제구 지도',sta:'체력 관리',con:'컨택 지도',pow:'장타 지도',eye:'선구 지도',def:'수비 지도',spd:'주루 지도',cat:'포수 지도',yng:'유망주 육성',com:'소통',ana:'데이터 분석'};
+const CDOM={pc:['stf','ctl','sta'],fp:['stf','ctl','sta'],cc:['cat','ctl'],bc:['con','pow','eye'],fb:['con','pow','eye'],rc:['spd'],dc:['def'],hc:['com','ana'],fm:['yng','com']};
+function coachSync(c){ const a=c.ab, D=CDOM[c.role]; const dom=avg(D.map(k=>a[k])); c.sk=Math.round(clamp(dom*.8+a.ana*.2,30,90)); c.dv=Math.round(clamp(dom*.5+a.yng*.5,30,90)); }
+/* 예전 저장의 코치: 지금 지도력·육성력은 그대로 두고 세부 능력만 그에 맞춰 나눈다 */
+function cAb(c){ if(!c)return null; if(c.ab)return c.ab; const h=k=>hn('cab'+k,String(c.id)); const D=CDOM[c.role]||[]; const a={};
+  for(const k in CAB)a[k]=clamp(Math.round(46+h(k)*7),25,85); D.forEach(k=>a[k]=clamp(Math.round(c.sk+h('d'+k)*6),25,88)); a.yng=clamp(Math.round(c.dv*2-avg(D.map(k=>a[k]))),25,88); c.ab=a; return a; }
+function cGrow(c,d){ cAb(c); for(const k of CDOM[c.role].concat('yng'))c.ab[k]=clamp(c.ab[k]+d,25,90); c.sk=clamp(c.sk+d,30,90); c.dv=clamp(c.dv+d,30,90); }
+function mkCoach(role,o){ o=o||{}; const b=o.boost||0; const L=N(53,8)+b; const a={}; for(const k in CAB)a[k]=N(45,7); const D=CDOM[role];
+  for(const k of D)a[k]=L+N(0,4); if(D.length>=2){ const s=pick(D); a[s]+=rnd(5,12); if(R()<.5){ const w=pick(D.filter(x=>x!==s)); a[w]-=rnd(3,9); } } else a[D[0]]+=rnd(0,6); /* 같은 자리라도 잘하는 분야가 다르다 */
+  a.yng=N(CROLE[role].g===2?57:51,9)+b*.6; a.com=N(50,9)+(role==='hc'||role==='fm'?b*.4:0); a.ana=N(48,10)+(role==='hc'?b*.4:0);
+  if(R()<.3){ const x=pick(Object.keys(CAB).filter(k=>!D.includes(k)&&k!=='yng')); a[x]+=rnd(8,15); } /* 자리 밖에도 강점이 있는 코치 */
+  for(const k in a)a[k]=clamp(Math.round(a[k]),25,85);
+  const c={id:'c'+Math.floor(R()*1e9),name:genName(),age:ri(36,63),role,ab:a,car:pick(CCAR),yrs:0,clan:o.clan||null}; coachSync(c); c.sal=round5(clamp(60+(Math.max(c.sk,c.dv)-50)*4.5+N(0,12),45,320)); return c; }
+/* 훈련 집중 항목에 적용되는 지도 수준: 그 항목 지도 60% + 유망주 육성 40% (사단 보정 포함) */
+function trnCoachV(c,tid,k){ if(!c)return 45; const a=cAb(c); const base=(a[k]??c.dv)*.6+a.yng*.4; return base+(effC(c,tid,'dv')-c.dv); }
+/* 잘하는 분야·약한 분야 */
+function cStrong(c){ const a=cAb(c); return Object.keys(CAB).filter(k=>a[k]>=60).sort((x,y)=>a[y]-a[x]).slice(0,2); }
+function cWeak(c){ const a=cAb(c); return (CDOM[c.role]||[]).filter(k=>a[k]<45); }
 function mkClan(m){ // 이름난 감독은 사단을 거느린다
   const n=m.fame>=80?5:m.fame>=70?4:m.fame>=55?2:0; if(!n)return [];
   const roles=['hc',...['pc','bc','cc','rc','dc','fm'].sort(()=>R()-.5)].slice(0,n);

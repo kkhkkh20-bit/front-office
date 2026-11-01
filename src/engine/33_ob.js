@@ -19,14 +19,14 @@ function obMake(o){ G.obSeq=(G.obSeq||0)+1; const pers=o.pers||{pro:ri(4,20),amb
   const aim=pers.amb>=13?(path==='coach'||path==='media'?'mgr':'gm'):null;
   const ob={id:'ob'+G.obSeq,fid:o.fid,name:o.name,isP:o.isP,pos:o.pos,team:o.team,ys:o.ys||0,mine:o.team===G.user,war:o.war||0,seasons:o.seasons||0,awards:o.awards||0,hof:!!o.hof,
     retY:o.retY,age:o.age,pers,fame,path,aim,sk:Math.round(clamp(44+Math.min(10,o.war*.3)+(o.cat?4:0)+pers.pro*.35+N(0,4),32,72)),dv:Math.round(clamp(44+pers.pro*.5+pers.loy*.15+N(0,5),32,72)),
-    sc:clamp(Math.round(1.5+pers.pro/8+R()),1,5),readyY:o.retY+(path==='media'?ri(2,5):path==='coach'?(R()<.5?0:1):0),cy:0,sy:0,fy:0,my:0,bond:o.team===G.user?10:0,log:[]};
+    sc:clamp(Math.round(1.5+pers.pro/8+R()),1,5),readyY:o.retY+(path==='media'?ri(2,5):path==='coach'?(R()<.5?0:1):0),cy:0,sy:0,fy:0,my:0,bond:o.team===G.user?10:0,log:[],pr:o.pr||null};
   G.ob.push(ob); return ob; }
 function obFromPlayer(p,rec){ if(!G.ob)obInit(); const c=careerOf(p); let war=rec?rec.war:+c.war.toFixed(1); let seasons=rec?rec.seasons:c.seasons.size; const by=c.byTeam[p.team]; let ys=by?by.ys.size:0;
   const fm=p.team===G.user&&G.fd?fdMine(p):undefined; if(fm!==undefined)ys=fm?fm.ys:0; /* 창단 게임: 창단 이후만 우리 구단 경력 */
   if(rec&&rec.mine&&p.team===G.user)ys=Math.max(ys,rec.mine.ys);
   const miss=Math.max(0,(p.svc||0)-seasons); if(miss){ seasons+=miss; war=+(war+miss*clamp((p.pot-45)/5,0,4.5)).toFixed(1); if(c.teams.size<=1&&fm===undefined)ys+=miss; } /* 기록이 남기 전(게임 시작 전) 경력은 연차와 잠재력으로 추정 */
   if(seasons<5&&war<5&&!(p.team===G.user&&ys>=3))return null; initPers(p);
-  const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers}});
+  const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers},pr:{...p.r}});
   ob.mineWar=fm!==undefined?(fm?fm.war:0):rec&&rec.mine?rec.mine.war:p.team===G.user?+(war*(ys/Math.max(1,seasons))).toFixed(1):c.byTeam[G.user]?+c.byTeam[G.user].war.toFixed(1):0; ob.no=jno(p); if(rec&&rec.canRetNo)ob.canRetNo='p'+p.id; return ob; }
 /* 지금 어디서 무엇을 하는가 */
 function obWhere(ob){ for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.ob===ob.id)return {k:'mgr',tid:t.id,t:`${t.city} ${t.nick} 감독`}; if(t.gm&&t.gm.ob===ob.id)return {k:'gm',tid:t.id,t:`${t.city} ${t.nick} 단장`};
@@ -36,8 +36,18 @@ function obWhere(ob){ for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.ob==
   if(ob.alt)return {k:ob.alt.k,tid:ob.alt.tid,t:ob.alt.t};
   return {k:'free',t:ob.path==='media'?'해설위원':`${OBPATH[ob.path]} 자리를 찾는 중`}; }
 function obRole(ob){ if(ob.isP)return ob.cy>=6?'hc':ob.cy<2&&R()<.5?'fp':'pc'; if(ob.pos==='포수')return 'cc'; const r=pick(['bc','bc','dc','rc','fb']); return ob.cy>=6&&R()<.4?'hc':r; }
+/* 은퇴 선수 코치의 세부 능력: 지도자 수준(ob.sk·dv, 경력으로 오름)에 선수 시절 강점의 모양을 얹는다. 제구가 좋던 투수는 제구 지도, 포수 출신은 포수 지도.
+   소통은 충성심·성격(무던할수록), 데이터는 프로의식, 유망주 육성은 육성력 */
+function obAb(ob,role){ const P=ob.pers||{pro:10,amb:10,loy:10,temp:10}; const h=k=>hn('oab'+k,String(ob.id)); const a={}; for(const k in CAB)a[k]=44+h(k)*6;
+  const pr=ob.pr; const keys=ob.isP?['stf','ctl','sta']:['con','pow','eye','spd','def'];
+  if(pr){ const m=avg(keys.map(k=>pr[k]||50)); for(const k of keys)a[k]=ob.sk+((pr[k]||50)-m)*.6+h('s'+k)*3; } else for(const k of keys)a[k]=ob.sk+h('s'+k)*5;
+  if(ob.cat||ob.pos==='포수')a.cat=ob.sk+5+h('cat')*3;
+  a.com=40+P.loy*.4+(20-P.temp)*.6+h('com')*4; a.ana=38+P.pro*.8+h('ana')*5;
+  for(const k of CDOM[role])if(!keys.includes(k)&&k!=='cat'&&k!=='com')a[k]=Math.max(a[k],ob.sk+h('r'+k)*4);
+  const D=CDOM[role]; const dom=avg(D.map(k=>a[k])); a.yng=ob.dv*2-dom+h('y')*2;
+  for(const k in a)a[k]=clamp(Math.round(a[k]),25,88); return a; }
 function obCoach(ob){ const role=obRole(ob); const c={id:'c'+ob.id,name:ob.name,age:ob.age,role,sk:ob.sk,dv:ob.dv,car:`${tshort(ob.team)} ${ob.hof?'명예의 전당 ':ob.fame>=70?'레전드 ':''}출신 · 통산 WAR ${ob.war}`,sal:round5(clamp(55+(Math.max(ob.sk,ob.dv)-50)*4.5+(ob.fame>=70?40:0),45,340)),yrs:0,clan:null,ob:ob.id,star:ob.fame>=70};
-  G.obFace[c.id]=ob.fid; return c; }
+  c.ab=obAb(ob,role); coachSync(c); G.obFace[c.id]=ob.fid; return c; }
 function obCands(kind){ obInit(); return G.ob.filter(o=>{ const w=obWhere(o); return w.k==='free'&&o.age<=66&&(kind==='coach'?(o.path==='coach'||o.path==='media'&&o.my>=3):kind==='scout'?(o.path==='scout'||o.path==='front'&&o.fy<3):false); }); }
 function obMgrCands(){ obInit(); return G.ob.filter(o=>{ const w=obWhere(o); if(w.k==='mgr'||w.k==='gm'||o.age>66||o.age<42)return false; return (o.cy>=5&&(o.sk>=58||o.aim==='mgr'))||(o.fame>=72&&(o.cy>=2||o.my>=4)); }); }
 function obMgr(ob){ const m=mkMgr(); m.name=ob.name; m.age=ob.age; m.fame=clamp(ob.fame+Math.min(10,ob.cy),20,95); m.tac=clamp(Math.round(ob.sk+N(0,4)),30,90); m.youth=clamp(Math.round(ob.dv+N(0,8)),15,88); m.ego=clamp(Math.round(ob.pers.temp*3.5+20+(ob.fame>=70?10:0)),20,95);
@@ -47,7 +57,7 @@ function obGM(ob,tid){ const g=mkGM(tid); g.name=ob.name; g.age=ob.age; const P=
   g.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.sy?`스카우트 ${ob.sy}년`:''}${ob.sy&&ob.fy?' · ':''}${ob.fy?`프런트 ${ob.fy}년`:''}`; g.ob=ob.id; g.id='m'+ob.id; G.obFace[g.id]=ob.fid; return g; }
 /* 겨울마다: 경력 연차가 쌓이고, 능력이 자라고, 일부는 자리를 옮긴다 */
 function obYear(){ obInit(); for(const ob of G.ob){ ob.age++; const w=obWhere(ob);
-    if(w.k==='coach'){ ob.cy++; const c=G.coach[w.tid][w.role]; if(ob.age<=56){ c.sk=clamp(c.sk+ri(0,2),30,90); c.dv=clamp(c.dv+ri(0,2),30,90); } else if(ob.age>=61){ c.sk=clamp(c.sk-ri(0,2),30,90); c.dv=clamp(c.dv-ri(0,2),30,90); } /* 60대부터는 현장 감각이 떨어진다 */ ob.sk=c.sk; ob.dv=c.dv; c.age=ob.age; }
+    if(w.k==='coach'){ ob.cy++; const c=G.coach[w.tid][w.role]; if(ob.age<=56)cGrow(c,ri(0,2)); else if(ob.age>=61)cGrow(c,-ri(0,2)); /* 60대부터는 현장 감각이 떨어진다 */ ob.sk=c.sk; ob.dv=c.dv; c.age=ob.age; }
     else if(w.k==='mgr'){ ob.cy++; } else if(w.k==='scout'){ ob.sy++; const s=G.scouts.find(x=>x.ob===ob.id); if(s&&ob.sy%3===0&&s.skill<5)s.skill++; ob.sc=s?s.skill:ob.sc; }
     else if(w.k==='front'||ob.alt&&ob.alt.k==='front'){ ob.fy++; } else if(ob.path==='media'&&G.year>=ob.retY){ ob.my++; }
     else if(w.k==='free'&&G.year>=ob.readyY){ // 자리를 못 찾으면 일부는 다른 구단 프런트·2군으로 간다
@@ -81,7 +91,7 @@ EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)retur
       if(ob.path==='scout'){ const s=obScout(ob); if(G.scouts.length<SCOUT_MAX){ s.since=G.day; G.scouts.push(s); return `${ob.name}이(가) 스카우트로 합류했습니다.`; } G.scoutMarket.unshift(s); return '스카우트 자리가 꽉 차서 후보 명단에 올렸습니다.'; }
       ob.alt={k:'front',tid:G.user,t:`${t.city} ${t.nick} 프런트`}; return `${ob.name}이(가) 우리 프런트에서 일을 시작합니다.`; }
     return ''; } };
-function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid; return s; }
+function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec=ob.isP?'P':'B'; s.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.isP?'투수':'타자'}를 더 정확히 봄`; /* 선수 출신 스카우트: 자기 쪽(투수·타자)을 더 잘 본다 */ s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid; return s; }
 
 function obHireBonus(obid,role){ if(!obid||!G.ob)return; const ob=G.ob.find(o=>o.id===obid); if(!ob)return; ob.log.push({y:G.year,t:`${tshort(G.user)} ${role}`}); if(!ob.mine)return; prInit(); const f=ob.fame>=70?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
   news('팬',`${ob.name}, 친정 ${tshort(G.user)}로 돌아왔다`,`${role}로 합류합니다. 팬들이 반깁니다.`,2,{fanW:1}); }

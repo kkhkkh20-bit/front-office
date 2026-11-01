@@ -357,6 +357,28 @@ const QUICK=process.env.QUICK==='1';
       const keep=G.shortlist; G.shortlist=[pool[0].id,pool[1].id]; UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'mine',more:20}; const h=draftBoard(); out.board=/data-a="dmemo"/.test(h)&&/data-a="drd"/.test(h)&&/data-a="dchk"/.test(h);
       if(A.dmove){ A.dmove(pool[1].id+':-1'); out.mv=G.shortlist[0]===pool[1].id; } G.shortlist=keep; UI.df.seg='board'; return out; });
     if(r){ if(!r.velo)add('드래프트','후보 카드와 아마 프로필의 최고 구속이 다름 '+r.dbg); if(!r.board||!r.mv)add('드래프트','관심 목록에 내 순위·메모·고려 라운드·확인할 것이 없음'); } }
+  /* 면담: 다시 열면 최근 면담 기록이 보인다 */
+  { where='면담 기록'; const r=await ev(()=>{ const p=playersOf(G.user)[0]; if(!p)return null; const keep=p.talkLog; p.talkLog=[{d:G.day,k:'ask',a:'점검 답변'}]; closeSheets(); A.meetOpen('pl:'+p.id); const tx=(document.querySelector('#sheet')||{}).textContent||''; UI.meet=null; closeSheets(); p.talkLog=keep; return /최근 면담/.test(tx)&&/점검 답변/.test(tx); });
+    if(r===false)add('면담','다시 열면 최근 면담 기록이 안 보임'); }
+  /* 코치: 훈련 화면 담당 코치 육성력이 코치진 화면과 같은 척도, 코치 카드에 세부 능력 */
+  { where='코치 카드'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.foreign&&q.age<=28&&q.isP); if(!p)return null; const c=trnCoachOf(p,trnPlan(p)); const h=trnCard(p); const sl=coachView(); return {dev:!c||(/기본 육성/.test(h)&&h.includes('>'+dv(effC(c,G.user,'dv'))+'<')),card:/세부 능력/.test(sl)}; });
+    if(r){ if(!r.dev)add('코치','훈련 화면 담당 코치 육성력이 코치진 화면과 다른 척도'); if(!r.card)add('코치','코치 카드에 세부 능력이 없음'); } }
+  /* 감독과의 호흡: 투구 수는 실제 집계한 경기 수로, 부담 큰 투수를 따로 */
+  { where='투수 관리 표시'; const r=await ev(()=>{ const m=G.mgr[G.user]; if(!m||m.interim)return null; const u=mgrUseStats(); const h=mgrBondView(); return {n:u.n!=null&&(u.n===0||h.includes('최근 '+u.n+'경기')),heavy:/부담 큰 투수/.test(h)}; });
+    if(r){ if(!r.n)add('감독','선발 투구 수가 실제 집계 경기 수로 표시되지 않음'); if(!r.heavy)add('감독','최근 부담 큰 투수 목록이 없음'); } }
+  /* 훈련 목록: 코치 평가와 실전 확인을 나눠 표시 */
+  { where='훈련 목록'; const r=await ev(()=>{ const p=domestic(G.user).find(q=>q.age<=26&&!q.ys&&!(q.joinY>G.year)); if(!p)return null; const keep=G.trn&&G.trn[p.id]; trnSet(p.id,p.isP?'ctl':'con'); UI.it=UI.it||{}; UI.it.trnv=p.isP?'P':'B'; const h=trnListBody(); if(keep)G.trn[p.id]=keep; else delete G.trn[p.id]; return /코치 평가/.test(h)&&/실전/.test(h); });
+    if(r===false)add('훈련','훈련 목록에 코치 평가와 실전 확인이 나뉘어 있지 않음'); }
+  /* 외국인 후보: 관찰 명단과 선수 화면의 올해 예상이 같고, 관찰 진행·평가 신뢰도·미확인 항목을 나눠 보여 준다 */
+  { where='외국인 예상 통일'; const r=await ev(()=>{ const p=(G.fmarket||[]).map(id=>G.players[id]).find(q=>q&&q.foreign==='용병'&&q.team==null&&q.isP); if(!p)return null; const keep=G.fwatch; G.fwatch=[{id:p.id,k:48}];
+      const cv=curView(p); const pj=projKBO(p,cv.v,cv.sd); const h=fwatchBox(false); const box=fsBox(p,scoutReport(p)); G.fwatch=keep;
+      return {same:!pj||h.includes('올해 예상 ERA '+pj.mid),box:/현장 관찰/.test(box)&&/종합 평가 신뢰도/.test(box)&&/미확인/.test(box)&&!/정밀 조사/.test(box)}; });
+    if(r){ if(!r.same)add('외국인','관찰 명단과 선수 화면의 올해 예상 ERA가 다름'); if(!r.box)add('외국인','관찰 진행·평가 신뢰도·미확인 항목이 나뉘어 있지 않음'); } }
+  /* 위임: 위임 처리와 기한 만료 처리를 나누고, 규칙은 화면 척도로. 달력에 상무 마감·재논의일. 창단 드래프트 나이 드롭다운 */
+  { where='위임·달력'; const r=await ev(()=>{ const keep=G.autoLog; G.autoLog=[{d:G.day,t:'점검 위임',c:'처리',r:'',k:'x',why:'deleg'},{d:G.day,t:'점검 만료',c:'기본안',r:'',k:Object.keys(EV_NAME)[0],why:'exp'}]; const dk=G.deleg; G.deleg={}; const h=authView(); G.autoLog=keep; G.deleg=dk;
+      const cal=calEvents(KD(4,14)).some(e=>/상무 지원 마감/.test(e.t)); let re=true; const m=G.mgr[G.user]; if(m&&!m.interim){ const D=mgrDir(); const k0=D.arm; D.arm={ok:false,mid:m.id,day:G.day,rel0:m.rel}; re=calEvents(G.day+30).some(e=>/재논의/.test(e.t)); if(k0)D.arm=k0; else delete D.arm; }
+      return {split:/위임에 따라 처리한 일/.test(h)&&/기본안이 적용된 일/.test(h)&&/data-a="evGive"/.test(h),scale:!/능력 55 이상/.test(h)&&!/능력 4 이상/.test(h),cal,re}; });
+    if(r){ if(!r.split)add('위임','위임 처리와 기한 만료 처리가 섞여 있음'); if(!r.scale)add('위임','위임 규칙의 능력 기준이 화면 척도와 다름'); if(!r.cal)add('달력','달력에 상무 지원 마감이 없음'); if(!r.re)add('달력','달력에 감독 재논의 가능일이 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

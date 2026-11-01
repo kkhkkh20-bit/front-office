@@ -24,7 +24,8 @@ function reqHomeCard(){ const M=mreqs().filter(r=>r.st==='open'); const O=grants
 /* ---------- 감독과의 공생 화면 ---------- */
 function mgrUseStats(){ const ps=playersOf(G.user); const sp=ps.filter(p=>isSPr(p)); const pc=[]; for(const g of (G.games||[]).slice(0,10)){ const side=g.box&&(g.home===G.user?g.box.h:g.away===G.user?g.box.a:null); if(side&&side.pit&&side.pit[0])pc.push(side.pit[0].pc||0); }
   const tired=ps.filter(p=>(p.fat||0)>=60).length; const inj=ps.filter(p=>p.injOut>0).length; const injY=ps.reduce((a,p)=>a+(p.injHist||[]).filter(h=>h.y===G.year).length,0);
-  return {avgPc:pc.length?Math.round(sum(pc)/pc.length):null,tired,inj,injY}; }
+  const heavy=ps.filter(p=>p.isP&&healthy(p)).map(p=>({p,w:pc7(p,G.day),c:consecDays(p,G.day),a:armRatio(p)})).filter(x=>x.w>=60||x.c>=2||x.a>=.8).sort((a,b)=>(b.a-a.a)||(b.w-a.w)).slice(0,4);
+  return {avgPc:pc.length?Math.round(sum(pc)/pc.length):null,n:pc.length,tired,inj,injY,heavy}; }
 function mgrBondView(){ const m=G.mgr[G.user]; if(!m||m.interim)return ''; mgrAttr(m); const d=mgrDir(); const u=mgrUseStats(); const bo=mgrRelBoost({team:G.user});
   const dirBox=(k,l,desc,cur)=>{ const x=d[k]; const st=!x?'지시 없음':x.mid!==m.id?'지시 없음':x.ok?'따르는 중':'거부함'; return `<div class="mdir"><div><b>${l}</b><span class="small muted">${desc} · 감독 본래 ${cur}</span></div><span class="pill ${x&&x.mid===m.id?(x.ok?'good':'bad'):''}">${st}</span>${(()=>{ const w=mgrDirWait(k); return w?`<button class="btn small" disabled title="${esc(w)}">${esc(w)}</button>`:`<button class="btn small ${x&&x.mid===m.id&&x.ok?'':'primary'}" data-a="mgrDir" data-v="${k}:${x&&x.mid===m.id&&x.ok?0:1}">${x&&x.mid===m.id&&x.ok?'지시 해제':'지시하기'}</button>`; })()}</div>`; };
   const P=G.mpick&&G.mpick.y===G.year&&G.mpick.mid===m.id?G.mpick:null; const picks=P?P.ids.map(id=>G.players[id]).filter(Boolean):[];
@@ -36,7 +37,8 @@ function mgrBondView(){ const m=G.mgr[G.user]; if(!m||m.interim)return ''; mgrAt
     <div class="eyebrow" style="margin-top:8px">운용 성향과 단장 지시</div>
     ${dirBox('rest','주전 휴식 보장','피로한 주전을 일찍 쉬게 해 부상을 줄입니다. 대신 쉬는 날은 벤치가 나갑니다',`휴식 관리 ${m.rest}`)}
     ${dirBox('arm','투수 관리(혹사 금지)','선발 투구 수와 불펜 연투를 줄여 투수 부상을 막습니다. 접전에서 필승조를 덜 씁니다',`투수 혹사 ${m.arm}`)}
-    <p class="small">최근 10경기 선발 평균 투구 수 <b>${u.avgPc??'-'}</b> · 피로 60 이상 ${u.tired}명 · 지금 부상 ${u.inj}명 · 올해 부상 ${u.injY}건</p>
+    <p class="small">${u.n?`최근 ${u.n}경기 선발 평균 투구 수 <b>${u.avgPc}</b>${u.n<5?' (경기 수가 적어 참고만)':''}`:'아직 집계할 경기가 없습니다'} · 피로 60 이상 ${u.tired}명 · 지금 부상 ${u.inj}명 · 올해 부상 ${u.injY}건</p>
+    <p class="small"><b>최근 부담 큰 투수</b> ${u.heavy.length?u.heavy.map(x=>`<button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button>(${posLabel(x.p)} · 최근 7일 ${x.w}구${x.c>=2?` · ${x.c}연투`:''} · 누적 부하 ${Math.round(x.a*100)}%)`).join(', '):'없음(최근 7일 60구 이상·연투·누적 부하 80% 이상인 투수 없음)'}</p>
     <p class="small muted">휴식 관리가 낮은 감독은 주전을 끝까지 써서 전력이 안정적이지만 피로와 부상이 쌓입니다. 투수 혹사가 높은 감독은 선발을 길게 끌고 필승조를 연투시켜 접전에 강하지만 투수 부상이 늘어납니다. 지시는 관계와 감독 고집에 따라 거부될 수 있고, 그래도 안 되면 시즌 중에도 감독을 교체할 수 있습니다(감독대행 체제 후 새 감독 선임).</p>
     ${UI.dirMsg?`<div class="note">${esc(UI.dirMsg)}</div>`:''}`); }
 function mgrOpinion(p){ const v=mgrView(p); if(!v)return ''; const m=G.mgr[G.user]; if(v.mute)return `<div class="mop"><b>감독 의견</b><span class="small muted">${esc(m.name)} 감독이 말을 아낍니다(관계 30 미만).</span></div>`;

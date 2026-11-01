@@ -10,6 +10,7 @@ function meetGreet(M){ const t=team(G.user);
   if(M.k==='mgr'){ const m=G.mgr[G.user]; const v=mgrVoice(m); return M.first?`${m.name}입니다. 믿고 맡겨 주셔서 감사합니다. ${v==='data'?'자료부터 같이 보시죠.':v==='fire'?'바로 이기는 팀 만들겠습니다.':v==='warm'?'선수들 잘 챙기겠습니다.':v==='old'?'기본부터 다시 세우겠습니다.':'차근차근 맞춰 가겠습니다.'} ${foreignOf(G.user).filter(p=>p.foreign==='용병').length<3?'외국인 선수 구성부터 상의드릴까요?':'선수들부터 직접 보겠습니다.'}`:m.rel>=60?'단장님, 들어오세요. 편하게 말씀하시죠.':m.rel>=35?'오셨습니까. 무슨 일로?':'...네, 말씀하시죠.'; }
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
 function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
+  if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
   M.log.push({w:'them',t:meetGreet(M)}); UI.meet=M; if(o.ask)meetDo(o.ask); renderSheet(); }
 function meetBadF(){ return foreignOf(G.user).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=60&&pRate(h).era>5):(h.pa>=100&&bRate(h).ops<.700)); }); }
 function frepAmt(p){ return round5(Math.max(500,p.sal*.6)); }
@@ -21,7 +22,7 @@ function meetTopics(M){ const t=team(G.user);
     for(const p of meetBadF())L.push([`frep:${p.id}`,`외국인 ${p.name} 교체 자금 요청`,`${money(frepAmt(p))} · ${oddsTxt(ownOdds(frepAmt(p),{k:'frep',pid:p.id}))}`,!left]);
     return L; }
   if(M.k==='mgr')return [['now','지금 팀 상황은 어떻습니까?'],['foreign','외국인은 어떤 선수가 필요합니까?'],['cand','시장에 나온 외국인 후보들 어떻게 보세요?'],['need','가장 급한 자리는 어디입니까?'],['young','눈여겨보는 젊은 선수 있습니까?']];
-  const used=G.players[M.id]&&G.players[M.id].talkWk===Math.floor(G.day/7); return Object.entries(TALK).map(([k,l])=>[k,l,null,used]); }
+  const p=G.players[M.id]; return Object.entries(TALK).map(([k,l])=>[k,l,k==='ask'?'언제든 물어볼 수 있습니다':talkUsed(p,k)?'이번 주에는 했습니다':null,talkUsed(p,k)]); }
 function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const say=(w,x)=>M.log.push({w,t:x});
   if(M.k==='own'){ if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',g?`${g.rank.cur?`지금 ${g.rank.cur}위군. `:''}올해 목표는 ${g.rank.t}위 안이오. ${g.rank.cur&&g.rank.cur<=g.rank.t?'지금처럼만 하시오.':'더 분발해야 하오.'}${t.owner==='profit'?' 그리고 적자는 꼭 줄이시오.':t.owner==='pr'?' 팬들 반응도 늘 보고 있소.':''}`:'시즌이 시작되면 다시 이야기합시다.'); return; }
     const [k,x]=v.split(':'); const p=k==='gen'?null:G.players[+x]; const amt=k==='gen'?+x:k==='fa'?p.ask.annual:frepAmt(p); const tr0=t.trust;
@@ -43,7 +44,7 @@ function meetSheet(){ const M=UI.meet; const W=meetWho(M); if(!W)return ''; cons
   return `<div class="scrim" data-a="meetClose"><div class="sheet gut meet" data-stop="1" role="dialog" aria-label="${esc(W.place)}">
     <div class="sheet-head"><div class="mt-h">${W.av}<div><span class="eyebrow">${esc(W.place)}</span><h2 class="sec">${esc(W.name)}</h2><span class="small muted">${esc(W.role)} · ${esc(W.rel)}</span></div></div><button class="x" data-a="meetClose" aria-label="닫기">×</button></div>
     <div class="mt-log" id="mt-log">${log}</div>
-    <div class="mt-opts"><span class="eyebrow">꺼낼 이야기${own&&!left?' · 이번 달 지원 요청은 이미 했습니다':''}${M.k==='pl'&&T.every(x=>x[3])?' · 이번 주에는 이미 이야기를 나눴습니다. 다음 주에 다시 부르세요':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}<button class="mt-o end" data-a="meetClose"><b>면담 마치기</b></button></div></div></div>`; }
+    <div class="mt-opts"><span class="eyebrow">꺼낼 이야기${own&&!left?' · 이번 달 지원 요청은 이미 했습니다':''}${M.k==='pl'&&T.some(x=>x[3])?' · 이번 주에 한 이야기는 다음 주에 다시 할 수 있습니다(고민 묻기는 언제든)':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}<button class="mt-o end" data-a="meetClose"><b>면담 마치기</b></button></div></div></div>`; }
 /* 면담 입구: 상대 얼굴 + 들어가기 */
 function meetDoor(k){ const W=meetWho({k}); if(!W)return ''; const t=team(G.user);
   const sub=k==='own'?(ownAskLeft()?'운영비 증액 · FA 영입 자금 · 외국인 교체 자금 · 근황 보고':'이번 달 지원 요청은 이미 했습니다 · 근황 보고는 가능'):'팀 상황 · 원하는 외국인 · 외국인 후보 의견 · 급한 자리 · 젊은 선수';

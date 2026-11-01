@@ -51,7 +51,8 @@ function moraleWeek(){
     const d=depth(t.id); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
     const st=G.sea.rec[t.id]; const wp=(st.w+st.l)?st.w/(st.w+st.l):.5; const m=G.mgr[t.id]; const disc=m?m.disc:45;
     const cap=t.id===G.user?captainOf(t.id):null; const capB=cap&&healthy(cap)?((cap.pers&&cap.pers.pro)||10)>=14?.4:.2:0;
-    for(const p of playersOf(t.id)){ initPers(p); let dd=capB; const star=ovr(p)>=55||p.sal>=500; const r=reg.has(p.id)||(per==='season'&&playedReg(p));
+    const hcC=G.coach&&coachesOf(t.id).hc; const comB=hcC?(cAb(hcC).com-50)/80:-.1; /* 수석코치 소통: 주에 ±0.3 안팎 */
+    for(const p of playersOf(t.id)){ initPers(p); let dd=capB+comB; const star=ovr(p)>=55||p.sal>=500; const r=reg.has(p.id)||(per==='season'&&playedReg(p));
       if(per==='season'){ if(star&&!r&&healthy(p))dd-=3*(p.pers.temp>=14?1.3:1); else if(!r&&healthy(p)&&p.age>=27&&ovr(p)>=46)dd-=1; else if(r)dd+=1; if(wp>.56)dd+=1; if(wp<.44)dd-=1; }
       if(p.promise&&G.day>=p.promise.until){
         if(r){ dd+=5; if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
@@ -114,11 +115,25 @@ function mgrOnForeign(p,short){ const m=G.mgr[G.user]; if(!m||!p)return '...'; m
     :(good?`제가 급하다고 보는 자리는 ${need} 쪽이라 우선순위는 아닙니다. 그래도 ${lv}.`:`제가 급하다고 보는 자리는 ${need} 쪽입니다. 이 선수는 자리도 안 맞고, ${lv}.`);
   const age=p.age>=34?' 다만 나이가 있어서 한 시즌을 버틸지 걱정입니다.':p.age<=26?' 젊어서 적응만 하면 더 좋아질 수 있습니다.':'';
   return short?`${fit?'원하던 유형, ':''}${lv}`:`${src}${head}${sty}${opin}${age}`; }
+/* 면담 제한: 고민 묻기(상태 확인)는 언제든, 칭찬·분발 촉구는 함께 한 주에 한 번, 출전 건의·계약 이야기는 각자 한 주에 한 번 */
+const TALK_GRP={praise:'pp',push:'pp',promise:'promise',contract:'contract',ask:null};
+const TALK_GRPL={pp:'칭찬·분발 촉구',promise:'출전 기회 건의',contract:'계약 이야기'};
+function talkUsed(p,kind){ const g=TALK_GRP[kind]; return !!(g&&p&&p.tk&&p.tk[g]===Math.floor(G.day/7)); }
+/* 최근 사건: 이 선수가 나온 우리 팀 마지막 경기(2일 안)에서 눈에 띈 일 */
+function talkEvent(p){ const L=G.games||[]; for(let i=0;i<L.length;i++){ const g=L[i]; /* G.games는 최근 경기가 앞 */ if(g.home!==p.team&&g.away!==p.team)continue; if(G.day-g.day>2||!g.box)return null; const B=g.box[g.home===p.team?'h':'a']; if(!B)return null;
+    if(p.isP){ const x=(B.pit||[]).find(q=>q.id===p.id); if(!x)return null; const ip=ipStr(x.outs); if(x.er>=4||(x.d==='패'&&x!==B.pit[0]))return {d:g.day,k:'bad',t:`지난 경기 ${ip}이닝 ${x.er}실점${x.d==='패'?' 패전':''}`}; if(x.d==='세')return {d:g.day,k:'good',t:'지난 경기 세이브'}; if(x.outs>=18&&x.er<=1)return {d:g.day,k:'good',t:`지난 경기 ${ip}이닝 ${x.er}실점`}; return null; }
+    const x=(B.bat||[]).find(q=>q.id===p.id); if(!x)return null; if(x.hr>=1||x.h>=3)return {d:g.day,k:'good',t:`지난 경기 ${x.ab}타수 ${x.h}안타${x.hr?` ${x.hr}홈런`:''}`}; if(x.ab>=4&&x.h===0)return {d:g.day,k:'bad',t:`지난 경기 ${x.ab}타수 무안타`}; return null; }
+  return null; }
+/* 같은 사건도 성격대로 받아들인다: 무던함(temp 낮음)·예민함(temp 높음)·자신감(amb 높음) */
+function eventLine(p,ev){ const s=p.pers||{}; const nx=p.isP?'등판':'경기';
+  if(ev.k==='bad'){ if(s.temp>=15)return `${ev.t}... 마지막 ${p.isP?'타구':'타석'}가 계속 생각납니다.`; if(s.amb>=15)return `${ev.t}. 그래도 다음에도 같은 상황이면 저한테 맡겨 주십시오.`; if(s.temp<=7)return `${ev.t}, 아쉽지만 털어 버렸습니다. 다음 ${nx}에서 만회하겠습니다.`; return `${ev.t}, 제 책임입니다. 다음 ${nx}에서 만회하겠습니다.`; }
+  return s.temp>=15?`${ev.t}. 이제야 마음이 좀 놓입니다.`:`${ev.t}. 감이 좋습니다. 이 흐름 이어 가겠습니다.`; }
+function talkLogPush(p,kind,a){ (p.talkLog=p.talkLog||[]).unshift({d:G.day,k:kind,a}); if(p.talkLog.length>5)p.talkLog.length=5; }
 function talk(id,kind){
   const p=G.players[id]; if(!p||p.team!==G.user)return {msg:'우리 선수만 면담할 수 있습니다.'};
-  initPers(p); const wk=Math.floor(G.day/7);
-  if(p.talkWk===wk)return {msg:`${p.name}: 이번 주에는 이미 이야기를 나눴습니다.`};
-  p.talkWk=wk; G.tutFlags.talk=true;
+  initPers(p); const wk=Math.floor(G.day/7); const grp=TALK_GRP[kind];
+  if(talkUsed(p,kind))return {msg:`${p.name}: 이번 주 ${TALK_GRPL[grp]}는 이미 했습니다. 다음 주에 다시 이야기하세요.`};
+  p.tk=p.tk||{}; const askAgain=kind==='ask'&&p.tk.ask===wk; if(grp)p.tk[grp]=wk; else p.tk.ask=wk; p.talkWk=wk; G.tutFlags.talk=true;
   const h=curLine(p); const pf=perfOf(h,p.isP); const good=pf==null?null:pf>=ovr(p)+1.5?true:pf<=ovr(p)-3?false:null;
   let d=0, line='';
   if(kind==='praise'){ if(good===true){d=rnd(6,10);line='고맙습니다. 계속 잘하겠습니다.';} else if(good===false){ if(p.pers.temp>=14){d=-3;line='요즘 못하는 건 저도 압니다. 빈말은 괜찮습니다.';} else {d=2;line='감사합니다. 분발하겠습니다.';} } else {d=3;line='감사합니다. 힘이 됩니다.';} }
@@ -129,9 +144,10 @@ function talk(id,kind){
     else if(p.faC&&p.yrs>1)line='계약 기간이 남았으니 야구에만 집중하겠습니다.';
     else if(p.svc>=faSvc(p)-2)line=`${Math.max(0,faSvc(p)-p.svc)<=1?'이번 시즌이 끝나면 FA입니다':`${Math.max(0,faSvc(p)-p.svc)}시즌 뒤에 FA입니다`}. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`;
     else line=p.age<=24?'아직은 1군에서 자리 잡는 게 먼저입니다.':'좋은 대우를 받으려면 성적부터 내야죠.'; }
-  if(kind==='ask'){ d=2; line=moraleWhy(p); }
+  if(kind==='ask'){ d=askAgain?0:2; const ev=talkEvent(p); const why=moraleWhy(p); const plain=/즐겁습니다|특별한 고민은 없습니다/.test(why);
+    if(ev){ line=eventLine(p,ev)+(plain?'':` 그리고 ${why}`); if(ev.k==='bad'&&p.pers.temp>=15&&d)d=1; } else line=why; }
   if(d<0&&p.pers.temp>=15)d*=1.4;
-  p.mor=clamp(p.mor+d,0,100);
+  p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
   return {msg:`${p.name}: "${line}"`,d};
 }
 function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; p.listed=true; const req=p.treq&&!p.treq.done; if(req){ p.treq.done=true; p.mor=clamp(p.mor+6,0,100); } /* 기분은 트레이드 요청에 응했을 때 한 번만 */ note('면담',`${p.name}을(를) 트레이드 명단에 올렸습니다. 다른 구단이 관심을 보이면 제안이 올 수 있습니다.`,id); }
