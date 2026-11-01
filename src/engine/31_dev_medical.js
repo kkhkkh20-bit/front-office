@@ -67,6 +67,13 @@ function ovsAiPlan(){ const out={fall:{},abl:{},us:{},jpl:{}};
     pickN('abl',lean>-.1?ri(2,6):0); pickN('us',lean>.25?ri(2,5):0); pickN('jpl',lean>.35&&R()<.5?ri(2,3):0); }
   return out; }
 const md=(d,a)=>d.m===a[0]&&d.d===a[1];
+/* 이직: 이미 떠난 연수는 그 구단에서 마무리(옛 구단 AI 목록으로 넘김), 출발 전 예약은 옛 구단이 정리. 새 구단이 보낸 연수는 우리 목록으로 이어받는다 */
+function ovsHandOff(old,tid){ const A=G.ovsAi=G.ovsAi||{y:G.year,fall:{},abl:{},us:{},jpl:{}}; for(const k of ['abl','us','jpl'])A[k]=A[k]||{};
+  for(const x of (G.ovs||[]))if(x.go&&A[x.prog]){ (A[x.prog][old]=A[x.prog][old]||[]).push(x.pid); }
+  const N=[]; for(const k of ['abl','us','jpl']){ const L=A[k][tid]||[]; for(const id of L)if(G.players[id]&&G.players[id].team===tid)N.push({pid:id,prog:k,go:true,inh:1}); delete A[k][tid]; } G.ovs=N; }
+/* 출발일 재확인: 여전히 우리 소속이고 복무·부상으로 못 가는 상황이 아닌 선수만 떠난다. 못 가는 선수는 예약을 풀고 참가비를 돌려받으며, 남은 선수가 없으면 동행 비용도 없다 */
+function ovsGoCheck(k){ const L=(G.ovs||[]).filter(x=>x.prog===k&&!x.go); const out=[]; for(const x of L){ const p=G.players[x.pid]; const why=!p?'리그를 떠남':p.team!==G.user?`${tshort(p.team)}(으)로 이적`:isAway(p)?'군 복무·대표팀':(p.injOut||0)>14?'부상':null; if(why){ out.push(`${p?p.name:'선수'}: ${why}`); G.spend.dev=Math.max(0,(G.spend.dev||0)-OVS[k].c); G.ovs=G.ovs.filter(y=>y!==x); } }
+  if(out.length&&!G.unemp)mail('육성팀',`${OVS[k].l} 출발 전 확인: ${out.length}명 취소`,`${out.join('\n')}\n\n참가할 수 없어 예약을 취소하고 1인 참가비를 돌려받았습니다.`,{kind:'연수'}); return out; }
 function ovsFin(k){ const y=G.year; const out=[]; const C=G.coach&&G.coach[G.user]; const cd=C?(k==='abl'?(C.fm||C.fp||{}).dv:(C.pc||{}).dv):50;
   for(const x of (G.ovs||[]).filter(x=>x.prog===k)){ const p=G.players[x.pid]; if(!p||p.team!==G.user)continue; const r=ovsRoll(p,OVS[k],cd); out.push(`${p.name}: ${r.txt}`); }
   G.ovs=(G.ovs||[]).filter(x=>x.prog!==k);
@@ -84,7 +91,7 @@ function tabDaily(day){ const d=dobj(day); const y=G.year;
     const me=!G.unemp&&G.fall&&G.fall.y===y&&G.fall.k; if(me){ const r=fallRoll(G.user,me); mail('육성팀',`${FALL[me].l} 결과`,`${r.n}명이 ${FALL[me].l}를 마쳤습니다. 대부분 실전 감각을 이어 가는 정도의 작은 성장입니다.${r.hot.length?`\n눈에 띄게 좋아진 선수: ${r.hot.join(', ')}.`:''}`,{kind:'연수'}); }
     const L=A?Object.entries(A.abl).map(([t,ids])=>`${tshort(+t)} ${ids.length}명`):[]; const mine=(G.ovs||[]).filter(x=>x.prog==='abl'); if(mine.length)L.push(`${tshort(G.user)} ${mine.length}명`);
     if(L.length)news('리그','호주리그 파견 선수단 출국',`${L.join(', ')}이(가) 호주 프로리그로 떠났습니다. 약 10주 동안 실전을 치르고 돌아옵니다.`,0); }
-  for(const k in OVS)if(md(d,OVS[k].go)){ const mine=(G.ovs||[]).filter(x=>x.prog===k); mine.forEach(x=>x.go=true); if(mine.length)G.spend.dev=(G.spend.dev||0)+OVS[k].fix; }
+  for(const k in OVS)if(md(d,OVS[k].go)){ try{ ovsGoCheck(k); }catch(e){} const mine=(G.ovs||[]).filter(x=>x.prog===k); mine.forEach(x=>x.go=true); if(mine.length)G.spend.dev=(G.spend.dev||0)+OVS[k].fix; }
   if(md(d,[1,5])){ ovsFin('us'); ovsFin('jpl'); }
   if(md(d,[2,1]))ovsFin('abl'); }
 

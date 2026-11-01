@@ -46,7 +46,7 @@ function simPit(p,outs,b){
 const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0,sf:0};
 const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,so:0,er:0,w:0,l:0,sv:0,hld:0,bf:0};
 /* 좌우 상대 기록(정규시즌 1군): 타자는 상대 투수 손, 투수는 상대 타자 쪽(양타는 투수 반대편). [타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런] */
-function splAdd(b,p,o){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0]); a[0]++; if(o!=='BB')a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
+function splAdd(b,p,o,f){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
   row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side); }
 /* 우리 선수 경기별 기록(이동 구간 추세용, 이번 시즌만): 타자 [날짜, 타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런], 투수 [날짜, 상대 타자, 아웃, 삼진, 볼넷, 피안타, 피홈런, 자책] */
 function glAdd(p,day,x){ const y=G.year; if(!p.gl||p.gl.y!==y)p.gl={y,g:[]}; p.gl.g.push(p.isP?[day,x.bf||0,x.outs||0,x.so||0,x.bb||0,x.h||0,x.hr||0,x.er||0]:[day,x.pa||0,x.ab||0,x.h||0,(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0),x.bb||0,x.so||0,x.hr||0]); }
@@ -65,6 +65,9 @@ function lgOf(y){ return (G.lg&&G.lg[y])||{ops:.72,era:4.5}; }
 /* WAR: 끝난 시즌의 타자 WAR은 처음 계산한 값으로 고정한다(수비 능력치가 나중에 바뀌어도 과거 기록은 그대로).
    창단 전 시즌은 공개 기록용 수비 추정치(fdWar)를 쓴다. 화면마다 같은 시즌 WAR이 달라 보이던 문제를 막는다 */
 function warKey(h){ return h.y+':'+(h.lvl||'')+':'+(h.t??'')+':'+(h.pa||0); }
+/* 포지션별 타석(pp)에서 가장 많이 뛴 자리 */
+function ppTop(pp){ let k=null,v=-1; for(const x in pp||{})if(pp[x]>v){ v=pp[x]; k=x; } return k; }
+function ppMerge(a,b){ if(!a&&!b)return undefined; const o=Object.assign({},a||{}); for(const k in b||{})o[k]=(o[k]||0)+b[k]; return o; }
 function warOf(h,p){ if(!h||!p)return 0; if(p.isP||!h.pa||h.y==null||h.y2)return warRaw(h,p);
   const pre=h.y<(G.startY??-1); if(!pre&&h.y>=G.year)return warRaw(h,p);
   p.pw=p.pw||{}; const k=warKey(h); if(p.pw[k]==null){ const old=pre?p.pw[h.y+':'+(h.lvl||'')]:null; /* 이전 저장 형식 */ p.pw[k]=old!=null?old:Math.round((pre?fdWar(p,h):warRaw(h,p))*100)/100; } return p.pw[k]; }
@@ -74,7 +77,8 @@ function warRaw(h,p){
   if(!h)return 0; const lg=lgOf(h.y);
   if(p.isP){ if(!h.outs)return 0; const ip=h.outs/3; const era=h.er*27/h.outs; const lev=(h.sv>5)?1.3:1; return ((lg.era+.9)-era)*ip/9/10*lev; }
   if(!h.pa)return 0; const ops=bRate(h).ops; const pos=h.pos||p.pos;
-  const bat=(ops/lg.ops-1)*h.pa*.16, rep=20*h.pa/600, adj=(POS_ADJ[pos]||0)*h.pa/600, def=pos==='DH'||!DWR[pos]?0:(defAt(p,pos)-DAVG[pos])*DWR[pos]*h.pa/600; /* 그 자리 수비가 실제로 막은 실점(유격이 1루의 약 3배) */
+  const bat=(ops/lg.ops-1)*h.pa*.16, rep=20*h.pa/600; const dOf=k=>k==='DH'||!DWR[k]?0:(defAt(p,k)-DAVG[k])*DWR[k];
+  let adj=(POS_ADJ[pos]||0)*h.pa/600, def=dOf(pos)*h.pa/600; { const pp=h.pp, tot=pp?Object.values(pp).reduce((s,v)=>s+v,0):0; if(tot>0){ adj=0; def=0; for(const k in pp){ const w=pp[k]/tot*h.pa/600; adj+=(POS_ADJ[k]||0)*w; def+=dOf(k)*w; } } } /* 여러 자리를 뛰었으면 자리별 타석 비율로(마지막 출전 자리 하나로 시즌 전체를 보지 않는다) */ /* 그 자리 수비가 실제로 막은 실점(유격이 1루의 약 3배) */
   return (bat+rep+adj+def)/10;
 }
 /* ===== wRC+ (조정 득점 창출력) =====
@@ -84,14 +88,16 @@ function warRaw(h,p){
 function wobaOf(h){ const ab=h.ab||0, bb=h.bb||0, sf=h.sf||0, den=ab+bb+sf; if(!den)return null; const s1=(h.h||0)-(h.d||0)-(h.tr||0)-(h.hr||0); return (.69*bb+.89*s1+1.27*(h.d||0)+1.62*(h.tr||0)+2.10*(h.hr||0))/den; }
 let _lgbC={k:'',m:{}};
 function lgBat(y,lvl){ lvl=lvl||'1군'; const L0=G.lg&&G.lg[y]; if(lvl==='1군'&&L0&&L0.woba&&y<G.year)return L0; const k=G.year+':'+G.day+':'+(G.games?G.games.length:0); if(_lgbC.k!==k)_lgbC={k,m:{}}; const ck=y+':'+lvl; if(_lgbC.m[ck])return _lgbC.m[ck];
-  let ab=0,bb=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!==lvl||x.y2)continue; ab+=x.ab||0; bb+=x.bb||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; } }
+  let ab=0,bb=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; const add=x=>{ ab+=x.ab||0; bb+=x.bb||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; }; if(lvl==='1군'){ for(const z of y1Rows(y))if(!z.isP)add(z.h); } else for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!==lvl||x.y2)continue; add(x); } }
   const T={ab,bb,sf,h,d,tr,hr}; const pa=ab+bb+sf; const woba=wobaOf(T)||.32, obp=pa?(h+bb)/pa:.33; const o={woba,scale:Math.max(.8,woba/Math.max(.2,obp)),rpa:pa&&r?r/pa:.12}; _lgbC.m[ck]=o; return o; }
 function wrcPlus(h,y){ if(!h||!h.pa)return null; const yy=y??h.y; if(typeof yy!=='number')return null; const w=wobaOf(h); if(w==null)return null; const L=lgBat(yy,h.lvl==='퓨처스'?'퓨처스':'1군'); return Math.round(100*((w-L.woba)/L.scale+L.rpa)/L.rpa); } /* 퓨처스 기록은 퓨처스 리그 기준 */
 /* 여러 시즌 wRC+: 시즌별 값을 타석으로 가중 평균(통산·최근 3년 합계용) */
 function wrcMulti(L){ let a=0,n=0; for(const h of L){ const w=wrcPlus(h,h.y); if(w==null)continue; a+=w*h.pa; n+=h.pa; } return n?Math.round(a/n):null; }
+/* 한 시즌 1군 기록 줄 전부: 지금 선수 목록 + 리그를 떠난 선수의 보관 기록(시즌 중 교체된 외국인 등). 팀·리그 합계는 이걸로 센다(이미 치른 경기 기록은 선수가 떠나도 그대로) */
+function y1Rows(y){ const L=[]; for(const p of Object.values(G.players)) for(const h of p.hist) if(h.y===y&&h.lvl==='1군'&&!h.y2)L.push({isP:!!p.isP,h}); const A=G.arch||{}; for(const id in A){ if(G.players[id])continue; const a=A[id]; for(const r of a.rows||[])if(r.y===y)L.push({isP:!!a.isP,h:archFull(r)}); } return L; }
 function updateLg(y){
   const bl=[],pl=[];
-  for(const p of Object.values(G.players)) for(const h of p.hist) if(h.y===y&&h.lvl==='1군'){ (p.isP?pl:bl).push(h); }
+  for(const x of y1Rows(y))(x.isP?pl:bl).push(x.h);
   const s=(a,k)=>sum(a.map(h=>h[k]||0));
   const ab=s(bl,'ab'),H=s(bl,'h'),bb=s(bl,'bb'),pa=ab+bb+s(bl,'sf'),tb=s(bl,'h')+s(bl,'d')+2*s(bl,'tr')+3*s(bl,'hr');
   const outs=s(pl,'outs'),er=s(pl,'er');
