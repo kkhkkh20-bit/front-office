@@ -100,16 +100,18 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
   const foot=`<p class="small muted" style="margin-top:14px">구단과 선수는 모두 가상입니다. 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
   const back=(v,l)=>`<button class="lnk tsback" data-a="tsGo" data-v="${v}">← ${l}</button>`;
   if(st==='main'){ const tn=act&&act.tid!=null&&TEAM_DEF[act.tid]?`${TEAM_DEF[act.tid].city} ${TEAM_DEF[act.tid].nick}`:(act&&act.name)||'';
-    return `<div class="gut"><div class="wrap ts-wrap"><div class="ts">
-      <div class="ts-bg" aria-hidden="true">${TEAM_DEF.map((d,i)=>badge(i,30)).join('')}</div>
-      <div class="kicker">한국 프로야구형 가상 리그 · 단장 시뮬레이션</div><h1>프런트타임</h1>
-      <p class="ts-sub">경기는 감독이 합니다. 단장은 선수를 모으고, 팀을 만들고, 돈을 지킵니다.</p>${achStartLine()}
-      <div class="ts-menu">
-        ${canCont?`<button class="tsb primary" data-a="tsCont"><b>이어하기</b><span>슬롯 ${m.active}${tn?` · ${esc(tn)}`:''}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
-        <button class="tsb ${canCont?'':'primary'}" data-a="tsGo" data-v="team"><b>새 게임</b><span>창단 드래프트로 처음부터 팀을 만듭니다</span></button>
-        ${anySave()?`<button class="tsb" data-a="tsGo" data-v="slots"><b>저장 슬롯</b><span>불러오기 · 덮어쓰기 · 삭제</span></button>`:''}
-      </div><p class="ts-ver">버전 ${GAME_VER} · 무료 게임 · <button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button></p>${typeof TELE!=='undefined'&&TELE&&(TELE.ph||TELE.ga)&&teleOn()?'<p class="small muted">게임 개선을 위해 익명 플레이 기록을 수집합니다. 설정 > 게임 설정에서 끌 수 있습니다.</p>':''}
-      ${inFrame()&&isIOS()?`<p class="small ts-warn">iPhone·iPad의 Safari는 이 화면 안에서 저장이 지워질 수 있습니다. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a>를 권하고, 가끔 설정의 "파일로 내보내기"로 백업하세요.</p>`:''}</div>${foot}${creditsLine()}</div></div>`; }
+    return `<main class="fb-title" aria-label="프런트야구 시작 화면"><div class="fb-title-content">
+      <div class="fb-brand"><p class="fb-kicker">야구 단장 시뮬레이션</p><h1 class="fb-wordmark"><span class="fb-sr">프런트야구</span></h1><p class="fb-english" aria-hidden="true">FRONT BASEBALL</p></div>
+      <p class="fb-tagline">어떤 야구를 할지는,<br class="fb-mobile-br"> 당신이 정한다.</p>
+      <nav class="fb-menu" aria-label="시작 메뉴">
+        ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${m.active}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
+        <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="team"><b>새 게임</b>${canCont?'':'<span>창단 드래프트로 나만의 팀을 만듭니다</span>'}</button>
+        <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>
+        <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
+      </nav><p class="fb-caption">가상의 리그. 당신만의 야구.</p>
+      ${inFrame()&&isIOS()?`<p class="small ts-warn">Safari에서는 가끔 설정의 파일로 내보내기로 저장을 백업하세요. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a></p>`:''}
+      </div><footer class="fb-footer"><span>프런트야구 <i>v${GAME_VER}</i></span><button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button></footer></main>`; }
+  if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면에서 기능 설명을 펼쳐 보일지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine()}</section></div></div>`;
   if(st==='patch')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${patchCard()}</div></div>`;
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}</div></div>`;
   if(st==='mode'&&false){ ensureWorld();
