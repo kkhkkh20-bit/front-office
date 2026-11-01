@@ -11,6 +11,7 @@ function fmBack(){ const H=UI.navH||[]; if(!(UI.navI>0))return; UI.navI--; fmGoK
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 function fmSubRow(){ const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
+  if(tab==='home'&&!G.unemp)return back+`<nav class="subtabs" aria-label="바로 가기"><button class="on" data-a="tab" data-v="home">개요</button><button data-a="tab" data-v="inbox">소식함</button><button data-a="calOpen">캘린더</button><button data-a="go" data-v="league:stand">순위</button><button data-a="go" data-v="league:score">일정·결과</button><button data-a="go" data-v="club:fin">재정</button><button data-a="go" data-v="club:owner">구단주·목표</button></nav>`; /* FM 포털처럼 홈에서 자주 가는 곳 */
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
 function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||[];
   const menu=FM_MENU.map(k=>{ const it=NAV.find(x=>x[0]===k); if(!it)return ''; const subs=SUBS[k]; const al=tabAlert(k);
