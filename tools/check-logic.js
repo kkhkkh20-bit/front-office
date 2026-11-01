@@ -537,6 +537,15 @@ T('[역할] 출전 없는 선수의 보유 이유와 기분 vs 기회 만족',()
   a.sal=800; a.mor=80; const o=oppSat(a); ok(o&&o.lv==='불만'&&/기회가 계속 없으면/.test(o.gap),'기회 만족 '+JSON.stringify(o)); });
 T('[구종 수] 타순 세 바퀴째부터 맞기 시작하고, 구종이 많을수록 덜하다',()=>{ fresh(); const a=playersOf(G.user).filter(p=>p.isP).map(p=>({p,n:pitchN(p)})).sort((x,y)=>x.n-y.n); const lo=a[0], hi=a[a.length-1]; ok(hi.n>lo.n,'구종 수 차이 없음');
   ok(ttoPen(lo.p,10)===0,'첫 바퀴 벌점'); ok(ttoPen(lo.p,20)>ttoPen(hi.p,20)&&ttoPen(hi.p,20)>0,'구종 수 반영'); ok(ttoPen(lo.p,28)>ttoPen(lo.p,20),'네 번째 바퀴'); });
+T('[감독 연장] 계약 중에도 연장할 수 있고(연봉 인상·관계 상승), 한 해 한 번이며, 관계가 나쁘면 거절한다',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=60; const y0=m.yrs, s0=m.sal, r0=m.rel;
+  ok(typeof extendMgr==='function','연장 기능 없음'); const r=extendMgr(2); ok(!r,'연장 실패: '+r); ok(m.yrs===y0+2&&m.sal>s0&&m.rel>r0,'연장 반영 '+[m.yrs,m.sal,m.rel]); ok(extendMgr(1),'한 해에 두 번 연장됨');
+  fresh(); const m2=G.mgr[G.user]; m2.rel=20; const y2=m2.yrs; ok(/응하지 않/.test(extendMgr(1))&&m2.yrs===y2,'관계가 나쁜데 연장됨'); });
+T('[코치 연장] 계약 중인 코치를 연장하면 기간이 늘고 연봉이 조금 오르며, 같은 해 다시는 못 한다',()=>{ fresh(); const C=G.coach[G.user]; C.bc=mkCoach('bc'); C.bc.yrs=1; C.bc.age=50; const c=C.bc, s0=c.sal;
+  ok(typeof extendCoach==='function','연장 기능 없음'); const r=extendCoach('bc',2); ok(!r,'연장 실패: '+r); ok(c.yrs===3&&c.sal>s0,'연장 반영 '+[c.yrs,c.sal]); ok(extendCoach('bc',1),'한 해에 두 번 연장됨'); });
+T('[코치 승격] 투수코치를 수석코치로 올리면 연봉이 오르고 기존 수석코치는 비는 투수코치 자리로 옮긴다',()=>{ fresh(); const C=G.coach[G.user]; C.pc=mkCoach('pc'); C.hc=mkCoach('hc'); C.pc.yrs=C.hc.yrs=2; const a=C.pc, b=C.hc, s0=a.sal;
+  ok(typeof promoteCoach==='function','승격 기능 없음'); const r=promoteCoach('pc'); ok(typeof r!=='string'||!/없습니다/.test(r),'승격 실패: '+r); ok(C.hc===a&&C.pc===b&&a.role==='hc'&&b.role==='pc','보직 맞교환'); ok(a.sal>s0,'승격 연봉');
+  ok(/없습니다|이미/.test(promoteCoach('hc')||''),'수석코치는 더 올라갈 자리가 없다');
+  C.fp=mkCoach('fp'); C.fp.yrs=2; C.bc=null; const f=C.fp; C.fb=mkCoach('fb'); C.fb.yrs=2; const fb=C.fb; promoteCoach('fb'); ok(C.bc===fb&&C.fb==null,'2군 타격코치 → 1군 타격코치(빈자리)'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

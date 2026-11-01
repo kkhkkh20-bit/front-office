@@ -64,6 +64,14 @@ function offseasonMgr(){
   const m=G.mgr[G.user];
   if(m&&!m.interim&&m.yrs<=0) mail('운영팀','감독 계약이 끝납니다',`${m.name} 감독의 계약이 올해로 끝납니다. 재계약하거나 새 감독을 선임해야 합니다. 연말까지 정하지 않으면 감독 자리가 비게 됩니다.`,{imp:true,kind:'감독',acts:[{l:'2년 재계약',a:'renewMgr',v:'2'},{l:'감독 후보 보기',a:'goWork',v:'감독'}]});
 }
+/* 감독 중도 재계약: 계약 중 언제든 1~3년 연장(남은 계약 합계 최대 5년), 한 해 한 번. 감독은 명성·성적·관계를 보고 연봉 인상을 요구한다.
+   관계 30 미만이면 응하지 않는다. 연장하면 감독은 안정감에 관계 +5, 대신 경질할 때 정산금(남은 연봉)이 커진다 */
+function mgrExtTerms(add){ const m=G.mgr[G.user]; if(!m||m.interim)return null; mgrFix(m); const per=period(); const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; const rk=(per==='season'||per==='post')&&r&&r.w+r.l>=20?uRank():null;
+  const up=Math.max(.02,.04*add+(m.fame>=70?.06:0)+(rk!=null&&rk<=3?.05:0)-(rk!=null&&rk>=8?.03:0)+(m.rel<50?.04:0)); const sal=round5(m.sal*(1+up)); const yrs=Math.max(0,m.yrs)+add; let why='';
+  if(m.extY===G.year)why=`${m.name} 감독과는 올해 이미 계약을 손봤습니다. 다음 해에 다시 이야기할 수 있습니다.`; else if(yrs>5)why='감독 계약은 남은 기간 합계 최대 5년까지입니다.'; else if(m.rel<30)why=`${m.name} 감독이 "지금은 계약 이야기를 할 때가 아닙니다"라며 응하지 않습니다(관계 ${Math.round(m.rel)}).`;
+  return {m,add,sal,yrs,why,up,rk,sev0:Math.round(m.sal*Math.max(0,m.yrs-.5)),sev1:Math.round(sal*Math.max(0,yrs-.5))}; }
+function extendMgr(add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const T=mgrExtTerms(+add); if(!T)return '감독이 없습니다.'; if(T.why)return T.why; const m=T.m; const re=m.yrs<=0;
+  m.yrs=T.yrs; m.sal=T.sal; m.extY=G.year; m.rel=clamp(m.rel+5,0,100); addLog(`${m.name} 감독과 ${T.add}년 ${re?'재계약':'연장 계약'}했습니다(연 ${money(m.sal)}, 계약 ${m.yrs}년 남음).`); try{ chron('mgr',`${m.name} 감독과 ${T.add}년 ${re?'재계약':'연장'}(연 ${money(m.sal)})`); }catch(e){} return ''; }
 function renewMgr(y){ const m=G.mgr[G.user]; if(!m||m.interim)return; if(m.yrs>0)return `${m.name} 감독과는 이미 계약 기간이 남아 있습니다(${m.yrs}년).`; /* 이미 처리한 재계약 제안을 다시 눌러도 연봉이 또 오르지 않게 */ m.yrs=+y; m.sal=round5(m.sal*1.1); addLog(`${m.name} 감독과 ${y}년 재계약했습니다(연 ${money(m.sal)}).`); }
 
 /* ===== 인물 관계도: 구단주·사장·감독·코치·선수·타 구단 단장·팬·언론 ===== */
