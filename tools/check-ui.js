@@ -299,6 +299,17 @@ const QUICK=process.env.QUICK==='1';
   /* 내가 꾸린 팀: 요약 줄(취임 당시 선수·주전 나이·계약 결정), 주전 구성, 재임 시즌별 성과, 영입 성과에 상태·계약 */
   { where='재임 성과'; const r=await ev(()=>{ const h=teamBuildView(); return {k:/취임 당시 선수/.test(h)&&/주전 평균 나이/.test(h)&&/계약 결정/.test(h),c:/주전 구성/.test(h),s:/재임 시즌별 성과/.test(h),st:/<th>상태<\/th>/.test(h)&&/<th>계약<\/th>/.test(h)}; });
     if(r&&(!r.k||!r.c||!r.s||!r.st))add('재임 성과','내가 꾸린 팀에 요약·주전 구성·시즌별 성과·상태 칸이 없음: '+JSON.stringify(r)); }
+  /* 성장 화살표 설명은 화면 숫자 기준(내부 값 47→48이 아니라 61→62처럼) */
+  { where='성장 화살표'; const r=await ev(()=>{ const p=domestic(G.user).find(q=>!q.isP&&!q.prospect); if(!p)return null; const s0=p.rS; const old={...p.r}; for(const k of ['con','pow','eye'])old[k]-=2.6; p.rS=[{d:G.day-10,r:old}];
+      A.player(p.id); const el=[...document.querySelectorAll('#sheet .dar')].filter(x=>x.getAttribute('title')); const bad=el.filter(x=>{ const m=(x.getAttribute('title')||'').match(/(\d+) → (\d+)/); if(!m)return true; const n=+(x.textContent.replace(/[^0-9]/g,'')); const shown=+(((x.parentElement||{}).querySelector?x.parentElement.querySelector('b.rc'):null)||{textContent:'-1'}).textContent; return Math.abs(+m[2]-+m[1])!==n||+m[2]!==shown; }).length; closeSheets(); p.rS=s0; return {n:el.length,bad}; });
+    if(r&&(!r.n||r.bad))add('성장 화살표','성장 화살표 숫자와 설명 숫자가 다른 기준: '+JSON.stringify(r)); }
+  /* 연도별 시즌 요약: '우리 팀' 대신 지금 구단 이름, 내 재임 구단 기록은 따로 */
+  { where='시즌 요약'; const r=await ev(()=>{ if(!G.history.length)return null; const h=seasonSummary(); return {our:/<th>우리 팀<\/th>/.test(h),nm:h.includes(`<th>${tshort(G.user)}</th>`),mine:/내 재임 구단/.test(h)}; });
+    if(r&&(r.our||!r.nm||!r.mine))add('시즌 요약','연도별 시즌 요약에 우리 팀 제목이 남거나 내 재임 구단 칸이 없음: '+JSON.stringify(r)); }
+  /* 중계 볼카운트 신호등: 볼 3·스트라이크 2·아웃 2 칸, 투구 결과마다 카운트가 바뀐다(파울은 2스트라이크에서 그대로) */
+  { where='볼카운트'; const r=await ev(()=>{ if(typeof cCountAfter!=='function')return {fn:false}; const a=cCountAfter({b:1,s:1,res:'볼'}), b=cCountAfter({b:3,s:2,res:'파울'}), c=cCountAfter({b:0,s:1,res:'헛스윙'}); const i=G.games.findIndex(g=>g.pbp&&g.pbp.length); let mk=null; if(i>=0){ A.cast(i); const el=document.getElementById('cs-bso'); mk=!!el&&el.querySelectorAll('#cs-B i').length===3&&el.querySelectorAll('#cs-S i').length===2&&el.querySelectorAll('#cs-Ob i').length===2; A.castClose(true); }
+      return {fn:true,ok:a.b===2&&a.s===1&&b.b===3&&b.s===2&&c.s===2,mk}; });
+    if(r&&(!r.fn||!r.ok||r.mk===false))add('볼카운트','중계에 볼카운트 신호등이 없거나 카운트 계산이 틀림: '+JSON.stringify(r)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

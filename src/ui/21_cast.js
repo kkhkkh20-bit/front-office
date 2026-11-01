@@ -53,7 +53,7 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
     <div class="cs-board"><span class="cs-tm">${badge(g.away,24)}<i>${esc(tshort(g.away))}</i><b id="cs-sa">0</b></span><span class="cs-mid"><b id="cs-inn">1회초</b><span class="cs-cnt"><span id="cs-O"><i></i><i></i></span><em id="cs-on">0아웃</em></span></span><span class="cs-tm r"><b id="cs-sh">0</b><i>${esc(tshort(g.home))}</i>${badge(g.home,24)}</span></div>
     <div class="cs-wpw"><div class="cs-wp"><span class="wa" style="background:${ac}"></span><i id="cs-wpa" style="background:${hc}"></i><span class="cs-wpt" id="cs-wpt"></span></div></div>
     <button class="x" style="margin-left:auto" data-a="castClose" aria-label="중계 닫기">×</button></div>
-  <div class="cs-body"><div class="cs-stage" id="cs-stage">${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-pitch" id="cs-pitch" aria-live="polite"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-bn" id="cs-bn"></div></div>
+  <div class="cs-body"><div class="cs-stage" id="cs-stage">${fieldBg}<div class="cs-bso" id="cs-bso" aria-label="볼카운트"><div><b>B</b><span id="cs-B"><i></i><i></i><i></i></span></div><div><b>S</b><span id="cs-S"><i></i><i></i></span></div><div><b>O</b><span id="cs-Ob"><i></i><i></i></span></div></div><svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-pitch" id="cs-pitch" aria-live="polite"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-bn" id="cs-bn"></div></div>
     <div class="cs-side"><div class="cs-vs" id="cs-vs"></div><div class="cs-log" id="cs-log"></div></div></div>
   <div class="cs-ctl"><div class="cs-mode">${[['hl','하이라이트'],['all','전체 보기']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}</div>
     <div class="cs-btns"><button data-a="castPlay" id="cs-play" aria-label="일시정지·재생">${UI.cast&&UI.cast.play===false?'재생':'일시정지'}</button><button data-a="castWin" title="승부를 가른 점수가 난 타석으로">결승점</button><button data-a="castStep" data-v="-1" aria-label="이전 타석">◀</button><button data-a="castStep" data-v="1" aria-label="다음 타석">▶</button><button data-a="castSpd" id="cs-spd">${sp}배속</button><button data-a="castEnd">결과 바로 보기</button><button class="pri" data-a="castClose">나가기</button></div></div>
@@ -83,7 +83,7 @@ function cSit(st,x){ const el=document.getElementById('cs-sit'); if(!el)return; 
   const t=risp&&st.bases[0]&&st.bases[1]&&st.bases[2]?'만루 찬스':risp?'득점권 찬스':late?'승부처':''; el.textContent=t; el.className='cs-sit'+(t&&x&&typeof x[1]==='number'?' on':''); }
 function cDraw(k,ms){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; const st=k>=L.length?{...pbpState(g,L.length-1),bases:[0,0,0]}:cBefore(g,k);
   cSync(k>=L.length?[]:cTargets(g,k,st),ms); if(k>=L.length){ st.sa=g.as; st.sh=g.hs; } cBoard(g,st,null); cSide(g,k); cSit(st,L[k]); c.wp=k>=L.length?(g.hs>g.as?1:0):wpHome(st); try{ if(k>=L.length){ const bar=document.getElementById('cs-wpa'); if(bar)bar.style.width=(c.wp*100)+'%'; const tx=document.getElementById('cs-wpt'); if(tx)tx.textContent=`${tshort(g.hs>g.as?g.home:g.away)} 승리`; } else cWp(g,st,null); }catch(e){}
-  cCap(''); { const pe=document.getElementById('cs-pitch'); if(pe)pe.className='cs-pitch'; } if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&k<L.length?'일시정지':'재생'; }
+  cCap(''); cCount(0,0); { const pe=document.getElementById('cs-pitch'); if(pe)pe.className='cs-pitch'; } if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&k<L.length?'일시정지':'재생'; }
 /* 연출 */
 function cFx(t,cls,stay){ const el=document.getElementById('cs-fx'); if(!el)return; el.className='cs-fx'; void el.offsetWidth; if(!t){ el.textContent=''; return; } el.textContent=t; el.className='cs-fx on '+(cls||'')+(stay?' stay':''); el.style.animationDuration=(1.5/cSpd())+'s'; }
 function cFlash(){ const el=document.getElementById('cs-flash'); if(!el)return; el.className='cs-flash'; void el.offsetWidth; el.className='cs-flash on'; }
@@ -115,7 +115,7 @@ function cAng(a,b){ return Math.round(Math.atan2((b[1]-a[1]),(b[0]-a[0]))*180/Ma
 function cBoard(g,st,cnt){ const s=id=>document.getElementById(id); if(!s('cs-sa'))return;
   s('cs-sa').textContent=st.sa; s('cs-sh').textContent=st.sh; s('cs-inn').textContent=cHalfTxt(st.half);
   const dots=(id,n)=>s(id).querySelectorAll('i').forEach((el,i)=>el.classList.toggle('on',i<n));
-  dots('cs-O',Math.min(2,st.outs)); s('cs-on').textContent=Math.min(3,st.outs)+'아웃';
+  dots('cs-O',Math.min(2,st.outs)); { const ob=s('cs-Ob'); if(ob)dots('cs-Ob',Math.min(2,st.outs)); } s('cs-on').textContent=Math.min(3,st.outs)+'아웃';
   CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); }
 function cCap(t,cls){ const el=document.getElementById('cs-cap'); if(!el)return; el.className='cs-cap'+(t?' on':'')+(cls?' '+cls:''); el.textContent=t||''; }
 /* 공 */
@@ -163,7 +163,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   { const seq=cPitchSeq(g,k); const pe=document.getElementById('cs-pitch'); const fast=c.mode&&c.mode!=='all'; const show=fast?Math.min(2,seq.length):seq.length;
     const throwOne=async(q,i,last)=>{ const pc=st.querySelector('.cc.pit'); if(pc){ pc.classList.remove('th'); void pc.offsetWidth; pc.classList.add('th'); } await cSleep(fast?150:220); await cBall(CFP.P,[50,88],fast?240:300,false); cBallHide();
       const sw=last?(o!=='BB'&&!/루킹/.test(q.res)):/헛스윙|파울/.test(q.res); if(bat&&sw){ bat.classList.remove('sw'); void bat.offsetWidth; bat.classList.add('sw'); }
-      if(pe){ pe.innerHTML=cPitchTxt(q,i); pe.className='cs-pitch on'; } if(!last){ if(q.res==='파울')sfx('crack',.25,1.3); else sfx('mitt',.35); await cSleep(fast?230:420); } };
+      if(pe){ pe.innerHTML=cPitchTxt(q,i); pe.className='cs-pitch on'; } { const n=last?{b:q.b,s:q.s}:cCountAfter(q); cCount(n.b,n.s); } if(!last){ if(q.res==='파울')sfx('crack',.25,1.3); else sfx('mitt',.35); await cSleep(fast?230:420); } };
     for(let i=0;i<seq.length;i++){ const last=i===seq.length-1; if(i<seq.length-show){ continue; } await throwOne(seq[i],i,last); }
     if(!seq.length){ await cSleep(220); await cBall(CFP.P,[50,88],300,false); cBallHide(); } }
   cCap('');
@@ -237,4 +237,7 @@ function cPitchSeq(g,k){ const x=g.pbp[k]; if(!x||typeof x[1]!=='number')return 
   const fin=o==='K'?(look?'루킹 삼진':'헛스윙 삼진'):o==='BB'?'볼넷':o==='SAC'?'번트':'타격';
   add(fin,o==='K'); if(o==='K'&&!look){ try{ if(pcH(g,k,'kb')<.6)out[out.length-1].t=best; }catch(e){} out[out.length-1].v=cPitchSpd(p,out[out.length-1].t,r); }
   return out; }
+/* 볼카운트 신호등: 이 공 결과 뒤 카운트. 볼넷·삼진·타격으로 끝나는 마지막 공 뒤에는 다음 타자 때 0-0으로 돌아간다 */
+function cCountAfter(q){ let b=q.b, s=q.s; if(q.res==='볼')b=Math.min(3,b+1); else if(q.res==='파울')s=Math.min(2,s+1); else if(q.res==='스트라이크'||q.res==='헛스윙')s=Math.min(2,s+1); return {b,s}; }
+function cCount(b,s){ const set=(id,n)=>{ const el=document.getElementById(id); if(el)el.querySelectorAll('i').forEach((x,i)=>x.classList.toggle('on',i<n)); }; set('cs-B',b); set('cs-S',s); }
 function cPitchTxt(q,i){ return `<b>${q.b}-${q.s}</b> ${i+1}구 ${q.t} ${q.v}km · <em class="${/볼|볼넷/.test(q.res)?'pb':/타격|번트/.test(q.res)?'pi':'ps'}">${q.res}</em>`; }
