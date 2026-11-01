@@ -45,7 +45,7 @@ const A={
   meetDo(v){ meetDo(v); renderSheet(); },
   ngtOpen(v){ const [k,id]=String(v).split(':'); UI._ngtY=0; ngtOpen(k,+id); },
   ngtSet(v){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=s?s.scrollTop:0; ngtSet(v); renderSheet(); },
-  ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=s?s.scrollTop:0; const D=ngtDemand(N); N.T={...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years}; if(N.k==='ext')N.T.role=null; renderSheet(); },
+  ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=s?s.scrollTop:0; const D=ngtDemand(N); N.T={...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years}; if(N.k==='ext')N.T.role=null; N.ed='dem'; N.kept=false; renderSheet(); },
   ngtSubmit(){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=0; ngtSubmit(); save(); render(); renderSheet(); },
   ngtCounter(){ UI._ngtY=0; ngtCounter(); save(); render(); renderSheet(); },
   ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },

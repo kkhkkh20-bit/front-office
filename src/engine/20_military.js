@@ -22,7 +22,10 @@ function enlistNow(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(
 function milAdvice(p){ if(!p||!milFree(p))return {k:'none',who:'',why:''}; const d=depth(p.team); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].filter(Boolean).map(x=>x.id)); const o=ovr(p);
   if(p.age>=27)return {k:'last',who:'운영팀',why:`${p.age}세: 올해 안에 입대하지 않으면 현역으로 갑니다. 상무 지원을 권합니다${o<44?'(다만 기량이 낮아 합격은 장담하기 어렵습니다)':''}.`};
   if(reg.has(p.id))return {k:'hold',who:'감독',why:`지금 1군 ${p.isP?(isSPr(p)?'선발':'필승조'):'주전'}입니다. 빠지면 1년 6개월 공백이 생기니 ${27-p.age>=2?'1~2년 뒤':'내년'}에 보내는 게 좋겠습니다.`};
-  if(p.age>=23){ const room=Math.max(0,p.pot-o); const h1=seasonTotal(p,G.year,'1군'); const g1=h1?(h1.g||0):0; const now=p.e1?`지금 1군${p.isP?' 불펜(추격조)':' 백업'}이지만 출전 비중이 낮아(올해 1군 ${g1}경기) 빠져도 대체할 선수가 있습니다. 상무에서 꾸준히 뛰는 편이 낫습니다.`:'1군 자리가 없어 2군에 머무는 것보다 상무에서 꾸준히 뛰는 편이 낫습니다.'; return {k:'go',who:'스카우트팀장',why:`${now}${room>=4?` 아직 클 여지가 있어(잠재력 차이 ${Math.round(room)}) 경기 경험이 중요합니다.`:''} 전역하면 ${p.age+2}세입니다.`}; }
+  if(p.age>=23){ const room=Math.max(0,p.pot-o); const h1=seasonTotal(p,G.year,'1군'); const g1=h1?(h1.g||0):0; const tr=G.sea&&G.sea.rec&&G.sea.rec[p.team]; const tg=tr&&period()==='season'?tr.w+tr.l+(tr.t||0):0;
+    /* 시즌 초 몇 경기로는 출전 비중을 말하지 않는다: 20경기 전에는 보직(기용 순서·주전), 그 뒤에는 팀 경기 수 대비 실제 출전 */
+    const roleW=()=>{ if(p.isP){ const i=d.pen.findIndex(x=>x&&x.id===p.id); return i>=0?`불펜 기용 순서 ${i+1}번째로 앞에 ${i}명이 있어`:'선발·필승조 보직이 아니어서'; } const st=(d.start||[]).find(x=>x&&x.pos===p.pos); return st?`${POSS[p.pos]} 주전 ${st.name} 뒤의 백업 보직이어서`:'주전 보직이 아니어서'; };
+    const now=p.e1?(tg>=20?`지금 1군${p.isP?' 불펜(추격조)':' 백업'}이고 팀 ${tg}경기 중 ${g1}경기 ${p.isP?'등판':'출전'}으로 비중이 낮아 빠져도 대체할 선수가 있습니다. 상무에서 꾸준히 뛰는 편이 낫습니다.`:`지금 1군${p.isP?' 불펜':' 백업'}이지만 ${roleW()} 빠져도 대체할 선수가 있습니다(시즌 초라 출전 기록 대신 보직으로 판단). 상무에서 꾸준히 뛰는 편이 낫습니다.`):'1군 자리가 없어 2군에 머무는 것보다 상무에서 꾸준히 뛰는 편이 낫습니다.'; return {k:'go',who:'스카우트팀장',why:`${now}${room>=4?` 아직 클 여지가 있어(잠재력 차이 ${Math.round(room)}) 경기 경험이 중요합니다.`:''} 전역하면 ${p.age+2}세입니다.`}; }
   return {k:'wait',who:'스카우트팀장',why:`${p.age}세로 아직 여유가 있습니다. 1~2년 더 키워 본 뒤 보내도 됩니다.`}; }
 function milDaily(){ const d=G.day;
   if(d===KD(9,1)||d===KD(3,1)){ const w=d===KD(9,1)?'dec':'jun';

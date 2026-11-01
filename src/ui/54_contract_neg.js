@@ -12,7 +12,16 @@ function ngtOpen(k,id){ const p=G.players[id]; if(!p)return; let T;
   if(k==='fa'){ const o=G.fa&&G.fa.offers[id]; T=o&&o.terms?{...o.terms}:termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); }
   else if(k==='ext'){ const y=p.extCounter&&p.extCounter.terms?p.extCounter.years:p.age<=29?4:p.age<=32?3:2; T=p.extCounter&&p.extCounter.terms?{...p.extCounter.terms}:{...termsDemand(p,'ext',{annual:ngtExtDem(p,y),years:y}),role:null}; T.annual=round5(Math.max(MIN_SAL,T.annual*.94)); }
   else { const n=salNeg(id); T={years:1,annual:n?(n.cur??n.off):p.sal,bonus:0,opt:0,role:null,ntc:false}; }
-  UI.ngt={k,id,T,msg:null}; renderSheet(); }
+  UI.ngt={k,id,T,msg:null,ed:false}; renderSheet(); }
+/* 기간을 바꿨을 때: 금액을 직접 고치지 않았으면 새 기간 기준으로 다시 잡고(요구대로 채웠으면 새 요구로), 고쳤으면 그대로 두고 알린다 */
+function ngtYears(N,y){ const p=G.players[N.id]; const T=N.T; T.years=y; if(N.k!=='ext')return;
+  if(N.ed==='dem'){ const D=ngtDemand(N); Object.assign(T,{bonus:D.bonus,annual:D.annual,opt:D.opt}); N.kept=false; return; }
+  if(!N.ed){ const D=termsDemand(p,'ext',{annual:ngtExtDem(p,y),years:y}); Object.assign(T,{bonus:D.bonus,opt:D.opt,annual:round5(Math.max(MIN_SAL,D.annual*.94))}); N.kept=false; return; }
+  N.kept=true; }
+function ngtSeasons(N){ const st=N.k==='ext'&&(period()==='season'||period()==='post')?G.year+1:sponSeason(); return [st,st+(N.T.years||1)-1]; }
+function ngtMil(N){ const p=G.players[N.id]; if(p.foreign||N.k==='sal')return ''; const m=p.mil; const free=milFree(p), srv=!!(m&&m.until&&m.until>G.day); if(!free&&!srv)return '';
+  const [s0,s1]=ngtSeasons(N); const due=G.year+Math.max(0,27-p.age); const inK=free&&due<=s1;
+  return `<div class="ng-mil small"><b>병역</b> ${esc(milText(p))}${inK?` · 계약 기간(${s0}~${s1}) 안에 입대해야 합니다`:''}<span class="muted">복무(1년 6개월) 중에도 계약 연수는 줄어듭니다. 복무하는 동안 연봉은 예산·상한 합계에서 빠지고, 그 시즌은 FA 등록 시즌으로 치지 않습니다.</span></div>`; }
 function ngtStep(v){ return v>=3000?50:v>=1000?20:v>=300?10:5; }
 function ngtRows(N,D){ const p=G.players[N.id]; const T=N.T; const R=[];
   const mrow=(f,l,sub,max)=>{ const v=T[f]||0, d=D[f]||0; const ok=v>=d; const st=ngtStep(Math.max(v,d,100));
@@ -66,14 +75,17 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
   const rounds=fn?`협상 ${fn.rounds}/${agRoundsMax(p)}회 · 분위기 ${fn.mood}`:N.k==='sal'?'한 주에 한 번 제시':'한 주에 한 번 제안';
   const closed=fn&&fn.closed;
   return `<div class="scrim" data-a="ngtClose"><div class="sheet gut ngt" data-stop="1" role="dialog" aria-label="계약 협상">
-    <div class="sheet-head"><div class="ng-h">${avImg(p)}<div><span class="eyebrow">${NGT_K[N.k]} · ${esc(posLabel(p))} · ${p.age}세</span><h2 class="sec">${esc(p.name)}</h2><span class="small muted">${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:`지금 연봉 ${money(p.sal)} · ${ctText(p)}`}</span></div></div><button class="x" data-a="ngtClose" aria-label="닫기">×</button></div>
+    <div class="sheet-head"><div class="ng-h">${avImg(p)}<div><span class="eyebrow">${NGT_K[N.k]} · ${esc(posLabel(p))} · ${p.age}세</span><h2 class="sec">${esc(p.name)}</h2><span class="small muted">${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:`지금 연봉 ${money(p.sal)} · ${ctText(p)}`}${!p.foreign&&N.k!=='sal'?` · ${esc(milText(p))}`:''}</span></div></div><button class="x" data-a="ngtClose" aria-label="닫기">×</button></div>
     ${ngtResHtml(N)}
     <div class="ng-ag">${ag?agAv(ag,expr):avImg(p)}<div class="ng-say"><span class="small muted">${ag?`${esc(ag.name)} 에이전트 · ${esc(ag.firm)} · ${esc((AG_STYLE[ag.style]||AG_STYLE.rel).l)}`:`${esc(p.name)} 본인`} · ${rounds}</span><p>${esc(say)}</p>${fn?`<span class="gauge"><i style="width:${fn.mood}%;background:${fn.mood>=60?'var(--good)':fn.mood>=35?'var(--warn)':'var(--bad)'}"></i></span>`:''}</div></div>
     ${N.k==='ext'?(()=>{ const x=extParts(p,T.years); const m=Math.round((x.mkt-1)*100); return `<div class="ng-why"><span class="eyebrow">요구액 근거 · 전력분석팀</span><p class="small">${x.ytf?`FA까지 ${x.ytf}시즌`:'지금 FA 자격'} · FA 시장 분위기 <b>${faMktLabel(x.mkt)}</b>(${m>=0?'+':''}${m}%) · 예상 FA 시장가 연 <b>${money(x.expFA)}</b></p><p class="small muted keep">${x.why.map(esc).join(' · ')}${x.yadj!==1?` · ${T.years}년 계약 기간 ${x.yadj>1?'+':''}${Math.round((x.yadj-1)*100)}%`:''}</p></div>`; })():''}
     ${ngtLog(N)}
+    ${ngtMil(N)}
     <div class="ng-rows">${ngtRows(N,D)}</div>
+    ${N.k==='ext'&&N.kept?`<div class="note warn small">기간을 바꿨지만 직접 정한 금액은 그대로 두었습니다. ${T.years}년 기준 요구는 ${esc(termsTxt(D,true))}입니다.</div>`:''}
     ${N.k==='sal'?(()=>{ const sb=salBasis(p); const d=T.annual-p.sal; return `<div class="ng-sum"><div><i>직전 시즌</i><b>${sb.h?`WAR ${sb.war.toFixed(1)}`:'1군 기록 없음'}</b><em>${esc(sb.band)} · 인상 상한 +${sb.cap}%</em></div><div><i>인상률</i><b class="num ${d>0?'warn':''}">${d>=0?'+':''}${p.sal?Math.round(d/p.sal*100):0}%</b><em>${money(p.sal)} → ${money(T.annual)}</em></div><div><i>올해 예산 여유</i><b class="num">${money(b.roomGoal)}</b><em>${dobj(G.day).m<=3&&G.day>KD(1,10)?'1월 31일 마감 · 미합의면 구단 마지막 제시액으로 확정':(p.svc||0)>=ARB_SVC?'1월 10일까지 안 되면 연봉조정 신청 가능':'연봉조정 신청 대상 아님'}</em></div><div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div></div>`; })():`<div class="ng-sum">
-      <div><i>보장 총액</i><b class="num">${money(tot)}</b>${T.opt?`<em>옵션 포함 최대 ${money(tot+T.opt*T.years)}</em>`:''}</div>
+      <div><i>적용 시즌</i><b class="num">${ngtSeasons(N).join('~')}</b><em>${N.k==='ext'?(period()==='season'||period()==='post'?'시즌 중 합의는 다음 시즌부터':'개막 전 합의는 다가오는 시즌부터'):'다가오는 시즌부터'}</em></div>
+      <div><i>보장 총액</i><b class="num">${money(tot)}</b>${T.opt?`<em>옵션 포함 최대 ${money(tot+T.opt*T.years)}</em>`:''}${(()=>{ if(N.k!=='ext')return ''; const dt=(D.bonus||0)+D.annual*(D.years||T.years); const over=tot-dt; return over>Math.max(50,dt*.03)?`<em class="warn">요구(${money(dt)})보다 ${money(over)} 더 주는 조건</em>`:''; })()}</div>
       <div><i>상한 반영(연평균)</i><b class="num">${money(capAvg)}</b><em class="${capAvg>capRoom?'bad':''}">상한 여유 ${money(capRoom)}</em></div>
       <div><i>올해 예산 여유</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
       <div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div>
@@ -82,8 +94,8 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       ${closed?'<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.</div>':`<button class="btn" data-a="ngtDemand">요구 조건대로 채우기</button>${ctr?`<button class="btn" data-a="ngtCounter">역제안 수락 · ${esc(ctrTx)}</button>`:''}${N.k==='ext'&&extNextDay(p)?`<button class="btn primary" data-a="ngtSubmit" disabled>다음 제안 ${dsh(extNextDay(p))}부터</button>`:'<button class="btn primary" data-a="ngtSubmit">제안하기</button>'}`}
       ${N.k==='fa'&&G.fa.offers[p.id]?'<button class="btn danger" data-a="ngtWithdraw">제안 철회</button>':''}<button class="btn ng-close" data-a="ngtClose">협상 마치기</button></div></div></div>`; }
 function ngtSet(v){ const N=UI.ngt; if(!N)return; const [f,x]=v.split(':'); const T=N.T;
-  if(x[0]==='='){ const val=+x.slice(1); if(f==='ntc')T.ntc=!!val; else T[f]=val; if(f==='years'&&N.k==='ext'){ N.msg=null; } }
-  else T[f]=Math.max(f==='annual'?MIN_SAL:0,round5((T[f]||0)+(+x))||0);
+  if(x[0]==='='){ const val=+x.slice(1); if(f==='ntc')T.ntc=!!val; else if(f==='years'){ ngtYears(N,val); if(N.k==='ext')N.msg=null; } else T[f]=val; }
+  else { T[f]=Math.max(f==='annual'?MIN_SAL:0,round5((T[f]||0)+(+x))||0); N.ed=true; N.kept=false; }
   if(f==='bonus'||f==='opt')T[f]=Math.max(0,Math.round((T[f]||0)/5)*5); }
 function ngtSubmit(){ const N=UI.ngt; const p=G.players[N.id]; const T={...N.T};
   if(N.k==='fa'){ if(faOutBlocked(G.user,p)){ N.msg=`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조).`; return; }
@@ -100,6 +112,6 @@ function ngtDoor(k,p){ const o=k==='fa'?G.fa.offers[p.id]:null; const ag=hasAgen
   const cur=o?(o.terms?termsTxt(o.terms,true):`${o.years}년 연 ${money(o.annual)}`)+(o.rej?' (선수가 거절함)':''):null;
   return `<button class="mt-door" data-a="ngtOpen" data-v="${k}:${p.id}">${ag?agAv(ag):avImg(p)}<span><b>협상 테이블 열기</b><i>${ag?`${esc(ag.name)} 에이전트 · ${esc(ag.firm)}`:`${esc(p.name)} 본인과 협상`}</i><i>${cur?`지금 우리 제안: ${esc(cur)}`:k==='fa'?`요구 ${p.ask.years}년 연 ${money(p.ask.annual)} 수준`:'기간 · 계약금 · 연봉 · 옵션을 정해 제안합니다'}</i></span><em>›</em></button>`; }
 /* 슬라이더: 움직이는 동안은 숫자만, 놓으면 다시 그린다 */
-function ngtRange(el,fin){ const N=UI.ngt; if(!N)return; const f=el.dataset.ngr; N.T[f]=f==='annual'?Math.max(MIN_SAL,+el.value):+el.value; if(fin){ renderSheet(); return; } const o=document.getElementById('ngv-'+f); if(o)o.textContent=money(N.T[f]); }
+function ngtRange(el,fin){ const N=UI.ngt; if(!N)return; const f=el.dataset.ngr; N.T[f]=f==='annual'?Math.max(MIN_SAL,+el.value):+el.value; N.ed=true; N.kept=false; if(fin){ renderSheet(); return; } const o=document.getElementById('ngv-'+f); if(o)o.textContent=money(N.T[f]); }
 document.addEventListener('input',e=>{ const el=e.target.closest('[data-ngr]'); if(el)ngtRange(el,false); });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-ngr]'); if(el)ngtRange(el,true); });

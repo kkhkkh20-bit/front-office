@@ -18,12 +18,21 @@ function posStrength(list){ const ev=new Map(list.map(p=>[p.id,scoutReport(p).cu
   for(const k of FIELDK){ const c=list.filter(p=>canAt(p,k)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)).sort((a,b)=>b-a); out[k]=c.length?c[0]:null; }
   const sp=list.filter(p=>p.isP&&isSPr(p)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)).sort((a,b)=>b-a).slice(0,5);
   const rp=list.filter(p=>p.isP&&!isSPr(p)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)).sort((a,b)=>b-a).slice(0,5);
+  if(sp.length){ const fill=list.filter(p=>p.isP&&!isSPr(p)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)-6).sort((a,b)=>b-a); while(sp.length<5)sp.push(fill.length?fill.shift():35); } /* 선발이 5명 안 되면 빈자리는 불펜에서 돌려 막는다(선발 전환 -6), 그것도 없으면 35: 선발을 보내면 평균이 오르는 착시를 막는다 */
   out.SP=sp.length?Math.round(avg(sp)):null; out.RP=rp.length?Math.round(avg(rp)):null; return out; }
 function rosterList(tid){ return playersOf(tid).filter(p=>!(p.joinY>G.year)); }
 function tradeCompare(tid,give,get){
   const mine=rosterList(G.user), theirs=rosterList(tid); const gv=give.map(id=>G.players[id]), gt=get.map(id=>G.players[id]);
   const myAfter=mine.filter(p=>!give.includes(p.id)).concat(gt), thAfter=theirs.filter(p=>!get.includes(p.id)).concat(gv);
   return {my:[posStrength(mine),posStrength(myAfter)],th:[posStrength(theirs),posStrength(thAfter)]}; }
+/* 선발진 변화: 평균 대신 빠지는 선발, 대신 로테이션에 들어갈 다음 후보, 선발 가능 인원 */
+function spRot(list){ return list.filter(p=>p&&p.isP&&isSPr(p)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)); }
+function spSwap(tid,give,get){ const mine=rosterList(G.user); const after=mine.filter(p=>!give.includes(p.id)).concat(get.map(id=>G.players[id]).filter(Boolean));
+  const b=spRot(mine), a=spRot(after); const t0=b.slice(0,5), t1=a.slice(0,5); const out=t0.filter(p=>!t1.includes(p)), inn=t1.filter(p=>!t0.includes(p));
+  if(!out.length&&!inn.length&&b.length===a.length)return null; return {out:out.map(p=>({p,slot:t0.indexOf(p)+1})),inn,n0:b.length,n1:a.length}; }
+function spSwapTxt(x){ if(!x)return ''; const v=p=>dv(Math.round(ovr(p)));
+  const o=x.out.map(o=>`${o.p.name}(${o.slot}선발, 능력 ${v(o.p)})`).join(', '); const i=x.inn.map(p=>`${p.name}(능력 ${v(p)})`).join(', ');
+  return `선발진: ${o?`${o} 빠짐 → `:''}${i?`${i}이(가) 로테이션에 들어감`:o?'로테이션을 채울 선발 자원이 없어 불펜·2군에서 메워야 함':''} · 선발 가능 ${x.n0}명 → ${x.n1}명`; }
 /* 감독 반응: 우리 트레이드가 전력과 감독 성향에 맞는지 */
 function mgrTradeView(tid,give,get){ const m=G.mgr[G.user]; if(!m||m.interim)return null; const c=tradeCompare(tid,give,get); const ks=FIELDK.concat(['SP','RP']);
   let d=0; for(const k of ks){ const b=c.my[0][k]??35, a=c.my[1][k]??35; d+=(a-b)*(k==='SP'?2:1); }

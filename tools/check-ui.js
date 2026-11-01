@@ -327,6 +327,30 @@ const QUICK=process.env.QUICK==='1';
   /* 리그 소식: 종류별로 골라 보기(구단 사정 등) */
   { where='리그 소식'; const r=await ev(()=>{ G.wire=G.wire||[]; G.wire.unshift({d:G.day,k:'구단 사정',t:'점검 구단 사정',tid:null}); const h=wireView(); G.wire.shift(); return /data-a="wk"/.test(h)&&/구단 사정/.test(h); });
     if(r===false)add('리그 소식','리그 소식에 종류별 보기가 없음'); }
+  /* 트레이드 비교: 선발을 보내면 빠지는 선발과 선발 가능 인원 변화가 보인다 */
+  { where='트레이드 비교 선발'; const r=await ev(()=>{ const sp=playersOf(G.user).filter(p=>p.isP&&isSPr(p)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a))[2]; if(!sp)return null; const tid=G.teams.find(t=>t.id!==G.user).id; const h=tradeInsight(tid,[sp.id],[]); return {line:/선발 가능 \d+명 → \d+명/.test(h)&&h.includes(sp.name)}; });
+    if(r&&!r.line)add('트레이드 비교','선발을 보낼 때 빠지는 선발·선발 인원 변화가 없음'); }
+  /* 선수 찾기: 조건에 맞는 전체 인원, 능력별 정렬 */
+  { where='선수 찾기 전체'; const r=await ev(()=>{ const K=['findName','findAge','findSal','findMil','findPos','findTeam','findSort','findT']; const keep={}; K.forEach(k=>keep[k]=UI[k]); Object.assign(UI,{findName:'',findAge:0,findSal:0,findMil:'all',findPos:'all',findTeam:'all',findSort:'cur',findT:null});
+      const n=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)).length; const h=tcFind(); const m=h.match(/조건에 맞는 (\d+)명/);
+      UI.findSort='velo'; tcFind(); const P=UI._findPool||[]; const allP=P.length>0&&P.every(p=>p.isP); let sorted=P.length>0; for(let i=1;i<P.length;i++)if(veloOf(P[i])>veloOf(P[i-1]))sorted=false;
+      K.forEach(k=>UI[k]=keep[k]); return {n,got:m?+m[1]:null,allP,sorted,opt:/value="velo"/.test(h)}; });
+    if(r){ if(r.got!==r.n)add('선수 찾기',`조건에 맞는 전체 인원이 안 보임(${r.got}/${r.n})`); if(!r.opt||!r.allP||!r.sorted)add('선수 찾기','구속 순 정렬이 안 됨'); } }
+  /* 다년계약 협상: 기간만 바꾸면 금액도 따라가고, 직접 고친 금액은 유지 표시. 병역·적용 시즌 */
+  { where='다년계약 기간 변경'; const r=await ev(()=>{ closeSheets(); A.tab('roster'); const L=playersOf(G.user).filter(p=>canExtend(p)).sort((a,b)=>ovr(b)-ovr(a)); const p=L.find(q=>milFree(q))||L[0]; if(!p)return {skip:1};
+      A.player(p.id); A.ngtOpen('ext:'+p.id); const y0=UI.ngt.T.years, y1=y0===2?5:2; const t0=UI.ngt.T.annual+UI.ngt.T.bonus; A.ngtSet('years:='+y1); const t1=UI.ngt.T.annual+UI.ngt.T.bonus; const diff=ngtExtDem(p,y0)!==ngtExtDem(p,y1);
+      A.ngtSet('annual:50'); const a2=UI.ngt.T.annual, b2=UI.ngt.T.bonus; A.ngtSet('years:='+y0); const kept=UI.ngt.T.annual===a2&&UI.ngt.T.bonus===b2; const tx=(document.querySelector('#sheet')||{}).textContent||'';
+      closeSheets(); return {auto:!diff||t1!==t0,kept,note:/금액은 그대로/.test(tx),mil:!milFree(p)||/병역/.test(tx),seas:/적용 시즌/.test(tx)}; });
+    if(r&&r.skip)add('다년계약','점검할 연장 대상이 없음'); else if(r){ if(!r.auto)add('다년계약','기간만 바꿨는데 제안 금액이 그대로'); if(!r.kept||!r.note)add('다년계약','직접 정한 금액 유지 표시가 없음'); if(!r.mil)add('다년계약','협상창에 병역 상태가 없음'); if(!r.seas)add('다년계약','협상창에 적용 시즌이 없음'); } }
+  /* 경기 요약: 8회까지 앞서다 9회에 뒤집힌 경기는 빈타가 아니라 역전패, 선발 호투 무산을 함께 */
+  { where='경기 요약 전환점'; const r=await ev(()=>{ const o=G.teams.find(t=>t.id!==G.user); const g={home:G.user,away:o.id,hs:1,as:4,line:{h:[0,0,0,0,0,0,0,1,0],a:[0,0,0,0,0,0,0,0,4]},box:{h:{pit:[{id:0,n:'점검선발',outs:24,er:0,so:8}],bat:[{h:5},{h:3}]},a:{pit:[],bat:[]}}}; const c=gameChar(g); return {k:c&&c.k,t:c&&c.t,sub:c&&c.sub}; });
+    if(r&&(r.k!=='blown'||!/호투/.test(r.sub||'')||!/8안타/.test(r.sub||'')))add('경기 요약','9회 역전패를 전환점으로 알리지 않음: '+JSON.stringify(r)); }
+  /* 성적 표본: 적은 타석의 OPS 옆에 타석 수와 '적은 표본' */
+  { where='성적 표본'; const r=await ev(()=>{ const p=Object.values(G.players).find(q=>!q.isP&&q.team!=null&&(curLine(q)||{}).pa>=150); if(!p)return null; const h=curLine(p); const h2={}; for(const k in h)h2[k]=typeof h[k]==='number'&&k!=='y'?Math.round(h[k]/25):h[k]; const keep=curLine; curLine=()=>h2; let html=''; try{ html=pcRec(p,false); }finally{ curLine=keep; } return {pa:/\d+타석/.test(html),tag:/적은 표본/.test(html)}; });
+    if(r&&(!r.pa||!r.tag))add('성적 표본','적은 타석의 OPS 옆에 타석 수·적은 표본 표시가 없음'); }
+  /* 동률: 공동 선두가 여럿이면 모두 셈 */
+  { where='공동 선두'; const r=await ev(()=>{ const keep=standOrder; const fake=G.teams.map((t,i)=>({tid:t.id,w:i<5?1:0,l:i<5?0:1,t:0})); standOrder=()=>({order:fake,live:true,y:G.year}); let h=''; try{ h=miniStand(); }catch(e){ h='ERR '+e.message; } finally{ standOrder=keep; } return {ok:/등 5개 구단 공동 선두/.test(h),h:h.slice(0,80)}; });
+    if(r&&!r.ok)add('순위','5개 구단 동률인데 두 팀만 공동 선두로 표시: '+r.h); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

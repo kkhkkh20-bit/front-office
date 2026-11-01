@@ -589,6 +589,13 @@ T('[구단 사정] 다른 구단도 기강이 느슨하면 사고가 나고, 기
   const m=G.mgr[t.id]; m.disc=20; t.cap=null; G._cl=null; let n=0; for(let i=0;i<300&&!(G.wire||[]).some(w=>w.k==='구단 사정'&&w.tid===t.id);i++){ G._cl=null; aiDisc(t); } ok((G.wire||[]).some(w=>w.k==='구단 사정'&&w.tid===t.id&&/징계/.test(w.t)),'느슨한 구단인데 사고가 없음');
   const d=depth(t.id); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const p=domestic(t.id).find(q=>!q.isP&&!reg.has(q.id)&&!q.ys); ok(p,'준비 실패'); for(const k in p.r)p.r[k]=Math.max(p.r[k],70); p.e1=false; if(typeof isRegular==='function'){} p.mor=10; G._dc=null;
   const n0=G.mail.length; for(let i=0;i<40&&!p.aiListed;i++){ p.gripeY=null; aiGripe(t); } ok(p.aiListed&&p.aiWhy==='mood','트레이드 요청 매물 아님'); ok(G.mail.length>n0&&G.mail.slice(0,G.mail.length-n0).some(x=>/트레이드 요청/.test(x.subj)),'소식함에 안 옴'); });
+T('[트레이드 비교] 선발을 보내면 선발 평가가 오르지 않고, 빠지는 선발·대신 들어갈 후보·선발 인원 변화를 따로 보여 준다',()=>{ fresh(); const L=rosterList(G.user).filter(p=>p.isP&&isSPr(p)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4); ok(L.length===4,'준비 실패');
+  const s0=posStrength(L).SP, s1=posStrength(L.slice(0,3)).SP; ok(s1<s0,'선발 4명에서 1명을 빼는데 평가 '+s0+'→'+s1);
+  ok(typeof spSwap==='function','spSwap 없음'); const g=L[3]; const tid=G.teams.find(t=>t.id!==G.user).id; const x=spSwap(tid,[g.id],[]); ok(x&&x.out.some(o=>o.p.id===g.id)&&x.n1===x.n0-1,'빠지는 선발·인원 변화 없음'); });
+T('[병역 조언] 시즌 초에는 몇 경기 안 된 출전 기록 대신 보직·앞선 선수로 설명한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+2);
+  const tg=(r=>r.w+r.l+(r.t||0))(G.sea.rec[G.user]); ok(tg<20,'준비 실패 '+tg); let a=null, p=null;
+  for(const q of domestic(G.user).filter(q=>milFree(q)&&q.age>=23&&q.age<=26).sort((x,y)=>ovr(x)-ovr(y))){ q.e1=true; G._dc=null; const r=milAdvice(q); if(r.k==='go'){ a=r; p=q; break; } }
+  ok(a,'상무 추천 대상 없음'); ok(!/올해 1군 \\d+경기/.test(a.why),'적은 표본으로 판단: '+a.why); ok(/보직|주전|기용 순서/.test(a.why),'보직 근거 없음: '+a.why); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
