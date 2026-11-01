@@ -695,6 +695,28 @@ T('[위임·옵션] 국내 연봉만 맡겨도 외국인 결정이 끝났으면 
   G.contract.fre[f.id]={ok:true}; autoConfirm(); ok(G.contract.done,'외국인 재계약을 직접 끝냈는데 국내 연봉 자동 확정이 안 됨'); ok(/완료/.test(delegStatus('sal')),'완료 상태가 없음: '+delegStatus('sal'));
   const sp=playersOf(G.user).find(p=>p.isP&&isSPr(p)&&!p.foreign); termsApply(sp,{years:2,annual:sp.sal,opt:500},'fa'); ok(sp.opt&&sp.opt.c==='sp','옵션에 계약 때 기준이 저장되지 않음'); sp.role='RP';
   const keep=sp.hist; sp.hist=[Object.assign({y:G.year,t:G.user,lvl:'1군'},ZP,{outs:240,g:40})]; ok(!optEarned(sp),'선발 계약(120이닝)인데 불펜으로 바뀌자 80이닝으로 옵션 달성'); sp.hist=keep; });
+T('[밸런스] 규정 타석 wRC+ 분포가 실제 KBO 비율에 가깝다(2026 KBO 1위 175·5위 149·10위 140·20위 125·30위 110, 사용자 2026-11-01 22:37·22:58)',()=>{ fresh(); const y0=G.year; simTo(()=>G.year>y0); const R=[]; for(const p of Object.values(G.players)){ if(p.isP)continue; const h=seasonTotal(p,y0,'1군'); if(!h||h.pa<446)continue; R.push(wrcPlus(h,y0)); } R.sort((a,b)=>b-a);
+  const at=i=>R[Math.min(R.length-1,i)]; ok(R.length>=40,'규정 타석 '+R.length+'명'); ok(at(4)<=170,'5위 '+at(4)+'(KBO 149)'); ok(at(9)<=158,'10위 '+at(9)+'(KBO 140)'); ok(at(19)>=110&&at(19)<=140,'20위 '+at(19)+'(KBO 125)'); ok(at(R.length-3)>=25,'규정 타석 하위권이 너무 낮음: '+R.slice(-3).join('/'));
+  const E=Object.values(G.players).filter(p=>p.isP).map(p=>seasonTotal(p,y0,'1군')).filter(h=>h&&h.outs>=432).map(h=>h.er*27/h.outs).sort((a,b)=>a-b); ok(E.length>=12,'규정 이닝 '+E.length+'명'); ok(E[0]>=1.4,'평균자책점 1위 '+E[0].toFixed(2)+'(KBO 1위는 해마다 1.9~2.7 안팎)'); ok(E[4]>=2.3,'평균자책점 5위 '+E[4].toFixed(2)); });
+T('[리뷰 11-02] 국가대표 차출 중에도 연봉 합계·샐러리캡·구단 선수 수는 그대로이고, 경기 출전 명단에서만 빠진다(군 복무는 지급 제외 유지)',()=>{ fresh(); const p=domestic(G.user).filter(q=>!isRookie(q)).sort((a,b)=>b.sal-a.sal)[0]; const b={pay:payroll(G.user),cap:capPay(G.user),n:rosterN(G.user),nx:capPayNext(G.user)};
+  p.ntFrom=G.day; p.ntAway=G.day+10; ok(!playersOf(G.user).includes(p),'차출 선수가 출전 가능 명단에 남음');
+  ok(payroll(G.user)===b.pay,'국내 연봉 합계 '+b.pay+' → '+payroll(G.user)); ok(capPay(G.user)===b.cap,'샐러리캡 산정액 '+b.cap+' → '+capPay(G.user)); ok(capPayNext(G.user)===b.nx,'내년 산정액이 바뀜'); ok(rosterN(G.user)===b.n,'구단 선수 수 '+b.n+' → '+rosterN(G.user));
+  delete p.ntAway; delete p.ntFrom; p.mil={from:G.day,until:G.day+500}; ok(payroll(G.user)===b.pay-p.sal,'군 복무 선수 연봉이 빠지지 않음'); delete p.mil; });
+T('[리뷰 11-02] 다음 시즌부터 시작하는 다년계약도 방출 정산금(남은 보장액 50%)에 들어가고, 확인창 금액과 실제 지출이 같다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.faC&&!q.extNext&&!isRookie(q)); p.extNext={annual:1000,years:4}; const c=relCost(p);
+  ok(c.cur===0&&c.next===2000&&c.tot===2000,'정산금 계산 '+JSON.stringify(c)); const s0=G.spend.rel||0; releasePlayer(p.id); ok((G.spend.rel||0)-s0===2000,'실제 지출 '+((G.spend.rel||0)-s0)+'(2000이어야 함)');
+  const q=domestic(G.user).find(x=>x.faC&&(x.yrs||0)>=1); if(q){ const c2=relCost(q); ok(c2.cur===Math.round(q.sal*q.yrs*.5),'현재 다년 계약 정산금이 달라짐'); } });
+T('[리뷰 11-02] 내년 연봉은 한 계산(salNext)으로: 합의한 다음 시즌 다년계약이 내년 샐러리캡 산정에 반영된다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.faC&&!q.extNext&&!isRookie(q)&&q.sal<=150); const b=capPayNext(G.user);
+  p.extNext={annual:1000,years:4}; ok(salNext(p)===1000,'salNext '+salNext(p)); ok(capPayNext(G.user)>b,'내년 산정액이 그대로 '+b+' → '+capPayNext(G.user)); });
+T('[리뷰 11-02] 은퇴 선수 보관 기록: 비율 기록은 현역과 같은 계산(희생번트 타석 차이로 OPS가 바뀌지 않음), 0이라 빠진 칸은 0으로 되살린다(무자책 ERA NaN)',()=>{ fresh();
+  const h={y:2025,t:G.user,lvl:'1군',g:120,pa:520,ab:440,h:140,d:30,tr:2,hr:25,bb:60,so:90,sf:5,sh:15}; const r={y:2025,t:G.user}; for(const k of ARCH_K)if(h[k])r[k]=h[k];
+  ok(Math.abs(archLine(r).ops-bRate(h).ops)<1e-9,'보관 OPS '+archLine(r).ops.toFixed(3)+' ≠ 현역 '+bRate(h).ops.toFixed(3));
+  const pr={y:2025,t:G.user,g:3,outs:15}; const e=archLine(pr).era; ok(e===0,'무자책 5이닝 ERA '+e); });
+T('[이름·등번호] 같은 구단 안에서 등번호가 겹치지 않고, 이름·등번호를 고칠 수 있으며 겹치는 번호·영구결번·잘못된 값은 막는다(사용자 2026-11-01 23:49)',()=>{ fresh();
+  for(const t of G.teams){ const L=Object.values(G.players).filter(p=>p.team===t.id).map(jno); ok(new Set(L).size===L.length,tshort(t.id)+' 등번호 겹침 '+L.length+'명 중 '+new Set(L).size+'개'); ok(L.every(n=>n>=0&&n<=99),'0~99 밖 등번호'); }
+  const [a,b]=playersOf(G.user); ok(setPlayerNo(a.id,String(jno(b))).includes(b.name),'겹치는 등번호가 저장됨'); const free=[...Array(100).keys()].find(n=>!teamNos(G.user).has(n)); ok(setPlayerNo(a.id,String(free))===''&&jno(a)===free,'빈 번호 저장 실패');
+  ok(setPlayerNo(a.id,'100')!==''&&setPlayerNo(a.id,'ab')!=='','잘못된 등번호가 저장됨'); G.retNos=[{name:'전설',no:(free+1)%100,y:2020}]; if(!teamNos(G.user,a).has((free+1)%100)||G.retNos.length)ok(/영구결번/.test(setPlayerNo(a.id,String((free+1)%100))),'영구결번 번호가 저장됨');
+  ok(setPlayerName(a.id,'  홍 길동 ')===''&&a.name==='홍 길동','이름 저장 실패: '+a.name); ok(setPlayerName(a.id,'')!==''&&setPlayerName(a.id,'가'.repeat(13))!=='','빈 이름·긴 이름이 저장됨'); setPlayerName(a.id,'<b>x</b>'); ok(!/[<>]/.test(a.name),'꺾쇠가 이름에 남음');
+  const t2=G.teams.find(t=>t.id!==G.user).id; const q=playersOf(t2)[0]; a.no=jno(q); a.team=t2; const L2=Object.values(G.players).filter(p=>p.team===t2).map(jno); ok(new Set(L2).size===L2.length,'옮긴 팀에서 등번호가 겹침'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
@@ -843,13 +865,16 @@ T('[스타] 캠페인 중에는 매달 기사가 나고, 스타가 떠오르면 
   const q=playersOf(G.user).filter(x=>!x.foreign&&x!==p)[0]; q.aw=[G.year+' 신인왕',G.year+' 골든글러브(1루수)']; const m0=G.mail.length; starCheck(); const M=JSON.stringify(G.mail.slice(0,G.mail.length-m0+1)); ok(M.includes(q.name),'스타 탄생 알림이 없음');
   const m1=G.mail.length; starCheck(); ok(G.mail.length===m1,'같은 해에 또 알림'); });
 
-T('[엔진] 능력이 성적에 정확히 반영된다: 규정타석 타자의 한 시즌 OPS를 능력치가 60% 이상 설명한다(방승환: 파워 평균인데 장타율 .514)',()=>{ const R=[];
-  for(const tid of [1,2,3]){ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players))snap[p.id]={...p.r}; return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }
-    for(const p of Object.values(G.players)){ const s=snap[p.id]; if(!s||p.isP)continue; const h=seasonTotal(p,2025,'1군'); if(!h||h.pa<446)continue; R.push({x:[1,s.con,s.pow,s.eye,s.spd],y:obpOf(h)+(h.h+h.d+2*h.tr+3*h.hr)/h.ab}); } }
+T('[엔진] 능력이 성적에 반영된다: 규정타석 타자의 한 시즌 OPS를 능력 기대치가 50% 이상, 세부 능력치 직선 관계만으로도 40% 이상 설명한다(방승환: 파워 평균인데 장타율 .514 · KBO 실력 폭 기준 2026-11-02)',()=>{ const R=[];
+  for(const tid of [1,2,3]){ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players)){ if(p.isP)continue; const e=simBat(p,6000,0); snap[p.id]={r:{...p.r},e:bRate(e).ops}; } return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }
+    for(const p of Object.values(G.players)){ const s=snap[p.id]; if(!s||p.isP)continue; const h=seasonTotal(p,2025,'1군'); if(!h||h.pa<446)continue; R.push({x:[1,s.r.con,s.r.pow,s.r.eye,s.r.spd],e:s.e,y:obpOf(h)+(h.h+h.d+2*h.tr+3*h.hr)/h.ab}); } }
   ok(R.length>=150,'준비 실패: 규정타석 '+R.length); const n=R.length, p=5; const A=Array.from({length:p},()=>Array(p).fill(0)), b=Array(p).fill(0);
   for(const r of R)for(let i=0;i<p;i++){ b[i]+=r.x[i]*r.y; for(let j=0;j<p;j++)A[i][j]+=r.x[i]*r.x[j]; }
   for(let i=0;i<p;i++){ for(let j=i+1;j<p;j++){ const f=A[j][i]/A[i][i]; for(let c=i;c<p;c++)A[j][c]-=f*A[i][c]; b[j]-=f*b[i]; } } const w=Array(p).fill(0); for(let i=p-1;i>=0;i--){ let s2=b[i]; for(let c=i+1;c<p;c++)s2-=A[i][c]*w[c]; w[i]=s2/A[i][i]; }
-  const my=R.reduce((s2,r)=>s2+r.y,0)/n; let sst=0, sse=0; for(const r of R){ const pr=r.x.reduce((s2,v,i)=>s2+v*w[i],0); sst+=(r.y-my)**2; sse+=(r.y-pr)**2; } const r2=1-sse/sst; ok(r2>=.6,'능력치가 OPS를 설명하는 정도 '+(r2*100).toFixed(0)+'%(60% 이상이어야 함)'); });
+  const my=R.reduce((s2,r)=>s2+r.y,0)/n; let sst=0, sse=0; for(const r of R){ const pr=r.x.reduce((s2,v,i)=>s2+v*w[i],0); sst+=(r.y-my)**2; sse+=(r.y-pr)**2; } const r2=1-sse/sst;
+  const me=R.reduce((s2,r)=>s2+r.e,0)/n; let sxy=0, sxx=0; for(const r of R){ sxy+=(r.e-me)*(r.y-my); sxx+=(r.e-me)**2; } const re=sxy*sxy/(sxx*sst);
+  /* 실제 KBO 규정 타석 wRC+는 실력 차가 MLB보다 좁아(2026 1위 175·10위 140), 600타석 운(wRC+ 약 18)과 합치면 한 시즌 기록을 실력이 설명하는 정도가 60% 안팎이다 */
+  ok(re>=.5,'능력 기대 OPS가 실제 OPS를 설명하는 정도 '+(re*100).toFixed(0)+'%(50% 이상이어야 함)'); ok(r2>=.4,'세부 능력치(컨택·파워·선구·주루) 직선 관계가 OPS를 설명하는 정도 '+(r2*100).toFixed(0)+'%(40% 이상이어야 함)'); });
 
 T('[엔진] 투수도 능력이 성적에 반영된다: 100이닝 이상 투수의 평균자책점을 능력치(구위·제구·체력)가 45% 이상 설명한다',()=>{ const R=[];
   for(const tid of [1,2,3]){ const snap={}; const u0=updateLg; updateLg=function(y){ if(y===2025)for(const p of Object.values(G.players))snap[p.id]={...p.r}; return u0.apply(this,arguments); }; try{ DEMO.on=false; newGame(tid); }finally{ updateLg=u0; }

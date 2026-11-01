@@ -204,6 +204,9 @@ const A={
   hireCoach(v){ const [id,y]=v.split(':'); const c=(G.cmarket||[]).find(x=>x.id===id); const e=hireCoach(id,+y); UI.cMsg=e||(c?`${CROLE[c.role].l} ${c.name} 영입 (${y}년)`:''); if(!e&&c){ UI.it=UI.it||{}; UI.it.coach=CROLE[c.role].g===2?'g2':'g1'; } save(); render(); },
   hy(v){UI.hy=+v;render();},
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
+  pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; renderSheet(); },
+  pEditSave(v){ const id=+v, p=G.players[id]; if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value);
+    if(e){ UI.pEditErr=e; renderSheet(); return; } UI.pEdit=null; UI.pEditErr=''; note('선수',`${p.name} · ${p.team!=null?jno(p)+'번':''} 저장했습니다.`); save(); render(); },
   blkOn(v){ const q=G.players[+v]; if(q&&hasNtc(q)){ toast(`${q.name}은(는) 트레이드 거부권이 있어 매물로 올릴 수 없습니다(${q.ntc}년까지).`); return; } blockAdd(+v,'any'); UI.sheet=null; save(); A.go('trade:block'); },
   blkOff(v){ blockRemove(+v); save(); render(); },
   blkAdd(){ const el=document.getElementById('blkAddSel'); if(!el||!el.value)return; blockAdd(+el.value,'any'); save(); render(); },

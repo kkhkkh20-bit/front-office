@@ -10,7 +10,7 @@ function syncMinSal(){ MIN_SAL=(typeof G!=='undefined'&&G&&G.year>=2027)?33:30; 
 const ROSTER_MAX=68, ROSTER_MIN=45; // KBO 소속선수 한도: 2025년까지 65명, 2026년 68명으로 확대
 /* 1군 엔트리(KBO 2026: 29명, 8월 25일부터 4명 확대, 말소 후 10일 뒤 재등록)와 육성선수 */
 const ENTRY_BASE=29, ENTRY_EXP=4, YS_MAX=15;
-const rosterN=tid=>playersOf(tid).filter(p=>!p.ys).length;
+const rosterN=tid=>ownedOf(tid).filter(p=>!p.ys).length; /* 국가대표 차출 선수도 구단 선수 수에 들어간다(군 복무는 빠짐) */
 const ysN=tid=>playersOf(tid).filter(p=>p.ys).length;
 const FA_SVC=8; // 고졸 8시즌, 대졸 7시즌 (2022시즌 종료 후 적용)
 const faSvc=p=>p&&p.college?7:FA_SVC;
@@ -142,13 +142,20 @@ function newPlayer(o){
 const playersOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!isAway(p));
 const awayOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&isAway(p));
 const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
-const payroll=tid=>sum(domestic(tid).map(p=>p.sal));
+/* 구단이 돈을 주는 선수(계약 기준): 국가대표 차출로 잠시 빠진 선수도 소속 선수로 연봉·샐러리캡·선수 수에 넣는다. 군 복무 중인 선수만 지급에서 뺀다.
+   playersOf·domestic은 '지금 경기에 뛸 수 있는 선수'라 계약·돈 계산에는 쓰지 않는다 */
+const ownedOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!milServing(p));
+const domPayOf=tid=>ownedOf(tid).filter(p=>!p.foreign);
+const forPayOf=tid=>ownedOf(tid).filter(p=>p.foreign);
+const payroll=tid=>sum(domPayOf(tid).map(p=>p.sal));
+/* 다음 시즌 연봉 한 가지 기준: 이미 합의한 다음 시즌 시작 다년계약(extNext) > 재계약 중 합의 연봉(newSal) > 지금 연봉 */
+function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; return p.newSal??p.sal; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
-function capPayAs(tid,inIds,outIds){ const out=new Set(outIds||[]); const L=domestic(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0));
+function capPayAs(tid,inIds,outIds){ const out=new Set(outIds||[]); const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0));
   for(const id of (inIds||[])){ const p=G.players[id]; if(p&&!p.foreign&&!isRookie(p))L.push(p.sal); } return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
-function capPayNext(tid){ const y=sponSeason(); const s=domestic(tid).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>(p.newSal??p.sal)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
-function capPay(tid){ const s=domestic(tid).filter(p=>!isRookie(p)).map(p=>p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
+function capPayNext(tid){ const y=sponSeason(); const s=domPayOf(tid).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
+function capPay(tid){ const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign);
 /* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 강백호 4년 100억, 박찬호 4년 80억) */
 function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*3.0:1617+(o-60)*95; return Math.round(Math.min(3000,v)*capOf(G.year)/15117); }

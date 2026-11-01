@@ -143,7 +143,7 @@ function rosterTable(groups,pit){
       case 'velo':return `<td class="num">${p.isP?veloOf(p):'-'}</td>`; case 'conf':return `<td class="small">${esc(rp.conf||'-')}</td>`;
       case 'inj':return `<td class="small">${p.injOut>0?`${p.injOut}일 · ${dmd(G.day+p.injOut)} 복귀`:'-'}</td>`; case 'ct':return `<td class="small">${esc(tContract(p))}</td>`; case 'org':return `<td class="small"><span class="org">${esc(originOf(p))}</span></td>`;
       default:if(k.startsWith('t_')){ const v=rTool(rp,k.slice(2)); return `<td>${v==null?'-':rchip(v)}</td>`; } return `<td>${rfmt(k,rstat(p,k),p)}${fut&&k===(pit?'era':'ops')?' <i class="f">F</i>':''}</td>`; } };
-    return `<tr class="click${fut?' fut':''}" data-a="player" data-v="${p.id}"><td><span class="pn">${avImg(p)}<span>${esc(p.name)} ${tags}</span></span></td>${keys.map(td).join('')}</tr>`; };
+    return `<tr class="click${fut?' fut':''}" data-a="player" data-v="${p.id}"><td><span class="pn">${avImg(p)}<span>${p.team!=null?`<i class="jn">${jno(p)}</i>`:''}${esc(p.name)} ${tags}</span></span></td>${keys.map(td).join('')}</tr>`; };
   const n=keys.length+1;
   const cfg=`<div class="row between rcp-bar">${UI._own?rviewBar(pit):'<span></span>'}<button class="tc-i${UI.rcolOpen?' on':''}" data-a="rcolCfg">열 설정</button></div>${UI.rcolOpen?rcolPanel(pit):''}`;
   if(!sk){ return cfg+`<div class="tw"><table class="sqt rt"><thead>${head}</thead><tbody>${groups.filter(g=>g[1].length).map(([g,arr,posf])=>`<tr class="grp"><td colspan="${n}">${g} · ${arr.length}명</td></tr>`+arr.map(p=>row(p,posf?posf(p):null)).join('')).join('')}</tbody></table></div>`; }

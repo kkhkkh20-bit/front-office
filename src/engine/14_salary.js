@@ -116,11 +116,13 @@ function offerExtension0(id,annual,years,acc,T){
 }
 function keepScore(p){ return ovr(p)+Math.max(0,p.pot-ovr(p))*(p.age<=22?.4:p.age<=24?.28:.1)+(p.faC?3:0)+(p.age>=26&&p.age<=33?1.2:0); }
 function trimCands(n){ return domestic(G.user).filter(p=>!p.ys&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id))).sort((a,b)=>keepScore(a)-keepScore(b)).slice(0,n); }
+/* 방출 정산금: 확정된 보장액의 50%. 지금 다년·FA 계약의 남은 해 + 이미 합의한 다음 시즌 시작 다년계약(extNext). 해마다 협상하는 연봉은 보장이 아니라 0 */
+function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,tot:0}; const cur=p.faC?Math.round(p.sal*Math.max(1,p.yrs||1)*.5):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*.5):0; return {cur,next,tot:cur+next}; }
 function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;
   if(p.foreign){ releaseForeign(id); return; }
-  const cost=p.faC?Math.round(p.sal*p.yrs*.5):0; payOut(G.user,cost,'rel');
-  addLog(`${p.name}을(를) 방출했습니다.${cost?` 남은 계약 정산금 ${money(cost)}.`:''} 다른 구단과 계약할 때까지 무적 선수로 남습니다.`);
+  const c=relCost(p), cost=c.tot; payOut(G.user,cost,'rel');
+  addLog(`${p.name}을(를) 방출했습니다.${cost?` 정산금 ${money(cost)}${c.next?`(다음 시즌 확정 계약 ${money(c.next)} 포함)`:''}.`:''} 다른 구단과 계약할 때까지 무적 선수로 남습니다.`);
   if(G.contract){ G.contract.ended=G.contract.ended.filter(x=>x!==id); }
   for(const k in G.lineup) if(G.lineup[k]===id)delete G.lineup[k];
   toFree(p,`${tname(G.user)}에서 방출`); /* 바로 은퇴하지 않고 무적 선수로 남는다 */

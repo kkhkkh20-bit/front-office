@@ -12,7 +12,7 @@ function trimCard(){
   const over=n-ROSTER_MAX; const ret=milReturns(14); const overAll=over+ret.length; const c=trimCands(overAll+4); const inSea=period()==='season';
   return `<section class="card hero"><div class="row between"><h2 class="sec">로스터 정리</h2><span class="pill bad">${n}/${ROSTER_MAX} · ${over>0?`${over}명 초과`:`복귀 후 ${overAll}명 초과`}</span></div>
     ${ret.length?`<p class="small warn"><b>군 복귀 예정 ${ret.length}명</b>: ${esc(milRetTxt(ret))}. 복귀까지 고려하면 <b>${overAll}자리</b>를 비워야 다시 막히지 않습니다.</p>`:''}<p class="small">${inSea?'지금':'개막 전까지'} ${ROSTER_MAX}명 이하로 줄여야 ${inSea?'진행할 수 있습니다':'합니다'}. 아래는 코치진이 꼽은 방출 후보(현재 기량과 성장 여지가 낮은 순)입니다. FA·다년계약 선수를 방출하면 남은 계약의 절반을 정산합니다. 연봉 1억 원 이하 선수는 방출 대신 육성선수(정식 로스터 밖, 최대 15명)로 돌릴 수 있습니다.</p>
-    <div class="tgrid">${c.map(p=>pcard(p,{foot:`${rosterFoot(p)}${!p.faC&&p.sal<=100&&ysN(G.user)<YS_MAX?`<button class="tc-i" data-a="ysNow" data-v="${p.id}">육성 전환</button>`:''}<button class="tc-i" data-a="relNow" data-v="${p.id}">방출${p.faC?` (정산 ${money(Math.round(p.sal*p.yrs*.5))})`:''}</button>`})).join('')}</div>
+    <div class="tgrid">${c.map(p=>pcard(p,{foot:`${rosterFoot(p)}${!p.faC&&p.sal<=100&&ysN(G.user)<YS_MAX?`<button class="tc-i" data-a="ysNow" data-v="${p.id}">육성 전환</button>`:''}<button class="tc-i" data-a="relNow" data-v="${p.id}">방출${relCost(p).tot?` (정산 ${money(relCost(p).tot)})`:''}</button>`})).join('')}</div>
     ${over>0?`<button class="btn danger" data-a="autoTrim">추천대로 ${over}명 방출</button>`:''}</section>`;
 }
 /* 다른 구단 요약: 리그 화면을 벗어나지 않고 본다 */
