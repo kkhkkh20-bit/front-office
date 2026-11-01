@@ -8,7 +8,7 @@ function fillRoster(tid,min){
 /* AI 구단 육성선수 한도: 사용자는 규정 한도(YS_MAX)까지 쓸 수 있지만 AI는 해마다 쌓이지 않게 8명 안팎만 둔다 */
 const AI_YS_MAX=8;
 function trimRoster(tid,max){
-  let ps=playersOf(tid).filter(p=>!p.foreign&&!p.ys); const out=[]; max=(max||ROSTER_MAX)-foreignOf(tid).length; const ysCap=tid===G.user?YS_MAX:AI_YS_MAX;
+  let ps=playersOf(tid).filter(p=>!p.foreign&&!p.ys); const out=[]; { const ow=ownedOf(tid).filter(p=>!p.ys); max=(max||ROSTER_MAX)-ow.filter(p=>p.foreign).length-ow.filter(p=>!p.foreign&&isAway(p)).length; } /* 정원은 구단 선수 수(국가대표 차출 선수 포함) 기준 */ const ysCap=tid===G.user?YS_MAX:AI_YS_MAX;
   const keep=p=>keepScore(p)+(team(tid).mode==='contend'?(p.age>=26?1:0):(p.age<=24?1:0));
   while(ps.length>max){ ps.sort((a,b)=>keep(a)-keep(b)); const p=ps.shift(); out.push(p); if(p.age<=24&&!p.faC&&p.pot-ovr(p)>=8&&ysN(tid)<ysCap){ p.ys=true; p.e1=false; p.sal=MIN_SAL; } else if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출`); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); }
   return out;
