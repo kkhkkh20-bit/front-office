@@ -75,7 +75,7 @@ function gmMemo(g){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!m
   H+=sec('우리 타선',bat);
   /* 마운드 */
   const pit=g.box[me].pit.map((q,i)=>({q,i,p:G.players[q.id]})).filter(o=>o.p); let mp='';
-  if(pit[0]){ const s=pit[0]; mp+=row(s.p,`선발 · ${pitToday(s.q)}`,l10Text(s.p)); }
+  if(pit[0]){ const s=pit[0]; mp+=row(s.p,`선발 · ${pitToday(s.q)}${campHitTxt(s.p,g)}`,l10Text(s.p)); }
   const pen=pit.slice(1); if(pen.length){ const o=sum(pen.map(x=>x.q.outs)), e=sum(pen.map(x=>x.q.er)), pc=sum(pen.map(x=>x.q.pc||0));
     const bad=pen.filter(x=>x.q.er>=2).sort((a,c)=>c.q.er-a.q.er)[0];
     mp+=`<p class="gm-n">불펜 ${pen.length}명 ${Math.floor(o/3)}${o%3?'.'+o%3:''}이닝 ${pc}구 ${e}자책</p>`; if(bad)mp+=row(bad.p,`흔들렸다 · ${pitToday(bad.q)}`,l10Text(bad.p)); }

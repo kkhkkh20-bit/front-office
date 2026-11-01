@@ -1,8 +1,9 @@
 /* ---------- 동작 ---------- */
+function roleLines(p){ const r=squadRole(p), k=keepWhy(p), o=oppSat(p); const L=[]; if(r)L.push(`<b>팀 내 역할</b> ${esc(r)}`); if(o)L.push(`<b>기회 만족</b> ${esc(o.lv)} · ${esc(o.why)}${o.gap?` <span class="muted">${esc(o.gap)}</span>`:''}`); if(k)L.push(`<b>보유 이유</b> ${esc(k)}`); return L.length?`<p class="small">${L.join('<br>')}</p>`:''; }
 function bondCard(p){
   initPers(p); const m=p.mor;
   return `<section class="card"><div class="row between"><span class="eyebrow">선수와의 관계</span><span class="pill ${moodClass(m)}">기분 ${moodLabel(m)}</span></div>
-  <p class="small">${esc(moraleWhy(p))}</p>
+  <p class="small">${esc(moraleWhy(p))}</p>${p.team===G.user?roleLines(p):''}
   <p class="small muted">코치진이 본 성향: ${esc(persText(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
   ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${p.talkWk===Math.floor(G.day/7)?'이번 주에는 이미 이야기를 나눴습니다':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}

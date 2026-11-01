@@ -82,7 +82,7 @@ function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=p
   const t=team(G.user); const me=rec.home===G.user?'h':'a'; const ms=me==='h'?rec.hs-rec.as:rec.as-rec.hs; const tr0=t.trust;
   const L=cwUlog(); const tags=cwTags(rec,me,ms,cwStreak(L.slice(0,-1)));
   const S={tid:G.user,id:'cw'+rec.day+':'+rec.home+':'+rec.away,day:rec.day,gk:{d:rec.day,h:rec.home,a:rec.away},who,why,ms,res:rec.res,tags,tr0,until:G.day+3,done:false,sugg:null,gift:null};
-  S.lines=cwRemarks(rec,me,who,ms,tags);
+  S.lines=cwRemarks(rec,me,who,ms,tags); try{ S.live=cwLive(rec,who); }catch(e){ S.live=[]; }
   /* 결과에 따른 신뢰 소폭 변화: 이기면 +1(5점 차 이상 +1.5), 5점 차 이상 지면 -1. 사장과 보면 절반이 구단주에게 전해진다 */
   const d0=ms>=5?1.5:ms>0?1:ms<=-5?-1:0; const dv=who==='ceo'?d0/2:d0; t.trust=clamp(Math.round((t.trust+dv)*10)/10,0,100); S.trD=Math.round((t.trust-tr0)*10)/10;
   /* 친밀도: 같이 보면 +4, 이기면 +2 더 */ const r0=cwRap(who); cwRapAdd(who,ms>0?6:4); S.rapD=cwRap(who)-r0;
@@ -92,6 +92,20 @@ function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=p
   G.cwS=S; const c=cwSt(); c.hist.push({d:S.day,y:G.year,why,who,res:rec.res,ms,trD:S.trD,rapD:S.rapD,gift:S.gift?S.gift.k:null,tags,ord:S.ord?S.ord.k:null}); if(c.hist.length>40)c.hist.splice(0,c.hist.length-40);
   const O=cwOrd(); mail(cwFrom(who),`${who==='ceo'?'사장':'구단주'}과 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} 홈경기를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>=0?'+':''}${S.trD} · ${who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD}(${cwRap(who)})${S.gift?`\n${S.gift.t}`:''}\n감독 관계 +1 · 1군 선수단 기분 +1(단장 직관)${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]});
   return true; }
+/* 함께 본 경기 중 반응: 리드를 잡거나 빼앗긴 순간, 동점, 우리 홈런, 한 번에 3점 이상 내준 순간. 최대 4번, 구단주 성향별 말투(사장은 수익 쪽) */
+const CW_LIVE={
+  flip:{win:'됐어, 뒤집었어! 이래야지.',profit:'이런 경기가 관중을 다시 부르지.',pr:'방금 장면은 내일 기사 첫머리감이오.'},
+  lead:{win:'앞서 나가는군. 이대로 끝냅시다.',profit:'분위기 좋소. 관중석이 들썩이는군.',pr:'중계 화면에 우리 응원석이 잡히겠군.'},
+  tie:{win:'따라붙었어. 아직 모르지.',profit:'원점이군. 끝까지 보고 가야겠소.',pr:'이런 접전이 화제가 되지.'},
+  lost:{win:'어허, 뒤집혔잖소. 마운드가 왜 이래요?',profit:'관중들 표정이 굳는군.',pr:'이 장면이 하이라이트로 계속 돌겠군.'},
+  hurt:{win:'한 번에 {r}점이라... 단장, 저건 설명 좀 들어야겠소.',profit:'{r}점을 한꺼번에 주다니. 표값 아깝다는 말 나오겠소.',pr:'{r}점이라니, 기자들이 가만있지 않겠군.'},
+  hr:{win:'{n}, 저 친구 힘 좋네.',profit:'{n} 홈런이면 유니폼 좀 팔리겠군.',pr:'{n}, 저런 선수가 구단 얼굴이 돼야 해.'}};
+function cwLive(g,who){ if(!g||!g.pbp)return []; const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!me)return []; const ow=who==='ceo'?'profit':(team(G.user).owner||'win'); let pa=0,ph=0; const L=[];
+  g.pbp.forEach((x,k)=>{ if(typeof x[1]!=='number'||x.length<9)return; const a=x[7],h=x[8]; const runs=(a-pa)+(h-ph); const d0=me==='h'?ph-pa:pa-ph, d1=me==='h'?h-a:a-h; const usBat=(x[0]%2===1)===(me==='h'); pa=a; ph=h; if(runs<=0)return;
+    let t=null; if(usBat&&d0<=0&&d1>0)t=d0<0?'flip':'lead'; else if(!usBat&&d0>=0&&d1<0)t='lost'; else if(usBat&&d0<0&&d1===0)t='tie'; else if(usBat&&x[3]==='HR')t='hr'; else if(!usBat&&runs>=3)t='hurt';
+    if(t)L.push({k,t,inn:Math.floor(x[0]/2)+1,top:x[0]%2===0,r:runs,n:(G.players[x[1]]||{}).name||''}); });
+  const pri={flip:0,lost:0,lead:1,tie:1,hurt:2,hr:3}; const pick=L.map((z,i)=>({z,i})).sort((a,b)=>pri[a.z.t]-pri[b.z.t]||a.i-b.i).slice(0,4).map(o=>o.z).sort((a,b)=>a.k-b.k);
+  return pick.map(z=>({k:z.k,inn:z.inn,top:z.top,t:z.t,l:(CW_LIVE[z.t][ow]||CW_LIVE[z.t].win).replace('{r}',z.r).replace('{n}',z.n)})); }
 /* 좋은 경기 표시: 끝내기, 대승, 연패 탈출, 같은 지역 라이벌전, 가을야구 확정권 */
 function cwTags(rec,me,ms,prevStreak){ const T=[]; if(ms<=0)return T; const op=team(me==='h'?rec.away:rec.home), mine=team(G.user);
   if(me==='h'){ const L=rec.line.h; const last=L.length-1; const before=rec.hs-(L[last]||0); if(last>=8&&(L[last]||0)>0&&before<=rec.as)T.push('walkoff'); }

@@ -14,6 +14,10 @@ function arsenal(p,stfV){ const id=p.id; const velo=veloSim(p); const sp=isSPr(p
 const _ak=new Map();
 function arsenalK(p){ const key=p.r.stf+':'+(p.role||'')+':'+(p.velo||0)+':'+((p.addP||[]).length); const c=_ak.get(p.id); if(c&&c.k===key)return c.v;
   const best=Math.max(...arsenal(p,p.r.stf).map(x=>x[1])); const v=clamp((best-p.r.stf-4)*.0016,-.012,.025); _ak.set(p.id,{k:key,v}); return v; }
+/* 구종 수: 타순이 세 바퀴째(타자 18명 상대 뒤)부터 타자가 공에 익숙해진다. 구종이 많을수록 덜하다(2구종 능력 -1.6 → 6구종 -0.4, 네 바퀴째는 2배) */
+const _pn=new Map();
+function pitchN(p){ const k=(p.addP||[]).length+':'+(p.role||''); const c=_pn.get(p.id); if(c&&c.k===k)return c.v; const v=arsenal(p,p.r.stf).length; _pn.set(p.id,{k,v}); return v; }
+function ttoPen(p,bf){ if(!(bf>=18))return 0; return (bf>=27?2:1)*clamp(1.6-.3*(pitchN(p)-2),.4,1.6); }
 /* 좌우 상대: 타자 쪽 절반, 투수 쪽 절반을 반영해 같은 손 대결이 불리해진다 */
 function platB(b,p){ const vsL=p.th==='좌'; const L=b.bt==='좌'?-4:b.bt==='양'?0:2, Rr=b.bt==='좌'?2:b.bt==='양'?0:-1; return vsL?L+trt(b,'vl',3):Rr+trt(b,'vr',3); }
 function platP(p,b){ const side=b.bt==='양'?(p.th==='좌'?'우':'좌'):b.bt; const Lp=p.th==='좌'?3:-2; return side==='좌'?Lp+trt(p,'vl',3):-Lp/2+trt(p,'vr',3); }

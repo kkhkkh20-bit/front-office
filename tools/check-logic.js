@@ -494,9 +494,9 @@ T('[캠프 결산] 첫 줄에 주목할 선수(최대 성장·예상 밖 부진�
   try{ campEnd(); }finally{ campGrowAll=_cg; } const m=G.mail.find(x=>/스프링캠프 결산/.test(x.subj)); ok(m,'결산 소식');
   ok(/주목할 선수/.test(m.body.split('\\n\\n').slice(0,2).join('\\n')),'첫머리에 주목할 선수: '+m.body.slice(0,200));
   ok(m.body.indexOf('최대 성장')>=0&&m.body.indexOf('최대 성장')<m.body.indexOf('능력이 오른 선수'),'최대 성장이 집계보다 앞'); ok(/예상 밖 부진: /.test(m.body),'예상 밖 부진에 폼 수정 실패 선수'); ok(/새 구종: /.test(m.body),'새 구종 습득 선수'); });
-T('[나이] 시작 세계에도 20대 초반 주전급이 있다(일찍 크는 선수): 새 세계 3개 평균 23세 이하 1군 평균 이상 선수와 상위 50명 안의 23세 이하',()=>{ let y=0,t50=0; const N=3; for(let r=0;r<N;r++){ DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
-  y+=P.filter(p=>p.age<=23&&ovr(p)>=53).length/N; t50+=[...P].sort((a,b)=>ovr(b)-ovr(a)).slice(0,50).filter(p=>p.age<=23).length/N; } /* 예전 세계(이 점검 시드): 5명 · 3.7명, 지금 8명 · 7명 */
-  ok(y>=6.5,'23세 이하 주전급 평균 '+y.toFixed(1)+'명'); ok(t50>=5,'상위 50명 중 23세 이하 평균 '+t50.toFixed(1)+'명'); });
+T('[나이] 시작 세계에도 20대 초반 주전급이 있다(일찍 크는 선수): 새 세계 8개 평균 23세 이하 1군 평균 이상 선수와 상위 50명 안의 23세 이하',()=>{ let y=0,t50=0; const N=8; for(let r=0;r<N;r++){ DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
+  y+=P.filter(p=>p.age<=23&&ovr(p)>=53).length/N; t50+=[...P].sort((a,b)=>ovr(b)-ovr(a)).slice(0,50).filter(p=>p.age<=23).length/N; } /* 새 세계 24개 측정: 평균 9.1명 · 7.0명(세계마다 3~18명으로 편차가 커서 8개 평균으로 본다). 예전 세계는 5명 · 3.7명 */
+  ok(y>=6.5,'23세 이하 주전급 평균 '+y.toFixed(1)+'명'); ok(t50>=4.5,'상위 50명 중 23세 이하 평균 '+t50.toFixed(1)+'명'); });
 T('[창단 드래프트] 장래성: 스카우트가 본 장래 최고 능력(추정)을 지명 전에 보여 주고, 젊을수록 오차가 크지만 실제 잠재력과 맞는 방향이다',()=>{ fresh(); DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
   ok(typeof fdPotEst==='function','장래성 추정 함수'); const E=P.map(p=>({p,e:fdPotEst(p)})); ok(E.every(x=>x.e!=null&&x.e>=fdSeenBy(G.user,x.p).sc-.01),'장래성은 현재 추정 이상');
   const cor=(L,f,g)=>{ const n=L.length, mx=L.reduce((a,x)=>a+f(x),0)/n, my=L.reduce((a,x)=>a+g(x),0)/n; let sxy=0,sx=0,sy=0; for(const x of L){ const dx=f(x)-mx, dy=g(x)-my; sxy+=dx*dy; sx+=dx*dx; sy+=dy*dy; } return sxy/Math.sqrt(sx*sy); };
@@ -525,6 +525,18 @@ T('[트레이드 위임] 유망한 제안만 보고: 유리한 제안은 남기�
   const them=domestic(tid).filter(p=>!p.prospect), us=domestic(G.user).filter(p=>!p.prospect).sort((a,b)=>ovr(b)-ovr(a)); const mk=(id,g,w)=>({id,from:tid,give:[g.id],get:[w.id],exp:G.day+3});
   const good=them.map(g=>mk(9001,g,us[us.length-1])).sort((a,b)=>troDiff(b)-troDiff(a))[0], bad=them.map(g=>mk(9002,g,us[0])).sort((a,b)=>troDiff(a)-troDiff(b))[0]; ok(troDiff(good)>=-1&&troDiff(bad)<-1,'준비 실패 '+troDiff(good)+' '+troDiff(bad)); G.offers=[good,bad];
   ok(autoTradeOffer(good)===false&&G.offers.some(o=>o.id===9001),'유리한 제안까지 거절'); ok(autoTradeOffer(bad)===true&&!G.offers.some(o=>o.id===9002),'불리한 제안이 남음'); autoSet('tro',false); });
+T('[첫걸음] 첫 승은 기록만 남기고 소식함에는 보내지 않는다',()=>{ fresh(); G.sea.rec[G.user].w=1; const n0=G.mail.length; achFirstDaily(); ok(achHas('fWin'),'첫 승 미달성'); ok(!G.mail.slice(0,G.mail.length-n0+1).some(m=>/첫 승/.test(m.subj)),'소식함으로 보냄'); });
+T('[동석 관람] 경기 중 반응: 리드를 빼앗긴 순간과 뒤집은 순간에 구단주 한마디',()=>{ fresh(); const me=G.user; const b=playersOf(me).find(p=>!p.isP), o=playersOf(G.teams.find(t=>t.id!==me).id).find(p=>!p.isP);
+  const g={home:me,away:-1,pbp:[[0,o.id,1,'HR',0,[0,0,0],2,2,0],[1,b.id,2,'HR',0,[0,0,0],3,2,3]]}; const L=cwLive(g,'own'); ok(L.some(z=>z.t==='lost')&&L.some(z=>z.t==='flip'),'반응 '+JSON.stringify(L)); ok(L.every(z=>z.l&&!/\{/.test(z.l)),'문구'); });
+T('[캠프 구종] 결정구가 된 새 구종으로 처음 삼진을 여럿 잡으면 캠프와 이어 기록',()=>{ fresh(); const p=playersOf(G.user).find(q=>q.isP&&!q.foreign); const k=addPitch(p,25); ok(k,'준비 실패'); const rec={home:G.user,away:-1,day:G.day,box:{h:{pit:[{id:p.id,n:p.name,outs:18,er:1,so:6}]},a:{pit:[]}}};
+  campPitchHit(rec); const e=p.addP.find(x=>x.k===k); ok(e.hit&&e.hit.so===6,'기록 '+JSON.stringify(e)); ok(JSON.stringify(p.story).includes(k),'선수 이야기'); });
+T('[역할] 팀 내 역할 문구: 주전·선발 순번·마무리·벤치 성향',()=>{ fresh(); const d=depth(G.user); ok(d.start.every(p=>/^주전/.test(squadRole(p))),'주전'); ok(squadRole(d.sp[0])==='1선발','1선발 '+squadRole(d.sp[0])); ok(squadRole(d.pen[0])==='마무리','마무리 '+squadRole(d.pen[0])); ok(d.bench.every(p=>/대타|대주자|수비 강화|백업/.test(squadRole(p))),'벤치 '+d.bench.map(squadRole)); });
+T('[역할] 출전 없는 선수의 보유 이유와 기분 vs 기회 만족',()=>{ fresh(); G.day=G.cal.open+30; G.sea.rec[G.user].w=15; G.sea.rec[G.user].l=15; const d=depth(G.user); const f=d.futB.filter(p=>!p.foreign&&!seasonTotal(p,G.year,'1군')); ok(f.length>=2,'준비 실패');
+  const a=f[0]; a.injOut=0; a.mil=null; a.age=30; a.pot=ovr(a); a.pos='1B'; a.sal=100; ok(/1군 자리/.test(keepWhy(a)),'보유 이유 '+keepWhy(a));
+  const b=f[1]; b.injOut=0; b.mil=null; b.age=21; b.pot=ovr(b)+12; ok(/2군에서.*키우/.test(keepWhy(b)),'육성 '+keepWhy(b));
+  a.sal=800; a.mor=80; const o=oppSat(a); ok(o&&o.lv==='불만'&&/기회가 계속 없으면/.test(o.gap),'기회 만족 '+JSON.stringify(o)); });
+T('[구종 수] 타순 세 바퀴째부터 맞기 시작하고, 구종이 많을수록 덜하다',()=>{ fresh(); const a=playersOf(G.user).filter(p=>p.isP).map(p=>({p,n:pitchN(p)})).sort((x,y)=>x.n-y.n); const lo=a[0], hi=a[a.length-1]; ok(hi.n>lo.n,'구종 수 차이 없음');
+  ok(ttoPen(lo.p,10)===0,'첫 바퀴 벌점'); ok(ttoPen(lo.p,20)>ttoPen(hi.p,20)&&ttoPen(hi.p,20)>0,'구종 수 반영'); ok(ttoPen(lo.p,28)>ttoPen(lo.p,20),'네 번째 바퀴'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
@@ -824,7 +836,7 @@ T('[데이터 연결] 트래킹·세부 능력이 그 지표가 말하는 경기
   const B=Object.values(G.players).filter(p=>!p.isP&&p.team!=null&&!p.prospect).slice(0,160), tb=B.map(p=>simBat(p,4000,0)), T=B.map(trackOf);
   const P=Object.values(G.players).filter(p=>p.isP&&p.team!=null&&!p.prospect).slice(0,160), tp=P.map(p=>simPit(p,6000,0)), TP=P.map(trackOf), bf=x=>x.outs+x.h+x.bb;
   const C=[['평균 타구속도↔홈런%',corr(T.map(x=>x.ev),tb.map(x=>x.hr/x.pa)),.75],['강한타구%↔홈런%',corr(T.map(x=>x.hh),tb.map(x=>x.hr/x.pa)),.75],['최고 타구속도↔홈런%',corr(T.map(x=>x.evmax),tb.map(x=>x.hr/x.pa)),.75],
-    ['타자 헛스윙%↔삼진%',corr(T.map(x=>x.whiff),tb.map(x=>x.so/x.pa)),.75],['추격 스윙%↔볼넷%(반대)',-corr(T.map(x=>x.chase),tb.map(x=>x.bb/x.pa)),.75],['삼진 회피↔삼진%(반대)',-corr(B.map(kAvoidV),tb.map(x=>x.so/x.pa)),.95],
+    ['타자 헛스윙%↔삼진%',corr(T.map(x=>x.whiff),tb.map(x=>x.so/x.pa)),.7 /* 세계 6개 측정 0.77~0.82, 세계에 따라 0.73까지 내려간다 */],['추격 스윙%↔볼넷%(반대)',-corr(T.map(x=>x.chase),tb.map(x=>x.bb/x.pa)),.75],['삼진 회피↔삼진%(반대)',-corr(B.map(kAvoidV),tb.map(x=>x.so/x.pa)),.95],
     ['투수 헛스윙%↔탈삼진%',corr(TP.map(x=>x.whiff),tp.map(x=>x.so/bf(x))),.8],['CSW%↔탈삼진%',corr(TP.map(x=>x.csw),tp.map(x=>x.so/bf(x))),.7],['땅볼%↔피홈런%(반대)',-corr(TP.map(x=>x.gb),tp.map(x=>x.hr/bf(x))),.3]];
   for(const [l,v,th] of C)ok(v>=th,l+' 상관 '+v.toFixed(2)+' (기준 '+th+')'); });
 T('[체력] 체력이 좋은 불펜은 연투를 더 버티고(피로가 덜 쌓이고 빨리 풀림), 부상 위험·시즌 누적 부하가 낮고, 선발은 시즌 이닝을 더 먹는다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user);

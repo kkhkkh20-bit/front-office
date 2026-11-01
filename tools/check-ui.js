@@ -285,6 +285,9 @@ const QUICK=process.env.QUICK==='1';
   /* 팀 빌딩: 지명 경로(직접·자동)와 그때 판단 */
   { where='영입 판단'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>q.acq&&q.acq.k==='fd'&&!q.acq.auto); if(!p)return null; return {lab:originLabel(p.acq), j:typeof acqJudge==='function'?acqJudge(p.acq):''}; });
     if(r&&(!/지명/.test(r.lab)||!/추정/.test(r.j)))add('영입 판단','데려온 길에 지명 경로·그때 추정이 없음: '+JSON.stringify(r)); }
+  /* 리더십 변화 이력: 주장 교체(사유·전임·기강 변화)가 리더십 화면에 쌓인다 */
+  { where='리더십 이력'; const r=await ev(()=>{ team(G.user).cap=null; electCaptain(G.user,'점검'); const h=leadCard(); return {hist:/리더십 변화/.test(h),cl:/기강 \d+→\d+/.test(h)}; });
+    if(!r.hist||!r.cl)add('리더십','리더십 화면에 주장 교체 이력·기강 변화가 없음: '+JSON.stringify(r)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

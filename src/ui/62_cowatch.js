@@ -13,6 +13,7 @@ function cwBubble(w,t,av){ return w==='sys'?`<div class="mt-sys">${esc(t)}</div>
 function cwSheet(){ const S=G.cwS; if(!S)return ''; const g=cwGame(S); const W=cwWho(S); const t=team(G.user);
   const F=[]; const res=S.res==='승'?'승리':S.res==='패'?'패배':'무승부';
   if(g&&g.pbp){ const K=cwKeys(g); if(K.length)F.push(`<div class="cw-keys"><span class="eyebrow">주요 장면</span>${K.map(k=>`<p class="${k.mine?'me':''}"><span class="ticker">${Math.floor(k.h/2)+1}회${k.h%2?'말':'초'}</span> ${esc(k.t)}</p>`).join('')}</div>`); }
+  for(const z of (S.live||[]))F.push(cwBubble('them',`(${z.inn}회${z.top?'초':'말'}) ${z.l}`,W.av)); /* 경기 중 반응 */
   for(const l of S.lines)F.push(cwBubble('them',l,W.av));
   F.push(cwBubble('sys',`구단주 신뢰 ${S.trD?(S.trD>0?'+':'')+S.trD:'변화 없음'} · ${S.who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD} · 감독 관계 +1 · 1군 선수단 기분 +1`));
   if(S.gift)F.push(`<div class="cw-gift"><b>구단주 선물</b><p>${esc(S.gift.t)}</p></div>`);

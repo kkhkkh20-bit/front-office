@@ -116,7 +116,7 @@ function simGame(day,hid,aid,ps){
           else if(r<.9){ o='OUT'; xb.ab++; outs++; xp.outs++; }
           else { o='OUT'; xb.ab++; outs++; xp.outs++; if(base[1]){ base[1]=base[0]; } base[0]=b; } } }
       if(o){ if(pbp.length<260)pbp.push([half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h]); if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+6)bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
-      o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0;
+      o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm+ttoPen(p,xp.bf)); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0;
       let chg=null, chgE=null, rbiN=0, sfN=0; const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
       if(o==='BB'){ xb.bb++; xp.bb++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;

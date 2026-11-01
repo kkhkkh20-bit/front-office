@@ -206,7 +206,8 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const st2={sa:x[7],sh:x[8],outs:outsA,bases:outsA>=3?[0,0,0]:after,half:x[0]};
   sndStop('chant',.9); if(runs){ cScorePop(x[0]%2?'h':'a'); cBurst(CHM,oc,12); if(o==='OUT'||o==='BB')sfx('cheer_hit',homeBat?.6:.25); }
   cBoard(g,st2,null); { const prev=c.wp; const s3=outsA>=3?{...st2,half:x[0]+1,outs:0,bases:[0,0,0]}:st2; const w=k===L.length-1?(g.hs>g.as?1:0):wpHome(s3); c.wp=cWp(g,s3,prev)??w; if(prev!=null&&Math.abs(w-prev)>=.18&&k<L.length-1){ cCap(`승부를 흔든 한 방 · 승리 확률 ${Math.round(Math.abs(w-prev)*100)}%p 이동`,'good'); } }
-  await cSleep(runs?1300:850); cCap(''); }
+  await cSleep(runs?1300:850); cCap('');
+  { const S=G.cwS; const z=UI.cwAfter&&S&&S.id===UI.cwAfter&&(S.live||[]).find(q=>q.k===k); if(z){ cCap(`${cwNm(S.who)} "${z.l}"`,'good'); await cSleep(1700); cCap(''); } } /* 함께 보는 구단주·사장 반응 */ }
 async function castLoop(){ if(CT.run)return; CT.run=true; const my=CT.tok;
   if(UI.cast&&UI.cast.play)sndLoop('amb','amb',.4,1.2);
   try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); siren(); if(g.hs>g.as)sfx('cheer_big',.8); if(g.res==='승'){ setTimeout(()=>organ(ORG_WIN,.18),900); } break; }

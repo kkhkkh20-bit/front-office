@@ -34,6 +34,11 @@ function campWho(tid,kind){ const ps=domestic(tid).filter(p=>!p.prospect); if(ki
 /* 캠프 결과 문장(우리 구단 메일) */
 function campEvLine(p,e){ if(e.t==='big')return `${p.name}: 한 단계 성장했습니다`; if(e.t==='pitch')return `${p.name}: ${e.k}을(를) 새로 장착${e.q>=3?' — 결정구로 쓸 만합니다':e.q<=-2?' — 아직 실전에서 쓰기는 어렵습니다':''}`; if(e.t==='form+')return `${p.name}: ${p.isP?'투구폼':'타격폼'} 수정 효과(${TOOLK[e.k]} +${e.d.toFixed(1)})`; return `${p.name}: ${p.isP?'투구폼':'타격폼'}을 고치다 흔들림(${TOOLK[e.k]} ${e.d.toFixed(1)})`; }
 function campGrowAll(kind,userFocus){ const mine=[], evs=[]; for(const t of G.teams){ const focus=t.id===ME()?userFocus:campFocusAi(t.id,kind); for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev){ mine.push(campEvLine(p,e)); evs.push({p,e}); } } } mine.ev=evs; return mine; } /* 문장 목록 + 결산 머리말용 사건(ev) */
+/* 캠프에서 익힌 구종이 결정구가 된 투수: 처음으로 삼진을 여럿 잡은 경기(선발 5개·구원 2개 이상)를 캠프와 이어 남긴다(구종별 결과는 경기에서 따로 세지 않는다) */
+function campPitchHit(rec){ if(!rec||!rec.box||G.unemp)return; const me=rec.home===G.user?'h':rec.away===G.user?'a':null; if(!me)return;
+  (rec.box[me].pit||[]).forEach((q,i)=>{ const p=G.players[q.id]; if(!p||!p.addP)return; const e=p.addP.find(x=>!x.hit&&x.y>=G.year-1); if(!e)return; const A=arsenal(p,p.r.stf); const best=A.reduce((a,b)=>b[1]>a[1]?b:a); if(best[0]!==e.k||(q.so||0)<(i===0?5:2))return;
+    e.hit={d:rec.day??G.day,so:q.so}; story(p,`${e.y} 캠프에서 익힌 ${e.k}을(를) 결정구로 ${q.so}탈삼진`,'grow'); try{ addLog(`${p.name}: 캠프에서 익힌 ${e.k}이(가) 실전에서 통했습니다(${q.so}탈삼진).`); }catch(err){} }); }
+function campHitTxt(p,g){ const e=(p&&p.addP||[]).find(x=>x.hit&&x.hit.d===g.day); return e?` · 캠프에서 익힌 ${e.k}이(가) 결정구로 통함`:''; }
 /* 캠프 결산 머리말: 최대 성장 · 예상 밖 부진 · 새 구종 한 명씩 */
 function campHeads(up,dn,evs){ const L=[]; const used=new Set(); const nm=p=>`${p.name}(${posLabel(p)}, ${p.age}세)`;
   const g=up[0]; if(g){ used.add(g.p.id); L.push(`최대 성장: ${nm(g.p)} ${g.ch.slice(0,2).map(([k,v])=>`${TOOLK[k]||k} ${v>0?'+':''}${v.toFixed(1)}`).join(', ')}`); }

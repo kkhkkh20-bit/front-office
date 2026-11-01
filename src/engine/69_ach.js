@@ -54,6 +54,11 @@ const ACH=[
   {id:'steal',c:'트레이드',n:'도둑 트레이드',d:'트레이드 뒤 받은 선수의 WAR이 준 선수보다 8 이상 많습니다.',r:{rep:2}},
   {id:'asWin',c:'협회',n:'킹메이커',d:'지지를 밝힌 후보가 협회장에 당선됩니다.',r:null},
   {id:'cmtWin',c:'협회',n:'내 안대로',d:'상한 표결에서 우리 구단이 던진 안이 최종안이 됩니다.',r:null},
+  {id:'fWin',c:'첫걸음',n:'첫 승',d:'단장으로 맡은 구단이 정규시즌 첫 승을 거둡니다.',r:null},
+  {id:'fDebut',c:'첫걸음',n:'첫 데뷔',d:'1군 기록이 없던 선수가 우리 유니폼을 입고 1군 경기에 나섭니다.',r:null},
+  {id:'fLead',c:'첫걸음',n:'첫 선두',d:'정규시즌 10경기 이상 치른 뒤 1위로 하루를 마칩니다.',r:null},
+  {id:'fTrade',c:'첫걸음',n:'첫 거래',d:'첫 트레이드를 성사시킵니다.',r:null},
+  {id:'fFac',c:'첫걸음',n:'첫 완공',d:'구단 시설 공사를 처음 마칩니다.',r:null},
 ];
 const ACH_BY=Object.fromEntries(ACH.map(a=>[a.id,a]));
 const achHas=id=>!!(G&&G.ach&&G.ach[id]);
@@ -64,9 +69,17 @@ function achUnlock(id,why){ const a=ACH_BY[id]; if(!a)return false; G.ach=G.ach|
   if(!newHere&&!newMeta)return false;
   if(newHere)G.ach[id]={y:G.year,d:G.day};
   if(newMeta){ M.u[id]={at:Date.now(),y:G.year,team:G.user!=null&&G.teams&&G.teams[G.user]?tshort(G.user):''}; achMetaSave(); }
+  if(newHere&&a.c==='첫걸음'){ try{ addLog(`도전과제 달성: ${a.n}${why?` (${why})`:''}`); }catch(e){} return true; } /* 작은 첫 성과는 소식함 대신 활동 기록에만 */
   if(newHere){ try{ mail('도전과제',`도전과제 달성: ${a.n}`,`${a.d}${why?`\n${why}`:''}\n\n보상: ${achRewardTxt(a.r)}${newMeta?'':'\n(다른 게임에서 이미 깬 과제라 보상은 그대로입니다.)'}\n구단 > 연대기 > 도전과제에서 볼 수 있습니다.`,{kind:'경력'}); }catch(e){} }
   return true; }
 
+/* 첫걸음: 작은 첫 성과(하루 처리에서 확인) */
+function achFirstDaily(){ if(!G||G.user==null||G.unemp)return; const U=G.user; const miss=id=>!achHas(id); const r=G.sea&&G.sea.rec&&G.sea.rec[U];
+  if(miss('fWin')&&r&&r.w>=1)achUnlock('fWin');
+  if(miss('fLead')&&r&&r.w+r.l>=10){ const st=standingsNow(); if(st[0]&&st[0].tid===U)achUnlock('fLead',`${r.w}승 ${r.l}패`); }
+  if(miss('fFac')&&G.fac&&G.fac.dn&&Object.keys(G.fac.dn).length)achUnlock('fFac');
+  if(miss('fTrade')&&(G.trades||[]).some(t=>t.gi))achUnlock('fTrade');
+  if(miss('fDebut')&&period()==='season'){ const p=playersOf(U).find(q=>{ const h=seasonTotalT(q,G.year,'1군',U); if(!h||!((h.pa||0)+(h.outs||0)))return false; return !q.hist.some(x=>x.lvl==='1군'&&x.y<G.year&&((x.pa||0)+(x.outs||0))>0); }); if(p)achUnlock('fDebut',`${p.name}, ${posLabel(p)}`); } }
 /* ctx.k: season(결산 직후), award(시상식), retNo(영구결번), switch(구단 이동), assoc(협회 결과) */
 function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT(); const U=G.user;
   if(ctx.k==='switch'){ if(G.unemp)T.fired=true; if(ctx.to!=null&&!T.teams.includes(ctx.to))T.teams.push(ctx.to); if(T.teams.length>=3)achUnlock('teams3'); if(T.fired||ctx.wasU)achUnlock('comeback'); return; }
