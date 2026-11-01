@@ -20,6 +20,19 @@ function stadBuilt(tid){ const S=stadOf(tid); return S.built||STAD_BUILT[tid]||2
 /* 구장 연식 효과: 30년 넘으면 관람 환경이 낡아 수요 -4%, 새 구장은 개장 3년간 +12%에서 서서히 줄어든다, 공사 중 -2% */
 function stadAgeF(tid){ const S=stadOf(tid); const age=G.year-stadBuilt(tid); let f=age>=30?.96:1; if(age<3)f*=1+.12*(3-age)/3+.04; const N=S.proj; if(N&&N.stage==='build')f*=.98; return f; }
 function stadName(tid){ const S=stadOf(tid); return S.name||STAD_NM[tid]||`${team(tid).city} 야구장`; }
+/* 구장 치수(m): 좌·중·우 담장 거리와 높이. 실제 한국 구장 규모를 참고한 가상 구장의 기본값(새 구장·공사로 바뀔 수 있음) */
+const STAD_DIM=[{lf:100,cf:125,rf:100,wl:2.6,wc:2.6,wr:2.6},{lf:100,cf:125,rf:100,wl:2.6,wc:2.6,wr:2.6},{lf:95,cf:120,rf:95,wl:2.4,wc:2.4,wr:2.4},{lf:98,cf:120,rf:98,wl:4,wc:4,wr:4},{lf:99,cf:122,rf:99,wl:4,wc:4,wr:4},
+  {lf:99,cf:122,rf:95,wl:3.2,wc:3.2,wr:8},{lf:99,cf:121,rf:99,wl:3,wc:3,wr:3},{lf:99.5,cf:122.5,rf:99.5,wl:3.6,wc:3.6,wr:3.6},{lf:95.8,cf:120.5,rf:95.8,wl:6,wc:6,wr:6},{lf:101,cf:123,rf:101,wl:3.3,wc:3.3,wr:3.3}];
+function stadDim(tid){ const S=stadOf(tid); return S.dim||STAD_DIM[tid]||STAD_DIM[0]; }
+/* 홈런 지수: 담장이 1m 가까우면 그 방향 홈런이 약 3.8% 늘고(27m에 e배), 1m 높으면 약 4% 준다. 당겨친 홈런(60%)·가운데(28%)·밀어친(12%) 비중으로 방향을 섞고,
+   리그 10개 구장 평균이 1이 되게 나눈다(리그 전체 홈런 수는 그대로, 구장 사이 차이만). 오른쪽 타석은 당기면 좌익, 왼쪽 타석은 우익 */
+const PK_DREF={lf:98.7,cf:122.1,rf:98.4}, PK_WREF={l:3.37,c:3.37,r:3.84};
+function parkSideF(D,s){ const d=s==='l'?D.lf:s==='c'?D.cf:D.rf, w=s==='l'?D.wl:s==='c'?D.wc:D.wr; return Math.exp(-(d-PK_DREF[s==='l'?'lf':s==='c'?'cf':'rf'])/27)*Math.exp(-(w-PK_WREF[s])/24); }
+function parkRaw(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; return .6*parkSideF(D,pl)+.28*parkSideF(D,'c')+.12*parkSideF(D,op); }
+let _pkN={k:null}; function parkNorm(){ const k=G.teams.map(t=>JSON.stringify(stadDim(t.id))).join('|'); if(_pkN.k===k)return _pkN.v; const v=G.teams.reduce((a,t)=>a+(parkRaw(t.id,'R')+parkRaw(t.id,'L'))/2,0)/G.teams.length; _pkN={k,v}; return v; }
+function parkHRM(tid,side){ if(tid==null||!G||!G.teams)return 1; return parkRaw(tid,side)/parkNorm(); }
+/* 홈런 방향: 기본 비중에 그 구장 방향별 홈런 쉬움을 곱해 고른다 */
+function parkHRDir(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; const w=[.6*parkSideF(D,pl),.28*parkSideF(D,'c'),.12*parkSideF(D,op)]; let x=R()*(w[0]+w[1]+w[2]); return x<w[0]?'pull':x<w[0]+w[1]?'mid':'oppo'; }
 function stadTurfM(tid){ return 1-(stadOf(tid).lv.turf-2)*.05; }
 function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;

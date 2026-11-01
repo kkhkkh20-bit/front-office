@@ -494,8 +494,8 @@ T('[캠프 결산] 첫 줄에 주목할 선수(최대 성장·예상 밖 부진�
   try{ campEnd(); }finally{ campGrowAll=_cg; } const m=G.mail.find(x=>/스프링캠프 결산/.test(x.subj)); ok(m,'결산 소식');
   ok(/주목할 선수/.test(m.body.split('\\n\\n').slice(0,2).join('\\n')),'첫머리에 주목할 선수: '+m.body.slice(0,200));
   ok(m.body.indexOf('최대 성장')>=0&&m.body.indexOf('최대 성장')<m.body.indexOf('능력이 오른 선수'),'최대 성장이 집계보다 앞'); ok(/예상 밖 부진: /.test(m.body),'예상 밖 부진에 폼 수정 실패 선수'); ok(/새 구종: /.test(m.body),'새 구종 습득 선수'); });
-T('[나이] 시작 세계에도 20대 초반 주전급이 있다(일찍 크는 선수): 새 세계 8개 평균 23세 이하 1군 평균 이상 선수와 상위 50명 안의 23세 이하',()=>{ let y=0,t50=0; const N=8; for(let r=0;r<N;r++){ DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
-  y+=P.filter(p=>p.age<=23&&ovr(p)>=53).length/N; t50+=[...P].sort((a,b)=>ovr(b)-ovr(a)).slice(0,50).filter(p=>p.age<=23).length/N; } /* 새 세계 24개 측정: 평균 9.1명 · 7.0명(세계마다 3~18명으로 편차가 커서 8개 평균으로 본다). 예전 세계는 5명 · 3.7명 */
+T('[나이] 시작 세계에도 20대 초반 주전급이 있다(일찍 크는 선수): 새 세계 12개 평균 23세 이하 1군 평균 이상 선수와 상위 50명 안의 23세 이하',()=>{ let y=0,t50=0; const N=12; for(let r=0;r<N;r++){ DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
+  y+=P.filter(p=>p.age<=23&&ovr(p)>=53).length/N; t50+=[...P].sort((a,b)=>ovr(b)-ovr(a)).slice(0,50).filter(p=>p.age<=23).length/N; } /* 새 세계 24개 측정: 평균 9.1명 · 7.0명(세계마다 3~18명으로 편차가 커서 12개 평균으로 본다. 8개일 때는 경기 엔진 난수 흐름만 바뀌어도 6.4로 떨어지는 세계가 있었다(24개 평균은 8.9 그대로)). 예전 세계는 5명 · 3.7명 */
   ok(y>=6.5,'23세 이하 주전급 평균 '+y.toFixed(1)+'명'); ok(t50>=4.5,'상위 50명 중 23세 이하 평균 '+t50.toFixed(1)+'명'); });
 T('[창단 드래프트] 장래성(3년 뒤 예상): 젊은 선수는 지금 추정보다 높고 30대 중반은 낮으며, 24세 이하는 실제 잠재력과 맞는 방향이다',()=>{ fresh(); DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
   ok(typeof fdPotEst==='function','장래성 추정 함수'); const E=P.map(p=>({p,e:fdPotEst(p),s:fdSeenBy(G.user,p).sc}));
@@ -632,6 +632,10 @@ T('[타구 모델] 인플레이 타구는 유형·방향이 먼저 정해지고 
   const run=v=>{ const d0=ss.r.def; ss.r.def=v; let h=0,n=0; globalThis.__seed(99); for(let i=0;i<6000;i++){ const o=bipResolve(b,p,.30,{d2:.2,d3:.02},{x2:1},fsA); if(LBIP&&LBIP.pos==='SS'){ n++; if(o!=='OUT')h++; } } ss.r.def=d0; return h/Math.max(1,n); };
   const lo=run(35), hi=run(80); ok(hi<lo-.03,'유격수 수비가 좋아도 유격수 방향 땅볼 안타가 줄지 않음: '+lo.toFixed(3)+' → '+hi.toFixed(3));
   simTo(()=>period()==='season'&&((G.sea.tl||[])[G.user]||[]).length>=10); const q=playersOf(G.user).find(x=>!x.isP&&x.spr&&x.spr.y===G.year); ok(q&&Object.keys(q.spr.z||{}).length>=3,'방향별 타구 기록 없음'); });
+T('[구장] 담장이 가깝고 낮은 구장은 홈런이 늘고, 멀고 높은 구장은 줄며(높은 담장은 2루타로), 리그 평균 구장은 1에 가깝다',()=>{ fresh(); ok(typeof parkHRM==='function'&&typeof stadDim==='function','함수 없음');
+  const ms=G.teams.map(t=>(parkHRM(t.id,'R')+parkHRM(t.id,'L'))/2); const avgM=ms.reduce((a,b)=>a+b,0)/ms.length; ok(Math.abs(avgM-1)<.03,'리그 평균 구장 지수가 1이 아님: '+avgM.toFixed(3));
+  const S=stadOf(G.teams[0].id); const keep=JSON.stringify(stadDim(G.teams[0].id)); S.dim={lf:94,cf:118,rf:94,wl:2,wc:2,wr:2}; const m1=parkHRM(G.teams[0].id,'R'); S.dim={lf:104,cf:127,rf:104,wl:5,wc:5,wr:5}; const m2=parkHRM(G.teams[0].id,'R'); S.dim=JSON.parse(keep); ok(m1>1.15&&m2<.85,'담장 거리·높이가 홈런에 반영되지 않음: '+m1.toFixed(2)+' / '+m2.toFixed(2));
+  simTo(()=>period()==='season'&&((G.sea.tl||[])[G.user]||[]).length>=8); const e=(G.sea.tl[G.user]||[])[0]; ok(e&&e.length>=8,'경기 기록에 홈런 수가 없음'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
@@ -846,7 +850,7 @@ T('[트레이드] 개막 전·시즌 중 올해 가치는 지금 능력 그대�
   const base=q=>ovr(q)+pvShift(q)+condOf(q)*.3; ok(Math.abs(projO(p,0)-base(p))<.01,'33세 올해 값 '+projO(p,0).toFixed(1)+' vs 지금 '+base(p).toFixed(1)); ok(Math.abs(projO(y,0)-base(y))<.01,'21세 올해 값을 미리 부풀림 '+projO(y,0).toFixed(1)+' vs '+base(y).toFixed(1)); ok(projO(p,2)<base(p),'2년 뒤 노화 반영 안 됨'); });
 T('[트레이드] 리빌딩이 아닌 AI 구단은 주전(라인업 9명·로테이션·필승조)을 훨씬 못한 선수 하나와 바꿔 주지 않는다(다른 자리에서 뛰는 주전 포함)',()=>{ fresh(); const ours=domestic(G.user).filter(p=>!p.foreign&&!(p.joinY>G.year)); let bad=[];
   for(const t of G.teams){ if(t.id===G.user)continue; const d=depth(t.id); const S=[...d.start,...d.sp,...d.pen.slice(0,4)].filter(q=>q&&!q.foreign&&!q.aiListed&&ovr(q)>=56&&(t.mode!=='rebuild'||q.age<=28));
-    for(const q of S)for(const p of ours){ const sv=x=>ovr(x)+pvShift(x)+seenDelta(t,x); if(sv(p)>sv(q)-8)continue; /* 포지션 가치와 그 단장이 기록으로 본 차이(seenDelta)까지 넣어 8점 넘게 못한 경우만(1루수 63과 유격수 53은 포지션 가치로 보면 비슷할 수 있다) */ let e; try{ e=evalTrade(t.id,[p.id],[q.id],0); }catch(x){ continue; } if(e.ok)bad.push(tshort(t.id)+' '+q.name+'('+Math.round(ovr(q))+','+q.age+')<-'+p.name+'('+Math.round(ovr(p))+','+p.age+')'); } }
+    for(const q of S)for(const p of ours){ if(t.mode==='rebuild'&&p.age<q.age)continue; /* 리빌딩 구단은 올해 값 60%만 받으면 더 어린 선수와 바꾼다(evalTrade 설계: 28세 고액 투수 ↔ 25세 저연봉 주전 야수). 리빌딩 구단은 같은 나이 이상인 선수와 바꿔 주는지만 본다 */ const sv=x=>ovr(x)+pvShift(x)+seenDelta(t,x); if(sv(p)>sv(q)-8)continue; /* 포지션 가치와 그 단장이 기록으로 본 차이(seenDelta)까지 넣어 8점 넘게 못한 경우만(1루수 63과 유격수 53은 포지션 가치로 보면 비슷할 수 있다) */ let e; try{ e=evalTrade(t.id,[p.id],[q.id],0); }catch(x){ continue; } if(e.ok)bad.push(tshort(t.id)+' '+q.name+'('+Math.round(ovr(q))+','+q.age+')<-'+p.name+'('+Math.round(ovr(p))+','+p.age+')'); } }
   ok(!bad.length,'주전을 싸게 내줌 '+bad.length+'건: '+bad.slice(0,3).join(', ')); });
 T('[트레이드] 한 시즌에 트레이드를 많이 할수록 다른 단장들도 값을 올린다(리그 전체 눈치)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const q=domestic(t.id).filter(x=>!x.foreign).sort((a,b)=>ovr(b)-ovr(a))[5]; const p=domestic(G.user).filter(x=>!x.foreign)[3];
   const n0=evalTrade(t.id,[p.id],[q.id],0).need; const o=G.teams.filter(x=>x.id!==G.user&&x.id!==t.id); for(let k=0;k<4;k++)G.trades.push({y:G.year,d:G.day,with:o[k].id,give:[],get:[]}); const n1=evalTrade(t.id,[p.id],[q.id],0).need; ok(n1>n0+.5,'트레이드 4건 뒤에도 요구치 그대로 '+n0.toFixed(2)+' -> '+n1.toFixed(2)); });
@@ -951,7 +955,8 @@ T('창단 드래프트: 지명 뒤 공개하는 실제 툴 등급은 스카우�
   const P=Object.values(G.players).filter(p=>p.fdPool); const out=[];
   for(const isP of [false,true]) for(const [k,l] of FD_TOOLS[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); if(A.length<20)continue; let dNew=0,dOld=0;
     for(const p of A){ const sg=fdScoutTools(p).L.find(t=>t.k===k).g; dNew+=FD_GL[sg]-FD_GL[fdToolTrue(p,k).g]; dOld+=FD_GL[sg]-FD_GL[FD_G(p.r[k])]; }
-    out.push(l+' 새 '+(dNew/A.length).toFixed(2)+' 옛 '+(dOld/A.length).toFixed(2)); ok(Math.abs(dNew/A.length)<=.8,l+': 스카우트와 실제 등급 평균 차이 '+(dNew/A.length).toFixed(2)); }
+    const SP=fdScoutProfile(), bk=SP?(SP[isP?'P':'B'].find(t=>t.k===k)||{b:0}).b/9:0; /* 알려 준 스카우트 버릇(등급 단위)은 일부러 넣은 차이라 빼고 본다(버릇이 맞는지는 아래에서 따로) */
+    out.push(l+' 새 '+(dNew/A.length).toFixed(2)+' 옛 '+(dOld/A.length).toFixed(2)+' 버릇 '+bk.toFixed(2)); ok(Math.abs(dNew/A.length-bk)<=.8,l+': 스카우트와 실제 등급 평균 차이 '+(dNew/A.length).toFixed(2)+'(버릇 '+bk.toFixed(2)+' 제외)'); }
   const pw=P.find(p=>!p.isP); const a=fdToolTrue(pw,'pow'); ok(a.v>=20&&a.v<=80&&FD_G(a.v)===a.g,'등급 계산');
   /* 스카우트 성향(지명 전에 공개): 알려 준 버릇이 실제로 후보 전체에서 스카우트 등급과 실제 등급의 평균 차이와 맞아야 한다 */
   const S=fdScoutProfile(); ok(S&&S.B.length===5&&S.P.length===3,'성향 없음'); for(const isP of [false,true]) for(const t of S[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); const m=A.reduce((a,p)=>a+fdScoutTools(p).L.find(x=>x.k===t.k).v-fdToolTrue(p,t.k).v,0)/A.length;

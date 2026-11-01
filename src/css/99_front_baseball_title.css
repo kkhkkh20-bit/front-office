@@ -30,3 +30,9 @@
 /* 로고 단독 구성: 부제와 슬로건 없이 메뉴와 간격 확보 */
 .fb-brand{margin-bottom:24px}
 @media(max-width:700px){.fb-brand{margin-bottom:40px}.fb-title-content>.ts-warn{margin-top:16px}}
+
+/* 구장 효과 */
+.pk-b{position:relative;display:inline-block;width:120px;height:16px;background:var(--line);border-radius:3px;vertical-align:middle;margin-right:6px}.pk-b em{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted)}.pk-b i{position:absolute;top:3px;bottom:3px;border-radius:2px}.pk-b i.up{background:var(--bad);opacity:.7}.pk-b i.dn{background:var(--acc);opacity:.7}.pk td,.pk th{white-space:nowrap;text-align:left}.pk td.num,.pk th:nth-child(2),.pk th:nth-child(3){text-align:right}.pk-v{display:flex;align-items:center;gap:8px}.pk-v b{font-size:13px;font-variant-numeric:tabular-nums;min-width:28px}.pk-v b.mu{font-size:11px;font-weight:400;color:var(--muted)}.pk-s{display:block;font-size:11px;color:var(--muted);margin-top:2px;font-style:normal}.pk .pk-b{width:110px;margin:0}
+/* 타구 분포도 */
+.spr{margin:4px 0 12px}.spr-g{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;align-items:center}@media (max-width:640px){.spr-g{grid-template-columns:1fr}}.spr-f{width:100%;max-width:340px;display:block;margin:4px auto}.spr-z td,.spr-z th{font-size:12px}.spr-w{fill:var(--acc);stroke:var(--panel);stroke-width:2}.spr-f text{fill:var(--ink);font-size:11px;font-weight:700}.spr-f text.s{font-size:9px;font-weight:400;fill:var(--muted)}.spr-l{fill:none;stroke:var(--muted);stroke-width:1}
+.spr-mix{display:flex;gap:2px;margin:4px 0}.spr-t{font-size:11px;padding:3px 6px;border-radius:3px;background:var(--line);white-space:nowrap;overflow:hidden}.spr-t b{font-weight:600}

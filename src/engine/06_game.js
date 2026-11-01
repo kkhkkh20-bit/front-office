@@ -72,10 +72,12 @@ function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k'
 function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
   const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)),TWP,QCP,QOF);
   const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
-  LBIP=null; const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hr){ LBIP=bipHR(b,p); return 'HR'; }
+  LBIP=null; const pm=parkHRM(PARK,bipSide(b,p)), hrA=hr*pm; /* 구장: 담장 거리·높이에 따른 홈런 지수 */ const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hrA){ LBIP=bipHR(b,p); return 'HR'; }
+  if(pm<1&&x<bb+k+hr){ const side=bipSide(b,p); LBIP={t:'FB',pos:bipPos('FB',parkHRDir(PARK,side),side),side,wall:true}; return '2B'; } /* 담장에 막힌 타구는 2루타 */
   return bipResolve(b,p,babip,qb,qp,fs); /* 인플레이: 타구 유형·방향 → 그 자리 야수 수비(46b_bip) */
 }
-function simGame(day,hid,aid,ps){
+let PARK=null; /* 지금 경기 구장(홈 팀) */
+function simGame(day,hid,aid,ps){ PARK=hid;
   const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
   const psx=ps&&typeof ps==='object'?ps:null;
   const score={h:0,a:0}, line={h:[],a:[]}, hits={h:[],a:[]}, ev=[], pbp=[];
@@ -205,7 +207,8 @@ function applyGame(day,hid,aid,g,ps){
   }
   if(!ps){ try{ featGame(day,g); }catch(e){} }
   if(!ps){ const r=G.sea.rec; if(g.score.h>g.score.a){r[hid].w++;r[aid].l++;} else if(g.score.a>g.score.h){r[aid].w++;r[hid].l++;} else {r[hid].t++;r[aid].t++;}
-    const tl=G.sea.tl||(G.sea.tl=G.teams.map(()=>[])); const sg=Math.sign(g.score.h-g.score.a); tl[hid].push([sg,g.score.h,g.score.a,1,aid,day]); tl[aid].push([-sg,g.score.a,g.score.h,0,hid,day]); }
+    const tl=G.sea.tl||(G.sea.tl=G.teams.map(()=>[])); const sg=Math.sign(g.score.h-g.score.a); const hrOf=k=>{ let n=0; for(const [id,x] of g.S[k].box)if(!g.S[k].pitchers.includes(id))n+=x.hr||0; return n; }; const hh=hrOf('h'), ha=hrOf('a');
+    tl[hid].push([sg,g.score.h,g.score.a,1,aid,day,hh,ha]); tl[aid].push([-sg,g.score.a,g.score.h,0,hid,day,ha,hh]); }
 }
 function injure(p,day,ctx){ ctx=ctx||{};
   const k=injPick(p,ctx); const I=INJ[k]; let days=ri(I.d[0],I.d[1]); days=Math.max(3,Math.round(days*(I.d[0]>=240?Math.sqrt(recMult(p)):recMult(p))));

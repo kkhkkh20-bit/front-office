@@ -377,6 +377,15 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .tcash{margin:8px 0;padding:8px 10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:6px}
 /* 패치 노트 */
 .pn{max-width:560px;max-height:82vh;overflow:auto}
+/* 업데이트 소식: PC에서는 넓게, 본문만 스크롤하고 확인 버튼은 아래 고정 */
+.rv.pn{width:min(880px,94vw);max-width:none;max-height:88vh;padding:0;gap:0;display:flex;flex-direction:column;overflow:hidden;animation:pnIn .22s ease}@keyframes pnIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pn-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 22px 10px;border-bottom:1px solid var(--line)}
+.pn-body{overflow:auto;padding:4px 22px 8px}.pn-foot{padding:12px 22px 16px;border-top:1px solid var(--line)}.pn-foot .btn{max-width:320px;margin:0 auto}
+.pn-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;cursor:default}details.pn-i>summary.pn-h{cursor:pointer;list-style:none}details.pn-i>summary.pn-h::before{content:'▸';margin-right:6px;color:var(--muted)}details.pn-i[open]>summary.pn-h::before{content:'▾'}
+.pn-t{font-size:16px;font-weight:800;color:var(--ink)}.pn-d{font-size:12px;color:var(--muted);white-space:nowrap}
+.pn-body .pn-i{padding:14px 0;margin:0;border-bottom:1px solid var(--line)}.pn-body .pn-i:last-child{border-bottom:0}
+.pn-body .pn-l{font-size:14.5px;line-height:1.7;gap:8px;max-width:76ch;margin-top:8px}.pn-l li::marker{color:var(--acc)}.pn-l b{color:var(--ink);font-weight:700}
+@media (max-width:600px){ .rv.pn{width:100%;max-height:90vh}.pn-top,.pn-body,.pn-foot{padding-left:14px;padding-right:14px}.pn-body .pn-l{font-size:14px} }
 .pn-i{margin:10px 0 4px}
 .pn-l{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:13.5px;line-height:1.5}
 .pn-card .pn-i+.pn-i{border-top:1px solid var(--line,rgba(255,255,255,.08));padding-top:10px}

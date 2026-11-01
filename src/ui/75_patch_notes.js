@@ -3,6 +3,19 @@
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01zj',d:'11월 1일',t:'창단 지명 카드에 장래성',items:[
+    '창단 드래프트에서 지명한 직후 카드에 장래성(3년 뒤 예상)을 넣었습니다. 스카우트 추정으로 3년 뒤 어떤 역할(주전·주전 후보·백업, 투수는 선발 로테이션·필승조 등)일지와 등급을 보여 주고, 어린 선수는 오차가 크다고 표시합니다. 기존 예상 역할은 \'올해 예상 역할\'로 이름을 바꿔 구분했습니다.'
+  ]},
+  {id:'2026-11-01zi',d:'11월 1일',t:'업데이트 소식 창 개선',items:[
+    'PC에서 업데이트 소식 창이 넓게(최대 880px) 열립니다. 제목줄(새 업데이트 수)과 확인 버튼은 고정되고 본문만 스크롤됩니다.',
+    '업데이트마다 제목·날짜·항목 수를 한 줄로 보여 주고, 항목 첫 문장을 굵게 표시합니다. 줄 간격과 글자 크기를 키우고 한 줄 길이를 제한했습니다.',
+    '새 업데이트가 4개 이상이면 최근 3개만 펼치고 나머지는 접어 둡니다(눌러서 펼침). 게임 설정 > 패치 노트도 같은 방식입니다.'
+  ]},
+  {id:'2026-11-01zh',d:'11월 1일',t:'경기 엔진: 구장 · 타구 분포도 · 구장 효과',items:[
+    '구장마다 좌·중·우 담장 거리와 높이가 생겼습니다(실제 한국 구장 규모를 참고한 가상 구장). 담장이 가깝고 낮을수록 홈런이 늘고, 높은 담장에 막힌 타구는 2루타가 됩니다. 오른쪽 타석은 좌익 쪽, 왼쪽 타석은 우익 쪽 담장의 영향을 더 받습니다. 리그 전체 홈런 수는 그대로이고 구장 사이 차이만 생깁니다.',
+    "리그 > 통계에 '구장 효과'를 넣었습니다. 평균 100을 기준으로 설정 홈런 지수(담장 치수로 계산, 우타·좌타 따로)와 관측 득점·홈런 지수(이번 시즌 홈 경기 vs 원정 경기)를 나눠 보여 줍니다.",
+    '선수 정보 > 기록에 타구 분포도(방향별 타구 비중과 안타 비율, 땅볼·라인드라이브·뜬공·팝플라이 비중)를 넣었습니다. 투수는 맞은 타구 유형을 봅니다.'
+  ]},
   {id:'2026-11-01zg',d:'11월 1일',t:'경기 엔진: 타구 모델',items:[
     '인플레이 타구마다 유형(땅볼·라인드라이브·뜬공·팝플라이)과 방향(당겨치기·가운데·밀어치기)을 먼저 정합니다. 타자 파워가 높을수록 뜬공·당겨치기, 컨택이 높을수록 라인드라이브, 땅볼형 투수일수록 땅볼이 많습니다.',
     '그 방향을 맡은 야수의 수비력이 안타·아웃을 가릅니다(예전에는 팀 수비 평균 하나로 계산). 유격수가 약하면 유격수 쪽 땅볼이 더 빠져나가고, 중견수가 좋으면 가운데 뜬공이 더 잡힙니다. 실책은 그 공을 받은 야수에게서, 병살은 땅볼에서, 희생플라이는 뜬공·라인드라이브에서 나옵니다.',
@@ -262,10 +275,13 @@ const PATCH_KEY='fronttime-patch-seen';
 function patchSeen(){ try{ return localStorage.getItem(PATCH_KEY)||''; }catch(e){ return ''; } }
 function patchMark(){ try{ localStorage.setItem(PATCH_KEY,PATCH[0].id); }catch(e){ UI.patchSeenMem=PATCH[0].id; } }
 function patchUnseen(){ const s=patchSeen()||UI.patchSeenMem||''; const i=PATCH.findIndex(x=>x.id===s); return i<0?PATCH.slice(0,2):PATCH.slice(0,i); }
-function patchBlock(x){ return `<div class="pn-i"><div class="row between"><b>${esc(x.t)}</b><span class="small muted">${esc(x.d)}</span></div><ul class="pn-l">${x.items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`; }
+/* 업데이트 한 건: 제목·날짜 머리줄, 항목은 문장 앞부분(첫 쉼표·마침표 전)을 굵게 해 훑어보기 쉽게. 오래된 것은 접어 둔다 */
+function pnItem(t){ const m=t.match(/^(.{6,60}?)(\.\s|:\s|,\s)/); return m?`<b>${esc(m[1])}</b>${esc(t.slice(m[1].length))}`:esc(t); }
+function patchBlock(x,fold){ const body=`<ul class="pn-l">${x.items.map(t=>`<li>${pnItem(t)}</li>`).join('')}</ul>`; const head=`<span class="pn-t">${esc(x.t)}</span><span class="pn-d">${esc(x.d)} · ${x.items.length}건</span>`;
+  return fold?`<details class="pn-i"><summary class="pn-h">${head}</summary>${body}</details>`:`<div class="pn-i"><div class="pn-h">${head}</div>${body}</div>`; }
 /* 게임 화면에서 한 번 띄우는 공지(자동화 점검에서는 UI.patchTest일 때만) */
 function patchPop(){ if(!G||UI.title||!PATCH.length)return ''; if(navigator.webdriver&&!UI.patchTest)return ''; if(UI.patchClosed)return ''; const L=patchUnseen(); if(!L.length)return '';
-  return `<div class="rv-w pn-w"><div class="rv pn"><div class="eyebrow">업데이트 소식</div>${L.map(patchBlock).join('')}<button class="btn primary block" data-a="patchOk">확인</button></div></div>`; }
+  return `<div class="rv-w pn-w"><div class="rv pn"><div class="pn-top"><span class="eyebrow">업데이트 소식</span><span class="small muted">새 업데이트 ${L.length}개 · 위에서부터 최신</span></div><div class="pn-body">${L.map((x,i)=>patchBlock(x,i>=3)).join('')}</div><div class="pn-foot"><button class="btn primary block" data-a="patchOk">확인</button></div></div></div>`; }
 /* 처음 화면·게임 설정용 카드 */
-function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map(patchBlock).join('')}</section>`; }
+function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map((x,i)=>patchBlock(x,all&&i>=3)).join('')}</section>`; }
 Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); }, patchShow(){ UI.patchClosed=false; try{ localStorage.removeItem(PATCH_KEY); }catch(e){ UI.patchSeenMem=''; } render(); } });

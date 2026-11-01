@@ -75,6 +75,19 @@ function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSer
   return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 ${W}타석</span>${chart(ob,.2,.5,v=>fmt3(v),'출루율(타석 기준)',lg.obp)}${chart(kp,0,40,v=>v.toFixed(0)+'%','삼진율(K%)',lg.k)}<p class="small muted">점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
 let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; so+=x.so||0; } }
   const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb)/pa:null,k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
+/* 타구 분포도: 방향(자리)별 타구 비중과 안타 비율, 유형(땅볼·라인드라이브·뜬공·팝플라이) 비중. 정규시즌 1군 기록 */
+const SPR_Z={LF:[-45,-15,1],CF:[-15,15,1],RF:[15,45,1],'3B':[-45,-22.5,0],SS:[-22.5,0,0],'2B':[0,22.5,0],'1B':[22.5,45,0]}; const SPR_TL={GB:'땅볼',LD:'라인드라이브',FB:'뜬공',PU:'팝플라이'};
+function sprayCard(p){ const S=UI.sprP&&p.sprP?p.sprP:p.spr; if(!S)return ''; const T=S.t||{}; const tot=Object.values(T).reduce((a,x)=>a+x[0],0); if(!tot)return '';
+  const mix=`<div class="spr-mix">${['GB','LD','FB','PU'].map(k=>{ const x=T[k]||[0,0]; const pc=Math.round(x[0]/tot*100); return `<span style="flex:${Math.max(pc,1)}" class="spr-t ${k}" title="${SPR_TL[k]} ${x[0]}개 · 안타 ${x[1]}"><b>${SPR_TL[k]}</b> ${pc}%</span>`; }).join('')}</div>`;
+  if(p.isP)return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 맞은 타구 유형 · ${tot}개</span>${p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>${mix}</div>`;
+  const Z=S.z||{}; const zt=Object.keys(SPR_Z).reduce((a,k)=>a+((Z[k]||[0])[0]),0)||1; const cx=170,cy=196; const pt=(r,a)=>[cx+r*Math.sin(a*Math.PI/180),cy-r*Math.cos(a*Math.PI/180)];
+  const wedge=(k)=>{ const [a0,a1,of]=SPR_Z[k]; const r0=of?104:22, r1=of?180:100; const z=Z[k]||[0,0,0,0]; const sh=z[0]/zt; const p1=pt(r0,a0),p2=pt(r1,a0),p3=pt(r1,a1),p4=pt(r0,a1); const op=(.12+sh/.35*.75).toFixed(2); const mid=pt((r0+r1)/2,(a0+a1)/2);
+    return `<g><path class="spr-w" d="M${p1} L${p2} A${r1} ${r1} 0 0 1 ${p3} L${p4} A${r0} ${r0} 0 0 0 ${p1} Z" style="fill-opacity:${op}"><title>${POSS[k]||k} 방향 타구 ${z[0]}개(${Math.round(sh*100)}%) · 안타 ${z[1]} · 장타 ${z[2]} · 홈런 ${z[3]}</title></path><text x="${mid[0].toFixed(1)}" y="${(mid[1]+4).toFixed(1)}" text-anchor="middle">${Math.round(sh*100)}%</text></g>`; };
+  const ZO=['LF','CF','RF','3B','SS','2B','1B']; const zr=k=>{ const z=Z[k]||[0,0,0,0]; return `<tr><td>${POSS[k]||k} 쪽</td><td class="num">${z[0]}</td><td class="num">${Math.round(z[0]/zt*100)}%</td><td class="num">${z[0]?Math.round(z[1]/z[0]*100)+'%':'-'}</td><td class="num">${z[2]}</td><td class="num">${z[3]}</td></tr>`; };
+  const tbl=`<table class="sqt spr-z"><thead><tr><th>방향</th><th>타구</th><th>비중</th><th>안타 비율</th><th>장타</th><th>홈런</th></tr></thead><tbody>${ZO.map(zr).join('')}</tbody></table>`;
+  return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 타구 분포 · 인플레이 타구와 홈런 ${tot}개</span>${p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>
+    <div class="spr-g"><svg class="spr-f" viewBox="0 0 340 206" role="img" aria-label="방향별 타구 분포">${Object.keys(SPR_Z).map(wedge).join('')}<path class="spr-l" d="M${pt(180,-45)} L${cx} ${cy} L${pt(180,45)}"></path></svg><div class="tw">${tbl}</div></div>${mix}
+    <p class="small muted">그림의 숫자는 그 방향 타구 비중(진할수록 많이 보냄)입니다. 안타 비율·장타·홈런은 옆 표에 있습니다. ${p.bt==='좌'?'좌타자라 당겨치면 1루·우익 쪽입니다.':p.bt==='양'?'양타자는 투수에 따라 타석이 바뀝니다.':'우타자라 당겨치면 3루·좌익 쪽입니다.'}</p></div>`; }
 function reportCard(p,noTools){
   const rp=scoutReport(p);
   if(hideOvr(p))return `<section class="card"><div class="row between"><h2 class="sec">스카우트 의견</h2><span class="small muted">${fdHideNow(p)?'우리 스카우트 추정':p.foreign&&p.team==null?`조사 단계 · ${fScout(p,rp).l}`:`${esc(rp.who)} · 정확도 ${rp.conf}`}</span></div>${p.foreign&&p.team==null?fsBox(p,rp):''}
@@ -200,7 +213,7 @@ function renderSheet0(){
    `:''}
    ${T==='dev'?devTab(p):''}
    ${T==='rec'?`
-   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
+   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`

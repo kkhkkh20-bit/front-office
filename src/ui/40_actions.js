@@ -221,7 +221,7 @@ const A={
   ysNow(v){ const r=toYS(+v); if(r)UI.trimMsg=r; save(); render(); },
   setPol(v){ const r=setPolicy(v); UI.polMsg=r.msg; save(); render(); },
   rcolCfg(){ UI.rcolOpen=!UI.rcolOpen; render(); },
-  cgSort(v){ UI.cgS=v; render(); }, splP(){ UI.splP=!UI.splP; renderSheet(); },
+  cgSort(v){ UI.cgS=v; render(); }, splP(){ UI.splP=!UI.splP; renderSheet(); }, sprP(){ UI.sprP=!UI.sprP; renderSheet(); },
   dsSet(v){ const [k,x]=v.split(':'); if(k==='G'){ UI.dsG=x; UI.dsAx=null; UI.dsMin=null; } else if(k==='Y')UI.dsY=x==='prev'?'prev':null; else if(k==='L')UI.dsLv=x; else if(k==='M')UI.dsMin=+x; render(); },
   pcmpTg(v){ const id=+v; UI.pcmp=UI.pcmp||[]; const i=UI.pcmp.indexOf(id); if(i>=0)UI.pcmp.splice(i,1); else { if(UI.pcmp.length>=3)UI.pcmp.shift(); UI.pcmp.push(id); } renderSheet(); },
   pcmpOpen(){ UI.sheet=null; UI.pcmpSh=true; renderSheet(); }, pcOpt(v){ const [k,x]=v.split(':'); if(k==='sea')UI.pcSea=x==='prev'?'prev':null; else UI.pcLvl=x; renderSheet(); },

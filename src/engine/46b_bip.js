@@ -24,7 +24,7 @@ function bipResolve(b,p,babip,qb,qp,fs){ const M=bipMix(b,p); let x=R(), t='PU';
   if(R()>=ph)return 'OUT';
   const hw=k=>M[k]*BIP_TF[k]; const E=(hw('GB')*BIP_XB.GB+hw('LD')*BIP_XB.LD+hw('FB')*BIP_XB.FB)/norm; const xm=(qp&&qp.x2)||1;
   const xbP=clamp(BIP_XB[t]*((qb.d2+qb.d3)*xm)/Math.max(.01,E),0,.92); if(R()<xbP){ const tr=qb.d3/Math.max(.001,qb.d2+qb.d3); return t!=='GB'&&R()<tr*(t==='FB'?1.55:1)?'3B':'2B'; } return '1B'; }
-function bipHR(b,p){ const side=bipSide(b,p); const x=R(); const d=x<.6?'pull':x<.88?'mid':'oppo'; return {t:'FB',pos:bipPos('FB',d,side),side,hr:true}; }
+function bipHR(b,p){ const side=bipSide(b,p); const d=PARK!=null?parkHRDir(PARK,side):(x=>x<.6?'pull':x<.88?'mid':'oppo')(R()); return {t:'FB',pos:bipPos('FB',d,side),side,hr:true}; }
 /* 방향별 타구 기록(정규시즌 1군): 타자 spr.z[자리]=[타구, 안타, 장타, 홈런], 유형 spr.t[유형]=[타구, 안타]. 투수는 맞은 타구 유형만 */
 function sprAdd(b,p,o,L){ if(!L)return; const y=G.year; const ini=x=>{ if(!x.spr||x.spr.y!==y){ if(x.spr&&x.spr.y===y-1)x.sprP=x.spr; x.spr={y,z:{},t:{}}; } return x.spr; };
   const hit=o!=='OUT', xb=o==='2B'||o==='3B'||o==='HR'; const S=ini(b); const z=S.z[L.pos]||(S.z[L.pos]=[0,0,0,0]); z[0]++; if(hit)z[1]++; if(xb)z[2]++; if(o==='HR')z[3]++;

@@ -1408,6 +1408,15 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .tcash{margin:8px 0;padding:8px 10px;border:1px dashed var(--line,#444);border-radius:8px;display:grid;gap:6px}
 /* 패치 노트 */
 .pn{max-width:560px;max-height:82vh;overflow:auto}
+/* 업데이트 소식: PC에서는 넓게, 본문만 스크롤하고 확인 버튼은 아래 고정 */
+.rv.pn{width:min(880px,94vw);max-width:none;max-height:88vh;padding:0;gap:0;display:flex;flex-direction:column;overflow:hidden;animation:pnIn .22s ease}@keyframes pnIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pn-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 22px 10px;border-bottom:1px solid var(--line)}
+.pn-body{overflow:auto;padding:4px 22px 8px}.pn-foot{padding:12px 22px 16px;border-top:1px solid var(--line)}.pn-foot .btn{max-width:320px;margin:0 auto}
+.pn-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;cursor:default}details.pn-i>summary.pn-h{cursor:pointer;list-style:none}details.pn-i>summary.pn-h::before{content:'▸';margin-right:6px;color:var(--muted)}details.pn-i[open]>summary.pn-h::before{content:'▾'}
+.pn-t{font-size:16px;font-weight:800;color:var(--ink)}.pn-d{font-size:12px;color:var(--muted);white-space:nowrap}
+.pn-body .pn-i{padding:14px 0;margin:0;border-bottom:1px solid var(--line)}.pn-body .pn-i:last-child{border-bottom:0}
+.pn-body .pn-l{font-size:14.5px;line-height:1.7;gap:8px;max-width:76ch;margin-top:8px}.pn-l li::marker{color:var(--acc)}.pn-l b{color:var(--ink);font-weight:700}
+@media (max-width:600px){ .rv.pn{width:100%;max-height:90vh}.pn-top,.pn-body,.pn-foot{padding-left:14px;padding-right:14px}.pn-body .pn-l{font-size:14px} }
 .pn-i{margin:10px 0 4px}
 .pn-l{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:13.5px;line-height:1.5}
 .pn-card .pn-i+.pn-i{border-top:1px solid var(--line,rgba(255,255,255,.08));padding-top:10px}
@@ -2158,7 +2167,7 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .fde-t.fz{border-style:dashed}.fde-t.fz b{opacity:.75}
 .fde-bx{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fde-bx>div{display:grid;gap:2px;justify-items:center;text-align:center;padding:10px 6px;border:1px solid var(--line);border-radius:10px;background:#0e1419;min-width:0}
-.fde-bx span{font-size:12px;color:var(--muted)}.fde-bx b{font-size:24px;line-height:1.15}.fde-bx b.fde-role{font-size:15px;line-height:1.3;word-break:keep-all}.fde-bx i{font-style:normal;font-size:11px;color:var(--muted)}
+.fde-bx span{font-size:12px;color:var(--muted)}.fde-bx b{font-size:24px;line-height:1.15}.fde-bx b.fde-role{font-size:15px;line-height:1.3;word-break:keep-all}.fde-bx i{font-style:normal;font-size:11px;color:var(--muted)}.fde-bx i b{font-size:12px;line-height:1.3}
 .rc.fde-g{min-width:22px}
 .fde-l{display:grid}
 .fde-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid var(--line)}
@@ -2395,6 +2404,12 @@ svg.campus.iso .cpn{font-size:9.5px}
 /* 로고 단독 구성: 부제와 슬로건 없이 메뉴와 간격 확보 */
 .fb-brand{margin-bottom:24px}
 @media(max-width:700px){.fb-brand{margin-bottom:40px}.fb-title-content>.ts-warn{margin-top:16px}}
+
+/* 구장 효과 */
+.pk-b{position:relative;display:inline-block;width:120px;height:16px;background:var(--line);border-radius:3px;vertical-align:middle;margin-right:6px}.pk-b em{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted)}.pk-b i{position:absolute;top:3px;bottom:3px;border-radius:2px}.pk-b i.up{background:var(--bad);opacity:.7}.pk-b i.dn{background:var(--acc);opacity:.7}.pk td,.pk th{white-space:nowrap;text-align:left}.pk td.num,.pk th:nth-child(2),.pk th:nth-child(3){text-align:right}.pk-v{display:flex;align-items:center;gap:8px}.pk-v b{font-size:13px;font-variant-numeric:tabular-nums;min-width:28px}.pk-v b.mu{font-size:11px;font-weight:400;color:var(--muted)}.pk-s{display:block;font-size:11px;color:var(--muted);margin-top:2px;font-style:normal}.pk .pk-b{width:110px;margin:0}
+/* 타구 분포도 */
+.spr{margin:4px 0 12px}.spr-g{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;align-items:center}@media (max-width:640px){.spr-g{grid-template-columns:1fr}}.spr-f{width:100%;max-width:340px;display:block;margin:4px auto}.spr-z td,.spr-z th{font-size:12px}.spr-w{fill:var(--acc);stroke:var(--panel);stroke-width:2}.spr-f text{fill:var(--ink);font-size:11px;font-weight:700}.spr-f text.s{font-size:9px;font-weight:400;fill:var(--muted)}.spr-l{fill:none;stroke:var(--muted);stroke-width:1}
+.spr-mix{display:flex;gap:2px;margin:4px 0}.spr-t{font-size:11px;padding:3px 6px;border-radius:3px;background:var(--line);white-space:nowrap;overflow:hidden}.spr-t b{font-weight:600}
 </style>
 </head>
 <body>
@@ -3007,10 +3022,12 @@ function shrinkQ(q,W,C,F){ const o=Object.assign({},q); for(const k of ['bb','k'
 function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, 평균만큼 뺀 값) */
   const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)),TWP,QCP,QOF);
   const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
-  LBIP=null; const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hr){ LBIP=bipHR(b,p); return 'HR'; }
+  LBIP=null; const pm=parkHRM(PARK,bipSide(b,p)), hrA=hr*pm; /* 구장: 담장 거리·높이에 따른 홈런 지수 */ const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hrA){ LBIP=bipHR(b,p); return 'HR'; }
+  if(pm<1&&x<bb+k+hr){ const side=bipSide(b,p); LBIP={t:'FB',pos:bipPos('FB',parkHRDir(PARK,side),side),side,wall:true}; return '2B'; } /* 담장에 막힌 타구는 2루타 */
   return bipResolve(b,p,babip,qb,qp,fs); /* 인플레이: 타구 유형·방향 → 그 자리 야수 수비(46b_bip) */
 }
-function simGame(day,hid,aid,ps){
+let PARK=null; /* 지금 경기 구장(홈 팀) */
+function simGame(day,hid,aid,ps){ PARK=hid;
   const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
   const psx=ps&&typeof ps==='object'?ps:null;
   const score={h:0,a:0}, line={h:[],a:[]}, hits={h:[],a:[]}, ev=[], pbp=[];
@@ -3140,7 +3157,8 @@ function applyGame(day,hid,aid,g,ps){
   }
   if(!ps){ try{ featGame(day,g); }catch(e){} }
   if(!ps){ const r=G.sea.rec; if(g.score.h>g.score.a){r[hid].w++;r[aid].l++;} else if(g.score.a>g.score.h){r[aid].w++;r[hid].l++;} else {r[hid].t++;r[aid].t++;}
-    const tl=G.sea.tl||(G.sea.tl=G.teams.map(()=>[])); const sg=Math.sign(g.score.h-g.score.a); tl[hid].push([sg,g.score.h,g.score.a,1,aid,day]); tl[aid].push([-sg,g.score.a,g.score.h,0,hid,day]); }
+    const tl=G.sea.tl||(G.sea.tl=G.teams.map(()=>[])); const sg=Math.sign(g.score.h-g.score.a); const hrOf=k=>{ let n=0; for(const [id,x] of g.S[k].box)if(!g.S[k].pitchers.includes(id))n+=x.hr||0; return n; }; const hh=hrOf('h'), ha=hrOf('a');
+    tl[hid].push([sg,g.score.h,g.score.a,1,aid,day,hh,ha]); tl[aid].push([-sg,g.score.a,g.score.h,0,hid,day,ha,hh]); }
 }
 function injure(p,day,ctx){ ctx=ctx||{};
   const k=injPick(p,ctx); const I=INJ[k]; let days=ri(I.d[0],I.d[1]); days=Math.max(3,Math.round(days*(I.d[0]>=240?Math.sqrt(recMult(p)):recMult(p))));
@@ -7137,6 +7155,19 @@ function stadBuilt(tid){ const S=stadOf(tid); return S.built||STAD_BUILT[tid]||2
 /* 구장 연식 효과: 30년 넘으면 관람 환경이 낡아 수요 -4%, 새 구장은 개장 3년간 +12%에서 서서히 줄어든다, 공사 중 -2% */
 function stadAgeF(tid){ const S=stadOf(tid); const age=G.year-stadBuilt(tid); let f=age>=30?.96:1; if(age<3)f*=1+.12*(3-age)/3+.04; const N=S.proj; if(N&&N.stage==='build')f*=.98; return f; }
 function stadName(tid){ const S=stadOf(tid); return S.name||STAD_NM[tid]||`${team(tid).city} 야구장`; }
+/* 구장 치수(m): 좌·중·우 담장 거리와 높이. 실제 한국 구장 규모를 참고한 가상 구장의 기본값(새 구장·공사로 바뀔 수 있음) */
+const STAD_DIM=[{lf:100,cf:125,rf:100,wl:2.6,wc:2.6,wr:2.6},{lf:100,cf:125,rf:100,wl:2.6,wc:2.6,wr:2.6},{lf:95,cf:120,rf:95,wl:2.4,wc:2.4,wr:2.4},{lf:98,cf:120,rf:98,wl:4,wc:4,wr:4},{lf:99,cf:122,rf:99,wl:4,wc:4,wr:4},
+  {lf:99,cf:122,rf:95,wl:3.2,wc:3.2,wr:8},{lf:99,cf:121,rf:99,wl:3,wc:3,wr:3},{lf:99.5,cf:122.5,rf:99.5,wl:3.6,wc:3.6,wr:3.6},{lf:95.8,cf:120.5,rf:95.8,wl:6,wc:6,wr:6},{lf:101,cf:123,rf:101,wl:3.3,wc:3.3,wr:3.3}];
+function stadDim(tid){ const S=stadOf(tid); return S.dim||STAD_DIM[tid]||STAD_DIM[0]; }
+/* 홈런 지수: 담장이 1m 가까우면 그 방향 홈런이 약 3.8% 늘고(27m에 e배), 1m 높으면 약 4% 준다. 당겨친 홈런(60%)·가운데(28%)·밀어친(12%) 비중으로 방향을 섞고,
+   리그 10개 구장 평균이 1이 되게 나눈다(리그 전체 홈런 수는 그대로, 구장 사이 차이만). 오른쪽 타석은 당기면 좌익, 왼쪽 타석은 우익 */
+const PK_DREF={lf:98.7,cf:122.1,rf:98.4}, PK_WREF={l:3.37,c:3.37,r:3.84};
+function parkSideF(D,s){ const d=s==='l'?D.lf:s==='c'?D.cf:D.rf, w=s==='l'?D.wl:s==='c'?D.wc:D.wr; return Math.exp(-(d-PK_DREF[s==='l'?'lf':s==='c'?'cf':'rf'])/27)*Math.exp(-(w-PK_WREF[s])/24); }
+function parkRaw(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; return .6*parkSideF(D,pl)+.28*parkSideF(D,'c')+.12*parkSideF(D,op); }
+let _pkN={k:null}; function parkNorm(){ const k=G.teams.map(t=>JSON.stringify(stadDim(t.id))).join('|'); if(_pkN.k===k)return _pkN.v; const v=G.teams.reduce((a,t)=>a+(parkRaw(t.id,'R')+parkRaw(t.id,'L'))/2,0)/G.teams.length; _pkN={k,v}; return v; }
+function parkHRM(tid,side){ if(tid==null||!G||!G.teams)return 1; return parkRaw(tid,side)/parkNorm(); }
+/* 홈런 방향: 기본 비중에 그 구장 방향별 홈런 쉬움을 곱해 고른다 */
+function parkHRDir(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; const w=[.6*parkSideF(D,pl),.28*parkSideF(D,'c'),.12*parkSideF(D,op)]; let x=R()*(w[0]+w[1]+w[2]); return x<w[0]?'pull':x<w[0]+w[1]?'mid':'oppo'; }
 function stadTurfM(tid){ return 1-(stadOf(tid).lv.turf-2)*.05; }
 function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;
@@ -7804,7 +7835,7 @@ function bipResolve(b,p,babip,qb,qp,fs){ const M=bipMix(b,p); let x=R(), t='PU';
   if(R()>=ph)return 'OUT';
   const hw=k=>M[k]*BIP_TF[k]; const E=(hw('GB')*BIP_XB.GB+hw('LD')*BIP_XB.LD+hw('FB')*BIP_XB.FB)/norm; const xm=(qp&&qp.x2)||1;
   const xbP=clamp(BIP_XB[t]*((qb.d2+qb.d3)*xm)/Math.max(.01,E),0,.92); if(R()<xbP){ const tr=qb.d3/Math.max(.001,qb.d2+qb.d3); return t!=='GB'&&R()<tr*(t==='FB'?1.55:1)?'3B':'2B'; } return '1B'; }
-function bipHR(b,p){ const side=bipSide(b,p); const x=R(); const d=x<.6?'pull':x<.88?'mid':'oppo'; return {t:'FB',pos:bipPos('FB',d,side),side,hr:true}; }
+function bipHR(b,p){ const side=bipSide(b,p); const d=PARK!=null?parkHRDir(PARK,side):(x=>x<.6?'pull':x<.88?'mid':'oppo')(R()); return {t:'FB',pos:bipPos('FB',d,side),side,hr:true}; }
 /* 방향별 타구 기록(정규시즌 1군): 타자 spr.z[자리]=[타구, 안타, 장타, 홈런], 유형 spr.t[유형]=[타구, 안타]. 투수는 맞은 타구 유형만 */
 function sprAdd(b,p,o,L){ if(!L)return; const y=G.year; const ini=x=>{ if(!x.spr||x.spr.y!==y){ if(x.spr&&x.spr.y===y-1)x.sprP=x.spr; x.spr={y,z:{},t:{}}; } return x.spr; };
   const hit=o!=='OUT', xb=o==='2B'||o==='3B'||o==='HR'; const S=ini(b); const z=S.z[L.pos]||(S.z[L.pos]=[0,0,0,0]); z[0]++; if(hit)z[1]++; if(xb)z[2]++; if(o==='HR')z[3]++;
@@ -11442,10 +11473,10 @@ const SUBS={
   club:[['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block'],gms:['gms','report']},staff:{train:['camp','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
-  league:{rec:['rec','feat'],stat:['tdata','dist']},club:{owner:['owner','rel'],fans:['fans','news','media'],chron:['build','chron','result','ob','log']}};
+  league:{rec:['rec','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','news','media'],chron:['build','chron','result','ob','log']}};
 const ALIAS={}; for(const t in MERGE){ ALIAS[t]={}; for(const v in MERGE[t])for(const k of MERGE[t][v])ALIAS[t][k]=v; } ALIAS.trade.offers='block';
 /* 합친 탭에서 부가 화면은 접어 둔다(제목만 보이고 누르면 펼침) */
-const MFOLD={'trade:find':'선수 찾기','trade:report':'트레이드 성적표','league:teams':'구단 둘러보기','league:feat':'진기록','league:dist':'리그 분포','league:tdata':'구단 지표','league:abroad':'해외파','club:rel':'관계도','club:ob':'OB·레전드','club:log':'구단 일지','club:result':'지난 시즌 결산','staff:mil':'병역','staff:coach':'코치진'};
+const MFOLD={'trade:find':'선수 찾기','trade:report':'트레이드 성적표','league:teams':'구단 둘러보기','league:feat':'진기록','league:dist':'리그 분포','league:tdata':'구단 지표','league:park':'구장 효과','league:abroad':'해외파','club:rel':'관계도','club:ob':'OB·레전드','club:log':'구단 일지','club:result':'지난 시즌 결산','staff:mil':'병역','staff:coach':'코치진'};
 /* 합쳐진 메뉴는 세로로 쌓지 않고 안쪽 탭으로 나눈다: 한 화면에 한 주제 */
 const MLBL={'staff:camp':'훈련장','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
 function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter(k=>H[k]); if(!ks.length)return H[SUBS[tab][0][0]]?H[SUBS[tab][0][0]]():'';
@@ -14814,7 +14845,7 @@ function playerRow(p,showTeam){
 function lsegFix(s){ if(s==='board'||!s)return 'stand'; if(s==='sched'){ UI.it=UI.it||{}; UI.it.sres='cal'; return 'score'; } if(s==='games')return 'score'; if(s==='lead')return 'rec'; return s; }
 function leagueView(){ UI.lseg=lsegFix(UI.lseg); UI.lseg=ALIAS.league[UI.lseg]||UI.lseg; if(!SUBS.league.some(x=>x[0]===UI.lseg))UI.lseg='stand';
   const s=UI.lseg;
-  return subTabs('league')+mergedBody('league',s,{feat:featView,abroad:abroadView,hist:histView,stand:standView,score:scoreHub,wire:wireView,teams:teamsView,rec:recView,dist:distView,tdata:teamDataView,assoc:assocView,nt:ntView});
+  return subTabs('league')+mergedBody('league',s,{feat:featView,abroad:abroadView,hist:histView,stand:standView,score:scoreHub,wire:wireView,teams:teamsView,rec:recView,dist:distView,tdata:teamDataView,park:parkView,assoc:assocView,nt:ntView});
 }
 /* 리그 분포(FM식 산점도): 같은 시즌·같은 군 기록으로 두 지표를 함께. 리그 선수는 회색, 우리 선수는 강조와 이름. 기록에 있는 지표만 쓰고 숨은 능력은 쓰지 않는다 */
 const DS_AX={B:[['obp_slg','출루율 × 장타율'],['bb_k','볼넷% × 삼진%'],['sal_war','연봉 × WAR']],P:[['bb9_k9','BB/9 × K/9'],['era_whip','ERA × WHIP'],['sal_war','연봉 × WAR']]};
@@ -14866,6 +14897,13 @@ function teamDataView(){ const T=G.teams.map(t=>({t,s:teamRuns(t.id)})); const g
     <div class="row between" style="margin-top:10px"><span class="eyebrow">경기 흐름</span><select data-a="tdT" aria-label="구단">${G.teams.map(t=>`<option value="${t.id}" ${t.id===tid?'selected':''}>${esc(tshort(t.id))}</option>`).join('')}</select></div>
     <p class="small">경기별 득실차 <span class="ds-k"><i class="me"></i>승</span><span class="ds-k"><i class="lsq"></i>패</span></p><div class="ds-w">${bars}</div><p class="small">최근 10경기 승률(점선 .500)</p><div class="ds-w">${line}</div>
     <p class="small muted">정규시즌 경기만 셉니다. 막대에 마우스를 올리면 그 경기 상대와 점수가 보입니다.</p>`); }
+/* 구장 효과(Savant식 평균 100): 설정(담장 치수로 계산한 홈런 지수)과 관측(이번 시즌 홈 경기 vs 원정 경기의 경기당 득점·홈런)을 나눠 보여 준다 */
+function parkView(){ const L=G.teams.map(t=>{ const D=stadDim(t.id); const tl=((G.sea&&G.sea.tl)||[])[t.id]||[]; const H=tl.filter(x=>x[3]), A=tl.filter(x=>!x[3]); const pg=(a,f)=>a.length?a.reduce((s,x)=>s+f(x),0)/a.length:null;
+    const rH=pg(H,x=>x[1]+x[2]), rA=pg(A,x=>x[1]+x[2]); const hH=pg(H.filter(x=>x.length>=8),x=>x[6]+x[7]), hA=pg(A.filter(x=>x.length>=8),x=>x[6]+x[7]);
+    return {t,D,set:Math.round((parkHRM(t.id,'R')+parkHRM(t.id,'L'))/2*100),setR:Math.round(parkHRM(t.id,'R')*100),setL:Math.round(parkHRM(t.id,'L')*100),nH:H.length,nA:A.length,run:rH&&rA?Math.round(rH/rA*100):null,hr:hH&&hA?Math.round(hH/hA*100):null}; }).sort((a,b)=>b.set-a.set);
+  const bar=(v,sub)=>{ const s=sub?`<span class="pk-s">${sub}</span>`:''; if(v==null)return `<span class="pk-v"><span class="pk-b"><em></em></span><b class="mu">경기 없음</b></span>${s}`; const d=clamp(v-100,-40,40); return `<span class="pk-v"><span class="pk-b"><i class="${d>=0?'up':'dn'}" style="${d>=0?'left:50%':`left:${50+d/80*100}%`};width:${Math.abs(d)/80*100}%"></i><em></em></span><b>${v}</b></span>${s}`; };
+  return csec('구장 효과',`<div class="tw"><table class="sqt pk"><thead><tr><th>구장</th><th>좌·중·우(m)</th><th>담장 높이(m)</th><th>설정 홈런 지수</th><th>관측 득점 지수</th><th>관측 홈런 지수</th></tr></thead><tbody>${L.map(x=>`<tr class="${x.t.id===G.user?'me':''}"><td>${badge(x.t.id,16)} ${esc(stadName(x.t.id))}</td><td class="num">${x.D.lf}·${x.D.cf}·${x.D.rf}</td><td class="num">${x.D.wl===x.D.wr&&x.D.wl===x.D.wc?x.D.wl:`${x.D.wl}·${x.D.wc}·${x.D.wr}`}</td><td>${bar(x.set,`우타 ${x.setR} · 좌타 ${x.setL}`)}</td><td>${bar(x.run,`홈 ${x.nH} · 원정 ${x.nA}경기`)}</td><td>${bar(x.hr)}</td></tr>`).join('')}</tbody></table></div>
+    <p class="small muted">평균 100. 설정 홈런 지수는 담장 거리·높이로 엔진이 쓰는 값입니다(오른쪽 타석은 당기면 좌익, 왼쪽 타석은 우익). 관측 지수는 이번 시즌 그 구단의 홈 경기와 원정 경기의 경기당 득점·홈런(양 팀 합) 비율이라, 타자 구성·상대·표본의 영향이 섞입니다. 경기가 적을 때는 크게 흔들립니다. 구장을 고친 해는 그 전후를 나눠 보세요.</p>`); }
 function teamsView(){
   const sel=UI.leagueTeam;
   const list=`<section class="card"><div class="row between"><h2 class="sec">10개 구단</h2><span class="small muted">구단을 누르면 선수단을 봅니다</span></div><div class="tgrid">${[...G.teams].sort((a,b)=>(a.id===G.user?-1:b.id===G.user?1:0)).map(teamCard).join('')}</div></section>`;
@@ -15002,6 +15040,19 @@ function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSer
   return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 ${W}타석</span>${chart(ob,.2,.5,v=>fmt3(v),'출루율(타석 기준)',lg.obp)}${chart(kp,0,40,v=>v.toFixed(0)+'%','삼진율(K%)',lg.k)}<p class="small muted">점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
 let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; so+=x.so||0; } }
   const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb)/pa:null,k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
+/* 타구 분포도: 방향(자리)별 타구 비중과 안타 비율, 유형(땅볼·라인드라이브·뜬공·팝플라이) 비중. 정규시즌 1군 기록 */
+const SPR_Z={LF:[-45,-15,1],CF:[-15,15,1],RF:[15,45,1],'3B':[-45,-22.5,0],SS:[-22.5,0,0],'2B':[0,22.5,0],'1B':[22.5,45,0]}; const SPR_TL={GB:'땅볼',LD:'라인드라이브',FB:'뜬공',PU:'팝플라이'};
+function sprayCard(p){ const S=UI.sprP&&p.sprP?p.sprP:p.spr; if(!S)return ''; const T=S.t||{}; const tot=Object.values(T).reduce((a,x)=>a+x[0],0); if(!tot)return '';
+  const mix=`<div class="spr-mix">${['GB','LD','FB','PU'].map(k=>{ const x=T[k]||[0,0]; const pc=Math.round(x[0]/tot*100); return `<span style="flex:${Math.max(pc,1)}" class="spr-t ${k}" title="${SPR_TL[k]} ${x[0]}개 · 안타 ${x[1]}"><b>${SPR_TL[k]}</b> ${pc}%</span>`; }).join('')}</div>`;
+  if(p.isP)return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 맞은 타구 유형 · ${tot}개</span>${p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>${mix}</div>`;
+  const Z=S.z||{}; const zt=Object.keys(SPR_Z).reduce((a,k)=>a+((Z[k]||[0])[0]),0)||1; const cx=170,cy=196; const pt=(r,a)=>[cx+r*Math.sin(a*Math.PI/180),cy-r*Math.cos(a*Math.PI/180)];
+  const wedge=(k)=>{ const [a0,a1,of]=SPR_Z[k]; const r0=of?104:22, r1=of?180:100; const z=Z[k]||[0,0,0,0]; const sh=z[0]/zt; const p1=pt(r0,a0),p2=pt(r1,a0),p3=pt(r1,a1),p4=pt(r0,a1); const op=(.12+sh/.35*.75).toFixed(2); const mid=pt((r0+r1)/2,(a0+a1)/2);
+    return `<g><path class="spr-w" d="M${p1} L${p2} A${r1} ${r1} 0 0 1 ${p3} L${p4} A${r0} ${r0} 0 0 0 ${p1} Z" style="fill-opacity:${op}"><title>${POSS[k]||k} 방향 타구 ${z[0]}개(${Math.round(sh*100)}%) · 안타 ${z[1]} · 장타 ${z[2]} · 홈런 ${z[3]}</title></path><text x="${mid[0].toFixed(1)}" y="${(mid[1]+4).toFixed(1)}" text-anchor="middle">${Math.round(sh*100)}%</text></g>`; };
+  const ZO=['LF','CF','RF','3B','SS','2B','1B']; const zr=k=>{ const z=Z[k]||[0,0,0,0]; return `<tr><td>${POSS[k]||k} 쪽</td><td class="num">${z[0]}</td><td class="num">${Math.round(z[0]/zt*100)}%</td><td class="num">${z[0]?Math.round(z[1]/z[0]*100)+'%':'-'}</td><td class="num">${z[2]}</td><td class="num">${z[3]}</td></tr>`; };
+  const tbl=`<table class="sqt spr-z"><thead><tr><th>방향</th><th>타구</th><th>비중</th><th>안타 비율</th><th>장타</th><th>홈런</th></tr></thead><tbody>${ZO.map(zr).join('')}</tbody></table>`;
+  return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 타구 분포 · 인플레이 타구와 홈런 ${tot}개</span>${p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>
+    <div class="spr-g"><svg class="spr-f" viewBox="0 0 340 206" role="img" aria-label="방향별 타구 분포">${Object.keys(SPR_Z).map(wedge).join('')}<path class="spr-l" d="M${pt(180,-45)} L${cx} ${cy} L${pt(180,45)}"></path></svg><div class="tw">${tbl}</div></div>${mix}
+    <p class="small muted">그림의 숫자는 그 방향 타구 비중(진할수록 많이 보냄)입니다. 안타 비율·장타·홈런은 옆 표에 있습니다. ${p.bt==='좌'?'좌타자라 당겨치면 1루·우익 쪽입니다.':p.bt==='양'?'양타자는 투수에 따라 타석이 바뀝니다.':'우타자라 당겨치면 3루·좌익 쪽입니다.'}</p></div>`; }
 function reportCard(p,noTools){
   const rp=scoutReport(p);
   if(hideOvr(p))return `<section class="card"><div class="row between"><h2 class="sec">스카우트 의견</h2><span class="small muted">${fdHideNow(p)?'우리 스카우트 추정':p.foreign&&p.team==null?`조사 단계 · ${fScout(p,rp).l}`:`${esc(rp.who)} · 정확도 ${rp.conf}`}</span></div>${p.foreign&&p.team==null?fsBox(p,rp):''}
@@ -15127,7 +15178,7 @@ function renderSheet0(){
    `:''}
    ${T==='dev'?devTab(p):''}
    ${T==='rec'?`
-   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
+   ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
@@ -15450,7 +15501,7 @@ const A={
   ysNow(v){ const r=toYS(+v); if(r)UI.trimMsg=r; save(); render(); },
   setPol(v){ const r=setPolicy(v); UI.polMsg=r.msg; save(); render(); },
   rcolCfg(){ UI.rcolOpen=!UI.rcolOpen; render(); },
-  cgSort(v){ UI.cgS=v; render(); }, splP(){ UI.splP=!UI.splP; renderSheet(); },
+  cgSort(v){ UI.cgS=v; render(); }, splP(){ UI.splP=!UI.splP; renderSheet(); }, sprP(){ UI.sprP=!UI.sprP; renderSheet(); },
   dsSet(v){ const [k,x]=v.split(':'); if(k==='G'){ UI.dsG=x; UI.dsAx=null; UI.dsMin=null; } else if(k==='Y')UI.dsY=x==='prev'?'prev':null; else if(k==='L')UI.dsLv=x; else if(k==='M')UI.dsMin=+x; render(); },
   pcmpTg(v){ const id=+v; UI.pcmp=UI.pcmp||[]; const i=UI.pcmp.indexOf(id); if(i>=0)UI.pcmp.splice(i,1); else { if(UI.pcmp.length>=3)UI.pcmp.shift(); UI.pcmp.push(id); } renderSheet(); },
   pcmpOpen(){ UI.sheet=null; UI.pcmpSh=true; renderSheet(); }, pcOpt(v){ const [k,x]=v.split(':'); if(k==='sea')UI.pcSea=x==='prev'?'prev':null; else UI.pcLvl=x; renderSheet(); },
@@ -16312,7 +16363,7 @@ function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; i
     <div class="row" style="flex-wrap:nowrap">${avImg(p,true)}<div><h2 class="sec" style="font-size:22px">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.fdFrom!=null?` · 전 ${esc(tshort(p.fdFrom))}`:''} · 연봉 ${money(p.sal||0)}</p></div></div>
     ${p.team===G.user?`<div><div class="eyebrow">실제 능력 · 코치진 평가(지명 후 공개)</div><div class="fde-ts">${p.isP?`<span class="fde-t"><i>구속</i><b>${veloOf(p)}</b><em>km</em></span>`:''}${FD_TOOLS[p.isP?'P':'B'].map(([k,l])=>{ const v=Math.round(p.r[k]||0); const sg=(S.L.find(t=>t.k===k)||{}).g; const tt=fdToolTrue(p,k), g=tt.g; return `<span class="fde-t"><i>${l}</i><b style="color:${fdGc(g)}">${fdToolNum(tt.v)}</b><em>${g}${sg&&sg!==g?` · 추정 ${sg}`:''}</em></span>`; }).join('')}</div></div>`:''}
     <div><div class="eyebrow">${p.team===G.user?'지명 전 스카우트 평가':'스카우트 평가'}</div><div class="fde-ts${p.team===G.user?' fde-old':''}">${tl}</div></div>
-    <div class="fde-bx"><div><span>현재 능력</span><b style="color:${rcol(ovr(p))}">${dv(ovr(p))} <small>${GRD(ovr(p))}</small></b><i>실제 · 코치진 평가</i></div><div><span>지명 전 추정</span>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; return e==null?'<b>-</b>':`<b style="color:${rcol(e)}">${dv(e-w)}~${dv(e+w)}</b>`; })()}<i>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; if(e==null)return '우리 스카우트'; const o=ovr(p); return o>e+w?'<b class="good">추정보다 좋음</b>':o<e-w?'<b class="bad">추정보다 낮음</b>':'추정 범위 안'; })()}</i></div><div><span>예상 역할</span><b class="fde-role">${esc(role)}</b><i>추정 기준</i></div></div>
+    <div class="fde-bx"><div><span>현재 능력</span><b style="color:${rcol(ovr(p))}">${dv(ovr(p))} <small>${GRD(ovr(p))}</small></b><i>실제 · 코치진 평가</i></div><div><span>지명 전 추정</span>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; return e==null?'<b>-</b>':`<b style="color:${rcol(e)}">${dv(e-w)}~${dv(e+w)}</b>`; })()}<i>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; if(e==null)return '우리 스카우트'; const o=ovr(p); return o>e+w?'<b class="good">추정보다 좋음</b>':o<e-w?'<b class="bad">추정보다 낮음</b>':'추정 범위 안'; })()}</i></div><div><span>올해 예상 역할</span><b class="fde-role">${esc(role)}</b><i>지금 추정 기준</i></div>${(()=>{ const v=fdPotEst(p); if(v==null)return ''; return `<div class="fde-fut"><span>장래성 · 3년 뒤</span><b class="fde-role" style="color:${rcol(v)}">${esc(fdRole(p,v))}</b><i>${GRD(v)}등급 · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':p.age>=31?' · 하락 반영':''}</i></div>`; })()}</div>
     <p class="small"><b>스카우트</b> ${esc(fdScoutLine(p))}</p>
     <p class="small"><b>데이터팀</b> ${esc(dl)}</p>
     ${fdScoutProfileTxt(p.isP)?`<p class="small"><b>우리 스카우트 성향</b> ${esc(fdScoutProfileTxt(p.isP))}</p>`:''}
@@ -17247,6 +17298,19 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01zj',d:'11월 1일',t:'창단 지명 카드에 장래성',items:[
+    '창단 드래프트에서 지명한 직후 카드에 장래성(3년 뒤 예상)을 넣었습니다. 스카우트 추정으로 3년 뒤 어떤 역할(주전·주전 후보·백업, 투수는 선발 로테이션·필승조 등)일지와 등급을 보여 주고, 어린 선수는 오차가 크다고 표시합니다. 기존 예상 역할은 \'올해 예상 역할\'로 이름을 바꿔 구분했습니다.'
+  ]},
+  {id:'2026-11-01zi',d:'11월 1일',t:'업데이트 소식 창 개선',items:[
+    'PC에서 업데이트 소식 창이 넓게(최대 880px) 열립니다. 제목줄(새 업데이트 수)과 확인 버튼은 고정되고 본문만 스크롤됩니다.',
+    '업데이트마다 제목·날짜·항목 수를 한 줄로 보여 주고, 항목 첫 문장을 굵게 표시합니다. 줄 간격과 글자 크기를 키우고 한 줄 길이를 제한했습니다.',
+    '새 업데이트가 4개 이상이면 최근 3개만 펼치고 나머지는 접어 둡니다(눌러서 펼침). 게임 설정 > 패치 노트도 같은 방식입니다.'
+  ]},
+  {id:'2026-11-01zh',d:'11월 1일',t:'경기 엔진: 구장 · 타구 분포도 · 구장 효과',items:[
+    '구장마다 좌·중·우 담장 거리와 높이가 생겼습니다(실제 한국 구장 규모를 참고한 가상 구장). 담장이 가깝고 낮을수록 홈런이 늘고, 높은 담장에 막힌 타구는 2루타가 됩니다. 오른쪽 타석은 좌익 쪽, 왼쪽 타석은 우익 쪽 담장의 영향을 더 받습니다. 리그 전체 홈런 수는 그대로이고 구장 사이 차이만 생깁니다.',
+    "리그 > 통계에 '구장 효과'를 넣었습니다. 평균 100을 기준으로 설정 홈런 지수(담장 치수로 계산, 우타·좌타 따로)와 관측 득점·홈런 지수(이번 시즌 홈 경기 vs 원정 경기)를 나눠 보여 줍니다.",
+    '선수 정보 > 기록에 타구 분포도(방향별 타구 비중과 안타 비율, 땅볼·라인드라이브·뜬공·팝플라이 비중)를 넣었습니다. 투수는 맞은 타구 유형을 봅니다.'
+  ]},
   {id:'2026-11-01zg',d:'11월 1일',t:'경기 엔진: 타구 모델',items:[
     '인플레이 타구마다 유형(땅볼·라인드라이브·뜬공·팝플라이)과 방향(당겨치기·가운데·밀어치기)을 먼저 정합니다. 타자 파워가 높을수록 뜬공·당겨치기, 컨택이 높을수록 라인드라이브, 땅볼형 투수일수록 땅볼이 많습니다.',
     '그 방향을 맡은 야수의 수비력이 안타·아웃을 가릅니다(예전에는 팀 수비 평균 하나로 계산). 유격수가 약하면 유격수 쪽 땅볼이 더 빠져나가고, 중견수가 좋으면 가운데 뜬공이 더 잡힙니다. 실책은 그 공을 받은 야수에게서, 병살은 땅볼에서, 희생플라이는 뜬공·라인드라이브에서 나옵니다.',
@@ -17506,12 +17570,15 @@ const PATCH_KEY='fronttime-patch-seen';
 function patchSeen(){ try{ return localStorage.getItem(PATCH_KEY)||''; }catch(e){ return ''; } }
 function patchMark(){ try{ localStorage.setItem(PATCH_KEY,PATCH[0].id); }catch(e){ UI.patchSeenMem=PATCH[0].id; } }
 function patchUnseen(){ const s=patchSeen()||UI.patchSeenMem||''; const i=PATCH.findIndex(x=>x.id===s); return i<0?PATCH.slice(0,2):PATCH.slice(0,i); }
-function patchBlock(x){ return `<div class="pn-i"><div class="row between"><b>${esc(x.t)}</b><span class="small muted">${esc(x.d)}</span></div><ul class="pn-l">${x.items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`; }
+/* 업데이트 한 건: 제목·날짜 머리줄, 항목은 문장 앞부분(첫 쉼표·마침표 전)을 굵게 해 훑어보기 쉽게. 오래된 것은 접어 둔다 */
+function pnItem(t){ const m=t.match(/^(.{6,60}?)(\.\s|:\s|,\s)/); return m?`<b>${esc(m[1])}</b>${esc(t.slice(m[1].length))}`:esc(t); }
+function patchBlock(x,fold){ const body=`<ul class="pn-l">${x.items.map(t=>`<li>${pnItem(t)}</li>`).join('')}</ul>`; const head=`<span class="pn-t">${esc(x.t)}</span><span class="pn-d">${esc(x.d)} · ${x.items.length}건</span>`;
+  return fold?`<details class="pn-i"><summary class="pn-h">${head}</summary>${body}</details>`:`<div class="pn-i"><div class="pn-h">${head}</div>${body}</div>`; }
 /* 게임 화면에서 한 번 띄우는 공지(자동화 점검에서는 UI.patchTest일 때만) */
 function patchPop(){ if(!G||UI.title||!PATCH.length)return ''; if(navigator.webdriver&&!UI.patchTest)return ''; if(UI.patchClosed)return ''; const L=patchUnseen(); if(!L.length)return '';
-  return `<div class="rv-w pn-w"><div class="rv pn"><div class="eyebrow">업데이트 소식</div>${L.map(patchBlock).join('')}<button class="btn primary block" data-a="patchOk">확인</button></div></div>`; }
+  return `<div class="rv-w pn-w"><div class="rv pn"><div class="pn-top"><span class="eyebrow">업데이트 소식</span><span class="small muted">새 업데이트 ${L.length}개 · 위에서부터 최신</span></div><div class="pn-body">${L.map((x,i)=>patchBlock(x,i>=3)).join('')}</div><div class="pn-foot"><button class="btn primary block" data-a="patchOk">확인</button></div></div></div>`; }
 /* 처음 화면·게임 설정용 카드 */
-function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map(patchBlock).join('')}</section>`; }
+function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map((x,i)=>patchBlock(x,all&&i>=3)).join('')}</section>`; }
 Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); }, patchShow(){ UI.patchClosed=false; try{ localStorage.removeItem(PATCH_KEY); }catch(e){ UI.patchSeenMem=''; } render(); } });
 /* ---------- 리그 > 국가대표: 다가오는 대회 · 예비/최종 명단 · 상비군(지금 뽑는다면) · 차출 거부 · 지난 대회 ---------- */
 function ntProj(k){ const key=G.day+':'+k+':'+G.year; if(UI._ntP&&UI._ntP.key===key&&UI._ntP.g===G)return UI._ntP.L; const L=ntSquad(k); UI._ntP={key,g:G,L}; return L; }

@@ -3,7 +3,7 @@
 function lsegFix(s){ if(s==='board'||!s)return 'stand'; if(s==='sched'){ UI.it=UI.it||{}; UI.it.sres='cal'; return 'score'; } if(s==='games')return 'score'; if(s==='lead')return 'rec'; return s; }
 function leagueView(){ UI.lseg=lsegFix(UI.lseg); UI.lseg=ALIAS.league[UI.lseg]||UI.lseg; if(!SUBS.league.some(x=>x[0]===UI.lseg))UI.lseg='stand';
   const s=UI.lseg;
-  return subTabs('league')+mergedBody('league',s,{feat:featView,abroad:abroadView,hist:histView,stand:standView,score:scoreHub,wire:wireView,teams:teamsView,rec:recView,dist:distView,tdata:teamDataView,assoc:assocView,nt:ntView});
+  return subTabs('league')+mergedBody('league',s,{feat:featView,abroad:abroadView,hist:histView,stand:standView,score:scoreHub,wire:wireView,teams:teamsView,rec:recView,dist:distView,tdata:teamDataView,park:parkView,assoc:assocView,nt:ntView});
 }
 /* 리그 분포(FM식 산점도): 같은 시즌·같은 군 기록으로 두 지표를 함께. 리그 선수는 회색, 우리 선수는 강조와 이름. 기록에 있는 지표만 쓰고 숨은 능력은 쓰지 않는다 */
 const DS_AX={B:[['obp_slg','출루율 × 장타율'],['bb_k','볼넷% × 삼진%'],['sal_war','연봉 × WAR']],P:[['bb9_k9','BB/9 × K/9'],['era_whip','ERA × WHIP'],['sal_war','연봉 × WAR']]};
@@ -55,6 +55,13 @@ function teamDataView(){ const T=G.teams.map(t=>({t,s:teamRuns(t.id)})); const g
     <div class="row between" style="margin-top:10px"><span class="eyebrow">경기 흐름</span><select data-a="tdT" aria-label="구단">${G.teams.map(t=>`<option value="${t.id}" ${t.id===tid?'selected':''}>${esc(tshort(t.id))}</option>`).join('')}</select></div>
     <p class="small">경기별 득실차 <span class="ds-k"><i class="me"></i>승</span><span class="ds-k"><i class="lsq"></i>패</span></p><div class="ds-w">${bars}</div><p class="small">최근 10경기 승률(점선 .500)</p><div class="ds-w">${line}</div>
     <p class="small muted">정규시즌 경기만 셉니다. 막대에 마우스를 올리면 그 경기 상대와 점수가 보입니다.</p>`); }
+/* 구장 효과(Savant식 평균 100): 설정(담장 치수로 계산한 홈런 지수)과 관측(이번 시즌 홈 경기 vs 원정 경기의 경기당 득점·홈런)을 나눠 보여 준다 */
+function parkView(){ const L=G.teams.map(t=>{ const D=stadDim(t.id); const tl=((G.sea&&G.sea.tl)||[])[t.id]||[]; const H=tl.filter(x=>x[3]), A=tl.filter(x=>!x[3]); const pg=(a,f)=>a.length?a.reduce((s,x)=>s+f(x),0)/a.length:null;
+    const rH=pg(H,x=>x[1]+x[2]), rA=pg(A,x=>x[1]+x[2]); const hH=pg(H.filter(x=>x.length>=8),x=>x[6]+x[7]), hA=pg(A.filter(x=>x.length>=8),x=>x[6]+x[7]);
+    return {t,D,set:Math.round((parkHRM(t.id,'R')+parkHRM(t.id,'L'))/2*100),setR:Math.round(parkHRM(t.id,'R')*100),setL:Math.round(parkHRM(t.id,'L')*100),nH:H.length,nA:A.length,run:rH&&rA?Math.round(rH/rA*100):null,hr:hH&&hA?Math.round(hH/hA*100):null}; }).sort((a,b)=>b.set-a.set);
+  const bar=(v,sub)=>{ const s=sub?`<span class="pk-s">${sub}</span>`:''; if(v==null)return `<span class="pk-v"><span class="pk-b"><em></em></span><b class="mu">경기 없음</b></span>${s}`; const d=clamp(v-100,-40,40); return `<span class="pk-v"><span class="pk-b"><i class="${d>=0?'up':'dn'}" style="${d>=0?'left:50%':`left:${50+d/80*100}%`};width:${Math.abs(d)/80*100}%"></i><em></em></span><b>${v}</b></span>${s}`; };
+  return csec('구장 효과',`<div class="tw"><table class="sqt pk"><thead><tr><th>구장</th><th>좌·중·우(m)</th><th>담장 높이(m)</th><th>설정 홈런 지수</th><th>관측 득점 지수</th><th>관측 홈런 지수</th></tr></thead><tbody>${L.map(x=>`<tr class="${x.t.id===G.user?'me':''}"><td>${badge(x.t.id,16)} ${esc(stadName(x.t.id))}</td><td class="num">${x.D.lf}·${x.D.cf}·${x.D.rf}</td><td class="num">${x.D.wl===x.D.wr&&x.D.wl===x.D.wc?x.D.wl:`${x.D.wl}·${x.D.wc}·${x.D.wr}`}</td><td>${bar(x.set,`우타 ${x.setR} · 좌타 ${x.setL}`)}</td><td>${bar(x.run,`홈 ${x.nH} · 원정 ${x.nA}경기`)}</td><td>${bar(x.hr)}</td></tr>`).join('')}</tbody></table></div>
+    <p class="small muted">평균 100. 설정 홈런 지수는 담장 거리·높이로 엔진이 쓰는 값입니다(오른쪽 타석은 당기면 좌익, 왼쪽 타석은 우익). 관측 지수는 이번 시즌 그 구단의 홈 경기와 원정 경기의 경기당 득점·홈런(양 팀 합) 비율이라, 타자 구성·상대·표본의 영향이 섞입니다. 경기가 적을 때는 크게 흔들립니다. 구장을 고친 해는 그 전후를 나눠 보세요.</p>`); }
 function teamsView(){
   const sel=UI.leagueTeam;
   const list=`<section class="card"><div class="row between"><h2 class="sec">10개 구단</h2><span class="small muted">구단을 누르면 선수단을 봅니다</span></div><div class="tgrid">${[...G.teams].sort((a,b)=>(a.id===G.user?-1:b.id===G.user?1:0)).map(teamCard).join('')}</div></section>`;
