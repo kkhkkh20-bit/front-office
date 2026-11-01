@@ -546,6 +546,15 @@ T('[코치 승격] 투수코치를 수석코치로 올리면 연봉이 오르고
   ok(typeof promoteCoach==='function','승격 기능 없음'); const r=promoteCoach('pc'); ok(typeof r!=='string'||!/없습니다/.test(r),'승격 실패: '+r); ok(C.hc===a&&C.pc===b&&a.role==='hc'&&b.role==='pc','보직 맞교환'); ok(a.sal>s0,'승격 연봉');
   ok(/없습니다|이미/.test(promoteCoach('hc')||''),'수석코치는 더 올라갈 자리가 없다');
   C.fp=mkCoach('fp'); C.fp.yrs=2; C.bc=null; const f=C.fp; C.fb=mkCoach('fb'); C.fb.yrs=2; const fb=C.fb; promoteCoach('fb'); ok(C.bc===fb&&C.fb==null,'2군 타격코치 → 1군 타격코치(빈자리)'); });
+T('[구단 이동] 시즌 중 옮기면 최근 경기·월별 성적·상세 경기가 새 구단 것으로 바뀐다(옛 구단 경기가 섞이지 않게)',()=>{ fresh(); simTo(()=>period()==='season'&&(G.sea.ulog||[]).length>=40);
+  const tid=G.teams.find(t=>t.id!==G.user).id; G.jobs=[]; jobOffer(tid,true); const r=jobAnswer(tid,true); ok(G.user===tid,'이동 실패 '+r);
+  const L=G.sea.ulog||[]; ok(L.length>=30,'새 구단 기록 '+L.length); ok(L.every(x=>x.h===tid||x.a===tid),'옛 구단 경기가 남음');
+  const tl=G.sea.tl[tid]; const last=L[L.length-1], z=tl[tl.length-1]; ok(last.d===z[5]&&((last.h===tid?last.hs:last.as)===z[1]),'결과·점수가 새 구단 기준'); ok(last.res===(z[0]>0?'승':z[0]<0?'패':'무'),'승패');
+  ok((G.games||[]).every(g=>g.home===tid||g.away===tid),'상세 경기에 옛 구단 경기'); const mw=G.sea.months.reduce((a,o)=>a+o.w,0); ok(mw<=G.sea.rec[tid].w,'월별 성적이 새 구단 기준'); });
+T('[구단 이동] 야인에게 온 제의에는 지금 구단과 작별한다는 말 대신 경력을 다시 시작한다고 쓰고, 제의에 현재 순위·연봉 상한·장기 부상·내년 연봉·구단주 성향을 적는다',()=>{ fresh(); const tid=G.teams.find(t=>t.id!==G.user).id; G.unemp={y:G.year,d:G.day}; jobOffer(tid,true); const m=G.mail[0]; G.unemp=null;
+  ok(!/작별/.test(m.body)&&/다시 시작/.test(m.body),'야인 문구 '+m.body.slice(-80)); ok(typeof jobBrief==='function','제의 요약 없음'); const b=jobBrief(tid).join(' '); ok(/상한/.test(b)&&/장기 부상/.test(b)&&/내년/.test(b)&&/구단주/.test(b),'제의 요약 '+b); });
+T('[야인 경력] 물러날 때 재임 구단의 마지막 시즌 결산과 사유를 경력에 보관한다',()=>{ fresh(); simTo(()=>G.year>=2027&&period()==='pre'); const tid=G.user; ok(G.last&&G.last.fins&&G.last.fins[tid],'결산 없음');
+  firedFlow(G.year,'점검'); const st=G.myC.stints[0]; ok(st&&st.tid===tid&&st.how,'퇴임 기록'); ok(st.fin&&st.fin.y===G.last.y&&st.fin.f&&Array.isArray(st.fin.f.inc),'퇴임 시점 결산 보관 '+JSON.stringify(st.fin||null).slice(0,80)); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
@@ -598,7 +607,7 @@ T('자리 돌리기: 수비가 약한 유격수라도 방망이가 좋으면 감
   pexpOf(x)[k1]=95; posWeek(); ok(x.pos===k1,'전환 훈련을 마쳤는데 주 포지션이 '+x.pos); delete x.pconv;
   const others=domestic(t.id).filter(q=>!q.isP&&q!==x&&q.pos===k1); others.forEach(q=>{ q.r.def=Math.max(q.r.def,70); for(const k of ['con','pow','eye'])q.r[k]=Math.max(q.r[k],70); });
   posPlanAll(); if(x.pconv)ok(DSPEC[x.pconv.pos]<=DSPEC[k1],'두 번째 이동이 더 어려운 자리로: '+x.pconv.pos);
-  const me=domestic(G.user).filter(q=>!q.isP&&q.pos==='SS'); if(me.length>=2){ const a=me[0]; for(const k of ['con','pow','eye'])a.r[k]=82; a.r.def=30; a.vers=70; delete a.pconv; me[1].r.def=Math.max(me[1].r.def,68); for(const k of ['con','pow','eye'])me[1].r[k]=Math.max(me[1].r[k],50); const n0=G.mail.length; posPlanAll(); ok(!a.pconv,'우리 선수를 단장 허락 없이 전환 훈련시킴'); ok(G.mail.length>n0&&G.mail.slice(0,G.mail.length-n0).some(m=>(m.acts||[]).some(z=>z.a==='posConv')),'감독 제안 메일이 없음'); } });
+  const me=domestic(G.user).filter(q=>!q.isP&&q.pos==='SS'); if(me.length>=2){ const a=me[0]; for(const k of ['con','pow','eye'])a.r[k]=82; a.r.def=30; a.vers=70; a.age=26; delete a.pconv; if(a.pexp){ for(const k in a.pexp)delete a.pexp[k]; } /* 33세 이상이거나 이미 다른 자리를 익힌 선수면 감독이 돌리지 않는다(세계에 따라 달라지던 점검) */ me[1].r.def=Math.max(me[1].r.def,68); for(const k of ['con','pow','eye'])me[1].r[k]=Math.max(me[1].r[k],50); const n0=G.mail.length; posPlanAll(); ok(!a.pconv,'우리 선수를 단장 허락 없이 전환 훈련시킴'); ok(G.mail.length>n0&&G.mail.slice(0,G.mail.length-n0).some(m=>(m.acts||[]).some(z=>z.a==='posConv')),'감독 제안 메일이 없음'); } });
 
 T('코치 계약 만료: 우리와 계약이 끝난 OB 코치를 같은 날 AI 구단이 먼저 데려가지 않는다(단장이 후보에서 볼 기회)',()=>{ const {ob,c}=obCoachSetup(); G.coach[G.user].pc=null; c.yrs=0; c.from=G.user; c.fromY=G.year; G.cmarket=(G.cmarket||[]).concat(c);
   const other=G.teams.find(t=>t.id!==G.user).id; let took=0; for(let i=0;i<300;i++){ const r=obAiCoach(other,'pc'); if(r&&r.ob===ob.id){ took++; G.cmarket.push(c); } } ok(!took,'같은 날 AI가 우리 코치를 '+took+'번 데려감'); });

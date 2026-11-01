@@ -12,7 +12,8 @@ function myCStart(tid,terms,why){ const old=G.myC; const sal=terms&&terms.sal||m
   const y0=period()==='season'||period()==='post'?G.year:(dobj(G.day).m>=10?G.year+1:G.year);
   G.myC={tid,sal,y0,y1:y0+yrs-1,earn:old?old.earn:0,stints:old?old.stints:[],seas:old?old.seas:[]};
   chron('join',`${tname(tid)} 단장 계약: 연봉 ${money(sal)}, ${y0}~${y0+yrs-1}년${why?` (${why})`:''}`,null,tid); }
-function myCEnd(how,y){ const C=G.myC; if(!C)return; C.stints.unshift({tid:C.tid,y0:C.y0,y1:Math.min(C.y1,y??G.year),sal:C.sal,how}); C.stints.length=Math.min(C.stints.length,20); C.tid=null; }
+function myCEnd(how,y){ const C=G.myC; if(!C)return; let fin=null; try{ const L=G.last; if(L&&L.fins&&L.fins[C.tid]&&L.y>=C.y0){ const o=L.order&&L.order.find(x=>x.tid===C.tid); fin={y:L.y,f:JSON.parse(JSON.stringify(L.fins[C.tid])),rank:L.order?L.order.findIndex(x=>x.tid===C.tid)+1:null,w:o?o.w:null,l:o?o.l:null}; } }catch(e){} /* 퇴임 시점의 마지막 시즌 결산: 야인이 되어도 복기할 수 있게 경력에 남긴다 */
+  C.stints.unshift({tid:C.tid,y0:C.y0,y1:Math.min(C.y1,y??G.year),sal:C.sal,how,fin}); C.stints.length=Math.min(C.stints.length,20); C.tid=null; }
 /* 결산 지출: 단장 연봉 */
 function myCPay(){ const C=myCInit(); if(!C||G.unemp)return 0; C.earn+=C.sal; return C.sal; }
 /* 시즌 기록(경질 판정 전에 남긴다) */

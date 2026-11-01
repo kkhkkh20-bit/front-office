@@ -293,6 +293,9 @@ const QUICK=process.env.QUICK==='1';
   /* 감독·코치 중도 재계약, 코치 승격 버튼 */
   { where='감독·코치 계약'; const r=await ev(()=>{ const C=G.coach[G.user]; if(!C.pc){ C.pc=mkCoach('pc'); C.pc.yrs=2; } const h=coachSlot('pc'); const mb=mgrBody(); return {pro:/수석코치로 승격/.test(h),ext:/연장/.test(h),mext:/연장/.test(mb)}; });
     if(!r.pro||!r.ext||!r.mext)add('감독·코치 계약','코치 승격·연장 또는 감독 연장 버튼이 없음: '+JSON.stringify(r)); }
+  /* 야인이어도 단장 탭(경력·재임 기간 결산)은 볼 수 있다 */
+  { where='야인 경력'; const r=await ev(()=>{ const u0=G.unemp, t0=UI.tab, c0=G.myC; G.unemp={y:G.year,msg:'점검',since:G.day,from:G.user}; G.myC=Object.assign({},c0||{},{tid:null,stints:[{tid:G.user,y0:G.year-1,y1:G.year,how:'경질'}],seas:[{y:G.year-1,tid:G.user,rank:4,w:75,l:64,ch:0}]}); UI.tab='me'; let h=''; try{ h=tabBody(); }finally{ G.unemp=u0; UI.tab=t0; G.myC=c0; } return {blk:/야인입니다/.test(h),car:/시즌별 경력/.test(h)}; });
+    if(r&&(r.blk||!r.car))add('야인 경력','야인 상태에서 단장 경력 화면을 볼 수 없음: '+JSON.stringify(r)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
