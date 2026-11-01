@@ -4097,13 +4097,17 @@ function fdSeenBy(tid,p){ const F=G.fd; if(!F.est||!F.ana)fdEstAll(); const o=ov
   const seen=tid===G.user?sc:sc*.5+An*.5;
   const up=Math.max(0,26-p.age)*1.3+Math.max(0,p.pot-o)*.25+hn('fdp'+tid,p.id)*sd*.4;
   return {o:seen,pot:seen+Math.max(0,up),sc,an:An}; }
-/* 장래성: 스카우트가 본 3년 뒤 예상 능력. 지금 능력 추정에서 출발해 보통 성장 곡선(DT.norm: 26세까지 크고 29세까지 유지, 30세부터 하락)으로 3년을 굴린다.
-   젊으면 남은 성장 몫(잠재력 - 현재, 어릴수록·스카우트가 약할수록 오차 큼)을 해마다 일부 채우고, 30대는 나이만큼 깎인다(실제 성장 처리 develop과 같은 크기).
-   예전에는 '장래 최고 능력'이라 다 큰 30대 중반 선수가 지금 능력 그대로 높게 나와 젊은 유망주와 비교가 안 됐다 */
-function fdPotEst(p){ if(!G.fd||!p)return null; const S=fdSeenBy(G.user,p); const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0);
+/* 장래성: 스카우트가 본 최대 예상 능력(전성기 능력). 지금 능력에서 출발해 보통 성장 곡선(DT.norm: 26세까지 큰다)으로 남은 성장 몫(잠재력 - 현재,
+   어릴수록·스카우트가 약할수록 오차 큼)을 해마다 채워 가장 높은 지점을 본다. 다 큰 선수(27세 이상)는 지금 능력이 곧 최대치다.
+   출발점은 지명 전에는 우리 스카우트 추정, 우리 선수는 코치진이 보는 실제 현재 능력(지명 직후 공개)이다. 잠재력 쪽은 여전히 추정.
+   (사용자 2026-11-01 20:02: 장래성은 3년 뒤가 아니라 최대치. 30대의 하락은 장래성이 아니라 나이·계약 판단에서 본다) */
+function fdPotBase(p){ return p.team===G.user?ovr(p):fdSeenBy(G.user,p).sc; }
+function fdPotEst(p){ if(!G.fd||!p)return null; const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0);
   const yrs=Math.max(0,27-p.age); const sd=(1+yrs*.6)*(1.25-clamp(sk,1,5)*.08); let gap=Math.max(0,(p.pot-ovr(p))+hn('fdpe'+G.user,p.id)*sd);
-  const T=DT.norm; let v=S.sc; for(let a=p.age;a<p.age+3;a++){ if(a<=T.grow){ const add=gap*clamp(1/(T.grow-a+1.5),.04,.65)*1.3; v+=add; gap-=add; } else if(a>=T.fall-1){ v-=Math.min(a<=34?2.4:3.6,(a-T.fall+1)*.6+.2)+(a>=35?.8:0); } }
+  const T=DT.norm; let v=fdPotBase(p); for(let a=p.age;a<=T.grow;a++){ const add=gap*clamp(1/(T.grow-a+1.5),.04,.65)*1.3; v+=add; gap-=add; if(gap<=.05)break; }
   return v; }
+/* 전성기 예상 나이: 남은 성장이 끝나는 해(다 큰 선수는 지금) */
+function fdPeakAge(p){ return Math.max(p.age,DT.norm.grow+1); }
 /* 화면용: 스카우트 등급과 분석팀 등급(분석원이 있을 때만) */
 function fdViews(p){ if(!G.fd)return null; const S=fdSeenBy(G.user,p); const lv=dataLv(G.user); return {sc:S.sc,an:lv>=1?S.an:null,up:p.age<=26&&S.pot-S.o>=6}; }
 function fdSlot(p){ return p.isP?'P':p.pos; }
@@ -8730,11 +8734,17 @@ function fdRange(p){ const pk=p&&fdPickOf(p.id); if(!pk)return null; const o=ovr
   return {exact:false,lo:mid-w,hi:mid+w,mid,k:K.k,K,stage}; }
 /* 화면용 범위 글: "62~74" (표시 능력 단위) */
 function fdRangeTxt(r){ if(!r)return '-'; const a=dv(r.lo), b=dv(r.hi); return r.exact||a===b?`${dv(r.mid)}`:`${a}~${b}`; }
-/* 예상 역할: 우리 스카우트 추정 능력으로 말한다(정답 아님) */
-function fdRole(p,v){
-  if(p.isP){ if(isSPr(p))return v>=57?'선발 로테이션 후보':v>=51?'5선발 경쟁 · 롱릴리프':v>=45?'불펜':'2군 투수 자원'; return v>=56?'필승조 불펜 후보':v>=48?'불펜':'2군 투수 자원'; }
+/* 예상 역할: 능력(원래 단위)을 화면 능력(63이 1군 평균, 69가 주전급)으로 바꿔 사다리로 말한다.
+   지명 전에는 우리 스카우트 추정, 지명 뒤 우리 선수는 실제 현재 능력. 예전에는 선발 사다리 맨 위가 '선발 로테이션 후보'라 주전급(71)도 후보로 나왔다 */
+const FD_ROLES={SP:['2군 투수 자원','불펜','5선발 경쟁 · 롱릴리프','선발 로테이션','1~2선발','에이스급 선발'],RP:['2군 투수 자원','추격조 불펜','불펜','필승조','마무리급','리그 정상급 마무리'],B:['2군 육성 자원','백업 {g}','주전 {p} 후보','주전 {p}','핵심 주전 {p}','리그 정상급 {p}']};
+const FD_ROLE_CUT=[56,63,69,76,84]; /* 화면 능력 경계: 56 미만 2군 · 63 1군 평균 · 69 주전급 · 76 핵심 · 84 정상급 */
+function fdRoleLv(v){ const d=dvRaw(v); let i=0; while(i<FD_ROLE_CUT.length&&d>=FD_ROLE_CUT[i])i++; return i; }
+function fdRole(p,v){ const lv=fdRoleLv(v);
+  if(p.isP)return FD_ROLES[isSPr(p)?'SP':'RP'][lv];
   const pos={C:'포수',DH:'지명타자'}[p.pos]||(POSS[p.pos]?POSS[p.pos]+'수':posLabel(p)); const grp=p.pos==='C'?'포수':['LF','CF','RF'].includes(p.pos)?'외야수':p.pos==='DH'?'타자':'내야수';
-  return v>=57?`주전 ${pos}`:v>=51?`주전 ${pos} 후보`:v>=45?`백업 ${grp}`:'2군 육성 자원'; }
+  return FD_ROLES.B[lv].replace('{p}',pos).replace('{g}',grp); }
+/* 역할 글의 순위(사다리 몇 번째인지). 화면 비교·점검용 */
+function FD_ROLE_RANK(r){ for(const k of ['SP','RP','B']){ const i=FD_ROLES[k].findIndex(x=>{ const [a,b]=x.split(/\{[pg]\}/); return b==null?r===x:r.startsWith(a)&&r.endsWith(b)&&r.length>a.length+b.length; }); if(i>=0)return i; } return -1; }
 
 /* ---------- 지명 평가: 같은 순번대(앞뒤 8명) 지명자들의 실제 WAR과 비교 ---------- */
 function fdOverall(x){ return (x.rd-1)*10+x.no; }
@@ -12789,7 +12799,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
 ]; }
   { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
     CS=[
-      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'장래성: 스카우트가 본 3년 뒤 예상 능력. 젊으면 성장, 30대는 하락을 반영합니다. 어릴수록 오차가 큽니다'),
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'장래성: 스카우트가 본 최대 예상 능력(전성기). 어린 선수는 남은 성장을 더하고, 다 큰 선수는 지금 능력 그대로입니다. 어릴수록 오차가 큽니다'),
       ...(isP?[c('velo','구속',x=>fdScoutTools(x.p).velo,x=>td(`${fdScoutTools(x.p).velo}<i class="sm"> ${veloMax(x.p)}</i>`),'직구 평균 · 최고(km)')]:[]),
       ...TO.map(([k,l])=>c('t:'+k,l,x=>GL[tg(x,k)]*100+wv(x),x=>{ const z=tz(x,k); return `<td class="fdg" style="color:${fdGc(z.g)}">${z.g}</td>`; },`스카우트가 눈으로 본 ${l} 등급(S·A·B·C·D·E). 스카우트마다 버릇이 있고, 경기에서 드러나는 실전 감각은 못 봅니다`)),
       ...(isP?[c('pit','구종',x=>arsenal(x.p,tz(x,'stf').raw).length,x=>{ const A=arsenal(x.p,tz(x,'stf').raw); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),
@@ -15276,7 +15286,7 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
 /* 창단 드래프트 후보: 종합 등급 대신 스카우트(툴)·데이터팀(기록) 의견을 나란히 */
 function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
-  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,`3년 뒤 예상 · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':p.age>=31?' · 하락 반영':''}`); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
+  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,`최대 예상(${fdPeakAge(p)>p.age?fdPeakAge(p)+'세 무렵 전성기':'이미 전성기'}) · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':''}`); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
     <div class="fdop">${S.L.map(t=>`<span class="fdtg" style="--c:${fdGc(t.g)}">${t.l} <b>${t.g}</b></span>`).join('')}</div>`; }
 /* ---------- 동작 ---------- */
 function roleLines(p){ const r=squadRole(p), k=keepWhy(p), o=oppSat(p); const L=[]; if(r)L.push(`<b>팀 내 역할</b> ${esc(r)}`); if(o)L.push(`<b>기회 만족</b> ${esc(o.lv)} · ${esc(o.why)}${o.gap?` <span class="muted">${esc(o.gap)}</span>`:''}`); if(k)L.push(`<b>보유 이유</b> ${esc(k)}`); return L.length?`<p class="small">${L.join('<br>')}</p>`:''; }
@@ -16355,7 +16365,7 @@ function fdEstChip(v){ return v==null?rchip(null):`<b class="rc fde-g" style="--
 function revMake(pid,pk,n){ const p=G.players[pid]; if(!p)return null; return {pid,rd:pk.rd,no:pk.no,n,open:true}; }
 function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; if(!p){ UI.rev=null; return ''; }
   const S=fdScoutTools(p); const vis=new Set(FD_TOOLS[p.isP?'P':'B'].filter(t=>t[2]).map(t=>t[0]));
-  const pk=fdPickOf(p.id); const r=fdRange(p); const est=fdEstOf(p); const role=(pk&&pk.role)||fdRole(p,est);
+  const pk=fdPickOf(p.id); const r=fdRange(p); const est=fdEstOf(p); const role0=(pk&&pk.role)||fdRole(p,est); const mine=p.team===G.user; const role=mine?fdRole(p,ovr(p)):role0; /* 우리 선수는 실제 현재 능력이 공개됐으니 역할도 실제 능력 기준(지명 전 추정 역할은 아래 줄에) */
   const tl=`${p.isP?`<span class="fde-t"><i>구속</i><b>${S.velo}</b><em>km</em></span>`:''}${S.L.map(t=>`<span class="fde-t${vis.has(t.k)?'':' fz'}"><i>${t.l}</i><b style="color:${fdGc(t.g)}">${t.g}</b><em>${vis.has(t.k)?'':'오차 큼'}</em></span>`).join('')}`;
   const dl=fdDataLine(p,(G.fd&&G.fd.y||G.year)-1);
   return `<div class="rv-w"><div class="rv fde-rv">
@@ -16363,7 +16373,7 @@ function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; i
     <div class="row" style="flex-wrap:nowrap">${avImg(p,true)}<div><h2 class="sec" style="font-size:22px">${esc(p.name)}</h2><p class="small muted">${posLabel(p)} · ${p.age}세${p.fdFrom!=null?` · 전 ${esc(tshort(p.fdFrom))}`:''} · 연봉 ${money(p.sal||0)}</p></div></div>
     ${p.team===G.user?`<div><div class="eyebrow">실제 능력 · 코치진 평가(지명 후 공개)</div><div class="fde-ts">${p.isP?`<span class="fde-t"><i>구속</i><b>${veloOf(p)}</b><em>km</em></span>`:''}${FD_TOOLS[p.isP?'P':'B'].map(([k,l])=>{ const v=Math.round(p.r[k]||0); const sg=(S.L.find(t=>t.k===k)||{}).g; const tt=fdToolTrue(p,k), g=tt.g; return `<span class="fde-t"><i>${l}</i><b style="color:${fdGc(g)}">${fdToolNum(tt.v)}</b><em>${g}${sg&&sg!==g?` · 추정 ${sg}`:''}</em></span>`; }).join('')}</div></div>`:''}
     <div><div class="eyebrow">${p.team===G.user?'지명 전 스카우트 평가':'스카우트 평가'}</div><div class="fde-ts${p.team===G.user?' fde-old':''}">${tl}</div></div>
-    <div class="fde-bx"><div><span>현재 능력</span><b style="color:${rcol(ovr(p))}">${dv(ovr(p))} <small>${GRD(ovr(p))}</small></b><i>실제 · 코치진 평가</i></div><div><span>지명 전 추정</span>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; return e==null?'<b>-</b>':`<b style="color:${rcol(e)}">${dv(e-w)}~${dv(e+w)}</b>`; })()}<i>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; if(e==null)return '우리 스카우트'; const o=ovr(p); return o>e+w?'<b class="good">추정보다 좋음</b>':o<e-w?'<b class="bad">추정보다 낮음</b>':'추정 범위 안'; })()}</i></div><div><span>올해 예상 역할</span><b class="fde-role">${esc(role)}</b><i>지금 추정 기준</i></div>${(()=>{ const v=fdPotEst(p); if(v==null)return ''; return `<div class="fde-fut"><span>장래성 · 3년 뒤</span><b class="fde-role" style="color:${rcol(v)}">${esc(fdRole(p,v))}</b><i>${GRD(v)}등급 · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':p.age>=31?' · 하락 반영':''}</i></div>`; })()}</div>
+    <div class="fde-bx"><div><span>현재 능력</span><b style="color:${rcol(ovr(p))}">${dv(ovr(p))} <small>${GRD(ovr(p))}</small></b><i>실제 · 코치진 평가</i></div><div><span>지명 전 추정</span>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; return e==null?'<b>-</b>':`<b style="color:${rcol(e)}">${dv(e-w)}~${dv(e+w)}</b>`; })()}<i>${(()=>{ const e=fdEstOf(p); const w=fdEsd()*1.15+.8; if(e==null)return '우리 스카우트'; const o=ovr(p); return o>e+w?'<b class="good">추정보다 좋음</b>':o<e-w?'<b class="bad">추정보다 낮음</b>':'추정 범위 안'; })()}</i></div><div><span>올해 예상 역할</span><b class="fde-role">${esc(role)}</b><i>${mine?(role0!==role?`지명 전 추정: ${esc(role0)}`:'실제 현재 능력 기준'):'스카우트 추정 기준'}</i></div>${(()=>{ const v=fdPotEst(p); if(v==null)return ''; const pa=fdPeakAge(p); return `<div class="fde-fut"><span>장래성 · 최대 예상</span><b class="fde-role" style="color:${rcol(v)}">${esc(fdRole(p,v))}</b><i>${dv(v)} ${GRD(v)} · ${pa>p.age?`${pa}세 무렵 전성기`:'이미 전성기'} · 스카우트 추정${p.age<=24?' · 오차 큼':''}</i></div>`; })()}</div>
     <p class="small"><b>스카우트</b> ${esc(fdScoutLine(p))}</p>
     <p class="small"><b>데이터팀</b> ${esc(dl)}</p>
     ${fdScoutProfileTxt(p.isP)?`<p class="small"><b>우리 스카우트 성향</b> ${esc(fdScoutProfileTxt(p.isP))}</p>`:''}
@@ -17298,6 +17308,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01zk',d:'11월 1일',t:'장래성은 최대 예상 · 역할 표기 정리',items:[
+    '장래성을 3년 뒤 예상에서 최대 예상(전성기 능력)으로 바꿨습니다. 어린 선수는 남은 성장을 더하고, 27세 이상 다 큰 선수는 지금 능력 그대로입니다. 창단 드래프트 표·선수 정보·지명 직후 카드에 \'몇 세 무렵 전성기\' 또는 \'이미 전성기\'를 함께 적습니다.',
+    '우리가 지명한 선수는 실제 현재 능력이 공개되므로, 올해 예상 역할과 장래성도 실제 능력에서 출발합니다(지명 전 추정 역할은 작은 글씨로 남김). 예전에는 현재 71인 선발이 올해 \'5선발 경쟁\', 장래 \'로테이션 후보\'로 나와 숫자와 맞지 않았습니다.',
+    '역할 사다리를 화면 능력 기준(63 1군 평균, 69 주전급)으로 다시 맞추고 위쪽 단계를 넣었습니다. 선발: 5선발 경쟁 → 선발 로테이션 → 1~2선발 → 에이스급, 불펜: 필승조 → 마무리급, 야수: 주전 후보 → 주전 → 핵심 주전 → 리그 정상급.'
+  ]},
   {id:'2026-11-01zj',d:'11월 1일',t:'창단 지명 카드에 장래성',items:[
     '창단 드래프트에서 지명한 직후 카드에 장래성(3년 뒤 예상)을 넣었습니다. 스카우트 추정으로 3년 뒤 어떤 역할(주전·주전 후보·백업, 투수는 선발 로테이션·필승조 등)일지와 등급을 보여 주고, 어린 선수는 오차가 크다고 표시합니다. 기존 예상 역할은 \'올해 예상 역할\'로 이름을 바꿔 구분했습니다.'
   ]},

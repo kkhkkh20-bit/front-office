@@ -81,13 +81,17 @@ function fdSeenBy(tid,p){ const F=G.fd; if(!F.est||!F.ana)fdEstAll(); const o=ov
   const seen=tid===G.user?sc:sc*.5+An*.5;
   const up=Math.max(0,26-p.age)*1.3+Math.max(0,p.pot-o)*.25+hn('fdp'+tid,p.id)*sd*.4;
   return {o:seen,pot:seen+Math.max(0,up),sc,an:An}; }
-/* 장래성: 스카우트가 본 3년 뒤 예상 능력. 지금 능력 추정에서 출발해 보통 성장 곡선(DT.norm: 26세까지 크고 29세까지 유지, 30세부터 하락)으로 3년을 굴린다.
-   젊으면 남은 성장 몫(잠재력 - 현재, 어릴수록·스카우트가 약할수록 오차 큼)을 해마다 일부 채우고, 30대는 나이만큼 깎인다(실제 성장 처리 develop과 같은 크기).
-   예전에는 '장래 최고 능력'이라 다 큰 30대 중반 선수가 지금 능력 그대로 높게 나와 젊은 유망주와 비교가 안 됐다 */
-function fdPotEst(p){ if(!G.fd||!p)return null; const S=fdSeenBy(G.user,p); const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0);
+/* 장래성: 스카우트가 본 최대 예상 능력(전성기 능력). 지금 능력에서 출발해 보통 성장 곡선(DT.norm: 26세까지 큰다)으로 남은 성장 몫(잠재력 - 현재,
+   어릴수록·스카우트가 약할수록 오차 큼)을 해마다 채워 가장 높은 지점을 본다. 다 큰 선수(27세 이상)는 지금 능력이 곧 최대치다.
+   출발점은 지명 전에는 우리 스카우트 추정, 우리 선수는 코치진이 보는 실제 현재 능력(지명 직후 공개)이다. 잠재력 쪽은 여전히 추정.
+   (사용자 2026-11-01 20:02: 장래성은 3년 뒤가 아니라 최대치. 30대의 하락은 장래성이 아니라 나이·계약 판단에서 본다) */
+function fdPotBase(p){ return p.team===G.user?ovr(p):fdSeenBy(G.user,p).sc; }
+function fdPotEst(p){ if(!G.fd||!p)return null; const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||0),0);
   const yrs=Math.max(0,27-p.age); const sd=(1+yrs*.6)*(1.25-clamp(sk,1,5)*.08); let gap=Math.max(0,(p.pot-ovr(p))+hn('fdpe'+G.user,p.id)*sd);
-  const T=DT.norm; let v=S.sc; for(let a=p.age;a<p.age+3;a++){ if(a<=T.grow){ const add=gap*clamp(1/(T.grow-a+1.5),.04,.65)*1.3; v+=add; gap-=add; } else if(a>=T.fall-1){ v-=Math.min(a<=34?2.4:3.6,(a-T.fall+1)*.6+.2)+(a>=35?.8:0); } }
+  const T=DT.norm; let v=fdPotBase(p); for(let a=p.age;a<=T.grow;a++){ const add=gap*clamp(1/(T.grow-a+1.5),.04,.65)*1.3; v+=add; gap-=add; if(gap<=.05)break; }
   return v; }
+/* 전성기 예상 나이: 남은 성장이 끝나는 해(다 큰 선수는 지금) */
+function fdPeakAge(p){ return Math.max(p.age,DT.norm.grow+1); }
 /* 화면용: 스카우트 등급과 분석팀 등급(분석원이 있을 때만) */
 function fdViews(p){ if(!G.fd)return null; const S=fdSeenBy(G.user,p); const lv=dataLv(G.user); return {sc:S.sc,an:lv>=1?S.an:null,up:p.age<=26&&S.pot-S.o>=6}; }
 function fdSlot(p){ return p.isP?'P':p.pos; }

@@ -412,8 +412,8 @@ const QUICK=process.env.QUICK==='1';
       return {park:/홈런 지수/.test(pv)&&/득점 지수/.test(pv),spr:/<svg/.test(h)&&/땅볼/.test(h)}; });
     if(r){ if(!r.park)add('구장','구장 효과(설정·관측) 표가 없음'); if(!r.spr)add('타구','타구 분포도가 없음'); } }
   /* 창단 지명 직후 카드: 올해 예상 역할과 함께 장래성(3년 뒤 예상 역할·등급)을 보여 준다(사용자 2026-11-01 19:39: 장래 주전급인지 안 뜸) */
-  { where='창단 지명 카드'; const r=await ev(()=>{ if(!G.fd||typeof revView!=='function')return null; const p=playersOf(G.user).find(q=>q.fdPool||(G.fd.picks||[]).some(x=>x.pid===q.id&&x.tid===G.user)); if(!p)return null; const keep=UI.rev; UI.rev={pid:p.id,rd:1,no:1,n:1,open:true}; const h=revView(); UI.rev=keep; return {fut:/장래성 · 3년 뒤/.test(h),role:/올해 예상 역할/.test(h)}; });
-    if(r){ if(!r.fut)add('창단 지명','지명 직후 카드에 장래성(3년 뒤 예상)이 없음'); if(!r.role)add('창단 지명','올해 예상 역할과 장래를 구분하지 않음'); } }
+  { where='창단 지명 카드'; const r=await ev(()=>{ if(!G.fd||typeof revView!=='function')return null; const p=playersOf(G.user).find(q=>q.fdPool||(G.fd.picks||[]).some(x=>x.pid===q.id&&x.tid===G.user)); if(!p)return null; const keep=UI.rev; UI.rev={pid:p.id,rd:1,no:1,n:1,open:true}; const h=revView(); UI.rev=keep; const cur=fdRole(p,ovr(p)), fut=fdRole(p,fdPotEst(p)); return {fut:/장래성 · 최대 예상/.test(h),role:/올해 예상 역할/.test(h),ord:FD_ROLE_RANK(fut)>=FD_ROLE_RANK(cur)&&h.indexOf(cur)>=0,cur,futR:fut}; });
+    if(r){ if(!r.fut)add('창단 지명','지명 직후 카드에 장래성(최대 예상)이 없음'); if(!r.role)add('창단 지명','올해 예상 역할과 장래를 구분하지 않음'); if(!r.ord)add('창단 지명','올해 역할(실제 능력 기준)과 장래 역할이 맞지 않음: '+r.cur+' → '+r.futR); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

@@ -84,7 +84,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
 ]; }
   { /* 스카우트: 툴 숫자 · 체격 · 한 줄 의견 */
     CS=[
-      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'장래성: 스카우트가 본 3년 뒤 예상 능력. 젊으면 성장, 30대는 하락을 반영합니다. 어릴수록 오차가 큽니다'),
+      c('pe','장래성',x=>fdPotEst(x.p),x=>{ const v=fdPotEst(x.p); return `<td>${fdEstChip(v)}</td>`; },'장래성: 스카우트가 본 최대 예상 능력(전성기). 어린 선수는 남은 성장을 더하고, 다 큰 선수는 지금 능력 그대로입니다. 어릴수록 오차가 큽니다'),
       ...(isP?[c('velo','구속',x=>fdScoutTools(x.p).velo,x=>td(`${fdScoutTools(x.p).velo}<i class="sm"> ${veloMax(x.p)}</i>`),'직구 평균 · 최고(km)')]:[]),
       ...TO.map(([k,l])=>c('t:'+k,l,x=>GL[tg(x,k)]*100+wv(x),x=>{ const z=tz(x,k); return `<td class="fdg" style="color:${fdGc(z.g)}">${z.g}</td>`; },`스카우트가 눈으로 본 ${l} 등급(S·A·B·C·D·E). 스카우트마다 버릇이 있고, 경기에서 드러나는 실전 감각은 못 봅니다`)),
       ...(isP?[c('pit','구종',x=>arsenal(x.p,tz(x,'stf').raw).length,x=>{ const A=arsenal(x.p,tz(x,'stf').raw); const best=[...A].sort((a,b)=>b[1]-a[1])[0]; return td(`${A.length}개<i class="sm"> ${best?esc(best[0]):''}</i>`,'tl2'); },'구종 수 · 가장 좋은 공')]:[]),

@@ -27,11 +27,17 @@ function fdRange(p){ const pk=p&&fdPickOf(p.id); if(!pk)return null; const o=ovr
   return {exact:false,lo:mid-w,hi:mid+w,mid,k:K.k,K,stage}; }
 /* 화면용 범위 글: "62~74" (표시 능력 단위) */
 function fdRangeTxt(r){ if(!r)return '-'; const a=dv(r.lo), b=dv(r.hi); return r.exact||a===b?`${dv(r.mid)}`:`${a}~${b}`; }
-/* 예상 역할: 우리 스카우트 추정 능력으로 말한다(정답 아님) */
-function fdRole(p,v){
-  if(p.isP){ if(isSPr(p))return v>=57?'선발 로테이션 후보':v>=51?'5선발 경쟁 · 롱릴리프':v>=45?'불펜':'2군 투수 자원'; return v>=56?'필승조 불펜 후보':v>=48?'불펜':'2군 투수 자원'; }
+/* 예상 역할: 능력(원래 단위)을 화면 능력(63이 1군 평균, 69가 주전급)으로 바꿔 사다리로 말한다.
+   지명 전에는 우리 스카우트 추정, 지명 뒤 우리 선수는 실제 현재 능력. 예전에는 선발 사다리 맨 위가 '선발 로테이션 후보'라 주전급(71)도 후보로 나왔다 */
+const FD_ROLES={SP:['2군 투수 자원','불펜','5선발 경쟁 · 롱릴리프','선발 로테이션','1~2선발','에이스급 선발'],RP:['2군 투수 자원','추격조 불펜','불펜','필승조','마무리급','리그 정상급 마무리'],B:['2군 육성 자원','백업 {g}','주전 {p} 후보','주전 {p}','핵심 주전 {p}','리그 정상급 {p}']};
+const FD_ROLE_CUT=[56,63,69,76,84]; /* 화면 능력 경계: 56 미만 2군 · 63 1군 평균 · 69 주전급 · 76 핵심 · 84 정상급 */
+function fdRoleLv(v){ const d=dvRaw(v); let i=0; while(i<FD_ROLE_CUT.length&&d>=FD_ROLE_CUT[i])i++; return i; }
+function fdRole(p,v){ const lv=fdRoleLv(v);
+  if(p.isP)return FD_ROLES[isSPr(p)?'SP':'RP'][lv];
   const pos={C:'포수',DH:'지명타자'}[p.pos]||(POSS[p.pos]?POSS[p.pos]+'수':posLabel(p)); const grp=p.pos==='C'?'포수':['LF','CF','RF'].includes(p.pos)?'외야수':p.pos==='DH'?'타자':'내야수';
-  return v>=57?`주전 ${pos}`:v>=51?`주전 ${pos} 후보`:v>=45?`백업 ${grp}`:'2군 육성 자원'; }
+  return FD_ROLES.B[lv].replace('{p}',pos).replace('{g}',grp); }
+/* 역할 글의 순위(사다리 몇 번째인지). 화면 비교·점검용 */
+function FD_ROLE_RANK(r){ for(const k of ['SP','RP','B']){ const i=FD_ROLES[k].findIndex(x=>{ const [a,b]=x.split(/\{[pg]\}/); return b==null?r===x:r.startsWith(a)&&r.endsWith(b)&&r.length>a.length+b.length; }); if(i>=0)return i; } return -1; }
 
 /* ---------- 지명 평가: 같은 순번대(앞뒤 8명) 지명자들의 실제 WAR과 비교 ---------- */
 function fdOverall(x){ return (x.rd-1)*10+x.no; }

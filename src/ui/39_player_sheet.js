@@ -311,5 +311,5 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
 /* 창단 드래프트 후보: 종합 등급 대신 스카우트(툴)·데이터팀(기록) 의견을 나란히 */
 function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
-  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,`3년 뒤 예상 · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':p.age>=31?' · 하락 반영':''}`); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
+  return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,`최대 예상(${fdPeakAge(p)>p.age?fdPeakAge(p)+'세 무렵 전성기':'이미 전성기'}) · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':''}`); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
     <div class="fdop">${S.L.map(t=>`<span class="fdtg" style="--c:${fdGc(t.g)}">${t.l} <b>${t.g}</b></span>`).join('')}</div>`; }

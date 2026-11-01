@@ -497,9 +497,11 @@ T('[캠프 결산] 첫 줄에 주목할 선수(최대 성장·예상 밖 부진�
 T('[나이] 시작 세계에도 20대 초반 주전급이 있다(일찍 크는 선수): 새 세계 12개 평균 23세 이하 1군 평균 이상 선수와 상위 50명 안의 23세 이하',()=>{ let y=0,t50=0; const N=12; for(let r=0;r<N;r++){ DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
   y+=P.filter(p=>p.age<=23&&ovr(p)>=53).length/N; t50+=[...P].sort((a,b)=>ovr(b)-ovr(a)).slice(0,50).filter(p=>p.age<=23).length/N; } /* 새 세계 24개 측정: 평균 9.1명 · 7.0명(세계마다 3~18명으로 편차가 커서 12개 평균으로 본다. 8개일 때는 경기 엔진 난수 흐름만 바뀌어도 6.4로 떨어지는 세계가 있었다(24개 평균은 8.9 그대로)). 예전 세계는 5명 · 3.7명 */
   ok(y>=6.5,'23세 이하 주전급 평균 '+y.toFixed(1)+'명'); ok(t50>=4.5,'상위 50명 중 23세 이하 평균 '+t50.toFixed(1)+'명'); });
-T('[창단 드래프트] 장래성(3년 뒤 예상): 젊은 선수는 지금 추정보다 높고 30대 중반은 낮으며, 24세 이하는 실제 잠재력과 맞는 방향이다',()=>{ fresh(); DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
+T('[창단 드래프트] 장래성(최대 예상, 사용자 2026-11-01 20:02): 지금보다 낮지 않고, 젊을수록 크며, 다 큰 선수는 지금 그대로, 24세 이하는 실제 잠재력과 맞는 방향이다',()=>{ fresh(); DEMO.on=false; newGame(6); fdStart(); const P=(G.fd.all||G.fd.pool).map(id=>G.players[id]).filter(Boolean);
   ok(typeof fdPotEst==='function','장래성 추정 함수'); const E=P.map(p=>({p,e:fdPotEst(p),s:fdSeenBy(G.user,p).sc}));
-  ok(E.filter(x=>x.p.age<=25).every(x=>x.e>=x.s-.01),'25세 이하는 지금 추정 이상'); const O=E.filter(x=>x.p.age>=33); ok(O.length&&O.every(x=>x.e<x.s),'33세 이상은 지금 추정보다 낮게(하락 반영)');
+  ok(E.every(x=>x.e>=x.s-.01),'장래성이 지금 추정보다 낮음(최대치가 아님)'); const O=E.filter(x=>x.p.age>=30); ok(O.length&&O.every(x=>Math.abs(x.e-x.s)<.01),'30세 이상은 이미 전성기라 지금 추정 그대로여야 함');
+  const Yg=E.filter(x=>x.p.age<=22&&x.p.pot-ovr(x.p)>=8); ok(Yg.length&&Yg.reduce((a,x)=>a+x.e-x.s,0)/Yg.length>=4,'어린 유망주의 성장 여지가 장래성에 거의 안 들어감');
+  const q=P.find(x=>x.age>=30); q.team=G.user; ok(Math.abs(fdPotEst(q)-ovr(q))<.01,'우리 선수는 실제 현재 능력이 공개됐으니 다 큰 선수의 장래성은 실제 능력과 같아야 함: '+fdPotEst(q).toFixed(1)+' vs '+ovr(q).toFixed(1)); q.team=null;
   const cor=(L,f,g)=>{ const n=L.length, mx=L.reduce((a,x)=>a+f(x),0)/n, my=L.reduce((a,x)=>a+g(x),0)/n; let sxy=0,sx=0,sy=0; for(const x of L){ const dx=f(x)-mx, dy=g(x)-my; sxy+=dx*dy; sx+=dx*dx; sy+=dy*dy; } return sxy/Math.sqrt(sx*sy); };
   const Y=E.filter(x=>x.p.age<=24); const c=cor(Y,x=>x.e,x=>x.p.pot); ok(c>=.6,'24세 이하 장래성 추정과 실제 잠재력 상관 '+c.toFixed(2)); });
 T('[감독 지시] 거절된 지시를 바로 다시 꺼내도 관계가 또 깎이지 않는다(관계가 5 오르거나 30일 뒤 재논의)',()=>{ fresh(); const m=G.mgr[G.user]; m.rel=60; mgrDir().arm={ok:false,mid:m.id,day:G.day,rel0:56}; m.rel=56;
@@ -636,6 +638,13 @@ T('[구장] 담장이 가깝고 낮은 구장은 홈런이 늘고, 멀고 높은
   const ms=G.teams.map(t=>(parkHRM(t.id,'R')+parkHRM(t.id,'L'))/2); const avgM=ms.reduce((a,b)=>a+b,0)/ms.length; ok(Math.abs(avgM-1)<.03,'리그 평균 구장 지수가 1이 아님: '+avgM.toFixed(3));
   const S=stadOf(G.teams[0].id); const keep=JSON.stringify(stadDim(G.teams[0].id)); S.dim={lf:94,cf:118,rf:94,wl:2,wc:2,wr:2}; const m1=parkHRM(G.teams[0].id,'R'); S.dim={lf:104,cf:127,rf:104,wl:5,wc:5,wr:5}; const m2=parkHRM(G.teams[0].id,'R'); S.dim=JSON.parse(keep); ok(m1>1.15&&m2<.85,'담장 거리·높이가 홈런에 반영되지 않음: '+m1.toFixed(2)+' / '+m2.toFixed(2));
   simTo(()=>period()==='season'&&((G.sea.tl||[])[G.user]||[]).length>=8); const e=(G.sea.tl[G.user]||[])[0]; ok(e&&e.length>=8,'경기 기록에 홈런 수가 없음'); });
+T('[창단 지명] 역할 표기는 능력 수준과 맞는다(사용자 2026-11-01 20:02: 현재 71인 선발이 장래 로테이션 후보): 표시 69 이상 주전급은 후보·경쟁으로 적지 않고, 높을수록 역할이 내려가지 않는다',()=>{ fresh(); ok(typeof fdRole==='function','fdRole 없음');
+  const inv=d=>{ let lo=20,hi=78; for(let i=0;i<40;i++){ const m=(lo+hi)/2; if(dvRaw(m)<d)lo=m; else hi=m; } return (lo+hi)/2; };
+  const sp=Object.values(G.players).find(p=>isSPr(p)), rp=Object.values(G.players).find(p=>p.isP&&!isSPr(p)), bt=Object.values(G.players).find(p=>!p.isP&&p.pos==='SS');
+  for(const p of [sp,rp,bt]){ const L=[50,57,60,64,66,70,72,77,81,86].map(d=>fdRole(p,inv(d)));
+    for(let i=5;i<L.length;i++)ok(!/후보|경쟁|2군|백업/.test(L[i]),(p.isP?(isSPr(p)?'선발':'불펜'):'유격수')+' 표시 '+[50,57,60,64,66,70,72,77,81,86][i]+'인데 '+L[i]);
+    const rk=L.map(r=>FD_ROLE_RANK(r)); for(let i=1;i<rk.length;i++)ok(rk[i]>=rk[i-1],'높은 능력의 역할이 더 낮음: '+L[i-1]+' → '+L[i]); }
+});
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
