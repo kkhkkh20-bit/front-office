@@ -13,10 +13,10 @@ function originOf(p){ if(!p||p.team!==G.user)return ''; if(p.foreign)return '외
 function cgCell(p,k,Y){ const y=Y+k; const m=p.mil; const srv=m&&m.until&&dobj(m.from).y<=y&&dobj(m.until).y>=y; const due=!p.foreign&&milFree(p)&&G.year+Math.max(0,27-p.age)===y;
   const tag=srv?' <i class="cg-m">복무</i>':due?' <i class="cg-m">입대 기한</i>':''; const fr=s=>s<3?.35:s<6?.55:s<faSvc(p)?.78:1;
   if(p.foreign)return k===0?{t:'fix',v:p.sal,h:`${money(p.sal)}`}:{t:'neg',v:0,h:'재계약 협상'};
-  if(p.extNext){ if(k===0)return {t:'fix',v:srv?0:p.sal,h:`${money(p.sal)}${tag}`}; if(k<=p.extNext.years)return {t:'fix',v:srv?0:p.extNext.annual,h:`${money(p.extNext.annual)}${tag}`}; return k===p.extNext.years+1?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
-  if(p.faC){ const n=Math.max(1,p.yrs||1); if(k<n)return {t:'fix',v:srv?0:p.sal,h:`${money(p.sal)}${tag}`}; return k===n?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
-  const cy=ctrlYears(p); if(k===0)return {t:'fix',v:srv?0:p.sal,h:`${money(p.sal)}${tag}`};
-  if(k<cy){ const e=round5(marketSal(projPlan(p,k))*Math.min(1,fr((p.svc||0)+k))); const v=Math.max(MIN_SAL,e); return {t:'est',v:srv?0:v,h:`~${money(v)}${tag}`}; }
+  if(p.extNext){ if(k===0)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`}; if(k<=p.extNext.years)return {t:'fix',v:Math.round(p.extNext.annual*payFrac(p,y)),h:`${money(p.extNext.annual)}${tag}`}; return k===p.extNext.years+1?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
+  if(p.faC){ const n=Math.max(1,p.yrs||1); if(k<n)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`}; return k===n?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
+  const cy=ctrlYears(p); if(k===0)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`};
+  if(k<cy){ const e=round5(marketSal(projPlan(p,k))*Math.min(1,fr((p.svc||0)+k))); const v=Math.max(MIN_SAL,e); return {t:'est',v:Math.round(v*payFrac(p,y)),h:`~${money(v)}${tag}`}; }
   return k===cy?{t:'fa',v:0,h:`FA 예상${tag}`}:{t:'none',v:0,h:'미계약'}; }
 function contractGrid(){ const Y=sponSeason(); const K=[0,1,2,3]; const ps=Object.values(G.players).filter(p=>p.team===G.user&&!(p.joinY>Y));
   const R=ps.map(p=>({p,c:K.map(k=>cgCell(p,k,Y))})); const exp=x=>{ const i=x.c.findIndex(c=>c.t==='fa'||c.t==='none'||c.t==='neg'); return i<0?9:i; };

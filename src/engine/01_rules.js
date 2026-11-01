@@ -148,6 +148,10 @@ const ownedOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.
 const domPayOf=tid=>ownedOf(tid).filter(p=>!p.foreign);
 const forPayOf=tid=>ownedOf(tid).filter(p=>p.foreign);
 const payroll=tid=>sum(domPayOf(tid).map(p=>p.sal));
+/* 그해 지급 비율: 군 복무 기간은 연봉을 주지 않는다. 입대·전역 날짜를 알면 그 해 복무하지 않는 기간 몫만(전역 예정일 기준으로 미리) */
+function payFrac(p,y){ const m=p&&p.mil; if(!m||m.from==null||!m.until)return 1; const a=dnum(y,1,1), b=dnum(y+1,1,1); const s=Math.max(a,m.from), e=Math.min(b,m.until); return 1-Math.max(0,e-s)/(b-a); }
+/* 한 해 국내 선수 연봉 지급액(결산·예산 전망): 복무 중인 선수도 그해 복무하지 않는 기간 몫은 넣는다 */
+function payYear(tid,y){ return Math.round(sum(Object.values(G.players).filter(p=>p.team===tid&&!p.foreign&&!(p.joinY>y)).map(p=>p.sal*payFrac(p,y)))); }
 /* 다음 시즌 연봉 한 가지 기준: 이미 합의한 다음 시즌 시작 다년계약(extNext) > 재계약 중 합의 연봉(newSal) > 지금 연봉 */
 function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; return p.newSal??p.sal; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
