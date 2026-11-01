@@ -320,6 +320,10 @@ const QUICK=process.env.QUICK==='1';
   /* 단장 카드: 능력 4가지와 재임 성적 */
   { where='단장 카드'; const r=await ev(()=>{ const t=G.teams.find(x=>x.id!==G.user); const h=gmCard(t,true); return {ab:/보는 눈/.test(h)&&/협상/.test(h)&&/설계/.test(h)&&/재정/.test(h),rec:/재임/.test(h)}; });
     if(r&&(!r.ab||!r.rec))add('단장 카드','단장 카드에 능력·재임 성적이 없음: '+JSON.stringify(r)); }
+  /* 소식 '자세히'는 펼친 상태를 기억한다(스크롤·다시 그리기에 닫히지 않게), 끝난 인터뷰 요청은 읽은 소식으로 */
+  { where='소식 자세히'; const r=await ev(()=>{ const m={id:'zz1',from:'점검',subj:'[인터뷰 요청] 점검',body:Array.from({length:8},(_,i)=>'줄 '+i).join('\n'),acts:[],day:G.day,read:false}; G.mail.unshift(m); const iv0=G.iv; G.iv={id:999,day:G.day,done:true,ans:[1]};
+      const h=mailCard(m); try{ render(); }catch(e){} const rd=m.read; G.iv=iv0; G.mail.shift(); return {k:/details class="mfold" data-k="mf:zz1"/.test(h),rd}; });
+    if(r&&(!r.k||!r.rd))add('소식','자세히 펼침 기억 또는 끝난 인터뷰 읽음 처리 안 됨: '+JSON.stringify(r)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

@@ -51,7 +51,8 @@ const ROUNDK={wc:'와일드카드 결정전',spo:'준플레이오프',po:'플레
 function psDay(day){
   const P=G.ps, s=P.cur; if(!s||s.days[s.gi]!==day)return;
   const h=s.homes[s.gi], a=h===s.hi?s.lo:s.hi;
-  const g=simGame(day,h,a,true); applyGame(day,h,a,g,true);
+  const hiL=s.need[0]-s.wh, loL=s.need[1]-s.wl; /* 남은 승수: 한쪽이 1승만 남으면 다른 쪽은 탈락 위기, 둘 다 1승이면 최종전 */
+  const g=simGame(day,h,a,{elim:hiL===1||loL===1,fin:hiL===1&&loL===1}); applyGame(day,h,a,g,true);
   let win=g.score.h>g.score.a?h:g.score.a>g.score.h?a:null;
   if(win===s.hi)s.wh++; else if(win===s.lo)s.wl++;
   s.gi++;

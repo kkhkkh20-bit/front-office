@@ -23,6 +23,8 @@ const MAIL_DONE=[
   [/참석 선수 확인/,()=>!G.md||!!G.md.res||G.day>=G.md.day],
   [/내일 직관|개막합니다/,(m)=>G.day>m.day+1]];
 const mailDoneShow=m=>(m.imp||m.kind==='업무'||m.kind==='결정'||(m.acts&&m.acts.length>0)||!!m.oid)&&mailDone(m);
+/* 끝난 인터뷰 요청은 열어 보지 않았어도 읽은 소식으로(파란 새 소식 표시가 남지 않게) */
+function ibAutoRead(){ for(const m of (G.mail||[])){ if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&mailDone(m))m.read=true; } }
 function mailDone(m){ if(m.done)return true;
   for(const a of (m.acts||[])){ if(a.a==='evPick'){ const id=String(a.v).split(':')[0]; const e=(G.evs||[]).find(x=>x.id===id); return !e||!!e.done; }
     if(a.a==='faOpen'||(a.a==='player'&&/관심 FA|우리 FA|시장 보고/.test(m.subj))){ const p=G.players[+a.v]; if(p&&(p.team!=null||!(G.fa&&!G.fa.closed)))return true; } }
@@ -56,7 +58,7 @@ function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); c
   return `<article class="ibm mfc${m.read?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">
     <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">확인할 소식</span>':mailDoneShow(m)?'<span class="pill">처리됨</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${m.day0!=null&&m.day0!==m.day?` · 처음 받은 날 ${dmd(m.day0)}`:''}${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
     ${warnLive(m)?`<div class="note warn ibm-warn">기한 임박: ${esc(m.warn)}</div>`:m.warn&&mailDone(m)?`<div class="note ibm-warn">기한이 지나 처리된 일입니다${mailEvPick(m)}. 아래는 받았던 당시 내용입니다.</div>`:''}
-    ${L.length?`<div class="mailbody">${(L.length>4?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4?`<details class="mfold"><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
+    ${L.length?`<div class="mailbody">${(L.length>4?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4?`<details class="mfold" data-k="mf:${m.id}" ${UI.open['mf:'+m.id]?'open':''}><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${fth?`<div class="ibm-fth"><div class="small muted">댓글 ${fth.cm.length}개${(()=>{ try{ return ` · 분위기: ${fpMood(fth.cm)}`; }catch(e){ return ''; } })()}</div><div class="fcms">${fth.cm.map(cmtRow).join('')}</div></div>`:''}
     ${m.rv?rvActsH(m):''}${handOffBtns(m)}
     ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${acts.length&&!(m.oid&&!o)?`<div class="ibm-acts">${acts.map(a=>`<button class="btn${a===acts[0]?' primary':''}" data-a="mailAct" data-v="${m.id}:${m.acts.indexOf(a)}">${esc(a.l)}</button>`).join('')}</div>`:''}

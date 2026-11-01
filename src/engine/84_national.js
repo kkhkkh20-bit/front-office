@@ -22,7 +22,9 @@ function ntMgr(){ if(!G.ntMgr)G.ntMgr={name:genName(),since:G.year}; return G.nt
 function ntUpcoming(n){ const L=[]; for(let y=G.year;y<=G.year+4&&L.length<(n||4);y++)for(const k of ['wbc','oly','ag','p12']){ const e=NT_EV[k]; if(!e.yr(y))continue; const end=dnum(y,e.to[0],e.to[1]); if(y===G.year&&end<G.day)continue; L.push({k,y,n:e.n,from:dnum(y,e.from[0],e.from[1]),to:end}); } return L.slice(0,n||4); }
 function ntPool(){ return Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!p.prospect&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&!(p.mil&&p.mil.until&&p.mil.until>G.day)); } /* 복무 중·입대 예정 선수는 뽑지 않는다 */
 /* 대표 명단: 감독 눈(능력 + 감독마다 다른 선호 약간). 아시안게임은 나이 제한·와일드카드·구단당 3명 */
-function ntSquad(k,excl,o){ o=o||{}; const e=NT_EV[k]; const M=ntMgr(); const ex=new Set(excl||[]); const v=p=>ovr(p)+hn('nt'+M.name+G.year+k,p.id)*2.5; const mul=o.mul||1, cap=e.cap?e.cap*mul:0, only=o.only?new Set(o.only):null;
+/* 병역 특례가 걸린 대회(올림픽·아시안게임)는 같은 실력이면 미필 선수를 먼저 뽑는다: 미필 중심에 군필 몇 명이 섞이는 실제 구성 */
+function ntMilB(k){ const e=NT_EV[k]; return e&&e.ex?(k==='ag'?6:5):0; }
+function ntSquad(k,excl,o){ o=o||{}; const e=NT_EV[k]; const M=ntMgr(); const ex=new Set(excl||[]); const mb=ntMilB(k); const v=p=>ovr(p)+hn('nt'+M.name+G.year+k,p.id)*2.5+(mb&&milFree(p)&&p.age<=30?mb:0); const mul=o.mul||1, cap=e.cap?e.cap*mul:0, only=o.only?new Set(o.only):null;
   const base=ntPool().filter(p=>!ex.has(p.id)).map(p=>({p,v:v(p),b:ntBucket(p),ok:!e.u25||ntU25(p)})).sort((a,b)=>b.v-a.v);
   const pool=only?base.filter(x=>only.has(x.p.id)).concat(base.filter(x=>!only.has(x.p.id))):base; /* 최종 명단은 예비 명단 안에서 먼저 뽑고, 모자라면 밖에서 채운다 */
   const per={}, cnt={P:0,C:0,IF:0,OF:0}, S=[]; const capOk=x=>!cap||(per[x.p.team]||0)<cap; const put=x=>{ S.push(x); cnt[x.b]++; per[x.p.team]=(per[x.p.team]||0)+1; }; const drop=x=>{ S.splice(S.indexOf(x),1); cnt[x.b]--; per[x.p.team]--; };

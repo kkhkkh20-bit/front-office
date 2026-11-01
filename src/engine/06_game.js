@@ -14,12 +14,18 @@ const pz=()=>({outs:0,h:0,hr:0,bb:0,so:0,er:0,pc:0,bf:0});
 const staF=p=>clamp(1+(45-(p.r.sta||45))*.006,.8,1.2);
 const staI=p=>clamp(1+(40-(p.r.sta||40))*.006,.8,1.2); /* 부상 배수: 리그 투수 평균 체력(약 40)을 1로 둬 전체 부상 빈도는 그대로 */
 function pitFatGain(p,pc,isSP){ return (pc*(isSP?.55:.9)+(isSP?0:6))*staF(p); } /* 한 경기 등판 피로(원정 이동 피로는 따로 곱한다) */
-function relAvail(p,day){ const ae=mgrPush(p.team); if(!healthy(p)||p.lastApp===day||(p.fat||0)>72+(ae-50)*.4+((p.r.sta||45)-45)*.4)return false; /* 체력이 좋은 불펜은 연투를 더 버틴다 */
+function relAvail(p,day,ps){ const ae=mgrPush(p.team)+(ps?18:0); /* 가을야구: 연투·혹사를 더 감수한다 */ if(!healthy(p)||p.lastApp===day||(p.fat||0)>72+(ae-50)*.4+((p.r.sta||45)-45)*.4)return false; /* 체력이 좋은 불펜은 연투를 더 버틴다 */
   const cd=consecDays(p,day); /* 연투: 이틀은 보통, 3연투는 밀어붙이는 감독만, 4연투는 강행군 감독만 */
   if(cd>=1&&(p.lastPc||0)>25+(ae-50)*.4)return false; if(cd>=2&&(ae<55||(p.lastPc||0)>22))return false; if(cd>=3&&ae<72)return false; if(cd>=4)return false;
   if(ae<=38&&pc7(p,day)>60)return false; return true; }
-function pickStarter(tid,d,day){
-  const t=team(tid); const sp=d.sp;
+/* 가을야구 총력전: 좋은 선발 셋으로 돌리고(4일 휴식이면 등판), 탈락 위기면 에이스가 3일만 쉬고도 나온다 */
+function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastStart; const top=[...d.sp].filter(healthy).sort((a,b)=>spV(b)-spV(a)); const need=ps.elim?3:4;
+  return top.slice(0,3).find(p=>rest(p)>=need)||top.find(p=>rest(p)>=4)||null; }
+/* 최종전 접전 7회 이후: 오늘 선발이 아닌 에이스(선발 상위 2명, 2일 이상 쉼)를 불펜으로 */
+function psAceRelief(fs,inn,lead,day,ps){ if(!ps||!(ps.fin||ps.elim)||inn<7||Math.abs(lead)>3||!fs.spAll)return null; const top=[...fs.spAll].filter(p=>healthy(p)&&p!==fs.sp&&!fs.used.has(p.id)).sort((a,b)=>spV(b)-spV(a)).slice(0,2);
+  return top.find(p=>(p.lastStart==null||day-p.lastStart>=2)&&p.lastApp!==day)||null; }
+function pickStarter(tid,d,day,ps){
+  const t=team(tid); const sp=d.sp; if(ps&&sp.length){ const c=psStarter(tid,d,day,ps); if(c)return c; }
   if(!sp.length) return d.pen[0]||playersOf(tid).find(p=>p.isP&&healthy(p))||playersOf(tid).find(p=>p.isP)||null;
   for(let k=0;k<sp.length;k++){ const i=((t.rot||0)+k)%sp.length; const p=sp[i]; if(p.lastStart==null||day-p.lastStart>=5){ t.rot=(i+1)%sp.length; return p; } }
   return [...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0))[0];
@@ -34,15 +40,15 @@ function orderList(start,tid){
   by(p=>p.r.pow+p.r.con*.5); const mid=s.splice(0,3);
   by(offV); return [...top,...mid,...s];
 }
-function gameSide(tid,day){
+function gameSide(tid,day,ps){
   const d=depth(tid); const ln=Object.assign({},d.ln); const bench=[...d.bench];
   const ov={};
   for(const pos of ORDER){ const p=ln[pos]; if(!p||ov[pos]===p.id||!bench.length)continue;
     const m=mgrOf(tid), re=m.interim?50:mgrRestEff(m); const fat=p.fat||0, thr=(pos==='C'?55:66)+(50-re)*.35; if(R()<.004+re/4000||(fat>thr&&R()<clamp((fat-thr)/30+(re-50)/150,.12,.95))){ let best=null,bs=-1e9; for(const q of bench){const s=posScore(q,pos); if(s>bs){bs=s;best=q}} ln[pos]=best; bench.splice(bench.indexOf(best),1); } }
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k;
   const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),tid);
-  const sp=pickStarter(tid,d,day);
-  const s={tid,order,posOf,bench,out:[],defv:teamDefV(ln),pen:d.pen.filter(p=>p!==sp),used:new Set(sp?[sp.id]:[]),cur:sp,sp,curIsSP:true,idx:0,box:new Map(),pitchers:sp?[sp.id]:[],entry:{},exit:{}};
+  const sp=pickStarter(tid,d,day,ps);
+  const s={tid,order,posOf,bench,out:[],defv:teamDefV(ln),spAll:d.sp,short:!!(ps&&sp&&sp.lastStart!=null&&day-sp.lastStart<5),pen:d.pen.filter(p=>p!==sp),used:new Set(sp?[sp.id]:[]),cur:sp,sp,curIsSP:true,idx:0,box:new Map(),pitchers:sp?[sp.id]:[],entry:{},exit:{}};
   if(sp)s.box.set(sp.id,pz()); order.forEach(p=>s.box.set(p.id,bz())); sideTraits(s);
   return s;
 }
@@ -71,17 +77,20 @@ function outcome(b,p,dv,fp){ /* fp: 경기 중 피로(투구 수와 체력, 평�
   return 'OUT';
 }
 function simGame(day,hid,aid,ps){
-  const S={h:gameSide(hid,day),a:gameSide(aid,day)};
+  const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
+  const psx=ps&&typeof ps==='object'?ps:null;
   const score={h:0,a:0}, line={h:[],a:[]}, hits={h:[],a:[]}, ev=[], pbp=[];
+  for(const k of ['a','h']){ const s0=S[k]; if(s0.short&&s0.sp)ev.push({h:0,t:`${s0.sp.name}, ${day-s0.sp.lastStart}일 휴식 후 선발 등판(총력전)`}); }
   const wc={}, lc={}; let walk=false;
   const opp=k=>k==='h'?'a':'h';
   /* 선발 한계 투구 수: KBO 2024 선발 평균 90구 안팎(90구를 넘는 구단은 롯데 91.2구 하나). 단장이 '투수 혹사 금지'를 지시했으면 감독 성향과 상관없이 95구에서 끊는다 */
-  const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ const v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5; /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
+  const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ const v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5-(fs.short?15:0); /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
   function needChange(fs){ const x=fs.box.get(fs.cur.id); const mm=mgrOf(fs.tid);
     if(fs.curIsSP){ const hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&x.er>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)||x.er>=6||(x.er>=4&&x.pc>=lim(fs)-25)||hook; }
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
-    const av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day)); if(!av.length)return;
+    { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<260)pbp.push([half,'PC',ace.id]); return; } }
+    const av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day,ps)); if(!av.length)return;
     const closer=fs.pen[0], setup=fs.pen.slice(1,4), mid=fs.pen.slice(4);
     let nxt=null;
     if(inn>=9&&lead>=1&&lead<=3) nxt=av.find(p=>p===closer);

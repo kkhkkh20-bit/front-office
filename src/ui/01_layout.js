@@ -2,7 +2,7 @@
 function render(){
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
-  try{ annCheck(); }catch(e){}
+  try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}
   setTimeout(()=>{ try{ document.querySelectorAll('nav.subtabs,.itabs,.tstrip').forEach(n=>{ const ov=n.scrollWidth>n.clientWidth+2; n.classList.toggle('ovx',ov); const b=n.querySelector('button.on'); if(ov&&b)n.scrollLeft=Math.max(0,b.offsetLeft-n.clientWidth/2+b.offsetWidth/2); }); }catch(e){} },0);
   setTimeout(()=>{ try{ campAfter(); if(UI.facFocus){ const el=document.getElementById('fci-'+UI.facFocus); UI.facFocus=null; if(el){ el.scrollIntoView({block:'center'}); el.classList.add('flash'); } } }catch(e){} try{ document.querySelectorAll('.chips').forEach(el=>el.classList.toggle('ovf',el.scrollWidth>el.clientWidth+2)); }catch(e){} },0);
   if(UI.tab==='roster'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.roster=true; } if(G.tut&&!G.tut.done){ try{ tutTick(); }catch(e){} }
