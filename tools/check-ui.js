@@ -532,6 +532,13 @@ const QUICK=process.env.QUICK==='1';
   { where='추세 차트 범위'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.isP); const k={gl:p.gl,hist:p.hist}; const y=G.year; const ot=G.teams.find(t=>t.id!==G.user).id; p.gl={y,g:[[G.day,80,70,20,30,8,15,3]]}; p.hist=[Object.assign({},ZB,{y,t:ot,lvl:'1군',pa:400,ab:350,h:100}),Object.assign({},ZB,{y,t:G.user,lvl:'1군',pa:80,ab:70,h:20})];
       const h=rollCard(p); p.gl=k.gl; p.hist=k.hist; return {h}; });
     if(r&&!(/우리 구단에서 모은 경기별 기록 80타석/.test(r.h)&&/이번 시즌 전체 480타석/.test(r.h)))add('추세 차트','이적 선수 기록 범위 안내가 없음: '+String(r.h).replace(/<[^>]+>/g,'').slice(0,80)); }
+  /* 확인창 = 실제 실행 계산(리뷰 2026-11-02 00:55): 연봉조정 선수는 구단안/선수안, 감독 교체 정산금은 약속 위반 절반 반영 */
+  { where='확인창 계산'; const r=await ev(()=>{ const out={}; const keepC=G.contract; const ps=playersOf(G.user).filter(p=>!p.foreign&&!p.faC).slice(0,2); const [a,b]=ps; const ka=a.newSal, kb=b.newSal; a.newSal=a.sal+50; b.newSal=b.sal;
+      G.contract={y:G.year,tid:G.user,ended:ps.map(p=>p.id),foreignEnd:[],foreignDrop:[],released:[],done:false,neg:{[b.id]:{st:'arb',arb:{club:200,player:1000},ask:1000,off:200}}};
+      const cf=GUARD.confirmContracts(); out.arb=!!cf&&cf.lines.some(l=>/구단안/.test(l)&&/선수안/.test(l))&&cf.lines.some(l=>/연봉조정 중/.test(l)); G.contract=keepC; a.newSal=ka; b.newSal=kb; if(ka==null)delete a.newSal; if(kb==null)delete b.newSal;
+      const cur=G.mgr[G.user]; if(cur&&!cur.interim&&(G.mmarket||[]).length){ const k={plv:cur.plv,yrs:cur.yrs}; cur.plv=[{y:G.year},{y:G.year}]; cur.yrs=Math.max(2,cur.yrs||0); const c2=GUARD.hireMgr?GUARD.hireMgr(G.mmarket[0].id+":2:0"):null; const txt=c2?c2.lines.join(' '):''; out.sev=!c2||txt.includes(money(mgrSevPay(cur).pay)); cur.plv=k.plv; cur.yrs=k.yrs; } else out.sev=true;
+      return out; });
+    if(r){ if(!r.arb)add('확인창','연봉조정 중 선수를 구단안/선수안으로 나눠 보여 주지 않음'); if(!r.sev)add('확인창','감독 교체 정산금이 실제 경질 계산과 다름'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);
