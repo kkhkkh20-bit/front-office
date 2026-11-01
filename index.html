@@ -3169,7 +3169,7 @@ function processDay(){ syncMinSal();
   try{ stDaily(); }catch(e){}
   try{ ivDaily(); }catch(e){}
   try{ fanPulseDaily(); }catch(e){}
-  try{ cwDaily(); }catch(e){} try{ achFirstDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
+  try{ cwDaily(); }catch(e){} try{ aiPlanDaily(); }catch(e){} try{ achFirstDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
   if(day===KD(11,24))try{ awardCeremony('mvp'); }catch(e){}
   if(day===KD(12,9))try{ awardCeremony('gg'); }catch(e){}
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{evDaily();}catch(e){} try{ fPubDaily(); }catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ marketDaily(); }catch(e){}
@@ -6509,7 +6509,7 @@ function offseasonMgr(){
   try{ obYear(); }catch(e){}
   if(G.coach)coachYear(); try{ gmTurnover(); }catch(e){} try{ mgrFireOff(); }catch(e){}
   for(const t of G.teams){ const m=G.mgr[t.id]; if(!m)continue; m.yrs--; if(m.age)m.age++;
-    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<70&&R()<.6)m.yrs=2; else { const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||mkMgr(); n.yrs=n.yrs||ri(2,3); G.mgr[t.id]=n; n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){ c.yrs=n.yrs; G.coach[t.id][c.role]=c; } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
+    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<70&&R()<.6)m.yrs=2; else { const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrPick(t,[mkMgr(),mkMgr(),mkMgr()]); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ n.yrs=n.yrs||ri(2,3); G.mgr[t.id]=n; n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){ c.yrs=n.yrs; G.coach[t.id][c.role]=c; } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
   refreshMgrMarket();
   const m=G.mgr[G.user];
   if(m&&!m.interim&&m.yrs<=0) mail('운영팀','감독 계약이 끝납니다',`${m.name} 감독의 계약이 올해로 끝납니다. 재계약하거나 새 감독을 선임해야 합니다. 연말까지 정하지 않으면 감독 자리가 비게 됩니다.`,{imp:true,kind:'감독',acts:[{l:'2년 재계약',a:'renewMgr',v:'2'},{l:'감독 후보 보기',a:'goWork',v:'감독'}]});
@@ -10355,6 +10355,26 @@ function roleInside(tid,k){ let d=null; try{ d=depth(tid); }catch(e){ return nul
 /* 감독 화면: 원하는 역할별 주전 현황 + 그 야구가 먹히는지 보여 주는 기록 */
 function mgrPlayStat(tid,m){ const y=G.year; let sb=0,cs=0,hr=0,pa=0; for(const p of playersOf(tid)){ const h=seasonTotalT(p,y,'1군',tid); if(!h||p.isP)continue; sb+=h.sb||0; cs+=h.cs||0; hr+=h.hr||0; pa+=h.pa||0; } if(!pa)return '';
   const L=mgrRolesOf(m); if(L.includes('runSPD'))return `올 시즌 도루 ${sb}개 · 실패 ${cs}개(성공률 ${sb+cs?Math.round(sb/(sb+cs)*100):0}%)`; if(L.includes('pow'))return `올 시즌 팀 홈런 ${hr}개`; return ''; }
+/* ===== AI 단장의 계획: 우승 도전 · 전력 정비 · 재건 =====
+ 1월 10일(새 시즌 전력 기준)과 7월 1일(실제 순위 기준)에 다시 정한다. 계획은 t.mode로 이어져 이미 있는 판단이 따른다:
+ 트레이드 가치(우승 도전은 베테랑을 더, 재건은 덜 쳐줌), FA 지출, 드래프트, 로스터 정리, 매물 등록(재건이면 비싼 베테랑), 마감 거래의 구매자.
+ 구단 설계 능력이 낮은 단장은 형편과 다른 계획을 고를 수 있다(무리한 우승 도전·늦은 재건). 바뀌면 리그 소식으로 알린다(시장이 열리는 순간) */
+function aiPlanBase(rk,age,owner,cash){ if(cash<-5000)return 'rebuild'; if(rk<=3||(rk<=5&&owner==='win'))return 'contend'; if(rk>=8&&(age>=29.5||cash<-2000))return 'rebuild'; return 'mid'; }
+function aiPlanRank(t,mid){ if(mid){ const st=standingsNow(); return st.findIndex(x=>x.tid===t.id)+1; } const L=G.teams.map(x=>({id:x.id,r:teamRating(x.id)})).sort((a,b)=>b.r-a.r); return L.findIndex(x=>x.id===t.id)+1; }
+function aiPlanApply(t,nw,why){ const old=t.mode; t.mode=nw; t.modeY=G.year; t.modeD=G.day; if(old===nw)return;
+  const L=nw==='rebuild'?domestic(t.id).filter(p=>p.age>=29&&!p.ys&&ovr(p)>=50).sort((a,b)=>b.sal-a.sal).slice(0,2):[]; for(const p of L){ p.aiListed=true; p.aiWhy='reb'; p.aiLd=G.day; }
+  const lab={contend:'우승 도전',rebuild:'재건',mid:'전력 정비'}[nw]; const g=t.gm&&!t.gm.interim?t.gm.name:'단장대행';
+  try{ news('리그',`${tshort(t.id)}, ${lab}으로 방향 전환`,`${tname(t.id)} ${g} 단장이 ${lab} 쪽으로 방향을 잡았습니다${why?`(${why})`:''}.${L.length?` ${L.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세)`).join(', ')}이(가) 시장에 나올 수 있습니다.`:nw==='contend'?' 마감 전 보강에 나설 전망입니다.':''}`,0); }catch(e){} }
+function aiPlanYear(mid){ for(const t of G.teams){ if(t.id===ME())continue; const rk=aiPlanRank(t,mid); const top=domestic(t.id).filter(p=>!p.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,12); const age=top.length?top.reduce((a,p)=>a+p.age,0)/top.length:28;
+    let nw=aiPlanBase(rk,age,t.owner,t.cash||0);
+    if(mid){ /* 시즌 중에는 크게 어긋날 때만 바꾼다 */ if(t.mode==='contend'&&rk>=8)nw='rebuild'; else if(t.mode!=='contend'&&rk<=3)nw='contend'; else nw=t.mode||nw; }
+    const ab=t.gm?gmAbil(t.gm):null; if(ab&&nw!=='contend'&&R()<(1-ab.plan/100)*.35)nw='contend'; /* 서툰 단장은 형편보다 무리하게 우승을 노린다 */
+    aiPlanApply(t,nw,mid?`${rk}위`:`전력 ${rk}위 예상`); } }
+function aiPlanDaily(){ const o=dobj(G.day); if(o.m===1&&o.d===10&&G.aiPlanY!==G.year){ G.aiPlanY=G.year; aiPlanYear(false); } if(o.m===7&&o.d===1&&G.aiPlanM!==G.year){ G.aiPlanM=G.year; aiPlanYear(true); } }
+/* AI 감독 선임: 후보 여럿 중 지금 선수단과 맞는 감독(원하는 역할을 이미 갖춘 정도)을 구단 설계 능력만큼 더 본다 */
+function aiMgrFit(tid,m){ const L=mgrRolesOf(m); if(!L.length)return .4; return L.reduce((a,k)=>a+Math.min(1,roleHaveAs(tid,k)/MROLE[k].tgt),0)/L.length; }
+function roleHaveAs(tid,k){ const R0=MROLE[k]; return playersOf(tid).filter(p=>!p.prospect&&!p.ys&&roleOk(p,k)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,R0.bat?9:5).filter(p=>ovr(p)>=45).length; }
+function aiMgrPick(t,C){ const ab=t.gm?gmAbil(t.gm):null; const w=ab?ab.plan/100:.5; let best=C[0], bs=-1e9; for(const m of C){ const s=(m.fame||50)*.05+aiMgrFit(t.id,m)*10*w+R()*1.5; if(s>bs){ bs=s; best=m; } } return best; }
 </script>
 <script>
 /* 위에서 본 선수 그림: Kenney Sports Pack (CC0) — https://kenney.nl */
@@ -12082,7 +12102,7 @@ function intLine(tid,short){ if(!interestKnown(tid))return short?'':'<p class="s
 function gmCard(t,full){ const g=gmOf(t.id); if(!g)return ''; const c=(G.gmc||{})[t.id]||{};
   return `<div class="gmc"><div class="gmc-h">${gmAv(t.id)}<div><b>${badge(t.id,16)} ${esc(t.city+' '+t.nick)}${g.ob?obTag(g.ob):''}</b><span>${g.interim?'단장대행 체제':`${esc(g.name)} 단장 · ${g.age}세`}</span></div><span class="pill ${g.trait==='hard'||g.trait==='miser'?'warn':g.trait==='loyal'?'good':'acc'}">${GMT[g.trait].l}</span></div>
     <div class="gmc-r"><span class="small muted">친분</span>${relBar(t.rel)}<b>${t.rel}</b><span class="small muted">${relLabel(t.rel)}</span></div>
-    ${(()=>{ const ab=g.interim?null:gmAbil(g); const rc=gmRecord(t.id); return ab?`<div class="chips gmab"><span class="pill" title="높을수록 성적의 운에 덜 속습니다">보는 눈 ${ab.eye}</span><span class="pill" title="높을수록 트레이드에서 더 받아 내려 합니다">협상 ${ab.neg}</span><span class="pill" title="높을수록 감독 야구에 맞는 선수를 꾸준히 찾습니다">구단 설계 ${ab.plan}</span><span class="pill" title="높을수록 노장 FA에 덜 씁니다">재정 ${ab.money}</span></div><p class="small muted">재임 ${rc&&rc.n?`${rc.n}시즌 평균 ${rc.avg.toFixed(1)}위 · 최고 ${rc.best}위 · 가을야구 ${rc.ps}회${rc.ch?` · 우승 ${rc.ch}회`:''}`:`${g.since}년 취임 · 아직 마친 시즌 없음`}</p>`:''; })()}
+    ${(()=>{ const ab=g.interim?null:gmAbil(g); const rc=gmRecord(t.id); return ab?`<div class="chips gmab"><span class="pill" title="높을수록 성적의 운에 덜 속습니다">보는 눈 ${ab.eye}</span><span class="pill" title="높을수록 트레이드에서 더 받아 내려 합니다">협상 ${ab.neg}</span><span class="pill" title="높을수록 감독 야구에 맞는 선수를 꾸준히 찾습니다">구단 설계 ${ab.plan}</span><span class="pill" title="높을수록 노장 FA에 덜 씁니다">재정 ${ab.money}</span></div><p class="small muted">${t.mode?`올해 계획: <b>${{contend:'우승 도전',rebuild:'재건',mid:'전력 정비'}[t.mode]||'-'}</b> · `:''}재임 ${rc&&rc.n?`${rc.n}시즌 평균 ${rc.avg.toFixed(1)}위 · 최고 ${rc.best}위 · 가을야구 ${rc.ps}회${rc.ch?` · 우승 ${rc.ch}회`:''}`:`${g.since}년 취임 · 아직 마친 시즌 없음`}</p>`:''; })()}
     <p class="gmc-n">${esc(needText(t.id))}</p>${intLine(t.id)}<div class="gmc-q">${negChip(t.id)}</div>
     ${full?`<p class="small muted">${esc(GMT[g.trait].d)} ${esc(g.car)} · ${g.since}년부터 재임</p>`:''}${(()=>{ const T=g.interim?[]:aiGmTags(t.id); return T.length?`<div class="chips gmtags">${T.map(x=>`<span class="pill" title="${esc(x.d)}">${esc(x.l)}</span>`).join('')}</div>`:''; })()}
     <div class="row"><button class="btn small primary" data-a="tpartnerGo" data-v="${t.id}">트레이드 협상</button><button class="btn small" data-a="gmCall" data-v="${t.id}" ${c.call!=null&&c.call>G.day-14?'disabled':''}>안부 연락${c.call!=null&&c.call>G.day-14?` (${c.call+14-G.day}일 뒤)`:''}</button><button class="btn small" data-a="gmMeal" data-v="${t.id}" ${c.meal!=null&&c.meal>G.day-30?'disabled':''}>식사 (1천만)${c.meal!=null&&c.meal>G.day-30?` · ${c.meal+30-G.day}일 뒤`:''}</button></div>
@@ -16779,6 +16799,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-01p',d:'11월 1일',t:'AI 단장의 계획',items:[
+    '다른 구단 단장이 1월(새 시즌 전력 기준)과 7월(실제 순위 기준)에 계획을 정합니다: 우승 도전·전력 정비·재건. 계획에 따라 트레이드 가치, FA 지출, 드래프트, 매물 등록, 마감 거래 태도가 달라집니다.',
+    '재건으로 돌아선 구단은 비싼 베테랑을 시장에 내놓고 리그 소식으로 알립니다. 구단 설계 능력이 낮은 단장은 형편보다 무리하게 우승을 노리기도 합니다.',
+    'AI 구단이 감독을 새로 뽑을 때 지금 선수단과 맞는 감독(원하는 역할을 이미 갖춘 정도)을 구단 설계 능력만큼 더 봅니다. 단장 카드에 올해 계획을 보여 줍니다.'
+  ]},
   {id:'2026-11-01o',d:'11월 1일',t:'단장 능력',items:[
     '다른 구단 단장마다 능력 네 가지가 있습니다: 선수 보는 눈(높을수록 성적의 운에 덜 속음), 협상력(트레이드에서 더 받아 내려 함), 구단 설계(감독 야구에 맞는 선수를 꾸준히 찾음), 재정 운영(노장 FA에 덜 씀). 성향과 따로 정해지고 실제 판단에 쓰입니다.',
     '트레이드 센터의 단장 카드와 인물 카드에 능력과 재임 성적(시즌 수·평균 순위·가을야구·우승)을 보여 줍니다.'

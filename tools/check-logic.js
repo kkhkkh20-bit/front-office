@@ -573,6 +573,12 @@ T('[단장 능력] AI 단장의 선수 보는 눈·협상력·구단 설계·재
   const p=Object.values(G.players).find(q=>q.team!=null&&q.team!==t.id&&!q.isP&&statLuck(q)&&Math.abs(statLuck(q).d)>=2); ok(p,'준비 실패'); g.ab.eye=90; const a=Math.abs(seenDelta(t,p)); g.ab.eye=35; const b=Math.abs(seenDelta(t,p)); ok(b>a,'눈이 좋을수록 운에 덜 속음 '+a+' '+b);
   g.ab.neg=90; const n1=tradeNeed(t,5); g.ab.neg=35; const n2=tradeNeed(t,5); ok(n1>n2,'협상력이 높을수록 더 요구 '+n1+' '+n2);
   const v=Object.values(G.players).filter(q=>!q.isP&&q.age>=31&&q.team!=null&&q.team!==t.id).sort((x,y)=>ovr(y)-ovr(x))[0]; /* 최저 연봉에 걸리지 않는 쓸 만한 노장 */ g.ab.money=90; const f1=faWorth(t,v); g.ab.money=35; const f2=faWorth(t,v); ok(f1<f2,'재정 운영이 좋으면 노장에게 덜 씀 '+f1+' '+f2); });
+T('[AI 계획] AI 단장은 형편에 맞는 계획(우승 도전·전력 정비·재건)을 세우고, 재건으로 돌면 비싼 베테랑을 시장에 내놓는다',()=>{ fresh(); ok(typeof aiPlanBase==='function','계획 함수 없음');
+  ok(aiPlanBase(2,27,'pr',0)==='contend'&&aiPlanBase(9,31,'pr',0)==='rebuild'&&aiPlanBase(6,28,'pr',0)==='mid'&&aiPlanBase(5,28,'win',0)==='contend','계획 판단');
+  const t=G.teams.find(x=>x.id!==G.user); t.mode='contend'; const n0=domestic(t.id).filter(p=>p.aiListed).length; aiPlanApply(t,'rebuild'); ok(t.mode==='rebuild','계획 반영'); ok(domestic(t.id).filter(p=>p.aiListed).length>n0,'재건인데 매물이 없음'); ok(G.news&&G.news.some(n=>/재건/.test(n.t||'')),'재건 소식 없음'); });
+T('[AI 감독 선임] 구단 설계가 좋은 AI 단장은 선수단에 맞는 감독을 고른다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); ok(typeof aiMgrPick==='function','함수 없음'); gmAbil(t.gm).plan=95;
+  for(const p of domestic(t.id))if(!p.isP){ p.r.spd=Math.max(p.r.spd,66); p.r.eye=Math.max(p.r.eye,60); p.r.con=Math.max(p.r.con,55); }
+  const C=[mkMgr(),mkMgr(),mkMgr(),mkMgr()]; C.forEach((m,i)=>{ Object.assign(m,{small:i===2?88:30,dfn:50,pen:50,arm:50,youth:50,fame:50}); delete m.ty; }); const m=aiMgrPick(t,C); ok(m===C[2],'맞는 감독을 고르지 않음 '+C.indexOf(m)); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
