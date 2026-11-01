@@ -28,7 +28,14 @@ function autoFre(){ const C=G.contract; if(!C||C.done)return; const L=[];
     else { C.foreignDrop.push(id); L.push(`${p.name}: 결별(보류권 유지)`); } }
   let g=0; while(fReCapInfo().over>0&&g++<4){ const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>ovr(a)-ovr(b))[0]; if(!k)break; C.foreignDrop.push(k.id); L.push(`${k.name}: 총액 한도로 결별`); }
   if(L.length){ autoLogAdd('외국인 재계약(운영팀)',L.join(' · ')); note('연봉',`운영팀이 외국인 재계약을 처리했습니다.\n${L.join('\n')}`); } }
-function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(C.foreignEnd.length&&!autoOn('fre'))return; if(!autoOn('sal'))return; const r=confirmContracts(); if(!r)autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
+/* 남은 외국인 재계약 결정(결별도 합의도 안 한 선수). 외국인 위임을 껐더라도 이게 없으면 국내 연봉 확정을 미루지 않는다(리뷰 2026-11-01) */
+function fRePending(){ const C=G.contract; if(!C||C.done)return []; return C.foreignEnd.filter(id=>{ const p=G.players[id]; return p&&p.team===G.user&&!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok); }); }
+function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sal'))return; const pend=fRePending(); if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
+  const r=confirmContracts(); if(r){ C.autoWait={d:G.day,why:String(r)}; return; } delete C.autoWait; C.autoDone={d:G.day,n:C.ended.length,f:C.foreignEnd.length}; autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
+/* 위임 업무 처리 상태(처리 예정·완료·대기와 이유). 지금은 연봉 계약 */
+function delegStatus(k){ if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
+  if(C.done)return C.autoDone?`처리 완료: ${dmd(C.autoDone.d)} 국내 ${C.autoDone.n}명·외국인 ${C.autoDone.f}명 계약 확정`:'처리 완료: 올해 연봉 계약 확정';
+  if(C.autoWait)return `대기: ${C.autoWait.why}`; return `처리 예정: ${G.day<KD(1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; }
 function autoDaily(day){ if(!G.auto||G.unemp)return;
   if(day===KD(12,3)&&autoOn('fre'))try{ autoFre(); }catch(e){}
   if(day===KD(12,5)&&autoOn('sal'))try{ autoSalRound(true); }catch(e){}
@@ -54,7 +61,7 @@ function autoNow(k){ const C=G.contract; const out=[];
   if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
   if(k==='scout'){ out.push('스카우트 배치를 맡았습니다'); }
   if(k==='ev'||k==='mgr'){ for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))){ e.deleg=true; evPick(e.id,e.def,true); } } out.push('걸려 있던 결정을 기본안으로 처리했습니다'); }
-  if(C&&!C.done&&autoOn('sal')&&(!C.foreignEnd.length||autoOn('fre'))&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
+  if(C&&!C.done&&autoOn('sal')&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
   return out.join('. '); }
 function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 설정 · 권한에서 다시 가져올 수 있습니다.`; }
 function takeBack(k){ autoSet(k,false); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) 다시 직접 합니다.`; }

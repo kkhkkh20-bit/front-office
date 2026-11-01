@@ -19,7 +19,7 @@ function keyBar(p,rp,isFA,isFM){ if((p.fdPool&&G.fd)||fdHideNow(p))return fdKeyB
 function posValLine(p,rp){ if(p.isP||p.prospect||p.fdPool||hideOvr(p)||!p.r)return ''; const b=posBest(p); const d=dv(b.v)-dvo(p);
   return `<div class="pvline small"><span class="muted">포지션 가치</span> <b class="num">${dv(b.v)}</b> <span class="muted">${POSK[b.pos]||b.pos} 기준 · 종합보다 ${d>0?'+':''}${d}</span> <span class="i" title="종합 능력은 수비를 어느 자리든 같게 칩니다. 실제로는 유격·3루·2루·중견 수비가 실점을 훨씬 크게 바꾸고, 포수·유격·2루는 쓸 만한 선수가 드뭅니다. 구단들은 트레이드·FA·연봉에서 이 포지션 가치로 봅니다. 1루·지명타자로는 누구나 옮길 수 있어 가치가 낮습니다.">?</span></div>`; }
 function valueLine(p,rp){ if(p.prospect||p.fdPool||p.team==null)return ''; const L=[];
-  const hs=p.hist.filter(h=>h.lvl==='1군'&&h.t===p.team&&h.y>=(G.startY||0)); const ys=[...new Set(hs.map(h=>h.y))]; const w=sum(ys.map(y=>{ const h=seasonTotal(p,y,'1군'); return h&&h.t===p.team?wOf(h,p):0; }));
+  const CW=clubWar(p,p.team,G.startY||0); const ys=CW.ys; const w=sum(ys.map(y=>{ const h=seasonTotalT(p,y,'1군',p.team); return h?wOf(h,p):0; })); /* 우리 구단 소속으로 낸 기록만(시즌 중 이적 전 기록 제외) */
   L.push(`<span><i>구단 기여</i>${ys.length?`${esc(tshort(p.team))} ${ys.length}시즌 · 1군 WAR <b>${w.toFixed(1)}</b>`:`${esc(tshort(p.team))} 첫 시즌`}</span>`);
   if(p.team===G.user&&!p.foreign&&p.age<=25){ if(rp.ofp!=null)L.push(`<span><i>스카우트</i>${esc(potLine(p,rp,{who:false}))}</span>`);
     try{ const d=depth(G.user); const k=pSlot(p); const st=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k]; const reg=[...d.start,...d.sp,...d.pen.slice(0,4)].some(x=>x.id===p.id);

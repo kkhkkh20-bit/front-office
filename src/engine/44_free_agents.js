@@ -10,7 +10,9 @@ const ARCH_K=['g','pa','ab','h','d','tr','hr','bb','so','sb','rbi','outs','er','
 function archPlayer(p){ if(!p||!p.hist)return; const H=p.hist.filter(h=>h.lvl==='1군'&&!h.y2&&((h.pa||0)+(h.outs||0))>0); if(!H.length)return; const A=G.arch=G.arch||{};
   const rows=H.map(h=>{ const o={y:h.y,t:h.t}; for(const k of ARCH_K)if(h[k])o[k]=h[k]; let w=0; try{ w=Math.round(warOf(h,p)*10)/10; }catch(e){} o.war=w; return o; });
   const last=(p.story||[]).slice(-1)[0]; A[p.id]={id:p.id,name:p.name,isP:!!p.isP,pos:p.isP?(p.role==='SP'?'선발':'불펜'):p.pos,foreign:p.foreign||null,age:p.age,y:G.year,t:p.team??(rows[rows.length-1]||{}).t,why:last&&last.y===G.year?last.t:'',rows};
-  const ks=Object.keys(A); if(ks.length>900){ const tw=id=>A[id].rows.reduce((a,r)=>a+(r.war||0),0); ks.sort((a,b)=>tw(a)-tw(b)).slice(0,ks.length-900).forEach(id=>delete A[id]); } }
+  const ks=Object.keys(A).filter(id=>A[id]&&!archKeep(A[id])); if(ks.length>900){ const tw=id=>A[id].rows.reduce((a,r)=>a+(r.war||0),0); ks.sort((a,b)=>tw(a)-tw(b)).slice(0,ks.length-900).forEach(id=>delete A[id]); } }
+/* 지우지 않는 보관 기록: 우리 구단에서 뛴 선수, 우리 트레이드에 들어간 선수(기억할 이유가 WAR만은 아니다). 나머지만 900명 한도로 통산 WAR 낮은 순 정리 */
+function archKeep(a){ if(!a||!a.rows)return false; if(a.rows.some(r=>r.t===G.user))return true; const id=a.id; return (G.trades||[]).some(t=>(t.gi||[]).includes(id)||(t.go||[]).includes(id)); }
 function dropP(id){ const p=G.players[id]; if(p)try{ archPlayer(p); }catch(e){} delete G.players[id]; }
 function retireOut(p,why){ if(!p)return; if(why)story(p,why,'move'); let rec=null; try{ rec=retireRecord(p); }catch(e){} try{ obFromPlayer(p,rec); }catch(e){} if(G.lineup)for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; if(Array.isArray(G.retired))G.retired.push({name:p.name,team:p.team,age:p.age}); dropP(p.id); }
 function toFree(p,why){ if(!p)return; if(p.team!=null){ mvLog('방출',p,p.team,null,why||''); p.relT=p.team; p.relD=G.day; } termsClear(p); /* 방출되면 계약 조건(상한 반영·옵션·약속·거부권)도 끝난다: 같은 구단에 다시 와도 되살아나지 않게 */ p.team=null; if(p.freeSince==null)p.freeSince=G.year; p.freeDay=G.day; p.faC=false; p.ext=false; p.yrs=0;

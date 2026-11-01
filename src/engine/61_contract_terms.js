@@ -23,19 +23,26 @@ function termsTxt(t,short){ const L=[`${t.years}년`]; if(t.bonus)L.push(`계약
   if(!short){ const tot=(t.bonus||0)+t.annual*t.years; L.push(`보장 총액 ${money(tot)}${t.opt?` (옵션 포함 최대 ${money(tot+t.opt*t.years)})`:''}`); } return L.join(' · '); }
 /* 계약 반영: 계약금은 바로 지급(올해 지출), 상한 계산에는 연평균으로 들어간다. 옵션은 시즌 뒤 달성하면 지급 */
 /* 조건은 계약한 구단에서만 유효하다(p.ctT): 방출·트레이드·보상선수로 옮기면 상한 반영·옵션·거부권·약속이 모두 끝난다 */
+/* 확정 잔여 보장액: 지금 계약의 남은 해(다년·FA 계약) + 이미 합의한 다음 시즌 시작 계약(extNext). 해마다 협상하는 연봉은 넣지 않는다 */
+function guarLeft(p){ if(!p||p.foreign)return 0; return (p.faC?p.sal*Math.max(1,p.yrs||1):0)+(p.extNext?p.extNext.annual*p.extNext.years:0); }
+/* 이적하면 없어지는 계약 조건(화면 안내용) */
+function termsLostTxt(p){ if(!p||!ctOn(p))return ''; const L=[]; if(p.capB)L.push(`계약금 상한 반영(연 ${money(p.capB.a)})`); if(p.opt)L.push(`성과 옵션(연 최대 ${money(p.opt.a)})`); if(p.ntc)L.push('트레이드 거부권'); if(p.roleProm)L.push('역할 약속'); return L.join(' · '); }
 function termsClear(p){ delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; }
 const ctOn=p=>p&&p.ctT!=null&&p.ctT===p.team;
 function termsApply(p,t,from,sy,noPay){ termsClear(p); if(!t)return; const y=Math.max(1,t.years); sy=sy??ctSeason(); const end=sy+y-1; p.ctT=p.team;
   if(t.bonus>0){ if(!noPay){ G.spend=G.spend||{}; G.spend.faB=(G.spend.faB||0)+t.bonus; } p.capB={a:Math.round(t.bonus/y),until:end,b:t.bonus,pd:noPay?-1:finYearEnd()}; } /* b: 계약금 전액, pd: 지급한 회계연도(결산일). 미리 준 계약금(다음 시즌 시작 다년계약)은 -1 */
-  if(t.opt>0)p.opt={a:t.opt,until:end}; else delete p.opt;
+  if(t.opt>0)p.opt={a:t.opt,until:end,c:optCrit(p)}; else delete p.opt; /* 달성 기준은 계약 때 보직으로 고정 */
   if(t.ntc)p.ntc=end; else delete p.ntc;
   if(t.role===0)p.roleProm={k:0,until:sy+Math.min(y,2)-1,l:roleSet(p)[0],from:from||'fa'}; else delete p.roleProm; }
 function capBOf(p){ return ctOn(p)&&p.capB&&p.capB.until>=G.year?p.capB.a:0; }
 /* 예산 전망용 옵션 예상액: 시즌 중엔 지금 페이스로, 개막 전·비시즌엔 주전이면 달성한다고 본다 */
 function optProj(tid,y){ let s=0; for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year||!ctOn(p)||!p.opt||p.opt.until<y)continue; if(isAway(p)){ if(y===G.year&&optEarned(p))s+=p.opt.a; continue; } const h=y===G.year?seasonTotal(p,G.year,'1군'):null; const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0;
-  const ok=h&&g>=20?(p.isP?(isSPr(p)?h.outs*144/g>=360:h.outs*144/g>=150):h.pa*144/g>=400):isRegular(p); if(ok)s+=p.opt.a; } return s; }
+  const oc=OPT_CRIT[p.opt.c||optCrit(p)]; const ok=h&&g>=20?(h[oc[0]]||0)*144/g>=oc[1]:isRegular(p); if(ok)s+=p.opt.a; } return s; }
 /* 옵션 달성 기준: 타자 400타석, 선발 120이닝, 불펜 50이닝(규정 달성형 옵션을 단순화) */
-function optEarned(p){ if(!ctOn(p)||!p.opt||p.opt.until<G.year)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(isSPr(p)?h.outs>=360:h.outs>=150):h.pa>=400; }
+/* 옵션 기준: 계약 때 보직(b 타자 400타석 · sp 선발 120이닝 · rp 불펜 50이닝). 저장된 기준이 없으면(예전 계약) 지금 보직 */
+function optCrit(p){ return p.isP?(isSPr(p)?'sp':'rp'):'b'; }
+const OPT_CRIT={b:['pa',400,'400타석'],sp:['outs',360,'120이닝'],rp:['outs',150,'50이닝']};
+function optEarned(p){ if(!ctOn(p)||!p.opt||p.opt.until<G.year)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; const c=OPT_CRIT[p.opt.c||optCrit(p)]; return (h[c[0]]||0)>=c[1]; }
 function optSettle(tid){ let tot=0; const L=[]; for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; /* 시즌 중 입대·대표팀으로 빠진 선수도 이미 달성한 옵션은 받는다 */ if(!ctOn(p)||!p.opt||p.opt.until<G.year)continue; if(optEarned(p)){ tot+=p.opt.a; L.push(`${p.name} ${money(p.opt.a)}`); story(p,`계약 옵션 달성 (${money(p.opt.a)})`,'move'); } }
   if(L.length&&tid===G.user)note('운영팀',`계약 옵션 지급: ${L.join(', ')}`); return tot; }
 /* 역할 약속 점검(6~9월 매달 1일): 주전 보장을 약속했는데 주전이 아니면 서운해한다 */

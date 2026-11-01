@@ -224,15 +224,18 @@ const A={
   cgSort(v){ UI.cgS=v; render(); }, splP(){ UI.splP=!UI.splP; renderSheet(); }, sprP(){ UI.sprP=!UI.sprP; renderSheet(); },
   dsPick(v){ const id=+v; UI.dsSel=UI.dsSel===id?null:id; render(); }, dsCmp(v){ const id=+v; const p=G.players[id]; UI.pcmp=(UI.pcmp||[]).filter(x=>G.players[x]&&!!G.players[x].isP===!!(p&&p.isP)); const i=UI.pcmp.indexOf(id); if(i>=0)UI.pcmp.splice(i,1); else { if(UI.pcmp.length>=3)UI.pcmp.shift(); UI.pcmp.push(id); } render(); },
   dsSave(v){ const els=document.querySelectorAll('#dsName'); const el=els[els.length-1]; const C=G.dsCharts=G.dsCharts||[]; const cfg=dsCfg();
-    if(v==='over'){ const c=C.find(x=>x.name===UI.dsOver); if(c){ Object.assign(c,cfg,{used:(G.dsSeq=(G.dsSeq||0)+1)}); UI.dsCur=c.id; toast(`'${c.name}' 차트를 덮어썼습니다.`); } UI.dsOver=null; render(); return; }
+    if(v==='over'){ const c=C.find(x=>x.name===UI.dsOver); if(c){ Object.assign(c,cfg,{used:(G.dsSeq=(G.dsSeq||0)+1)}); UI.dsCur=c.id; toast(`'${c.name}' 차트를 덮어썼습니다.`); } UI.dsOver=null; UI.dsSaveOn=false; render(); return; }
     const nm=(el&&el.value||'').trim().slice(0,30); if(!nm){ toast('차트 이름을 적어 주세요.'); return; } if(C.some(x=>x.name===nm)){ UI.dsOver=nm; render(); return; }
-    if(C.length>=20){ toast('내 차트는 20개까지입니다. 하나를 지운 뒤 저장해 주세요.'); return; } const seq=(G.dsSeq=(G.dsSeq||0)+1); const c=Object.assign({v:1,id:'c'+seq,name:nm},cfg,{at:G.day,used:seq}); C.push(c); UI.dsCur=c.id; UI.dsOver=null; toast(`'${nm}' 차트를 저장했습니다.`); render(); },
+    if(C.length>=20){ toast('내 차트는 20개까지입니다. 하나를 지운 뒤 저장해 주세요.'); return; } const seq=(G.dsSeq=(G.dsSeq||0)+1); const c=Object.assign({v:1,id:'c'+seq,name:nm},cfg,{at:G.day,used:seq}); C.push(c); UI.dsCur=c.id; UI.dsOver=null; UI.dsSaveOn=false; toast(`'${nm}' 차트를 저장했습니다.`); render(); },
   dsOverNo(){ UI.dsOver=null; render(); },
   dsLoad(v){ const c=(G.dsCharts||[]).find(x=>x.id===v); if(!c)return; const g=c.g==='P'?'P':'B'; UI.dsG=g; UI.dsAx=null; UI.dsSel=null; UI.dsCur=c.id; c.used=(G.dsSeq=(G.dsSeq||0)+1);
     if(!DS_M[g].includes(c.x)||!DS_M[g].includes(c.y)||c.x===c.y){ UI.dsX=null; UI.dsYk=null; toast(`'${c.name}'에 지금 없는 지표가 있어 기본 차트로 엽니다.`); } else { UI.dsX=c.x; UI.dsYk=c.y; }
     UI.dsPos=c.pos||null; UI.dsMin=c.min!=null?+c.min:null; UI.dsLv=c.lv==='퓨처스'?'퓨처스':null; render(); },
   dsDel(v){ G.dsCharts=(G.dsCharts||[]).filter(x=>x.id!==v); if(UI.dsCur===v)UI.dsCur=null; render(); },
   dsAx(v){ UI.dsAx=v||null; UI.dsX=null; UI.dsYk=null; UI.dsSel=null; render(); },
+  dsSaveOpen(){ UI.dsSaveOn=!UI.dsSaveOn; render(); if(UI.dsSaveOn){ const e=document.getElementById('dsName'); if(e)e.focus(); } },
+  dsNamesTg(){ UI.dsNames=!UI.dsNames; render(); },
+  dsCmpOpen(){ UI.pcSea=UI.dsY==='prev'?'prev':null; UI.pcLvl=UI.dsLv==='퓨처스'?'퓨처스':'1군'; A.pcmpOpen(); }, /* 차트에서 보던 시즌·1/2군 그대로 비교(리뷰 2026-11-01) */
   dsLoosen(){ UI.dsMin=0; UI.dsPos=null; render(); },
   dsSet(v){ const [k,x]=v.split(':'); if(k==='G'){ UI.dsG=x; UI.dsAx=null; UI.dsX=null; UI.dsYk=null; UI.dsPos=null; UI.dsSel=null; UI.dsMin=null; } else if(k==='Y')UI.dsY=x==='prev'?'prev':null; else if(k==='L')UI.dsLv=x; else if(k==='M')UI.dsMin=+x; render(); },
   pcmpTg(v){ const id=+v; UI.pcmp=UI.pcmp||[]; const i=UI.pcmp.indexOf(id); if(i>=0)UI.pcmp.splice(i,1); else { if(UI.pcmp.length>=3)UI.pcmp.shift(); UI.pcmp.push(id); } renderSheet(); },

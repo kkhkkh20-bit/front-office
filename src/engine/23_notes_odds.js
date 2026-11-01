@@ -14,8 +14,21 @@ function rankSnap(day){ if(period()!=='season')return; const st=standingsNow(); 
 
 const FIELDK=['C','1B','2B','3B','SS','LF','CF','RF'];
 function canAt(p,k){ return !p.isP&&(p.pos===k||subsOf(p).includes(k)); }
+/* 예상 주전 배치: 한 선수는 한 자리에만(리뷰 2026-11-01). 자리마다 할 수 있는 선수 중 상위 5명을 후보로 두고, 8자리 합이 가장 큰 배치를 찾는다.
+   원래 포지션이 아니면 -2(익숙하지 않은 자리). 표시 값(val)도 같은 기준이라 선수를 빼면 합계가 늘지 않는다 */
+function posStarters(list,ev){ ev=ev||new Map(list.map(p=>[p.id,scoutReport(p).cur])); const C={}; for(const k of FIELDK)C[k]=list.filter(p=>canAt(p,k)&&ev.get(p.id)!=null&&healthy(p)).map(p=>({p,v:ev.get(p.id)-(p.pos===k?0:2)})).sort((a,b)=>b.v-a.v).slice(0,5);
+  const ord=[...FIELDK].sort((a,b)=>C[a].length-C[b].length); const best={s:-1e9,pick:null}; const cur={}; const used=new Set(); const ub=ord.map((k,i)=>ord.slice(i).reduce((s,kk)=>s+(C[kk][0]?C[kk][0].v:0),0));
+  const go=(i,s)=>{ if(i===ord.length){ if(s>best.s){ best.s=s; best.pick=Object.assign({},cur); } return; } if(s+ub[i]<=best.s)return; const k=ord[i]; let any=false;
+    for(const c of C[k]){ if(used.has(c.p.id))continue; any=true; used.add(c.p.id); cur[k]=c.p; go(i+1,s+c.v); used.delete(c.p.id); } delete cur[k]; if(!any||C[k].length===0)go(i+1,s-30); /* 자리를 채울 선수가 없으면 비운다 */ };
+  go(0,0); const who={}, val={}; for(const k of FIELDK){ const p=best.pick&&best.pick[k]; who[k]=p||null; val[k]=p?ev.get(p.id)-(p.pos===k?0:2):null; } return {who,val}; }
+/* 야수 주전 변화 글: 자리마다 빠지는 주전과 대신 들어가는 선수 */
+function posSwapTxt(before,after){ const A=posStarters(before), B=posStarters(after); const v=p=>dv(Math.round(scoutReport(p).cur)); const L=[];
+  for(const k of FIELDK){ const a=A.who[k], b=B.who[k]; if(a===b)continue; L.push(`${POSS[k]}: ${a?`${a.name}(${v(a)}) 빠짐`:'빈자리'} → ${b?`${b.name}(${v(b)})${b.pos!==k?', 포지션 이동':''} 들어감`:'채울 선수 없음'}`); }
+  return L.length?`야수 예상 주전: ${L.join(' · ')}`:'야수 예상 주전 그대로'; }
+/* 포지션별 활용 가능 자원(겹침 허용): 자리마다 할 수 있는 선수 상위 3명과 우리 평가 */
+function posDepthList(list){ const out={}; for(const k of FIELDK)out[k]=list.filter(p=>canAt(p,k)&&healthy(p)).map(p=>({p,v:scoutReport(p).cur})).filter(x=>x.v!=null).sort((a,b)=>b.v-a.v).slice(0,3); return out; }
 function posStrength(list){ const ev=new Map(list.map(p=>[p.id,scoutReport(p).cur])); const out={};
-  for(const k of FIELDK){ const c=list.filter(p=>canAt(p,k)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)).sort((a,b)=>b-a); out[k]=c.length?c[0]:null; }
+  { const S=posStarters(list,ev); for(const k of FIELDK)out[k]=S.val[k]; } /* 예상 주전 배치(한 선수 한 자리) 기준 */
   const sp=list.filter(p=>p.isP&&isSPr(p)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)).sort((a,b)=>b-a).slice(0,5);
   const rp=list.filter(p=>p.isP&&!isSPr(p)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)).sort((a,b)=>b-a).slice(0,5);
   if(sp.length){ const fill=list.filter(p=>p.isP&&!isSPr(p)&&ev.get(p.id)!=null&&healthy(p)).map(p=>ev.get(p.id)-6).sort((a,b)=>b-a); while(sp.length<5)sp.push(fill.length?fill.shift():35); } /* 선발이 5명 안 되면 빈자리는 불펜에서 돌려 막는다(선발 전환 -6), 그것도 없으면 35: 선발을 보내면 평균이 오르는 착시를 막는다 */

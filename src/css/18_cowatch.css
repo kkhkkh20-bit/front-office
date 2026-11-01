@@ -99,3 +99,4 @@
 .trophy-img{object-fit:contain;flex:none}
 .nt-id .uni-row{flex:none;flex-wrap:nowrap}@media (max-width:600px){.nt-id .uni-row{margin:0}}
 .tpg.cmp{align-items:start}
+.ds-set{margin:4px 0}.ds-sum{cursor:pointer;font-size:12.5px;padding:6px 0;color:var(--ink)}.ds-basis{margin:6px 0;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}

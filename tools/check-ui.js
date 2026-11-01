@@ -493,6 +493,32 @@ const QUICK=process.env.QUICK==='1';
     await pg.waitForTimeout(450); const r2=await ev(()=>{ if(!G.iv||G.iv.done)return null; const i0=G.iv.i; const b=document.querySelectorAll('#sheet .iv-o')[0]; if(b)b.click(); const ok=G.iv.done||G.iv.i===i0+1; UI.ivSh=false; G.iv=null; closeSheets(); render(); return {ok,lock:document.documentElement.classList.contains('modal-open')}; });
     if(r){ if(r.ta!=='manipulation')add('터치','더블탭 확대가 막혀 있지 않음(touch-action '+r.ta+')'); if(!r.none){ if(!r.lock)add('터치','창이 열려도 뒤 화면 스크롤이 잠기지 않음'); if(!r.guard)add('터치','답한 직후 같은 자리의 새 선택지가 바로 눌려 답이 하나 더 나감('+r.i1+'→'+r.i2+')'); if(!r.vis)add('터치','답한 뒤 새 질문이 창 밖(맨 위로 튐)'); }
       if(r2&&!r2.ok)add('터치','잠깐 뒤 정상 터치가 먹히지 않음'); if(r2&&r2.lock)add('터치','창을 닫아도 스크롤 잠금이 남음'); } }
+  /* 트레이드 비교판: 예상 주전(한 선수 한 자리)과 야수 주전 변화, 활용 가능 자원(겹침 허용)을 나눠 보여 준다(리뷰 2026-11-01 22:35 1번) */
+  { where='트레이드 예상 주전'; const r=await ev(()=>{ const S=posStarters(rosterList(G.user)); const p=S.who.SS||S.who['2B']; if(!p)return null; const tid=G.teams.find(t=>t.id!==G.user).id; const h=tradeInsight(tid,[p.id],[]); return {head:/예상 주전 \(한 선수는 한 자리/.test(h),swap:h.indexOf('야수 예상 주전')>=0&&h.indexOf(esc(p.name)+'(')>=0,depth:/활용 가능 자원/.test(h)}; });
+    if(r){ if(!r.head)add('트레이드 비교','예상 주전 기준(한 선수 한 자리) 표시가 없음'); if(!r.swap)add('트레이드 비교','야수 주전 변화(누가 빠지고 누가 들어가는지)가 없음'); if(!r.depth)add('트레이드 비교','포지션별 활용 가능 자원이 없음'); } }
+  /* 소식함: 끝난 인터뷰·결정은 참여한 일이라 파란 강조(안 읽음 점·선택 강조)를 두지 않는다. 고른 줄 표시는 무채색(사용자 2026-11-01 22:58) */
+  { where='소식함 끝난 일 강조'; const r=await ev(()=>{ const m=mail('홍보팀','[인터뷰 요청] 점검일보: 시즌 결산','본문',{kind:'언론',acts:[{l:'인터뷰하기',a:'ivOpen',v:'999999'}]}); m.read=false; const keepIv=G.iv; G.iv={id:999999,done:true,ans:[{}],day:G.day-1,exp:G.day+3,qs:[],i:1};
+      UI.tab='inbox'; UI.mf='all'; UI.ibSel=m.id; render(); const row=document.querySelector('.ibr[data-mid="'+m.id+'"]'); const out={}; out.row=!!row; if(row){ out.unread=row.classList.contains('unread'); out.need=row.classList.contains('need'); const c=getComputedStyle(row); const rgb=(c.backgroundColor.match(/\d+/g)||[0,0,0]).map(Number); const bl=(c.borderLeftColor.match(/\d+/g)||[0,0,0]).map(Number); const sat=x=>Math.max(...x.slice(0,3))-Math.min(...x.slice(0,3)); out.cur=row.classList.contains('cur'); out.satBg=sat(rgb); out.satBl=sat(bl); }
+      G.iv=keepIv; G.mail=G.mail.filter(x=>x!==m); UI.ibSel=null; render(); return out; });
+    if(r&&r.row){ if(r.unread||r.need)add('소식함','끝난 인터뷰가 안 읽음·확인 필요로 강조됨'); if(r.cur&&(r.satBg>24||r.satBl>40))add('소식함','고른 줄이 파란색 강조(무채색이 아님)'); } }
+  /* 트레이드 돈: 연간 연봉 변화·일회성 현금·올해 총부담·거래 후 예산 여유·승인 필요를 나눠 적고, 현금을 얹으면 예산 여유에도 반영(리뷰 2026-11-01 22:35 2번) */
+  { where='트레이드 돈 표시'; const r=await ev(()=>{ const mine=rosterList(G.user).filter(p=>!p.foreign).sort((a,b)=>a.sal-b.sal); const tid=G.teams.find(t=>t.id!==G.user).id; const th=rosterList(tid).filter(p=>!p.foreign).sort((a,b)=>b.sal-a.sal);
+      const give=[mine[0].id], get=[th[0].id]; const ra=roomAfter(give,get); const cash=1000; const h0=dealMoney(give,get,0), h1=dealMoney(give,get,cash); const out={};
+      out.sep=/연간 선수 연봉/.test(h1)&&/일회성 현금/.test(h1)&&/올해 총부담/.test(h1); out.after=h1.indexOf(money(ra.after-cash))>=0&&h0.indexOf(money(ra.after))>=0;
+      const oc=tradeOwnerCheck(give,get,5000); out.msg=!oc||!oc.msg||(!/연봉이 [^ ]+ 늘어/.test(oc.msg)&&/현금/.test(oc.msg)); return out; });
+    if(r){ if(!r.sep)add('트레이드 돈','연간 연봉 변화·일회성 현금·올해 총부담이 나뉘어 있지 않음'); if(!r.after)add('트레이드 돈','현금을 얹어도 거래 후 예산 여유가 그대로'); if(!r.msg)add('트레이드 돈','구단주 승인 문구가 현금을 연봉 증가로 합쳐 적음'); } }
+  /* 차트(리뷰 2026-11-01 22:35 3~5, 23:07 6): 비교로 넘어갈 때 시즌·1/2군 유지, 기준 줄('성적: N시즌 · 소속팀·포지션: 현재 기준'), 이름은 고른 선수만(전체 표시는 선택), 휴대폰은 설정을 한 줄 요약으로 접고 저장은 버튼 → 이름 입력 */
+  { where='차트 기준·비교 연결'; const r=await ev(()=>{ const keep={y:UI.dsY,lv:UI.dsLv,sea:UI.pcSea,lvl:UI.pcLvl,nm:UI.dsNames,cmp:UI.pcmp}; const out={}; UI.dsG='B'; UI.dsY='prev'; UI.dsLv='퓨처스'; UI.dsMin=0; UI.dsX='obp'; UI.dsYk='slg'; let h=distView();
+      out.basis=/성적: \d{4}시즌[^<]*소속팀·포지션: 현재 기준/.test(h); out.lbl=/현재 우리 선수/.test(h)&&/현재 포지션/.test(h);
+      const ids=[...h.matchAll(/data-a="dsPick" data-v="(\d+)"/g)].map(m=>+m[1]); UI.pcmp=[...new Set(ids)].slice(0,2); if(UI.pcmp.length===2){ A.dsCmpOpen(); out.keep=UI.pcSea==='prev'&&UI.pcLvl==='퓨처스'; } else out.keep=true; closeSheets();
+      UI.dsY=null; UI.dsLv=null; UI.dsMin=0; UI.dsNames=false; h=distView(); const mine=(h.match(/class="ds-p me[^"]*"[^>]*>(?:(?!<\/g>).)*?<text/g)||[]).length; out.names=mine<=1; UI.dsNames=true; h=distView(); out.namesAll=(h.match(/<text x=/g)||[]).length>=Math.min(3,(h.match(/class="ds-p me/g)||[]).length);
+      out.sum=/class="ds-sum"/.test(h)&&/data-a="dsSaveOpen"/.test(h);
+      Object.assign(UI,{dsY:keep.y,dsLv:keep.lv,pcSea:keep.sea,pcLvl:keep.lvl,dsNames:keep.nm,pcmp:keep.cmp}); render(); return out; });
+    if(r){ if(!r.basis)add('차트','기준 줄(성적 시즌 · 소속·포지션 현재 기준)이 없음'); if(!r.lbl)add('차트','현재 포지션·현재 우리 선수 표기가 없음'); if(!r.keep)add('차트','비교로 넘어가면 시즌·1/2군 기준이 바뀜'); if(!r.names)add('차트','기본 화면에 우리 선수 이름이 모두 붙어 겹침'); if(!r.namesAll)add('차트','이름 모두 표시를 켜도 이름이 안 나옴'); if(!r.sum)add('차트','설정 한 줄 요약·내 차트 저장 버튼이 없음'); } }
+  /* 위임 처리 상태 한 줄(리뷰 2026-11-01 23:07 3번), 이적하면 없어지는 계약 조건 안내(23:00 ⑤) */
+  { where='위임 상태·계약 조건'; const r=await ev(()=>{ const keepA=G.auto, keepC=G.contract; G.auto=Object.assign({},G.auto||{},{sal:true}); G.contract={y:G.year,tid:G.user,ended:[],foreignEnd:[],foreignDrop:[],released:[],done:false}; const h=authView(); const st=/처리 예정|처리 완료|대기/.test(h); G.auto=keepA; G.contract=keepC;
+      const p=playersOf(G.user).find(q=>!q.foreign); const k={ctT:p.ctT,opt:p.opt}; p.ctT=p.team; p.opt={a:300,until:G.year+1,c:'b'}; const tid=G.teams.find(t=>t.id!==G.user).id; const h2=tradeInsight(tid,[p.id],[]); const lost=/이적하면 없어지는 계약 조건/.test(h2)&&/성과 옵션/.test(h2); p.ctT=k.ctT; if(k.opt)p.opt=k.opt; else delete p.opt; return {st,lost}; });
+    if(r){ if(!r.st)add('위임','위임한 연봉 업무에 처리 상태(예정·완료·대기)가 없음'); if(!r.lost)add('트레이드','이적하면 없어지는 계약 조건 안내가 없음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

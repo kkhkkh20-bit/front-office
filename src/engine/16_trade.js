@@ -105,7 +105,7 @@ function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)re
   const room=after?b.roomGoal+dSal:b.roomGoal; const over=dSal-room; if(over<=0)return null; const t=team(G.user);
   const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
   if(over<=lim)return {ok:true,over,lim,dSal};
-  return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 연봉이 ${money(dSal)} 늘어 올해 예산(지원 목표)을 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
+  return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(연간 선수 연봉 ${money(dSal-(cash||0))}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 올해 예산(지원 목표)을 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
 function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 -2.`,{kind:'구단주'}); }catch(e){} }
 function evalTrade(tid,give,get,cash){ cash=cash||0;
   const t=team(tid); const P=id=>G.players[id];

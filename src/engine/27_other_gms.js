@@ -47,8 +47,11 @@ function negInfo(tid){ const c=negTurn(tid); const free=seriesOpp()===tid; const
 const tsig=(give,get,cash)=>[...give].sort((a,b)=>a-b).join(',')+'|'+[...get].sort((a,b)=>a-b).join(',')+(cash>0?'|c'+cash:'');
 /* 트레이드 기록과 성적표 */
 const warSoFar=(p,y)=>{ const h=seasonTotal(p,y,'1군'); return h?warOf(h,p):0; };
+/* 우리 구단 기여: 그 구단 소속으로 낸 1군 기록만(시즌 중 이적하면 이전 구단 기록은 빼고) */
+function clubWar(p,tid,y0){ const ys=[...new Set(p.hist.filter(h=>h.lvl==='1군'&&!h.y2&&h.t===tid&&h.y>=(y0||0)).map(h=>h.y))]; let w=0; for(const y of ys){ const h=seasonTotalT(p,y,'1군',tid); if(h)w+=warOf(h,p); } return {ys,w}; }
 function tradeSnap(ids){ const o={}; for(const id of ids){ const p=G.players[id]; if(p)o[id]=warSoFar(p,G.year); } return o; }
-function warSince(id,y,snap){ const p=G.players[id]; if(!p)return 0; let w=0; for(let yy=y;yy<=G.year;yy++)w+=warSoFar(p,yy); return w-(snap&&snap[id]||0); }
+/* 트레이드 이후 WAR: 은퇴 등으로 목록에서 빠진 선수는 보관 기록(G.arch)으로 계속 센다(은퇴했다고 지난 거래 평가가 바뀌지 않게) */
+function warSince(id,y,snap){ const p=G.players[id]; if(!p){ const a=G.arch&&G.arch[id]; if(!a)return 0; let w=0; for(const r of a.rows)if(r.y>=y&&r.y<=G.year)w+=r.war||0; return w-(snap&&snap[id]||0); } let w=0; for(let yy=y;yy<=G.year;yy++)w+=warSoFar(p,yy); return w-(snap&&snap[id]||0); }
 function tradeReport(tr){ if(!tr.gi)return null; const got=sum(tr.gi.map(id=>warSince(id,tr.y,tr.snap))), gave=sum(tr.go.map(id=>warSince(id,tr.y,tr.snap))); return {got,gave,net:got-gave}; }
 function tradeGrade(tid,give,get){ const U=team(G.user); const d=stackIn(get.map(id=>tval(U,G.players[id],'in')))-sum(give.map(id=>tval(U,G.players[id],'out'))); return d>=8?'A':d>=3?'B':d>=-3?'C':d>=-8?'D':'F'; }
 /* 다른 구단끼리 트레이드 */
