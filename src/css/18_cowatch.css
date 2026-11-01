@@ -85,3 +85,17 @@
 @media (max-width:600px){ .ds-ctl{gap:6px}.ds-f{flex:1 1 44%}.ds-f select{width:100%} }
 .ds-p circle.hit,.ds-p.me circle.hit,.ds-p.w circle.hit{fill:transparent;stroke:none;opacity:1}
 .ds-mine{margin:6px 0 4px}.chip-x{display:inline-flex;gap:2px}.ds-near{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.ds-near .tc-i,.ds-mine .tc-i{min-height:32px}
+.pct-g{margin:10px 0 4px;font-size:12.5px;cursor:help}.pct-g b{font-weight:700}
+/* 에셋 v2.1: 유니폼·모자 줄, 대회 마크, 구장 분위기 배경, 포스트시즌 진출팀 */
+.uni-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:6px 0 10px}.uni-row figure{margin:0;display:grid;justify-items:center;gap:2px}.uni-row img{object-fit:contain;display:block}.uni-row figcaption{font-size:11px;color:var(--muted)}
+.tpg.cmp .tmk:not(.open) .tp-uni{display:none}.tp-uni{margin-top:6px}
+.bg-hero{background-size:cover;background-position:center 60%;border-radius:10px;padding:14px 14px 10px;margin:0 0 10px;color:#f4f6f8}.bg-hero .small,.bg-hero .sdesc{color:#d9dee4}.bg-hero dt{color:#c9d1d9}
+.ps-hero{display:flex;align-items:center;min-height:86px}.ps-head{display:flex;gap:12px;align-items:center}.ps-head b{display:block;font-size:18px}.ps-head .small{color:#d9dee4}
+.cmark{display:inline-block;vertical-align:middle;object-fit:contain}.ps-r{display:flex;gap:10px;align-items:center}.ps-m{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ps-t{display:inline-flex;align-items:center;gap:4px}.ps-t.me b,.ps-t.me{font-weight:700;color:var(--ink)}
+.ps-seeds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}.ps-seed{display:grid;justify-items:center;gap:3px;padding:8px 4px;border:1px solid var(--line);border-radius:10px;text-align:center}.ps-seed.me{border-color:var(--acc)}.ps-seed i{font-style:normal;font-size:10.5px;color:var(--muted);line-height:1.3}.ps-seed .num{font-size:11px;color:var(--muted)}
+@media (max-width:600px){.ps-seeds{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ps-champ{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid #d5b46a55;border-radius:10px;margin:0 0 10px;background:#d5b46a10}.ps-champ b{display:flex;align-items:center;gap:6px;font-size:17px}.ps-champ>div{display:grid;gap:2px}
+.nt-id{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 10px}.nt-id>div:not(.uni-row){display:grid;gap:2px}.nt-id .uni-row{margin:0 0 0 auto}
+.trophy-img{object-fit:contain;flex:none}
+.nt-id .uni-row{flex:none;flex-wrap:nowrap}@media (max-width:600px){.nt-id .uni-row{margin:0}}
+.tpg.cmp{align-items:start}

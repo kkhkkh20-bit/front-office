@@ -142,3 +142,5 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:2px -12px;width:auto}
 
 
 
+.badge.bimg{object-fit:contain;aspect-ratio:1/1;border-radius:0;background:none;box-shadow:none;border:0}
+.badge.bimg{margin-inline:2px}

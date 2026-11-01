@@ -13,7 +13,7 @@ function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); c
   const exL=k=>NT_EV[k].ex==='gold'?'금메달':NT_EV[k].ex==='top3'?'3위 이내':'없음';
   const live=N&&N.y===G.year&&!N.res?N:null; const e=live&&NT_EV[live.k]; const canRef=live&&G.day<KD(e.from[0],e.from[1]);
   const pre=!live&&G.ntPre&&G.ntPre.y===G.year&&nx&&G.ntPre.k===nx.k&&nx.y===G.year?G.ntPre:null;
-  let h=csec('국가대표',`<dl class="tsum"><div><dt>감독</dt><dd>${esc(M.name)}</dd></div><div><dt>다음 대회</dt><dd>${nx?`${nx.y} ${nx.n}`:'없음'}</dd></div></dl>
+  let h=csec('국가대표',`${natHead()}<dl class="tsum"><div><dt>감독</dt><dd>${esc(M.name)}</dd></div><div><dt>다음 대회</dt><dd>${nx?`${nx.y} ${nx.n}`:'없음'}</dd></div></dl>
     ${UI.ntMsg?`<div class="note">${esc(UI.ntMsg)}</div>`:''}
     <div class="tw"><table class="sqt rt lst"><thead><tr><th>대회</th><th>소집 기간</th><th>병역 특례</th></tr></thead><tbody>${up.map(x=>`<tr><td>${x.y} ${x.n}</td><td>${dmd(x.from)} ~ ${dmd(x.to)}</td><td>${exL(x.k)}</td></tr>`).join('')}</tbody></table></div>`);
   if(live){ const mine=live.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);

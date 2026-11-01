@@ -125,6 +125,11 @@ document.addEventListener('click',e=>{
   const a=el.dataset.a;
   if(['tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
+  /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
+     예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
+  { const now=performance.now(), L=UI._clk, sig=a+'|'+(el.dataset.v||'')+'|'+(el.textContent||'').trim().slice(0,40);
+    if(L&&now-L.t<400&&Math.hypot((e.clientX||0)-L.x,(e.clientY||0)-L.y)<30&&L.r!==UI._rN&&L.sig!==sig){ e.preventDefault(); return; }
+    UI._clk={t:now,x:e.clientX||0,y:e.clientY||0,r:UI._rN,sig}; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; const a=el.dataset.a;

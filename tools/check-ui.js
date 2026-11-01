@@ -329,8 +329,8 @@ const QUICK=process.env.QUICK==='1';
   { where='리그 소식'; const r=await ev(()=>{ G.wire=G.wire||[]; G.wire.unshift({d:G.day,k:'구단 사정',t:'점검 구단 사정',tid:null}); const h=wireView(); G.wire.shift(); return /data-a="wk"/.test(h)&&/구단 사정/.test(h); });
     if(r===false)add('리그 소식','리그 소식에 종류별 보기가 없음'); }
   /* 트레이드 비교: 선발을 보내면 빠지는 선발과 선발 가능 인원 변화가 보인다 */
-  { where='트레이드 비교 선발'; const r=await ev(()=>{ const sp=playersOf(G.user).filter(p=>p.isP&&isSPr(p)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a))[2]; if(!sp)return null; const tid=G.teams.find(t=>t.id!==G.user).id; const h=tradeInsight(tid,[sp.id],[]); return {line:/선발 가능 \d+명 → \d+명/.test(h)&&h.includes(sp.name)}; });
-    if(r&&!r.line)add('트레이드 비교','선발을 보낼 때 빠지는 선발·선발 인원 변화가 없음'); }
+  { where='트레이드 비교 선발'; const r=await ev(()=>{ const sp=playersOf(G.user).filter(p=>p.isP&&isSPr(p)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a))[2]; if(!sp)return null; const tid=G.teams.find(t=>t.id!==G.user).id; const h=tradeInsight(tid,[sp.id],[]); const x=spSwap(tid,[sp.id],[]); return {line:/선발 가능 \d+명 → \d+명/.test(h)&&!!x&&x.n1===x.n0-1&&h.includes(esc(spSwapTxt(x))),why:x?(x.n0+'→'+x.n1+' 빠짐 '+x.out.map(o=>o.p.name).join(',')+' / 고른 선발 '+sp.name+' / 줄 '+((h.match(/선발진:[^<]*/)||[''])[0])):'spSwap 없음'}; }); /* 고른 선발이 상위 5명이 아니면(역할 재배정 등) 이름 대신 인원 변화로 본다 */
+    if(r&&!r.line)add('트레이드 비교','선발을 보낼 때 빠지는 선발·선발 인원 변화가 없음: '+(r.why||'')); }
   /* 선수 찾기: 조건에 맞는 전체 인원, 능력별 정렬 */
   { where='선수 찾기 전체'; const r=await ev(()=>{ const K=['findName','findAge','findSal','findMil','findPos','findTeam','findSort','findT']; const keep={}; K.forEach(k=>keep[k]=UI[k]); Object.assign(UI,{findName:'',findAge:0,findSal:0,findMil:'all',findPos:'all',findTeam:'all',findSort:'cur',findT:null});
       const n=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)).length; const h=tcFind(); const m=h.match(/조건에 맞는 (\d+)명/);
@@ -416,14 +416,14 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(!r.fut)add('창단 지명','지명 직후 카드에 장래성(최대 예상)이 없음'); if(!r.role)add('창단 지명','올해 예상 역할과 장래를 구분하지 않음'); if(!r.ord)add('창단 지명','올해 역할(실제 능력 기준)과 장래 역할이 맞지 않음: '+r.cur+' → '+r.futR); } }
   /* 리그 분포 확장(사용자 문서 2026-11-01 20:06): 가로·세로 축 따로 선택, 같은 지표 양축 금지, 포지션 필터, 표시 선수 평균선, 이상치를 가장자리로 붙이지 않음, 기록 없는 선수 제외 안내 */
   { where='리그 분포 축 선택'; const r=await ev(()=>{ if(typeof distView!=='function')return null; const keep={g:UI.dsG,x:UI.dsX,yk:UI.dsYk,pos:UI.dsPos,ax:UI.dsAx,min:UI.dsMin}; const out={};
-      UI.dsG='B'; UI.dsAx=null; UI.dsMin=0; UI.dsX='ops'; UI.dsYk='sb'; let h=distView(); out.sel=/data-a="dsX"/.test(h)&&/data-a="dsYk"/.test(h)&&/data-a="dsAx"/.test(h); out.lab=/OPS와 도루/.test(h); out.mean=/표시 선수 평균/.test(h); out.pre=['obp_slg','bb_k','sal_war'].every(k=>h.indexOf('data-a="dsAx" data-v="'+k+'"')>=0); render(); out.bnav=!!document.querySelector('.bnav [data-a="tab"][data-v="league"]');
+      UI.dsG='B'; UI.dsAx=null; UI.dsMin=0; UI.dsX='ops'; UI.dsYk='sb'; let h=distView(); out.sel=/data-a="dsX"/.test(h)&&/data-a="dsYk"/.test(h)&&/data-a="dsAx"/.test(h); out.lab=/OPS와 도루/.test(h); out.mean=/표시 선수 평균/.test(h); out.pre=['obp_slg','bb_k','sal_war'].every(k=>h.indexOf('data-a="dsAx" data-v="'+k+'"')>=0); render(); out.bnav=!!document.querySelector('.bnav [data-a="tab"][data-v="league"]'); { const B=[...document.querySelectorAll('.bnav .in > button')]; const tops=new Set(B.map(x=>Math.round(x.getBoundingClientRect().top))); out.bnavRow=tops.size<=1; }
       const pts=[...h.matchAll(/data-v="(\d+)" data-x="([-\d.e]+)" data-y="([-\d.e]+)"><title>[^<]*<\/title><circle cx="([\d.]+)"/g)].map(m=>({id:+m[1],vx:+m[2],cx:+m[4]})); out.n=pts.length;
       const S=[...pts].sort((a,b)=>b.vx-a.vx); out.edge=S.length>2&&!(S[0].vx>S[1].vx+1e-9&&S[0].cx<=S[1].cx+1e-6)&&!(S[S.length-1].vx<S[S.length-2].vx-1e-9&&S[S.length-1].cx>=S[S.length-2].cx-1e-6);
       UI.dsX='war'; UI.dsYk='war'; h=distView(); out.same=!/WAR와 WAR/.test(h);
       UI.dsX='ops'; UI.dsYk='war'; UI.dsPos='SS'; h=distView(); const ids=[...h.matchAll(/class="ds-p[^"]*" data-a="dsPick" data-v="(\d+)"/g)].map(m=>+m[1]); out.pos=ids.every(id=>G.players[id]&&G.players[id].pos==='SS')&&/data-a="dsPos"/.test(h);
       UI.dsPos=null; UI.dsG='P'; UI.dsX='hr9'; UI.dsYk='ip'; h=distView(); out.pit=/HR\/9와 이닝/.test(h);
       Object.assign(UI,{dsG:keep.g,dsX:keep.x,dsYk:keep.yk,dsPos:keep.pos,dsAx:keep.ax,dsMin:keep.min}); return out; });
-    if(r){ if(!r.sel)add('리그 분포','가로·세로 축 선택과 기본 차트 선택이 없음'); if(!r.lab)add('리그 분포','고른 축(OPS·도루)으로 그리지 않음'); if(!r.mean)add('리그 분포','기준선이 표시 선수 평균이라고 적혀 있지 않음'); if(!r.pre)add('리그 분포','기본 차트가 바로 누를 수 있게 보이지 않음(사용자 2026-11-01 20:48)'); if(!r.bnav)add('하단 탭','하단 탭에 리그가 없음(사용자 2026-11-01 20:48)'); if(r.n<5)add('리그 분포','점 좌표·값을 읽을 수 없음('+r.n+')'); else if(!r.edge)add('리그 분포','가장 큰·작은 값의 점이 다른 점과 같은 가장자리에 붙음(이상치 숨김)');
+    if(r){ if(!r.sel)add('리그 분포','가로·세로 축 선택과 기본 차트 선택이 없음'); if(!r.lab)add('리그 분포','고른 축(OPS·도루)으로 그리지 않음'); if(!r.mean)add('리그 분포','기준선이 표시 선수 평균이라고 적혀 있지 않음'); if(!r.pre)add('리그 분포','기본 차트가 바로 누를 수 있게 보이지 않음(사용자 2026-11-01 20:48)'); if(!r.bnav)add('하단 탭','하단 탭에 리그가 없음(사용자 2026-11-01 20:48)'); if(r.bnavRow===false)add('하단 탭','하단 탭 버튼이 두 줄로 넘어감'); if(r.n<5)add('리그 분포','점 좌표·값을 읽을 수 없음('+r.n+')'); else if(!r.edge)add('리그 분포','가장 큰·작은 값의 점이 다른 점과 같은 가장자리에 붙음(이상치 숨김)');
       if(!r.same)add('리그 분포','같은 지표를 양쪽 축에 그림'); if(!r.pos)add('리그 분포','포지션 필터가 없거나 다른 포지션이 섞임'); if(!r.pit)add('리그 분포','투수 HR/9·이닝 축 없음'); } }
   /* 리그 분포 2차: 겹친 점(가까운 선수) 고르기, 내 차트 저장·불러오기·같은 이름 덮어쓰기 확인·삭제, 설정만 저장(선수·값 저장 안 함), 없는 지표 키는 기본 차트로 */
   { where='리그 분포 내 차트'; const r=await ev(()=>{ if(typeof distView!=='function')return null; const keep={g:UI.dsG,x:UI.dsX,yk:UI.dsYk,pos:UI.dsPos,ax:UI.dsAx,min:UI.dsMin,sel:UI.dsSel,ch:G.dsCharts}; const out={}; delete G.dsCharts;
@@ -441,6 +441,58 @@ const QUICK=process.env.QUICK==='1';
       Object.assign(UI,{dsG:keep.g,dsX:keep.x,dsYk:keep.yk,dsPos:keep.pos,dsAx:keep.ax,dsMin:keep.min,dsSel:keep.sel,dsOver:null}); if(keep.ch)G.dsCharts=keep.ch; else delete G.dsCharts; render(); return out; });
     if(r){ if(!r.old)add('리그 분포','저장 차트가 없는 옛 저장에서 내 차트 영역이 안 나오거나 오류'); if(r.near===false)add('리그 분포','겹친 점을 골랐을 때 가까운 선수 목록이 없음'); if(!r.saved)add('리그 분포','내 차트 저장이 이름(앞뒤 공백 제거)·축·포지션·최소 표본을 설정으로만 남기지 않음'); if(!r.mod)add('리그 분포','저장 차트를 바꾼 상태 표시가 없음');
       if(!r.load)add('리그 분포','내 차트를 불러와도 설정이 돌아오지 않음'); if(!r.dupAsk)add('리그 분포','같은 이름 저장 때 덮어쓰기 확인 없이 바뀌거나 중복 저장'); if(!r.over)add('리그 분포','덮어쓰기를 골라도 바뀌지 않음'); if(!r.bad)add('리그 분포','없는 지표 키가 든 차트를 불러오면 기본 차트로 돌아가지 않음'); if(!r.del)add('리그 분포','내 차트 삭제가 안 됨'); } }
+  /* 데이터 출처 구분·단정 문구(리뷰 2026-11-01 21:12): 백분위는 경기 기록과 능력 기반 측정값을 나눠 적고, 화면 설명에 운·불운·반등 단정이 없다 */
+  { where='데이터 출처·분석 문구'; const r=await ev(()=>{ const BAD=/운이 따름|불운|운이 좋았|반등 여지|반등 후보|운이 섞였/; const out={};
+      const fns=['fdView','recent3','pctCard','fdDataLine','statNotes'].filter(n=>typeof window[n]==='function'||typeof globalThis[n]==='function'); out.bad=fns.filter(n=>BAD.test(String(globalThis[n])));
+      const y=statY(); const p=Object.values(G.players).find(q=>!q.isP&&q.team===G.user&&seasonTotal(q,y,'1군')&&seasonTotal(q,y,'1군').pa>=100)||Object.values(G.players).find(q=>!q.isP&&seasonTotal(q,y,'1군')&&seasonTotal(q,y,'1군').pa>=100);
+      const h=p&&typeof pctCard==='function'?pctCard(p):''; out.pct=!h||(/경기 기록/.test(h)&&/능력[^<]{0,12}측정/.test(h)&&/표본|타석/.test(h)); out.has=!!h; return out; });
+    if(r){ if(r.bad.length)add('분석 문구','화면 설명에 운·불운·반등 단정이 남음: '+r.bad.join(', ')); if(!r.pct)add('데이터 출처','백분위가 경기 기록과 능력 기반 측정값을 나눠 적지 않음'); } }
+  /* 구단 로고 바꾸기(사용자 2026-11-01 21:15): 설정의 구단 카드에서 상징·색·글자·이미지를 고르고, 배지에 바로 반영된다 */
+  { where='구단 로고'; const r=await ev(()=>{ if(typeof setTeamLogo!=='function')return {none:true}; const keep=JSON.stringify(G.teams[2].logo||null); const out={};
+      const d0=badge(2,40); UI.lgEdit=2; const c=teamNameCard(); out.ed=/data-a="lgEmb"/.test(c)&&/type="color"/.test(c)&&/type="file"/.test(c)&&/data-a="lgReset"/.test(c);
+      A.lgEmb('2:왕관'); const b1=badge(2,40); out.emb=b1!==d0&&G.teams[2].logo.emb==='왕관';
+      A.lgEmb('2:글자'); setTeamLogo(2,{code:'XYZ'}); out.code=/>XYZ</.test(badge(2,24));
+      setTeamLogo(2,{img:'data:image/png;base64,iVBORw0KGgo='}); out.img=/<image[^>]+href="data:image\/png/.test(badge(2,24))&&/clip-path/.test(badge(2,24));
+      A.lgReset('2'); out.reset=badge(2,40)===d0; UI.lgEdit=null; const k=JSON.parse(keep); if(k)G.teams[2].logo=k; else delete G.teams[2].logo; render(); return out; });
+    if(r){ if(r.none)add('구단 로고','로고 바꾸기 기능이 없음'); else { if(!r.ed)add('구단 로고','로고 편집(상징·색·이미지·기본으로)이 없음'); if(!r.emb)add('구단 로고','상징을 바꿔도 배지가 그대로'); if(!r.code)add('구단 로고','글자 로고가 배지에 안 나옴'); if(!r.img)add('구단 로고','이미지 로고가 방패 모양으로 안 나옴'); if(!r.reset)add('구단 로고','기본으로 되돌려도 원래 배지가 아님'); } } }
+  /* 승인된 구단 원형 배지(assets/badges/v1): 10개 구단 이름으로 매핑, 게임 전(구단 선택)에도, 작은 표시는 64px·큰 표시는 128px, 별칭을 바꿔도 같은 배지, 직접 바꾼 로고가 우선, 깨진 이미지 없음 */
+  { where='구단 배지'; const r=await ev(()=>{ if(typeof BADGE_IMG==='undefined')return {none:true}; const out={};
+      out.map=TEAM_DEF.every((d,i)=>BADGE_IMG[i]&&BADGE_IMG[i].n===d.city+' '+d.nick); out.all=G.teams.every(t=>/<img class="badge bimg" src="data:image\/png/.test(badge(t.id,24)));
+      out.size=badge(3,24).indexOf(BADGE_IMG[3].s)>=0&&badge(3,40).indexOf(BADGE_IMG[3].l)>=0&&/alt=""/.test(badge(3,24));
+      const g=G; let pre=''; try{ G=null; pre=badge(5,30); }finally{ G=g; } out.pre=pre.indexOf(BADGE_IMG[5].s)>=0;
+      const nk=G.teams[2].nick; G.teams[2].nick='테스트'; out.ren=badge(2,24).indexOf(BADGE_IMG[2].s)>=0; G.teams[2].nick=nk;
+      const keep=G.teams[1].logo; setTeamLogo(1,{emb:'별'}); out.cust=!/bimg/.test(badge(1,24)); if(keep)G.teams[1].logo=keep; else delete G.teams[1].logo;
+      UI.tab='league'; render(); const I=[...document.querySelectorAll('img.bimg')]; out.n=I.length; out.broken=I.filter(x=>x.complete&&!x.naturalWidth).length; return out; });
+    if(r){ if(r.none)add('구단 배지','배지 데이터가 없음'); else { if(!r.map)add('구단 배지','구단 이름과 배지가 맞지 않음'); if(!r.all)add('구단 배지','기본 배지가 이미지가 아닌 구단이 있음'); if(!r.size)add('구단 배지','표시 크기별 이미지(64/128)·빈 alt가 아님'); if(!r.pre)add('구단 배지','게임 전(구단 선택) 화면에 배지가 안 나옴'); if(!r.ren)add('구단 배지','별칭을 바꾸면 배지가 바뀜'); if(!r.cust)add('구단 배지','직접 바꾼 로고보다 기본 배지가 우선함'); if(!r.n||r.broken)add('구단 배지','화면에 배지 이미지가 없거나 깨짐('+r.n+'개 중 '+r.broken+'개)'); } } }
+  /* 진행 멈춤 설정(위임과 별개): 설정 화면에 분류별 켜고 끄기, 필수 분류는 잠김, 위임 화면에서 바로 갈 수 있음 */
+  { where='진행 멈춤 설정'; const r=await ev(()=>{ if(typeof stopCard!=='function')return {none:true}; const keep=G.stopCfg; G.stopCfg={}; const h=stopCard(); const out={};
+      out.tg=['trade','inj','mgr','squad','owner','spon','press','info'].every(k=>h.indexOf('data-a="stopTg" data-v="'+k+'"')>=0)&&/checked disabled/.test(h);
+      A.stopTg('spon'); out.off=G.stopCfg.spon===false&&!stopOn({kind:'스폰서',from:'마케팅팀'}); A.stopTg('spon'); out.on=G.stopCfg.spon===true;
+      out.link=/data-v="cfg:set"/.test(authView()); G.stopCfg=keep; render(); return out; });
+    if(r){ if(r.none)add('진행 멈춤','진행 멈춤 설정이 없음'); else { if(!r.tg)add('진행 멈춤','분류별 켜고 끄기·필수 잠금이 없음'); if(!r.off||!r.on)add('진행 멈춤','스폰서 멈춤을 끄고 켜도 반영되지 않음'); if(!r.link)add('진행 멈춤','위임 화면에서 진행 멈춤 설정으로 가는 길이 없음'); } } }
+  /* 에셋 v2.1: 유니폼·모자는 구단명으로 매핑해 구단 소개·국가대표에, 포스트시즌·한국시리즈 마크와 트로피는 엔진 상태(G.ps)의 실제 진출팀·전적으로, 구장 배경은 구장 화면에. 이미지가 깨지지 않는다 */
+  { where='에셋 v2.1'; const r=await ev(()=>{ if(typeof ASSET==='undefined')return {none:true}; const out={};
+      out.map=TEAM_DEF.every((d,i)=>ASSET.uni[i]&&ASSET.uni[i].n===d.city+' '+d.nick&&/^data:image\/png/.test(ASSET.uni[i].h)&&/^data:image\/png/.test(ASSET.uni[i].c));
+      out.chron=chronView().indexOf(ASSET.uni[G.user].h)>=0; out.nt=typeof ntView!=='function'||ntView().indexOf(ASSET.nat.b128)>=0; out.stad=/class="bg-hero stad-hero"/.test(stadView('now'));
+      const keep=G.ps; const ord=G.teams.map(t=>t.id).sort((a,b)=>a-b); const sd=[ord[3],ord[7],ord[1],ord[9],ord[0]]; const d0=G.day;
+      G.ps={seeds:sd,order:[],res:{wc:[sd[3],sd[4],1,0],spo:[sd[2],sd[3],3,1],po:[sd[1],sd[2],3,2],ks:[sd[0],sd[1],4,3]},resD:{ks:d0},round:'ks',done:true}; const h=psBody();
+      const pos=sd.map(t=>h.indexOf('<b>'+esc(tshort(t))+'</b>')); out.seeds=pos.every((x,i)=>x>0&&(i===0||x>pos[i-1])); out.champ=h.indexOf(ASSET.comp.trophy)>=0&&h.indexOf(esc(tname(sd[0]))+' 우승')>=0&&/4승 3패/.test(h)&&h.indexOf(ASSET.comp.ks)>=0&&h.indexOf(ASSET.comp.ps)>=0;
+      G.ps={seeds:sd,order:[],res:{},round:'wc',done:false}; const h2=psBody(); out.noChamp=h2.indexOf(ASSET.comp.trophy)<0; G.ps=keep;
+      document.body.insertAdjacentHTML('beforeend','<div id="astest">'+h+chronView()+'</div>'); return out; });
+    await pg.waitForTimeout(300); const im=await ev(()=>{ const I=[...document.querySelectorAll('#astest img')]; const b=I.filter(x=>x.complete&&!x.naturalWidth).length; document.getElementById('astest').remove(); return {n:I.length,b}; });
+    if(r){ if(r.none)add('에셋','에셋 데이터가 없음'); else { if(!r.map)add('에셋','유니폼·모자가 구단명과 맞지 않음'); if(!r.chron)add('에셋','구단 연대기에 우리 유니폼·모자가 없음'); if(!r.nt)add('에셋','국가대표 화면에 국가대표 배지가 없음'); if(!r.stad)add('에셋','구장 화면에 분위기 배경이 없음');
+      if(!r.seeds)add('에셋','포스트시즌 진출팀이 엔진 시드 순서대로 나오지 않음'); if(!r.champ)add('에셋','한국시리즈 우승(트로피·실제 우승팀·전적·대회 마크)이 엔진 결과대로 나오지 않음'); if(!r.noChamp)add('에셋','한국시리즈가 끝나기 전에 우승 트로피가 나옴'); }
+      if(im&&(im.b||!im.n))add('에셋','이미지가 깨짐('+im.n+'개 중 '+im.b+'개)'); } }
+  /* 휴대폰 터치 밀림(커뮤니티 제보 2026-10-31: 인터뷰 3번을 누르면 2번이 나가거나 위로 잘못 찍힘): 더블탭 확대 막기, 창이 열리면 뒤 화면 스크롤 잠금,
+     답한 직후 같은 자리에 새로 그려진 다른 선택지를 곧바로 눌러도(연속 터치) 답이 하나 더 나가지 않음, 새 질문이 창 안에 보임 */
+  { where='터치 밀림'; const r=await ev(()=>{ const out={}; out.ta=getComputedStyle(document.documentElement).touchAction; G.iv=null; ivRequest('preseason',{}); const v=G.iv; if(!v)return {ta:out.ta,none:true};
+      A.ivOpen(String(v.id)); out.lock=document.documentElement.classList.contains('modal-open')&&getComputedStyle(document.body).overflow==='hidden';
+      const pick=()=>document.querySelectorAll('#sheet .iv-o')[Math.min(1,document.querySelectorAll('#sheet .iv-o').length-1)]; const b1=pick(); if(!b1)return {ta:out.ta,none:true};
+      b1.click(); const i1=G.iv.i; const b2=pick(); if(b2&&!G.iv.done)b2.click(); out.i1=i1; out.i2=G.iv.i; out.guard=G.iv.done||G.iv.i===i1;
+      const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now'); if(sh&&q){ const a=sh.getBoundingClientRect(), b=q.getBoundingClientRect(); out.vis=b.top>=a.top-1&&b.top<a.bottom-40; } else out.vis=true; return out; });
+    await pg.waitForTimeout(450); const r2=await ev(()=>{ if(!G.iv||G.iv.done)return null; const i0=G.iv.i; const b=document.querySelectorAll('#sheet .iv-o')[0]; if(b)b.click(); const ok=G.iv.done||G.iv.i===i0+1; UI.ivSh=false; G.iv=null; closeSheets(); render(); return {ok,lock:document.documentElement.classList.contains('modal-open')}; });
+    if(r){ if(r.ta!=='manipulation')add('터치','더블탭 확대가 막혀 있지 않음(touch-action '+r.ta+')'); if(!r.none){ if(!r.lock)add('터치','창이 열려도 뒤 화면 스크롤이 잠기지 않음'); if(!r.guard)add('터치','답한 직후 같은 자리의 새 선택지가 바로 눌려 답이 하나 더 나감('+r.i1+'→'+r.i2+')'); if(!r.vis)add('터치','답한 뒤 새 질문이 창 밖(맨 위로 튐)'); }
+      if(r2&&!r2.ok)add('터치','잠깐 뒤 정상 터치가 먹히지 않음'); if(r2&&r2.lock)add('터치','창을 닫아도 스크롤 잠금이 남음'); } }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

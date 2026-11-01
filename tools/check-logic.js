@@ -650,6 +650,30 @@ T('[리그 분포] 연봉 축은 그 시즌 연봉을 쓴다: 기록이 생길 �
   ok(p.salYr&&p.salYr[y]===p.sal,'그해 연봉 기록 없음'); const s0=p.sal; p.sal=s0+5000; ok(salOfY(p,y)===s0,'연봉이 바뀌자 이번 시즌 값도 바뀜: '+salOfY(p,y)+' vs '+s0); p.sal=s0;
   ok(salOfY(p,y-5)==null,'기록 없는 해에 지금 연봉을 붙임');
 });
+T('[분석 문구] ERA−FIP·BABIP·기대 홈런 차이를 운·불운·반등으로 단정하지 않고, 함께 볼 요인(수비·타구 특성·주력·표본)을 적는다(리뷰 2026-11-01 21:12)',()=>{ DEMO.on=false; newGame(6); fdStart(); const y=G.fd.y-1;
+  const BAD=/운이 따름|운이 따른|불운|운이 없었|반등 여지|반등 후보|반등을 기대할 만|운 좋았|운이 좋았|타율에 운이 섞|운이 섞여|운의 도움/;
+  const P=Object.values(G.players).filter(p=>p.fdPool); const T=[]; for(const p of P){ try{ T.push(fdDataLine(p,y)); }catch(e){} try{ T.push(...statNotes(p)); }catch(e){} try{ T.push(...((scoutReport0(p)||{}).notes||[])); }catch(e){} }
+  try{ const M=fdDataAll(); for(const id in M){ const d=M[id]; if(d&&d.luck)T.push(d.luck.join(' ')); } }catch(e){}
+  const bad=T.filter(x=>BAD.test(String(x))); ok(!bad.length,'단정 문구 '+bad.length+'건: '+bad.slice(0,3).join(' / '));
+  const fip=T.filter(x=>/FIP보다/.test(String(x))), bab=T.filter(x=>/BABIP/.test(String(x))&&/높|낮/.test(String(x)));
+  ok(fip.length&&fip.every(x=>/수비|타구/.test(x)),'ERA−FIP 문구에 수비·타구 결과 언급 없음: '+(fip[0]||'(문구 없음)')); ok(bab.length&&bab.every(x=>/타구|주력|표본/.test(x)),'BABIP 문구에 타구 특성·주력·표본 언급 없음: '+(bab[0]||'(문구 없음)'));
+  ok(!BAD.test(String(statNotes))&&!BAD.test(String(amNotes))&&!BAD.test(String(scoutReport0)),'선수 메모 함수에 단정 문구가 남음'); });
+T('[구단 로고] 플레이어가 구단 로고(상징·색·글자·이미지)를 바꿀 수 있고, 잘못된 값은 거절하며, 기본으로 되돌릴 수 있다(사용자 2026-11-01 21:15)',()=>{ fresh(); ok(typeof setTeamLogo==='function','setTeamLogo 없음'); const t=G.teams[3];
+  ok(setTeamLogo(3,{emb:'별'})===''&&t.logo&&t.logo.emb==='별','상징 바꾸기 실패'); ok(setTeamLogo(3,{emb:'없는상징'})!=='','없는 상징을 받아들임');
+  ok(setTeamLogo(3,{c1:'#123456'})===''&&tpal(3)[0]==='#123456','주색이 구단 색(tpal)에 반영되지 않음'); ok(setTeamLogo(3,{c1:'red;x'})!=='','잘못된 색을 받아들임');
+  ok(setTeamLogo(3,{code:'ab1'})===''&&t.logo.code==='AB1','글자는 대문자 3자까지'); ok(setTeamLogo(3,{code:'<s>'})!=='','글자에 기호를 받아들임');
+  const png='data:image/png;base64,'+'A'.repeat(200); ok(setTeamLogo(3,{img:png})===''&&t.logo.img===png,'이미지 로고 저장 실패'); ok(setTeamLogo(3,{img:'javascript:alert(1)'})!==''&&t.logo.img===png,'이미지가 아닌 주소를 받아들임'); ok(setTeamLogo(3,{img:'data:image/png;base64,'+'A'.repeat(90000)})!=='','너무 큰 이미지를 받아들임');
+  ok(setTeamLogo(3,{img:null})===''&&!t.logo.img,'이미지 지우기 실패'); ok(JSON.parse(JSON.stringify(t)).logo.emb==='별','저장 형식(JSON)으로 남지 않음');
+  setTeamLogo(3,null); ok(!t.logo&&tpal(3)[0]===TPAL[t.code][0],'기본 로고로 되돌리지 못함'); });
+T('[진행 멈춤] 멈춤 조건은 위임과 따로 고른다: 계약·등록·규정은 항상 멈추고, 스폰서·언론·부상 등은 끄면 소식만 오고 진행은 안 멈추며, 일반 소식은 기본으로 멈추지 않는다(리뷰 2026-11-01 21:12 5번)',()=>{ fresh(); ok(typeof stopCat==='function'&&typeof stopOn==='function'&&typeof evStops==='function','멈춤 조건 함수 없음');
+  const M=(f,k,subj,acts)=>({from:f,kind:k,subj,acts:acts||[]});
+  const C=[[M('마케팅팀','스폰서','스폰서 제안 2건',[1]),'spon'],[M('홍보팀','언론','[인터뷰 요청] 야구일보',[1,2]),'press'],[M('팀 닥터 · 의무팀','부상','누가 이탈합니다',[1]),'inj'],[M('운영팀','결정','훈련 지각',[1,2,3]),'squad'],[M('감독실','결정','감독: 선발진 보강 요청',[1,2]),'mgr'],[M('구단주실','결정','구단주의 초대',[1,2]),'owner'],
+    [M('운영팀','FA','우리 FA에게 먼저 제안',[1,2]),'must'],[M('운영팀','연봉','연봉 계약 마감일입니다',[1]),'must'],[M('운영팀','병역','상무 지원 기간입니다',[1]),'must'],[M('구단주실','구단주','구단주 주문',[1]),'must'],[M('비서 서하린','일정','내일 개막합니다',[]),'info'],[M('홍보팀','기록','골든글러브 시상식',[1]),'info'],[M('운영팀','트레이드','트레이드 제안',[1,2]),'trade']];
+  for(const [m,c] of C)ok(stopCat(m)===c,m.subj+' → '+stopCat(m)+' (기대 '+c+')');
+  G.stopCfg={}; ok(!stopOn({kind:'일정',from:'비서 서하린',subj:'x'}),'일반 소식이 기본으로 멈춤'); ok(stopOn({kind:'스폰서',from:'마케팅팀',subj:'x'}),'스폰서는 기본으로 멈춰야 함(지금까지와 같게)');
+  for(const [k] of STOP_CATS)if(k!=='must')G.stopCfg[k]=false; const n0=G.stops.length; const sp=mail('마케팅팀','스폰서 제안 9건','본문',{imp:true,kind:'스폰서',acts:[{l:'보기'}]});
+  ok(G.stops.length===n0&&G.mail.includes(sp)&&sp.imp&&!sp.read,'끈 분류인데 진행을 멈추거나 소식이 사라짐'); const fa=mail('운영팀','연봉 계약 마감일입니다','본문',{imp:true,kind:'연봉'}); ok(G.stops.includes(fa),'계약 마감은 설정과 상관없이 멈춰야 함');
+  const e={mid:sp.id}; ok(!evStops(e),'끈 분류의 결정이 진행을 멈춤'); ok(evStops({mid:fa.id}),'필수 결정이 진행을 안 멈춤'); G.stopCfg.spon=true; ok(evStops(e),'다시 켜도 안 멈춤'); G.stopCfg={}; });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

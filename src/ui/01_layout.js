@@ -1,5 +1,5 @@
 /* ---------- 화면 조립 ---------- */
-function render(){
+function render(){ UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
   try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}
@@ -84,7 +84,7 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
         <p class="tp-sum">${(()=>{ const o=ORD.indexOf(x.tid)+1; return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', o<=3?'지명 빠름':o>=8?'지명 늦음':'지명 중간', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
         <div class="tp-g"><span><i>창단 지명 순서</i><b>1라운드 ${ORD.indexOf(x.tid)+1}번째</b></span><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
-          <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>
+          <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>${typeof uniRow==='function'?`<div class="tp-uni">${uniRow(x.tid,{sz:64})}</div>`:''}
         <div class="tp-t"><span class="pill ${ok?'good':mid?'':'bad'}">난이도 ${ok?'쉬움':mid?'보통':'어려움'}</span><span class="pill">1라운드 ${ORD.indexOf(x.tid)+1}번째 지명</span>${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}">자세히</button></div></div>`; };
     return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 차이는 돈과 시장입니다.</p><details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">예산 여유가 적은 구단일수록 먼저 지명하고, 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
     <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>`; }
@@ -140,9 +140,25 @@ function fdSteps(cur){ const S=['구단 선택','드래프트','시즌 준비'];
 const TN_KEY='fronttime-teamnames';
 function teamNamesPreset(){ try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); return o&&o.on&&Array.isArray(o.L)?o.L:null; }catch(e){ return null; } }
 function teamNameCard(){ if(!G||!G.teams)return ''; let pre=null; try{ pre=JSON.parse(localStorage.getItem(TN_KEY)||'null'); }catch(e){}
-  return `<section class="card"><h2 class="sec">구단 이름 바꾸기</h2><p class="small muted">기본은 가상 구단입니다. 별칭을 원하는 대로 바꿀 수 있습니다(10자까지). 연고지는 지역·시장 규모와 묶여 있어 바꿀 수 없습니다. 엠블럼과 구단 색은 그대로이고, 이미 나온 기사·기록의 이름은 바뀌지 않습니다.</p>
-  <div class="tn-l">${G.teams.map(t=>`<div class="tn-r">${badge(t.id,18)}<b class="tn-c">${esc(t.city)}</b><input class="tn-n" data-tn="${t.id}" data-k="nick" value="${esc(t.nick)}" maxlength="10" aria-label="별칭"><span class="small muted">${esc(TEAM_DEF[t.id].city+' '+TEAM_DEF[t.id].nick)}</span></div>`).join('')}</div>
+  return `<section class="card"><h2 class="sec">구단 이름·로고 바꾸기</h2><p class="small muted">기본은 가상 구단입니다. 별칭을 원하는 대로 바꿀 수 있습니다(10자까지). 연고지는 지역·시장 규모와 묶여 있어 바꿀 수 없습니다. 로고는 구단마다 '로고'를 눌러 상징·색·글자를 고르거나 이미지를 올립니다(색을 바꾸면 그 구단의 화면 강조색도 바뀝니다). 이미 나온 기사·기록의 이름은 바뀌지 않습니다.</p>
+  <div class="tn-l">${G.teams.map(t=>`<div class="tn-r">${badge(t.id,24)}<b class="tn-c">${esc(t.city)}</b><input class="tn-n" data-tn="${t.id}" data-k="nick" value="${esc(t.nick)}" maxlength="10" aria-label="별칭"><span class="small muted">${esc(TEAM_DEF[t.id].city+' '+TEAM_DEF[t.id].nick)}</span><button class="tc-i${UI.lgEdit===t.id?' on':''}" data-a="lgOpen" data-v="${t.id}">로고</button></div>${UI.lgEdit===t.id?lgEditor(t):''}`).join('')}</div>
   <label class="chk"><input type="checkbox" data-a="tnPre" ${pre&&pre.on?'checked':''}> 새 게임에도 이 이름 쓰기(이 브라우저에 저장)</label>
   <div class="row"><button class="btn primary" data-a="tnSave">이름 저장</button><button class="btn" data-a="tnReset">기본 이름으로</button></div>${UI.tnMsg?`<p class="small">${esc(UI.tnMsg)}</p>`:''}</section>`; }
+/* 로고 편집: 상징(원래 10개 구단 엠블럼 + 별·왕관·배트·산 + 글자), 주색·보조색·바탕색, 글자(3자), 이미지 올리기(96px로 줄여 저장) */
+function lgPrev(t,k){ const keep=t.logo; t.logo=Object.assign({},keep||{},{emb:k}); delete t.logo.img; const h=badge(t.id,30); if(keep)t.logo=keep; else delete t.logo; return h; }
+function lgEditor(t){ const P=tpal(t); const L=t.logo||{}; const cur=L.emb||(TEAM_DEF[t.id]||t).nick;
+  return `<div class="lg-ed"><div class="row" style="gap:10px;align-items:center">${badge(t.id,56)}<div class="small muted">${L.img?'올린 이미지를 쓰는 중입니다. 상징을 고르려면 이미지를 지우세요.':'상징을 고르고 색을 바꾸면 바로 반영됩니다.'}</div></div>
+    <div class="lg-emb" role="group" aria-label="상징">${LOGO_EMB.map(k=>`<button class="lg-e${cur===k&&!L.img?' on':''}" data-a="lgEmb" data-v="${t.id}:${esc(k)}" title="${esc(k)}">${lgPrev(t,k)}<i>${esc(k)}</i></button>`).join('')}</div>
+    <div class="row wrapr lg-col"><label>주색 <input type="color" data-lg="${t.id}:c1" value="${P[0]}"></label><label>보조색 <input type="color" data-lg="${t.id}:c2" value="${P[1]}"></label><label>바탕색 <input type="color" data-lg="${t.id}:c3" value="${P[2]}"></label><label>글자 <input type="text" data-lg="${t.id}:code" value="${esc(L.code||t.code)}" maxlength="3" style="width:4.5em" aria-label="로고 글자"></label></div>
+    <div class="row wrapr lg-col"><label class="btn small">이미지 올리기<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-lgimg="${t.id}" hidden></label>${L.img?`<button class="btn small" data-a="lgImgDel" data-v="${t.id}">이미지 지우기</button>`:''}<button class="btn small" data-a="lgReset" data-v="${t.id}">기본 로고로</button></div>
+    ${UI.lgMsg?`<p class="small">${esc(UI.lgMsg)}</p>`:''}<p class="small muted">이미지는 정사각형에 가까운 그림이 잘 맞습니다. 올리면 96px로 줄여 저장 파일에 넣습니다.</p></div>`; }
+function lgApply(tid,patch,msg){ const r=setTeamLogo(tid,patch); UI.lgMsg=r||msg||''; if(!r){ if(tid===G.user)setTeamVars(team(G.user)); let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); }
+function lgImgFile(tid,file){ if(!file)return; if(!/^image\/(png|jpeg|webp|gif)$/.test(file.type)){ UI.lgMsg='png·jpg·webp·gif 이미지만 올릴 수 있습니다.'; render(); return; }
+  const rd=new FileReader(); rd.onload=()=>{ const im=new Image(); im.onload=()=>{ const S=96, c=document.createElement('canvas'); c.width=S; c.height=S; const x=c.getContext('2d'); const s=Math.max(S/im.width,S/im.height); const w=im.width*s, h=im.height*s; x.drawImage(im,(S-w)/2,(S-h)/2,w,h);
+      let u=''; try{ u=c.toDataURL('image/webp',.85); if(!/^data:image\/webp/.test(u))u=c.toDataURL('image/png'); }catch(e){ u=''; } if(!u){ UI.lgMsg='이미지를 읽지 못했습니다.'; render(); return; } lgApply(tid,{img:u},'로고 이미지를 바꿨습니다.'); };
+    im.onerror=()=>{ UI.lgMsg='이미지를 읽지 못했습니다.'; render(); }; im.src=rd.result; }; rd.readAsDataURL(file); }
+if(typeof document!=='undefined')document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.dataset)return;
+  if(el.dataset.lg){ const [tid,k]=el.dataset.lg.split(':'); lgApply(+tid,{[k]:el.value},k==='code'?'로고 글자를 바꿨습니다.':'로고 색을 바꿨습니다.'); }
+  else if(el.dataset.lgimg){ lgImgFile(+el.dataset.lgimg,el.files&&el.files[0]); } });
 function tnRead(){ const L={}; document.querySelectorAll('input[data-tn]').forEach(el=>{ const id=+el.dataset.tn; (L[id]=L[id]||{id})[el.dataset.k]=el.value; }); return Object.values(L); }
-function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick}))})); }catch(e){} }
+function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick,logo:t.logo||null}))})); }catch(e){} }

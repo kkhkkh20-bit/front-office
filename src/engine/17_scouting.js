@@ -72,7 +72,7 @@ function scoutReport0(p){
     if(p.age<=26&&ofp!=null&&ofp-cur>=10)notes.push(p.prospect?`체격과 기술이 더 자랄 여지가 큽니다. ${ofp>=60?'팀의 미래를 걸어 볼 만합니다.':'꾸준히 키우면 1군 자원이 됩니다.'}`:`아직 다 자라지 않았습니다. 2~3년 안에 ${roleOf(ofp,p)}까지 기대합니다.`);
     if(p.age>=32)notes.push('하락세가 시작될 나이입니다. 장기 계약은 신중해야 합니다.');
     { const dh=dtHint(p,sd); if(dh&&(p.age<=30||p.dt==='vet'))notes.push(dh); }
-    if(!p.prospect&&!p.foreign){ const pf=perfOvr(p,2); if(pf!=null){ if(pf-cur>=8)notes.push('최근 기록은 실력보다 운이 따른 면이 있습니다. 기록만 보고 비싸게 사면 위험합니다.'); else if(cur-pf>=8)notes.push('기록보다 실력이 좋습니다. 반등을 기대할 만합니다.'); } }
+    if(!p.prospect&&!p.foreign){ const pf=perfOvr(p,2); if(pf!=null){ if(pf-cur>=8)notes.push('최근 기록이 우리 평가보다 좋습니다. 수비·타구 결과·표본의 영향이 섞였을 수 있어 기록만으로 값을 매기기는 어렵습니다.'); else if(cur-pf>=8)notes.push('우리 평가가 최근 기록보다 높습니다. 나아질 가능성은 있으나 지금 기록만으로 확정하기 어렵습니다.'); } }
     if(p.foreign&&p.prev&&p.team==null){ notes.push(LG_LV[p.prevLvl]?`${p.prevLvl}: ${LG_LV[p.prevLvl][0]}. ${LG_LV[p.prevLvl][1]}`:`${p.prevLvl} 기록은 리그 수준 차이를 감안해야 합니다.`); const lv=intlLv(origOf(p)); if(lv>=2&&p.adapt!=null){ if(p.adapt>=62)notes.push('성격이 밝고 생활 적응력이 좋아 첫해부터 제 실력을 낼 것으로 봅니다.'); else if(p.adapt<=38)notes.push('낯선 환경에 예민한 편입니다. 첫 시즌 적응에 애를 먹을 수 있습니다.'); else notes.push('적응력은 평범한 수준입니다.'); } }
     if(p.inj>.24&&sd<=7.5)notes.push('잔부상이 잦은 체질입니다. 부상 위험이 높습니다.');
     if(p.prospect&&p.amLevel&&sc&&sc.skill>=4)notes.push(`아마추어 기록은 ${p.amLevel}니다.`);

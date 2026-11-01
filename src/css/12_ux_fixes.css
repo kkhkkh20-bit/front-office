@@ -541,3 +541,7 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 /* 백업 권유 줄 */
 .blk.bkn .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.blk.bkn button{margin-left:0}
 .blk.bkn{background:#2e2a14;color:#ffe9a8;border-bottom-color:#4a4220}
+.tn-r{grid-template-columns:26px 44px minmax(0,150px) minmax(0,1fr) auto}
+@media (max-width:520px){ .tn-r{grid-template-columns:26px 44px minmax(0,1fr) auto} }
+/* 휴대폰 터치: 더블탭 확대 막기(빠른 연속 터치가 확대로 바뀌어 위치가 어긋나던 문제), 창이 열리면 뒤 화면 스크롤 잠금 */
+html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hidden}.sheet{overscroll-behavior:contain}

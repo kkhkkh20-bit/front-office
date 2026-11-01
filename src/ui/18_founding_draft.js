@@ -97,15 +97,15 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('db','볼넷%',x=>D(x)?-D(x).bb:-99,x=>td(D(x)?pc(D(x).bb):'-'),'볼넷 비율(3년)'),
       c('dh','피홈런/9',x=>D(x)?-D(x).hr9:-99,x=>td(D(x)?n2(D(x).hr9):'-'),'9이닝당 피홈런(3년)'),
       c('df','FIP',x=>D(x)?-D(x).fip:-99,x=>td(D(x)?n2(D(x).fip):'-'),'수비·운을 뺀 실점 지표(3년). 낮을수록 좋음'),
-      c('dg','ERA−FIP',x=>D(x)&&D(x).gap!=null?D(x).gap:0,x=>{ const g=D(x)&&D(x).gap; return td(g==null?'-':`${g>0?'+':''}${n2(g)}`,g==null?'':g<=-.6?'lk':g>=.6?'ul':''); },`${ly} ERA에서 FIP를 뺀 값. −면 운이 좋았고 +면 불운`),
+      c('dg','ERA−FIP',x=>D(x)&&D(x).gap!=null?D(x).gap:0,x=>{ const g=D(x)&&D(x).gap; return td(g==null?'-':`${g>0?'+':''}${n2(g)}`,g==null?'':g<=-.6?'lk':g>=.6?'ul':''); },`${ly} ERA에서 FIP를 뺀 값. −면 평균자책점이 FIP 기대보다 낮았고 +면 높았음. 수비·타구 결과 영향을 함께 확인`),
       ...(dOK?[c('dwh','헛스윙%',x=>trackOf(x.p).whiff,x=>td(pc(trackOf(x.p).whiff)),'트래킹 측정(지난해)'),c('dcsw','CSW%',x=>trackOf(x.p).csw,x=>td(pc(trackOf(x.p).csw)),'루킹+헛스윙 스트라이크 비율'),c('drpm','회전수',x=>trackOf(x.p).rpm,x=>td(trackOf(x.p).rpm),'직구 회전수')]:[]),
       c('dop','데이터팀 의견',x=>0,x=>`<td class="op">${esc(fdDataLine(x.p,ly))}</td>`)]
     :[
       c('dk','삼진%',x=>D(x)?-D(x).k:-99,x=>td(D(x)?pc(D(x).k):'-'),'타석 중 삼진 비율(3년)'),
       c('db','볼넷%',x=>D(x)?D(x).bb:-1,x=>td(D(x)?pc(D(x).bb):'-'),'볼넷 비율(3년)'),
       c('di','순장타',x=>D(x)?D(x).iso:-1,x=>td(D(x)?f3(D(x).iso):'-'),'장타율−타율(3년). 장타 힘'),
-      c('dxh','기대 홈런',x=>{ const e=fdHrExp(x.p,ly); return e?e.hr-e.exp:-99; },x=>{ const e=fdHrExp(x.p,ly); return td(e?`${e.exp}<i class="sm"> 실제 ${e.hr}</i>`:'-',e&&e.k==='bub'?'lk':e&&e.k==='low'?'ul':''); },`${ly} 타석에서 나왔어야 할 홈런(지난 2년 기록·타구 질). 실제가 크게 많으면 거품, 적으면 반등 여지. 정렬은 실제−기대`),
-      c('dbp','BABIP',x=>D(x)&&D(x).babip!=null?D(x).babip:-1,x=>{ const v=D(x)&&D(x).babip; return td(v==null?'-':f3(v),v==null?'':v>=.345?'lk':v<=.265?'ul':''); },`${ly} 인플레이 타구 안타 비율. .340 이상은 운이 섞였을 수 있음`),
+      c('dxh','기대 홈런',x=>{ const e=fdHrExp(x.p,ly); return e?e.hr-e.exp:-99; },x=>{ const e=fdHrExp(x.p,ly); return td(e?`${e.exp}<i class="sm"> 실제 ${e.hr}</i>`:'-',e&&e.k==='bub'?'lk':e&&e.k==='low'?'ul':''); },`${ly} 타석에서 나왔어야 할 홈런(지난 2년 기록·타구 질). 실제와 차이가 크면 표시(유지·회복 여부는 기록만으로 확정하기 어려움). 정렬은 실제−기대`),
+      c('dbp','BABIP',x=>D(x)&&D(x).babip!=null?D(x).babip:-1,x=>{ const v=D(x)&&D(x).babip; return td(v==null?'-':f3(v),v==null?'':v>=.345?'lk':v<=.265?'ul':''); },`${ly} 인플레이 타구 안타 비율. .340 이상·.265 이하는 리그 평균과 차이가 큼. 타구 특성·주력·표본을 함께 확인`),
       ...(dOK?[c('dev','타구속도',x=>evOf(x.p),x=>td(evOf(x.p)),'평균 타구속도 km(지난해)'),c('dhh','강한타구%',x=>trackOf(x.p).hh,x=>td(pc(trackOf(x.p).hh)),'150km 이상 타구 비율'),c('dwh','헛스윙%',x=>-trackOf(x.p).whiff,x=>td(pc(trackOf(x.p).whiff)),'스윙 중 헛스윙'),c('dch','볼 스윙%',x=>-trackOf(x.p).chase,x=>td(pc(trackOf(x.p).chase)),'볼에 방망이가 나간 비율'),c('drun','1루 도달',x=>-trackOf(x.p).run,x=>td(n2(trackOf(x.p).run)),'초')]:[]),
       c('dop','데이터팀 의견',x=>0,x=>`<td class="op">${esc(fdDataLine(x.p,ly))}</td>`)]; }
   COL={rec:CR,sc:CS,dt:CD}[V]; const ALLC=[...CR,...CS,...CD]; const so2=ALLC.some(z=>z.k===so&&z.k!=='sop'&&z.k!=='dop')?so:'war';
@@ -217,7 +217,7 @@ const FD_TS={pow:'파워',spd:'발',def:'수비',con:'컨택',eye:'선구',stf:'
 function fdScoutCell(p){ const S=fdScoutTools(p); return `<td class="fdsc" title="${esc(fdScoutLine(p))}">${p.isP?`<b class="velo">${S.velo}<i>km</i></b>`:''}${S.L.map(t=>`<span class="fdtg${t.vis?'':' fz'}" style="--c:${fdGc(t.g)}" title="${t.vis?'':'눈으로 판단하기 어려워 오차가 큽니다'}">${FD_TS[t.k]} <b>${fdToolNum(t.v)}</b>${t.vis?'':'?'}</span>`).join('')}<span class="bd">${S.ht}·${S.wt}</span></td>`; }
 /* 데이터팀 칸: 항목별 순위 말(상~하)과 운 · 표본 */
 const FD_DS={'삼진 적음':'컨택','볼넷':'선구','장타력':'장타','생산력':'생산','탈삼진':'탈삼진','볼넷 억제':'제구','피홈런 억제':'피홈런','실점 억제(FIP)':'실점억제'};
-function fdDataCell(p){ const d=fdData(p); if(!d)return '<td class="muted fddt">기록 부족</td>'; return `<td class="fddt">${d.it.map(([l,v])=>`<span class="dt-i" title="${l} 상위 ${100-v}%"><i>${FD_DS[l]}</i><b style="color:${pctC(v)}">${pctW(v)}</b></span>`).join('')}${d.lv===2?'<em class="tg">2군 기록</em>':''}${d.small?'<em class="tg w">표본 적음</em>':''}${d.luck?`<em class="tg ${d.luck[0].includes('불운')?'u':'l'}" title="${esc(d.luck[1])}">${d.luck[0]}</em>`:''}</td>`; }
+function fdDataCell(p){ const d=fdData(p); if(!d)return '<td class="muted fddt">기록 부족</td>'; return `<td class="fddt">${d.it.map(([l,v])=>`<span class="dt-i" title="${l} 상위 ${100-v}%"><i>${FD_DS[l]}</i><b style="color:${pctC(v)}">${pctW(v)}</b></span>`).join('')}${d.lv===2?'<em class="tg">2군 기록</em>':''}${d.small?'<em class="tg w">표본 적음</em>':''}${d.luck?`<em class="tg ${(d.luck[0]==='ERA>FIP'||d.luck[0]==='BABIP 낮음')?'u':'l'}" title="${esc(d.luck[1])}">${d.luck[0]}</em>`:''}</td>`; }
 function fdSortSel(gk,so,ana){ const o=[['war','WAR(지난해)'],['risk','뺏길 확률'],['sal','연봉 낮은 순'],...(gk==='P'?[['t:velo','스카우트: 구속'],['t:stf','스카우트: 구위'],['t:sta','스카우트: 체력'],['t:ctl','스카우트: 제구(추정)']]:[['t:pow','스카우트: 파워'],['t:spd','스카우트: 발'],['t:def','스카우트: 수비'],['t:con','스카우트: 컨택(추정)']]),...(ana?(gk==='P'?[['d:3','데이터: 실점 억제'],['d:0','데이터: 탈삼진'],['d:1','데이터: 제구']]:[['d:3','데이터: 생산력'],['d:2','데이터: 장타'],['d:1','데이터: 선구'],['d:0','데이터: 컨택']]):[])];
   return `<select class="fdsort" data-a="fdSsel" aria-label="정렬">${o.map(([k,l])=>`<option value="${k}" ${so===k?'selected':''}>정렬: ${l}</option>`).join('')}</select>`; }
 /* 포지션 현황판: 남은 후보 · 툴 좋은 선수 · 기록 좋은 선수 · 다음 우리 차례 전 빠질 예상. 누르면 그 포지션만 */

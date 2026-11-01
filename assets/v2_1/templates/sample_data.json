@@ -1,0 +1,12 @@
+{
+  "note": "fictional demonstration data only",
+  "date": "2026-09-28",
+  "matches": [
+    {
+      "home": "seoul_comets",
+      "away": "busan_waves",
+      "home_score": 5,
+      "away_score": 3
+    }
+  ]
+}

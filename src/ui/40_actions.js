@@ -133,7 +133,7 @@ const A={
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='train'){ A.go('staff:camp'); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
   startGo(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='inbox'; UI._ibFirst=true; save();render();window.scrollTo(0,0);}, /* 소식함이 게임의 중심: 시작하면 소식함 */
-  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done).length; const d0=G.day; UI._tk={show:d0,until:Date.now()+3000}; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
+  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length; const d0=G.day; UI._tk={show:d0,until:Date.now()+3000}; advance(v); setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
     if(G.res||G.live){ closeSheets(); UI.tab='home'; UI.mail=null; } else if(G.stops.length){ /* 중요한 소식으로 멈추면 홈이 아니라 소식함에서 그 소식을 연다 */ const sm=G.stops.find(s=>s&&s.id&&G.mail.some(m=>m.id===s.id)); closeSheets(); UI.mail=null; if(sm){ UI.mf='all'; UI.tab='inbox'; UI.ibSel=sm.id; UI._ibToCur=true; sm.read=true; if(!wide())UI.ibOpen=sm.id; } else UI.tab='inbox'; } else { /* 멈출 소식이 없어도 소식함으로: 새 소식(한 주 정리 포함)을 거기서 본다 */ closeSheets(); UI.mail=null; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; UI._ibEnd=true; UI.ibSel=null; UI.ibOpen=null; }
     if(G.dig&&G.dig.games&&G.dig.games.length&&!G.res&&!G.live)UI.wkres={from:G.dig.from,to:G.dig.to,rk0:G.dig.rk}; /* 넘긴 동안의 경기를 한 장으로 */ save(); render(); window.scrollTo(0,0); },
   calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
@@ -141,8 +141,8 @@ const A={
   calDay(v){ UI.calSel=+v; render(); const el=document.querySelector('.cal-dg,.cal-dl'); if(el&&!wide())el.scrollIntoView({block:'center',behavior:'smooth'}); },
   calJump(v){ const o=dobj(+v); UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); },
   /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
-  advTo(v){ const T=+v; if(!(T>G.day))return; if(G.res&&!G.live)G.res=null; const d0=G.day; const rk0=userRank(); let g=0; const ev0=(G.evs||[]).filter(e=>!e.done).length;
-    while(G.day<T&&g++<200){ if(blocker())break; advance('day'); if(G.stops.length||(G.evs||[]).filter(e=>!e.done).length>ev0||G.live)break; if(G.res)G.res=null; }
+  advTo(v){ const T=+v; if(!(T>G.day))return; if(G.res&&!G.live)G.res=null; const d0=G.day; const rk0=userRank(); let g=0; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length;
+    while(G.day<T&&g++<200){ if(blocker())break; advance('day'); if(G.stops.length||(G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0||G.live)break; if(G.res)G.res=null; }
     if(!G.live&&wkGames(d0+1,G.day).length){ G.res=null; closeSheets(); UI.wkres={from:d0+1,to:G.day,rk0}; } /* 이 날까지 진행한 동안의 경기도 한 장으로 */
     save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
@@ -254,7 +254,7 @@ const A={
   ivOpen(v){ const iv=G.iv; if(!iv||iv.id!==+v)return toast('지난 인터뷰 요청입니다.'); if(iv.done&&!iv.ans.length)return toast('이미 거절한 인터뷰입니다.'); if(iv.exp<G.day&&!iv.done)return toast('기한이 지났습니다.'); UI.ivSh=true; renderSheet(); },
   mdRep(v){ toast(mdSuggest(v)); save(); render(); },
   ivSkip(v){ if(G.iv&&G.iv.id===+v&&!G.iv.done){ ivSkip(); toast('인터뷰를 거절했습니다. 단장 침묵 기사가 나갑니다.'); save(); render(); } },
-  ivAns(v){ ivAnswer(+v); save(); renderSheet(); },
+  ivAns(v){ ivAnswer(+v); save(); renderSheet(); try{ const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now,#sheet .iv-end'); if(sh&&q)sh.scrollTop=Math.max(0,q.offsetTop-sh.offsetTop-12); }catch(e){} }, /* 다시 그리면 창이 맨 위로 튀던 것: 새 질문(또는 끝 안내)이 보이게 */
   gmPlan(v){ const [d,k,x]=String(v).split(':'); toast(gmPlanSet(+d,k||null,x||null)); save(); render(); },
   capex(v){ const [k,x]=String(v).split(':'); const r=capexAsk(k,x); toast(r||'공사를 시작했습니다.'); save(); render(); },
   offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
@@ -397,6 +397,11 @@ const A={
     toast(ok?'코드를 복사했습니다. 메모장이나 메신저에 붙여 넣어 보관하세요.':(auto?'코드를 만들었습니다. 코드 복사하기를 눌러 주세요.':'자동 복사가 막혀 있습니다. 코드 칸이 선택돼 있으니 Ctrl+C(휴대폰은 길게 눌러 복사)로 복사하세요.')); },
   async impPaste(){ const el=document.getElementById('impCode'); let t=''; try{ if(navigator.clipboard&&navigator.clipboard.readText)t=await navigator.clipboard.readText(); }catch(e){ t=''; } if(t&&el){ el.value=t.trim(); toast('붙여 넣었습니다. 코드로 불러오기를 누르세요.'); } else { if(el)el.focus(); toast('브라우저가 붙여넣기를 막았습니다. 칸을 눌러 Ctrl+V(휴대폰은 길게 눌러 붙여넣기)로 넣어 주세요.'); } },
   bkLater(){ if(G){ G.bkAt=G.day-30; save(); } render(); },
+  lgOpen(v){ const id=+v; UI.lgEdit=UI.lgEdit===id?null:id; UI.lgMsg=''; render(); },
+  lgEmb(v){ const i=v.indexOf(':'); const tid=+v.slice(0,i), k=v.slice(i+1); lgApply(tid,{emb:k},''); },
+  lgImgDel(v){ lgApply(+v,{img:null},'로고 이미지를 지웠습니다.'); },
+  lgReset(v){ lgApply(+v,null,'기본 로고로 되돌렸습니다.'); },
+  stopTg(v){ if(!STOP_DEF.hasOwnProperty(v))return; G.stopCfg=G.stopCfg||{}; const cur=G.stopCfg[v]!=null?!!G.stopCfg[v]:STOP_DEF[v]; G.stopCfg[v]=!cur; save(); render(); },
   tnSave(){ const r=applyTeamNames(tnRead()); UI.tnMsg=r||'구단 이름을 바꿨습니다.'; if(!r){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); },
   tnReset(){ resetTeamNames(); UI.tnMsg='기본 이름으로 되돌렸습니다.'; let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); render(); },
   tnPre(){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on){ tnStore(false); UI.tnMsg='새 게임에는 기본 이름을 씁니다.'; } else { tnStore(true); UI.tnMsg='새 게임에도 지금 이름을 씁니다.'; } render(); },

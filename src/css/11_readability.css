@@ -397,3 +397,8 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 
 
 .tbk .tile .small{display:block;margin-top:2px;line-height:1.35}
+/* 구단 로고 편집 */
+.lg-ed{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0 10px;display:grid;gap:10px;background:var(--panel)}
+.lg-emb{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}.lg-e{display:grid;justify-items:center;gap:2px;padding:6px 2px;border:1px solid var(--line);border-radius:8px;background:none;color:var(--ink);cursor:pointer;min-height:44px}.lg-e.on{border-color:var(--acc);background:#ffffff0d}.lg-e i{font-style:normal;font-size:11px;color:var(--muted)}
+.lg-col{gap:12px;align-items:center}.lg-col label{display:inline-flex;align-items:center;gap:6px;font-size:13px}.lg-col input[type=color]{width:40px;height:32px;padding:0;border:1px solid var(--line);border-radius:6px;background:none}
+.stop-l{display:grid;gap:6px;margin-top:8px}.stop-r{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.stop-r.lock{opacity:.75}

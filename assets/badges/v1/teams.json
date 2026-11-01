@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "note": "Palette values are design references, not certified official colors; existing raster artwork includes tonal variations. Keys are asset keys, not game team IDs.",
+  "teams": [
+    {
+      "key": "seoul_comets",
+      "name": "서울 코메츠",
+      "color_reference": "LG",
+      "design_palette": {
+        "background": "#A50034",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "assets": {
+        "320": "png/320/seoul_comets.png",
+        "128": "png/128/seoul_comets.png",
+        "64": "png/64/seoul_comets.png",
+        "32": "png/32/seoul_comets.png"
+      }
+    },
+    {
+      "key": "seoul_hounds",
+      "name": "서울 하운즈",
+      "color_reference": "두산",
+      "design_palette": {
+        "background": "#131230",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "assets": {
+        "320": "png/320/seoul_hounds.png",
+        "128": "png/128/seoul_hounds.png",
+        "64": "png/64/seoul_hounds.png",
+        "32": "png/32/seoul_hounds.png"
+      }
+    },
+    {
+      "key": "incheon_seagulls",
+      "name": "인천 시걸스",
+      "color_reference": "SSG",
+      "design_palette": {
+        "background": "#CE0E2D",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "assets": {
+        "320": "png/320/incheon_seagulls.png",
+        "128": "png/128/incheon_seagulls.png",
+        "64": "png/64/incheon_seagulls.png",
+        "32": "png/32/incheon_seagulls.png"
+      }
+    },
+    {
+      "key": "suwon_sparks",
+      "name": "수원 스파크스",
+      "color_reference": "KT",
+      "design_palette": {
+        "background": "#141414",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "assets": {
+        "320": "png/320/suwon_sparks.png",
+        "128": "png/128/suwon_sparks.png",
+        "64": "png/64/suwon_sparks.png",
+        "32": "png/32/suwon_sparks.png"
+      }
+    },
+    {
+      "key": "goyang_storm",
+      "name": "고양 스톰",
+      "color_reference": "키움",
+      "design_palette": {
+        "background": "#570514",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "assets": {
+        "320": "png/320/goyang_storm.png",
+        "128": "png/128/goyang_storm.png",
+        "64": "png/64/goyang_storm.png",
+        "32": "png/32/goyang_storm.png"
+      }
+    },
+    {
+      "key": "daejeon_redfox",
+      "name": "대전 레드폭스",
+      "color_reference": "한화",
+      "design_palette": {
+        "background": "#F37321",
+        "symbol": "#FFFFFF",
+        "ring": "#282828"
+      },
+      "assets": {
+        "320": "png/320/daejeon_redfox.png",
+        "128": "png/128/daejeon_redfox.png",
+        "64": "png/64/daejeon_redfox.png",
+        "32": "png/32/daejeon_redfox.png"
+      }
+    },
+    {
+      "key": "gwangju_blazes",
+      "name": "광주 블레이즈",
+      "color_reference": "KIA",
+      "design_palette": {
+        "background": "#EA0029",
+        "symbol": "#FFD34F",
+        "ring": "#FFD34F"
+      },
+      "assets": {
+        "320": "png/320/gwangju_blazes.png",
+        "128": "png/128/gwangju_blazes.png",
+        "64": "png/64/gwangju_blazes.png",
+        "32": "png/32/gwangju_blazes.png"
+      }
+    },
+    {
+      "key": "daegu_thunders",
+      "name": "대구 썬더스",
+      "color_reference": "삼성",
+      "design_palette": {
+        "background": "#074CA1",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "assets": {
+        "320": "png/320/daegu_thunders.png",
+        "128": "png/128/daegu_thunders.png",
+        "64": "png/64/daegu_thunders.png",
+        "32": "png/32/daegu_thunders.png"
+      }
+    },
+    {
+      "key": "busan_waves",
+      "name": "부산 웨이브스",
+      "color_reference": "롯데",
+      "design_palette": {
+        "background": "#041E42",
+        "symbol": "#FFFFFF",
+        "ring": "#D00F31"
+      },
+      "assets": {
+        "320": "png/320/busan_waves.png",
+        "128": "png/128/busan_waves.png",
+        "64": "png/64/busan_waves.png",
+        "32": "png/32/busan_waves.png"
+      }
+    },
+    {
+      "key": "changwon_anchors",
+      "name": "창원 앵커스",
+      "color_reference": "NC",
+      "design_palette": {
+        "background": "#1D467B",
+        "symbol": "#FFFFFF",
+        "ring": "#C6A269"
+      },
+      "assets": {
+        "320": "png/320/changwon_anchors.png",
+        "128": "png/128/changwon_anchors.png",
+        "64": "png/64/changwon_anchors.png",
+        "32": "png/32/changwon_anchors.png"
+      }
+    }
+  ]
+}

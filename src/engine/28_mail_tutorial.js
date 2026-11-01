@@ -2,12 +2,25 @@
 const SEC='서하린';
 const FROM={병역:'운영팀',엔트리:'감독실',언론:'홍보팀',구단주:'구단주실',부상:'팀 닥터 · 의무팀',복귀:'팀 닥터 · 의무팀',트레이드:'운영팀',일정:`비서 ${SEC}`,FA:'운영팀',연봉:'운영팀',결산:'구단주실',경기:'전력분석팀',기록:'홍보팀',월간:`비서 ${SEC}`,드래프트:'스카우트팀장',새해:`비서 ${SEC}`,캠프:'코칭스태프',스토브리그:`비서 ${SEC}`,외국인:'운영팀',포스트시즌:`비서 ${SEC}`,취임:`비서 ${SEC}`,면담:'선수단',감독:'운영팀',연수:'육성팀',의무:'팀 닥터 · 의무팀'};
 const GOTO={구장:'구장',연봉:'연봉협상',드래프트:'신인드래프트',FA:'FA시장',결산:'시즌결산',캠프:'스프링캠프',감독:'감독',스토브리그:'FA시장',외국인:'외국인선수',용병:'외국인선수',트레이드:'트레이드'};
+/* ===== 진행 멈춤 조건(위임과 별개, 리뷰 2026-11-01 5번) =====
+   중요한 소식(imp)이 와도, 플레이어가 끈 분류면 소식함에만 남기고 진행은 멈추지 않는다(결정은 기한이 지나면 기본안으로 처리).
+   계약·협상·등록·규정·구단주 주문·드래프트·포스트시즌(must)은 항상 멈춘다. 일반 소식(일정·시상식·결산 알림)은 기본으로 멈추지 않는다 */
+const STOP_CATS=[['must','계약·협상·등록·규정·구단주 주문','항상 멈춤: 정하지 않으면 손해가 크거나 규정 문제가 생기는 일'],['trade','트레이드 제안','다른 구단이 보낸 제안'],['inj','부상·복귀','선수 이탈·복귀 소식'],['mgr','감독 요청','보강·기용·미디어데이 등 감독이 묻는 일'],['squad','선수단 사건','지각·징계·충돌·슬럼프 등 선수단 관리'],['owner','구단주 초대·행사','관전 초대 등 구단주와의 일정'],['spon','스폰서·팬 행사','스폰서 제안·팬 행사 제안'],['press','언론 인터뷰 요청','인터뷰·후속 질문'],['info','일반 소식','일정·시상식·결산·캠프 결산 알림(결정할 것이 없는 소식)']];
+const STOP_DEF={trade:true,inj:true,mgr:true,squad:true,owner:true,spon:true,press:true,info:false};
+const STOP_INFO=new Set(['일정','새해','포스트시즌알림','기록','캠프','스토브리그','업무','결산','월간','경기','연수']);
+function stopCat(m){ const k=m&&m.kind, f=m&&m.from||'';
+  if(k==='부상'||k==='복귀'||k==='의무')return 'inj'; if(k==='트레이드')return 'trade'; if(k==='스폰서'||f==='마케팅팀')return 'spon'; if(k==='언론')return 'press'; if(k==='면담')return 'squad';
+  if(k==='감독')return 'mgr'; if(k==='결정'){ if(f==='감독실')return 'mgr'; if(f==='구단주실')return 'owner'; if(f==='에이전트'||f==='부단장')return 'must'; return 'squad'; }
+  if(STOP_INFO.has(k))return 'info'; return 'must'; }
+function stopOn(m){ const c=stopCat(m); if(c==='must')return true; const S=(typeof G!=='undefined'&&G&&G.stopCfg)||{}; return S[c]!=null?!!S[c]:STOP_DEF[c]; }
+/* 결정(G.evs)이 진행을 멈추게 하는가: 그 결정을 알린 소식의 분류로 본다 */
+function evStops(e){ const m=e&&e.mid!=null&&G.mail?G.mail.find(x=>x.id===e.mid):null; return m?stopOn(m):true; }
 function mail(from,subj,body,o){ o=o||{}; if(G.unemp&&o.kind!=='경력'&&from!=='야인')return {read:true,acts:[]}; /* 야인일 때는 전 소속 구단 업무 메일을 받지 않는다 */
   { const d=G.mail.slice(0,60).find(x=>!x.read&&x.subj===subj&&x.body===body&&G.day-x.day<=7); if(d)return d; } /* 같은 소식이 아직 안 읽힌 채 있으면 다시 보내지 않는다 */
   const m={id:'m'+(G.mailSeq=(G.mailSeq||0)+1),day:G.day,from,subj,body,read:false,imp:!!o.imp,acts:o.acts||[],ref:o.ref??null,kind:o.kind||'일반',face:o.face??null};
-  G.mail.unshift(m); mailPrune(); if(m.imp)G.stops.push(m); return m; }
+  G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }
 /* 이미 보낸 소식을 다시 알릴 때: 새 소식을 만들지 않고 원래 소식을 오늘로 끌어올려 안 읽음으로 되돌린다 */
-function mailBump(m,warn){ const i=G.mail.indexOf(m); if(i<0)return null; G.mail.splice(i,1); G.mail.unshift(m); if(m.day0==null)m.day0=m.day; m.day=G.day; m.read=false; m.imp=true; m.warn=warn||m.warn||''; G.stops.push(m); return m; }
+function mailBump(m,warn){ const i=G.mail.indexOf(m); if(i<0)return null; G.mail.splice(i,1); G.mail.unshift(m); if(m.day0==null)m.day0=m.day; m.day=G.day; m.read=false; m.imp=true; m.warn=warn||m.warn||''; if(stopOn(m))G.stops.push(m); return m; }
 /* 소식함 한도: 160건을 넘으면 오래된 '읽은' 소식부터 지운다. 안 읽은 소식은 남기고, 그래도 240건을 넘을 때만 가장 오래된 것을 지운다 */
 function mailPrune(){ if(G.mail.length<=160)return; for(let i=G.mail.length-1;i>=0&&G.mail.length>160;i--)if(G.mail[i].read)G.mail.splice(i,1); if(G.mail.length>240)G.mail.length=240; }
 function headline(t){ const i=t.search(/[.!?](\s|$)/); return i>0&&i<46?t.slice(0,i):t.length>40?t.slice(0,38)+'…':t; }

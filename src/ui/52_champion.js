@@ -4,7 +4,7 @@ function champHomeCard(){ const c=G.champNew; if(!c||c.seen)return ''; const t=t
   const heads=(G.news||[]).filter(n=>n.d>=G.day-5&&(n.v||0)>=3).slice(0,3);
   const FAN=['평생 응원한 보람이 있다 오늘은 그냥 울자','단장님 그동안 욕해서 죄송합니다','퍼레이드 어디서 하냐 연차 쓴다','이 멤버 그대로 내년에도 가자','MVP 유니폼 품절이다 벌써'];
   const fans=FAN.map((x,i)=>[x,hn('cf'+c.y+i,G.user)]).sort((a,b)=>a[1]-b[1]).slice(0,3).map(x=>x[0]);
-  return `<section class="card champ"><div class="ch-top">${trophySvg()}<div><div class="eyebrow">${c.y} 한국시리즈</div><h2>${esc(tname(G.user))} 우승</h2><p class="ch-tag">${esc(c.tag)}${c.ks?` · ${esc(tshort(c.opp))}에 ${c.ks[0]}승 ${c.ks[1]}패`:''}</p></div></div>
+  return `<section class="card champ"><div class="ch-top">${trophyImg(64)}<div><div class="eyebrow">${c.y} 한국시리즈</div><h2>${esc(tname(G.user))} 우승</h2><p class="ch-tag">${esc(c.tag)}${c.ks?` · ${esc(tshort(c.opp))}에 ${c.ks[0]}승 ${c.ks[1]}패`:''}</p></div></div>
     ${c.mvp?`<button class="ch-mvp" data-a="player" data-v="${c.mvp.id}">${G.players[c.mvp.id]?avImg(G.players[c.mvp.id]):''}<span><i>시리즈 최우수선수</i><b>${esc(c.mvp.n)}</b><em>${esc(c.mvp.line)}</em></span></button>`:''}
     ${heads.length?`<div class="ch-news">${heads.map(n=>`<div><span class="pill">${esc(n.o||'')}</span> ${esc(n.t||'')}</div>`).join('')}</div>`:''}
     <div class="ch-fans"><span class="eyebrow">팬 커뮤니티</span>${fans.map(x=>`<p>"${esc(x)}"</p>`).join('')}</div>

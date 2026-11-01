@@ -56,8 +56,8 @@ function fdDataAll(){ const F=G.fd; if(!F)return {}; const k=F.y+':'+F.pool.leng
     else { const fk=pct(A,x=>x.t.so/x.t.pa,0), fb=pct(A,x=>x.t.bb/x.t.pa,1), fi=pct(A,x=>{ const r=bRate(x.t); return r.slg-r.avg; },1), fo=pct(A,x=>bRate(x.t).obp*1.2+bRate(x.t).slg,1);
       A.forEach(x=>{ m[x.p.id]={isP,lv:x.lv,n:x.t.pa,ys:x.t.ys||1,small:x.t.pa<250,it:[['삼진 적음',fk(x)],['볼넷',fb(x)],['장타력',fi(x)],['생산력',fo(x)]]}; }); } }
   /* 지난해 운: BABIP(타자) · ERA−FIP(투수) */
-  for(const p of P){ const d=m[p.id]; if(!d)continue; const L=fdStatLine(p,y); if(!L)continue; if(p.isP){ const g=L.era-L.fip; d.luck=g<=-.7?['지난해 운 좋았음',`ERA가 FIP보다 ${(-g).toFixed(1)} 낮음`]:g>=.7?['지난해 불운',`ERA가 FIP보다 ${g.toFixed(1)} 높음`]:null; }
-    else { const b=L.babip; d.luck=b>=.345?['지난해 운 좋았음',`BABIP ${fmt3(b)}`]:b<=.265?['지난해 불운',`BABIP ${fmt3(b)}`]:null; } }
+  for(const p of P){ const d=m[p.id]; if(!d)continue; const L=fdStatLine(p,y); if(!L)continue; if(p.isP){ const g=L.era-L.fip; d.luck=g<=-.7?['ERA<FIP',`ERA가 FIP보다 ${(-g).toFixed(1)} 낮음. 수비·타구 결과 영향 함께 확인`]:g>=.7?['ERA>FIP',`ERA가 FIP보다 ${g.toFixed(1)} 높음. 수비·타구 결과 영향 함께 확인`]:null; }
+    else { const b=L.babip; d.luck=b>=.345?['BABIP 높음',`BABIP ${fmt3(b)}. 타구 특성·주력·표본 함께 확인`]:b<=.265?['BABIP 낮음',`BABIP ${fmt3(b)}. 타구 특성·주력·표본 함께 확인`]:null; } }
   F._dv={k,m}; return m; }
 function fdData(p){ if(dataLv(G.user)<1)return null; return fdDataAll()[p.id]||null; }
 const pctW=v=>v>=80?'상':v>=60?'중상':v>=40?'중':v>=20?'중하':'하';
@@ -89,12 +89,12 @@ function fdHrExp(p,y){ if(!p||p.isP)return null; const h=seasonTotal(p,y,'1군')
   const ana=dataLv(G.user)>=1; let xr=null; if(ana){ const c=fdXhrModel(y), T=trackOf(p); if(c&&T)xr=Math.max(0,c[0]+c[1]*T.hh+c[2]*T.evmax); }
   if(!pr&&xr==null)return null; const w1=pr?pr.w:0, w2=xr!=null?1:0; const rate=((pr?pr.r*w1:0)+(xr!=null?xr*w2:0))/(w1+w2);
   const exp=rate*h.pa, d=h.hr-exp; const k=d>=Math.max(6,exp*.25)?'bub':exp>=10&&d<=-Math.max(6,exp*.3)?'low':''; /* 반등은 기대 10개 이상인 타자만(적게 치는 타자의 몇 개 차이는 판단하기 어렵다) */
-  return {exp:Math.round(exp),hr:h.hr,k,src:pr&&xr!=null?'지난 2년 기록·타구 질로 본':xr!=null?'타구 질로 본':'지난 2년 기록으로 본'}; }
-/* 데이터팀 한 줄 의견: 세부 데이터에서 눈에 띄는 것 두세 가지와 운 */
+  return {exp:Math.round(exp),hr:h.hr,k,src:pr&&xr!=null?'지난 2년 기록·타구 질 측정값으로 본':xr!=null?'타구 질 측정값으로 본':'지난 2년 기록으로 본'}; }
+/* 데이터팀 한 줄 의견: 세부 데이터에서 눈에 띄는 것 두세 가지. 기록과 기대치의 차이는 사실로만 적고 원인(운·반등)을 단정하지 않는다(리뷰 2026-11-01) */
 function fdDataLine(p,y){ const d=fdDetail(p,y); if(!d)return '기록이 부족해 판단하기 어렵습니다'; const T=trackOf(p); const ana=dataLv(G.user)>=1; const out=[];
   if(p.isP){ if(d.k>=24)out.push('삼진을 잘 잡음'); else if(d.k<=15)out.push('삼진이 적음'); if(d.bb<=6.5)out.push('볼넷 적음'); else if(d.bb>=11)out.push('볼넷 많음'); if(d.hr9>=1.3)out.push('홈런 허용 많음'); if(ana&&T.whiff>=29)out.push('헛스윙 유도 좋음');
-    if(d.gap!=null&&d.gap<=-.7)out.push(`${y} ERA가 FIP보다 ${(-d.gap).toFixed(1)} 낮아 운이 따름`); else if(d.gap!=null&&d.gap>=.7)out.push(`${y} ERA가 FIP보다 ${d.gap.toFixed(1)} 높아 불운, 반등 여지`); }
+    if(d.gap!=null&&d.gap<=-.7)out.push(`${y} ERA가 FIP보다 ${(-d.gap).toFixed(1)} 낮음(수비·타구 결과 영향 함께 확인)`); else if(d.gap!=null&&d.gap>=.7)out.push(`${y} ERA가 FIP보다 ${d.gap.toFixed(1)} 높음(수비·타구 결과 영향 함께 확인)`); }
   else { if(ana&&T.ev>=141)out.push('타구가 강함'); else if(ana&&T.ev<=131)out.push('타구가 약함'); if(d.k<=14)out.push('삼진 적음'); else if(d.k>=24)out.push('삼진 많음'); if(d.bb>=11)out.push('볼넷 잘 고름'); if(d.iso>=.2)out.push('장타 힘 있음');
-    const X=fdHrExp(p,y); if(X&&X.k)out.unshift(X.k==='bub'?`${y} 홈런 ${X.hr}개는 ${X.src} 기대(${X.exp}개 안팎)보다 많아 거품 가능`:`${y} 홈런 ${X.hr}개는 ${X.src} 기대(${X.exp}개 안팎)보다 적어 반등 여지`);
-    if(d.babip!=null&&d.babip>=.345)out.push(`${y} BABIP ${fmt3(d.babip)}로 높아 타율에 운이 섞임`); else if(d.babip!=null&&d.babip<=.265)out.push(`${y} BABIP ${fmt3(d.babip)}로 낮아 불운, 반등 여지`); }
+    const X=fdHrExp(p,y); if(X&&X.k)out.unshift(X.k==='bub'?`${y} 홈런 ${X.hr}개는 ${X.src} 기대(${X.exp}개 안팎)보다 많음(유지될지는 확정하기 어려움)`:`${y} 홈런 ${X.hr}개는 ${X.src} 기대(${X.exp}개 안팎)보다 적음(늘어날지는 확정하기 어려움)`);
+    if(d.babip!=null&&d.babip>=.345)out.push(`${y} BABIP ${fmt3(d.babip)}로 높음(타구 특성·주력·표본 함께 확인)`); else if(d.babip!=null&&d.babip<=.265)out.push(`${y} BABIP ${fmt3(d.babip)}로 낮음(타구 특성·주력·표본 함께 확인)`); }
   if(d.n<(p.isP?60:250))out.push('표본 적음'); return out.slice(0,4).join(' · ')||'특별히 튀는 데이터 없음'; }

@@ -5,7 +5,7 @@ function buildWorld(){ const userTid=0; worldReset();
   TEAM_DEF.forEach((d,i)=>G.teams.push(Object.assign({id:i,cash:4000,pop:1,trust:55,rel:50,owner:d.indie?'profit':pick(['win','profit','pr','win']),
     mode:'contend',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:ri(2,4)},d)));
   /* 플레이어가 정해 둔 구단 이름(설정 → 구단 이름 바꾸기, '새 게임에도 쓰기')이 있으면 처음부터 그 이름으로 만든다(화면 쪽 teamNamesPreset) */
-  try{ if(typeof teamNamesPreset==='function'){ const L=teamNamesPreset(); if(L)applyTeamNames(L); } }catch(e){}
+  try{ if(typeof teamNamesPreset==='function'){ const L=teamNamesPreset(); if(L){ applyTeamNames(L); for(const x of L)if(x&&x.logo)setTeamLogo(+x.id,x.logo); } } }catch(e){} /* 로고도 함께(새 게임에도 쓰기) */
   const bpos=['C','C','1B','1B','2B','2B','3B','3B','SS','SS','LF','LF','CF','CF','RF','RF','3B'];
   for(const t of G.teams){
     const tb=N(0,1.6);
@@ -87,4 +87,15 @@ function applyTeamNames(L){ if(!G||!G.teams||!Array.isArray(L))return '바꿀 �
     void c; if(!k)return '별칭을 적어 주세요.'; if(k.length>10)return '별칭은 10자까지입니다.'; if(/[<>&"'`]/.test(k))return '이름에 쓸 수 없는 기호가 있습니다.'; n.nick=k; } /* 연고지는 바꿀 수 없다(지역·시장 규모·연고 선수와 묶여 있다) */
   const full=next.map(t=>t.city+' '+t.nick); if(new Set(full).size!==full.length)return '같은 이름의 구단이 둘 있습니다.'; if(new Set(next.map(t=>t.nick)).size!==next.length)return '별칭이 겹치는 구단이 있습니다(기사·기록에서 헷갈립니다).';
   for(const n of next){ const t=G.teams[n.id]; t.city=n.city; t.nick=n.nick; } return ''; }
+/* ===== 구단 로고 바꾸기(사용자 2026-11-01 21:15) =====
+   t.logo={emb 상징, c1 주색, c2 보조색(테두리), c3 바탕색, code 글자(대문자·숫자 3자), img 이미지(data:image png·jpeg·webp·gif, 64KB까지)}. 없으면 원래 로고.
+   주색·보조색·바탕색은 구단 색(tpal)에도 쓰여 화면 강조색이 같이 바뀐다. 잘못된 값은 거절(이유 문자열), 문제없으면 '' */
+const LOGO_EMB=[...TEAM_DEF.map(t=>t.nick),'별','왕관','배트','산','글자'];
+function setTeamLogo(tid,patch){ const t=G&&G.teams&&G.teams[tid]; if(!t)return '구단이 없습니다.'; if(patch===null){ delete t.logo; return ''; }
+  const L=Object.assign({},t.logo||{}); const P=patch||{};
+  if('emb' in P){ if(P.emb!=null&&!LOGO_EMB.includes(P.emb))return '고를 수 없는 상징입니다.'; L.emb=P.emb||null; }
+  for(const k of ['c1','c2','c3']) if(k in P){ if(P[k]!=null&&!/^#[0-9a-fA-F]{6}$/.test(P[k]))return '색은 #RRGGBB 형식이어야 합니다.'; L[k]=P[k]?P[k].toLowerCase():null; }
+  if('code' in P){ const c=String(P.code??'').trim().toUpperCase(); if(c&&!/^[A-Z0-9]{1,3}$/.test(c))return '글자는 영문 대문자·숫자 3자까지입니다.'; L.code=c||null; }
+  if('img' in P){ if(P.img!=null){ const s=String(P.img); if(!/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s))return '이미지 파일(png·jpg·webp·gif)만 쓸 수 있습니다.'; if(s.length>64000)return '이미지가 너무 큽니다(64KB까지). 작게 줄여서 올려 주세요.'; L.img=s; } else delete L.img; }
+  for(const k of Object.keys(L))if(L[k]==null)delete L[k]; if(Object.keys(L).length)t.logo=L; else delete t.logo; return ''; }
 function resetTeamNames(){ if(!G||!G.teams)return; for(const t of G.teams){ const d=TEAM_DEF[t.id]; if(d){ t.city=d.city; t.nick=d.nick; } } }
