@@ -203,7 +203,7 @@ const A={
   fireCoach(v){ fireCoach(v); UI.cfire=null; UI.cMsg=`${CROLE[v].l} 자리를 비웠습니다.`; save(); render(); },
   hireCoach(v){ const [id,y]=v.split(':'); const c=(G.cmarket||[]).find(x=>x.id===id); const e=hireCoach(id,+y); UI.cMsg=e||(c?`${CROLE[c.role].l} ${c.name} 영입 (${y}년)`:''); if(!e&&c){ UI.it=UI.it||{}; UI.it.coach=CROLE[c.role].g===2?'g2':'g1'; } save(); render(); },
   hy(v){UI.hy=+v;render();},
-  fmBack(){ fmBack(); }, fmFwd(){ fmFwd(); },
+  fmBack(){ fmBack(); }, fmFwd(){ fmFwd(); }, fmPlan(){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; UI.it.rdepth='glance'; closeSheets(); render(); },
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
   pEditOpen(v){ UI.pEdit=v===''||v==null?null:+v; UI.pEditErr=''; renderSheet(); },
   pEditSave(v){ const id=+v, p=G.players[id]; if(!p)return; const nm=$('#pe-nm'), no=$('#pe-no'); let e=nm?setPlayerName(id,nm.value):''; if(!e&&no&&String(no.value).trim()!==String(jno(p)))e=setPlayerNo(id,no.value);
