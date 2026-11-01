@@ -50,7 +50,8 @@ function subAlert(tab,k){
   return !!A2[tab+':'+k];
 }
 function tabAlert(tab){ return (SUBS[tab]||[]).some(([k])=>((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))); }
-function subTabs(tab){
+function subTabs(tab){ return fmOn()?'':subTabsRaw(tab); } /* PC(FM식)에서는 위 두 번째 줄이 하위 탭이다 */
+function subTabsRaw(tab){
   const cur=curSub(tab);
   return `<nav class="subtabs" aria-label="${TITLE[tab]} 하위 메뉴">${SUBS[tab].map(([k,l])=>`<button data-a="${tab==='league'?'lseg':'sub'}" data-v="${tab==='league'?k:tab+':'+k}" class="${cur===k?'on':''}">${l}${((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))?'<i class="sdot"></i>':''}</button>`).join('')}</nav>`;
 }

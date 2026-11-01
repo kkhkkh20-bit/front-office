@@ -1,0 +1,57 @@
+/* ---------- PC 화면(FM식) 위 두 줄 메뉴 ---------- */
+@media (min-width:1100px){
+  body.fm .shell.fmsh{display:block;min-height:100vh}
+  body.fm .bnav{display:none}
+  .fmtop{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,var(--team-dk),color-mix(in srgb,var(--team-dk) 82%,#000));border-bottom:2px solid var(--team-hi);box-shadow:0 2px 10px #0006}
+  .fm1{display:flex;align-items:center;gap:10px;height:54px;padding:0 14px}
+  .fm-nav{display:flex;gap:4px}
+  .fm-a{width:28px;height:30px;border:1px solid #ffffff22;background:#ffffff10;color:#e8eef3;border-radius:5px;font:700 18px/1 var(--f-ui);cursor:pointer;padding:0}
+  .fm-a:disabled{opacity:.35;cursor:default}
+  .fm-a:not(:disabled):hover{background:#ffffff22}
+  .fm-club{border:0;background:none;padding:0 2px;cursor:pointer;display:flex;align-items:center}
+  .fm-menu{display:flex;align-items:stretch;height:100%;min-width:0;flex:1 1 auto}
+  .fmm{position:relative;display:flex}
+  .fmm-b{border:0;background:none;color:#e9eef2cc;font:700 16px var(--f-ui);padding:0 12px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;letter-spacing:-.01em}
+  .fmm-b:hover,.fmm:hover .fmm-b{color:#fff;background:#ffffff0f}
+  .fmm.on .fmm-b{color:#fff;box-shadow:inset 0 -3px 0 var(--team-hi)}
+  .fmm-c{font-style:normal;font-size:10px;opacity:.6;margin-left:2px}
+  .fmm-b .sdot{margin-left:2px}
+  .fmdd{display:none;position:absolute;top:100%;left:0;min-width:180px;background:#141c23;border:1px solid var(--line2);border-top:2px solid var(--team-hi);border-radius:0 0 6px 6px;padding:4px 0;box-shadow:0 10px 24px #000a;z-index:40}
+  .fmm:hover .fmdd,.fmm:focus-within .fmdd{display:block}
+  .fmdd button{display:flex;align-items:center;gap:6px;width:100%;border:0;background:none;color:var(--ink);font:500 14px var(--f-ui);text-align:left;padding:8px 14px;cursor:pointer;white-space:nowrap}
+  .fmdd button:hover{background:#ffffff10;color:#fff}
+  .fm-r{display:flex;align-items:center;gap:6px;margin-left:auto;flex:0 0 auto}
+  .fm-i{position:relative;width:34px;height:34px;border:0;background:none;color:#dfe7ee;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  .fm-i:hover,.fm-i.on{background:#ffffff18;color:#fff}
+  .fm-i .ico{width:19px;height:19px}
+  .fm-i>i{position:absolute;top:1px;right:0;min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font:700 10px/16px var(--f-num);font-style:normal;padding:0 4px}
+  .fm-date{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;margin:0 6px 0 4px;white-space:nowrap}
+  .fm-date b{font:700 14px var(--f-num);color:#fff}
+  .fm-date span{font-size:11.5px;color:#d6dee5b3}
+  .fm1 .goset .continue{min-height:40px;min-width:170px;justify-content:space-between}
+  .fm2{display:flex;align-items:center;gap:10px;height:36px;padding:0 14px 0 82px;background:#00000038;border-top:1px solid #ffffff12}
+  .fm-sub{display:flex;align-items:center;gap:2px;min-width:0;flex:1 1 auto;overflow:hidden}
+  .fm-sub nav.subtabs{display:flex;gap:2px;margin:0;padding:0;border:0;background:none;overflow-x:auto;scrollbar-width:none}
+  .fm-sub nav.subtabs button{border:0;background:none;color:#dfe7eeb8;font:600 13.5px var(--f-ui);padding:6px 10px;border-radius:0;white-space:nowrap;cursor:pointer;position:relative}
+  .fm-sub nav.subtabs button:hover{color:#fff}
+  .fm-sub nav.subtabs button.on{color:#fff;box-shadow:inset 0 -2px 0 var(--team-hi)}
+  .fm-ttl{font:700 14px var(--f-ui);color:#fff;padding:0 4px}
+  .fm-ib{border:1px solid #ffffff2a;background:#ffffff12;color:#fff;font:600 12px var(--f-ui);border-radius:4px;padding:3px 8px;margin-right:8px;cursor:pointer;white-space:nowrap}
+  .fm-meta{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .fm-meta .chipn{background:#00000030;border-color:#ffffff1f;color:#e3eaf0}
+  .fmsh .gut .wrap.fmwrap{max-width:none;padding:0 6px}
+  .fmsh main.content{padding-block:12px 40px}
+  .fmsh .sbwrap .wrap,.fmsh .blk .wrap{max-width:none}
+}
+@media (min-width:1100px) and (max-width:1320px){
+  .fmm-b{font-size:14.5px;padding:0 8px}
+  .fm-date span{display:none}
+  .fm1 .goset .continue{min-width:130px}
+  .fm1 .goset .step .st-x{display:none}
+}
+/* 홈(FM식): 세 칸 카드 */
+@media (min-width:1100px){
+  .homeg.fm3{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+  .homeg.fm3>.col{min-width:0;display:flex;flex-direction:column;gap:12px}
+  .homeg.fm3>.col>.card,.homeg.fm3>.col>section,.homeg.fm3>.col>details{margin:0}
+}
