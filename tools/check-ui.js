@@ -310,6 +310,10 @@ const QUICK=process.env.QUICK==='1';
   { where='볼카운트'; const r=await ev(()=>{ if(typeof cCountAfter!=='function')return {fn:false}; const a=cCountAfter({b:1,s:1,res:'볼'}), b=cCountAfter({b:3,s:2,res:'파울'}), c=cCountAfter({b:0,s:1,res:'헛스윙'}); const i=G.games.findIndex(g=>g.pbp&&g.pbp.length); let mk=null; if(i>=0){ A.cast(i); const el=document.getElementById('cs-bso'); mk=!!el&&el.querySelectorAll('#cs-B i').length===3&&el.querySelectorAll('#cs-S i').length===2&&el.querySelectorAll('#cs-Ob i').length===2; A.castClose(true); }
       return {fn:true,ok:a.b===2&&a.s===1&&b.b===3&&b.s===2&&c.s===2,mk}; });
     if(r&&(!r.fn||!r.ok||r.mk===false))add('볼카운트','중계에 볼카운트 신호등이 없거나 카운트 계산이 틀림: '+JSON.stringify(r)); }
+  /* 떠난 선수: 보관된 기록으로 선수 창이 열린다(시즌 결산 리더 버튼이 막히던 문제) */
+  { where='떠난 선수'; const r=await ev(()=>{ if(typeof archSheet!=='function')return {fn:false}; const id=-987654; G.arch=G.arch||{}; G.arch[id]={id,name:'점검선수',isP:false,pos:'1B',why:'해외 진출',y:G.year,t:G.user,rows:[{y:G.year-1,t:G.user,pa:500,ab:450,h:130,d:25,tr:2,hr:20,bb:45,so:90,war:3.1}]};
+      A.player(id); const h=(document.querySelector('#sheet')||{}).textContent||''; closeSheets(); delete G.arch[id]; return {fn:true,ok:/점검선수/.test(h)&&/해외 진출/.test(h)&&/3\.1/.test(h)}; });
+    if(r&&(!r.fn||!r.ok))add('떠난 선수','떠난 선수 기록 창이 열리지 않음: '+JSON.stringify(r)); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

@@ -559,6 +559,9 @@ T('[재임 성과] 내가 데려온 선수는 떠나도 재임 성과 목록에 
   const L=G.mineL||[]; ok(L.length>=20,'데려온 선수 기록 '+L.length); const p=L.map(x=>G.players[x.id]).find(q=>q&&q.team===G.user); const to=G.teams.find(t=>t.id!==G.user).id; p.team=to; ok(tbMineAll().some(x=>x.p===p&&x.gone),'떠난 선수가 목록에서 빠짐'); p.team=G.user;
   const K=tbKpi(); ok(K.comp.inh+K.comp.dr+K.comp.ext===K.ln&&K.ln>=8,'주전 구성 '+JSON.stringify(K.comp)); ok(K.age>0,'주전 평균 나이');
   const tid=G.teams.find(t=>t.id!==G.user).id; G.jobs=[]; jobOffer(tid,true); jobAnswer(tid,true); ok(G.tbSnap.tid===tid,'이직 뒤 취임 당시 기록'); });
+T('[떠난 선수 기록] 리그를 떠나는 선수(은퇴·해외·방출)는 1군 시즌 기록을 보관해 나중에도 열어 볼 수 있다',()=>{ fresh(); const p=Object.values(G.players).find(q=>q.foreign&&q.hist.some(h=>h.lvl==='1군'&&(h.pa>=100||h.outs>=150))); ok(p,'준비 실패'); const id=p.id, nm=p.name;
+  ok(typeof dropP==='function','보관 함수 없음'); dropP(id); ok(!G.players[id],'삭제 안 됨'); const a=G.arch&&G.arch[id]; ok(a&&a.name===nm&&a.rows.length>=1&&a.rows.every(r=>r.war!=null&&r.t!=null),'보관 '+JSON.stringify(a||null).slice(0,120));
+  const q=Object.values(G.players).find(x=>x.prospect); if(q){ dropP(q.id); ok(!G.arch[q.id],'1군 기록 없는 선수까지 보관'); } });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

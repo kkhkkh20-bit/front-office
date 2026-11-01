@@ -66,6 +66,12 @@ function growthCard(p){
     <div class="growth">${pts.map(x=>`<div><i style="height:${Math.max(6,(x.v-20)*1.6)}px;background:${rcol(x.v)}"></i><b>${dv(x.v)}</b><span>${String(x.y).slice(2)}</span></div>`).join('')}</div>
     ${lg?`<p class="small muted">지난 겨울 성장 요인: ${lg.y}시즌 ${pl} · ${esc(lg.fac)}${G.mgr[G.user]?` · ${esc(G.mgr[G.user].name)} 감독 육성 ${G.mgr[G.user].youth}`:''}</p>`:''}</section>`;
 }
+function archSheet(a){ const tw=a.rows.reduce((s,r)=>s+(r.war||0),0); const f3=v=>fmt3(v);
+  const row=r=>a.isP?`<tr><td>${r.y}</td><td>${badge(r.t,14)} ${esc(tshort(r.t))}</td><td>${r.g||'-'}</td><td>${ipStr(r.outs||0)}</td><td>${r.outs?(r.er*27/r.outs).toFixed(2):'-'}</td><td>${r.w||0}-${r.l||0}${r.sv?` ${r.sv}세`:''}</td><td>${r.so||0}</td><td>${(r.war||0).toFixed(1)}</td></tr>`
+    :(()=>{ const ab=r.ab||0, obp=(r.pa?((r.h||0)+(r.bb||0)+(r.hbp||0))/r.pa:0), slg=ab?((r.h||0)+(r.d||0)+2*(r.tr||0)+3*(r.hr||0))/ab:0; return `<tr><td>${r.y}</td><td>${badge(r.t,14)} ${esc(tshort(r.t))}</td><td>${r.pa||0}</td><td>${ab?f3((r.h||0)/ab):'-'}</td><td>${r.hr||0}</td><td>${ab?f3(obp+slg):'-'}</td><td>${r.sb||0}</td><td>${(r.war||0).toFixed(1)}</td></tr>`; })();
+  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="${esc(a.name)} 기록"><div class="sheet-head"><div><span class="eyebrow">리그를 떠난 선수${a.foreign?` · ${a.foreign==='아시아'?'아시아쿼터':'외국인'}`:''}</span><h2 class="sec">${esc(a.name)} <span class="small muted">${esc(a.isP?a.pos:(POSK[a.pos]||a.pos||''))} · ${a.y}년 ${a.age}세</span></h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    ${a.why?`<p class="small">${esc(a.why)}</p>`:''}<p class="small muted">1군 통산 WAR ${tw.toFixed(1)} · 마지막 소속 ${a.t!=null?esc(tshort(a.t)):'-'}. 리그를 떠나 지금 능력은 볼 수 없고, 남긴 기록만 보관합니다.</p>
+    <div class="tw"><table class="mst"><thead><tr>${a.isP?'<th>시즌</th><th>구단</th><th>경기</th><th>이닝</th><th>ERA</th><th>승-패</th><th>탈삼진</th><th>WAR</th>':'<th>시즌</th><th>구단</th><th>타석</th><th>타율</th><th>홈런</th><th>OPS</th><th>도루</th><th>WAR</th>'}</tr></thead><tbody>${a.rows.slice().sort((x,y)=>x.y-y.y).map(row).join('')}</tbody></table></div></div></div>`; }
 function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet'); renderSheet0(); try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} }
 function renderSheet0(){
   const el=$('#sheet');
@@ -86,6 +92,7 @@ function renderSheet0(){
   if(UI.posSheet){ el.innerHTML=UI.posSheet.includes(':')?teamPosSheet(UI.posSheet):posSheet(UI.posSheet); return; }
   if(UI.wkres&&UI.sheet==null&&!UI.menu){ el.innerHTML=wkResSheet(); return; } /* 경기 결과 정리(박스스코어·선수 정보는 그 위에 뜨고, 닫으면 돌아온다) */
   if(UI.sheet==null){ el.innerHTML=''; return; }
+  if(UI.sheet!=null&&!G.players[UI.sheet]&&G.arch&&G.arch[UI.sheet]){ el.innerHTML=archSheet(G.arch[UI.sheet]); return; } /* 리그를 떠난 선수: 보관된 1군 기록 */
   const p=G.players[UI.sheet]; if(!p){UI.sheet=null; el.innerHTML=''; return;}
   const rp=scoutReport(p); const h=curLine(p); const per=period();
   const isFA=G.fa&&G.fa.open&&!G.fa.closed&&G.fa.pool.includes(p.id)&&p.team==null;
