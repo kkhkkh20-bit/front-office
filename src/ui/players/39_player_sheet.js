@@ -137,10 +137,35 @@ function archSheet(a){ const tw=a.rows.reduce((s,r)=>s+(r.war||0),0); const f3=v
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="${esc(a.name)} 기록"><div class="sheet-head"><div><span class="eyebrow">리그를 떠난 선수${a.foreign?` · ${a.foreign==='아시아'?'아시아쿼터':'외국인'}`:''}</span><h2 class="sec">${esc(a.name)} <span class="small muted">${esc(a.isP?a.pos:(POSK[a.pos]||a.pos||''))} · ${a.y}년 ${a.age}세</span></h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${a.why?`<p class="small">${esc(a.why)}</p>`:''}<p class="small muted">1군 통산 WAR ${tw.toFixed(1)} · 마지막 소속 ${a.t!=null?esc(tshort(a.t)):'-'}. 리그를 떠나 지금 능력은 볼 수 없고, 남긴 기록만 보관합니다.</p>
     <div class="tw"><table class="mst"><thead><tr>${a.isP?'<th>시즌</th><th>구단</th><th>경기</th><th>이닝</th><th>ERA</th><th>승-패</th><th>탈삼진</th><th>WAR</th>':'<th>시즌</th><th>구단</th><th>타석</th><th>타율</th><th>홈런</th><th>OPS</th><th>도루</th><th>WAR</th>'}</tr></thead><tbody>${a.rows.slice().sort((x,y)=>x.y-y.y).map(row).join('')}</tbody></table></div></div></div>`; }
-function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet'); renderSheet0(); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} }
+function sheetScrollY(){return document.documentElement.classList.contains('detail-page-open')?scrollY:(document.querySelector('#sheet .sheet')?.scrollTop||0);}
+function sheetScrollTo(y){if(document.documentElement.classList.contains('detail-page-open'))scrollTo(0,y);else{const sh=document.querySelector('#sheet .sheet');if(sh)sh.scrollTop=y;}}
+function detailPageSync(el){
+  const sh=el&&el.querySelector('.sheet'), active=!!sh;
+  const was=document.documentElement.classList.contains('detail-page-open');
+  if(active&&!was)UI._detailReturn={y:scrollY,tab:UI.tab,focus:document.activeElement};
+  document.documentElement.classList.toggle('detail-page-open',active);
+  if(active){
+    const key=sh.getAttribute('aria-label')||'상세',changed=UI._detailKey!==key;UI._detailKey=key;
+    sh.classList.add('detail-page'); sh.setAttribute('role','region'); sh.removeAttribute('aria-modal');
+    const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
+    const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
+    bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
+    sh.prepend(bar);
+    if(UI.stamp){ document.querySelectorAll('#app .stamp-w').forEach(x=>x.remove()); el.insertAdjacentHTML('beforeend',stampView()); }
+    if(!was||changed)scrollTo(0,0);
+    if(UI.ngt&&sh.classList.contains('ngt')&&UI._ngtY!=null)sheetScrollTo(UI._ngtY);
+  }else if(was){
+    const ret=UI._detailReturn;UI._detailReturn=null;UI._detailKey=null;
+    if(UI.stamp&&!document.querySelector('.stamp-w'))$('#app').insertAdjacentHTML('beforeend',stampView());
+    if(ret&&ret.tab===UI.tab){scrollTo(0,ret.y);if(ret.focus&&ret.focus.isConnected)ret.focus.focus({preventScroll:true});}
+  }
+}
+function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet'); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
+  if(UI.fmKeys){el.innerHTML=fmKeysSheet();return;}
+  if(UI.mgrCandidate&&!UI.menu){ el.innerHTML=mgrCandidatePage(); return; }
   if(UI.ngt&&!UI.menu){ const sc=el.querySelector('.ng-rows'); const top=sc?sc.scrollTop:0; el.innerHTML=ngtSheet(); const s2=el.querySelector('.sheet.ngt'); if(s2&&UI._ngtY!=null)s2.scrollTop=UI._ngtY; return; }
   if(UI.negWin&&!UI.menu&&G.players[UI.negWin.id]){ const sc=el.querySelector('.sheet.negw'); const y=sc?sc.scrollTop:0; el.innerHTML=negWinSheet(); const s2=el.querySelector('.sheet.negw'); if(s2&&sc)s2.scrollTop=y; return; }
   if(UI.meet&&!UI.menu){ el.innerHTML=meetSheet(); const lg=el.querySelector('#mt-log'); if(lg)lg.scrollTop=lg.scrollHeight; return; }

@@ -25,7 +25,7 @@ const FM_MENU=['home','roster','trade','transfer','staff','league','club'];
 function fmKey(){ const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }
 function fmNavRec(){ const H=UI.navH=UI.navH||[]; if(UI.navI==null)UI.navI=-1; const k=fmKey(); if(UI._navSkip){ UI._navSkip=false; return; } if(H[UI.navI]===k)return; H.length=UI.navI+1; H.push(k); if(H.length>40)H.shift(); UI.navI=H.length-1; }
 function fmGoKey(k){ const [t,s]=k.split(':'); UI.tab=t; if(s){ if(t==='league')UI.lseg=s; else { UI.sub=UI.sub||{}; UI.sub[t]=s; } } UI._navSkip=true; closeSheets(); render(); try{ scrollTo(0,0); }catch(e){} }
-function fmBack(){ const H=UI.navH||[]; if(!(UI.navI>0))return; UI.navI--; fmGoKey(H[UI.navI]); }
+function fmBack(){ if(document.documentElement.classList.contains('detail-page-open')){ A.detailBack(); return; } const H=UI.navH||[]; if(!(UI.navI>0))return; UI.navI--; fmGoKey(H[UI.navI]); }
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 /* 카드가 세로로 길게 쌓이는 화면은 PC에서 두 칸으로(FM 대시보드처럼). 표가 넓은 화면에는 쓰지 않는다 */
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
@@ -45,9 +45,9 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
     <nav class="fm-menu" aria-label="메뉴">${menu}</nav>
     <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` 안 읽음 ${unread}`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필',UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
-  </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
+  </div><div class="fm2${!SUBS[UI.tab]&&UI.tab!=='home'&&!UI.fromMail?' fm2-compact':''}"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
   <div class="fmbody">${fmSide(unread)}<div class="fmmain">${topBlocks(b)}
-  <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}${fmKeysSheet()}</div></div></div></div>
+  <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}</div></div></div></div>
   </div>`; }
 /* ---------- PC 단축키(FM 기본 단축키를 우리 화면에 맞춤) ----------
    FM24 기본: F1 도움말 · F2 홈 · F3 선수단 · F4 받은 편지함 · F5 선수 검색 · F6 관심 명단 · F7 스카우트 · F8 스태프 · F9 이적 · F10 일정, Space 계속, Backspace·←/→ 뒤로/앞으로,

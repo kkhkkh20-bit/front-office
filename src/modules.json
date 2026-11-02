@@ -98,7 +98,9 @@
       "src/engine/draft/88_draft_view.js",
       "src/engine/media/89_data_report.js",
       "src/engine/runtime/95_audit.js",
-      "src/engine/media/90_player_analysis.js"
+      "src/engine/media/90_player_analysis.js",
+      "src/engine/media/91_league_events.js",
+      "src/engine/media/92_gg_voting.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -154,6 +156,7 @@
       "src/ui/finance/43_sponsor.js",
       "src/ui/market/44_moves.js",
       "src/ui/league/45_awards.js",
+      "src/ui/league/77_league_events.js",
       "src/ui/shell/46_dash.js",
       "src/ui/staff/47_staff_league.js",
       "src/ui/media/48_interview.js",
@@ -215,7 +218,8 @@
       "src/css/foundation/99_front_baseball_title.css",
       "src/css/players/20_player_analysis.css",
       "src/css/players/21_player_readout.css",
-      "src/css/players/22_full_player_profile.css"
+      "src/css/players/22_full_player_profile.css",
+      "src/css/shell/23_consistent_pages.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

@@ -500,7 +500,7 @@ const QUICK=process.env.QUICK==='1';
   /* 휴대폰 터치 밀림(커뮤니티 제보 2026-10-31: 인터뷰 3번을 누르면 2번이 나가거나 위로 잘못 찍힘): 더블탭 확대 막기, 창이 열리면 뒤 화면 스크롤 잠금,
      답한 직후 같은 자리에 새로 그려진 다른 선택지를 곧바로 눌러도(연속 터치) 답이 하나 더 나가지 않음, 새 질문이 창 안에 보임 */
   { where='터치 밀림'; const r=await ev(()=>{ const out={}; out.ta=getComputedStyle(document.documentElement).touchAction; G.iv=null; ivRequest('preseason',{}); const v=G.iv; if(!v)return {ta:out.ta,none:true};
-      A.ivOpen(String(v.id)); out.lock=document.documentElement.classList.contains('modal-open')&&getComputedStyle(document.body).overflow==='hidden';
+      A.ivOpen(String(v.id)); out.lock=(document.documentElement.classList.contains('modal-open')&&getComputedStyle(document.body).overflow==='hidden')||(document.documentElement.classList.contains('detail-page-open')&&getComputedStyle(document.querySelector('#app')).display==='none');
       const pick=()=>document.querySelectorAll('#sheet .iv-o')[Math.min(1,document.querySelectorAll('#sheet .iv-o').length-1)]; const b1=pick(); if(!b1)return {ta:out.ta,none:true};
       b1.click(); const i1=G.iv.i; const b2=pick(); if(b2&&!G.iv.done)b2.click(); out.i1=i1; out.i2=G.iv.i; out.guard=G.iv.done||G.iv.i===i1;
       const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now'); if(sh&&q){ const a=sh.getBoundingClientRect(), b=q.getBoundingClientRect(); out.vis=b.top>=a.top-1&&b.top<a.bottom-40; } else out.vis=true; return out; });

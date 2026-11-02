@@ -16,7 +16,7 @@ function cerSheet(){ const C=UI.cer; const A=G.awards&&G.awards[C.y]; if(!A)retu
       <div class="row" style="justify-content:flex-end"><button class="btn primary" data-a="closeSheet">닫기</button></div>`; }
   else { const st=S[C.i]; const tot=st[2]>1?288:(C.k==='mvp'?125:288); const rev=!!C.rev; const L=rev?st[1]:[...st[1]].sort((a,b)=>a.name.localeCompare(b.name));
     const w=st[1][0];
-    body=`<div class="cer-stage"><div class="cer-lab"><span>${C.i+1} / ${S.length}</span><h3>${st[0]}${st[2]>1?` (${st[2]}명)`:''}</h3><span class="small muted">${rev?`투표 결과 · 유효표 ${tot}표`:'후보'}</span></div>
+    body=`<div class="cer-stage"><div class="cer-lab"><span>${C.i+1} / ${S.length}</span><h3>${st[0]}${st[2]>1?` (${st[2]}명)`:''}</h3><span class="small muted">${rev?`투표 결과 · 기자 ${tot}명${st[2]>1?' · 1인 최대 '+st[2]+'명 선택':''}`:'후보'}</span></div>
       <div class="cer-list${rev?' rev':''}">${L.map((c,i)=>cerCard(c,i,st,rev,tot)).join('')}</div>
       ${rev&&w?`<div class="cer-q"><span class="pill warn">수상 소감</span> ${esc(w.name)}: ${esc(cerQuote(w,st[0],C.k))}</div>`:''}
       <div class="row" style="justify-content:space-between"><button class="btn small" data-a="cerAll">결과 한눈에</button>${rev?`<button class="btn primary" data-a="cerNext">${C.i+1<S.length?'다음 부문':'전체 결과'}</button>`:`<button class="btn primary cer-go" data-a="cerRev">수상자 발표</button>`}</div></div>`; }

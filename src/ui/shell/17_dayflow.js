@@ -31,7 +31,7 @@ function nextCard(){
       <span class="small muted">${live&&per!=='pre'?`상대 ${ri}위 · ${wlStr(r)} · 최근 10경기 ${wlStr(l10)}${streakOf(x.op)?' · '+streakOf(x.op):''}`:'개막전'}${hh.w+hh.l+hh.t?` · 상대 전적 ${hh.w}승 ${hh.l}패${hh.t?` ${hh.t}무`:''}`:''}</span></div></div>
     ${x.ps?'':`<div class="nsps">${spc(mySP,G.user)}${spc(thSP,x.op)}</div><p class="small muted">로테이션 순번과 휴식일로 본 예상입니다. 부상·피로로 바뀔 수 있습니다.</p>`}
     ${weak}
-    ${(()=>{ const o=UI.open.nxCmp??wide(); return `<details class="moreg" data-k="nxCmp" ${o?'open':''}><summary><span>전력 비교</span><i>자리별 주전 비교 · 누르면 상세</i></summary><div class="moreb">${cmpView(x.op,true)}<button class="btn small" data-a="cmpT" data-v="${x.op}">자세히 · 다른 구단과 비교</button></div></details>`; })()}
+    ${(()=>{ const o=UI.open.nxCmp??false; return `<details class="moreg" data-k="nxCmp" ${o?'open':''}><summary><span>전력 비교</span><i>자리별 주전 비교 · 누르면 상세</i></summary><div class="moreb">${cmpView(x.op,true)}<button class="btn small" data-a="cmpT" data-v="${x.op}">자세히 · 다른 구단과 비교</button></div></details>`; })()}
 
   </section>`;
 }

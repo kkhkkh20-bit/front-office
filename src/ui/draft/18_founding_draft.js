@@ -17,7 +17,7 @@ function fdBoard(myPicks,ci,justId){ const bats=myPicks.filter(p=>!p.isP), pits=
   const pitN=pits.length;
   return `<section class="card fdbd"><div class="row between"><h2 class="sec">우리 팀 ${myPicks.length}명</h2>${(()=>{ const M=fdMoney(); return M?`<span class="small ${M.room<0?'bad':'muted'}">연봉 ${money(M.spent)} / 한도 ${money(M.lim)}</span>`:`<span class="small muted">연봉 ${money(ci.pay)} / 상한 ${money(ci.cap)}</span>`; })()}</div>
     <p class="small ${miss.length?'':'good'}">${miss.length?`빈 수비 위치 ${['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).map(k=>`<button class="pill lnkp" data-a="fdSlot" data-v="${k}">${SLK[k]}</button>`).join('')}`:'수비 위치 8곳 완료'} · <button class="pill lnkp" data-a="fdSlot" data-v="P">투수 ${pitN}/${FD_TGT.P}</button> · <span class="muted">연봉 ${money(ci.pay)}</span></p>
-    <div class="fld"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M50 96 L88 58 L50 20 L12 58 Z" class="dia"/><path d="M50 96 L2 48 Q50 -14 98 48 Z" class="ofl"/></svg>${['C','1B','2B','SS','3B','LF','CF','RF'].map(slot).join('')}</div>
+    <div class="fd-position-list">${['C','1B','2B','3B','SS','LF','CF','RF'].map(k=>{const p=ln[k];return `<button data-a="${p?'player':'fdSlot'}" data-v="${p?p.id:k}" class="${p?'':'empty'}"><span>${SLK[k]}</span><b>${p?esc(p.name):'빈자리'}</b>${p?fdChip(p):'<i>찾기</i>'}</button>`;}).join('')}</div><div class="fld"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M50 96 L88 58 L50 20 L12 58 Z" class="dia"/><path d="M50 96 L2 48 Q50 -14 98 48 Z" class="ofl"/></svg>${['C','1B','2B','SS','3B','LF','CF','RF'].map(slot).join('')}</div>
     <div class="fdh2"><span>지명타자</span>${slot('DH')}${bench.length?`<span>벤치</span>${bench.map(p=>`<button class="fpp${p.id===justId?' just':''}" data-a="player" data-v="${p.id}"><i>${SLK[p.pos]}</i><b>${esc(p.name)}</b>${fdChip(p)}</button>`).join('')}`:''}</div>
     <div class="row between fdpgh" style="margin-top:8px"><b class="small">투수진 ${pits.length}/${FD_TGT.P}</b><span class="small muted">보직은 감독이 체력·투구를 보고 정합니다</span></div>
     <div class="fdpg">${P.map(pc).join('')}${empties?`<button class="fpp empty" data-a="fdSlot" data-v="P"><i>투수 빈자리</i><b>${empties}명 더 · 찾기</b></button>`:''}</div></section>`; }
@@ -202,8 +202,11 @@ function homeView(){
   const o=UI.open.homeMore??false;
   const more=moreBody?`<details class="moreg" data-k="homeMore" ${o?'open':''}><summary><span>더 보기</span><i>우리 팀 주요 선수 · 구단 상태 · 일정</i></summary><div class="moreb">${moreBody}</div></details>`:'';
   const gh=t=>`<h2 class="grp-t">${t}</h2>`;
-  if(fmOn()){ /* PC(FM식): 할 일 · 경기 · 리그 세 칸 카드 */ const todoF=[cerHomeCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),todoCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard(),desk].filter(Boolean).join(''); const gamesF=[champHomeCard(),resultHome(),liveCard(),digestCard(),nextCard(),upcomingGames(10)].filter(Boolean).join('');
-    return `${stripBar()}${dashTiles()}<div class="homeg fm3"><div class="col">${gh('할 일')}${todoF||'<section class="card"><p class="small muted">지금 처리할 일이 없습니다.</p></section>'}</div><div class="col">${gh('경기')}${gamesF}</div><div class="col">${gh('리그 현황')}${league}${more}</div></div>`; }
+  if(fmOn()){
+    const cards=(name,items)=>items.filter(Boolean).map(h=>`<div class="home-module home-${name}">${h}</div>`).join('');
+    const urgent=[champHomeCard(),cerHomeCard(),resultHome(),liveCard(),digestCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()];
+    return `${stripBar()}${dashTiles()}<div class="home-priority">${cards('today',[todoCard(4)])}${cards('game',[nextCard()])}</div><div class="home-dashboard">${cards('today',urgent)}${cards('game',[upcomingGames(4)])}${cards('league',[miniStand(),mvHomeCard(),formCard(),newsCard()])}${cards('more',[desk,more])}</div>`;
+  }
   if(wide())return `${stripBar()}${dashTiles()}${stBand()}<div class="homeg"><div class="col">${gh('오늘')}${today}</div><div class="col">${gh('리그 현황')}${league}${more}</div></div>`;
   const todo=[cerHomeCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),todoCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean).join('');
   const games=[resultHome(),liveCard(),digestCard(),nextCard(),upcomingGames(10)].filter(Boolean).join('');

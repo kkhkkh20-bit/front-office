@@ -1,0 +1,164 @@
+/* 상세 정보는 목록과 같은 브라우저 안의 한 페이지로 이동한다. */
+html.detail-page-open,html.detail-page-open body{overflow:auto}
+.detail-page-open #app{display:none}
+.detail-page-open #sheet{min-height:100dvh}
+#sheet .detail-page-wrap{position:static;display:block;background:none;min-height:100dvh}
+body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:100dvh;overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
+.detail-navigation{display:flex;align-items:center;gap:12px;grid-column:1/-1;min-height:40px;border-bottom:1px solid var(--line2);margin:0 -20px 10px;padding:4px 20px;background:var(--panel2)}
+.detail-navigation>span{font-size:11px;color:var(--muted)}
+.detail-navigation .btn{min-height:28px;padding:3px 12px;font-size:12px}
+.detail-page .sheet-head{margin-inline:-20px;padding-inline:20px}
+.detail-page .pf-topnav{position:relative;top:auto}
+.detail-page .sheet-head .x{display:none}
+.detail-page .pf-masthead .pf-window-actions{align-self:center}
+.detail-page .kv{grid-template-columns:minmax(100px,160px) minmax(0,1fr)}
+.detail-page .kv dt,.detail-page .kv dd{min-width:0;white-space:normal;overflow-wrap:anywhere}
+.detail-page .fs-kv dt{white-space:normal}
+.pf-core-compact{border-top:1px solid var(--line2);margin-top:10px;padding-top:8px}
+.pf-core-caption{display:flex;justify-content:space-between;gap:4px;font-size:11px;margin-bottom:6px}
+.pf-core-caption>span{font-size:9px;color:var(--muted)}
+.pf-core-compact .pf-core-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.pf-core-compact .pf-core-cell{padding:4px 2px;border:0;background:var(--panel2)}
+.pf-core-compact .pf-core-cell>span{font-size:10px}
+.pf-core-compact .pf-core-cell strong{font-size:19px}
+.pf-core-compact .pf-core-cell small{display:none}
+/* 목록의 공통 기준: 제목·필터·표, 선택한 한 사람의 상세로 이동. */
+.candidate-list,.roster-list{min-width:0}
+.candidate-table{width:100%;font-variant-numeric:tabular-nums}
+.candidate-table th,.candidate-table td{white-space:nowrap;padding:8px 10px;font-size:12px}
+.candidate-table .candidate-name{display:flex;align-items:center;gap:8px;color:var(--ink);background:none;border:0;font:700 13px var(--f-ui);padding:0;cursor:pointer;text-align:left}
+.candidate-name .av{width:30px;height:30px;flex-shrink:0}
+.candidate-name small{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:2px}
+.candidate-table td:first-child,.candidate-table th:first-child{position:sticky;left:0;background:var(--panel);z-index:1}
+.candidate-table .candidate-note{white-space:normal;min-width:150px;max-width:230px;font-size:11px;line-height:1.5}
+.candidate-table small.block{display:block;font-size:10px;line-height:1.5;color:var(--muted)}
+.foreign-candidates .candidate-table td:last-child{white-space:normal;min-width:140px;max-width:180px}
+.foreign-candidates .candidate-table td:last-child .pill{display:block;white-space:normal;font-size:10px;line-height:1.4;margin-top:4px}
+.foreign-candidates .candidate-table td,.foreign-candidates .candidate-table th{padding-inline:7px}
+.candidate-table .pill{font-size:10px}
+.candidate-list>.row:first-child{margin-bottom:8px}
+.candidate-list .tw{margin-top:6px;overflow-x:auto}
+.roster-navigation{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.roster-navigation .seg{margin:0}
+.roster-navigation .rseg{width:auto;min-width:200px}
+.roster-filters{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px}
+.roster-filters .chips,.roster-filters .rscope{margin:0}
+.roster-list .rcp-bar{min-height:28px;margin:4px 0}
+.roster-list .tw{overflow-x:auto}
+.roster-list .rt td:first-child,.roster-list .rt th:first-child{position:sticky;left:0;z-index:2;background:var(--panel)}
+.roster-list .rt .grp td{position:static;background:var(--panel2)}
+.todo-rest{font-size:12px;padding:8px 0}.todo-rest>summary{cursor:pointer;color:var(--muted)}
+.manager-overview{display:grid;grid-template-columns:220px minmax(0,1fr) 330px;gap:14px;align-items:start}
+.manager-overview>.card{min-width:0;margin:0;padding:14px;display:block}
+.manager-overview h3{font-size:15px;margin:0 0 12px}.manager-overview h3:not(:first-child){margin-top:18px}
+.manager-bio>.av{width:70px;height:70px;margin-bottom:12px}
+.manager-overview .mabil{max-width:none}.manager-overview .msty{margin-bottom:18px}
+.manager-overview .manager-deals{flex-wrap:wrap;gap:6px;margin:14px 0}
+.manager-overview .mplpick{margin-block:12px}
+.league-event-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.fd-position-list{display:none}
+@media(min-width:1100px){
+  .fm1{height:46px;gap:6px;padding-inline:10px}
+  .fmm-b{font-size:14px;padding-inline:9px}
+  .fm-i{width:28px;height:30px}.fm-r{gap:3px}.fm-date b{font-size:12px}.fm-date span{font-size:10px}
+  .fm1 .goset .continue{min-width:140px;min-height:35px}.fm1 .goset .step{min-height:35px}
+  .fm2{height:29px}.fm2 .subtabs button{font-size:12px;padding:6px 12px}
+  .fm2-compact{height:0;min-height:0;border:0;overflow:visible;position:relative}
+  .fm2-compact .fm-sub{display:none}.fm2-compact .fm-meta{position:absolute;right:14px;top:7px;z-index:1}
+  .fm2-compact .fm-meta .helpbtn{display:none}
+  .fmsh{--fm-top-height:77px}.fmsh:has(.fm2-compact){--fm-top-height:48px}
+  .fmside{top:var(--fm-top-height);height:calc(100dvh - var(--fm-top-height));box-sizing:border-box}
+  .fmsh main.content{padding-top:10px;gap:8px}
+  .roster-heading{min-height:32px;margin-bottom:0;padding-right:190px}
+  .roster-heading select{max-width:260px;min-height:30px;padding:4px 10px;font-size:13px}
+  .roster-heading .chipn{font-size:11px;padding:3px 6px}
+  .roster-navigation .seg button{font-size:12px;padding:6px 13px;min-height:30px}
+  .roster-navigation .seg.itabs{margin:0}
+  .roster-list.card{padding:10px 12px;margin:0}
+  .roster-list .roster-caption{margin-bottom:7px}.roster-caption h2.sec{font-size:15px}
+  .roster-caption .small{font-size:10px}
+  .roster-list .seg.sm button,.roster-list .chips button,.roster-list .tc-i{padding:4px 8px;min-height:27px;font-size:11px}
+  .roster-list .rt td,.roster-list .rt th{font-size:12px;padding:6px 8px}
+  .roster-list .rt .pn .av{width:28px;height:28px}.roster-list .rt .pn{font-size:13px;gap:6px}
+  .home-dashboard{columns:2;column-gap:14px}
+  .home-priority{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+  .home-priority .card{margin:0;padding:12px}.home-priority .home-module{margin-bottom:14px}
+  .home-module{break-inside:avoid;margin:0 0 14px;min-width:0}
+  .home-module>.card,.home-module>section,.home-module>details{margin:0}
+  .home-dashboard .grp-t{display:none}
+  .home-dashboard .nextcmp{font-size:12px}
+  .home-dashboard .card{padding:12px}
+  .home-dashboard .card>.row:first-child h2.sec{font-size:16px}
+  .home-dashboard .ug-r{grid-template-columns:52px minmax(0,1fr) auto;gap:6px;padding:9px 4px}
+  .home-dashboard .ug-d{white-space:nowrap}
+  .home-dashboard .ug-m{display:none}
+  .dshell .wrap{max-width:none}
+  .dshell .fdlay{grid-template-columns:260px minmax(0,1fr);gap:12px}
+  .dshell .fdl-main{min-width:0}
+  .dshell .fdl-side{position:static}
+  .dshell .fdbd .fld{height:auto;aspect-ratio:1.25}
+  .dshell .fdt-w{overflow-x:auto}
+  .dshell .dtop{position:relative}
+  .dshell .dcontent{padding-top:8px}
+  .dshell .fdl-main>.card{padding:10px;display:block}
+  .dshell .fdl-main .fdgk{margin:5px 0;font-size:12px}
+  .dshell .fdl-main .fdq{margin:6px 0}
+  .dshell .fdvt,.dshell .fdy3{display:inline-flex;width:calc(50% - 5px);margin:4px 5px 8px 0;vertical-align:top}
+  .dshell .fd-position-list{display:grid;gap:3px}
+  .dshell .fdbd .fld{display:none}
+  .fd-position-list button{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:5px 7px;font-size:12px;cursor:pointer;text-align:left;min-width:0}
+  .fd-position-list button>span{font-size:11px;color:var(--muted);width:28px;flex-shrink:0}
+  .fd-position-list button>b{flex:1;overflow:hidden;text-overflow:ellipsis}
+  .fd-position-list button>i{font-size:10px;color:var(--muted);font-style:normal}
+  .fd-position-list .empty{border-style:dashed}
+  .dshell .fdl-main .seg button,.dshell .fdl-main .chips button{min-height:28px;padding:4px 9px;font-size:12px}
+  .draft-candidates .candidate-table td{padding-block:7px}
+  .dfilt.card{padding:10px}.dfilt .chips button{min-height:27px;padding:4px 8px;font-size:12px}
+  .dhead.card{padding:12px}.dhead .dnow{font-size:20px}.dhead .row{gap:8px}
+}
+@media(min-width:1700px) and (min-height:950px){.home-dashboard{columns:3}.dshell .fdlay{grid-template-columns:300px minmax(0,1fr)}}
+@media(min-width:1100px) and (max-height:820px){
+  .home-dashboard{column-gap:12px}.home-module{margin-bottom:12px}
+  .home-dashboard .card{padding:10px}
+  .home-dashboard .ug-r{padding-block:7px}
+  .fmside{gap:5px;padding-top:5px}.fmside button{padding-block:5px;font-size:12px}
+  .dshell .tk{padding-bottom:4px;gap:3px}.dshell .tk2{min-height:26px;padding-block:3px}
+  .dshell .tk0m{display:none}.dshell .dtbar{padding-block:5px}
+  .dshell .fdl-main .fd-own{font-size:11px}
+}
+@media(max-width:600px){
+  body #sheet .sheet.detail-page{padding:0 12px 24px}
+  .detail-navigation{margin-inline:-12px;padding-inline:12px}.detail-navigation>span{font-size:10px}
+  .detail-page .sheet-head{margin-inline:-12px;padding-inline:12px}
+  .detail-page .kv{grid-template-columns:100px minmax(0,1fr);font-size:12px;gap:6px 10px}
+  .pf-core-compact .pf-core-cell strong{font-size:18px}.pf-core-caption{display:block}
+  .pf-core-caption>span{display:block;margin-top:3px}
+  .roster-navigation{display:block}.roster-navigation .rseg{margin:8px 0}
+  .roster-caption>.row>.small{display:none}
+  .roster-list .roster-filters{gap:8px}
+}
+@media(max-width:1000px){.manager-overview{grid-template-columns:180px minmax(0,1fr)}.manager-contract{grid-column:1/-1}.league-event-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.manager-overview{grid-template-columns:minmax(0,1fr)}.manager-contract{grid-column:auto}.manager-bio>.av{float:left;margin-right:12px}.manager-bio h3{padding-top:8px}}
+
+/* 신인 드래프트도 팀/진행 요약과 후보 표의 비율을 창단 화면에 맞춘다. */
+.draft-context,.draft-candidate-body{min-width:0}
+@media(min-width:1100px){
+  .draft-page{display:grid;grid-template-columns:260px minmax(0,1fr);align-items:start;gap:12px}
+  .draft-context>.card{margin:0;display:block;padding:12px}
+  .draft-context .dnow{font-size:20px}.draft-context .row{flex-wrap:wrap;gap:6px}
+  .draft-context .cap-line{display:block;font-size:12px;margin-block:10px}
+  .draft-context .cap-line>span{display:block;margin-top:5px}
+  .draft-context .drest,.draft-context .dlog{margin-top:10px}
+  .draft-candidate-body>.seg{margin:0 0 8px}
+  .draft-candidate-body>.seg button{font-size:12px;min-height:30px;padding:5px 9px}
+  .draft-candidate-body .dfilt.card{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-bottom:8px;padding:8px 10px}
+  .draft-candidate-body .dfilt .chips,.draft-candidate-body .dfilt .row,.draft-candidate-body .dfilt p{margin:0}
+  .draft-candidate-body .dfilt>.row{flex-wrap:wrap;gap:6px}
+  .draft-candidate-body .dfilt>.row.between{justify-content:flex-start}
+  .draft-candidate-body .dfilt p{font-size:11px}
+  .draft-candidate-body>.row{margin-bottom:6px}
+  .draft-candidate-body>.card{margin:0;padding:8px 10px}
+  .draft-candidate-body .candidate-help{font-size:11px}
+}
+
+.detail-navigation{position:sticky;top:0;z-index:12}

@@ -17,8 +17,10 @@ function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH
   ${H.length?`<p class="small muted">지난 연수: ${H.map(h=>`${h.y} ${esc(h.k)}(${T[h.t]||''})`).join(', ')}</p>`:''}
   ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
 }
-function closeSheets(){ const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
+function closeSheets(){ const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; UI.mgrCandidate=null; UI.fmKeys=false; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
 const A={
+  detailBack(){if(UI.fmKeys){UI.fmKeys=false;render();return;}if(UI.ngt||UI.meet){UI.ngt=null;UI.meet=null;renderSheet();render();return;}if(UI.negWin){UI.negWin=null;renderSheet();render();return;}closeSheets();},
+  mgrCandidate(v){UI.mgrCandidate=v;UI.mgrMsg=null;renderSheet();},
   analysisY(v){ UI.analysisY=+v; renderSheet(); },
   smkGo(v){ UI.smkK=v; UI.smkSrc='free'; A.go('staff:smkt'); }, smkK(v){ UI.smkK=v; render(); }, smkSrc(v){ UI.smkSrc=v; render(); }, /* 스태프 시장 */
   dlSpd(v){ UI.dspeed=v; render(); },
@@ -46,8 +48,8 @@ const A={
   meetOpen(v){ const [h,ask]=String(v).split('|'); const [k,id]=h.split(':'); meetOpen(k,id!=null?+id:null,{ask}); },
   meetDo(v){ meetDo(v); renderSheet(); },
   ngtOpen(v){ const [k,id]=String(v).split(':'); UI._ngtY=0; ngtOpen(k,+id); },
-  ngtSet(v){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=s?s.scrollTop:0; ngtSet(v); renderSheet(); },
-  ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=s?s.scrollTop:0; const D=ngtDemand(N); N.T={...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years}; if(N.k==='ext')N.T.role=null; N.ed='dem'; N.kept=false; renderSheet(); },
+  ngtSet(v){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); ngtSet(v); renderSheet(); },
+  ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); const D=ngtDemand(N); N.T={...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years}; if(N.k==='ext')N.T.role=null; N.ed='dem'; N.kept=false; renderSheet(); },
   ngtSubmit(){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=0; ngtSubmit(); save(); render(); renderSheet(); },
   ngtCounter(){ UI._ngtY=0; ngtCounter(); save(); render(); renderSheet(); },
   ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },
@@ -112,7 +114,7 @@ const A={
   setIntl(v){ const [r,l]=v.split(':'); G.intl[r]=+l; addLog(`${IREG[r].l} 스카우트망을 ${INET[+l].l} 단계로 조정했습니다.`); save(); render(); },
   signFc(v){ const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg2=err;render();return;} UI.fmsg2=''; signForeign(G.user,p.id); save(); render(); },
   tutSkip(){ tutSkip(); save(); render(); },
-  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
+  hireMgr(v){ const [id,y,c]=v.split(':'); const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.mgrCandidate=null; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ UI.confirmFire=true; render(); }, fireCancel(){ UI.confirmFire=false; render(); },
   fireMgr(){ fireMgr(); UI.confirmFire=false; save(); render(); },
   renewMgr(v){ const [y,tid,mid]=String(v||2).split(':'); const r=renewMgr(+y,tid,mid); if(r)toast(r); save(); render(); },
@@ -193,7 +195,7 @@ const A={
   posSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
-  rview(v){UI.rview=v;render();},
+  rviewMode(v){UI.rlayout=v;render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
@@ -263,7 +265,7 @@ const A={
   ivOpen(v){ const iv=G.iv; if(!iv||iv.id!==+v)return toast('지난 인터뷰 요청입니다.'); if(iv.done&&!iv.ans.length)return toast('이미 거절한 인터뷰입니다.'); if(iv.exp<G.day&&!iv.done)return toast('기한이 지났습니다.'); UI.ivSh=true; renderSheet(); },
   mdRep(v){ toast(mdSuggest(v)); save(); render(); },
   ivSkip(v){ if(G.iv&&G.iv.id===+v&&!G.iv.done){ ivSkip(); toast('인터뷰를 거절했습니다. 단장 침묵 기사가 나갑니다.'); save(); render(); } },
-  ivAns(v){ ivAnswer(+v); save(); renderSheet(); try{ const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now,#sheet .iv-end'); if(sh&&q)sh.scrollTop=Math.max(0,q.offsetTop-sh.offsetTop-12); }catch(e){} }, /* 다시 그리면 창이 맨 위로 튀던 것: 새 질문(또는 끝 안내)이 보이게 */
+  ivAns(v){ ivAnswer(+v); save(); renderSheet(); try{ const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now,#sheet .iv-end'); if(sh&&q){if(document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(Math.max(0,scrollY+q.getBoundingClientRect().top-12));else sh.scrollTop=Math.max(0,q.offsetTop-sh.offsetTop-12);} }catch(e){} }, /* 다시 그리면 창이 맨 위로 튀던 것: 새 질문(또는 끝 안내)이 보이게 */
   gmPlan(v){ const [d,k,x]=String(v).split(':'); toast(gmPlanSet(+d,k||null,x||null)); save(); render(); },
   capex(v){ const [k,x]=String(v).split(':'); const r=capexAsk(k,x); toast(r||'공사를 시작했습니다.'); save(); render(); },
   offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
@@ -302,7 +304,7 @@ const A={
   lrAll(){ UI.lrAll=!UI.lrAll; render(); },
   extOpen(v){ A.player(v); A.jump('ext'); },
   jump(v){ UI.ptab='mgmt'; renderSheet(); const el=document.getElementById('s-'+v); if(el)el.scrollIntoView({block:'start'}); },
-  ptab(v){ UI.ptab=v; renderSheet(); const sh=document.querySelector('#sheet .sheet'); if(sh)sh.scrollTop=0; },
+  ptab(v){ UI.ptab=v; renderSheet(); const sh=document.querySelector('#sheet .sheet'); if(sh)sheetScrollTo(0); },
   lsort(v){ const [id,k]=v.split(':'); UI.ls=UI.ls||{}; const c=UI.ls[id]; const asc=['era','whip','ra','hra','bb','so','name','tm','pos','role'].includes(k)&&!(id==='bat'&&k==='bb')&&!(id==='pit'&&k==='so')&&!(id==='team'&&k==='so'); UI.ls[id]={k,dir:c&&c.k===k?-c.dir:(asc?1:-1)}; render(); },
   lrec(v){ UI.lrec=v; render(); },
   fuF(v){ UI.fuF=v; render(); }, fuAll(){ UI.fuAll=!UI.fuAll; render(); },
