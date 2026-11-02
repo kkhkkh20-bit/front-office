@@ -45,7 +45,7 @@ function offPrepCard(){ if(!offPrepOn())return ''; const R=offPrepRows(); if(!R.
     <p class="small muted opz-f">스폰서 계약이 끝나면 다음 시즌 기본 수입이 그만큼 줄어듭니다. 재계약·신규 계약은 스폰서 화면에서 받습니다.</p></section>`; }
 
 /* 선수 시트 계약 금액: 그 시즌 현금 지출 · 보장 총액 · 연평균(상한 반영)을 한 줄씩 */
-function ctMoneyKv(p){ const m=ctMoney(p); if(!m)return ''; return `<dt>${m.sy}시즌 현금 지출</dt><dd class="ctm-dd">${money(m.cash)}${m.bNow?`<i>계약금 ${money(m.bNow)} 포함</i>`:''}</dd><dt>보장 총액</dt><dd class="ctm-dd">${money(m.tot)}<i>${m.yrs}년${m.bTot?` · 계약금 ${money(m.bTot)}`:''}</i></dd><dt>연평균(상한 반영)</dt><dd class="ctm-dd">${money(m.avg)}</dd>${m.opt?`<dt>옵션</dt><dd class="ctm-dd">최대 연 ${money(m.opt)}</dd>`:''}`; }
+function ctMoneyKv(p){ const m=ctMoney(p); if(!m)return ''; return `<dt>${m.sy}시즌 현금 지출</dt><dd class="ctm-dd">${money(m.cash)}${m.bNow?`<i>계약금 ${money(m.bNow)} 포함</i>`:''}</dd><dt>보장 총액</dt><dd class="ctm-dd">${money(m.tot)}<i>${m.yrs}년${m.bTot?` · 계약금 ${money(m.bTot)}`:''}${m.add?` · 구단 옵션 실행 +${m.add.y}년(연 ${money(m.add.a)})`:''}</i></dd><dt>연평균(상한 반영)</dt><dd class="ctm-dd">${money(m.avg)}</dd>${m.opt?`<dt>옵션</dt><dd class="ctm-dd">최대 연 ${money(m.opt)}</dd>`:''}`; }
 /* ---------- 외국인 재계약 "15% 깎아 협상" 위험 표시: 엔진 fReNegChance와 같은 식 ---------- */
 function fNegRiskH(p){ const C=G.contract; if(!C||C.done)return ''; if((C.fneg||{})[p.id])return `<span class="opz-risk small muted">이미 한 번 협상했습니다 · 다시 협상할 수 없습니다</span>`;
   let r; try{ r=fReNegChance(p); }catch(e){ return ''; } const b=1-r.ch; const lv=b>=.55?['높음','bad']:b>=.35?['보통','warn']:['낮음','good'];
