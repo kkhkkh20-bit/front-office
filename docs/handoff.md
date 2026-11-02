@@ -8,7 +8,7 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02aa').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02ab').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -109,3 +109,11 @@
 - 실측 근거 없는 투수 회전수·CSW·헛스윙 추정은 선수 백분위 목록에서 제외. 타자 능력 환산 카드는 참고값임을 제목에 명시.
 
 - 실제 선수 데이터 묶음 최종 검증: `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh` 전체 통과. 모듈 6개·규칙 384개·능력치 반영·2029년 1월까지 시뮬 3개·PC 240회 조작·모바일 화면. 구종/핵심 능력/표·레이더/목록 척도 및 실제 시즌 기록 검사 포함. 후보 범위는 5개 세계 185명 중 143명(77%) 확인. 로그 `/tmp/front-office-pitch-state-final.log`.
+
+## FM식 전체 화면 선수 프로필
+- `players/35_full_player_profile.js`, `players/22_full_player_profile.css`: 프로 선수 능력 화면을 상태/정보·속성표·레이더/성적 3영역으로 재배치. 기존 detailOf, playerState, pitchProfile, scoutReport, 시즌 기록 재사용. 경기 모형·저장 형식 변경 없음.
+- `.sheet.psh.pf-screen`은 전체 뷰포트 사용. 기존 body.fm의 84vw 제한보다 높은 우선순위로 적용한다. 프로 선수는 상단 정보·업무 버튼·탭을 압축하고 속성표를 첫 화면에 배치한다. 영입·드래프트 후보는 기존 특수 정보 표현을 유지한다.
+- 긴 구종·성장·코치 설명과 기존 자세한 능력 카드는 pf-more에 보관. 모바일은 핵심 능력 우선, 두 열 속성표·이후 상태/역할 순서. Escape·닫기와 기존 탭/비교/선수 편집 동작 유지.
+- 브라우저 회귀: 전체 폭·왼쪽 좌표, 핵심 능력의 경기 원값 환산 일치, 속성 묶음·시즌 카드, 가로 넘침, PC 첫 화면 속성표 범위, Escape 후 기존 탭 복원. 기존 구속 검사는 새로 항상 보이는 구속 요약에서 값 확인.
+
+- 전체 화면 프로필 묶음 검증: `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh` 전체 통과. 모듈 6개·규칙 384개·능력치·시뮬 3개(2029년 1월까지)·PC 240회 조작·모바일 화면. 이후 국적/아시아쿼터·학력 표시 누락과 ‘현재 종합’ 문구만 보완하고 PC/모바일 빠른 UI 관련 검사 재통과. 전체 검사는 반복하지 않음. 로그 `/tmp/front-office-full-profile-check.log`, `/tmp/front-office-full-profile-release-ui.log`, `/tmp/front-office-full-profile-release-mobile.log`.

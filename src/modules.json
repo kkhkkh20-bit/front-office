@@ -146,6 +146,7 @@
       "src/ui/finance/38_finance_tab.js",
       "src/ui/players/38_player_analysis.js",
       "src/ui/players/37_player_readout.js",
+      "src/ui/players/35_full_player_profile.js",
       "src/ui/players/39_player_sheet.js",
       "src/ui/actions/40_actions.js",
       "src/ui/actions/41_guard_boot.js",
@@ -213,7 +214,8 @@
       "src/css/shell/19_fm_shell.css",
       "src/css/foundation/99_front_baseball_title.css",
       "src/css/players/20_player_analysis.css",
-      "src/css/players/21_player_readout.css"
+      "src/css/players/21_player_readout.css",
+      "src/css/players/22_full_player_profile.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
