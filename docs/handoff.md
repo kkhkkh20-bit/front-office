@@ -8,7 +8,7 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02x').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02y').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -82,3 +82,11 @@
 - `[리뷰 11-02x]` 9개 추가. 수정 전 신규 실패 6개 확인, 나머지는 진행·저장·중복 방지 검사를 강화했다.
 
 - 검증 완료: `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh` 전체 통과. 모듈 6개, 규칙 363개, 능력치 반영, 2029년 1월까지 시뮬 3개, PC 240회 조작 및 모바일 화면 검사 통과.
+
+## 자체 리뷰 1차
+- 사용자가 버그를 알려주기를 기다리지 않고 진행 경계와 상태 소유권을 직접 검수했다. 상세 범위·발견은 백로그의 자체 리뷰 1차 참조.
+- AI 감독·코치 갱신·교체·사단 합류는 `staffCt(x,years,G.year+1)` 사용. 사용자 신규 계약은 기존 날짜 기준을 유지한다.
+- 감독 재계약 소식 값은 `기간:구단ID:감독ID`. 화면 동작이 이를 분해해 `renewMgr`에 넘기며 야인·다른 구단·다른 감독이면 거절한다. 기존 단일 기간 값과의 호환은 유지한다. 구단을 떠나면 기존 소식의 재계약 버튼을 제거한다.
+- `[자체 리뷰 1]` 7개 추가, 수정 전 실패 5개 확인.
+
+- 자체 리뷰 최종 검증: `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh` 전체 통과. 모듈 6개, 규칙 370개, 능력치 반영, 2029년 1월까지 장기 시뮬 3개, PC 240회 조작·모바일 화면. 로그 `/tmp/front-office-self-review-full.log`.
