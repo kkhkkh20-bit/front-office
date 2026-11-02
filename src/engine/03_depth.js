@@ -20,7 +20,7 @@ const DSPEC={SS:6,C:6,CF:5,'2B':5,'3B':4,RF:3,LF:2,'1B':1,DH:0};
 function posValAt(p,pos){ const d=pos==='DH'?0:(defAt(p,pos)-DAVG[pos])*DWR[pos]; return ovr(p)-(p.r.def-50)*.2+((POS_ADJ[pos]||0)+d)/RUN_PER_OVR; }
 const _pvC=new Map();
 function posBest(p){ if(!p||p.isP)return {pos:'P',v:p?ovr(p):0}; const k=G.day+':'+p.pos+':'+p.r.def+':'+ovr(p).toFixed(2)+':'+JSON.stringify(p.pexp||'')+':'+(p.trt||''); const c=_pvC.get(p.id); if(c&&c.k===k)return c.b;
-  let b={pos:'DH',v:posValAt(p,'DH')}; const lim=DSPEC[p.pos]??1; for(const q of ['C','SS','2B','CF','3B','RF','LF','1B']){ if(q===p.pos||(q!=='C'&&DSPEC[q]<=lim)){ const v=posValAt(p,q); if(v>b.v)b={pos:q,v}; } } if(_pvC.size>4000)_pvC.clear(); _pvC.set(p.id,{k,b}); return b; }
+  let b={pos:'DH',v:posValAt(p,'DH')}; const lim=DSPEC[p.pos]??1; const sub=new Set(subsOf(p)); for(const q of ['C','SS','2B','CF','3B','RF','LF','1B']){ if(q===p.pos||sub.has(q)||(q!=='C'&&DSPEC[q]<=lim)){ /* 실제로 익힌 부 포지션(숙련 50 이상)도 후보: 유격수를 1루로 바꿔도 익힌 유격 가치는 그대로 */ const v=posValAt(p,q); if(v>b.v)b={pos:q,v}; } } if(_pvC.size>4000)_pvC.clear(); _pvC.set(p.id,{k,b}); return b; }
 const pvShift=p=>p&&!p.isP?posBest(p).v-ovr(p):0; /* 종합 능력에 더할 포지션 보정(투수 0) */
 const posScore=(p,pos)=>{ if(pos==='DH')return offV(p); const w=DWR[pos]!=null?.2+DWR[pos]*.3:.38; return offV(p)*(1-w)+defAt(p,pos)*w; }; /* 수비가 중요한 자리일수록 수비를 더 본다: 유격 .53 · 3루·2루 .45 · 중견 .41 · 포수 .4 · 코너 외야 .33 · 1루 .32 */
 const ORDER=['C','SS','CF','2B','3B','RF','LF','1B','DH'];
@@ -85,7 +85,7 @@ function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p
     p.e1=true; p.upDay=G.day; addLog(`${p.name}이(가) 단장 요청으로 1군에 등록되었습니다.`); return `${m.name} 감독이 받아들였습니다. ${p.name} 1군 등록.`; }
   p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); addLog(`${p.name}이(가) 단장 요청으로 1군에서 말소되었습니다.`); return `${m.name} 감독이 받아들였습니다. ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능).`; }
 function toYS(id){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||p.ys)return '대상이 아닙니다.'; if(p.faC||p.sal>100)return '연봉 1억 원 이하이고 FA·다년계약이 아닌 선수만 육성선수로 돌릴 수 있습니다.'; if(ysN(G.user)>=YS_MAX)return `육성선수는 ${YS_MAX}명까지입니다(게임 규칙).`;
-  p.ys=true; p.e1=false; p.ysSal0=p.sal; p.sal=Math.min(p.sal,MIN_SAL); addLog(`${p.name}을(를) 육성선수로 돌렸습니다. 정식 로스터에서 빠집니다.`); return ''; }
+  if(p.e1)p.downDay=G.day; /* 1군에서 빠지는 모든 길은 같은 말소 규칙(10일 뒤 재등록) */ p.ys=true; p.e1=false; p.ysSal0=p.sal; p.sal=Math.min(p.sal,MIN_SAL); addLog(`${p.name}을(를) 육성선수로 돌렸습니다. 정식 로스터에서 빠집니다.`); return ''; }
 function fromYS(id){ const p=G.players[id]; if(!p||!p.ys||p.team!==G.user||G.unemp)return '대상이 아닙니다.'; if(period()==='season'&&G.day<KD(5,1))return '육성선수는 5월 1일부터 정식 선수로 등록할 수 있습니다.'; if((period()==='season'&&G.day>foreignDL())||period()==='post')return '8월 15일 이후에는 시즌이 끝날 때까지 정식 선수로 등록할 수 없습니다.'; if(rosterN(G.user)>=ROSTER_MAX)return `정식 로스터가 ${ROSTER_MAX}명으로 꽉 찼습니다.`;
   p.ys=false; if(p.ysSal0!=null){ p.sal=Math.max(p.sal,p.ysSal0); delete p.ysSal0; } /* 육성으로 돌릴 때 깎인 연봉을 되돌린다 */ addLog(`${p.name}을(를) 정식 선수로 등록했습니다.`); return ''; }
 function makeLineupFrom(tid,bats){ const save=G.entryY; G.entryY=-1; const ln=makeLineup(tid,bats); G.entryY=save; return ln; }
