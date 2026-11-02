@@ -273,7 +273,7 @@ function newYear(){
   const added=fillRoster(G.user,ROSTER_MIN); if(added.length)addLog(`정식 선수 최소 인원(${ROSTER_MIN}명)을 맞추려고 선수 ${added.length}명을 등록했습니다.`);
   for(const k in G.lineup){ const p=G.players[G.lineup[k]]; if(!p||p.team!==G.user)delete G.lineup[k]; }
   G.cal=buildCalendar(G.year); G.ps=null; G.camp=null; G.campInj=1; G.form=null; G.draft=null;
-  G.sea={y:G.year,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},mark:null};
+  G.sea={y:G.year,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
   refreshScoutMarket(); if(!G.fmarket||G.fmarket.length<4)refreshFMarket(8); updateModes();
   makeDraftClass();
   if(G.fa&&G.fa.closed)G.fa=null;

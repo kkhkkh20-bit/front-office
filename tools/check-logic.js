@@ -16,6 +16,34 @@ const simTo=cond=>{ let n=0; while(n++<800&&!cond()){ G.live=null; G.res=null; G
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(x){} }); try{ if(rosterN(G.user)>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX); }catch(x){} const d0=G.day; try{ advance('day'); }catch(e){ throw new Error('simTo: '+dmd(G.day)+' 하루 진행 중 오류 — '+e.message); } if(G.day===d0&&!cond()&&n>=799)break; }
   if(!cond())throw new Error('simTo: 목표 조건에 도달하지 못함(멈춘 날 '+dmd(G.day)+(blocker&&blocker()?' · 진행 막힘: '+String(blocker()).slice(0,80):'')+')'); }; /* 예외를 날짜만 넘겨 숨기지 않고, 조건에 못 가면 실패(거짓 통과 방지) */
 
+T('[외국인 규정 검수] 아시아쿼터 교체는 일반 외국인 횟수와 별도로 한 번만 가능하다',()=>{ fresh(); G.day=G.cal.open+20; G.sea.repl[G.user]=F_REPL_MAX;
+  for(const p of foreignOf(G.user).filter(p=>p.foreign==='아시아'))releaseForeign(p.id);
+  const q=newForeign('아시아',{market:true}); q.ask=ASIA_CAP/2; q.fknow=[G.user]; q.fpub=G.day; G.fmarket.push(q.id);
+  const r=foOffer(q.id,ASIA_CAP,0); ok(r.ok&&q.team===G.user,'일반 교체 소진으로 아시아 첫 교체가 막힘: '+r.msg);
+  ok(G.sea.repl[G.user]===F_REPL_MAX,'아시아 교체가 일반 횟수를 사용함'); releaseForeign(q.id);
+  const next=newForeign('아시아',{market:true}); const before=JSON.stringify(G); const r2=foOffer(next.id,ASIA_CAP,0);
+  ok(!r2.ok&&/교체/.test(r2.msg),'아시아 두 번째 교체가 허용됨'); ok(JSON.stringify(G)===before,'거절 뒤 상태가 바뀜'); });
+T('[외국인 규정 검수] 아시아 교체를 소진해도 일반 외국인 계약은 가능하며 저장 상태에 각각 남는다',()=>{ fresh(); G.day=G.cal.open+20; const asia=foreignOf(G.user).find(p=>p.foreign==='아시아'); releaseForeign(asia.id);
+  const a=newForeign('아시아',{market:true}); a.ask=100; signForeign(G.user,a.id); const f=foreignOf(G.user).find(p=>p.foreign==='용병'); releaseForeign(f.id);
+  const q=newForeign('용병',{isP:f.isP,market:true}); q.ask=100; ok(!signForeign(G.user,q.id),'일반 외국인 첫 계약이 실패함');
+  G=JSON.parse(JSON.stringify(G)); ok(fReplLeft(G.user,'아시아')===0,'저장 상태에서 아시아 잔여 횟수가 복원되지 않음'); ok(fReplLeft(G.user)===F_REPL_MAX-1,'일반 외국인 잔여 횟수가 아시아와 섞임');
+  G.sea={y:G.year+1,repl:{},fspend:{}}; G.year++; ok(fReplLeft(G.user,'아시아')===1&&fReplLeft(G.user)===F_REPL_MAX,'새 시즌 카운터가 초기화되지 않음'); });
+T('[외국인 규정 검수] 직접 계약도 교체 한도와 소속을 검사하고 실패 시 아무것도 바꾸지 않는다',()=>{ fresh(); G.day=G.cal.open+20; G.sea.repl[G.user]=F_REPL_MAX; const f=foreignOf(G.user).find(p=>p.foreign==='용병'); releaseForeign(f.id);
+  const q=newForeign('용병',{isP:f.isP,market:true}); q.ask=100; const before=JSON.stringify(G); const err=signForeignT(G.user,q.id,100,10);
+  ok(!!err&&q.team==null,'직접 계약이 교체 한도를 우회함'); ok(JSON.stringify(G)===before,'실패한 계약이 연봉·현금·시장·상태를 바꿈');
+  const own=foreignOf(G.user)[0]; const before2=JSON.stringify(G); ok(!!signForeign(G.user,own.id),'이미 소속된 선수를 다시 계약함'); ok(JSON.stringify(G)===before2,'중복 계약이 상태를 바꿈'); });
+T('[외국인 규정 검수] 보류권은 선수 식별자로 타 구단 계약을 막고 원 구단·만료 뒤에는 허용한다',()=>{ fresh(); const owner=G.teams.find(t=>t.id!==G.user).id;
+  for(const p of [...foreignOf(G.user),...foreignOf(owner)])p.team=null;
+  const q=newForeign('용병',{market:true}); q.ask=300; foResAdd(q,owner); G.fmarket.push(q.id);
+  ok(/보류/.test(foreignCheck(G.user,q)),'보류권 선수를 타 구단이 영입할 수 있음'); const before=JSON.stringify(G); ok(!!signForeign(G.user,q.id),'직접 계약이 보류권을 우회함'); ok(JSON.stringify(G)===before,'보류권 위반 계약이 상태를 바꿈');
+  ok(!foreignCheck(owner,q),'원 구단도 계약할 수 없음'); const other=newForeign('용병',{market:true}); other.name=q.name; other.nat=q.nat; other.ask=300; ok(!foreignCheck(G.user,other),'식별자가 다른 동명이인까지 차단함');
+  G.year+=6; ok(!foreignCheck(G.user,q),'기존 보류 만료 연도 뒤에도 계약을 차단함'); });
+T('[외국인 규정 검수] 유효한 보류권은 40명 제한이나 중복 기록으로 유실되지 않고 옛 저장도 검사한다',()=>{ fresh(); for(const p of foreignOf(G.user))p.team=null;
+  const owner=G.teams.find(t=>t.id!==G.user).id; const q=newForeign('용병',{market:true}); q.ask=300; foResAdd(q,owner); foResAdd(q,owner);
+  for(let i=0;i<45;i++){ const p=newForeign('용병',{market:true}); foResAdd(p,owner); }
+  ok((G.fRes||[]).filter(r=>r.pid===q.id).length===1,'보류 기록 중복 또는 40명 제한으로 권리 유실'); ok(/보류/.test(foreignCheck(G.user,q)),'새 기록이 늘면 기존 유효 보류권을 잃음');
+  G.fRes=[{name:q.name,nat:q.nat,tid:owner,y:G.year,until:G.year+5}]; G=JSON.parse(JSON.stringify(G)); ok(/보류/.test(foreignCheck(G.user,G.players[q.id])),'선수 식별자가 없던 옛 저장 보류권을 무시함'); });
+
 T('훈련 비용: 돌려 막기로 겨울 기회비용을 피할 수 없다(1b82f85 리뷰)',()=>{ fresh(); const p=playersOf(G.user).find(q=>q.isP); const ks=TRN_TOOLS[trnG(p)].filter(k=>k in p.r);
   p.trD={y:G.year,f:ks[0],s:3,by:{[ks[0]]:3}}; const one=trnCost(p); const s1=Object.values(one).reduce((a,b)=>a+b,0);
   p.trD={y:G.year,f:ks[0],s:ks.length,by:Object.fromEntries(ks.map(k=>[k,1]))}; const rot=trnCost(p); const s2=rot?Object.values(rot).reduce((a,b)=>a+b,0):0;

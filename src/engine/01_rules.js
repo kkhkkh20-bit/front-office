@@ -28,8 +28,10 @@ const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 /* 외국인 선수 한 명이 총액 한도에 차지하는 금액: 보장 연봉 + 아직 유효한 인센티브(신규·재계약·화면이 모두 이 계산을 쓴다) */
 function fCommit(p,sy){ sy=sy??ctSeason(); return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
 function fCap(tid){ return F_TOTAL_CAP+10*USD*sum(foreignOf(tid).filter(x=>x.foreign==='용병').map(x=>x.rsy||0)); }
-const F_REPL_MAX=2;
-const fReplLeft=tid=>period()!=='season'?F_REPL_MAX:Math.max(0,F_REPL_MAX-((G.sea&&G.sea.repl&&G.sea.repl[tid])||0)); /* 시즌 중 남은 외국인 교체 횟수 */          // 시즌 중 외국인 교체 횟수 (게임 설정)
+const F_REPL_MAX=2, ASIA_REPL_MAX=1;
+const fReplMax=kind=>kind==='아시아'?ASIA_REPL_MAX:F_REPL_MAX;
+function fReplUsed(tid,kind){ const S=G.sea; if(!S||S.y!==G.year)return 0; const by=kind==='아시아'?S.asiaRepl:S.repl; return (by&&by[tid])||0; }
+const fReplLeft=(tid,kind)=>period()!=='season'?fReplMax(kind):Math.max(0,fReplMax(kind)-fReplUsed(tid,kind)); /* 일반 외국인과 아시아쿼터는 별도 교체 횟수 */
 
 const TEAM_DEF=[
   {city:'서울',nick:'코메츠',code:'SC',hue:340,market:1.25,region:'수도권'},

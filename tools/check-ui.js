@@ -547,6 +547,19 @@ const QUICK=process.env.QUICK==='1';
     if(seq.join(',')!=='roster,trade:market,league:score,club:fin,league:score')add('단축키','F3·F5·F10·Shift+O·Backspace 이동 '+seq.join(','));
     await pg.keyboard.press('F1'); await pg.waitForTimeout(80); const kk=await ev(()=>!!document.querySelector('.fmkeys')); await pg.keyboard.press('Escape'); if(!kk)add('단축키','F1 단축키 목록이 안 열림');
     await ev(k=>{ UI.tab=k.tab; UI.sub=JSON.parse(k.sub); UI.lseg=k.ls; render(); },keep); }
+  /* 외국인 종류별 횟수: 시장·선수 상세·협상·방출 확인이 같은 제한을 보여야 한다 */
+  { where='외국인 종류별 교체 안내'; const r=await ev(()=>{ const keep=JSON.stringify(G), ff=UI.ff, fo=UI.fo, it=UI.it, pg=UI.pg;
+      try { G.day=G.cal.open+20; G.contract=null; G.sea.repl[G.user]=F_REPL_MAX; G.sea.asiaRepl={[G.user]:0};
+        for(const p of foreignOf(G.user).filter(p=>p.foreign==='아시아'))p.team=null;
+        const q=newForeign('아시아',{market:true}); q.ask=100; q.fknow=[G.user]; q.fpub=G.day; G.fmarket=[q.id]; UI.ff={t:'asia',r:'all',s:'rk'}; UI.fo=null; UI.it={fviewa:'market'}; UI.pg={};
+        const box=document.createElement('div'); box.innerHTML=foreignView(); const btn=box.querySelector('[data-a="negOpen"][data-v="fm:'+q.id+'"]');
+        const out={market:!!btn&&!btn.disabled}; UI.it.fviewa='rule'; box.innerHTML=foreignView(); out.summary=/교체 0\/1회/.test(box.textContent); UI.it.fviewa='market';
+        box.innerHTML=foPanel(q); const offer=box.querySelector('[data-a="foGo"]'); out.panel=!!offer&&!offer.disabled;
+        const other=foreignOf(G.user).find(p=>p.foreign==='용병'); if(other){ other.foreign='아시아'; const guard=GUARD.relNow(other.id); const text=guard?guard.lines.join(' '):''; out.guard=/남은 교체 1회/.test(text); other.foreign='용병'; } else out.guard=false;
+        G.sea.asiaRepl[G.user]=1; G.sea.repl[G.user]=0; box.innerHTML=foreignView(); const btn2=box.querySelector('[data-a="negOpen"][data-v="fm:'+q.id+'"]'); out.blocked=!!btn2&&btn2.disabled;
+        return out;
+      } finally { G=JSON.parse(keep); UI.ff=ff; UI.fo=fo; UI.it=it; UI.pg=pg; G._cl=null; } });
+    if(r)for(const [k,v] of Object.entries(r))if(!v)add('외국인 교체 안내',k+' 화면이 종류별 교체 횟수와 다름'); }
   where='시즌 준비'; await crawl('시즌 준비'); await sheets('시즌 준비'); await negResult('시즌 준비'); await space('시즌 준비',4);
   if(!QUICK){
     where='시뮬 → 시즌 중'; console.log('  시즌 중:',await sim('period()==="season"&&G.day>=G.cal.open+60',400)); await crawl('시즌 중'); await sheets('시즌 중'); await wkCheck('시즌 중'); await recCheck('시즌 중'); await psFanCheck(); await gmCheck(); await patchCheck(); await ntCheck(); await draftCheck('시즌 중'); await faUpCheck('시즌 중'); await space('시즌 중',6);

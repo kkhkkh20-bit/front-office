@@ -32,7 +32,7 @@ function buildWorld(){ const userTid=0; worldReset();
   for(const t of G.teams){ const m=mkMgr(); m.yrs=ri(1,3); G.mgr[t.id]=m; }
   // 지난 시즌(2025) 기록을 실제 경기로 만든다
   G.cal=buildCalendar(2025); G.day=G.cal.open-1;
-  G.sea={y:2025,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},mark:null};
+  G.sea={y:2025,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
   for(const t of G.teams){ for(const isP of [true,true,false]){ const p=newForeign('용병',{isP}); while(foreignCheck(t.id,p)&&p.ask>300)p.ask=round5(p.ask*.85); signForeign(t.id,p.id);} signForeign(t.id,newForeign('아시아').id); }
   G.stops=[]; rollForm(); /* 2025 시즌도 컨디션·타구 운이 걸린 채로 치른다 */
   let pd=null; for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false); applyGame(d,h,a,g,false);} if(dobj(d).w===0)futuresWeek(); }
@@ -57,7 +57,7 @@ function buildWorld(){ const userTid=0; worldReset();
   for(const t of G.teams){ const cap=capOf(2026), cp=capPay(t.id); const lim=cap*rnd(.88,.96); if(cp>lim){ const ps=domestic(t.id); const k=lim/cp; ps.forEach(p=>p.sal=round5(Math.max(MIN_SAL,p.sal*(p.sal>200?k:1)))); } }
   // 2026년 1월 2일에서 시작
   G.year=2026; G.cal=buildCalendar(2026); G.day=dnum(2026,1,2); G.ps=null;
-  G.sea={y:2026,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},mark:null};
+  G.sea={y:2026,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
   G.teams.forEach(t=>{t.cash=ri(3000,5000);});
   G.fmarket=[]; refreshFMarket(12); updateModes(); makeDraftClass();
   G.stops=[]; G.games=[];
