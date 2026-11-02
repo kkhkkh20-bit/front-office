@@ -1,8 +1,10 @@
 // 쓰이지 않는 최상위 함수·상수를 찾아(옵션: 지운다). 자기 자신 안에서만 부르는 경우는 안 쓰는 것으로 본다.
 const fs=require('fs'), path=require('path'), acorn=require('acorn'), walk=require('acorn-walk');
 const R=require('path').join(__dirname,'..','src')+'/';
-const ls=d=>fs.readdirSync(R+d).filter(f=>f.endsWith('.js')).sort().map(f=>R+d+'/'+f);
-const groups=[ls('engine'), [...ls('gfx'),...ls('ui')]];
+const root=path.resolve(R,'..');
+const {loadManifest,validateManifest}=require('./lib/sources.cjs');
+const manifest=validateManifest(root,loadManifest(root));
+const groups=[manifest.bundles.engine,[...manifest.bundles.graphics,...manifest.bundles.ui]].map(files=>files.map(f=>path.join(root,f)));
 const KEEP=new Set((process.env.KEEP||'').split(',').filter(Boolean));
 const apply=process.argv.includes('--apply');
 function load(){ return groups.map(fl=>{ let off=0, text=''; const map=[]; for(const f of fl){ const t=fs.readFileSync(f,'utf8'); map.push({f,s:off,e:off+t.length}); text+=t; off+=t.length; } return {text,map,ast:acorn.parse(text,{ecmaVersion:'latest',sourceType:'script',ranges:true})}; }); }

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""에셋 패키지 v2.1(assets/v2_1) → src/ui/00b_assets_data.js
+"""에셋 패키지 v2.1(assets/v2_1) → src/ui/assets/00b_assets_data.js
  - manifest.json의 구단명(예: "서울 코메츠")을 엔진 TEAM_DEF의 원래 '연고지 별칭'과 맞춰 구단 ID에 연결(배열 순서·파일 이름 순서를 ID로 쓰지 않음)
  - 단일 HTML 배포라 data URI로 넣는다. 표시 크기의 약 2배로 줄여 넣는다: 유니폼 192px, 모자 160px, 국가대표 배지 64/128px, 구장 배경 960px(webp)
  - 대회 마크·트로피는 작은 SVG 그대로(밝은 글자색 버전: 이 게임은 어두운 화면)
  사용: python3 tools/gen-assets.py  (에셋을 바꿨을 때만 다시 실행)"""
 import json, re, io, base64, hashlib, os, sys
 from PIL import Image
+from source_manifest import source_file
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__))); D=os.path.join(ROOT,'assets','v2_1')
-src=open(os.path.join(ROOT,'src','engine','01_rules.js'),encoding='utf8').read()
+src=open(source_file('engine','01_rules.js'),encoding='utf8').read()
 TD=re.findall(r"\{city:'([^']+)',nick:'([^']+)'",src.split('const TEAM_DEF=[')[1].split('];')[0])
 M=json.load(open(os.path.join(D,'manifest.json'),encoding='utf8'))
 sums=json.load(open(os.path.join(D,'checksums.json'),encoding='utf8')) if os.path.exists(os.path.join(D,'checksums.json')) else {}
@@ -32,5 +33,5 @@ out={'uni':uni,
  'comp':{'ps':svg('competition/postseason_mark_light.svg'),'ks':svg('competition/korean_series_mark_light.svg'),'trophy':svg('competition/championship_trophy.svg')},
  'stad':{k:webp(v,960) for k,v in M['backgrounds'].items()}}
 body='/* 자동 생성: python3 tools/gen-assets.py (손으로 고치지 않는다). 에셋 패키지 v2.1(assets/v2_1). uni 키는 게임 구단 ID(TEAM_DEF 순서, 구단명으로 대조). 구장 배경은 공용 분위기 이미지(특정 구장·구장 효과와 무관) */\nconst ASSET='+json.dumps(out,ensure_ascii=False)+';\n'
-open(os.path.join(ROOT,'src','ui','00b_assets_data.js'),'w',encoding='utf8').write(body)
+open(source_file('ui','00b_assets_data.js'),'w',encoding='utf8').write(body)
 print('유니폼·모자 %d개 구단: %s · %dKB'%(len(uni),', '.join(f"{i}={u['n']}" for i,u in sorted(uni.items())),len(body)//1024))

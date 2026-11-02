@@ -1,4 +1,4 @@
-/* 외국인 후보 기록 해석표(src/engine/12_foreign.js의 FREC)를 다시 맞춘다.
+/* 외국인 후보 기록 해석표(src/engine/contracts/12_foreign.js의 FREC)를 다시 맞춘다.
  후보 생성(newForeign: 리그 비중·능력 분포·리그 보정 LG_ADJ·리그 환경 편차 FENV·MLB 경력)을 바꾸면 이 표도 다시 맞춰야 한다.
  사용: bash build.sh && node tools/fit-frec.js   → 출력된 한 줄을 FREC 자리에 붙여 넣는다.
  방법: 리그·투타별로 실제 능력(ovr)을 기록 지표로 최소제곱 회귀한다. 타자 [1, OPS, ln(1+MLB 경기)], 투수 [1, WHIP, K-BB/9, HR/9, ln(1+MLB 경기)]. 마지막 값은 남는 오차(표준편차) */

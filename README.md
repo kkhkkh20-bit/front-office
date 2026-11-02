@@ -15,35 +15,42 @@
 
 ## 구조
 
-소스는 기능별 조각 파일로 나뉘어 있고, `build.sh`가 파일 이름 앞 숫자 순서대로 이어 붙여 `index.html` 한 파일을 만듭니다. 엔진과 화면은 각각 하나의 `<script>`로 들어가지만 전역 공간을 함께 씁니다.
+공용 계산은 `src/core/`의 자바스크립트 모듈로, 게임과 화면 코드는 기능별 폴더로 나뉩니다. `src/modules.json`이 전체 입력과 로딩 순서를 관리합니다. `build.sh`는 공용 모듈을 번들로 만들고 기존 게임·화면 코드를 결합해 단일 `index.html`을 생성합니다.
 
 | 경로 | 내용 |
 | --- | --- |
-| `src/html/` | 문서 머리말(`head.html`)과 본문 틀(`body.html`) |
-| `src/css/` | 화면 스타일 21개. 뒤 번호 파일이 앞 규칙을 덮습니다 |
-| `src/engine/` | 게임 규칙과 시뮬레이션 84개: 규정, 기록, 경기, 하루 진행, 스토브리그, 드래프트, 외국인, 연봉, 트레이드, 재정, 병역, 감독·코치, 육성, 인터뷰·미디어데이, 팬 여론, 내가 꾸린 팀 등 |
-| `src/gfx/` | 그림: 카드 중계 경기장, 훈련 단지·홈구장 |
-| `src/ui/` | 화면과 동작 77개: 소식함, 홈, 선수단, 트레이드, 영입·계약, 스태프·육성, 리그, 구단·재정, 선수 정보, 단장 프로필, 동작(`40_actions.js`), 결재(`41_guard_boot.js`), 플레이 기록(`72_telemetry.js`), 부팅(`99_boot.js`) |
-| `vendor/` | 외부 라이브러리(faces.js, lz-string) |
-| `tools/` | 점검 도구(아래) |
-| `index.html` | 빌드 결과물. 이 파일 하나로 실행됩니다 |
+| `src/core/` | 상태와 독립적인 수학·난수·능력 척도·UTC 날짜 모듈 |
+| `src/engine/` | `league`, `players`, `matches`, `progression`, `contracts`, `draft`, `market`, `career`, `staff`, `development`, `finance`, `media`, `runtime` 도메인 |
+| `src/ui/` | 기능별 화면, 공용 `components`, `shell`, `actions`, `runtime`, 데이터 `assets` |
+| `src/css/` | 기능별 스타일. 적용 순서는 소스 목록에 명시 |
+| `src/gfx/` | 경기 중계와 시설 그림 |
+| `src/html/`, `vendor/` | 문서 틀과 포함 배포하는 외부 라이브러리 |
+| `src/modules.json` | 전체 소스·공용 진입점·동작/결재/부팅 순서 |
+| `tools/build.cjs`, `tools/lib/sources.cjs` | 공용 소스 목록 검증과 번들 생성 |
+| `index.html`, `dist/engine.js` | 배포 HTML과 엔진 검사 결과물 |
+
+게임·화면 전역 호출은 호환 계층으로 유지됩니다. 전체 게임의 전역 상태를 제거한 구조는 아닙니다. 모듈 경계와 다음 기능을 분리하는 방법은 [구조 문서](docs/architecture.md)를 참고하세요.
 
 ### 지켜야 할 규칙 (점검 도구가 확인합니다)
 
-1. **같은 이름을 두 번 선언하지 않는다.** 엔진과 화면은 전역을 함께 써서, 나중 선언이 앞 선언을 조용히 덮어씁니다. 일부러 덮어쓸 때만 `tools/dup-allow.txt`에 적습니다.
-2. **파일 맨 위에서 바로 실행되는 코드는 뒤 번호 파일의 상수(`const`)를 쓰지 않는다.** 저장 불러오기와 첫 화면 그리기는 `src/ui/99_boot.js`(가장 뒤)에서만 합니다. 동작 표 `A`는 `40_actions.js`에서 만들어지므로 `Object.assign(A, …)`은 그 뒤 번호 파일에서만 합니다.
+1. **호환 스크립트에서 같은 전역 이름을 두 번 선언하지 않는다.** 엔진과 화면은 전역을 함께 써서, 나중 선언이 앞 선언을 조용히 덮어씁니다. 일부러 덮어쓸 때만 `tools/dup-allow.txt`에 적습니다.
+2. **파일 맨 위에서 바로 실행되는 코드는 소스 목록에서 뒤에 오는 파일의 상수(`const`)를 쓰지 않는다.** 저장 불러오기와 첫 화면 그리기는 `src/ui/runtime/99_boot.js`(가장 뒤)에서만 합니다. 동작 표 `A`는 `actions/40_actions.js`에서 만들어지므로 `Object.assign(A, …)`은 소스 목록에서 그 뒤 파일에만 둡니다. 새 파일은 `src/modules.json`에 등록해야 하며, 누락·중복·부팅 순서 위반은 빌드가 거절합니다.
 
 ## 빌드와 점검
 
 ```bash
+cd tools && npm ci && npx playwright install chromium && cd ..   # 처음 한 번
 bash build.sh              # index.html, dist/engine.js 만들기
-cd tools && npm install && npx playwright install chromium && cd ..   # 처음 한 번
-bash tools/check.sh        # 전체 점검(약 2분)
+node --test tools/test/*.test.cjs   # 모듈 경계·순수 계산·빌드 계약
+bash tools/check.sh        # 전체 점검
 QUICK=1 bash tools/check.sh   # 빠른 점검
 ```
 
+화면 검사는 실행 중에만 로컬 HTTP 서버를 직접 열고 종료하므로 별도 서버가 필요 없습니다. 시스템 Chromium을 쓰는 환경은 `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh`로 실행할 수 있습니다. 변수를 지정하지 않으면 Playwright가 설치한 Chromium을 사용합니다.
+
 | 점검 | 파일 | 찾는 것 |
 | --- | --- | --- |
+| 모듈·빌드 | `tools/test/modules.test.cjs` | 소스 누락·중복·경계·순환 참조, 부팅 순서, 결정적 빌드와 순수 계산 |
 | 문법 | `check.sh` | 빌드된 스크립트의 문법 오류 |
 | 정적 점검 | `tools/check-static.js` | 이름 충돌, 초기화 전 사용(첫 화면이 비는 종류의 오류) |
 | 규칙 점검 | `tools/check-logic.js` | 오류 없이 결과만 틀린 버그(리뷰에서 나온 버그를 시나리오로 고정) |
@@ -55,7 +62,7 @@ GitHub에 올리면 `.github/workflows/check.yml`이 빠른 점검을 자동으�
 ## 배포
 
 - **itch.io**: `index.html`을 zip으로 묶어 올리고(Kind of project: HTML) "This file will be played in the browser"를 켭니다. 화면 1280×800, Mobile friendly, Fullscreen button. 화면이 800px보다 길어서 **Enable scrollbars를 반드시 켭니다**(끄면 아래가 잘리고 스크롤이 안 됨). 저장은 플레이어 브라우저의 localStorage(`danjang-*`)에 남아 파일을 다시 올려도 이어집니다.
-- **플레이 기록(선택)**: `src/ui/72_telemetry.js`의 `TELE`에 분석 서비스 키를 넣으면 익명 플레이 기록(시작 퍼널, 몇 년 차까지 했는지, 기능 사용, 화면 이동, 오류)을 보냅니다. 비어 있으면 아무것도 보내지 않습니다. 이름·얼굴·저장 내용은 보내지 않고, 플레이어는 설정에서 끌 수 있습니다.
+- **플레이 기록(선택)**: `src/ui/runtime/72_telemetry.js`의 `TELE`에 분석 서비스 키를 넣으면 익명 플레이 기록(시작 퍼널, 몇 년 차까지 했는지, 기능 사용, 화면 이동, 오류)을 보냅니다. 비어 있으면 아무것도 보내지 않습니다. 이름·얼굴·저장 내용은 보내지 않고, 플레이어는 설정에서 끌 수 있습니다.
 
 ## 크레딧
 

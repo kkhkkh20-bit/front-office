@@ -17,7 +17,7 @@ jobs:
       - name: 점검 도구 설치
         working-directory: tools
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
       - name: 전체 점검(빠르게)
         env:

@@ -1,4 +1,4 @@
-# 인수인계 (2026-11-02, 진행 논리 검수 반영)
+# 인수인계 (2026-11-02, 모듈화·리팩터링 반영)
 
 ## 프로젝트
 - 프런트야구: KBO 구단 단장 시뮬레이션. 단일 index.html(빌드 결과물).
@@ -7,8 +7,8 @@
 - itch.io(kkhkkh20.itch.io)는 사용자가 직접 index.html을 올림.
 
 ## 구조
-- src/engine/*.js → dist/engine.js, src/html·css·ui → index.html. `bash build.sh`로 합친다.
-- 패치 노트: src/ui/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02w').
+- `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02w').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -22,8 +22,8 @@
 
 ## 검사 도구
 - tools/check-logic.js: 규칙 테스트(현재 354개). 앞부분 `T('리그 수준: 트리플A는` 앞에 새 테스트를 넣는다. 테스트 코드는 템플릿 문자열 안이라 백틱을 쓰면 안 된다.
-- 일부만: `ONLY=문구 node tools/check-logic.js`(0개 선택이면 실패). src를 빌드 없이 시험: `cat src/engine/*.js > /tmp/e.js` 후 ENGINE 경로만 바꾼 복사본으로 실행.
-- [공통 점검] 테스트 + src/engine/95_audit.js(stateAudit·auditMoney·leaveSweep): 이동 정리·감독 교체·안내한 기한·시즌 구분을 여러 전환 뒤 한꺼번에 본다.
+- 일부만: `ONLY=문구 node tools/check-logic.js`(0개 선택이면 실패). 별도 엔진으로 시험: `node tools/build.cjs --engine-out /tmp/e.js` 후 ENGINE 경로만 바꾼 복사본으로 실행. 평면 glob으로 합치면 공용 모듈이 빠지므로 사용 금지.
+- [공통 점검] 테스트 + src/engine/runtime/95_audit.js(stateAudit·auditMoney·leaveSweep): 이동 정리·감독 교체·안내한 기한·시즌 구분을 여러 전환 뒤 한꺼번에 본다.
 - tools/check-sens.js: 능력치 반영(세계 2개 평균). check-sim.js: 장기 시뮬 불변식. check-ui.js: 넓은 화면(FM 모드 1280)·휴대폰(W=390).
 
 ## 최근 반영(오늘)
@@ -39,7 +39,7 @@
 4. 정책 결정 필요: 트레이드 후 68명 초과(시즌 구분), AI 하한 맞추기 재협상 기록, 군 복무 중 성장 환경, 복무 중 자기관리 사건.
 5. FM 2단계: 소식함 분류를 2번째 줄로, 재정·스폰서·스태프 카드 그리드, 2번째 줄 빠른 버튼.
 6. 백로그: 데이터 출처 표기, 20시즌 시뮬, 전략 비교, 홈 할 일 분류, 차트 후속, 다른 구단 경기 기록, 감독 영향, 구장 리모델링, 주소창 FM 단축키 추가 정리.
-7. 멘탈 효과 크기 관찰(상위 wRC+), 필요하면 2.0에서 조정(src/engine/06_game.js outcome의 CLUTCH 계수).
+7. 멘탈 효과 크기 관찰(상위 wRC+), 필요하면 2.0에서 조정(src/engine/matches/06_game.js outcome의 CLUTCH 계수).
 
 ## 도구
 - ponytail 플러그인과 security-audit 스킬을 사용자 범위(~/.claude)에 설치함. 클라우드 작업 공간이 새로 만들어지면 없을 수 있음(설치: `claude plugin marketplace add DietrichGebert/ponytail` → `claude plugin install ponytail@ponytail`, `DISABLE_TELEMETRY=1 npx -y skills add https://github.com/cloudflare/security-audit-skill --skill security-audit --global --agent claude-code -y`).
@@ -49,7 +49,7 @@
 - 일반 외국인 교체와 아시아쿼터를 별도 계산. 직접 계약·AI·시장·협상·방출 안내·교체 요청에 같은 기준 적용. 새해에는 각각 초기화.
 - 보류권은 새 기록의 선수 식별자로 검사, 옛 이름·국적 기록은 호환. 유효 기록 40명 제한·중복 기록 제거.
 - 옛 저장에서 과거 일반 합계에 섞인 아시아 교체는 종류별 정보가 없으면 복구 불가. 기존 일반 합계는 유지하며 이후부터 분리 기록.
-- 현재 환경은 시스템 Chromium과 로컬 HTTP를 사용: /workspace/front-office-setup/start.sh 실행 후 env.sh를 로드하고 전체 검사. 검사 도중 빌드 금지.
+- 현재 환경은 CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh로 실행. 화면 검사가 서버를 직접 소유하므로 이전 start.sh·env.sh 실행 보조 코드에 의존하지 않음. 검사 도중 빌드 금지.
 - 아티팩트 URL 갱신 도구가 현재 제공되지 않아 재게시 미완료. 커밋·푸시와 실제 아티팩트 게시를 구분해서 보고할 것.
 
 ## 진행 논리 검수 인계(2026-11-02, Codex)
@@ -60,3 +60,15 @@
 - 프랜차이즈 예외 캐시는 같은 날 소속·연봉·이력 변경을 반영. capPayAs는 제외될 선수도 예외 대상에서 제외해 실제 이동 후 상한과 일치. 합계 계산당 대상 조회 한 번으로 반복 비용 억제.
 - 기존 FA 보상 저장 검사는 보호명단 단계에서 정산하던 준비 조건을 바로잡음. 실제 보상 선택 단계에서 저장 후 결과 식별자 연결과 보상금 900을 검사.
 - 원격 검수 기준은 edbe21b. 사용자가 붙인 fd22541 리뷰의 0건 검사·simTo·소속/거래/정원/보직 문제는 이미 반영된 상태를 실행·코드로 확인했으며 중복 구현하지 않음.
+
+## 소스 구조 인계(2026-11-02, Codex)
+- src/modules.json이 모든 소스와 순서를 관리한다. 폴더나 파일명 순서로 합치지 말 것. 게임·화면·스타일·그림은 기능별 하위 폴더로 이동했다.
+- 공용 계산은 src/core/*.mjs. 단일 HTML 배포는 유지하고 esbuild가 FrontOfficeCore로 묶는다. 기존 전역은 게임 쪽 두 호환 연결 파일로 유지한다. 전역 G/UI/A를 모두 제거한 구조는 아님.
+- 최초 의존성은 cd tools && npm ci. tools/package-lock.json과 esbuild 고정 버전을 함께 관리. bash build.sh, --check, --engine-out 별도 경로 지원.
+- 전체 검사에 모듈·빌드 계약 검사 6개가 추가됨. 정적 검사·정리·에셋 도구도 같은 소스 목록을 읽는다.
+- 이동 파일 204개 중 202개 본문 동일. 일반 진행과 거래·방출 포함 한 시즌의 변경 전후 G 상태 해시가 각각 일치한다. 자세한 경계와 작업 순서는 docs/architecture.md.
+- 모듈화 자체를 플레이어 패치 알림으로 띄우지 않았음. 게임 규칙이나 저장 형식 변경 없음.
+
+- 화면 검사도 실행·서버 수명을 모듈로 분리했다(tools/lib/ui-server.cjs). 검사 종료·실패 시 서버와 브라우저를 정리한다. 외부 HTTP 서버를 미리 띄워 두는 방식은 사용하지 말 것.
+
+- 모듈화 최종 검증: 외부 서버 없이 전체 check.sh 통과. 모듈 6개 검사·규칙 354개·능력치·3개 시뮬(2029년 1월까지)·데스크톱 240회 조작·모바일. 재사용 설치 초안도 npm ci + 빌드로 갱신했으며 설정 게시와 새 작업 복원 검증은 별개.

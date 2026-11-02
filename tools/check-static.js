@@ -9,12 +9,13 @@
 const fs=require('fs'), path=require('path');
 let acorn, walk; try{ acorn=require('acorn'); walk=require('acorn-walk'); }catch(e){ console.error('acorn이 없습니다. cd tools && npm i 를 먼저 실행하세요.'); process.exit(2); }
 const ROOT=path.join(__dirname,'..');
-const ls=d=>fs.readdirSync(path.join(ROOT,'src',d)).filter(f=>f.endsWith('.js')).sort().map(f=>path.join('src',d,f));
-/* build.sh와 같은 순서: 엔진 스크립트 하나, 그림·화면 스크립트 하나 */
-const GROUPS=[{name:'engine',files:ls('engine')},{name:'ui',files:['src/gfx/kart.js','src/gfx/campus.js','src/gfx/iso.js',...ls('ui')]}];
+const {loadManifest,validateManifest}=require('./lib/sources.cjs');
+const manifest=validateManifest(ROOT,loadManifest(ROOT));
+/* 빌드와 같은 소스 목록. 공용 ESM은 별도 경계 검사 후 하나의 이름 공간으로 앞에 묶는다. */
+const GROUPS=[{name:'engine',files:manifest.bundles.engine},{name:'ui',files:[...manifest.bundles.graphics,...manifest.bundles.ui]}];
 const allow=new Set((fs.existsSync(path.join(__dirname,'dup-allow.txt'))?fs.readFileSync(path.join(__dirname,'dup-allow.txt'),'utf8'):'').split(/\s+/).map(s=>s.trim()).filter(s=>s&&!s.startsWith('#')));
 const errors=[], warns=[];
-const decls=[]; /* {name, kind:'function'|'const'|'let'|'var'|'class', g, file, pos} */
+const decls=[{name:manifest.coreGlobal,kind:'var',g:0,file:manifest.coreEntry,pos:-1}]; /* {name, kind:'function'|'const'|'let'|'var'|'class', g, file, pos} */
 const parsed=GROUPS.map((G,gi)=>{ let text='', map=[]; for(const f of G.files){ const t=fs.readFileSync(path.join(ROOT,f),'utf8'); map.push({f,s:text.length,e:text.length+t.length}); text+=t+'\n'; }
   let ast; try{ ast=acorn.parse(text,{ecmaVersion:'latest',sourceType:'script',allowHashBang:true}); }catch(e){ const m=map.find(x=>e.pos>=x.s&&e.pos<x.e); errors.push(`[문법] ${m?m.f:G.name}: ${e.message}`); return null; }
   const fileOf=pos=>{ const m=map.find(x=>pos>=x.s&&pos<x.e); return m?m.f:'?'; };

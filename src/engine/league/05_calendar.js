@@ -1,12 +1,12 @@
 /* ===== 날짜 ===== */
-const D0=Date.UTC(2024,0,1);
-const dnum=(y,m,d)=>Math.round((Date.UTC(y,m-1,d)-D0)/864e5);
-function dobj(n){const t=new Date(D0+n*864e5);return {y:t.getUTCFullYear(),m:t.getUTCMonth()+1,d:t.getUTCDate(),w:t.getUTCDay()};}
-const WD='일월화수목금토';
-const dstr=n=>{const o=dobj(n);return `${o.y}년 ${o.m}월 ${o.d}일 ${WD[o.w]}요일`;};
-const dmd=n=>{const o=dobj(n);return `${o.m}월 ${o.d}일`;};
-const dsh=n=>{const o=dobj(n);return `${o.m}/${o.d}`;};
-function onOrAfter(y,m,d,w){ let n=dnum(y,m,d); while(dobj(n).w!==w)n++; return n; }
+const D0=FrontOfficeCore.D0;
+const dnum=FrontOfficeCore.dnum;
+const dobj=FrontOfficeCore.dobj;
+const WD=FrontOfficeCore.WD;
+const dstr=FrontOfficeCore.dstr;
+const dmd=FrontOfficeCore.dmd;
+const dsh=FrontOfficeCore.dsh;
+const onOrAfter=FrontOfficeCore.onOrAfter;
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 const KD=(m,d)=>dnum(G.year,m,d);
 /* 시즌 주요 마감일(KBO 규정): 트레이드 7월 31일, 외국인 선수 등록·교체 8월 15일 */

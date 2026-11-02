@@ -1,9 +1,10 @@
 import re,glob,sys
 import os
+from source_manifest import source_paths
 R=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','src')+'/'
-js='\n'.join(open(f).read() for f in glob.glob(R+'engine/*.js')+glob.glob(R+'ui/*.js')+glob.glob(R+'gfx/*.js')+glob.glob(R+'html/*.html'))
+js='\n'.join(open(f).read() for f in source_paths('engine','ui','graphics','core','html'))
 apply='--apply' in sys.argv; tot=0; removed=0
-for f in sorted(glob.glob(R+'css/*.css')):
+for f in source_paths('styles'):
     css=open(f).read()
     # 규칙 단위로 나누기(중괄호 깊이 0의 선택자{...}); @media 안쪽도 처리
     out=[]; i=0; n=len(css); changed=False
