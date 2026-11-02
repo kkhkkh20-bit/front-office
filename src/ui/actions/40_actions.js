@@ -19,6 +19,7 @@ function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH
 }
 function closeSheets(){ const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
 const A={
+  analysisY(v){ UI.analysisY=+v; renderSheet(); },
   smkGo(v){ UI.smkK=v; UI.smkSrc='free'; A.go('staff:smkt'); }, smkK(v){ UI.smkK=v; render(); }, smkSrc(v){ UI.smkSrc=v; render(); }, /* 스태프 시장 */
   dlSpd(v){ UI.dspeed=v; render(); },
   dlStop(){ dliveStop(); },

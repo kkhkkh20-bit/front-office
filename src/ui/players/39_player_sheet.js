@@ -46,7 +46,7 @@ function pcmpView(){ const P=(UI.pcmp||[]).map(id=>G.players[id]).filter(Boolean
     <div class="tw"><table class="sqt pcmp"><thead><tr><th></th>${P.map(p=>`<th><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <button class="tc-i" data-a="pcmpTg" data-v="${p.id}" aria-label="빼기">×</button></th>`).join('')}</tr></thead><tbody>${rows.map(([l,f])=>`<tr><td class="small muted">${l}</td>${P.map(p=>`<td>${f(p)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
     <p class="small muted">같은 시즌·같은 군 기록만 나란히 둡니다(60타석·10이닝 미만은 적은 표본). 능력은 선수 화면 스카우트 리포트와 같은 평가이고, 다른 구단 선수는 담당 스카우트가 본 범위입니다. 순위나 추천은 매기지 않습니다.</p>`; }
 /* 리그 백분위(Baseball Savant식): 같은 시즌 1군에서 기준(타자 50타석·투수 20이닝)을 넘긴 선수 중 위치. 빨강=상위, 파랑=하위. 기록과 공개 트래킹만 쓴다 */
-function pctCard(p){ if(hideOvr(p))return ''; const y=statY(); const h=seasonTotal(p,y,'1군'); const qual=h&&(p.isP?(h.outs||0)>=60:(h.pa||0)>=50); const pool=pctPool(!!p.isP,y); if(pool.length<15)return '';
+function pctCard(p,year){ if(hideOvr(p))return ''; const y=year??statY(); const h=seasonTotal(p,y,'1군'); const qual=h&&(p.isP?(h.outs||0)>=60:(h.pa||0)>=50); const pool=pctPool(!!p.isP,y); if(pool.length<15)return '';
   const V=pctVals(p,h); const M=p.isP?PCT_P:PCT_B; const col=v=>{ const t=(v-50)/50; const a=[59,111,182],m=[178,178,178],b=[210,59,59]; const c=t<0?a.map((x,i)=>Math.round(m[i]+(x-m[i])*-t)):b.map((x,i)=>Math.round(m[i]+(x-m[i])*t)); return `rgb(${c.join(',')})`; };
   const row=([k,l,dir,trk])=>{ const v=V[k]; if(v==null||!isFinite(v)||(!trk&&!qual))return `<div class="pct-r off"><span>${l}</span><span class="pct-b"></span><b>-</b><i>${trk?'':'기준 미달'}</i></div>`; const all=pool.map(x=>x[k]).filter(x=>x!=null&&isFinite(x)); const below=all.filter(x=>dir>0?x<v:x>v).length; const pc=Math.round(below/Math.max(1,all.length)*100);
     const fv=['ops','obp','iso'].includes(k)?fmt3(v):['era','whip','run'].includes(k)?v.toFixed(2):['k9','bb9','hr9','bbp','kp','kpp','bbpp'].includes(k)?v.toFixed(1):Math.round(v); return `<div class="pct-r"><span>${l}</span><span class="pct-b"><i style="width:${pc}%;background:${col(pc)}"></i><em style="left:${pc}%;background:${col(pc)}">${pc}</em></span><b>${fv}</b><i></i></div>`; };
@@ -82,15 +82,15 @@ let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)r
   const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb)/pa:null,k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
 /* 타구 분포도: 방향(자리)별 타구 비중과 안타 비율, 유형(땅볼·라인드라이브·뜬공·팝플라이) 비중. 정규시즌 1군 기록 */
 const SPR_Z={LF:[-45,-15,1],CF:[-15,15,1],RF:[15,45,1],'3B':[-45,-22.5,0],SS:[-22.5,0,0],'2B':[0,22.5,0],'1B':[22.5,45,0]}; const SPR_TL={GB:'땅볼',LD:'라인드라이브',FB:'뜬공',PU:'팝플라이'};
-function sprayCard(p){ const S=UI.sprP&&p.sprP?p.sprP:p.spr; if(!S)return ''; const T=S.t||{}; const tot=Object.values(T).reduce((a,x)=>a+x[0],0); if(!tot)return '';
+function sprayCard(p,selected){ const S=selected||(UI.sprP&&p.sprP?p.sprP:p.spr); if(!S)return ''; const T=S.t||{}; const tot=Object.values(T).reduce((a,x)=>a+x[0],0); if(!tot)return '';
   const mix=`<div class="spr-mix">${['GB','LD','FB','PU'].map(k=>{ const x=T[k]||[0,0]; const pc=Math.round(x[0]/tot*100); return `<span style="flex:${Math.max(pc,1)}" class="spr-t ${k}" title="${SPR_TL[k]} ${x[0]}개 · 안타 ${x[1]}"><b>${SPR_TL[k]}</b> ${pc}%</span>`; }).join('')}</div>`;
-  if(p.isP)return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 맞은 타구 유형 · ${tot}개</span>${p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>${mix}</div>`;
+  if(p.isP)return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 맞은 타구 유형 · ${tot}개</span>${!selected&&p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>${mix}</div>`;
   const Z=S.z||{}; const zt=Object.keys(SPR_Z).reduce((a,k)=>a+((Z[k]||[0])[0]),0)||1; const cx=170,cy=196; const pt=(r,a)=>[cx+r*Math.sin(a*Math.PI/180),cy-r*Math.cos(a*Math.PI/180)];
   const wedge=(k)=>{ const [a0,a1,of]=SPR_Z[k]; const r0=of?104:22, r1=of?180:100; const z=Z[k]||[0,0,0,0]; const sh=z[0]/zt; const p1=pt(r0,a0),p2=pt(r1,a0),p3=pt(r1,a1),p4=pt(r0,a1); const op=(.12+sh/.35*.75).toFixed(2); const mid=pt((r0+r1)/2,(a0+a1)/2);
     return `<g><path class="spr-w" d="M${p1} L${p2} A${r1} ${r1} 0 0 1 ${p3} L${p4} A${r0} ${r0} 0 0 0 ${p1} Z" style="fill-opacity:${op}"><title>${POSS[k]||k} 방향 타구 ${z[0]}개(${Math.round(sh*100)}%) · 안타 ${z[1]} · 장타 ${z[2]} · 홈런 ${z[3]}</title></path><text x="${mid[0].toFixed(1)}" y="${(mid[1]+4).toFixed(1)}" text-anchor="middle">${Math.round(sh*100)}%</text></g>`; };
   const ZO=['LF','CF','RF','3B','SS','2B','1B']; const zr=k=>{ const z=Z[k]||[0,0,0,0]; return `<tr><td>${POSS[k]||k} 쪽</td><td class="num">${z[0]}</td><td class="num">${Math.round(z[0]/zt*100)}%</td><td class="num">${z[0]?Math.round(z[1]/z[0]*100)+'%':'-'}</td><td class="num">${z[2]}</td><td class="num">${z[3]}</td></tr>`; };
   const tbl=`<table class="sqt spr-z"><thead><tr><th>방향</th><th>타구</th><th>비중</th><th>안타 비율</th><th>장타</th><th>홈런</th></tr></thead><tbody>${ZO.map(zr).join('')}</tbody></table>`;
-  return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 타구 분포 · 인플레이 타구와 홈런 ${tot}개</span>${p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>
+  return `<div class="spr"><div class="row between"><span class="eyebrow">${S.y} 타구 분포 · 인플레이 타구와 홈런 ${tot}개</span>${!selected&&p.sprP?`<button class="tc-i" data-a="sprP">${UI.sprP?'이번 시즌':'지난 시즌'}</button>`:''}</div>
     <div class="spr-g"><svg class="spr-f" viewBox="0 0 340 206" role="img" aria-label="방향별 타구 분포">${Object.keys(SPR_Z).map(wedge).join('')}<path class="spr-l" d="M${pt(180,-45)} L${cx} ${cy} L${pt(180,45)}"></path></svg><div class="tw">${tbl}</div></div>${mix}
     <p class="small muted">그림의 숫자는 그 방향 타구 비중(진할수록 많이 보냄)입니다. 안타 비율·장타·홈런은 옆 표에 있습니다. ${p.bt==='좌'?'좌타자라 당겨치면 1루·우익 쪽입니다.':p.bt==='양'?'양타자는 투수에 따라 타석이 바뀝니다.':'우타자라 당겨치면 3루·좌익 쪽입니다.'}</p></div>`; }
 function reportCard(p,noTools){
@@ -189,7 +189,7 @@ function renderSheet0(){
   const pt=p.team!=null?team(p.team):null; const pst=pt?`--pt:${tpal(pt)[2]};--pt2:${tpal(pt)[3]}`:'';
   const ownP=p.team===G.user&&!(p.joinY>G.year); const st=careerStory(p);
   const hasM=ownP;
-  const tabs=[...(p.prospect||p.fdPool||isFM?[]:[['abil','능력']]),...(hasM?[['dev','육성']]:[]),['sum','요약'],['rec','기록'],...(st?[['story','이야기']]:[]),...(hasM?[['mgmt','관리']]:[])]; /* 능력(정보) 다음에 육성(보직·훈련·전환·연수) */
+  const tabs=[...(p.prospect||p.fdPool||isFM?[]:[['abil','능력']]),...(hasM?[['dev','육성']]:[]),['sum','요약'],['rec','기록'],...(!p.prospect&&!p.fdPool&&!isFM?[['analysis','분석']]:[]),...(st?[['story','이야기']]:[]),...(hasM?[['mgmt','관리']]:[])]; /* 능력(정보) 다음에 육성(보직·훈련·전환·연수) */
   let T=UI.ptab||'abil'; if(!tabs.some(t=>t[0]===T))T='sum';
   const tabBar=`<div class="seg ptabs">${tabs.map(([k,l])=>`<button data-a="ptab" data-v="${k}" class="${T===k?'on':''}">${l}</button>`).join('')}</div>`;
   el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut psh${T==='sum'||T==='abil'?' psh2':''}" style="${pst}" role="dialog" aria-label="${esc(p.name)} 선수 정보" data-stop="1">
@@ -219,6 +219,7 @@ function renderSheet0(){
    ${hasM?'':growthCard(p)}
    `:''}
    ${T==='dev'?devTab(p):''}
+   ${T==='analysis'?playerAnalysisTab(p):''}
    ${T==='rec'?`
    ${pctCard(p)}${hideOvr(p)?'':splitCard(p)}${hideOvr(p)?'':sprayCard(p)}${rollCard(p)}<div><div class="row between" style="margin-bottom:6px"><span class="eyebrow">기록</span><span class="small muted">F는 2군</span></div><div class="tw">${statTable(p)}</div></div>
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}

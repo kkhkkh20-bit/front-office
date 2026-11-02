@@ -81,6 +81,11 @@ const QUICK=process.env.QUICK==='1';
       for(const [a,v] of tabs){ where=`${label} · ${t} · ${a}=${v}`; await ev(([a,v])=>{ try{ A[a](v); }catch(e){ console.error(a+' '+e.message); } },[a,v]); await pg.waitForTimeout(30); await blank(); } } };
   const sheets=async label=>{ where=`${label} · 선수 정보`; const tabs=await ev(()=>{ const p=playersOf(G.user)[0]; A.player(p.id); return [...document.querySelectorAll('#sheet [data-a="ptab"]')].map(x=>x.dataset.v); });
     for(const v of (tabs||[])){ where=`${label} · 선수 정보 · ${v}`; await ev(v=>A.ptab(v),v); await pg.waitForTimeout(40); }
+    where=`${label} · 선수 분석`;
+    await ev(()=>{ const p=playersOf(G.user).find(p=>!p.isP&&!p.prospect); if(!p)throw new Error('분석 대상 타자 없음'); A.player(p.id); A.ptab('analysis'); });
+    { const r=await ev(()=>{ const root=document.querySelector('#sheet'); return {cards:root.querySelectorAll('.an-grid>.card').length,sel:!!root.querySelector('[data-a="analysisY"]'),bad:/NaN|Infinity/.test(root.innerText)}; }); if(r&&(r.cards!==4||!r.sel||r.bad))add('선수 분석','4개 분석 카드·시즌 선택·유효 숫자 검사 실패: '+JSON.stringify(r)); }
+    { const visible=await ev(()=>{ const p=[...document.querySelectorAll('#sheet .an-grid p')].find(p=>p.textContent.includes('선수 고유의 코스별')); return !!p&&getComputedStyle(p).display!=='none'; }); if(!visible)add('선수 분석','추정 존의 한계 설명이 기본 화면에서 숨겨짐'); }
+    { const years=await ev(()=>[...document.querySelectorAll('#sheet [data-a="analysisY"] option')].map(o=>o.value)); if(years&&years.length>1){ const y=years[years.length-1]; await pg.selectOption('#sheet [data-a="analysisY"]',y); const text=await pg.locator('#sheet .an-grid h3').first().innerText(); if(!text.includes(y))add('선수 분석','실제 시즌 선택이 화면에 반영되지 않음'); } }
     await ev(()=>{ const p=Object.values(G.players).find(q=>q.team!=null&&q.team!==G.user); if(p)A.player(p.id); }); where=`${label} · 다른 구단 선수`; await pg.waitForTimeout(60);
     for(const k of ['mgr','own','ceo','fan','press']){ where=`${label} · 사람 카드 ${k}`; await ev(k=>{ closeSheets(); A.person(k); },k); await pg.waitForTimeout(40); }
     where=`${label} · 기자 카드`; await ev(()=>{ closeSheets(); const r=pressInit()[0]; if(r)A.person('rep:'+r.id); }); await pg.waitForTimeout(40);

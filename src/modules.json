@@ -97,7 +97,8 @@
       "src/engine/staff/87_ai_events.js",
       "src/engine/draft/88_draft_view.js",
       "src/engine/media/89_data_report.js",
-      "src/engine/runtime/95_audit.js"
+      "src/engine/runtime/95_audit.js",
+      "src/engine/media/90_player_analysis.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -143,6 +144,7 @@
       "src/ui/players/36_roster_tab.js",
       "src/ui/league/37_league_tab.js",
       "src/ui/finance/38_finance_tab.js",
+      "src/ui/players/38_player_analysis.js",
       "src/ui/players/39_player_sheet.js",
       "src/ui/actions/40_actions.js",
       "src/ui/actions/41_guard_boot.js",
@@ -208,7 +210,8 @@
       "src/css/facilities/17_iso.css",
       "src/css/career/18_cowatch.css",
       "src/css/shell/19_fm_shell.css",
-      "src/css/foundation/99_front_baseball_title.css"
+      "src/css/foundation/99_front_baseball_title.css",
+      "src/css/players/20_player_analysis.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

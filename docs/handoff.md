@@ -8,13 +8,13 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02y').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02z').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
 - 한국어로만, 이모지 금지, 객관적·사실 기반. 작업 안내·커밋 메시지도 한국어.
 - 커밋 메시지 끝 두 줄: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` / `Claude-Session: <세션 링크>`.
-- 순서: 수정 전 실패하는 테스트 먼저 → 고치기 → 빠른 확인 → `bash tools/check.sh` 전체 점검(30분 안팎, 배경 실행 시간 제한 주의) → 통과하면 커밋·푸시 → 아티팩트 게시 → 패치 노트·백로그.
+- 검증 단위(2026-11-02 사용자 갱신): 개별 수정은 실패 테스트 먼저 → 수정 → 관련 검사로 빠르게 확인한다. 큰 업데이트 묶음이 끝난 시점에 `bash tools/check.sh` 전체 점검을 한 번 수행하고, 통과하면 커밋·푸시 → 아티팩트 게시 → 패치 노트·백로그. 작은 수정마다 전체 점검을 반복하지 않는다. 전체 점검에서 실제 실패가 생겨 수정한 경우에는 영향에 맞게 재검증한다.
 - 규칙이 애매하면 실제 KBO 규정을 찾아 그대로 따른다. 규정이 없는 게임 고유 기능만 사용자에게 선택지로 묻는다.
 - 모든 데이터는 능력치와 유기적으로 연결. 리팩터링은 나중으로 미룸.
 - 게시판(D1)은 사용자가 Cloudflare에 ADMIN_KEY를 등록하고 D1 ID를 줄 때까지 대기.
@@ -90,3 +90,11 @@
 - `[자체 리뷰 1]` 7개 추가, 수정 전 실패 5개 확인.
 
 - 자체 리뷰 최종 검증: `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh` 전체 통과. 모듈 6개, 규칙 370개, 능력치 반영, 2029년 1월까지 장기 시뮬 3개, PC 240회 조작·모바일 화면. 로그 `/tmp/front-office-self-review-full.log`.
+
+## 선수 분석 화면
+- `media/90_player_analysis.js`: 공개 기록 기반 기대 지표·런 밸류·예상 존 계산. `players/38_player_analysis.js`/`players/20_player_analysis.css`: 4패널 화면. 소스 목록 등록 완료.
+- 분석 탭은 프로 선수 정보에 추가. 시즌 선택 `analysisY`는 change 경로로 전달하고 클릭 경로에서는 제외한다. 기존 기록 탭도 유지.
+- `spr.points`는 업데이트 이후 타구의 `[방향,결과]`. 기존 spr/sprP와 함께 이번·지난 시즌을 분리한다. 과거 저장에 없으면 복원하지 않는다.
+- 측정·경기 기록·모형 추정·미집계를 구분한다. 모델 한계와 후속 실측형 분석은 백로그 참조. UI는 숨은 능력으로 기대 지표를 만들지 않는다.
+
+- 선수 분석 묶음 최종 검증: `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium bash tools/check.sh` 전체 통과. 모듈 6개, 규칙 376개, 능력치 반영, 2029년 1월까지 시뮬 3개, PC 240회 조작 및 모바일 화면. 분석 카드·실제 시즌 선택·설명 기본 노출 검사 포함. 로그 `/tmp/front-office-analysis-full-final.log`.
