@@ -32,13 +32,13 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
       check(!r.overflow,`${size.width}: 명단 가로 넘침`);
       if(size.width>=1100){check(r.top<350,`${size.width}: 명단 첫 선수가 너무 아래에 있음 (${Math.round(r.top)}px)`);check(!r.pager,`${size.width}: PC 명단에서 열을 페이지로 숨김`);}
       const returnY=await page.evaluate(()=>{scrollTo(0,240);const y=scrollY;A.player(playersOf(G.user).find(p=>!p.isP).id);A.ptab('abil');return y;});
-      r=await page.evaluate(()=>{const sheet=document.querySelector('#sheet .sheet'),radar=document.querySelector('.pf-radar'),core=document.querySelector('.pf-core-compact');return{app:getComputedStyle(document.querySelector('#app')).display,back:!!document.querySelector('.detail-back'),left:sheet.getBoundingClientRect().left,width:sheet.getBoundingClientRect().width,core:!!core,under:!!core&&!!radar&&radar.contains(core),large:!!document.querySelector('.pf-main .pf-core'),overflow:sheet.scrollWidth>sheet.clientWidth+2};});
-      check(r.app==='none'&&r.back,`${size.width}: 상세가 한 화면으로 전환되지 않음`);check(r.left===0&&Math.abs(r.width-size.width)<2,`${size.width}: 상세 화면 폭 불일치`);
+      r=await page.evaluate(()=>{const sheet=document.querySelector('#sheet .sheet'),radar=document.querySelector('.pf-radar'),core=document.querySelector('.pf-core-compact');return{app:getComputedStyle(document.querySelector('#app')).display,back:!!document.querySelector('.detail-back'),left:sheet.getBoundingClientRect().left,width:sheet.getBoundingClientRect().width,core:!!core,under:!!core&&!!radar&&radar.contains(core),large:!!document.querySelector('.pf-main .pf-core'),hostLeft:document.querySelector('#sheet').getBoundingClientRect().left,hostWidth:document.querySelector('#sheet').clientWidth,header:!!document.querySelector('.fmtop,.top'),overflow:sheet.scrollWidth>sheet.clientWidth+2};});
+      check(r.app!=='none'&&r.back&&r.header,`${size.width}: 상세에서 상단 셸·뒤로 유지 실패`);check(Math.abs(r.left-r.hostLeft)<2&&Math.abs(r.width-r.hostWidth)<2,`${size.width}: 상세 화면 폭 불일치`);
       check(r.core&&r.under&&!r.large,`${size.width}: 핵심 능력이 레이더 아래의 작은 요약으로 이동하지 않음`);check(!r.overflow,`${size.width}: 프로필 가로 넘침`);
-      if(size.width>=1100){const fit=await page.evaluate(()=>{const bat=UI.sheet,a=document.documentElement.scrollHeight;A.player(playersOf(G.user).find(p=>p.isP).id);const p=document.documentElement.scrollHeight;A.player(bat);return {page:a,pitcher:p,h:innerHeight};});check(fit.page<=fit.h+3&&fit.pitcher<=fit.h+3,`${size.width}: 능력 화면에서 페이지 스크롤이 필요함 (타자 ${fit.page}, 투수 ${fit.pitcher}/${fit.h})`);}
+      if(size.width>=1100){const fit=await page.evaluate(()=>{const bat=UI.sheet,host=document.querySelector('#sheet'),a=host.scrollHeight;A.player(playersOf(G.user).find(p=>p.isP).id);const p=host.scrollHeight;A.player(bat);return {page:a,pitcher:p,h:host.clientHeight};});check(fit.page<=fit.h+3&&fit.pitcher<=fit.h+3,`${size.width}: 능력 화면에서 페이지 스크롤이 필요함 (타자 ${fit.page}, 투수 ${fit.pitcher}/${fit.h})`);}
       if(size.width===1366){
         await page.keyboard.press('F1');check(await page.locator('#sheet .fmkeys.detail-page').count()===1,'선수 상세에서 F1 안내가 숨겨짐');await page.keyboard.press('Escape');check(await page.locator('#sheet .pf-overview').count()===1,'F1 안내에서 선수 상세로 복귀 실패');
-        const y=await page.evaluate(()=>{A.ngtOpen('ext:'+UI.sheet);UI._ngtY=300;renderSheet();A.fmKeysOpen();return scrollY;});
+        const y=await page.evaluate(()=>{A.ngtOpen('ext:'+UI.sheet);UI._ngtY=300;renderSheet();A.fmKeysOpen();return sheetScrollY();});
         check(y===0,'협상 화면의 스크롤 위치가 F1 안내에 섞임');await page.keyboard.press('Escape');check(await page.locator('#sheet .ngt.detail-page').count()===1,'F1 안내에서 협상 화면으로 복귀 실패');await page.locator('.detail-back').click();
         check(await page.locator('#sheet .pf-overview').count()===1,'협상 화면에서 선수 상세로 복귀 실패');
       }
@@ -61,8 +61,8 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
     check(await page.locator('.manager-profile.detail-page').count()===1,'감독 후보 상세가 전체 페이지로 열리지 않음');
     await page.keyboard.press('Escape');
     await page.evaluate(()=>{A.go('transfer:foreign');A.player(G.fmarket[0]);});
-    let r=await page.evaluate(()=>({page:document.documentElement.classList.contains('detail-page-open'),app:getComputedStyle(document.querySelector('#app')).display,box:document.querySelector('.sheet').getBoundingClientRect().toJSON()}));
-    check(r.page&&r.app==='none'&&r.box.left===0&&r.box.width===1366,'외국인 후보가 별도 우측 창으로 열림');
+    let r=await page.evaluate(()=>({page:document.documentElement.classList.contains('detail-page-open'),app:getComputedStyle(document.querySelector('#app')).display,box:document.querySelector('.sheet').getBoundingClientRect().toJSON(),host:document.querySelector('#sheet').getBoundingClientRect().toJSON(),client:document.querySelector('#sheet').clientWidth}));
+    check(r.page&&r.app!=='none'&&Math.abs(r.box.left-r.host.left)<2&&Math.abs(r.box.width-r.client)<2,'외국인 후보가 별도 우측 창으로 열림');
     await page.keyboard.press('Escape');
     r=await page.evaluate(()=>({app:getComputedStyle(document.querySelector('#app')).display,tab:UI.tab,sub:curSub('transfer')}));
     check(r.app!=='none'&&r.tab==='transfer'&&r.sub==='foreign','외국인 후보에서 Escape로 시장 복귀 실패');

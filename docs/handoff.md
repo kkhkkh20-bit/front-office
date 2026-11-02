@@ -1,4 +1,4 @@
-# 인수인계 (2026-11-03, 감독 대화 확대·본문 면담)
+# 인수인계 (2026-11-03, 모든 상세 상단바 유지)
 
 ## 프로젝트
 - 프런트야구: KBO 구단 단장 시뮬레이션. 단일 index.html(빌드 결과물).
@@ -8,7 +8,7 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03e').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03f').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -192,3 +192,11 @@
 - `ui/career/53_meeting.js`: `meetPage`를 `tabBody`에서 렌더한다. #sheet에는 면담을 만들지 않아 상단바·사이드바/휴대폰 하단 탐색이 유지된다. 대화/화제 영역이 각각 스크롤하고, 화면의 남은 높이에 맞춘다. 일반 메뉴/단축키 탐색, 면담 마치기/뒤로/Esc와 소식함/선수 정보 복귀를 연결한다. 구단주·선수 면담도 같은 본문 형식을 쓴다. `visit` 단장실 문맥은 유지한다.
 - `css/career/28_meeting_page.css`와 새 대화 엔진은 modules.json에 등록했다. 전체 검사에 `tools/check-meeting.cjs` 추가. 기존 빠른 UI의 면담 기록 확인 대상을 #sheet에서 .meet-page로 갱신했다.
 - 수정 전 감독 대화 4개와 셸/배치 실패를 확인했다. 새 규칙은 총 409개이며 이번에는 새 대화 4개 및 기존 감독 정보 한계 규칙을 관련 검사한다. 경기 계산을 바꾸지 않은 대화/화면 개선이므로 전체 장기 시뮬은 반복하지 않는다. 최종 검증: 새 대화 규칙 4개·기존 감독 정보 한계 규칙 1개·모듈 6개·정적 검사·PC/휴대폰 빠른 UI·면담 4개 화면/탐색/반복 답변/스크롤 복귀·소식함 20개 상태·본문 5개 배치 모두 통과. 로그 `/tmp/front-office-dialogue-final.log`, `/tmp/front-office-dialogue-knowledge.log`, `/tmp/front-office-meeting-pc.log`, `/tmp/front-office-meeting-mobile.log`, `/tmp/front-office-meeting-verified.log`, `/tmp/front-office-meeting-inbox.log`, `/tmp/front-office-meeting-layout.log`.
+
+
+## 모든 상세 화면에서 상단바 유지 (2026-11-03f)
+- `.detail-page-open #app{display:none}`를 제거했다. 실제 기존 상단바·PC 측면/휴대폰 하단 메뉴를 유지하고 #sheet 본문을 그 사이 영역에 고정한다. 동일 헤더를 복제하지 않는다. 배경 본문은 inert로 두고, 상단/메뉴는 탐색할 수 있다.
+- `appFrameSync`가 FM/일반/창단 헤더·측면·하단 메뉴의 실제 위치를 CSS 변수로 공유한다. 헤더 크기 변경은 ResizeObserver로 갱신한다. 결재/도장도 상단바 아래에 표시한다.
+- 상세 스크롤은 #sheet가 소유한다. `sheetScrollY/To`, 협상/인터뷰 질문 위치, 면담에서 선수 상세 복귀에 반영한다. 원래 목록의 창 스크롤은 보존한다. 중계도 공통 영역을 사용하고 낮은 PC 화면의 기록은 2열/3행으로 압축한다. 안타 막대는 부모 높이의 비율로 그린다.
+- `tools/check-topbar.cjs`를 전체 검사에 추가. 선수/외국인/감독/코치/협상/제안/선수단/비교/인터뷰/단축키/메뉴/결재 12종, PC/휴대폰 상단의 실제 클릭·본문 스크롤·창단 상세 헤더를 확인한다. 기존 배치 검사의 “앱 전체 숨김/전체 폭” 기대를 공통 본문 영역 기준으로 바꾸고, 중계 검사에도 상단바 노출·가림 검사를 추가했다.
+- 수정 전 상단바 숨김 실패 확인(`/tmp/front-office-topbar-before.log`). 경기 계산 변경이 없는 화면 수정이므로 전체 장기 시뮬은 반복하지 않는다. 최종 검증: 상단바 12종/4개 화면 및 창단 2개 화면·모듈 6개·정적 검사·PC/휴대폰 빠른 UI·본문 5개 배치·중계 5개 화면·면담 4개 화면/복귀 모두 통과. 로그 `/tmp/front-office-topbar-final.log`, `/tmp/front-office-topbar-pc-fixed.log`, `/tmp/front-office-topbar-mobile-fixed.log`, `/tmp/front-office-topbar-layout-final.log`, `/tmp/front-office-topbar-match-final.log`, `/tmp/front-office-topbar-meeting.log`. 최초 중계의 기록 행/점수표 가림을 발견해 2열 기록과 45px 점수표로 보완했으며 기존 UI의 전체 폭/숨김 기대를 새 본문 영역에 맞춰 재통과했다.

@@ -1,9 +1,10 @@
-/* 상세 정보는 목록과 같은 브라우저 안의 한 페이지로 이동한다. */
-html.detail-page-open,html.detail-page-open body{overflow:auto}
-.detail-page-open #app{display:none}
-.detail-page-open #sheet{min-height:100dvh}
-#sheet .detail-page-wrap{position:static;display:block;background:none;min-height:100dvh}
-body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:100dvh;overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
+/* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
+html.detail-page-open,html.detail-page-open body{overflow:hidden}
+.detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
+#sheet .detail-page-wrap{position:static;display:block;background:none;min-height:var(--detail-height,100dvh)}
+body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:var(--detail-height,100dvh);overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
+.detail-page-open #sheet .cast{position:relative;inset:auto;width:100%;height:var(--detail-height,100dvh);min-height:0;max-width:none;z-index:auto}
+.cfm-w,.stamp-w,.rv-w{top:var(--app-header-h,0px);left:var(--app-side-w,0px);bottom:var(--app-footer-h,0px)}
 .detail-navigation{display:flex;align-items:center;gap:12px;grid-column:1/-1;min-height:40px;border-bottom:1px solid var(--line2);margin:0 -20px 10px;padding:4px 20px;background:var(--panel2)}
 .detail-navigation>span{font-size:11px;color:var(--muted)}
 .detail-navigation .btn{min-height:28px;padding:3px 12px;font-size:12px}
@@ -171,3 +172,5 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .sm-player,.sm-active{display:grid;gap:5px}.star-marketing .smb{width:100%;margin-left:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:6px}
 .star-marketing .sm-offer{display:grid;gap:4px;padding:9px 7px;text-align:left;white-space:normal;line-height:1.5;min-width:0}.sm-offer>b{font-size:12px}.sm-offer>span{font-size:10px;color:var(--muted)}.sm-offer>.sm-net{font-size:11px;border-top:1px solid var(--line);padding-top:5px}.sm-active .small{line-height:1.5}
 @media(max-width:600px){.sm-summary{grid-template-columns:minmax(0,1fr)}.sm-summary>div{grid-template-columns:1fr auto;align-items:center}.sm-summary small{grid-column:1/-1}}
+
+#dtick{top:calc(var(--app-header-h,56px) + 8px)}

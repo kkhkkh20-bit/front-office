@@ -20,6 +20,7 @@ step "화면 점검(휴대폰)"; W=390 QUICK=1 node tools/check-ui.js || fail=1
 step "노트북 배치·상세 이동"; node tools/check-layout.cjs || fail=1
 step "경기 대시보드·재생 기록"; node tools/check-match.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
+step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1
 step "면담 본문·셸 유지"; node tools/check-meeting.cjs || fail=1
 step "소식함 완료·기한·지난 업무"; node tools/check-inbox.cjs || fail=1
 echo

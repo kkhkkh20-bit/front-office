@@ -2594,12 +2594,13 @@ body .sheet.psh.pf-screen{width:100vw;max-width:none}
 .pf-screen .pf-core-cell>span{line-height:1.2}.pf-screen .pf-core-cell strong{line-height:1.1}.pf-screen .pf-core-cell small{line-height:1.2}
 .pf-screen .pf-attribute-row{line-height:1.2}.pf-screen .pf-score{line-height:1.15}
 @media(min-width:1100px) and (max-height:800px){.pf-screen .pf-masthead{min-height:72px;padding-block:8px}.pf-name>.av{width:52px;height:52px}.pf-screen .pf-attribute-row{min-height:25px;padding-block:2px}.pf-attribute-group{margin-bottom:10px}.pf-screen .pf-overview .card{padding:10px}.pf-core-cell strong{font-size:24px}.pf-topnav{margin-bottom:10px}.pf-radar .radar{max-height:170px}.pf-screen .pf-attribute-row.text{grid-template-columns:minmax(0,1fr) auto}.pf-attribute-row.text .pf-score{max-width:100px;text-align:right}.pf-attribute-legend{font-size:9px}.pf-screen .pf-attribute-group h3{padding-bottom:5px;font-size:12px;margin-bottom:2px}}
-/* 상세 정보는 목록과 같은 브라우저 안의 한 페이지로 이동한다. */
-html.detail-page-open,html.detail-page-open body{overflow:auto}
-.detail-page-open #app{display:none}
-.detail-page-open #sheet{min-height:100dvh}
-#sheet .detail-page-wrap{position:static;display:block;background:none;min-height:100dvh}
-body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:100dvh;overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
+/* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
+html.detail-page-open,html.detail-page-open body{overflow:hidden}
+.detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
+#sheet .detail-page-wrap{position:static;display:block;background:none;min-height:var(--detail-height,100dvh)}
+body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:var(--detail-height,100dvh);overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
+.detail-page-open #sheet .cast{position:relative;inset:auto;width:100%;height:var(--detail-height,100dvh);min-height:0;max-width:none;z-index:auto}
+.cfm-w,.stamp-w,.rv-w{top:var(--app-header-h,0px);left:var(--app-side-w,0px);bottom:var(--app-footer-h,0px)}
 .detail-navigation{display:flex;align-items:center;gap:12px;grid-column:1/-1;min-height:40px;border-bottom:1px solid var(--line2);margin:0 -20px 10px;padding:4px 20px;background:var(--panel2)}
 .detail-navigation>span{font-size:11px;color:var(--muted)}
 .detail-navigation .btn{min-height:28px;padding:3px 12px;font-size:12px}
@@ -2767,6 +2768,8 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .sm-player,.sm-active{display:grid;gap:5px}.star-marketing .smb{width:100%;margin-left:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:6px}
 .star-marketing .sm-offer{display:grid;gap:4px;padding:9px 7px;text-align:left;white-space:normal;line-height:1.5;min-width:0}.sm-offer>b{font-size:12px}.sm-offer>span{font-size:10px;color:var(--muted)}.sm-offer>.sm-net{font-size:11px;border-top:1px solid var(--line);padding-top:5px}.sm-active .small{line-height:1.5}
 @media(max-width:600px){.sm-summary{grid-template-columns:minmax(0,1fr)}.sm-summary>div{grid-template-columns:1fr auto;align-items:center}.sm-summary small{grid-column:1/-1}}
+
+#dtick{top:calc(var(--app-header-h,56px) + 8px)}
 /* 경기장은 하나의 화면, 주변 패널은 현재 재생 시점의 기록만 보여 준다. */
 .cast.match-dashboard{height:100dvh;box-sizing:border-box;padding:10px;gap:6px;grid-template-rows:50px minmax(0,1fr) 30px 45px 84px 32px;background:#0b1118;color:#dce5ec;overflow:hidden;--md-line:#303d48;--md-panel:#17212b}
 .match-dashboard .cs-top{padding:0 8px;background:#141e28;border:1px solid var(--md-line);border-radius:5px;gap:8px;min-width:0}
@@ -2820,6 +2823,8 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .match-dashboard[data-view="teams"] .md-center{display:none}.match-dashboard[data-view="teams"] .md-layout{display:grid;grid-template-columns:1fr 1fr;gap:6px}.match-dashboard[data-view="teams"] .md-team-panel{display:grid;grid-template-rows:30px minmax(110px,.7fr) minmax(0,1.1fr) 25px}.md-lineup-row{grid-template-columns:12px minmax(0,1fr) 22px}.md-lineup-row>b{display:none}
 }
 @media(max-height:650px) and (max-width:1000px){.cast.match-dashboard{position:absolute;min-height:650px;overflow:visible}}
+/* 상단바 아래에 남은 높이에서도 구장과 선수 줄을 함께 유지한다. */
+@media(min-width:1001px) and (max-height:850px){.detail-page-open .cast.match-dashboard{grid-template-rows:44px minmax(0,1fr) 28px 45px 74px 28px;gap:5px;padding:7px}.detail-page-open .md-center{grid-template-rows:100px minmax(0,1fr);gap:7px}.detail-page-open #md-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 8px;align-content:start}.detail-page-open .md-stat-row{height:19px;grid-template-columns:14px minmax(0,1fr) 14px}.detail-page-open .md-hit-bars{height:58px}.detail-page-open .md-hit-bars>div>span{height:43px}.detail-page-open .md-chart-note{display:none}.detail-page-open .md-panel>header{min-height:25px;padding-block:4px}.detail-page-open .md-field-panel{grid-template-rows:25px minmax(0,1fr) 46px}.detail-page-open .md-play-grid{grid-template-columns:minmax(0,1fr) 195px;gap:7px}.detail-page-open .md-layout{grid-template-columns:180px minmax(0,1fr) 180px;gap:7px}}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 @media(min-width:1100px){
   .fm-home .fmmain{height:calc(100dvh - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -15016,7 +15021,7 @@ function mdMiniField(g,side,s){
 function mdLineup(g,side,s){return s.teams[side].lineup.map((x,i)=>{const p=mdPlayer(g,x.id),r=s.players[x.id]||{ab:0,h:0},active=x.id===s.batter;return `<button class="md-lineup-row${active?' current':''}" data-a="castPlayer" data-v="${x.id}"><i>${i+1}</i><span>${esc(p.name)}</span><em>${x.pos}</em><b>${r.ab}타수 ${r.h}안타</b></button>`;}).join('');}
 function mdStats(g,s){const A=s.teams.a.stats,H=s.teams.h.stats;return [['h','안타'],['hr','홈런'],['bb','볼넷'],['so','삼진'],['sb','도루'],['e','실책']].map(([k,l])=>{const total=A[k]+H[k],pct=total?A[k]/total*100:50;return `<div class="md-stat-row"><b>${A[k]}</b><span>${l}<i><em style="width:${pct}%;background:${mdColor(g,'a')}"></em><em style="width:${100-pct}%;background:${mdColor(g,'h')}"></em></i></span><b>${H[k]}</b></div>`;}).join('');}
 function mdEvents(g,s){const E=s.events.slice(-5).reverse();return E.length?E.map(e=>`<button class="md-event" data-a="castEvent" data-v="${e.i}"><i>${cHalfTxt(e.half)}</i><b>${esc(mdPlayer(g,e.id).name)}</b><span>${e.type==='PC'?'투수 교체':e.type==='SB'?'도루':e.type==='CS'?'도루 실패':OUTK[e.type]||e.type}${e.runs?' · '+e.runs+'점':''}</span></button>`).join(''):'<p class="md-empty">주요 장면이 생기면 여기에 표시됩니다.</p>';}
-function mdHitBars(g,s){const N=Math.max(9,Math.floor(s.state.half/2)+1),max=Math.max(1,...s.teams.a.hits.filter(Number.isFinite),...s.teams.h.hits.filter(Number.isFinite));return `<div class="md-hit-bars">${Array.from({length:N},(_,i)=>`<div><span><i style="height:${(s.teams.a.hits[i]||0)/max*70}px;background:${mdColor(g,'a')}"></i><i style="height:${(s.teams.h.hits[i]||0)/max*70}px;background:${mdColor(g,'h')}"></i></span><b>${i+1}</b></div>`).join('')}</div><div class="md-legend"><span><i style="background:${mdColor(g,'a')}"></i>${esc(tshort(g.away))}</span><span><i style="background:${mdColor(g,'h')}"></i>${esc(tshort(g.home))}</span></div>`;}
+function mdHitBars(g,s){const N=Math.max(9,Math.floor(s.state.half/2)+1),max=Math.max(1,...s.teams.a.hits.filter(Number.isFinite),...s.teams.h.hits.filter(Number.isFinite));return `<div class="md-hit-bars">${Array.from({length:N},(_,i)=>`<div><span><i style="height:${(s.teams.a.hits[i]||0)/max*100}%;background:${mdColor(g,'a')}"></i><i style="height:${(s.teams.h.hits[i]||0)/max*100}%;background:${mdColor(g,'h')}"></i></span><b>${i+1}</b></div>`).join('')}</div><div class="md-legend"><span><i style="background:${mdColor(g,'a')}"></i>${esc(tshort(g.away))}</span><span><i style="background:${mdColor(g,'h')}"></i>${esc(tshort(g.home))}</span></div>`;}
 function mdFlowChart(g,s,probability){
   const H=s.history,n=Math.max(1,H[H.length-1].i),max=probability?1:Math.max(1,...H.flatMap(x=>[x.sa,x.sh]));
   const X=x=>28+x.i/n*300,Y=v=>116-v/max*94;
@@ -16790,22 +16795,27 @@ function archSheet(a){ const tw=a.rows.reduce((s,r)=>s+(r.war||0),0); const f3=v
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="${esc(a.name)} 기록"><div class="sheet-head"><div><span class="eyebrow">리그를 떠난 선수${a.foreign?` · ${a.foreign==='아시아'?'아시아쿼터':'외국인'}`:''}</span><h2 class="sec">${esc(a.name)} <span class="small muted">${esc(a.isP?a.pos:(POSK[a.pos]||a.pos||''))} · ${a.y}년 ${a.age}세</span></h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${a.why?`<p class="small">${esc(a.why)}</p>`:''}<p class="small muted">1군 통산 WAR ${tw.toFixed(1)} · 마지막 소속 ${a.t!=null?esc(tshort(a.t)):'-'}. 리그를 떠나 지금 능력은 볼 수 없고, 남긴 기록만 보관합니다.</p>
     <div class="tw"><table class="mst"><thead><tr>${a.isP?'<th>시즌</th><th>구단</th><th>경기</th><th>이닝</th><th>ERA</th><th>승-패</th><th>탈삼진</th><th>WAR</th>':'<th>시즌</th><th>구단</th><th>타석</th><th>타율</th><th>홈런</th><th>OPS</th><th>도루</th><th>WAR</th>'}</tr></thead><tbody>${a.rows.slice().sort((x,y)=>x.y-y.y).map(row).join('')}</tbody></table></div></div></div>`; }
-function sheetScrollY(){return document.documentElement.classList.contains('detail-page-open')?scrollY:(document.querySelector('#sheet .sheet')?.scrollTop||0);}
-function sheetScrollTo(y){if(document.documentElement.classList.contains('detail-page-open'))scrollTo(0,y);else{const sh=document.querySelector('#sheet .sheet');if(sh)sh.scrollTop=y;}}
+/* 상단바와 메뉴를 남긴 채 상세 본문에 사용할 실제 영역을 계산한다. */
+let _appFrameObserver=null,_appFrameHeader=null;
+function appFrameSync(){const root=document.documentElement,head=document.querySelector('#app .fmtop,#app .top,#app .dtop'),nav=document.querySelector('#app .bnav'),side=document.querySelector('#app .fmside,#app .rail');const visible=e=>e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().height>0;const top=visible(head)?Math.max(0,head.getBoundingClientRect().bottom):0,bottom=visible(nav)?Math.max(0,innerHeight-nav.getBoundingClientRect().top):0,left=visible(side)?Math.max(0,side.getBoundingClientRect().right):0;root.style.setProperty('--app-header-h',top+'px');root.style.setProperty('--app-footer-h',bottom+'px');root.style.setProperty('--app-side-w',left+'px');root.style.setProperty('--detail-height',Math.max(160,innerHeight-top-bottom)+'px');
+  if(head!==_appFrameHeader&&typeof ResizeObserver!=='undefined'){_appFrameObserver?.disconnect();_appFrameHeader=head;_appFrameObserver=new ResizeObserver(()=>appFrameSync());if(head)_appFrameObserver.observe(head);}}
+function sheetScrollY(){return document.documentElement.classList.contains('detail-page-open')?($('#sheet')?.scrollTop||0):(document.querySelector('#sheet .sheet')?.scrollTop||0);}
+function sheetScrollTo(y){const e=document.documentElement.classList.contains('detail-page-open')?$('#sheet'):document.querySelector('#sheet .sheet');if(e)e.scrollTop=y;}
 function detailPageSync(el){
-  const sh=el&&el.querySelector('.sheet'), active=!!sh;
+  const sh=el&&el.querySelector('.sheet,.cast'),active=!!sh,cast=sh?.classList.contains('cast');
   const was=document.documentElement.classList.contains('detail-page-open');
   if(active&&!was)UI._detailReturn={y:scrollY,tab:UI.tab,focus:document.activeElement};
   document.documentElement.classList.toggle('detail-page-open',active);
+  document.querySelectorAll('#app main.content,#app .subhead,#app .fmmain,#app .dshell>.gut').forEach(e=>{e.inert=active;});appFrameSync();
   if(active){
     const key=sh.getAttribute('aria-label')||'상세',changed=UI._detailKey!==key;UI._detailKey=key;
     sh.classList.add('detail-page'); sh.setAttribute('role','region'); sh.removeAttribute('aria-modal');
     const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
     const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
     bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
-    sh.prepend(bar);
+    if(!cast)sh.prepend(bar);
     if(UI.stamp){ document.querySelectorAll('#app .stamp-w').forEach(x=>x.remove()); el.insertAdjacentHTML('beforeend',stampView()); }
-    if(!was||changed)scrollTo(0,0);
+    if(!was||changed)sheetScrollTo(0);
     if(UI.ngt&&sh.classList.contains('ngt')&&UI._ngtY!=null)sheetScrollTo(UI._ngtY);
   }else if(was){
     const ret=UI._detailReturn;UI._detailReturn=null;UI._detailKey=null;
@@ -17063,7 +17073,7 @@ const A={
   ngtCounter(){ UI._ngtY=0; ngtCounter(); save(); render(); renderSheet(); },
   ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },
   ngtClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.ngt=null; renderSheet(); render(); },
-  meetClose(){ const y=UI.meet?.returnY||0;UI.meet=null;render();scrollTo(0,y); },
+  meetClose(){ const M=UI.meet,y=M?.returnY||0;UI.meet=null;render();if(M?.returnDetail&&document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(y);else scrollTo(0,y); },
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },
   annPlayer(v){ (UI.annQ||[]).shift(); annRender(); A.player(+v); },
@@ -17274,7 +17284,7 @@ const A={
   ivOpen(v){ const iv=G.iv; if(!iv||iv.id!==+v)return toast('지난 인터뷰 요청입니다.'); if(iv.done&&!iv.ans.length)return toast('이미 거절한 인터뷰입니다.'); if(iv.exp<G.day&&!iv.done)return toast('기한이 지났습니다.'); UI.ivSh=true; renderSheet(); },
   mdRep(v){ toast(mdSuggest(v)); save(); render(); },
   ivSkip(v){ if(G.iv&&G.iv.id===+v&&!G.iv.done){ ivSkip(); toast('인터뷰를 거절했습니다. 단장 침묵 기사가 나갑니다.'); save(); render(); } },
-  ivAns(v){ ivAnswer(+v); save(); renderSheet(); try{ const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now,#sheet .iv-end'); if(sh&&q){if(document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(Math.max(0,scrollY+q.getBoundingClientRect().top-12));else sh.scrollTop=Math.max(0,q.offsetTop-sh.offsetTop-12);} }catch(e){} }, /* 다시 그리면 창이 맨 위로 튀던 것: 새 질문(또는 끝 안내)이 보이게 */
+  ivAns(v){ ivAnswer(+v); save(); renderSheet(); try{ const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now,#sheet .iv-end'); if(sh&&q){if(document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(Math.max(0,sheetScrollY()+q.getBoundingClientRect().top-$('#sheet').getBoundingClientRect().top-12));else sh.scrollTop=Math.max(0,q.offsetTop-sh.offsetTop-12);} }catch(e){} }, /* 다시 그리면 창이 맨 위로 튀던 것: 새 질문(또는 끝 안내)이 보이게 */
   gmPlan(v){ const [d,k,x]=String(v).split(':'); toast(gmPlanSet(+d,k||null,x||null)); save(); render(); },
   capex(v){ const [k,x]=String(v).split(':'); const r=capexAsk(k,x); toast(r||'공사를 시작했습니다.'); save(); render(); },
   offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
@@ -17996,7 +18006,7 @@ function meetGreet(M){ const t=team(G.user);
   if(M.k==='own'){ const tr=t.trust; return tr>=70?'단장, 잘 왔소. 요즘 분위기가 좋더군. 앉으시오.':tr>=45?'앉으시오. 무슨 일로 왔소?':tr>=25?'바쁘니 용건만 간단히 합시다.':'...할 말이 있으면 해 보시오. 내 인내심도 한계가 있소.'; }
   if(M.k==='mgr')return mvGreeting(G.mgr[G.user],M);
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
-function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:scrollY,mid:k==='mgr'?G.mgr[G.user]?.id:null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
+function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:document.documentElement.classList.contains('detail-page-open')?sheetScrollY():scrollY,returnDetail:document.documentElement.classList.contains('detail-page-open'),mid:k==='mgr'?G.mgr[G.user]?.id:null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
   if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
   M.log.push({w:'them',t:meetGreet(M)}); UI.meet=M; if(o.ask)meetDo(o.ask); render(); }
 function meetBadF(){ return foreignOf(G.user).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=60&&pRate(h).era>5):(h.pa>=100&&bRate(h).ops<.700)); }); }
@@ -19115,6 +19125,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-03f',d:'11월 3일',t:'모든 상세 화면에서 상단바 유지',items:[
+    '선수·직원·구단 정보, 협상, 인터뷰, 비교, 안내와 경기 중계에서도 기존 상단바와 탐색 메뉴를 유지합니다. 상세 내용만 그 아래 본문 영역을 사용합니다.',
+    '본문 스크롤과 상단바를 분리하고 뒤로·Esc·면담 복귀 위치를 연결했습니다. 경기 중계는 남은 화면 높이에 맞춰 기록·구장·선수 줄을 배치합니다.']},
   {id:'2026-11-03e',d:'11월 3일',t:'감독 대화 확대와 본문 면담 화면',items:[
     '면담을 상단바와 사이드바가 유지되는 본문 화면으로 옮겼습니다. 대화 기록과 화제를 나눠 보고, 메뉴 이동·뒤로·Esc로 이전 화면에 돌아갑니다.',
     '감독 화제를 12개로 늘려 투수·타격·수비·주루·피로·분위기·보강 계획을 의논합니다. 말투와 운영 성향에 따라 판단 기준과 제안이 달라집니다.',
