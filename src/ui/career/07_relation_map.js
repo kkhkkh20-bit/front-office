@@ -11,7 +11,8 @@ function relPeople(){
   const field=[];
   if(m)field.push({k:'mgr',name:m.name,role:m.interim?'감독대행':'1군 감독',av:{persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name},rel:m.rel,rl:'관계',lab:relLabel(m.rel),sub:m.fame>=70?'스타 감독':m.ego>=70?'고집 센 편':'무난한 성격'});
   for(const r of CKEYS){ const c=C[r]; if(!c)continue; const clan=m&&c.clan===m.id;
-    field.push({k:'c:'+r,name:c.name,role:CROLE[r].l,av:{persona:'coach',pid:c.id,team:G.user,age:c.age,name:c.name},rel:null,lab:clan?'감독 사단':'구단 코치',sub:`지도 ${dv(effC(c,G.user,'sk'))} · 육성 ${dv(effC(c,G.user,'dv'))}`}); }
+    field.push({k:'c:'+r,name:c.name,role:CROLE[r].l,av:{persona:'coach',pid:c.id,team:G.user,age:c.age,name:c.name},rel:staffRel(c,G.user,'gm'),rl:'단장 관계',lab:clan?'감독 사단':relLabel(staffRel(c,G.user,'gm')),sub:`지도 ${dv(effC(c,G.user,'sk'))} · 육성 ${dv(effC(c,G.user,'dv'))}`}); }
+  for(const [kind,L] of [['scout',G.scouts||[]],['analyst',anaList()]])for(const s of L){const rel=staffRel(s,G.user,'gm');field.push({k:(kind==='scout'?'sc:':'an:')+s.id,name:s.name,role:kind==='scout'?'스카우트 · '+staffRoleLabel(kind,s.role||'am'):'데이터팀 · '+staffRoleLabel(kind,s.role),av:{persona:'staff',pid:s.id,team:G.user,age:s.age,name:s.name},rel,rl:'단장 관계',lab:relLabel(rel),sub:'희망 '+staffRoleLabel(kind,staffProfile(s,kind).pref)});}
   const mine=playersOf(G.user).filter(p=>!p.ys);
   const core=[...mine].sort((a,b)=>ovr(b)-ovr(a)).slice(0,6); const sad=mine.filter(p=>(p.mor??60)<40&&!core.includes(p)).sort((a,b)=>(a.mor??60)-(b.mor??60)).slice(0,4);
   const capP=G.players[team(G.user).cap]; const capL=capP&&capP.team===G.user&&!core.includes(capP)&&!sad.includes(capP)?[capP]:[];
@@ -25,7 +26,7 @@ function relPeople(){
   for(const ag of agInit()){ const cl=faLive()?agClients(ag):[]; const dl=(ag.deals&&ag.deals[G.user])||0; if(!cl.length&&!dl&&agRel(ag)===50)continue; const r=agRel(ag);
     out.push({k:'agt:'+ag.id,name:ag.name,role:`${ag.firm} · ${AG_SIZE[ag.size]}${cl.length?` · FA 고객 ${cl.length}명`:''}`,av:{persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:relEx(r),name:ag.name},rel:r,rl:'친분',lab:agRelLab(r),sub:(AG_STYLE[ag.style]||AG_STYLE.rel).l+' 에이전트'}); }
   const reps=pressInit().map(r=>({k:'rep:'+r.id,name:r.name,role:`${r.outlet} 기자`,av:{persona:'agent',pid:r.id+r.name,age:r.age,female:r.female,expr:relEx(r.rel),name:r.name},rel:Math.round(r.rel),rl:'관계',lab:relLabel(r.rel),sub:`${PR_STYLE[r.style].l} · ${r.field}`}));
-  return [['구단 수뇌부',top],['현장 · 코칭스태프',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out],['기자단',reps]];
+  return [['구단 수뇌부',top],['코치·스카우트·데이터팀',field],['선수단',pl],['다른 구단 단장',gms],['바깥',out],['기자단',reps]];
 }
 function relKey(x){ return x.k.startsWith('p:')?['player',x.k.slice(2)]:['person',x.k]; }
 function dChip(k){ const d=relDelta(k); return d?`<i class="rd ${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</i>`:''; }

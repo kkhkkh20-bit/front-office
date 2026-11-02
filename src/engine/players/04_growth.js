@@ -47,6 +47,7 @@ function develop(p){
       dk-=PHYS[k]*(age-T.fall+2)*.24*fac.d;
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=34)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
+    if(dk>0&&p.team!=null&&!(svc==='현역'||svc==='상무'))dk*=coachToolMult(p,k);
     if(tc&&tc[k])dk-=tc[k];
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }

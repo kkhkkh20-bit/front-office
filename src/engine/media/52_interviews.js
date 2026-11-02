@@ -156,7 +156,7 @@ function mgrGameQuote(rec,m){ const v=mgrVoice(m); const V=MQ2[v]||MQ2.calm; con
   const hero=my&&my.bat?my.bat.slice().sort((a,c)=>(c.hr*3+c.h+c.rbi)-(a.hr*3+a.h+a.rbi))[0]:null; if(hero&&(hero.hr>=2||hero.rbi>=4||hero.h>=4))C.push([w?9:5,w?`${hero.n} 선수가 ${hero.hr?`${hero.hr}홈런 `:''}${hero.rbi}타점으로 경기를 가져왔습니다.`:`${hero.n} 선수 혼자 분전했는데 받쳐 주지 못했습니다.`]);
   if(my&&my.pit&&my.pit.length>=3&&w&&Math.abs(ms)<=2&&my.pit.slice(1).every(x=>!x.er))C.push([6,'불펜이 끝까지 한 점도 안 줬습니다.']);
   if(!w&&!dr&&myR<=1)C.push([6,'방망이가 전혀 터지지 않았습니다.']); if(w&&ms>=7)C.push([5,'타선이 골고루 터졌습니다.']); if(!w&&!dr&&ms<=-7)C.push([5,'완패입니다. 인정하겠습니다.']);
-  const st=(G.sea&&G.sea.streak)||0; const ns=w?(st>0?st+1:1):(!dr?(st<0?st-1:-1):0); if(ns>=3)C.push([7,`${ns}연승이지만 들뜨지 않겠습니다.`]); if(ns<=-3)C.push([7,`${-ns}연패, 빨리 끊어야 합니다.`]); if(w&&st<=-3)C.push([8,`${-st}연패를 끊어서 다행입니다.`]);
+  const regular=period()==='season',st=regular?((G.sea&&G.sea.streak)||0):0; const ns=regular?(w?(st>0?st+1:1):(!dr?(st<0?st-1:-1):0)):0; if(ns>=3)C.push([7,`${ns}연승이지만 들뜨지 않겠습니다.`]); if(ns<=-3)C.push([7,`${-ns}연패, 빨리 끊어야 합니다.`]); if(w&&st<=-3)C.push([8,`${-st}연패를 끊어서 다행입니다.`]);
   try{ const rk=uRank(); if(period()==='season'&&rk===1&&w)C.push([3,'1위 자리, 쉽게 내주지 않겠습니다.']); }catch(e){}
   C.sort((a,b)=>b[0]-a[0]); const H=G.mqHist=G.mqHist||[]; let q='';
   for(let t=0;t<8;t++){ const a=dr?pick(['끝까지 따라붙은 건 좋았습니다.','이길 수 있던 경기라 아쉽습니다.','비긴 것도 결과입니다.']):pick(V[w?'w':'l']);

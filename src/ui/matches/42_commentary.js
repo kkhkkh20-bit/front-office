@@ -67,4 +67,5 @@ function pbpCall(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; const nm
     else if(outsA===3&&risp&&runs===0)a=`득점권 주자를 두고 이닝이 끝납니다. ${tshort(atT)}로선 아쉬운 공격.`;
     else if(inn>=8&&Math.abs(lead1)<=1&&typeof x[1]==='number'&&pcH(g,k,'lt')<.35)a='한 타석 한 타석이 승부처입니다.'; }
   if(outsA===3&&!walkoff)c+=` 이닝 종료.`;
+  if(Array.isArray(x[14])&&x[14].length)c+=' '+x[14].map(m=>`${nm(m.id)}, ${m.to===4?'홈':m.to+'루'}${m.result==='out'?'에서 아웃.':'까지 진루.'}`).join(' ');
   return {c,a}; }

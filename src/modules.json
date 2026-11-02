@@ -57,6 +57,7 @@
       "src/engine/finance/49_sponsors.js",
       "src/engine/market/50_moves.js",
       "src/engine/staff/51_staff_league.js",
+      "src/engine/staff/52_staff_profiles.js",
       "src/engine/media/52_interviews.js",
       "src/engine/career/53_gm_schedule.js",
       "src/engine/media/54_press.js",
@@ -161,6 +162,7 @@
       "src/ui/league/77_league_events.js",
       "src/ui/shell/46_dash.js",
       "src/ui/staff/47_staff_league.js",
+      "src/ui/staff/48_staff_profiles.js",
       "src/ui/media/48_interview.js",
       "src/ui/career/49_person_cards.js",
       "src/ui/market/50_offer_consult.js",
@@ -224,7 +226,8 @@
       "src/css/shell/23_consistent_pages.css",
       "src/css/matches/24_match_dashboard.css",
       "src/css/home/25_home_workspace.css",
-      "src/css/players/26_compact_profile.css"
+      "src/css/players/26_compact_profile.css",
+      "src/css/staff/27_staff_cards.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

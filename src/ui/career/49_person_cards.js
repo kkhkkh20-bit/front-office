@@ -5,14 +5,14 @@ function pcBar(l,v,inv){ const c=Math.round(clamp(v,0,100)); return `<div class=
 const sk100=s=>Math.round(20+s*16); /* 별 1~5 → 100점 척도 */
 function personX(k){ const [kind,a,b]=String(k).split(':');
   if(kind==='sc'||kind==='an'){ const s=(kind==='sc'?G.scouts:anaList()).find(x=>x.id===a); if(!s)return null; stAttr(s);
-    return {k,name:s.name,role:kind==='sc'?`스카우트 · ${SROLE[s.role||'am']} ${s.role==='intl'?IREG[s.region].l:s.region||''}`:`전력분석원 · ${AROLE[s.role].l}`,av:{persona:'staff',pid:s.id,team:G.user,age:s.age,name:s.name},rel:Math.round(s.loy),rl:'충성도',lab:s.loy>=70?'구단 사람':s.loy>=40?'자리 잡음':'아직 손님',sub:`${s.age}세 · 연 ${money(s.sal)}${s.car?' · '+s.car:''}`}; }
+    return {k,name:s.name,role:kind==='sc'?`스카우트 · ${SROLE[s.role||'am']} ${s.role==='intl'?IREG[s.region].l:s.region||''}`:`전력분석원 · ${AROLE[s.role].l}`,av:{persona:'staff',pid:s.id,team:G.user,age:s.age,name:s.name},rel:staffRel(s,G.user,'gm'),rl:'단장 관계',lab:relLabel(staffRel(s,G.user,'gm')),sub:`${s.age}세 · 연 ${money(s.sal)}${s.car?' · '+s.car:''}`}; }
   if(kind==='rep'){ const r=repById(a); if(!r)return null; return {k,name:r.name,role:`${r.outlet} 기자 · ${r.field}`,av:{persona:'agent',pid:r.id+r.name,age:r.age,female:r.female,expr:relEx(r.rel),name:r.name},rel:Math.round(r.rel),rl:'관계',lab:relLabel(r.rel),sub:`${PR_STYLE[r.style].l} · 영향력 ${'★'.repeat(r.inf)}`}; }
   if(kind==='omgr'){ const m=G.mgr[+a]; if(!m)return null; mgrFix(m); return {k,name:m.name,role:`${tname(+a)} 감독`,av:{persona:'mgr',pid:m.id,team:+a,age:m.age,name:m.name},rel:null,lab:mgrType(m).n,sub:m.career||''}; }
   if(kind==='ost'){ const L=stInit()[+b]; const s=L&&(a==='sc'?L.sc:L.an).find(x=>x.id===String(k).split(':')[3]); if(!s)return null; stAttr(s);
     return {k,name:s.name,role:`${tname(+b)} ${a==='sc'?'스카우트':'전력분석원'}`,av:{persona:'staff',pid:s.id,team:+b,age:s.age,name:s.name},rel:null,lab:`구단 충성도 ${Math.round(s.loy)}`,sub:`${s.age}세 · 연 ${money(s.sal)}`}; }
   return null; }
 /* 카드 공통 상단: 능력·성격·관계 */
-function personTop(k){ const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[], sty='';
+function personTop(k){const staff=staffPerson(k);if(staff)return (staff.kind==='coach'?coachAbBox(staff.s):'')+staffBioBox(staff.s,staff.kind,staff.tid,true); const [kind,a]=String(k).split(':'); const t=team(G.user); let ab=[], pe=[], li=[], sty='';
   if(kind==='own'){ const w=OWNER[t.owner].w; ab=[['순위 중시',w[0]*100],['재정 중시',w[2]*100],['여론 중시',w[3]*100]]; pe=[[OWNER[t.owner].label,OWNTRAIT[t.owner]]]; li=[['사장',bossOf(G.user).ceo.name+' (예산 집행 창구)'],['단장',`신뢰 ${Math.round(t.trust)}`]]; }
   else if(kind==='ceo'){ const B=bossOf(G.user); const c=u01('ceoP',B.ceo.id); ab=[['예산 재량',40+c*40],['현장 이해',30+u01('ceoQ',B.ceo.id)*50]]; pe=[[c>.5?'진취적':'보수적',c>.5?'투자에 비교적 열려 있습니다.':'지출 하나하나를 따집니다.']]; li=[['구단주',bossOf(G.user).own.name+'의 뜻을 전합니다']]; }
   else if(kind==='mgr'||kind==='omgr'){ const m=kind==='mgr'?G.mgr[G.user]:G.mgr[+a]; if(m){ mgrAttr(m); const ty=mgrType(m);

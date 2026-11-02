@@ -23,7 +23,7 @@ function campGrow(p,kind,focus){ const ev=[]; if(p.injOut>0||(p.mil&&p.mil.from<
   const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const o0=ovr(p), cap=Math.max(p.pot,o0)+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
   let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5); let tot=0;
   /* 확 늘어나는 선수 */ if(p.age<=25&&p.pot-ovr(p)>=4&&R()<(focus==='skill'?.05:.03)*f.will){ amt+=rnd(2,4); ev.push({t:'big'}); }
-  if(amt>0){ const w=ks.map(()=>.3+R()); const ws=w.reduce((a,b)=>a+b,0); ks.forEach((k,i)=>{ if(p.r[k]<cap)tot+=addR(p,k,amt*w[i]/ws*(ks.length===3?1.6:1)); }); }
+  if(amt>0){ const w=ks.map(()=>.3+R()); const ws=w.reduce((a,b)=>a+b,0); ks.forEach((k,i)=>{ if(p.r[k]<cap)tot+=addR(p,k,amt*w[i]/ws*(ks.length===3?1.6:1)*coachToolMult(p,k)); }); }
   /* 구종 추가 */ if(p.isP&&p.age<=31){ const pr=kind==='fall'?(focus==='pitch'?.2:.05):(focus==='skill'?.1:.06); const n=arsenal(p,p.r.stf).length; if(n<(isSPr(p)?6:4)&&R()<pr*clamp(f.will,.8,1.2)){ const q=N(-1.5,4)+(f.coach-1)*6; const k=addPitch(p,q); if(k)ev.push({t:'pitch',k,q}); } }
   /* 폼 수정 */ if(p.age<=32&&R()<.045){ const k=p.isP?(R()<.5?'stf':'ctl'):(R()<.5?'con':'pow'); const good=R()<.6; const d=good?rnd(1.5,3.5):-rnd(1,2.5); const v=clamp(p.r[k]+d,20,80); const dd=v-p.r[k]; p.r[k]=v; roundR(p); tot+=dd; ev.push({t:good?'form+':'form-',k,d:dd}); }
   /* 포지션 전환 캠프: 전환 훈련 중인 선수는 숙련이 크게 오른다 */ if(kind==='fall'&&focus==='conv'&&p.pconv)posGain(p,p.pconv.pos,18*posLearnRate(p)*(p.team!=null?posCoachF(p.team):1));

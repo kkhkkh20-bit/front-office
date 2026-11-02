@@ -16,6 +16,11 @@ function cBefore(g,k){ const L=g.pbp; if(k<=0)return {sa:0,sh:0,outs:0,bases:[0,
   const s=pbpState(g,Math.min(k,L.length)-1); if(k<L.length&&L[k][0]!==s.half)return {sa:s.sa,sh:s.sh,outs:0,bases:[0,0,0],half:L[k][0]}; return s; }
 function cFielders(g,half,k){ return castLineup(g,half%2===0?'h':'a',k??0).filter(x=>CFP[x.pos]&&x.pos!=='P'); }
 function cTeamCol(tid){ const t=G.teams[tid]; return t?tpal(t)[3]:'#888'; }
+/* 새 기록의 송구 아웃 목적지를 우선하고, 옛 기록은 베이스·득점 변화로 복원한다. */
+function cRunnerMoves(g,k){const x=g.pbp[k];if(!x||typeof x[1]!=='number')return [];const before=cBefore(g,k),after=x[5],hr=x[3]==='HR',recorded=Array.isArray(x[14])?x[14]:[],moves=[];let scores=x[6]-(hr?1:0);
+  for(const r of before.bases.map((id,i)=>id?{id,i}:null).filter(Boolean).sort((a,b)=>b.i-a.i)){const m=recorded.find(m=>m.id===r.id),j=after.indexOf(r.id),from=r.i+1;if(m?.result==='out')moves.push({id:r.id,from,to:m.to,out:1});else if(j>=0&&j!==r.i)moves.push({id:r.id,from,to:j+1});else if(j<0){if(scores>0){scores--;moves.push({id:r.id,from,to:4,score:1});}else moves.push({id:r.id,from,to:Math.min(4,r.i+2),out:1});}}
+  return moves;
+}
 /* 카드 배치: 키가 같은 카드는 이동, 없어진 카드는 사라지고 새 카드는 나타남 */
 function cPlace(el,pt,ms){ if(ms>=250&&el.classList){ el.classList.add('mv'); clearTimeout(el._mvT); el._mvT=setTimeout(()=>el.classList.remove('mv'),ms/cSpd()); } el.style.transition=ms?`left ${ms/cSpd()}ms linear, top ${ms/cSpd()}ms linear, opacity .25s`:'none'; el.style.left=pt[0]+'%'; el.style.top=pt[1]+'%'; }
 function cSync(T,ms){ const st=document.getElementById('cs-stage'); if(!st)return; st.querySelectorAll('.cc.gone').forEach(el=>el.remove()); const have={}; st.querySelectorAll('.cc').forEach(el=>have[el.dataset.k]=el);
@@ -173,12 +178,8 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const nearest=pt=>{ let best=null,bd=1e9; for(const el of fieldCards){ const d=cDist(posOf(el),pt); if(d<bd){bd=d;best=el;} } return best; };
   /* 주자 이동 계산 */
   const isHR=o==='HR'; const batSafe=after.includes(bid)||isHR;
-  const runners=b.bases.map((id,i)=>id?{id,i}:null).filter(Boolean).sort((p,q)=>q.i-p.i);
-  let scoreLeft=runs-(isHR?1:0); const moves=[];
-  for(const r of runners){ const j=after.indexOf(r.id); if(j>=0&&j!==r.i)moves.push({id:r.id,from:r.i,to:j}); else if(j<0){ if(scoreLeft>0){ scoreLeft--; moves.push({id:r.id,from:r.i,to:3,score:1}); } else moves.push({id:r.id,from:r.i,to:Math.min(3,r.i+1),out:1}); } }
+  const moves=cRunnerMoves(g,k);
   const bTo=isHR?4:after.indexOf(bid);
-  // m.from은 베이스 번호(0=1루) → 경로 번호는 +1
-  moves.forEach(m=>{ m.from=m.from+1; if(!m.out)m.to=m.score?4:m.to+1; else m.to=m.to+1; });
   const runAll2=async(per)=>Promise.all(moves.map(async m=>{ const el=card('o'+m.id); if(!el)return; for(let i=m.from+1;i<=Math.min(4,m.to);i++){ cPlace(el,CPATH[i],per); await cSleep(per); } if(m.out||m.score)el.classList.add('gone'); }));
   let cap='', cls='';
   const oc=cTeamCol(x[0]%2?g.home:g.away);

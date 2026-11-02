@@ -17,7 +17,8 @@ function stMakeTeam(t){ const sc=[], an=[];
   return {sc,an}; }
 /* AI 구단의 스카우트 오차(scoutSd)를 실제 스카우트 실력에서 계산 */
 function stSync(tid){ const L=G.lgStaff&&G.lgStaff[tid]; if(!L)return; const sk=L.sc.map(s=>s.skill).sort((a,b)=>b-a); const v=(sk[0]||1)*.55+(sk[1]||1)*.3+(sk[2]||1)*.15; const i=Math.floor(v), f=v-i;
-  team(tid).scoutSd=Math.round((SCOUT_SD[clamp(i,0,5)]*(1-f)+SCOUT_SD[clamp(i+1,0,5)]*f)*10)/10; }
+  const staff=[...L.sc].sort((a,b)=>b.skill-a.skill).slice(0,3),weights=[.55,.3,.15],w=sum(staff.map((s,i)=>weights[i])),quality=w?sum(staff.map((s,i)=>weights[i]*(staffScoutFactor(s,{isP:true,prospect:true},tid)+staffScoutFactor(s,{isP:false,prospect:true},tid))/2))/w:1;
+  team(tid).scoutSd=Math.round((SCOUT_SD[clamp(i,0,5)]*(1-f)+SCOUT_SD[clamp(i+1,0,5)]*f)*quality*10)/10; }
 function stAnaPow(tid,role){ const L=G.lgStaff&&G.lgStaff[tid]; if(!L)return null; const v=L.an.filter(a=>a.role===role).map(anaNow).sort((a,b)=>b-a); return (v[0]||0)+(v[1]||0)*.6+(v[2]||0)*.3; }
 /* 구단 위상: 큰 시장·인기·최근 성적·단장 평판 */
 /* 구단 명성(FM의 평판): 시장·인기·최근 성적·최근 10년 우승·시설·단장 평판. FA·외국인·스태프가 행선지를 고를 때 본다 */

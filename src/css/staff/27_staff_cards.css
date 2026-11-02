@@ -1,0 +1,12 @@
+/* 직원 카드의 주요 지도 능력·희망 보직은 바로, 성격·관계는 펼쳐서 본다. */
+.staff-primary-grid,.staff-mental{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:7px 0}
+.staff-primary-grid>span,.staff-mental>span{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;background:var(--panel2);padding:5px 6px;border:1px solid var(--line);border-radius:3px}
+.staff-primary-grid i,.staff-mental i{font-size:10px;line-height:1.4;font-style:normal;color:var(--muted)}
+.staff-bio{min-width:0;border-top:1px solid var(--line);padding-top:7px;margin-top:6px}
+.staff-preference{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:11px;line-height:1.5}.staff-preference>b{color:var(--muted);font-size:10px}.staff-preference>span{font-weight:600}
+.staff-bio .staff-traits{font-size:10px;line-height:1.5;margin:5px 0}.staff-more{margin-top:4px}.staff-more>summary{font-size:11px;color:var(--muted);cursor:pointer;padding:5px 0}.staff-more .small{font-size:11px;line-height:1.6}
+.staff-network{display:grid;grid-template-columns:32px 25px minmax(48px,1fr) 25px minmax(45px,1fr);align-items:center;gap:4px;padding:9px 0;margin:6px 0;border-block:1px solid var(--line);min-width:0}
+.staff-network>span{font-size:10px;line-height:1.4;text-align:center;overflow-wrap:anywhere}.staff-network>b{font-size:11px;line-height:1.5;text-align:center;padding:5px;border:1px solid var(--line2);border-radius:4px;background:var(--panel2)}.staff-network>i{font:700 12px var(--f-num);text-align:center;border-bottom:1px solid var(--line2);padding-bottom:3px}
+.staff-talk{gap:5px}.staff-talk .btn,.staff-talk .tc-i{font-size:10px;white-space:normal;line-height:1.5;padding:4px 7px}.staff-bio .note{overflow-wrap:anywhere}
+.cgrid{align-items:start}.csl,.anc,.tcard:has(>.staff-bio){min-width:0;align-self:start;align-content:start}.csl-n{flex-wrap:wrap}.ps>.staff-bio{margin-top:12px}.ps .staff-mental{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:600px){.ps .staff-mental{grid-template-columns:repeat(2,minmax(0,1fr))}.staff-network{grid-template-columns:30px 22px minmax(45px,1fr) 22px minmax(45px,1fr)}}

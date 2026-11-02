@@ -1,0 +1,18 @@
+/* 코치·스카우트·데이터 직원이 공유하는 인물 카드. 표시값은 실제 계산에서 읽는다. */
+function staffRoleLabel(kind,role){return kind==='coach'?(role==='mgr'?'1군 감독':CROLE[role]?.l||role):kind==='scout'?SROLE[role]||role:AROLE[role]?.l||role;}
+function staffScore(v){return `<b class="rc" style="--c:${rcol(20+v*.6)}">${Math.round(v)}</b>`;}
+function staffOfficeBox(s,kind){
+  if(kind==='coach')return '';
+  const fields=kind==='scout'?[['pitch','투수 평가'],['bat','타자 평가'],['potential','잠재력 판별']]:[['opp','상대 전력분석'],['trk','트래킹 해석'],['vid','영상 분석']];
+  return `<div class="staff-primary-grid">${fields.map(([k,l])=>`<span><i>${l}</i>${rchip(staffOfficeV(s,kind,k))}</span>`).join('')}</div>`;
+}
+function staffBioBox(s,kind,tid,full){
+  if(kind!=='coach')stAttr(s);const P=staffProfile(s,kind),own=staffOwned(kind,s.id)===s,gm=staffRel(s,tid??G.user,'gm'),mgr=staffRel(s,tid??G.user,'mgr'),m=tid!=null?G.mgr[tid]:null,key='staffBio:'+s.id;
+  const cool=own&&P.talk?.tid===G.user&&G.day-P.talk.day<14,msg=UI.staffMsgs?.[s.id];
+  const styles=[P.mental.pro>=70?'성실한 준비':P.mental.pro<40?'준비 기복':'꾸준한 준비',P.mental.pat>=70?'끈기 있는 업무':P.mental.pat<40?'빠른 성과 선호':'균형 있는 업무'];
+  return `<div class="staff-bio" data-staff-id="${s.id}" data-staff-kind="${kind}">${staffOfficeBox(s,kind)}<div class="staff-preference"><b>희망 보직</b><span>${esc(staffRoleLabel(kind,P.pref))}</span></div><p class="staff-traits small muted">${styles.join(' · ')}</p>
+    <details class="staff-more" data-k="${key}" ${full||UI.open[key]?'open':''}><summary>멘탈·관계${own?'·면담':''}</summary><div class="staff-mental">${Object.entries(STAFF_MENTAL).map(([k,l])=>`<span><i>${l}</i>${staffScore(P.mental[k])}</span>`).join('')}${kind!=='coach'&&s.amb!=null?`<span><i>야망</i>${staffScore(s.amb)}</span>`:''}${s.loy!=null?`<span><i>구단 충성도</i>${staffScore(s.loy)}</span>`:''}</div>
+    ${own?`<div class="staff-network" role="img" aria-label="${esc(s.name)}의 단장·감독 관계"><span>단장</span><i style="color:${relCol(gm)}">${Math.round(gm)}</i><b>${esc(s.name)}</b><i style="color:${relCol(mgr)}">${m?Math.round(mgr):'—'}</i><span>${m?esc(m.name)+' 감독':'감독 미선임'}</span></div><p class="small muted keep">관계는 처음 50에서 시작합니다. 프로의식·적응력과 협업 관계는 실제 업무에 작게 반영됩니다.${kind==='coach'?' 인내심은 어린 선수 지도에 반영됩니다.':' 분야 능력은 평가·분석 정확도에 반영됩니다.'}</p><div class="row staff-talk"><button class="btn small" data-a="staffTalk" data-v="${kind}:${s.id}:listen" ${cool?'disabled':''}>업무·희망 보직 면담</button><button class="btn small" data-a="staffTalk" data-v="${kind}:${s.id}:coord" ${cool||!m?'disabled':''}>감독과 업무 조율</button><button class="tc-i" data-a="go" data-v="club:rel">관계도</button></div>${cool?`<p class="small muted">다음 면담 ${dmd(P.talk.day+14)}</p>`:''}`:'<p class="small muted keep">영입 후 단장·감독과 관계를 쌓습니다. 희망과 다른 보직에서는 적응력이 업무 손실을 줄입니다.</p>'}
+    ${msg?`<p class="note small">${esc(msg)}</p>`:''}</details></div>`;
+}
+function staffPerson(k){const a=String(k).split(':');if(a[0]==='c'){const s=coachesOf(G.user)[a[1]];return s?{s,kind:'coach',tid:G.user}:null;}if(a[0]==='sc'||a[0]==='an'){const kind=a[0]==='sc'?'scout':'analyst',s=staffOwned(kind,a[1]);return s?{s,kind,tid:G.user}:null;}if(a[0]==='ost'){const tid=+a[2],kind=a[1]==='sc'?'scout':'analyst',s=(G.lgStaff?.[tid]?.[a[1]==='sc'?'sc':'an']||[]).find(s=>s.id===a[3]);return s?{s,kind,tid}:null;}return null;}

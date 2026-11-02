@@ -376,8 +376,8 @@ const QUICK=process.env.QUICK==='1';
   { where='면담 기록'; const r=await ev(()=>{ const p=playersOf(G.user)[0]; if(!p)return null; const keep=p.talkLog; p.talkLog=[{d:G.day,k:'ask',a:'점검 답변'}]; closeSheets(); A.meetOpen('pl:'+p.id); const tx=(document.querySelector('#sheet')||{}).textContent||''; UI.meet=null; closeSheets(); p.talkLog=keep; return /최근 면담/.test(tx)&&/점검 답변/.test(tx); });
     if(r===false)add('면담','다시 열면 최근 면담 기록이 안 보임'); }
   /* 코치: 훈련 화면 담당 코치 육성력이 코치진 화면과 같은 척도, 코치 카드에 세부 능력 */
-  { where='코치 카드'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.foreign&&q.age<=28&&q.isP); if(!p)return null; const c=trnCoachOf(p,trnPlan(p)); const h=trnCard(p); const sl=coachView(); return {dev:!c||(/기본 육성/.test(h)&&h.includes('>'+dv(effC(c,G.user,'dv'))+'<')),card:/세부 능력/.test(sl)}; });
-    if(r){ if(!r.dev)add('코치','훈련 화면 담당 코치 육성력이 코치진 화면과 다른 척도'); if(!r.card)add('코치','코치 카드에 세부 능력이 없음'); } }
+  { where='코치 카드'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.foreign&&q.age<=28&&q.isP); if(!p)return null; const f=trnPlan(p),k=TRN[trnG(p)][f]?.k[0]||(p.isP?'stf':'con');const h=trnCard(p); const sl=coachView(); return {dev:/지도 수준/.test(h)&&h.includes('>'+dv(coachToolV(p,k))+'<'),card:/세부 능력/.test(sl)}; });
+    if(r){ if(!r.dev)add('코치','훈련 화면 지도 수준이 실제 분야별 코칭 계산과 불일치'); if(!r.card)add('코치','코치 카드에 세부 능력이 없음'); } }
   /* 감독과의 호흡: 투구 수는 실제 집계한 경기 수로, 부담 큰 투수를 따로 */
   { where='투수 관리 표시'; const r=await ev(()=>{ const m=G.mgr[G.user]; if(!m||m.interim)return null; const u=mgrUseStats(); const h=mgrBondView(); return {n:u.n!=null&&(u.n===0||h.includes('최근 '+u.n+'경기')),heavy:/부담 큰 투수/.test(h)}; });
     if(r){ if(!r.n)add('감독','선발 투구 수가 실제 집계 경기 수로 표시되지 않음'); if(!r.heavy)add('감독','최근 부담 큰 투수 목록이 없음'); } }
