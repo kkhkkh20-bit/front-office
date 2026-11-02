@@ -42,7 +42,7 @@ function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 /* 하한 미달(2027년~): 모자란 금액의 50%, 2회 연속 60%, 3회 연속부터 75%를 발전기금으로 낸다.
    상한 제재처럼 100%까지 오르면 하한을 못 맞춘 가난한 구단이 더 가난해지는 악순환이 생겨 완만하게 둔다 */
-function floorRate(n){ return n>=3?.75:n===2?.6:.5; }
+function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */
 const ME=()=>G.unemp?-99:G.user;

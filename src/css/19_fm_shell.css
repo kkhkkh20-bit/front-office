@@ -101,3 +101,5 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
   body.fm .seg.itabs+.seg.itabs>button{min-height:28px!important;padding:3px 12px;border:1px solid var(--line);border-radius:999px;font-size:12.5px}
   body.fm .seg.itabs+.seg.itabs>button.on{background:var(--panel2);box-shadow:none;border-color:var(--team-hi)}
 }
+/* 현재 감독 화면: 넓은 화면에서 성향 눈금·능력 막대가 화면 끝까지 늘어나지 않게 */
+@media (min-width:1100px){ body.fm .msty,body.fm .mabil{max-width:760px} }

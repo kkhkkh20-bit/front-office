@@ -12,7 +12,7 @@ function defAt(p,pos){
    자리마다 그만한 선수가 드문 정도도 다르다. 그래서 값을 매길 때(트레이드·FA·연봉·WAR)는 이 둘을 종합 능력 단위로 바꿔 더한다.
    DWR: 그 자리 수비 1점이 시즌 실점을 몇 점 바꾸는가(엔진 식에서 계산: 인플레이 타구 안타 확률 + 자리별 실책). POS_ADJ: 자리 희소성(600타석당 득점).
    공격 종합 1점은 600타석당 약 1.56점. 자리는 그 선수가 가장 가치 있는 곳(1루·지명은 누구나 갈 수 있다) */
-const DWR={SS:1.1,'3B':.84,'2B':.82,CF:.7,C:.67,RF:.47,LF:.43,'1B':.39}, RUN_PER_OVR=1.56;
+const DWR={SS:1.1,'3B':.84,'2B':.82,CF:.7,C:.92, /* 포수: 리드·블로킹·도루 저지까지 맡아 유격 다음으로 수비 비중이 크다 */RF:.47,LF:.43,'1B':.39}, RUN_PER_OVR=1.56;
 /* DAVG: 리그 주전의 자리별 평균 수비력(새 게임 5개에서 잰 값). 그 자리 평균보다 잘하면 플러스 */
 const DAVG={SS:57.5,'2B':57.4,CF:56.7,C:54.5,'3B':53.8,'1B':48.2,RF:46.3,LF:46.3};
 /* 수비 난이도: 같거나 쉬운 자리로는 옮길 수 있다고 본다(유격→3루·1루 쉬움, 1루→유격 안 됨). 포수는 포수만 */
@@ -46,7 +46,7 @@ function makeLineup(tid,pool){
     if(!better)break; }
   return ln;
 }
-function entryLimit(){ return period()==='season'&&G.day>=KD(8,25)?ENTRY_BASE+ENTRY_EXP:ENTRY_BASE; }
+function entryLimit(){ if(period()!=='season')return ENTRY_BASE; if(G.day>=KD(8,25))return ENTRY_BASE+ENTRY_EXP; if(G.cal&&G.cal.asg&&G.day>G.cal.asg&&typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year))return ENTRY_BASE+1; return ENTRY_BASE; } /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); }
 /* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */

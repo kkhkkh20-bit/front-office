@@ -30,8 +30,21 @@ function platP(p,b){ const side=b.bt==='양'?(p.th==='좌'?'우':'좌'):b.bt; co
 const holdOf=p=>50+trt(p,'hold',8);
 function catArm(c){ return c?c.r.def+trt(c,'cat'):50; }
 const OF0=50, CA0=55, IF0=52;
+/* ===== 멘탈·기복·포수 리드 (2026-11-02) — 모두 리그 평균이 0이라 리그 전체 성적은 그대로 두고 선수 사이 차이만 만든다 =====
+   멘탈(승부처 집중): 득점권·경기 후반 접전·포스트시즌에서만 능력에 더해진다. 해결사 타자·위기에 강한 투수. 프로의식이 높고 기질이 안정될수록 조금 높다.
+   기복(일관성): 경기마다의 컨디션 흔들림과 몇 주 단위 슬럼프·상승세의 폭. 프로의식이 높을수록 기복이 적다.
+   포수 리드: 포수 수비·리드 감각·블로킹이 투수 전원의 안정감(투구 결과)에 더해진다. 같은 투수와 많이 호흡을 맞출수록 조금 더 좋아진다(배터리 호흡) */
+const persV=(p,k)=>p.pers&&p.pers[k]!=null?p.pers[k]:12;
+function mentalOf(p){ return clamp(hn('dtmen',p.id)*.8+(persV(p,'pro')-12)/8*.35-(persV(p,'temp')-12)/8*.25,-2.2,2.2); }
+function consOf(p){ return clamp(hn('dtcons',p.id)*.7+(persV(p,'pro')-12)/8*.6,-2,2); }
+const volF=p=>clamp(1-.22*consOf(p),.55,1.5);
+const mentalRt=p=>Math.round(clamp(50+mentalOf(p)*12,20,85)), consRt=p=>Math.round(clamp(50+consOf(p)*12,20,85)); /* 화면용 0~100 */
+function catLead(c){ return c?c.r.def*.55+(50+trt(c,'lead',7))*.3+(50+trt(c,'cat',6))*.15+Math.min(4,Math.max(0,(c.age||25)-24)*.4):50; } /* 수비 55% · 리드 감각 30% · 블로킹 15% · 경험(나이) */
+const CL0=60; /* 주전 포수 평균 리드(리그 평균 성적을 그대로 두는 기준점, 측정 59.6) */
+function chemOf(p,cid){ if(!p||cid==null||!p.chem)return 0; const n=p.chem[cid]||0; if(!n)return 0; return (Math.min(1,n/40)-.5)*1.2; } /* 배터리 호흡: 같이 몇 경기 안 맞췄으면 -0.6 쪽, 40경기 넘게 맞추면 +0.6(처음 만나는 짝은 0). 한 시즌 평균은 0 안팎 */
+let CLUTCH=0, SIMDAY=null; /* 지금 타석의 승부처 정도(0~1.1), 지금 시뮬 중인 경기 날짜 */
 function sideTraits(fs){ let c=null, of=[], inf=[]; for(const q of fs.order){ const k=fs.posOf[q.id]; if(k==='C')c=q; else if(k==='LF'||k==='CF'||k==='RF')of.push(defAt(q,k)+(k==='RF'?3:0)+trt(q,'arm')); else if(k==='SS'||k==='2B')inf.push(defAt(q,k)+trt(q,'dp')); }
-  fs.cArm=catArm(c); fs.ofArm=of.length?sum(of)/of.length:OF0; fs.ifD=inf.length?sum(inf)/inf.length:IF0; }
+  fs.cArm=catArm(c); fs.cLead=catLead(c); fs.cId=c?c.id:null; fs.ofArm=of.length?sum(of)/of.length:OF0; fs.ifD=inf.length?sum(inf)/inf.length:IF0; }
 function stealTry(fs){ return clamp(1-((fs.cArm??CA0)-CA0)*.012,.6,1.4); }
 function stealAdj(r,fs){ return trt(r,'sb')*.004-((fs.cArm??CA0)-CA0)*.006-(holdOf(fs.cur)-50)*.003; }
 function runAdj(r,fs){ return trt(r,'br')*.004-((fs.ofArm??OF0)-OF0)*.005; }
