@@ -51,6 +51,12 @@
 .ibm .mailbody p{margin:0 0 .7em}.ibm .mailbody p:last-child{margin:0}
 .ibm-acts{display:flex;gap:8px;flex-wrap:wrap}
 .ibm-acts .btn{width:auto;min-width:120px}
+.ibm-act{display:inline-flex;align-items:center;flex-wrap:wrap;gap:7px;max-width:100%}
+.ibm-act .btn{white-space:normal;overflow-wrap:anywhere}
+.ibm-act .ibm-act-done,.ibm-act .ibm-act-done:hover{background:var(--panel2);border:1px solid var(--line);color:var(--muted);opacity:1;box-shadow:none;cursor:default}
+.ibm-act-state{color:var(--muted);font-size:11px}
+.ibm-status{display:grid;gap:5px;color:var(--muted);border:1px solid var(--line);background:var(--panel2);font-size:12px;line-height:1.6}
+.ibm-status b{color:var(--ink)}
 .ibm>section.card{margin:0}
 .ibx-empty{text-align:center;padding:40px 16px}
 

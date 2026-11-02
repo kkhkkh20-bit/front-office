@@ -15,9 +15,21 @@ function stopCat(m){ const k=m&&m.kind, f=m&&m.from||'';
 function stopOn(m){ const c=stopCat(m); if(c==='must')return true; const S=(typeof G!=='undefined'&&G&&G.stopCfg)||{}; return S[c]!=null?!!S[c]:STOP_DEF[c]; }
 /* 결정(G.evs)이 진행을 멈추게 하는가: 그 결정을 알린 소식의 분류로 본다 */
 function evStops(e){ const m=e&&e.mid!=null&&G.mail?G.mail.find(x=>x.id===e.mid):null; return m?stopOn(m):true; }
+/* 소식이 가리킨 구단·회차를 보존한다. 다음 제안/시즌의 상태로 옛 버튼이 살아나지 않게 한다. */
+function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>k.includes(a.a));
+  if(has(['renewMgr','pactKeep','pactEnd'])){c.mid=G.mgr?.[G.user]?.id;c.pact=G.pact?.day;}
+  if(has(['jobYes','jobNo']))c.job=(G.jobs||[]).find(j=>!j.done&&j.tid===+(acts||[]).find(a=>a.a==='jobYes'||a.a==='jobNo').v)?.exp;
+  if(has(['stKeep','stLet']))c.raid=(G.stRaid||[]).find(r=>r.id===String((acts||[]).find(a=>a.a==='stKeep'||a.a==='stLet').v).split(':')[0])?.exp;
+  if(has(['scoutPlanGo']))c.scout=scoutPlan().filter(x=>x.move).map(x=>({id:x.s.id,role:x.role,key:x.key}));
+  if(has(['cwOpen']))c.cw=G.cwS?.id;
+  if(/스폰서 제안/.test(subj))c.spon=(G.spon?.off||[]).map(x=>x.id);
+  if(/보호선수|보상선수/.test(subj))c.comp=(G.comp||[]).find(x=>(x.stage==='protect'&&x.to===G.user)||(x.stage==='pick'&&x.from===G.user))?.id;
+  if(/연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청/.test(subj))c.contract=G.contract?.y;
+  if(has(['faOpen','faMatch','faLL','agPitchOk'])||/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/.test(subj))c.fa=G.fa?.y0;
+  return c; }
 function mail(from,subj,body,o){ o=o||{}; if(G.unemp&&o.kind!=='경력'&&from!=='야인')return {read:true,acts:[]}; /* 야인일 때는 전 소속 구단 업무 메일을 받지 않는다 */
   { const d=G.mail.slice(0,60).find(x=>!x.read&&x.subj===subj&&x.body===body&&G.day-x.day<=7); if(d)return d; } /* 같은 소식이 아직 안 읽힌 채 있으면 다시 보내지 않는다 */
-  const m={id:'m'+(G.mailSeq=(G.mailSeq||0)+1),day:G.day,from,subj,body,read:false,imp:!!o.imp,acts:o.acts||[],ref:o.ref??null,kind:o.kind||'일반',face:o.face??null};
+  const m={id:'m'+(G.mailSeq=(G.mailSeq||0)+1),day:G.day,from,subj,body,read:false,imp:!!o.imp,acts:o.acts||[],ref:o.ref??null,kind:o.kind||'일반',face:o.face??null,ctx:mailContext(subj,o.acts)};
   G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }
 /* 이미 보낸 소식을 다시 알릴 때: 새 소식을 만들지 않고 원래 소식을 오늘로 끌어올려 안 읽음으로 되돌린다 */
 function mailBump(m,warn){ const i=G.mail.indexOf(m); if(i<0)return null; G.mail.splice(i,1); G.mail.unshift(m); if(m.day0==null)m.day0=m.day; m.day=G.day; m.read=false; m.imp=true; m.warn=warn||m.warn||''; if(stopOn(m))G.stops.push(m); return m; }

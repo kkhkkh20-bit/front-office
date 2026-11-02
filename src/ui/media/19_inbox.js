@@ -7,31 +7,10 @@ const IB_CATS={all:'전체',task:'확인',squad:'선수단',move:'이적',club:'
 function ibCat(m){ for(const k in IB_KIND)if(IB_KIND[k].split(' ').includes(m.kind))return k; return 'club'; }
 const IB_CATN={squad:'선수단',move:'이적·계약',club:'구단 운영',media:'언론·기록'};
 /* 이미 처리된 일인가: 결정(이벤트)이 끝났거나, 소식이 알린 상황이 해결됐으면 '처리됨'. 안 읽음 표시는 그대로 두고 '확인할 소식'에서만 뺀다 */
-const MAIL_DONE=[
-  [/감독 자리가 비어/,()=>{ const m=G.mgr[G.user]; return !!(m&&!m.interim); }],
-  [/코치 자리가 비어/,()=>!!G.coach&&!CKEYS.some(k=>!coachesOf(G.user)[k])],
-  [/창단 드래프트(가 끝|: 모든)/,()=>!!(G.fd&&G.fd.done)],
-  [/스폰서 제안/,()=>!(G.spon&&G.spon.off&&G.spon.off.length)],
-  [/상무 지원 기간/,()=>!sangmuWave()],
-  [/연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청/,()=>!G.contract||!!G.contract.done],
-  [/신인 드래프트가 열립니다/,()=>!G.draft||!!G.draft.done],
-  [/스프링캠프가 시작/,()=>!G.camp||!!G.camp.done||!!G.camp.seen],
-  [/보호선수 명단|보상선수 지명/,()=>!(G.comp||[]).some(c=>(c.stage==='protect'&&c.to===G.user)||(c.stage==='pick'&&c.from===G.user))],
-  [/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/,()=>!faLive()],
-  [/외국인 선수를 구성/,()=>foreignOf(G.user).length>=3||period()==='season'],
-  [/트레이드 마감|마감 보강안/,()=>!tradeOpen()],
-  [/참석 선수 확인/,()=>!G.md||!!G.md.res||G.day>=G.md.day],
-  [/내일 직관|개막합니다/,(m)=>G.day>m.day+1]];
 const mailDoneShow=m=>(m.imp||m.kind==='업무'||m.kind==='결정'||(m.acts&&m.acts.length>0)||!!m.oid)&&mailDone(m);
-/* 끝난 인터뷰 요청은 열어 보지 않았어도 읽은 소식으로(파란 새 소식 표시가 남지 않게) */
-function ibAutoRead(){ for(const m of (G.mail||[])){ if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&mailDone(m))m.read=true; } }
-function mailDone(m){ if(m.done)return true;
-  for(const a of (m.acts||[])){ if(a.a==='evPick'){ const id=String(a.v).split(':')[0]; const e=(G.evs||[]).find(x=>x.id===id); return !e||!!e.done; }
-    if(a.a==='faOpen'||(a.a==='player'&&/관심 FA|우리 FA|시장 보고/.test(m.subj))){ const p=G.players[+a.v]; if(p&&(p.team!=null||!(G.fa&&!G.fa.closed)))return true; } }
-  if(m.oid)return !(G.offers||[]).some(o=>o.id===m.oid);
-  if(/^\[인터뷰 요청\]/.test(m.subj))return !(G.iv&&!G.iv.done&&m.day>=G.iv.day);
-  for(const [re,f] of MAIL_DONE)if(re.test(m.subj)){ try{ return !!f(m); }catch(e){ return false; } }
-  return false; }
+/* 완료는 구단/시즌의 새 업무와 분리해 보존한다. 읽음 처리는 기존 인터뷰 규칙만 따른다. */
+function ibAutoRead(){ for(const m of (G.mail||[])){const st=mailStatus(m);if(st&&!m.closed)m.closed=st;if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&st)m.read=true;} }
+function mailDone(m){return !!mailStatus(m);}
 /* 결정할 일: 읽었어도 수락·거절·선택하기 전까지 남는 일(트레이드 제안·결정 이벤트·인터뷰). 마감일 */
 function ibDecide(m){ if(mailDone(m))return false; if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'); }
 function ibDue(m){ if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return null; }
@@ -49,22 +28,22 @@ function ibSplit(m){ let subj=m.subj, L=m.body.split('\n').filter(Boolean); cons
     const rest=L[0].slice(subj.replace(/…$/,'').length).replace(/^[.!?]\s*/,'').trim(); if(L[0].startsWith(subj.replace(/…$/,''))){ if(rest)L[0]=rest; else L.shift(); } }
   return {subj,L}; }
 const warnLive=m=>!!m.warn&&!mailDone(m)&&G.day<=m.day+1; /* '내일까지' 경고는 그날·다음 날만. 이미 처리됐으면 지운다 */
-function mailRow(m,cur){ const fin=mailDone(m)&&((m.acts||[]).length>0||!!m.oid||/^\[인터뷰 요청\]/.test(m.subj)); /* 끝난 인터뷰·결정: 참여한 일이라 강조하지 않는다 */ const need=!fin&&ibTask(m)&&!m.read; return `<button class="ibr${m.read||fin?'':' unread'}${need?' need':''}${fin?' fin':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${warnLive(m)?'<span class="ibr-tag">기한 내일</span>':ibDecide(m)&&m.read?`<span class="ibr-tag">검토 중${ibDue(m)!=null?' · D-'+Math.max(0,ibDue(m)-G.day):''}</span>`:ibTask(m)?'<span class="ibr-tag">확인</span>':mailDoneShow(m)?'<span class="ibr-tag done">처리됨</span>':''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
+function mailRow(m,cur){ const fin=mailDone(m)&&((m.acts||[]).length>0||!!m.oid||/^\[인터뷰 요청\]/.test(m.subj)); /* 끝난 인터뷰·결정: 참여한 일이라 강조하지 않는다 */ const need=!fin&&ibTask(m)&&!m.read; return `<button class="ibr${m.read||fin?'':' unread'}${need?' need':''}${fin?' fin':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${warnLive(m)?'<span class="ibr-tag">기한 내일</span>':ibDecide(m)&&m.read?`<span class="ibr-tag">검토 중${ibDue(m)!=null?' · D-'+Math.max(0,ibDue(m)-G.day):''}</span>`:ibTask(m)?'<span class="ibr-tag">확인</span>':mailDoneShow(m)?`<span class="ibr-tag done">${mailStatus(m).label}</span>`:''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
 function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); const dup=(UI._ibDup||{})[m.id]; const {subj,L:L0}=ibSplit(m);
   let fth=null; if(m.fth){ try{ fth=fanThreads().find(t=>t.id===m.fth)||null; }catch(e){} }
   /* 팬 게시판 소식: 댓글은 아래 게시판 블록에만 보여 준다(본문에 같은 댓글을 글로 한 번 더 쓰지 않는다) */
   const L=fth?L0.filter(t=>!/^댓글 분위기:/.test(t)&&!/\(추천 [\d,]+\)$/.test(t)):L0;
-  const dn=mailDoneShow(m); const doneA=m.acts.filter(a=>a.done&&a.res); const acts=m.acts.filter(a=>!a.done&&!(o&&a.a==='goWork')&&!(dn&&/^(evPick|ivOpen|ivSkip|faOpen|faMatch)$/.test(a.a))); /* 끝난 결정·인터뷰·FA 건은 버튼 대신 '처리됨' */ /* 제안 카드가 붙은 메일은 '해당 화면으로' 대신 카드 안의 버튼을 쓴다 */
+  const status=mailStatus(m); const doneA=(m.acts||[]).filter(a=>a.done&&a.res); const acts=(m.acts||[]).filter(a=>!(o&&!status&&a.a==='goWork'));
   const finM=mailDone(m)&&((m.acts||[]).length>0||!!m.oid||/^\[인터뷰 요청\]/.test(m.subj)); return `<article class="ibm mfc${m.read||finM?' rdm':' unread'}" id="m-${m.id}" data-mid="${m.id}">
-    <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">확인할 소식</span>':mailDoneShow(m)?'<span class="pill">처리됨</span>':''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${m.day0!=null&&m.day0!==m.day?` · 처음 받은 날 ${dmd(m.day0)}`:''}${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
-    ${warnLive(m)?`<div class="note warn ibm-warn">기한 임박: ${esc(m.warn)}</div>`:m.warn&&mailDone(m)?`<div class="note ibm-warn">기한이 지나 처리된 일입니다${mailEvPick(m)}. 아래는 받았던 당시 내용입니다.</div>`:''}
+    <header class="ibm-h">${senderAv(m)}<div class="ibm-t"><div class="ibm-from"><b>${esc(m.from)}</b><span class="pill">${IB_CATN[ibCat(m)]}</span>${ibTask(m)?'<span class="pill warn">확인할 소식</span>':mailDoneShow(m)?`<span class="pill">${esc(status.label)}</span>`:''}</div><h2 class="ibm-s">${lk(subj)}</h2><div class="ibm-d">${G.year===dobj(m.day).y?'':dobj(m.day).y+'년 '}${dmd(m.day)} ${WD[dobj(m.day).w]}요일${m.day0!=null&&m.day0!==m.day?` · 처음 받은 날 ${dmd(m.day0)}`:''}${dup?` · 같은 소식 ${dup.length+1}건을 묶었습니다`:''}</div></div>${nav||''}</header>
+    ${status?`<div class="note ibm-status" role="status"><b>${esc(status.label)}</b><span>${esc(status.text)}${mailEvPick(m)} 아래는 받았던 당시 내용입니다.</span></div>`:warnLive(m)?`<div class="note warn ibm-warn">기한 임박: ${esc(m.warn)}</div>`:''}
     ${L.length?`<div class="mailbody">${(L.length>4?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4?`<details class="mfold" data-k="mf:${m.id}" ${UI.open['mf:'+m.id]?'open':''}><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${fth?`<div class="ibm-fth"><div class="small muted">댓글 ${fth.cm.length}개${(()=>{ try{ return ` · 분위기: ${fpMood(fth.cm)}`; }catch(e){ return ''; } })()}</div><div class="fcms">${fth.cm.map(cmtRow).join('')}</div></div>`:''}
     ${m.rv?rvActsH(m):''}${handOffBtns(m)}
-    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${acts.length&&!(m.oid&&!o)?`<div class="ibm-acts">${acts.map(a=>`<button class="btn${a===acts[0]?' primary':''}" data-a="mailAct" data-v="${m.id}:${m.acts.indexOf(a)}">${esc(a.l)}</button>`).join('')}</div>`:''}
-    ${o?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
+    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${acts.length?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}</div>`:''}
+    ${o&&!status?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 처리할 메일: 안 읽었고 중요하거나 업무·버튼·제안이 있는 것. 상단 숫자는 이것만 센다 */
-const mailNeeds=m=>!m.read&&(m.imp||m.kind==='업무'||(m.acts&&m.acts.length>0)||!!m.oid);
+const mailNeeds=m=>!m.read&&!mailDone(m)&&(m.imp||m.kind==='업무'||(m.acts&&m.acts.length>0)||!!m.oid);
 /* ===== 소식함 =====
  - 맨 위 '안 읽은 소식' 묶음: 안 읽은 소식을 확인할 소식부터, 같은 종류 안에서는 최신부터. 읽어도 그날(또는 소식함을 다시 열 때)까지는 그 자리에 둔다(읽는 중에 목록이 움직이지 않게).
  - 그 아래는 최신 날짜부터 날짜별로 묶는다. 날짜 머리를 누르면 그 날짜를 접고 편다.
