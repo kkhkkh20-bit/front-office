@@ -75,7 +75,7 @@ function warFreeze(y){ for(const p of Object.values(G.players)){ if(p.isP||!p.hi
   const lv=[...new Set(L.map(h=>h.lvl))]; for(const h of L.concat(lv.map(l=>seasonTotal(p,y,l)).filter(Boolean))){ const k=warKey(h); if(p.pw[k]==null)p.pw[k]=Math.round(warRaw(h,p)*100)/100; } } }
 function warRaw(h,p){
   if(!h)return 0; const lg=lgOf(h.y);
-  if(p.isP){ if(!h.outs)return 0; const ip=h.outs/3; const era=h.er*27/h.outs; const lev=(h.sv>5)?1.3:1; return ((lg.era+.9)-era)*ip/9/10*lev; }
+  if(p.isP){ if(!h.outs)return 0; const ip=h.outs/3; const era=h.er*27/h.outs; const svS=(h.y!=null&&!h.y2&&p.hist)?p.hist.reduce((s,r)=>r.y===h.y&&!r.y2&&r.lvl===h.lvl?s+(r.sv||0):s,0):0; const lev=Math.max(h.sv||0,svS)>5?1.3:1; /* 마무리 보정은 그 선수의 시즌 전체 세이브로 정하고 구단별 기록에도 같은 배수를 쓴다(구단별 합 = 시즌 전체) */ return ((lg.era+.9)-era)*ip/9/10*lev; }
   if(!h.pa)return 0; const ops=bRate(h).ops; const pos=h.pos||p.pos;
   const bat=(ops/lg.ops-1)*h.pa*.16, rep=20*h.pa/600; const dOf=k=>k==='DH'||!DWR[k]?0:(defAt(p,k)-DAVG[k])*DWR[k];
   let adj=(POS_ADJ[pos]||0)*h.pa/600, def=dOf(pos)*h.pa/600; { const pp=h.pp, tot=pp?Object.values(pp).reduce((s,v)=>s+v,0):0; if(tot>0){ adj=0; def=0; for(const k in pp){ const w=pp[k]/tot*h.pa/600; adj+=(POS_ADJ[k]||0)*w; def+=dOf(k)*w; } } } /* 여러 자리를 뛰었으면 자리별 타석 비율로(마지막 출전 자리 하나로 시즌 전체를 보지 않는다) */ /* 그 자리 수비가 실제로 막은 실점(유격이 1루의 약 3배) */

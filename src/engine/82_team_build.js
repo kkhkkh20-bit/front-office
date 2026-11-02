@@ -12,7 +12,7 @@ function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1;
 function tbTakeSnap(){ if(G.user==null||G.unemp)return; let d=null; try{ d=depth(G.user); }catch(e){ return; } const ln=d.start||[]; G.tbSnap={tid:G.user,y:G.year,d:G.day,age:ln.length?Math.round(ln.reduce((a,p)=>a+p.age,0)/ln.length*10)/10:null,n:playersOf(G.user).filter(p=>!p.prospect).length}; }
 /* 재임 기간에 데려온 선수 전부(지금 우리 선수 + 떠난 선수). 떠난 선수는 우리 팀에서 쌓은 WAR만 */
 function tbMineAll(){ const out=[], seen=new Set(); const since=G.gmSinceD;
-  for(const p of playersOf(G.user)){ if(!mineOf(p))continue; seen.add(p.id); out.push({p,o:tbOrigin(p),gone:false}); }
+  for(const p of Object.values(G.players)){ if(p.team!==G.user||p.joinY>G.year||!mineOf(p))continue; seen.add(p.id); out.push({p,o:tbOrigin(p),gone:false,away:isAway(p)}); } /* 소속·영입 이력 기준(대표팀 차출·군 복무로 잠시 빠져도 집계에 남고, 상태만 따로 표시) */
   for(const x of (G.mineL||[])){ if(seen.has(x.id)||x.o.tid!==G.user||(since!=null&&x.o.d!=null&&x.o.d<since))continue; const p=G.players[x.id]; if(!p||p.team===G.user)continue; seen.add(x.id); out.push({p,o:x.o,gone:true}); }
   return out; }
 function warWithT(p,tid,y0){ let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',tid); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }

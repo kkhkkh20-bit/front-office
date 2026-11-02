@@ -30,17 +30,17 @@ function autoFre(){ const C=G.contract; if(!C||C.done)return; const L=[];
   if(L.length){ autoLogAdd('외국인 재계약(운영팀)',L.join(' · ')); note('연봉',`운영팀이 외국인 재계약을 처리했습니다.\n${L.join('\n')}`); } }
 /* 남은 외국인 재계약 결정(결별도 합의도 안 한 선수). 외국인 위임을 껐더라도 이게 없으면 국내 연봉 확정을 미루지 않는다(리뷰 2026-11-01) */
 function fRePending(){ const C=G.contract; if(!C||C.done)return []; return C.foreignEnd.filter(id=>{ const p=G.players[id]; return p&&p.team===G.user&&!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok); }); }
-function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sal'))return; const pend=fRePending(); if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
+function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sal'))return; const pend=fRePending(); if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
   const r=confirmContracts(); if(r){ C.autoWait={d:G.day,why:String(r)}; return; } delete C.autoWait; C.autoDone={d:G.day,n:C.ended.length,f:C.foreignEnd.length}; autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
 /* 위임 업무 처리 상태(처리 예정·완료·대기와 이유). 지금은 연봉 계약 */
 function delegStatus(k){ if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
   if(C.done)return C.autoDone?`처리 완료: ${dmd(C.autoDone.d)} 국내 ${C.autoDone.n}명·외국인 ${C.autoDone.f}명 계약 확정`:'처리 완료: 올해 연봉 계약 확정';
-  if(C.autoWait)return `대기: ${C.autoWait.why}`; return `처리 예정: ${G.day<KD(1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; }
+  if(C.autoWait){ if(C.autoWait.f){ const pend=fRePending(); if(!pend.length||autoOn('fre'))return '처리 예정: 외국인 결정이 끝나 다음 날 운영팀이 확정'; return `대기: 외국인 ${pend.length}명(${pend.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}) 재계약 미결정 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`; } return `대기: ${C.autoWait.why}`; } /* 지난 사유가 아니라 지금 남은 사유 */ return `처리 예정: ${G.day<KD(1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; }
 function autoDaily(day){ if(!G.auto||G.unemp)return;
   if(day===KD(12,3)&&autoOn('fre'))try{ autoFre(); }catch(e){}
   if(day===KD(12,5)&&autoOn('sal'))try{ autoSalRound(true); }catch(e){}
   if(day===KD(12,19)&&autoOn('sal'))try{ autoSalRound(false); }catch(e){}
-  if(day===KD(1,5))try{ autoConfirm(); }catch(e){} }
+  if(day===KD(1,5)||(day>KD(1,5)&&G.contract&&!G.contract.done&&G.contract.autoWait))try{ autoConfirm(); }catch(e){} } /* 대기했으면 다음 날부터 매일 다시 확인한다 */
 /* 받은 트레이드 제안: 맡겼으면 부단장이 바로 거절한다 */
 /* 우리 평가(부단장 의견과 같은 기준)로 받는 쪽 가치 - 주는 쪽 가치 */
 function troDiff(off){ const U=team(G.user); const P=id=>G.players[id]; return stackIn(off.give.map(P).filter(Boolean).map(p=>tval(U,p,'in')))-sum(off.get.map(P).filter(Boolean).map(p=>tval(U,p,'out'))); }

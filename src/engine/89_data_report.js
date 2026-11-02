@@ -4,11 +4,15 @@ function teamRuns(tid){ const L=((G.sea&&G.sea.tl)||[])[tid]||[]; const rs=sum(L
   const py=rs+ra?Math.pow(rs,1.83)/(Math.pow(rs,1.83)+Math.pow(ra,1.83)):.5; return {L,g:L.length,rs,ra,w,l,t,py,exW:py*(w+l)}; }
 const PCT_B=[['ops','OPS',1],['obp','출루율',1],['iso','순수 장타(ISO)',1],['bbp','볼넷%',1],['kp','삼진%',-1],['ev','평균 타구속도',1,1],['hh','강한 타구%',1,1],['whiff','헛스윙%',-1,1],['chase','볼 스윙%',-1,1],['run','1루 도달(초)',-1,1]];
 const PCT_P=[['era','ERA',-1],['whip','WHIP',-1],['kpp','K%',1],['bbpp','BB%',-1],['k9','K/9',1],['bb9','BB/9',-1],['hr9','HR/9',-1],['velo','직구 평균',1,1],['rpm','직구 회전수',1,1],['whiff','헛스윙%',1,1],['csw','CSW%',1,1],['gb','땅볼%',1,1]];
-function pctVals(p,h){ const T=trackOf(p)||{}; if(p.isP){ const r=h&&h.outs?pRate(h):null; return {era:r&&r.era,whip:r&&r.whip,kpp:h&&h.bf?h.so/h.bf*100:null,bbpp:h&&h.bf?h.bb/h.bf*100:null,k9:r&&r.k9,bb9:r&&r.bb9,hr9:h&&h.outs?(h.hr||0)*27/h.outs:null,velo:T.velo,rpm:T.rpm,whiff:T.whiff,csw:T.csw,gb:T.gb}; }
+function pctVals(p,h){ const T=(p.arch?null:trackOf(p))||{}; if(p.isP){ const r=h&&h.outs?pRate(h):null; return {era:r&&r.era,whip:r&&r.whip,kpp:h&&h.bf?h.so/h.bf*100:null,bbpp:h&&h.bf?h.bb/h.bf*100:null,k9:r&&r.k9,bb9:r&&r.bb9,hr9:h&&h.outs?(h.hr||0)*27/h.outs:null,velo:T.velo,rpm:T.rpm,whiff:T.whiff,csw:T.csw,gb:T.gb}; }
   const r=h&&h.pa?bRate(h):null; return {ops:r&&r.ops,obp:r&&r.obp,iso:r&&r.slg-r.avg,bbp:h&&h.pa?h.bb/h.pa*100:null,kp:h&&h.pa?h.so/h.pa*100:null,ev:T.ev,hh:T.hh,whiff:T.whiff,chase:T.chase,run:T.run}; }
 let _pctC={k:null};
 const pctQual=(isP,h)=>!!h&&(isP?(h.outs||0)>=60:(h.pa||0)>=50);
-function pctPool(isP,y){ const k=G.day+':'+y+':'+isP+':'+(G.games||[]).length; if(_pctC.k===k)return _pctC.v; const L=[]; for(const q of Object.values(G.players)){ if(!!q.isP!==isP||q.team==null||q.prospect||q.fdPool)continue; const h=seasonTotal(q,y,'1군'); if(!pctQual(isP,h))continue; L.push(pctVals(q,h)); } _pctC={k,v:L}; return L; }
+/* 비교 집단: 그 시즌 1군 기준을 채운 선수(지금 소속·현역 여부와 상관없이). 리그를 떠난 선수는 보관 기록으로 넣는다(기록 항목만, 측정값 없음) */
+function pctPool(isP,y){ const k=G.day+':'+y+':'+isP+':'+(G.games||[]).length+':'+Object.keys(G.players).length+':'+Object.keys(G.arch||{}).length; if(_pctC.k===k)return _pctC.v; const L=[];
+  for(const q of Object.values(G.players)){ if(!!q.isP!==isP||q.fdPool)continue; const h=seasonTotal(q,y,'1군'); if(!pctQual(isP,h))continue; L.push(pctVals(q,h)); }
+  for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==isP)continue; const h=archSeason(a,y); if(!pctQual(isP,h))continue; L.push(pctVals({isP:a.isP,arch:a},h)); }
+  _pctC={k,v:L}; return L; }
 function pctOf(p,k,v,y){ const M=(p.isP?PCT_P:PCT_B).find(x=>x[0]===k); if(!M||v==null||!isFinite(v))return null; const all=pctPool(!!p.isP,y).map(x=>x[k]).filter(x=>x!=null&&isFinite(x)); if(!all.length)return null; const below=all.filter(x=>M[2]>0?x<v:x>v).length; return Math.round(below/all.length*100); }
 /* 월간 전력 분석 보고(40_analysts dataReport)에 붙는 데이터 줄: 득실·피타고리안·최근 흐름·백분위 상하위 */
 function dataLines(){ const me=teamRuns(G.user); if(me.g<10)return [];

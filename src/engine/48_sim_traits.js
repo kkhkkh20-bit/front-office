@@ -7,8 +7,13 @@ function gbT(p){ return clamp(hn('gb',p.id),-1.6,1.6); } /* +면 땅볼형 */
 /* 삼진 회피(세부 능력): 경기 계산의 삼진 확률과 같은 비중(컨택 .8·선구 .2)과 삼진 성향 */
 function kAvoidV(p){ return p.r.con*.8+p.r.eye*.2+trt(p,'k'); }
 /* 구종: 상세 화면과 같은 규칙으로 고른다 */
-function arsenal(p,stfV){ const id=p.id; const velo=veloSim(p); const sp=isSPr(p); const n=sp?3+(u01('np',id)>.5?1:0):1+(u01('np',id)>.4?1:0);
-  const pool=[...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,n);
+/* 구종: 선수마다 보유 구종(직구 + 변화구 3~4개)과 완성도는 고정이고, 보직은 '쓰는 구종'만 정한다.
+   선발은 보유 구종을 모두 쓰고, 계투는 주로 쓰는 1~2개만 던진다(나머지는 보유로 남아 선발로 돌아가면 다시 쓴다). 쓰는 구종 수가 경기 계산(타순 세 바퀴째)에 들어간다 */
+function pitchOwnK(p){ const id=p.id; return [...PITCHES].sort((a,b)=>hn('pt'+a,id)-hn('pt'+b,id)).slice(0,3+(u01('np',id)>.5?1:0)); }
+function pitchUseN(p){ return isSPr(p)?99:1+(u01('np',p.id)>.4?1:0); }
+function arsenalAll(p,stfV){ const velo=veloSim(p); const own=pitchOwnK(p); const add=(p.addP||[]).filter(x=>!own.includes(x.k)).map(x=>[x.k,stfV+x.q]); return [['직구',stfV+(velo-145)*.8+trt(p,'fb',3)],...own.map(k=>[k,stfV+trt(p,'p'+k,6)]),...add]; } /* 보유 구종 전체 */
+function arsenal(p,stfV){ const id=p.id; const velo=veloSim(p); const n=pitchUseN(p);
+  const pool=pitchOwnK(p).slice(0,n);
   const add=(p.addP||[]).filter(x=>!pool.includes(x.k)).map(x=>[x.k,stfV+x.q]); /* 캠프에서 새로 익힌 구종 */
   return [['직구',stfV+(velo-145)*.8+trt(p,'fb',3)],...pool.map(k=>[k,stfV+trt(p,'p'+k,6)]),...add]; }
 const _ak=new Map();
@@ -41,6 +46,6 @@ function futBat(p,t,pos,games){ games=games||3; const pa=games>=3?ri(9,14):ri(3,
 function futPit(p,t){ const sp=isSPr(p); const outs=sp?ri(12,18):ri(4,8); const o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:2; o.gs=sp?1:0; addTo(lineFor(p,G.year,t,'퓨처스'),o);
   /* 투구 수 = 상대 타자 수 × 타석당 3.9구(KBO 평균 수준). 예전 식(아웃당 5.4구 + 출루당 4구)은 출루를 두 번 세어 퓨처스 선발이 130~200구를 던진 것으로 잡혔다 */
   const pc=Math.min(sp?110:45,Math.round((outs+(o.h||0)+(o.bb||0)+(o.hbp||0))*3.9)); if(p.injFx)injRecover(p,outs);
-  if(sp){ const cd=loadLog(p,G.day,pc,true); if(R()<p.inj*.075*pc/95*injMult(p)*loadMult(p,cd,G.day)/LOAD_NORM)injure(p,G.day,{sp:true,pc,farm:1}); }
-  else for(const [d,q] of [[G.day-2,Math.round(pc/2)],[G.day,pc-Math.round(pc/2)]]){ const cd=loadLog(p,d,q,false); if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,G.day,{pc:q,farm:1}); break; } } }
+  if(sp){ const cd=pitchApp(p,G.day,pc,true); p.fat=clamp((p.fat||0)+pitFatGain(p,pc,true),0,100); if(R()<p.inj*.075*pc/95*injMult(p)*loadMult(p,cd,G.day)/LOAD_NORM)injure(p,G.day,{sp:true,pc,farm:1}); }
+  else for(const [d,q] of ((p.downDay!=null&&p.downDay>G.day-2)?[[G.day,pc]]:[[G.day-2,Math.round(pc/2)],[G.day,pc-Math.round(pc/2)]])){ /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */ const cd=pitchApp(p,d,q,false); if(d===G.day)p.fat=clamp((p.fat||0)+pitFatGain(p,q,false),0,100); if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,G.day,{pc:q,farm:1}); break; } } }
 const arsenal_=arsenal;

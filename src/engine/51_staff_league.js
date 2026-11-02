@@ -18,7 +18,7 @@ function stMakeTeam(t){ const sc=[], an=[];
 /* AI 구단의 스카우트 오차(scoutSd)를 실제 스카우트 실력에서 계산 */
 function stSync(tid){ const L=G.lgStaff&&G.lgStaff[tid]; if(!L)return; const sk=L.sc.map(s=>s.skill).sort((a,b)=>b-a); const v=(sk[0]||1)*.55+(sk[1]||1)*.3+(sk[2]||1)*.15; const i=Math.floor(v), f=v-i;
   team(tid).scoutSd=Math.round((SCOUT_SD[clamp(i,0,5)]*(1-f)+SCOUT_SD[clamp(i+1,0,5)]*f)*10)/10; }
-function stAnaPow(tid,role){ const L=G.lgStaff&&G.lgStaff[tid]; if(!L)return null; const v=L.an.filter(a=>a.role===role).map(a=>a.skill).sort((a,b)=>b-a); return (v[0]||0)+(v[1]||0)*.6+(v[2]||0)*.3; }
+function stAnaPow(tid,role){ const L=G.lgStaff&&G.lgStaff[tid]; if(!L)return null; const v=L.an.filter(a=>a.role===role).map(anaNow).sort((a,b)=>b-a); return (v[0]||0)+(v[1]||0)*.6+(v[2]||0)*.3; }
 /* 구단 위상: 큰 시장·인기·최근 성적·단장 평판 */
 /* 구단 명성(FM의 평판): 시장·인기·최근 성적·최근 10년 우승·시설·단장 평판. FA·외국인·스태프가 행선지를 고를 때 본다 */
 function clubPrestigeParts(tid){ const t=team(tid); const P=[]; P.push(['기본',50]); P.push(['시장 규모',(t.market-1)*45]); P.push(['구단 인기',(clamp(t.pop,0,1.6)-1)*25]); if(t.indie)P.push(['모기업 없음',-8]);
@@ -58,7 +58,7 @@ function stJoin(kind,s,tid,sal){ const L=stTeamL(tid); if(!L)return; if(sal)s.sa
 /* 매달 1일: AI 구단이 시장에서 사람을 데려간다(좋은 후보부터 사라진다) */
 function stAiMonthly(){ stInit(); const off=period()!=='season'; for(const t of G.teams){ if(t.id===G.user)continue; if(R()>(off?.35:.12)*clamp(t.market,.7,1.3))continue; const L=G.lgStaff[t.id];
     for(const [kind,list,mkt] of [['sc',L.sc,scoutMkt()],['an',L.an,anaMarket()]]){ const worst=[...list].sort((a,b)=>a.skill-b.skill)[0]; const room=list.length<(kind==='sc'?ST_SC_N[1]:ST_AN_N[1]);
-      const c=mkt.filter(s=>!s.ob&&(room||(worst&&s.skill>=worst.skill+2))&&(s.skill<5||t.market>=1.05||R()<.4)).sort((a,b)=>stScore(b,t.id,b.sal,false)-stScore(a,t.id,a.sal,false)+(b.skill-a.skill)*20)[0];
+      const c=mkt.filter(s=>!s.ob&&!(s.bid&&s.bid.exp>=G.day)&&(room||(worst&&s.skill>=worst.skill+2))&&(s.skill<5||t.market>=1.05||R()<.4)).sort((a,b)=>stScore(b,t.id,b.sal,false)-stScore(a,t.id,a.sal,false)+(b.skill-a.skill)*20)[0];
       if(c&&R()<.6){ stAttr(c); if(!room&&worst){ const i=list.indexOf(worst); list.splice(i,1); (kind==='sc'?G.scoutMarket:G.amarket).push(worst); } stJoin(kind,c,t.id); break; } } } }
 /* 비시즌: 다른 구단 스태프 빼오기(연봉 인상 필요). 구단당 한 번, 비시즌 3번까지 */
 function stPoachOpen(){ const o=dobj(G.day); return o.m>=11||o.m<=1; }

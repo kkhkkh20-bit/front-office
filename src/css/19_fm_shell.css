@@ -88,3 +88,16 @@
   .fmk kbd{min-width:118px;font:700 12px var(--f-num);color:#fff;background:#ffffff12;border:1px solid var(--line2);border-bottom-width:2px;border-radius:4px;padding:2px 7px;text-align:center}
   .fmk span{font-size:13.5px}
 }
+
+/* 감독 후보: 넓은 화면에서는 화면 폭을 채워 나란히(후보 수만큼 열, 카드 최소 300px) */
+body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+/* 안쪽 탭(페이지 안 탭): 넓은 화면에서는 화면 폭을 꽉 채운 큰 막대 대신 왼쪽 정렬 밑줄 탭으로 가볍게.
+   두 단이 이어지면(예: 선수단 → 전력 구성 → 배치도) 아래 단은 작은 알약 버튼으로 줄여 위계가 보이게 */
+@media (min-width:1100px){
+  body.fm .seg.itabs{display:flex;width:fit-content;max-width:100%;background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0;gap:20px;margin:2px 0 12px}
+  body.fm .seg.itabs>button{flex:0 0 auto;min-height:32px!important;padding:6px 2px;background:none;border-radius:0;font-size:13.5px}
+  body.fm .seg.itabs>button.on{background:none;color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--team-hi)}
+  body.fm .seg.itabs+.seg.itabs{border:0;gap:6px;margin-top:-4px}
+  body.fm .seg.itabs+.seg.itabs>button{min-height:28px!important;padding:3px 12px;border:1px solid var(--line);border-radius:999px;font-size:12.5px}
+  body.fm .seg.itabs+.seg.itabs>button.on{background:var(--panel2);box-shadow:none;border-color:var(--team-hi)}
+}

@@ -101,10 +101,14 @@ function awShown(A,k){ return A&&!(A.pend&&A.pend[k]); }
 /* 시상식 전에 은퇴한 선수의 아직 발표되지 않은 수상(은퇴 기록에 넣어 두었다가 시상식 때 반영) */
 function awLabels(A,k,y){ if(!A)return []; return k==='mvp'?[['MVP',A.mvp],['신인왕',A.roy]].filter(x=>x[1]).map(([l,x])=>[`${y} ${l}`,x]):Object.entries(A.gg||{}).filter(x=>x[1]).map(([pos,x])=>[`${y} 골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x]); }
 function awPendFor(p){ const y=G.year, A=G.awards&&G.awards[y]; if(!A||!A.pend)return []; const L=[]; for(const k of ['mvp','gg'])if(A.pend[k])for(const [l,x] of awLabels(A,k,y))if(x.id===p.id)L.push(l); return L; }
+/* 해외에 나가 있는 국내 선수의 보관 정보(pj)에 수상 이력을 더한다. 돌아오면 그 정보로 선수가 되살아나 이력이 이어진다 */
+function awAbroad(id,label){ const a=(G.abroad||[]).find(r=>r.id===id&&!r.back&&r.pj); if(!a)return false; let q; try{ q=JSON.parse(a.pj); }catch(e){ return false; }
+  (q.aw=q.aw||[]).includes(label)||q.aw.push(label); try{ story(q,label,'award'); }catch(e){} a.pj=JSON.stringify(q); (a.aw=a.aw||[]).includes(label)||a.aw.push(label); if(a.from===G.user&&!G.unemp)chron('award',`${a.name} ${label}`,id); return true; }
 function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A||!A.pend||!A.pend[k])return; A.pend[k]=false;
   const lst=k==='mvp'?[['MVP',A.mvp,A.cand.mvp],['신인왕',A.roy,A.cand.roy]]:Object.entries(A.gg).map(([pos,x])=>[`골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x,pos.startsWith('OF')?A.cand.gg.OF:A.cand.gg[pos]]);
   const mine=[];
   for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; if(p){ addAward(p,`${y} ${lab}`); if(p.team===G.user){ p.mor=clamp((p.mor??60)+6,0,100); mine.push(x.name+' '+lab); } }
+    else if(awAbroad(x.id,`${y} ${lab}`)){} /* 시상식 전에 해외로 떠난 선수: 해외 보관 정보(복귀 때 되살아나는 선수 정보)에 넣는다 */
     else { const r=(G.legends||[]).find(r=>r.id===x.id&&r.awP&&r.awP.includes(`${y} ${lab}`)); if(r){ r.awP=r.awP.filter(l=>l!==`${y} ${lab}`); r.aw.push(`${y} ${lab}`); if(lab==='MVP')r.mvp++; if(lab.includes('골든'))r.gg++;
       if(!r.hof&&(r.war>=38||r.mvp>=2||r.gg>=6||(r.war>=30&&r.mvp>=1))){ r.hof=true; (G.hof=G.hof||[]).push(r); news('기록',`${r.name}, 명예의 전당 헌액`,`은퇴한 ${r.name}이(가) 마지막 시즌 ${lab} 수상으로 명예의 전당 기준을 채웠습니다.`,0); } } }
     /* WAR 1위가 표에서 졌으면 논란 기사 */

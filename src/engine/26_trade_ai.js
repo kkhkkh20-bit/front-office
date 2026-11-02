@@ -4,7 +4,7 @@ const SLOTK={C:'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격�
 function slotOf(tid){ const d=depth(tid); const o={}; for(const k of PSLOTS.slice(0,9)){ const p=d.ln[k]; o[k]={ps:p?[p]:[],v:p?posScore(p,k):30}; }
   const sp=d.sp.slice(0,5), rp=d.pen.slice(0,4); o.SP={ps:sp,v:sp.length?avg(sp.map(spV))*(Math.min(5,sp.length)/5):30}; o.RP={ps:rp,v:rp.length?avg(rp.map(penV)):30}; return o; }
 let _slC={k:null};
-function leagueSlots(){ const k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+Object.values(G.players).filter(p=>p.team===G.user).length; if(_slC.k===k)return _slC.v; const v=G.teams.map(t=>slotOf(t.id)); _slC={k,v}; return v; }
+function leagueSlots(){ const k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+Object.values(G.players).filter(p=>p.team===G.user).map(p=>p.id+(p.role||'')+(p.e1?'+':'')+(p.injOut>0?'i':'')).join(',')+':'+JSON.stringify(G.lineup||{})+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.rotOrd||G.rot||null); /* 보직·엔트리·라인업·투수 기용 계획이 바뀌면 다시 계산 */ if(_slC.k===k)return _slC.v; const v=G.teams.map(t=>slotOf(t.id)); _slC={k,v}; return v; }
 /* 트레이드 마감 주간: 사는 구단(상위권의 약한 자리)과 파는 구단(하위권의 베테랑) 루머 */
 function deadlineRumors(quiet){ const st=standingsNow(); const buyers=st.slice(0,5).map(x=>x.tid).filter(t=>t!==G.user); const sellers=st.slice(6).map(x=>x.tid).filter(t=>t!==G.user);
   const L=[]; for(const t of buyers.slice(0,3)){ const rk=slotRanks(t); const weak=PSLOTS.filter(k=>k!=='DH').sort((a,b)=>rk[b].rank-rk[a].rank)[0]; if(weak&&rk[weak].rank>=6)L.push(`${tshort(t)}(${st.findIndex(x=>x.tid===t)+1}위)은(는) ${SLOTK[weak]} 보강을 노립니다`); }

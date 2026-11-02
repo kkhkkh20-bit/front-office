@@ -14,10 +14,12 @@ function consecDays(p,day){ const L=p.ld||[]; let n=0, d=day-1; for(let i=L.leng
 function pc7(p,day){ return sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[1])); }
 /* 누적 팔 부하 한도: 선발은 5일 로테이션 100구, 불펜은 이틀에 한 번 20구를 꾸준히 던질 때 한도에 닿는다 */
 /* 선발 한도는 지금 역할이 선발이거나 최근 선발처럼 길게(60구 이상) 던진 투수(대체 선발·불펜 데이)에게 적용한다 */
-function armCap(p){ const s=p.r.sta||50; const sp=isSPr(p)||(p.ld||[]).some(x=>x[1]>=60); return sp?1150+(s-50)*18:540+(s-50)*9; } /* 체력이 좋을수록 시즌 누적 부하를 더 견딘다 */
+function armCap(p){ const s=p.r.sta||50; const SP=1150+(s-50)*18, RP=540+(s-50)*9; if(isSPr(p))return SP; let w=0; for(const x of (p.ld||[]))if(x[1]>=60)w=Math.max(w,clamp(1-(G.day-x[0])/60,0,1)); return RP+(SP-RP)*w; } /* 계투: 최근 긴 등판(60구 이상)일수록 선발 한도에 가깝고, 60일에 걸쳐 계투 한도로 줄어든다(오래된 기록 하나로 한도가 두 배가 되지 않게) */ /* 체력이 좋을수록 시즌 누적 부하를 더 견딘다 */
 function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 기록: applyGame에서 투수마다 호출 */
-function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; L.push([day,pc]); if(L.length>10)L.shift();
+/* 등판 하나를 1군·퓨처스 공통으로 남긴다: 부하 기록(날짜순) + 마지막 등판일·선발일·투구 수. 선발 선택·불펜 가용 판단이 어느 리그 등판이든 같은 이력을 본다 */
+function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastApp=day; p.lastPc=pc; } else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
+function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; { const same=L.find(x=>x[0]===day); if(same)same[1]+=pc; else { L.push([day,pc]); L.sort((a,b)=>a[0]-b[0]); } } if(L.length>10)L.shift(); /* 날짜순 유지·같은 날은 합친다(퓨처스 주간 기록이 1군 기록 뒤에 들어와도 연투 계산이 맞게) */
   const prevS=p.lsS; let add=pc*(cd>=2?1.8:cd>=1?1.3:1);
   if(isStart){ if(pc>105)add+=(pc-105)*3; if(prevS!=null&&day-prevS<5)add+=pc*.4; p.lsS=day; }
   if(!isStart&&pc>=35)add+=(pc-35)*1.5; /* 불펜 멀티이닝 */

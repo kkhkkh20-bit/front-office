@@ -17,7 +17,7 @@ function misbehaveMonth(){ const per=period(); if(per==='off'&&dobj(G.day).m===1
 const FCAMP={skill:'기술 훈련',pitch:'구종 개발',conv:'포지션 전환'};
 const CAMP_AMT={spring:{balance:.4,skill:.65,fitness:.18,game:.18},fall:{skill:.55,pitch:.32,conv:.28}}, WINTER_F=.7; /* 겨울 성장의 4분의 1을 캠프로 옮겨 한 해 총성장은 예전과 비슷하게 */
 function campFocusAi(tid,kind){ const m=mgrOf(tid); if(kind==='fall')return 'skill'; return m&&(m.youth||50)>=58?'skill':'balance'; }
-function addPitch(p,q){ const have=new Set(arsenal(p,p.r.stf).map(x=>x[0])); const L=PITCHES.filter(k=>!have.has(k)); if(!L.length)return null; const k=L[Math.floor(u01('np'+G.year+(p.addP||[]).length,p.id)*L.length)];
+function addPitch(p,q){ const have=new Set(arsenalAll(p,p.r.stf).map(x=>x[0])); /* 보유 구종(계투라 안 쓰는 구종 포함)은 새로 익히지 않는다 */ const L=PITCHES.filter(k=>!have.has(k)); if(!L.length)return null; const k=L[Math.floor(u01('np'+G.year+(p.addP||[]).length,p.id)*L.length)];
   (p.addP=p.addP||[]).push({k,q:Math.round(q*10)/10,y:G.year}); return k; }
 function campGrow(p,kind,focus){ const ev=[]; if(p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
   const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const o0=ovr(p), cap=Math.max(p.pot,o0)+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
@@ -33,7 +33,7 @@ function campGrow(p,kind,focus){ const ev=[]; if(p.injOut>0||(p.mil&&p.mil.from<
 function campWho(tid,kind){ const ps=domestic(tid).filter(p=>!p.prospect); if(kind==='spring')return ps; const d=depth(tid); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); return ps.filter(p=>p.age<=26||(p.age<=30&&!reg.has(p.id))); }
 /* 캠프 결과 문장(우리 구단 메일) */
 function campEvLine(p,e){ if(e.t==='big')return `${p.name}: 한 단계 성장했습니다`; if(e.t==='pitch')return `${p.name}: ${e.k}을(를) 새로 장착${e.q>=3?' — 결정구로 쓸 만합니다':e.q<=-2?' — 아직 실전에서 쓰기는 어렵습니다':''}`; if(e.t==='form+')return `${p.name}: ${p.isP?'투구폼':'타격폼'} 수정 효과(${TOOLK[e.k]} +${e.d.toFixed(1)})`; return `${p.name}: ${p.isP?'투구폼':'타격폼'}을 고치다 흔들림(${TOOLK[e.k]} ${e.d.toFixed(1)})`; }
-function campGrowAll(kind,userFocus){ const mine=[], evs=[]; for(const t of G.teams){ const focus=t.id===ME()?userFocus:campFocusAi(t.id,kind); for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev){ mine.push(campEvLine(p,e)); evs.push({p,e}); } } } mine.ev=evs; return mine; } /* 문장 목록 + 결산 머리말용 사건(ev) */
+function campGrowAll(kind,userFocus){ const mine=[], evs=[]; for(const t of G.teams){ const CP=kind==='fall'?G.fcamp:G.camp; const focus=t.id===ME()?userFocus:((CP&&CP.byT&&CP.byT[t.id])||campFocusAi(t.id,kind)); /* 캠프 도중 떠난 옛 구단은 단장이 정해 둔 방향으로 마친다 */ for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev){ mine.push(campEvLine(p,e)); evs.push({p,e}); } } } mine.ev=evs; return mine; } /* 문장 목록 + 결산 머리말용 사건(ev) */
 /* 캠프에서 익힌 구종이 결정구가 된 투수: 처음으로 삼진을 여럿 잡은 경기(선발 5개·구원 2개 이상)를 캠프와 이어 남긴다(구종별 결과는 경기에서 따로 세지 않는다) */
 function campPitchHit(rec){ if(!rec||!rec.box||G.unemp)return; const me=rec.home===G.user?'h':rec.away===G.user?'a':null; if(!me)return;
   (rec.box[me].pit||[]).forEach((q,i)=>{ const p=G.players[q.id]; if(!p||!p.addP)return; const e=p.addP.find(x=>!x.hit&&x.y>=G.year-1); if(!e)return; const A=arsenal(p,p.r.stf); const best=A.reduce((a,b)=>b[1]>a[1]?b:a); if(best[0]!==e.k||(q.so||0)<(i===0?5:2))return;

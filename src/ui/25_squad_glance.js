@@ -85,6 +85,12 @@ function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; cons
   const tag=(team(p.team).cap===p.id?'<em class="capb">C</em>':'')+(p.fr&&p.fr.tid===p.team?'<em class="frb">프</em>':'')+(p.age<=24&&(rp.ofp??0)>=(rp.cur??0)+6?`<em class="potb">${potTier(potVal(rp),rp.cur).s}</em>`:'');
   const org=own?originOf(p):'';
   return `<button class="gl-r" data-a="player" data-v="${p.id}"><span class="gl-l">${lab}</span><span class="gl-a">${gt}</span>${avImg(p)}<span class="gl-m"><b>${esc(p.name)}${tag}</b><i>${posLabel(p)} · ${p.age}세 · ${money(p.sal)} · ${st}${org?` · <span class="org">${org}</span>`:''}</i></span><span class="gl-o">${rchip(rp.cur)}</span></button>`; }
+/* 1군 투수진(선발 로테이션·불펜 보직)과 벤치: 전력 구성 화면에서 배치도 옆에 붙인다 */
+function glancePitch(tid){ const own=tid===G.user; const d=depth(tid); const R=(p,lab)=>glanceRow(p,lab,own,'1'); const roles=['마무리','필승조','필승조','추격조','추격조','롱릴리프','롱릴리프'];
+  return `<div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`)).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜')).join('')}${d.bench.length?`<div class="eyebrow">벤치</div><div class="gl-chips">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}`; }
+/* 우리 팀 현황(선수단 → 현황): 팀 상태 · 빠진 선수 · 올해 성장 */
+function teamStatusView(){ if(!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const away=playersOf(G.user).filter(p=>!healthy(p)||isAway(p)); const awayT=away.length?`<p class="small">${away.map(p=>`${esc(p.name)}(${outTxt(p)})`).join(', ')}</p>`:'';
+  return `<section class="card"><h2 class="sec">우리 팀 현황</h2>${teamStatusBox()}</section>`+(awayT?csec('빠진 선수',awayT):'')+teamGrowCard(); }
 function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const d=depth(tid); const order=orderList(d.start,tid); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
   const R=(p,lab,l)=>glanceRow(p,lab,own,l);
   const roles=['마무리','필승조','필승조','추격조','추격조','롱릴리프','롱릴리프'];

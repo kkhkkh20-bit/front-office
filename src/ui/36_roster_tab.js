@@ -48,8 +48,10 @@ function rosterView(){
   const d=depth(tid); const rv=UI.rview||'table';
   const vis0=p=>tid===G.user||!scoutReport(p).unseen||publicP(p);
   /* 탭 정리: 같은 선수를 필터만 바꿔 보여 주던 탭을 합친다. 선수 명단(야수·투수 전환) / 전력 구성(배치도·한눈에·포지션 진단) / 병역 */
-  { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='diag'){ UI.it.rdepth=r; UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
-  const RT=[['list','선수 명단'],['fut','2군'],['depth','전력 구성'],...(tid===G.user?[['mil','병역']]:[])];
+  /* 2차 정리(FM 선수단 화면처럼): 같은 선수를 다른 탭에서 겹쳐 보여 주던 '2군'·'한눈에'·안쪽 탭을 없앤다.
+     선수 명단(1군·2군·전체는 명단 안 필터) / 전력 구성(배치도 + 투수진 + 2군 + 포지션 진단을 한 화면에) / 현황(우리 팀) / 병역 */
+  { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='diag'||r==='fut'){ UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
+  const RT=[['list','선수 명단'],['depth','전력 구성'],...(tid===G.user?[['st','현황'],['mil','병역']]:[])];
   const it=inTabs('roster',RT,'list'); const seg=UI.seg==='pit'?'pit':'bat';
   const rookies=own?Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year):[];
   const pf=(UI.rpos=UI.rpos||{bat:'all',pit:'all'})[seg];
@@ -62,9 +64,8 @@ function rosterView(){
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const head=(own?trimCard():'')+`<div class="row between wrapr"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span></div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small keep fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
-  if(it.cur==='depth'){ const dt=inTabs('rdepth',[['field','배치도'],['glance','한눈에'],...(own?[['diag','포지션 진단']]:[])],'field'); return head+it.bar+dt.bar+(dt.cur==='glance'?glanceView(tid):dt.cur==='diag'?posDiag('bat')+posDiag('pit'):fieldC); }
-  if(it.cur==='glance')return head+it.bar+glanceView(tid);
-  if(it.cur==='fut')return head+it.bar+futSquadView(tid);
+  if(it.cur==='depth')return head+it.bar+fmCols(fieldC+csec(`투수진 · 벤치 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)))+futSquadView(tid)+(own?posDiag('bat')+posDiag('pit'):''); /* 한 화면: 1군 배치도 · 투수진 · 2군 · 포지션 진단 */
+  if(it.cur==='st'&&own)return head+it.bar+teamStatusView();
   if(it.cur==='mil'&&tid===G.user)return head+it.bar+milView();
   if(it.cur==='lineup')return head+it.bar+lineupCard(tid);
   if(it.cur==='staff')return head+it.bar+staffCard(tid);

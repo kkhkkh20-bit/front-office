@@ -51,7 +51,9 @@ function mreqMake(k,d){ const m=G.mgr[G.user]; const nm=mgrSays(m);
     const r=mreqAdd('draft',{pol},G.cal.draft+1);
     mreqAsk(r,`${nm}: 드래프트는 ${DPOL[pol]}(으)로`,`"${why}. 이번 드래프트는 ${DPOL[pol]}(으)로 가 주셨으면 합니다." 스카우트팀 판단과는 다를 수 있습니다.`,
       [{l:'감독 의견대로 간다',fx:`드래프트 화면에 "감독 추천" 표시가 붙습니다. 1·2라운드에서 이 기조 선수를 뽑으면 감독 관계 +4.`},{l:'스카우트 판단을 따른다',fx:'감독 관계 -1. 감독은 크게 개의치 않습니다.'}],0); return; } }
-EVH.mreq={ pick(e,i){ const r=mreqs().find(x=>x.id===e.data.rid); const m=G.mgr[G.user]; if(!r||!m)return ''; const L=e.opts.length;
+/* 감독이 바뀌면 전임 감독이 보낸 미응답 요청을 끝낸다(소식은 기록으로 남고 결정 버튼만 사라진다) */
+function mreqCloseOld(){ const m=G.mgr[G.user]; const mid=m&&!m.interim?m.id:null; if(G.dirFr&&G.dirFr.mid!==mid)G.dirFr=null; /* 지시 충돌 횟수도 감독마다 */ for(const r of mreqs())if(r.st==='ask'&&r.mid!==mid){ r.st='void'; const e=(G.evs||[]).find(x=>x.k==='mreq'&&!x.done&&x.data&&x.data.rid===r.id); if(e){ e.done=true; e.res='요청한 감독이 팀을 떠나 종료'; const ml=(G.mail||[]).find(x=>x.id===e.mid); if(ml){ ml.acts=[]; ml.imp=false; ml.body+='\n\n[종료] 요청한 감독이 팀을 떠나 이 요청은 끝났습니다.'; } } } }
+EVH.mreq={ pick(e,i){ const r=mreqs().find(x=>x.id===e.data.rid); const m=G.mgr[G.user]; if(!r||!m)return ''; if(r.mid!=null&&r.mid!==m.id){ r.st='void'; return '요청한 감독이 팀을 떠나 이 요청은 끝났습니다. 아무것도 바꾸지 않았습니다.'; } /* 응답 때도 요청한 감독인지 다시 본다 */ const L=e.opts.length;
     const neg=d=>{ m.rel=clamp(m.rel-d,0,100); return `감독 관계 -${d}.`; };
     if(r.k==='fit'){ if(i===0){ r.st='open'; return `${dmd(r.until)}까지 ${MROLE[r.data.role].l}을(를) 찾기로 했습니다.`; } r.st='no'; return neg(m.ego>=70?4:2); }
     if(r.k==='slot'){ if(i===0){ r.st='open'; return `${dmd(r.until)}까지 ${SLOTK[r.data.sk]} 보강을 약속했습니다.`; } r.st='no'; return neg(m.ego>=70?5:3); }
@@ -126,7 +128,7 @@ function mgrDirWait(k){ const m=G.mgr[G.user]; const x=mgrDir()[k]; if(!m||!x||x
 function setMgrDir(k,on){ const m=G.mgr[G.user]; if(!m||m.interim)return '감독이 없습니다.'; mgrAttr(m); mgrFix(m); const d=mgrDir();
   if(on){ const w=mgrDirWait(k); if(w)return `${m.name} 감독이 얼마 전 거절한 지시입니다. ${w}.`; }
   if(!on){ delete d[k]; return k==='arm'?'투수 관리 지시를 풀었습니다. 감독 본래 성향대로 운영합니다.':'휴식 보장 지시를 풀었습니다.'; }
-  if(!G.dirFr||G.dirFr.y!==G.year)G.dirFr={y:G.year}; const fr=G.dirFr[k]||0; /* 같은 해 같은 사안으로 거절당한 횟수: 많을수록 감독이 더 굳어진다(이 사안 수용도) */
+  if(!G.dirFr||G.dirFr.y!==G.year||G.dirFr.mid!==m.id)G.dirFr={y:G.year,mid:m.id}; /* 충돌 횟수는 감독마다 센다 */ const fr=G.dirFr[k]||0; /* 같은 해 같은 사안으로 거절당한 횟수: 많을수록 감독이 더 굳어진다(이 사안 수용도) */
   const gap=k==='arm'?Math.max(0,m.arm-35)/55:Math.max(0,70-m.rest)/50; const s=1-gap*.45-(m.ego-50)/70+(m.rel-60)/80-fr*.08; const ok=R()<clamp(s,.15,.97);
   d[k]={ok,mid:m.id,day:G.day}; if(ok){ m.rel=clamp(m.rel-(gap>.5?2:0),0,100); return `${m.name} 감독: "알겠습니다. ${k==='arm'?'투수들 무리시키지 않겠습니다':'주전도 쉬게 하면서 가겠습니다'}."${gap>.5?' (본래 성향과 달라 관계 -2)':''}`; }
   G.dirFr[k]=fr+1; const rep=fr>=1; if(rep)m.rel=clamp(m.rel-3,0,100); d[k].rel0=m.rel;

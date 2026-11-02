@@ -14,13 +14,16 @@ const TITLES=[['홈런왕','hr',0],['타점왕','rbi',0],['도루왕','sb',0],['
 function tgp(tid){ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r.t||0):0; } /* 소속 팀 경기 수: 규정 타석(×3.1)·규정 이닝(×1) */
 function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; return h[k]||0; }
 function tfmt(k,v){ return k==='avg'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
-function titleBoard(y,k,isP,low){ const L=[]; for(const p of Object.values(G.players)){ if(!!p.isP!==!!isP)continue; const h=seasonTotal(p,y,'1군'); if(!h)continue; const g=tgp(h.t??p.team);
+/* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
+function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.t=R[R.length-1].t; return h; }
+function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
+  for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const g=tgp(h.t??p.team);
     if(k==='avg'&&(h.pa||0)<g*3.1)continue; if(k==='era'&&(h.outs||0)<g*3)continue; const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t:h.t??p.team}); }
   return L.sort((a,b)=>low?a.v-b.v:b.v-a.v); }
 function seasonTitles(y){ const out=[];
   for(const [lab,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(!B.length)continue; const top=B[0].v; const W=B.filter(x=>Math.abs(x.v-top)<1e-9); /* 같으면 공동 수상 */
     out.push({k:lab,stat:k,v:top,ids:W.map(x=>x.p.id),names:W.map(x=>x.p.name),tids:W.map(x=>x.t)});
-    for(const x of W){ addAward(x.p,`${y} ${lab}`); if(x.p.team===G.user&&!G.unemp)x.p.mor=clamp((x.p.mor??60)+3,0,100); } }
+    for(const x of W){ if(x.p.arch){ const a=x.p.arch; (a.aw=a.aw||[]).push(`${y} ${lab}`); continue; } /* 떠난 선수: 보관 기록에 수상을 남긴다 */ addAward(x.p,`${y} ${lab}`); if(x.p.team===G.user&&!G.unemp)x.p.mor=clamp((x.p.mor??60)+3,0,100); } }
   (G.titles=G.titles||{})[y]=out;
   const mine=out.filter(t=>t.tids.includes(G.user)&&!G.unemp);
   news('기록',`${y} 개인 타이틀${mine.length?`: ${tshort(G.user)} ${mine.length}개 부문`:''}`,out.map(t=>`${t.k} ${t.names.join('·')}(${t.tids.map(tshort).join('·')}) ${tfmt(t.stat,t.v)}`).join(' / '),mine.length?Math.min(3,mine.length):0,mine.length?{ref:mine[0].ids[0],fanW:Math.min(2,mine.length)}:undefined);
@@ -40,10 +43,15 @@ const SMK=[{k:'s',l:'기본',c:100,m:.5,fan:1},{k:'m',l:'집중',c:300,m:1,fan:3
 const fyNow=()=>(G.last&&G.last.y>=G.year)?G.year+1:G.year; /* 지금 장부가 잡히는 결산 연도(finYearEnd와 같은 기준) */
 function smActive(p){ return !!(p&&p.smk&&p.smk.fy===fyNow()&&p.team===G.user&&!G.unemp); } /* 결산일이 예상보다 늦어져도 그 결산까지는 유효 */
 function smEst(p,k){ const T=SMK.find(x=>x.k===k); return T&&p?Math.round(starPower(p)*14*team(G.user).market*T.m):0; } /* 1년 내내 했을 때 추가 수입 */
-function smBonus(tid){ if(tid!==G.user||G.unemp)return 0; return sum(playersOf(G.user).filter(smActive).map(p=>Math.round(smEst(p,p.smk.k)*(p.smk.f??1)))); }
+/* 캠페인 장부: 선수가 우리 구단을 떠나면(방출·트레이드·해외·은퇴) 그날 캠페인을 끝내고 진행한 기간 몫만 정산한다. 이후 예상 수입만 빠진다 */
+function smCheck(){ const fy=fyNow(); G.smkL=(G.smkL||[]).filter(e=>e.fy===fy); for(const e of G.smkL){ if(e.end!=null)continue; const p=G.players[e.pid];
+    if(p&&p.smk&&p.smk.d===e.d&&smActive(p)&&G.user===e.tid){ e.a=smEst(p,e.k); continue; }
+    e.end=G.day; const amt=Math.round((e.a||0)*Math.max(0,G.day-e.d)/365); if(e.tid===G.user&&!G.unemp)note('마케팅',`${e.name} 스타 마케팅이 선수 이탈로 끝났습니다. 진행한 ${G.day-e.d}일 몫 수입 ${money(amt)}은 이번 결산에 들어갑니다(이후 예상 수입은 빠짐).`); } }
+function smBonus(tid){ if(tid!==G.user||G.unemp)return 0; const fy=fyNow(); const done=sum((G.smkL||[]).filter(e=>e.fy===fy&&e.end!=null&&e.tid===tid).map(e=>Math.round((e.a||0)*Math.max(0,e.end-e.d)/365)));
+  return done+sum(playersOf(G.user).filter(smActive).map(p=>Math.round(smEst(p,p.smk.k)*(p.smk.f??1)))); }
 function smStart(pid,k){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const p=G.players[pid]; const T=SMK.find(x=>x.k===k); if(!p||p.team!==G.user||!T)return '우리 선수를 고르세요.';
   if(smActive(p))return `${p.name}은(는) 이미 스타 마케팅 중입니다(${dmd(p.smk.until)}까지).`;
-  const until=finYearEnd(); const f=clamp((until-G.day)/365,0,1); const est=Math.round(smEst(p,k)*f); prInit(); G.spend.etc=(G.spend.etc||0)+T.c; p.smk={k,d:G.day,until,f,fy:fyNow()}; G.pr.fan=clamp(G.pr.fan+T.fan,0,100); p.mor=clamp((p.mor??60)+2,0,100);
+  const until=finYearEnd(); const f=clamp((until-G.day)/365,0,1); const est=Math.round(smEst(p,k)*f); prInit(); G.spend.etc=(G.spend.etc||0)+T.c; p.smk={k,d:G.day,until,f,fy:fyNow()}; (G.smkL=G.smkL||[]).push({pid:p.id,name:p.name,k,d:G.day,fy:fyNow(),a:smEst(p,k),tid:G.user}); G.pr.fan=clamp(G.pr.fan+T.fan,0,100); p.mor=clamp((p.mor??60)+2,0,100);
   news('구단',k==='l'?`${tshort(G.user)}, '${p.name}' 대대적 마케팅…도시 곳곳에 대형 광고`:k==='m'?`${tshort(G.user)}, ${p.name} 앞세운 마케팅 본격화`:`${tshort(G.user)}, ${p.name} 유니폼·굿즈 출시`,`구단이 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 얼굴로 내세운 마케팅을 시작했습니다.`,1,{ref:p.id,fanW:1});
   return `${p.name} 스타 마케팅(${T.l})을 시작했습니다. 비용 ${money(T.c)}, 이번 결산까지 추가 수입 예상 ${money(est)}${est<T.c?` (비용보다 적습니다. 스타 파워 ${starPower(p)}로는 아직 이름값이 약합니다)`:''}. 팬 관심 +${T.fan}.`; }
 /* 캠페인 기간 매달(15일) 기사 */

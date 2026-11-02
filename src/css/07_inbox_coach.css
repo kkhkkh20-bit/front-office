@@ -29,8 +29,8 @@
 @media(max-width:600px){.itabs.wrapt{flex-wrap:wrap;overflow:visible}.itabs.wrapt button{flex:1 1 30%;padding:6px 6px}}
 /* 코치진 */
 .cgr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
-.cg{display:grid;justify-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:3px;padding:6px 2px}.cg span{font-size:11px;color:var(--muted)}.cg b{font:700 18px var(--f-num)}
-.cg .gA{color:var(--good)}.cg .gB{color:var(--r50,#8fd18f)}.cg .gC{color:var(--warn)}.cg .gD{color:var(--bad)}
+.cgg{display:grid;justify-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:3px;padding:6px 2px}.cgg span{font-size:11px;color:var(--muted)}.cgg b{font:700 18px var(--f-num)} /* .cg는 동석 관람 표(18_cowatch)와 이름이 겹쳐 코치 등급 칸이 비어 보였다 */
+.cgg .gA{color:var(--good)}.cgg .gB{color:var(--r50,#8fd18f)}.cgg .gC{color:var(--warn)}.cgg .gD{color:var(--bad)}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
 .csl{display:grid;gap:6px;align-content:start;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
 .csl.empty{border-style:dashed}

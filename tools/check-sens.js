@@ -3,7 +3,11 @@
    수비→상대 BABIP, 구위→탈삼진·실점, 제구→볼넷 허용, 체력→선발 이닝). 사용: node tools/check-sens.js  (N=경기 수, 기본 1200) */
 const fs=require('fs'), path=require('path'); const N=+process.env.N||1200; /* 체력·제구처럼 효과가 작은 항목은 경기 수가 적으면 흔들린다 */
 let seed=7; const rnd=()=>{ let a=seed|0; a=a+0x6D2B79F5|0; seed=a; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; Math.random=rnd;
-const out=new Function('NG','setSeed',fs.readFileSync(path.join(__dirname,'..','dist','engine.js'),'utf8')+`
+/* 세계 두 개(시작 난수 7·11)에서 재고 평균을 본다: 엔진이 바뀌면 같은 시작 난수라도 다른 선수단이 만들어져, 한 세계만으로는 승률 변화(±.02 안팎)가 선수단 구성에 흔들렸다.
+   (같은 세계를 저장해 이전·이후 엔진에 넣으면 결과가 같다는 것을 확인함 — 2026-11-02) */
+const WORLDS=(process.env.WORLDS||'7,11').split(',').map(Number); const outs=[];
+for(const ws of WORLDS){ seed=ws;
+outs.push(new Function('NG','setSeed',fs.readFileSync(path.join(__dirname,'..','dist','engine.js'),'utf8')+`
 DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true;
 const day=G.cal.open+20; const T=G.teams.find(t=>t.id!==G.user).id; const opp=G.teams.filter(t=>t.id!==T).map(t=>t.id);
 const run=(k,dv)=>{ const ps=Object.values(G.players).filter(p=>p.team===T); const keep=ps.map(p=>p.r[k]); if(dv)ps.forEach(p=>{ p.r[k]=Math.min(90,p.r[k]+dv); }); setSeed(globalThis.__SEED||12345);
@@ -19,7 +23,8 @@ const run=(k,dv)=>{ const ps=Object.values(G.players).filter(p=>p.team===T); con
     '실점ERA':P.er*9/ip,'탈삼진K9':P.so*9/ip,'볼넷BB9':P.bb*9/ip,'피홈런HR9':P.hr*9/ip,'선발이닝':P.spOuts/3/P.gs,'상대BABIP':(O.h-O.hr)/(O.ab-O.so-O.hr+O.sf),'피장타XBH9':O.xb*9/ip,'P/PA':P.pc/P.bf,'승률':W/NG}; };
 const base=run('con',0); const res={base}; res.noise=(()=>{ const r0=run; return null; })();
 for(const k of ['con','pow','eye','spd','def','stf','ctl','sta'])res[k]=run(k,10); 
-return res;`)(N,s=>{seed=s;});
+return res;`)(N,s=>{seed=s;})); }
+const out={}; for(const k of Object.keys(outs[0])){ if(!outs[0][k])continue; out[k]={}; for(const m of Object.keys(outs[0][k]))out[k][m]=outs.reduce((a,o)=>a+o[k][m],0)/outs.length; }
 const keys=Object.keys(out.base); const f=(k,v)=>['AVG','OBP','SLG','상대BABIP'].includes(k)?v.toFixed(3):k==='승률'?v.toFixed(3):v.toFixed(2);
 console.log('기준 '+keys.map(k=>k+' '+f(k,out.base[k])).join(' · '));
 const L={con:'컨택',pow:'파워',eye:'선구',spd:'주력',def:'수비',stf:'구위',ctl:'제구',sta:'체력'};
@@ -32,4 +37,4 @@ const need=[['con','AVG',.015,'타율'],['con','K%',-2,'삼진%'],['pow','HR%',.
   ['stf','피장타XBH9',-.15,'2루타·3루타 허용/9'],['stf','피홈런HR9',-.1,'피홈런/9'] /* KBO 분포 맞춤 뒤 구위 +10에 피홈런/9 -0.12 안팎(기준 1.0의 12%) */,['ctl','상대BABIP',-.004,'맞춰 잡기(상대 BABIP)'] /* 투수가 인플레이 타구 안타율을 좌우하는 폭은 작다(DIPS). KBO 분포 맞춤(2026-11-02, 투수 결과 폭 축소) 뒤 제구 +10에 -.005 안팎 */,['ctl','피홈런HR9',-.15,'피홈런/9'],['ctl','P/PA',-.08,'타석당 투구 수'],['ctl','실점ERA',-.6,'평균자책'],['sta','선발이닝',.25,'선발 이닝']];
 for(const [t,k,th,lab] of need){ const d=D(t,k); if(th>0?d<th:d>th)bad.push(`${L[t]} +10인데 ${lab} 변화 ${d.toFixed(3)}(기대 ${th>0?'+':''}${th} 이상)`); }
 for(const t of ['con','pow','eye','spd','stf','ctl'])if(D(t,'승률')<(t==='spd'?.01:.02))bad.push /* 주력은 실제 효과가 +.03 안팎(2400경기)이라 1200경기 표본 오차(±.02)로 .02를 밑돌 수 있다 */(`${L[t]} +10인데 승률 변화 ${D(t,'승률').toFixed(3)}`);
-console.log(bad.length?'능력치 반영 점검: 문제 '+bad.length+'건\n  '+bad.join('\n  '):'능력치 반영 점검: 문제 없음 ('+N+'경기씩)'); process.exit(bad.length?1:0);
+console.log(bad.length?'능력치 반영 점검: 문제 '+bad.length+'건\n  '+bad.join('\n  '):'능력치 반영 점검: 문제 없음 ('+N+'경기씩 · 세계 '+WORLDS.length+'개 평균)'); process.exit(bad.length?1:0);

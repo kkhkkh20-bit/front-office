@@ -9,6 +9,7 @@ function staffView(){
     dev:()=>(G.camp&&!G.camp.done&&(G.camp.seen=true),campCard())+csec('선수 육성',devBody(),`<span class="small muted">${(G.ovs||[]).length?`해외 연수 ${(G.ovs||[]).length}명`:''}</span>`),
     coach:coachView,
     scouts:scoutTeamPage,
+    smkt:staffMarketView,
     camp:campView,
     data:dataPage,
     fac:facView,
@@ -65,20 +66,26 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
     return `<div class="csl"><div class="csl-h"><b>${CROLE[c.role].l}</b>${cur?`<span class="small muted">${cmpT(c,cur)}</span>`:'<span class="pill bad">빈자리</span>'}</div>${kind?`<p class="small muted" style="margin:2px 0">${kind}${CROLE[c.role].g===2?' · 2군 코치의 육성력은 2군에서 뛰는 선수 성장에, 지도력은 2군 경기력에 쓰입니다':''}</p>`:''}
     <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null})}${esc(c.name)} <span class="small muted">${c.age}세</span>${c.star?' <span class="pill acc">스타 코치</span>':''}${obTag(c.ob)}${c.res===G.user?' <span class="pill warn">우선 협상</span>':''}${c.age<=41?' <span class="pill">젊은 지도자</span>':''}${c.from!=null&&c.from!==G.user&&G.teams[c.from]?` <span class="pill">전 ${esc(tshort(c.from))}</span>`:''}</div><div class="csl-s">${coachStats({...c,clan:null},G.user)}</div>${coachAbBox(c)}
     <div class="small muted">${esc(c.car)} · 연 ${money(c.sal)}</div>
-    <div class="row"><button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년 계약</button></div></div>`; };
+    <div class="row"><button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약(${ctSeasonsTxt(1)})</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년 계약(${ctSeasonsTxt(2)})</button></div></div>`; };
   if(mode==='other')return modeBar+`<div class="chips">${[['all','전체'],...CKEYS.map(k=>[k,CROLE[k].l])].map(([k,l])=>`<button data-a="crole" data-v="${k}" class="${role===k?'on':''}">${l}${k!=='all'&&!C[k]?' <i class="cnt" style="background:var(--bad)">빈자리</i>':''}</button>`).join('')}</div><div class="chips">${[['tot','종합순'],['sk','지도력순'],['dv','육성력순'],['sal','연봉 낮은 순']].map(([k,l])=>`<button data-a="csort" data-v="${k}" class="${srt===k?'on':''}">${l}</button>`).join('')}</div>${UI.poachMsg?`<div class="note">${esc(UI.poachMsg)}</div>`:''}`+coachOther(role,srt);
   return modeBar+chips+(L.length?(()=>{ const P=pager('cmk'+role+srt,L,wide()?12:6); return `<div class="cgrid" data-pg="${'cmk'+role+srt}">${P.items.map(card).join('')}</div>${P.bar}`; })():'<p class="small muted">이 자리 후보가 없습니다. 겨울에 새 후보가 나옵니다.</p>'); }
 function coachView(){ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=coachGrade(G.user); const cn=clanCount(G.user);
   const empty=CKEYS.filter(k=>!C[k]).length;
-  const gc=(l,x)=>`<div class="cg"><span>${l}</span><b class="g${x.l}">${x.l}</b></div>`;
+  const gc=(l,x)=>`<div class="cgg"><span>${l}</span><b class="g${x.l}">${x.l}</b></div>`;
   const sumC=`<section class="card"><div class="row between"><h2 class="sec">코치진</h2><span class="small muted">연봉 합계 ${money(coachSal(G.user))}${empty?` · <b style="color:var(--bad)">빈자리 ${empty}</b>`:''}</span></div>
     <div class="cgr">${gc('타격',g.bat)}${gc('투수',g.pit)}${gc('주루',g.run)}${gc('수비',g.def)}${gc('1군 육성',g.dev1)}${gc('2군 육성',g.dev2)}</div>
     <p class="small">${m?`${esc(m.name)} 감독 사단 코치 <b>${cn}명</b>${cn?` · 사단 코치는 지도·육성 +6 · 감독이 바뀌면 사단 코치 ${cn}명(${Object.values(coachesOf(G.user)).filter(c=>c&&c.clan===m.id).map(c=>esc(c.name)).join('·')})이 함께 떠날 수 있고 +6도 사라집니다`:''}${(m.ego||0)>=70?' · 고집 센 감독이라 사단 밖 코치는 -2(카드 숫자에 이미 반영)':''}`:'감독이 없습니다.'}</p>
     <p class="small muted">지도력은 1군 경기력(투수·타격·주루·수비)에, 육성력은 선수 성장 속도에 반영됩니다. 선수 성장에는 그해 1군·2군 출전 비율만큼 1군 코치와 2군 코치진의 육성력이 섞여 들어갑니다(2군에서만 뛰면 2군 코치진). 비어 있는 자리는 낮은 수준으로 계산됩니다.</p></section>`;
   const cs=coachesOf(G.user); const vac1=CKEYS.some(k=>CROLE[k].g===1&&!cs[k]), vac2=CKEYS.some(k=>CROLE[k].g===2&&!cs[k]);
-  const it=inTabs('coach',[['g1',`1군 코치${vac1?' · 빈자리':''}`],['g2',`2군 코치${vac2?' · 빈자리':''}`],['mk',`채용 후보 ${(G.cmarket||[]).length}`],['po','다른 구단']],!vac1&&vac2?'g2':'g1');
-  const body=it.cur==='mk'||it.cur==='po'?(UI.cmode=it.cur==='po'?'other':'free',coachMarket()):`<div class="cgrid">${CKEYS.filter(k=>CROLE[k].g===(it.cur==='g2'?2:1)).map(coachSlot).join('')}</div>`;
-  return sumC+it.bar+(UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+body; }
+  if(UI._smk){ UI.cmode=UI.smkSrc==='oth'?'other':'free'; return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+coachMarket(); } /* 스태프 시장 */
+  const grp=g=>`<div class="cgrid">${CKEYS.filter(k=>CROLE[k].g===g).map(coachSlot).join('')}</div>`; /* 1군·2군 코치를 한 화면에(탭 없이) */
+  return sumC+(UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+csec(`1군 코치${vac1?' · <b style="color:var(--bad)">빈자리</b>':''}`,grp(1))+csec(`2군 코치${vac2?' · <b style="color:var(--bad)">빈자리</b>':''}`,grp(2))+smkLink('coach','코치 채용'); }
+/* 스태프 시장(FM의 스태프 찾기처럼 한 곳): 감독·코치·스카우트·분석원 후보와 다른 구단 소속 스태프 */
+function smkLink(k,l){ return `<div class="row" style="margin:8px 0"><button class="btn small" data-a="smkGo" data-v="${k}">${l} → 스태프 시장</button></div>`; }
+function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free'; const K=[['mgr',`감독 ${(G.mmarket||[]).length}`],['coach',`코치 ${(G.cmarket||[]).length}`],['sc',`스카우트 ${scoutMkt().length}`],['an',`분석원 ${anaMarket().length}`]];
+  const chips=`<div class="chips" style="margin:4px 0 8px">${K.map(([v,l])=>`<button data-a="smkK" data-v="${v}" class="${k===v?'on':''}">${l}</button>`).join('')}</div>${k==='coach'||k==='sc'?`<div class="chips" style="margin:0 0 10px">${[['free','자유 계약 후보'],['oth','다른 구단 소속']].map(([v,l])=>`<button data-a="smkSrc" data-v="${v}" class="${src===v?'on':''}">${l}</button>`).join('')}</div>`:''}`;
+  UI._smk=true; let h=''; try{ h=k==='mgr'?mgrBody():k==='coach'?coachView():k==='sc'?scoutBody():dataPage(); }finally{ UI._smk=false; }
+  return csec('스태프 시장',chips+h,`<span class="small muted">${esc(stPrestigeLine())}</span>`); }
 /* 감독 후보의 사단 */
 function clanBox(x){ const L=x.clan||[]; if(!L.length)return '<p class="small muted">사단 없음 · 코치진은 그대로 유지됩니다.</p>';
   return `<div class="clan"><div class="eyebrow">${esc(x.name)} 사단 ${L.length}명</div><span class="clan-c hd"><b></b><span></span><em>지도</em><i></i><em>육성</em></span>${L.map(c=>`<span class="clan-c"><b>${CROLE[c.role].l}</b><span>${esc(c.name)}</span>${rchip(c.sk+6)}<i>/</i>${rchip(c.dv+6)}</span>`).join('')}<p class="small muted">연봉 합계 ${money(sum(L.map(c=>c.sal)))} · 함께 오면 지도·육성 +6. 같은 자리 기존 코치는 정리됩니다(잔여 연봉 절반 정산).</p></div>`; }
