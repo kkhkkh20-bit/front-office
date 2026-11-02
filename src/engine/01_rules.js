@@ -32,22 +32,22 @@ const F_REPL_MAX=2;
 const fReplLeft=tid=>period()!=='season'?F_REPL_MAX:Math.max(0,F_REPL_MAX-((G.sea&&G.sea.repl&&G.sea.repl[tid])||0)); /* 시즌 중 남은 외국인 교체 횟수 */          // 시즌 중 외국인 교체 횟수 (게임 설정)
 
 const TEAM_DEF=[
-  {city:'서울',nick:'코메츠',code:'SC',hue:241,market:1.25,region:'수도권'},
-  {city:'서울',nick:'하운즈',code:'SH',hue:337,market:1.2,region:'수도권'},
+  {city:'서울',nick:'코메츠',code:'SC',hue:340,market:1.25,region:'수도권'},
+  {city:'서울',nick:'하운즈',code:'SH',hue:241,market:1.2,region:'수도권'},
   {city:'인천',nick:'시걸스',code:'IS',hue:350,market:1.0,region:'수도권'},
   {city:'수원',nick:'스파크스',code:'SS',hue:0,market:.95,region:'수도권'},
   {city:'고양',nick:'스톰',code:'GS',hue:345,market:.85,region:'수도권',indie:true},
-  {city:'대전',nick:'레드폭스',code:'DR',hue:15,market:.9,region:'호남·충청'},
+  {city:'대전',nick:'레드폭스',code:'DR',hue:22,market:.9,region:'호남·충청'},
   {city:'광주',nick:'블레이즈',code:'GB',hue:357,market:1.0,region:'호남·충청'},
   {city:'대구',nick:'썬더스',code:'DT',hue:206,market:1.05,region:'영남'},
   {city:'부산',nick:'웨이브스',code:'BW',hue:215,market:1.15,region:'영남'},
   {city:'창원',nick:'앵커스',code:'CA',hue:217,market:.8,region:'영남'},
 ];
-/* 구단 색: 같은 지역 실제 프로야구단의 상징색 (주색·보조색·어두운 바탕·밝은 강조)
-   서울 코메츠=두산(네이비), 서울 하운즈=LG(분홍·검정), 인천=SSG(카디널 레드), 수원=kt(검정·빨강), 고양=키움(버건디),
-   대전=한화(오렌지), 광주=KIA(빨강·남색), 대구=삼성(파랑), 부산=롯데(네이비), 창원=NC(마린 블루) */
-const TPAL={SC:['#131230','#ffffff','#09091a','#4b5fd6'],SH:['#C7004E','#111111','#2b0011','#ff3f88'],IS:['#CE0E2D','#ffffff','#34040c','#ff4a5c'],SS:['#1a1a1a','#ED1B23','#000000','#ff3c3c'],GS:['#820024','#ffffff','#26000b','#d63361'],
-  DR:['#F15A28','#1a1a1a','#3f1606','#ff7d47'],GB:['#ED1B23','#091330','#3b0507','#ff4048'],DT:['#0066B3','#A1A0A4','#002340','#2e92ec'],BW:['#041E42','#ffffff','#020c1a','#3d72d9'],CA:['#315288','#ffffff','#0f1b2f','#5d8ad6']};
+/* 구단 색: 구단 배지(assets/badges/v1/teams.json)와 같은 지역 실제 프로야구단의 상징색 (주색·보조색·어두운 바탕·밝은 강조)
+   서울 코메츠=LG(빨강·검정), 서울 하운즈=두산(네이비·빨강), 인천=SSG(카디널 레드), 수원=kt(검정·빨강), 고양=키움(버건디),
+   대전=한화(오렌지), 광주=KIA(빨강·남색·금색), 대구=삼성(파랑), 부산=롯데(네이비), 창원=NC(마린 블루·금색). 배지 바탕색을 주색으로 맞춘다(사용자 2026-11-02) */
+const TPAL={SC:['#A50034','#111111','#2b000e','#ff3f78'],SH:['#131230','#ED1C24','#09091a','#4b5fd6'],IS:['#CE0E2D','#ffffff','#34040c','#ff4a5c'],SS:['#141414','#ED1C24','#000000','#ff3c3c'],GS:['#570514','#ffffff','#1f0207','#c23a52'],
+  DR:['#F37321','#282828','#3f1606','#ff8a45'],GB:['#EA0029','#091330','#3b0507','#ff4048'],DT:['#074CA1','#A1A0A4','#002340','#2e92ec'],BW:['#041E42','#ffffff','#020c1a','#3d72d9'],CA:['#1D467B','#C6A269','#0f1b2f','#5d8ad6']};
 function tpal(t){ if(t==null)return ['#4b5b6c','#e3e9ee','#26313c','#8a99aa']; if(typeof t==='number')t=(typeof G!=='undefined'&&G&&G.teams&&G.teams[t])||TEAM_DEF[t]; if(t&&t.logo&&t.logo.c1){ const b=(t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; const L=t.logo; return [L.c1||b[0],L.c2||b[1],L.c3||b[2],L.c4||L.c1||b[3]]; } return (t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; }
 const OWNVOICE={win:'저는 가을야구를 기본으로 봅니다. 성적이 나면 지원은 아끼지 않겠습니다.',profit:'저는 적자를 가장 싫어합니다. 숫자로 보여 주세요.',pr:'관중이 꽉 찬 야구장을 보고 싶습니다. 화제가 되는 구단을 만들어 주세요.'};
 const OWNER={
