@@ -40,7 +40,7 @@ function autoDaily(day){ if(!G.auto||G.unemp)return;
   if(day===KD(12,3)&&autoOn('fre'))try{ autoFre(); }catch(e){}
   if(day===KD(12,5)&&autoOn('sal'))try{ autoSalRound(true); }catch(e){}
   if(day===KD(12,19)&&autoOn('sal'))try{ autoSalRound(false); }catch(e){}
-  if(day===KD(1,5)||(day>KD(1,5)&&G.contract&&!G.contract.done&&G.contract.autoWait))try{ autoConfirm(); }catch(e){} } /* 대기했으면 다음 날부터 매일 다시 확인한다 */
+  if(dobj(day).m<=2&&day>=KD(1,5))try{ autoConfirm(); }catch(e){} } /* 확정일이 지난 뒤 위임하거나 대기 사유가 풀려도 다음 날부터 다시 확인 */
 /* 받은 트레이드 제안: 맡겼으면 부단장이 바로 거절한다 */
 /* 우리 평가(부단장 의견과 같은 기준)로 받는 쪽 가치 - 주는 쪽 가치 */
 function troDiff(off){ const U=team(G.user); const P=id=>G.players[id]; return stackIn(off.give.map(P).filter(Boolean).map(p=>tval(U,p,'in')))-sum(off.get.map(P).filter(Boolean).map(p=>tval(U,p,'out'))); }

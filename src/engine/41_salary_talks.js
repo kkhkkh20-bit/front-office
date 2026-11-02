@@ -15,7 +15,7 @@ function salAsk(p,off){ const b=salBasis(p); initPers(p); const amb=p.pers.amb;
   /* 예비 FA는 시장을 알고 있어 조금 더 부른다 */
   const pf=preFA(p)&&b.war>=1?.05:0;
   const lim=!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)?Math.max(off,preCap(p)):Infinity; return round5(Math.min(lim,Math.max(off,off*(1+clamp(want+pf,0,.45))*agSalMul(p)))); }
-function salTalkInit(){ const C=G.contract; if(!C||C.neg)return; C.y=G.year; C.neg={};
+function salTalkInit(){ const C=G.contract; if(!C||C.neg)return; if(C.y==null)C.y=dobj(G.day).m<=2?G.year-1:G.year; C.neg={};
   for(const id of C.ended){ const p=G.players[id]; if(!p||p.newSal==null)continue; const off=p.newSal; C.neg[id]={off,ask:salAsk(p,off),cur:null,st:'open',wk:-1}; } }
 function salNeg(id){ const C=G.contract; if(!C)return null; salTalkInit(); return C.neg&&C.neg[id]||null; }
 /* 단장이 금액을 제시한다. 한 선수에게는 한 주에 한 번. 요구액에 가까우면 받아들이고, 아니면 요구액을 조금 낮춰 답한다 */

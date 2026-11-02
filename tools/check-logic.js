@@ -16,6 +16,34 @@ const simTo=cond=>{ let n=0; while(n++<800&&!cond()){ G.live=null; G.res=null; G
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(x){} }); try{ if(rosterN(G.user)>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX); }catch(x){} const d0=G.day; try{ advance('day'); }catch(e){ throw new Error('simTo: '+dmd(G.day)+' 하루 진행 중 오류 — '+e.message); } if(G.day===d0&&!cond()&&n>=799)break; }
   if(!cond())throw new Error('simTo: 목표 조건에 도달하지 못함(멈춘 날 '+dmd(G.day)+(blocker&&blocker()?' · 진행 막힘: '+String(blocker()).slice(0,80):'')+')'); }; /* 예외를 날짜만 넘겨 숨기지 않고, 조건에 못 가면 실패(거짓 통과 방지) */
 
+T('[공통 점검] 보상: 완료된 정산은 두 번 호출하거나 저장 후 재실행해도 한 번만 지급한다',()=>{ fresh(); const to=G.teams.find(t=>t.id!==G.user).id; const c={id:'cp반복',pid:-1,name:'검수',grade:'A',from:G.user,to,prev:100,day:G.day,stage:'pick',prot:[]}; G.comp=[c];
+  compResolve(c,null); const after=JSON.stringify({cash:team(to).cash,spend:G.spend,moves:G.moves}); compResolve(c,null);
+  ok(JSON.stringify({cash:team(to).cash,spend:G.spend,moves:G.moves})===after,'완료 정산을 반복하면 보상금이 중복 지급됨');
+  G=JSON.parse(JSON.stringify(G)); compResolve(G.comp[0],null); ok(JSON.stringify({cash:team(to).cash,spend:G.spend,moves:G.moves})===after,'저장 후 재실행하면 보상금이 중복 지급됨'); });
+T('[공통 점검] 보상: 무효 선수·보호 선수·잘못된 단계는 비용과 소속을 바꾸기 전에 거절한다',()=>{ fresh(); const to=G.teams.find(t=>t.id!==G.user).id;
+  const q=compPool(to)[0]; ok(q,'준비 실패: 보상 후보 없음'); const c={id:'cp자격',pid:-1,name:'검수',grade:'A',from:G.user,to,prev:100,day:G.day,stage:'pick',prot:[q.id]}; G.comp=[c];
+  const before=JSON.stringify({spend:G.spend,cash:team(to).cash,team:q.team,comp:G.comp,moves:G.moves}); let thrown=false; try{ compResolve(c,-999999); }catch(e){ thrown=true; }
+  ok(!thrown,'없는 선수를 지정했을 때 정산 중 예외 발생'); ok(JSON.stringify({spend:G.spend,cash:team(to).cash,team:q.team,comp:G.comp,moves:G.moves})===before,'무효 선수 검사 전에 보상금·단계가 변경됨');
+  compResolve(c,q.id); ok(JSON.stringify({spend:G.spend,cash:team(to).cash,team:q.team,comp:G.comp,moves:G.moves})===before,'보호 선수를 데려오거나 보상금을 지급함');
+  c.stage='protect'; const b2=JSON.stringify({spend:G.spend,cash:team(to).cash,comp:G.comp}); compResolve(c,null); ok(JSON.stringify({spend:G.spend,cash:team(to).cash,comp:G.comp})===b2,'보호명단 단계에서 정산됨'); });
+T('[공통 점검] 결정: 없는 선택값은 예외나 완료 표시 없이 거절하고 정상 결정은 한 번만 적용한다',()=>{ fresh(); EVH.fan.make({fan:50}); const e=G.evs[G.evs.length-1]; const snap=()=>JSON.stringify({event:e,spend:G.spend,fan:G.pr.fan,mail:G.mail,log:G.evlog});
+  const before=snap(); let thrown=false; try{ evPick(e.id,99); }catch(x){ thrown=true; } ok(!thrown,'범위 밖 선택값으로 진행 예외'); ok(snap()===before,'유효하지 않은 선택이 완료 처리됨');
+  evPick(e.id,0); const after=snap(); evPick(e.id,0); ok(snap()===after,'같은 결정이 두 번 반영됨'); });
+T('[공통 점검] 협상: 새해에 늦게 초기화해도 계약의 기준 시즌은 직전 시즌으로 유지한다',()=>{ fresh(); G.day=KD(12,1); contractStart(); const y=G.contract.y; delete G.contract.neg;
+  G.day=dnum(G.year+1,1,2); G.year++; salTalkInit(); ok(G.contract.y===y,'협상 초기화가 계약 기준 시즌을 '+y+'에서 '+G.contract.y+'로 바꿈'); });
+T('[공통 점검] 위임: 1월 5일 이후 맡긴 연봉은 이전 대기 기록이 없어도 다음 일일 처리에서 확정한다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.ys); ok(p,'준비 실패');
+  G.day=KD(1,6); p.newSal=p.sal; G.contract={y:G.year-1,tid:G.user,ended:[p.id],foreignEnd:[],foreignDrop:[],released:[],done:false,neg:{[p.id]:{off:p.sal,ask:p.sal,cur:p.sal,st:'ok'}}};
+  const keep=JSON.stringify(G); for(const d of [4,5,6]){ G=JSON.parse(keep); G.day=KD(1,d); autoSet('sal',true); autoDaily(G.day); ok(G.contract.done===(d>=5),'1월 '+d+'일 위임 확정 시점 오류'); } });
+T('[공통 점검] 진행: 새해를 하루 넘겼을 때 지난 시즌 승패를 음수로 표시하지 않는다',()=>{ fresh(); G.day=KD(12,31); G.sea.rec[G.user]={w:71,l:73,t:0}; G.res=null; G.live=null; G.stops=[];
+  const a=advance('day'); ok(a.days===1&&a.to-a.from===1,'새해 하루 진행 일수 오류'); ok(a.w===0&&a.l===0,'경기 없는 새해 진행에서 '+a.w+'승 '+a.l+'패 표시'); });
+T('[공통 점검] 진행: 체험 종료로 날짜가 되돌려지면 실제 진행 일수는 0일이다',()=>{ fresh(); const on=DEMO.on; try{ DEMO.on=true; G.day=KD(10,31); G.startY=G.year; G.res=null; G.live=null; G.stops=[];
+    const a=advance('day'); ok(G.demoEnd&&a.to===a.from,'준비 실패: 체험 종료가 아님'); ok(a.days===0,'날짜가 안 바뀌었는데 '+a.days+'일 진행으로 표시'); } finally { DEMO.on=on; } });
+T('[공통 점검] 캐시: 같은 날 연봉 변경·실제 방출 뒤 프랜차이즈 대상과 상한은 강제 재계산과 같다',()=>{ fresh(); const L=domestic(G.user).filter(p=>!p.ys&&p.age<=32&&ovr(p)>=35&&!hasNtc(p)); ok(L.length>=2,'준비 실패: 대상 부족'); const [a,b]=L;
+  for(const p of domestic(G.user))p.hist=(p.hist||[]).filter(h=>h.t!==G.user); for(const p of [a,b])p.hist=Array.from({length:7},(_,i)=>Object.assign({},p.isP?ZP:ZB,{y:G.year-7+i,t:G.user,lvl:'1군'}));
+  a.sal=1500; b.sal=1400; _franC={k:null}; ok(franId(G.user)===a.id,'준비 실패: 첫 대상이 다름'); b.sal=1600; ok(franId(G.user)===b.id,'같은 날 연봉 변경 후 예전 대상이 남음');
+  const projected=capPayAs(G.user,[],[b.id]); const err=releasePlayer(b.id); ok(!err&&b.team!==G.user,'준비 실패: 실제 방출 실패 '+err); ok(franId(G.user)===a.id,'방출한 선수가 프랜차이즈 캐시에 남음');
+  const cached=capPay(G.user); ok(projected===cached,'제외 인원으로 계산한 상한 전망 '+projected+' ≠ 실제 이동 뒤 '+cached); _franC={k:null}; const uncached=capPay(G.user); ok(cached===uncached,'캐시 유무에 따라 상한 '+cached+' / '+uncached); });
+
 T('[외국인 규정 검수] 아시아쿼터 교체는 일반 외국인 횟수와 별도로 한 번만 가능하다',()=>{ fresh(); G.day=G.cal.open+20; G.sea.repl[G.user]=F_REPL_MAX;
   for(const p of foreignOf(G.user).filter(p=>p.foreign==='아시아'))releaseForeign(p.id);
   const q=newForeign('아시아',{market:true}); q.ask=ASIA_CAP/2; q.fknow=[G.user]; q.fpub=G.day; G.fmarket.push(q.id);
@@ -810,9 +838,9 @@ T('[리뷰 11-02e] 협상 화면 상한 예상은 실제 샐러리캡처럼 상�
   const k40=L[39].v, low=L[L.length-1]; const W=capPayWith(tid,low.p.id,Math.max(low.v,Math.min(k40-10,low.v+70)),G.year); ok(W.tot===capPay(tid),'40위 밖 그대로인데 상한 합계 '+W.tot+' ≠ '+capPay(tid));
   const W2=capPayWith(tid,low.p.id,k40+500,G.year); ok(W2.tot===capPay(tid)-k40+k40+500,'40위 안으로 들어올 때 밀려나는 40번째 몫 계산 '+W2.tot);
   const s1=G.year+1, W3=capPayWith(tid,null,null,s1); ok(W3.s===s1&&W3.cap===capOf(s1),'다음 시즌 계약인데 '+W3.s+' 상한 '+W3.cap); const q=L[5].p; const t0=W3.tot; q.extNext={annual:q.sal+3000,years:3}; ok(capPayWith(tid,null,null,s1).tot===t0+3000,'합의한 다음 시즌 계약이 반영되지 않음'); delete q.extNext; });
-T('[리뷰 11-02e] FA 보상: 저장·불러오기 뒤 현금 보상을 골라도 FA 계약 결과 기록에 보상금이 남는다(객체 대신 식별자로 찾기)',()=>{ fresh(); const ot=otherT(); const p=domestic(ot)[0]; p.faGrade='A'; p.faPrevSal=300; const rec={id:p.id,from:ot,to:G.user,annual:500,years:3}; G.fa={results:[rec],pool:[],offers:{},ai:{},open:true};
-  compStart(p,ot,G.user,rec); const c=G.comp[0]; ok(c&&c.stage==='protect','준비 실패'); ok(!('_rec' in c),'보상 절차가 계약 결과 객체를 직접 들고 있음');
-  G=JSON.parse(JSON.stringify(G)); const c2=G.comp[0]; compResolve(c2,null); const R=G.fa.results.find(r=>r.id===p.id); ok(R&&R.compCash===c2.cash&&c2.cash>0,'저장 뒤 보상금 기록 '+(R&&R.compCash)+' / 받은 '+c2.cash); });
+T('[리뷰 11-02e] FA 보상: 저장·불러오기 뒤 현금 보상을 골라도 FA 계약 결과 기록에 보상금이 남는다(객체 대신 식별자로 찾기)',()=>{ fresh(); const ot=otherT(); const p=domestic(G.user)[0]; p.faGrade='A'; p.faPrevSal=300; const rec={id:p.id,from:G.user,to:ot,annual:500,years:3}; G.fa={results:[rec],pool:[],offers:{},ai:{},open:true};
+  compStart(p,G.user,ot,rec); const c=G.comp[0]; ok(c&&c.stage==='pick'&&c.from===G.user,'준비 실패: 보상금 선택 단계가 아님'); ok(!('_rec' in c),'보상 절차가 계약 결과 객체를 직접 들고 있음');
+  G=JSON.parse(JSON.stringify(G)); const c2=G.comp[0]; compResolve(c2,null); const R=G.fa.results.find(r=>r.id===p.id); ok(R&&R.compCash===900&&c2.cash===900,'저장 뒤 보상금 기록 '+(R&&R.compCash)+' / 받은 '+c2.cash); });
 T('[리뷰 11-02e] 병원을 바꾸면 재활 중인 선수(남은 14일 이상)의 남은 기간에도 새 병원 효과가 적용되고, 짧은 부상은 그대로다',()=>{ fresh(); G.med.hosp='none'; const [a,b]=domestic(G.user); a.injOut=60; b.injOut=7; setHospital('a'); ok(a.injOut===Math.round(60*(1-HOSP.a.rec)),'60일 부상 → '+a.injOut); ok(b.injOut===7,'짧은 부상이 바뀜 '+b.injOut); setHospital('none'); ok(Math.abs(a.injOut-60)<=1,'되돌리면 원래 비율로 '+a.injOut); });
 T('[리뷰 11-02f] 해외 진출: 가을·겨울에 떠난 선수는 그해 해외 기록이 생기지 않고(첫 해외 시즌은 다음 해), 같은 시즌 기록을 두 번 만들지 않는다',()=>{ fresh(); const p=domestic(otherT()).find(q=>!q.isP&&ovr(q)>=55)||domestic(otherT())[0]; G.day=KD(11,1); const id=p.id; ovsLeave(p,'NPB','테스트',2,200,'해외 FA');
   const a=G.abroad.find(x=>x.id===id); abroadYear(); ok(!a.lines.length,'떠난 해에 해외 기록 '+a.lines.map(l=>l.y+' '+(l.pa||l.outs)).join(',')); G.year++; abroadYear(); ok(a.lines.length===1&&a.lines[0].y===G.year,'첫 해외 시즌 기록 '+a.lines.map(l=>l.y).join(',')); if(!a.back){ abroadYear(); ok(a.lines.filter(l=>l.y===G.year).length===1,'같은 시즌 기록이 두 번'); } G.year--; });

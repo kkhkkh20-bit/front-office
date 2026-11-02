@@ -21,7 +21,7 @@ function advance(mode){
   let target=mode==='day'?start+1:mode==='week'?start+7:mode==='month'?dnum(o.m===12?o.y+1:o.y,o.m===12?1:o.m+1,1):start+400;
   if(mode==='month'&&target-start<2)target=start+30;
   if(mode==='next'&&!G.unemp&&(period()==='off'||period()==='pre'))target=Math.min(target,start+7); /* 비시즌·시즌 준비: 한 번에 최대 7일 */
-  G.stops=[]; const r0=G.sea.rec[G.user]; const w0=r0.w,l0=r0.l; let days=0;
+  G.stops=[]; const r0=G.sea.rec[G.user]; const w0=r0.w,l0=r0.l, sea0=G.sea.y; let days=0;
   /* 다음 일까지(event): 경기 결과에서 멈추지 않고, 중요한 소식·결정·포스트시즌 경기·한 주가 끝날 때(월요일) 멈춘다 */
   if(mode==='event'){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+60; } else G.dig=null;
   while(G.day<target){
@@ -29,7 +29,7 @@ function advance(mode){
     if(blocker())break;
     /* 포스트시즌: 다른 팀 경기를 넘기다가 우리 경기까지 한 번에 지나치지 않게, 우리 경기 전날에 멈춘다(바로 다음 날이 우리 경기면 그 경기를 진행) */
     if(days>0&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
-    processDay(); days++;
+    processDay(); days=G.day-start;
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
     if(mode==='event'){ const D=G.dig; D.to=G.day;
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); if(g&&/차전/.test(g.kind||''))break; G.res=null; }
@@ -43,7 +43,7 @@ function advance(mode){
   }
   if(mode==='event'&&G.dig&&!G.dig.games.length)G.dig=null;
   const r1=G.sea.rec[G.user];
-  G.lastAdv={days,from:start,to:G.day,w:r1.w-w0,l:r1.l-l0};
+  G.lastAdv={days,from:start,to:G.day,w:r1.w-(G.sea.y===sea0?w0:0),l:r1.l-(G.sea.y===sea0?l0:0)};
   return G.lastAdv;
 }
 /* 주간 요약용: 우리 선수 시즌 누적 기록 스냅숏 */

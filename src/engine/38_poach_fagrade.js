@@ -45,7 +45,10 @@ function compStart(p,from,to,rec){ const g=COMP[p.faGrade]; const prev=p.faPrevS
   mail('운영팀',`보호선수 명단 제출: ${p.name} 영입 보상`,`${p.name}(${p.faGrade}등급) 영입으로 ${tname(from)}에 보상해야 합니다. 보호선수 ${g.prot}명을 정해 ${dmd(c.exp)}까지 제출하세요. 외국인, 이번 드래프트 지명 신인(입단 예정), 군 복무 중인 선수, 이번 겨울(해가 바뀌어도 같은 스토브리그) FA 계약 선수는 저절로 보호됩니다. ${tname(from)}은(는) 명단 밖에서 1명을 데려가거나 돈으로 받습니다.`,{imp:true,kind:'FA',acts:[{l:'보호명단 정하기',a:'go',v:'trade:fa'}]}); stop('FA',`${p.name} 영입 보상: 보호선수 ${g.prot}명을 정하세요.`); }
 function compAiPick(c){ const g=COMP[c.grade]; const ft=team(c.from); const cand=compPool(c.to).filter(q=>!c.prot.includes(q.id)).sort((a,b)=>aiVal(ft,b)-aiVal(ft,a)); const best=cand[0];
   const cashDiff=c.prev*(g.cash-g.withP)/100; return compResolve(c,best&&aiVal(ft,best)>=Math.max(.8,cashDiff*.15)?best.id:null); }
-function compResolve(c,pid){ const g=COMP[c.grade]; const mult=pid?g.withP:g.cash; const cash=Math.round(c.prev*mult); payOut(c.to,cash,'comp'); payIn(c.from,cash); c.cash=cash; c.stage='done'; c.done=G.day;
+function compResolve(c,pid){
+  if(!c||c.stage!=='pick'||!COMP[c.grade]||!Array.isArray(c.prot))return null;
+  if(pid&&!compPool(c.to).some(q=>q.id===pid&&!c.prot.includes(q.id)))return null; /* 지급·단계 변경 전에 현재 자격을 다시 검사 */
+  const g=COMP[c.grade]; const mult=pid?g.withP:g.cash; const cash=Math.round(c.prev*mult); payOut(c.to,cash,'comp'); payIn(c.from,cash); c.cash=cash; c.stage='done'; c.done=G.day;
   const R0=(G.fa&&G.fa.results||[]).find(r=>r.id===(c.rec??c.pid)&&r.to===c.to); delete c._rec; if(R0)R0.compCash=cash;
   if(pid){ const q=G.players[pid]; termsClear(q); q.team=c.from; q.listed=false; /* 남은 계약(연봉·기간)은 새 구단이 그대로 이어받는다. 상한 반영·옵션·거부권·약속처럼 계약한 구단에만 걸린 조건만 끝난다 */ for(const k in G.lineup)if(G.lineup[k]===q.id)delete G.lineup[k]; story(q,`FA ${c.name} 보상선수로 ${tname(c.from)} 이적`,'move'); mvLog('보상선수',q,c.to,c.from,`FA ${c.name} 보상`); c.player=q.name; c.cpid=q.id; if(R0)R0.compPlayer=q.name;
     wire('FA',`${tname(c.from)}, ${c.name} 보상선수로 ${tname(c.to)} ${q.name}(${posLabel(q)}) 지명`,{tid:c.from,ref:q.id}); }

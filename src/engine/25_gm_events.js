@@ -14,6 +14,7 @@ function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
   e.mid=m.id; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
 function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.';
+  if(!Number.isInteger(i)||i<0||i>=e.opts.length)return '선택할 수 없는 항목입니다.';
   if(e.pt!=null){ const q=G.players[e.data.pid]; if(!q||q.team!==e.pt||G.user!==e.pt){ e.done=true; e.void=true; e.res='선수가 우리 구단을 떠나 결정이 끝났습니다.'; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[종료] ${q?q.name:'선수'}이(가) 우리 구단을 떠나 이 결정은 적용하지 않았습니다.`; } return e.res; } } /* 실행 시점 소속 재검사: 떠난 선수에게 옛 결정(징계·면담 등)을 적용하지 않는다 */
   e.done=true; e.pick=i; if(auto)e.auto=true;
   let r=''; try{ r=(EVH[e.k]&&EVH[e.k].pick(e,i))||''; }catch(err){ r=''; }
