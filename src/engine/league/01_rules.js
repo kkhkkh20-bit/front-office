@@ -175,10 +175,10 @@ const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign);
 function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*3.0:1617+(o-60)*95; return Math.round(Math.min(3000,v)*capOf(G.year)/15117); }
 const round5=v=>Math.max(MIN_SAL,Math.round(v/5)*5);
 /* 직구 평균 구속(km): 리그 평균 146 안팎(KBO 2025~26년 146.0·146.3), 구위 90(원래 능력 약 69.5)이면 155 안팎·최고 160 가까이.
-   VELO_K: 구위 1당 구속. 경기 계산(직구 구종 점수)은 예전 식(veloSim)을 그대로 써서 표시만 바뀐다 */
+   VELO_K: 구위 1당 구속. 화면과 경기 계산(직구 구종 점수)이 같은 구속을 사용한다 */
 const VELO_K=.324;
-const veloOf=p=>Math.round(146+(p.r.stf-41.5)*VELO_K+(p.velo||0));
-const veloSim=p=>137+(p.r.stf-20)/60*17+(p.velo||0);
+const veloOf=p=>Math.min(161,Math.round(146+(p.r.stf-41.5)*VELO_K+(p.velo||0)));
+const veloSim=veloOf;
 const runOf=p=>(4.62-(p.r.spd-20)/60*.6+p.velo*.02).toFixed(2);
 
 

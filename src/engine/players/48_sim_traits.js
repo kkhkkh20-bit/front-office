@@ -17,7 +17,7 @@ function arsenal(p,stfV){ const id=p.id; const velo=veloSim(p); const n=pitchUse
   const add=(p.addP||[]).filter(x=>!pool.includes(x.k)).map(x=>[x.k,stfV+x.q]); /* 캠프에서 새로 익힌 구종 */
   return [['직구',stfV+(velo-145)*.8+trt(p,'fb',3)],...pool.map(k=>[k,stfV+trt(p,'p'+k,6)]),...add]; }
 const _ak=new Map();
-function arsenalK(p){ const key=p.r.stf+':'+(p.role||'')+':'+(p.velo||0)+':'+((p.addP||[]).length); const c=_ak.get(p.id); if(c&&c.k===key)return c.v;
+function arsenalK(p){ const key=p.r.stf+':'+(p.role||'')+':'+(p.velo||0)+':'+JSON.stringify(p.addP||[]); const c=_ak.get(p.id); if(c&&c.k===key)return c.v;
   const best=Math.max(...arsenal(p,p.r.stf).map(x=>x[1])); const v=clamp((best-p.r.stf-4)*.0016,-.012,.025); _ak.set(p.id,{k:key,v}); return v; }
 /* 구종 수: 타순이 세 바퀴째(타자 18명 상대 뒤)부터 타자가 공에 익숙해진다. 구종이 많을수록 덜하다(2구종 능력 -1.6 → 6구종 -0.4, 네 바퀴째는 2배) */
 const _pn=new Map();
@@ -62,3 +62,20 @@ function futPit(p,t){ const sp=isSPr(p); const outs=sp?ri(12,18):ri(4,8); const 
   if(sp){ const cd=pitchApp(p,G.day,pc,true); p.fat=clamp((p.fat||0)+pitFatGain(p,pc,true),0,100); if(R()<p.inj*.075*pc/95*injMult(p)*loadMult(p,cd,G.day)/LOAD_NORM)injure(p,G.day,{sp:true,pc,farm:1}); }
   else for(const [d,q] of ((p.downDay!=null&&p.downDay>G.day-2)?[[G.day,pc]]:[[G.day-2,Math.round(pc/2)],[G.day,pc-Math.round(pc/2)]])){ /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */ const cd=pitchApp(p,d,q,false); if(d===G.day)p.fat=clamp((p.fat||0)+pitFatGain(p,q,false),0,100); if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,G.day,{pc:q,farm:1}); break; } } }
 const arsenal_=arsenal;
+
+/* 화면과 경기가 공유하는 구종 자료. 추정 구위로 볼 때는 원본 선수를 변경하지 않는다. */
+function pitchProfile(p,stf){
+  if(!p||!p.isP)return null; const v={...p,r:{...p.r,stf:stf??p.r.stf}}, a=arsenal(v,v.r.stf), used=new Map(a);
+  const all=arsenalAll(v,v.r.stf), best=Math.max(...a.map(x=>x[1]));
+  return {velo:veloOf(v),max:veloMax(v),activeCount:a.length,third:clamp(1.6-.3*(a.length-2),.4,1.6),bonus:clamp((best-v.r.stf-4)*.0016,-.012,.025),
+    pitches:all.map(([name,value])=>({name,value:used.has(name)?used.get(name):value,active:used.has(name)})),tendency:gbT(v)};
+}
+/* 저장된 현재 상태만 읽는다. depth()를 호출해 보직을 새로 배정하지 않는다. */
+function playerState(p){
+  const labels=[]; if(p.joinY>G.year)labels.push(p.joinY+'시즌 합류 예정'); if(p.injOut>0)labels.push('부상 · 복귀까지 '+p.injOut+'일');
+  if(milServing(p))labels.push('군 복무 중'); else if(isAway(p))labels.push('국가대표 차출 중'); if(p.susp>G.day)labels.push('출장정지 · '+(p.susp-G.day)+'일 남음');
+  const blocked=labels.length>0; labels.push(p.team==null?'미소속':p.e1?'1군 등록':p.ys?'육성선수':entryOn()?'1군 미등록':'등록 준비');
+  if(p.isP)labels.push(p.role?(p.role==='SP'?'현재 선발':'현재 계투'):(isSPr(p)?'선발 자원 · 보직 미배정':'계투 자원 · 보직 미배정'));
+  const rest=p.lastApp==null?null:Math.max(0,G.day-p.lastApp);
+  return {labels,blocked,rest,lastPc:p.lastPc??null,fat:p.fat||0,morale:p.mor??null,arm:p.isP?armRatio(p):null};
+}

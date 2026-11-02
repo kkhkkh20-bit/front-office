@@ -1,6 +1,6 @@
 /* ---------- 세부 능력치 · 레이더 · 성장 차트 ---------- */
 function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t.cur; tf[t.k]=t.fut; } const id=p.id; const o=(k,s)=>hn('dt'+k,id)*(s||4);
-  const c=v=>clamp(Math.round(v),20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
+  const c=v=>clamp(v,20,80); const pers=p.pers||{pro:12,amb:12,loy:12,temp:12}; const ps=v=>c(20+(v-4)/16*60);
   const G2=[];
   if(!p.isP){ const L=p.bt==='좌'?-4:p.bt==='양'?0:2, Rr=p.bt==='좌'?2:p.bt==='양'?0:-1;
     G2.push(['타격',[['평균 타구속도',evOf(p)+'km/h','t'],['컨택',c(tv.con)],['갭 파워',c((tv.con+tv.pow)/2+o('gap'))],['홈런 파워',c(tv.pow)],['선구안',c(tv.eye)],['삼진 회피',c(tv.con*.8+tv.eye*.2+o('k'))],['좌투수 상대',c(tv.con+L+o('vl',3))],['우투수 상대',c(tv.con+Rr+o('vr',3))]]]);
@@ -8,10 +8,10 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
     const arm=['C','RF','SS','3B'].includes(p.pos)?3:p.pos==='1B'?-4:0;
     G2.push(['수비',[['수비 범위',c(tv.def+(['SS','CF'].includes(p.pos)?2:0)+o('rng'))],['포구',c(tv.def+o('fld'))],['송구(어깨)',c(tv.def+arm+o('arm'))],p.pos==='C'?['블로킹·도루 저지',c(tv.def+o('cat'))]:['병살·중계',c(tv.def+o('dp'))],...(p.pos==='C'?[['투수 리드(안방)',c(catLead(Object.assign({},p,{r:Object.assign({},p.r,{def:tv.def})})))]]:[])]]); } /* 포수 리드: 투수 전원의 결과에 더해진다 */
   else { const velo=veloOf(p);
-    const arsenal=arsenal_(p,tv.stf).map(([k,v])=>[k,c(v)]); const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
+    const viewP={...p,r:{...p.r,stf:tv.stf}}; const arsenal=arsenal_(viewP,tv.stf).map(([k,v])=>[k,c(v)]); const best=[...arsenal].sort((a,b)=>b[1]-a[1])[0][0];
     const L=p.th==='좌'?3:-2;
     G2.push(['투구',[['구위',c(tv.stf)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv'))],['제구',c(tv.ctl)],['스태미나',c(tv.sta)],['좌타자 상대',c(tv.stf+L+o('vl',3))],['우타자 상대',c(tv.stf-L/2+o('vr',3))],['견제·수비',c(50+o('hold',8))]]]);
-    { const use=new Set(arsenal.map(x=>x[0])); const rest=arsenalAll(p,tv.stf).filter(([k])=>!use.has(k)).map(([k,v])=>[k+' · 보유(계투라 거의 안 씀)',c(v)]); G2.push(['구종',arsenal.map(([k,v])=>[k+(k===best?' · 결정구':''),v]).concat(rest)]); }
+    { const use=new Set(arsenal.map(x=>x[0])); const rest=arsenalAll(viewP,tv.stf).filter(([k])=>!use.has(k)).map(([k,v])=>[k+' · 보유(계투라 거의 안 씀)',c(v)]); G2.push(['구종',arsenal.map(([k,v])=>[k+(k===best?' · 결정구':''),v]).concat(rest)]); }
     G2.push(['투구 정보',[['직구 평균',velo+'km/h','t'],['직구 최고',veloMax(p)+'km/h','t'],['유형',(hn('gb',id)>.5?'땅볼형':hn('gb',id)<-.5?'뜬공형':'중립'),'t'],['투구 팔',p.th==='좌'?'좌완':'우완','t'],['타순 세 바퀴째',(()=>{ const n=arsenal.length, pn=clamp(1.6-.3*(n-2),.4,1.6); return `구종 ${n}개 · ${pn<=.7?'잘 버팀':pn<=1.1?'보통':'맞기 쉬움'}`; })(),'t']]]); }
   G2.push(['체력·몸',[['체력',c(p.isP?tv.sta:tv.vit)],['내구성',c(80-(clamp(medInj(p),.03,.42)-.03)/.39*60)]]]);
   const mind=[['성실성',ps(pers.pro)],['야망',ps(pers.amb),'n'],['충성심',ps(pers.loy)],['기질 안정',ps(24-pers.temp)],['승부처 집중(멘탈)',c(mentalRt(p))],['꾸준함(기복 적음)',c(consRt(p))]]; /* 멘탈: 득점권·접전 후반·포스트시즌에서만 능력에 더해짐. 꾸준함: 경기별 컨디션·몇 주 단위 슬럼프 폭 */
@@ -38,12 +38,12 @@ function growthSVG(p){ const H=(p.oh||[]).slice(-10).filter(h=>h.y!==G.year).con
     <p class="small muted"><span class="lg" style="background:var(--acc)"></span>종합 능력(해마다 겨울 기준) <span class="lg" style="background:#3fbf6a88"></span>1군 WAR</p>`; }
 /* 측정 데이터(트래킹): 능력치를 모르는 선수도 볼 수 있는 객관적 수치 */
 function trackCard(p){ if(p.prospect)return ''; const T=trackOf(p); if(!T)return ''; const it=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
-  const L=p.isP?[it('직구 평균',T.velo+'km',`최고 ${T.vmax}km`),it('직구 회전수',T.rpm+'rpm'),it('익스텐션',T.ext.toFixed(2)+'m'),it('헛스윙 유도',T.whiff+'%'),it('CSW',T.csw+'%','루킹+헛스윙'),it('땅볼 비율',T.gb+'%')]
+  const L=p.isP?[it('직구 평균',T.velo+'km/h','경기 계산 공통 구속'),it('직구 최고 상한',T.vmax+'km/h','평균 구속 기반 환산')]
     :[it('평균 타구속도',T.ev+'km',`최고 ${T.evmax}km`),it('강한 타구',T.hh+'%','150km 이상'),it('헛스윙률',T.whiff+'%'),it('볼 스윙률',T.chase+'%'),it('1루 도달',T.run.toFixed(2)+'초'),it('송구 속도',T.arm+'km')];
-  return `<section class="card"><div class="row between"><h2 class="sec">측정 데이터</h2><span class="small muted">트래킹 · 리그 평균 대비는 드래프트 표 '측정'에서</span></div><div class="trk">${L.join('')}</div></section>`; }
-function detailCard(p){ const rp=scoutReport(p); if(hideOvr(p)||!rp.tools||!rp.tools.length)return ''; const d=detailOf(p,rp); const fut=rp.ofp!=null&&rp.tools.some(t=>t.fut>t.cur);
+  return `<section class="card"><div class="row between"><h2 class="sec">능력 환산 참고값</h2><span class="small muted">실측 경기 기록이 아닌 핵심 능력 환산값</span></div><div class="trk">${L.join('')}</div></section>`; }
+function detailCard(p){ const rp=scoutReport(p); if(hideOvr(p)||!rp.tools||!rp.tools.length)return ''; const shown=rp.exact?{...rp,tools:rp.tools.map(t=>({...t,cur:p.r[t.k]}))}:rp; const d=detailOf(p,shown); const fut=rp.ofp!=null&&rp.tools.some(t=>t.fut>t.cur);
   /* 능력치 변화(FM 화살표): 우리 선수는 약 6개월 전 능력과 비교해 오른 항목은 ▲와 막대의 밝은 부분, 떨어진 항목은 ▼ */
-  const OLD={}; let RT=''; const DL=p.team===G.user&&rp.exact?rDelta(p):null; if(DL&&rp.tools.some(t=>Math.abs(DL.d[t.k]||0)>=.5)){ RT=`${dsh(DL.from)} 대비`; const od=detailOf(p,{...rp,tools:rp.tools.map(t=>({...t,cur:t.cur-(DL.d[t.k]||0)}))}); for(const [,L] of od.groups)for(const [l,v,t] of L)if(!t)OLD[String(l).split(' · ')[0]]=v; }
+  const OLD={}; let RT=''; const DL=p.team===G.user&&rp.exact?rDelta(p):null; if(DL&&rp.tools.some(t=>Math.abs(DL.d[t.k]||0)>=.5)){ RT=`${dsh(DL.from)} 대비`; const od=detailOf(p,{...rp,tools:shown.tools.map(t=>({...t,cur:t.cur-(DL.d[t.k]||0)}))}); for(const [,L] of od.groups)for(const [l,v,t] of L)if(!t)OLD[String(l).split(' · ')[0]]=v; }
   const bar=([l,v,t])=>t==='t'?`<div class="dt"><span>${esc(l)}</span><b class="dt-t">${esc(String(v))}</b></div>`:t==='n'||t==='i'?`<div class="dt" title="${t==='n'?'성향: 좋고 나쁨이 없습니다':'낮을수록 구단에 유리합니다'}"><span>${esc(l)}</span><b class="num" style="text-align:center;color:${t==='n'?'var(--ink)':rcol(100-v)}">${Math.round(v)}</b><span class="track"><span class="mid"></span><span class="now" style="width:${Math.round((v-20)/60*100)}%;--c:${t==='n'?'var(--dim)':rcol(100-v)}"></span></span></div>`:(()=>{ const o=OLD[String(l).split(' · ')[0]]; const dd=o!=null?dv(v)-dv(o):0; /* 화면에 보이는 숫자(rchip과 같은 기준)로 오르내림을 센다 */ const w=x=>Math.round((clamp(x,20,80)-20)/60*100);
     const ar=dd>=1?`<i class="dar up" title="${esc(RT)} ${dv(o)} → ${dv(v)}">▲${dd}</i>`:dd<=-1?`<i class="dar dn" title="${esc(RT)} ${dv(o)} → ${dv(v)}">▼${-dd}</i>`:'';
     const gb=dd>=1?`<span class="gain" style="left:${w(o)}%;width:${Math.max(1,w(v)-w(o))}%"></span>`:dd<=-1?`<span class="loss" style="left:${w(v)}%;width:${Math.max(1,w(o)-w(v))}%"></span>`:'';
