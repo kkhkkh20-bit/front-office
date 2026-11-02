@@ -21,7 +21,10 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
       await page.waitForTimeout(200);
       let r=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+2,grid:!!document.querySelector('.home-dashboard'),games:document.querySelectorAll('.home-dashboard .ug-r').length}));
       check(!r.overflow,`${size.width}: 홈 가로 넘침`);
-      if(size.width>=1100){check(r.grid,`${size.width}: 열 전체를 묶지 않는 홈 카드 그리드 없음`);check(r.games<=4,`${size.width}: 홈 예정 경기가 4개보다 많음`);}
+      if(size.width>=1100){check(r.grid,`${size.width}: 열 전체를 묶지 않는 홈 카드 그리드 없음`);check(r.games<=4,`${size.width}: 홈 예정 경기가 4개보다 많음`);
+        const side=await page.evaluate(()=>{const s=document.querySelector('.fmside');return {count:s.querySelectorAll('button').length,fits:s.scrollHeight<=s.clientHeight+2};});
+        check(side.count===8&&side.fits,`${size.width}: 사이드바가 8개 핵심 메뉴로 줄지 않거나 세로로 넘침 (${side.count}개)`);
+      }
       if(size.width>=1100){const p=await page.evaluate(()=>({todo:document.querySelector('.home-priority #todoCard')?.getBoundingClientRect().top,next:document.querySelector('.home-priority .nextc')?.getBoundingClientRect().top,compare:!!document.querySelector('.home-priority details[data-k="nxCmp"][open]')}));check(p.todo<350&&p.next<350&&!p.compare,`${size.width}: 할 일·다음 경기 우선 배치 실패`);}
       await page.evaluate(()=>A.tab('roster'));await page.waitForTimeout(200);
       r=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+2,top:document.querySelector('.rt tbody tr.click')?.getBoundingClientRect().top,pager:!!document.querySelector('.roster-list .twpg')}));

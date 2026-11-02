@@ -11,15 +11,22 @@ const ICO3={list:SV('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
  file:SV('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>'),act:SV('<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>'),
  net:SV('<circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M8.5 7.5 10.5 16M15.5 7.5 13.5 16M9 6h6"/>'),clock:SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
  grid:SV('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>'),news:SV('<path d="M4 4h13v16H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v10a2 2 0 0 1-2 2M8 8h5M8 12h5M8 16h3"/>')};
-const FM_SIDE=[[['tab:home','홈','home'],['tab:inbox','소식함','mail'],['tab:roster','선수단','users'],['x:plan','선수단 계획표','grid'],['go:staff:train','훈련·육성','act'],['go:staff:coach','스태프','clip'],['go:league:score','주요 일정','clock'],['cal','달력','cal']],
-  [['go:staff:mgr','감독','user'],['go:club:rel','관계도','net'],['go:staff:med','의료','med']],
-  [['go:trade:market','선수 찾기','search'],['go:trade:block','트레이드','swap'],['go:transfer:fa','FA 시장','brief'],['go:transfer:foreign','외국인','globe'],['go:transfer:draft','드래프트','target'],['go:transfer:contract','계약','file'],['go:club:fin','재정','coin']],
-  [['go:league:stand','리그','trophy'],['go:league:stat','데이터 허브','chart'],['go:club:owner','구단 비전','flag'],['go:club:fans','팬·언론','news'],['tab:me','내 프로필','star']]];
+/* 세부 기능은 상단 하위 탭으로 들어간다. 사이드바에는 8개 상위 화면만 둔다. */
+const FM_SIDE=[[['tab:home','홈','home'],['tab:inbox','소식함','mail'],['tab:roster','선수단','users']],
+  [['tab:trade','트레이드','swap'],['tab:transfer','영입·계약','brief'],['tab:staff','스태프·육성','clip']],
+  [['tab:league','리그','trophy'],['tab:club','구단·재정','club']]];
 const fmPlanOn=()=>UI.tab==='roster'&&UI.it&&UI.it.roster==='depth'&&UI.it.rdepth==='glance';
-function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t&&!(t==='roster'&&fmPlanOn()); if(a==='go')return UI.tab===t&&SUBS[t]&&curSub(t)===s; return false; }
+function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t||(t==='league'&&UI.tab==='cal'); if(a==='go')return UI.tab===t&&SUBS[t]&&curSub(t)===s; return false; }
 function fmSide(unread){ const ic=i=>ICO[i]||ICO2[i]||ICO3[i]||'';
-  return `<aside class="fmside" aria-label="바로 가기">${FM_SIDE.map(g=>`<div class="fms-g">${g.map(([k,l,i])=>{ const [a,t,s]=k.split(':'); const da=a==='x'?'data-a="fmPlan"':a==='cal'?'data-a="calOpen"':a==='tab'?`data-a="tab" data-v="${t}"`:`data-a="go" data-v="${t}:${s}"`; if(G.unemp&&(a==='x'||!['home','inbox','league','me'].includes(t)))return '';
-    return `<button ${da} class="${fmSideOn(k)?'on':''}">${ic(i)}<span>${esc(l)}</span>${t==='inbox'&&unread?`<i class="cnt">${unread>99?'99+':unread}</i>`:''}</button>`; }).join('')}</div>`).join('')}</aside>`; }
+  const groups=FM_SIDE.map(g=>{
+    const items=g.filter(([k])=>!G.unemp||['home','inbox','league'].includes(k.split(':')[1]));
+    if(!items.length)return '';
+    return `<div class="fms-g">${items.map(([k,l,i])=>{const t=k.split(':')[1],on=fmSideOn(k);
+      return `<button data-a="tab" data-v="${t}" class="${on?'on':''}"${on?' aria-current="page"':''}>${ic(i)}<span>${esc(l)}</span>${t==='inbox'&&unread?`<i class="cnt">${unread>99?'99+':unread}</i>`:tabAlert(t)?'<i class="sdot"></i>':''}</button>`;
+    }).join('')}</div>`;
+  }).join('');
+  return `<aside class="fmside" aria-label="바로 가기">${groups}</aside>`;
+}
 const FM_MENU=['home','roster','trade','transfer','staff','league','club'];
 /* 뒤로·앞으로: 메뉴와 하위 탭 이동을 기억한다(최근 40개) */
 function fmKey(){ const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }

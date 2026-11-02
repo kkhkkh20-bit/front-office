@@ -556,7 +556,9 @@ const QUICK=process.env.QUICK==='1';
   /* PC(FM식, 폭 1100 이상): 위 두 줄 메뉴·왼쪽 사이드바·단축키(사용자 2026-11-02 08:24·08:28) */
   if(W>=1100){ where='PC FM식 메뉴'; const keep=await ev(()=>({tab:UI.tab,sub:JSON.stringify(UI.sub||{}),ls:UI.lseg})); await ev(()=>{ closeSheets(); A.tab('home'); });
     const lay=await ev(()=>({top:!!document.querySelector('.fmtop .fm-menu'),side:document.querySelectorAll('.fmside button').length,dd:document.querySelectorAll('.fmdd button').length}));
-    if(lay){ if(!lay.top)add('PC 메뉴','위 큰 메뉴가 없음'); if(lay.side<15)add('PC 메뉴','왼쪽 사이드바 바로 가기가 '+lay.side+'개'); if(lay.dd<10)add('PC 메뉴','큰 메뉴 하위 펼침이 '+lay.dd+'개'); }
+    if(lay){ if(!lay.top)add('PC 메뉴','위 큰 메뉴가 없음'); if(lay.side!==8)add('PC 메뉴','왼쪽 사이드바 핵심 메뉴가 '+lay.side+'개(8개 기대)'); if(lay.dd<10)add('PC 메뉴','큰 메뉴 하위 펼침이 '+lay.dd+'개'); }
+    const parent=await ev(()=>{const it=JSON.stringify(UI.it||{}),out=[];for(const [route,tab] of [['staff:med','staff'],['transfer:foreign','transfer'],['trade:market','trade'],['league:stat','league'],['club:rel','club']]){A.go(route);const on=document.querySelectorAll('.fmside button.on');out.push(on.length===1&&on[0].dataset.v===tab);}A.fmPlan();out.push(document.querySelector('.fmside button.on')?.dataset.v==='roster');A.calOpen();out.push(document.querySelector('.fmside button.on')?.dataset.v==='league');UI.it=JSON.parse(it);return out.every(Boolean);});
+    if(!parent)add('PC 메뉴','하위 화면·선수단 계획·달력에서 상위 메뉴 표시가 사라짐');
     const seq=[]; for(const k of ['F3','F5','F10','Shift+O','Backspace']){ await pg.keyboard.press(k); await pg.waitForTimeout(60); seq.push(await ev(()=>UI.tab+(SUBS[UI.tab]?':'+curSub(UI.tab):''))); }
     if(seq.join(',')!=='roster,trade:market,league:score,club:fin,league:score')add('단축키','F3·F5·F10·Shift+O·Backspace 이동 '+seq.join(','));
     await pg.keyboard.press('F1'); await pg.waitForTimeout(80); const kk=await ev(()=>!!document.querySelector('.fmkeys')); await pg.keyboard.press('Escape'); if(!kk)add('단축키','F1 단축키 목록이 안 열림');

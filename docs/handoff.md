@@ -8,7 +8,7 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02ac').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-02ad').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -132,3 +132,9 @@
 - 최종 검증: `/tmp/front-office-consistent-pages-full.log` 전체 통과. 모듈 6개·규칙 394개·능력치·2029년까지 시뮬 3개·PC 240회 조작·모바일·4개 화면 크기 배치/이동 통과.
 - 전체 점검 후 화면 연결 보완: 신인 드래프트의 요약/후보 2영역, F1 안내를 현재 상세 페이지에 표시, 명단의 표/상세 표시 상태와 열 프리셋 상태 충돌 분리, 상세 스크롤 소유권 연결. 변경 전 실패 각각 확인. 엔진은 바꾸지 않았고 관련 PC/모바일 빠른 UI 및 확장 배치 검사 재통과. 전체 점검은 반복하지 않음.
 - 관련 로그: `/tmp/front-office-final-related-pc.log`, `/tmp/front-office-final-related-mobile.log`, `/tmp/front-office-layout-verified.log`. 후자는 F1→협상/선수 복귀, 협상 스크롤 혼입 방지, 열 프리셋/표시 방식 독립, 신인·창단 드래프트 비율도 확인.
+
+
+## 사이드바 축소 (2026-11-02ad)
+- PC FM_SIDE를 23개 세부 바로 가기에서 8개 상위 메뉴(홈/소식함/선수단/트레이드/영입·계약/스태프·육성/리그/구단·재정)로 줄였다. 기존 하위 탭·상단 펼침·단축키는 유지한다. 달력/프로필/설정은 상단에서 접근한다.
+- 전력 구성·계획표에서도 선수단, 달력에서는 리그를 표시한다. 하위 업무 알림은 상위 메뉴의 점으로 유지. 야인에게는 가능한 메뉴만 표시하고 빈 묶음은 만들지 않는다.
+- 변경 전 23개 실패 확인. 관련 PC 빠른 UI(하위 페이지의 상위 메뉴 표시·계획표·달력·키보드)와 1366×768/1440×900/1920×1080/390×844 배치 검사 및 정적 검사 통과. 화면만의 작은 변경이므로 전체 검사는 반복하지 않음. 로그 `/tmp/front-office-sidebar-ui.log`, `/tmp/front-office-sidebar-layout.log`.
