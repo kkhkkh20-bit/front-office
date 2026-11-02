@@ -62,9 +62,12 @@ function coachDevMult(p){ // 성장 배율: 1군에서 많이 뛴 선수는 1군
   const v1=(p.isP?effC(C.pc,tid,'dv')*.65+effC(C.cc,tid,'dv')*.1:effC(C.bc,tid,'dv')*.75)+effC(C.hc,tid,'dv')*.25, v2=(p.isP?effC(C.fp,tid,'dv'):effC(C.fb,tid,'dv'))*.6+effC(C.fm,tid,'dv')*.4;
   const v=v1*s+v2*(1-s);
   return clamp(1+(v-55)/110,.7,1.35)*(G.mentor&&G.mentor.y===G.year&&p.team===G.user&&p.age<=24?1.05:1); }
-/* 계약 시작 시즌: 정규시즌이 끝난 뒤(9월 이후, 이번 겨울 계약 정리 전) 맺은 계약은 다음 시즌부터 센다. 그래서 이번 겨울 차감에서 빠진다(cs: 시작 시즌) */
-function ctStartS(){ return (dobj(G.day).m>=9&&G.cal&&G.day>G.cal.end&&G.rolled!==G.year)?G.year+1:G.year; }
+/* 계약 시작 시즌: 정규시즌이 끝난 뒤(9월 이후) 맺은 계약은 다음 시즌부터 센다. 그래서 이번 겨울 차감에서 빠진다(cs: 시작 시즌) */
+function ctStartS(){ return (dobj(G.day).m>=9&&G.cal&&G.day>G.cal.end)?G.year+1:G.year; }
 function staffCt(x,years){ x.yrs=years; x.cs=ctStartS(); x.ce=x.cs+years-1; return x; }
+/* 연장은 기존 시작 시즌을 유지한다. 옛 저장은 현재 잔여 기간으로 종료 시즌을 복원한다. */
+function staffCtExtend(x,add){ const left=Math.max(0,x.yrs); if(!left)return staffCt(x,add);
+  if(x.ce==null){ if(x.cs==null)x.cs=G.rolled===G.year?G.year+1:G.year; x.ce=x.cs+left-1; } x.ce+=add; x.yrs=left+add; return x; }
 const ctSeasonsTxt=n=>{ const s=ctStartS(); return n>1?`${s}~${s+n-1} 시즌`:`${s} 시즌`; };
 function hireCoach(id,years){ const c=(G.cmarket||[]).find(x=>x.id===id); if(!c)return '후보가 없습니다.'; const C=G.coach[G.user]; const old=C[c.role];
   if(old){ const pay=Math.round(old.sal*Math.max(0,old.yrs-.5)*.5); G.spend.coach=(G.spend.coach||0)+pay; addLog(`${CROLE[c.role].l} ${old.name}와(과) 결별했습니다(잔여 연봉 정산 ${money(pay)}).`); old.yrs=0; old.clan=null; G.cmarket.push(old); }
@@ -75,7 +78,7 @@ function coachExtTerms(role,add){ const c=coachesOf(G.user)[role]; if(!c)return 
   if(c.extY===G.year)why=`${c.name} 코치와는 올해 이미 계약을 손봤습니다.`; else if(c.age>=64&&add>1)why=`${c.name} 코치(${c.age}세)는 은퇴를 생각하고 있어 1년만 연장합니다.`; else if(c.yrs+add>4)why='코치 계약은 최대 4년까지입니다.';
   return {c,add,sal,why}; }
 function extendCoach(role,add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const T=coachExtTerms(role,+add); if(!T)return '그 자리에 코치가 없습니다.'; if(T.why)return T.why; const c=T.c;
-  c.yrs+=T.add; c.sal=T.sal; c.extY=G.year; addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
+  staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
 /* 우리 코치 승격(PROMO): 2군 투수·타격코치는 1군 같은 자리로, 1군 코치·2군 감독은 수석코치로. 연봉 15% 인상.
    올라갈 자리에 코치가 있으면 그 코치는 비게 되는 자리로 옮긴다(보직 맞교환, 연봉 그대로). 그 코치가 감독 사단이면 감독 관계가 조금 떨어진다. 같은 해 두 번 승격하지 않는다 */
 function promoteTerms(role){ const C=coachesOf(G.user); const c=C[role]; const to=PROMO[role]; if(!c||!to)return null; return {c,to,sal:round5(c.sal*1.15),old:C[to]||null,why:c.prY===G.year?`${c.name} 코치는 올해 이미 승격했습니다.`:''}; }

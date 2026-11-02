@@ -71,8 +71,8 @@ function mgrExtTerms(add){ const m=G.mgr[G.user]; if(!m||m.interim)return null; 
   if(m.extY===G.year)why=`${m.name} 감독과는 올해 이미 계약을 손봤습니다. 다음 해에 다시 이야기할 수 있습니다.`; else if(yrs>5)why='감독 계약은 남은 기간 합계 최대 5년까지입니다.'; else if(m.rel<30)why=`${m.name} 감독이 "지금은 계약 이야기를 할 때가 아닙니다"라며 응하지 않습니다(관계 ${Math.round(m.rel)}).`;
   return {m,add,sal,yrs,why,up,rk,sev0:mgrSevPay(m).pay,sev1:mgrSevPay(Object.assign({},m,{sal,yrs})).pay}; } /* 정산금은 실제 경질과 같은 계산(mgrSevPay) */
 function extendMgr(add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const T=mgrExtTerms(+add); if(!T)return '감독이 없습니다.'; if(T.why)return T.why; const m=T.m; const re=m.yrs<=0;
-  m.yrs=T.yrs; m.sal=T.sal; m.extY=G.year; m.rel=clamp(m.rel+5,0,100); addLog(`${m.name} 감독과 ${T.add}년 ${re?'재계약':'연장 계약'}했습니다(연 ${money(m.sal)}, 계약 ${m.yrs}년 남음).`); try{ chron('mgr',`${m.name} 감독과 ${T.add}년 ${re?'재계약':'연장'}(연 ${money(m.sal)})`); }catch(e){} return ''; }
-function renewMgr(y){ const m=G.mgr[G.user]; if(!m||m.interim)return; if(m.yrs>0)return `${m.name} 감독과는 이미 계약 기간이 남아 있습니다(${m.yrs}년).`; /* 이미 처리한 재계약 제안을 다시 눌러도 연봉이 또 오르지 않게 */ m.yrs=+y; m.sal=round5(m.sal*1.1); addLog(`${m.name} 감독과 ${y}년 재계약했습니다(연 ${money(m.sal)}).`); }
+  staffCtExtend(m,T.add); m.sal=T.sal; m.extY=G.year; m.rel=clamp(m.rel+5,0,100); addLog(`${m.name} 감독과 ${T.add}년 ${re?'재계약':'연장 계약'}했습니다(연 ${money(m.sal)}, 계약 ${m.yrs}년 남음).`); try{ chron('mgr',`${m.name} 감독과 ${T.add}년 ${re?'재계약':'연장'}(연 ${money(m.sal)})`); }catch(e){} return ''; }
+function renewMgr(y){ const m=G.mgr[G.user]; if(!m||m.interim)return; if(m.yrs>0)return `${m.name} 감독과는 이미 계약 기간이 남아 있습니다(${m.yrs}년).`; /* 이미 처리한 재계약 제안을 다시 눌러도 연봉이 또 오르지 않게 */ staffCt(m,+y); m.sal=round5(m.sal*1.1); addLog(`${m.name} 감독과 ${y}년 재계약했습니다(연 ${money(m.sal)}).`); }
 
 /* ===== 인물 관계도: 구단주·사장·감독·코치·선수·타 구단 단장·팬·언론 ===== */
 function nameH(k){ for(let i=0;i<9;i++){ const a=u01(k+'s'+i,7),b=u01(k+'a'+i,11),c=u01(k+'b'+i,13); const n=SUR[Math.floor(a*SUR.length)]+G1[Math.floor(b*G1.length)]+G2[Math.floor(c*G2.length)]; if(!BLOCK.has(n)&&n[1]!==n[2])return n; } return SUR[0]+'도윤'; }

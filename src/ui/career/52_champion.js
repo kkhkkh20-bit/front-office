@@ -1,6 +1,6 @@
 /* ---------- 우승 순간 카드(홈 맨 위). 확인을 누를 때까지 남는다 ---------- */
 function trophySvg(){ return `<svg class="trophy" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 8h24v10c0 9-5 16-12 16S20 27 20 18z" fill="#f2c14e"/><path d="M20 12H10c0 9 5 13 11 13M44 12h10c0 9-5 13-11 13" fill="none" stroke="#f2c14e" stroke-width="3"/><rect x="29" y="33" width="6" height="11" fill="#d9a630"/><rect x="21" y="44" width="22" height="6" rx="1" fill="#d9a630"/><rect x="17" y="50" width="30" height="6" rx="1" fill="#b8871f"/></svg>`; }
-function champHomeCard(){ const c=G.champNew; if(!c||c.seen)return ''; const t=team(G.user); const ev=(G.evs||[]).find(e=>e.k==='champGift'&&!e.done);
+function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=null&&c.tid!==G.user))return ''; const t=team(G.user); const ev=(G.evs||[]).find(e=>e.k==='champGift'&&!e.done);
   const heads=(G.news||[]).filter(n=>n.d>=G.day-5&&(n.v||0)>=3).slice(0,3);
   const FAN=['평생 응원한 보람이 있다 오늘은 그냥 울자','단장님 그동안 욕해서 죄송합니다','퍼레이드 어디서 하냐 연차 쓴다','이 멤버 그대로 내년에도 가자','MVP 유니폼 품절이다 벌써'];
   const fans=FAN.map((x,i)=>[x,hn('cf'+c.y+i,G.user)]).sort((a,b)=>a[1]-b[1]).slice(0,3).map(x=>x[0]);

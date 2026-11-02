@@ -187,12 +187,12 @@ function jobBrief(tid){ const t=team(tid); const L=[]; const per=period(); const
   const inj=playersOf(tid).filter(p=>(p.injOut||0)>=30).sort((a,b)=>b.injOut-a.injOut); L.push(inj.length?`장기 부상 ${inj.length}명(${inj.slice(0,3).map(p=>`${p.name} ${p.injOut}일`).join(', ')})`:'장기 부상 없음');
   try{ L.push(`내년 예상 연봉 총액 ${money(capPayNext(tid))}`); }catch(e){}
   L.push(`구단주 ${OWNER[t.owner]?OWNER[t.owner].label:''}${t.indie?' · 모기업 없음':''}`); return L; }
-function switchTeam(tid){ const old=G.user; const ot=team(old), nt=team(tid); try{ contractHandOff(old); }catch(e){} spendHandOff(old); /* 옛 구단에서 쓴 돈은 옛 구단이 내고, 새 구단 결산에 섞이지 않게 */
+function switchTeam(tid){ champEventsInit(); const old=G.user; const ot=team(old), nt=team(tid); try{ contractHandOff(old); }catch(e){} spendHandOff(old); /* 옛 구단에서 쓴 돈은 옛 구단이 내고, 새 구단 결산에 섞이지 않게 */
   facMoveTeam(old,tid); /* 시설·공사·버스는 구단에 남는다: 떠나는 구단은 그대로 갖고, 가는 구단 것을 그대로 이어받는다 */
   /* 부상 방지 프로그램·병원 제휴·해외 스카우트망·전력분석 수준·영구결번도 구단 것이다: 옛 구단에 두고, 새 구단 것(처음이면 기본 수준)을 이어받는다 */
   { const O=G.orgT=G.orgT||{}; O[old]={med:G.med,intl:G.intl,data:G.data,retNos:G.retNos||[]}; const n=O[tid]; delete O[tid]; G.retNos=n&&n.retNos?n.retNos:[]; /* 영구결번도 그 구단 것 */
     G.med=n&&n.med?n.med:{prev:1,hosp:'none'}; G.intl=n&&n.intl?n.intl:{us:1,la:0,jp:0,tw:0,au:0}; G.data=n&&n.data?n.data:{lv:1}; }
-  ot.gm=mkGM(old); ot.rel=60; nt.gm=null; G.user=tid; nt.trust=55; nt.rel=50;
+  ot.gm=mkGM(old); ot.rel=60; nt.gm=null; G.user=tid; champAdopt(tid); nt.trust=55; nt.rel=50;
   G.goals=null; G.policy=null; G.devProg=[]; try{ ovsHandOff(old,tid); }catch(e){ G.ovs=[]; } G.lineup={}; G.offers=[]; G.shortlist=[]; G.tsug=null; G.mentor=null;
   /* 캠프: 옛 구단 훈련 방향·시작 기록은 두고, 새 구단 캠프를 합류 시점 기준으로 이어받는다(방향은 기본 '균형', 결산 비교는 합류일부터) */
   G.camp=G.camp&&!G.camp.done?{focus:'balance',done:false,snap:campSnap(),join:G.day,byT:Object.assign({},G.camp.byT||{},G.camp.focus?{[old]:G.camp.focus}:{})}:null;
