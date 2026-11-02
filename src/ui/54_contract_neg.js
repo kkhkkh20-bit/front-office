@@ -101,8 +101,8 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       ${N.k==='fa'&&G.fa.offers[p.id]?'<button class="btn danger" data-a="ngtWithdraw">제안 철회</button>':''}<button class="btn ng-close" data-a="ngtClose">협상 마치기</button></div></div></div>`; }
 function ngtSet(v){ const N=UI.ngt; if(!N)return; const [f,x]=v.split(':'); const T=N.T;
   if(x[0]==='='){ const val=+x.slice(1); if(f==='ntc')T.ntc=!!val; else if(f==='years'){ ngtYears(N,val); if(N.k==='ext')N.msg=null; } else T[f]=val; }
-  if(T.pOut&&(T.pOut>=(T.years||1)||(N.k==='ext'&&T.pOut<pOutMin(G.players[N.id],ngtSeasons(N)[0]))))T.pOut=0; /* 옵트아웃은 계약 기간 안쪽, 비FA는 FA 자격이 생기는 해부터 */
   else { T[f]=Math.max(f==='annual'?MIN_SAL:0,round5((T[f]||0)+(+x))||0); N.ed=true; N.kept=false; }
+  if(T.pOut&&(T.pOut>=(T.years||1)||(N.k==='ext'&&T.pOut<pOutMin(G.players[N.id],ngtSeasons(N)[0]))))T.pOut=0; /* 옵트아웃은 계약 기간 안쪽, 비FA는 FA 자격이 생기는 해부터 */
   if(f==='bonus'||f==='opt')T[f]=Math.max(0,Math.round((T[f]||0)/5)*5); }
 function ngtSubmit(){ const N=UI.ngt; const p=G.players[N.id]; const T={...N.T};
   if(N.k==='fa'){ if(faOutBlocked(G.user,p)){ N.msg=`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조).`; return; }
