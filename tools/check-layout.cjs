@@ -14,13 +14,14 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
     await page.goto(server.url,{waitUntil:'domcontentloaded'});
     console.log('배치 검사: 새 게임 준비');
     await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);G.tut={done:true,step:99};hireMgr(G.mmarket[0].id,3);G.medSet=true;UI.menu=false;UI.title=false;UI.tab='home';render();});
-    for(const size of [{width:1366,height:768},{width:1440,height:900},{width:1920,height:1080},{width:390,height:844}]){
+    for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1440,height:900},{width:1920,height:1080},{width:390,height:844}]){
       console.log('배치 검사: '+size.width+'×'+size.height);
       await page.setViewportSize(size);
       await page.evaluate(()=>{closeSheets();UI.tab='home';render();});
       await page.waitForTimeout(200);
       let r=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+2,grid:!!document.querySelector('.home-dashboard'),games:document.querySelectorAll('.home-dashboard .ug-r').length}));
       check(!r.overflow,`${size.width}: 홈 가로 넘침`);
+      if(size.width>=1100){const fit=await page.evaluate(()=>({page:document.documentElement.scrollHeight,h:innerHeight}));check(fit.page<=fit.h+3,`${size.width}: 홈에서 페이지 스크롤이 필요함 (${fit.page}/${fit.h})`);}
       if(size.width>=1100){check(r.grid,`${size.width}: 열 전체를 묶지 않는 홈 카드 그리드 없음`);check(r.games<=4,`${size.width}: 홈 예정 경기가 4개보다 많음`);
         const side=await page.evaluate(()=>{const s=document.querySelector('.fmside');return {count:s.querySelectorAll('button').length,fits:s.scrollHeight<=s.clientHeight+2};});
         check(side.count===8&&side.fits,`${size.width}: 사이드바가 8개 핵심 메뉴로 줄지 않거나 세로로 넘침 (${side.count}개)`);
@@ -34,6 +35,7 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
       r=await page.evaluate(()=>{const sheet=document.querySelector('#sheet .sheet'),radar=document.querySelector('.pf-radar'),core=document.querySelector('.pf-core-compact');return{app:getComputedStyle(document.querySelector('#app')).display,back:!!document.querySelector('.detail-back'),left:sheet.getBoundingClientRect().left,width:sheet.getBoundingClientRect().width,core:!!core,under:!!core&&!!radar&&radar.contains(core),large:!!document.querySelector('.pf-main .pf-core'),overflow:sheet.scrollWidth>sheet.clientWidth+2};});
       check(r.app==='none'&&r.back,`${size.width}: 상세가 한 화면으로 전환되지 않음`);check(r.left===0&&Math.abs(r.width-size.width)<2,`${size.width}: 상세 화면 폭 불일치`);
       check(r.core&&r.under&&!r.large,`${size.width}: 핵심 능력이 레이더 아래의 작은 요약으로 이동하지 않음`);check(!r.overflow,`${size.width}: 프로필 가로 넘침`);
+      if(size.width>=1100){const fit=await page.evaluate(()=>{const bat=UI.sheet,a=document.documentElement.scrollHeight;A.player(playersOf(G.user).find(p=>p.isP).id);const p=document.documentElement.scrollHeight;A.player(bat);return {page:a,pitcher:p,h:innerHeight};});check(fit.page<=fit.h+3&&fit.pitcher<=fit.h+3,`${size.width}: 능력 화면에서 페이지 스크롤이 필요함 (타자 ${fit.page}, 투수 ${fit.pitcher}/${fit.h})`);}
       if(size.width===1366){
         await page.keyboard.press('F1');check(await page.locator('#sheet .fmkeys.detail-page').count()===1,'선수 상세에서 F1 안내가 숨겨짐');await page.keyboard.press('Escape');check(await page.locator('#sheet .pf-overview').count()===1,'F1 안내에서 선수 상세로 복귀 실패');
         const y=await page.evaluate(()=>{A.ngtOpen('ext:'+UI.sheet);UI._ngtY=300;renderSheet();A.fmKeysOpen();return scrollY;});
@@ -45,6 +47,9 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
       check(!r.sheet&&r.tab==='roster'&&Math.abs(r.y-returnY)<3,`${size.width}: 목록·스크롤 복귀 실패 (${r.y}/${returnY})`);
     }
     await page.setViewportSize({width:1366,height:768});
+    await page.evaluate(()=>A.tab('home'));await page.locator('[data-a="homePanel"][data-v="work"]').click();
+    check(await page.locator('.hw-work .card').count()>0,'홈 업무·보고 탭 내용 누락');await page.locator('[data-a="homePanel"][data-v="team"]').click();check(await page.locator('.hw-work .card').count()>0,'홈 선수단 요약 탭 내용 누락');await page.locator('[data-a="homePanel"][data-v="overview"]').click();
+    const home=await page.evaluate(()=>{const n=(G.news||[]).filter(x=>!x.oth)[1];if(n){A.homeNews(n.id);if(!document.querySelector('.hw-news h3')?.textContent.includes(n.t))return false;}const d=G.day;G.day=G.cal.open;render();const L=standOrder().order,R=[...document.querySelectorAll('.hw-stand tbody tr')];let rank=1;const valid=R.length===10&&R.every((r,i)=>{if(i&&!tieOf(L[i-1],L[i]))rank=i+1;return +r.cells[0].textContent===rank&&r.cells[2].textContent===L[i].w+'-'+L[i].l+(L[i].t?'-'+L[i].t:'');});G.day=d;render();return valid;});check(home,'홈 기사 선택·실제 승패·공동 순위 연결 실패');await page.evaluate(()=>A.tab('roster'));
     const mode=await page.evaluate(()=>{A.rview('add');const cols=rcolKeys(false).join(',');A.rviewMode('card');const card=UI.rlayout==='card'&&!document.querySelector('.roster-list .rt');A.rviewMode('table');const back=!!document.querySelector('.roster-list .rt')&&rcolKeys(false).join(',')===cols&&UI.rview.bat==='add';A.rview('base');return {card,back};});
     check(mode.card&&mode.back,'명단의 표시 방식과 열 프리셋이 충돌');
     await page.evaluate(()=>A.go('staff:smkt'));
@@ -79,5 +84,5 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
     }
   }finally{await browser?.close();await server.close();}
   if(failures.length)throw new Error(failures.join('\n'));
-  console.log('본문 배치·상세 이동: 4개 화면 크기 통과');
+  console.log('본문 배치·상세 이동: 5개 화면 크기 통과');
 })().catch(e=>{console.error(e.message);process.exitCode=1;});

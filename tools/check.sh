@@ -18,6 +18,7 @@ step "장기 시뮬"; export STRICT=1; SEED=7 node tools/check-sim.js $END || fa
 step "화면 점검(넓은 화면)"; node tools/check-ui.js || fail=1
 step "화면 점검(휴대폰)"; W=390 QUICK=1 node tools/check-ui.js || fail=1
 step "노트북 배치·상세 이동"; node tools/check-layout.cjs || fail=1
+step "경기 대시보드·재생 기록"; node tools/check-match.cjs || fail=1
 echo
 if [ $fail = 0 ]; then echo "전체 점검: 통과"; else echo "전체 점검: 실패 — 위 내용을 확인하세요"; fi
 exit $fail

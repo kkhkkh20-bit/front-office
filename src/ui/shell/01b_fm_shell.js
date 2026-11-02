@@ -45,7 +45,7 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
     return `<div class="fmm${UI.tab===k?' on':''}"><button class="fmm-b" data-a="tab" data-v="${k}">${esc(it[1])}${al?'<i class="sdot"></i>':''}${subs?'<i class="fmm-c">▾</i>':''}</button>${subs?`<div class="fmdd" role="menu">${subs.map(([s,l])=>`<button data-a="go" data-v="${k}:${s}">${esc(l)}${subAlert(k,s)?'<i class="sdot"></i>':''}</button>`).join('')}</div>`:''}</div>`; }).join('');
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
-  return `<div class="shell fmsh">
+  return `<div class="shell fmsh${UI.tab==='home'&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
   <header class="fmtop"><div class="fm1">
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="myRos" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>

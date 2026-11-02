@@ -19,7 +19,9 @@ function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH
 }
 function closeSheets(){ const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; UI.mgrCandidate=null; UI.fmKeys=false; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
 const A={
-  detailBack(){if(UI.fmKeys){UI.fmKeys=false;render();return;}if(UI.ngt||UI.meet){UI.ngt=null;UI.meet=null;renderSheet();render();return;}if(UI.negWin){UI.negWin=null;renderSheet();render();return;}closeSheets();},
+  homePanel(v){UI.homePanel=v;render();},
+  homeNews(v){UI.homeNews=+v;render();},
+  detailBack(){if(UI.fmKeys){UI.fmKeys=false;render();return;}if(UI.ngt||UI.meet){UI.ngt=null;UI.meet=null;renderSheet();render();return;}if(UI.negWin){UI.negWin=null;renderSheet();render();return;}if(UI.castRet&&UI.sheet!=null){const c=UI.castRet;UI.sheet=null;UI.castRet=null;UI.cast=c;c.play=false;renderSheet();return;}closeSheets();},
   mgrCandidate(v){UI.mgrCandidate=v;UI.mgrMsg=null;renderSheet();},
   analysisY(v){ UI.analysisY=+v; renderSheet(); },
   smkGo(v){ UI.smkK=v; UI.smkSrc='free'; A.go('staff:smkt'); }, smkK(v){ UI.smkK=v; render(); }, smkSrc(v){ UI.smkSrc=v; render(); }, /* 스태프 시장 */
@@ -283,6 +285,10 @@ const A={
   lseg(v){ if(v==='find'){ A.go('trade:find'); return; } UI.lseg=lsegFix(v);render();window.scrollTo(0,0);},
   gtab(v){ UI.gtab=v; renderSheet(); },
   pbpGo(v){ const [g,k]=v.split(':').map(Number); UI.pbp={g,k:Math.max(0,k)}; UI.gtab='pbp'; renderSheet(); },
+  castView(v){if(UI.cast&&['field','data','teams'].includes(v)){UI.cast.view=v;const el=document.querySelector('.match-dashboard');if(el)el.dataset.view=v;document.querySelectorAll('[data-a="castView"]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));}},
+  castTeam(v){if(UI.cast&&['a','h'].includes(v)){UI.cast.team=v;castDashboardUpdate(G.games[UI.cast.g],UI.cast.k);}},
+  castSeek(v){if(UI.cast)castJump(+v,false);},
+  castEvent(v){if(UI.cast&&+v<UI.cast.k)castJump(+v,true);},
   cast(v){ const gi=+v; const g=G.games[gi]; if(!g||!g.pbp||!g.pbp.length)return; UI.sheet=null;UI.posSheet=null;UI.game=null;UI.menu=false;UI.castRet=null; UI.cast={g:gi,k:0,play:true,spd:UI.castSpd||1,mode:UI.castMode==='all'?'all':'hl'}; renderSheet(); },
   castClose(noCw){ sndStopAll(); CT.tok++; CT.run=false; UI.cast=null; UI.castRet=null; renderSheet(); const cw=UI.cwAfter; UI.cwAfter=null; if(!noCw&&cw&&G.cwS&&G.cwS.id===cw)A.cwOpen(); }, /* 함께 본 경기: 중계를 닫으면 동석 결과 */
   castPlay(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; if(c.k>=L.length)c.k=0; c.play=!c.play; CT.tok++; CT.run=false; cBallHide(); if(c.play)castLoop(); else { cDraw(c.k,250); sndStop('amb'); sndStop('chant'); } const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play?'일시정지':'재생'; },

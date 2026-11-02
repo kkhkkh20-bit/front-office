@@ -112,6 +112,7 @@
       "src/ui/shell/03_menu.js",
       "src/ui/league/04_league_helpers.js",
       "src/ui/home/05_home.js",
+      "src/ui/home/06_home_workspace.js",
       "src/ui/contracts/06_fa.js",
       "src/ui/career/07_relation_map.js",
       "src/ui/career/08_ob_feats_abroad.js",
@@ -129,6 +130,7 @@
       "src/ui/matches/20_art_sound.js",
       "src/ui/matches/21_cast.js",
       "src/ui/matches/22_pbp.js",
+      "src/ui/matches/23_match_dashboard.js",
       "src/ui/market/23_trade_compare.js",
       "src/ui/components/24_cards.js",
       "src/ui/players/25_squad_glance.js",
@@ -219,7 +221,10 @@
       "src/css/players/20_player_analysis.css",
       "src/css/players/21_player_readout.css",
       "src/css/players/22_full_player_profile.css",
-      "src/css/shell/23_consistent_pages.css"
+      "src/css/shell/23_consistent_pages.css",
+      "src/css/matches/24_match_dashboard.css",
+      "src/css/home/25_home_workspace.css",
+      "src/css/players/26_compact_profile.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

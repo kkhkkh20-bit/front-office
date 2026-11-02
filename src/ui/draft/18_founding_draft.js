@@ -202,11 +202,7 @@ function homeView(){
   const o=UI.open.homeMore??false;
   const more=moreBody?`<details class="moreg" data-k="homeMore" ${o?'open':''}><summary><span>더 보기</span><i>우리 팀 주요 선수 · 구단 상태 · 일정</i></summary><div class="moreb">${moreBody}</div></details>`:'';
   const gh=t=>`<h2 class="grp-t">${t}</h2>`;
-  if(fmOn()){
-    const cards=(name,items)=>items.filter(Boolean).map(h=>`<div class="home-module home-${name}">${h}</div>`).join('');
-    const urgent=[champHomeCard(),cerHomeCard(),resultHome(),liveCard(),digestCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()];
-    return `${stripBar()}${dashTiles()}<div class="home-priority">${cards('today',[todoCard(4)])}${cards('game',[nextCard()])}</div><div class="home-dashboard">${cards('today',urgent)}${cards('game',[upcomingGames(4)])}${cards('league',[miniStand(),mvHomeCard(),formCard(),newsCard()])}${cards('more',[desk,more])}</div>`;
-  }
+  if(fmOn()&&!G.live)return homeWorkspace();
   if(wide())return `${stripBar()}${dashTiles()}${stBand()}<div class="homeg"><div class="col">${gh('오늘')}${today}</div><div class="col">${gh('리그 현황')}${league}${more}</div></div>`;
   const todo=[cerHomeCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),todoCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean).join('');
   const games=[resultHome(),liveCard(),digestCard(),nextCard(),upcomingGames(10)].filter(Boolean).join('');

@@ -124,7 +124,7 @@ function cfmBundle(s0){ const nw=(G.mail||[]).filter(m=>+String(m.id).slice(1)>s
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(['analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
+  if(['castSeek','analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
      예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
@@ -134,6 +134,7 @@ document.addEventListener('click',e=>{
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; const a=el.dataset.a;
+  if(a==='castSeek'){A.castSeek(el.value);return;}
   if(a==='analysisY'){ A.analysisY(el.value); return; }
   if(a==='tsel'||a==='mkt')A[a](el.dataset.v,el,e);
   if(a==='lfTeam'){UI.lf.team=el.value;render();}
@@ -170,7 +171,7 @@ document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.mat
 document.addEventListener('keydown',e=>{
   if(UI.fmKeys&&e.key==='Escape'){ UI.fmKeys=false; render(); return; }
   try{ if(fmHotkey(e))return; }catch(x){} /* PC 단축키(FM식) */
-  if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; } if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
+  if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
   if(e.key==='Escape'&&UI.negWin&&!UI.ngt&&!UI.meet){ UI.negWin=null; renderSheet(); render(); return; }
   if(e.key==='Escape'&&(UI.ngt||UI.meet)){ UI.ngt=null; UI.meet=null; renderSheet(); render(); return; }
   if(e.key==='Escape'&&(document.documentElement.classList.contains('detail-page-open')||UI.sheet!=null||UI.posSheet||UI.game!=null||UI.menu||UI.wkres)){A.detailBack();return;}

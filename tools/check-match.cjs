@@ -1,0 +1,38 @@
+/* 경기 대시보드: 실제 경기 기록으로 재생·시간 경계·화면 배치·상세 복귀를 확인한다. */
+const assert=require('node:assert/strict');
+const path=require('node:path');
+const {chromium}=require('playwright');
+const {startHtmlServer}=require('./lib/ui-server.cjs');
+(async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const errors=[];
+  const check=(yes,msg)=>{if(!yes)errors.push(msg);};
+  try{browser=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});const page=await browser.newPage({viewport:{width:1366,height:768}});page.on('pageerror',e=>errors.push(e.message));
+    await page.goto(server.url,{waitUntil:'domcontentloaded'});
+    await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id;const g=simGame(G.day,G.user,op,false);applyGame(G.day,G.user,op,g,false);G.games=[gameRecord(G.day,G.user,op,g,'')];UI.title=false;UI.tab='home';render();A.cast(0);UI.cast.play=false;castJump(0,false);});
+    let r=await page.evaluate(()=>{const g=G.games[0];return {helper:typeof castSnapshot==='function',starts:!!g.box.h.lineup&&!!g.box.a.lineup,dashboard:!!document.querySelector('.match-dashboard')};});
+    check(r.helper&&r.starts&&r.dashboard,'기록 기반 대시보드·선발 스냅샷 없음');
+    if(r.helper){
+      r=await page.evaluate(()=>{const g=G.games[0],n=Math.floor(g.pbp.length/2),s=castSnapshot(g,n);const copy=JSON.parse(JSON.stringify(g));copy.hs=987;copy.as=654;for(const side of ['a','h'])for(const p of copy.box[side].bat){p.h=999;p.hr=999;p.rbi=999;}copy.pbp=copy.pbp.map((x,i)=>i<n?x:[x[0],999999,999998,'HR',0,[0,0,0],9,999,999]);const t=castSnapshot(copy,n),zero=castSnapshot(g,0),end=castSnapshot(g,g.pbp.length);return {private:JSON.stringify(s)===JSON.stringify(t),zero:zero.state.sa===0&&zero.state.sh===0&&zero.teams.a.stats.h===0&&zero.teams.h.stats.h===0,end:end.state.sa===g.as&&end.state.sh===g.hs,hits:['a','h'].every(k=>end.teams[k].stats.h===g.box[k].bat.reduce((a,b)=>a+b.h,0)),bb:['a','h'].every(k=>end.teams[k].stats.bb===g.box[k].bat.reduce((a,b)=>a+b.bb,0))};});
+      check(r.private&&r.zero&&r.end&&r.hits&&r.bb,'재생 시점 집계·최종 기록 일치·미래 결과 차단 실패 '+JSON.stringify(r));
+      r=await page.evaluate(()=>{const g=JSON.parse(JSON.stringify(G.games[0])),old=g.box.a.lineup[0],replacement={...old,id:-10001,n:'교체 검증 선수'},lineup=g.box.a.lineup.map((x,i)=>i?x:replacement);g.box.a.changes=[{at:1,lineup}];g.box.a.bat.push({...replacement,ab:0,h:0});const before=castLineup(g,'a',0),after=castLineup(g,'a',1),s=castSnapshot(g,1);const timeline=before[0].id===old.id&&after[0].id===replacement.id,next=s.batter===lineup[1].id;delete g.box.a.lineup;delete g.box.h.lineup;delete g.box.a.changes;const legacy=castSnapshot(g,0);return {timeline,next,legacy:legacy.legacy&&legacy.teams.h.lineup.length===9&&cFielders(g,0,0).length===8};});
+      check(r.timeline&&r.next&&r.legacy,'교체 시점·다음 타순·이전 저장 호환 실패 '+JSON.stringify(r));
+    }
+    for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1440,height:900},{width:1920,height:1080},{width:390,height:844}]){
+      await page.setViewportSize(size);await page.evaluate(()=>{render();UI.cast.play=false;castJump(Math.floor(G.games[0].pbp.length/2),false);});await page.waitForTimeout(250);
+      r=await page.evaluate(()=>{const root=document.querySelector('.cast'),stage=document.querySelector('#cs-stage'),rect=stage.getBoundingClientRect();return{w:innerWidth,h:innerHeight,overflow:root.scrollWidth>root.clientWidth+2,field:rect.width>180&&rect.height>160&&rect.bottom<=innerHeight,teams:document.querySelectorAll('.md-team-panel').length,stats:!!document.querySelector('#md-stats'),events:!!document.querySelector('#md-events'),flow:!!document.querySelector('#md-flow svg'),roster:document.querySelectorAll('#md-roster [data-a="castPlayer"]').length,control:document.querySelector('#cs-play').getBoundingClientRect().bottom<=innerHeight};});
+      check(!r.overflow&&r.field&&r.teams===2&&r.stats&&r.events&&r.flow&&r.roster>=9&&r.control,`${size.width} 경기 화면 배치 실패 `+JSON.stringify(r));
+      const bench=await page.evaluate(()=>{const r=document.querySelector('.md-dugout').getBoundingClientRect(),p=document.querySelector('#md-roster .md-roster-player').getBoundingClientRect();return r.height>=70&&p.height>=50&&p.top>=r.top&&p.bottom<=r.bottom+1&&r.bottom<=innerHeight;});check(bench,`${size.width} 하단 출전 선수 줄이 접히거나 가려짐`);
+      if(size.width>=1100){r=await page.evaluate(()=>({chart:document.querySelector('#md-prob svg').getBoundingClientRect().height,score:document.querySelector('#md-linescore tbody tr:last-child').getBoundingClientRect().bottom<=document.querySelector('#md-linescore').getBoundingClientRect().bottom+1}));check(r.chart>35&&r.score,`${size.width} 확률 그래프·이닝별 점수 가림`);}
+      if(process.env.CAPTURE)await page.screenshot({path:`/workspace/front-office-match-${size.width}.png`});
+      if(size.width<1100){await page.locator('[data-a="castView"][data-v="data"]').click();check(await page.locator('#md-flow svg').isVisible(),'휴대폰 기록 탭 전환 실패');await page.locator('[data-a="castView"][data-v="teams"]').click();check(await page.locator('.md-team-panel').first().isVisible()&&await page.locator('.md-team-panel').last().isVisible(),'휴대폰 선수단 탭 전환 실패');await page.locator('[data-a="castView"][data-v="field"]').click();}
+    }
+    await page.setViewportSize({width:1366,height:768});
+    await page.locator('#md-seek').evaluate(el=>{el.value='2';el.dispatchEvent(new Event('change',{bubbles:true}));});check(await page.evaluate(()=>UI.cast.k===2&&!UI.cast.play),'장면 슬라이더 이동 실패');
+    r=await page.evaluate(()=>{const g=G.games[0],hs=g.hs;g.hs=g.as;castJump(g.pbp.length,false);const tie=castSnapshot(g,g.pbp.length).history.at(-1).wp===.5&&document.querySelector('#cs-wpt').textContent==='무승부';g.hs=hs;castJump(0,false);return tie;});check(r,'무승부 종료를 승패로 표시함');
+    r=await page.evaluate(()=>{const c=UI.cast,g=G.games[0];castJump(0,false);const a=document.querySelector('#cs-sa').textContent,b=document.querySelector('#cs-sh').textContent;A.castTeam('a');const away=document.querySelector('#md-roster').dataset.team==='a';castJump(g.pbp.length,false);const end=document.querySelector('#cs-sa').textContent===String(g.as)&&document.querySelector('#cs-sh').textContent===String(g.hs);castJump(3,false);const p=g.box.h.bat[0].id;A.castPlayer(p);return {a,b,away,end,profile:!!document.querySelector('.pf-overview')};});
+    check(r.a==='0'&&r.b==='0'&&r.away&&r.end&&r.profile,'처음/끝/팀 전환/선수 상세 연결 실패');
+    await page.locator('.detail-back').click({timeout:1500}).catch(()=>{});
+    r=await page.evaluate(()=>({back:!!UI.cast&&UI.cast.k===3&&!UI.cast.play,visible:!!document.querySelector('.match-dashboard')}));check(r.back&&r.visible,'선수 상세에서 같은 재생 시점으로 복귀 실패');
+    await page.evaluate(()=>A.castClose(true));check(await page.locator('.cast').count()===0,'중계 종료 실패');
+  }finally{await browser?.close();await server.close();}
+  assert.equal(errors.length,0,errors.join('\n'));console.log('경기 대시보드: 기록·재생·5개 화면 크기·상세 복귀 통과');
+})().catch(e=>{console.error(e.message);process.exitCode=1;});
