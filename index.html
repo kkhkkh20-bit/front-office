@@ -9595,7 +9595,7 @@ function devSeedUser(){ const P=G.ps; if(!P||P.done||!P.seeds)return '가을야�
 function mgrVisit(){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp||G.gameOver)return; const per=period(); const last=G.mgrVisitD??-99;
   if(per==='season'){ if(G.day-last<14||R()>.12)return; G.mgrVisitD=G.day; mgrAttr(m);
     const a=mgrNowTalk(m); if(!a)return;
-    mail('감독실',`${m.name} 감독이 단장실에 들렀습니다`,`${m.name} 감독: "${a}"\n\n더 이야기하려면 감독실로 가세요. 자주 의논할수록 감독과의 관계가 좋아집니다.`,{kind:'감독',acts:[{l:'감독실 들어가기',a:'meetOpen',v:'mgr'}]}); return; }
+    mail('감독실',`${m.name} 감독이 단장실에 들렀습니다`,`${m.name} 감독: "${a}"\n\n더 이야기를 나누려면 감독과 면담하세요. 자주 의논할수록 감독과의 관계가 좋아집니다.`,{kind:'감독',acts:[{l:'감독과 면담하기',a:'meetOpen',v:'mgr'}]}); return; }
   if(!foreignOpen()||per==='post')return; const yb=foreignOf(G.user).filter(p=>p.foreign==='용병').length; if(yb>=3||G.day-last<20)return;
   const W=mgrWantForeign(); if(!W||!W.want)return; G.mgrVisitD=G.day;
   mail('감독실',`${m.name} 감독: "외국인 이야기 좀 하시죠"`,`${m.name} 감독: "${W.txt} 후보 명단을 같이 보면서 정하고 싶습니다."\n\n외국인 ${yb}/3명. 감독실에서 후보별 의견을 들을 수 있습니다.`,{kind:'감독',acts:[{l:'감독실에서 후보 상의',a:'meetOpen',v:'mgr|cand'},{l:'외국인 후보 보기',a:'goWork',v:'외국인선수'}]}); }
@@ -14405,7 +14405,10 @@ function ibSplit(m){ let subj=m.subj, L=m.body.split('\n').filter(Boolean); cons
   return {subj,L}; }
 const warnLive=m=>!!m.warn&&!mailDone(m)&&G.day<=m.day+1; /* '내일까지' 경고는 그날·다음 날만. 이미 처리됐으면 지운다 */
 function mailRow(m,cur){ const fin=mailDone(m)&&((m.acts||[]).length>0||!!m.oid||/^\[인터뷰 요청\]/.test(m.subj)); /* 끝난 인터뷰·결정: 참여한 일이라 강조하지 않는다 */ const need=!fin&&ibTask(m)&&!m.read; return `<button class="ibr${m.read||fin?'':' unread'}${need?' need':''}${fin?' fin':''}${cur?' cur':''}" data-a="mailJump" data-v="${m.id}" data-mid="${m.id}">${senderAv(m)}<span class="ibr-m"><span class="ibr-top"><b class="ibr-from">${esc(m.from)}</b>${warnLive(m)?'<span class="ibr-tag">기한 내일</span>':ibDecide(m)&&m.read?`<span class="ibr-tag">검토 중${ibDue(m)!=null?' · D-'+Math.max(0,ibDue(m)-G.day):''}</span>`:ibTask(m)?'<span class="ibr-tag">확인</span>':mailDoneShow(m)?`<span class="ibr-tag done">${mailStatus(m).label}</span>`:''}<span class="ibr-d">${dsh(m.day)}</span></span><span class="ibr-s">${esc(m.subj)}</span></span></button>`; }
-function mailCard(m,nav){ const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); const dup=(UI._ibDup||{})[m.id]; const {subj,L:L0}=ibSplit(m);
+function mailCard(m,nav){
+  /* 이전 저장의 방문 소식도 장소 이동을 요구하지 않는 안내로 표시한다. 원본·행동 인덱스는 유지한다. */
+  if(m.subj.includes('감독이 단장실에 들렀습니다'))m={...m,body:m.body.replace('더 이야기하려면 감독실로 가세요.','더 이야기를 나누려면 감독과 면담하세요.'),acts:(m.acts||[]).map(a=>a.a==='meetOpen'&&a.l==='감독실 들어가기'?{...a,l:'감독과 면담하기'}:a)};
+  const o=m.oid&&(G.offers||[]).find(x=>x.id===m.oid); const dup=(UI._ibDup||{})[m.id]; const {subj,L:L0}=ibSplit(m);
   let fth=null; if(m.fth){ try{ fth=fanThreads().find(t=>t.id===m.fth)||null; }catch(e){} }
   /* 팬 게시판 소식: 댓글은 아래 게시판 블록에만 보여 준다(본문에 같은 댓글을 글로 한 번 더 쓰지 않는다) */
   const L=fth?L0.filter(t=>!/^댓글 분위기:/.test(t)&&!/\(추천 [\d,]+\)$/.test(t)):L0;
@@ -17036,7 +17039,7 @@ const A={
   nk(v){ UI.nk=v; A.go('club:news'); },
   recGo(v){ const [seg,k]=v.split(':'); UI.lrec=seg; UI.ls=UI.ls||{}; UI.ls[seg]={k,dir:['era','whip','bb9'].includes(k)?1:-1}; A.go('league:rec'); },
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
-  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(!a)return; const status=mailButtonStatus(m,a);if(status){toast(status.text);render();return;} UI.actRes=null; if(a&&A[a.a])A[a.a](a.v); else render(); if(a&&(MAIL_ONCE.test(a.a)||a.a==='pactKeep')){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(a.a==='pactKeep')m.closed=mailEnd('유망주 기회 합의를 유지하기로 결정했습니다.'); if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
+  mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(!a)return; const status=mailButtonStatus(m,a);if(status){toast(status.text);render();return;} UI.actRes=null; if(a.a==='meetOpen'&&m.subj.includes('감독이 단장실에 들렀습니다'))meetOpen('mgr',null,{visit:true}); else if(a&&A[a.a])A[a.a](a.v); else render(); if(a&&(MAIL_ONCE.test(a.a)||a.a==='pactKeep')){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(a.a==='pactKeep')m.closed=mailEnd('유망주 기회 합의를 유지하기로 결정했습니다.'); if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
   evPick(v){ sfx('confirm',.6); const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); evPick(id,+i); save(); if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ A.go('transfer:foreign'); return; } render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
@@ -17919,13 +17922,14 @@ function devCard(){ const P=G.ps; const ready=P&&P.seeds&&!P.done&&P.round==='wc
 const MEET_PL={praise:'요즘 정말 잘해 주고 있어. 고맙다.',push:'솔직히 지금보다 더 해 줘야 한다.',promise:'감독님께 출전 기회를 건의해 보겠네.',contract:'계약 이야기를 좀 해 볼까.',ask:'요즘 고민 있나? 편하게 말해 봐.'};
 function meetWho(M){ const t=team(G.user);
   if(M.k==='own'){ const B=bossOf(G.user); return {name:B.own.name,role:'구단주 · 모기업 회장',place:'구단주 집무실',av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name}),rel:`신뢰 ${Math.round(t.trust)} · 친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))})`}; }
-  if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m)return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · 말투 ${MV[mgrVoice(m)].l}`,place:'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${m.rel}`}; }
+  if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m)return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · 말투 ${MV[mgrVoice(m)].l}`,place:M.visit?'단장실':'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${m.rel}`}; }
   const p=G.players[M.id]; if(!p)return null; return {name:p.name,role:`${posLabel(p)} · ${p.age}세`,place:'선수 면담실',av:avImg(p),rel:`기분 ${Math.round(p.mor??60)}`}; }
 function meetGreet(M){ const t=team(G.user);
+  if(M.k==='mgr'&&M.visit){const m=G.mgr[G.user];return m.rel>=60?'더 궁금한 점이 있으십니까? 편하게 말씀하십시오.':m.rel>=35?'보고드린 내용 중 더 의논할 것이 있으십니까?':'추가로 하실 말씀이 있으면 듣겠습니다.';}
   if(M.k==='own'){ const tr=t.trust; return tr>=70?'단장, 잘 왔소. 요즘 분위기가 좋더군. 앉으시오.':tr>=45?'앉으시오. 무슨 일로 왔소?':tr>=25?'바쁘니 용건만 간단히 합시다.':'...할 말이 있으면 해 보시오. 내 인내심도 한계가 있소.'; }
   if(M.k==='mgr'){ const m=G.mgr[G.user]; const v=mgrVoice(m); return M.first?`${m.name}입니다. 믿고 맡겨 주셔서 감사합니다. ${v==='data'?'자료부터 같이 보시죠.':v==='fire'?'바로 이기는 팀 만들겠습니다.':v==='warm'?'선수들 잘 챙기겠습니다.':v==='old'?'기본부터 다시 세우겠습니다.':'차근차근 맞춰 가겠습니다.'} ${foreignOf(G.user).filter(p=>p.foreign==='용병').length<3?'외국인 선수 구성부터 상의드릴까요?':'선수들부터 직접 보겠습니다.'}`:m.rel>=60?'단장님, 들어오세요. 편하게 말씀하시죠.':m.rel>=35?'오셨습니까. 무슨 일로?':'...네, 말씀하시죠.'; }
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
-function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
+function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
   if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
   M.log.push({w:'them',t:meetGreet(M)}); UI.meet=M; if(o.ask)meetDo(o.ask); renderSheet(); }
 function meetBadF(){ return foreignOf(G.user).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=60&&pRate(h).era>5):(h.pa>=100&&bRate(h).ops<.700)); }); }
@@ -19045,6 +19049,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-03d',d:'11월 3일',t:'감독 방문 소식의 면담 안내 정리',items:[
+    '감독이 단장실에 찾아온 소식에서 안내를 “감독과 면담하세요”, 버튼을 “감독과 면담하기”로 바꿨습니다. 면담도 단장실에서 이어지는 대화로 표시하며, 기존 저장의 같은 소식에도 적용합니다.']},
   {id:'2026-11-03c',d:'11월 3일',t:'지난 소식의 완료 상태와 버튼 안내',items:[
     '이미 감독을 선임했으면 과거 소식의 감독 후보 버튼을 회색으로 바꾸고 선임 완료 문구를 표시합니다. 다른 업무도 처리 완료와 기한 종료를 구분해 안내합니다.',
     '계약·드래프트·캠프·인터뷰·선수 요청·직원 제안·스폰서 등 완료되거나 지난 업무의 재실행을 막습니다. 새 시즌이나 새 제안으로 예전 버튼이 다시 활성화되지 않도록 했습니다.',

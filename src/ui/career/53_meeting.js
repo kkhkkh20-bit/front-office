@@ -3,13 +3,14 @@
 const MEET_PL={praise:'요즘 정말 잘해 주고 있어. 고맙다.',push:'솔직히 지금보다 더 해 줘야 한다.',promise:'감독님께 출전 기회를 건의해 보겠네.',contract:'계약 이야기를 좀 해 볼까.',ask:'요즘 고민 있나? 편하게 말해 봐.'};
 function meetWho(M){ const t=team(G.user);
   if(M.k==='own'){ const B=bossOf(G.user); return {name:B.own.name,role:'구단주 · 모기업 회장',place:'구단주 집무실',av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name}),rel:`신뢰 ${Math.round(t.trust)} · 친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))})`}; }
-  if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m)return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · 말투 ${MV[mgrVoice(m)].l}`,place:'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${m.rel}`}; }
+  if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m)return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · 말투 ${MV[mgrVoice(m)].l}`,place:M.visit?'단장실':'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${m.rel}`}; }
   const p=G.players[M.id]; if(!p)return null; return {name:p.name,role:`${posLabel(p)} · ${p.age}세`,place:'선수 면담실',av:avImg(p),rel:`기분 ${Math.round(p.mor??60)}`}; }
 function meetGreet(M){ const t=team(G.user);
+  if(M.k==='mgr'&&M.visit){const m=G.mgr[G.user];return m.rel>=60?'더 궁금한 점이 있으십니까? 편하게 말씀하십시오.':m.rel>=35?'보고드린 내용 중 더 의논할 것이 있으십니까?':'추가로 하실 말씀이 있으면 듣겠습니다.';}
   if(M.k==='own'){ const tr=t.trust; return tr>=70?'단장, 잘 왔소. 요즘 분위기가 좋더군. 앉으시오.':tr>=45?'앉으시오. 무슨 일로 왔소?':tr>=25?'바쁘니 용건만 간단히 합시다.':'...할 말이 있으면 해 보시오. 내 인내심도 한계가 있소.'; }
   if(M.k==='mgr'){ const m=G.mgr[G.user]; const v=mgrVoice(m); return M.first?`${m.name}입니다. 믿고 맡겨 주셔서 감사합니다. ${v==='data'?'자료부터 같이 보시죠.':v==='fire'?'바로 이기는 팀 만들겠습니다.':v==='warm'?'선수들 잘 챙기겠습니다.':v==='old'?'기본부터 다시 세우겠습니다.':'차근차근 맞춰 가겠습니다.'} ${foreignOf(G.user).filter(p=>p.foreign==='용병').length<3?'외국인 선수 구성부터 상의드릴까요?':'선수들부터 직접 보겠습니다.'}`:m.rel>=60?'단장님, 들어오세요. 편하게 말씀하시죠.':m.rel>=35?'오셨습니까. 무슨 일로?':'...네, 말씀하시죠.'; }
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
-function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
+function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
   if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
   M.log.push({w:'them',t:meetGreet(M)}); UI.meet=M; if(o.ask)meetDo(o.ask); renderSheet(); }
 function meetBadF(){ return foreignOf(G.user).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=60&&pRate(h).era>5):(h.pa>=100&&bRate(h).ops<.700)); }); }
