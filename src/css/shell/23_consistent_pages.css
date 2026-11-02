@@ -162,3 +162,12 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 }
 
 .detail-navigation{position:sticky;top:0;z-index:12}
+
+/* 선수·감독은 얼굴과 주요 평가를 담은 카드로 비교한다. */
+.foreign-candidates .tgrid,.mgrg{align-items:start}.mgrg .mgrc{min-width:0}.mgrc>.tc-i{justify-self:start}
+.star-marketing{min-width:0}.sm-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.sm-summary>div{display:grid;align-content:start;gap:5px;padding:9px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);min-width:0}
+.sm-summary dt{font-size:11px;line-height:1.5;color:var(--muted)}.sm-summary dd{margin:0;font:700 19px var(--f-num)}.sm-summary small{font-size:10px;color:var(--muted);line-height:1.5}
+.sm-player,.sm-active{display:grid;gap:5px}.star-marketing .smb{width:100%;margin-left:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:6px}
+.star-marketing .sm-offer{display:grid;gap:4px;padding:9px 7px;text-align:left;white-space:normal;line-height:1.5;min-width:0}.sm-offer>b{font-size:12px}.sm-offer>span{font-size:10px;color:var(--muted)}.sm-offer>.sm-net{font-size:11px;border-top:1px solid var(--line);padding-top:5px}.sm-active .small{line-height:1.5}
+@media(max-width:600px){.sm-summary{grid-template-columns:minmax(0,1fr)}.sm-summary>div{grid-template-columns:1fr auto;align-items:center}.sm-summary small{grid-column:1/-1}}

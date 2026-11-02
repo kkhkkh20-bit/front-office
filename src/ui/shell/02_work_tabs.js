@@ -120,19 +120,17 @@ function mgrCandidatePage(){
   if(!x){UI.mgrCandidate=null;return '';}
   return `<div class="scrim"><div class="sheet gut manager-profile" data-stop="1" aria-label="${esc(x.name)} 감독 후보"><div class="sheet-head"><h2 class="sec">감독 후보 · ${esc(x.name)}</h2></div>${UI.mgrMsg?`<p class="note bad">${esc(UI.mgrMsg)}</p>`:''}${mgrCandidateCard(x)}</div></div>`;
 }
-function mgrCandidateTable(){
-  return `<div class="candidate-list"><div class="tw"><table class="sqt candidate-table"><thead><tr>${['감독','나이','유형','운영','장악력','안목','휴식 관리','육성 성향','연봉','사단','상세'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${(G.mmarket||[]).map(x=>{mgrFix(x);mgrAttr(x);return `<tr><td><button class="candidate-name" data-a="mgrCandidate" data-v="${x.id}">${avImg({persona:'mgr',pid:x.id,name:x.name,age:x.age,team:G.user})}<span>${esc(x.name)}</span></button></td><td>${x.age}</td><td>${esc(mgrType(x).n)}</td>${['tac','disc','eye','rest'].map(k=>`<td>${rchip(x[k])}</td>`).join('')}<td>${x.youth>=62?'육성 우선':x.youth<=38?'성적 우선':'균형'}</td><td class="num">${money(x.sal)}</td><td>${(x.clan||[]).length}명</td><td><button class="tc-i" data-a="mgrCandidate" data-v="${x.id}">평가·계약</button></td></tr>`;}).join('')}</tbody></table></div></div>`;
-}
 function mgrBody(){
   const m=G.mgr[G.user];
   const pol=m?policyCard(m)+(m.interim?'':pactCard(m)):'';
   const cur=m?`<div class="eyebrow">현재 감독</div>${mgrRow(m,`<p class="small muted">${m.interim?'감독대행 체제입니다.':`계약 잔여 ${Math.max(0,m.yrs)}년`}${m.pl?` · 영입 때 받은 약속: ${Object.keys(m.pl).map(k=>MPL[k].l).join(', ')}`:''}</p>${(m.plv||[]).length?`<p class="small bad">약속 위반 ${m.plv.length}회${m.plv.length>=2?' · 경질하면 잔여 연봉 절반, 선수단 동요 없음':''}</p><ul class="small muted">${m.plv.slice(-3).reverse().map(v=>`<li>${dmd(v.d)} ${esc(MPL[v.k].l)}: ${esc(v.t)}</li>`).join('')}</ul>`:''}${m.interim?'':UI.confirmFire?`<div class="row"><button class="btn danger" data-a="fireMgr">정말 경질 (잔여 연봉 지급)</button><button class="btn" data-a="fireCancel">취소</button></div>`:`${mgrExtBox(m)}<div class="row"><button class="btn danger" data-a="fireAsk">경질</button></div>`}`)}`:'<div class="note bad">감독이 없습니다. 개막 전까지 반드시 선임해야 합니다.</div>';
 
+  const mgrCandCard=x=>`<div class="tcard mgrc" style="cursor:default">${mgrRow(x,`${ctStartS()>G.year?`<p class="small muted">정규시즌이 끝난 뒤 맺는 계약이라 ${ctStartS()} 시즌부터 셉니다(2년이면 ${ctSeasonsTxt(2)}).</p>`:''}${mplStanceBox(x)}${G.coach?clanBox(x):''}<div class="row">${(()=>{ const b=budget(); const cur=G.mgr[G.user]; const pay=cur&&!cur.interim?mgrSevPay(cur).pay:0; /* 실제 경질과 같은 정산금(약속 위반 절반 포함) */ const clan=G.coach&&(x.clan||[]).length?sum(x.clan.map(c=>c.sal)):0; return budgetTag(Math.round(x.sal*b.rem)+pay+Math.round(clan*b.rem)+(clan?clanSev(x):0))+(pay?`<span class="small muted">현 감독 경질 정산금 ${money(pay)} 포함</span>`:''); })()}</div><div class="row">${G.coach&&(x.clan||[]).length?`<button class="btn small primary" data-a="hireMgr" data-v="${x.id}:2:1">사단과 2년</button><button class="btn small" data-a="hireMgr" data-v="${x.id}:3:1">사단과 3년</button><button class="btn small" data-a="hireMgr" data-v="${x.id}:2:0">감독만 2년</button>`:`<button class="btn small primary" data-a="hireMgr" data-v="${x.id}:2">2년 계약</button><button class="btn small" data-a="hireMgr" data-v="${x.id}:3">3년 계약</button>`}</div>`)}<button class="tc-i" data-a="mgrCandidate" data-v="${x.id}">상세 평가</button></div>`;
   const mv=inTabs('mgrv',[['cur','현재 감독'],...(m&&!m.interim?[['rel','지시·요청']]:[]),['cand',`채용 후보 ${(G.mmarket||[]).length}`]],m&&!m.interim?'cur':'cand');
-  if(UI._smk){ mv.cur='cand'; mv.bar=''; }  /* 넓은 화면: 후보를 한 화면에 나란히 */
+  if(UI._smk){ mv.cur='cand'; mv.bar=''; } const PGm=pager('mgc',(G.mmarket||[]),fmOn()?8:3);
   if(mv.cur==='rel')return mv.bar+mgrBondView()+mreqView()+pol;
   if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+mgrChatCard(false)+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다.</p>`;
-  return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다. 감독을 바꾸면 남은 계약 연봉은 그대로 나갑니다.</p>`:mv.cur==='pol'?pol:((G.mmarket||[]).length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}${mgrCandidateTable()}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
+  return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다. 감독을 바꾸면 남은 계약 연봉은 그대로 나갑니다.</p>`:mv.cur==='pol'?pol:((G.mmarket||[]).length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid mgrg" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
 }
 /* 지금 빠져 있거나 복귀 뒤 실전으로 기량을 되찾는 중인 우리 선수 */
 function injNowList(){ const L=[]; for(const p of Object.values(G.players)){ if(p.team!==G.user||p.ys)continue; const I=p.injK&&INJ[p.injK];
@@ -157,7 +155,7 @@ function devBody(){
 function marketingBody(){
   return `<div class="row between"><span class="small">올 시즌 예산</span><b class="num" id="mktv">${money(G.marketing)}</b></div>
     <input type="range" id="mkt" min="500" max="6000" step="250" value="${G.marketing}" data-a="mkt" aria-label="마케팅 예산">
-    <p class="small muted">광고·상품 수입과 인기에 영향을 줍니다. 개막 전에만 바꿀 수 있고, 비용은 시즌 결산 때 나갑니다.</p>`;
+    <p class="small muted">구단 전체의 연간 홍보비입니다. 광고·상품 수입과 인기에 영향을 줍니다. 개막 전에만 바꿀 수 있고, 비용은 시즌 결산 때 나갑니다. 구단주 화면의 선수별 추가 홍보와는 별도입니다.</p>`;
 }
 function capCard(ci){
   const pct=Math.min(100,ci.pay/ci.cap*100), fl=ci.floor/ci.cap*100;
