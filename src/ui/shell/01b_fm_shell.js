@@ -32,11 +32,11 @@ const FM_MENU=['home','roster','trade','transfer','staff','league','club'];
 function fmKey(){ const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }
 function fmNavRec(){ const H=UI.navH=UI.navH||[]; if(UI.navI==null)UI.navI=-1; const k=fmKey(); if(UI._navSkip){ UI._navSkip=false; return; } if(H[UI.navI]===k)return; H.length=UI.navI+1; H.push(k); if(H.length>40)H.shift(); UI.navI=H.length-1; }
 function fmGoKey(k){ const [t,s]=k.split(':'); UI.tab=t; if(s){ if(t==='league')UI.lseg=s; else { UI.sub=UI.sub||{}; UI.sub[t]=s; } } UI._navSkip=true; closeSheets(); render(); try{ scrollTo(0,0); }catch(e){} }
-function fmBack(){ if(document.documentElement.classList.contains('detail-page-open')){ A.detailBack(); return; } const H=UI.navH||[]; if(!(UI.navI>0))return; UI.navI--; fmGoKey(H[UI.navI]); }
+function fmBack(){ if(UI.meet){A.meetClose();return;}if(document.documentElement.classList.contains('detail-page-open')){ A.detailBack(); return; } const H=UI.navH||[]; if(!(UI.navI>0))return; UI.navI--; fmGoKey(H[UI.navI]); }
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 /* 카드가 세로로 길게 쌓이는 화면은 PC에서 두 칸으로(FM 대시보드처럼). 표가 넓은 화면에는 쓰지 않는다 */
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
-function fmSubRow(){ const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
+function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
   if(tab==='home'&&!G.unemp)return back+`<nav class="subtabs" aria-label="바로 가기"><button class="on" data-a="tab" data-v="home">개요</button><button data-a="tab" data-v="inbox">소식함</button><button data-a="calOpen">캘린더</button><button data-a="go" data-v="league:stand">순위</button><button data-a="go" data-v="league:score">일정·결과</button><button data-a="go" data-v="club:fin">재정</button><button data-a="go" data-v="club:owner">구단주·목표</button></nav>`; /* FM 포털처럼 홈에서 자주 가는 곳 */
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
@@ -45,15 +45,15 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
     return `<div class="fmm${UI.tab===k?' on':''}"><button class="fmm-b" data-a="tab" data-v="${k}">${esc(it[1])}${al?'<i class="sdot"></i>':''}${subs?'<i class="fmm-c">▾</i>':''}</button>${subs?`<div class="fmdd" role="menu">${subs.map(([s,l])=>`<button data-a="go" data-v="${k}:${s}">${esc(l)}${subAlert(k,s)?'<i class="sdot"></i>':''}</button>`).join('')}</div>`:''}</div>`; }).join('');
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
-  return `<div class="shell fmsh${UI.tab==='home'&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
+  return `<div class="shell fmsh${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
   <header class="fmtop"><div class="fm1">
-    <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
+    <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.meet||UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="myRos" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>
     <nav class="fm-menu" aria-label="메뉴">${menu}</nav>
     <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` 안 읽음 ${unread}`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필',UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
   </div><div class="fm2${!SUBS[UI.tab]&&UI.tab!=='home'&&!UI.fromMail?' fm2-compact':''}"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
-  <div class="fmbody">${fmSide(unread)}<div class="fmmain">${topBlocks(b)}
+  <div class="fmbody">${fmSide(unread)}<div class="fmmain">${UI.meet?'':topBlocks(b)}
   <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}</div></div></div></div>
   </div>`; }
 /* ---------- PC 단축키(FM 기본 단축키를 우리 화면에 맞춤) ----------
@@ -76,7 +76,7 @@ function fmRun(act){ if(!act)return false; const [a,t,s]=act.split(':');
   if(a==='x'){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; closeSheets(); render(); return true; }
   if(G.unemp&&!['home','inbox','league','me'].includes(t))return true;
   if(a==='tab'){ closeSheets(); A.tab(t); return true; } if(a==='go'){ closeSheets(); A.go(t+':'+s); return true; } return false; }
-function fmHotkey(e){ if(!G||UI.title||!fmOn())return false; if((G.fd&&!G.fd.done)||G.fdWait)return false; if(UI.cast||UI.cfm||UI.ngt||UI.meet||UI.negWin||UI.game!=null)return false;
+function fmHotkey(e){ if(!G||UI.title||!fmOn())return false; if((G.fd&&!G.fd.done)||G.fdWait)return false; if(UI.cast||UI.cfm||UI.ngt||UI.negWin||UI.game!=null)return false;
   if(e.target&&e.target.matches&&e.target.matches('input,select,textarea,[contenteditable]'))return false;
   const nm=fmKeyName(e); let act=null;
   if(nm==='Backspace'||nm==='Alt+←')act='back'; else if(nm==='Alt+→')act='fwd'; else { const r=FM_KEYS.find(x=>x[0]===nm); act=r&&r[2]; }

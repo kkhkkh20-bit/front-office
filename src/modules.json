@@ -48,6 +48,7 @@
       "src/engine/contracts/41_salary_talks.js",
       "src/engine/contracts/42_agents.js",
       "src/engine/staff/43_mgr_voice.js",
+      "src/engine/staff/44_mgr_dialogue.js",
       "src/engine/players/44_free_agents.js",
       "src/engine/players/45_injuries.js",
       "src/engine/players/46_workload.js",
@@ -228,7 +229,8 @@
       "src/css/matches/24_match_dashboard.css",
       "src/css/home/25_home_workspace.css",
       "src/css/players/26_compact_profile.css",
-      "src/css/staff/27_staff_cards.css"
+      "src/css/staff/27_staff_cards.css",
+      "src/css/career/28_meeting_page.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

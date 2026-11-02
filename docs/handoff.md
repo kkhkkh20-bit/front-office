@@ -1,4 +1,4 @@
-# 인수인계 (2026-11-03, 감독 방문 면담 안내)
+# 인수인계 (2026-11-03, 감독 대화 확대·본문 면담)
 
 ## 프로젝트
 - 프런트야구: KBO 구단 단장 시뮬레이션. 단일 index.html(빌드 결과물).
@@ -8,7 +8,7 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03d').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03e').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -22,7 +22,7 @@
 - check.sh가 도는 동안 index.html/dist를 다시 빌드하지 않는다(뒤 단계가 새 빌드를 읽는다).
 
 ## 검사 도구
-- tools/check-logic.js: 규칙 테스트(현재 405개). 앞부분 `T('리그 수준: 트리플A는` 앞에 새 테스트를 넣는다. 테스트 코드는 템플릿 문자열 안이라 백틱을 쓰면 안 된다.
+- tools/check-logic.js: 규칙 테스트(현재 409개). 앞부분 `T('리그 수준: 트리플A는` 앞에 새 테스트를 넣는다. 테스트 코드는 템플릿 문자열 안이라 백틱을 쓰면 안 된다.
 - 일부만: `ONLY=문구 node tools/check-logic.js`(0개 선택이면 실패). 별도 엔진으로 시험: `node tools/build.cjs --engine-out /tmp/e.js` 후 ENGINE 경로만 바꾼 복사본으로 실행. 평면 glob으로 합치면 공용 모듈이 빠지므로 사용 금지.
 - [공통 점검] 테스트 + src/engine/runtime/95_audit.js(stateAudit·auditMoney·leaveSweep): 이동 정리·감독 교체·안내한 기한·시즌 구분을 여러 전환 뒤 한꺼번에 본다.
 - tools/check-sens.js: 능력치 반영(세계 2개 평균). check-sim.js: 장기 시뮬 불변식. check-ui.js: 넓은 화면(FM 모드 1280)·휴대폰(W=390).
@@ -184,3 +184,11 @@
 - 감독이 단장실에 들렀다는 소식의 본문을 “더 이야기를 나누려면 감독과 면담하세요”, 버튼을 “감독과 면담하기”로 수정했다. `mailCard`는 같은 제목의 이전 저장 소식도 표시할 때만 교정하며, 원본과 행동 인덱스를 보존한다.
 - 이 소식에서 여는 면담은 `visit` 문맥으로 단장실과 후속 보고 인사를 표시한다. 일반 메뉴의 감독실·첫 선임 인사는 유지한다. 경기·관계 계산은 변경하지 않았다.
 - 검증: 정적 검사·소식함 상태 20개/PC·휴대폰, 신규 문구 생성·기존 소식/원본 보존·PC/휴대폰 단장실 면담 연결·일반 감독실 경로 통과. 로그 `/tmp/front-office-visit-copy.log`, `/tmp/front-office-visit-copy-inbox.log`. 작은 문구/면담 문맥 수정이므로 전체 시뮬은 반복하지 않는다.
+
+
+## 감독 대화 확대·본문 면담 (2026-11-03e)
+- `engine/staff/44_mgr_dialogue.js`: 다섯 말투에 따라 기록/승부/역할과 부담/기본/단계적 판단을 다르게 한다. 기존 5개 화제에 투수·타격·수비·주루·피로·분위기·우선순위 7개를 추가했다. 실제 선수·시즌 성적·피로·부상·기분·주장/자리 전력을 쓰고, 보직/육성/수비/작전 성향도 제안에 반영한다. 새로 부임한 감독과 외국인 후보의 기존 정보 한계를 유지한다.
+- `mvPick`는 감독 식별자 전체를 쓴다(기존 ID 길이만 쓰던 충돌 수정). 최근 표현·상황·답변은 각 감독의 `dialogue`에 저장한다. 구단/연도를 구분하고 실제 상태가 바뀌면 갱신한다. 같은 날 같은 사실은 캐시하며 경기 난수를 소비하지 않는다. 주간 관계 +1 한도는 유지한다. 최근에 물은 화제는 면담에서 짧은 후속 답변으로 연결한다.
+- `ui/career/53_meeting.js`: `meetPage`를 `tabBody`에서 렌더한다. #sheet에는 면담을 만들지 않아 상단바·사이드바/휴대폰 하단 탐색이 유지된다. 대화/화제 영역이 각각 스크롤하고, 화면의 남은 높이에 맞춘다. 일반 메뉴/단축키 탐색, 면담 마치기/뒤로/Esc와 소식함/선수 정보 복귀를 연결한다. 구단주·선수 면담도 같은 본문 형식을 쓴다. `visit` 단장실 문맥은 유지한다.
+- `css/career/28_meeting_page.css`와 새 대화 엔진은 modules.json에 등록했다. 전체 검사에 `tools/check-meeting.cjs` 추가. 기존 빠른 UI의 면담 기록 확인 대상을 #sheet에서 .meet-page로 갱신했다.
+- 수정 전 감독 대화 4개와 셸/배치 실패를 확인했다. 새 규칙은 총 409개이며 이번에는 새 대화 4개 및 기존 감독 정보 한계 규칙을 관련 검사한다. 경기 계산을 바꾸지 않은 대화/화면 개선이므로 전체 장기 시뮬은 반복하지 않는다. 최종 검증: 새 대화 규칙 4개·기존 감독 정보 한계 규칙 1개·모듈 6개·정적 검사·PC/휴대폰 빠른 UI·면담 4개 화면/탐색/반복 답변/스크롤 복귀·소식함 20개 상태·본문 5개 배치 모두 통과. 로그 `/tmp/front-office-dialogue-final.log`, `/tmp/front-office-dialogue-knowledge.log`, `/tmp/front-office-meeting-pc.log`, `/tmp/front-office-meeting-mobile.log`, `/tmp/front-office-meeting-verified.log`, `/tmp/front-office-meeting-inbox.log`, `/tmp/front-office-meeting-layout.log`.

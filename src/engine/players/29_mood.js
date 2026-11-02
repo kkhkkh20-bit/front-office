@@ -96,18 +96,21 @@ function mgrKnow(m,p){ if(!m||!p)return 0; if(p.team==null)return 0; if(p.team!=
   const g=(h?(p.isP?h.outs/90:h.pa/150):0)+(m.hD==null&&h0?(p.isP?h0.outs/120:h0.pa/200):0); return clamp(.15+clamp(days/120,0,1)*.45+g*.4,0,1); }
 function mgrEst(m,p){ const k=mgrKnow(m,p); const sd=(2+(85-(m.eye||50))/6)*(1.1-k*.7); const base=p.foreign&&p.team==null?(()=>{ const f=fScout(p); return f.raw??ovr(p); })():ovr(p); return base+hn('me'+(m.id||'')+halfK(),p.id)*sd; }
 const mgrFresh=m=>m&&m.hD!=null&&G.day-m.hD<45&&!(period()==='season'||period()==='post'); /* 부임한 지 얼마 안 됐고 아직 경기를 못 봤다 */
-function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감독이 없습니다.'}; mgrAttr(m); const nm=m.name; let a='';
-  if(topic==='now'){ a=mgrNowTalk(m); }
+function mgrTalk(topic){ const m=G.mgr[G.user]; if(!m||m.interim)return {a:'감독이 없습니다.'}; mgrAttr(m); const nm=m.name; let a='';const memory=mvMemory(m),key=mvDialogueKey(m,topic),previous=memory.last[topic],cached=previous&&previous.d===G.day&&previous.key===key;
+  if(!['now','foreign','need','young',...MV_DETAIL_TOPICS].includes(topic))return {a:'지금은 그 화제에 답할 수 없습니다.'};
+  if(cached)a=previous.a;
+  else if(topic==='now'){ a=mgrNowTalk(m); }
+  else if(MV_DETAIL_TOPICS.includes(topic)){a=mvDetailed(m,topic);}
   else if(topic==='foreign'){ const W=mgrWantForeign(); a=W?W.txt:''; G.mgrWant=W&&W.want?{y:G.year,day:G.day,...W.want}:null;
     const L=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)&&mgrFitF(p,W)).sort((x,y)=>{ const v=r=>(r.ofp??r.cur+6)+r.cur*.2; return v(scoutReport(y))-v(scoutReport(x)); }).slice(0,3);
     if(L.length)a+=` 시장에서 눈에 띄는 건 ${L.map(p=>`${p.name}(${posLabel(p)}, ${p.nat||''})`).join(', ')} 정도입니다.`; }
   else if(topic==='need'){ const R=slotRanks(G.user); const k=PSLOTS.filter(x=>x!=='DH').sort((x,y)=>R[y].rank-R[x].rank)[0]; const d=depth(G.user); const cur=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k];
     const ce=cur?mgrEst(m,cur):null; const cv=ce==null?'':ce>=ovr(cur)+3?' 그래도 저는 좀 더 해 줄 선수라고 봅니다':ce<=ovr(cur)-3?' 제가 보기엔 그 이상은 어렵습니다':'';
-    a=`${mgrFresh(m)?'아직 선수들을 다 보지는 못했지만 기록상으로는 ':''}${SLOTK[k]}입니다. 리그 ${R[k].rank}위${cur?`이고 지금은 ${cur.name}이(가) 맡고 있습니다${cv?'.'+cv:''}`:''}. ${m.youth>=60?'내부에서 키울 선수가 있으면 기회를 주겠지만, ':''}트레이드든 외국인이든 한 명 있으면 확 달라집니다.`; }
+    a=`${mgrFresh(m)?'아직 선수들을 다 보지는 못했지만 기록상으로는 ':''}${SLOTK[k]}입니다. 리그 ${R[k].rank}위${cur?`이고 지금은 ${cur.name}이(가) 맡고 있습니다${cv?'.'+cv:''}`:''}. \n\n${mvNeedOpinion(m,k)}`; }
   else if(topic==='young'){ /* 감독 눈으로 본 지금 실력 + 2군 보고서의 성장 여지. 성향(젊은 선수 선호)에 따라 고르는 기준도 다르다 */ const ys=playersOf(G.user).filter(p=>!p.foreign&&p.age<=24).map(p=>{ const rp=scoutReport(p); const e=mgrEst(m,p); return {p,rp,s:e+((rp.ofp||e)-e)*(m.youth>=60?.6:.3)}; }).sort((x,y)=>y.s-x.s).slice(0,3);
     const up=x=>{ const h=seasonTotal(x.p,G.year,'1군'); return !!(h&&(x.p.isP?h.outs>=45:h.pa>=60)); }; const inU=ys.filter(up), outU=ys.filter(x=>!up(x));
     a=mgrFresh(m)&&ys.length?`아직 캠프 전이라 어린 선수들을 직접 보지 못했습니다. 2군 감독 보고로는 ${ys.slice(0,2).map(x=>x.p.name).join(', ')}이(가) 좋다고 합니다. 캠프에서 보고 다시 말씀드리겠습니다.`:ys.length?`눈여겨보는 선수는 ${ys.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}입니다.${inU.length?` ${inU.map(x=>x.p.name).join(', ')}은(는) 이미 1군에서 자리를 잡아 가고 있습니다.`:''}${outU.length?` ${outU.map(x=>x.p.name).join(', ')}은(는) ${m.youth>=60?'기회를 더 주고 싶습니다.':'아직 1군에서 쓰기엔 이릅니다.'}`:''}`:'당장 1군에 올릴 만한 젊은 선수는 안 보입니다.'; }
-  if(topic!=='now'){ a=mvWrap(m,topic,a); const LT=(G.mgrLast=G.mgrLast||{})[topic]; if(LT&&LT.a===a&&G.day-LT.d<=14)a=`${dmd(LT.d)}에 말씀드린 것과 같습니다. 그사이 달라진 게 없습니다. 요약하면, ${a}`; G.mgrLast[topic]={d:G.day,a:LT&&LT.a===a?LT.a:a}; } /* 같은 질문을 또 하면 지난번 답과 같다고 짧게 말한다 */
+  if(!cached){if(topic==='young'&&!mgrFresh(m))a+='\n\n'+mvYoungOpinion(m);if(topic==='foreign')a=mvWrap(m,topic,a);memory.last[topic]={d:G.day,key:mvDialogueKey(m,topic),a};} /* 같은 날 같은 사실은 다시 조립하지 않고, 선수 상태가 바뀌면 새로 답한다 */
   const wk=Math.floor(G.day/7); let rel=''; if(G.mgrTalkW!==wk){ G.mgrTalkW=wk; m.rel=clamp(m.rel+1,0,100); rel=' (자주 의논해 주셔서 감독 관계 +1)'; }
   (G.mgrChat=G.mgrChat||[]).unshift({d:G.day,t:topic,a:a.replace(/^/,'')}); if(G.mgrChat.length>8)G.mgrChat.length=8; return {a:`${nm} 감독: "${a}"${rel}`}; }
 /* 감독이 보는 외국인 후보 한 명: 원하는 유형과 맞는지 + 감독 눈으로 본 실력 + 감독 성향 */
@@ -120,7 +123,7 @@ function mgrOnForeign(p,short){ const m=G.mgr[G.user]; if(!m||!p)return '...'; m
   const head=!need?lv+'.':fit?(good?`딱 제가 원하던 ${need} 유형이고, ${lv}.`:bad?`${need} 유형이라 자리는 맞는데, 실력이 아쉽습니다. ${lv}.`:`${need} 유형이라 자리는 맞습니다. 다만 ${lv}.`)
     :(good?`제가 급하다고 보는 자리는 ${need} 쪽이라 우선순위는 아닙니다. 그래도 ${lv}.`:`제가 급하다고 보는 자리는 ${need} 쪽입니다. 이 선수는 자리도 안 맞고, ${lv}.`);
   const age=p.age>=34?' 다만 나이가 있어서 한 시즌을 버틸지 걱정입니다.':p.age<=26?' 젊어서 적응만 하면 더 좋아질 수 있습니다.':'';
-  return short?`${fit?'원하던 유형, ':''}${lv}`:`${src}${head}${sty}${opin}${age}`; }
+  return short?`${fit?'원하던 유형, ':''}${lv}`:`${src}${head}${sty}${opin}${age}\n\n${mvForeignView(m,p,fit)}`; }
 /* 면담 제한: 고민 묻기(상태 확인)는 언제든, 칭찬·분발 촉구는 함께 한 주에 한 번, 출전 건의·계약 이야기는 각자 한 주에 한 번 */
 const TALK_GRP={praise:'pp',push:'pp',promise:'promise',contract:'contract',ask:null};
 const TALK_GRPL={pp:'칭찬·분발 촉구',promise:'출전 기회 건의',contract:'계약 이야기'};

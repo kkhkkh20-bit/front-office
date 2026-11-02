@@ -373,7 +373,7 @@ const QUICK=process.env.QUICK==='1';
       if(A.dmove){ A.dmove(pool[1].id+':-1'); out.mv=G.shortlist[0]===pool[1].id; } G.shortlist=keep; UI.df.seg='board'; return out; });
     if(r){ if(!r.velo)add('드래프트','후보 카드와 아마 프로필의 최고 구속이 다름 '+r.dbg); if(!r.board||!r.mv)add('드래프트','관심 목록에 내 순위·메모·고려 라운드·확인할 것이 없음'); } }
   /* 면담: 다시 열면 최근 면담 기록이 보인다 */
-  { where='면담 기록'; const r=await ev(()=>{ const p=playersOf(G.user)[0]; if(!p)return null; const keep=p.talkLog; p.talkLog=[{d:G.day,k:'ask',a:'점검 답변'}]; closeSheets(); A.meetOpen('pl:'+p.id); const tx=(document.querySelector('#sheet')||{}).textContent||''; UI.meet=null; closeSheets(); p.talkLog=keep; return /최근 면담/.test(tx)&&/점검 답변/.test(tx); });
+  { where='면담 기록'; const r=await ev(()=>{ const p=playersOf(G.user)[0]; if(!p)return null; const keep=p.talkLog; p.talkLog=[{d:G.day,k:'ask',a:'점검 답변'}]; closeSheets(); A.meetOpen('pl:'+p.id); const tx=(document.querySelector('.meet-page')||{}).textContent||''; A.meetClose(); closeSheets(); p.talkLog=keep; return /최근 면담/.test(tx)&&/점검 답변/.test(tx); });
     if(r===false)add('면담','다시 열면 최근 면담 기록이 안 보임'); }
   /* 코치: 훈련 화면 담당 코치 육성력이 코치진 화면과 같은 척도, 코치 카드에 세부 능력 */
   { where='코치 카드'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.foreign&&q.age<=28&&q.isP); if(!p)return null; const f=trnPlan(p),k=TRN[trnG(p)][f]?.k[0]||(p.isP?'stf':'con');const h=trnCard(p); const sl=coachView(); return {dev:/지도 수준/.test(h)&&h.includes('>'+dv(coachToolV(p,k))+'<'),card:/세부 능력/.test(sl)}; });

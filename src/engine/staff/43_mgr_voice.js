@@ -12,9 +12,9 @@ const MV={
 function mgrVoice(m){ if(!m)return 'calm'; mgrFix(m); if(m.voice&&MV[m.voice])return m.voice;
   m.voice=m.tac>=72?'data':(m.ego>=72&&m.fame>=55)?'fire':(m.youth>=66&&m.disc<55)?'warm':(m.disc>=72||m.age>=59)?'old':'calm'; return m.voice; }
 /* 같은 날 같은 질문에는 같은 대답(새로 고침해도 바뀌지 않게) */
-function mvPick(m,key,arr){ return arr[Math.floor(u01('mv'+key+G.day,(m.id||'x').length+G.day)*arr.length)%arr.length]; }
-/* 최근에 한 말은 되도록 다시 하지 않는다(최근 30문장 기억) */
-function mvFresh(m,key,arr){ const S0=G.mgrSaid||[]; const said=new Set(S0); const f=arr.filter(x=>!said.has(x)); const x=f.length?mvPick(m,key,f):arr.slice().sort((a,b)=>S0.lastIndexOf(a)-S0.lastIndexOf(b))[0]; /* 다 한 말이면 가장 오래전에 한 말 */ (G.mgrSaid=G.mgrSaid||[]).push(x); if(G.mgrSaid.length>30)G.mgrSaid.shift(); return x; }
+function mvPick(m,key,arr){ if(!arr.length)return '';return arr[Math.floor(u01('mv:'+m.id+':'+key,G.day)*arr.length)%arr.length]; }
+/* 최근에 쓴 표현은 각 감독의 기억 안에서만 피한다. */
+function mvFresh(m,key,arr){if(!arr.length)return '';const S=mvMemory(m).said,f=arr.filter(x=>!S.includes(x));const x=f.length?mvPick(m,key,f):arr.slice().sort((a,b)=>S.lastIndexOf(a)-S.lastIndexOf(b))[0];S.push(x);if(S.length>48)S.shift();return x;}
 function mgrBack(m){ const c=m.career||''; return /투수/.test(c)?'pit':/타격|타자/.test(c)?'bat':/배터리|포수/.test(c)?'cat':/수비|주루|작전/.test(c)?'def':/2군/.test(c)?'farm':/스타|레전드|국가대표|우승/.test(c)?'star':'gen'; }
 /* 지금 상황을 숫자로 정리 */
 function mgrSit(){ const tid=G.user; const per=period(); const r=G.sea&&G.sea.rec?G.sea.rec[tid]:null; const S={per,g:r?r.w+r.l+(r.t||0):0};
@@ -58,11 +58,11 @@ function mvSummary(m,S){ const v=mgrVoice(m);
 /* 걸리는 점 */
 function mvIssues(m,S){ const v=mgrVoice(m); const out=[];
   if(S.inj.length)out.push(v==='warm'?`${S.inj.map(p=>p.name).join(', ')}이(가) 다쳐서 빠져 있는 게 제일 마음 아픕니다(${S.inj.map(p=>`${p.name} ${p.injOut}일`).join(', ')}).`:`부상자는 ${S.inj.map(p=>`${p.name}(${p.injOut}일)`).join(', ')}입니다.`);
-  if(S.cold.length)out.push(v==='data'?`${S.cold.map(x=>`${x.p.name} OPS ${fmt3(bRate(x.h).ops)}`).join(', ')}. 타구 질은 나쁘지 않아서 운도 섞였다고 봅니다.`:v==='fire'?`${S.cold.map(x=>x.p.name).join(', ')}은(는) 이대로면 라인업에서 뺍니다.`:v==='warm'?`${S.cold.map(x=>x.p.name).join(', ')}이(가) 방망이가 안 맞아서 혼자 남아 연습하더군요. 믿고 기다려 보겠습니다.`:`타격이 안 풀리는 주전은 ${S.cold.map(x=>`${x.p.name}(OPS ${fmt3(bRate(x.h).ops)})`).join(', ')}입니다.`);
+  if(S.cold.length)out.push(v==='data'?`${S.cold.map(x=>`${x.p.name} OPS ${fmt3(bRate(x.h).ops)}`).join(', ')}. 최근 타구 내용도 확인해야 부진 원인을 구분할 수 있습니다.`:v==='fire'?`${S.cold.map(x=>x.p.name).join(', ')}은(는) 기회를 더 줄지, 대안을 준비할지 검토하겠습니다.`:v==='warm'?`${S.cold.map(x=>x.p.name).join(', ')}이(가) 기록상 타격이 풀리지 않고 있습니다. 부담을 덜어 줄 방법도 함께 보겠습니다.`:`타격이 안 풀리는 주전은 ${S.cold.map(x=>`${x.p.name}(OPS ${fmt3(bRate(x.h).ops)})`).join(', ')}입니다.`);
   if(S.spBad)out.push(`선발 ${S.spBad.p.name}의 평균자책점이 ${pRate(S.spBad.h).era.toFixed(2)}입니다. ${v==='old'?'로테이션에서 뺄지 고민 중입니다.':'계속 지켜보고 있습니다.'}`);
   if(S.tired.length)out.push(`${S.tired.map(p=>p.name).join(', ')}은(는) 지쳐 있어서 쉬게 해 줄 생각입니다.`);
   const dn=S.down.filter(p=>!S.tired.includes(p)); if(dn.length&&!S.cold.length)out.push(`${dn.map(p=>p.name).join(', ')}은(는) 컨디션이 바닥입니다.`);
-  if(S.hot&&out.length<3)out.push(v==='fire'?`그래도 ${S.hot.p.name}은(는) 지금 리그에서 제일 무서운 타자입니다.`:`${S.hot.p.name}은(는) OPS ${fmt3(bRate(S.hot.h).ops)}로 팀을 끌고 가고 있습니다.`);
+  if(S.hot&&out.length<3)out.push(v==='fire'?`그래도 ${S.hot.p.name}은(는) 지금 우리 타선에서 좋은 흐름을 보이고 있습니다.`:`${S.hot.p.name}은(는) OPS ${fmt3(bRate(S.hot.h).ops)}로 팀을 끌고 가고 있습니다.`);
   if(!out.length&&S.rank!=null)out.push(`가장 약한 자리는 ${S.weak.map(x=>`${SLOTK[x.k]}(리그 ${x.rank}위)`).join(', ')}입니다.`);
   return out.slice(0,3).join(' '); }
 /* 경험에서 나온 생각: 이력(투수코치·타격코치·스타 출신 등)·성향·지금 상황을 섞어 후보를 모으고 하나(관계가 좋으면 둘)를 꺼낸다 */
@@ -89,20 +89,22 @@ function mvExp(m,S){ const b=mgrBack(m), v=mgrVoice(m); const st=S.streak||0; co
   if(m.youth>=65&&S.rank!=null&&S.rank>=7)L.push('순위가 이럴 때 젊은 선수들한테 경험을 주는 게 내년을 사는 길이라고 봅니다.');
   if(S.per==='pre')L.push(G.startY===G.year?(v==='fire'?'새로 모인 팀이지만 캠프 보니 해볼 만합니다.':v==='warm'?'처음 모인 애들이라 서로 이름 외우는 것부터 시작했습니다. 그래도 분위기는 좋습니다.':'창단 첫해라 아직 손발을 맞추는 중입니다. 4월 한 달은 시행착오가 있을 겁니다.'):(v==='fire'?'캠프에서 본 걸로는 작년보다 확실히 좋아졌습니다.':v==='data'?'캠프 트래킹 수치는 작년보다 좋습니다. 다만 실전은 다릅니다.':'캠프는 다치지 않고 끝내는 게 제일입니다.'));
   const sit=L.slice(); const gen=[...(MV_BACK[b]||MV_BACK.gen),...MV_VOICE[v]]; if(m.dfn>=68)gen.push('수비가 흔들리면 투수도 무너집니다. 실책 하나가 3점이 됩니다. 수비 되는 선수를 먼저 쓰겠습니다.'); if(m.dfn<=32)gen.push('수비 실책 하나보다 홈런 하나가 더 큽니다. 잘 치는 선수를 빼지 않겠습니다.'); if(m.small>=68)gen.push('우리 같은 팀은 한 점을 짜내는 야구를 해야 합니다. 번트와 도루로 흔들겠습니다.'); if(m.pen>=68)gen.push('경기는 7회부터라고 생각합니다. 필승조만 버텨 주면 이깁니다.');
-  const said=new Set(G.mgrSaid||[]); const sitF=sit.filter(x=>!said.has(x)); const one=sitF.length?mvFresh(m,'es',sitF):mvFresh(m,'eg',gen); const two=m.rel>=70?mvFresh(m,'eg2',gen.filter(x=>x!==one&&!one.includes(x.slice(0,12))&&!x.includes(one.slice(0,12)))):''; /* 상황 이야기도 최근에 했으면 다른 이야기로 */ return [one,two].filter(Boolean).join(' '); }
+  const said=new Set(mvMemory(m).said); const sitF=sit.filter(x=>!said.has(x)); const one=sitF.length?mvFresh(m,'es',sitF):mvFresh(m,'eg',gen); const two=m.rel>=70?mvFresh(m,'eg2',gen.filter(x=>x!==one&&!one.includes(x.slice(0,12))&&!x.includes(one.slice(0,12)))):''; /* 상황 이야기도 최근에 했으면 다른 이야기로 */ return [one,two].filter(Boolean).join(' '); }
 /* 단장에게 바라는 것 */
 function mvAsk(m,S){ const v=mgrVoice(m); const k=S.weak[0]; if(!k)return '';
   const B={data:[`${SLOTK[k.k]} 쪽 기대 득점 손실이 가장 큽니다. 보강하면 승수가 바로 보일 겁니다.`],fire:[`${SLOTK[k.k]} 한 명만 구해 주십시오. 나머지는 제가 책임지겠습니다.`],warm:[`${SLOTK[k.k]} 자리가 비어서 애들이 무리하고 있습니다. 한 명만 도와주십시오.`],old:[`${SLOTK[k.k]}이(가) 약합니다. 필요한 건 그것뿐입니다.`],calm:[`여유가 되시면 ${SLOTK[k.k]} 보강을 검토해 주십시오.`]};
   return m.rel<35?'':mvFresh(m,'a',B[v]); }
 /* 지난번 이야기 이후 달라진 것: 성적·순위·부상·복귀 */
-function mvSince(m,S){ const L=(G.mgrLast||{}).now; if(!L)return null; const dd=G.day-L.d; if(dd>21)return null; const out=[];
+function mvSince(m,S){ const L=mvMemory(m).sit;if(!L||L.y!==G.year||L.tid!==G.user)return null; const dd=G.day-L.d; if(dd>21)return null; const out=[];
   if(S.rank!=null&&L.rank!=null){ const w=S.w-L.w, l=S.l-L.l; if(w+l>0)out.push(`${w}승 ${l}패`); if(S.rank!==L.rank)out.push(`순위는 ${L.rank}위에서 ${S.rank}위로 ${S.rank<L.rank?'올라왔습니다':'내려갔습니다'}`); else if(w+l>0)out.push(`순위는 ${S.rank}위 그대로입니다`); }
   const now=new Set(S.inj.map(p=>p.id)); const back=(L.inj||[]).map(id=>G.players[id]).filter(p=>p&&p.team===G.user&&!(p.injOut>0)); const fresh=S.inj.filter(p=>!(L.inj||[]).includes(p.id));
   if(back.length)out.push(`${back.map(p=>p.name).join(', ')}이(가) 돌아왔습니다`); if(fresh.length)out.push(`${fresh.map(p=>p.name).join(', ')}이(가) 새로 다쳤습니다`);
   return {dd,L,txt:out.length?`지난번(${dmd(L.d)}) 이후 ${out.join(', ')}.`:''}; }
-function mgrNowTalk(m){ const S=mgrSit(); const sc=mvSince(m,S); (G.mgrLast=G.mgrLast||{}).now={d:G.day,rank:S.rank,w:S.w,l:S.l,inj:S.inj.map(p=>p.id)};
-  if(sc&&sc.dd<=1&&!sc.txt)return mvFresh(m,'same',['어제 말씀드린 그대로입니다. 그사이 달라진 건 없습니다.','하루 만에 바뀐 건 없습니다. 지켜보고 있습니다.','어제와 같습니다. 내일 경기 보고 다시 말씀드리겠습니다.'])+' '+mvExp(m,S);
-  if(sc&&sc.dd<=10){ const parts=[sc.txt||'지난번 이후 큰 변화는 없습니다.',mvIssues(m,S)]; if(m.rel>=35){ parts.push(mvExp(m,S)); parts.push(mvAsk(m,S)); } return parts.filter(Boolean).join(' '); } /* 최근에 이미 들은 상황 정리는 건너뛰고 달라진 것부터 */ const cold=m.rel<35; const parts=[mvOpen(m,S),mvSummary(m,S),mvIssues(m,S)]; if(!cold){ parts.push(mvExp(m,S)); parts.push(mvAsk(m,S)); } return parts.filter(Boolean).join(' '); }
+function mgrNowTalk(m){const mem=mvMemory(m),key=mvDialogueKey(m,'now'),last=mem.last.now;if(last&&last.d===G.day&&last.key===key)return last.a;
+  const S=mgrSit(),sc=mvSince(m,S),focus=S.inj.length||S.tired.length?'workload':S.cold.length?'bat':S.spBad?'pitch':m.small>=65?'run':m.dfn>=65?'defense':mvPick(m,'now-focus',['pitch','bat','clubhouse','plan']);
+  const parts=[mvOpen(m,S),sc&&sc.dd<=10&&sc.txt?sc.txt:mvSummary(m,S),mvIssues(m,S)];
+  if(m.rel>=35){parts.push(mvFresh(m,'now:'+focus,MV_DISCUSS[focus][mgrVoice(m)]));if(m.rel>=70)parts.push(mvAsk(m,S));}
+  const a=parts.filter(Boolean).join('\n\n');mem.sit={d:G.day,y:G.year,tid:G.user,rank:S.rank,w:S.w,l:S.l,inj:S.inj.map(p=>p.id)};mem.last.now={d:G.day,key:mvDialogueKey(m,'now'),a};return a;}
 /* 다른 질문에도 말투를 입힌다: 첫마디와 끝맺음만 바꾼다 */
 function mvWrap(m,topic,a){ const v=mgrVoice(m); if(m.rel<35)return a;
   const pre={data:{foreign:'시장 자료를 봤습니다. ',need:'숫자로 보면 답은 하나입니다. ',young:'트래킹 수치까지 보고 말씀드립니다. '},fire:{foreign:'이기려면 외국인이 터져야 합니다. ',need:'돌려 말 안 하겠습니다. ',young:'저는 실력 있으면 나이 안 봅니다. '},warm:{foreign:'새로 오는 선수도 우리 식구가 되는 거니까요. ',need:'애들이 버티고는 있지만, ',young:'제가 제일 아끼는 얘기네요. '},old:{foreign:'',need:'',young:'어린 선수는 기본부터입니다. '},calm:{foreign:'',need:'',young:''}}[v]||{};

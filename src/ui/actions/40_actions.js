@@ -22,7 +22,7 @@ const A={
   staffTalk(v){const [kind,id,topic]=v.split(':');UI.staffMsgs=UI.staffMsgs||{};UI.staffMsgs[id]=staffTalk(kind,id,topic);save();if(UI.person)renderSheet();else render();},
   homePanel(v){UI.homePanel=v;render();},
   homeNews(v){UI.homeNews=+v;render();},
-  detailBack(){if(UI.fmKeys){UI.fmKeys=false;render();return;}if(UI.ngt||UI.meet){UI.ngt=null;UI.meet=null;renderSheet();render();return;}if(UI.negWin){UI.negWin=null;renderSheet();render();return;}if(UI.castRet&&UI.sheet!=null){const c=UI.castRet;UI.sheet=null;UI.castRet=null;UI.cast=c;c.play=false;renderSheet();return;}closeSheets();},
+  detailBack(){if(UI.fmKeys){UI.fmKeys=false;render();return;}if(UI.meet){A.meetClose();return;}if(UI.ngt){UI.ngt=null;renderSheet();render();return;}if(UI.negWin){UI.negWin=null;renderSheet();render();return;}if(UI.castRet&&UI.sheet!=null){const c=UI.castRet;UI.sheet=null;UI.castRet=null;UI.cast=c;c.play=false;renderSheet();return;}closeSheets();},
   mgrCandidate(v){UI.mgrCandidate=v;UI.mgrMsg=null;renderSheet();},
   analysisY(v){ UI.analysisY=+v; renderSheet(); },
   smkGo(v){ UI.smkK=v; UI.smkSrc='free'; A.go('staff:smkt'); }, smkK(v){ UI.smkK=v; render(); }, smkSrc(v){ UI.smkSrc=v; render(); }, /* 스태프 시장 */
@@ -49,7 +49,7 @@ const A={
   fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
   fdV(v){ UI.fdV=v; render(); }, fdY3(v){ UI.fdY3=v==='1'; render(); }, /* 성적 탭: 지난 시즌 ↔ 최근 3년(1군 합산) */ /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
   meetOpen(v){ const [h,ask]=String(v).split('|'); const [k,id]=h.split(':'); meetOpen(k,id!=null?+id:null,{ask}); },
-  meetDo(v){ meetDo(v); renderSheet(); },
+  meetDo(v){ if(UI.meet){UI.meet.optsY=document.querySelector('.mt-opts')?.scrollTop||0;UI.meet.topic=v;}meetDo(v);render(); },
   ngtOpen(v){ const [k,id]=String(v).split(':'); UI._ngtY=0; ngtOpen(k,+id); },
   ngtSet(v){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); ngtSet(v); renderSheet(); },
   ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); const D=ngtDemand(N); N.T={...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years}; if(N.k==='ext')N.T.role=null; N.ed='dem'; N.kept=false; renderSheet(); },
@@ -57,7 +57,7 @@ const A={
   ngtCounter(){ UI._ngtY=0; ngtCounter(); save(); render(); renderSheet(); },
   ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },
   ngtClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.ngt=null; renderSheet(); render(); },
-  meetClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.meet=null; renderSheet(); render(); },
+  meetClose(){ const y=UI.meet?.returnY||0;UI.meet=null;render();scrollTo(0,y); },
   mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(/관계 \+1/.test(r.a||''))try{ toast('자주 의논해 주셔서 감독 관계 +1'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },
   annPlayer(v){ (UI.annQ||[]).shift(); annRender(); A.player(+v); },
