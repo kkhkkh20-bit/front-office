@@ -817,6 +817,13 @@ T('[리뷰 11-02h] 군 복무 중인 선수의 구단 연장 옵션도 단장에
   G.evs=(G.evs||[]).filter(e=>e.k!=='copt'); cOptAsk(); ok((G.evs||[]).some(e=>e.k==='copt'&&e.data.pid===p.id),'복무 중 선수 옵션 결정을 묻지 않음'); });
 T('[리뷰 11-02h] 구단 옵션을 실행해도 계약금이 계약 총액에서 빠지지 않는다(상한 반영 기간과 총액 기록은 별개)',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign); p.faC=true; p.yrs=1; p.cyrs=4; termsApply(p,{years:4,annual:500,bonus:1000,cOpt:1},'fa',G.year-3,true); p.sal=500;
   p.yrs=2; p.cyrs=5; p.cOptAdd={y:1,a:500}; const keep=G.year; G.year=keep+1; const m=ctMoney(p); G.year=keep; ok(m&&m.tot===1000+500*5,'옵션 실행 뒤 보장 총액 '+(m&&m.tot)+'(3500이어야 함)'); });
+T('[리뷰 11-02i] 외부 FA 한도를 채운 뒤 남은 역제안은 수락할 수 없고, 실제 계약이 된 경우에만 사인 완료라고 알린다',()=>{ fresh(); simTo(()=>G.fa&&G.fa.open&&!G.fa.closed); const ps=G.fa.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!==G.user); ok(ps.length>=1,'준비 실패');
+  const p=ps[0]; const n=negOf(p.id); n.counter={annual:p.ask.annual,years:p.ask.years||2,until:G.day+7}; G.fa.outN=G.fa.outN||{}; G.fa.outN[G.user]=faCapN(); ok(faOutBlocked(G.user,p),'준비 실패: 한도');
+  const msg=faAcceptCounter(p.id); ok(!/사인했습니다/.test(msg),'한도를 채웠는데 사인했다고 안내: '+msg); ok(p.team==null&&n.counter,'한도 실패인데 역제안이 사라지거나 소속이 바뀜'); });
+T('[리뷰 11-02i] 해외 복귀 우선협상 중 이직하면 옛 구단(AI)이 계약하거나 거절해 끝내고, 이미 꼬인 저장도 기한이 지나면 정리된다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP&&ovr(q)>=50); const id=p.id; G.day=KD(11,1); ovsLeave(p,'NPB','테스트',1,200,'해외 FA'); const a=G.abroad.find(x=>x.id===id); { const pj=JSON.parse(a.pj); pj.age=33; a.pj=JSON.stringify(pj); }
+  G.year++; abroadYear(); const q=G.players[id]; ok(q&&q.retAsk&&q.retFrom===G.user,'준비 실패'); const old=G.user; switchTeam(otherT()); ok(!q.retAsk&&(q.team===old||q.freeSince!=null),'이직 뒤 복귀 협상이 남음 team='+q.team);
+  G.year--; });
+T('[리뷰 11-02i] 이미 이벤트 없이 남은 해외 복귀 협상(예전 저장)은 기한이 지나면 자유계약으로 풀린다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); p.team=null; p.retFrom=G.user; p.retAsk={sal:300,yrs:1,lg:'NPB',n:1,exp:G.day-1}; ovsBackSweep(); ok(!p.retAsk&&p.freeSince!=null,'꼬인 복귀 협상이 정리되지 않음'); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');

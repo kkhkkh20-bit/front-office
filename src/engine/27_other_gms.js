@@ -196,7 +196,7 @@ function switchTeam(tid){ const old=G.user; const ot=team(old), nt=team(tid); tr
   G.goals=null; G.policy=null; G.devProg=[]; try{ ovsHandOff(old,tid); }catch(e){ G.ovs=[]; } G.lineup={}; G.offers=[]; G.shortlist=[]; G.tsug=null; G.mentor=null;
   /* 캠프: 옛 구단 훈련 방향·시작 기록은 두고, 새 구단 캠프를 합류 시점 기준으로 이어받는다(방향은 기본 '균형', 결산 비교는 합류일부터) */
   G.camp=G.camp&&!G.camp.done?{focus:'balance',done:false,snap:campSnap(),join:G.day}:null;
-  for(const e of (G.evs||[]))if(!e.done)e.done=true; G.marketing=2000; G.pr={fan:55,press:50,hist:[]};
+  for(const e of (G.evs||[]))if(!e.done){ if(e.k==='ovsback'){ const q=G.players[e.data&&e.data.pid]; if(q&&q.retAsk)try{ ovsBackAI(q); }catch(x){} } e.done=true; } /* 미결 해외 복귀 협상은 옛 구단(이제 AI)이 계약하거나 거절하고 닫는다 */ G.marketing=2000; G.pr={fan:55,press:50,hist:[]};
   for(const p of Object.values(G.players)){ if(p.team===old){ delete p.listed; delete p.promise; } }
   G.unemp=null; G.gameOver=null; G.stops=[]; if(G.contract&&G.contract.done)G.contract.tid=tid;
   /* 스태프는 구단에 남는다: 우리 스카우트·분석원은 옛 구단 몫으로, 새 구단의 스태프를 이어받는다 */

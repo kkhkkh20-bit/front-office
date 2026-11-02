@@ -53,7 +53,9 @@ EVH.post={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; if(p.team!
 function postStart(p){ G.posting=G.posting||[]; G.posting.push({pid:p.id,y:G.year,tid:p.team,day:Math.max(G.day+20,KD(12,12)),done:false}); wire('해외',`${tname(p.team)} ${p.name}, 포스팅 신청`,{tid:p.team,ref:p.id}); delete p.postPromise; }
 /* 포스팅 결과: 능력이 높을수록 MLB 계약 가능성이 크다 */
 function postFee(amtTot){ const a=amtTot; const f=Math.min(a,2500)*.2+Math.max(0,Math.min(a,5000)-2500)*.175+Math.max(0,a-5000)*.15; return Math.round(f); }
-function ovsDaily(){ for(const x of G.posting||[]){ if(x.done||G.day<x.day)continue; x.done=true; const p=G.players[x.pid]; if(!p||p.team!==x.tid)continue; const o=ovr(p);
+/* 해외 복귀 협상 정리: 우리 구단 몫이 아니거나(이직·야인) 결정할 이벤트가 없이 기한이 지난 선수는 원소속 구단(AI) 판단으로 끝낸다(예전에 꼬여 저장된 선수 복구 포함) */
+function ovsBackSweep(){ for(const p of Object.values(G.players)){ if(!p.retAsk)continue; if(p.retFrom!==G.user||G.unemp){ ovsBackAI(p); continue; } const live=(G.evs||[]).some(e=>!e.done&&e.k==='ovsback'&&e.data&&e.data.pid===p.id); if(!live&&G.day>(p.retAsk.exp||0))ovsBackFree(p,'해외 복귀 우선협상 기한 만료'); } }
+function ovsDaily(){ try{ ovsBackSweep(); }catch(e){} for(const x of G.posting||[]){ if(x.done||G.day<x.day)continue; x.done=true; const p=G.players[x.pid]; if(!p||p.team!==x.tid)continue; const o=ovr(p);
     const pm=o>=68?.9:o>=64?.6:o>=61?.3:.1; let lg=null; if(R()<pm)lg='MLB'; else if(R()<(o>=60?.35:.1))lg='NPB';
     if(!lg){ x.res='무산'; p.mor=clamp((p.mor??60)-5,0,100); p.mlb=clamp(p.mlb-15,0,100); wire('해외',`${p.name} 포스팅 무산, ${tshort(x.tid)} 잔류`,{tid:x.tid,ref:p.id}); if(x.tid===G.user)note('선수',`${p.name}의 포스팅이 무산됐습니다. 계약을 제시한 구단이 없었습니다. 선수는 남습니다(기분 -5).`,p.id); continue; }
     const yrs=lg==='MLB'?(o>=70?ri(4,6):o>=66?ri(2,4):ri(1,2)):ri(2,3); const amt=Math.round(lg==='MLB'?clamp((o-58)*90+N(0,80),100,2500):clamp((o-55)*45+N(0,30),80,600)); const fee=usd(postFee(amt*yrs)); x.res=lg;
