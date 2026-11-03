@@ -30,19 +30,22 @@ function cSync(T,ms){ const st=document.getElementById('cs-stage'); if(!st)retur
 function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
   const stripes=[...Array(9)].map((_,i)=>`<path d="M50 89 L${-40+i*20} -20 L${-30+i*20} -20 Z" class="st"/>`).join('');
   const hc=cTeamCol(g.home), ac=cTeamCol(g.away); const day=[0,6].includes(dobj(g.day).w);
-  const crowd=(()=>{ const r=mulberry(g.day*31+g.home); let o=''; for(let i=0;i<950;i++){ const a=Math.PI*(1.0+r()*1.0), rr=50+r()*30; /* 기본 만석 */ const x=50+Math.cos(a)*rr*1.05, y=89+Math.sin(a)*rr*1.12; if(y>44&&(x>14&&x<86))continue; if(y>58)continue; const v=r(); const col=v<.3?hc:v<.4?ac:v<.6?'#c9d1d8':v<.8?'#6b7680':'#3b444d'; o+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(.36+r()*.22).toFixed(2)}" fill="${col}" opacity="${(.62+r()*.38).toFixed(2)}"/>`; } return o; })();
-  const tower=(x,y)=>`<g class="tw"><circle cx="${x}" cy="${y}" r="9" class="glow"/><rect x="${x-.4}" y="${y}" width=".8" height="13" class="pole"/><rect x="${x-3}" y="${y-1.6}" width="6" height="2.6" rx=".4" class="lamp"/></g>`;
+  const stadium=typeof MATCH_STADIUM_IMAGE==='string'?MATCH_STADIUM_IMAGE:null,skyline=hasAsset()?ASSET.stad[day?'city_day':'city_night']:null;
+  const tower=(x,y)=>`<g class="tw"><circle cx="${x}" cy="${y}" r="9" class="glow"/><path d="M${x-.65} ${y+1}V${y+14}H${x+.65}V${y+1}M${x-.65} ${y+3}L${x+.65} ${y+6}L${x-.65} ${y+9}L${x+.65} ${y+12}" class="cs-mast"/><rect x="${x-3}" y="${y-1.6}" width="6" height="2.6" rx=".3" fill="#394a53"/>${Array.from({length:18},(_,i)=>`<rect x="${x-2.65+i%6*.88}" y="${y-1.2+Math.floor(i/6)*.74}" width=".66" height=".46" rx=".08" fill="#fff8d9"/>`).join('')}</g>`;
   const fieldBg=`<svg class="cs-bg${day?' day':''}" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    <defs><clipPath id="cs-fair"><path d="M50 92 L1 43 Q50 -16 99 43 Z"/></clipPath>
+    <defs><clipPath id="cs-sky-cut"><rect width="100" height="35"/></clipPath>${stadium?`<pattern id="cs-crowd-art" patternUnits="userSpaceOnUse" width="25" height="50"><image href="${stadium}" width="25" height="50" preserveAspectRatio="none"/></pattern>`:""}<clipPath id="cs-stands"><path d="M-6 58 L-6 30 Q50 -38 106 30 L106 58 L99 43 Q50 -16 1 43 Z"/></clipPath><clipPath id="cs-fair"><path d="M50 92 L1 43 Q50 -16 99 43 Z"/></clipPath>
       <linearGradient id="cs-sky" x1="0" y1="0" x2="0" y2="1">${day?'<stop offset="0" stop-color="#5d8fc0"/><stop offset=".45" stop-color="#9cc1e0"/><stop offset="1" stop-color="#1c3a26"/>':'<stop offset="0" stop-color="#03060a"/><stop offset=".45" stop-color="#0b1622"/><stop offset="1" stop-color="#0d1a12"/>'}</linearGradient>
+      <linearGradient id="cs-grass" x1="0" y1="0" x2=".2" y2="1"><stop stop-color="${day?'#579852':'#3b7950'}"/><stop offset=".5" stop-color="${day?'#367b43':'#275c3b'}"/><stop offset="1" stop-color="${day?'#255c36':'#1d422e'}"/></linearGradient>
+      <linearGradient id="cs-earth" x1="0" y1="0" x2=".65" y2="1"><stop stop-color="${day?'#d5ac7e':'#b79773'}"/><stop offset=".55" stop-color="${day?'#b98c60':'#97734e'}"/><stop offset="1" stop-color="${day?'#9b6e48':'#795b40'}"/></linearGradient>
+      <linearGradient id="cs-wall-light" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#88b4c0"/><stop offset=".25" stop-color="#355b63"/><stop offset="1" stop-color="#173a40"/></linearGradient>
       <radialGradient id="cs-glw"><stop offset="0" stop-color="#fff7d6" stop-opacity=".55"/><stop offset="1" stop-color="#fff7d6" stop-opacity="0"/></radialGradient></defs>
-    <rect width="100" height="100" fill="url(#cs-sky)"/>
-    <path d="M-6 58 L-6 30 Q50 -38 106 30 L106 58 L99 43 Q50 -16 1 43 Z" class="stand"/>${crowd}
+    <rect width="100" height="100" fill="#183e2a"/><rect width="100" height="40" fill="url(#cs-sky)"/>${skyline?`<image class="cs-sky-art" href="${skyline}" width="100" height="100" preserveAspectRatio="none" clip-path="url(#cs-sky-cut)"/>`:""}
+    <path d="M-6 58 L-6 30 Q50 -38 106 30 L106 58 L99 43 Q50 -16 1 43 Z" class="stand"/>${stadium?`<path class="cs-stand-art" d="M-6 58 L-6 30 Q50 -38 106 30 L106 58 L99 43 Q50 -16 1 43 Z" fill="url(#cs-crowd-art)"/><g clip-path="url(#cs-stands)" stroke="#163641" stroke-width=".35" opacity=".45"><path d="M25 0V60M50 0V60M75 0V60"/></g>`:""}
     <rect x="38" y="1.2" width="24" height="8" rx=".8" class="sb"/><rect x="39.2" y="2.4" width="21.6" height="5.6" class="sbi"/><text x="50" y="6.6" class="sbt">${esc(tshort(g.away))} : ${esc(tshort(g.home))}</text>
     ${day?'':tower(6,10)+tower(94,10)+tower(24,-2)+tower(76,-2)}
     <path d="M50 100 L-5 45 L-5 100 Z M50 100 L105 45 L105 100 Z" class="foul"/><path d="M50 92 L1 43 Q50 -16 99 43 Z" class="g1"/>
     <g clip-path="url(#cs-fair)">${stripes}<path d="M1 43 Q50 -16 99 43" class="trk"/></g>
-    <path d="M1 43 Q50 -16 99 43" class="wall"/>
+    <path d="M1 43 Q50 -16 99 43" class="wall-shadow"/><path d="M1 43 Q50 -16 99 43" class="wall"/>
     <path d="M24 74 Q50 32 76 74 L50 95 Z" class="dirt"/><path d="M50 86 L65 73 L50 59 L35 73 Z" class="g3"/>
     <circle cx="50" cy="72" r="2.8" class="dirt"/><circle cx="50" cy="89" r="4.2" class="dirt"/>
     <path d="M50 89 L2 41 M50 89 L98 41" class="line"/>

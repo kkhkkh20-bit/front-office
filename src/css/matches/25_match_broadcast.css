@@ -79,3 +79,20 @@
   .match-dashboard .cs-sit{top:calc(8% + 10px);left:12px;font-size:12px}
 }
 @media(max-height:560px){.detail-page-open #sheet .cast.match-dashboard{height:640px;min-height:640px}}
+
+/* 2D 플레이 좌표 위에 관중석 이미지와 구장 재질만 합성한다. */
+.match-dashboard .cs-bg .g1{fill:url(#cs-grass)}
+.match-dashboard .cs-bg .g3{fill:#377747;fill-opacity:.78}
+.match-dashboard .cs-bg .dirt{fill:url(#cs-earth)}
+.match-dashboard .cs-bg .st{fill:#c8e8a4;fill-opacity:.065}
+.match-dashboard .cs-bg .foul{fill:#183e2a}
+.match-dashboard .cs-bg .trk{stroke:#a88c69;stroke-width:4.2}
+.match-dashboard .cs-bg .wall-shadow{fill:none;stroke:#0b2428;stroke-width:2.5}
+.match-dashboard .cs-bg .wall{stroke:url(#cs-wall-light);stroke-width:1.7}
+.match-dashboard .cs-bg .stand{fill:#32434b}
+.match-dashboard .cs-bg .path{stroke:#b1875e;stroke-width:2.4;opacity:.7}
+.match-dashboard .cs-bg .line{stroke:#fff3d7;opacity:.85}
+
+.match-dashboard .cs-bg .cs-stand-art{filter:saturate(.92) brightness(1.03)}
+.match-dashboard .cs-bg:not(.day) .cs-stand-art{filter:saturate(.75) brightness(.68)}
+.match-dashboard .cs-bg .cs-mast{fill:none;stroke:#748993;stroke-width:.3;stroke-linejoin:round}

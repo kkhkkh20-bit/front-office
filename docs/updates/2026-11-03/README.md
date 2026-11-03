@@ -4,7 +4,8 @@
 
 - `post.txt`: 복사해서 쓸 제목과 본문
 - `upload-guide.txt`: 사진 첨부 순서
-- `01-match.png`: 실제 2D 경기 중계
+- `01-match.png`: 새 관중석 배경을 적용한 실제 2D 경기 중계
+- `01b-match-night.png`: 추가 야간 미리보기(기본 ZIP에는 낮 화면만 포함)
 - `02-coach.png`: 코치 능력·멘탈·희망 보직·관계
 - `03-foreign.png`: 외국인 후보 카드
 - `04-manager-talk.png`: 감독 면담
