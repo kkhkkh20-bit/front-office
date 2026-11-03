@@ -4,6 +4,13 @@
 function scoutChief(){ const L=G.scouts||[]; if(!L.length)return null; return [...L].sort((a,b)=>effSkill(b)-effSkill(a)||(b.since??0)-(a.since??0))[0]; }
 /* 드래프트 시즌: 3월부터 그해 신인 드래프트가 끝날 때까지 */
 function scoutDraftSea(){ const m=dobj(G.day).m; if(m<3||m>9)return false; return !(G.draft&&G.draft.done&&(G.draft.y||G.year)===G.year); }
+/* 배치 책임을 맡긴 뒤에도 겨울의 해외·프로 배치를 아마추어 공백으로 경고하지 않는다.
+   채용 부족은 위임과 별개이며, 직접 배치할 때는 드래프트 시즌에 세 지역을 확인한다. */
+function scoutWorkStatus(){
+  const scouts=G.scouts||[],missing=REG.filter(r=>!scouts.some(s=>(s.role||'am')==='am'&&s.region===r));
+  const delegated=!!G.scoutAuto&&!!scoutChief(),shortage=Math.max(0,REG.length-scouts.length);
+  return {delegated,missing,shortage,needs:shortage>0||(!delegated&&scoutDraftSea()&&missing.length>0)};
+}
 function scoutSlots(){ const draftSea=scoutDraftSea(); const S=[];
   const proN=r=>G.teams.filter(t=>t.id!==G.user&&t.region===r).length;
   const asiaNeed=(()=>{ try{ return foreignOf(G.user).filter(p=>p.foreign==='아시아').length<1; }catch(e){ return false; } })();

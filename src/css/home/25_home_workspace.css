@@ -52,3 +52,40 @@
 
 .hw-metrics>.hw-record{display:grid;grid-template-columns:1fr auto;row-gap:2px;min-width:0;padding:7px 12px;background:var(--panel);border:1px solid var(--line);border-radius:5px;color:var(--ink);cursor:pointer;text-align:left}.hw-record>small{grid-column:1/-1;font-size:10px;line-height:1.2;color:var(--muted)}.hw-record>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:699px){.hw-metrics>.hw-record{padding:4px 7px}.hw-record>span{font-size:9px}.hw-record>b{font-size:12px}.hw-record>small{font-size:9px}}
+
+/* 홈은 화면 한 장으로 읽는다. 자세한 내용은 전체/보고 열기로 이동한다. */
+.home-workspace[data-columns="3"] :is(.home-grid,.hw-work){grid-template-columns:repeat(3,minmax(0,1fr))}
+.home-workspace[data-columns="2"] :is(.home-grid,.hw-work){grid-template-columns:repeat(2,minmax(0,1fr))}
+.home-workspace[data-columns="1"] :is(.home-grid,.hw-work){grid-template-columns:minmax(0,1fr)}
+.home-workspace[data-rows="1"] :is(.home-grid,.hw-work){grid-template-rows:minmax(0,1fr)}
+.home-workspace .hw-panel{border-radius:3px}
+.home-workspace .hw-panel>header{min-height:32px}
+.home-workspace .hw-todo>.card{overflow:hidden}
+@media(min-width:1100px){
+ .fm-home .fmmain{height:100%}
+ .fm-home .hw-heading>nav{display:none}
+ .fm-home .home-workspace{grid-template-rows:36px 56px minmax(0,1fr) 30px;gap:10px}
+ .fm-home .hw-heading b{font-size:18px}
+ .fm-home main.content{padding:10px 8px}
+ .fm-home .hw-metrics>div,.fm-home .hw-metrics>button{border-radius:3px}
+ .home-workspace[data-rows="1"] .hw-stand td,.home-workspace[data-rows="1"] .hw-stand th{padding-block:2px;font-size:12px}
+ .home-workspace[data-rows="1"] .hw-stand td button{height:18px;font-size:12px}
+}
+@media(min-width:700px) and (max-width:1099px){
+ .home-workspace{grid-template-rows:40px 54px minmax(0,1fr) 32px;gap:8px}
+ .hw-heading>nav button{padding-inline:8px}
+}
+@media(min-width:1100px) and (min-height:900px){
+ .hw-panel h2{font-size:14px}
+ .hw-stand td,.hw-stand th{padding-block:2px;font-size:12px}
+ .hw-stand td button{height:18px;font-size:12px}
+ .hw-news h3{font-size:18px;-webkit-line-clamp:3}
+ .hw-news article>p{font-size:13px;-webkit-line-clamp:4}
+ .hw-finance dt,.hw-todo .td>div>b{font-size:13px}
+}
+
+.hw-todo>#todoCard{width:100%;min-width:0;max-width:100%;padding:8px;box-sizing:border-box}
+.hw-todo>#todoCard>.row:first-child{display:none}
+.hw-todo .todo{margin:0}
+.hw-todo .td .btn{max-width:70px;white-space:normal}
+.hw-more-tasks{margin-top:8px}

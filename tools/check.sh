@@ -14,8 +14,11 @@ step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
+step "계속·날짜 표시·스카우트 위임"; node tools/check-continue.cjs || fail=1
 step "경기 전 중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
+step "공통 글꼴·패널 정렬"; node tools/check-design-system.cjs || fail=1
+step "표·목록 내부 스크롤"; node tools/check-workspace.cjs || fail=1
 step "PC 전체 화면 높이"; node tools/check-desktop-fit.cjs || fail=1
 step "능력치 반영"; node tools/check-sens.js || fail=1
 step "장기 시뮬"; export STRICT=1; SEED=7 node tools/check-sim.js $END || fail=1

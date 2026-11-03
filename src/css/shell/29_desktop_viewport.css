@@ -9,6 +9,18 @@
  .fmsh>.fmbody{flex:1;min-height:0;display:grid;grid-template-columns:180px minmax(0,1fr);overflow:hidden}
  .fmsh .fmside{position:relative;top:auto;height:100%;min-height:0}
  .fmsh .fmmain{height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+ /* FM식 탐색: 대메뉴는 왼쪽 한 곳, 상단은 현재 업무와 세부 탭. */
+ .fm-context{flex:1;min-width:0;display:grid;gap:2px;padding-inline:6px}
+ .fm-context small{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .fm-context strong{font-size:17px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .fm1{height:54px;padding-inline:12px;gap:10px}
+ .fmsh{--fm-top-height:85px}
+ .fm2{padding-left:192px;background:var(--panel2)}
+ .fms-label{padding:10px 12px 6px;font-size:10px;letter-spacing:.08em;color:var(--muted)}
+ .fms-g{background:none;border-radius:0;padding:3px 0;border-bottom:1px solid var(--line)}
+ .fmside button{min-height:36px;padding:8px 12px;border-radius:3px;font-size:13px}
+ .fmside button.on{box-shadow:inset 3px 0 var(--team-hi)}
+ .fm-home .fm-meta .chipn{display:none}
  .fmsh main.content{padding-bottom:12px}
  .cast-page-open .fmsh>.fmbody{grid-template-columns:minmax(0,1fr)}
  .detail-page-open #sheet{overflow:hidden;scrollbar-gutter:auto}
@@ -22,3 +34,69 @@
 .tgrid,.cgrid{grid-template-columns:minmax(0,1fr)}
 @media(min-width:700px){.tgrid,.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:1100px){.tgrid,.cgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* 작업 화면: 제목·탭·필터는 고정하고 표와 목록에만 스크롤을 배정한다. */
+html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-behavior:none}
+.shell:has(.ws-frame){height:100dvh;min-height:0;overflow:hidden}
+.fmsh:has(.ws-frame) .fmmain{display:flex;flex-direction:column;overflow:hidden}
+.fmsh:has(.ws-frame) .fmmain>.blk{flex:none}
+.fmsh:has(.ws-frame) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
+.fmsh:has(.ws-frame) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
+.ws-frame,.ws-page{display:flex!important;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;gap:8px}
+.ws-frame{height:100%;box-sizing:border-box}
+.ws-frame>*:not(.ws-panels,.ws-page,.ws-scroll),.ws-page>*:not(.ws-panels,.ws-scroll){flex-shrink:0}
+.ws-panels{flex:1;min-height:0;min-width:0;display:grid;grid-template-columns:repeat(var(--ws-columns,1),minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:10px;overflow:hidden}
+.ws-panels>.ws-panel{display:flex!important;flex-direction:column;min-width:0;min-height:0;margin:0;overflow:hidden;box-sizing:border-box}
+.ws-panels>.ws-panel[hidden]{display:none!important}
+.ws-panel>*:not(.ws-scroll){flex-shrink:0}
+.ws-scroll{flex:1;min-width:0;min-height:0;overflow:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable}
+.ws-scroll:focus-visible{outline:2px solid var(--team-hi);outline-offset:-2px}
+.ws-scroll:is(.tgrid,.cgrid,.cgr,.ltiles){align-content:start}
+.ws-panel .tgrid,.ws-panel .cgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));align-content:start}
+.ws-scroll>table{border-collapse:separate;border-spacing:0;width:100%}
+.ws-scroll>table>thead{position:sticky;top:0;z-index:5;background:var(--panel2);box-shadow:0 1px var(--line2)}
+.ws-scroll>table>thead th{background:var(--panel2)}
+.ws-pages{display:flex;align-items:center;gap:8px;min-width:0}
+.ws-pages>select{flex:1;min-width:0;min-height:30px;max-width:560px;font-size:12px}
+.ws-pages>.btn{min-height:30px;white-space:nowrap}
+.ws-panel .pgr{margin-bottom:0}
+@media(max-width:1099px){
+ .shell:has(.ws-frame){display:block;padding-bottom:calc(58px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+ .shell:has(.ws-frame)>.rail{display:none}
+ .shell:has(.ws-frame)>.mainc{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .shell:has(.ws-frame) .top{flex:none;position:relative}
+ .shell:has(.ws-frame) .mainc>.gut{flex:1;min-height:0;overflow:hidden}
+ .shell:has(.ws-frame) .mainc>.gut>.wrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .shell:has(.ws-frame) .subhead{flex:none;margin-block:6px}
+ .shell:has(.ws-frame) .bnav{display:block}
+ .shell:has(.ws-frame) .content{padding-bottom:8px}
+}
+
+/* 창단 드래프트도 후보 표와 구단 보고를 각각 스크롤한다. */
+@media(min-width:0px){
+ html:has(.dcontent .fdlay),body:has(.dcontent .fdlay){height:100%;overflow:hidden}
+ .dshell:has(.fdlay){height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .dshell:has(.fdlay)>.dtop{flex:none}
+ .dshell:has(.fdlay)>.gut{flex:1;min-height:0;overflow:hidden}
+ .dshell:has(.fdlay)>.gut>.wrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .dcontent:has(.fdlay){flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:8px}
+ .dcontent>.fdseg,.dcontent>.note{flex:none}
+ .dcontent>.fdlay{flex:1;min-height:0;overflow:hidden;align-items:stretch}
+ .fdlay>.fdl-side{min-height:0;overflow:auto;overscroll-behavior:contain}
+ .fdlay>.fdl-main{min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .fdl-main>.card{flex:1;min-height:0;display:flex!important;flex-direction:column;margin-bottom:0;overflow:hidden}
+ .fdl-main>.card>*:not(.fdt-w){flex-shrink:0}
+ .fdl-main .fdt-w{flex:1;min-height:60px;overflow:auto;overscroll-behavior:contain}
+ .fdl-main .fdt thead{position:sticky;top:0;z-index:5;background:var(--panel2)}
+}
+/* 선수 기록: 신상·탭은 남기고 시즌별 기록표 안에서 이동한다. */
+#sheet .sheet.psh.ws-detail{height:var(--detail-height);min-height:0;display:flex!important;flex-direction:column;overflow:hidden!important}
+.ws-detail>.detail-navigation,.ws-detail>.pf-topnav{flex:none}
+.ws-detail>.ws-detail-body{flex:1;min-height:0;min-width:0}
+#sheet:has(.ws-detail){overflow:hidden}
+
+/* 진행 결과·확인 창이 떠도 날짜 띠는 작은 화면 안의 맨 앞에 남긴다. */
+#dtick.on{display:block;z-index:120}
+#dtick .dt-in{max-width:100%;box-sizing:border-box}
+#dtick .dt-c{flex:1 1 0;min-width:0}
+#dtick .dt-c b,#dtick .dt-flip b{white-space:nowrap;line-height:20px}

@@ -39,7 +39,7 @@ function subAlert(tab,k){
     'transfer:fa':faLive(),
     'transfer:contract':!!(G.contract&&!G.contract.done),
     'transfer:draft':!!(G.draft&&!G.draft.done),
-    'staff:scouts':new Set(G.scouts.filter(s=>(s.role||'am')==='am').map(s=>s.region)).size<3,
+    'staff:scouts':scoutWorkStatus().needs,
     'staff:mgr':!G.mgr[G.user],
     'staff:coach':!!G.coach&&CKEYS.some(k=>!coachesOf(G.user)[k]),
     'train:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),

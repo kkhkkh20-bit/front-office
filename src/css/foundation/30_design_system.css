@@ -1,0 +1,139 @@
+/* 업무 화면의 공통 기준. 개별 기능 CSS 뒤에서 제목·본문·표·조작부의 역할을 통일한다.
+   본문 13 / 설명 12 / 패널 제목 16 / 화면 제목·주요 값 20 / 대표 수치 24px.
+   글씨를 화면 높이에 따라 축소하지 않는다. 긴 내용은 기존 패널 내부에서 스크롤한다. */
+:root{
+ --ui-caption:12px;--ui-body:13px;--ui-heading:16px;--ui-title:20px;--ui-display:24px;
+ --ui-line:20px;--ui-caption-line:16px;--ui-control:32px;--ui-control-compact:28px;
+ --ui-space:8px;--ui-panel-pad:12px;--ui-panel-head:40px;
+}
+:is(.shell,.dshell,.sheet,.cfm){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line)}
+:is(#app,#sheet,#cfm) :is(.small,.eyebrow,.hint,.sdesc,.dnote,.pill,.chipn,small){font-size:var(--ui-caption);line-height:var(--ui-caption-line);letter-spacing:0}
+:is(#app,#sheet,#cfm) :is(.sec,h2.sec,.hw-panel h2,.ws-panel h3,.pf-overview h3){font-size:var(--ui-heading);line-height:24px;font-weight:700;letter-spacing:0}
+:is(#app,#sheet) :is(.subhead h1,.fm-context strong,.pf-name h2.sec,.hw-heading b){font-size:var(--ui-title);line-height:28px}
+:is(#app,#sheet,#cfm) :is(p,li,dd,dt){line-height:var(--ui-line)}
+:is(#app,#sheet,#cfm) :is(a.tl,a.ml){font-family:inherit;font-size:inherit;line-height:inherit}
+:is(#app,#sheet,#cfm) :is(.num,td,.rc,.chipn,.pf-score){font-family:var(--f-ui);font-variant-numeric:tabular-nums;letter-spacing:0}
+
+/* 같은 역할의 조작부는 같은 크기로 맞춘다. */
+:is(#app,#sheet,#cfm) :is(.btn,.btn.small,.tc-i,.chips button,.seg button,.pgr button){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line);min-height:var(--ui-control);padding:5px 10px;box-sizing:border-box;vertical-align:middle;letter-spacing:0}
+:is(#app,#sheet,#cfm) :is(select,input[type=text],input[type=search],input[type=number],input:not([type]),textarea){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line);min-height:var(--ui-control);padding:5px 8px;box-sizing:border-box;vertical-align:middle}
+:is(#app,#sheet) :is(.row,.chips,.seg,.roster-filters,.roster-navigation){gap:var(--ui-space);align-items:center}
+:is(#app,#sheet) :is(.chips,.seg){margin-block:0}
+:is(#app,#sheet) :is(.seg.itabs,.roster-navigation){min-height:var(--ui-control)}
+:is(#app,#sheet) :is(.tgrid,.cgrid,.ws-panels,.home-grid,.hw-work){gap:var(--ui-panel-pad)}
+#app .ws-panels>.card,#sheet .ws-panels>.card{margin:0;padding:var(--ui-panel-pad);gap:var(--ui-space)}
+:is(#app,#sheet) .card>:is(h2.sec,.row.between,.eyebrow):first-child{margin:-12px -12px 0;padding:4px 12px;min-height:var(--ui-panel-head);align-items:center}
+:is(#app,#sheet) .card>h2.sec:first-child{display:flex}
+:is(#app,#sheet) :is(.tcard,.pcard){padding:var(--ui-panel-pad);gap:var(--ui-space);align-content:start}
+:is(#app,#sheet) .tcard{display:flex;flex-direction:column}
+:is(#app,#sheet) .tcard>.tc-ft{margin-top:auto;padding-top:var(--ui-space);border-top:1px solid var(--line)}
+:is(#app,#sheet) :is(.tc-ft,.tc-ft span,.tc-ft b,.tc-tools,.tc-tools span,.tc-tools i,.tc-rt span,.pc-s,.pc-l,.pp,.staff-preference,.staff-preference>b,.staff-traits,.staff-more summary,.staff-more .small,.staff-network>span){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+:is(#app,#sheet) :is(.tc-name,.tcard .row>b,.pc-name,.staff-person b){font-size:var(--ui-heading);line-height:24px}
+:is(#app,#sheet) :is(.pc-v,.pc-v b,.pc-r b){font-size:var(--ui-title);line-height:28px}
+:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental){gap:var(--ui-space);margin-block:var(--ui-space)}
+:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental)>span{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;min-height:40px;padding:4px 8px;gap:var(--ui-space)}
+:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental) i{font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+:is(#app,#sheet) .cgr b{font-size:var(--ui-heading);line-height:24px}
+
+/* 열 제목과 값은 같은 열에 맞추고 행 높이를 통일한다. */
+:is(#app,#sheet) :is(.ws-panel,.candidate-list,.roster-list,.fdt-w) :is(th,td){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line);padding:6px 8px;height:32px;letter-spacing:0;vertical-align:middle}
+:is(#app,#sheet) :is(.ws-panel,.candidate-list,.roster-list,.fdt-w) th{font-size:var(--ui-caption);font-weight:600}
+:is(#app,#sheet) :is(.ws-panel,.candidate-list,.roster-list) :is(th,td):first-child{padding-left:12px}
+:is(#app,#sheet) :is(.rc,.rchip,.ovc,.candidate-name,.rt .pn,.rt i.f,.rt .rd,.rt .trend){font-size:var(--ui-body);line-height:var(--ui-line)}
+:is(#app,#sheet) .rc{min-width:28px;min-height:20px;padding-inline:4px;text-align:center}
+:is(#app,#sheet) :is(.pgr .num,.ws-pages select,.hw-pager>span,.twpg){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+
+/* 홈의 요약표만 12px/18px의 고정 행을 사용한다. */
+#app .home-workspace{grid-template-rows:40px 64px minmax(0,1fr) 36px;gap:var(--ui-space)}
+#app .hw-panel>header{min-height:var(--ui-panel-head);padding:4px 12px;gap:var(--ui-space)}
+#app .hw-panel>header .tc-i{min-height:var(--ui-control);font-size:var(--ui-caption);padding:5px 8px}
+#app .hw-panel :is(.small,.hw-hint,.hw-kicker,.hw-news-art small,.hw-news-art b,.hw-todo .td>div>span,.hw-upcoming .ug-d,.hw-upcoming .ug-o,.hw-recent){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+#app .hw-panel :is(.hw-todo .td>div>b,.hw-finance dt,.hw-news article>p,.hw-match-teams b){font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .hw-news h3{font-size:var(--ui-heading);line-height:24px}
+#app .hw-finance dd{font-family:var(--f-ui);font-size:var(--ui-title);line-height:28px;letter-spacing:0}
+#app .hw-stand :is(th,td){font-family:var(--f-ui);font-size:var(--ui-caption);line-height:16px;height:18px;padding:0 6px;vertical-align:middle}
+#app .hw-stand td button{font-size:var(--ui-caption);line-height:16px;min-height:0;height:16px;padding:0}
+#app .hw-metrics>div,#app .hw-metrics>.hw-record{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:24px 16px;align-content:center;align-items:center;gap:0 8px;padding:8px 12px}
+#app .hw-metrics :is(span,small){font-size:var(--ui-caption);line-height:16px}
+#app .hw-metrics b{font-family:var(--f-ui);font-size:var(--ui-title);line-height:24px;letter-spacing:0}
+#app .hw-metrics small{grid-column:1/-1}
+#app .hw-pager>.btn{height:32px;min-height:32px;line-height:20px;padding:5px 10px}
+#app .hw-todo .todo .td{padding-block:8px;gap:var(--ui-space)}
+
+/* 선택한 선수·계약 창도 같은 단계의 글꼴을 사용한다. */
+#sheet :is(.pf-attribute-row,.pf-fact,.pf-role,.pf-bio,.pf-state .small,.pf-role .small,.ng-row,.ng-res,.cfm ul){font-size:var(--ui-body);line-height:var(--ui-line)}
+#sheet :is(.pf-fact>b,.pf-fact>span,.pf-attribute-legend,.pf-section-title>span,.pf-name .pinfo,.pf-core-caption,.pf-core-caption>span,.pf-season-grid span,.pf-core-cell>span,.pf-core-cell small){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+#sheet .pf-attribute-row{min-height:28px;padding:4px 8px;gap:var(--ui-space)}
+#sheet :is(.pf-score,.pf-attribute-row.text .pf-score){font-size:var(--ui-heading);line-height:20px}
+#sheet .pf-attribute-row.text .pf-score{font-size:var(--ui-caption);line-height:16px}
+#sheet :is(.pf-core-cell strong,.pf-season-grid b,.pf-contract-head b){font-family:var(--f-ui);font-size:var(--ui-title);line-height:28px}
+#sheet .pf-attribute-group h3{font-size:var(--ui-body);line-height:20px}
+#sheet .pf-contract-head>span,#sheet .pf-contract-head small{font-size:var(--ui-caption);line-height:16px}
+#sheet .pf-toolbar{gap:var(--ui-space)}
+#cfm :is(h3,.cfm h3){font-size:var(--ui-title);line-height:28px}
+#cfm :is(.cfm-h,.cfm-x){font-size:var(--ui-caption);line-height:16px}
+#cfm .cfm ul{font-size:var(--ui-body);line-height:20px}
+#app :is(.bud-big b,.bud-big strong){font-family:var(--f-ui);font-size:var(--ui-display);line-height:32px}
+
+/* 메뉴와 본문의 왼쪽 시작점을 공통 여백에 맞춘다. */
+#app :is(.fm-context small,.fm-date b,.fm-date span,.fms-label,.fm-k,.fmside .cnt,.fm-i>i){font-family:var(--f-ui);font-size:var(--ui-caption);line-height:16px}
+#app :is(.fm-a,.goset .continue b){font-family:var(--f-ui);font-size:var(--ui-heading);line-height:20px}
+#app :is(.fmside button,.bnav button,.fm-sub .subtabs button,.fm-sub .fm-ttl,.seg.itabs button){font-size:var(--ui-body);line-height:20px}
+#app :is(.goset .continue i,.goset .step,.ibr-d,.ibr-tag,.ibx-key,.ibx-day,.ibx-dn){font-size:var(--ui-caption);line-height:16px}
+#app :is(.ibr-subj,.ibm-body,.ibm-acts button){font-size:var(--ui-body);line-height:20px}
+@media(min-width:1100px){
+ #app .fmsh{--fm-top-height:90px}
+ #app .fm1{height:56px}
+ #app .fm2{height:32px;padding-left:192px}
+ #app .fm-sub .subtabs button{min-height:28px;padding:4px 12px}
+ #app .fmsh .fmwrap{padding-inline:0}
+ #app .fmsh main.content{padding:12px 0}
+ #app .fm-home main.content{padding-block:8px}
+}
+@media(max-width:699px){
+ #app .home-workspace{grid-template-rows:64px 56px minmax(0,1fr) 36px}
+ #app .hw-metrics>div,#app .hw-metrics>.hw-record{grid-template-columns:minmax(0,1fr);grid-template-rows:16px 24px;padding:4px 8px}
+ #app .hw-metrics small{display:none}
+ #app .hw-heading b{font-size:var(--ui-heading);line-height:24px}
+ #app .hw-heading>nav button{font-size:var(--ui-body);line-height:20px;padding:4px 8px}
+ #app .bnav button{font-size:var(--ui-caption);line-height:16px}
+}
+
+/* 표식·요약·인물 이름도 동일한 단계로 수렴시킨다. */
+:is(#app,#sheet) :is(.hi-i,.cnt,.ptier,.cst,.cst span,.cst i,.cgr span,.cgg span,.bud-t span,.bud-t i,.bud-t em,.bud-lg span,.bud-lg i,.bud-big em,.ibx-tabs button i,.tdi,.hw-match-teams small,.hw-heading small){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+:is(#app,#sheet) :is(.pc-ov,.pc-big){font-family:var(--f-ui);font-size:var(--ui-title);line-height:28px}
+#app :is(.ibl,.ibr-s,.ibx-tabs button){font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .ibm-s{font-size:var(--ui-heading);line-height:24px}
+#app .ibm .mailbody{font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .hw-match-teams b{font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .hw-stand :is(td,th){height:17px}
+#sheet .pno{font-size:var(--ui-body);line-height:20px}
+#sheet .sheet-head h2.sec{font-size:var(--ui-title)!important;line-height:28px}
+
+/* 같은 보직 카드끼리 이름·능력·설명·계약 버튼의 행 경계를 공유한다. */
+:is(#app,#sheet) .cgrid:has(>.csl){align-items:stretch;grid-auto-rows:auto}
+:is(#app,#sheet) .cgrid>.csl{display:grid;grid-template-rows:subgrid;grid-row:span 9;align-self:stretch;align-content:stretch;gap:8px;padding:12px}
+:is(#app,#sheet) .csl-h{min-height:24px;align-items:center}
+:is(#app,#sheet) .csl-n{min-height:40px;font-size:var(--ui-heading);line-height:24px;align-items:center}
+:is(#app,#sheet) .csl-s{min-height:24px;align-items:center}
+:is(#app,#sheet) .csl>.small{font-size:var(--ui-caption);line-height:16px;min-height:32px}
+:is(#app,#sheet) .csl>.row:last-child{grid-row:9}
+:is(#app,#sheet) .csl.empty>p{grid-row:2 / span 5;align-self:start}
+:is(#app,#sheet) .csl.empty>.btn{grid-row:9;align-self:end}
+:is(#app,#sheet) :is(.ug-o>b,.ug-d>b){font-size:var(--ui-caption);line-height:16px}
+:is(#app,#sheet) :is(.ug-d>i,.bud-bar .mk>i,.detail-navigation>span){font-size:var(--ui-caption);line-height:16px}
+#sheet .match-entry-choices .btn>b{font-size:var(--ui-heading);line-height:24px}
+#sheet .match-entry-choices .btn>span{font-size:var(--ui-caption);line-height:16px}
+#app :is(.cb-v,.mailbtn i,.top .club span,.top .club span i){font-size:var(--ui-caption);line-height:16px}
+#app button.fd-gob.btn{min-height:48px;font-size:var(--ui-heading);line-height:24px;padding:10px 16px}
+#sheet :is(.ng-say p,.ngl b,.ngv,.ng-sum b,.ng-res b,.ng-res span){font-family:var(--f-ui);font-size:var(--ui-body);line-height:20px}
+#sheet :is(.ngl i,.ng-sum i,.ng-sum em){font-size:var(--ui-caption);line-height:16px}
+#sheet .ngb{width:32px;height:32px;font-size:var(--ui-body);line-height:20px}
+#sheet .ngr{min-height:80px;padding:8px 12px;gap:8px 16px;align-items:center}
+@media(min-width:700px){#sheet .ngr{grid-template-columns:minmax(0,1fr) minmax(280px,1fr) minmax(160px,.6fr)}}
+#sheet .match-entry-teams>b{font-size:var(--ui-heading);line-height:24px}
+#sheet .match-entry-teams>b>span{font-size:var(--ui-body);line-height:20px}
+#app .subtabs button{font-size:var(--ui-body);line-height:20px;min-height:32px;padding:5px 10px}
+#app .rail button,#app .railme span{font-size:var(--ui-body);line-height:20px}
+#app .rail .brand b,#app .top .club b{font-size:var(--ui-heading);line-height:24px}
+#sheet .pe-b{font-size:var(--ui-caption);line-height:16px;min-height:28px;padding:4px 8px}

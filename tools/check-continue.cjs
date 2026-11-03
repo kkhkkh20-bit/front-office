@@ -1,0 +1,32 @@
+/* 실제 채용·배치·확인하러 가기·계속 버튼을 통한 회귀 검사. */
+const assert=require('node:assert/strict'),path=require('node:path');
+const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
+(async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
+try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.fOkY=G.year;G.scoutAuto=false;UI.title=false;A.go('staff:scouts');});
+await p.locator('[data-a="smkGo"][data-v="sc"]').click();const tried=new Set();let attempts=0;
+while(await p.evaluate(()=>G.scouts.length<SCOUT_MAX)){
+ const offers=p.locator('[data-a="hireScout"][data-v$=":0.2"]:visible');let selected=null;
+ for(let i=0;i<await offers.count();i++){const v=await offers.nth(i).getAttribute('data-v');if(!tried.has(v)){tried.add(v);selected=offers.nth(i);break;}}
+ assert.ok(selected&&attempts++<20,'실제 채용 후보에서 스카우트 정원 충원');await selected.click();if(await p.locator('#cfm [data-a="cfmOk"]').count())await p.locator('#cfm [data-a="cfmOk"]').click();
+}
+await p.evaluate(()=>{const t=TUT.find(s=>s.k==='scout');window._scoutOld=mail('스카우트팀장',t.subj,t.body,{kind:'업무',imp:true,acts:[{l:t.btn,a:t.go[0],v:t.go[1]}]}).id;A.go('staff:scouts');});
+await p.locator('input[data-a="scoutAuto"]').check();let state=await p.evaluate(()=>({n:G.scouts.length,auto:G.scoutAuto,need:scoutWorkStatus().needs,alert:subAlert('staff','scouts'),tut:TUT.find(s=>s.k==='scout').check(),mail:mailStatus(G.mail.find(m=>m.id===_scoutOld)),pending:ibNeedList().some(m=>m.id===_scoutOld),proposal:!!document.querySelector('.schief [data-a="scoutPlanGo"]')}));assert.ok(state.n===6&&state.auto&&!state.need&&!state.alert&&state.tut&&state.mail&&!state.pending&&!state.proposal,JSON.stringify(state));
+console.log('실제 스카우트 채용',attempts,'회 제안 → 6명 충원·팀장 위임·겨울 해외/프로 배치·잘못된 공백 알림 해제 통과');
+await p.evaluate(()=>{const old=mail('팀 닥터 · 의무팀','부상 방지 프로그램과 병원 제휴를 정해 주세요','완료한 운영안',{kind:'의무',imp:true});window._doneOld=old.id;mail('스카우트팀','배치 조정 완료','팀장이 처리했습니다.',{kind:'스카우트'});mail('육성팀','훈련 방향과 해외 연수 안내','설명입니다.',{kind:'업무',acts:[{l:'보기',a:'goWork',v:'2군연수'}]});window._liveMail=mail('운영팀','오늘 결정할 계약 조건','진행 전에 확인할 실제 업무',{kind:'연봉',imp:true}).id;A.tab('home');});
+await p.locator('button.continue').click();state=await p.evaluate(()=>({doc:UI.cfm?.doc.lines.join('\n'),target:pendMailId(),live:_liveMail,done:ibNeedList().some(m=>m.id===_doneOld||m.id===_scoutOld)}));assert.ok(state.doc?.includes('오늘 결정할 계약 조건')&&!state.doc.includes('스카우트 담당 지역')&&!state.doc.includes('병원 제휴')&&!state.done&&state.target===state.live,JSON.stringify(state));await p.locator('#cfm [data-a="cfmNo"]').click();assert.equal(await p.evaluate(()=>UI.ibSel||UI.ibOpen),state.live,'확인하러 가기는 실제 미처리 업무로 이동');
+await p.evaluate(()=>{if(UI.cfm)A.cfmNo();closeSheets();});
+// 감독 선임으로 실제 발생한 인터뷰와 구단 목표는 직접 확인한다. 완료/위임 소식과 구분해야 한다.
+for(const item of await p.evaluate(()=>ibNeedList().map(m=>({id:m.id,skip:(m.acts||[]).findIndex(a=>a.a==='ivSkip')})))){await p.evaluate(id=>A.openMail(id),item.id);if(item.skip>=0)await p.locator('[data-a="mailAct"][data-v="'+item.id+':'+item.skip+'"]').click();}
+await p.evaluate(()=>{closeSheets();window._continueBase=JSON.stringify(G);});
+for(const [width,height]of [[390,844],[844,390],[768,1024],[1024,768]])for(const reducedMotion of ['no-preference','reduce']){
+ await p.emulateMedia({reducedMotion});await p.setViewportSize({width,height});await p.waitForTimeout(200);await p.evaluate(()=>{G=JSON.parse(_continueBase);UI.title=false;A.tab('home');window._dateBefore=G.day;});
+ await p.locator('button.continue').click();await p.waitForFunction(()=>G.day>_dateBefore,{},{timeout:5000}).catch(async error=>{throw Error(error.message+' '+JSON.stringify(await p.evaluate(()=>({day:G.day,before:_dateBefore,block:blocker(),cfm:UI.cfm?.doc,selected:UI.ibSel,need:ibNeedList().map(m=>[m.id,m.subj]),pending:pendItems(),advT:UI._advT,now:Date.now(),text:document.body.innerText.slice(0,2000)}))));});await p.waitForSelector('#dtick.on',{state:'visible'});await p.waitForTimeout(250);
+ const tick=await p.locator('#dtick').evaluate(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el),v=visualViewport;return {opacity:+s.opacity,z:+s.zIndex,top:r.top,bottom:r.bottom,left:r.left,right:r.right,h:v?.height||innerHeight,w:v?.width||innerWidth,last:el.querySelector('.dt-c:last-child').getBoundingClientRect().right,day:G.day,before:_dateBefore,wrapped:[...el.querySelectorAll('.dt-c b')].some(b=>b.getBoundingClientRect().height>24)};});assert.ok(tick.day>tick.before&&tick.opacity>.5&&tick.z>90&&tick.top>=0&&tick.bottom<=tick.h+1&&tick.left>=0&&tick.right<=tick.w+1&&tick.last<=tick.right+1&&!tick.wrapped,width+' '+reducedMotion+' '+JSON.stringify(tick));if(process.env.CAPTURE)await p.screenshot({path:'/workspace/continue-date-'+width+'-'+reducedMotion+'.png'});
+ // 연속 진행은 이전 날짜 타이머가 새 날짜를 덮어쓰지 않는다.
+ await p.evaluate(()=>{dayTick(G.day-1);});await p.waitForTimeout(350);const last=await p.locator('#dtFlip').innerText();assert.ok(last.includes(await p.evaluate(()=>dobj(G.day).d+'일')));await p.waitForTimeout(1900);
+ console.log('실제 계속 → 날짜 표시',width,height,reducedMotion,'통과');
+}
+await p.emulateMedia({reducedMotion:'no-preference'});await p.setViewportSize({width:1366,height:768});await p.evaluate(()=>{G=JSON.parse(_continueBase);G.day=KD(3,1);G.scoutAuto=false;A.go('staff:scouts');});assert.equal(await p.evaluate(()=>subAlert('staff','scouts')),true,'드래프트 시즌 직접 배치의 실제 공백은 경고');await p.locator('input[data-a="scoutAuto"]').check();assert.equal(await p.evaluate(()=>subAlert('staff','scouts')),false,'위임하면 실제 배치까지 적용');await p.evaluate(()=>{G.scouts=G.scouts.slice(0,2);render();});assert.equal(await p.evaluate(()=>subAlert('staff','scouts')),true,'인원 부족은 위임해도 채용 필요');assert.match(await p.locator('.alert-why').innerText(),/더 필요|채용/);
+assert.deepEqual(errors,[]);console.log('완료·안내 소식 제외·실제 확인 대상 이동·계절/수동/위임/채용 부족 구분 통과');
+}finally{await browser?.close();await server.close();}})().catch(e=>{console.error(e.stack);process.exitCode=1;});

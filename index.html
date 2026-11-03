@@ -3048,6 +3048,43 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 
 .hw-metrics>.hw-record{display:grid;grid-template-columns:1fr auto;row-gap:2px;min-width:0;padding:7px 12px;background:var(--panel);border:1px solid var(--line);border-radius:5px;color:var(--ink);cursor:pointer;text-align:left}.hw-record>small{grid-column:1/-1;font-size:10px;line-height:1.2;color:var(--muted)}.hw-record>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:699px){.hw-metrics>.hw-record{padding:4px 7px}.hw-record>span{font-size:9px}.hw-record>b{font-size:12px}.hw-record>small{font-size:9px}}
+
+/* 홈은 화면 한 장으로 읽는다. 자세한 내용은 전체/보고 열기로 이동한다. */
+.home-workspace[data-columns="3"] :is(.home-grid,.hw-work){grid-template-columns:repeat(3,minmax(0,1fr))}
+.home-workspace[data-columns="2"] :is(.home-grid,.hw-work){grid-template-columns:repeat(2,minmax(0,1fr))}
+.home-workspace[data-columns="1"] :is(.home-grid,.hw-work){grid-template-columns:minmax(0,1fr)}
+.home-workspace[data-rows="1"] :is(.home-grid,.hw-work){grid-template-rows:minmax(0,1fr)}
+.home-workspace .hw-panel{border-radius:3px}
+.home-workspace .hw-panel>header{min-height:32px}
+.home-workspace .hw-todo>.card{overflow:hidden}
+@media(min-width:1100px){
+ .fm-home .fmmain{height:100%}
+ .fm-home .hw-heading>nav{display:none}
+ .fm-home .home-workspace{grid-template-rows:36px 56px minmax(0,1fr) 30px;gap:10px}
+ .fm-home .hw-heading b{font-size:18px}
+ .fm-home main.content{padding:10px 8px}
+ .fm-home .hw-metrics>div,.fm-home .hw-metrics>button{border-radius:3px}
+ .home-workspace[data-rows="1"] .hw-stand td,.home-workspace[data-rows="1"] .hw-stand th{padding-block:2px;font-size:12px}
+ .home-workspace[data-rows="1"] .hw-stand td button{height:18px;font-size:12px}
+}
+@media(min-width:700px) and (max-width:1099px){
+ .home-workspace{grid-template-rows:40px 54px minmax(0,1fr) 32px;gap:8px}
+ .hw-heading>nav button{padding-inline:8px}
+}
+@media(min-width:1100px) and (min-height:900px){
+ .hw-panel h2{font-size:14px}
+ .hw-stand td,.hw-stand th{padding-block:2px;font-size:12px}
+ .hw-stand td button{height:18px;font-size:12px}
+ .hw-news h3{font-size:18px;-webkit-line-clamp:3}
+ .hw-news article>p{font-size:13px;-webkit-line-clamp:4}
+ .hw-finance dt,.hw-todo .td>div>b{font-size:13px}
+}
+
+.hw-todo>#todoCard{width:100%;min-width:0;max-width:100%;padding:8px;box-sizing:border-box}
+.hw-todo>#todoCard>.row:first-child{display:none}
+.hw-todo .todo{margin:0}
+.hw-todo .td .btn{max-width:70px;white-space:normal}
+.hw-more-tasks{margin-top:8px}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -3111,6 +3148,18 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
  .fmsh>.fmbody{flex:1;min-height:0;display:grid;grid-template-columns:180px minmax(0,1fr);overflow:hidden}
  .fmsh .fmside{position:relative;top:auto;height:100%;min-height:0}
  .fmsh .fmmain{height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+ /* FM식 탐색: 대메뉴는 왼쪽 한 곳, 상단은 현재 업무와 세부 탭. */
+ .fm-context{flex:1;min-width:0;display:grid;gap:2px;padding-inline:6px}
+ .fm-context small{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .fm-context strong{font-size:17px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .fm1{height:54px;padding-inline:12px;gap:10px}
+ .fmsh{--fm-top-height:85px}
+ .fm2{padding-left:192px;background:var(--panel2)}
+ .fms-label{padding:10px 12px 6px;font-size:10px;letter-spacing:.08em;color:var(--muted)}
+ .fms-g{background:none;border-radius:0;padding:3px 0;border-bottom:1px solid var(--line)}
+ .fmside button{min-height:36px;padding:8px 12px;border-radius:3px;font-size:13px}
+ .fmside button.on{box-shadow:inset 3px 0 var(--team-hi)}
+ .fm-home .fm-meta .chipn{display:none}
  .fmsh main.content{padding-bottom:12px}
  .cast-page-open .fmsh>.fmbody{grid-template-columns:minmax(0,1fr)}
  .detail-page-open #sheet{overflow:hidden;scrollbar-gutter:auto}
@@ -3124,6 +3173,211 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .tgrid,.cgrid{grid-template-columns:minmax(0,1fr)}
 @media(min-width:700px){.tgrid,.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:1100px){.tgrid,.cgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* 작업 화면: 제목·탭·필터는 고정하고 표와 목록에만 스크롤을 배정한다. */
+html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-behavior:none}
+.shell:has(.ws-frame){height:100dvh;min-height:0;overflow:hidden}
+.fmsh:has(.ws-frame) .fmmain{display:flex;flex-direction:column;overflow:hidden}
+.fmsh:has(.ws-frame) .fmmain>.blk{flex:none}
+.fmsh:has(.ws-frame) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
+.fmsh:has(.ws-frame) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
+.ws-frame,.ws-page{display:flex!important;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;gap:8px}
+.ws-frame{height:100%;box-sizing:border-box}
+.ws-frame>*:not(.ws-panels,.ws-page,.ws-scroll),.ws-page>*:not(.ws-panels,.ws-scroll){flex-shrink:0}
+.ws-panels{flex:1;min-height:0;min-width:0;display:grid;grid-template-columns:repeat(var(--ws-columns,1),minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:10px;overflow:hidden}
+.ws-panels>.ws-panel{display:flex!important;flex-direction:column;min-width:0;min-height:0;margin:0;overflow:hidden;box-sizing:border-box}
+.ws-panels>.ws-panel[hidden]{display:none!important}
+.ws-panel>*:not(.ws-scroll){flex-shrink:0}
+.ws-scroll{flex:1;min-width:0;min-height:0;overflow:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable}
+.ws-scroll:focus-visible{outline:2px solid var(--team-hi);outline-offset:-2px}
+.ws-scroll:is(.tgrid,.cgrid,.cgr,.ltiles){align-content:start}
+.ws-panel .tgrid,.ws-panel .cgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));align-content:start}
+.ws-scroll>table{border-collapse:separate;border-spacing:0;width:100%}
+.ws-scroll>table>thead{position:sticky;top:0;z-index:5;background:var(--panel2);box-shadow:0 1px var(--line2)}
+.ws-scroll>table>thead th{background:var(--panel2)}
+.ws-pages{display:flex;align-items:center;gap:8px;min-width:0}
+.ws-pages>select{flex:1;min-width:0;min-height:30px;max-width:560px;font-size:12px}
+.ws-pages>.btn{min-height:30px;white-space:nowrap}
+.ws-panel .pgr{margin-bottom:0}
+@media(max-width:1099px){
+ .shell:has(.ws-frame){display:block;padding-bottom:calc(58px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+ .shell:has(.ws-frame)>.rail{display:none}
+ .shell:has(.ws-frame)>.mainc{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .shell:has(.ws-frame) .top{flex:none;position:relative}
+ .shell:has(.ws-frame) .mainc>.gut{flex:1;min-height:0;overflow:hidden}
+ .shell:has(.ws-frame) .mainc>.gut>.wrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .shell:has(.ws-frame) .subhead{flex:none;margin-block:6px}
+ .shell:has(.ws-frame) .bnav{display:block}
+ .shell:has(.ws-frame) .content{padding-bottom:8px}
+}
+
+/* 창단 드래프트도 후보 표와 구단 보고를 각각 스크롤한다. */
+@media(min-width:0px){
+ html:has(.dcontent .fdlay),body:has(.dcontent .fdlay){height:100%;overflow:hidden}
+ .dshell:has(.fdlay){height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .dshell:has(.fdlay)>.dtop{flex:none}
+ .dshell:has(.fdlay)>.gut{flex:1;min-height:0;overflow:hidden}
+ .dshell:has(.fdlay)>.gut>.wrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .dcontent:has(.fdlay){flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:8px}
+ .dcontent>.fdseg,.dcontent>.note{flex:none}
+ .dcontent>.fdlay{flex:1;min-height:0;overflow:hidden;align-items:stretch}
+ .fdlay>.fdl-side{min-height:0;overflow:auto;overscroll-behavior:contain}
+ .fdlay>.fdl-main{min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .fdl-main>.card{flex:1;min-height:0;display:flex!important;flex-direction:column;margin-bottom:0;overflow:hidden}
+ .fdl-main>.card>*:not(.fdt-w){flex-shrink:0}
+ .fdl-main .fdt-w{flex:1;min-height:60px;overflow:auto;overscroll-behavior:contain}
+ .fdl-main .fdt thead{position:sticky;top:0;z-index:5;background:var(--panel2)}
+}
+/* 선수 기록: 신상·탭은 남기고 시즌별 기록표 안에서 이동한다. */
+#sheet .sheet.psh.ws-detail{height:var(--detail-height);min-height:0;display:flex!important;flex-direction:column;overflow:hidden!important}
+.ws-detail>.detail-navigation,.ws-detail>.pf-topnav{flex:none}
+.ws-detail>.ws-detail-body{flex:1;min-height:0;min-width:0}
+#sheet:has(.ws-detail){overflow:hidden}
+
+/* 진행 결과·확인 창이 떠도 날짜 띠는 작은 화면 안의 맨 앞에 남긴다. */
+#dtick.on{display:block;z-index:120}
+#dtick .dt-in{max-width:100%;box-sizing:border-box}
+#dtick .dt-c{flex:1 1 0;min-width:0}
+#dtick .dt-c b,#dtick .dt-flip b{white-space:nowrap;line-height:20px}
+/* 업무 화면의 공통 기준. 개별 기능 CSS 뒤에서 제목·본문·표·조작부의 역할을 통일한다.
+   본문 13 / 설명 12 / 패널 제목 16 / 화면 제목·주요 값 20 / 대표 수치 24px.
+   글씨를 화면 높이에 따라 축소하지 않는다. 긴 내용은 기존 패널 내부에서 스크롤한다. */
+:root{
+ --ui-caption:12px;--ui-body:13px;--ui-heading:16px;--ui-title:20px;--ui-display:24px;
+ --ui-line:20px;--ui-caption-line:16px;--ui-control:32px;--ui-control-compact:28px;
+ --ui-space:8px;--ui-panel-pad:12px;--ui-panel-head:40px;
+}
+:is(.shell,.dshell,.sheet,.cfm){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line)}
+:is(#app,#sheet,#cfm) :is(.small,.eyebrow,.hint,.sdesc,.dnote,.pill,.chipn,small){font-size:var(--ui-caption);line-height:var(--ui-caption-line);letter-spacing:0}
+:is(#app,#sheet,#cfm) :is(.sec,h2.sec,.hw-panel h2,.ws-panel h3,.pf-overview h3){font-size:var(--ui-heading);line-height:24px;font-weight:700;letter-spacing:0}
+:is(#app,#sheet) :is(.subhead h1,.fm-context strong,.pf-name h2.sec,.hw-heading b){font-size:var(--ui-title);line-height:28px}
+:is(#app,#sheet,#cfm) :is(p,li,dd,dt){line-height:var(--ui-line)}
+:is(#app,#sheet,#cfm) :is(a.tl,a.ml){font-family:inherit;font-size:inherit;line-height:inherit}
+:is(#app,#sheet,#cfm) :is(.num,td,.rc,.chipn,.pf-score){font-family:var(--f-ui);font-variant-numeric:tabular-nums;letter-spacing:0}
+
+/* 같은 역할의 조작부는 같은 크기로 맞춘다. */
+:is(#app,#sheet,#cfm) :is(.btn,.btn.small,.tc-i,.chips button,.seg button,.pgr button){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line);min-height:var(--ui-control);padding:5px 10px;box-sizing:border-box;vertical-align:middle;letter-spacing:0}
+:is(#app,#sheet,#cfm) :is(select,input[type=text],input[type=search],input[type=number],input:not([type]),textarea){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line);min-height:var(--ui-control);padding:5px 8px;box-sizing:border-box;vertical-align:middle}
+:is(#app,#sheet) :is(.row,.chips,.seg,.roster-filters,.roster-navigation){gap:var(--ui-space);align-items:center}
+:is(#app,#sheet) :is(.chips,.seg){margin-block:0}
+:is(#app,#sheet) :is(.seg.itabs,.roster-navigation){min-height:var(--ui-control)}
+:is(#app,#sheet) :is(.tgrid,.cgrid,.ws-panels,.home-grid,.hw-work){gap:var(--ui-panel-pad)}
+#app .ws-panels>.card,#sheet .ws-panels>.card{margin:0;padding:var(--ui-panel-pad);gap:var(--ui-space)}
+:is(#app,#sheet) .card>:is(h2.sec,.row.between,.eyebrow):first-child{margin:-12px -12px 0;padding:4px 12px;min-height:var(--ui-panel-head);align-items:center}
+:is(#app,#sheet) .card>h2.sec:first-child{display:flex}
+:is(#app,#sheet) :is(.tcard,.pcard){padding:var(--ui-panel-pad);gap:var(--ui-space);align-content:start}
+:is(#app,#sheet) .tcard{display:flex;flex-direction:column}
+:is(#app,#sheet) .tcard>.tc-ft{margin-top:auto;padding-top:var(--ui-space);border-top:1px solid var(--line)}
+:is(#app,#sheet) :is(.tc-ft,.tc-ft span,.tc-ft b,.tc-tools,.tc-tools span,.tc-tools i,.tc-rt span,.pc-s,.pc-l,.pp,.staff-preference,.staff-preference>b,.staff-traits,.staff-more summary,.staff-more .small,.staff-network>span){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+:is(#app,#sheet) :is(.tc-name,.tcard .row>b,.pc-name,.staff-person b){font-size:var(--ui-heading);line-height:24px}
+:is(#app,#sheet) :is(.pc-v,.pc-v b,.pc-r b){font-size:var(--ui-title);line-height:28px}
+:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental){gap:var(--ui-space);margin-block:var(--ui-space)}
+:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental)>span{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;min-height:40px;padding:4px 8px;gap:var(--ui-space)}
+:is(#app,#sheet) :is(.staff-primary-grid,.staff-mental) i{font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+:is(#app,#sheet) .cgr b{font-size:var(--ui-heading);line-height:24px}
+
+/* 열 제목과 값은 같은 열에 맞추고 행 높이를 통일한다. */
+:is(#app,#sheet) :is(.ws-panel,.candidate-list,.roster-list,.fdt-w) :is(th,td){font-family:var(--f-ui);font-size:var(--ui-body);line-height:var(--ui-line);padding:6px 8px;height:32px;letter-spacing:0;vertical-align:middle}
+:is(#app,#sheet) :is(.ws-panel,.candidate-list,.roster-list,.fdt-w) th{font-size:var(--ui-caption);font-weight:600}
+:is(#app,#sheet) :is(.ws-panel,.candidate-list,.roster-list) :is(th,td):first-child{padding-left:12px}
+:is(#app,#sheet) :is(.rc,.rchip,.ovc,.candidate-name,.rt .pn,.rt i.f,.rt .rd,.rt .trend){font-size:var(--ui-body);line-height:var(--ui-line)}
+:is(#app,#sheet) .rc{min-width:28px;min-height:20px;padding-inline:4px;text-align:center}
+:is(#app,#sheet) :is(.pgr .num,.ws-pages select,.hw-pager>span,.twpg){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+
+/* 홈의 요약표만 12px/18px의 고정 행을 사용한다. */
+#app .home-workspace{grid-template-rows:40px 64px minmax(0,1fr) 36px;gap:var(--ui-space)}
+#app .hw-panel>header{min-height:var(--ui-panel-head);padding:4px 12px;gap:var(--ui-space)}
+#app .hw-panel>header .tc-i{min-height:var(--ui-control);font-size:var(--ui-caption);padding:5px 8px}
+#app .hw-panel :is(.small,.hw-hint,.hw-kicker,.hw-news-art small,.hw-news-art b,.hw-todo .td>div>span,.hw-upcoming .ug-d,.hw-upcoming .ug-o,.hw-recent){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+#app .hw-panel :is(.hw-todo .td>div>b,.hw-finance dt,.hw-news article>p,.hw-match-teams b){font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .hw-news h3{font-size:var(--ui-heading);line-height:24px}
+#app .hw-finance dd{font-family:var(--f-ui);font-size:var(--ui-title);line-height:28px;letter-spacing:0}
+#app .hw-stand :is(th,td){font-family:var(--f-ui);font-size:var(--ui-caption);line-height:16px;height:18px;padding:0 6px;vertical-align:middle}
+#app .hw-stand td button{font-size:var(--ui-caption);line-height:16px;min-height:0;height:16px;padding:0}
+#app .hw-metrics>div,#app .hw-metrics>.hw-record{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:24px 16px;align-content:center;align-items:center;gap:0 8px;padding:8px 12px}
+#app .hw-metrics :is(span,small){font-size:var(--ui-caption);line-height:16px}
+#app .hw-metrics b{font-family:var(--f-ui);font-size:var(--ui-title);line-height:24px;letter-spacing:0}
+#app .hw-metrics small{grid-column:1/-1}
+#app .hw-pager>.btn{height:32px;min-height:32px;line-height:20px;padding:5px 10px}
+#app .hw-todo .todo .td{padding-block:8px;gap:var(--ui-space)}
+
+/* 선택한 선수·계약 창도 같은 단계의 글꼴을 사용한다. */
+#sheet :is(.pf-attribute-row,.pf-fact,.pf-role,.pf-bio,.pf-state .small,.pf-role .small,.ng-row,.ng-res,.cfm ul){font-size:var(--ui-body);line-height:var(--ui-line)}
+#sheet :is(.pf-fact>b,.pf-fact>span,.pf-attribute-legend,.pf-section-title>span,.pf-name .pinfo,.pf-core-caption,.pf-core-caption>span,.pf-season-grid span,.pf-core-cell>span,.pf-core-cell small){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+#sheet .pf-attribute-row{min-height:28px;padding:4px 8px;gap:var(--ui-space)}
+#sheet :is(.pf-score,.pf-attribute-row.text .pf-score){font-size:var(--ui-heading);line-height:20px}
+#sheet .pf-attribute-row.text .pf-score{font-size:var(--ui-caption);line-height:16px}
+#sheet :is(.pf-core-cell strong,.pf-season-grid b,.pf-contract-head b){font-family:var(--f-ui);font-size:var(--ui-title);line-height:28px}
+#sheet .pf-attribute-group h3{font-size:var(--ui-body);line-height:20px}
+#sheet .pf-contract-head>span,#sheet .pf-contract-head small{font-size:var(--ui-caption);line-height:16px}
+#sheet .pf-toolbar{gap:var(--ui-space)}
+#cfm :is(h3,.cfm h3){font-size:var(--ui-title);line-height:28px}
+#cfm :is(.cfm-h,.cfm-x){font-size:var(--ui-caption);line-height:16px}
+#cfm .cfm ul{font-size:var(--ui-body);line-height:20px}
+#app :is(.bud-big b,.bud-big strong){font-family:var(--f-ui);font-size:var(--ui-display);line-height:32px}
+
+/* 메뉴와 본문의 왼쪽 시작점을 공통 여백에 맞춘다. */
+#app :is(.fm-context small,.fm-date b,.fm-date span,.fms-label,.fm-k,.fmside .cnt,.fm-i>i){font-family:var(--f-ui);font-size:var(--ui-caption);line-height:16px}
+#app :is(.fm-a,.goset .continue b){font-family:var(--f-ui);font-size:var(--ui-heading);line-height:20px}
+#app :is(.fmside button,.bnav button,.fm-sub .subtabs button,.fm-sub .fm-ttl,.seg.itabs button){font-size:var(--ui-body);line-height:20px}
+#app :is(.goset .continue i,.goset .step,.ibr-d,.ibr-tag,.ibx-key,.ibx-day,.ibx-dn){font-size:var(--ui-caption);line-height:16px}
+#app :is(.ibr-subj,.ibm-body,.ibm-acts button){font-size:var(--ui-body);line-height:20px}
+@media(min-width:1100px){
+ #app .fmsh{--fm-top-height:90px}
+ #app .fm1{height:56px}
+ #app .fm2{height:32px;padding-left:192px}
+ #app .fm-sub .subtabs button{min-height:28px;padding:4px 12px}
+ #app .fmsh .fmwrap{padding-inline:0}
+ #app .fmsh main.content{padding:12px 0}
+ #app .fm-home main.content{padding-block:8px}
+}
+@media(max-width:699px){
+ #app .home-workspace{grid-template-rows:64px 56px minmax(0,1fr) 36px}
+ #app .hw-metrics>div,#app .hw-metrics>.hw-record{grid-template-columns:minmax(0,1fr);grid-template-rows:16px 24px;padding:4px 8px}
+ #app .hw-metrics small{display:none}
+ #app .hw-heading b{font-size:var(--ui-heading);line-height:24px}
+ #app .hw-heading>nav button{font-size:var(--ui-body);line-height:20px;padding:4px 8px}
+ #app .bnav button{font-size:var(--ui-caption);line-height:16px}
+}
+
+/* 표식·요약·인물 이름도 동일한 단계로 수렴시킨다. */
+:is(#app,#sheet) :is(.hi-i,.cnt,.ptier,.cst,.cst span,.cst i,.cgr span,.cgg span,.bud-t span,.bud-t i,.bud-t em,.bud-lg span,.bud-lg i,.bud-big em,.ibx-tabs button i,.tdi,.hw-match-teams small,.hw-heading small){font-size:var(--ui-caption);line-height:var(--ui-caption-line)}
+:is(#app,#sheet) :is(.pc-ov,.pc-big){font-family:var(--f-ui);font-size:var(--ui-title);line-height:28px}
+#app :is(.ibl,.ibr-s,.ibx-tabs button){font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .ibm-s{font-size:var(--ui-heading);line-height:24px}
+#app .ibm .mailbody{font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .hw-match-teams b{font-size:var(--ui-body);line-height:var(--ui-line)}
+#app .hw-stand :is(td,th){height:17px}
+#sheet .pno{font-size:var(--ui-body);line-height:20px}
+#sheet .sheet-head h2.sec{font-size:var(--ui-title)!important;line-height:28px}
+
+/* 같은 보직 카드끼리 이름·능력·설명·계약 버튼의 행 경계를 공유한다. */
+:is(#app,#sheet) .cgrid:has(>.csl){align-items:stretch;grid-auto-rows:auto}
+:is(#app,#sheet) .cgrid>.csl{display:grid;grid-template-rows:subgrid;grid-row:span 9;align-self:stretch;align-content:stretch;gap:8px;padding:12px}
+:is(#app,#sheet) .csl-h{min-height:24px;align-items:center}
+:is(#app,#sheet) .csl-n{min-height:40px;font-size:var(--ui-heading);line-height:24px;align-items:center}
+:is(#app,#sheet) .csl-s{min-height:24px;align-items:center}
+:is(#app,#sheet) .csl>.small{font-size:var(--ui-caption);line-height:16px;min-height:32px}
+:is(#app,#sheet) .csl>.row:last-child{grid-row:9}
+:is(#app,#sheet) .csl.empty>p{grid-row:2 / span 5;align-self:start}
+:is(#app,#sheet) .csl.empty>.btn{grid-row:9;align-self:end}
+:is(#app,#sheet) :is(.ug-o>b,.ug-d>b){font-size:var(--ui-caption);line-height:16px}
+:is(#app,#sheet) :is(.ug-d>i,.bud-bar .mk>i,.detail-navigation>span){font-size:var(--ui-caption);line-height:16px}
+#sheet .match-entry-choices .btn>b{font-size:var(--ui-heading);line-height:24px}
+#sheet .match-entry-choices .btn>span{font-size:var(--ui-caption);line-height:16px}
+#app :is(.cb-v,.mailbtn i,.top .club span,.top .club span i){font-size:var(--ui-caption);line-height:16px}
+#app button.fd-gob.btn{min-height:48px;font-size:var(--ui-heading);line-height:24px;padding:10px 16px}
+#sheet :is(.ng-say p,.ngl b,.ngv,.ng-sum b,.ng-res b,.ng-res span){font-family:var(--f-ui);font-size:var(--ui-body);line-height:20px}
+#sheet :is(.ngl i,.ng-sum i,.ng-sum em){font-size:var(--ui-caption);line-height:16px}
+#sheet .ngb{width:32px;height:32px;font-size:var(--ui-body);line-height:20px}
+#sheet .ngr{min-height:80px;padding:8px 12px;gap:8px 16px;align-items:center}
+@media(min-width:700px){#sheet .ngr{grid-template-columns:minmax(0,1fr) minmax(280px,1fr) minmax(160px,.6fr)}}
+#sheet .match-entry-teams>b{font-size:var(--ui-heading);line-height:24px}
+#sheet .match-entry-teams>b>span{font-size:var(--ui-body);line-height:20px}
+#app .subtabs button{font-size:var(--ui-body);line-height:20px;min-height:32px;padding:5px 10px}
+#app .rail button,#app .railme span{font-size:var(--ui-body);line-height:20px}
+#app .rail .brand b,#app .top .club b{font-size:var(--ui-heading);line-height:24px}
+#sheet .pe-b{font-size:var(--ui-caption);line-height:16px;min-height:28px;padding:4px 8px}
 </style>
 </head>
 <body>
@@ -8300,34 +8554,34 @@ function blocker(){
 }
 function ourGameOn(day){return !G.unemp&&(!!(G.cal.sched[day]||[]).find(pair=>pair.includes(G.user))||psOursOn(day));}
 function advance(mode,options={}){
-  if(G.matchAwait&&G.matchAwait.day<=G.day)G.matchAwait=null;
-  if(mode==='watch')G.matchAwait=null;
+  G.matchAwait=null; // 이전 버전에서 모든 경기마다 남긴 대기는 이어받지 않는다.
   const start=G.day; const o=dobj(start);
   let target=mode==='day'?start+1:mode==='week'?start+7:mode==='month'?dnum(o.m===12?o.y+1:o.y,o.m===12?1:o.m+1,1):start+400;
   if(mode==='month'&&target-start<2)target=start+30;
   if(mode==='next'&&!G.unemp&&(period()==='off'||period()==='pre'))target=Math.min(target,start+7); /* 비시즌·시즌 준비: 한 번에 최대 7일 */
   G.stops=[]; const r0=G.sea.rec[G.user]; const w0=r0.w,l0=r0.l, sea0=G.sea.y; let days=0;
-  /* 다음 일까지(event): 경기 결과에서 멈추지 않고, 중요한 소식·결정·포스트시즌 경기·한 주가 끝날 때(월요일) 멈춘다 */
-  if(mode==='event'){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+60; } else G.dig=null;
+  const weekly=mode==='event'||mode==='week';
+  /* 기본 진행: 최대 7일을 자동 계산하고 중요한 결정과 예약한 직관에서만 멈춘다. */
+  if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+7; } else G.dig=null;
   while(G.day<target){
     if(G.unemp)unempAuto();
     if(blocker())break;
     /* 포스트시즌: 다른 팀 경기를 넘기다가 우리 경기까지 한 번에 지나치지 않게, 우리 경기 전날에 멈춘다(바로 다음 날이 우리 경기면 그 경기를 진행) */
-    if(days>0&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
-    if(options.stopBeforeMatch&&mode!=='watch'&&ourGameOn(G.day+1)){G.matchAwait={day:G.day+1,mode};break;}
+    if(days>0&&!weekly&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
+    const planned=gmPlanAt(G.day+1);
+    if(!options.skipMatchStop&&mode!=='watch'&&ourGameOn(G.day+1)&&(G.watchPlanned?.day===G.day+1||(planned?.k==='attend'&&!planned.done))){G.matchAwait={day:G.day+1,mode};break;}
     processDay(); days=G.day-start;
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
-    if(mode==='event'){ const D=G.dig; D.to=G.day;
-      if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); if(g&&/차전/.test(g.kind||''))break; G.res=null; }
+    if(weekly){ const D=G.dig; D.to=G.day;
+      if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); G.res=null; }
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
       { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if((G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
-      if(D.games.length&&dobj(G.day+1).w===1)break; /* 다음 날이 월요일(휴식일)이면 한 주 정리 */
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
       if(G.unemp&&days>=14)break;
       continue; }
     if(G.stops.length||G.live||G.res||(G.draft&&!G.draft.done)||G.gameOver)break;
   }
-  if(mode==='event'&&G.dig&&!G.dig.games.length)G.dig=null;
+  if(weekly&&G.dig&&!G.dig.games.length)G.dig=null;
   const r1=G.sea.rec[G.user];
   G.lastAdv={days,from:start,to:G.day,w:r1.w-(G.sea.y===sea0?w0:0),l:r1.l-(G.sea.y===sea0?l0:0)};
   return G.lastAdv;
@@ -11470,7 +11724,7 @@ const TUT=[
   {k:'foreign',title:'외국인 선수 구성',subj:'외국인 선수를 구성하세요',body:'외국인 선수 네 자리가 모두 비어 있습니다. 외국인 선수 3명과 아시아쿼터 1명을 채울 수 있습니다.\n\n감독실에 들러 어떤 유형이 필요한지 먼저 물어보세요. 후보 카드의 감독 의견 버튼을 누르면 감독이 그 선수를 어떻게 보는지 들을 수 있습니다.\n\n보통은 선발 투수 2명과 타자 1명으로 구성합니다. 규정상 3명을 모두 투수나 모두 타자로 채울 수는 없습니다. 신규 계약은 1인 100만 달러, 아시아쿼터는 20만 달러까지이고, 외국인 선수 3명 합계는 400만 달러를 넘을 수 없습니다.\n\n화면 위쪽에서 외국인과 아시아쿼터 탭이 나뉩니다. 후보 정보가 얼마나 정확한지는 그 나라에 우리 스카우트망이 얼마나 있느냐에 달려 있습니다. 지금은 미국에만 현지 통신원이 있고, 나머지 지역은 에이전트 자료뿐입니다. 스카우팅 메뉴의 해외 스카우트망에서 지역별로 늘릴 수 있습니다.\n\n지난 리그 기록은 리그 수준 차이를 감안해서 보세요.',btn:'외국인 후보 보기',go:['goWork','외국인선수'],check:()=>{const f=foreignOf(G.user); return f.filter(p=>p.foreign==='용병').length>=3&&f.some(p=>p.foreign==='아시아');},prog:()=>{const f=foreignOf(G.user); return `외국인 ${f.filter(p=>p.foreign==='용병').length}/3 · 아시아쿼터 ${f.filter(p=>p.foreign==='아시아').length}/1`;}},
   {k:'med',from:'팀 닥터 · 의무팀',title:'부상 관리 체계',subj:'부상 방지 프로그램과 병원 제휴를 정해 주세요',body:'의무팀에서 올 시즌 운영안을 올렸습니다. 부상 방지 프로그램 단계가 높을수록 부상이 줄고, 제휴 병원이 좋을수록 재활 기간이 짧아집니다. 종합 스포츠의학센터와 제휴하면 정밀 검진으로 선수의 부상 체질도 알 수 있습니다.\n\n비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.',btn:'의무 운영안 보기',go:['goWork','부상방지·병원'],check:()=>!!G.medSet},
   {k:'dev',from:'육성팀',title:'선수 육성',subj:'훈련 방향과 해외 연수 안내',body:'육성팀입니다. 선수들의 훈련 주안점(구위·제구·장타·수비 등)은 감독과 코치진이 상의해 정합니다. 단장님은 선수 정보의 육성 탭이나 스태프·육성 > 훈련·육성에서 바꿔 달라고 요청할 수 있습니다.\n\n성장 속도는 1군 출장, 잠재력과 성장 의지, 훈련 시설, 코치 수준에 따라 다릅니다.\n\n가을에는 교육리그(일본 미야자키·국내 울산)와 호주리그 파견, 미국·일본 단기 연수 같은 해외 연수를 보낼 수 있습니다. 돈이 들고 결과는 선수마다 크게 갈립니다.',btn:'선수 육성 보기',go:['goWork','2군연수'],check:()=>Object.keys(G.trn||{}).length>=1},
-  {k:'scout',from:'스카우트팀장',title:'스카우트 공백',subj:'스카우트 담당 지역에 공백이 있습니다',body:'스카우트팀장입니다. 스카우트는 한 사람이 한 가지 업무만 맡습니다. 아마추어(지역 고교·대학 선수), 프로(그 지역 연고 구단 선수), 해외(외국인 선수 시장) 중 하나입니다. 최대 6명까지 둘 수 있으니, 드래프트를 위해 먼저 수도권·영남·호남·충청 세 지역에 아마추어 스카우트를 배치해 주세요. 업무를 바꾸면 30일 동안 적응 기간이 있습니다.',btn:'스카우트 팀 보기',go:['goWork','스카우트팀'],check:()=>new Set(G.scouts.filter(s=>(s.role||'am')==='am').map(s=>s.region)).size>=3},
+  {k:'scout',from:'스카우트팀장',title:'스카우트 공백',subj:'스카우트 담당 지역에 공백이 있습니다',body:'스카우트팀장입니다. 스카우트는 한 사람이 한 가지 업무만 맡습니다. 아마추어(지역 고교·대학 선수), 프로(그 지역 연고 구단 선수), 해외(외국인 선수 시장) 중 하나입니다. 최대 6명까지 고용할 수 있습니다. 드래프트 시즌에는 수도권·영남·호남·충청 세 지역의 아마추어 담당을 확보하고, 겨울에는 해외·프로 관찰을 우선합니다. 스카우트팀장에게 배치를 맡기면 시기에 맞게 자동 조정합니다. 업무를 바꾸면 30일 동안 적응 기간이 있습니다.',btn:'스카우트 팀 보기',go:['goWork','스카우트팀'],check:()=>!scoutWorkStatus().needs},
   {k:'lineup',from:'코칭스태프',title:'배치 확인',subj:'감독이 정한 선수단 배치를 확인해 주세요',body:'선수단 탭에서 야구장 그림으로 포지션별 주전을 볼 수 있습니다. 주전 기용과 타순, 투수 운용은 감독 권한입니다. 단장은 선수 구성과 감독 선임으로 팀을 바꿉니다. 자리를 누르면 그 포지션 후보를 비교해 볼 수 있습니다.',btn:'선수단 보기',go:['tab','roster'],check:()=>!!(G.tutFlags&&G.tutFlags.roster)||(G.cal&&G.day>G.cal.open+7)},
   {k:'go',title:'캠프 준비',subj:'개막 준비가 끝났습니다',body:'기본 업무 안내는 여기까지입니다. 소식함의 확인할 소식과 홈의 처리할 일(코치 빈자리 등)을 마저 정리하고 스페이스바로 시간을 넘겨 보세요. 1월 25일에 스프링캠프가 시작되면 훈련 방향을 정해 주셔야 합니다.\n\n그 밖에 비FA 다년계약과 트레이드는 영입·계약 메뉴, 마케팅 예산은 구단·재정 메뉴에서 언제든 볼 수 있습니다.',btn:'캠프까지 넘기기',go:['adv','next'],check:()=>G.day>=G.cal.camp},
 ];
@@ -14455,6 +14709,13 @@ function facNeglect(t){ const mine=t.id===G.user; const it=mine?(G.fac&&G.fac.it
 function scoutChief(){ const L=G.scouts||[]; if(!L.length)return null; return [...L].sort((a,b)=>effSkill(b)-effSkill(a)||(b.since??0)-(a.since??0))[0]; }
 /* 드래프트 시즌: 3월부터 그해 신인 드래프트가 끝날 때까지 */
 function scoutDraftSea(){ const m=dobj(G.day).m; if(m<3||m>9)return false; return !(G.draft&&G.draft.done&&(G.draft.y||G.year)===G.year); }
+/* 배치 책임을 맡긴 뒤에도 겨울의 해외·프로 배치를 아마추어 공백으로 경고하지 않는다.
+   채용 부족은 위임과 별개이며, 직접 배치할 때는 드래프트 시즌에 세 지역을 확인한다. */
+function scoutWorkStatus(){
+  const scouts=G.scouts||[],missing=REG.filter(r=>!scouts.some(s=>(s.role||'am')==='am'&&s.region===r));
+  const delegated=!!G.scoutAuto&&!!scoutChief(),shortage=Math.max(0,REG.length-scouts.length);
+  return {delegated,missing,shortage,needs:shortage>0||(!delegated&&scoutDraftSea()&&missing.length>0)};
+}
 function scoutSlots(){ const draftSea=scoutDraftSea(); const S=[];
   const proN=r=>G.teams.filter(t=>t.id!==G.user&&t.region===r).length;
   const asiaNeed=(()=>{ try{ return foreignOf(G.user).filter(p=>p.foreign==='아시아').length<1; }catch(e){ return false; } })();
@@ -16901,7 +17162,7 @@ function render(){ UI._rN=(UI._rN||0)+1;
   /* 도장(거래 성사·지명)은 4초 뒤 저절로 닫혀 아래 버튼을 가리지 않는다 */
   if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); }
 }
-function goSet(per,b){ return `<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 2주가 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="matchOpen" ${b?'disabled':''} aria-label="경기 중계 선택" title="중계로 보거나 결과만 보기를 선택합니다"><span class="st-l">중계</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="다음 소식이나 우리 경기 시작 전까지 진행합니다. 경기는 중계 방식을 고른 뒤 시작합니다. 확인할 소식이 있으면 그 소식부터 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub('다음 소식까지'))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="next" ${b?'disabled':''}><span class="cl"><b>${per==='post'?'다음 경기':'계속'}</b><i>${esc(b?nextLabel():contSub(nextLabel()))}</i></span>${ICO.ff}</button>`}</div>`; }
+function goSet(per,b){ return `<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 1주일이 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="matchOpen" ${b?'disabled':''} aria-label="경기 중계 선택" title="중계로 보거나 결과만 보기를 선택합니다"><span class="st-l">중계</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="최대 1주일을 자동 진행합니다. 예약한 직관과 중요한 소식에서만 멈춥니다. 확인할 소식이 있으면 먼저 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub('최대 1주일 · 예약한 경기만 관전'))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>${esc(b?nextLabel():contSub('최대 1주일 · 중요한 소식까지'))}</i></span>${ICO.ff}</button>`}</div>`; }
 function topBlocks(b){ return `${wide()&&!fmOn()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}${needBackup()?`<div class="blk bkn gut"><div class="wrap">itch처럼 다른 사이트 안에서 하면 브라우저 정리나 게임 업데이트로 저장이 지워질 수 있습니다. 가끔 파일로 내보내 두세요.<button data-a="expFile">파일로 내보내기</button><button data-a="bkLater">나중에</button></div></div>`:''}`; }
 function tabBody(){
   if(UI.meet)return meetPage();
@@ -17030,9 +17291,7 @@ if(typeof document!=='undefined')document.addEventListener('change',e=>{ const e
   else if(el.dataset.lgimg){ lgImgFile(+el.dataset.lgimg,el.files&&el.files[0]); } });
 function tnRead(){ const L={}; document.querySelectorAll('input[data-tn]').forEach(el=>{ const id=+el.dataset.tn; (L[id]=L[id]||{id})[el.dataset.k]=el.value; }); return Object.values(L); }
 function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick,logo:t.logo||null}))})); }catch(e){} }
-/* ---------- PC 화면(FM식): 위 두 줄 메뉴 + 넓은 카드 화면 ----------
-   1줄: 뒤로·앞으로, 구단 배지, 큰 메뉴(내려 펼치면 하위 화면), 캘린더·소식함·단장·설정, 날짜, 계속
-   2줄: 지금 메뉴의 하위 탭(왼쪽)과 성적·예산 칩(오른쪽). 휴대폰·좁은 화면은 예전 배치 그대로 */
+/* PC: 왼쪽은 업무 이동, 위는 현재 위치·하위 탭·날짜·진행. */
 const fmOn=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:1100px)').matches;
 /* 왼쪽 바로 가기 줄(FM 측면 사이드바): 자주 가는 화면을 묶음별로 */
 const SV=(d)=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -17057,9 +17316,8 @@ function fmSide(unread){ const ic=i=>ICO[i]||ICO2[i]||ICO3[i]||'';
       return `<button data-a="tab" data-v="${t}" class="${on?'on':''}"${on?' aria-current="page"':''}>${ic(i)}<span>${esc(l)}</span>${t==='inbox'&&unread?`<i class="cnt">${unread>99?'99+':unread}</i>`:tabAlert(t)?'<i class="sdot"></i>':''}</button>`;
     }).join('')}</div>`;
   }).join('');
-  return `<aside class="fmside" aria-label="바로 가기">${groups}</aside>`;
+  return `<aside class="fmside" aria-label="주 메뉴"><div class="fms-label">구단 업무</div>${groups}</aside>`;
 }
-const FM_MENU=['home','roster','trade','transfer','staff','league','club'];
 /* 뒤로·앞으로: 메뉴와 하위 탭 이동을 기억한다(최근 40개) */
 function fmKey(){ const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }
 function fmNavRec(){ const H=UI.navH=UI.navH||[]; if(UI.navI==null)UI.navI=-1; const k=fmKey(); if(UI._navSkip){ UI._navSkip=false; return; } if(H[UI.navI]===k)return; H.length=UI.navI+1; H.push(k); if(H.length>40)H.shift(); UI.navI=H.length-1; }
@@ -17070,21 +17328,20 @@ function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)ret
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
 function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
-  if(tab==='home'&&!G.unemp)return back+`<nav class="subtabs" aria-label="바로 가기"><button class="on" data-a="tab" data-v="home">개요</button><button data-a="tab" data-v="inbox">소식함</button><button data-a="calOpen">캘린더</button><button data-a="go" data-v="league:stand">순위</button><button data-a="go" data-v="league:score">일정·결과</button><button data-a="go" data-v="club:fin">재정</button><button data-a="go" data-v="club:owner">구단주·목표</button></nav>`; /* FM 포털처럼 홈에서 자주 가는 곳 */
+  if(tab==='home'&&!G.unemp)return back+`<nav class="subtabs" aria-label="홈 화면">${[['overview','구단 현황'],['work','업무·보고'],['team','선수단']].map(([k,l])=>`<button class="${(UI.homePanel||'overview')===k?'on':''}" data-a="homePanel" data-v="${k}">${l}</button>`).join('')}</nav>`;
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
 function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||[];
-  const menu=FM_MENU.map(k=>{ const it=NAV.find(x=>x[0]===k); if(!it)return ''; const subs=SUBS[k]; const al=tabAlert(k);
-    return `<div class="fmm${UI.tab===k?' on':''}"><button class="fmm-b" data-a="tab" data-v="${k}">${esc(it[1])}${al?'<i class="sdot"></i>':''}${subs?'<i class="fmm-c">▾</i>':''}</button>${subs?`<div class="fmdd" role="menu">${subs.map(([s,l])=>`<button data-a="go" data-v="${k}:${s}">${esc(l)}${subAlert(k,s)?'<i class="sdot"></i>':''}</button>`).join('')}</div>`:''}</div>`; }).join('');
+  const location=TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
   return `<div class="shell fmsh${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
   <header class="fmtop"><div class="fm1">
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.meet||UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="myRos" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>
-    <nav class="fm-menu" aria-label="메뉴">${menu}</nav>
+    <div class="fm-context"><small>${esc(G.unemp?'자유 계약 단장':tshort(G.user))}</small><strong>${esc(location)}</strong></div>
     <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` 안 읽음 ${unread}`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필',UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
-  </div><div class="fm2${!SUBS[UI.tab]&&UI.tab!=='home'&&!UI.fromMail?' fm2-compact':''}"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
+  </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
   <div class="fmbody">${fmSide(unread)}<div class="fmmain">${UI.meet?'':topBlocks(b)}
   <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}</div></div></div></div>
   </div>`; }
@@ -17347,7 +17604,7 @@ function subAlert(tab,k){
     'transfer:fa':faLive(),
     'transfer:contract':!!(G.contract&&!G.contract.done),
     'transfer:draft':!!(G.draft&&!G.draft.done),
-    'staff:scouts':new Set(G.scouts.filter(s=>(s.role||'am')==='am').map(s=>s.region)).size<3,
+    'staff:scouts':scoutWorkStatus().needs,
     'staff:mgr':!G.mgr[G.user],
     'staff:coach':!!G.coach&&CKEYS.some(k=>!coachesOf(G.user)[k]),
     'train:dev':!!(G.camp&&!G.camp.done&&!G.camp.seen),
@@ -17474,8 +17731,9 @@ const TODO={
   'staff:med':['부상 관리 체계를 정하지 않았습니다','부상 방지 투자와 지정 병원'],
   'staff:mil':['상무 지원 기간입니다','입대 대상 선수를 확인하세요'],
   'trade:block':['트레이드 제안이 와 있습니다','받은 제안에 답하세요'],'club:spon':['스폰서 자리가 비어 있습니다','기업 제안을 기다리거나 마케팅팀에 영업을 지시하세요(영업비 3천만 원, 1~2주 뒤 결과, 같은 자리는 30일에 한 번)'],'staff:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요'],'train:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요']};
+function scoutTaskText(){const S=scoutWorkStatus();return S.shortage?[`스카우트 ${S.shortage}명이 더 필요합니다`,'팀장은 배치를 맡습니다. 채용은 스태프 시장에서 단장이 결정하세요.']:[`아마추어 담당 지역 ${S.missing.length}곳이 비어 있습니다`,`${S.missing.join('·')} 담당을 배치하거나 팀장에게 맡기세요.`];}
 /* 주황 점이 뜬 하위 탭 안에서 그 이유를 맨 위에 보여 준다 */
-function alertWhy(tab,k){ if(!subAlert(tab,k))return ''; let t=TODO[tab+':'+k]; if(!t)return ''; if(tab+':'+k==='staff:scouts'){ const have=new Set(G.scouts.filter(s=>(s.role||'am')==='am').map(s=>s.region)); const miss=['수도권','영남','호남·충청'].filter(r=>!have.has(r)); t=[`아마추어 스카우트 담당 지역 ${miss.length}곳이 비어 있습니다`,`${miss.join('·')} 담당이 없으면 그 지역 드래프트 후보를 제대로 못 봅니다. 아래에서 배치하거나 채용하세요`]; }
+function alertWhy(tab,k){ if(!subAlert(tab,k))return ''; let t=TODO[tab+':'+k]; if(!t)return ''; if(tab+':'+k==='staff:scouts'){ t=scoutTaskText(); }
   return `<div class="note warn alert-why"><b>${esc(t[0])}</b> · ${esc(t[1])}</div>`; }
 /* ---------- 전력 요약: 전력 한눈에 + 추천 트레이드 ---------- */
 const SLOTS_S={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜'};
@@ -17549,20 +17807,24 @@ function homeNewsPanel(){
 }
 function homeFinancePanel(){const b=budget(),t=team(G.user),capRoom=capOf(sponSeason())-capPay(G.user);return `<section class="hw-panel hw-finance"><header><h2>구단 운영</h2><button class="tc-i" data-a="go" data-v="club:fin">재정</button></header><dl><div><dt>예산 여유</dt><dd class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</dd></div><div><dt>상한 잔여</dt><dd class="${capRoom<0?'bad':''}">${money(capRoom)}</dd></div><div><dt>보유 자금</dt><dd>${money(t.cash)}</dd></div><div><dt>구단주 신뢰</dt><dd>${Math.round(t.trust)} <small>/ 100</small></dd></div></dl></section>`;}
 function homeMatchPanel(){const n=nextGames(1)[0],recent=G.res&&G.games[G.res.i],planned=n&&G.watchPlanned?.day===n.d;
-  return `<section class="hw-panel hw-match"><header><h2>${G.matchAwait?'경기 시작 대기':'다음 경기'}</h2><button class="tc-i" data-a="go" data-v="league:score">일정</button></header>${n?`<div class="hw-match-main"><span class="hw-kicker">${dmd(n.d)} · ${n.home?'홈':'원정'}${planned?' · 중계 예정':n&&G.simPlanned?.day===n.d?' · 결과만 보기 예정':''}</span><div class="hw-match-teams">${badge(G.user,36)}<b>${esc(tshort(G.user))}<small>vs</small>${esc(tshort(n.op))}</b>${badge(n.op,36)}</div><button class="btn primary" data-a="matchOpen">${G.matchAwait?'중계 선택하고 경기 시작':'경기 중계 선택'}</button><span class="small muted">결과를 보지 않고 1회부터 관전</span></div>`:'<p class="hw-hint">다음 시즌을 준비하고 있습니다.</p>'}${recent?.pbp?.length?`<button class="hw-recent" data-a="cast" data-v="${G.res.i}">최근 경기 다시 보기 · ${esc(tshort(recent.away))} vs ${esc(tshort(recent.home))}</button>`:''}</section>`;}
+  return `<section class="hw-panel hw-match"><header><h2>${G.matchAwait?'경기 시작 대기':'다음 경기'}</h2><button class="tc-i" data-a="go" data-v="league:score">일정</button></header>${n?`<div class="hw-match-main"><span class="hw-kicker">${dmd(n.d)} · ${n.home?'홈':'원정'}${planned?' · 중계 예정':n&&G.simPlanned?.day===n.d?' · 결과만 보기 예정':''}</span><div class="hw-match-teams">${badge(G.user,36)}<b>${esc(tshort(G.user))}<small>vs</small>${esc(tshort(n.op))}</b>${badge(n.op,36)}</div><button class="btn primary" data-a="matchOpen">${G.matchAwait?'중계 선택하고 경기 시작':'경기 중계 선택'}</button><span class="small muted">계속은 주간 자동 진행 · 이 경기만 선택 관전</span></div>`:'<p class="hw-hint">다음 시즌을 준비하고 있습니다.</p>'}${recent?.pbp?.length?`<button class="hw-recent" data-a="cast" data-v="${G.res.i}">최근 경기 다시 보기 · ${esc(tshort(recent.away))} vs ${esc(tshort(recent.home))}</button>`:''}</section>`;}
 function homeMetrics(){const b=budget(),r=G.sea.rec[G.user],c=G.cal,draft=c?.draft&&G.day>=KD(3,1)&&G.day<c.draft&&!(G.draft&&G.draft.y===G.year)?draftNo(G.user):null;return `<div class="hw-metrics"><button class="hw-record${draft?' dtl':''}" data-a="go" data-v="${draft?'transfer:draft':'league:stand'}"><span>${draft?'신인 드래프트':'시즌 성적'}</span><b>${draft?'D-'+(c.draft-G.day):r.w||r.l||r.t?`${r.w}승 ${r.l}패${r.t?' '+r.t+'무':''}`:'시즌 준비'}</b>${draft?`<small>1라운드 ${draft.r1}순위</small>`:''}</button><div class="hw-budget"><span>예산 여유</span><b class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</b><small>상한 잔여 ${money(capOf(sponSeason())-capPay(G.user))}</small></div><div><span>확인할 소식</span><b>${ibNeedList().length}건</b></div></div>`;}
 
 function homeCardInfo(html){const t=document.createElement('template');t.innerHTML=html;const title=t.content.querySelector('h2,h3,.sec,.eyebrow')?.textContent.trim()||'구단 보고';const text=t.content.textContent.replace(/\s+/g,' ').trim();return {title,text:text.slice(0,220)};}
 function homeWorkspace(){
-  const view=UI.homePanel||'overview',cols=innerWidth>=1100?3:innerWidth>=700?2:1,rows=innerHeight<620||innerWidth<700&&innerHeight<740?1:2,size=cols*rows,t=team(G.user);
-  const work=view==='work'?[champHomeCard(),cerHomeCard(),resultHome(),digestCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean):[];
+  // 메뉴·요약·페이지 버튼을 먼저 확보하고 카드 한 줄에 최소 220px을 배정한다.
+  const device=innerWidth>=1100?'desktop':innerWidth>=700?'tablet':'mobile';
+  const cols=device==='desktop'?3:device==='tablet'?2:1;
+  const reserved=device==='desktop'?280:device==='tablet'?290:320;
+  const rows=innerHeight-reserved>=440?2:1,size=cols*rows,view=UI.homePanel||'overview',t=team(G.user);
+  const work=view==='work'?[todoCard(),champHomeCard(),cerHomeCard(),resultHome(),digestCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean):[];
   const raw=view==='work'?work:view==='team'?[myLeaders(),formCard(),clubCard(),deskCard()].filter(Boolean):[];UI.homeCards=raw;
-  const overview=view==='overview'?[homeMatchPanel(),`<section class="hw-panel hw-todo"><header><h2>오늘 할 일</h2><button class="tc-i" data-a="homePanel" data-v="work">업무 전체</button></header>${todoCard(2)}</section>`,homeStandingPanel(),homeNewsPanel(),`<section class="hw-panel hw-upcoming"><header><h2>다가오는 일정</h2><button class="tc-i" data-a="calOpen">달력</button></header>${upcomingGames(3)||'<p class="hw-hint">시즌 일정이 확정되면 표시합니다.</p>'}</section>`,homeFinancePanel()]:[];
+  const overview=view==='overview'?[homeMatchPanel(),`<section class="hw-panel hw-todo"><header><h2>오늘 할 일</h2><button class="tc-i" data-a="homePanel" data-v="work">업무 전체</button></header>${todoCard(2,true)}</section>`,homeStandingPanel(),homeNewsPanel(),`<section class="hw-panel hw-upcoming"><header><h2>다가오는 일정</h2><button class="tc-i" data-a="calOpen">달력</button></header>${upcomingGames(3)||'<p class="hw-hint">시즌 일정이 확정되면 표시합니다.</p>'}</section>`,homeFinancePanel()]:[];
   const cards=view==='overview'?overview:raw.map((html,i)=>{const x=homeCardInfo(html);return `<section class="hw-panel hw-report"><header><h2>${esc(x.title)}</h2></header><p>${esc(x.text)}</p><button class="btn small" data-a="homeOpenCard" data-v="${i}">보고 열기</button></section>`;});
   if(!cards.length)cards.push('<section class="hw-panel"><p class="hw-hint">현재 확인할 보고가 없습니다.</p></section>');
   const pages=Math.max(1,Math.ceil(cards.length/size)),page=clamp(UI.homePage||0,0,pages-1);UI.homePage=page;
   const focused=UI.homeFocus&&UI.homeFocus.view===view&&raw[UI.homeFocus.index],heading=`<div class="hw-heading"><div>${badge(G.user,30)}<span><b>${esc(tshort(G.user))}</b><small>${G.year} ${PERIOD[period()]}</small></span></div><nav aria-label="홈 화면">${[['overview','구단 현황'],['work','업무·보고'],['team','선수단']].map(([k,l])=>`<button class="${view===k?'on':''}" data-a="homePanel" data-v="${k}">${l}</button>`).join('')}</nav></div>`;
-  return `<div class="home-workspace" data-columns="${cols}" data-rows="${Math.min(rows,Math.ceil(Math.min(cards.length-page*size,size)/cols))}">${heading}${homeMetrics()}${focused?`<div class="hw-full-report"><button class="btn small" data-a="homeCloseCard">‹ 카드 목록으로</button>${focused}</div>`:`<div class="${view==='overview'?'home-priority home-dashboard home-grid':'hw-work'}">${cards.slice(page*size,(page+1)*size).join('')}</div>`}<nav class="hw-pager" aria-label="홈 카드 페이지"><button class="btn small" data-a="homePage" data-v="-1" ${page>0&&!focused?'':'disabled'}>이전</button><span>${focused?'보고 상세':`${page+1} / ${pages} · ${cards.length}개 카드`}</span><button class="btn small" data-a="homePage" data-v="1" ${page<pages-1&&!focused?'':'disabled'}>다음</button></nav></div>`;
+  return `<div class="home-workspace" data-device="${device}" data-columns="${cols}" data-rows="${Math.min(rows,Math.ceil(Math.min(cards.length-page*size,size)/cols))}">${heading}${homeMetrics()}${focused?`<div class="hw-full-report"><button class="btn small" data-a="homeCloseCard">‹ 카드 목록으로</button>${focused}</div>`:`<div class="${view==='overview'?'home-priority home-dashboard home-grid':'hw-work'}">${cards.slice(page*size,(page+1)*size).join('')}</div>`}<nav class="hw-pager" aria-label="홈 카드 페이지"><button class="btn small" data-a="homePage" data-v="-1" ${page>0&&!focused?'':'disabled'}>이전</button><span aria-live="polite">${focused?'보고 상세':`${page+1} / ${pages} · ${cards.length}개 카드`}</span><button class="btn small" data-a="homePage" data-v="1" ${page<pages-1&&!focused?'':'disabled'}>다음</button></nav></div>`;
 }
 /* ---------- FA 센터 ---------- */
 function agAv(ag,expr){ return avImg({persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:expr||null,name:ag.name}); }
@@ -18352,10 +18614,10 @@ function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done); const last=(
   const done=last.map(x=>`<div class="dec-r"><b>${lk(x.t)}</b><span>결정: ${esc(x.c)}${x.auto?' (자동)':''}</span>${x.r?`<em>${lk(x.r)}</em>`:''}${x.f?`<em class="f">${lk(x.f)}</em>`:''}</div>`).join('');
   const dl=Object.keys(G.deleg||{}).filter(k=>G.deleg[k]&&EV_NAME[k]); const dlx=dl.length?`<p class="small muted" style="margin:6px 0 0">비서에게 맡긴 일: ${dl.map(k=>EV_NAME[k]).join(', ')} <button class="tc-i" data-a="evDelegOff">모두 직접 하기</button></p>`:'';
   return `<section class="card deccard">${open.map(one).join('')}${done?`<div class="dec-rs">${done}</div>`:''}${dlx}</section>`; }
-function todoCard(limit){
+function todoCard(limit,compact=false){
   const it=[]; const b=blockNow();
   if(b&&!G.live)it.push({t:b,s:'',btn:blkLink(b).replace('<button ','<button class="btn small" ')});
-  for(const [tab,arr] of Object.entries(SUBS)) for(const [k,l] of arr){ const key=tab+':'+k; if(key==='trade:offers'||key==='train:dev'||key==='staff:dev')continue; if(TODO[key]&&subAlert(tab,k)&&!(b&&key==='staff:mgr'&&/감독/.test(b)))it.push({t:TODO[key][0],s:TODO[key][1],btn:`<button class="btn small" data-a="go" data-v="${key}">${l}</button>`}); }
+  for(const [tab,arr] of Object.entries(SUBS)) for(const [k,l] of arr){ const key=tab+':'+k; if(key==='trade:offers'||key==='train:dev'||key==='staff:dev')continue; if(TODO[key]&&subAlert(tab,k)&&!(b&&key==='staff:mgr'&&/감독/.test(b)))it.push({t:(key==='staff:scouts'?scoutTaskText():TODO[key])[0],s:(key==='staff:scouts'?scoutTaskText():TODO[key])[1],btn:`<button class="btn small" data-a="go" data-v="${key}">${l}</button>`}); }
   if(subAlert('staff','mil'))it.push({t:TODO['staff:mil'][0],s:TODO['staff:mil'][1],btn:'<button class="btn small" data-a="go" data-v="staff:mil">병역</button>'});
   for(const o of (G.offers||[]).filter(o=>o.exp!=null&&o.exp-G.day<=2&&o.exp>=G.day).slice(0,2)){ const gp=o.get&&G.players[o.get[0]]; it.push({t:`${tshort(o.from)} 트레이드 제안 ${o.exp-G.day<=0?'오늘':o.exp-G.day+'일 뒤'} 만료`,s:gp?`상대가 원하는 선수: ${gp.name}`:'',btn:'<button class="btn small" data-a="go" data-v="trade:offers">제안 보기</button>'}); }
   const imp=G.mail.filter(m=>m.imp&&!m.read&&m.kind!=='결정'&&G.day-m.day<=20&&!(m.kind==='트레이드'&&/원한다/.test(m.subj))).slice(0,4);
@@ -18364,7 +18626,7 @@ function todoCard(limit){
   const per=period();
   const row=x=>`<div class="td">${x.mail?senderAv(x.mail):'<span class="tdi">!</span>'}<div><b>${esc(x.t)}</b>${x.s?`<span>${esc(x.s)}</span>`:''}</div>${x.btn||''}</div>`;
   const shown=limit?it.slice(0,limit):it,rest=limit?it.slice(limit):[];
-  const body=it.length?`<div class="todo">${shown.map(row).join('')}</div>${rest.length?`<details class="todo-rest"><summary>나머지 ${rest.length}건 보기</summary><div class="todo">${rest.map(row).join('')}</div></details>`:''}`
+  const body=it.length?`<div class="todo">${shown.map(row).join('')}</div>${rest.length?(compact?`<button class="btn small hw-more-tasks" data-a="homeTasks">나머지 ${rest.length}건 보기 →</button>`:`<details class="todo-rest"><summary>나머지 ${rest.length}건 보기</summary><div class="todo">${rest.map(row).join('')}</div></details>`):''}`
     :`<p class="small muted">급한 일이 없습니다. ${per==='season'?'오른쪽 위 <b>계속</b>은 다음 소식까지(최대 한 주), <b>1경기</b>는 한 경기씩 진행합니다.':per==='post'?'오른쪽 위 <b>다음 경기</b>는 우리 경기가 내일이면 그 경기를 치르고, 아니면 우리 경기 전날까지 다른 팀 경기를 넘깁니다.':'오른쪽 위 <b>계속</b>을 누르면 다음 일정까지 진행합니다.'}</p>`;
   return `<section class="card" id="todoCard"><div class="row between"><h2 class="sec">처리할 일${it.length?` <span class="cntb">${it.length}</span>`:''}</h2><button class="btn small" data-a="tab" data-v="inbox">소식함${unread?` ${unread}`:''}</button></div>${body}</section>`;
 }
@@ -18865,6 +19127,7 @@ function mailActionStatus(m,a){
   if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답변했거나 종료된 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 종료되었습니다.'):null;}
   if(a.a==='scoutPlanGo'){
+    if(scoutWorkStatus().delegated)return mailEnd('스카우트팀장에게 배치를 맡겼습니다. 단장의 별도 승인은 필요하지 않습니다.');
     if(old||dobj(d).m!==dobj(G.day).m)return mailEnd('지난달의 배치 제안입니다. 최신 제안은 스카우트팀에서 확인하세요.',true);
     const P=c.scout;if(P){if(P.every(x=>G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('이미 제안한 스카우트 배치를 마쳤습니다.');const now=scoutPlan().filter(x=>x.move);if(P.some(x=>!now.some(z=>z.s.id===x.id&&z.role===x.role&&z.key===x.key)&&!G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('직원·배치 상황이 바뀌었습니다. 최신 제안을 확인하세요.',true);}
     else if(!scoutPlan().some(x=>x.move))return mailEnd('이미 스카우트 배치를 마쳤습니다.');return null;
@@ -18888,7 +19151,7 @@ function mailStatus(m){
   if(/코치 자리가 비어/.test(s)&&G.coach&&!CKEYS.some(k=>!coachesOf(G.user)[k]))return end('이미 코치진을 모두 구성했습니다.');
   if(/부상 방지 프로그램과 병원 제휴/.test(s)&&G.medSet)return end('이미 의무 운영안을 설정했습니다.');
   if(/훈련 방향과 해외 연수 안내/.test(s)&&Object.keys(G.trn||{}).length)return end('이미 선수 훈련 방향을 지정했습니다.');
-  if(/스카우트 담당 지역에 공백/.test(s)&&new Set((G.scouts||[]).filter(x=>(x.role||'am')==='am').map(x=>x.region)).size>=3)return end('이미 세 지역 이상에 아마추어 스카우트를 배치했습니다.');
+  if(/스카우트 담당 지역에 공백/.test(s)){const S=scoutWorkStatus();if(!S.needs)return end(S.delegated?'팀장이 시기에 맞게 스카우트를 배치하고 있습니다.':scoutDraftSea()?'이미 필요한 아마추어 담당을 배치했습니다.':'현재는 해외·프로 관찰을 우선하는 시기이며 필요한 스카우트 인원을 확보했습니다.');}
   if(/감독이 정한 선수단 배치/.test(s)&&(G.tutFlags?.roster||(G.cal&&G.day>G.cal.open+7)))return end('이미 선수단 배치를 확인했거나 안내 기간이 지났습니다.');
   if(/개막 준비가 끝났습니다/.test(s)&&(old||G.day>=G.cal.camp))return end('이미 스프링캠프 시작일에 도달했습니다.');
   if(/창단 드래프트(가 끝|: 모든)/.test(s)&&G.fd?.done)return end('이미 창단 드래프트를 마쳤습니다.');
@@ -18929,7 +19192,7 @@ function mailEvPick(m){ const a=(m.acts||[]).find(x=>x.a==='evPick'); const e=a&
 /* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 일은 뺀다) */
 function ibTask(m){ if(mailDone(m))return false; if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); /* 살아 있는 트레이드 제안 */
   if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); /* 아직 응하지 않은 인터뷰 */
-  return m.imp&&!m.read&&!(m.kind==='트레이드'&&/원한다/.test(m.subj)); } /* 아직 확인하지 않은 결재·중요 소식 */
+  return m.imp&&!m.read&&stopOn(m)&&!(m.kind==='트레이드'&&/원한다/.test(m.subj)); } /* 현재 중단 설정에 해당하는 결재·중요 소식 */
 function mailFilter(f){ return G.mail.filter(m=>f==='all'||(f==='task'?(ibTask(m)||ibMust(m)):f==='unread'?!m.read:f==='player'?typeof m.face==='number':ibCat(m)===f)); }
 function ibDay(d){ const k=G.day-d; if(k===0)return '오늘'; if(k===1)return '어제'; return `${dmd(d)} (${WD[dobj(d).w]})`; }
 /* 제목이 본문 첫 문장을 그대로 잘라 만든 경우(stop·note) 본문에서 겹치는 부분을 덜어 낸다 */
@@ -18955,8 +19218,8 @@ function mailCard(m,nav){
     ${m.rv?rvActsH(m):''}${handOffBtns(m)}
     ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${acts.length?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}</div>`:''}
     ${o&&!status?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
-/* 처리할 메일: 안 읽었고 중요하거나 업무·버튼·제안이 있는 것. 상단 숫자는 이것만 센다 */
-const mailNeeds=m=>!m.read&&!mailDone(m)&&(m.imp||m.kind==='업무'||(m.acts&&m.acts.length>0)||!!m.oid);
+/* 상단 숫자와 계속 버튼은 동일한 현재 미처리 업무만 센다. 단순 안내·보고는 제외한다. */
+const mailNeeds=m=>ibMust(m);
 /* ===== 소식함 =====
  - 맨 위 '안 읽은 소식' 묶음: 안 읽은 소식을 확인할 소식부터, 같은 종류 안에서는 최신부터. 읽어도 그날(또는 소식함을 다시 열 때)까지는 그 자리에 둔다(읽는 중에 목록이 움직이지 않게).
  - 그 아래는 최신 날짜부터 날짜별로 묶는다. 날짜 머리를 누르면 그 날짜를 접고 편다.
@@ -18967,8 +19230,8 @@ function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const k
   list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep)return true; const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
-/* 반드시 확인할 소식: 안 읽었고, 답이 필요하거나(살아 있는 제안·인터뷰) 중요 표시·업무 소식. 단순히 '선수 보기' 버튼만 있는 소식은 넣지 않는다 */
-const ibMust=m=>!m.read&&!mailDone(m)&&(ibTask(m)||m.kind==='업무');
+/* 반드시 확인할 소식: 살아 있는 결정·제안·인터뷰와 중단 설정에 해당하는 중요 소식. 안내 버튼만 있는 소식은 넣지 않는다. */
+const ibMust=m=>!m.read&&!mailDone(m)&&(ibTask(m)||ibDecide(m));
 function ibNeedList(){ return G.mail.filter(ibMust); } /* 최신부터(화면 순서) */
 /* 스페이스바·'안 읽음'이 여는 순서: 확인할 소식 먼저, 그다음 나머지 안 읽은 소식(각각 최신부터) = 화면 맨 위 묶음 순서 */
 function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).concat(u.filter(m=>!ibMust(m))).reverse(); } /* 화면 맨 위 묶음의 맨 아래(가장 오래된)부터 위로 올라가며 연다 */
@@ -20064,7 +20327,17 @@ function tkShow(d){ if(UI._tk)UI._tk.show=d; const L=document.querySelector('.ib
   let any=false; document.querySelectorAll('[data-tkd]').forEach(el=>{ if(+el.dataset.tkd<=d){ el.removeAttribute('data-tkd'); el.classList.add('tk-in'); any=true; } });
   if(any&&L){ const c=L.querySelector('.ibr.cur'); if(c)ibShowCur(L,c,false); else if(top)L.scrollTop=0; } }
 function tkDone(){ UI._tk=null; tkShow(1e9); }
+function dayTickPosition(el){
+  if(!el?.classList.contains('on'))return;
+  const v=window.visualViewport,w=v?.width||innerWidth,h=v?.height||innerHeight,x=v?.offsetLeft||0,y=v?.offsetTop||0;
+  const count=el.querySelectorAll('.dt-c').length;
+  el.style.width=Math.min(w-24,Math.max(196,count*52+Math.max(0,count-1)*4+12))+'px';
+  el.style.maxWidth=Math.max(0,w-24)+'px';el.style.left=(x+w/2)+'px';
+  const head=document.querySelector('#app .fmtop,#app .top,#app .dtop'),after=head?head.getBoundingClientRect().bottom+8:y+8;
+  el.style.top=Math.max(y+8,Math.min(after,y+h-el.getBoundingClientRect().height-12))+'px';
+}
 function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
+  (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
   let el=document.getElementById('dtick'); if(!el){ el=document.createElement('div'); el.id='dtick'; el.setAttribute('aria-hidden','true'); document.body.appendChild(el); }
   let days=[]; for(let d=d0+1;d<=d1;d++)days.push(d); if(days.length>10)days=days.slice(0,4).concat([null],days.slice(-5));
@@ -20072,12 +20345,18 @@ function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } let stil
     return `<span class="dt-c"><i>${WD[o.w]}</i><b>${o.m}/${o.d}</b>${g?`<span class="dt-g">${badge(g.op,18)}</span>${g.res?`<em class="rs ${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:'<em></em>'}`:ev.length?`<em class="ev">${esc(ev[0].t.slice(0,6))}</em>`:'<em></em>'}</span>`; }).join('')}</div>`;
   el.className='on'; const cs=[...el.querySelectorAll('.dt-c')]; const fl=el.querySelector('#dtFlip'); const step=Math.max(110,Math.min(220,1300/cs.length));
   if(still){ const o=dobj(d1); fl.innerHTML=`<i>${o.y}년</i><b>${o.m}월 ${o.d}일</b><i>${WD[o.w]}요일</i>`; cs.forEach(c=>c.classList.add('done')); if(cs.length)cs[cs.length-1].classList.add('cur'); tkDone();
-    clearTimeout(dayTick._t); dayTick._t=setTimeout(()=>{ el.className=''; },1600); return; }
+    dayTickPosition(el);dayTick._t=setTimeout(()=>{ el.className=''; },1600); return; }
   const show=d=>{ const o=dobj(d); fl.classList.remove('go'); void fl.offsetWidth; fl.innerHTML=`<i>${o.y}년</i><b>${o.m}월 ${o.d}일</b><i>${WD[o.w]}요일</i>`; fl.classList.add('go'); };
-  show(d0); cs.forEach((c,i)=>setTimeout(()=>{ cs.forEach(x=>x.classList.remove('cur')); c.classList.add('cur','done'); const dd=days[i]; if(dd!=null){ show(dd); tkShow(dd); } else if(days[i+1]!=null)tkShow(days[i+1]-1); },(i+1)*step));
+  show(d0);dayTickPosition(el);dayTick._steps=cs.map((c,i)=>setTimeout(()=>{ cs.forEach(x=>x.classList.remove('cur')); c.classList.add('cur','done'); const dd=days[i]; if(dd!=null){ show(dd); tkShow(dd); } else if(days[i+1]!=null)tkShow(days[i+1]-1); },(i+1)*step));
   const hd=document.querySelector('.tbar .club span'); if(hd){ hd.classList.remove('dchg'); void hd.offsetWidth; hd.classList.add('dchg'); }
   if(UI._tk)UI._tk.until=Date.now()+(cs.length+1)*step+200; clearTimeout(dayTick._t2); dayTick._t2=setTimeout(tkDone,(cs.length+1)*step+50);
   clearTimeout(dayTick._t); dayTick._t=setTimeout(()=>{ el.className=''; },(cs.length+1)*step+600); }
+if(typeof window!=='undefined'){
+  const reposition=()=>dayTickPosition(document.getElementById('dtick'));
+  window.addEventListener('resize',reposition);
+  window.visualViewport?.addEventListener('resize',reposition);
+  window.visualViewport?.addEventListener('scroll',reposition);
+}
 /* 앞으로의 경기: 일정표 순서대로 다음 10경기(같은 상대 연전은 묶어서 몇 번째 경기인지 표시) */
 function upcomingGames(n){ const per=period(); if(per!=='season'&&per!=='post'&&per!=='pre')return ''; const L=nextGames(n||10); if(!L.length)return '';
   let sp=[]; try{ sp=projStarters(G.user,5)||[]; }catch(e){}
@@ -21381,7 +21660,7 @@ function detailPageSync(el){
     if(ret&&ret.tab===UI.tab){scrollTo(0,ret.y);if(ret.focus&&ret.focus.isConnected)ret.focus.focus({preventScroll:true});}
   }
 }
-function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}if(UI.meet)meetWire(); }
+function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}if(UI.meet)meetWire(); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -21596,11 +21875,12 @@ function closeSheets(){ UI.matchPreview=false; const kw=UI.wkres&&(UI.game!=null
 const A={
   staffTalk(v){const [kind,id,topic]=v.split(':');UI.staffMsgs=UI.staffMsgs||{};UI.staffMsgs[id]=staffTalk(kind,id,topic);save();if(UI.person)renderSheet();else render();},
 homePage(v){UI.homePage=Math.max(0,(UI.homePage||0)+(+v));UI.homeFocus=null;render();},homeOpenCard(v){UI.homeFocus={view:UI.homePanel||'overview',index:+v};render();},homeCloseCard(){UI.homeFocus=null;render();},
+homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0};render();},
 
  matchOpen(){UI.matchPreview=true;renderSheet();},
  matchLater(){UI.matchPreview=false;renderSheet();},
  matchWatch(){UI.matchPreview=false;A.watchNext();},
- matchSim(){const next=nextGames(1)[0];if(next)G.simPlanned={day:next.d};UI.matchPreview=false;G.watchPlanned=null;G.matchAwait=null;if(G.res&&!G.live)G.res=null;if(blocker()){save();render();return;}const day=G.day;advance('next');if(G.res&&G.games[G.res.i]?.day===G.simPlanned?.day)G.simPlanned=null;closeSheets();UI.tab='home';save();render();setTimeout(()=>dayTick(day),30);}
+ matchSim(){const next=nextGames(1)[0];if(next)G.simPlanned={day:next.d};UI.matchPreview=false;G.watchPlanned=null;G.matchAwait=null;if(G.res&&!G.live)G.res=null;if(blocker()){save();render();return;}const day=G.day;advance('next',{skipMatchStop:true});if(G.res&&G.games[G.res.i]?.day===G.simPlanned?.day)G.simPlanned=null;closeSheets();UI.tab='home';save();render();setTimeout(()=>dayTick(day),30);}
 ,
   prepPage(){const el=document.querySelector('.cs-prep');if(!el)return;el.dataset.page=el.dataset.page==='0'?'1':'0';const b=el.querySelector('[data-a="prepPage"]');if(b)b.textContent=el.dataset.page==='0'?'6~9번 보기':'1~5번 보기';},
   homePanel(v){UI.homePanel=v;UI.homePage=0;UI.homeFocus=null;render();},
@@ -21723,7 +22003,7 @@ homePage(v){UI.homePage=Math.max(0,(UI.homePage||0)+(+v));UI.homeFocus=null;rend
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='train'){ A.go('staff:camp'); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
   startGo(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='inbox'; UI._ibFirst=true; save();render();window.scrollTo(0,0);}, /* 소식함이 게임의 중심: 시작하면 소식함 */
-  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length; const d0=G.day; UI._tk={show:d0,until:Date.now()+3000}; advance(v,{stopBeforeMatch:true});if(G.matchAwait){closeSheets();UI.tab='home';if(G.watchPlanned?.day===G.matchAwait.day){A.watchNext();return;}if(G.simPlanned?.day===G.matchAwait.day){A.matchSim();return;}UI.matchPreview=true;save();render();return;} setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
+  adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length; const d0=G.day; UI._tk={show:d0,until:Date.now()+3000}; advance(v);if(G.matchAwait){closeSheets();UI.tab='home';if(G.watchPlanned?.day===G.matchAwait.day){A.watchNext();return;}if(G.simPlanned?.day===G.matchAwait.day){A.matchSim();return;}A.watchNext();return;} setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
     if(G.res||G.live){ closeSheets(); UI.tab='home'; UI.mail=null; } else if(G.stops.length){ /* 중요한 소식으로 멈추면 홈이 아니라 소식함에서 그 소식을 연다 */ const sm=G.stops.find(s=>s&&s.id&&G.mail.some(m=>m.id===s.id)); closeSheets(); UI.mail=null; if(sm){ UI.mf='all'; UI.tab='inbox'; UI.ibSel=sm.id; UI._ibToCur=true; sm.read=true; if(!wide())UI.ibOpen=sm.id; } else UI.tab='inbox'; } else { /* 멈출 소식이 없어도 소식함으로: 새 소식(한 주 정리 포함)을 거기서 본다 */ closeSheets(); UI.mail=null; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; UI._ibEnd=true; UI.ibSel=null; UI.ibOpen=null; }
     if(G.dig&&G.dig.games&&G.dig.games.length&&!G.res&&!G.live)UI.wkres={from:G.dig.from,to:G.dig.to,rk0:G.dig.rk}; /* 넘긴 동안의 경기를 한 장으로 */ save(); render(); window.scrollTo(0,0); },
   calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
@@ -21732,8 +22012,8 @@ homePage(v){UI.homePage=Math.max(0,(UI.homePage||0)+(+v));UI.homeFocus=null;rend
   calJump(v){ const o=dobj(+v); UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); },
   /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
   advTo(v){ const T=+v; if(!(T>G.day))return; if(G.res&&!G.live)G.res=null; const d0=G.day; const rk0=userRank(); let g=0; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length;
-    while(G.day<T&&g++<200){ if(blocker())break; advance('day',{stopBeforeMatch:true}); if(G.matchAwait||G.stops.length||(G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0||G.live)break; if(G.res)G.res=null; }
-    if(G.matchAwait){closeSheets();UI.tab='home';if(G.watchPlanned?.day===G.matchAwait.day){A.watchNext();return;}if(G.simPlanned?.day===G.matchAwait.day){A.matchSim();return;}UI.matchPreview=true;save();render();return;}
+    while(G.day<T&&g++<200){ if(blocker())break; advance('day'); if(G.matchAwait||G.stops.length||(G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0||G.live)break; if(G.res)G.res=null; }
+    if(G.matchAwait){closeSheets();UI.tab='home';if(G.watchPlanned?.day===G.matchAwait.day){A.watchNext();return;}if(G.simPlanned?.day===G.matchAwait.day){A.matchSim();return;}A.watchNext();return;}
     if(!G.live&&wkGames(d0+1,G.day).length){ G.res=null; closeSheets(); UI.wkres={from:d0+1,to:G.day,rk0}; } /* 이 날까지 진행한 동안의 경기도 한 장으로 */
     save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
@@ -22095,23 +22375,25 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
     <div class="cfm-b"><button class="btn" data-a="annPlayer" data-v="${p.id}">선수 보기</button><button class="btn primary" data-a="annClose">확인${UI.annQ.length>1?` (${UI.annQ.length-1}명 더)`:''}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
 /* 계속을 누를 때 아직 보지 않은 결정·중요 소식·트레이드 제안이 있으면 한 번 알려 준다(같은 목록이면 다시 묻지 않는다) */
-function pendItems(){ const L=[]; const ev=(G.evs||[]).filter(e=>!e.done); const key=ev.filter(e=>EV_KEY.has(e.k)), oth=ev.filter(e=>!EV_KEY.has(e.k));
+function pendEvents(){return (G.evs||[]).filter(e=>!e.done&&(e.exp==null||e.exp>=G.day)&&!G.mail.some(m=>m.id===e.mid&&mailDone(m)));}
+function pendOffers(){return (G.offers||[]).filter(o=>!o.blk&&(o.exp==null||o.exp>=G.day));}
+function pendItems(){ const L=[]; const ev=pendEvents(); const key=ev.filter(e=>EV_KEY.has(e.k)), oth=ev.filter(e=>!EV_KEY.has(e.k));
   if(key.length)L.push({id:'k'+key.map(e=>e.id).join(','),t:`핵심 결정 ${key.length}건: ${key.slice(0,2).map(e=>`${e.title}(~${dmd(e.exp)})`).join(', ')}${key.length>2?' 외':''}`});
   if(oth.length)L.push({id:'e'+oth.map(e=>e.id).join(','),t:`결정 ${oth.length}건: ${oth.slice(0,2).map(e=>e.title).join(', ')}${oth.length>2?' 외':''}`});
-  const of=(G.offers||[]).filter(o=>!o.blk); if(of.length)L.push({id:'o'+of.map(o=>o.id).join(','),t:`트레이드 제안 ${of.length}건(답하지 않으면 만료)`});
-  const im=(G.mail||[]).filter(m=>m.imp&&!m.read&&G.day-(m.day||0)<=14); if(im.length)L.push({id:'m'+im.map(m=>m.id).join(','),t:`읽지 않은 중요 소식 ${im.length}건: ${im.slice(0,2).map(m=>m.subj).join(', ')}${im.length>2?' 외':''}`});
+  const of=pendOffers(); if(of.length)L.push({id:'o'+of.map(o=>o.id).join(','),t:`트레이드 제안 ${of.length}건(답하지 않으면 만료)`});
+  const im=ibNeedList(); if(im.length)L.push({id:'m'+im.map(m=>m.id).join(','),t:`확인할 중요 소식 ${im.length}건: ${im.slice(0,2).map(m=>m.subj).join(', ')}${im.length>2?' 외':''}`});
   return L; }
 function pendDoc(){ if(G.unemp||blocker())return null; const L=pendItems(); if(!L.length)return null; const sig=L.map(x=>x.id).join('|'); if(UI._pendAck===sig)return null;
   UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ const id=pendMailId(); if(id){ UI.mf='all'; A.openMail(id); return; } UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); } /* 확인하러 가기: 그 소식을 소식함에서 연다 */,onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
 /* 확인할 일이 담긴 소식: 안 읽은 확인할 소식 → 끝나지 않은 결정 → 살아 있는 트레이드 제안 순 */
 function pendMailId(){ const n=ibNeedList(); if(n.length)return n[0].id;
-  const ev=(G.evs||[]).filter(e=>!e.done); for(const e of ev){ const m=G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(e.id))); if(m)return m.id; }
-  const of=(G.offers||[]).filter(o=>!o.blk); for(const o of of){ const m=G.mail.find(m=>m.oid===o.id); if(m)return m.id; } return null; }
+  const ev=pendEvents(); for(const e of ev){ const m=G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(e.id))&&!mailDone(m)); if(m)return m.id; }
+  const of=pendOffers(); for(const o of of){ const m=G.mail.find(m=>m.oid===o.id&&!mailDone(m)); if(m)return m.id; } return null; }
 /* 스페이스바로 진행할 때 묻는 창: 어디까지 가는지 */
 function advTargetTxt(v){ const per=period();
-  if(G.unemp)return '제의가 오거나 2주가 지날 때까지 진행합니다.';
+  if(G.unemp)return '제의가 오거나 1주일이 지날 때까지 진행합니다.';
   if(v==='event'&&(per==='off'||per==='pre')&&!nextGames(1).some(x=>x.d<=G.day+7))return `${dmd(G.day+7)}까지 최대 7일 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`;
-  if(v==='event'){ let d=G.day+1; while(d<G.day+7&&dobj(d+1).w!==1)d++; return `${dmd(d)}(${WD[dobj(d).w]}) 경기까지 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`; }
+  if(v==='event'||v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기만 관전하며 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
   if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
   const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
 function advAsk(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
@@ -22558,7 +22840,7 @@ function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div clas
   return `<div class="oadv">${(()=>{ let n=o.pot; if(n==null){ try{ n=o.pot=offScoutNote(o); }catch(e){ n=''; } } return n?`<div class="oadv-pot"><div class="eyebrow">스카우트 잠재력 추정 · 받는 선수</div><p class="small">${esc(n).replace(/\n/g,'<br>')}</p></div>`:''; })()}<div class="eyebrow">결정 전에 의견 듣기</div><div class="oadv-b">${row('mgr','감독','감독 의견 묻기')}${row('ana','전력분석팀','전력분석팀 분석')}${row('sc','스카우트·의무','스카우트·메디컬 확인')}</div>
     <button class="btn small" data-a="offerCounter" data-v="${o.id}">조건 바꿔 역제안하기</button></div>`; }
 /* ---------- 휴대폰 표: 가로 스크롤 대신 버튼으로 열 묶음을 넘긴다 ----------
-   세로는 페이지 스크롤 하나만 쓰고(표 안에 스크롤 상자를 만들지 않는다), 첫 열(이름)은 늘 보인다.
+   세로는 표·목록 패널 안에서 스크롤하고, 첫 열(이름)은 늘 보인다.
    열 폭을 재서 화면에 들어가는 만큼씩 묶고 '◀ 1/3 ▶'로 넘긴다. 넓은 화면도 표가 넘칠 때만 같은 방식 */
 const TWP_W=600;
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
@@ -22586,6 +22868,75 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     bp.onclick=()=>go(-1); bn.onclick=()=>go(1); tw.insertBefore(bar,tb); });
   document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
+
+/* 전체 화면 대신 표·목록 내부를 스크롤하는 공통 작업 틀. */
+function workspaceFit(host){
+  const main=host||document.querySelector('#app main.content');
+  if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
+  main.dataset.workspaceReady='1';main.classList.add('ws-frame');
+  const root=main.querySelector(':scope > .roster-page')||main;
+  if(root!==main)root.classList.add('ws-page');
+  const fixed='.seg,.subtabs,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
+  const panels=[];
+  for(const node of [...root.children]){
+    if(node.matches(fixed)||node.matches('p')||getComputedStyle(node).position==='fixed')continue;
+    if(node.matches('.fmcols')){panels.push(...node.children);node.replaceWith(...node.children);}
+    else panels.push(node);
+  }
+  if(!panels.length){
+    const body=document.createElement('div');body.className='ws-scroll';
+    while(root.firstChild)body.append(root.firstChild);root.append(body);return;
+  }
+  const deck=document.createElement('div');deck.className='ws-panels';root.insertBefore(deck,panels[0]);
+  const key=host?'detail:'+UI.sheet+':'+UI.ptab:fmKey()+':'+(UI.it?.[UI.tab]||'');
+  const positions=UI.workspaceScroll=UI.workspaceScroll||{};
+  const scrollSelectors='.tw,.fdt-w,.tgrid,.cgrid,.cgr,.fl,.feed,.dealg,.sched,.stop-l,.tn-l,.slots,.bud-t,.cpwrap,.ltiles,.covm';
+  const label=el=>el.querySelector('h2,h3,.sec,.eyebrow,summary')?.textContent.trim()||'보고';
+  panels.forEach((panel,index)=>{
+    deck.append(panel);panel.classList.add('ws-panel');
+    const children=[...panel.children],regions=children.filter(el=>el.matches(scrollSelectors));
+    let scroller;
+    if(regions.length===1){
+      const region=regions[0],tail=children.slice(children.indexOf(region)+1);
+      const extra=tail.filter(el=>!el.matches('.pgr,.row,.btn,p.small'));
+      if(extra.length){
+        scroller=document.createElement('div');panel.insertBefore(scroller,region);scroller.append(region);
+        tail.filter(el=>!el.matches('.pgr,.row,.btn')).forEach(el=>scroller.append(el));
+      }else scroller=region;
+    }
+    else{
+      scroller=document.createElement('div');
+      const first=regions[0]||children.find(el=>!el.matches('h1,h2,h3,header,.row:first-child,.seg,.chips,.roster-caption,.roster-filters'));
+      if(first){panel.insertBefore(scroller,first);let el=first;while(el){const next=el.nextSibling;scroller.append(el);el=next;}}
+      else panel.append(scroller);
+    }
+    scroller.classList.add('ws-scroll');scroller.tabIndex=0;scroller.setAttribute('role','region');scroller.setAttribute('aria-label',label(panel)+' 내용');
+    scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
+  });
+  const columns=Math.min(panels.length,innerWidth>=700?2:1),pages=Math.ceil(panels.length/columns);
+  deck.style.setProperty('--ws-columns',columns);
+  UI.workspacePages=UI.workspacePages||{};
+  let page=clamp(UI.workspacePages[key]||0,0,pages-1);
+  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(!panel.hidden&&pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
+  if(pages>1){
+    const bar=document.createElement('nav');bar.className='ws-pages';bar.setAttribute('aria-label','업무 패널');
+    const prev=document.createElement('button'),next=document.createElement('button'),select=document.createElement('select');
+    prev.className=next.className='btn small';prev.textContent='‹ 이전';next.textContent='다음 ›';select.setAttribute('aria-label','표·보고 묶음 선택');
+    for(let i=0;i<pages;i++){const option=document.createElement('option');option.value=i;option.textContent=(i+1)+' / '+pages+' · '+panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');select.append(option);}
+    const sync=()=>{show();select.value=String(page);prev.disabled=page===0;next.disabled=page===pages-1;};
+    prev.onclick=()=>{page--;sync();};next.onclick=()=>{page++;sync();};select.onchange=()=>{page=+select.value;sync();};
+    bar.append(prev,select,next);root.insertBefore(bar,deck);sync();
+  }
+}
+
+function workspaceDetail(){
+  const sheet=document.querySelector('#sheet .psh'),nav=sheet?.querySelector(':scope > .pf-topnav');
+  if(!nav||UI.ptab!=='rec'||sheet.classList.contains('ws-detail'))return;
+  sheet.classList.add('ws-detail');
+  const body=document.createElement('div');body.className='ws-detail-body';
+  let node=nav.nextSibling;while(node){const next=node.nextSibling;body.append(node);node=next;}
+  sheet.append(body);workspaceFit(body);
+}
 /* ---------- 우승 순간 카드(홈 맨 위). 확인을 누를 때까지 남는다 ---------- */
 function trophySvg(){ return `<svg class="trophy" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 8h24v10c0 9-5 16-12 16S20 27 20 18z" fill="#f2c14e"/><path d="M20 12H10c0 9 5 13 11 13M44 12h10c0 9-5 13-11 13" fill="none" stroke="#f2c14e" stroke-width="3"/><rect x="29" y="33" width="6" height="11" fill="#d9a630"/><rect x="21" y="44" width="22" height="6" rx="1" fill="#d9a630"/><rect x="17" y="50" width="30" height="6" rx="1" fill="#b8871f"/></svg>`; }
 function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=null&&c.tid!==G.user))return ''; const t=team(G.user); const ev=(G.evs||[]).find(e=>e.k==='champGift'&&!e.done);
@@ -23170,7 +23521,7 @@ Object.assign(A,{
 function scoutChiefBox(){ const c=scoutChief(); if(!c)return ''; const P=scoutPlan(); const mv=P.filter(x=>x.move); const sea=scoutDraftSea()?'드래프트 시즌(3월~신인 드래프트): 아마추어 관찰이 먼저입니다.':'외국인·FA 시즌(드래프트 뒤~2월): 해외와 프로 담당이 먼저입니다.';
   return `<div class="schief"><div class="row between"><b>스카우트팀장 ${esc(c.name)} ${'★'.repeat(effSkill(c))}</b><label class="small schief-auto"><input type="checkbox" data-a="scoutAuto" ${G.scoutAuto?'checked':''}> 팀장에게 맡기기(매달 1일 배치)</label></div>
     <p class="small">${sea}</p>
-    ${mv.length?`<ul class="small">${mv.map(x=>{ const or=x.s.role||'am', ok=x.s.region; const still=G.scouts.some(o=>o!==x.s&&(o.role||'am')===or&&o.region===ok&&!mv.some(m=>m.s===o))||mv.some(m=>m.role===or&&m.key===ok);
+    ${G.scoutAuto?'<p class="small muted">팀장이 시기에 맞게 배치하고 있습니다. 매달 1일 자동 조정하며, 직접 제안을 승인할 필요는 없습니다.</p>':mv.length?`<ul class="small">${mv.map(x=>{ const or=x.s.role||'am', ok=x.s.region; const still=G.scouts.some(o=>o!==x.s&&(o.role||'am')===or&&o.region===ok&&!mv.some(m=>m.s===o))||mv.some(m=>m.role===or&&m.key===ok);
       return `<li>${esc(x.s.name)}: ${esc(scoutSlotTxt(or,ok))} → <b>${esc(scoutSlotTxt(x.role,x.key))}</b> <span class="muted">${esc(x.why)}</span><br><span class="muted">비는 곳: ${still?'없음(다른 스카우트가 맡음)':`${esc(scoutSlotTxt(or,ok))} 관찰 공백`} · 적응: ${dmd(G.day+30)}까지 정확도 한 단계 낮게 일함</span></li>`; }).join('')}</ul><button class="btn small primary" data-a="scoutPlanGo">제안대로 배치(${mv.length}명)</button> <span class="small muted">바꾼 스카우트는 30일 적응 기간</span>`:'<p class="small muted">지금 배치가 팀장 생각과 같습니다.</p>'}</div>`; }
 Object.assign(A,{ scoutPlanGo(){ const n=scoutPlanApply(false); UI.toast&&0; save(); render(); }, scoutAuto(v,el){ G.scoutAuto=!G.scoutAuto; if(G.scoutAuto)scoutPlanApply(true); save(); render(); } });
 /* ---------- 동석 관람 경기 보고: 구단주·사장과 함께 본 홈경기 ----------

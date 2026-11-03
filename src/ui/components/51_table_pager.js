@@ -1,5 +1,5 @@
 /* ---------- 휴대폰 표: 가로 스크롤 대신 버튼으로 열 묶음을 넘긴다 ----------
-   세로는 페이지 스크롤 하나만 쓰고(표 안에 스크롤 상자를 만들지 않는다), 첫 열(이름)은 늘 보인다.
+   세로는 표·목록 패널 안에서 스크롤하고, 첫 열(이름)은 늘 보인다.
    열 폭을 재서 화면에 들어가는 만큼씩 묶고 '◀ 1/3 ▶'로 넘긴다. 넓은 화면도 표가 넘칠 때만 같은 방식 */
 const TWP_W=600;
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
@@ -27,3 +27,72 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     bp.onclick=()=>go(-1); bn.onclick=()=>go(1); tw.insertBefore(bar,tb); });
   document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
+
+/* 전체 화면 대신 표·목록 내부를 스크롤하는 공통 작업 틀. */
+function workspaceFit(host){
+  const main=host||document.querySelector('#app main.content');
+  if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
+  main.dataset.workspaceReady='1';main.classList.add('ws-frame');
+  const root=main.querySelector(':scope > .roster-page')||main;
+  if(root!==main)root.classList.add('ws-page');
+  const fixed='.seg,.subtabs,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
+  const panels=[];
+  for(const node of [...root.children]){
+    if(node.matches(fixed)||node.matches('p')||getComputedStyle(node).position==='fixed')continue;
+    if(node.matches('.fmcols')){panels.push(...node.children);node.replaceWith(...node.children);}
+    else panels.push(node);
+  }
+  if(!panels.length){
+    const body=document.createElement('div');body.className='ws-scroll';
+    while(root.firstChild)body.append(root.firstChild);root.append(body);return;
+  }
+  const deck=document.createElement('div');deck.className='ws-panels';root.insertBefore(deck,panels[0]);
+  const key=host?'detail:'+UI.sheet+':'+UI.ptab:fmKey()+':'+(UI.it?.[UI.tab]||'');
+  const positions=UI.workspaceScroll=UI.workspaceScroll||{};
+  const scrollSelectors='.tw,.fdt-w,.tgrid,.cgrid,.cgr,.fl,.feed,.dealg,.sched,.stop-l,.tn-l,.slots,.bud-t,.cpwrap,.ltiles,.covm';
+  const label=el=>el.querySelector('h2,h3,.sec,.eyebrow,summary')?.textContent.trim()||'보고';
+  panels.forEach((panel,index)=>{
+    deck.append(panel);panel.classList.add('ws-panel');
+    const children=[...panel.children],regions=children.filter(el=>el.matches(scrollSelectors));
+    let scroller;
+    if(regions.length===1){
+      const region=regions[0],tail=children.slice(children.indexOf(region)+1);
+      const extra=tail.filter(el=>!el.matches('.pgr,.row,.btn,p.small'));
+      if(extra.length){
+        scroller=document.createElement('div');panel.insertBefore(scroller,region);scroller.append(region);
+        tail.filter(el=>!el.matches('.pgr,.row,.btn')).forEach(el=>scroller.append(el));
+      }else scroller=region;
+    }
+    else{
+      scroller=document.createElement('div');
+      const first=regions[0]||children.find(el=>!el.matches('h1,h2,h3,header,.row:first-child,.seg,.chips,.roster-caption,.roster-filters'));
+      if(first){panel.insertBefore(scroller,first);let el=first;while(el){const next=el.nextSibling;scroller.append(el);el=next;}}
+      else panel.append(scroller);
+    }
+    scroller.classList.add('ws-scroll');scroller.tabIndex=0;scroller.setAttribute('role','region');scroller.setAttribute('aria-label',label(panel)+' 내용');
+    scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
+  });
+  const columns=Math.min(panels.length,innerWidth>=700?2:1),pages=Math.ceil(panels.length/columns);
+  deck.style.setProperty('--ws-columns',columns);
+  UI.workspacePages=UI.workspacePages||{};
+  let page=clamp(UI.workspacePages[key]||0,0,pages-1);
+  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(!panel.hidden&&pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
+  if(pages>1){
+    const bar=document.createElement('nav');bar.className='ws-pages';bar.setAttribute('aria-label','업무 패널');
+    const prev=document.createElement('button'),next=document.createElement('button'),select=document.createElement('select');
+    prev.className=next.className='btn small';prev.textContent='‹ 이전';next.textContent='다음 ›';select.setAttribute('aria-label','표·보고 묶음 선택');
+    for(let i=0;i<pages;i++){const option=document.createElement('option');option.value=i;option.textContent=(i+1)+' / '+pages+' · '+panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');select.append(option);}
+    const sync=()=>{show();select.value=String(page);prev.disabled=page===0;next.disabled=page===pages-1;};
+    prev.onclick=()=>{page--;sync();};next.onclick=()=>{page++;sync();};select.onchange=()=>{page=+select.value;sync();};
+    bar.append(prev,select,next);root.insertBefore(bar,deck);sync();
+  }
+}
+
+function workspaceDetail(){
+  const sheet=document.querySelector('#sheet .psh'),nav=sheet?.querySelector(':scope > .pf-topnav');
+  if(!nav||UI.ptab!=='rec'||sheet.classList.contains('ws-detail'))return;
+  sheet.classList.add('ws-detail');
+  const body=document.createElement('div');body.className='ws-detail-body';
+  let node=nav.nextSibling;while(node){const next=node.nextSibling;body.append(node);node=next;}
+  sheet.append(body);workspaceFit(body);
+}

@@ -30,6 +30,7 @@ function mailActionStatus(m,a){
   if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답변했거나 종료된 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 종료되었습니다.'):null;}
   if(a.a==='scoutPlanGo'){
+    if(scoutWorkStatus().delegated)return mailEnd('스카우트팀장에게 배치를 맡겼습니다. 단장의 별도 승인은 필요하지 않습니다.');
     if(old||dobj(d).m!==dobj(G.day).m)return mailEnd('지난달의 배치 제안입니다. 최신 제안은 스카우트팀에서 확인하세요.',true);
     const P=c.scout;if(P){if(P.every(x=>G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('이미 제안한 스카우트 배치를 마쳤습니다.');const now=scoutPlan().filter(x=>x.move);if(P.some(x=>!now.some(z=>z.s.id===x.id&&z.role===x.role&&z.key===x.key)&&!G.scouts.some(s=>s.id===x.id&&(s.role||'am')===x.role&&s.region===x.key)))return mailEnd('직원·배치 상황이 바뀌었습니다. 최신 제안을 확인하세요.',true);}
     else if(!scoutPlan().some(x=>x.move))return mailEnd('이미 스카우트 배치를 마쳤습니다.');return null;
@@ -53,7 +54,7 @@ function mailStatus(m){
   if(/코치 자리가 비어/.test(s)&&G.coach&&!CKEYS.some(k=>!coachesOf(G.user)[k]))return end('이미 코치진을 모두 구성했습니다.');
   if(/부상 방지 프로그램과 병원 제휴/.test(s)&&G.medSet)return end('이미 의무 운영안을 설정했습니다.');
   if(/훈련 방향과 해외 연수 안내/.test(s)&&Object.keys(G.trn||{}).length)return end('이미 선수 훈련 방향을 지정했습니다.');
-  if(/스카우트 담당 지역에 공백/.test(s)&&new Set((G.scouts||[]).filter(x=>(x.role||'am')==='am').map(x=>x.region)).size>=3)return end('이미 세 지역 이상에 아마추어 스카우트를 배치했습니다.');
+  if(/스카우트 담당 지역에 공백/.test(s)){const S=scoutWorkStatus();if(!S.needs)return end(S.delegated?'팀장이 시기에 맞게 스카우트를 배치하고 있습니다.':scoutDraftSea()?'이미 필요한 아마추어 담당을 배치했습니다.':'현재는 해외·프로 관찰을 우선하는 시기이며 필요한 스카우트 인원을 확보했습니다.');}
   if(/감독이 정한 선수단 배치/.test(s)&&(G.tutFlags?.roster||(G.cal&&G.day>G.cal.open+7)))return end('이미 선수단 배치를 확인했거나 안내 기간이 지났습니다.');
   if(/개막 준비가 끝났습니다/.test(s)&&(old||G.day>=G.cal.camp))return end('이미 스프링캠프 시작일에 도달했습니다.');
   if(/창단 드래프트(가 끝|: 모든)/.test(s)&&G.fd?.done)return end('이미 창단 드래프트를 마쳤습니다.');

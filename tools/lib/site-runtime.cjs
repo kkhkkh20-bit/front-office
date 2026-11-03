@@ -4,7 +4,9 @@ const hash=data=>crypto.createHash('sha256').update(data).digest('hex').slice(0,
 function splitWebsite(html){
  const files=[],seen=new Set(),add=(filename,data)=>{data=Buffer.from(data);if(!seen.has(filename)){files.push({filename,data});seen.add(filename);}return './'+filename;};
  html=html.replace(/data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)/g,(_,type,base64)=>{const data=Buffer.from(base64,'base64');return add(`assets/images/${hash(data)}.${type==='jpeg'?'jpg':type}`,data);});
- const css=esbuild.transformSync(html.match(/<style[^>]*>([\s\S]*?)<\/style>/)[1],{loader:'css',minify:true}).code,cssURL=add(`assets/app/style.${hash(css)}.css`,css);
+ // CSS는 assets/app 아래에 있으므로 이미지 주소도 문서가 아닌 CSS 위치를 기준으로 쓴다.
+ const cssSource=html.match(/<style[^>]*>([\s\S]*?)<\/style>/)[1].replace(/url\(\s*(["']?)\.\/assets\/images\//g,'url($1../images/');
+ const css=esbuild.transformSync(cssSource,{loader:'css',minify:true}).code,cssURL=add(`assets/app/style.${hash(css)}.css`,css);
  const scripts=[...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)],eager=[];let matchURL;
  for(const [_,attrs,source]of scripts){const id=attrs.match(/id="([^"]+)"/)?.[1]||'ui',vendor=['faces','lz','match3d'].includes(id),notices=vendor?[...source.matchAll(/\/\*[\s\S]*?\*\//g)].map(m=>m[0]).filter(c=>/copyright|license|\(c\)|ZenGM|pieroxy|fflate/i.test(c)).join('\n')+'\n':'',code=notices+esbuild.transformSync(source,{target:'es2020',minifyWhitespace:true,minifySyntax:true,minifyIdentifiers:false,charset:'utf8',legalComments:vendor?'none':'eof'}).code,url=add(`assets/app/${id}.${hash(code)}.js`,code);if(id==='match3d')matchURL=url;else eager.push({id,url});}
  if(!matchURL)throw Error('3D 번들을 찾지 못했습니다.');

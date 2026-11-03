@@ -241,7 +241,8 @@
       "src/css/players/26_compact_profile.css",
       "src/css/staff/27_staff_cards.css",
       "src/css/career/28_meeting_page.css",
-      "src/css/shell/29_desktop_viewport.css"
+      "src/css/shell/29_desktop_viewport.css",
+      "src/css/foundation/30_design_system.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

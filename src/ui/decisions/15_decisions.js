@@ -7,10 +7,10 @@ function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done); const last=(
   const done=last.map(x=>`<div class="dec-r"><b>${lk(x.t)}</b><span>결정: ${esc(x.c)}${x.auto?' (자동)':''}</span>${x.r?`<em>${lk(x.r)}</em>`:''}${x.f?`<em class="f">${lk(x.f)}</em>`:''}</div>`).join('');
   const dl=Object.keys(G.deleg||{}).filter(k=>G.deleg[k]&&EV_NAME[k]); const dlx=dl.length?`<p class="small muted" style="margin:6px 0 0">비서에게 맡긴 일: ${dl.map(k=>EV_NAME[k]).join(', ')} <button class="tc-i" data-a="evDelegOff">모두 직접 하기</button></p>`:'';
   return `<section class="card deccard">${open.map(one).join('')}${done?`<div class="dec-rs">${done}</div>`:''}${dlx}</section>`; }
-function todoCard(limit){
+function todoCard(limit,compact=false){
   const it=[]; const b=blockNow();
   if(b&&!G.live)it.push({t:b,s:'',btn:blkLink(b).replace('<button ','<button class="btn small" ')});
-  for(const [tab,arr] of Object.entries(SUBS)) for(const [k,l] of arr){ const key=tab+':'+k; if(key==='trade:offers'||key==='train:dev'||key==='staff:dev')continue; if(TODO[key]&&subAlert(tab,k)&&!(b&&key==='staff:mgr'&&/감독/.test(b)))it.push({t:TODO[key][0],s:TODO[key][1],btn:`<button class="btn small" data-a="go" data-v="${key}">${l}</button>`}); }
+  for(const [tab,arr] of Object.entries(SUBS)) for(const [k,l] of arr){ const key=tab+':'+k; if(key==='trade:offers'||key==='train:dev'||key==='staff:dev')continue; if(TODO[key]&&subAlert(tab,k)&&!(b&&key==='staff:mgr'&&/감독/.test(b)))it.push({t:(key==='staff:scouts'?scoutTaskText():TODO[key])[0],s:(key==='staff:scouts'?scoutTaskText():TODO[key])[1],btn:`<button class="btn small" data-a="go" data-v="${key}">${l}</button>`}); }
   if(subAlert('staff','mil'))it.push({t:TODO['staff:mil'][0],s:TODO['staff:mil'][1],btn:'<button class="btn small" data-a="go" data-v="staff:mil">병역</button>'});
   for(const o of (G.offers||[]).filter(o=>o.exp!=null&&o.exp-G.day<=2&&o.exp>=G.day).slice(0,2)){ const gp=o.get&&G.players[o.get[0]]; it.push({t:`${tshort(o.from)} 트레이드 제안 ${o.exp-G.day<=0?'오늘':o.exp-G.day+'일 뒤'} 만료`,s:gp?`상대가 원하는 선수: ${gp.name}`:'',btn:'<button class="btn small" data-a="go" data-v="trade:offers">제안 보기</button>'}); }
   const imp=G.mail.filter(m=>m.imp&&!m.read&&m.kind!=='결정'&&G.day-m.day<=20&&!(m.kind==='트레이드'&&/원한다/.test(m.subj))).slice(0,4);
@@ -19,7 +19,7 @@ function todoCard(limit){
   const per=period();
   const row=x=>`<div class="td">${x.mail?senderAv(x.mail):'<span class="tdi">!</span>'}<div><b>${esc(x.t)}</b>${x.s?`<span>${esc(x.s)}</span>`:''}</div>${x.btn||''}</div>`;
   const shown=limit?it.slice(0,limit):it,rest=limit?it.slice(limit):[];
-  const body=it.length?`<div class="todo">${shown.map(row).join('')}</div>${rest.length?`<details class="todo-rest"><summary>나머지 ${rest.length}건 보기</summary><div class="todo">${rest.map(row).join('')}</div></details>`:''}`
+  const body=it.length?`<div class="todo">${shown.map(row).join('')}</div>${rest.length?(compact?`<button class="btn small hw-more-tasks" data-a="homeTasks">나머지 ${rest.length}건 보기 →</button>`:`<details class="todo-rest"><summary>나머지 ${rest.length}건 보기</summary><div class="todo">${rest.map(row).join('')}</div></details>`):''}`
     :`<p class="small muted">급한 일이 없습니다. ${per==='season'?'오른쪽 위 <b>계속</b>은 다음 소식까지(최대 한 주), <b>1경기</b>는 한 경기씩 진행합니다.':per==='post'?'오른쪽 위 <b>다음 경기</b>는 우리 경기가 내일이면 그 경기를 치르고, 아니면 우리 경기 전날까지 다른 팀 경기를 넘깁니다.':'오른쪽 위 <b>계속</b>을 누르면 다음 일정까지 진행합니다.'}</p>`;
   return `<section class="card" id="todoCard"><div class="row between"><h2 class="sec">처리할 일${it.length?` <span class="cntb">${it.length}</span>`:''}</h2><button class="btn small" data-a="tab" data-v="inbox">소식함${unread?` ${unread}`:''}</button></div>${body}</section>`;
 }
