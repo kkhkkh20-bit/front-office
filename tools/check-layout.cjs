@@ -26,7 +26,7 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
         const side=await page.evaluate(()=>{const s=document.querySelector('.fmside');return {count:s.querySelectorAll('button').length,fits:s.scrollHeight<=s.clientHeight+2};});
         check(side.count===8&&side.fits,`${size.width}: 사이드바가 8개 핵심 메뉴로 줄지 않거나 세로로 넘침 (${side.count}개)`);
       }
-      if(size.width>=1100){const p=await page.evaluate(()=>({todo:document.querySelector('.home-priority #todoCard')?.getBoundingClientRect().top,next:document.querySelector('.home-priority .nextc')?.getBoundingClientRect().top,compare:!!document.querySelector('.home-priority details[data-k="nxCmp"][open]')}));check(p.todo<350&&p.next<350&&!p.compare,`${size.width}: 할 일·다음 경기 우선 배치 실패`);}
+      if(size.width>=1100){const p=await page.evaluate(()=>({todo:document.querySelector('.home-priority #todoCard')?.getBoundingClientRect().top,next:document.querySelector('.home-priority .hw-match')?.getBoundingClientRect().top,compare:!!document.querySelector('.home-priority details[data-k="nxCmp"][open]')}));check(p.todo<350&&p.next<350&&!p.compare,`${size.width}: 할 일·다음 경기 우선 배치 실패`);}
       await page.evaluate(()=>A.tab('roster'));await page.waitForTimeout(200);
       r=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+2,top:document.querySelector('.rt tbody tr.click')?.getBoundingClientRect().top,pager:!!document.querySelector('.roster-list .twpg')}));
       check(!r.overflow,`${size.width}: 명단 가로 넘침`);
@@ -47,8 +47,8 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
       check(!r.sheet&&r.tab==='roster'&&Math.abs(r.y-returnY)<3,`${size.width}: 목록·스크롤 복귀 실패 (${r.y}/${returnY})`);
     }
     await page.setViewportSize({width:1366,height:768});
-    await page.evaluate(()=>A.tab('home'));await page.locator('[data-a="homePanel"][data-v="work"]').click();
-    check(await page.locator('.hw-work .card').count()>0,'홈 업무·보고 탭 내용 누락');await page.locator('[data-a="homePanel"][data-v="team"]').click();check(await page.locator('.hw-work .card').count()>0,'홈 선수단 요약 탭 내용 누락');await page.locator('[data-a="homePanel"][data-v="overview"]').click();
+    await page.evaluate(()=>A.tab('home'));await page.locator('.hw-heading [data-a="homePanel"][data-v="work"]').click();
+    check(await page.locator('.hw-work .hw-report').count()>0,'홈 업무·보고 탭 내용 누락');await page.locator('.hw-heading [data-a="homePanel"][data-v="team"]').click();check(await page.locator('.hw-work .hw-report').count()>0,'홈 선수단 요약 탭 내용 누락');await page.locator('.hw-heading [data-a="homePanel"][data-v="overview"]').click();
     const home=await page.evaluate(()=>{const n=(G.news||[]).filter(x=>!x.oth)[1];if(n){A.homeNews(n.id);if(!document.querySelector('.hw-news h3')?.textContent.includes(n.t))return false;}const d=G.day;G.day=G.cal.open;render();const L=standOrder().order,R=[...document.querySelectorAll('.hw-stand tbody tr')];let rank=1;const valid=R.length===10&&R.every((r,i)=>{if(i&&!tieOf(L[i-1],L[i]))rank=i+1;return +r.cells[0].textContent===rank&&r.cells[2].textContent===L[i].w+'-'+L[i].l+(L[i].t?'-'+L[i].t:'');});G.day=d;render();return valid;});check(home,'홈 기사 선택·실제 승패·공동 순위 연결 실패');await page.evaluate(()=>A.tab('roster'));
     const mode=await page.evaluate(()=>{A.rview('add');const cols=rcolKeys(false).join(',');A.rviewMode('card');const card=UI.rlayout==='card'&&!document.querySelector('.roster-list .rt');A.rviewMode('table');const back=!!document.querySelector('.roster-list .rt')&&rcolKeys(false).join(',')===cols&&UI.rview.bat==='add';A.rview('base');return {card,back};});
     check(mode.card&&mode.back,'명단의 표시 방식과 열 프리셋이 충돌');

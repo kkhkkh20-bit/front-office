@@ -16,7 +16,10 @@ function blocker(){
     const d=depth(G.user); if(d.start.length<9)return '건강한 야수가 9명이 안 됩니다.'; if(d.sp.length+d.pen.length<8)return '건강한 투수가 부족합니다.'; }
   return '';
 }
-function advance(mode){
+function ourGameOn(day){return !G.unemp&&(!!(G.cal.sched[day]||[]).find(pair=>pair.includes(G.user))||psOursOn(day));}
+function advance(mode,options={}){
+  if(G.matchAwait&&G.matchAwait.day<=G.day)G.matchAwait=null;
+  if(mode==='watch')G.matchAwait=null;
   const start=G.day; const o=dobj(start);
   let target=mode==='day'?start+1:mode==='week'?start+7:mode==='month'?dnum(o.m===12?o.y+1:o.y,o.m===12?1:o.m+1,1):start+400;
   if(mode==='month'&&target-start<2)target=start+30;
@@ -29,6 +32,7 @@ function advance(mode){
     if(blocker())break;
     /* 포스트시즌: 다른 팀 경기를 넘기다가 우리 경기까지 한 번에 지나치지 않게, 우리 경기 전날에 멈춘다(바로 다음 날이 우리 경기면 그 경기를 진행) */
     if(days>0&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
+    if(options.stopBeforeMatch&&mode!=='watch'&&ourGameOn(G.day+1)){G.matchAwait={day:G.day+1,mode};break;}
     processDay(); days=G.day-start;
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
     if(mode==='event'){ const D=G.dig; D.to=G.day;

@@ -4,3 +4,5 @@
 G=load(); if(G){ try{migrateDraft();}catch(e){} } UI.title=true; UI.sstep='main';
 let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
 render();
+
+try{performance.mark('fronttime-menu-ready');}catch(e){}

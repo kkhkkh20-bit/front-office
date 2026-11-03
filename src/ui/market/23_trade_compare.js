@@ -131,3 +131,5 @@ function inTabs(key,tabs,def){ const cur=(UI.it||{})[key]||def||tabs[0][0]; cons
 function pager(key,arr,per){ UI.pg=UI.pg||{}; const n=Math.max(1,Math.ceil(arr.length/per)); let i=Math.min(UI.pg[key]||0,n-1); if(i<0)i=0;
   const items=arr.slice(i*per,i*per+per); const bar=n<=1?'':`<div class="pgr"><button class="btn small" data-a="pgGo" data-v="${key}:${i-1}" ${i<=0?'disabled':''} aria-label="이전">‹ 이전</button><span class="num">${i+1} / ${n}</span><button class="btn small" data-a="pgGo" data-v="${key}:${i+1}" ${i>=n-1?'disabled':''} aria-label="다음">다음 ›</button></div>`;
   return {items,bar,i,n}; }
+
+function cardPageSize(){const cols=innerWidth>=1100?3:innerWidth>=700?2:1;return cols*(innerHeight>=850&&innerWidth>=700?2:1);}

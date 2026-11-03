@@ -17,3 +17,8 @@
  body #sheet .cast.detail-page{height:100%;min-height:0;overflow:hidden}
  .dshell{height:100dvh;display:flex;flex-direction:column;overflow:hidden}.dshell>.dtop{flex:none}.dshell>.gut{min-height:0;flex:1;overflow:auto}
 }
+
+/* Person and recruitment cards share the same responsive density. */
+.tgrid,.cgrid{grid-template-columns:minmax(0,1fr)}
+@media(min-width:700px){.tgrid,.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.tgrid,.cgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}

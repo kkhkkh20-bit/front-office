@@ -51,7 +51,7 @@ function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]
     const R0=foRivals(q); const b=R0[0]; if(!b||!foreignOpen())continue; aiForeignSign(b.tid,q); note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`); } }
 /* AI 구단은 우리와 협상 중인(기다려 주는) 선수를 그 기간에는 데려가지 않는다 */
 function foHeld(q){ return q&&q.fneg&&q.fneg.dl&&q.fneg.dl>=G.day; }
-const usdT=v=>`${Math.round(v/USD)}만 달러`;
+const usdT=v=>`${(v/USD).toFixed(2).replace(/\.?0+$/,'')}만 달러`;
 
 /* ===== 우리 외국인 선수 재계약과 보류권 =====
  실제 규정(외국인 선수 고용 규정 '독점 교섭 기간: 보류권'): 원소속 구단이 재계약을 제안했는데 선수가 받아들이지 않으면 5년 동안 국내 다른 구단에 입단할 수 없다.

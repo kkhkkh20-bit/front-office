@@ -1,4 +1,4 @@
-# 인수인계 (2026-11-03, 풀스윙·투구폼·도루·처리량과 비교 영상)
+# 인수인계 (2026-11-03, 첫 접속·중계 선택·라인업·상황별 해설)
 
 ## 최신 보완: 풀스윙·도루·영상 (11월 3일 q)
 - 투구 루트를 홈 방향 π에 고정한다. 원본 `pitcher_set` 자체가 측면 자세이며 추가 90도/절차적 회전은 목·투구폼을 틀리게 만든다. 스윙은 원본 접촉 시각에 맞춰 자연 속도로 재생하고 650ms 팔로스루 후 주루, 카메라는 접촉 후 550ms 유지한다.
@@ -9,6 +9,35 @@
 - 중계는 cs-cap을 3D 내부 하단에 지속 표시하며 HR은 .7s×5 점멸, reduced-motion에서는 자막 점멸 없음. PC field 보기의 중복 외부 md-comment 행은 0px로 접었다.
 - 변경 범위는 시각화·에셋이다. 정적·모듈 10개·경기/투구판·3D 리뷰·실제 수비 5유형/모바일·사이트 배포 검사를 통과했다. 확률/시즌 규칙 엔진은 그대로다.
 - 게시용 [32초 전후 영상·글·ZIP](updates/2026-11-03-motion/README.md). 이전 2D before cdf19b3, 현재 3D after q. 단독 영상은 before-2d.mp4/after-3d.mp4이고 비교 영상과 ZIP도 같은 기준이다. 영상은 고정 간격 24fps의 실제 로컬 게임 재생으로 실시간 FPS와 구분한다. 각 MP4 768프레임·전체 디코딩 검증. 외부 게시판에 자동 게시하지 않았다.
+
+## 최신 작업: 첫 접속·중계 진입·준비 라인업·주루·홈 (11월 3일 s)
+- 사용자 추가 요구: 중계 선택을 놓치지 않기, 빠던/드문 벤치 클리어링, PC 3열·태블릿 2열·모바일 1열과 최소 스크롤, 첫 접속 경량화, 준비 중 양 팀 라인업/얼굴, 2루타 도착/송구/판정 순서, 재미있는 캐스터/해설 자막. 모두 구현하고 관련 검사를 마쳤다.
+- `tools/lib/site-runtime.cjs` + build-site: 사이트만 CSS/고전 스크립트/그림을 내용 해시 파일로 분리, 3D 전역은 지연 로더로 시작. 다운로드용 단일 index.html 보존. 첫 문서 약 3.8KB, 필수 코드·스타일 gzip 약 1.06MB(기존 합본 약 3.37MB, 약 69% 감소). 그림 61개 분리. 메뉴에서는 3D JS/GLB를 받지 않으며 실패/재시도 안내가 실제 동작한다. 외부 폰트는 렌더 차단을 해제했다.
+- 지연 로더의 mount/sync/prefetch는 로드 전 최신 타깃을 넘기고, 스크립트 실패 뒤 재시도한다. 사이트 검사 서버의 JS/CSS/그림 MIME도 연결. `check-startup.cjs`, 사이트 단위/실제 로딩 실패→재시도 검사 통과.
+- `advance(mode,{stopBeforeMatch:true})`는 우리 경기 처리 전에 G.matchAwait를 남긴다. UI 진행·달력에서만 켜며 엔진 자동 시뮬 기본 동작 유지. `27_match_entry.js`, matchOpen/Watch/Sim/Later로 선택. 소식 때문에 멈춰도 G.watchPlanned/G.simPlanned가 해당 경기 선택을 보존한다. 상단 시즌 1경기 버튼은 중계 선택 버튼으로 바꿈.
+- 경기장 준비 중 castLineup(g,side,0)의 기록된 선발 9명+투수 얼굴/이름/포지션을 양쪽 표시. 좁은 화면은 라인업 타순 묶음 전환 버튼. 준비 이후 같은 경기로 이어진다.
+- 홈은 homeWorkspace를 모든 크기에 쓰며 3/2/1열과 뷰포트 내 1~2단 카드/페이지. 카드 전체 보고는 명시적으로 열며 정보 손실 없이 상세 스크롤을 허용한다. 예산/상한 잔여/현금 유지. homeView는 레거시 홈 부품을 만들기 전에 새 홈으로 조기 반환해 불필요 계산 제거.
+- 공통 .tgrid/.cgrid도 3/2/1열, cardPageSize로 외국인/코치/스카우트 후보·우리 코치 보직·분석원 목록을 페이지로 나눔. 코치 설명은 펼쳐 보기. 최초 페이지는 소속 코치를 앞에 정렬한다.
+- c3DRunTime은 주력에 따른 베이스 주행 시간. 수비는 실제 변환 좌표 거리/주력으로 이동해 받기 전에 순간 이동하지 않음. 안타 중계 송구는 세이프 주자가 도착한 뒤, 2루타 최종 안내도 도착 후. 낙하 시에는 '주자 진루 중', trackRunner로 주자 카메라 추적. 중계 수비수는 베이스에서 약간 비켜 서도록 배치.
+- 홈런 후 650ms 팔로스루 다음 batFlip, 350ms 뒤 주루. bat prop은 월드 좌표와 중력/회전·배속을 적용하고 장면 취소 때 제거. 홈런 카메라 전환은 1150ms까지 보류.
+- `08_atmosphere.js`: 실제 몸쪽 볼 기록이 있는 경기 중 로컬 seed로 약 1.2% 벤치 언쟁을 기록, 경기 난수/확률/점수/부상/퇴장에는 영향 없음. 참가자는 당시 actOf의 미출전 선수 중 선발/등판 투수 제외. 3D benchClear/Gather/Return과 UI pending 상태로 모임→말림→복귀. 과거 저장에 없는 사건을 소급 생성하지 않는다.
+- 관련 회귀 통과: 홈 6크기, 경기 진입, 실제 3D 5타구+강제 희귀 사건 시드의 실제 몸쪽 볼/벤치/홈런 빠던 호출, 초기 로딩/재시도, 계약/빠른 UI. pure contact timing은 수정 전 실패/수정 후 통과, incidents는 3000시드 희소성/좌우 몸쪽/난수·원본 보존 검사.
+- 전체 검사 `/tmp/front-office-startup-match-full.log`: 규칙 415개·능력 반영 2400경기씩 두 세계·2029년까지 세 조건·휴대폰 및 전용 화면 검사 통과. PC UI에서 홈의 드래프트 순번 타일 누락 1개로 전체 종료는 실패했다. 실제 순번과 D-day 타일을 복원한 뒤 PC 전체 UI 240회 조작을 재통과(`/tmp/front-office-final-ui.log`)했고 홈 6크기에서도 순위 10행까지 표시를 확인했다. 중단한 첫 계약 범위 전체 검사는 최종 검사로 보고하지 않는다.
+- 직원 UI 검사는 프로그램상 A.go 전환 뒤 400ms 터치 보호가 남아 클릭이 무시되는 테스트 경로가 있었다. viewport 안정화·펼친 상세 재사용·면담 ID 지정·420ms 보호 만료 대기를 적용. 관련 재검사 통과(`/tmp/staff-guard-verified.log`). 제품의 터치 보호나 관계 수치를 바꾸지 않았다.
+- `43_live_commentary.js`: 타석 도입·공별 승부·타구·송구·주루·최종 결과의 캐스터/해설 두 줄. 같은 결과의 연속 표현 반복을 피하고 동점·역전·끝내기·만루·2아웃 적시타에 반응한다. 도입과 진행 중 문구는 아직 공개하지 않은 타석 결과에 의존하지 않으며, 홈런 비거리도 임의 생성하지 않는다. 교체된 수비수는 재생 시점 명단을 쓴다. 판정 뒤 타자/투수 카드는 방금 완료한 타석까지 반영한다.
+- 최종 관련 검사: 모듈 18개·정적 3197개 선언·실제 3D 5타구/벤치/빠던/모바일·계약 실제 합의·진입·사이트 재시도·투구판·메모리·배치 통과. 해설 5개 순수 검사와 자막 높이/완료 타석 기록 검사를 포함한다. `/tmp/front-office-publish-gameplay.log`, `/tmp/front-office-publish-modules.log`, `/tmp/front-office-publish-startup.log`, `/tmp/front-office-final-site.log`. 전체 검사 뒤 해설/표시/패키징 보완은 관련 검사를 재실행했다.
+- 게시용 실제 화면·글·ZIP: [업데이트 기록](updates/2026-11-03-startup-match/README.md). main 직접 푸시 승인 유지. Cloudflare 직접 접속은 정책 제한으로 라이브 배포 검증과 구분한다. 실제 서비스의 초 단위 로딩 개선이나 FPS를 측정했다고 주장하지 않는다.
+
+## 최신 작업: 계약 직접 입력·경기 리뷰 (11월 3일 r)
+- `src/ui/contracts/53_money_input.js`: 금액 텍스트 입력, inputmode=decimal, 억 원 소수 둘째 자리=내부 100만원 정수. 연봉/FA/다년/외국인 영입·재계약 공통. 미완성/잘못된 입력은 모델에 쓰지 않고 제안 시 전체 필드를 다시 검증한다.
+- 입력 중 `.ng-sum`/요구 표시/외국인 비교만 교체한다. 입력칸 전체를 매번 renderSheet로 바꾸면 포커스·클릭·Tab이 끊기므로 금지. Enter는 blur만 하고 제출하지 않는다.
+- `salOffer`의 사용자 금액 round5를 Math.round로 변경. 요구·AI 산정 round5는 유지. ngtSet 증감도 기존 끝자리를 보존한다. 외국인 usdT는 환산 소수 둘째 자리까지 표시한다.
+- `castResumePitch`는 최종 공까지 공개된 같은 타석을 재개할 때 한 공 되돌린다. 멈춘 화면은 보존하고 재개할 때만 적용한다. 배속/모드 변경은 `castRestart`로 타이머 토큰을 취소한다.
+- 3D `contactPoint`는 실제 타격 투구 끝을 다음 타구 시작으로 넘기고 cancelMotion/다음 windup에서 해제한다. hideBall은 중간에도 호출하므로 타격 좌표를 지우지 않는다. 땅볼은 타격 높이에서 바운드로 연결한다.
+- clearActor에서 클론마다 소유하는 Skeleton을 dispose하고 mixer.uncacheRoot를 호출한다. 공유 GLB geometry/material texture를 폐기하면 다른 선수까지 깨지므로 공유 에셋에는 적용하지 않는다.
+- visibility는 카메라 위치·방향 외 projectionMatrix도 비교한다. 화면 비율/FOV 변경은 120ms 스로틀을 건너뛰어 즉시 관중을 복원한다.
+- 새 회귀: check-contract-input.cjs, check-match3d-state.cjs(전체 check.sh 등록), visibility.test.cjs, 엔진 계약 2개. 수정 전 실패 및 관련 수정 후 통과 확인. 첫 전체 검사는 추가 요구로 중단했으며 s의 최종 전체/관련 검사 결과를 따른다.
+- FM 공식 매뉴얼/공식 사이트 403, Google 자동 요청 확인으로 원문 미확인. 실제 조사 범위·화면·재현 수치는 [변경 기록](updates/2026-11-03-contract/README.md).
 
 ## 최신 작업: 인게임·제안·PC 화면 (11월 3일)
 - 패치 `2026-11-03p`: 상대 저가 2대1 제안의 가치·핵심 대체 수준 검사와 재접촉 간격, 좌우 네 가지 투구폼/세트, 공·수비·주루 동작 연결, 타구 착지·결과, 이름표, 실시간 전광판과 확대.
@@ -25,7 +54,7 @@
 
 ## 3D 사이트 배포 주의 (11월 3일)
 - 다운로드용 index.html은 약 34 MB로 Cloudflare 단일 자산 한도 25 MiB를 넘는다. 예전 `cp index.html site/index.html`만 실행하면 배포가 실패할 수 있다.
-- wrangler.jsonc의 custom build가 `npm --prefix tools ci --no-audit --no-fund && node tools/build-site.cjs`를 실행한다. site HTML은 약 7.1 MB, 나머지 모델은 같은 출처의 내용 해시 파일명으로 분리한다.
+- wrangler.jsonc의 custom build가 `npm --prefix tools ci --no-audit --no-fund && node tools/build-site.cjs`를 실행한다. site HTML은 약 3.8KB, 코드·스타일·그림·모델은 같은 출처의 내용 해시 파일명으로 분리한다.
 - 사이트 빌드 검사는 `node tools/check-site.cjs`, 배포 파일 식별은 `/release.json`. 다운로드용 HTML은 별도로 보존한다.
 - main 반영과 실제 서비스 배포 완료는 다르다. 이 환경에서는 workers.dev 직접 접속이 403 네트워크 정책으로 막혀 있다. 원격 배포 성공을 확인하지 못했다면 완료로 단정하지 않는다.
 
@@ -37,7 +66,7 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03q').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03s').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -51,7 +80,7 @@
 - check.sh가 도는 동안 index.html/dist를 다시 빌드하지 않는다(뒤 단계가 새 빌드를 읽는다).
 
 ## 검사 도구
-- tools/check-logic.js: 규칙 테스트(현재 410개). 앞부분 `T('리그 수준: 트리플A는` 앞에 새 테스트를 넣는다. 테스트 코드는 템플릿 문자열 안이라 백틱을 쓰면 안 된다.
+- tools/check-logic.js: 규칙 테스트(현재 415개). 앞부분 `T('리그 수준: 트리플A는` 앞에 새 테스트를 넣는다. 테스트 코드는 템플릿 문자열 안이라 백틱을 쓰면 안 된다.
 - 일부만: `ONLY=문구 node tools/check-logic.js`(0개 선택이면 실패). 별도 엔진으로 시험: `node tools/build.cjs --engine-out /tmp/e.js` 후 ENGINE 경로만 바꾼 복사본으로 실행. 평면 glob으로 합치면 공용 모듈이 빠지므로 사용 금지.
 - [공통 점검] 테스트 + src/engine/runtime/95_audit.js(stateAudit·auditMoney·leaveSweep): 이동 정리·감독 교체·안내한 기한·시즌 구분을 여러 전환 뒤 한꺼번에 본다.
 - tools/check-sens.js: 능력치 반영(세계 2개 평균). check-sim.js: 장기 시뮬 불변식. check-ui.js: 넓은 화면(FM 모드 1280)·휴대폰(W=390).

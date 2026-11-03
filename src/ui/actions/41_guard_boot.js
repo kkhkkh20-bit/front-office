@@ -175,6 +175,7 @@ document.addEventListener('keydown',e=>{
     if((e.key===' '||e.key==='Enter')&&!(e.target.matches&&e.target.matches('input,select,textarea'))){e.preventDefault();if(!e.repeat){if(e.target.closest&&e.target.closest('#cfm [data-a="cfmNo"]'))A.cfmNo();else A.cfmOk();}}
     return;
   }
+  if(UI.matchPreview&&e.key==='Escape'){e.preventDefault();A.matchLater();return;}
   if(UI.fmKeys&&e.key==='Escape'){ UI.fmKeys=false; render(); return; }
   try{ if(fmHotkey(e))return; }catch(x){} /* PC 단축키(FM식) */
   if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
