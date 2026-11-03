@@ -33,7 +33,7 @@ function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
-  const root=main.querySelector(':scope > .roster-page')||main;
+  const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭 대신 같은 항목을 선택 상자로 연다.
   if(matchMedia('(max-width:699px), (max-height:599px)').matches){
@@ -46,11 +46,11 @@ function workspaceFit(host){
       select.onchange=()=>A.itab(select.value);tabs.before(select);tabs.classList.add('ws-tabs-folded');
     });
   }
-  const fixed='.seg,.subtabs,.ws-tab-select,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
+  const fixed='.seg,.subtabs,.ws-tab-select,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr,.trade-modes,.trade-back,.trade-partner,.trade-steps,.trade-basket,.trade-extra,button[data-a=tradePick]';
   const panels=[];
   for(const node of [...root.children]){
     if(node.matches(fixed)||node.matches('p')||getComputedStyle(node).position==='fixed')continue;
-    if(node.matches('.fmcols')){panels.push(...node.children);node.replaceWith(...node.children);}
+    if(node.matches('.fmcols,.tlay')){panels.push(...node.children);node.replaceWith(...node.children);}
     else panels.push(node);
   }
   if(!panels.length){

@@ -1,40 +1,100 @@
-/* Situational broadcast language. Read recorded outcomes only; no simulation RNG. */
+/* Short, original caster calls. Facts come from pregame snapshots and revealed plays. */
 function pcVoice(g,k,key,lines,all=false){let previous=-1;const type=row=>typeof row?.[1]==='number'?row[3]:row?.[1],wanted=type(g.pbp[k]);for(let i=0;i<=k;i++){if(all?typeof g.pbp[i]?.[1]!=='number':type(g.pbp[i])!==wanted)continue;let index=Math.floor(pcH(g,i,'voice:'+key)*lines.length);if(index===previous)index=(index+1)%lines.length;previous=index;}return lines[Math.max(0,previous)]||'';}
 function pcName(g,id){return G.players[id]?.name||g.box?.h?.bat?.find(p=>p.id===id)?.n||g.box?.a?.bat?.find(p=>p.id===id)?.n||'선수';}
 function pcMoment(g,k){const x=g.pbp[k],pre=pcBefore(g,k),top=x[0]%2===0,before=top?pre.sa-pre.sh:pre.sh-pre.sa,after=top?x[7]-x[8]:x[8]-x[7],inn=Math.floor(x[0]/2)+1;return {x,pre,top,inn,before,after,runs:x[6]||0,risp:!!(pre.bases[1]||pre.bases[2]),loaded:pre.bases.every(Boolean),walkoff:!top&&inn>=9&&before<=0&&after>0,team:top?g.away:g.home};}
-function pcScoreFinish(g,k){const m=pcMoment(g,k);if(!m.runs)return '';if(m.walkoff)return ` 끝내기! ${tshort(m.team)}, 이 승부를 여기서 끝냅니다!`;if(m.before<0&&m.after>0)return ` 역전입니다! 앞서 나가는 ${tshort(m.team)}. ${m.x[7]}:${m.x[8]}.`;if(m.before<0&&m.after===0)return ` 다시 동점! 승부는 원점입니다. ${m.x[7]}:${m.x[8]}.`;return ` 스코어 ${m.x[7]}:${m.x[8]}.`;}
-function pbpCall(g,k){const raw=pbpCallBase(g,k),x=g.pbp[k];if(!x)return raw;const name=pcName(g,x[1]),pick=(key,lines)=>pcVoice(g,k,key,lines),pre=pcBefore(g,k);
- if(x[1]==='PC')return raw;
- if(x[1]==='SB'||x[1]==='CS'){const from=pre.bases.indexOf(x[2]),base=from>=0?['2루','3루','홈'][from]:'다음 베이스',runner=pcName(g,x[2]);return x[1]==='SB'?{c:pick('steal-safe',[`${runner}, 살았습니다! ${base} 도루 성공!`,`${base} 세이프! ${runner}, 한 베이스를 더 가져갑니다!`,`${runner}, 공보다 먼저 도착합니다! ${base} 도루!`,`${runner}의 발이 해냈습니다. ${base}에서 세이프!`]),a:pick('steal-analysis',['안타 없이 진루했습니다. 다음 타자의 선택지가 넓어집니다.','출발과 슬라이딩까지, 주루는 끝까지 해내야 합니다.','베이스 하나의 차이가 투수에게는 큰 부담이 됩니다.','발로 만들어 낸 기회입니다. 이제 타선이 응답할 차례죠.'])}:{c:pick('steal-out',[`${runner}, ${base}에서 잡혔습니다! 도루자!`,`${base} 앞에서 멈춰 섭니다. ${runner}, 태그 아웃!`,`이번에는 수비가 이겼습니다! ${runner}, ${base} 도루 실패!`,`${base}에서 아웃입니다! 수비가 주자를 지워 냅니다.`]),a:pick('steal-out-analysis',['포구와 태그까지 연결한 수비의 승리입니다.','한 베이스를 노렸지만 아웃카운트를 내줬습니다.','공격의 발걸음을 여기서 끊어 냅니다.','벤치의 승부수가 이번에는 막혔습니다.'])};}
- if(typeof x[1]!=='number')return raw;const m=pcMoment(g,k),o=x[3],seq=storedPitchSequence(x),last=seq?.at(-1),today=pcToday(g,k,x[1]);let c=raw.c,a=raw.a,changed=true;
- switch(o){
-  case 'HR':{const kind=m.runs===4?'만루 홈런':m.runs>1?m.runs+'점 홈런':'솔로 홈런';c=pick('homer-result',[`${name}, 방망이가 제대로 터졌습니다! ${kind}!`,`담장 밖으로 보낸 한 방! ${name}의 ${kind}!`,`${name}, 그라운드를 한 바퀴 돕니다. ${kind}!`,`이 한 방에 구장이 들썩입니다! ${name}, ${kind}!`,`공은 담장 밖으로, 시선은 ${name}에게! ${kind}!`,`${name}, 오늘의 큰 장면을 만듭니다! ${kind}!`]);a=[raw.a,pick('homer-analysis',m.runs===4?['주자 세 명을 모두 불러들이는 만루 홈런, 이보다 큰 한 방은 없습니다.','가득 찬 베이스를 단 한 번의 스윙으로 비웁니다.','투수가 피하고 싶던 결과, 타자가 원하던 결과가 정반대였죠.']:['한 번의 스윙으로 점수판을 바꿉니다. 이게 홈런의 힘이죠.','타석에서 시작한 승부가 담장 너머에서 끝났습니다.','투수에게 숨 돌릴 틈을 주지 않는 한 방입니다.','안타를 이어 붙일 필요도 없었습니다. 한 방으로 해결합니다.'])].filter(Boolean).join(' ');break;}
-  case '2B':c=pick('double',[`${name}, 장타가 나옵니다! 2루타!`,`${name}, 두 베이스를 챙깁니다. 귀중한 2루타!`,`한 번의 타격으로 득점권까지! ${name}, 2루타입니다!`,`${name}의 방망이가 기회를 키웁니다! 2루타!`,`이번에는 장타입니다! ${name}의 2루타!`,`${name}, 타석의 승부를 장타로 바꿨습니다. 2루타!`]);a=pick('double-analysis',['한 번의 스윙으로 득점권을 만듭니다. 다음 타자가 중요해졌어요.','주루까지 마무리해야 장타가 완성됩니다. 베이스 두 개를 가져갔습니다.','투수가 타자를 상대할 때 주자도 신경 써야 하는 상황입니다.','베이스 하나의 차이가 공격의 모양을 크게 바꿉니다.']);break;
-  case '3B':c=pick('triple',[`2루에서 멈추지 않습니다! ${name}, 3루타!`,`${name}, 달리고 또 달립니다! 3루까지 가져갑니다!`,`질주가 장타를 완성합니다! ${name}의 3루타!`,`베이스를 세 개나 가져갑니다. ${name}, 3루타!`]);a=pre.outs<2?'이제 안타 없이도 점수를 노릴 수 있습니다. 투수는 더 조심스러워지겠죠.':'2아웃이라도 안타 한 개면 주자가 들어올 수 있습니다. 타석 하나가 중요합니다.';break;
-  case '1B':c=pick('single',[`${name}, 안타입니다! 타석에서 답을 내놓습니다.`,`${name}의 방망이에서 안타가 나옵니다!`,`수비가 아웃을 만들지 못합니다. ${name}, 안타!`,`${name}, 공격의 맥을 잇는 안타입니다!`,`한 타석을 허투루 쓰지 않습니다. ${name}, 안타!`,`${name}, 기회를 이어 갑니다. 안타입니다!`]);a=pick('single-analysis',['한 번의 출루가 다음 타자에게 기회가 됩니다.','크게 휘두르는 것만 답은 아니죠. 안타로 타석을 마칩니다.','투수에게 편하게 숨 돌릴 틈을 주지 않습니다.','이렇게 한 명씩 살아 나가야 이닝이 길어집니다.']);break;
-  case 'BB':c=m.loaded?pick('walk-loaded',[`${name}, 볼넷! 밀어내기로 한 점이 들어옵니다!`,`배트를 내지 않고 점수를 가져갑니다! ${name}, 밀어내기 볼넷!`,`볼 네 개, 주자는 홈으로! ${name}, 밀어내기입니다!`]):pick('walk',[`${name}, 볼넷으로 살아 나갑니다.`,`${name}, 기다림 끝에 볼넷을 얻습니다.`,`방망이를 아끼고 1루를 가져갑니다. ${name}, 볼넷!`,`${name}, 출루로 타석을 마칩니다. 볼넷입니다!`]);if(seq?.length===4&&!m.loaded)c=`${name}, 공 네 개가 모두 볼입니다. 스트레이트 볼넷!`;else if(last?.s===2&&!m.loaded)c=`${name}, 풀카운트 승부 끝에 볼넷!`;a=m.loaded?'막을 수 있었던 한 점을 볼넷으로 내줬습니다. 다음 타자부터 다시 정리해야 합니다.':pick('walk-analysis',['출루는 공격의 시작입니다. 이제 다음 타자에게 공이 넘어갑니다.','타자가 불리한 공을 고를 필요는 없었습니다.','투수에게는 타자 하나를 더 상대해야 하는 부담이 생겼습니다.']);break;
-  case 'K':{const finish=last?last.t+'에 '+(last.res==='루킹 삼진'?'루킹 삼진':'헛스윙 삼진'):'삼진';c=pick('strikeout',[`${name}, ${finish}! 투수가 이 승부를 가져갑니다!`,`${name}, ${finish}! 투수가 한숨을 돌립니다.`,`${name}, ${finish}! 이번 타석의 답은 투수에게 있었습니다.`,`${name}, ${finish}! 아웃카운트 하나를 직접 챙깁니다.`]);a=raw.a||pick('strikeout-analysis',['수비의 도움 없이 아웃카운트를 만들었습니다.','다음 타자에게 넘어가기 전에 투수가 자신의 리듬을 찾습니다.','타자와 투수의 승부에서 투수가 웃었습니다.']);break;}
-  case 'SAC':c=pick('sacrifice',[`${name}, 희생번트로 주자를 돕습니다.`,`${name}, 짧게 댔습니다! 희생번트입니다.`,`한 베이스를 위해 타석을 씁니다. ${name}, 희생번트!`]);a='아웃카운트와 주자의 진루를 맞바꾼 작전입니다.';break;
-  case 'DP':c=pick('double-play',['잡고, 넘기고, 또 잡아냅니다! ','수비의 연결이 끊기지 않습니다! ','한 타구로 두 개를 노립니다! ','이 타구, 수비가 놓치지 않습니다! '])+raw.c;a=pick('double-play-analysis',x[4]===3?['한 타구로 이닝을 닫습니다. 마운드가 크게 숨을 돌리겠네요.','두 개의 아웃카운트를 한 번에! 공격의 기회를 통째로 끊었습니다.']:['아웃카운트 두 개를 한 번에 챙겼습니다. 공격의 계산이 달라졌죠.','주자를 지우고 타자까지 잡았습니다. 수비의 연결이 좋았습니다.']);changed=false;break;
-  default:changed=false;c=c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');if(!a)a=pick('out-analysis',['화려함보다 확실함입니다. 아웃카운트 하나를 챙깁니다.','수비는 마지막 포구까지 끝내야 완성입니다.','공격의 흐름을 여기서 한 번 끊어 냅니다.','이런 아웃 하나하나가 투수에게 힘이 됩니다.']);
- }
- if(m.walkoff)a=pick('walkoff-analysis',['마지막 기회를 승리로 바꿉니다. 끝까지 남아 있던 공격이 웃습니다!','상대에게는 다음 수비가 없습니다. 이 한 타석이 경기를 끝냈습니다!','마지막 점수판을 바꾼 타자, 오늘 승부의 주인공입니다!']);else if(m.runs&&m.before<0&&m.after>0)a=pick('comeback-analysis',['따라가던 팀이 앞서가는 팀으로 바뀌었습니다. 이게 야구의 한 타석이죠.','한 번의 타석으로 양 팀 벤치의 표정이 바뀝니다.','점수판의 앞뒤를 뒤집었습니다. 이제 지켜야 하는 쪽이 달라졌죠.']);else if(m.runs&&m.before<0&&m.after===0)a=pick('tie-analysis',['뒤쫓던 점수를 지웠습니다. 양 팀은 다시 같은 출발선입니다.','상대가 지키던 리드가 사라집니다. 승부는 아직 모릅니다.','한 점도 쉽게 주고받을 수 없는 경기가 됐습니다.']);else if(['1B','2B','3B','HR'].includes(o)&&m.runs&&m.risp&&pre.outs===2)a=pick('two-out-rbi',['2아웃이라 기회가 끝나는가 했는데, 방망이가 점수를 만듭니다.','아웃 하나만 남은 상황에서 나온 적시타. 이게 정말 큽니다.','득점권 기회를 마지막 아웃카운트 앞에서 살려 냈습니다.']);else if(['1B','2B','3B','HR'].includes(o)&&today.h>=2)a=`오늘만 ${today.h+1}안타째입니다. 이 타자의 타석이 계속 기다려지는 날이네요.`;
- if(changed){if(m.runs&&o!=='HR'&&o!=='BB')c+=` ${m.runs}점이 들어옵니다!`;c+=pcScoreFinish(g,k);if(Array.isArray(x[14]))c+=' '+x[14].map(r=>`${pcName(g,r.id)}, ${r.to===4?'홈':r.to+'루'}${r.result==='out'?'에서 아웃.':'까지 진루.'}`).join(' ');if(x[4]===3&&!m.walkoff)c+=' 이닝 종료.';}
- return {c:c.trim(),a};
+function pcScoreFinish(g,k){const m=pcMoment(g,k);if(!m.runs)return '';if(m.walkoff)return ` 끝내기! ${tshort(m.team)}, 승부를 끝냅니다!`;if(m.before<0&&m.after>0)return ` 역전입니다! ${m.x[7]}:${m.x[8]}!`;if(m.before<0&&m.after===0)return ` 다시 동점! ${m.x[7]}:${m.x[8]}!`;return ` ${m.x[7]}:${m.x[8]}.`;}
+function pcKnownTotals(g,k,id,key,pitcher=false){
+ const base=g.broadcast?.regular&&g.broadcast.players?.[id];if(!base)return null;
+ let add=0;for(const x of g.pbp.slice(0,k))if(typeof x[1]==='number'&&x[pitcher?2:1]===id){if(key==='hr'&&x[3]==='HR'||key==='h'&&['1B','2B','3B','HR'].includes(x[3])||key==='so'&&x[3]==='K')add++;}
+ return {season:(base.season?.[key]||0)+add,career:(base.career?.[key]||0)+add};
 }
-function pcAtBatIntro(g,k){const x=g.pbp[k],m=pcMoment(g,k),name=pcName(g,x[1]),pitcher=pcName(g,x[2]),pick=(key,lines)=>pcVoice(g,k,key,lines,true);let c=pick('at-bat',[`${name} 대 ${pitcher}. 이번 타석, 누가 웃을까요?`,`${name}, 타석에 섭니다. 마운드의 ${pitcher}와 정면 승부입니다.`,`공 하나, 스윙 한 번에 흐름이 바뀝니다. ${name}의 타석입니다.`,`투수는 ${pitcher}, 타자는 ${name}. 서로 물러설 수 없는 승부입니다.`]),a='';if(m.loaded)a=`${m.pre.outs}아웃 만루입니다. 투수도 타자도 공 하나를 쉽게 볼 수 없습니다.`;else if(m.risp)a=`${m.pre.outs}아웃 득점권입니다. 한 타석의 결과가 점수판을 바꿀 수 있습니다.`;else if(m.inn>=8&&Math.abs(m.before)<=1)a=`${m.inn}회 접전입니다. 출루 한 번, 아웃 하나가 모두 무겁습니다.`;return {c,a};}
-function pcPitchCall(g,k,q,index){if(/타격|번트/.test(q.res))return null;const pitcher=pcName(g,g.pbp[k][2]),name=pcName(g,g.pbp[k][1]),pick=(key,lines)=>{const first=pcVoice(g,k,'pitch:'+key,lines,true);return lines[(lines.indexOf(first)+index)%lines.length];};let c='',a='';if(q.res==='파울'){c=pick('foul',[`${name}, 커트해 냅니다! 이 타석은 아직입니다.`,`파울입니다! ${name}이 승부를 계속 이어 갑니다.`,`배트에 걸렸습니다, 파울! 다음 공을 다시 봐야 합니다.`]);if(q.s===2)a='두 스트라이크 이후에도 파울은 삼진이 아닙니다. 타자에게 기회가 남습니다.';}
- else if(q.res==='볼'||q.res==='볼넷'){c=q.res==='볼넷'?`${name}, 볼넷입니다! 1루로 걸어 나갑니다.`:pick('ball',[`${pitcher}, ${q.t}. 존 밖입니다, 볼!`,`타자가 지켜봅니다. ${q.t}, 볼입니다.`,`${q.t}, 스트라이크가 아닙니다. 볼 하나가 더해집니다.`]);if(q.res==='볼'&&q.b===2)a='이제 쓰리 볼입니다. 투수는 다음 공을 쉽게 버릴 수 없습니다.';}
- else if(/삼진/.test(q.res)){c=`${q.t}, ${q.res}! ${pitcher}, 이 타석을 끝냅니다!`;}
- else{c=/헛스윙/.test(q.res)?pick('swing',[`${name}, 헛스윙! 방망이가 공을 따라잡지 못합니다.`,`${q.t}에 방망이가 헛돕니다. 스트라이크!`,`크게 돌렸지만 맞지 않았습니다. ${name}, 헛스윙!`]):pick('called',[`${q.t}, 스트라이크 판정! 타자가 지켜봤습니다.`,`보고 지나갔습니다. 스트라이크입니다!`,`${pitcher}, ${q.t}로 스트라이크를 더합니다.`]);if(q.s===1)a='이제 두 스트라이크입니다. 타자는 다음 공에도 준비해야 합니다.';}
- return {c,a};}
+function pcPitchingRun(g,k,attack){
+ let outs=0,bf=0,hits=0,runs=0,reached=false,half=-1,previous=0;const pitchers=new Set();
+ for(const x of g.pbp.slice(0,k+1)){if(x[0]%2!==attack)continue;if(half!==x[0]){half=x[0];previous=0;}if(x[1]==='PC'||x[1]==='SB')continue;
+  const next=x[1]==='CS'?x[3]:x[4];outs+=Math.max(0,next-previous);previous=next;
+  if(typeof x[1]!=='number')continue;bf++;pitchers.add(x[2]);runs+=x[6]||0;
+  if(['1B','2B','3B','HR'].includes(x[3]))hits++;
+  if(x[3]==='BB'||x[3]==='HBP'||x[9]||x[5]?.includes(x[1]))reached=true;
+ }
+ return {outs,bf,hits,runs,reached,pitchers:[...pitchers]};
+}
+function pcNoHitRecords(g,k){
+ const x=g.pbp[k];if(!x||(typeof x[1]!=='number'&&x[1]!=='CS'))return [];
+ const out=[],add=(kind,text,priority)=>out.push({kind,text,priority});
+ const attack=x[0]%2,run=pcPitchingRun(g,k,attack),pitcher=run.pitchers.length===1?pcName(g,run.pitchers[0]):tshort(attack?g.away:g.home)+' 투수진';
+ if(!run.hits&&!run.runs){
+  if(k===g.pbp.length-1&&run.outs>=27){const perfect=run.pitchers.length===1&&!run.reached&&run.bf===run.outs;add(perfect?'perfect':'nohit',`${pitcher}, ${perfect?'퍼펙트게임':run.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}! 대기록을 완성합니다!`,110);}
+  else if((x[1]==='CS'?x[3]:x[4])===3&&[18,21,24].includes(run.outs))add('challenge',`${pitcher}, ${run.outs/3}이닝 무안타! ${run.pitchers.length===1&&!run.reached&&run.bf===run.outs?'퍼펙트게임':'노히트 노런'}에 도전합니다!`,80);
+ }
+ return out;
+}
+function pcRecords(g,k){
+ const x=g.pbp[k];if(!x)return [];if(typeof x[1]!=='number')return pcNoHitRecords(g,k);
+ const name=pcName(g,x[1]),o=x[3],hit=['1B','2B','3B','HR'].includes(o),prior=g.pbp.slice(0,k).filter(r=>r[1]===x[1]),out=[];
+ const add=(kind,text,priority=50)=>out.push({kind,text,priority});
+ if(hit){const types=new Set(prior.map(r=>r[3]));if(['1B','2B','3B','HR'].every(t=>types.has(t)||t===o)&&!['1B','2B','3B','HR'].every(t=>types.has(t)))add('cycle',`${name}, 사이클링 히트 달성!`,100);
+  const hits=prior.filter(r=>['1B','2B','3B','HR'].includes(r[3])).length+1;if(hits>=5)add('hits',`${name}, 오늘만 ${hits}안타! 방망이가 멈추지 않습니다!`,60);
+  const form=g.broadcast?.regular&&g.broadcast.players?.[x[1]],todayHit=prior.some(r=>['1B','2B','3B','HR'].includes(r[3]));
+  if(!todayHit&&form?.streak>=19&&(form.streak+1)%5===0)add('streak',`${name}, ${form.streak+1}경기 연속 안타! 오늘도 이어갑니다!`,75);
+ }
+ if(o==='HR'){const n=prior.filter(r=>r[3]==='HR').length+1;if(n>=2)add('multihr',`${name}, 오늘 ${n}홈런! ${n>=3?'엄청납니다!':'멀티홈런!'}`,65);}
+ const milestones=(id,key,pitcher,label,seasonMarks,step)=>{const n=pcKnownTotals(g,k,id,key,pitcher);if(!n)return;const who=pcName(g,id);if(seasonMarks.includes(n.season+1))add('season',`${who}, 시즌 ${n.season+1}${label}!`,70);if(n.career+1>=step&&(n.career+1)%step===0)add('career',`${who}, 통산 ${n.career+1}${label}!`,85);};
+ if(hit)milestones(x[1],'h',false,'안타',[100,150,200,250],500);
+ if(o==='HR')milestones(x[1],'hr',false,'호 홈런',[10,20,30,40,50,60],100);
+ if(o==='K'){const n=g.pbp.slice(0,k+1).filter(r=>typeof r[1]==='number'&&r[2]===x[2]&&r[3]==='K').length;if([15,18,20].includes(n))add('strikeouts',`${pcName(g,x[2])}, 한 경기 ${n}탈삼진! 타선을 압도합니다!`,75);milestones(x[2],'so',true,'탈삼진',[100,150,200,250],500);}
+ out.push(...pcNoHitRecords(g,k));
+ return out.sort((a,b)=>b.priority-a.priority);
+}
+function pbpCall(g,k){
+ const x=g.pbp[k];if(!x)return {c:'',a:''};const raw=pbpCallBase(g,k),pick=(key,lines)=>pcVoice(g,k,key,lines);
+ if(x[1]==='PC')return {c:`${pcName(g,x[2])}, 마운드를 이어받습니다!`,a:''};
+ if(x[1]==='SB'||x[1]==='CS'){const from=pcBefore(g,k).bases.indexOf(x[2]),base=from>=0?['2루','3루','홈'][from]:'다음 베이스',name=pcName(g,x[2]);return {c:x[1]==='SB'?`${name}, 공보다 먼저 들어갑니다! ${base} 도루 성공!`:`아, 잡혔어요! ${name}, ${base}에서 도루자!`,a:'',records:pcRecords(g,k)};}
+ if(typeof x[1]!=='number')return {c:raw.c,a:''};
+ const name=pcName(g,x[1]),o=x[3],m=pcMoment(g,k),today=pcToday(g,k,x[1]),form=g.broadcast?.players?.[x[1]],hit=['1B','2B','3B','HR'].includes(o);let c='';
+ switch(o){
+  case 'HR':{const kind=m.runs===4?'만루 홈런':m.runs>1?m.runs+'점 홈런':'솔로 홈런';c=today.hr?`또 홈런을 쳤어요! ${today.hr===1?'멀티홈런':`오늘 ${today.hr+1}홈런`}, ${name}!`:pick('homer-result',[`${name}, 넘어갑니다! ${kind}!`,`아, 이게 뭔가요! ${name}의 ${kind}!`,`담장 밖으로! ${name}, ${kind}!`,`이 한 방에 구장이 들썩입니다! ${name}, ${kind}!`,`제대로 후렸어요! ${name}, ${kind}!`,`잡을 수 없는 곳으로! ${name}, ${kind}!`]);break;}
+  case '2B':c=pick('double',[`${name}, 쭉쭉 뻗었어요! 2루타!`,`${name}, 2루까지! 귀중한 2루타입니다!`,`한 방에 득점권! ${name}, 2루타!`,`외야를 흔들어 놓습니다! ${name}의 2루타!`,`이번에는 장타예요! ${name}, 2루타!`,`시원하게 돌렸어요! ${name}의 2루타!`]);break;
+  case '3B':c=pick('triple',[`멈추지 않아요! ${name}, 3루타!`,`${name}, 달리고 또 달립니다! 3루타!`,`2루를 돌아 3루까지! ${name}, 3루타!`,`발까지 뜨겁습니다! ${name}의 3루타!`]);break;
+  case '1B':c=pick('single',[`${name}, 안타! 방망이가 답합니다!`,`${name}, 안타를 만들어 냅니다!`,`살아 나갑니다! ${name}의 안타!`,`${name}, 공격을 잇는 안타!`,`좋아요, 안타입니다! ${name}!`,`${name}, 안타! 기회가 이어집니다!`]);break;
+  case 'HBP':c=m.loaded?`아, 몸에 맞았어요! ${name}, 밀어내기 사구!`:`아, 몸에 맞았습니다! ${name}, 사구로 1루에 나갑니다.`;break;
+  case 'BB':c=m.loaded?`${name}, 밀어내기 볼넷! 공 네 개로 한 점!`:`${name}, 볼넷! 기다림 끝에 1루를 얻습니다.`;break;
+  case 'K':{const q=storedPitchSequence(x)?.at(-1);c=q?`${name}, ${q.t}에 ${q.res==='루킹 삼진'?'루킹':'헛스윙'} 삼진!`:`${name}, 삼진! 마운드가 웃습니다!`;break;}
+  case 'DP':c=`아, 이게 뭔가요! ${name}, 병살타! ${x[4]===3?'이닝이 끝납니다!':'아웃 두 개를 내줍니다!'}`;break;
+  case 'SAC':c=`${name}, 짧게 댔습니다! 희생번트로 주자를 보냅니다.`;break;
+  default:c=x[9]?`아, 이게 뭔가요! 수비 실책! ${name}, 살아 나갑니다!`:x[5].includes(x[1])?`${name}, 1루에서 살아남습니다!`:raw.c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
+ }
+ if(hit&&!today.h&&g.broadcast?.regular&&form?.hitless>=3)c=`${name}, ${form.hitless+1}경기 만의 안타! 긴 침묵을 깹니다!${o==='HR'?' 홈런이에요!':o==='2B'?' 2루타!':o==='3B'?' 3루타!':''}`;
+ if(hit&&m.runs&&m.pre.outs===2&&o!=='HR')c+=` 2아웃 적시타!`;
+ if(hit){const before=pcPitchingRun(g,k-1,x[0]%2);if(before.outs>=18&&!before.hits)c=`아, 여기서 안타가 나옵니다! ${name}, 노히트 행진을 멈춥니다!`;}
+ if(m.runs&&o!=='HR'&&o!=='BB'&&o!=='HBP'&&o!=='OUT')c+=` ${m.runs}점!`;
+ if(o!=='OUT'||x[9]||x[5].includes(x[1]))c+=pcScoreFinish(g,k);
+ if(Array.isArray(x[14])&&(o!=='OUT'||x[9]||x[5].includes(x[1])))c+=' '+x[14].map(r=>`${pcName(g,r.id)}, ${r.to===4?'홈':r.to+'루'}${r.result==='out'?'에서 아웃.':'까지 진루.'}`).join(' ');
+ const beats=[c.trim()];
+ if(o==='HR'&&form?.power){const team=g.broadcast?.teams?.[m.top?'a':'h']||tshort(m.team);beats.push(`역시 ${team}의 거포입니다! ${name}의 한 방!`);}
+ return {c:c.trim(),a:'',beats,records:pcRecords(g,k)};
+}
+function pcAtBatIntro(g,k){const x=g.pbp[k],m=pcMoment(g,k),name=pcName(g,x[1]),pick=(key,lines)=>pcVoice(g,k,key,lines,true);return {c:m.loaded?`${m.pre.outs}아웃 만루! ${name}, 주인공이 될 기회입니다!`:m.risp?`${name}, 득점권 타석! 한 방이면 달라집니다!`:pick('at-bat',[`${name}, 타석에 섭니다. 승부를 보죠!`,`${pcName(g,x[2])} 대 ${name}! 이번에는 누가 웃을까요?`,`${name}, 배트를 고쳐 쥡니다!`,`${name}의 타석입니다. 공 하나에 집중합니다!`]),a:''};}
+function pcPitchCall(g,k,q,index){if(/타격|번트/.test(q.res))return null;const name=pcName(g,g.pbp[k][1]),pick=(key,lines)=>{const first=pcVoice(g,k,'pitch:'+key,lines,true);return lines[(lines.indexOf(first)+index)%lines.length];};let c='';
+ if(q.res==='몸에 맞는 공')c=`아, 몸에 맞았어요! ${name}, 사구입니다!`;
+ else if(q.res==='파울')c=pick('foul',[`${name}, 커트! 승부가 길어집니다!`,`파울이에요! ${name}, 쉽게 물러서지 않아요!`,`또 파울! 이 타석, 끈질깁니다!`]);
+ else if(q.res==='볼'||q.res==='볼넷')c=q.res==='볼넷'?`${name}, 볼넷! 1루로 나갑니다!`:q.b===2?`${q.t}, 볼! 이제 쓰리 볼입니다!`:pick('ball',[`${q.t}, 빠졌습니다! 볼!`,`지켜봅니다, ${q.t}! 볼입니다.`,`${q.t}, 존 밖! 타자가 참았어요!`]);
+ else if(/삼진/.test(q.res))c=`${q.t}, ${q.res}! 이 승부는 투수의 것입니다!`;
+ else c=/헛스윙/.test(q.res)?`${q.t}, 헛스윙!${q.s===1?' 두 스트라이크!':''}`:`${q.t}, 스트라이크!${q.s===1?' 이제 두 스트라이크입니다!':''}`;
+ return {c,a:''};}
 function pcLiveCall(g,k,phase,ctx={}){const name=pcName(g,g.pbp[k][1]),pick=(key,lines)=>pcVoice(g,k,'live:'+key,lines,true),fielder=ctx.fielder||'수비수';switch(phase){
- case 'flight':return {c:ctx.arc?pick('air',[`${name}, 타구가 뻗어 갑니다! 끝까지 따라가는 ${fielder}.`,`공이 외야 쪽으로 갑니다! ${fielder}, 끝까지 쫓아갑니다.`,`높이 올라간 타구, 시선은 모두 공으로! ${fielder}의 수비가 시작됩니다.`]):!ctx.ground?pick('line',[`${name}, 낮게 뻗는 타구! 끝까지 따라가는 ${fielder}.`,`타구가 수비 쪽으로 갑니다! ${fielder}, 끝까지 봐야 합니다.`,`배트를 떠난 공, 이제 ${fielder}의 글러브를 향합니다.`]):pick('ground',[`${name}, 땅으로 보낸 타구! 달려 나오는 ${fielder}.`,`${fielder}가 타구를 쫓습니다. 글러브와 공의 승부입니다!`,`타구가 그라운드를 가릅니다! ${fielder}, 공을 처리하러 갑니다.`]),a:''};
- case 'homer':return {c:pick('homer-impact',[`갔습니다! ${name}, 담장 밖으로 날려 보냅니다!`,`넘어갑니다, 넘어갔습니다! ${name}, 홈런입니다!`,`수비가 손쓸 수 없는 곳으로! ${name}의 홈런!`,`담장을 넘겼습니다! ${name}의 한 방에 구장이 뜨거워집니다!`]),a:ctx.landing||''};
- case 'throw':return {c:ctx.relay?`${fielder}, 추가 진루를 막으며 ${ctx.receiver}에게 공을 돌립니다.`:pick('throw',[`${fielder}, 송구합니다! ${ctx.receiver}의 글러브를 향합니다.`,`글러브에서 공을 꺼냈습니다! ${fielder}의 송구, ${ctx.receiver}에게!`,`${fielder}에서 ${ctx.receiver}로! 송구가 이어집니다.`]),a:''};
- case 'steal':return {c:pick('steal-start',[`뜁니다! ${ctx.runner}, ${ctx.base}를 노립니다!`,`${ctx.runner}가 출발합니다! ${ctx.base}에서 승부가 납니다.`,`주자가 움직입니다! ${ctx.runner}, ${ctx.base}까지 갑니다!`]),a:'주자의 발과 포수의 송구, 마지막 태그까지 봐야 합니다.'};
- case 'bench-start':return {c:pick('bench-start',['몸쪽 공 뒤에 분위기가 뜨거워집니다! 양 팀 벤치가 움직입니다.','잠깐, 선수들이 나옵니다! 양 팀 벤치에서 그라운드로 모여듭니다.','여기서 승부가 잠시 멈춥니다. 양 팀 선수들이 서로를 진정시키러 나옵니다.']),a:'동료들이 사이를 막아야 합니다. 더 커지기 전에 진정시킬 필요가 있습니다.'};
- case 'bench-talk':return {c:'선수들이 사이를 막아섭니다. 말로 풀고, 야구로 승부해야죠!',a:'이런 순간에는 함께 흥분하기보다 동료를 붙잡아 주는 쪽이 중요합니다.'};
- case 'bench-back':return {c:'됐습니다! 선수들은 각자의 자리로, 승부는 다시 그라운드로 돌아옵니다.',a:'퇴장 없이 경기를 이어 갑니다.'};
+ case 'flight':return {c:ctx.arc?pick('air',[`${name}, 높이 띄웠어요! ${fielder}, 따라갑니다!`,`뻗어 가는 타구! ${fielder}, 끝까지 봅니다!`,`공이 올라갑니다! ${fielder}의 글러브를 보세요!`]):ctx.ground?`${name}, 땅볼! ${fielder}, 달려 나옵니다!`:`낮게 뻗었어요! ${fielder}, 타구를 쫓습니다!`,a:''};
+ case 'homer':return {c:ctx.landing||pick('homer-impact',[`갔습니다! ${name}, 담장 밖으로!`,`넘어갔어요! ${name}, 홈런입니다!`,`아, 이게 뭔가요! ${name}의 홈런!`]),a:''};
+ case 'throw':return {c:ctx.relay?`${fielder}, ${ctx.receiver}에게 중계합니다!`:`${fielder}에서 ${ctx.receiver}로! 송구합니다!`,a:''};
+ case 'steal':return {c:`뜁니다! ${ctx.runner}, ${ctx.base}를 노립니다!`,a:''};
+ case 'bench-start':return {c:'잠깐, 벤치가 움직입니다! 분위기가 뜨거워져요!',a:''};
+ case 'bench-talk':return {c:'말려야 합니다! 동료들이 사이를 막아섭니다!',a:''};
+ case 'bench-back':return {c:'됐어요! 각자의 자리로, 다시 야구로 승부합니다!',a:''};
  default:return {c:ctx.text||'',a:''};}}
-function cSpeak(g,k,phase,ctx={},cls=''){const voice=pcLiveCall(g,k,phase,ctx);cCap(voice.c,cls,voice.a);}
+function cSpeak(g,k,phase,ctx={},cls=''){cCap(pcLiveCall(g,k,phase,ctx).c,cls);}
+/* Long calls become sequential single lines, including on phones. */
+function pcCaptionParts(text,limit){const words=String(text).split(/\s+/),out=[];let line='';for(let word of words){if(line.length+word.length+1>limit&&line){out.push(line);line='';}while(word.length>limit){if(line){out.push(line);line='';}out.push(word.slice(0,limit));word=word.slice(limit);}line+=(line?' ':'')+word;}if(line)out.push(line);return out;}
+async function cResultCall(call,cls=''){
+ const box=document.getElementById('cs-cap'),limit=Math.max(12,Math.floor(((box?.clientWidth||innerWidth)-(innerWidth<700?65:95))/(innerWidth<700?12:15)));
+ for(const beat of call.beats||[call.c])for(const line of pcCaptionParts(beat,limit)){cCap(line,cls);await cSleep(Math.max(1400,cSpd()*900,Math.min(2600,line.length*65)));}
+ for(const record of call.records||[])for(const line of pcCaptionParts(record.text,limit)){cCap(line,'record '+(record.kind==='challenge'?'challenge':''));await cSleep(2200*cSpd());}
+}

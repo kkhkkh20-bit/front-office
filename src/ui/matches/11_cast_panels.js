@@ -7,7 +7,7 @@ function wpHome(st){ const D0=st.sh-st.sa; const half=st.half; const outs=Math.m
   return clamp(.5+.5*cErf((D+.08)/Math.sqrt(2*v)),.005,.995); }
 function cOrderNo(g,half,id){ const s=g.box[half%2?'h':'a']; const i=s.bat.findIndex(b=>b.id===id); return i<0?null:(s.bat[i].o!=null?s.bat[i].o:i%9)+1; }
 function cNext(g,half,id){ const s=g.box[half%2?'h':'a']; const B=s.bat.slice(0,9); const i=B.findIndex(b=>b.id===id); if(i<0)return []; return [B[(i+1)%9],B[(i+2)%9]].filter(Boolean); }
-const PAK={'1B':['안타','h'],'2B':['2루타','h'],'3B':['3루타','h'],HR:['홈런','hr'],BB:['볼넷','bb'],K:['삼진','k'],OUT:['범타','o'],DP:['병살','o'],SAC:['희생번트','o']};
+const PAK={'1B':['안타','h'],'2B':['2루타','h'],'3B':['3루타','h'],HR:['홈런','hr'],HBP:['사구','bb'],BB:['볼넷','bb'],K:['삼진','k'],OUT:['범타','o'],DP:['병살','o'],SAC:['희생번트','o']};
 function cChips(g,k,id){ const L=g.pbp; const out=[]; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[1]===id){ const r=PAK[x[3]]||['?','o']; out.push(`<i class="pk ${r[1]}">${cHalfTxt(x[0]).replace('회초','').replace('회말','')}${r[0]}</i>`); } } return out.join('')||'<i class="pk n">첫 타석</i>'; }
 function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const bid=k<L.length&&typeof x[1]==='number'?x[1]:null; const pid=cPit(g,Math.min(k,L.length-1));
   const b=bid&&G.players[bid], p=pid&&G.players[pid]; if(!b||!p)return '';
@@ -49,12 +49,12 @@ function ourStrip(g,k){ const me=g.home===G.user?'h':g.away===G.user?'a':null; i
     return `<button class="ost${b.id===cur?' on':''}" data-a="castPlayer" data-v="${b.id}">${avImg(p)}${a?`<i class="ost-a ${ACQC[a.k]||''}"></i>`:''}<b>${esc(fname(p))}</b><span class="od">${(R[b.id]||[]).map(c=>`<i class="${c}"></i>`).join('')||'<em>-</em>'}</span></button>`; }).join('')}</div>`; }
 /* 최근 10경기: 어디가 문제인가 */
 function gmTrend(){ const G10=(G.games||[]).filter(x=>x.box&&(x.home===G.user||x.away===G.user)).slice(0,10); if(G10.length<3)return null;
-  const pos={}, all={ab:0,h:0,tb:0,bb:0,sf:0}; let spO=0,spE=0,rpO=0,rpE=0,spN=0;
+  const pos={}, all={ab:0,h:0,tb:0,bb:0,hbp:0,sf:0}; let spO=0,spE=0,rpO=0,rpE=0,spN=0;
   for(const x of G10){ const s=x.box[x.home===G.user?'h':'a'];
-    for(const b of s.bat){ const k=b.pos||'?'; const o=pos[k]=pos[k]||{ab:0,h:0,tb:0,bb:0,sf:0}; const tb=b.h+(b.d||0)+2*(b.tr||0)+3*(b.hr||0); for(const t of [o,all]){ t.ab+=b.ab; t.h+=b.h; t.tb+=tb; t.bb+=b.bb||0; t.sf+=b.sf||0; } }
+    for(const b of s.bat){ const k=b.pos||'?'; const o=pos[k]=pos[k]||{ab:0,h:0,tb:0,bb:0,hbp:0,sf:0}; const tb=b.h+(b.d||0)+2*(b.tr||0)+3*(b.hr||0); for(const t of [o,all]){ t.ab+=b.ab; t.h+=b.h; t.tb+=tb; t.bb+=b.bb||0;t.hbp+=b.hbp||0; t.sf+=b.sf||0; } }
     s.pit.forEach((q,i)=>{ if(i===0){ spO+=q.outs; spE+=q.er; spN++; } else { rpO+=q.outs; rpE+=q.er; } }); }
   const ops=o=>o.ab+o.bb?obpOf(o)+(o.ab?o.tb/o.ab:0):0;
-  const P=Object.entries(pos).filter(([k,o])=>SLOTS_S[k]&&o.ab+o.bb+o.sf>=18).map(([k,o])=>({k,ops:ops(o),pa:o.ab+o.bb+o.sf})).sort((a,b)=>a.ops-b.ops);
+  const P=Object.entries(pos).filter(([k,o])=>SLOTS_S[k]&&o.ab+o.bb+(o.hbp||0)+o.sf>=18).map(([k,o])=>({k,ops:ops(o),pa:o.ab+o.bb+(o.hbp||0)+o.sf})).sort((a,b)=>a.ops-b.ops);
   return {n:G10.length,tops:ops(all),weak:P[0]||null,best:P[P.length-1]||null,spEra:spO?spE*27/spO:0,rpEra:rpO?rpE*27/rpO:0,spIp:spN?spO/3/spN:0}; }
 /* 경기 후 보고의 판단 강도: 몇 경기 표본으로 보강을 떠올리게 하지 않는다.
    관찰(표본 부족) → 점검(10경기 넘게 이어짐, 또는 개막 전부터 약했던 자리) → 보강 검토(10경기 넘게 이어지고 전력도 리그 하위권) */

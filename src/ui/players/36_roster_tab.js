@@ -105,7 +105,7 @@ function carLine(p,lvl){ const hs=(p.hist||[]).filter(h=>h.lvl===lvl&&!h.y2); if
 function rline(p){ if(UI.rsea==='car')return carLine(p,'1군')||carLine(p,'퓨처스'); const y=rSeaY(); return seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); }
 function rstat(p,k){ const h=rline(p); if(!h)return null;
   if(k==='war')return wOf(h,p);
-  if(p.isP){ const r=pRate(h); return {g:h.g||0,gs:h.gs||0,ip:h.outs,era:h.outs?r.era:null,whip:h.outs?r.whip:null,w:h.w||0,l:h.l||0,sv:h.sv||0,hld:h.hld||0,so:h.so,bb:h.bb,k9:h.outs?r.k9:null,bb9:h.outs?r.bb9:null,h:h.h||0,hra:h.hr||0,fip:h.outs?(13*(h.hr||0)+3*h.bb-2*h.so)/(h.outs/3)+3.2:null}[k]; }
+  if(p.isP){ const r=pRate(h); return {g:h.g||0,gs:h.gs||0,ip:h.outs,era:h.outs?r.era:null,whip:h.outs?r.whip:null,w:h.w||0,l:h.l||0,sv:h.sv||0,hld:h.hld||0,so:h.so,bb:h.bb,k9:h.outs?r.k9:null,bb9:h.outs?r.bb9:null,h:h.h||0,hra:h.hr||0,fip:h.outs?(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*h.so)/(h.outs/3)+3.2:null}[k]; }
   if(k==='wrc')return h.pa?wrcPlus(h,h.y):null; const r=bRate(h); return {g:h.g||0,pa:h.pa,avg:h.pa?r.avg:null,obp:h.pa?r.obp:null,slg:h.pa?r.slg:null,ops:h.pa?r.ops:null,hr:h.hr,rbi:h.rbi,sb:h.sb,bb:h.bb,so:h.so,bbk:h.so?h.bb/h.so:(h.bb?9:null),h:h.h||0,d:h.d||0,r:h.r||0,cs:h.cs||0}[k]; }
 function rfmt(k,v,p){ if(v==null)return '-';
   if(['avg','obp','slg','ops'].includes(k)){ const s=fmt3(v); if(k==='ops'){ const c=v>=.9?'var(--good)':v>=.78?'var(--r50)':v<.62?'var(--bad)':'inherit'; return `<b style="color:${c}">${s}</b>`; } return s; }

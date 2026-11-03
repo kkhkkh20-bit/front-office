@@ -55,7 +55,7 @@ function pctCard(p,year){ if(hideOvr(p))return ''; const y=year??statY(); const 
     <div class="pct-g" title="경기 기록이 아니라 선수 능력에서 만든 측정값입니다. 측정 오차가 있고 시즌 중에는 변하지 않습니다."><b>측정값</b> <span class="small muted">${y<G.year?`${y} 시즌 측정이 아니라 지금(${G.year}) 능력 기반 값 · `:''}능력 기반 측정 · 측정 오차 포함 · 경기 결과로 바뀌지 않음</span></div>${trkM.map(row).join('')}
     <p class="small muted">숫자는 백분위(100에 가까울수록 리그 상위, 빨강), 오른쪽은 실제 값입니다. 삼진%·볼넷 허용처럼 낮을수록 좋은 항목은 뒤집어 계산했습니다. 비교 집단은 같은 시즌 1군 기준 이상 선수입니다.</p></div>`; }
 /* 좌우 상대 비교(정규시즌 1군): 타자는 좌투수·우투수 상대, 투수는 좌타자·우타자 상대. 타석 수와 적은 표본을 함께 */
-function splLine(a){ if(!a||!a[0])return null; const [pa,ab,h,tb,bb,so,hr]=a; const obp=(h+bb)/pa, slg=ab?tb/ab:0; return {pa,obp,slg,ops:obp+slg,kp:so/pa*100,bbp:bb/pa*100,hr}; }
+function splLine(a){ if(!a||!a[0])return null; const [pa,ab,h,tb,bb,so,hr,hbp=0]=a; const obp=(h+bb+hbp)/pa, slg=ab?tb/ab:0; return {pa,obp,slg,ops:obp+slg,kp:so/pa*100,bbp:bb/pa*100,hr}; }
 function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R))return p.splP&&!UI.splP?'':'<p class="small muted">좌우 상대 기록은 이 업데이트 이후 1군 경기부터 쌓입니다.</p>';
   const L=splLine(S.L), Rr=splLine(S.R); const vs=p.isP?['좌타자','우타자']:['좌투수','우투수']; const M=p.isP?[['ops','피OPS'],['kp','삼진%'],['bbp','볼넷%']]:[['ops','OPS'],['kp','삼진%'],['bbp','볼넷%']];
   const mx=k=>Math.max(k==='ops'?1:30,...[L,Rr].filter(Boolean).map(x=>x[k])); const fv=(k,v)=>k==='ops'?fmt3(v):v.toFixed(1)+'%';
@@ -354,7 +354,7 @@ function pitchCard(p){ if(G.unemp||team(G.user).indie)return ''; const I=pitchIn
 
 /* 최근 3년 한눈에: 한 해 기록의 운(컨디션·타구 운)을 걸러 보게 한다 */
 function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
-  const row=x=>{ const h=x.h; if(p.isP){ const ip=h.outs/3, era=h.er*9/ip, fip=(13*(h.hr||0)+3*h.bb-2*h.so)/ip+3.2; const d=era-fip; return `<tr><td>${x.y}</td><td>${x.lvl===1?'1군':'2군'}</td><td class="num">${era.toFixed(2)}</td><td class="num">${fip.toFixed(2)}</td><td class="num ${d<=-.6?'lk':d>=.6?'ul':''}">${d>0?'+':''}${d.toFixed(2)}</td><td class="num">${ipStr(h.outs)}</td></tr>`; }
+  const row=x=>{ const h=x.h; if(p.isP){ const ip=h.outs/3, era=h.er*9/ip, fip=(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*h.so)/ip+3.2; const d=era-fip; return `<tr><td>${x.y}</td><td>${x.lvl===1?'1군':'2군'}</td><td class="num">${era.toFixed(2)}</td><td class="num">${fip.toFixed(2)}</td><td class="num ${d<=-.6?'lk':d>=.6?'ul':''}">${d>0?'+':''}${d.toFixed(2)}</td><td class="num">${ipStr(h.outs)}</td></tr>`; }
     const r=bRate(h), bp=(h.h-h.hr)/Math.max(1,h.ab-h.so-h.hr); return `<tr><td>${x.y}</td><td>${x.lvl===1?'1군':'2군'}</td><td class="num">${fmt3(r.ops)}</td><td class="num">${wrcPlus(h,x.y)??'-'}</td><td class="num">${fmt3(r.avg)}</td><td class="num">${h.hr}</td><td class="num ${bp>=.34?'lk':bp<=.27?'ul':''}">${fmt3(bp)}</td><td class="num">${h.pa}</td></tr>`; };
   return `<div class="r3"><div class="eyebrow">최근 ${R.length}년</div><table class="r3t"><thead><tr><th>시즌</th><th></th>${p.isP?'<th>ERA</th><th>FIP</th><th>ERA−FIP</th><th>이닝</th>':'<th>OPS</th><th>wRC+</th><th>타율</th><th>홈런</th><th>BABIP</th><th>타석</th>'}</tr></thead><tbody>${R.map(row).join('')}</tbody></table>
     <p class="small muted">${p.isP?'ERA−FIP가 크게 음수면 평균자책점이 탈삼진·볼넷·피홈런으로 본 기대보다 낮았던 해, 양수면 높았던 해입니다. 수비와 타구 결과의 영향을 함께 봐야 합니다.':'BABIP(인플레이 타구 안타 비율)가 .340을 넘거나 .270 아래면 리그 평균과 차이가 큰 해입니다. 타구 특성·주력·표본을 함께 봐야 합니다.'} 한 해만 튀는지, 해마다 비슷한지를 여러 시즌으로 비교해 보세요.</p></div>`; }

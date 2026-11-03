@@ -38,12 +38,12 @@ function evOf(p){ if(!p||p.isP)return null; return Math.round(126+(p.r.pow-20)/6
 /* 최근 3년 1군 합계(게임 시작 전 2023·2024 포함) */
 function fdThree(p,y){ let t=null, ys=0; for(let yy=y-2;yy<=y;yy++){ const h=seasonTotal(p,yy,'1군'); if(!h||!(p.isP?h.outs:h.pa))continue; ys++; if(!t)t=Object.assign({},h); else addTo(t,h); } if(t)t.ys=ys; return t; }
 function fdStatLine(p,y){ const h1=seasonTotal(p,y,'1군'), h2=seasonTotal(p,y,'퓨처스');
-  if(p.isP){ const h=h1&&h1.outs>=30?h1:h2&&h2.outs>=30?h2:h1||h2; if(!h||!h.outs)return null; const ip=h.outs/3; const T3=fdThree(p,y); return {lvl:h===h1?1:2,h,n:ip,t:trackOf(p),velo:veloOf(p),vmax:veloMax(p),war:warOf(h,p),fip:(13*(h.hr||0)+3*h.bb-2*h.so)/ip+3.2,fip3:T3&&T3.outs>=60?(13*(T3.hr||0)+3*T3.bb-2*T3.so)/(T3.outs/3)+3.2:null,n3:T3?T3.outs/3:0,ys:T3?T3.ys:0,whip:(h.h+h.bb)/ip,k9:h.so*9/ip,kbb:h.so/Math.max(1,h.bb),era:h.er*9/ip,g:h.g||0,gs:h.gs||0,ipg:h.g?ip/h.g:0}; }
+  if(p.isP){ const h=h1&&h1.outs>=30?h1:h2&&h2.outs>=30?h2:h1||h2; if(!h||!h.outs)return null; const ip=h.outs/3; const T3=fdThree(p,y); return {lvl:h===h1?1:2,h,n:ip,t:trackOf(p),velo:veloOf(p),vmax:veloMax(p),war:warOf(h,p),fip:(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*h.so)/ip+3.2,fip3:T3&&T3.outs>=60?(13*(T3.hr||0)+3*((T3.bb||0)+(T3.hbp||0))-2*T3.so)/(T3.outs/3)+3.2:null,n3:T3?T3.outs/3:0,ys:T3?T3.ys:0,whip:(h.h+h.bb)/ip,k9:h.so*9/ip,kbb:h.so/Math.max(1,h.bb),era:h.er*9/ip,g:h.g||0,gs:h.gs||0,ipg:h.g?ip/h.g:0}; }
   const h=h1&&h1.pa>=30?h1:h2&&h2.pa>=30?h2:h1||h2; if(!h||!h.pa)return null; const r=bRate(h); const T3=fdThree(p,y); return {lvl:h===h1?1:2,h,n:h.pa,t:trackOf(p),ev:evOf(p),war:warPub(h,p),babip:(h.h-h.hr)/Math.max(1,h.ab-h.so-h.hr),ops3:T3&&T3.pa>=150?bRate(T3).ops:null,n3:T3?T3.pa:0,ys:T3?T3.ys:0,avg:r.avg,obp:r.obp,slg:r.slg,ops:r.ops,wrc:wrcPlus(h,y),iso:r.slg-r.avg,bbk:h.bb/Math.max(1,h.so),hr:h.hr,sb:h.sb||0}; }
 /* 최근 3년(1군) 합산 줄: 성적 탭의 '최근 3년' 보기. 1군 기록이 거의 없으면 지난 시즌 줄(퓨처스 포함)로 */
 function fdStatLine3(p,y){ const T=fdThree(p,y); if(!T||(p.isP?T.outs<30:T.pa<30))return fdStatLine(p,y); const yrs=[y-2,y-1,y].map(yy=>seasonTotal(p,yy,'1군')).filter(h=>h&&(p.isP?h.outs:h.pa));
   const war=yrs.reduce((a,h)=>a+warPub(h,p),0);
-  if(p.isP){ const h=T, ip=h.outs/3; return {lvl:1,y3:T.ys,h,n:ip,t:trackOf(p),velo:veloOf(p),vmax:veloMax(p),war,fip:(13*(h.hr||0)+3*h.bb-2*h.so)/ip+3.2,fip3:null,n3:ip,ys:T.ys,whip:(h.h+h.bb)/ip,k9:h.so*9/ip,kbb:h.so/Math.max(1,h.bb),era:h.er*9/ip,g:h.g||0,gs:h.gs||0,ipg:h.g?ip/h.g:0}; }
+  if(p.isP){ const h=T, ip=h.outs/3; return {lvl:1,y3:T.ys,h,n:ip,t:trackOf(p),velo:veloOf(p),vmax:veloMax(p),war,fip:(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*h.so)/ip+3.2,fip3:null,n3:ip,ys:T.ys,whip:(h.h+h.bb)/ip,k9:h.so*9/ip,kbb:h.so/Math.max(1,h.bb),era:h.er*9/ip,g:h.g||0,gs:h.gs||0,ipg:h.g?ip/h.g:0}; }
   const h=T, r=bRate(h); return {lvl:1,y3:T.ys,h,n:h.pa,t:trackOf(p),ev:evOf(p),war,babip:(h.h-h.hr)/Math.max(1,h.ab-h.so-h.hr),ops3:null,n3:h.pa,ys:T.ys,avg:r.avg,obp:r.obp,slg:r.slg,ops:r.ops,wrc:wrcMulti(yrs),iso:r.slg-r.avg,bbk:h.bb/Math.max(1,h.so),hr:h.hr,sb:h.sb||0}; }
 function olsFit(X,y,w){ const k=X[0].length+1; const A=Array.from({length:k},()=>new Array(k+1).fill(0));
   for(let i=0;i<X.length;i++){ const r=[1,...X[i]], wi=w[i]; for(let a=0;a<k;a++){ for(let b=0;b<k;b++)A[a][b]+=wi*r[a]*r[b]; A[a][k]+=wi*r[a]*y[i]; } }
@@ -67,7 +67,7 @@ function fdEstAll(){ const F=G.fd; if(!F)return {}; const y=F.y-1; const P=(F.al
     else { const za=fdZ(W,x=>x.L.avg), zh=fdZ(W,x=>x.L.hr/Math.max(1,x.L.n)*600), zr=fdZ(W,x=>(x.L.h.rbi||0)/Math.max(1,x.L.n)*600), zs=fdZ(W,x=>x.L.sb/Math.max(1,x.L.n)*600); W.forEach(x=>{ x.s=.42*za(x)+.28*zh(x)+.15*zr(x)+.15*zs(x); x.s*=x.L.n/(x.L.n+40); }); }
     /* 전력분석팀: 최근 2년 세부 지표, 표본만큼 믿는다 */
     W.forEach(x=>{ const t=fdTwo(x.p,y); x.t=t&&(isP?t.outs>=30:t.pa>=60)?t:x.L.h; });
-    if(isP){ const ip=x=>Math.max(1,x.t.outs/3); const zf=fdZ(W,x=>-((13*(x.t.hr||0)+3*x.t.bb-2*x.t.so)/ip(x))), zkb=fdZ(W,x=>(x.t.so-x.t.bb)*9/ip(x)), zwh=fdZ(W,x=>trackOf(x.p).whiff); W.forEach(x=>{ x.a=(.45*zf(x)+.35*zkb(x)+.2*zwh(x))*ip(x)/(ip(x)+40); }); }
+    if(isP){ const ip=x=>Math.max(1,x.t.outs/3); const zf=fdZ(W,x=>-((13*(x.t.hr||0)+3*((x.t.bb||0)+(x.t.hbp||0))-2*x.t.so)/ip(x))), zkb=fdZ(W,x=>(x.t.so-x.t.bb)*9/ip(x)), zwh=fdZ(W,x=>trackOf(x.p).whiff); W.forEach(x=>{ x.a=(.45*zf(x)+.35*zkb(x)+.2*zwh(x))*ip(x)/(ip(x)+40); }); }
     else { const r=x=>bRate(x.t); const zo=fdZ(W,x=>r(x).obp), zi=fdZ(W,x=>r(x).slg-r(x).avg), zb=fdZ(W,x=>x.t.bb/Math.max(1,x.t.so)), ze=fdZ(W,x=>evOf(x.p)); W.forEach(x=>{ x.a=(.32*zo(x)+.3*zi(x)+.13*zb(x)+.25*ze(x))*x.t.pa/(x.t.pa+180); }); }
     A.forEach(x=>{ if(!x.L){ x.s=-1.5; x.a=-1.5; } });
     fdMap(A,'s',est); fdMap(A,'a',ana); }

@@ -1,5 +1,5 @@
 /* ---------- B: 중계 ---------- */
-const OUTK={'1B':'안타','2B':'2루타','3B':'3루타',HR:'홈런',BB:'볼넷',K:'삼진',OUT:'범타',DP:'병살타',SAC:'희생번트'};
+const OUTK={'1B':'안타','2B':'2루타','3B':'3루타',HR:'홈런',HBP:'사구',BB:'볼넷',K:'삼진',OUT:'범타',DP:'병살타',SAC:'희생번트'};
 const PBPOS={C:[50,93],'1B':[71,63],'2B':[61,47],SS:[39,47],'3B':[29,63],LF:[17,27],CF:[50,13],RF:[83,27],P:[50,67]};
 function pbpState(g,k){ // k번째 기록까지 반영한 상태
   const L=g.pbp; let sa=0,sh=0,outs=0,bases=[0,0,0],cur={h:null,a:null}; let half=0;
@@ -35,7 +35,7 @@ function pbpView(gi){
   return `<div class="pbp">
     <div class="pbp-top"><span class="pill ${top?'':'acc'}">${inn}회${top?'초':'말'}</span><span class="num pbp-sc">${tshort(g.away)} ${s.sa} : ${s.sh} ${tshort(g.home)}</span><span class="outs">${[0,1,2].map(i=>`<i class="${i<s.outs?'on':''}"></i>`).join('')} ${s.outs}아웃</span></div>
     <div class="pbp-main">${svg}<div class="pbp-side">
-      ${(()=>{ const cl=pbpCall(g,k); return `<div class="pbp-now ${x[6]?'run':''}"><span class="pc-who">캐스터</span><b>${esc(cl.c)}</b>${cl.a?`<div class="pc-an"><span class="pc-who">해설</span>${esc(cl.a)}</div>`:''}</div>`; })()}
+      ${(()=>{ const cl=pbpCall(g,k); return `<div class="pbp-now ${x[6]?'run':''}"><span class="pc-who">캐스터</span><b>${esc(cl.c)}</b></div>`; })()}
       ${bat?`<div class="pbp-vs"><button data-a="player" data-v="${bat.id}">${avImg(bat)}<span><i>타자 · ${tshort(g[atK==='h'?'home':'away'])}</i><b>${esc(bat.name)}</b><em>${avgOpsAt(g,k,bat.id)}</em></span></button>${pn?`<button data-a="player" data-v="${pn.id}">${avImg(pn)}<span><i>투수 · ${tshort(g[defK==='h'?'home':'away'])}</i><b>${esc(pn.name)}</b><em>시즌 ERA ${eraAt(g,k,pn.id)}</em></span></button>`:''}</div>`:''}
       <div class="log">${recent.map((y,i)=>`<p class="${i===0?'cur':''}"><span class="ticker">${Math.floor(y[0]/2)+1}${y[0]%2?'말':'초'}</span> ${esc(pbpCall(g,k-i).c)}</p>`).join('')}</div>
     </div></div>

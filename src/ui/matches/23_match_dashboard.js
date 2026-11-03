@@ -11,10 +11,10 @@ function castLineup(g,side,k){
 }
 function castSnapshot(g,k){
   const L=g.pbp||[],n=clamp(Math.floor(k),0,L.length),finished=n>=L.length;
-  const init=side=>({lineup:castLineup(g,side,n),pitcher:g.box[side].pit[0]?.id??null,pitchers:g.box[side].pit[0]?[g.box[side].pit[0].id]:[],next:0,innings:[],hits:[],stats:{r:0,h:0,hr:0,bb:0,so:0,sb:0,cs:0,e:0}});
+  const init=side=>({lineup:castLineup(g,side,n),pitcher:g.box[side].pit[0]?.id??null,pitchers:g.box[side].pit[0]?[g.box[side].pit[0].id]:[],next:0,innings:[],hits:[],stats:{r:0,h:0,hr:0,bb:0,hbp:0,so:0,sb:0,cs:0,e:0}});
   const teams={a:init('a'),h:init('h')},players={},events=[],history=[{i:0,half:0,sa:0,sh:0,wp:wpHome({sa:0,sh:0,outs:0,bases:[0,0,0],half:0})}];
   let half=-1,outs=0;
-  const bat=id=>players[id]||(players[id]={ab:0,h:0,hr:0,bb:0,so:0,outs:0,sb:0,cs:0});
+  const bat=id=>players[id]||(players[id]={ab:0,h:0,hr:0,bb:0,hbp:0,so:0,outs:0,sb:0,cs:0});
   for(let i=0;i<n;i++){
     const x=L[i],atk=x[0]%2?'h':'a',def=atk==='h'?'a':'h',T=teams[atk],D=teams[def],inn=Math.floor(x[0]/2);
     if(half!==x[0]){half=x[0];outs=0;}
@@ -22,10 +22,11 @@ function castSnapshot(g,k){
     if(x[1]==='SB'||x[1]==='CS'){T.stats[x[1]==='SB'?'sb':'cs']++;bat(x[2])[x[1]==='SB'?'sb':'cs']++;if(D.pitcher)bat(D.pitcher).outs+=Math.max(0,x[3]-outs);outs=x[3];events.push({i,half,type:x[1],id:x[2]});continue;}
     if(typeof x[1]!=='number')continue;
     const B=bat(x[1]),P=bat(x[2]);D.pitcher=x[2];if(!D.pitchers.includes(x[2]))D.pitchers.push(x[2]);
-    if(x[3]!=='BB'&&x[3]!=='SAC'&&!x[13])B.ab++;
+    if(x[3]!=='BB'&&x[3]!=='HBP'&&x[3]!=='SAC'&&!x[13])B.ab++;
     if(['1B','2B','3B','HR'].includes(x[3])){B.h++;T.stats.h++;T.hits[inn]=(T.hits[inn]||0)+1;P.h++;}
     if(x[3]==='HR'){B.hr++;T.stats.hr++;P.hr++;}
     if(x[3]==='BB'){B.bb++;T.stats.bb++;P.bb++;}
+    if(x[3]==='HBP'){B.hbp++;T.stats.hbp++;P.hbp++;}
     if(x[3]==='K'){B.so++;T.stats.so++;P.so++;}
     if(x[9])D.stats.e++;
     P.outs+=Math.max(0,x[4]-outs);outs=x[4];
@@ -72,7 +73,7 @@ function castDashboardUpdate(g,k){
   mdSet('cs-vs',mdDuel(g,s,c?.completed===k?castSnapshot(g,k+1):s));
   const team=c?.team||((g.away===G.user)?'a':'h'),roster=document.getElementById('md-roster');if(roster)roster.dataset.team=team;mdSet('md-roster',mdRoster(g,s,team));
   document.querySelectorAll('[data-a="castTeam"]').forEach(b=>b.classList.toggle('on',b.dataset.v===team));
-  const last=s.k?pbpCall(g,s.k-1):null;mdSet('md-comment',last?`<span>캐스터</span><b>${esc(last.c)}</b>${last.a?`<small>${esc(last.a)}</small>`:''}`:'<span>경기 중계</span><b>플레이볼을 기다립니다.</b>');
+  const last=s.k?pbpCall(g,s.k-1):null;mdSet('md-comment',last?`<span>캐스터</span><b>${esc(last.c)}</b>`:'<span>경기 중계</span><b>플레이볼을 기다립니다.</b>');
   const range=document.getElementById('md-seek');if(range)range.value=s.k;mdSet('md-progress',s.k+' / '+(g.pbp||[]).length+' 장면');
   mdSet('md-status',s.finished?(g.hs===g.as?'경기 종료 · 무승부':'경기 종료'):cHalfTxt(s.state.half)+' · '+s.state.outs+'아웃');
 }
