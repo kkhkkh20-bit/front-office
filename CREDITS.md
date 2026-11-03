@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | faces.js | ZenGM — https://github.com/zengm-games/facesjs | Apache License 2.0 | 선수 얼굴 (`vendor/faces.min.js`) |
 | lz-string | pieroxy — https://github.com/pieroxy/lz-string | MIT License | 저장 데이터 압축 (`vendor/lz-string.min.js`) |
-| Sports Pack | Kenney — https://kenney.nl | CC0 1.0 (퍼블릭 도메인) | 카드 중계 경기장의 위에서 본 선수·방망이 그림 (`src/kart.js`) |
+| Sports Pack | Kenney — https://kenney.nl | CC0 1.0 (퍼블릭 도메인) | 카드 중계 경기장의 위에서 본 선수·방망이 그림 (`src/gfx/matches/kart.js`) |
 | Lucide 아이콘 | https://lucide.dev | ISC License | 메뉴·버튼의 선 아이콘 일부 |
 | Noto Sans KR, Black Han Sans, Barlow Condensed | Google Fonts | SIL Open Font License 1.1 | 글꼴(실행 시 Google Fonts에서 불러옴) |
 

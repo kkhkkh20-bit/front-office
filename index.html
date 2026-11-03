@@ -2600,6 +2600,8 @@ html.detail-page-open,html.detail-page-open body{overflow:hidden}
 #sheet .detail-page-wrap{position:static;display:block;background:none;min-height:var(--detail-height,100dvh)}
 body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:var(--detail-height,100dvh);overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
 .detail-page-open #sheet .cast{position:relative;inset:auto;width:100%;height:var(--detail-height,100dvh);min-height:0;max-width:none;z-index:auto}
+/* 경기 중계는 왼쪽 탐색 영역까지 쓴다. 선수 상세·일반 화면에서는 메뉴가 돌아온다. */
+.cast-page-open #app .fmside,.cast-page-open #app .rail{display:none}
 .cfm-w,.stamp-w,.rv-w{top:var(--app-header-h,0px);left:var(--app-side-w,0px);bottom:var(--app-footer-h,0px)}
 .detail-navigation{display:flex;align-items:center;gap:12px;grid-column:1/-1;min-height:40px;border-bottom:1px solid var(--line2);margin:0 -20px 10px;padding:4px 20px;background:var(--panel2)}
 .detail-navigation>span{font-size:11px;color:var(--muted)}
@@ -16807,6 +16809,7 @@ function detailPageSync(el){
   const was=document.documentElement.classList.contains('detail-page-open');
   if(active&&!was)UI._detailReturn={y:scrollY,tab:UI.tab,focus:document.activeElement};
   document.documentElement.classList.toggle('detail-page-open',active);
+  document.documentElement.classList.toggle('cast-page-open',!!cast);
   document.querySelectorAll('#app main.content,#app .subhead,#app .fmmain,#app .dshell>.gut').forEach(e=>{e.inert=active;});appFrameSync();
   if(active){
     const key=detailViewKey(sh);UI._detailKey=key;sh.dataset.detailKey=key;
@@ -19133,6 +19136,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-03h',d:'11월 3일',t:'경기 중계 화면 넓히기',items:[
+    '경기 중계에서는 왼쪽 탐색 메뉴를 숨기고 본문을 넓게 사용합니다. 상단바는 유지하며, 선수 정보나 일반 화면으로 이동하면 탐색 메뉴가 돌아옵니다.']},
   {id:'2026-11-03g',d:'11월 3일',t:'리뷰 개선: 결재 키 입력과 상세 복귀',items:[
     '결재창이 떠 있을 때 Esc·Space·Enter가 뒤의 협상·중계·소식함에 전달되던 문제를 고쳤습니다. 가장 앞의 결재만 처리하며, 취소 버튼에 포커스가 있으면 Space·Enter로도 취소합니다.',
     '상세 화면에서 안내·협상을 열었다 돌아오면 보던 스크롤 위치를 복원합니다. 새 선수나 새 협상은 맨 위에서 시작합니다.',

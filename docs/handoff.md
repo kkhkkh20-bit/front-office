@@ -207,3 +207,11 @@
 - 상세→F1/협상→상세의 스크롤 손실을 수정했다. DOM에 화면 식별자를 붙이고 대상·탭별 최근 이동 경로의 스크롤을 UI에 최대 24개까지 보존한다. 같은 레이블의 다른 선수/계약을 구분하며 새 대상은 0에서 시작한다. 링크/표 가공 후 위치를 복원하고 브라우저의 추가 스크롤 앵커 보정을 끈다. 협상 조정의 `_ngtY`는 한 번 적용한 뒤 비워 과거 위치가 계속 덮지 않게 한다.
 - 감독 답변 캐시가 기분·주장·선수 이름 변경을 놓쳤다. 해당 값과 규율 성향을 대화 서명에 포함했다. 각 변경을 독립적으로 회귀 검사하고 주간 관계·경기 난수 불변을 확인한다. 새 규칙 총 410개.
 - `tools/check-review.cjs`를 전체 검사에 추가. 실제 감독 선임 결재, 실제 경기 중계·소식함, 긴 기록 목록에서 PC/휴대폰 재현. 수정 전 로그 `/tmp/front-office-review-repro.log`, `/tmp/front-office-review-dialogue-before.log`. 최종 검증: 새 캐시 규칙 1개·기존 감독 대화 4개·모듈 6개·정적 검사·새 리뷰 PC/휴대폰(결재/취소 포커스/중첩 복귀)·PC/휴대폰 빠른 UI·본문/중계 5개 화면·상단바 12종·면담 4개 화면 모두 통과. 로그 `/tmp/front-office-review-verified.log`, `/tmp/front-office-review-dialogue-final.log`, `/tmp/front-office-review-dialogue-related.log`, `/tmp/front-office-review-pc.log`, `/tmp/front-office-review-mobile.log`, `/tmp/front-office-review-layout.log`, `/tmp/front-office-review-match.log`, `/tmp/front-office-review-topbar.log`, `/tmp/front-office-review-meeting.log`. 화면/캐시의 국소 수정이므로 전체 장기 시뮬은 반복하지 않는다.
+
+
+## 경기 전용 탐색 영역·에셋 조사 (2026-11-03h)
+- 사용자 선택: 타자 뒤 시점 선호, 위에서 보는 2D 중계도 허용. 경기 중 왼쪽 앱 메뉴는 불필요하며 상단바는 유지한다. 생성된 사실적인 시안은 실제 게임 화면이나 3D 에셋 패키지가 아니다.
+- `detailPageSync`에서 실제 렌더 대상이 `.cast`일 때만 `cast-page-open`을 켠다. 왼쪽 `.fmside/.rail`을 숨긴 뒤 기존 `appFrameSync` 측정으로 본문을 화면 왼쪽 끝까지 넓힌다. 선수 상세·뒤로·중계 종료 시 메뉴 상태를 복원한다. 휴대폰 하단 탐색과 실제 상단바는 유지.
+- 현재 Kenney Sports Pack(CC0) 선수·팔·방망이, 자체 필드·공·배지·유니폼·구장 분위기 그림이 있다. `docs/match-assets.md`에 실제 파일·출처·용도와 2D/3D 범위를 기록했다. Kenney/Quaternius 원문은 네트워크 접근 제한. GitHub에서 찾은 출처·라이선스 미확인 그림은 도입하지 않았다.
+- 3×3 투구판과 카메라는 아직 변경하지 않았다. `cPitchSeq`는 타석 결과에 맞춘 연출이며 실제 투구 위치 기록이 없다. 임의 좌표를 실제 기록으로 제시하지 않는다. 진짜 투구 단위 데이터 적용 시 엔진·저장·재생과 기존 저장 호환을 함께 다룰 것.
+- 검증: 정적 검사·모듈 6개·상단바 12종/4개 화면·중계 5개 화면/기록/상세 복귀/메뉴 숨김·복원·PC 빠른 UI 통과. 경기 계산 변경이 없어 전체 장기 시뮬은 반복하지 않는다.

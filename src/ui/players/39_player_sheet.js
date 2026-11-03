@@ -149,6 +149,7 @@ function detailPageSync(el){
   const was=document.documentElement.classList.contains('detail-page-open');
   if(active&&!was)UI._detailReturn={y:scrollY,tab:UI.tab,focus:document.activeElement};
   document.documentElement.classList.toggle('detail-page-open',active);
+  document.documentElement.classList.toggle('cast-page-open',!!cast);
   document.querySelectorAll('#app main.content,#app .subhead,#app .fmmain,#app .dshell>.gut').forEach(e=>{e.inert=active;});appFrameSync();
   if(active){
     const key=detailViewKey(sh);UI._detailKey=key;sh.dataset.detailKey=key;
