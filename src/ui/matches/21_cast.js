@@ -121,6 +121,7 @@ function cBoard(g,st,cnt){ const s=id=>document.getElementById(id); if(!s('cs-sa
   s('cs-sa').textContent=st.sa; s('cs-sh').textContent=st.sh; s('cs-inn').textContent=cHalfTxt(st.half);
   const dots=(id,n)=>s(id).querySelectorAll('i').forEach((el,i)=>el.classList.toggle('on',i<n));
   dots('cs-O',Math.min(2,st.outs)); { const ob=s('cs-Ob'); if(ob)dots('cs-Ob',Math.min(2,st.outs)); } s('cs-on').textContent=Math.min(3,st.outs)+'아웃';const bso=s('cs-bso');if(bso)bso.dataset.outs=Math.min(3,st.outs);const summary=s('cs-count-summary');if(summary){const b=s('cs-B')?.querySelectorAll('.on').length||0,ss=s('cs-S')?.querySelectorAll('.on').length||0;summary.textContent=b+'볼 · '+ss+'스트라이크 · '+Math.min(3,st.outs)+'아웃';}
+  mdSet('cs-bases',st.bases.map((id,i)=>`<span class="md-base-pill${id?' occupied':''}" title="${i+1}루 · ${id?esc(mdPlayer(g,id).name):'주자 없음'}"><i>${i+1}루</i><b>${id?esc(mdPlayer(g,id).name):'비어 있음'}</b></span>`).join(''));
   CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); }
 function cCap(t,cls){ const el=document.getElementById('cs-cap'); if(!el)return; el.className='cs-cap'+(t?' on':'')+(cls?' '+cls:''); el.textContent=t||''; }
 /* 공 */

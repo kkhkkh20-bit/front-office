@@ -18,6 +18,7 @@ for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1920,h
    if(document.querySelectorAll('.md-pitch-dot').length!==Math.min(6,i+1)||document.querySelectorAll('.md-pitch-history li').length!==Math.min(4,i+1))failures.push('공개 범위');
  }
  const dock=document.querySelector('.md-pitch-dock').getBoundingClientRect(),bso=document.querySelector('#cs-bso').getBoundingClientRect(),field=document.querySelector('#cs-stage').getBoundingClientRect(),duel=document.querySelector('#cs-vs').getBoundingClientRect(),host=document.querySelector('.cast').getBoundingClientRect();
+ const bases=[...document.querySelectorAll('#cs-bases .md-base-pill')],state=cBefore(g,k);if(bases.length!==3||bases.some((e,i)=>e.classList.contains('occupied')!==!!state.bases[i]))failures.push('현재 주자 표시');
  if(bso.bottom>dock.bottom||bso.right>dock.right||bso.top<dock.top+dock.height/2)failures.push('우측 하단 카운트');
  if(field.height<160||field.width<200||duel.bottom>innerHeight||host.right>innerWidth+1)failures.push('구장·카드 배치');
  return {failures,record:document.querySelector('#cs-pitch-source').textContent,pitcher:document.querySelector('#cs-pitcher-count').textContent};},k);
