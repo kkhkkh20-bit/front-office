@@ -1,13 +1,16 @@
 {
-  "beforeSource": "fed5df1",
+  "beforeSource": "cdf19b3",
+  "beforeRenderer": "2d",
   "afterSource": "2026-11-03q",
+  "afterRenderer": "3d",
+  "afterPublishedSource": "2dfd953000a98d16919cb0233f81c1f24d3df5b7",
   "fixtureSha256": "f4ffdb612c0f0a9dc01f1b22f08f8dd4e94b62ddeea1a6c9d695d17fe6b7c4c9",
   "fps": 24,
   "seconds": 32,
   "chapters": [
     {
       "key": "ground",
-      "label": "투구·풀스윙·땅볼 처리",
+      "label": "투구·타격·땅볼 처리",
       "speed": 1,
       "seconds": 7,
       "gi": 0,
@@ -31,7 +34,7 @@
     },
     {
       "key": "homer",
-      "label": "홈런 · 관중석 착지",
+      "label": "홈런 · 타구 방향",
       "speed": 2,
       "seconds": 10,
       "gi": 16,
@@ -67,7 +70,7 @@
     }
   ],
   "files": {
-    "before": {
+    "before-2d": {
       "programs": [],
       "stream_groups": [],
       "streams": [
@@ -85,10 +88,10 @@
       ],
       "format": {
         "duration": "32.000000",
-        "size": "2254807"
+        "size": "926806"
       }
     },
-    "after": {
+    "after-3d": {
       "programs": [],
       "stream_groups": [],
       "streams": [
@@ -106,7 +109,7 @@
       ],
       "format": {
         "duration": "32.000000",
-        "size": "3230168"
+        "size": "3209502"
       }
     },
     "comparison": {
@@ -124,10 +127,9 @@
       ],
       "format": {
         "duration": "32.000000",
-        "size": "3171823"
+        "size": "2400048"
       }
     }
   },
-  "note": "실제 시뮬레이션 기록을 로컬 브라우저에서 고정 시간 간격으로 재생·녹화. 동작 비교용이며 실시간 FPS 측정은 별도.",
-  "afterPublishedSource": "2dfd953000a98d16919cb0233f81c1f24d3df5b7"
+  "note": "실제 시뮬레이션 기록을 로컬 브라우저에서 고정 시간 간격으로 재생·녹화. 동작 비교용이며 실시간 FPS 측정은 별도."
 }
