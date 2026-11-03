@@ -35,7 +35,18 @@ function workspaceFit(host){
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
   const root=main.querySelector(':scope > .roster-page')||main;
   if(root!==main)root.classList.add('ws-page');
-  const fixed='.seg,.subtabs,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
+  // 좁거나 낮은 화면에서는 여러 줄 탭 대신 같은 항목을 선택 상자로 연다.
+  if(matchMedia('(max-width:699px), (max-height:599px)').matches){
+    const filters=root.querySelector('.roster-filter-body');
+    if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
+    root.querySelectorAll('.seg.itabs').forEach(tabs=>{
+      const buttons=[...tabs.querySelectorAll('button[data-a="itab"]')];if(!buttons.length)return;
+      const select=document.createElement('select');select.className='ws-tab-select';select.setAttribute('aria-label','화면 선택');
+      buttons.forEach(button=>{const option=document.createElement('option');option.value=button.dataset.v;option.textContent=button.textContent;option.selected=button.classList.contains('on');select.append(option);});
+      select.onchange=()=>A.itab(select.value);tabs.before(select);tabs.classList.add('ws-tabs-folded');
+    });
+  }
+  const fixed='.seg,.subtabs,.ws-tab-select,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
   const panels=[];
   for(const node of [...root.children]){
     if(node.matches(fixed)||node.matches('p')||getComputedStyle(node).position==='fixed')continue;
@@ -57,6 +68,7 @@ function workspaceFit(host){
     let scroller;
     if(regions.length===1){
       const region=regions[0],tail=children.slice(children.indexOf(region)+1);
+      if(matchMedia('(max-width:699px), (max-height:599px)').matches&&region.matches('.tw,.fdt-w'))tail.filter(el=>el.matches('p.small')).forEach(el=>region.append(el));
       const extra=tail.filter(el=>!el.matches('.pgr,.row,.btn,p.small'));
       if(extra.length){
         scroller=document.createElement('div');panel.insertBefore(scroller,region);scroller.append(region);
@@ -76,7 +88,18 @@ function workspaceFit(host){
   deck.style.setProperty('--ws-columns',columns);
   UI.workspacePages=UI.workspacePages||{};
   let page=clamp(UI.workspacePages[key]||0,0,pages-1);
-  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(!panel.hidden&&pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
+  // 패널을 넘길 때도 다시 측정한다. 처음 숨겨진 보고는 크기가 0이라 미리 판단할 수 없다.
+  function fitPanel(panel,index){
+    const scroll=panel.querySelector('.ws-scroll');if(!scroll||scroll.clientHeight>=80||panel.clientHeight<100||panel.matches('.roster-list'))return;
+    const keep=el=>el.matches('.pgr')||(el.matches('h1,h2,h3,header')||el===panel.firstElementChild&&el.querySelector('h2,h3,.sec'))&&el.offsetHeight<=Math.max(40,panel.clientHeight*.4);
+    const content=[...panel.children].filter(el=>el!==scroll&&!keep(el));if(!content.length)return;
+    const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');
+    const ordered=[...panel.children].filter(el=>el===scroll||content.includes(el));ordered[0].before(body);
+    scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');ordered.forEach(el=>body.append(el));
+    body.addEventListener('scroll',()=>{positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
+  }
+  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
+
   if(pages>1){
     const bar=document.createElement('nav');bar.className='ws-pages';bar.setAttribute('aria-label','업무 패널');
     const prev=document.createElement('button'),next=document.createElement('button'),select=document.createElement('select');
@@ -86,6 +109,14 @@ function workspaceFit(host){
     prev.onclick=()=>{page--;sync();};next.onclick=()=>{page++;sync();};select.onchange=()=>{page=+select.value;sync();};
     bar.append(prev,select,next);root.insertBefore(bar,deck);sync();
   }
+
+}
+
+function workspaceReveal(selector){
+  const panel=document.querySelector(selector)?.closest('.ws-panel');if(!panel||!panel.hidden)return;
+  const deck=panel.parentElement,select=deck.parentElement.querySelector(':scope > .ws-pages select');if(!select)return;
+  const columns=+deck.style.getPropertyValue('--ws-columns')||1;
+  select.value=String(Math.floor([...deck.children].indexOf(panel)/columns));select.dispatchEvent(new Event('change',{bubbles:true}));
 }
 
 function workspaceDetail(){

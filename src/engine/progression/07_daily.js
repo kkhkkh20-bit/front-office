@@ -25,8 +25,9 @@ function advance(mode,options={}){
   if(mode==='next'&&!G.unemp&&(period()==='off'||period()==='pre'))target=Math.min(target,start+7); /* 비시즌·시즌 준비: 한 번에 최대 7일 */
   G.stops=[]; const r0=G.sea.rec[G.user]; const w0=r0.w,l0=r0.l, sea0=G.sea.y; let days=0;
   const weekly=mode==='event'||mode==='week';
-  /* 기본 진행: 최대 7일을 자동 계산하고 중요한 결정과 예약한 직관에서만 멈춘다. */
-  if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+7; } else G.dig=null;
+  const gameBatch=mode==='event'&&!G.unemp&&(period()==='season'||Array.from({length:7},(_,i)=>start+i+1).some(ourGameOn));
+  /* 기본 계속은 3경기. 휴식일은 세지 않고, 경기 없는 비시즌과 명시한 1주일 진행은 7일이다. */
+  if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+(gameBatch?21:7); } else G.dig=null;
   while(G.day<target){
     if(G.unemp)unempAuto();
     if(blocker())break;
@@ -38,8 +39,9 @@ function advance(mode,options={}){
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
     if(weekly){ const D=G.dig; D.to=G.day;
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); G.res=null; }
+      if(gameBatch&&D.games.length>=3)break;
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
-      { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if((G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
+      { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
       if(G.unemp&&days>=14)break;
       continue; }

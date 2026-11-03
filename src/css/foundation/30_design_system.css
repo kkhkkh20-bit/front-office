@@ -137,3 +137,78 @@
 #app .rail button,#app .railme span{font-size:var(--ui-body);line-height:20px}
 #app .rail .brand b,#app .top .club b{font-size:var(--ui-heading);line-height:24px}
 #sheet .pe-b{font-size:var(--ui-caption);line-height:16px;min-height:28px;padding:4px 8px}
+
+/* 트레이드의 양쪽 명단은 화면 폭이 아니라 실제 카드가 들어갈 폭으로 열 수를 정한다. */
+:is(#app,#sheet) .tcols2 .tgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));align-items:stretch}
+:is(#app,#sheet) .tcard.pc :is(.pc-top,.pc-core,.pc-id,.tc-ft){min-width:0;max-width:100%;box-sizing:border-box}
+:is(#app,#sheet) .tcard.pc .pc-top{padding-right:0}
+:is(#app,#sheet) .tcard.pc:has(>.tc-mark) .pc-top{padding-right:30px}
+:is(#app,#sheet) .tcard.pc .pc-id>span{flex-wrap:wrap;white-space:normal;overflow:visible}
+:is(#app,#sheet) .tcard.pc .pc-core{grid-template-columns:repeat(auto-fit,minmax(min(100%,100px),1fr))}
+:is(#app,#sheet) .tcard.pc :is(.pc-ab,.pc-rec){min-width:0;box-sizing:border-box;padding:6px 8px}
+:is(#app,#sheet) .tcard.pc :is(.pc-l,.pc-s){white-space:normal;overflow:visible;overflow-wrap:anywhere}
+:is(#app,#sheet) .tcard.pc .pc-s .ptier{display:inline-block;max-width:100%;white-space:normal;box-sizing:border-box;vertical-align:middle}
+
+/* 주소창이 보이는 휴대폰과 낮은 가로 화면에서도 표의 공간부터 확보한다. */
+:is(#app,#sheet) .ws-tabs-folded{display:none!important}
+:is(#app,#sheet) .ws-tab-select{min-width:0;max-width:100%;flex:1}
+#app .roster-filters{display:block;min-width:0;margin:0}
+#app .roster-filters>summary{display:none;cursor:pointer;min-height:32px;line-height:20px;padding:6px 0;box-sizing:border-box;font-size:var(--ui-body)}
+#app .roster-filter-body{display:grid;gap:8px}
+#app .roster-short-controls{display:none}
+.ws-scroll>.ws-flow{overflow:visible!important;max-height:none;min-height:0}
+.ws-scroll.tw.twp thead th,.ws-scroll.fdt-w.twp thead th{top:0}
+
+/* 긴 제안·결재 소식도 목록 또는 본문 안에서만 스크롤한다. */
+html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidden;overscroll-behavior:none}
+.shell:has(.inbox-workspace){height:100dvh;min-height:0;overflow:hidden}
+.fmsh:has(.inbox-workspace) .fmmain{display:flex;flex-direction:column;overflow:hidden}
+.fmsh:has(.inbox-workspace) .fmmain>.blk{flex:none}
+.fmsh:has(.inbox-workspace) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
+.fmsh:has(.inbox-workspace) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
+#app .inbox-workspace{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;padding-bottom:8px}
+.inbox-workspace>.ibx-bar,.inbox-workspace>.ibx-mback{flex:none}
+.inbox-workspace>.ibx{flex:1;min-height:0;height:auto!important;align-items:stretch;overflow:hidden}
+.inbox-workspace>.ibx>.ibx-lw{min-height:0;height:100%}
+.inbox-workspace .ibx-read{min-height:0;height:100%;overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
+.inbox-workspace .ibx-lw>.ibx-list{height:100%;max-height:none;position:static;overflow:auto;box-sizing:border-box}
+.inbox-workspace>.ibx-list.m,.inbox-workspace>.ibm{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;align-content:start}
+@media(max-width:1099px){
+ .shell:has(.inbox-workspace){display:block;padding-bottom:calc(58px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+ .shell:has(.inbox-workspace)>.rail{display:none}
+ .shell:has(.inbox-workspace)>.mainc{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .shell:has(.inbox-workspace) .top{flex:none;position:relative}
+ .shell:has(.inbox-workspace) .mainc>.gut{flex:1;min-height:0;overflow:hidden}
+ .shell:has(.inbox-workspace) .mainc>.gut>.wrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .shell:has(.inbox-workspace) .subhead{flex:none;margin-block:6px}
+ .shell:has(.inbox-workspace) .bnav{display:block}
+}
+@media(max-width:699px),(max-height:599px){
+ #app .roster-navigation{display:flex;flex-wrap:nowrap;min-width:0}
+ #app .roster-navigation>.rseg{flex:1;min-width:0}
+ #app .roster-navigation>.rseg button{flex:1;min-width:0;white-space:nowrap;padding-inline:6px}
+ #app .roster-filters>summary{display:list-item}
+ #app .roster-filter-body{max-height:min(200px,30dvh);overflow:auto;overscroll-behavior:contain;padding-block:6px}
+ #app .roster-filters[open]{flex-shrink:1;min-height:32px;overflow:auto;overscroll-behavior:contain;max-height:45%}
+ #app .roster-filters[open]>summary{position:sticky;top:0;background:var(--panel);z-index:6}
+ #app .roster-list>.ws-scroll{min-height:80px}
+}
+@media(max-width:1099px) and (max-height:599px){
+ #app .shell>.mainc>.gut>.wrap>.subhead{display:none}
+ #app .shell:has(.ws-frame,.home-workspace,.inbox-workspace){padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+ #app .bnav>.in{height:40px;min-height:40px}
+ #app .bnav button{padding:4px 2px;min-height:40px}
+ #app .bnav button>.ico{display:none}
+ #app .home-workspace{grid-template-rows:32px minmax(0,1fr) 36px;gap:6px}
+ #app .hw-heading>div,#app .hw-metrics{display:none}
+ #app .hw-heading,#app .hw-heading>nav{height:32px;margin:0;width:100%;flex-wrap:nowrap}
+ #app .hw-heading>nav button{min-height:32px;padding:4px 8px}
+ #app .home-workspace .hw-panel{overflow:auto;overscroll-behavior:contain}
+ #app .home-workspace .hw-panel>header{position:sticky;top:0;z-index:6;flex-shrink:0}
+ #app .home-workspace .hw-panel>*:not(header){flex-shrink:0}
+ #app .roster-heading,#app .roster-caption,#app .roster-list>.r2link{display:none}
+ #app .roster-short-controls{display:flex;gap:8px;flex-wrap:wrap}
+ #app .roster-short-controls>select{flex:1;min-width:120px}
+ #app .ws-panels>.card{padding:8px;gap:6px}
+ #app .roster-list>.ws-scroll{min-height:64px}
+}

@@ -15,8 +15,10 @@ END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
 step "계속·날짜 표시·스카우트 위임"; node tools/check-continue.cjs || fail=1
-step "경기 전 중계 선택"; node tools/check-match-entry.cjs || fail=1
+step "3경기 진행·중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
+step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
+step "트레이드 제안 카드 레이아웃"; node tools/check-trade-layout.cjs || fail=1
 step "공통 글꼴·패널 정렬"; node tools/check-design-system.cjs || fail=1
 step "표·목록 내부 스크롤"; node tools/check-workspace.cjs || fail=1
 step "PC 전체 화면 높이"; node tools/check-desktop-fit.cjs || fail=1

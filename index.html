@@ -3378,6 +3378,81 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 #app .rail button,#app .railme span{font-size:var(--ui-body);line-height:20px}
 #app .rail .brand b,#app .top .club b{font-size:var(--ui-heading);line-height:24px}
 #sheet .pe-b{font-size:var(--ui-caption);line-height:16px;min-height:28px;padding:4px 8px}
+
+/* 트레이드의 양쪽 명단은 화면 폭이 아니라 실제 카드가 들어갈 폭으로 열 수를 정한다. */
+:is(#app,#sheet) .tcols2 .tgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));align-items:stretch}
+:is(#app,#sheet) .tcard.pc :is(.pc-top,.pc-core,.pc-id,.tc-ft){min-width:0;max-width:100%;box-sizing:border-box}
+:is(#app,#sheet) .tcard.pc .pc-top{padding-right:0}
+:is(#app,#sheet) .tcard.pc:has(>.tc-mark) .pc-top{padding-right:30px}
+:is(#app,#sheet) .tcard.pc .pc-id>span{flex-wrap:wrap;white-space:normal;overflow:visible}
+:is(#app,#sheet) .tcard.pc .pc-core{grid-template-columns:repeat(auto-fit,minmax(min(100%,100px),1fr))}
+:is(#app,#sheet) .tcard.pc :is(.pc-ab,.pc-rec){min-width:0;box-sizing:border-box;padding:6px 8px}
+:is(#app,#sheet) .tcard.pc :is(.pc-l,.pc-s){white-space:normal;overflow:visible;overflow-wrap:anywhere}
+:is(#app,#sheet) .tcard.pc .pc-s .ptier{display:inline-block;max-width:100%;white-space:normal;box-sizing:border-box;vertical-align:middle}
+
+/* 주소창이 보이는 휴대폰과 낮은 가로 화면에서도 표의 공간부터 확보한다. */
+:is(#app,#sheet) .ws-tabs-folded{display:none!important}
+:is(#app,#sheet) .ws-tab-select{min-width:0;max-width:100%;flex:1}
+#app .roster-filters{display:block;min-width:0;margin:0}
+#app .roster-filters>summary{display:none;cursor:pointer;min-height:32px;line-height:20px;padding:6px 0;box-sizing:border-box;font-size:var(--ui-body)}
+#app .roster-filter-body{display:grid;gap:8px}
+#app .roster-short-controls{display:none}
+.ws-scroll>.ws-flow{overflow:visible!important;max-height:none;min-height:0}
+.ws-scroll.tw.twp thead th,.ws-scroll.fdt-w.twp thead th{top:0}
+
+/* 긴 제안·결재 소식도 목록 또는 본문 안에서만 스크롤한다. */
+html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidden;overscroll-behavior:none}
+.shell:has(.inbox-workspace){height:100dvh;min-height:0;overflow:hidden}
+.fmsh:has(.inbox-workspace) .fmmain{display:flex;flex-direction:column;overflow:hidden}
+.fmsh:has(.inbox-workspace) .fmmain>.blk{flex:none}
+.fmsh:has(.inbox-workspace) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
+.fmsh:has(.inbox-workspace) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
+#app .inbox-workspace{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;padding-bottom:8px}
+.inbox-workspace>.ibx-bar,.inbox-workspace>.ibx-mback{flex:none}
+.inbox-workspace>.ibx{flex:1;min-height:0;height:auto!important;align-items:stretch;overflow:hidden}
+.inbox-workspace>.ibx>.ibx-lw{min-height:0;height:100%}
+.inbox-workspace .ibx-read{min-height:0;height:100%;overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
+.inbox-workspace .ibx-lw>.ibx-list{height:100%;max-height:none;position:static;overflow:auto;box-sizing:border-box}
+.inbox-workspace>.ibx-list.m,.inbox-workspace>.ibm{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;align-content:start}
+@media(max-width:1099px){
+ .shell:has(.inbox-workspace){display:block;padding-bottom:calc(58px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+ .shell:has(.inbox-workspace)>.rail{display:none}
+ .shell:has(.inbox-workspace)>.mainc{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .shell:has(.inbox-workspace) .top{flex:none;position:relative}
+ .shell:has(.inbox-workspace) .mainc>.gut{flex:1;min-height:0;overflow:hidden}
+ .shell:has(.inbox-workspace) .mainc>.gut>.wrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .shell:has(.inbox-workspace) .subhead{flex:none;margin-block:6px}
+ .shell:has(.inbox-workspace) .bnav{display:block}
+}
+@media(max-width:699px),(max-height:599px){
+ #app .roster-navigation{display:flex;flex-wrap:nowrap;min-width:0}
+ #app .roster-navigation>.rseg{flex:1;min-width:0}
+ #app .roster-navigation>.rseg button{flex:1;min-width:0;white-space:nowrap;padding-inline:6px}
+ #app .roster-filters>summary{display:list-item}
+ #app .roster-filter-body{max-height:min(200px,30dvh);overflow:auto;overscroll-behavior:contain;padding-block:6px}
+ #app .roster-filters[open]{flex-shrink:1;min-height:32px;overflow:auto;overscroll-behavior:contain;max-height:45%}
+ #app .roster-filters[open]>summary{position:sticky;top:0;background:var(--panel);z-index:6}
+ #app .roster-list>.ws-scroll{min-height:80px}
+}
+@media(max-width:1099px) and (max-height:599px){
+ #app .shell>.mainc>.gut>.wrap>.subhead{display:none}
+ #app .shell:has(.ws-frame,.home-workspace,.inbox-workspace){padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+ #app .bnav>.in{height:40px;min-height:40px}
+ #app .bnav button{padding:4px 2px;min-height:40px}
+ #app .bnav button>.ico{display:none}
+ #app .home-workspace{grid-template-rows:32px minmax(0,1fr) 36px;gap:6px}
+ #app .hw-heading>div,#app .hw-metrics{display:none}
+ #app .hw-heading,#app .hw-heading>nav{height:32px;margin:0;width:100%;flex-wrap:nowrap}
+ #app .hw-heading>nav button{min-height:32px;padding:4px 8px}
+ #app .home-workspace .hw-panel{overflow:auto;overscroll-behavior:contain}
+ #app .home-workspace .hw-panel>header{position:sticky;top:0;z-index:6;flex-shrink:0}
+ #app .home-workspace .hw-panel>*:not(header){flex-shrink:0}
+ #app .roster-heading,#app .roster-caption,#app .roster-list>.r2link{display:none}
+ #app .roster-short-controls{display:flex;gap:8px;flex-wrap:wrap}
+ #app .roster-short-controls>select{flex:1;min-width:120px}
+ #app .ws-panels>.card{padding:8px;gap:6px}
+ #app .roster-list>.ws-scroll{min-height:64px}
+}
 </style>
 </head>
 <body>
@@ -8561,8 +8636,9 @@ function advance(mode,options={}){
   if(mode==='next'&&!G.unemp&&(period()==='off'||period()==='pre'))target=Math.min(target,start+7); /* 비시즌·시즌 준비: 한 번에 최대 7일 */
   G.stops=[]; const r0=G.sea.rec[G.user]; const w0=r0.w,l0=r0.l, sea0=G.sea.y; let days=0;
   const weekly=mode==='event'||mode==='week';
-  /* 기본 진행: 최대 7일을 자동 계산하고 중요한 결정과 예약한 직관에서만 멈춘다. */
-  if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+7; } else G.dig=null;
+  const gameBatch=mode==='event'&&!G.unemp&&(period()==='season'||Array.from({length:7},(_,i)=>start+i+1).some(ourGameOn));
+  /* 기본 계속은 3경기. 휴식일은 세지 않고, 경기 없는 비시즌과 명시한 1주일 진행은 7일이다. */
+  if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+(gameBatch?21:7); } else G.dig=null;
   while(G.day<target){
     if(G.unemp)unempAuto();
     if(blocker())break;
@@ -8574,8 +8650,9 @@ function advance(mode,options={}){
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
     if(weekly){ const D=G.dig; D.to=G.day;
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); G.res=null; }
+      if(gameBatch&&D.games.length>=3)break;
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
-      { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if((G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
+      { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
       if(G.unemp&&days>=14)break;
       continue; }
@@ -17162,7 +17239,7 @@ function render(){ UI._rN=(UI._rN||0)+1;
   /* 도장(거래 성사·지명)은 4초 뒤 저절로 닫혀 아래 버튼을 가리지 않는다 */
   if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); }
 }
-function goSet(per,b){ return `<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 1주일이 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="matchOpen" ${b?'disabled':''} aria-label="경기 중계 선택" title="중계로 보거나 결과만 보기를 선택합니다"><span class="st-l">중계</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="최대 1주일을 자동 진행합니다. 예약한 직관과 중요한 소식에서만 멈춥니다. 확인할 소식이 있으면 먼저 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub('최대 1주일 · 예약한 경기만 관전'))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>${esc(b?nextLabel():contSub('최대 1주일 · 중요한 소식까지'))}</i></span>${ICO.ff}</button>`}</div>`; }
+function goSet(per,b){ const hint=!G.unemp&&(per==='season'||nextGames(1).some(x=>x.d<=G.day+7))?'3경기씩 · 예약한 경기만 관전':'최대 7일 · 중요한 소식까지'; return `<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 1주일이 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="matchOpen" ${b?'disabled':''} aria-label="경기 중계 선택" title="중계로 보거나 결과만 보기를 선택합니다"><span class="st-l">중계</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="최대 3경기를 자동 진행합니다. 휴식일은 제외하고 예약한 직관과 설정한 중단 조건에서 멈춥니다. 확인할 소식이 있으면 먼저 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub(hint))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>${esc(b?nextLabel():contSub(hint))}</i></span>${ICO.ff}</button>`}</div>`; }
 function topBlocks(b){ return `${wide()&&!fmOn()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}${needBackup()?`<div class="blk bkn gut"><div class="wrap">itch처럼 다른 사이트 안에서 하면 브라우저 정리나 게임 업데이트로 저장이 지워질 수 있습니다. 가끔 파일로 내보내 두세요.<button data-a="expFile">파일로 내보내기</button><button data-a="bkLater">나중에</button></div></div>`:''}`; }
 function tabBody(){
   if(UI.meet)return meetPage();
@@ -17807,7 +17884,7 @@ function homeNewsPanel(){
 }
 function homeFinancePanel(){const b=budget(),t=team(G.user),capRoom=capOf(sponSeason())-capPay(G.user);return `<section class="hw-panel hw-finance"><header><h2>구단 운영</h2><button class="tc-i" data-a="go" data-v="club:fin">재정</button></header><dl><div><dt>예산 여유</dt><dd class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</dd></div><div><dt>상한 잔여</dt><dd class="${capRoom<0?'bad':''}">${money(capRoom)}</dd></div><div><dt>보유 자금</dt><dd>${money(t.cash)}</dd></div><div><dt>구단주 신뢰</dt><dd>${Math.round(t.trust)} <small>/ 100</small></dd></div></dl></section>`;}
 function homeMatchPanel(){const n=nextGames(1)[0],recent=G.res&&G.games[G.res.i],planned=n&&G.watchPlanned?.day===n.d;
-  return `<section class="hw-panel hw-match"><header><h2>${G.matchAwait?'경기 시작 대기':'다음 경기'}</h2><button class="tc-i" data-a="go" data-v="league:score">일정</button></header>${n?`<div class="hw-match-main"><span class="hw-kicker">${dmd(n.d)} · ${n.home?'홈':'원정'}${planned?' · 중계 예정':n&&G.simPlanned?.day===n.d?' · 결과만 보기 예정':''}</span><div class="hw-match-teams">${badge(G.user,36)}<b>${esc(tshort(G.user))}<small>vs</small>${esc(tshort(n.op))}</b>${badge(n.op,36)}</div><button class="btn primary" data-a="matchOpen">${G.matchAwait?'중계 선택하고 경기 시작':'경기 중계 선택'}</button><span class="small muted">계속은 주간 자동 진행 · 이 경기만 선택 관전</span></div>`:'<p class="hw-hint">다음 시즌을 준비하고 있습니다.</p>'}${recent?.pbp?.length?`<button class="hw-recent" data-a="cast" data-v="${G.res.i}">최근 경기 다시 보기 · ${esc(tshort(recent.away))} vs ${esc(tshort(recent.home))}</button>`:''}</section>`;}
+  return `<section class="hw-panel hw-match"><header><h2>${G.matchAwait?'경기 시작 대기':'다음 경기'}</h2><button class="tc-i" data-a="go" data-v="league:score">일정</button></header>${n?`<div class="hw-match-main"><span class="hw-kicker">${dmd(n.d)} · ${n.home?'홈':'원정'}${planned?' · 중계 예정':n&&G.simPlanned?.day===n.d?' · 결과만 보기 예정':''}</span><div class="hw-match-teams">${badge(G.user,36)}<b>${esc(tshort(G.user))}<small>vs</small>${esc(tshort(n.op))}</b>${badge(n.op,36)}</div><button class="btn primary" data-a="matchOpen">${G.matchAwait?'중계 선택하고 경기 시작':'경기 중계 선택'}</button><span class="small muted">계속은 3경기씩 진행 · 이 경기만 선택 관전</span></div>`:'<p class="hw-hint">다음 시즌을 준비하고 있습니다.</p>'}${recent?.pbp?.length?`<button class="hw-recent" data-a="cast" data-v="${G.res.i}">최근 경기 다시 보기 · ${esc(tshort(recent.away))} vs ${esc(tshort(recent.home))}</button>`:''}</section>`;}
 function homeMetrics(){const b=budget(),r=G.sea.rec[G.user],c=G.cal,draft=c?.draft&&G.day>=KD(3,1)&&G.day<c.draft&&!(G.draft&&G.draft.y===G.year)?draftNo(G.user):null;return `<div class="hw-metrics"><button class="hw-record${draft?' dtl':''}" data-a="go" data-v="${draft?'transfer:draft':'league:stand'}"><span>${draft?'신인 드래프트':'시즌 성적'}</span><b>${draft?'D-'+(c.draft-G.day):r.w||r.l||r.t?`${r.w}승 ${r.l}패${r.t?' '+r.t+'무':''}`:'시즌 준비'}</b>${draft?`<small>1라운드 ${draft.r1}순위</small>`:''}</button><div class="hw-budget"><span>예산 여유</span><b class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</b><small>상한 잔여 ${money(capOf(sponSeason())-capPay(G.user))}</small></div><div><span>확인할 소식</span><b>${ibNeedList().length}건</b></div></div>`;}
 
 function homeCardInfo(html){const t=document.createElement('template');t.innerHTML=html;const title=t.content.querySelector('h2,h3,.sec,.eyebrow')?.textContent.trim()||'구단 보고';const text=t.content.textContent.replace(/\s+/g,' ').trim();return {title,text:text.slice(0,220)};}
@@ -19231,7 +19308,7 @@ function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const k
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
 /* 반드시 확인할 소식: 살아 있는 결정·제안·인터뷰와 중단 설정에 해당하는 중요 소식. 안내 버튼만 있는 소식은 넣지 않는다. */
-const ibMust=m=>!m.read&&!mailDone(m)&&(ibTask(m)||ibDecide(m));
+const ibMust=m=>!m.read&&!mailDone(m)&&stopOn(m)&&(ibTask(m)||ibDecide(m));
 function ibNeedList(){ return G.mail.filter(ibMust); } /* 최신부터(화면 순서) */
 /* 스페이스바·'안 읽음'이 여는 순서: 확인할 소식 먼저, 그다음 나머지 안 읽은 소식(각각 최신부터) = 화면 맨 위 묶음 순서 */
 function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).concat(u.filter(m=>!ibMust(m))).reverse(); } /* 화면 맨 위 묶음의 맨 아래(가장 오래된)부터 위로 올라가며 연다 */
@@ -19282,15 +19359,15 @@ function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m||m.read)return; m.
 function ibShowCur(L,c,flash){ const lr=L.getBoundingClientRect(), cr=c.getBoundingClientRect(); const a=cr.top-lr.top+L.scrollTop, b=a+cr.height; if(a<L.scrollTop+4||b>L.scrollTop+L.clientHeight-4)L.scrollTop=Math.max(0,a-L.clientHeight/3); if(flash){ c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); } }
 function ibTop(){ const t=document.querySelector('.top'); return t?t.offsetHeight:60; }
 /* 넓은 화면: 소식함이 창 아래 끝까지 딱 맞게(목록·본문이 각자 스크롤). 목록이 창 밖으로 잘려 보이지 않게 실제 위치로 높이를 잰다 */
-function ibFit(){ const X=document.querySelector('.ibx'); if(!X)return; const top=X.getBoundingClientRect().top+window.scrollY; X.style.height=Math.max(320,window.innerHeight-top-14)+'px'; }
+function ibFit(){ const main=document.querySelector('#app main.content');if(UI.tab!=='inbox'||!main)return;main.classList.add('inbox-workspace');const X=main.querySelector('.ibx');if(X)X.style.height=''; }
 if(!window._ibFitOn){ window._ibFitOn=1; window.addEventListener('resize',()=>{ if(UI&&UI.tab==='inbox'&&wide())ibFit(); }); }
-function inboxWire(){ document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
+function inboxWire(){ ibFit();document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
   const L=document.querySelector('.ibx-list'); if(!L)return; const n=G.mail.length;
-  if(wide()){ ibFit(); /* 목록 칸 스크롤: 처음 열면 맨 위(안 읽은 소식·최신), 그 뒤로는 보던 위치를 지키고, 맨 위를 보던 중에 새 소식이 오면 맨 위에 머문다 */
+  { /* 목록 칸 스크롤: 휴대폰도 페이지 대신 목록 안에서 이동하고 돌아오면 그 위치를 지킨다. */
     const atTop=UI._ibAtTop!==false; if(UI._ibFirst||(atTop&&UI._ibCnt!==n)){ L.scrollTop=0; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
     const c=L.querySelector('.ibr.cur'); if(c&&(f||UI._ibToCur)){ UI._ibToCur=false; ibShowCur(L,c,true); }
     const up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibAtTop=L.scrollTop<=24; if(up){ const lt=L.getBoundingClientRect().top; const k=[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length; up.hidden=L.scrollTop<200&&!k; up.textContent=k?`안 읽은 소식 ${k}건 ↑`:'맨 위로 ↑'; } }; L.onscroll=upd; upd();
-  } else if(!UI.ibOpen){ if(UI._ibFirst||(UI.ibY==null&&UI._ibCnt!==n))window.scrollTo(0,0); else if(UI.ibY!=null&&!f){ window.scrollTo(0,UI.ibY); UI.ibY=null; } }
+  }
   UI._ibFirst=false; UI._ibCnt=n; }
 function ibStep(d){ const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>document.querySelector(`.ibr[data-mid="${id}"]`)||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
@@ -19322,7 +19399,7 @@ function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
     else { if(d.pa<5)continue; const ops=d.ab?obpOf(d)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} OPS ${fmt3(ops)}`}); } }
   rows.sort((a,b)=>b.sc-a.sc); const hot=rows.filter(x=>x.sc>0).slice(0,3), cold=rows.filter(x=>x.sc<0).slice(-2).reverse();
   const A=digAnalysis(gs);
-  const body=[`[이번 주 핵심] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
+  const body=[`[진행 결과] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
   const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
   return m; }
 /* ---------- 그림 에셋: 트로피·메달·사건 아이콘 (직접 그린 SVG) ---------- */
@@ -20310,7 +20387,7 @@ function calView(){ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m};
 function calDetail(d){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d); const dd=d-G.day;
   let gh=''; if(g){ const sp=d>G.day&&d-G.day<=6?(()=>{ try{ const L=projStarters(G.user,6); const k=nextGames(8).findIndex(x=>x.d===d); const s=k>=0&&L[k]?L[k].sp:null; return s?` · 예상 선발 ${esc(s.name)}`:''; }catch(e){ return ''; } })():'';
     gh=`<div class="cal-dg">${badge(g.op,28)}<div><b>${g.kind?esc(g.kind)+' · ':''}${g.home?'홈':'원정'} ${g.home?'vs':'@'} ${esc(tname(g.op))}</b><span class="small muted">${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:d<G.day?'결과 기록 없음':`예정${sp}`}</span></div>${g.gi>=0&&G.games[g.gi]?`<button class="btn small" data-a="openGame" data-v="${g.gi}">박스스코어</button>`:''}</div>`; }
-  return `<section class="card"><div class="row between"><h2 class="sec">${o.m}월 ${o.d}일 ${WD[o.w]}요일</h2><span class="small muted">${dd===0?'오늘':dd>0?`D-${dd}`:`${-dd}일 전`}</span></div>
+  return `<section class="card cal-detail"><div class="row between"><h2 class="sec">${o.m}월 ${o.d}일 ${WD[o.w]}요일</h2><span class="small muted">${dd===0?'오늘':dd>0?`D-${dd}`:`${-dd}일 전`}</span></div>
     ${gh}${ev.length?`<ul class="cal-dl">${ev.map(e=>`<li><i style="background:${CAL_K[e.k].c}"></i>${esc(e.t)}</li>`).join('')}</ul>`:(g?'':'<p class="small muted">일정이 없습니다.</p>')}
     ${d>G.day?gmPlanBox(d,g):''}
     ${d>G.day?`<div class="row"><button class="btn primary" data-a="advTo" data-v="${d}" ${blockNow()?'disabled':''}>이 날까지 진행</button><span class="small muted">중요한 소식이나 결정할 일이 생기면 그 전에 멈춥니다.</span></div>`:''}</section>`; }
@@ -21174,8 +21251,10 @@ function rosterView(){
   const f2=(seg==='bat'?d.futB:d.futP).filter(vis); const f2n=f2.filter(p=>!p.ys).length, ysn=f2.filter(p=>p.ys).length; /* 2군·육성선수는 2군 탭에서 따로 본다 */
   const futLink=f2.length&&sc==='one'?`<button class="btn small block r2link" data-a="itab" data-v="roster:fut">2군 ${seg==='bat'?'야수':'투수'} ${f2n}명${ysn?` · 육성선수 ${ysn}명`:''}은 2군 탭에서 보기 ›</button>`:'';
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
+  const compact=matchMedia('(max-width:699px), (max-height:599px)').matches;
+  const filterOpen=!compact||UI.open?.rosterFilters;
   return `<div class="roster-page">${head}<div class="roster-navigation">${it.bar}${segT}</div><section class="card roster-list"><div class="row between roster-caption"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()}</span><div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>
-    <div class="roster-filters"><div class="row wrapr rscope"><div class="seg sm">${[['one','1군'],['two','2군'],['all','전체']].map(([k,l])=>`<button data-a="rscope" data-v="${k}" class="${sc===k?'on':''}">${l}</button>`).join('')}</div><div class="seg sm">${[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']].map(([k,l])=>`<button data-a="rsea" data-v="${k}" class="${(UI.rsea||'cur')===k?'on':''}">${l}</button>`).join('')}</div></div>${filt}</div>${body}${futLink}
+    <details class="roster-filters" data-k="rosterFilters" ${filterOpen?'open':''}><summary>필터·표시 설정 · ${sc==='one'?'1군':sc==='two'?'2군':'전체'} · ${UI.rsea==='car'?'통산':rSeaY()}</summary><div class="roster-filter-body"><div class="roster-short-controls">${sel}<div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div><div class="row wrapr rscope"><div class="seg sm">${[['one','1군'],['two','2군'],['all','전체']].map(([k,l])=>`<button data-a="rscope" data-v="${k}" class="${sc===k?'on':''}">${l}</button>`).join('')}</div><div class="seg sm">${[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']].map(([k,l])=>`<button data-a="rsea" data-v="${k}" class="${(UI.rsea||'cur')===k?'on':''}">${l}</button>`).join('')}</div></div>${filt}</div></details>${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section></div>`;
 }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }
@@ -22006,10 +22085,10 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length; const d0=G.day; UI._tk={show:d0,until:Date.now()+3000}; advance(v);if(G.matchAwait){closeSheets();UI.tab='home';if(G.watchPlanned?.day===G.matchAwait.day){A.watchNext();return;}if(G.simPlanned?.day===G.matchAwait.day){A.matchSim();return;}A.watchNext();return;} setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
     if(G.res||G.live){ closeSheets(); UI.tab='home'; UI.mail=null; } else if(G.stops.length){ /* 중요한 소식으로 멈추면 홈이 아니라 소식함에서 그 소식을 연다 */ const sm=G.stops.find(s=>s&&s.id&&G.mail.some(m=>m.id===s.id)); closeSheets(); UI.mail=null; if(sm){ UI.mf='all'; UI.tab='inbox'; UI.ibSel=sm.id; UI._ibToCur=true; sm.read=true; if(!wide())UI.ibOpen=sm.id; } else UI.tab='inbox'; } else { /* 멈출 소식이 없어도 소식함으로: 새 소식(한 주 정리 포함)을 거기서 본다 */ closeSheets(); UI.mail=null; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; UI._ibEnd=true; UI.ibSel=null; UI.ibOpen=null; }
     if(G.dig&&G.dig.games&&G.dig.games.length&&!G.res&&!G.live)UI.wkres={from:G.dig.from,to:G.dig.to,rk0:G.dig.rk}; /* 넘긴 동안의 경기를 한 장으로 */ save(); render(); window.scrollTo(0,0); },
-  calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); },
+  calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); workspaceReveal('.cal-grid'); },
   calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
-  calDay(v){ UI.calSel=+v; render(); const el=document.querySelector('.cal-dg,.cal-dl'); if(el&&!wide())el.scrollIntoView({block:'center',behavior:'smooth'}); },
-  calJump(v){ const o=dobj(+v); UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); },
+  calDay(v){ UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
+  calJump(v){ const o=dobj(+v); closeSheets(); UI.tab='cal'; UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
   /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
   advTo(v){ const T=+v; if(!(T>G.day))return; if(G.res&&!G.live)G.res=null; const d0=G.day; const rk0=userRank(); let g=0; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length;
     while(G.day<T&&g++<200){ if(blocker())break; advance('day'); if(G.matchAwait||G.stops.length||(G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0||G.live)break; if(G.res)G.res=null; }
@@ -22375,8 +22454,8 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
     <div class="cfm-b"><button class="btn" data-a="annPlayer" data-v="${p.id}">선수 보기</button><button class="btn primary" data-a="annClose">확인${UI.annQ.length>1?` (${UI.annQ.length-1}명 더)`:''}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
 /* 계속을 누를 때 아직 보지 않은 결정·중요 소식·트레이드 제안이 있으면 한 번 알려 준다(같은 목록이면 다시 묻지 않는다) */
-function pendEvents(){return (G.evs||[]).filter(e=>!e.done&&(e.exp==null||e.exp>=G.day)&&!G.mail.some(m=>m.id===e.mid&&mailDone(m)));}
-function pendOffers(){return (G.offers||[]).filter(o=>!o.blk&&(o.exp==null||o.exp>=G.day));}
+function pendEvents(){return (G.evs||[]).filter(e=>!e.done&&evStops(e)&&(e.exp==null||e.exp>=G.day)&&!G.mail.some(m=>m.id===e.mid&&mailDone(m)));}
+function pendOffers(){return stopOn({kind:'트레이드'})?(G.offers||[]).filter(o=>!o.blk&&(o.exp==null||o.exp>=G.day)):[];}
 function pendItems(){ const L=[]; const ev=pendEvents(); const key=ev.filter(e=>EV_KEY.has(e.k)), oth=ev.filter(e=>!EV_KEY.has(e.k));
   if(key.length)L.push({id:'k'+key.map(e=>e.id).join(','),t:`핵심 결정 ${key.length}건: ${key.slice(0,2).map(e=>`${e.title}(~${dmd(e.exp)})`).join(', ')}${key.length>2?' 외':''}`});
   if(oth.length)L.push({id:'e'+oth.map(e=>e.id).join(','),t:`결정 ${oth.length}건: ${oth.slice(0,2).map(e=>e.title).join(', ')}${oth.length>2?' 외':''}`});
@@ -22393,7 +22472,8 @@ function pendMailId(){ const n=ibNeedList(); if(n.length)return n[0].id;
 function advTargetTxt(v){ const per=period();
   if(G.unemp)return '제의가 오거나 1주일이 지날 때까지 진행합니다.';
   if(v==='event'&&(per==='off'||per==='pre')&&!nextGames(1).some(x=>x.d<=G.day+7))return `${dmd(G.day+7)}까지 최대 7일 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`;
-  if(v==='event'||v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기만 관전하며 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
+  if(v==='event'&&!G.unemp)return '최대 3경기를 자동 진행합니다. 휴식일은 경기 수에 포함하지 않으며 예약한 직관과 설정한 중단 조건에서 먼저 멈춥니다. 경기가 없는 비시즌에는 최대 7일 진행합니다.';
+  if(v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기만 관전하며 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
   if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
   const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
 function advAsk(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
@@ -22876,7 +22956,18 @@ function workspaceFit(host){
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
   const root=main.querySelector(':scope > .roster-page')||main;
   if(root!==main)root.classList.add('ws-page');
-  const fixed='.seg,.subtabs,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
+  // 좁거나 낮은 화면에서는 여러 줄 탭 대신 같은 항목을 선택 상자로 연다.
+  if(matchMedia('(max-width:699px), (max-height:599px)').matches){
+    const filters=root.querySelector('.roster-filter-body');
+    if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
+    root.querySelectorAll('.seg.itabs').forEach(tabs=>{
+      const buttons=[...tabs.querySelectorAll('button[data-a="itab"]')];if(!buttons.length)return;
+      const select=document.createElement('select');select.className='ws-tab-select';select.setAttribute('aria-label','화면 선택');
+      buttons.forEach(button=>{const option=document.createElement('option');option.value=button.dataset.v;option.textContent=button.textContent;option.selected=button.classList.contains('on');select.append(option);});
+      select.onchange=()=>A.itab(select.value);tabs.before(select);tabs.classList.add('ws-tabs-folded');
+    });
+  }
+  const fixed='.seg,.subtabs,.ws-tab-select,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
   const panels=[];
   for(const node of [...root.children]){
     if(node.matches(fixed)||node.matches('p')||getComputedStyle(node).position==='fixed')continue;
@@ -22898,6 +22989,7 @@ function workspaceFit(host){
     let scroller;
     if(regions.length===1){
       const region=regions[0],tail=children.slice(children.indexOf(region)+1);
+      if(matchMedia('(max-width:699px), (max-height:599px)').matches&&region.matches('.tw,.fdt-w'))tail.filter(el=>el.matches('p.small')).forEach(el=>region.append(el));
       const extra=tail.filter(el=>!el.matches('.pgr,.row,.btn,p.small'));
       if(extra.length){
         scroller=document.createElement('div');panel.insertBefore(scroller,region);scroller.append(region);
@@ -22917,7 +23009,18 @@ function workspaceFit(host){
   deck.style.setProperty('--ws-columns',columns);
   UI.workspacePages=UI.workspacePages||{};
   let page=clamp(UI.workspacePages[key]||0,0,pages-1);
-  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(!panel.hidden&&pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
+  // 패널을 넘길 때도 다시 측정한다. 처음 숨겨진 보고는 크기가 0이라 미리 판단할 수 없다.
+  function fitPanel(panel,index){
+    const scroll=panel.querySelector('.ws-scroll');if(!scroll||scroll.clientHeight>=80||panel.clientHeight<100||panel.matches('.roster-list'))return;
+    const keep=el=>el.matches('.pgr')||(el.matches('h1,h2,h3,header')||el===panel.firstElementChild&&el.querySelector('h2,h3,.sec'))&&el.offsetHeight<=Math.max(40,panel.clientHeight*.4);
+    const content=[...panel.children].filter(el=>el!==scroll&&!keep(el));if(!content.length)return;
+    const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');
+    const ordered=[...panel.children].filter(el=>el===scroll||content.includes(el));ordered[0].before(body);
+    scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');ordered.forEach(el=>body.append(el));
+    body.addEventListener('scroll',()=>{positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
+  }
+  const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
+
   if(pages>1){
     const bar=document.createElement('nav');bar.className='ws-pages';bar.setAttribute('aria-label','업무 패널');
     const prev=document.createElement('button'),next=document.createElement('button'),select=document.createElement('select');
@@ -22927,6 +23030,14 @@ function workspaceFit(host){
     prev.onclick=()=>{page--;sync();};next.onclick=()=>{page++;sync();};select.onchange=()=>{page=+select.value;sync();};
     bar.append(prev,select,next);root.insertBefore(bar,deck);sync();
   }
+
+}
+
+function workspaceReveal(selector){
+  const panel=document.querySelector(selector)?.closest('.ws-panel');if(!panel||!panel.hidden)return;
+  const deck=panel.parentElement,select=deck.parentElement.querySelector(':scope > .ws-pages select');if(!select)return;
+  const columns=+deck.style.getPropertyValue('--ws-columns')||1;
+  select.value=String(Math.floor([...deck.children].indexOf(panel)/columns));select.dispatchEvent(new Event('change',{bubbles:true}));
 }
 
 function workspaceDetail(){

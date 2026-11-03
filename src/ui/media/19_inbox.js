@@ -58,7 +58,7 @@ function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const k
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
 /* 반드시 확인할 소식: 살아 있는 결정·제안·인터뷰와 중단 설정에 해당하는 중요 소식. 안내 버튼만 있는 소식은 넣지 않는다. */
-const ibMust=m=>!m.read&&!mailDone(m)&&(ibTask(m)||ibDecide(m));
+const ibMust=m=>!m.read&&!mailDone(m)&&stopOn(m)&&(ibTask(m)||ibDecide(m));
 function ibNeedList(){ return G.mail.filter(ibMust); } /* 최신부터(화면 순서) */
 /* 스페이스바·'안 읽음'이 여는 순서: 확인할 소식 먼저, 그다음 나머지 안 읽은 소식(각각 최신부터) = 화면 맨 위 묶음 순서 */
 function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).concat(u.filter(m=>!ibMust(m))).reverse(); } /* 화면 맨 위 묶음의 맨 아래(가장 오래된)부터 위로 올라가며 연다 */
@@ -109,15 +109,15 @@ function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m||m.read)return; m.
 function ibShowCur(L,c,flash){ const lr=L.getBoundingClientRect(), cr=c.getBoundingClientRect(); const a=cr.top-lr.top+L.scrollTop, b=a+cr.height; if(a<L.scrollTop+4||b>L.scrollTop+L.clientHeight-4)L.scrollTop=Math.max(0,a-L.clientHeight/3); if(flash){ c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); } }
 function ibTop(){ const t=document.querySelector('.top'); return t?t.offsetHeight:60; }
 /* 넓은 화면: 소식함이 창 아래 끝까지 딱 맞게(목록·본문이 각자 스크롤). 목록이 창 밖으로 잘려 보이지 않게 실제 위치로 높이를 잰다 */
-function ibFit(){ const X=document.querySelector('.ibx'); if(!X)return; const top=X.getBoundingClientRect().top+window.scrollY; X.style.height=Math.max(320,window.innerHeight-top-14)+'px'; }
+function ibFit(){ const main=document.querySelector('#app main.content');if(UI.tab!=='inbox'||!main)return;main.classList.add('inbox-workspace');const X=main.querySelector('.ibx');if(X)X.style.height=''; }
 if(!window._ibFitOn){ window._ibFitOn=1; window.addEventListener('resize',()=>{ if(UI&&UI.tab==='inbox'&&wide())ibFit(); }); }
-function inboxWire(){ document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
+function inboxWire(){ ibFit();document.documentElement.style.setProperty('--ibtop',(ibTop()+8)+'px'); const f=UI.mailFocus; UI.mailFocus=null;
   const L=document.querySelector('.ibx-list'); if(!L)return; const n=G.mail.length;
-  if(wide()){ ibFit(); /* 목록 칸 스크롤: 처음 열면 맨 위(안 읽은 소식·최신), 그 뒤로는 보던 위치를 지키고, 맨 위를 보던 중에 새 소식이 오면 맨 위에 머문다 */
+  { /* 목록 칸 스크롤: 휴대폰도 페이지 대신 목록 안에서 이동하고 돌아오면 그 위치를 지킨다. */
     const atTop=UI._ibAtTop!==false; if(UI._ibFirst||(atTop&&UI._ibCnt!==n)){ L.scrollTop=0; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
     const c=L.querySelector('.ibr.cur'); if(c&&(f||UI._ibToCur)){ UI._ibToCur=false; ibShowCur(L,c,true); }
     const up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibAtTop=L.scrollTop<=24; if(up){ const lt=L.getBoundingClientRect().top; const k=[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length; up.hidden=L.scrollTop<200&&!k; up.textContent=k?`안 읽은 소식 ${k}건 ↑`:'맨 위로 ↑'; } }; L.onscroll=upd; upd();
-  } else if(!UI.ibOpen){ if(UI._ibFirst||(UI.ibY==null&&UI._ibCnt!==n))window.scrollTo(0,0); else if(UI.ibY!=null&&!f){ window.scrollTo(0,UI.ibY); UI.ibY=null; } }
+  }
   UI._ibFirst=false; UI._ibCnt=n; }
 function ibStep(d){ const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>document.querySelector(`.ibr[data-mid="${id}"]`)||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
@@ -149,6 +149,6 @@ function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
     else { if(d.pa<5)continue; const ops=d.ab?obpOf(d)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} OPS ${fmt3(ops)}`}); } }
   rows.sort((a,b)=>b.sc-a.sc); const hot=rows.filter(x=>x.sc>0).slice(0,3), cold=rows.filter(x=>x.sc<0).slice(-2).reverse();
   const A=digAnalysis(gs);
-  const body=[`[이번 주 핵심] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
+  const body=[`[진행 결과] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
   const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
   return m; }
