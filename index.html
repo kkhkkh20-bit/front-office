@@ -2890,6 +2890,12 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .match-dashboard[data-view="teams"] .md-team-panel{grid-template-rows:28px minmax(100px,.7fr) minmax(0,1fr) 24px}.match-dashboard[data-view="teams"] .md-mini-player .av{width:23px;height:23px}.match-dashboard[data-view="teams"] .md-mini-player>b{font-size:9px}.match-dashboard[data-view="teams"] .md-lineup-row{font-size:10px;padding:5px 2px;grid-template-columns:12px minmax(0,1fr) 22px}
 }
 /* 낮은 가로 화면은 상단바를 고정한 채 경기 본문만 스크롤한다. */
+/* PC 구장은 고정된 4:3 투영을 쓴다. 가로·세로를 따로 늘리면 다이아몬드가 납작해진다.
+   구장·선수·공·궤적 모두 같은 경기판 안에서 좌표를 공유하고 아래 포수 이름 여백을 남긴다. */
+@media(min-width:1001px){
+  .match-dashboard .md-field-body{container-type:size;display:grid;place-items:center;background:radial-gradient(ellipse at center,#234b35,#10231a 75%)}
+  .match-dashboard .cs-stage{width:min(100cqw,calc((100cqh - 40px)*1.3333333333));height:auto;aspect-ratio:4/3;flex:none;margin:0}
+}
 @media(max-height:560px){.detail-page-open #sheet .cast.match-dashboard{height:640px;min-height:640px}}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 @media(min-width:1100px){
@@ -19312,6 +19318,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-03j',d:'11월 3일',t:'PC 경기장 화면 비율 수정',items:[
+    'PC 경기장을 고정된 4:3 비율로 표시해 넓은 화면에서 위아래로 눌려 보이던 문제를 고쳤습니다. 구장·선수·공·궤적은 같은 경기판 안에서 위치를 맞추고, 포수 이름이 잘리지 않도록 여백을 남깁니다.']},
   {id:'2026-11-03i',d:'11월 3일',t:'2D 구장 중계와 공별 투구판',items:[
     '경기 화면을 큰 2D 구장과 현재 타자·투수 카드 중심으로 정리했습니다. 상단바는 유지하고 경기 기록·선수단은 보기 버튼으로 전환합니다.',
     '우측 하단에 9칸 투구판과 B·S·O를 배치했습니다. 공마다 위치·순번·구종·구속·결과를 보여주며 존 밖의 볼도 표시합니다.',

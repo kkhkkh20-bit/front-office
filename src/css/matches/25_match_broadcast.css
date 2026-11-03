@@ -61,4 +61,10 @@
   .match-dashboard[data-view="teams"] .md-team-panel{grid-template-rows:28px minmax(100px,.7fr) minmax(0,1fr) 24px}.match-dashboard[data-view="teams"] .md-mini-player .av{width:23px;height:23px}.match-dashboard[data-view="teams"] .md-mini-player>b{font-size:9px}.match-dashboard[data-view="teams"] .md-lineup-row{font-size:10px;padding:5px 2px;grid-template-columns:12px minmax(0,1fr) 22px}
 }
 /* 낮은 가로 화면은 상단바를 고정한 채 경기 본문만 스크롤한다. */
+/* PC 구장은 고정된 4:3 투영을 쓴다. 가로·세로를 따로 늘리면 다이아몬드가 납작해진다.
+   구장·선수·공·궤적 모두 같은 경기판 안에서 좌표를 공유하고 아래 포수 이름 여백을 남긴다. */
+@media(min-width:1001px){
+  .match-dashboard .md-field-body{container-type:size;display:grid;place-items:center;background:radial-gradient(ellipse at center,#234b35,#10231a 75%)}
+  .match-dashboard .cs-stage{width:min(100cqw,calc((100cqh - 40px)*1.3333333333));height:auto;aspect-ratio:4/3;flex:none;margin:0}
+}
 @media(max-height:560px){.detail-page-open #sheet .cast.match-dashboard{height:640px;min-height:640px}}
