@@ -48,15 +48,15 @@ function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; c
 /* 연수 결과: 크게 늘거나, 조금 늘거나, 그대로거나, 다치거나 폼이 흐트러진다 */
 const jB=w=>{ const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<11172&&c%28>0; }; const jIGa=w=>w+(jB(w)?'이':'가'), jEulReul=w=>w+(jB(w)?'을':'를');
 const OVS_TOOLN={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
-function ovsRoll(p,o,coachDv){ const L=trnLearn(p); const room=Math.max(0,p.pot-ovr(p)); const ag=p.age<=22?1.3:p.age<=25?1:p.age<=27?.75:.5;
-  const big=o.big*ag*L*clamp(room/6,.3,1.3)*(1+((coachDv||50)-50)/150), inj=o.inj*clamp((p.inj||.15)/.15,.6,2), form=o.form, good=o.good;
+function ovsForecast(p,o,coachDv){const room=Math.max(0,p.pot-ovr(p)),ag=p.age<=22?1.3:p.age<=25?1:p.age<=27?.75:.5;const inj=clamp(o.inj*clamp((p.inj||.15)/.15,.6,2),0,1),form=Math.min(o.form,1-inj),big=Math.min(o.big*ag*trnLearn(p)*clamp(room/6,.3,1.3)*(1+((coachDv||50)-50)/150),1-inj-form),good=Math.min(o.good,Math.max(0,1-inj-form-big));return {inj,form,big,good,flat:Math.max(0,1-inj-form-big-good)};}
+function ovsRoll(p,o,coachDv){const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
   const ks=o[p.isP?'P':'B']; const k=ks[Math.floor(R()*ks.length)]; const sc=Math.min(1,room/6+.4); const v0=p.isP?veloOf(p):null; const x=R(); let r;
   if(x<inj){ p.injOut=ri(14,60); delete p.injK; r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${p.injOut}일 재활이 필요합니다.`}; }
   else if(x<inj+form){ p.r[k]=clamp(p.r[k]-rnd(1,3),20,80); r={t:'form',k,txt:`${jEulReul(OVS_TOOLN[k])} 손보다 폼이 흐트러졌습니다. 다시 잡는 데 시간이 걸립니다.`}; }
   else if(x<inj+form+big){ p.r[k]=clamp(p.r[k]+rnd(4,8)*sc,20,80); p.pot=Math.min(80,p.pot+rnd(1,4)); const v1=p.isP?veloOf(p):null; r={t:'big',k,txt:k==='stf'&&v1>v0?`직구 평균 ${v0}km/h에서 ${v1}km/h로 올라 돌아왔습니다.`:`${jIGa(OVS_TOOLN[k])} 확실히 달라져 돌아왔습니다.`}; }
   else if(x<inj+form+big+good){ for(const kk of ks)p.r[kk]=clamp(p.r[kk]+rnd(1,2.5)*sc*1.4/ks.length,20,80); r={t:'good',k,txt:`${ks.map(z=>OVS_TOOLN[z]).join('·')}에서 성장이 확인됐습니다.`}; }
   else r={t:'flat',k,txt:'큰 변화는 없었습니다.'};
-  roundR(p); (p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t}); return r; }
+  roundR(p);const after=Object.fromEntries(Object.keys(before).map(k=>[k,p.r[k]]));const changes=Object.keys(before).map(k=>OVS_TOOLN[k]+' '+dv(before[k])+'→'+dv(after[k])).join(' · ');r.txt+=' '+changes+'.';(p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t,before,after,text:r.txt});if(p.ovsH.length>20)p.ovsH.shift();return r; }
 function fallRoll(tid,k){ const F=FALL[k]; const L=[]; const ps=domestic(tid).filter(p=>p.age<=25&&!(p.injOut>0)&&!(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)).sort((a,b)=>ovr(a)-ovr(b)).slice(0,22);
   for(const p of ps){ const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
     if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); }
@@ -103,7 +103,7 @@ const PREV=[{l:'없음',c:0,m:1},{l:'기본',c:500,m:.9},{l:'강화',c:1200,m:.8
 const HOSP={none:{name:'제휴 없음',c:0,rec:0,dx:false,d:'부상 때마다 외부 병원을 이용합니다.'},c:{name:'다온재활병원',c:400,rec:.08,dx:false,d:'재활 위주. 재활 기간이 조금 줄어듭니다.'},b:{name:'청명정형외과',c:700,rec:.12,dx:false,d:'정형외과 전문. 재활 기간이 줄어듭니다.'},a:{name:'새봄스포츠의학센터',c:1500,rec:.25,dx:true,d:'종합 스포츠의학. 재활 기간이 크게 줄고, 정밀 검진으로 선수의 부상 체질을 알려 줍니다.'}};
 /* 리그 전체 부상 빈도 보정: 1군·퓨처스를 합쳐 구단당 한 해 10~12건(그중 1군 이탈 7~10건)에 맞춘다. 부상 종류·체질 차이는 그대로 둔다 */
 const INJ_RATE=.58;
-function injMult(p){ return INJ_RATE*(p.team===G.user?(G.campInj||1)*PREV[G.med.prev].m*(1-facOf('weight')*.05):facAiInj(p.team))*(p.rush&&G.day<=p.rush?3:1)*(p.reInj&&p.reInj.left>0?p.reInj.m:1)*(p.trnF==='sta'?.92:p.trnF==='stf'?1.05:1); } /* 훈련 방향: 체력 집중은 부상이 조금 줄고, 구위 집중은 조금 는다 */
+function injMult(p){ return INJ_RATE*(p.team===G.user?(G.campInj||1)*PREV[G.med.prev].m*(1-facImpact(facOf('weight'))*.05):facAiInj(p.team))*(p.rush&&G.day<=p.rush?3:1)*(p.reInj&&p.reInj.left>0?p.reInj.m:1)*(p.trnF==='sta'?.92:p.trnF==='stf'?1.05:1); } /* 훈련 방향: 체력 집중은 부상이 조금 줄고, 구위 집중은 조금 는다 */
 /* 제휴 병원 바꾸기: 새 부상의 재활 기간뿐 아니라, 지금 재활 중인 선수(남은 14일 이상)의 남은 기간에도 그날부터 새 병원 재활 효과를 적용한다(일괄 할인이 아니라 남은 재활 비율만큼). 짧은 부상(14일 미만)은 그대로 */
 /* 병원 효과 기준: 병원 배수를 빼낸 '기준 재활 일수'(소수)를 선수에게 보관하고, 병원을 바꿀 때마다 그 기준에서 다시 계산한다.
    그래서 A→B→A로 돌아오면 원래 남은 기간으로 돌아온다(반올림·14일 문턱 때문에 단축이 남던 문제). 기준 이후 다른 일로 남은 기간이 바뀌었으면 지금 값에서 기준을 새로 잡는다 */
@@ -113,8 +113,8 @@ function setHospital(k){ if(!HOSP[k])return ''; const o=G.med.hosp||'none'; if(o
   for(const p of ownedOf(G.user)){ if(!(p.injOut>0))continue; const kept=p.injB&&p.injB.h===o&&p.injOut===p.injB.o-(G.day-p.injB.d); if(!kept&&p.injOut<14){ delete p.injB; continue; } /* 짧은 부상은 그대로(병원을 거쳐 바뀐 기간은 기준에서 되돌린다) */
     const n0=hospBase(p,o); const n=Math.max(1,Math.round(n0*hospF(k,p))); p.injB={n:n0,h:k,o:n,d:G.day}; if(n!==p.injOut){ L.push(`${p.name} ${p.injOut}일 → ${n}일`); p.injOut=n; } }
   G.med.hosp=k; G.medSet=true; addLog(`제휴 병원을 ${HOSP[k].name}(으)로 바꿨습니다.${L.length?` 재활 중인 선수 남은 기간: ${L.join(', ')}.`:''}`); return L; }
-function recMult(p){ return p.team===G.user?(1-HOSP[G.med.hosp].rec)*(1-facOf('rehab')*.07):facAiRec(p.team); }
-function facWeek(){ const dl=facOf('dorm'); if(!dl||G.unemp)return; for(const p of domestic(G.user))if(p.age<=23&&(p.mor??60)<75)p.mor=clamp((p.mor??60)+dl*.3,0,75); }
+function recMult(p){ return p.team===G.user?(1-HOSP[G.med.hosp].rec)*(1-facImpact(facOf('rehab'))*.07):facAiRec(p.team); }
+function facWeek(){ const dl=facImpact(facOf('dorm')); if(!dl||G.unemp)return; for(const p of domestic(G.user))if(p.age<=23&&(p.mor??60)<75)p.mor=clamp((p.mor??60)+dl*.3,0,75); }
 /* 스카우트 연봉: 재직한 날만큼 쌓는다(결산 직전 해고해도 그해 일한 몫은 비용으로 남고, 막판 채용은 남은 기간만). 기록이 없는 예전 저장은 이번 회계연도 경과분을 지금 인원 기준으로 잡는다 */
 function scoutSpent(){ const S=G.spend||{}; if(S.scout!=null)return S.scout; const el=clamp(G.day-(finYearEnd()-365),0,365)/365; return sum((G.scouts||[]).map(s=>s.sal||0))*el; }
 function scoutFire(id){ const s=(G.scouts||[]).find(x=>x.id===id); if(!s)return ''; G.spend=G.spend||{}; G.spend.scout=scoutSpent(); G.scouts=G.scouts.filter(x=>x.id!==id); addLog(`스카우트 ${s.name}와(과) 계약을 끝냈습니다. 올해 일한 기간 연봉(${money(Math.round(s.sal*clamp(G.day-(finYearEnd()-365),0,365)/365))} 안팎)은 그대로 비용에 남습니다.`); return s.name; }

@@ -2,6 +2,7 @@
    세로는 표·목록 패널 안에서 스크롤하고, 첫 열(이름)은 늘 보인다.
    열 폭을 재서 화면에 들어가는 만큼씩 묶고 '◀ 1/3 ▶'로 넘긴다. 넓은 화면도 표가 넘칠 때만 같은 방식 */
 const TWP_W=600;
+function workspaceCompact(){return matchMedia('(max-width:699px), (max-height:599px), (max-width:1099px) and (pointer:coarse)').matches;}
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
   document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg'))return; const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
     tw.querySelectorAll(':scope > .twpg').forEach(x=>x.remove()); tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; }); tw.classList.remove('twp');
@@ -36,17 +37,19 @@ function workspaceFit(host){
   const root=main.querySelector(':scope > .roster-page')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭 대신 같은 항목을 선택 상자로 연다.
-  if(matchMedia('(max-width:699px), (max-height:599px)').matches){
+  if(workspaceCompact()){
     const filters=root.querySelector('.roster-filter-body');
     if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
-    root.querySelectorAll('.seg.itabs').forEach(tabs=>{
-      const buttons=[...tabs.querySelectorAll('button[data-a="itab"]')];if(!buttons.length)return;
+    root.querySelectorAll('.seg.itabs,nav.subtabs').forEach(tabs=>{
+      const buttons=[...tabs.querySelectorAll('button[data-a]')].filter(b=>['itab','go','sub','tab'].includes(b.dataset.a));if(!buttons.length)return;
       const select=document.createElement('select');select.className='ws-tab-select';select.setAttribute('aria-label','화면 선택');
-      buttons.forEach(button=>{const option=document.createElement('option');option.value=button.dataset.v;option.textContent=button.textContent;option.selected=button.classList.contains('on');select.append(option);});
-      select.onchange=()=>A.itab(select.value);tabs.before(select);tabs.classList.add('ws-tabs-folded');
+      buttons.forEach((button,i)=>{const option=document.createElement('option');option.value=i;option.textContent=button.textContent;option.selected=button.classList.contains('on');select.append(option);});
+      select.onchange=()=>{const button=buttons[+select.value];if(button)A[button.dataset.a](button.dataset.v);};tabs.before(select);tabs.classList.add('ws-tabs-folded');
     });
+    const selectors=[...root.querySelectorAll(':scope > .ws-tab-select')];
+    if(selectors.length>1){const nav=document.createElement('nav');nav.className='ws-navigation';nav.setAttribute('aria-label','업무 화면 선택');selectors[0].before(nav);selectors.forEach(select=>nav.append(select));}
   }
-  const fixed='.seg,.subtabs,.ws-tab-select,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
+  const fixed='.seg,.subtabs,.ws-tab-select,.ws-navigation,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr';
   const panels=[];
   for(const node of [...root.children]){
     if(node.matches(fixed)||node.matches('p')||getComputedStyle(node).position==='fixed')continue;
@@ -58,7 +61,8 @@ function workspaceFit(host){
     while(root.firstChild)body.append(root.firstChild);root.append(body);return;
   }
   const deck=document.createElement('div');deck.className='ws-panels';root.insertBefore(deck,panels[0]);
-  const key=host?'detail:'+UI.sheet+':'+UI.ptab:fmKey()+':'+(UI.it?.[UI.tab]||'');
+  const innerTabs=[...root.querySelectorAll('.itabs button.on')].map(b=>b.dataset.v).join('|');
+  const key=(host?'detail:'+UI.sheet+':'+UI.ptab:fmKey())+':'+innerTabs;
   const positions=UI.workspaceScroll=UI.workspaceScroll||{};
   const scrollSelectors='.tw,.fdt-w,.tgrid,.cgrid,.cgr,.fl,.feed,.dealg,.sched,.stop-l,.tn-l,.slots,.bud-t,.cpwrap,.ltiles,.covm';
   const label=el=>el.querySelector('h2,h3,.sec,.eyebrow,summary')?.textContent.trim()||'보고';
@@ -83,6 +87,11 @@ function workspaceFit(host){
     }
     scroller.classList.add('ws-scroll');scroller.tabIndex=0;scroller.setAttribute('role','region');scroller.setAttribute('aria-label',label(panel)+' 내용');
     scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
+    if(workspaceCompact()&&!panel.matches('.roster-list')){
+      const before=[...panel.children].slice(0,[...panel.children].indexOf(scroller));
+      const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp'));
+      if(controls.length){const disclosure=document.createElement('details'),summary=document.createElement('summary'),options=document.createElement('div');disclosure.className='ws-filter-controls';disclosure.dataset.k='workspace-filter:'+key+':'+index;disclosure.open=!!UI.open[disclosure.dataset.k];summary.textContent='검색·필터 설정';options.className='ws-filter-options';controls[0].before(disclosure);controls.forEach(el=>options.append(el));disclosure.append(summary,options);}
+    }
   });
   const columns=Math.min(panels.length,innerWidth>=700?2:1),pages=Math.ceil(panels.length/columns);
   deck.style.setProperty('--ws-columns',columns);

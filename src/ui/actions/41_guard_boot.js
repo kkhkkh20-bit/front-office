@@ -30,8 +30,8 @@ const GUARD={
   offer(v){ const id=+v; const p=G.players[id]; if(!p||!G.fa||p.faFrom===G.user||G.fa.offers[id]||faOutBlocked(G.user,p))return null; const o=UI.offer&&UI.offer.id===id?UI.offer:p.ask; const g=COMP[p.faGrade]; const ps=p.faPrevSal||0;
     const comp=p.faGrade==='C'?`보상금 ${money(Math.round(ps*1.5))}`:`보호 ${g.prot}명 밖 선수 1명 + ${money(ps*g.withP)}, 또는 선수 없이 ${money(ps*g.cash)} (상대 구단 선택)`;
     return {subj:`FA ${p.name} 영입 제안`,kind:'FA',lines:[`${posLabel(p)} · ${p.age}세 · ${p.faGrade}등급 · 원소속 ${tshort(p.faFrom)}`,`제시 ${o.years}년 · 연 ${money(o.annual)} · 총 ${money(o.annual*o.years)}`,`계약하면 보상: ${comp}`,'보상금은 올해 결산 지출로 잡혀 예산 여유가 그만큼 줄어듭니다.'],warn:'선수가 받아들이면 바로 계약되고 되돌릴 수 없습니다. 첫 제안 때만 묻습니다.'}; },
-  buildFacItem(v){ facInit(); const D=FACI[v]; if(!D)return null; const lv=G.fac.it[v]; if(lv>=3||G.fac.bld[v])return null; const c=D.c[lv+1]; return {subj:`${D.l} 공사: ${D.lv[lv+1]}`,kind:'시설',lines:[`공사비 ${money(c)} (보유 현금 ${money(team(G.user).cash)}에서 바로 지출)`,`공사 기간 ${D.days[lv+1]}일 · 완공 후 유지비 연 ${money(D.up[lv+1])}`,D.d],warn:'시작하면 되돌릴 수 없습니다.'}; },
-  stadBuild(v){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===v); if(!it)return null; const lv=S.lv[v]; if(lv>=5||(S.build||[]).some(b=>b.k===v))return null; const per=period(); if(per==='season'||per==='post')return null;
+  buildFacItem(v){ facInit(); const D=FACI[v]; if(!D)return null; const lv=G.fac.it[v]; if(lv>=FAC_MAX||G.fac.bld[v])return null; const c=D.c[lv+1]; return {subj:`${D.l} 공사: ${D.lv[lv+1]}`,kind:'시설',lines:[`공사비 ${money(c)} (보유 현금 ${money(team(G.user).cash)}에서 바로 지출)`,`공사 기간 ${D.days[lv+1]}일 · 완공 후 유지비 연 ${money(D.up[lv+1])}`,D.d],warn:'시작하면 되돌릴 수 없습니다.'}; },
+  stadBuild(v){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===v); if(!it)return null; const lv=S.lv[v]; if(lv>=STAD_MAX||(S.build||[]).some(b=>b.k===v))return null; const per=period(); if(per==='season'||per==='post')return null;
     const c=STAD_COST[lv+1]; if(team(G.user).cash<c)return null; return {subj:`${it.l} ${lv+1}단계 공사`,kind:'구장',lines:[`공사비 ${money(c)} (보유 현금 ${money(team(G.user).cash)} → ${money(team(G.user).cash-c)})`,`공사 ${STAD_DAYS[lv+1]}일 · 유지비 연 +${money(STAD_UP[lv+1]-STAD_UP[lv])}`],warn:'공사비는 바로 나가고 되돌릴 수 없습니다.'}; },
   protSubmit(v){ const c=(G.comp||[]).find(x=>x.id===v); if(!c||!UI.prot)return null; const g=COMP[c.grade]; const ids=UI.prot.ids||[]; if(ids.length>g.prot)return null; const out=compPool(G.user).filter(q=>!ids.includes(q.id)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4);
     return {subj:`보호선수 ${ids.length}명 명단 제출`,kind:'FA',lines:[`${tshort(c.from)}이(가) 명단 밖에서 1명을 데려가거나 보상금을 받습니다.`,`명단 밖 주요 선수: ${out.map(q=>`${q.name}(${posLabel(q)}, ${dvo(q)})`).join(', ')||'없음'}`],warn:'제출하면 바꿀 수 없습니다.'}; },
@@ -127,7 +127,8 @@ function cfmBundle(s0){ const nw=(G.mail||[]).filter(m=>+String(m.id).slice(1)>s
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]'); if(!el)return;
   const a=el.dataset.a;
-  if(['castSeek','analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
+  if(a==='start'&&el.matches('.tmk.open')&&!e.target.closest('.tp-h'))return;
+  if(['playerTab','castSeek','analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','sAssign','blkWant','impFile','recF','anaRole','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ const back=UI.sheet!=null&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=back.k<G.games[back.g].pbp.length; renderSheet(); } /* 일시정지 버튼이 없으니 돌아오면 이어서 재생 */ } return; }
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
      예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
@@ -137,6 +138,7 @@ document.addEventListener('click',e=>{
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; const a=el.dataset.a;
+  if(a==='playerTab'){A.ptab(el.value);return;}
   if(a==='castSeek'){A.castSeek(el.value);return;}
   if(a==='analysisY'){ A.analysisY(el.value); return; }
   if(a==='tsel'||a==='mkt')A[a](el.dataset.v,el,e);
@@ -146,7 +148,7 @@ document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); i
   if(a==='findTeam'){UI.findTeam=el.value;render();}
   if(a==='findSort'){UI.findSort=el.value;render();}
   if(a==='lrfT'){UI.lrf=Object.assign({q:true,t:'all'},UI.lrf,{t:el.value});render();}
-  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim()); r.readAsText(f); } }
+  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim());r.onerror=()=>{UI.impMsg='파일을 읽지 못했습니다. 다시 선택해 주세요.';render();};r.readAsText(f); } }
   if(a==='blkWant'){ const p=G.players[+el.dataset.v]; if(p){p.lw=el.value; save(); render();} }
   if(a==='sAssign'){ const [r,k]=el.value.split(':'); assignScout(el.dataset.v,r,k); save(); render(); }
   if(a==='rosterTeam'){UI.rosterTeam=+el.value;render();window.scrollTo(0,0);}
@@ -169,8 +171,9 @@ document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if
   if(el.dataset.a==='offA')A.offA(el.dataset.v,el);
   if(el.dataset.a==='extA')A.extA(el.dataset.v,el);
   if(el.dataset.a==='mkt'){ const o=document.getElementById('mktv'); if(o)o.textContent=money(+el.value); } });
-window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(()=>{ if(G)render(); },150); });
-document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details[data-k]')){ UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); } } },true);
+window.__readingWidth=innerWidth;
+window.addEventListener('resize',()=>{const widthChanged=Math.abs(innerWidth-window.__readingWidth)>1;window.__readingWidth=innerWidth;const touch=matchMedia('(pointer:coarse)').matches;window.__readingRedraw=window.__readingRedraw||widthChanged||!touch;clearTimeout(window.__rz);window.__rz=setTimeout(()=>{const redraw=window.__readingRedraw;window.__readingRedraw=false;if(!G)return;if(redraw||(!UI.title&&UI.tab==='home'&&!UI.homeFocus&&UI.sheet==null&&!document.querySelector('details[open]')))render();else{appFrameSync();if(UI.tab==='inbox')ibFit();if(UI.meet)meetWire();dayTickPosition(document.getElementById('dtick'));}},150);});
+document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details')){if(d.dataset.readingKey)(UI.readingOpen=UI.readingOpen||{})[d.dataset.readingKey]=d.open;if(d.dataset.k)UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); } } },true);
 document.addEventListener('keydown',e=>{
   /* 결재가 떠 있으면 뒤의 협상·면담·중계·소식함으로 키를 전달하지 않는다. */
   if(UI.cfm){

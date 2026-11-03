@@ -151,7 +151,7 @@ function cwMod(S){ S=S||G.cwS; if(!S)return 0; return S.ms>0?(S.tags.some(x=>x==
    함수가 바꾼 신뢰(반려 -1 등)만 남긴다 */
 function cwWithMod(scale,mod,fn){ const t=team(G.user); const b=t.trust, sh=mod*scale; t.trust=b+sh; let r; try{ r=fn(); }finally{ t.trust=clamp(b+(t.trust-(b+sh)),0,100); } return r; }
 function cwFireOdds(S){ const m=G.mgr[G.user]; const t=team(G.user); const rk=uRank(); return clamp(.3+(t.trust-50)/100+(rk>=7?.2:rk>=6?.1:0)+({win:.08,pr:0,profit:-.1}[t.owner]||0)-(m&&m.yrs>=2?.08:0)+cwMod(S)+cwRapMod(),.05,.9); }
-function cwFacPick(){ if(typeof FACI==='undefined'||!G.fac||!G.fac.it)return null; if(Object.keys(G.fac.bld||{}).length>=2)return null; const L=Object.keys(FACI).filter(k=>G.fac.it[k]<3&&!(G.fac.bld||{})[k]).map(k=>({k,c:FACI[k].c[G.fac.it[k]+1]})); return L.sort((a,b)=>b.c-a.c)[0]||null; }
+function cwFacPick(){ if(typeof FACI==='undefined'||!G.fac||!G.fac.it)return null; if(Object.keys(G.fac.bld||{}).length>=2)return null; const L=Object.keys(FACI).filter(k=>G.fac.it[k]<FAC_MAX&&!(G.fac.bld||{})[k]).map(k=>({k,c:FACI[k].c[G.fac.it[k]+1]})); return L.sort((a,b)=>b.c-a.c)[0]||null; }
 function cwCapexLeft(){ const S=capexState(); return S.last.fac==null||G.day-S.last.fac>=60; }
 /* 건의할 수 있는 일: [키, 제목, 설명(승인 가능성 포함), 막힘 사유] */
 function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const left=ownAskLeft(); const L=[]; const od=p=>oddsTxt(clamp(p+mod,.03,.92)); const fac=cwFacPick(); const noL=left?'':'이번 달 지원 요청은 이미 했습니다';

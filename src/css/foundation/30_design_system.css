@@ -151,7 +151,12 @@
 
 /* 주소창이 보이는 휴대폰과 낮은 가로 화면에서도 표의 공간부터 확보한다. */
 :is(#app,#sheet) .ws-tabs-folded{display:none!important}
-:is(#app,#sheet) .ws-tab-select{min-width:0;max-width:100%;flex:1}
+:is(#app,#sheet) .ws-tab-select{min-width:0;max-width:100%;flex:1;height:32px;max-height:32px;min-height:32px;box-sizing:border-box}
+.ws-frame>.ws-tab-select,.ws-page>.ws-tab-select{flex:0 0 32px;width:100%}
+.ws-navigation{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;flex:none;min-width:0}
+.ws-filter-controls{flex-shrink:1;min-height:32px;max-height:40%;overflow:auto;overscroll-behavior:contain}
+.ws-filter-controls>summary{position:sticky;top:0;z-index:6;cursor:pointer;min-height:32px;padding:6px 0;line-height:20px;font-size:13px;background:var(--panel)}
+.ws-filter-options{max-height:160px;overflow:auto;overscroll-behavior:contain;display:grid;gap:8px;padding-block:8px}
 #app .roster-filters{display:block;min-width:0;margin:0}
 #app .roster-filters>summary{display:none;cursor:pointer;min-height:32px;line-height:20px;padding:6px 0;box-sizing:border-box;font-size:var(--ui-body)}
 #app .roster-filter-body{display:grid;gap:8px}
@@ -193,6 +198,12 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-filters[open]>summary{position:sticky;top:0;background:var(--panel);z-index:6}
  #app .roster-list>.ws-scroll{min-height:80px}
 }
+@media(max-width:699px){
+ #app .shell:has(.ws-frame) .subhead{min-height:24px;max-height:24px;margin-block:4px;gap:8px}
+ #app .shell:has(.ws-frame) .subhead h1{font-size:16px;line-height:24px;margin:0}
+ #app .shell:has(.ws-frame) .subhead .meta>.chipn{display:none}
+ #app .shell:has(.ws-frame) .subhead .helpbtn{width:24px;height:24px;min-height:24px;padding:0}
+}
 @media(max-width:1099px) and (max-height:599px){
  #app .shell>.mainc>.gut>.wrap>.subhead{display:none}
  #app .shell:has(.ws-frame,.home-workspace,.inbox-workspace){padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
@@ -211,4 +222,11 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-short-controls>select{flex:1;min-width:120px}
  #app .ws-panels>.card{padding:8px;gap:6px}
  #app .roster-list>.ws-scroll{min-height:64px}
+}
+/* 목록 폭은 화면 전체가 아니라 실제 패널을 기준으로 삼는다. */
+.fl{container-type:inline-size}
+@container(max-width:620px){
+ .flr:not(.fur){grid-template-columns:minmax(0,1fr) auto;row-gap:2px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+ .flr:not(.fur)>.small{grid-column:1/-1;grid-row:2;padding-left:4px}
+ .flr:not(.fur)>.tc-i,.flr:not(.fur)>.flx{grid-column:2;grid-row:1}
 }

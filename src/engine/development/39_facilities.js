@@ -10,6 +10,9 @@ const FACI={
   lab:{l:'피칭·타격 랩',lv:['없음','랩소도·영상 장비','트래킹 랩(고속 카메라)','바이오메카닉스 랩'],c:[0,500,1500,3500],days:[0,30,60,90],up:[0,40,90,180],d:'투구·스윙을 측정해 고칩니다. 젊은 선수의 성장이 빨라지고, 트래킹 분석원이 있으면 효과가 커집니다.'},
   fut:{l:'2군 구장',lv:['낡은 공용 구장','천연잔디 교체','조명·불펜·라커룸 개선','2군 전용 구장'],c:[0,2000,5000,10000],days:[0,150,210,300],up:[0,50,100,180],d:'2군 경기 환경입니다. 2군에서 뛰는 시간이 성장에 더 많이 인정되고 2군 부상이 줄어듭니다.'},
   dorm:{l:'선수 숙소·식당',lv:['없음','기숙사','기숙사·영양 식당','선수촌'],c:[0,1000,2500,5000],days:[0,120,180,240],up:[0,30,60,100],d:'젊은 선수의 생활과 영양을 관리합니다. 23세 이하 선수 성장과 기분이 좋아집니다.'}};
+const FAC_MAX=6;
+const facImpact=lv=>lv<=3?lv:3+(lv-3)*.35;
+for(const F of Object.values(FACI)){const c=F.c[3],days=F.days[3],up=F.up[3];F.lv.push(F.l+' 전문화',F.l+' 통합 캠퍼스',F.l+' 선도 연구센터');for(let lv=4;lv<=FAC_MAX;lv++){F.c.push(Math.round(c*Math.pow(1.7,lv-3)/100)*100);F.days.push(days+(lv-3)*90);F.up.push(Math.round(up*Math.pow(1.45,lv-3)));}}
 const FACK=Object.keys(FACI);
 /* 구단 버스: 원정 경기 피로. 다른 구단은 우등 버스 기준 */
 const BUS=[{l:'일반 버스',f:.10,c:0,up:0},{l:'우등 버스',f:.02,c:250,up:40},{l:'리무진 버스',f:-.06,c:600,up:100}];
@@ -21,7 +24,7 @@ function facUpkeep(){ const bu=BUS[busLv()].up; if(!G.fac||!G.fac.it)return FAC_
 function facOf(k){ return G.fac&&G.fac.it?G.fac.it[k]||0:1; }
 /* 성장·노화 배수: 모든 구단이 세부 시설을 쓴다(다른 구단 시설은 team.fi, 66_fac_ai.js) */
 function facEff(p){ if(p.team==null)return FAC[2]; const mine=p.team===G.user; const S=mine?G.fac:(()=>{ try{ return facSt(p.team); }catch(e){ return null; } })(); if(!S||!S.it)return FAC[facLv(p.team)];
-  const fo=k=>S.it[k]||0;
+  const fo=k=>facImpact(S.it[k]||0);
   const young=p.age<=23; const futP=(()=>{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); return f&&(!a||(p.isP?(f.outs||0)>(a.outs||0):(f.pa||0)>(a.pa||0))); })();
   /* 다른 구단: 예전 종합 등급 효과(1단계 .88 ~ 5단계 1.12)를 세부 시설 평균으로 이어 쓰고, 숙소·2군 구장·웨이트는 구단 평균과의 차이만큼 더한다.
      그래서 투자하면 바로 효과가 오르고, 시작 시점 리그 균형은 예전과 같다 */
@@ -31,7 +34,7 @@ function facEff(p){ if(p.team==null)return FAC[2]; const mine=p.team===G.user; c
   const g=.94+fo('indoor')*.012+fo('lab')*.015*(1+anaPow('trk')*.08)+(young?fo('dorm')*.015:0)+(futP?fo('fut')*.02:0);
   const d=1.05-fo('weight')*.03-fo('rehab')*.015;
   return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
-function buildFacItem(k){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; if(lv>=3)return '이미 최고 단계입니다.'; if(G.fac.bld[k])return '이미 공사 중입니다.'; if(Object.keys(G.fac.bld).length>=2)return '공사는 동시에 2곳까지만 할 수 있습니다.';
+function buildFacItem(k){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; if(lv>=FAC_MAX)return '이미 최고 단계입니다.'; if(G.fac.bld[k])return '이미 공사 중입니다.'; if(Object.keys(G.fac.bld).length>=2)return '공사는 동시에 2곳까지만 할 수 있습니다.';
   const c=F.c[lv+1]; const t=team(G.user); if(t.cash<c)return `보유 현금이 부족합니다. 공사비 ${money(c)}이 필요합니다(보유 ${money(t.cash)}).`;
   t.cash-=c; G.spend.facB=(G.spend.facB||0); G.fac.bld[k]={lv:lv+1,done:G.day+F.days[lv+1],c}; addLog(`${F.l} ${F.lv[lv+1]} 공사를 시작했습니다(공사비 ${money(c)}, ${F.days[lv+1]}일).`); t.trust=clamp(t.trust+1,0,100); return ''; }
 function facDaily(){ if(!G.fac||!G.fac.bld)return; for(const k of Object.keys(G.fac.bld)){ const b=G.fac.bld[k]; if(G.day>=b.done){ G.fac.it[k]=b.lv; (G.fac.dn=G.fac.dn||{})[k]=G.day; delete G.fac.bld[k]; facRecalc(); addLog(`${FACI[k].l} ${FACI[k].lv[b.lv]} 완공.`); chron('fac',`${FACI[k].l} ${FACI[k].lv[b.lv]} 완공`); mail('육성팀',`${FACI[k].l} 완공: ${FACI[k].lv[b.lv]}`,`${FACI[k].l}이(가) ${b.lv}단계(${FACI[k].lv[b.lv]})로 완공됐습니다. ${FACI[k].d} 연 유지비는 ${money(FACI[k].up[b.lv])}입니다.`,{kind:'시설',acts:[{l:'시설 보기',a:'go',v:'staff:fac'}]}); } } }

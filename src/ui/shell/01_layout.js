@@ -1,5 +1,6 @@
 /* ---------- 화면 조립 ---------- */
-function render(){ UI._rN=(UI._rN||0)+1;
+function render(){const app=document.getElementById('app');rememberReading(app);try{return render0();}finally{restoreReading(app);}}
+function render0(){ UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
   try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}
@@ -63,7 +64,15 @@ function exportCard(){ return `<section class="card"><h2 class="sec">내보내�
   <textarea class="code" id="impCode" placeholder="내보낸 코드를 여기에 붙여 넣으세요"></textarea>
   <div class="row"><button class="btn" data-a="impPaste">붙여넣기</button><button class="btn primary" data-a="impCode">코드로 불러오기 (현재 슬롯에 덮어씀)</button></div>
   ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`; }
-function importText(t){ let g=null; try{ g=JSON.parse(t[0]==='{'?t:LZString.decompressFromBase64(t)); }catch(e){} if(!g||g.ver!==4){ UI.impMsg='코드를 읽지 못했습니다. 내보낸 코드 전체를 붙여 넣었는지 확인하세요.'; render(); return; } G=g; try{migrateDraft();}catch(e){} save(); UI.impMsg='불러왔습니다.'; UI.tab='home'; render(); }
+function importText(t){
+ let g=null;try{t=String(t||'').trim().replace(/^\uFEFF/,'');g=JSON.parse(t[0]==='{'?t:LZString.decompressFromBase64(t));}catch(e){}
+ if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.teams.length||!g.players||!g.cal||!Number.isFinite(g.day)||!Number.isFinite(g.year)){UI.impMsg='저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.';render();return;}
+ const m=meta(),fromTitle=UI.title,slot=fromTitle?SLOT_IDS.find(n=>!m.slots[n]):m.active;
+ if(fromTitle&&!slot){UI.impMsg='빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.';render();return;}
+ const old=G;try{G=g;migrateDraft();}catch(e){G=old;UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.';render();return;}
+ if(fromTitle){m.active=slot;setMeta(m);}closeSheets();UI.title=false;UI.sstep='main';UI.tab='home';UI.impMsg='불러왔습니다.';UI.readingOpen={};UI.readingScroll={};saveNow();render();
+}
+
 function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G;
     /* 구단마다 취임 첫날 예산을 미리 계산해 재정 압박 구단을 표시한다 */
     try{ const js=JSON.stringify(UI.world); for(const x of UI.world.preview){ G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} } }catch(e){ console.error(e); }
@@ -74,23 +83,23 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
   if(!UI.world){ ensureWorld(); return `<div class="worldload"><span class="spin"></span><p>리그를 만드는 중입니다. 10개 구단 선수단을 만들고 지난 시즌 144경기를 치르고 있습니다.</p></div>`; }
   const P=[...UI.world.preview].sort((a,b)=>a.proj-b.proj); const OL={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
   const card=x=>{ const d=TEAM_DEF[x.tid]; const over=x.pay>x.cap; const mv=x.prev-x.proj; const tight=over||(x.room!=null&&x.room<0);
-    return `<div class="tmk" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
+    return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
       <div class="tp-r ${x.proj<=3?'hi':x.proj<=6?'mid':'lo'}"><i>예상</i><b>${x.proj}<em>위</em></b><span>${x.mode}</span></div></div>
       <div class="tp-g"><span><i>지난 시즌</i><b>${x.prev}위 · ${x.w}승 ${x.l}패</b>${mv?`<em class="${mv<0?'dn':'up'}">${mv>0?'▲':'▼'}${Math.abs(mv)}</em>`:''}</span><span><i>구단주</i><b>${OL[x.owner]}</b></span>
         <span><i>강점</i><b>${x.best.map(([k,r])=>`${SLK[k]} ${r}위`).join(' · ')}</b></span><span><i>약점</i><b class="wk">${x.worst.map(([k,r])=>`${SLK[k]} ${r}위`).join(' · ')}</b></span>
         <span><i>간판</i><b>${x.top.map(p=>`${esc(p.name)}(${p.pos} ${dv(p.o)})`).join(', ')}</b></span><span><i>연봉 총액</i><b class="${over?'wk':''}">${money(x.pay)} / 캡 ${money(x.cap)}${over?' 초과':''}</b></span><span><i>첫해 예산 여유</i><b class="${tight?'wk':''}">${x.room==null?'-':x.room<0?`지원 한도 ${money(-x.room)} 초과`:`여유 ${money(x.room)}`}</b></span></div>
-      <div class="tp-t">${tight?'<span class="pill bad">재정 압박 구단</span>':''}${[x.age<=27.8?'젊은 선수단':x.age>=28.8?'노장 위주':'', x.young?`24세 이하 1군급 ${x.young}명`:'', x.vets>=2?`33세 이상 주전급 ${x.vets}명`:'', x.faSoon?`FA 앞둔 주전 ${x.faSoon}명`:'', d.indie?'모기업 지원 없음':''].filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join('')}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}">자세히</button></div></div>`; };
+      <div class="tp-t">${tight?'<span class="pill bad">재정 압박 구단</span>':''}${[x.age<=27.8?'젊은 선수단':x.age>=28.8?'노장 위주':'', x.young?`24세 이하 1군급 ${x.young}명`:'', x.vets>=2?`33세 이상 주전급 ${x.vets}명`:'', x.faSoon?`FA 앞둔 주전 ${x.faSoon}명`:'', d.indie?'모기업 지원 없음':''].filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join('')}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
   if(UI.smode==='fd'){ const OLV={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
     const P2=[...UI.world.preview].sort((a,b)=>((b.fin||{}).avail||0)-((a.fin||{}).avail||0));
     const ORD=[...UI.world.preview].map(x=>({tid:x.tid,v:((x.fin||{}).avail||0)+hn('fdo'+G0Y(),x.tid)*30})).sort((a,b)=>a.v-b.v).map(x=>x.tid);
     const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=x.fin||{}; const ok=f.avail>=f.cap, mid=f.avail>=f.cap*.75; const age=G0Y()-(STAD_BUILT[x.tid]||2000);
-      return `<div class="tmk" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
+      return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
         <div class="tp-r ${ok?'hi':mid?'mid':'lo'}"><i>캡까지 쓰면</i><b style="font-size:18px">${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>선수 연봉에 쓸 수 있는 돈 ${eok(Math.max(0,f.avail||0))}</span></div></div>
         <p class="tp-sum">${(()=>{ const o=ORD.indexOf(x.tid)+1; return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', o<=3?'지명 빠름':o>=8?'지명 늦음':'지명 중간', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
         <div class="tp-g"><span><i>창단 지명 순서</i><b>1라운드 ${ORD.indexOf(x.tid)+1}번째</b></span><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
           <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>${typeof uniRow==='function'?`<div class="tp-uni">${uniRow(x.tid,{sz:64})}</div>`:''}
-        <div class="tp-t"><span class="pill ${ok?'good':mid?'':'bad'}">난이도 ${ok?'쉬움':mid?'보통':'어려움'}</span><span class="pill">1라운드 ${ORD.indexOf(x.tid)+1}번째 지명</span>${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}">자세히</button></div></div>`; };
+        <div class="tp-t"><span class="pill ${ok?'good':mid?'':'bad'}">난이도 ${ok?'쉬움':mid?'보통':'어려움'}</span><span class="pill">1라운드 ${ORD.indexOf(x.tid)+1}번째 지명</span>${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
     return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 차이는 돈과 시장입니다.</p><details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">예산 여유가 적은 구단일수록 먼저 지명하고, 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
     <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>`; }
   return `<p class="small muted">예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
@@ -117,7 +126,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
       </div><footer class="fb-footer"><span>프런트야구 <i>v${GAME_VER}</i></span><button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button></footer></main>`; }
   if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면에서 기능 설명을 펼쳐 보일지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine()}</section></div></div>`;
   if(st==='patch')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${patchCard()}</div></div>`;
-  if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}</div></div>`;
+  if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}${exportCard()}</div></div>`;
   if(st==='mode'&&false){ ensureWorld();
     return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
     <h2 class="ts-h">${UI.newSlot?`슬롯 ${UI.newSlot} · `:''}어떻게 시작할까요</h2><div class="mbg">

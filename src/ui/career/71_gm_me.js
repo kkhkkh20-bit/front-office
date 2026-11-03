@@ -41,7 +41,7 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
     <ul class="small muted"><li>남은 계약 ${left}년 치 연봉은 받지 않습니다(경질과 다릅니다).</li><li>명성 ${pen?`-${pen}`:'변화 없음'}${mid?' (시즌 도중 사임은 -3 더)':''}${left>0?' (계약 기간 중 -2)':''}. 지금 명성 ${G.rep??50}.</li><li>구단은 새 단장(AI)이 맡습니다. 진행 중인 협상·약속은 넘어가지 않습니다.</li></ul>
     ${UI.rsAsk?`<div class="note bad">${esc(tname(G.user))} 단장직에서 물러납니다. 되돌릴 수 없습니다.</div><div class="row"><button class="btn danger" data-a="resignGo">사임합니다</button><button class="btn" data-a="resignAsk">취소</button></div>`:'<button class="btn" data-a="resignAsk">단장직 사임</button>'}`);
   const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small primary" data-a="go" data-v="club:build">보기</button></div></section>`;
-  return head+tb+card+stints+quit; }
+  return head+tb+(G.unemp?'':personalLifeView())+card+stints+quit; }
 Object.assign(A,{
   start(v){ UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },

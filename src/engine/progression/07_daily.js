@@ -106,7 +106,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===tradeDL())stop('일정','오늘 자정 트레이드가 마감됩니다. 남은 제안과 협상을 오늘 안에 정리하세요.');
   if(day===KD(8,8)){ const n=foreignOf(G.user).filter(p=>p.foreign==='용병'&&healthy(p)).length; (n<3?stop:note)('일정',`외국인 선수 포스트시즌 등록 마감(8월 15일)까지 7일 남았습니다. 건강한 외국인 선수 ${n}명.`); }
   if(o.d===1&&o.m>=5&&o.m<=9&&period()==='season'){ try{ futuresReport(); }catch(e){} }
-  if(o.d===1){ try{ growSnap(); }catch(e){} }
+  if(o.d===1){ try{ personalMonthlyPay(); }catch(e){} try{ growSnap(); }catch(e){} }
   allStarDaily(); ggVotingDaily();
   if(day===KD(3,1)&&day<c.draft)try{ draftSeasonMail(); }catch(e){}
   if(day===c.draft)startDraft();

@@ -8,6 +8,7 @@
    - 결정은 구단·연도로 고정된 해시 난수를 쓴다. 공용 난수(R)를 건드리지 않아 경기·성장 흐름이 시설 결정 때문에 바뀌지 않는다. */
 const FAC_NEWS={indoor:['','간이 실내 연습장','실내 연습장','실내 훈련동'],weight:['','웨이트장','컨디셔닝 센터','퍼포먼스 센터'],rehab:['','물리치료실','재활센터','회복 센터'],
   lab:['','피칭·타격 랩','트래킹 랩','바이오메카닉스 랩'],fut:['','2군 구장 천연잔디','2군 구장 조명·라커룸','2군 전용 구장'],dorm:['','기숙사','기숙사 영양 식당','선수촌']};
+for(const k of FACK)for(let lv=4;lv<=FAC_MAX;lv++)FAC_NEWS[k][lv]=FACI[k].lv[lv];
 function facU(a,b){ let h=2166136261>>>0; const s=a+'|'+b; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; }
   h=Math.imul(h^(h>>>15),2246822507)>>>0; h=Math.imul(h^(h>>>13),3266489909)>>>0; return ((h^(h>>>16))>>>0)/4294967296; }
 /* 세계마다 다른 구단 성향이 나오게 하는 열쇠(공용 난수를 쓰지 않으려고 창단 때 정해진 값을 쓴다) */
@@ -31,10 +32,10 @@ function facSt(tid){ if(tid==null)return null; if(tid===G.user){ if(!G.fac||!G.f
 /* 다른 구단의 시설 단계: 매일 모든 선수에 쓰므로 가볍게. 아직 만들지 않았으면 리그 기준(2단계) */
 function facLvK(tid,k){ if(tid==null)return 2; if(tid===G.user)return facOf(k); const t=G.teams[tid]; return t&&t.fi&&t.fi.it?(t.fi.it[k]||0):2; }
 /* 다른 구단 부상·회복·2군 효과는 리그 중간인 2단계를 기준(예전 값)으로 본다. 예전엔 이 효과가 없었으므로 2단계 구단은 그대로다 */
-function facAiInj(tid){ return tid==null?1:1-(facLvK(tid,'weight')-2)*.05; }
-function facAiRec(tid){ return tid==null?1:1-(facLvK(tid,'rehab')-2)*.07; }
-function facAiFat(tid){ return tid==null?1:1+(facLvK(tid,'rehab')-2)*.06; }
-function facAiFut(tid){ return tid==null?0:(facLvK(tid,'fut')-2)*.05; }
+function facAiInj(tid){ return tid==null?1:1-(facImpact(facLvK(tid,'weight'))-2)*.05; }
+function facAiRec(tid){ return tid==null?1:1-(facImpact(facLvK(tid,'rehab'))-2)*.07; }
+function facAiFat(tid){ return tid==null?1:1+(facImpact(facLvK(tid,'rehab'))-2)*.06; }
+function facAiFut(tid){ return tid==null?0:(facImpact(facLvK(tid,'fut'))-2)*.05; }
 /* 증설분 유지비: 시작 때보다 늘어난 유지비만 결산에 붙인다(기본 시설 유지비는 구단 운영비에 들어 있다) */
 function aiFacUpExtra(t){ if(!t.fi||!t.fi.it)return 0; return Math.max(0,facUpOf(t.fi.it)-(t.fi.up0||0)); }
 /* 구단 이동: 떠나는 구단에 시설을 그대로 남기고, 가는 구단의 시설을 그대로 가져온다 */
@@ -57,7 +58,7 @@ function aiFacPlan(t,S,summer){ const nb=Object.keys(S.bld).length; if(nb>=2)ret
   maps.push(t.mode==='rebuild'?{fut:2.2,dorm:2.2}:{rehab:1.8,weight:1.8});
   if(tr==='data')maps.push({lab:1.6}); else if(tr==='prospect')maps.push({fut:1.4,dorm:1.4}); else if(tr==='gambler')maps.push({rehab:1.3,weight:1.2});
   const reserve=rich?2000:2500; const capP=t.indie?0:clamp(.28+({win:.15,pr:.1,profit:-.05}[t.owner]||0)+((t.trust??55)-50)/100,.05,.65);
-  const C=FACK.filter(k=>(S.it[k]||0)<3&&!S.bld[k]).map(k=>{ const lv=S.it[k]||0, c=FACI[k].c[lv+1]; let w=((S.pf&&S.pf[k])||1)*(1+(2-lv)*.25); for(const M of maps)w*=M[k]||1;
+  const C=FACK.filter(k=>(S.it[k]||0)<FAC_MAX&&!S.bld[k]).map(k=>{ const lv=S.it[k]||0, c=FACI[k].c[lv+1]; let w=((S.pf&&S.pf[k])||1)*(1+(2-lv)*.25); for(const M of maps)w*=M[k]||1;
       if(tight&&c>1500)w=0; return {k,lv,c,w}; }).filter(x=>x.w>0);
   if(!C.length)return null;
   /* 먼저 하고 싶은 공사를 고르고, 돈은 그다음에 본다: 적립금으로 되면 바로, 크면 모기업에 한 번 요청, 안 되면 작은 공사로 바꾸거나 올해는 접는다 */

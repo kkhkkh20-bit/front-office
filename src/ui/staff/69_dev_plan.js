@@ -53,7 +53,7 @@ function ovsBody(){ const y=G.year; const T={big:'크게 늘어 옴',good:'성�
   const prog=Object.entries(OVS).map(([k,o])=>{ const mine=(G.ovs||[]).filter(x=>x.prog===k); const open=ovsOpen(k);
     const cands=open&&mine.length<o.lim?domestic(G.user).filter(p=>ovsElig(p)&&p.age<=27&&!used.has(p.id)&&(k!=='us'||p.isP||p.r.pow<60)).sort((a,b)=>potGapEst(b)-potGapEst(a)).slice(0,6):[];
     return `<section class="card"><div class="row between"><span class="eyebrow">${o.l}</span><span class="small muted">1인 ${money(o.c)} · 동행 ${money(o.fix)} · ${o.lim}명까지</span></div>
-      <p class="small">${o.d}</p>
+      <p class="small">${o.d} 투수 목표: ${o.P.map(k=>OVS_TOOLN[k]).join('·')} / 타자 목표: ${o.B.map(k=>OVS_TOOLN[k]).join('·')}. 개인별 성공·부상 확률은 선수 카드 → 훈련·해외연수에서 확인하세요.</p>
       ${mine.length?`<div class="list">${mine.map(x=>{ const p=G.players[x.pid]; return p?`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${x.go?'연수 중':'출발 대기'}</span>${x.go?'':`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`}</div>`:''; }).join('')}</div>`:''}
       ${cands.length?`<div class="eyebrow">추천 후보(더 클 여지가 큰 순)</div><div class="list">${cands.map(p=>`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><button class="btn small" data-a="ovsSet" data-v="${p.id}:${k}">보내기</button></div>`).join('')}</div>`:open?'':`<p class="small muted">신청 기간: 9월 1일~${o.close[0]}월 ${o.close[1]}일</p>`}</section>`; }).join('');
   const A=G.ovsAi&&G.ovsAi.y===y?G.ovsAi:null;

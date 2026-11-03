@@ -3,10 +3,12 @@
 const MEET_PL={praise:'요즘 정말 잘해 주고 있어. 고맙다.',push:'솔직히 지금보다 더 해 줘야 한다.',promise:'감독님께 출전 기회를 건의해 보겠네.',contract:'계약 이야기를 좀 해 볼까.',ask:'요즘 고민 있나? 편하게 말해 봐.'};
 function meetWho(M){ const t=team(G.user);
   if(M.k==='own'){ const B=bossOf(G.user); return {name:B.own.name,role:'구단주 · 모기업 회장',place:'구단주 집무실',av:avImg({persona:'own',pid:B.own.id,team:G.user,age:B.own.age,expr:relEx(t.trust),name:B.own.name}),rel:`신뢰 ${Math.round(t.trust)} · 친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))})`}; }
+  if(M.k==='gm'){const t=team(M.id),m=gmOf(M.id);if(!t||M.id===G.user)return null;return {name:m?.name||t.nick+' 단장',role:tname(M.id)+' 단장',place:'단장 간 면담',av:avImg({persona:'gm',pid:m?.id||M.id,team:M.id,age:m?.age||50,name:m?.name||'단장'}),rel:'양 구단 관계 '+Math.round(t.rel??50)};}
   if(M.k==='mgr'){ const m=G.mgr[G.user]; if(!m||(M.mid&&M.mid!==m.id))return null; return {name:`${m.name} 감독`,role:`${mgrType(m).n} · 말투 ${MV[mgrVoice(m)].l}`,place:M.visit?'단장실':'감독실',av:avImg({persona:'mgr',pid:m.id,team:G.user,age:m.age,expr:relEx(m.rel),name:m.name}),rel:`관계 ${m.rel}`}; }
-  const p=G.players[M.id]; if(!p)return null; return {name:p.name,role:`${posLabel(p)} · ${p.age}세`,place:'선수 면담실',av:avImg(p),rel:`기분 ${Math.round(p.mor??60)}`}; }
+  const p=G.players[M.id]; if(!p)return null; return {name:p.name,role:`${posLabel(p)} · ${p.age}세`,place:'선수 면담실',av:avImg(p),rel:`기분 ${Math.round(p.mor??60)} · ${friendshipLabel(p)}`}; }
 function meetGreet(M){ const t=team(G.user);
   if(M.k==='own'){ const tr=t.trust; return tr>=70?'단장, 잘 왔소. 요즘 분위기가 좋더군. 앉으시오.':tr>=45?'앉으시오. 무슨 일로 왔소?':tr>=25?'바쁘니 용건만 간단히 합시다.':'...할 말이 있으면 해 보시오. 내 인내심도 한계가 있소.'; }
+  if(M.k==='gm')return gmPersonalReply(M.id,'check');
   if(M.k==='mgr')return mvGreeting(G.mgr[G.user],M);
   const p=G.players[M.id]; const mo=p.mor??60; return mo>=70?'단장님! 무슨 일이세요?':mo>=45?'아, 단장님. 안녕하세요.':'...네. 부르셨어요?'; }
 function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:document.documentElement.classList.contains('detail-page-open')?sheetScrollY():scrollY,returnDetail:document.documentElement.classList.contains('detail-page-open'),mid:k==='mgr'?G.mgr[G.user]?.id:null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
@@ -21,10 +23,12 @@ function meetTopics(M){ const t=team(G.user);
     const faL=G.fa&&G.fa.open&&!G.fa.closed?G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null).sort((a,c)=>ovr(c)-ovr(a)).slice(0,3):[]; for(const p of faL)L.push([`fa:${p.id}`,`FA ${p.name} 영입 자금 요청`,`${money(p.ask.annual)} · ${oddsTxt(ownOdds(p.ask.annual,{k:'fa',pid:p.id}))}`,!left]);
     for(const p of meetBadF())L.push([`frep:${p.id}`,`외국인 ${p.name} 교체 자금 요청`,`${money(frepAmt(p))} · ${oddsTxt(ownOdds(frepAmt(p),{k:'frep',pid:p.id}))}`,!left]);
     return L; }
+  if(M.k==='gm')return [['plan','앞으로의 운영 계획은?'],['trade','선수 거래에서 무엇을 봅니까?'],['check','양 구단 관계를 이야기합시다']];
   if(M.k==='mgr')return [['now','지금 팀 상황은 어떻습니까?'],['foreign','외국인은 어떤 선수가 필요합니까?'],['cand','시장에 나온 외국인 후보들 어떻게 보세요?'],['need','가장 급한 자리는 어디입니까?'],['young','눈여겨보는 젊은 선수 있습니까?'],['pitch','선발과 불펜은 어떻게 보고 있습니까?'],['bat','타선의 흐름은 어떻습니까?'],['defense','수비에서 챙길 부분은 무엇입니까?'],['run','도루와 추가 진루는 어떻게 가져갈까요?'],['workload','지친 선수와 휴식 계획을 봅시다'],['clubhouse','선수단 분위기는 어떻습니까?'],['plan','보강과 육성의 우선순위를 맞춰 봅시다']];
   const p=G.players[M.id]; return Object.entries(TALK).map(([k,l])=>[k,l,k==='ask'?'언제든 물어볼 수 있습니다':talkUsed(p,k)?'이번 주에는 했습니다':null,talkUsed(p,k)]); }
 function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const say=(w,x)=>M.log.push({w,t:x});
-  if(M.k==='own'){ if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',g?`${g.rank.cur?`지금 ${g.rank.cur}위군. `:''}올해 목표는 ${g.rank.t}위 안이오. ${g.rank.cur&&g.rank.cur<=g.rank.t?'지금처럼만 하시오.':'더 분발해야 하오.'}${t.owner==='profit'?' 그리고 적자는 꼭 줄이시오.':t.owner==='pr'?' 팬들 반응도 늘 보고 있소.':''}`:'시즌이 시작되면 다시 이야기합시다.'); return; }
+  if(M.k==='gm'){say('me',meetTopics(M).find(x=>x[0]===v)?.[1]||'근황이 어떻습니까?');say('them',gmPersonalReply(M.id,v));save();return;}
+  if(M.k==='own'){ if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',ownerPersonalReport()); return; }
     const [k,x]=v.split(':'); const p=k==='gen'?null:G.players[+x]; const amt=k==='gen'?+x:k==='fa'?p.ask.annual:frepAmt(p); const tr0=t.trust;
     say('me',k==='gen'?`회장님, 운영비 ${money(amt)} 증액을 요청드립니다. 전력 보강과 운영에 꼭 필요합니다.`:k==='fa'?`FA ${p.name} 선수를 잡으려면 ${money(amt)}이(가) 필요합니다. 도와주십시오.`:`외국인 ${p.name}이(가) 기대에 못 미칩니다. 교체할 선수를 데려오려면 ${money(amt)}이(가) 필요합니다.`);
     const r=k==='gen'?ownerAsk(amt,null):ownerAsk(amt,{k,pid:+x}); if(!/^(승인|반려)/.test(r)){ say('sys',r); return; } const ok=/^승인/.test(r);

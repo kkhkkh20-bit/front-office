@@ -60,7 +60,7 @@ function cpFacPanel(S,k){ const t=team(G.user);
     return `<div class="cpph"><span class="cpnm sm">구장·1군 시설</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
       <p class="small">홈구장 투자(관람석·식음료·프리미엄석·전광판·그라운드)는 관중·수입·홈경기 부상에 쓰이고, 웨이트·재활·랩은 훈련 단지에 있지만 1군도 함께 씁니다.</p>
       <div class="cpstat"><span>홈구장</span>${STAD_ITEMS.map(x=>`${x.l} ${SL[x.k]||0}/5`).join(' · ')}</div>
-      <div class="cpstat"><span>함께 쓰는 훈련 시설</span>웨이트 ${L2.weight||0}/3 · 재활 ${L2.rehab||0}/3 · 랩 ${L2.lab||0}/3</div>
+      <div class="cpstat"><span>함께 쓰는 훈련 시설</span>웨이트 ${L2.weight||0}/${FAC_MAX} · 재활 ${L2.rehab||0}/${FAC_MAX} · 랩 ${L2.lab||0}/${FAC_MAX}</div>
       <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="main">홈구장 시설 투자</button><button class="btn small" data-a="itab" data-v="cmap:farm">훈련 단지 보기</button></div>`; }
   if(k==='club'){ const C=S.players.filter(p=>p.where==='club');
     return `<div class="cpph"><span class="cpnm sm">클럽하우스</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
@@ -75,13 +75,13 @@ function cpFacPanel(S,k){ const t=team(G.user);
       <div class="row" style="gap:6px"><button class="btn small" data-a="cpFacGo" data-v="bus">구단 버스 화면</button></div>`; }
   const D=FACI[k]; if(!D)return cpIdle(S); const lv=facOf(k), b=S.bmap[k], nx=lv+1; const nb=Object.keys(S.bmap).length; const st=cpFacStat(k);
   const act=b?`<div class="eyebrow">공사 중: ${esc(D.lv[b.lv])}</div>${cpBar(b)}`
-    :lv>=3?'<p class="small good">최고 단계입니다.</p>'
+    :lv>=FAC_MAX?'<p class="small good">최고 단계입니다.</p>'
     :`<dl class="cpdl"><div><dt>다음 단계</dt><dd><b>${esc(D.lv[nx])}</b></dd></div><div><dt>공사비</dt><dd class="num">${money(D.c[nx])}</dd></div><div><dt>기간</dt><dd>${D.days[nx]}일</dd></div><div><dt>유지비</dt><dd>연 ${money(D.up[nx])}</dd></div></dl>
       <div class="cpbtns"><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||t.cash<D.c[nx]?'disabled':''}>구단 현금으로 · ${money(D.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''}>모기업 투자 요청 · ${Math.round(capexOdds('fac',D.c[nx])*100)}%</button>`}</div>
       ${nb>=2?'<p class="small muted">동시 공사는 2곳까지입니다.</p>':t.cash<D.c[nx]?`<p class="small bad">현금 부족(보유 ${money(t.cash)})</p>`:''}`;
   return `<div class="cpph"><span class="cpnm sm">${esc(D.l)}</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
-    <div class="cplv">${cpPips(lv,3,b)} <span>${esc(D.lv[lv])}</span></div>
-    <p class="small">${esc(D.d)}</p>
+    <div class="cplv">${cpPips(lv,FAC_MAX,b)} <span>${esc(D.lv[lv])}</span></div>
+    <p class="small">${esc(D.d)} 4단계부터는 전문화 투자로 효과 증가폭이 완만해지고 공사 기간·유지비가 커집니다.</p>
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
     ${act}
     ${st?`<div class="cpstat"><span>운영 기록</span>${esc(st)}</div><p class="small muted cpfn">지금 기록을 센 숫자입니다. 성장·부상 변화가 이 시설 때문이라고 단정할 수는 없습니다.</p>`:''}

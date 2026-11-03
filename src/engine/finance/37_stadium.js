@@ -11,11 +11,12 @@ const STAD_ITEMS=[
   {k:'prem',l:'프리미엄석',d:'스카이박스·테이블석·캠핑존. 기업 고객 판매로 고정 수입이 생기지만 일반 좌석이 조금 줄어듭니다.'},
   {k:'vis',l:'전광판·영상',d:'대형 전광판과 영상 설비. 구장 광고 수입이 오르고 관중 수요도 조금 늡니다.'},
   {k:'turf',l:'그라운드·잔디',d:'잔디·배수·조명 정비. 홈경기에서 부상이 조금 줄어듭니다.'}];
-const STAD_COST=[0,0,600,1200,2200,3600], STAD_UP=[0,30,60,110,180,280], STAD_DAYS=[0,0,60,90,120,150];
+const STAD_MAX=8;const stadPower=lv=>lv<=5?lv:5+(lv-5)*.45;
+const STAD_COST=[0,0,600,1200,2200,3600,5500,8000,12000], STAD_UP=[0,30,60,110,180,280,400,560,780], STAD_DAYS=[0,0,60,90,120,150,210,270,330];
 const PRICE=[{l:'할인',m:.8,dem:1.12,fan:.5,d:'관중이 늘고 팬 여론이 오르지만 표값 수입이 줄어듭니다.'},{l:'보통',m:1,dem:1,fan:0,d:'리그 평균 수준입니다.'},{l:'인상',m:1.15,dem:.87,fan:-.5,d:'표값 수입이 늘지만 관중과 팬 여론이 조금 줄어듭니다.'},{l:'고가',m:1.3,dem:.72,fan:-1.2,d:'매진이 잦은 인기 구단이 아니면 손해입니다. 팬 여론이 매달 떨어집니다.'}];
 const TICKET=.014; // 관중 1명당 표값 수입 1만4천원(백만원 단위, 게임 재정 기준)
 function stadOf(tid){ const t=team(tid); if(!t.stad){ const r=k=>2+(hn('st'+k,tid)>.35?1:0); t.stad={lv:{seat:r('s'),fnb:r('f'),prem:r('p'),vis:r('v'),turf:r('t')},price:1,build:[]}; } return t.stad; }
-function stadCap(tid){ const S=stadOf(tid); return Math.round((S.cap||STAD_CAP[tid])-(S.lv.prem-2)*300); }
+function stadCap(tid){ const S=stadOf(tid); return Math.round((S.cap||STAD_CAP[tid])-(stadPower(S.lv.prem)-2)*300); }
 function stadBuilt(tid){ const S=stadOf(tid); return S.built||STAD_BUILT[tid]||2000; }
 /* 구장 연식 효과: 30년 넘으면 관람 환경이 낡아 수요 -4%, 새 구장은 개장 3년간 +12%에서 서서히 줄어든다, 공사 중 -2% */
 function stadAgeF(tid){ const S=stadOf(tid); const age=G.year-stadBuilt(tid); let f=age>=30?.96:1; if(age<3)f*=1+.12*(3-age)/3+.04; const N=S.proj; if(N&&N.stage==='build')f*=.98; return f; }
@@ -33,24 +34,24 @@ let _pkN={k:null}; function parkNorm(){ const k=G.teams.map(t=>JSON.stringify(st
 function parkHRM(tid,side){ if(tid==null||!G||!G.teams)return 1; return parkRaw(tid,side)/parkNorm(); }
 /* 홈런 방향: 기본 비중에 그 구장 방향별 홈런 쉬움을 곱해 고른다 */
 function parkHRDir(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; const w=[.6*parkSideF(D,pl),.28*parkSideF(D,'c'),.12*parkSideF(D,op)]; let x=R()*(w[0]+w[1]+w[2]); return x<w[0]?'pull':x<w[0]+w[1]?'mid':'oppo'; }
-function stadTurfM(tid){ return 1-(stadOf(tid).lv.turf-2)*.05; }
+function stadTurfM(tid){ return 1-(stadPower(stadOf(tid).lv.turf)-2)*.05; }
 function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;
   const fan=h===G.user&&G.pr?(.9+G.pr.fan/500):1; const late=o.m>=8&&wp<.44?.9:1;
-  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(S.lv.seat-2)*.04)*(1+(S.lv.vis-2)*.015)*stadAgeF(h)*(S.dome?1.06:1);
+  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1);
   if(noise===null){ /* 기대 관중: 3점 가우스-에르미트 근사로 매진 상한까지 반영 */ const z=1.732*.2; return Math.round(cap*(Math.min(1,f*Math.exp(-z))/6+Math.min(1,f)*2/3+Math.min(1,f*Math.exp(z))/6)); }
   const n=Math.exp(N(0,.2)); return Math.min(cap,Math.round(cap*f*n)); }
 function stadGame(day,h,a){ const cap=stadCap(h); let att=attOf(h,a,day); const ring=champRing(h);
   if(ring){ ring.ringDone=G.year; if(G.ringT===h)G.ringDone=G.year; att=cap; /* 우승 반지 수여식: 우승 구단 홈 개막전 매진(단장이 이직해도 우승 구단에서 연다) */ for(const p of playersOf(h))p.mor=clamp((p.mor??60)+3,0,100);
     if(h!==G.user||G.unemp)wire('구단',`${tshort(h)} 우승 반지 수여식, 홈 개막전 ${cap.toLocaleString('ko-KR')}석 매진`,{tid:h}); else news('구단',`${tshort(G.user)} 우승 반지 수여식…홈 개막전 ${cap.toLocaleString('ko-KR')}석 매진`,`경기 전 지난 시즌 우승 멤버들이 반지를 받았습니다. 전광판에는 우승 순간이 다시 흘렀고, 관중석은 빈자리 없이 들어찼습니다.`,2,{fanW:2}); } G.sea.att=G.sea.att||{}; const A=G.sea.att[h]||(G.sea.att[h]={n:0,sum:0,so:0,best:0});
-  { const S=stadOf(h); A.tk=(A.tk||0)+att*TICKET*ecoIdx()*PRICE[S.price].m; A.fb=(A.fb||0)+att*.0003*(S.lv.fnb-2); } /* 그 경기 당시 표값·매점 수준으로 수입을 쌓는다(나중에 값을 바꿔도 지난 경기 수입은 그대로) */
+  { const S=stadOf(h); A.tk=(A.tk||0)+att*TICKET*ecoIdx()*PRICE[S.price].m; A.fb=(A.fb||0)+att*.0003*(stadPower(S.lv.fnb)-2); } /* 그 경기 당시 표값·매점 수준으로 수입을 쌓는다(나중에 값을 바꿔도 지난 경기 수입은 그대로) */
   A.n++; A.sum+=att; if(att>=cap)A.so++; if(att>A.best)A.best=att; return {att,so:att>=cap}; }
 function homeGames(tid,from,to){ const L=[]; for(let d=from;d<=to;d++){ const gs=G.cal.sched[d]; if(!gs)continue; for(const [h,a] of gs)if(h===tid)L.push([d,a]); } return L; }
 /* 시즌 관중·구장 수입 전망: 지금까지 실제 + 남은 홈경기 예상 */
 function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal;
   /* 시즌이 끝난 뒤 예산 전망(next): 지난 일정에 지금 가격·시설을 넣어 다음 시즌 기대 관중을 낸다 */
   if(next&&c&&c.sched){ let att=0,n=0; for(const [d,a] of homeGames(tid,c.open,c.end)){ att+=attOf(tid,a,d,null); n++; } att=Math.round(att);
-    return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(att*TICKET*ecoIdx()*PRICE[S.price].m),fnb:Math.round(att*.0003*(S.lv.fnb-2)),prem:(S.lv.prem-2)*600,ad:(S.lv.vis-2)*400+(S.dome?2500:0),up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; }
+    return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(att*TICKET*ecoIdx()*PRICE[S.price].m),fnb:Math.round(att*.0003*(stadPower(S.lv.fnb)-2)),prem:(stadPower(S.lv.prem)-2)*600,ad:(stadPower(S.lv.vis)-2)*400+(S.dome?2500:0),up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; }
   const A=(G.sea&&G.sea.att&&G.sea.att[tid])||{n:0,sum:0}; let rest=0, rn=0;
   let done=A.sum, dn=A.n;
   if(c&&c.sched){ for(const [d,a] of homeGames(tid,Math.max(G.day+1,c.open),c.end)){ rest+=attOf(tid,a,d,null); rn++; }
@@ -58,14 +59,14 @@ function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal;
     const played=homeGames(tid,c.open,Math.min(G.day,c.end)).length; if(played>dn){ if(dn>0){ done=A.sum/dn*played; } else { done=0; for(const [d,a] of homeGames(tid,c.open,Math.min(G.day,c.end)))done+=attOf(tid,a,d,null); } dn=played; } }
   const att=Math.round(done+rest); const n=dn+rn;
   /* 수입 = 이미 치른 경기에서 그때 가격으로 번 돈 + 남은 경기 예상(지금 가격). 경기별 수입 기록이 없는 예전 저장은 지금 가격으로 본다 */
-  const tkNow=TICKET*ecoIdx()*PRICE[S.price].m, fbNow=.0003*(S.lv.fnb-2); const sc=A.n>0?done/A.sum:1; const hasR=A.tk!=null&&A.n>0&&A.sum>0;
+  const tkNow=TICKET*ecoIdx()*PRICE[S.price].m, fbNow=.0003*(stadPower(S.lv.fnb)-2); const sc=A.n>0?done/A.sum:1; const hasR=A.tk!=null&&A.n>0&&A.sum>0;
   const tkDone=hasR?A.tk*sc:done*tkNow, fbDone=hasR?(A.fb||0)*sc:done*fbNow;
-  return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(tkDone+rest*tkNow),fnb:Math.round(fbDone+rest*fbNow),prem:(S.lv.prem-2)*600,ad:(S.lv.vis-2)*400+(S.dome?2500:0),
+  return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(tkDone+rest*tkNow),fnb:Math.round(fbDone+rest*fbNow),prem:(stadPower(S.lv.prem)-2)*600,ad:(stadPower(S.lv.vis)-2)*400+(S.dome?2500:0),
     up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; }
 /* 구장 공사 시작 가능 기간: 정규시즌이 끝난 뒤부터 2월 말까지(3월은 개막 준비) */
 function stadWindow(){ const per=period(); if(per==='season'||per==='post')return false; return !(per==='pre'&&dobj(G.day).m>=3); }
 function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=S.lv[k];
-  if(lv>=5)return '이미 최고 단계입니다.'; if((S.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
+  if(lv>=STAD_MAX)return '이미 최고 단계입니다.'; if((S.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
   if(!stadWindow())return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
   const c=STAD_COST[lv+1]; const t=team(G.user); if(t.cash<c)return `자금이 부족합니다. 공사비 ${money(c)}이 필요합니다.`;
   t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c}); G.spend.stad=(G.spend.stad||0)+c;
@@ -95,7 +96,7 @@ function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; co
     /* 옛 구장에서 진행 중이던 시설 공사: 새 구장 기본 단계(4) 이하가 목표면 취소하고 남은 공사 기간만큼 환급, 그보다 높으면 새 구장에서 이어서 진행 */
     { const can=[], go=[]; S.build=(S.build||[]).filter(b=>{ if(b.lv>S.lv[b.k]){ go.push(b); return true; } const c=b.c??STAD_COST[b.lv]; const r=Math.round(c*clamp((b.done-G.day)/Math.max(1,STAD_DAYS[b.lv]),0,1)); t.cash+=r; can.push([b,r]); return false; });
       if(me&&(can.length||go.length)){ const nm=b=>STAD_ITEMS.find(x=>x.k===b.k).l; mail('운영팀','신구장 개장: 옛 구장 공사 정리',`${can.length?`새 구장 시설(4단계 이상)에 포함돼 취소한 공사: ${can.map(([b,r])=>`${nm(b)} ${b.lv}단계(남은 공사분 ${money(r)} 환급)`).join(', ')}.`:''}${go.length?`${can.length?'\n':''}새 구장에서 이어서 진행하는 공사: ${go.map(b=>`${nm(b)} ${b.lv}단계(${dmd(b.done)} 완공)`).join(', ')}.`:''}`,{kind:'구장'}); } }
-    S.cap=N.cap+(S.lv.prem-2)*300; /* 고를 때 안내한 좌석 수 = 개장 때 실제 수용(프리미엄석 4단계로 줄어드는 일반석만큼 기준을 늘려 둔다). 이후 프리미엄석을 더 늘리면 그만큼 줄어든다 */ S.proj=null; t.pop=clamp(t.pop+.08,.7,1.45);
+    S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; /* 고를 때 안내한 좌석 수 = 개장 때 실제 수용(프리미엄석 4단계로 줄어드는 일반석만큼 기준을 늘려 둔다). 이후 프리미엄석을 더 늘리면 그만큼 줄어든다 */ S.proj=null; t.pop=clamp(t.pop+.08,.7,1.45);
     if(!me){ wire('구장',`${S.name} 개장 (${N.cap.toLocaleString('ko-KR')}석)`,{tid}); return; }
     chron('stad',`${S.name} 개장 (${N.cap.toLocaleString('ko-KR')}석)`);
     stop('구장',`${S.name}이(가) 문을 열었습니다. ${N.cap.toLocaleString('ko-KR')}석, 시설은 모두 4단계 이상입니다. 개장 첫 몇 해는 관중이 크게 늡니다.`); news('구단',`${S.name} 개장`,`${t.city} ${t.nick}의 새 홈구장이 문을 열었습니다.`,3); } }

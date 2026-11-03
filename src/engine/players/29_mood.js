@@ -156,7 +156,7 @@ function talk(id,kind){
   if(kind==='ask'){ d=askAgain?0:2; const ev=talkEvent(p); const why=moraleWhy(p); const plain=/즐겁습니다|특별한 고민은 없습니다/.test(why);
     if(ev){ line=eventLine(p,ev)+(plain?'':` 그리고 ${why}`); if(ev.k==='bad'&&p.pers.temp>=15&&d)d=1; } else line=why; }
   if(d<0&&p.pers.temp>=15)d*=1.4;
-  p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
+  line=personalTalkReply(p,kind,line);if(d){const C=contactRecord('pl:'+p.id);C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
   return {msg:`${p.name}: "${line}"`,d};
 }
 function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; p.listed=true; const req=p.treq&&!p.treq.done; if(req){ p.treq.done=true; p.mor=clamp(p.mor+6,0,100); } /* 기분은 트레이드 요청에 응했을 때 한 번만 */ note('면담',`${p.name}을(를) 트레이드 명단에 올렸습니다. 다른 구단이 관심을 보이면 제안이 올 수 있습니다.`,id); }

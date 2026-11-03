@@ -172,7 +172,7 @@ function detailPageSync(el){
     if(ret&&ret.tab===UI.tab){scrollTo(0,ret.y);if(ret.focus&&ret.focus.isConnected)ret.focus.focus({preventScroll:true});}
   }
 }
-function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}if(UI.meet)meetWire(); }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -228,13 +228,13 @@ function renderSheet0(){
   const pt=p.team!=null?team(p.team):null; const pst=pt?`--pt:${tpal(pt)[2]};--pt2:${tpal(pt)[3]}`:'';
   const ownP=p.team===G.user&&!(p.joinY>G.year); const st=careerStory(p);
   const hasM=ownP;
-  const tabs=[...(p.prospect||p.fdPool||isFM?[]:[['abil','능력']]),...(hasM?[['dev','육성']]:[]),['sum','요약'],['rec','기록'],...(!p.prospect&&!p.fdPool&&!isFM?[['analysis','분석']]:[]),...(st?[['story','이야기']]:[]),...(hasM?[['mgmt','관리']]:[])]; /* 능력(정보) 다음에 육성(보직·훈련·전환·연수) */
+  const tabs=[...(p.prospect||p.fdPool||isFM?[]:[['card','선수 카드'],['abil','능력']]),...(hasM?[['dev','육성']]:[]),['sum','요약'],['rec','기록'],...(!p.prospect&&!p.fdPool&&!isFM?[['analysis','분석']]:[]),...(st?[['story','이야기']]:[]),...(hasM?[['mgmt','관리']]:[])]; /* 능력(정보) 다음에 육성(보직·훈련·전환·연수) */
   let T=UI.ptab||'abil'; if(!tabs.some(t=>t[0]===T))T='sum';
   const fullProfile=!p.prospect&&!p.fdPool&&!isFM;
-  const tabBar=`<div class="seg ptabs">${tabs.map(([k,l])=>`<button data-a="ptab" data-v="${k}" class="${T===k?'on':''}">${l}</button>`).join('')}</div>`;
-  el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut psh pf-screen${T==='sum'||T==='abil'?' psh2':''}" style="${pst}" role="dialog" aria-modal="true" aria-label="${esc(p.name)} 선수 정보" data-stop="1">
+  const tabBar=`<select class="player-tab-select" data-a="playerTab" aria-label="선수 화면 선택">${tabs.map(([k,l])=>`<option value="${k}" ${T===k?'selected':''}>${l}</option>`).join('')}</select><div class="seg ptabs">${tabs.map(([k,l])=>`<button data-a="ptab" data-v="${k}" class="${T===k?'on':''}">${l}</button>`).join('')}</div>`;
+  el.innerHTML=`<div class="scrim" data-a="closeSheet"><div class="sheet gut psh pf-screen${T==='card'?' collection-mode':''}${T==='sum'||T==='abil'?' psh2':''}" style="${pst}" role="dialog" aria-modal="true" aria-label="${esc(p.name)} 선수 정보" data-stop="1">
    ${fullProfile?'<div class="pf-topnav">':''}
-   ${fullProfile?playerFullscreenHeader(p,rp,where,isFA):`   <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${avImg(p,true)}<div><div class="eyebrow">${where}${isFA?' · FA':''}${p.foreign&&p.team!=null?` · ${p.foreign==='아시아'?'아시아쿼터':'외국인'} · ${p.nat}`:''}</div>
+   ${fullProfile?(T==='card'?collectionHeader(p):playerFullscreenHeader(p,rp,where,isFA)):`   <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${avImg(p,true)}<div><div class="eyebrow">${where}${isFA?' · FA':''}${p.foreign&&p.team!=null?` · ${p.foreign==='아시아'?'아시아쿼터':'외국인'} · ${p.nat}`:''}</div>
     <h2 class="sec" style="font-size:24px">${p.team!=null?`<span class="pno" title="등번호">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></h2>${UI.pEdit===p.id?pEditBox(p):''}${p.aw&&p.aw.length?`<div class="row" style="gap:4px;margin:2px 0">${p.aw.slice(-6).map(a=>`<span class="awp">${awArt(a,18)}${esc(a)}</span>`).join('')}</div>`:''}
     <p class="pinfo keep"><b class="pinfo-pos">${posLabel(p)}</b>${!p.isP&&typeof subsOf==='function'&&subsOf(p).length?`<span class="pinfo-sub">(${subsOf(p).map(k=>POSK[k]||k).join('·')} 가능)</span>`:''} · <b>${p.age}세</b> · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.rd}R ${p.draft.no}순위`:''}${p.dev?' · 육성선수 출신':''}</p></div></div><button class="tc-i pcmp-b${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}" title="같은 시즌·같은 군 기준으로 2~3명을 나란히 비교">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':`비교에 담기${(UI.pcmp||[]).length?` (${(UI.pcmp||[]).length}/3)`:''}`}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i go" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
    ${keyBar(p,rp,isFA,isFM)}${posValLine(p,rp)}${playerReadout(p,rp)}
@@ -244,6 +244,7 @@ function renderSheet0(){
 `}
    ${tabBar}
    ${fullProfile?'</div>':''}
+   ${T==='card'?playerCollectionView(p,rp):''}
    ${T==='sum'?`
    ${staffCardP(p)}
    ${p.team===G.user&&!(p.joinY>G.year)?`<section class="card"><div class="row between"><span class="eyebrow">컨디션</span><span class="small muted">피로 ${Math.round(p.fat||0)} · ${fatText(p)}</span></div>${fatBar(p)}<p class="small">${l10Text(p)||'최근 1군 경기 기록이 없습니다.'}${p.isP?`</p><p class="small">투구 부하: ${esc(loadText(p))}`:''}</p><p class="small muted">연속 출장하면 피로가 쌓여 성적이 떨어지고 부상 위험이 커집니다. 감독은 지친 선수를 쉬게 합니다. ${p.isP?'투수는 투구 수만큼 지치고 체력(스태미나)이 좋을수록 빨리 회복합니다.':'포수는 더 빨리 지칩니다. 체력이 좋을수록 덜 지치고 빨리 회복하며, 시즌 후반 성적 하락도 적습니다.'}</p></section>`:''}

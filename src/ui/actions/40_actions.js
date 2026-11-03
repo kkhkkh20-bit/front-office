@@ -9,16 +9,14 @@ function bondCard(p){
   ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
   </section>`;
 }
-function devForm(p){ const ov=(G.ovs||[]).find(x=>x.pid===p.id); const H=(p.ovsH||[]).slice(-3);
-  const T={big:'크게 늘어 옴',good:'성장 확인',flat:'변화 없음',form:'폼 흐트러짐',inj:'부상'};
-  const btns=Object.entries(OVS).filter(([k])=>ovsOpen(k)).map(([k,v])=>`<button class="btn small ${ov&&ov.prog===k?'on':''}" data-a="ovsSet" data-v="${p.id}:${k}">${v.l} ${money(v.c)}</button>`).join('');
-  return `<section class="card"><div class="eyebrow">해외 연수 ${ov?'· '+OVS[ov.prog].l+(ov.go?' 진행 중':' 신청됨'):''}</div>
-  ${ov&&ov.go?'':btns?`<div class="talk">${btns}${ov?`<button class="btn small danger" data-a="ovsSet" data-v="${p.id}:">취소</button>`:''}</div>`:'<p class="small muted">신청은 9월 1일부터 받습니다(호주리그 11월 10일, 미국·일본 연수 11월 30일까지).</p>'}
-  ${H.length?`<p class="small muted">지난 연수: ${H.map(h=>`${h.y} ${esc(h.k)}(${T[h.t]||''})`).join(', ')}</p>`:''}
-  ${UI.devMsg?`<div class="note bad">${esc(UI.devMsg)}</div>`:''}</section>`;
-}
+function devForm(p){const current=(G.ovs||[]).find(x=>x.pid===p.id);return `<section class="card"><h2 class="sec">해외연수 · 목표와 결과</h2>${current?`<p>${OVS[current.prog].l} · ${current.go?'참가 중':'출발 전 예약'}</p>${!current.go?`<button class="btn" data-a="ovsSet" data-v="${p.id}:">예약 취소</button>`:''}`:''}${overseasProgramDetails(p)}${UI.devMsg?`<p class="note" role="status">${esc(UI.devMsg)}</p>`:''}${(p.ovsH||[]).length?'<h3>귀국 후 실제 변화</h3>'+overseasHistory(p):''}</section>`;}
+
 function closeSheets(){ UI.matchPreview=false; const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; UI.mgrCandidate=null; UI.fmKeys=false; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
 const A={
+  cardFlip(){const C=collectionState(G.players[UI.sheet]);C.back=!C.back;C.show=false;renderSheet();},
+  cardNext(){const C=collectionState(G.players[UI.sheet]);C.page=innerWidth>=700||C.show?(C.page+1)%4:0;C.show=true;renderSheet();},
+  cardPrev(){const C=collectionState(G.players[UI.sheet]);if(innerWidth>=700){C.page=(C.page+3)%4;C.show=true;}else if(C.page>0)C.page--;else C.show=false;renderSheet();},
+  cardHome(){const C=collectionState(G.players[UI.sheet]);C.show=false;C.page=0;renderSheet();},
   staffTalk(v){const [kind,id,topic]=v.split(':');UI.staffMsgs=UI.staffMsgs||{};UI.staffMsgs[id]=staffTalk(kind,id,topic);save();if(UI.person)renderSheet();else render();},
 homePage(v){UI.homePage=Math.max(0,(UI.homePage||0)+(+v));UI.homeFocus=null;render();},homeOpenCard(v){UI.homeFocus={view:UI.homePanel||'overview',index:+v};render();},homeCloseCard(){UI.homeFocus=null;render();},
 homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0};render();},
@@ -203,7 +201,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   dset(v){const [k,x]=v.split(':'); UI.df=UI.df||{pos:'all',typ:'all',reg:'all',sort:'rk',seg:'board',more:20}; UI.df[k]=k==='more'?+x:x; if(k!=='more')UI.df.more=30; render();},
   autoPick(){const id=userAutoPick(); if(id)return A.pick(id); save();render();},
   pick(v){ const id=+v; const pk0=G.draft&&G.draft.picks[G.draft.cur]; doPick(id); if(pk0)dlFeedAdd('am',pk0,id); UI.sheet=null; const p=G.players[id]; if(p&&p.team===G.user&&p.draft&&p.draft.rd<=3){ const f=draftFan(p); UI.stamp={title:f.bank==='drSteal'?'스틸 지명':'지명',msg:`${p.draft.rd}라운드 ${p.draft.no}순위 · ${p.name} (${posLabel(p)}, ${p.school||''}) · 언론 순위 ${p.press||'-'}위`,fans:f.lines}; } save(); render(); if(G.draft&&!G.draft.done&&G.draft.picks[G.draft.cur]&&G.draft.picks[G.draft.cur].tid!==G.user)setTimeout(()=>dliveStart('am'),UI.stamp?1600:350); },
-  player(v){UI.myRos=false;UI.drawer=false;UI.mail=null;UI.posSheet=null;UI.game=null;if(UI.sheet!==+v)UI.ptab=(UI.tab==='staff'&&curSub('staff')==='train'&&(UI.it||{}).mg_staff_train==='dev'&&G.players[+v]&&G.players[+v].team===G.user)?'dev':(G.fa&&G.fa.open&&!G.fa.closed&&G.fa.pool.includes(+v)&&G.players[+v]&&G.players[+v].team==null)?'sum':'abil';UI.sheet=+v;UI.talkMsg=null;UI.devMsg=null;UI.offer=null;UI.fmsg='';UI.confirmRel=null;if(!UI.ext||UI.ext.id!==+v)UI.ext=null;renderSheet();},
+  player(v){UI.myRos=false;UI.drawer=false;UI.mail=null;UI.posSheet=null;UI.game=null;if(UI.sheet!==+v)UI.ptab=(UI.tab==='staff'&&curSub('staff')==='train'&&(UI.it||{}).mg_staff_train==='dev'&&G.players[+v]&&G.players[+v].team===G.user)?'dev':(G.fa&&G.fa.open&&!G.fa.closed&&G.fa.pool.includes(+v)&&G.players[+v]&&G.players[+v].team==null)?'sum':G.players[+v]&&!G.players[+v].prospect&&!G.players[+v].fdPool?'card':'sum';UI.sheet=+v;UI.talkMsg=null;UI.devMsg=null;UI.offer=null;UI.fmsg='';UI.confirmRel=null;if(!UI.ext||UI.ext.id!==+v)UI.ext=null;renderSheet();},
   fpos(v){ UI.fpos=(v&&UI.fpos!==v)?v:null; render(); if(UI.fpos){ const el=document.querySelector('.fdd'); if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'}); } },
   posSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
@@ -317,7 +315,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   slotCopy(){ if(!G)return; saveNow(); const m=meta(); const to=SLOT_IDS.find(n=>!m.slots[n]); if(!to){ UI.slotMsg=`빈 슬롯이 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.`; render(); return; } try{ localStorage.setItem(slotKey(to),localStorage.getItem(slotKey(m.active))); m.slots[to]=Object.assign({},m.slots[m.active],{at:Date.now()}); setMeta(m); UI.slotMsg=`슬롯 ${to}에 지금 상황(${dstr(G.day)})을 따로 저장했습니다. 계속 진행하는 곳은 슬롯 ${m.active}입니다.`; }catch(e){ UI.slotMsg='저장 공간이 부족해 따로 저장하지 못했습니다.'; } render(); },
   slotAll(){ UI.slotAll=!UI.slotAll; render(); },
   dview(v){ UI.dview=v; render(); },
-  tpOpen(v,el){ const c=el&&el.closest('.tmk'); if(c){ c.classList.toggle('open'); el.textContent=c.classList.contains('open')?'접기':'자세히'; } },
+  tpOpen(v,el){ const c=el&&el.closest('.tmk'); if(c){ c.classList.toggle('open');const open=c.classList.contains('open');(UI.teamOpen=UI.teamOpen||{})[v]=open;el.textContent=open?'접기':'자세히';el.setAttribute('aria-expanded',String(open)); } },
   mfcShow(v){ const el=document.getElementById('m-'+v); if(el&&!el.classList.contains('open')){ el.classList.add('open'); const b=el.querySelector('.mfc-more'); if(b)b.textContent='접기'; } },
   mfcOpen(v){ const el=document.getElementById('m-'+v); if(el){ el.classList.toggle('open'); const b=el.querySelector('.mfc-more'); if(b)b.textContent=el.classList.contains('open')?'접기':'전체 보기'; } },
   lrAll(){ UI.lrAll=!UI.lrAll; render(); },

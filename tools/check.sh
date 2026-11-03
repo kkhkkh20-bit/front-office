@@ -11,6 +11,7 @@ step "모듈·빌드 계약"; node --test tools/test/*.test.cjs || fail=1
 step "문법"; node -e "const fs=require('fs');const h=fs.readFileSync('index.html','utf8');const s=[...h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');new Function(s);console.log('문법 OK')" || fail=1
 step "정적 점검"; node tools/check-static.js || fail=1
 step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
+step "개인 활동·시설·해외연수·저장 규칙"; node tools/check-feature-rules.cjs || fail=1
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
@@ -18,6 +19,8 @@ step "계속·날짜 표시·스카우트 위임"; node tools/check-continue.cjs
 step "3경기 진행·중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
+step "선수 카드·모바일 읽기·검색 공간·파일 불러오기"; node tools/check-experience.cjs || fail=1
+step "실제 3D 투구·타구·주루·수비 재생"; node tools/check-gameplay.cjs || fail=1
 step "트레이드 제안 카드 레이아웃"; node tools/check-trade-layout.cjs || fail=1
 step "공통 글꼴·패널 정렬"; node tools/check-design-system.cjs || fail=1
 step "표·목록 내부 스크롤"; node tools/check-workspace.cjs || fail=1
