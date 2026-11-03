@@ -29,6 +29,7 @@ function pbpCall(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; const nm
   if(x[1]==='SB'||x[1]==='CS'){ const r=G.players[x[2]]; const from=pre.bases.indexOf(x[2]); const to=from>=0?['2루','3루','홈'][from]:'다음 베이스'; const cat=pcFielder(g,half,'C');
     if(x[1]==='SB')return {c:`${nm(x[2])}, ${to} 도루 성공!${cat?` 포수 ${cat}의 송구가 늦었습니다.`:''}`,a:r&&r.r.spd>=68?pk('sb',[`${r.name}의 발은 리그에서도 손꼽힙니다.`,'투수가 견제를 더 신경 써야 했습니다.']):''};
     const c0=G.players[(g.box[half%2?'a':'h'].bat.find(b=>b.pos==='C')||{}).id]; return {c:`${nm(x[2])}, ${to} 도루 실패!${cat?` 포수 ${cat}의 정확한 송구에 걸렸습니다.`:''}`,a:c0&&catArm(c0)>=60?`${c0.name} 포수 어깨가 좋습니다. 함부로 뛸 수 없는 포수입니다.`:pk('cs',['무리한 주루였습니다. 흐름이 끊깁니다.','타이밍을 빼앗겼습니다.'])}; }
+  const pitches=storedPitchSequence(x),lastPitch=pitches?.at(-1);
   const b=G.players[x[1]], p=G.players[x[2]], o=x[3], runs=x[6]||0, outsA=x[4];
   const sa=x[7], sh=x[8], befA=pre.sa, befH=pre.sh; const myB=top?sa:sh, opB=top?sh:sa, myB0=top?befA:befH, opB0=top?befH:befA;
   const lead0=myB0-opB0, lead1=myB-opB; const walkoff=!top&&inn>=9&&lead0<=0&&lead1>0;
@@ -43,8 +44,8 @@ function pbpCall(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; const nm
     case '3B': c=`${BN}, ${pk('t3',['우중간 깊숙한 곳','좌중간을 완전히 가르는 타구','우익선상 끝까지 굴러가는 타구'])}! 3루까지 달립니다. 3루타!`; a=b&&b.r.spd>=62?'발이 빠르니까 3루까지 가능한 타구였습니다.':''; break;
     case '2B': c=`${BN}, ${pk('t2',['좌중간을 가르는','우중간을 가르는','좌익선상','우익선상','펜스를 직접 맞히는'])} 타구! 2루타.`; break;
     case '1B':{ const inf=b&&b.r.spd>=64&&pcH(g,k,'if')<.25; c=inf?`${BN}, ${fld(pk('ip',['SS','3B','2B']))} 쪽 느린 땅볼, 1루 세이프! 내야 안타.`:`${BN}, ${pk('t1',['좌전','중전','우전','3유간을 빠지는','1·2루간을 꿰뚫는','유격수 키를 넘기는'])} 안타.`; break; }
-    case 'BB': c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pk('bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.'])}`; if(loaded)a='투수에게 가장 뼈아픈 실점입니다.'; break;
-    case 'K':{ const best=p?pcBest(p):''; const look=pcH(g,k,'kl')<.28; c=look?`${BN}, ${pk('kl2',['바깥쪽 꽉 찬 공에 그대로 서서 삼진!','몸쪽 꽉 찬 직구에 루킹 삼진!'])}`:`${BN}, ${best&&pcH(g,k,'kb')<.6?`결정구 ${best}에 `:''}헛스윙 삼진!`;
+    case 'BB': if(lastPitch){c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pitches.length===4?'스트레이트 볼넷.':lastPitch.s===2?'풀카운트 끝에 볼넷.':'볼넷으로 걸어 나갑니다.'}`;if(loaded)a='투수에게 가장 뼈아픈 실점입니다.';break;}c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pk('bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.'])}`; if(loaded)a='투수에게 가장 뼈아픈 실점입니다.'; break;
+    case 'K':{ const best=p?pcBest(p):''; const look=lastPitch?lastPitch.res==='루킹 삼진':pcH(g,k,'kl')<.28; c=lastPitch?`${BN}, ${lastPitch.t}에 ${look?'루킹':'헛스윙'} 삼진!`:look?`${BN}, ${pk('kl2',['바깥쪽 꽉 찬 공에 그대로 서서 삼진!','몸쪽 꽉 찬 직구에 루킹 삼진!'])}`:`${BN}, ${best&&pcH(g,k,'kb')<.6?`결정구 ${best}에 `:''}헛스윙 삼진!`;
       const pt=pcPitToday(g,k,x[2]); if(pt.so+1>=6)a=`${PN}, 오늘 벌써 ${pt.so+1}번째 탈삼진입니다.`; else if(pcHand(b,p)&&pcH(g,k,'hh')<.5)a=`${pcHand(b,p)} 승부, 타자가 불리한 싸움이었습니다.`; break; }
     case 'DP':{ const pat=pk('dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]); c=`${BN}, ${fld(pat[0])} 정면 땅볼! ${pcFielder(g,half,pat[1])||PC_POS[pat[1]]}에서 1루까지, ${pat[2]} 병살!`; a=p&&gbT(p)>.6?`${PN}은(는) 땅볼 유도형 투수입니다. 원하던 그림이 나왔습니다.`:pk('dpa',['한 번에 불이 꺼집니다.','공격 흐름이 완전히 끊겼습니다.']); break; }
     case 'SAC':{ c=`${BN}, 희생번트! 주자를 ${pre.bases[1]?'2·3루':'2루'}로 보냅니다.`; const m=mgrOf(atT); if(m&&!m.interim&&m.small>=62)a=`${m.name} 감독다운 작전입니다. 한 점을 짜내겠다는 뜻입니다.`; break; }

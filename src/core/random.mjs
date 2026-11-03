@@ -1,4 +1,8 @@
 /* 난수원을 주입해 저장·검사와 같은 호출 순서를 유지한다. */
+export function createSeededRandom(seed){
+  let a=seed|0;
+  return ()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};
+}
 export function createRandom(random){
   const R=random;
   const rnd=(a,b)=>a+R()*(b-a);

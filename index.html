@@ -2827,6 +2827,70 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 @media(max-height:650px) and (max-width:1000px){.cast.match-dashboard{position:absolute;min-height:650px;overflow:visible}}
 /* 상단바 아래에 남은 높이에서도 구장과 선수 줄을 함께 유지한다. */
 @media(min-width:1001px) and (max-height:850px){.detail-page-open .cast.match-dashboard{grid-template-rows:44px minmax(0,1fr) 28px 45px 74px 28px;gap:5px;padding:7px}.detail-page-open .md-center{grid-template-rows:100px minmax(0,1fr);gap:7px}.detail-page-open #md-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 8px;align-content:start}.detail-page-open .md-stat-row{height:19px;grid-template-columns:14px minmax(0,1fr) 14px}.detail-page-open .md-hit-bars{height:58px}.detail-page-open .md-hit-bars>div>span{height:43px}.detail-page-open .md-chart-note{display:none}.detail-page-open .md-panel>header{min-height:25px;padding-block:4px}.detail-page-open .md-field-panel{grid-template-rows:25px minmax(0,1fr) 46px}.detail-page-open .md-play-grid{grid-template-columns:minmax(0,1fr) 195px;gap:7px}.detail-page-open .md-layout{grid-template-columns:180px minmax(0,1fr) 180px;gap:7px}}
+/* 2D 구장 중계: 경기는 구장·대결·투구판, 통계와 선수단은 별도 보기. */
+.cast.match-dashboard{grid-template-rows:48px minmax(0,1fr) 30px 45px 70px 30px;padding:8px;gap:6px;background:radial-gradient(ellipse at 45% 30%,#192a30,#0b121a 70%);--md-line:#33434e}
+.match-dashboard .cs-top{background:linear-gradient(100deg,#29191e,#15232d 55%);border-top:2px solid var(--team-hi,#ba4349)}
+.match-dashboard .cs-board{gap:12px;flex-shrink:0}.match-dashboard .cs-tm b{font-size:30px}.match-dashboard .md-match-meta{padding-inline:10px;font-size:10px}
+.match-dashboard .md-mobile-nav{display:flex;gap:2px;flex-wrap:nowrap;justify-content:flex-end;flex-basis:auto;order:0;margin-left:4px}
+.match-dashboard .md-mobile-nav button.on{background:#315b47;border-color:#5f9879;color:#fff}.match-dashboard .md-mobile-nav button{padding:4px 9px;min-height:28px;font-size:11px}
+.match-dashboard .md-layout{display:block;height:100%;min-height:0}
+.match-dashboard .md-layout>.md-team-panel,.match-dashboard .md-top-grid,.match-dashboard .md-charts{display:none}
+.match-dashboard .md-center{display:block;height:100%;min-height:0}
+.match-dashboard .md-play-grid{display:grid;position:relative;height:100%;grid-template-columns:minmax(0,1fr) 252px;gap:8px;min-height:0}
+.match-dashboard .md-field-panel{display:grid;grid-template-rows:27px minmax(0,1fr) 72px;height:100%;border-color:#3d5b50;border-top:2px solid #477c61;background:#11281e}
+.match-dashboard .md-field-panel>header{background:#172a27;border-bottom-color:#355044}
+.match-dashboard .md-field-body{background:#10231a;isolation:isolate}
+.match-dashboard .cs-stage{height:calc(100% - 16px);width:100%;margin:0;aspect-ratio:auto;clip-path:none}
+.match-dashboard .cs-bg .g1{fill:#235c37}.match-dashboard .cs-bg .g3{fill:#337345}.match-dashboard .cs-bg .dirt{fill:#ae8356}.match-dashboard .cs-bg .st{fill:#fff1}
+.match-dashboard .cc,.match-dashboard .cc.of.bat{width:7%;max-width:64px}.match-dashboard .cc-n{font-size:12px;line-height:1.2}.match-dashboard .cc.ctch{width:5.4%;max-width:48px}.match-dashboard .cc-f{filter:drop-shadow(0 3px 3px #0006)}
+.match-dashboard .cs-sit{top:6px;left:8px;font-size:11px}.match-dashboard .cs-cap{max-width:80%;white-space:normal;text-align:center;line-height:1.4;font-size:14px}
+.match-dashboard .md-duel{padding:7px 12px;gap:16px;background:linear-gradient(100deg,#251c24,#182b35);border-top-color:#49725c;align-items:center}
+.match-dashboard .md-duel-player{padding:0 8px;min-width:0;gap:10px;border-left:3px solid #cc6674}.match-dashboard .md-duel-player:nth-child(2){border-left-color:#6ab5d4}
+.match-dashboard .md-duel-player .av{width:48px;height:48px;border-radius:5px;outline:1px solid #ffffff23;background:#101b24}
+.match-dashboard .md-duel-player i{font-size:11px;color:#b1c6d3}.match-dashboard .md-duel-player b{font-size:18px;line-height:1.3;color:#f5f4ee}.match-dashboard .md-duel-player small{font-size:11px;color:#a6bcc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.match-dashboard .md-duel-player em{font-style:normal;color:#f0d893}
+.match-dashboard .md-final{padding:10px;color:#f7d782}
+.md-pitch-dock{display:flex;flex-direction:column;align-items:stretch;background:linear-gradient(150deg,#202e3a,#111b25);border-top:2px solid #9c4c54;min-height:0}
+.md-pitch-dock>header{flex:0 0 28px;padding:6px 10px;font-size:12px;background:#3b202a55}.md-pitch-dock>header>b>small{font-size:9px;font-weight:400;color:#94acbc;margin-left:5px}.md-pitch-dock>header>span{font-size:10px;color:#d3bb93;border:1px solid #a58a4b55;padding:1px 4px;border-radius:3px}
+.md-zone-map{position:relative;flex:1 1 150px;min-height:100px;max-height:215px;margin:4px 20px 0;isolation:isolate;background:radial-gradient(ellipse,#293f50aa,transparent 65%)}
+.md-zone-grid{position:absolute;left:20%;top:15%;width:60%;height:70%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);border:2px solid #dfebee;box-sizing:border-box;box-shadow:0 0 20px #98d1d010;overflow:hidden}
+.md-zone-grid>i{border-right:1px solid #b9d2dc88;border-bottom:1px solid #b9d2dc88;background:#a5cadb05}.md-zone-grid>i:nth-child(3n){border-right:0}.md-zone-grid>i:nth-last-child(-n+3){border-bottom:0}
+.md-zone-view{position:absolute;top:0;left:0;width:100%;font-size:9px;text-align:center;color:#8ba7b9}.md-zone-high,.md-zone-low{position:absolute;left:50%;transform:translateX(-50%);font-size:8px;color:#7290a5}.md-zone-high{top:5%}.md-zone-low{bottom:3%}
+#md-pitch-dots{position:absolute;inset:0;pointer-events:none}
+.md-pitch-dot{position:absolute;transform:translate(-50%,-50%);width:20px;height:20px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #c4ecff;color:#fff;font:700 11px var(--f-num);background:#347d9e;box-shadow:0 1px 3px #0008;z-index:1;opacity:.6}
+.md-pitch-dot.ball{background:#377d58;border-color:#8de6b6}.md-pitch-dot.contact{background:#a24869;border-color:#ffd8e2}.md-pitch-dot.latest{background:#ef8b31;border:2px solid #fff2d4;color:#fff;box-shadow:0 0 0 4px #ffb95622,0 0 16px #ff9e41aa;opacity:1;z-index:2;width:25px;height:25px}
+.match-dashboard .cs-pitch{position:static;transform:none;opacity:1;z-index:auto;white-space:normal;padding:6px 10px;margin:0 9px;border:1px solid #415564;border-radius:4px;background:#0f1c26;min-height:62px;box-sizing:border-box;pointer-events:auto;flex:0 0 auto;font-size:12px;display:grid;grid-template-columns:1fr auto;align-content:center;gap:3px 6px}
+.match-dashboard .cs-pitch.on::before{content:none}.md-pitch-main{display:flex;align-items:baseline;justify-content:space-between;gap:8px;grid-column:1/-1}.md-pitch-main>b{color:#e8edf0;font-size:13px;margin:0}.md-pitch-main>strong{font:700 20px var(--f-num);color:#ffd18a;white-space:nowrap}.md-pitch-main small{font-size:10px;font-weight:400;color:#8ba7b9}
+.match-dashboard .cs-pitch em{font-size:12px;font-style:normal}.md-pitch-dock .strike{color:#ffb878}.md-pitch-dock .ball{color:#83dab1}.md-pitch-dock .contact{color:#ef9fb7}.md-pitch-location{font-size:9px;color:#90adbe;text-align:right}.md-pitch-wait{grid-column:1/-1;text-align:center;font-size:11px;color:#819cac}
+.md-pitch-history{list-style:none;margin:5px 10px;padding:0;flex:1 1 36px;min-height:0;overflow:auto;scrollbar-width:thin}
+.md-pitch-history>li{display:grid;grid-template-columns:15px minmax(0,1fr) auto 57px;gap:4px;align-items:center;border-bottom:1px solid #ffffff0b;padding:4px 0;font-size:10px;line-height:1.3}.md-pitch-history i{font-style:normal;color:#7a97a8}.md-pitch-history b{font-weight:500;white-space:nowrap}.md-pitch-history span{font-family:var(--f-num);color:#bdcfd9}.md-pitch-history small{font-size:8px;color:#728da0}.md-pitch-history em{font-size:9px;font-style:normal;text-align:right;white-space:nowrap}
+.md-pitch-history>li:last-child{background:#ffffff06}.md-count-panel{flex:0 0 auto;padding:9px 10px 8px;border-top:1px solid #ffffff16;background:#0d1821;border-radius:0 0 4px 4px}
+.match-dashboard .cs-bso{position:static;display:flex;flex-direction:row;align-items:center;justify-content:space-between;transform:none;background:none;border:0;padding:0;gap:8px}
+.match-dashboard .cs-bso>div{gap:5px}.match-dashboard .cs-bso b{font:700 15px var(--f-num);width:auto;color:#dbe6ed}.match-dashboard .cs-bso span{gap:3px}.match-dashboard .cs-bso i{width:11px;height:11px;background:#182733;box-shadow:inset 0 0 0 1px #59728277}
+#cs-B i.on{background:#6fd38e;box-shadow:0 0 6px #76e09466}#cs-S i.on{background:#f2cf64;box-shadow:0 0 6px #ffe49e55}#cs-Ob i.on{background:#f18a5e;box-shadow:0 0 6px #ff9b7444}
+#cs-count-summary{margin-top:6px;text-align:center;font:500 10px var(--f-ui);color:#a5bac8;white-space:nowrap}
+.match-dashboard .md-comment{background:#1d3c30;border-color:#365d48}.match-dashboard .md-dugout{padding:3px 8px}.match-dashboard .md-roster-label{flex-basis:105px;font-size:11px}.match-dashboard .md-roster-player{min-width:70px;flex-basis:70px}.match-dashboard .md-roster-player .av{width:25px;height:25px}.match-dashboard .md-roster-player>b{font-size:10px}
+.match-dashboard[data-view="data"] .md-center{display:grid;grid-template-rows:155px minmax(0,1fr);gap:8px}.match-dashboard[data-view="data"] .md-top-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.match-dashboard[data-view="data"] .md-play-grid{display:block}
+.match-dashboard[data-view="data"] .md-field-panel,.match-dashboard[data-view="data"] .md-pitch-dock{display:none}.match-dashboard[data-view="data"] .md-charts{display:grid;height:100%;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);gap:8px}.match-dashboard[data-view="data"] .md-chart{max-height:none}.match-dashboard[data-view="data"] #md-stats{display:block}.match-dashboard[data-view="data"] .md-hit-bars{height:78px}.match-dashboard[data-view="data"] .md-hit-bars>div>span{height:58px}
+.match-dashboard[data-view="teams"] .md-center{display:none}.match-dashboard[data-view="teams"] .md-layout{display:grid;grid-template-columns:1fr 1fr;gap:8px}.match-dashboard[data-view="teams"] .md-team-panel{display:grid;grid-template-rows:30px minmax(120px,.8fr) minmax(0,1.1fr) 26px}.match-dashboard[data-view="teams"] .md-mini-player{width:70px}.match-dashboard[data-view="teams"] .md-mini-player .av{width:32px;height:32px}.match-dashboard[data-view="teams"] .md-mini-player>b{font-size:11px}.match-dashboard[data-view="teams"] .md-lineup-row{font-size:12px;padding:6px}
+@media(min-width:1600px) and (min-height:900px){.match-dashboard[data-view="data"] .md-center{grid-template-rows:190px minmax(0,1fr)}.match-dashboard .md-play-grid{grid-template-columns:minmax(0,1fr) 290px}.md-zone-map{max-height:260px;flex-basis:220px;margin-inline:30px}.md-pitch-dock>header{font-size:14px;flex-basis:34px}.md-pitch-history>li{font-size:12px;padding:8px 0;grid-template-columns:18px minmax(0,1fr) auto 70px}.md-pitch-history em{font-size:11px}.md-count-panel{padding:15px}.match-dashboard .cs-bso i{width:13px;height:13px}.match-dashboard .md-field-panel{grid-template-rows:30px minmax(0,1fr) 86px}.match-dashboard .md-duel-player .av{width:58px;height:58px}.match-dashboard .md-duel-player b{font-size:22px}.match-dashboard .cc,.match-dashboard .cc.of.bat{max-width:78px}}
+@media(min-width:1001px) and (max-width:1350px){.match-dashboard .md-match-meta{display:none}.match-dashboard .md-mobile-nav button{padding-inline:6px}.match-dashboard .md-play-grid{grid-template-columns:minmax(0,1fr) 230px}.match-dashboard .cs-board{margin-right:auto}}
+@media(max-width:1000px){
+  .cast.match-dashboard{position:relative;min-height:0;overflow:hidden;padding:5px;gap:5px;grid-template-rows:auto minmax(0,1fr) 33px 63px 28px}
+  .match-dashboard .cs-top{padding:4px;gap:3px}.match-dashboard .cs-board{gap:7px;flex-basis:100%;justify-content:center}.match-dashboard .cs-tm b{font-size:24px}.match-dashboard .cs-tm i{font-size:11px}.match-dashboard .cs-mode{margin-right:auto}.match-dashboard .md-mobile-nav{flex-basis:100%;justify-content:center;margin:0;gap:4px}.match-dashboard .md-mobile-nav button{padding:2px 16px;min-height:23px;font-size:10px}
+  .match-dashboard .md-layout,.match-dashboard .md-center{display:block;height:100%}.match-dashboard .md-play-grid{display:grid;height:100%;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 142px;gap:5px}
+  .match-dashboard .md-field-panel{height:100%;grid-template-rows:23px minmax(0,1fr) 54px}.match-dashboard .md-field-panel>header{font-size:10px;min-height:23px;padding:4px 7px}.match-dashboard .md-field-panel>header>span{font-size:9px}.match-dashboard .cc,.match-dashboard .cc.of.bat{width:10%;max-width:42px}.match-dashboard .cc.ctch{width:8%;max-width:32px}.match-dashboard .cc-n{font-size:10px}.match-dashboard .cs-sit{padding:2px 5px;font-size:9px;top:4px;left:5px}.match-dashboard .cs-cap{font-size:11px;padding:4px 8px}
+  .match-dashboard .md-duel{padding:4px;gap:4px}.match-dashboard .md-duel-player{gap:5px;padding-left:4px;border-left-width:2px}.match-dashboard .md-duel-player .av{width:34px;height:34px}.match-dashboard .md-duel-player b{font-size:14px}.match-dashboard .md-duel-player i{font-size:9px}.match-dashboard .md-duel-player small{font-size:9px}.match-dashboard .md-duel-player .ab-res{display:none}
+  .md-pitch-dock{display:grid;grid-template-columns:125px minmax(0,1fr);grid-template-rows:24px minmax(0,1fr) 47px;gap:0;height:142px;box-sizing:border-box}
+  .md-pitch-dock>header{grid-column:1/-1;min-height:23px;font-size:11px;padding:4px 8px}.md-pitch-dock>header>span{font-size:9px;padding:0 4px}
+  .md-zone-map{grid-row:2/4;grid-column:1;min-height:0;max-height:none;height:auto;margin:0 6px 3px}.md-zone-view{display:none}.md-zone-high,.md-zone-low{font-size:7px}.md-pitch-dot{width:15px;height:15px;font-size:9px}.md-pitch-dot.latest{width:19px;height:19px;border-width:1px;box-shadow:0 0 0 2px #ffb95622,0 0 9px #ff9e4177}
+  .match-dashboard .cs-pitch{grid-column:2;grid-row:2;min-height:0;margin:4px 7px 4px 0;padding:4px 6px;gap:1px 3px}.md-pitch-main{gap:2px}.md-pitch-main>b{font-size:10px}.md-pitch-main>strong{font-size:17px}.md-pitch-main small{font-size:8px}.match-dashboard .cs-pitch em{font-size:10px}.md-pitch-location{font-size:8px}.md-pitch-wait{font-size:10px}
+  .md-pitch-history{display:none}.md-count-panel{grid-column:2;grid-row:3;margin:0 7px 4px 0;padding:5px 6px 3px;border:1px solid #334b5b;border-radius:4px}.match-dashboard .cs-bso{gap:5px}.match-dashboard .cs-bso b{font-size:12px}.match-dashboard .cs-bso>div{gap:3px}.match-dashboard .cs-bso i{width:8px;height:8px}.match-dashboard .cs-bso span{gap:2px}#cs-count-summary{font-size:8px;margin-top:4px}
+  .match-dashboard .md-roster-label{flex-basis:65px;font-size:10px}.match-dashboard .md-roster-label button{padding:2px 4px;font-size:8px}.match-dashboard .md-roster-player{min-width:66px;flex-basis:66px}.match-dashboard .md-roster-player .av{width:22px;height:22px}.match-dashboard .md-roster-player>b{font-size:9px}.match-dashboard .md-roster-player>small{font-size:8px}.match-dashboard .md-linescore{display:none}
+  .match-dashboard[data-view="data"] .md-center{grid-template-rows:165px minmax(0,1fr);gap:5px}.match-dashboard[data-view="data"] .md-top-grid{grid-template-columns:1fr 1fr;gap:5px}.match-dashboard[data-view="data"] .md-top-grid>.md-panel:last-child{display:none}.match-dashboard[data-view="data"] .md-charts{grid-template-columns:1fr;grid-template-rows:1fr 1fr;gap:5px}.match-dashboard[data-view="data"] .md-play-grid{display:block}
+  .match-dashboard[data-view="teams"] .md-team-panel{grid-template-rows:28px minmax(100px,.7fr) minmax(0,1fr) 24px}.match-dashboard[data-view="teams"] .md-mini-player .av{width:23px;height:23px}.match-dashboard[data-view="teams"] .md-mini-player>b{font-size:9px}.match-dashboard[data-view="teams"] .md-lineup-row{font-size:10px;padding:5px 2px;grid-template-columns:12px minmax(0,1fr) 22px}
+}
+/* 낮은 가로 화면은 상단바를 고정한 채 경기 본문만 스크롤한다. */
+@media(max-height:560px){.detail-page-open #sheet .cast.match-dashboard{height:640px;min-height:640px}}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 @media(min-width:1100px){
   .fm-home .fmmain{height:calc(100dvh - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -2947,8 +3011,10 @@ var FrontOfficeCore = (() => {
     DV_PTS: () => DV_PTS,
     WD: () => WD,
     avg: () => avg,
+    buildPitchSequence: () => buildPitchSequence,
     clamp: () => clamp,
     createRandom: () => createRandom,
+    createSeededRandom: () => createSeededRandom,
     dmd: () => dmd,
     dnum: () => dnum,
     dobj: () => dobj,
@@ -2959,6 +3025,9 @@ var FrontOfficeCore = (() => {
     dvSd: () => dvSd,
     hn: () => hn,
     onOrAfter: () => onOrAfter,
+    pitchCountAfter: () => pitchCountAfter,
+    pitchInZone: () => pitchInZone,
+    pitchLocation: () => pitchLocation,
     r5: () => r5,
     sum: () => sum
   });
@@ -2982,6 +3051,15 @@ var FrontOfficeCore = (() => {
   }
 
   // src/core/random.mjs
+  function createSeededRandom(seed) {
+    let a = seed | 0;
+    return () => {
+      a = a + 1831565813 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
   function createRandom(random) {
     const R = random;
     const rnd = (a, b) => a + R() * (b - a);
@@ -3040,6 +3118,62 @@ var FrontOfficeCore = (() => {
     let n = dnum(y, m, d);
     while (dobj(n).w !== w) n++;
     return n;
+  }
+
+  // src/core/pitches.mjs
+  function buildPitchSequence({ outcome, target = 4, profile }, random) {
+    const pitches = profile.pitches.filter((p) => p.active !== false);
+    const best = [...pitches].sort((a, b2) => b2.value - a.value)[0];
+    const off = { "직구": 0, "투심": -3, "커터": -5, "슬라이더": -12, "스위퍼": -14, "체인지업": -15, "포크": -13, "커브": -22 };
+    const n = Math.max(outcome === "BB" ? 4 : outcome === "K" ? 3 : 1, Math.round(target));
+    const candidates = [];
+    for (let b2 = 0; b2 <= 3; b2++) for (let s2 = 0; s2 <= 2; s2++) {
+      if (outcome === "BB" && b2 !== 3 || outcome === "K" && s2 !== 2) continue;
+      const fouls = n - 1 - b2 - s2;
+      if (fouls < 0 || fouls > 0 && s2 !== 2) continue;
+      candidates.push({ b: b2, s: s2, fouls });
+    }
+    const choice = candidates[Math.floor(random() * candidates.length)];
+    const pre = [...Array(choice.b).fill("볼"), ...Array(choice.s).fill("스트라이크")];
+    for (let i = pre.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [pre[i], pre[j]] = [pre[j], pre[i]];
+    }
+    const calls = pre.map((t) => t === "스트라이크" && random() < 0.45 ? "헛스윙" : t);
+    calls.push(...Array(choice.fouls).fill("파울"));
+    calls.push(outcome === "BB" ? "볼넷" : outcome === "K" ? random() < 0.28 ? "루킹 삼진" : "헛스윙 삼진" : outcome === "SAC" ? "번트" : "타격");
+    let b = 0, s = 0;
+    return calls.map((res, i) => {
+      const pitch = i === calls.length - 1 && outcome === "K" && random() < 0.6 ? best : pitches[Math.floor(random() * pitches.length)];
+      const t = pitch.name, v = Math.min(profile.max, Math.round(profile.velo + (off[t] ?? -10) + (random() - 0.5) * 4));
+      const q = { t, v, ...pitchLocation(res, random), res, b, s };
+      const after = pitchCountAfter(q);
+      b = after.b;
+      s = after.s;
+      return q;
+    });
+  }
+  function pitchCountAfter(q) {
+    let { b, s } = q;
+    if (q.res === "볼" || q.res === "볼넷") b++;
+    else if (q.res === "파울") s = Math.min(2, s + 1);
+    else if (/스트라이크|헛스윙|삼진/.test(q.res)) s++;
+    return { b, s };
+  }
+  function pitchInZone(q) {
+    return q.x >= 0 && q.x <= 1 && q.y >= 0 && q.y <= 1;
+  }
+  function pitchLocation(res, random) {
+    let x = 0.04 + random() * 0.92, y = 0.04 + random() * 0.92;
+    const ball = res === "볼" || res === "볼넷", chase = /헛스윙|파울/.test(res) && random() < 0.4;
+    if (ball || chase) {
+      const side = Math.floor(random() * 4), edge = -0.08 - random() * 0.16;
+      if (side === 0) x = edge;
+      else if (side === 1) x = 1 - edge;
+      else if (side === 2) y = edge;
+      else y = 1 - edge;
+    }
+    return { x: +x.toFixed(3), y: +y.toFixed(3) };
   }
   return __toCommonJS(index_exports);
 })();
@@ -3678,12 +3812,13 @@ function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, �
   return bipResolve(b,p,babip,qb,qp,fs); /* 인플레이: 타구 유형·방향 → 그 자리 야수 수비(46b_bip) */
 }
 let PARK=null; /* 지금 경기 구장(홈 팀) */
-function simGame(day,hid,aid,ps){ PARK=hid; SIMDAY=day; for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
+function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
   const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
   const psx=ps&&typeof ps==='object'?ps:null;
   const score={h:0,a:0}, line={h:[],a:[]}, hits={h:[],a:[]}, ev=[], pbp=[];
   for(const k of ['a','h']){ const s0=S[k]; if(s0.short&&s0.sp)ev.push({h:0,t:`${s0.sp.name}, ${day-s0.sp.lastStart}일 휴식 후 선발 등판(총력전)`}); }
-  const wc={}, lc={}; let walk=false;
+  const wc={}, lc={},pitchProfiles=new Map(); let walk=false;
+  const trace=(half,b,p,o,n)=>{if(options?.pitchRecords===false)return null;if(!pitchProfiles.has(p.id))pitchProfiles.set(p.id,pitchProfile(p));return gamePitchRecord(day,hid,aid,half,pbp.length,b.id,p.id,o,n,pitchProfiles.get(p.id));};
   const opp=k=>k==='h'?'a':'h';
   /* 선발 한계 투구 수: KBO 2024 선발 평균 90구 안팎(90구를 넘는 구단은 롯데 91.2구 하나). 단장이 '투수 혹사 금지'를 지시했으면 감독 성향과 상관없이 95구에서 끊는다 */
   const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ const v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5-(fs.short?15:0); /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
@@ -3716,7 +3851,7 @@ function simGame(day,hid,aid,ps){ PARK=hid; SIMDAY=day; for(const tid of [hid,ai
         const r=base[0], rb=bs.box.get(r.id); if(R()<clamp(.65+(r.r.spd-50)*.007+coachRunAdj(bs.tid)+stealAdj(r,fs),.35,.92)){rb.sb++;base[1]=r;base[0]=null; if(pbp.length<260)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[0]=null;outs++; fs.box.get(fs.cur.id).outs++; if(pbp.length<260)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
       const b=bs.order[bs.idx%bs.order.length]; bs.idx++;
       const p=fs.cur; const xb=bs.box.get(b.id), xp=fs.box.get(p.id);
-      xb.pa++; xp.bf++; xp.pc+=Math.max(1,Math.round(N(3.9-(cc(p.r.ctl,0)-.5)*PW.eff,1.3))); /* 제구가 좋으면 타석당 투구 수가 준다 */ resp.set(b.id,p.id); let eRun=false; ueR.delete(b.id); const xo0=outs+eOuts; /* 이 타석 전 '실책 없었다면' 아웃 수 */
+      const pc0=xp.pc;xb.pa++; xp.bf++; xp.pc+=Math.max(1,Math.round(N(3.9-(cc(p.r.ctl,0)-.5)*PW.eff,1.3))); /* 제구가 좋으면 타석당 투구 수가 준다 */ resp.set(b.id,p.id); let eRun=false; ueR.delete(b.id); const xo0=outs+eOuts; /* 이 타석 전 '실책 없었다면' 아웃 수 */
       const before=lead(); const sc=[]; let dp=false; let o=null;
       /* 희생번트: 스몰볼 감독이 무사 1루(1·2루) 접전에서 하위 타선에게 시킨다. 빅볼 감독은 거의 대지 않는다 */
       if(outs===0&&base[0]&&!base[2]&&inn<=10){ const mm=mgrOf(bs.tid), sm=mm.interim?50:mm.small, slot=(bs.idx-1)%9; const close=before>=-2&&before<=1;
@@ -3726,10 +3861,11 @@ function simGame(day,hid,aid,ps){ PARK=hid; SIMDAY=day; for(const tid of [hid,ai
           else if(r<.8){ o='1B'; xb.ab++; xb.h++; xp.h++; hh++; base[2]=base[1]; base[1]=base[0]; base[0]=b; }
           else if(r<.9){ o='OUT'; xb.ab++; outs++; xp.outs++; }
           else { o='OUT'; xb.ab++; outs++; xp.outs++; if(base[1]){ base[1]=base[0]; } base[0]=b; } } }
-      if(o){ if(!ps)splAdd(b,p,o==='SAC'?'SAC':o); /* 번트도 좌우 기록에 */ if(pbp.length<260)pbp.push([half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h]); if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+6)bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
+      if(o){ if(!ps)splAdd(b,p,o==='SAC'?'SAC':o); /* 번트도 좌우 기록에 */ const rec=trace(half,b,p,o,xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;if(pbp.length<260){const row=[half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h];if(rec)row[15]=rec;pbp.push(row);} if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+6)bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
       CLUTCH=Math.min(1.1,((base[1]||base[2])?.5:0)+(inn>=7&&Math.abs(before)<=2?.4:0)+(ps?.4:0)); /* 득점권 · 7회 이후 2점 차 이내 · 포스트시즌 */
       o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm+ttoPen(p,xp.bf),fs); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0; if(!ps){ if(LBIP)sprAdd(b,p,o,LBIP); } /* 좌우 기록은 타석 결과(희생플라이 등)가 확정된 뒤 */
-      let chg=null, chgE=null, rbiN=0, sfN=0;const moves=[]; const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); if(moves.length)r[14]=moves;pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
+      const rec=trace(half,b,p,o,xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;
+      let chg=null, chgE=null, rbiN=0, sfN=0;const moves=[]; const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); if(moves.length)r[14]=moves;if(rec)r[15]=rec;pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
       const advanceRunner=(r,from,to,chance,spd)=>{const z=runAdvance(r,fs,{base:chance,from,to,spd,outs});if(!z.send)return 'hold';const result=z.safe?'safe':'out';moves.push({id:r.id,from,to,result});if(!z.safe){outs++;xp.outs++;}if(ev.length<400)ev.push({h:half,t:`주루 판단: ${r.name} ${from}루 → ${to===4?'홈':to+'루'} ${z.safe?'진루':'아웃'}`});return result;};
       if(o==='BB'){ xb.bb++; xp.bb++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;
@@ -3840,6 +3976,17 @@ function keepGame(rec){ G.games.unshift(rec); G.games=G.games.slice(0,25); G.gam
 function ulog(r){ (G.sea.ulog=G.sea.ulog||[]).push({d:r.day,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||''}); }
 
 
+/* 공별 기록은 타석이 끝나기 전에 저장한다. 당시 구종·구속·위치·카운트를 보존한다.
+   결과 확률은 기존 outcome이 담당하고, 공별 사건은 그 결과에 조건부로 구성한다. */
+function gamePitchRecord(day,hid,aid,half,k,bid,pid,outcome,target,profile){
+  const seed=(Math.imul(day,613)^Math.imul(hid+1,193)^Math.imul(aid+1,997)^Math.imul(half+1,3191)^Math.imul(k+1,97)^bid^pid)|0;
+  return {v:1,pitches:FrontOfficeCore.buildPitchSequence({outcome,target,profile},FrontOfficeCore.createSeededRandom(seed))};
+}
+function storedPitchSequence(row){
+  const rec=row?.[15];if(rec?.v!==1||!Array.isArray(rec.pitches)||!rec.pitches.length)return null;
+  const valid=q=>q&&typeof q.t==='string'&&Number.isFinite(q.v)&&Number.isFinite(q.x)&&Number.isFinite(q.y)&&q.x>=-.3&&q.x<=1.3&&q.y>=-.3&&q.y<=1.3&&Number.isInteger(q.b)&&q.b>=0&&q.b<=3&&Number.isInteger(q.s)&&q.s>=0&&q.s<=2&&['볼','볼넷','스트라이크','헛스윙','파울','루킹 삼진','헛스윙 삼진','번트','타격'].includes(q.res);
+  return rec.pitches.every(valid)?rec.pitches:null;
+}
 /* ===== 하루 진행 ===== */
 function blocker(){
   if(G.demoEnd)return '체험판은 여기까지입니다.';
@@ -5373,12 +5520,12 @@ function buildWorld(){ const userTid=0; worldReset();
   if(G.scouts[0].region===G.scouts[1].region)G.scouts[1].region=REG.find(r=>r!==G.scouts[0].region);
   refreshScoutMarket();
   for(const t of G.teams){ const m=mkMgr(); m.yrs=ri(1,3); G.mgr[t.id]=m; }
-  // 지난 시즌(2025) 기록을 실제 경기로 만든다
+  // 지난 시즌(2025) 기록은 기존 모형으로 만든다. 다시 볼 수 없는 사전 경기는 공별 기록을 만들지 않아 초기 세계·후보 생성 난수와 성능을 보존한다.
   G.cal=buildCalendar(2025); G.day=G.cal.open-1;
   G.sea={y:2025,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
   for(const t of G.teams){ for(const isP of [true,true,false]){ const p=newForeign('용병',{isP}); while(foreignCheck(t.id,p)&&p.ask>300)p.ask=round5(p.ask*.85); signForeign(t.id,p.id);} signForeign(t.id,newForeign('아시아').id); }
   G.stops=[]; rollForm(); /* 2025 시즌도 컨디션·타구 운이 걸린 채로 치른다 */
-  let pd=null; for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false); applyGame(d,h,a,g,false);} if(dobj(d).w===0)futuresWeek(); }
+  let pd=null; for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false,{pitchRecords:false}); applyGame(d,h,a,g,false);} if(dobj(d).w===0)futuresWeek(); }
   updateLg(2025); try{ featSeason(2025); }catch(e){} try{ genPastSeasons(); }catch(e){ console.error(e); } const st=standingsNow();
   G.history.push({y:2025,order:st,champ:st[0].tid,runner:st[1].tid}); G.iv=null;
   for(const p of Object.values(G.players)){ p.svc++; p.injOut=0; /* 사전 시뮬의 진행 중 부상 상태는 지운다(부상 이력 injHist만 남긴다) */ delete p.injFx; delete p.injK; delete p.reInj; delete p.ld; delete p.armw; delete p.lsS; develop(p); delete p.lastStart; delete p.lastApp; delete p.prevApp; }
@@ -14698,10 +14845,10 @@ function castSheet(){ const c=UI.cast; const g=G.games[c.g]; if(!g)return '';
   return `<div class="cast match-dashboard" data-view="${c.view||'field'}" data-g="${c.g}" role="region" aria-label="경기 대시보드">
   <header class="cs-top"><div class="cs-board"><span class="cs-tm">${badge(g.away,26)}<i>${esc(tshort(g.away))}</i><b id="cs-sa">0</b></span><span class="cs-mid"><b id="cs-inn">1회초</b><span class="cs-cnt"><span id="cs-O"><i></i><i></i></span><em id="cs-on">0아웃</em></span></span><span class="cs-tm r"><b id="cs-sh">0</b><i>${esc(tshort(g.home))}</i>${badge(g.home,26)}</span></div>
     <div class="md-match-meta"><b id="md-status">경기 중계</b><span>${dstr(g.day)} · ${g.kind?esc(g.kind):'정규시즌'}</span></div>
-    <div class="cs-mode">${[['hl','하이라이트'],['all','전체']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}</div><button class="md-control" data-a="castSpd" id="cs-spd">${sp}배속</button><button class="md-control md-play" data-a="castPlay" id="cs-play">${c.play?'일시정지':'재생'}</button><button class="md-control" data-a="castBox">기록</button><button class="md-control" data-a="castClose">나가기</button><nav class="md-mobile-nav" aria-label="중계 화면">${[['field','구장'],['data','기록'],['teams','선수단']].map(([k,l])=>`<button data-a="castView" data-v="${k}" class="${(c.view||'field')===k?'on':''}">${l}</button>`).join('')}</nav></header>
+    <div class="cs-mode">${[['hl','하이라이트'],['all','전체']].map(([k,l])=>`<button data-a="castMode" data-v="${k}" class="${md===k?'on':''}">${l}</button>`).join('')}</div><button class="md-control" data-a="castSpd" id="cs-spd">${sp}배속</button><button class="md-control md-play" data-a="castPlay" id="cs-play">${c.play?'일시정지':'재생'}</button><button class="md-control" data-a="castBox">박스스코어</button><button class="md-control" data-a="castClose">나가기</button><nav class="md-mobile-nav" aria-label="중계 화면">${[['field','경기'],['data','기록'],['teams','선수단']].map(([k,l])=>`<button data-a="castView" data-v="${k}" class="${(c.view||'field')===k?'on':''}">${l}</button>`).join('')}</nav></header>
   <div class="md-layout">${mdTeamPanel(g,'a')}<main class="md-center"><div class="md-top-grid"><section class="md-panel"><header><b>경기 기록</b><span>현재 시점</span></header><div id="md-stats"></div></section><section class="md-panel"><header><b>주요 장면</b><span>다시 보기</span></header><div id="md-events"></div></section><section class="md-panel"><header><b>안타 흐름</b><span>원정 / 홈</span></header><div id="md-hits"></div></section></div>
-    <div class="md-play-grid"><section class="md-field-panel md-panel"><header><b>${esc(tshort(g.away))} vs ${esc(tshort(g.home))}</b><span>타석 기록 기반 중계</span></header><div class="md-field-body"><div class="cs-stage" id="cs-stage">${fieldBg}<div class="cs-bso" id="cs-bso" aria-label="볼카운트"><div><b>B</b><span id="cs-B"><i></i><i></i><i></i></span></div><div><b>S</b><span id="cs-S"><i></i><i></i></span></div><div><b>O</b><span id="cs-Ob"><i></i><i></i></span></div></div><svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-pitch" id="cs-pitch" aria-live="polite" aria-label="투구 연출"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-bn" id="cs-bn"></div></div></div><div class="md-duel" id="cs-vs"></div></section>
-    <div class="md-charts"><section class="md-panel"><header><b>득점 흐름</b><span>실제 누적 득점</span></header><div id="md-flow"></div></section><section class="md-panel"><header><b>홈 승리 확률</b><span>상황 기반 추정</span></header><div id="md-prob"></div><div class="cs-wpw"><div class="cs-wp"><span class="wa" style="background:${mdColor(g,'a')}"></span><i id="cs-wpa" style="background:${mdColor(g,'h')}"></i><span class="cs-wpt" id="cs-wpt"></span></div></div></section></div></div></main>${mdTeamPanel(g,'h')}</div>
+    <div class="md-play-grid"><section class="md-field-panel md-panel"><header><b>${esc(tshort(g.away))} vs ${esc(tshort(g.home))}</b><span>구장 중계</span></header><div class="md-field-body"><div class="cs-stage" id="cs-stage">${fieldBg}<svg class="cs-trail" id="cs-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cs-shd" id="cs-shd"></div><div class="cs-ball" id="cs-ball"></div><div class="cs-sit" id="cs-sit"></div><div class="cs-cap" id="cs-cap"></div><div class="cs-fx" id="cs-fx"></div><div class="cs-flash" id="cs-flash"></div><div class="cs-bn" id="cs-bn"></div></div></div><div class="md-duel" id="cs-vs"></div></section>
+    ${mdPitchDock()}<div class="md-charts"><section class="md-panel"><header><b>득점 흐름</b><span>실제 누적 득점</span></header><div id="md-flow"></div></section><section class="md-panel"><header><b>홈 승리 확률</b><span>상황 기반 추정</span></header><div id="md-prob"></div><div class="cs-wpw"><div class="cs-wp"><span class="wa" style="background:${mdColor(g,'a')}"></span><i id="cs-wpa" style="background:${mdColor(g,'h')}"></i><span class="cs-wpt" id="cs-wpt"></span></div></div></section></div></div></main>${mdTeamPanel(g,'h')}</div>
   <div class="md-comment" id="md-comment" aria-live="polite"></div><div class="md-linescore" id="md-linescore"></div>
   <section class="md-dugout"><div class="md-roster-label"><b>출전 선수</b><div>${[['a',g.away],['h',g.home]].map(([k,tid])=>`<button data-a="castTeam" data-v="${k}">${esc(tshort(tid))}</button>`).join('')}</div></div><div class="md-roster" id="md-roster"></div></section>
   <nav class="md-replay" aria-label="중계 재생"><button class="md-control" data-a="castStep" data-v="-1">이전 타석</button><button class="md-control" data-a="castStep" data-v="1">다음 타석</button><span id="md-progress"></span><input id="md-seek" data-a="castSeek" type="range" min="0" max="${g.pbp.length}" value="${c.k}" aria-label="재생 시점"><button class="md-control" data-a="castWin">결승 장면</button><button class="md-control" data-a="castEnd">경기 종료로</button></nav></div>`;
@@ -14731,7 +14878,7 @@ function cSit(st,x){ const el=document.getElementById('cs-sit'); if(!el)return; 
   const t=risp&&st.bases[0]&&st.bases[1]&&st.bases[2]?'만루 찬스':risp?'득점권 찬스':late?'승부처':''; el.textContent=t; el.className='cs-sit'+(t&&x&&typeof x[1]==='number'?' on':''); }
 function cDraw(k,ms){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; const st=k>=L.length?{...pbpState(g,L.length-1),bases:[0,0,0]}:cBefore(g,k);
   cSync(k>=L.length?[]:cTargets(g,k,st),ms); if(k>=L.length){ st.sa=g.as; st.sh=g.hs; } cBoard(g,st,null); cSide(g,k); cSit(st,L[k]); c.wp=k>=L.length?(g.hs===g.as?.5:g.hs>g.as?1:0):wpHome(st); try{ if(k>=L.length){ const bar=document.getElementById('cs-wpa'); if(bar)bar.style.width=(c.wp*100)+'%'; const tx=document.getElementById('cs-wpt'); if(tx)tx.textContent=g.hs===g.as?'무승부':`${tshort(g.hs>g.as?g.home:g.away)} 승리`; } else cWp(g,st,null); }catch(e){}
-  cCap(''); cCount(0,0); { const pe=document.getElementById('cs-pitch'); if(pe)pe.className='cs-pitch'; } if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&k<L.length?'일시정지':'재생'; }
+  cCap(''); cPitchReset(g,k); if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&k<L.length?'일시정지':'재생'; }
 /* 연출 */
 function cFx(t,cls,stay){ const el=document.getElementById('cs-fx'); if(!el)return; el.className='cs-fx'; void el.offsetWidth; if(!t){ el.textContent=''; return; } el.textContent=t; el.className='cs-fx on '+(cls||'')+(stay?' stay':''); el.style.animationDuration=(1.5/cSpd())+'s'; }
 function cFlash(){ const el=document.getElementById('cs-flash'); if(!el)return; el.className='cs-flash'; void el.offsetWidth; el.className='cs-flash on'; }
@@ -14763,18 +14910,18 @@ function cAng(a,b){ return Math.round(Math.atan2((b[1]-a[1]),(b[0]-a[0]))*180/Ma
 function cBoard(g,st,cnt){ const s=id=>document.getElementById(id); if(!s('cs-sa'))return;
   s('cs-sa').textContent=st.sa; s('cs-sh').textContent=st.sh; s('cs-inn').textContent=cHalfTxt(st.half);
   const dots=(id,n)=>s(id).querySelectorAll('i').forEach((el,i)=>el.classList.toggle('on',i<n));
-  dots('cs-O',Math.min(2,st.outs)); { const ob=s('cs-Ob'); if(ob)dots('cs-Ob',Math.min(2,st.outs)); } s('cs-on').textContent=Math.min(3,st.outs)+'아웃';
+  dots('cs-O',Math.min(2,st.outs)); { const ob=s('cs-Ob'); if(ob)dots('cs-Ob',Math.min(2,st.outs)); } s('cs-on').textContent=Math.min(3,st.outs)+'아웃';const bso=s('cs-bso');if(bso)bso.dataset.outs=Math.min(3,st.outs);const summary=s('cs-count-summary');if(summary){const b=s('cs-B')?.querySelectorAll('.on').length||0,ss=s('cs-S')?.querySelectorAll('.on').length||0;summary.textContent=b+'볼 · '+ss+'스트라이크 · '+Math.min(3,st.outs)+'아웃';}
   CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); }
 function cCap(t,cls){ const el=document.getElementById('cs-cap'); if(!el)return; el.className='cs-cap'+(t?' on':'')+(cls?' '+cls:''); el.textContent=t||''; }
 /* 공 */
 /* 공: arc=뜬공(가운데서 커지고 바닥에 그림자), gb=땅볼(작게 튀며 굴러감), 그 밖은 직선(라인드라이브·송구) */
-function cBall(from,to,ms,arc,gb){ const b=document.getElementById('cs-ball'); if(!b)return Promise.resolve(); const d=ms/cSpd();
+function cBall(from,to,ms,arc,gb){ const b=document.getElementById('cs-ball'); if(!b)return Promise.resolve(); const d=ms/cSpd(),token=CT.tok;
   const P=(f)=>[from[0]+(to[0]-from[0])*f,from[1]+(to[1]-from[1])*f]; let kf;
   if(arc){ const mid=P(.5); kf=[{left:from[0]+'%',top:from[1]+'%',transform:'translate(-50%,-50%) scale(1)',opacity:1},{left:mid[0]+'%',top:(mid[1]-cDist(from,to)*.18)+'%',transform:'translate(-50%,-50%) scale(2.2)',opacity:1,offset:.5},{left:to[0]+'%',top:to[1]+'%',transform:'translate(-50%,-50%) scale(1)',opacity:1}];
     const sh=document.getElementById('cs-shd'); if(sh)sh.animate([{left:from[0]+'%',top:from[1]+'%',opacity:.15,transform:'translate(-50%,-50%) scale(.6)'},{left:P(.5)[0]+'%',top:P(.5)[1]+'%',opacity:.45,transform:'translate(-50%,-50%) scale(1.3)',offset:.5},{left:to[0]+'%',top:to[1]+'%',opacity:.6,transform:'translate(-50%,-50%) scale(.9)'}],{duration:d,easing:'linear',fill:'forwards'}).onfinish=function(){ sh.getAnimations().forEach(a=>a.cancel()); }; }
   else if(gb){ kf=[0,.18,.32,.5,.62,.8,1].map((f,i)=>{ const q=P(f); return {left:q[0]+'%',top:(q[1]-(i%2?1.2*(1-f):0))+'%',transform:`translate(-50%,-50%) scale(${i%2?1.25:1})`,opacity:1,offset:f}; }); }
   else kf=[{left:from[0]+'%',top:from[1]+'%',transform:'translate(-50%,-50%) scale(1)',opacity:1},{left:to[0]+'%',top:to[1]+'%',transform:'translate(-50%,-50%) scale(1)',opacity:1}];
-  const an=b.animate(kf,{duration:d,easing:gb?'ease-out':'linear',fill:'forwards'}); return new Promise(r=>{ an.onfinish=r; an.oncancel=r; }); }
+  const an=b.animate(kf,{duration:d,easing:gb?'ease-out':'linear',fill:'forwards'}); return new Promise((resolve,reject)=>{const done=()=>token===CT.tok?resolve():reject('stop');an.onfinish=done;an.oncancel=done;}); }
 function cBallHide(){ const b=document.getElementById('cs-ball'); if(b)b.getAnimations().forEach(a=>a.cancel()); }
 const cPolar=(th,d)=>[50+d*Math.sin(th*Math.PI/180),89-d*Math.cos(th*Math.PI/180)];
 const cDist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
@@ -14808,11 +14955,11 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
     const base=CFP[opos]||CFP.SS; spot=[base[0]+rnd()*6-3,base[1]+rnd()*5-2.5]; const ofE=typ==='err'&&['LF','CF','RF'].includes(opos); arc=typ==='fly'||ofE; c.gb=typ==='gb'||(typ==='err'&&!ofE); c.errPos=typ==='err'?opos:null; flight=arc?950:typ==='ld'?380:560;
     kind=typ==='fly'?(x[6]>0?'희생플라이':'뜬공 아웃'):typ==='ld'?'직선타 아웃':typ==='err'?'실책':(o==='DP'?'병살타':'땅볼 아웃'); }
   const cam=false;
-  { const seq=cPitchSeq(g,k); const pe=document.getElementById('cs-pitch'); const fast=c.mode&&c.mode!=='all'; const show=fast?Math.min(2,seq.length):seq.length;
-    const throwOne=async(q,i,last)=>{ const pc=st.querySelector('.cc.pit'); if(pc){ pc.classList.remove('th'); void pc.offsetWidth; pc.classList.add('th'); } await cSleep(fast?150:220); await cBall(CFP.P,[50,88],fast?240:300,false); cBallHide();
+  { const seq=cPitchSeq(g,k); const fast=c.mode&&c.mode!=='all'; const show=fast?Math.min(2,seq.length):seq.length;
+    const throwOne=async(q,i,last)=>{ const pc=st.querySelector('.cc.pit'); if(pc){ pc.classList.remove('th'); void pc.offsetWidth; pc.classList.add('th'); } await cSleep(fast?150:220); await cBall(CFP.P,[50+(q.x-.5)*4,88+(q.y-.5)*2],fast?240:300,false); cBallHide();
       const sw=last?(o!=='BB'&&!/루킹/.test(q.res)):/헛스윙|파울/.test(q.res); if(bat&&sw){ bat.classList.remove('sw'); void bat.offsetWidth; bat.classList.add('sw'); }
-      if(pe){ pe.innerHTML=cPitchTxt(q,i); pe.className='cs-pitch on'; } { const n=last?{b:q.b,s:q.s}:cCountAfter(q); cCount(n.b,n.s); } if(!last){ if(q.res==='파울')sfx('crack',.25,1.3); else sfx('mitt',.35); await cSleep(fast?230:420); } };
-    for(let i=0;i<seq.length;i++){ const last=i===seq.length-1; if(i<seq.length-show){ continue; } await throwOne(seq[i],i,last); }
+      cShowPitch(g,k,seq,i); if(!last){ if(q.res==='파울')sfx('crack',.25,1.3); else sfx('mitt',.35); await cSleep(fast?230:420); } };
+    for(let i=0;i<seq.length;i++){ const last=i===seq.length-1; if(i<seq.length-show||c.pitch?.k===k&&i<c.pitch.shown){continue;} await throwOne(seq[i],i,last); }
     if(!seq.length){ await cSleep(220); await cBall(CFP.P,[50,88],300,false); cBallHide(); } }
   cCap('');
   const after=x[5], runs=x[6], outsA=x[4];
@@ -14863,12 +15010,12 @@ async function castLoop(){ if(CT.run)return; CT.run=true; const my=CT.tok;
 function castMount(){ const c=UI.cast; if(!c)return; CT.tok++;const token=CT.tok; CT.run=false; requestAnimationFrame(()=>{if(UI.cast!==c||token!==CT.tok)return; cDraw(c.k,0); if(c.play)castLoop(); }); }
 /* 결승점: 이긴 팀이 마지막으로 앞서기 시작한 타석(그 뒤로 다시 따라잡히지 않음) */
 function castWinIdx(g){ const L=g.pbp||[]; if(!L.length||g.hs===g.as)return -1; const W=g.hs>g.as?'h':'a'; let last=-1, prev=0; for(let i=0;i<L.length;i++){ const a=L[i][7], h=L[i][8]; const lead=h>a?'h':a>h?'a':''; if(lead===W&&prev!==W)last=i; prev=lead||'t'; } return last; }
-function castJump(k,play){ const c=UI.cast; const L=G.games[c.g].pbp; c.k=clamp(k,0,L.length); c.lastHalf=null; CT.tok++; CT.run=false; cBallHide(); cTrailClear(); cDraw(c.k,250); if(play!=null)c.play=play; if(c.play&&c.k<L.length)castLoop(); else { sndStop('amb'); sndStop('chant'); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; } }
+function castJump(k,play){ const c=UI.cast; const L=G.games[c.g].pbp; c.k=clamp(k,0,L.length); c.pitch=null;c.lastHalf=null; CT.tok++; CT.run=false; cBallHide(); cTrailClear(); cDraw(c.k,250); if(play!=null)c.play=play; if(c.play&&c.k<L.length)castLoop(); else { sndStop('amb'); sndStop('chant'); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; } }
 
 
 /* ---------- 투구 연출: 타석 결과에 맞는 볼카운트 순서를 투수의 실제 구종표로 만든다(해설과 같은 결정을 쓴다) ---------- */
 function cPitchSpd(p,t,r){ const v=veloOf(p), vm=veloMax(p); const off={'직구':0,'투심':-3,'커터':-5,'슬라이더':-12,'스위퍼':-14,'체인지업':-15,'포크':-13,'커브':-22}[t]??-10; return Math.min(vm,Math.round(v+off+(r()-.5)*4)); }
-function cPitchSeq(g,k){ const x=g.pbp[k]; if(!x||typeof x[1]!=='number')return []; const p=G.players[x[2]]; if(!p)return []; const o=x[3]; const r=mulberry((g.day*613+k*97+(x[1]||0))|0);
+function cPitchSeq(g,k){ const x=g.pbp[k]; if(!x||typeof x[1]!=='number')return [];const saved=storedPitchSequence(x);if(saved)return saved; const p=G.players[x[2]]; if(!p)return []; const o=x[3]; const r=mulberry((g.day*613+k*97+(x[1]||0))|0);
   let ars=['직구']; try{ ars=arsenal(p,p.r.stf).map(a=>a[0]); }catch(e){} const best=(()=>{ try{ return pcBest(p)||ars[ars.length-1]; }catch(e){ return ars[ars.length-1]; } })();
   const pickT=(fin)=>fin&&r()<.6?best:r()<.5?'직구':ars[Math.floor(r()*ars.length)];
   let bN, sN; if(o==='BB'){ bN=3; let ph=''; try{ ph=pcPick(g,k,'bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.']); }catch(e){} sN=/스트레이트/.test(ph)?0:/풀카운트|커트/.test(ph)?2:Math.floor(r()*3); }
@@ -14880,11 +15027,11 @@ function cPitchSeq(g,k){ const x=g.pbp[k]; if(!x||typeof x[1]!=='number')return 
   let look=false; try{ look=pcH(g,k,'kl')<.28; }catch(e){}
   const fin=o==='K'?(look?'루킹 삼진':'헛스윙 삼진'):o==='BB'?'볼넷':o==='SAC'?'번트':'타격';
   add(fin,o==='K'); if(o==='K'&&!look){ try{ if(pcH(g,k,'kb')<.6)out[out.length-1].t=best; }catch(e){} out[out.length-1].v=cPitchSpd(p,out[out.length-1].t,r); }
-  return out; }
+  const loc=mulberry((g.day*2017+k*71+x[1])|0);return out.map(q=>({...q,...FrontOfficeCore.pitchLocation(q.res,loc)})); }
 /* 볼카운트 신호등: 이 공 결과 뒤 카운트. 볼넷·삼진·타격으로 끝나는 마지막 공 뒤에는 다음 타자 때 0-0으로 돌아간다 */
 function cCountAfter(q){ let b=q.b, s=q.s; if(q.res==='볼')b=Math.min(3,b+1); else if(q.res==='파울')s=Math.min(2,s+1); else if(q.res==='스트라이크'||q.res==='헛스윙')s=Math.min(2,s+1); return {b,s}; }
-function cCount(b,s){ const set=(id,n)=>{ const el=document.getElementById(id); if(el)el.querySelectorAll('i').forEach((x,i)=>x.classList.toggle('on',i<n)); }; set('cs-B',b); set('cs-S',s); }
-function cPitchTxt(q,i){ return `<b>${q.b}-${q.s}</b> ${i+1}구 ${q.t} ${q.v}km · <em class="${/볼|볼넷/.test(q.res)?'pb':/타격|번트/.test(q.res)?'pi':'ps'}">${q.res}</em>`; }
+function cCount(b,s){ const set=(id,n)=>{ const el=document.getElementById(id); if(el)el.querySelectorAll('i').forEach((x,i)=>x.classList.toggle('on',i<n)); }; set('cs-B',b); set('cs-S',s);const summary=document.getElementById('cs-count-summary'),outs=document.getElementById('cs-bso')?.dataset.outs||0;if(summary)summary.textContent=b+'볼 · '+s+'스트라이크 · '+outs+'아웃'; }
+function cPitchTxt(q,i){ return `<span class="md-pitch-main"><b>${i+1}구 · ${esc(q.t)}</b><strong>${q.v}<small> km/h</small></strong></span><em class="${cPitchClass(q)}">${esc(q.res)}</em><small class="md-pitch-location">${esc(cPitchLocationText(q))}</small>`; }
 /* ---------- B: 중계 ---------- */
 const OUTK={'1B':'안타','2B':'2루타','3B':'3루타',HR:'홈런',BB:'볼넷',K:'삼진',OUT:'범타',DP:'병살타',SAC:'희생번트'};
 const PBPOS={C:[50,93],'1B':[71,63],'2B':[61,47],SS:[39,47],'3B':[29,63],LF:[17,27],CF:[50,13],RF:[83,27],P:[50,67]};
@@ -15050,8 +15197,36 @@ function castDashboardUpdate(g,k){
 function mdDuel(g,s){
   if(s.finished)return `<div class="md-final"><b>${g.hs===g.as?'무승부':esc(tshort(g.hs>g.as?g.home:g.away))+' 승리'} · ${g.as}:${g.hs}</b><button class="btn small" data-a="castBox">박스스코어</button></div>`;
   const pid=s.teams[s.attack==='a'?'h':'a'].pitcher;
-  return [[s.batter,'이번 타자',false],[pid,'상대 투수',true]].filter(x=>x[0]).map(([id,label,pitch])=>{const p=mdPlayer(g,id),r=s.players[id]||{ab:0,h:0,outs:0,so:0};return `<button class="md-duel-player" data-a="castPlayer" data-v="${id}">${G.players[id]?avImg(p):''}<span><i>${label}</i><b>${esc(p.name)}</b><small>${pitch?ipStr(r.outs)+'이닝 · '+r.so+'K':r.ab+'타수 '+r.h+'안타'}</small></span>${!pitch?'<span class="ab-res" id="cs-abr"></span>':''}</button>`;}).join('');
+  return [[s.batter,'현재 타자',false],[pid,'현재 투수',true]].filter(x=>x[0]).map(([id,label,pitch])=>{const p=mdPlayer(g,id),r=s.players[id]||{ab:0,h:0,outs:0,so:0},slot=s.teams[s.attack].lineup.findIndex(x=>x.id===id)+1,total=pitch?cPitchTotalBefore(g,s.k,id):null;return `<button class="md-duel-player" data-a="castPlayer" data-v="${id}">${G.players[id]?avImg(p):''}<span><i>${label} · ${pitch?(p.th==='좌'?'좌완':'우완'):(slot?slot+'번 · ':'')+(p.bt==='좌'?'좌타':p.bt==='양'?'양타':'우타')}</i><b>${esc(p.name)}</b><small>${pitch?ipStr(r.outs)+'이닝 · '+r.so+'K · <em id="cs-pitcher-count">'+(total==null?'투구 수 미기록':total+'구')+'</em>':'오늘 '+r.ab+'타수 '+r.h+'안타'}</small></span>${!pitch?'<span class="ab-res" id="cs-abr"></span>':''}</button>`;}).join('');
 }
+/* 포수 시점: x=0..1은 존 왼쪽→오른쪽, y=0..1은 높음→낮음.
+   공이 존 밖으로 빠진 위치도 표시한다. 공개되는 공은 재생한 순서까지만. */
+function mdPitchDock(){return `<section class="md-pitch-dock md-panel" aria-label="투구판과 볼카운트"><header><b>투구 위치 <small>포수 시점</small></b><span id="cs-pitch-source">포수 시점</span></header><div class="md-zone-map" role="img" aria-label="9칸 스트라이크존 · 투구 대기"><div class="md-zone-grid">${Array.from({length:9},()=>'<i></i>').join('')}</div><div id="md-pitch-dots"></div></div><div class="cs-pitch" id="cs-pitch" aria-live="polite"></div><ol class="md-pitch-history" id="md-pitch-history" aria-label="이번 타석 투구 기록"></ol><div class="md-count-panel"><div class="cs-bso" id="cs-bso" aria-label="볼카운트"><div><b>B</b><span id="cs-B"><i></i><i></i><i></i></span></div><div><b>S</b><span id="cs-S"><i></i><i></i></span></div><div><b>O</b><span id="cs-Ob"><i></i><i></i></span></div></div><div id="cs-count-summary">0볼 · 0스트라이크 · 0아웃</div></div></section>`;}
+function cPitchTotalBefore(g,k,pid){
+  let total=0;for(let i=0;i<k;i++){const x=g.pbp[i];if(typeof x[1]!=='number'||x[2]!==pid)continue;const seq=storedPitchSequence(x);if(!seq)return null;total+=seq.length;}return total;
+}
+function cPitchLocationText(q){
+  const side=q.x<0?'존 왼쪽 바깥':q.x>1?'존 오른쪽 바깥':q.x<1/3?'왼쪽':q.x>2/3?'오른쪽':'가운데';
+  const height=q.y<0?'높게 벗어남':q.y>1?'낮게 벗어남':q.y<1/3?'높은 코스':q.y>2/3?'낮은 코스':'중간 높이';
+  return side+' · '+height;
+}
+function cPitchClass(q){return /볼/.test(q.res)?'ball':/타격|번트/.test(q.res)?'contact':'strike';}
+function cPitchPanel(g,k,seq,shown){
+  const x=g.pbp[k],q=seq[shown-1],saved=!!storedPitchSequence(x),source=document.getElementById('cs-pitch-source'),info=document.getElementById('cs-pitch');
+  if(!info)return;
+  if(source){source.textContent=!x?'경기 종료':typeof x[1]!=='number'?'투구 대기':saved?'투구 기록':'투구 재현';source.title=saved?'시뮬레이션에서 생성·저장한 투구 기록입니다. 타석 결과에 맞춰 구성한 좌표이며 실측 자료는 아닙니다.':'기존 경기에는 공별 기록이 없어 타석 결과를 바탕으로 재현합니다.';}
+  const list=seq.slice(0,shown),start=Math.max(0,list.length-6);
+  mdSet('md-pitch-dots',list.slice(start).map((p,i)=>`<span class="md-pitch-dot ${cPitchClass(p)}${i===list.length-start-1?' latest':''}" style="left:${20+60*p.x}%;top:${15+70*p.y}%" title="${esc((start+i+1)+'구 '+p.t+' '+p.v+'km/h · '+p.res+' · '+cPitchLocationText(p))}" data-index="${start+i+1}" data-x="${p.x}" data-y="${p.y}">${start+i+1}</span>`).join(''));
+  mdSet('md-pitch-history',list.slice(-4).map((p,i)=>`<li><i>${list.length-Math.min(4,list.length)+i+1}</i><b>${esc(p.t)}</b><span>${p.v}<small> km/h</small></span><em class="${cPitchClass(p)}">${esc(p.res)}</em></li>`).join(''));
+  const history=document.getElementById('md-pitch-history');if(history)history.scrollTop=history.scrollHeight;
+  const map=document.querySelector('.md-zone-map');if(map)map.setAttribute('aria-label',q?`${shown}구 ${q.t} ${q.v}km/h · ${q.res} · ${cPitchLocationText(q)}`:'9칸 스트라이크존 · 투구 대기');
+  info.innerHTML=q?cPitchTxt(q,shown-1):`<span class="md-pitch-wait">${x?typeof x[1]==='number'?'첫 공을 기다립니다':x[1]==='PC'?'투수 교체':'주루 상황':'경기 종료'}</span>`;info.className='cs-pitch'+(q?' on':'');
+  if(q){const terminal=shown===seq.length,n=terminal?{b:q.b,s:q.s}:cCountAfter(q);cCount(n.b,n.s);}
+  else cCount(0,0);
+  const count=document.getElementById('cs-pitcher-count');if(count&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);count.textContent=total==null?'투구 수 미기록':(total+shown)+'구';}
+}
+function cShowPitch(g,k,seq,index){if(!UI.cast)return;UI.cast.pitch={k,shown:index+1};cPitchPanel(g,k,seq,index+1);}
+function cPitchReset(g,k){const state=UI.cast?.pitch,seq=cPitchSeq(g,k);cPitchPanel(g,k,seq,state?.k===k?Math.min(seq.length,state.shown):0);}
 /* ---------- C: 트레이드 비교판 ---------- */
 function tradeInsight(tid,give,get){
   if(!give.length&&!get.length)return '';
@@ -17310,7 +17485,7 @@ const A={
   gtab(v){ UI.gtab=v; renderSheet(); },
   pbpGo(v){ const [g,k]=v.split(':').map(Number); UI.pbp={g,k:Math.max(0,k)}; UI.gtab='pbp'; renderSheet(); },
   castView(v){if(UI.cast&&['field','data','teams'].includes(v)){UI.cast.view=v;const el=document.querySelector('.match-dashboard');if(el)el.dataset.view=v;document.querySelectorAll('[data-a="castView"]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));}},
-  castTeam(v){if(UI.cast&&['a','h'].includes(v)){UI.cast.team=v;castDashboardUpdate(G.games[UI.cast.g],UI.cast.k);}},
+  castTeam(v){if(UI.cast&&['a','h'].includes(v)){UI.cast.team=v;castDashboardUpdate(G.games[UI.cast.g],UI.cast.k);cPitchReset(G.games[UI.cast.g],UI.cast.k);}},
   castSeek(v){if(UI.cast)castJump(+v,false);},
   castEvent(v){if(UI.cast&&+v<UI.cast.k)castJump(+v,true);},
   cast(v){ const gi=+v; const g=G.games[gi]; if(!g||!g.pbp||!g.pbp.length)return; UI.sheet=null;UI.posSheet=null;UI.game=null;UI.menu=false;UI.castRet=null; UI.cast={g:gi,k:0,play:true,spd:UI.castSpd||1,mode:UI.castMode==='all'?'all':'hl'}; renderSheet(); },
@@ -17685,6 +17860,7 @@ function pbpCall(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; const nm
   if(x[1]==='SB'||x[1]==='CS'){ const r=G.players[x[2]]; const from=pre.bases.indexOf(x[2]); const to=from>=0?['2루','3루','홈'][from]:'다음 베이스'; const cat=pcFielder(g,half,'C');
     if(x[1]==='SB')return {c:`${nm(x[2])}, ${to} 도루 성공!${cat?` 포수 ${cat}의 송구가 늦었습니다.`:''}`,a:r&&r.r.spd>=68?pk('sb',[`${r.name}의 발은 리그에서도 손꼽힙니다.`,'투수가 견제를 더 신경 써야 했습니다.']):''};
     const c0=G.players[(g.box[half%2?'a':'h'].bat.find(b=>b.pos==='C')||{}).id]; return {c:`${nm(x[2])}, ${to} 도루 실패!${cat?` 포수 ${cat}의 정확한 송구에 걸렸습니다.`:''}`,a:c0&&catArm(c0)>=60?`${c0.name} 포수 어깨가 좋습니다. 함부로 뛸 수 없는 포수입니다.`:pk('cs',['무리한 주루였습니다. 흐름이 끊깁니다.','타이밍을 빼앗겼습니다.'])}; }
+  const pitches=storedPitchSequence(x),lastPitch=pitches?.at(-1);
   const b=G.players[x[1]], p=G.players[x[2]], o=x[3], runs=x[6]||0, outsA=x[4];
   const sa=x[7], sh=x[8], befA=pre.sa, befH=pre.sh; const myB=top?sa:sh, opB=top?sh:sa, myB0=top?befA:befH, opB0=top?befH:befA;
   const lead0=myB0-opB0, lead1=myB-opB; const walkoff=!top&&inn>=9&&lead0<=0&&lead1>0;
@@ -17699,8 +17875,8 @@ function pbpCall(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; const nm
     case '3B': c=`${BN}, ${pk('t3',['우중간 깊숙한 곳','좌중간을 완전히 가르는 타구','우익선상 끝까지 굴러가는 타구'])}! 3루까지 달립니다. 3루타!`; a=b&&b.r.spd>=62?'발이 빠르니까 3루까지 가능한 타구였습니다.':''; break;
     case '2B': c=`${BN}, ${pk('t2',['좌중간을 가르는','우중간을 가르는','좌익선상','우익선상','펜스를 직접 맞히는'])} 타구! 2루타.`; break;
     case '1B':{ const inf=b&&b.r.spd>=64&&pcH(g,k,'if')<.25; c=inf?`${BN}, ${fld(pk('ip',['SS','3B','2B']))} 쪽 느린 땅볼, 1루 세이프! 내야 안타.`:`${BN}, ${pk('t1',['좌전','중전','우전','3유간을 빠지는','1·2루간을 꿰뚫는','유격수 키를 넘기는'])} 안타.`; break; }
-    case 'BB': c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pk('bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.'])}`; if(loaded)a='투수에게 가장 뼈아픈 실점입니다.'; break;
-    case 'K':{ const best=p?pcBest(p):''; const look=pcH(g,k,'kl')<.28; c=look?`${BN}, ${pk('kl2',['바깥쪽 꽉 찬 공에 그대로 서서 삼진!','몸쪽 꽉 찬 직구에 루킹 삼진!'])}`:`${BN}, ${best&&pcH(g,k,'kb')<.6?`결정구 ${best}에 `:''}헛스윙 삼진!`;
+    case 'BB': if(lastPitch){c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pitches.length===4?'스트레이트 볼넷.':lastPitch.s===2?'풀카운트 끝에 볼넷.':'볼넷으로 걸어 나갑니다.'}`;if(loaded)a='투수에게 가장 뼈아픈 실점입니다.';break;}c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pk('bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.'])}`; if(loaded)a='투수에게 가장 뼈아픈 실점입니다.'; break;
+    case 'K':{ const best=p?pcBest(p):''; const look=lastPitch?lastPitch.res==='루킹 삼진':pcH(g,k,'kl')<.28; c=lastPitch?`${BN}, ${lastPitch.t}에 ${look?'루킹':'헛스윙'} 삼진!`:look?`${BN}, ${pk('kl2',['바깥쪽 꽉 찬 공에 그대로 서서 삼진!','몸쪽 꽉 찬 직구에 루킹 삼진!'])}`:`${BN}, ${best&&pcH(g,k,'kb')<.6?`결정구 ${best}에 `:''}헛스윙 삼진!`;
       const pt=pcPitToday(g,k,x[2]); if(pt.so+1>=6)a=`${PN}, 오늘 벌써 ${pt.so+1}번째 탈삼진입니다.`; else if(pcHand(b,p)&&pcH(g,k,'hh')<.5)a=`${pcHand(b,p)} 승부, 타자가 불리한 싸움이었습니다.`; break; }
     case 'DP':{ const pat=pk('dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]); c=`${BN}, ${fld(pat[0])} 정면 땅볼! ${pcFielder(g,half,pat[1])||PC_POS[pat[1]]}에서 1루까지, ${pat[2]} 병살!`; a=p&&gbT(p)>.6?`${PN}은(는) 땅볼 유도형 투수입니다. 원하던 그림이 나왔습니다.`:pk('dpa',['한 번에 불이 꺼집니다.','공격 흐름이 완전히 끊겼습니다.']); break; }
     case 'SAC':{ c=`${BN}, 희생번트! 주자를 ${pre.bases[1]?'2·3루':'2루'}로 보냅니다.`; const m=mgrOf(atT); if(m&&!m.interim&&m.small>=62)a=`${m.name} 감독다운 작전입니다. 한 점을 짜내겠다는 뜻입니다.`; break; }
@@ -19136,6 +19312,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-03i',d:'11월 3일',t:'2D 구장 중계와 공별 투구판',items:[
+    '경기 화면을 큰 2D 구장과 현재 타자·투수 카드 중심으로 정리했습니다. 상단바는 유지하고 경기 기록·선수단은 보기 버튼으로 전환합니다.',
+    '우측 하단에 9칸 투구판과 B·S·O를 배치했습니다. 공마다 위치·순번·구종·구속·결과를 보여주며 존 밖의 볼도 표시합니다.',
+    '새 경기는 시뮬레이션에서 생성한 공별 정보를 저장해 같은 투구를 다시 재생합니다. 공별 기록이 없는 이전 경기는 “투구 재현”으로 구분합니다.',
+    '투구 기록 합계와 투수 투구 수를 맞추고, 일시정지·상세 화면 복귀·타석 이동 때 표시가 섞이지 않도록 연결했습니다.']},
   {id:'2026-11-03h',d:'11월 3일',t:'경기 중계 화면 넓히기',items:[
     '경기 중계에서는 왼쪽 탐색 메뉴를 숨기고 본문을 넓게 사용합니다. 상단바는 유지하며, 선수 정보나 일반 화면으로 이동하면 탐색 메뉴가 돌아옵니다.']},
   {id:'2026-11-03g',d:'11월 3일',t:'리뷰 개선: 결재 키 입력과 상세 복귀',items:[

@@ -12,13 +12,14 @@ step "문법"; node -e "const fs=require('fs');const h=fs.readFileSync('index.ht
 step "정적 점검"; node tools/check-static.js || fail=1
 step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
-step "능력치 반영"; node tools/check-sens.js | tail -1 || fail=1
+step "능력치 반영"; node tools/check-sens.js || fail=1
 step "장기 시뮬"; export STRICT=1; SEED=7 node tools/check-sim.js $END || fail=1
 [ "${QUICK:-0}" = "1" ] || { SEED=21 TEAM=2 node tools/check-sim.js $END || fail=1; SEED=3 ACT=1 node tools/check-sim.js $END || fail=1; }
 step "화면 점검(넓은 화면)"; node tools/check-ui.js || fail=1
 step "화면 점검(휴대폰)"; W=390 QUICK=1 node tools/check-ui.js || fail=1
 step "노트북 배치·상세 이동"; node tools/check-layout.cjs || fail=1
 step "경기 대시보드·재생 기록"; node tools/check-match.cjs || fail=1
+step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
 step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || fail=1
 step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1
