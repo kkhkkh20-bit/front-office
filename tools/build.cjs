@@ -5,7 +5,7 @@ const esbuild = require('esbuild');
 const { loadManifest, validateManifest } = require('./lib/sources.cjs');
 const { buildMatch3d } = require('./build-match3d.cjs');
 
-function build({ root = path.resolve(__dirname, '..'), manifest = loadManifest(root), write = true, engineOut } = {}) {
+function build({ root = path.resolve(__dirname, '..'), manifest = loadManifest(root), write = true, engineOut, embedded3d = true } = {}) {
   validateManifest(root, manifest);
   const read = relative => fs.readFileSync(path.join(root, relative), 'utf8');
   const concatenate = files => files.map(read).join('');
@@ -22,7 +22,7 @@ function build({ root = path.resolve(__dirname, '..'), manifest = loadManifest(r
   new vm.Script(engine, { filename: 'dist/engine.js' });
   new vm.Script(ui, { filename: '화면 번들' });
   const vendor = manifest.vendor;
-  const match3d = buildMatch3d(root, manifest);
+  const match3d = buildMatch3d(root, manifest, {embedded:embedded3d});
   const html = read(manifest.html.head) + concatenate(manifest.bundles.styles) + read(manifest.html.body)
     + '<script id="faces">\n'
     + '/* 선수 얼굴: faces.js (c) ZenGM, Apache License 2.0 — https://github.com/zengm-games/facesjs */\n'

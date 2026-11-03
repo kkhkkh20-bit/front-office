@@ -11,13 +11,15 @@ const pack=FO3D_PACK;
 let active=null,loaded=null;
 const v=(x,y,z)=>new T.Vector3(x,y,z),clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function decode(s){const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+function fallback(host,text){host.dataset.state='fallback';host.parentElement?.classList.remove('has-3d');const el=host.querySelector('.cs-3d-status');if(el)el.textContent=text;}
 function status(text){if(active?.host){const el=active.host.querySelector('.cs-3d-status');if(el)el.textContent=text;}}
+async function modelBuffer(source){if(typeof source==='string')return decode(source).buffer;const response=await fetch(new URL(source.url,document.baseURI));if(!response.ok)throw new Error('경기장 파일 응답 '+response.status);return response.arrayBuffer();}
 async function load(renderer){
  if(loaded)return loaded;
  loaded=(async()=>{const urls=[];const blob=(b,type)=>{const u=URL.createObjectURL(new Blob([b],{type}));urls.push(u);return u;};
  const manager=new T.LoadingManager(),js=blob(pack.basisJS,'text/javascript'),wasm=blob(decode(pack.basisWasm),'application/wasm');manager.setURLModifier(u=>u.endsWith('basis_transcoder.js')?js:u.endsWith('basis_transcoder.wasm')?wasm:u);
  const ktx=new KTX2Loader(manager).setTranscoderPath('fo3d-basis/').setWorkerLimit(2).detectSupport(renderer),loader=new GLTFLoader(manager).setMeshoptDecoder(MeshoptDecoder).setKTX2Loader(ktx);
- try{const result={};for(const key of ['field','stadium','player','bat','ball'])result[key]=await loader.parseAsync(decode(pack[key]).buffer,'');return result;}finally{ktx.dispose();urls.forEach(u=>URL.revokeObjectURL(u));}
+ try{const result={};for(const key of ['field','stadium','player','bat','ball'])result[key]=await loader.parseAsync(await modelBuffer(pack[key]),'');return result;}finally{ktx.dispose();urls.forEach(u=>URL.revokeObjectURL(u));}
  })().catch(e=>{loaded=null;throw e;});return loaded;
 }
 // Shared virtual board coordinates map to the same measured 3D diamond (metres).
@@ -44,8 +46,8 @@ function scoreboard(data){const s=active;if(!s?.board)return;const c=s.boardCanv
 function cancelMotion(){const s=active;if(!s)return;s.ballMotion=null;s.ball.visible=false;s.cameraMode='pitch';s.follow=null;for(const a of s.actors.values()){a.move=null;a.root.visible=true;if(a.bat)a.bat.visible=true;if(a.heldBall)a.heldBall.visible=true;pose(a,idle(a),true);}}
 function resize(){const s=active;if(!s)return;const r=s.host.getBoundingClientRect();if(!r.width||!r.height)return;s.renderer.setSize(r.width,r.height,false);s.camera.aspect=r.width/r.height;s.camera.fov=r.width/r.height<1?65:46;s.camera.updateProjectionMatrix();s.dirty=true;}
 async function mount(host,options={}){
- if(active?.host===host)return active.ready;
- dispose();let renderer;try{renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',alpha:false});}catch(e){host.dataset.state='fallback';host.querySelector('.cs-3d-status').textContent='3D를 사용할 수 없어 기본 중계로 표시합니다';return false;}
+ if(active?.host===host&&active.ready)return true;
+ dispose();let renderer;try{renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',alpha:false});}catch(e){fallback(host,'브라우저에서 3D 그래픽을 시작하지 못해 기본 중계로 표시 중입니다.');return false;}
  const gl=renderer.getContext(),debug=gl.getExtension('WEBGL_debug_renderer_info'),software=debug&&/swiftshader|llvmpipe|software/i.test(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL));renderer.setPixelRatio(Math.min(devicePixelRatio||1,software?1:1.5));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=options.day?1:.95;renderer.shadowMap.enabled=innerWidth>700&&!software;renderer.shadowMap.type=T.PCFSoftShadowMap;
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(46,1,.3,700),s={host,renderer,scene,camera,actors:new Map(),ready:false,frame:0,last:performance.now(),day:!!options.day,ballMotion:null,cameraMode:'pitch',follow:null,fieldShots:0,dirty:true,cameraFrames:0,desired:null,customMaterials:[],ownedTextures:[]};active=s;host.appendChild(renderer.domElement);host.dataset.state='loading';resize();s.resizeObserver=new ResizeObserver(resize);s.resizeObserver.observe(host);
  const pmrem=new T.PMREMGenerator(renderer),env=pmrem.fromScene(new RoomEnvironment(),.04);scene.environment=env.texture;pmrem.dispose();s.env=env;scene.environmentIntensity=s.day?.65:.35;scene.background=sky(s.day);s.ownedTextures.push(scene.background);scene.fog=new T.Fog(s.day?0xa6becd:0x1c3048,170,430);
@@ -63,7 +65,7 @@ async function mount(host,options={}){
  const floor=new T.Mesh(new T.PlaneGeometry(1500,1500),new T.MeshStandardMaterial({color:0x344c3b,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.2;scene.add(floor);s.floor=floor;
  s.cardObserver=new MutationObserver(rows=>{for(const row of rows){const el=row.target;if(el.classList?.contains('gone')&&el.dataset.k)hide(el.dataset.k);}});s.cardObserver.observe(host.parentElement,{subtree:true,attributes:true,attributeFilter:['class']});
  s.ready=true;host.dataset.state='ready';host.parentElement.classList.add('has-3d');status('');if(s.desired)sync(s.desired);setCamera(true);tick(performance.now());return true;
- }catch(e){if(active===s){console.error('3D 경기장 로드 실패',e);host.dataset.state='fallback';status('3D를 불러오지 못해 기본 중계로 표시합니다');}return false;}
+ }catch(e){if(active===s){console.error('3D 경기장 로드 실패',e);fallback(host,'3D 경기장 파일을 불러오지 못해 기본 중계로 표시 중입니다.');}return false;}
 }
 function setCamera(snap=false,dt=1/60){const s=active;if(!s)return;let pos,look;if(s.cameraMode==='field'&&s.follow){const target=s.follow;pos=v(clamp(target.x*.2,-12,12),8.5,-10);look=target.clone();look.y=Math.max(1.5,look.y);}else{pos=v(0,3.4,-8.8);look=v(0,1.1,24);}
  if(snap){s.camera.position.copy(pos);s.look=look;}else{s.camera.position.lerp(pos,1-Math.exp(-5*dt));s.look.lerp(look,1-Math.exp(-7*dt));}s.camera.lookAt(s.look);

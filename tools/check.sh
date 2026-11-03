@@ -19,6 +19,7 @@ step "화면 점검(넓은 화면)"; node tools/check-ui.js || fail=1
 step "화면 점검(휴대폰)"; W=390 QUICK=1 node tools/check-ui.js || fail=1
 step "노트북 배치·상세 이동"; node tools/check-layout.cjs || fail=1
 step "경기 대시보드·재생 기록"; node tools/check-match.cjs || fail=1
+step "사이트 배포·파일 크기·3D 재시도"; node tools/check-site.cjs || fail=1
 step "3D 경기장·동작·오프라인"; node tools/check-match3d.cjs || fail=1
 step "3D 플레이 리뷰·시선·릴리스"; node tools/check-match3d-review.cjs || fail=1
 step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1

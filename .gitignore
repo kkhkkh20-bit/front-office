@@ -5,3 +5,5 @@ node_modules/
 .claude/
 site/
 __pycache__/
+
+.wrangler/

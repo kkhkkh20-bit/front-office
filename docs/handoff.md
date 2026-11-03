@@ -1,5 +1,11 @@
 # 인수인계 (2026-11-03, 리뷰: 결재 키·상세 복귀·감독 갱신)
 
+## 3D 사이트 배포 주의 (11월 3일)
+- 다운로드용 index.html은 약 34 MB로 Cloudflare 단일 자산 한도 25 MiB를 넘는다. 예전 `cp index.html site/index.html`만 실행하면 배포가 실패할 수 있다.
+- wrangler.jsonc의 custom build가 `npm --prefix tools ci --no-audit --no-fund && node tools/build-site.cjs`를 실행한다. site HTML은 약 7.1 MB, 나머지 모델은 같은 출처의 내용 해시 파일명으로 분리한다.
+- 사이트 빌드 검사는 `node tools/check-site.cjs`, 배포 파일 식별은 `/release.json`. 다운로드용 HTML은 별도로 보존한다.
+- main 반영과 실제 서비스 배포 완료는 다르다. 이 환경에서는 workers.dev 직접 접속이 403 네트워크 정책으로 막혀 있다. 원격 배포 성공을 확인하지 못했다면 완료로 단정하지 않는다.
+
 ## 프로젝트
 - 프런트야구: KBO 구단 단장 시뮬레이션. 단일 index.html(빌드 결과물).
 - 저장소: github.com/kkhkkh20-bit/front-office (main). 푸시하면 Cloudflare(https://fronttime.kkhkkh-20.workers.dev/)에 자동 배포.

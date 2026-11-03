@@ -1,8 +1,10 @@
-// Cloudflare Workers(정적 파일) 배포 설정: 게임 파일(index.html)만 site 폴더에 복사해 올린다.
-// Cloudflare 대시보드 빌드 명령: mkdir -p site && cp index.html site/index.html
-// 배포 명령: npx wrangler deploy
+// The dashboard's old `cp index.html` command is overridden here before upload.
+// Website models load as separate versioned assets; downloadable index.html stays standalone.
 {
   "name": "fronttime",
   "compatibility_date": "2026-09-01",
+  "build": {
+    "command": "npm --prefix tools ci --no-audit --no-fund && node tools/build-site.cjs"
+  },
   "assets": { "directory": "./site" }
 }

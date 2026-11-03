@@ -1,7 +1,8 @@
 const fs=require('node:fs'),path=require('node:path'),esbuild=require('esbuild');
-function buildMatch3d(root,manifest){
+const {modelFiles}=require('./match3d-assets.cjs');
+function buildMatch3d(root,manifest,{embedded=true}={}){
  const bytes=p=>fs.readFileSync(p).toString('base64'),dir=path.join(root,'assets/match3d'),three=path.join(__dirname,'node_modules/three');
- const assets={};for(const name of ['field','stadium','player','bat','ball'])assets[name]=bytes(path.join(dir,name+'.glb'));
+ const assets={};for(const file of modelFiles(root))assets[file.key]=embedded?bytes(file.source):{url:'./'+file.filename};
  assets.events=JSON.parse(fs.readFileSync(path.join(dir,'animation-events.json'),'utf8'));
  assets.gear=JSON.parse(fs.readFileSync(path.join(dir,'gear_defaults.json'),'utf8'));
  assets.basisJS=fs.readFileSync(path.join(three,'examples/jsm/libs/basis/basis_transcoder.js'),'utf8');assets.basisWasm=bytes(path.join(three,'examples/jsm/libs/basis/basis_transcoder.wasm'));

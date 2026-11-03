@@ -62,6 +62,8 @@ GitHub에 올리면 `.github/workflows/check.yml`이 빠른 점검을 자동으�
 
 ## 배포
 
+- **Cloudflare**: `wrangler.jsonc`의 build.command가 `tools/build-site.cjs`를 실행하고 `site/`를 배포합니다. 사이트 HTML은 약 7.1 MB이며, 경기장·선수 모델은 파일당 25 MiB 이하의 별도 파일로 제공합니다. 모델은 경기 화면에서 불러오고 주소에는 내용 해시를 붙입니다. `index.html`만 복사하면 단독 다운로드용 34 MB 파일이 Cloudflare 파일 한도를 넘으므로 이 빌드 단계를 생략하면 안 됩니다. 배포 버전은 `/release.json`으로 확인합니다. `node tools/check-site.cjs`가 실제 배포 구성을 브라우저에서 검사합니다.
+
 - **itch.io**: `index.html`을 zip으로 묶어 올리고(Kind of project: HTML) "This file will be played in the browser"를 켭니다. 화면 1280×800, Mobile friendly, Fullscreen button. 화면이 800px보다 길어서 **Enable scrollbars를 반드시 켭니다**(끄면 아래가 잘리고 스크롤이 안 됨). 저장은 플레이어 브라우저의 localStorage(`danjang-*`)에 남아 파일을 다시 올려도 이어집니다.
 - **플레이 기록(선택)**: `src/ui/runtime/72_telemetry.js`의 `TELE`에 분석 서비스 키를 넣으면 익명 플레이 기록(시작 퍼널, 몇 년 차까지 했는지, 기능 사용, 화면 이동, 오류)을 보냅니다. 비어 있으면 아무것도 보내지 않습니다. 이름·얼굴·저장 내용은 보내지 않고, 플레이어는 설정에서 끌 수 있습니다.
 

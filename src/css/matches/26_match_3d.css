@@ -8,5 +8,10 @@
 .match-dashboard .cs-stage.has-3d>.cs-sit{top:14px}
 .match-dashboard .cs-stage.has-3d>.cs-cap{bottom:15px;background:#0a1724d9;backdrop-filter:blur(6px)}
 .match-dashboard .cs-stage.has-3d>.cs-fx{z-index:8;text-shadow:0 3px 15px #000}
-.match-dashboard .cs-3d[data-state="fallback"]{display:none}
+.cs-3d-retry{display:none}
+.match-dashboard .cs-3d[data-state="fallback"]{display:block;background:transparent;z-index:12}
+.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:12px;bottom:auto;left:12px;right:12px;padding-right:110px;min-height:35px;border:1px solid #8e7740;line-height:1.5}
+.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-retry{display:block;position:absolute;top:19px;right:20px;pointer-events:auto;background:#263d4b;border:1px solid #829cad;border-radius:4px;color:#eff6fb;padding:6px 9px;font-size:11px}
 @media(max-width:1000px){.match-dashboard .md-field-body{position:relative;min-height:0}.match-dashboard .cs-stage.has-3d{position:absolute;inset:0}.match-dashboard .cs-stage.has-3d>.cs-fx{font-size:32px}}
+/* The 2D fallback stage crops 8% off its top on PC. Keep the notice inside its visible part. */
+@media(min-width:1001px){.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:calc(8% + 12px)}.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-retry{top:calc(8% + 19px)}}
