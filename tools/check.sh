@@ -20,6 +20,7 @@ step "화면 점검(휴대폰)"; W=390 QUICK=1 node tools/check-ui.js || fail=1
 step "노트북 배치·상세 이동"; node tools/check-layout.cjs || fail=1
 step "경기 대시보드·재생 기록"; node tools/check-match.cjs || fail=1
 step "3D 경기장·동작·오프라인"; node tools/check-match3d.cjs || fail=1
+step "3D 플레이 리뷰·시선·릴리스"; node tools/check-match3d-review.cjs || fail=1
 step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
 step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || fail=1

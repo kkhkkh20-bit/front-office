@@ -1,0 +1,28 @@
+/* 실제 스킨·애니메이션의 머리 방향과 공 출발점을 검사한다. 회전값만 비교하지 않는다. */
+const assert=require('node:assert/strict'),path=require('node:path');
+const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
+(async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const errors=[];try{
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:['--enable-unsafe-swiftshader']});const page=await browser.newPage({viewport:{width:1280,height:800}});
+ await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await page.route('https://www.googletagmanager.com/**',r=>r.fulfill({body:'',contentType:'text/javascript'}));page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))errors.push(m.text());});
+ await page.goto(server.url);await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open+2;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id,g=simGame(G.day,G.user,op,false);applyGame(G.day,G.user,op,g,false);G.games=[gameRecord(G.day,G.user,op,g,'')];UI.title=false;UI.tab='home';render();A.cast(0);castJump(0,false);});
+ await page.waitForFunction(()=>Match3D.ready(),{},{timeout:120000});
+ const cases=[['우','우',false],['좌','우',true],['양','우',true],['양','좌',false]];
+ for(const [bat,throwing,left]of cases){const a=await page.evaluate(({bat,throwing})=>{const g=G.games[0],k=g.pbp.findIndex(x=>typeof x[1]==='number'),x=g.pbp[k];G.players[x[1]].bt=bat;G.players[x[2]].th=throwing;castJump(k,false);const info=Match3D.info(true);return {b:info.players.find(a=>a.role==='batter'),p:info.players.find(a=>a.pitcher)};},{bat,throwing});
+  assert.equal(a.b.left,left);assert.ok((left?a.b.position[0]<0:a.b.position[0]>0),'타석 좌우 위치');assert.ok(a.b.headForward[2]>.85,JSON.stringify(a.b));assert.ok(a.b.batVisible,'준비 자세의 배트');assert.equal(a.p.left,throwing==='좌');console.log('타자 시선',bat,throwing,a.b.headForward.map(n=>n.toFixed(3)).join(','));
+  if(process.env.CAPTURE&&bat!=='양')await page.screenshot({path:`/workspace/match-review/fixed-${bat==='우'?'right':'left'}.png`});
+ }
+ const release=[];
+ for(const throwing of ['우','좌']){const r=await page.evaluate(throwing=>{const g=G.games[0],k=g.pbp.findIndex(x=>typeof x[1]==='number'),x=g.pbp[k];G.players[x[2]].th=throwing;castJump(k,false);Match3D.windup(800);const q=cPitchSeq(g,k)[0];Match3D.flight(CFP.P,[50,88],1000,false,false,q);const info=Match3D.info(true);return {p:info.players.find(a=>a.pitcher),flight:info.flight};},throwing);assert.ok(r.flight.pitch);assert.equal(r.p.heldBallVisible,false);assert.ok(Math.hypot(...r.flight.from.map((n,i)=>n-r.p.grip[i]))<1e-5,'실제 손 위치에서 공 출발');release.push(r.flight.from);}
+ assert.ok(Math.abs(release[0][0]+release[1][0])<.01,'좌우 투수의 릴리스 좌우 대칭');assert.ok(Math.abs(release[0][0])>.1,'중앙 고정 릴리스 회귀');
+ const key=await page.evaluate(()=>{cDraw(UI.cast.k,0);const a=Match3D.info(true).players.find(a=>a.role==='batter');Match3D.move(a.key,CBS[0],1500);document.querySelector(`.cc[data-k="${a.key}"]`).classList.add('gone');return a.key;});
+ await page.waitForFunction(key=>{const a=Match3D.info(true).players.find(a=>a.key===key);return !a.visible&&!a.moving&&!a.playing;},key,{timeout:10000});
+ assert.ok(await page.evaluate(()=>{cDraw(UI.cast.k,0);const a=Match3D.info(true).players.find(a=>a.role==='batter');return a.visible&&a.batVisible&&a.headForward[2]>.85;}),'중단·복귀 후 타격 자세 복원');
+ // Record-backed play: resume the final pitch of a real batted ball and follow it.
+ await page.evaluate(()=>{const g=G.games[0],k=g.pbp.findIndex(x=>typeof x[1]==='number'&&!['BB','K'].includes(x[3]));if(k<0)throw Error('타격 기록 없음');castJump(k,false);const seq=cPitchSeq(g,k);for(let i=0;i<seq.length-1;i++)cShowPitch(g,k,seq,i);window.reviewShots=Match3D.info().fieldShots;UI.cast.mode='all';UI.cast.spd=1;});
+ await page.locator('#cs-play').click();await page.waitForFunction(()=>Match3D.info()?.fieldShots>window.reviewShots,{},{timeout:120000,polling:50});
+ if(process.env.CAPTURE)await page.screenshot({path:'/workspace/match-review/fixed-playing.png'});await page.locator('#cs-play').click();
+ // A high fly must steer the camera toward the ball's height, not its landing spot.
+ await page.evaluate(()=>{castJump(UI.cast.k,false);Match3D.flight([50,88],[50,0],8000,true,false);});await page.waitForFunction(()=>{const i=Match3D.info(true);return i.ball[1]>12&&i.look[1]>6;},{},{timeout:20000,polling:50}).catch(async e=>{console.log('fly failure',await page.evaluate(()=>{const i=Match3D.info(true);return {ball:i.ball,look:i.look,flight:i.flight,play:UI.cast.play};}));throw e;});
+ await page.evaluate(()=>castJump(UI.cast.k,false));await page.setViewportSize({width:390,height:844});if(process.env.CAPTURE)await page.screenshot({path:'/workspace/match-review/fixed-mobile.png'});
+ await page.evaluate(()=>A.castPlayer(G.games[0].pbp[UI.cast.k][1]));assert.equal(await page.evaluate(()=>Match3D.info()),null);await page.locator('.detail-back').click();await page.waitForFunction(()=>Match3D.ready(),{},{timeout:30000});assert.ok(await page.evaluate(()=>Match3D.info(true).players.find(a=>a.role==='batter').headForward[2]>.85));await page.evaluate(()=>A.castClose(true));assert.deepEqual(errors,[]);console.log('3D 리뷰: 우타·좌타·양타 시선·좌우 릴리스·배트 복원·아웃 선수 정지·실제 타격 재생·높은 타구 카메라·상세 복귀 통과');
+ }finally{await browser?.close();await server.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
