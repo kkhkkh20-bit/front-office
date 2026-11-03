@@ -3,6 +3,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const esbuild = require('esbuild');
 const { loadManifest, validateManifest } = require('./lib/sources.cjs');
+const { buildMatch3d } = require('./build-match3d.cjs');
 
 function build({ root = path.resolve(__dirname, '..'), manifest = loadManifest(root), write = true, engineOut } = {}) {
   validateManifest(root, manifest);
@@ -21,13 +22,16 @@ function build({ root = path.resolve(__dirname, '..'), manifest = loadManifest(r
   new vm.Script(engine, { filename: 'dist/engine.js' });
   new vm.Script(ui, { filename: '화면 번들' });
   const vendor = manifest.vendor;
+  const match3d = buildMatch3d(root, manifest);
   const html = read(manifest.html.head) + concatenate(manifest.bundles.styles) + read(manifest.html.body)
     + '<script id="faces">\n'
     + '/* 선수 얼굴: faces.js (c) ZenGM, Apache License 2.0 — https://github.com/zengm-games/facesjs */\n'
     + read(vendor.faces) + '</script>\n<script id="lz">\n'
     + '/* 저장 압축: lz-string (c) 2013 pieroxy, MIT License — https://github.com/pieroxy/lz-string */\n'
     + read(vendor.lz) + '\n/* 저장 압축(deflate): fflate 0.8.2 (c) 2020 Arjun Barrett, MIT License — https://github.com/101arrowz/fflate */\n'
-    + read(vendor.fflate) + '</script>\n<script id="engine">\n'
+    + read(vendor.fflate) + '</script>\n<script id="match3d">\n'
+    + '/* three.js MIT; Claudeball models / field look Copyright (c) 2026 Taylor Beeston, MIT. Full notices: assets/match3d/LICENSE.txt and docs/licenses/match3d.txt. */\n'
+    + match3d + '</script>\n<script id="engine">\n'
     + engine + '</script>\n<script>\n' + ui + '</script>\n</body>\n</html>\n';
   new vm.Script([...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(match => match[1]).join('\n'), { filename: 'index.html의 스크립트' });
   if (write) {

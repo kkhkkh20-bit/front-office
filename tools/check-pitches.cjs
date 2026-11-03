@@ -1,8 +1,9 @@
+/* 3D 구장·동작은 check-match3d.cjs에서, 이 검사는 WebGL 대체 중계와 기록 UI를 확인한다. */
 /* 실제 저장된 공을 DOM·애니메이션·일시정지·이전 저장에서 검증한다. */
 const assert=require('node:assert/strict'),path=require('node:path');
 const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const errors=[];
-try{browser=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});const page=await browser.newPage({viewport:{width:1366,height:768}});page.on('pageerror',e=>errors.push(e.message));
+try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:['--disable-webgl']});const page=await browser.newPage({viewport:{width:1366,height:768}});page.on('pageerror',e=>errors.push(e.message));
 await page.goto(server.url);await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open;for(const t of G.teams)setEntry(t.id);const other=G.teams.find(t=>t.id!==G.user).id,g=simGame(G.day,G.user,other,false);applyGame(G.day,G.user,other,g,false);G.games=[gameRecord(G.day,G.user,other,g,'')];UI.title=false;UI.tab='home';render();A.cast(0);castJump(0,false);});
 const k=await page.evaluate(()=>G.games[0].pbp.findIndex(x=>typeof x[1]==='number'&&x[15].pitches.length>=6));assert.ok(k>=0,'긴 타석 준비');
 for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1920,height:1080},{width:390,height:844}]){

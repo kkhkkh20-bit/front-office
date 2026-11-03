@@ -11,7 +11,7 @@
 
 ## 실행
 
-`index.html`을 브라우저로 열면 됩니다. 글꼴은 Google Fonts에서 불러오므로, 인터넷이 없으면 기본 글꼴로 표시됩니다.
+`index.html`을 브라우저로 열면 됩니다. 3D 경기장·선수·디코더를 포함해 파일 크기는 약 34 MB입니다. 모델의 출처와 사용 조건은 [3D 에셋 안내](assets/match3d/README.md)에 정리했습니다. 글꼴은 Google Fonts에서 불러오므로, 인터넷이 없으면 기본 글꼴로 표시됩니다.
 
 ## 구조
 
@@ -24,6 +24,7 @@
 | `src/ui/` | 기능별 화면, 공용 `components`, `shell`, `actions`, `runtime`, 데이터 `assets` |
 | `src/css/` | 기능별 스타일. 적용 순서는 소스 목록에 명시 |
 | `src/gfx/` | 경기 중계와 시설 그림 |
+| `src/scene3d/`, `assets/match3d/` | 타자 뒤 시점의 3D 중계·원본 모델·사용 고지 |
 | `src/html/`, `vendor/` | 문서 틀과 포함 배포하는 외부 라이브러리 |
 | `src/modules.json` | 전체 소스·공용 진입점·동작/결재/부팅 순서 |
 | `tools/build.cjs`, `tools/lib/sources.cjs` | 공용 소스 목록 검증과 번들 생성 |

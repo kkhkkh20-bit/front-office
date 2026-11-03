@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const acorn = require('acorn');
 const walk = require('acorn-walk');
-const GROUPS = { engine: ['src/engine', '.js'], graphics: ['src/gfx', '.js'], ui: ['src/ui', '.js'], styles: ['src/css', '.css'], core: ['src/core', '.mjs'] };
+const GROUPS = { engine: ['src/engine', '.js'], graphics: ['src/gfx', '.js'], ui: ['src/ui', '.js'], styles: ['src/css', '.css'], core: ['src/core', '.mjs'], scene3d: ['src/scene3d', '.mjs'] };
 
 function checkedPath(root, relative) {
   if (typeof relative !== 'string' || relative.includes('\\') || path.posix.normalize(relative) !== relative || relative.startsWith('../') || path.isAbsolute(relative)) {

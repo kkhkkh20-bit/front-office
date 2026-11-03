@@ -94,7 +94,7 @@ test('새 파일과 다른 확장자의 소스도 누락을 감지하며 저장�
   const manifest = {
     version: 1, coreEntry: 'src/core/index.mjs', coreGlobal: 'FrontOfficeCore',
     bundles: {
-      core: ['src/core/index.mjs'], engine: ['src/engine/start.js'], graphics: ['src/gfx/draw.js'],
+      scene3d: ['src/scene3d/scene.mjs'], core: ['src/core/index.mjs'], engine: ['src/engine/start.js'], graphics: ['src/gfx/draw.js'],
       ui: ['src/ui/actions.js', 'src/ui/guards.js', 'src/ui/boot.js'], styles: ['src/css/base.css'],
     },
     html: { head: 'src/html/head.html', body: 'src/html/body.html' },

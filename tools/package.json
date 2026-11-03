@@ -11,6 +11,7 @@
     "acorn": "^8.12.0",
     "acorn-walk": "^8.3.0",
     "esbuild": "0.28.2",
-    "playwright": "^1.47.0"
+    "playwright": "^1.47.0",
+    "three": "0.180.0"
   }
 }

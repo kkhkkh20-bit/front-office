@@ -1,0 +1,12 @@
+/* The canvas keeps its own camera aspect ratio; never stretch the 2D stage into a 3D viewport. */
+.match-dashboard .cs-3d{position:absolute;inset:0;z-index:0;pointer-events:none;background:#0b1925;display:grid;place-items:center}
+.match-dashboard .cs-3d canvas{width:100%;height:100%;display:block}
+.cs-3d-status{position:absolute;left:16px;bottom:16px;z-index:1;background:#10222ddd;color:#d9e7ef;padding:9px 14px;border-radius:5px;font-size:12px}
+.cs-3d-status:empty{display:none}
+.match-dashboard .cs-stage.has-3d{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0;overflow:hidden;isolation:isolate}
+.match-dashboard .cs-stage.has-3d>.cs-bg,.match-dashboard .cs-stage.has-3d>.cs-trail,.match-dashboard .cs-stage.has-3d>.cc,.match-dashboard .cs-stage.has-3d>.cs-ball,.match-dashboard .cs-stage.has-3d>.cs-shd,.match-dashboard .cs-stage.has-3d>.cs-pt{visibility:hidden;pointer-events:none}
+.match-dashboard .cs-stage.has-3d>.cs-sit{top:14px}
+.match-dashboard .cs-stage.has-3d>.cs-cap{bottom:15px;background:#0a1724d9;backdrop-filter:blur(6px)}
+.match-dashboard .cs-stage.has-3d>.cs-fx{z-index:8;text-shadow:0 3px 15px #000}
+.match-dashboard .cs-3d[data-state="fallback"]{display:none}
+@media(max-width:1000px){.match-dashboard .md-field-body{position:relative;min-height:0}.match-dashboard .cs-stage.has-3d{position:absolute;inset:0}.match-dashboard .cs-stage.has-3d>.cs-fx{font-size:32px}}

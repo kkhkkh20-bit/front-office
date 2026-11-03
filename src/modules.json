@@ -231,6 +231,7 @@
       "src/css/shell/23_consistent_pages.css",
       "src/css/matches/24_match_dashboard.css",
       "src/css/matches/25_match_broadcast.css",
+      "src/css/matches/26_match_3d.css",
       "src/css/home/25_home_workspace.css",
       "src/css/players/26_compact_profile.css",
       "src/css/staff/27_staff_cards.css",
@@ -248,6 +249,9 @@
       "src/core/random.mjs",
       "src/core/ratings.mjs",
       "src/core/pitches.mjs"
+    ],
+    "scene3d": [
+      "src/scene3d/scene.mjs"
     ]
   },
   "html": {
