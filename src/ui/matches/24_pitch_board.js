@@ -20,7 +20,7 @@ function cPitchPanel(g,k,seq,shown){
   const history=document.getElementById('md-pitch-history');if(history)history.scrollTop=history.scrollHeight;
   const map=document.querySelector('.md-zone-map');if(map)map.setAttribute('aria-label',q?`${shown}구 ${q.t} ${q.v}km/h · ${q.res} · ${cPitchLocationText(q)}`:'9칸 스트라이크존 · 투구 대기');
   info.innerHTML=q?cPitchTxt(q,shown-1):`<span class="md-pitch-wait">${x?typeof x[1]==='number'?'첫 공을 기다립니다':x[1]==='PC'?'투수 교체':'주루 상황':'경기 종료'}</span>`;info.className='cs-pitch'+(q?' on':'');
-  if(q){const terminal=shown===seq.length,n=terminal?{b:q.b,s:q.s}:cCountAfter(q);cCount(n.b,n.s);}
+  if(q){const terminal=shown===seq.length,n=terminal?{b:q.b,s:q.s}:cCountAfter(q);cCount(n.b,n.s);if(c3DActive())Match3D.scoreboard({b:n.b,s:n.s,pitch:{t:q.t,v:q.v},playText:q.res});}
   else cCount(0,0);
   const count=document.getElementById('cs-pitcher-count');if(count&&x&&typeof x[1]==='number'){const total=cPitchTotalBefore(g,k,x[2]);count.textContent=total==null?'투구 수 미기록':(total+shown)+'구';}
 }

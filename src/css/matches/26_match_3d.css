@@ -6,7 +6,7 @@
 .match-dashboard .cs-stage.has-3d{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0;overflow:hidden;isolation:isolate}
 .match-dashboard .cs-stage.has-3d>.cs-bg,.match-dashboard .cs-stage.has-3d>.cs-trail,.match-dashboard .cs-stage.has-3d>.cc,.match-dashboard .cs-stage.has-3d>.cs-ball,.match-dashboard .cs-stage.has-3d>.cs-shd,.match-dashboard .cs-stage.has-3d>.cs-pt{visibility:hidden;pointer-events:none}
 .match-dashboard .cs-stage.has-3d>.cs-sit{top:14px}
-.match-dashboard .cs-stage.has-3d>.cs-cap{bottom:15px;background:#0a1724d9;backdrop-filter:blur(6px)}
+.match-dashboard .cs-stage.has-3d>.cs-cap{top:auto;bottom:15px;transform:translateX(-50%);background:#0a1724d9;backdrop-filter:blur(6px)}
 .match-dashboard .cs-stage.has-3d>.cs-fx{z-index:8;text-shadow:0 3px 15px #000}
 .cs-3d-retry{display:none}
 .match-dashboard .cs-3d[data-state="fallback"]{display:block;background:transparent;z-index:12}
@@ -15,3 +15,21 @@
 @media(max-width:1000px){.match-dashboard .md-field-body{position:relative;min-height:0}.match-dashboard .cs-stage.has-3d{position:absolute;inset:0}.match-dashboard .cs-stage.has-3d>.cs-fx{font-size:32px}}
 /* The 2D fallback stage crops 8% off its top on PC. Keep the notice inside its visible part. */
 @media(min-width:1001px){.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:calc(8% + 12px)}.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-retry{top:calc(8% + 19px)}}
+/* The first paint belongs to the 3D loading view; 2D is shown only after an actual failure. */
+.match-dashboard .cs-stage[data-renderer="pending"],.match-dashboard .cs-stage[data-renderer="loading"]{inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0}
+.match-dashboard .cs-stage[data-renderer="pending"]>.cs-bg,.match-dashboard .cs-stage[data-renderer="loading"]>.cs-bg,.match-dashboard .cs-stage[data-renderer="pending"]>.cc,.match-dashboard .cs-stage[data-renderer="loading"]>.cc{visibility:hidden}
+.match-dashboard .cs-3d{z-index:3}
+.match-dashboard .cs-3d[data-state="pending"],.match-dashboard .cs-3d[data-state="loading"]{background:radial-gradient(ellipse at 50% 45%,#234338 0,#142b31 45%,#0a1825 100%)}
+.cs-3d[data-state="pending"] .cs-3d-status,.cs-3d[data-state="loading"] .cs-3d-status{top:50%;bottom:auto;left:50%;transform:translate(-50%,-50%);background:transparent;text-align:center;min-width:240px;font-size:15px;line-height:1.8}
+.cs-3d[data-state="pending"] .cs-3d-status::before,.cs-3d[data-state="loading"] .cs-3d-status::before{content:"";display:block;margin:0 auto 18px;width:30px;height:30px;border:3px solid #69948955;border-top-color:#e8dbab;border-radius:50%;animation:cs-loading-spin 1.1s linear infinite}
+@keyframes cs-loading-spin{to{transform:rotate(360deg)}}
+.cs-3d-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+.cs-nameplate{position:absolute;left:0;top:0;display:grid;justify-items:center;gap:1px;min-width:70px;padding:3px 7px;background:#081724bf;border:1px solid #b6d2db55;border-radius:4px;pointer-events:auto;color:#fff;text-shadow:0 1px 3px #000;line-height:1.15;white-space:nowrap;will-change:transform}
+.cs-nameplate[hidden]{display:none}.cs-nameplate b{font-size:11px;font-weight:700}.cs-nameplate span{font-size:9px;color:#b5d3d7}.cs-nameplate.active{background:#4b3d12e8;border-color:#f2cf73;box-shadow:0 0 13px #efcb5755;z-index:3}.cs-nameplate.active span{color:#ffe199;font-weight:700}
+@media(max-width:600px){.cs-nameplate{padding:2px 4px;min-width:55px}.cs-nameplate b{font-size:10px}.cs-nameplate span{font-size:8px}}
+.cs-3d[data-state="pending"] canvas,.cs-3d[data-state="loading"] canvas,.cs-3d[data-state="fallback"] canvas{visibility:hidden}
+.cs-3d[data-state="pending"] .cs-3d-labels,.cs-3d[data-state="loading"] .cs-3d-labels,.cs-3d[data-state="fallback"] .cs-3d-labels{display:none}
+.cs-name-leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}.cs-name-leader{stroke:#b9d4db88;stroke-width:1}
+.cs-board-view{display:none;position:absolute;right:12px;top:12px;z-index:9;padding:6px 10px;background:#102431dd;border:1px solid #91aab777;border-radius:4px;color:#e1edf1;font-size:11px}
+.cs-stage[data-renderer="ready"]>.cs-board-view{display:block}
+.cs-landing-label{position:absolute;left:0;top:0;margin-top:-36px;z-index:7;padding:5px 9px;background:#403416ed;border:1px solid #eace7a;border-radius:4px;color:#ffe5a1;font-weight:700;font-size:12px;text-shadow:0 1px 2px #000;white-space:nowrap;pointer-events:none}.cs-landing-label[hidden]{display:none}

@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path');const engine=fs.readFileSync(path.join(__dirname,'../dist/engine.js'),'utf8');
+new Function(engine+`\nconst ok=(v,s)=>{if(!v)throw Error(s);};DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.day=G.cal.open+10;
+const U=team(G.user),T=G.teams.find(t=>t.id!==G.user),own=domestic(G.user),other=domestic(T.id),target=own.find(p=>startersOf(G.user).has(p.id)&&!hasNtc(p))||own[0],a=other[5],b=other[6],protectedIds=new Set(other.slice(0,3).map(p=>p.id)),old=tval;
+try{let incoming=new Map([[a.id,6],[b.id,6]]);tval=function(t,p,dir){if(p.team===G.user)return p.id===target.id?10:0;if(protectedIds.has(p.id))return 100;if(incoming.has(p.id))return t.id===G.user?incoming.get(p.id):2;return 0;};
+ ok(!incomingOfferFair([a.id,b.id],[target.id]),'약한 두 명의 합으로 핵심 선수 한 명을 요구하면 안 됨');incoming=new Map([[a.id,9],[b.id,2]]);ok(incomingOfferFair([a.id,b.id],[target.id]),'가치와 핵심 대체 수준을 충족하는 2대1은 허용');incoming=new Map([[a.id,9.6]]);ok(!incomingOfferFair([a.id],[target.id]),'받는 쪽 평가의 과도한 손해 제안 차단');incoming=new Map([[a.id,10.5]]);
+ G.offers=[];G.offSeen={};G.offerContact={};ok(aiOfferFrom(T),'공정한 실제 제안 생성');const offer=G.offers[0];ok(offer.give.length===1&&offer.get[0]===target.id,'단순하고 공정한 안');ok(!aiOfferFrom(T),'진행 중인 같은 구단 제안 중복 금지');answerOffer(offer.id,false);ok(!aiOfferFrom(T),'거절 직후 반복 금지');G.day+=21;ok(!aiOfferFrom(T),'조합만 바꿔 같은 선수 재요구 금지');G.day+=24;ok(aiOfferFrom(T),'45일 뒤에는 합리적인 재접촉 허용');
+ const seed=JSON.stringify(target);const f=pitchDelivery(target);ok(f===pitchDelivery(target)&&JSON.stringify(target)===seed,'폼 조회는 선수 원본을 변경하지 않음');for(const delivery of Object.keys(DELIVERY_LABEL)){const p={...target,delivery};ok(pitchDelivery(p)===delivery,'저장된 폼 유지');}
+ const counts={};for(let id=1;id<=1000;id++){const f=pitchDelivery({id});counts[f]=(counts[f]||0)+1;}ok(counts.submarine>=20&&counts.sidearm>=80,'사이드암·언더핸드의 고정 배정 다양성');
+ console.log('트레이드·폼: 저가 2대1 차단·정당한 묶음 허용·공정한 제안 생성·구단/대상 쿨다운·폼 복원 통과');
+}finally{tval=old;}
+`)();

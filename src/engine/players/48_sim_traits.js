@@ -1,3 +1,6 @@
+/* 투구 동작은 선수 고정 속성이다. 기존 저장은 식별자 기반으로 복원하며 경기 난수를 소비하지 않는다. */
+const DELIVERY_LABEL={overhand:'오버핸드',three_quarter:'스리쿼터',sidearm:'사이드암',submarine:'언더핸드'};
+function pitchDelivery(p){if(p&&DELIVERY_LABEL[p.delivery])return p.delivery;const n=seededRand('delivery:'+(p?.id||0))();return n<.055?'submarine':n<.19?'sidearm':n<.52?'three_quarter':'overhand';}
 /* ===== 세부 능력: 화면에 보이는 세부 능력과 경기 시뮬레이션이 같은 값을 쓴다 =====
    선수 상세의 세부 능력(좌·우 상대, 삼진 회피, 갭 파워, 도루, 주루 센스, 수비 범위, 포구, 송구, 병살·중계, 도루 저지,
    무브먼트, 구종, 견제, 땅볼·뜬공 성향)은 모두 같은 고정 성향 값(trt)에서 나오고, 1군·퓨처스 경기 결과에 똑같이 반영된다 */

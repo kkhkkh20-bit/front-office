@@ -292,20 +292,23 @@ function aiWeekly(){
 function gmHeat(tid){ const t=team(tid); let h=gmTrait(tid)==='gambler'?.25:0; const per=period();
   if(per==='season'&&G.cal&&G.day>G.cal.open+20&&G.proj){ const st=standingsNow(); const rk=st.findIndex(x=>x.tid===tid)+1; const pr=G.proj.indexOf(tid)+1; if(pr>0)h+=clamp((rk-pr)/5,0,.6); if(rk>=8)h+=.15; }
   const g=t.gm; if(g&&G.year-g.since>=3)h+=.1; return clamp(h,0,1); }
+function incomingOfferFair(receive,give){const U=team(G.user),a=receive.map(id=>G.players[id]).filter(Boolean),b=give.map(id=>G.players[id]).filter(Boolean);if(!a.length||!b.length)return false;const incoming=a.map(p=>tval(U,p,'in')),outgoing=b.map(p=>tval(U,p,'out')),total=sum(outgoing),value=stackIn(incoming),top=Math.max(...outgoing),core=startersOf(G.user);if(value<Math.max(0,total)*.97)return false;if(a.length>b.length&&Math.max(...incoming)<top*(b.some(p=>core.has(p.id))?.9:.8))return false;return true;}
+function offerContactOk(tid,pid){const c=G.offerContact||{},pending=G.offers||[];if(pending.length>=2||pending.some(o=>o.from===tid))return false;const last=Object.values(c).filter(Number.isFinite);if(last.length&&G.day-Math.max(...last)<10)return false;if(c[tid+':*']!=null&&G.day-c[tid+':*']<21)return false;if(pid!=null&&c['p:'+pid]!=null&&G.day-c['p:'+pid]<45)return false;return true;}
 function aiOffer(){ const ts=G.teams.filter(x=>x.id!==G.user&&!tradeCool(x.id)) /* 막 거래한 구단은 30일 동안 새 제안을 하지 않는다 */.map(t=>({t,w:gmHeat(t.id)+R()*.8})).sort((a,b)=>b.w-a.w).slice(0,3);
   for(const x of ts){ if(aiOfferFrom(x.t))return true; } return false; }
-function aiOfferFrom(t){ const U=team(G.user);
-  const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)).map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
+function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.user);
+  const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)&&offerContactOk(t.id,p.id)).map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
   if(!mine.length)return false; const listed=mine.filter(x=>x.p.listed); const tg=listed.length&&R()<.7?pick(listed):pick(mine);
   const tgU=tval(U,tg.p,'out'); // 우리가 그 선수를 내줄 때 느끼는 가치
   const core=new Set(domestic(t.id).map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id));
   const pool=domestic(t.id).filter(p=>!core.has(p.id)&&healthy(p)&&!p.ys&&!hasNtc(p)).map(p=>({p,v:tval(t,p,'out'),u:tval(U,p,'in')})).filter(x=>x.v>0&&x.u>.3).sort((a,b)=>a.v-b.v);
-  const need=tradeNeed(t,0); const cap=tg.v-need; let best=null,bu=-1;
-  for(let i=0;i<pool.length;i++){ const a=pool[i]; if(a.v<=cap&&a.u>=tgU*.75&&a.u>bu){ best=[a]; bu=a.u; }
-    for(let j=i+1;j<pool.length;j++){ const b=pool[j]; const tv=a.v+b.v; const uv=Math.max(a.u,b.u)+.72*Math.min(a.u,b.u); if(tv<=cap&&uv>=tgU*.8&&uv>bu){ best=[a,b]; bu=uv; } } }
-  if(!best)return false;
+  const need=tradeNeed(t,0); const cap=tg.v-need,topRatio=startersOf(G.user).has(tg.p.id)?.9:.8; let best=null,bu=-1;
+  for(let i=0;i<pool.length;i++){ const a=pool[i]; if(a.v<=cap&&a.u>=tgU*.97&&a.u>bu){ best=[a]; bu=a.u; }
+    for(let j=i+1;j<pool.length;j++){ const b=pool[j]; const tv=a.v+b.v; const uv=stackIn([a.u,b.u]); if(tv<=cap&&uv>=tgU*.97&&Math.max(a.u,b.u)>=tgU*topRatio&&uv>bu){ best=[a,b]; bu=uv; } } }
+  if(!best||!incomingOfferFair(best.map(x=>x.p.id),[tg.p.id]))return false;
   const off={id:'o'+Math.floor(R()*1e9),from:t.id,give:best.map(x=>x.p.id),get:[tg.p.id],exp:period()==='season'?Math.min(G.day+3,tradeDL()):G.day+3,day:G.day};
   { const key=off.from+':'+[...off.give].sort().join(',')+':'+off.get.join(','); G.offSeen=G.offSeen||{}; if(G.offSeen[key]!=null&&G.day-G.offSeen[key]<40)return false; G.offSeen[key]=G.day; } /* 같은 제안을 한 달 안에 되풀이하지 않는다 */
+  G.offerContact=G.offerContact||{};G.offerContact[t.id+':*']=G.day;G.offerContact['p:'+tg.p.id]=G.day;
   try{ off.pot=offScoutNote(off); }catch(e){} try{ off.why=mgrFitWhy(t.id,tg.p); }catch(e){}
   G.offers=(G.offers||[]).concat(off);
   if(autoTradeOffer(off))return true; /* 업무 맡기기: 부단장이 거절. 맡기지 않았으면 진행을 멈추지 않는 소식으로 보낸다(할 일 목록·만료 임박 알림에 뜬다) */

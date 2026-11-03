@@ -1,0 +1,19 @@
+/* PC: the browser page stays fixed; long workspaces and detail panels scroll inside the shell. */
+@media(min-width:1100px){
+ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+ #app>.gut{height:100dvh;overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
+ #app>.fb-title{height:100dvh;min-height:0;overflow:auto}
+ body.fm #app,.shell.fmsh{height:100dvh;min-height:0!important;overflow:hidden}
+ body.fm .shell.fmsh{display:flex!important;flex-direction:column}
+ .fmsh>.fmtop{flex:none;position:relative}
+ .fmsh>.fmbody{flex:1;min-height:0;display:grid;grid-template-columns:180px minmax(0,1fr);overflow:hidden}
+ .fmsh .fmside{position:relative;top:auto;height:100%;min-height:0}
+ .fmsh .fmmain{height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+ .fmsh main.content{padding-bottom:12px}
+ .cast-page-open .fmsh>.fmbody{grid-template-columns:minmax(0,1fr)}
+ .detail-page-open #sheet{overflow:hidden;scrollbar-gutter:auto}
+ #sheet .detail-page-wrap{height:100%;min-height:0}
+ body #sheet .sheet.detail-page{height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;padding-bottom:12px}
+ body #sheet .cast.detail-page{height:100%;min-height:0;overflow:hidden}
+ .dshell{height:100dvh;display:flex;flex-direction:column;overflow:hidden}.dshell>.dtop{flex:none}.dshell>.gut{min-height:0;flex:1;overflow:auto}
+}

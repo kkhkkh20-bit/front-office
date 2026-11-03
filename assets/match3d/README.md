@@ -23,3 +23,7 @@
 검사: `CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium CAPTURE=1 node tools/check-match3d.cjs`
 
 타격 모델 방향은 원본 에셋의 좌표 규칙을 따른다. 모델의 기본 정면은 +Z이고 타격 자세는 왼쪽 어깨 너머로 투수를 본다. 따라서 +X의 우타자는 Y 회전 -90도, -X의 좌타자는 모델 X 반사와 Y 회전 +90도를 적용해야 둘 다 +Z의 마운드를 바라본다. 모델을 단순히 정면에 세우면 머리와 스윙 방향이 옆으로 틀어진다. 방향·릴리스·카메라 검사는 `node tools/check-match3d-review.cjs`로 실행한다.
+
+중계 어댑터는 `scene.mjs`(장면), `motion.mjs`(애니메이션), `labels.mjs`(이름표), `scoreboard.mjs`(전광판)로 나뉜다. 투수는 좌우 측면 준비 자세에서 포수를 보며 오버핸드·스리쿼터·사이드암·언더핸드를 구분하고, 주자 상황에서는 세트 동작을 사용한다. 포구·송구·스윙은 클립 이벤트 시각에 연결한다. 전광판은 모델 UV에 맞춰 `CanvasTexture.flipY=false`를 사용한다.
+
+사이트 배포는 `tools/build-site.cjs`로 모델을 같은 출처의 내용 해시 파일로 나누며, 단일 HTML 다운로드 빌드는 그대로 유지한다. 첫 진입은 준비 화면을 표시하고, 모델 병렬 해석과 셰이더 준비가 끝난 뒤 3D 화면을 공개한다. `tools/check-gameplay.cjs`에서 실제 경기 기록을 재생하여 수비·착지·전광판·좌우 투구폼을 검사한다.

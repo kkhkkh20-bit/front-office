@@ -137,6 +137,7 @@
       "src/ui/matches/22_pbp.js",
       "src/ui/matches/23_match_dashboard.js",
       "src/ui/matches/24_pitch_board.js",
+      "src/ui/matches/25_scene_actions.js",
       "src/ui/market/23_trade_compare.js",
       "src/ui/components/24_cards.js",
       "src/ui/players/25_squad_glance.js",
@@ -235,7 +236,8 @@
       "src/css/home/25_home_workspace.css",
       "src/css/players/26_compact_profile.css",
       "src/css/staff/27_staff_cards.css",
-      "src/css/career/28_meeting_page.css"
+      "src/css/career/28_meeting_page.css",
+      "src/css/shell/29_desktop_viewport.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
@@ -251,7 +253,10 @@
       "src/core/pitches.mjs"
     ],
     "scene3d": [
-      "src/scene3d/scene.mjs"
+      "src/scene3d/scene.mjs",
+      "src/scene3d/motion.mjs",
+      "src/scene3d/scoreboard.mjs",
+      "src/scene3d/labels.mjs"
     ]
   },
   "html": {

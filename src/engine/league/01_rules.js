@@ -139,6 +139,7 @@ function newPlayer(o){
   setOvr(p,o.base);
   p.pot=clamp(Math.max(ovr(p),o.pot??ovr(p)),20,80); p.dt=rollDT();
   initPers(p);
+  if(p.isP)p.delivery=o.delivery||pitchDelivery(p);
   G.players[p.id]=p; return p;
 }
 const playersOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!isAway(p));
