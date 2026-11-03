@@ -1,0 +1,133 @@
+{
+  "beforeSource": "fed5df1",
+  "afterSource": "2026-11-03q",
+  "fixtureSha256": "f4ffdb612c0f0a9dc01f1b22f08f8dd4e94b62ddeea1a6c9d695d17fe6b7c4c9",
+  "fps": 24,
+  "seconds": 32,
+  "chapters": [
+    {
+      "key": "ground",
+      "label": "투구·풀스윙·땅볼 처리",
+      "speed": 1,
+      "seconds": 7,
+      "gi": 0,
+      "k": 0,
+      "half": 0,
+      "score": 0,
+      "start": 0,
+      "end": 7
+    },
+    {
+      "key": "double",
+      "label": "2루타 · 타구 착지와 중계",
+      "speed": 2,
+      "seconds": 5.5,
+      "gi": 1,
+      "k": 1,
+      "half": 0,
+      "score": 0,
+      "start": 7,
+      "end": 12.5
+    },
+    {
+      "key": "homer",
+      "label": "홈런 · 관중석 착지",
+      "speed": 2,
+      "seconds": 10,
+      "gi": 16,
+      "k": 0,
+      "half": 0,
+      "score": 1,
+      "start": 12.5,
+      "end": 22.5
+    },
+    {
+      "key": "steal",
+      "label": "도루 성공 · 슬라이딩",
+      "speed": 1,
+      "seconds": 5,
+      "gi": 2,
+      "k": 2,
+      "half": 0,
+      "score": 0,
+      "start": 22.5,
+      "end": 27.5
+    },
+    {
+      "key": "caught",
+      "label": "도루자 · 포수 송구와 태그",
+      "speed": 1,
+      "seconds": 4.5,
+      "gi": 9,
+      "k": 55,
+      "half": 9,
+      "score": 0,
+      "start": 27.5,
+      "end": 32
+    }
+  ],
+  "files": {
+    "before": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1280,
+          "height": 800,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "24/1",
+          "nb_read_frames": "768",
+          "side_data_list": [
+            {}
+          ]
+        }
+      ],
+      "format": {
+        "duration": "32.000000",
+        "size": "2254807"
+      }
+    },
+    "after": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1280,
+          "height": 800,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "24/1",
+          "nb_read_frames": "768",
+          "side_data_list": [
+            {}
+          ]
+        }
+      ],
+      "format": {
+        "duration": "32.000000",
+        "size": "3230168"
+      }
+    },
+    "comparison": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 720,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "24/1",
+          "nb_read_frames": "768"
+        }
+      ],
+      "format": {
+        "duration": "32.000000",
+        "size": "3171823"
+      }
+    }
+  },
+  "note": "실제 시뮬레이션 기록을 로컬 브라우저에서 고정 시간 간격으로 재생·녹화. 동작 비교용이며 실시간 FPS 측정은 별도.",
+  "afterPublishedSource": "2dfd953000a98d16919cb0233f81c1f24d3df5b7"
+}
