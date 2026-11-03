@@ -33,3 +33,11 @@
 .cs-board-view{display:none;position:absolute;right:12px;top:12px;z-index:9;padding:6px 10px;background:#102431dd;border:1px solid #91aab777;border-radius:4px;color:#e1edf1;font-size:11px}
 .cs-stage[data-renderer="ready"]>.cs-board-view{display:block}
 .cs-landing-label{position:absolute;left:0;top:0;margin-top:-36px;z-index:7;padding:5px 9px;background:#403416ed;border:1px solid #eace7a;border-radius:4px;color:#ffe5a1;font-weight:700;font-size:12px;text-shadow:0 1px 2px #000;white-space:nowrap;pointer-events:none}.cs-landing-label[hidden]{display:none}
+
+/* Keep live commentary inside the 3D picture, directly above its bottom edge. */
+.match-dashboard .cs-stage.has-3d>.cs-cap{left:12px;right:12px;bottom:10px;top:auto;transform:none;max-width:none;min-height:42px;padding:11px 16px;text-align:left;font-size:15px;line-height:1.4;white-space:normal;color:#f4f7f8;background:linear-gradient(90deg,#0b1c2bf2,#0b1c2bdb);border:1px solid #9bb7bf66;border-left:4px solid #e0c676;backdrop-filter:none}
+.cs-stage.has-3d>.cs-cap.hr{color:#fff0b0;border-color:#f7cf67;background:#6b2225ed;font-size:19px;animation:cs-home-celebrate .7s ease-in-out 5}
+@keyframes cs-home-celebrate{0%,100%{background:#6b2225ed;box-shadow:0 0 0 #efb94a00}50%{background:#8b5723f5;box-shadow:0 0 18px #efb94a88}}
+@media(min-width:1001px){.detail-page-open .cast.match-dashboard[data-view="field"]:has(.has-3d){grid-template-rows:44px minmax(0,1fr) 0px 28px}.match-dashboard[data-view="field"]:has(.has-3d)>.md-comment{visibility:hidden;min-height:0;height:0;border:0;padding:0;overflow:hidden}}
+@media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{left:6px;right:6px;bottom:6px;font-size:12px;padding:8px 10px;min-height:34px}.cs-stage.has-3d>.cs-cap.hr{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.cs-stage.has-3d>.cs-cap.hr{animation:none;box-shadow:0 0 12px #efb94a77}}

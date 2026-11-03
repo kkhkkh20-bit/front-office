@@ -91,7 +91,7 @@ function cSit(st,x){ const el=document.getElementById('cs-sit'); if(!el)return; 
   const t=risp&&st.bases[0]&&st.bases[1]&&st.bases[2]?'만루 찬스':risp?'득점권 찬스':late?'승부처':''; el.textContent=t; el.className='cs-sit'+(t&&x&&typeof x[1]==='number'?' on':''); }
 function cDraw(k,ms){ CT.pitch=null; const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; const st=k>=L.length?{...pbpState(g,L.length-1),bases:[0,0,0]}:cBefore(g,k);
   const targets=k>=L.length?[]:cTargets(g,k,st); cSync(targets,ms); if(typeof Match3D!=='undefined')Match3D.sync({targets,away:tshort(g.away),home:tshort(g.home),sa:st.sa,sh:st.sh,inning:cHalfTxt(st.half),outs:st.outs,board:c3DScore(g,k,st)}); if(k>=L.length){ st.sa=g.as; st.sh=g.hs; } cBoard(g,st,null); cSide(g,k); cSit(st,L[k]); c.wp=k>=L.length?(g.hs===g.as?.5:g.hs>g.as?1:0):wpHome(st); try{ if(k>=L.length){ const bar=document.getElementById('cs-wpa'); if(bar)bar.style.width=(c.wp*100)+'%'; const tx=document.getElementById('cs-wpt'); if(tx)tx.textContent=g.hs===g.as?'무승부':`${tshort(g.hs>g.as?g.home:g.away)} 승리`; } else cWp(g,st,null); }catch(e){}
-  cCap(''); cPitchReset(g,k); if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&k<L.length?'일시정지':'재생'; }
+  cCap(c3DActive()?(k>=L.length?'경기가 끝났습니다':typeof L[k]?.[1]==='number'?'다음 투구를 준비합니다':'주루 상황을 확인합니다'):''); cPitchReset(g,k); if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&k<L.length?'일시정지':'재생'; }
 /* 연출 */
 function cFx(t,cls,stay){ const el=document.getElementById('cs-fx'); if(!el)return; el.className='cs-fx'; void el.offsetWidth; if(!t){ el.textContent=''; return; } el.textContent=t; el.className='cs-fx on '+(cls||'')+(stay?' stay':''); el.style.animationDuration=(1.5/cSpd())+'s'; }
 function cFlash(){ const el=document.getElementById('cs-flash'); if(!el)return; el.className='cs-flash'; void el.offsetWidth; el.className='cs-flash on'; }
@@ -126,7 +126,7 @@ function cBoard(g,st,cnt){if(c3DActive())Match3D.scoreboard(c3DScore(g,UI.cast.k
   dots('cs-O',Math.min(2,st.outs)); { const ob=s('cs-Ob'); if(ob)dots('cs-Ob',Math.min(2,st.outs)); } s('cs-on').textContent=Math.min(3,st.outs)+'아웃';const bso=s('cs-bso');if(bso)bso.dataset.outs=Math.min(3,st.outs);const summary=s('cs-count-summary');if(summary){const b=s('cs-B')?.querySelectorAll('.on').length||0,ss=s('cs-S')?.querySelectorAll('.on').length||0;summary.textContent=b+'볼 · '+ss+'스트라이크 · '+Math.min(3,st.outs)+'아웃';}
   mdSet('cs-bases',st.bases.map((id,i)=>`<span class="md-base-pill${id?' occupied':''}" title="${i+1}루 · ${id?esc(mdPlayer(g,id).name):'주자 없음'}"><i>${i+1}루</i><b>${id?esc(mdPlayer(g,id).name):'비어 있음'}</b></span>`).join(''));
   CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); }
-function cCap(t,cls){ const el=document.getElementById('cs-cap'); if(!el)return; el.className='cs-cap'+(t?' on':'')+(cls?' '+cls:''); el.textContent=t||'';if(t&&document.querySelector('.match-dashboard'))mdSet('md-comment','<span>실시간 중계</span><b>'+esc(t)+'</b>'); }
+function cCap(t,cls){const el=document.getElementById('cs-cap');if(!el)return;if(!t&&c3DActive())return;el.className='cs-cap'+(t?' on':'')+(cls?' '+cls:'');el.textContent=t||'';if(t&&document.querySelector('.match-dashboard'))mdSet('md-comment','<span>실시간 중계</span><b>'+esc(t)+'</b>');}
 /* 공 */
 /* 공: arc=뜬공(가운데서 커지고 바닥에 그림자), gb=땅볼(작게 튀며 굴러감), 그 밖은 직선(라인드라이브·송구) */
 function cBall(from,to,ms,arc,gb){ if(typeof Match3D!=='undefined'&&Match3D.flight(from,to,ms/cSpd(),arc,gb,CT.pitch)){CT.pitch=null;return cSleep(ms);} const b=document.getElementById('cs-ball'); if(!b)return Promise.resolve(); const d=ms/cSpd(),token=CT.tok;
@@ -144,8 +144,9 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   if(x[1]==='PC'){ const top=x[0]%2===0; const dug=CDUG[top?'h':'a']; const old=cPit(g,k); const oc=old&&card('d'+old);
     cCap(`투수 교체 · ${(G.players[x[2]]||{}).name||''}`); if(oc){ cPlace(oc,dug,700); oc.classList.add('gone'); }
     const ne=cCard('d'+x[2],x[2],'df','투',cTeamCol(top?g.home:g.away)); cPlace(ne,dug,0); st.appendChild(ne); ne.getBoundingClientRect(); cPlace(ne,CFP.P,900); await cSleep(1100); if(oc)oc.remove(); cCap(''); return; }
+  if((x[1]==='SB'||x[1]==='CS')&&c3DActive()){await c3DSteal(g,k,b);return;}
   if(x[1]==='SB'||x[1]==='CS'){ const i=b.bases.indexOf(x[2]); const el=card('o'+x[2]); cCap(x[1]==='SB'?'도루 시도':'도루 시도');
-    const to=Math.min(3,i+1); cBall(CFP.P,CHM,300); await cSleep(300); cBall(CHM,CPATH[to],450); if(el)cPlace(el,CPATH[to],500); await cSleep(550);
+    const to=Math.min(3,i+2); cBall(CFP.P,CHM,300); await cSleep(300); cBall(CHM,CPATH[to],450); if(el)cPlace(el,CPATH[to],500); await cSleep(550);
     if(x[1]==='CS'&&el){ el.classList.add('gone'); cCap('도루 실패 · 아웃','bad'); } else cCap('도루 성공','good');
     cBoard(g,{...b,outs:x[3],bases:x[4]},null); await cSleep(700); cCap(''); cBallHide(); return; }
   /* 타석 */
@@ -170,10 +171,10 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
     kind=typ==='fly'?(x[6]>0?'희생플라이':'뜬공 아웃'):typ==='ld'?'직선타 아웃':typ==='err'?'실책':(o==='DP'?'병살타':'땅볼 아웃'); }
   const cam=false,scene3d=c3DActive();
   { const seq=cPitchSeq(g,k); const fast=c.mode&&c.mode!=='all'; const show=fast?Math.min(2,seq.length):seq.length;
-    const throwOne=async(q,i,last)=>{const delivery=pitchDelivery(G.players[x[2]]),pc=st.querySelector('.cc.pit'),sw=last?(o!=='BB'&&!/루킹/.test(q.res)):/헛스윙|파울/.test(q.res),stretch=b.bases.some(Boolean),wind=scene3d?(Math.round(((delivery==='sidearm'&&!stretch?.5417:stretch?.375:.5833)/.8)*1000)):(fast?150:220),travel=scene3d?Math.round(18.44/(Math.max(80,q.v)/3.6)*1000):(fast?240:300),lead=scene3d&&sw?350:0;
+    const throwOne=async(q,i,last)=>{const delivery=pitchDelivery(G.players[x[2]]),pc=st.querySelector('.cc.pit'),sw=last?(o!=='BB'&&!/루킹/.test(q.res)):/헛스윙|파울/.test(q.res),stretch=b.bases.some(Boolean),wind=scene3d?(Math.round(((delivery==='sidearm'&&!stretch?.5417:stretch?.375:.5833)/.8)*1000)):(fast?150:220),travel=scene3d?Math.round(18.44/(Math.max(80,q.v)/3.6)*1000):(fast?240:300),lead=scene3d&&sw?Math.min(wind,Math.max(0,917-travel)):0;
       if(scene3d)Match3D.windup(wind/cSpd(),delivery,stretch);if(pc){pc.classList.remove('th');void pc.offsetWidth;pc.classList.add('th');}
-      await cSleep(wind-lead);if(scene3d&&sw)Match3D.swing((lead+travel)/cSpd());if(lead)await cSleep(lead);CT.pitch=q;await cBall(CFP.P,[50+(q.x-.5)*4,88+(q.y-.5)*2],travel,false);cBallHide();
-      if(bat&&sw){bat.classList.remove('sw');void bat.offsetWidth;bat.classList.add('sw');}cShowPitch(g,k,seq,i);if(!last){if(q.res==='파울')sfx('crack',.25,1.3);else sfx('mitt',.35);await cSleep(scene3d?500:fast?230:420);}};
+      await cSleep(wind-lead);if(scene3d&&sw)Match3D.swing((lead+travel)/cSpd());if(lead)await cSleep(lead);CT.pitch=q;if(scene3d){const catcher=c3DFielder(g,k,'C');if(catcher)Match3D.receive('d'+catcher.id,'pitch',travel/cSpd(),CFP.P);}await cBall(CFP.P,[50+(q.x-.5)*4,88+(q.y-.5)*2],travel,false);cBallHide();if(scene3d&&!/타격|파울|번트/.test(q.res)){const catcher=c3DFielder(g,k,'C');if(catcher)Match3D.caught('d'+catcher.id,'투구 포구');}
+      if(bat&&sw){bat.classList.remove('sw');void bat.offsetWidth;bat.classList.add('sw');}cShowPitch(g,k,seq,i);if(!last){if(q.res==='파울')sfx('crack',.25,1.3);else sfx('mitt',.35);await cSleep(scene3d?700:fast?230:420);}};
     for(let i=0;i<seq.length;i++){ const last=i===seq.length-1; if(i<seq.length-show||c.pitch?.k===k&&i<c.pitch.shown){continue;} await throwOne(seq[i],i,last); }
     if(!seq.length){ await cSleep(220); await cBall(CFP.P,[50,88],300,false); cBallHide(); } }
   cCap('');
@@ -189,7 +190,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   let cap='', cls='';
   const oc=cTeamCol(x[0]%2?g.home:g.away);
   cAbRes((PAK[o]||['',''])[0],(PAK[o]||['',''])[1]);
-  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
+  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
   else if(o==='BB'){ if(!cam)cFx('볼넷','bb'); const pr=[]; if(bat){ cPlace(bat,CBS[0],700); pr.push(cSleep(700)); } pr.push(runAll2(600)); await Promise.all(pr); }
   else if(scene3d){await c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo});}
   else {

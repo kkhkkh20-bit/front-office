@@ -1,6 +1,6 @@
 import {LoopOnce,LoopRepeat,AnimationClip} from 'three';
 export function idleClip(a){return a.role==='batter'?'batting_stance':a.role==='catcher'?'catcher_crouch':a.role==='runner'?'idle':a.pitcher?'pitcher_set':'field_ready';}
-export function advanceActor(a,now){const dt=Math.max(0,(now-(a.updatedAt??now))/1000);a.updatedAt=now;a.mixer.update(dt);if(a.returnAt&&now>=a.returnAt){a.returnAt=0;playPose(a,idleClip(a),{freeze:true,fade:.16});}}
+export function advanceActor(a,now){const dt=Math.max(0,(now-(a.updatedAt??now))/1000);a.updatedAt=now;if(a.action&&(!a.action.paused||a.blendUntil))a.mixer.update(dt);if(a.blendUntil&&now>=a.blendUntil)a.blendUntil=0;if(a.returnAt&&now>=a.returnAt){a.returnAt=0;playPose(a,idleClip(a),{freeze:true,fade:.16});}}
 export function playPose(a,name,{freeze=false,loop=false,rate=1,fade=.12,returnIdle=false}={}){
  const clip=AnimationClip.findByName(a.clips,name)||AnimationClip.findByName(a.clips,'idle');if(!clip)return null;
  const now=performance.now();advanceActor(a,now);const previous=a.action,action=a.mixer.clipAction(clip);

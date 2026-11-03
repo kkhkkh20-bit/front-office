@@ -256,7 +256,8 @@
       "src/scene3d/scene.mjs",
       "src/scene3d/motion.mjs",
       "src/scene3d/scoreboard.mjs",
-      "src/scene3d/labels.mjs"
+      "src/scene3d/labels.mjs",
+      "src/scene3d/visibility.mjs"
     ]
   },
   "html": {
