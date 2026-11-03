@@ -8,7 +8,7 @@ const ICO2={dumbbell:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><p
 const NAV=[['inbox','소식함','mail'],['home','홈','home'],['roster','선수단','users'],['trade','트레이드','swap'],['transfer','영입·계약','brief'],['staff','스태프·육성','clip'],['league','리그','trophy'],['club','구단·재정','club']];
 const BNAV=['inbox','home','roster','trade','transfer','league']; /* 하단 탭에 리그(순위·기록·통계) 추가(사용자 2026-11-01 20:48) */
 const SUBS={
-  trade:[['block','트레이드 매물'],['table','트레이드 협상'],['market','추천·선수 찾기'],['gms','단장']],
+  trade:[['market','선수 찾기'],['table','협상하기'],['block','제안·매물']],
   transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약'],['moves','이적 현황']],
   train:[['camp','훈련장'],['dev','육성'],['lead','리더십']],
   staff:[['mgr','감독'],['coach','코치진'],['train','훈련·육성'],['scouts','스카우트'],['data','전력분석'],['smkt','스태프 시장'],['med','부상 관리']],
@@ -16,7 +16,7 @@ const SUBS={
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['stat','통계'],['wire','리그 소식'],['assoc','협회'],['nt','국가대표'],['hist','역사']],
   club:[['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
-const MERGE={trade:{block:['block'],gms:['gms','report']},staff:{train:['camp','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
+const MERGE={trade:{block:['block']},staff:{train:['camp','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
   league:{rec:['rec','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','news','media'],chron:['build','chron','result','ob','log']}};
 const ALIAS={}; for(const t in MERGE){ ALIAS[t]={}; for(const v in MERGE[t])for(const k of MERGE[t][v])ALIAS[t][k]=v; } ALIAS.trade.offers='block';
 /* 합친 탭에서 부가 화면은 접어 둔다(제목만 보이고 누르면 펼침) */
@@ -52,12 +52,12 @@ function subAlert(tab,k){
 function tabAlert(tab){ return (SUBS[tab]||[]).some(([k])=>((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))); }
 function subTabs(tab){ return fmOn()?'':subTabsRaw(tab); } /* PC(FM식)에서는 위 두 번째 줄이 하위 탭이다 */
 function subTabsRaw(tab){
-  const cur=curSub(tab);
+  const s=curSub(tab),cur=tab==='trade'?(s==='gms'?'table':s==='report'?'block':s):s;
   return `<nav class="subtabs" aria-label="${TITLE[tab]} 하위 메뉴">${SUBS[tab].map(([k,l])=>`<button data-a="${tab==='league'?'lseg':'sub'}" data-v="${tab==='league'?k:tab+':'+k}" class="${cur===k?'on':''}">${l}${((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))?'<i class="sdot"></i>':''}</button>`).join('')}</nav>`;
 }
 const csec=(title,body,extra)=>`<section class="card"><div class="row between"><h2 class="sec">${title}</h2>${extra||''}</div>${body}</section>`;
 function menuSheet(){
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="전체 메뉴"><div class="sheet-head"><h2 class="sec">전체 메뉴</h2><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
-  <div class="menu-grid">${NAV.map(([k,l,i])=>`<div class="menu-sec"><button class="menu-h ${UI.tab===k?'on':''}" data-a="tab" data-v="${k}">${ICO[i]||ICO2[i]}<b>${l}</b>${tabAlert(k)?'<i class="sdot"></i>':''}</button>${SUBS[k]?`<div class="menu-subs">${SUBS[k].map(([s,sl])=>`<button data-a="go" data-v="${k}:${s}">${sl}${subAlert(k,s)?'<i class="sdot"></i>':''}</button>`).join('')}</div>`:''}</div>`).join('')}</div><button class="btn block" data-a="tab" data-v="me" style="margin-top:8px">${avImg(meAv())} 단장 프로필 · 경력 · 사임</button><button class="btn block" data-a="go" data-v="cfg:set" style="margin-top:8px">${ICO2.cog} 설정 · 권한 (새 게임·저장·업무 맡기기)</button></div></div>`;
+  <div class="menu-grid">${NAV.map(([k,l,i])=>`<div class="menu-sec"><button class="menu-h ${UI.tab===k?'on':''}" data-a="tab" data-v="${k}">${ICO[i]||ICO2[i]}<b>${l}</b>${tabAlert(k)?'<i class="sdot"></i>':''}</button>${SUBS[k]?`<div class="menu-subs">${SUBS[k].map(([s,sl])=>`<button data-a="go" data-v="${k}:${s}">${sl}${subAlert(k,s)?'<i class="sdot"></i>':''}</button>`).join('')}</div>`:''}</div>`).join('')}</div><button class="btn block" data-a="tab" data-v="me" style="margin-top:8px">${avImg(meAv())} 내 프로필 · 경력</button><button class="btn block" data-a="go" data-v="cfg:set" style="margin-top:8px">${ICO2.cog} 설정 · 권한 (새 게임·저장·업무 맡기기)</button></div></div>`;
 }
 

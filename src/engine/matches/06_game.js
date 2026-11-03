@@ -1,7 +1,7 @@
 /* ===== 경기: 타석·주자·투수 교체 ===== */
 const LGP={bb:.083,k:.198,hr:.024,babip:.312};
 const comb=(pb,pp,pl)=>{ const x=pb*pp/pl, y=(1-pb)*(1-pp)/(1-pl); return x/(x+y); };
-const bz=()=>({pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0,e:0});
+const bz=()=>({pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0,e:0});
 /* 실책을 범한 야수: 타구가 많이 가는 자리(유격수·3루·2루)일수록, 그 자리 수비력이 낮을수록 잦다 */
 const ERRW={SS:1.5,'3B':1.2,'2B':1,'1B':.5,C:.5,LF:.35,CF:.35,RF:.35}, ERRN={SS:60,'2B':60,CF:63,C:56,'3B':52,'1B':49,LF:47,RF:46}; /* 실제 KBO 자리별 실책 비율에 맞춘 무게, 자리별 보통 수비력 */
 /* 실책: 먼저 공이 어느 자리로 갔는지(자리별 실책 비율 무게) 고르고, 그 자리 수비수의 실력으로 실책 확률을 정한다. 수비가 약한 유격수는 실책이 크게 는다 */
@@ -9,7 +9,7 @@ function errLoc(fs){ const L=[]; let t=0; for(const p of fs.order){ const k=fs.p
 const errChance=e=>.022*(e?clamp(1+(ERRN[e[1]]-fieldV(e[0],e[1]))/20,.4,2.2):1); /* 그 자리 보통 수비력(ERRN)보다 20 낮으면 실책 2배 */
 function errFielder(fs){ const L=[]; let t=0; for(const p of fs.order){ const k=fs.posOf[p.id]; if(!k||!ERRW[k])continue; const w=ERRW[k]*clamp(1+(ERRN[k]-fieldV(p,k))/12,.35,3); L.push([p,k,w]); t+=w; }
   let x=R()*t; for(const e of L){ x-=e[2]; if(x<=0)return e; } return L[L.length-1]||null; }
-const pz=()=>({outs:0,h:0,hr:0,bb:0,so:0,er:0,pc:0,bf:0});
+const pz=()=>({outs:0,h:0,hr:0,bb:0,hbp:0,so:0,er:0,pc:0,bf:0});
 /* 체력 배수: 체력 45를 1로, 높을수록 피로가 덜 쌓이고 부상 위험이 낮다(0.8~1.2) */
 const staF=p=>clamp(1+(45-(p.r.sta||45))*.006,.8,1.2);
 const staI=p=>clamp(1+(40-(p.r.sta||40))*.006,.8,1.2); /* 부상 배수: 리그 투수 평균 체력(약 40)을 1로 둬 전체 부상 빈도는 그대로 */
@@ -77,17 +77,20 @@ function outcome(b,p,dv,fp,fs){ /* fp: 경기 중 피로(투구 수와 체력, �
   const qb=shrinkQ(batProbs(b,boostOf(b)+platB(b,p)*.5+cb),TWB,QCB,QOF), qp=shrinkQ(pitProbs(p,boostOf(p)+platP(p,b)*.5-(fp||0)+lead+cp),TWP,QCP,QOF);
   const bb=comb(qb.bb,qp.bb,LGP.bb), k=comb(qb.k,qp.k,LGP.k), hr=comb(qb.hr,qp.hr,LGP.hr), babip=comb(qb.babip,qp.babip,LGP.babip)-(G.coach&&p.team!=null?(effC(coachesOf(p.team).dc,p.team)-55)*.0006:0)-(p.team!=null?anaEff(p.team).bab-.0016:0)+(b.team!=null?anaEff(b.team).bat-.0012:0); /* 전력분석: 수비 위치·투구 계획. 야수 수비력이 인플레이 타구 안타 확률을 바꾼다 */
   LBIP=null; const pm=parkHRM(PARK,bipSide(b,p)), hrA=hr*pm; /* 구장: 담장 거리·높이에 따른 홈런 지수 */ const x=R(); if(x<bb)return 'BB'; if(x<bb+k)return 'K'; if(x<bb+k+hrA){ LBIP=bipHR(b,p); return 'HR'; }
+  const hbp=clamp(.0085+(50-(p.r.ctl||50))*.00010+(fp||0)*.00008,.004,.014);
+  if(x>=bb+k+Math.max(hr,hrA)&&x<bb+k+Math.max(hr,hrA)+hbp)return 'HBP'; /* 제구·피로에 따른 사구. 볼넷/삼진/홈런 구간과 분리 */
   if(pm<1&&x<bb+k+hr){ const side=bipSide(b,p); LBIP={t:'FB',pos:bipPos('FB',parkHRDir(PARK,side),side),side,wall:true}; return '2B'; } /* 담장에 막힌 타구는 2루타 */
   return bipResolve(b,p,babip,qb,qp,fs); /* 인플레이: 타구 유형·방향 → 그 자리 야수 수비(46b_bip) */
 }
 let PARK=null; /* 지금 경기 구장(홈 팀) */
 function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of [hid,aid])for(const q of playersOf(tid)){ q.gc=N(0,.55*volF(q)); q.gcD=day; } /* 그날 컨디션: 기복이 큰 선수일수록 흔들림이 크다 */
   const S={h:gameSide(hid,day,ps),a:gameSide(aid,day,ps)};
+  const broadcast=options?.pitchRecords===false?null:gameBroadcastContext(day,S,!ps);
   const psx=ps&&typeof ps==='object'?ps:null;
   const score={h:0,a:0}, line={h:[],a:[]}, hits={h:[],a:[]}, ev=[], pbp=[];
   for(const k of ['a','h']){ const s0=S[k]; if(s0.short&&s0.sp)ev.push({h:0,t:`${s0.sp.name}, ${day-s0.sp.lastStart}일 휴식 후 선발 등판(총력전)`}); }
   const wc={}, lc={},pitchProfiles=new Map(); let walk=false;
-  const trace=(half,b,p,o,n)=>{if(options?.pitchRecords===false)return null;if(!pitchProfiles.has(p.id))pitchProfiles.set(p.id,pitchProfile(p));return gamePitchRecord(day,hid,aid,half,pbp.length,b.id,p.id,o,n,pitchProfiles.get(p.id));};
+  const trace=(half,b,p,o,n)=>{if(options?.pitchRecords===false)return null;if(!pitchProfiles.has(p.id))pitchProfiles.set(p.id,pitchProfile(p));return gamePitchRecord(day,hid,aid,half,pbp.length,b.id,p.id,o,n,{...pitchProfiles.get(p.id),batterHand:b.bt==='양'?(p.th==='좌'?'우':'좌'):b.bt});};
   const opp=k=>k==='h'?'a':'h';
   /* 선발 한계 투구 수: KBO 2024 선발 평균 90구 안팎(90구를 넘는 구단은 롯데 91.2구 하나). 단장이 '투수 혹사 금지'를 지시했으면 감독 성향과 상관없이 95구에서 끊는다 */
   const lim=(fs)=>{ const mm=mgrOf(fs.tid); const ae=mgrPush(fs.tid); if(fs.curIsSP){ const v=PW.l0+fs.cur.r.sta*PW.ls+(50-mm.pen)/6+(ae-50)/5-(fs.short?15:0); /* 감독 성향 폭: KBO 구단별 선발 평균 80~91구 수준 */ return armDirOn(fs.tid)?Math.min(v,95):v; } return 18+fs.cur.r.sta*.3+(ae-50)/8+(fs.multi&&fs.multi[fs.cur.id]?12:0); };
@@ -136,7 +139,7 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
       const rec=trace(half,b,p,o,xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;
       let chg=null, chgE=null, rbiN=0, sfN=0;const moves=[]; const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); if(moves.length)r[14]=moves;if(rec)r[15]=rec;pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
       const advanceRunner=(r,from,to,chance,spd)=>{const z=runAdvance(r,fs,{base:chance,from,to,spd,outs});if(!z.send)return 'hold';const result=z.safe?'safe':'out';moves.push({id:r.id,from,to,result});if(!z.safe){outs++;xp.outs++;}if(ev.length<400)ev.push({h:half,t:`주루 판단: ${r.name} ${from}루 → ${to===4?'홈':to+'루'} ${z.safe?'진루':'아웃'}`});return result;};
-      if(o==='BB'){ xb.bb++; xp.bb++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
+      if(o==='BB'||o==='HBP'){ const key=o==='HBP'?'hbp':'bb';xb[key]++; xp[key]++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;
         if(o==='K'){ xb.so++; xp.so++; outs++; xp.outs++; }
         else if(o==='OUT'){
@@ -158,7 +161,7 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
       if(sc.length){
         const n=sc.length; sc.forEach(r=>bs.box.get(r.id).r++); chg=sc.map(r=>resp.get(r.id)??p.id); const earned=r=>!(eRun||xo0>=3||ueR.has(r.id)); chgE=sc.filter(earned).map(r=>resp.get(r.id)??p.id); rbiN=!dp&&!eRun?n:0; if(!dp&&!eRun)xb.rbi+=n; /* 실책으로 들어온 득점은 타점이 아니다 */ for(const r of sc){ if(earned(r)){ const pb=fs.box.get(resp.get(r.id)??p.id)||xp; pb.er++; } ueR.delete(r.id); } /* 자책점: 실책으로 나간 주자, 실책 플레이로 들어온 주자, 실책이 없었다면 이미 3아웃이었을 뒤의 득점만 비자책. 득점한 주자를 내보낸 투수의 자책 */ score[bk]+=n; runs+=n; PB();
         const after=lead(); if(before<=0&&after>0){ wc[bk]=bs.cur; const gr=sc[-before]; const lp=gr&&resp.has(gr.id)?G.players[resp.get(gr.id)]:null; lc[opp(bk)]=lp&&fs.pitchers.includes(lp.id)?lp:fs.cur; } /* 패전은 결승 주자를 내보낸 투수 */
-        const kind={HR:n===4?'만루 홈런':`${n}점 홈런`,'3B':'3루타','2B':'2루타','1B':'적시타',BB:'밀어내기 볼넷',OUT:eRun?'상대 실책':'희생플라이',K:''}[o];
+        const kind={HR:n===4?'만루 홈런':`${n}점 홈런`,'3B':'3루타','2B':'2루타','1B':'적시타',BB:'밀어내기 볼넷',HBP:'밀어내기 사구',OUT:eRun?'상대 실책':'희생플라이',K:''}[o];
         if(ev.length<400)ev.push({h:half,t:`${b.name} ${kind}${o!=='HR'?` (${n}점)`:''} · ${score.a}:${score.h}`,run:true});
         if(isBot&&inn>=9&&score.h>score.a){ walk=true; break; }
       } else PB();
@@ -191,17 +194,17 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     /* 홀드: 세이브 상황에 나와 아웃 1개 이상을 잡고 리드를 지킨 채 내려간 중간 투수 */
     dec.hld=[]; for(const k of ['h','a']){ const s=S[k]; s.pitchers.slice(1).forEach(id=>{ if(id===dec.w||id===dec.sv||id===s.pitchers[s.pitchers.length-1])return; const xl=s.exit[id], o=(s.box.get(id)||{}).outs||0; if(svSit(s,id)&&o>=1&&xl!=null&&xl>=1)dec.hld.push(id); }); }
   }
-  CLUTCH=0; return {S,score,line,hits,ev,dec,inn,walk,pbp};
+  CLUTCH=0; return {S,score,line,hits,ev,dec,inn,walk,pbp,broadcast};
 }
 function applyGame(day,hid,aid,g,ps){
   let turfM=1; try{ turfM=stadTurfM(hid); }catch(e){}
   const y=G.year;
   for(const k of ['h','a']){ const s=g.S[k]; const bm=k==='a'?1+BUS[busLv(s.tid)].f:1; /* 원정 이동 피로 */
     for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue;
-      if(!ps)storyGame(p,x,day,g.S[k==='h'?'a':'h'].tid,g.dec);
+      if(!ps){if(!p.isP)broadcastFormUpdate(p,x);storyGame(p,x,day,g.S[k==='h'?'a':'h'].tid,g.dec,{runsAllowed:g.score[k==='h'?'a':'h'],solo:s.pitchers.length===1});}
       if(p.isP){ const cid=s.cId; if(cid!=null&&cid!==p.id){ const C=p.chem=p.chem||{}; C[cid]=(C[cid]||0)+1; const ks=Object.keys(C); if(ks.length>6){ ks.sort((a,b2)=>C[a]-C[b2]); delete C[ks[0]]; } } /* 배터리 호흡 기록 */ const cd=pitchApp(p,day,x.pc,id===s.sp?.id); const lm=loadMult(p,cd,day);
         p.fat=clamp((p.fat||0)+pitFatGain(p,x.pc,id===s.sp?.id)*bm,0,100); /* 체력이 좋으면 같은 투구 수에도 덜 지친다 */ if(!ps)p.wear=(p.wear||0)+x.pc/15; if(!ps){ (p.l10=p.l10||[]).push([x.outs,x.er,x.h,x.bb,x.so]); if(p.l10.length>10)p.l10.shift(); }
-        if(!ps){ const h=lineFor(p,y,s.tid,'1군'); const o={g:1,gs:id===s.sp?.id?1:0,outs:x.outs,h:x.h,hr:x.hr,bb:x.bb,so:x.so,er:x.er,w:g.dec.w===id?1:0,l:g.dec.l===id?1:0,sv:g.dec.sv===id?1:0,hld:(g.dec.hld||[]).includes(id)?1:0,bf:x.bf||0}; addTo(h,o); if(s.tid===G.user)glAdd(p,day,x); }
+        if(!ps){ const h=lineFor(p,y,s.tid,'1군'); const o={g:1,gs:id===s.sp?.id?1:0,outs:x.outs,h:x.h,hr:x.hr,bb:x.bb,hbp:x.hbp||0,so:x.so,er:x.er,w:g.dec.w===id?1:0,l:g.dec.l===id?1:0,sv:g.dec.sv===id?1:0,hld:(g.dec.hld||[]).includes(id)?1:0,bf:x.bf||0}; addTo(h,o); if(s.tid===G.user)glAdd(p,day,x); }
         /* 부상 빈도: KBO 구단당 시즌 부상 이탈 7~10건 수준. 부상 병동(체질 .3 이상)은 해마다 한두 번 빠진다 */ const risk=p.inj*(id===s.sp?.id?.075*(x.pc||0)/95:.026*(x.pc||0)/17)*injMult(p)*staI(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/50)*(id===s.sp?.id?1+Math.max(0,(x.pc||0)-100)/60:1)*lm/LOAD_NORM; if(R()<risk)injure(p,day,{sp:id===s.sp?.id,pc:x.pc||0,load:lm}); if(p.injFx&&!(p.injOut>0)){ p.injPlay=day; injRecover(p,x.outs||0); } /* 포스트시즌도 실전량이다 */
       } else {
         if(!ps){ const h=lineFor(p,y,s.tid,'1군'); addTo(h,Object.assign({g:1},x)); { const ps0=s.posOf[id]||p.pos; h.pp=h.pp||{}; h.pp[ps0]=(h.pp[ps0]||0)+(x.pa||0); h.pos=ppTop(h.pp)||ps0; } /* 포지션별 타석을 쌓고 대표 포지션은 가장 많이 뛴 자리 */ if(s.tid===G.user)glAdd(p,day,x); }
@@ -236,10 +239,10 @@ function injure(p,day,ctx){ ctx=ctx||{};
   if(p.team===G.user&&days>=30&&!ctx.farm&&ovr(p)>=58)try{ ivRequest('injury',{pid:p.id,days}); }catch(e){}
 }
 function gameRecord(day,hid,aid,g,kind){
-  const side=k=>{ const s=g.S[k]; return {tid:s.tid,lineup:s.start,changes:s.changes||[],bat:[...s.order,...(s.out||[])].map((p,i)=>{const x=s.box.get(p.id);return {id:p.id,n:p.name,o:s.outI&&s.outI[p.id]!=null?s.outI[p.id]:i,pos:(s.out||[]).includes(p)?null:s.posOf[p.id],ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,rbi:x.rbi,bb:x.bb,so:x.so,r:x.r,sb:x.sb,sf:x.sf||0,e:x.e||0}}),
-    pit:s.pitchers.map(id=>{const x=s.box.get(id);const p=G.players[id];return {id,n:p?p.name:'',outs:x.outs,h:x.h,hr:x.hr,er:x.er,bb:x.bb,so:x.so,pc:x.pc,d:g.dec.w===id?'승':g.dec.l===id?'패':g.dec.sv===id?'세':(g.dec.hld||[]).includes(id)?'홀':''}})}; };
+  const side=k=>{ const s=g.S[k]; return {tid:s.tid,lineup:s.start,changes:s.changes||[],bat:[...s.order,...(s.out||[])].map((p,i)=>{const x=s.box.get(p.id);return {id:p.id,n:p.name,o:s.outI&&s.outI[p.id]!=null?s.outI[p.id]:i,pos:(s.out||[]).includes(p)?null:s.posOf[p.id],pa:x.pa,ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,rbi:x.rbi,bb:x.bb,hbp:x.hbp||0,so:x.so,r:x.r,sb:x.sb,sf:x.sf||0,e:x.e||0}}),
+    pit:s.pitchers.map(id=>{const x=s.box.get(id);const p=G.players[id];return {id,n:p?p.name:'',outs:x.outs,h:x.h,hr:x.hr,er:x.er,bb:x.bb,hbp:x.hbp||0,so:x.so,pc:x.pc,d:g.dec.w===id?'승':g.dec.l===id?'패':g.dec.sv===id?'세':(g.dec.hld||[]).includes(id)?'홀':''}})}; };
   const me=hid===G.user?'h':'a'; const ms=g.score[me], os=g.score[me==='h'?'a':'h'];
-  return {day,kind,home:hid,away:aid,hs:g.score.h,as:g.score.a,line:g.line,hits:g.hits,ev:g.ev,pbp:g.pbp,incidents:gameIncidents(day,hid,aid,g),box:{h:side('h'),a:side('a')},res:ms>os?'승':ms<os?'패':'무',inn:g.inn};
+  return {day,kind,home:hid,away:aid,hs:g.score.h,as:g.score.a,line:g.line,hits:g.hits,ev:g.ev,pbp:g.pbp,broadcast:g.broadcast,incidents:gameIncidents(day,hid,aid,g),box:{h:side('h'),a:side('a')},res:ms>os?'승':ms<os?'패':'무',inn:g.inn};
 }
 function keepGame(rec){ G.games.unshift(rec); G.games=G.games.slice(0,25); G.games.forEach((g,i)=>{ if(i>=8&&g.pbp)delete g.pbp; }); }
 function ulog(r){ (G.sea.ulog=G.sea.ulog||[]).push({d:r.day,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||''}); }

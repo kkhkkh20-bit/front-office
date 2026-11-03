@@ -13,6 +13,7 @@
       "src/engine/matches/06_game.js",
       "src/engine/matches/07_pitch_records.js",
       "src/engine/matches/08_atmosphere.js",
+      "src/engine/matches/09_broadcast_context.js",
       "src/engine/progression/07_daily.js",
       "src/engine/league/08_season_events.js",
       "src/engine/contracts/09_stoveleague.js",
@@ -249,6 +250,7 @@
       "src/css/career/28_meeting_page.css",
       "src/css/shell/29_desktop_viewport.css",
       "src/css/foundation/30_design_system.css",
+      "src/css/shell/30_mobile_workspace.css",
       "src/css/players/31_collectible_player.css"
     ],
     "graphics": [
@@ -268,6 +270,7 @@
     "scene3d": [
       "src/scene3d/scene.mjs",
       "src/scene3d/motion.mjs",
+      "src/scene3d/athletic-motion.mjs",
       "src/scene3d/scoreboard.mjs",
       "src/scene3d/labels.mjs",
       "src/scene3d/visibility.mjs"

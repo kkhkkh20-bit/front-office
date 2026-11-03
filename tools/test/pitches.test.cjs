@@ -1,6 +1,13 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const core=import('../../src/core/index.mjs');
 const profile={velo:148,max:154,pitches:[{name:'직구',value:60,active:true},{name:'슬라이더',value:66,active:true},{name:'커브',value:58,active:false}]};
+test('사구는 좌우 타자의 몸쪽에서 타석을 끝내며 볼·스트라이크를 더하지 않는다',async()=>{
+ const {buildPitchSequence,createSeededRandom,pitchCountAfter}=await core;
+ for(const hand of ['좌','우'])for(let seed=0;seed<100;seed++){
+  const seq=buildPitchSequence({outcome:'HBP',target:5,profile:{...profile,batterHand:hand}},createSeededRandom(seed)),q=seq.at(-1);
+  assert.equal(q.res,'몸에 맞는 공');assert.ok(hand==='좌'?q.x>1:q.x<0);assert.ok(Math.abs(Math.abs((.5-q.x)*.432)-.95)<.002,'저장된 코스가 3D 타자의 몸 위치와 일치');assert.deepEqual(pitchCountAfter(q),{b:q.b,s:q.s});
+ }
+});
 test('공별 기록: 모든 타석 결과에서 합법적인 카운트·최종 공·투구 수를 구성한다',async()=>{
   const {buildPitchSequence,createSeededRandom}=await core;
   for(const outcome of ['BB','K','HR','1B','2B','3B','OUT','DP','SAC'])for(let n=1;n<=15;n++)for(let seed=0;seed<30;seed++){

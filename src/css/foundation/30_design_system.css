@@ -224,7 +224,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-list>.ws-scroll{min-height:64px}
 }
 /* 목록 폭은 화면 전체가 아니라 실제 패널을 기준으로 삼는다. */
-.fl{container-type:inline-size}
+.fl{container-type:inline-size;align-content:start}
 @container(max-width:620px){
  .flr:not(.fur){grid-template-columns:minmax(0,1fr) auto;row-gap:2px;padding-bottom:6px;border-bottom:1px solid var(--line)}
  .flr:not(.fur)>.small{grid-column:1/-1;grid-row:2;padding-left:4px}

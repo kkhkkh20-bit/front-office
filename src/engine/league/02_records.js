@@ -6,7 +6,7 @@ function batProbs(p,b){ const r=p.r; const be=b*.4, bc=b*.3, bh=b*.55; /* 기세
     babip:clamp(.268+cc(r.con,b)*.07+cc(r.spd,b)*.035+seasonLuck(p),.22,.39), d2:clamp(.16+cc(r.pow,b)*.08+trt(p,'gap')*.004,.1,.3), d3:.004+cc(r.spd,b)*.025};
 }
 function simBat(p,pa,b,slot){
-  const q=shrinkQ(batProbs(p,b||0),TWB,QCB); /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0};
+  const q=shrinkQ(batProbs(p,b||0),TWB,QCB); /* 경기를 돌리지 않는 기록(아마추어·2군·해외·외국인 이전 리그·옛 시즌)도 1군 경기와 같은 폭으로 능력이 드러나게 */ const o={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0};
   for(let i=0;i<pa;i++){ o.pa++; const x=R();
     if(x<q.bb){o.bb++;continue} o.ab++;
     if(x<q.bb+q.k){o.so++;continue}
@@ -30,7 +30,7 @@ function pitProbs(p,b){ const r=p.r; const be=b*.4, bk=b*.35;
     x2:clamp(1-(cc(r.stf,b)-.5)*PW.xs-(cc(r.ctl,be)-.5)*PW.xc-gbT(p)*.05,.6,1.4)}; /* 땅볼형: 피홈런·장타가 줄고 땅볼 안타는 조금 는다 */ /* x2: 인플레이 안타 중 2루타·3루타가 되는 비율에 곱한다 */
 }
 function simPit(p,outs,b){
-  const q=shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,so:0,tb:0};
+  const q=shrinkQ(pitProbs(p,b||0),TWP,QCP); /* 1군 경기와 같은 폭 */ const o={outs:0,h:0,hr:0,bb:0,hbp:0,so:0,tb:0};
   let guard=0;
   while(o.outs<outs&&guard++<5000){ const x=R();
     if(x<q.bb){o.bb++;continue}
@@ -43,10 +43,10 @@ function simPit(p,outs,b){
   o.er=Math.max(0,Math.round(runs*.92+N(0,Math.sqrt(runs+.5)*.35)));
   delete o.tb; return o;
 }
-const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0,sf:0};
-const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,so:0,er:0,w:0,l:0,sv:0,hld:0,bf:0};
+const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0,sf:0};
+const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,hbp:0,so:0,er:0,w:0,l:0,sv:0,hld:0,bf:0};
 /* 좌우 상대 기록(정규시즌 1군): 타자는 상대 투수 손, 투수는 상대 타자 쪽(양타는 투수 반대편). [타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런] */
-function splAdd(b,p,o,f){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
+function splAdd(b,p,o,f){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1;if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
   row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side); }
 /* 우리 선수 경기별 기록(이동 구간 추세용, 이번 시즌만): 타자 [날짜, 타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런], 투수 [날짜, 상대 타자, 아웃, 삼진, 볼넷, 피안타, 피홈런, 자책] */
 function glAdd(p,day,x){ const y=G.year; if(!p.gl||p.gl.y!==y)p.gl={y,g:[]}; p.gl.g.push(p.isP?[day,x.bf||0,x.outs||0,x.so||0,x.bb||0,x.h||0,x.hr||0,x.er||0]:[day,x.pa||0,x.ab||0,x.h||0,(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0),x.bb||0,x.so||0,x.hr||0]); }
@@ -55,8 +55,8 @@ function lineFor(p,y,t,lvl){ let h=p.hist.find(x=>x.y===y&&x.t===t&&x.lvl===lvl)
 function salOfY(p,y){ if(!p)return null; const v=p.salYr?p.salYr[y]:null; if(v!=null)return v; const o=Array.isArray(p.salH)?p.salH.find(x=>x.y===y):null; if(o)return o.s; /* 스토브리그 연봉 기록(국내 선수, 4년) */ return y===G.year?(p.sal||0):null; }
 function addTo(h,o){ for(const k in o) if(k!=='y'&&k!=='t'&&typeof o[k]==='number') h[k]=(h[k]||0)+o[k]; }
 // 비율 기록
-/* 출루율 = (안타+볼넷)/(타수+볼넷+희생플라이). 희생번트는 분모에 넣지 않는다 */
-function obpOf(h){ const d=(h.ab||0)+(h.bb||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0))/d:0; }
+/* 출루율 = (안타+볼넷+사구)/(타수+볼넷+사구+희생플라이). 희생번트는 분모에 넣지 않는다 */
+function obpOf(h){ const d=(h.ab||0)+(h.bb||0)+(h.hbp||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0)+(h.hbp||0))/d:0; }
 function bRate(h){ const avg=h.ab?h.h/h.ab:0, obp=obpOf(h), slg=h.ab?(h.h+h.d+2*h.tr+3*h.hr)/h.ab:0; return {avg,obp,slg,ops:obp+slg}; }
 function pRate(h){ const ip=h.outs/3; return {ip,era:h.outs?h.er*27/h.outs:0,whip:h.outs?(h.h+h.bb)*3/h.outs:0,k9:h.outs?h.so*27/h.outs:0,bb9:h.outs?h.bb*27/h.outs:0}; }
 const ipStr=outs=>Math.floor(outs/3)+(outs%3?'.'+outs%3:'');
@@ -85,11 +85,11 @@ function warRaw(h,p){
    wOBA(가중출루율) = (0.69×볼넷 + 0.89×단타 + 1.27×2루타 + 1.62×3루타 + 2.10×홈런) / (타수 + 볼넷 + 희생플라이). 가중치는 FanGraphs 표준 근삿값.
    wRC+ = 100 × ((wOBA - 리그 wOBA) / wOBA 스케일 + 리그 타석당 득점) / 리그 타석당 득점. 스케일 = 리그 wOBA / 리그 출루율.
    구장 보정은 넣지 않았다. 100이 리그 평균, 150이면 평균보다 득점 기여가 50% 많다 */
-function wobaOf(h){ const ab=h.ab||0, bb=h.bb||0, sf=h.sf||0, den=ab+bb+sf; if(!den)return null; const s1=(h.h||0)-(h.d||0)-(h.tr||0)-(h.hr||0); return (.69*bb+.89*s1+1.27*(h.d||0)+1.62*(h.tr||0)+2.10*(h.hr||0))/den; }
+function wobaOf(h){ const ab=h.ab||0, bb=h.bb||0, sf=h.sf||0,hbp=h.hbp||0, den=ab+bb+hbp+sf; if(!den)return null; const s1=(h.h||0)-(h.d||0)-(h.tr||0)-(h.hr||0); return (.69*bb+.72*hbp+.89*s1+1.27*(h.d||0)+1.62*(h.tr||0)+2.10*(h.hr||0))/den; }
 let _lgbC={k:'',m:{}};
 function lgBat(y,lvl){ lvl=lvl||'1군'; const L0=G.lg&&G.lg[y]; if(lvl==='1군'&&L0&&L0.woba&&y<G.year)return L0; const k=G.year+':'+G.day+':'+(G.games?G.games.length:0); if(_lgbC.k!==k)_lgbC={k,m:{}}; const ck=y+':'+lvl; if(_lgbC.m[ck])return _lgbC.m[ck];
-  let ab=0,bb=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; const add=x=>{ ab+=x.ab||0; bb+=x.bb||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; }; if(lvl==='1군'){ for(const z of y1Rows(y))if(!z.isP)add(z.h); } else for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!==lvl||x.y2)continue; add(x); } }
-  const T={ab,bb,sf,h,d,tr,hr}; const pa=ab+bb+sf; const woba=wobaOf(T)||.32, obp=pa?(h+bb)/pa:.33; const o={woba,scale:Math.max(.8,woba/Math.max(.2,obp)),rpa:pa&&r?r/pa:.12}; _lgbC.m[ck]=o; return o; }
+  let ab=0,bb=0,hbp=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; const add=x=>{ ab+=x.ab||0; bb+=x.bb||0;hbp+=x.hbp||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; }; if(lvl==='1군'){ for(const z of y1Rows(y))if(!z.isP)add(z.h); } else for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!==lvl||x.y2)continue; add(x); } }
+  const T={ab,bb,hbp,sf,h,d,tr,hr}; const pa=ab+bb+hbp+sf; const woba=wobaOf(T)||.32, obp=pa?(h+bb+hbp)/pa:.33; const o={woba,scale:Math.max(.8,woba/Math.max(.2,obp)),rpa:pa&&r?r/pa:.12}; _lgbC.m[ck]=o; return o; }
 function wrcPlus(h,y){ if(!h||!h.pa)return null; const yy=y??h.y; if(typeof yy!=='number')return null; const w=wobaOf(h); if(w==null)return null; const L=lgBat(yy,h.lvl==='퓨처스'?'퓨처스':'1군'); return Math.round(100*((w-L.woba)/L.scale+L.rpa)/L.rpa); } /* 퓨처스 기록은 퓨처스 리그 기준 */
 /* 여러 시즌 wRC+: 시즌별 값을 타석으로 가중 평균(통산·최근 3년 합계용) */
 function wrcMulti(L){ let a=0,n=0; for(const h of L){ const w=wrcPlus(h,h.y); if(w==null)continue; a+=w*h.pa; n+=h.pa; } return n?Math.round(a/n):null; }
@@ -99,9 +99,9 @@ function updateLg(y){
   const bl=[],pl=[];
   for(const x of y1Rows(y))(x.isP?pl:bl).push(x.h);
   const s=(a,k)=>sum(a.map(h=>h[k]||0));
-  const ab=s(bl,'ab'),H=s(bl,'h'),bb=s(bl,'bb'),pa=ab+bb+s(bl,'sf'),tb=s(bl,'h')+s(bl,'d')+2*s(bl,'tr')+3*s(bl,'hr');
+  const ab=s(bl,'ab'),H=s(bl,'h'),bb=s(bl,'bb'),hbp=s(bl,'hbp'),pa=ab+bb+hbp+s(bl,'sf'),tb=s(bl,'h')+s(bl,'d')+2*s(bl,'tr')+3*s(bl,'hr');
   const outs=s(pl,'outs'),er=s(pl,'er');
   if(!G.lg)G.lg={};
-  G.lg[y]={ops:pa&&ab?(H+bb)/pa+tb/ab:.72, era:outs?er*27/outs:4.5}; try{ _lgbC={k:'',m:{}}; const W=lgBat(y); Object.assign(G.lg[y],{woba:W.woba,scale:W.scale,rpa:W.rpa}); }catch(e){} /* wRC+ 기준(시즌이 끝나면 고정) */
+  G.lg[y]={ops:pa&&ab?(H+bb+hbp)/pa+tb/ab:.72, era:outs?er*27/outs:4.5}; try{ _lgbC={k:'',m:{}}; const W=lgBat(y); Object.assign(G.lg[y],{woba:W.woba,scale:W.scale,rpa:W.rpa}); }catch(e){} /* wRC+ 기준(시즌이 끝나면 고정) */
 }
 

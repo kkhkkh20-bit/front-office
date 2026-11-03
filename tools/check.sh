@@ -39,6 +39,7 @@ step "계약 금액 직접 입력"; node tools/check-contract-input.cjs || fail=
 step "3D 상태·공 연결·메모리"; node tools/check-match3d-state.cjs || fail=1
 step "3D 플레이 리뷰·시선·릴리스"; node tools/check-match3d-review.cjs || fail=1
 step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1
+step "모바일 메뉴·트레이드·코치 보직 버튼"; node tools/check-mobile-workspace.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
 step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || fail=1
 step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1

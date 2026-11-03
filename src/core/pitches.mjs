@@ -17,12 +17,14 @@ export function buildPitchSequence({outcome,target=4,profile},random){
   for(let i=pre.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[pre[i],pre[j]]=[pre[j],pre[i]];}
   const calls=pre.map(t=>t==='스트라이크'&&random()<.45?'헛스윙':t);
   calls.push(...Array(choice.fouls).fill('파울'));
-  calls.push(outcome==='BB'?'볼넷':outcome==='K'?(random()<.28?'루킹 삼진':'헛스윙 삼진'):outcome==='SAC'?'번트':'타격');
+  calls.push(outcome==='BB'?'볼넷':outcome==='K'?(random()<.28?'루킹 삼진':'헛스윙 삼진'):outcome==='HBP'?'몸에 맞는 공':outcome==='SAC'?'번트':'타격');
   let b=0,s=0;
   return calls.map((res,i)=>{
     const pitch=i===calls.length-1&&outcome==='K'&&random()<.6?best:pitches[Math.floor(random()*pitches.length)];
     const t=pitch.name,v=Math.min(profile.max,Math.round(profile.velo+(off[t]??-10)+(random()-.5)*4));
-    const q={t,v,...pitchLocation(res,random),res,b,s};
+    const location=pitchLocation(res,random);
+    if(res==='몸에 맞는 공'){location.x=profile.batterHand==='좌'?2.699:-1.699;location.y=.268;}
+    const q={t,v,...location,res,b,s};
     const after=pitchCountAfter(q);b=after.b;s=after.s;return q;
   });
 }

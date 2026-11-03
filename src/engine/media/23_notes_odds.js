@@ -117,13 +117,13 @@ function story(p,t,k){ if(!p)return; (p.story=p.story||[]).push({y:G.year,d:G.da
 const MILE={hr:[100,200,300,400,500],h:[1000,1500,2000,2500],w:[100,150,200],sv:[100,200,300,400],so:[1000,1500,2000]};
 const MILEK={hr:'홈런',h:'안타',w:'승',sv:'세이브',so:'탈삼진'};
 function cumInit(p){ if(p.cum)return; const one=p.hist.filter(h=>h.lvl==='1군'); const c={h:0,hr:0,w:0,sv:0,so:0}; for(const h of one){ if(p.isP){ c.w+=h.w||0; c.sv+=h.sv||0; c.so+=h.so||0; } else { c.h+=h.h||0; c.hr+=h.hr||0; } } p.cum=c; p.fl=p.fl||{}; if(one.length)p.fl.deb=1; if(c.hr)p.fl.hr1=1; if(c.w)p.fl.w1=1; if(c.sv)p.fl.sv1=1; }
-function storyGame(p,x,day,opp,dec){ // 1군 경기 하나가 끝난 뒤
+function storyGame(p,x,day,opp,dec,game){ // 1군 경기 하나가 끝난 뒤
   cumInit(p); const f=p.fl, c=p.cum; const vs=`${dmd(day)} vs ${tshort(opp)}`;
   if(!f.deb){ f.deb=1; story(p,`1군 데뷔 · ${vs}`,'debut'); }
   const add=(k,v)=>{ if(!v)return; const b=c[k]; c[k]+=v; for(const m of MILE[k]) if(b<m&&c[k]>=m){ story(p,`통산 ${m}${MILEK[k]} 달성 · ${vs}`,'mile'); try{ featAdd('mile',p,`통산 ${m}${MILEK[k]}`,{vs,maj:m>=({hr:400,h:2000,w:150,sv:300,so:2000})[k]}); }catch(e){} } };
   if(p.isP){ if(dec.w===p.id&&!f.w1){ f.w1=1; story(p,`1군 첫 승 · ${vs}`,'first'); } if(dec.sv===p.id&&!f.sv1){ f.sv1=1; story(p,`1군 첫 세이브 · ${vs}`,'first'); }
     add('w',dec.w===p.id?1:0); add('sv',dec.sv===p.id?1:0); add('so',x.so||0);
-    if(x.outs>=27&&x.h===0)story(p,`노히트노런 · ${vs}`,'mile'); }
+    if(x.outs>=27&&x.h===0&&game?.runsAllowed===0&&game.solo)story(p,`노히트노런 · ${vs}`,'mile'); }
   else { if(x.hr&&!f.hr1){ f.hr1=1; story(p,`1군 첫 홈런 · ${vs}`,'first'); } if(x.hr>=3)story(p,`한 경기 ${x.hr}홈런 · ${vs}`,'mile'); if(x.h>=5&&(!f.h5||x.h>=6)){ f.h5=1; story(p,`한 경기 ${x.h}안타 · ${vs}`,'mile'); } add('h',x.h||0); add('hr',x.hr||0); try{ featBat(p,x,vs); }catch(e){} }
 }
 function storySeason(y){ // 시즌이 끝나면: 커리어 하이와 규정 이상 시즌

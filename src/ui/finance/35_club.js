@@ -75,9 +75,9 @@ function tmini(p,side){ const rp=scoutReport(p);
 function tradeView(){
   const tr=UI.trade;
   if(!tradeOpen())return `<section class="card"><h2 class="sec">트레이드 기간이 아닙니다</h2><p class="small muted">7월 31일 트레이드 마감 이후에는 포스트시즌이 끝날 때까지 트레이드할 수 없습니다.</p></section>`;
-  const strip=`<div class="tstrip">${G.teams.filter(t=>t.id!==G.user).map(t=>`<button data-a="tpartner" data-v="${t.id}" class="${tr.tid===t.id?'on':''}">${gmAv(t.id)}<span><b>${badge(t.id,14)} ${esc(t.city+' '+t.nick)}</b><i>${esc(gmOf(t.id).name)} · ${GMT[gmOf(t.id).trait].l} · 친분 ${t.rel}</i><em class="${negInfo(t.id).free?'free':negInfo(t.id).left?'':'out'}">${negInfo(t.id).free?'맞대결 · 제한 없음':`이번 달 ${negInfo(t.id).left}/${negInfo(t.id).cap}`}</em></span></button>`).join('')}</div>`;
+  const strip=`<div class="trade-partner"><label>상대 구단<select data-a="tpartner" aria-label="협상 상대 구단"><option value="" disabled ${tr.tid==null?'selected':''}>구단을 선택하세요</option>${G.teams.filter(t=>t.id!==G.user).map(t=>`<option value="${t.id}" ${tr.tid===t.id?'selected':''}>${esc(tname(t.id))}</option>`).join('')}</select></label><button class="btn small" data-a="tradeGm">상대 단장</button></div>`;
   if(tr.tid==null){ const gv0=tr.give.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
-    return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${strip.replace('class="tstrip"','class="tstrip grid"')}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 관계 숫자가 높을수록 상대 단장의 반응을 정확히 읽을 수 있습니다.</p></section>`; }
+    return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${strip}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 관계 숫자가 높을수록 상대 단장의 반응을 정확히 읽을 수 있습니다.</p></section>`; }
   const t=team(tr.tid);
   const ok=p=>p&&!p.foreign&&!(p.joinY>G.year);
   tr.give=tr.give.filter(id=>ok(G.players[id])&&G.players[id].team===G.user);
@@ -99,7 +99,7 @@ function tradeView(){
     ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><p class="small" style="margin:2px 0">${mood.s}</p><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${t.rel} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p></div>`:''}
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
     ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>`<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}</span><button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button></div>`).join('')}</div>`:''}
-    ${tradeInsight(tr.tid,tr.give,tr.get)}
+    <details class="trade-analysis"><summary>선수 비교·메디컬·검토 의견</summary>${tradeInsight(tr.tid,tr.give,tr.get)}</details>
     ${gt.length?`<div class="tcash"><span class="small">현금 얹기</span><div class="chips">${[0,100,300,500,1000,2000,3000].map(v=>`<button data-a="tcash" data-v="${v}" class="${(tr.cash||0)===v?'on':''}">${v?money(v):'없음'}</button>`).join('')}</div><span class="small muted">실제 한국 프로야구도 선수와 현금을 섞은 트레이드가 있습니다. 돈을 중시하는 구단(독립구단·수익형 구단주·샐러리캡 초과·리빌딩)일수록 현금을 높게 칩니다. 예산 여유에서 빠집니다.</span></div>`:''}
     ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0); const isC=nt.ctr&&nt.ctr[sg]===G.day; const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}${(()=>{ const cd=tradeCool(tr.tid,tr.get); if(cd)return `<p class="small" style="color:#ffb547">${cd.cap?`${esc(tshort(tr.tid))}와(과)는 올해 이미 ${cd.n}번 거래했습니다(같은 구단과는 한 시즌 ${cd.max}번까지, 맞대결 기간에는 한 번 더). 급매 매물은 이 제한 없이 데려올 수 있습니다.`:`${esc(tshort(tr.tid))}와(과)는 ${dsh(cd.d)}에 거래했습니다. ${dsh(cd.until)}부터 다시 거래할 수 있습니다. 맞대결 기간이나 급매 매물은 바로 됩니다.`}</p>`; const oc=(gv.length||gt.length)?tradeOwnerCheck(tr.give,tr.get,tr.cash||0):null; return oc?`<p class="small" style="color:${oc.ok?'#ffb547':'#ff6b6b'}">연봉 ${money(oc.dSal)} 증가 · 예산 초과 ${money(oc.over)} (구단주 허용 ${money(oc.lim)}) — ${oc.ok?'성사되면 구단주가 승인하지만 신뢰 -2':'구단주가 승인하지 않습니다'}</p>`:''; })()}`; })()}
   </section>`;
@@ -107,15 +107,16 @@ function tradeView(){
   let pool=(side==='get'?domestic(tr.tid):domestic(G.user)).filter(p=>ok(p)&&(seg==='bat'?!p.isP:p.isP)).map(p=>({p,rp:scoutReport(p)}));
   const sf={cur:(a,b)=>(b.rp.cur??-1)-(a.rp.cur??-1)||(b.rp.ofp??0)-(a.rp.ofp??0),fut:(a,b)=>(b.rp.ofp??0)-(a.rp.ofp??0)||(b.rp.cur??-1)-(a.rp.cur??-1),sal:(a,b)=>b.p.sal-a.p.sal,age:(a,b)=>a.p.age-b.p.age}[sort];
   pool.sort(sf); const INT=side==='give'&&interestKnown(tr.tid)?aiInterest(tr.tid):[]; if(INT.length)pool.sort((a,b)=>(INT.includes(b.p.id)?1:0)-(INT.includes(a.p.id)?1:0));
-  const sel=tr[side]; const PGt=pager('tpool'+side+seg+sort+tr.tid,pool,wide()?16:12);
+  const sel=tr[side]; const PGt=pager('tpool'+side+seg+sort+tr.tid,pool,innerWidth<700?tradeListSize():wide()?16:8);
   const poolCard=`<section class="card">
     <div class="seg" id="tpick"><button data-a="tside" data-v="get" class="${side==='get'?'on':''}">상대 선수 (${esc(t.city+' '+t.nick)})</button><button data-a="tside" data-v="give" class="${side==='give'?'on':''}">우리 선수</button></div>
-    <div class="row between wrapr"><div class="seg sm"><button data-a="tseg" data-v="bat" class="${seg==='bat'?'on':''}">야수</button><button data-a="tseg" data-v="pit" class="${seg==='pit'?'on':''}">투수</button></div>
-    <div class="chips">${[['cur','현재순'],['fut','잠재력순'],['sal','연봉순'],['age','나이순']].map(([k,l])=>`<button data-a="tsort" data-v="${k}" class="${sort===k?'on':''}">${l}</button>`).join('')}</div></div>
+    <div class="trade-pool-options"><label>구분<select data-a="tseg" aria-label="협상 선수 구분">${[['bat','야수'],['pit','투수']].map(([v,l])=>`<option value="${v}" ${seg===v?'selected':''}>${l}</option>`).join('')}</select></label><label>정렬<select data-a="tsort" aria-label="협상 선수 정렬">${[['cur','현재 능력순'],['fut','잠재력순'],['sal','연봉순'],['age','나이순']].map(([v,l])=>`<option value="${v}" ${sort===v?'selected':''}>${l}</option>`).join('')}</select></label></div>
     <p class="small muted">"${side==='get'?'받기':'보내기'}"를 누르면 위 협상안에 올라갑니다. 이름을 누르면 선수 정보가 열립니다. 현재 능력은 정확한 값이고, 잠재력은 우리 선수와 프로 담당 스카우트가 있는 지역 구단만 보입니다. 외국인 선수와 올해 입단 신인은 제외됩니다.</p>
     <div class="trws" data-pg="tpool${side}${seg}${sort}${tr.tid}"><div class="trw-h"><span>선수</span><span>현재 · 잠재력</span><span></span></div>${PGt.items.map(({p})=>trow(p,side,sel.includes(p.id),INT.includes(p.id)?interestWhy(tr.tid,p):'')).join('')||'<p class="small muted">대상 선수가 없습니다.</p>'}</div>${PGt.bar}
   </section>`;
-  return `<section class="card"><div class="eyebrow">상대 구단</div>${strip}</section><div class="tlay">${board}${poolCard}</div>`;
+  const steps=`<ol class="trade-steps" aria-label="협상 순서"><li>1 상대 구단</li><li class="${tr.stage!=='review'?'on':''}">2 선수 선택</li><li class="${tr.stage==='review'?'on':''}">3 제안 확인</li></ol>`;
+  const basket=`<div class="trade-basket"><span>보냄 <b>${gv.length}</b> · 받음 <b>${gt.length}</b></span><button class="btn small primary" data-a="tradeReview" ${gv.length||gt.length?'':'disabled'}>제안 확인</button></div>`;
+  return strip+steps+(innerWidth<700?(tr.stage==='review'?`<button class="btn small" data-a="tradePick">‹ 선수 다시 고르기</button>${board}`:basket+poolCard):`<div class="tlay">${board}${poolCard}</div>`);
 }
 function extBody(){
   const c=domestic(G.user).filter(canExtend).sort((a,b)=>scoutReport(b).ofp-scoutReport(a).ofp).slice(0,6);

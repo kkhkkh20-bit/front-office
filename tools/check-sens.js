@@ -1,7 +1,7 @@
 /* 능력치 반영 점검: 한 구단 선수 전원의 능력치 하나를 +10(원래 능력 단위) 올리고 같은 난수로 경기를 돌려,
    그 능력치가 맡은 기록이 실제로 움직이는지 본다(컨택→타율·삼진, 파워→홈런·장타, 선구→볼넷, 주력→도루,
-   수비→상대 BABIP, 구위→탈삼진·실점, 제구→볼넷 허용, 체력→선발 이닝). 사용: node tools/check-sens.js  (N=경기 수, 기본 2400) */
-const fs=require('fs'), path=require('path'); const N=+process.env.N||2400; /* 체력·제구처럼 작은 효과는 1200경기에서 통과 경계에 걸릴 수 있어 세계별 2400경기로 확인한다. 기준값은 유지한다. */
+   수비→상대 BABIP, 구위→탈삼진·실점, 제구→볼넷 허용, 체력→선발 이닝). 사용: node tools/check-sens.js  (N=경기 수, 기본 4800) */
+const fs=require('fs'), path=require('path'); const N=+process.env.N||4800; /* 작은 승률 차이는 표본 경계에 걸린다. 사구 추가 후 선구 승률 +.019(2400경기)을 같은 두 세계의 4800경기로 재확인했다. 능력·승률 기준은 유지한다. */
 let seed=7; const rnd=()=>{ let a=seed|0; a=a+0x6D2B79F5|0; seed=a; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; Math.random=rnd;
 /* 세계 두 개(시작 난수 7·11)에서 재고 평균을 본다: 엔진이 바뀌면 같은 시작 난수라도 다른 선수단이 만들어져, 한 세계만으로는 승률 변화(±.02 안팎)가 선수단 구성에 흔들렸다.
    (같은 세계를 저장해 이전·이후 엔진에 넣으면 결과가 같다는 것을 확인함 — 2026-11-02) */
@@ -11,15 +11,15 @@ outs.push(new Function('NG','setSeed',fs.readFileSync(path.join(__dirname,'..','
 DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true;
 const day=G.cal.open+20; const T=G.teams.find(t=>t.id!==G.user).id; const opp=G.teams.filter(t=>t.id!==T).map(t=>t.id);
 const run=(k,dv)=>{ const ps=Object.values(G.players).filter(p=>p.team===T); const keep=ps.map(p=>p.r[k]); if(dv)ps.forEach(p=>{ p.r[k]=Math.min(90,p.r[k]+dv); }); setSeed(globalThis.__SEED||12345);
-  const B={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,sb:0,cs:0,r:0}, P={outs:0,h:0,hr:0,bb:0,so:0,er:0,bf:0,spOuts:0,gs:0,pc:0}, O={ab:0,h:0,hr:0,so:0,sf:0,xb:0}; let W=0;
+  const B={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,sb:0,cs:0,r:0}, P={outs:0,h:0,hr:0,bb:0,so:0,er:0,bf:0,spOuts:0,gs:0,pc:0}, O={ab:0,h:0,hr:0,so:0,sf:0,xb:0}; let W=0;
   for(let i=0;i<NG;i++){ const o=opp[i%opp.length]; const home=i%2===0; for(const p of Object.values(G.players))p.fat=0; const g=simGame(day+(i%3),home?T:o,home?o:T,false); const me=home?'h':'a', op=home?'a':'h';
-    const S=g.S[me], Q=g.S[op]; for(const [id,x] of S.box){ if(S.pitchers.includes(id))continue; B.ab+=x.ab||0; B.h+=x.h||0; B.d+=x.d||0; B.tr+=x.tr||0; B.hr+=x.hr||0; B.bb+=x.bb||0; B.so+=x.so||0; B.sb+=x.sb||0; B.cs+=x.cs||0; B.r+=x.r||0; B.pa+=(x.ab||0)+(x.bb||0)+(x.hbp||0)+(x.sf||0); }
+    const S=g.S[me], Q=g.S[op]; for(const [id,x] of S.box){ if(S.pitchers.includes(id))continue; B.ab+=x.ab||0; B.h+=x.h||0; B.d+=x.d||0; B.tr+=x.tr||0; B.hr+=x.hr||0; B.bb+=x.bb||0;B.hbp+=x.hbp||0; B.so+=x.so||0; B.sb+=x.sb||0; B.cs+=x.cs||0; B.r+=x.r||0; B.pa+=(x.ab||0)+(x.bb||0)+(x.hbp||0)+(x.sf||0); }
     S.pitchers.forEach((id,j)=>{ const x=S.box.get(id); P.outs+=x.outs||0; P.h+=x.h||0; P.hr+=x.hr||0; P.bb+=x.bb||0; P.so+=x.so||0; P.er+=x.er||0; P.pc+=x.pc||0; P.bf+=x.bf||0; if(j===0){ P.spOuts+=x.outs||0; P.gs++; } });
     for(const [id,x] of Q.box){ if(Q.pitchers.includes(id))continue; O.ab+=x.ab||0; O.h+=x.h||0; O.hr+=x.hr||0; O.so+=x.so||0; O.sf+=x.sf||0; O.xb+=(x.d||0)+(x.tr||0); }
     if(g.score[me]>g.score[op])W++; }
   ps.forEach((p,i)=>p.r[k]=keep[i]);
-  const avg=B.h/B.ab, obp=(B.h+B.bb)/B.pa, slg=(B.h+B.d+2*B.tr+3*B.hr)/B.ab, ip=P.outs/3;
-  return {AVG:avg,OBP:obp,SLG:slg,'HR%':B.hr/B.pa*100,'BB%':B.bb/B.pa*100,'K%':B.so/B.pa*100,'SB/G':B.sb/NG,'3B/G':B.tr/NG,'R/G':B.r/NG,
+  const avg=B.h/B.ab, obp=(B.h+B.bb+B.hbp)/B.pa, slg=(B.h+B.d+2*B.tr+3*B.hr)/B.ab, ip=P.outs/3;
+  return {AVG:avg,OBP:obp,SLG:slg,'HR%':B.hr/B.pa*100,'BB%':B.bb/B.pa*100,'HBP%':B.hbp/B.pa*100,'K%':B.so/B.pa*100,'SB/G':B.sb/NG,'3B/G':B.tr/NG,'R/G':B.r/NG,
     '실점ERA':P.er*9/ip,'탈삼진K9':P.so*9/ip,'볼넷BB9':P.bb*9/ip,'피홈런HR9':P.hr*9/ip,'선발이닝':P.spOuts/3/P.gs,'상대BABIP':(O.h-O.hr)/(O.ab-O.so-O.hr+O.sf),'피장타XBH9':O.xb*9/ip,'P/PA':P.pc/P.bf,'승률':W/NG}; };
 const base=run('con',0); const res={base}; res.noise=(()=>{ const r0=run; return null; })();
 for(const k of ['con','pow','eye','spd','def','stf','ctl','sta'])res[k]=run(k,10); 

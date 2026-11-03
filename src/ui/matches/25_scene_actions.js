@@ -25,9 +25,9 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');Match3D.hide('o'+id);};
  const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,m.to);i++){if(retired.has(m.id))return;const duration=isHR?4600:c3DRunTime(m.id);cPlace(el,CPATH[i],duration);await cSleep(duration);}if(retired.has(m.id))return;if(m.out||m.score)retire(m.id);}));
  runners.catch(()=>{});
- const batter=(async()=>{await cSleep(isHR?620:330);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(350);}const target=bTo>0?Math.min(4,bTo):1;for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?4600:c3DRunTime(x[1]);cPlace(bat,CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&bTo>=4)retire(x[1]);})();
+ const batter=(async()=>{await cSleep(620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(350);}const target=bTo>0?Math.min(4,bTo):1;for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?4600:c3DRunTime(x[1]);cPlace(bat,CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&bTo>=4)retire(x[1]);})();
  batter.catch(()=>{});
- sfx('crack',1,1);Match3D.batted(o,(isHR?1150:550)/cSpd());
+ sfx('crack',1,1);Match3D.batted(o,(isHR?1150:650)/cSpd());
  const ball=cBall([50,88],spot,timing.flight,arc,!!UI.cast.gb);
  if(f&&!isHR){
   cSpeak(g,k,'flight',{fielder:`${POSK[f.pos]||f.pos} ${c3DName(f)}`,arc,ground:!!UI.cast.gb});

@@ -145,7 +145,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   cmpGo(v){ UI.cmpK=v; A.cmpT(''); },
   cmpK(v){ UI.cmpK=UI.cmpK===v?null:v; render(); },
   keepP(v){ keepPlayer(+v); save(); render(); },
-  tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='train'){ A.go('staff:camp'); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='trade'&&faLive()&&UI.tab!=='trade'){ UI.sub=UI.sub||{}; if(!UI.sub.trade||UI.sub.trade==='market')UI.sub.trade='fa'; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
+  tab(v){ if(v==='inbox'){ A.inbox(); return; } if(v==='train'){ A.go('staff:camp'); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
   startGo(v){ const m=meta(); if(!UI.newSlot){ const free=SLOT_IDS.find(n=>!m.slots[n]); if(!free){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return; } m.active=free; setMeta(m); } UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.world; UI.world=null; claimTeam(+v); } else newGame(+v); fdWelcome(); UI.tab='inbox'; UI._ibFirst=true; save();render();window.scrollTo(0,0);}, /* 소식함이 게임의 중심: 시작하면 소식함 */
   adv(v,el){ if(el){ const nd=ibNeedList(); if(nd.length){ UI.mf='all'; A.mailJump(nd[0].id); toast(`확인할 소식 ${nd.length}건: 가장 오래된 것부터 엽니다`); return; } } /* '계속'은 확인할 소식부터(FM 방식) */ const nw=Date.now(); if(el){ if(UI._advT&&nw-UI._advT<450)return; UI._advT=nw; } if(G.res&&!G.live)G.res=null; if(blocker())return; if(UI._cfmPass)G.fOkY=G.year; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length; const d0=G.day; UI._tk={show:d0,until:Date.now()+3000}; advance(v);if(G.matchAwait){closeSheets();UI.tab='home';if(G.watchPlanned?.day===G.matchAwait.day){A.watchNext();return;}if(G.simPlanned?.day===G.matchAwait.day){A.matchSim();return;}A.watchNext();return;} setTimeout(()=>dayTick(d0),30); if((G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0)setTimeout(()=>sfx('alert',.7),120); else if(G.res&&G.games[G.res.i]&&G.games[G.res.i].res==='승')setTimeout(()=>sfx('cheer_hit',.45),120); if(G.dig&&G.dig.games&&G.dig.games.length&&!G.dig.mailed){ try{ digestMail(); }catch(e){} G.dig.mailed=true; }
     if(G.res||G.live){ closeSheets(); UI.tab='home'; UI.mail=null; } else if(G.stops.length){ /* 중요한 소식으로 멈추면 홈이 아니라 소식함에서 그 소식을 연다 */ const sm=G.stops.find(s=>s&&s.id&&G.mail.some(m=>m.id===s.id)); closeSheets(); UI.mail=null; if(sm){ UI.mf='all'; UI.tab='inbox'; UI.ibSel=sm.id; UI._ibToCur=true; sm.read=true; if(!wide())UI.ibOpen=sm.id; } else UI.tab='inbox'; } else { /* 멈출 소식이 없어도 소식함으로: 새 소식(한 주 정리 포함)을 거기서 본다 */ closeSheets(); UI.mail=null; UI.fromMail=null; UI.tab='inbox'; UI.mf='all'; UI._ibEnd=true; UI.ibSel=null; UI.ibOpen=null; }
@@ -207,6 +207,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
   rviewMode(v){UI.rlayout=v;render();},
+  coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
@@ -336,10 +337,14 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   nco(v){ UI.nco=UI.nco||{}; UI.nco[v]=!UI.nco[v]; render(); },
   lteam(v){ if(v===''){UI.leagueTeam=null;render();return;} UI.rosterTeam=+v; closeSheets(); UI.tab='roster'; render(); window.scrollTo(0,0); },
   lteamGo(v){ if(+v===G.user){ UI.rosterTeam=null; UI.tab='roster'; closeSheets(); render(); window.scrollTo(0,0); return; } closeSheets(); UI.teamSh=+v; renderSheet(); },
+  tradeNews(){UI.it=UI.it||{};UI.it.mkv='news';A.go('trade:market');},
+  tradeReview(){UI.trade.stage='review';render();window.scrollTo(0,0);},
+  tradePick(){UI.trade.stage='pick';render();window.scrollTo(0,0);},
+  tradeGm(){const ts=G.teams.filter(t=>t.id!==G.user),i=ts.findIndex(t=>t.id===UI.trade.tid);UI.pg=UI.pg||{};UI.pg.gms=Math.max(0,Math.floor(i/(innerWidth<700?1:3)));A.go('trade:gms');},
   tpartner(v){ if(UI.trade.tid===+v)return; UI.trade={tid:+v,give:UI.trade.give||[],get:[],msg:'',seg:UI.trade.seg||'bat',side:'get',sort:UI.trade.sort||'cur'};render();},
   tseg(v){UI.trade.seg=v;render();},
   tside(v){UI.trade.side=v;render();},
-  tsideGo(v){ UI.trade.side=v; render(); requestAnimationFrame(()=>{ const e=document.getElementById('tpick'); if(e)e.scrollIntoView({behavior:'smooth',block:'start'}); }); },
+  tsideGo(v){ UI.trade.side=v;if(innerWidth<700)UI.trade.stage='pick'; render(); requestAnimationFrame(()=>{ const e=document.getElementById('tpick'); if(e)e.scrollIntoView({behavior:'smooth',block:'start'}); }); },
   tsort(v){UI.trade.sort=v;render();},
   tpick(v){const [side,id]=v.split(':');const arr=UI.trade[side];const i=arr.indexOf(+id);i>=0?arr.splice(i,1):arr.push(+id);UI.trade.msg='';UI.trade.want=null;render();},
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.msg='';UI.trade.want=null;render();},
