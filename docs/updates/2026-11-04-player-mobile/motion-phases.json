@@ -1,0 +1,116 @@
+[
+  {
+    "kind": "swing",
+    "at": 0,
+    "clip": "swing",
+    "time": 0,
+    "bat": true
+  },
+  {
+    "kind": "swing",
+    "at": 480,
+    "clip": "swing",
+    "time": 0.48,
+    "bat": true
+  },
+  {
+    "kind": "swing",
+    "at": 740,
+    "clip": "swing",
+    "time": 0.74,
+    "bat": true
+  },
+  {
+    "kind": "swing",
+    "at": 900,
+    "clip": "swing",
+    "time": 0.9,
+    "bat": true
+  },
+  {
+    "kind": "swing",
+    "at": 1200,
+    "clip": "swing",
+    "time": 1.2,
+    "bat": true
+  },
+  {
+    "kind": "swing",
+    "at": 1510,
+    "clip": "swing",
+    "time": 1.51,
+    "bat": true
+  },
+  {
+    "kind": "overhand",
+    "at": 640,
+    "clip": "pitch_overhand_windup",
+    "time": 0.64
+  },
+  {
+    "kind": "overhand",
+    "at": 1010,
+    "clip": "pitch_overhand_windup",
+    "time": 1.01
+  },
+  {
+    "kind": "overhand",
+    "at": 1230,
+    "clip": "pitch_overhand_windup",
+    "time": 1.23
+  },
+  {
+    "kind": "three_quarter",
+    "at": 640,
+    "clip": "pitch_three_quarter_windup",
+    "time": 0.64
+  },
+  {
+    "kind": "three_quarter",
+    "at": 1010,
+    "clip": "pitch_three_quarter_windup",
+    "time": 1.01
+  },
+  {
+    "kind": "three_quarter",
+    "at": 1230,
+    "clip": "pitch_three_quarter_windup",
+    "time": 1.23
+  },
+  {
+    "kind": "sidearm",
+    "at": 640,
+    "clip": "pitch_sidearm_windup",
+    "time": 0.64
+  },
+  {
+    "kind": "sidearm",
+    "at": 1010,
+    "clip": "pitch_sidearm_windup",
+    "time": 1.01
+  },
+  {
+    "kind": "sidearm",
+    "at": 1230,
+    "clip": "pitch_sidearm_windup",
+    "time": 1.23
+  },
+  {
+    "kind": "submarine",
+    "at": 640,
+    "clip": "pitch_submarine_windup",
+    "time": 0.64
+  },
+  {
+    "kind": "submarine",
+    "at": 1010,
+    "clip": "pitch_submarine_windup",
+    "time": 1.01
+  },
+  {
+    "kind": "submarine",
+    "at": 1230,
+    "clip": "pitch_submarine_windup",
+    "time": 1.23
+  }
+]
