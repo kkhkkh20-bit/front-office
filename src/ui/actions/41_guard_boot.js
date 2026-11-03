@@ -169,6 +169,12 @@ document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if
 window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(()=>{ if(G)render(); },150); });
 document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details[data-k]')){ UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); } } },true);
 document.addEventListener('keydown',e=>{
+  /* 결재가 떠 있으면 뒤의 협상·면담·중계·소식함으로 키를 전달하지 않는다. */
+  if(UI.cfm){
+    if(e.key==='Escape'){e.preventDefault();A.cfmNo();return;}
+    if((e.key===' '||e.key==='Enter')&&!(e.target.matches&&e.target.matches('input,select,textarea'))){e.preventDefault();if(!e.repeat){if(e.target.closest&&e.target.closest('#cfm [data-a="cfmNo"]'))A.cfmNo();else A.cfmOk();}}
+    return;
+  }
   if(UI.fmKeys&&e.key==='Escape'){ UI.fmKeys=false; render(); return; }
   try{ if(fmHotkey(e))return; }catch(x){} /* PC 단축키(FM식) */
   if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
@@ -179,8 +185,6 @@ document.addEventListener('keydown',e=>{
   if(e.key===' '&&UI.wkres&&UI.sheet==null&&UI.game==null&&!UI.menu&&!UI.cast&&!UI.cfm&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.wkClose(); return; } /* 경기 결과 창: 스페이스바 = 확인 */
   if(UI.tab==='inbox'&&!UI.meet&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
   /* 소식함: 스페이스바로 안 읽은 소식을 하나씩 열고, 다 읽었으면 계속 진행 */
-  if(UI.cfm&&(e.key===' '||e.key==='Enter')&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.cfmOk(); return; } /* 확인 창: 스페이스바·엔터 = 진행 */
-  if(UI.cfm&&e.key==='Escape'){ A.cfmNo(); return; }
   if(e.key===' '&&UI.ivSh&&G.iv&&G.iv.done){ e.preventDefault(); closeSheets(); render(); return; } /* 끝난 인터뷰는 스페이스바로 닫기 */
   /* 스페이스바(어느 화면에서나): 안 읽은 소식이 있으면 차례로 열고, 없으면 어디까지 진행할지 묻는다 */
   if(e.key===' '&&!document.documentElement.classList.contains('detail-page-open')&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!UI.ngt&&!UI.meet&&!UI.negWin&&!UI.cast&&!UI.title&&!(e.target.matches&&e.target.matches('input,select,textarea,summary,[contenteditable]'))){ e.preventDefault(); if(e.repeat)return; /* 누르고 있어도 한 번만. 포커스된 버튼(계속 등)을 스페이스바가 직접 누르지 않게 막는다 */ if(e.target.blur&&e.target.matches&&e.target.matches('button'))e.target.blur(); ibSpace(); return; }

@@ -2596,7 +2596,7 @@ body .sheet.psh.pf-screen{width:100vw;max-width:none}
 @media(min-width:1100px) and (max-height:800px){.pf-screen .pf-masthead{min-height:72px;padding-block:8px}.pf-name>.av{width:52px;height:52px}.pf-screen .pf-attribute-row{min-height:25px;padding-block:2px}.pf-attribute-group{margin-bottom:10px}.pf-screen .pf-overview .card{padding:10px}.pf-core-cell strong{font-size:24px}.pf-topnav{margin-bottom:10px}.pf-radar .radar{max-height:170px}.pf-screen .pf-attribute-row.text{grid-template-columns:minmax(0,1fr) auto}.pf-attribute-row.text .pf-score{max-width:100px;text-align:right}.pf-attribute-legend{font-size:9px}.pf-screen .pf-attribute-group h3{padding-bottom:5px;font-size:12px;margin-bottom:2px}}
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
-.detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
+.detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
 #sheet .detail-page-wrap{position:static;display:block;background:none;min-height:var(--detail-height,100dvh)}
 body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:var(--detail-height,100dvh);overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
 .detail-page-open #sheet .cast{position:relative;inset:auto;width:100%;height:var(--detail-height,100dvh);min-height:0;max-width:none;z-index:auto}
@@ -8472,7 +8472,7 @@ function mvWrap(m,topic,a){ const v=mgrVoice(m); if(m.rel<35)return a;
 /* 대화의 사실은 현재 선수단에서, 판단과 표현은 감독 성향에서 가져온다. 경기 난수는 쓰지 않는다. */
 const MV_DETAIL_TOPICS=['pitch','bat','defense','run','workload','clubhouse','plan'];
 function mvMemory(m){if(!m.dialogue||m.dialogue.v!==1)m.dialogue={v:1,said:[],last:{},sit:null};return m.dialogue;}
-function mvDialogueKey(m,topic){const P=playersOf(G.user),r=G.sea?.rec?.[G.user];return String(u01('dialogue:'+JSON.stringify([G.user,G.year,topic,period(),mgrVoice(m),m.rel<35?0:m.rel>=70?2:1,m.small,m.pen,m.arm,m.youth,m.dfn,m.ego,m.hD,r,(G.sea?.tl?.[G.user]||[]).slice(-10),G.pact?.on,G.policy?.k,G.fmarket,P.map(p=>[p.id,p.pos,p.e1,p.injOut,p.fat,p.r,p.team,p.role,seasonTotal(p,G.year,'1군')])]),0));}
+function mvDialogueKey(m,topic){const P=playersOf(G.user),r=G.sea?.rec?.[G.user];return String(u01('dialogue:'+JSON.stringify([G.user,G.year,topic,period(),mgrVoice(m),m.rel<35?0:m.rel>=70?2:1,m.small,m.pen,m.arm,m.youth,m.dfn,m.disc,m.ego,m.hD,team(G.user).cap,r,(G.sea?.tl?.[G.user]||[]).slice(-10),G.pact?.on,G.policy?.k,G.fmarket,P.map(p=>[p.id,p.name,p.mor,p.pos,p.e1,p.injOut,p.fat,p.r,p.team,p.role,seasonTotal(p,G.year,'1군')])]),0));}
 function mvGreeting(m,M){const v=mgrVoice(m),cold=m.rel<35;const bank=M.first?{
   data:['보고서는 받았습니다. 먼저 우리 전력의 강점과 빈자리부터 함께 확인하고 싶습니다.','첫 판단을 서두르지는 않겠습니다. 선수들을 본 뒤 기록과 현장 평가가 다른 부분부터 말씀드리겠습니다.'],
   fire:['책임지고 경쟁하는 팀으로 만들겠습니다. 다만 이기려면 필요한 보강은 솔직하게 말씀드리겠습니다.','이름값보다 그날 준비된 선수를 쓰겠습니다. 현장에서 필요한 것은 단장님께 바로 요청드리겠습니다.'],
@@ -16801,6 +16801,7 @@ function appFrameSync(){const root=document.documentElement,head=document.queryS
   if(head!==_appFrameHeader&&typeof ResizeObserver!=='undefined'){_appFrameObserver?.disconnect();_appFrameHeader=head;_appFrameObserver=new ResizeObserver(()=>appFrameSync());if(head)_appFrameObserver.observe(head);}}
 function sheetScrollY(){return document.documentElement.classList.contains('detail-page-open')?($('#sheet')?.scrollTop||0):(document.querySelector('#sheet .sheet')?.scrollTop||0);}
 function sheetScrollTo(y){const e=document.documentElement.classList.contains('detail-page-open')?$('#sheet'):document.querySelector('#sheet .sheet');if(e)e.scrollTop=y;}
+function detailViewKey(sh){const label=sh.getAttribute('aria-label')||'상세';let target='';if(sh.matches('.ngt'))target=[UI.ngt?.k,UI.ngt?.id];else if(sh.matches('.negw'))target=[UI.negWin?.k,UI.negWin?.id];else if(sh.matches('.psh'))target=[UI.sheet,UI.ptab||'abil'];else if(sh.matches('.cast'))target=UI.cast?.g;else if(sh.matches('.manager-profile'))target=UI.mgrCandidate;else if(UI.person)target=UI.person;else if(UI.teamSh!=null)target=UI.teamSh;else if(UI.game!=null)target=UI.game;return JSON.stringify([label,target]);}
 function detailPageSync(el){
   const sh=el&&el.querySelector('.sheet,.cast'),active=!!sh,cast=sh?.classList.contains('cast');
   const was=document.documentElement.classList.contains('detail-page-open');
@@ -16808,22 +16809,25 @@ function detailPageSync(el){
   document.documentElement.classList.toggle('detail-page-open',active);
   document.querySelectorAll('#app main.content,#app .subhead,#app .fmmain,#app .dshell>.gut').forEach(e=>{e.inert=active;});appFrameSync();
   if(active){
-    const key=sh.getAttribute('aria-label')||'상세',changed=UI._detailKey!==key;UI._detailKey=key;
+    const key=detailViewKey(sh);UI._detailKey=key;sh.dataset.detailKey=key;
+    let history=UI._detailStack;if(!was||!history)history=UI._detailStack=[];const index=history.findIndex(x=>x.key===key);
+    if(index>=0)history.length=index+1;else{history.push({key,y:0});if(history.length>24)history.shift();}
+    const position=history[history.length-1];
     sh.classList.add('detail-page'); sh.setAttribute('role','region'); sh.removeAttribute('aria-modal');
     const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
     const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
     bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
     if(!cast)sh.prepend(bar);
     if(UI.stamp){ document.querySelectorAll('#app .stamp-w').forEach(x=>x.remove()); el.insertAdjacentHTML('beforeend',stampView()); }
-    if(!was||changed)sheetScrollTo(0);
-    if(UI.ngt&&sh.classList.contains('ngt')&&UI._ngtY!=null)sheetScrollTo(UI._ngtY);
+    UI._detailPendingScroll=position.y;
+    if(UI.ngt&&sh.classList.contains('ngt')&&UI._ngtY!=null){UI._detailPendingScroll=UI._ngtY;UI._ngtY=null;}
   }else if(was){
-    const ret=UI._detailReturn;UI._detailReturn=null;UI._detailKey=null;
+    const ret=UI._detailReturn;UI._detailReturn=null;UI._detailKey=null;UI._detailStack=null;UI._detailPendingScroll=null;
     if(UI.stamp&&!document.querySelector('.stamp-w'))$('#app').insertAdjacentHTML('beforeend',stampView());
     if(ret&&ret.tab===UI.tab){scrollTo(0,ret.y);if(ret.focus&&ret.focus.isConnected)ret.focus.focus({preventScroll:true});}
   }
 }
-function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet'); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} if(UI.meet)meetWire(); }
+function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}if(UI.meet)meetWire(); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -17612,6 +17616,12 @@ document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if
 window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(()=>{ if(G)render(); },150); });
 document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details[data-k]')){ UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); } } },true);
 document.addEventListener('keydown',e=>{
+  /* 결재가 떠 있으면 뒤의 협상·면담·중계·소식함으로 키를 전달하지 않는다. */
+  if(UI.cfm){
+    if(e.key==='Escape'){e.preventDefault();A.cfmNo();return;}
+    if((e.key===' '||e.key==='Enter')&&!(e.target.matches&&e.target.matches('input,select,textarea'))){e.preventDefault();if(!e.repeat){if(e.target.closest&&e.target.closest('#cfm [data-a="cfmNo"]'))A.cfmNo();else A.cfmOk();}}
+    return;
+  }
   if(UI.fmKeys&&e.key==='Escape'){ UI.fmKeys=false; render(); return; }
   try{ if(fmHotkey(e))return; }catch(x){} /* PC 단축키(FM식) */
   if(UI.cast&&UI.sheet==null){ if(e.key==='Escape'){ A.castClose(); return; }if(e.target.matches&&e.target.matches('input,select,textarea'))return; if(e.key===' '){ e.preventDefault(); A.castPlay(); return; } if(e.key==='ArrowRight'){ A.castStep('1'); return; } if(e.key==='ArrowLeft'){ A.castStep('-1'); return; } }
@@ -17622,8 +17632,6 @@ document.addEventListener('keydown',e=>{
   if(e.key===' '&&UI.wkres&&UI.sheet==null&&UI.game==null&&!UI.menu&&!UI.cast&&!UI.cfm&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.wkClose(); return; } /* 경기 결과 창: 스페이스바 = 확인 */
   if(UI.tab==='inbox'&&!UI.meet&&UI.sheet==null&&!UI.menu&&!UI.game&&!(e.target.matches&&e.target.matches('input,select,textarea'))&&(e.key==='j'||e.key==='k')){ e.preventDefault(); ibStep(e.key==='j'?1:-1); }
   /* 소식함: 스페이스바로 안 읽은 소식을 하나씩 열고, 다 읽었으면 계속 진행 */
-  if(UI.cfm&&(e.key===' '||e.key==='Enter')&&!(e.target.matches&&e.target.matches('input,select,textarea'))){ e.preventDefault(); if(!e.repeat)A.cfmOk(); return; } /* 확인 창: 스페이스바·엔터 = 진행 */
-  if(UI.cfm&&e.key==='Escape'){ A.cfmNo(); return; }
   if(e.key===' '&&UI.ivSh&&G.iv&&G.iv.done){ e.preventDefault(); closeSheets(); render(); return; } /* 끝난 인터뷰는 스페이스바로 닫기 */
   /* 스페이스바(어느 화면에서나): 안 읽은 소식이 있으면 차례로 열고, 없으면 어디까지 진행할지 묻는다 */
   if(e.key===' '&&!document.documentElement.classList.contains('detail-page-open')&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!UI.ngt&&!UI.meet&&!UI.negWin&&!UI.cast&&!UI.title&&!(e.target.matches&&e.target.matches('input,select,textarea,summary,[contenteditable]'))){ e.preventDefault(); if(e.repeat)return; /* 누르고 있어도 한 번만. 포커스된 버튼(계속 등)을 스페이스바가 직접 누르지 않게 막는다 */ if(e.target.blur&&e.target.matches&&e.target.matches('button'))e.target.blur(); ibSpace(); return; }
@@ -19125,6 +19133,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-03g',d:'11월 3일',t:'리뷰 개선: 결재 키 입력과 상세 복귀',items:[
+    '결재창이 떠 있을 때 Esc·Space·Enter가 뒤의 협상·중계·소식함에 전달되던 문제를 고쳤습니다. 가장 앞의 결재만 처리하며, 취소 버튼에 포커스가 있으면 Space·Enter로도 취소합니다.',
+    '상세 화면에서 안내·협상을 열었다 돌아오면 보던 스크롤 위치를 복원합니다. 새 선수나 새 협상은 맨 위에서 시작합니다.',
+    '감독의 분위기 답변이 같은 날 바뀐 선수 기분·주장·이름을 즉시 반영하도록 수정했습니다. 관계 상승 한도와 경기 난수는 유지합니다.']},
   {id:'2026-11-03f',d:'11월 3일',t:'모든 상세 화면에서 상단바 유지',items:[
     '선수·직원·구단 정보, 협상, 인터뷰, 비교, 안내와 경기 중계에서도 기존 상단바와 탐색 메뉴를 유지합니다. 상세 내용만 그 아래 본문 영역을 사용합니다.',
     '본문 스크롤과 상단바를 분리하고 뒤로·Esc·면담 복귀 위치를 연결했습니다. 경기 중계는 남은 화면 높이에 맞춰 기록·구장·선수 줄을 배치합니다.']},

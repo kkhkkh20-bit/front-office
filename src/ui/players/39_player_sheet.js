@@ -143,6 +143,7 @@ function appFrameSync(){const root=document.documentElement,head=document.queryS
   if(head!==_appFrameHeader&&typeof ResizeObserver!=='undefined'){_appFrameObserver?.disconnect();_appFrameHeader=head;_appFrameObserver=new ResizeObserver(()=>appFrameSync());if(head)_appFrameObserver.observe(head);}}
 function sheetScrollY(){return document.documentElement.classList.contains('detail-page-open')?($('#sheet')?.scrollTop||0):(document.querySelector('#sheet .sheet')?.scrollTop||0);}
 function sheetScrollTo(y){const e=document.documentElement.classList.contains('detail-page-open')?$('#sheet'):document.querySelector('#sheet .sheet');if(e)e.scrollTop=y;}
+function detailViewKey(sh){const label=sh.getAttribute('aria-label')||'상세';let target='';if(sh.matches('.ngt'))target=[UI.ngt?.k,UI.ngt?.id];else if(sh.matches('.negw'))target=[UI.negWin?.k,UI.negWin?.id];else if(sh.matches('.psh'))target=[UI.sheet,UI.ptab||'abil'];else if(sh.matches('.cast'))target=UI.cast?.g;else if(sh.matches('.manager-profile'))target=UI.mgrCandidate;else if(UI.person)target=UI.person;else if(UI.teamSh!=null)target=UI.teamSh;else if(UI.game!=null)target=UI.game;return JSON.stringify([label,target]);}
 function detailPageSync(el){
   const sh=el&&el.querySelector('.sheet,.cast'),active=!!sh,cast=sh?.classList.contains('cast');
   const was=document.documentElement.classList.contains('detail-page-open');
@@ -150,22 +151,25 @@ function detailPageSync(el){
   document.documentElement.classList.toggle('detail-page-open',active);
   document.querySelectorAll('#app main.content,#app .subhead,#app .fmmain,#app .dshell>.gut').forEach(e=>{e.inert=active;});appFrameSync();
   if(active){
-    const key=sh.getAttribute('aria-label')||'상세',changed=UI._detailKey!==key;UI._detailKey=key;
+    const key=detailViewKey(sh);UI._detailKey=key;sh.dataset.detailKey=key;
+    let history=UI._detailStack;if(!was||!history)history=UI._detailStack=[];const index=history.findIndex(x=>x.key===key);
+    if(index>=0)history.length=index+1;else{history.push({key,y:0});if(history.length>24)history.shift();}
+    const position=history[history.length-1];
     sh.classList.add('detail-page'); sh.setAttribute('role','region'); sh.removeAttribute('aria-modal');
     const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
     const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
     bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
     if(!cast)sh.prepend(bar);
     if(UI.stamp){ document.querySelectorAll('#app .stamp-w').forEach(x=>x.remove()); el.insertAdjacentHTML('beforeend',stampView()); }
-    if(!was||changed)sheetScrollTo(0);
-    if(UI.ngt&&sh.classList.contains('ngt')&&UI._ngtY!=null)sheetScrollTo(UI._ngtY);
+    UI._detailPendingScroll=position.y;
+    if(UI.ngt&&sh.classList.contains('ngt')&&UI._ngtY!=null){UI._detailPendingScroll=UI._ngtY;UI._ngtY=null;}
   }else if(was){
-    const ret=UI._detailReturn;UI._detailReturn=null;UI._detailKey=null;
+    const ret=UI._detailReturn;UI._detailReturn=null;UI._detailKey=null;UI._detailStack=null;UI._detailPendingScroll=null;
     if(UI.stamp&&!document.querySelector('.stamp-w'))$('#app').insertAdjacentHTML('beforeend',stampView());
     if(ret&&ret.tab===UI.tab){scrollTo(0,ret.y);if(ret.focus&&ret.focus.isConnected)ret.focus.focus({preventScroll:true});}
   }
 }
-function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet'); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} if(UI.meet)meetWire(); }
+function renderSheet(){ const el=$('#sheet'); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}if(UI.meet)meetWire(); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }

@@ -1,7 +1,7 @@
 /* 대화의 사실은 현재 선수단에서, 판단과 표현은 감독 성향에서 가져온다. 경기 난수는 쓰지 않는다. */
 const MV_DETAIL_TOPICS=['pitch','bat','defense','run','workload','clubhouse','plan'];
 function mvMemory(m){if(!m.dialogue||m.dialogue.v!==1)m.dialogue={v:1,said:[],last:{},sit:null};return m.dialogue;}
-function mvDialogueKey(m,topic){const P=playersOf(G.user),r=G.sea?.rec?.[G.user];return String(u01('dialogue:'+JSON.stringify([G.user,G.year,topic,period(),mgrVoice(m),m.rel<35?0:m.rel>=70?2:1,m.small,m.pen,m.arm,m.youth,m.dfn,m.ego,m.hD,r,(G.sea?.tl?.[G.user]||[]).slice(-10),G.pact?.on,G.policy?.k,G.fmarket,P.map(p=>[p.id,p.pos,p.e1,p.injOut,p.fat,p.r,p.team,p.role,seasonTotal(p,G.year,'1군')])]),0));}
+function mvDialogueKey(m,topic){const P=playersOf(G.user),r=G.sea?.rec?.[G.user];return String(u01('dialogue:'+JSON.stringify([G.user,G.year,topic,period(),mgrVoice(m),m.rel<35?0:m.rel>=70?2:1,m.small,m.pen,m.arm,m.youth,m.dfn,m.disc,m.ego,m.hD,team(G.user).cap,r,(G.sea?.tl?.[G.user]||[]).slice(-10),G.pact?.on,G.policy?.k,G.fmarket,P.map(p=>[p.id,p.name,p.mor,p.pos,p.e1,p.injOut,p.fat,p.r,p.team,p.role,seasonTotal(p,G.year,'1군')])]),0));}
 function mvGreeting(m,M){const v=mgrVoice(m),cold=m.rel<35;const bank=M.first?{
   data:['보고서는 받았습니다. 먼저 우리 전력의 강점과 빈자리부터 함께 확인하고 싶습니다.','첫 판단을 서두르지는 않겠습니다. 선수들을 본 뒤 기록과 현장 평가가 다른 부분부터 말씀드리겠습니다.'],
   fire:['책임지고 경쟁하는 팀으로 만들겠습니다. 다만 이기려면 필요한 보강은 솔직하게 말씀드리겠습니다.','이름값보다 그날 준비된 선수를 쓰겠습니다. 현장에서 필요한 것은 단장님께 바로 요청드리겠습니다.'],

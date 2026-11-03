@@ -1,6 +1,6 @@
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
-.detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
+.detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
 #sheet .detail-page-wrap{position:static;display:block;background:none;min-height:var(--detail-height,100dvh)}
 body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:var(--detail-height,100dvh);overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
 .detail-page-open #sheet .cast{position:relative;inset:auto;width:100%;height:var(--detail-height,100dvh);min-height:0;max-width:none;z-index:auto}

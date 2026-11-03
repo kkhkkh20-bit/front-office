@@ -1,4 +1,4 @@
-# 인수인계 (2026-11-03, 모든 상세 상단바 유지)
+# 인수인계 (2026-11-03, 리뷰: 결재 키·상세 복귀·감독 갱신)
 
 ## 프로젝트
 - 프런트야구: KBO 구단 단장 시뮬레이션. 단일 index.html(빌드 결과물).
@@ -8,7 +8,7 @@
 
 ## 구조
 - `src/modules.json`의 순서로 공용 ESM → 게임 → 그림·화면을 묶는다. `bash build.sh` → dist/engine.js + 단일 index.html. 구조는 docs/architecture.md.
-- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03f').
+- 패치 노트: src/ui/media/75_patch_notes.js 맨 앞에 항목 추가(최근 id '2026-11-03g').
 - 리뷰·작업 기록: docs/feedback-backlog.md (끝에 [ ] 항목이 남은 일).
 
 ## 작업 규칙(사용자 지시)
@@ -22,7 +22,7 @@
 - check.sh가 도는 동안 index.html/dist를 다시 빌드하지 않는다(뒤 단계가 새 빌드를 읽는다).
 
 ## 검사 도구
-- tools/check-logic.js: 규칙 테스트(현재 409개). 앞부분 `T('리그 수준: 트리플A는` 앞에 새 테스트를 넣는다. 테스트 코드는 템플릿 문자열 안이라 백틱을 쓰면 안 된다.
+- tools/check-logic.js: 규칙 테스트(현재 410개). 앞부분 `T('리그 수준: 트리플A는` 앞에 새 테스트를 넣는다. 테스트 코드는 템플릿 문자열 안이라 백틱을 쓰면 안 된다.
 - 일부만: `ONLY=문구 node tools/check-logic.js`(0개 선택이면 실패). 별도 엔진으로 시험: `node tools/build.cjs --engine-out /tmp/e.js` 후 ENGINE 경로만 바꾼 복사본으로 실행. 평면 glob으로 합치면 공용 모듈이 빠지므로 사용 금지.
 - [공통 점검] 테스트 + src/engine/runtime/95_audit.js(stateAudit·auditMoney·leaveSweep): 이동 정리·감독 교체·안내한 기한·시즌 구분을 여러 전환 뒤 한꺼번에 본다.
 - tools/check-sens.js: 능력치 반영(세계 2개 평균). check-sim.js: 장기 시뮬 불변식. check-ui.js: 넓은 화면(FM 모드 1280)·휴대폰(W=390).
@@ -200,3 +200,10 @@
 - 상세 스크롤은 #sheet가 소유한다. `sheetScrollY/To`, 협상/인터뷰 질문 위치, 면담에서 선수 상세 복귀에 반영한다. 원래 목록의 창 스크롤은 보존한다. 중계도 공통 영역을 사용하고 낮은 PC 화면의 기록은 2열/3행으로 압축한다. 안타 막대는 부모 높이의 비율로 그린다.
 - `tools/check-topbar.cjs`를 전체 검사에 추가. 선수/외국인/감독/코치/협상/제안/선수단/비교/인터뷰/단축키/메뉴/결재 12종, PC/휴대폰 상단의 실제 클릭·본문 스크롤·창단 상세 헤더를 확인한다. 기존 배치 검사의 “앱 전체 숨김/전체 폭” 기대를 공통 본문 영역 기준으로 바꾸고, 중계 검사에도 상단바 노출·가림 검사를 추가했다.
 - 수정 전 상단바 숨김 실패 확인(`/tmp/front-office-topbar-before.log`). 경기 계산 변경이 없는 화면 수정이므로 전체 장기 시뮬은 반복하지 않는다. 최종 검증: 상단바 12종/4개 화면 및 창단 2개 화면·모듈 6개·정적 검사·PC/휴대폰 빠른 UI·본문 5개 배치·중계 5개 화면·면담 4개 화면/복귀 모두 통과. 로그 `/tmp/front-office-topbar-final.log`, `/tmp/front-office-topbar-pc-fixed.log`, `/tmp/front-office-topbar-mobile-fixed.log`, `/tmp/front-office-topbar-layout-final.log`, `/tmp/front-office-topbar-match-final.log`, `/tmp/front-office-topbar-meeting.log`. 최초 중계의 기록 행/점수표 가림을 발견해 2열 기록과 45px 점수표로 보완했으며 기존 UI의 전체 폭/숨김 기대를 새 본문 영역에 맞춰 재통과했다.
+
+
+## 리뷰: 결재 키·상세 복귀·감독 갱신 (2026-11-03g)
+- 결재 위에 있던 Esc 처리가 협상을 닫고, Space가 중계를 재생하거나 J/K가 소식을 이동시키는 문제를 재현했다. keydown의 최우선에서 결재를 처리하고 배경 화면에 키를 전달하지 않는다. 취소 버튼에 포커스가 있을 때 Space/Enter가 승인하던 문제도 별도로 실패 재현 후 취소 동작을 따르도록 수정했다.
+- 상세→F1/협상→상세의 스크롤 손실을 수정했다. DOM에 화면 식별자를 붙이고 대상·탭별 최근 이동 경로의 스크롤을 UI에 최대 24개까지 보존한다. 같은 레이블의 다른 선수/계약을 구분하며 새 대상은 0에서 시작한다. 링크/표 가공 후 위치를 복원하고 브라우저의 추가 스크롤 앵커 보정을 끈다. 협상 조정의 `_ngtY`는 한 번 적용한 뒤 비워 과거 위치가 계속 덮지 않게 한다.
+- 감독 답변 캐시가 기분·주장·선수 이름 변경을 놓쳤다. 해당 값과 규율 성향을 대화 서명에 포함했다. 각 변경을 독립적으로 회귀 검사하고 주간 관계·경기 난수 불변을 확인한다. 새 규칙 총 410개.
+- `tools/check-review.cjs`를 전체 검사에 추가. 실제 감독 선임 결재, 실제 경기 중계·소식함, 긴 기록 목록에서 PC/휴대폰 재현. 수정 전 로그 `/tmp/front-office-review-repro.log`, `/tmp/front-office-review-dialogue-before.log`. 최종 검증: 새 캐시 규칙 1개·기존 감독 대화 4개·모듈 6개·정적 검사·새 리뷰 PC/휴대폰(결재/취소 포커스/중첩 복귀)·PC/휴대폰 빠른 UI·본문/중계 5개 화면·상단바 12종·면담 4개 화면 모두 통과. 로그 `/tmp/front-office-review-verified.log`, `/tmp/front-office-review-dialogue-final.log`, `/tmp/front-office-review-dialogue-related.log`, `/tmp/front-office-review-pc.log`, `/tmp/front-office-review-mobile.log`, `/tmp/front-office-review-layout.log`, `/tmp/front-office-review-match.log`, `/tmp/front-office-review-topbar.log`, `/tmp/front-office-review-meeting.log`. 화면/캐시의 국소 수정이므로 전체 장기 시뮬은 반복하지 않는다.
