@@ -913,6 +913,58 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 /* 올 시즌 뒤 FA 예정자(다른 구단) 행: 선수 + 팀·등급·자격 상태 */
 .flr.fur{grid-template-columns:minmax(0,1fr) minmax(0,300px)}
 @media (max-width:620px){ .flr.fur{grid-template-columns:minmax(0,1fr)} }
+/* PC FM 대시보드(재정·구단주·목표): 화면을 상자로 빈틈없이 나누고, 넘치는 내용은 상자 안에서 스크롤 */
+@media(min-width:1100px){
+ .fmsh .ws-frame>.fmd{flex:1 1 auto;min-height:0}
+ .fmd{display:grid;gap:10px;min-height:0;overflow:auto;scrollbar-width:thin}
+ .fmd>.card{margin:0!important;min-width:0;min-height:0;overflow:auto;scrollbar-width:thin;display:flex;flex-direction:column;gap:6px;padding:10px 14px}
+ .fmd .good{color:var(--good)}.fmd .bad{color:var(--bad)}
+ .fmd-h{margin:0;font-size:12px;font-weight:600;color:var(--team-hi)}
+ .fmd-k{display:block;margin:6px 0 2px;font-size:11px;font-weight:600;color:var(--team-hi)}
+ .fmd-big{font:700 22px/1.15 var(--f-num)}
+ .fmd-note{margin:0;font-size:11px;color:var(--muted)}
+ .fmd-top{display:flex;align-items:flex-start;gap:28px;flex:none}.fmd-top>div:first-child{flex:1;min-width:0}
+ .fmd-st{display:grid;gap:1px;min-width:120px}.fmd-st span{font-size:11px;color:var(--team-hi)}.fmd-st b{font:700 15px var(--f-num)}
+ .fmc{position:relative;flex:1 1 auto;min-height:70px;margin:4px 8px 18px 70px}
+ .fmc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+ .fmc-y{position:absolute;right:100%;margin-right:6px;transform:translateY(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+ .fmc-x{position:absolute;top:100%;margin-top:3px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}.fmc-x:last-child{transform:translateX(-100%)}
+ .fmd-row{flex:1 1 auto;min-height:0;display:flex;gap:16px}.fmd-row>.fmc{flex:1}
+ .fmd-chg{flex:none;width:300px;overflow:auto;border-left:1px solid var(--line);padding-left:12px}
+ .fmd-li2{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+ .fmd-l{flex:1 1 auto;min-height:0;overflow:auto;scrollbar-width:thin;display:grid;grid-auto-rows:minmax(26px,1fr);align-content:stretch}
+ .fmd-li{display:grid;grid-template-columns:minmax(110px,40%) minmax(0,1fr) 72px;gap:10px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+ .fmd-li svg{width:100%;height:8px;background:var(--panel2)}.fmd-li b{text-align:right;font:600 12px var(--f-num)}
+ .fmd-bar{display:block;width:100%;height:6px;margin:3px 0}.fmd-bar.big{height:12px;margin:6px 0}
+ .fmd-s{display:grid;gap:2px;padding:8px 0;border-bottom:1px solid var(--line)}.fmd-s:last-child{border-bottom:0}
+ .fmd-s p{margin:0;font-size:11px;color:var(--muted)}.fmd-s>b{font:700 15px var(--f-num)}
+ .fmd-bud{justify-content:space-between}
+ .fmd-acts{display:grid;gap:6px}.fmd-acts .btn{width:100%}
+ .fmd-rl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+ .fmd-rl>div{padding:8px 12px;border-radius:3px;background:color-mix(in srgb,var(--good) 26%,var(--panel));border-left:4px solid var(--good)}
+ .fmd-rl>div.ng{background:color-mix(in srgb,var(--bad) 26%,var(--panel));border-left-color:var(--bad)}
+ .fmd-rl b{display:flex;justify-content:space-between;align-items:center;font-size:14px}.fmd-rl p{margin:2px 0 0;font-size:12px}
+ .fmd-kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:13px}.fmd-kv dt{color:var(--muted)}.fmd-kv dd{margin:0;text-align:right;font-family:var(--f-num)}
+ .fin-d{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px;grid-template-rows:minmax(170px,1fr) minmax(170px,1fr) minmax(200px,1.15fr) auto;grid-template-areas:"cash cash bud" "room room bud" "inc exp bud" "rule rule rule"}
+ .fmd-cash{grid-area:cash}.fmd-room{grid-area:room}.fmd-inc{grid-area:inc}.fmd-exp{grid-area:exp}.fmd-bud{grid-area:bud}.fmd-rule{grid-area:rule;overflow:visible!important}
+ .own-d{grid-template-columns:.95fr 1.35fr 1fr 1fr;grid-template-rows:auto minmax(170px,1fr) minmax(220px,29%);grid-template-areas:"goal goal fb fb" "plan plan fb fb" "fin req dat adj"}
+ .own-goal{grid-area:goal}.own-plan{grid-area:plan}.own-fb{grid-area:fb}.own-fin{grid-area:fin}.own-req{grid-area:req}.own-dat{grid-area:dat}.own-adj{grid-area:adj}
+ .og-r{display:grid;grid-template-columns:minmax(0,1fr) 84px 48px 80px 74px;gap:8px;align-items:center;padding:7px 10px;margin-top:4px;border-radius:3px;font-size:13px;background:var(--panel2)}
+ .og-r.must{background:color-mix(in srgb,var(--team-hi) 30%,var(--panel2))}.og-r.pref{background:color-mix(in srgb,var(--warn) 24%,var(--panel2))}
+ .og-r>.pill{justify-self:start}
+ .og-r.og-h{background:none;padding:6px 10px 0;font-size:11px;color:var(--muted)}.og-r.og-h>span:first-child{color:var(--ink);font-size:12px;font-weight:600}
+ .own-plan>.seg{flex:none;align-self:start}.own-plan>.fmc{min-height:60px}.own-plan>.ologs,.own-plan>.fmd-kv{flex:none}
+ .own-plan .ologs{display:grid;gap:6px}.own-plan .olog{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}.own-plan .olog p{margin:0}
+ .own-sum{flex:none;padding:10px 14px;border-radius:3px;font-size:14px;color:#111;background:var(--warn)}.own-sum.good{background:var(--good)}.own-sum.bad{background:var(--bad);color:#fff}
+ .own-fb .fmd-st{min-width:150px}
+ .own-pr{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px}.own-pr span{display:flex;justify-content:space-between;padding:5px 10px;border-radius:3px;font-size:12px;background:var(--panel2)}.own-pr i{font-style:normal}
+ .own-ev{margin:0;font-size:13px;display:flex;gap:8px}.own-ev i{font-style:normal}.own-ev.good i{color:var(--good)}.own-ev.bad i{color:var(--bad)}
+ .own-fin>.btn{align-self:flex-start;margin-top:auto}.own-fin .fmd-kv{gap:3px 12px}
+ .own-adj .mt-door{width:100%}
+ .own-fb>.fmc{min-height:110px}
+ .own-w{display:grid;grid-template-columns:120px minmax(0,1fr) 34px;gap:4px 10px;align-items:center;font-size:12px}.own-w b{text-align:right;font:600 12px var(--f-num)}
+ .own-lg{margin-left:10px;font-weight:400;color:var(--muted)}.own-lg i{display:inline-block;width:10px;height:3px;margin:0 4px 2px 8px;vertical-align:middle;background:var(--good)}.own-lg i.p{background:var(--warn)}
+}
 /* FA 센터 */
 .fahero{display:grid;gap:3px;padding:14px 16px;border-radius:6px;margin-bottom:10px;background:linear-gradient(120deg,#1e2a3a,#141b22);border:1px solid var(--line2)}.fahero b{font:400 24px 'Black Han Sans',var(--f-ui)}.fahero span{font-size:13px;color:var(--muted)}
 .fahero.live{background:radial-gradient(circle at 10% 0%,#ffd24d33,transparent 50%),linear-gradient(120deg,#2a2210,#141b22);border-color:#c8922e}.fahero.live b{color:#ffe08a}
@@ -21228,6 +21280,38 @@ function ownerView(){
     <p class="small muted">구단주는 매달 말 보고를 받고 순위·여론·언론·재정을 함께 봅니다. 시즌이 끝나면 목표 달성 여부와 언론 논조가 신뢰에 크게 반영됩니다. 성향에 따라 무엇을 더 중시하는지가 다릅니다.</p>`)
    +(log?csec('월간 보고 기록',`<div class="ologs">${log}</div>`):'');
 }
+/* PC 구단주·목표(FM 구단 비전처럼): 왼쪽 목표 줄·평가 기록, 오른쪽 구단주 피드백, 아래 재정·요청 기록·요청 통계·예산 조정 */
+function ownerDash(){ prInit(); const t=team(G.user), ow=OWNER[t.owner], w=ow.w, s=goalStatus(), b=budget(), OL=G.ownerLog||[];
+  const pill=ok=>ok==null?'<span class="pill">시즌 전</span>':`<span class="pill ${ok?'good':'bad'}">${ok?'달성 중':'미달'}</span>`, pct=v=>Math.round(v*100)+'%';
+  const gr=(l,cat,wt,ok,cur)=>{ const [il,ik]=wt>=1.3?['필수 사항','must']:wt>=.8?['선호 사항','pref']:['희망 사항','hope']; return `<div class="og-r ${ik}"><b>${l}</b><span>${il}</span><span>${cat}</span><span>${cur}</span>${pill(ok)}</div>`; }; /* 중요도 = 구단주 성향의 평가 가중치 */
+  const hd=l=>`<div class="og-r og-h"><span>${l}</span><span>중요도</span><span>분류</span><span>현재</span><span>상태</span></div>`;
+  const goals=s?hd('올 시즌 목표')+gr(`정규시즌 ${s.rank.t}위 안에 들어라`,'성적',w[0],s.rank.cur?s.rank.ok:null,s.rank.cur?s.rank.cur+'위':'-')+gr(`모기업 적자 보전을 ${pct(s.sup.t)} 이하로 줄여라`,'재정',w[2],s.sup.ok,'예상 '+pct(s.sup.cur))+gr(`팬 여론을 ${s.fan.t} 이상으로 지켜라`,'여론',w[3],s.fan.ok,s.fan.cur)+(s.youth?gr('24세 이하 주전급을 1명 이상 키워라','육성',.8,s.youth.ok,s.youth.cur+'명'):''):'<p class="small muted">시즌 목표는 개막일에 구단주가 정합니다.</p>';
+  const info=hd('월간 보고 때 함께 보는 것')+gr('언론 논조를 38 아래로 떨어뜨리지 마라','언론',w[3]*.6+.4,G.pr.press>=38,Math.round(G.pr.press));
+  const H=(G.history||[]).filter(h=>h.user).slice(-4).reverse(), it=inTabs('own5',[['cur','현재 시즌'],...H.map(h=>[String(h.y),h.y+'년'])]);
+  const olog=L=>L.map(x=>`<div class="olog"><span class="pill ${x.mood==='만족'?'good':x.mood==='관망'?'':'bad'}">${x.m}월 ${x.mood}</span><p class="small">${esc(x.txt)}</p><span class="small muted">신뢰 ${x.trust} (${x.delta>=0?'+':''}${x.delta})</span></div>`).join('');
+  const kv=R=>`<dl class="fmd-kv">${R.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+  const plan=(()=>{ if(it.cur==='cur'){ const cy=OL.filter(x=>dobj(x.d).y===G.year); return fmArea([...cy.slice().reverse().map(x=>({l:x.m+'월',v:x.trust})),{l:'오늘',v:t.trust}],'var(--good)',v=>v)+`<div class="ologs">${olog(cy)||'<p class="small muted">구단주는 매달 말 보고를 받습니다. 첫 보고가 오면 여기에 쌓입니다.</p>'}</div>`; }
+    const h=H.find(x=>String(x.y)===it.cur), Ls=G.last&&G.last.y===h.y?G.last:null, u=h.user;
+    return kv([['정규시즌',`${u.w}승 ${u.l}패${u.t?` ${u.t}무`:''} · ${u.rank}위`],['순이익',money(u.net)],['시즌 말 구단주 신뢰',u.trust],...(Ls?[['신뢰 변화',`${Ls.trust.before} → ${Ls.trust.after} (${Ls.trust.delta>=0?'+':''}${Ls.trust.delta})`]]:[])])+(Ls&&Ls.goals&&Ls.goals.length?`<div class="ologs">${Ls.goals.map(g=>`<p class="small">${esc(g)}</p>`).join('')}</div>`:'')+`<div class="ologs">${olog(OL.filter(x=>dobj(x.d).y===h.y))}</div>`; })();
+  const band=t.trust>=60?['안정','good']:t.trust>=35?['보통','warn']:t.trust>=20?['불안','bad']:['위험','bad'];
+  const pv=clubPrestige(G.user), PL=G.teams.map(x=>clubPrestige(x.id)).sort((a,c)=>c-a), parts=clubPrestigeParts(G.user).filter(x=>x[0]!=='기본'&&Math.abs(x[1])>=.5);
+  const ev=(L,c,m)=>L.length?L.map(x=>`<p class="own-ev ${c}"><i>${m}</i>${esc(x)}</p>`).join(''):'<p class="small muted">아직 없습니다.</p>';
+  const LG=G.last&&G.last.y>=G.year-1&&G.last.goals||[];
+  const good=[...OL.filter(x=>x.mood==='만족').slice(0,4).map(x=>`${x.m}월 보고: ${x.txt}`),...LG.filter(g=>/달성/.test(g)&&!/미달/.test(g))], bad=[...OL.filter(x=>x.mood==='불만'||x.mood==='격노').slice(0,4).map(x=>`${x.m}월 보고: ${x.txt}`),...LG.filter(g=>/미달/.test(g))];
+  const GM=grants().filter(g=>g.by==='gm'), ok=GM.filter(g=>g.ok).length, n=GM.length||1, GR=grants().slice(0,10);
+  return `<div class="fmd own-d"><section class="card own-goal"><h3 class="fmd-h">구단주 목표</h3><p class="fmd-note">구단주가 정한 올 시즌 목표 · 매달 말 보고와 시즌 결산 때 평가합니다</p>${goals}${info}</section>
+    <section class="card own-plan"><h3 class="fmd-h">구단주 평가 기록</h3>${it.bar}${plan}</section>
+    <section class="card own-fb"><div class="fmd-top"><div><h3 class="fmd-h">구단주 피드백</h3><p class="small">구단주 성향 <b>${ow.label}</b> · ${esc(ow.msg)}</p></div><div class="fmd-st"><span>구단주 신뢰</span><b class="fmd-big">${t.trust}</b>${gauge(t.trust,25,60)}</div></div>
+      <div class="own-sum ${band[1]}">요약하자면, 구단주 신뢰는 <b>${band[0]}</b> 단계입니다.${OL[0]?` 최근 ${OL[0].m}월 보고는 '${OL[0].mood}'였습니다.`:''}${t.trust<25?' 시즌이 끝날 때 12 아래로 떨어지면 경질됩니다.':''}</div>
+      <h4 class="fmd-k">구단 명성 <span class="stars-t">${starTxt(prestigeStars(pv))}</span> ${pv}점 · 리그 ${PL.indexOf(pv)+1}위</h4><div class="own-pr">${parts.map(x=>`<span><i>${esc(x[0])}</i><b class="${x[1]>=0?'good':'bad'}">${x[1]>=0?'+':''}${Math.round(x[1])}</b></span>`).join('')||'<p class="small muted">기본 점수 외 요인이 없습니다.</p>'}</div>
+      <h4 class="fmd-k">주요 사건</h4>${ev(good,'good','▲')}<h4 class="fmd-k">주요 비판점</h4>${ev(bad,'bad','▼')}
+      <h4 class="fmd-k">구단주가 평가에 두는 비중 (${ow.label})</h4><div class="own-w">${[['정규시즌 순위',w[0]],['재정(적자 보전)',w[2]],['팬 여론',w[3]],['언론 논조',w[3]*.6+.4]].map(([l,v])=>`<span>${l}</span>${fmBar(v,1.8)}<b>${v.toFixed(1)}</b>`).join('')}</div>
+      <h4 class="fmd-k">팬 여론·언론 논조 추이 <span class="own-lg"><i class="f"></i>팬 여론 <i class="p"></i>언론 논조</span></h4>${(()=>{ const PH=[...(G.pr.hist||[]).slice(-12),{m:'오늘',fan:Math.round(G.pr.fan),press:Math.round(G.pr.press)}]; return fmArea(PH.map(x=>({l:x.m==='오늘'?x.m:x.m.split('.')[1]+'월',v:x.fan})),'var(--good)',v=>v,PH.map(x=>({v:x.press})),'var(--warn)'); })()}</section>
+    <section class="card own-fin"><h3 class="fmd-h">재정</h3>${kv([['보유 현금',money(t.cash)],['올해 예상 수입',money(b.I)],['올해 예상 지출',money(b.E)],['예상 수지',`<span class="${b.I-b.E>=0?'good':'bad'}">${money(b.I-b.E)}</span>`],...(b.indie?[]:[['모기업 지원 예상',money(b.support)],['지원 목표 · 한도',`${money(b.goalSup)} · ${money(b.cap)}`]]),['예산 여유',`<span class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</span>`],['국내 선수 연봉',`${money(b.ci.pay)} / ${money(b.ci.cap)}`]])}<button class="btn small" data-a="go" data-v="club:fin">재정 화면</button></section>
+    <section class="card own-req"><h3 class="fmd-h">구단주 요청 기록</h3>${GR.length?`<div class="rql">${GR.map(grantLine).join('')}</div>`:'<p class="small muted">아직 구단주에게 요청하거나 구단주가 주문한 지원이 없습니다.</p>'}</section>
+    <section class="card own-dat"><h3 class="fmd-h">요청 통계</h3><p class="small">역대 단장 요청</p><svg class="fmd-bar big" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="8" fill="var(--panel2)"/><rect width="${(ok/n*100).toFixed(1)}" height="8" fill="var(--good)"/><rect x="${(ok/n*100).toFixed(1)}" width="${((GM.length-ok)/n*100).toFixed(1)}" height="8" fill="var(--bad)"/></svg>
+      <p class="small"><b class="good">승인 ${ok}건(${Math.round(ok/n*100)}%)</b> · <b class="bad">반려 ${GM.length-ok}건(${Math.round((GM.length-ok)/n*100)}%)</b></p>${kv([['올해 단장 요청',GM.filter(g=>g.y===G.year).length+'건'],['재임 기간 단장 요청',GM.length+'건'],['구단주 먼저 주문',grants().filter(g=>g.by!=='gm').length+'건'],['올해 추가 지원',money(grantAmt())],['이번 달 요청',ownAskLeft()?'가능':'이미 함']])}</section>
+    <section class="card own-adj"><h3 class="fmd-h">예산 조정</h3>${t.indie?'<p class="small muted">독립구단이라 모기업 지원이 없습니다. 스폰서와 자체 수익으로 운영합니다.</p>':`${meetDoor('own')}<p class="small">지금 예산 여유 <b>${money(b.roomGoal)}</b>${b.extra>0?` · 예상보다 더 들어온 수입 <b class="good">${money(b.extra)}</b>(요청 근거)`:''}</p><p class="fmd-note">한 달에 한 번 요청할 수 있습니다. 승인 여부는 구단주 신뢰, 성향(${ow.label}), 순위, 요청 금액과 목적에 따라 달라지고, 반려되면 신뢰 -1입니다.</p>`}</section></div>`; }
 function mediaView(){
   prInit(); const P=G.pr; const f=Math.round(P.fan), pr=Math.round(P.press);
   const hist=P.hist.slice(-12);
@@ -21761,7 +21845,7 @@ function chronView(){ const tid=G.user; const t=team(tid); const C=(G.chron||[])
   return csec(`${esc(t.city)} ${esc(t.nick)} 연대기`,top)+csec('해마다 일어난 일',ys.length?ys.map(yc).join(''):'<p class="small muted">아직 기록이 없습니다. 시즌을 치르며 트레이드·지명·FA·수상·감독 교체가 여기에 쌓입니다.</p>'); }
 function clubView(){ return subTabs('club')+clubBody(curSub('club')); }
 function clubBody(s){
-  const H0={auth:authView,rel:relView,ob:obView,owner:()=>fmCols(prestigeCard()+ownerView()+starPanel()+ownerAskView()),media:mediaView,fans:fanBoard,build:teamBuildView,news:ourNewsView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,
+  const H0={auth:authView,rel:relView,ob:obView,owner:()=>fmOn()?ownerDash():fmCols(prestigeCard()+ownerView()+starPanel()+ownerAskView()),media:mediaView,fans:fanBoard,build:teamBuildView,news:ourNewsView,fin:moneyView,spon:sponView,stad:()=>stadView('now'),inv:invView,chron:chronView,ach:achView,
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
@@ -22228,7 +22312,9 @@ function teamsView(){
 function moneyView(){
   const t=team(G.user); const ci=capInfo(G.user);
   const f=G.last&&G.last.fins?G.last.fins[G.user]:null; const hs=G.history.filter(h=>h.user);
-  const it=inTabs('fin',[['bud','올해 예산'],['flow','수입·지출'],['lim','한도·캡'],['last','지난 결산']]);
+  const it=inTabs('fin',[['bud','올해 예산'],['flow','수입·지출'],['lim','한도·캡'],['last','지난 결산'],...(fmOn()?[['star','선수 홍보']]:[])]); /* PC 구단주 화면은 FM식 한 화면이라 선수 홍보 카드는 재정 쪽 탭으로 */
+  if(it.cur==='star')return it.bar+starPanel();
+  if(it.cur==='bud'&&fmOn())return it.bar+finDash();
   if(it.cur==='flow'||it.cur==='lim'){ const parts=budgetCards().split('<section class="card'); const pick=it.cur==='flow'?parts.find(x=>x.includes('어디에 쓰고 어디서 버나')):parts.find(x=>x.includes('용도별 한도')); return it.bar+(pick?'<section class="card'+pick:'')+(it.cur==='lim'?capCard(ci):''); }
   if(it.cur==='last')return it.bar+(f?`<section class="card"><h2 class="sec">${G.last.y} 결산</h2>${finTable(f)}</section>`:'<section class="card"><p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p></section>')+`<section class="card"><h2 class="sec">재임 기록</h2>${hs.length?`<div class="tw"><table><thead><tr><th>시즌</th><th>성적</th><th>순위</th><th>순이익</th><th>신뢰</th></tr></thead><tbody>${hs.map(h=>`<tr><td>${h.y}</td><td>${h.user.w}-${h.user.l}${h.user.t?'-'+h.user.t:''}</td><td>${h.user.rank}</td><td>${money(h.user.net)}</td><td>${h.user.trust}</td></tr>`).join('')}</tbody></table></div>`:'<p class="small muted">첫 시즌을 마치면 기록이 쌓입니다.</p>'}</section>`;
   { const parts=budgetCards().split('<section class="card'); return it.bar+finMonthCard()+parts.filter(x=>x&&!x.includes('어디에 쓰고 어디서 버나')&&!x.includes('용도별 한도')).map(x=>'<section class="card'+x).join('')+csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 마케팅 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`); }
@@ -22268,6 +22354,39 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
   <section class="card"><h2 class="sec">어디에 쓰고 어디서 버나</h2><div class="eyebrow">지출 (연간 예상)</div>${[...b.exp].sort((x,y)=>y[1]-x[1]).map(x=>row(x[0],x[1],emax,'ex')).join('')}
     <div class="eyebrow">수입 (연간 예상, 포스트시즌 배당 제외)</div>${b.inc.map(x=>row(x[0],x[1],imax,'in')).join('')}</section>`;
 }
+/* PC 그래프: 0을 기준선으로 한 면적 그래프(인라인 SVG). p:1인 끝 점들은 예상이라 점선 */
+function fmArea(P,col,fmt=money,Q,col2){ if(P.length<2){ P=[P[0],{...P[0],l:''}]; if(Q)Q=[Q[0],Q[0]]; } const V=[...P,...(Q||[])].map(p=>p.v), hi=Math.max(0,...V), lo=Math.min(0,...V), rg=hi-lo||1, n=P.length;
+  const X=i=>i/(n-1)*100, Y=v=>(hi-v)/rg*100, z=Y(0).toFixed(2), k=P.filter(p=>!p.p).length||1;
+  const pts=(L,o)=>L.map((p,i)=>`${X(i+o).toFixed(2)},${Y(p.v).toFixed(2)}`).join(' ');
+  const ty=[hi,lo<0&&hi>0?0:null,lo].filter((v,i,a)=>v!=null&&a.indexOf(v)===i);
+  return `<div class="fmc"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="100" y1="${z}" y2="${z}" stroke="var(--line)" vector-effect="non-scaling-stroke"/><polygon points="0,${z} ${pts(P.slice(0,k),0)} ${X(k-1).toFixed(2)},${z}" fill="${col}" fill-opacity=".16"/><polyline points="${pts(P.slice(0,k),0)}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/>${k<n?`<polyline points="${pts(P.slice(k-1),k-1)}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>`:''}${Q?`<polyline points="${pts(Q,0)}" fill="none" stroke="${col2}" stroke-width="2" vector-effect="non-scaling-stroke"/>`:''}</svg>${ty.map(v=>`<span class="fmc-y" style="top:${Y(v).toFixed(1)}%">${fmt(v)}</span>`).join('')}${P.map((p,i)=>p.l&&(n<=9||i%2===0||i===n-1)?`<span class="fmc-x" style="left:${X(i).toFixed(1)}%">${esc(p.l)}</span>`:'').join('')}</div>`; }
+function fmBar(v,mx,bad){ return `<svg class="fmd-bar" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="6" fill="var(--panel2)"/><rect width="${clamp(v/Math.max(1,mx)*100,0,100).toFixed(1)}" height="6" fill="var(${bad?'--bad':'--good'})"/></svg>`; }
+function fmBox(cls,h,big,stats,body){ return `<section class="card ${cls}"><div class="fmd-top"><div><h3 class="fmd-h">${h}</h3><b class="fmd-big">${big}</b></div>${stats.map(([k,v])=>`<div class="fmd-st"><span>${k}</span><b>${v}</b></div>`).join('')}</div>${body}</section>`; }
+/* PC 재정(FM 재정 화면처럼): 위 보유 현금 추이 · 예산 여유 추이, 아래 수입·지출, 오른쪽 예산 칸, 맨 아래 규정 준수 띠.
+   추이는 월말 재무팀 기록(G.finLog·G.finSnap)과 오늘 값, 결산 예상 현금(점선)으로 그린다 */
+function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=G.finLog||[], s=G.finSnap, last=L[L.length-1], st=!!(G.last&&G.last.y>=G.year);
+  const f=G.last&&G.last.fins?G.last.fins[G.user]:null, ml=m=>((m+10)%12+1)+'월', same=!!(s&&last&&s.cash===last.cash1&&s.room===last.room1);
+  const sg=v=>`<span class="${v>=0?'good':'bad'}">${v>=0?'+':''}${money(v)}</span>`;
+  const cash=[...(L.length?[{l:ml(L[0].m),v:L[0].cash0}]:[]),...L.map(x=>({l:x.m+'월',v:x.cash1})),...(s&&!same?[{l:dsh(s.d),v:s.cash}]:[]),{l:'오늘',v:t.cash},{l:dsh(finYearEnd())+' 결산',v:b.endCash,p:1}];
+  const room=[]; if(s&&s.y===G.year&&s.st===st){ let v=s.room,k=L.length-1; if(same){ while(k>=0&&L[k].y===s.y&&L[k].room1===v){ room.unshift({l:L[k].m+'월',v}); v=L[k].room0; k--; } room.unshift({l:ml(L[k+1].m),v}); } else room.push({l:dsh(s.d),v}); } /* 결산을 사이에 두면 다른 해 예산이라 이어 그리지 않는다 */
+  room.push({l:'오늘',v:b.roomGoal});
+  const chg=last&&last.y===G.year?last.top.slice(0,5):[];
+  const li=(A,c)=>{ const mx=Math.max(1,...A.map(x=>x[1])); return A.map(x=>`<div class="fmd-li"><span>${esc(x[0])}</span>${`<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><rect width="${(x[1]/mx*100).toFixed(1)}" height="8" fill="var(${c})"/></svg>`}<b>${money(x[1])}</b></div>`).join(''); };
+  const R=[['샐러리캡',!ci.over,ci.over?`상한을 ${money(ci.over)} 넘었습니다. 결산 때 경쟁균형세를 냅니다.`:`국내 선수 연봉 ${money(ci.pay)}이 상한 ${money(ci.cap)} 안입니다.`],
+    ...(G.year>=2027?[['샐러리캡 하한',ci.pay>=ci.floor,ci.pay>=ci.floor?`하한 ${money(ci.floor)} 이상입니다.`:`하한 ${money(ci.floor)}에 ${money(ci.floor-ci.pay)} 모자랍니다. 발전기금을 냅니다.`]]:[]),
+    ['외국인 선수 총액',b.fUsed<=b.fCap,`3명 총액 ${Math.round(b.fUsed/USD)}만 달러 · 한도 ${Math.round(b.fCap/USD)}만 달러`],
+    ...(b.indie?[]:[['구단주 지원 목표',b.support<=b.goalSup,`적자 보전 예상 ${money(b.support)} · 목표 ${money(b.goalSup)} 이하`]])];
+  const bud=`<section class="card fmd-bud"><h3 class="fmd-h">예산</h3>
+    <div class="fmd-s"><span class="fmd-k">구단주 목표 안 예산 여유</span><b class="fmd-big ${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</b>${b.indie?'<p>독립구단 · 모기업 지원 없음</p>':`<p>모기업 지원 예상 ${money(b.support)} · 목표 ${money(b.goalSup)}(한도의 ${Math.round(b.goalFrac*100)}%) · 한도 ${money(b.cap)}</p>${fmBar(b.support,b.cap,b.support>b.goalSup)}`}<p>${b.lockD!=null?dsh(b.lockD)+'에 시즌 예산 확정':'시즌 시작 때 예산 확정'}${b.extra?` · 예상보다 수입 ${b.extra>0?'+':''}${money(b.extra)}`:''}</p></div>
+    <div class="fmd-s"><span class="fmd-k">국내 선수 연봉 (샐러리캡)</span><b>${money(ci.pay)} / ${money(ci.cap)}</b>${fmBar(ci.pay,ci.cap,ci.over)}<p>${ci.over?`초과 ${money(ci.over)} · 경쟁균형세 부과`:`여유 ${money(ci.cap-ci.pay)}`}</p></div>
+    <div class="fmd-s"><span class="fmd-k">외국인 선수 (3명)</span><b>${Math.round(b.fUsed/USD)}만 / ${Math.round(b.fCap/USD)}만 달러</b>${fmBar(b.fUsed,b.fCap,b.fUsed>b.fCap)}<p>배정 예산 남음 ${money(b.fRoom)}${b.aUsed?` · 아시아쿼터 ${Math.round(b.aUsed/USD)}만 달러`:''}</p></div>
+    <div class="fmd-s"><span class="fmd-k">마케팅 예산</span>${period()==='pre'?marketingBody():`<b>${money(G.marketing)}</b><p>개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`}</div>
+    <div class="fmd-s"><span class="fmd-k">예산 조정</span><div class="fmd-acts"><button class="btn small" data-a="go" data-v="club:owner">구단주에게 요청</button><button class="btn small" data-a="itab" data-v="fin:lim">한도·캡 자세히</button><button class="btn small" data-a="itab" data-v="fin:star">선수 홍보</button></div></div></section>`;
+  return `<div class="fmd fin-d">${fmBox('fmd-cash','보유 현금',`<span class="${t.cash<0?'bad':''}">${money(t.cash)}</span>`,[['결산 후 예상 현금',money(b.endCash)],['결산일',dmd(finYearEnd())],['지난 결산 후 현금',f?money(f.cash):'기록 없음']],fmArea(cash,'var(--team-hi)')+'<p class="fmd-note">월말 재무팀 기록과 오늘 값 · 점선은 결산까지의 예상</p>')}
+    ${fmBox('fmd-room','예산 여유',`<span class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</span>`,[['올해 예상 수지',sg(b.I-b.E)],['모기업 지원 예상',b.indie?'없음':money(b.support)],['지난 시즌 순이익',f?sg(f.net):'기록 없음']],`<div class="fmd-row">${fmArea(room,'var(--warn)')}<div class="fmd-chg"><span class="fmd-k">${chg.length?last.m+'월에 바뀐 항목':'바뀐 항목'}</span>${chg.map(z=>`<div class="fmd-li2"><span>${z.kind} · ${esc(z.l)}</span>${sg(z.eff)}</div>`).join('')||'<p class="fmd-note">월말 재무팀 보고가 오면 예산 여유를 바꾼 항목이 여기에 쌓입니다.</p>'}</div></div>`)}
+    ${fmBox('fmd-inc','올해 예상 수입',money(b.I),[],`<div class="fmd-l">${li(b.inc,'--good')}</div><p class="fmd-note">${dmd(finYearEnd())} 결산까지 연간 예상 · 포스트시즌 배당 제외</p>`)}
+    ${fmBox('fmd-exp','올해 예상 지출',money(b.E),[],`<div class="fmd-l">${li([...b.exp].sort((x,y)=>y[1]-x[1]),'--warn')}</div>`)}
+    ${bud}<section class="card fmd-rule"><h3 class="fmd-h">규정 준수</h3><div class="fmd-rl">${R.map(([l,ok,d])=>`<div class="${ok?'ok':'ng'}"><b>${l} <span class="pill ${ok?'good':'bad'}">${ok?'준수':/하한/.test(l)?'미달':'초과'}</span></b><p>${d}</p></div>`).join('')}</div></section></div>`; }
 function fBudgetTag(cost){ const b=budget(); if(cost<=b.fRoom)return '<span class="pill good" title="외국인 배정 예산(시즌 전에 따로 떼어 둔 돈) 안에서 씁니다. 그래서 홈의 예산 여유는 줄지 않습니다">배정 예산 안 · 예산 여유 그대로</span>'; const ex=cost-b.fRoom; return b.roomGoal>=ex?`<span class="pill warn" title="외국인 배정 예산을 넘는 ${money(ex)}은 일반 예산에서 씁니다">배정 예산 초과 ${money(ex)} · 일반 예산 사용</span>`:b.roomMax>=ex?`<span class="pill warn">예산 초과 ${money(ex)}</span>`:'<span class="pill bad">자금 부족</span>'; }
 function budgetTag(cost){ const b=budget(); if(b.roomGoal>=cost)return `<span class="pill good">올해 부담 ${money(cost)} · 예산 안</span>`; if(b.roomCap>=cost||b.roomMax>=cost)return `<span class="pill warn">올해 부담 ${money(cost)} · 구단주 목표 초과</span>`; return `<span class="pill bad">올해 부담 ${money(cost)} · 자금 부족</span>`; }
 
@@ -23823,7 +23942,7 @@ function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
-  if(main.querySelector(':scope > .ws-own'))return; /* 화면이 스스로 칸을 나눠 높이를 채우는 경우(PC FM식 개요): 틀 높이만 주고 패널로 다시 묶지 않는다 */
+  if(main.querySelector(':scope > .ws-own,:scope > .fmd'))return; /* 화면이 스스로 칸을 나눠 높이를 채우는 경우(PC FM식 스태프·의료·일정·재정·구단주): 틀 높이만 주고 패널로 다시 묶지 않는다 */
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
@@ -25164,6 +25283,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04l',d:'11월 4일',t:'PC 재정·구단주 화면을 FM처럼',items:[
+    '재정 > 올해 예산(PC)을 FM 재정 요약처럼 바꿨습니다. 보유 현금 추이(점선은 결산까지 예상), 예산 여유 추이와 바뀐 항목, 올해 예상 수입·지출 막대, 오른쪽 예산 칸(지원 한도·샐러리캡·외국인 한도·마케팅·예산 조정 버튼), 아래 규정 준수 띠입니다. 선수 홍보는 PC에서 재정의 "선수 홍보" 탭으로 옮겼습니다.',
+    '구단주·목표(PC)를 FM 구단 비전처럼 바꿨습니다. 목표 줄(중요도·분류·지금 값·상태), 평가 기록(신뢰 추이), 구단주 피드백(요약·구단 명성 구성·주요 사건과 비판점·평가 비중·여론 추이), 아래 재정 요약·요청 기록·요청 통계·예산 조정입니다. 추이 그래프는 월말마다 점이 늘어납니다.']},
   {id:'2026-11-04k',d:'11월 4일',t:'PC 스태프·훈련·의료·일정을 FM처럼',items:[
     '스태프 > 코치진(PC)이 FM의 스태프 기본 정보처럼 세 칸으로 바뀌었습니다. 코치진, 스카우트·전력분석, 의무·부상 칸마다 위에 직책별 인원, 가운데 리그 10개 구단 비교 막대(우리 값·리그 최고·평균·최저와 순위), 아래 명단 표가 있습니다. 기존 보직 카드는 "보직 카드 보기"로 엽니다.',
     '훈련·육성에 "코치 배정" 탭을 추가했습니다. 타격·투구·수비·주루·2군 항목마다 지도하는 코치, 그 항목 지도 능력(별), 그 항목에 집중하는 선수와 지금 능력, 코치 부담(적음·보통·많음)을 보여 줍니다. 담당 코치가 없으면 바로 채용으로 갑니다.',

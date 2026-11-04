@@ -97,3 +97,55 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 /* 올 시즌 뒤 FA 예정자(다른 구단) 행: 선수 + 팀·등급·자격 상태 */
 .flr.fur{grid-template-columns:minmax(0,1fr) minmax(0,300px)}
 @media (max-width:620px){ .flr.fur{grid-template-columns:minmax(0,1fr)} }
+/* PC FM 대시보드(재정·구단주·목표): 화면을 상자로 빈틈없이 나누고, 넘치는 내용은 상자 안에서 스크롤 */
+@media(min-width:1100px){
+ .fmsh .ws-frame>.fmd{flex:1 1 auto;min-height:0}
+ .fmd{display:grid;gap:10px;min-height:0;overflow:auto;scrollbar-width:thin}
+ .fmd>.card{margin:0!important;min-width:0;min-height:0;overflow:auto;scrollbar-width:thin;display:flex;flex-direction:column;gap:6px;padding:10px 14px}
+ .fmd .good{color:var(--good)}.fmd .bad{color:var(--bad)}
+ .fmd-h{margin:0;font-size:12px;font-weight:600;color:var(--team-hi)}
+ .fmd-k{display:block;margin:6px 0 2px;font-size:11px;font-weight:600;color:var(--team-hi)}
+ .fmd-big{font:700 22px/1.15 var(--f-num)}
+ .fmd-note{margin:0;font-size:11px;color:var(--muted)}
+ .fmd-top{display:flex;align-items:flex-start;gap:28px;flex:none}.fmd-top>div:first-child{flex:1;min-width:0}
+ .fmd-st{display:grid;gap:1px;min-width:120px}.fmd-st span{font-size:11px;color:var(--team-hi)}.fmd-st b{font:700 15px var(--f-num)}
+ .fmc{position:relative;flex:1 1 auto;min-height:70px;margin:4px 8px 18px 70px}
+ .fmc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+ .fmc-y{position:absolute;right:100%;margin-right:6px;transform:translateY(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+ .fmc-x{position:absolute;top:100%;margin-top:3px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}.fmc-x:last-child{transform:translateX(-100%)}
+ .fmd-row{flex:1 1 auto;min-height:0;display:flex;gap:16px}.fmd-row>.fmc{flex:1}
+ .fmd-chg{flex:none;width:300px;overflow:auto;border-left:1px solid var(--line);padding-left:12px}
+ .fmd-li2{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+ .fmd-l{flex:1 1 auto;min-height:0;overflow:auto;scrollbar-width:thin;display:grid;grid-auto-rows:minmax(26px,1fr);align-content:stretch}
+ .fmd-li{display:grid;grid-template-columns:minmax(110px,40%) minmax(0,1fr) 72px;gap:10px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+ .fmd-li svg{width:100%;height:8px;background:var(--panel2)}.fmd-li b{text-align:right;font:600 12px var(--f-num)}
+ .fmd-bar{display:block;width:100%;height:6px;margin:3px 0}.fmd-bar.big{height:12px;margin:6px 0}
+ .fmd-s{display:grid;gap:2px;padding:8px 0;border-bottom:1px solid var(--line)}.fmd-s:last-child{border-bottom:0}
+ .fmd-s p{margin:0;font-size:11px;color:var(--muted)}.fmd-s>b{font:700 15px var(--f-num)}
+ .fmd-bud{justify-content:space-between}
+ .fmd-acts{display:grid;gap:6px}.fmd-acts .btn{width:100%}
+ .fmd-rl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+ .fmd-rl>div{padding:8px 12px;border-radius:3px;background:color-mix(in srgb,var(--good) 26%,var(--panel));border-left:4px solid var(--good)}
+ .fmd-rl>div.ng{background:color-mix(in srgb,var(--bad) 26%,var(--panel));border-left-color:var(--bad)}
+ .fmd-rl b{display:flex;justify-content:space-between;align-items:center;font-size:14px}.fmd-rl p{margin:2px 0 0;font-size:12px}
+ .fmd-kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:13px}.fmd-kv dt{color:var(--muted)}.fmd-kv dd{margin:0;text-align:right;font-family:var(--f-num)}
+ .fin-d{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px;grid-template-rows:minmax(170px,1fr) minmax(170px,1fr) minmax(200px,1.15fr) auto;grid-template-areas:"cash cash bud" "room room bud" "inc exp bud" "rule rule rule"}
+ .fmd-cash{grid-area:cash}.fmd-room{grid-area:room}.fmd-inc{grid-area:inc}.fmd-exp{grid-area:exp}.fmd-bud{grid-area:bud}.fmd-rule{grid-area:rule;overflow:visible!important}
+ .own-d{grid-template-columns:.95fr 1.35fr 1fr 1fr;grid-template-rows:auto minmax(170px,1fr) minmax(220px,29%);grid-template-areas:"goal goal fb fb" "plan plan fb fb" "fin req dat adj"}
+ .own-goal{grid-area:goal}.own-plan{grid-area:plan}.own-fb{grid-area:fb}.own-fin{grid-area:fin}.own-req{grid-area:req}.own-dat{grid-area:dat}.own-adj{grid-area:adj}
+ .og-r{display:grid;grid-template-columns:minmax(0,1fr) 84px 48px 80px 74px;gap:8px;align-items:center;padding:7px 10px;margin-top:4px;border-radius:3px;font-size:13px;background:var(--panel2)}
+ .og-r.must{background:color-mix(in srgb,var(--team-hi) 30%,var(--panel2))}.og-r.pref{background:color-mix(in srgb,var(--warn) 24%,var(--panel2))}
+ .og-r>.pill{justify-self:start}
+ .og-r.og-h{background:none;padding:6px 10px 0;font-size:11px;color:var(--muted)}.og-r.og-h>span:first-child{color:var(--ink);font-size:12px;font-weight:600}
+ .own-plan>.seg{flex:none;align-self:start}.own-plan>.fmc{min-height:60px}.own-plan>.ologs,.own-plan>.fmd-kv{flex:none}
+ .own-plan .ologs{display:grid;gap:6px}.own-plan .olog{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}.own-plan .olog p{margin:0}
+ .own-sum{flex:none;padding:10px 14px;border-radius:3px;font-size:14px;color:#111;background:var(--warn)}.own-sum.good{background:var(--good)}.own-sum.bad{background:var(--bad);color:#fff}
+ .own-fb .fmd-st{min-width:150px}
+ .own-pr{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px}.own-pr span{display:flex;justify-content:space-between;padding:5px 10px;border-radius:3px;font-size:12px;background:var(--panel2)}.own-pr i{font-style:normal}
+ .own-ev{margin:0;font-size:13px;display:flex;gap:8px}.own-ev i{font-style:normal}.own-ev.good i{color:var(--good)}.own-ev.bad i{color:var(--bad)}
+ .own-fin>.btn{align-self:flex-start;margin-top:auto}.own-fin .fmd-kv{gap:3px 12px}
+ .own-adj .mt-door{width:100%}
+ .own-fb>.fmc{min-height:110px}
+ .own-w{display:grid;grid-template-columns:120px minmax(0,1fr) 34px;gap:4px 10px;align-items:center;font-size:12px}.own-w b{text-align:right;font:600 12px var(--f-num)}
+ .own-lg{margin-left:10px;font-weight:400;color:var(--muted)}.own-lg i{display:inline-block;width:10px;height:3px;margin:0 4px 2px 8px;vertical-align:middle;background:var(--good)}.own-lg i.p{background:var(--warn)}
+}
