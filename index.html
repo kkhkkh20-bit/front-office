@@ -1291,6 +1291,9 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 /* 창단 드래프트 구단 고르기: 오른쪽 자금 칸. 굵은 숫자가 위 설명과 겹치던 것을 줄 간격을 두고 세 줄로 */
 .tp-r.tp-rf{display:flex;flex-direction:column;align-items:flex-end;gap:4px;line-height:1.2;min-width:0;flex:none;text-align:right;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.04)}
 .tp-r.tp-rf i{font-size:11px;color:var(--muted)}.tp-r.tp-rf b{font-size:22px;line-height:1.1;font-family:'Black Han Sans',sans-serif;letter-spacing:.3px}.tp-r.tp-rf span{font-size:11.5px;color:var(--muted)!important;white-space:nowrap}
+
+/* FA 예정자(휴대폰): 구단·등급·자격·전망을 한 줄로 */
+.fur{padding:3px 0;gap:0;border-bottom:1px solid var(--line)}.fur .pm{padding:1px 0;background:none;border:0;min-height:0}.fur .pm b,.fur .pm i{line-height:1.25}.fur>.small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
 /* 읽기·누르기 개선: 작은 글씨 11px, 버튼 높이 30px 이상 */
 .tc-rt span,.tc-tools span,.tc-tools i,.teamc-top i,.fsq em,.sbr .small,.pc-l,.cnd,table.rt i.f,.trend,.rd,.tp-r i,.tp-g i,.posfit i,table.tcmp td i,.cmp-k i,.sl span,.growth span,.prchart span{font-size:11px}
 button.pill,.pill[data-a]{min-height:30px;display:inline-flex;align-items:center;padding-top:0;padding-bottom:0}
@@ -4581,6 +4584,8 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .r2tr{display:table-row}#app .r2tr>td{padding:6px 0 2px}#app .r2tr .r2link{margin:0;width:100%}
  #app .ws-panels>.roster-list.card{padding:6px 8px;gap:4px}
 }
+/* 코치 보직 표(휴대폰): 펼친 카드는 표 폭 그대로 */
+.cslt td,.cslt th{vertical-align:middle;text-align:left}.cslt .pn>span{display:block;line-height:1.25}.cslt .pn small{display:block;font-size:11px;color:var(--muted)}.cslt .pn .av{width:24px;height:24px}.cslt tr.on>td{background:var(--panel2)}.cslt-x>td{padding:4px 0 8px;white-space:normal}.cslt-x .csl{border:0;padding:0}
 </style>
 </head>
 <body>
@@ -19499,8 +19504,9 @@ function faCenter(){ return compView()+(fmOn()?faFM():faCenter0()); }
 function faCenter0(){ const F=G.fa;
   if(!faLive()){ const U=faUpcoming(); const nx=U.filter(x=>x.p.team===G.user).map(x=>x.p).sort((a,b)=>ovr(b)-ovr(a));
     const res=F&&F.results&&F.results.length?`<div class="feed">${F.results.slice(0,10).map(r=>`<div class="fd"><span class="pill">${r.grade}</span><span>${esc(r.name)} · ${esc(tshort(r.from))} → <b>${esc(tshort(r.to))}</b> ${esc(ctRecShort(r))}</span><i>${dsh(r.day)}</i></div>`).join('')}</div>`:'';
-    return `<div class="fahero"><b>FA 시장</b><span>포스트시즌 뒤 11월 2일 공시 · 11월 6일 협상 시작 · 1월 24일(캠프 전날) 사실상 마감</span></div>
-      <section class="card"><h2 class="sec">올겨울 FA가 될 우리 선수</h2>${nx.length?`<div class="fl">${nx.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">예상 ${faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null))}등급(FA 보상 기준)</span>${canExtend(p)?`<button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`:'<span class="flx"></span>'}</div>`).join('')}</div>`:'<p class="small muted">없습니다.</p>'}<p class="small muted">FA가 되기 전에 비FA 다년계약으로 묶어 둘 수 있습니다.</p></section>${faUpcomingCard(U)}
+    /* 시장 열리기 전: 일정은 한 줄 안내(패널 밖), 첫 칸은 FA 예정자 목록 */
+    return `<p class="small muted fa-sched"><b>FA 시장</b> 포스트시즌 뒤 11월 2일 공시 · 11월 6일 협상 시작 · 1월 24일(캠프 전날) 사실상 마감</p>${faUpcomingCard(U)}
+      <section class="card"><h2 class="sec">올겨울 FA가 될 우리 선수</h2>${nx.length?`<div class="fl">${nx.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">예상 ${faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null))}등급(FA 보상 기준)</span>${canExtend(p)?`<button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`:'<span class="flx"></span>'}</div>`).join('')}</div>`:'<p class="small muted">없습니다.</p>'}<p class="small muted">FA가 되기 전에 비FA 다년계약으로 묶어 둘 수 있습니다.</p></section>
       ${res?`<section class="card"><h2 class="sec">지난 FA 계약</h2>${res}</section>`:''}${freeCard()}`; }
   const ids=F.pool.filter(id=>G.players[id]&&G.players[id].team==null).sort((a,b)=>G.players[b].ask.annual-G.players[a].ask.annual);
   const open=G.day>=F.openDay; const d1=open?G.day-F.openDay+1:F.openDay-G.day; const left=KD(1,24)>G.day?KD(1,24)-G.day:dnum(G.year+1,1,24)-G.day;
@@ -19533,10 +19539,9 @@ function faUpcomingCard(U){ const all=Object.values(G.players).filter(q=>q.team!
   const f=UI.fuF||'all'; const R=L.filter(x=>f==='all'||(f==='P'?x.p.isP:f==='H'?!x.p.isP:f==='sure'?x.sure&&x.dp>=.8:true)).map(x=>({...x,g:faGradeOf(x.p,all)})).sort((a,b)=>b.p.sal-a.p.sal);
   const st=faUpSt, dl=faUpDl;
   const nA=R.filter(x=>x.g==='A').length, nB=R.filter(x=>x.g==='B').length; const b=budget(); const lim=UI.fuAll?R.length:15;
-  return `<section class="card"><div class="row between"><h2 class="sec">올 시즌 뒤 FA 예정자 · 다른 구단</h2><span class="small muted">${L.length}명 · 예상 A등급 ${nA} · B등급 ${nB}</span></div>
-    <p class="small sdesc">FA 계약이 끝나는 선수, 자격을 채운 선수, 올해 1군 등록일수를 채우면 자격을 얻는 선수입니다. 실제로 시장에 나올지는 선수가 정합니다(가치가 애매하면 신청하지 않고 남습니다). 외부 FA는 한 겨울에 2~3명까지 데려올 수 있고, A·B등급은 원 소속 구단에 보상(선수 또는 연봉의 200~300%)을 줘야 합니다. 지금 예산 여유 ${money(Math.round(b.roomGoal))}.</p>
+  return `<section class="card"><div class="row between"><h2 class="sec">올 시즌 뒤 FA 예정자 · 다른 구단<button type="button" class="hi-i" data-tip="FA 계약이 끝나는 선수, 자격을 채운 선수, 올해 1군 등록일수를 채우면 자격을 얻는 선수입니다. 실제로 시장에 나올지는 선수가 정합니다(가치가 애매하면 신청하지 않고 남습니다). 외부 FA는 한 겨울에 2~3명까지 데려올 수 있고, A·B등급은 원 소속 구단에 보상(선수 또는 연봉의 200~300%)을 줘야 합니다. 지금 예산 여유 ${money(Math.round(b.roomGoal))}.">i</button></h2><span class="small muted">${L.length}명 · 예상 A등급 ${nA} · B등급 ${nB}</span></div>
     <div class="chips">${[['all','전체'],['sure','신청 유력'],['P','투수'],['H','야수']].map(([k,l])=>`<button class="${f===k?'on':''}" data-a="fuF" data-v="${k}">${l}</button>`).join('')}</div>
-    ${R.length?`<div class="fl">${R.slice(0,lim).map(x=>{ const [d,c]=dl(x); return `<div class="flr fur">${pMini(x.p)}<span class="small">${badge(x.p.team,14)} ${esc(tshort(x.p.team))} · <b>예상 ${x.g}등급</b><br><span class="muted">${st(x)}</span> · <span class="${c}">${d}</span></span></div>`; }).join('')}</div>`:'<p class="small muted">조건에 맞는 선수가 없습니다.</p>'}
+    ${R.length?`<div class="fl">${R.slice(0,lim).map(x=>{ const [d,c]=dl(x); return `<div class="flr fur">${pMini(x.p)}<span class="small">${badge(x.p.team,14)} ${esc(tshort(x.p.team))} · <b>예상 ${x.g}등급</b> · <span class="muted">${st(x)}</span> · <span class="${c}">${d}</span></span></div>`; }).join('')}</div>`:'<p class="small muted">조건에 맞는 선수가 없습니다.</p>'}
     ${R.length>15?`<button class="btn small" data-a="fuAll">${UI.fuAll?'15명만 보기':`전체 ${R.length}명 보기`}</button>`:''}</section>`; }
 
 /* ---------- PC(FM식) 영입·계약 공통: 위 요약 줄 + 왼쪽 큰 표 + 오른쪽 세부 칸. 상자 안에서만 스크롤(34b_staff_fm.js와 같은 방식) ---------- */
@@ -22838,7 +22843,7 @@ function myBoard(all,mine){ const L=(G.shortlist||[]).map(id=>all.find(x=>x.p.id
 function draftBoard(){
   const live=G.draft&&!G.draft.done; const d=G.draft; const pk=live?d.picks[d.cur]:null; const mine=!!(pk&&pk.tid===G.user);
   const pool=draftPool();
-  if(!pool.length&&!live)return csec('신인 드래프트',`<p class="small muted keep">올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`)+(d&&d.done?draftResults():'');
+  if(!pool.length&&!live)return `<p class="small muted keep"><b>신인 드래프트</b> 올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`+(d&&d.done?draftResults():''); /* 안내는 패널 밖 한 줄, 칸은 지명 결과에 */
   const all=pool.map(p=>({p,rp:scoutReport(p)})).sort((a,b)=>dval(b.rp)-dval(a.rp)); all.forEach((x,i)=>x.rk=i+1);
   const f=UI.df||(UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'board',more:20});
   const noScout=REG.filter(r=>!G.scouts.some(s=>s.region===r));
@@ -23197,6 +23202,9 @@ function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* P
   const cs=coachesOf(G.user); const vac1=CKEYS.some(k=>CROLE[k].g===1&&!cs[k]), vac2=CKEYS.some(k=>CROLE[k].g===2&&!cs[k]);
   if(UI._smk){ UI.cmode=UI.smkSrc==='oth'?'other':'free'; return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+coachMarket(); } /* 스태프 시장 */
   const slots=[...CKEYS.filter(k=>cs[k]),...CKEYS.filter(k=>!cs[k])],PG=pager('coachSlots',slots,cardPageSize());
+  if(!fmOn()){ /* 휴대폰·태블릿: 보직 9개를 한 표로, 행을 누르면 그 아래에 코치 카드 */
+    const tr=k=>{ const c=cs[k],op=UI.cslot===k; return `<tr class="click${op?' on':''}" data-a="cslotTg" data-v="${k}"><td><b>${CROLE[k].l}</b></td>${c?`<td><span class="pn">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user})}<span><b>${esc(c.name)}</b> <i class="muted">${c.age}세</i><small>${money(c.sal)} · 잔여 ${Math.max(0,c.yrs)}년</small></span></span></td><td>${rchip(effC(c,G.user,'sk'))}</td><td>${rchip(effC(c,G.user,'dv'))}</td>`:`<td colspan="3"><span class="pill bad">빈자리</span> <button class="btn small primary" data-a="coachFind" data-v="${k}">후보 보기</button></td>`}</tr>${op&&c?`<tr class="cslt-x"><td colspan="4">${coachSlot(k)}</td></tr>`:''}`; };
+    return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+csec('1군·2군 코치 보직',`<div class="tw"><table class="sqt cslt"><thead><tr><th>보직</th><th>코치</th><th>지도</th><th>육성</th></tr></thead><tbody>${slots.map(tr).join('')}</tbody></table></div>`,`<span class="small muted">${slots.length}개 보직 · 행을 누르면 상세</span>`)+sumC+smkLink('coach','코치 채용'); }
   return (fmOn()?'<div class="ws-own sfw">':'')+(UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+(fmOn()?'<div class="row" style="margin-bottom:8px"><button class="btn small" data-a="sfCards">◀ 스태프 개요</button></div>':'')+csec('1군·2군 코치 보직',`<nav class="seg coach-slot-jump" aria-label="우리 코치 보직 바로가기">${slots.map(k=>`<button data-a="coachSlot" data-v="${k}" class="${(PG.items.includes(UI.cslot)?UI.cslot:PG.items[0])===k?'on':''}">${CROLE[k].l}${cs[k]?'':' <i class="cnt" style="background:var(--bad);color:#fff">빈자리</i>'}</button>`).join('')}</nav><div class="cgrid">${PG.items.map(coachSlot).join('')}</div>${PG.bar}`,`<span class="small muted">${slots.length}개 보직 · ${vac1||vac2?'빈 보직은 뒤 페이지에서 확인':'전원 배치'}</span>`)+sumC+smkLink('coach','코치 채용')+(fmOn()?'</div>':''); }
 /* 스태프 시장(FM의 스태프 찾기처럼 한 곳): 감독·코치·스카우트·분석원 후보와 다른 구단 소속 스태프 */
 function smkLink(k,l){ return `<div class="row" style="margin:8px 0"><button class="btn small" data-a="smkGo" data-v="${k}">${l} → 스태프 시장</button></div>`; }
@@ -24711,6 +24719,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   rviewMode(v){UI.rlayout=v;render();},
   cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ UI.cmkOpen=UI.cmkOpen===+v?null:+v; render(); },
   sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
+  cslotTg(v){ UI.cslot=UI.cslot===v?null:v; render(); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
   crole(v){ UI.crole=v; render(); },
@@ -25422,11 +25431,16 @@ function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
     const btn=w.from===G.user?'<span class="pill">우리가 공시</span>':!w.ok?'<span class="pill">양수 신청 불가(기간 밖)</span>':G.unemp?'':`<button class="btn small ${on?'':'primary'}" data-a="wvClaim" data-v="${p.id}">${on?'신청 취소':'양수 신청'}</button>`;
     return `<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(w.c.sal)}${w.c.yrs>1?` · ${w.c.yrs}년 남음`:''} · 전 ${esc(tshort(w.from))} · ${dsh(w.end)}까지</span></span>${btn}</div>`; };
   const log=(G.wvLog||[]).slice(0,8).map(r=>`<p class="small">${dsh(r.d)} <button class="lnk" data-a="player" data-v="${r.pid}">${esc(r.n)}</button> ${esc(tshort(r.from))} → ${r.to!=null?esc(tshort(r.to))+' (계약 승계)':'자유계약'}</p>`).join('');
-  return csec('웨이버 공시',`<p class="small muted">KBO 규약: 시즌 중·겨울에 방출한 등록 선수는 ${WV_DAYS}일 동안 웨이버 공시됩니다. 양수를 신청한 구단 중 지금 성적이 낮은 구단이 남은 계약을 그대로 이어받고, 방출한 구단은 낸 정산금을 돌려받습니다. 아무도 신청하지 않으면 자유계약 선수가 됩니다. 7월 25일 이후 공시는 양수 신청을 받지 않고, 11월 보류선수 정리는 웨이버 없이 바로 자유계약입니다.</p>
+  const rule=`KBO 규약: 시즌 중·겨울에 방출한 등록 선수는 ${WV_DAYS}일 동안 웨이버 공시됩니다. 양수를 신청한 구단 중 지금 성적이 낮은 구단이 남은 계약을 그대로 이어받고, 방출한 구단은 낸 정산금을 돌려받습니다. 아무도 신청하지 않으면 자유계약 선수가 됩니다. 7월 25일 이후 공시는 양수 신청을 받지 않고, 11월 보류선수 정리는 웨이버 없이 바로 자유계약입니다.`;
+  if(!L.length&&!log)return `<p class="small muted"><b>웨이버 공시</b> 지금 공시 중인 선수가 없습니다.${hiI(rule)}</p>`; /* 비어 있으면 칸 대신 한 줄 */
+  return csec('웨이버 공시',`<p class="small muted">${rule}</p>
     ${L.length?L.map(row).join(''):'<p class="small muted">지금 공시 중인 선수가 없습니다.</p>'}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
 function sdBox(){ const S=G.sd2&&G.sd2.y===G.year?G.sd2:null;
   const rule=hiI(`KBO 2차 드래프트는 홀수 해 11월에 열립니다. 구단마다 보호선수 ${SD_PROT}명을 내고, 다른 구단이 지난 시즌 성적 역순으로 명단 밖 선수를 ${SD_RD}라운드까지(하위 3개 구단은 5라운드) 지명합니다. 한 구단에서 최대 ${SD_LOSS}명. 양도금 1라운드 4억·2라운드 3억·3라운드 2억·4라운드 이하 1억. 1·2라운드 지명자는 두 시즌 안에 1군 ${SD_REG[0]}일·${SD_REG[1]}일을 채우지 못하면 원소속 구단으로 돌아갑니다. 외국인·입단 1~3년 차·육성선수·군 보류·이번 겨울 FA 계약 선수는 대상이 아닙니다.`);
-  if(!S){ let y=G.year+(G.sd2&&G.sd2.y===G.year?1:0); while(!sdYear(y))y++; return csec('2차 드래프트'+rule,`<p class="small">다음 2차 드래프트: ${y}년 11월</p>`); }
+  if(!S){ let y=G.year+(G.sd2&&G.sd2.y===G.year?1:0); while(!sdYear(y))y++; /* 대기 중: 지금 운영팀 추천 기준으로 보호 명단 밖이 될 선수를 미리 보여 준다 */
+    const pool=sdPool(G.user), prot=new Set(sdProtAI(G.user)), out=pool.filter(p=>!prot.has(p.id)).sort((a,b)=>ovr(b)-ovr(a));
+    const row=p=>`<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(p.sal)}</span></span></div>`;
+    return csec('2차 드래프트'+rule,`<p class="small">다음 2차 드래프트: ${y}년 11월 · 지금 보호 대상 ${pool.length}명 중 ${prot.size}명 보호(운영팀 추천 기준)</p><div class="eyebrow" style="margin-top:8px">지금이라면 명단 밖이 될 선수 ${out.length}명</div>${out.map(row).join('')||'<p class="small muted">없습니다.</p>'}`); }
   if(S.stage==='protect'){ if(G.unemp)return csec('2차 드래프트'+rule,`<p class="small">보호선수 명단 제출 중(${dsh(S.exp)}까지)</p>`);
     const pool=sdPool(G.user).sort((a,b)=>ovr(b)-ovr(a)); if(!UI.sdProt||UI.sdProtY!==S.y){ UI.sdProt=[...(S.prot[G.user]||sdProtAI(G.user))]; UI.sdProtY=S.y; }
     const P=new Set(UI.sdProt.filter(id=>pool.some(p=>p.id===id))); const PG=pager('sdp',pool,15);
