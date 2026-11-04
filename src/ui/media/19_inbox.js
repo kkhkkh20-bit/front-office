@@ -93,9 +93,31 @@ function inboxView(){
   if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=order[ids.indexOf(UI.ibOpen)];
       return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav)}`; }
     UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}</nav>`; }
-  const pane=si>=0?mailCard(order[si],nav):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
-  return bar+`<div class="ibx"><div class="ibx-lw"><nav class="ibx-list" aria-label="소식 목록">${rows}</nav><button class="ibx-up" data-a="ibTop" hidden>맨 위로 ↑</button></div><div class="ibx-read">${pane}</div></div>`;
+  const pane=si>=0?(fmOn()?`<div class="ibx-fm">${mailCard(order[si],nav)}${ibAtt(order[si])}</div>`:mailCard(order[si],nav)):fmOn()?ibDash(need):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
+  return bar+`<div class="ibx"><div class="ibx-lw">${fmOn()&&si>=0?ibFrom(order[si]):''}<nav class="ibx-list" aria-label="소식 목록">${rows}</nav><button class="ibx-up" data-a="ibTop" hidden>맨 위로 ↑</button></div><div class="ibx-read">${pane}</div></div>`;
 }
+/* PC(FM식): 목록 칸 위에 보낸 사람 큰 얼굴, 소식 본문 아래에 첨부 자료 상자들(관련 선수·능력·기록·같은 사람의 소식) */
+function ibPid(m){ return typeof m.face==='number'&&G.players[m.face]?m.face:m.ref!=null&&G.players[m.ref]?m.ref:null; }
+function ibFrom(m){ return `<div class="ibs-from"><div class="ibs-face">${senderAv(m)}</div><b>${esc(m.from)}</b><span>${IB_CATN[ibCat(m)]||'소식'} · ${dmd(m.day)} ${WD[dobj(m.day).w]}요일</span></div>`; }
+function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`, T=[];
+  if(p){ const rp=scoutReport(p), h=seasonTotal(p,G.year,'1군'), cur=rp.cur==null?'?':dv(rp.cur), pot=rp.ofp==null?'미확인':potTierP(rp,p).s;
+    T.push(`<section class="card ibs-box ibs-pl"><h3>관련 선수</h3><div class="ibs-plh">${avImg(p,true)}<div><b>${esc(p.name)}</b><span>${esc(posLabel(p))} · ${p.age}세${p.team!=null?' · '+esc(tshort(p.team)):''}</span></div></div><div class="ibs-key"><div><span>현재 종합</span><b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b></div><div><span>잠재력</span><b class="t">${esc(pot)}</b></div></div><button class="btn small block" data-a="player" data-v="${p.id}">선수 정보 보기</button></section>`);
+    const keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit'], tl=keys.map(k=>{ const t=(rp.tools||[]).find(t=>t.k===k); return t?{k,v:rp.exact?p.r[k]:t.cur}:null; }).filter(Boolean);
+    if(tl.length)T.push(`<section class="card ibs-box"><h3>핵심 능력</h3><div class="ibs-core">${tl.map(t=>`<div><span>${TOOLK[t.k]}</span><b style="color:${rcol(t.v)}">${dv(t.v)}</b></div>`).join('')}</div>${l10Text(p)?`<p class="ibs-form">${l10Text(p)}</p>`:''}</section>`);
+    T.push(`<section class="card ibs-box"><h3>기록·계약</h3>${row('올해 1군',esc(statLine(h,p)))}${row('연봉',money(p.sal||0))}${row('계약',esc(ctText(p)))}${row('병역',esc(milText(p)))}${p.injOut>0?row('부상','약 '+p.injOut+'일 이탈'):row('컨디션','피로 '+Math.round(p.fat||0))}</section>`); }
+  const same=G.mail.filter(x=>x.from===m.from&&x.id!==m.id).slice(0,6), cat=G.mail.filter(x=>x.id!==m.id&&x.from!==m.from&&ibCat(x)===ibCat(m)).slice(0,6);
+  const li=x=>`<button class="ibs-li" data-a="mailJump" data-v="${x.id}"><span>${dmd(x.day)}${x.from!==m.from?' · '+esc(x.from):''}</span><b>${esc(x.subj)}</b></button>`;
+  T.push(`<section class="card ibs-box"><h3>${esc(m.from)}의 다른 소식</h3>${same.length?same.map(li).join(''):'<p class="small muted">다른 소식이 없습니다.</p>'}</section>`);
+  if(!p)T.push(`<section class="card ibs-box"><h3>같은 분류 최근 소식 · ${IB_CATN[ibCat(m)]||''}</h3>${cat.length?cat.map(li).join(''):'<p class="small muted">다른 소식이 없습니다.</p>'}</section>`);
+  return `<div class="ibx-att" data-n="${T.length}">${T.join('')}</div>`; }
+/* PC(FM식): 소식을 고르기 전 오른쪽은 빈 안내 대신 요약 상자들 */
+function ibDash(need){ const N=ibNeedList().slice(0,6), D=ibDecideList().slice(0,6), cats=IB_CAT.filter(c=>!['all','task'].includes(c[0]));
+  const li=x=>`<button class="ibs-li" data-a="mailJump" data-v="${x.id}"><span>${dmd(x.day)} · ${esc(x.from)}</span><b>${esc(x.subj)}</b></button>`;
+  const latest=G.mail.slice(0,8);
+  return `<div class="ibx-dash"><section class="card ibs-box"><h3>확인할 소식 <em>${need}건</em></h3>${N.length?N.map(li).join(''):'<p class="small muted">새로 확인할 소식이 없습니다.</p>'}${need?'<button class="btn primary small block" data-a="ibNeedGo">확인할 소식 차례로 열기</button>':''}</section>
+    <section class="card ibs-box"><h3>결정할 일 <em>${D.length}건</em></h3>${D.length?D.map(x=>li(x).replace('</span>',ibDue(x)!=null?` · D-${Math.max(0,ibDue(x)-G.day)}</span>`:'</span>')).join(''):'<p class="small muted">답을 기다리는 일이 없습니다.</p>'}</section>
+    <section class="card ibs-box"><h3>분류별 안 읽음</h3><div class="ibs-cats">${cats.map(([k,l])=>{ const n=mailFilter(k).filter(m=>!m.read).length; return `<button data-a="mf" data-v="${k}"><span>${l}</span><b>${n}</b></button>`; }).join('')}</div><p class="small muted">스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p></section>
+    <section class="card ibs-box"><h3>최근 소식</h3>${latest.map(li).join('')}</section></div>`; }
 /* 화면에 보인 메일은 읽음으로. 다시 그리지 않고 표시만 바꾼다 */
 let _ibSave=null, _ibOn=false, _ibRaf=0;
 function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m||m.read)return; m.read=true; for(const d of ((UI._ibDup||{})[id]||[])){ const q=G.mail.find(x=>x.id===d); if(q)q.read=true; }
