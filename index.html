@@ -506,6 +506,28 @@ button.sb-i{cursor:pointer}button.sb-i:hover{border-color:var(--line2)}
 .mday{padding:6px 12px 4px;font:600 11px var(--f-ui);color:var(--dim);background:#0b1014;border-top:1px solid var(--line);letter-spacing:.03em}
 .list>.mday:first-child{border-top:0}
 .btns3{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px}
+/* PC 일정(27_calendar.js calFM): 위 한 주 띠, 아래 왼쪽 경기 목록 · 오른쪽 고른 날 상세 */
+@media(min-width:1100px){
+  .sch{display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-rows:auto minmax(0,1fr);gap:10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  main.ws-frame>.sch{height:auto}
+  .sch>.card{margin:0;min-height:0}
+  .sch-wk{grid-column:1/3;display:flex;flex-direction:column;gap:8px}
+  .sch-nav b{font-size:15px}.sch-nav .row{gap:6px;align-items:center}
+  .sch-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .sch-d{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:8px;min-height:150px;border-left:1px solid var(--line);background:var(--panel)}.sch-d:first-child{border-left:0}
+  .sch-d.past{background:color-mix(in srgb,var(--panel) 70%,#000)}.sch-d.today .sch-n b{color:var(--team-hi,#4fa3ff)}.sch-d.sel{box-shadow:inset 0 0 0 2px var(--team-hi,#4fa3ff)}.sch-d:hover{background:var(--panel2)}
+  .sch-n{font-size:12px;color:var(--muted)}.sch-n b{font:700 18px var(--f-num);color:var(--ink);margin-right:6px}
+  .sch-g{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:3px;background:var(--panel2);border-left:3px solid var(--muted)}.sch-g.h{border-left-color:var(--team-hi,#4fa3ff)}.sch-g.w{background:color-mix(in srgb,var(--good) 16%,var(--panel2))}.sch-g.l{background:color-mix(in srgb,var(--bad) 16%,var(--panel2))}
+  .sch-g>span{display:grid;min-width:0}.sch-g i{font-style:normal;font-size:10.5px;color:var(--muted)}.sch-g b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sch-g em{font-style:normal;font:700 12px var(--f-num)}
+  .sch-e{font-size:11.5px;padding:2px 6px;border-left:3px solid var(--ec);background:color-mix(in srgb,var(--ec) 12%,transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sch-e.more{border-left-color:var(--line);color:var(--muted)}
+  .sch-list{display:flex;flex-direction:column;overflow:hidden}.sch-list h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff)}.sch-list h3 em{font-style:normal;color:var(--muted);font-weight:500;margin-left:8px}
+  .sch-t tr[data-a]{cursor:pointer}.sch-t tr[data-a]:hover td{background:var(--panel2)}.sch-t tr.sel td{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 16%,transparent)}.sch-t tr.today td:first-child{box-shadow:inset 3px 0 var(--team-hi,#4fa3ff)}
+  .sch-t.sf-t td:last-child{text-align:left}.sch-t.sf-t .sch-mh td{text-align:left;background:var(--panel2);font-size:11px;color:var(--muted);padding:3px 6px}
+  .sch-r{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;color:#fff;background:var(--muted)}.sch-r.w{background:var(--good)}.sch-r.l{background:var(--bad)}
+  .sch-sp i{font-style:normal;color:var(--muted);font-size:11px}
+  .sch-op .ibd-sec{padding:0;border:0}.sch-op .ibd-form{grid-template-columns:minmax(0,1fr)}
+  .sch-side{min-height:0;overflow:auto;scrollbar-width:thin;display:flex;flex-direction:column;gap:10px}.sch-side>.card{margin:0}
+}
 /* 중계 */
 .pbp{display:grid;gap:8px}
 .pbp-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pbp-sc{font-size:20px;font-weight:700}
@@ -3366,6 +3388,75 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .staff-talk{gap:5px}.staff-talk .btn,.staff-talk .tc-i{font-size:10px;white-space:normal;line-height:1.5;padding:4px 7px}.staff-bio .note{overflow-wrap:anywhere}
 .cgrid{align-items:start}.csl,.anc,.tcard:has(>.staff-bio){min-width:0;align-self:start;align-content:start}.csl-n{flex-wrap:wrap}.ps>.staff-bio{margin-top:12px}.ps .staff-mental{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:600px){.ps .staff-mental{grid-template-columns:repeat(2,minmax(0,1fr))}.staff-network{grid-template-columns:30px 22px minmax(45px,1fr) 22px minmax(45px,1fr)}}
+/* PC 스태프 개요(34b_staff_fm.js): FM '스탭 기본 정보'처럼 세 칸 × (인원 현황 · 리그 비교 막대 · 명단 표), 화면 높이에 딱 맞춤 */
+@media(min-width:1100px){
+  .sf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto minmax(200px,34%) minmax(0,1fr);gap:0 10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  main.ws-frame>.sf{height:auto}
+  .sf-c{display:grid;grid-row:span 3;grid-template-rows:subgrid;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .sf-c>section{padding:10px 12px;min-height:0;border-top:1px solid var(--line)}.sf-c>section:first-child{border-top:0}
+  .sf-c h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff)}
+  .sf-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px}
+  .sf-roles>div{font-size:12px;line-height:1.7;color:var(--muted)}.sf-roles>div b{font-family:var(--f-num);color:var(--ink)}.sf-roles>div.miss,.sf-roles>div.miss b{color:var(--warn)}
+  .sf-note{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
+  .sf-sum{display:flex;flex-direction:column;gap:8px;min-width:0}.sf-sum h2{margin:0;font-size:18px}.sf-sum>.btn{align-self:flex-start}
+  .sf-dots{display:flex;flex-wrap:wrap;gap:5px}.sf-dots i{width:10px;height:16px;border-radius:5px 5px 2px 2px}.sf-dots i.emp{border:1px solid var(--muted)}
+  .sf-cmp{display:flex;flex-direction:column}
+  .sf-bars{flex:1;min-height:0;display:flex;gap:6px;align-items:stretch}
+  .sf-b{flex:1;min-width:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;justify-items:center;gap:2px;font-size:11px}
+  .sf-b em{font-style:normal;color:var(--muted)}.sf-b em.good{color:var(--good)}.sf-b em.bad{color:var(--bad)}
+  .sf-b b{font:700 13px var(--f-num)}.sf-b>span{color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .sf-col{position:relative;width:100%;max-width:34px;background:var(--panel2);border-radius:2px}
+  .sf-col>i{position:absolute;left:6px;right:6px;bottom:0;background:#5b8fc7;border-radius:2px 2px 0 0}.sf-col>i.good{background:var(--good)}.sf-col>i.bad{background:var(--bad)}
+  .sf-col>u,.sf-leg u{position:absolute;left:0;right:0;height:2px;text-decoration:none}.sf-col>u.hi,.sf-leg u.hi{background:var(--good)}.sf-col>u.lo,.sf-leg u.lo{background:var(--bad)}.sf-col>u.av,.sf-leg u.av{background:#fff;left:3px;right:3px}
+  .sf-leg{display:flex;gap:12px;margin:6px 0 0;font-size:11px;color:var(--muted)}.sf-leg span{display:inline-flex;align-items:center;gap:4px}.sf-leg u{position:static;display:inline-block;width:12px}
+  .sf-list{display:flex;flex-direction:column;min-height:0}
+  .sf-tw{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
+  .sf-t{width:100%;border-collapse:collapse;font-size:12px}.sf-t th{position:sticky;top:0;background:var(--panel);text-align:left;font-weight:500;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .sf-t td{padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}.sf-t td.wrap{white-space:normal}.sf-t td.bad{color:var(--bad)}.sf-t tr.miss td{color:var(--warn)}
+  .sf-t td,.sf-t th{text-align:left}.sf-t td:last-child,.sf-t th:last-child{text-align:right}.sf-t td:last-child.wrap{text-align:left}
+  .sf-t .lnk{font-weight:600}
+  .sf-sub{margin-top:12px!important}.sf-sub em{font-style:normal;color:var(--muted);font-weight:500}
+  .sf-st{color:var(--warn);letter-spacing:-1px}.sf-st i{font-style:normal;color:var(--line)}
+}
+/* 훈련 > 코치 배정(34c_train_coach.js): 항목 카드(담당 코치·별·집중 선수·코치 부담). PC는 네 묶음 × 세 장으로 화면을 채움 */
+.tc{display:flex;flex-direction:column;gap:10px;min-height:0;flex:1;overflow:auto}
+.tc-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.tc-top h2{margin:0;font-size:18px}.tc-top>p{flex:1 1 320px;margin:0}.tc-btns{display:flex;gap:6px}
+.tc-top .sf-dots{display:flex;flex-wrap:wrap;gap:5px}.tc-top .sf-dots i{width:10px;height:16px;border-radius:5px 5px 2px 2px}.tc-top .sf-dots i.emp{border:1px solid var(--muted)}
+.tc-groups{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.tc-g{display:flex;flex-direction:column;gap:8px;min-height:0}.tc-g>h3{margin:0;font-size:14px;text-align:center;color:var(--team-hi,#4fa3ff)}
+.tc-card{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:4px;min-height:0}
+.tc-card.miss{border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}
+.tc-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.tc-h b{font-size:15px}
+.tc-st{color:var(--warn);letter-spacing:-1px;white-space:nowrap}.tc-st i{font-style:normal;color:var(--line)}
+.tc-ppl{display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-height:16px}.tc-ppl i{width:8px;height:14px;border-radius:4px 4px 2px 2px;background:#5b8fc7}.tc-ppl i.p{background:#d9a441}.tc-ppl em{font-style:normal;font-size:11px;color:var(--muted);margin-left:4px}
+.tc-card>p{margin:0;font-size:13px;line-height:1.5}
+.tc-f{display:flex;gap:8px;align-items:center;font-size:12px}.tc-f>span:first-child{color:var(--muted)}.tc-f b.good{color:var(--good)}.tc-f b.warn{color:var(--warn)}.tc-f b.bad{color:var(--bad)}.tc-f .muted{margin-left:auto}
+.tc-t{width:100%;border-collapse:collapse;font-size:12px}.tc-t td{padding:3px 4px;border-top:1px solid var(--line);white-space:nowrap}.tc-t td:last-child{text-align:right}.tc-t b{font-family:var(--f-num)}
+@media(min-width:1100px){
+  .tc{overflow:hidden}
+  .tc-groups{flex:1;min-height:0;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .tc-g{display:grid;grid-template-rows:auto repeat(3,minmax(0,1fr))}
+  .tc-card{overflow:auto;scrollbar-width:thin}
+}
+/* PC 의료 센터(34b_staff_fm.js medFM) */
+@media(min-width:1100px){
+  .md{display:grid;grid-template-columns:minmax(0,1fr) 330px;grid-template-rows:auto minmax(0,1fr) minmax(200px,32%);gap:10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  main.ws-frame>.md{height:auto}
+  .md>.card{margin:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .md h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.md h3 em{font-style:normal;color:var(--ink);font-size:15px}
+  .md-sum{flex-direction:row!important;gap:16px;align-items:center}.md-doc{display:flex;gap:10px;align-items:center;flex:none;width:200px}.md-doc .av{width:56px;height:56px}.md-doc b{display:block}.md-doc span{font-size:12px;color:var(--muted)}
+  .md-txt{flex:1;min-width:0;background:var(--panel2);border-radius:4px;padding:8px 12px}.md-txt p{margin:2px 0;font-size:13px;line-height:1.6}
+  .md-ctl{grid-column:2;grid-row:1/4}.md-ctl-b{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
+  .md-bt{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:0}.md-bt>.card{margin:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .md-p{display:flex;gap:8px;align-items:center}.md-p .av{width:34px;height:34px;flex:none}.md-p span{display:block;font-size:11px;color:var(--muted)}
+  .md-t td{vertical-align:middle}.md-t td.warn,.md-t b.warn{color:var(--warn)}.md-t td.good{color:var(--good)}
+  .md-bar{display:block;width:70px;height:4px;background:var(--panel2);border-radius:2px;margin-top:3px}.md-bar u{display:block;height:100%;background:var(--warn);border-radius:2px}
+  .md-risk{display:grid;gap:1px;padding:6px 10px;border-radius:3px;min-width:180px;text-align:left}.md-risk b{font-size:12.5px}.md-risk span{font-size:11px;opacity:.85}
+  .md-risk.r0{background:color-mix(in srgb,var(--good) 18%,transparent)}.md-risk.r1{background:var(--panel2)}.md-risk.r2{background:color-mix(in srgb,#c8642a 55%,transparent);color:#fff}.md-risk.r3{background:color-mix(in srgb,var(--bad) 60%,transparent);color:#fff}
+  .md-sv{font-size:12px;font-weight:600;color:var(--muted)}.md-sv.warn{color:var(--warn)}.md-sv.bad{color:var(--bad)}
+  .md-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:var(--panel2)}.md-tag.s2{background:#c8642a;color:#fff}.md-tag.s3{background:var(--bad);color:#fff}
+}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -18119,13 +18210,13 @@ const SUBS={
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['stat','통계'],['wire','리그 소식'],['assoc','협회'],['nt','국가대표'],['hist','역사']],
   club:[['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
-const MERGE={trade:{block:['block']},staff:{train:['camp','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
+const MERGE={trade:{block:['block']},staff:{train:['tc','camp','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
   league:{rec:['rec','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','news','media'],chron:['build','chron','result','ob','log']}};
 const ALIAS={}; for(const t in MERGE){ ALIAS[t]={}; for(const v in MERGE[t])for(const k of MERGE[t][v])ALIAS[t][k]=v; } ALIAS.trade.offers='block';
 /* 합친 탭에서 부가 화면은 접어 둔다(제목만 보이고 누르면 펼침) */
 const MFOLD={'trade:find':'선수 찾기','trade:report':'트레이드 성적표','league:teams':'구단 둘러보기','league:feat':'진기록','league:dist':'리그 분포','league:tdata':'구단 지표','league:park':'구장 효과','league:abroad':'해외파','club:rel':'관계도','club:ob':'OB·레전드','club:log':'구단 일지','club:result':'지난 시즌 결산','staff:mil':'병역','staff:coach':'코치진'};
 /* 합쳐진 메뉴는 세로로 쌓지 않고 안쪽 탭으로 나눈다: 한 화면에 한 주제 */
-const MLBL={'staff:camp':'훈련장','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
+const MLBL={'staff:tc':'코치 배정','staff:camp':'훈련장','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
 function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter(k=>H[k]); if(!ks.length)return H[SUBS[tab][0][0]]?H[SUBS[tab][0][0]]():'';
   const why=ks.map(k=>{ try{ return alertWhy(tab,k); }catch(e){ return ''; } }).join('');
   if(ks.length===1)return why+H[ks[0]]();
@@ -20945,7 +21036,7 @@ function calGame(d){ const c=G.cal; let m=null, kind='';
   if(!m&&log){ m=[log.h,log.a]; kind=log.k||''; }
   if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
   return {home,op,kind,res:log?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }
-function calView(){ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
+function calView(){ if(fmOn())return calFM(); /* PC: FM식 주요 일정 */ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
   const first=dnum(ym.y,ym.m,1); const w0=(dobj(first).w+6)%7; /* 월요일 시작 */ const last=dnum(ym.m===12?ym.y+1:ym.y,ym.m===12?1:ym.m+1,1)-1;
   const sel=UI.calSel!=null&&dobj(UI.calSel).m===ym.m&&dobj(UI.calSel).y===ym.y?UI.calSel:(now.y===ym.y&&now.m===ym.m?G.day:first);
   let cells=''; for(let i=0;i<w0;i++)cells+='<div class="cal-c nil"></div>';
@@ -21030,6 +21121,22 @@ function gmPlanBox(d,g){ const pl=gmPlanAt(d); const T=gmTourn(d); const per=per
   if(per==='season'||(dobj(d).m>=4&&dobj(d).m<=9))B.push(`<div class="gpl-r"><span class="small">2군 방문</span><button class="btn small${pl&&pl.k==='farm'?' primary':''}" data-a="gmPlan" data-v="${d}:farm:">2군 경기장</button></div>`);
   if(!B.length)return '';
   return `<div class="gpl"><div class="row between"><span class="eyebrow">단장 일정</span>${pl?`<span class="row"><span class="pill acc">${esc(lab)}</span><button class="btn small" data-a="gmPlan" data-v="${d}:">취소</button></span>`:'<span class="small muted">경기는 결과 보고로 받습니다. 볼 경기나 출장을 잡아 두세요.</span>'}</div>${B.join('')}</div>`; }
+/* PC 일정(FM '주요 일정'처럼): 위 한 주 띠(경기·마감·리그 일정), 아래 왼쪽 시즌 경기 목록(지난 경기 결과·선발, 앞으로 경기 D-day·예상 선발), 오른쪽 고른 날 상세 */
+function calFM(){ const c=G.cal; const sel=UI.calSel??G.day; const so=dobj(sel), mon=sel-((so.w+6)%7);
+  const days=Array.from({length:7},(_,i)=>mon+i);
+  const nx=nextGames(1)[0];
+  const strip=`<section class="card sch-wk"><div class="row between sch-nav"><b>${so.y}년 ${so.m}월</b><span class="row">${nx?`<span class="small muted">다음 경기 ${dmd(nx.d)} ${nx.home?'홈':'원정'} vs ${esc(tshort(nx.op))}</span>`:''}<button class="btn small" data-a="calWk" data-v="${G.day-sel}">오늘</button><button class="btn small" data-a="calWk" data-v="-7" aria-label="지난주">◀</button><button class="btn small" data-a="calWk" data-v="7" aria-label="다음 주">▶</button></span></div>
+    <div class="sch-days">${days.map(d=>{ const o=dobj(d), g=calGame(d), ev=calEvents(d);
+      return `<button class="sch-d${d===G.day?' today':''}${d===sel?' sel':''}${d<G.day?' past':''}" data-a="calDay" data-v="${d}"><span class="sch-n"><b>${o.d}</b>${WD[o.w]}${d===G.day?' · 오늘':''}</span>${g?`<span class="sch-g${g.res?' '+({승:'w',패:'l'}[g.res.r]||'t'):''}${g.home?' h':''}">${badge(g.op,26)}<span><i>${g.kind?esc(g.kind):'정규시즌'} · ${g.home?'홈':'원정'}</i><b>${esc(tshort(g.op))}</b>${g.res?`<em>${g.res.r} ${g.res.my}:${g.res.op}</em>`:''}</span></span>`:''}${ev.slice(0,3).map(e=>`<span class="sch-e" style="--ec:${CAL_K[e.k].c}">${esc(e.t)}</span>`).join('')}${ev.length>3?`<span class="sch-e more">외 ${ev.length-3}건</span>`:''}</button>`; }).join('')}</div></section>`;
+  /* 시즌 경기 목록: 지난 경기는 최근 8경기(전체 보기로 펼침), 앞으로는 끝까지 */
+  const all=[]; const start=(c&&c.open)||G.day, end=Math.max((c&&c.end)||G.day,G.day+60); for(let d=start;d<=end;d++){ const g=calGame(d); if(g)all.push({d,g}); }
+  const past=all.filter(x=>x.d<G.day||(x.d===G.day&&x.g.res)), fut=all.filter(x=>!past.includes(x)); const showP=UI.calAll?past:past.slice(-8);
+  let proj=[]; try{ proj=projStarters(G.user,6)||[]; }catch(e){} const nxL=nextGames(8);
+  const st=(x)=>{ const r=x.g.gi>=0?G.games[x.g.gi]:null; if(r&&r.box){ const me=r.home===G.user?'h':'a', op=me==='h'?'a':'h'; const a=(r.box[me].pit[0]||{}).n, b=(r.box[op].pit[0]||{}).n; return `${a?esc(a):'-'} <i>vs</i> ${b?esc(b):'-'}`; } if(x.d>G.day){ const k=nxL.findIndex(y=>y.d===x.d); const s=k>=0&&proj[k]?proj[k].sp:null; return s?`<i>예상</i> ${esc(s.name)}`:''; } return ''; };
+  let lastM=null; const rows=[...showP,...fut].map(x=>{ const o=dobj(x.d), g=x.g, mh=o.m!==lastM?`<tr class="sch-mh"><td colspan="8">${o.y}년 ${o.m}월</td></tr>`:''; lastM=o.m; const dd=x.d-G.day, rk=(()=>{ const L=standOrder().order||[]; const i=L.findIndex(y=>(y.tid??y)===g.op); return i<0?'':i+1; })();
+    return mh+`<tr class="${x.d===sel?'sel':''}${x.d===G.day?' today':''}" data-a="calDay" data-v="${x.d}"><td>${o.m}/${o.d} ${WD[o.w]}</td><td class="muted">${dd===0?'오늘':dd>0?dd+'일 뒤':-dd+'일 전'}</td><td class="muted">${g.kind?esc(g.kind):'정규시즌'}</td><td>${g.home?'홈':'원정'}</td><td class="muted">${rk?rk+'위':''}</td><td>${g.res?`<span class="sch-r ${({승:'w',패:'l'}[g.res.r]||'t')}">${g.res.r}</span> <b>${g.res.my}-${g.res.op}</b>`:''}</td><td>${badge(g.op,18)} ${esc(tshort(g.op))}</td><td class="sch-sp">${st(x)}</td></tr>`; }).join('');
+  const list=`<section class="card sch-list"><div class="row between"><h3>경기 일정·결과 <em>${past.length}경기 치름 · ${fut.length}경기 남음</em></h3>${past.length>8?`<button class="btn small" data-a="calAll">${UI.calAll?'최근 8경기만':'지난 경기 모두 보기'}</button>`:''}</div><div class="sf-tw"><table class="sf-t sch-t"><thead><tr><th>날짜</th><th></th><th>대회</th><th>장소</th><th>상대 순위</th><th>결과</th><th>상대</th><th>선발 (우리 vs 상대)</th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="muted">경기 일정이 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  return `<div class="sch ws-own">${strip}${list}<div class="sch-side">${calDetail(sel)}${(()=>{ const g=calGame(sel); return g?`<section class="card sch-op">${ibdOpp(g.op,'상대 전력')}</section><section class="card sch-op">${ibdForm(g.op,'상대 수비 배치')}</section>`:''; })()}${calUpcoming()}</div></div>`; }
 /* ---------- 역사·시상 ---------- */
 function histView(){
   const ys=Object.keys(G.awards||{}).map(Number).sort((a,b)=>b-a); const y=UI.hy&&G.awards&&G.awards[UI.hy]?UI.hy:ys[0];
@@ -21447,12 +21554,13 @@ function staffView(){
     coach:coachView,
     scouts:scoutTeamPage,
     smkt:staffMarketView,
+    tc:trainCoachView,
     camp:campView,
     data:dataPage,
     fac:facView,
     lead:leadCard,
     mil:milView,
-    med:()=>csec('부상 방지·병원',medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
+    med:()=>fmOn()?medFM():csec('부상 방지·병원',medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
   return subTabs('staff')+h;
 }
 /* ---------- 코치진 ---------- */
@@ -21506,7 +21614,7 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
     ${staffBioBox(c,'coach',null)}<div class="row"><button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약(${ctSeasonsTxt(1)})</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년 계약(${ctSeasonsTxt(2)})</button></div></div>`; };
   if(mode==='other')return modeBar+`<div class="chips coach-role-buttons">${[['all','전체'],...CKEYS.map(k=>[k,CROLE[k].l])].map(([k,l])=>`<button data-a="crole" data-v="${k}" class="${role===k?'on':''}">${l}${k!=='all'&&!C[k]?' <i class="cnt" style="background:var(--bad)">빈자리</i>':''}</button>`).join('')}</div><div class="chips">${[['tot','종합순'],['sk','지도력순'],['dv','육성력순'],['sal','연봉 낮은 순']].map(([k,l])=>`<button data-a="csort" data-v="${k}" class="${srt===k?'on':''}">${l}</button>`).join('')}</div>${UI.poachMsg?`<div class="note">${esc(UI.poachMsg)}</div>`:''}`+coachOther(role,srt);
   return modeBar+chips+(L.length?(()=>{ const P=pager('cmk'+role+srt,L,cardPageSize()); return `<div class="cgrid" data-pg="${'cmk'+role+srt}">${P.items.map(card).join('')}</div>${P.bar}`; })():'<p class="small muted">이 자리 후보가 없습니다. 겨울에 새 후보가 나옵니다.</p>'); }
-function coachView(){ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=coachGrade(G.user); const cn=clanCount(G.user);
+function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* PC: FM식 스태프 개요(34b_staff_fm.js), '보직 카드 보기'로 아래 카드 화면 */ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=coachGrade(G.user); const cn=clanCount(G.user);
   const empty=CKEYS.filter(k=>!C[k]).length;
   const gc=(l,x)=>`<div class="cgg"><span>${l}</span><b class="g${x.l}">${x.l}</b></div>`;
   const sumC=`<section class="card"><div class="row between"><h2 class="sec">코치진</h2><span class="small muted">연봉 합계 ${money(coachSal(G.user))}${empty?` · <b style="color:var(--bad)">빈자리 ${empty}</b>`:''}</span></div>
@@ -21516,7 +21624,7 @@ function coachView(){ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=
   const cs=coachesOf(G.user); const vac1=CKEYS.some(k=>CROLE[k].g===1&&!cs[k]), vac2=CKEYS.some(k=>CROLE[k].g===2&&!cs[k]);
   if(UI._smk){ UI.cmode=UI.smkSrc==='oth'?'other':'free'; return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+coachMarket(); } /* 스태프 시장 */
   const slots=[...CKEYS.filter(k=>cs[k]),...CKEYS.filter(k=>!cs[k])],PG=pager('coachSlots',slots,cardPageSize());
-  return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+csec('1군·2군 코치 보직',`<nav class="seg coach-slot-jump" aria-label="우리 코치 보직 바로가기">${slots.map(k=>`<button data-a="coachSlot" data-v="${k}" class="${(PG.items.includes(UI.cslot)?UI.cslot:PG.items[0])===k?'on':''}">${CROLE[k].l}${cs[k]?'':' <i class="cnt" style="background:var(--bad)">빈자리</i>'}</button>`).join('')}</nav><div class="cgrid">${PG.items.map(coachSlot).join('')}</div>${PG.bar}`,`<span class="small muted">${slots.length}개 보직 · ${vac1||vac2?'빈 보직은 뒤 페이지에서 확인':'전원 배치'}</span>`)+sumC+smkLink('coach','코치 채용'); }
+  return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+(fmOn()?'<div class="row" style="margin-bottom:8px"><button class="btn small" data-a="sfCards">◀ 스태프 개요</button></div>':'')+csec('1군·2군 코치 보직',`<nav class="seg coach-slot-jump" aria-label="우리 코치 보직 바로가기">${slots.map(k=>`<button data-a="coachSlot" data-v="${k}" class="${(PG.items.includes(UI.cslot)?UI.cslot:PG.items[0])===k?'on':''}">${CROLE[k].l}${cs[k]?'':' <i class="cnt" style="background:var(--bad)">빈자리</i>'}</button>`).join('')}</nav><div class="cgrid">${PG.items.map(coachSlot).join('')}</div>${PG.bar}`,`<span class="small muted">${slots.length}개 보직 · ${vac1||vac2?'빈 보직은 뒤 페이지에서 확인':'전원 배치'}</span>`)+sumC+smkLink('coach','코치 채용'); }
 /* 스태프 시장(FM의 스태프 찾기처럼 한 곳): 감독·코치·스카우트·분석원 후보와 다른 구단 소속 스태프 */
 function smkLink(k,l){ return `<div class="row" style="margin:8px 0"><button class="btn small" data-a="smkGo" data-v="${k}">${l} → 스태프 시장</button></div>`; }
 function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free'; const K=[['mgr','감독'],['coach','코치'],['sc','스카우트'],['an','분석원']];
@@ -21526,6 +21634,90 @@ function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free';
 /* 감독 후보의 사단 */
 function clanBox(x){ const L=x.clan||[]; if(!L.length)return '<p class="small muted">사단 없음 · 코치진은 그대로 유지됩니다.</p>';
   return `<div class="clan"><div class="eyebrow">${esc(x.name)} 사단 ${L.length}명</div><span class="clan-c hd"><b></b><span></span><em>지도</em><i></i><em>육성</em></span>${L.map(c=>`<span class="clan-c"><b>${CROLE[c.role].l}</b><span>${esc(c.name)}</span>${rchip(c.sk+6)}<i>/</i>${rchip(c.dv+6)}</span>`).join('')}<p class="small muted">연봉 합계 ${money(sum(L.map(c=>c.sal)))} · 함께 오면 지도·육성 +6. 같은 자리 기존 코치는 정리됩니다(잔여 연봉 절반 정산).</p></div>`; }
+/* PC 스태프 개요(FM '스탭 기본 정보'처럼): 코치진 | 스카우트·전력분석 | 의무·부상 세 칸.
+   칸마다 위에 인원 현황, 가운데 리그 10개 구단 비교 막대(우리 값·리그 최고·최저·평균), 아래 명단 표. */
+const sfStars=k=>`<span class="sf-st">${'★'.repeat(k)}<i>${'★'.repeat(Math.max(0,5-k))}</i></span>`;
+/* 리그 비교 막대: rows=[{l,v(우리),all(구단별 값 배열)}], lo/hi 축 범위, low=true면 낮을수록 좋음 */
+function sfChart(title,rows,lo,hi,fmt,low){ const f=fmt||(v=>Math.round(v)), y=v=>clamp((v-lo)/(hi-lo),0,1)*100;
+  return `<section class="sf-cmp"><h3>${title}</h3><div class="sf-bars">${rows.map(r=>{ const mx=Math.max(...r.all), mn=Math.min(...r.all), av=avg(r.all), rk=[...r.all].sort((a,b)=>low?a-b:b-a).indexOf(r.v)+1, n=r.all.length;
+    return `<div class="sf-b" title="${esc(r.l)}: 우리 ${f(r.v)} · 리그 최고 ${f(low?mn:mx)} · 최저 ${f(low?mx:mn)} · 평균 ${f(av)}"><em class="${rk<=3?'good':rk>=n-2?'bad':''}">${rk}위</em><div class="sf-col"><u class="hi" style="bottom:${y(low?mn:mx)}%"></u><u class="lo" style="bottom:${y(low?mx:mn)}%"></u><i class="${rk<=3?'good':rk>=n-2?'bad':''}" style="height:${Math.max(2,y(r.v))}%"></i><u class="av" style="bottom:${y(av)}%"></u></div><b>${f(r.v)}</b><span>${esc(r.l)}</span></div>`; }).join('')}</div>
+    <p class="sf-leg"><span><u class="hi"></u>리그 최고</span><span><u class="av"></u>평균</span><span><u class="lo"></u>최저</span>${low?'<span>낮을수록 좋음</span>':''}</p></section>`; }
+/* 위 칸: 직책별 채움(1/1 수석코치) + 사람 점 */
+function sfHead(title,sub,roles,dots,btn,note){ return `<section class="sf-head"><div class="sf-roles"><h3>${title}</h3>${roles.map(([n,m,l,neu])=>`<div class="${n<m&&!neu?'miss':''}"><b>${n}/${m}</b> ${esc(l)}</div>`).join('')}</div><div class="sf-sum"><h2>${sub}</h2>${note?`<p class="sf-note">${note}</p>`:''}<div class="sf-dots">${dots.map(c=>`<i style="background:${c||'transparent'}" class="${c?'':'emp'}"></i>`).join('')}</div>${btn||''}</div></section>`; }
+function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mgr[G.user];
+  /* 코치진 */
+  const CG=tids.map(t=>coachGrade(t)), me=CG[tids.indexOf(G.user)], K=[['bat','타격'],['pit','투수'],['run','주루'],['def','수비'],['dev1','1군 육성'],['dev2','2군 육성']];
+  const cRows=K.map(([k,l])=>({l,v:me[k].v,all:CG.map(g=>g[k].v)}));
+  const nC=CKEYS.filter(k=>C[k]).length;
+  const coachT=`<div class="sf-tw"><table class="sf-t"><thead><tr><th>직책</th><th>이름</th><th>나이</th><th>계약</th><th>지도</th><th>육성</th><th>연봉</th></tr></thead><tbody>${m?`<tr><td>감독</td><td><button class="lnk" data-a="go" data-v="staff:mgr">${esc(m.name)}</button></td><td>${m.age||'-'}</td><td>${m.yrs!=null?m.yrs+'년':'-'}</td><td colspan="2" class="muted">${esc(mgrType(m).n)}</td><td>${money(m.sal||0)}</td></tr>`:''}${CKEYS.map(k=>{ const c=C[k];
+    return c?`<tr><td>${CROLE[k].l}</td><td><button class="lnk" data-a="sfCoach" data-v="${k}">${esc(c.name)}</button>${m&&c.clan===m.id?' <span class="pill good">사단</span>':''}</td><td>${c.age}</td><td>${c.yrs!=null?c.yrs+'년':'-'}</td><td>${rchip(effC(c,G.user,'sk'))}</td><td>${rchip(effC(c,G.user,'dv'))}</td><td>${money(c.sal)}</td></tr>`
+      :`<tr class="miss"><td>${CROLE[k].l}</td><td colspan="5">빈자리</td><td><button class="btn small" data-a="smkGo" data-v="coach">채용</button></td></tr>`; }).join('')}</tbody></table></div>`;
+  const col1=`<div class="sf-c">${sfHead('코치진','코치 '+nC+'/'+CKEYS.length+'명',[[m?1:0,1,'감독'],[CKEYS.filter(k=>CROLE[k].g===1&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===1).length,'1군 코치'],[CKEYS.filter(k=>CROLE[k].g===2&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===2).length,'2군 코치'],[m?Object.values(C).filter(c=>c&&c.clan===m.id).length:0,nC,'감독 사단',1]],
+      [m?'var(--team-hi,#4fa3ff)':null,...CKEYS.map(k=>C[k]?rcol(effC(C[k],G.user,'sk')):null)],`<button class="btn small" data-a="sfCards">보직 카드 보기</button>`,!m?'감독 자리가 비어 있습니다.':nC<CKEYS.length?`코치 보직 ${CKEYS.length-nC}곳이 비어 있습니다. 빈 보직은 해당 분야 성장이 느려집니다.`:'모든 코치 보직이 차 있습니다.')}
+    ${sfChart('코치진 비교 · 리그 10개 구단',cRows,40,80)}<section class="sf-list"><h3>코치진 명단</h3>${coachT}</section></div>`;
+  /* 스카우트·전력분석 */
+  const L=stInit(), scOf=t=>t===G.user?G.scouts:((L[t]||{}).sc||[]), anOf=t=>t===G.user?anaList():((L[t]||{}).an||[]);
+  const sk=a=>a.length?avg(a.map(s=>s.skill||0)):0;
+  const sRows=[{l:'스카우트 수',v:G.scouts.length,all:tids.map(t=>scOf(t).length)},{l:'스카우트 실력',v:sk(G.scouts),all:tids.map(t=>sk(scOf(t)))},...['opp','trk','vid'].map(r=>({l:AROLE[r].l.replace(' 데이터',''),v:anaPow(r,G.user),all:tids.map(t=>anaPow(r,t))}))];
+  const A=anaList(), reg=[...new Set(G.scouts.map(s=>s.role==='intl'?'해외':s.region||'국내'))];
+  const scT=`<div class="sf-tw"><table class="sf-t"><thead><tr><th>직책</th><th>이름</th><th>나이</th><th>실력</th><th>연봉</th></tr></thead><tbody>${G.scouts.map(s=>`<tr><td>스카우트 · ${esc(s.role==='intl'&&IREG[s.region]?IREG[s.region].l:s.region||SROLE[s.role||'am'])}</td><td><button class="lnk" data-a="person" data-v="sc:${s.id}">${esc(s.name)}</button></td><td>${s.age}</td><td>${sfStars(s.skill||0)}</td><td>${money(s.sal)}</td></tr>`).join('')}${A.map(a=>`<tr><td>분석원 · ${esc(AROLE[a.role].l)}</td><td><button class="lnk" data-a="person" data-v="an:${a.id}">${esc(a.name)}</button></td><td>${a.age}</td><td>${sfStars(a.skill||0)}</td><td>${money(a.sal)}</td></tr>`).join('')}${G.scouts.length<SCOUT_MAX?`<tr class="miss"><td>스카우트</td><td colspan="3">빈자리 ${SCOUT_MAX-G.scouts.length}명</td><td><button class="btn small" data-a="smkGo" data-v="sc">채용</button></td></tr>`:''}</tbody></table></div>`;
+  const col2=`<div class="sf-c">${sfHead('스카우트·전력분석',`스카우트 ${G.scouts.length}/${SCOUT_MAX} · 분석원 ${A.length}/${ANA_MAX}`,[[G.scouts.filter(s=>(s.role||'am')==='am').length,G.scouts.length,'아마추어 스카우트'],[G.scouts.filter(s=>s.role==='pro').length,G.scouts.length,'프로 스카우트'],[G.scouts.filter(s=>s.role==='intl').length,G.scouts.length,'해외 스카우트'],...['opp','trk','vid'].map(r=>[A.filter(a=>a.role===r).length,1,AROLE[r].l])],
+      [...G.scouts.map(s=>['#5b7285','#7aa0b8','#4fa3ff','#3fb871','#f0b429'][clamp((s.skill||1)-1,0,4)]),...Array(SCOUT_MAX-G.scouts.length).fill(null),...A.map(a=>'#b48ead')],'',`담당 지역 ${reg.length?esc(reg.join(', ')):'없음'}${G.scouts.length<SCOUT_MAX?` · 스카우트 자리 ${SCOUT_MAX-G.scouts.length}곳 남음`:''}`)}
+    ${sfChart('스카우트·분석 비교 · 리그 10개 구단',sRows,0,Math.max(6,...sRows.flatMap(r=>r.all)),v=>(Math.round(v*10)/10).toString())}<section class="sf-list"><h3>스카우트·분석원 명단</h3>${scT}</section></div>`;
+  /* 의무·부상 */
+  const injN=t=>playersOf(t).filter(p=>p.injOut>0).length, injY=t=>sum(playersOf(t).map(p=>(p.injHist||[]).filter(x=>x.y===G.year).length)), injD=t=>sum(playersOf(t).map(p=>sum((p.injHist||[]).filter(x=>x.y===G.year).map(x=>x.days||0))));
+  const iRows=[{l:'지금 부상자',v:injN(G.user),all:tids.map(injN)},{l:'올해 부상 건수',v:injY(G.user),all:tids.map(injY)},{l:'올해 이탈 일수',v:injD(G.user),all:tids.map(injD)}];
+  const IL=injNowList(), H=HOSP[G.med.hosp]||HOSP.none;
+  const inT=`<div class="sf-tw"><table class="sf-t"><thead><tr><th>선수</th><th>포지션</th><th>상태</th></tr></thead><tbody>${IL.length?IL.map(x=>`<tr><td><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button>${x.p.e1?'':' <span class="small muted">2군</span>'}</td><td>${esc(posLabel(x.p))}</td><td class="wrap ${x.st==='out'?'bad':''}">${esc(x.t)}</td></tr>`).join(''):'<tr><td colspan="3" class="muted">지금 부상자가 없습니다.</td></tr>'}</tbody></table></div>`;
+  const HY=playersOf(G.user).flatMap(p=>(p.injHist||[]).filter(x=>x.y===G.year).map(x=>({p,x}))).slice(-12).reverse();
+  const hyT=HY.length?`<h3 class="sf-sub">올해 부상 이력 <em>${HY.length}건</em></h3><table class="sf-t"><tbody>${HY.map(({p,x})=>`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${esc(posLabel(p))}</td><td>${x.k?esc(injName(x.k)):'부상'}</td><td>${x.days}일</td></tr>`).join('')}</tbody></table>`:'';
+  const col3=`<div class="sf-c">${sfHead('의무·부상','부상 방지 '+esc(PREV[G.med.prev].l),[[G.med.prev,PREV.length-1,'부상 방지 단계'],[G.med.hosp==='none'?0:1,1,'제휴 병원 · '+H.name],[IL.filter(x=>x.st==='out').length,playersOf(G.user).length,'지금 부상자',1],[IL.filter(x=>x.st==='rec').length,Math.max(1,IL.length),'실전 회복 중',1]],
+      IL.map(x=>x.st==='out'?'var(--bad)':'var(--warn)'),`<button class="btn small" data-a="go" data-v="staff:med">부상 관리</button>`,`${esc(H.d)} 부상 방지 단계가 높을수록 부상이 덜 납니다.`)}
+    ${sfChart('부상 비교 · 리그 10개 구단',iRows,0,Math.max(4,...iRows.flatMap(r=>r.all)),null,true)}<section class="sf-list"><h3>부상자 명단</h3><div class="sf-tw">${inT.replace(/^<div class="sf-tw">|<\/div>$/g,'')}${hyT}</div></section></div>`;
+  return `<div class="sf ws-own">${col1}${col2}${col3}</div>`; }
+/* PC 의료 센터(FM '의료 센터 기본 정보'처럼): 위 요약 문장, 가운데 위험 평가 표(경기 중 부상 확률 계산과 같은 요인), 아래 지금 부상·최근 복귀, 오른쪽 부상 방지·병원 */
+function medRisk(p){ const sp=p.isP, cd=sp?consecDays(p,G.day+1):0, lm=sp?loadMult(p,cd,G.day+1):1;
+  const f={inj:p.inj||0, mult:injMult(p), sta:staI(p), fat:1+Math.max(0,(p.fat||0)-60)/50, load:lm};
+  return {p,f,cd,arm:sp?armRatio(p):null,v:f.inj*f.mult*f.sta*f.fat*f.load}; }
+function medFM(){ const ps=playersOf(G.user).filter(p=>!p.ys&&!(p.injOut>0)), R=ps.map(medRisk), med=[...R].map(x=>x.v).sort((a,b)=>a-b)[Math.floor(R.length/2)]||1;
+  const tier=v=>v>=med*2.2?3:v>=med*1.5?2:v>=med*.85?1:0, TL=['낮음','보통','높음','매우 높음'], TC=['good','','warn','bad'];
+  const why=x=>{ const L=[]; if(x.f.inj>=.25)L.push('부상이 잦은 체질'); if(x.f.fat>1.05)L.push('피로 누적'); if(x.p.isP&&(x.cd>=2||(x.arm||0)>=.9||x.f.load>1.6))L.push(x.cd>=2?`${x.cd}연투`:(x.arm||0)>=.9?'누적 팔 부하':'최근 7일 투구 많음'); if(x.p.rush&&G.day<=x.p.rush)L.push('조기 복귀 후'); if(x.p.reInj&&x.p.reInj.left>0)L.push('재발 주의 기간'); if(x.f.sta>1.08)L.push('체력 낮음'); return L.slice(0,2).join(' · ')||'특이 요인 없음'; };
+  const top=R.filter(x=>x.p.e1||tier(x.v)>=2).sort((a,b)=>b.v-a.v).slice(0,14), hi=R.filter(x=>tier(x.v)>=2);
+  const word=(v,a,b)=>v>=b?'높음':v>=a?'보통':'낮음';
+  const rows=top.map(x=>{ const t=tier(x.v), h=seasonTotal(x.p,G.year,'1군'); return `<tr><td><div class="md-p">${avImg(x.p,true)}<div><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button><span>${esc(posLabel(x.p))} · ${x.p.age}세${x.p.e1?'':' · 2군'}</span></div></div></td>
+    <td>${h?h.g:0}경기</td><td><b class="${(x.p.fat||0)>=60?'warn':''}">${word(x.p.fat||0,35,60)}</b><i class="md-bar"><u style="width:${Math.round(clamp(x.p.fat||0,0,100))}%"></u></i></td>
+    <td class="${x.f.inj>=.2?'warn':x.f.inj<=.08?'good':''}">${x.f.inj>=.3?'매우 잦음':x.f.inj>=.2?'잦은 편':x.f.inj<=.08?'튼튼함':'보통'}</td>
+    <td>${x.p.isP?`팔 부하 ${Math.round((x.arm||0)*100)}%${x.cd?` · ${x.cd}연투`:''}`:'-'}</td>
+    <td><div class="md-risk r${t}"><b>부상 위험 ${TL[t]}</b><span>${esc(why(x))}</span></div></td></tr>`; }).join('');
+  const IL=playersOf(G.user).filter(p=>p.injOut>0&&!p.ys).sort((a,b)=>b.injOut-a.injOut), sev=d=>d>=60?3:d>=21?2:d>=8?1:0, SN=['경미','가벼움','보통','심각'], SC=['','','warn','bad'];
+  const cnt=[0,1,2,3].map(i=>IL.filter(p=>sev(p.injOut)===i).length);
+  const back=playersOf(G.user).flatMap(p=>(p.injHist||[]).filter(x=>x.y===G.year&&x.d+x.days<=G.day&&G.day-(x.d+x.days)<=30&&!(p.injOut>0)).map(x=>({p,x}))).sort((a,b)=>(b.x.d+b.x.days)-(a.x.d+a.x.days)).slice(0,8);
+  const tids=G.teams.map(t=>t.id), yc=t=>sum(playersOf(t).map(p=>(p.injHist||[]).filter(x=>x.y===G.year).length)), lg=avg(tids.map(yc)), me=yc(G.user);
+  const head=`<section class="card md-sum"><div class="md-doc">${avImg({persona:'staff',pid:'doc'+G.user,team:G.user,age:48,name:'팀 닥터'})}<div><b>팀 닥터</b><span>의무팀</span></div></div><div class="md-txt"><p>${hi.length?`지금 부상 위험이 높은 선수는 ${hi.slice(0,6).map(x=>esc(x.p.name)).join(', ')}${hi.length>6?` 등 ${hi.length}명`:''}입니다. 피로와 투수 부하를 보고 휴식을 검토해 주십시오.`:'지금 부상 위험이 특별히 높은 선수는 없습니다.'}</p><p>올해 우리 부상 ${me}건, 리그 구단 평균 ${lg.toFixed(1)}건${lg>0?` · 평균보다 ${Math.abs(Math.round((me/lg-1)*100))}% ${me<=lg?'적습니다':'많습니다'}`:''}.</p></div></section>`;
+  const risk=`<section class="card md-rk"><div class="row between"><h3>위험 평가 <em>${top.length}명</em></h3><span class="small muted">경기 중 부상 확률을 정하는 요인(체질·피로·체력·투수 부하·부상 방지)으로 계산 · 우리 선수 중간값 대비</span></div><div class="sf-tw"><table class="sf-t md-t"><thead><tr><th>선수</th><th>올해 1군</th><th>피로</th><th>부상 체질</th><th>투수 부하</th><th>종합 위험</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+  const now=`<section class="card md-in"><h3>부상 <em>${IL.length}명</em> ${SN.map((l,i)=>`<span class="md-sv ${SC[i]}">${l} ${cnt[i]}명</span>`).reverse().join('')}</h3><div class="sf-tw"><table class="sf-t"><thead><tr><th>정도</th><th>선수</th><th>부상</th><th>남은 기간</th></tr></thead><tbody>${IL.length?IL.map(p=>`<tr><td><span class="md-tag s${sev(p.injOut)}">${SN[sev(p.injOut)]}</span></td><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${p.e1?'':' <span class="small muted">2군</span>'}</td><td>${esc(injNow(p))}</td><td>${p.injOut}일 · ${dmd(G.day+p.injOut)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">지금 부상자가 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  const ret=`<section class="card md-in"><h3>최근 부상에서 복귀 <em>${back.length}명</em></h3><div class="sf-tw"><table class="sf-t"><thead><tr><th>선수</th><th>지난 부상</th><th>복귀</th><th>피로</th></tr></thead><tbody>${back.length?back.map(({p,x})=>`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${x.k?esc(injName(x.k)):'부상'} · ${x.days}일</td><td>${dmd(x.d+x.days)}</td><td>${word(p.fat||0,35,60)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">최근 30일 안에 복귀한 선수가 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  const ctl=medBody().replace(/^<div class="eyebrow">지금 부상[\s\S]*?(?=<div class="eyebrow">부상 방지 프로그램)/,'');
+  return `<div class="md ws-own">${head}${risk}<div class="md-bt">${now}${ret}</div><section class="card md-ctl"><h3>부상 방지 · 병원</h3><div class="md-ctl-b">${ctl}</div></section></div>`; }
+/* 훈련 > 코치 배정(FM '훈련 - 코치진'처럼): 훈련 항목마다 지도하는 코치·그 항목 지도 능력(별)·
+   그 항목에 집중하는 선수·코치 부담을 한 장씩. 선수 집중 항목은 trnPlan(p)(76_dev_plan.js), 담당 코치는 TRN의 c 역할 */
+const TC_GROUPS=[['타격',[['con','B','bc'],['pow','B','bc'],['eye','B','bc']]],['투구',[['stf','P','pc'],['ctl','P','cc'],['sta','P','pc']]],['수비·주루',[['def','B','dc'],['spd','B','rc'],['cat','C','cc']]],['2군',[['f:B','F','fb'],['f:P','F','fp'],['f:all','F','fm']]]];
+const tcStars=v=>{ const n=clamp(Math.round((v-20)/12),0,5); return `<span class="tc-st" title="지도 능력 ${Math.round(v)}">${'★'.repeat(n)}<i>${'★'.repeat(5-n)}</i></span>`; };
+function trainCoachView(){ const C=coachesOf(G.user), ps=playersOf(G.user).filter(p=>!p.ys), on=ps.filter(p=>p.e1), off=ps.filter(p=>!p.e1);
+  const who=(k,g)=>g==='C'?on.filter(p=>p.pos==='C'):g==='F'?off.filter(p=>k==='f:all'||(k==='f:P')===!!p.isP):on.filter(p=>(g==='P')===!!p.isP&&trnPlan(p)===k);
+  const load={}; for(const [,L] of TC_GROUPS)for(const [k,g,r] of L)load[r]=(load[r]||0)+(r==='fm'?0:who(k,g).length);
+  const card=([k,g,r])=>{ const c=C[r], L=who(k,g), lab=g==='F'?{'f:B':'2군 타격','f:P':'2군 투구','f:all':'2군 전체 육성'}[k]:CAB[k].replace(' 지도',''), ab=c?(g==='F'?effC(c,G.user,'dv'):cAb(c)[k]):null;
+    const ld=r==='fm'?L.length:load[r], lv=r==='fm'?(ld<=20?0:ld<=30?1:2):(ld<=6?0:ld<=12?1:2);
+    return `<section class="tc-card${c?'':' miss'}"><div class="tc-h"><b>${lab}</b>${c?tcStars(ab):'<span class="pill warn">담당 없음</span>'}</div>
+      <div class="tc-ppl" title="${g==='F'?'2군 선수':'이 항목에 집중하는 선수'} ${L.length}명">${L.slice(0,14).map(p=>`<i class="${p.isP?'p':'b'}"></i>`).join('')}${L.length>14?`<em>+${L.length-14}</em>`:''}${L.length?'':'<em>집중하는 선수 없음</em>'}</div>
+      <p>${c?`<button class="lnk" data-a="sfCoach" data-v="${r}">${esc(c.name)}</button> (${CROLE[r].l})이(가) 훈련을 지도합니다`:`${CROLE[r].l} 자리가 비어 기본 훈련만 합니다 <button class="btn small" data-a="smkGo" data-v="coach">채용</button>`}</p>
+      <div class="tc-f"><span>코치 부담</span><b class="${['good','warn','bad'][lv]}">● ${['적음','보통','많음'][lv]}</b><span class="muted">${g==='F'?`2군 ${L.length}명`:`${L.length}명 집중`}</span></div>
+      ${L.length?`<table class="tc-t"><tbody>${[...L].sort((a,b)=>g==='F'?ovr(b)-ovr(a):0).slice(0,12).map(p=>{ const v=g==='F'?ovr(p):g==='C'?defAt(p,'C'):p.r[k]; return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td class="muted">${esc(posLabel(p))} · ${p.age}세</td><td>${g==='F'?'종합 ':g==='C'?'포수 수비 ':''}<b style="color:${rcol(v)}">${dv(v)}</b></td></tr>`; }).join('')}</tbody></table>`:''}</section>`; };
+  const nC=CKEYS.filter(k=>C[k]).length;
+  return `<div class="tc ws-own"><section class="tc-top"><div><span class="small muted">코치진</span><h2>코치 ${nC}/${CKEYS.length}명</h2></div><div class="sf-dots">${CKEYS.map(k=>`<i style="background:${C[k]?rcol(effC(C[k],G.user,'sk')):'transparent'}" class="${C[k]?'':'emp'}" title="${CROLE[k].l}${C[k]?' '+esc(C[k].name):' 빈자리'}"></i>`).join('')}</div>
+    <p class="small muted">선수마다 집중 항목 하나를 정하면 그 항목 담당 코치가 지도합니다. 코치 한 명이 맡는 선수가 많을수록 효과가 나뉩니다. 집중 항목은 선수 정보의 훈련 탭이나 '육성' 탭에서 바꿉니다.</p>
+    <div class="tc-btns"><button class="btn small" data-a="go" data-v="staff:coach">스태프 개요</button><button class="btn small" data-a="itab" data-v="mg_staff_train:dev">선수별 훈련 방향</button></div></section>
+    <div class="tc-groups">${TC_GROUPS.map(([t,L])=>`<div class="tc-g"><h3>${t}</h3>${L.map(card).join('')}</div>`).join('')}</div></div>`; }
 /* ---------- 구단·재정 ---------- */
 
 /* ---------- 구장 ---------- */
@@ -22681,6 +22873,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   fullTg(){ const d=document,e=d.documentElement; try{ const r=fullOn()?(d.exitFullscreen||d.webkitExitFullscreen).call(d):(e.requestFullscreen||e.webkitRequestFullscreen).call(e); if(r&&r.catch)r.catch(()=>toast('이 브라우저에서는 전체 화면을 켤 수 없습니다.')); }catch(x){ toast('이 브라우저에서는 전체 화면을 켤 수 없습니다.'); } },
   calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); workspaceReveal('.cal-grid'); },
   calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
+  calWk(v){ UI.calSel=(UI.calSel??G.day)+(+v); const o=dobj(UI.calSel); UI.calYM={y:o.y,m:o.m}; render(); }, calAll(){ UI.calAll=!UI.calAll; render(); },
   calDay(v){ UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
   calJump(v){ const o=dobj(+v); closeSheets(); UI.tab='cal'; UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
   /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
@@ -22736,6 +22929,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
   rviewMode(v){UI.rlayout=v;render();},
+  sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
   crole(v){ UI.crole=v; render(); },
@@ -23629,6 +23823,7 @@ function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
+  if(main.querySelector(':scope > .ws-own'))return; /* 화면이 스스로 칸을 나눠 높이를 채우는 경우(PC FM식 개요): 틀 높이만 주고 패널로 다시 묶지 않는다 */
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
@@ -24969,6 +25164,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04k',d:'11월 4일',t:'PC 스태프·훈련·의료·일정을 FM처럼',items:[
+    '스태프 > 코치진(PC)이 FM의 스태프 기본 정보처럼 세 칸으로 바뀌었습니다. 코치진, 스카우트·전력분석, 의무·부상 칸마다 위에 직책별 인원, 가운데 리그 10개 구단 비교 막대(우리 값·리그 최고·평균·최저와 순위), 아래 명단 표가 있습니다. 기존 보직 카드는 "보직 카드 보기"로 엽니다.',
+    '훈련·육성에 "코치 배정" 탭을 추가했습니다. 타격·투구·수비·주루·2군 항목마다 지도하는 코치, 그 항목 지도 능력(별), 그 항목에 집중하는 선수와 지금 능력, 코치 부담(적음·보통·많음)을 보여 줍니다. 담당 코치가 없으면 바로 채용으로 갑니다.',
+    '부상 관리(PC)가 FM 의료 센터처럼 바뀌었습니다. 팀 닥터 요약, 위험 평가 표(경기 중 부상 확률을 정하는 체질·피로·체력·투수 부하·부상 방지로 계산한 종합 위험과 주된 이유), 지금 부상(정도별)·최근 복귀 선수, 오른쪽 부상 방지·병원 설정입니다.',
+    '일정(PC)이 FM 주요 일정처럼 바뀌었습니다. 위에 한 주 띠(경기·마감·리그 일정), 아래 시즌 경기 목록(결과·점수·상대 순위·양 팀 선발, 앞으로 경기는 예상 선발), 오른쪽에 고른 날 상세와 상대 전력·수비 배치가 나옵니다. 휴대폰은 기존 달력 그대로입니다.']},
   {id:'2026-11-04j',d:'11월 4일',t:'드래프트 드롭다운을 버튼으로',items:[
     '창단 드래프트의 나이 고르기(최소·최대 두 칸)를 나이 범위 버튼(전체·25세 이하·26~30세·31~34세·35세 이상)으로, 맡길 방침과 지명 기록의 구단 고르기도 버튼 줄로 바꿨습니다. 휴대폰에서는 한 줄 가로 스크롤입니다.',
     '신인 드래프트 관심 목록의 고려 라운드도 버튼(미정·1R~11R)으로 바꿨습니다.']},

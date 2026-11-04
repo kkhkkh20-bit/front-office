@@ -10,3 +10,72 @@
 .staff-talk{gap:5px}.staff-talk .btn,.staff-talk .tc-i{font-size:10px;white-space:normal;line-height:1.5;padding:4px 7px}.staff-bio .note{overflow-wrap:anywhere}
 .cgrid{align-items:start}.csl,.anc,.tcard:has(>.staff-bio){min-width:0;align-self:start;align-content:start}.csl-n{flex-wrap:wrap}.ps>.staff-bio{margin-top:12px}.ps .staff-mental{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:600px){.ps .staff-mental{grid-template-columns:repeat(2,minmax(0,1fr))}.staff-network{grid-template-columns:30px 22px minmax(45px,1fr) 22px minmax(45px,1fr)}}
+/* PC 스태프 개요(34b_staff_fm.js): FM '스탭 기본 정보'처럼 세 칸 × (인원 현황 · 리그 비교 막대 · 명단 표), 화면 높이에 딱 맞춤 */
+@media(min-width:1100px){
+  .sf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto minmax(200px,34%) minmax(0,1fr);gap:0 10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  main.ws-frame>.sf{height:auto}
+  .sf-c{display:grid;grid-row:span 3;grid-template-rows:subgrid;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .sf-c>section{padding:10px 12px;min-height:0;border-top:1px solid var(--line)}.sf-c>section:first-child{border-top:0}
+  .sf-c h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff)}
+  .sf-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px}
+  .sf-roles>div{font-size:12px;line-height:1.7;color:var(--muted)}.sf-roles>div b{font-family:var(--f-num);color:var(--ink)}.sf-roles>div.miss,.sf-roles>div.miss b{color:var(--warn)}
+  .sf-note{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
+  .sf-sum{display:flex;flex-direction:column;gap:8px;min-width:0}.sf-sum h2{margin:0;font-size:18px}.sf-sum>.btn{align-self:flex-start}
+  .sf-dots{display:flex;flex-wrap:wrap;gap:5px}.sf-dots i{width:10px;height:16px;border-radius:5px 5px 2px 2px}.sf-dots i.emp{border:1px solid var(--muted)}
+  .sf-cmp{display:flex;flex-direction:column}
+  .sf-bars{flex:1;min-height:0;display:flex;gap:6px;align-items:stretch}
+  .sf-b{flex:1;min-width:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;justify-items:center;gap:2px;font-size:11px}
+  .sf-b em{font-style:normal;color:var(--muted)}.sf-b em.good{color:var(--good)}.sf-b em.bad{color:var(--bad)}
+  .sf-b b{font:700 13px var(--f-num)}.sf-b>span{color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .sf-col{position:relative;width:100%;max-width:34px;background:var(--panel2);border-radius:2px}
+  .sf-col>i{position:absolute;left:6px;right:6px;bottom:0;background:#5b8fc7;border-radius:2px 2px 0 0}.sf-col>i.good{background:var(--good)}.sf-col>i.bad{background:var(--bad)}
+  .sf-col>u,.sf-leg u{position:absolute;left:0;right:0;height:2px;text-decoration:none}.sf-col>u.hi,.sf-leg u.hi{background:var(--good)}.sf-col>u.lo,.sf-leg u.lo{background:var(--bad)}.sf-col>u.av,.sf-leg u.av{background:#fff;left:3px;right:3px}
+  .sf-leg{display:flex;gap:12px;margin:6px 0 0;font-size:11px;color:var(--muted)}.sf-leg span{display:inline-flex;align-items:center;gap:4px}.sf-leg u{position:static;display:inline-block;width:12px}
+  .sf-list{display:flex;flex-direction:column;min-height:0}
+  .sf-tw{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
+  .sf-t{width:100%;border-collapse:collapse;font-size:12px}.sf-t th{position:sticky;top:0;background:var(--panel);text-align:left;font-weight:500;color:var(--muted);padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .sf-t td{padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap}.sf-t td.wrap{white-space:normal}.sf-t td.bad{color:var(--bad)}.sf-t tr.miss td{color:var(--warn)}
+  .sf-t td,.sf-t th{text-align:left}.sf-t td:last-child,.sf-t th:last-child{text-align:right}.sf-t td:last-child.wrap{text-align:left}
+  .sf-t .lnk{font-weight:600}
+  .sf-sub{margin-top:12px!important}.sf-sub em{font-style:normal;color:var(--muted);font-weight:500}
+  .sf-st{color:var(--warn);letter-spacing:-1px}.sf-st i{font-style:normal;color:var(--line)}
+}
+/* 훈련 > 코치 배정(34c_train_coach.js): 항목 카드(담당 코치·별·집중 선수·코치 부담). PC는 네 묶음 × 세 장으로 화면을 채움 */
+.tc{display:flex;flex-direction:column;gap:10px;min-height:0;flex:1;overflow:auto}
+.tc-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.tc-top h2{margin:0;font-size:18px}.tc-top>p{flex:1 1 320px;margin:0}.tc-btns{display:flex;gap:6px}
+.tc-top .sf-dots{display:flex;flex-wrap:wrap;gap:5px}.tc-top .sf-dots i{width:10px;height:16px;border-radius:5px 5px 2px 2px}.tc-top .sf-dots i.emp{border:1px solid var(--muted)}
+.tc-groups{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.tc-g{display:flex;flex-direction:column;gap:8px;min-height:0}.tc-g>h3{margin:0;font-size:14px;text-align:center;color:var(--team-hi,#4fa3ff)}
+.tc-card{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:4px;min-height:0}
+.tc-card.miss{border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}
+.tc-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.tc-h b{font-size:15px}
+.tc-st{color:var(--warn);letter-spacing:-1px;white-space:nowrap}.tc-st i{font-style:normal;color:var(--line)}
+.tc-ppl{display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-height:16px}.tc-ppl i{width:8px;height:14px;border-radius:4px 4px 2px 2px;background:#5b8fc7}.tc-ppl i.p{background:#d9a441}.tc-ppl em{font-style:normal;font-size:11px;color:var(--muted);margin-left:4px}
+.tc-card>p{margin:0;font-size:13px;line-height:1.5}
+.tc-f{display:flex;gap:8px;align-items:center;font-size:12px}.tc-f>span:first-child{color:var(--muted)}.tc-f b.good{color:var(--good)}.tc-f b.warn{color:var(--warn)}.tc-f b.bad{color:var(--bad)}.tc-f .muted{margin-left:auto}
+.tc-t{width:100%;border-collapse:collapse;font-size:12px}.tc-t td{padding:3px 4px;border-top:1px solid var(--line);white-space:nowrap}.tc-t td:last-child{text-align:right}.tc-t b{font-family:var(--f-num)}
+@media(min-width:1100px){
+  .tc{overflow:hidden}
+  .tc-groups{flex:1;min-height:0;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .tc-g{display:grid;grid-template-rows:auto repeat(3,minmax(0,1fr))}
+  .tc-card{overflow:auto;scrollbar-width:thin}
+}
+/* PC 의료 센터(34b_staff_fm.js medFM) */
+@media(min-width:1100px){
+  .md{display:grid;grid-template-columns:minmax(0,1fr) 330px;grid-template-rows:auto minmax(0,1fr) minmax(200px,32%);gap:10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
+  main.ws-frame>.md{height:auto}
+  .md>.card{margin:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .md h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.md h3 em{font-style:normal;color:var(--ink);font-size:15px}
+  .md-sum{flex-direction:row!important;gap:16px;align-items:center}.md-doc{display:flex;gap:10px;align-items:center;flex:none;width:200px}.md-doc .av{width:56px;height:56px}.md-doc b{display:block}.md-doc span{font-size:12px;color:var(--muted)}
+  .md-txt{flex:1;min-width:0;background:var(--panel2);border-radius:4px;padding:8px 12px}.md-txt p{margin:2px 0;font-size:13px;line-height:1.6}
+  .md-ctl{grid-column:2;grid-row:1/4}.md-ctl-b{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
+  .md-bt{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:0}.md-bt>.card{margin:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .md-p{display:flex;gap:8px;align-items:center}.md-p .av{width:34px;height:34px;flex:none}.md-p span{display:block;font-size:11px;color:var(--muted)}
+  .md-t td{vertical-align:middle}.md-t td.warn,.md-t b.warn{color:var(--warn)}.md-t td.good{color:var(--good)}
+  .md-bar{display:block;width:70px;height:4px;background:var(--panel2);border-radius:2px;margin-top:3px}.md-bar u{display:block;height:100%;background:var(--warn);border-radius:2px}
+  .md-risk{display:grid;gap:1px;padding:6px 10px;border-radius:3px;min-width:180px;text-align:left}.md-risk b{font-size:12.5px}.md-risk span{font-size:11px;opacity:.85}
+  .md-risk.r0{background:color-mix(in srgb,var(--good) 18%,transparent)}.md-risk.r1{background:var(--panel2)}.md-risk.r2{background:color-mix(in srgb,#c8642a 55%,transparent);color:#fff}.md-risk.r3{background:color-mix(in srgb,var(--bad) 60%,transparent);color:#fff}
+  .md-sv{font-size:12px;font-weight:600;color:var(--muted)}.md-sv.warn{color:var(--warn)}.md-sv.bad{color:var(--bad)}
+  .md-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:var(--panel2)}.md-tag.s2{background:#c8642a;color:#fff}.md-tag.s3{background:var(--bad);color:#fff}
+}

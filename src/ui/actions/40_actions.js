@@ -149,6 +149,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   fullTg(){ const d=document,e=d.documentElement; try{ const r=fullOn()?(d.exitFullscreen||d.webkitExitFullscreen).call(d):(e.requestFullscreen||e.webkitRequestFullscreen).call(e); if(r&&r.catch)r.catch(()=>toast('이 브라우저에서는 전체 화면을 켤 수 없습니다.')); }catch(x){ toast('이 브라우저에서는 전체 화면을 켤 수 없습니다.'); } },
   calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); workspaceReveal('.cal-grid'); },
   calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
+  calWk(v){ UI.calSel=(UI.calSel??G.day)+(+v); const o=dobj(UI.calSel); UI.calYM={y:o.y,m:o.m}; render(); }, calAll(){ UI.calAll=!UI.calAll; render(); },
   calDay(v){ UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
   calJump(v){ const o=dobj(+v); closeSheets(); UI.tab='cal'; UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
   /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
@@ -204,6 +205,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
   rviewMode(v){UI.rlayout=v;render();},
+  sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
   crole(v){ UI.crole=v; render(); },

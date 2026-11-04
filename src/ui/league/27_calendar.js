@@ -30,7 +30,7 @@ function calGame(d){ const c=G.cal; let m=null, kind='';
   if(!m&&log){ m=[log.h,log.a]; kind=log.k||''; }
   if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
   return {home,op,kind,res:log?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }
-function calView(){ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
+function calView(){ if(fmOn())return calFM(); /* PC: FM식 주요 일정 */ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
   const first=dnum(ym.y,ym.m,1); const w0=(dobj(first).w+6)%7; /* 월요일 시작 */ const last=dnum(ym.m===12?ym.y+1:ym.y,ym.m===12?1:ym.m+1,1)-1;
   const sel=UI.calSel!=null&&dobj(UI.calSel).m===ym.m&&dobj(UI.calSel).y===ym.y?UI.calSel:(now.y===ym.y&&now.m===ym.m?G.day:first);
   let cells=''; for(let i=0;i<w0;i++)cells+='<div class="cal-c nil"></div>';
@@ -115,3 +115,19 @@ function gmPlanBox(d,g){ const pl=gmPlanAt(d); const T=gmTourn(d); const per=per
   if(per==='season'||(dobj(d).m>=4&&dobj(d).m<=9))B.push(`<div class="gpl-r"><span class="small">2군 방문</span><button class="btn small${pl&&pl.k==='farm'?' primary':''}" data-a="gmPlan" data-v="${d}:farm:">2군 경기장</button></div>`);
   if(!B.length)return '';
   return `<div class="gpl"><div class="row between"><span class="eyebrow">단장 일정</span>${pl?`<span class="row"><span class="pill acc">${esc(lab)}</span><button class="btn small" data-a="gmPlan" data-v="${d}:">취소</button></span>`:'<span class="small muted">경기는 결과 보고로 받습니다. 볼 경기나 출장을 잡아 두세요.</span>'}</div>${B.join('')}</div>`; }
+/* PC 일정(FM '주요 일정'처럼): 위 한 주 띠(경기·마감·리그 일정), 아래 왼쪽 시즌 경기 목록(지난 경기 결과·선발, 앞으로 경기 D-day·예상 선발), 오른쪽 고른 날 상세 */
+function calFM(){ const c=G.cal; const sel=UI.calSel??G.day; const so=dobj(sel), mon=sel-((so.w+6)%7);
+  const days=Array.from({length:7},(_,i)=>mon+i);
+  const nx=nextGames(1)[0];
+  const strip=`<section class="card sch-wk"><div class="row between sch-nav"><b>${so.y}년 ${so.m}월</b><span class="row">${nx?`<span class="small muted">다음 경기 ${dmd(nx.d)} ${nx.home?'홈':'원정'} vs ${esc(tshort(nx.op))}</span>`:''}<button class="btn small" data-a="calWk" data-v="${G.day-sel}">오늘</button><button class="btn small" data-a="calWk" data-v="-7" aria-label="지난주">◀</button><button class="btn small" data-a="calWk" data-v="7" aria-label="다음 주">▶</button></span></div>
+    <div class="sch-days">${days.map(d=>{ const o=dobj(d), g=calGame(d), ev=calEvents(d);
+      return `<button class="sch-d${d===G.day?' today':''}${d===sel?' sel':''}${d<G.day?' past':''}" data-a="calDay" data-v="${d}"><span class="sch-n"><b>${o.d}</b>${WD[o.w]}${d===G.day?' · 오늘':''}</span>${g?`<span class="sch-g${g.res?' '+({승:'w',패:'l'}[g.res.r]||'t'):''}${g.home?' h':''}">${badge(g.op,26)}<span><i>${g.kind?esc(g.kind):'정규시즌'} · ${g.home?'홈':'원정'}</i><b>${esc(tshort(g.op))}</b>${g.res?`<em>${g.res.r} ${g.res.my}:${g.res.op}</em>`:''}</span></span>`:''}${ev.slice(0,3).map(e=>`<span class="sch-e" style="--ec:${CAL_K[e.k].c}">${esc(e.t)}</span>`).join('')}${ev.length>3?`<span class="sch-e more">외 ${ev.length-3}건</span>`:''}</button>`; }).join('')}</div></section>`;
+  /* 시즌 경기 목록: 지난 경기는 최근 8경기(전체 보기로 펼침), 앞으로는 끝까지 */
+  const all=[]; const start=(c&&c.open)||G.day, end=Math.max((c&&c.end)||G.day,G.day+60); for(let d=start;d<=end;d++){ const g=calGame(d); if(g)all.push({d,g}); }
+  const past=all.filter(x=>x.d<G.day||(x.d===G.day&&x.g.res)), fut=all.filter(x=>!past.includes(x)); const showP=UI.calAll?past:past.slice(-8);
+  let proj=[]; try{ proj=projStarters(G.user,6)||[]; }catch(e){} const nxL=nextGames(8);
+  const st=(x)=>{ const r=x.g.gi>=0?G.games[x.g.gi]:null; if(r&&r.box){ const me=r.home===G.user?'h':'a', op=me==='h'?'a':'h'; const a=(r.box[me].pit[0]||{}).n, b=(r.box[op].pit[0]||{}).n; return `${a?esc(a):'-'} <i>vs</i> ${b?esc(b):'-'}`; } if(x.d>G.day){ const k=nxL.findIndex(y=>y.d===x.d); const s=k>=0&&proj[k]?proj[k].sp:null; return s?`<i>예상</i> ${esc(s.name)}`:''; } return ''; };
+  let lastM=null; const rows=[...showP,...fut].map(x=>{ const o=dobj(x.d), g=x.g, mh=o.m!==lastM?`<tr class="sch-mh"><td colspan="8">${o.y}년 ${o.m}월</td></tr>`:''; lastM=o.m; const dd=x.d-G.day, rk=(()=>{ const L=standOrder().order||[]; const i=L.findIndex(y=>(y.tid??y)===g.op); return i<0?'':i+1; })();
+    return mh+`<tr class="${x.d===sel?'sel':''}${x.d===G.day?' today':''}" data-a="calDay" data-v="${x.d}"><td>${o.m}/${o.d} ${WD[o.w]}</td><td class="muted">${dd===0?'오늘':dd>0?dd+'일 뒤':-dd+'일 전'}</td><td class="muted">${g.kind?esc(g.kind):'정규시즌'}</td><td>${g.home?'홈':'원정'}</td><td class="muted">${rk?rk+'위':''}</td><td>${g.res?`<span class="sch-r ${({승:'w',패:'l'}[g.res.r]||'t')}">${g.res.r}</span> <b>${g.res.my}-${g.res.op}</b>`:''}</td><td>${badge(g.op,18)} ${esc(tshort(g.op))}</td><td class="sch-sp">${st(x)}</td></tr>`; }).join('');
+  const list=`<section class="card sch-list"><div class="row between"><h3>경기 일정·결과 <em>${past.length}경기 치름 · ${fut.length}경기 남음</em></h3>${past.length>8?`<button class="btn small" data-a="calAll">${UI.calAll?'최근 8경기만':'지난 경기 모두 보기'}</button>`:''}</div><div class="sf-tw"><table class="sf-t sch-t"><thead><tr><th>날짜</th><th></th><th>대회</th><th>장소</th><th>상대 순위</th><th>결과</th><th>상대</th><th>선발 (우리 vs 상대)</th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="muted">경기 일정이 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  return `<div class="sch ws-own">${strip}${list}<div class="sch-side">${calDetail(sel)}${(()=>{ const g=calGame(sel); return g?`<section class="card sch-op">${ibdOpp(g.op,'상대 전력')}</section><section class="card sch-op">${ibdForm(g.op,'상대 수비 배치')}</section>`:''; })()}${calUpcoming()}</div></div>`; }

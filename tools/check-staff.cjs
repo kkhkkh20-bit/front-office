@@ -8,6 +8,7 @@ await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let
 for(const size of [{width:1366,height:768},{width:390,height:844}]){await page.setViewportSize(size);await page.waitForTimeout(220);
   for(const [route,kind] of [['staff:coach','coach'],['staff:scouts','scout'],['staff:data','analyst']]){
     await page.evaluate(route=>{closeSheets();A.go(route);},route);await page.waitForTimeout(100);
+    if(kind==='coach'&&size.width>=1100){check(await page.locator('.sf .sf-cmp').count()===3,`${size.width} PC 스태프 개요(세 칸 리그 비교) 없음`);await page.evaluate(()=>{UI.coachCards=1;render();});await page.waitForTimeout(100);} /* PC는 개요가 먼저, '보직 카드 보기'로 카드 */
     const card=page.locator('.staff-bio[data-staff-kind="'+kind+'"]').first();check(await card.count()>0,`${size.width} ${kind} 인물 카드 없음`);if(!await card.count())continue;
     if(!await card.locator('details.staff-more').evaluate(e=>e.open))await card.locator('summary').click();await page.waitForTimeout(100);
     const r=await page.evaluate(kind=>{const e=document.querySelector('.staff-bio[data-staff-kind="'+kind+'"]'),s=staffOwned(kind,e.dataset.staffId),P=staffProfile(s,kind);return {pref:e.querySelector('.staff-preference').textContent.includes(staffRoleLabel(kind,P.pref)),mental:e.querySelector('.staff-mental').textContent.includes(String(P.mental.pro)),network:!!e.querySelector('.staff-network'),overflow:document.documentElement.scrollWidth>innerWidth+2};},kind);

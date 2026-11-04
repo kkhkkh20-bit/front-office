@@ -369,14 +369,14 @@ const QUICK=process.env.QUICK==='1';
   /* 드래프트: 카드와 아마 프로필의 최고 구속이 같고, 관심 목록은 내 보드(순위 이동·메모·고려 라운드·확인할 것) */
   { where='드래프트 보드'; const r=await ev(()=>{ const pool=draftPool(); const pp=pool.find(q=>q.isP); if(pool.length<2||!pp)return null; const out={};
       const cell=(statCells(pp).match(/최고 구속<\/span><b[^>]*>(\d+)/)||[])[1]; closeSheets(); A.player(pp.id); const sh=((document.querySelector('#sheet')||{}).textContent||''); const prof=(sh.match(/최고 구속(\d+)km/)||[])[1]; closeSheets(); out.velo=cell&&cell===prof; out.dbg=cell+'/'+prof;
-      const keep=G.shortlist; G.shortlist=[pool[0].id,pool[1].id]; UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'mine',more:20}; const h=draftBoard(); out.board=/data-a="dmemo"/.test(h)&&/data-a="drd"/.test(h)&&/data-a="dchk"/.test(h);
+      const keep=G.shortlist; G.shortlist=[pool[0].id,pool[1].id]; UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'mine',more:20}; const h=draftBoard(); out.board=/data-a="dmemo"/.test(h)&&/data-a="drdB"/.test(h)&&/data-a="dchk"/.test(h);
       if(A.dmove){ A.dmove(pool[1].id+':-1'); out.mv=G.shortlist[0]===pool[1].id; } G.shortlist=keep; UI.df.seg='board'; return out; });
     if(r){ if(!r.velo)add('드래프트','후보 카드와 아마 프로필의 최고 구속이 다름 '+r.dbg); if(!r.board||!r.mv)add('드래프트','관심 목록에 내 순위·메모·고려 라운드·확인할 것이 없음'); } }
   /* 면담: 다시 열면 최근 면담 기록이 보인다 */
   { where='면담 기록'; const r=await ev(()=>{ const p=playersOf(G.user)[0]; if(!p)return null; const keep=p.talkLog; p.talkLog=[{d:G.day,k:'ask',a:'점검 답변'}]; closeSheets(); A.meetOpen('pl:'+p.id); const tx=(document.querySelector('.meet-page')||{}).textContent||''; A.meetClose(); closeSheets(); p.talkLog=keep; return /최근 면담/.test(tx)&&/점검 답변/.test(tx); });
     if(r===false)add('면담','다시 열면 최근 면담 기록이 안 보임'); }
   /* 코치: 훈련 화면 담당 코치 육성력이 코치진 화면과 같은 척도, 코치 카드에 세부 능력 */
-  { where='코치 카드'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.foreign&&q.age<=28&&q.isP); if(!p)return null; const f=trnPlan(p),k=TRN[trnG(p)][f]?.k[0]||(p.isP?'stf':'con');const h=trnCard(p); const sl=coachView(); return {dev:/지도 수준/.test(h)&&h.includes('>'+dv(coachToolV(p,k))+'<'),card:/세부 능력/.test(sl)}; });
+  { where='코치 카드'; const r=await ev(()=>{ const p=playersOf(G.user).find(q=>!q.foreign&&q.age<=28&&q.isP); if(!p)return null; const f=trnPlan(p),k=TRN[trnG(p)][f]?.k[0]||(p.isP?'stf':'con');const h=trnCard(p); const keep=UI.coachCards; UI.coachCards=1; const sl=coachView(); UI.coachCards=keep; return {dev:/지도 수준/.test(h)&&h.includes('>'+dv(coachToolV(p,k))+'<'),card:/세부 능력/.test(sl)}; });
     if(r){ if(!r.dev)add('코치','훈련 화면 지도 수준이 실제 분야별 코칭 계산과 불일치'); if(!r.card)add('코치','코치 카드에 세부 능력이 없음'); } }
   /* 감독과의 호흡: 투구 수는 실제 집계한 경기 수로, 부담 큰 투수를 따로 */
   { where='투수 관리 표시'; const r=await ev(()=>{ const m=G.mgr[G.user]; if(!m||m.interim)return null; const u=mgrUseStats(); const h=mgrBondView(); return {n:u.n!=null&&(u.n===0||h.includes('최근 '+u.n+'경기')),heavy:/부담 큰 투수/.test(h)}; });

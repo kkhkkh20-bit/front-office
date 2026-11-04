@@ -157,6 +157,8 @@
       "src/ui/contracts/32_transfer.js",
       "src/ui/staff/33_scouting_train.js",
       "src/ui/staff/34_staff.js",
+      "src/ui/staff/34b_staff_fm.js",
+      "src/ui/staff/34c_train_coach.js",
       "src/ui/finance/35_club.js",
       "src/ui/players/36_roster_tab.js",
       "src/ui/league/37_league_tab.js",
