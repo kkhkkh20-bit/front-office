@@ -73,11 +73,11 @@
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
 @media(min-width:1100px){.ws-scroll:has(>.tp-grid){display:flex;flex-direction:column}}
 @media(max-width:699px){.tp-grid{gap:5px;margin:2px 0}.tp-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:6px 9px}.tp-card>.tp-h{grid-column:1/-1}.tp-card .tp-h{grid-template-columns:32px minmax(0,1fr) auto}.tp-card .tp-h .av{width:32px;height:32px}.tp-card>.tp-rel{grid-column:1}.tp-card>em{grid-column:2;grid-row:2;align-self:center}.tp-card>.tp-meta{grid-column:1/-1}}
-/* 휴대폰 감독 채용: 후보 카드가 한 장에 600px쯤이라 칸 안 스크롤(240px)로는 일부만 보였다.
-   작업 공간 전체를 한 번에 스크롤해 안내·필터는 위로 밀려 나가고 후보 목록이 화면 대부분을 쓰게 한다 */
+/* 휴대폰 감독 채용·신인 드래프트: 칸 안 스크롤이면 위 안내·탭·필터가 자리를 차지해 후보 카드 일부(감독 240px)나 후보 2~3줄(드래프트)만 보였다.
+   작업 공간 전체를 한 번에 스크롤해 안내·탭·필터는 위로 밀려 나가고 후보 목록이 화면의 70% 넘게 쓰게 한다 */
 @media(max-width:599px){
- main.ws-frame:has(.mgrg){overflow-y:auto!important;overscroll-behavior:contain}
- main.ws-frame:has(.mgrg)>.ws-panels{flex:none;display:block}
- main.ws-frame:has(.mgrg)>.ws-panels>.ws-panel{overflow:visible}
- main.ws-frame:has(.mgrg) .ws-panel>.ws-scroll{flex:none;overflow:visible!important}
+ main.ws-frame:has(.mgrg),main.ws-frame:has(.draft-page){overflow-y:auto!important;overscroll-behavior:contain}
+ main.ws-frame:has(.mgrg)>.ws-panels,main.ws-frame:has(.draft-page)>.ws-panels{flex:none;display:block}
+ main.ws-frame:has(.mgrg)>.ws-panels>.ws-panel,main.ws-frame:has(.draft-page)>.ws-panels>.ws-panel{overflow:visible}
+ main.ws-frame:has(.mgrg) .ws-panel>.ws-scroll,main.ws-frame:has(.draft-page) .ws-panel>.ws-scroll{flex:none;overflow:visible!important}
 }
