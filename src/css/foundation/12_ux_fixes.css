@@ -615,3 +615,9 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 }
 @media (max-width:1099px){ .tk.m .fd-got:not(:has(.fd-left)){display:none} }
 @media (max-width:1099px){ .fdl-main .fdt-w{overscroll-behavior:none} .dshell,.dshell .gut{overscroll-behavior:none} } /* 휴대폰: 표를 끝 너머로 당겨 빈칸이 드러나던 튕김 막기 */
+@media (max-width:1099px){ .fdbar>.fdvt{flex:1 1 auto;min-width:0;margin:0;display:flex}.fdbar>.fdvt button{flex:1 1 0;min-width:0;min-height:30px;padding:2px 4px;font-size:12.5px;font-weight:600;white-space:nowrap}.fdbar>[data-a="fdFilt"]{margin-left:0} }
+@media (max-width:1099px){
+  .fdbar>.fdgs{flex:1 1 auto;min-width:0;margin:0;display:flex}.fdbar>.fdgs button{flex:1 1 0;min-height:30px;padding:2px 6px;font-size:13px;font-weight:700}
+  .fdbar>.fdfx{flex:none}
+  .fdl-main .fdvt-m{display:flex;margin:0 0 4px}.fdl-main .fdvt-m button{flex:1 1 0;min-height:32px;padding:2px 4px;font-size:13px;font-weight:600}
+}
