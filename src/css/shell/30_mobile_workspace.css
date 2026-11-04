@@ -28,3 +28,7 @@
   #app [data-a="castView"],#app [data-a="castTeam"]{min-height:32px;min-width:44px}
   .bnav button span,.bnav button b{white-space:nowrap}
 }
+
+/* 전체 화면 버튼: 휴대폰은 공간이 좁아 숨김(태블릿·PC만) */
+@media(max-width:699px){.fullbtn{display:none!important}}
+.fullbtn.on,.fm-i.on[data-a="fullTg"]{color:var(--team-hi,#4fa3ff)}

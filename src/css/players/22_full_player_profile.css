@@ -73,3 +73,22 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 }
 @media(min-width:1250px){#sheet .pf-overview{grid-template-columns:210px minmax(0,1fr) 240px 225px}}
 @media(min-width:1700px){#sheet .pf-overview{grid-template-columns:240px minmax(0,1fr) 280px 260px}}
+/* PC: 세부 능력은 2열(수비·체력·성격을 한 열로), 옆에 보고서 상자(최근 폼·스태프 의견·평가 근거) */
+.pf-main-top{display:contents}
+.pf-report{display:none}
+@media(min-width:1100px){
+  #sheet .pf-main-top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:10px;flex:none;align-items:stretch}
+  #sheet .pf-main-top .pf-attribute-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #sheet .pf-report{display:flex!important;flex-direction:column;gap:8px;min-width:0}
+  .pf-report h3{margin:0}
+  .pf-rp-form{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#0b1014;border:1px solid var(--line);border-radius:3px;font-size:12px}.pf-rp-form span{color:var(--muted)}
+  .pf-rp-note{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:12px;line-height:1.5}.pf-rp-note span{color:var(--team-hi,#4fa3ff);font-weight:700}.pf-rp-note p{margin:0}
+  .pf-rp-why{margin:0;font-size:11.5px;line-height:1.5;color:var(--muted);padding-top:6px;border-top:1px dashed var(--line)}
+}
+@media(min-width:1100px){
+  #sheet .pf-overview .pf-attribute-row.text{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+  #sheet .pf-overview .pf-attribute-row.text .pf-score{max-width:160px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #sheet .pf-main>.pf-season-table{min-height:190px}
+}
+/* 1500px 아래 PC: 보고서 상자는 세부 능력 아래로(세부 능력이 좁아져 길어지지 않게) */
+@media(min-width:1100px) and (max-width:1499px){#sheet .pf-main-top{grid-template-columns:minmax(0,1fr)}}

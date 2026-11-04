@@ -1,6 +1,10 @@
 /* ---------- 화면 조립 ---------- */
 /* 대형 화면: 1920×1080 기준 배치를 통째로 확대한다(게임처럼 비율 고정). 확대 중에는 CSS의 vh·vw를 --z로 나누고,
    화면 좌표(getBoundingClientRect)를 스타일 px로 옮길 때도 uiZ()로 나눈다 */
+/* 전체 화면(PC·태블릿): 브라우저 주소창·탭을 숨긴다. 아이폰 사파리는 지원하지 않아 버튼을 감춘다 */
+function fullOk(){ if(typeof document==='undefined')return false; const e=document.documentElement; return !!(e.requestFullscreen||e.webkitRequestFullscreen)&&(document.fullscreenEnabled!==false); }
+function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenElement||document.webkitFullscreenElement); }
+if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
 function render(){const app=document.getElementById('app');rememberReading(app);try{return render0();}finally{restoreReading(app);workspaceRefit();}}
@@ -28,7 +32,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   <div class="mainc">
    <header class="top"><div class="gut"><div class="tbar wrap">
      <div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:`<i class="cb-c">${esc(t.city)} </i>${esc(t.nick)}<i class="cb-v">▾</i>`}</b><span>${wide()?dstr(G.day):`<i class="cb-y">${dobj(G.day).y}.</i>${dsh(G.day)} ${WD[dobj(G.day).w]}`}<i class="cb-p"> · ${PERIOD[per]}</i></span></div></div>
-     ${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}${goSet(per,b)}
+     ${fullOk()?`<button class="mailbtn fullbtn${fullOn()?' on':''}" data-a="fullTg" aria-label="전체 화면" title="전체 화면 켜기·끄기">${ICO.full}</button>`:''}${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}${goSet(per,b)}
    </div></div>${topBlocks(b)}</header>
    <div class="gut"><div class="wrap">
      <div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
