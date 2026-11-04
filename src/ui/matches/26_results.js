@@ -56,8 +56,63 @@ function schedView(){
    +(G.ps?csec('포스트시즌',psBody()):'');
 }
 function busView(){ const t=team(G.user); return csec('구단 버스',`<div class="tgrid">${(()=>{ const bl=busLv(); return `<div class="tcard fci" id="fci-bus" style="cursor:default"><div class="row between" style="flex-wrap:nowrap"><div><b>구단 버스</b><div class="small muted">${BUS[bl].l}</div></div><span class="fpip">${[1,2].map(i=>`<i class="${i<=bl?'on':''}"></i>`).join('')}<em>${bl}/2</em></span></div>${busIsoPic()}<p class="dnote">원정 경기 이동 피로를 바꿉니다. 일반 버스는 원정 피로 +10%, 우등 +2%, 리무진 -6%(다른 구단은 우등 기준).</p><div class="tc-ft">${bl>=2?'<span class="pill good">최고 등급</span>':`<span class="small">${BUS[bl+1].l} 구입 <b class="num">${money(BUS[bl+1].c)}</b> · 운영비 연 ${money(BUS[bl+1].up)}</span><button class="btn small primary" data-a="buyBus" data-v="${bl+1}" ${t.cash<BUS[bl+1].c?'disabled':''}>구입 · ${money(BUS[bl+1].c)}</button>`}</div></div>`; })()}</div>${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}`); }
-function invView(){ const it=inTabs('inv',[['train','훈련 시설'],['bus','구단 버스'],['home','홈구장'],['new','신구장']],'train');
+function invView(){ if(fmOn()){ /* PC: 훈련 시설·버스·홈구장을 한 화면(invFM)으로, 신구장은 따로 */ UI.it=UI.it||{}; const m={bus:'bus',home:'stad:seat'}[UI.it.inv]; if(m){ UI.invSel=m; UI.it.inv='train'; }
+    const it=inTabs('inv',[['train','시설 현황'],['new','신구장']],'train'); return it.bar+(it.cur==='new'?stadView('new'):invFM()); }
+  const it=inTabs('inv',[['train','훈련 시설'],['bus','구단 버스'],['home','홈구장'],['new','신구장']],'train');
   if(it.cur==='bus')return it.bar+busView(); if(it.cur==='home')return it.bar+stadView('now')+stadView('fac')+`<details class="moreg"><summary><span>리그 관중 비교</span></summary><div class="moreb">${stadView('lg')}</div></details>`; if(it.cur==='new')return it.bar+stadView('new'); return it.bar+facView(); }
+/* PC 시설(FM '구단 정보'의 시설·구장 칸처럼): 왼쪽 위 훈련·육성 시설, 왼쪽 아래 구장 시설·구단 버스(별 + 단계 + 등급 이름 + 리그 순위),
+   가운데 위 구장 정보, 가운데 아래 리그 비교(항목당 한 줄 순위 막대), 오른쪽 고른 시설의 효과·다음 단계·투자 버튼. 값은 모두 실제 시설·구장 데이터 */
+function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=team(tid), F=G.fac, S=stadOf(tid), nb=Object.keys(F.bld).length, tids=G.teams.map(x=>x.id);
+  const star=(lv,mx)=>`<span class="fvx-st">${'★'.repeat(lv)}<i>${'★'.repeat(Math.max(0,mx-lv))}</i></span>`;
+  const rank=(v,all)=>all.filter(x=>x>v).length+1;
+  const fAll=k=>tids.map(i=>{ const s=facSt(i); return s&&s.it?s.it[k]||0:0; }), sAll=k=>tids.map(i=>stadOf(i).lv[k]||0);
+  const sel=UI.invSel||('fac:'+FACK[0]);
+  const tile=(key,name,lv,mx,grade,rk,bld,nx)=>`<button class="fvx-t${sel===key?' on':''}${bld?' bld':''}" data-a="invSel" data-v="${key}"><span class="fvx-n">${esc(name)}</span><b class="fvx-lv">${lv}<i>/${mx}</i></b>${star(lv,mx)}<span class="fvx-g">${esc(grade)}</span><em>${bld?esc(bld):`리그 ${rk}위${lv>=mx?' · 최고 단계':nx?' · 다음 '+nx:''}`}</em></button>`;
+  const trT=FACK.map(k=>{ const lv=F.it[k], b=F.bld[k]; return tile('fac:'+k,FACI[k].l,lv,FAC_MAX,FACI[k].lv[lv],rank(lv,fAll(k)),b?`${FACI[k].lv[b.lv]} 공사 · ${dmd(b.done)} 완공`:'',lv<FAC_MAX?money(FACI[k].c[lv+1]):''); }).join('');
+  const lgLv=tids.map(facLv), rkAll=rank(F.lv,lgLv);
+  const tr=`<section class="card fvx-box"><h3>훈련·육성 시설 <em>종합 ${F.lv}단계 · 리그 ${rkAll}위</em><span class="fvx-k">연 유지비 <b>${money(facUpkeep())}</b> · 보유 현금 <b>${money(t.cash)}</b> · 공사 <b>${nb}/2</b></span></h3><div class="fvx-tiles">${trT}</div></section>`;
+  const bl=busLv();
+  const sdT=STAD_ITEMS.map(it=>{ const lv=S.lv[it.k], b=(S.build||[]).find(x=>x.k===it.k); return tile('stad:'+it.k,it.l,lv,STAD_MAX,`${lv}단계`,rank(lv,sAll(it.k)),b?`${b.lv}단계 공사 · ${dmd(b.done)} 완공`:'',lv<STAD_MAX?money(STAD_COST[lv+1]):''); }).join('')+tile('bus','구단 버스',bl,BUS.length-1,BUS[bl].l,rank(bl,tids.map(busLv)),'',BUS[bl+1]?money(BUS[bl+1].c):'');
+  const sd=`<section class="card fvx-box"><h3>구장 시설 · 구단 버스 <em>구장은 시 소유 · 구단 임대 운영</em></h3><div class="fvx-tiles">${sdT}</div></section>`;
+  /* 구장 정보 */
+  const cap=stadCap(tid), A=(G.sea.att&&G.sea.att[tid])||{n:0,sum:0,so:0}, P=stadProj(tid), D=stadDim(tid), age=G.year-stadBuilt(tid);
+  const o=stadIsoOpts(tid); o.col=cTeamCol(tid);
+  const kv=(k,v)=>`<div><span>${k}</span><b>${v}</b></div>`;
+  const st=`<section class="card fvx-stad"><h3>${esc(stadName(tid))}</h3><div class="fvx-top">${kv('개장',stadBuilt(tid)+'년')}${kv('구장 상태',age>=30?`<span class="bad">노후(${age}년째) · 관중 수요 -4%</span>`:age<3?`<span class="good">새 구장(${age}년째)</span>`:`${age}년째`)}${kv('지붕',S.dome?'돔구장':'개방형')}</div>
+    <div class="fvx-pic">${isoStadiumSvg(o)}</div>
+    <div class="fvx-kv">${kv('수용 인원',cap.toLocaleString('ko-KR')+'석')}${kv('올해 홈 평균',A.n?Math.round(A.sum/A.n).toLocaleString('ko-KR')+'명':P.n?'예상 '+P.avg.toLocaleString('ko-KR')+'명':'-')}${kv('좌석 점유율',A.n?Math.round(A.sum/A.n/cap*100)+'%':'-')}${kv('매진',`${A.so||0}회 / ${A.n}경기`)}
+      ${kv('담장 거리',`좌 ${D.lf} · 중 ${D.cf} · 우 ${D.rf}m`)}${kv('담장 높이',`좌 ${D.wl} · 중 ${D.wc} · 우 ${D.wr}m`)}${kv('홈런 지수',`우타 ${Math.round(parkHRM(tid,'R')*100)} · 좌타 ${Math.round(parkHRM(tid,'L')*100)}`)}${kv('시즌 예상 관중',P.att.toLocaleString('ko-KR')+'명')}
+      ${kv('표값 수입',money(P.ticket))}${kv('구장 부대 수입',money(P.fnb+P.prem+P.ad))}</div>
+    <div class="fvx-pr"><span>티켓 가격</span><div class="seg">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div></div><p class="fvx-note">${esc(PRICE[S.price].d)} 홈런 지수 100 = 리그 평균.</p></section>`;
+  /* 리그 비교 */
+  const att=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?x.sum/x.n:0; }, occ=i=>{ const x=(G.sea.att&&G.sea.att[i])||{n:0,sum:0}; return x.n?x.sum/x.n/stadCap(i)*100:0; }, sTot=i=>sum(STAD_ITEMS.map(x=>stadOf(i).lv[x.k]||0));
+  const cmp=`<section class="card fvx-cmp">${sfChart('훈련 시설 · 리그 10개 구단',[...FACK.map(k=>({l:FACI[k].l,v:F.it[k],all:fAll(k)})),{l:'종합 등급',v:F.lv,all:lgLv}],0,FAC_MAX)}
+    ${sfChart('구장 · 리그 10개 구단',[{l:'수용 인원',v:cap,all:tids.map(stadCap)},{l:'홈 평균 관중',v:att(tid),all:tids.map(att)},{l:'좌석 점유율 %',v:occ(tid),all:tids.map(occ)},{l:'구장 시설 합계',v:sTot(tid),all:tids.map(sTot)},{l:'구단 버스',v:bl,all:tids.map(busLv)}],0,0,v=>Math.round(v).toLocaleString('ko-KR'))}</section>`;
+  /* 오른쪽: 고른 시설 */
+  const [kind,k]=sel.split(':'); let dh='';
+  if(kind==='fac'&&FACI[k]){ const D0=FACI[k], lv=F.it[k], b=F.bld[k], nx=lv+1;
+    dh=`<h2>${esc(D0.l)}</h2>${star(lv,FAC_MAX)}<p class="fvx-cur"><b>${lv}단계</b> ${esc(D0.lv[lv])} · 리그 ${rank(lv,fAll(k))}위 · 유지비 연 ${money(D0.up[lv])}</p><p>${esc(D0.d)}</p>
+      ${b?`<div class="note warn">${esc(D0.lv[b.lv])} 공사 중 · ${dmd(b.done)} 완공</div>`:lv>=FAC_MAX?'<div class="note good">최고 단계입니다.</div>':`<dl class="fvx-nx"><div><dt>다음 단계</dt><dd>${nx}단계 · ${esc(D0.lv[nx])}</dd></div><div><dt>공사비</dt><dd>${money(D0.c[nx])}</dd></div><div><dt>공사 기간</dt><dd>${D0.days[nx]}일</dd></div><div><dt>유지비</dt><dd>연 ${money(D0.up[nx])}</dd></div></dl>
+      <div class="fvx-btn"><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||t.cash<D0.c[nx]?'disabled':''}>구단 현금으로 · ${money(D0.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''}>모기업 투자 요청 · ${Math.round(capexOdds('fac',D0.c[nx])*100)}%</button>`}</div>${nb>=2?'<p class="muted">동시 공사는 2곳까지입니다.</p>':t.cash<D0.c[nx]?`<p class="bad">현금 부족(보유 ${money(t.cash)})</p>`:''}`}
+      <p class="fvx-note">큰 시설 투자는 운영 예산이 아니라 구단 현금(적립금)이나 모기업 투자로 합니다. 모기업 요청은 구단주 신뢰·성향·금액에 따라 승인되고, 거절되면 신뢰 -1, 60일마다 1번입니다. 성장 효과는 겨울 성장 때, 부상·회복 효과는 바로 반영됩니다.</p>`; }
+  else if(kind==='stad'&&STAD_ITEMS.find(x=>x.k===k)){ const it=STAD_ITEMS.find(x=>x.k===k), lv=S.lv[k], b=(S.build||[]).find(x=>x.k===k), nx=lv+1, can=stadWindow();
+    dh=`<h2>${esc(it.l)}</h2>${star(lv,STAD_MAX)}<p class="fvx-cur"><b>${lv}단계</b> · 리그 ${rank(lv,sAll(k))}위</p><p>${esc(it.d)}</p>
+      ${b?`<div class="note warn">${b.lv}단계 공사 중 · ${dmd(b.done)} 완공</div>`:lv>=STAD_MAX?'<div class="note good">최고 단계입니다.</div>':`<dl class="fvx-nx"><div><dt>다음 단계</dt><dd>${nx}단계</dd></div><div><dt>공사비</dt><dd>${money(STAD_COST[nx])}</dd></div><div><dt>공사 기간</dt><dd>${STAD_DAYS[nx]}일</dd></div><div><dt>유지비 증가</dt><dd>연 +${money(STAD_UP[nx]-STAD_UP[lv])}</dd></div></dl><p class="fvx-eff">효과: ${stadGainTxt(k)}</p>
+      <div class="fvx-btn"><button class="btn small${can?' primary':''}" data-a="stadBuild" data-v="${k}" ${can?'':'disabled'}>구단 현금으로 · ${money(STAD_COST[nx])}</button><button class="btn small" data-a="capex" data-v="stad:${k}" ${can?'':'disabled'}>지자체 분담 협의 · ${Math.round(capexOdds('stad',STAD_COST[nx])*100)}%</button></div>${can?'':'<p class="muted">구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.</p>'}`}
+      <p class="fvx-note">수입 효과는 올해 예상 관중·가격 기준이고 그 효과가 이어진다고 본 값입니다(공사 기간·팬 여론 변화 제외). 6단계부터 효과 증가폭이 완만해집니다.</p>`; }
+  else { const nx=bl+1; dh=`<h2>구단 버스</h2>${star(bl,BUS.length-1)}<p class="fvx-cur"><b>${esc(BUS[bl].l)}</b> · 원정 피로 ${BUS[bl].f>0?'+':''}${Math.round(BUS[bl].f*100)}% · 유지비 연 ${money(BUS[bl].up)}</p><p>원정 경기 이동 피로를 바꿉니다. 다른 구단은 우등 버스 기준입니다.</p>
+      ${nx>=BUS.length?'<div class="note good">최고 등급입니다.</div>':`<dl class="fvx-nx"><div><dt>다음 등급</dt><dd>${esc(BUS[nx].l)}</dd></div><div><dt>구입비</dt><dd>${money(BUS[nx].c)}</dd></div><div><dt>원정 피로</dt><dd>${BUS[nx].f>0?'+':''}${Math.round(BUS[nx].f*100)}%</dd></div><div><dt>유지비</dt><dd>연 ${money(BUS[nx].up)}</dd></div></dl><div class="fvx-btn"><button class="btn small primary" data-a="buyBus" data-v="${nx}" ${t.cash<BUS[nx].c?'disabled':''}>구입 · ${money(BUS[nx].c)}</button></div>`}`; }
+  /* 고른 시설의 구단별 단계(리그 시설 비교 표의 한 열) */
+  const [lvOf,mxS,nmS]=kind==='fac'&&FACI[k]?[i=>{ const x=facSt(i); return x&&x.it?x.it[k]||0:0; },FAC_MAX,FACI[k].l]:kind==='stad'&&STAD_ITEMS.find(x=>x.k===k)?[i=>stadOf(i).lv[k]||0,STAD_MAX,STAD_ITEMS.find(x=>x.k===k).l]:[busLv,BUS.length-1,'구단 버스'];
+  const byT=tids.map(i=>[i,lvOf(i)]).sort((a,b)=>b[1]-a[1]||(b[0]===tid)-(a[0]===tid));
+  const lgL=`<h3>구단별 ${esc(nmS)}</h3>${byT.map(([i,lv])=>`<div class="fvx-li${i===tid?' me':''}"><span>${esc(team(i).city)} ${esc(team(i).nick)}</span>${star(lv,mxS)}<b>${lv}단계</b></div>`).join('')}`;
+  const msg=[UI.facMsg,UI.stadMsg].filter(Boolean).map(m=>`<div class="note bad">${esc(m)}</div>`).join('');
+  const bl2=[...Object.entries(F.bld).map(([k,b])=>[b.done,`${FACI[k].l} · ${FACI[k].lv[b.lv]}`]),...(S.build||[]).map(b=>[b.done,`${(STAD_ITEMS.find(x=>x.k===b.k)||{}).l} · ${b.lv}단계`])].sort((a,b)=>a[0]-b[0]);
+  const H=[]; for(const i of tids){ if(i===tid)continue; const s=facSt(i); for(const h of ((s&&s.hist)||[]))H.push({...h,i}); } H.sort((a,b)=>b.d-a.d);
+  const det=`<section class="card fvx-det"><div class="fvx-db">${dh}${msg}
+    ${lgL}<h3>공사 현황 <em>${bl2.length}건</em></h3>${bl2.length?bl2.map(([d,l])=>`<div class="fvx-li"><span>${esc(l)}</span><b>${dmd(d)} 완공</b></div>`).join(''):'<p class="muted">진행 중인 공사가 없습니다.</p>'}
+    <h3>최근 다른 구단 시설 투자</h3>${H.length?H.slice(0,8).map(h=>`<div class="fvx-li"><span>${esc(team(h.i).nick)} · ${esc(FACI[h.k].lv[h.lv])}${h.src==='cap'?' · 모기업 투자':''}</span><b>${dobj(h.d).y}년 ${dmd(h.d)}</b></div>`).join(''):'<p class="muted">기록이 없습니다.</p>'}</div></section>`;
+  return `<div class="fvx ws-own">${tr}${st}${det}${sd}${cmp}</div>`; }
 function facView(){ facInit(); const F=G.fac; const t=team(G.user); const nb=Object.keys(F.bld).length;
   const league=G.teams.map(x=>({x,lv:facLv(x.id)})); const rk=league.filter(q=>q.lv>F.lv).length+1;
   const card=k=>{ const D=FACI[k], lv=F.it[k], b=F.bld[k], nx=lv+1;
