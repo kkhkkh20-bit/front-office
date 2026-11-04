@@ -8,7 +8,8 @@ const ART={
 };
 const EVI={pt:'<path d="M4 15h16M6 15v4M18 15v4M8 11h8v4H8Z"/>',call:'<path d="M12 19V5M6 11l6-6 6 6"/>',reinf:'<path d="M12 5v14M5 12h14"/>',clash:'<path d="M13 3 6 13h5l-1 8 7-10h-5Z"/>',press:'<path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3ZM6 11a6 6 0 0 0 12 0M12 17v4M9 21h6"/>',slump:'<path d="M4 6l6 6 4-4 6 8M20 10v6h-6"/>',fx:'<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.8 2.5 13.2 0 16M12 4c-2.5 2.8-2.5 13.2 0 16"/>',inj:'<path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6Z"/>',agent:'<path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4M10 12h5M10 15h5M10 18h3"/>',vet:'<path d="m12 4 2.3 4.7 5.2.8-3.8 3.6.9 5.1L12 15.8 7.4 18.2l.9-5.1-3.8-3.6 5.2-.8Z"/>',fan:'<path d="M4 10v4l10 4V6Z"/><path d="M14 8a4 4 0 0 1 0 8M7 15l1 5h3l-1-4"/>'};
 const evIcon=k=>`<svg class="evi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${EVI[k]||EVI.vet}</svg>`;
-function awArt(a,sz){ return a.includes('골든글러브')?ART.glove(sz):a.includes('명예의 전당')?ART.plaque(sz):a.includes('MVP')?ART.medal(sz,'gold'):a.includes('신인')?ART.medal(sz,'green'):a.includes('우승')?ART.trophy(sz):ART.medal(sz,'silver'); }
+/* 수상 그림: 에셋 v3 트로피(타이틀 상패는 부문 글자를 겹침), 없으면 직접 그린 SVG */
+function awArt(a,sz){ const [id,dep]=typeof awV3==='function'?awV3(a):[]; const v=id&&v3Img(id,sz,'aw-v3','',dep); if(v)return v; return a.includes('우승 반지')?trophyImg(sz):a.includes('골든글러브')?ART.glove(sz):a.includes('명예의 전당')?ART.plaque(sz):a.includes('MVP')?ART.medal(sz,'gold'):a.includes('신인')?ART.medal(sz,'green'):a.includes('우승')?ART.trophy(sz):ART.medal(sz,'silver'); }
 function cardTier(o){ return o==null?'':o>=64?'t-gold':o>=57?'t-silver':o>=50?'t-bronze':''; }
 
 /* ---------- 효과음 ---------- */

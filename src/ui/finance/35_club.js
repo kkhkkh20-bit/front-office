@@ -73,7 +73,7 @@ function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
     fxBtn('go','club:chron','연대기')+fxBtn('go','club:rel','관계도'));
   /* 명예의 전당: 지금까지 쌓인 리그 역사(G.history)와 구단 기록 */
   const yrs=f=>H.filter(f).map(h=>h.y), tro=(ic,ys,l,n)=>`<div class="fx-tro${(n??ys.length)?'':' none'}">${ic}<b>${n??ys.length}</b><span>${l}</span><i>${ys.slice(-3).join(', ')}</i></div>`;
-  const hof=fxBox('fxc-hof',fxHead('명예의 전당'),`<div class="fx-tros">${tro(trophyImg(44),yrs(h=>h.champ===tid),'한국시리즈 우승')}${tro(compMark('ks',40)||ART.trophy(36),yrs(h=>h.runner===tid),'한국시리즈 준우승')}${tro(ART.trophy(36),yrs(h=>h.order&&h.order[0]&&h.order[0].tid===tid),'정규시즌 1위')}${tro(compMark('ps',40)||ART.trophy(36),yrs(h=>h.order&&h.order.slice(0,5).some(o=>o.tid===tid)),'가을야구 진출')}${tro(`<span class="fx-no">${(G.retNos||[]).length}</span>`,[],'영구결번',(G.retNos||[]).length)}</div>`,fxBtn('trophyGo','','트로피 진열장'));
+  const hof=fxBox('fxc-hof',fxHead('명예의 전당'),`<div class="fx-tros">${tro(trophyImg(44),yrs(h=>h.champ===tid),'한국시리즈 우승')}${tro(cupImg('r',44),yrs(h=>h.runner===tid),'한국시리즈 준우승')}${tro(cupImg('f',44),yrs(h=>h.order&&h.order[0]&&h.order[0].tid===tid),'정규시즌 1위')}${tro(compMark('ps',40)||ART.trophy(36),yrs(h=>h.order&&h.order.slice(0,5).some(o=>o.tid===tid)),'가을야구 진출')}${tro(`<span class="fx-no">${(G.retNos||[]).length}</span>`,[],'영구결번',(G.retNos||[]).length)}</div>`,fxBtn('trophyGo','','트로피 진열장'));
   const uni=fxBox('fxc-uni',fxHead('유니폼'),uniRow(tid,{sz:120})||'<p class="fx-none">유니폼 그림이 없습니다.</p>');
   /* 경기 일정 및 결과: 다음 5경기·최근 5경기 */
   const gt=(op,a,bt,cls,act)=>`<${act?'button':'div'} class="fx-g ${cls||''}"${act||''}>${badge(op,22)}<b>${esc(team(op).nick)}</b><span>${a}</span><em>${bt}</em></${act?'button':'div'}>`;

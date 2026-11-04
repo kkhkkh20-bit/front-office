@@ -57,13 +57,13 @@ function careerHub(p){
   const aw=(p.aw||[]).map(l=>({y:+String(l).slice(0,4),l:String(l).slice(5)})).filter(a=>a.y);
   const rings=ringYears(p); for(const r of rings)aw.push({y:r.y,l:`${tshort(r.t)} 우승 반지`,t:r.t});
   const cnt={}; for(const a of aw){ const c=awCat(a.l); cnt[c]=(cnt[c]||0)+1; }
-  const art=(a,sz)=>awCat(a.l)==='ring'?trophyImg(sz):awArt(a.l,sz);
+  const art=(a,sz)=>awArt(a.l,sz);
   const shelf=AWC.filter(c=>cnt[c[0]]).map(([k,l])=>{ const one=aw.find(a=>awCat(a.l)===k); return `<div class="ch-tro k-${k}">${art(one,34)}<b class="num">${cnt[k]}</b><span>${l}</span></div>`; }).join('');
   const ys=[...new Set(aw.map(a=>a.y))].sort((a,b)=>b-a);
   const awT=ys.length?`<ol class="ch-tl">${ys.map(y=>`<li><b class="num">${y}</b><div>${aw.filter(a=>a.y===y).map(a=>`<span class="ch-aw k-${awCat(a.l)}">${art(a,16)}${esc(a.l)}</span>`).join('')}</div></li>`).join('')}</ol>`:'<p class="small muted keep">아직 수상 기록이 없습니다.</p>';
   /* 대기록·통산 이정표: 선수 기록(p.feats), 옛 저장은 리그 연표에서 */
   const F=p.feats||(G.feats||[]).filter(x=>x.pid===p.id); const fe=F.filter(x=>x.k!=='mile'&&x.k!=='ovs'), mi=F.filter(x=>x.k==='mile');
-  const fRow=x=>`<div class="ch-ft${FEATMAJ.has(x.k)?' maj':''}"><span class="ft-i k-${x.k}">${FEATI[x.k]||'·'}</span><div><b>${esc(FEATK[x.k]||'')}</b><span>${esc(x.txt)}${x.n?` · 리그 ${x.n}번째`:''}</span></div><i>${x.y}<br>${x.vs?esc(String(x.vs).split(' vs ')[0]):'시즌'}</i>${x.vs&&x.vs.includes(' vs ')?`<em>vs ${esc(x.vs.split(' vs ')[1])}</em>`:''}</div>`;
+  const fRow=x=>`<div class="ch-ft${FEATMAJ.has(x.k)?' maj':''}">${featIcon(x)}<div><b>${esc(FEATK[x.k]||'')}</b><span>${esc(x.txt)}${x.n?` · 리그 ${x.n}번째`:''}</span></div><i>${x.y}<br>${x.vs?esc(String(x.vs).split(' vs ')[0]):'시즌'}</i>${x.vs&&x.vs.includes(' vs ')?`<em>vs ${esc(x.vs.split(' vs ')[1])}</em>`:''}</div>`;
   const featBox=fe.length?`<div class="ch-fl">${fe.slice(0,24).map(fRow).join('')}</div>`:'<p class="small muted keep">아직 기록된 대기록이 없습니다.</p>';
   const c=careerOf(p); const K=p.isP?['w','sv','so']:['h','hr']; const val={h:c.h,hr:c.hr,w:c.w,sv:c.sv,so:c.so};
   const mile=K.map(k=>{ const got=MILE[k].filter(m=>val[k]>=m), nx=MILE[k].find(m=>val[k]<m); const when=m=>{ const f=mi.find(x=>x.txt===`통산 ${m}${MILEK[k]}`); return f?`${f.y} ${f.vs?esc(String(f.vs).split(' vs ')[0]):''}`:''; };
