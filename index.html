@@ -659,6 +659,7 @@ button.ggf-m{cursor:pointer}button.ggf-m:focus-visible{outline:2px solid #e8b923
 .ggf-m em{font-style:normal;font-size:clamp(9.5px,1.1vw,12px);opacity:.85;white-space:nowrap}
 @media(max-width:600px){.ggf{aspect-ratio:1/1.08}.ggf-v{display:none}}
 @media(min-width:1100px){.ggf{max-width:min(980px,calc((100dvh / var(--z,1) - 260px) * 1.25))}}
+.ggf-m em,.asf-p em{display:inline-flex;align-items:center;gap:3px}.ggf-m em .badge,.asf-p em .badge,.ggf-m em img,.asf-p em img{width:16px;height:16px;flex:none} /* 수상자·올스타 구단 마크 */
 /* 중계 */
 .pbp{display:grid;gap:8px}
 .pbp-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pbp-sc{font-size:20px;font-weight:700}
@@ -25408,7 +25409,7 @@ const GG_SPOT={OF0:[18,27],OF1:[50,11],OF2:[82,27],SS:[35,44],'2B':[65,44],'3B':
 function ggField(A,votes){ const nm=k=>k.startsWith('OF')?'외야수':k==='P'?'투수':POSK[k];
   const fld=`<svg class="ggf-bg" viewBox="0 0 100 80" preserveAspectRatio="none" aria-hidden="true"><path d="M50 74 L3 27 A67 67 0 0 1 97 27 Z" fill="#2c6a3a"/><path d="M50 74 L3 27 A67 67 0 0 1 97 27 Z" fill="none" stroke="#1d4a28" stroke-width="2.5"/><path d="M50 76 L26 51 Q50 27 74 51 Z" fill="#a8743f"/><path d="M50 69 L37 55 L50 41 L63 55 Z" fill="#37803f"/><circle cx="50" cy="55" r="2.6" fill="#a8743f"/><path d="M50 74 L3 27 M50 74 L97 27" stroke="#e9efe6" stroke-width=".5"/>${[[50,69],[63,55],[50,41],[37,55]].map(([x,y])=>`<rect x="${x-1}" y="${y-1}" width="2" height="2" fill="#fff" transform="rotate(45 ${x} ${y})"/>`).join('')}</svg>`;
   const mk=Object.entries(GG_SPOT).filter(([k])=>A.gg[k]).map(([k,[x,y]])=>{ const w=A.gg[k], p=G.players[w.id];
-    return `<${p?`button data-a="player" data-v="${w.id}"`:'div'} class="ggf-m${w.t===G.user?' me':''}" style="left:${x}%;top:${y}%">${p?avImg(p,true):`<span class="av ini big">${esc(w.name.slice(0,1))}</span>`}<i>${nm(k)}</i><b>${esc(w.name)}</b><em>${esc(tshort(w.t))}${votes?`<span class="ggf-v"> · ${w.v}표</span>`:''}</em></${p?'button':'div'}>`; }).join('');
+    return `<${p?`button data-a="player" data-v="${w.id}"`:'div'} class="ggf-m${w.t===G.user?' me':''}" style="left:${x}%;top:${y}%">${p?avImg(p,true):`<span class="av ini big">${esc(w.name.slice(0,1))}</span>`}<i>${nm(k)}</i><b>${esc(w.name)}</b><em>${badge(w.t,16)} ${esc(tshort(w.t))}${votes?`<span class="ggf-v"> · ${w.v}표</span>`:''}</em></${p?'button':'div'}>`; }).join('');
   return `<div class="ggf">${fld}${mk}</div>`; }
 /* 선정 명단과 맞대결 이력은 뉴스에서 다시 찾아볼 수 있는 같은 표로 제공한다. */
 function leagueEventsView(){
@@ -25443,7 +25444,7 @@ function asgField(side,L){
   for(const x of of)if(!Object.values(at).includes(x)){ const k=['LF','CF','RF'].find(k=>!at[k]); if(k)at[k]=x; else left.push(x); }
   if(!at.DH&&left.length)at.DH=left[0];
   if(!at.P)at.P=S.find(x=>x.isP);
-  const chip=(k,x)=>{ const [l,t,nm]=ASG_SPOT[k], p=x&&G.players[x.id]; return `<button class="asf-p${x&&x.t===G.user?' me':''}" style="left:${l}%;top:${t}%"${p?` data-a="player" data-v="${x.id}"`:''}>${p?avImg(p):'<span class="av ini">-</span>'}<i>${nm}</i><b>${x?esc(x.name):'공석'}</b>${x?`<em>${esc(tshort(x.t))}</em>`:''}</button>`; };
+  const chip=(k,x)=>{ const [l,t,nm]=ASG_SPOT[k], p=x&&G.players[x.id]; return `<button class="asf-p${x&&x.t===G.user?' me':''}" style="left:${l}%;top:${t}%"${p?` data-a="player" data-v="${x.id}"`:''}>${p?avImg(p):'<span class="av ini">-</span>'}<i>${nm}</i><b>${x?esc(x.name):'공석'}</b>${x?`<em>${badge(x.t,16)} ${esc(tshort(x.t))}</em>`:''}</button>`; };
   const pen=S.filter(x=>x.isP&&x!==at.P);
   return `<section class="card asf-card"><div class="row between"><h2 class="sec">${side} 올스타 선발 라인업</h2><span class="small muted">베스트12 · ${L.length}명 선정</span></div><div class="asf"><svg viewBox="0 0 200 200" aria-hidden="true"><rect width="200" height="200" fill="#1d3a26"/><path d="M100 184 L2 86 Q100 -36 198 86 Z" fill="#3f8a3f"/><path d="M100 184 L2 86 Q100 -36 198 86 Z" fill="none" stroke="#c9b48a" stroke-width="5" opacity=".55"/><path d="M100 184 L40 124 Q100 52 160 124 Z" fill="#b8814f"/><path d="M100 170 L134 136 L100 102 L66 136 Z" fill="#4c9a48"/><circle cx="100" cy="138" r="7" fill="#b8814f"/><path d="M100 184 L2 86 M100 184 L198 86" stroke="#fff" stroke-width=".8" opacity=".8"/><g fill="#fff"><rect x="96.5" y="176" width="7" height="7"/><rect x="133" y="132.5" width="6" height="6" transform="rotate(45 136 135.5)"/><rect x="97" y="99" width="6" height="6" transform="rotate(45 100 102)"/><rect x="61" y="132.5" width="6" height="6" transform="rotate(45 64 135.5)"/></g></svg>${Object.keys(ASG_SPOT).map(k=>chip(k,at[k])).join('')}</div>${pen.length?`<p class="asf-pen small"><b>불펜</b> ${pen.map(x=>`<button class="lnk" ${G.players[x.id]?`data-a="player" data-v="${x.id}"`:''}>${x.slot==='CP'?'마무리':x.slot==='SP'?'선발':'중간'} ${esc(x.name)}</button> <span class="muted">${esc(tshort(x.t))}</span>`).join(' · ')}</p>`:''}</section>`;
 }

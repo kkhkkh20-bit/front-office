@@ -199,3 +199,4 @@ button.ggf-m{cursor:pointer}button.ggf-m:focus-visible{outline:2px solid #e8b923
 .ggf-m em{font-style:normal;font-size:clamp(9.5px,1.1vw,12px);opacity:.85;white-space:nowrap}
 @media(max-width:600px){.ggf{aspect-ratio:1/1.08}.ggf-v{display:none}}
 @media(min-width:1100px){.ggf{max-width:min(980px,calc((100dvh / var(--z,1) - 260px) * 1.25))}}
+.ggf-m em,.asf-p em{display:inline-flex;align-items:center;gap:3px}.ggf-m em .badge,.asf-p em .badge,.ggf-m em img,.asf-p em img{width:16px;height:16px;flex:none} /* 수상자·올스타 구단 마크 */
