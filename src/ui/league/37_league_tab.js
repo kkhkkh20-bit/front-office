@@ -74,7 +74,7 @@ function distView(){ const g=UI.dsG==='P'?'P':'B'; const [kx,ky]=dsAxes(g); cons
     <p class="small muted">${y} 시즌 ${lv==='1군'?'1군':'2군'} 기록, ${mn?(g==='P'?mn+'이닝':mn+'타석')+' 이상':'표본 제한 없음'}${posF?` · ${POSK[posF]||posF}`:roleF?` · ${roleF==='SP'?'선발':'불펜'}`:''}. 시즌 중 이적한 선수는 그 시즌 기록을 합친 점 하나, 포지션·보직은 지금 기준입니다. 축은 실제 최소~최대 값이라 이상치도 그대로 보입니다. 기록에 남은 지표만 쓰고 순위·추천은 매기지 않습니다.${missTxt}</p>`); }
 /* ===== 구단 지표: 득점×실점, 피타고리안 기대 승률, 경기별 득실차와 최근 10경기 승률 (정규시즌 경기 기록 G.sea.tl) ===== */
 /* 구단 산점도: 가로 좋은 지표(오른쪽이 많음), 세로 나쁜 지표(위가 적음). diag면 두 축을 같은 눈금으로 두고 대각선, avg면 리그 평균 점선, nick이면 이름표를 별칭만. 점을 누르면 구단 */
-function tdScatter(P,o){ const W=o.W||560,H=o.H||360,ml=46,mr=o.mr??16,mt=14,mb=40, fx=o.fx||(v=>v.toFixed(2)), fy=o.fy||(v=>v.toFixed(2)), xs=P.map(p=>p.x), ys=P.map(p=>p.y);
+function tdScatter(P,o){ const W=o.W||560,H=o.H||360,ml=58,mr=o.mr??16,mt=14,mb=40, fx=o.fx||(v=>v.toFixed(2)), fy=o.fy||(v=>v.toFixed(2)), xs=P.map(p=>p.x), ys=P.map(p=>p.y);
   const rg=a=>{ const lo=Math.min(...a), hi=Math.max(...a), pd=(hi-lo||Math.abs(hi)||1)*.08; return [lo-pd,hi+pd]; };
   const [xl,xh]=o.diag?rg([...xs,...ys]):rg(xs), [yl,yh]=o.diag?[xl,xh]:rg(ys);
   const X=v=>ml+(v-xl)/(xh-xl)*(W-ml-mr), Y=v=>mt+(v-yl)/(yh-yl)*(H-mt-mb); /* 세로는 위쪽이 적다(위로 갈수록 좋음) */
@@ -82,7 +82,7 @@ function tdScatter(P,o){ const W=o.W||560,H=o.H||360,ml=46,mr=o.mr??16,mt=14,mb=
   return `<svg class="ds" viewBox="0 0 ${W} ${H}" role="img" aria-label="구단별 ${o.xl}과 ${o.yl}">
     ${t5(xl,xh).map(v=>`<line class="gr" x1="${X(v)}" x2="${X(v)}" y1="${mt}" y2="${H-mb}"></line><text class="tk" x="${X(v)}" y="${H-mb+14}" text-anchor="middle">${fx(v)}</text>`).join('')}${t5(yl,yh).map(v=>`<line class="gr" x1="${ml}" x2="${W-mr}" y1="${Y(v)}" y2="${Y(v)}"></line><text class="tk" x="${ml-6}" y="${Y(v)+4}" text-anchor="end">${fy(v)}</text>`).join('')}
     ${o.diag?`<line class="md" x1="${X(xl)}" y1="${Y(xl)}" x2="${X(xh)}" y2="${Y(xh)}"></line><text class="tk" x="${X(xh)-4}" y="${Y(xh)-6}" text-anchor="end">${o.diag}</text>`:''}${o.avg?`<line class="md" x1="${X(ax)}" x2="${X(ax)}" y1="${mt}" y2="${H-mb}"></line><line class="md" x1="${ml}" x2="${W-mr}" y1="${Y(ay)}" y2="${Y(ay)}"></line><text class="tk" x="${X(ax)+4}" y="${mt+10}">리그 평균</text>`:''}
-    <text class="al" x="${(ml+W-mr)/2}" y="${H-6}" text-anchor="middle">${o.xl} →</text><text class="al" x="12" y="${(mt+H-mb)/2}" text-anchor="middle" transform="rotate(-90 12 ${(mt+H-mb)/2})">← ${o.yl}(위가 적음)</text>
+    <text class="al" x="${(ml+W-mr)/2}" y="${H-6}" text-anchor="middle">${o.xl} →</text><text class="al" x="11" y="${(mt+H-mb)/2}" text-anchor="middle" transform="rotate(-90 11 ${(mt+H-mb)/2})">← ${o.yl}(위가 적음)</text>
     ${P.map(p=>`<g class="ds-p${p.tid===G.user?' me':''}" data-a="lteamGo" data-v="${p.tid}"><title>${esc(tshort(p.tid))} · ${o.xl} ${fx(p.x)} · ${o.yl} ${fy(p.y)}</title><circle cx="${X(p.x).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="6" style="${p.tid===G.user?'':'opacity:.75'}"></circle><text x="${(X(p.x)+8).toFixed(1)}" y="${(Y(p.y)+4).toFixed(1)}">${esc(o.nick?team(p.tid).nick:tshort(p.tid))}</text></g>`).join('')}</svg>`; }
 function teamDataView(){ const T=G.teams.map(t=>({t,s:teamRuns(t.id)})); const g=Math.max(0,...T.map(x=>x.s.g)); if(g<3)return csec('구단 지표','<p class="small muted">정규시즌 경기가 3경기 이상 쌓이면 보입니다.</p>');
   const sc=tdScatter(T.map(x=>({tid:x.t.id,x:x.s.rs/x.s.g,y:x.s.ra/x.s.g})),{xl:'경기당 득점',yl:'경기당 실점',diag:'득점 = 실점',mr:fmOn()?70:16});
