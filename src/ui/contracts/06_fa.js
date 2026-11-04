@@ -36,8 +36,9 @@ function faCenter(){ return compView()+(fmOn()?faFM():faCenter0()); }
 function faCenter0(){ const F=G.fa;
   if(!faLive()){ const U=faUpcoming(); const nx=U.filter(x=>x.p.team===G.user).map(x=>x.p).sort((a,b)=>ovr(b)-ovr(a));
     const res=F&&F.results&&F.results.length?`<div class="feed">${F.results.slice(0,10).map(r=>`<div class="fd"><span class="pill">${r.grade}</span><span>${esc(r.name)} · ${esc(tshort(r.from))} → <b>${esc(tshort(r.to))}</b> ${esc(ctRecShort(r))}</span><i>${dsh(r.day)}</i></div>`).join('')}</div>`:'';
-    return `<div class="fahero"><b>FA 시장</b><span>포스트시즌 뒤 11월 2일 공시 · 11월 6일 협상 시작 · 1월 24일(캠프 전날) 사실상 마감</span></div>
-      <section class="card"><h2 class="sec">올겨울 FA가 될 우리 선수</h2>${nx.length?`<div class="fl">${nx.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">예상 ${faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null))}등급(FA 보상 기준)</span>${canExtend(p)?`<button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`:'<span class="flx"></span>'}</div>`).join('')}</div>`:'<p class="small muted">없습니다.</p>'}<p class="small muted">FA가 되기 전에 비FA 다년계약으로 묶어 둘 수 있습니다.</p></section>${faUpcomingCard(U)}
+    /* 시장 열리기 전: 일정은 한 줄 안내(패널 밖), 첫 칸은 FA 예정자 목록 */
+    return `<p class="small muted fa-sched"><b>FA 시장</b> 포스트시즌 뒤 11월 2일 공시 · 11월 6일 협상 시작 · 1월 24일(캠프 전날) 사실상 마감</p>${faUpcomingCard(U)}
+      <section class="card"><h2 class="sec">올겨울 FA가 될 우리 선수</h2>${nx.length?`<div class="fl">${nx.map(p=>`<div class="flr">${pMini(p)}<span class="small muted">예상 ${faGradeOf(p,Object.values(G.players).filter(q=>q.team!=null))}등급(FA 보상 기준)</span>${canExtend(p)?`<button class="tc-i go" data-a="extOpen" data-v="${p.id}">연장 협상</button>`:'<span class="flx"></span>'}</div>`).join('')}</div>`:'<p class="small muted">없습니다.</p>'}<p class="small muted">FA가 되기 전에 비FA 다년계약으로 묶어 둘 수 있습니다.</p></section>
       ${res?`<section class="card"><h2 class="sec">지난 FA 계약</h2>${res}</section>`:''}${freeCard()}`; }
   const ids=F.pool.filter(id=>G.players[id]&&G.players[id].team==null).sort((a,b)=>G.players[b].ask.annual-G.players[a].ask.annual);
   const open=G.day>=F.openDay; const d1=open?G.day-F.openDay+1:F.openDay-G.day; const left=KD(1,24)>G.day?KD(1,24)-G.day:dnum(G.year+1,1,24)-G.day;
@@ -70,10 +71,9 @@ function faUpcomingCard(U){ const all=Object.values(G.players).filter(q=>q.team!
   const f=UI.fuF||'all'; const R=L.filter(x=>f==='all'||(f==='P'?x.p.isP:f==='H'?!x.p.isP:f==='sure'?x.sure&&x.dp>=.8:true)).map(x=>({...x,g:faGradeOf(x.p,all)})).sort((a,b)=>b.p.sal-a.p.sal);
   const st=faUpSt, dl=faUpDl;
   const nA=R.filter(x=>x.g==='A').length, nB=R.filter(x=>x.g==='B').length; const b=budget(); const lim=UI.fuAll?R.length:15;
-  return `<section class="card"><div class="row between"><h2 class="sec">올 시즌 뒤 FA 예정자 · 다른 구단</h2><span class="small muted">${L.length}명 · 예상 A등급 ${nA} · B등급 ${nB}</span></div>
-    <p class="small sdesc">FA 계약이 끝나는 선수, 자격을 채운 선수, 올해 1군 등록일수를 채우면 자격을 얻는 선수입니다. 실제로 시장에 나올지는 선수가 정합니다(가치가 애매하면 신청하지 않고 남습니다). 외부 FA는 한 겨울에 2~3명까지 데려올 수 있고, A·B등급은 원 소속 구단에 보상(선수 또는 연봉의 200~300%)을 줘야 합니다. 지금 예산 여유 ${money(Math.round(b.roomGoal))}.</p>
+  return `<section class="card"><div class="row between"><h2 class="sec">올 시즌 뒤 FA 예정자 · 다른 구단<button type="button" class="hi-i" data-tip="FA 계약이 끝나는 선수, 자격을 채운 선수, 올해 1군 등록일수를 채우면 자격을 얻는 선수입니다. 실제로 시장에 나올지는 선수가 정합니다(가치가 애매하면 신청하지 않고 남습니다). 외부 FA는 한 겨울에 2~3명까지 데려올 수 있고, A·B등급은 원 소속 구단에 보상(선수 또는 연봉의 200~300%)을 줘야 합니다. 지금 예산 여유 ${money(Math.round(b.roomGoal))}.">i</button></h2><span class="small muted">${L.length}명 · 예상 A등급 ${nA} · B등급 ${nB}</span></div>
     <div class="chips">${[['all','전체'],['sure','신청 유력'],['P','투수'],['H','야수']].map(([k,l])=>`<button class="${f===k?'on':''}" data-a="fuF" data-v="${k}">${l}</button>`).join('')}</div>
-    ${R.length?`<div class="fl">${R.slice(0,lim).map(x=>{ const [d,c]=dl(x); return `<div class="flr fur">${pMini(x.p)}<span class="small">${badge(x.p.team,14)} ${esc(tshort(x.p.team))} · <b>예상 ${x.g}등급</b><br><span class="muted">${st(x)}</span> · <span class="${c}">${d}</span></span></div>`; }).join('')}</div>`:'<p class="small muted">조건에 맞는 선수가 없습니다.</p>'}
+    ${R.length?`<div class="fl">${R.slice(0,lim).map(x=>{ const [d,c]=dl(x); return `<div class="flr fur">${pMini(x.p)}<span class="small">${badge(x.p.team,14)} ${esc(tshort(x.p.team))} · <b>예상 ${x.g}등급</b> · <span class="muted">${st(x)}</span> · <span class="${c}">${d}</span></span></div>`; }).join('')}</div>`:'<p class="small muted">조건에 맞는 선수가 없습니다.</p>'}
     ${R.length>15?`<button class="btn small" data-a="fuAll">${UI.fuAll?'15명만 보기':`전체 ${R.length}명 보기`}</button>`:''}</section>`; }
 
 /* ---------- PC(FM식) 영입·계약 공통: 위 요약 줄 + 왼쪽 큰 표 + 오른쪽 세부 칸. 상자 안에서만 스크롤(34b_staff_fm.js와 같은 방식) ---------- */
