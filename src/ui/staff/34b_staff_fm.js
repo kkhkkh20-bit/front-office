@@ -1,11 +1,10 @@
 /* PC 스태프 개요(FM '스탭 기본 정보'처럼): 코치진 | 스카우트·전력분석 | 의무·부상 세 칸.
    칸마다 위에 인원 현황, 가운데 리그 10개 구단 비교 막대(우리 값·리그 최고·최저·평균), 아래 명단 표. */
 const sfStars=k=>`<span class="sf-st">${'★'.repeat(k)}<i>${'★'.repeat(Math.max(0,5-k))}</i></span>`;
-/* 리그 비교 막대: rows=[{l,v(우리),all(구단별 값 배열)}], lo/hi 축 범위, low=true면 낮을수록 좋음 */
-function sfChart(title,rows,lo,hi,fmt,low){ const f=fmt||(v=>Math.round(v)), y=v=>clamp((v-lo)/(hi-lo),0,1)*100;
-  return `<section class="sf-cmp"><h3>${title}</h3><div class="sf-bars">${rows.map(r=>{ const mx=Math.max(...r.all), mn=Math.min(...r.all), av=avg(r.all), rk=[...r.all].sort((a,b)=>low?a-b:b-a).indexOf(r.v)+1, n=r.all.length;
-    return `<div class="sf-b" title="${esc(r.l)}: 우리 ${f(r.v)} · 리그 최고 ${f(low?mn:mx)} · 최저 ${f(low?mx:mn)} · 평균 ${f(av)}"><em class="${rk<=3?'good':rk>=n-2?'bad':''}">${rk}위</em><div class="sf-col"><u class="hi" style="bottom:${y(low?mn:mx)}%"></u><u class="lo" style="bottom:${y(low?mx:mn)}%"></u><i class="${rk<=3?'good':rk>=n-2?'bad':''}" style="height:${Math.max(2,y(r.v))}%"></i><u class="av" style="bottom:${y(av)}%"></u></div><b>${f(r.v)}</b><span>${esc(r.l)}</span></div>`; }).join('')}</div>
-    <p class="sf-leg"><span><u class="hi"></u>리그 최고</span><span><u class="av"></u>평균</span><span><u class="lo"></u>최저</span>${low?'<span>낮을수록 좋음</span>':''}</p></section>`; }
+/* 리그 비교: 항목마다 한 줄. 막대 길이는 리그 10개 구단 중 순위(1위가 가장 김), 오른쪽에 우리 값과 순위. low=true면 낮을수록 좋음 */
+function sfChart(title,rows,lo,hi,fmt,low){ const f=fmt||(v=>Math.round(v));
+  return `<section class="sf-cmp"><h3>${title}</h3><div class="sf-rows">${rows.map(r=>{ const n=r.all.length, rk=[...r.all].sort((a,b)=>low?a-b:b-a).indexOf(r.v)+1, best=low?Math.min(...r.all):Math.max(...r.all), cls=rk<=3?'good':rk>=n-2?'bad':'';
+    return `<div class="sf-r" title="${esc(r.l)}: 우리 ${f(r.v)} · 리그 ${low?'최소':'최고'} ${f(best)} · 평균 ${f(avg(r.all))}"><span>${esc(r.l)}</span><div class="sf-trk"><i class="${cls}" style="width:${Math.round((n+1-rk)/n*100)}%"></i></div><b>${f(r.v)}</b><em class="${cls}">${rk}위</em></div>`; }).join('')}</div><p class="sf-leg">막대는 리그 ${rows[0]?rows[0].all.length:10}개 구단 중 순위${low?' · 낮을수록 좋음':''}</p></section>`; }
 /* 위 칸: 직책별 채움(1/1 수석코치) + 사람 점 */
 function sfHead(title,sub,roles,dots,btn,note){ return `<section class="sf-head"><div class="sf-roles"><h3>${title}</h3>${roles.map(([n,m,l,neu])=>`<div class="${n<m&&!neu?'miss':''}"><b>${n}/${m}</b> ${esc(l)}</div>`).join('')}</div><div class="sf-sum"><h2>${sub}</h2>${note?`<p class="sf-note">${note}</p>`:''}<div class="sf-dots">${dots.map(c=>`<i style="background:${c||'transparent'}" class="${c?'':'emp'}"></i>`).join('')}</div>${btn||''}</div></section>`; }
 function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mgr[G.user];

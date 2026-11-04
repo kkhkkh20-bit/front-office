@@ -928,6 +928,8 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
  .fmc{position:relative;flex:1 1 auto;min-height:70px;margin:4px 8px 18px 70px}
  .fmc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
  .fmc-y{position:absolute;right:100%;margin-right:6px;transform:translateY(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+ .fmc-p{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--panel)}.fmc-p.est{background:var(--panel);border:2px solid var(--c);box-sizing:border-box}
+ .fmc-v{position:absolute;transform:translate(-50%,-150%);font:700 12px var(--f-num);color:var(--ink);white-space:nowrap;background:var(--panel);padding:0 4px;border-radius:3px}
  .fmc-x{position:absolute;top:100%;margin-top:3px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}.fmc-x:last-child{transform:translateX(-100%)}
  .fmd-row{flex:1 1 auto;min-height:0;display:flex;gap:16px}.fmd-row>.fmc{flex:1}
  .fmd-chg{flex:none;width:300px;overflow:auto;border-left:1px solid var(--line);padding-left:12px}
@@ -3453,6 +3455,9 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .sf-sum{display:flex;flex-direction:column;gap:8px;min-width:0}.sf-sum h2{margin:0;font-size:18px}.sf-sum>.btn{align-self:flex-start}
   .sf-dots{display:flex;flex-wrap:wrap;gap:5px}.sf-dots i{width:10px;height:16px;border-radius:5px 5px 2px 2px}.sf-dots i.emp{border:1px solid var(--muted)}
   .sf-cmp{display:flex;flex-direction:column}
+  .sf-rows{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-around;gap:4px}
+  .sf-r{display:grid;grid-template-columns:76px minmax(0,1fr) 44px 34px;gap:8px;align-items:center;font-size:12px}.sf-r>span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-r>b{text-align:right;font:700 13px var(--f-num)}.sf-r>em{font-style:normal;text-align:right;color:var(--muted)}.sf-r>em.good{color:var(--good)}.sf-r>em.bad{color:var(--bad)}
+  .sf-trk{height:10px;background:var(--panel2);border-radius:2px;overflow:hidden}.sf-trk>i{display:block;height:100%;background:#5b8fc7;border-radius:2px}.sf-trk>i.good{background:var(--good)}.sf-trk>i.bad{background:var(--bad)}
   .sf-bars{flex:1;min-height:0;display:flex;gap:6px;align-items:stretch}
   .sf-b{flex:1;min-width:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;justify-items:center;gap:2px;font-size:11px}
   .sf-b em{font-style:normal;color:var(--muted)}.sf-b em.good{color:var(--good)}.sf-b em.bad{color:var(--bad)}
@@ -21721,11 +21726,10 @@ function clanBox(x){ const L=x.clan||[]; if(!L.length)return '<p class="small mu
 /* PC 스태프 개요(FM '스탭 기본 정보'처럼): 코치진 | 스카우트·전력분석 | 의무·부상 세 칸.
    칸마다 위에 인원 현황, 가운데 리그 10개 구단 비교 막대(우리 값·리그 최고·최저·평균), 아래 명단 표. */
 const sfStars=k=>`<span class="sf-st">${'★'.repeat(k)}<i>${'★'.repeat(Math.max(0,5-k))}</i></span>`;
-/* 리그 비교 막대: rows=[{l,v(우리),all(구단별 값 배열)}], lo/hi 축 범위, low=true면 낮을수록 좋음 */
-function sfChart(title,rows,lo,hi,fmt,low){ const f=fmt||(v=>Math.round(v)), y=v=>clamp((v-lo)/(hi-lo),0,1)*100;
-  return `<section class="sf-cmp"><h3>${title}</h3><div class="sf-bars">${rows.map(r=>{ const mx=Math.max(...r.all), mn=Math.min(...r.all), av=avg(r.all), rk=[...r.all].sort((a,b)=>low?a-b:b-a).indexOf(r.v)+1, n=r.all.length;
-    return `<div class="sf-b" title="${esc(r.l)}: 우리 ${f(r.v)} · 리그 최고 ${f(low?mn:mx)} · 최저 ${f(low?mx:mn)} · 평균 ${f(av)}"><em class="${rk<=3?'good':rk>=n-2?'bad':''}">${rk}위</em><div class="sf-col"><u class="hi" style="bottom:${y(low?mn:mx)}%"></u><u class="lo" style="bottom:${y(low?mx:mn)}%"></u><i class="${rk<=3?'good':rk>=n-2?'bad':''}" style="height:${Math.max(2,y(r.v))}%"></i><u class="av" style="bottom:${y(av)}%"></u></div><b>${f(r.v)}</b><span>${esc(r.l)}</span></div>`; }).join('')}</div>
-    <p class="sf-leg"><span><u class="hi"></u>리그 최고</span><span><u class="av"></u>평균</span><span><u class="lo"></u>최저</span>${low?'<span>낮을수록 좋음</span>':''}</p></section>`; }
+/* 리그 비교: 항목마다 한 줄. 막대 길이는 리그 10개 구단 중 순위(1위가 가장 김), 오른쪽에 우리 값과 순위. low=true면 낮을수록 좋음 */
+function sfChart(title,rows,lo,hi,fmt,low){ const f=fmt||(v=>Math.round(v));
+  return `<section class="sf-cmp"><h3>${title}</h3><div class="sf-rows">${rows.map(r=>{ const n=r.all.length, rk=[...r.all].sort((a,b)=>low?a-b:b-a).indexOf(r.v)+1, best=low?Math.min(...r.all):Math.max(...r.all), cls=rk<=3?'good':rk>=n-2?'bad':'';
+    return `<div class="sf-r" title="${esc(r.l)}: 우리 ${f(r.v)} · 리그 ${low?'최소':'최고'} ${f(best)} · 평균 ${f(avg(r.all))}"><span>${esc(r.l)}</span><div class="sf-trk"><i class="${cls}" style="width:${Math.round((n+1-rk)/n*100)}%"></i></div><b>${f(r.v)}</b><em class="${cls}">${rk}위</em></div>`; }).join('')}</div><p class="sf-leg">막대는 리그 ${rows[0]?rows[0].all.length:10}개 구단 중 순위${low?' · 낮을수록 좋음':''}</p></section>`; }
 /* 위 칸: 직책별 채움(1/1 수석코치) + 사람 점 */
 function sfHead(title,sub,roles,dots,btn,note){ return `<section class="sf-head"><div class="sf-roles"><h3>${title}</h3>${roles.map(([n,m,l,neu])=>`<div class="${n<m&&!neu?'miss':''}"><b>${n}/${m}</b> ${esc(l)}</div>`).join('')}</div><div class="sf-sum"><h2>${sub}</h2>${note?`<p class="sf-note">${note}</p>`:''}<div class="sf-dots">${dots.map(c=>`<i style="background:${c||'transparent'}" class="${c?'':'emp'}"></i>`).join('')}</div>${btn||''}</div></section>`; }
 function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mgr[G.user];
@@ -22355,11 +22359,13 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
     <div class="eyebrow">수입 (연간 예상, 포스트시즌 배당 제외)</div>${b.inc.map(x=>row(x[0],x[1],imax,'in')).join('')}</section>`;
 }
 /* PC 그래프: 0을 기준선으로 한 면적 그래프(인라인 SVG). p:1인 끝 점들은 예상이라 점선 */
-function fmArea(P,col,fmt=money,Q,col2){ if(P.length<2){ P=[P[0],{...P[0],l:''}]; if(Q)Q=[Q[0],Q[0]]; } const V=[...P,...(Q||[])].map(p=>p.v), hi=Math.max(0,...V), lo=Math.min(0,...V), rg=hi-lo||1, n=P.length;
-  const X=i=>i/(n-1)*100, Y=v=>(hi-v)/rg*100, z=Y(0).toFixed(2), k=P.filter(p=>!p.p).length||1;
+/* 추이 선 그래프: 면을 채우지 않고 선과 점만. 세로 범위는 값 주변으로(0을 지나면 0선 표시), 점선은 결산까지 예상 */
+function fmArea(P,col,fmt=money,Q,col2){ if(P.length<2){ P=[P[0],{...P[0],l:''}]; if(Q)Q=[Q[0],Q[0]]; } const V=[...P,...(Q||[])].map(p=>p.v), n=P.length;
+  let hi=Math.max(...V), lo=Math.min(...V); const pad=Math.max((hi-lo)*.15,Math.abs(hi)*.05,1); hi+=pad; lo-=pad; if(lo>0&&lo<hi*.35)lo=0; const rg=hi-lo||1;
+  const X=i=>i/(n-1)*100, Y=v=>(hi-v)/rg*100, k=P.filter(p=>!p.p).length||1;
   const pts=(L,o)=>L.map((p,i)=>`${X(i+o).toFixed(2)},${Y(p.v).toFixed(2)}`).join(' ');
-  const ty=[hi,lo<0&&hi>0?0:null,lo].filter((v,i,a)=>v!=null&&a.indexOf(v)===i);
-  return `<div class="fmc"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="100" y1="${z}" y2="${z}" stroke="var(--line)" vector-effect="non-scaling-stroke"/><polygon points="0,${z} ${pts(P.slice(0,k),0)} ${X(k-1).toFixed(2)},${z}" fill="${col}" fill-opacity=".16"/><polyline points="${pts(P.slice(0,k),0)}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/>${k<n?`<polyline points="${pts(P.slice(k-1),k-1)}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>`:''}${Q?`<polyline points="${pts(Q,0)}" fill="none" stroke="${col2}" stroke-width="2" vector-effect="non-scaling-stroke"/>`:''}</svg>${ty.map(v=>`<span class="fmc-y" style="top:${Y(v).toFixed(1)}%">${fmt(v)}</span>`).join('')}${P.map((p,i)=>p.l&&(n<=9||i%2===0||i===n-1)?`<span class="fmc-x" style="left:${X(i).toFixed(1)}%">${esc(p.l)}</span>`:'').join('')}</div>`; }
+  const grid=[0,1,2,3].map(i=>lo+rg*i/3), zero=lo<0&&hi>0;
+  return `<div class="fmc"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${grid.map(v=>`<line x1="0" x2="100" y1="${Y(v).toFixed(2)}" y2="${Y(v).toFixed(2)}" stroke="var(--line)" stroke-opacity=".6" vector-effect="non-scaling-stroke"/>`).join('')}${zero?`<line x1="0" x2="100" y1="${Y(0).toFixed(2)}" y2="${Y(0).toFixed(2)}" stroke="var(--muted)" vector-effect="non-scaling-stroke"/>`:''}<polyline points="${pts(P.slice(0,k),0)}" fill="none" stroke="${col}" stroke-width="2.5" vector-effect="non-scaling-stroke"/>${k<n?`<polyline points="${pts(P.slice(k-1),k-1)}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>`:''}${Q?`<polyline points="${pts(Q,0)}" fill="none" stroke="${col2}" stroke-width="2" vector-effect="non-scaling-stroke"/>`:''}</svg>${P.map((p,i)=>`<i class="fmc-p${p.p?' est':''}" style="left:${X(i).toFixed(1)}%;top:${Y(p.v).toFixed(1)}%;--c:${col}" title="${esc(p.l||'')} ${fmt(p.v)}"></i>`).join('')}${(()=>{ const p=P[k-1]; return `<span class="fmc-v" style="left:${X(k-1).toFixed(1)}%;top:${Y(p.v).toFixed(1)}%">${fmt(p.v)}</span>`; })()}${[grid[3],grid[0]].map(v=>`<span class="fmc-y" style="top:${Y(v).toFixed(1)}%">${fmt(v)}</span>`).join('')}${zero?`<span class="fmc-y" style="top:${Y(0).toFixed(1)}%">${fmt(0)}</span>`:''}${P.map((p,i)=>p.l&&(n<=9||i%2===0||i===n-1)?`<span class="fmc-x" style="left:${X(i).toFixed(1)}%">${esc(p.l)}</span>`:'').join('')}</div>`; }
 function fmBar(v,mx,bad){ return `<svg class="fmd-bar" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="6" fill="var(--panel2)"/><rect width="${clamp(v/Math.max(1,mx)*100,0,100).toFixed(1)}" height="6" fill="var(${bad?'--bad':'--good'})"/></svg>`; }
 function fmBox(cls,h,big,stats,body){ return `<section class="card ${cls}"><div class="fmd-top"><div><h3 class="fmd-h">${h}</h3><b class="fmd-big">${big}</b></div>${stats.map(([k,v])=>`<div class="fmd-st"><span>${k}</span><b>${v}</b></div>`).join('')}</div>${body}</section>`; }
 /* PC 재정(FM 재정 화면처럼): 위 보유 현금 추이 · 예산 여유 추이, 아래 수입·지출, 오른쪽 예산 칸, 맨 아래 규정 준수 띠.
@@ -25283,6 +25289,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04m',d:'11월 4일',t:'비교 막대·추이 그래프 정리',items:[
+    '스태프 개요의 리그 비교를 항목마다 한 줄 가로 막대(리그 10개 구단 중 순위가 높을수록 길게)로 바꾸고, 평균·최고·최저 눈금을 뺐습니다.',
+    '재정·구단주 화면의 추이 그래프를 채운 면 대신 점이 찍힌 선 그래프로 바꿨습니다. 세로 범위는 값 주변으로 맞추고, 마지막 값은 숫자로 표시합니다.']},
   {id:'2026-11-04l',d:'11월 4일',t:'PC 재정·구단주 화면을 FM처럼',items:[
     '재정 > 올해 예산(PC)을 FM 재정 요약처럼 바꿨습니다. 보유 현금 추이(점선은 결산까지 예상), 예산 여유 추이와 바뀐 항목, 올해 예상 수입·지출 막대, 오른쪽 예산 칸(지원 한도·샐러리캡·외국인 한도·마케팅·예산 조정 버튼), 아래 규정 준수 띠입니다. 선수 홍보는 PC에서 재정의 "선수 홍보" 탭으로 옮겼습니다.',
     '구단주·목표(PC)를 FM 구단 비전처럼 바꿨습니다. 목표 줄(중요도·분류·지금 값·상태), 평가 기록(신뢰 추이), 구단주 피드백(요약·구단 명성 구성·주요 사건과 비판점·평가 비중·여론 추이), 아래 재정 요약·요청 기록·요청 통계·예산 조정입니다. 추이 그래프는 월말마다 점이 늘어납니다.']},
