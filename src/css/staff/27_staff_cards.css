@@ -189,3 +189,5 @@ button.st-n:hover b{text-decoration:underline}
 }
 
 .smk-vw button{white-space:nowrap}
+/* 스카우트 담당 업무 버튼: 아마·프로·해외 세 줄, 넘치면 그 줄만 가로로 민다 */
+.sasg{flex:1 1 100%;display:grid;gap:3px;min-width:0}.sasg>div{display:flex;align-items:center;gap:6px;min-width:0}.sasg>div>i{flex:none;width:26px;font-style:normal;font-size:11px;color:var(--muted)}.sasg .optrow{flex:1;min-width:0}.sasg .optrow>button{padding:3px 8px;min-height:26px}
