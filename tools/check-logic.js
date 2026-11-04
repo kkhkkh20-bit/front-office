@@ -125,6 +125,11 @@ T('[공통 점검] 캐시: 같은 날 연봉 변경·실제 방출 뒤 프랜차
   const projected=capPayAs(G.user,[],[b.id]); const err=releasePlayer(b.id); ok(!err&&b.team!==G.user,'준비 실패: 실제 방출 실패 '+err); ok(franId(G.user)===a.id,'방출한 선수가 프랜차이즈 캐시에 남음');
   const cached=capPay(G.user); ok(projected===cached,'제외 인원으로 계산한 상한 전망 '+projected+' ≠ 실제 이동 뒤 '+cached); _franC={k:null}; const uncached=capPay(G.user); ok(cached===uncached,'캐시 유무에 따라 상한 '+cached+' / '+uncached); });
 
+T('[포스팅] FA 계약을 한 적 있거나 해외에서 돌아온 선수에게는 포스팅 요청이 오지 않는다',()=>{ fresh(); const ps=playersOf(G.user).filter(p=>!p.foreign).slice(0,3); ok(ps.length===3,'준비 실패');
+  for(const p of ps){ p.svc=8; p.age=27; p.mlb=90; p.joinY=G.year-8; delete p.faC; delete p.faN; delete p.lastFA; delete p.ovsY; delete p.retFrom; }
+  ps[0].faC=true; ps[0].faN=1; ps[0].yrs=1; ps[1].ovsY=G.year-3; ps[1].retFrom=G.user; G.posting=[]; const n0=(G.evs||[]).length; postingSeason();
+  const asked=id=>(G.evs||[]).slice(n0).some(e=>e.k==='post'&&e.data&&e.data.pid===id);
+  ok(!asked(ps[0].id),'FA 계약 선수에게 포스팅 요청이 옴'); ok(!asked(ps[1].id),'해외 복귀 선수에게 포스팅 요청이 옴'); ok(asked(ps[2].id)||ovr(ps[2])<60,'보류 선수(서비스 8년)에게 포스팅 요청이 안 옴'); });
 T('[외국인 규정 검수] 아시아쿼터 교체는 일반 외국인 횟수와 별도로 한 번만 가능하다',()=>{ fresh(); G.day=G.cal.open+20; G.sea.repl[G.user]=F_REPL_MAX;
   for(const p of foreignOf(G.user).filter(p=>p.foreign==='아시아'))releaseForeign(p.id);
   const q=newForeign('아시아',{market:true}); q.ask=ASIA_CAP/2; q.fknow=[G.user]; q.fpub=G.day; G.fmarket.push(q.id);
