@@ -12,7 +12,8 @@ for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1920,h
  const result=await page.evaluate(k=>{const g=G.games[0],seq=cPitchSeq(g,k);let b=0,s=0;const failures=[];for(let i=0;i<seq.length;i++){
    const q=seq[i];cShowPitch(g,k,seq,i);if(i<seq.length-1){if(q.res==='볼')b++;else if(q.res==='파울')s=Math.min(2,s+1);else if(q.res==='스트라이크'||q.res==='헛스윙')s++;}
    const last=document.querySelector('.md-pitch-dot.latest'),box=document.querySelector('.md-zone-grid').getBoundingClientRect(),dot=last.getBoundingClientRect(),inside=dot.x+dot.width/2>=box.left&&dot.x+dot.width/2<=box.right&&dot.y+dot.height/2>=box.top&&dot.y+dot.height/2<=box.bottom;
-   if((q.res==='볼'||q.res==='볼넷')&&inside)failures.push('볼 위치');if((q.res==='스트라이크'||q.res==='루킹 삼진')&&!inside)failures.push('루킹 위치');
+   /* 휴대폰은 존 그림을 접고 한 줄 문구(코스)로 보여 주므로 존 안팎은 그림이 보일 때만 본다. */
+   if(box.width>0){if((q.res==='볼'||q.res==='볼넷')&&inside)failures.push('볼 위치');if((q.res==='스트라이크'||q.res==='루킹 삼진')&&!inside)failures.push('루킹 위치');}else if(!document.querySelector('.md-pitch-location')?.textContent)failures.push('코스 문구');
    if(document.querySelectorAll('#cs-B .on').length!==b||document.querySelectorAll('#cs-S .on').length!==s)failures.push('카운트');
    if(+last.dataset.index!==i+1||+last.dataset.x!==q.x||+last.dataset.y!==q.y)failures.push('순서·좌표');
    if(!document.querySelector('#cs-pitch').textContent.includes(q.t)||!document.querySelector('#cs-pitch').textContent.includes(String(q.v)))failures.push('구종·구속');
@@ -20,12 +21,12 @@ for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1920,h
  }
  const dock=document.querySelector('.md-pitch-dock').getBoundingClientRect(),bso=document.querySelector('#cs-bso').getBoundingClientRect(),field=document.querySelector('#cs-stage').getBoundingClientRect(),duel=document.querySelector('#cs-vs').getBoundingClientRect(),host=document.querySelector('.cast').getBoundingClientRect();
  const bases=[...document.querySelectorAll('#cs-bases .md-base-pill')],state=cBefore(g,k);if(bases.length!==3||bases.some((e,i)=>e.classList.contains('occupied')!==!!state.bases[i]))failures.push('현재 주자 표시');
- if(bso.bottom>dock.bottom||bso.right>dock.right||bso.top<dock.top+dock.height/2)failures.push('우측 하단 카운트');
+ if(bso.bottom>dock.bottom||bso.right>dock.right||bso.top<dock.top+(innerWidth<=600?0:dock.height/2))failures.push('우측 하단 카운트');
  if(field.height<160||field.width<200||duel.bottom>innerHeight||host.right>innerWidth+1)failures.push('구장·카드 배치');
  return {failures,record:document.querySelector('#cs-pitch-source').textContent,pitcher:document.querySelector('#cs-pitcher-count').textContent};},k);
  assert.deepEqual(result.failures,[],size.width+' 투구판');assert.equal(result.record,'투구 기록');assert.match(result.pitcher,/구$/);
  if(process.env.CAPTURE)await page.screenshot({path:`/workspace/front-office-pitches-${size.width}.png`});
- await page.locator('[data-a="castView"][data-v="data"]').click();const statsFit=await page.evaluate(()=>{const rows=document.querySelectorAll('#md-stats .md-stat-row'),panel=document.querySelector('#md-stats').closest('.md-panel');return rows[rows.length-1].getBoundingClientRect().bottom<=panel.getBoundingClientRect().bottom;});assert.equal(statsFit,true,size.width+' 기록 보기의 마지막 통계 행 가림');await page.locator('[data-a="castView"][data-v="field"]').click();
+ const more=async()=>{if(await page.locator('.md-more-btn').isVisible())await page.locator('.md-more-btn').click();};await more();await page.locator('[data-a="castView"][data-v="data"]').click();const statsFit=await page.evaluate(()=>{const rows=document.querySelectorAll('#md-stats .md-stat-row'),panel=document.querySelector('#md-stats').closest('.md-panel');return rows[rows.length-1].getBoundingClientRect().bottom<=panel.getBoundingClientRect().bottom;});assert.equal(statsFit,true,size.width+' 기록 보기의 마지막 통계 행 가림');await more();await page.locator('[data-a="castView"][data-v="field"]').click();
 }
 await page.setViewportSize({width:1366,height:768});await page.evaluate(k=>{render();castJump(k,false);UI.cast.mode='all';UI.cast.spd=4;A.castPlay();},k);
 await page.waitForFunction(()=>UI.cast?.pitch?.shown>=1,{},{timeout:10000});await page.locator('#cs-play').click();
