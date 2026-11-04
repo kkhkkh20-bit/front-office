@@ -155,3 +155,6 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-posfield>p{margin:0;font-size:11px}
 .pf-field .pfd-v{font-size:14px}.pf-field .pfd-l{font-size:11px}
 @media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-posfield>p{display:none}#sheet .pf-overview .pf-posfield{overflow:hidden}.pf-field{height:100%}}
+.pf-field .pfd-v{font:700 10.5px var(--f-num);fill:#071014}.pf-field .pfd.main .pfd-v{font-size:12px}
+.pf-field .pfd-l{font:600 9px var(--f-ui);fill:#f2f5f7;paint-order:stroke;stroke:#0b1014;stroke-width:2.4px;stroke-linejoin:round}.pf-field .pfd:not(.main):not(.ok) .pfd-l{fill:#9fb0bd}
+.pf-posfield .pf-field{display:block;margin:0 auto;aspect-ratio:200/222;max-width:100%}
