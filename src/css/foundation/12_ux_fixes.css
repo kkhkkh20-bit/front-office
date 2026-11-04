@@ -467,7 +467,7 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 
 /* 드래프트 상황판: 휴대폰에서는 한 줄 요약, 맡기기는 눌러서 펼침, 통째로 접기 */
 .fdm1,.tk-delb,.tk-minb{display:none}
-@media (max-width:700px){
+@media (max-width:1099px){
   .tk{gap:3px;padding:0 0 4px}
   .tk1{font-size:13px;gap:4px 6px}.tk1>.muted{display:none}
   .tk-delb{display:inline-flex}.tk1 .tk-del{display:none}.tk1 .tk-del.open{display:flex;flex-wrap:wrap;gap:6px;width:100%}
@@ -567,10 +567,10 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 .money-edit>.small{font-size:10.5px}.money-error{color:var(--bad);max-width:220px;line-height:1.35}.money-error:empty{display:none}
 .fo .money-edit{margin:4px 0}.fo .money-box input{width:110px}
 /* 드래프트 버튼 줄(나이·지명 기록 구단): 휴대폰에서는 여러 줄로 쌓지 않고 한 줄 가로 스크롤 */
-@media (max-width:700px){ .fdlog,.fdlog>.row{min-width:0;max-width:100%}.fdlogt,.fdage{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;min-width:0;flex:1 1 100%}.fdlogt button,.fdage button{flex:none} }
+@media (max-width:1099px){ .fdlog,.fdlog>.row{min-width:0;max-width:100%}.fdlogt,.fdage{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;min-width:0;flex:1 1 100%}.fdlogt button,.fdage button{flex:none} }
 .tk{grid-template-columns:minmax(0,1fr)} /* 안의 가로 스크롤 버튼 줄이 상황판 폭을 밀어내지 않게 */
 /* 휴대폰 창단 드래프트: 조작 줄을 한 줄씩(가로 스크롤)으로 줄여 선수 목록이 화면 대부분을 쓰게 */
-@media (max-width:700px){
+@media (max-width:1099px){
   .dcontent:has(.fdlay)>.fdseg{margin:4px 0}.dcontent:has(.fdlay)>.fdseg button{min-height:32px;padding:4px 6px;font-size:13px}
   .fdl-main>.card{padding:6px 8px 4px!important;gap:4px}
   .fdl-main .fpseg{margin:0 0 4px}.fdl-main .fpseg button{min-height:30px;padding:2px 6px;font-size:12.5px}.fdl-main .fpseg .fdsg{font-size:10.5px}
@@ -583,7 +583,7 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .fdl-main>.card>.btn.block{min-height:32px;padding:4px}
 }
 /* 휴대폰 창단 드래프트 2차: 구단 줄·우리 팀 탭·카드 테두리·넘김 줄·더 보기 버튼을 없애고 조작을 세 줄로 */
-@media (max-width:700px){
+@media (max-width:1099px){
   .dtop:has(.tk.m) .dtbar{display:none}
   .tk.m{padding:4px 0 3px;gap:2px}
   .tk.m .tk1{flex-wrap:nowrap;align-items:center;min-height:34px}.tk.m .tk1>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -608,9 +608,9 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .fdl-main .fdt-w tbody th,.fdl-main .fdt-w thead th.c0{position:sticky;left:0;z-index:1;background:var(--bg,#0f1318)}.fdl-main .fdt-w thead th.c0{z-index:3}
   .fdl-main>.card>.fdmore{display:none}
 }
-@media (max-width:700px){
+@media (max-width:1099px){
   .tk.m .tk1 .fd-go{display:flex;flex-direction:row;align-items:center;gap:6px;padding:0;border:0;background:none;margin:0} .tk.m .tk1 .fd-gob{width:auto}
   .tk.m .fd-got{flex:1;min-width:0;display:block}.tk.m .fd-got>b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tk.m .fd-got>span:not(.fd-left){display:none}.tk.m .fd-got>.fd-left{font-size:11px}
   .tk.m .fd-gob{flex:none;min-height:34px;padding:4px 10px;font-size:13px;white-space:nowrap}
 }
-@media (max-width:700px){ .tk.m .fd-got:not(:has(.fd-left)){display:none} }
+@media (max-width:1099px){ .tk.m .fd-got:not(:has(.fd-left)){display:none} }

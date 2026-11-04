@@ -2150,7 +2150,7 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 
 /* 드래프트 상황판: 휴대폰에서는 한 줄 요약, 맡기기는 눌러서 펼침, 통째로 접기 */
 .fdm1,.tk-delb,.tk-minb{display:none}
-@media (max-width:700px){
+@media (max-width:1099px){
   .tk{gap:3px;padding:0 0 4px}
   .tk1{font-size:13px;gap:4px 6px}.tk1>.muted{display:none}
   .tk-delb{display:inline-flex}.tk1 .tk-del{display:none}.tk1 .tk-del.open{display:flex;flex-wrap:wrap;gap:6px;width:100%}
@@ -2250,10 +2250,10 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 .money-edit>.small{font-size:10.5px}.money-error{color:var(--bad);max-width:220px;line-height:1.35}.money-error:empty{display:none}
 .fo .money-edit{margin:4px 0}.fo .money-box input{width:110px}
 /* 드래프트 버튼 줄(나이·지명 기록 구단): 휴대폰에서는 여러 줄로 쌓지 않고 한 줄 가로 스크롤 */
-@media (max-width:700px){ .fdlog,.fdlog>.row{min-width:0;max-width:100%}.fdlogt,.fdage{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;min-width:0;flex:1 1 100%}.fdlogt button,.fdage button{flex:none} }
+@media (max-width:1099px){ .fdlog,.fdlog>.row{min-width:0;max-width:100%}.fdlogt,.fdage{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;min-width:0;flex:1 1 100%}.fdlogt button,.fdage button{flex:none} }
 .tk{grid-template-columns:minmax(0,1fr)} /* 안의 가로 스크롤 버튼 줄이 상황판 폭을 밀어내지 않게 */
 /* 휴대폰 창단 드래프트: 조작 줄을 한 줄씩(가로 스크롤)으로 줄여 선수 목록이 화면 대부분을 쓰게 */
-@media (max-width:700px){
+@media (max-width:1099px){
   .dcontent:has(.fdlay)>.fdseg{margin:4px 0}.dcontent:has(.fdlay)>.fdseg button{min-height:32px;padding:4px 6px;font-size:13px}
   .fdl-main>.card{padding:6px 8px 4px!important;gap:4px}
   .fdl-main .fpseg{margin:0 0 4px}.fdl-main .fpseg button{min-height:30px;padding:2px 6px;font-size:12.5px}.fdl-main .fpseg .fdsg{font-size:10.5px}
@@ -2266,7 +2266,7 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .fdl-main>.card>.btn.block{min-height:32px;padding:4px}
 }
 /* 휴대폰 창단 드래프트 2차: 구단 줄·우리 팀 탭·카드 테두리·넘김 줄·더 보기 버튼을 없애고 조작을 세 줄로 */
-@media (max-width:700px){
+@media (max-width:1099px){
   .dtop:has(.tk.m) .dtbar{display:none}
   .tk.m{padding:4px 0 3px;gap:2px}
   .tk.m .tk1{flex-wrap:nowrap;align-items:center;min-height:34px}.tk.m .tk1>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -2291,12 +2291,12 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .fdl-main .fdt-w tbody th,.fdl-main .fdt-w thead th.c0{position:sticky;left:0;z-index:1;background:var(--bg,#0f1318)}.fdl-main .fdt-w thead th.c0{z-index:3}
   .fdl-main>.card>.fdmore{display:none}
 }
-@media (max-width:700px){
+@media (max-width:1099px){
   .tk.m .tk1 .fd-go{display:flex;flex-direction:row;align-items:center;gap:6px;padding:0;border:0;background:none;margin:0} .tk.m .tk1 .fd-gob{width:auto}
   .tk.m .fd-got{flex:1;min-width:0;display:block}.tk.m .fd-got>b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tk.m .fd-got>span:not(.fd-left){display:none}.tk.m .fd-got>.fd-left{font-size:11px}
   .tk.m .fd-gob{flex:none;min-height:34px;padding:4px 10px;font-size:13px;white-space:nowrap}
 }
-@media (max-width:700px){ .tk.m .fd-got:not(:has(.fd-left)){display:none} }
+@media (max-width:1099px){ .tk.m .fd-got:not(:has(.fd-left)){display:none} }
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -18475,7 +18475,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
     app.innerHTML=`<div class="dshell"><header class="dtop"><div class="gut"><div class="wrap dtbar">${badge(G.user,30)}<div class="dti"><b>${esc(t.city)} ${esc(t.nick)}</b><span>창단 드래프트${F?(F.open===false?' · 탐색 시간':pk?` · ${pk.rd}/${FD_ROUNDS}라운드`:''):' · 준비'}</span></div>
       <button class="mailbtn" data-a="inbox" aria-label="소식함">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button><button class="btn small" data-a="toTitle">처음 화면</button></div>${F&&!G.fdWait?`<div class="wrap">${fdTicker()}</div>`:''}</div></header>
       <div class="gut"><div class="wrap"><main class="content dcontent">${G.fdWait?fdWaitView():fdView()}</main></div></div></div>${patchPop()}`;
-    document.body.classList.toggle('help',helpOn()); markHints(app); renderSheet(); KS.forEach((q,i)=>{ const e=document.querySelector(q); if(e&&keep[i]){ e.scrollTop=keep[i][0]; e.scrollLeft=keep[i][1]; } }); const fw=document.querySelector('.fdt-w'); if(fw&&innerWidth<700)fw.onscroll=()=>{ if(fw.scrollTop+fw.clientHeight>=fw.scrollHeight-200&&document.querySelector('.fdmore')&&!UI._fdMoreT){ UI._fdMoreT=1; A.fdListMore(); setTimeout(()=>{ UI._fdMoreT=0; },500); } }; const pc=document.querySelector('.fpcs-m'), on=pc&&pc.querySelector('.fpc.on'); if(on){ const x=on.getBoundingClientRect().left-pc.getBoundingClientRect().left; if(x<0||x+on.offsetWidth>pc.clientWidth)pc.scrollLeft+=x-8; } /* 휴대폰: 끝까지 내리면 다음 60명 */ return; }
+    document.body.classList.toggle('help',helpOn()); markHints(app); renderSheet(); KS.forEach((q,i)=>{ const e=document.querySelector(q); if(e&&keep[i]){ e.scrollTop=keep[i][0]; e.scrollLeft=keep[i][1]; } }); const fw=document.querySelector('.fdt-w'); if(fw&&innerWidth<1100)fw.onscroll=()=>{ if(fw.scrollTop+fw.clientHeight>=fw.scrollHeight-200&&document.querySelector('.fdmore')&&!UI._fdMoreT){ UI._fdMoreT=1; A.fdListMore(); setTimeout(()=>{ UI._fdMoreT=0; },500); } }; const pc=document.querySelector('.fpcs-m'), on=pc&&pc.querySelector('.fpc.on'); if(on){ const x=on.getBoundingClientRect().left-pc.getBoundingClientRect().left; if(x<0||x+on.offsetWidth>pc.clientWidth)pc.scrollLeft+=x-8; } /* 휴대폰: 끝까지 내리면 다음 60명 */ return; }
   if(fmOn()){ fmNavRec(); app.innerHTML=fmShell(t,per,unread,b); document.body.classList.toggle('help',helpOn()); document.body.classList.add('fm'); markHints(app); renderSheet(); try{ autoLink($('#app')); }catch(e){} if(UI.tab==='inbox')inboxWire(); if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); } return; }
   document.body.classList.remove('fm');
   const nav=NAV; const ic=i=>ICO[i]||ICO2[i]; const inMenu=!BNAV.includes(UI.tab); const menuAlert=NAV.some(([k])=>!BNAV.includes(k)&&tabAlert(k));
@@ -20508,7 +20508,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
     const lead=t?`<span class="fdtk">${badge(t.tid,18)}</span>`:`<button class="fds${sl.has(p.id)?' on':''}" data-a="star" data-v="${p.id}" aria-label="관심">${sl.has(p.id)?'★':'☆'}</button>`;
     const tail=t?`<span class="fdtk2"><i>${me?'우리':esc(tshort(t.tid))} ${t.rd}-${t.no}</i>${fdChip(p)}</span>`:mine?`<button class="fdgo" data-a="fdPick" data-v="${p.id}">지명</button>`:'';
     return `<tr class="${lv?'f2':''}${!t&&sl.has(p.id)?' st':''}${t?(me?' gone me':' gone'):''}"><th><div class="fdn">${lead}<button class="fdnm" data-a="player" data-v="${p.id}"><b>${esc(p.name)}${!t&&r>=.1?`<em class="rkp ${r>=.6?'r3':r>=.3?'r2':'r1'}" title="다음 우리 차례 전에 다른 구단이 지명할 확률">${Math.round(r*100)}%</em>`:''}</b><i>${p.age}세·${p.isP?(isSPr(p)?'선발':'불펜'):SLK[p.pos]||posLabel(p)}·<span class="${!t&&MM&&p.sal>MM.room-MM.W?'lo':''}">${money(p.sal)}</span>${lv?'·2군':''}${isAway(p)?'·군':''}</i></button>${tail}</div></th>${COL.map(z=>z.td(x)).join('')}</tr>`; };
-  const mob=innerWidth<700; /* 휴대폰: 조작 줄을 한 줄로 모아 선수 목록을 넓게 */
+  const mob=innerWidth<1100; /* 휴대폰: 조작 줄을 한 줄로 모아 선수 목록을 넓게 */
   const nF=[...AB].filter(k=>abK.includes(k)).length+(young?1:0)+(a0||a1?1:0)+(mob?(UI.fdNeed?1:0)+(onlyS?1:0)+(UI.fdY3?1:0):0); const fOpen=!!UI.fdFiltOpen;
   const quick=`<div class="chips fdq"><button data-a="fdFilt" class="${nF?'on':''}">필터 ${nF}${fOpen?' ▴':' ▾'}</button><button data-a="fdNeed" class="${UI.fdNeed?'on':''}">우리 빈자리만</button><button data-a="fdO" class="${onlyS?'on':''}">관심 ${[...sl].filter(id=>G.players[id]&&G.players[id].fdPool).length||''}</button><span class="chips fdage" role="group" aria-label="나이">${[[0,0,'나이 전체'],[0,25,'25세 이하'],[26,30,'26~30세'],[31,34,'31~34세'],[35,0,'35세 이상']].map(([x,y,l])=>`<button data-a="fdAgeR" data-v="${x}-${y}" class="${a0===x&&a1===y?'on':''}">${l}</button>`).join('')}</span></div>`;
   const abChips=!fOpen?'':`<div class="chips fdab"><span class="small muted">스카우트 평가</span>${abK.map(k=>`<button data-a="fdAb" data-v="${k}" class="${AB.has(k)?'on':''}">${k==='velo'?'구속 150km+':`${({pow:'파워',con:'컨택',eye:'선구',def:'수비',spd:'주력',ctl:'제구',stf:'구위',sta:'체력'})[k]} A 이상`}</button>`).join('')}<button data-a="fdY" class="${young?'on':''}">24세 이하</button></div>`;
@@ -20523,7 +20523,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
     ${L.length>shown.length?`<button class="btn block fdmore" data-a="fdListMore">${Math.min(60,L.length-shown.length)}명 더 보기 (${shown.length}/${L.length})</button>`:''}</section>`;
   const tab=UI.fdTab==='team'?'team':'list';
   const miss=(()=>{ const {ln}=fdLineupOf(myPicks.filter(p=>!p.isP)); return ['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length; })(); const pitN=myPicks.filter(p=>p.isP).length;
-  return `${UI.fdMsg?`<div class="note bad">${esc(UI.fdMsg)}</div>`:''}<div class="seg fdseg${innerWidth<700?' fdseg-m':''}"><button data-a="fdTab" data-v="list" class="${tab==='list'?'on':''}">후보 선수</button><button data-a="fdTab" data-v="team" class="${tab==='team'?'on':''}">우리 팀 <i class="fdsg">빈자리 ${miss+Math.max(0,FD_TGT.P-pitN)}</i></button></div>
+  return `${UI.fdMsg?`<div class="note bad">${esc(UI.fdMsg)}</div>`:''}<div class="seg fdseg${innerWidth<1100?' fdseg-m':''}"><button data-a="fdTab" data-v="list" class="${tab==='list'?'on':''}">후보 선수</button><button data-a="fdTab" data-v="team" class="${tab==='team'?'on':''}">우리 팀 <i class="fdsg">빈자리 ${miss+Math.max(0,FD_TGT.P-pitN)}</i></button></div>
   <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${listPane}</div></div>${revView()}`; }
 /* 창단 드래프트 연봉 계산: 지금까지 쓴 돈, 쓸 수 있는 한도, 남은 지명과 자동 배분까지 감안한 1명당 여유 */
 function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user; if(!UI._fdf||UI._fdf.k!==key){ try{ UI._fdf={k:key,f:fdFin()}; }catch(e){ return null; } } const f=UI._fdf.f;
@@ -20543,20 +20543,20 @@ function fdTicker(){ const F=G.fd; if(!F||F.done)return ''; const pk=F.picks[F.c
   let r1;
   if(pre){ const first=F.picks.findIndex(x=>x.tid===G.user)+1; r1=`<div class="fd-go"><div class="fd-got"><b>아직 드래프트가 시작되지 않았습니다</b><span>지금은 지명 전 탐색 시간입니다. 선수를 살펴보고 관심(☆)을 표시해 두세요. <b>시작을 눌러야 지명할 수 있습니다.</b> 우리 첫 지명은 ${first}번째입니다.</span></div><button class="btn primary fd-gob" data-a="fdOpen">드래프트 시작 (1라운드) ▶</button></div>`; } /* 작은 버튼이라 못 찾고 '왜 지명이 안 되지' 하던 문제: 크게, 설명과 함께 */
   else if(ask){ const left=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; r1=`<b class="good">${F.man}라운드 직접 지명을 마쳤습니다</b><span class="muted">남은 우리 지명 ${left}번은 주로 2군·백업 자원입니다</span>${fdPolSel()}<button class="btn small primary" data-a="fdAuto" title="고른 방침대로 스카우트가 남은 지명을 모두 뽑고 드래프트를 끝냅니다">나머지 스카우트에게 맡기기</button><button class="btn small" data-a="fdPlus">${Math.min(FD_ROUNDS,F.man+FD_MORE)}라운드까지 더 뽑기</button>`; }
-  else if(mine){ r1=`<b class="good">${innerWidth<700?`우리 차례 ${pk.rd}R ${pk.no}번`:`우리 차례 · ${pk.rd}라운드 ${pk.no}번째`}</b><button class="btn small tk-delb${UI.tkDel?' on':''}" data-a="tkDel">맡기기 ${UI.tkDel?'▴':'▾'}</button><span class="tk-del${UI.tkDel?' open':''}">${fdPolSel()}<button class="btn small" data-a="fdAutoN" data-v="5" title="우리 지명 5번을 고른 방침대로 스카우트가 뽑고 다시 멈춥니다">5번 맡기기</button><button class="btn small" data-a="fdAuto" title="남은 우리 지명을 고른 방침대로 스카우트가 모두 뽑고 드래프트를 끝냅니다">나머지 맡기기</button></span><span class="muted">${F.man||FD_ROUNDS}라운드까지 직접 지명</span>`; }
+  else if(mine){ r1=`<b class="good">${innerWidth<1100?`우리 차례 ${pk.rd}R ${pk.no}번`:`우리 차례 · ${pk.rd}라운드 ${pk.no}번째`}</b><button class="btn small tk-delb${UI.tkDel?' on':''}" data-a="tkDel">맡기기 ${UI.tkDel?'▴':'▾'}</button><span class="tk-del${UI.tkDel?' open':''}">${fdPolSel()}<button class="btn small" data-a="fdAutoN" data-v="5" title="우리 지명 5번을 고른 방침대로 스카우트가 뽑고 다시 멈춥니다">5번 맡기기</button><button class="btn small" data-a="fdAuto" title="남은 우리 지명을 고른 방침대로 스카우트가 모두 뽑고 드래프트를 끝냅니다">나머지 맡기기</button></span><span class="muted">${F.man||FD_ROUNDS}라운드까지 직접 지명</span>`; }
   else if(!on&&!UI.rev){ r1=`<div class="fd-go"><div class="fd-got"><b>${esc(tshort(pk.tid))} 차례에서 멈춰 있습니다 · ${pk.rd}-${pk.no}</b><span class="fd-left">우리 차례까지 ${k<0?'-':k}번</span></div><button class="btn primary fd-gob" data-a="fdAdv">다른 구단 지명 진행 ▶</button></div>`; } /* 멈춘 상태가 작은 '진행' 버튼뿐이라 못 찾던 문제 */
   else r1=`${on?'<span class="dl-dot"></span>':''}${badge(pk.tid,18)}<b>${esc(tshort(pk.tid))} 지명 중 · ${pk.rd}-${pk.no}</b><span class="muted">우리 차례까지 ${k<0?'-':k}번</span><span class="tk-sp"><button data-a="dlSpdC" class="on">속도 ${({slow:'느리게',norm:'보통',fast:'빠르게'})[sp]}</button>${on?'<button data-a="dlStop">멈춤</button>':'<button data-a="fdAdv">진행</button>'}</span>`;
   const r2=fresh?`<div class="tk2 steal"><b>뺏겼습니다</b><span>${esc(st.tg)} <button class="lnk" data-a="player" data-v="${st.pid}">${esc(st.nm)}</button>을(를) ${esc(tshort(st.tid))}이(가) ${st.rd}-${st.no}에 지명</span>${fdTrue(top)}</div>`
     :top?`<div class="tk2">${badge(top.tid,16)}<i>${top.rd}-${top.no}</i><button class="lnk" data-a="player" data-v="${top.pid}">${esc(top.nm)}</button><span class="muted">${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}</span>${top.me?'<em class="good">우리 지명</em>':fdTrue(top)}${L.stN?`<span class="tk-l">놓친 관심 ${L.stN}명</span>`:''}</div>`:'';
   const risk=(()=>{ if(pre||ask)return ''; const RK=fdRisk(); const S=(G.shortlist||[]).map(id=>G.players[id]).filter(p=>p&&p.fdPool&&(RK[p.id]||0)>=.35).sort((a,b)=>RK[b.id]-RK[a.id]).slice(0,4); if(!S.length)return ''; return `<div class="tk2 risk"><b>${mine?'지금 안 뽑으면':'우리 차례 전에'} 빠질 수 있는 관심 선수</b>${S.map(p=>`<span class="rk-i"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><em>${Math.round(RK[p.id]*100)}%</em></span>`).join('')}</div>`; })();
-  const tkm=UI.tkMin??innerWidth<700; /* 휴대폰은 처음부터 한 줄로 접어 선수 목록을 넓게 */ const minB=`<button class="tk-minb" data-a="tkMin" aria-label="${tkm?'상황판 펼치기':'상황판 접기'}">${tkm?'펼치기 ▾':'접기 ▴'}</button>`; /* 휴대폰: 위에 고정된 상황판을 한 줄로 접어 선수 목록을 넓게 */
-  if(innerWidth<700){ /* 휴대폰: 구단 줄을 없애고 로고(소식함·처음 화면)·우리 팀을 상황판 첫 줄에, 펼치기는 한도 줄을 눌러서 */
+  const tkm=UI.tkMin??innerWidth<1100; /* 휴대폰은 처음부터 한 줄로 접어 선수 목록을 넓게 */ const minB=`<button class="tk-minb" data-a="tkMin" aria-label="${tkm?'상황판 펼치기':'상황판 접기'}">${tkm?'펼치기 ▾':'접기 ▴'}</button>`; /* 휴대폰: 위에 고정된 상황판을 한 줄로 접어 선수 목록을 넓게 */
+  if(innerWidth<1100){ /* 휴대폰: 구단 줄을 없애고 로고(소식함·처음 화면)·우리 팀을 상황판 첫 줄에, 펼치기는 한도 줄을 눌러서 */
     const unread=G.mail.filter(mailNeeds).length; const my=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const {ln}=fdLineupOf(my.filter(p=>!p.isP)); const emp=['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length+Math.max(0,FD_TGT.P-my.filter(p=>p.isP).length); const tm=UI.fdTab==='team';
     const logo=`<button class="tk-logo" data-a="tkMenu" aria-label="메뉴">${badge(G.user,26)}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`;
     const menu=UI.tkMenu?`<div class="tk-menu"><button class="btn small" data-a="inbox">소식함${unread?` ${unread}`:''}</button><button class="btn small" data-a="toTitle">처음 화면</button></div>`:'';
     const teamB=`<button class="btn small tk-team${tm?' on':''}" data-a="fdTab" data-v="${tm?'list':'team'}">${tm?'후보 선수':`우리 팀 <i>${emp}</i>`}</button>`;
     return `<div class="tk m${tkm?' min':''}"><div class="tk1">${logo}${r1}${teamB}</div>${menu}<div class="tk-mt" data-a="tkMin">${fdMoneyLine()}<span class="tk-mtg">${tkm?'▾':'▴'}</span></div>${risk}${r2}${fdPickLog()}</div>`; }
-  return `<div class="tk${(UI.tkMin??innerWidth<700)?' min':''}"><div class="tk1">${r1}${minB}</div>${fdMoneyLine()}${risk}${r2}${fdPickLog()}</div>`; }
+  return `<div class="tk${(UI.tkMin??innerWidth<1100)?' min':''}"><div class="tk1">${r1}${minB}</div>${fdMoneyLine()}${risk}${r2}${fdPickLog()}</div>`; }
 /* 지명 기록: 지금까지 나온 지명을 펼쳐 본다(최근 순, 구단별로 거르기) */
 function fdPickLog(){ const F=G.fd; if(!F)return ''; const done=F.picks.slice(0,F.cur).filter(x=>x.pid&&G.players[x.pid]); if(!done.length)return '';
   const open=!!UI.fdLog; const ft=UI.fdLogT??'all'; const btn=`<button class="lnk tk-log" data-a="fdLog">지명 기록 ${open?'접기':'펼치기'} (${done.length}명)</button>`; if(!open)return btn;
@@ -20629,7 +20629,7 @@ function fdPosBoardH(gk,f){ const B=fdPosBoard(); const nm={SP:'선발',RP:'불�
   const all=(g,l)=>`<button class="fpc all${cur===g+':all'?' on':''}" data-a="fdPos" data-v="${g}:all"><b>${l} 전체</b></button>`;
   /* 야수/투수를 먼저 고르고, 그 그룹의 포지션만 칩으로 보인다(모바일에서 칩이 화면 밖으로 밀리지 않게) */
   const isP=gk==='P'; const seg=`<div class="seg fpseg"><button data-a="fdPos" data-v="B:all" class="${isP?'':'on'}">야수</button><button data-a="fdPos" data-v="P:all" class="${isP?'on':''}">투수 <i class="fdsg">선발 ${sp}/6 · 불펜 ${rp}/7</i></button></div>`;
-  if(innerWidth<700)return `<div class="fpcs fpcs-m">${all('B','야수')+B.filter(x=>!['SP','RP'].includes(x.k)).map(chip).join('')}<i class="fpsep"></i>${all('P','투수')+B.filter(x=>['SP','RP'].includes(x.k)).map(chip).join('')}</div>`;
+  if(innerWidth<1100)return `<div class="fpcs fpcs-m">${all('B','야수')+B.filter(x=>!['SP','RP'].includes(x.k)).map(chip).join('')}<i class="fpsep"></i>${all('P','투수')+B.filter(x=>['SP','RP'].includes(x.k)).map(chip).join('')}</div>`;
   return `${seg}<div class="fpcs">${isP?all('P','투수')+B.filter(x=>['SP','RP'].includes(x.k)).map(chip).join(''):all('B','야수')+B.filter(x=>!['SP','RP'].includes(x.k)).map(chip).join('')}</div>`; }
 /* 고른 포지션에 우리 선수가 이미 있으면 위에 크게 보여 준다 */
 function fdOwnCard(gk,f){ if(gk==='P'||f==='all'||f==='OF'||f==='DH')return ''; const F=G.fd; const my=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const {ln}=fdLineupOf(my.filter(p=>!p.isP)); const p=ln[f]; if(!p)return '';
@@ -25251,7 +25251,7 @@ function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div clas
 const TWP_W=600;
 function workspaceCompact(){return matchMedia('(max-width:699px), (max-height:599px), (max-width:1099px) and (pointer:coarse)').matches;}
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
-  document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; if(tw.matches('.fdt-w')&&innerWidth<700)return; /* 휴대폰 창단 드래프트 표는 넘김 줄 대신 옆으로 밀기(이름 열 고정) */ /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
+  document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; if(tw.matches('.fdt-w')&&innerWidth<1100)return; /* 휴대폰 창단 드래프트 표는 넘김 줄 대신 옆으로 밀기(이름 열 고정) */ /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
     tw.querySelectorAll(':scope > .twpg').forEach(x=>x.remove()); tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; }); tw.classList.remove('twp');
     if(!narrow&&tw.closest('.roster-list,.candidate-list,.fdl-main'))return;
     if(tb.scrollWidth<=tw.clientWidth+4)return; void narrow; /* 넓은 화면도 표가 넘치면 같은 방식으로 넘긴다 */
@@ -26461,7 +26461,7 @@ Object.assign(A,{
 Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });
 
 /* 드래프트 상황판(휴대폰): 맡기기 메뉴 열기·상황판 접기 */
-Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??innerWidth<700); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
+Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??innerWidth<1100); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
 /* ---------- 플레이 기록(익명, 테스트용) ----------
  테스트 배포 때 '단장을 만들고 어디까지, 몇 년 차까지 하는지'와 어느 기능을 쓰는지, 어디서 막히는지를 보기 위한 기록.
  - TELE.ph에 PostHog 프로젝트 키(phc_…)를 넣어야 켜진다. 비어 있으면 아무것도 보내지 않는다(GA4 측정 ID도 넣을 수 있다).
