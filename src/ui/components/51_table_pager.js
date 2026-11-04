@@ -43,9 +43,9 @@ function workspaceFit(host){
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
+  const filters=root.querySelector('.roster-filter-body'); // 열 묶음·열 설정도 접힌 필터 안으로(PC·휴대폰 같은 구조)
+  if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
   if(workspaceCompact()){
-    const filters=root.querySelector('.roster-filter-body');
-    if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
     root.querySelectorAll('.seg.itabs,nav.subtabs,.trade-modes').forEach(tabs=>{
       if([...tabs.querySelectorAll('button[data-a]')].some(b=>['itab','go','sub','tab','lseg'].includes(b.dataset.a)))tabs.classList.add('ws-tab-row');
     });

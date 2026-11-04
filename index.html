@@ -2713,7 +2713,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .dshell .fdl-main>.card{padding:10px;display:block}
   .dshell .fdl-main .fdgk{margin:5px 0;font-size:12px}
   .dshell .fdl-main .fdq{margin:6px 0}
-  .dshell .fdvt,.dshell .fdy3{display:inline-flex;width:calc(50% - 5px);margin:4px 5px 8px 0;vertical-align:top}
+  .dshell .fdvrow{display:flex;gap:8px}.dshell .fdvt,.dshell .fdy3{flex:1 1 0;min-width:0;margin:4px 0 8px} /* 보기·시즌 버튼 줄을 한 줄에 */
   .dshell .fd-position-list{display:grid;gap:3px}
   .dshell .fdbd .fld{display:none}
   .fd-position-list button{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:5px 7px;font-size:12px;cursor:pointer;text-align:left;min-width:0}
@@ -3434,8 +3434,9 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 .ws-filter-controls>summary{position:sticky;top:0;z-index:6;cursor:pointer;min-height:32px;padding:6px 0;line-height:20px;font-size:13px;background:var(--panel)}
 .ws-filter-options{max-height:160px;overflow:auto;overscroll-behavior:contain;display:grid;gap:8px;padding-block:8px}
 #app .roster-filters{display:block;min-width:0;margin:0}
-#app .roster-filters>summary{display:none;cursor:pointer;min-height:32px;line-height:20px;padding:6px 0;box-sizing:border-box;font-size:var(--ui-body)}
+#app .roster-filters>summary{display:list-item;cursor:pointer;min-height:32px;line-height:20px;padding:6px 0;box-sizing:border-box;font-size:var(--ui-body)}
 #app .roster-filter-body{display:grid;gap:8px}
+#app .roster-caption .seg{padding-block:0} /* 표 머리 줄을 다른 패널 머리 높이에 맞춤 */
 #app .roster-short-controls{display:none}
 .ws-scroll>.ws-flow{overflow:visible!important;max-height:none;min-height:0}
 .ws-scroll.tw.twp thead th,.ws-scroll.fdt-w.twp thead th{top:0}
@@ -3468,7 +3469,6 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-navigation{display:flex;flex-wrap:nowrap;min-width:0}
  #app .roster-navigation>.rseg{flex:1;min-width:0}
  #app .roster-navigation>.rseg button{flex:1;min-width:0;white-space:nowrap;padding-inline:6px}
- #app .roster-filters>summary{display:list-item}
  #app .roster-filter-body{max-height:min(200px,30dvh);overflow:auto;overscroll-behavior:contain;padding-block:6px}
  #app .roster-filters[open]{flex-shrink:1;min-height:32px;overflow:auto;overscroll-behavior:contain;max-height:45%}
  #app .roster-filters[open]>summary{position:sticky;top:0;background:var(--panel);z-index:6}
@@ -19269,7 +19269,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   const vtab=`<div class="seg fdvt"><button data-a="fdV" data-v="rec" class="${V==='rec'?'on':''}">성적</button><button data-a="fdV" data-v="sc" class="${V==='sc'?'on':''}">스카우트</button><button data-a="fdV" data-v="dt" class="${V==='dt'?'on':''}">데이터팀</button></div>`;
   const vnote=V==='rec'?`${ly} 시즌 기록(1군, 없으면 2군) · 지난 시즌들은 선수 정보의 '최근 3년'에서`:V==='sc'?'스카우트가 눈과 스피드건으로 본 툴 등급(S·A·B·C·D·E, C가 1군 평균쯤)과 체격. 기록은 보지 않고, 경기에서 드러나는 실전 감각은 못 봅니다. 스카우트마다 후하게 보는 툴과 짜게 보는 툴이 있습니다':ANA?'데이터팀이 실제 기록과 트래킹으로 본 세부 데이터. 툴은 보지 않습니다':'분석원이 없어 기록에서 계산한 지표만 있습니다(트래킹 데이터와 데이터팀 의견 일부 없음)';
   const listPane=`<section class="card">${F.done?'':fdPosBoardH(gk,f)}${F.done?'':fdOwnCard(gk,f)}<div class="fdgk"><b>${isP?'투수':'야수'} ${f==='all'?'전체':({SP:'선발형',RP:'불펜형',OF:'외야'})[f]||SLK[f]||f}</b> <span class="muted">${L.length}명 · 정렬 ${scol.h} ${dir?'▲':'▼'}</span> <button type="button" class="hi-i" data-tip="${esc(`이름 옆 %는 다음 우리 차례 전에 다른 구단이 데려갈 확률입니다. 탭을 바꿔도 같은 선수·같은 순서이고 보이는 정보만 바뀝니다. 열 제목을 누르면 그 기준으로 정렬합니다.\n\n${vnote}${COL.some(z=>z.tip)?`\n\n[열 설명]\n${COL.filter(z=>z.tip).map(z=>`${z.h}: ${z.tip}`).join('\n')}`:''}`)}">i</button></div>
-    ${quick}${abChips}${vtab}${V==='rec'?`<div class="seg fdy3"><button data-a="fdY3" data-v="0" class="${UI.fdY3?'':'on'}">${ly} 시즌</button><button data-a="fdY3" data-v="1" class="${UI.fdY3?'on':''}">최근 3년(${ly-2}~${ly})</button></div>`:''}${V==='sc'&&fdScoutProfileTxt(isP)?`<p class="small fdscp"><b>우리 스카우트 성향</b> ${esc(fdScoutProfileTxt(isP))}</p>`:''}
+    ${quick}${abChips}<div class="fdvrow">${vtab}${V==='rec'?`<div class="seg fdy3"><button data-a="fdY3" data-v="0" class="${UI.fdY3?'':'on'}">${ly} 시즌</button><button data-a="fdY3" data-v="1" class="${UI.fdY3?'on':''}">최근 3년(${ly-2}~${ly})</button></div>`:''}</div>${V==='sc'&&fdScoutProfileTxt(isP)?`<p class="small fdscp"><b>우리 스카우트 성향</b> ${esc(fdScoutProfileTxt(isP))}</p>`:''}
     <div class="fdt-w"><table class="fdt v-${V}"><thead><tr><th class="c0">선수</th>${COL.map(hd).join('')}</tr></thead><tbody>${shown.map(trow).join('')}</tbody></table></div>
     ${L.length>shown.length?`<button class="btn block" data-a="fdListMore">${Math.min(60,L.length-shown.length)}명 더 보기 (${shown.length}/${L.length})</button>`:''}</section>`;
   const tab=UI.fdTab==='team'?'team':'list';
@@ -21488,8 +21488,7 @@ function rosterView(){
   const f2=(seg==='bat'?d.futB:d.futP).filter(vis); const f2n=f2.filter(p=>!p.ys).length, ysn=f2.filter(p=>p.ys).length; /* 2군·육성선수는 2군 탭에서 따로 본다 */
   const futLink=f2.length&&sc==='one'?`<button class="btn small block r2link" data-a="itab" data-v="roster:fut">2군 ${seg==='bat'?'야수':'투수'} ${f2n}명${ysn?` · 육성선수 ${ysn}명`:''}은 2군 탭에서 보기 ›</button>`:'';
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  const compact=matchMedia('(max-width:699px), (max-height:599px)').matches;
-  const filterOpen=!compact||UI.open?.rosterFilters;
+  const filterOpen=UI.open?.rosterFilters; /* PC·휴대폰 모두 접힌 요약 줄로 시작해 첫 선수 행을 위로 */
   return `<div class="roster-page">${head}<div class="roster-navigation">${it.bar}${segT}</div><section class="card roster-list"><div class="row between roster-caption"><h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()}</span><div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>
     <details class="roster-filters" data-k="rosterFilters" ${filterOpen?'open':''}><summary>필터·표시 설정 · ${sc==='one'?'1군':sc==='two'?'2군':'전체'} · ${UI.rsea==='car'?'통산':rSeaY()}</summary><div class="roster-filter-body"><div class="roster-short-controls">${sel}<div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div><div class="row wrapr rscope"><div class="seg sm">${[['one','1군'],['two','2군'],['all','전체']].map(([k,l])=>`<button data-a="rscope" data-v="${k}" class="${sc===k?'on':''}">${l}</button>`).join('')}</div><div class="seg sm">${[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']].map(([k,l])=>`<button data-a="rsea" data-v="${k}" class="${(UI.rsea||'cur')===k?'on':''}">${l}</button>`).join('')}</div></div>${filt}</div></details>${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section></div>`;
@@ -23271,9 +23270,9 @@ function workspaceFit(host){
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
+  const filters=root.querySelector('.roster-filter-body'); // 열 묶음·열 설정도 접힌 필터 안으로(PC·휴대폰 같은 구조)
+  if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
   if(workspaceCompact()){
-    const filters=root.querySelector('.roster-filter-body');
-    if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
     root.querySelectorAll('.seg.itabs,nav.subtabs,.trade-modes').forEach(tabs=>{
       if([...tabs.querySelectorAll('button[data-a]')].some(b=>['itab','go','sub','tab','lseg'].includes(b.dataset.a)))tabs.classList.add('ws-tab-row');
     });

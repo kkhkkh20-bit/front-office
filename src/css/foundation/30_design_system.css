@@ -170,8 +170,9 @@
 .ws-filter-controls>summary{position:sticky;top:0;z-index:6;cursor:pointer;min-height:32px;padding:6px 0;line-height:20px;font-size:13px;background:var(--panel)}
 .ws-filter-options{max-height:160px;overflow:auto;overscroll-behavior:contain;display:grid;gap:8px;padding-block:8px}
 #app .roster-filters{display:block;min-width:0;margin:0}
-#app .roster-filters>summary{display:none;cursor:pointer;min-height:32px;line-height:20px;padding:6px 0;box-sizing:border-box;font-size:var(--ui-body)}
+#app .roster-filters>summary{display:list-item;cursor:pointer;min-height:32px;line-height:20px;padding:6px 0;box-sizing:border-box;font-size:var(--ui-body)}
 #app .roster-filter-body{display:grid;gap:8px}
+#app .roster-caption .seg{padding-block:0} /* 표 머리 줄을 다른 패널 머리 높이에 맞춤 */
 #app .roster-short-controls{display:none}
 .ws-scroll>.ws-flow{overflow:visible!important;max-height:none;min-height:0}
 .ws-scroll.tw.twp thead th,.ws-scroll.fdt-w.twp thead th{top:0}
@@ -204,7 +205,6 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-navigation{display:flex;flex-wrap:nowrap;min-width:0}
  #app .roster-navigation>.rseg{flex:1;min-width:0}
  #app .roster-navigation>.rseg button{flex:1;min-width:0;white-space:nowrap;padding-inline:6px}
- #app .roster-filters>summary{display:list-item}
  #app .roster-filter-body{max-height:min(200px,30dvh);overflow:auto;overscroll-behavior:contain;padding-block:6px}
  #app .roster-filters[open]{flex-shrink:1;min-height:32px;overflow:auto;overscroll-behavior:contain;max-height:45%}
  #app .roster-filters[open]>summary{position:sticky;top:0;background:var(--panel);z-index:6}

@@ -106,7 +106,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .dshell .fdl-main>.card{padding:10px;display:block}
   .dshell .fdl-main .fdgk{margin:5px 0;font-size:12px}
   .dshell .fdl-main .fdq{margin:6px 0}
-  .dshell .fdvt,.dshell .fdy3{display:inline-flex;width:calc(50% - 5px);margin:4px 5px 8px 0;vertical-align:top}
+  .dshell .fdvrow{display:flex;gap:8px}.dshell .fdvt,.dshell .fdy3{flex:1 1 0;min-width:0;margin:4px 0 8px} /* 보기·시즌 버튼 줄을 한 줄에 */
   .dshell .fd-position-list{display:grid;gap:3px}
   .dshell .fdbd .fld{display:none}
   .fd-position-list button{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:5px 7px;font-size:12px;cursor:pointer;text-align:left;min-width:0}
