@@ -9,21 +9,26 @@ const ICO3={list:SV('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
  file:SV('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>'),act:SV('<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>'),
  net:SV('<circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M8.5 7.5 10.5 16M15.5 7.5 13.5 16M9 6h6"/>'),clock:SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
  grid:SV('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>'),news:SV('<path d="M4 4h13v16H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v10a2 2 0 0 1-2 2M8 8h5M8 12h5M8 16h3"/>')};
-/* 세부 기능은 상단 하위 탭으로 들어간다. 사이드바에는 8개 상위 화면만 둔다. */
+/* FM처럼 자주 가는 화면을 왼쪽에 바로 둔다(2026-11-04 사용자 결정: 15개 안팎). 'go:탭:하위'는 그 하위 화면으로 바로 간다. */
 const FM_SIDE=[[['tab:home','홈','home'],['tab:inbox','소식함','mail'],['tab:roster','선수단','users']],
-  [['tab:trade','트레이드','swap'],['tab:transfer','영입·계약','brief'],['tab:staff','스태프·육성','clip']],
-  [['tab:league','리그','trophy'],['tab:club','구단·재정','club']]];
+  [['tab:trade','트레이드','swap'],['tab:transfer','영입·계약','brief'],['go:staff:scouts','스카우트','target']],
+  [['go:staff:coach','스태프','clip',1],['go:staff:train','훈련·육성','act'],['go:staff:med','의료','med'],['go:staff:data','데이터 분석','chart']],
+  [['tab:cal','일정','clock'],['tab:league','리그','trophy']],
+  [['go:club:owner','구단주·목표','flag'],['go:club:fin','재정','coin'],['go:club:fans','구단 정보','club'],['go:club:inv','시설','grid']]];
 const fmPlanOn=()=>UI.tab==='roster'&&UI.it&&UI.it.roster==='depth'&&UI.it.rdepth==='glance';
-function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t||(t==='league'&&UI.tab==='cal'); if(a==='go')return UI.tab===t&&SUBS[t]&&curSub(t)===s; return false; }
+function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t;
+  if(a==='go'){ if(UI.tab!==t||!SUBS[t])return false; const cur=curSub(t); if(cur===s)return true; const items=FM_SIDE.flat().filter(([x])=>x.startsWith('go:'+t+':')),mine=items.map(([x])=>x.split(':')[2]),home=(items.find(x=>x[3])||items[0])[0].split(':')[2]; return !mine.includes(cur)&&home===s; } /* 네 번째 값 1 = 그 탭의 대표 항목 */ /* 왼쪽에 없는 하위 화면(감독·스태프 시장 등)은 그 탭의 첫 항목에 불을 켠다 */
+  return false; }
 function fmSide(unread){ const ic=i=>ICO[i]||ICO2[i]||ICO3[i]||'';
   const groups=FM_SIDE.map(g=>{
-    const items=g.filter(([k])=>!G.unemp||['home','inbox','league'].includes(k.split(':')[1]));
+    const items=g.filter(([k])=>!G.unemp||['home','inbox','league','cal'].includes(k.split(':')[1]));
     if(!items.length)return '';
     return `<div class="fms-g">${items.map(([k,l,i])=>{const t=k.split(':')[1],on=fmSideOn(k);
-      return `<button data-a="tab" data-v="${t}" class="${on?'on':''}"${on?' aria-current="page"':''}>${ic(i)}<span>${esc(l)}</span>${t==='inbox'&&unread?`<i class="cnt">${unread>99?'99+':unread}</i>`:tabAlert(t)?'<i class="sdot"></i>':''}</button>`;
+      const [a,,s]=k.split(':');
+      return `<button data-a="${a==='go'?'go':'tab'}" data-v="${a==='go'?t+':'+s:t}" class="${on?'on':''}"${on?' aria-current="page"':''}>${ic(i)}<span>${esc(l)}</span>${t==='inbox'&&unread?`<i class="cnt">${unread>99?'99+':unread}</i>`:(a==='go'?subAlert(t,s):tabAlert(t))?'<i class="sdot"></i>':''}</button>`;
     }).join('')}</div>`;
   }).join('');
-  return `<aside class="fmside" aria-label="주 메뉴"><div class="fms-label">구단 업무</div>${groups}</aside>`;
+  return `<aside class="fmside" aria-label="주 메뉴">${groups}</aside>`;
 }
 /* 뒤로·앞으로: 메뉴와 하위 탭 이동을 기억한다(최근 40개) */
 function fmKey(){ const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }
@@ -45,7 +50,7 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
   <header class="fmtop"><div class="fm1">
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.meet||UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="myRos" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>
-    <div class="fm-context"><small>${esc(G.unemp?'자유 계약 단장':tshort(G.user))}</small><strong>${esc(location)}</strong></div>
+    <div class="fm-context" data-club="${esc(G.unemp?'자유 계약 단장':tshort(G.user))}" data-loc="${esc(location)}"><small>${esc(G.unemp?'자유 계약 단장':tshort(G.user))}</small><strong>${esc(location)}</strong></div>
     <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` 안 읽음 ${unread}`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필',UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
   </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
@@ -82,3 +87,13 @@ function fmKeysSheet(){ if(!UI.fmKeys)return ''; return `<div class="scrim" data
   <div class="fmk-l">${FM_KEYS.map(([k,l])=>`<div class="fmk"><kbd>${esc(k)}</kbd><span>${esc(l)}</span></div>`).join('')}</div></div></div>`; }
 /* 마우스 뒤로·앞으로 버튼(FM처럼 화면 기록 이동) */
 if(typeof document!=='undefined')document.addEventListener('mouseup',e=>{ try{ if(!G||UI.title||!fmOn())return; if(e.button===3){ e.preventDefault(); fmBack(); } else if(e.button===4){ e.preventDefault(); fmFwd(); } }catch(x){} });
+
+/* FM처럼 선수 정보를 열면 상단 제목이 '등번호. 이름', 작은 줄이 '포지션 - 소속'이 된다(상세는 renderSheet만 다시 그리므로 여기서 맞춘다) */
+function fmTitleSync(){ const ctx=typeof document!=='undefined'&&document.querySelector('#app .fm-context'); if(!ctx)return; const st=ctx.querySelector('strong'),sm=ctx.querySelector('small'),p=UI.sheet!=null&&!UI.cast?G.players[UI.sheet]:null;
+  if(p){ st.textContent=(p.team!=null?jno(p)+'. ':'')+p.name; sm.textContent=posLabel(p)+' - '+(p.team!=null?tshort(p.team):p.prospect?'드래프트 대상':'소속 없음'); }
+  else { st.textContent=ctx.dataset.loc||''; sm.textContent=ctx.dataset.club||''; }
+  /* 상단 하위 탭 줄도 선수 탭(능력·육성·요약…)으로 바꾼다. 원래 줄은 보관했다가 닫으면 되돌린다 */
+  const sub=document.querySelector('#app .fm-sub'),tabs=p&&fmOn()?document.querySelector('#sheet .pf-topnav .ptabs'):null; if(!sub)return;
+  if(sub.dataset.orig==null)sub.dataset.orig=sub.innerHTML;
+  if(tabs){ sub.innerHTML=`<nav class="subtabs pf-subtabs" aria-label="선수 화면">${[...tabs.querySelectorAll('button')].map(b=>`<button data-a="ptab" data-v="${b.dataset.v}" class="${b.classList.contains('on')?'on':''}">${esc(b.textContent)}</button>`).join('')}</nav>`; document.documentElement.classList.add('fm-ptabs'); }
+  else { if(sub.querySelector('.pf-subtabs'))sub.innerHTML=sub.dataset.orig; document.documentElement.classList.remove('fm-ptabs'); } }

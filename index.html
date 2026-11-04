@@ -2605,6 +2605,64 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-screen .pf-core-cell>span{line-height:1.2}.pf-screen .pf-core-cell strong{line-height:1.1}.pf-screen .pf-core-cell small{line-height:1.2}
 .pf-screen .pf-attribute-row{line-height:1.2}.pf-screen .pf-score{line-height:1.15}
 @media(min-width:1100px) and (max-height:800px){.pf-screen .pf-masthead{min-height:72px;padding-block:8px}.pf-name>.av{width:52px;height:52px}.pf-screen .pf-attribute-row{min-height:25px;padding-block:2px}.pf-attribute-group{margin-bottom:10px}.pf-screen .pf-overview .card{padding:10px}.pf-core-cell strong{font-size:24px}.pf-topnav{margin-bottom:10px}.pf-radar .radar{max-height:170px}.pf-screen .pf-attribute-row.text{grid-template-columns:minmax(0,1fr) auto}.pf-attribute-row.text .pf-score{max-width:100px;text-align:right}.pf-attribute-legend{font-size:9px}.pf-screen .pf-attribute-group h3{padding-bottom:5px;font-size:12px;margin-bottom:2px}}
+
+/* FM 상황판식 선수 정보(PC): 왼쪽 인물 상자, 오른쪽 장점·약점·수비 위치, 주요 행동은 오른쪽 아래 행동 줄 */
+.pf-fmcard{display:grid!important;gap:8px;padding:0!important;overflow:hidden;border-color:var(--pt2,var(--team-hi))!important}
+.pf-fm-face{position:relative;background:linear-gradient(160deg,var(--pt,var(--team-dk)),#0d1217 85%);display:grid;place-items:center;padding:14px 10px 8px}
+.pf-fm-face>.av{width:120px;height:120px;border:0;background:none}
+.pf-fm-no{position:absolute;left:10px;top:10px;font:700 26px/1 var(--f-num);color:#fff;text-shadow:0 2px 6px #000}
+.pf-fm-team{position:absolute;right:10px;top:10px}
+.pf-fm-name{display:grid;gap:2px;padding:0 12px;text-align:center}.pf-fm-name b{font-size:16px}.pf-fm-name span{font-size:12px;color:var(--muted)}
+.pf-fm-key{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px}.pf-fm-key>div{display:grid;justify-items:center;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:6px 4px}
+.pf-fm-key span{font-size:11px;color:var(--muted)}.pf-fm-key b{font:700 26px/1.1 var(--f-num)}.pf-fm-key b.pf-fm-pot{font:700 15px/1.6 var(--f-ui)}.pf-fm-key small{font-size:10px;color:var(--muted)}
+.pf-fm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0 10px}.pf-fm-stats>div{display:grid;justify-items:center;padding:4px 2px;border-top:2px solid var(--pt2,var(--team-hi));background:#ffffff08}
+.pf-fm-stats span{font-size:11px;color:var(--muted)}.pf-fm-stats b{font:700 17px var(--f-num)}
+.pf-fm-pay{display:grid;justify-items:center;gap:1px;padding:0 10px 10px;font-size:12px;color:var(--muted)}.pf-fm-pay b{color:var(--ink);font-size:14px}
+.pf-procon{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.pf-procon h3{margin:0 0 4px}.pf-procon p{display:flex;justify-content:space-between;font-size:12px;margin:2px 0}
+.pf-pro h3{color:var(--good)}.pf-con h3{color:var(--bad)}
+.pf-pos-mini>.card>p.small.muted:last-of-type{display:none}.pf-pos-mini .posfit{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1099px){.pf-fmcard{display:none!important}}
+@media(min-width:1100px){
+  .pf-screen .pf-contract-head{display:none}
+  .pf-screen .pf-toolbar{position:fixed;right:16px;bottom:12px;z-index:30;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:70vw;padding:6px 8px;background:#0b1116e6;border:1px solid var(--line2);border-radius:6px;box-shadow:0 6px 18px #0009}
+  .pf-screen .pf-toolbar .btn,.pf-screen .pf-toolbar .tc-i{min-height:30px;border-radius:15px;padding-inline:14px}
+  .pf-screen .pf-overview{padding-bottom:64px}
+}
+@media(min-width:1100px){.pf-screen .pf-dup{display:none}.pf-screen .pf-name>.av{display:none}.pf-screen .pf-masthead{min-height:58px;padding-block:6px}}
+/* PC: 이름은 상단바 제목으로 올라가므로 본문 이름 띠는 숨긴다(이름 고치는 중에는 보임) */
+@media(min-width:1100px){.pf-screen .pf-masthead:not(:has(.pe-box)){display:none}.pf-fm-name .pe-b{font-size:11px;padding:1px 6px;margin-left:4px;vertical-align:2px}.pf-fm-pay .tc-i{margin:6px 2px 0}}
+/* PC: FM 시즌 통계처럼 연도·소속별 표(올해 핵심 숫자는 왼쪽 인물 상자에) */
+.pf-season-table{display:none!important}
+@media(min-width:1100px){.pf-screen .pf-mobile-only{display:none!important}.pf-screen .pf-season-table{display:block!important}.pf-season-table .tw{max-height:220px;overflow:auto;margin:0}.pf-season-table table{font-size:12px}.pf-season-table th,.pf-season-table td{padding:4px 6px}}
+/* PC: 선수 탭은 상단 하위 탭 줄로 올라간다(FM처럼) */
+@media(min-width:1100px){.fm-ptabs .pf-screen .pf-topnav .ptabs{display:none}}
+/* PC: FM 상황판처럼 한 화면에 꽉 맞춘다. 페이지는 스크롤하지 않고, 내용이 넘치는 열만 그 안에서 스크롤 */
+.pf-fm-role{display:grid;justify-items:center;gap:1px;padding:0 10px;font-size:11px;color:var(--muted);text-align:center}.pf-fm-role b{font-size:12px;color:var(--ink)}
+@media(min-width:1100px){
+  #sheet .sheet.pf-screen:has(.pf-overview){display:flex!important;flex-direction:column;height:var(--detail-height,100dvh)!important;min-height:0!important;max-height:var(--detail-height,100dvh);overflow:hidden!important;padding-bottom:0!important}
+  #sheet .sheet.pf-screen:has(.pf-overview)>*{flex:none}
+  #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 1 auto;min-height:0}
+  #sheet .pf-overview{height:100%;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch;padding:0 0 58px!important;box-sizing:border-box}
+  #sheet .pf-overview>:is(.pf-sidebar,.pf-main,.pf-insights){min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;align-content:start}
+  #sheet .pf-overview .pf-bio,#sheet .pf-overview .pf-role{display:none!important}
+  #sheet .pf-main{display:flex;flex-direction:column;gap:10px}#sheet .pf-main>.pf-attributes{flex:none}#sheet .pf-main>.pf-season-table{flex:1 1 auto;min-height:120px;display:flex!important;flex-direction:column}#sheet .pf-season-table .tw{max-height:none;flex:1;min-height:0}
+  #sheet .pf-main>.pf-more{flex:none;margin:0}
+}
+@media(min-width:1100px){#sheet .sheet.pf-screen:has(.pf-overview){align-items:stretch!important}#sheet .sheet.pf-screen:has(.pf-overview)>*{width:auto;max-width:none;align-self:stretch}}
+.pf-fm-info{display:none!important}
+@media(min-width:1100px){#sheet .pf-overview .pf-fm-info{display:block!important}.pf-fm-info h3{font-size:12px;color:var(--muted);margin:8px 0 4px}.pf-fm-info h3:first-child{margin-top:0}.pf-fm-info .pf-fact{gap:8px}.pf-fm-info .pf-fact b{text-align:right;font-size:12px;font-weight:600}}
+@media(min-width:1100px){#sheet .pf-overview>:is(.pf-sidebar,.pf-insights,.pf-main)>*{flex-shrink:0}}
+@media(min-width:1100px){#sheet .pf-overview>:is(.pf-sidebar,.pf-insights,.pf-main)>*{min-height:min-content}}
+@media(min-width:1100px){#sheet .pf-overview>:is(.pf-sidebar,.pf-insights){display:flex;flex-direction:column;gap:10px}}
+/* PC: FM처럼 네 번째 열(계약·신분·경력)을 두어 한 화면에 다 보이게 */
+.pf-extra{display:none}
+@media(min-width:1100px){
+  #sheet .pf-overview{grid-template-columns:180px minmax(0,1fr) 205px 200px}
+  #sheet .pf-overview>.pf-extra{display:flex;flex-direction:column;gap:10px;min-height:0;overflow-y:auto;scrollbar-width:thin}
+  #sheet .pf-overview>.pf-extra>*{flex-shrink:0;min-height:min-content}
+}
+@media(min-width:1250px){#sheet .pf-overview{grid-template-columns:210px minmax(0,1fr) 240px 225px}}
+@media(min-width:1700px){#sheet .pf-overview{grid-template-columns:240px minmax(0,1fr) 280px 260px}}
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
 .detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
@@ -3265,6 +3323,10 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 #dtick .dt-in{max-width:100%;box-sizing:border-box}
 #dtick .dt-c{flex:1 1 0;min-width:0}
 #dtick .dt-c b,#dtick .dt-flip b{white-space:nowrap;line-height:20px}
+
+/* FM식 왼쪽 메뉴 16개: 촘촘한 한 줄 항목(1280×720에서도 스크롤 없이) */
+@media(min-width:1100px){#app .fmside{padding-top:4px}#app .fmside .fms-g{padding:2px 0;gap:0}#app .fmside button{min-height:32px;padding:5px 12px}}
+@media(min-width:1100px) and (max-height:700px){#app .fmside button{min-height:28px;padding-block:3px}}
 /* 업무 화면의 공통 기준. 개별 기능 CSS 뒤에서 제목·본문·표·조작부의 역할을 통일한다.
    본문 13 / 설명 12 / 패널 제목 16 / 화면 제목·주요 값 20 / 대표 수치 24px.
    글씨를 화면 높이에 따라 축소하지 않는다. 긴 내용은 기존 패널 내부에서 스크롤한다. */
@@ -17591,21 +17653,26 @@ const ICO3={list:SV('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
  file:SV('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>'),act:SV('<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>'),
  net:SV('<circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M8.5 7.5 10.5 16M15.5 7.5 13.5 16M9 6h6"/>'),clock:SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
  grid:SV('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>'),news:SV('<path d="M4 4h13v16H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v10a2 2 0 0 1-2 2M8 8h5M8 12h5M8 16h3"/>')};
-/* 세부 기능은 상단 하위 탭으로 들어간다. 사이드바에는 8개 상위 화면만 둔다. */
+/* FM처럼 자주 가는 화면을 왼쪽에 바로 둔다(2026-11-04 사용자 결정: 15개 안팎). 'go:탭:하위'는 그 하위 화면으로 바로 간다. */
 const FM_SIDE=[[['tab:home','홈','home'],['tab:inbox','소식함','mail'],['tab:roster','선수단','users']],
-  [['tab:trade','트레이드','swap'],['tab:transfer','영입·계약','brief'],['tab:staff','스태프·육성','clip']],
-  [['tab:league','리그','trophy'],['tab:club','구단·재정','club']]];
+  [['tab:trade','트레이드','swap'],['tab:transfer','영입·계약','brief'],['go:staff:scouts','스카우트','target']],
+  [['go:staff:coach','스태프','clip',1],['go:staff:train','훈련·육성','act'],['go:staff:med','의료','med'],['go:staff:data','데이터 분석','chart']],
+  [['tab:cal','일정','clock'],['tab:league','리그','trophy']],
+  [['go:club:owner','구단주·목표','flag'],['go:club:fin','재정','coin'],['go:club:fans','구단 정보','club'],['go:club:inv','시설','grid']]];
 const fmPlanOn=()=>UI.tab==='roster'&&UI.it&&UI.it.roster==='depth'&&UI.it.rdepth==='glance';
-function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t||(t==='league'&&UI.tab==='cal'); if(a==='go')return UI.tab===t&&SUBS[t]&&curSub(t)===s; return false; }
+function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t;
+  if(a==='go'){ if(UI.tab!==t||!SUBS[t])return false; const cur=curSub(t); if(cur===s)return true; const items=FM_SIDE.flat().filter(([x])=>x.startsWith('go:'+t+':')),mine=items.map(([x])=>x.split(':')[2]),home=(items.find(x=>x[3])||items[0])[0].split(':')[2]; return !mine.includes(cur)&&home===s; } /* 네 번째 값 1 = 그 탭의 대표 항목 */ /* 왼쪽에 없는 하위 화면(감독·스태프 시장 등)은 그 탭의 첫 항목에 불을 켠다 */
+  return false; }
 function fmSide(unread){ const ic=i=>ICO[i]||ICO2[i]||ICO3[i]||'';
   const groups=FM_SIDE.map(g=>{
-    const items=g.filter(([k])=>!G.unemp||['home','inbox','league'].includes(k.split(':')[1]));
+    const items=g.filter(([k])=>!G.unemp||['home','inbox','league','cal'].includes(k.split(':')[1]));
     if(!items.length)return '';
     return `<div class="fms-g">${items.map(([k,l,i])=>{const t=k.split(':')[1],on=fmSideOn(k);
-      return `<button data-a="tab" data-v="${t}" class="${on?'on':''}"${on?' aria-current="page"':''}>${ic(i)}<span>${esc(l)}</span>${t==='inbox'&&unread?`<i class="cnt">${unread>99?'99+':unread}</i>`:tabAlert(t)?'<i class="sdot"></i>':''}</button>`;
+      const [a,,s]=k.split(':');
+      return `<button data-a="${a==='go'?'go':'tab'}" data-v="${a==='go'?t+':'+s:t}" class="${on?'on':''}"${on?' aria-current="page"':''}>${ic(i)}<span>${esc(l)}</span>${t==='inbox'&&unread?`<i class="cnt">${unread>99?'99+':unread}</i>`:(a==='go'?subAlert(t,s):tabAlert(t))?'<i class="sdot"></i>':''}</button>`;
     }).join('')}</div>`;
   }).join('');
-  return `<aside class="fmside" aria-label="주 메뉴"><div class="fms-label">구단 업무</div>${groups}</aside>`;
+  return `<aside class="fmside" aria-label="주 메뉴">${groups}</aside>`;
 }
 /* 뒤로·앞으로: 메뉴와 하위 탭 이동을 기억한다(최근 40개) */
 function fmKey(){ const t=UI.tab; return SUBS[t]?t+':'+curSub(t):t; }
@@ -17627,7 +17694,7 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
   <header class="fmtop"><div class="fm1">
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.meet||UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="myRos" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>
-    <div class="fm-context"><small>${esc(G.unemp?'자유 계약 단장':tshort(G.user))}</small><strong>${esc(location)}</strong></div>
+    <div class="fm-context" data-club="${esc(G.unemp?'자유 계약 단장':tshort(G.user))}" data-loc="${esc(location)}"><small>${esc(G.unemp?'자유 계약 단장':tshort(G.user))}</small><strong>${esc(location)}</strong></div>
     <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` 안 읽음 ${unread}`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필',UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
   </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
@@ -17664,6 +17731,16 @@ function fmKeysSheet(){ if(!UI.fmKeys)return ''; return `<div class="scrim" data
   <div class="fmk-l">${FM_KEYS.map(([k,l])=>`<div class="fmk"><kbd>${esc(k)}</kbd><span>${esc(l)}</span></div>`).join('')}</div></div></div>`; }
 /* 마우스 뒤로·앞으로 버튼(FM처럼 화면 기록 이동) */
 if(typeof document!=='undefined')document.addEventListener('mouseup',e=>{ try{ if(!G||UI.title||!fmOn())return; if(e.button===3){ e.preventDefault(); fmBack(); } else if(e.button===4){ e.preventDefault(); fmFwd(); } }catch(x){} });
+
+/* FM처럼 선수 정보를 열면 상단 제목이 '등번호. 이름', 작은 줄이 '포지션 - 소속'이 된다(상세는 renderSheet만 다시 그리므로 여기서 맞춘다) */
+function fmTitleSync(){ const ctx=typeof document!=='undefined'&&document.querySelector('#app .fm-context'); if(!ctx)return; const st=ctx.querySelector('strong'),sm=ctx.querySelector('small'),p=UI.sheet!=null&&!UI.cast?G.players[UI.sheet]:null;
+  if(p){ st.textContent=(p.team!=null?jno(p)+'. ':'')+p.name; sm.textContent=posLabel(p)+' - '+(p.team!=null?tshort(p.team):p.prospect?'드래프트 대상':'소속 없음'); }
+  else { st.textContent=ctx.dataset.loc||''; sm.textContent=ctx.dataset.club||''; }
+  /* 상단 하위 탭 줄도 선수 탭(능력·육성·요약…)으로 바꾼다. 원래 줄은 보관했다가 닫으면 되돌린다 */
+  const sub=document.querySelector('#app .fm-sub'),tabs=p&&fmOn()?document.querySelector('#sheet .pf-topnav .ptabs'):null; if(!sub)return;
+  if(sub.dataset.orig==null)sub.dataset.orig=sub.innerHTML;
+  if(tabs){ sub.innerHTML=`<nav class="subtabs pf-subtabs" aria-label="선수 화면">${[...tabs.querySelectorAll('button')].map(b=>`<button data-a="ptab" data-v="${b.dataset.v}" class="${b.classList.contains('on')?'on':''}">${esc(b.textContent)}</button>`).join('')}</nav>`; document.documentElement.classList.add('fm-ptabs'); }
+  else { if(sub.querySelector('.pf-subtabs'))sub.innerHTML=sub.dataset.orig; document.documentElement.classList.remove('fm-ptabs'); } }
 /* ---------- 업무 탭 ---------- */
 function upcoming(){
   const c=G.cal, y=G.year, d=G.day; const L=[];
@@ -21803,10 +21880,20 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const stateRow=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`;
   const pitch=p.isP&&tools.length?pitchProfile(p,rp.exact?undefined:tools.find(t=>t.k==='stf').cur):null;
   const active=pitch?pitch.pitches.filter(x=>x.active):[];
-  return `<div class="pf-overview"><aside class="pf-sidebar"><section class="card pr-readout pf-state"><h3>현재 상태</h3><div class="pf-status">${state.labels.map(l=>`<span class="pill${state.blocked?' bad':''}">${esc(l)}</span>`).join('')}</div>${own?`${stateRow('피로',Math.round(state.fat)+'/100')}${stateRow('기분',state.morale==null?'미확인':Math.round(state.morale)+'/100')}${p.isP?`${stateRow('팔 부하',Math.round(state.arm*100)+'%')}${stateRow('최근 등판',state.rest==null?'기록 없음':(state.rest===0?'오늘':state.rest+'일 전')+(state.lastPc!=null?' · '+state.lastPc+'구':''))}`:''}${state.fat>45?'<p class="small bad keep">피로 누적으로 경기력 저하</p>':''}`:'<p class="small muted keep">상세 컨디션은 우리 구단 선수만 확인합니다.</p>'}${own&&p.isP&&!state.blocked&&!isSPr(p)?`<p class="pf-availability ${relAvail(p,G.day,false)?'good':'warn'}">${relAvail(p,G.day,false)?'불펜 가용 조건 충족':'오늘 불펜 운용 제한'}</p>`:''}</section><section class="card pf-bio"><h3>선수 정보</h3>${stateRow('나이',p.age+'세')}${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}${stateRow('손잡이',hand(p))}${stateRow('병역',esc(milText(p)))}${stateRow('계약',esc(ctText(p)))}${p.draft?stateRow('드래프트',p.draft.y+' · '+p.draft.rd+'R '+p.draft.no+'순위'):''}</section><section class="card pf-role"><h3>포지션·역할</h3><b>${posLabel(p)}</b>${!p.isP&&subsOf(p).length?`<p class="small keep">가능 포지션 ${subsOf(p).map(k=>POSK[k]||k).join(' · ')}</p>`:''}<p class="small keep">${esc(rp.arch||'평가 없음')}</p>${rp.role?`<p class="small keep"><span class="muted">${p.foreign?'올해 예상':'장래 예상'}</span> ${esc(rp.role)}</p>`:''}</section></aside>
-  <main class="pf-main"><section class="card pf-attributes"><div class="pf-section-title"><h3>세부 능력</h3><span>핵심 능력과 경기 성향을 구분해 표시</span></div><div class="pf-attribute-grid">${attributes}</div><div class="pf-attribute-legend"><span>높을수록 우수</span><span>성격의 야망은 성향</span><span>해외 진출 의지는 낮을수록 구단에 유리</span></div></section><section class="card pf-season pf-season-inline"><h3>${h?h.y+' '+(h.lvl||'1군'):'시즌'} 성적</h3>${tiles?`<div class="pf-season-grid">${tiles.map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')}</div>`:'<p class="small muted keep">아직 경기 기록이 없습니다.</p>'}</section></main>
-  <aside class="pf-insights"><section class="card pf-radar"><h3>능력 균형</h3>${d?radarSVG(d.radar,rp.ofp!=null&&tools.some(t=>t.fut>t.cur)):'<p>평가 미확인</p>'}<p class="small keep">실선 현재 · 점선 잠재력</p><div class="pf-core-compact"><div class="pf-core-caption">핵심 능력 <span>100점 · 63 = 1군 평균</span></div><div class="pf-core-grid${p.isP?' pitcher':''}">${core||'<p>평가 미확인</p>'}</div></div></section>${pitch?`<section class="card pf-pitch-head"><h3>구속·사용 구종</h3>${stateRow('평균',pitch.velo+' km/h')}${stateRow('최고 상한',pitch.max+' km/h')}<p class="small keep">경기 적용 ${pitch.activeCount}구종</p><div class="pf-status">${active.map(x=>`<span class="pill">${esc(x.name)} ${dv(x.value)}</span>`).join('')}</div></section>`:''}</aside>
-  <details class="pf-more" data-k="player-more:${p.id}" ${UI.open['player-more:'+p.id]?'open':''}><summary>구종·성장 추이·코치 의견 자세히 보기</summary><div class="pf-more-grid">${injBox||''}${pitcherRepertoireCard(p,rp)}${mgrOpinion(p)}${detailCard(p)}${reportCard(p,true)}${!p.isP?posCard(p,true):''}${growthCard(p)}</div></details></div>`;
+  /* FM 상황판처럼: 왼쪽 위 인물 상자(얼굴·등번호·포지션·종합·잠재력·연봉·올해 성적 3개), 오른쪽에 장점·약점 */
+  const pot=rp.ofp==null?'미확인':potTierP(rp,p).s, cur=rp.cur==null?'?':dv(rp.cur);
+  const fmCard=`<section class="card pf-fmcard"><div class="pf-fm-face">${avImg(p,true)}${p.team!=null?`<span class="pf-fm-no">${jno(p)}</span>`:''}${p.team!=null?`<span class="pf-fm-team">${badge(p.team,22)}</span>`:''}</div><div class="pf-fm-name"><b>${esc(p.name)} <button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}</span></div><div class="pf-fm-key"><div><span>현재 종합</span><b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b><small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></div><div><span>잠재력</span><b class="pf-fm-pot">${esc(pot)}</b></div></div><div class="pf-fm-stats">${(tiles||[]).slice(0,3).map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')||'<div><span>올해 성적</span><b>-</b></div>'}</div><div class="pf-fm-role"><b>${esc(rp.arch||posLabel(p))}</b>${rp.role?`<span>${p.foreign?'올해 예상':'장래 예상'} ${esc(rp.role)}</span>`:''}<span>${!p.foreign?(p.college?'대졸':'고졸')+' · ':''}${esc(milText(p))}${p.draft?' · '+p.draft.y+' '+p.draft.rd+'R '+p.draft.no+'순위':''}</span></div><div class="pf-fm-pay"><span>연봉 <b>${money(p.sal||0)}</b></span><small>${esc(ctText(p))}</small><button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}</div></section>`;
+  const good=tools.filter(t=>t.cur>=60).sort((a,b)=>b.cur-a.cur).slice(0,3), weak=tools.filter(t=>t.cur<45).sort((a,b)=>a.cur-b.cur).slice(0,3);
+  const proCon=tools.length?`<section class="card pf-procon"><div class="pf-pro"><h3>장점</h3>${good.length?good.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 장점 없음</p>'}</div><div class="pf-con"><h3>약점</h3>${weak.length?weak.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 약점 없음</p>'}</div></section>`:'';
+  /* FM처럼 남는 칸을 정보로: 계약·신분(왼쪽), 경력(오른쪽). PC에서만 보인다 */
+  const sy=Object.keys(p.salYr||{}).map(Number).sort((a,b)=>a-b).slice(-3), mv=[...(p.story||[])].reverse().find(s=>s.k==='move'||s.k==='draft');
+  const infoCard=`<section class="card pf-fm-info"><h3>계약</h3>${stateRow('연봉',money(p.sal||0))}${stateRow('계약',esc(ctText(p)))}${stateRow('형태',p.foreign?'외국인 계약':p.faC?(p.ext?'비FA 다년계약':'FA 계약'):'단년(연봉 협상)')}${!p.foreign?stateRow('FA 자격',p.svc>=faSvc(p)?'충족':`등록 ${p.svc||0}/${faSvc(p)}년`):''}${sy.length>1?stateRow('연봉 추이',sy.map(y=>money(p.salYr[y])).join(' → ')):''}<h3>신분</h3>${stateRow(p.foreign?'국적':'출신',esc(p.foreign?(p.nat||'-'):(p.region||'-')))}${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${stateRow('투타',esc(hand(p)))}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}${stateRow('병역',esc(milText(p)))}${p.draft?stateRow('드래프트',p.draft.y+' '+p.draft.rd+'R '+p.draft.no+'순위'):''}${mv?stateRow('입단·이적',esc(mv.t)):''}</section>`;
+  const oh=(p.oh||[]).slice(-4), inj=p.injHist||[], aw=(p.aw||[]).slice(-3).reverse();
+  const career=`<section class="card pf-fm-info pf-career"><h3>경력</h3>${stateRow('수상',aw.length?esc(aw.join(', ')):'없음')}${stateRow('부상 이력',inj.length?inj.length+'회 · 최근 '+inj[inj.length-1].y+'년 '+inj[inj.length-1].days+'일':'없음')}${rp.exact&&oh.length>1?stateRow('종합 추이',oh.map(x=>x.y%100+'년 '+dv(x.o)).join(' → ')):''}${p.use&&p.use.y===G.year&&p.use.g?stateRow('올해 기용',esc(useText(p))):''}${own?`<h3>성격</h3><p class="small keep">${esc(persText(p))}</p>`:''}</section>`;
+  return `<div class="pf-overview"><aside class="pf-sidebar">${fmCard}<section class="card pr-readout pf-state"><h3>현재 상태</h3><div class="pf-status">${state.labels.map(l=>`<span class="pill${state.blocked?' bad':''}">${esc(l)}</span>`).join('')}</div>${own?`${stateRow('피로',Math.round(state.fat)+'/100')}${stateRow('기분',state.morale==null?'미확인':Math.round(state.morale)+'/100')}${p.isP?`${stateRow('팔 부하',Math.round(state.arm*100)+'%')}${stateRow('최근 등판',state.rest==null?'기록 없음':(state.rest===0?'오늘':state.rest+'일 전')+(state.lastPc!=null?' · '+state.lastPc+'구':''))}`:''}${state.fat>45?'<p class="small bad keep">피로 누적으로 경기력 저하</p>':''}`:'<p class="small muted keep">상세 컨디션은 우리 구단 선수만 확인합니다.</p>'}${own&&p.isP&&!state.blocked&&!isSPr(p)?`<p class="pf-availability ${relAvail(p,G.day,false)?'good':'warn'}">${relAvail(p,G.day,false)?'불펜 가용 조건 충족':'오늘 불펜 운용 제한'}</p>`:''}</section><section class="card pf-bio"><h3>선수 정보</h3><div class="pf-dup">${stateRow('나이',p.age+'세')}</div>${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}<div class="pf-dup">${stateRow('손잡이',hand(p))}</div>${stateRow('병역',esc(milText(p)))}<div class="pf-dup">${stateRow('계약',esc(ctText(p)))}</div>${p.draft?stateRow('드래프트',p.draft.y+' · '+p.draft.rd+'R '+p.draft.no+'순위'):''}</section><section class="card pf-role"><h3>포지션·역할</h3><b>${posLabel(p)}</b>${!p.isP&&subsOf(p).length?`<p class="small keep">가능 포지션 ${subsOf(p).map(k=>POSK[k]||k).join(' · ')}</p>`:''}<p class="small keep">${esc(rp.arch||'평가 없음')}</p>${rp.role?`<p class="small keep"><span class="muted">${p.foreign?'올해 예상':'장래 예상'}</span> ${esc(rp.role)}</p>`:''}</section></aside>
+  <main class="pf-main"><section class="card pf-attributes"><div class="pf-section-title"><h3>세부 능력</h3><span>핵심 능력과 경기 성향을 구분해 표시</span></div><div class="pf-attribute-grid">${attributes}</div><div class="pf-attribute-legend"><span>높을수록 우수</span><span>성격의 야망은 성향</span><span>해외 진출 의지는 낮을수록 구단에 유리</span></div></section><section class="card pf-season pf-season-inline pf-mobile-only"><h3>${h?h.y+' '+(h.lvl||'1군'):'시즌'} 성적</h3>${tiles?`<div class="pf-season-grid">${tiles.map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')}</div>`:'<p class="small muted keep">아직 경기 기록이 없습니다.</p>'}</section><section class="card pf-season-table"><h3>시즌 통계</h3><div class="tw">${statTable(p)}</div></section><details class="pf-more" data-k="player-more:${p.id}" ${UI.open['player-more:'+p.id]?'open':''}><summary>구종·성장 추이·코치 의견 자세히 보기</summary><div class="pf-more-grid">${injBox||''}${pitcherRepertoireCard(p,rp)}${mgrOpinion(p)}${detailCard(p)}${reportCard(p,true)}${!p.isP?posCard(p,true):''}${growthCard(p)}</div></details></main>
+  <aside class="pf-insights"><section class="card pf-radar"><h3>능력 균형</h3>${d?radarSVG(d.radar,rp.ofp!=null&&tools.some(t=>t.fut>t.cur)):'<p>평가 미확인</p>'}<p class="small keep">실선 현재 · 점선 잠재력</p><div class="pf-core-compact"><div class="pf-core-caption">핵심 능력 <span>100점 · 63 = 1군 평균</span></div><div class="pf-core-grid${p.isP?' pitcher':''}">${core||'<p>평가 미확인</p>'}</div></div></section>${pitch?`<section class="card pf-pitch-head"><h3>구속·사용 구종</h3>${stateRow('평균',pitch.velo+' km/h')}${stateRow('최고 상한',pitch.max+' km/h')}<p class="small keep">경기 적용 ${pitch.activeCount}구종</p><div class="pf-status">${active.map(x=>`<span class="pill">${esc(x.name)} ${dv(x.value)}</span>`).join('')}</div></section>`:''}${proCon}${!p.isP?`<div class="pf-pos-mini">${posCard(p,true)}</div>`:''}</aside><aside class="pf-extra">${infoCard}${career}</aside>
+</div>`;
 }
 /* ---------- 선수 카드와 경기 기록 ---------- */
 function statTable(p){
@@ -21984,7 +22071,7 @@ function detailPageSync(el){
 }
 /* 단장 실무 교육(개인 생활)에서 얻은 판단 참고: 관리 탭은 계약, 육성 탭은 훈련·연수 */
 function personalAdviceBox(p,kind){const L=personalAdvice(p,kind);return L.length?`<section class="card note"><h3 class="sec">실무 교육 · 판단 참고</h3>${L.map(x=>`<p class="small">${esc(x)}</p>`).join('')}</section>`:'';}
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); renderSheet0(); detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -24599,6 +24686,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04f',d:'11월 4일',t:'PC 화면을 FM처럼: 왼쪽 메뉴 16개·선수 상황판',items:[
+    'PC 왼쪽 메뉴를 FM처럼 16개로 펼쳤습니다. 스카우트·스태프·훈련·의료·데이터 분석·일정·구단주·재정·구단 정보·시설로 바로 갑니다.',
+    'PC에서 선수를 열면 상단 제목이 등번호와 이름으로 바뀌고, 선수 탭(능력·육성·요약 등)이 상단 탭 줄에 놓입니다.',
+    '선수 능력 화면을 FM 상황판처럼 한 화면에 맞췄습니다. 인물 상자(얼굴·종합·잠재력·올해 성적), 세부 능력, 시즌 통계 표, 능력 균형·장점·약점·수비 위치, 계약·신분·경력·성격을 네 열로 보여 줍니다.',
+    '선수 화면의 면담·시장 가치·트레이드·매물·연장 버튼은 오른쪽 아래 행동 줄에 모았습니다.']},
   {id:'2026-11-04e',d:'11월 4일',t:'대형 화면 비율 고정·지명 공개 창·PC 명단 정리',items:[
     '1920×1080보다 큰 화면(2560×1440 등)에서는 1920 기준 배치를 통째로 확대합니다. 카드와 표가 길게 늘어나고 글자만 작아 보이던 문제를 고쳤습니다.',
     '창단 드래프트에서 지명하면 뜨는 선수 공개 창이 화면 아래로 넘쳐 계속 버튼을 누를 수 없던 문제를 고쳤습니다. 창은 남은 화면 안에 들어오고 길면 창 안에서 스크롤되며 계속 버튼은 아래에 고정됩니다.',

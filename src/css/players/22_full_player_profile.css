@@ -15,3 +15,61 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-screen .pf-core-cell>span{line-height:1.2}.pf-screen .pf-core-cell strong{line-height:1.1}.pf-screen .pf-core-cell small{line-height:1.2}
 .pf-screen .pf-attribute-row{line-height:1.2}.pf-screen .pf-score{line-height:1.15}
 @media(min-width:1100px) and (max-height:800px){.pf-screen .pf-masthead{min-height:72px;padding-block:8px}.pf-name>.av{width:52px;height:52px}.pf-screen .pf-attribute-row{min-height:25px;padding-block:2px}.pf-attribute-group{margin-bottom:10px}.pf-screen .pf-overview .card{padding:10px}.pf-core-cell strong{font-size:24px}.pf-topnav{margin-bottom:10px}.pf-radar .radar{max-height:170px}.pf-screen .pf-attribute-row.text{grid-template-columns:minmax(0,1fr) auto}.pf-attribute-row.text .pf-score{max-width:100px;text-align:right}.pf-attribute-legend{font-size:9px}.pf-screen .pf-attribute-group h3{padding-bottom:5px;font-size:12px;margin-bottom:2px}}
+
+/* FM 상황판식 선수 정보(PC): 왼쪽 인물 상자, 오른쪽 장점·약점·수비 위치, 주요 행동은 오른쪽 아래 행동 줄 */
+.pf-fmcard{display:grid!important;gap:8px;padding:0!important;overflow:hidden;border-color:var(--pt2,var(--team-hi))!important}
+.pf-fm-face{position:relative;background:linear-gradient(160deg,var(--pt,var(--team-dk)),#0d1217 85%);display:grid;place-items:center;padding:14px 10px 8px}
+.pf-fm-face>.av{width:120px;height:120px;border:0;background:none}
+.pf-fm-no{position:absolute;left:10px;top:10px;font:700 26px/1 var(--f-num);color:#fff;text-shadow:0 2px 6px #000}
+.pf-fm-team{position:absolute;right:10px;top:10px}
+.pf-fm-name{display:grid;gap:2px;padding:0 12px;text-align:center}.pf-fm-name b{font-size:16px}.pf-fm-name span{font-size:12px;color:var(--muted)}
+.pf-fm-key{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px}.pf-fm-key>div{display:grid;justify-items:center;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:6px 4px}
+.pf-fm-key span{font-size:11px;color:var(--muted)}.pf-fm-key b{font:700 26px/1.1 var(--f-num)}.pf-fm-key b.pf-fm-pot{font:700 15px/1.6 var(--f-ui)}.pf-fm-key small{font-size:10px;color:var(--muted)}
+.pf-fm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0 10px}.pf-fm-stats>div{display:grid;justify-items:center;padding:4px 2px;border-top:2px solid var(--pt2,var(--team-hi));background:#ffffff08}
+.pf-fm-stats span{font-size:11px;color:var(--muted)}.pf-fm-stats b{font:700 17px var(--f-num)}
+.pf-fm-pay{display:grid;justify-items:center;gap:1px;padding:0 10px 10px;font-size:12px;color:var(--muted)}.pf-fm-pay b{color:var(--ink);font-size:14px}
+.pf-procon{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.pf-procon h3{margin:0 0 4px}.pf-procon p{display:flex;justify-content:space-between;font-size:12px;margin:2px 0}
+.pf-pro h3{color:var(--good)}.pf-con h3{color:var(--bad)}
+.pf-pos-mini>.card>p.small.muted:last-of-type{display:none}.pf-pos-mini .posfit{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1099px){.pf-fmcard{display:none!important}}
+@media(min-width:1100px){
+  .pf-screen .pf-contract-head{display:none}
+  .pf-screen .pf-toolbar{position:fixed;right:16px;bottom:12px;z-index:30;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:70vw;padding:6px 8px;background:#0b1116e6;border:1px solid var(--line2);border-radius:6px;box-shadow:0 6px 18px #0009}
+  .pf-screen .pf-toolbar .btn,.pf-screen .pf-toolbar .tc-i{min-height:30px;border-radius:15px;padding-inline:14px}
+  .pf-screen .pf-overview{padding-bottom:64px}
+}
+@media(min-width:1100px){.pf-screen .pf-dup{display:none}.pf-screen .pf-name>.av{display:none}.pf-screen .pf-masthead{min-height:58px;padding-block:6px}}
+/* PC: 이름은 상단바 제목으로 올라가므로 본문 이름 띠는 숨긴다(이름 고치는 중에는 보임) */
+@media(min-width:1100px){.pf-screen .pf-masthead:not(:has(.pe-box)){display:none}.pf-fm-name .pe-b{font-size:11px;padding:1px 6px;margin-left:4px;vertical-align:2px}.pf-fm-pay .tc-i{margin:6px 2px 0}}
+/* PC: FM 시즌 통계처럼 연도·소속별 표(올해 핵심 숫자는 왼쪽 인물 상자에) */
+.pf-season-table{display:none!important}
+@media(min-width:1100px){.pf-screen .pf-mobile-only{display:none!important}.pf-screen .pf-season-table{display:block!important}.pf-season-table .tw{max-height:220px;overflow:auto;margin:0}.pf-season-table table{font-size:12px}.pf-season-table th,.pf-season-table td{padding:4px 6px}}
+/* PC: 선수 탭은 상단 하위 탭 줄로 올라간다(FM처럼) */
+@media(min-width:1100px){.fm-ptabs .pf-screen .pf-topnav .ptabs{display:none}}
+/* PC: FM 상황판처럼 한 화면에 꽉 맞춘다. 페이지는 스크롤하지 않고, 내용이 넘치는 열만 그 안에서 스크롤 */
+.pf-fm-role{display:grid;justify-items:center;gap:1px;padding:0 10px;font-size:11px;color:var(--muted);text-align:center}.pf-fm-role b{font-size:12px;color:var(--ink)}
+@media(min-width:1100px){
+  #sheet .sheet.pf-screen:has(.pf-overview){display:flex!important;flex-direction:column;height:var(--detail-height,100dvh)!important;min-height:0!important;max-height:var(--detail-height,100dvh);overflow:hidden!important;padding-bottom:0!important}
+  #sheet .sheet.pf-screen:has(.pf-overview)>*{flex:none}
+  #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 1 auto;min-height:0}
+  #sheet .pf-overview{height:100%;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch;padding:0 0 58px!important;box-sizing:border-box}
+  #sheet .pf-overview>:is(.pf-sidebar,.pf-main,.pf-insights){min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;align-content:start}
+  #sheet .pf-overview .pf-bio,#sheet .pf-overview .pf-role{display:none!important}
+  #sheet .pf-main{display:flex;flex-direction:column;gap:10px}#sheet .pf-main>.pf-attributes{flex:none}#sheet .pf-main>.pf-season-table{flex:1 1 auto;min-height:120px;display:flex!important;flex-direction:column}#sheet .pf-season-table .tw{max-height:none;flex:1;min-height:0}
+  #sheet .pf-main>.pf-more{flex:none;margin:0}
+}
+@media(min-width:1100px){#sheet .sheet.pf-screen:has(.pf-overview){align-items:stretch!important}#sheet .sheet.pf-screen:has(.pf-overview)>*{width:auto;max-width:none;align-self:stretch}}
+.pf-fm-info{display:none!important}
+@media(min-width:1100px){#sheet .pf-overview .pf-fm-info{display:block!important}.pf-fm-info h3{font-size:12px;color:var(--muted);margin:8px 0 4px}.pf-fm-info h3:first-child{margin-top:0}.pf-fm-info .pf-fact{gap:8px}.pf-fm-info .pf-fact b{text-align:right;font-size:12px;font-weight:600}}
+@media(min-width:1100px){#sheet .pf-overview>:is(.pf-sidebar,.pf-insights,.pf-main)>*{flex-shrink:0}}
+@media(min-width:1100px){#sheet .pf-overview>:is(.pf-sidebar,.pf-insights,.pf-main)>*{min-height:min-content}}
+@media(min-width:1100px){#sheet .pf-overview>:is(.pf-sidebar,.pf-insights){display:flex;flex-direction:column;gap:10px}}
+/* PC: FM처럼 네 번째 열(계약·신분·경력)을 두어 한 화면에 다 보이게 */
+.pf-extra{display:none}
+@media(min-width:1100px){
+  #sheet .pf-overview{grid-template-columns:180px minmax(0,1fr) 205px 200px}
+  #sheet .pf-overview>.pf-extra{display:flex;flex-direction:column;gap:10px;min-height:0;overflow-y:auto;scrollbar-width:thin}
+  #sheet .pf-overview>.pf-extra>*{flex-shrink:0;min-height:min-content}
+}
+@media(min-width:1250px){#sheet .pf-overview{grid-template-columns:210px minmax(0,1fr) 240px 225px}}
+@media(min-width:1700px){#sheet .pf-overview{grid-template-columns:240px minmax(0,1fr) 280px 260px}}

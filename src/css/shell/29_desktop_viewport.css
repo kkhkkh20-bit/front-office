@@ -98,3 +98,7 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 #dtick .dt-in{max-width:100%;box-sizing:border-box}
 #dtick .dt-c{flex:1 1 0;min-width:0}
 #dtick .dt-c b,#dtick .dt-flip b{white-space:nowrap;line-height:20px}
+
+/* FM식 왼쪽 메뉴 16개: 촘촘한 한 줄 항목(1280×720에서도 스크롤 없이) */
+@media(min-width:1100px){#app .fmside{padding-top:4px}#app .fmside .fms-g{padding:2px 0;gap:0}#app .fmside button{min-height:32px;padding:5px 12px}}
+@media(min-width:1100px) and (max-height:700px){#app .fmside button{min-height:28px;padding-block:3px}}

@@ -23,8 +23,8 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
       check(!r.overflow,`${size.width}: 홈 가로 넘침`);
       if(size.width>=1100){const fit=await page.evaluate(()=>({page:document.documentElement.scrollHeight,h:innerHeight}));check(fit.page<=fit.h+3,`${size.width}: 홈에서 페이지 스크롤이 필요함 (${fit.page}/${fit.h})`);}
       if(size.width>=1100){check(r.grid,`${size.width}: 열 전체를 묶지 않는 홈 카드 그리드 없음`);check(r.games<=4,`${size.width}: 홈 예정 경기가 4개보다 많음`);
-        const side=await page.evaluate(()=>{const s=document.querySelector('.fmside');return {count:s.querySelectorAll('button').length,fits:s.scrollHeight<=s.clientHeight+2};});
-        check(side.count===8&&side.fits,`${size.width}: 사이드바가 8개 핵심 메뉴로 줄지 않거나 세로로 넘침 (${side.count}개)`);
+        const FM_SIDE_N=await page.evaluate(()=>FM_SIDE.flat().length);const side=await page.evaluate(()=>{const s=document.querySelector('.fmside');return {count:s.querySelectorAll('button').length,fits:s.scrollHeight<=s.clientHeight+2};});
+        check(side.count===FM_SIDE_N&&side.fits,`${size.width}: 사이드바가 FM식 ${FM_SIDE_N}개 메뉴가 아니거나 세로로 넘침 (${side.count}개)`);
       }
       if(size.width>=1100){const p=await page.evaluate(()=>({todo:document.querySelector('.home-priority #todoCard')?.getBoundingClientRect().top,next:document.querySelector('.home-priority .hw-match')?.getBoundingClientRect().top,compare:!!document.querySelector('.home-priority details[data-k="nxCmp"][open]')}));check(p.todo<350&&p.next<350&&!p.compare,`${size.width}: 할 일·다음 경기 우선 배치 실패`);}
       await page.evaluate(()=>A.tab('roster'));await page.waitForTimeout(200);
