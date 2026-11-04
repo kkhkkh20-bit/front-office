@@ -98,6 +98,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ibFoldOld(){ const F=ibFolds(); if(Object.keys(F).length){ G.ibFold={}; } else { const days=[...new Set(ibList(UI.mf||'all').map(m=>m.day))]; days.slice(1).forEach(d=>F[d]=true); /* 최신 날짜만 펴 둔다 */ } save(); render(); },
   ibTop(){ const L=document.querySelector('.ibx-list'); if(L)L.scrollTo({top:0,behavior:'smooth'}); },
   ibNeedGo(){ const n=ibNeedList(); if(!n.length)return; UI.mf='all'; A.mailJump(n[0].id); },
+  psSel(v){ UI.psSel=v; render(); },
   itab(v){ const [k,t]=v.split(':'); UI.it=UI.it||{}; UI.it[k]=t; render(); },
   pgGo(v){ const i=v.lastIndexOf(':'); const k=v.slice(0,i), n=+v.slice(i+1); UI.pg=UI.pg||{}; UI.pg[k]=Math.max(0,n); render(); const el=document.querySelector(`[data-pg="${k}"]`); if(el)el.scrollIntoView({block:'start'}); else window.scrollTo(0,0); },
   help(){ const on=!helpOn(); try{ localStorage.setItem('danjang-help',on?'1':'0'); }catch(e){} render(); try{ toast(on?'설명을 화면에 펼쳐 보입니다.':'설명을 접었습니다. 제목 옆 i를 누르면 볼 수 있습니다.'); }catch(e){} },
