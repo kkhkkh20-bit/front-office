@@ -4,7 +4,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
 await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.fOkY=G.year;G.scoutAuto=false;UI.title=false;A.go('staff:scouts');});
-await p.locator('[data-a="smkGo"][data-v="sc"]').click();const tried=new Set();let attempts=0;
+await p.locator('[data-a="smkGo"][data-v="sc"]').first().click();const tried=new Set();let attempts=0;
 while(await p.evaluate(()=>G.scouts.length<SCOUT_MAX)){
  const offers=p.locator('[data-a="hireScout"][data-v$=":0.2"]:visible');let selected=null;
  for(let i=0;i<await offers.count();i++){const v=await offers.nth(i).getAttribute('data-v');if(!tried.has(v)){tried.add(v);selected=offers.nth(i);break;}}
