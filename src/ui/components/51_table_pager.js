@@ -40,6 +40,7 @@ function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
   if(!main||UI.title||(!host&&(UI.meet||['home','inbox'].includes(UI.tab)||main.classList.contains('dcontent')))||main.dataset.workspaceReady)return;
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
+  if(main.querySelector(':scope > .fmd'))return; /* PC FM 대시보드(재정·구단주): 상자 배치를 스스로 하므로 묶음 페이지로 나누지 않는다 */
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
   // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
