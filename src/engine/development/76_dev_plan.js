@@ -53,6 +53,7 @@ function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by
 function trnSetMany(P){ const L=[]; for(const id in (P||{})){ const p=G.players[+id]; if(!p)continue; const t=trnSet(+id,P[id]); if(t)L.push(t); } return L; }
 function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 정할 수 있습니다.'; G.trn=G.trn||{};
   if(f==='coach'){ delete G.trn[pid]; return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
+  if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; /* 복무 중에는 상무·군 일정대로 지낸다 */
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
   G.trn[pid]={f,by:'gm',since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p)};
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';

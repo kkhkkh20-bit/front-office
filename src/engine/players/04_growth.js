@@ -19,21 +19,22 @@ function develop(p){
   try{ proDrift(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p); const age=p.age; const pg=p.foreign?1:persGrowF(p); const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
-  const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=p.team!=null?facEff(p):FAC[2];
-  const yf=p.team!=null&&G.mgr?1+(mgrOf(p.team).youth-50)/150:1;
+  /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
+  const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
+  const club=p.team!=null&&!svc; const yf=club&&G.mgr?1+(mgrOf(p.team).youth-50)/150:1;
   p.devLog={y:G.year,play,fac:fac.l};
   const gap=Math.max(0,p.pot-o); let base=0;
   if(age<=T.grow){
     const rate=clamp((p.dt==='early'?1.25:p.dt==='late'?(T.vl&&age<=26?.35:.85):p.dt==='stall'?.35:1)/(T.grow-age+1.5),.04,.65); /* 남은 성장 연수에 맞춰 조금씩: 18세 1순위도 20대 중반에 정점(예전엔 남은 잠재력의 20~34%를 해마다 채워 20~21세에 리그 정상급이 됐다) */
-    const env=play*fac.g*yf*(G.coach?coachDevMult(p):1)*mpickMult(p)*pg; base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
+    const env=play*fac.g*yf*(club&&G.coach?coachDevMult(p):1)*(club?mpickMult(p):1)*pg; base=gap*rate*WINTER_F*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
     if(R()<.05*play*fac.g)p.pot+=ri(3,7);
     if(R()<(p.dt==='stall'?.12:.05))p.pot-=ri(3,8);
     if(p.dt==='late'&&age>=25)p.pot+=rnd(0,1.5);
-    if(T.vl&&age>=28&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
+    if(T.vl&&svc!=='현역'&&age>=28&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
   } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
-  else { base=-(age-T.fall+1)*.6*fac.d*(G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=34?-2.4:-3.6)-(age>=35?.8:0); if(age<T.fall)base=N(-.2,1); }
+  else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=34?-2.4:-3.6)-(age>=35?.8:0); if(age<T.fall)base=N(-.2,1); }
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
   if(age<=31&&!p.foreign){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.17:.11)+Math.max(0,10-pr)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
@@ -47,7 +48,8 @@ function develop(p){
       dk-=PHYS[k]*(age-T.fall+2)*.24*fac.d;
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=34)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
-    if(dk>0&&p.team!=null&&!(svc==='현역'||svc==='상무'))dk*=coachToolMult(p,k);
+    if(dk>0&&club)dk*=coachToolMult(p,k);
+    if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k])dk-=tc[k];
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
@@ -58,7 +60,7 @@ function develop(p){
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0));
   p.pot=clamp(Math.max(p.pot,no),20,80);
-  if(p.isP&&base>0)p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
+  if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();
   p.age++;
 }

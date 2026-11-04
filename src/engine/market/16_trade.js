@@ -107,12 +107,17 @@ function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)re
   if(over<=lim)return {ok:true,over,lim,dSal};
   return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(연간 선수 연봉 ${money(dSal-(cash||0))}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 올해 예산(지원 목표)을 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
 function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 -2.`,{kind:'구단주'}); }catch(e){} }
+/* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
+function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }
+/* 우리 쪽 정원: 상대 쪽 초과는 막지만 우리 쪽은 넘어도 성사되고, 넘은 만큼 정리해야 진행된다. 확인창·받은 제안에 미리 보여 준다 */
+function tradeRosterTxt(give,get){ const n=rosterN(G.user)-give.filter(tradeCntN).length+get.filter(tradeCntN).length, over=n-ROSTER_MAX;
+  return `트레이드 후 정식 ${n}/${ROSTER_MAX}명${over>0?` · ${over}명 정리 필요(${period()==='season'||period()==='post'?'정리해야 진행할 수 있습니다':'개막 전까지'})`:''}`; }
 function evalTrade(tid,give,get,cash){ cash=cash||0;
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
   _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
   let inV, outV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)))+cashVal(t,cash); outV=sum(get.map(id=>tval(t,P(id),'out'))); } finally { _evOut=null; }
-  const cntN=id=>{ const q=P(id); return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }; const theirN=rosterN(tid)+give.filter(cntN).length-get.filter(cntN).length; /* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
+  const theirN=rosterN(tid)+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
   let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?1.5:0)-(hit.length?.6:0); /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-.9:-.3); /* 급매는 손해를 조금 보더라도 넘긴다 */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPayAs(tid,give,get); /* 연봉 차액을 더하지 않고 상위 40명을 다시 고른다 */
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,outV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);

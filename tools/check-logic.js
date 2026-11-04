@@ -1098,6 +1098,24 @@ T('[리뷰 11-04] 저장 크기: 타구 분포 좌표는 선수당 최근 250개
 T('[리뷰 11-04] 사구가 경기별 기록·최근 10경기·좌우 기록 출루율에 들어간다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); glAdd(p,G.day,{pa:4,ab:2,h:1,bb:1,hbp:1,so:0,hr:0,d:0,tr:0}); const r=p.gl.g[p.gl.g.length-1]; ok(r[8]===1,'경기별 기록에 사구 없음 '+JSON.stringify(r)); });
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
+T('[리뷰 설계] 트레이드 확인은 우리 정식 인원과 정리해야 할 인원을 보여 준다(우리 쪽 초과는 막지 않는다)',()=>{ fresh(); const o=G.teams.find(t=>t.id!==G.user).id; const n=rosterN(G.user); const give=ownedOf(G.user).filter(p=>!p.ys&&!p.foreign).slice(0,1).map(p=>p.id); const pool=ownedOf(o).filter(p=>!p.ys&&!p.foreign).map(p=>p.id); const k=ROSTER_MAX-n+3; ok(pool.length>=k,'준비 실패: 상대 선수 부족');
+  const tx=tradeRosterTxt(give,pool.slice(0,k)); ok(tx.includes('트레이드 후 정식 '+(ROSTER_MAX+2)+'/'+ROSTER_MAX+'명')&&tx.includes('2명 정리 필요'),'초과 안내 틀림: '+tx);
+  const t0=tradeRosterTxt(give,[]); ok(t0.includes((n-1)+'/'+ROSTER_MAX)&&!t0.includes('정리 필요'),'한도 안인데 정리 안내: '+t0); });
+T('[리뷰 설계] AI 연봉 하한 맞추기는 올린 선수의 계약 이력에 이전→새 연봉과 연수를 남긴다',()=>{ fresh(); G.year=2027; const t=G.teams.find(t=>t.id!==G.user); t.cash=0; for(const p of domestic(t.id))p.sal=Math.min(p.sal,40); const s0={}; for(const p of domestic(t.id))s0[p.id]=p.sal; aiFloorFix(t.id);
+  const ch=domestic(t.id).filter(p=>p.sal!==s0[p.id]); ok(ch.length>0,'준비 실패: 하한 맞추기가 일어나지 않음');
+  for(const p of ch){ const st=(p.story||[]).find(x=>x.t.includes('연봉 하한')); ok(st&&st.k==='move'&&st.t.includes(money(s0[p.id]))&&st.t.includes(money(p.sal)),p.name+' 계약 이력 없음'); ok(st.t.includes(p.yrs+'년'),p.name+' 계약 연수 없음: '+st.t); } });
+T('[리뷰 설계] 상무 복무 선수 성장에는 우리 구단 시설·코치·감독 성향이 적용되지 않는다',()=>{ fresh(); const p=domestic(G.user).filter(q=>!q.foreign&&q.age<=23).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a)))[0]; ok(p,'준비 실패'); p.dt='norm'; p.pot=Math.max(p.pot,ovr(p)+15); p.mil={unit:'상무',from:G.day-1,until:G.day+400}; ok(milServing(p),'준비 실패: 복무 아님');
+  const snap=JSON.stringify(p), f0=facEff, c0=coachDevMult, m=G.mgr[G.user], y0=m.youth;
+  const run=(fx,cx,yo)=>{ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(snap)); facEff=()=>fx; coachDevMult=()=>cx; m.youth=yo; globalThis.__seed(77); develop(p); return JSON.stringify(p.r); };
+  let a,b; try{ run(FAC[3],1,50); /* 첫 성장 때 한 번만 만드는 전역 값(캐시)을 먼저 채운다 */ a=run(FAC[1],.7,20); b=run(FAC[5],1.4,90); } finally { facEff=f0; coachDevMult=c0; m.youth=y0; } ok(a===b,'우리 구단 시설·코치·감독이 상무 선수 성장에 반영됨'); });
+T('[리뷰 설계] 현역 복무 선수는 야구 훈련을 못 해 능력이 늘지 않는다(조금씩 떨어진다)',()=>{ fresh(); const p=domestic(G.user).filter(q=>!q.foreign&&q.age<=22).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a)))[0]; ok(p,'준비 실패'); p.dt='norm'; p.pot=Math.min(80,ovr(p)+25); p.mil={unit:'현역',from:G.day-1,until:G.day+400};
+  const snap=JSON.stringify(p); let up=0, down=0; for(let s=1;s<=6;s++){ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(snap)); const r0={...p.r}; globalThis.__seed(s); develop(p); for(const k in r0){ if(p.r[k]>r0[k]+1e-9)up++; if(p.r[k]<r0[k])down++; } }
+  ok(up===0,'현역 복무 중 능력이 오름 '+up+'건'); ok(down>0,'현역 복무 중 하락이 없음'); });
+T('[리뷰 설계] 군 복무 중에는 구단 훈련 지시·포지션 전환·구단 생활 사고가 없고 육성 탭 안내 문구가 있다',()=>{ fresh(); G.day=G.cal.open+10; const p=domestic(G.user).find(q=>!q.isP&&!q.foreign&&milFree(q)); ok(p,'준비 실패'); p.mil={unit:'상무',from:G.day-1,until:G.day+400}; ok(milServing(p),'준비 실패: 복무 아님');
+  const f=Object.keys(TRN[trnG(p)]).find(k=>k!=='bal'); const r=trnSet(p.id,f); ok(!(G.trn&&G.trn[p.id])&&String(r).includes('군 복무'),'복무 중 훈련 지시가 걸림');
+  const pos=POS_F.find(k=>k!==p.pos); posConv(p.id,pos); ok(!p.pconv,'복무 중 포지션 전환이 시작됨');
+  ok(milTrainTxt(p).includes('상무 야구단')&&milTrainTxt(p).includes('적용되지 않'),'상무 훈련 환경 안내 없음'); p.mil.unit='현역'; ok(milTrainTxt(p).includes('늘지 않'),'현역 훈련 환경 안내 없음'); p.mil.unit='상무';
+  initPers(p); p.pers.pro=1; p.injOut=0; delete p.badY; for(let i=0;i<300;i++)misbehaveMonth(); ok(!p.badY,'복무 중 선수에게 구단 생활 사고(통금·지각)가 생김'); });
 T('외국인 예상 능력순: 우리 발굴 후보라고 앞에 끼우지 않고 예상 능력으로만 줄 세운다(1위가 더 낮게 보이던 문제)',()=>{ fresh(); const a=newForeign('용병',{market:true}), b=newForeign('용병',{market:true}); a.fsrc='scout'; a.fknow=[G.user]; a.fpub=G.day+30; ok(fMineFind(a),'준비 실패: 발굴 후보가 아님');
   const L=[a,b].map(p=>{ const rp=scoutReport(p); return {p,rp,fs:fScout(p,rp)}; }); L[0].fs.score=40; L[1].fs.score=60; L.sort(fSortBy('rk')); ok(L[0].p===b,'점수가 낮은 우리 발굴 후보가 추천순 맨 앞'); delete G.players[a.id]; delete G.players[b.id]; });
 

@@ -61,7 +61,8 @@ function capWarnUser(){ const pay=capPayNext(G.user), cap=capOf(sponSeason()), c
 /* 군 입대·부상 이탈로 시즌 중 상위 40명 연봉이 줄어드므로 5% 여유를 두고 맞춘다. 시즌 막판(9월 1일·정규시즌 종료)에도 한 번 더 확인한다 */
 function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.year); let gap=fl*1.05-capPay(tid); if(gap<=0)return; const t=team(tid); if((t.cash||0)<-3000)return; /* 빚이 큰 구단은 연봉을 억지로 올리지 않고 하한 미달 발전기금을 낸다 */
   const ps=domestic(tid).filter(p=>!isRookie(p)&&!p.ys&&!(p.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,8); const tot=sum(ps.map(p=>ovr(p)));
-  for(const p of ps){ const add=round5(gap*ovr(p)/tot); p.sal=round5(p.sal+add); if(!p.faC){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; } }
+  for(const p of ps){ const s0=p.sal, y0=p.yrs||0, multi=!p.faC; const add=round5(gap*ovr(p)/tot); p.sal=round5(p.sal+add); if(!p.faC){ p.faC=true; p.ext=true; p.yrs=Math.max(p.yrs||0,2); p.cyrs=p.yrs; }
+    if(p.sal!==s0||multi)story(p,`연봉 하한 맞추기 계약 조정: 연봉 ${money(s0)} → ${money(p.sal)}, 계약 ${multi?`${y0||1}년 → ${p.yrs}년(다년계약 전환)`:`${p.yrs}년 유지`}`,'move'); } /* 구단이 하한을 맞추려 올린 계약도 선수 이력(이적·계약)에 남긴다 */
   wire('구단',`${t.city} ${t.nick}, 연봉 하한 맞추려 주축 선수들과 다년계약`,{tid}); }
 /* 빚이 깊은 AI 구단(현금 -40억 아래): 모기업이 허리띠를 졸라맨다. 고액 베테랑을 여유 있는 구단에 넘겨 상위 40명 연봉을 상한의 80%까지 낮춘다(방출 위약금은 빚을 늘리므로 트레이드만) */
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME()||t.cash>=-4000)continue; t.mode='rebuild'; n+=aiCapFix(t.id,.8,true,3); } return n; }
