@@ -97,6 +97,13 @@
 .ps-champ{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid #d5b46a55;border-radius:10px;margin:0 0 10px;background:#d5b46a10}.ps-champ b{display:flex;align-items:center;gap:6px;font-size:17px}.ps-champ>div{display:grid;gap:2px}
 .nt-id{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 10px}.nt-id>div:not(.uni-row){display:grid;gap:2px}.nt-id .uni-row{margin:0 0 0 auto}
 .trophy-img{object-fit:contain;flex:none}
+/* 에셋 v3 그림: 글자 자리(text_slots)를 겹치는 틀, 대기록 배지(전용 그림은 원형 칸 대신 그림 그대로) */
+.v3{object-fit:contain;flex:none}.v3w{position:relative;display:inline-block;flex:none;line-height:0;vertical-align:middle}.v3w>img{width:100%;height:100%;display:block}
+.v3t{position:absolute;display:flex;align-items:center;justify-content:center;font-weight:800;line-height:1;white-space:nowrap;overflow:hidden;letter-spacing:-.02em;font-family:var(--f-num,inherit);pointer-events:none}
+:is(.ch-ft,.ft)[class] .ft-i.ft-im{width:40px;height:40px;background:none;border:0;border-radius:0}.ft-i.ft-im img{width:40px;height:40px}
+.trc-t img.v3{filter:none}
+.cer-tro.v3t-on{background:none;box-shadow:none;border-radius:0;width:56px;height:56px;top:8px;right:8px}.cer-tro.v3t-on img{width:56px;height:56px;filter:drop-shadow(0 2px 6px #000a)}
+.hof-v3{vertical-align:middle;margin-right:6px}.nt-md{vertical-align:-5px;margin-right:4px}
 .nt-id .uni-row{flex:none;flex-wrap:nowrap}@media (max-width:600px){.nt-id .uni-row{margin:0}}
 .tpg.cmp{align-items:start}
 .ds-set{margin:4px 0}.ds-sum{cursor:pointer;font-size:12.5px;padding:6px 0;color:var(--ink)}.ds-basis{margin:6px 0;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
