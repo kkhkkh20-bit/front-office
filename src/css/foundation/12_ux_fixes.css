@@ -138,6 +138,8 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 
 .fdt td.fdsc,.fdt td.fddt,.fdt th.fdsc-h,.fdt th.fddt-h{text-align:left}
 .kbar.fdk .kb b{font-size:15px;line-height:1.35;white-space:normal;word-break:keep-all}
+/* 휴대폰: 세 칸이 100px씩이면 데이터팀 문장이 한 줄 몇 글자로 길게 늘어진다. 데이터팀 칸을 아래 한 줄 전체로 */
+@media (max-width:600px){.kbar.fdk{grid-template-columns:1fr 1fr}.kbar.fdk .kb:nth-child(2){grid-column:1/-1;order:3}.kbar.fdk .kb:nth-child(2) b{font-size:13.5px}}
 @media (max-width:600px){.fdt td.fdsc,.fdt td.fddt{white-space:normal;min-width:150px;max-width:190px;line-height:1.5}}
 .fdpb-i .r0{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fdpb-i .r0 .emp{color:var(--warn);font-weight:600}
 .fdpb-i.all{border-style:dashed;align-content:center}.fdgk{margin:8px 0 4px;font-size:14px}
@@ -588,6 +590,8 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .tk.m{padding:4px 0 3px;gap:2px}
   .tk.m .tk1{flex-wrap:nowrap;align-items:center;min-height:34px}.tk.m .tk1>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .tk.m .tk1 .fd-go{flex:1;min-width:0}
+  /* 맡기기를 펼치면 다음 줄로 내린다(한 줄에 끼워 넣으면 '맡/기/기'가 세로로 접히고 구단명이 잘림) */
+  .tk.m .tk1:has(.tk-del.open){flex-wrap:wrap}.tk1 .tk-del.open{order:9}.tk-delb{white-space:nowrap;flex:none}
   .tk-logo{position:relative;flex:none;display:inline-flex;padding:0;border:0;background:none}.tk-logo>i{position:absolute;top:-4px;right:-6px;min-width:15px;height:15px;border-radius:8px;background:var(--bad,#e5534b);color:#fff;font:600 10px/15px sans-serif;font-style:normal;text-align:center;padding:0 3px}
   .tk-team{flex:none;margin-left:auto;white-space:nowrap}.tk-team>i{font-style:normal;color:var(--warn,#e0a23a);margin-left:2px}
   .tk-menu{display:flex;gap:6px}

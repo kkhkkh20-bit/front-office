@@ -73,6 +73,8 @@ table.lst td.t-hi{color:var(--good)}table.lst td.t-lo{color:var(--bad)}
 
 /* A·B·C */
 .goset .continue .cl{display:grid;line-height:1.1;text-align:left}.goset .continue .cl b{font-size:16px}.goset .continue .cl i{font-style:normal;font-size:11px;font-weight:500;opacity:.85;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+/* PC: 자리가 넉넉한데 '최대 7일 · 중요한 소…'로 잘리던 보조 문구 */
+@media(min-width:1100px){.goset .continue .cl i{max-width:190px}}
 .sbwrap{background:#0a0f13;border-bottom:1px solid var(--line)}
 .sbar{display:flex;gap:6px;overflow-x:auto;padding:6px 0;scrollbar-width:none}.sbar::-webkit-scrollbar{display:none}
 .sb-i{all:unset;box-sizing:border-box;flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--dim);border-radius:3px;padding:4px 8px;font-size:12px;color:var(--muted);white-space:nowrap}
