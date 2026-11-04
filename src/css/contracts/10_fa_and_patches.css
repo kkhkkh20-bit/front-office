@@ -1,5 +1,6 @@
 /* FA 센터 */
 .fahero{display:grid;gap:3px;padding:14px 16px;border-radius:6px;margin-bottom:10px;background:linear-gradient(120deg,#1e2a3a,#141b22);border:1px solid var(--line2)}.fahero b{font:400 24px 'Black Han Sans',var(--f-ui)}.fahero span{font-size:13px;color:var(--muted)}
+@media(max-width:699px){.fahero{padding:8px 12px;margin-bottom:8px}.fahero b{font-size:18px}.fahero span{font-size:12px}}
 .fahero.live{background:radial-gradient(circle at 10% 0%,#ffd24d33,transparent 50%),linear-gradient(120deg,#2a2210,#141b22);border-color:#c8922e}.fahero.live b{color:#ffe08a}
 .fabg{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
 .fab-c{display:grid;gap:7px;background:#0b1014;border:1px solid var(--line2);border-radius:6px;padding:12px}.fab-c.on{border-color:#ffd24d}
@@ -177,7 +178,7 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
   /* 신인 드래프트 */
   .drf-main{gap:6px}.drf-main>.seg{margin:0;flex:none}
   .drf-c{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;overflow:auto;scrollbar-width:thin}
-  .drf-c>*{flex:none;margin:0}.drf-c .dfilt{padding:0!important;border:0;background:none;box-shadow:none;display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:4px 10px;align-items:center;text-align:left}
+  .drf-c>*,.drf-c>.dtools>*{flex:none;margin:0}.drf-c .dfilt{padding:0!important;border:0;background:none;box-shadow:none;display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:4px 10px;align-items:center;text-align:left}
   .drf-c .dfilt .chips,.drf-c .dfilt>.row{justify-content:flex-start;width:auto;margin:0}.drf-c .dfilt .chips button{padding:3px 9px;font-size:12px;min-height:0}
   .drf-c .candidate-table th,.drf-c .candidate-table td{padding-inline:6px}
   .drf-c .dfilt>p{margin:0}.drf-c .dfilt .row{gap:4px 10px}

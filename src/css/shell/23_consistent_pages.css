@@ -37,6 +37,8 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .candidate-name small{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:2px}
 .candidate-table td:first-child,.candidate-table th:first-child{position:sticky;left:0;background:var(--panel);z-index:1}
 .candidate-table .candidate-note{white-space:normal;min-width:150px;max-width:230px;font-size:11px;line-height:1.5}
+/* 신인 후보 표가 넓은 화면에서 가로로 밀려도 관심·지명 버튼은 오른쪽에 붙어 보인다 */
+@media(min-width:980px){.draft-candidates .candidate-table td:last-child,.draft-candidates .candidate-table th:last-child{position:sticky;right:0;background:var(--panel);z-index:1}}
 .candidate-table small.block{display:block;font-size:10px;line-height:1.5;color:var(--muted)}
 .foreign-candidates .candidate-table td:last-child{white-space:normal;min-width:140px;max-width:180px}
 .foreign-candidates .candidate-table td:last-child .pill{display:block;white-space:normal;font-size:10px;line-height:1.4;margin-top:4px}
@@ -44,6 +46,8 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .candidate-table .pill{font-size:10px}
 .candidate-list>.row:first-child{margin-bottom:8px}
 .candidate-list .tw{margin-top:6px;overflow-x:auto}
+/* 후보 표 칸은 자체 가로 스크롤 칸이라, 열 넘김 표의 머리 고정 위치(상단바 높이)를 쓰면 머리줄이 첫 행을 덮는다 */
+.candidate-list .tw.twp thead th{top:0}
 .roster-navigation{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .roster-navigation .seg{margin:0}
 .roster-navigation .rseg{width:auto;min-width:200px}
@@ -162,9 +166,21 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .draft-candidate-body .dfilt>.row{flex-wrap:wrap;gap:6px}
   .draft-candidate-body .dfilt>.row.between{justify-content:flex-start}
   .draft-candidate-body .dfilt p{font-size:11px}
-  .draft-candidate-body>.row{margin-bottom:6px}
+  .draft-candidate-body>.row,.draft-candidate-body>.dtools>.row{margin-bottom:6px}
   .draft-candidate-body>.card{margin:0;padding:8px 10px}
   .draft-candidate-body .candidate-help{font-size:11px}
+}
+/* 필터 요약과 목록·상세 전환: PC는 그대로 두 줄, 좁은 화면은 한 줄로 붙여 후보 목록을 위로 올린다 */
+.dtools{display:contents}
+@media(max-width:979px){
+  .dtools{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 8px;margin:8px 0}
+  .dtools>.dfilt{flex:1 1 200px;margin:0;min-width:0}
+  .dtools>.row{flex:none;margin:0;gap:6px;flex-wrap:nowrap}
+  .dtools>.dfilt[open]{flex-basis:100%}
+  .dhead.dhead-m{padding:8px 10px}.dhead-m .dnow{font-size:17px}.dhead-mr{flex-wrap:wrap;gap:6px 8px;align-items:center}.dhead-mr>.btn{margin-left:auto;min-height:36px}.dhead-m .dmore{margin-top:6px}
+  .draft-candidate-body>.seg button{font-size:12px;white-space:nowrap;padding-inline:4px}
+  .dhead-m .dmore>summary{cursor:pointer;color:var(--muted)}
+  .dhead .dpre-no{margin:4px 0 0}
 }
 
 .detail-navigation{position:sticky;top:0;z-index:12}
