@@ -134,13 +134,14 @@ document.addEventListener('click',e=>{
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
      예) 인터뷰 답을 누르고 손가락을 한 번 더 대면 다음 질문의 같은 자리 답이 나가던 문제(커뮤니티 제보 2026-10-31). 같은 버튼(＋/− 등)의 빠른 연타는 그대로 */
   { const now=performance.now(), L=UI._clk, sig=a+'|'+(el.dataset.v||'')+'|'+(el.textContent||'').trim().slice(0,40);
-    const navigation=['tab','sub','go','itab','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tsideGo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive'].includes(a);
+    const navigation=['tab','sub','go','itab','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tsideGo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive'].includes(a);
     if(!navigation&&L&&now-L.t<400&&Math.hypot((e.clientX||0)-L.x,(e.clientY||0)-L.y)<30&&L.r!==UI._rN&&L.sig!==sig){ e.preventDefault(); return; }
     UI._clk={t:now,x:e.clientX||0,y:e.clientY||0,r:UI._rN,sig}; }
   if(A[a]){ e.preventDefault(); A[a](el.dataset.v,el,e); }
 });
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; const a=el.dataset.a;
   if(a==='playerTab'){A.ptab(el.value);return;}
+  if(a==='personalTarget'||a==='personalGmTarget'){UI[a]=+el.value;return;}
   if(el.tagName==='SELECT'&&['crole','csort','coachSlot','findPos','tpartner','tcash','tseg','tsort'].includes(a)){if(A[a])A[a](el.value,el,e);return;}
   if(a==='castSeek'){A.castSeek(el.value);return;}
   if(a==='analysisY'){ A.analysisY(el.value); return; }
@@ -175,8 +176,8 @@ document.addEventListener('input',e=>{ const el=e.target.closest('[data-a]'); if
   if(el.dataset.a==='extA')A.extA(el.dataset.v,el);
   if(el.dataset.a==='mkt'){ const o=document.getElementById('mktv'); if(o)o.textContent=money(+el.value); } });
 window.__readingWidth=innerWidth;
-window.addEventListener('resize',()=>{const widthChanged=Math.abs(innerWidth-window.__readingWidth)>1;window.__readingWidth=innerWidth;const touch=matchMedia('(pointer:coarse)').matches;window.__readingRedraw=window.__readingRedraw||widthChanged||!touch;clearTimeout(window.__rz);window.__rz=setTimeout(()=>{const redraw=window.__readingRedraw;window.__readingRedraw=false;if(!G)return;if(redraw||(!UI.title&&UI.tab==='home'&&!UI.homeFocus&&UI.sheet==null&&!document.querySelector('details[open]')))render();else{appFrameSync();if(UI.tab==='inbox')ibFit();if(UI.meet)meetWire();dayTickPosition(document.getElementById('dtick'));}},150);});
-document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details')){if(d.dataset.readingKey)(UI.readingOpen=UI.readingOpen||{})[d.dataset.readingKey]=d.open;if(d.dataset.k)UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); } } },true);
+window.addEventListener('resize',()=>{const widthChanged=Math.abs(innerWidth-window.__readingWidth)>1;window.__readingWidth=innerWidth;const touch=matchMedia('(pointer:coarse)').matches;window.__readingRedraw=window.__readingRedraw||widthChanged||!touch;clearTimeout(window.__rz);window.__rz=setTimeout(()=>{const redraw=window.__readingRedraw;window.__readingRedraw=false;if(!G)return;if(redraw||(!UI.title&&UI.tab==='home'&&!UI.homeFocus&&UI.sheet==null&&!document.querySelector('details[open]')))render();else{appFrameSync();workspaceRefit();if(UI.tab==='inbox')ibFit();if(UI.meet)meetWire();dayTickPosition(document.getElementById('dtick'));}},150);});
+document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.matches&&d.matches('details')){if(d.dataset.readingKey)(UI.readingOpen=UI.readingOpen||{})[d.dataset.readingKey]=d.open;if(d.dataset.k)UI.open[d.dataset.k]=d.open; if(d.open&&d.dataset.lazy==='1'){ const y=window.scrollY; render(); window.scrollTo(0,y); }else workspaceRefit(); } },true);
 document.addEventListener('keydown',e=>{
   /* 결재가 떠 있으면 뒤의 협상·면담·중계·소식함으로 키를 전달하지 않는다. */
   if(UI.cfm){

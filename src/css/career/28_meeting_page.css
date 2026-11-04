@@ -1,5 +1,5 @@
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
-.meet-page{display:flex;flex-direction:column;min-width:0;min-height:320px;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
+.meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
 .meet-heading .mt-h>.av{width:48px;height:48px}.meet-heading .mt-h>div{min-width:0}.meet-heading h2{font-size:17px}.meet-heading .small{font-size:11px}.meet-heading .eyebrow{font-size:10px}.meet-heading>.btn{white-space:nowrap}
 .meet-workspace{display:grid;grid-template-columns:minmax(0,1fr) 280px;flex:1;min-height:0;min-width:0}
@@ -10,3 +10,12 @@
 .meet-page .mt-opts>.eyebrow{flex:none;margin:0 0 5px}.meet-page .mt-o{flex:none;min-width:0;border-radius:4px;padding:10px 11px}.meet-page .mt-o b{font-size:12px;line-height:1.5;font-weight:500}.meet-page .mt-o i{font-size:10px;line-height:1.5;margin-top:3px}.meet-page .mt-o.selected{border-color:var(--team-hi);background:var(--panel2)}
 @media(max-width:1000px){.meet-workspace{grid-template-columns:minmax(0,1fr) 235px}.meet-heading{padding:10px 12px}}
 @media(max-width:600px){.meet-heading{align-items:flex-start;gap:7px;padding:10px}.meet-heading .mt-h{gap:8px}.meet-heading .mt-h>.av{width:36px;height:36px}.meet-heading h2{font-size:14px}.meet-heading .small{font-size:10px}.meet-heading>.btn{font-size:10px;padding:4px 7px;min-height:27px}.meet-workspace{display:flex;flex-direction:column}.meet-conversation{flex:1;min-height:100px}.meet-page .mt-log{padding:10px;gap:12px}.meet-page .mt-l{max-width:98%}.meet-page .mt-l p{font-size:12px;padding:8px 10px}.meet-page .mt-av .av{width:24px;height:24px}.meet-page .mt-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;max-height:35%;min-height:100px;border-left:0;border-top:1px solid var(--line2);padding:8px;gap:5px}.meet-page .mt-opts>.eyebrow{grid-column:1/-1}.meet-page .mt-o{padding:7px 8px}.meet-page .mt-o b{font-size:10px}}
+
+@media(max-height:500px){
+ .meeting-page-open #app .subhead{display:none}
+ .meet-heading{padding:6px 8px;gap:8px}.meet-heading .mt-h>.av{width:28px;height:28px}.meet-heading .eyebrow{display:none}
+ .meet-workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,38%)}
+ .meet-conversation{min-height:0}.meet-log-label{padding:3px 8px}.meet-page .mt-log{padding:6px;gap:8px}
+ .meet-page .mt-opts{display:flex;flex-direction:column;min-height:0;max-height:none;padding:6px;border-top:0;border-left:1px solid var(--line2)}
+ .meet-page .mt-o{padding:5px 7px}
+}

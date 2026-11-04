@@ -1,6 +1,6 @@
 /* ---------- 화면 조립 ---------- */
-function render(){const app=document.getElementById('app');rememberReading(app);try{return render0();}finally{restoreReading(app);}}
-function render0(){ UI._rN=(UI._rN||0)+1;
+function render(){const app=document.getElementById('app');rememberReading(app);try{return render0();}finally{restoreReading(app);workspaceRefit();}}
+function render0(){document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
   try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}

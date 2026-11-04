@@ -40,14 +40,16 @@ function workspaceFit(host){
   if(workspaceCompact()){
     const filters=root.querySelector('.roster-filter-body');
     if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
-    root.querySelectorAll('.seg.itabs,nav.subtabs').forEach(tabs=>{
-      const buttons=[...tabs.querySelectorAll('button[data-a]')].filter(b=>['itab','go','sub','tab'].includes(b.dataset.a));if(!buttons.length)return;
+    root.querySelectorAll('.seg.itabs,nav.subtabs,.trade-modes').forEach(tabs=>{
+      const buttons=[...tabs.querySelectorAll('button[data-a]')].filter(b=>['itab','go','sub','tab','lseg'].includes(b.dataset.a));if(!buttons.length)return;
       const select=document.createElement('select');select.className='ws-tab-select';select.setAttribute('aria-label','화면 선택');
       buttons.forEach((button,i)=>{const option=document.createElement('option');option.value=i;option.textContent=button.textContent;option.selected=button.classList.contains('on');select.append(option);});
       select.onchange=()=>{const button=buttons[+select.value];if(button)A[button.dataset.a](button.dataset.v);};tabs.before(select);tabs.classList.add('ws-tabs-folded');
     });
     const selectors=[...root.querySelectorAll(':scope > .ws-tab-select')];
-    if(selectors.length>1){const nav=document.createElement('nav');nav.className='ws-navigation';nav.setAttribute('aria-label','업무 화면 선택');selectors[0].before(nav);selectors.forEach(select=>nav.append(select));}
+    // A navigation control never participates in the growing content deck, including Safari's native select.
+    if(selectors.length){const nav=document.createElement('nav');nav.className='ws-navigation';nav.setAttribute('aria-label','업무 화면 선택');selectors[0].before(nav);selectors.forEach(select=>nav.append(select));}
+    root.querySelector(':scope > .roster-navigation')?.classList.add('ws-navigation');
   }
   const fixed='.seg,.subtabs,.ws-tab-select,.ws-navigation,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr,.trade-modes,.trade-back,.trade-partner,.trade-steps,.trade-basket,.trade-extra,button[data-a=tradePick]';
   const panels=[];
@@ -68,14 +70,17 @@ function workspaceFit(host){
   const label=el=>el.querySelector('h2,h3,.sec,.eyebrow,summary')?.textContent.trim()||'보고';
   panels.forEach((panel,index)=>{
     deck.append(panel);panel.classList.add('ws-panel');
+    if(innerHeight<500){const heading=panel.querySelector(':scope > .row:first-child:has(h2,h3)'),pager=panel.querySelector(':scope > .pgr');if(heading&&pager){heading.append(pager);heading.classList.add('ws-panel-heading');pager.classList.add('ws-inline-pager');}}
     const children=[...panel.children],regions=children.filter(el=>el.matches(scrollSelectors));
     let scroller;
     if(regions.length===1){
       const region=regions[0],tail=children.slice(children.indexOf(region)+1);
+      // Identity blocks, illustrations and explanatory text belong to the content, even before their images load.
+      const leading=children.slice(0,children.indexOf(region)).filter(el=>!el.matches('h1,h2,h3,header,.row,.seg,.chips,.roster-caption,.roster-filters,.trade-search-main,.trade-pool-options,label:has(input,select),input,select'));
       if(matchMedia('(max-width:699px), (max-height:599px)').matches&&region.matches('.tw,.fdt-w'))tail.filter(el=>el.matches('p.small')).forEach(el=>region.append(el));
       const extra=tail.filter(el=>!el.matches('.pgr,.row,.btn,p.small'));
-      if(extra.length){
-        scroller=document.createElement('div');panel.insertBefore(scroller,region);scroller.append(region);
+      if(extra.length||leading.length){
+        scroller=document.createElement('div');panel.insertBefore(scroller,leading[0]||region);scroller.append(...leading,region);region.classList.add('ws-flow');
         tail.filter(el=>!el.matches('.pgr,.row,.btn')).forEach(el=>scroller.append(el));
       }else scroller=region;
     }
@@ -93,20 +98,24 @@ function workspaceFit(host){
       if(controls.length){const disclosure=document.createElement('details'),summary=document.createElement('summary'),options=document.createElement('div');disclosure.className='ws-filter-controls';disclosure.dataset.k='workspace-filter:'+key+':'+index;disclosure.open=!!UI.open[disclosure.dataset.k];summary.textContent='검색·필터 설정';options.className='ws-filter-options';controls[0].before(disclosure);controls.forEach(el=>options.append(el));disclosure.append(summary,options);}
     }
   });
+  if(innerHeight<500){const panel=panels[0],scroll=panel?.querySelector(':scope > .ws-scroll'),notes=[...root.querySelectorAll(':scope > .note')];if(scroll&&notes.length){const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');scroll.before(body);scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');body.append(...notes,scroll);body.addEventListener('scroll',()=>{positions[key+':0']=[body.scrollTop,body.scrollLeft];},{passive:true});}}
   const columns=Math.min(panels.length,innerWidth>=700?2:1),pages=Math.ceil(panels.length/columns);
   deck.style.setProperty('--ws-columns',columns);
   UI.workspacePages=UI.workspacePages||{};
   let page=clamp(UI.workspacePages[key]||0,0,pages-1);
   // 패널을 넘길 때도 다시 측정한다. 처음 숨겨진 보고는 크기가 0이라 미리 판단할 수 없다.
   function fitPanel(panel,index){
-    const scroll=panel.querySelector('.ws-scroll');if(!scroll||scroll.clientHeight>=80||panel.clientHeight<60||panel.matches('.roster-list'))return;
-    const keep=el=>el.matches('.pgr')||(el.matches('h1,h2,h3,header')||el===panel.firstElementChild&&el.querySelector('h2,h3,.sec'))&&el.offsetHeight<=Math.max(40,panel.clientHeight*.4);
+    const scroll=panel.querySelector(':scope > .ws-scroll');if(!scroll||scroll.clientHeight>=Math.min(160,panel.clientHeight*.55)||panel.clientHeight<60||panel.matches('.roster-list'))return;
+    const footer=[...panel.children].filter(el=>el.matches('.pgr')).reduce((n,el)=>n+el.offsetHeight,0);
+    const headerRoom=panel.clientHeight-footer-16-Math.min(120,panel.clientHeight*.5);
+    const keep=el=>el.matches('.pgr')||(el.matches('h1,h2,h3,header')||el===panel.firstElementChild&&el.querySelector('h2,h3,.sec'))&&el.offsetHeight<=headerRoom;
     const content=[...panel.children].filter(el=>el!==scroll&&!keep(el));if(!content.length)return;
     const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');
     const ordered=[...panel.children].filter(el=>el===scroll||content.includes(el));ordered[0].before(body);
     scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');ordered.forEach(el=>body.append(el));
     body.addEventListener('scroll',()=>{positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
   }
+  panels.forEach((panel,index)=>panel._workspaceFit=()=>fitPanel(panel,index));
   const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
 
   if(pages>1){
@@ -116,14 +125,23 @@ function workspaceFit(host){
     for(let i=0;i<pages;i++){const option=document.createElement('option');option.value=i;option.textContent=(i+1)+' / '+pages+' · '+panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');select.append(option);}
     const sync=()=>{show();select.value=String(page);prev.disabled=page===0;next.disabled=page===pages-1;};
     prev.onclick=()=>{page--;sync();};next.onclick=()=>{page++;sync();};select.onchange=()=>{page=+select.value;sync();};
-    bar.append(prev,select,next);root.insertBefore(bar,deck);sync();
+    bar.append(prev,select,next);const navigation=root.querySelector(':scope > .ws-navigation');
+    if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else root.insertBefore(bar,deck);sync();
   }
+  workspaceObserve();
+}
 
+// Refit after a filter opens or browser chrome changes height, without replacing the reading DOM.
+let _workspaceObserver=null;
+function workspaceRefit(){document.querySelectorAll('.ws-panel:not([hidden])').forEach(panel=>panel._workspaceFit?.());workspaceObserve();}
+function workspaceObserve(){if(typeof ResizeObserver==='undefined')return;
+ if(!_workspaceObserver)_workspaceObserver=new ResizeObserver(entries=>{requestAnimationFrame(()=>entries.forEach(({target})=>{if(!target.isConnected)return;const panel=target.parentElement;if(!panel.matches('.ws-panel')||panel.hidden)return;panel._workspaceFit?.();const next=panel.querySelector(':scope > .ws-scroll');if(next!==target){_workspaceObserver.unobserve(target);if(next)_workspaceObserver.observe(next);}}));});
+ _workspaceObserver.disconnect();document.querySelectorAll('.ws-panel > .ws-scroll').forEach(scroll=>_workspaceObserver.observe(scroll));
 }
 
 function workspaceReveal(selector){
   const panel=document.querySelector(selector)?.closest('.ws-panel');if(!panel||!panel.hidden)return;
-  const deck=panel.parentElement,select=deck.parentElement.querySelector(':scope > .ws-pages select');if(!select)return;
+  const deck=panel.parentElement,select=deck.parentElement.querySelector(':scope > .ws-pages select,:scope > .ws-navigation > .ws-pages select');if(!select)return;
   const columns=+deck.style.getPropertyValue('--ws-columns')||1;
   select.value=String(Math.floor([...deck.children].indexOf(panel)/columns));select.dispatchEvent(new Event('change',{bubbles:true}));
 }

@@ -1,0 +1,65 @@
+{
+  "label": "phone",
+  "seed": 7,
+  "tid": 6,
+  "advances": 81,
+  "reads": 4,
+  "batches": 50,
+  "decisions": 5,
+  "administration": [
+    "신인 드래프트 자동 지명",
+    "보상 명단 기본안",
+    "보상 명단 기본안",
+    "연봉 결산: undefined"
+  ],
+  "scouts": {
+    "n": 5,
+    "delegated": true,
+    "status": {
+      "delegated": true,
+      "missing": [
+        "수도권",
+        "영남",
+        "호남·충청"
+      ],
+      "shortage": 0,
+      "needs": false
+    }
+  },
+  "start": {
+    "day": 732,
+    "year": 2026
+  },
+  "yearReached": 2027,
+  "end": {
+    "day": 1096,
+    "date": "2027년 1월 1일 금요일",
+    "year": 2027,
+    "record": {
+      "w": 0,
+      "l": 0,
+      "t": 0
+    },
+    "lastYear": 2026,
+    "lastRank": 7,
+    "lastRecord": {
+      "tid": 6,
+      "w": 68,
+      "l": 72,
+      "t": 4
+    },
+    "cash": 3500,
+    "wallet": 313,
+    "scouts": {
+      "delegated": true,
+      "missing": [
+        "수도권",
+        "영남",
+        "호남·충청"
+      ],
+      "shortage": 0,
+      "needs": false
+    },
+    "messages": []
+  }
+}

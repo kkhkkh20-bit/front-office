@@ -1,0 +1,67 @@
+{
+  "label": "tablet",
+  "seed": 21,
+  "tid": 2,
+  "advances": 101,
+  "reads": 8,
+  "batches": 60,
+  "decisions": 46,
+  "administration": [
+    "신인 드래프트 자동 지명",
+    "보상 명단 기본안",
+    "보상 명단 기본안",
+    "연봉 결산: undefined"
+  ],
+  "scouts": {
+    "n": 6,
+    "delegated": true,
+    "status": {
+      "delegated": true,
+      "missing": [
+        "영남",
+        "호남·충청"
+      ],
+      "shortage": 0,
+      "needs": false
+    }
+  },
+  "start": {
+    "day": 732,
+    "year": 2026
+  },
+  "yearReached": 2027,
+  "end": {
+    "day": 1096,
+    "date": "2027년 1월 1일 금요일",
+    "year": 2027,
+    "record": {
+      "w": 0,
+      "l": 0,
+      "t": 0
+    },
+    "lastYear": 2026,
+    "lastRank": 6,
+    "lastRecord": {
+      "tid": 2,
+      "w": 72,
+      "l": 71,
+      "t": 1
+    },
+    "cash": 3500,
+    "wallet": 313,
+    "scouts": {
+      "delegated": true,
+      "missing": [
+        "영남",
+        "호남·충청"
+      ],
+      "shortage": 0,
+      "needs": false
+    },
+    "messages": [
+      "전희영 현역 입대",
+      "성지우 현역 입대",
+      "추진율이(가) 수원 스파크스와(과) 계약했습니다(3년 연 10.05억)"
+    ]
+  }
+}

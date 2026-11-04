@@ -12,6 +12,11 @@
 
 ## 맞춤 도구
 
+- `check-workspace-space.cjs`: 모바일 3종·태블릿 가로/세로·PC·낮은 가로 화면에서 모든 업무 메뉴와 내부 탭·보고 묶음을 열고, 선택창 높이·목록 공간·필터 펼침을 확인합니다. 실제 터치 스크롤과 소개/이미지 뒤 표 머리글 고정도 확인합니다. `REVIEW_OUT`은 화면·측정 결과 저장, `REVIEW_WIDTHS=390,568`은 화면 폭 선택, `GESTURES_ONLY=1`은 터치와 표 고정만 빠르게 확인합니다.
+- `check-career-rules.cjs`, `check-career-review.cjs`: 단장이 교체될 때 개인 친분과 구단 관계 구분, 실제 대화 상황, 활동 상대 선택 유지와 빠른 설정 변경을 검사합니다.
+- `check-reading-navigation.cjs`: 관전 보고 닫기·다른 결과 보고의 위치·긴 면담의 새 답변 표시와 읽기 위치를 검사합니다.
+- `check-season-playthrough.cjs`: 휴대폰·태블릿·PC에서 다른 구단으로 실제 계속·소식 결정·경기 결과·선수 카드·면담을 조작하며 한 시즌과 저장 후 재접속을 확인합니다. `PLAY_CASES=phone,tablet,pc`, `PLAY_TURNS=180`, `PLAY_OUT=/tmp/front-office-season-review`로 범위를 정합니다. 전체 점검에서는 `LONG_PLAY=1`일 때 실행합니다.
+
 - `check-pitches.cjs`: 저장된 공과 9칸 투구판·구종·구속·좌표·B/S/O를 대조합니다. PC/휴대폰 배치, 재생·일시정지·팀 전환, 저장 후 재생과 예전 기록의 재현 표시도 확인합니다. `CAPTURE=1`이면 `/workspace/front-office-pitches-폭.png`로 화면을 남깁니다.
 
 - `fit-frec.js`: 외국인 후보의 기록 해석표(`12_foreign.js`의 `FREC`)를 다시 맞춥니다. 후보 생성 방식(리그 비중, 능력 분포, `LG_ADJ`, `FENV`, MLB 경력)을 바꾸면 돌리고, 출력된 한 줄로 표를 바꿉니다. 추천순과 종합 추정이 이 표를 씁니다.

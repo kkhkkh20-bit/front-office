@@ -151,9 +151,12 @@
 
 /* 주소창이 보이는 휴대폰과 낮은 가로 화면에서도 표의 공간부터 확보한다. */
 :is(#app,#sheet) .ws-tabs-folded{display:none!important}
-:is(#app,#sheet) .ws-tab-select{min-width:0;max-width:100%;flex:1;height:32px;max-height:32px;min-height:32px;box-sizing:border-box}
-.ws-frame>.ws-tab-select,.ws-page>.ws-tab-select{flex:0 0 32px;width:100%}
-.ws-navigation{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;flex:none;min-width:0}
+:is(#app,#sheet) .ws-tab-select{display:block;min-width:0;width:100%;max-width:100%;flex:0 0 auto!important;height:44px!important;max-height:44px!important;min-height:44px!important;box-sizing:border-box;margin:0}
+.ws-navigation{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr));grid-auto-rows:44px;gap:8px;flex:0 0 auto!important;min-width:0;align-items:start}
+.ws-navigation>.ws-pages{grid-column:span 2;min-width:0;height:44px}
+#app .roster-navigation.ws-navigation{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr));grid-auto-rows:44px;min-height:0;margin:0;align-items:start}
+#app .roster-navigation.ws-navigation>.rseg{min-width:0;width:auto;margin:0}
+.ws-panel-heading{flex-wrap:nowrap!important;min-width:0}.ws-panel-heading>h2{flex:1;min-width:0}.ws-panel-heading>.ws-inline-pager{flex:none;margin:0;padding:0}.ws-inline-pager .btn{padding-inline:8px!important}
 .ws-filter-controls{flex-shrink:1;min-height:32px;max-height:40%;overflow:auto;overscroll-behavior:contain}
 .ws-filter-controls>summary{position:sticky;top:0;z-index:6;cursor:pointer;min-height:32px;padding:6px 0;line-height:20px;font-size:13px;background:var(--panel)}
 .ws-filter-options{max-height:160px;overflow:auto;overscroll-behavior:contain;display:grid;gap:8px;padding-block:8px}

@@ -12,6 +12,7 @@ step "문법"; node -e "const fs=require('fs');const h=fs.readFileSync('index.ht
 step "정적 점검"; node tools/check-static.js || fail=1
 step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
 step "개인 활동·시설·해외연수·저장 규칙"; node tools/check-feature-rules.cjs || fail=1
+step "개인 인맥·단장 교체·상황별 면담 규칙"; node tools/check-career-rules.cjs || fail=1
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
@@ -20,10 +21,12 @@ step "3경기 진행·중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
 step "선수 카드·모바일 읽기·검색 공간·파일 불러오기"; node tools/check-experience.cjs || fail=1
-step "실제 3D 투구·타구·주루·수비 재생"; node tools/check-gameplay.cjs || fail=1
+step "개인 활동 상대·검색·빠른 설정 변경"; node tools/check-career-review.cjs || fail=1
+step "긴 대화·관전 보고·읽기 위치"; node tools/check-reading-navigation.cjs || fail=1
 step "트레이드 제안 카드 레이아웃"; node tools/check-trade-layout.cjs || fail=1
 step "공통 글꼴·패널 정렬"; node tools/check-design-system.cjs || fail=1
 step "표·목록 내부 스크롤"; node tools/check-workspace.cjs || fail=1
+step "전체 업무 화면·하위 모드·필터 공간"; node tools/check-workspace-space.cjs || fail=1
 step "PC 전체 화면 높이"; node tools/check-desktop-fit.cjs || fail=1
 step "능력치 반영"; node tools/check-sens.js || fail=1
 step "장기 시뮬"; export STRICT=1; SEED=7 node tools/check-sim.js $END || fail=1
@@ -45,6 +48,9 @@ step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || f
 step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1
 step "면담 본문·셸 유지"; node tools/check-meeting.cjs || fail=1
 step "소식함 완료·기한·지난 업무"; node tools/check-inbox.cjs || fail=1
+if [ "${LONG_PLAY:-0}" = "1" ]; then
+ step "실제 조작으로 휴대폰·태블릿·PC 한 시즌"; node tools/check-season-playthrough.cjs || fail=1
+fi
 echo
 if [ $fail = 0 ]; then echo "전체 점검: 통과"; else echo "전체 점검: 실패 — 위 내용을 확인하세요"; fi
 exit $fail
