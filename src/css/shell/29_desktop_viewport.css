@@ -174,14 +174,18 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 }
 /* 한 화면 맞춤: 높이가 넉넉한 PC에서는 본문을 화면 높이에 고정하고 상자 안에서만 스크롤(낮은 화면은 페이지 스크롤). 구단 정보는 상자가 많아 900px부터 */
 @media(min-width:1100px) and (min-height:760px){
- .fmsh:has(.fmx-league) .fmmain{display:flex;flex-direction:column;overflow:hidden}
- .fmsh:has(.fmx-league) .fmmain>.blk{flex:none}
- .fmsh:has(.fmx-league) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
- .fmsh:has(.fmx-league) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
- .fmsh:has(.fmx-league) main.content{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-sizing:border-box;padding-bottom:8px}
- .fmsh:has(.fmx-league) main.content>.fmx{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
- .fmsh:has(.fmx-league) main.content>:not(.fmx){flex:none}
- .fmsh:has(.fmx-league) .fx-b{flex:1 1 0}
+ .fmsh:has(.fmx-fit) .fmmain{display:flex;flex-direction:column;overflow:hidden}
+ .fmsh:has(.fmx-fit) .fmmain>.blk{flex:none}
+ .fmsh:has(.fmx-fit) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
+ .fmsh:has(.fmx-fit) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .fmsh:has(.fmx-fit) main.content{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-sizing:border-box;padding-bottom:8px}
+ .fmsh:has(.fmx-fit) main.content>.fmx{flex:1;min-height:0;grid-template-rows:none;grid-auto-rows:minmax(0,1fr)}
+ .fmsh:has(.fmx-fit) main.content>.fmx.fmx-td{grid-template-rows:minmax(0,1.3fr) minmax(0,1fr)}
+ .fmx-fit .fx-scr{flex:1 1 0!important;max-height:none}
+ .fmx-fit .ds-w{flex:1 1 0!important;min-height:140px;display:flex;justify-content:center}.fmx-fit .ds-w>svg.ds{width:100%;height:100%;max-height:none}
+ .fmx-rec .fx-cat{flex:1 0 auto!important}
+ .fmsh:has(.fmx-fit) main.content>:not(.fmx){flex:none}
+ .fmsh:has(.fmx-fit) .fx-b{flex:1 1 0}
 }
 @media(min-width:1100px) and (min-height:900px){
  .fmsh:has(.fmx-club) .fmmain{display:flex;flex-direction:column;overflow:hidden}
@@ -193,4 +197,60 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
  .fmsh:has(.fmx-club) main.content>:not(.fmx){flex:none}
  .fmsh:has(.fmx-club) .fx-b{flex:1 1 0}
  .fmsh:has(.fmx-club) main.content>.fmx.fmx-club{grid-template-rows:minmax(0,1fr) minmax(0,1.05fr) minmax(0,.62fr)}
+}
+
+/* PC FM식 리그 하위 화면(16_league.js scoreFm·recFm·wireFm, 37_league_tab.js 통계, 63_assoc.js, 76_national.js, 27_history.js): 상자 배치와 한 줄 목록 */
+@media(min-width:1100px){
+ .fx-scr{min-height:0;max-height:62vh;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+ .fx-scr .fx-t thead th,.fx-scr .sqt thead th{position:sticky;top:0;z-index:1;background:var(--panel)}
+ .fbox .sf-cmp{flex:1 0 auto!important;display:flex;flex-direction:column}.fbox .sf-cmp>h3:empty{display:none}
+ .fx-bar i.warn{background:var(--warn)}
+ .fbox .ds-w{overflow:hidden}.fbox svg.ds{min-width:0;max-height:440px}
+ .fx-fact b small{display:block;font-size:11px;font-weight:400;color:var(--muted)}
+ /* 일정·결과 */
+ .fmx-sch{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr) minmax(0,1fr);grid-template-areas:"all day nx" "all day sum"}
+ .fxs-all{grid-area:all}.fxs-day{grid-area:day}.fxs-nx{grid-area:nx}.fxs-sum{grid-area:sum}
+ .fx-sch :is(td,th){text-align:left!important;font-family:var(--f-ui)!important}.fx-sch :is(td,th):nth-child(n+6){text-align:right!important;font-family:var(--f-num)!important}
+ .fx-sch td i{font-style:normal;font-size:11px;color:var(--muted)}.fx-sch td img{vertical-align:middle}.fx-sch tr.click{cursor:pointer}.fx-sch tr.up td{color:var(--muted)}.fx-sch tr.up td:nth-child(4){color:inherit}
+ .fx-sch tr.now td{background:color-mix(in srgb,var(--team-hi) 18%,transparent);color:inherit;font-weight:700}
+ .fx-sch tr.fx-mo td{background:var(--panel2);color:var(--muted);font-size:11px;padding-block:3px}
+ button.fx-fx{width:100%;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;font-size:12.5px;text-align:left;cursor:pointer}
+ .fx-sc em{font-size:13px}.fx-sc em b{font:600 14px var(--f-num);color:var(--muted)}.fx-sc em b.w{color:var(--ink,#fff)}
+ .fx-mt :is(td,th):nth-child(2){text-align:right;font-family:var(--f-num)}
+ /* 부문별 1위 */
+ .fmx-rec{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .fx-cat{display:flex;flex-direction:column;gap:1px;padding-bottom:6px;border-bottom:1px solid var(--line)}.fx-cat:last-child{border-bottom:0}.fx-cat>h4{margin:0 0 2px}
+ .fx-l1{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;padding:3px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+ .fx-l1 .av{width:38px;height:38px}.fx-l1 b{display:grid;font-size:13.5px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-l1 b i{font-style:normal;font-weight:400;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px}
+ .fx-l1 em{font:700 18px var(--f-num);font-style:normal;color:var(--warn)}.fx-l1.me b{color:var(--team-hi)}
+ .fx-rk{display:grid;grid-template-columns:20px minmax(0,1fr) auto minmax(38px,auto);gap:6px;align-items:center;width:100%;padding:2px 0;border:0;background:none;color:inherit;font:inherit;font-size:12px;text-align:left;cursor:pointer}div.fx-rk{cursor:default}
+ .fx-rk>i{font-style:normal;color:var(--muted);text-align:center;font-size:11px}.fx-rk b{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-rk span{color:var(--muted);font-size:11px;white-space:nowrap}.fx-rk em{font:600 12px var(--f-num);font-style:normal;text-align:right}.fx-rk.me b{color:var(--team-hi);font-weight:700}
+ /* 리그 소식 */
+ .fmx-wire{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);grid-template-areas:"all mv" "all st"}
+ .fxw-all{grid-area:all}.fxw-mv{grid-area:mv}.fxw-st{grid-area:st}
+ .fx-chips{flex-wrap:wrap;gap:4px}
+ .fx-wr{display:grid;grid-template-columns:38px auto 18px minmax(0,1fr);gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.4}.fx-wr[data-a]{cursor:pointer}
+ .fx-wr>span:first-child{color:var(--muted);font:12px var(--f-num)}.fx-wr b{font-weight:400;min-width:0}.fx-wr .av.ini{width:18px;height:18px;font-size:9px}.fx-wr img{display:block}
+ /* 통계: 구단 지표·리그 분포·구장 효과 */
+ .fmx-td{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,.85fr);grid-template-areas:"sc tb cm" "fl fl rl"}
+ .fxt-sc{grid-area:sc}.fxt-tb{grid-area:tb}.fxt-cm{grid-area:cm}.fxt-fl{grid-area:fl}.fxt-rl{grid-area:rl}
+ .fx-tdt :is(td,th):first-child{text-align:left}.fx-tdt :is(td,th):nth-child(2){text-align:right;font-family:var(--f-num)}.fx-tdt td img{vertical-align:middle}
+ .fxt-rl .fmc,.fxh-me .fmc{flex:1 0 auto!important;min-height:110px;margin-left:44px}
+ .fmx-ds{grid-template-columns:minmax(0,.85fr) minmax(0,1.6fr) minmax(0,.85fr)}
+ .fxd-c .ds-ctl{flex-direction:column;align-items:flex-start;gap:8px}.fxd-c .ds-set{margin:0}.ds-f{min-width:0;max-width:100%}.fxd-c .ds-f{display:flex;width:100%}
+ .fmx-pk{grid-template-columns:minmax(0,3fr) minmax(280px,1fr)}.fxk-me .fx-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ /* 협회 */
+ .fmx-as{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"hd cap hi" "ru cap el"}
+ .fxa-ru{grid-area:ru}.fxa-hd{grid-area:hd}.fxa-cap{grid-area:cap}.fxa-hi{grid-area:hi}.fxa-el{grid-area:el}.fxa-hd .fx-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ /* 국가대표 */
+ .fmx-nt{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr) minmax(0,.95fr);grid-template-areas:"in sq me" "ps sq tm"}
+ .fxn-in{grid-area:in}.fxn-sq{grid-area:sq}.fxn-me{grid-area:me}.fxn-ps{grid-area:ps}.fxn-tm{grid-area:tm}
+ .fx-pl1{grid-template-columns:minmax(0,1fr)}.fx-ntt :is(td,th){text-align:left!important;font-family:var(--f-ui)!important}.fx-ntt td i{font-style:normal;color:var(--muted);font-size:11px}
+ /* 역사 */
+ .fmx-hi{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);grid-template-areas:"sm ch aw" "sm me ld"}
+ .fxh-sm{grid-area:sm}.fxh-ch{grid-area:ch}.fxh-me{grid-area:me}.fxh-aw{grid-area:aw}.fxh-ld{grid-area:ld}
+ .fx-yrs{margin:-2px 0 4px 42px!important;font-size:11px!important}
+ .fx-scr>.tw{margin:0}.fxn-sq .sqt :is(td,th){text-align:left}.fxn-sq .sqt :is(td,th).n{text-align:right}
+ .fxa-cap .fx-odd,.fxn-tm .fx-odd{flex:1 0 auto!important}
+ .fx-mst td{padding-block:2px}.fx-mst td:nth-child(2){font-family:var(--f-ui)}.fx-mst td img{vertical-align:middle}
 }

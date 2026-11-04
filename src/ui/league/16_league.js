@@ -52,7 +52,7 @@ function recView(){
   const rows=playerRows(y);
   if(!rows.length)return head+csec(`${y} 기록`,'<p class="small muted">아직 기록이 없습니다.</p>');
   if(seg==='team')return head+teamRecCard();
-  if(seg==='top')return head+leaderTiles(rows,y);
+  if(seg==='top')return head+(fmOn()?recFm(rows,y):leaderTiles(rows,y));
   const pit=seg==='pit'; const f=UI.lrf||{q:true,t:'all'};
   let R=rows.filter(x=>x.p.isP===pit&&(f.t==='all'||(f.t==='me'?x.h.t===G.user||x.p.team===G.user:String(x.h.t)===f.t)));
   /* 규정 기준은 비율 기록(타율·OPS·ERA 등) 순위에만 건다. 홈런·타점 같은 누적 기록은 타석 수와 관계없이 모두 보여 준다 */
@@ -141,11 +141,11 @@ function standFm(order,live,y){
     return a?`<button class="fx-ld${tt===me?' me':''}" data-a="player" data-v="${a.p.id}"><span>${l}</span>${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt!=null?badge(tt,12)+' '+esc(team(tt).nick):'무소속'}</i></b><em>${(f||v)(a)}</em></button>`:''; }).join('');
   const hist=[...G.history].filter(h=>h.champ!=null).reverse().slice(0,6).map(h=>`<div class="fx-li${h.champ===me?' me':''}"><b>${h.y}</b><span>${badge(h.champ,14)} ${esc(tshort(h.champ))}</span></div>`).join('');
   const lead=fxBox('fx-lead',fxHead(`${y} 부문별 1위`,'비율 기록은 규정 기준 이상'),(L||'<p class="fx-none">아직 기록이 없습니다.</p>')+(hist?`<h4>역대 한국시리즈 우승</h4>${hist}`:''),fxBtn('go','league:rec','기록')+fxBtn('go','league:hist','역사'));
-  return `<div class="fmx fmx-league nolink ws-own">${reg}${ps}${sch}${lead}</div>`;
+  return `<div class="fmx fmx-fit fmx-league nolink ws-own">${reg}${ps}${sch}${lead}</div>`;
 }
 
 /* ---------- 리그: 경기 결과(스코어보드) ---------- */
-function scoreHub(){ const t=inTabs('sres',[['mine','우리 경기'],['day','날짜별 결과'],['cal','월별 일정']],G.games.length?'mine':'cal'); /* 개막 전에는 일정부터 */ return t.bar+(t.cur==='mine'?gamesView():t.cur==='day'?scoreView():schedView()); }
+function scoreHub(){ const fm=fmOn(), t=inTabs('sres',[['mine',fm?'시즌 일정':'우리 경기'],['day','날짜별 결과'],['cal','월별 일정']],fm||G.games.length?'mine':'cal'); /* 개막 전에는 일정부터(PC는 첫 칸이 시즌 전체 일정) */ return t.bar+(t.cur==='mine'?(fm?scoreFm():gamesView()):t.cur==='day'?scoreView():schedView()); }
 function scoreView(){
   const days=[...new Set(G.teams.flatMap(t=>tlOf(t.id).map(x=>x[5])))].sort((a,b)=>a-b);
   if(!days.length)return csec('날짜별 결과','<p class="small muted">아직 치른 경기가 없습니다.</p>');
@@ -161,7 +161,7 @@ function scoreView(){
 
 /* ---------- 리그: 뉴스 ---------- */
 /* 리그 소식: 다른 구단 외국인 교체·감독 선임·FA 이적 */
-function wireView(){ const all=G.wire||[]; const ks=[...new Set(all.map(w=>w.k))]; const W=UI.wk?all.filter(w=>w.k===UI.wk):all;
+function wireView(){ if(fmOn())return wireFm(); const all=G.wire||[]; const ks=[...new Set(all.map(w=>w.k))]; const W=UI.wk?all.filter(w=>w.k===UI.wk):all;
   const kc=ks.length>1?`<div class="chips"><button data-a="wk" data-v="" class="${!UI.wk?'on':''}">전체</button>${ks.map(k=>`<button data-a="wk" data-v="${esc(k)}" class="${UI.wk===k?'on':''}">${esc(k)}</button>`).join('')}</div>`:'';
   return csec('리그 소식',kc+(W.length?(()=>{ const P=pager('wire',W.slice(0,120),20); return `<div class="list">${P.items.map(w=>`<div class="item wa" ${w.ref!=null&&G.players[w.ref]?`data-a="player" data-v="${w.ref}"`:'style="cursor:default"'}>${w.tid!=null?badge(w.tid,24):`<span class="av ini">${ASSOC.s}</span>`}<span class="nm">${lk(w.t)}</span><span class="sub"><span class="pill">${esc(w.k)}</span> ${dsh(w.d)}</span></div>`).join('')}</div>${P.bar}`; })():'<p class="small muted">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>')); }
 /* 우리 구단 기사(구단 > 팬·언론) */
@@ -171,3 +171,58 @@ function ourNewsView(){ G.newsSeen=Math.max(newsSeen(),...(G.news||[]).map(n=>n.
   return csec('우리 구단 기사',kc+(ns.length?(()=>{ const P=pager('news'+(UI.nk||''),ns.slice(0,120),8); return `<div class="newslist">${P.items.map(n=>newsItem(n,true)).join('')}</div>${P.bar}`; })():'<p class="small muted">기사가 없습니다.</p>')); }
 function newsView(){ return ourNewsView(); }
 
+
+/* ---------- PC(FM '주요 일정' 배치): 일정·결과 ----------
+   왼쪽 시즌 전체 일정 한 줄 표(다음 경기 근처로 맞춤), 가운데 날짜별 리그 결과와 다음 경기일 대진, 오른쪽 다음 경기와 시즌 성적 요약.
+   값은 일정(G.cal.sched)·우리 정규시즌 기록(G.sea.ulog)·구단별 경기 기록(tlOf)만 쓴다 */
+function scoreFm(){ const me=G.user, c=G.cal, U=(G.sea.ulog||[]).filter(x=>!/차전/.test(x.k)), log=new Map(U.map(x=>[x.d,x])), so=standOrder(), rkOf=t=>{ const i=(so.order||[]).findIndex(o=>o.tid===t); return so.live&&i>=0?i+1:null; };
+  const days=Object.keys(c.sched).map(Number).filter(d=>c.sched[d].some(m=>m.includes(me))).sort((a,b)=>a-b), ni=days.findIndex(d=>!log.has(d)&&d>=G.day);
+  let w=0,l=0,t=0,mo=0; const rows=days.map((d,i)=>{ const m=c.sched[d].find(x=>x.includes(me)), h=m[0]===me, op=h?m[1]:m[0], r=log.get(d), o=dobj(d), gi=G.games.findIndex(g=>g.day===d&&!g.kind);
+    if(r){ if(r.res==='승')w++; else if(r.res==='패')l++; else t++; }
+    const sep=o.m!==mo?`<tr class="fx-mo"><td colspan="7">${G.year}년 ${o.m}월</td></tr>`:''; mo=o.m; const rk=rkOf(op);
+    return sep+`<tr class="${i===ni?'now ':''}${r?'':'up'}${gi>=0?' click':''}"${gi>=0?` data-a="openGame" data-v="${gi}"`:''}><td>${o.m}/${o.d} <i>${WD[o.w]}</i></td><td>${r?'':d>G.day?`${d-G.day}일 뒤`:''}</td><td>${h?'홈':'원정'}</td><td>${badge(op,16)} ${esc(team(op).nick)}${rk?` <i>${rk}위</i>`:''}</td><td>${r?`<span class="pill ${r.res==='승'?'good':r.res==='패'?'bad':''}">${r.res}</span>`:d<G.day?'<span class="muted">-</span>':''}</td><td>${r?`${h?r.hs:r.as} : ${h?r.as:r.hs}`:''}</td><td>${r?`${w}-${l}${t?'-'+t:''}`:''}</td></tr>`; }).join('');
+  const all=fxBox('fxs-all',fxHead(`${G.year} 정규시즌 일정`,`144경기 중 ${U.length}경기 치름 · 남은 ${Math.max(0,days.length-U.length)}경기`),
+    days.length?`<div class="fx-scr" data-snap><table class="fx-t fx-sch"><thead><tr><th>날짜</th><th>남은 날</th><th>장소</th><th>상대 · 지금 순위</th><th>결과</th><th>점수</th><th>누적</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="fx-none">일정이 아직 나오지 않았습니다.</p>',
+    fxBtn('itab','sres:cal','월별 일정')+fxBtn('go','league:stand','순위'));
+  /* 날짜별 리그 결과(왼쪽이 홈) */
+  const rd=[...new Set(G.teams.flatMap(x=>tlOf(x.id).map(z=>z[5])))].sort((a,b)=>a-b); let d=UI.sbd; if(d==null||!rd.includes(d))d=rd[rd.length-1]; const di=rd.indexOf(d);
+  const gs=[]; if(d!=null)for(const x of G.teams)for(const z of tlOf(x.id))if(z[5]===d&&z[3]===1)gs.push({h:x.id,a:z[4],hs:z[1],as:z[2]});
+  const res=gs.map(s=>{ const gi=G.games.findIndex(g=>g.day===d&&g.home===s.h&&g.away===s.a), mine=s.h===me||s.a===me;
+    return `<${gi>=0?`button data-a="openGame" data-v="${gi}"`:'div'} class="fx-fx fx-sc${mine?' me':''}"><span>${badge(s.h,16)}${esc(team(s.h).nick)}</span><em><b class="${s.hs>s.as?'w':''}">${s.hs}</b> : <b class="${s.as>s.hs?'w':''}">${s.as}</b></em><span>${esc(team(s.a).nick)}${badge(s.a,16)}</span></${gi>=0?'button':'div'}>`; }).join('');
+  let dd=null; for(let x=G.day+1;x<=c.end&&dd==null;x++)if((c.sched[x]||[]).length)dd=x;
+  const day=fxBox('fxs-day',fxHead('날짜별 결과',d!=null?`${dmd(d)} ${WD[dobj(d).w]} · 왼쪽이 홈`:'아직 치른 경기가 없습니다'),
+    (res||'<p class="fx-none">치른 경기가 쌓이면 날짜별 점수가 보입니다.</p>')+((so.order||[]).length?`<h4>${so.live?'지금 순위':so.y+' 최종 순위'}</h4><table class="fx-t fx-mst"><tbody>${so.order.map((o,i)=>`<tr class="${o.tid===me?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td>${badge(o.tid,14)} ${esc(team(o.tid).nick)}</td><td>${o.w}-${o.l}${o.t?'-'+o.t:''}</td><td>${pctStr(o)}</td><td>${i?gbStr(gbOf(so.order[0],o)):'-'}</td></tr>`).join('')}</tbody></table>`:'')+(dd?`<h4>다음 경기일 ${dmd(dd)} ${WD[dobj(dd).w]} 대진</h4>${c.sched[dd].map(([h,a])=>`<div class="fx-fx${h===me||a===me?' me':''}"><span>${badge(h,16)}${esc(team(h).nick)}</span><em>vs</em><span>${esc(team(a).nick)}${badge(a,16)}</span></div>`).join('')}`:''),
+    (di>0?`<button class="btn small" data-a="sbd" data-v="${rd[di-1]}">‹ 이전 날</button>`:'')+(di>=0&&di<rd.length-1?`<button class="btn small" data-a="sbd" data-v="${rd[di+1]}">다음 날 ›</button>`:'')+fxBtn('itab','sres:day','크게 보기'));
+  /* 다음 경기 */
+  const nx=nextGames(6), g0=nx[0], vsT=(x,s)=>`<div class="fx-vt">${badge(x,56)}<b>${esc(team(x).nick)}</b><span>${s} · ${ibdRec(x)}</span></div>`;
+  const nxt=fxBox('fxs-nx',fxHead('다음 경기',g0?`${dmd(g0.d)} ${WD[dobj(g0.d).w]}${g0.d>G.day?` · ${g0.d-G.day}일 뒤`:''}`:'남은 경기 없음'),
+    (g0?`<div class="fx-vs">${vsT(g0.home?me:g0.op,'홈')}<em>${g0.ps?esc(g0.ps):'vs'}</em>${vsT(g0.home?g0.op:me,'원정')}</div>`:'')
+    +(nx.length>1?`<h4>이어지는 경기</h4>${nx.slice(1).map(x=>`<div class="ibd-gm"><span>${dmd(x.d)} ${WD[dobj(x.d).w]}</span><span class="pill">${x.ps?esc(x.ps):x.home?'홈':'원정'}</span><b>${badge(x.op,14)} ${esc(tshort(x.op))}</b><em>${ibdRank(x.op)?ibdRank(x.op)+'위':''}</em></div>`).join('')}`:'')
+    +(G.ps?`<h4>포스트시즌</h4><div class="psl-l">${psLadder(null)}</div>`:''),fxBtn('go','league:stand','순위')+(G.ps?fxBtn('itab','stand:ps','포스트시즌'):''));
+  /* 시즌 성적 요약: 홈·원정·1점 차·최근 10경기, 월별 */
+  const wl=L=>{ const a=L.filter(x=>x.res==='승').length, b=L.filter(x=>x.res==='패').length, e=L.length-a-b; return L.length?`${a}-${b}${e?'-'+e:''}`:'-'; }, run=(x,mine)=>(x.h===me)===mine?x.hs:x.as;
+  const M=[...new Set(U.map(x=>dobj(x.d).m))].map(m=>{ const L=U.filter(x=>dobj(x.d).m===m), a=L.filter(x=>x.res==='승').length, b=L.filter(x=>x.res==='패').length; return `<tr><td>${m}월</td><td>${L.length}</td><td>${a}</td><td>${b}</td><td>${L.length-a-b}</td><td>${a+b?fmt3(a/(a+b)):'-'}</td><td>${sum(L.map(x=>run(x,true)))}</td><td>${sum(L.map(x=>run(x,false)))}</td></tr>`; }).join('');
+  const sm=fxBox('fxs-sum',fxHead('시즌 성적',U.length?`${wl(U)} · 정규시즌`:'개막 전'),
+    `<div class="fx-facts">${fxFact('홈',wl(U.filter(x=>x.h===me)))}${fxFact('원정',wl(U.filter(x=>x.h!==me)))}${fxFact('1점 차',wl(U.filter(x=>Math.abs(x.hs-x.as)===1)))}${fxFact('최근 10경기',wl(U.slice(-10)))}</div>`
+    +(tlOf(me).length?`<h4>최근 경기력</h4>${fxForm(tlOf(me).slice(-20))}`:'')
+    +(M?`<h4>월별 성적</h4><table class="fx-t fx-mt"><thead><tr><th>월</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>득점</th><th>실점</th></tr></thead><tbody>${M}</tbody></table>`:'<p class="fx-none">경기를 치르면 월별 성적이 쌓입니다.</p>'),
+    fxBtn('go','league:stat','구단 지표'));
+  return `<div class="fmx fmx-fit fmx-sch nolink ws-own">${all}${day}${nxt}${sm}</div>`; }
+
+/* ---------- PC(FM '대회' 기록 배치): 부문별 1위 ----------
+   네 칸에 부문 네 개씩, 부문마다 1위는 얼굴과 함께 크게, 2~5위는 한 줄. 마지막 자리는 우리 선수의 부문별 최고 순위 */
+function recFm(rows,y){ const me=G.user, C=leaderCats(rows,y), by=l=>C.find(c=>c[0]===l), tt=x=>x.h.t??x.p.team, srt=([,arr,v])=>[...arr].sort((a,b)=>v(b)-v(a));
+  const cat=c=>{ const [l,,v,f]=c, s=srt(c).slice(0,5), fm=f||v; if(!s.length)return `<div class="fx-cat"><h4>${l}</h4><p class="fx-none">기록 없음</p></div>`; const a=s[0];
+    return `<div class="fx-cat"><h4>${l}</h4><button class="fx-l1${tt(a)===me?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt(a)!=null?badge(tt(a),12)+' '+esc(team(tt(a)).nick):'무소속'}</i></b><em>${fm(a)}</em></button>${s.slice(1).map((x,i)=>`<button class="fx-rk${tt(x)===me?' me':''}" data-a="player" data-v="${x.p.id}"><i>${i+2}</i><b>${esc(x.p.name)}</b><span>${tt(x)!=null?esc(team(tt(x)).nick):''}</span><em>${fm(x)}</em></button>`).join('')}</div>`; };
+  const ours=`<div class="fx-cat"><h4>우리 선수 최고 순위</h4>${C.map(c=>{ const s=srt(c), i=s.findIndex(x=>tt(x)===me); return i<0?'':`<button class="fx-rk${i<3?' me':''}" data-a="player" data-v="${s[i].p.id}"><i>${i+1}</i><b>${esc(s[i].p.name)}</b><span>${c[0]}</span><em>${(c[3]||c[2])(s[i])}</em></button>`; }).join('')||'<p class="fx-none">기록 없음</p>'}</div>`;
+  const col=(cls,t,s,ls,foot,extra)=>fxBox('fxr '+cls,fxHead(t,s),ls.map(by).filter(Boolean).map(cat).join('')+(extra||''),foot);
+  return `<div class="fmx fmx-fit fmx-rec nolink ws-own">${col('fxr-b1',`${y} 타격 · 정확성`,'타율·OPS·wRC+는 규정타석 이상',['타율','안타','OPS','wRC+'],fxBtn('lrec','bat','타자 기록'))}${col('fxr-b2',`${y} 타격 · 힘과 발`,'누적 기록은 모든 타자',['홈런','타점','도루','타자 WAR'],fxBtn('go','league:stat','리그 통계'))}${col('fxr-p1',`${y} 투수 · 실점 억제`,'평균자책점·WHIP는 규정이닝 이상',['평균자책점','승리','탈삼진','WHIP'],fxBtn('lrec','pit','투수 기록'))}${col('fxr-p2',`${y} 투수 · 불펜과 종합`,'누적 기록은 모든 투수',['세이브','홀드','투수 WAR'],fxBtn('lrec','team','팀 기록'),ours)}</div>`; }
+
+/* ---------- PC(FM 뉴스 배치): 리그 소식 ----------
+   왼쪽 전체 소식 한 줄 목록(분류 버튼), 오른쪽 이적·계약과 감독·스태프 소식을 따로 */
+const WIRE_G={mv:['트레이드','FA','외국인','이적','계약','방출','은퇴','해외'],st:['감독','코치','스태프','단장']};
+function wireFm(){ const all=G.wire||[], ks=[...new Set(all.map(w=>w.k))], W=UI.wk?all.filter(w=>w.k===UI.wk):all;
+  const line=w=>`<div class="fx-wr"${w.ref!=null&&G.players[w.ref]?` data-a="player" data-v="${w.ref}"`:''}><span>${dsh(w.d)}</span><span class="pill">${esc(w.k)}</span>${w.tid!=null?badge(w.tid,16):`<span class="av ini">${ASSOC.s}</span>`}<b>${lk(w.t)}</b></div>`; /* 본문 안 이름 링크(lk)가 있어 버튼 대신 div */
+  const kc=ks.length>1?`<div class="chips fx-chips"><button data-a="wk" data-v="" class="${!UI.wk?'on':''}">전체 ${all.length}</button>${ks.map(k=>`<button data-a="wk" data-v="${esc(k)}" class="${UI.wk===k?'on':''}">${esc(k)} ${all.filter(w=>w.k===k).length}</button>`).join('')}</div>`:'';
+  const side=(cls,t,g,none)=>{ const L=all.filter(w=>WIRE_G[g].includes(w.k)); return fxBox(cls,fxHead(t,L.length?`${L.length}건 · 최근 순`:'소식 없음'),L.length?`<div class="fx-scr">${L.slice(0,40).map(line).join('')}</div>`:`<p class="fx-none">${none}</p>`); };
+  return `<div class="fmx fmx-fit fmx-wire nolink ws-own">${fxBox('fxw-all',fxHead('리그 소식',`${W.length}건${UI.wk?' · '+esc(UI.wk):''} · 최근 150건 보관`),kc+(W.length?`<div class="fx-scr">${W.slice(0,150).map(line).join('')}</div>`:'<p class="fx-none">다른 구단의 외국인 교체, 감독 선임, FA 이적 소식이 여기에 쌓입니다.</p>'),fxBtn('go','transfer:moves','이적 현황')+fxBtn('go','club:fans','우리 구단 기사'))}${side('fxw-mv','이적·계약','mv','트레이드·FA·외국인 계약 소식이 쌓입니다.')}${side('fxw-st','감독·스태프','st','감독 선임·코치·스태프 변동 소식이 쌓입니다.')}</div>`; }
