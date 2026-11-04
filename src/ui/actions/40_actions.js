@@ -208,7 +208,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
   rviewMode(v){UI.rlayout=v;render();},
-  cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ UI.cmkOpen=UI.cmkOpen===+v?null:+v; render(); },
+  cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ UI.cmkOpen=UI.cmkOpen===+v?null:+v; render(); }, cslotOpen(v){ UI.cslotOpen=UI.cslotOpen===v?null:v; render(); },
   sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
