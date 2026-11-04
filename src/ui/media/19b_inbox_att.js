@@ -46,6 +46,7 @@ function ibdFin(){ let b; try{ b=budget(); }catch(e){ return ''; } const top=(L,
 function ibKindAtt(m,pid){ const k=m.kind, T=ibdTeamsIn(m), nx=(nextGames(1)||[])[0], S=[]; const add=h=>{ if(h)S.push(h); };
   const opp=T[0]!=null?T[0]:['분석','월간','감독'].includes(k)&&nx?nx.op:null, oppL=T[0]!=null?'소식 속 구단':'다음 상대';
   const per=period(), live=per==='season'||per==='post';
+  if(k==='월간'||(k==='분석'&&m.from==='전력분석팀'&&/월 전력 분석 보고/.test(m.subj||'')))add(teamReport(m)); /* 월간 소식에는 팀 성적 보고서 문서를 맨 앞에 */
   if(k==='분석'){ add(ibdSlots(G.user)); add(ibdForm(G.user,'우리 수비 배치')); if(opp!=null){ add(ibdOpp(opp,oppL)); add(ibdForm(opp,oppL+' 수비 배치')); } }
   else if(k==='월간'){ add(ibdStand()); add(ibdNext(6)); if(opp!=null)add(ibdOpp(opp,oppL)); }
   else if(k==='감독'){ add(ibdForm(G.user,'우리 수비 배치')); add(ibdNext(5)); if(opp!=null)add(ibdOpp(opp,oppL)); }
