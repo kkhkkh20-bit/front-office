@@ -50,6 +50,7 @@ button,input,select{font:inherit;color:inherit}
 .goset .continue:hover{background:var(--go-hi)}
 .goset button[disabled]{opacity:.45;cursor:not-allowed}
 .blk{background:#3a1c1a;color:#ffd2cc;font-size:13px;padding-block:6px;border-bottom:1px solid #5a2a26}
+.fmmain>.blk{flex:none!important;min-height:0} /* 막힘 안내 띠: 넓은 화면 작업판(.gut flex:1)에 같이 늘어나 화면 절반을 빨갛게 덮던 문제 */
 .blk button{all:unset;cursor:pointer;text-decoration:underline;margin-left:6px;font-weight:700}
 .subhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-block:10px 4px}
 .subhead h1{margin:0;font:700 18px var(--f-ui);letter-spacing:-.01em}
@@ -2204,7 +2205,7 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 
 /* FM식 소식함(PC): 오른쪽은 소식 하나가 한 장의 문서. 머리(분류·시각 | 큰 제목) → 본문 → 같은 문서 안에 내용별 자료 칸 → 행동 버튼은 아래 오른쪽.
    왼쪽 목록 칸 위에는 보낸 사람 얼굴(상자 없이). 고르기 전에는 요약 상자 2×2 */
-.ibx-fm,.ibx-dash,.ibd-att{display:none}.ibx-lw>.ibs-from{display:none}
+.ibx-fm,.ibx-dash{display:none}.ibx-lw>.ibs-from{display:none}
 @media(min-width:1100px){
   .ibx-read:has(.ibx-fm,.ibx-dash){overflow:hidden!important}
   .ibx-lw:has(>.ibs-from){display:flex;flex-direction:column;gap:8px;min-height:0}.ibx-lw:has(>.ibs-from)>.ibx-list{flex:1;min-height:0;max-height:none}
@@ -2221,16 +2222,6 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
   .ibx-fm .ibm-acts{margin-top:auto;padding-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
   .ibx-fm .ibm-acts .btn{border-radius:16px;padding-inline:16px}
   /* 문서 안 자료 칸: 상자 대신 얇은 구분선과 제목, 남는 폭을 칸으로 나눠 채운다 */
-  .ibd-att{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .ibd-sec{padding:12px 14px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}.ibd-sec:first-child{border-left:0;padding-left:0}
-  .ibd-sec.ibd-wide{grid-column:span 2}
-  .ibd-sec h3{margin:0 0 4px;font-size:13px;color:var(--team-hi,#4fa3ff)}
-  .ibd-pl{display:flex;gap:12px;align-items:center}.ibd-pl .av{width:72px;height:72px}.ibd-pl b{display:block;font-size:17px}.ibd-pl span{font-size:12px;color:var(--muted)}
-  .ibd-key{display:flex;gap:14px;margin-top:6px}.ibd-key span{font-size:12px;color:var(--muted)}.ibd-key b{display:inline;font:700 20px var(--f-num);color:var(--ink);margin-left:4px}
-  .ibd-core{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:6px}.ibd-core>div{display:grid;justify-items:center;padding:4px 0;border-top:2px solid var(--line)}.ibd-core span{font-size:11px;color:var(--muted)}.ibd-core b{font:700 20px var(--f-num)}
-  .ibd-bars>div{display:grid;grid-template-columns:44px minmax(0,1fr) 40px;gap:6px;align-items:center;font-size:12px;padding:2px 0}.ibd-bars span{color:var(--muted)}.ibd-bars i{display:block;height:8px;border-radius:2px;background:var(--team-hi,#4fa3ff)}.ibd-bars b{text-align:right;font-family:var(--f-num)}
-  .ibd-sec .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-sec .pf-fact span{color:var(--muted);flex:none}.ibd-sec .pf-fact b{text-align:right;font-weight:600}
-  .ibd-sec>.btn{align-self:flex-start;margin-top:4px}
   .ibs-li{all:unset;cursor:pointer;display:grid;gap:1px;padding:5px 0;border-top:1px solid var(--line);font-size:12px}.ibs-li:first-of-type{border-top:0}.ibs-li span{color:var(--muted);font-size:11px}.ibs-li b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ibs-li:hover b{color:var(--team-hi,#4fa3ff)}
   .ibs-box{margin:0!important;display:flex!important;flex-direction:column;gap:6px;min-height:0;overflow:auto;scrollbar-width:thin}
   .ibs-box h3{margin:0 0 2px;font-size:13px;display:flex;justify-content:space-between;gap:6px}.ibs-box h3 em{font-style:normal;color:var(--warn)}
@@ -2242,6 +2233,45 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
   .ibx-fm>.ibm>.ibd-att{order:5;flex:1 0 auto;align-content:stretch}
   .ibx-fm>.ibm>.ibm-acts{order:9;margin-top:0}
   .ibx-fm>.ibm>.ibm-res{order:8}
+}
+/* 소식 종류별 자료(19b_inbox_att.js): 순위표·수비 배치·상대 구단·자리별 순위·여론 막대·예산. PC·휴대폰 같은 자료 */
+@media all{
+  .ibd-att{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .ibd-sec{padding:12px 14px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}.ibd-sec:first-child{border-left:0;padding-left:0}
+  .ibd-sec.ibd-wide{grid-column:span 2}
+  .ibd-sec h3{margin:0 0 4px;font-size:13px;color:var(--team-hi,#4fa3ff)}
+  .ibd-pl{display:flex;gap:12px;align-items:center}.ibd-pl .av{width:72px;height:72px}.ibd-pl b{display:block;font-size:17px}.ibd-pl span{font-size:12px;color:var(--muted)}
+  .ibd-key{display:flex;gap:14px;margin-top:6px}.ibd-key span{font-size:12px;color:var(--muted)}.ibd-key b{display:inline;font:700 20px var(--f-num);color:var(--ink);margin-left:4px}
+  .ibd-core{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:6px}.ibd-core>div{display:grid;justify-items:center;padding:4px 0;border-top:2px solid var(--line)}.ibd-core span{font-size:11px;color:var(--muted)}.ibd-core b{font:700 20px var(--f-num)}
+  .ibd-bars>div{display:grid;grid-template-columns:44px minmax(0,1fr) 40px;gap:6px;align-items:center;font-size:12px;padding:2px 0}.ibd-bars span{color:var(--muted)}.ibd-bars i{display:block;height:8px;border-radius:2px;background:var(--team-hi,#4fa3ff)}.ibd-bars b{text-align:right;font-family:var(--f-num)}
+  .ibd-sec .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-sec .pf-fact span{color:var(--muted);flex:none}.ibd-sec .pf-fact b{text-align:right;font-weight:600}
+  .ibd-sec>.btn{align-self:flex-start;margin-top:4px}
+  .ibd-sec h3 em{font-style:normal;font-weight:500;color:var(--muted);margin-left:6px}
+  .ibd-sec h4{margin:6px 0 2px;font-size:11px;font-weight:600;color:var(--muted)}.ibd-sec h4:first-child{margin-top:0}
+  .ibd-t{width:100%;border-collapse:collapse;font-size:12px}.ibd-t th{text-align:left;font-weight:500;color:var(--muted);padding:3px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .ibd-t td{padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}.ibd-t td.small{white-space:normal;color:var(--muted)}
+  .ibd-t tr.me td{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 16%,transparent);font-weight:600}.ibd-t tr.cut td{border-bottom:2px solid var(--muted)}
+  .ibd-t td,.ibd-t th{text-align:left}.ibd-st td:nth-child(n+3),.ibd-st th:nth-child(n+3){text-align:right;font-family:var(--f-num)}
+  .ibd-form{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(120px,1fr);gap:12px;align-items:start}
+  .ibd-form .pf-field{display:block;width:100%;height:auto;aspect-ratio:300/222}
+  .ibd-plist>div{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}.ibd-plist span{color:var(--muted);font-size:11px}.ibd-plist b{font:700 13px var(--f-num)}
+  .ibd-plist .lnk,.ibd-t .lnk{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ibd-slot>div,.ibd-money>div{--bar:#5b7285}.ibd-slot i,.ibd-money i{background:var(--bar)!important}.ibd-slot i.good,.ibd-money i.good{--bar:var(--good)}.ibd-slot i.bad{--bar:var(--bad)}
+  .ibd-slot>div{grid-template-columns:56px minmax(0,1fr) 34px}.ibd-bars i.good{background:var(--good)}.ibd-bars i.bad{background:var(--bad)}
+  .ibd-money>div{grid-template-columns:96px minmax(0,1fr) 64px}.ibd-money span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ibd-gg{display:grid;grid-template-columns:72px minmax(0,1fr) 54px;gap:8px;align-items:center;font-size:12px;padding:5px 0}.ibd-gg>span{color:var(--muted)}
+  .ibd-gg>div{position:relative;height:9px;background:var(--panel2);border-radius:2px}.ibd-gg i{display:block;height:100%;border-radius:2px;background:#5b7285}.ibd-gg i.good{background:var(--good)}.ibd-gg i.bad{background:var(--warn)}
+  .ibd-gg u{position:absolute;top:-4px;width:2px;height:17px;background:var(--ink);text-decoration:none}.ibd-gg b{text-align:right;font:700 15px var(--f-num)}.ibd-gg b em{font:400 11px var(--f-ui);color:var(--muted)}
+  .ibd-gm{display:grid;grid-template-columns:62px auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-gm>span:first-child{color:var(--muted)}.ibd-gm em{font-style:normal;color:var(--muted)}
+}
+/* 휴대폰·좁은 화면: 자료 칸을 한 줄씩 쌓고, 넓은 표는 칸 안에서 가로로 민다 */
+@media(max-width:1099px){
+  .ibm>.ibd-att{grid-template-columns:minmax(0,1fr);border-bottom:0;margin-top:4px}
+  .ibd-sec,.ibd-sec:first-child{border-left:0;padding:12px 0;border-top:1px solid var(--line)}.ibd-sec:first-child{border-top:0}
+  .ibd-sec.ibd-wide{grid-column:auto}
+  .ibd-sec:has(>.ibd-t){overflow-x:auto}.ibd-t td.small{white-space:nowrap}
+  .ibd-form{grid-template-columns:minmax(0,1fr)}
+  .ibd-core{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%)}
@@ -19775,7 +19805,7 @@ function inboxView(){
   const rows=pinH+groups.map(g=>{ const fold=!!F[g.d]&&!(sel&&g.L.some(m=>m.id===sel)); const u=g.L.filter(m=>!m.read).length, nd=g.L.filter(ibMust).length;
     return `<div class="ibx-g${fold?' fold':''}"${sel&&g.L.some(m=>m.id===sel)?'':tkAt(g.d)}><button class="ibx-day" data-a="ibFold" data-v="${g.d}" aria-expanded="${!fold}"><span class="ibx-car">${fold?'▸':'▾'}</span>${ibDay(g.d)}<span class="ibx-dn">${g.L.length}건${u?` · <b class="${nd?'warn':''}">안 읽음 ${u}</b>`:''}</span></button>${fold?'':g.L.map(m=>mailRow(m,m.id===sel)).join('')}</div>`; }).join('')+more;
   if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=order[ids.indexOf(UI.ibOpen)];
-      return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav)}`; }
+      return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav).replace(/<\/article>\s*$/,ibAtt(m)+'</article>')}`; }
     UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}</nav>`; }
   const pane=si>=0?(fmOn()?`<div class="ibx-fm">${mailCard(order[si],nav).replace(/<\/article>\s*$/,ibAtt(order[si])+'</article>')}</div>`:mailCard(order[si],nav)):fmOn()?ibDash(need):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
   return bar+`<div class="ibx"><div class="ibx-lw">${fmOn()&&si>=0?ibFrom(order[si]):''}<nav class="ibx-list" aria-label="소식 목록">${rows}</nav><button class="ibx-up" data-a="ibTop" hidden>맨 위로 ↑</button></div><div class="ibx-read">${pane}</div></div>`;
@@ -19794,10 +19824,11 @@ function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v
     if(p.isP&&(p.ld||[]).length){ const L=(p.ld||[]).slice(-7).reverse(); const mx=Math.max(...L.map(x=>x[1]),1);
       S.push(sec('최근 등판',`<div class="ibd-bars">${L.map(x=>`<div><span>${dmd(x[0])}</span><i style="width:${Math.round(x[1]/mx*100)}%"></i><b>${x[1]}구</b></div>`).join('')}</div>${row('연속 등판',consecDays(p,G.day)+'일')}`)); }
     S.push(sec('기록·계약',`${row('올해 1군',esc(statLine(h,p)))}${l10Text(p)?row('최근 폼',l10Text(p)):''}${row('연봉',money(p.sal||0))}${row('계약',esc(ctText(p)))}${row('병역',esc(milText(p)))}<button class="btn small" data-a="player" data-v="${p.id}">선수 정보 보기 ›</button>`)); }
-  const same=G.mail.filter(x=>x.from===m.from&&x.id!==m.id).slice(0,5), cat=G.mail.filter(x=>x.id!==m.id&&x.from!==m.from&&ibCat(x)===ibCat(m)).slice(0,5);
+  try{ S.push(...ibKindAtt(m,pid)); }catch(e){ console.warn('소식 자료',e); }
+  const same=G.mail.filter(x=>x.from===m.from&&x.id!==m.id).slice(0,S.length>3?3:5), cat=G.mail.filter(x=>x.id!==m.id&&x.from!==m.from&&ibCat(x)===ibCat(m)).slice(0,5);
   const li=x=>`<button class="ibs-li" data-a="mailJump" data-v="${x.id}"><span>${dmd(x.day)}${x.from!==m.from?' · '+esc(x.from):''}</span><b>${esc(x.subj)}</b></button>`;
-  if(same.length)S.push(sec(`${esc(m.from)}의 다른 소식`,same.map(li).join('')));
-  if(!p&&cat.length)S.push(sec(`같은 분류 최근 소식`,cat.map(li).join('')));
+  if(same.length&&S.length<6)S.push(sec(`${esc(m.from)}의 다른 소식`,same.map(li).join('')));
+  if(!p&&cat.length&&S.length<3)S.push(sec(`같은 분류 최근 소식`,cat.map(li).join('')));
   return S.length?`<div class="ibd-att" data-n="${S.length}">${S.join('')}</div>`:''; }
 /* PC(FM식): 소식을 고르기 전 오른쪽은 빈 안내 대신 요약 상자들 */
 function ibDash(need){ const N=ibNeedList().slice(0,6), D=ibDecideList().slice(0,6), cats=IB_CAT.filter(c=>!['all','task'].includes(c[0]));
@@ -19827,7 +19858,7 @@ function inboxWire(){ ibFit();document.documentElement.style.setProperty('--ibto
   { /* 목록 칸 스크롤: 휴대폰도 페이지 대신 목록 안에서 이동하고 돌아오면 그 위치를 지킨다. */
     const atTop=UI._ibAtTop!==false; if(UI._ibFirst||(atTop&&UI._ibCnt!==n)){ L.scrollTop=0; } else if(UI._ibLS!=null)L.scrollTop=UI._ibLS;
     const c=L.querySelector('.ibr.cur'); if(c&&(f||UI._ibToCur)){ UI._ibToCur=false; ibShowCur(L,c,true); }
-    const up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibAtTop=L.scrollTop<=24; if(up){ const lt=L.getBoundingClientRect().top; const k=[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length; up.hidden=L.scrollTop<200&&!k; up.textContent=k?`안 읽은 소식 ${k}건 ↑`:'맨 위로 ↑'; } }; L.onscroll=upd; upd();
+    const up=document.querySelector('.ibx-up'); const upd=()=>{ UI._ibLS=L.scrollTop; UI._ibAtTop=L.scrollTop<=24; if(up){ up.style.top=(L.offsetTop+8)+'px'; /* PC: 위의 보낸 사람 얼굴을 가리지 않게 목록 칸 위쪽에 */ const lt=L.getBoundingClientRect().top; const k=[...L.querySelectorAll('.ibr.unread')].filter(r=>r.getBoundingClientRect().bottom<lt+4).length; up.hidden=L.scrollTop<200&&!k; up.textContent=k?`안 읽은 소식 ${k}건 ↑`:'맨 위로 ↑'; } }; L.onscroll=upd; upd();
   }
   UI._ibFirst=false; UI._ibCnt=n; }
 function ibStep(d){ const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>document.querySelector(`.ibr[data-mid="${id}"]`)||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
@@ -19863,6 +19894,64 @@ function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
   const body=[`[진행 결과] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
   const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
   return m; }
+/* 소식 첨부 자료(PC·FM식): 소식 내용에 맞는 자료 상자를 본문 아래에 붙인다.
+   소식 종류(m.kind)와 본문에 나온 구단·선수 이름으로 고르고, 모두 지금 게임 데이터에서 만든다. */
+const ibdRow=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`;
+const ibdSec=(t,body,cls='')=>`<section class="ibd-sec ${cls}"><h3>${t}</h3>${body}</section>`;
+const ibdTxt=m=>(m.subj||'')+'\n'+(m.body||'');
+const ibdRec=tid=>{ const r=(G.sea&&G.sea.rec&&G.sea.rec[tid])||{w:0,l:0,t:0}; return `${r.w}승 ${r.l}패${r.t?' '+r.t+'무':''}`; };
+const ibdRank=tid=>{ const o=standOrder().order||[]; const i=o.findIndex(x=>(x.tid??x)===tid); return i<0?null:i+1; };
+/* 남의 선수는 스카우트가 아는 만큼만(모르면 '?') */
+function ibdOvr(p){ if(!p||hideOvr(p))return null; if(p.team===G.user)return ovr(p); const r=scoutReport(p); return r&&r.cur!=null?r.cur:null; }
+function ibdTeamsIn(m){ const s=ibdTxt(m); return G.teams.map(t=>t.id).filter(id=>id!==G.user&&(s.includes(tshort(id))||s.includes(team(id).nick))); }
+/* 본문에 이름이 나온 선수: 우리 선수 먼저, 같은 이름은 한 번만 */
+function ibdPlayersIn(m,skip){ const s=ibdTxt(m), seen=new Set(), L=[];
+  const all=Object.values(G.players).filter(p=>p.name&&p.name.length>=2&&p.id!==skip&&(p.team!=null||p.foreign||p.watch)).sort((a,b)=>(b.team===G.user)-(a.team===G.user));
+  for(const p of all){ if(seen.has(p.name)||!s.includes(p.name))continue; seen.add(p.name); L.push(p); if(L.length>=8)break; }
+  return L; }
+function ibdPlayers(L){ return ibdSec(`소식에 나온 선수 <em>${L.length}명</em>`,`<table class="ibd-t"><thead><tr><th>선수</th><th>소속</th><th>포지션</th><th>나이</th><th>종합</th><th>올해 1군</th></tr></thead><tbody>${L.map(p=>{ const o=ibdOvr(p);
+    return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${p.team!=null?badge(p.team,14)+' '+esc(team(p.team).nick):'-'}</td><td>${esc(posLabel(p))}</td><td>${p.age}</td><td><b style="color:${o!=null?rcol(o):'var(--muted)'}">${o!=null?dv(o):'?'}</b></td><td class="small">${esc(statLine(seasonTotal(p,G.year,'1군'),p))}</td></tr>`; }).join('')}</tbody></table>`,'ibd-wide'); }
+/* 수비 배치: 세로로 본 구장 위에 선발 야수(타순 번호), 옆에 선발진·불펜 */
+function ibdForm(tid,title){ const d=depth(tid), ord=new Map(d.start.map((p,i)=>[p.id,i+1]));
+  const dot=(p,x,y,lab)=>{ if(!p)return ''; const o=ibdOvr(p), r=11;
+    return `<g class="pfd ok"><title>${esc(p.name)} · ${lab}${o!=null?' · 종합 '+dv(o):''}</title><circle cx="${x}" cy="${y}" r="${r}" fill="${o!=null?rcol(o):'#5b6b79'}" stroke="#0b1014" stroke-width="1.2"/><text x="${x}" y="${y+3.6}" text-anchor="middle" class="pfd-v">${ord.get(p.id)||''}</text>${y+r+10>214?`<text x="${x+r+4}" y="${y+4}" class="pfd-l">${esc(p.name)}</text>`:`<text x="${x}" y="${y+r+10}" text-anchor="middle" class="pfd-l">${esc(p.name)}</text>`}</g>`; }; /* 포수는 구장 아래 끝이라 이름을 오른쪽에 */
+  const dots=FIELD.map(k=>dot(d.ln[k],POS_XY[k][0],POS_XY[k][1],POSK[k])).join('')+(d.ln.DH?`<text x="38" y="178" text-anchor="middle" class="pfd-l">지명타자</text>${dot(d.ln.DH,38,194,'지명타자')}`:'');
+  const pl=(p,i,lab)=>`<div><span>${lab||i+1}</span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><b style="color:${ibdOvr(p)!=null?rcol(ibdOvr(p)):'var(--muted)'}">${ibdOvr(p)!=null?dv(ibdOvr(p)):'?'}</b></div>`;
+  return ibdSec(`${title} <em>${badge(tid,14)} ${esc(tshort(tid))}</em>`,`<div class="ibd-form"><svg viewBox="0 0 300 222" class="pf-field" role="img" aria-label="${esc(tshort(tid))} 수비 배치" preserveAspectRatio="xMidYMid meet">${POS_FIELD}${dots}</svg><div class="ibd-plist"><h4>선발진</h4>${d.sp.slice(0,5).map((p,i)=>pl(p,i)).join('')||'<p class="small muted">없음</p>'}<h4>불펜 핵심</h4>${d.pen.slice(0,3).map((p,i)=>pl(p,i,i?'':'마무리')).join('')||'<p class="small muted">없음</p>'}</div></div><p class="small muted">숫자는 타순 · 색은 종합 능력(모르면 회색)</p>`,'ibd-wide ibd-formsec'); }
+/* 상대 구단 요약: 순위·전적·최근 흐름·팀 기록 순위·맞대결 */
+function ibdOpp(tid,label){ const T=teamStats(G.year), me=T.find(x=>x.tid===tid), l10=l10Of(tid), h=h2hOf(G.user,tid), rk=ibdRank(tid);
+  const nx=nextGames(40).filter(x=>x.op===tid).slice(0,3), gp=me&&me.g>0;
+  return ibdSec(`${label} <em>${badge(tid,14)} ${esc(tshort(tid))}</em>`,`${ibdRow('순위',rk?rk+'위 · '+ibdRec(tid):ibdRec(tid))}${ibdRow('최근 10경기',l10.n?`${l10.w}승 ${l10.l}패${l10.t?' '+l10.t+'무':''}`:'경기 전')}${gp?ibdRow('팀 OPS',`${fmt3(me.ops)} (${rankIn(T,tid,'ops')}위)`)+ibdRow('팀 평균자책점',`${me.era.toFixed(2)} (${rankIn(T,tid,'era',true)}위)`)+ibdRow('홈런',`${me.hr}개 (${rankIn(T,tid,'hr')}위)`):''}${ibdRow('올해 맞대결',h.w+h.l+h.t?`우리 ${h.w}승 ${h.l}패${h.t?' '+h.t+'무':''}`:'아직 없음')}${ibdRow('다음 맞대결',nx.length?nx.map(x=>dmd(x.d)+(x.home?'(홈)':'(원정)')).join(', '):'일정 없음')}<button class="btn small" data-a="lteam" data-v="${tid}">구단 선수단 보기 ›</button>`); }
+function ibdStand(){ const {order}=standOrder(); if(!order||!order.length)return ''; const top=order[0], gb=x=>((top.w-x.w)+(x.l-top.l))/2;
+  return ibdSec('순위',`<table class="ibd-t ibd-st"><thead><tr><th></th><th>구단</th><th>승</th><th>패</th><th>무</th><th>승차</th><th>최근 10</th></tr></thead><tbody>${order.map((x,i)=>{ const t=x.tid??x, r=x.w!=null?x:(G.sea.rec[t]||{w:0,l:0}), L=l10Of(t);
+    return `<tr class="${t===G.user?'me':''}${i===4?' cut':''}"><td>${i+1}</td><td>${badge(t,14)} ${esc(team(t).nick)}</td><td>${r.w}</td><td>${r.l}</td><td>${r.t||0}</td><td>${i?gb(r).toFixed(1):'-'}</td><td>${L.n?L.w+'-'+L.l:'-'}</td></tr>`; }).join('')}</tbody></table>`,'ibd-wide'); }
+function ibdNext(n){ const L=nextGames(n); if(!L.length)return '';
+  return ibdSec('다가오는 경기',L.map(x=>`<div class="ibd-gm"><span>${dmd(x.d)} ${WD[dobj(x.d).w]}</span><span class="pill">${x.ps?esc(x.ps):x.home?'홈':'원정'}</span><b>${badge(x.op,14)} ${esc(tshort(x.op))}</b><em>${ibdRank(x.op)?ibdRank(x.op)+'위':''}</em></div>`).join('')); }
+/* 자리별 리그 순위: 1위가 가장 긴 막대 */
+function ibdSlots(tid){ const R=slotRanks(tid), n=G.teams.length;
+  return ibdSec('자리별 전력 순위',`<div class="ibd-bars ibd-slot">${PSLOTS.map(k=>{ const r=R[k].rank; return `<div><span>${SLOTK[k]}</span><i class="${r<=3?'good':r>=n-2?'bad':''}" style="width:${Math.round((n+1-r)/n*100)}%"></i><b>${r}위</b></div>`; }).join('')}</div><p class="small muted">리그 ${n}개 구단 중 같은 자리 주전 비교</p>`); }
+function ibdGauge(l,v,goal){ v=Math.round(v); return `<div class="ibd-gg"><span>${l}</span><div><i style="width:${clamp(v,0,100)}%" class="${goal!=null?(v>=goal?'good':'bad'):''}"></i>${goal!=null?`<u style="left:${clamp(goal,0,100)}%" title="목표 ${goal}"></u>`:''}</div><b>${v}${goal!=null?`<em>/${goal}</em>`:''}</b></div>`; }
+function ibdPR(owner){ const g=G.goals||{}, t=team(G.user), rk=ibdRank(G.user), log=(G.ownerLog||[]).slice(0,5);
+  const a=ibdSec('여론·신뢰',`${ibdGauge('팬 여론',G.pr.fan,g.fan)}${ibdGauge('언론 논조',G.pr.press,null)}${t.trust!=null?ibdGauge('구단주 신뢰',t.trust,null):''}${owner&&g.rank?ibdRow('목표 순위',`${g.rank}위 이내 · 지금 ${rk||'-'}위`)+(g.sup!=null?ibdRow('적자 보전 목표',Math.round(g.sup*100)+'% 이하'):''):''}<p class="small muted">${g.fan!=null?'세로 선은 구단주 목표':''}</p>`);
+  return owner&&log.length?a+ibdSec('구단주 평가 기록',log.map(x=>ibdRow(`${x.m}월`,`${esc(x.mood)} · 신뢰 ${x.trust} (${x.delta>=0?'+':''}${x.delta})`)).join('')):a; }
+function ibdFin(){ let b; try{ b=budget(); }catch(e){ return ''; } const top=(L,n)=>[...L].filter(x=>x[1]>0).sort((x,y)=>y[1]-x[1]).slice(0,n), mx=Math.max(1,...b.inc.map(x=>x[1]),...b.exp.map(x=>x[1]));
+  const bars=(L,c)=>`<div class="ibd-bars ibd-money">${L.map(x=>`<div><span>${esc(x[0])}</span><i class="${c}" style="width:${Math.round(x[1]/mx*100)}%"></i><b>${money(x[1])}</b></div>`).join('')}</div>`;
+  return ibdSec('올해 예산',`${ibdRow('예상 수입',money(b.I))}${ibdRow('예상 지출',money(b.E))}${ibdRow('예산 여유',`<span class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</span>`)}${ibdRow('보유 현금',money(b.cash))}${b.support?ibdRow('구단주 보전',money(b.support)):''}`)
+    +ibdSec('큰 수입',bars(top(b.inc,5),'good'))+ibdSec('큰 지출',bars(top(b.exp,5),'')); }
+/* 소식 종류별 구성 */
+function ibKindAtt(m,pid){ const k=m.kind, T=ibdTeamsIn(m), nx=(nextGames(1)||[])[0], S=[]; const add=h=>{ if(h)S.push(h); };
+  const opp=T[0]!=null?T[0]:['분석','월간','감독'].includes(k)&&nx?nx.op:null, oppL=T[0]!=null?'소식 속 구단':'다음 상대';
+  const per=period(), live=per==='season'||per==='post';
+  if(k==='분석'){ add(ibdSlots(G.user)); add(ibdForm(G.user,'우리 수비 배치')); if(opp!=null){ add(ibdOpp(opp,oppL)); add(ibdForm(opp,oppL+' 수비 배치')); } }
+  else if(k==='월간'){ add(ibdStand()); add(ibdNext(6)); if(opp!=null)add(ibdOpp(opp,oppL)); }
+  else if(k==='감독'){ add(ibdForm(G.user,'우리 수비 배치')); add(ibdNext(5)); if(opp!=null)add(ibdOpp(opp,oppL)); }
+  else if(k==='구단주'){ add(ibdPR(true)); if(live)add(ibdStand()); }
+  else if(k==='언론'){ add(ibdPR(false)); if(live)add(ibdNext(4)); }
+  else if(k==='재정'||k==='스폰서')add(ibdFin());
+  else if(k==='일정'||k==='엔트리'){ add(ibdNext(6)); add(ibdForm(G.user,'우리 수비 배치')); }
+  if(!['분석','월간','감독','언론'].includes(k)&&T.length){ add(ibdOpp(T[0],'소식 속 구단')); add(ibdForm(T[0],'소식 속 구단 수비 배치')); }
+  const P=ibdPlayersIn(m,pid); if(P.length>=(pid!=null?2:1))add(ibdPlayers(P));
+  return S; }
 /* ---------- 그림 에셋: 트로피·메달·사건 아이콘 (직접 그린 SVG) ---------- */
 let ARTN=0;
 const ART={
@@ -24879,6 +24968,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04i',d:'11월 4일',t:'드래프트 중 빨간 안내 띠가 화면 절반을 덮던 문제',items:[
+    'PC에서 신인·창단 드래프트처럼 진행을 막는 일이 있을 때 위에 뜨는 빨간 안내 띠("신인 드래프트를 먼저 마치세요")가 화면 높이만큼 늘어나 절반을 덮던 문제를 고쳤습니다. 이제 한 줄로만 보입니다.']},
+  {id:'2026-11-04h',d:'11월 4일',t:'소식마다 내용에 맞는 자료',items:[
+    '소식 아래 자료 칸을 소식 종류별로 채웠습니다. 전력 분석 보고는 자리별 전력 순위·우리 수비 배치(타순·종합 능력)·다음 상대 요약과 수비 배치, 월간 성적은 순위표·다가오는 경기·다음 상대, 감독 면담은 수비 배치·다가오는 경기, 구단주 보고는 팬 여론·언론 논조·구단주 신뢰(목표선 표시)와 평가 기록·순위, 재정·스폰서 소식은 올해 예산과 큰 수입·지출을 보여 줍니다.',
+    '본문에 다른 구단이 나오면 그 구단의 순위·최근 10경기·팀 기록 순위·맞대결 전적·다음 맞대결과 수비 배치가, 선수 이름이 나오면 그 선수들의 소속·포지션·종합·올해 기록 표가 붙습니다. 남의 선수 능력은 스카우트가 아는 만큼만 보입니다.',
+    '휴대폰에서도 같은 자료가 소식 아래에 한 줄씩 쌓여 보입니다. PC 소식함의 "안 읽은 소식" 버튼이 보낸 사람 얼굴을 가리지 않게 목록 칸 위로 옮겼습니다.']},
   {id:'2026-11-04g',d:'11월 4일',t:'PC 소식함을 FM처럼',items:[
     'PC 소식함의 소식을 FM처럼 한 장의 문서로 바꿨습니다. 머리(보낸 곳·분류·큰 제목), 본문, 내용에 맞춘 자료 칸(부상 소식은 의무팀 기록, 투수 소식은 최근 등판 투구 수, 선수 소식은 선수·핵심 능력·기록과 계약), 행동 버튼(아래 오른쪽) 순서입니다. 목록 칸 위에는 보낸 사람 얼굴이 크게 보입니다.',
     '소식을 고르기 전에는 빈 안내 대신 확인할 소식·결정할 일·분류별 안 읽음·최근 소식 상자 네 칸을 보여 줍니다.']},

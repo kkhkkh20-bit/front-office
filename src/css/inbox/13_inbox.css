@@ -125,7 +125,7 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 
 /* FM식 소식함(PC): 오른쪽은 소식 하나가 한 장의 문서. 머리(분류·시각 | 큰 제목) → 본문 → 같은 문서 안에 내용별 자료 칸 → 행동 버튼은 아래 오른쪽.
    왼쪽 목록 칸 위에는 보낸 사람 얼굴(상자 없이). 고르기 전에는 요약 상자 2×2 */
-.ibx-fm,.ibx-dash,.ibd-att{display:none}.ibx-lw>.ibs-from{display:none}
+.ibx-fm,.ibx-dash{display:none}.ibx-lw>.ibs-from{display:none}
 @media(min-width:1100px){
   .ibx-read:has(.ibx-fm,.ibx-dash){overflow:hidden!important}
   .ibx-lw:has(>.ibs-from){display:flex;flex-direction:column;gap:8px;min-height:0}.ibx-lw:has(>.ibs-from)>.ibx-list{flex:1;min-height:0;max-height:none}
@@ -142,16 +142,6 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
   .ibx-fm .ibm-acts{margin-top:auto;padding-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
   .ibx-fm .ibm-acts .btn{border-radius:16px;padding-inline:16px}
   /* 문서 안 자료 칸: 상자 대신 얇은 구분선과 제목, 남는 폭을 칸으로 나눠 채운다 */
-  .ibd-att{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .ibd-sec{padding:12px 14px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}.ibd-sec:first-child{border-left:0;padding-left:0}
-  .ibd-sec.ibd-wide{grid-column:span 2}
-  .ibd-sec h3{margin:0 0 4px;font-size:13px;color:var(--team-hi,#4fa3ff)}
-  .ibd-pl{display:flex;gap:12px;align-items:center}.ibd-pl .av{width:72px;height:72px}.ibd-pl b{display:block;font-size:17px}.ibd-pl span{font-size:12px;color:var(--muted)}
-  .ibd-key{display:flex;gap:14px;margin-top:6px}.ibd-key span{font-size:12px;color:var(--muted)}.ibd-key b{display:inline;font:700 20px var(--f-num);color:var(--ink);margin-left:4px}
-  .ibd-core{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:6px}.ibd-core>div{display:grid;justify-items:center;padding:4px 0;border-top:2px solid var(--line)}.ibd-core span{font-size:11px;color:var(--muted)}.ibd-core b{font:700 20px var(--f-num)}
-  .ibd-bars>div{display:grid;grid-template-columns:44px minmax(0,1fr) 40px;gap:6px;align-items:center;font-size:12px;padding:2px 0}.ibd-bars span{color:var(--muted)}.ibd-bars i{display:block;height:8px;border-radius:2px;background:var(--team-hi,#4fa3ff)}.ibd-bars b{text-align:right;font-family:var(--f-num)}
-  .ibd-sec .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-sec .pf-fact span{color:var(--muted);flex:none}.ibd-sec .pf-fact b{text-align:right;font-weight:600}
-  .ibd-sec>.btn{align-self:flex-start;margin-top:4px}
   .ibs-li{all:unset;cursor:pointer;display:grid;gap:1px;padding:5px 0;border-top:1px solid var(--line);font-size:12px}.ibs-li:first-of-type{border-top:0}.ibs-li span{color:var(--muted);font-size:11px}.ibs-li b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ibs-li:hover b{color:var(--team-hi,#4fa3ff)}
   .ibs-box{margin:0!important;display:flex!important;flex-direction:column;gap:6px;min-height:0;overflow:auto;scrollbar-width:thin}
   .ibs-box h3{margin:0 0 2px;font-size:13px;display:flex;justify-content:space-between;gap:6px}.ibs-box h3 em{font-style:normal;color:var(--warn)}
@@ -163,4 +153,43 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
   .ibx-fm>.ibm>.ibd-att{order:5;flex:1 0 auto;align-content:stretch}
   .ibx-fm>.ibm>.ibm-acts{order:9;margin-top:0}
   .ibx-fm>.ibm>.ibm-res{order:8}
+}
+/* 소식 종류별 자료(19b_inbox_att.js): 순위표·수비 배치·상대 구단·자리별 순위·여론 막대·예산. PC·휴대폰 같은 자료 */
+@media all{
+  .ibd-att{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .ibd-sec{padding:12px 14px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}.ibd-sec:first-child{border-left:0;padding-left:0}
+  .ibd-sec.ibd-wide{grid-column:span 2}
+  .ibd-sec h3{margin:0 0 4px;font-size:13px;color:var(--team-hi,#4fa3ff)}
+  .ibd-pl{display:flex;gap:12px;align-items:center}.ibd-pl .av{width:72px;height:72px}.ibd-pl b{display:block;font-size:17px}.ibd-pl span{font-size:12px;color:var(--muted)}
+  .ibd-key{display:flex;gap:14px;margin-top:6px}.ibd-key span{font-size:12px;color:var(--muted)}.ibd-key b{display:inline;font:700 20px var(--f-num);color:var(--ink);margin-left:4px}
+  .ibd-core{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:6px}.ibd-core>div{display:grid;justify-items:center;padding:4px 0;border-top:2px solid var(--line)}.ibd-core span{font-size:11px;color:var(--muted)}.ibd-core b{font:700 20px var(--f-num)}
+  .ibd-bars>div{display:grid;grid-template-columns:44px minmax(0,1fr) 40px;gap:6px;align-items:center;font-size:12px;padding:2px 0}.ibd-bars span{color:var(--muted)}.ibd-bars i{display:block;height:8px;border-radius:2px;background:var(--team-hi,#4fa3ff)}.ibd-bars b{text-align:right;font-family:var(--f-num)}
+  .ibd-sec .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-sec .pf-fact span{color:var(--muted);flex:none}.ibd-sec .pf-fact b{text-align:right;font-weight:600}
+  .ibd-sec>.btn{align-self:flex-start;margin-top:4px}
+  .ibd-sec h3 em{font-style:normal;font-weight:500;color:var(--muted);margin-left:6px}
+  .ibd-sec h4{margin:6px 0 2px;font-size:11px;font-weight:600;color:var(--muted)}.ibd-sec h4:first-child{margin-top:0}
+  .ibd-t{width:100%;border-collapse:collapse;font-size:12px}.ibd-t th{text-align:left;font-weight:500;color:var(--muted);padding:3px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .ibd-t td{padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}.ibd-t td.small{white-space:normal;color:var(--muted)}
+  .ibd-t tr.me td{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 16%,transparent);font-weight:600}.ibd-t tr.cut td{border-bottom:2px solid var(--muted)}
+  .ibd-t td,.ibd-t th{text-align:left}.ibd-st td:nth-child(n+3),.ibd-st th:nth-child(n+3){text-align:right;font-family:var(--f-num)}
+  .ibd-form{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(120px,1fr);gap:12px;align-items:start}
+  .ibd-form .pf-field{display:block;width:100%;height:auto;aspect-ratio:300/222}
+  .ibd-plist>div{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}.ibd-plist span{color:var(--muted);font-size:11px}.ibd-plist b{font:700 13px var(--f-num)}
+  .ibd-plist .lnk,.ibd-t .lnk{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ibd-slot>div,.ibd-money>div{--bar:#5b7285}.ibd-slot i,.ibd-money i{background:var(--bar)!important}.ibd-slot i.good,.ibd-money i.good{--bar:var(--good)}.ibd-slot i.bad{--bar:var(--bad)}
+  .ibd-slot>div{grid-template-columns:56px minmax(0,1fr) 34px}.ibd-bars i.good{background:var(--good)}.ibd-bars i.bad{background:var(--bad)}
+  .ibd-money>div{grid-template-columns:96px minmax(0,1fr) 64px}.ibd-money span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ibd-gg{display:grid;grid-template-columns:72px minmax(0,1fr) 54px;gap:8px;align-items:center;font-size:12px;padding:5px 0}.ibd-gg>span{color:var(--muted)}
+  .ibd-gg>div{position:relative;height:9px;background:var(--panel2);border-radius:2px}.ibd-gg i{display:block;height:100%;border-radius:2px;background:#5b7285}.ibd-gg i.good{background:var(--good)}.ibd-gg i.bad{background:var(--warn)}
+  .ibd-gg u{position:absolute;top:-4px;width:2px;height:17px;background:var(--ink);text-decoration:none}.ibd-gg b{text-align:right;font:700 15px var(--f-num)}.ibd-gg b em{font:400 11px var(--f-ui);color:var(--muted)}
+  .ibd-gm{display:grid;grid-template-columns:62px auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-gm>span:first-child{color:var(--muted)}.ibd-gm em{font-style:normal;color:var(--muted)}
+}
+/* 휴대폰·좁은 화면: 자료 칸을 한 줄씩 쌓고, 넓은 표는 칸 안에서 가로로 민다 */
+@media(max-width:1099px){
+  .ibm>.ibd-att{grid-template-columns:minmax(0,1fr);border-bottom:0;margin-top:4px}
+  .ibd-sec,.ibd-sec:first-child{border-left:0;padding:12px 0;border-top:1px solid var(--line)}.ibd-sec:first-child{border-top:0}
+  .ibd-sec.ibd-wide{grid-column:auto}
+  .ibd-sec:has(>.ibd-t){overflow-x:auto}.ibd-t td.small{white-space:nowrap}
+  .ibd-form{grid-template-columns:minmax(0,1fr)}
+  .ibd-core{grid-template-columns:repeat(3,minmax(0,1fr))}
 }

@@ -136,6 +136,7 @@
       "src/ui/draft/18_founding_draft.js",
       "src/ui/media/18_mail_status.js",
       "src/ui/media/19_inbox.js",
+      "src/ui/media/19b_inbox_att.js",
       "src/ui/matches/20_art_sound.js",
       "src/ui/matches/21_cast.js",
       "src/ui/matches/22_pbp.js",

@@ -39,6 +39,7 @@ button,input,select{font:inherit;color:inherit}
 .goset .continue:hover{background:var(--go-hi)}
 .goset button[disabled]{opacity:.45;cursor:not-allowed}
 .blk{background:#3a1c1a;color:#ffd2cc;font-size:13px;padding-block:6px;border-bottom:1px solid #5a2a26}
+.fmmain>.blk{flex:none!important;min-height:0} /* 막힘 안내 띠: 넓은 화면 작업판(.gut flex:1)에 같이 늘어나 화면 절반을 빨갛게 덮던 문제 */
 .blk button{all:unset;cursor:pointer;text-decoration:underline;margin-left:6px;font-weight:700}
 .subhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-block:10px 4px}
 .subhead h1{margin:0;font:700 18px var(--f-ui);letter-spacing:-.01em}

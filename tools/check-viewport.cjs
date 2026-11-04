@@ -42,12 +42,13 @@ const SIZES=(process.env.SIZES||'360x640,390x844,844x390,768x1024,1024x768,1280x
             const cx=b.left+b.width/2,cy=b.top+Math.min(b.height/2,8);if(cy<=topY+1||cy>=botY-1||cx<0||cx>W||pinned(e))continue;
             let inView=true;for(let a=e.parentElement;a&&a!==document.body;a=a.parentElement){const s=getComputedStyle(a);if(/(auto|scroll)/.test(s.overflowY+s.overflowX)){const r=a.getBoundingClientRect();if(cy<r.top||cy>r.bottom||cx<r.left||cx>r.right){inView=false;break;}}}
             if(!inView)continue;const hit=document.elementFromPoint(cx,cy);if(!hit||e.contains(hit)||hit.contains(e)||pinned(hit)||hit.closest('svg'))continue;hid.push(desc(e)+' ← '+desc(hit));}
-          const fb=document.querySelector('.md-field-body');
-          return {field:fb?Math.round(fb.getBoundingClientRect().height):null,over:document.documentElement.scrollWidth-W,out:[...new Set(out)],cut:[...new Set(cut)],hid:[...new Set(hid)]};
+          const fb=document.querySelector('.md-field-body');const bk=document.querySelector('.blk');
+          return {blk:bk?Math.round(bk.getBoundingClientRect().height):0,field:fb?Math.round(fb.getBoundingClientRect().height):null,over:document.documentElement.scrollWidth-W,out:[...new Set(out)],cut:[...new Set(cut)],hid:[...new Set(hid)]};
         });
         const tag=size.width+'x'+size.height+' '+v;
         if(r.over>2)fails.push(tag+': 가로 넘침 '+r.over+'px');
         if(v==='cast'&&!(r.field>=200))fails.push(tag+': 경기장 높이 '+r.field+'px(200px 미만이면 선수·타구가 납작하게 보임)');
+        if(r.blk>90)fails.push(tag+': 막힘 안내 띠 높이 '+r.blk+'px(한두 줄이어야 함)');
         if(r.out.length)fails.push(tag+': 화면 밖 '+r.out.slice(0,3).join(', '));
         if(r.cut.length)fails.push(tag+': 잘린 버튼 '+r.cut.slice(0,3).join(', '));
         if(r.hid.length)fails.push(tag+': 가려진 버튼 '+r.hid.slice(0,3).join(', '));
