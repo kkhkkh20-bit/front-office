@@ -1532,6 +1532,10 @@ T('창단 드래프트 툴 등급: 1군 주전 평균이 C 중급(70점대)이�
     ok(mean>=72&&mean<=76,l+' 주전 평균 점수 '+mean.toFixed(1)); ok(f('S')<=.06,l+' S 비율 '+(f('S')*100).toFixed(1)+'%'); ok(f('A')+f('S')>=.03&&f('A')+f('S')<=.15,l+' A 이상 비율 '+((f('A')+f('S'))*100).toFixed(1)+'%');
     ok(f('C')>=.25&&['S','A','B','D','E'].every(g=>f(g)<=f('C')+.04),l+' C가 가장 많은 쪽이어야 함 '+JSON.stringify(G2)); }
   ok(FD_G(52.5)==='C'&&fdToolNum(52.5)===74,'주전 평균 = 74점 C'); ok(!/F/.test(['S','A','B','C','D','E'].map(g=>g).join('')+FD_G(5)),'F 등급이 남아 있음'); });
+T('[리뷰 11-04] 포스트시즌 대진표 차전 점수: 모든 시리즈의 차전별 점수가 남고 승수·우리 경기 기록과 맞는다',()=>{ fresh(); simTo(()=>G.ps&&G.ps.done); ok(G.ps&&G.ps.done,'준비 실패: 포스트시즌이 끝나지 않음');
+  for(const k of ['wc','spo','po','ks']){ const r=G.ps.res[k], D=G.ps.days[k]; ok(D&&D.p&&D.p.length===D.d.length,k+' 차전 점수 수 '+(D&&D.p?D.p.length:'없음')+' / 경기 '+(D?D.d.length:0));
+    const w={}; D.p.forEach(([hs,as],i)=>{ const h=D.h[i], a=h===r[0]?r[1]:r[0]; if(hs!==as){ const t=hs>as?h:a; w[t]=(w[t]||0)+1; } }); ok((w[r[0]]||0)===r[2]&&(w[r[1]]||0)===r[3],k+' 점수로 센 승수가 결과와 다름: '+JSON.stringify(w)+' / '+r.join(','));
+    for(const g of (G.sea.ulog||[]).filter(g=>(g.k||'').startsWith(ROUNDK[k]+' '))){ const i=D.d.indexOf(g.d); ok(i>=0&&D.p[i][0]===g.hs&&D.p[i][1]===g.as,k+' 우리 경기 '+g.d+' 점수가 기록과 다름'); } } });
 T('창단 드래프트: 지명 뒤 공개하는 실제 툴 등급은 스카우트 등급과 같은 기준이다(추정 A → 실제 C처럼 기준 차이로 어긋나지 않게)',()=>{ DEMO.on=false; newGame(6); fdStart();
   const P=Object.values(G.players).filter(p=>p.fdPool); const out=[];
   for(const isP of [false,true]) for(const [k,l] of FD_TOOLS[isP?'P':'B']){ const A=P.filter(p=>p.isP===isP); if(A.length<20)continue; let dNew=0,dOld=0;

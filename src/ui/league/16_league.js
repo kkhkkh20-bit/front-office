@@ -123,16 +123,22 @@ function bkData(y){ const P=G.ps;
 function bkSeries(D,[k,hs,src]){ const R=D.res||{}, r=R[k], c=D.cur&&D.cur.round===k?D.cur:null, hi=D.seeds[hs];
   let lo=typeof src==='number'?D.seeds[src]:R[src]?R[src][0]:null, wh=null, wl=null;
   if(r){ lo=r[0]===hi?r[1]:r[0]; wh=r[0]===hi?r[2]:r[3]; wl=r[0]===hi?r[3]:r[2]; } else if(c){ lo=c.lo; wh=c.wh; wl=c.wl; }
-  const sc=c?{d:c.days,h:c.homes,gi:c.gi}:D.days[k]?{d:D.days[k].d,h:D.days[k].h,gi:D.days[k].d.length}:null;
+  const sc=c?{d:c.days,h:c.homes,gi:c.gi,p:c.pts}:D.days[k]?{d:D.days[k].d,h:D.days[k].h,gi:D.days[k].d.length,p:D.days[k].p}:null;
   return {k,hi,lo,wh,wl,r,c,sc,win:r?r[0]:null}; }
 function bkSlot(D,t,w,win,alt){ if(t==null)return `<span class="bk-s tbd"><b>TBD</b><i>${alt}</i></span>`;
   const P=tpal(t); return `<span class="bk-s${win==null?'':win===t?' win':' out'}${t===G.user?' me':''}" style="--c1:${P[0]};--c2:${P[2]}">${badge(t,40)}<b>${esc(tshort(t))}<sup>${D.seeds.indexOf(t)+1}</sup></b><em>${w??''}</em></span>`; }
 function bkCard(D,x,sel){ const s=bkSeries(D,x), [k,,src]=x;
   const st=s.r?'종료':s.c?'진행 중':D.proj?'예상':'';
   return `<button class="bk-c bk-${k}${s.r?' done':s.c?' live':''}${sel===k?' sel':''}" data-a="psSel" data-v="${k}" aria-label="${ROUNDK[k]} 결과 보기"><span class="bk-h"><b>${ROUNDK[k]}</b><i>${st}</i></span>${bkSlot(D,s.hi,s.wh,s.win,'')}${bkSlot(D,s.lo,s.wl,s.win,typeof src==='number'?'정규시즌 5위':BK_S[src]+' 승자')}</button>`; }
-/* 칸 아래 차전별 날짜·홈 구장(일정이 정해진 시리즈만) */
-function bkSched(D,x){ const s=bkSeries(D,x), S=s.sc;
-  return `<div class="bk-sc bk-sc-${x[0]}"><b>${x[3]}</b>${S?S.d.map((d,i)=>`<span class="${i<S.gi?'past':i===S.gi&&s.c?'now':''}"><i>${i+1}차전</i>${dmd(d)}<em>${esc(stadName(S.h[i]))}</em></span>`).join(''):`<span class="muted">${D.proj?'정규시즌이 끝나면 일정이 정해집니다':'앞 시리즈가 끝나면 일정이 정해집니다'}</span>`}</div>`; }
+/* 차전별 날짜·홈·점수: 엔진이 남긴 차전 점수(G.ps 시리즈 pts → days[k].p), 없으면(옛 저장) 우리 경기 기록(G.sea.ulog)만 */
+function bkGames(D,x){ const s=bkSeries(D,x), S=s.sc; if(!S)return null;
+  const L=D.now?(G.sea.ulog||[]).filter(g=>(g.k||'').startsWith(ROUNDK[x[0]]+' ')):[];
+  return S.d.map((d,i)=>{ const h=S.h[i], a=h===s.hi?s.lo:s.hi, u=L.find(g=>g.d===d), p=i<S.gi?(S.p&&S.p[i]?{hs:S.p[i][0],as:S.p[i][1]}:u?{hs:u.hs,as:u.as}:null):null;
+    return {i,d,h,a,p,w:p?(p.hs>p.as?h:p.as>p.hs?a:null):null,u:u?G.games.findIndex(r=>r.day===d&&r.kind===u.k):-1,st:i<S.gi?'past':i===S.gi&&s.c?'now':''}; }); }
+const bkRes=(g,sz)=>g.p?g.w!=null?`<u class="bk-rs">${badge(g.w,sz)}<b>${esc(team(g.w).nick)}</b><em>${Math.max(g.p.hs,g.p.as)}:${Math.min(g.p.hs,g.p.as)}</em><s>승</s></u>`:`<u class="bk-rs t"><em>${g.p.hs}:${g.p.as}</em><s>무</s></u>`:'';
+/* 칸 아래 차전별 날짜·홈 구장·결과(일정이 정해진 시리즈만) */
+function bkSched(D,x){ const L=bkGames(D,x);
+  return `<div class="bk-sc bk-sc-${x[0]}"><b>${x[3]}</b>${L?L.map(g=>`<span class="${g.st}" title="${g.i+1}차전 ${dmd(g.d)} ${esc(stadName(g.h))}"><i>${g.i+1}차전</i><time>${dobj(g.d).m}/${dobj(g.d).d}</time><em>${esc(stadName(g.h))}</em>${bkRes(g,14)}</span>`).join(''):`<span class="muted">${D.proj?'정규시즌이 끝나면 일정이 정해집니다':'앞 시리즈가 끝나면 일정이 정해집니다'}</span>`}</div>`; }
 /* 고른 시리즈 결과: 우리 경기는 경기별 기록(박스스코어)이 남고, 다른 구단 시리즈는 승패 결과만 남는다 */
 function bkDet(D,k){ const x=BK_R.find(r=>r[0]===k), s=bkSeries(D,x), nm=t=>`${badge(t,20)} ${esc(tname(t))}`;
   let b='';
@@ -140,9 +146,9 @@ function bkDet(D,k){ const x=BK_R.find(r=>r[0]===k), s=bkSeries(D,x), nm=t=>`${b
   else if(s.r)b=`<p class="bk-big">${nm(s.r[0])} <b>${s.r[2]}승 ${s.r[3]}패</b> 승리</p><p class="muted">${nm(s.r[1])} 탈락${D.resD[k]!=null?` · ${dmd(D.resD[k])} 종료`:''}</p>`;
   else if(s.c)b=`<p class="bk-big">${nm(s.c.hi)} <b>${s.c.wh} : ${s.c.wl}</b> ${nm(s.c.lo)}</p><p class="muted">다음 ${s.c.gi+1}차전 ${dmd(s.c.days[s.c.gi])} · ${esc(stadName(s.c.homes[s.c.gi]))}</p>`;
   else b=`<p>${s.hi!=null?nm(s.hi):''}${s.lo!=null?` 대 ${nm(s.lo)}`:` · ${BK_S[x[2]]||''} 승자를 기다리는 중`}</p><p class="muted">아직 시작 전입니다.</p>`;
-  const L=D.now?(G.sea.ulog||[]).filter(g=>(g.k||'').startsWith(ROUNDK[k]+' ')):[];
-  const gl=L.length?`<h4>우리 경기</h4><div class="bk-gr">${L.map(g=>{ const i=G.games.findIndex(r=>r.day===g.d&&r.kind===g.k), tg=i>=0?'button':'span'; return `<${tg}${i>=0?` data-a="openGame" data-v="${i}"`:''} class="bk-g ${({승:'w',패:'l'})[g.res]||'t'}"><i>${esc(g.k.slice(ROUNDK[k].length+1))}</i><span>${dmd(g.d)}</span><b>${esc(tshort(g.a))} ${g.as} : ${g.hs} ${esc(tshort(g.h))}</b><em>${g.res}</em></${tg}>`; }).join('')}</div>`
-    :(s.r||s.c)?`<p class="small muted">경기별 기록(박스스코어)은 우리 구단 경기만 남습니다.</p>`:'';
+  const L=D.proj?null:bkGames(D,x), me=G.user;
+  const gl=L?`<h4>차전별 결과</h4><div class="bk-gr">${L.map(g=>{ const tg=g.u>=0?'button':'span', o=g.w==null?'t':[g.h,g.a].includes(me)?(g.w===me?'w':'l'):'';
+    return `<${tg}${g.u>=0?` data-a="openGame" data-v="${g.u}"`:''} class="bk-g ${g.p?o:'yet'}"${g.p?` title="${esc(tshort(g.a))} ${g.p.as} : ${g.p.hs} ${esc(tshort(g.h))}(원정 : 홈)"`:''}><i>${g.i+1}차전</i><span>${dmd(g.d)} · ${esc(stadName(g.h))}</span>${g.p?bkRes(g,16):`<b class="muted">${g.st==='now'?'다음 경기':'예정'}</b>`}</${tg}>`; }).join('')}</div>${L.some(g=>g.st==='past'&&!g.p)?'<p class="small muted">이 시리즈는 점수가 남지 않은 차전이 있습니다(우리 구단 경기만 기록된 저장).</p>':''}${L.some(g=>g.u>=0)?'<p class="small muted">우리 경기는 눌러서 박스스코어를 봅니다.</p>':''}`:'';
   return `<section class="bk-box bk-det"><h3>${ROUNDK[k]}</h3>${b}${gl}${k==='wc'?'<p class="small muted">4위는 1승을 안고 시작해 한 번만 이기거나 비겨도 올라갑니다. 칸의 숫자는 실제로 이긴 경기 수입니다.</p>':''}</section>`; }
 function psBracket(){
   const ys=bkYears(), so=standOrder(), projOk=!G.ps&&so.live, def=G.ps?psYearOf(G.ps):projOk||!ys.length?G.year:ys[ys.length-1];
@@ -152,17 +158,17 @@ function psBracket(){
   const st=D.proj?(D.live?'지금 순위대로라면 이렇게 붙습니다(예상 대진)':'지난 시즌 최종 순위 기준 예상 대진'):R.ks?`${tname(R.ks[0])} 우승 · 준우승 ${tname(R.ks[1])}`:D.cur?(D.cur.round==='tb'?'순위 결정전 진행 중 · 끝나면 시드가 정해집니다':`${ROUNDK[D.cur.round]} 진행 중`):'포스트시즌';
   const head=`<div class="bk-hd"><span class="eyebrow">가을야구 대진표</span><h2>${D.y} 포스트시즌</h2><p>${esc(st)}</p>${opts.length>1?optRow('psY',y,opts):''}<div class="bk-sum">${BK_R.map(x=>{ const s=bkSeries(D,x), r=s.r; return `<div class="${[s.hi,s.lo].includes(G.user)?'me':''}"><i>${BK_S[x[0]]||'한국시리즈'}</i><span>${r?`${badge(r[0],16)} ${esc(tshort(r[0]))} ${r[2]}승 ${r[3]}패로 ${esc(tshort(r[1]))} 꺾음`:s.c?`${esc(tshort(s.c.hi))} ${s.c.wh} : ${s.c.wl} ${esc(tshort(s.c.lo))} · 진행 중`:`${s.hi!=null?esc(tshort(s.hi)):'TBD'} 대 ${s.lo!=null?esc(tshort(s.lo)):'TBD'}${D.proj?' (예상)':''}`}</span></div>`; }).join('')}</div></div>`;
   /* 아래 줄: 5위 → 1위(왼쪽→오른쪽), 정규시즌 성적 */
-  const seeds=`<div class="bk-sd">${[4,3,2,1,0].map(i=>{ const o=D.order[i]; return o?`<div class="bk-q bk-q${i+1}${o.tid===G.user?' me':''}">${badge(o.tid,44)}<span><i>${i+1}위</i><b>${esc(tshort(o.tid))}</b><em>${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''}</em></span></div>`:''; }).join('')}</div>`;
+  const seeds=`<div class="bk-sd">${[4,3,2,1,0].map(i=>{ const o=D.order[i]; return o?`<div class="bk-q bk-q${i+1}${o.tid===G.user?' me':''}">${badge(o.tid,44)}<span title="${esc(tshort(o.tid))}"><i>${i+1}위</i><b><s>${esc(team(o.tid).city)} </s>${esc(team(o.tid).nick)}</b><em>${o.w}승 ${o.l}패${o.t?` <s>${o.t}무</s>`:''}</em></span></div>`:''; }).join('')}</div>`;
   const ruleT='정규시즌 1~5위가 나갑니다. 아래 단계에서 이긴 팀이 위에서 기다리는 상위 팀과 붙습니다. 칸을 누르면 그 시리즈 결과를 봅니다.';
   /* PC 대진표에서는 칸이 작아 긴 설명은 i 버튼으로, 짧은 안내만 남긴다 */
   const rule=`<section class="bk-box bk-rule"><h3>진행 방식 ${hiI(ruleT)}</h3><p class="bk-rule-l">${ruleT}</p><p class="bk-rule-s">1~5위 · 아래 단계 승자가 위 칸 상위 팀과 붙습니다.</p></section>`;
-  const ks=R.ks, ch=`<div class="bk-ch${ks?' on':''}${ks&&ks[0]===G.user?' me':''}"><span class="eyebrow">${D.y} 우승</span>${ks?`${trophyImg(72)}<span class="bk-cht">${badge(ks[0],48)}<b>${esc(tname(ks[0]))}</b></span><i>한국시리즈 ${ks[2]}승 ${ks[3]}패</i>`:'<b class="muted">TBD</b><i>한국시리즈 승자</i>'}</div>`;
+  const ks=R.ks, ch=`<div class="bk-ch${ks?' on':''}${ks&&ks[0]===G.user?' me':''}"><span class="eyebrow">${D.y} 우승</span>${ks?`${champTrophyImg(80)}<span class="bk-cht">${badge(ks[0],48)}<b>${esc(tname(ks[0]))}</b></span><i>한국시리즈 ${ks[2]}승 ${ks[3]}패</i>`:'<b class="muted">TBD</b><i>한국시리즈 승자</i>'}</div>`;
   /* 선: 칸(두 팀 사이) → 다음 칸 아래 팀, 아래 줄 구단 → 그 구단이 들어가는 칸 */
   const my=i=>BK_Y[i]+BK_H*.61, lowY=i=>BK_Y[i]+BK_H*.805, bot=i=>BK_Y[i]+BK_H;
   const ln=BK_R.map(([k],i)=>{ const x0=BK_X[i]+BK_W, x1=BK_X[i+1], y0=my(i), y1=i<3?lowY(i+1):my(i), m=(x0+x1)/2;
     return `<path class="${R[k]?'on':''}" d="M${x0} ${y0}H${m}V${y1}H${x1}"/>`; }).join('')
     +[[0,BK_W*.25],[0,BK_W*.75],[1,BK_W/2],[2,BK_W/2],[3,BK_W/2]].map(([c,dx])=>`<path d="M${BK_X[c]+dx} ${BK_SY}V${bot(c)}"/>`).join(''); /* 일정 칸이 줄기를 덮는다 */
-  return `<div class="bk ws-own">${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${rule}</div>`; }
+  return `<div class="bk ws-own"${v3('bracket')?` style="--bk-bg:url(${v3('bracket')})"`:''}>${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${rule}</div>`; }
 function standFm(order,live,y){
   const me=G.user, n=order.length, top=order[0], rk=order.findIndex(o=>o.tid===me)+1, gs=G.unemp?null:goalStatus(), od=live?playoffOdds():null, om=new Map((od||[]).map(o=>[o.tid,o]));
   const R=playerRows(y), mine=R.filter(x=>(x.h.t??x.p.team)===me), B=mine.filter(x=>!x.p.isP), P=mine.filter(x=>x.p.isP), rc=fxRankLine();
