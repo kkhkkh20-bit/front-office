@@ -1121,6 +1121,25 @@ T('[리뷰 11-04] FA는 나이 제한이 없다(KBO): 38세도 자격을 얻는�
 T('[리뷰 11-04] 저장 크기: 타구 분포 좌표는 선수당 최근 250개, 골든글러브 투표지 원본은 남기지 않는다',()=>{ fresh(); const p=Object.values(G.players).find(q=>!q.isP&&q.team!=null); for(let i=0;i<400;i++)sprAdd(p,p,'OUT',{pos:'SS',t:'GB'}); ok(p.spr.points.length===250,'좌표 '+p.spr.points.length); ok(p.spr.z.SS[0]>=400,'구역 집계는 전체'); const y=G.year-1; G.mail=[]; const A=seasonAwards(y); for(const k in A.ggVote.ballots)ok(typeof A.ggVote.ballots[k]==='number','투표지 원본이 저장됨 '+k); });
 T('[리뷰 11-04] 사구가 경기별 기록·최근 10경기·좌우 기록 출루율에 들어간다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); glAdd(p,G.day,{pa:4,ab:2,h:1,bb:1,hbp:1,so:0,hr:0,d:0,tr:0}); const r=p.gl.g[p.gl.g.length-1]; ok(r[8]===1,'경기별 기록에 사구 없음 '+JSON.stringify(r)); });
 /*KBO-BEGIN*/
+T('[KBO 부상 대체 외국인] 6주 이상 부상만 대체 가능하고 교체 횟수를 쓰지 않으며 월 10만 달러 한도를 지킨다',()=>{ fresh(); G.day=G.cal.open+20; const yb=foreignOf(G.user).filter(p=>p.foreign==='용병'); ok(yb.length>=2,'준비 실패: 외국인 '+yb.length); const o=yb[0], o2=yb[1];
+  o.injOut=50; o2.injOut=20; const used=fReplUsed(G.user); const q=newForeign('용병',{isP:o.isP,market:true}); q.ask=900; G.fmarket.push(q.id);
+  ok(fTmpErr(G.user,o2)!=='','6주 미만 부상도 대체 가능'); ok(signTempForeign(G.user,o2.id,q.id)!=="",'6주 미만 부상인데 대체 계약됨'); ok(q.team==null,'실패한 계약이 선수를 바꿈');
+  const err=signTempForeign(G.user,o.id,q.id); ok(!err,'대체 계약 실패: '+err); ok(q.team===G.user&&o.frehab===q.id&&q.ftmp&&q.ftmp.o===o.id,'대체 상태가 저장되지 않음');
+  ok(fReplUsed(G.user)===used,'부상 대체가 교체 횟수를 씀'); ok(q.ftmp.fee<=F_TMP_MON&&q.ftmp.fee>0,'월 보수 한도 위반 '+q.ftmp.fee); ok(!foreignOf(G.user).includes(o)&&foreignOf(G.user).includes(q),'재활 명단 선수가 외국인 인원에 남음');
+  o.injOut=0; ok(!healthy(o),'재활 명단 선수가 결정 전에 출전 가능'); const r=G.players[o.id]; ok(r&&r.team===G.user,'원 선수 보류권이 사라짐');
+  G=JSON.parse(JSON.stringify(G)); const q2=G.players[q.id], o3=G.players[o.id]; ok(q2.ftmp&&o3.frehab===q2.id,'저장 후 대체 상태 유실');
+  fTmpDaily(); const e=(G.evs||[]).find(x=>x.k==='ftmp'&&!x.done); ok(e&&e.opts.length===2,'원 선수 복귀 결정이 오지 않음'); evPick(e.id,1);
+  ok(!G.players[q.id].ftmp&&G.players[q.id].team===G.user,'정식 전환 실패'); ok(!(G.players[o.id]&&G.players[o.id].team===G.user),'원 선수가 남아 있음'); ok(fReplUsed(G.user)===used+1,'정식 전환이 교체 1회를 쓰지 않음'); });
+T('[KBO 부상 대체 외국인] 원 선수가 돌아오면 대체 선수가 떠나고, 정규시즌이 끝나면 대체 계약도 끝난다',()=>{ fresh(); G.day=G.cal.open+20; const o=foreignOf(G.user).find(p=>p.foreign==='용병'); o.injOut=60; const q=newForeign('용병',{isP:o.isP,market:true}); G.fmarket.push(q.id);
+  const sp0=G.sea.fspend[G.user]||0; ok(!signTempForeign(G.user,o.id,q.id),'준비 실패'); ok((G.sea.fspend[G.user]||0)>sp0,'대체 보수가 지출에 안 잡힘');
+  G.day+=45; const paid=q.ftmp.paid; fTmpDaily(); ok(q.ftmp.paid===paid+30,'6주 뒤 연장 비용이 붙지 않음'); o.injOut=0; fTmpDaily(); const e=G.evs.find(x=>x.k==='ftmp'&&!x.done); ok(e,'결정 없음'); G.day=e.exp; evDaily();
+  ok(!G.players[q.id],'기본 선택(원 선수 복귀)인데 대체 선수가 남음'); ok(!o.frehab&&healthy(o)&&foreignOf(G.user).includes(o),'원 선수가 돌아오지 않음');
+  const o2=foreignOf(G.user).find(p=>p.foreign==='용병'); o2.injOut=60; const q3=newForeign('용병',{isP:o2.isP,market:true}); G.fmarket.push(q3.id); ok(!signTempForeign(G.user,o2.id,q3.id),'두 번째 대체 실패');
+  G.day=G.cal.end+1; fTmpDaily(); ok(!G.players[q3.id]&&!o2.frehab,'정규시즌 뒤에도 대체 선수가 남음(포스트시즌 출전 불가)'); });
+T('[KBO 부상 대체 외국인] AI 구단도 시즌 안에 돌아올 외국인 부상에 대체 선수를 쓰고, 8월 15일 뒤에는 막힌다',()=>{ fresh(); G.day=G.cal.open+20; const t=G.teams.find(x=>x.id!==G.user&&foreignOf(x.id).some(p=>p.foreign==='용병')); const o=foreignOf(t.id).find(p=>p.foreign==='용병'); o.injOut=50;
+  for(let i=0;i<4;i++){ const q=newForeign('용병',{isP:o.isP,market:true}); G.fmarket.push(q.id); } const used=fReplUsed(t.id); aiForeignReview(t.id);
+  ok(o.frehab&&G.players[o.frehab]&&G.players[o.frehab].ftmp,'AI가 부상 대체를 쓰지 않음'); ok(fReplUsed(t.id)===used,'AI 부상 대체가 교체 횟수를 씀');
+  const u=foreignOf(G.user).find(p=>p.foreign==='용병'); u.injOut=50; G.day=foreignDL()+1; ok(fTmpErr(G.user,u).includes('8월 15일'),'8월 15일 뒤에도 대체 가능'); });
 /*KBO-END*/
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 

@@ -106,7 +106,7 @@ const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=id=>id==null?'-':team(id).city+' '+team(id).nick;
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
-const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day);
+const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab; /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 
 function genRatings(isP,base,pos){
   const g=()=>clamp(N(base,7),20,80);
@@ -171,7 +171,7 @@ function capPayWith(tid,pid,amt,s){ const fid=franId(tid), y0=sponSeason(); s=s?
 let _franC={k:null}; function franId(tid,outIds){ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=domPayOf(tid).filter(p=>!out.has(p.id)); const k=G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+p.sal+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||p.sal>b.sal)b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
 const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 예외 대상도 한 번만 조회 */
 function capPay(tid){ const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
-const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign);
+const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign&&!p.frehab); /* 재활 선수 명단에 오른 외국인은 등록 인원·총액에서 빠진다(대체 선수가 그 자리) */
 /* 시장가(연 환산, 백만원): 능력 60까지는 제곱으로 오르고, 그 위는 완만하게(최상위 FA 연평균 20~25억: 2026 강백호 4년 100억, 박찬호 4년 80억) */
 function marketSal(o){ const x=Math.max(0,o-37); const v=o<=60?30+x*x*3.0:1617+(o-60)*95; return Math.round(Math.min(3000,v)*capOf(G.year)/15117); }
 const round5=v=>Math.max(MIN_SAL,Math.round(v/5)*5);

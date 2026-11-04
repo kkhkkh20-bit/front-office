@@ -46,7 +46,8 @@ function foreignView(){
     <div class="chips">${[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div></div>
     <details class="candidate-help"><summary class="small muted">예상 능력·조사 단계 읽는 법</summary><p class="small muted">카드의 <b>예상</b>은 지난 리그 기록(리그 수준과 그 리그 기록이 믿을 만한지 감안)·MLB 경력·스카우트 평가를 합친 예상 능력이고, <b>예상 능력순</b>은 이 숫자 순서입니다. <b>범위</b>는 실제 능력이 10명 중 8명꼴로 들어가는 폭입니다. 조사 단계가 <b>조사 전 → 기초 조사 → 정밀 조사 → 확인 완료</b>로 오를수록 범위가 좁아집니다. 조사 전 후보는 추정보다 지난 리그 기록을 더 믿으세요(리그 수준 차이는 감안). <b>관찰</b>을 누르면 매주 조사가 쌓이고, 지역 스카우트망을 넓혀도 정확해집니다. 영입하면 코치진이 정확히 파악합니다.</p></details>
     <div class="tgrid">${PG.items.join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}</div>${PG.bar}</section>`;
-  return tabs+ft.bar+(ft.cur==='net'?intlView():ft.cur==='market'?mkS:ft.cur==='mine'?mineS:ft.cur==='watch'?(fwatchBox(asia)||'<section class="card"><p class="small muted">관찰 명단이 비어 있습니다. 후보 목록에서 관찰을 눌러 두면 여기서 비교합니다.</p></section>'):summary);
+  const ftb=asia?'':fTmpBox(market);
+  return tabs+(ftb?`<section class="card">${ftb}</section>`:'')+ft.bar+(ft.cur==='net'?intlView():ft.cur==='market'?mkS:ft.cur==='mine'?mineS:ft.cur==='watch'?(fwatchBox(asia)||'<section class="card"><p class="small muted">관찰 명단이 비어 있습니다. 후보 목록에서 관찰을 눌러 두면 여기서 비교합니다.</p></section>'):summary);
 }
 
 function intlView(){
@@ -67,3 +68,11 @@ function contractPage(){
 }
 
 
+/* 부상 대체 외국인(KBO 2024~): 6주 이상 부상인 일반 외국인 대신 쓸 선수를 후보 중에서 고른다. 교체 횟수는 쓰지 않는다 */
+function fTmpBox(market){ const mine=playersOf(G.user).filter(q=>q.ftmp).map(q=>`<p class="small"><span class="pill">부상 대체</span> <button class="lnk" data-a="player" data-v="${q.id}">${esc(q.name)}</button> · ${esc((G.players[q.ftmp.o]||{}).name||'')} 대신 · 월 ${money(q.ftmp.fee)} · 정규시즌 끝에 계약 종료</p>`).join('');
+  const inj=foreignOf(G.user).filter(o=>o.foreign==='용병'&&!fTmpErr(G.user,o)); const sel=UI.ftmpFor!=null&&inj.find(o=>o.id===UI.ftmpFor);
+  if(!mine&&!inj.length)return '';
+  const pick=sel?`<div class="note">${esc(sel.name)}(${esc(posLabel(sel))}, ${sel.injOut}일 진단) 대신 등록할 후보를 고르세요. 보수는 월 10만 달러(${money(F_TMP_MON)})까지이고 교체 횟수는 쓰지 않습니다.</div>
+    ${market.filter(x=>!fTmpErr(G.user,sel,x.p)).slice(0,8).map(({p})=>`<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 월 ${money(fTmpFee(p))}</span></span><button class="btn small primary" data-a="fTmpSign" data-v="${p.id}">부상 대체로 등록</button></div>`).join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}
+    <div class="btns"><button class="btn small" data-a="fTmpStart" data-v="">고르기 취소</button></div>`:'';
+  return `<div class="eyebrow">부상 대체 외국인</div>${mine}${sel?'':inj.map(o=>`<div class="row between wrapr"><span class="small">${esc(o.name)}(${esc(posLabel(o))}) ${o.injOut}일 치료 진단 · 6주 이상이라 대체 선수를 쓸 수 있습니다</span><button class="btn small" data-a="fTmpStart" data-v="${o.id}">대체 선수 고르기</button></div>`).join('')}${pick}`; }
