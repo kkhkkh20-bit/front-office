@@ -1,15 +1,16 @@
 /* ---------- 구단·재정 ---------- */
 
 /* ---------- 구장 ---------- */
+/* 구장 시설 한 단계 올렸을 때 수입 효과 문장(올해 예상 관중·가격 기준, 효과가 이어진다고 가정·공사 기간 제외). stadView·PC 시설 화면 공용 */
+function stadGainTxt(k){ const tid=G.user, S=stadOf(tid); if(k==='turf')return '홈경기 부상 계수 '+((stadPower(S.lv[k]+1)-stadPower(S.lv[k]))*5).toFixed(2)+'%p 감소'; const yr=x=>x.ticket+x.fnb+x.prem+x.ad, lv=S.lv[k], nx=lv+1; let g=0; if(lv<STAD_MAX){ const base=yr(stadProj(tid,true)); S.lv[k]=lv+1; try{ g=Math.round(yr(stadProj(tid,true))-base); }finally{ S.lv[k]=lv; } } const up=nx<=STAD_MAX?STAD_UP[nx]-STAD_UP[lv]:0, net=g-up; const pay=net>0&&nx<=STAD_MAX?STAD_COST[nx]/net:null;
+    return `연 수입 약 +${money(g)}${k==='prem'?'(일반석 '+Math.round((stadPower(nx)-stadPower(lv))*300)+'석 감소분 반영)':''} · 연 순수익 ${net>=0?'+':''}${money(net)}${pay?` · 회수 약 ${pay<1?'1년 안':pay.toFixed(1)+'년'}`:' · 돈으로는 회수 어려움'}${k==='seat'?' · 팬 여론 상승':''}${(k==='seat'||k==='vis')&&g<200?' (매진이 잦아 효과 작음)':''}`; }
 function stadView(part){ const tid=G.user, S=stadOf(tid), cap=stadCap(tid), P=stadProj(tid), A=(G.sea.att&&G.sea.att[tid])||{n:0,sum:0,so:0,best:0}; const per=period(); const can=stadWindow();
   const occ=A.n?A.sum/A.n/cap:0;
   const lg=G.teams.map(t=>{ const x=(G.sea.att&&G.sea.att[t.id])||{n:0,sum:0,so:0}; const c=stadCap(t.id); return {t,c,avg:x.n?Math.round(x.sum/x.n):0,occ:x.n?x.sum/x.n/c:0,so:x.so,n:x.n}; }).sort((a,b)=>b.avg-a.avg||b.c-a.c);
   const top=bgHero('city_day',`<dl class="tsum"><div><dt>수용 인원</dt><dd class="num">${cap.toLocaleString('ko-KR')}석</dd></div><div><dt>올해 홈 평균</dt><dd class="num">${A.n?Math.round(A.sum/A.n).toLocaleString('ko-KR')+'명':P.n?'예상 '+P.avg.toLocaleString('ko-KR')+'명':'-'}</dd></div><div><dt>좌석 점유율</dt><dd class="num">${A.n?Math.round(occ*100)+'%':'-'}</dd></div><div><dt>매진</dt><dd class="num">${A.so}회 / ${A.n}경기</dd></div></dl>
     <p class="small sdesc">시즌 예상 관중 ${P.att.toLocaleString('ko-KR')}명(홈 ${P.n}경기) · 표값 수입 ${money(P.ticket)}${P.fnb+P.prem+P.ad>0?` · 구장 부대 수입 ${money(P.fnb+P.prem+P.ad)}`:''}${P.up?` · 시설 유지비 ${money(P.up)}`:''}</p>`,'stad-hero');
   const price=`<div class="eyebrow">티켓 가격</div><div class="chips">${PRICE.map((x,i)=>`<button data-a="stadPrice" data-v="${i}" class="${S.price===i?'on':''}">${x.l}</button>`).join('')}</div><p class="small sdesc">${PRICE[S.price].l}: ${PRICE[S.price].d} 언제든 바꿀 수 있고, 다음 홈경기부터 반영됩니다.</p>`;
-  const yr=x=>x.ticket+x.fnb+x.prem+x.ad; const base=yr(stadProj(tid,true)); const gain={}; for(const it of STAD_ITEMS){ if(it.k==='turf'){ gain.turf=null; continue; } const lv=S.lv[it.k]; if(lv>=STAD_MAX){ gain[it.k]=0; continue; } S.lv[it.k]=lv+1; try{ gain[it.k]=Math.round(yr(stadProj(tid,true))-base); }finally{ S.lv[it.k]=lv; } }
-  const gtxt=k=>{ if(gain[k]==null)return '홈경기 부상 계수 '+((stadPower(S.lv[k]+1)-stadPower(S.lv[k]))*5).toFixed(2)+'%p 감소'; const lv=S.lv[k], nx=lv+1; const up=nx<=STAD_MAX?STAD_UP[nx]-STAD_UP[lv]:0, net=gain[k]-up; const pay=net>0&&nx<=STAD_MAX?STAD_COST[nx]/net:null;
-    return `연 수입 약 +${money(gain[k])}${k==='prem'?'(일반석 '+Math.round((stadPower(nx)-stadPower(lv))*300)+'석 감소분 반영)':''} · 연 순수익 ${net>=0?'+':''}${money(net)}${pay?` · 회수 약 ${pay<1?'1년 안':pay.toFixed(1)+'년'}`:' · 돈으로는 회수 어려움'}${k==='seat'?' · 팬 여론 상승':''}${(k==='seat'||k==='vis')&&gain[k]<200?' (매진이 잦아 효과 작음)':''}`; }; /* 올해 예상 관중 기준, 효과가 이어진다고 가정(공사 기간 제외) */
+  const gtxt=stadGainTxt;
   const premise='<p class="small muted">수입 효과는 올해 예상 관중·가격 기준이고, 그 효과가 이어진다고 보고 셈한 값입니다(공사 기간·팬 여론 변화 제외). 6단계부터 효과 증가폭이 완만해지고 공사비·기간·유지비가 커집니다.</p>';
   const items=STAD_ITEMS.map(it=>{ const lv=S.lv[it.k]; const b=(S.build||[]).find(x=>x.k===it.k); const nx=lv+1;
     return `<div class="stad-i"><div class="row between"><b>${it.l}</b><span class="lvdots">${Array.from({length:STAD_MAX},(_,i)=>i+1).map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</span></div><p class="small sdesc">${it.d}${it.k==='prem'?` 5단계까지 단계당 일반석 300석, 이후 135석이 줄고(지금 수용 ${stadCap(tid).toLocaleString('ko-KR')}석) 프리미엄석 수입이 생깁니다.`:''}</p>
