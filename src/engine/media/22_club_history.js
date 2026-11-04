@@ -88,7 +88,7 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   { const pick=(L,n)=>{ const t=L.filter(x=>tit.has(x.p.id)); const rest=L.filter(x=>!tit.has(x.p.id)).sort((a,b)=>b.w-a.w); return t.concat(rest).slice(0,Math.max(n,t.length)); };
     A.cand.mvp=awVote(pick(rows.filter(qP),8).concat(pick(rows.filter(qB),10)).map(x=>awCand(x)),125); }
   /* 신인상(KBO 표창규정 제7조): 그해 입단 또는 최근 5년 이내 입단, 이전 시즌까지 1군 누적 투수 30이닝·타자 60타석 이하, 해외 프로리그 소속 경험 없음(외국인 제외) */
-  const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y]));
+  const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y,y-Math.max(0,(p.svc||0)-1)])); /* 기록은 최근 3년치만 있어 등록 연차로도 입단 연도를 잡는다 */
   A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
   const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ let b=null,n=-1; for(const k in u.pos)if(u.pos[k]>n){ n=u.pos[k]; b=k; } if(b)return b; } return x.h.pos; }; /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
   const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */

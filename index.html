@@ -3937,7 +3937,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .home-workspace .hw-stand{overflow:auto;scrollbar-width:thin}
 /* 홈 다음 경기 칸: 시즌 끝 결산 */
 .hw-season{display:grid;gap:6px;padding:4px 10px}.hw-season .hw-hint{padding:0}.hw-season>b{font-size:18px}.hw-season ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:13px}.hw-season li i{font-style:normal;color:var(--muted);margin-right:4px}
-.hw-upcoming .cal-up{display:grid}
+.hw-upcoming .cal-up{display:grid}.hw-upcoming .cal-up{flex:1 1 auto;min-height:0;overflow-y:auto}.hw-upcoming .cal-ur{padding-inline:10px} /* 비시즌 일정 줄이 칸 테두리에 붙고 1366 화면에서 아래 일정이 잘리던 문제(칸 안에서 스크롤) */
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -12294,7 +12294,7 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   { const pick=(L,n)=>{ const t=L.filter(x=>tit.has(x.p.id)); const rest=L.filter(x=>!tit.has(x.p.id)).sort((a,b)=>b.w-a.w); return t.concat(rest).slice(0,Math.max(n,t.length)); };
     A.cand.mvp=awVote(pick(rows.filter(qP),8).concat(pick(rows.filter(qB),10)).map(x=>awCand(x)),125); }
   /* 신인상(KBO 표창규정 제7조): 그해 입단 또는 최근 5년 이내 입단, 이전 시즌까지 1군 누적 투수 30이닝·타자 60타석 이하, 해외 프로리그 소속 경험 없음(외국인 제외) */
-  const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y]));
+  const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y,y-Math.max(0,(p.svc||0)-1)])); /* 기록은 최근 3년치만 있어 등록 연차로도 입단 연도를 잡는다 */
   A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
   const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ let b=null,n=-1; for(const k in u.pos)if(u.pos[k]>n){ n=u.pos[k]; b=k; } if(b)return b; } return x.h.pos; }; /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
   const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
@@ -19696,7 +19696,7 @@ function faRoom(p){ const ag=agentOf(p); const n=G.fa.neg&&G.fa.neg[p.id]; const
     ${ngtDoor('fa',p)}${negPanel(p)}</section>`; }
 function faCelebrate(){ const F=G.fa; if(!F||!F.results)return; G.faCel=G.faCel||[]; const r=F.results.find(x=>x.to===G.user&&x.from!==G.user&&!G.faCel.includes(x.id+':'+x.day)); if(!r)return;
   G.faCel.push(r.id+':'+r.day); if(G.faCel.length>40)G.faCel.splice(0,10); UI.stamp={title:'FA 영입',msg:`${r.name} · ${esc(ctRecShort(r))}${r.compPlayer?` · 보상선수 ${r.compPlayer} 이탈`:''}`}; sfx('cheer_big',.7); }
-function faCenter(){ return compView()+(fmOn()?faFM():faCenter0()); }
+function faCenter(){ const cv=compView(); if((G.comp||[]).some(c=>(c.stage==='protect'&&c.to===G.user)||(c.stage==='pick'&&c.from===G.user)))return cv; /* 진행을 막는 보상 절차 중에는 그 카드만(작업 화면 위에 얹으면 아래 목록이 잘려 안 보였다) */ return cv+(fmOn()?faFM():faCenter0()); }
 function faCenter0(){ const F=G.fa;
   if(!faLive()){ const U=faUpcoming(); const nx=U.filter(x=>x.p.team===G.user).map(x=>x.p).sort((a,b)=>ovr(b)-ovr(a));
     const res=F&&F.results&&F.results.length?`<div class="feed">${F.results.slice(0,10).map(r=>`<div class="fd"><span class="pill">${r.grade}</span><span>${esc(r.name)} · ${esc(tshort(r.from))} → <b>${esc(tshort(r.to))}</b> ${esc(ctRecShort(r))}</span><i>${dsh(r.day)}</i></div>`).join('')}</div>`:'';
@@ -20105,7 +20105,7 @@ function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.us
       return `<section class="card cpbox"><div class="row between"><h2 class="sec">보상선수 지명 · ${esc(c.name)} 이적 보상</h2><span class="small muted">${dmd(c.exp)}까지</span></div>
         <p class="small">${tname(c.to)} 보호명단 밖 선수입니다(${c.grade}등급, 보호 ${g.prot}명). 선수 1명 + 직전 연봉 ${g.withP*100}% <b>${money(c.prev*g.withP)}</b>, 또는 선수 없이 ${g.cash*100}% <b>${money(c.prev*g.cash)}</b>.</p>
         <div class="btns"><button class="btn" data-a="compPick" data-v="${c.id}:0">선수 없이 ${money(c.prev*g.cash)} 받기</button></div>
-        ${cand.length?'':'<p class="small muted">보호명단 밖에 데려올 만한 선수가 없습니다.</p>'}<div class="cp-list">${cand.map(q=>{ const rp=scoutReport(q); return `<div class="cp-r"><button class="lnk cp-n" data-a="player" data-v="${q.id}">${esc(q.name)}</button><span class="small muted">${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</span>${rchip(rp.cur)}${rp.ofp!=null?potChip(rp,q):''}<button class="btn small primary" data-a="compPick" data-v="${c.id}:${q.id}">지명</button></div>`; }).join('')}</div></section>`; }
+        ${cand.length?'':'<p class="small muted">보호명단 밖에 데려올 만한 선수가 없습니다.</p>'}<div class="cp-list">${cand.map(q=>{ const rp=scoutReport(q); return `<div class="cp-r"><button class="lnk cp-n" data-a="player" data-v="${q.id}">${esc(q.name)}</button><span class="small muted">${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</span>${rchip(rp.cur)}${rp.ofp!=null?potChip(rp,q):'<span></span>'}<button class="btn small primary" data-a="compPick" data-v="${c.id}:${q.id}">지명</button></div>`; }).join('')}</div></section>`; }
     return ''; };
   return open.map(one).join('')+(done.length?`<details class="cp-done"><summary class="small">FA 보상 기록 ${done.length}건</summary><div class="rql">${done.slice(0,20).map(c=>`<div class="rq"><span class="pill ${c.from===G.user?'good':'warn'}">${c.from===G.user?'받음':'내줌'}</span><div><b>${esc(c.name)} (${c.grade}등급) ${c.from===G.user?`→ ${tshort(c.to)}`:`← ${tshort(c.from)}`}</b><span>${c.player?`보상선수 ${esc(c.player)} + `:'선수 없이 '}${money(c.cash||0)}</span><i>${dsh(c.done||c.day)}</i></div></div>`).join('')}</div></details>`:''); } /* 기록은 접어서: 펼친 채 화면을 차지해 FA 계약 칸이 아래로 밀리던 문제 */
 
@@ -25740,7 +25740,9 @@ function cerQuote(c,lab,k){ const p=G.players[c.id]; const mine=c.t===G.user; co
   if(mine&&!G.unemp)L.push(`"단장님과 프런트가 뒤에서 많이 챙겨 주셨습니다. 감사합니다."`); if(p&&p.age<=23)L.push('"어릴 때 꿈꾸던 무대입니다. 아직 실감이 안 납니다."'); if(p&&p.age>=33)L.push('"이 나이에 이 상을 받을 줄 몰랐습니다. 후배들에게 길을 보여 주고 싶습니다."');
   return L[Math.floor(u01('cq'+c.id,lab)*L.length)]; }
 /* 후보 카드: 발표 전에는 모두 같은 밝기(이름순), 발표 뒤에는 득표순 목록과 수상자 무대 */
-function cerFace(c){ const p=G.players[c.id]; return p?avImg(p,true):`<span class="av ini big">${esc(c.name.slice(0,1))}</span>`; }
+/* 시상식 전에 해외로 떠나거나 은퇴한 선수도 보관 기록으로 같은 얼굴을 그린다(글자 한 자로 나오던 문제) */
+function awP(id){ const a=G.arch&&G.arch[id]; return G.players[id]||(a?{...a,team:a.t}:null); }
+function cerFace(c){ const p=awP(c.id); return p?avImg(p,true):`<span class="av ini big">${esc(c.name.slice(0,1))}</span>`; }
 function cerCard(c){ const p=G.players[c.id];
   return `<div class="cer-c${c.t===G.user?' me':''}">${cerFace(c)}<div class="cer-i"><b>${esc(c.name)}</b><span>${badge(c.t,18)} ${esc(tshort(c.t))}${p?` · ${esc(posLabel(p))}`:''}</span><em>${esc(c.line)}</em></div></div>`; }
 function cerRow(c,i,win,tot){ const pct=Math.round(c.v/tot*100);
@@ -25767,7 +25769,7 @@ function cerHomeCard(){ const c=G.cerNew; if(!c||c.seen||!G.awards||!G.awards[c.
 const GG_SPOT={OF0:[19,31],OF1:[50,25],OF2:[81,31],SS:[34,47],'2B':[66,47],'3B':[16,63],'1B':[84,61],P:[50,62],C:[50,86],DH:[23,87]};
 function ggField(A,votes){ const nm=k=>k.startsWith('OF')?'외야수':k==='P'?'투수':POSK[k], y=A.y||Object.keys(G.awards||{}).find(k=>G.awards[k]===A)||'', st=v3('stage');
   const fld=`<svg class="ggf-bg" viewBox="0 0 100 80" preserveAspectRatio="none" aria-hidden="true"><defs><radialGradient id="ggfG" cx="50%" cy="85%" r="80%"><stop offset="0" stop-color="#3f9a4e"/><stop offset="1" stop-color="#1c4d2a"/></radialGradient><linearGradient id="ggfD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b98450"/><stop offset="1" stop-color="#7e5229"/></linearGradient><pattern id="ggfS" width="8" height="80" patternUnits="userSpaceOnUse"><rect width="4" height="80" fill="#fff" opacity=".05"/></pattern><radialGradient id="ggfL" cx="50%" cy="0" r="70%"><stop offset="0" stop-color="#fff6d0" stop-opacity=".22"/><stop offset="1" stop-color="#fff6d0" stop-opacity="0"/></radialGradient></defs><path d="M50 76 L4 32 A64 64 0 0 1 96 32 Z" fill="#6b4a2a" opacity=".9"/><path d="M50 74 L6.5 32.5 A61 61 0 0 1 93.5 32.5 Z" fill="url(#ggfG)"/><path d="M50 74 L6.5 32.5 A61 61 0 0 1 93.5 32.5 Z" fill="url(#ggfS)"/><path d="M50 77 L27 53 Q50 30 73 53 Z" fill="url(#ggfD)"/><path d="M50 70 L38 57.5 L50 45 L62 57.5 Z" fill="#3a8a47"/><ellipse cx="50" cy="58" rx="2.6" ry="2" fill="#a9733f"/><path d="M50 74 L4 30 M50 74 L96 30" stroke="#f3f1e4" stroke-width=".45"/>${[[50,70],[62,57.5],[50,45],[38,57.5]].map(([x,y])=>`<rect x="${x-.9}" y="${y-.9}" width="1.8" height="1.8" fill="#fff" transform="rotate(45 ${x} ${y})"/>`).join('')}<rect width="100" height="80" fill="url(#ggfL)"/></svg>`;
-  const mk=Object.entries(GG_SPOT).filter(([k])=>A.gg[k]).map(([k,[x,yy]])=>{ const w=A.gg[k], p=G.players[w.id];
+  const mk=Object.entries(GG_SPOT).filter(([k])=>A.gg[k]).map(([k,[x,yy]])=>{ const w=A.gg[k], p=awP(w.id);
     return `<${p?`button data-a="player" data-v="${w.id}"`:'div'} class="ggf-m${w.t===G.user?' me':''}" style="left:${x}%;top:${yy}%" title="${esc(nm(k))} ${esc(w.name)} · ${esc(tshort(w.t))}${votes?` · ${w.v}표`:''}"><i>${nm(k)}</i><span class="ggf-ph">${p?avImg(p,true):`<span class="av ini big">${esc(w.name.slice(0,1))}</span>`}<span class="ggf-tb">${badge(w.t,18)}</span></span><span class="ggf-nb"><b>${esc(w.name)}</b><em>${esc(team(w.t).nick)}${votes?`<span class="ggf-v"> · ${w.v}표</span>`:''}</em></span></${p?'button':'div'}>`; }).join('');
   return `<div class="ggf"${st?` style="--ggf-bg:url(${st})"`:''}>${fld}<div class="ggf-rb"><span>${y?y+' ':''}골든글러브 수상자</span></div>${mk}<div class="ggf-tro" aria-hidden="true">${ggTrophyImg(160)}</div></div>`; }
 /* 선정 명단과 맞대결 이력은 뉴스에서 다시 찾아볼 수 있는 같은 표로 제공한다. */
@@ -25953,14 +25955,14 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const hr=tb.tHead.rows[tb.tHead.rows.length-1]; const H=[...hr.cells]; const n=H.length; if(n<3||H.some(c=>c.colSpan>1))return;
     tw.classList.add('twp'); /* 줄인 이름 칸 기준으로 폭을 잰다 */
     const rows=[...tb.rows].filter(r=>r.cells.length===n); /* 그룹 제목처럼 칸이 합쳐진 줄은 그대로 둔다 */
-    const w=H.map(c=>c.getBoundingClientRect().width); const avail=tw.clientWidth-w[0]-2; const pages=[]; let cur=[],sum=0;
-    for(let i=1;i<n;i++){ if(cur.length&&sum+w[i]>avail){ pages.push(cur); cur=[]; sum=0; } cur.push(i); sum+=w[i]; } if(cur.length)pages.push(cur);
+    const w=H.map(c=>c.getBoundingClientRect().width); const pin=H[n-1].textContent.trim()==='행동'?n-1:-1; /* 지명 같은 행동 버튼 열은 어느 쪽을 넘겨도 보이게 */ const avail=tw.clientWidth-w[0]-2-(pin>0?w[pin]:0); const pages=[]; let cur=[],sum=0;
+    for(let i=1;i<n;i++){ if(i===pin)continue; if(cur.length&&sum+w[i]>avail){ pages.push(cur); cur=[]; sum=0; } cur.push(i); sum+=w[i]; } if(cur.length)pages.push(cur);
     if(pages.length<2){ tw.classList.remove('twp'); return; }
     const key=(UI.sheet!=null&&tw.closest('#sheet')?'s':UI.tab)+':'+ix+':'+n; let pg=Math.min(UI.twPg[key]||0,pages.length-1);
-    const show=new Set([0,...pages[pg]]);
+    const show=new Set([0,...pages[pg],...(pin>0?[pin]:[])]);
     for(const r of rows)[...r.cells].forEach((c,i)=>{ if(!show.has(i))c.classList.add('twh'); });
     /* '빈자리'처럼 이름 칸 뒤를 한 칸으로 합친 줄: 지금 보이는 열 수만큼만 차지하고 줄바꿈한다(표 밖으로 삐져나가지 않게) */
-    for(const r of tb.rows){ const c=r.cells; if(c.length===2&&c[0].colSpan===1&&c[1].colSpan===n-1){ c[1].dataset.cs0=c[1].colSpan; c[1].colSpan=pages[pg].length; c[1].classList.add('twspan'); } }
+    for(const r of tb.rows){ const c=r.cells; if(c.length===2&&c[0].colSpan===1&&c[1].colSpan===n-1){ c[1].dataset.cs0=c[1].colSpan; c[1].colSpan=pages[pg].length+(pin>0?1:0); c[1].classList.add('twspan'); } }
     tw.classList.add('twp');
     const hn0=c=>{ const e=c.querySelector('button')||c; const t=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(); return (t||e.innerText.split('\n')[0]).replace(/[▲▼]/g,'').trim(); };
     const lab=i=>{ const a=hn0(H[pages[i][0]]), b=hn0(H[pages[i][pages[i].length-1]]); return a===b||!b?a:`${a} ~ ${b}`; };
