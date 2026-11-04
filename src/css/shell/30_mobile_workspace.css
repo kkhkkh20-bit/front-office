@@ -32,3 +32,17 @@
 /* 전체 화면 버튼: 휴대폰은 공간이 좁아 숨김(태블릿·PC만) */
 @media(max-width:699px){.fullbtn{display:none!important}}
 .fullbtn.on,.fm-i.on[data-a="fullTg"]{color:var(--team-hi,#4fa3ff)}
+/* 선택 상자 대신 버튼 줄(optRow, 41_guard_boot.js) */
+.optrow{display:flex;flex-wrap:wrap;gap:4px;margin:0;align-items:center}.optrow>button{font-size:12px;padding:4px 10px;min-height:28px}
+.optrow.wsx{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;max-width:100%}.optrow.wsx>button{flex:none}
+.trade-search-main{grid-template-columns:minmax(0,1fr)!important}.trade-position{display:flex!important;align-items:center;gap:8px!important;min-width:0}.trade-position>span{flex:none;min-width:34px}
+.trade-find-filters{grid-template-columns:minmax(0,1fr) minmax(160px,260px)!important;align-items:center}.trade-filter-grid{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}
+@media(max-width:700px){.trade-find-filters{grid-template-columns:minmax(0,1fr)!important}.trade-find-filters input{grid-row:auto!important}.optrow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.optrow>button{flex:none}}
+.blk-add{display:flex;flex-wrap:wrap;gap:4px;max-height:180px;overflow:auto;scrollbar-width:thin}
+.pl-pick{max-height:120px;overflow:auto;scrollbar-width:thin}
+.gp-age{display:flex;align-items:center;gap:4px}.gp-age b{min-width:44px;text-align:center}
+/* PC 선수 찾기 표(14_trade_center.js findTable) */
+.fnd-w{overflow:auto;scrollbar-width:thin}.fnd-t{width:100%;border-collapse:collapse;font-size:12.5px}.fnd-t th{position:sticky;top:0;z-index:2;background:var(--panel2);text-align:left;font-weight:500;color:var(--muted);padding:6px 8px;white-space:nowrap}
+.fnd-t td{padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap}.fnd-t tr:hover td{background:var(--panel2)}
+.pm-n{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px}.pm-n .av{width:30px;height:30px}.pm-n b{font-weight:600}
+.tw .fnd-t td,.tw .fnd-t th,.fnd-t td,.fnd-t th{text-align:left}.fnd-t td:last-child{text-align:right}

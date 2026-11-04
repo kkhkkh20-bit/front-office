@@ -9,8 +9,8 @@ function analysisDots(p,a){ const points=(a.s&&a.s.points)||[], hits=points.filt
 function playerAnalysisTab(p){
   const years=[...new Set([G.year,...(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2).map(h=>h.y)])].sort((a,b)=>b-a);
   const y=years.includes(+UI.analysisY)?+UI.analysisY:(years.includes(statY())?statY():G.year), a=playerAnalysis(p,y), h=a.h;
-  const opts=years.map(v=>`<option value="${v}"${v===y?' selected':''}>${v} 시즌</option>`).join('');
-  const head=`<div class="row between an-head"><h2 class="sec">선수 분석</h2><label>시즌 <select data-a="analysisY">${opts}</select></label></div>`;
+  const opts=optRow('analysisY',y,years.map(v=>[v,v+' 시즌']),null,'wsx');
+  const head=`<div class="row between an-head"><h2 class="sec">선수 분석</h2>${opts}</div>`;
   if(p.isP)return head+`<section class="card">${pctCard(p,y)}${a.s?sprayCard(p,a.s):''}<p class="small muted keep">타자 기대 타격·핫·콜드 존·안타 점도는 타자 분석 항목입니다.</p></section>`;
   const base=pctVals(p,h), rows=[['woba','wOBA',a.observed&&a.observed.woba,1,fmt3,'실제 시즌 기록'],['avg','타율',a.observed&&a.observed.avg,1,fmt3,'실제 시즌 기록'],['slg','장타율',a.observed&&a.observed.slg,1,fmt3,'실제 시즌 기록'],['obp','출루율',base.obp,1,fmt3,'실제 시즌 기록'],['ops','OPS',base.ops,1,fmt3,'실제 시즌 기록'],['iso','순수 장타 ISO',base.iso,1,fmt3,'실제 시즌 기록'],['kp','삼진%',base.kp,-1,v=>v.toFixed(1),'실제 시즌 기록'],['bbp','볼넷%',base.bbp,1,v=>v.toFixed(1),'실제 시즌 기록'],['sb','도루',h?h.sb||0:null,1,v=>v.toFixed(0),'실제 시즌 기록'],['cs','도루 실패',h?h.cs||0:null,-1,v=>v.toFixed(0),'실제 시즌 기록']];
   const pool=Object.values(G.players).filter(q=>!q.isP&&!q.fdPool&&pctQual(false,seasonTotal(q,y,'1군'))).map(q=>{ const d=playerAnalysis(q,y),v=pctVals(q,d.h); return {...v,woba:d.observed&&d.observed.woba,avg:d.observed&&d.observed.avg,slg:d.observed&&d.observed.slg,sb:d.h.sb||0,cs:d.h.cs||0,bat:d.runs.bat,br:d.runs.run}; });
