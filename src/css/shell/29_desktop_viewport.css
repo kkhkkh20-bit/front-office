@@ -92,6 +92,8 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 .ws-detail>.detail-navigation,.ws-detail>.pf-topnav{flex:none}
 .ws-detail>.ws-detail-body{flex:1;min-height:0;min-width:0}
 #sheet:has(.ws-detail){overflow:hidden}
+/* 상세 화면 패널은 안쪽 여백이 없어 표의 -12px 번짐(.tw)이 패널 밖으로 나가 첫 열·끝 열이 잘렸다 */
+.ws-detail .ws-panel>.tw{margin-inline:0}
 
 /* 진행 결과·확인 창이 떠도 날짜 띠는 작은 화면 안의 맨 앞에 남긴다. */
 #dtick.on{display:block;z-index:120}
