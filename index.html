@@ -665,6 +665,11 @@ button.bk-g{cursor:pointer}button.bk-g:hover{background:var(--panel3,var(--panel
   .bk-sc .bk-rs s{display:none}
   .bk-q5{left:1%}.bk-q4{left:9.5%}.bk-q3{left:24.05%}.bk-q2{left:43.85%}.bk-q1{left:63.65%}
 }
+/* 1366 같은 좁은 PC: 시리즈 칸(16%)이 좁아 팀은 별칭만, 차전 목록의 구장 이름은 뺀다(구장은 칸 제목 풍선·오른쪽 결과 칸에 있음) */
+.bk-s b s{text-decoration:none}
+@media(min-width:1100px) and (max-width:1599px){.bk-s b s,.bk-sc>span>em{display:none}.bk-sc>span{grid-template-columns:auto auto minmax(0,1fr)}.bk-sc>span>.bk-rs{justify-self:end}.bk-s{gap:6px;padding-right:8px}.bk-s .badge{width:32px;height:32px}.bk-s b{font-size:16px}.bk-s em{font-size:24px}}
+/* 아래 구단 줄은 칸 전체 폭이라 오른쪽 결과 칸(차전 버튼)을 덮지 않게 구단 칸만 눌리게 한다 */
+@media(min-width:1100px){.bk-sd{pointer-events:none}.bk-q{pointer-events:auto}}
 /* 골든글러브 필드(45_awards.js ggField): 야구장 그림 위 자리마다 수상자 얼굴·포지션·이름(구단) */
 .ggf{position:relative;width:100%;max-width:980px;margin:6px auto 10px;aspect-ratio:10/8;container-type:inline-size;border-radius:10px;overflow:hidden;border:1px solid #d4a01755;background:radial-gradient(70% 45% at 50% 30%,#2a3a5c66,transparent 70%),var(--ggf-bg,none) center/cover no-repeat,radial-gradient(120% 90% at 50% 100%,#14284a,#070d1c 75%)}
 .ggf-bg{position:absolute;left:0;top:8%;width:100%;height:92%;filter:drop-shadow(0 0 18px #0009)}
@@ -20708,7 +20713,7 @@ function bkSeries(D,[k,hs,src]){ const R=D.res||{}, r=R[k], c=D.cur&&D.cur.round
   const sc=c?{d:c.days,h:c.homes,gi:c.gi,p:c.pts}:D.days[k]?{d:D.days[k].d,h:D.days[k].h,gi:D.days[k].d.length,p:D.days[k].p}:null;
   return {k,hi,lo,wh,wl,r,c,sc,win:r?r[0]:null}; }
 function bkSlot(D,t,w,win,alt){ if(t==null)return `<span class="bk-s tbd"><b>TBD</b><i>${alt}</i></span>`;
-  const P=tpal(t); return `<span class="bk-s${win==null?'':win===t?' win':' out'}${t===G.user?' me':''}" style="--c1:${P[0]};--c2:${P[2]}">${badge(t,40)}<b>${esc(tshort(t))}<sup>${D.seeds.indexOf(t)+1}</sup></b><em>${w??''}</em></span>`; }
+  const P=tpal(t); return `<span class="bk-s${win==null?'':win===t?' win':' out'}${t===G.user?' me':''}" style="--c1:${P[0]};--c2:${P[2]}">${badge(t,40)}<b title="${esc(tshort(t))}"><s>${esc(team(t).city)} </s>${esc(team(t).nick)}<sup>${D.seeds.indexOf(t)+1}</sup></b><em>${w??''}</em></span>`; }
 function bkCard(D,x,sel){ const s=bkSeries(D,x), [k,,src]=x;
   const st=s.r?'종료':s.c?'진행 중':D.proj?'예상':'';
   return `<button class="bk-c bk-${k}${s.r?' done':s.c?' live':''}${sel===k?' sel':''}" data-a="psSel" data-v="${k}" aria-label="${ROUNDK[k]} 결과 보기"><span class="bk-h"><b>${ROUNDK[k]}</b><i>${st}</i></span>${bkSlot(D,s.hi,s.wh,s.win,'')}${bkSlot(D,s.lo,s.wl,s.win,typeof src==='number'?'정규시즌 5위':BK_S[src]+' 승자')}</button>`; }
