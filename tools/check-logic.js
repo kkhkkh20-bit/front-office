@@ -1149,6 +1149,12 @@ T('[KBO 지명권 트레이드] 다음 드래프트 지명권만, 선수와 맞�
   ok(G.trades[G.trades.length-1].pk&&G.trades[G.trades.length-1].pk.get.length===1,'거래 기록에 지명권 없음');
   if(y===G.year&&draftOrders()){ startDraft(); const P=G.draft.picks; ok(P.length===DRAFT_ROUNDS*G.teams.length,'지명 수 '+P.length); const x=P.find(q=>q.rd===3&&q.from===tid); ok(x&&x.tid===G.user,'넘겨받은 지명권이 우리 차례가 아님'); const no=draftOrders().r2.indexOf(tid)+1; ok(x.no===no,'원래 구단 순번이 아님 '+x.no+'/'+no);
     ok(String(pkCheck(tid,[p.id],[],{give:['2:'+G.user]})).includes('진행 중'),'드래프트 중 지명권 거래 허용'); ok(pkYear()===G.year+1&&pkHeld(G.user).length===DRAFT_ROUNDS,'드래프트가 열린 뒤 다음 해 지명권이 아님'); } });
+T('[KBO ABS·피치 클락] 연도별 존·제한 시간, 정식 도입 뒤 경기 시간 단축, 경기 기록·리그 평균·개막 안내',()=>{ fresh(); ok(absZone(2024).top===56.35&&absZone(2025).top===55.75&&absZone(2026).bot===27.04&&absZone(2023)===null,'ABS 존');
+  ok(pClock(2024).trial&&pClock(2025).none===20&&pClock(2025).on===25&&pClock(2026).none===18&&pClock(2026).on===23,'피치 클락 시간'); ok(gtBase(2024)-gtBase(2025)===8,'정식 도입 뒤 8분 단축이 아님');
+  G.day=G.cal.open; for(const t of G.teams)setEntry(t.id); const op=G.teams.find(t=>t.id!==G.user).id; const g=simGame(G.day,G.user,op,false); const rec=gameRecord(G.day,G.user,op,g,''); const pc=sum(['h','a'].map(k=>sum(rec.box[k].pit.map(x=>x.pc||0))));
+  ok(rec.min===Math.round(gtBase(G.year)*pc/GT_PC)&&rec.min>100&&rec.min<300,'경기 시간 '+rec.min+' / 투구 '+pc); const y0=G.year; G.year=2024; const m24=gameMin(g); G.year=y0; ok(m24>rec.min,'시범 운영 해가 더 짧음');
+  G.gt=null; gtAdd(180); gtAdd(190); ok(gtAvg()===185,'리그 평균 '+gtAvg()); G.mail=[]; gameRulesMail(G.cal.open); const m=G.mail.find(x=>String(x.subj).includes('ABS'));
+  ok(m&&String(m.body).includes('55.75')&&String(m.body).includes(pClock(G.year).none+'초'),'개막 규정 안내 없음'); });
 /*KBO-END*/
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 
