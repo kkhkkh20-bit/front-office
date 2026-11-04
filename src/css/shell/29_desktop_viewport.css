@@ -254,3 +254,5 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
  .fxa-cap .fx-odd,.fxn-tm .fx-odd{flex:1 0 auto!important}
  .fx-mst td{padding-block:2px}.fx-mst td:nth-child(2){font-family:var(--f-ui)}.fx-mst td img{vertical-align:middle}
 }
+/* 리그 역사: 시즌 요약 표는 내용 높이만, 아래에 지난 시즌 순위 */
+.fmx-fit .fxh-sm .fx-scr{flex:0 1 auto!important}.fxh-sm>h4,.fxh-sm h4{margin:12px 0 4px}

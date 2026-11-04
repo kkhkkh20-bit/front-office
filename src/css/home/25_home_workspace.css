@@ -92,3 +92,6 @@
 
 /* 홈 순위 칸: 낮은 화면에서 마지막 구단이 잘리지 않고 칸 안에서 스크롤 */
 .home-workspace .hw-stand{overflow:auto;scrollbar-width:thin}
+/* 홈 다음 경기 칸: 시즌 끝 결산 */
+.hw-season{display:grid;gap:6px;padding:4px 10px}.hw-season .hw-hint{padding:0}.hw-season>b{font-size:18px}.hw-season ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:13px}.hw-season li i{font-style:normal;color:var(--muted);margin-right:4px}
+.hw-upcoming .cal-up{display:grid}
