@@ -13,7 +13,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
   try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}
   setTimeout(()=>{ try{ document.querySelectorAll('nav.subtabs,.itabs,.tstrip').forEach(n=>{ const ov=n.scrollWidth>n.clientWidth+2; n.classList.toggle('ovx',ov); const b=n.querySelector('button.on'); if(ov&&b)n.scrollLeft=Math.max(0,b.offsetLeft-n.clientWidth/2+b.offsetWidth/2); }); }catch(e){} },0);
-  setTimeout(()=>{ try{ campAfter(); if(UI.facFocus){ const el=document.getElementById('fci-'+UI.facFocus); UI.facFocus=null; if(el){ el.scrollIntoView({block:'center'}); el.classList.add('flash'); } } }catch(e){} try{ document.querySelectorAll('.chips').forEach(el=>el.classList.toggle('ovf',el.scrollWidth>el.clientWidth+2)); }catch(e){} },0);
+  setTimeout(()=>{ try{ campAfter(); if(UI.facFocus){ const el=document.getElementById('fci-'+UI.facFocus); UI.facFocus=null; if(el){ el.scrollIntoView({block:'center'}); el.classList.add('flash'); } } }catch(e){} try{ document.querySelectorAll('.chips').forEach(el=>el.classList.toggle('ovf',el.scrollWidth>el.clientWidth+2)); }catch(e){} try{ document.querySelectorAll('[data-snap]').forEach(w=>{ const r=w.querySelector('tr.now'); if(r&&!w.scrollTop)w.scrollTop=Math.max(0,r.offsetTop-w.clientHeight/3); }); }catch(e){} },0); /* data-snap: PC 시즌 일정 표를 다음 경기 근처로 */
   if(UI.tab==='roster'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.roster=true; } if(G.tut&&!G.tut.done){ try{ tutTick(); }catch(e){} }
   const t=team(G.user); setTeamVars(t);
   const per=period(); const unread=G.mail.filter(mailNeeds).length; const b=blockNow();
