@@ -179,3 +179,30 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 @media(max-width:600px){.sm-summary{grid-template-columns:minmax(0,1fr)}.sm-summary>div{grid-template-columns:1fr auto;align-items:center}.sm-summary small{grid-column:1/-1}}
 
 #dtick{top:calc(var(--app-header-h,56px) + 8px)}
+/* 올스타 선발 라인업: 야구장 그림 위 포지션 자리. 그림은 정사각형이고 PC에서는 화면 높이에 맞춰 줄인다 */
+.asf-card{min-width:0}
+.asf{position:relative;width:100%;max-width:min(100%,calc(100dvh - 380px));min-width:280px;aspect-ratio:1;margin:6px auto 0;border-radius:8px;overflow:hidden;container-type:inline-size}
+.asf>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.asf-p{position:absolute;transform:translate(-50%,-50%);width:21%;display:grid;justify-items:center;gap:1px;padding:0;border:0;background:none;color:#fff;font:inherit;cursor:pointer;line-height:1.15;text-align:center}
+.asf-p .av{width:clamp(28px,11cqw,58px);height:clamp(28px,11cqw,58px);border-radius:50%;border:2px solid #fff;background:#1d2833;object-fit:cover;box-shadow:0 1px 4px #0008}
+.asf-p.me .av{border-color:var(--team-hi,#ffd166)}
+.asf-p i{font-style:normal;padding:0 4px;border-radius:3px;background:#0009;font-size:clamp(9px,2.6cqw,12px);font-weight:700;color:#ffe08a;text-shadow:0 1px 2px #000}
+.asf-p b{max-width:100%;padding:0 4px;border-radius:3px;background:#000a;font-size:clamp(10px,3cqw,14px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asf-p em{font-style:normal;font-size:clamp(9px,2.5cqw,12px);color:#e6edf3;text-shadow:0 1px 2px #000}
+.asf-pen{margin:8px 0 0;line-height:1.7}
+/* 우승 트로피 진열장: 금(우승)·은(준우승)·동(정규 1위) */
+.ws-frame>.trc-page,.ws-frame>.asg-page{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.trc-page>p{margin:0}
+.trc-room{flex:1 0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));grid-auto-rows:minmax(min-content,1fr);gap:10px}
+.trc{display:flex;flex-direction:column}.trc-s{flex:1;align-items:flex-end;align-content:flex-end;flex-wrap:wrap}
+@media(min-width:1001px){.trc-room{grid-template-columns:repeat(5,minmax(0,1fr))}.trc-room .trc-t img,.trc-room .trc-t svg{width:52px;height:52px}.trc-room .trc-t{min-width:58px}}
+.trc{min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card,#141c25)}
+.trc.me{border-color:var(--team-hi,#ffd166);box-shadow:inset 3px 0 0 var(--team-hi,#ffd166)}
+.trc-h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}.trc-h b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trc-h span{font-size:12px;color:var(--muted);white-space:nowrap}
+.trc-n{margin:4px 0 6px;font-size:12px;color:var(--muted)}
+.trc-s{display:flex;gap:6px;padding:6px 4px 4px;border-bottom:4px solid #ffffff1a}
+.trc-t{display:grid;justify-items:center;gap:1px;flex:none;min-width:44px}.trc-t img,.trc-t svg{width:38px;height:38px;object-fit:contain}.trc.sm .trc-t img,.trc.sm .trc-t svg{width:28px;height:28px}
+.trc-t.r img,.trc-t.r svg{filter:grayscale(1) brightness(1.25)}.trc-t.f img,.trc-t.f svg{filter:sepia(1) hue-rotate(-18deg) saturate(1.6) brightness(.8)}
+.trc-t i{font:700 11px var(--f-num,inherit);font-style:normal}.trc-t em{font-style:normal;font-size:10px;color:var(--muted)}
+.trc-y{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:6px}.trc-y span{display:grid;justify-items:center;padding:3px 0;border-radius:4px;background:#ffffff08;font-size:11px;line-height:1.3}.trc-y i{font-style:normal;color:var(--muted)}.trc-y b{font:700 13px var(--f-num,inherit)}.trc-y em{font-style:normal;color:var(--muted);font-size:10.5px}.trc-y .p em{color:var(--good,#5bd17a)}.trc-y .c{background:#f2c14e22}.trc-y .c em{color:#ffd166;font-weight:700}
+.trc-e{font-size:12px;color:var(--muted);padding:10px 0}

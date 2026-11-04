@@ -24,7 +24,7 @@ function champSeriesMvp(y){ const R=(G.games||[]).filter(r=>r.kind&&r.kind.start
 function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.year; const record=champSchedule(P.champ,y); if(G.unemp||P.champ!==G.user)return; if(record.news)return; const t=team(G.user);
   const prev=(G.history||[]).filter(h=>h.champ===G.user).map(h=>h.y); const last=prev.length?Math.max(...prev):null; const n=prev.length+1;
   const ks=P.res&&P.res.ks?P.res.ks:null; const mvp=champSeriesMvp(y);
-  const gap=last?y-last:null; const tag=!prev.length?(G.startY&&G.startY>=y-3?`창단 ${y-G.startY+1}년 만의 첫 우승`:'구단 첫 한국시리즈 우승'):gap>=10?`${gap}년 만의 우승`:gap===1?'2년 연속 우승':`통산 ${n}번째 우승`;
+  const gap=last?y-last:null; let streak=1; for(let k=y-1;prev.includes(k);k--)streak++; const tag=!prev.length?(G.startY&&G.startY>=y-3?`창단 ${y-G.startY+1}년 만의 첫 우승`:'구단 첫 한국시리즈 우승'):gap>=10?`${gap}년 만의 우승`:gap===1?`${streak}년 연속 우승`:`통산 ${n}번째 우승`;
   G.champNew=record.news={tid:G.user,y,n,tag,ks:ks?[ks[2],ks[3]]:null,opp:P.runner,mvp,seen:false};
   /* 신문 1면 */
   news('구단',`${tname(G.user)}, ${y} 한국시리즈 정상… ${tag}`,`${tname(G.user)}이(가) ${tname(P.runner)}을(를) ${ks?`${ks[2]}승 ${ks[3]}패로`:''} 꺾고 우승했습니다. 홈구장은 밤늦게까지 팬들의 함성으로 가득했습니다.`,5,{fanW:4});

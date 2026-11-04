@@ -13,9 +13,10 @@ function histView(){
   const board=(label,f,fmt,flt)=>`<div class="ldr"><div class="eyebrow">${label}</div>${all.filter(flt||(()=>true)).sort((a,b)=>f(b)-f(a)).slice(0,8).map((x,i)=>`<div class="ldr-r"><i>${i+1}</i><span>${x.act&&G.players[x.id]?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)} <span class="small muted">${x.act?tshort(x.t):`${x.y} 은퇴`}</span></span><b class="num">${fmt(f(x))}</b></div>`).join('')}</div>`;
   const hof=(G.hof||[]);
   const champs=G.history.filter(h=>h.champ===G.user).map(h=>h.y);
-  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['abroad','해외파']],'sum');
+  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['abroad','해외파']],'sum');
   if(hv.cur==='abroad')return hv.bar+abroadView();
   if(hv.cur==='events')return hv.bar+leagueEventsView();
+  if(hv.cur==='tro')return hv.bar+trophyRoom();
   if(hv.cur==='sum'&&fmOn()){ /* PC(FM식): 연도별 요약 표 | 역대 우승·우리 구단 연혁 | 최근 시상·통산 WAR */
     const me=G.user, HH=G.history.filter(h=>h.champ!=null), cnt=G.teams.map(t=>({t,c:HH.filter(h=>h.champ===t.id).map(h=>h.y),r:HH.filter(h=>h.runner===t.id).length})).filter(x=>x.c.length||x.r).sort((a,b)=>b.c.length-a.c.length||b.r-a.r), mx=Math.max(1,...cnt.map(x=>x.c.length));
     const champ=fxBox('fxh-ch',fxHead('역대 한국시리즈 우승',`${HH.length}시즌 · ${HH.length?HH[0].y+'~'+HH[HH.length-1].y:''}`),cnt.map((x,i)=>`<div class="fx-odd${x.t.id===me?' me':''}" title="${x.c.join(', ')}"><span>${i+1}</span>${badge(x.t.id,16)}<b>${esc(x.t.nick)}</b><p class="fx-bar"><i style="width:${x.c.length?Math.max(2,x.c.length/mx*100):0}%"></i></p><em>${x.c.length}회</em></div><p class="fx-none fx-yrs">${x.c.length?'우승 '+x.c.join(' · '):''}${x.r?`${x.c.length?' · ':''}준우승 ${x.r}회`:''}</p>`).join('')||'<p class="fx-none">아직 기록이 없습니다.</p>');
@@ -34,3 +35,18 @@ function histView(){
    +`<section class="card"><div class="row between"><span class="small">우리 구단 우승 ${champs.length}회 · 영구결번 ${(G.retNos||[]).length}명</span><button class="btn small" data-a="go" data-v="club:chron">우리 구단 연대기</button></div></section>`;
 }
 
+/* ===== 우승 트로피 진열장: 리그 역사(G.history)의 한국시리즈 우승·준우승·정규시즌 1위를 연도별 트로피로 =====
+   옛 저장도 G.history만 있으면 그대로 그린다. 우리 구단과 상대 구단을 같은 모양으로 보여 준다 */
+function trophyOf(tid){ const H=(G.history||[]).filter(h=>h.order); const ys=f=>H.filter(f).map(h=>h.y);
+  return {c:ys(h=>h.champ===tid),r:ys(h=>h.runner===tid),f:ys(h=>h.order[0]&&h.order[0].tid===tid),y0:H.length?H[0].y:null,y1:H.length?H[H.length-1].y:null}; }
+function trophyCase(tid,compact){ const T=trophyOf(tid), last=T.c.length?T.c[T.c.length-1]:null;
+  let streak=0; if(last!=null&&last===T.y1)for(let y=last;T.c.includes(y);y--)streak++;
+  const note=T.y0==null?'아직 끝난 시즌이 없습니다.':last==null?`${T.y0}년 기록 이후 아직 우승이 없습니다.`:last===T.y1?(streak>=2?`${streak}년 연속 우승 · 디펜딩 챔피언`:'디펜딩 챔피언'):`마지막 우승 ${last}년 · ${T.y1-last}시즌째 무관`;
+  const shelf=[...T.c.map(y=>[y,'c']),...T.r.map(y=>[y,'r']),...T.f.map(y=>[y,'f'])].sort((a,b)=>b[0]-a[0]||'cfr'.indexOf(a[1])-'cfr'.indexOf(b[1]));
+  const ic=k=>k==='c'?trophyImg(compact?30:38):ART.trophy(compact?26:32), lab={c:'우승',r:'준우승',f:'정규 1위'};
+  return `<div class="trc${tid===G.user?' me':''}${compact?' sm':''}"><div class="trc-h">${badge(tid,compact?22:28)}<b>${esc(tname(tid))}</b><span class="num">우승 ${T.c.length} · 준우승 ${T.r.length} · 정규 1위 ${T.f.length}</span></div><p class="trc-n">${note}</p>${compact?'':trophyYears(tid)}<div class="trc-s">${shelf.length?shelf.map(([y,k])=>`<span class="trc-t ${k}" title="${y} ${k==='f'?'정규시즌 1위':'한국시리즈 '+lab[k]}">${ic(k)}<i>${y}</i><em>${lab[k]}</em></span>`).join(''):'<span class="trc-e">진열장이 비어 있습니다</span>'}</div></div>`; }
+/* 연도별 정규시즌 순위와 가을야구 결과(최근 8시즌) */
+function trophyYears(tid){ const H=(G.history||[]).filter(h=>h.order).slice(-8).reverse(); if(!H.length)return '';
+  return `<div class="trc-y">${H.map(h=>{ const i=h.order.findIndex(o=>o.tid===tid), r=h.champ===tid?'우승':h.runner===tid?'준우승':i>=0&&i<5?'가을야구':''; return `<span class="${h.champ===tid?'c':r?'p':''}"><i>${h.y}</i><b>${i+1}위</b><em>${r||'-'}</em></span>`; }).join('')}</div>`; }
+function trophyRoom(){ const L=G.teams.map(t=>({t,T:trophyOf(t.id)})).sort((a,b)=>(b.t.id===G.user)-(a.t.id===G.user)||b.T.c.length-a.T.c.length||b.T.r.length-a.T.r.length||b.T.f.length-a.T.f.length);
+  return `<div class="trc-page ws-own"><p class="small muted">이 리그에서 치른 시즌만 집계합니다. 금색 트로피는 한국시리즈 우승, 은색은 준우승, 동색은 정규시즌 1위입니다.</p><div class="trc-room">${L.map(x=>trophyCase(x.t.id)).join('')}</div></div>`; }

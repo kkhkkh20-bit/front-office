@@ -39,7 +39,7 @@ function chronView(){ const tid=G.user; const t=team(tid); const C=(G.chron||[])
     <p class="small sdesc expl">한 팀에서 5시즌 이상 뛰며 통산 WAR 12 이상을 쌓은 선수는 프랜차이즈 스타가 됩니다. 트레이드하면 팬들이 크게 반발하고, 은퇴하면 은퇴식을 엽니다. 영구결번은 OB·레전드 메뉴에서 정합니다. 주장은 선수단 투표로 뽑힙니다.</p>`;
   const yc=y=>{ const L=C.filter(x=>x.y===y); const se=L.find(x=>x.k==='season'); const rest=L.filter(x=>x.k!=='season');
     return `<div class="chy"><div class="chy-h"><b>${y}</b><span>${se?esc(se.t):'진행 중'}</span>${champs.includes(y)?'<span class="pill good">우승</span>':''}</div>${(()=>{ const R=G.reviews&&G.reviews[y]; return R&&R.tid===tid?`<details class="mfold chrev"><summary>${y} 시즌 회고</summary>${R.L.map(l=>`<p class="small">${lk(l)}</p>`).join('')}</details>`:''; })()}${rest.length?`<ul>${rest.map(x=>`<li><i>${CHK[x.k]||x.k}</i>${x.ref!=null&&G.players[x.ref]?`<button class="lnk" data-a="player" data-v="${x.ref}">${esc(x.t)}</button>`:esc(x.t)}</li>`).join('')}</ul>`:''}</div>`; };
-  return csec(`${esc(t.city)} ${esc(t.nick)} 연대기`,top)+csec('해마다 일어난 일',ys.length?ys.map(yc).join(''):'<p class="small muted">아직 기록이 없습니다. 시즌을 치르며 트레이드·지명·FA·수상·감독 교체가 여기에 쌓입니다.</p>'); }
+  return csec(`${esc(t.city)} ${esc(t.nick)} 연대기`,top)+csec('우승 트로피 진열장',trophyCase(tid)+'<div class="row"><button class="btn small" data-a="trophyGo">다른 구단 진열장</button></div>')+csec('해마다 일어난 일',ys.length?ys.map(yc).join(''):'<p class="small muted">아직 기록이 없습니다. 시즌을 치르며 트레이드·지명·FA·수상·감독 교체가 여기에 쌓입니다.</p>'); }
 function clubView(){ return subTabs('club')+clubBody(curSub('club')); }
 /* PC(FM '구단 정보' 배치): 구단 기본 정보·시설·재정·선발 명단·구장·주요 인물·인물·명예의 전당·유니폼·경기 일정. 모두 지금 게임 데이터(없는 값은 지어내지 않음) */
 function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
@@ -73,7 +73,7 @@ function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
     fxBtn('go','club:chron','연대기')+fxBtn('go','club:rel','관계도'));
   /* 명예의 전당: 지금까지 쌓인 리그 역사(G.history)와 구단 기록 */
   const yrs=f=>H.filter(f).map(h=>h.y), tro=(ic,ys,l,n)=>`<div class="fx-tro${(n??ys.length)?'':' none'}">${ic}<b>${n??ys.length}</b><span>${l}</span><i>${ys.slice(-3).join(', ')}</i></div>`;
-  const hof=fxBox('fxc-hof',fxHead('명예의 전당'),`<div class="fx-tros">${tro(trophyImg(44),yrs(h=>h.champ===tid),'한국시리즈 우승')}${tro(compMark('ks',40)||ART.trophy(36),yrs(h=>h.runner===tid),'한국시리즈 준우승')}${tro(ART.trophy(36),yrs(h=>h.order&&h.order[0]&&h.order[0].tid===tid),'정규시즌 1위')}${tro(compMark('ps',40)||ART.trophy(36),yrs(h=>h.order&&h.order.slice(0,5).some(o=>o.tid===tid)),'가을야구 진출')}${tro(`<span class="fx-no">${(G.retNos||[]).length}</span>`,[],'영구결번',(G.retNos||[]).length)}</div>`);
+  const hof=fxBox('fxc-hof',fxHead('명예의 전당'),`<div class="fx-tros">${tro(trophyImg(44),yrs(h=>h.champ===tid),'한국시리즈 우승')}${tro(compMark('ks',40)||ART.trophy(36),yrs(h=>h.runner===tid),'한국시리즈 준우승')}${tro(ART.trophy(36),yrs(h=>h.order&&h.order[0]&&h.order[0].tid===tid),'정규시즌 1위')}${tro(compMark('ps',40)||ART.trophy(36),yrs(h=>h.order&&h.order.slice(0,5).some(o=>o.tid===tid)),'가을야구 진출')}${tro(`<span class="fx-no">${(G.retNos||[]).length}</span>`,[],'영구결번',(G.retNos||[]).length)}</div>`,fxBtn('trophyGo','','트로피 진열장'));
   const uni=fxBox('fxc-uni',fxHead('유니폼'),uniRow(tid,{sz:120})||'<p class="fx-none">유니폼 그림이 없습니다.</p>');
   /* 경기 일정 및 결과: 다음 5경기·최근 5경기 */
   const gt=(op,a,bt,cls,act)=>`<${act?'button':'div'} class="fx-g ${cls||''}"${act||''}>${badge(op,22)}<b>${esc(team(op).nick)}</b><span>${a}</span><em>${bt}</em></${act?'button':'div'}>`;

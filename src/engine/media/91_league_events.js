@@ -80,3 +80,28 @@ function allStarDaily(){
   }
   if(G.day>=G.cal.asg&&!A.played){const resume=Object.keys(G.cal.sched).map(Number).filter(d=>d>G.cal.asg+1).sort((a,b)=>a-b)[0];A.played=true;note('일정',`${G.year} 나눔·드림 올스타 행사가 열렸습니다.${resume?' '+dmd(resume)+'부터 정규시즌 일정이 재개됩니다.':''}`);}
 }
+/* ===== 우승·가을야구 순간 기사 =====
+   횟수·연도는 G.history(이 리그에서 치른 시즌, 올해는 아직 들어가기 전)에서만 센다. 우리 구단 우승 기사는 champCelebrate가 쓴다. */
+function titleYears(tid,k){ return (G.history||[]).filter(h=>k==='first'?h.order&&h.order[0]&&h.order[0].tid===tid:k==='ps'?h.order&&h.order.slice(0,5).some(o=>o.tid===tid):h[k]===tid).map(h=>h.y); }
+function titleRun(ys,y){ let n=1; for(let k=y-1;ys.includes(k);k--)n++; return n; } /* 올해를 포함한 연속 횟수 */
+function titleSince(){ return (G.history||[]).length?G.history[0].y:G.year; }
+function titleDrought(tid){ const ys=titleYears(tid,'champ'), last=ys.length?ys[ys.length-1]:null; return last==null?`${titleSince()}년 기록 이후 아직 우승이 없습니다`:`마지막 우승은 ${last}년, ${G.year-last}시즌째 무관입니다`; }
+/* 정규시즌 순위가 확정돼 와일드카드 결정전 일정이 잡힐 때: 정규시즌 1위, 우리 구단 가을야구 진출·탈락 */
+function psSeedNews(){ const P=G.ps; if(!P||P.seedNews)return; P.seedNews=1; const y=G.year, top=P.order[0], first=top.tid;
+  const fy=titleYears(first,'first'), run=titleRun(fy,y);
+  news('경기',`${tshort(first)}, ${y} 정규시즌 1위 확정`,`${tname(first)}이(가) ${top.w}승 ${top.l}패${top.t?` ${top.t}무`:''}로 정규시즌 1위를 차지해 한국시리즈에 직행합니다. ${run>=2?`${run}년 연속 정규시즌 1위입니다.`:fy.length?`이 리그 기록으로 ${fy.length+1}번째 정규시즌 1위(직전 ${fy[fy.length-1]}년)입니다.`:`${titleSince()}년 기록 이후 첫 정규시즌 1위입니다.`}`,first===G.user&&!G.unemp?3:0,{tid:first});
+  if(G.unemp)return; const rk=P.order.findIndex(o=>o.tid===G.user)+1, me=P.order[rk-1], nm=tshort(G.user); if(!rk||first===G.user)return;
+  const py=titleYears(G.user,'ps'), pr=titleRun(py,y), lastPs=py.length?py[py.length-1]:null;
+  if(rk<=5)news('경기',`${nm}, 정규시즌 ${rk}위로 가을야구 진출 확정`,`${tname(G.user)}이(가) ${me.w}승 ${me.l}패로 ${rk}위에 올라 ${rk===2?'플레이오프':rk===3?'준플레이오프':'와일드카드 결정전'}부터 포스트시즌을 치릅니다. ${pr>=2?`${pr}년 연속 가을야구입니다.`:lastPs!=null?`${y-lastPs}년 만의 가을야구입니다.`:`${titleSince()}년 기록 이후 첫 가을야구입니다.`}`,2,{fanW:2});
+  else { const o5=P.order[4], gb=((o5.w-me.w)-(o5.l-me.l))/2; news('경기',`${nm}, ${rk}위로 시즌 마감… 가을야구 탈락 확정`,`${tname(G.user)}이(가) ${me.w}승 ${me.l}패로 5위 ${tshort(o5.tid)}에 ${gb}경기 뒤져 포스트시즌에 나가지 못합니다. ${lastPs!=null?`마지막 가을야구는 ${lastPs}년입니다.`:`${titleSince()}년 기록 이후 아직 가을야구가 없습니다.`}`,-2); } }
+/* 우리 구단이 한국시리즈 전 라운드에서 떨어질 때 */
+function psOutNews(round,res){ if(G.unemp||!res||res[1]!==G.user||round==='ks'||round==='tb')return; const nm=tshort(G.user);
+  news('경기',`${nm}, ${ROUNDK[round]}에서 탈락… 가을야구 마감`,`${tname(G.user)}이(가) ${tname(res[0])}에 시리즈 ${res[3]}승 ${res[2]}패로 밀려 시즌을 마쳤습니다. ${titleDrought(G.user)}.`,-1); }
+/* 한국시리즈가 끝났을 때: 다른 구단 우승, 우리 구단 준우승, 라이벌 구단 우승 */
+function titleNews(ch,ru){ const y=G.year, ks=G.ps&&G.ps.res&&G.ps.res.ks; if(!ks)return; const prev=titleYears(ch,'champ'), n=prev.length+1, last=prev.length?prev[prev.length-1]:null, run=titleRun(prev,y);
+  const tag=run>=2?`${run}년 연속 우승`:last==null?`${titleSince()}년 기록 이후 첫 우승`:y-last>=10?`${y-last}년 만의 우승`:`통산 ${n}번째 우승`;
+  if(ch!==G.user||G.unemp)news('경기',`${tname(ch)}, ${y} 한국시리즈 우승… ${tag}`,`${tname(ch)}이(가) ${tname(ru)}을(를) ${ks[2]}승 ${ks[3]}패로 꺾었습니다. 이 리그 기록으로 통산 ${n}번째 우승${last!=null?`이며 직전 우승은 ${last}년`:''}입니다.`,0,{tid:ch});
+  if(G.unemp||ch===G.user)return; const nm=tshort(G.user);
+  if(ru===G.user){ const rn=titleYears(G.user,'runner').length+1; news('경기',`${nm}, 한국시리즈 준우승… 정상 문턱에서 멈췄다`,`${tname(G.user)}이(가) ${tname(ch)}에 ${ks[3]}승 ${ks[2]}패로 졌습니다. 이 리그 기록으로 ${rn}번째 준우승입니다. ${titleDrought(G.user)}.`,-1); return; }
+  const r=((G.rivalries||{}).pairs||{})[rivalPair(ch,G.user)];
+  if(r&&r.label)news('분석',`라이벌 ${tshort(ch)} 정상에… 지켜본 ${nm} 속앓이`,`${r.label}의 상대 ${tname(ch)}이(가) ${tag}을 차지했습니다. ${tname(G.user)}은(는) 올해 정상에 오르지 못했습니다. ${titleDrought(G.user)}. 이 게임에서 두 팀은 ${r.games}번 맞붙었습니다.`,0,{tid:G.user}); }

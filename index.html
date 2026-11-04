@@ -3435,6 +3435,33 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 @media(max-width:600px){.sm-summary{grid-template-columns:minmax(0,1fr)}.sm-summary>div{grid-template-columns:1fr auto;align-items:center}.sm-summary small{grid-column:1/-1}}
 
 #dtick{top:calc(var(--app-header-h,56px) + 8px)}
+/* 올스타 선발 라인업: 야구장 그림 위 포지션 자리. 그림은 정사각형이고 PC에서는 화면 높이에 맞춰 줄인다 */
+.asf-card{min-width:0}
+.asf{position:relative;width:100%;max-width:min(100%,calc(100dvh - 380px));min-width:280px;aspect-ratio:1;margin:6px auto 0;border-radius:8px;overflow:hidden;container-type:inline-size}
+.asf>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.asf-p{position:absolute;transform:translate(-50%,-50%);width:21%;display:grid;justify-items:center;gap:1px;padding:0;border:0;background:none;color:#fff;font:inherit;cursor:pointer;line-height:1.15;text-align:center}
+.asf-p .av{width:clamp(28px,11cqw,58px);height:clamp(28px,11cqw,58px);border-radius:50%;border:2px solid #fff;background:#1d2833;object-fit:cover;box-shadow:0 1px 4px #0008}
+.asf-p.me .av{border-color:var(--team-hi,#ffd166)}
+.asf-p i{font-style:normal;padding:0 4px;border-radius:3px;background:#0009;font-size:clamp(9px,2.6cqw,12px);font-weight:700;color:#ffe08a;text-shadow:0 1px 2px #000}
+.asf-p b{max-width:100%;padding:0 4px;border-radius:3px;background:#000a;font-size:clamp(10px,3cqw,14px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asf-p em{font-style:normal;font-size:clamp(9px,2.5cqw,12px);color:#e6edf3;text-shadow:0 1px 2px #000}
+.asf-pen{margin:8px 0 0;line-height:1.7}
+/* 우승 트로피 진열장: 금(우승)·은(준우승)·동(정규 1위) */
+.ws-frame>.trc-page,.ws-frame>.asg-page{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.trc-page>p{margin:0}
+.trc-room{flex:1 0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));grid-auto-rows:minmax(min-content,1fr);gap:10px}
+.trc{display:flex;flex-direction:column}.trc-s{flex:1;align-items:flex-end;align-content:flex-end;flex-wrap:wrap}
+@media(min-width:1001px){.trc-room{grid-template-columns:repeat(5,minmax(0,1fr))}.trc-room .trc-t img,.trc-room .trc-t svg{width:52px;height:52px}.trc-room .trc-t{min-width:58px}}
+.trc{min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card,#141c25)}
+.trc.me{border-color:var(--team-hi,#ffd166);box-shadow:inset 3px 0 0 var(--team-hi,#ffd166)}
+.trc-h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}.trc-h b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trc-h span{font-size:12px;color:var(--muted);white-space:nowrap}
+.trc-n{margin:4px 0 6px;font-size:12px;color:var(--muted)}
+.trc-s{display:flex;gap:6px;padding:6px 4px 4px;border-bottom:4px solid #ffffff1a}
+.trc-t{display:grid;justify-items:center;gap:1px;flex:none;min-width:44px}.trc-t img,.trc-t svg{width:38px;height:38px;object-fit:contain}.trc.sm .trc-t img,.trc.sm .trc-t svg{width:28px;height:28px}
+.trc-t.r img,.trc-t.r svg{filter:grayscale(1) brightness(1.25)}.trc-t.f img,.trc-t.f svg{filter:sepia(1) hue-rotate(-18deg) saturate(1.6) brightness(.8)}
+.trc-t i{font:700 11px var(--f-num,inherit);font-style:normal}.trc-t em{font-style:normal;font-size:10px;color:var(--muted)}
+.trc-y{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:6px}.trc-y span{display:grid;justify-items:center;padding:3px 0;border-radius:4px;background:#ffffff08;font-size:11px;line-height:1.3}.trc-y i{font-style:normal;color:var(--muted)}.trc-y b{font:700 13px var(--f-num,inherit)}.trc-y em{font-style:normal;color:var(--muted);font-size:10.5px}.trc-y .p em{color:var(--good,#5bd17a)}.trc-y .c{background:#f2c14e22}.trc-y .c em{color:#ffd166;font-weight:700}
+.trc-e{font-size:12px;color:var(--muted);padding:10px 0}
 /* 경기장은 하나의 화면, 주변 패널은 현재 재생 시점의 기록만 보여 준다. */
 .cast.match-dashboard{height:calc(100dvh / var(--z,1));box-sizing:border-box;padding:10px;gap:6px;grid-template-rows:50px minmax(0,1fr) 30px 45px 84px 32px;background:#0b1118;color:#dce5ec;overflow:hidden;--md-line:#303d48;--md-panel:#17212b}
 .match-dashboard .cs-top{padding:0 8px;background:#141e28;border:1px solid var(--md-line);border-radius:5px;gap:8px;min-width:0}
@@ -9966,6 +9993,7 @@ function seasonEnd(){
   const tbq=[]; if(pctEq(st[0],st[1]))tbq.push([0,s[0],s[1]]); if(st.length>5&&pctEq(st[4],st[5]))tbq.push([4,s[4],s[5]]); G.ps.tbq=tbq;
   if(tbq.length){ const q=tbq.shift(); G.ps.round='tb'; G.ps.tbPos=q[0]; G.ps.cur=mkSeries('tb',q[1],q[2],G.day+1); note('일정',`${q[0]+1}위 결정전: ${tname(q[1])} - ${tname(q[2])} (${tshort(q[1])} 홈)`); }
   else G.ps.cur=mkSeries('wc',s[3],s[4],G.day+2);
+  if(G.ps.round==='wc')try{ psSeedNews(); }catch(e){ console.error(e); }
   for(const t of G.teams)try{ entryManage(t.id,false,true); }catch(e){} /* 포스트시즌에 들어가는 날 바로 엔트리를 기본 한도로 */
 }
 function mkSeries(round,hi,lo,start){
@@ -9995,10 +10023,11 @@ function psDay(day){
     const msg=`${ROUNDK[s.round]}: ${tname(done[0])}이(가) ${P.res[s.round][2]}승 ${P.res[s.round][3]}패로 이겼습니다.`;
     (done.includes(G.user)?stop:note)('포스트시즌',s.round==='tb'?`${P.tbPos+1}위 결정전: ${tname(done[0])}이(가) 이겨 ${P.tbPos+1}위, ${tname(done[1])}은(는) ${P.tbPos+2}위입니다.${P.tbPos===4&&done[1]===G.user?' 우리 구단은 가을야구에 나가지 못합니다.':''}`:msg+(done[1]===G.user?' 우리 구단의 포스트시즌은 여기서 끝났습니다.':done[0]===G.user&&s.round!=='ks'?' 우리 구단이 다음 시리즈에 올랐습니다.':''));
     if(s.round==='tb'){ const i=P.tbPos; if(done[0]!==P.order[i].tid){ const a=P.order[i]; P.order[i]=P.order[i+1]; P.order[i+1]=a; } P.seeds=P.order.slice(0,5).map(x=>x.tid); delete P.res.tb; (P.tbRes=P.tbRes||[]).push({pos:i+1,w:done[0],l:done[1]});
-      if((P.tbq||[]).length){ const q=P.tbq.shift(); const hi=P.order[q[0]].tid, lo=P.order[q[0]+1].tid; P.tbPos=q[0]; P.cur=mkSeries('tb',hi,lo,day+1); } else { P.round='wc'; P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],day+2); } return; } /* 결정전 승자가 그 순위를 갖는다 */
+      if((P.tbq||[]).length){ const q=P.tbq.shift(); const hi=P.order[q[0]].tid, lo=P.order[q[0]+1].tid; P.tbPos=q[0]; P.cur=mkSeries('tb',hi,lo,day+1); } else { P.round='wc'; P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],day+2); try{ psSeedNews(); }catch(e){ console.error(e); } } return; } /* 결정전 승자가 그 순위를 갖는다 */
     const nx={wc:['spo',P.seeds[2]],spo:['po',P.seeds[1]],po:['ks',P.seeds[0]]}[s.round];
+    try{ psOutNews(s.round,P.res[s.round]); }catch(e){ console.error(e); }
     if(nx){ P.round=nx[0]; P.cur=mkSeries(nx[0],nx[1],done[0],day+2); }
-    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } }
+    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
   }
 }
 function settlement(){
@@ -15509,7 +15538,7 @@ function champSeriesMvp(y){ const R=(G.games||[]).filter(r=>r.kind&&r.kind.start
 function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.year; const record=champSchedule(P.champ,y); if(G.unemp||P.champ!==G.user)return; if(record.news)return; const t=team(G.user);
   const prev=(G.history||[]).filter(h=>h.champ===G.user).map(h=>h.y); const last=prev.length?Math.max(...prev):null; const n=prev.length+1;
   const ks=P.res&&P.res.ks?P.res.ks:null; const mvp=champSeriesMvp(y);
-  const gap=last?y-last:null; const tag=!prev.length?(G.startY&&G.startY>=y-3?`창단 ${y-G.startY+1}년 만의 첫 우승`:'구단 첫 한국시리즈 우승'):gap>=10?`${gap}년 만의 우승`:gap===1?'2년 연속 우승':`통산 ${n}번째 우승`;
+  const gap=last?y-last:null; let streak=1; for(let k=y-1;prev.includes(k);k--)streak++; const tag=!prev.length?(G.startY&&G.startY>=y-3?`창단 ${y-G.startY+1}년 만의 첫 우승`:'구단 첫 한국시리즈 우승'):gap>=10?`${gap}년 만의 우승`:gap===1?`${streak}년 연속 우승`:`통산 ${n}번째 우승`;
   G.champNew=record.news={tid:G.user,y,n,tag,ks:ks?[ks[2],ks[3]]:null,opp:P.runner,mvp,seen:false};
   /* 신문 1면 */
   news('구단',`${tname(G.user)}, ${y} 한국시리즈 정상… ${tag}`,`${tname(G.user)}이(가) ${tname(P.runner)}을(를) ${ks?`${ks[2]}승 ${ks[3]}패로`:''} 꺾고 우승했습니다. 홈구장은 밤늦게까지 팬들의 함성으로 가득했습니다.`,5,{fanW:4});
@@ -17881,6 +17910,31 @@ function allStarDaily(){
   }
   if(G.day>=G.cal.asg&&!A.played){const resume=Object.keys(G.cal.sched).map(Number).filter(d=>d>G.cal.asg+1).sort((a,b)=>a-b)[0];A.played=true;note('일정',`${G.year} 나눔·드림 올스타 행사가 열렸습니다.${resume?' '+dmd(resume)+'부터 정규시즌 일정이 재개됩니다.':''}`);}
 }
+/* ===== 우승·가을야구 순간 기사 =====
+   횟수·연도는 G.history(이 리그에서 치른 시즌, 올해는 아직 들어가기 전)에서만 센다. 우리 구단 우승 기사는 champCelebrate가 쓴다. */
+function titleYears(tid,k){ return (G.history||[]).filter(h=>k==='first'?h.order&&h.order[0]&&h.order[0].tid===tid:k==='ps'?h.order&&h.order.slice(0,5).some(o=>o.tid===tid):h[k]===tid).map(h=>h.y); }
+function titleRun(ys,y){ let n=1; for(let k=y-1;ys.includes(k);k--)n++; return n; } /* 올해를 포함한 연속 횟수 */
+function titleSince(){ return (G.history||[]).length?G.history[0].y:G.year; }
+function titleDrought(tid){ const ys=titleYears(tid,'champ'), last=ys.length?ys[ys.length-1]:null; return last==null?`${titleSince()}년 기록 이후 아직 우승이 없습니다`:`마지막 우승은 ${last}년, ${G.year-last}시즌째 무관입니다`; }
+/* 정규시즌 순위가 확정돼 와일드카드 결정전 일정이 잡힐 때: 정규시즌 1위, 우리 구단 가을야구 진출·탈락 */
+function psSeedNews(){ const P=G.ps; if(!P||P.seedNews)return; P.seedNews=1; const y=G.year, top=P.order[0], first=top.tid;
+  const fy=titleYears(first,'first'), run=titleRun(fy,y);
+  news('경기',`${tshort(first)}, ${y} 정규시즌 1위 확정`,`${tname(first)}이(가) ${top.w}승 ${top.l}패${top.t?` ${top.t}무`:''}로 정규시즌 1위를 차지해 한국시리즈에 직행합니다. ${run>=2?`${run}년 연속 정규시즌 1위입니다.`:fy.length?`이 리그 기록으로 ${fy.length+1}번째 정규시즌 1위(직전 ${fy[fy.length-1]}년)입니다.`:`${titleSince()}년 기록 이후 첫 정규시즌 1위입니다.`}`,first===G.user&&!G.unemp?3:0,{tid:first});
+  if(G.unemp)return; const rk=P.order.findIndex(o=>o.tid===G.user)+1, me=P.order[rk-1], nm=tshort(G.user); if(!rk||first===G.user)return;
+  const py=titleYears(G.user,'ps'), pr=titleRun(py,y), lastPs=py.length?py[py.length-1]:null;
+  if(rk<=5)news('경기',`${nm}, 정규시즌 ${rk}위로 가을야구 진출 확정`,`${tname(G.user)}이(가) ${me.w}승 ${me.l}패로 ${rk}위에 올라 ${rk===2?'플레이오프':rk===3?'준플레이오프':'와일드카드 결정전'}부터 포스트시즌을 치릅니다. ${pr>=2?`${pr}년 연속 가을야구입니다.`:lastPs!=null?`${y-lastPs}년 만의 가을야구입니다.`:`${titleSince()}년 기록 이후 첫 가을야구입니다.`}`,2,{fanW:2});
+  else { const o5=P.order[4], gb=((o5.w-me.w)-(o5.l-me.l))/2; news('경기',`${nm}, ${rk}위로 시즌 마감… 가을야구 탈락 확정`,`${tname(G.user)}이(가) ${me.w}승 ${me.l}패로 5위 ${tshort(o5.tid)}에 ${gb}경기 뒤져 포스트시즌에 나가지 못합니다. ${lastPs!=null?`마지막 가을야구는 ${lastPs}년입니다.`:`${titleSince()}년 기록 이후 아직 가을야구가 없습니다.`}`,-2); } }
+/* 우리 구단이 한국시리즈 전 라운드에서 떨어질 때 */
+function psOutNews(round,res){ if(G.unemp||!res||res[1]!==G.user||round==='ks'||round==='tb')return; const nm=tshort(G.user);
+  news('경기',`${nm}, ${ROUNDK[round]}에서 탈락… 가을야구 마감`,`${tname(G.user)}이(가) ${tname(res[0])}에 시리즈 ${res[3]}승 ${res[2]}패로 밀려 시즌을 마쳤습니다. ${titleDrought(G.user)}.`,-1); }
+/* 한국시리즈가 끝났을 때: 다른 구단 우승, 우리 구단 준우승, 라이벌 구단 우승 */
+function titleNews(ch,ru){ const y=G.year, ks=G.ps&&G.ps.res&&G.ps.res.ks; if(!ks)return; const prev=titleYears(ch,'champ'), n=prev.length+1, last=prev.length?prev[prev.length-1]:null, run=titleRun(prev,y);
+  const tag=run>=2?`${run}년 연속 우승`:last==null?`${titleSince()}년 기록 이후 첫 우승`:y-last>=10?`${y-last}년 만의 우승`:`통산 ${n}번째 우승`;
+  if(ch!==G.user||G.unemp)news('경기',`${tname(ch)}, ${y} 한국시리즈 우승… ${tag}`,`${tname(ch)}이(가) ${tname(ru)}을(를) ${ks[2]}승 ${ks[3]}패로 꺾었습니다. 이 리그 기록으로 통산 ${n}번째 우승${last!=null?`이며 직전 우승은 ${last}년`:''}입니다.`,0,{tid:ch});
+  if(G.unemp||ch===G.user)return; const nm=tshort(G.user);
+  if(ru===G.user){ const rn=titleYears(G.user,'runner').length+1; news('경기',`${nm}, 한국시리즈 준우승… 정상 문턱에서 멈췄다`,`${tname(G.user)}이(가) ${tname(ch)}에 ${ks[3]}승 ${ks[2]}패로 졌습니다. 이 리그 기록으로 ${rn}번째 준우승입니다. ${titleDrought(G.user)}.`,-1); return; }
+  const r=((G.rivalries||{}).pairs||{})[rivalPair(ch,G.user)];
+  if(r&&r.label)news('분석',`라이벌 ${tshort(ch)} 정상에… 지켜본 ${nm} 속앓이`,`${r.label}의 상대 ${tname(ch)}이(가) ${tag}을 차지했습니다. ${tname(G.user)}은(는) 올해 정상에 오르지 못했습니다. ${titleDrought(G.user)}. 이 게임에서 두 팀은 ${r.games}번 맞붙었습니다.`,0,{tid:G.user}); }
 /* 기자 성향별 가상 투표 모형. 공식 배점이나 실제 기자의 국적 선호를 뜻하지 않는다.
    국내 선수의 작은 가산과 이정표 비중은 사용자 요청. 실제 기사 대조는 별도 검증 대상이다. */
 function ggCandidate(x,pos){
@@ -22489,9 +22543,10 @@ function histView(){
   const board=(label,f,fmt,flt)=>`<div class="ldr"><div class="eyebrow">${label}</div>${all.filter(flt||(()=>true)).sort((a,b)=>f(b)-f(a)).slice(0,8).map((x,i)=>`<div class="ldr-r"><i>${i+1}</i><span>${x.act&&G.players[x.id]?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.name)}</button>`:esc(x.name)} <span class="small muted">${x.act?tshort(x.t):`${x.y} 은퇴`}</span></span><b class="num">${fmt(f(x))}</b></div>`).join('')}</div>`;
   const hof=(G.hof||[]);
   const champs=G.history.filter(h=>h.champ===G.user).map(h=>h.y);
-  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['abroad','해외파']],'sum');
+  const hv=inTabs('histv',[['sum','지난 시즌'],['aw','시상'],['tro','우승 트로피'],['events','올스타·라이벌'],['ldr','통산 순위'],['hof','명예의 전당'],['abroad','해외파']],'sum');
   if(hv.cur==='abroad')return hv.bar+abroadView();
   if(hv.cur==='events')return hv.bar+leagueEventsView();
+  if(hv.cur==='tro')return hv.bar+trophyRoom();
   if(hv.cur==='sum'&&fmOn()){ /* PC(FM식): 연도별 요약 표 | 역대 우승·우리 구단 연혁 | 최근 시상·통산 WAR */
     const me=G.user, HH=G.history.filter(h=>h.champ!=null), cnt=G.teams.map(t=>({t,c:HH.filter(h=>h.champ===t.id).map(h=>h.y),r:HH.filter(h=>h.runner===t.id).length})).filter(x=>x.c.length||x.r).sort((a,b)=>b.c.length-a.c.length||b.r-a.r), mx=Math.max(1,...cnt.map(x=>x.c.length));
     const champ=fxBox('fxh-ch',fxHead('역대 한국시리즈 우승',`${HH.length}시즌 · ${HH.length?HH[0].y+'~'+HH[HH.length-1].y:''}`),cnt.map((x,i)=>`<div class="fx-odd${x.t.id===me?' me':''}" title="${x.c.join(', ')}"><span>${i+1}</span>${badge(x.t.id,16)}<b>${esc(x.t.nick)}</b><p class="fx-bar"><i style="width:${x.c.length?Math.max(2,x.c.length/mx*100):0}%"></i></p><em>${x.c.length}회</em></div><p class="fx-none fx-yrs">${x.c.length?'우승 '+x.c.join(' · '):''}${x.r?`${x.c.length?' · ':''}준우승 ${x.r}회`:''}</p>`).join('')||'<p class="fx-none">아직 기록이 없습니다.</p>');
@@ -22510,6 +22565,21 @@ function histView(){
    +`<section class="card"><div class="row between"><span class="small">우리 구단 우승 ${champs.length}회 · 영구결번 ${(G.retNos||[]).length}명</span><button class="btn small" data-a="go" data-v="club:chron">우리 구단 연대기</button></div></section>`;
 }
 
+/* ===== 우승 트로피 진열장: 리그 역사(G.history)의 한국시리즈 우승·준우승·정규시즌 1위를 연도별 트로피로 =====
+   옛 저장도 G.history만 있으면 그대로 그린다. 우리 구단과 상대 구단을 같은 모양으로 보여 준다 */
+function trophyOf(tid){ const H=(G.history||[]).filter(h=>h.order); const ys=f=>H.filter(f).map(h=>h.y);
+  return {c:ys(h=>h.champ===tid),r:ys(h=>h.runner===tid),f:ys(h=>h.order[0]&&h.order[0].tid===tid),y0:H.length?H[0].y:null,y1:H.length?H[H.length-1].y:null}; }
+function trophyCase(tid,compact){ const T=trophyOf(tid), last=T.c.length?T.c[T.c.length-1]:null;
+  let streak=0; if(last!=null&&last===T.y1)for(let y=last;T.c.includes(y);y--)streak++;
+  const note=T.y0==null?'아직 끝난 시즌이 없습니다.':last==null?`${T.y0}년 기록 이후 아직 우승이 없습니다.`:last===T.y1?(streak>=2?`${streak}년 연속 우승 · 디펜딩 챔피언`:'디펜딩 챔피언'):`마지막 우승 ${last}년 · ${T.y1-last}시즌째 무관`;
+  const shelf=[...T.c.map(y=>[y,'c']),...T.r.map(y=>[y,'r']),...T.f.map(y=>[y,'f'])].sort((a,b)=>b[0]-a[0]||'cfr'.indexOf(a[1])-'cfr'.indexOf(b[1]));
+  const ic=k=>k==='c'?trophyImg(compact?30:38):ART.trophy(compact?26:32), lab={c:'우승',r:'준우승',f:'정규 1위'};
+  return `<div class="trc${tid===G.user?' me':''}${compact?' sm':''}"><div class="trc-h">${badge(tid,compact?22:28)}<b>${esc(tname(tid))}</b><span class="num">우승 ${T.c.length} · 준우승 ${T.r.length} · 정규 1위 ${T.f.length}</span></div><p class="trc-n">${note}</p>${compact?'':trophyYears(tid)}<div class="trc-s">${shelf.length?shelf.map(([y,k])=>`<span class="trc-t ${k}" title="${y} ${k==='f'?'정규시즌 1위':'한국시리즈 '+lab[k]}">${ic(k)}<i>${y}</i><em>${lab[k]}</em></span>`).join(''):'<span class="trc-e">진열장이 비어 있습니다</span>'}</div></div>`; }
+/* 연도별 정규시즌 순위와 가을야구 결과(최근 8시즌) */
+function trophyYears(tid){ const H=(G.history||[]).filter(h=>h.order).slice(-8).reverse(); if(!H.length)return '';
+  return `<div class="trc-y">${H.map(h=>{ const i=h.order.findIndex(o=>o.tid===tid), r=h.champ===tid?'우승':h.runner===tid?'준우승':i>=0&&i<5?'가을야구':''; return `<span class="${h.champ===tid?'c':r?'p':''}"><i>${h.y}</i><b>${i+1}위</b><em>${r||'-'}</em></span>`; }).join('')}</div>`; }
+function trophyRoom(){ const L=G.teams.map(t=>({t,T:trophyOf(t.id)})).sort((a,b)=>(b.t.id===G.user)-(a.t.id===G.user)||b.T.c.length-a.T.c.length||b.T.r.length-a.T.r.length||b.T.f.length-a.T.f.length);
+  return `<div class="trc-page ws-own"><p class="small muted">이 리그에서 치른 시즌만 집계합니다. 금색 트로피는 한국시리즈 우승, 은색은 준우승, 동색은 정규시즌 1위입니다.</p><div class="trc-room">${L.map(x=>trophyCase(x.t.id)).join('')}</div></div>`; }
 /* ---------- 트레이드 매물 ---------- */
 /* 트레이드 매물 센터: 받은 제안 → 우리 매물 → 다른 구단 매물. 매물끼리 맞교환 후보를 바로 보여 준다 */
 /* 받은 제안 한 줄 요약: 받는/보내는 선수 정보와 거래 뒤 변화 */
@@ -22640,6 +22710,7 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
     ${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
     <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)} · ${GMT[g.trait].l} · 친분 ${t.rel}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd></dl>
     <div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}
+    <div class="eyebrow" style="margin-top:10px">우승 트로피</div>${trophyCase(tid,true)}
     <div class="row" style="margin-top:10px"><button class="btn primary" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
   </div></div>`; }
 function teamCard(t){
@@ -23285,7 +23356,7 @@ function chronView(){ const tid=G.user; const t=team(tid); const C=(G.chron||[])
     <p class="small sdesc expl">한 팀에서 5시즌 이상 뛰며 통산 WAR 12 이상을 쌓은 선수는 프랜차이즈 스타가 됩니다. 트레이드하면 팬들이 크게 반발하고, 은퇴하면 은퇴식을 엽니다. 영구결번은 OB·레전드 메뉴에서 정합니다. 주장은 선수단 투표로 뽑힙니다.</p>`;
   const yc=y=>{ const L=C.filter(x=>x.y===y); const se=L.find(x=>x.k==='season'); const rest=L.filter(x=>x.k!=='season');
     return `<div class="chy"><div class="chy-h"><b>${y}</b><span>${se?esc(se.t):'진행 중'}</span>${champs.includes(y)?'<span class="pill good">우승</span>':''}</div>${(()=>{ const R=G.reviews&&G.reviews[y]; return R&&R.tid===tid?`<details class="mfold chrev"><summary>${y} 시즌 회고</summary>${R.L.map(l=>`<p class="small">${lk(l)}</p>`).join('')}</details>`:''; })()}${rest.length?`<ul>${rest.map(x=>`<li><i>${CHK[x.k]||x.k}</i>${x.ref!=null&&G.players[x.ref]?`<button class="lnk" data-a="player" data-v="${x.ref}">${esc(x.t)}</button>`:esc(x.t)}</li>`).join('')}</ul>`:''}</div>`; };
-  return csec(`${esc(t.city)} ${esc(t.nick)} 연대기`,top)+csec('해마다 일어난 일',ys.length?ys.map(yc).join(''):'<p class="small muted">아직 기록이 없습니다. 시즌을 치르며 트레이드·지명·FA·수상·감독 교체가 여기에 쌓입니다.</p>'); }
+  return csec(`${esc(t.city)} ${esc(t.nick)} 연대기`,top)+csec('우승 트로피 진열장',trophyCase(tid)+'<div class="row"><button class="btn small" data-a="trophyGo">다른 구단 진열장</button></div>')+csec('해마다 일어난 일',ys.length?ys.map(yc).join(''):'<p class="small muted">아직 기록이 없습니다. 시즌을 치르며 트레이드·지명·FA·수상·감독 교체가 여기에 쌓입니다.</p>'); }
 function clubView(){ return subTabs('club')+clubBody(curSub('club')); }
 /* PC(FM '구단 정보' 배치): 구단 기본 정보·시설·재정·선발 명단·구장·주요 인물·인물·명예의 전당·유니폼·경기 일정. 모두 지금 게임 데이터(없는 값은 지어내지 않음) */
 function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
@@ -23319,7 +23390,7 @@ function clubFm(){ const tid=G.user, t=team(tid), F=fxFact, H=G.history||[];
     fxBtn('go','club:chron','연대기')+fxBtn('go','club:rel','관계도'));
   /* 명예의 전당: 지금까지 쌓인 리그 역사(G.history)와 구단 기록 */
   const yrs=f=>H.filter(f).map(h=>h.y), tro=(ic,ys,l,n)=>`<div class="fx-tro${(n??ys.length)?'':' none'}">${ic}<b>${n??ys.length}</b><span>${l}</span><i>${ys.slice(-3).join(', ')}</i></div>`;
-  const hof=fxBox('fxc-hof',fxHead('명예의 전당'),`<div class="fx-tros">${tro(trophyImg(44),yrs(h=>h.champ===tid),'한국시리즈 우승')}${tro(compMark('ks',40)||ART.trophy(36),yrs(h=>h.runner===tid),'한국시리즈 준우승')}${tro(ART.trophy(36),yrs(h=>h.order&&h.order[0]&&h.order[0].tid===tid),'정규시즌 1위')}${tro(compMark('ps',40)||ART.trophy(36),yrs(h=>h.order&&h.order.slice(0,5).some(o=>o.tid===tid)),'가을야구 진출')}${tro(`<span class="fx-no">${(G.retNos||[]).length}</span>`,[],'영구결번',(G.retNos||[]).length)}</div>`);
+  const hof=fxBox('fxc-hof',fxHead('명예의 전당'),`<div class="fx-tros">${tro(trophyImg(44),yrs(h=>h.champ===tid),'한국시리즈 우승')}${tro(compMark('ks',40)||ART.trophy(36),yrs(h=>h.runner===tid),'한국시리즈 준우승')}${tro(ART.trophy(36),yrs(h=>h.order&&h.order[0]&&h.order[0].tid===tid),'정규시즌 1위')}${tro(compMark('ps',40)||ART.trophy(36),yrs(h=>h.order&&h.order.slice(0,5).some(o=>o.tid===tid)),'가을야구 진출')}${tro(`<span class="fx-no">${(G.retNos||[]).length}</span>`,[],'영구결번',(G.retNos||[]).length)}</div>`,fxBtn('trophyGo','','트로피 진열장'));
   const uni=fxBox('fxc-uni',fxHead('유니폼'),uniRow(tid,{sz:120})||'<p class="fx-none">유니폼 그림이 없습니다.</p>');
   /* 경기 일정 및 결과: 다음 5경기·최근 5경기 */
   const gt=(op,a,bt,cls,act)=>`<${act?'button':'div'} class="fx-g ${cls||''}"${act||''}>${badge(op,22)}<b>${esc(team(op).nick)}</b><span>${a}</span><em>${bt}</em></${act?'button':'div'}>`;
@@ -25345,9 +25416,10 @@ function leagueEventsView(){
   const A=y?G.allStars[y]:null;
   const who=x=>`<button class="candidate-name" ${G.players[x.id]?`data-a="player" data-v="${x.id}"`:''}>${G.players[x.id]?avImg(G.players[x.id]):''}<span>${esc(x.name)}</span></button>`;
   const list=(side,L)=>`<section class="card candidate-list"><div class="row between"><h2 class="sec">${side} 올스타</h2><span class="small muted">${L.length}명 · 베스트12와 추천</span></div><div class="tw"><table class="sqt candidate-table"><thead><tr><th>선수</th><th>구단</th><th>역할</th><th>선정</th><th>발표 당시 기록</th></tr></thead><tbody>${L.map(x=>`<tr><td>${who(x)}</td><td>${esc(tshort(x.t))}</td><td>${({SP:'선발',MR:'중간',CP:'마무리',OF:'외야'})[x.slot]||POSS[x.slot]||x.slot}</td><td>${x.starter?'베스트12':'추천'}${/대체/.test(x.reason)?' · 대체':''}</td><td class="candidate-note">${esc(x.line)}</td></tr>`).join('')}</tbody></table></div></section>`;
-  const stars=A?`<div class="chips">${years.map(y=>`<button data-a="asgY" data-v="${y}" class="${y===A.y?'on':''}">${y}</button>`).join('')}</div><p class="small muted">${dmd(A.event-2)}~${dmd(A.event+1)} 올스타 휴식기 · 발표 당시 소속·기록입니다. ${A.played?'행사 종료':'행사 예정'}</p><div class="league-event-grid">${['나눔','드림'].map(k=>list(k,A.teams[k]||[])).join('')}</div>${A.withdrawn.length?`<p class="small muted">출전 취소·대체: ${A.withdrawn.map(x=>`${esc(x.name)} → ${G.players[x.replacement]?esc(G.players[x.replacement].name):'대체 선수'}`).join(', ')}</p>`:''}`:'<section class="card"><h2 class="sec">나눔·드림 올스타</h2><p class="small muted">올스타 행사 2주 전에 전반기 실제 기록과 팬·선수 평가를 바탕으로 명단을 발표합니다. 휴식기에는 정규시즌 경기가 없습니다.</p></section>';
+  const fld=UI.asgV!=='list';
+  const stars=A?`<div class="row wrapr"><span class="chips">${years.map(y=>`<button data-a="asgY" data-v="${y}" class="${y===A.y?'on':''}">${y}</button>`).join('')}</span><span class="chips">${[['field','라인업 그림'],['list','전체 명단']].map(([v,l])=>`<button data-a="asgV" data-v="${v}" class="${(fld?'field':'list')===v?'on':''}">${l}</button>`).join('')}</span></div><p class="small muted">${dmd(A.event-2)}~${dmd(A.event+1)} 올스타 휴식기 · 발표 당시 소속·기록입니다. ${A.played?'행사 종료':'행사 예정'}</p><div class="league-event-grid">${['나눔','드림'].map(k=>fld?asgField(k,A.teams[k]||[]):list(k,A.teams[k]||[])).join('')}</div>${A.withdrawn.length?`<p class="small muted">출전 취소·대체: ${A.withdrawn.map(x=>`${esc(x.name)} → ${G.players[x.replacement]?esc(G.players[x.replacement].name):'대체 선수'}`).join(', ')}</p>`:''}`:'<section class="card"><h2 class="sec">나눔·드림 올스타</h2><p class="small muted">올스타 행사 2주 전에 전반기 실제 기록과 팬·선수 평가를 바탕으로 명단을 발표합니다. 휴식기에는 정규시즌 경기가 없습니다.</p></section>';
   const rivals=Object.values((G.rivalries||{}).pairs||{}).filter(r=>r.label).sort((a,b)=>b.last-a.last);
-  return stars+csec('라이벌 맞대결',rivals.length?`<div class="tw"><table class="sqt"><thead><tr><th>이야기</th><th>구단</th><th>경기</th><th>접전</th><th>가을 맞대결</th><th>시작</th></tr></thead><tbody>${rivals.map(r=>`<tr><td><b>${esc(r.label)}</b></td><td>${esc(tshort(r.a))} · ${esc(tshort(r.b))}</td><td>${r.games}</td><td>${r.close}</td><td>${r.post}</td><td>${r.emerged?dstr(r.emerged):'연고지·팬 문화'}</td></tr>`).join('')}</tbody></table></div><p class="small muted">이 게임에서 치른 경기만 집계합니다. 접전은 두 점 차 이내 승부입니다. 라이벌 뉴스는 경기 능력·징계에 영향을 주지 않습니다.</p>`:'<p class="small muted">시즌 맞대결이 쌓이면 여기서 이력을 볼 수 있습니다. 달빛대전·엘롯기 맞대결과 게임 속에서 생긴 새 라이벌을 함께 기록합니다.</p>');
+  return '<div class="asg-page ws-own">'+stars+csec('라이벌 맞대결',rivals.length?`<div class="tw"><table class="sqt"><thead><tr><th>이야기</th><th>구단</th><th>경기</th><th>접전</th><th>가을 맞대결</th><th>시작</th></tr></thead><tbody>${rivals.map(r=>`<tr><td><b>${esc(r.label)}</b></td><td>${esc(tshort(r.a))} · ${esc(tshort(r.b))}</td><td>${r.games}</td><td>${r.close}</td><td>${r.post}</td><td>${r.emerged?dstr(r.emerged):'연고지·팬 문화'}</td></tr>`).join('')}</tbody></table></div><p class="small muted">이 게임에서 치른 경기만 집계합니다. 접전은 두 점 차 이내 승부입니다. 라이벌 뉴스는 경기 능력·징계에 영향을 주지 않습니다.</p>`:'<p class="small muted">시즌 맞대결이 쌓이면 여기서 이력을 볼 수 있습니다. 달빛대전·엘롯기 맞대결과 게임 속에서 생긴 새 라이벌을 함께 기록합니다.</p>')+'</div>';
 }
 function ggVotingView(A){
   if(!A||!A.ggVote||awShown(A,'gg'))return '';
@@ -25356,8 +25428,25 @@ function ggVotingView(A){
 }
 Object.assign(A,{
   leagueEvents(){UI.it=UI.it||{};UI.it.histv='events';A.go('league:hist');},
-  asgY(v){UI.asgY=+v;render();}
+  asgY(v){UI.asgY=+v;render();},
+  asgV(v){UI.asgV=v;render();},
+  trophyGo(){UI.it=UI.it||{};UI.it.histv='tro';closeSheets();A.go('league:hist');}
 });
+/* 올스타 베스트12를 야구장 그림 위 선발 라인업으로 보여 준다. 드림(두산·SSG·KT·삼성·롯데 연고)·나눔 배정은 엔진 ALL_STAR_DREAM을 따른다.
+   선정 명단의 외야는 OF로 묶여 있어, 선수 주 포지션(좌·중·우)을 먼저 맞추고 남는 자리를 순서대로 채운다. 좌표는 야구장 그림(200x200) 기준 백분율 */
+const ASG_SPOT={P:[50,60,'투수'],C:[50,88,'포수'],'1B':[82,62,'1루수'],'2B':[67,42,'2루수'],'3B':[18,62,'3루수'],SS:[33,42,'유격수'],LF:[17,25,'좌익수'],CF:[50,12,'중견수'],RF:[83,25,'우익수'],DH:[84,89,'지명타자']};
+function asgField(side,L){
+  /* 베스트12는 선발·중간·마무리·포수…지명 순서로 뽑혔다. 자리가 비어 다른 포지션 선수로 채운 지명타자는 이미 찬 자리에 겹치지 않게 지명으로 보낸다 */
+  const S=L.filter(x=>x.starter), at={}, of=[], left=[];
+  for(const x of S){ if(x.slot==='SP'&&!at.P)at.P=x; else if(x.slot==='OF')of.push(x); else if(!x.isP&&ASG_SPOT[x.slot]&&!at[x.slot])at[x.slot]=x; else if(!x.isP)left.push(x); }
+  for(const x of of){ const pp=(G.players[x.id]||{}).pos; if(['LF','CF','RF'].includes(pp)&&!at[pp])at[pp]=x; }
+  for(const x of of)if(!Object.values(at).includes(x)){ const k=['LF','CF','RF'].find(k=>!at[k]); if(k)at[k]=x; else left.push(x); }
+  if(!at.DH&&left.length)at.DH=left[0];
+  if(!at.P)at.P=S.find(x=>x.isP);
+  const chip=(k,x)=>{ const [l,t,nm]=ASG_SPOT[k], p=x&&G.players[x.id]; return `<button class="asf-p${x&&x.t===G.user?' me':''}" style="left:${l}%;top:${t}%"${p?` data-a="player" data-v="${x.id}"`:''}>${p?avImg(p):'<span class="av ini">-</span>'}<i>${nm}</i><b>${x?esc(x.name):'공석'}</b>${x?`<em>${esc(tshort(x.t))}</em>`:''}</button>`; };
+  const pen=S.filter(x=>x.isP&&x!==at.P);
+  return `<section class="card asf-card"><div class="row between"><h2 class="sec">${side} 올스타 선발 라인업</h2><span class="small muted">베스트12 · ${L.length}명 선정</span></div><div class="asf"><svg viewBox="0 0 200 200" aria-hidden="true"><rect width="200" height="200" fill="#1d3a26"/><path d="M100 184 L2 86 Q100 -36 198 86 Z" fill="#3f8a3f"/><path d="M100 184 L2 86 Q100 -36 198 86 Z" fill="none" stroke="#c9b48a" stroke-width="5" opacity=".55"/><path d="M100 184 L40 124 Q100 52 160 124 Z" fill="#b8814f"/><path d="M100 170 L134 136 L100 102 L66 136 Z" fill="#4c9a48"/><circle cx="100" cy="138" r="7" fill="#b8814f"/><path d="M100 184 L2 86 M100 184 L198 86" stroke="#fff" stroke-width=".8" opacity=".8"/><g fill="#fff"><rect x="96.5" y="176" width="7" height="7"/><rect x="133" y="132.5" width="6" height="6" transform="rotate(45 136 135.5)"/><rect x="97" y="99" width="6" height="6" transform="rotate(45 100 102)"/><rect x="61" y="132.5" width="6" height="6" transform="rotate(45 64 135.5)"/></g></svg>${Object.keys(ASG_SPOT).map(k=>chip(k,at[k])).join('')}</div>${pen.length?`<p class="asf-pen small"><b>불펜</b> ${pen.map(x=>`<button class="lnk" ${G.players[x.id]?`data-a="player" data-v="${x.id}"`:''}>${x.slot==='CP'?'마무리':x.slot==='SP'?'선발':'중간'} ${esc(x.name)}</button> <span class="muted">${esc(tshort(x.t))}</span>`).join(' · ')}</p>`:''}</section>`;
+}
 /* ---------- 홈 상태 타일: FM 대시보드처럼 구단 상태를 한눈에 ----------
    순위·다음 일정·팀 분위기·부상자·구단주 신뢰·예산·여론을 숫자 하나와 짧은 설명으로 보여 주고, 누르면 해당 화면으로 간다 */
 function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team(G.user); const per=period();

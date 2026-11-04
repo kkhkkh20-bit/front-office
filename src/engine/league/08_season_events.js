@@ -40,6 +40,7 @@ function seasonEnd(){
   const tbq=[]; if(pctEq(st[0],st[1]))tbq.push([0,s[0],s[1]]); if(st.length>5&&pctEq(st[4],st[5]))tbq.push([4,s[4],s[5]]); G.ps.tbq=tbq;
   if(tbq.length){ const q=tbq.shift(); G.ps.round='tb'; G.ps.tbPos=q[0]; G.ps.cur=mkSeries('tb',q[1],q[2],G.day+1); note('일정',`${q[0]+1}위 결정전: ${tname(q[1])} - ${tname(q[2])} (${tshort(q[1])} 홈)`); }
   else G.ps.cur=mkSeries('wc',s[3],s[4],G.day+2);
+  if(G.ps.round==='wc')try{ psSeedNews(); }catch(e){ console.error(e); }
   for(const t of G.teams)try{ entryManage(t.id,false,true); }catch(e){} /* 포스트시즌에 들어가는 날 바로 엔트리를 기본 한도로 */
 }
 function mkSeries(round,hi,lo,start){
@@ -69,10 +70,11 @@ function psDay(day){
     const msg=`${ROUNDK[s.round]}: ${tname(done[0])}이(가) ${P.res[s.round][2]}승 ${P.res[s.round][3]}패로 이겼습니다.`;
     (done.includes(G.user)?stop:note)('포스트시즌',s.round==='tb'?`${P.tbPos+1}위 결정전: ${tname(done[0])}이(가) 이겨 ${P.tbPos+1}위, ${tname(done[1])}은(는) ${P.tbPos+2}위입니다.${P.tbPos===4&&done[1]===G.user?' 우리 구단은 가을야구에 나가지 못합니다.':''}`:msg+(done[1]===G.user?' 우리 구단의 포스트시즌은 여기서 끝났습니다.':done[0]===G.user&&s.round!=='ks'?' 우리 구단이 다음 시리즈에 올랐습니다.':''));
     if(s.round==='tb'){ const i=P.tbPos; if(done[0]!==P.order[i].tid){ const a=P.order[i]; P.order[i]=P.order[i+1]; P.order[i+1]=a; } P.seeds=P.order.slice(0,5).map(x=>x.tid); delete P.res.tb; (P.tbRes=P.tbRes||[]).push({pos:i+1,w:done[0],l:done[1]});
-      if((P.tbq||[]).length){ const q=P.tbq.shift(); const hi=P.order[q[0]].tid, lo=P.order[q[0]+1].tid; P.tbPos=q[0]; P.cur=mkSeries('tb',hi,lo,day+1); } else { P.round='wc'; P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],day+2); } return; } /* 결정전 승자가 그 순위를 갖는다 */
+      if((P.tbq||[]).length){ const q=P.tbq.shift(); const hi=P.order[q[0]].tid, lo=P.order[q[0]+1].tid; P.tbPos=q[0]; P.cur=mkSeries('tb',hi,lo,day+1); } else { P.round='wc'; P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],day+2); try{ psSeedNews(); }catch(e){ console.error(e); } } return; } /* 결정전 승자가 그 순위를 갖는다 */
     const nx={wc:['spo',P.seeds[2]],spo:['po',P.seeds[1]],po:['ks',P.seeds[0]]}[s.round];
+    try{ psOutNews(s.round,P.res[s.round]); }catch(e){ console.error(e); }
     if(nx){ P.round=nx[0]; P.cur=mkSeries(nx[0],nx[1],done[0],day+2); }
-    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } }
+    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
   }
 }
 function settlement(){
