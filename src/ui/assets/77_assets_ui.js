@@ -8,5 +8,9 @@ function uniRow(tid,opt){ if(!hasAsset())return ''; const U=tid==='kr'?ASSET.nat
   return `<div class="uni-row" aria-label="${esc(nm)} 유니폼과 모자">${[['h','홈 유니폼'],['a','원정 유니폼'],['c','모자']].map(([k,l])=>`<figure><img src="${U[k]}" width="${sz}" height="${sz}" alt="" loading="lazy" decoding="async"><figcaption>${l}</figcaption></figure>`).join('')}</div>`; }
 function compMark(k,sz){ if(!hasAsset()||!ASSET.comp[k])return ''; return `<img class="cmark" src="${ASSET.comp[k]}" width="${sz}" height="${sz}" alt="" decoding="async">`; }
 function trophyImg(sz){ return hasAsset()?`<img class="trophy-img" src="${ASSET.comp.trophy}" width="${sz}" height="${sz}" alt="우승 트로피" decoding="async">`:trophySvg(); }
+/* 에셋 v3(ASSET.v3): 골든글러브 트로피·한국시리즈 우승 트로피·시상식 무대·대진표 배경. 없으면 예전 그림으로 */
+const v3=k=>hasAsset()&&ASSET.v3?ASSET.v3[k]:null;
+function ggTrophyImg(sz){ const u=v3('gg'); return u?`<img class="gg-tro-img" src="${u}" width="${sz}" height="${sz}" alt="" decoding="async">`:ART.glove(sz); }
+function champTrophyImg(sz){ const u=v3('champ'); return u?`<img class="trophy-img" src="${u}" width="${sz}" height="${sz}" alt="우승 트로피" decoding="async">`:trophyImg(sz); }
 function bgHero(k,inner,cls){ const u=hasAsset()&&ASSET.stad[k]; if(!u)return inner; return `<div class="bg-hero ${cls||''}" style="background-image:linear-gradient(180deg,rgba(8,12,16,.55),rgba(8,12,16,.86)),url(${u})">${inner}</div>`; }
 function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img src="${ASSET.nat.b128}" width="56" height="56" alt="" decoding="async"><div><b>대한민국 야구 국가대표</b><span class="small muted">국제대회 소집 명단·차출 현황</span></div>${uniRow('kr',{sz:64})}</div>`; }

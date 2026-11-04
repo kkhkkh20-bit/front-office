@@ -21,6 +21,17 @@ def png(rel,w):
 def webp(rel,w,q=72):
     im=Image.open(io.BytesIO(raw(rel))).convert('RGB'); h=round(im.height*w/im.width); im=im.resize((w,h),Image.LANCZOS); o=io.BytesIO(); im.save(o,'WEBP',quality=q,method=6); return 'data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode()
 def svg(rel): return 'data:image/svg+xml;base64,'+base64.b64encode(raw(rel)).decode()
+def v3():
+    """에셋 v3(assets/v3)에서 대진표·골든글러브 화면에 쓰는 것만: manifest ID로 찾는다"""
+    D3=os.path.join(ROOT,'assets','v3'); A=json.load(open(os.path.join(D3,'manifest.json'),encoding='utf8'))['assets']
+    S3=json.load(open(os.path.join(D3,'checksums.json'),encoding='utf8'))['files'] if os.path.exists(os.path.join(D3,'checksums.json')) else {}
+    def r3(rel):
+        b=open(os.path.join(D3,rel),'rb').read(); h=(S3.get(rel) or {}).get('sha256')
+        if h and hashlib.sha256(b).hexdigest()!=h: sys.exit('체크섬 불일치: '+rel)
+        return b
+    def p3(id,w): im=Image.open(io.BytesIO(r3(A[id]['png']['256']))).convert('RGBA').resize((w,w),Image.LANCZOS); o=io.BytesIO(); im.save(o,'PNG',optimize=True); return 'data:image/png;base64,'+base64.b64encode(o.getvalue()).decode()
+    def w3(id,w,q=70): im=Image.open(io.BytesIO(r3(A[id]['webp']['1920']))).convert('RGB'); im=im.resize((w,round(im.height*w/im.width)),Image.LANCZOS); o=io.BytesIO(); im.save(o,'WEBP',quality=q,method=6); return 'data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode()
+    return {'gg':p3('golden_glove',224),'champ':p3('championship_trophy',160),'stage':w3('awards_stage',1280),'bracket':w3('postseason_bracket_background',1280)}
 uni={}; seen=set()
 for t in M['teams']:
     ids=[i for i,(c,n) in enumerate(TD) if c+' '+n==t['name']]
@@ -31,7 +42,8 @@ if len(seen)!=len(TD): sys.exit('유니폼이 없는 구단이 있음')
 out={'uni':uni,
  'nat':{'b64':png('national/korea_badge_64.png',64),'b128':png('national/korea_badge_128.png',128),'h':png('uniforms/korea_home.png',192),'a':png('uniforms/korea_away.png',192),'c':png('caps/korea.png',160)},
  'comp':{'ps':svg('competition/postseason_mark_light.svg'),'ks':svg('competition/korean_series_mark_light.svg'),'trophy':svg('competition/championship_trophy.svg')},
- 'stad':{k:webp(v,960) for k,v in M['backgrounds'].items()}}
+ 'stad':{k:webp(v,960) for k,v in M['backgrounds'].items()},
+ 'v3':v3()}
 body='/* 자동 생성: python3 tools/gen-assets.py (손으로 고치지 않는다). 에셋 패키지 v2.1(assets/v2_1). uni 키는 게임 구단 ID(TEAM_DEF 순서, 구단명으로 대조). 구장 배경은 공용 분위기 이미지(특정 구장·구장 효과와 무관) */\nconst ASSET='+json.dumps(out,ensure_ascii=False)+';\n'
 open(source_file('ui','00b_assets_data.js'),'w',encoding='utf8').write(body)
 print('유니폼·모자 %d개 구단: %s · %dKB'%(len(uni),', '.join(f"{i}={u['n']}" for i,u in sorted(uni.items())),len(body)//1024))
