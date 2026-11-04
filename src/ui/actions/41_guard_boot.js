@@ -220,3 +220,12 @@ function ftMigrateAccept(e){ try{ const d=e&&e.data; if(!d||d.type!=='ft-migrate
     try{ window.parent.postMessage({type:'ft-migrated'},e.origin); }catch(x){}
     try{ toast('itch에서 하던 저장을 옮겨 왔습니다. 처음 화면에서 이어하기를 누르세요.'); }catch(x){} try{ if(!G)UI.title=true; render(); }catch(x){} return true; }catch(err){ return false; } }
 window.addEventListener('message',ftMigrateAccept);
+
+/* 휴대폰: 화면을 옆으로 끌면 전체나 칸이 통째로 밀려 빈칸이 드러나던 문제(iOS 웹뷰는 overscroll-behavior를 무시). 가로로 끄는 동작은 실제로 옆으로 움직일 수 있는 칸이 있을 때만 허용하고 나머지는 막는다. 세로 스크롤은 그대로 */
+if(typeof addEventListener!=='undefined'&&typeof document!=='undefined'){ let x0=0,y0=0,ax=null;
+  addEventListener('touchstart',e=>{ const t=e.touches[0]; if(!t)return; x0=t.clientX; y0=t.clientY; ax=null; },{passive:true});
+  addEventListener('touchmove',e=>{ if(e.touches.length>1||!e.cancelable)return; const t=e.touches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    if(!ax){ if(Math.abs(dx)<6&&Math.abs(dy)<6)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; } if(ax!=='x')return;
+    if(e.target.closest&&e.target.closest('input,textarea,canvas,.fdt-w'))return; /* 슬라이더·3D·드래프트 표(자체 처리)는 그대로 */
+    for(let el=e.target;el&&el!==document.documentElement;el=el.parentElement){ if(el.scrollWidth>el.clientWidth+1){ const o=getComputedStyle(el).overflowX; if(o==='auto'||o==='scroll'){ const atL=el.scrollLeft<=0, atR=el.scrollLeft+el.clientWidth>=el.scrollWidth-1; if((dx>0&&!atL)||(dx<0&&!atR))return; } } }
+    e.preventDefault(); },{passive:false}); }

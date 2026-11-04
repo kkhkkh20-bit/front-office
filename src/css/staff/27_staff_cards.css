@@ -141,3 +141,21 @@
 body.fm .sfw{display:flex;flex-direction:column;height:100%;min-height:0;overflow:auto;gap:8px}
 body.fm .sfw>.card,body.fm .sfw>section{flex:none}
 body.fm .sfw .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+/* 스태프 시장 코치 비교 표(휴대폰·PC) */
+.smk-vw{margin:0 0 6px;display:inline-flex}
+.smk-tw{overflow:auto;max-width:100%;border:1px solid var(--line,#2a323c);border-radius:8px}
+.smk-t{width:100%;border-collapse:collapse;font-size:13px}
+.smk-t th{position:sticky;top:0;z-index:1;background:var(--panel,#181d24);text-align:left;font-size:11.5px;color:var(--muted,#9aa7b4);font-weight:600;padding:6px 6px;white-space:nowrap}
+.smk-t td{padding:5px 6px;border-top:1px solid var(--line,#2a323c);vertical-align:middle;white-space:nowrap}
+.smk-t tr.on>td{background:rgba(59,130,246,.08)}
+.smk-n button{display:flex;align-items:center;gap:6px;text-align:left;background:none;border:0;color:inherit;padding:0;font:inherit}
+.smk-n .av,.smk-n img{width:28px;height:28px;flex:none}
+.smk-n span{display:grid;line-height:1.25}.smk-n b{font-size:13px}.smk-n i{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4)}
+.smk-t em{font-style:normal;font-size:11px;margin-left:3px}
+.smk-abs{display:flex;gap:4px;flex-wrap:nowrap}.smk-ab{display:inline-flex;align-items:center;gap:2px;font-size:11px}.smk-ab i{font-style:normal;color:var(--muted,#9aa7b4)}
+.smk-b{display:flex;gap:4px}.smk-b .btn{min-height:28px;padding:2px 9px}
+.smk-x>td{white-space:normal;padding:6px}
+@media (max-width:700px){ .smk-t th:first-child,.smk-t td.smk-n{position:sticky;left:0;z-index:2;background:var(--bg,#0f1318)} .smk-t th:first-child{z-index:3} }
+.smk-vw{width:auto!important;flex:none}.smk-vw button{padding:4px 14px}
+.smk-n i{white-space:nowrap}
+@media (max-width:700px){ .smk-n .av,.smk-n img{display:none}.smk-t td{padding:4px 5px}.smk-vw button{white-space:nowrap;padding:4px 10px}.smk-t{font-size:12.5px} }
