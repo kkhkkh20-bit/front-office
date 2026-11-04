@@ -25,7 +25,7 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const bar=document.createElement('div'); bar.className='twpg';
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
     const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.twPg[key]=pg+d; twPager(); };
-    bp.onclick=()=>go(-1); bn.onclick=()=>go(1); if(tw.matches('.fdl-main .fdt-w')&&innerWidth<1100)tw.before(bar); else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
+    bp.onclick=()=>go(-1); bn.onclick=()=>go(1); if(tw.matches('.fdl-main .fdt-w')&&fdCompact())tw.before(bar); else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
   document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 

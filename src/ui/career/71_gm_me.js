@@ -61,4 +61,4 @@ Object.assign(A,{
 Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });
 
 /* 드래프트 상황판(휴대폰): 맡기기 메뉴 열기·상황판 접기 */
-Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??innerWidth<1100); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
+Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??fdCompact()); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
