@@ -129,6 +129,7 @@ function mgrBody(){
   const mv=inTabs('mgrv',[['cur','현재 감독'],...(m&&!m.interim?[['rel','지시·요청']]:[]),['cand',`채용 후보 ${(G.mmarket||[]).length}`]],m&&!m.interim?'cur':'cand');
   if(UI._smk){ mv.cur='cand'; mv.bar=''; } const PGm=pager('mgc',(G.mmarket||[]),fmOn()?8:3);
   if(mv.cur==='rel')return mv.bar+mgrBondView()+mreqView()+pol;
+  if(mv.cur==='cur'&&m&&!m.interim&&fmOn())return mv.bar+`<div class="mgfm"><section class="mgfm-c">${cur}</section><section class="mgfm-c"><h3>지시·요청</h3>${mgrBondView()}${mreqView()}</section><section class="mgfm-c">${mgrChatCard(false)}${pol}</section></div>`; /* PC: 감독 정보 | 지시·요청 | 대화·운영 방침을 한 화면에 */
   if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+mgrChatCard(false)+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다.</p>`;
   return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다. 감독을 바꾸면 남은 계약 연봉은 그대로 나갑니다.</p>`:mv.cur==='pol'?pol:((G.mmarket||[]).length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid mgrg" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
 }

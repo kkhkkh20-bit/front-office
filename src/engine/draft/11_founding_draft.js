@@ -10,7 +10,7 @@ const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
 function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
-  G.lineup={}; const order=fdOrder(); const picks=[];
+  G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
   for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
   G.startY=G.year; G.fd={pool:ids,all:ids.slice(),order,picks,cur:0,done:false,y:G.year,open:false,man:FD_MAN};
   { for(let i=0;i<4;i++)scoutFindWeek(true); } /* 창단 때 찾은 후보도 소식 없이 외국인 시장에 '우리 스카우트 발굴'로 표시 */

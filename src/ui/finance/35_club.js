@@ -116,9 +116,12 @@ function tmini(p,side){ const rp=scoutReport(p);
 function tradeView(){
   const tr=UI.trade;
   if(!tradeOpen())return `<section class="card"><h2 class="sec">트레이드 기간이 아닙니다</h2><p class="small muted">7월 31일 트레이드 마감 이후에는 포스트시즌이 끝날 때까지 트레이드할 수 없습니다.</p></section>`;
-  const strip=`<div class="trade-partner"><label>상대 구단<select data-a="tpartner" aria-label="협상 상대 구단"><option value="" disabled ${tr.tid==null?'selected':''}>구단을 선택하세요</option>${G.teams.filter(t=>t.id!==G.user).map(t=>`<option value="${t.id}" ${tr.tid===t.id?'selected':''}>${esc(tname(t.id))}</option>`).join('')}</select></label><button class="btn small" data-a="tradeGm">상대 단장</button></div>`;
+  const strip=`<div class="trade-partner"><span class="small muted">상대 구단</span>${optRow('tpartner',tr.tid,G.teams.filter(t=>t.id!==G.user).map(t=>[t.id,`${badge(t.id,14)} ${esc(t.nick)}`]),null,'wsx')}<button class="btn small" data-a="tradeGm">상대 단장</button></div>`;
+  /* 상대를 고르기 전: 선택 상자 대신 구단 카드(순위·단장 성향·친분·보강 원하는 자리)를 눌러 고른다 */
+  const pick=()=>{ const st=standingsNow?standingsNow():[]; return `<div class="tp-grid">${G.teams.filter(t=>t.id!==G.user).map(t=>{ const rk=st.findIndex(x=>x.tid===t.id)+1, r=G.sea&&G.sea.rec&&G.sea.rec[t.id];
+    const g=gmOf(t.id)||{}; return `<button class="tp-card" data-a="opt" data-k="tpartner" data-v="${t.id}"><span class="tp-h">${gmAv(t.id)}<span><b>${badge(t.id,16)} ${esc(t.city+' '+t.nick)}</b><i>${g.interim?'단장대행':esc(g.name||'')+' 단장'}${rk?` · ${rk}위${r?` ${r.w}승 ${r.l}패`:''}`:''}</i></span>${g.trait&&GMT[g.trait]?`<span class="pill ${g.trait==='hard'||g.trait==='miser'?'warn':g.trait==='loyal'?'good':'acc'}">${GMT[g.trait].l}</span>`:''}</span><span class="tp-rel"><i>친분</i>${relBar(t.rel)}<b>${t.rel}</b></span><span class="tp-meta"><i>${esc(needText(t.id))}</i></span><em>이 구단과 협상 ›</em></button>`; }).join('')}</div>`; };
   if(tr.tid==null){ const gv0=tr.give.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
-    return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${strip}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 관계 숫자가 높을수록 상대 단장의 반응을 정확히 읽을 수 있습니다.</p></section>`; }
+    return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${pick()}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 관계 숫자가 높을수록 상대 단장의 반응을 정확히 읽을 수 있습니다.</p></section>`; }
   const t=team(tr.tid);
   const ok=p=>p&&!p.foreign&&!(p.joinY>G.year);
   tr.give=tr.give.filter(id=>ok(G.players[id])&&G.players[id].team===G.user);

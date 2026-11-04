@@ -3660,6 +3660,12 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 /* 좁은 PC(1100~1599px)·낮은 화면: 표의 보조 열을 접고 요약을 촘촘하게 */
 @media(min-width:1100px) and (max-width:1599px){ .dh-t .dh-x{display:none} }
 @media(min-width:1100px) and (max-height:900px){ .dh-sum{padding:4px 8px;font-size:11.5px;line-height:1.4}.dh-cmp .sf-rows{gap:2px}.scn-c{padding:4px 7px;gap:2px} }
+/* PC 감독 화면(02_work_tabs.js mgrBody): 세 칸 */
+@media(min-width:1100px){
+  .mgfm{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+  .mgfm-c{min-width:0;display:flex;flex-direction:column;gap:8px;padding:0 0 0 12px;border-left:1px solid var(--line)}.mgfm-c:first-child{border-left:0;padding-left:0}
+  .mgfm-c>h3{margin:0;font-size:13px;color:var(--team-hi,#4fa3ff)}.mgfm-c>.card{margin:0}
+}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -4172,6 +4178,14 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .fnd-t td{padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap}.fnd-t tr:hover td{background:var(--panel2)}
 .pm-n{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px}.pm-n .av{width:30px;height:30px}.pm-n b{font-weight:600}
 .tw .fnd-t td,.tw .fnd-t th,.fnd-t td,.fnd-t th{text-align:left}.fnd-t td:last-child{text-align:right}
+/* 트레이드 협상: 상대 구단 카드(35_club.js tradeView) */
+.tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin:6px 0}
+.tp-card{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel2)}.tp-card:hover{border-color:var(--team-hi,#4fa3ff)}
+.tp-card .gmc{border:0;padding:0;background:none;margin:0}.tp-meta{display:grid;gap:2px;font-size:12px}.tp-meta i{font-style:normal;color:var(--muted)}.tp-card>em{font-style:normal;font-size:12px;color:var(--team-hi,#4fa3ff);align-self:flex-end}
+.trade-partner{display:flex;align-items:center;gap:8px;min-width:0}.trade-partner .optrow{flex:1;min-width:0}
+.tp-h{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:8px;align-items:center}.tp-h .av{width:40px;height:40px}.tp-h>span{display:grid;min-width:0}.tp-h b{font-size:14px}.tp-h i{font-style:normal;font-size:12px;color:var(--muted)}
+.tp-rel{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px}.tp-rel i{font-style:normal;color:var(--muted)}
+@media(min-width:1100px){.tp-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(150px,1fr);flex:1}.tp-card{justify-content:space-between}.tp-card .tp-h b{font-size:16px}.tp-meta i{font-size:13px}}
 </style>
 </head>
 <body>
@@ -10257,7 +10271,7 @@ const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
 function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
-  G.lineup={}; const order=fdOrder(); const picks=[];
+  G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
   for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
   G.startY=G.year; G.fd={pool:ids,all:ids.slice(),order,picks,cur:0,done:false,y:G.year,open:false,man:FD_MAN};
   { for(let i=0;i<4;i++)scoutFindWeek(true); } /* 창단 때 찾은 후보도 소식 없이 외국인 시장에 '우리 스카우트 발굴'로 표시 */
@@ -18111,9 +18125,9 @@ function importText(t){
  if(fromTitle){m.active=slot;setMeta(m);}closeSheets();UI.title=false;UI.sstep='main';UI.tab='home';UI.impMsg='불러왔습니다.';UI.readingOpen={};UI.readingScroll={};saveNow();render();
 }
 
-function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G;
+function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G; try{ G.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */
     /* 구단마다 취임 첫날 예산을 미리 계산해 재정 압박 구단을 표시한다 */
-    try{ const js=JSON.stringify(UI.world); for(const x of UI.world.preview){ G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} try{ fdWelcome(); fdStart(); x.fdPos=G.fd.picks.findIndex(q=>q.tid===x.tid)+1; }catch(e){} } /* 지명 순서는 그 구단을 골랐을 때 실제로 만들어지는 순서(창단 드래프트 시작과 같은 계산)로 보여 준다 */ }catch(e){ console.error(e); }
+    try{ const js=JSON.stringify(UI.world); for(const x of UI.world.preview){ G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} } }catch(e){ console.error(e); }
   }catch(e){ console.error(e); UI.worldErr=true; } finally{ G=G0; UI.worldBusy=false; render(); } },60); }
 const SLK={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜',P:'투수'};
 const G0Y=()=>2026; const eok=v=>`${Math.round(v/100)}억`;
@@ -18129,15 +18143,15 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
       <div class="tp-t">${tight?'<span class="pill bad">재정 압박 구단</span>':''}${[x.age<=27.8?'젊은 선수단':x.age>=28.8?'노장 위주':'', x.young?`24세 이하 1군급 ${x.young}명`:'', x.vets>=2?`33세 이상 주전급 ${x.vets}명`:'', x.faSoon?`FA 앞둔 주전 ${x.faSoon}명`:'', d.indie?'모기업 지원 없음':''].filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join('')}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
   if(UI.smode==='fd'){ const OLV={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
     const P2=[...UI.world.preview].sort((a,b)=>((b.fin||{}).avail||0)-((a.fin||{}).avail||0));
-    const ORD=[...UI.world.preview].map(x=>({tid:x.tid,v:((x.fin||{}).avail||0)+hn('fdo'+G0Y(),x.tid)*30})).sort((a,b)=>a.v-b.v).map(x=>x.tid);
+    const ORD=UI.world.fdOrd&&UI.world.fdOrd.length?UI.world.fdOrd:[...UI.world.preview].map(x=>({tid:x.tid,v:((x.fin||{}).avail||0)+hn('fdo'+G0Y(),x.tid)*30})).sort((a,b)=>a.v-b.v).map(x=>x.tid);
     const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=x.fin||{}; const ok=f.avail>=f.cap, mid=f.avail>=f.cap*.75; const age=G0Y()-(STAD_BUILT[x.tid]||2000);
       return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
         <div class="tp-r ${ok?'hi':mid?'mid':'lo'}"><i>캡까지 쓰면</i><b style="font-size:18px">${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>선수 연봉에 쓸 수 있는 돈 ${eok(Math.max(0,f.avail||0))}</span></div></div>
-        <p class="tp-sum">${(()=>{ const o=(x.fdPos||ORD.indexOf(x.tid)+1); return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', o<=3?'지명 빠름':o>=8?'지명 늦음':'지명 중간', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
-        <div class="tp-g"><span><i>창단 지명 순서</i><b>1라운드 ${(x.fdPos||ORD.indexOf(x.tid)+1)}번째</b></span><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
+        <p class="tp-sum">${(()=>{ const o=(ORD.indexOf(x.tid)+1); return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', o<=3?'지명 빠름':o>=8?'지명 늦음':'지명 중간', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
+        <div class="tp-g"><span><i>창단 지명 순서</i><b>1라운드 ${(ORD.indexOf(x.tid)+1)}번째</b></span><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
           <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>${typeof uniRow==='function'?`<div class="tp-uni">${uniRow(x.tid,{sz:64})}</div>`:''}
-        <div class="tp-t"><span class="pill ${ok?'good':mid?'':'bad'}">난이도 ${ok?'쉬움':mid?'보통':'어려움'}</span><span class="pill">1라운드 ${(x.fdPos||ORD.indexOf(x.tid)+1)}번째 지명</span>${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
+        <div class="tp-t"><span class="pill ${ok?'good':mid?'':'bad'}">난이도 ${ok?'쉬움':mid?'보통':'어려움'}</span><span class="pill">1라운드 ${(ORD.indexOf(x.tid)+1)}번째 지명</span>${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
     return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 차이는 돈과 시장입니다.</p><details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">예산 여유가 적은 구단일수록 먼저 지명하고, 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
     <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>`; }
   return `<p class="small muted">예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
@@ -18444,6 +18458,7 @@ function mgrBody(){
   const mv=inTabs('mgrv',[['cur','현재 감독'],...(m&&!m.interim?[['rel','지시·요청']]:[]),['cand',`채용 후보 ${(G.mmarket||[]).length}`]],m&&!m.interim?'cur':'cand');
   if(UI._smk){ mv.cur='cand'; mv.bar=''; } const PGm=pager('mgc',(G.mmarket||[]),fmOn()?8:3);
   if(mv.cur==='rel')return mv.bar+mgrBondView()+mreqView()+pol;
+  if(mv.cur==='cur'&&m&&!m.interim&&fmOn())return mv.bar+`<div class="mgfm"><section class="mgfm-c">${cur}</section><section class="mgfm-c"><h3>지시·요청</h3>${mgrBondView()}${mreqView()}</section><section class="mgfm-c">${mgrChatCard(false)}${pol}</section></div>`; /* PC: 감독 정보 | 지시·요청 | 대화·운영 방침을 한 화면에 */
   if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+mgrChatCard(false)+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다.</p>`;
   return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장의 지시를 덜 받아들이고, 스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다. 감독을 바꾸면 남은 계약 연봉은 그대로 나갑니다.</p>`:mv.cur==='pol'?pol:((G.mmarket||[]).length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid mgrg" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
 }
@@ -22472,9 +22487,12 @@ function tmini(p,side){ const rp=scoutReport(p);
 function tradeView(){
   const tr=UI.trade;
   if(!tradeOpen())return `<section class="card"><h2 class="sec">트레이드 기간이 아닙니다</h2><p class="small muted">7월 31일 트레이드 마감 이후에는 포스트시즌이 끝날 때까지 트레이드할 수 없습니다.</p></section>`;
-  const strip=`<div class="trade-partner"><label>상대 구단<select data-a="tpartner" aria-label="협상 상대 구단"><option value="" disabled ${tr.tid==null?'selected':''}>구단을 선택하세요</option>${G.teams.filter(t=>t.id!==G.user).map(t=>`<option value="${t.id}" ${tr.tid===t.id?'selected':''}>${esc(tname(t.id))}</option>`).join('')}</select></label><button class="btn small" data-a="tradeGm">상대 단장</button></div>`;
+  const strip=`<div class="trade-partner"><span class="small muted">상대 구단</span>${optRow('tpartner',tr.tid,G.teams.filter(t=>t.id!==G.user).map(t=>[t.id,`${badge(t.id,14)} ${esc(t.nick)}`]),null,'wsx')}<button class="btn small" data-a="tradeGm">상대 단장</button></div>`;
+  /* 상대를 고르기 전: 선택 상자 대신 구단 카드(순위·단장 성향·친분·보강 원하는 자리)를 눌러 고른다 */
+  const pick=()=>{ const st=standingsNow?standingsNow():[]; return `<div class="tp-grid">${G.teams.filter(t=>t.id!==G.user).map(t=>{ const rk=st.findIndex(x=>x.tid===t.id)+1, r=G.sea&&G.sea.rec&&G.sea.rec[t.id];
+    const g=gmOf(t.id)||{}; return `<button class="tp-card" data-a="opt" data-k="tpartner" data-v="${t.id}"><span class="tp-h">${gmAv(t.id)}<span><b>${badge(t.id,16)} ${esc(t.city+' '+t.nick)}</b><i>${g.interim?'단장대행':esc(g.name||'')+' 단장'}${rk?` · ${rk}위${r?` ${r.w}승 ${r.l}패`:''}`:''}</i></span>${g.trait&&GMT[g.trait]?`<span class="pill ${g.trait==='hard'||g.trait==='miser'?'warn':g.trait==='loyal'?'good':'acc'}">${GMT[g.trait].l}</span>`:''}</span><span class="tp-rel"><i>친분</i>${relBar(t.rel)}<b>${t.rel}</b></span><span class="tp-meta"><i>${esc(needText(t.id))}</i></span><em>이 구단과 협상 ›</em></button>`; }).join('')}</div>`; };
   if(tr.tid==null){ const gv0=tr.give.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
-    return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${strip}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 관계 숫자가 높을수록 상대 단장의 반응을 정확히 읽을 수 있습니다.</p></section>`; }
+    return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${pick()}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 관계 숫자가 높을수록 상대 단장의 반응을 정확히 읽을 수 있습니다.</p></section>`; }
   const t=team(tr.tid);
   const ok=p=>p&&!p.foreign&&!(p.joinY>G.year);
   tr.give=tr.give.filter(id=>ok(G.players[id])&&G.players[id].team===G.user);
@@ -25894,6 +25912,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04p',d:'11월 4일',t:'창단 지명 순서가 두 구단에 같게 뜨던 문제',items:[
+    '구단 고르기 화면에서 두 구단이 같은 "1라운드 8번째 지명"으로 보일 수 있던 문제를 고쳤습니다. 창단 드래프트 순서를 구단을 고르기 전에 리그 전체로 한 번 정해 두고(예산 여유가 적은 구단부터), 구단 카드와 실제 드래프트에 그 순서를 그대로 씁니다. 이제 1~10번째가 겹치지 않고, 고른 구단의 순서가 실제와 같습니다.',
+    '트레이드 협상하기: 상대 구단을 선택 상자 대신 구단 카드(순위·단장 성향·친분·보강 원하는 자리)로 고릅니다. 고른 뒤에는 위에 구단 버튼 줄이 나옵니다.',
+    'PC 감독 화면: 감독 정보, 지시·요청, 감독과 대화·운영 방침을 세 칸으로 한 화면에 보여 줍니다.']},
   {id:'2026-11-04o',d:'11월 4일',t:'창단 드래프트 지명 순서 표시 오류',items:[
     '구단 고르기 화면에 보이던 창단 드래프트 1라운드 지명 순서가 실제 순서와 한 칸씩 다를 수 있던 문제를 고쳤습니다(예: 7번째로 보였는데 실제 8번째). 이제 각 구단 카드의 순서는 그 구단을 골랐을 때 실제로 만들어지는 순서와 같은 계산으로 보여 줍니다.',
     'PC 스카우팅 센터에 스카우트팀장 자동 배치 켜기·배치 제안 승인 상자를 다시 넣었습니다.']},

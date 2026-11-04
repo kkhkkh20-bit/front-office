@@ -131,3 +131,9 @@
 /* 좁은 PC(1100~1599px)·낮은 화면: 표의 보조 열을 접고 요약을 촘촘하게 */
 @media(min-width:1100px) and (max-width:1599px){ .dh-t .dh-x{display:none} }
 @media(min-width:1100px) and (max-height:900px){ .dh-sum{padding:4px 8px;font-size:11.5px;line-height:1.4}.dh-cmp .sf-rows{gap:2px}.scn-c{padding:4px 7px;gap:2px} }
+/* PC 감독 화면(02_work_tabs.js mgrBody): 세 칸 */
+@media(min-width:1100px){
+  .mgfm{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+  .mgfm-c{min-width:0;display:flex;flex-direction:column;gap:8px;padding:0 0 0 12px;border-left:1px solid var(--line)}.mgfm-c:first-child{border-left:0;padding-left:0}
+  .mgfm-c>h3{margin:0;font-size:13px;color:var(--team-hi,#4fa3ff)}.mgfm-c>.card{margin:0}
+}
