@@ -187,3 +187,6 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 }
 /* 좁은 PC(1100~1599px): 외국인 후보 표는 칸 안에서 줄바꿈해 버튼 열까지 한 화면에 */
 @media(min-width:1100px) and (max-width:1599px){ .foreign-candidates .tf-t td:nth-child(n+2):not(:last-child){white-space:normal;min-width:110px}.foreign-candidates .tf-t td:nth-child(3){max-width:230px}.foreign-candidates .tf-t td:nth-child(4){max-width:160px}.foreign-candidates .tf-t td:nth-child(5){max-width:170px} }
+/* 창단 드래프트 구단 고르기: 오른쪽 자금 칸. 굵은 숫자가 위 설명과 겹치던 것을 줄 간격을 두고 세 줄로 */
+.tp-r.tp-rf{display:flex;flex-direction:column;align-items:flex-end;gap:4px;line-height:1.2;min-width:0;flex:none;text-align:right;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.04)}
+.tp-r.tp-rf i{font-size:11px;color:var(--muted)}.tp-r.tp-rf b{font-size:22px;line-height:1.1;font-family:'Black Han Sans',sans-serif;letter-spacing:.3px}.tp-r.tp-rf span{font-size:11.5px;color:var(--muted)!important;white-space:nowrap}

@@ -100,9 +100,9 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
   if(UI.smode==='fd'){ const OLV={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
     const P2=[...UI.world.preview].sort((a,b)=>((b.fin||{}).avail||0)-((a.fin||{}).avail||0));
     const ORD=UI.world.fdOrd&&UI.world.fdOrd.length?UI.world.fdOrd:[...UI.world.preview].map(x=>({tid:x.tid,v:((x.fin||{}).avail||0)+hn('fdo'+G0Y(),x.tid)*30})).sort((a,b)=>a.v-b.v).map(x=>x.tid);
-    const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=x.fin||{}; const ok=f.avail>=f.cap, mid=f.avail>=f.cap*.75; const age=G0Y()-(STAD_BUILT[x.tid]||2000);
+    const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=x.fin||{}; const ri=P2.indexOf(x), ok=ri<3, mid=ri<7; /* 난이도는 10개 구단 안에서 자금 여유 순위로(모두 캡을 넘겨 다 '쉬움'으로 보이던 문제) */ const age=G0Y()-(STAD_BUILT[x.tid]||2000);
       return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
-        <div class="tp-r ${ok?'hi':mid?'mid':'lo'}"><i>캡까지 쓰면</i><b style="font-size:18px">${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>선수 연봉에 쓸 수 있는 돈 ${eok(Math.max(0,f.avail||0))}</span></div></div>
+        <div class="tp-r tp-rf ${ok?'hi':mid?'mid':'lo'}"><i>샐러리캡 대비 여유</i><b>${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>연봉 예산 ${eok(Math.max(0,f.avail||0))} · 자금 ${ri+1}위</span></div></div>
         <p class="tp-sum">${(()=>{ const o=(ORD.indexOf(x.tid)+1); return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', o<=3?'지명 빠름':o>=8?'지명 늦음':'지명 중간', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
         <div class="tp-g"><span><i>창단 지명 순서</i><b>1라운드 ${(ORD.indexOf(x.tid)+1)}번째</b></span><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
