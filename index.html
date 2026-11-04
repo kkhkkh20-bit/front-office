@@ -2306,6 +2306,7 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 }
 @media (max-width:1099px){ .fdl-main .fdt-w{touch-action:pan-y} }
 @media (max-width:1099px){ .fdl-main .fdvt-m .fdvsep{flex:none;width:1px;margin:4px 3px;background:var(--line,#2a323c)} .fdl-main .fdvt-m [data-a="fdY3"]{flex:.7 1 0} }
+@media (max-width:1099px){ .fdl-main .card>.twpg{flex:none;margin:0 0 2px;font-size:11.5px}.fdl-main .card>.twpg button{min-height:26px;height:26px;padding:0 14px} }
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -18647,12 +18648,12 @@ function tnRead(){ const L={}; document.querySelectorAll('input[data-tn]').forEa
 function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick,logo:t.logo||null}))})); }catch(e){} }
 
 /* 휴대폰 창단 드래프트 표: iOS에서 끝 너머로 당기면 표가 통째로 밀려 빈칸이 드러난다(overscroll-behavior가 안 먹는 웹뷰가 있음).
-   세로는 기본 스크롤(touch-action:pan-y)에 맡기되 위·아래 끝에서 더 당기는 움직임을 막고, 가로는 직접 scrollLeft를 범위 안에서만 옮긴다 */
-function fdNoBounce(el){ let x0=0,y0=0,l0=0,ax=null;
-  el.addEventListener('touchstart',e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; l0=el.scrollLeft; ax=null; },{passive:true});
+   세로만 스크롤(touch-action:pan-y)하고 위·아래 끝에서 더 당기는 움직임을 막는다. 가로로 쓸면 열 묶음을 넘긴다(대각선으로 흔들리지 않게) */
+function fdNoBounce(el){ let x0=0,y0=0,ax=null;
+  el.addEventListener('touchstart',e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; ax=null; el._sw=0; },{passive:true});
   el.addEventListener('touchmove',e=>{ if(e.touches.length>1)return; const t=e.touches[0], dx=t.clientX-x0, dy=t.clientY-y0;
     if(!ax){ if(Math.abs(dx)<6&&Math.abs(dy)<6)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; }
-    if(ax==='x'){ const mx=el.scrollWidth-el.clientWidth; el.scrollLeft=Math.max(0,Math.min(mx,l0-dx)); if(e.cancelable)e.preventDefault(); return; }
+    if(ax==='x'){ if(e.cancelable)e.preventDefault(); if(!el._sw&&Math.abs(dx)>50&&el._twGo){ el._sw=1; el._twGo(dx<0?1:-1); } return; }
     const top=el.scrollTop<=0, bot=el.scrollTop+el.clientHeight>=el.scrollHeight-1; if(((dy>0&&top)||(dy<0&&bot))&&e.cancelable)e.preventDefault(); },{passive:false}); }
 /* PC: 왼쪽은 업무 이동, 위는 현재 위치·하위 탭·날짜·진행. */
 const fmOn=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:1100px)').matches;
@@ -25269,8 +25270,8 @@ function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div clas
 const TWP_W=600;
 function workspaceCompact(){return matchMedia('(max-width:699px), (max-height:599px), (max-width:1099px) and (pointer:coarse)').matches;}
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
-  document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; if(tw.matches('.fdt-w')&&innerWidth<1100)return; /* 휴대폰 창단 드래프트 표는 넘김 줄 대신 옆으로 밀기(이름 열 고정) */ /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
-    tw.querySelectorAll(':scope > .twpg').forEach(x=>x.remove()); tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; }); tw.classList.remove('twp');
+  document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
+    tw.querySelectorAll(':scope > .twpg').forEach(x=>x.remove()); if(tw.previousElementSibling&&tw.previousElementSibling.classList.contains('twpg'))tw.previousElementSibling.remove(); tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; }); tw.classList.remove('twp');
     if(!narrow&&tw.closest('.roster-list,.candidate-list,.fdl-main'))return;
     if(tb.scrollWidth<=tw.clientWidth+4)return; void narrow; /* 넓은 화면도 표가 넘치면 같은 방식으로 넘긴다 */
     const hr=tb.tHead.rows[tb.tHead.rows.length-1]; const H=[...hr.cells]; const n=H.length; if(n<3||H.some(c=>c.colSpan>1))return;
@@ -25290,7 +25291,7 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const bar=document.createElement('div'); bar.className='twpg';
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
     const [bp,bn]=bar.querySelectorAll('button'); const go=d=>{ UI.twPg[key]=pg+d; twPager(); };
-    bp.onclick=()=>go(-1); bn.onclick=()=>go(1); tw.insertBefore(bar,tb); });
+    bp.onclick=()=>go(-1); bn.onclick=()=>go(1); if(tw.matches('.fdl-main .fdt-w')&&innerWidth<1100)tw.before(bar); else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
   document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 

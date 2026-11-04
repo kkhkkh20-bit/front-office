@@ -186,10 +186,10 @@ function tnRead(){ const L={}; document.querySelectorAll('input[data-tn]').forEa
 function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick,logo:t.logo||null}))})); }catch(e){} }
 
 /* 휴대폰 창단 드래프트 표: iOS에서 끝 너머로 당기면 표가 통째로 밀려 빈칸이 드러난다(overscroll-behavior가 안 먹는 웹뷰가 있음).
-   세로는 기본 스크롤(touch-action:pan-y)에 맡기되 위·아래 끝에서 더 당기는 움직임을 막고, 가로는 직접 scrollLeft를 범위 안에서만 옮긴다 */
-function fdNoBounce(el){ let x0=0,y0=0,l0=0,ax=null;
-  el.addEventListener('touchstart',e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; l0=el.scrollLeft; ax=null; },{passive:true});
+   세로만 스크롤(touch-action:pan-y)하고 위·아래 끝에서 더 당기는 움직임을 막는다. 가로로 쓸면 열 묶음을 넘긴다(대각선으로 흔들리지 않게) */
+function fdNoBounce(el){ let x0=0,y0=0,ax=null;
+  el.addEventListener('touchstart',e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; ax=null; el._sw=0; },{passive:true});
   el.addEventListener('touchmove',e=>{ if(e.touches.length>1)return; const t=e.touches[0], dx=t.clientX-x0, dy=t.clientY-y0;
     if(!ax){ if(Math.abs(dx)<6&&Math.abs(dy)<6)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; }
-    if(ax==='x'){ const mx=el.scrollWidth-el.clientWidth; el.scrollLeft=Math.max(0,Math.min(mx,l0-dx)); if(e.cancelable)e.preventDefault(); return; }
+    if(ax==='x'){ if(e.cancelable)e.preventDefault(); if(!el._sw&&Math.abs(dx)>50&&el._twGo){ el._sw=1; el._twGo(dx<0?1:-1); } return; }
     const top=el.scrollTop<=0, bot=el.scrollTop+el.clientHeight>=el.scrollHeight-1; if(((dy>0&&top)||(dy<0&&bot))&&e.cancelable)e.preventDefault(); },{passive:false}); }

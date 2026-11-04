@@ -623,3 +623,4 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 }
 @media (max-width:1099px){ .fdl-main .fdt-w{touch-action:pan-y} }
 @media (max-width:1099px){ .fdl-main .fdvt-m .fdvsep{flex:none;width:1px;margin:4px 3px;background:var(--line,#2a323c)} .fdl-main .fdvt-m [data-a="fdY3"]{flex:.7 1 0} }
+@media (max-width:1099px){ .fdl-main .card>.twpg{flex:none;margin:0 0 2px;font-size:11.5px}.fdl-main .card>.twpg button{min-height:26px;height:26px;padding:0 14px} }
