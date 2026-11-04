@@ -12,7 +12,7 @@
  .trade-modes{gap:5px}.trade-modes button{font-size:12px;min-height:42px}.trade-search-main{grid-template-columns:90px minmax(0,1fr);align-items:end}.trade-find-filters{grid-template-columns:minmax(0,1fr)}.trade-find-filters input{grid-row:1}.trade-filter-more{align-self:start}.trade-find-filters select{font-size:12px}.trade-search-main>.trade-filter-more{grid-column:1/-1}
  .trade-workspace .flr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;padding:8px 0}.trade-workspace .flr>.small{grid-column:1}.trade-workspace .flr>.tc-i{grid-column:2;grid-row:1/3;align-self:center}.trade-workspace .pmini{min-width:0}.trade-workspace .gmg{grid-template-columns:minmax(0,1fr)}
  .trade-partner{gap:6px}.trade-partner>label{display:grid;gap:3px}.trade-partner>.btn{align-self:end;flex:none}.trade-steps{justify-content:space-between;gap:4px;font-size:12px}.trade-basket{font-size:12px}.trade-workspace .tgm{align-items:center}.trade-workspace .tgm b{font-size:13px}.trade-workspace .tgm>div{min-width:0}.trade-workspace .tgm span{font-size:12px}
- .trade-workspace .tboard>.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.trade-workspace .tboard>.row .negc{grid-column:1/-1}.trade-workspace .tboard .btn{min-width:0}.trade-workspace .bk-c{flex-wrap:wrap;max-width:100%}.trade-workspace .tcols{gap:8px}
+ .trade-workspace .tboard>.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.trade-workspace .tboard>.row .negc{grid-column:1/-1}.trade-workspace .tboard .btn{min-width:0}.trade-workspace .bk-act{max-width:100%}.trade-workspace .tcols{gap:8px}
  .coach-slot-jump{align-items:center}.csl .row,.cgrid .pcb{display:flex;flex-wrap:wrap;gap:6px}.csl .row>.btn,.cgrid .pcb>.btn{flex:1 1 120px;min-width:0}.csl .row .pc-s{white-space:normal}.cgr{gap:5px}.cgg span{font-size:12px}.coach-guide summary,.staff-more summary{min-height:40px;align-content:center}
 }
 
@@ -38,7 +38,6 @@
 .trade-search-main{grid-template-columns:minmax(0,1fr)!important}.trade-position{display:flex!important;align-items:center;gap:8px!important;min-width:0}.trade-position>span{flex:none;min-width:34px}
 .trade-find-filters{grid-template-columns:minmax(0,1fr) minmax(160px,260px)!important;align-items:center}.trade-filter-grid{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}
 @media(max-width:700px){.trade-find-filters{grid-template-columns:minmax(0,1fr)!important}.trade-find-filters input{grid-row:auto!important}.optrow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.optrow>button{flex:none}}
-.blk-add{display:flex;flex-wrap:wrap;gap:4px;max-height:180px;overflow:auto;scrollbar-width:thin}
 .pl-pick{max-height:120px;overflow:auto;scrollbar-width:thin}
 .gp-age{display:flex;align-items:center;gap:4px}.gp-age b{min-width:44px;text-align:center}
 /* PC 선수 찾기 표(14_trade_center.js findTable) */
@@ -54,3 +53,19 @@
 .tp-h{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:8px;align-items:center}.tp-h .av{width:40px;height:40px}.tp-h>span{display:grid;min-width:0}.tp-h b{font-size:14px}.tp-h i{font-style:normal;font-size:12px;color:var(--muted)}
 .tp-rel{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px}.tp-rel i{font-style:normal;color:var(--muted)}
 @media(min-width:1100px){.tp-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(150px,1fr);flex:1}.tp-card{justify-content:space-between}.tp-card .tp-h b{font-size:16px}.tp-meta i{font-size:13px}}
+/* 선수 명단 휴대폰 세로: 제목 줄 하나에 야수/투수·목록/상세, 필터 줄 옆에 열 넘김, 2군 안내는 표 마지막 줄 */
+.roster-tools{display:contents}.roster-caption .rseg-cap,.r2tr{display:none}
+@media(max-width:699px) and (min-height:600px){
+ #app .roster-navigation>.rseg{display:none}
+ #app .roster-caption{flex-wrap:nowrap;gap:6px;margin-bottom:2px}
+ #app .roster-caption .rseg-cap{display:flex;flex:none;margin:0}#app .roster-caption .rseg-cap button{padding-inline:10px;white-space:nowrap}
+ #app .roster-caption>h2.sec{flex:1;min-width:0;font-size:0;margin:0}#app .roster-caption>h2.sec .hi-i{font-size:11px}
+ #app .roster-tools{display:flex;align-items:center;gap:6px;min-width:0;flex:none}
+ #app .roster-tools>.roster-filters{flex:1 1 0;min-width:0}#app .roster-tools>.roster-filters[open]{flex-basis:100%}
+ #app .roster-tools:has(>.roster-filters[open]){flex-wrap:wrap}
+ #app .roster-tools>.roster-filters>summary{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#app .roster-tools .rf-long{display:none}
+ #app .roster-tools>.twpg{flex:0 1 auto;margin:0;gap:4px;min-width:0}#app .roster-tools>.twpg button{min-width:40px}
+ #app .roster-list:has(.r2tr) .r2link:not(.r2row){display:none}
+ #app .r2tr{display:table-row}#app .r2tr>td{padding:6px 0 2px}#app .r2tr .r2link{margin:0;width:100%}
+ #app .ws-panels>.roster-list.card{padding:6px 8px;gap:4px}
+}
