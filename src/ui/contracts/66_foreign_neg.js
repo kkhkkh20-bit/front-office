@@ -41,3 +41,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
       <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt?'good':'bad'}">${v>=tgt?'합의 가능':'모자람'}</b></div>
       ${N?`<p class="muted">제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
     ${N&&N.ok?'<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.</div>':`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
+Object.assign(A,{
+  fTmpStart(v){ UI.ftmpFor=v===''||v==null?null:+v; UI.ff=Object.assign({},UI.ff||{},{t:'yb'}); if(UI.tab==='transfer'&&curSub('transfer')==='foreign')render(); else A.go('transfer:foreign'); },
+  fTmpSign(v){ const err=signTempForeign(G.user,UI.ftmpFor,+v); toast(err||'부상 대체 외국인을 등록했습니다.'); if(!err)UI.ftmpFor=null; save(); render(); },
+});

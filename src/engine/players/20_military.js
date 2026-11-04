@@ -4,6 +4,10 @@
 const MIL_DAYS=548, SANGMU_SLOTS=14;
 const milServing=p=>!!(p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day); /* 실제 입대일부터 전역일 전까지만 복무 중 */
 const isAway=p=>!!(milServing(p)||(p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day));
+/* 복무 중 훈련 환경: 상무는 상무 야구단 시설·코치진 아래 퓨처스리그에서 뛰고(구단 시설·코치·감독 영향 없음), 현역은 야구 훈련을 하지 못해 늘지 않고 조금씩 떨어진다 */
+const MIL_FAC={'상무':{l:'상무 야구단 시설',g:1,d:1},'현역':{l:'군 복무(야구 훈련 없음)',g:1,d:1}};
+function milTrainTxt(p){ if(!p||!milServing(p))return ''; const no='우리 구단 시설·코치진·훈련 지시·포지션 전환·해외 연수는 적용되지 않습니다.';
+  return p.mil.unit==='상무'?`상무(국군체육부대) 복무 중: 상무 야구단 시설·코치진 아래 퓨처스리그에서 뛰며 훈련합니다. ${no}`:`현역 복무 중: 야구 훈련을 하지 못해 능력이 늘지 않고 체력·기술이 조금씩 떨어집니다. ${no}`; }
 const milFree=p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt||p.mil.until));
 function milInit(p){ if(p.mil!==undefined||p.foreign)return; const a=p.age; const u=u01('mil',p.id);
   p.mil=a>=28?(u<.9?{done:true}:u<.95?{exempt:true}:null):a>=25?(u<.55?{done:true}:u<.6?{exempt:true}:null):a>=22?(u<.2?{done:true}:null):null; }

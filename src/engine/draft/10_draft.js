@@ -90,7 +90,7 @@ function draftSeasonMail(){ if(G.unemp||G.user==null)return; const n=draftNo(G.u
 function startDraft(){
   const D=draftOrders(); const order=D.r2, o1=D.r1;
   if(D.pen.includes(G.user))note('드래프트','경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 9단계 내려갔습니다.');
-  const picks=[]; for(let r=0;r<DRAFT_ROUNDS;r++)(r===0?o1:order).forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null}));
+  pkClean(); const picks=[]; for(let r=0;r<DRAFT_ROUNDS;r++)(r===0?o1:order).forEach((tid,i)=>{ const own=pkOwner(G.year,r+1,tid); picks.push(own===tid?{rd:r+1,no:i+1,tid,pid:null}:{rd:r+1,no:i+1,tid:own,from:tid,pid:null}); }); /* 트레이드로 넘겨받은 지명권은 원래 구단 순번에 쓴다 */
   G.draft={cls:G.draftClass||[],picks,cur:0,done:false,y:G.year};
   stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명 중 ${DRAFT_ROUNDS}라운드 ${picks.length}명을 지명합니다. 순서는 지난 시즌 성적의 역순이고, 우리 첫 지명은 ${o1.indexOf(G.user)+1}순위입니다. 3라운드부터는 지명을 건너뛸 수 있습니다.`);
 }

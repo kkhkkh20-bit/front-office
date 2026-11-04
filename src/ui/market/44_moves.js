@@ -1,5 +1,5 @@
 /* ---------- 이적시장 현황: 항상 볼 수 있는 요약과 전체 기록 ---------- */
-const MV_TYPES=['FA','트레이드','외국인','방출','무적 영입','보상선수','해외 진출','해외 복귀'];
+const MV_TYPES=['FA','트레이드','외국인','방출','무적 영입','보상선수','웨이버 양수','2차 드래프트','해외 진출','해외 복귀'];
 function mvTeam(t){ return t==null?'-':`${badge(t,14)} ${esc(tshort(t))}`; }
 function mvDir(m){ return m.t==='방출'||m.t==='해외 진출'?`${mvTeam(m.from)} →`:m.from!=null&&m.to!=null&&m.from!==m.to?`${mvTeam(m.from)} → ${mvTeam(m.to)}`:`→ ${mvTeam(m.to)}`; }
 function mvLine(m,brief){ const me=m.to===G.user||m.from===G.user; const dir=mvDir(m);
@@ -44,3 +44,34 @@ function movesFM(){ const W=mvWindow(), st=mvStatus(); UI.mvf=UI.mvf||{}; const 
   const big=W.filter(m=>m.amt>0&&m.t!=='외국인').sort((a,c)=>c.amt-a.amt).slice(0,10);
   const bigB=tfBox('tf-big','큰 계약',`${big.length}건`,tfT(['선수','이동','내용'],big.map(m=>`<tr><td>${pl(m)}<span class="scn-s">${esc(m.t)} · ${dsh(m.d)}</span></td><td>${mvDir(m)}</td><td class="wrap small">${esc(m.note||'')}</td></tr>`),'이번 구간에 큰 계약이 없습니다.'));
   return tfWrap(top,tbl,sch+team+bigB,'','minmax(0,auto) minmax(0,1.2fr) minmax(0,1fr)'); }
+/* ---------- 웨이버·2차 드래프트(KBO 선수 이동 제도): 영입·계약 → 웨이버·2차 ---------- */
+function kboView(){ return wvBox()+sdBox(); }
+function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
+  const row=p=>{ const w=p.wv, on=w.cl.includes(G.user);
+    const btn=w.from===G.user?'<span class="pill">우리가 공시</span>':!w.ok?'<span class="pill">양수 신청 불가(기간 밖)</span>':G.unemp?'':`<button class="btn small ${on?'':'primary'}" data-a="wvClaim" data-v="${p.id}">${on?'신청 취소':'양수 신청'}</button>`;
+    return `<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(w.c.sal)}${w.c.yrs>1?` · ${w.c.yrs}년 남음`:''} · 전 ${esc(tshort(w.from))} · ${dsh(w.end)}까지</span></span>${btn}</div>`; };
+  const log=(G.wvLog||[]).slice(0,8).map(r=>`<p class="small">${dsh(r.d)} <button class="lnk" data-a="player" data-v="${r.pid}">${esc(r.n)}</button> ${esc(tshort(r.from))} → ${r.to!=null?esc(tshort(r.to))+' (계약 승계)':'자유계약'}</p>`).join('');
+  return csec('웨이버 공시',`<p class="small muted">KBO 규약: 시즌 중·겨울에 방출한 등록 선수는 ${WV_DAYS}일 동안 웨이버 공시됩니다. 양수를 신청한 구단 중 지금 성적이 낮은 구단이 남은 계약을 그대로 이어받고, 방출한 구단은 낸 정산금을 돌려받습니다. 아무도 신청하지 않으면 자유계약 선수가 됩니다. 7월 25일 이후 공시는 양수 신청을 받지 않고, 11월 보류선수 정리는 웨이버 없이 바로 자유계약입니다.</p>
+    ${L.length?L.map(row).join(''):'<p class="small muted">지금 공시 중인 선수가 없습니다.</p>'}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
+function sdBox(){ const S=G.sd2&&G.sd2.y===G.year?G.sd2:null;
+  const rule=`<p class="small muted">KBO 2차 드래프트는 홀수 해 11월에 열립니다. 구단마다 보호선수 ${SD_PROT}명을 내고, 다른 구단이 지난 시즌 성적 역순으로 명단 밖 선수를 ${SD_RD}라운드까지(하위 3개 구단은 5라운드) 지명합니다. 한 구단에서 최대 ${SD_LOSS}명. 양도금 1라운드 4억·2라운드 3억·3라운드 2억·4라운드 이하 1억. 1·2라운드 지명자는 두 시즌 안에 1군 ${SD_REG[0]}일·${SD_REG[1]}일을 채우지 못하면 원소속 구단으로 돌아갑니다. 외국인·입단 1~3년 차·육성선수·군 보류·이번 겨울 FA 계약 선수는 대상이 아닙니다.</p>`;
+  if(!S){ let y=G.year+(G.sd2&&G.sd2.y===G.year?1:0); while(!sdYear(y))y++; return csec('2차 드래프트',`${rule}<p class="small">다음 2차 드래프트: ${y}년 11월</p>`); }
+  if(S.stage==='protect'){ if(G.unemp)return csec('2차 드래프트',`${rule}<p class="small">보호선수 명단 제출 중(${dsh(S.exp)}까지)</p>`);
+    const pool=sdPool(G.user).sort((a,b)=>ovr(b)-ovr(a)); if(!UI.sdProt||UI.sdProtY!==S.y){ UI.sdProt=[...(S.prot[G.user]||sdProtAI(G.user))]; UI.sdProtY=S.y; }
+    const P=new Set(UI.sdProt.filter(id=>pool.some(p=>p.id===id))); const PG=pager('sdp',pool,15);
+    const row=p=>`<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(p.sal)}</span></span><button class="btn small ${P.has(p.id)?'primary':''}" data-a="sdTog" data-v="${p.id}">${P.has(p.id)?'보호':'명단 밖'}</button></div>`;
+    return csec('2차 드래프트 · 보호선수 명단',`${rule}<p class="small"><b>보호 ${P.size} / ${SD_PROT}명</b> · 대상 ${pool.length}명 · ${dsh(S.exp)}까지 제출${S.sub?' · <span class="pill good">제출함</span>':''}</p>
+      <div class="btns"><button class="btn primary" data-a="sdSubmit">명단 제출</button><button class="btn" data-a="sdAuto">운영팀 추천(능력순)</button></div>${PG.items.map(row).join('')}${PG.bar}`); }
+  const done=S.seq.filter(s=>s.pid); const res=done.length?done.map(s=>`<p class="small">${s.rd}라운드 ${esc(tshort(s.tid))}: <button class="lnk" data-a="player" data-v="${s.pid}">${esc(s.nm)}</button> (전 ${esc(tshort(s.from))}, 양도금 ${money(s.fee)})</p>`).join(''):'<p class="small muted">아직 지명된 선수가 없습니다.</p>';
+  const s=S.seq[S.cur]; let turn='';
+  if(S.stage==='pick'&&s&&s.tid===G.user&&S.wait===S.cur){ const C=sdCands(G.user).sort((a,b)=>ovr(b)-ovr(a)); const PG=pager('sdc',C,15);
+    turn=`<div class="note"><b>${s.rd}라운드 우리 차례</b> · 양도금 ${money(sdFee(s.rd))} · ${dsh(S.exp)}까지 정하지 않으면 건너뜁니다.</div><div class="btns"><button class="btn" data-a="sdPick" data-v="skip">이번 라운드 건너뛰기</button></div>
+      ${PG.items.map(p=>`<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(tshort(p.team))} · ${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(p.sal)}</span></span><button class="btn small primary" data-a="sdPick" data-v="${p.id}">지명</button></div>`).join('')}${PG.bar}`; }
+  return csec(`${S.y} 2차 드래프트 · ${S.stage==='done'?'종료':'지명 중'}`,`${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}${S.stage==='done'?rule:''}`); }
+Object.assign(A,{
+  wvClaim(v){ toast(wvClaim(+v)); save(); render(); },
+  sdTog(v){ const id=+v; const L=UI.sdProt||[]; const i=L.indexOf(id); if(i>=0)L.splice(i,1); else if(L.length<SD_PROT)L.push(id); else { toast(`보호선수는 ${SD_PROT}명까지입니다. 먼저 한 명을 빼세요.`); return; } UI.sdProt=L; render(); },
+  sdAuto(){ UI.sdProt=sdProtAI(G.user); render(); },
+  sdSubmit(){ toast(sdSubmit(UI.sdProt||[])); save(); render(); },
+  sdPick(v){ toast(sdPick(v==='skip'?null:+v)); save(); render(); },
+});

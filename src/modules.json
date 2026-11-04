@@ -83,6 +83,7 @@
       "src/engine/career/69_ach.js",
       "src/engine/career/70_gm_contract.js",
       "src/engine/contracts/71_foreign_neg.js",
+      "src/engine/contracts/72_foreign_temp.js",
       "src/engine/progression/72_delegate.js",
       "src/engine/staff/73_firings.js",
       "src/engine/media/74_press_play.js",
@@ -106,7 +107,11 @@
       "src/engine/media/90_player_analysis.js",
       "src/engine/media/91_league_events.js",
       "src/engine/media/92_gg_voting.js",
-      "src/engine/career/83_personal_life.js"
+      "src/engine/career/83_personal_life.js",
+      "src/engine/market/93_waivers.js",
+      "src/engine/draft/94_second_draft.js",
+      "src/engine/market/96_pick_trade.js",
+      "src/engine/league/95_game_rules.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",

@@ -139,4 +139,4 @@ function cmpCard(p){ if(p.team!==G.user||p.prospect||!p.rh)return ''; const y0=p
   return `<section class="card"><div class="row between"><span class="eyebrow">${y0===G.year?'올 시즌 시작과 비교':'지난 시즌 시작과 비교'}</span><span class="small muted">${y0}년 1월 기준</span></div>
   <div class="cmpt">${ks.map(k=>`<div><span>${OVS_TOOLN[k]}</span>${ar(k)}</div>`).join('')}</div></section>`; }
 /* 선수 화면 '육성' 탭: 보직·훈련 방향·포지션 전환·해외 연수·성장 기록을 한곳에 */
-function devTab(p){ return `${cmpCard(p)}${p.isP?roleCard(p):''}${trnCard(p)}${!p.isP?posCard(p):''}${!p.foreign&&p.age<=30?devForm(p):''}${growthCard(p)}`; }
+function devTab(p){ const mt=milTrainTxt(p); return `${mt?`<p class="note small">${esc(mt)}</p>`:''}${cmpCard(p)}${p.isP?roleCard(p):''}${trnCard(p)}${!p.isP?posCard(p):''}${!p.foreign&&p.age<=30?devForm(p):''}${growthCard(p)}`; }

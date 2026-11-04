@@ -9,7 +9,7 @@ const NAV=[['inbox','소식함','mail'],['home','홈','home'],['roster','선수�
 const BNAV=['inbox','home','roster','trade','transfer','league']; /* 하단 탭에 리그(순위·기록·통계) 추가(사용자 2026-11-01 20:48) */
 const SUBS={
   trade:[['market','선수 찾기'],['table','협상하기'],['block','제안·매물']],
-  transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약'],['moves','이적 현황']],
+  transfer:[['fa','FA 시장'],['foreign','외국인'],['draft','신인 드래프트'],['contract','계약'],['kbo','웨이버·2차'],['moves','이적 현황']],
   train:[['camp','훈련장'],['dev','육성'],['lead','리더십']],
   staff:[['mgr','감독'],['coach','코치진'],['train','훈련·육성'],['scouts','스카우트'],['data','전력분석'],['smkt','스태프 시장'],['med','부상 관리']],
   cfg:[['set','게임 설정'],['auth','업무 권한']],
@@ -39,6 +39,7 @@ function subAlert(tab,k){
     'transfer:fa':faLive(),
     'transfer:contract':!!(G.contract&&!G.contract.done),
     'transfer:draft':!!(G.draft&&!G.draft.done),
+    'transfer:kbo':!!(G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'&&!G.unemp),
     'staff:scouts':scoutWorkStatus().needs,
     'staff:mgr':!G.mgr[G.user],
     'staff:coach':!!G.coach&&CKEYS.some(k=>!coachesOf(G.user)[k]),

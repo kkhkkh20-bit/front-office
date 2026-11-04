@@ -134,11 +134,11 @@ function refreshFMarket(n,drop){
     if(asiaN<aMin)G.fmarket.push(newForeign('아시아',{market:true}).id); else if(pitN<pMin)G.fmarket.push(newForeign('용병',{isP:true,market:true}).id); else if(batN<bMin)G.fmarket.push(newForeign('용병',{isP:false,market:true}).id); else G.fmarket.push(newForeign('용병',{market:true}).id); }
 }
 function foreignOpen(){ const per=period(); if(per==='post')return false; if(per==='season')return G.day<=foreignDL(); return G.day>=KD(12,1)||per==='pre'; }
-function foreignCheck(tid,p,excludeId){
+function foreignCheck(tid,p,excludeId,tmp){
   if(!p||!p.foreign)return '외국인 계약 대상이 아닙니다.';
   if(p.team!=null)return '이미 소속 구단이 있는 선수입니다.';
   const held=foResFor(p); if(held&&held.tid!==tid)return `${tname(held.tid)}의 보류권이 남아 있어 계약할 수 없습니다(${held.until}년까지).`;
-  if(period()==='season'&&fReplLeft(tid,p.foreign)<=0)return `이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 썼습니다.`;
+  if(!tmp&&period()==='season'&&fReplLeft(tid,p.foreign)<=0)return `이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 썼습니다.`;
   const C=G.contract; const drop=tid===G.user&&C&&!C.done?(C.foreignDrop||[]):[]; /* 재계약 기간에 결별하기로 한 선수는 자리를 비운 것으로 본다(계약 확정 때 떠난다) */
   const fs=foreignOf(tid).filter(x=>x.id!==excludeId&&!drop.includes(x.id));
   if(p.foreign==='아시아'){ if(fs.filter(x=>x.foreign==='아시아').length>=1)return '아시아쿼터는 1명까지입니다. 먼저 한 명을 방출하세요.'; return ''; }
@@ -189,6 +189,7 @@ function aiForeignFill(tid){
   if(!fs.some(x=>x.foreign==='아시아')&&fReplLeft(tid,'아시아')>0){ const p=newForeign('아시아'); if(signForeign(tid,p.id))dropP(p.id); }
 }
 function aiForeignReview(tid){
+  try{ if(aiForeignTemp(tid))return; }catch(e){} /* 시즌 안에 돌아올 부상은 교체 횟수를 쓰지 않는 부상 대체로 */
   if((G.sea.repl[tid]||0)>=F_REPL_MAX)return;
   for(const p of foreignOf(tid).filter(x=>x.foreign==='용병')){
     const h=seasonTotal(p,G.year,'1군');
