@@ -80,8 +80,9 @@
 /* 휴대폰 소식함 탭: 짧은 이름으로 한 줄에(옆으로 밀지 않게) */
 .ibx-tabs .ibs{display:none}
 @media (max-width:600px){
-  .ibx-tabs{overflow:visible;width:100%;justify-content:space-between}
-  .ibx-tabs button{padding:10px 5px 9px;gap:4px}
+  .ibx-bar{margin-inline:0}
+  .ibx-tabs{overflow-x:auto;width:100%;justify-content:space-between} /* 좁은 화면(360)에서 넘치면 잘리지 않고 옆으로 민다 */
+  .ibx-tabs button{padding:10px 4px 9px;gap:3px}
   .ibx-tabs .ibl{display:none}.ibx-tabs .ibs{display:inline}
 }
 /* 날짜 묶음(접기는 단장만) */

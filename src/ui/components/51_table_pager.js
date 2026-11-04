@@ -29,6 +29,12 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
   document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 
+/* 한 줄 버튼 줄: 지금 고른 버튼을 보이는 자리로 옮기고, 옆에 더 있으면 가장자리를 흐리게 표시한다 */
+function wsRowHint(row){ if(!row||!row.isConnected)return; const on=row.querySelector('button.on,button[aria-current="true"]');
+  if(on&&row.scrollWidth>row.clientWidth+2){const r=row.getBoundingClientRect(),b=on.getBoundingClientRect();if(b.left<r.left||b.right>r.right)row.scrollLeft+=b.left-r.left-(r.width-b.width)/2;}
+  const upd=()=>{row.classList.toggle('more-l',row.scrollLeft>2);row.classList.toggle('more-r',row.scrollLeft+row.clientWidth<row.scrollWidth-2);};
+  upd(); if(!row._hint){row._hint=1;row.addEventListener('scroll',upd,{passive:true});} }
+
 /* 전체 화면 대신 표·목록 내부를 스크롤하는 공통 작업 틀. */
 function workspaceFit(host){
   const main=host||document.querySelector('#app main.content');
@@ -36,19 +42,15 @@ function workspaceFit(host){
   main.dataset.workspaceReady='1';main.classList.add('ws-frame');
   const root=main.querySelector(':scope > .roster-page,:scope > .trade-workspace')||main;
   if(root!==main)root.classList.add('ws-page');
-  // 좁거나 낮은 화면에서는 여러 줄 탭 대신 같은 항목을 선택 상자로 연다.
+  // 좁거나 낮은 화면에서는 여러 줄 탭을 한 줄 버튼 줄로 접는다. 넘치면 옆으로 밀고(선택 상자처럼 아래 창을 가리지 않음) 지금 화면 버튼을 가운데로.
   if(workspaceCompact()){
     const filters=root.querySelector('.roster-filter-body');
     if(filters)root.querySelectorAll('.roster-list>.rcp-bar,.roster-list>.rcp').forEach(el=>filters.append(el));
     root.querySelectorAll('.seg.itabs,nav.subtabs,.trade-modes').forEach(tabs=>{
-      const buttons=[...tabs.querySelectorAll('button[data-a]')].filter(b=>['itab','go','sub','tab','lseg'].includes(b.dataset.a));if(!buttons.length)return;
-      const select=document.createElement('select');select.className='ws-tab-select';select.setAttribute('aria-label','화면 선택');
-      buttons.forEach((button,i)=>{const option=document.createElement('option');option.value=i;option.textContent=button.textContent;option.selected=button.classList.contains('on');select.append(option);});
-      select.onchange=()=>{const button=buttons[+select.value];if(button)A[button.dataset.a](button.dataset.v);};tabs.before(select);tabs.classList.add('ws-tabs-folded');
+      if([...tabs.querySelectorAll('button[data-a]')].some(b=>['itab','go','sub','tab','lseg'].includes(b.dataset.a)))tabs.classList.add('ws-tab-row');
     });
-    const selectors=[...root.querySelectorAll(':scope > .ws-tab-select')];
-    // A navigation control never participates in the growing content deck, including Safari's native select.
-    if(selectors.length){const nav=document.createElement('nav');nav.className='ws-navigation';nav.setAttribute('aria-label','업무 화면 선택');selectors[0].before(nav);selectors.forEach(select=>nav.append(select));}
+    const rows=[...root.querySelectorAll(':scope > .ws-tab-row')];
+    if(rows.length){const nav=document.createElement('nav');nav.className='ws-navigation';nav.setAttribute('aria-label','업무 화면 선택');rows[0].before(nav);rows.forEach(row=>nav.append(row));}
     root.querySelector(':scope > .roster-navigation')?.classList.add('ws-navigation');
   }
   const fixed='.seg,.subtabs,.ws-tab-select,.ws-navigation,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr,.trade-modes,.trade-back,.trade-partner,.trade-steps,.trade-basket,.trade-extra,button[data-a=tradePick]';
@@ -67,7 +69,7 @@ function workspaceFit(host){
   const key=(host?'detail:'+UI.sheet+':'+UI.ptab:fmKey())+':'+innerTabs;
   const positions=UI.workspaceScroll=UI.workspaceScroll||{};
   const scrollSelectors='.tw,.fdt-w,.tgrid,.cgrid,.cgr,.fl,.feed,.dealg,.sched,.stop-l,.tn-l,.slots,.bud-t,.cpwrap,.ltiles,.covm';
-  const label=el=>el.querySelector('h2,h3,.sec,.eyebrow,summary')?.textContent.trim()||'보고';
+  const label=el=>{const h=el.querySelector('h2,h3,.sec,.eyebrow,summary');if(!h)return '보고';const c=h.cloneNode(true);c.querySelectorAll('.hi-i,button,.tc-i').forEach(x=>x.remove());return c.textContent.replace(/\s+/g,' ').trim()||'보고';};
   panels.forEach((panel,index)=>{
     deck.append(panel);panel.classList.add('ws-panel');
     if(innerHeight<500){const heading=panel.querySelector(':scope > .row:first-child:has(h2,h3)'),pager=panel.querySelector(':scope > .pgr');if(heading&&pager){heading.append(pager);heading.classList.add('ws-panel-heading');pager.classList.add('ws-inline-pager');}}
@@ -119,15 +121,14 @@ function workspaceFit(host){
   const show=()=>{panels.forEach((panel,i)=>{panel.hidden=Math.floor(i/columns)!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
 
   if(pages>1){
-    const bar=document.createElement('nav');bar.className='ws-pages';bar.setAttribute('aria-label','업무 패널');
-    const prev=document.createElement('button'),next=document.createElement('button'),select=document.createElement('select');
-    prev.className=next.className='btn small';prev.textContent='‹ 이전';next.textContent='다음 ›';select.setAttribute('aria-label','표·보고 묶음 선택');
-    for(let i=0;i<pages;i++){const option=document.createElement('option');option.value=i;option.textContent=(i+1)+' / '+pages+' · '+panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');select.append(option);}
-    const sync=()=>{show();select.value=String(page);prev.disabled=page===0;next.disabled=page===pages-1;};
-    prev.onclick=()=>{page--;sync();};next.onclick=()=>{page++;sync();};select.onchange=()=>{page=+select.value;sync();};
-    bar.append(prev,select,next);const navigation=root.querySelector(':scope > .ws-navigation');
+    /* 표·보고 묶음도 버튼 줄로: 묶음마다 제목 버튼 하나(한 번 눌러 바로 이동) */
+    const bar=document.createElement('nav');bar.className='ws-pages ws-tab-row';bar.setAttribute('aria-label','표·보고 묶음');
+    const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.slice(i*columns,(i+1)*columns).map(label).join(' · ');b.onclick=()=>{page=i;sync();};return b;});
+    const sync=()=>{show();buttons.forEach((b,i)=>{b.classList.toggle('on',i===page);b.setAttribute('aria-current',i===page?'true':'false');});wsRowHint(bar);};
+    bar.append(...buttons);const navigation=root.querySelector(':scope > .ws-navigation');
     if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else root.insertBefore(bar,deck);sync();
   }
+  root.querySelectorAll('.ws-tab-row').forEach(wsRowHint);
   workspaceObserve();
 }
 
@@ -141,9 +142,9 @@ function workspaceObserve(){if(typeof ResizeObserver==='undefined')return;
 
 function workspaceReveal(selector){
   const panel=document.querySelector(selector)?.closest('.ws-panel');if(!panel||!panel.hidden)return;
-  const deck=panel.parentElement,select=deck.parentElement.querySelector(':scope > .ws-pages select,:scope > .ws-navigation > .ws-pages select');if(!select)return;
+  const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages');if(!bar)return;
   const columns=+deck.style.getPropertyValue('--ws-columns')||1;
-  select.value=String(Math.floor([...deck.children].indexOf(panel)/columns));select.dispatchEvent(new Event('change',{bubbles:true}));
+  bar.querySelector(`[data-ws-page="${Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click();
 }
 
 function workspaceDetail(){

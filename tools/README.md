@@ -18,6 +18,7 @@
 - `check-season-playthrough.cjs`: 휴대폰·태블릿·PC에서 다른 구단으로 실제 계속·소식 결정·경기 결과·선수 카드·면담을 조작하며 한 시즌과 저장 후 재접속을 확인합니다. `PLAY_CASES=phone,tablet,pc`, `PLAY_TURNS=180`, `PLAY_OUT=/tmp/front-office-season-review`로 범위를 정합니다. 전체 점검에서는 `LONG_PLAY=1`일 때 실행합니다.
 
 - `check-pitches.cjs`: 저장된 공과 9칸 투구판·구종·구속·좌표·B/S/O를 대조합니다. PC/휴대폰 배치, 재생·일시정지·팀 전환, 저장 후 재생과 예전 기록의 재현 표시도 확인합니다. `CAPTURE=1`이면 `/workspace/front-office-pitches-폭.png`로 화면을 남깁니다.
+- `check-viewport.cjs`: 모든 메뉴·하위 탭·선수 상세·중계를 휴대폰 세로(360·390)·가로(844×390)·태블릿·노트북(1280×600 포함)·PC·대형(2560) 화면에서 열고 가로 넘침, 화면 밖 요소, 넘침 숨김에 일부가 잘린 버튼, 다른 요소에 가려진 버튼, 200px보다 납작한 경기장을 찾습니다. `SIZES=390x844,844x390`, `VIEWS=home,cast`로 골라 돌릴 수 있습니다.
 
 - `fit-frec.js`: 외국인 후보의 기록 해석표(`12_foreign.js`의 `FREC`)를 다시 맞춥니다. 후보 생성 방식(리그 비중, 능력 분포, `LG_ADJ`, `FENV`, MLB 경력)을 바꾸면 돌리고, 출력된 한 줄로 표를 바꿉니다. 추천순과 종합 추정이 이 표를 씁니다.
 

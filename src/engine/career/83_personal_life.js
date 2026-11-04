@@ -16,7 +16,7 @@ function personalActivity(kind,target){const A=PERSONAL_ACT[kind];if(!A||G.unemp
  if(kind==='study'&&(S.study||0)>=5)return '실무 교육을 모두 마쳤습니다.';let text='',contact=null,p=null;
  if(['chat','meal','rehab'].includes(kind)){p=G.players[+target];if(!p||p.team!==G.user)return '우리 구단 선수를 골라 주세요.';if(kind==='rehab'&&!(p.injOut>0))return '현재 재활 중인 선수가 아닙니다.';contact=contactRecord('pl:'+p.id);contact.bond=clamp(contact.bond+A.bond,0,100);p.mor=clamp((p.mor??60)+(kind==='chat'?.5:1),0,100);text=`${p.name} · ${A.l}: ${friendshipLabel(p)}(친밀도 ${Math.round(contact.bond)}). 능력치·출전은 바꾸지 않습니다.`;}
  if(kind==='network'){const t=G.teams.find(t=>t.id===+target&&t.id!==G.user);if(!t)return '다른 구단 단장을 골라 주세요.';contact=personalGMContact(t.id);contact.bond=clamp(contact.bond+A.bond,0,100);t.rel=clamp((t.rel??50)+1,0,100);text=`${tname(t.id)} ${gmOf(t.id).name} 단장과 식사했습니다. 거래 관계 +1, 친밀도 ${Math.round(contact.bond)}.`;}
- if(kind==='study'){S.study=Math.min(5,(S.study||0)+1);text=`실무 교육 ${S.study}/5: 선수 카드에서 계약·연수 판단 참고를 확인할 수 있습니다.`;}
+ if(kind==='study'){S.study=Math.min(5,(S.study||0)+1);text=`실무 교육 ${S.study}/5: 선수 정보의 관리(계약)·육성(연수) 탭에서 판단 참고를 확인할 수 있습니다.`;}
  if(kind==='community'){G.rep=clamp((G.rep??50)+1,0,100);if(!team(G.user).indie)cwRapAdd('own',1);text='지역 야구 봉사·기부: 단장 명성 +1. 구단 예산은 사용하지 않았습니다.';}
  S.cash-=A.cost;S.spent+=A.cost;S.last[kind]=G.day;S.history.unshift({day:G.day,text,amount:-A.cost});S.history.length=Math.min(S.history.length,40);if(contact){contact.history.unshift({day:G.day,kind,text});contact.history.length=Math.min(contact.history.length,12);}return text;
 }

@@ -38,8 +38,8 @@ try{if(output)fs.mkdirSync(output,{recursive:true});browser=await chromium.launc
     const next=page.locator('[data-a="homePage"][data-v="1"]');if(await next.isEnabled()){const before=await page.locator('.hw-pager').innerText();await next.tap();assert.notEqual(await page.locator('.hw-pager').innerText(),before);}
    }
    await page.locator('nav [data-a="homePanel"][data-v="overview"]:visible').tap();await capture(page,label+'-home');const before=await page.evaluate(()=>G.day);await page.locator('button.continue').tap();if(await page.locator('#cfm [data-a="cfmOk"]').count())await page.locator('#cfm [data-a="cfmOk"]').tap();assert.ok(await page.evaluate(d=>G.day>d,before),label+' 실제 계속');const tick=await assertTick(page,label);
-   for(const route of ['roster','staff:scouts','cal','cfg:set']){await page.evaluate(route=>A.go(route),route);const groups=await page.locator('.ws-pages select option').count()||1;
-    for(let group=0;group<groups;group++){if(groups>1)await page.locator('.ws-pages select').selectOption(String(group));
+   for(const route of ['roster','staff:scouts','cal','cfg:set']){await page.evaluate(route=>A.go(route),route);const groups=await page.locator('.ws-pages [data-ws-page]').count()||1;
+    for(let group=0;group<groups;group++){if(groups>1)await page.locator('.ws-pages [data-ws-page="'+String(group)+'"]').click();
      const fit=await page.evaluate(()=>{const main=document.querySelector('main.content');return {outer:document.documentElement.scrollHeight>innerHeight+2||document.documentElement.scrollWidth>innerWidth+2,overflow:main.scrollHeight>main.clientHeight+2,panels:[...main.querySelectorAll('.ws-panel:not([hidden])')].map(panel=>{const s=panel.querySelector('.ws-scroll');return {height:panel.clientHeight,overflow:panel.scrollHeight>panel.clientHeight+3,body:s.clientHeight,content:s.scrollHeight,text:s.innerText.length};})};});
      assert.ok(!fit.outer&&!fit.overflow&&!fit.panels.some(p=>p.overflow||(p.text>0&&p.content>p.body&&p.body<48)),label+' '+route+' '+group+' '+JSON.stringify(fit));
     }

@@ -114,7 +114,6 @@
       "src/ui/assets/00a_badges_data.js",
       "src/ui/assets/00b_assets_data.js",
       "src/ui/assets/00c_match_stadium_data.js",
-      "src/ui/assets/00d_player_card_art.js",
       "src/ui/shell/01_layout.js",
       "src/ui/shell/01b_fm_shell.js",
       "src/ui/shell/02_work_tabs.js",
@@ -164,7 +163,6 @@
       "src/ui/players/38_player_analysis.js",
       "src/ui/players/37_player_readout.js",
       "src/ui/players/35_full_player_profile.js",
-      "src/ui/players/35b_collectible_player.js",
       "src/ui/players/39_player_sheet.js",
       "src/ui/actions/40_actions.js",
       "src/ui/career/83_personal_life.js",
@@ -250,8 +248,7 @@
       "src/css/career/28_meeting_page.css",
       "src/css/shell/29_desktop_viewport.css",
       "src/css/foundation/30_design_system.css",
-      "src/css/shell/30_mobile_workspace.css",
-      "src/css/players/31_collectible_player.css"
+      "src/css/shell/30_mobile_workspace.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",

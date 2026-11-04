@@ -28,6 +28,7 @@ step "공통 글꼴·패널 정렬"; node tools/check-design-system.cjs || fail=
 step "표·목록 내부 스크롤"; node tools/check-workspace.cjs || fail=1
 step "전체 업무 화면·하위 모드·필터 공간"; node tools/check-workspace-space.cjs || fail=1
 step "PC 전체 화면 높이"; node tools/check-desktop-fit.cjs || fail=1
+step "화면 비율(휴대폰 세로·가로·태블릿·PC·대형 화면)"; node tools/check-viewport.cjs || fail=1
 step "능력치 반영"; node tools/check-sens.js || fail=1
 step "장기 시뮬"; export STRICT=1; SEED=7 node tools/check-sim.js $END || fail=1
 [ "${QUICK:-0}" = "1" ] || { SEED=21 TEAM=2 node tools/check-sim.js $END || fail=1; SEED=3 ACT=1 node tools/check-sim.js $END || fail=1; }
