@@ -70,3 +70,29 @@
 .match-dashboard[data-view="field"]:has(.has-3d)>.md-comment{display:none}
 @media(max-width:1000px){.detail-page-open .cast.match-dashboard[data-view="field"]:has(.has-3d){grid-template-rows:auto minmax(0,1fr) 63px 28px}}
 @media(min-width:1001px){.detail-page-open .cast.match-dashboard[data-view="field"]:has(.has-3d){grid-template-rows:44px minmax(0,1fr) 28px}}
+/* 휴대폰 3D 중계: 스크롤 없이 점수·3D·현재 타자/투수·이번 투구가 한 화면에 들어오게 접는다. PC는 그대로. */
+.md-more-btn{display:none}
+@media(max-width:600px){
+  .match-dashboard .md-more-btn{display:inline-flex}
+  .match-dashboard:not([data-more]) [data-a="castBox"],.match-dashboard:not([data-more]) .md-mobile-nav{display:none}
+  .match-dashboard .cs-top>.md-control,.match-dashboard .cs-mode button{padding:3px 6px}
+  :is(.detail-page-open,body) .cast.match-dashboard[data-view="field"]:has(.has-3d){grid-template-rows:auto minmax(0,1fr) 28px}
+  .match-dashboard[data-view="field"]:has(.has-3d) .md-dugout{display:none}
+  .match-dashboard .md-field-panel>header{display:none}
+  .match-dashboard .md-field-panel{grid-template-rows:minmax(0,1fr) auto}
+  .match-dashboard .md-play-grid{grid-template-rows:minmax(0,1fr) auto}
+  .match-dashboard .md-duel{padding:3px 4px}
+  .match-dashboard .md-duel-player .av,.match-dashboard .md-duel-player i{display:none}
+  .match-dashboard .md-duel-player>span{display:flex;align-items:baseline;gap:5px;white-space:nowrap;overflow:hidden}
+  .match-dashboard .md-duel-player b{font-size:13px}
+  .md-pitch-dock{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto;height:auto}
+  .md-pitch-dock>header,.md-zone-map,#cs-count-summary{display:none}
+  .match-dashboard .cs-pitch{grid-column:1;grid-row:1;margin:3px;padding:3px 6px;display:flex;align-items:baseline;gap:6px;white-space:nowrap;overflow:hidden}
+  .md-pitch-main{display:flex;align-items:baseline;gap:5px}.md-pitch-location{overflow:hidden;text-overflow:ellipsis}
+  .md-count-panel{grid-column:2;grid-row:1;margin:3px 3px 3px 0;padding:3px 6px;display:flex;align-items:center}
+  .match-dashboard .cs-stage.has-3d>.cs-cap{left:4px;right:4px;bottom:4px;padding:3px 7px;min-height:0}
+  .match-dashboard .cs-stage>.cs-cap{padding-block:3px}.cs-cap .cs-voice{grid-template-columns:auto minmax(0,1fr)}.cs-cap .cs-voice>b{font-size:11px}
+  .cs-landing-label{font-size:10px;padding:2px 6px;margin-top:-24px}
+  .cs-nameplate{padding:1px 3px;min-width:0}.cs-nameplate b{font-size:9px}.cs-nameplate span{font-size:7px}
+  .cs-stage[data-renderer="ready"]>.cs-board-view{top:5px;right:5px;padding:2px 6px;font-size:9px}
+}
