@@ -1,5 +1,5 @@
 /* ---------- 이적시장 현황: 항상 볼 수 있는 요약과 전체 기록 ---------- */
-const MV_TYPES=['FA','트레이드','외국인','방출','무적 영입','보상선수','해외 진출','해외 복귀'];
+const MV_TYPES=['FA','트레이드','외국인','방출','무적 영입','보상선수','웨이버 양수','해외 진출','해외 복귀'];
 function mvTeam(t){ return t==null?'-':`${badge(t,14)} ${esc(tshort(t))}`; }
 function mvLine(m,brief){ const me=m.to===G.user||m.from===G.user;
   const dir=m.t==='방출'||m.t==='해외 진출'?`${mvTeam(m.from)} →`:m.from!=null&&m.to!=null&&m.from!==m.to?`${mvTeam(m.from)} → ${mvTeam(m.to)}`:`→ ${mvTeam(m.to)}`;
@@ -29,3 +29,16 @@ function movesView(){ const W=mvWindow(); const st=mvStatus(); UI.mvf=UI.mvf||{}
     csec('전체 기록',`<div class="chips"><button data-a="mvF" data-v="t:" class="${!f.t?'on':''}">전체</button>${MV_TYPES.map(k=>`<button data-a="mvF" data-v="t:${k}" class="${f.t===k?'on':''}">${k}</button>`).join('')}</div>
       <div class="chips"><button data-a="mvF" data-v="tm:" class="${f.tm==null?'on':''}">모든 구단</button>${G.teams.map(t=>`<button data-a="mvF" data-v="tm:${t.id}" class="${f.tm===t.id?'on':''}">${esc(tshort(t.id))}</button>`).join('')}</div>
       ${all.length?AP.items.map(m=>mvLine(m)).join('')+AP.bar:'<p class="small muted">기록이 없습니다.</p>'}`)]; return it.bar+PARTS[{sum:0,team:1,all:2}[it.cur]]; }
+
+/* ---------- 웨이버 공시(KBO 선수 이동 제도): 영입·계약 → 웨이버 ---------- */
+function kboView(){ return wvBox(); }
+function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
+  const row=p=>{ const w=p.wv, on=w.cl.includes(G.user);
+    const btn=w.from===G.user?'<span class="pill">우리가 공시</span>':!w.ok?'<span class="pill">양수 신청 불가(기간 밖)</span>':G.unemp?'':`<button class="btn small ${on?'':'primary'}" data-a="wvClaim" data-v="${p.id}">${on?'신청 취소':'양수 신청'}</button>`;
+    return `<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(w.c.sal)}${w.c.yrs>1?` · ${w.c.yrs}년 남음`:''} · 전 ${esc(tshort(w.from))} · ${dsh(w.end)}까지</span></span>${btn}</div>`; };
+  const log=(G.wvLog||[]).slice(0,8).map(r=>`<p class="small">${dsh(r.d)} <button class="lnk" data-a="player" data-v="${r.pid}">${esc(r.n)}</button> ${esc(tshort(r.from))} → ${r.to!=null?esc(tshort(r.to))+' (계약 승계)':'자유계약'}</p>`).join('');
+  return csec('웨이버 공시',`<p class="small muted">KBO 규약: 시즌 중·겨울에 방출한 등록 선수는 ${WV_DAYS}일 동안 웨이버 공시됩니다. 양수를 신청한 구단 중 지금 성적이 낮은 구단이 남은 계약을 그대로 이어받고, 방출한 구단은 낸 정산금을 돌려받습니다. 아무도 신청하지 않으면 자유계약 선수가 됩니다. 7월 25일 이후 공시는 양수 신청을 받지 않고, 11월 보류선수 정리는 웨이버 없이 바로 자유계약입니다.</p>
+    ${L.length?L.map(row).join(''):'<p class="small muted">지금 공시 중인 선수가 없습니다.</p>'}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
+Object.assign(A,{
+  wvClaim(v){ toast(wvClaim(+v)); save(); render(); },
+});
