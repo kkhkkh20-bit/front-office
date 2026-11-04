@@ -230,7 +230,7 @@ function renderSheet0(){
   const pt=p.team!=null?team(p.team):null; const pst=pt?`--pt:${tpal(pt)[2]};--pt2:${tpal(pt)[3]}`:'';
   const ownP=p.team===G.user&&!(p.joinY>G.year); const st=careerStory(p);
   const hasM=ownP;
-  const tabs=[...(p.prospect||p.fdPool?[]:[['abil','능력']]),...(hasM?[['dev','육성']]:[]),['sum','요약'],['rec','기록'],...(!p.prospect&&!p.fdPool&&!isFM?[['analysis','분석']]:[]),...(st?[['story','이야기']]:[]),...(hasM?[['mgmt','관리']]:[])]; /* 능력(정보) 다음에 육성(보직·훈련·전환·연수) */
+  const tabs=[...(p.prospect||p.fdPool?[]:[['abil','능력']]),...(hasM?[['dev','육성']]:[]),['sum','요약'],['rec','기록'],...(!p.prospect&&!p.fdPool&&!isFM?[['analysis','분석']]:[]),...(st||!p.prospect&&!p.fdPool&&(p.hist||[]).length?[['story','경력·수상']]:[]),...(hasM?[['mgmt','관리']]:[])]; /* 능력(정보) 다음에 육성(보직·훈련·전환·연수) */
   let T=UI.ptab||'abil'; if(!tabs.some(t=>t[0]===T))T='sum';
   const fullProfile=!p.prospect&&!p.fdPool; /* 외국인 후보도 우리 선수와 같은 상황판(모르는 능력은 범위) */
   const tabBar=`<div class="seg ptabs">${tabs.map(([k,l])=>`<button data-a="ptab" data-v="${k}" class="${T===k?'on':''}">${l}</button>`).join('')}</div>`;
@@ -270,7 +270,7 @@ function renderSheet0(){
    ${p.injHist.length?`<p class="small"><b>부상 이력</b> ${p.injHist.map(i=>`${i.y}년 ${i.k?esc(injName(i.k))+' ':''}${i.days}일`).join(' · ')}</p>`:''}
    `:''}
    ${T==='story'?`
-   ${st}
+   ${p.prospect||p.fdPool?'':careerHub(p)}${st}
    `:''}
    ${T==='mgmt'?`
    <div id="s-bond"></div>${p.team===G.user&&!(p.joinY>G.year)?bondCard(p):''}${personalAdviceBox(p,'contract')}
