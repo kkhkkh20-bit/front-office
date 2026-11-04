@@ -148,3 +148,10 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-teampos{display:none!important}
   #sheet .pf-overview .pf-season-table{grid-area:4/2/7/3}
 }
+/* 수비 위치 야구장 그림 */
+.pf-posfield{display:flex!important;flex-direction:column;gap:4px}.pf-posfield h3{margin:0}
+.pf-field{flex:1;min-height:0;width:100%;max-height:100%}
+.pf-field .pfd-v{font:700 11px var(--f-num);fill:#071014}.pf-field .pfd-l{font:500 9px var(--f-ui);fill:#c7d1da}.pf-field .pfd.main .pfd-l{fill:#fff;font-weight:700}
+.pf-posfield>p{margin:0;font-size:11px}
+.pf-field .pfd-v{font-size:14px}.pf-field .pfd-l{font-size:11px}
+@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-posfield>p{display:none}#sheet .pf-overview .pf-posfield{overflow:hidden}.pf-field{height:100%}}

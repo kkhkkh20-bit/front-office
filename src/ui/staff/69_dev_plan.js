@@ -71,6 +71,14 @@ function roleCard(p){ if(!p.isP||p.team!==G.user||(p.joinY>G.year))return ''; co
   ${UI.roleMsg&&UI.roleMsg.id===p.id?`<div class="note">${esc(UI.roleMsg.t)}</div>`:''}</section>`; }
 Object.assign(A,{ proleSet(v){ const [id,k]=v.split(':'); const t=proleSet(+id,k); UI.roleMsg=t?{id:+id,t}:null; if(UI.mail!=null&&t)toast(t); save(); if(UI.sheet!=null)renderSheet(); render(); } });
 /* 수비 위치(선수 화면 능력 탭 정보, 육성 탭 전환 훈련): 자리별 숙련도와 수비 평가, 전환 훈련 */
+/* FM처럼 세로로 본 야구장 위에 수비 위치를 점으로: 주 포지션은 큰 점, 익힌 자리는 평가 색, 못 맡는 자리는 흐린 점 */
+const POS_XY={C:[120,236],'1B':[170,178],'2B':[148,140],SS:[92,140],'3B':[70,178],LF:[50,86],CF:[120,46],RF:[190,86]};
+function posFieldBox(p){ const hid=hideOvr(p), v=versOf(p);
+  const dots=POS_F.map(k=>{ const [x,y]=POS_XY[k], main=p.pos===k, e=posExp(p,k), ok=main||e>=50, val=ok&&!hid?clamp(r5(defAt(p,k)+hn('pf'+k,p.id)*2),20,80):null;
+    const fill=val!=null?rcol(val):e>0?'#4a5866':'#26313c', r=main?21:ok?17:11;
+    return `<g class="pfd${main?' main':''}"><title>${POSK[k]}${main?' (주 포지션)':''}${val!=null?' · 수비 '+dv(val):e>0?' · 익히는 중 '+Math.round(e):' · 경험 없음'}</title><circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${main?'stroke="#fff" stroke-width="2.5"':ok?'stroke="#0b1014" stroke-width="1.5"':'opacity=".7"'}/>${val!=null?`<text x="${x}" y="${y+4}" text-anchor="middle" class="pfd-v">${dv(val)}</text>`:''}<text x="${x}" y="${y+r+11}" text-anchor="middle" class="pfd-l">${POSS[k]}</text></g>`; }).join('');
+  const field=`<path d="M120 232 L20 132 A100.5 100.5 0 1 1 220 132 Z" fill="#183a26" stroke="#3b6b4a" stroke-width="1.5"/><path d="M120 232 L38 150 A116 116 0 0 1 202 150 Z" fill="#1d4530" opacity=".55"/><path d="M120 230 L162 188 L120 146 L78 188 Z" fill="#6b4d2e" opacity=".6"/><path d="M120 230 L162 188 L120 146 L78 188 Z" fill="none" stroke="#e6e1d0" stroke-width="1"/><circle cx="120" cy="190" r="6" fill="#8a6a44"/>`;
+  return `<section class="card pf-posfield"><div class="row between"><h3>수비 위치</h3><span class="small muted">다재다능 ${hid?'?':dvGrade(v)}</span></div><svg viewBox="10 22 220 248" class="pf-field" role="img" aria-label="수비 위치">${field}${dots}</svg><p class="small muted keep">${p.use&&p.use.y===G.year&&p.use.g?'1군 '+esc(useText(p))+' · ':''}큰 점 주 포지션 · 숫자는 그 자리 수비 평가</p></section>`; }
 function posCard(p,info){ const own=p.team===G.user&&!(p.joinY>G.year); const hid=hideOvr(p); const v=versOf(p); const C=p.pconv;
   const cells=POS_F.map(k=>{ const main=p.pos===k, e=posExp(p,k), ok=main||e>=50; const val=ok&&!hid?clamp(r5(defAt(p,k)+hn('pf'+k,p.id)*2),20,80):null;
     return `<div class="${main?'main':ok?'sub':''}${C&&C.pos===k?' conv':''}"><span>${POSS[k]}</span>${val!=null?rchip(val):`<b class="rc q">${ok?'○':e>0?Math.round(e):'-'}</b>`}<i>${main?'주':ok?`숙련 ${Math.round(e)}`:e>0?'익히는 중':''}</i></div>`; }).join('');
