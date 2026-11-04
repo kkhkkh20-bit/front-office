@@ -104,3 +104,47 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-report{justify-content:flex-start}
 }
 @media(min-width:1100px){.pf-st{display:grid;grid-template-columns:38px minmax(0,1fr);gap:6px;padding:4px 0;border-top:1px solid var(--line);font-size:12px;line-height:1.45}.pf-st:first-of-type{border-top:0}.pf-st span{color:var(--muted)}.pf-st p{margin:0}}
+/* FM식 분할 배치(PC, 높이 860 이상): 화면을 위·아래로 나누고, 각 줄을 다시 좌우·상하로 나눠 상자로 빈틈없이 채운다.
+   모든 상자는 자기 칸에 꽉 맞고(가로·세로 끝선 일치), 내용이 넘치면 상자 안에서 스크롤한다.
+     | 인물 카드 | 세부 능력          | 보고서 | 능력 균형  | 계약·신분 |
+     |           |                    |        | 지표/구속  |           |
+     | 현재 상태 | 시즌 통계(넓게)              | 장점·약점  | 팀 내 위치 |
+     | 최근 경기 |                              | 수비 위치  | 경력·이력  |  */
+@media(min-width:1100px) and (min-height:860px){
+  #sheet .pf-overview{display:grid;grid-template-columns:230px minmax(0,1.55fr) minmax(0,1fr) 270px 250px;grid-template-rows:minmax(0,1.6fr) minmax(0,1.6fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}
+  #sheet .pf-overview :is(.pf-sidebar,.pf-main,.pf-main-top,.pf-insights,.pf-extra){display:contents!important}
+  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{margin:0!important;min-height:0!important;min-width:0;overflow:auto;scrollbar-width:thin;box-sizing:border-box}
+  #sheet .pf-overview .pf-fmcard{grid-area:1/1/4/2}
+  #sheet .pf-overview .pf-state{grid-area:4/1/6/2}
+  #sheet .pf-overview .pf-recent{grid-area:6/1/7/2}
+  #sheet .pf-overview .pf-attributes{grid-area:1/2/4/3}
+  #sheet .pf-overview .pf-report{grid-area:1/3/4/4}
+  #sheet .pf-overview .pf-season-table{grid-area:4/2/7/4;display:flex!important;flex-direction:column}
+  #sheet .pf-overview .pf-radar{grid-area:1/4/3/5}
+  #sheet .pf-overview :is(.pf-track,.pf-pitch-head){grid-area:3/4/4/5}
+  #sheet .pf-overview .pf-procon{grid-area:4/4/5/5}
+  #sheet .pf-overview .pf-pos-mini{grid-area:5/4/7/5}
+  #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:1/5/4/6}
+  #sheet .pf-overview .pf-teampos{grid-area:4/5/5/6}
+  #sheet .pf-overview .pf-career{grid-area:5/5/7/6}
+  /* 빠진 상자가 있으면 이웃 상자가 그 칸까지 채운다 */
+  #sheet .pf-overview:not(:has(.pf-track,.pf-pitch-head)) .pf-radar{grid-area:1/4/4/5}
+  #sheet .pf-overview:not(:has(.pf-pos-mini)) .pf-procon{grid-area:4/4/7/5}
+  #sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:4/5/7/6}
+  #sheet .pf-overview :is(.pf-bio,.pf-role,.pf-mobile-only){display:none!important}
+  #sheet .pf-overview .pf-pos-mini>.card,#sheet .pf-overview .pf-track>.card{height:100%;margin:0;box-sizing:border-box}
+  #sheet .pf-overview .pf-pos-mini,#sheet .pf-overview .pf-track{overflow:hidden}
+  #sheet .pf-overview .pf-pos-mini>.card,#sheet .pf-overview .pf-track>.card{overflow:auto}
+  #sheet .pf-season-table .tw{flex:1;min-height:0;max-height:none}
+  #sheet .pf-season-table>.pf-more{margin-top:8px}
+}
+@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-radar .pf-core-compact{display:none}#sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;justify-content:center}}
+@media(min-width:1100px){.fm-ptabs .pf-screen .pf-topnav:not(:has(.pe-box)){display:none}}
+/* 1100~1599 폭: 다섯 열은 좁아지므로 네 열로 다시 나눈다(계약·신분과 경력은 시즌 통계 옆 칸으로, 팀 내 위치는 생략) */
+@media(min-width:1100px) and (max-width:1599px) and (min-height:860px){
+  #sheet .pf-overview{grid-template-columns:200px minmax(0,1.45fr) minmax(0,1fr) 240px}
+  #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:4/3/6/4}
+  #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:6/3/7/4}
+  #sheet .pf-overview .pf-teampos{display:none!important}
+  #sheet .pf-overview .pf-season-table{grid-area:4/2/7/3}
+}
