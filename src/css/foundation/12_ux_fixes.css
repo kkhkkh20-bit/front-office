@@ -582,3 +582,35 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .fdl-main .fdt-w{margin:0 -4px 4px}.fdl-main .fdt-w>.twpg{margin:0 6px 2px}.fdl-main .fdt-w>.twpg button{min-height:26px;padding:0 10px}
   .fdl-main>.card>.btn.block{min-height:32px;padding:4px}
 }
+/* 휴대폰 창단 드래프트 2차: 구단 줄·우리 팀 탭·카드 테두리·넘김 줄·더 보기 버튼을 없애고 조작을 세 줄로 */
+@media (max-width:700px){
+  .dtop:has(.tk.m) .dtbar{display:none}
+  .tk.m{padding:4px 0 3px;gap:2px}
+  .tk.m .tk1{flex-wrap:nowrap;align-items:center;min-height:34px}.tk.m .tk1>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .tk.m .tk1 .fd-go{flex:1;min-width:0}
+  .tk-logo{position:relative;flex:none;display:inline-flex;padding:0;border:0;background:none}.tk-logo>i{position:absolute;top:-4px;right:-6px;min-width:15px;height:15px;border-radius:8px;background:var(--bad,#e5534b);color:#fff;font:600 10px/15px sans-serif;font-style:normal;text-align:center;padding:0 3px}
+  .tk-team{flex:none;margin-left:auto;white-space:nowrap}.tk-team>i{font-style:normal;color:var(--warn,#e0a23a);margin-left:2px}
+  .tk-menu{display:flex;gap:6px}
+  .tk-mt{display:flex;align-items:center;gap:6px;cursor:pointer}.tk-mt>.fdm1{flex:1;min-width:0}.tk-mtg{color:var(--mut,#9aa7b4);font-size:12px;padding:0 4px}
+  .tk.m.min>:not(.tk1):not(.tk-mt):not(.tk-menu){display:none}
+  .tk-mt .fdm3{display:none}
+  .dcontent:has(.fdlay)>.fdseg-m{display:none}
+  .fdl-main>.card{padding:4px 0 0!important;border:0!important;background:none!important;box-shadow:none!important}
+  .fdl-main .fpcs-m .fpsep{flex:none;width:1px;align-self:stretch;margin:2px 2px;background:var(--line,#2a323c)}
+  .fdbar{display:flex;align-items:center;gap:5px;margin:0 0 4px;font-size:12px;white-space:nowrap}.fdbar>button:not(.hi-i){flex:none;min-height:28px;padding:2px 9px;font-size:12px;border:1px solid var(--line,#2a323c);border-radius:6px;background:none;color:inherit}.fdbar>button.on{border-color:var(--team-hi,#3b82f6)}
+  .fdbar>[data-a="fdFilt"]{margin-left:auto}
+  .fdfp{display:grid;gap:4px;margin:0 0 4px}.fdfp .fdq>[data-a="fdFilt"]{display:none}.fdfp .fdy3{margin:0}.fdfp .fdy3 button{min-height:28px;font-size:12px}
+  .fdl-main .fdt-w{margin:0;overflow:auto;max-height:none;flex:1 1 0;min-height:120px}
+  .dcontent:has(.fdlay.t-list)>.fdlay{flex:1;min-height:0}.fdlay.t-list>.fdl-main{display:flex;flex-direction:column;min-height:0}.fdl-main>.card{flex:1;min-height:0;display:flex;flex-direction:column}
+  .tk.m.min>.tk-mt{display:flex!important}.tk.m.min>.tk-menu{display:flex!important}
+  .fdl-main .fdt-w>table{width:auto;min-width:100%}
+  .fdl-main .fdt-w thead th{position:sticky;top:0;z-index:2;background:var(--bg,#0f1318)}
+  .fdl-main .fdt-w tbody th,.fdl-main .fdt-w thead th.c0{position:sticky;left:0;z-index:1;background:var(--bg,#0f1318)}.fdl-main .fdt-w thead th.c0{z-index:3}
+  .fdl-main>.card>.fdmore{display:none}
+}
+@media (max-width:700px){
+  .tk.m .tk1 .fd-go{display:flex;flex-direction:row;align-items:center;gap:6px;padding:0;border:0;background:none;margin:0} .tk.m .tk1 .fd-gob{width:auto}
+  .tk.m .fd-got{flex:1;min-width:0;display:block}.tk.m .fd-got>b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tk.m .fd-got>span:not(.fd-left){display:none}.tk.m .fd-got>.fd-left{font-size:11px}
+  .tk.m .fd-gob{flex:none;min-height:34px;padding:4px 10px;font-size:13px;white-space:nowrap}
+}
+@media (max-width:700px){ .tk.m .fd-got:not(:has(.fd-left)){display:none} }
