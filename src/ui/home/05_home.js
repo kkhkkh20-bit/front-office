@@ -69,11 +69,11 @@ const TODO={
   'staff:coach':['코치 자리가 비어 있습니다','스태프·육성 → 코치진에서 채우세요'],
   'staff:med':['부상 관리 체계를 정하지 않았습니다','부상 방지 투자와 지정 병원'],
   'staff:mil':['상무 지원 기간입니다','입대 대상 선수를 확인하세요'],
-  'trade:block':['트레이드 제안이 와 있습니다','받은 제안에 답하세요'],'club:spon':['스폰서 자리가 비어 있습니다','기업 제안을 기다리거나 마케팅팀에 영업을 지시하세요(영업비 3천만 원, 1~2주 뒤 결과, 같은 자리는 30일에 한 번)'],'staff:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요'],'train:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요']};
+  'trade:block':['트레이드 제안이 와 있습니다','받은 제안에 답하세요'],'club:spon':['스폰서 자리가 비어 있습니다','마케팅팀에 영업을 지시하세요','기업 제안을 기다리거나 마케팅팀에 영업을 지시하세요. 영업비 3천만 원, 1~2주 뒤 결과, 같은 자리는 30일에 한 번.'],'staff:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요'],'train:dev':['캠프 훈련 방향을 정하지 않았습니다','캠프 방향을 고르세요']};
 function scoutTaskText(){const S=scoutWorkStatus();return S.shortage?[`스카우트 ${S.shortage}명이 더 필요합니다`,'팀장은 배치를 맡습니다. 채용은 스태프 시장에서 단장이 결정하세요.']:[`아마추어 담당 지역 ${S.missing.length}곳이 비어 있습니다`,`${S.missing.join('·')} 담당을 배치하거나 팀장에게 맡기세요.`];}
 /* 주황 점이 뜬 하위 탭 안에서 그 이유를 맨 위에 보여 준다 */
 function alertWhy(tab,k){ if(!subAlert(tab,k))return ''; let t=TODO[tab+':'+k]; if(!t)return ''; if(tab+':'+k==='staff:scouts'){ t=scoutTaskText(); }
-  return `<div class="note warn alert-why"><b>${esc(t[0])}</b> · ${esc(t[1])}</div>`; }
+  return `<div class="note warn alert-why"><b>${esc(t[0])}</b> · ${esc(t[1])}${t[2]?` <button type="button" class="hi-i" data-tip="${esc(t[2])}">i</button>`:''}</div>`; }
 /* ---------- 전력 요약: 전력 한눈에 + 추천 트레이드 ---------- */
 const SLOTS_S={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜'};
 const rkCls=r=>r<=3?'hi':r<=7?'md':'lo';

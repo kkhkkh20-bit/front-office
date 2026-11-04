@@ -13,7 +13,7 @@ function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=nu
 /* 구단 명성 카드(구단·재정 → 구단주 탭 맨 위) */
 function prestigeCard(){ const v=clubPrestige(G.user); const L=G.teams.map(t=>({t:t.id,v:clubPrestige(t.id)})).sort((a,b)=>b.v-a.v); const i=L.findIndex(x=>x.t===G.user); const P=clubPrestigeParts(G.user).filter(x=>x[0]!=='기본'&&Math.abs(x[1])>=.5);
   return `<section class="card"><div class="row between"><h2 class="sec">구단 명성</h2><span class="stars-t big">${starTxt(prestigeStars(v))}</span></div>
-    <p class="small">${v}점 · 리그 ${i+1}위 (1위 ${esc(tshort(L[0].t))} ${L[0].v}점). 명성이 높을수록 FA·외국인 선수·스카우트와 분석원이 우리 구단을 더 원하고, 스폰서 가치도 오릅니다.</p>
+    <p class="small">${v}점 · 리그 ${i+1}위 (1위 ${esc(tshort(L[0].t))} ${L[0].v}점) ${hiI('명성이 높을수록 FA·외국인 선수·스카우트와 분석원이 우리 구단을 더 원하고, 스폰서 가치도 오릅니다.')}</p>
     <div class="pres-parts">${P.map(([l,x])=>`<span class="pill ${x>0?'good':'bad'}">${esc(l)} ${x>0?'+':''}${Math.round(x)}</span>`).join('')}</div>
     <p class="small muted">우승은 2년 동안 크게, 그 뒤 10년 동안 조금씩 명성에 남고, 그보다 오래된 우승도 '명문 구단'으로 조금 남습니다. 성적이 나쁘면 해마다 깎입니다.</p></section>`; }
 /* 테스트 도구 카드(구단·재정 → 설정) */

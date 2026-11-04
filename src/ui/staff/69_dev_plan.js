@@ -104,9 +104,8 @@ function fut2Card(p){ if(p.prospect||p.team==null)return ''; const y=period()===
   return `<section class="card"><div class="row between"><span class="eyebrow">${y} 2군 성적</span>${ft||sp2?`<span class="small muted">${esc(ft||'2군 선발 수업 중')}</span>`:''}</div><div class="tiles">${T.map(t=>`<div class="tile"><b>${t[1]}</b><span>${t[0]}</span></div>`).join('')}</div></section>`; }
 /* 감독 영입 면담: 받을 약속 고르기 */
 function mplPickCard(){ const sel=UI.mplSel||[];
-  return `<section class="card"><span class="eyebrow">영입 면담: 받아 둘 약속</span><p class="small">단장은 감독에게 건의만 할 수 있고 기용 권한은 없습니다. 영입할 때 약속을 받아 두면 계약 기간 동안 지킵니다. 후보마다 그대로 수용하거나, 연봉 10%를 더 요구하거나, 거절합니다.</p>
-  <div class="chips">${Object.entries(MPL).map(([k,v])=>`<button data-a="mplSel" data-v="${k}" class="${sel.includes(k)?'on':''}">${v.l}</button>`).join('')}</div>
-  <p class="small muted">${Object.values(MPL).map(v=>`${v.l}: ${v.d}`).join(' ')}</p>${UI.mgrMsg?`<div class="note bad">${esc(UI.mgrMsg)}</div>`:''}</section>`; }
+  return `<section class="card"><span class="eyebrow">영입 면담: 받아 둘 약속 ${hiI('단장은 감독에게 건의만 할 수 있고 기용 권한은 없습니다. 영입할 때 약속을 받아 두면 계약 기간 동안 지킵니다. 후보마다 그대로 수용하거나, 연봉 10%를 더 요구하거나, 거절합니다.\n\n'+Object.values(MPL).map(v=>`${v.l}: ${v.d}`).join('\n'))}</span>
+  <div class="chips">${Object.entries(MPL).map(([k,v])=>`<button data-a="mplSel" data-v="${k}" class="${sel.includes(k)?'on':''}">${v.l}</button>`).join('')}</div>${UI.mgrMsg?`<div class="note bad">${esc(UI.mgrMsg)}</div>`:''}</section>`; }
 function mplStanceBox(x){ const sel=UI.mplSel||[]; if(!sel.length)return ''; const st=sel.map(k=>[k,mplStance(x,k)]); const pay=st.filter(s=>s[1]==='pay').length;
   return `<div class="mpl">${st.map(([k,s])=>`<div class="small"><span class="pill ${s==='ok'?'good':s==='pay'?'warn':'bad'}">${MPL_ST[s]}</span> ${MPL[k].l}</div>`).join('')}${st.some(s=>s[1]==='no')?'<div class="small muted">거절한 약속을 빼야 계약할 수 있습니다.</div>':pay?`<div class="small muted">연봉 ${money(round5(x.sal*(1+.1*pay)))}로 계약됩니다.</div>`:''}</div>`; }
 Object.assign(A,{ mplSel(v){ const s=new Set(UI.mplSel||[]); s.has(v)?s.delete(v):s.add(v); UI.mplSel=[...s]; UI.mgrMsg=''; render(); } });
