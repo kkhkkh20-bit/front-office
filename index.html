@@ -533,6 +533,8 @@ table.lst td.t-hi{color:var(--good)}table.lst td.t-lo{color:var(--bad)}
 
 /* A·B·C */
 .goset .continue .cl{display:grid;line-height:1.1;text-align:left}.goset .continue .cl b{font-size:16px}.goset .continue .cl i{font-style:normal;font-size:11px;font-weight:500;opacity:.85;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+/* PC: 자리가 넉넉한데 '최대 7일 · 중요한 소…'로 잘리던 보조 문구 */
+@media(min-width:1100px){.goset .continue .cl i{max-width:190px}}
 .sbwrap{background:#0a0f13;border-bottom:1px solid var(--line)}
 .sbar{display:flex;gap:6px;overflow-x:auto;padding:6px 0;scrollbar-width:none}.sbar::-webkit-scrollbar{display:none}
 .sb-i{all:unset;box-sizing:border-box;flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--dim);border-radius:3px;padding:4px 8px;font-size:12px;color:var(--muted);white-space:nowrap}
@@ -993,8 +995,8 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 /* 단장 데스크 */
 .desk{display:grid;gap:9px}
 .mr.tro{grid-template-columns:56px minmax(0,1fr) auto 56px;gap:6px}.mr-t{width:56px;padding-left:0!important;padding-right:0!important;text-align:center;justify-self:end}
-.trws{display:grid}.trw-h{display:grid;grid-template-columns:minmax(0,1fr) 76px 58px;gap:6px;font-size:11px;color:var(--muted);padding:2px 0 4px;border-bottom:1px solid var(--line)}
-.trw{display:grid;grid-template-columns:minmax(0,1fr) 76px 58px;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}.trw.on{background:rgba(79,210,124,.07)}
+.trws{display:grid}.trw-h{display:grid;grid-template-columns:minmax(0,1fr) 112px 58px;gap:6px;font-size:11px;color:var(--muted);padding:2px 0 4px;border-bottom:1px solid var(--line)}
+.trw{display:grid;grid-template-columns:minmax(0,1fr) 112px 58px;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}.trw.on{background:rgba(79,210,124,.07)}
 .trw .mr-p small{font-size:11px;color:var(--muted);font-weight:400}.trw .mr-p em{font-style:normal;font-size:11px}.trw .mr-p em.good{color:var(--good)}.trw .mr-p em.warn{color:var(--warn)}
 .trw-r{display:flex;gap:4px;align-items:center}.trw-b{width:58px;padding-left:0!important;padding-right:0!important;text-align:center}.trw-b.on{border-color:var(--bad);color:#ff9a92}
 .mchat .chips{flex-wrap:wrap;overflow:visible}
@@ -1448,7 +1450,7 @@ button.lnk{min-height:30px}
 .dtbar{display:flex;align-items:center;gap:10px;padding:8px 0}.dti{display:grid;flex:1;min-width:0}.dti b{font-size:16px}.dti span{font-size:12px;color:var(--muted)}
 .dcontent{padding-top:12px;padding-bottom:40px}.dshell .fdl-side{top:62px}
 .tk{display:grid;gap:4px;padding:0 0 8px}.tk1{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px}.tk1 .btn.small{min-height:30px;padding:3px 10px}
-.tk-sp{display:flex;gap:4px;margin-left:auto}.tk-sp button{background:none;border:1px solid var(--line2);color:var(--muted);border-radius:6px;font-size:12px;padding:3px 7px;cursor:pointer}.tk-sp button.on{color:var(--ink);border-color:var(--acc,#5aa8ff)}
+.tk-sp{display:flex;gap:4px;margin-left:auto}.tk-sp button{background:none;border:1px solid var(--line2);color:var(--muted);border-radius:6px;font-size:12px;padding:3px 7px;cursor:pointer;white-space:nowrap;flex:none}.tk-sp button.on{color:var(--ink);border-color:var(--acc,#5aa8ff)}
 .tk2{display:flex;align-items:center;gap:7px;font-size:13px;padding:5px 8px;border-radius:7px;background:rgba(127,140,155,.12);min-height:34px}.tk2 i{font-style:normal;font-size:11px;color:var(--muted)}.tk2 .lnk{font-weight:700}.tk2 .rc{margin-left:auto}.tk2 em{margin-left:auto;font-style:normal;font-size:12px}
 .tk-l{margin-left:8px;font-size:11px;color:#e0716b}.tk2.steal{background:rgba(224,86,79,.16);border:1px solid rgba(224,86,79,.5)}.tk2.steal b{color:#e0564f;white-space:nowrap}
 .lnkp{cursor:pointer;border:1px dashed var(--acc,#5aa8ff);background:rgba(90,168,255,.08);color:var(--ink);font:inherit;font-size:12px;margin:1px 2px}
@@ -2025,6 +2027,8 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 
 .fdt td.fdsc,.fdt td.fddt,.fdt th.fdsc-h,.fdt th.fddt-h{text-align:left}
 .kbar.fdk .kb b{font-size:15px;line-height:1.35;white-space:normal;word-break:keep-all}
+/* 휴대폰: 세 칸이 100px씩이면 데이터팀 문장이 한 줄 몇 글자로 길게 늘어진다. 데이터팀 칸을 아래 한 줄 전체로 */
+@media (max-width:600px){.kbar.fdk{grid-template-columns:1fr 1fr}.kbar.fdk .kb:nth-child(2){grid-column:1/-1;order:3}.kbar.fdk .kb:nth-child(2) b{font-size:13.5px}}
 @media (max-width:600px){.fdt td.fdsc,.fdt td.fddt{white-space:normal;min-width:150px;max-width:190px;line-height:1.5}}
 .fdpb-i .r0{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fdpb-i .r0 .emp{color:var(--warn);font-weight:600}
 .fdpb-i.all{border-style:dashed;align-content:center}.fdgk{margin:8px 0 4px;font-size:14px}
@@ -2475,6 +2479,8 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .tk.m{padding:4px 0 3px;gap:2px}
   .tk.m .tk1{flex-wrap:nowrap;align-items:center;min-height:34px}.tk.m .tk1>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .tk.m .tk1 .fd-go{flex:1;min-width:0}
+  /* 맡기기를 펼치면 다음 줄로 내린다(한 줄에 끼워 넣으면 '맡/기/기'가 세로로 접히고 구단명이 잘림) */
+  .tk.m .tk1:has(.tk-del.open){flex-wrap:wrap}.tk1 .tk-del.open{order:9}.tk-delb{white-space:nowrap;flex:none}
   .tk-logo{position:relative;flex:none;display:inline-flex;padding:0;border:0;background:none}.tk-logo>i{position:absolute;top:-4px;right:-6px;min-width:15px;height:15px;border-radius:8px;background:var(--bad,#e5534b);color:#fff;font:600 10px/15px sans-serif;font-style:normal;text-align:center;padding:0 3px}
   .tk-team{flex:none;margin-left:auto;white-space:nowrap}.tk-team>i{font-style:normal;color:var(--warn,#e0a23a);margin-left:2px}
   .tk-menu{display:flex;gap:6px}
@@ -4701,7 +4707,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  .staff-market-modes{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.staff-market-modes button{min-width:0;padding-inline:4px!important;font-size:12px!important}
 }
 
-.trade-pool-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.trade-pool-options label{display:grid;gap:4px;font-size:12px;color:var(--muted)}.trade-pool-options select{min-width:0;width:100%}
+.trade-pool-options{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;margin:10px 0}.trade-pool-options .seg{margin:0}.trade-pool-options .seg button{white-space:nowrap}
 /* 2026-11-04 리뷰: 휴대폰 중계 보기 전환·팀 전환 버튼이 18~23px로 작아 터치가 어려웠다. 하단 탭 이름은 한 줄로 */
 @media (max-width:700px){
   #app [data-a="castView"],#app [data-a="castTeam"]{min-height:32px;min-width:44px}
@@ -13934,7 +13940,8 @@ function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[];
 let _intC={};
 function aiInterest(tid){ if(tid===G.user||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=Object.values(G.players).filter(p=>p.team===G.user).length; const k=wk+':'+n+':'+(G.trades||[]).length;
   if(_intC[tid]&&_intC[tid].k===k)return _intC[tid].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
-  const v=domestic(G.user).filter(p=>!p.ys&&!(p.joinY>G.year)&&healthy(p)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
+  const back=new Set((G.trades||[]).filter(r=>r.with===tid&&r.y===G.year).flatMap(r=>r.gi||[])); /* 올해 이 구단에서 받아 온 선수는 되찾으려 하지 않는다 */
+  const v=domestic(G.user).filter(p=>!p.ys&&!(p.joinY>G.year)&&healthy(p)&&!back.has(p.id)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
   _intC[tid]={k,v}; return v; }
 function interestKnown(tid){ return team(tid).rel>=35; }
 
@@ -15142,7 +15149,7 @@ function sponPitchDaily(){ const S=G.spon; if(!S||!S.pitch)return; for(const x o
   S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); }
 /* ===== 이적 기록: 리그 모든 선수 이동을 구조화해 남긴다(이적시장 요약·주간 정리·구단별 영입/이탈) ===== */
 function mvLog(type,p,from,to,note,amt){ if(!p)return;
-  { const C=G.contract; if(to!==from&&C&&!C.done&&from!=null&&from===(C.tid??G.user)&&(C.ended||[]).includes(p.id)){ const n=C.neg&&C.neg[p.id]; const v=n?(n.st==='ok'?p.newSal:(n.cur??n.off)):p.newSal; if(v!=null){ p.sal=Math.max(MIN_SAL,v); } delete p.newSal; if(C.neg)delete C.neg[p.id]; C.ended=C.ended.filter(x=>x!==p.id); } } /* 연봉 협상 중 떠나는 선수: 그때까지의 구단 제시액(합의했으면 합의액)으로 새 연봉을 확정 */ if(to!==from){ if(p.e1){ p.e1=false; p.downDay=G.day; } /* 1군 등록은 새 구단이 다시 정한다(엔트리 한도 초과 방지) */
+  { const C=G.contract; if(to!==from&&C&&!C.done&&from!=null&&from===(C.tid??G.user)&&(C.ended||[]).includes(p.id)){ const n=C.neg&&C.neg[p.id]; const v=n?(n.st==='ok'?p.newSal:(n.cur??n.off)):p.newSal; if(v!=null){ p.sal=Math.max(MIN_SAL,v); } delete p.newSal; if(C.neg)delete C.neg[p.id]; C.ended=C.ended.filter(x=>x!==p.id); } } /* 연봉 협상 중 떠나는 선수: 그때까지의 구단 제시액(합의했으면 합의액)으로 새 연봉을 확정 */ if(to!==from){ p.e1=false; delete p.downDay; /* 1군 등록은 새 구단이 다시 정한다(엔트리 한도 초과 방지). 말소 10일 규정은 같은 구단 재등록이라 새 구단은 바로 올릴 수 있다 */
     delete p.listed; delete p.lw; delete p.urgent; delete p.promise; delete p.pconv; delete p.treq; delete p.aiListed; /* 옛 구단·단장이 건 표시는 끝난다 */
     if(p.extNext&&p.extNext.terms)p.extNext.terms=null; /* 미리 맺은 다년계약의 구단 한정 조건(거부권·옵션·약속)은 옮기면 끝난다 */
     if(from===G.user&&(G.ovs||[]).some(x=>x.pid===p.id&&!x.go))try{ setOvs(p.id,null); }catch(e){} } try{ if(to!=null&&to!==from&&ACQ_K[type])acqStamp(p,type,to,{from:from??null}); }catch(e){} const L=G.moves=G.moves||[]; L.unshift({y:G.year,d:G.day,t:type,pid:p.id,n:p.name,pos:posLabel(p),age:p.age,o:Math.round(ovr(p)),from:from??null,to:to??null,note:note||'',amt:amt||0}); if(L.length>600)L.length=600; }
@@ -21691,7 +21698,7 @@ function cTrail(from,to,arc,ms,cls){ const sv=document.getElementById('cs-trail'
   p.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:ms/cSpd(),fill:'forwards'}); setTimeout(()=>{ p.style.transition='opacity .6s'; p.style.opacity=0; setTimeout(()=>p.remove(),700); },(ms+700)/cSpd()); }
 function cTrailClear(){ const sv=document.getElementById('cs-trail'); if(sv)sv.innerHTML=''; }
 async function cBanner(g,half){ const el=document.getElementById('cs-bn'); if(!el)return; const at=half%2?g.home:g.away;
-  el.innerHTML=`<div>${badge(at,40)}<b>${cHalfTxt(half)}</b><span>${esc(tname(at))} 공격</span></div>`; el.className='cs-bn on'; sfx('bong',.55); await cSleep(850); el.className='cs-bn'; await cSleep(150); }
+  el.innerHTML=`<div>${badge(at,40)}<b>${cHalfTxt(half)}</b><span>${esc(tname(at))} 공격</span></div>`; el.className='cs-bn on'; sfx('bong',.55); try{ await cSleep(850); }finally{ el.className='cs-bn'; } /* 멈춤·넘기기로 대기가 끊겨도 이닝 배너가 화면에 남지 않게 */ await cSleep(150); }
 /* 볼 수 있는 장면 고르기 */
 function cKeep(g,k,mode){ if((g.incidents||[]).some(e=>e.k===k))return true;if(mode==='all'||pcRecords(g,k).length)return true; const L=g.pbp; const x=L[k]; if(typeof x[1]!=='number')return false; const b=cBefore(g,k); const risp=!!(b.bases[1]||b.bases[2]);
   if(mode==='risp')return risp; return x[6]>0||['HR','3B','2B','DP','HBP'].includes(x[3])||(x[3]==='K'&&risp)||k===L.length-1||(x[4]>=3&&b.half>=16&&Math.abs(x[7]-x[8])<=1); }
@@ -23774,7 +23781,7 @@ function tradeView(){
   const sel=tr[side]; const PGt=pager('tpool'+side+seg+sort+tr.tid,pool,innerWidth<700?tradeListSize():wide()?16:8);
   const poolCard=`<section class="card">
     <div class="seg" id="tpick"><button data-a="tside" data-v="get" class="${side==='get'?'on':''}">상대 선수 (${esc(t.city+' '+t.nick)})</button><button data-a="tside" data-v="give" class="${side==='give'?'on':''}">우리 선수</button></div>
-    <div class="trade-pool-options"><label>구분<select data-a="tseg" aria-label="협상 선수 구분">${[['bat','야수'],['pit','투수']].map(([v,l])=>`<option value="${v}" ${seg===v?'selected':''}>${l}</option>`).join('')}</select></label><label>정렬<select data-a="tsort" aria-label="협상 선수 정렬">${[['cur','현재 능력순'],['fut','잠재력순'],['sal','연봉순'],['age','나이순']].map(([v,l])=>`<option value="${v}" ${sort===v?'selected':''}>${l}</option>`).join('')}</select></label></div>
+    <div class="trade-pool-options"><div class="seg" role="group" aria-label="협상 선수 구분">${[['bat','야수'],['pit','투수']].map(([v,l])=>`<button data-a="tseg" data-v="${v}" class="${seg===v?'on':''}">${l}</button>`).join('')}</div><div class="seg" role="group" aria-label="협상 선수 정렬">${[['cur','능력순'],['fut','잠재력순'],['sal','연봉순'],['age','나이순']].map(([v,l])=>`<button data-a="tsort" data-v="${v}" class="${sort===v?'on':''}">${l}</button>`).join('')}</div></div>
     <p class="small muted">"${side==='get'?'받기':'보내기'}"를 누르면 위 협상안에 올라갑니다. 이름을 누르면 선수 정보가 열립니다. 현재 능력은 정확한 값이고, 잠재력은 우리 선수와 프로 담당 스카우트가 있는 지역 구단만 보입니다. 외국인 선수와 올해 입단 신인은 제외됩니다.</p>
     <div class="trws" data-pg="tpool${side}${seg}${sort}${tr.tid}"><div class="trw-h"><span>선수</span><span>현재 · 잠재력</span><span></span></div>${PGt.items.map(({p})=>trow(p,side,sel.includes(p.id),INT.includes(p.id)?interestWhy(tr.tid,p):'')).join('')||'<p class="small muted">대상 선수가 없습니다.</p>'}</div>${PGt.bar}
   </section>`;
@@ -25086,7 +25093,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castSpd(){ const c=UI.cast; if(!c)return; c.spd=c.spd===1?2:c.spd===2?4:1; UI.castSpd=c.spd; const b=document.getElementById('cs-spd'); if(b)b.textContent=c.spd+'배속'; if(c.play)castRestart(); },
   castMode(v){ const c=UI.cast; if(!c)return; c.mode=v; UI.castMode=v; document.querySelectorAll('.cs-mode button').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); if(c.play)castRestart(); },
   castEnd(){ const c=UI.cast; if(c)castJump(G.games[c.g].pbp.length,false); },
-  castBox(){ const gi=UI.cast?UI.cast.g:null; A.castClose(true); if(gi!=null)A.openGame(gi); },
+  castBox(){ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.pbp&&c.k<g.pbp.length){ A.castView('data'); return; } /* 중계 도중에는 지금까지 기록만(전체 박스스코어는 최종 결과를 미리 보여 줌) */ const gi=c?c.g:null; A.castClose(true); if(gi!=null)A.openGame(gi); },
   castPlayer(v){ const c=UI.cast; if(!c)return; c.play=false; CT.tok++; CT.run=false; UI.castRet=c; UI.cast=null; A.player(v); },
   watch(v){ UI.sheet=null; UI.posSheet=null; UI.game=+v; UI.gtab='pbp'; UI.pbp={g:+v,k:0}; renderSheet(); },
   slotCopy(){ if(!G)return; saveNow(); const m=meta(); const to=SLOT_IDS.find(n=>!m.slots[n]); if(!to){ UI.slotMsg=`빈 슬롯이 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.`; render(); return; } try{ localStorage.setItem(slotKey(to),localStorage.getItem(slotKey(m.active))); m.slots[to]=Object.assign({},m.slots[m.active],{at:Date.now()}); setMeta(m); UI.slotMsg=`슬롯 ${to}에 지금 상황(${dstr(G.day)})을 따로 저장했습니다. 계속 진행하는 곳은 슬롯 ${m.active}입니다.`; }catch(e){ UI.slotMsg='저장 공간이 부족해 따로 저장하지 못했습니다.'; } render(); },
@@ -25989,7 +25996,7 @@ function workspaceFit(host){
     if(rows.length){const nav=document.createElement('nav');nav.className='ws-navigation';nav.setAttribute('aria-label','업무 화면 선택');rows[0].before(nav);rows.forEach(row=>nav.append(row));}
     root.querySelector(':scope > .roster-navigation')?.classList.add('ws-navigation');
   }
-  const fixed='.fahero,.seg,.subtabs,.ws-tab-select,.ws-navigation,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr,.trade-modes,.trade-back,.trade-partner,.trade-steps,.trade-basket,.trade-extra,button[data-a=tradePick]';
+  const fixed='.fahero,.dlb,.vsb,.seg,.subtabs,.ws-tab-select,.ws-navigation,.roster-heading,.roster-navigation,.note,.hi-i,.fabtn,.pgr,.trade-modes,.trade-back,.trade-partner,.trade-steps,.trade-basket,.trade-extra,button[data-a=tradePick]';
   const panels=[];
   for(const node of [...root.children]){
     if(node.matches(fixed)||node.matches('p')||getComputedStyle(node).position==='fixed')continue;
