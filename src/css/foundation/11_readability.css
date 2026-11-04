@@ -99,7 +99,7 @@ button.lnk{min-height:30px}
 .dtbar{display:flex;align-items:center;gap:10px;padding:8px 0}.dti{display:grid;flex:1;min-width:0}.dti b{font-size:16px}.dti span{font-size:12px;color:var(--muted)}
 .dcontent{padding-top:12px;padding-bottom:40px}.dshell .fdl-side{top:62px}
 .tk{display:grid;gap:4px;padding:0 0 8px}.tk1{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px}.tk1 .btn.small{min-height:30px;padding:3px 10px}
-.tk-sp{display:flex;gap:4px;margin-left:auto}.tk-sp button{background:none;border:1px solid var(--line2);color:var(--muted);border-radius:6px;font-size:12px;padding:3px 7px;cursor:pointer}.tk-sp button.on{color:var(--ink);border-color:var(--acc,#5aa8ff)}
+.tk-sp{display:flex;gap:4px;margin-left:auto}.tk-sp button{background:none;border:1px solid var(--line2);color:var(--muted);border-radius:6px;font-size:12px;padding:3px 7px;cursor:pointer;white-space:nowrap;flex:none}.tk-sp button.on{color:var(--ink);border-color:var(--acc,#5aa8ff)}
 .tk2{display:flex;align-items:center;gap:7px;font-size:13px;padding:5px 8px;border-radius:7px;background:rgba(127,140,155,.12);min-height:34px}.tk2 i{font-style:normal;font-size:11px;color:var(--muted)}.tk2 .lnk{font-weight:700}.tk2 .rc{margin-left:auto}.tk2 em{margin-left:auto;font-style:normal;font-size:12px}
 .tk-l{margin-left:8px;font-size:11px;color:#e0716b}.tk2.steal{background:rgba(224,86,79,.16);border:1px solid rgba(224,86,79,.5)}.tk2.steal b{color:#e0564f;white-space:nowrap}
 .lnkp{cursor:pointer;border:1px dashed var(--acc,#5aa8ff);background:rgba(90,168,255,.08);color:var(--ink);font:inherit;font-size:12px;margin:1px 2px}
