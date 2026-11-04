@@ -21,4 +21,11 @@ export function catcherThrow(source,crouch){
  });
  return new AnimationClip('catcher_throw',CATCHER_PREP+source.duration,tracks);
 }
-export function athleticClips(clips){const swing=clips.find(c=>c.name==='swing'),throwing=clips.find(c=>c.name==='throw'),crouch=clips.find(c=>c.name==='catcher_crouch');if(!swing||!throwing||!crouch)return clips;return [...clips.map(c=>c===swing?powerSwing(c):c),catcherThrow(throwing,crouch)];}
+// 투구 팔로스루: 릴리스 뒤 상체를 홈 쪽으로 깊게 숙인다(척추 세 마디에 나눠 로컬 축으로 더함). 릴리스 순간 자세는 그대로.
+export const FOLLOW_FLEX=.8;
+export function pitchFollowThrough(source,release){const axis=new Vector3(1,0,0),q=new Quaternion(),turn=new Quaternion(),weights={Spine:.3,Spine1:.35,Spine2:.35},ramp=.22;
+ const tracks=source.tracks.map(track=>{const joint=track.name.match(/(Spine[12]?)\.quaternion$/)?.[1];if(!joint)return track;const grid=[];for(let t=release;t<source.duration;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t));
+  for(let i=0;i<times.length;i++){const k=smooth((times[i]-release)/ramp);if(!k)continue;q.fromArray(values,i*4);q.multiply(turn.setFromAxisAngle(axis,FOLLOW_FLEX*weights[joint]*k)).normalize().toArray(values,i*4);}
+  const copy=track.clone();copy.times=new Float32Array(times);copy.values=new Float32Array(values);return copy;});
+ return new AnimationClip(source.name,source.duration,tracks);}
+export function athleticClips(clips,events={}){const swing=clips.find(c=>c.name==='swing'),throwing=clips.find(c=>c.name==='throw'),crouch=clips.find(c=>c.name==='catcher_crouch');if(!swing||!throwing||!crouch)return clips;return [...clips.map(c=>c===swing?powerSwing(c):/^pitch_.*_(windup|stretch)$/.test(c.name)&&events[c.name]?pitchFollowThrough(c,events[c.name].release):c),catcherThrow(throwing,crouch)];}
