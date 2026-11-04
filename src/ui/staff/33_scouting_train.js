@@ -61,7 +61,7 @@ function campClick(e){ const svg=e.target.closest('svg.campus'); if(!svg)return 
   const k=g.dataset.k; if(!UI.cz){ UI.cpSel={t:'f',k}; UI.facMsg=null; const [a,b,w,h]=g.dataset.b.split(',').map(Number); campZoomTo([a-8,b-8,w+16,h+16]); return true; }
   cpPick({t:'f',k}); return true; }
 document.addEventListener('click',e=>{ if((UI.tab==='train'||UI.tab==='staff')&&e.target.closest&&e.target.closest('#campst')){ if(campClick(e)){ e.preventDefault(); e.stopPropagation(); } } },true);
-function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarket(); const stars=k=>'★'.repeat(k)+'<i class="off">'+'★'.repeat(5-k)+'</i>';
+function dataPage(){ if(fmOn()&&!UI._smk)return dataFM(); /* PC: FM식 데이터 허브(34b_staff_fm.js) */ const L=anaList(); const E=anaEff(G.user); const M=anaMarket(); const stars=k=>'★'.repeat(k)+'<i class="off">'+'★'.repeat(5-k)+'</i>';
   const pw=r=>anaPow(r)*anaRoleQuality(G.user,r); const last=(G.mail||[]).find(m=>m.from==='전력분석팀');
   const card=(a,mine)=>`<div class="tcard anc" style="cursor:default"><div class="row between" style="flex-wrap:nowrap"><div style="min-width:0">${avImg({persona:'staff',pid:a.id,name:a.name,age:a.age})}<b> ${esc(a.name)}</b> <span class="small muted">${a.age}세 · 연 ${money(a.sal)}</span></div><span class="anstar">${stars(a.skill)}</span></div>
     ${staffBioBox(a,'analyst',mine?G.user:null)}${mine?`<div class="row" style="gap:6px;margin-top:6px"><select data-a="anaRole" data-v="${a.id}" aria-label="역할">${Object.entries(AROLE).map(([k,r])=>`<option value="${k}" ${a.role===k?'selected':''}>${r.l}</option>`).join('')}</select>${G.day-(a.since??-999)<30?`<span class="pill warn">적응 중 · 지금 효과 ${anaNow(a)} / 적응 뒤 ${a.skill} · ${dmd(a.since+30)}까지</span>`:''}<span class="small muted">충성도 ${Math.round(stAttr(a).loy)}</span><button class="btn small" data-a="person" data-v="an:${a.id}">카드</button><button class="btn small" data-a="anaFire" data-v="${a.id}" style="margin-left:auto">계약 해지</button></div>`
@@ -75,6 +75,6 @@ function dataPage(){ const L=anaList(); const E=anaEff(G.user); const M=anaMarke
       <div class="eyebrow" style="margin-top:8px">역할</div><div class="list">${Object.entries(AROLE).map(([k,r])=>`<div class="item" style="cursor:default"><span class="nm"><b>${r.l}</b></span><span class="sub">${esc(r.d)}</span></div>`).join('')}</div>`;
   if(UI._smk)return body; const rep=last?`<div class="eyebrow">${dsh(last.day)} 보고</div><p class="small" style="white-space:pre-line">${esc(last.body)}</p>`:'<p class="small muted">시즌 중 매달 말 보고가 옵니다.</p>';
   return csec('전력분석·데이터팀',body+smkLink('an','분석원 채용'),`<span class="small muted">연 ${money(anaSal())}</span>`)+csec('분석 보고',rep); }
-function scoutTeamPage(){ return csec('스카우트 팀',scoutBody(),`<span class="small muted">${G.scouts.length}/${SCOUT_MAX}</span>`); }
+function scoutTeamPage(){ if(fmOn())return scoutFM(); /* PC: FM식 스카우팅 센터(34b_staff_fm.js) */ return csec('스카우트 팀',scoutBody(),`<span class="small muted">${G.scouts.length}/${SCOUT_MAX}</span>`); }
 /* 예전 '스카우팅' 탭: 드래프트는 영입·계약, 스카우트 팀은 스태프, 해외 스카우트망은 외국인 화면으로 옮겼다 */
 function scoutView(){ return transferView(); }
