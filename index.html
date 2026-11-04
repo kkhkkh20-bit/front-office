@@ -2202,30 +2202,46 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibr.cur{background:#ffffff10;border-left:3px solid #9aa6b2;box-shadow:inset 0 0 0 1px #ffffff1c}.ibr.cur .ibr-s,.ibr.cur .ibr-from{color:var(--ink)}
 .ibr.fin .ibr-s{color:var(--muted)}
 
-/* FM식 소식함(PC): 목록 칸 위 보낸 사람 얼굴 | 소식 본문 + 아래 첨부 자료 상자들(남은 높이를 빈틈없이 채움). 고르기 전에는 요약 상자 2×2 */
-.ibx-fm,.ibx-dash,.ibx-att{display:none}.ibx-lw>.ibs-from{display:none}
+/* FM식 소식함(PC): 오른쪽은 소식 하나가 한 장의 문서. 머리(분류·시각 | 큰 제목) → 본문 → 같은 문서 안에 내용별 자료 칸 → 행동 버튼은 아래 오른쪽.
+   왼쪽 목록 칸 위에는 보낸 사람 얼굴(상자 없이). 고르기 전에는 요약 상자 2×2 */
+.ibx-fm,.ibx-dash,.ibd-att{display:none}.ibx-lw>.ibs-from{display:none}
 @media(min-width:1100px){
   .ibx-read:has(.ibx-fm,.ibx-dash){overflow:hidden!important}
-  .ibx-lw:has(>.ibs-from){display:flex;flex-direction:column;gap:10px;min-height:0}.ibx-lw:has(>.ibs-from)>.ibx-list{flex:1;min-height:0;max-height:none}
-  .ibx-lw>.ibs-from{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px 8px;text-align:center;background:linear-gradient(180deg,color-mix(in srgb,var(--team-hi,#4fa3ff) 16%,var(--panel)),var(--panel));border:1px solid var(--line);border-radius:4px;flex:none}
-  .ibs-face .av{width:110px;height:110px;font-size:32px;border:0;background:none}.ibs-from b{font-size:16px}.ibs-from span{font-size:12px;color:var(--muted)}
-  .ibx-fm{display:flex;flex-direction:column;gap:10px;height:100%;min-height:0}
-  .ibx-fm>.ibm{margin:0;flex:none;max-height:58%;overflow:auto;scrollbar-width:thin}
-  .ibx-fm>.ibm>.ibm-acts{justify-content:flex-end}
-  .ibx-fm .ibm-s{font-size:22px;line-height:1.35}
-  .ibx-att{display:grid;flex:1;min-height:150px;gap:10px;grid-template-columns:repeat(var(--n,2),minmax(0,1fr))}
-  .ibx-att[data-n="1"]{--n:1}.ibx-att[data-n="2"]{--n:2}.ibx-att[data-n="4"]{--n:4}
+  .ibx-lw:has(>.ibs-from){display:flex;flex-direction:column;gap:8px;min-height:0}.ibx-lw:has(>.ibs-from)>.ibx-list{flex:1;min-height:0;max-height:none}
+  .ibx-lw>.ibs-from{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px 4px;text-align:center;flex:none}
+  .ibs-face .av{width:120px;height:120px;font-size:34px;border:0;background:none}.ibs-from b{font-size:16px}.ibs-from span{font-size:12px;color:var(--muted)}
+  .ibx-fm{display:block;height:100%;min-height:0}
+  .ibx-fm>.ibm{height:100%;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:12px;overflow:auto;scrollbar-width:thin;padding:18px 24px 14px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+  .ibx-fm .ibm-h{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:start;padding:0 0 10px;border-bottom:1px solid var(--line)}
+  .ibx-fm .ibm-h>.av,.ibx-fm .ibm-h>.ob-av{display:none}
+  .ibx-fm .ibm-from{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--team-hi,#4fa3ff)}.ibx-fm .ibm-from b{font-weight:600}
+  .ibx-fm .ibm-s{font-size:26px;line-height:1.3;margin:2px 0 0}
+  .ibx-fm .ibm-d{font-size:12px;color:var(--muted)}
+  .ibx-fm .mailbody{font-size:15px;line-height:1.75;max-width:none}
+  .ibx-fm .ibm-acts{margin-top:auto;padding-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+  .ibx-fm .ibm-acts .btn{border-radius:16px;padding-inline:16px}
+  /* 문서 안 자료 칸: 상자 대신 얇은 구분선과 제목, 남는 폭을 칸으로 나눠 채운다 */
+  .ibd-att{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .ibd-sec{padding:12px 14px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:6px;min-width:0}.ibd-sec:first-child{border-left:0;padding-left:0}
+  .ibd-sec.ibd-wide{grid-column:span 2}
+  .ibd-sec h3{margin:0 0 4px;font-size:13px;color:var(--team-hi,#4fa3ff)}
+  .ibd-pl{display:flex;gap:12px;align-items:center}.ibd-pl .av{width:72px;height:72px}.ibd-pl b{display:block;font-size:17px}.ibd-pl span{font-size:12px;color:var(--muted)}
+  .ibd-key{display:flex;gap:14px;margin-top:6px}.ibd-key span{font-size:12px;color:var(--muted)}.ibd-key b{display:inline;font:700 20px var(--f-num);color:var(--ink);margin-left:4px}
+  .ibd-core{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:6px}.ibd-core>div{display:grid;justify-items:center;padding:4px 0;border-top:2px solid var(--line)}.ibd-core span{font-size:11px;color:var(--muted)}.ibd-core b{font:700 20px var(--f-num)}
+  .ibd-bars>div{display:grid;grid-template-columns:44px minmax(0,1fr) 40px;gap:6px;align-items:center;font-size:12px;padding:2px 0}.ibd-bars span{color:var(--muted)}.ibd-bars i{display:block;height:8px;border-radius:2px;background:var(--team-hi,#4fa3ff)}.ibd-bars b{text-align:right;font-family:var(--f-num)}
+  .ibd-sec .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line)}.ibd-sec .pf-fact span{color:var(--muted);flex:none}.ibd-sec .pf-fact b{text-align:right;font-weight:600}
+  .ibd-sec>.btn{align-self:flex-start;margin-top:4px}
+  .ibs-li{all:unset;cursor:pointer;display:grid;gap:1px;padding:5px 0;border-top:1px solid var(--line);font-size:12px}.ibs-li:first-of-type{border-top:0}.ibs-li span{color:var(--muted);font-size:11px}.ibs-li b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ibs-li:hover b{color:var(--team-hi,#4fa3ff)}
   .ibs-box{margin:0!important;display:flex!important;flex-direction:column;gap:6px;min-height:0;overflow:auto;scrollbar-width:thin}
   .ibs-box h3{margin:0 0 2px;font-size:13px;display:flex;justify-content:space-between;gap:6px}.ibs-box h3 em{font-style:normal;color:var(--warn)}
-  .ibs-plh{display:flex;gap:10px;align-items:center}.ibs-plh .av{width:56px;height:56px}.ibs-plh b{display:block;font-size:15px}.ibs-plh span{font-size:12px;color:var(--muted)}
-  .ibs-key{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ibs-key>div{display:grid;justify-items:center;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:6px}.ibs-key span{font-size:11px;color:var(--muted)}.ibs-key b{font:700 24px/1.1 var(--f-num)}.ibs-key b.t{font:700 14px/1.7 var(--f-ui)}
-  .ibs-pl .btn{margin-top:auto}
-  .ibs-core{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.ibs-core>div{display:grid;justify-items:center;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:6px 2px}.ibs-core span{font-size:11px;color:var(--muted)}.ibs-core b{font:700 22px var(--f-num)}
-  .ibs-form{margin:auto 0 0;font-size:12px;padding:6px 8px;background:#0b1014;border:1px solid var(--line);border-radius:3px}
-  .ibs-box .pf-fact{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--line)}.ibs-box .pf-fact span{color:var(--muted);flex:none}.ibs-box .pf-fact b{text-align:right;font-weight:600}
-  .ibs-li{all:unset;cursor:pointer;display:grid;gap:1px;padding:6px 4px;border-top:1px solid var(--line);font-size:12px}.ibs-li:first-of-type{border-top:0}.ibs-li span{color:var(--muted);font-size:11px}.ibs-li b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ibs-li:hover b{color:var(--team-hi,#4fa3ff)}
   .ibx-dash{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:10px;height:100%;min-height:0}
   .ibs-cats{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ibs-cats button{all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#0b1014;border:1px solid var(--line);border-radius:3px;font-size:13px}.ibs-cats b{font:700 20px var(--f-num)}.ibs-cats button:hover{border-color:var(--team-hi,#4fa3ff)}
+}
+@media(min-width:1100px){
+  /* 자료 칸은 본문 바로 아래에서 남은 높이를 채우고, 행동 버튼은 문서 맨 아래 오른쪽 */
+  .ibx-fm>.ibm>.ibd-att{order:5;flex:1 0 auto;align-content:stretch}
+  .ibx-fm>.ibm>.ibm-acts{order:9;margin-top:0}
+  .ibx-fm>.ibm>.ibm-res{order:8}
 }
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%)}
@@ -19761,23 +19777,28 @@ function inboxView(){
   if(!W){ if(UI.ibOpen&&ids.includes(UI.ibOpen)){ const m=order[ids.indexOf(UI.ibOpen)];
       return `<div class="ibx-mback"><button class="btn small" data-a="ibBack">◀ 목록</button><span class="small muted">${IB_CAT.find(c=>c[0]===f)[1]}</span></div>${mailCard(m,nav)}`; }
     UI.ibOpen=null; return bar+`<nav class="ibx-list m" aria-label="소식 목록">${rows}</nav>`; }
-  const pane=si>=0?(fmOn()?`<div class="ibx-fm">${mailCard(order[si],nav)}${ibAtt(order[si])}</div>`:mailCard(order[si],nav)):fmOn()?ibDash(need):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
+  const pane=si>=0?(fmOn()?`<div class="ibx-fm">${mailCard(order[si],nav).replace(/<\/article>\s*$/,ibAtt(order[si])+'</article>')}</div>`:mailCard(order[si],nav)):fmOn()?ibDash(need):`<section class="card ibx-guide"><p>${need?`확인할 소식이 <b>${need}건</b> 있습니다.`:'새로 확인할 소식이 없습니다.'}</p><p class="small muted">왼쪽 목록에서 소식을 고르세요. 스페이스바를 누르면 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행합니다.</p>${need?'<button class="btn primary" data-a="ibNeedGo">확인할 소식 열기</button>':''}</section>`;
   return bar+`<div class="ibx"><div class="ibx-lw">${fmOn()&&si>=0?ibFrom(order[si]):''}<nav class="ibx-list" aria-label="소식 목록">${rows}</nav><button class="ibx-up" data-a="ibTop" hidden>맨 위로 ↑</button></div><div class="ibx-read">${pane}</div></div>`;
 }
 /* PC(FM식): 목록 칸 위에 보낸 사람 큰 얼굴, 소식 본문 아래에 첨부 자료 상자들(관련 선수·능력·기록·같은 사람의 소식) */
 function ibPid(m){ return typeof m.face==='number'&&G.players[m.face]?m.face:m.ref!=null&&G.players[m.ref]?m.ref:null; }
 function ibFrom(m){ return `<div class="ibs-from"><div class="ibs-face">${senderAv(m)}</div><b>${esc(m.from)}</b><span>${IB_CATN[ibCat(m)]||'소식'} · ${dmd(m.day)} ${WD[dobj(m.day).w]}요일</span></div>`; }
-function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`, T=[];
+/* 소식 안에 들어가는 자료(FM처럼 본문 아래 같은 문서 안에): 내용 종류에 따라 다른 구성 */
+function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`, S=[];
+  const sec=(t,body,cls='')=>`<section class="ibd-sec ${cls}"><h3>${t}</h3>${body}</section>`;
   if(p){ const rp=scoutReport(p), h=seasonTotal(p,G.year,'1군'), cur=rp.cur==null?'?':dv(rp.cur), pot=rp.ofp==null?'미확인':potTierP(rp,p).s;
-    T.push(`<section class="card ibs-box ibs-pl"><h3>관련 선수</h3><div class="ibs-plh">${avImg(p,true)}<div><b>${esc(p.name)}</b><span>${esc(posLabel(p))} · ${p.age}세${p.team!=null?' · '+esc(tshort(p.team)):''}</span></div></div><div class="ibs-key"><div><span>현재 종합</span><b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b></div><div><span>잠재력</span><b class="t">${esc(pot)}</b></div></div><button class="btn small block" data-a="player" data-v="${p.id}">선수 정보 보기</button></section>`);
     const keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit'], tl=keys.map(k=>{ const t=(rp.tools||[]).find(t=>t.k===k); return t?{k,v:rp.exact?p.r[k]:t.cur}:null; }).filter(Boolean);
-    if(tl.length)T.push(`<section class="card ibs-box"><h3>핵심 능력</h3><div class="ibs-core">${tl.map(t=>`<div><span>${TOOLK[t.k]}</span><b style="color:${rcol(t.v)}">${dv(t.v)}</b></div>`).join('')}</div>${l10Text(p)?`<p class="ibs-form">${l10Text(p)}</p>`:''}</section>`);
-    T.push(`<section class="card ibs-box"><h3>기록·계약</h3>${row('올해 1군',esc(statLine(h,p)))}${row('연봉',money(p.sal||0))}${row('계약',esc(ctText(p)))}${row('병역',esc(milText(p)))}${p.injOut>0?row('부상','약 '+p.injOut+'일 이탈'):row('컨디션','피로 '+Math.round(p.fat||0))}</section>`); }
-  const same=G.mail.filter(x=>x.from===m.from&&x.id!==m.id).slice(0,6), cat=G.mail.filter(x=>x.id!==m.id&&x.from!==m.from&&ibCat(x)===ibCat(m)).slice(0,6);
+    S.push(sec('선수',`<div class="ibd-pl">${avImg(p,true)}<div><b>${esc(p.name)}</b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}${p.team!=null?' · '+esc(tshort(p.team)):''}</span><div class="ibd-key"><span>현재 종합 <b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b></span><span>잠재력 <b>${esc(pot)}</b></span></div></div></div>${tl.length?`<div class="ibd-core">${tl.map(t=>`<div><span>${TOOLK[t.k]}</span><b style="color:${rcol(t.v)}">${dv(t.v)}</b></div>`).join('')}</div>`:''}`,'ibd-wide'));
+    if(m.kind==='부상'||p.injOut>0||(p.injHist||[]).length){ const H=(p.injHist||[]).slice(-4).reverse();
+      S.push(sec('의무팀 기록',`${p.injOut>0?row('현재',esc(injNow(p))+' · 약 '+p.injOut+'일')+row('복귀 예정',esc(injRetTxt(p))||'-'):row('현재','출전 가능')}${H.length?H.map(x=>row(x.y+'년',(x.k?esc(injName(x.k))+' · ':'')+x.days+'일')).join(''):row('이력','없음')}`)); }
+    if(p.isP&&(p.ld||[]).length){ const L=(p.ld||[]).slice(-7).reverse(); const mx=Math.max(...L.map(x=>x[1]),1);
+      S.push(sec('최근 등판',`<div class="ibd-bars">${L.map(x=>`<div><span>${dmd(x[0])}</span><i style="width:${Math.round(x[1]/mx*100)}%"></i><b>${x[1]}구</b></div>`).join('')}</div>${row('연속 등판',consecDays(p,G.day)+'일')}`)); }
+    S.push(sec('기록·계약',`${row('올해 1군',esc(statLine(h,p)))}${l10Text(p)?row('최근 폼',l10Text(p)):''}${row('연봉',money(p.sal||0))}${row('계약',esc(ctText(p)))}${row('병역',esc(milText(p)))}<button class="btn small" data-a="player" data-v="${p.id}">선수 정보 보기 ›</button>`)); }
+  const same=G.mail.filter(x=>x.from===m.from&&x.id!==m.id).slice(0,5), cat=G.mail.filter(x=>x.id!==m.id&&x.from!==m.from&&ibCat(x)===ibCat(m)).slice(0,5);
   const li=x=>`<button class="ibs-li" data-a="mailJump" data-v="${x.id}"><span>${dmd(x.day)}${x.from!==m.from?' · '+esc(x.from):''}</span><b>${esc(x.subj)}</b></button>`;
-  T.push(`<section class="card ibs-box"><h3>${esc(m.from)}의 다른 소식</h3>${same.length?same.map(li).join(''):'<p class="small muted">다른 소식이 없습니다.</p>'}</section>`);
-  if(!p)T.push(`<section class="card ibs-box"><h3>같은 분류 최근 소식 · ${IB_CATN[ibCat(m)]||''}</h3>${cat.length?cat.map(li).join(''):'<p class="small muted">다른 소식이 없습니다.</p>'}</section>`);
-  return `<div class="ibx-att" data-n="${T.length}">${T.join('')}</div>`; }
+  if(same.length)S.push(sec(`${esc(m.from)}의 다른 소식`,same.map(li).join('')));
+  if(!p&&cat.length)S.push(sec(`같은 분류 최근 소식`,cat.map(li).join('')));
+  return S.length?`<div class="ibd-att" data-n="${S.length}">${S.join('')}</div>`:''; }
 /* PC(FM식): 소식을 고르기 전 오른쪽은 빈 안내 대신 요약 상자들 */
 function ibDash(need){ const N=ibNeedList().slice(0,6), D=ibDecideList().slice(0,6), cats=IB_CAT.filter(c=>!['all','task'].includes(c[0]));
   const li=x=>`<button class="ibs-li" data-a="mailJump" data-v="${x.id}"><span>${dmd(x.day)} · ${esc(x.from)}</span><b>${esc(x.subj)}</b></button>`;
@@ -24859,7 +24880,7 @@ Object.assign(A,{
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
   {id:'2026-11-04g',d:'11월 4일',t:'PC 소식함을 FM처럼',items:[
-    'PC 소식함에서 소식을 고르면 목록 위에 보낸 사람 얼굴이 크게 보이고, 본문 아래에 첨부 자료 상자(관련 선수·핵심 능력·기록과 계약·같은 사람의 다른 소식)가 남은 칸을 채웁니다.',
+    'PC 소식함의 소식을 FM처럼 한 장의 문서로 바꿨습니다. 머리(보낸 곳·분류·큰 제목), 본문, 내용에 맞춘 자료 칸(부상 소식은 의무팀 기록, 투수 소식은 최근 등판 투구 수, 선수 소식은 선수·핵심 능력·기록과 계약), 행동 버튼(아래 오른쪽) 순서입니다. 목록 칸 위에는 보낸 사람 얼굴이 크게 보입니다.',
     '소식을 고르기 전에는 빈 안내 대신 확인할 소식·결정할 일·분류별 안 읽음·최근 소식 상자 네 칸을 보여 줍니다.']},
   {id:'2026-11-04f',d:'11월 4일',t:'PC 화면을 FM처럼: 왼쪽 메뉴 16개·선수 상황판',items:[
     'PC 왼쪽 메뉴를 FM처럼 16개로 펼쳤습니다. 스카우트·스태프·훈련·의료·데이터 분석·일정·구단주·재정·구단 정보·시설로 바로 갑니다.',
