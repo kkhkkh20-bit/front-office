@@ -66,9 +66,10 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
     await page.keyboard.press('Escape');
     r=await page.evaluate(()=>({app:getComputedStyle(document.querySelector('#app')).display,tab:UI.tab,sub:curSub('transfer')}));
     check(r.app!=='none'&&r.tab==='transfer'&&r.sub==='foreign','외국인 후보에서 Escape로 시장 복귀 실패');
-    check(await page.locator('.foreign-candidates .tgrid .pc').count()>0&&await page.locator('.foreign-candidates .candidate-table').count()===0,'외국인 시장이 선수 카드로 표시되지 않음');
+    /* PC(1100px 이상)는 FM식 후보 표(32_transfer.js foreignFM), 휴대폰은 선수 카드 */
+    check(await page.evaluate(()=>innerWidth>=1100)?await page.locator('.tf .foreign-candidates tbody tr [data-a="negOpen"]').count()>0:await page.locator('.foreign-candidates .tgrid .pc').count()>0&&await page.locator('.foreign-candidates .candidate-table').count()===0,'외국인 시장이 후보 표(PC)·선수 카드(휴대폰)로 표시되지 않음');
     await page.evaluate(()=>A.go('transfer:draft'));
-    const dr=await page.evaluate(()=>({frame:!!document.querySelector('.draft-page'),top:document.querySelector('.draft-candidates tbody tr')?.getBoundingClientRect().top,width:document.querySelector('.draft-candidate-body')?.getBoundingClientRect().width}));
+    const dr=await page.evaluate(()=>({frame:!!document.querySelector('.draft-page,.drf'),top:document.querySelector('.draft-candidates tbody tr')?.getBoundingClientRect().top,width:document.querySelector('.draft-candidate-body')?.getBoundingClientRect().width}));
     check(dr.frame&&dr.top<440&&dr.width>800,'신인 드래프트 후보 표 비율·첫 화면 배치 실패 '+JSON.stringify(dr));
     if(process.env.CAPTURE)await page.screenshot({path:'/workspace/front-office-amateur-draft-final.png'});
     await page.evaluate(()=>{for(const p of Object.values(G.players)){if(p.team!=null)Object.assign(lineFor(p,G.year,p.team,'1군'),p.isP?{g:20,gs:8,outs:180,er:20,so:60,w:6}:{g:60,pa:240,ab:200,h:65,hr:10});}G.day=G.cal.asg-14;allStarDaily();A.leagueEvents();});
