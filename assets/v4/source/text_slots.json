@@ -1,0 +1,1363 @@
+{
+  "championship_trophy": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "runner_up_trophy": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "regular_season_pennant": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "mvp_trophy": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "rookie_trophy": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "golden_glove": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "batting_title": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    },
+    "department": {
+      "rect": [
+        173.845,
+        328.088,
+        134.442,
+        30.186
+      ],
+      "align": "center",
+      "baseline": 350.283,
+      "max_font_size": 17.3,
+      "fill": "#49351d",
+      "source_v3_rect": [
+        179,
+        332,
+        154,
+        24
+      ],
+      "quad": [
+        [
+          173.845,
+          328.088
+        ],
+        [
+          308.287,
+          336.97
+        ],
+        [
+          308.287,
+          358.274
+        ],
+        [
+          173.845,
+          349.393
+        ]
+      ],
+      "anchor": [
+        241.066,
+        350.283
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          179,
+          332,
+          154,
+          24
+        ],
+        "align": "center",
+        "baseline": 352,
+        "max_font_size": 19,
+        "fill": "#49351d",
+        "hide_svg_layer": "batting_title__department_text"
+      },
+      "baseline_segment": [
+        [
+          173.845,
+          345.842
+        ],
+        [
+          308.287,
+          354.723
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "batting_title_blank": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    },
+    "department": {
+      "rect": [
+        175.147,
+        327.11,
+        134.442,
+        30.186
+      ],
+      "align": "center",
+      "baseline": 349.304,
+      "max_font_size": 17.3,
+      "fill": "#49351d",
+      "source_v3_rect": [
+        179,
+        332,
+        154,
+        24
+      ],
+      "quad": [
+        [
+          175.147,
+          327.11
+        ],
+        [
+          309.589,
+          335.992
+        ],
+        [
+          309.589,
+          357.296
+        ],
+        [
+          175.147,
+          348.415
+        ]
+      ],
+      "anchor": [
+        242.368,
+        349.304
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          179,
+          332,
+          154,
+          24
+        ],
+        "align": "center",
+        "baseline": 352,
+        "max_font_size": 19,
+        "fill": "#49351d",
+        "hide_svg_layer": null
+      },
+      "baseline_segment": [
+        [
+          175.147,
+          344.864
+        ],
+        [
+          309.589,
+          353.745
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "pitching_title": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    },
+    "department": {
+      "rect": [
+        173.277,
+        328.515,
+        134.442,
+        30.186
+      ],
+      "align": "center",
+      "baseline": 350.709,
+      "max_font_size": 17.3,
+      "fill": "#49351d",
+      "source_v3_rect": [
+        179,
+        332,
+        154,
+        24
+      ],
+      "quad": [
+        [
+          173.277,
+          328.515
+        ],
+        [
+          307.719,
+          337.396
+        ],
+        [
+          307.719,
+          358.701
+        ],
+        [
+          173.277,
+          349.819
+        ]
+      ],
+      "anchor": [
+        240.498,
+        350.709
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          179,
+          332,
+          154,
+          24
+        ],
+        "align": "center",
+        "baseline": 352,
+        "max_font_size": 19,
+        "fill": "#49351d",
+        "hide_svg_layer": "pitching_title__department_text"
+      },
+      "baseline_segment": [
+        [
+          173.277,
+          346.268
+        ],
+        [
+          307.719,
+          355.15
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "pitching_title_blank": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    },
+    "department": {
+      "rect": [
+        174.863,
+        327.324,
+        134.442,
+        30.185
+      ],
+      "align": "center",
+      "baseline": 349.518,
+      "max_font_size": 17.3,
+      "fill": "#49351d",
+      "source_v3_rect": [
+        179,
+        332,
+        154,
+        24
+      ],
+      "quad": [
+        [
+          174.863,
+          327.324
+        ],
+        [
+          309.305,
+          336.205
+        ],
+        [
+          309.305,
+          357.509
+        ],
+        [
+          174.863,
+          348.628
+        ]
+      ],
+      "anchor": [
+        242.084,
+        349.518
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          179,
+          332,
+          154,
+          24
+        ],
+        "align": "center",
+        "baseline": 352,
+        "max_font_size": 19,
+        "fill": "#49351d",
+        "hide_svg_layer": null
+      },
+      "baseline_segment": [
+        [
+          174.863,
+          345.077
+        ],
+        [
+          309.305,
+          353.958
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "all_star_mvp": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "all_star_dream_badge": {},
+  "all_star_nanum_badge": {},
+  "national_gold_medal": {},
+  "national_silver_medal": {},
+  "national_bronze_medal": {},
+  "championship_ring": {},
+  "hall_of_fame_plaque": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    },
+    "honoree_name": {
+      "rect": [
+        179.007,
+        317.491,
+        120.474,
+        27.488
+      ],
+      "align": "center",
+      "baseline": 337.448,
+      "max_font_size": 16.39,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        187,
+        318,
+        138,
+        22
+      ],
+      "quad": [
+        [
+          179.007,
+          317.491
+        ],
+        [
+          299.481,
+          325.45
+        ],
+        [
+          299.481,
+          344.979
+        ],
+        [
+          179.007,
+          337.02
+        ]
+      ],
+      "anchor": [
+        239.244,
+        337.448
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          187,
+          318,
+          138,
+          22
+        ],
+        "align": "center",
+        "baseline": 336,
+        "max_font_size": 18,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          179.007,
+          333.469
+        ],
+        [
+          299.481,
+          341.428
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "manager_trophy": {
+    "base_nameplate": {
+      "rect": [
+        170.227,
+        424.188,
+        136.188,
+        23.199
+      ],
+      "align": "center",
+      "baseline": 440.226,
+      "max_font_size": 12.75,
+      "fill": "#f7e9bb",
+      "source_v3_rect": [
+        178,
+        438,
+        156,
+        16
+      ],
+      "quad": [
+        [
+          170.227,
+          424.188
+        ],
+        [
+          306.415,
+          433.184
+        ],
+        [
+          306.415,
+          447.387
+        ],
+        [
+          170.227,
+          438.391
+        ]
+      ],
+      "anchor": [
+        238.321,
+        440.226
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          178,
+          438,
+          156,
+          16
+        ],
+        "align": "center",
+        "baseline": 451,
+        "max_font_size": 14,
+        "fill": "#f7e9bb"
+      },
+      "baseline_segment": [
+        [
+          170.227,
+          435.728
+        ],
+        [
+          306.415,
+          444.724
+        ]
+      ],
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "cycling_hit": {},
+  "no_hitter": {},
+  "perfect_game": {},
+  "four_home_runs": {},
+  "consecutive_home_runs": {},
+  "walk_off_home_run": {},
+  "grand_slam": {},
+  "fifteen_strikeouts": {},
+  "hitting_streak": {},
+  "career_milestone_frame": {
+    "record_value": {
+      "rect": [
+        139.796,
+        207.396,
+        216.504,
+        108.397
+      ],
+      "anchor": [
+        248.048,
+        296.214
+      ],
+      "align": "center",
+      "max_font_size": 87.41,
+      "fill": "#f5e4bd",
+      "examples": [
+        "100",
+        "200",
+        "300",
+        "400",
+        "500"
+      ],
+      "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in.",
+      "source_v3_rect": [
+        66,
+        105,
+        124,
+        53
+      ],
+      "quad": [
+        [
+          139.796,
+          207.396
+        ],
+        [
+          356.3,
+          221.699
+        ],
+        [
+          356.3,
+          315.793
+        ],
+        [
+          139.796,
+          301.491
+        ]
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          66,
+          105,
+          124,
+          53
+        ],
+        "anchor": [
+          128,
+          151
+        ],
+        "align": "center",
+        "max_font_size": 48,
+        "fill": "#f5e4bd",
+        "examples": [
+          "100",
+          "200",
+          "300",
+          "400",
+          "500"
+        ],
+        "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in."
+      },
+      "baseline_segment": [
+        [
+          139.796,
+          289.063
+        ],
+        [
+          356.3,
+          303.365
+        ]
+      ],
+      "baseline": 296.214,
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  },
+  "season_record_frame": {
+    "record_value": {
+      "rect": [
+        110.114,
+        208.986,
+        275.868,
+        108.768
+      ],
+      "anchor": [
+        248.048,
+        296.214
+      ],
+      "align": "center",
+      "max_font_size": 69.2,
+      "fill": "#f5e4bd",
+      "examples": [
+        "30-30",
+        "40HR"
+      ],
+      "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in.",
+      "source_v3_rect": [
+        49,
+        107,
+        158,
+        51
+      ],
+      "quad": [
+        [
+          110.114,
+          208.986
+        ],
+        [
+          385.982,
+          227.21
+        ],
+        [
+          385.982,
+          317.754
+        ],
+        [
+          110.114,
+          299.53
+        ]
+      ],
+      "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+      "source_v3": {
+        "rect": [
+          49,
+          107,
+          158,
+          51
+        ],
+        "anchor": [
+          128,
+          151
+        ],
+        "align": "center",
+        "max_font_size": 38,
+        "fill": "#f5e4bd",
+        "examples": [
+          "30-30",
+          "40HR"
+        ],
+        "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in."
+      },
+      "baseline_segment": [
+        [
+          110.114,
+          287.102
+        ],
+        [
+          385.982,
+          305.326
+        ]
+      ],
+      "baseline": 296.214,
+      "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+    }
+  }
+}

@@ -1,0 +1,3329 @@
+{
+  "schema_version": "4.0",
+  "version": "v4",
+  "package": "Front Office — PBR collectibles and fictional portrait trial",
+  "created": "2026-11-04",
+  "request": "docs/asset-requests/2026-11-05-codex-v4-render.md",
+  "path_base": "assets/v4/",
+  "path_policy": "All asset paths below are relative to path_base; v3 references are repository relative.",
+  "scope": {
+    "A": "complete: 19 trophies + 11 feats, actual modeled PBR renders",
+    "B": "complete: 10 fictional identities × cap on/off = 20 portraits; style evaluation only"
+  },
+  "counts": {
+    "trophies": 19,
+    "feats": 11,
+    "face_identities": 10,
+    "face_variants": 20,
+    "collectible_png": 120,
+    "collectible_webp": 120,
+    "portrait_png": 40
+  },
+  "collections": {
+    "trophies": [
+      "championship_trophy",
+      "runner_up_trophy",
+      "regular_season_pennant",
+      "mvp_trophy",
+      "rookie_trophy",
+      "golden_glove",
+      "batting_title",
+      "batting_title_blank",
+      "pitching_title",
+      "pitching_title_blank",
+      "all_star_mvp",
+      "all_star_dream_badge",
+      "all_star_nanum_badge",
+      "national_gold_medal",
+      "national_silver_medal",
+      "national_bronze_medal",
+      "championship_ring",
+      "hall_of_fame_plaque",
+      "manager_trophy"
+    ],
+    "feats": [
+      "cycling_hit",
+      "no_hitter",
+      "perfect_game",
+      "four_home_runs",
+      "consecutive_home_runs",
+      "walk_off_home_run",
+      "grand_slam",
+      "fifteen_strikeouts",
+      "hitting_streak",
+      "career_milestone_frame",
+      "season_record_frame"
+    ],
+    "faces_test": [
+      "ko_early20s_01_cap_off",
+      "ko_early20s_01_cap_on",
+      "ko_early20s_02_cap_off",
+      "ko_early20s_02_cap_on",
+      "ko_late20s_01_cap_off",
+      "ko_late20s_01_cap_on",
+      "ko_late20s_02_cap_off",
+      "ko_late20s_02_cap_on",
+      "ko_30s_01_cap_off",
+      "ko_30s_01_cap_on",
+      "ko_30s_02_cap_off",
+      "ko_30s_02_cap_on",
+      "ko_late30s_beard_01_cap_off",
+      "ko_late30s_beard_01_cap_on",
+      "ko_glasses_01_cap_off",
+      "ko_glasses_01_cap_on",
+      "latino_01_cap_off",
+      "latino_01_cap_on",
+      "black_01_cap_off",
+      "black_01_cap_on"
+    ]
+  },
+  "assets": {
+    "championship_trophy": {
+      "id": "championship_trophy",
+      "name": "한국시리즈 우승 트로피",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/championship_trophy.png",
+        "128": "trophies/png/128/championship_trophy.png",
+        "256": "trophies/png/256/championship_trophy.png",
+        "512": "trophies/png/512/championship_trophy.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/championship_trophy.webp",
+        "128": "trophies/webp/128/championship_trophy.webp",
+        "256": "trophies/webp/256/championship_trophy.webp",
+        "512": "trophies/webp/512/championship_trophy.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/championship_trophy.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "championship_trophy"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "runner_up_trophy": {
+      "id": "runner_up_trophy",
+      "name": "한국시리즈 준우승 트로피",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/runner_up_trophy.png",
+        "128": "trophies/png/128/runner_up_trophy.png",
+        "256": "trophies/png/256/runner_up_trophy.png",
+        "512": "trophies/png/512/runner_up_trophy.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/runner_up_trophy.webp",
+        "128": "trophies/webp/128/runner_up_trophy.webp",
+        "256": "trophies/webp/256/runner_up_trophy.webp",
+        "512": "trophies/webp/512/runner_up_trophy.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/runner_up_trophy.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "runner_up_trophy"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "regular_season_pennant": {
+      "id": "regular_season_pennant",
+      "name": "정규시즌 1위 페넌트",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/regular_season_pennant.png",
+        "128": "trophies/png/128/regular_season_pennant.png",
+        "256": "trophies/png/256/regular_season_pennant.png",
+        "512": "trophies/png/512/regular_season_pennant.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/regular_season_pennant.webp",
+        "128": "trophies/webp/128/regular_season_pennant.webp",
+        "256": "trophies/webp/256/regular_season_pennant.webp",
+        "512": "trophies/webp/512/regular_season_pennant.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/regular_season_pennant.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "regular_season_pennant"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "mvp_trophy": {
+      "id": "mvp_trophy",
+      "name": "MVP 트로피",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/mvp_trophy.png",
+        "128": "trophies/png/128/mvp_trophy.png",
+        "256": "trophies/png/256/mvp_trophy.png",
+        "512": "trophies/png/512/mvp_trophy.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/mvp_trophy.webp",
+        "128": "trophies/webp/128/mvp_trophy.webp",
+        "256": "trophies/webp/256/mvp_trophy.webp",
+        "512": "trophies/webp/512/mvp_trophy.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/mvp_trophy.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "mvp_trophy"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "rookie_trophy": {
+      "id": "rookie_trophy",
+      "name": "신인왕 트로피",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/rookie_trophy.png",
+        "128": "trophies/png/128/rookie_trophy.png",
+        "256": "trophies/png/256/rookie_trophy.png",
+        "512": "trophies/png/512/rookie_trophy.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/rookie_trophy.webp",
+        "128": "trophies/webp/128/rookie_trophy.webp",
+        "256": "trophies/webp/256/rookie_trophy.webp",
+        "512": "trophies/webp/512/rookie_trophy.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/rookie_trophy.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "rookie_trophy"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "golden_glove": {
+      "id": "golden_glove",
+      "name": "골든글러브",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/golden_glove.png",
+        "128": "trophies/png/128/golden_glove.png",
+        "256": "trophies/png/256/golden_glove.png",
+        "512": "trophies/png/512/golden_glove.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/golden_glove.webp",
+        "128": "trophies/webp/128/golden_glove.webp",
+        "256": "trophies/webp/256/golden_glove.webp",
+        "512": "trophies/webp/512/golden_glove.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/golden_glove.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "golden_glove"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "batting_title": {
+      "id": "batting_title",
+      "name": "타격 타이틀 상패",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/batting_title.png",
+        "128": "trophies/png/128/batting_title.png",
+        "256": "trophies/png/256/batting_title.png",
+        "512": "trophies/png/512/batting_title.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/batting_title.webp",
+        "128": "trophies/webp/128/batting_title.webp",
+        "256": "trophies/webp/256/batting_title.webp",
+        "512": "trophies/webp/512/batting_title.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/batting_title.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "batting_title"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        },
+        "department": {
+          "rect": [
+            173.845,
+            328.088,
+            134.442,
+            30.186
+          ],
+          "align": "center",
+          "baseline": 350.283,
+          "max_font_size": 17.3,
+          "fill": "#49351d",
+          "source_v3_rect": [
+            179,
+            332,
+            154,
+            24
+          ],
+          "quad": [
+            [
+              173.845,
+              328.088
+            ],
+            [
+              308.287,
+              336.97
+            ],
+            [
+              308.287,
+              358.274
+            ],
+            [
+              173.845,
+              349.393
+            ]
+          ],
+          "anchor": [
+            241.066,
+            350.283
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              179,
+              332,
+              154,
+              24
+            ],
+            "align": "center",
+            "baseline": 352,
+            "max_font_size": 19,
+            "fill": "#49351d",
+            "hide_svg_layer": "batting_title__department_text"
+          },
+          "baseline_segment": [
+            [
+              173.845,
+              345.842
+            ],
+            [
+              308.287,
+              354.723
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "batting_title_blank": {
+      "id": "batting_title_blank",
+      "name": "타격 타이틀 상패 · 글자 없음",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/batting_title_blank.png",
+        "128": "trophies/png/128/batting_title_blank.png",
+        "256": "trophies/png/256/batting_title_blank.png",
+        "512": "trophies/png/512/batting_title_blank.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/batting_title_blank.webp",
+        "128": "trophies/webp/128/batting_title_blank.webp",
+        "256": "trophies/webp/256/batting_title_blank.webp",
+        "512": "trophies/webp/512/batting_title_blank.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/batting_title_blank.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "batting_title_blank"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        },
+        "department": {
+          "rect": [
+            175.147,
+            327.11,
+            134.442,
+            30.186
+          ],
+          "align": "center",
+          "baseline": 349.304,
+          "max_font_size": 17.3,
+          "fill": "#49351d",
+          "source_v3_rect": [
+            179,
+            332,
+            154,
+            24
+          ],
+          "quad": [
+            [
+              175.147,
+              327.11
+            ],
+            [
+              309.589,
+              335.992
+            ],
+            [
+              309.589,
+              357.296
+            ],
+            [
+              175.147,
+              348.415
+            ]
+          ],
+          "anchor": [
+            242.368,
+            349.304
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              179,
+              332,
+              154,
+              24
+            ],
+            "align": "center",
+            "baseline": 352,
+            "max_font_size": 19,
+            "fill": "#49351d",
+            "hide_svg_layer": null
+          },
+          "baseline_segment": [
+            [
+              175.147,
+              344.864
+            ],
+            [
+              309.589,
+              353.745
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "pitching_title": {
+      "id": "pitching_title",
+      "name": "투수 타이틀 상패",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/pitching_title.png",
+        "128": "trophies/png/128/pitching_title.png",
+        "256": "trophies/png/256/pitching_title.png",
+        "512": "trophies/png/512/pitching_title.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/pitching_title.webp",
+        "128": "trophies/webp/128/pitching_title.webp",
+        "256": "trophies/webp/256/pitching_title.webp",
+        "512": "trophies/webp/512/pitching_title.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/pitching_title.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "pitching_title"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        },
+        "department": {
+          "rect": [
+            173.277,
+            328.515,
+            134.442,
+            30.186
+          ],
+          "align": "center",
+          "baseline": 350.709,
+          "max_font_size": 17.3,
+          "fill": "#49351d",
+          "source_v3_rect": [
+            179,
+            332,
+            154,
+            24
+          ],
+          "quad": [
+            [
+              173.277,
+              328.515
+            ],
+            [
+              307.719,
+              337.396
+            ],
+            [
+              307.719,
+              358.701
+            ],
+            [
+              173.277,
+              349.819
+            ]
+          ],
+          "anchor": [
+            240.498,
+            350.709
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              179,
+              332,
+              154,
+              24
+            ],
+            "align": "center",
+            "baseline": 352,
+            "max_font_size": 19,
+            "fill": "#49351d",
+            "hide_svg_layer": "pitching_title__department_text"
+          },
+          "baseline_segment": [
+            [
+              173.277,
+              346.268
+            ],
+            [
+              307.719,
+              355.15
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "pitching_title_blank": {
+      "id": "pitching_title_blank",
+      "name": "투수 타이틀 상패 · 글자 없음",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/pitching_title_blank.png",
+        "128": "trophies/png/128/pitching_title_blank.png",
+        "256": "trophies/png/256/pitching_title_blank.png",
+        "512": "trophies/png/512/pitching_title_blank.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/pitching_title_blank.webp",
+        "128": "trophies/webp/128/pitching_title_blank.webp",
+        "256": "trophies/webp/256/pitching_title_blank.webp",
+        "512": "trophies/webp/512/pitching_title_blank.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/pitching_title_blank.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "pitching_title_blank"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        },
+        "department": {
+          "rect": [
+            174.863,
+            327.324,
+            134.442,
+            30.185
+          ],
+          "align": "center",
+          "baseline": 349.518,
+          "max_font_size": 17.3,
+          "fill": "#49351d",
+          "source_v3_rect": [
+            179,
+            332,
+            154,
+            24
+          ],
+          "quad": [
+            [
+              174.863,
+              327.324
+            ],
+            [
+              309.305,
+              336.205
+            ],
+            [
+              309.305,
+              357.509
+            ],
+            [
+              174.863,
+              348.628
+            ]
+          ],
+          "anchor": [
+            242.084,
+            349.518
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              179,
+              332,
+              154,
+              24
+            ],
+            "align": "center",
+            "baseline": 352,
+            "max_font_size": 19,
+            "fill": "#49351d",
+            "hide_svg_layer": null
+          },
+          "baseline_segment": [
+            [
+              174.863,
+              345.077
+            ],
+            [
+              309.305,
+              353.958
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "all_star_mvp": {
+      "id": "all_star_mvp",
+      "name": "올스타 MVP 트로피",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/all_star_mvp.png",
+        "128": "trophies/png/128/all_star_mvp.png",
+        "256": "trophies/png/256/all_star_mvp.png",
+        "512": "trophies/png/512/all_star_mvp.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/all_star_mvp.webp",
+        "128": "trophies/webp/128/all_star_mvp.webp",
+        "256": "trophies/webp/256/all_star_mvp.webp",
+        "512": "trophies/webp/512/all_star_mvp.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/all_star_mvp.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "all_star_mvp"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "all_star_dream_badge": {
+      "id": "all_star_dream_badge",
+      "name": "올스타 선정 · 드림",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/all_star_dream_badge.png",
+        "128": "trophies/png/128/all_star_dream_badge.png",
+        "256": "trophies/png/256/all_star_dream_badge.png",
+        "512": "trophies/png/512/all_star_dream_badge.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/all_star_dream_badge.webp",
+        "128": "trophies/webp/128/all_star_dream_badge.webp",
+        "256": "trophies/webp/256/all_star_dream_badge.webp",
+        "512": "trophies/webp/512/all_star_dream_badge.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/all_star_dream_badge.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "all_star_dream_badge"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "all_star_nanum_badge": {
+      "id": "all_star_nanum_badge",
+      "name": "올스타 선정 · 나눔",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/all_star_nanum_badge.png",
+        "128": "trophies/png/128/all_star_nanum_badge.png",
+        "256": "trophies/png/256/all_star_nanum_badge.png",
+        "512": "trophies/png/512/all_star_nanum_badge.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/all_star_nanum_badge.webp",
+        "128": "trophies/webp/128/all_star_nanum_badge.webp",
+        "256": "trophies/webp/256/all_star_nanum_badge.webp",
+        "512": "trophies/webp/512/all_star_nanum_badge.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/all_star_nanum_badge.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "all_star_nanum_badge"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "national_gold_medal": {
+      "id": "national_gold_medal",
+      "name": "국가대표 금메달",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/national_gold_medal.png",
+        "128": "trophies/png/128/national_gold_medal.png",
+        "256": "trophies/png/256/national_gold_medal.png",
+        "512": "trophies/png/512/national_gold_medal.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/national_gold_medal.webp",
+        "128": "trophies/webp/128/national_gold_medal.webp",
+        "256": "trophies/webp/256/national_gold_medal.webp",
+        "512": "trophies/webp/512/national_gold_medal.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/national_gold_medal.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "national_gold_medal"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "national_silver_medal": {
+      "id": "national_silver_medal",
+      "name": "국가대표 은메달",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/national_silver_medal.png",
+        "128": "trophies/png/128/national_silver_medal.png",
+        "256": "trophies/png/256/national_silver_medal.png",
+        "512": "trophies/png/512/national_silver_medal.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/national_silver_medal.webp",
+        "128": "trophies/webp/128/national_silver_medal.webp",
+        "256": "trophies/webp/256/national_silver_medal.webp",
+        "512": "trophies/webp/512/national_silver_medal.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/national_silver_medal.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "national_silver_medal"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "national_bronze_medal": {
+      "id": "national_bronze_medal",
+      "name": "국가대표 동메달",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/national_bronze_medal.png",
+        "128": "trophies/png/128/national_bronze_medal.png",
+        "256": "trophies/png/256/national_bronze_medal.png",
+        "512": "trophies/png/512/national_bronze_medal.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/national_bronze_medal.webp",
+        "128": "trophies/webp/128/national_bronze_medal.webp",
+        "256": "trophies/webp/256/national_bronze_medal.webp",
+        "512": "trophies/webp/512/national_bronze_medal.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/national_bronze_medal.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "national_bronze_medal"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "championship_ring": {
+      "id": "championship_ring",
+      "name": "우승 반지",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/championship_ring.png",
+        "128": "trophies/png/128/championship_ring.png",
+        "256": "trophies/png/256/championship_ring.png",
+        "512": "trophies/png/512/championship_ring.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/championship_ring.webp",
+        "128": "trophies/webp/128/championship_ring.webp",
+        "256": "trophies/webp/256/championship_ring.webp",
+        "512": "trophies/webp/512/championship_ring.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/championship_ring.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "championship_ring"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "hall_of_fame_plaque": {
+      "id": "hall_of_fame_plaque",
+      "name": "명예의 전당 명패",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/hall_of_fame_plaque.png",
+        "128": "trophies/png/128/hall_of_fame_plaque.png",
+        "256": "trophies/png/256/hall_of_fame_plaque.png",
+        "512": "trophies/png/512/hall_of_fame_plaque.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/hall_of_fame_plaque.webp",
+        "128": "trophies/webp/128/hall_of_fame_plaque.webp",
+        "256": "trophies/webp/256/hall_of_fame_plaque.webp",
+        "512": "trophies/webp/512/hall_of_fame_plaque.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/hall_of_fame_plaque.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "hall_of_fame_plaque"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        },
+        "honoree_name": {
+          "rect": [
+            179.007,
+            317.491,
+            120.474,
+            27.488
+          ],
+          "align": "center",
+          "baseline": 337.448,
+          "max_font_size": 16.39,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            187,
+            318,
+            138,
+            22
+          ],
+          "quad": [
+            [
+              179.007,
+              317.491
+            ],
+            [
+              299.481,
+              325.45
+            ],
+            [
+              299.481,
+              344.979
+            ],
+            [
+              179.007,
+              337.02
+            ]
+          ],
+          "anchor": [
+            239.244,
+            337.448
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              187,
+              318,
+              138,
+              22
+            ],
+            "align": "center",
+            "baseline": 336,
+            "max_font_size": 18,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              179.007,
+              333.469
+            ],
+            [
+              299.481,
+              341.428
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "manager_trophy": {
+      "id": "manager_trophy",
+      "name": "감독상",
+      "category": "trophies",
+      "png": {
+        "64": "trophies/png/64/manager_trophy.png",
+        "128": "trophies/png/128/manager_trophy.png",
+        "256": "trophies/png/256/manager_trophy.png",
+        "512": "trophies/png/512/manager_trophy.png"
+      },
+      "webp": {
+        "64": "trophies/webp/64/manager_trophy.webp",
+        "128": "trophies/webp/128/manager_trophy.webp",
+        "256": "trophies/webp/256/manager_trophy.webp",
+        "512": "trophies/webp/512/manager_trophy.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/trophies/svg/manager_trophy.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "manager_trophy"
+      },
+      "text_slots": {
+        "base_nameplate": {
+          "rect": [
+            170.227,
+            424.188,
+            136.188,
+            23.199
+          ],
+          "align": "center",
+          "baseline": 440.226,
+          "max_font_size": 12.75,
+          "fill": "#f7e9bb",
+          "source_v3_rect": [
+            178,
+            438,
+            156,
+            16
+          ],
+          "quad": [
+            [
+              170.227,
+              424.188
+            ],
+            [
+              306.415,
+              433.184
+            ],
+            [
+              306.415,
+              447.387
+            ],
+            [
+              170.227,
+              438.391
+            ]
+          ],
+          "anchor": [
+            238.321,
+            440.226
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              178,
+              438,
+              156,
+              16
+            ],
+            "align": "center",
+            "baseline": 451,
+            "max_font_size": 14,
+            "fill": "#f7e9bb"
+          },
+          "baseline_segment": [
+            [
+              170.227,
+              435.728
+            ],
+            [
+              306.415,
+              444.724
+            ]
+          ],
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "cycling_hit": {
+      "id": "cycling_hit",
+      "name": "사이클링 히트",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/cycling_hit.png",
+        "128": "feats/png/128/cycling_hit.png",
+        "256": "feats/png/256/cycling_hit.png",
+        "512": "feats/png/512/cycling_hit.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/cycling_hit.webp",
+        "128": "feats/webp/128/cycling_hit.webp",
+        "256": "feats/webp/256/cycling_hit.webp",
+        "512": "feats/webp/512/cycling_hit.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/cycling_hit.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "cycling_hit"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "no_hitter": {
+      "id": "no_hitter",
+      "name": "노히트노런",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/no_hitter.png",
+        "128": "feats/png/128/no_hitter.png",
+        "256": "feats/png/256/no_hitter.png",
+        "512": "feats/png/512/no_hitter.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/no_hitter.webp",
+        "128": "feats/webp/128/no_hitter.webp",
+        "256": "feats/webp/256/no_hitter.webp",
+        "512": "feats/webp/512/no_hitter.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/no_hitter.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "no_hitter"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "perfect_game": {
+      "id": "perfect_game",
+      "name": "퍼펙트게임",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/perfect_game.png",
+        "128": "feats/png/128/perfect_game.png",
+        "256": "feats/png/256/perfect_game.png",
+        "512": "feats/png/512/perfect_game.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/perfect_game.webp",
+        "128": "feats/webp/128/perfect_game.webp",
+        "256": "feats/webp/256/perfect_game.webp",
+        "512": "feats/webp/512/perfect_game.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/perfect_game.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "perfect_game"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "four_home_runs": {
+      "id": "four_home_runs",
+      "name": "한 경기 4홈런",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/four_home_runs.png",
+        "128": "feats/png/128/four_home_runs.png",
+        "256": "feats/png/256/four_home_runs.png",
+        "512": "feats/png/512/four_home_runs.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/four_home_runs.webp",
+        "128": "feats/webp/128/four_home_runs.webp",
+        "256": "feats/webp/256/four_home_runs.webp",
+        "512": "feats/webp/512/four_home_runs.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/four_home_runs.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "four_home_runs"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "consecutive_home_runs": {
+      "id": "consecutive_home_runs",
+      "name": "연타석 홈런",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/consecutive_home_runs.png",
+        "128": "feats/png/128/consecutive_home_runs.png",
+        "256": "feats/png/256/consecutive_home_runs.png",
+        "512": "feats/png/512/consecutive_home_runs.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/consecutive_home_runs.webp",
+        "128": "feats/webp/128/consecutive_home_runs.webp",
+        "256": "feats/webp/256/consecutive_home_runs.webp",
+        "512": "feats/webp/512/consecutive_home_runs.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/consecutive_home_runs.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "consecutive_home_runs"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "walk_off_home_run": {
+      "id": "walk_off_home_run",
+      "name": "끝내기 홈런",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/walk_off_home_run.png",
+        "128": "feats/png/128/walk_off_home_run.png",
+        "256": "feats/png/256/walk_off_home_run.png",
+        "512": "feats/png/512/walk_off_home_run.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/walk_off_home_run.webp",
+        "128": "feats/webp/128/walk_off_home_run.webp",
+        "256": "feats/webp/256/walk_off_home_run.webp",
+        "512": "feats/webp/512/walk_off_home_run.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/walk_off_home_run.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "walk_off_home_run"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "grand_slam": {
+      "id": "grand_slam",
+      "name": "만루 홈런",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/grand_slam.png",
+        "128": "feats/png/128/grand_slam.png",
+        "256": "feats/png/256/grand_slam.png",
+        "512": "feats/png/512/grand_slam.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/grand_slam.webp",
+        "128": "feats/webp/128/grand_slam.webp",
+        "256": "feats/webp/256/grand_slam.webp",
+        "512": "feats/webp/512/grand_slam.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/grand_slam.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "grand_slam"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "fifteen_strikeouts": {
+      "id": "fifteen_strikeouts",
+      "name": "15탈삼진",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/fifteen_strikeouts.png",
+        "128": "feats/png/128/fifteen_strikeouts.png",
+        "256": "feats/png/256/fifteen_strikeouts.png",
+        "512": "feats/png/512/fifteen_strikeouts.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/fifteen_strikeouts.webp",
+        "128": "feats/webp/128/fifteen_strikeouts.webp",
+        "256": "feats/webp/256/fifteen_strikeouts.webp",
+        "512": "feats/webp/512/fifteen_strikeouts.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/fifteen_strikeouts.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "fifteen_strikeouts"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "hitting_streak": {
+      "id": "hitting_streak",
+      "name": "연속 경기 안타",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/hitting_streak.png",
+        "128": "feats/png/128/hitting_streak.png",
+        "256": "feats/png/256/hitting_streak.png",
+        "512": "feats/png/512/hitting_streak.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/hitting_streak.webp",
+        "128": "feats/webp/128/hitting_streak.webp",
+        "256": "feats/webp/256/hitting_streak.webp",
+        "512": "feats/webp/512/hitting_streak.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/hitting_streak.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "hitting_streak"
+      },
+      "text_slots": {},
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "career_milestone_frame": {
+      "id": "career_milestone_frame",
+      "name": "통산 이정표 공용 틀",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/career_milestone_frame.png",
+        "128": "feats/png/128/career_milestone_frame.png",
+        "256": "feats/png/256/career_milestone_frame.png",
+        "512": "feats/png/512/career_milestone_frame.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/career_milestone_frame.webp",
+        "128": "feats/webp/128/career_milestone_frame.webp",
+        "256": "feats/webp/256/career_milestone_frame.webp",
+        "512": "feats/webp/512/career_milestone_frame.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/career_milestone_frame.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "career_milestone_frame"
+      },
+      "text_slots": {
+        "record_value": {
+          "rect": [
+            139.796,
+            207.396,
+            216.504,
+            108.397
+          ],
+          "anchor": [
+            248.048,
+            296.214
+          ],
+          "align": "center",
+          "max_font_size": 87.41,
+          "fill": "#f5e4bd",
+          "examples": [
+            "100",
+            "200",
+            "300",
+            "400",
+            "500"
+          ],
+          "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in.",
+          "source_v3_rect": [
+            66,
+            105,
+            124,
+            53
+          ],
+          "quad": [
+            [
+              139.796,
+              207.396
+            ],
+            [
+              356.3,
+              221.699
+            ],
+            [
+              356.3,
+              315.793
+            ],
+            [
+              139.796,
+              301.491
+            ]
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              66,
+              105,
+              124,
+              53
+            ],
+            "anchor": [
+              128,
+              151
+            ],
+            "align": "center",
+            "max_font_size": 48,
+            "fill": "#f5e4bd",
+            "examples": [
+              "100",
+              "200",
+              "300",
+              "400",
+              "500"
+            ],
+            "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in."
+          },
+          "baseline_segment": [
+            [
+              139.796,
+              289.063
+            ],
+            [
+              356.3,
+              303.365
+            ]
+          ],
+          "baseline": 296.214,
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "season_record_frame": {
+      "id": "season_record_frame",
+      "name": "시즌 기록 공용 틀",
+      "category": "feats",
+      "png": {
+        "64": "feats/png/64/season_record_frame.png",
+        "128": "feats/png/128/season_record_frame.png",
+        "256": "feats/png/256/season_record_frame.png",
+        "512": "feats/png/512/season_record_frame.png"
+      },
+      "webp": {
+        "64": "feats/webp/64/season_record_frame.webp",
+        "128": "feats/webp/128/season_record_frame.webp",
+        "256": "feats/webp/256/season_record_frame.webp",
+        "512": "feats/webp/512/season_record_frame.webp"
+      },
+      "view_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": true,
+      "source_v3": "assets/v3/feats/svg/season_record_frame.svg",
+      "model": {
+        "file": "source/pbr_collectibles.blend",
+        "collection": "season_record_frame"
+      },
+      "text_slots": {
+        "record_value": {
+          "rect": [
+            110.114,
+            208.986,
+            275.868,
+            108.768
+          ],
+          "anchor": [
+            248.048,
+            296.214
+          ],
+          "align": "center",
+          "max_font_size": 69.2,
+          "fill": "#f5e4bd",
+          "examples": [
+            "30-30",
+            "40HR"
+          ],
+          "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in.",
+          "source_v3_rect": [
+            49,
+            107,
+            158,
+            51
+          ],
+          "quad": [
+            [
+              110.114,
+              208.986
+            ],
+            [
+              385.982,
+              227.21
+            ],
+            [
+              385.982,
+              317.754
+            ],
+            [
+              110.114,
+              299.53
+            ]
+          ],
+          "coordinate_space": "512x512 render pixels; quad TL TR BR BL",
+          "source_v3": {
+            "rect": [
+              49,
+              107,
+              158,
+              51
+            ],
+            "anchor": [
+              128,
+              151
+            ],
+            "align": "center",
+            "max_font_size": 38,
+            "fill": "#f5e4bd",
+            "examples": [
+              "30-30",
+              "40HR"
+            ],
+            "font_hint": "Bold condensed UI font; fit the bounding rectangle; no player records baked in."
+          },
+          "baseline_segment": [
+            [
+              110.114,
+              287.102
+            ],
+            [
+              385.982,
+              305.326
+            ]
+          ],
+          "baseline": 296.214,
+          "compositing": "Fit text in quad; align baseline to baseline_segment. Multiply all coordinates/font sizes by output_width/512. No baked player names or variable record values."
+        }
+      },
+      "render": "Blender 4.3.2 Cycles, 128 samples; studio area lights; AgX; OIDN 1.4.3 color denoise",
+      "material_family": "gold / silver / bronze / optical crystal / enamel / walnut"
+    },
+    "ko_early20s_01_cap_off": {
+      "id": "ko_early20s_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_early20s_01 / 모자 미착용",
+      "identity_id": "ko_early20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_01_cap_off.png",
+        "128": "faces_test/png/128/ko_early20s_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 22,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "fair warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_early20s_01_cap_on": {
+      "id": "ko_early20s_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_early20s_01 / 모자 착용",
+      "identity_id": "ko_early20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_01_cap_on.png",
+        "128": "faces_test/png/128/ko_early20s_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 22,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "fair warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_early20s_02_cap_off": {
+      "id": "ko_early20s_02_cap_off",
+      "category": "faces_test",
+      "name": "ko_early20s_02 / 모자 미착용",
+      "identity_id": "ko_early20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_02_cap_off.png",
+        "128": "faces_test/png/128/ko_early20s_02_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 24,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium light warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "medium light warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_early20s_02_cap_on": {
+      "id": "ko_early20s_02_cap_on",
+      "category": "faces_test",
+      "name": "ko_early20s_02 / 모자 착용",
+      "identity_id": "ko_early20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_02_cap_on.png",
+        "128": "faces_test/png/128/ko_early20s_02_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 24,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium light warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "medium light warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_01_cap_off": {
+      "id": "ko_late20s_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_late20s_01 / 모자 미착용",
+      "identity_id": "ko_late20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_01_cap_off.png",
+        "128": "faces_test/png/128/ko_late20s_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 27,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "medium warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_01_cap_on": {
+      "id": "ko_late20s_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_late20s_01 / 모자 착용",
+      "identity_id": "ko_late20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_01_cap_on.png",
+        "128": "faces_test/png/128/ko_late20s_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 27,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "medium warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_02_cap_off": {
+      "id": "ko_late20s_02_cap_off",
+      "category": "faces_test",
+      "name": "ko_late20s_02 / 모자 미착용",
+      "identity_id": "ko_late20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_02_cap_off.png",
+        "128": "faces_test/png/128/ko_late20s_02_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair cool",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "fair cool",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_02_cap_on": {
+      "id": "ko_late20s_02_cap_on",
+      "category": "faces_test",
+      "name": "ko_late20s_02 / 모자 착용",
+      "identity_id": "ko_late20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_02_cap_on.png",
+        "128": "faces_test/png/128/ko_late20s_02_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair cool",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "fair cool",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_01_cap_off": {
+      "id": "ko_30s_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_30s_01 / 모자 미착용",
+      "identity_id": "ko_30s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_01_cap_off.png",
+        "128": "faces_test/png/128/ko_30s_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 32,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm tan",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "medium warm tan",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_01_cap_on": {
+      "id": "ko_30s_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_30s_01 / 모자 착용",
+      "identity_id": "ko_30s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_01_cap_on.png",
+        "128": "faces_test/png/128/ko_30s_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 32,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm tan",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "medium warm tan",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_02_cap_off": {
+      "id": "ko_30s_02_cap_off",
+      "category": "faces_test",
+      "name": "ko_30s_02 / 모자 미착용",
+      "identity_id": "ko_30s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_02_cap_off.png",
+        "128": "faces_test/png/128/ko_30s_02_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 35,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair neutral",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair neutral",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_02_cap_on": {
+      "id": "ko_30s_02_cap_on",
+      "category": "faces_test",
+      "name": "ko_30s_02 / 모자 착용",
+      "identity_id": "ko_30s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_02_cap_on.png",
+        "128": "faces_test/png/128/ko_30s_02_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 35,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair neutral",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair neutral",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late30s_beard_01_cap_off": {
+      "id": "ko_late30s_beard_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_late30s_beard_01 / 모자 미착용",
+      "identity_id": "ko_late30s_beard_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late30s_beard_01_cap_off.png",
+        "128": "faces_test/png/128/ko_late30s_beard_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 38,
+      "age_band": "late_30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": true,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_30s",
+        "medium warm",
+        "beard",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late30s_beard_01_cap_on": {
+      "id": "ko_late30s_beard_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_late30s_beard_01 / 모자 착용",
+      "identity_id": "ko_late30s_beard_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late30s_beard_01_cap_on.png",
+        "128": "faces_test/png/128/ko_late30s_beard_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 38,
+      "age_band": "late_30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": true,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_30s",
+        "medium warm",
+        "beard",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_glasses_01_cap_off": {
+      "id": "ko_glasses_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_glasses_01 / 모자 미착용",
+      "identity_id": "ko_glasses_01",
+      "png": {
+        "512": "faces_test/png/512/ko_glasses_01_cap_off.png",
+        "128": "faces_test/png/128/ko_glasses_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 31,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": true,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair warm",
+        "clean_shaven",
+        "glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_glasses_01_cap_on": {
+      "id": "ko_glasses_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_glasses_01 / 모자 착용",
+      "identity_id": "ko_glasses_01",
+      "png": {
+        "512": "faces_test/png/512/ko_glasses_01_cap_on.png",
+        "128": "faces_test/png/128/ko_glasses_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 31,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": true,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair warm",
+        "clean_shaven",
+        "glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "latino_01_cap_off": {
+      "id": "latino_01_cap_off",
+      "category": "faces_test",
+      "name": "latino_01 / 모자 미착용",
+      "identity_id": "latino_01",
+      "png": {
+        "512": "faces_test/png/512/latino_01_cap_off.png",
+        "128": "faces_test/png/128/latino_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Hispanic / Latino",
+      "skin_tone": "warm medium brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Hispanic / Latino",
+        "late_20s",
+        "warm medium brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "latino_01_cap_on": {
+      "id": "latino_01_cap_on",
+      "category": "faces_test",
+      "name": "latino_01 / 모자 착용",
+      "identity_id": "latino_01",
+      "png": {
+        "512": "faces_test/png/512/latino_01_cap_on.png",
+        "128": "faces_test/png/128/latino_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Hispanic / Latino",
+      "skin_tone": "warm medium brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Hispanic / Latino",
+        "late_20s",
+        "warm medium brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "black_01_cap_off": {
+      "id": "black_01_cap_off",
+      "category": "faces_test",
+      "name": "black_01 / 모자 미착용",
+      "identity_id": "black_01",
+      "png": {
+        "512": "faces_test/png/512/black_01_cap_off.png",
+        "128": "faces_test/png/128/black_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 28,
+      "age_band": "late_20s",
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Black",
+        "late_20s",
+        "deep brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "black_01_cap_on": {
+      "id": "black_01_cap_on",
+      "category": "faces_test",
+      "name": "black_01 / 모자 착용",
+      "identity_id": "black_01",
+      "png": {
+        "512": "faces_test/png/512/black_01_cap_on.png",
+        "128": "faces_test/png/128/black_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 28,
+      "age_band": "late_20s",
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Black",
+        "late_20s",
+        "deep brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    }
+  },
+  "face_pairs": [
+    {
+      "identity_id": "ko_early20s_01",
+      "age": 22,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_early20s_01_cap_off",
+        "cap_on": "ko_early20s_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_early20s_02",
+      "age": 24,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium light warm",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_early20s_02_cap_off",
+        "cap_on": "ko_early20s_02_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "age": 27,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_late20s_01_cap_off",
+        "cap_on": "ko_late20s_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_late20s_02",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair cool",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_late20s_02_cap_off",
+        "cap_on": "ko_late20s_02_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_30s_01",
+      "age": 32,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm tan",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_30s_01_cap_off",
+        "cap_on": "ko_30s_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_30s_02",
+      "age": 35,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair neutral",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_30s_02_cap_off",
+        "cap_on": "ko_30s_02_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_late30s_beard_01",
+      "age": 38,
+      "age_band": "late_30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": true,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_late30s_beard_01_cap_off",
+        "cap_on": "ko_late30s_beard_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_glasses_01",
+      "age": 31,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": true,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_glasses_01_cap_off",
+        "cap_on": "ko_glasses_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "latino_01",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Hispanic / Latino",
+      "skin_tone": "warm medium brown",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "latino_01_cap_off",
+        "cap_on": "latino_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "black_01",
+      "age": 28,
+      "age_band": "late_20s",
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "black_01_cap_off",
+        "cap_on": "black_01_cap_on"
+      }
+    }
+  ],
+  "render_studio": {
+    "source": "source/pbr_collectibles.blend",
+    "engine": "Blender Cycles 4.3.2, CPU",
+    "samples": 128,
+    "denoise": "Open Image Denoise 1.4.3, color-only pass; original render alpha preserved",
+    "color_management": "AgX / Medium High Contrast / sRGB output",
+    "camera": {
+      "projection": "orthographic",
+      "location": [
+        5.1,
+        -17.2,
+        6.6
+      ],
+      "target": [
+        0,
+        0,
+        2.5
+      ],
+      "elevation_degrees": 12.87,
+      "azimuth_degrees": 16.52,
+      "orthographic_scale": 6.15
+    },
+    "light_rig": "warm key / cool fill / warm rim / neutral overhead area softboxes",
+    "background": "transparent film with bounded physical contact shadow catcher"
+  },
+  "text_slot_policy": {
+    "coordinate_space": "512x512 raster pixels, top left origin",
+    "quad_order": [
+      "TL",
+      "TR",
+      "BR",
+      "BL"
+    ],
+    "rescale": "multiply all coordinates and max_font_size by display_width / 512",
+    "source_v3": "Original source rect/label metadata retained per slot; use new projected coordinates for v4.",
+    "dynamic_title_assets": [
+      "batting_title_blank",
+      "pitching_title_blank"
+    ],
+    "dynamic_record_assets": [
+      "career_milestone_frame",
+      "season_record_frame"
+    ]
+  },
+  "previews": {
+    "combined": "ASSET_PREVIEW.png",
+    "trophies": "previews/trophies_dark.png",
+    "feats": "previews/feats_dark.png",
+    "faces": "previews/faces_pairs.png",
+    "light": "previews/collectibles_light.png",
+    "small": "previews/collectibles_64px.png",
+    "slots": "previews/text_slots.png"
+  },
+  "validation": {
+    "png64_target_bytes": 15360,
+    "png64_actual_max_bytes": 7336,
+    "ids_equal_v3_trophies_and_feats": true,
+    "code_changes": false
+  },
+  "integration": {
+    "owner": "Claude",
+    "game_code_connected": false,
+    "note": "Asset files only. Use format paths rather than assuming v3 SVG structure. Do not bundle source/ or previews/ in game HTML."
+  }
+}

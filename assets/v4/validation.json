@@ -1,0 +1,263 @@
+{
+  "status": "pass",
+  "request": "docs/asset-requests/2026-11-05-codex-v4-render.md",
+  "checked_runtime_images": 280,
+  "runtime_image_bytes": 16865432,
+  "png64_max_bytes": 7336,
+  "png64_target_bytes": 15360,
+  "border_alpha_note": "0 expected at 512px; at most 3/255 tolerated for Lanczos resampling of small physical shadows.",
+  "nonzero_border_alpha": [
+    {
+      "path": "trophies/png/64/championship_trophy.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/championship_trophy.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/runner_up_trophy.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/webp/64/runner_up_trophy.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/png/64/regular_season_pennant.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/regular_season_pennant.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/mvp_trophy.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/mvp_trophy.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/rookie_trophy.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/rookie_trophy.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/golden_glove.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/golden_glove.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/batting_title.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/batting_title.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/batting_title_blank.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/batting_title_blank.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/pitching_title.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/pitching_title.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/pitching_title_blank.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/pitching_title_blank.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/all_star_mvp.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/all_star_mvp.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/all_star_dream_badge.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/webp/64/all_star_dream_badge.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/png/64/all_star_nanum_badge.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/webp/64/all_star_nanum_badge.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/png/64/national_gold_medal.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/national_gold_medal.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/national_silver_medal.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/national_silver_medal.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/national_bronze_medal.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/national_bronze_medal.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/png/64/championship_ring.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/webp/64/championship_ring.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/png/64/hall_of_fame_plaque.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/webp/64/hall_of_fame_plaque.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "trophies/png/64/manager_trophy.png",
+      "max_alpha": 1
+    },
+    {
+      "path": "trophies/webp/64/manager_trophy.webp",
+      "max_alpha": 1
+    },
+    {
+      "path": "feats/png/64/cycling_hit.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/cycling_hit.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/no_hitter.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/no_hitter.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/perfect_game.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/perfect_game.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/four_home_runs.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/four_home_runs.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/consecutive_home_runs.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/consecutive_home_runs.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/walk_off_home_run.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/walk_off_home_run.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/grand_slam.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/grand_slam.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/fifteen_strikeouts.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/fifteen_strikeouts.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/hitting_streak.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/hitting_streak.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/career_milestone_frame.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/career_milestone_frame.webp",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/png/64/season_record_frame.png",
+      "max_alpha": 2
+    },
+    {
+      "path": "feats/webp/64/season_record_frame.webp",
+      "max_alpha": 2
+    }
+  ],
+  "checks": [
+    "v3 collectible ID/order and text slot coverage",
+    "all PNG/WebP decodes and exact dimensions",
+    "collectibles: transparent RGBA; visible content; no clipped edge",
+    "lossless WebP visible RGB and alpha match PNG",
+    "all 64px PNG/WebP <=15KiB",
+    "20 opaque RGB portrait views with linked cap pairs",
+    "Korean age spread, beard, glasses and 2 foreign identities",
+    "all preview and source asset paths",
+    "no generator/game code or Blender backup files"
+  ],
+  "errors": []
+}

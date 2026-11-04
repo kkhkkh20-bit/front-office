@@ -1,0 +1,1187 @@
+{
+  "algorithm": "SHA-256",
+  "path_base": "assets/v4/",
+  "excludes": [
+    "checksums.json"
+  ],
+  "file_count": 294,
+  "total_bytes": 25317685,
+  "files": {
+    "ASSET_PREVIEW.png": {
+      "bytes": 3256086,
+      "sha256": "2fbe8db03ea27ceeb72468f50c656f460eb2b4038c22e2df2620e35de43b1bfb"
+    },
+    "CLAUDE_HANDOFF.md": {
+      "bytes": 3654,
+      "sha256": "1fbdcb7ec4b8be5b209c6f095e9642f5e9793a5f27024d91a0b3be5e521c5008"
+    },
+    "README.md": {
+      "bytes": 8969,
+      "sha256": "710ea20fd803596edba88ed43ecdee5b52f6a9763fbde8316d1cd5715db2d12e"
+    },
+    "faces_test/manifest.json": {
+      "bytes": 28461,
+      "sha256": "df21ab246d3771b2a557270c3e653129982a4a1eeff7f9b1cd51f52ef71b1d1c"
+    },
+    "faces_test/png/128/black_01_cap_off.png": {
+      "bytes": 24356,
+      "sha256": "b204c0c66468a6b8df0b2666e959c696dea81e72ff45cf44b6e49585f6ab1ad6"
+    },
+    "faces_test/png/128/black_01_cap_on.png": {
+      "bytes": 24480,
+      "sha256": "aef6471df8fbe05a09408352383ac0bb83266e4c58da54e735f8a19d2a0af716"
+    },
+    "faces_test/png/128/ko_30s_01_cap_off.png": {
+      "bytes": 24428,
+      "sha256": "d979c486b85724e7d03908ba2126a369288358f37eed5b101639868268c65561"
+    },
+    "faces_test/png/128/ko_30s_01_cap_on.png": {
+      "bytes": 24793,
+      "sha256": "7c833834bf06e7435f186a8475263e0bd09764ee0dc81238dd22990ab1208721"
+    },
+    "faces_test/png/128/ko_30s_02_cap_off.png": {
+      "bytes": 24256,
+      "sha256": "d7bca9a6aead8c546a516bb8dd1e8ce9ed800042da899390f8e61a6336646ba9"
+    },
+    "faces_test/png/128/ko_30s_02_cap_on.png": {
+      "bytes": 24093,
+      "sha256": "6fa2f072bf57737f4d1e7d31d586a8711b782974a84050033d2d887fadfbd646"
+    },
+    "faces_test/png/128/ko_early20s_01_cap_off.png": {
+      "bytes": 22930,
+      "sha256": "73d15cdd8ddf5511a5aa97314c0407a9475d6ff0190922df1b58b4f5987447e8"
+    },
+    "faces_test/png/128/ko_early20s_01_cap_on.png": {
+      "bytes": 23038,
+      "sha256": "437fb70eada25863f2fee9b95ac66ea0f46bb94f61c705492d7309c438fee179"
+    },
+    "faces_test/png/128/ko_early20s_02_cap_off.png": {
+      "bytes": 23258,
+      "sha256": "1197747e9f2da2477b077ca2185df8b0b4352ab381051de052f646ed171e77a7"
+    },
+    "faces_test/png/128/ko_early20s_02_cap_on.png": {
+      "bytes": 23273,
+      "sha256": "aa67830a797bb644a09f077caaa0e9643f9ea46271987d785ca313efd14afaf7"
+    },
+    "faces_test/png/128/ko_glasses_01_cap_off.png": {
+      "bytes": 24121,
+      "sha256": "3dcc6969647451b8b17f10c545ca28bfbe887d50ff176d400718713237e16002"
+    },
+    "faces_test/png/128/ko_glasses_01_cap_on.png": {
+      "bytes": 23957,
+      "sha256": "a5b679626e0d68e7d53486139441731bf1eb9c5aa39ecf07cc0888d61bf2621d"
+    },
+    "faces_test/png/128/ko_late20s_01_cap_off.png": {
+      "bytes": 24532,
+      "sha256": "c65dd653a2c40a9335d5ae700f0e75a617a77941e9134295163d28d0eedf932c"
+    },
+    "faces_test/png/128/ko_late20s_01_cap_on.png": {
+      "bytes": 24934,
+      "sha256": "c88baf5e1615034a52d9a0f6074b9b81aa0e5500a68c15d70fd7d01578fb8efc"
+    },
+    "faces_test/png/128/ko_late20s_02_cap_off.png": {
+      "bytes": 25070,
+      "sha256": "c584a14772bbe798650e5fa8f2ebc1bdbc229d284447cf3e4f350e8a88327f44"
+    },
+    "faces_test/png/128/ko_late20s_02_cap_on.png": {
+      "bytes": 25056,
+      "sha256": "7f6c1c8fc2c918d23b2c0cacd586806beede204b92dc1e23886258489a68a2fb"
+    },
+    "faces_test/png/128/ko_late30s_beard_01_cap_off.png": {
+      "bytes": 24291,
+      "sha256": "38f80992aad43e6520151d549d481c0d9aa365b0aa888a591e3fdfe362b249be"
+    },
+    "faces_test/png/128/ko_late30s_beard_01_cap_on.png": {
+      "bytes": 24105,
+      "sha256": "e5e0b8d7db02a1c721107f7d022cb4d4bc7c03c3ac84a3eb31cfe7d91010e731"
+    },
+    "faces_test/png/128/latino_01_cap_off.png": {
+      "bytes": 24806,
+      "sha256": "4951dbd0faff79d01cdb4b7cc7671d03fc95276707f0e4bf9f1b5609bfa7b354"
+    },
+    "faces_test/png/128/latino_01_cap_on.png": {
+      "bytes": 24853,
+      "sha256": "d2521225aa70b72fd9f65725b13431f3765ad95e21fc3a470891a87852e50ea5"
+    },
+    "faces_test/png/512/black_01_cap_off.png": {
+      "bytes": 336753,
+      "sha256": "8a7b949a316661051f5c1b220805294743b1f0c2baf9c820672c0927bb1859d2"
+    },
+    "faces_test/png/512/black_01_cap_on.png": {
+      "bytes": 342590,
+      "sha256": "5f0fce7ad80ca3cd561c289f1a5ced82dbfed74a3fdb669b4dc1c546131cfbef"
+    },
+    "faces_test/png/512/ko_30s_01_cap_off.png": {
+      "bytes": 326514,
+      "sha256": "ccd4d6bbc9f1ffe9c0a867d9983ec9e00985cfbfe3a344f8e2e3ecb502f390c5"
+    },
+    "faces_test/png/512/ko_30s_01_cap_on.png": {
+      "bytes": 332687,
+      "sha256": "61b6fd92e8dea9a987aba6dfc8227bf8db9b8ffe98d881d52bacecda3ff7f05e"
+    },
+    "faces_test/png/512/ko_30s_02_cap_off.png": {
+      "bytes": 326091,
+      "sha256": "fc46305f69166aa037d72ed3390d5c64ecc8b3c49c88d7af7241766d9af8d6b9"
+    },
+    "faces_test/png/512/ko_30s_02_cap_on.png": {
+      "bytes": 327168,
+      "sha256": "e0b706e9fe5d6810344507380130e709196c437195dadc6df3a7cd8b67d9e9f2"
+    },
+    "faces_test/png/512/ko_early20s_01_cap_off.png": {
+      "bytes": 306962,
+      "sha256": "35df0fddbec7246e6e85701fc55a12053dd1f92cba3654904a8a97d4381027a5"
+    },
+    "faces_test/png/512/ko_early20s_01_cap_on.png": {
+      "bytes": 307200,
+      "sha256": "6b8fbb1837be5d51a4828fc52f53ef4199219c669b5627e79c29874d74be6354"
+    },
+    "faces_test/png/512/ko_early20s_02_cap_off.png": {
+      "bytes": 310771,
+      "sha256": "1be5e232d91ae44d6d625fba63324fedfeac7729f46e822a4e93433138ea1760"
+    },
+    "faces_test/png/512/ko_early20s_02_cap_on.png": {
+      "bytes": 309892,
+      "sha256": "9742392feea08b567b479b69631b7ee79b4c9f90afe4085425b5c3a490955dec"
+    },
+    "faces_test/png/512/ko_glasses_01_cap_off.png": {
+      "bytes": 329095,
+      "sha256": "25f5250ddd8bdc8eaf44e37a37553af0a7ad895331986ed6a1bc879b958032e7"
+    },
+    "faces_test/png/512/ko_glasses_01_cap_on.png": {
+      "bytes": 330655,
+      "sha256": "5101b05e98322aa330961df6caf1380d47c3577745ce9dcf74a58b3e128a7ba9"
+    },
+    "faces_test/png/512/ko_late20s_01_cap_off.png": {
+      "bytes": 331603,
+      "sha256": "7f4a54736d25c277b3a73d0e691943bf60be1022db00d2ad9563b0039211b052"
+    },
+    "faces_test/png/512/ko_late20s_01_cap_on.png": {
+      "bytes": 340069,
+      "sha256": "65fe629249d264cd71e600c130f9ace0a757eae869b768328108797dbfa35bf6"
+    },
+    "faces_test/png/512/ko_late20s_02_cap_off.png": {
+      "bytes": 354733,
+      "sha256": "afa4f83e5761cffd57a9c6c6c77250510271b5560a2f0010909141d755e6dc4c"
+    },
+    "faces_test/png/512/ko_late20s_02_cap_on.png": {
+      "bytes": 356868,
+      "sha256": "0f18bc1fe890528971a27cce49ae4deda2bd3dc4a0bffe3c82437ceb89859d54"
+    },
+    "faces_test/png/512/ko_late30s_beard_01_cap_off.png": {
+      "bytes": 337126,
+      "sha256": "6187cf920b389134e0c2946b24d24ec33a61a3e49c2d4868980417a2f47f9cad"
+    },
+    "faces_test/png/512/ko_late30s_beard_01_cap_on.png": {
+      "bytes": 335424,
+      "sha256": "0e0fc3c4d7d0dc464fb2b710ed0fb36389f848b3ff7117059273fefef7cddd58"
+    },
+    "faces_test/png/512/latino_01_cap_off.png": {
+      "bytes": 336033,
+      "sha256": "d3664b2723acf4f121901953ec41d4a5cff54d7890356366777555a7b4ca07eb"
+    },
+    "faces_test/png/512/latino_01_cap_on.png": {
+      "bytes": 340334,
+      "sha256": "2a98d2541e543e2c8f633805962ee8a16f118438dfde6e2eadc664f2b36f2ea1"
+    },
+    "feats/png/128/career_milestone_frame.png": {
+      "bytes": 15772,
+      "sha256": "1aadf25b1e483c229c6e26b05a5e299dea66c960b4c52e647b47bcec83ea4b95"
+    },
+    "feats/png/128/consecutive_home_runs.png": {
+      "bytes": 19880,
+      "sha256": "223ca921786e7287114d5f697610c4e94ff025fbfc936a695e65a9c54e3b6447"
+    },
+    "feats/png/128/cycling_hit.png": {
+      "bytes": 21384,
+      "sha256": "ed40d2a10a667ffdaac10023aaf5c33770dc79afbaa4d17f5f543491763a8196"
+    },
+    "feats/png/128/fifteen_strikeouts.png": {
+      "bytes": 15786,
+      "sha256": "7855170adfc1e110167f3b0cf9f1273c63bace99a2ea0b408c863ca37e4c3544"
+    },
+    "feats/png/128/four_home_runs.png": {
+      "bytes": 17058,
+      "sha256": "ed5fd58fac6ad11146a8a6a1b9545b8c9bf2e2a549e25fca6526ff586dfe3ab9"
+    },
+    "feats/png/128/grand_slam.png": {
+      "bytes": 18477,
+      "sha256": "4356083a6bf2a71386094093f184da46f273b0d788beefa0e936590883429478"
+    },
+    "feats/png/128/hitting_streak.png": {
+      "bytes": 18813,
+      "sha256": "eb88990ce74fc6e1d47dc30d147fda0a70f53fcebff819dd7968231585244d2c"
+    },
+    "feats/png/128/no_hitter.png": {
+      "bytes": 17497,
+      "sha256": "7ca1cb8dd57b3e522e79bd4181f4baa27a2d59e1dba5336dc3c69f169ab88877"
+    },
+    "feats/png/128/perfect_game.png": {
+      "bytes": 17884,
+      "sha256": "b1d23de2ac312966cf683f4c63038ba1d6eafd357788c8a13dcdfaf1e60c5e68"
+    },
+    "feats/png/128/season_record_frame.png": {
+      "bytes": 16413,
+      "sha256": "b2d7121b289fd9be0462a36f800f2843f92b4a10c5ec1f8ec0d52a70f80d76a3"
+    },
+    "feats/png/128/walk_off_home_run.png": {
+      "bytes": 16165,
+      "sha256": "3d9584a0c3a8f26cb970e8b229c580b932687cd03bb0fa9533fd7cc3b6ca6c41"
+    },
+    "feats/png/256/career_milestone_frame.png": {
+      "bytes": 44237,
+      "sha256": "fa7883d356c3d4497db1cfb09c88fd6f01eb6734173d0324bdaba5ba7f5ee576"
+    },
+    "feats/png/256/consecutive_home_runs.png": {
+      "bytes": 58841,
+      "sha256": "80a833357479f18a1b52fef8d5d7e1f20834b7af0a9cb47877284a0ae5335926"
+    },
+    "feats/png/256/cycling_hit.png": {
+      "bytes": 63038,
+      "sha256": "1577b50e16b43b0279d5600c6b9f965f7342263da57e54f3b34b89507a0dcf6b"
+    },
+    "feats/png/256/fifteen_strikeouts.png": {
+      "bytes": 42847,
+      "sha256": "8d18a2b636cce96542cdea2d2728b5023465ba29b8a0726020cd33dfb9dd5249"
+    },
+    "feats/png/256/four_home_runs.png": {
+      "bytes": 48676,
+      "sha256": "1d5974979af50a8212c98fef50541e4576f9f0859ab6456d79e15ddeb8649369"
+    },
+    "feats/png/256/grand_slam.png": {
+      "bytes": 52859,
+      "sha256": "e21c5932962daf292ba12b630296cef6d60a09901a194ba1a4ef5f7a675205e7"
+    },
+    "feats/png/256/hitting_streak.png": {
+      "bytes": 54924,
+      "sha256": "fc3cc0ee8f22a2a4ac0c6e2f0150bf36252a8f47b01c5a08e2ac86bae0984d43"
+    },
+    "feats/png/256/no_hitter.png": {
+      "bytes": 49357,
+      "sha256": "e9a47ac4ab529889ebf98edf2236763fa5425efc4e4959e75d0049511336138b"
+    },
+    "feats/png/256/perfect_game.png": {
+      "bytes": 50590,
+      "sha256": "ca4bd17692f8ac370156f1ad0dc8c9e20ba0e58034cd2ef6598622cfbe47938a"
+    },
+    "feats/png/256/season_record_frame.png": {
+      "bytes": 46893,
+      "sha256": "df608c6d47fe9c305346c193450dca6362ba47b353e799f3baba4350f16ed79b"
+    },
+    "feats/png/256/walk_off_home_run.png": {
+      "bytes": 45424,
+      "sha256": "9805e1d78bdd208651036b49c6300202b175146209f1be3466e268a5f44b67f5"
+    },
+    "feats/png/512/career_milestone_frame.png": {
+      "bytes": 137308,
+      "sha256": "334933a5206eb1bd03d07afdbd88728f58e34f2593bc327cfd1eba8c2e46b25d"
+    },
+    "feats/png/512/consecutive_home_runs.png": {
+      "bytes": 176065,
+      "sha256": "41a668934754cf23115dabc8fbdef0cf25c1997dcb5951e8991e85802d900a62"
+    },
+    "feats/png/512/cycling_hit.png": {
+      "bytes": 186057,
+      "sha256": "a633b5d379d8e1f4023d8f04be744dac9c64c8b4681d061d281e4c0b620f858e"
+    },
+    "feats/png/512/fifteen_strikeouts.png": {
+      "bytes": 131401,
+      "sha256": "98e3ae56f7b165f601cc327fda078585ca5abac409b015a955ca746635fee8b0"
+    },
+    "feats/png/512/four_home_runs.png": {
+      "bytes": 150794,
+      "sha256": "eaa72939bb79c7e6a2e99ee36136b38192fcde3ed996807cd3536ce96377768d"
+    },
+    "feats/png/512/grand_slam.png": {
+      "bytes": 161031,
+      "sha256": "8596bf3fa2a44fb1e3fad321c04a3d9b09863be599a4c568022c00543d6eb96d"
+    },
+    "feats/png/512/hitting_streak.png": {
+      "bytes": 164425,
+      "sha256": "480f96f79e6b431c9cf758893cc0e5b74f5271dc972d70b9141233d1d4bdf8e1"
+    },
+    "feats/png/512/no_hitter.png": {
+      "bytes": 151098,
+      "sha256": "667bc51b8ec5ba53e05c6f3009b62caf5bae6cc95af0272c95665b8f652f088c"
+    },
+    "feats/png/512/perfect_game.png": {
+      "bytes": 154397,
+      "sha256": "3ce90d4891ef04f041be6b6011ad790111335558e5c4218983a54ab5ce4460e4"
+    },
+    "feats/png/512/season_record_frame.png": {
+      "bytes": 144768,
+      "sha256": "7400bbf4d4968d1aa75100645c6e62771321e69646b523cb044cd7b7c55b6532"
+    },
+    "feats/png/512/walk_off_home_run.png": {
+      "bytes": 140624,
+      "sha256": "df9827f05306f4051b3f5241034404e17f821ce18067cda70fbd9e7d56787e55"
+    },
+    "feats/png/64/career_milestone_frame.png": {
+      "bytes": 5718,
+      "sha256": "70c9872169d9be477f3fb9b39647c076a4f2fcc062a482d0768215da6f2844ba"
+    },
+    "feats/png/64/consecutive_home_runs.png": {
+      "bytes": 6782,
+      "sha256": "af7a4848155fb2a1ddb6958fb7d93a0a67372be8f65905ead1e703762741f1de"
+    },
+    "feats/png/64/cycling_hit.png": {
+      "bytes": 7336,
+      "sha256": "c19931393a4617675f2aa24d29ecc03b189f05dcd19f75da128ff478145ac54e"
+    },
+    "feats/png/64/fifteen_strikeouts.png": {
+      "bytes": 5949,
+      "sha256": "2ae47de2006c5933ad4396033405defd2f6e8163c438635f912d001ea47b79ec"
+    },
+    "feats/png/64/four_home_runs.png": {
+      "bytes": 6191,
+      "sha256": "1c11d48cef3fe2f5110392a84918fec7816c4c20c33410b518bd9216301ee4ff"
+    },
+    "feats/png/64/grand_slam.png": {
+      "bytes": 6682,
+      "sha256": "4247019e6ed384861b2ef81cdc29914601514b181dddfac2cbbe5867ef422f27"
+    },
+    "feats/png/64/hitting_streak.png": {
+      "bytes": 6442,
+      "sha256": "e6a370ecd939eb677f4f66478d84ff8ded7cb2d45d65e7db72fd88457b4893af"
+    },
+    "feats/png/64/no_hitter.png": {
+      "bytes": 6425,
+      "sha256": "2a5c51548ce7b1bf63d6f9ef6b95fff7aa68133e29499918d987deb1857c7522"
+    },
+    "feats/png/64/perfect_game.png": {
+      "bytes": 6482,
+      "sha256": "2500d9c25dc6a9b27532d452ee70fc76c66ecb7a63029d57d92ba36299de7847"
+    },
+    "feats/png/64/season_record_frame.png": {
+      "bytes": 5948,
+      "sha256": "08b67a99434a35914299aa9517bfb975b31c7cc42b7c99e393255dac09f0d3c0"
+    },
+    "feats/png/64/walk_off_home_run.png": {
+      "bytes": 5971,
+      "sha256": "01191da021f0be4314ae5a6410868cbabc17c7a7acc22150a81d9b28e653bace"
+    },
+    "feats/webp/128/career_milestone_frame.webp": {
+      "bytes": 11708,
+      "sha256": "6f36caa60432459fb5eb155ffb815e7d09f951bd10ddd150e746e74417aa777c"
+    },
+    "feats/webp/128/consecutive_home_runs.webp": {
+      "bytes": 14394,
+      "sha256": "99b2272fbc2ea31f20e3dcfee59f9932f9b772bce47bc3ed2ae6b25fc7510caf"
+    },
+    "feats/webp/128/cycling_hit.webp": {
+      "bytes": 14638,
+      "sha256": "ba226239043b5683345ba4326e2642fae7410c7627594888231baf8592c3be45"
+    },
+    "feats/webp/128/fifteen_strikeouts.webp": {
+      "bytes": 11440,
+      "sha256": "7250439a60a2d3ec381ec3865f1eb1d7dcb192692f733b3630d27768a7dfd2a6"
+    },
+    "feats/webp/128/four_home_runs.webp": {
+      "bytes": 13370,
+      "sha256": "25c37c0d66ea6ce9f405c95d41af83392b5cbd940558f13aaf1a489c18ef9e43"
+    },
+    "feats/webp/128/grand_slam.webp": {
+      "bytes": 13596,
+      "sha256": "95ccf0eae3afe84db6eef335c32ab060dfd731283cc877a4e0cce34ce6afcaff"
+    },
+    "feats/webp/128/hitting_streak.webp": {
+      "bytes": 13636,
+      "sha256": "c83d5b2f3bfe8fbf462f8f2525b9e8684438bc99dbc5ee1f0efa120c2f214a07"
+    },
+    "feats/webp/128/no_hitter.webp": {
+      "bytes": 12268,
+      "sha256": "831f993c0348e6c48498497bb3903bc8580d05b29503df4a11e6dd6965b79c20"
+    },
+    "feats/webp/128/perfect_game.webp": {
+      "bytes": 12504,
+      "sha256": "ebf09d0ecf8ddb792deaad04e189bcb5489697b0ffd36793dbea92acccccefa8"
+    },
+    "feats/webp/128/season_record_frame.webp": {
+      "bytes": 12460,
+      "sha256": "98930961693c45856350c0a485d23d7602391178b9746613e95afe635310a241"
+    },
+    "feats/webp/128/walk_off_home_run.webp": {
+      "bytes": 11964,
+      "sha256": "e256d13eccd1c6d39756b919c6ef01622cf9e57b657bfd6a50405af16a6c5d33"
+    },
+    "feats/webp/256/career_milestone_frame.webp": {
+      "bytes": 31048,
+      "sha256": "4e4df79553d7e1a0a54eed3a43f659e2e62ce63d5b9fc1e69f92f3b1d22875eb"
+    },
+    "feats/webp/256/consecutive_home_runs.webp": {
+      "bytes": 40042,
+      "sha256": "76db17e935f34dfba47aafca730fd6e4fed90f9133bf65799b19fcaa5385c3d6"
+    },
+    "feats/webp/256/cycling_hit.webp": {
+      "bytes": 41096,
+      "sha256": "e8a5629059f99781bf80e240122c5341450c599593bf53390a8c123e4632316e"
+    },
+    "feats/webp/256/fifteen_strikeouts.webp": {
+      "bytes": 30036,
+      "sha256": "0d84039e748a3eeef446e387bb1a9f30cbe9e6d82a044f528e5d9a1d61bb0cdc"
+    },
+    "feats/webp/256/four_home_runs.webp": {
+      "bytes": 35908,
+      "sha256": "7d15c9dfb7cc6abef365ab157781c3a2d88db6c3de3d4fafd4cda76be1567e60"
+    },
+    "feats/webp/256/grand_slam.webp": {
+      "bytes": 36374,
+      "sha256": "6c3e4174e436dbc18e1483c15b55faf1038aeafb88cfca2737572c9b76db73e2"
+    },
+    "feats/webp/256/hitting_streak.webp": {
+      "bytes": 37084,
+      "sha256": "8c2f367a57a6a397961e2eb49b4b85c87ce4e36ff59710ed9a48ff0d4e670e1c"
+    },
+    "feats/webp/256/no_hitter.webp": {
+      "bytes": 33146,
+      "sha256": "e98f241df252578d242dc0e227afad5b26e52b50b80b49f2ecb5e0f96fe3f605"
+    },
+    "feats/webp/256/perfect_game.webp": {
+      "bytes": 33274,
+      "sha256": "dda49822f78d9165d829ad386e99d7e8ce49780b2e673d3a2eaefd26311e72a5"
+    },
+    "feats/webp/256/season_record_frame.webp": {
+      "bytes": 33766,
+      "sha256": "7d0a858e7b7af099d844d506d7c8fa93b607965d5559146ae9ca66a7d3bb814a"
+    },
+    "feats/webp/256/walk_off_home_run.webp": {
+      "bytes": 32232,
+      "sha256": "20813e9aaee18b0a80615c13b763fe8739c7b92836f4535ec81a8f13606993e9"
+    },
+    "feats/webp/512/career_milestone_frame.webp": {
+      "bytes": 94834,
+      "sha256": "92ed9a6e3e0ba176f7561493e3267a60f77edfffa136d9f3560425c04994d0f7"
+    },
+    "feats/webp/512/consecutive_home_runs.webp": {
+      "bytes": 118110,
+      "sha256": "72cb99f188b93ddd9c0b87d2518a4897dab8ba19345f3ffd1704169b285c97a1"
+    },
+    "feats/webp/512/cycling_hit.webp": {
+      "bytes": 119512,
+      "sha256": "4fc24eb1a11cff8184a5e05d7d4c63cb2dc15fb7fee2ef217b5daedbade7345b"
+    },
+    "feats/webp/512/fifteen_strikeouts.webp": {
+      "bytes": 90186,
+      "sha256": "a9337f3c7b971d1110749eb4f75bfddcaf75b058e13222b90a0a9e0ff02cf210"
+    },
+    "feats/webp/512/four_home_runs.webp": {
+      "bytes": 105598,
+      "sha256": "4f3314980c7ee246dab0f88d1875bafcdd753f76c0e56104f1fbfaf8e3df5327"
+    },
+    "feats/webp/512/grand_slam.webp": {
+      "bytes": 106648,
+      "sha256": "f406d0a187662bbfe697e5a5064628d241c31bda16dcba77639797ca6117a921"
+    },
+    "feats/webp/512/hitting_streak.webp": {
+      "bytes": 109664,
+      "sha256": "909653bb091517f8821973dc1aa2dc5aa766d8030b17a0e4c5150aa6c9fa7dc8"
+    },
+    "feats/webp/512/no_hitter.webp": {
+      "bytes": 101222,
+      "sha256": "0984d573c4a287a20f38952fc89a7457da22908a2a4b8d726c4034eda7d39c60"
+    },
+    "feats/webp/512/perfect_game.webp": {
+      "bytes": 102124,
+      "sha256": "b29eadbb698ff3d8f58b49ec55d2cd7f75f9d170ca47c2c568ab51bc80bcc710"
+    },
+    "feats/webp/512/season_record_frame.webp": {
+      "bytes": 101542,
+      "sha256": "7eedb27cf0ad578fc2801d711d92965b2de0a4a665966c6f82d305545d043e3e"
+    },
+    "feats/webp/512/walk_off_home_run.webp": {
+      "bytes": 96524,
+      "sha256": "8a1d541da7737757494b1d1a7ac2f17a2848776264a01713c43b1f6b546e80a9"
+    },
+    "feats/webp/64/career_milestone_frame.webp": {
+      "bytes": 4516,
+      "sha256": "25b8fea11d1d9d89894559ed60c33f1fb156c6f283e6681dc23d6a408fdb2ee9"
+    },
+    "feats/webp/64/consecutive_home_runs.webp": {
+      "bytes": 5310,
+      "sha256": "7a1645b987c3a60c869b10113f73950944dd6a53755407db1b0bc25bae8d7da0"
+    },
+    "feats/webp/64/cycling_hit.webp": {
+      "bytes": 5450,
+      "sha256": "9a21674e3b1fc606375905568a213aac91aa4185a22c67085c0ae92cb1189bab"
+    },
+    "feats/webp/64/fifteen_strikeouts.webp": {
+      "bytes": 4606,
+      "sha256": "9f6f2f17138e083f2586444547f8ffcc1f58edf7e9856dce7d45b211870850b1"
+    },
+    "feats/webp/64/four_home_runs.webp": {
+      "bytes": 5244,
+      "sha256": "daef13899f22f170287b44f3cf35e09f4779e1663be227704438cc698b5d9546"
+    },
+    "feats/webp/64/grand_slam.webp": {
+      "bytes": 5450,
+      "sha256": "15aab902fdeb67c414c667d73e26d929ab8bb0f69876fa5c12529e7b47414660"
+    },
+    "feats/webp/64/hitting_streak.webp": {
+      "bytes": 5116,
+      "sha256": "80b75fcbe86a2328157130180ddc42b7200f4a20f512096601df336ecd48c137"
+    },
+    "feats/webp/64/no_hitter.webp": {
+      "bytes": 4814,
+      "sha256": "cd35ff7954068a051360daaed92957056ddba1cfd5d43195157e5efc50b4beec"
+    },
+    "feats/webp/64/perfect_game.webp": {
+      "bytes": 4792,
+      "sha256": "a4ef5993a79fe99f45a24a921397a978d40c156d98d13d8db10c28f95307afc7"
+    },
+    "feats/webp/64/season_record_frame.webp": {
+      "bytes": 4722,
+      "sha256": "f8694af5758edf0145bac01a3d9ef168c16825e1bf8a8412ac2025fa763afaa0"
+    },
+    "feats/webp/64/walk_off_home_run.webp": {
+      "bytes": 4744,
+      "sha256": "e860ddc109e963011f2b16bdd0d1a2143472b015050d645e18ecf0a26d09d8fe"
+    },
+    "manifest.json": {
+      "bytes": 97634,
+      "sha256": "6c94265e4d45825b53a3cb719d61af4ca36d9860c602c84cbd6cb1aaa66a174a"
+    },
+    "previews/collectibles_64px.png": {
+      "bytes": 126580,
+      "sha256": "ced29c6e219061797b2e913dfbc60109d00cfca1e7ab4908998579d32cc721e1"
+    },
+    "previews/collectibles_light.png": {
+      "bytes": 554250,
+      "sha256": "6e568514fe910a621b0e2eee97b1d415b990fa2bcb6bb1c49fc53081916d6816"
+    },
+    "previews/faces_pairs.png": {
+      "bytes": 2072659,
+      "sha256": "4eab85e27ddce448d039387cde4e169dee8e7555592b5f22ae5079c0068d06d2"
+    },
+    "previews/feats_dark.png": {
+      "bytes": 381228,
+      "sha256": "9bc76c4c7dc097b79db5d5389cd887e0355bb3ff75d4b0860b39249df6e30cf3"
+    },
+    "previews/text_slots.png": {
+      "bytes": 265686,
+      "sha256": "475a2d37bc1cbb581eee9d1b6ed5501ad35005a9bccb64f5bf3dd5b182e5cbc6"
+    },
+    "previews/trophies_dark.png": {
+      "bytes": 450209,
+      "sha256": "f45a40493ac3b0e77a6692d831eb8e8f95080e9b3ae01e141e63d9dc133415f6"
+    },
+    "source/pbr_collectibles.blend": {
+      "bytes": 1173709,
+      "sha256": "d3f9aba498c2581a90c18971fe03de4fd6296a8ec74a7285e8c07de16f549768"
+    },
+    "source/text_slots.json": {
+      "bytes": 26955,
+      "sha256": "53ffcfd9a65459836ac4dd9b5fe876352826c5c4bc17e7246b82f7e2463ee5ac"
+    },
+    "trophies/png/128/all_star_dream_badge.png": {
+      "bytes": 15375,
+      "sha256": "ebbe9bfbf96e8ef402c90e3d9f722f58a03d6a44c6091c2a29fb28f623514e9c"
+    },
+    "trophies/png/128/all_star_mvp.png": {
+      "bytes": 10853,
+      "sha256": "133675dffe66704be38291998ca56e8dff80130071afb0055d8f48499f643c9d"
+    },
+    "trophies/png/128/all_star_nanum_badge.png": {
+      "bytes": 15324,
+      "sha256": "d6b341e26a07fe5bf086759e74f42077b125eb4452ce5228246c4095c3d5b7af"
+    },
+    "trophies/png/128/batting_title.png": {
+      "bytes": 11106,
+      "sha256": "c8aef8c592ad746a672fcaaf322b84d39f4b9f6f1a089cf29d45c111738a09a9"
+    },
+    "trophies/png/128/batting_title_blank.png": {
+      "bytes": 10946,
+      "sha256": "06999369456c6a33f476500ecc07caeb84c0c320b637072716096abd74aebc55"
+    },
+    "trophies/png/128/championship_ring.png": {
+      "bytes": 11496,
+      "sha256": "eae780431f9353497f5e94c61e835629437055b2b024e0edbe3fee2e873fb208"
+    },
+    "trophies/png/128/championship_trophy.png": {
+      "bytes": 13412,
+      "sha256": "68c2dcf3041f5d86d226ee0454ab5ae011b03a71941a2b32a5728e8f83532b7c"
+    },
+    "trophies/png/128/golden_glove.png": {
+      "bytes": 13581,
+      "sha256": "14aa22780afae48a2738c07377066dc70a757655b7e16ac443ca7b4401a5450f"
+    },
+    "trophies/png/128/hall_of_fame_plaque.png": {
+      "bytes": 13257,
+      "sha256": "3c5f58bb3c1ef605203dfae11a00e6f49c2bf6b394c632b57bacf8db7980fa3c"
+    },
+    "trophies/png/128/manager_trophy.png": {
+      "bytes": 10570,
+      "sha256": "a2d82c768ec8433894e2567a1bc4b1d1b8fe05913b704ee05abcab2d55ab1b4a"
+    },
+    "trophies/png/128/mvp_trophy.png": {
+      "bytes": 10902,
+      "sha256": "72a00e391bc8cd91dc1e0bf6b92320105a769373c168d7ac76b647b55cddb838"
+    },
+    "trophies/png/128/national_bronze_medal.png": {
+      "bytes": 13470,
+      "sha256": "7b39b5399b59ba51098cff0de38fb3caeb10f1025a84c3eaeb14ed75a2229851"
+    },
+    "trophies/png/128/national_gold_medal.png": {
+      "bytes": 13443,
+      "sha256": "46af6da703a66433054284a636746b85b98083bee816891695cc86ccfc23e175"
+    },
+    "trophies/png/128/national_silver_medal.png": {
+      "bytes": 13192,
+      "sha256": "41aecb7d01aa11ed8fa3605b8c6f5d572a37696b8269b2ca7fdc68e7cfb3671c"
+    },
+    "trophies/png/128/pitching_title.png": {
+      "bytes": 12171,
+      "sha256": "3315a8e41fad509a3493e8fc133dda4d96dfee13d32d22c2e6b037bcadbf80a0"
+    },
+    "trophies/png/128/pitching_title_blank.png": {
+      "bytes": 11985,
+      "sha256": "14c69899ba3168f667b21a35d53dd60188848b29c81933691a0bfdf177ceec69"
+    },
+    "trophies/png/128/regular_season_pennant.png": {
+      "bytes": 10063,
+      "sha256": "028bbfd534502c3ed1a5ba249294437afb6de5cf42fa410314c923b456ef2c2f"
+    },
+    "trophies/png/128/rookie_trophy.png": {
+      "bytes": 10454,
+      "sha256": "5232e749e57ce1d67ef2778ab6a1baf8730343035ed2d5623908b6ee006b6b97"
+    },
+    "trophies/png/128/runner_up_trophy.png": {
+      "bytes": 13943,
+      "sha256": "7f995cd9733ba6d11298e6ea42b7a7b1198fb3d4cd9a34621f6353c21602b5cb"
+    },
+    "trophies/png/256/all_star_dream_badge.png": {
+      "bytes": 46569,
+      "sha256": "4540a8dcc57b32f0baf65a7f5418677bb9b4803cf198faaa69a11dcb09fabf15"
+    },
+    "trophies/png/256/all_star_mvp.png": {
+      "bytes": 30819,
+      "sha256": "1745d968c3094ed2eb2af02c80a8ed3b4263bc6113f20afce9e4ac7bfe00f61f"
+    },
+    "trophies/png/256/all_star_nanum_badge.png": {
+      "bytes": 46673,
+      "sha256": "99bf350a7779389a3d41dcf8a1025e2036641a3a53087b1035af314baeeeb609"
+    },
+    "trophies/png/256/batting_title.png": {
+      "bytes": 34329,
+      "sha256": "7afc5574489b99c457e35cb5d0260700326a30dd820e24b339cc41c21de063b8"
+    },
+    "trophies/png/256/batting_title_blank.png": {
+      "bytes": 33542,
+      "sha256": "f2b1a6e7c8b1d7cd6a122b46c014d0a997b6cc6421a8424affb8dfe1a27f1194"
+    },
+    "trophies/png/256/championship_ring.png": {
+      "bytes": 33017,
+      "sha256": "4721b388b5fc2b9dc357e028205d72779daac07703ef6e459c90d9262a85d286"
+    },
+    "trophies/png/256/championship_trophy.png": {
+      "bytes": 39350,
+      "sha256": "de957d09d60026ca92811733d6759a33b055496101c389ea10be8baa1094b514"
+    },
+    "trophies/png/256/golden_glove.png": {
+      "bytes": 41745,
+      "sha256": "f6a81eccb38b8de0e8797b85f17e09dee7a4af4a19af7b5cb8e01f6a85cb2fc6"
+    },
+    "trophies/png/256/hall_of_fame_plaque.png": {
+      "bytes": 41854,
+      "sha256": "d634420099b412dbcc7b50d37d8b4b6064f7101411e02e80637b332335274ca1"
+    },
+    "trophies/png/256/manager_trophy.png": {
+      "bytes": 30633,
+      "sha256": "d672384f499839471c0593bb1870f1aa47bfd43b1ea998a04c2cfeb3402479d6"
+    },
+    "trophies/png/256/mvp_trophy.png": {
+      "bytes": 31896,
+      "sha256": "55815889d9a5978317d20426c3161458488333ffd41cd06b63c6fa9adeb16ea5"
+    },
+    "trophies/png/256/national_bronze_medal.png": {
+      "bytes": 39705,
+      "sha256": "ca6dfbb121b5434f079357e3322402040a5e2adb1ac2c45937854884bf2c5ca2"
+    },
+    "trophies/png/256/national_gold_medal.png": {
+      "bytes": 39876,
+      "sha256": "3bb2d4102d6c2207adcc972733e3f13eb1ff682adc7fb45c645f5b4988e7f1d4"
+    },
+    "trophies/png/256/national_silver_medal.png": {
+      "bytes": 39127,
+      "sha256": "b74791ae417b12ad676db4f87d729beddb56d204ec4e71ae0a8ef62985ef6fa4"
+    },
+    "trophies/png/256/pitching_title.png": {
+      "bytes": 37705,
+      "sha256": "95601e66b40ab938d0e9900d854382127dbdbf9fd028505db05bcb5a94b0cfb4"
+    },
+    "trophies/png/256/pitching_title_blank.png": {
+      "bytes": 36884,
+      "sha256": "a0c598828940e81d15fc217bd619d535057e28616dbb40dd4844c39c9c400341"
+    },
+    "trophies/png/256/regular_season_pennant.png": {
+      "bytes": 29288,
+      "sha256": "a28430bb1439c3aaa6d8af769d9679b49b79c2d082c418449ff752a2c628daf6"
+    },
+    "trophies/png/256/rookie_trophy.png": {
+      "bytes": 29643,
+      "sha256": "2f6e77aa31bb152f0b60425774def84bc76b19503a201647fa331dcd4fc95180"
+    },
+    "trophies/png/256/runner_up_trophy.png": {
+      "bytes": 41839,
+      "sha256": "80ef609b068c9f547c7b879b52d751f73d7662504a43ab9a905364f82059dcc7"
+    },
+    "trophies/png/512/all_star_dream_badge.png": {
+      "bytes": 146781,
+      "sha256": "07c1717a0ca5ffb8ec074c8fbb1581c6fe66f49a2d9d943c9121263ef4f95f9e"
+    },
+    "trophies/png/512/all_star_mvp.png": {
+      "bytes": 96468,
+      "sha256": "51d35a319c567d8a2488f1d3a5492dbfe430d0c600a9bdfb88215388231c621b"
+    },
+    "trophies/png/512/all_star_nanum_badge.png": {
+      "bytes": 147126,
+      "sha256": "5795b6e48c7ea661af2bfe2a8c391d980cb9b3267cf5393aa14339749f1f3470"
+    },
+    "trophies/png/512/batting_title.png": {
+      "bytes": 109710,
+      "sha256": "4ef5e75ed26d3c5a76ee7822f1140f8f6b0be41db58f898af2d8f85d37545788"
+    },
+    "trophies/png/512/batting_title_blank.png": {
+      "bytes": 107095,
+      "sha256": "ca98d62803a09c5ac0e364e3b3ed87e83211d8b753f4be225d8c9c047a96a86f"
+    },
+    "trophies/png/512/championship_ring.png": {
+      "bytes": 103930,
+      "sha256": "b078199d457c91ba42ba7f22461d7d758fd719458daf849d3310ec49bd30fa4f"
+    },
+    "trophies/png/512/championship_trophy.png": {
+      "bytes": 122879,
+      "sha256": "fb92a9710197e5594610b441c176ce262a4007f99440ddddbce664c66498989e"
+    },
+    "trophies/png/512/golden_glove.png": {
+      "bytes": 133428,
+      "sha256": "c374194748c87750df27a3c4055648e4a3a06957abcc71ea57686fd0d31e5f5e"
+    },
+    "trophies/png/512/hall_of_fame_plaque.png": {
+      "bytes": 134113,
+      "sha256": "7e9905324bdefb30cdfe3c8b885d7625be429c00470baa7e5dbd3110f9a9afd9"
+    },
+    "trophies/png/512/manager_trophy.png": {
+      "bytes": 95304,
+      "sha256": "f43737747d725e1c4a6914cbe2fffe35e7cce38803937c50d22fc779156f324a"
+    },
+    "trophies/png/512/mvp_trophy.png": {
+      "bytes": 98572,
+      "sha256": "7722f6d5ef0091397f0e993e5361d24e872285bf71f9833bc90933a5c30ec621"
+    },
+    "trophies/png/512/national_bronze_medal.png": {
+      "bytes": 125503,
+      "sha256": "a8ed6f48910751f18bc590363813e5762d78adc7cfc64660c5b61854780b6569"
+    },
+    "trophies/png/512/national_gold_medal.png": {
+      "bytes": 128390,
+      "sha256": "e6bb33dbe963f1b7f28b6afcfa43088ac662646ac6ab5e4d3d18d20112b5624a"
+    },
+    "trophies/png/512/national_silver_medal.png": {
+      "bytes": 126027,
+      "sha256": "d3c66e68a031b751c133d1720bdddd35abd1d3b86d1ba0e95f609406864eb836"
+    },
+    "trophies/png/512/pitching_title.png": {
+      "bytes": 120214,
+      "sha256": "37e2c5995cf27d0cdc351d019dc1f2a0a6f363f8aca39e5e8ca64ecfc9834eb4"
+    },
+    "trophies/png/512/pitching_title_blank.png": {
+      "bytes": 117081,
+      "sha256": "406966948e21d784b29fbbb617d6d677ea151c6ee952d55c3bb022438d11c57c"
+    },
+    "trophies/png/512/regular_season_pennant.png": {
+      "bytes": 91817,
+      "sha256": "a4cae966266ffebb717da77728b179cb0332195f5d0cd18ac3691f459f4e1a94"
+    },
+    "trophies/png/512/rookie_trophy.png": {
+      "bytes": 93349,
+      "sha256": "20961b1b7d423648f4dda56ef0a40e757fd02756fcfe7c189c977b13855851cd"
+    },
+    "trophies/png/512/runner_up_trophy.png": {
+      "bytes": 131281,
+      "sha256": "1f8803cca7af527f6959cac6513208800300db54527455c6e298b7649c634978"
+    },
+    "trophies/png/64/all_star_dream_badge.png": {
+      "bytes": 5161,
+      "sha256": "e8678f65ba416ad09fc1ffb34abdc2db9ce8a20a9ca811ed2bb02748644b4a3b"
+    },
+    "trophies/png/64/all_star_mvp.png": {
+      "bytes": 3939,
+      "sha256": "6d158a67f0be18e354ab5148615185ace7511e36f349918524be81060acbdb2c"
+    },
+    "trophies/png/64/all_star_nanum_badge.png": {
+      "bytes": 5108,
+      "sha256": "9cb039165464f116406e38ab7e7b08edfffe9c940013f48a2a15851abb8819d4"
+    },
+    "trophies/png/64/batting_title.png": {
+      "bytes": 3766,
+      "sha256": "01e6c2d9f315d502c6bc2ed091d57e33103ca47f8b71be8b332e1f27c481b8c7"
+    },
+    "trophies/png/64/batting_title_blank.png": {
+      "bytes": 3739,
+      "sha256": "07b865090e40965f63cbe8631e3450c24c4becf4cdf87277220484a4572171b1"
+    },
+    "trophies/png/64/championship_ring.png": {
+      "bytes": 4131,
+      "sha256": "013f2b9e35fd0da4596d7545c456d4b42917f03dad7a91aab207b4a20cafb2dc"
+    },
+    "trophies/png/64/championship_trophy.png": {
+      "bytes": 4596,
+      "sha256": "86f03139ca3b26116e124da99d998d67210d712e2bf0556abcee9c07c4f9930e"
+    },
+    "trophies/png/64/golden_glove.png": {
+      "bytes": 4498,
+      "sha256": "b5724d205ea49fd8acdd693c0af7de618357331070c2fe9961c6ce15aeca36e7"
+    },
+    "trophies/png/64/hall_of_fame_plaque.png": {
+      "bytes": 4286,
+      "sha256": "a384c4dfd5dcaba3fe72137ed9b8acda39fca6fdc2f0eb56c28703d45bea4078"
+    },
+    "trophies/png/64/manager_trophy.png": {
+      "bytes": 3775,
+      "sha256": "2447b7a42fe2b97ce77c57795cdd424ebb94faa84211c8e20181f049b6757850"
+    },
+    "trophies/png/64/mvp_trophy.png": {
+      "bytes": 3812,
+      "sha256": "d84efaeb874117983767e2d21798e7310456c2600c6b80ab14acfb9812b1d4b6"
+    },
+    "trophies/png/64/national_bronze_medal.png": {
+      "bytes": 4657,
+      "sha256": "772fe5f36247a8d5712145055c3046e69dc680c0aca61dffe4de71d65680df0e"
+    },
+    "trophies/png/64/national_gold_medal.png": {
+      "bytes": 4665,
+      "sha256": "296af340844c9f2facf9c19ca788e43bda8e45c708b01e1ec62b1ec23f32925c"
+    },
+    "trophies/png/64/national_silver_medal.png": {
+      "bytes": 4559,
+      "sha256": "89ecb4d785dcf18467e9690cb2c443247fc3b850a5582077573d73e20cbd56e4"
+    },
+    "trophies/png/64/pitching_title.png": {
+      "bytes": 4039,
+      "sha256": "942954af2be8dbeca4517a84ebe11551e69451f559257a2f889bd30a1d3a0775"
+    },
+    "trophies/png/64/pitching_title_blank.png": {
+      "bytes": 4020,
+      "sha256": "7f01000eea02ed047f3d1e554e2507073c451aaec919b13c5353e47a9f19cafb"
+    },
+    "trophies/png/64/regular_season_pennant.png": {
+      "bytes": 3629,
+      "sha256": "b8dfebd5a83cde73b8d04f39c6023ad950bf94f389181350a975d98df7db6eff"
+    },
+    "trophies/png/64/rookie_trophy.png": {
+      "bytes": 3762,
+      "sha256": "8b46e47550c8f54e9a36f57973eb9e1092b1f796b8fa18f0364086d79f615cb5"
+    },
+    "trophies/png/64/runner_up_trophy.png": {
+      "bytes": 4738,
+      "sha256": "2abc7af699b08e6777760c22868cfa10206e2b8698040facec12ce2e48aeb992"
+    },
+    "trophies/webp/128/all_star_dream_badge.webp": {
+      "bytes": 10718,
+      "sha256": "632d3fca8d66b2a1e1ebf455f69e31806640ed0210ec5f8544031e5eb57a85b0"
+    },
+    "trophies/webp/128/all_star_mvp.webp": {
+      "bytes": 8688,
+      "sha256": "695ae3743f3848606093e1b91f358b2d70c1c47416813227569a25950703169c"
+    },
+    "trophies/webp/128/all_star_nanum_badge.webp": {
+      "bytes": 10604,
+      "sha256": "35a336fa14cca226c6bedfd340cd4f6d617057e1e970e14ccc99601198bdec83"
+    },
+    "trophies/webp/128/batting_title.webp": {
+      "bytes": 8674,
+      "sha256": "fc73180747e77b5bd281c61e2283e14cc06bdce1119d1a55d8ab7ce959d8375c"
+    },
+    "trophies/webp/128/batting_title_blank.webp": {
+      "bytes": 8574,
+      "sha256": "09949e959d31f884d1712173a4366172325661689774d879063353ae810c394f"
+    },
+    "trophies/webp/128/championship_ring.webp": {
+      "bytes": 8902,
+      "sha256": "32be68ad39d0139a3f5e9e4d703d62ecc3b30f36a14aa7292f212eb0325d9991"
+    },
+    "trophies/webp/128/championship_trophy.webp": {
+      "bytes": 10510,
+      "sha256": "f97995a8b23d3a0b580d62ba9da821172e25664f1754a14817409f38d18d8daf"
+    },
+    "trophies/webp/128/golden_glove.webp": {
+      "bytes": 10648,
+      "sha256": "e40836227187b4e14c6230db89f02f8008d616eb452488e5441d984072761607"
+    },
+    "trophies/webp/128/hall_of_fame_plaque.webp": {
+      "bytes": 10336,
+      "sha256": "aeb47db3102578e343f2b97af28df613f3423c382d8438d6d5dd1bc542734ce8"
+    },
+    "trophies/webp/128/manager_trophy.webp": {
+      "bytes": 7448,
+      "sha256": "3c17c717da88c707cbe3c414db0593fe5a56eaa940fa37cc6abdf4fa691c1517"
+    },
+    "trophies/webp/128/mvp_trophy.webp": {
+      "bytes": 8208,
+      "sha256": "e453ead2194e48840d7a86ea4a7f6a25dfc69bcd6705e24fe6687623c2d67bd4"
+    },
+    "trophies/webp/128/national_bronze_medal.webp": {
+      "bytes": 10072,
+      "sha256": "3a83896eb6e999375ea05de9a901b9141c9af66438b6a54de7e94948f076e8ae"
+    },
+    "trophies/webp/128/national_gold_medal.webp": {
+      "bytes": 10336,
+      "sha256": "4ea40b299d82f743926e9e1d7d762846a88c0e676fbacd195ce05c4a711246ea"
+    },
+    "trophies/webp/128/national_silver_medal.webp": {
+      "bytes": 9680,
+      "sha256": "8d8e36d1e8062962b2a24dde6774a851ed284b326bfe90ed5d5f83ae50592292"
+    },
+    "trophies/webp/128/pitching_title.webp": {
+      "bytes": 9310,
+      "sha256": "8a889a8c04b75e906cdd896c9791275a82e1fa14e1ea7e8428e345f2df23e17f"
+    },
+    "trophies/webp/128/pitching_title_blank.webp": {
+      "bytes": 9134,
+      "sha256": "52eb7b68ae41ced95f91942bfc79ee33f2aaae87730d627a0c964da085cf44d7"
+    },
+    "trophies/webp/128/regular_season_pennant.webp": {
+      "bytes": 7792,
+      "sha256": "02aa61d3428d4366f18eec3e77331f08a9acdc2d1e0c6ae95ac50c555d3b2cf0"
+    },
+    "trophies/webp/128/rookie_trophy.webp": {
+      "bytes": 8310,
+      "sha256": "681ae8f81c2ba422a3d541f6f5e2f757d4a616375dd507d50a214dfb8fa49fe1"
+    },
+    "trophies/webp/128/runner_up_trophy.webp": {
+      "bytes": 9860,
+      "sha256": "7e6c3d38d719c29eff32d478cc5db190cc54349853de595cc262769047238abc"
+    },
+    "trophies/webp/256/all_star_dream_badge.webp": {
+      "bytes": 29872,
+      "sha256": "8cf39c30effdbd4c9f5e0c213a32b5dc8b48312c588cc71c59ce70960846cb57"
+    },
+    "trophies/webp/256/all_star_mvp.webp": {
+      "bytes": 22672,
+      "sha256": "f14ebdc46690b7e7d95d4471ec505c2cd89f153097db1299833f365ea6a7698b"
+    },
+    "trophies/webp/256/all_star_nanum_badge.webp": {
+      "bytes": 29620,
+      "sha256": "135ca501689745549b72f046c81e4c465affc4a3502f11e7bece7d10f6390a67"
+    },
+    "trophies/webp/256/batting_title.webp": {
+      "bytes": 24790,
+      "sha256": "ebbb01b604daeb9b2ea9352e51c135eb756d2ef4264ae4ff8ca447d53b4e0c96"
+    },
+    "trophies/webp/256/batting_title_blank.webp": {
+      "bytes": 24044,
+      "sha256": "1b04d4312e5915c2a76fdd3493331a7ebb1f2088bd4de4fb5ba1c262313609f8"
+    },
+    "trophies/webp/256/championship_ring.webp": {
+      "bytes": 23370,
+      "sha256": "5552c38e0a178c3be0a743bae518727dd20d083825c80ccd2e42350f237f0563"
+    },
+    "trophies/webp/256/championship_trophy.webp": {
+      "bytes": 28886,
+      "sha256": "7351135ce9fe660c80ebde9d7e92a5c9ea36477a1e782acf81d175de40c4a1cc"
+    },
+    "trophies/webp/256/golden_glove.webp": {
+      "bytes": 30700,
+      "sha256": "c226416bd1bc0afb60eb0f6be573a887332e50df4dfa01b01f9dea5d11d7a5c2"
+    },
+    "trophies/webp/256/hall_of_fame_plaque.webp": {
+      "bytes": 30508,
+      "sha256": "1e98a107b323f5f3791d362a01b3d01c6f2012b0a760227d3a252f6544e110bf"
+    },
+    "trophies/webp/256/manager_trophy.webp": {
+      "bytes": 20036,
+      "sha256": "8c18e0dbc9f3ee1d4a0a53b183cd44fe0548e5c8a2f99437dc2fade86fb6ca67"
+    },
+    "trophies/webp/256/mvp_trophy.webp": {
+      "bytes": 22432,
+      "sha256": "1e318a8cd0a000c292e4771dc027e15380e828778e98b96987adf538475ebc40"
+    },
+    "trophies/webp/256/national_bronze_medal.webp": {
+      "bytes": 27506,
+      "sha256": "d756b165a327f092ed4259dbef43c2854d89aa943dc40b95b2320a7112f9ba73"
+    },
+    "trophies/webp/256/national_gold_medal.webp": {
+      "bytes": 28368,
+      "sha256": "1f66bfd96416b541a032ff49fe60706b1303f0234c21c1d68ce6279002dc0fd0"
+    },
+    "trophies/webp/256/national_silver_medal.webp": {
+      "bytes": 27058,
+      "sha256": "69d5efa0471e72c7248b3fe5c2e520114f4d76261643afc26f406e5afc56c318"
+    },
+    "trophies/webp/256/pitching_title.webp": {
+      "bytes": 27042,
+      "sha256": "c956972dba88e26a8d7ec10210b196d2cdda239609372cdecf28ed3752a6e327"
+    },
+    "trophies/webp/256/pitching_title_blank.webp": {
+      "bytes": 26426,
+      "sha256": "c4c05b3ad637f4426acf27e2056a2006d72ca946f49e0aee6655c67512eb4e62"
+    },
+    "trophies/webp/256/regular_season_pennant.webp": {
+      "bytes": 20966,
+      "sha256": "cc2d8d7f3c317639f77c20a71124905796ca53de58d4fd45dc37def87ba7159b"
+    },
+    "trophies/webp/256/rookie_trophy.webp": {
+      "bytes": 21884,
+      "sha256": "4282610c69013be63c7b0d9654617771647037407401cb248e8e56ee9f890790"
+    },
+    "trophies/webp/256/runner_up_trophy.webp": {
+      "bytes": 28140,
+      "sha256": "cb732eb278e1c2a7086777d942d40589063eb0192d453ca2392af0002c939164"
+    },
+    "trophies/webp/512/all_star_dream_badge.webp": {
+      "bytes": 93986,
+      "sha256": "55be05d4c3f6641a54369455fb4c81033a1dc0b0b4ac5375cffd6c9ef11ec3ff"
+    },
+    "trophies/webp/512/all_star_mvp.webp": {
+      "bytes": 67962,
+      "sha256": "ba7223c4fb7c0450a4a97625bc89a27bbd4919a5e83a95059f04112bbbaa98db"
+    },
+    "trophies/webp/512/all_star_nanum_badge.webp": {
+      "bytes": 95218,
+      "sha256": "66d4b28b7bc8e3ba0069ab29169086119d0d1b32c3ce496443dffaad03cb9c2f"
+    },
+    "trophies/webp/512/batting_title.webp": {
+      "bytes": 76516,
+      "sha256": "17e34f727487739ae7a185cd596cc919538ac7a63d47e626da677a85d329295b"
+    },
+    "trophies/webp/512/batting_title_blank.webp": {
+      "bytes": 74174,
+      "sha256": "f763d537717bfed82918da68b5f5a511660d0c24ff411970e78578c68fc54f9f"
+    },
+    "trophies/webp/512/championship_ring.webp": {
+      "bytes": 69982,
+      "sha256": "3a19e10112fff2d1deb2f1af912a6d7641b872adc43217ec17a52583dafe4a46"
+    },
+    "trophies/webp/512/championship_trophy.webp": {
+      "bytes": 85508,
+      "sha256": "1b4f5fe09cae13b9cf0e030ca010bdf61094075c496e77d64fa2fe2f322b4988"
+    },
+    "trophies/webp/512/golden_glove.webp": {
+      "bytes": 94728,
+      "sha256": "bce1fbd48fa552b93443b2d0fbdb2686109a5b16669d77037568235ad41bb4dc"
+    },
+    "trophies/webp/512/hall_of_fame_plaque.webp": {
+      "bytes": 94392,
+      "sha256": "7d5d150552f2ac15c7366ffc5585e3b314553969be10ce030a4f30ecedde36a2"
+    },
+    "trophies/webp/512/manager_trophy.webp": {
+      "bytes": 63296,
+      "sha256": "92d82624f5418d9543dadb6fe1d3067535289ce6d7d0eeb97cf950119519f32a"
+    },
+    "trophies/webp/512/mvp_trophy.webp": {
+      "bytes": 67094,
+      "sha256": "c7a188eadaed380720a31041f3006fe600f92e37c0c74fd93fd7a27307cf5390"
+    },
+    "trophies/webp/512/national_bronze_medal.webp": {
+      "bytes": 84964,
+      "sha256": "416a7d5e6bd731c7b48a86a420f1ea0ed787ffbaca9e9a31a3544b71ce67abd0"
+    },
+    "trophies/webp/512/national_gold_medal.webp": {
+      "bytes": 89252,
+      "sha256": "cbd4f5c77ac41b9a1d5f66a76e8444cc0ec3cecce2b4d3b899c1bac83ae9d497"
+    },
+    "trophies/webp/512/national_silver_medal.webp": {
+      "bytes": 84302,
+      "sha256": "ae538a96e28a8bffc8072f7d7d2784e2839f1468397c4316c84d6740e03b1c33"
+    },
+    "trophies/webp/512/pitching_title.webp": {
+      "bytes": 85172,
+      "sha256": "7d8e88e7e1c303c649d8253f8125fd6374f275745d9681633283b5d0d8fc46f9"
+    },
+    "trophies/webp/512/pitching_title_blank.webp": {
+      "bytes": 83054,
+      "sha256": "f36ab0ef0a882345a59377e4528feb2b215a71ba86e58b3e914e55d1a61e580f"
+    },
+    "trophies/webp/512/regular_season_pennant.webp": {
+      "bytes": 62834,
+      "sha256": "45c5fdef742ba0503ede39195d43177da62d969a5079a0164bebe7bce4352eb1"
+    },
+    "trophies/webp/512/rookie_trophy.webp": {
+      "bytes": 66388,
+      "sha256": "82cb4fd998c16aa1a2e9e8b83005db4f0f6eb50d8db0a2d152589c0373a96cf3"
+    },
+    "trophies/webp/512/runner_up_trophy.webp": {
+      "bytes": 86014,
+      "sha256": "76ea78b2be92bba9f080179797e44edecd0532bf475145bd29bedb2563ab65f0"
+    },
+    "trophies/webp/64/all_star_dream_badge.webp": {
+      "bytes": 4248,
+      "sha256": "d660e76a8e208eaa0096def1bef942335b1577097721405c1afa918b0de1fbcd"
+    },
+    "trophies/webp/64/all_star_mvp.webp": {
+      "bytes": 3448,
+      "sha256": "a1858179754befefbc4a36a5f2e117e71b0fb661b59172709cb4af7cd1005b6b"
+    },
+    "trophies/webp/64/all_star_nanum_badge.webp": {
+      "bytes": 4394,
+      "sha256": "1bd1de837eedcc18f8987d130d580618ccd2a936c15e15c91b68601878a467f0"
+    },
+    "trophies/webp/64/batting_title.webp": {
+      "bytes": 3094,
+      "sha256": "4fb8fead05c7cf265cbb32af237ebecaf0f827384bacc27a33901a8003bd0ccb"
+    },
+    "trophies/webp/64/batting_title_blank.webp": {
+      "bytes": 3056,
+      "sha256": "42cdc12e9f501c196c36ce09d2bf3e33bb764e879e34f8b334d51951af271806"
+    },
+    "trophies/webp/64/championship_ring.webp": {
+      "bytes": 3396,
+      "sha256": "c7769772ff1b9efca4644fa3519a4ee73cc2a03617eec5c289f0a64c0587ae78"
+    },
+    "trophies/webp/64/championship_trophy.webp": {
+      "bytes": 3932,
+      "sha256": "2ae91c29d4d24707d9d4b1313378c85bbb41393e4faf1971a470d9cea95dad2e"
+    },
+    "trophies/webp/64/golden_glove.webp": {
+      "bytes": 3774,
+      "sha256": "0ee73b8b37d411d012ba0e810f0a7389e3cfc163f4f976c0a6639256b75128f3"
+    },
+    "trophies/webp/64/hall_of_fame_plaque.webp": {
+      "bytes": 3530,
+      "sha256": "335b4b8f5aa1cfe66e64b76f105e13cdcf7d3368be0f7cbf2e59d004b430820d"
+    },
+    "trophies/webp/64/manager_trophy.webp": {
+      "bytes": 3292,
+      "sha256": "5232ff636e7f0b153df8ef8e97d83393f5fa9bb11f04a1fcd90844195b97f3eb"
+    },
+    "trophies/webp/64/mvp_trophy.webp": {
+      "bytes": 3346,
+      "sha256": "eac2fbaed43e35fd2bde647b2761bd520cbbeaa965e3b5d582c718e0f3edf5ef"
+    },
+    "trophies/webp/64/national_bronze_medal.webp": {
+      "bytes": 3784,
+      "sha256": "b5414460bf0fbbd5483e5be40e33dd6bce00cdd658a8024a0dc345691b5c2da5"
+    },
+    "trophies/webp/64/national_gold_medal.webp": {
+      "bytes": 4228,
+      "sha256": "f4e5dba997728dd67f175413b0e64badc54b96a4e2a2ff4ce370d6e96d9804d2"
+    },
+    "trophies/webp/64/national_silver_medal.webp": {
+      "bytes": 3940,
+      "sha256": "c3d31f7ad565a2e4b295d4fa6c5371671e35eba33922cd728a63e04d0f200d6e"
+    },
+    "trophies/webp/64/pitching_title.webp": {
+      "bytes": 3352,
+      "sha256": "afe299d18b17f82cce4bef1137f0cb93a1daf6cd6516cbd8f3533b6bf879d5ef"
+    },
+    "trophies/webp/64/pitching_title_blank.webp": {
+      "bytes": 3314,
+      "sha256": "f522e003ccd6f6a852160126933739e8bddfbb09bad94e59183d5fe5a5d8cea8"
+    },
+    "trophies/webp/64/regular_season_pennant.webp": {
+      "bytes": 3008,
+      "sha256": "48acd93bf7ae16349e4d949b07babdd51fb5a461a0b3e1793123ba78e4555af1"
+    },
+    "trophies/webp/64/rookie_trophy.webp": {
+      "bytes": 3230,
+      "sha256": "314ace790b000231fc2f2e92cec2fb2a584beeef03fde0bb14680abac37c0c21"
+    },
+    "trophies/webp/64/runner_up_trophy.webp": {
+      "bytes": 3502,
+      "sha256": "27e8c2643c1635bbbb7b7fff42a9fff15b4de7932a6e14956637a2cc523c765b"
+    },
+    "validation.json": {
+      "bytes": 6173,
+      "sha256": "5ad6b894c2b9086fe702bacac2efea0c2c82dd4e52b6692f8c7b09f9113caed9"
+    }
+  }
+}

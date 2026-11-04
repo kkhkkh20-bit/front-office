@@ -1,0 +1,900 @@
+{
+  "schema_version": 1,
+  "path_base": "assets/v4/",
+  "status": "style_evaluation_only",
+  "identities": [
+    {
+      "identity_id": "ko_early20s_01",
+      "age": 22,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_early20s_01_cap_off",
+        "cap_on": "ko_early20s_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_early20s_02",
+      "age": 24,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium light warm",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_early20s_02_cap_off",
+        "cap_on": "ko_early20s_02_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "age": 27,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_late20s_01_cap_off",
+        "cap_on": "ko_late20s_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_late20s_02",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair cool",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_late20s_02_cap_off",
+        "cap_on": "ko_late20s_02_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_30s_01",
+      "age": 32,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm tan",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_30s_01_cap_off",
+        "cap_on": "ko_30s_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_30s_02",
+      "age": 35,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair neutral",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_30s_02_cap_off",
+        "cap_on": "ko_30s_02_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_late30s_beard_01",
+      "age": 38,
+      "age_band": "late_30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": true,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_late30s_beard_01_cap_off",
+        "cap_on": "ko_late30s_beard_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "ko_glasses_01",
+      "age": 31,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": true,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "ko_glasses_01_cap_off",
+        "cap_on": "ko_glasses_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "latino_01",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Hispanic / Latino",
+      "skin_tone": "warm medium brown",
+      "beard": false,
+      "glasses": false,
+      "team": "seoul_comets",
+      "fictional": true,
+      "variants": {
+        "cap_off": "latino_01_cap_off",
+        "cap_on": "latino_01_cap_on"
+      }
+    },
+    {
+      "identity_id": "black_01",
+      "age": 28,
+      "age_band": "late_20s",
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "team": "gwangju_blazes",
+      "fictional": true,
+      "variants": {
+        "cap_off": "black_01_cap_off",
+        "cap_on": "black_01_cap_on"
+      }
+    }
+  ],
+  "assets": {
+    "ko_early20s_01_cap_off": {
+      "id": "ko_early20s_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_early20s_01 / 모자 미착용",
+      "identity_id": "ko_early20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_01_cap_off.png",
+        "128": "faces_test/png/128/ko_early20s_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 22,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "fair warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_early20s_01_cap_on": {
+      "id": "ko_early20s_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_early20s_01 / 모자 착용",
+      "identity_id": "ko_early20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_01_cap_on.png",
+        "128": "faces_test/png/128/ko_early20s_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 22,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "fair warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_early20s_02_cap_off": {
+      "id": "ko_early20s_02_cap_off",
+      "category": "faces_test",
+      "name": "ko_early20s_02 / 모자 미착용",
+      "identity_id": "ko_early20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_02_cap_off.png",
+        "128": "faces_test/png/128/ko_early20s_02_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 24,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium light warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "medium light warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_early20s_02_cap_on": {
+      "id": "ko_early20s_02_cap_on",
+      "category": "faces_test",
+      "name": "ko_early20s_02 / 모자 착용",
+      "identity_id": "ko_early20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_early20s_02_cap_on.png",
+        "128": "faces_test/png/128/ko_early20s_02_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 24,
+      "age_band": "early_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium light warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "early_20s",
+        "medium light warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_01_cap_off": {
+      "id": "ko_late20s_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_late20s_01 / 모자 미착용",
+      "identity_id": "ko_late20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_01_cap_off.png",
+        "128": "faces_test/png/128/ko_late20s_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 27,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "medium warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_01_cap_on": {
+      "id": "ko_late20s_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_late20s_01 / 모자 착용",
+      "identity_id": "ko_late20s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_01_cap_on.png",
+        "128": "faces_test/png/128/ko_late20s_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 27,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "medium warm",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_02_cap_off": {
+      "id": "ko_late20s_02_cap_off",
+      "category": "faces_test",
+      "name": "ko_late20s_02 / 모자 미착용",
+      "identity_id": "ko_late20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_02_cap_off.png",
+        "128": "faces_test/png/128/ko_late20s_02_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair cool",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "fair cool",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late20s_02_cap_on": {
+      "id": "ko_late20s_02_cap_on",
+      "category": "faces_test",
+      "name": "ko_late20s_02 / 모자 착용",
+      "identity_id": "ko_late20s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_02_cap_on.png",
+        "128": "faces_test/png/128/ko_late20s_02_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair cool",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_20s",
+        "fair cool",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_01_cap_off": {
+      "id": "ko_30s_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_30s_01 / 모자 미착용",
+      "identity_id": "ko_30s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_01_cap_off.png",
+        "128": "faces_test/png/128/ko_30s_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 32,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm tan",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "medium warm tan",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_01_cap_on": {
+      "id": "ko_30s_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_30s_01 / 모자 착용",
+      "identity_id": "ko_30s_01",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_01_cap_on.png",
+        "128": "faces_test/png/128/ko_30s_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 32,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm tan",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "medium warm tan",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_02_cap_off": {
+      "id": "ko_30s_02_cap_off",
+      "category": "faces_test",
+      "name": "ko_30s_02 / 모자 미착용",
+      "identity_id": "ko_30s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_02_cap_off.png",
+        "128": "faces_test/png/128/ko_30s_02_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 35,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair neutral",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair neutral",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_30s_02_cap_on": {
+      "id": "ko_30s_02_cap_on",
+      "category": "faces_test",
+      "name": "ko_30s_02 / 모자 착용",
+      "identity_id": "ko_30s_02",
+      "png": {
+        "512": "faces_test/png/512/ko_30s_02_cap_on.png",
+        "128": "faces_test/png/128/ko_30s_02_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 35,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair neutral",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair neutral",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late30s_beard_01_cap_off": {
+      "id": "ko_late30s_beard_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_late30s_beard_01 / 모자 미착용",
+      "identity_id": "ko_late30s_beard_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late30s_beard_01_cap_off.png",
+        "128": "faces_test/png/128/ko_late30s_beard_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 38,
+      "age_band": "late_30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": true,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_30s",
+        "medium warm",
+        "beard",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_late30s_beard_01_cap_on": {
+      "id": "ko_late30s_beard_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_late30s_beard_01 / 모자 착용",
+      "identity_id": "ko_late30s_beard_01",
+      "png": {
+        "512": "faces_test/png/512/ko_late30s_beard_01_cap_on.png",
+        "128": "faces_test/png/128/ko_late30s_beard_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 38,
+      "age_band": "late_30s",
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": true,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "late_30s",
+        "medium warm",
+        "beard",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_glasses_01_cap_off": {
+      "id": "ko_glasses_01_cap_off",
+      "category": "faces_test",
+      "name": "ko_glasses_01 / 모자 미착용",
+      "identity_id": "ko_glasses_01",
+      "png": {
+        "512": "faces_test/png/512/ko_glasses_01_cap_off.png",
+        "128": "faces_test/png/128/ko_glasses_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 31,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": true,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair warm",
+        "clean_shaven",
+        "glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "ko_glasses_01_cap_on": {
+      "id": "ko_glasses_01_cap_on",
+      "category": "faces_test",
+      "name": "ko_glasses_01 / 모자 착용",
+      "identity_id": "ko_glasses_01",
+      "png": {
+        "512": "faces_test/png/512/ko_glasses_01_cap_on.png",
+        "128": "faces_test/png/128/ko_glasses_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 31,
+      "age_band": "30s",
+      "ethnicity": "Korean",
+      "skin_tone": "fair warm",
+      "beard": false,
+      "glasses": true,
+      "fictional": true,
+      "tags": [
+        "Korean",
+        "30s",
+        "fair warm",
+        "clean_shaven",
+        "glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "latino_01_cap_off": {
+      "id": "latino_01_cap_off",
+      "category": "faces_test",
+      "name": "latino_01 / 모자 미착용",
+      "identity_id": "latino_01",
+      "png": {
+        "512": "faces_test/png/512/latino_01_cap_off.png",
+        "128": "faces_test/png/128/latino_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "seoul_comets",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Hispanic / Latino",
+      "skin_tone": "warm medium brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Hispanic / Latino",
+        "late_20s",
+        "warm medium brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "latino_01_cap_on": {
+      "id": "latino_01_cap_on",
+      "category": "faces_test",
+      "name": "latino_01 / 모자 착용",
+      "identity_id": "latino_01",
+      "png": {
+        "512": "faces_test/png/512/latino_01_cap_on.png",
+        "128": "faces_test/png/128/latino_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "seoul_comets",
+      "age": 29,
+      "age_band": "late_20s",
+      "ethnicity": "Hispanic / Latino",
+      "skin_tone": "warm medium brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Hispanic / Latino",
+        "late_20s",
+        "warm medium brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "seoul_comets"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/seoul_comets_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/seoul_comets.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "black_01_cap_off": {
+      "id": "black_01_cap_off",
+      "category": "faces_test",
+      "name": "black_01 / 모자 미착용",
+      "identity_id": "black_01",
+      "png": {
+        "512": "faces_test/png/512/black_01_cap_off.png",
+        "128": "faces_test/png/128/black_01_cap_off.png"
+      },
+      "transparent": false,
+      "cap": false,
+      "team": "gwangju_blazes",
+      "age": 28,
+      "age_band": "late_20s",
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Black",
+        "late_20s",
+        "deep brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_off",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    },
+    "black_01_cap_on": {
+      "id": "black_01_cap_on",
+      "category": "faces_test",
+      "name": "black_01 / 모자 착용",
+      "identity_id": "black_01",
+      "png": {
+        "512": "faces_test/png/512/black_01_cap_on.png",
+        "128": "faces_test/png/128/black_01_cap_on.png"
+      },
+      "transparent": false,
+      "cap": true,
+      "team": "gwangju_blazes",
+      "age": 28,
+      "age_band": "late_20s",
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "fictional": true,
+      "tags": [
+        "Black",
+        "late_20s",
+        "deep brown",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on",
+        "gwangju_blazes"
+      ],
+      "generation": {
+        "method": "image_gen",
+        "reference_uniform": "assets/v3/uniforms/png/512/gwangju_blazes_home_front.png",
+        "reference_cap": "assets/v3/caps/png/256/gwangju_blazes.png",
+        "portrait": "frontal head, shoulders and upper chest; frontal softbox",
+        "background_target": "#20262e",
+        "background_note": "Generated near-solid dark background; minor tonal variation is present. Opaque RGB."
+      }
+    }
+  },
+  "generation": "All people are fictional and generated; no photographs of real people were used. Identity consistency is intended within each pair, with small generative variations."
+}
