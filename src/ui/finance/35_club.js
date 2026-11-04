@@ -97,9 +97,9 @@ function gamesView(){
   return csec('우리 경기',`<div class="list">${G.games.slice(0,30).map((g,i)=>{ const home=g.home===G.user; const op=home?g.away:g.home; return `<button class="item wa" data-a="openGame" data-v="${i}">${badge(op,26)}<span class="nm"><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span> ${home?'vs':'@'} ${tname(op)}${g.kind?` <span class="small muted">${esc(g.kind)}</span>`:''}</span><span class="sub">${dmd(g.day)}${g.inn>9?` · 연장 ${g.inn}회`:''}</span><span class="rt num">${home?g.hs:g.as} : ${home?g.as:g.hs}</span></button>`; }).join('')}</div>`);
 }
 
-function tradeMood(tid,give,get,cash){
+function tradeMood(tid,give,get,cash,pk){
   if(!give.length&&!get.length)return null;
-  const t=team(tid); const e=evalTrade(tid,give,get,cash);
+  const t=team(tid); const e=evalTrade(tid,give,get,cash,pk);
   const sd=1.2+Math.max(0,75-t.rel)/10; // 관계가 좋을수록 상대 속내를 정확히 읽는다
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');
   const x=e.gain-e.need+hn('tm'+tid+'|'+key,G.year)*sd;
@@ -127,7 +127,8 @@ function tradeView(){
   const dPay=sum(gt.map(p=>p.sal))-sum(gv.map(p=>p.sal));
   const capAfter=capPayAs(G.user,tr.get||[],tr.give||[]), cap=capOf(sponSeason()); /* 엔진과 같이 상위 40명을 다시 고른다 */
   const myN=rosterN(G.user)-gv.filter(p=>!p.ys).length+gt.filter(p=>!p.ys).length, thN=rosterN(tr.tid)+gv.filter(p=>!p.ys).length-gt.filter(p=>!p.ys).length; /* 정식 선수 기준(육성 제외) */
-  const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0);
+  { const P=pkNorm(tr.pk), hm=pkHeld(G.user), ht=pkHeld(tr.tid); tr.pk={give:P.give.filter(k=>hm.includes(k)),get:P.get.filter(k=>ht.includes(k))}; } /* 지명권 보유가 바뀌었으면 뺀다 */
+  const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
   const board=`<section class="card tboard">
     <div class="tgm">${gmAv(t.id,mood?(mood.k==='ok'?'smile':mood.k==='more'?'flat':'angry'):null)}<div><b>${badge(t.id,16)} ${esc(tname(t.id))} · ${esc(gmOf(t.id).name)} 단장</b><span class="small muted">${GMT[gmOf(t.id).trait].l} · 친분 ${t.rel}(${relLabel(t.rel)}) · ${esc(needText(t.id))}</span></div></div>
@@ -142,7 +143,8 @@ function tradeView(){
     ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>`<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}</span><button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button></div>`).join('')}</div>`:''}
     <details class="trade-analysis"><summary>선수 비교·메디컬·검토 의견</summary>${tradeInsight(tr.tid,tr.give,tr.get)}</details>
     ${gt.length?`<div class="tcash"><span class="small">현금 얹기</span><div class="chips">${[0,100,300,500,1000,2000,3000].map(v=>`<button data-a="tcash" data-v="${v}" class="${(tr.cash||0)===v?'on':''}">${v?money(v):'없음'}</button>`).join('')}</div><span class="small muted">실제 한국 프로야구도 선수와 현금을 섞은 트레이드가 있습니다. 돈을 중시하는 구단(독립구단·수익형 구단주·샐러리캡 초과·리빌딩)일수록 현금을 높게 칩니다. 예산 여유에서 빠집니다.</span></div>`:''}
-    ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0); const isC=nt.ctr&&nt.ctr[sg]===G.day; const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}${(()=>{ const cd=tradeCool(tr.tid,tr.get); if(cd)return `<p class="small" style="color:#ffb547">${cd.cap?`${esc(tshort(tr.tid))}와(과)는 올해 이미 ${cd.n}번 거래했습니다(같은 구단과는 한 시즌 ${cd.max}번까지, 맞대결 기간에는 한 번 더). 급매 매물은 이 제한 없이 데려올 수 있습니다.`:`${esc(tshort(tr.tid))}와(과)는 ${dsh(cd.d)}에 거래했습니다. ${dsh(cd.until)}부터 다시 거래할 수 있습니다. 맞대결 기간이나 급매 매물은 바로 됩니다.`}</p>`; const oc=(gv.length||gt.length)?tradeOwnerCheck(tr.give,tr.get,tr.cash||0):null; return oc?`<p class="small" style="color:${oc.ok?'#ffb547':'#ff6b6b'}">연봉 ${money(oc.dSal)} 증가 · 예산 초과 ${money(oc.over)} (구단주 허용 ${money(oc.lim)}) — ${oc.ok?'성사되면 구단주가 승인하지만 신뢰 -2':'구단주가 승인하지 않습니다'}</p>`:''; })()}`; })()}
+    ${pkRow(tr)}
+    ${(()=>{ const ni=negInfo(tr.tid); const nt=negTurn(tr.tid); const sg=tsig(tr.give,tr.get,tr.cash||0)+pkSig(tr.pk); const isC=nt.ctr&&nt.ctr[sg]===G.day; const dup=!isC&&(gv.length||gt.length)&&nt.seen[sg]!=null; const left=ni.left||isC; return `<div class="row"><button class="btn primary" data-a="tpropose" ${(gv.length||gt.length)&&left&&!dup?'':'disabled'}>제안하기</button><button class="btn" data-a="treset">비우기</button>${negChip(tr.tid)}</div>${dup?'<p class="small" style="color:#ffb547">이미 거절된 안과 같습니다. 선수를 바꾸거나 더해야 제안할 수 있습니다.</p>':''}${(()=>{ const cd=tradeCool(tr.tid,tr.get); if(cd)return `<p class="small" style="color:#ffb547">${cd.cap?`${esc(tshort(tr.tid))}와(과)는 올해 이미 ${cd.n}번 거래했습니다(같은 구단과는 한 시즌 ${cd.max}번까지, 맞대결 기간에는 한 번 더). 급매 매물은 이 제한 없이 데려올 수 있습니다.`:`${esc(tshort(tr.tid))}와(과)는 ${dsh(cd.d)}에 거래했습니다. ${dsh(cd.until)}부터 다시 거래할 수 있습니다. 맞대결 기간이나 급매 매물은 바로 됩니다.`}</p>`; const oc=(gv.length||gt.length)?tradeOwnerCheck(tr.give,tr.get,tr.cash||0):null; return oc?`<p class="small" style="color:${oc.ok?'#ffb547':'#ff6b6b'}">연봉 ${money(oc.dSal)} 증가 · 예산 초과 ${money(oc.over)} (구단주 허용 ${money(oc.lim)}) — ${oc.ok?'성사되면 구단주가 승인하지만 신뢰 -2':'구단주가 승인하지 않습니다'}</p>`:''; })()}`; })()}
   </section>`;
   const side=tr.side||'get', seg=tr.seg||'bat', sort=tr.sort||'cur';
   let pool=(side==='get'?domestic(tr.tid):domestic(G.user)).filter(p=>ok(p)&&(seg==='bat'?!p.isP:p.isP)).map(p=>({p,rp:scoutReport(p)}));
@@ -249,3 +251,11 @@ function contractView(){
 function stopCard(){ const S=G.stopCfg||{}; return `<section class="card" id="stopCard"><h2 class="sec">진행 멈춤</h2><p class="small muted">'계속'을 눌렀을 때 어떤 소식에서 멈출지 고릅니다. 업무 위임(누가 처리하나)과는 따로입니다. 끈 분류는 소식함에 중요 표시로 남고 진행만 멈추지 않습니다. 그 안의 결정은 기한이 지나면 적힌 기본안으로 처리됩니다.</p>
   <div class="stop-l">${STOP_CATS.map(([k,l,d])=>{ const lock=k==='must'; const on=lock||(S[k]!=null?!!S[k]:STOP_DEF[k]); return `<label class="chk stop-r${lock?' lock':''}"><input type="checkbox" ${lock?'checked disabled':`data-a="stopTg" data-v="${k}" ${on?'checked':''}`}> <b>${l}</b> <span class="small muted">${d}${lock?'':STOP_DEF[k]?'':' · 기본은 멈추지 않음'}</span></label>`; }).join('')}</div></section>`; }
 function advSetCard(){ const on=!!G.advAsk; return `<section class="card"><div class="row between"><h2 class="sec">진행 방식</h2><button class="btn small" data-a="advAskTog">${on?'묻지 않기':'매번 묻기'}</button></div><p class="small muted">${on?'지금: 진행할 때마다 어디까지 갈지 확인 창을 띄웁니다.':'지금: 남은 결정·트레이드 제안·안 읽은 중요 소식이 없으면 묻지 않고 바로 진행합니다. 있으면 진행 전에 알려 줍니다.'}</p></section>`; }
+
+/* 신인 지명권 얹기(KBO 2020~): 다음 드래프트 지명권만, 선수와 맞바꿀 때만 */
+function pkRow(tr){ if(G.draft&&!G.draft.done)return ''; const P=pkNorm(tr.pk);
+  const chip=(side,k,on)=>{ const [rd,o]=k.split(':').map(Number); const own=side==='give'?G.user:tr.tid; return `<button data-a="pkT" data-v="${side}:${k}" class="${on?'on':''}">${rd}R${o!==own?`(${esc(tshort(o))})`:''}</button>`; };
+  return `<div class="tcash"><span class="small">신인 지명권 · ${pkYear()} 드래프트</span>
+    <div class="small muted">우리 지명권 보내기</div><div class="chips">${pkHeld(G.user).map(k=>chip('give',k,P.give.includes(k))).join('')||'<span class="small muted">없음</span>'}</div>
+    <div class="small muted">상대 지명권 받기</div><div class="chips">${pkHeld(tr.tid).map(k=>chip('get',k,P.get.includes(k))).join('')||'<span class="small muted">없음</span>'}</div>
+    <span class="small muted">KBO 규약(2020~): 다음에 열릴 신인 드래프트 지명권만 주고받을 수 있고, 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 넘겨받은 지명권은 원래 구단 순번에 씁니다. 리빌딩 구단일수록 지명권을 높게 칩니다.</span></div>`; }

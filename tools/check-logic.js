@@ -1140,6 +1140,15 @@ T('[KBO 부상 대체 외국인] AI 구단도 시즌 안에 돌아올 외국인 
   for(let i=0;i<4;i++){ const q=newForeign('용병',{isP:o.isP,market:true}); G.fmarket.push(q.id); } const used=fReplUsed(t.id); aiForeignReview(t.id);
   ok(o.frehab&&G.players[o.frehab]&&G.players[o.frehab].ftmp,'AI가 부상 대체를 쓰지 않음'); ok(fReplUsed(t.id)===used,'AI 부상 대체가 교체 횟수를 씀');
   const u=foreignOf(G.user).find(p=>p.foreign==='용병'); u.injOut=50; G.day=foreignDL()+1; ok(fTmpErr(G.user,u).includes('8월 15일'),'8월 15일 뒤에도 대체 가능'); });
+T('[KBO 지명권 트레이드] 다음 드래프트 지명권만, 선수와 맞바꿀 때만 넘기고, 넘겨받은 지명권은 원래 구단 순번에 쓴다',()=>{ fresh(); ok(tradeOpen(),'준비 실패: 트레이드 기간 아님 '+period()); const y=pkYear(); ok(pkHeld(G.user).length===DRAFT_ROUNDS,'처음 지명권 수 '+pkHeld(G.user).length);
+  const t=G.teams.filter(x=>x.id!==G.user&&rosterN(x.id)<ROSTER_MAX-1).sort((a,b)=>capPay(a.id)-capPay(b.id))[0]; ok(t,'준비 실패: 받을 구단 없음'); const tid=t.id; const mine=domestic(G.user).filter(p=>!p.ys&&!p.foreign&&!(p.joinY>G.year)&&!hasNtc(p));
+  ok(String(proposeTrade(tid,[mine[0].id],[],0,{give:['1:'+G.user]}).msg).includes('선수와 맞바꿀'),'선수 없이 지명권을 넘김');
+  const k='3:'+tid; ok(evalTrade(tid,[mine[0].id],[],0,{get:[k]}).gain<evalTrade(tid,[mine[0].id],[],0).gain,'상대가 지명권 가치를 치지 않음'); ok(pkVal(t,'1:'+tid)>pkVal(t,'5:'+tid),'1라운드가 5라운드보다 싸게 매겨짐');
+  const p=mine.filter(q=>evalTrade(tid,[q.id],[],0,{get:[k]}).ok&&capPayAs(tid,[q.id],[])<=capOf(G.year)).sort((a,b)=>b.sal-a.sal)[0]; ok(p,'준비 실패: 받아들일 선수 없음');
+  const r=proposeTrade(tid,[p.id],[],0,{get:[k]}); ok(r.ok,'트레이드 실패: '+r.msg); ok(p.team===tid,'선수 이동 안 됨'); ok(pkOwner(y,3,tid)===G.user&&pkHeld(G.user).includes(k)&&!pkHeld(tid).includes(k),'지명권 이동 안 됨');
+  ok(G.trades[G.trades.length-1].pk&&G.trades[G.trades.length-1].pk.get.length===1,'거래 기록에 지명권 없음');
+  if(y===G.year&&draftOrders()){ startDraft(); const P=G.draft.picks; ok(P.length===DRAFT_ROUNDS*G.teams.length,'지명 수 '+P.length); const x=P.find(q=>q.rd===3&&q.from===tid); ok(x&&x.tid===G.user,'넘겨받은 지명권이 우리 차례가 아님'); const no=draftOrders().r2.indexOf(tid)+1; ok(x.no===no,'원래 구단 순번이 아님 '+x.no+'/'+no);
+    ok(String(pkCheck(tid,[p.id],[],{give:['2:'+G.user]})).includes('진행 중'),'드래프트 중 지명권 거래 허용'); ok(pkYear()===G.year+1&&pkHeld(G.user).length===DRAFT_ROUNDS,'드래프트가 열린 뒤 다음 해 지명권이 아님'); } });
 /*KBO-END*/
 T('리그 수준: 트리플A는 우리 리그보다 살짝 높아 같은 타자도 성적이 조금 덜 나온다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP); const a=batProbs(p,LG_ADJ['트리플A'][0]), k=batProbs(p,0); ok(a.k>k.k&&a.babip<k.babip,'트리플A에서 삼진이 더 적거나 BABIP가 더 높음(우리 리그보다 쉬운 리그로 잡힘)'); const q=G.players[domestic(G.user).find(x=>x.isP).id]; ok(pitProbs(q,LG_ADJ['트리플A'][1]).k<pitProbs(q,0).k,'트리플A에서 투수 삼진율이 더 높음'); });
 

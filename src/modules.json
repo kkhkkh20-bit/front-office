@@ -109,7 +109,8 @@
       "src/engine/media/92_gg_voting.js",
       "src/engine/career/83_personal_life.js",
       "src/engine/market/93_waivers.js",
-      "src/engine/draft/94_second_draft.js"
+      "src/engine/draft/94_second_draft.js",
+      "src/engine/market/96_pick_trade.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",

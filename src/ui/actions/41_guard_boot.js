@@ -1,10 +1,10 @@
 /* ===== 결재: 되돌릴 수 없는 결정은 결재 문서로 한 번 더 확인하고, 결과를 소식함에 남긴다 ===== */
 function roomWith(mut){ const b0=budget(); const undo=mut(); let b1=b0; try{ b1=budget(); }finally{ undo(); } return [Math.round(b0.roomGoal),Math.round(b1.roomGoal)]; }
 const pnm=id=>{ const p=G.players[id]; return p?`${p.name}(${posLabel(p)}, ${p.age}세, ${money(p.sal)})`:''; };
-function tradeDoc(tid,give,get,cash){ cash=Math.max(0,Math.round(cash||0)); give=give.filter(id=>G.players[id]); get=get.filter(id=>G.players[id]); if(!give.length&&!get.length)return null;
+function tradeDoc(tid,give,get,cash,pk){ cash=Math.max(0,Math.round(cash||0)); pk=pkNorm(pk); give=give.filter(id=>G.players[id]); get=get.filter(id=>G.players[id]); if(!give.length&&!get.length)return null;
   const inS=sum(get.map(id=>G.players[id].sal)), outS=sum(give.map(id=>G.players[id].sal)); const ra=roomAfter(give,get);
   const cp0=capPay(G.user), cp1=capPayAs(G.user,get,give), cap=capOf(sponSeason()); if(cash){ ra.after-=cash; } /* 얹는 현금도 예산 여유에서 나간다 */
-  return {subj:`${tshort(tid)}와(과) 트레이드`,kind:'트레이드',lines:[`보내는 선수: ${give.map(pnm).join(', ')||'없음'}`,`받는 선수: ${get.map(pnm).join(', ')||'없음'}`,`${cash?`현금 ${money(cash)} 얹음 · `:''}연봉 ${inS-outS>=0?'+':''}${money(inS-outS)}/년 · 예산 여유 ${money(ra.before)} → ${money(ra.after)}`,Math.abs(ra.dI)>=10?`예산 여유 변화 = 올해 지출 ${ra.dE>=0?'+':'-'}${money(Math.abs(ra.dE))}, 예상 수입 ${ra.dI>=0?'+':'-'}${money(Math.abs(ra.dI))} (전력이 바뀌면 관중·광고 수입 전망도 바뀝니다)`:'',tradeRosterTxt(give,get),cp1>cap&&cp1>cp0?`샐러리캡 초과: 상위 40명 연봉 ${money(cp1)} / 상한 ${money(cap)} (시즌 끝까지 넘으면 경쟁균형세)`:''],warn:'상대가 받아들이면 바로 성사되고 되돌릴 수 없습니다.',chk:()=>(G.trades||[]).length}; }
+  return {subj:`${tshort(tid)}와(과) 트레이드`,kind:'트레이드',lines:[`보내는 선수: ${give.map(pnm).join(', ')||'없음'}`,`받는 선수: ${get.map(pnm).join(', ')||'없음'}`,pk.give.length?`보내는 지명권: ${pk.give.map(pkName).join(', ')}`:'',pk.get.length?`받는 지명권: ${pk.get.map(pkName).join(', ')}`:'',`${cash?`현금 ${money(cash)} 얹음 · `:''}연봉 ${inS-outS>=0?'+':''}${money(inS-outS)}/년 · 예산 여유 ${money(ra.before)} → ${money(ra.after)}`,Math.abs(ra.dI)>=10?`예산 여유 변화 = 올해 지출 ${ra.dE>=0?'+':'-'}${money(Math.abs(ra.dE))}, 예상 수입 ${ra.dI>=0?'+':'-'}${money(Math.abs(ra.dI))} (전력이 바뀌면 관중·광고 수입 전망도 바뀝니다)`:'',tradeRosterTxt(give,get),cp1>cap&&cp1>cp0?`샐러리캡 초과: 상위 40명 연봉 ${money(cp1)} / 상한 ${money(cap)} (시즌 끝까지 넘으면 경쟁균형세)`:''],warn:'상대가 받아들이면 바로 성사되고 되돌릴 수 없습니다.',chk:()=>(G.trades||[]).length}; }
 const GUARD={
   enlist(v){ const p=G.players[+v]; if(!p||!milFree(p))return null; const d=depth(G.user); const role=[...d.start].some(x=>x.id===p.id)?'주전':d.sp.some(x=>x.id===p.id)?'선발 로테이션':d.pen.slice(0,4).some(x=>x.id===p.id)?'필승조':p.e1?'1군 백업':'2군';
     const from=G.day+14, to=from+MIL_DAYS; return {subj:`${p.name} 현역 입대`,kind:'병역',lines:[`${posLabel(p)} · ${p.age}세 · 지금 ${role}`,`입대 ${dmd(from)} · 전역 예정 ${dmd(to)}(1년 6개월)`,'복무 중에는 로스터·연봉 총액에서 빠지고, 1군 기록이 없어 FA 연차로 치지 않습니다.','입대일 전까지는 병역 화면에서 예약을 취소할 수 있습니다.']}; },
@@ -13,7 +13,7 @@ const GUARD={
   signF(v){ return GUARD.signFc(v); },
   tsugGo(v){ const [src,i]=v.split(':'); const x=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!x||!tsugValid(x))return null; return tradeDoc(x.tid,x.give,[x.id]); },
   mktGo(v){ const x=(UI._mkt||[])[+v]; const m=UI.findM; if(!x||m==null)return null; return tradeDoc(x.tid,[m],x.give); },
-  tpropose(){ const tr=UI.trade; if(!tr||(!tr.give.length&&!tr.get.length))return null; return tradeDoc(tr.tid,tr.give,tr.get,tr.cash); },
+  tpropose(){ const tr=UI.trade; if(!tr||(!tr.give.length&&!tr.get.length))return null; return tradeDoc(tr.tid,tr.give,tr.get,tr.cash,tr.pk); },
   offerYes(v){ const o=(G.offers||[]).find(x=>x.id===v); if(!o)return null; const d=tradeDoc(o.from,o.get,o.give); if(d){ d.subj=`${tshort(o.from)} 제안 수락`; d.warn='수락하면 바로 성사되고 되돌릴 수 없습니다.'; } return d; },
   confirmContracts(){ const C=G.contract; if(!C)return null; { const f=fReCapInfo(); if(f&&f.over>0)return null; } const V=confirmPreview(); if(!V)return null; /* 실제 확정과 같은 계산(confirmPreview) */
     return {subj:'연봉 계약 일괄 확정',kind:'연봉',lines:[`합의·제시액 확정 ${V.fix.length}명 · 연봉 합계 ${V.dFix>=0?'+':''}${money(V.dFix)}`,...V.fix.sort((a,b)=>Math.abs(b.to-b.from)-Math.abs(a.to-a.from)).slice(0,5).map(x=>`${x.p.name}: ${money(x.from)} → ${money(x.to)}`),

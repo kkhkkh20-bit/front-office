@@ -99,9 +99,9 @@ function draftBoard(){
 function amScore(p){ const h=p.am; if(!h)return -99; if(p.isP){ const r=pRate(h); return 10-r.era+(h.so/Math.max(1,h.outs/3))*.8; } return bRate(h).ops*10; }
 function draftResults(){
   const d=G.draft; if(!d)return csec('지명 현황','<p class="small muted">드래프트가 시작되면 라운드별 지명 결과가 여기에 쌓입니다.</p>');
-  const order=d.picks.filter(x=>x.rd===1).map(x=>x.tid);
-  const rows=[]; for(let r=1;r<=DRAFT_ROUNDS;r++){ rows.push(`<tr><th>${r}R</th>${order.map(tid=>{ const x=d.picks.find(q=>q.rd===r&&q.tid===tid); const q=x&&x.pid>0?G.players[x.pid]:null;
-    return `<td class="${tid===G.user?'me':''}">${x&&x.pass?'<span class="muted">건너뜀</span>':q?`<button class="lnk" data-a="player" data-v="${q.id}">${esc(q.name)}</button><i>${posLabel(q)}</i>`:'<span class="muted">-</span>'}</td>`; }).join('')}</tr>`); }
+  const order=d.picks.filter(x=>x.rd===1).map(x=>x.from??x.tid); /* 열은 원래 구단 순번(지명권 트레이드로 넘긴 칸은 → 새 구단 표시) */
+  const rows=[]; for(let r=1;r<=DRAFT_ROUNDS;r++){ rows.push(`<tr><th>${r}R</th>${order.map(tid=>{ const x=d.picks.find(q=>q.rd===r&&(q.from??q.tid)===tid); const q=x&&x.pid>0?G.players[x.pid]:null;
+    return `<td class="${tid===G.user?'me':''}">${x&&x.pass?'<span class="muted">건너뜀</span>':q?`<button class="lnk" data-a="player" data-v="${q.id}">${esc(q.name)}</button><i>${posLabel(q)}</i>`:'<span class="muted">-</span>'}${x&&x.from!=null?`<i>→${esc(tshort(x.tid))}</i>`:''}</td>`; }).join('')}</tr>`); }
   const mine=d.picks.filter(x=>x.tid===G.user&&x.pid>0).map(x=>G.players[x.pid]).filter(Boolean);
   return `${mine.length?`<section class="card"><div class="row between"><h2 class="sec">우리 지명 선수</h2><span class="small muted">${mine.length}명 · 내년 1월 합류</span></div><div class="tgrid">${mine.map(p=>pcard(p,{sub:`${esc(p.school||'')} · ${p.age}세`,stat:`${p.draft.rd}라운드 ${p.draft.no}순위 · ${amLine(p)}`,foot:`<b class="num">${money(p.draft.bonus??bonusOf(p.draft.rd,p.draft.no,p))}</b><span>계약금</span>`})).join('')}</div></section>`:''}
   <section class="card"><h2 class="sec">라운드별 지명</h2><div class="tw"><table class="dres"><thead><tr><th></th>${order.map(t=>`<th>${badge(t,18)}<br>${esc(tshort(t))}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div></section>`;
