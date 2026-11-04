@@ -3521,6 +3521,11 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 }
 
 .trade-pool-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.trade-pool-options label{display:grid;gap:4px;font-size:12px;color:var(--muted)}.trade-pool-options select{min-width:0;width:100%}
+/* 2026-11-04 리뷰: 휴대폰 중계 보기 전환·팀 전환 버튼이 18~23px로 작아 터치가 어려웠다. 하단 탭 이름은 한 줄로 */
+@media (max-width:700px){
+  #app [data-a="castView"],#app [data-a="castTeam"]{min-height:32px;min-width:44px}
+  .bnav button span,.bnav button b{white-space:nowrap}
+}
 .collection-mode.psh{height:var(--detail-height);min-height:0;display:flex!important;flex-direction:column;overflow:hidden!important}
 .collection-mode>.pf-topnav,.collection-mode>.detail-navigation{flex:none}
 .collection-heading{display:flex;align-items:center;gap:12px;min-height:32px}.collection-heading>.small{flex:1}
@@ -7953,7 +7958,7 @@ const REG=['수도권','영남','호남·충청'];
 function capOf(y){ if(y<=2026)return 14397; if(y===2027)return 15117; if(y===2028)return 15873; if(typeof G!=='undefined'&&G&&G.capY){ if(G.capY[y])return G.capY[y]; const ks=Object.keys(G.capY).map(Number).filter(k=>k<y).sort((a,b)=>b-a); if(ks.length)return Math.round(G.capY[ks[0]]*Math.pow(1.03,y-ks[0])); } return Math.round(15873*Math.pow(1.03,y-2028)); }
 /* 리그 경제 지수: 연봉 상한이 오르는 만큼 수입·운영비·지원 한도·스폰서도 같이 오른다(연봉만 오르고 수입이 고정이면 해마다 모든 구단이 적자로 몰린다) */
 function ecoIdx(y){ return Math.max(1,capOf(y??G.year)/14397); }
-function floorOf(y){ return Math.round(6065*capOf(y)/14397); }
+function floorOf(y){ return Math.round(6065*capOf(y)/capOf(2027)); } /* KBO 하한: 2027년 도입 60억6,538만 원, 이후 상한과 같이 매년 상향 */
 let MIN_SAL=30;              // 최저 연봉 3,000만원(금액 단위: 백만원). 2027년부터 3,300만원(2026년 1월 KBO 이사회)
 function syncMinSal(){ MIN_SAL=(typeof G!=='undefined'&&G&&G.year>=2027)?33:30; }
 const ROSTER_MAX=68, ROSTER_MIN=45; // KBO 소속선수 한도: 2025년까지 65명, 2026년 68명으로 확대
@@ -8182,10 +8187,10 @@ function simPit(p,outs,b){
 const ZB={pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,r:0,rbi:0,sb:0,cs:0,g:0,e:0,sf:0};
 const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,hbp:0,so:0,er:0,w:0,l:0,sv:0,hld:0,bf:0};
 /* 좌우 상대 기록(정규시즌 1군): 타자는 상대 투수 손, 투수는 상대 타자 쪽(양타는 투수 반대편). [타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런] */
-function splAdd(b,p,o,f){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1;if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
+function splAdd(b,p,o,f){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1; if(o==='SAC')a[8]=(a[8]||0)+1; /* 희생번트는 출루율 분모에서 뺀다 */ if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
   row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side); }
 /* 우리 선수 경기별 기록(이동 구간 추세용, 이번 시즌만): 타자 [날짜, 타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런], 투수 [날짜, 상대 타자, 아웃, 삼진, 볼넷, 피안타, 피홈런, 자책] */
-function glAdd(p,day,x){ const y=G.year; if(!p.gl||p.gl.y!==y)p.gl={y,g:[]}; p.gl.g.push(p.isP?[day,x.bf||0,x.outs||0,x.so||0,x.bb||0,x.h||0,x.hr||0,x.er||0]:[day,x.pa||0,x.ab||0,x.h||0,(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0),x.bb||0,x.so||0,x.hr||0]); }
+function glAdd(p,day,x){ const y=G.year; if(!p.gl||p.gl.y!==y)p.gl={y,g:[]}; p.gl.g.push(p.isP?[day,x.bf||0,x.outs||0,x.so||0,x.bb||0,x.h||0,x.hr||0,x.er||0]:[day,x.pa||0,x.ab||0,x.h||0,(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0),x.bb||0,x.so||0,x.hr||0,x.hbp||0]); } /* 타자 끝 칸: 사구 */
 function lineFor(p,y,t,lvl){ let h=p.hist.find(x=>x.y===y&&x.t===t&&x.lvl===lvl); if(!h){ h=Object.assign({y,t,lvl},p.isP?ZP:ZB); p.hist.push(h); if(!p.salYr)p.salYr={}; if(p.salYr[y]==null)p.salYr[y]=p.sal||0; } return h; }
 /* 그 시즌 연봉: 그해 첫 기록이 생길 때 남긴 값. 기록이 없는 해는 비운다(지금 연봉을 지난 성적에 붙이지 않는다). 기록 전인 이번 시즌만 지금 연봉 */
 function salOfY(p,y){ if(!p)return null; const v=p.salYr?p.salYr[y]:null; if(v!=null)return v; const o=Array.isArray(p.salH)?p.salH.find(x=>x.y===y):null; if(o)return o.s; /* 스토브리그 연봉 기록(국내 선수, 4년) */ return y===G.year?(p.sal||0):null; }
@@ -8289,7 +8294,7 @@ function makeLineup(tid,pool){
     if(!better)break; }
   return ln;
 }
-function entryLimit(){ if(period()!=='season')return ENTRY_BASE; if(G.day>=KD(8,25))return ENTRY_BASE+ENTRY_EXP; if(G.cal&&G.cal.asg&&G.day>G.cal.asg&&typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year))return ENTRY_BASE+1; return ENTRY_BASE; } /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
+function entryLimit(){ const per=period(); if(per==='post')return ENTRY_BASE+1; if(per!=='season')return ENTRY_BASE; const ag=G.cal&&G.cal.asg&&G.day>G.cal.asg&&typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year)?1:0; return ENTRY_BASE+ag+(G.day>=KD(8,25)?ENTRY_EXP:0); } /* 포스트시즌 30명(KBO 2026), AG 해 후반기 30명이면 확대 뒤 34명 */ /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); }
 /* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */
@@ -8674,7 +8679,7 @@ function applyGame(day,hid,aid,g,ps){
         /* 선발 출장: 수비 강화로 빠진 선수는 선발로 치고, 교체로 들어온 선수는 선발이 아니다 */
         const sIn=s.subIn&&s.subIn[id]!=null, sOut=s.outI&&s.outI[id]!=null;
         if(!ps){ const i=sIn?-1:sOut?s.outI[id]:s.order.findIndex(q=>q.id===id); if(i>=0){ const u=(p.use&&p.use.y===y)?p.use:(p.use={y,g:0,pos:{},slot:{}}); u.g++; const ps_=s.posOf[id]||'DH'; u.pos[ps_]=(u.pos[ps_]||0)+1; u.slot[i+1]=(u.slot[i+1]||0)+1; } }
-        if(sOut||s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm*(sIn?.3:sOut?.85:1),0,100); if(!ps&&!sIn){ p.wear=(p.wear||0)+1; (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3,x.sf||0]); if(p.l10.length>10)p.l10.shift(); } }
+        if(sOut||s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm*(sIn?.3:sOut?.85:1),0,100); if(!ps&&!sIn){ p.wear=(p.wear||0)+1; (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3,x.sf||0,x.hbp||0]); if(p.l10.length>10)p.l10.shift(); } }
         if(R()<p.inj*.026*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60)*(sIn?.3:sOut?.85:1))injure(p,day);
         else if(p.injFx){ p.injPlay=day; injRecover(p,(x.ab||0)+(x.bb||0)); }
       }
@@ -8792,14 +8797,14 @@ function advance(mode,options={}){
     if(G.unemp)unempAuto();
     if(blocker())break;
     /* 포스트시즌: 다른 팀 경기를 넘기다가 우리 경기까지 한 번에 지나치지 않게, 우리 경기 전날에 멈춘다(바로 다음 날이 우리 경기면 그 경기를 진행) */
-    if(days>0&&!weekly&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
+    if(days>0&&(!weekly||period()==='post')&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
     const planned=gmPlanAt(G.day+1);
     if(!options.skipMatchStop&&mode!=='watch'&&ourGameOn(G.day+1)&&(G.watchPlanned?.day===G.day+1||(planned?.k==='attend'&&!planned.done))){G.matchAwait={day:G.day+1,mode};break;}
     processDay(); days=G.day-start;
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
     if(weekly){ const D=G.dig; D.to=G.day;
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); G.res=null; }
-      if(gameBatch&&D.games.length>=3)break;
+      if(gameBatch&&D.games.length>=(period()==='post'||(G.ps&&G.ps.done&&G.ps.finDay>=G.day)?1:3))break; /* 포스트시즌은 우리 경기마다 멈춘다(라인업·선발 확인) */
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
       { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
@@ -9059,7 +9064,7 @@ function settlement(){
     let tax=0; if(ci.over>0){ const n=(t.capOver||0)+1; tax=Math.round(ci.over*capRate(n)); t.capOver=n; if(n>=3)t.pickPen=G.year+1; } else t.capOver=0;
     let flo=0; if(G.year>=2027){ const under=ci.floor-ci.pay; if(under>0){ const n=(t.floorUnder||0)+1; flo=Math.round(under*floorRate(n)); t.floorUnder=n; } else t.floorUnder=0; }
     const champBonus=(ps.champ===t.id&&!t.indie)?Math.round(pool*.5*(t.owner==='profit'?.6:1)):0;
-    const EI=ecoIdx(y); const inc=[['입장 수입',SPj.att?SPj.ticket:Math.round(att*TICKET*EI*PRICE[S.price].m)] /* 경기마다 그때 가격으로 쌓은 수입(stadGame) */,['구장 부대 수입',Math.max(0,SPj.att?SPj.fnb:Math.round(att*.0003*(S.lv.fnb-2)))+(S.lv.prem-2)*600+(S.lv.vis-2)*400+(S.dome?2500:0)] /* 돔구장 비시즌 대관(예산 전망 stadProj와 같은 값) */,['중계권 배분',Math.round(9000*EI*asRev())],['광고·상품',Math.round((2200*EI+mkt*1.6)*t.market*t.pop*adM)]]; { const si=starIncome(t.id); if(si>0)inc.push(['스타 마케팅',si]); } { const ct=G.sea.cut&&G.sea.cut[t.id]; if(ct>0)inc.push(['연봉 감액(고액 연봉 선수 2군 체류)',Math.round(ct)]); } /* KBO: 연봉 3억 이상 선수가 1군에 없으면 하루 1/600 감액 */
+    const EI=ecoIdx(y); const inc=[['입장 수입',SPj.att?SPj.ticket:Math.round(att*TICKET*EI*PRICE[S.price].m)] /* 경기마다 그때 가격으로 쌓은 수입(stadGame) */,['구장 부대 수입',Math.max(0,SPj.att?SPj.fnb:Math.round(att*.0003*(S.lv.fnb-2)))+(stadPower(S.lv.prem)-2)*600+(stadPower(S.lv.vis)-2)*400+(S.dome?2500:0)] /* 돔구장 비시즌 대관(예산 전망 stadProj와 같은 값: 6단계 이상은 stadPower로 체감) */,['중계권 배분',Math.round(9000*EI*asRev())],['광고·상품',Math.round((2200*EI+mkt*1.6)*t.market*t.pop*adM)]]; { const si=starIncome(t.id); if(si>0)inc.push(['스타 마케팅',si]); } { const ct=G.sea.cut&&G.sea.cut[t.id]; if(ct>0)inc.push(['연봉 감액(고액 연봉 선수 2군 체류)',Math.round(ct)]); } /* KBO: 연봉 3억 이상 선수가 1군에 없으면 하루 1/600 감액 */
     if(t.id===ME()){ const sp=sponSettle(y,ps); if(sp.base)inc.push(['스폰서 계약',sp.base]); if(sp.bonus)inc.push(['스폰서 성과 보너스',sp.bonus]); } else { if(t.indie)inc.push(['메인 스폰서',Math.round(10500*EI)]); inc.push(['스폰서',sponAI(t.id)]); } 
     if(share[t.id])inc.push(['포스트시즌 배당금',share[t.id]]);
     if(champBonus)inc.push(['모기업 우승 보너스',champBonus]);
@@ -9177,7 +9182,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
       if(ctOn(p)&&p.pOut&&!p.pOut.used&&p.pOut.y===G.year&&(p.yrs||0)>1){ p.pOut.used=true; if(pOutDecide(p)){ p.yrs=1; p.ctFree=G.year; story(p,'옵트아웃: 남은 계약을 포기하고 FA 시장으로','move'); if(p.team===G.user)mail('운영팀',`${p.name} 옵트아웃`,`${p.name}이(가) 계약의 옵트아웃 조항을 써서 남은 계약을 포기하고 FA 시장에 나갑니다. 우리 구단도 FA 협상으로 다시 잡을 수 있습니다.`,{kind:'연봉',ref:p.id}); } else story(p,'옵트아웃 하지 않고 계약 유지','move'); }
       if((p.yrs||0)===1&&ctOn(p)&&p.cOpt&&!p.cOpt.used&&p.ctFree!==G.year){ p.cOpt.used=true; const ex=p.team===G.user&&!G.unemp?(p.cOpt.dec??cOptAI(p)):cOptAI(p); if(ex){ p.yrs+=p.cOpt.y; p.cyrs=(p.cyrs||0)+p.cOpt.y; p.sal=p.cOpt.a; p.cOptAdd={y:p.cOpt.y,a:p.cOpt.a}; story(p,`구단 연장 옵션 실행(${p.cOpt.y}년 연 ${money(p.cOpt.a)})`,'move'); } else { p.ctFree=G.year; story(p,'구단 연장 옵션 포기 → FA','move'); } }
       p.yrs--; if(p.yrs>0)continue; p.faC=false; p.ext=false; delete p.cyrs; }
-    const elig=p.svc>=faSvc(p)&&(p.lastFA==null||G.year-p.lastFA>=4||p.ctFree===G.year)&&p.age<=37; /* 옵트아웃·구단 옵션 포기로 나온 선수는 재자격 기간과 상관없이 FA */
+    const elig=p.svc>=faSvc(p)&&(p.lastFA==null||G.year-p.lastFA>=4||p.ctFree===G.year); /* KBO는 FA 나이 제한이 없다(신청 여부는 아래 선수 판단). 옵트아웃·구단 옵션 포기로 나온 선수는 재자격 기간과 상관없이 FA */
     /* 자격이 있어도 신청은 선수 몫: 시장 가치가 낮거나 나이가 많으면 신청하지 않고 남는다 */
     const dp=faDeclP(p);
     if(elig&&p.ctFree!==G.year&&R()>=dp){ p.faSkip=G.year; if(p.team===G.user)(G._faSkip=G._faSkip||[]).push(p.name); continue; }
@@ -9853,7 +9858,9 @@ function fdRisk(){ const F=G.fd; if(!F||F.done)return {}; const key=F.cur+':'+F.
   for(let it=0;it<N;it++){ const gone=new Set(); for(const tid of seq){ const L=tops[tid].filter(x=>!gone.has(x.id)); if(!L.length)continue; const vm=L[0].v, T=Math.max(.4,Math.abs(vm)*.1); let tot=0; const w=L.map(x=>{ const e=Math.exp((x.v-vm)/T); tot+=e; return e; }); let r=rnd0()*tot, pick=L[0].id; for(let j=0;j<L.length;j++){ r-=w[j]; if(r<=0){ pick=L[j].id; break; } } gone.add(pick); cnt[pick]=(cnt[pick]||0)+1; } }
   for(const id in cnt)m[id]=cnt[id]/N; F._rk={k:key,m,n:seq.length}; return m; }
 /* ===== 외국인 선수 ===== */
-function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(300+(o-46)*46),300,F_NEW_CAP); }
+/* KBO: 시즌 중 교체 외국인은 남은 기간 월 10만 달러까지. 지급은 남은 경기 비율(remainFrac)이라 연봉 기준 60만 달러(6개월)로 묶는다. shortcut: 시즌 6개월 고정 — 일정 길이가 바뀌면 남은 달 수로 */
+const fNewCap=()=>period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP;
+function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(300+(o-46)*46),300,fNewCap()); }
 function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(const k in ws){ x-=ws[k]; if(x<=0)return k; } return Object.keys(ws)[0]; }
 /* 외국인 후보는 두 경로로 나온다.
    에이전트 제안: 리그 전체에 돌리는 공용 후보. 대부분 트리플A 출신(MLB 콜업 경력이 있는 선수가 많다)이고, 이름값 있는 선수는 이유(부상·나이·적응)가 있다.
@@ -9913,7 +9920,7 @@ function newForeign(kind,opts){
     else if(!asia){ const ch=lvl[0]==='트리플A'?clamp(.12+(o0-52)*.045,.04,.75):lvl[0]==='더블A'?.04:clamp(.06+(o0-52)*.02,.02,.3); if(R()<ch)g=Math.round(ri(4,60)*(1+Math.max(0,o0-52)*.08)); }
     p.mlbG=g; }
   /* 몸값은 시장이 보는 가치(기록·경력·소문)라 실제 능력과 어긋난다. 몸값만 보고 실력을 알 수는 없다 */
-  p.ask=fAsk(p,ovr(p)+N(0,3.5)+(p.mlbG>=30?1.5:p.mlbG>0?.7:0)); if(reg==='la')p.ask=round5(p.ask*.8); if(lvl[0]==='MLB')p.ask=round5(Math.min(F_NEW_CAP,p.ask*1.2)); if(flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
+  p.ask=fAsk(p,ovr(p)+N(0,3.5)+(p.mlbG>=30?1.5:p.mlbG>0?.7:0)); if(reg==='la')p.ask=round5(p.ask*.8); if(lvl[0]==='MLB')p.ask=round5(Math.min(fNewCap(),p.ask*1.2)); if(flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
   if(src){ p.fsrc=src; p.fday=G.day; if(src==='scout'){ p.fknow=[opts.finder]; p.fpub=G.day+ri(14,45)-(base>=60?10:0); } else p.fpub=G.day; }
   return p;
 }
@@ -10004,6 +10011,7 @@ function foreignCheck(tid,p,excludeId){
 function remainFrac(){ const c=G.cal; if(G.day<c.open)return 1; if(G.day>c.end)return 0; const left=Object.keys(c.sched).filter(d=>+d>G.day).length; return left/144; }
 function signForeign(tid,id){
   const p=G.players[id];
+  if(period()==='season'&&p&&p.foreign!=='아시아'&&p.ask>fNewCap())p.ask=fNewCap(); /* 시즌 중 교체는 KBO 상한(월 10만 달러)으로 계약 */
   const err=foreignCheck(tid,p); if(err)return err;
   const mid=period()==='season';
   story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
@@ -10090,8 +10098,6 @@ function updateModes(){ const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})).
 function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.5+t.trust/100))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
 /* 상한 초과 제재(2025년 개정 규정): 1회 초과분 30%, 2회 연속 50%, 3회 연속 100% + 다음 해 1라운드 지명권 9단계 하락 */
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
-/* 하한 미달(2027년~): 모자란 금액의 50%, 2회 연속 60%, 3회 연속부터 75%를 발전기금으로 낸다.
-   상한 제재처럼 100%까지 오르면 하한을 못 맞춘 가난한 구단이 더 가난해지는 악순환이 생겨 완만하게 둔다 */
 function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */
@@ -10706,7 +10712,7 @@ function prMonth(m){ prInit(); if(G.unemp)return; const st=standingsNow(); const
   const best=domestic(G.user).concat(foreignOf(G.user)).map(p=>{ const L=p.l10||[]; return {p,v:(seasonTotal(p,G.year,'1군')?warOf(seasonTotal(p,G.year,'1군'),p):0)}; }).sort((a,b)=>b.v-a.v)[0];
   if(best&&best.v>=1.2&&R()<.6){ const h=seasonTotal(best.p,G.year,'1군'); news('선수',`${nm}의 기둥 ${best.p.name}`,`${best.p.name}이(가) ${statLine(h,best.p)}(으)로 팀을 이끌고 있습니다.`,1,{ref:best.p.id}); }
   // 티켓 가격과 구장 관중
-  { const S=stadOf(G.user); const pf=PRICE[S.price].fan+(S.lv.seat-2)*.25; if(pf)G.pr.fan=clamp(G.pr.fan+pf*2,0,100); const A=G.sea.att&&G.sea.att[G.user];
+  { const S=stadOf(G.user); const pf=PRICE[S.price].fan+(stadPower(S.lv.seat)-2)*.25; if(pf)G.pr.fan=clamp(G.pr.fan+pf*2,0,100); const A=G.sea.att&&G.sea.att[G.user];
     if(A&&A.n>=8){ const occ=A.sum/A.n/stadCap(G.user); if(occ>=.95&&R()<.5)news('구단',`${nm} 홈경기 표 구하기 전쟁`,`${stadName(G.user)} 좌석 점유율이 ${Math.round(occ*100)}%입니다. 올해 매진 ${A.so}회.`,1); else if(occ<.6&&R()<.5)news('구단',`${nm} 홈 관중석 썰렁`,`${stadName(G.user)} 경기당 평균 ${Math.round(A.sum/A.n).toLocaleString('ko-KR')}명으로 좌석 점유율 ${Math.round(occ*100)}%에 그쳤습니다.`,-1); } }
   ownerMonth(m,rk); try{ staffReport(`${m}월`); }catch(err){}
 }
@@ -11062,8 +11068,8 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y]));
   A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
   const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ let b=null,n=-1; for(const k in u.pos)if(u.pos[k]>n){ n=u.pos[k]; b=k; } if(b)return b; } return x.h.pos; }; /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
-  const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.round(tg(x)*3.1*2/3); const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
-  const voteGG=(pos,L,seats)=>{if(!L.length)return;const C=L.map(x=>ggCandidate(x,pos));A.ggVote.ballots[pos]=ggReporterVote(C,288,seats,y);A.cand.gg[pos]=C;};
+  const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
+  const voteGG=(pos,L,seats)=>{if(!L.length)return;const C=L.map(x=>ggCandidate(x,pos));A.ggVote.ballots[pos]=ggReporterVote(C,288,seats,y).length; /* 투표지 원본은 읽는 곳이 없어 수만 남긴다(저장 크기) */A.cand.gg[pos]=C;};
   for(const pos of ['C','1B','2B','3B','SS','DH'])voteGG(pos,rows.filter(x=>!x.p.isP&&gpos(x)===pos&&ggQ(x,pos)),1);
   voteGG('OF',rows.filter(x=>!x.p.isP&&['LF','CF','RF'].includes(gpos(x))&&ggQ(x,'OF')),3);
   voteGG('P',rows.filter(qP),1);
@@ -11556,7 +11562,7 @@ const EVH={
        {l:'시즌 끝나고 이야기하자',fx:'선수 기분이 조금 내려가고, FA 시장에 나갈 가능성이 커집니다.'}],{ref:p.id,face:p.id,from:'에이전트',data:{pid:p.id},def:1}); },
     pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0)return '선수 정보의 관리 탭에서 다년계약 조건을 제시하세요.'; p.mor=clamp(p.mor-5,0,100); return `${p.name} 기분 -5.`; } },
   /* 주전 슬럼프 */
-  slump:{ w:1.1, check(){ const d=depth(G.user); const L=d.start.filter(p=>(p.l10||[]).length>=8).map(p=>{ const L=p.l10; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)),sf=sum(L.map(x=>x[6]||0)); if(ab<25)return null; const ops=(h+bb)/(ab+bb+sf)+(h+xb)/ab; return ops<.5?{p,ops,avg:h/ab}:null; }).filter(Boolean).sort((a,b)=>a.ops-b.ops); return L[0]||null; },
+  slump:{ w:1.1, check(){ const d=depth(G.user); const L=d.start.filter(p=>(p.l10||[]).length>=8).map(p=>{ const L=p.l10; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)),sf=sum(L.map(x=>x[6]||0)); if(ab<25)return null; const hp=sum(L.map(x=>x[7]||0)); const ops=(h+bb+hp)/(ab+bb+hp+sf)+(h+xb)/ab; return ops<.5?{p,ops,avg:h/ab}:null; }).filter(Boolean).sort((a,b)=>a.ops-b.ops); return L[0]||null; },
     make(x){ const p=x.p; evNew('slump',`${p.name}, 깊은 슬럼프`,`주전 ${p.name}(${posLabel(p)})이(가) 최근 10경기 타율 ${fmt3(x.avg)}, OPS ${fmt3(x.ops)}에 그치고 있습니다. 전력분석팀은 타격 밸런스가 무너졌다고 봅니다.\n시즌 기록: ${evLine(p)}`,
       [{l:'2군에서 조정 (말소 요청)',fx:'감독이 받아들이면 10일 이상 2군에서 조정합니다. 돌아오면 2주간 컨디션이 좋아집니다. 본인 기분은 내려갑니다.'},
        {l:'면담으로 다잡기',fx:'프로의식이 높은 선수는 2주간 분발합니다. 아니면 기분만 내려갑니다.'},
@@ -13040,7 +13046,7 @@ function faGradeOf(p,all,snap){ if(p.age>=35)return 'C'; const n=p.faN||(p.lastF
   const gs=q=>avgSal3(q); const S=q=>(snap&&snap.get(q.id))||q; /* snap: 스토브리그 시작 때 상태(먼저 선언한 동료도 원래 구단에 있는 것으로 센다) */
   const D=all.filter(q=>{ const z=S(q); return !q.foreign&&(q.id===p.id||!(z.faC&&!z.ext)&&!(z.ext&&z.faC&&(z.yrs||0)>1)); }); const v=gs(p); const myT=S(p).team; const lg=D.filter(q=>gs(q)>v).length+1; const tm=D.filter(q=>S(q).team===myT&&gs(q)>v).length+1; p.faRank={lg,tm};
   if(tm<=3&&lg<=30)return 'A'; if(tm<=10&&lg<=60)return 'B'; return 'C'; }
-/* 실제 KBO는 소속선수 65명 중 A 20명·B 25명을 보호한다. 이 게임 등록 상한은 40명이라 같은 비율(약 31%·38%)로 줄인다 */
+/* KBO 보상: A등급 보호 20명, B등급 25명(보상선수 1명 + 연봉 200%/100%, 선수 없이 300%/200%), C등급 150% */
 const COMP={A:{prot:20,kbo:20,withP:2,cash:3},B:{prot:25,kbo:25,withP:1,cash:2},C:{prot:0,kbo:0,withP:0,cash:1.5}};
 /* 보호선수에서 저절로 빠지는 선수: 외국인, 이번 드래프트 지명 신인·입단 예정, 군 복무 중, 이번 겨울(스토브리그 회차) FA로 계약한 선수 */
 /* 스토브리그 회차: 시즌이 끝난 뒤 겨울은 그 시즌 연도로 센다(12월과 이듬해 1~2월이 같은 회차). 보호·FA 재자격은 달력 연도 대신 이 회차를 쓴다 */
@@ -13680,7 +13686,7 @@ function bipResolve(b,p,babip,qb,qp,fs){ const M=bipMix(b,p); let x=R(), t='PU';
 function bipHR(b,p){ const side=bipSide(b,p); const d=PARK!=null?parkHRDir(PARK,side):(x=>x<.6?'pull':x<.88?'mid':'oppo')(R()); return {t:'FB',pos:bipPos('FB',d,side),side,hr:true}; }
 /* 방향별 타구 기록(정규시즌 1군): 타자 spr.z[자리]=[타구, 안타, 장타, 홈런], 유형 spr.t[유형]=[타구, 안타]. 투수는 맞은 타구 유형만 */
 function sprAdd(b,p,o,L){ if(!L)return; const y=G.year; const ini=x=>{ if(!x.spr||x.spr.y!==y){ if(x.spr&&x.spr.y===y-1)x.sprP=x.spr; x.spr={y,z:{},t:{}}; } return x.spr; };
-  const hit=o!=='OUT', xb=o==='2B'||o==='3B'||o==='HR'; const S=ini(b); (S.points=S.points||[]).push([L.pos,o]); const z=S.z[L.pos]||(S.z[L.pos]=[0,0,0,0]); z[0]++; if(hit)z[1]++; if(xb)z[2]++; if(o==='HR')z[3]++;
+  const hit=o!=='OUT', xb=o==='2B'||o==='3B'||o==='HR'; const S=ini(b); const PT=S.points=S.points||[]; PT.push([L.pos,o]); if(PT.length>250)PT.shift(); /* 저장 크기: 분포도는 최근 250타구만(구역 집계 z는 시즌 전체) */ const z=S.z[L.pos]||(S.z[L.pos]=[0,0,0,0]); z[0]++; if(hit)z[1]++; if(xb)z[2]++; if(o==='HR')z[3]++;
   const tt=S.t[L.t]||(S.t[L.t]=[0,0]); tt[0]++; if(hit)tt[1]++; const P=ini(p); const pt=P.t[L.t]||(P.t[L.t]=[0,0]); pt[0]++; if(hit)pt[1]++; }
 /* ===== 감독 유형: 공격 작전(스몰볼·빅볼), 수비 중시·타격 중시, 투수 운용, 투수 관리, 기조 =====
    수비 중시 감독은 수비가 좋은 선수를 주전으로 쓰고, 8회 이후 근소하게 앞서면 수비 강화 교체를 한다.
@@ -14440,7 +14446,7 @@ function fdDataAll(){ const F=G.fd; if(!F)return {}; const k=F.y+':'+F.pool.leng
   for(const p of P){ let t=fdThree(p,y), lv=1; if(!t||(p.isP?t.outs<45:t.pa<120)){ const h=seasonTotal(p,y,'퓨처스'); if(h&&(p.isP?h.outs>=45:h.pa>=120)){ t=h; lv=2; } } if(!t)continue; const gk=(p.isP?'P':'B')+lv; (G2[gk]=G2[gk]||[]).push({p,t,lv}); }
   const pct=(A,f,hi)=>{ const v=A.map(f).sort((a,b)=>a-b); return x=>{ const z=f(x); let i=0; while(i<v.length&&v[i]<z)i++; const q=i/Math.max(1,v.length-1); return Math.round((hi?q:1-q)*100); }; };
   for(const gk in G2){ const A=G2[gk]; const isP=gk[0]==='P';
-    if(isP){ const bf=x=>x.t.outs+x.t.h+x.t.bb; const fk=pct(A,x=>x.t.so/bf(x),1), fb=pct(A,x=>x.t.bb/bf(x),0), fh=pct(A,x=>(x.t.hr||0)*27/x.t.outs,0), ff=pct(A,x=>(13*(x.t.hr||0)+3*((x.t.bb||0)+(x.t.hbp||0))-2*x.t.so)/(x.t.outs/3),0);
+    if(isP){ const bf=x=>x.t.bf||(x.t.outs+x.t.h+x.t.bb+(x.t.hbp||0)); const fk=pct(A,x=>x.t.so/bf(x),1), fb=pct(A,x=>x.t.bb/bf(x),0), fh=pct(A,x=>(x.t.hr||0)*27/x.t.outs,0), ff=pct(A,x=>(13*(x.t.hr||0)+3*((x.t.bb||0)+(x.t.hbp||0))-2*x.t.so)/(x.t.outs/3),0);
       A.forEach(x=>{ const n=x.t.outs/3; m[x.p.id]={isP,lv:x.lv,n,ys:x.t.ys||1,small:n<60,it:[['탈삼진',fk(x)],['볼넷 억제',fb(x)],['피홈런 억제',fh(x)],['실점 억제(FIP)',ff(x)]]}; }); }
     else { const fk=pct(A,x=>x.t.so/x.t.pa,0), fb=pct(A,x=>x.t.bb/x.t.pa,1), fi=pct(A,x=>{ const r=bRate(x.t); return r.slg-r.avg; },1), fo=pct(A,x=>bRate(x.t).obp*1.2+bRate(x.t).slg,1);
       A.forEach(x=>{ m[x.p.id]={isP,lv:x.lv,n:x.t.pa,ys:x.t.ys||1,small:x.t.pa<250,it:[['삼진 적음',fk(x)],['볼넷',fb(x)],['장타력',fi(x)],['생산력',fo(x)]]}; }); } }
@@ -14463,7 +14469,7 @@ function fdPosBoard(){ const F=G.fd; if(!F)return []; const RK=fdRisk(); const o
 /* 데이터팀 세부 지표: 최근 3년 1군 합산(부족하면 지난해 1·2군), 지난해 운 */
 function fdDetail(p,y){ let t=fdThree(p,y); if(!t||(p.isP?t.outs<30:t.pa<60)){ const h=seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); if(h&&(p.isP?h.outs>=15:h.pa>=30))t=Object.assign({ys:1},h); else return null; }
   const L=fdStatLine(p,y);
-  if(p.isP){ const bf=t.outs+t.h+t.bb, ip=t.outs/3; return {k:t.so/bf*100,bb:t.bb/bf*100,hr9:(t.hr||0)*9/ip,fip:(13*(t.hr||0)+3*((t.bb||0)+(t.hbp||0))-2*t.so)/ip+3.2,gap:L&&L.n>=15?L.era-L.fip:null,n:ip,ys:t.ys||1}; }
+  if(p.isP){ const bf=t.bf||(t.outs+t.h+t.bb+(t.hbp||0)), ip=t.outs/3; return {k:t.so/bf*100,bb:t.bb/bf*100,hr9:(t.hr||0)*9/ip,fip:(13*(t.hr||0)+3*((t.bb||0)+(t.hbp||0))-2*t.so)/ip+3.2,gap:L&&L.n>=15?L.era-L.fip:null,n:ip,ys:t.ys||1}; }
   const r=bRate(t); return {k:t.so/t.pa*100,bb:t.bb/t.pa*100,iso:r.slg-r.avg,babip:L&&L.n>=60?L.babip:null,n:t.pa,ys:t.ys||1}; }
 /* 기대 홈런(데이터팀): 능력치는 모른다. 지난 2년 1군 홈런율과, 분석팀이 있으면 타구 질(강한타구%·최고 타구속도로 리그 회귀)로 지난해 타석에서 나왔어야 할 홈런을 낸다.
    지난해 홈런이 기대보다 크게 많으면 거품, 크게 적으면 반등 여지. 한 해 기록만 보면 운(컨디션·타구 운)이 섞이므로 */
@@ -14536,7 +14542,7 @@ EVH.champGift={ pick(e,i){ const t=team(G.user); const y=G.year;
   if(i===0){ for(const p of playersOf(G.user)){ p.mor=clamp((p.mor??60)+6,0,100); initPers(p); if(!p.foreign&&R()<.35)p.pers.loy=Math.min(20,p.pers.loy+1); } return '모기업이 선수단에 우승 보너스를 지급했습니다. 선수 전원 기분 +6, 일부 선수는 구단에 더 애착을 갖습니다.'; }
   if(i===1){ t.cash+=2000; return '운영 자금 20억이 입금되었습니다.'; }
   if(i===2){ t.cash+=3000; G.faFund={y,amt:3000,used:false,due:dnum(y+1,2,1)}; return 'FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다.'; }
-  facInit(); const L=FACK.filter(k=>G.fac.it[k]<3).sort((a,b)=>(G.fac.bld[a]?1:0)-(G.fac.bld[b]?1:0)||G.fac.it[a]-G.fac.it[b]).slice(0,2); /* 공사 중인 시설은 뒤로: 낸 공사비가 헛되지 않게 */ for(const k of L){ const b=G.fac.bld[k]; G.fac.it[k]=Math.min(3,Math.max(G.fac.it[k]+1,b?b.lv:0)); delete G.fac.bld[k]; G.fac.dn[k]=G.day; } facRecalc();
+  facInit(); const L=FACK.filter(k=>G.fac.it[k]<FAC_MAX).sort((a,b)=>(G.fac.bld[a]?1:0)-(G.fac.bld[b]?1:0)||G.fac.it[a]-G.fac.it[b]).slice(0,2); /* 공사 중인 시설은 뒤로: 낸 공사비가 헛되지 않게 */ for(const k of L){ const b=G.fac.bld[k]; G.fac.it[k]=Math.min(FAC_MAX,Math.max(G.fac.it[k]+1,b?b.lv:0)); delete G.fac.bld[k]; G.fac.dn[k]=G.day; } facRecalc();
   return L.length?`${L.map(k=>`${FACI[k].l}: ${FACI[k].lv[G.fac.it[k]]}`).join(', ')}(으)로 바로 올렸습니다.`:'훈련 시설이 이미 모두 최고 단계라 운영 자금 20억으로 대신 받았습니다.'+(t.cash+=2000,''); } };
 /* FA 특별 자금: 2월 1일까지 FA를 한 명도 데려오지 않으면 절반 회수 */
 /* 우승 퍼레이드(우승 사흘 뒤): 연고 도시 카퍼레이드. 팬 여론·인기가 한 번 더 오른다 */
@@ -15003,7 +15009,7 @@ function cwRapLbl(r){ return r>=70?'각별함':r>=50?'가까움':r>=30?'보통':
 function cwRapWeek(){ for(const w of ['own','ceo']){ const x=cwRapP(w); if(G.day-(x.rapD??G.day)>=60&&x.rap>30)x.rap=Math.max(30,x.rap-.5); } }
 
 /* ---------- 기록 도우미 ---------- */
-function cwRecentB(p,n){ const o={g:0,pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,sf:0}; for(const g of (G.games||[])){ if(o.g>=n)break; if(!g.box||dobj(g.day).y!==G.year)continue; const s=g.box[g.home===G.user?'h':'a']; const b=s&&s.bat.find(x=>x.id===p.id); if(!b||!(b.ab+b.bb+(b.sf||0)))continue; o.g++; for(const k of ['ab','h','d','tr','hr','bb','so','sf'])o[k]+=b[k]||0; o.pa+=b.ab+b.bb+(b.sf||0); }
+function cwRecentB(p,n){ const o={g:0,pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,so:0,sf:0,hbp:0}; for(const g of (G.games||[])){ if(o.g>=n)break; if(!g.box||dobj(g.day).y!==G.year)continue; const s=g.box[g.home===G.user?'h':'a']; const b=s&&s.bat.find(x=>x.id===p.id); if(!b||!(b.ab+b.bb+(b.hbp||0)+(b.sf||0)))continue; o.g++; for(const k of ['ab','h','d','tr','hr','bb','so','sf','hbp'])o[k]+=b[k]||0; o.pa+=b.ab+b.bb+(b.hbp||0)+(b.sf||0); }
   const obp=obpOf(o), slg=o.ab?(o.h+o.d+2*o.tr+3*o.hr)/o.ab:0; return Object.assign(o,{avg:o.ab?o.h/o.ab:0,ops:obp+slg}); }
 function cwUlog(){ return ((G.sea&&G.sea.ulog)||[]).filter(x=>dobj(x.d).y===G.year); }
 function cwStreak(L){ L=L||cwUlog(); let n=0; for(let i=L.length-1;i>=0;i--){ if(L[i].res==='패')n++; else break; } return n; }
@@ -15497,7 +15503,7 @@ function myCStats(){ const C=myCInit()||G.myC; if(!C)return null; const S=C.seas
  - 우리 제안의 값(보장 + 인센티브 x 0.55) x 우리 매력이 선수 기준선과 가장 강한 경쟁 구단 제안보다 높으면 사인한다.
  - 처음 제안하면 에이전트가 경쟁 상황을 알려 주고 3일을 기다려 준다. 그 안에 못 잡으면 가장 강한 경쟁 구단으로 간다. */
 const FO_INC_W=.55;
-function foCap(q){ return q.foreign==='아시아'?ASIA_CAP:F_NEW_CAP; }
+function foCap(q){ return q.foreign==='아시아'?ASIA_CAP:fNewCap(); }
 function foRep(tid){ const L=foreignOf(tid).filter(p=>p.foreign==='용병'||p.foreign==='아시아'); return L.filter(p=>p.fy!=null&&p.fy<=G.year-1).length; }
 function foAppeal(q,tid){ const t=team(tid); const P=[]; let C=null; try{ C=faCtx(); }catch(e){}
   const pres=C?C.pres[tid]:clubPrestige(tid); P.push([`구단 명성 ${starTxt(prestigeStars(pres))}`,(pres-55)/400]);
@@ -16402,15 +16408,15 @@ function rRef(p){ const s=p&&p.rS; if(!s||!s.length)return null; const old=s.fil
 function rDelta(p){ const ref=rRef(p); if(!ref||ref.d===G.day)return null; const d={}; for(const k in p.r){ if(ref.r[k]==null)continue; d[k]=p.r[k]-ref.r[k]; } return {d,from:ref.d}; }
 
 /* 개인 타이틀 8개: [이름, 기록, 투수 여부, 낮을수록 좋은가] */
-const TITLES=[['홈런왕','hr',0],['타점왕','rbi',0],['도루왕','sb',0],['타격왕','avg',0],['다승왕','w',1],['탈삼진왕','so',1],['세이브왕','sv',1],['평균자책점왕','era',1,1]];
+const TITLES=[['홈런왕','hr',0],['타점왕','rbi',0],['도루왕','sb',0],['타격왕','avg',0],['득점왕','r',0],['최다안타','h',0],['출루율왕','obp',0],['장타율왕','slg',0],['다승왕','w',1],['탈삼진왕','so',1],['세이브왕','sv',1],['평균자책점왕','era',1,1],['승률왕','wpct',1],['홀드왕','hld',1]]; /* KBO 개인 타이틀 14개 부문 */
 function tgp(tid){ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r.t||0):0; } /* 소속 팀 경기 수: 규정 타석(×3.1)·규정 이닝(×1) */
-function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; return h[k]||0; }
-function tfmt(k,v){ return k==='avg'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
+function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; if(k==='obp'){ const d=(h.ab||0)+(h.bb||0)+(h.hbp||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0)+(h.hbp||0))/d:0; } if(k==='slg')return h.ab?((h.h||0)+(h.d||0)+2*(h.tr||0)+3*(h.hr||0))/h.ab:0; if(k==='wpct'){ const n=(h.w||0)+(h.l||0); return n?(h.w||0)/n:0; } return h[k]||0; }
+function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
 /* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
 function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.t=R[R.length-1].t; return h; }
 function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
   for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const g=tgp(h.t??p.team);
-    if(k==='avg'&&(h.pa||0)<g*3.1)continue; if(k==='era'&&(h.outs||0)<g*3)continue; const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t:h.t??p.team}); }
+    if(['avg','obp','slg'].includes(k)&&(h.pa||0)<Math.round(g*3.1))continue; if(k==='era'&&(h.outs||0)<g*3)continue; if(k==='wpct'&&(h.w||0)<10)continue; /* 규정타석 144경기 446(반올림), 승률왕은 10승 이상 */ const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t:h.t??p.team}); }
   return L.sort((a,b)=>low?a.v-b.v:b.v-a.v); }
 function seasonTitles(y){ const out=[];
   for(const [lab,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(!B.length)continue; const top=B[0].v; const W=B.filter(x=>Math.abs(x.v-top)<1e-9); /* 같으면 공동 수상 */
@@ -17619,12 +17625,12 @@ function fmBack(){ if(UI.meet){A.meetClose();return;}if(document.documentElement
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 /* 카드가 세로로 길게 쌓이는 화면은 PC에서 두 칸으로(FM 대시보드처럼). 표가 넓은 화면에는 쓰지 않는다 */
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
-function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
+function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
   if(tab==='home'&&!G.unemp)return back+`<nav class="subtabs" aria-label="홈 화면">${[['overview','구단 현황'],['work','업무·보고'],['team','선수단']].map(([k,l])=>`<button class="${(UI.homePanel||'overview')===k?'on':''}" data-a="homePanel" data-v="${k}">${l}</button>`).join('')}</nav>`;
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
 function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||[];
-  const location=TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
+  const location=UI.cast?'경기 중계':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
   return `<div class="shell fmsh${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
@@ -21886,7 +21892,7 @@ function pctCard(p,year){ if(hideOvr(p))return ''; const y=year??statY(); const 
     <div class="pct-g" title="경기 기록이 아니라 선수 능력에서 만든 측정값입니다. 측정 오차가 있고 시즌 중에는 변하지 않습니다."><b>측정값</b> <span class="small muted">${y<G.year?`${y} 시즌 측정이 아니라 지금(${G.year}) 능력 기반 값 · `:''}능력 기반 측정 · 측정 오차 포함 · 경기 결과로 바뀌지 않음</span></div>${trkM.map(row).join('')}
     <p class="small muted">숫자는 백분위(100에 가까울수록 리그 상위, 빨강), 오른쪽은 실제 값입니다. 삼진%·볼넷 허용처럼 낮을수록 좋은 항목은 뒤집어 계산했습니다. 비교 집단은 같은 시즌 1군 기준 이상 선수입니다.</p></div>`; }
 /* 좌우 상대 비교(정규시즌 1군): 타자는 좌투수·우투수 상대, 투수는 좌타자·우타자 상대. 타석 수와 적은 표본을 함께 */
-function splLine(a){ if(!a||!a[0])return null; const [pa,ab,h,tb,bb,so,hr,hbp=0]=a; const obp=(h+bb+hbp)/pa, slg=ab?tb/ab:0; return {pa,obp,slg,ops:obp+slg,kp:so/pa*100,bbp:bb/pa*100,hr}; }
+function splLine(a){ if(!a||!a[0])return null; const [pa,ab,h,tb,bb,so,hr,hbp=0,sac=0]=a; const obp=(h+bb+hbp)/Math.max(1,pa-sac), slg=ab?tb/ab:0; return {pa,obp,slg,ops:obp+slg,kp:so/pa*100,bbp:bb/pa*100,hr}; }
 function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R))return p.splP&&!UI.splP?'':'<p class="small muted">좌우 상대 기록은 이 업데이트 이후 1군 경기부터 쌓입니다.</p>';
   const L=splLine(S.L), Rr=splLine(S.R); const vs=p.isP?['좌타자','우타자']:['좌투수','우투수']; const M=p.isP?[['ops','피OPS'],['kp','삼진%'],['bbp','볼넷%']]:[['ops','OPS'],['kp','삼진%'],['bbp','볼넷%']];
   const mx=k=>Math.max(k==='ops'?1:30,...[L,Rr].filter(Boolean).map(x=>x[k])); const fv=(k,v)=>k==='ops'?fmt3(v):v.toFixed(1)+'%';
@@ -21897,7 +21903,7 @@ function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R)
     ${M.map(([k,l])=>`<div class="spl-r"><span>${l}</span>${bar(L,k,'l')}${bar(Rr,k,'r')}</div>`).join('')}
     <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다.</p></div>`; }
 /* 이동 구간 추세(최근 100타석·상대 100타자 창을 옮기며): 우리 선수만 경기별 기록을 보관 */
-function rollSeries(p,W){ const G0=(p.gl&&p.gl.g)||[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j]; n+=g[1]; for(let k=0;k<7;k++)a[k]+=g[k+1]; } if(n<W)continue; out.push({i,day:G0[i][0],a}); } return out; }
+function rollSeries(p,W){ const G0=(p.gl&&p.gl.g)||[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j]; n+=g[1]; for(let k=0;k<8;k++)a[k]+=g[k+1]||0; } if(n<W)continue; out.push({i,day:G0[i][0],a}); } return out; }
 function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.g)||[]).map(g=>g[1]));
   const st=seasonTotal(p,G.year,'1군'), sAll=st?(p.isP?(st.bf||0):(st.pa||0)):0, u=p.isP?'명':'타석'; const part=sAll>tot; /* 경기별 기록은 우리 구단에서 뛴 경기만 보관한다(이적 전 경기는 시즌 합계에만) */
   const scope=part?`우리 구단에서 모은 경기별 기록 ${tot}${u}(이번 시즌 전체 ${sAll}${u} 중 이적 전 기록은 경기별로 없음)`:`이번 시즌 ${tot}${u}`;
@@ -21907,7 +21913,7 @@ function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSer
   const lg=lgRates(p.isP);
   if(p.isP){ const k=L.map(x=>({i:x.i,v:x.a[2]/x.a[0]*100})), bb=L.map(x=>({i:x.i,v:x.a[3]/x.a[0]*100}));
     return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 상대 타자 ${W}명</span>${chart(k,0,40,v=>v.toFixed(0)+'%','탈삼진율(K%)',lg.k)}${chart(bb,0,20,v=>v.toFixed(0)+'%','볼넷율(BB%)',lg.bb)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
-  const ob=L.map(x=>({i:x.i,v:(x.a[2]+x.a[4])/x.a[0]})), kp=L.map(x=>({i:x.i,v:x.a[5]/x.a[0]*100}));
+  const ob=L.map(x=>({i:x.i,v:(x.a[2]+x.a[4]+x.a[7])/x.a[0]})), kp=L.map(x=>({i:x.i,v:x.a[5]/x.a[0]*100}));
   return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 ${W}타석</span>${chart(ob,.2,.5,v=>fmt3(v),'출루율(타석 기준)',lg.obp)}${chart(kp,0,40,v=>v.toFixed(0)+'%','삼진율(K%)',lg.k)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
 let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; so+=x.so||0; } }
   const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb)/pa:null,k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
@@ -24622,6 +24628,18 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04c',d:'11월 4일',t:'전체 리뷰 반영: KBO 규정·결산·기록 보완',items:[
+    '구장 6~8단계 프리미엄석·전광판 수입이 결산에서 예산 전망보다 많이 들어오던 문제를 고쳤습니다.',
+    '경쟁균형세 하한을 KBO대로 2027년 60억6,538만 원에서 시작합니다(1년 앞서 5% 올라가 있었음).',
+    '시즌 중 교체 외국인 연봉은 KBO 상한(남은 기간 월 10만 달러)까지입니다.',
+    '엔트리: 포스트시즌 30명, 아시안게임이 열리는 해 확대 엔트리 34명(KBO 2026).',
+    '개인 타이틀을 KBO 14개 부문으로 늘렸습니다(득점·최다안타·출루율·장타율·승률·홀드 추가). 규정타석은 446타석(144경기), 지명타자 골든글러브는 297타석입니다.',
+    'FA 37세 제한을 없앴습니다(KBO에 나이 제한 없음). 신청 여부는 선수가 판단합니다.',
+    '우승 포상으로 훈련 시설을 3단계 위로도 올릴 수 있습니다.',
+    '포스트시즌에는 계속을 눌러도 우리 경기마다 멈춥니다.',
+    '사구가 경기별 기록·최근 10경기 슬럼프 판정·동석 관람 기록에 들어가고, 좌우 기록 출루율에서 희생번트를 뺍니다.',
+    '저장 크기를 줄였습니다(타구 분포 좌표는 선수당 최근 250개, 골든글러브 투표지 원본은 저장하지 않음).',
+    '경기 중계 중에는 상단에 홈 하위 탭 대신 "경기 중계"가 보이고, 휴대폰 중계 전환 버튼을 키웠습니다.']},
   {id:'2026-11-04b',d:'11월 4일',t:'모바일 업무 화면 공간·관전 보고·면담 수정',items:[
     '휴대폰의 업무 메뉴와 세부 화면 선택을 한 줄에 나란히 배치하고 높이를 고정했습니다. 리그 메뉴도 같은 규칙을 적용합니다.',
     '트레이드뿐 아니라 FA·외국인·코치·시설·기록·설정 화면도 목록 공간을 우선 확보합니다. 필터나 설명이 길면 패널 안에서 스크롤하고, 주소창 높이가 변해도 읽던 화면을 유지합니다.',

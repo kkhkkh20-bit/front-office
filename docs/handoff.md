@@ -116,7 +116,7 @@
 ## 프로젝트
 - 프런트야구: KBO 구단 단장 시뮬레이션. 단일 index.html(빌드 결과물).
 - 저장소: github.com/kkhkkh20-bit/front-office (main). 푸시하면 Cloudflare(https://fronttime.kkhkkh-20.workers.dev/)에 자동 배포.
-- 아티팩트: https://claude.ai/code/artifact/9f1GBoUuCoHwaWHmKt9CwB (index.html을 같은 URL로 다시 게시, 현재 Version 323).
+- 아티팩트: https://claude.ai/code/artifact/9f1GBoUuCoHwaWHmKt9CwB. index.html(3D 포함 약 31.7MB)은 아티팩트 한도 16MB를 넘으므로 3D를 뺀 빌드를 게시한다: `node -e "const {build}=require('./tools/build.cjs');require('fs').writeFileSync('/tmp/artifact.html',build({write:false,embedded3d:false}).html)"` (약 7.5MB, 3D는 2D 중계로 대체).
 - itch.io(kkhkkh20.itch.io)는 사용자가 직접 index.html을 올림.
 
 ## 구조

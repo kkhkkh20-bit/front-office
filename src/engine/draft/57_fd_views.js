@@ -51,7 +51,7 @@ function fdDataAll(){ const F=G.fd; if(!F)return {}; const k=F.y+':'+F.pool.leng
   for(const p of P){ let t=fdThree(p,y), lv=1; if(!t||(p.isP?t.outs<45:t.pa<120)){ const h=seasonTotal(p,y,'퓨처스'); if(h&&(p.isP?h.outs>=45:h.pa>=120)){ t=h; lv=2; } } if(!t)continue; const gk=(p.isP?'P':'B')+lv; (G2[gk]=G2[gk]||[]).push({p,t,lv}); }
   const pct=(A,f,hi)=>{ const v=A.map(f).sort((a,b)=>a-b); return x=>{ const z=f(x); let i=0; while(i<v.length&&v[i]<z)i++; const q=i/Math.max(1,v.length-1); return Math.round((hi?q:1-q)*100); }; };
   for(const gk in G2){ const A=G2[gk]; const isP=gk[0]==='P';
-    if(isP){ const bf=x=>x.t.outs+x.t.h+x.t.bb; const fk=pct(A,x=>x.t.so/bf(x),1), fb=pct(A,x=>x.t.bb/bf(x),0), fh=pct(A,x=>(x.t.hr||0)*27/x.t.outs,0), ff=pct(A,x=>(13*(x.t.hr||0)+3*((x.t.bb||0)+(x.t.hbp||0))-2*x.t.so)/(x.t.outs/3),0);
+    if(isP){ const bf=x=>x.t.bf||(x.t.outs+x.t.h+x.t.bb+(x.t.hbp||0)); const fk=pct(A,x=>x.t.so/bf(x),1), fb=pct(A,x=>x.t.bb/bf(x),0), fh=pct(A,x=>(x.t.hr||0)*27/x.t.outs,0), ff=pct(A,x=>(13*(x.t.hr||0)+3*((x.t.bb||0)+(x.t.hbp||0))-2*x.t.so)/(x.t.outs/3),0);
       A.forEach(x=>{ const n=x.t.outs/3; m[x.p.id]={isP,lv:x.lv,n,ys:x.t.ys||1,small:n<60,it:[['탈삼진',fk(x)],['볼넷 억제',fb(x)],['피홈런 억제',fh(x)],['실점 억제(FIP)',ff(x)]]}; }); }
     else { const fk=pct(A,x=>x.t.so/x.t.pa,0), fb=pct(A,x=>x.t.bb/x.t.pa,1), fi=pct(A,x=>{ const r=bRate(x.t); return r.slg-r.avg; },1), fo=pct(A,x=>bRate(x.t).obp*1.2+bRate(x.t).slg,1);
       A.forEach(x=>{ m[x.p.id]={isP,lv:x.lv,n:x.t.pa,ys:x.t.ys||1,small:x.t.pa<250,it:[['삼진 적음',fk(x)],['볼넷',fb(x)],['장타력',fi(x)],['생산력',fo(x)]]}; }); } }
@@ -74,7 +74,7 @@ function fdPosBoard(){ const F=G.fd; if(!F)return []; const RK=fdRisk(); const o
 /* 데이터팀 세부 지표: 최근 3년 1군 합산(부족하면 지난해 1·2군), 지난해 운 */
 function fdDetail(p,y){ let t=fdThree(p,y); if(!t||(p.isP?t.outs<30:t.pa<60)){ const h=seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); if(h&&(p.isP?h.outs>=15:h.pa>=30))t=Object.assign({ys:1},h); else return null; }
   const L=fdStatLine(p,y);
-  if(p.isP){ const bf=t.outs+t.h+t.bb, ip=t.outs/3; return {k:t.so/bf*100,bb:t.bb/bf*100,hr9:(t.hr||0)*9/ip,fip:(13*(t.hr||0)+3*((t.bb||0)+(t.hbp||0))-2*t.so)/ip+3.2,gap:L&&L.n>=15?L.era-L.fip:null,n:ip,ys:t.ys||1}; }
+  if(p.isP){ const bf=t.bf||(t.outs+t.h+t.bb+(t.hbp||0)), ip=t.outs/3; return {k:t.so/bf*100,bb:t.bb/bf*100,hr9:(t.hr||0)*9/ip,fip:(13*(t.hr||0)+3*((t.bb||0)+(t.hbp||0))-2*t.so)/ip+3.2,gap:L&&L.n>=15?L.era-L.fip:null,n:ip,ys:t.ys||1}; }
   const r=bRate(t); return {k:t.so/t.pa*100,bb:t.bb/t.pa*100,iso:r.slg-r.avg,babip:L&&L.n>=60?L.babip:null,n:t.pa,ys:t.ys||1}; }
 /* 기대 홈런(데이터팀): 능력치는 모른다. 지난 2년 1군 홈런율과, 분석팀이 있으면 타구 질(강한타구%·최고 타구속도로 리그 회귀)로 지난해 타석에서 나왔어야 할 홈런을 낸다.
    지난해 홈런이 기대보다 크게 많으면 거품, 크게 적으면 반등 여지. 한 해 기록만 보면 운(컨디션·타구 운)이 섞이므로 */

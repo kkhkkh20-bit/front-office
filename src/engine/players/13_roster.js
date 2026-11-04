@@ -40,8 +40,6 @@ function updateModes(){ const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})).
 function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.5+t.trust/100))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
 /* 상한 초과 제재(2025년 개정 규정): 1회 초과분 30%, 2회 연속 50%, 3회 연속 100% + 다음 해 1라운드 지명권 9단계 하락 */
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
-/* 하한 미달(2027년~): 모자란 금액의 50%, 2회 연속 60%, 3회 연속부터 75%를 발전기금으로 낸다.
-   상한 제재처럼 100%까지 오르면 하한을 못 맞춘 가난한 구단이 더 가난해지는 악순환이 생겨 완만하게 둔다 */
 function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */

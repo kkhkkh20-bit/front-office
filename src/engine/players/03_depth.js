@@ -46,7 +46,7 @@ function makeLineup(tid,pool){
     if(!better)break; }
   return ln;
 }
-function entryLimit(){ if(period()!=='season')return ENTRY_BASE; if(G.day>=KD(8,25))return ENTRY_BASE+ENTRY_EXP; if(G.cal&&G.cal.asg&&G.day>G.cal.asg&&typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year))return ENTRY_BASE+1; return ENTRY_BASE; } /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
+function entryLimit(){ const per=period(); if(per==='post')return ENTRY_BASE+1; if(per!=='season')return ENTRY_BASE; const ag=G.cal&&G.cal.asg&&G.day>G.cal.asg&&typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year)?1:0; return ENTRY_BASE+ag+(G.day>=KD(8,25)?ENTRY_EXP:0); } /* 포스트시즌 30명(KBO 2026), AG 해 후반기 30명이면 확대 뒤 34명 */ /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); }
 /* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */

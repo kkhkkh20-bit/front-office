@@ -27,5 +27,5 @@ function bipResolve(b,p,babip,qb,qp,fs){ const M=bipMix(b,p); let x=R(), t='PU';
 function bipHR(b,p){ const side=bipSide(b,p); const d=PARK!=null?parkHRDir(PARK,side):(x=>x<.6?'pull':x<.88?'mid':'oppo')(R()); return {t:'FB',pos:bipPos('FB',d,side),side,hr:true}; }
 /* 방향별 타구 기록(정규시즌 1군): 타자 spr.z[자리]=[타구, 안타, 장타, 홈런], 유형 spr.t[유형]=[타구, 안타]. 투수는 맞은 타구 유형만 */
 function sprAdd(b,p,o,L){ if(!L)return; const y=G.year; const ini=x=>{ if(!x.spr||x.spr.y!==y){ if(x.spr&&x.spr.y===y-1)x.sprP=x.spr; x.spr={y,z:{},t:{}}; } return x.spr; };
-  const hit=o!=='OUT', xb=o==='2B'||o==='3B'||o==='HR'; const S=ini(b); (S.points=S.points||[]).push([L.pos,o]); const z=S.z[L.pos]||(S.z[L.pos]=[0,0,0,0]); z[0]++; if(hit)z[1]++; if(xb)z[2]++; if(o==='HR')z[3]++;
+  const hit=o!=='OUT', xb=o==='2B'||o==='3B'||o==='HR'; const S=ini(b); const PT=S.points=S.points||[]; PT.push([L.pos,o]); if(PT.length>250)PT.shift(); /* 저장 크기: 분포도는 최근 250타구만(구역 집계 z는 시즌 전체) */ const z=S.z[L.pos]||(S.z[L.pos]=[0,0,0,0]); z[0]++; if(hit)z[1]++; if(xb)z[2]++; if(o==='HR')z[3]++;
   const tt=S.t[L.t]||(S.t[L.t]=[0,0]); tt[0]++; if(hit)tt[1]++; const P=ini(p); const pt=P.t[L.t]||(P.t[L.t]=[0,0]); pt[0]++; if(hit)pt[1]++; }

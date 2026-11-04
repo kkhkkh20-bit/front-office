@@ -6,7 +6,7 @@
  - 우리 제안의 값(보장 + 인센티브 x 0.55) x 우리 매력이 선수 기준선과 가장 강한 경쟁 구단 제안보다 높으면 사인한다.
  - 처음 제안하면 에이전트가 경쟁 상황을 알려 주고 3일을 기다려 준다. 그 안에 못 잡으면 가장 강한 경쟁 구단으로 간다. */
 const FO_INC_W=.55;
-function foCap(q){ return q.foreign==='아시아'?ASIA_CAP:F_NEW_CAP; }
+function foCap(q){ return q.foreign==='아시아'?ASIA_CAP:fNewCap(); }
 function foRep(tid){ const L=foreignOf(tid).filter(p=>p.foreign==='용병'||p.foreign==='아시아'); return L.filter(p=>p.fy!=null&&p.fy<=G.year-1).length; }
 function foAppeal(q,tid){ const t=team(tid); const P=[]; let C=null; try{ C=faCtx(); }catch(e){}
   const pres=C?C.pres[tid]:clubPrestige(tid); P.push([`구단 명성 ${starTxt(prestigeStars(pres))}`,(pres-55)/400]);

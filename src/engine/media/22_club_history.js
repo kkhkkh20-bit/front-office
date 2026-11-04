@@ -91,8 +91,8 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y]));
   A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
   const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ let b=null,n=-1; for(const k in u.pos)if(u.pos[k]>n){ n=u.pos[k]; b=k; } if(b)return b; } return x.h.pos; }; /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
-  const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.round(tg(x)*3.1*2/3); const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
-  const voteGG=(pos,L,seats)=>{if(!L.length)return;const C=L.map(x=>ggCandidate(x,pos));A.ggVote.ballots[pos]=ggReporterVote(C,288,seats,y);A.cand.gg[pos]=C;};
+  const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
+  const voteGG=(pos,L,seats)=>{if(!L.length)return;const C=L.map(x=>ggCandidate(x,pos));A.ggVote.ballots[pos]=ggReporterVote(C,288,seats,y).length; /* 투표지 원본은 읽는 곳이 없어 수만 남긴다(저장 크기) */A.cand.gg[pos]=C;};
   for(const pos of ['C','1B','2B','3B','SS','DH'])voteGG(pos,rows.filter(x=>!x.p.isP&&gpos(x)===pos&&ggQ(x,pos)),1);
   voteGG('OF',rows.filter(x=>!x.p.isP&&['LF','CF','RF'].includes(gpos(x))&&ggQ(x,'OF')),3);
   voteGG('P',rows.filter(qP),1);

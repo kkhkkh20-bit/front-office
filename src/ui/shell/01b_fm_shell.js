@@ -33,12 +33,12 @@ function fmBack(){ if(UI.meet){A.meetClose();return;}if(document.documentElement
 function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)return; UI.navI++; fmGoKey(H[UI.navI]); }
 /* 카드가 세로로 길게 쌓이는 화면은 PC에서 두 칸으로(FM 대시보드처럼). 표가 넓은 화면에는 쓰지 않는다 */
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
-function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
+function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
   if(SUBS[tab])return back+subTabsRaw(tab);
   if(tab==='home'&&!G.unemp)return back+`<nav class="subtabs" aria-label="홈 화면">${[['overview','구단 현황'],['work','업무·보고'],['team','선수단']].map(([k,l])=>`<button class="${(UI.homePanel||'overview')===k?'on':''}" data-a="homePanel" data-v="${k}">${l}</button>`).join('')}</nav>`;
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
 function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||[];
-  const location=TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
+  const location=UI.cast?'경기 중계':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
   return `<div class="shell fmsh${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">

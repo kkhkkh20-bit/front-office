@@ -1,5 +1,7 @@
 /* ===== 외국인 선수 ===== */
-function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(300+(o-46)*46),300,F_NEW_CAP); }
+/* KBO: 시즌 중 교체 외국인은 남은 기간 월 10만 달러까지. 지급은 남은 경기 비율(remainFrac)이라 연봉 기준 60만 달러(6개월)로 묶는다. shortcut: 시즌 6개월 고정 — 일정 길이가 바뀌면 남은 달 수로 */
+const fNewCap=()=>period()==='season'?Math.min(F_NEW_CAP,60*USD):F_NEW_CAP;
+function fAsk(p,o){ o=o??ovr(p); if(p.foreign==='아시아')return clamp(round5(100+(o-44)*16),100,ASIA_CAP); return clamp(round5(300+(o-46)*46),300,fNewCap()); }
 function wpick(ws){ let tot=0; for(const k in ws)tot+=ws[k]; let x=R()*tot; for(const k in ws){ x-=ws[k]; if(x<=0)return k; } return Object.keys(ws)[0]; }
 /* 외국인 후보는 두 경로로 나온다.
    에이전트 제안: 리그 전체에 돌리는 공용 후보. 대부분 트리플A 출신(MLB 콜업 경력이 있는 선수가 많다)이고, 이름값 있는 선수는 이유(부상·나이·적응)가 있다.
@@ -59,7 +61,7 @@ function newForeign(kind,opts){
     else if(!asia){ const ch=lvl[0]==='트리플A'?clamp(.12+(o0-52)*.045,.04,.75):lvl[0]==='더블A'?.04:clamp(.06+(o0-52)*.02,.02,.3); if(R()<ch)g=Math.round(ri(4,60)*(1+Math.max(0,o0-52)*.08)); }
     p.mlbG=g; }
   /* 몸값은 시장이 보는 가치(기록·경력·소문)라 실제 능력과 어긋난다. 몸값만 보고 실력을 알 수는 없다 */
-  p.ask=fAsk(p,ovr(p)+N(0,3.5)+(p.mlbG>=30?1.5:p.mlbG>0?.7:0)); if(reg==='la')p.ask=round5(p.ask*.8); if(lvl[0]==='MLB')p.ask=round5(Math.min(F_NEW_CAP,p.ask*1.2)); if(flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
+  p.ask=fAsk(p,ovr(p)+N(0,3.5)+(p.mlbG>=30?1.5:p.mlbG>0?.7:0)); if(reg==='la')p.ask=round5(p.ask*.8); if(lvl[0]==='MLB')p.ask=round5(Math.min(fNewCap(),p.ask*1.2)); if(flaw)p.ask=round5(p.ask*.88); p.sal=p.ask;
   if(src){ p.fsrc=src; p.fday=G.day; if(src==='scout'){ p.fknow=[opts.finder]; p.fpub=G.day+ri(14,45)-(base>=60?10:0); } else p.fpub=G.day; }
   return p;
 }
@@ -150,6 +152,7 @@ function foreignCheck(tid,p,excludeId){
 function remainFrac(){ const c=G.cal; if(G.day<c.open)return 1; if(G.day>c.end)return 0; const left=Object.keys(c.sched).filter(d=>+d>G.day).length; return left/144; }
 function signForeign(tid,id){
   const p=G.players[id];
+  if(period()==='season'&&p&&p.foreign!=='아시아'&&p.ask>fNewCap())p.ask=fNewCap(); /* 시즌 중 교체는 KBO 상한(월 10만 달러)으로 계약 */
   const err=foreignCheck(tid,p); if(err)return err;
   const mid=period()==='season';
   story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));

@@ -24,7 +24,7 @@ function faGradeOf(p,all,snap){ if(p.age>=35)return 'C'; const n=p.faN||(p.lastF
   const gs=q=>avgSal3(q); const S=q=>(snap&&snap.get(q.id))||q; /* snap: 스토브리그 시작 때 상태(먼저 선언한 동료도 원래 구단에 있는 것으로 센다) */
   const D=all.filter(q=>{ const z=S(q); return !q.foreign&&(q.id===p.id||!(z.faC&&!z.ext)&&!(z.ext&&z.faC&&(z.yrs||0)>1)); }); const v=gs(p); const myT=S(p).team; const lg=D.filter(q=>gs(q)>v).length+1; const tm=D.filter(q=>S(q).team===myT&&gs(q)>v).length+1; p.faRank={lg,tm};
   if(tm<=3&&lg<=30)return 'A'; if(tm<=10&&lg<=60)return 'B'; return 'C'; }
-/* 실제 KBO는 소속선수 65명 중 A 20명·B 25명을 보호한다. 이 게임 등록 상한은 40명이라 같은 비율(약 31%·38%)로 줄인다 */
+/* KBO 보상: A등급 보호 20명, B등급 25명(보상선수 1명 + 연봉 200%/100%, 선수 없이 300%/200%), C등급 150% */
 const COMP={A:{prot:20,kbo:20,withP:2,cash:3},B:{prot:25,kbo:25,withP:1,cash:2},C:{prot:0,kbo:0,withP:0,cash:1.5}};
 /* 보호선수에서 저절로 빠지는 선수: 외국인, 이번 드래프트 지명 신인·입단 예정, 군 복무 중, 이번 겨울(스토브리그 회차) FA로 계약한 선수 */
 /* 스토브리그 회차: 시즌이 끝난 뒤 겨울은 그 시즌 연도로 센다(12월과 이듬해 1~2월이 같은 회차). 보호·FA 재자격은 달력 연도 대신 이 회차를 쓴다 */

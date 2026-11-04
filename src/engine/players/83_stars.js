@@ -10,15 +10,15 @@ function rRef(p){ const s=p&&p.rS; if(!s||!s.length)return null; const old=s.fil
 function rDelta(p){ const ref=rRef(p); if(!ref||ref.d===G.day)return null; const d={}; for(const k in p.r){ if(ref.r[k]==null)continue; d[k]=p.r[k]-ref.r[k]; } return {d,from:ref.d}; }
 
 /* 개인 타이틀 8개: [이름, 기록, 투수 여부, 낮을수록 좋은가] */
-const TITLES=[['홈런왕','hr',0],['타점왕','rbi',0],['도루왕','sb',0],['타격왕','avg',0],['다승왕','w',1],['탈삼진왕','so',1],['세이브왕','sv',1],['평균자책점왕','era',1,1]];
+const TITLES=[['홈런왕','hr',0],['타점왕','rbi',0],['도루왕','sb',0],['타격왕','avg',0],['득점왕','r',0],['최다안타','h',0],['출루율왕','obp',0],['장타율왕','slg',0],['다승왕','w',1],['탈삼진왕','so',1],['세이브왕','sv',1],['평균자책점왕','era',1,1],['승률왕','wpct',1],['홀드왕','hld',1]]; /* KBO 개인 타이틀 14개 부문 */
 function tgp(tid){ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r.t||0):0; } /* 소속 팀 경기 수: 규정 타석(×3.1)·규정 이닝(×1) */
-function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; return h[k]||0; }
-function tfmt(k,v){ return k==='avg'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
+function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; if(k==='obp'){ const d=(h.ab||0)+(h.bb||0)+(h.hbp||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0)+(h.hbp||0))/d:0; } if(k==='slg')return h.ab?((h.h||0)+(h.d||0)+2*(h.tr||0)+3*(h.hr||0))/h.ab:0; if(k==='wpct'){ const n=(h.w||0)+(h.l||0); return n?(h.w||0)/n:0; } return h[k]||0; }
+function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
 /* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
 function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.t=R[R.length-1].t; return h; }
 function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
   for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const g=tgp(h.t??p.team);
-    if(k==='avg'&&(h.pa||0)<g*3.1)continue; if(k==='era'&&(h.outs||0)<g*3)continue; const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t:h.t??p.team}); }
+    if(['avg','obp','slg'].includes(k)&&(h.pa||0)<Math.round(g*3.1))continue; if(k==='era'&&(h.outs||0)<g*3)continue; if(k==='wpct'&&(h.w||0)<10)continue; /* 규정타석 144경기 446(반올림), 승률왕은 10승 이상 */ const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t:h.t??p.team}); }
   return L.sort((a,b)=>low?a.v-b.v:b.v-a.v); }
 function seasonTitles(y){ const out=[];
   for(const [lab,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(!B.length)continue; const top=B[0].v; const W=B.filter(x=>Math.abs(x.v-top)<1e-9); /* 같으면 공동 수상 */

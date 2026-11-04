@@ -55,7 +55,7 @@ function pctCard(p,year){ if(hideOvr(p))return ''; const y=year??statY(); const 
     <div class="pct-g" title="경기 기록이 아니라 선수 능력에서 만든 측정값입니다. 측정 오차가 있고 시즌 중에는 변하지 않습니다."><b>측정값</b> <span class="small muted">${y<G.year?`${y} 시즌 측정이 아니라 지금(${G.year}) 능력 기반 값 · `:''}능력 기반 측정 · 측정 오차 포함 · 경기 결과로 바뀌지 않음</span></div>${trkM.map(row).join('')}
     <p class="small muted">숫자는 백분위(100에 가까울수록 리그 상위, 빨강), 오른쪽은 실제 값입니다. 삼진%·볼넷 허용처럼 낮을수록 좋은 항목은 뒤집어 계산했습니다. 비교 집단은 같은 시즌 1군 기준 이상 선수입니다.</p></div>`; }
 /* 좌우 상대 비교(정규시즌 1군): 타자는 좌투수·우투수 상대, 투수는 좌타자·우타자 상대. 타석 수와 적은 표본을 함께 */
-function splLine(a){ if(!a||!a[0])return null; const [pa,ab,h,tb,bb,so,hr,hbp=0]=a; const obp=(h+bb+hbp)/pa, slg=ab?tb/ab:0; return {pa,obp,slg,ops:obp+slg,kp:so/pa*100,bbp:bb/pa*100,hr}; }
+function splLine(a){ if(!a||!a[0])return null; const [pa,ab,h,tb,bb,so,hr,hbp=0,sac=0]=a; const obp=(h+bb+hbp)/Math.max(1,pa-sac), slg=ab?tb/ab:0; return {pa,obp,slg,ops:obp+slg,kp:so/pa*100,bbp:bb/pa*100,hr}; }
 function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R))return p.splP&&!UI.splP?'':'<p class="small muted">좌우 상대 기록은 이 업데이트 이후 1군 경기부터 쌓입니다.</p>';
   const L=splLine(S.L), Rr=splLine(S.R); const vs=p.isP?['좌타자','우타자']:['좌투수','우투수']; const M=p.isP?[['ops','피OPS'],['kp','삼진%'],['bbp','볼넷%']]:[['ops','OPS'],['kp','삼진%'],['bbp','볼넷%']];
   const mx=k=>Math.max(k==='ops'?1:30,...[L,Rr].filter(Boolean).map(x=>x[k])); const fv=(k,v)=>k==='ops'?fmt3(v):v.toFixed(1)+'%';
@@ -66,7 +66,7 @@ function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R)
     ${M.map(([k,l])=>`<div class="spl-r"><span>${l}</span>${bar(L,k,'l')}${bar(Rr,k,'r')}</div>`).join('')}
     <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다.</p></div>`; }
 /* 이동 구간 추세(최근 100타석·상대 100타자 창을 옮기며): 우리 선수만 경기별 기록을 보관 */
-function rollSeries(p,W){ const G0=(p.gl&&p.gl.g)||[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j]; n+=g[1]; for(let k=0;k<7;k++)a[k]+=g[k+1]; } if(n<W)continue; out.push({i,day:G0[i][0],a}); } return out; }
+function rollSeries(p,W){ const G0=(p.gl&&p.gl.g)||[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j]; n+=g[1]; for(let k=0;k<8;k++)a[k]+=g[k+1]||0; } if(n<W)continue; out.push({i,day:G0[i][0],a}); } return out; }
 function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.g)||[]).map(g=>g[1]));
   const st=seasonTotal(p,G.year,'1군'), sAll=st?(p.isP?(st.bf||0):(st.pa||0)):0, u=p.isP?'명':'타석'; const part=sAll>tot; /* 경기별 기록은 우리 구단에서 뛴 경기만 보관한다(이적 전 경기는 시즌 합계에만) */
   const scope=part?`우리 구단에서 모은 경기별 기록 ${tot}${u}(이번 시즌 전체 ${sAll}${u} 중 이적 전 기록은 경기별로 없음)`:`이번 시즌 ${tot}${u}`;
@@ -76,7 +76,7 @@ function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSer
   const lg=lgRates(p.isP);
   if(p.isP){ const k=L.map(x=>({i:x.i,v:x.a[2]/x.a[0]*100})), bb=L.map(x=>({i:x.i,v:x.a[3]/x.a[0]*100}));
     return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 상대 타자 ${W}명</span>${chart(k,0,40,v=>v.toFixed(0)+'%','탈삼진율(K%)',lg.k)}${chart(bb,0,20,v=>v.toFixed(0)+'%','볼넷율(BB%)',lg.bb)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
-  const ob=L.map(x=>({i:x.i,v:(x.a[2]+x.a[4])/x.a[0]})), kp=L.map(x=>({i:x.i,v:x.a[5]/x.a[0]*100}));
+  const ob=L.map(x=>({i:x.i,v:(x.a[2]+x.a[4]+x.a[7])/x.a[0]})), kp=L.map(x=>({i:x.i,v:x.a[5]/x.a[0]*100}));
   return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 ${W}타석</span>${chart(ob,.2,.5,v=>fmt3(v),'출루율(타석 기준)',lg.obp)}${chart(kp,0,40,v=>v.toFixed(0)+'%','삼진율(K%)',lg.k)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
 let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; so+=x.so||0; } }
   const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb)/pa:null,k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
