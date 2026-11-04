@@ -10,6 +10,7 @@ async function prepare(page){
 async function restore(page,base,route='home'){await page.evaluate(({base,route})=>{DEMO.on=false;G=JSON.parse(base);UI.title=false;closeSheets();A.go(route);},{base,route});}
 async function capture(page,name){if(output)await page.screenshot({path:path.join(output,name+'.png'),scale:'css'});}
 async function assertTick(page,label){
+ if(await page.evaluate(()=>fmOn()))return {fm:true}; // PC 폭은 상단 날짜 넘김(check-ui '날짜 넘김'에서 점검)
  await page.waitForSelector('#dtick.on',{state:'visible',timeout:5000});await page.waitForTimeout(280);
  const first=await page.locator('#dtick').evaluate(el=>{const r=el.getBoundingClientRect(),v=visualViewport;return {top:r.top,left:r.left,right:r.right,bottom:r.bottom,width:v.width,height:v.height,opacity:+getComputedStyle(el).opacity,cur:el.querySelector('.cur')?.innerText,flip:el.querySelector('#dtFlip').innerText,final:el.querySelector('.dt-c:last-child').innerText,count:el.querySelectorAll('.dt-c').length,animations:el.getAnimations({subtree:true}).length};});
  assert.ok(first.top>=0&&first.left>=0&&first.right<=first.width+1&&first.bottom<=first.height+1&&first.opacity>.8,label+' '+JSON.stringify(first));
