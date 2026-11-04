@@ -110,7 +110,7 @@ html,body{overscroll-behavior:none;overflow-x:clip;max-width:100%}
 .fdt td.lk{color:var(--warn)}.fdt td.ul{color:#7fb8ff}
 .fdt td.rk3{color:var(--bad);font-weight:700}.fdt td.rk2{color:var(--warn);font-weight:600}.fdt td.rk1{color:var(--muted)}
 .tk-rec,.tk-del{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}.tk-rec{color:var(--muted);font-size:12.5px}
-.fdpol{font-size:12px;padding:4px 6px;max-width:190px}
+.fdpol{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0}.fdpol>i{font-style:normal;margin-right:2px}.fdlogt{margin:0}.fdage{margin:0}
 .tk2.risk{color:var(--warn)}.tk2.risk em{font-style:normal;font-weight:700;color:var(--bad);margin-left:2px}
 .r3{margin:10px 0}.r3t{width:100%;border-collapse:collapse;font-size:13px}.r3t th{font-weight:500;color:var(--dim);text-align:right;padding:3px 6px;border-bottom:1px solid var(--line)}.r3t th:first-child,.r3t th:nth-child(2){text-align:left}
 .r3t td{padding:4px 6px;border-bottom:1px solid #ffffff08;text-align:right}.r3t td:first-child,.r3t td:nth-child(2){text-align:left;color:var(--muted)}
@@ -566,3 +566,6 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 .money-box>span{white-space:nowrap;font-size:12px;color:var(--muted)}
 .money-edit>.small{font-size:10.5px}.money-error{color:var(--bad);max-width:220px;line-height:1.35}.money-error:empty{display:none}
 .fo .money-edit{margin:4px 0}.fo .money-box input{width:110px}
+/* 드래프트 버튼 줄(나이·지명 기록 구단): 휴대폰에서는 여러 줄로 쌓지 않고 한 줄 가로 스크롤 */
+@media (max-width:700px){ .fdlog,.fdlog>.row{min-width:0;max-width:100%}.fdlogt,.fdage{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;min-width:0;flex:1 1 100%}.fdlogt button,.fdage button{flex:none} }
+.tk{grid-template-columns:minmax(0,1fr)} /* 안의 가로 스크롤 버튼 줄이 상황판 폭을 밀어내지 않게 */
