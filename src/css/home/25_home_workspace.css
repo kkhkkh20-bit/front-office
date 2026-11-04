@@ -94,4 +94,4 @@
 .home-workspace .hw-stand{overflow:auto;scrollbar-width:thin}
 /* 홈 다음 경기 칸: 시즌 끝 결산 */
 .hw-season{display:grid;gap:6px;padding:4px 10px}.hw-season .hw-hint{padding:0}.hw-season>b{font-size:18px}.hw-season ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:13px}.hw-season li i{font-style:normal;color:var(--muted);margin-right:4px}
-.hw-upcoming .cal-up{display:grid}
+.hw-upcoming .cal-up{display:grid}.hw-upcoming .cal-up{flex:1 1 auto;min-height:0;overflow-y:auto}.hw-upcoming .cal-ur{padding-inline:10px} /* 비시즌 일정 줄이 칸 테두리에 붙고 1366 화면에서 아래 일정이 잘리던 문제(칸 안에서 스크롤) */
