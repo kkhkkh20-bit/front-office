@@ -69,3 +69,5 @@
  #app .r2tr{display:table-row}#app .r2tr>td{padding:6px 0 2px}#app .r2tr .r2link{margin:0;width:100%}
  #app .ws-panels>.roster-list.card{padding:6px 8px;gap:4px}
 }
+/* 코치 보직 표(휴대폰): 펼친 카드는 표 폭 그대로 */
+.cslt td,.cslt th{vertical-align:middle;text-align:left}.cslt .pn>span{display:block;line-height:1.25}.cslt .pn small{display:block;font-size:11px;color:var(--muted)}.cslt .pn .av{width:24px;height:24px}.cslt tr.on>td{background:var(--panel2)}.cslt-x>td{padding:4px 0 8px;white-space:normal}.cslt-x .csl{border:0;padding:0}
