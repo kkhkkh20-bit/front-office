@@ -137,3 +137,7 @@
   .mgfm-c{min-width:0;display:flex;flex-direction:column;gap:8px;padding:0 0 0 12px;border-left:1px solid var(--line)}.mgfm-c:first-child{border-left:0;padding-left:0}
   .mgfm-c>h3{margin:0;font-size:13px;color:var(--team-hi,#4fa3ff)}.mgfm-c>.card{margin:0}
 }
+/* PC 스태프 시장·코치 보직 카드: 한 화면 안에서 위 버튼 줄, 아래 카드 칸만 스크롤 */
+body.fm .sfw{display:flex;flex-direction:column;height:100%;min-height:0;overflow:auto;gap:8px}
+body.fm .sfw>.card,body.fm .sfw>section{flex:none}
+body.fm .sfw .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}

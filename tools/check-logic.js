@@ -1085,6 +1085,9 @@ T('[공통 점검] 거래: AI가 보내는 트레이드 제안은 수락 검사(
   const add=[]; while(rosterN(op)<ROSTER_MAX){ const t3=G.teams.find(t=>t.id!==G.user&&t.id!==op).id; const q=Object.values(G.players).find(x=>x.team===t3&&!x.foreign&&!x.ys&&!milServing(x)&&!(x.joinY>G.year)&&!add.includes(x)); if(!q)break; q.team=op; add.push(q); }
   ok(offerBlockMsg(G.offers[0]),'준비 실패: 정원이 찼는데 제안이 막히지 않음');
   G.live=null; G.res=null; G.stops=[]; const d0=G.day; processDay(); ok(G.day>d0,'준비 실패: 하루 진행 안 됨'); ok(!(G.offers||[]).some(o=>o.id==='oW'&&offerBlockMsg(o)),'하루가 지나도 막힌 제안이 남아 있음'); });
+T('[연봉 미계약] 요구와 15% 넘게 차이 나면 마감에 사인하지 않고, 미계약 동안 경기·훈련에 못 나가며 계약하면 돌아온다',()=>{ fresh(); G.day=KD(12,1); contractStart(); const C=G.contract; salTalkInit(); const id=C.ended[0]; const n=C.neg[id]; const p=G.players[id]; ok(n&&p,'준비 실패: 협상 대상 없음');
+  n.st='open'; n.off=10000; n.cur=10000; n.ask=13000; confirmContracts(); ok(C.done,'확정되지 않음'); ok(p.hold&&p.hold.off===10000&&p.hold.ask===13000,'요구 차이 30%인데 미계약이 아님'); ok(!healthy(p),'미계약 선수가 출전 가능으로 나옴');
+  const r=holdPay(id); ok(!p.hold&&p.sal===13000&&healthy(p)||(p.injOut>0),'요구액 계약 뒤에도 미계약이거나 연봉이 다름: '+r); });
 T('[단장 이직] 현직 단장에게 오는 다른 구단 제의는 지금 연봉보다 높고, 수락하면 그 구단으로 옮긴다',()=>{ fresh(); myCInit(); const C=G.myC; ok(C&&C.tid!=null,'준비 실패: 단장 계약 없음'); C.sal=50000;
   const tid=G.teams.find(t=>t.id!==G.user).id; for(let i=0;i<20;i++){ const o=myCOffer(tid,false); ok(o.sal>C.sal,'제의 연봉이 지금 연봉보다 높지 않음: '+o.sal+' / '+C.sal); }
   G.jobs=G.jobs||[]; jobOffer(tid,false); const j=G.jobs.find(x=>x.tid===tid&&!x.done); ok(j&&j.terms.sal>C.sal,'제의가 만들어지지 않음'); const sal=j.terms.sal; jobAnswer(tid,true); ok(G.user===tid&&G.myC.tid===tid&&G.myC.sal===sal,'수락했는데 새 구단·새 연봉으로 옮기지 않음'); });

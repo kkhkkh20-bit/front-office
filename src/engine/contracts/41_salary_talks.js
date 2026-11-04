@@ -44,7 +44,22 @@ function confirmPreview(){ const C=G.contract; if(!C)return null; const own=id=>
   const dFix=sum(fix.map(x=>x.to-x.from)); return {fix,arb,dFix,dArbLo:sum(arb.map(x=>x.club-x.from)),dArbHi:sum(arb.map(x=>x.player-x.from))}; }
 /* 마감(확정): 남은 선수는 구단의 마지막 제시액에 사인한다. 조정 중이면 바로 결정한다 */
 function salTalkClose(){ const C=G.contract; if(!C||!C.neg)return; if(Object.values(C.neg).some(n=>n.st==='arb'))salArbDecide();
-  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='open')continue; const v=n.cur??n.off; p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
+  for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='open')continue; const v=n.cur??n.off;
+    if(n.ask>v*HOLD_GAP&&(C.tid??G.user)===G.user){ holdStart(p,v,n.ask); n.st='hold'; continue; } /* 요구와 차이가 크면 사인하지 않고 미계약으로 버틴다(KBO: 미계약 선수는 참가활동 불가) */
+    p.newSal=v; n.st='ok'; if(n.ask>v*1.03)p.mor=clamp((p.mor??60)-4,0,100); } }
+/* 연봉 미계약(홀드아웃): 구단 제시액과 선수 요구액 차이가 15% 넘게 남은 채 마감되면 사인하지 않는다. 미계약 선수는 훈련·경기 등 참가활동을 못 한다(healthy). 협상은 개막 전까지 이어진다 */
+const HOLD_GAP=1.15;
+function holdStart(p,off,ask){ p.hold={off:Math.max(MIN_SAL,off),ask,d:G.day}; delete p.newSal;
+  mail('운영팀',`${p.name} 연봉 미계약`,`${p.name}(${posLabel(p)})이(가) 구단 제시액 ${money(p.hold.off)}에 사인하지 않았습니다. 요구액은 ${money(ask)}입니다.\n미계약 선수는 계약할 때까지 훈련과 경기에 참가할 수 없고, 시간이 갈수록 기분이 떨어집니다. 개막 직전까지 계약하지 못하면 중간 금액으로 계약합니다.`,{imp:true,kind:'연봉',acts:[{l:`요구액 ${money(ask)}으로 계약`,a:'holdPay',v:p.id},{l:`중간 금액 ${money(holdMidAmt(p))} 제시`,a:'holdMid',v:p.id}]}); }
+function holdMidAmt(p){ return round5((p.hold.off+p.hold.ask)/2); }
+function holdSign(p,sal,why){ if(!p||!p.hold)return '미계약 선수가 아닙니다.'; p.sal=Math.max(MIN_SAL,sal); delete p.hold; addLog(`${p.name} 연봉 ${money(p.sal)}에 계약(${why})`); return `${p.name}과(와) 연봉 ${money(p.sal)}에 계약했습니다.`; }
+function holdPay(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; return holdSign(p,p.hold.ask,'요구액 수용'); }
+function holdMid(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; if(p.hold.midNo===G.day)return '오늘은 이미 제시했습니다.';
+  const wk=Math.floor((G.day-p.hold.d)/7); if(R()<.45+wk*.1)return holdSign(p,holdMidAmt(p),'중간 금액 합의'); p.hold.midNo=G.day; p.mor=clamp((p.mor??60)-2,0,100); return `${p.name}이(가) 중간 금액을 거절했습니다. 며칠 뒤 다시 제시할 수 있습니다.`; }
+function holdDaily(day){ for(const p of Object.values(G.players)){ if(!p.hold)continue; if(p.team!==G.user){ delete p.hold; continue; }
+    if((day-p.hold.d)%7===6)p.mor=clamp((p.mor??60)-3,0,100);
+    if(day>=G.cal.open-1){ const r=holdSign(p,holdMidAmt(p),'개막 전 합의'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 개막을 앞두고 중간 금액으로 합의했습니다.`,{kind:'연봉'}); continue; } /* shortcut: 개막 뒤까지 버티는 경우·임의해지는 다루지 않음, 실제 사례가 생기면 확장 */
+    if(R()<.015+.01*Math.floor((day-p.hold.d)/7)){ const r=holdSign(p,p.hold.off,'구단 제시액 수용'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 선수가 구단 제시액을 받아들였습니다.`,{kind:'연봉'}); } } }
 function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n){ stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); if(G.mail[0])G.mail[0].auto=['sal']; } }
   if(day===KD(1,10))salArbFile(); if(day===KD(1,20))salArbDecide(); }
 /* 예비 FA 보상금 미리 보기: 지금 연봉 순위로 등급을 어림하고, 이 금액을 내년 연봉으로 주면 떠날 때 받는 보상금을 계산한다 */

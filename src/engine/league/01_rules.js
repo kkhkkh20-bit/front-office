@@ -106,7 +106,7 @@ const team=id=>G.teams[id];
 const tname=id=>id==null?'무소속':tshort(id);
 const tshort=id=>id==null?'-':team(id).city+' '+team(id).nick;
 const isRookie=p=>p.draft&&p.draft.y===G.year-1;
-const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab; /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
+const healthy=p=>!(p.injOut>0)&&!(p.susp>G.day)&&!p.frehab&&!p.hold; /* hold: 연봉 미계약(41_salary_talks), 참가활동 불가 */ /* frehab: 부상 대체 외국인을 둔 재활 선수 명단(72_foreign_temp) */
 
 function genRatings(isP,base,pos){
   const g=()=>clamp(N(base,7),20,80);
