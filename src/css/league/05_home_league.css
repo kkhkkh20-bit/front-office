@@ -187,3 +187,15 @@ button.bk-g{cursor:pointer}button.bk-g:hover{background:var(--panel3,var(--panel
   .bk-q{position:absolute;top:0;height:100%;width:7.5%;box-sizing:border-box;justify-content:center}
   .bk-q5{left:1%}.bk-q4{left:9.5%}.bk-q3{left:24.05%}.bk-q2{left:43.85%}.bk-q1{left:63.65%}
 }
+/* 골든글러브 필드(45_awards.js ggField): 야구장 그림 위 자리마다 수상자 얼굴·포지션·이름(구단) */
+.ggf{position:relative;width:100%;max-width:980px;margin:6px auto 10px;aspect-ratio:10/8;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 100%,#17301e,#0c1410 70%)}
+.ggf-bg{position:absolute;inset:0;width:100%;height:100%}
+.ggf-m{all:unset;box-sizing:border-box;position:absolute;transform:translate(-50%,-32%);display:flex;flex-direction:column;align-items:center;gap:1px;width:20%;text-align:center;color:#fff;text-shadow:0 1px 3px #000c}
+button.ggf-m{cursor:pointer}button.ggf-m:focus-visible{outline:2px solid #e8b923;border-radius:6px}
+.ggf-m .av{width:clamp(34px,7.5vw,76px);height:clamp(34px,7.5vw,76px);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px #000a;background:#1b2430;object-fit:cover;display:grid;place-items:center;font-size:20px}
+.ggf-m.me .av{border-color:#e8b923;box-shadow:0 0 0 3px #e8b92366,0 2px 8px #000a}
+.ggf-m i{font-style:normal;font-size:clamp(9.5px,1.1vw,12px);font-weight:700;color:#ffe08a;margin-top:2px}
+.ggf-m b{font-size:clamp(11px,1.4vw,16px);line-height:1.15;white-space:nowrap}
+.ggf-m em{font-style:normal;font-size:clamp(9.5px,1.1vw,12px);opacity:.85;white-space:nowrap}
+@media(max-width:600px){.ggf{aspect-ratio:1/1.08}.ggf-v{display:none}}
+@media(min-width:1100px){.ggf{max-width:min(980px,calc((100dvh / var(--z,1) - 260px) * 1.25))}}
