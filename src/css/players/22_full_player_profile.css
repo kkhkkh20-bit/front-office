@@ -92,3 +92,15 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 }
 /* 1500px 아래 PC: 보고서 상자는 세부 능력 아래로(세부 능력이 좁아져 길어지지 않게) */
 @media(min-width:1100px) and (max-width:1499px){#sheet .pf-main-top{grid-template-columns:minmax(0,1fr)}}
+/* 빈 칸 채우는 상자 */
+.pf-fm-box{display:none!important}.pf-track{display:none}
+@media(min-width:1100px){
+  #sheet .pf-overview .pf-fm-box{display:block!important}#sheet .pf-overview .pf-track{display:block}
+  .pf-fm-box h3{margin:0 0 6px}
+  .pf-gl{display:grid;grid-template-columns:44px auto minmax(0,1fr);gap:8px;align-items:baseline;padding:4px 0;border-top:1px solid var(--line);font-size:12px}.pf-gl:first-of-type{border-top:0}.pf-gl span{color:var(--muted)}.pf-gl i{font-style:normal;color:var(--muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pf-rp-mop .mop{display:grid;gap:4px;padding-top:8px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}
+  .pf-track>.card .trk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.pf-track>.card .row.between{flex-wrap:wrap}.pf-track>.card .row.between .small{font-size:10px}
+  .pf-track .kb{display:grid;background:#0b1014;border:1px solid var(--line);border-radius:3px;padding:5px 7px}.pf-track .kb span{font-size:11px;color:var(--muted)}.pf-track .kb b{font:700 15px var(--f-num)}.pf-track .kb i{font-style:normal;font-size:10px;color:var(--muted)}
+  #sheet .pf-report{justify-content:flex-start}
+}
+@media(min-width:1100px){.pf-st{display:grid;grid-template-columns:38px minmax(0,1fr);gap:6px;padding:4px 0;border-top:1px solid var(--line);font-size:12px;line-height:1.45}.pf-st:first-of-type{border-top:0}.pf-st span{color:var(--muted)}.pf-st p{margin:0}}

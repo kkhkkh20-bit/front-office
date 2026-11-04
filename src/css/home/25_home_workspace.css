@@ -89,3 +89,6 @@
 .hw-todo .todo{margin:0}
 .hw-todo .td .btn{max-width:70px;white-space:normal}
 .hw-more-tasks{margin-top:8px}
+
+/* 홈 순위 칸: 낮은 화면에서 마지막 구단이 잘리지 않고 칸 안에서 스크롤 */
+.home-workspace .hw-stand{overflow:auto;scrollbar-width:thin}
