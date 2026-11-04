@@ -437,3 +437,9 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .lg-emb{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}.lg-e{display:grid;justify-items:center;gap:2px;padding:6px 2px;border:1px solid var(--line);border-radius:8px;background:none;color:var(--ink);cursor:pointer;min-height:44px}.lg-e.on{border-color:var(--acc);background:#ffffff0d}.lg-e i{font-style:normal;font-size:11px;color:var(--muted)}
 .lg-col{gap:12px;align-items:center}.lg-col label{display:inline-flex;align-items:center;gap:6px;font-size:13px}.lg-col input[type=color]{width:40px;height:32px;padding:0;border:1px solid var(--line);border-radius:6px;background:none}
 .stop-l{display:grid;gap:6px;margin-top:8px}.stop-r{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.stop-r.lock{opacity:.75}
+/* 시상식 후보가 많을 때(골든글러브 투수 30명 넘게 등): 칸이 화면 높이에 눌려 카드가 겹치던 문제. 작은 가로 카드로 바꾸고 칸 안에서 스크롤 */
+.cer-grid.many{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));grid-auto-rows:auto!important;overflow:auto;align-content:start;gap:8px}
+.cer-grid.many .cer-c{flex-direction:row;align-items:center;text-align:left;padding:8px 10px;gap:10px}
+.cer-grid.many .cer-c .av{width:46px;height:46px;border-width:2px;flex:none}
+.cer-grid.many .cer-i{min-width:0;display:grid;gap:1px}.cer-grid.many .cer-i b{font-size:14px}.cer-grid.many .cer-i span,.cer-grid.many .cer-i em{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:700px){ .cer-grid.many{grid-template-columns:minmax(0,1fr)} }

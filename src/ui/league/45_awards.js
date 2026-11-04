@@ -24,7 +24,7 @@ function cerSheet(){ const C=UI.cer; const A=G.awards&&G.awards[C.y]; if(!A)retu
   else { const st=S[C.i], tot=totOf(st), rev=!!C.rev, n=st[1].length;
     const L=[...st[1]].sort((a,b)=>a.name.localeCompare(b.name)), W=st[1].slice(0,st[2]);
     const mid=rev?`<div class="cer-rv"><div class="cer-stars">${W.map((w,i)=>cerStar(w,st[0],C.k,tot,i===0)).join('')}</div><div class="cer-rank"><h4>투표 결과 · 기자 ${tot}명${st[2]>1?` · 1인 최대 ${st[2]}명 선택`:''}</h4>${st[1].map((c,i)=>cerRow(c,i,i<st[2],tot)).join('')}</div></div>`
-      :`<div class="cer-grid" style="--cols:${n<=4?n:n<=6?3:n<=8?4:n<=12?4:6}">${L.map(cerCard).join('')}</div>`;
+      :`<div class="cer-grid${n>12?' many':''}" style="--cols:${n<=4?n:n<=6?3:n<=8?4:n<=12?4:6}">${L.map(cerCard).join('')}</div>`;
     body=`<div class="cer-stage"><div class="cer-lab"><span class="eyebrow">${C.i+1} / ${S.length} 부문</span><h3 class="cer-ttl">${st[0]}${st[2]>1?` <small>${st[2]}명</small>`:''}</h3><span class="muted">${rev?'수상자 발표':`후보 ${n}명 · 이름순`}</span></div>${mid}
       <div class="cer-ft"><button class="btn" data-a="cerAll">결과 한눈에</button>${rev?`<button class="btn primary" data-a="cerNext">${C.i+1<S.length?'다음 부문':'전체 결과'}</button>`:`<button class="btn primary cer-go" data-a="cerRev">수상자 발표</button>`}</div></div>`; }
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut cer" data-stop="1" role="dialog" aria-label="${esc(title)}"><div class="sheet-head"><div><div class="eyebrow">${C.k==='mvp'?'MVP · 신인왕':'포지션별 최고 선수'}</div><h2 class="sec">${esc(title)}</h2></div>${prog}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>${body}</div></div>`; }
