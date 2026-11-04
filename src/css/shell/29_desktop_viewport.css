@@ -102,3 +102,95 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 /* FM식 왼쪽 메뉴 16개: 촘촘한 한 줄 항목(1280×720에서도 스크롤 없이) */
 @media(min-width:1100px){#app .fmside{padding-top:4px}#app .fmside .fms-g{padding:2px 0;gap:0}#app .fmside button{min-height:32px;padding:5px 12px}}
 @media(min-width:1100px) and (max-height:700px){#app .fmside button{min-height:28px;padding-block:3px}}
+
+/* PC FM식 대시보드(.fmx): 리그 순위(대회)·구단 정보. 상자 폭·아래 끝을 맞추고, 넘치는 내용은 상자 안에서만 스크롤 */
+@media(min-width:1100px){
+ .fmx{display:grid;gap:8px;min-width:0;grid-auto-rows:max-content} /* 낮은 화면: 줄은 내용 높이, 대시보드 전체가 스크롤(맞춤 화면은 아래에서 줄 높이를 정함) */
+ .fmx-league{grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr))}
+ .fmx-club{grid-template-columns:minmax(0,.62fr) minmax(0,.62fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.8fr);grid-template-areas:"info info form stad ppl" "fac fin pers pers ppl" "uni uni hof hof sch"}
+ .fxc-info{grid-area:info}.fxc-fac{grid-area:fac}.fxc-fin{grid-area:fin}.fxc-form{grid-area:form}.fxc-stad{grid-area:stad}.fxc-ppl{grid-area:ppl}.fxc-pers{grid-area:pers}.fxc-hof{grid-area:hof}.fxc-uni{grid-area:uni}.fxc-sch{grid-area:sch}
+ .fbox{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+ .fx-h{flex:none;display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 12px;background:var(--panel2);border-bottom:2px solid var(--team-hi);box-sizing:border-box}
+ .fx-h>div{display:grid;min-width:0}.fx-h b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-h span{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .fx-h .seg.itabs{margin:0;border:0;background:none}
+ .fx-b{flex:1 0 auto;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:8px 12px;display:flex;flex-direction:column;gap:6px}
+ .fx-b>*{flex:none}
+ .fx-f{flex:none;display:flex;gap:6px;padding:6px 8px;border-top:1px solid var(--line)}.fx-f .btn{flex:1;justify-content:space-between;min-height:30px;border-radius:15px}
+ .fbox h4{margin:4px 0 0;font-size:11.5px;font-weight:600;color:var(--muted)}.fbox h4 i{font-style:normal;font-weight:400;margin-left:6px}
+ .fx-none{margin:0;font-size:12px;color:var(--muted)}
+ .fx-exp{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+ .fx-exp span{display:block;font-size:11px;color:var(--muted)}.fx-exp b{font-size:13px}
+ .fx-bar{position:relative;height:9px;margin:6px 0 0;background:var(--panel2);border-radius:2px}.fx-bar i{display:block;height:100%;border-radius:2px;background:#5b7285}.fx-bar i.good{background:var(--good)}.fx-bar i.bad{background:var(--bad)}
+ .fx-two{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px}.fx-two>div{display:flex;flex-direction:column}.fx .fmc,.fbox .fmc{margin:6px 6px 16px 36px;min-height:58px}
+ .fx-prs{grid-column:span 4;display:flex;flex-direction:column;gap:6px;min-width:0}.fx-prs .fmc{min-height:90px}
+ /* 낮은 PC 화면: 줄 높이를 내용에 맡기고 대시보드 전체가 안에서 스크롤 */
+ .fmsh main.content>.fmx{flex:1 1 auto;min-height:0;overflow:auto;scrollbar-width:thin}
+ .fx-form{display:inline-flex;gap:2px;align-items:flex-end;height:16px}.fx-form i{width:5px;height:100%;border-radius:1px;background:var(--muted)}.fx-form i.w{background:var(--good)}.fx-form i.l{background:var(--bad);height:60%}.fx-form i.t{height:35%}
+ .fx-two .fx-form{height:22px}.fx-two .fx-form i{width:9px}
+ .fx-tw{flex:1 0 auto!important;display:flex;flex-direction:column}.fx-tw>table{flex:1}
+ .fx-h2h{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px 10px}.fx-h2h>div{display:flex;align-items:center;gap:5px;font-size:12px;padding:2px 0;border-bottom:1px solid var(--line);min-width:0}.fx-h2h span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-h2h b{font:600 12px var(--f-num)}.fx-h2h .pos b{color:var(--good)}.fx-h2h .neg b{color:var(--bad)}
+ .fx-t{width:100%;border-collapse:collapse;font-size:12.5px}.fx-t th{font-weight:500;font-size:11px;color:var(--muted);padding:4px 5px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+ .fx-t td{padding:4px 5px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--f-num);white-space:nowrap}.fx-t td:nth-child(2),.fx-t th:nth-child(2){text-align:left;font-family:var(--f-ui)}.fx-t td:first-child,.fx-t th:first-child{text-align:center}
+ .fx-t .tname{display:inline-flex;align-items:center;gap:6px;min-height:0;padding:0;line-height:1.3}.fx-t tr.me td{background:color-mix(in srgb,var(--team-hi) 18%,transparent);font-weight:700}.fx-t tr.cut td{border-bottom:1px dashed var(--muted)}
+ .fx-t td.pos,.fx-odd em.pos{color:var(--good)}.fx-t td.neg,.fx-odd em.neg,.fbox .neg{color:var(--bad)}
+ .fx-pls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 10px}
+ .fx-pl{display:flex;align-items:center;gap:8px;min-width:0;padding:3px 0;border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}.fx-pl .av{width:34px;height:34px;flex:none}
+ .fx-pl>span{display:grid;min-width:0}.fx-pl i{font-style:normal;font-size:10.5px;color:var(--muted)}.fx-pl b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-pl em{font-style:normal;font-size:11.5px;color:var(--warn)}
+ .psl-l{display:flex;flex-direction:column;gap:4px}.psl{padding:5px 8px;background:var(--panel2);border-left:3px solid var(--line);border-radius:2px}.psl.live{border-left-color:var(--warn)}.psl.done{border-left-color:var(--good)}
+ .psl-h{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.psl-h b{color:var(--ink,#fff);font-size:12px}
+ .psl-m{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:center;margin-top:3px}.psl-m em{font:700 12px var(--f-num);color:var(--muted);font-style:normal}
+ .psl-t{display:flex;align-items:center;gap:5px;min-width:0;font-size:12.5px}.psl-t:last-child{justify-content:flex-end}.psl-t b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.psl-t i{font-style:normal;font-size:10.5px;color:var(--muted)}.psl-t.me b{color:var(--team-hi)}.psl-t.tbd b{font-weight:400;color:var(--muted);font-size:11.5px}
+ .fx-odd{display:grid;grid-template-columns:18px 18px 64px minmax(0,1fr) 48px;gap:6px;align-items:center;font-size:12px;padding:2px 0}.fx-odd>span{color:var(--muted);text-align:center}.fx-odd .fx-bar{margin:0}.fx-odd em{font:600 12px var(--f-num);font-style:normal;text-align:right}
+ .fx-odd.me b{color:var(--team-hi)}.fx-odd.cut{border-bottom:1px dashed var(--muted);padding-bottom:4px}
+ .fx-vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px;padding:6px 0 8px;border-bottom:1px solid var(--line)}.fx-vs>em{font-style:normal;font-weight:700;color:var(--muted);text-align:center;font-size:13px}
+ .fx-vt{display:grid;justify-items:center;gap:3px;text-align:center}.fx-vt b{font-size:14px}.fx-vt span{font-size:11px;color:var(--muted)}
+ .fx-fx{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:center;font-size:12.5px;padding:3px 0;border-bottom:1px solid var(--line)}.fx-fx span{display:flex;align-items:center;gap:5px;min-width:0}.fx-fx span:last-child{justify-content:flex-end}.fx-fx em{font-style:normal;color:var(--muted);font-size:11px}.fx-fx.me{color:var(--team-hi);font-weight:700}
+ .fx-res{display:grid;grid-template-columns:auto 62px minmax(0,1fr) auto;white-space:nowrap;gap:6px;align-items:center;width:100%;padding:3px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;font-size:12px;text-align:left;cursor:pointer}.fx-res>span:nth-child(2){color:var(--muted)}.fx-res b{display:flex;align-items:center;gap:4px;font-weight:500}.fx-res em{font:700 12.5px var(--f-num);font-style:normal}
+ .fx-ld{flex:1 0 auto!important;display:grid;grid-template-columns:64px 30px minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;padding:4px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+ .fx-ld>span{font-size:11.5px;color:var(--muted)}.fx-ld .av{width:30px;height:30px}.fx-ld b{display:grid;font-size:12.5px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-ld b i{font-style:normal;font-weight:400;font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:3px}
+ .fx-ld em{font:700 14px var(--f-num);font-style:normal}.fx-ld.me b{color:var(--team-hi)}
+ .fx-li{display:flex;justify-content:space-between;gap:8px;width:100%;padding:3px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;font-size:12px;text-align:left}button.fx-li{cursor:pointer}
+ .fx-li{min-width:0}.fx-li b{flex:1 1 auto;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-li span{flex:0 1 auto;min-width:0;display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-li.me b,.fx-li.me span{color:var(--team-hi)}
+ /* 구단 정보 */
+ .fx-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px}
+ .fx-fact{display:grid;justify-items:center;align-content:center;gap:2px;padding:5px 4px;background:var(--panel2);border-radius:3px;text-align:center;min-width:0}.fx-fact span{font-size:11px;color:var(--muted)}.fx-fact b{font-size:13px;line-height:1.3}.fx-fact small{display:block;font-size:11px;font-weight:400;color:var(--muted)}
+ .fx-id{flex:1 0 auto!important;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center}.fx-id .fx-fact{background:none}.fx-id .fx-fact b{font-size:16px}
+ .fxc-fin .fx-b,.fxc-fac .fx-b{gap:0;padding-block:4px}.fxc-fin .fx-fact{display:flex;justify-content:space-between;background:none;border-bottom:1px solid var(--line);border-radius:0;padding:6px 0;text-align:left}.fxc-fin .fx-fact b{font-family:var(--f-num)}
+ .fx-fac{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;padding:2px 0;line-height:1.3;border-bottom:1px solid var(--line);font-size:12px}.fx-fac span{font-weight:600}.fx-fac i{grid-column:1/-1;font-style:normal;font-size:11px;color:var(--muted)}.fx-fac em{font-style:normal;color:var(--warn);letter-spacing:1px}
+ .fxc-form .ibd-sec{padding:0;border:0;flex:1}.fxc-form .ibd-plist .lnk{min-height:0;padding:0}.fxc-form .ibd-plist>div{padding:1px 0;line-height:1.3}.fxc-form .ibd-sec h4{margin-top:4px}.fxc-form .ibd-sec>h3,.fxc-form .ibd-sec>p{display:none}.fxc-form .ibd-form{grid-template-columns:minmax(0,1.5fr) minmax(110px,1fr);gap:10px}
+ .fx-pic{flex:1 1 0!important;display:flex;justify-content:center;min-height:100px}.fx-pic .isostad{margin:0;width:100%;height:100%;display:flex;justify-content:center}.fx-pic svg{display:block;width:100%;height:100%}.fx-pic .isocap{display:none}
+ .fx-who{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;flex:1 0 auto!important;width:100%;padding:6px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+ .fx-who .av{width:72px;height:72px}.fx-who>div{display:grid;gap:1px;min-width:0}.fx-who i{font-style:normal;font-size:11px;color:var(--team-hi);font-weight:700}.fx-who b{font-size:14px}.fx-who span{font-size:11.5px;color:var(--muted)}.fx-who em{font-style:normal;font-weight:700}
+ .fxc-stad .fx-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .fx-col2{grid-column:span 2}.fx-col2 .fx-li{justify-content:flex-start}.fx-col2 .fx-li span{flex:none;width:84px}.fx-li-v{flex-direction:column;gap:0}.fx-li span .tdot,.fx-li span img{vertical-align:middle}
+ .fx-cols{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;flex:1 0 auto!important}.fx-col{min-width:0}.fx-cols>.ibd-sec{grid-column:span 3;padding:0;border:0}
+ .fx-tros{display:flex;gap:6px;justify-content:space-around;align-items:stretch;flex:1 0 auto!important}
+ .fx-tro{display:grid;justify-items:center;align-content:center;gap:2px;flex:1;min-width:0;text-align:center}.fx-tro img,.fx-tro svg{width:44px;height:44px;object-fit:contain}.fx-tro b{font:700 18px var(--f-num)}.fx-tro span{font-size:11.5px}.fx-tro i{font-style:normal;font-size:10.5px;color:var(--muted);min-height:14px}.fx-tro.none{opacity:.45}
+ .fx-no{display:grid;place-items:center;width:44px;height:44px;border:2px solid var(--line);border-radius:50%;font:700 16px var(--f-num)}
+ .fxc-uni .uni-row{display:flex;justify-content:space-around;gap:6px;flex:1 0 auto}.fxc-uni .uni-row figure{margin:0;display:grid;justify-items:center}.fxc-uni .uni-row img{width:100%;max-width:104px;height:auto}.fxc-uni .uni-row figcaption{font-size:11px;color:var(--muted)}
+ .fx-gs{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:4px;align-items:stretch}.fx-gs>h4{margin:0;align-self:center;writing-mode:vertical-rl;letter-spacing:2px}.fx-gs>.fx-none{grid-column:span 5;align-self:center}
+ .fx-g{display:grid;justify-items:center;gap:0;padding:1px 2px;line-height:1.25;background:var(--panel2);border:0;border-radius:3px;color:inherit;font:inherit;text-align:center;min-width:0}button.fx-g{cursor:pointer}
+ .fx-g b{font-size:11px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fx-g span{font-size:10px;color:var(--muted)}.fx-g em{font:600 11px var(--f-num);font-style:normal}.fx-g.w em{color:var(--good)}.fx-g.l em{color:var(--bad)}
+}
+/* 한 화면 맞춤: 높이가 넉넉한 PC에서는 본문을 화면 높이에 고정하고 상자 안에서만 스크롤(낮은 화면은 페이지 스크롤). 구단 정보는 상자가 많아 900px부터 */
+@media(min-width:1100px) and (min-height:760px){
+ .fmsh:has(.fmx-league) .fmmain{display:flex;flex-direction:column;overflow:hidden}
+ .fmsh:has(.fmx-league) .fmmain>.blk{flex:none}
+ .fmsh:has(.fmx-league) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
+ .fmsh:has(.fmx-league) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .fmsh:has(.fmx-league) main.content{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-sizing:border-box;padding-bottom:8px}
+ .fmsh:has(.fmx-league) main.content>.fmx{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
+ .fmsh:has(.fmx-league) main.content>:not(.fmx){flex:none}
+ .fmsh:has(.fmx-league) .fx-b{flex:1 1 0}
+}
+@media(min-width:1100px) and (min-height:900px){
+ .fmsh:has(.fmx-club) .fmmain{display:flex;flex-direction:column;overflow:hidden}
+ .fmsh:has(.fmx-club) .fmmain>.blk{flex:none}
+ .fmsh:has(.fmx-club) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
+ .fmsh:has(.fmx-club) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
+ .fmsh:has(.fmx-club) main.content{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-sizing:border-box;padding-bottom:8px}
+ .fmsh:has(.fmx-club) main.content>.fmx{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
+ .fmsh:has(.fmx-club) main.content>:not(.fmx){flex:none}
+ .fmsh:has(.fmx-club) .fx-b{flex:1 1 0}
+ .fmsh:has(.fmx-club) main.content>.fmx.fmx-club{grid-template-rows:minmax(0,1fr) minmax(0,1.05fr) minmax(0,.62fr)}
+}
