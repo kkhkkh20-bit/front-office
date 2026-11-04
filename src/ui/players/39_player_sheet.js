@@ -34,7 +34,7 @@ function fsBox(p,rp){ const f=fScout(p,rp); const st=[0,1,2,3].map(i=>`<i class=
 /* 선수 비교: 담은 2~3명을 같은 시즌·같은 군 기록과 같은 평가 기준으로 나란히. 추천 순위는 매기지 않는다 */
 function pcmpView(){ const P=(UI.pcmp||[]).map(id=>G.players[id]).filter(Boolean); if(!P.length)return '<p class="small muted">선수 정보 위쪽의 \'비교에 담기\'로 2~3명을 담으세요.</p>';
   const y=UI.pcSea==='prev'?statY()-1:statY(), lv=UI.pcLvl==='퓨처스'?'퓨처스':'1군'; const anyP=P.some(p=>p.isP), anyB=P.some(p=>!p.isP);
-  const RP=new Map(P.map(p=>[p.id,scoutReport(p)])); const tl=(p,k)=>{ const t=(RP.get(p.id).tools||[]).find(x=>x.k===k); return t?rchip(t.cur):'-'; };
+  const RP=new Map(P.map(p=>[p.id,scoutReport(p)])); const tl=(p,k)=>{ if(p.fdPool&&G.fd&&!G.fd.done){ const z=fdScoutTools(p).L.find(x=>x.k===k); return z?`<b style="color:${fdGc(z.g)}">${z.g}</b> <span class="small muted">${dv(z.raw)}</span>`:'-'; } /* 창단 드래프트 후보: 선수 정보와 같은 스카우트 추정(등급·숫자) */ const t=(RP.get(p.id).tools||[]).find(x=>x.k===k); return t?rchip(t.cur):'-'; };
   const H=p=>seasonTotal(p,y,lv); const small=(p,h)=>h&&(p.isP?(h.outs||0)<30:(h.pa||0)<60);
   const rows=[['구단 · 포지션 · 나이',p=>`${p.team!=null?esc(tshort(p.team)):'-'} · ${esc(posLabel(p))} · ${p.age}세`],['현재',p=>{ const cv=curView(p,RP.get(p.id)); return hideOvr(p)&&!cv.est?'?':`${rchip(cv.v)}${cv.est?` <span class="small muted">${cv.lo}~${cv.hi}</span>`:''}`; }],['잠재력',p=>potChip(RP.get(p.id),p)],['평가 확신도',p=>esc(RP.get(p.id).conf||'-')]];
   if(anyP)rows.push(['구위',p=>p.isP?tl(p,'stf'):'-'],['제구',p=>p.isP?tl(p,'ctl'):'-'],['체력',p=>p.isP?tl(p,'sta'):'-'],['구속',p=>p.isP?`${veloOf(p)}km`:'-']);
@@ -365,4 +365,4 @@ function recent3(p,y){ const R=recentLines(p,y,3); if(R.length<2)return '';
 function fdKeyBar(p){ const S=fdScoutTools(p); const d=fdData(p);
   const box=(l,v,sub)=>`<div class="kb"><span>${l}</span><b>${v}</b>${sub?`<i>${sub}</i>`:''}</div>`;
   return `<div class="kbar fdk">${box('스카우트 · 툴',esc(fdScoutLine(p)),`${S.ht}cm · ${S.wt}kg`)}${box('데이터팀 · 기록',esc(fdDataLine(p,G.fd.y-1)),'최근 3년 실제 기록 기준')}${(()=>{ const v=fdPotEst(p); return v==null?'':box('장래성',`<span style="color:${rcol(v)}">${GRD(v)}</span>`,`최대 예상(${fdPeakAge(p)>p.age?fdPeakAge(p)+'세 무렵 전성기':'이미 전성기'}) · 스카우트 추정${p.age<=24?' · 어려서 오차 큼':''}`); })()}${box('연봉',money(p.sal||0),tContract(p))}</div>
-    <div class="fdop">${S.L.map(t=>`<span class="fdtg" style="--c:${fdGc(t.g)}">${t.l} <b>${t.g}</b></span>`).join('')}</div>`; }
+    <div class="fdop">${S.L.map(t=>`<span class="fdtg" style="--c:${fdGc(t.g)}">${t.l} <b>${t.g}</b> <i class="fdtv" title="스카우트 추정치(실제와 다를 수 있음)">${dv(t.raw)}</i></span>`).join('')}</div>`; }

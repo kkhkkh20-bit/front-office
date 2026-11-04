@@ -13,7 +13,7 @@ function revMake(pid,pk,n){ const p=G.players[pid]; if(!p)return null; return {p
 function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; if(!p){ UI.rev=null; return ''; }
   const S=fdScoutTools(p); const vis=new Set(FD_TOOLS[p.isP?'P':'B'].filter(t=>t[2]).map(t=>t[0]));
   const pk=fdPickOf(p.id); const r=fdRange(p); const est=fdEstOf(p); const role0=(pk&&pk.role)||fdRole(p,est); const mine=p.team===G.user; const role=mine?fdRole(p,ovr(p)):role0; /* 우리 선수는 실제 현재 능력이 공개됐으니 역할도 실제 능력 기준(지명 전 추정 역할은 아래 줄에) */
-  const tl=`${p.isP?`<span class="fde-t"><i>구속</i><b>${S.velo}</b><em>km</em></span>`:''}${S.L.map(t=>`<span class="fde-t${vis.has(t.k)?'':' fz'}"><i>${t.l}</i><b style="color:${fdGc(t.g)}">${t.g}</b><em>${vis.has(t.k)?'':'오차 큼'}</em></span>`).join('')}`;
+  const tl=`${p.isP?`<span class="fde-t"><i>구속</i><b>${S.velo}</b><em>km</em></span>`:''}${S.L.map(t=>`<span class="fde-t${vis.has(t.k)?'':' fz'}"><i>${t.l}</i><b style="color:${fdGc(t.g)}">${t.g} <small>${dv(t.raw)}</small></b><em>${vis.has(t.k)?'':'오차 큼'}</em></span>`).join('')}`;
   const dl=fdDataLine(p,(G.fd&&G.fd.y||G.year)-1);
   return `<div class="rv-w"><div class="rv fde-rv">
     <div class="eyebrow">${R.rd}라운드 ${R.no}번째 · 전체 ${R.n}순위 지명</div>
