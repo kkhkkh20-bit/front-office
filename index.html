@@ -1294,6 +1294,32 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 
 /* FA 예정자(휴대폰): 구단·등급·자격·전망을 한 줄로 */
 .fur{padding:3px 0;gap:0;border-bottom:1px solid var(--line)}.fur .pm{padding:1px 0;background:none;border:0;min-height:0}.fur .pm b,.fur .pm i{line-height:1.25}.fur>.small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+/* 휴대폰 외국인 후보 목록 */
+.fr-list{display:flex;flex-direction:column;border:1px solid var(--line,#2a323c);border-radius:10px;overflow:hidden}
+.fr-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"n est ask" "rec rec act";gap:4px 10px;align-items:center;padding:8px 10px;border-top:1px solid var(--line,#2a323c)}
+.fr-r:first-child{border-top:0}
+.fr-r .st-n{grid-area:n}.fr-est{grid-area:est;display:grid;justify-items:center;line-height:1.15}.fr-est i,.fr-ask i{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4)}
+.fr-est .rc{font-size:17px}.fr-ask{grid-area:ask;display:grid;justify-items:end;line-height:1.2;font-size:13px;white-space:nowrap}
+.fr-rec{grid-area:rec;font-size:11.5px;color:var(--muted,#9aa7b4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fr-act{grid-area:act;display:flex;gap:5px;justify-content:flex-end}.fr-act .btn{min-height:30px;padding:3px 10px}
+@media (max-width:700px){
+  .fr-ctl{flex-direction:column;align-items:stretch;gap:4px}.fr-ctl>.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px}.fr-ctl>.chips>button{flex:none;min-height:30px;padding:2px 10px;font-size:12.5px}
+  .foreign-candidates .candidate-help{margin:2px 0}
+  .foreign-candidates .smk-vw button{min-height:28px;padding:2px 10px;font-size:12.5px}
+}
+@media (max-width:700px){
+  .fr-ctl>.chips>button{min-height:30px!important;height:30px;padding:0 10px!important;font-size:12.5px!important}
+  .fr-r{padding:6px 8px;gap:2px 8px}.fr-r .st-n .av,.fr-r .st-n img{width:28px;height:28px}.fr-r .st-n i{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fr-r .st-n b{font-size:13.5px}.fr-est .rc{font-size:15px}
+  .fr-act .btn,.fr-act .pill{min-height:26px!important;height:26px;padding:0 8px!important;font-size:12px}
+  .foreign-candidates>.row:first-child{padding:6px 10px}.foreign-candidates .sec{font-size:16px}
+}
+@media (max-width:700px){ .fr-ty{margin:0 0 4px}.fr-ty button{min-height:32px!important;padding:2px 8px!important;font-size:13px} }
+.fr-ctl1{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px;margin:0 0 4px}.fr-ctl1>button{flex:none}.fr-ctl1>.fpsep{flex:none;width:1px;align-self:stretch;margin:3px 2px;background:var(--line,#2a323c)}
+@media (max-width:700px){ .foreign-candidates .candidate-help{display:none} .fr-ctl1>button{min-height:32px!important;padding:0 10px!important;font-size:12.5px} .fr-act .btn,.fr-act .pill{min-height:30px!important} }
+.fr-r{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"n est act" "rec rec rec"}
+.fr-rec b{color:var(--ink,#e8edf2);font-weight:600}.fr-off{margin:2px 0 6px}
+@media (max-width:700px){ .fr-r .st-n .av,.fr-r .st-n img{display:none}.fr-r .st-n>span:last-child{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px}.fr-r{padding:7px 10px} }
 /* 읽기·누르기 개선: 작은 글씨 11px, 버튼 높이 30px 이상 */
 .tc-rt span,.tc-tools span,.tc-tools i,.teamc-top i,.fsq em,.sbr .small,.pc-l,.cnd,table.rt i.f,.trend,.rd,.tp-r i,.tp-g i,.posfit i,table.tcmp td i,.cmp-k i,.sl span,.growth span,.prchart span{font-size:11px}
 button.pill,.pill[data-a]{min-height:30px;display:inline-flex;align-items:center;padding-top:0;padding-bottom:0}
@@ -4570,7 +4596,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .trade-extra,.trade-analysis,.trade-gm-details{margin:10px 0;font-size:12px}.trade-extra>summary,.trade-analysis>summary,.trade-gm-details>summary{cursor:pointer;min-height:36px;display:list-item;align-content:center;color:var(--muted)}.trade-extra .btn{margin:6px 6px 0 0}
 .coach-slot-jump{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px;margin-bottom:10px}.coach-slot-jump>button{flex:none;white-space:nowrap}.coach-role-buttons{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none}.coach-role-buttons>button{flex:none;white-space:nowrap}.csl[data-selected="true"]{border-color:var(--acc)}
 @media(max-width:700px){
- #app .shell :is(.btn,.tc-i,.chips button,.seg button,select,input:not([type=range])):not(.home-workspace *){min-height:44px!important;box-sizing:border-box}
+ #app .shell :is(.btn,.tc-i,.chips button,.seg button,select,input:not([type=range])):not(.home-workspace *){min-height:36px!important;box-sizing:border-box} /* 사용자 요청(화면 밀도): 44→36px. 버튼 사이 간격은 그대로 */
  #app .shell :is(.btn,.tc-i,.chips button,.seg button){touch-action:manipulation;line-height:1.3;max-width:100%;white-space:normal;overflow-wrap:anywhere}
  #app .shell .btn.small{padding:8px 10px;font-size:12px}.trade-workspace .subtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;flex-wrap:nowrap}.trade-workspace .subtabs button{min-width:0;min-height:44px;padding:8px 3px;font-size:13px}
  .trade-modes{gap:5px}.trade-modes button{font-size:12px;min-height:42px}.trade-search-main{grid-template-columns:90px minmax(0,1fr);align-items:end}.trade-find-filters{grid-template-columns:minmax(0,1fr)}.trade-find-filters input{grid-row:1}.trade-filter-more{align-self:start}.trade-find-filters select{font-size:12px}.trade-search-main>.trade-filter-more{grid-column:1/-1}
@@ -23005,7 +23031,7 @@ function foreignView(){
     .filter(p=>ff.r==='all'||(ff.r==='p'?p.isP:ff.r==='b'?!p.isP:ff.r==='mine'?fMineFind(p):origOf(p)===ff.r))
     .map(p=>{ const rp=scoutReport(p); return {p,rp,fs:fScout(p,rp)}; });
   market.sort(fSortBy(ff.s)); /* 고른 기준 하나로만 줄 세운다. 우리 발굴 후보는 '우리 발굴' 칩으로 따로 본다 */
-  const tabs=`<div class="seg"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
+  const tabs=`<div class="seg fr-ty"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
   const capT=fCap(G.user), rsyN=sum(yb.map(x=>x.rsy||0)); const pct=Math.min(100,tot/capT*100);
   const rule=asia
     ?`<dl class="tsum"><div><dt>아시아쿼터</dt><dd class="num" style="color:${as.length?'var(--good)':'var(--warn)'}">${as.length} / 1</dd></div><div><dt>연봉 상한</dt><dd class="num">20만 달러</dd></div><div><dt>대상</dt><dd>일본·대만·호주</dd></div></dl>
@@ -23030,11 +23056,10 @@ function foreignView(){
   const full=asia?as.length>=1:yb.length>=3; const ft=inTabs('fview'+(asia?'a':''),[['market',`후보 ${market.length}`],['mine',`우리 선수 ${asia?as.length+'/1':yb.length+'/3'}`],['watch','관찰 명단'],['net','스카우트망'],['rule','규정']],full?'mine':'market');
   const mineS=`<section class="card"><div class="row between"><h2 class="sec">우리 ${asia?'아시아쿼터':'외국인 선수'}</h2><span class="small muted">${asia?as.length+'/1':yb.length+'/3'}</span></div>${mine?`<div class="tgrid">${mine}</div>`:'<p class="small muted">아직 없습니다.</p>'}</section>`;
   const PG=pager('fm'+(asia?'a':'')+ff.r+ff.s,cards,cardPageSize());
-  const mkS=`<section class="card foreign-candidates" data-pg="${'fm'+(asia?'a':'')+ff.r+ff.s}"><div class="row between"><h2 class="sec">${asia?'아시아쿼터 후보':'외국인 후보'}</h2><span class="small muted">${market.length}명</span></div>
-    <div class="row between wrapr"><div class="chips">${fchips.map(([k,l])=>`<button data-a="ffset" data-v="r:${k}" class="${ff.r===k?'on':''}">${l}</button>`).join('')}</div>
-    <div class="chips">${[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div></div>
+  const mkS=`<section class="card foreign-candidates" data-pg="${'fm'+(asia?'a':'')+ff.r+ff.s}"><div class="row between"><h2 class="sec">${asia?'아시아쿼터 후보':'외국인 후보'} <span class="small muted">${market.length}명</span></h2><div class="seg smk-vw"><button data-a="fview2" data-v="t" class="${UI.fview2!=='c'?'on':''}">목록</button><button data-a="fview2" data-v="c" class="${UI.fview2==='c'?'on':''}">카드</button></div></div>
+    <div class="chips fr-ctl1">${fchips.map(([k,l])=>`<button data-a="ffset" data-v="r:${k}" class="${ff.r===k?'on':''}">${l}</button>`).join('')}<i class="fpsep"></i>${[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div>
     <details class="candidate-help"><summary class="small muted">예상 능력·조사 단계 읽는 법</summary><p class="small muted">카드의 <b>예상</b>은 지난 리그 기록(리그 수준과 그 리그 기록이 믿을 만한지 감안)·MLB 경력·스카우트 평가를 합친 예상 능력이고, <b>예상 능력순</b>은 이 숫자 순서입니다. <b>범위</b>는 실제 능력이 10명 중 8명꼴로 들어가는 폭입니다. 조사 단계가 <b>조사 전 → 기초 조사 → 정밀 조사 → 확인 완료</b>로 오를수록 범위가 좁아집니다. 조사 전 후보는 추정보다 지난 리그 기록을 더 믿으세요(리그 수준 차이는 감안). <b>관찰</b>을 누르면 매주 조사가 쌓이고, 지역 스카우트망을 넓혀도 정확해집니다. 영입하면 코치진이 정확히 파악합니다.</p></details>
-    <div class="tgrid">${PG.items.join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}</div>${PG.bar}</section>`;
+    ${UI.fview2==='c'?`<div class="tgrid">${PG.items.join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}</div>${PG.bar}`:fRows(market,open,mid)}</section>`;
   const ftb=asia?'':fTmpBox(market);
   return tabs+(ftb?`<section class="card">${ftb}</section>`:'')+ft.bar+(ft.cur==='net'?intlView():ft.cur==='market'?mkS:ft.cur==='mine'?mineS:ft.cur==='watch'?(fwatchBox(asia)||'<section class="card"><p class="small muted">관찰 명단이 비어 있습니다. 후보 목록에서 관찰을 눌러 두면 여기서 비교합니다.</p></section>'):summary);
 }
@@ -23104,6 +23129,15 @@ function fTmpBox(market){ const mine=playersOf(G.user).filter(q=>q.ftmp).map(q=>
     ${market.filter(x=>!fTmpErr(G.user,sel,x.p)).slice(0,8).map(({p})=>`<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 월 ${money(fTmpFee(p))}</span></span><button class="btn small primary" data-a="fTmpSign" data-v="${p.id}">부상 대체로 등록</button></div>`).join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}
     <div class="btns"><button class="btn small" data-a="fTmpStart" data-v="">고르기 취소</button></div>`:'';
   return `<div class="eyebrow">부상 대체 외국인</div>${mine}${sel?'':inj.map(o=>`<div class="row between wrapr"><span class="small">${esc(o.name)}(${esc(posLabel(o))}) ${o.injOut}일 치료 진단 · 6주 이상이라 대체 선수를 쓸 수 있습니다</span><button class="btn small" data-a="fTmpStart" data-v="${o.id}">대체 선수 고르기</button></div>`).join('')}${pick}`; }
+
+/* 휴대폰 외국인 후보 목록: 한 줄에 이름·포지션·예상 능력(범위)·요구 연봉·관심 구단·협상 버튼, 아래 줄에 지난 리그 기록. 이름을 누르면 선수 정보 */
+function fRows(market,open,mid){ if(!market.length)return '<p class="small muted">조건에 맞는 후보가 없습니다.</p>';
+  const row=({p,rp,fs})=>{ const err=open?foreignCheck(G.user,p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0, n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev;
+    return `<div class="fr-r"><button class="st-n" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)}</b><i>${esc(posLabel(p))}${p.isP?(isSPr(p)?' 선발':' 불펜'):''} · ${esc(p.nat)} · ${p.age}세</i></span></button>
+      <span class="fr-est">${fs.mid!=null?`<b class="rc" style="--c:${rcol(fs.raw)}">${fs.mid}</b><i>${fs.lo}~${fs.hi}</i>`:'<i>조사 전</i>'}</span>
+      <span class="fr-act">${!open?'':err||repl?`<button class="btn small" data-a="negOpen" data-v="fm:${p.id}" disabled title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':esc(fErrShort(err))}</button>`:`<button class="btn small primary" data-a="negOpen" data-v="fm:${p.id}">협상</button>`}<button class="btn small${fwatchOn(p.id)?' on':''}" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 중':'관찰'}</button></span>
+      <span class="fr-rec"><b>${Math.round(p.ask/USD)}만$</b>${n?` · <span class="${n>=2?'bad':''}">관심 ${n}구단</span>`:''} · ${esc(p.prevLvl||'')} ${lineTxt(h,p.isP)}${p.mlbG?` · MLB ${p.mlbG}경기`:''}</span></div>`; };
+  return `${open?'':'<p class="small muted fr-off">영입 기간 아님(12월~8월 15일) · 관찰해 두면 조사가 쌓입니다</p>'}<div class="fr-list">${market.map(row).join('')}</div>`; }
 /* ---------- 스카우팅 ---------- */
 function draftYears(){ const S=new Set(Object.keys(G.dlog||{}).map(Number)); for(const p of Object.values(G.players))if(p.draft&&p.draft.y)S.add(p.draft.y); const cur=G.draft&&!G.draft.done?G.draft.y:null; return [...S].filter(y=>y!==cur&&y<=G.year).sort((a,b)=>b-a).slice(0,12); }
 function draftHist(ys){ const y=UI.dhy&&ys.includes(UI.dhy)?UI.dhy:ys[0]; const L=draftClass(y); const yrs=G.year-y;
@@ -24836,7 +24870,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
   rviewMode(v){UI.rlayout=v;render();},
-  cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ UI.cmkOpen=UI.cmkOpen===+v?null:+v; render(); }, cslotOpen(v){ UI.cslotOpen=UI.cslotOpen===v?null:v; render(); },
+  fview2(v){ UI.fview2=v; render(); }, cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ UI.cmkOpen=UI.cmkOpen===+v?null:+v; render(); }, cslotOpen(v){ UI.cslotOpen=UI.cslotOpen===v?null:v; render(); },
   sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
@@ -27178,6 +27212,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-04ae',d:'11월 4일',t:'코치진 표, 외국인 후보 목록, 휴대폰 버튼 높이',items:[
+    '우리 코치진과 스태프 시장 코치를 한 줄 목록으로 보여 줍니다(이름·지도·육성·연봉·핵심 능력·계약 버튼). 이름을 누르면 능력 카드가 열립니다.',
+    '휴대폰 외국인 후보를 한 줄 목록으로 바꿨습니다(이름·포지션·예상 능력 범위·요구 연봉·관심 구단·지난 리그 기록·협상/관찰). 카드 보기로도 바꿀 수 있습니다.',
+    '휴대폰에서 버튼 최소 높이를 44px에서 36px로 줄여 한 화면에 더 많이 보이게 했습니다.']},
   {id:'2026-11-04ad',d:'11월 4일',t:'선수 경력·수상, 대기록',items:[
     "선수 정보에 '경력·수상' 탭을 추가했습니다: 트로피 진열장, 연도별 MVP·신인왕·골든글러브·타이틀·올스타·국가대표·우승 반지, 대기록(날짜·상대·리그 몇 번째), 통산 이정표와 다음 이정표까지 남은 수, 소속 구단 흐름과 이적 기록, 드래프트 정보, 선수 이야기.",
     '경기 기록에서 사이클링 히트, 노히트노런·퍼펙트, 한 경기 3·4홈런, 15탈삼진, 만루 홈런, 3연타석 이상 홈런, 끝내기 홈런·안타, 20경기 이상 연속 안타, 통산 100·200·300홈런 등 이정표, 시즌 40홈런·3할·30홈런·100타점·30-30 등을 찾아 기록하고 기사로 알립니다.',

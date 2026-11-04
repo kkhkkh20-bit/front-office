@@ -17,7 +17,7 @@ function foreignView(){
     .filter(p=>ff.r==='all'||(ff.r==='p'?p.isP:ff.r==='b'?!p.isP:ff.r==='mine'?fMineFind(p):origOf(p)===ff.r))
     .map(p=>{ const rp=scoutReport(p); return {p,rp,fs:fScout(p,rp)}; });
   market.sort(fSortBy(ff.s)); /* 고른 기준 하나로만 줄 세운다. 우리 발굴 후보는 '우리 발굴' 칩으로 따로 본다 */
-  const tabs=`<div class="seg"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
+  const tabs=`<div class="seg fr-ty"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
   const capT=fCap(G.user), rsyN=sum(yb.map(x=>x.rsy||0)); const pct=Math.min(100,tot/capT*100);
   const rule=asia
     ?`<dl class="tsum"><div><dt>아시아쿼터</dt><dd class="num" style="color:${as.length?'var(--good)':'var(--warn)'}">${as.length} / 1</dd></div><div><dt>연봉 상한</dt><dd class="num">20만 달러</dd></div><div><dt>대상</dt><dd>일본·대만·호주</dd></div></dl>
@@ -42,11 +42,10 @@ function foreignView(){
   const full=asia?as.length>=1:yb.length>=3; const ft=inTabs('fview'+(asia?'a':''),[['market',`후보 ${market.length}`],['mine',`우리 선수 ${asia?as.length+'/1':yb.length+'/3'}`],['watch','관찰 명단'],['net','스카우트망'],['rule','규정']],full?'mine':'market');
   const mineS=`<section class="card"><div class="row between"><h2 class="sec">우리 ${asia?'아시아쿼터':'외국인 선수'}</h2><span class="small muted">${asia?as.length+'/1':yb.length+'/3'}</span></div>${mine?`<div class="tgrid">${mine}</div>`:'<p class="small muted">아직 없습니다.</p>'}</section>`;
   const PG=pager('fm'+(asia?'a':'')+ff.r+ff.s,cards,cardPageSize());
-  const mkS=`<section class="card foreign-candidates" data-pg="${'fm'+(asia?'a':'')+ff.r+ff.s}"><div class="row between"><h2 class="sec">${asia?'아시아쿼터 후보':'외국인 후보'}</h2><span class="small muted">${market.length}명</span></div>
-    <div class="row between wrapr"><div class="chips">${fchips.map(([k,l])=>`<button data-a="ffset" data-v="r:${k}" class="${ff.r===k?'on':''}">${l}</button>`).join('')}</div>
-    <div class="chips">${[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div></div>
+  const mkS=`<section class="card foreign-candidates" data-pg="${'fm'+(asia?'a':'')+ff.r+ff.s}"><div class="row between"><h2 class="sec">${asia?'아시아쿼터 후보':'외국인 후보'} <span class="small muted">${market.length}명</span></h2><div class="seg smk-vw"><button data-a="fview2" data-v="t" class="${UI.fview2!=='c'?'on':''}">목록</button><button data-a="fview2" data-v="c" class="${UI.fview2==='c'?'on':''}">카드</button></div></div>
+    <div class="chips fr-ctl1">${fchips.map(([k,l])=>`<button data-a="ffset" data-v="r:${k}" class="${ff.r===k?'on':''}">${l}</button>`).join('')}<i class="fpsep"></i>${[['rk','예상 능력순'],['stat','지난 리그 기록순'],['ask','연봉 낮은순'],['age','어린 순']].map(([k,l])=>`<button data-a="ffset" data-v="s:${k}" class="${ff.s===k?'on':''}">${l}</button>`).join('')}</div>
     <details class="candidate-help"><summary class="small muted">예상 능력·조사 단계 읽는 법</summary><p class="small muted">카드의 <b>예상</b>은 지난 리그 기록(리그 수준과 그 리그 기록이 믿을 만한지 감안)·MLB 경력·스카우트 평가를 합친 예상 능력이고, <b>예상 능력순</b>은 이 숫자 순서입니다. <b>범위</b>는 실제 능력이 10명 중 8명꼴로 들어가는 폭입니다. 조사 단계가 <b>조사 전 → 기초 조사 → 정밀 조사 → 확인 완료</b>로 오를수록 범위가 좁아집니다. 조사 전 후보는 추정보다 지난 리그 기록을 더 믿으세요(리그 수준 차이는 감안). <b>관찰</b>을 누르면 매주 조사가 쌓이고, 지역 스카우트망을 넓혀도 정확해집니다. 영입하면 코치진이 정확히 파악합니다.</p></details>
-    <div class="tgrid">${PG.items.join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}</div>${PG.bar}</section>`;
+    ${UI.fview2==='c'?`<div class="tgrid">${PG.items.join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}</div>${PG.bar}`:fRows(market,open,mid)}</section>`;
   const ftb=asia?'':fTmpBox(market);
   return tabs+(ftb?`<section class="card">${ftb}</section>`:'')+ft.bar+(ft.cur==='net'?intlView():ft.cur==='market'?mkS:ft.cur==='mine'?mineS:ft.cur==='watch'?(fwatchBox(asia)||'<section class="card"><p class="small muted">관찰 명단이 비어 있습니다. 후보 목록에서 관찰을 눌러 두면 여기서 비교합니다.</p></section>'):summary);
 }
@@ -116,3 +115,12 @@ function fTmpBox(market){ const mine=playersOf(G.user).filter(q=>q.ftmp).map(q=>
     ${market.filter(x=>!fTmpErr(G.user,sel,x.p)).slice(0,8).map(({p})=>`<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 월 ${money(fTmpFee(p))}</span></span><button class="btn small primary" data-a="fTmpSign" data-v="${p.id}">부상 대체로 등록</button></div>`).join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}
     <div class="btns"><button class="btn small" data-a="fTmpStart" data-v="">고르기 취소</button></div>`:'';
   return `<div class="eyebrow">부상 대체 외국인</div>${mine}${sel?'':inj.map(o=>`<div class="row between wrapr"><span class="small">${esc(o.name)}(${esc(posLabel(o))}) ${o.injOut}일 치료 진단 · 6주 이상이라 대체 선수를 쓸 수 있습니다</span><button class="btn small" data-a="fTmpStart" data-v="${o.id}">대체 선수 고르기</button></div>`).join('')}${pick}`; }
+
+/* 휴대폰 외국인 후보 목록: 한 줄에 이름·포지션·예상 능력(범위)·요구 연봉·관심 구단·협상 버튼, 아래 줄에 지난 리그 기록. 이름을 누르면 선수 정보 */
+function fRows(market,open,mid){ if(!market.length)return '<p class="small muted">조건에 맞는 후보가 없습니다.</p>';
+  const row=({p,rp,fs})=>{ const err=open?foreignCheck(G.user,p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0, n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev;
+    return `<div class="fr-r"><button class="st-n" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)}</b><i>${esc(posLabel(p))}${p.isP?(isSPr(p)?' 선발':' 불펜'):''} · ${esc(p.nat)} · ${p.age}세</i></span></button>
+      <span class="fr-est">${fs.mid!=null?`<b class="rc" style="--c:${rcol(fs.raw)}">${fs.mid}</b><i>${fs.lo}~${fs.hi}</i>`:'<i>조사 전</i>'}</span>
+      <span class="fr-act">${!open?'':err||repl?`<button class="btn small" data-a="negOpen" data-v="fm:${p.id}" disabled title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':esc(fErrShort(err))}</button>`:`<button class="btn small primary" data-a="negOpen" data-v="fm:${p.id}">협상</button>`}<button class="btn small${fwatchOn(p.id)?' on':''}" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 중':'관찰'}</button></span>
+      <span class="fr-rec"><b>${Math.round(p.ask/USD)}만$</b>${n?` · <span class="${n>=2?'bad':''}">관심 ${n}구단</span>`:''} · ${esc(p.prevLvl||'')} ${lineTxt(h,p.isP)}${p.mlbG?` · MLB ${p.mlbG}경기`:''}</span></div>`; };
+  return `${open?'':'<p class="small muted fr-off">영입 기간 아님(12월~8월 15일) · 관찰해 두면 조사가 쌓입니다</p>'}<div class="fr-list">${market.map(row).join('')}</div>`; }

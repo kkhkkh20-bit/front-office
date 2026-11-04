@@ -193,3 +193,29 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 
 /* FA 예정자(휴대폰): 구단·등급·자격·전망을 한 줄로 */
 .fur{padding:3px 0;gap:0;border-bottom:1px solid var(--line)}.fur .pm{padding:1px 0;background:none;border:0;min-height:0}.fur .pm b,.fur .pm i{line-height:1.25}.fur>.small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+/* 휴대폰 외국인 후보 목록 */
+.fr-list{display:flex;flex-direction:column;border:1px solid var(--line,#2a323c);border-radius:10px;overflow:hidden}
+.fr-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"n est ask" "rec rec act";gap:4px 10px;align-items:center;padding:8px 10px;border-top:1px solid var(--line,#2a323c)}
+.fr-r:first-child{border-top:0}
+.fr-r .st-n{grid-area:n}.fr-est{grid-area:est;display:grid;justify-items:center;line-height:1.15}.fr-est i,.fr-ask i{font-style:normal;font-size:11px;color:var(--muted,#9aa7b4)}
+.fr-est .rc{font-size:17px}.fr-ask{grid-area:ask;display:grid;justify-items:end;line-height:1.2;font-size:13px;white-space:nowrap}
+.fr-rec{grid-area:rec;font-size:11.5px;color:var(--muted,#9aa7b4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fr-act{grid-area:act;display:flex;gap:5px;justify-content:flex-end}.fr-act .btn{min-height:30px;padding:3px 10px}
+@media (max-width:700px){
+  .fr-ctl{flex-direction:column;align-items:stretch;gap:4px}.fr-ctl>.chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px}.fr-ctl>.chips>button{flex:none;min-height:30px;padding:2px 10px;font-size:12.5px}
+  .foreign-candidates .candidate-help{margin:2px 0}
+  .foreign-candidates .smk-vw button{min-height:28px;padding:2px 10px;font-size:12.5px}
+}
+@media (max-width:700px){
+  .fr-ctl>.chips>button{min-height:30px!important;height:30px;padding:0 10px!important;font-size:12.5px!important}
+  .fr-r{padding:6px 8px;gap:2px 8px}.fr-r .st-n .av,.fr-r .st-n img{width:28px;height:28px}.fr-r .st-n i{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fr-r .st-n b{font-size:13.5px}.fr-est .rc{font-size:15px}
+  .fr-act .btn,.fr-act .pill{min-height:26px!important;height:26px;padding:0 8px!important;font-size:12px}
+  .foreign-candidates>.row:first-child{padding:6px 10px}.foreign-candidates .sec{font-size:16px}
+}
+@media (max-width:700px){ .fr-ty{margin:0 0 4px}.fr-ty button{min-height:32px!important;padding:2px 8px!important;font-size:13px} }
+.fr-ctl1{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px;margin:0 0 4px}.fr-ctl1>button{flex:none}.fr-ctl1>.fpsep{flex:none;width:1px;align-self:stretch;margin:3px 2px;background:var(--line,#2a323c)}
+@media (max-width:700px){ .foreign-candidates .candidate-help{display:none} .fr-ctl1>button{min-height:32px!important;padding:0 10px!important;font-size:12.5px} .fr-act .btn,.fr-act .pill{min-height:30px!important} }
+.fr-r{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"n est act" "rec rec rec"}
+.fr-rec b{color:var(--ink,#e8edf2);font-weight:600}.fr-off{margin:2px 0 6px}
+@media (max-width:700px){ .fr-r .st-n .av,.fr-r .st-n img{display:none}.fr-r .st-n>span:last-child{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px}.fr-r{padding:7px 10px} }
