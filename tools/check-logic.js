@@ -1085,6 +1085,9 @@ T('[공통 점검] 거래: AI가 보내는 트레이드 제안은 수락 검사(
   const add=[]; while(rosterN(op)<ROSTER_MAX){ const t3=G.teams.find(t=>t.id!==G.user&&t.id!==op).id; const q=Object.values(G.players).find(x=>x.team===t3&&!x.foreign&&!x.ys&&!milServing(x)&&!(x.joinY>G.year)&&!add.includes(x)); if(!q)break; q.team=op; add.push(q); }
   ok(offerBlockMsg(G.offers[0]),'준비 실패: 정원이 찼는데 제안이 막히지 않음');
   G.live=null; G.res=null; G.stops=[]; const d0=G.day; processDay(); ok(G.day>d0,'준비 실패: 하루 진행 안 됨'); ok(!(G.offers||[]).some(o=>o.id==='oW'&&offerBlockMsg(o)),'하루가 지나도 막힌 제안이 남아 있음'); });
+T('[단장 이직] 현직 단장에게 오는 다른 구단 제의는 지금 연봉보다 높고, 수락하면 그 구단으로 옮긴다',()=>{ fresh(); myCInit(); const C=G.myC; ok(C&&C.tid!=null,'준비 실패: 단장 계약 없음'); C.sal=50000;
+  const tid=G.teams.find(t=>t.id!==G.user).id; for(let i=0;i<20;i++){ const o=myCOffer(tid,false); ok(o.sal>C.sal,'제의 연봉이 지금 연봉보다 높지 않음: '+o.sal+' / '+C.sal); }
+  G.jobs=G.jobs||[]; jobOffer(tid,false); const j=G.jobs.find(x=>x.tid===tid&&!x.done); ok(j&&j.terms.sal>C.sal,'제의가 만들어지지 않음'); const sal=j.terms.sal; jobAnswer(tid,true); ok(G.user===tid&&G.myC.tid===tid&&G.myC.sal===sal,'수락했는데 새 구단·새 연봉으로 옮기지 않음'); });
 T('[드래프트] 신인 드래프트 일괄 처리(주전감 이상만 지명)는 1라운드 우리 첫 지명부터 적용되고, 1·2라운드에 기준 미달이면 건너뛰지 않고 멈춘다',()=>{ fresh(); ok(draftOrders(),'준비 실패: 지명 순서 없음'); startDraft(); const d=G.draft;
   draftRestSet('cond',4); let g=0; while(g++<40&&d.picks[d.cur].tid!==G.user)amStep(); const pk=d.picks[d.cur]; ok(pk.tid===G.user&&pk.rd===1,'준비 실패: 1라운드 우리 차례 아님');
   const tp=potTierP; let r; potTierP=()=>({n:4}); try{ r=draftRestPick(); }finally{ potTierP=tp; } ok(r&&r.me&&pk.pid>0&&pk.rule,'1라운드에서 주전감 이상 방침으로 지명하지 않음');

@@ -22,7 +22,7 @@ function myCRecord(y,rank,ps,uo){ const C=myCInit(); if(!C||G.unemp)return; C.se
 function myCFired(y){ const C=G.myC; if(!C||C.tid==null)return ''; const left=Math.max(0,C.y1-y); const owed=left*C.sal; if(owed>0){ team(C.tid).cash-=owed;personalState(); C.earn+=owed;personalSalary(owed,'경질 잔여 연봉 정산'); } myCEnd('경질',y); return owed>0?` 남은 계약 ${left}년 치 연봉 ${money(owed)}을 구단이 정산합니다.`:''; }
 
 /* 다른 구단 제의 조건 */
-function myCOffer(tid,fired){ const b=myCBase(tid); return {sal:Math.round(b*(fired?rnd(1,1.12):rnd(1.08,1.25))/10)*10,yrs:G.rep>=70?3:R()<.5?3:2}; }
+function myCOffer(tid,fired){ const b=myCBase(tid); let sal=Math.round(b*(fired?rnd(1,1.12):rnd(1.08,1.25))/10)*10; const cur=!G.unemp&&G.myC&&G.myC.tid!=null?G.myC.sal||0:0; if(cur)sal=Math.max(sal,Math.round(cur*rnd(1.15,1.35)/10)*10); /* 현직 단장 빼 오기: 지금 연봉보다 높게 */ return {sal,yrs:G.rep>=70?3:R()<.5?3:2}; }
 
 /* 계약 마지막 해 결산 뒤: 구단주의 재계약 의사, 다른 구단 제의 */
 function myCSeasonEnd(y,ps){ const C=myCInit(); if(!C||G.unemp||C.y1!==y)return; const t=team(G.user); const tr=t.trust, rep=G.rep??50;
