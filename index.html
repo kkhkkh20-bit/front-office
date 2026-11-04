@@ -4589,8 +4589,6 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .r2tr{display:table-row}#app .r2tr>td{padding:6px 0 2px}#app .r2tr .r2link{margin:0;width:100%}
  #app .ws-panels>.roster-list.card{padding:6px 8px;gap:4px}
 }
-/* 코치 보직 표(휴대폰): 펼친 카드는 표 폭 그대로 */
-.cslt td,.cslt th{vertical-align:middle;text-align:left}.cslt .pn>span{display:block;line-height:1.25}.cslt .pn small{display:block;font-size:11px;color:var(--muted)}.cslt .pn .av{width:24px;height:24px}.cslt tr.on>td{background:var(--panel2)}.cslt-x>td{padding:4px 0 8px;white-space:normal}.cslt-x .csl{border:0;padding:0}
 /* 협상 상대 구단 카드: PC는 칸 높이를 채우고 주요 선수, 휴대폰은 촘촘히 */
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
 @media(min-width:1100px){.ws-scroll:has(>.tp-grid){display:flex;flex-direction:column}}
@@ -23217,9 +23215,6 @@ function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* P
   const cs=coachesOf(G.user); const vac1=CKEYS.some(k=>CROLE[k].g===1&&!cs[k]), vac2=CKEYS.some(k=>CROLE[k].g===2&&!cs[k]);
   if(UI._smk){ UI.cmode=UI.smkSrc==='oth'?'other':'free'; return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+coachMarket(); } /* 스태프 시장 */
   const slots=[...CKEYS.filter(k=>cs[k]),...CKEYS.filter(k=>!cs[k])],PG=pager('coachSlots',slots,cardPageSize());
-  if(!fmOn()){ /* 휴대폰·태블릿: 보직 9개를 한 표로, 행을 누르면 그 아래에 코치 카드 */
-    const tr=k=>{ const c=cs[k],op=UI.cslot===k; return `<tr class="click${op?' on':''}" data-a="cslotTg" data-v="${k}"><td><b>${CROLE[k].l}</b></td>${c?`<td><span class="pn">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user})}<span><b>${esc(c.name)}</b> <i class="muted">${c.age}세</i><small>${money(c.sal)} · 잔여 ${Math.max(0,c.yrs)}년</small></span></span></td><td>${rchip(effC(c,G.user,'sk'))}</td><td>${rchip(effC(c,G.user,'dv'))}</td>`:`<td colspan="3"><span class="pill bad">빈자리</span> <button class="btn small primary" data-a="coachFind" data-v="${k}">후보 보기</button></td>`}</tr>${op&&c?`<tr class="cslt-x"><td colspan="4">${coachSlot(k)}</td></tr>`:''}`; };
-    return (UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+csec('1군·2군 코치 보직',`<div class="tw"><table class="sqt cslt"><thead><tr><th>보직</th><th>코치</th><th>지도</th><th>육성</th></tr></thead><tbody>${slots.map(tr).join('')}</tbody></table></div>`,`<span class="small muted">${slots.length}개 보직 · 행을 누르면 상세</span>`)+sumC+smkLink('coach','코치 채용'); }
   return (fmOn()?'<div class="ws-own sfw">':'')+(UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+(fmOn()?'<div class="row" style="margin-bottom:8px"><button class="btn small" data-a="sfCards">◀ 스태프 개요</button></div>':'')+csec('1군·2군 코치 보직',`<nav class="seg coach-slot-jump" aria-label="우리 코치 보직 바로가기">${slots.map(k=>`<button data-a="coachSlot" data-v="${k}" class="${(PG.items.includes(UI.cslot)?UI.cslot:PG.items[0])===k?'on':''}">${CROLE[k].l}${cs[k]?'':' <i class="cnt" style="background:var(--bad);color:#fff">빈자리</i>'}</button>`).join('')}</nav><div class="cgrid">${PG.items.map(coachSlot).join('')}</div>${PG.bar}`,`<span class="small muted">${slots.length}개 보직 · ${vac1||vac2?'빈 보직은 뒤 페이지에서 확인':'전원 배치'}</span>`)+sumC+smkLink('coach','코치 채용')+(fmOn()?'</div>':''); }
 /* 스태프 시장(FM의 스태프 찾기처럼 한 곳): 감독·코치·스카우트·분석원 후보와 다른 구단 소속 스태프 */
 function smkLink(k,l){ return `<div class="row" style="margin:8px 0"><button class="btn small" data-a="smkGo" data-v="${k}">${l} → 스태프 시장</button></div>`; }
@@ -24737,7 +24732,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   rviewMode(v){UI.rlayout=v;render();},
   cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ UI.cmkOpen=UI.cmkOpen===+v?null:+v; render(); },
   sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
-  cslotTg(v){ UI.cslot=UI.cslot===v?null:v; render(); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
   coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
   crole(v){ UI.crole=v; render(); },

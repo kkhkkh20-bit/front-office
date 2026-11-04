@@ -69,8 +69,6 @@
  #app .r2tr{display:table-row}#app .r2tr>td{padding:6px 0 2px}#app .r2tr .r2link{margin:0;width:100%}
  #app .ws-panels>.roster-list.card{padding:6px 8px;gap:4px}
 }
-/* 코치 보직 표(휴대폰): 펼친 카드는 표 폭 그대로 */
-.cslt td,.cslt th{vertical-align:middle;text-align:left}.cslt .pn>span{display:block;line-height:1.25}.cslt .pn small{display:block;font-size:11px;color:var(--muted)}.cslt .pn .av{width:24px;height:24px}.cslt tr.on>td{background:var(--panel2)}.cslt-x>td{padding:4px 0 8px;white-space:normal}.cslt-x .csl{border:0;padding:0}
 /* 협상 상대 구단 카드: PC는 칸 높이를 채우고 주요 선수, 휴대폰은 촘촘히 */
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
 @media(min-width:1100px){.ws-scroll:has(>.tp-grid){display:flex;flex-direction:column}}
