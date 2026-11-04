@@ -56,6 +56,10 @@ function subTabsRaw(tab){
   const s=curSub(tab),cur=tab==='trade'?(s==='gms'?'table':s==='report'?'block':s):s;
   return `<nav class="subtabs" aria-label="${TITLE[tab]} 하위 메뉴">${SUBS[tab].map(([k,l])=>`<button data-a="${tab==='league'?'lseg':'sub'}" data-v="${tab==='league'?k:tab+':'+k}" class="${cur===k?'on':''}">${l}${((MERGE[tab]&&MERGE[tab][k])||[k]).some(x=>subAlert(tab,x))?'<i class="sdot"></i>':''}</button>`).join('')}</nav>`;
 }
+/* 부가설명은 화면에 펼치지 않고 제목·라벨 옆 i 말풍선으로 */
+function hiI(t){ return `<button type="button" class="hi-i" data-tip="${esc(t)}">i</button>`; }
+/* 긴 설명 줄: 첫 문장만 보이고 나머지는 i로 */
+function tipRest(x){ const i=x.length>=45?x.search(/\. (?=\S)/):-1; return i<0?esc(x):esc(x.slice(0,i+1))+' '+hiI(x.slice(i+2)); }
 const csec=(title,body,extra)=>`<section class="card"><div class="row between"><h2 class="sec">${title}</h2>${extra||''}</div>${body}</section>`;
 function menuSheet(){
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="전체 메뉴"><div class="sheet-head"><h2 class="sec">전체 메뉴</h2><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>

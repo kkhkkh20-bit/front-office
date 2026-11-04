@@ -81,11 +81,11 @@ function mgrRow(x,act){ mgrFix(x); return `<div class="item wa" style="cursor:de
 function policyCard(m){
   const p=G.policy; const lean=teamLean(G.user); const cd=p&&G.day-p.day<14;
   const leanTxt=lean>.35?'육성 쪽':lean<-.35?'성적 쪽':'균형';
-  return `<section class="card polc"><div class="row between"><span class="eyebrow">운영 기조 지시</span>${p?`<span class="small muted">감독 수용도 ${Math.round(p.follow*100)}% · 관계 ${m.rel}</span>`:`<span class="small muted">지시 없음 · 감독 본래 성향대로 운영 · 관계 ${m.rel}</span>`}</div>
+  return `<section class="card polc"><div class="row between"><span class="eyebrow">운영 기조 지시 ${hiI('단장이 방향을 정하면 감독이 성향에 따라 받아들입니다. 출전 시간이 곧 성장이므로, 유망주를 키우려면 육성 기조가 필요합니다.\n고집이 센 감독일수록, 본래 성향과 다른 지시일수록, 관계가 나쁠수록 덜 따릅니다. 2주에 한 번 바꿀 수 있습니다.')}</span>${p?`<span class="small muted">감독 수용도 ${Math.round(p.follow*100)}% · 관계 ${m.rel}</span>`:`<span class="small muted">지시 없음 · 감독 본래 성향대로 운영 · 관계 ${m.rel}</span>`}</div>
     <div class="seg">${Object.entries(POL).map(([k,x])=>`<button data-a="setPol" data-v="${k}" class="${p&&p.k===k?'on':''}" ${cd?'disabled':''}>${x.l}</button>`).join('')}</div>
-    <p class="small">${p?esc(POL[p.k].d):'단장이 방향을 정하면 감독이 성향에 따라 받아들입니다. 출전 시간이 곧 성장이므로, 유망주를 키우려면 육성 기조가 필요합니다.'}</p>
+    ${p?`<p class="small">${esc(POL[p.k].d)}</p>`:''}
     <div class="leanbar"><span>성적</span><div><i style="left:${(lean+1)*50}%"></i></div><span>육성</span></div>
-    <p class="small muted">실제 운영: <b>${leanTxt}</b>. 고집이 센 감독일수록, 본래 성향과 다른 지시일수록, 관계가 나쁠수록 덜 따릅니다. 2주에 한 번 바꿀 수 있습니다.${cd?` 다음 변경 ${dmd(p.day+14)}.`:''}</p>
+    <p class="small">실제 운영: <b>${leanTxt}</b>${cd?` · 다음 변경 ${dmd(p.day+14)}`:''}</p>
     ${UI.polMsg?`<div class="note">${esc(UI.polMsg)}</div>`:''}</section>`;
 }
 function mgrChatCard(compact){ const m=G.mgr[G.user]; if(!m||m.interim||G.unemp)return ''; const C=(G.mgrChat||[]).filter(c=>!compact||G.day-c.d<=14).slice(0,1); /* 지난 대화는 감독실에서: 화면에는 가장 최근 답 하나만 */
@@ -143,10 +143,8 @@ function medBody(){ const IL=injNowList();
   <div class="eyebrow">부상 방지 프로그램</div>
   <div class="chips prevc">${PREV.map((x,i)=>`<button data-a="setPrev" data-v="${i}" class="${G.med.prev===i?'on':''}">${x.l}<small>${x.c?`연 ${money(x.c)}`:'비용 없음'}</small></button>`).join('')}</div>
   <p class="small muted">연 ${money(PREV[G.med.prev].c)} · 경기 중 부상 위험 ${Math.round((1-PREV[G.med.prev].m)*100)}% 감소</p>
-  <div class="eyebrow">제휴 병원</div>
-  <p class="small muted">병원을 바꾸면 새 부상은 물론, 지금 재활 중인 선수(남은 기간 14일 이상)의 남은 기간에도 그날부터 새 병원의 재활 효과가 적용됩니다. 짧은 부상은 그대로입니다.</p><div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d)}${h.rec?` 재활 기간 ${Math.round(h.rec*100)}% 단축.`:''}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
-  <p class="small">병원을 바꾸면 다음 부상부터 재활 기간이 달라집니다. 이미 다친 선수의 복귀일은 그대로입니다.</p>
-  <p class="small muted">병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다. 지난 결산 이후 ${money(G.spend.med+G.spend.hosp)}.</p>
+  <div class="eyebrow">제휴 병원 ${hiI('병원을 바꾸면 새 부상은 물론, 지금 재활 중인 선수(남은 기간 14일 이상)의 남은 기간에도 그날부터 새 병원의 재활 효과가 적용됩니다. 짧은 부상은 그대로입니다.\n병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.')}</div><div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d)}${h.rec?` 재활 기간 ${Math.round(h.rec*100)}% 단축.`:''}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
+  <p class="small muted">지난 결산 이후 의료비 ${money(G.spend.med+G.spend.hosp)}</p>
   ${G.medSet?'':'<button class="btn primary block" data-a="medOk">이대로 운영</button>'}`;
 }
 function devBody(){

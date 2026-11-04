@@ -18,7 +18,7 @@ function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mg
     return c?`<tr><td>${CROLE[k].l}</td><td><button class="lnk" data-a="sfCoach" data-v="${k}">${esc(c.name)}</button>${m&&c.clan===m.id?' <span class="pill good">사단</span>':''}</td><td>${c.age}</td><td>${c.yrs!=null?c.yrs+'년':'-'}</td><td>${rchip(effC(c,G.user,'sk'))}</td><td>${rchip(effC(c,G.user,'dv'))}</td><td>${money(c.sal)}</td></tr>`
       :`<tr class="miss"><td>${CROLE[k].l}</td><td colspan="5">빈자리</td><td><button class="btn small" data-a="smkGo" data-v="coach">채용</button></td></tr>`; }).join('')}</tbody></table></div>`;
   const col1=`<div class="sf-c">${sfHead('코치진','코치 '+nC+'/'+CKEYS.length+'명',[[m?1:0,1,'감독'],[CKEYS.filter(k=>CROLE[k].g===1&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===1).length,'1군 코치'],[CKEYS.filter(k=>CROLE[k].g===2&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===2).length,'2군 코치'],[m?Object.values(C).filter(c=>c&&c.clan===m.id).length:0,nC,'감독 사단',1]],
-      [m?'var(--team-hi,#4fa3ff)':null,...CKEYS.map(k=>C[k]?rcol(effC(C[k],G.user,'sk')):null)],`<button class="btn small" data-a="sfCards">보직 카드 보기</button>`,!m?'감독 자리가 비어 있습니다.':nC<CKEYS.length?`코치 보직 ${CKEYS.length-nC}곳이 비어 있습니다. 빈 보직은 해당 분야 성장이 느려집니다.`:'모든 코치 보직이 차 있습니다.')}
+      [m?'var(--team-hi,#4fa3ff)':null,...CKEYS.map(k=>C[k]?rcol(effC(C[k],G.user,'sk')):null)],`<button class="btn small" data-a="sfCards">보직 카드 보기</button>`,!m?'감독 자리가 비어 있습니다.':nC<CKEYS.length?`코치 보직 ${CKEYS.length-nC}곳이 비어 있습니다 ${hiI('빈 보직은 해당 분야 성장이 느려집니다.')}`:'모든 코치 보직이 차 있습니다.')}
     ${sfChart('코치진 비교 · 리그 10개 구단',cRows,40,80)}<section class="sf-list"><h3>코치진 명단</h3>${coachT}</section></div>`;
   /* 스카우트·전력분석 */
   const L=stInit(), scOf=t=>t===G.user?G.scouts:((L[t]||{}).sc||[]), anOf=t=>t===G.user?anaList():((L[t]||{}).an||[]);
@@ -37,7 +37,7 @@ function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mg
   const HY=playersOf(G.user).flatMap(p=>(p.injHist||[]).filter(x=>x.y===G.year).map(x=>({p,x}))).slice(-12).reverse();
   const hyT=HY.length?`<h3 class="sf-sub">올해 부상 이력 <em>${HY.length}건</em></h3><table class="sf-t"><tbody>${HY.map(({p,x})=>`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${esc(posLabel(p))}</td><td>${x.k?esc(injName(x.k)):'부상'}</td><td>${x.days}일</td></tr>`).join('')}</tbody></table>`:'';
   const col3=`<div class="sf-c">${sfHead('의무·부상','부상 방지 '+esc(PREV[G.med.prev].l),[[G.med.prev,PREV.length-1,'부상 방지 단계'],[G.med.hosp==='none'?0:1,1,'제휴 병원 · '+H.name],[IL.filter(x=>x.st==='out').length,playersOf(G.user).length,'지금 부상자',1],[IL.filter(x=>x.st==='rec').length,Math.max(1,IL.length),'실전 회복 중',1]],
-      IL.map(x=>x.st==='out'?'var(--bad)':'var(--warn)'),`<button class="btn small" data-a="go" data-v="staff:med">부상 관리</button>`,`${esc(H.d)} 부상 방지 단계가 높을수록 부상이 덜 납니다.`)}
+      IL.map(x=>x.st==='out'?'var(--bad)':'var(--warn)'),`<button class="btn small" data-a="go" data-v="staff:med">부상 관리</button>`,`${esc(H.d)} ${hiI('부상 방지 단계가 높을수록 부상이 덜 납니다.')}`)}
     ${sfChart('부상 비교 · 리그 10개 구단',iRows,0,Math.max(4,...iRows.flatMap(r=>r.all)),null,true)}<section class="sf-list"><h3>부상자 명단</h3><div class="sf-tw">${inT.replace(/^<div class="sf-tw">|<\/div>$/g,'')}${hyT}</div></section></div>`;
   return `<div class="sf ws-own">${col1}${col2}${col3}</div>`; }
 /* PC 의료 센터(FM '의료 센터 기본 정보'처럼): 위 요약 문장, 가운데 위험 평가 표(경기 중 부상 확률 계산과 같은 요인), 아래 지금 부상·최근 복귀, 오른쪽 부상 방지·병원 */
@@ -95,7 +95,7 @@ function dataFM(){ const {y,cur,T}=dhTeams(), me=T.find(t=>t.tid===G.user), has=
   if(cur&&lv>=2){ const ps=domestic(G.user).concat(foreignOf(G.user)).filter(p=>!p.isP).map(p=>({p,h:seasonTotal(p,G.year,'1군')})).filter(x=>x.h&&x.h.pa>=60).map(x=>({p:x.p,o:bRate(x.h).ops,d:bRate(x.h).ops-(.62+(ovr(x.p)-40)*.006)})).sort((a,b)=>a.d-b.d);
     if(ps.length)F.push(['능력 대비 기록',`능력에 비해 기록이 낮은 타자는 ${esc(ps[0].p.name)}(OPS ${f3(ps[0].o)}), 능력 이상으로 잘하는 타자는 ${esc(ps[ps.length-1].p.name)}(OPS ${f3(ps[ps.length-1].o)})입니다.`]); }
   if(cur&&lv>=3){ try{ const q=(playoffOdds()||[]).find(x=>x.tid===G.user); if(q)F.push(['가을야구 전망',`데이터 랩 시뮬레이션으로 본 가을야구(5위 안) 진출 확률은 ${Math.round(q.ps*100)}%입니다.`]); }catch(e){} }
-  if(lv<3)F.push(['분석 수준',`전력분석 보고 수준 ${lv}/3단계입니다. ${lv<2?'2단계부터 능력 대비 기록이 엇갈린 타자를, ':''}3단계부터 가을야구 진출 확률을 함께 보고합니다. 분석원 능력이 높을수록 단계가 오릅니다.`]);
+  if(lv<3)F.push(['분석 수준',`전력분석 보고 수준 ${lv}/3단계 ${hiI(`${lv<2?'2단계부터 능력 대비 기록이 엇갈린 타자를, ':''}3단계부터 가을야구 진출 확률을 함께 보고합니다. 분석원 능력이 높을수록 단계가 오릅니다.`)}`]);
   const find=`<section class="card dh-find"><h3>주요 발견 <em>${F.length}건</em></h3><ol class="dh-fl">${F.map(([h,t],i)=>`<li><b>${i+1}</b><div><strong>${h}</strong><p>${t}</p></div></li>`).join('')}</ol></section>`;
   /* 왼쪽 아래 오른쪽: 승패 마진 추이(점 찍힌 선), 5위 팀과 비교 */
   const st=standingsNow(), cut=(st[4]&&st[4].tid===G.user?st[5]:st[4])||{}, A=tlOf(G.user), B=cut.tid!=null?tlOf(cut.tid):[], n=cur?Math.min(A.length,B.length||A.length):0;
@@ -137,7 +137,7 @@ function scoutFM(){ const S=G.scouts||[], ch=scoutChief(), sel=UI.scSel&&S.find(
     <div class="scn-g"><i>아마추어</i>${REG.map(r=>cell('am',r,r,`드래프트 후보 ${draft.filter(p=>p.region===r).length}명`)).join('')}</div>
     <div class="scn-g"><i>프로</i>${REG.map(r=>cell('pro',r,r+' 구단',`다른 구단 ${proT(r).length}곳`)).join('')}</div>
     <div class="scn-g scn-g5"><i>해외</i>${Object.keys(IREG).map(r=>cell('intl',r,IREG[r].l,`후보 ${fm.filter(p=>origOf(p)===r).length}명`)).join('')}</div>
-    <p class="sf-leg">막대: 국내는 담당 스카우트 능력(5단계, 적응 중이면 -1), 해외는 정보망 단계(3단계, 스카우트 파견 +1)</p></section>`;
+    <p class="sf-leg">막대 ${hiI('국내는 담당 스카우트 능력(5단계, 적응 중이면 -1), 해외는 정보망 단계(3단계, 스카우트 파견 +1)')}</p></section>`;
   /* 관심 명단: 드래프트 관심 선수(별표) + 외국인 관찰 명단(매주 보고 누적) */
   const SL=(G.shortlist||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect), FW=(G.fwatch||[]).map(w=>({w,p:G.players[w.id]})).filter(x=>x.p);
   const watch=`<section class="card scn-watch"><h3>관심 명단 <em>드래프트 ${SL.length}명 · 외국인 ${FW.length}/8명</em></h3><div class="sf-tw"><table class="sf-t scn-t"><thead><tr><th>드래프트 관심 선수</th><th>지역</th><th>현재 / 잠재</th><th>신뢰도</th><th></th></tr></thead><tbody>${SL.map(p=>{ const r=scoutReport(p); return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="scn-s">${esc(posLabel(p))} · ${p.age}세${p.school?` · ${esc(p.school)}`:''}</span></td><td>${esc(p.region||'-')}</td><td>${r.cur!=null?rchip(r.cur):'-'} / ${r.ofp!=null?rchip(r.ofp):'?'}</td><td>${esc(r.conf||'-')}</td><td><button class="btn small" data-a="star" data-v="${p.id}">빼기</button></td></tr>`; }).join('')||'<tr><td colspan="5" class="muted">드래프트 후보 화면에서 별표를 누르면 여기에 모입니다.</td></tr>'}</tbody></table>

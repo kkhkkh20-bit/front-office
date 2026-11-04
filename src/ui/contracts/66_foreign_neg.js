@@ -8,7 +8,7 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}">${l} 달러</button>`;
   const err=!open?'지금은 외국인 선수를 영입할 수 없습니다.':repl?'이번 시즌 외국인 교체 횟수를 다 썼습니다.':(()=>{ const a0=p.ask; p.ask=F.g+F.i; const e=foreignCheck(G.user,p); p.ask=a0; return e; })();
   return `<section class="card fo"><div class="row between"><h2 class="sec">계약 협상</h2><span class="small muted">상한 ${Math.round(cap/USD)}만 달러</span></div>
-    <p class="small">요구 총액 <b>${usdT(p.ask)}</b>(${money(p.ask)}) · 보통 보장 85% + 인센티브 15%로 받기를 원합니다. 선수는 인센티브를 보장의 절반 정도 가치로 봅니다.${mid?` 시즌 중 계약이라 남은 기간분 ${Math.round(remainFrac()*100)}%만 지급합니다.`:''}</p>
+    <p class="small">요구 총액 <b>${usdT(p.ask)}</b>(${money(p.ask)}) · 보장 85% + 인센티브 15% 선호${mid?` · 남은 기간분 ${Math.round(remainFrac()*100)}%만 지급`:''} ${hiI(`보통 보장 85% + 인센티브 15%로 받기를 원합니다. 선수는 인센티브를 보장의 절반 정도 가치로 봅니다.${mid?` 시즌 중 계약이라 남은 기간분 ${Math.round(remainFrac()*100)}%만 지급합니다.`:''}`)}</p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
       <div><span class="muted small">인센티브(규정 출전 시)</span>${contractMoneyInput('fo','i','인센티브',F.i,true)}<div class="row">${step('i',-5,'-5만')}${step('i',5,'+5만')}</div></div>
