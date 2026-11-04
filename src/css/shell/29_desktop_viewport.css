@@ -1,9 +1,9 @@
 /* PC: the browser page stays fixed; long workspaces and detail panels scroll inside the shell. */
 @media(min-width:1100px){
  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
- #app>.gut{height:100dvh;overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
- #app>.fb-title{height:100dvh;min-height:0;overflow:auto}
- body.fm #app,.shell.fmsh{height:100dvh;min-height:0!important;overflow:hidden}
+ #app>.gut{height:calc(100dvh / var(--z,1));overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
+ #app>.fb-title{height:calc(100dvh / var(--z,1));min-height:0;overflow:auto}
+ body.fm #app,.shell.fmsh{height:calc(100dvh / var(--z,1));min-height:0!important;overflow:hidden}
  body.fm .shell.fmsh{display:flex!important;flex-direction:column}
  .fmsh>.fmtop{flex:none;position:relative}
  .fmsh>.fmbody{flex:1;min-height:0;display:grid;grid-template-columns:180px minmax(0,1fr);overflow:hidden}
@@ -27,7 +27,7 @@
  #sheet .detail-page-wrap{height:100%;min-height:0}
  body #sheet .sheet.detail-page{height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;padding-bottom:12px}
  body #sheet .cast.detail-page{height:100%;min-height:0;overflow:hidden}
- .dshell{height:100dvh;display:flex;flex-direction:column;overflow:hidden}.dshell>.dtop{flex:none}.dshell>.gut{min-height:0;flex:1;overflow:auto}
+ .dshell{height:calc(100dvh / var(--z,1));display:flex;flex-direction:column;overflow:hidden}.dshell>.dtop{flex:none}.dshell>.gut{min-height:0;flex:1;overflow:auto}
 }
 
 /* Person and recruitment cards share the same responsive density. */
@@ -37,7 +37,7 @@
 
 /* 작업 화면: 제목·탭·필터는 고정하고 표와 목록에만 스크롤을 배정한다. */
 html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-behavior:none}
-.shell:has(.ws-frame){height:100dvh;min-height:0;overflow:hidden}
+.shell:has(.ws-frame){height:calc(100dvh / var(--z,1));min-height:0;overflow:hidden}
 .fmsh:has(.ws-frame) .fmmain{display:flex;flex-direction:column;overflow:hidden}
 .fmsh:has(.ws-frame) .fmmain>.blk{flex:none}
 .fmsh:has(.ws-frame) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
@@ -73,7 +73,7 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 /* 창단 드래프트도 후보 표와 구단 보고를 각각 스크롤한다. */
 @media(min-width:0px){
  html:has(.dcontent .fdlay),body:has(.dcontent .fdlay){height:100%;overflow:hidden}
- .dshell:has(.fdlay){height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .dshell:has(.fdlay){height:calc(100dvh / var(--z,1));min-height:0;display:flex;flex-direction:column;overflow:hidden}
  .dshell:has(.fdlay)>.dtop{flex:none}
  .dshell:has(.fdlay)>.gut{flex:1;min-height:0;overflow:hidden}
  .dshell:has(.fdlay)>.gut>.wrap{height:100%;min-height:0;display:flex;flex-direction:column}

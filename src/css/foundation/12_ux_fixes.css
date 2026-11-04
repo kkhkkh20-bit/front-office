@@ -217,7 +217,7 @@ body.help .hi-i{display:none}
 .mt-l.me{margin-left:auto;flex-direction:row-reverse}.mt-l.me p{background:#3d8bfd2e;border:1px solid #3d8bfd66;border-bottom-right-radius:4px}
 .mt-av .av{width:32px;height:32px}
 .mt-sys{align-self:center;flex:none;font-size:12px;color:var(--warn);background:#e3b44c14;border-radius:10px;padding:3px 10px}
-.mt-opts{flex:none;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));max-height:44vh;overflow-y:auto;background:var(--bg)}.mt-opts>.eyebrow{flex:1 1 100%}
+.mt-opts{flex:none;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));max-height:calc(44vh / var(--z,1));overflow-y:auto;background:var(--bg)}.mt-opts>.eyebrow{flex:1 1 100%}
 .mt-o{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:1px;flex:1 1 auto;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
 .mt-o:hover{border-color:var(--acc)}.mt-o b{font-size:13.5px;font-weight:600}.mt-o i{font-style:normal;font-size:12px;color:var(--muted)}
 .mt-o[disabled]{opacity:.45;cursor:default}.mt-o.end{flex:1 1 100%;text-align:center;color:var(--muted)}
@@ -372,7 +372,7 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 /* 창단 드래프트 지명 기록 */
 .tk-log{font-size:13px;margin:4px 0 0;align-self:flex-start}
 .fdlog{margin-top:6px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--panel2,rgba(127,127,127,.06))}
-.fdlog-l{max-height:42vh;overflow-y:auto;display:flex;flex-direction:column;margin-top:4px}
+.fdlog-l{max-height:calc(42vh / var(--z,1));overflow-y:auto;display:flex;flex-direction:column;margin-top:4px}
 .fdlg{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px;min-width:0}
 .fdlg i{font-style:normal;color:var(--muted);font-size:12px;min-width:36px}.fdlg .muted{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
 .fdlg.me{background:rgba(63,184,113,.08)}.fdlogt{font-size:13px}

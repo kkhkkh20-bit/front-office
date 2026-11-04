@@ -1,6 +1,10 @@
 /* ---------- 화면 조립 ---------- */
+/* 대형 화면: 1920×1080 기준 배치를 통째로 확대한다(게임처럼 비율 고정). 확대 중에는 CSS의 vh·vw를 --z로 나누고,
+   화면 좌표(getBoundingClientRect)를 스타일 px로 옮길 때도 uiZ()로 나눈다 */
+function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
+function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
 function render(){const app=document.getElementById('app');rememberReading(app);try{return render0();}finally{restoreReading(app);workspaceRefit();}}
-function render0(){document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
+function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
   try{ annCheck(); }catch(e){} try{ ibAutoRead(); }catch(e){}

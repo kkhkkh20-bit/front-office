@@ -15,7 +15,7 @@
 
 /* 2단: 목록 + 본문 */
 .ibx{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:14px;align-items:start}
-.ibx-list{background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow-y:auto;position:sticky;top:var(--ibtop,120px);max-height:calc(100vh - var(--ibtop,120px) - 16px);overscroll-behavior:contain}
+.ibx-list{background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow-y:auto;position:sticky;top:var(--ibtop,120px);max-height:calc(calc(100vh / var(--z,1)) - var(--ibtop,120px) - 16px);overscroll-behavior:contain}
 .ibx-list.m{position:static;max-height:none;overflow:visible}
 .ibx-day{position:sticky;top:0;z-index:1;padding:6px 12px;font:600 11px var(--f-ui);letter-spacing:.02em;color:var(--dim);background:var(--head,#1f2a35);border-bottom:1px solid var(--line)}
 .ibr{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:9px 12px 9px 10px;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #ffffff08;color:var(--muted);text-align:left;cursor:pointer;font:inherit}

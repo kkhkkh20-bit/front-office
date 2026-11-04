@@ -68,11 +68,11 @@ function tkDone(){ UI._tk=null; tkShow(1e9); }
 function dayTickPosition(el){
   if(!el?.classList.contains('on'))return;
   const v=window.visualViewport,w=v?.width||innerWidth,h=v?.height||innerHeight,x=v?.offsetLeft||0,y=v?.offsetTop||0;
-  const count=el.querySelectorAll('.dt-c').length;
-  el.style.width=Math.min(w-24,Math.max(196,count*52+Math.max(0,count-1)*4+12))+'px';
-  el.style.maxWidth=Math.max(0,w-24)+'px';el.style.left=(x+w/2)+'px';
+  const count=el.querySelectorAll('.dt-c').length,z=uiZ();
+  el.style.width=Math.min(w/z-24,Math.max(196,count*52+Math.max(0,count-1)*4+12))+'px';
+  el.style.maxWidth=Math.max(0,w/z-24)+'px';el.style.left=(x+w/2)/z+'px';
   const head=document.querySelector('#app .fmtop,#app .top,#app .dtop'),after=head?head.getBoundingClientRect().bottom+8:y+8;
-  el.style.top=Math.max(y+8,Math.min(after,y+h-el.getBoundingClientRect().height-12))+'px';
+  el.style.top=Math.max(y+8,Math.min(after,y+h-el.getBoundingClientRect().height-12))/z+'px';
 }
 function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);

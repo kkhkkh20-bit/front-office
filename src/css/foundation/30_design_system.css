@@ -160,7 +160,7 @@
 :is(#app,#sheet) :is(.ws-tab-row,.ptabs).more-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent)}
 :is(#app,#sheet) :is(.ws-tab-row,.ptabs).more-l{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 32px),transparent)}
 :is(#app,#sheet) :is(.ws-tab-row,.ptabs).more-l.more-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 32px,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(to right,transparent,#000 32px,#000 calc(100% - 32px),transparent)}
-.ws-pages>.ws-page{background:var(--panel2);border:1px solid var(--line);border-radius:4px;color:var(--muted);font-size:12px;padding:6px 12px;cursor:pointer;max-width:min(320px,80vw);overflow:hidden;text-overflow:ellipsis}
+.ws-pages>.ws-page{background:var(--panel2);border:1px solid var(--line);border-radius:4px;color:var(--muted);font-size:12px;padding:6px 12px;cursor:pointer;max-width:min(320px,calc(80vw / var(--z,1)));overflow:hidden;text-overflow:ellipsis}
 .ws-pages>.ws-page.on{color:var(--ink);border-color:var(--team-hi,#4fa3ff);background:color-mix(in srgb,var(--team-hi,#4fa3ff) 18%,var(--panel2));font-weight:600}
 .ws-navigation{display:flex;flex-direction:column;gap:6px;flex:0 0 auto!important;min-width:0}
 #app .roster-navigation.ws-navigation{display:flex;flex-direction:column;gap:6px;min-height:0;margin:0}
@@ -179,7 +179,7 @@
 
 /* 긴 제안·결재 소식도 목록 또는 본문 안에서만 스크롤한다. */
 html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidden;overscroll-behavior:none}
-.shell:has(.inbox-workspace){height:100dvh;min-height:0;overflow:hidden}
+.shell:has(.inbox-workspace){height:calc(100dvh / var(--z,1));min-height:0;overflow:hidden}
 .fmsh:has(.inbox-workspace) .fmmain{display:flex;flex-direction:column;overflow:hidden}
 .fmsh:has(.inbox-workspace) .fmmain>.blk{flex:none}
 .fmsh:has(.inbox-workspace) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
@@ -205,7 +205,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-navigation{display:flex;flex-wrap:nowrap;min-width:0}
  #app .roster-navigation>.rseg{flex:1;min-width:0}
  #app .roster-navigation>.rseg button{flex:1;min-width:0;white-space:nowrap;padding-inline:6px}
- #app .roster-filter-body{max-height:min(200px,30dvh);overflow:auto;overscroll-behavior:contain;padding-block:6px}
+ #app .roster-filter-body{max-height:min(200px,calc(30dvh / var(--z,1)));overflow:auto;overscroll-behavior:contain;padding-block:6px}
  #app .roster-filters[open]{flex-shrink:1;min-height:32px;overflow:auto;overscroll-behavior:contain;max-height:45%}
  #app .roster-filters[open]>summary{position:sticky;top:0;background:var(--panel);z-index:6}
  #app .roster-list>.ws-scroll{min-height:80px}

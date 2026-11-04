@@ -1,12 +1,15 @@
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
 .detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
-#sheet .detail-page-wrap{position:static;display:block;background:none;min-height:var(--detail-height,100dvh)}
-body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:var(--detail-height,100dvh);overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
-.detail-page-open #sheet .cast{position:relative;inset:auto;width:100%;height:var(--detail-height,100dvh);min-height:0;max-width:none;z-index:auto}
+#sheet .detail-page-wrap{position:static;display:block;background:none;min-height:var(--detail-height,calc(100dvh / var(--z,1)))}
+body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width:none;height:auto;min-height:var(--detail-height,calc(100dvh / var(--z,1)));overflow:visible;border:0;animation:none;box-sizing:border-box;padding:0 20px 24px}
+.detail-page-open #sheet .cast{position:relative;inset:auto;width:100%;height:var(--detail-height,calc(100dvh / var(--z,1)));min-height:0;max-width:none;z-index:auto}
 /* 경기 중계는 왼쪽 탐색 영역까지 쓴다. 선수 상세·일반 화면에서는 메뉴가 돌아온다. */
 .cast-page-open #app .fmside,.cast-page-open #app .rail{display:none}
 .cfm-w,.stamp-w,.rv-w{top:var(--app-header-h,0px);left:var(--app-side-w,0px);bottom:var(--app-footer-h,0px)}
+/* 알림 창(지명 공개·패치 노트 등)은 남은 화면 안에 들어오고 길면 창 안에서 스크롤, 마지막 확인 버튼은 아래에 고정 */
+.rv-w{grid-template-rows:minmax(0,1fr);overflow:hidden}.rv-w>.rv{max-height:100%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;align-self:center}
+.rv-w>.rv>.btn.block:last-child{position:sticky;bottom:-18px;z-index:2;box-shadow:0 -10px 14px #141b22}
 .detail-navigation{display:flex;align-items:center;gap:12px;grid-column:1/-1;min-height:40px;border-bottom:1px solid var(--line2);margin:0 -20px 10px;padding:4px 20px;background:var(--panel2)}
 .detail-navigation>span{font-size:11px;color:var(--muted)}
 .detail-navigation .btn{min-height:28px;padding:3px 12px;font-size:12px}
@@ -70,7 +73,7 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .fm2-compact .fm-sub{display:none}.fm2-compact .fm-meta{position:absolute;right:14px;top:7px;z-index:1}
   .fm2-compact .fm-meta .helpbtn{display:none}
   .fmsh{--fm-top-height:77px}.fmsh:has(.fm2-compact){--fm-top-height:48px}
-  .fmside{top:var(--fm-top-height);height:calc(100dvh - var(--fm-top-height));box-sizing:border-box}
+  .fmside{top:var(--fm-top-height);height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));box-sizing:border-box}
   .fmsh main.content{padding-top:10px;gap:8px}
   .roster-heading{min-height:32px;margin-bottom:0;padding-right:190px}
   .roster-heading select{max-width:260px;min-height:30px;padding:4px 10px;font-size:13px}
