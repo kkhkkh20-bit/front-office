@@ -77,6 +77,14 @@ function dayTickPosition(el){
 function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
+  /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '계속' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */
+  if(fmOn()&&!still){ const de=document.querySelector('.fmtop .fm-date'), bt=document.querySelector('.fmtop .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child'); const L=[]; for(let d=d0+1;d<=d1;d++)L.push(d);
+    const st=Math.max(90,Math.min(260,1400/L.length)), tot=st*L.length;
+    if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',tot+'ms'); }
+    const put=d=>{ if(!de)return; const o=dobj(d), g=calGame(d); de.classList.remove('fm-flip'); void de.offsetWidth; de.classList.add('fm-flip'); const b=de.querySelector('b'); if(b)b.textContent=`${WD[o.w]} ${o.m}월 ${o.d}일`; let r=de.querySelector('.fm-dres'); if(!r){ r=document.createElement('i'); r.className='fm-dres'; de.appendChild(r); } r.innerHTML=g&&g.res?`${badge(g.op,14)} <em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:''; };
+    put(d0); dayTick._steps=L.map((d,i)=>setTimeout(()=>{ put(d); tkShow(d); },(i+1)*st));
+    if(UI._tk)UI._tk.until=Date.now()+tot+200; dayTick._t2=setTimeout(tkDone,tot+50);
+    dayTick._t=setTimeout(()=>{ if(bt)bt.classList.remove('fm-busy'); const r=de&&de.querySelector('.fm-dres'); if(r)setTimeout(()=>r.remove(),900); },tot+250); return; }
   let el=document.getElementById('dtick'); if(!el){ el=document.createElement('div'); el.id='dtick'; el.setAttribute('aria-hidden','true'); document.body.appendChild(el); }
   let days=[]; for(let d=d0+1;d<=d1;d++)days.push(d); if(days.length>10)days=days.slice(0,4).concat([null],days.slice(-5));
   el.innerHTML=`<div class="dt-big"><span class="dt-flip" id="dtFlip"></span></div><div class="dt-in">${days.map(d=>{ if(d==null)return '<span class="dt-c gap">…</span>'; const o=dobj(d); const g=calGame(d); const ev=calEvents(d).filter(e=>e.k==='dl'||e.k==='lg');

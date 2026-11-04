@@ -103,3 +103,13 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 }
 /* 현재 감독 화면: 넓은 화면에서 성향 눈금·능력 막대가 화면 끝까지 늘어나지 않게 */
 @media (min-width:1100px){ body.fm .msty,body.fm .mabil{max-width:760px} }
+/* FM처럼 날짜 진행(27_calendar.js dayTick): 오른쪽 위 날짜가 하루씩 넘어가고 계속 버튼 아래에 진행 막대가 찬다 */
+.fmtop .fm-date{position:relative}
+.fmtop .fm-date.fm-flip b{animation:fmFlip .22s ease-out}@keyframes fmFlip{0%{opacity:0;transform:translateY(-60%)}100%{opacity:1;transform:none}}
+.fmtop .fm-dres{position:absolute;top:100%;right:0;margin-top:3px;display:flex;align-items:center;gap:4px;font-style:normal;font-size:11px;white-space:nowrap;background:rgba(0,0,0,.55);padding:1px 6px;border-radius:3px}.fmtop .fm-dres:empty{display:none}
+.fmtop .fm-dres em{font-style:normal;font-weight:700}.fmtop .fm-dres em.w{color:var(--good)}.fmtop .fm-dres em.l{color:var(--bad)}
+.fmtop .goset>button.fm-busy{position:relative;overflow:hidden}
+.fmtop .goset>button.fm-busy::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85);animation:fmProg var(--fmdur,1200ms) linear forwards}
+@keyframes fmProg{to{width:100%}}
+.fmtop .goset>button.fm-busy .cl i{font-size:0}.fmtop .goset>button.fm-busy .cl i::after{content:'날짜 진행 중…';font-size:11px}
+@media (prefers-reduced-motion: reduce){.fmtop .fm-date.fm-flip b,.fmtop .goset>button.fm-busy::after{animation:none}}
