@@ -87,6 +87,7 @@
   .dh,.scn{display:grid;gap:10px;flex:1;min-height:0;height:calc(100dvh / var(--z,1) - 120px)}
   main.ws-frame>.dh,main.ws-frame>.scn{height:auto}
   .dh .card,.scn>.card{margin:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:10px 12px}
+  .scn>.card.scn-job{overflow-y:auto} /* 1366×768: 팀장 배치 제안이 길면 아래 버튼·표가 칸 밖으로 잘려 누를 수 없었다 */
   .dh h3,.scn h3{margin:0 0 6px;font-size:13px;color:var(--team-hi,#4fa3ff);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.dh h3 em,.scn h3 em{font-style:normal;color:var(--muted);font-weight:500;font-size:12px}
   .dh .row.between,.scn .row.between{gap:8px;align-items:center;flex-wrap:nowrap}
   .dh .sf-t tr.me td{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 14%,transparent);font-weight:600}
