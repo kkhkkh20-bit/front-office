@@ -37,7 +37,9 @@ function nextCard(){
 }
 /* ---------- 실시간 드래프트: 다른 구단 지명을 한 명씩 보여 준다 ---------- */
 const DSPD={slow:1100,norm:550,fast:180};
-function dliveStart(kind){ if(UI.dl&&UI.dl.on)return; const o=UI.dl&&UI.dl.kind===kind?UI.dl:null; UI.dl={on:true,kind,feed:(o?o.feed:[])||[],stolen:o?o.stolen||[]:[],stN:o?o.stN||0:0}; dliveTick(); }
+/* UI.dl은 이번 해 드래프트 것만 이어 쓴다: 지난해 드래프트 기록이 남으면 새 드래프트가 저절로 시작하지 않았다(2027년부터 '다른 구단 지명 보기'를 눌러야 했음) */
+const dlSame=kind=>!!(UI.dl&&UI.dl.kind===kind&&UI.dl.y===G.year);
+function dliveStart(kind){ if(UI.dl&&UI.dl.on)return; const o=dlSame(kind)?UI.dl:null; UI.dl={on:true,kind,y:G.year,feed:(o?o.feed:[])||[],stolen:o?o.stolen||[]:[],stN:o?o.stN||0:0}; dliveTick(); }
 /* 우리가 노리던 선수: 관심 표시 + 지금 우리 보드 상위 3명 */
 function dlTargets(kind){ const m=new Map(); (G.shortlist||[]).forEach(id=>m.set(id,'관심 선수')); return m; }
 function dliveTick(){ const L=UI.dl; if(!L||!L.on||!G)return; const T=dlTargets(L.kind); let r=L.kind==='fd'?fdStep():amStep();
@@ -46,9 +48,9 @@ function dliveTick(){ const L=UI.dl; if(!L||!L.on||!G)return; const T=dlTargets(
   L.just=r.pid||null; if(r.pid){ const p=G.players[r.pid]; const tg=T.get(r.pid)||null; L.feed.unshift({me:!!r.me,tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,pid:r.pid,nm:p?p.name:'',pos:p?(L.kind==='fd'&&p.isP?'투수':posLabel(p)):'',age:p?p.age:null,tg,o:L.kind==='fd'&&p?fdEstOf(p):null}); L.feed=L.feed.slice(0,12);
     if(tg){ (L.stolen=L.stolen||[]).unshift({nm:p?p.name:'',tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,tg,pid:r.pid}); L.stolen=L.stolen.slice(0,20); L.stN=(L.stN||0)+1; } }
   render(); L.t=setTimeout(dliveTick,DSPD[UI.dspeed||'norm']); }
-function dlFeedAdd(kind,pk,pid){ if(!UI.dl||UI.dl.kind!==kind)UI.dl={on:false,kind,feed:[]}; const p=G.players[pid]; UI.dl.feed.unshift({tid:pk.tid,rd:pk.rd,no:pk.no,pid,nm:p?p.name:'',pos:p?posLabel(p):'',age:p?p.age:null,tg:null,me:true}); UI.dl.feed=UI.dl.feed.slice(0,12); }
+function dlFeedAdd(kind,pk,pid){ if(!dlSame(kind))UI.dl={on:false,kind,y:G.year,feed:[]}; const p=G.players[pid]; UI.dl.feed.unshift({tid:pk.tid,rd:pk.rd,no:pk.no,pid,nm:p?p.name:'',pos:p?posLabel(p):'',age:p?p.age:null,tg:null,me:true}); UI.dl.feed=UI.dl.feed.slice(0,12); }
 function dliveStop(){ const L=UI.dl; if(L){ L.on=false; clearTimeout(L.t); } save(); render(); }
-function dliveBox(kind){ if(!(UI.dl&&UI.dl.kind===kind)&&!UI.dlAuto&&!UI.rev&&!(kind==='fd'&&G.fd&&G.fd.open===false)){ UI.dlAuto=1; setTimeout(()=>{ UI.dlAuto=0; const d=kind==='fd'?G.fd:G.draft; if(d&&!d.done&&d.picks[d.cur]&&d.picks[d.cur].tid!==G.user&&!(UI.dl&&UI.dl.kind===kind))dliveStart(kind); },800); } const L=UI.dl&&UI.dl.kind===kind?UI.dl:null; const on=L&&L.on; const sp=UI.dspeed||'norm';
+function dliveBox(kind){ if(!dlSame(kind)&&!UI.dlAuto&&!UI.rev&&!(kind==='fd'&&G.fd&&G.fd.open===false)){ UI.dlAuto=1; setTimeout(()=>{ UI.dlAuto=0; const d=kind==='fd'?G.fd:G.draft; if(d&&!d.done&&d.picks[d.cur]&&d.picks[d.cur].tid!==G.user&&!dlSame(kind))dliveStart(kind); },800); } const L=dlSame(kind)?UI.dl:null; const on=L&&L.on; const sp=UI.dspeed||'norm';
   const f=L&&L.feed&&L.feed.length?L.feed:[]; const top=f[0];
   return `<div class="dlive ${on?'on':''}">${on?'<span class="dl-dot"></span>':''}<div class="dl-h"><b>${on?'지명 진행 중':'다른 구단 지명'}</b><span class="chips">${[['slow','느리게'],['norm','보통'],['fast','빠르게']].map(([k,l])=>`<button data-a="dlSpd" data-v="${k}" class="${sp===k?'on':''}">${l}</button>`).join('')}${on?'<button data-a="dlStop">멈춤</button><button data-a="dlSkip">우리 차례로</button>':''}</span></div>
     ${top?`<div class="dl-now ${on?'flash':''}">${badge(top.tid,30)}<div><i>${top.rd}-${top.no} · ${esc(tshort(top.tid))}</i><b>${esc(top.nm)}</b><span>${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}${top.me?' · <em class="good">우리 지명</em>':''}</span></div>${top.o!=null&&!top.me?`<div class="dl-o"><i>우리 추정</i>${fdEstChip(top.o)}</div>`:''}</div>`:''}
