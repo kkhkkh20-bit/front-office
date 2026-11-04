@@ -205,13 +205,13 @@ function advanceDraft(stopAtUser){
   const d=G.draft;
   while(!d.done){ const pk=d.picks[d.cur]; if(pk.tid===G.user&&stopAtUser)return; const id=pk.tid===G.user?userAutoPick():aiDraftPick(pk.tid); if(!id){finishDraft();break;} if(id===-1){passCurrent();continue;} if(pk.tid===G.user)pk.auto=true; doPick(id); }
 }
-/* 남은 우리 지명 일괄 처리(3라운드부터 적용, 1·2라운드는 직접 고른다). pass: 모두 건너뛴다
-   cond: 스카우트 추천 후보의 잠재력 추정 등급이 기준(min) 이상일 때만 지명하고, 아니면 건너뛴다. 로스터가 한도에 차면 더 뽑지 않는다 */
+/* 남은 우리 지명 일괄 처리. pass: 모두 건너뛴다
+   cond: 스카우트 추천 후보의 잠재력 추정 등급이 기준(min) 이상일 때만 지명하고, 아니면 건너뛴다. 로스터가 한도에 차면 더 뽑지 않는다.
+   1·2라운드는 건너뛸 수 없어서 기준을 넘는 후보는 그대로 지명하고, 못 넘거나 건너뛰기 방침이면 멈춰 단장에게 맡긴다 */
 function draftRestSet(mode,min){ const d=G.draft; if(!d||d.done)return; d.rest=mode?{mode,min:min||3}:null; }
 function draftRestPick(){ const d=G.draft; const R0=d&&!d.done&&d.rest; const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
   const id=userAutoPick(); let ok=false;
   if(id&&R0.mode==='cond'&&rosterProj(G.user)<ROSTER_MAX){ const p=G.players[id]; const T=potTierP(scoutReport(p),p); ok=!!T&&T.n>=R0.min; }
-  if(pk.rd<3)return null; /* 1·2라운드는 단장이 직접 고른다 */
   if(ok){ pk.rule=true; doPick(id); return {pk,pid:id,me:true}; }
   if(pk.rd>=3){ passCurrent(); return {pk,pass:true}; } return null; }
 function userAutoPick(){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect); let best=null,bs=-1; const pol=G.draftPol&&G.draftPol.y===G.year?G.draftPol.k:null;

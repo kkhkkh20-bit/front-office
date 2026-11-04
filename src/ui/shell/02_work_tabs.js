@@ -45,12 +45,12 @@ function offersCard(){
   const OS=(G.offers||[]).filter(o=>!o.blk); if(!OS.length)return '';
   return OS.map(offerOne).join('');
 }
-function offerOne(o){ { const t=team(o.from); const li=id=>{const p=G.players[id]; return p?pcard(p,{foot:rosterFoot(p)}):''};
+function offerOne(o){ { const t=team(o.from); const why=offerBlockMsg(o); /* 그사이 성사될 수 없게 된 제안은 수락 대신 사유 */ const li=id=>{const p=G.players[id]; return p?pcard(p,{foot:rosterFoot(p)}):''};
     return `<section class="card hero"><div class="row between"><span class="eyebrow">트레이드 제안 · ${dmd(o.exp)}까지</span><span class="small muted">관계 ${t.rel}</span></div>
     <h2 class="sec">${tname(o.from)}</h2>
     <div class="tcols2"><div><div class="eyebrow">받는 선수</div><div class="tgrid">${o.give.map(li).join('')}</div></div><div><div class="eyebrow">보내는 선수</div><div class="tgrid">${o.get.map(li).join('')}</div></div></div>
     ${(t=>`<p class="small ${t.includes('정리 필요')?'bad':'muted'}">${t}</p>`)(tradeRosterTxt(o.get,o.give))}${offerAdvBox(o)}
-    <div class="btns"><button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button><button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div></section>`; }
+    ${why?`<p class="small bad">지금은 수락할 수 없습니다: ${esc(why)}</p>`:''}<div class="btns">${why?'':`<button class="btn primary" data-a="offerYes" data-v="${o.id}">수락</button>`}<button class="btn" data-a="offerNo" data-v="${o.id}">거절</button></div></section>`; }
 }
 function campCard(){
   if(!G.camp||G.camp.done)return '';
