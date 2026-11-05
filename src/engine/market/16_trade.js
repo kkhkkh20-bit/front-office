@@ -112,6 +112,9 @@ function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)
 /* 우리 쪽 정원: 상대 쪽 초과는 막지만 우리 쪽은 넘어도 성사되고, 넘은 만큼 정리해야 진행된다. 확인창·받은 제안에 미리 보여 준다 */
 function tradeRosterTxt(give,get){ const n=rosterN(G.user)-give.filter(tradeCntN).length+get.filter(tradeCntN).length, over=n-ROSTER_MAX;
   return `트레이드 후 정식 ${n}/${ROSTER_MAX}명${over>0?` · ${over}명 정리 필요(${period()==='season'||period()==='post'?'정리해야 진행할 수 있습니다':'개막 전까지'})`:''}`; }
+/* 우리 구단 독주 정도: 시즌 중(20경기 이후) 1위일 때 2위와 승차(5경기당 1, 최대 2), 시즌 밖에는 지난 시즌 우승이면 1. 아니면 0 */
+function leaderGap(){ try{ if(period()==='season'){ const S=standingsNow(); if(!S.length||S[0].tid!==G.user)return 0; const r=G.sea.rec[G.user]; if(r.w+r.l<20)return 0; const a=S[0], b=S[1]; const gb=((a.w-b.w)+(b.l-a.l))/2; return Math.max(.5,Math.min(2,gb/5)); }
+  const H=(G.history||[]).find(h=>h.y===G.year-1); return H&&H.champ===G.user?1:0; }catch(e){ return 0; } }
 function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk);
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
@@ -125,6 +128,7 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk);
   if(tid!==G.user){ const nT=(G.trades||[]).filter(x=>x.y===G.year&&x.with===tid).length; if(nT)need+=Math.max(1.5,outV)*.25*nT;
     /* 리그 전체 눈치: 한 시즌에 우리가 트레이드를 많이 할수록(세 번째부터) 다른 단장들도 값을 올린다. KBO는 구단당 한 해 트레이드가 몇 건 안 된다 */
     { const nA=(G.trades||[]).filter(x=>x.y===G.year).length; if(nA>=2)need+=Math.max(1.5,outV)*.12*(nA-1); }
+    { const L=leaderGap(); if(L>0)need+=Math.max(1.5,outV)*(t.mode==='rebuild'?.05:.15)*Math.min(2,L); } /* 1위 견제: 우리가 선두면 경쟁 구단 단장은 선두를 돕는 트레이드를 꺼린다(실제로도 그렇다). 리빌딩 구단은 덜 따진다 */
     const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id)))need+=Math.max(1,outV)*.2; }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */
   { const outs=get.map(id=>tval(t,P(id),'out')).filter(x=>x>0); const ins=give.map(id=>tval(t,P(id),'in')); const topO=outs.length?Math.max(...outs):0, topI=ins.length?Math.max(...ins):0;

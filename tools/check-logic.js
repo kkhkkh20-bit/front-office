@@ -1560,6 +1560,11 @@ T('[기록] wRC+: 창단 드래프트 기록에도 들어가고, 퓨처스 기�
   ok(one.every(x=>typeof x.s.wrc==='number'),'창단 드래프트 기록에 wrc 없음');
   const fut=P.map(p=>(p.hist||[]).find(h=>h.y===y&&h.lvl==='퓨처스'&&h.pa>=100)).filter(Boolean); if(fut.length>=8){ const a=fut.reduce((s,h)=>s+wrcPlus(h,y)*h.pa,0)/fut.reduce((s,h)=>s+h.pa,0); ok(a>=80&&a<=120,'퓨처스 타석 가중 wRC+ '+a.toFixed(1)); }
   ok(wrcMulti([])==null,'빈 기록 통산 wRC+'); });
+T('[난이도] 1위 견제: 우리가 선두를 달리면 경쟁 구단은 같은 트레이드에 더 많은 값을 요구하고, 선두가 아니면 요구가 그대로다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3);
+  const op=G.teams.find(t=>t.id!==G.user&&t.mode!=='rebuild')||G.teams.find(t=>t.id!==G.user); const mine=domestic(G.user).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[3], their=domestic(op.id).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[3];
+  const R0=JSON.parse(JSON.stringify(G.sea.rec)); for(const t of G.teams)G.sea.rec[t.id]={w:15,l:15,t:0}; G.sea.rec[G.user]={w:30,l:5,t:0}; ok(leaderGap()>=1.5,'준비 실패: 독주 '+leaderGap());
+  const a=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec[G.user]={w:10,l:25,t:0}; ok(leaderGap()===0,'선두가 아닌데 견제 '+leaderGap()); const b=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec=R0;
+  ok(a>b+.1,'선두일 때 요구 '+a.toFixed(2)+' · 아닐 때 '+b.toFixed(2)); });
 T('[실플레이 11-05b] FA 미계약 선수: 12월·1월에도 다른 구단 FA에게 제안할 수 있다',()=>{ fresh(); simTo(()=>G.fa&&!G.fa.closed&&G.day>=dnum(G.fa.y0,12,20)); const F=G.fa;
   const L=F.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!==G.user&&q.ask); ok(L.length,'준비 실패: 12월 20일에 남은 FA 없음'); const p=L[0]; const ng=F.neg&&F.neg[p.id];
   const r=faNegotiate(p.id,{annual:round5(p.ask.annual*1.2),years:p.ask.years}); ok(!/협상할 수 없는/.test(r.msg||''),'12월 제안 막힘: '+r.msg+' · unemp '+!!G.unemp+' · neg '+JSON.stringify(ng||null).slice(0,160)+' · out '+faOutN(G.user)+'/'+faCapN());

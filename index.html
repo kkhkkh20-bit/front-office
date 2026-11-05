@@ -11147,12 +11147,12 @@ function fdPeakAge(p){ return Math.max(p.age,DT.norm.grow+1); }
 function fdViews(p){ if(!G.fd)return null; const S=fdSeenBy(G.user,p); const lv=dataLv(G.user); return {sc:S.sc,an:lv>=1?S.an:null,up:p.age<=26&&S.pot-S.o>=6}; }
 function fdSlot(p){ return p.isP?'P':p.pos; }
 /* AI 구단 지명 방향(stanceOf): 우승 도전은 지금 능력과 비싼 주전을 감수(상한 100%까지), 내년 도전은 25~30세, 리빌딩은 유망주를 보고 연봉을 아낀다 */
-const FD_ST={win:{pw:.3,old:.8,cap:1,sal:.012},next:{pw:.55,old:1.3,cap:1,sal:.025,mid:1.5},rebuild:{pw:.75,old:1.4,cap:.97,sal:.04,young:1}}; /* 사용자는 상한 가까이 쓰므로 AI도 연봉을 아끼느라 전력을 버리지 않게 연봉 감점을 줄였다 */
-function fdScore(tid,p,auto,X){ X=X||fdCtx(tid); const t=team(tid); const S=fdSeenBy(tid,p); const o=S.o, pot=S.pot; const pol=tid===G.user&&auto?(G.fdPol||'need'):null; /* 맡기기 방침 */ const st=tid===G.user?null:FD_ST[stanceOf(t)]; const pw=pol==='now'?0:pol==='young'?.9:st?st.pw:.5;
+const FD_ST={win:{pw:.25,old:.8,cap:1,sal:.012},next:{pw:.35,old:1.2,cap:1,sal:.02,mid:1},rebuild:{pw:.5,old:1.3,cap:.97,sal:.03,young:.6}}; /* 사용자는 상한 가까이 쓰므로 AI도 연봉을 아끼느라 전력을 버리지 않게 연봉 감점을 줄였다 */
+function fdScore(tid,p,auto,X){ X=X||fdCtx(tid); const t=team(tid); const S=fdSeenBy(tid,p); const o=S.o, pot=S.pot; const pol=tid===G.user&&auto?(G.fdPol||'need'):null; /* 맡기기 방침 */ const st=tid===G.user?null:FD_ST[stanceOf(t)]; const pw=pol==='now'?0:pol==='young'?.9:st?st.pw:.35;
   let eff=p.age<=25?o+Math.max(0,pot-o)*pw:p.age>=32?o-(p.age-31)*(st?st.old:1.3):o; if(pol==='young')eff+=p.age<=24?2:p.age>=31?-3:0; if(st&&st.young)eff+=p.age<=24?st.young:p.age>=31?-3:0; if(st&&st.mid&&p.age>=25&&p.age<=30)eff+=st.mid; let v=Math.pow(Math.max(0,eff-34),1.7)/10;
-  const k=fdSlot(p); const c=X.c; const tg=FD_TGT[k]||1; v*=pol==='now'?((c[k]||0)<tg+2?1:.8):pol==='need'?((c[k]||0)<tg?1.35:(c[k]||0)<tg+2?.8:.45):(c[k]||0)<tg?1.15:(c[k]||0)<tg+2?.85:.55;
-  const cap=X.cap, cp=X.cp; if(cp+p.sal>cap*(st?st.cap:.97))v*=.25; else v-=p.sal/100*(pol==='cheap'?.25:st?st.sal:.06)*(t.owner==='profit'?1.3:1);
-  if(isAway(p))v*=.5; if(!auto&&tid!==G.user)v+=hn('fd'+tid,p.id)*v*.12; if(tid===G.user&&(G.shortlist||[]).includes(p.id))v=pol==='board'?v*1.8+6:v*1.2+2; return v; }
+  const k=fdSlot(p); const c=X.c; const tg=FD_TGT[k]||1; v*=pol==='now'?((c[k]||0)<tg+2?1:.8):pol==='need'||st?((c[k]||0)<tg?1.35:(c[k]||0)<tg+2?.8:.45):(c[k]||0)<tg?1.15:(c[k]||0)<tg+2?.85:.55; /* AI 구단도 빈 포지션부터 채운다(전에는 덜 따져 고수와 전력 차가 컸다: check-balance) */
+  const cap=X.cap, cp=X.cp; if(cp+p.sal>cap*(st?st.cap:.97))v*=.25; else v-=p.sal/100*(pol==='cheap'?.25:st?st.sal:.025)*(t.owner==='profit'?1.3:1);
+  if(isAway(p))v*=.5; if(!auto&&tid!==G.user)v+=hn('fd'+tid,p.id)*v*.04; /* 구단마다 취향 차이(작게: 크면 AI가 손해) */ if(tid===G.user&&(G.shortlist||[]).includes(p.id))v=pol==='board'?v*1.8+6:v*1.2+2; return v; }
 function fdBest(tid,auto){ let best=null,bs=-1e9; const X=fdCtx(tid); for(const id of G.fd.pool){ const p=G.players[id]; if(!p||!p.fdPool)continue; const v=fdScore(tid,p,auto,X); if(v>bs){bs=v;best=id;} } return best; }
 function fdUserRec(n){ const X=fdCtx(G.user); const L=G.fd.pool.map(id=>G.players[id]).filter(p=>p&&p.fdPool).map(p=>({p,v:fdScore(G.user,p,true,X)})).sort((a,b)=>b.v-a.v); return L.slice(0,n||5).map(x=>x.p); }
 function fdPick(pid){ const F=G.fd; if(!F||F.done)return '드래프트가 없습니다.'; const pk=F.picks[F.cur]; const p=G.players[pid]; if(!pk||!p||!p.fdPool)return '지명할 수 없는 선수입니다.';
@@ -11175,8 +11175,8 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
   for(const id of F.pool){ const p=G.players[id]; if(!p)continue; story(p,'창단 드래프트에서 지명받지 못해 은퇴','move'); delete G.players[id]; }
   F.pool=[]; F.done=true; for(const p of Object.values(G.players)){ delete p.fdPool; delete p.fdFrom; } try{ tbTakeSnap(); }catch(e){}
   for(const t of G.teams){ if(rosterN(t.id)>ROSTER_MAX)trimRoster(t.id,ROSTER_MAX); } try{ aiCapAll(); }catch(e){} try{ fdStrengthen(); }catch(e){} try{ fdAiPayFill(); }catch(e){} try{ foundDefaults(); }catch(err){}
-  /* 다른 구단도 드래프트 동안 외국인 후보를 봐 두었다: 끝나자마자 구단마다 한 명씩 먼저 계약한다. 우리만 시장 최상위 후보를 쓸어 가지 않게 */
-  for(const t of [...G.teams].sort(()=>R()-.5)){ if(t.id===ME())continue; try{ const q=aiForeignPick(t.id); if(q)aiForeignSign(t.id,q); }catch(e){} } planSup(); G.tsug=null; try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
+  /* 다른 구단도 드래프트 동안 외국인 후보를 봐 두었다: 끝나자마자 구단마다 두 명씩 먼저 계약한다. 우리만 시장 최상위 후보를 쓸어 가지 않게 */
+  for(let rd=0;rd<2;rd++)for(const t of [...G.teams].sort(()=>R()-.5)){ if(t.id===ME())continue; try{ const q=aiForeignPick(t.id); if(q)aiForeignSign(t.id,q); }catch(e){} } /* 두 명씩: 고수가 시장 최상위를 쓸어 가던 차이(check-balance) */ planSup(); G.tsug=null; try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
   const mine=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const ci=capInfo(G.user);
   try{ G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); const pr=G.proj.indexOf(G.user)+1;
     setGoals(`창단 드래프트로 선수단이 꾸려졌습니다. 전력분석팀은 외국인 선수 영입 전 기준으로 우리를 10개 구단 중 ${pr}위 전력으로 봅니다. 창단 첫해이니 구단주도 무리한 목표는 잡지 않았습니다.`,true); G.goals.fd=true;
@@ -11922,6 +11922,9 @@ function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)
 /* 우리 쪽 정원: 상대 쪽 초과는 막지만 우리 쪽은 넘어도 성사되고, 넘은 만큼 정리해야 진행된다. 확인창·받은 제안에 미리 보여 준다 */
 function tradeRosterTxt(give,get){ const n=rosterN(G.user)-give.filter(tradeCntN).length+get.filter(tradeCntN).length, over=n-ROSTER_MAX;
   return `트레이드 후 정식 ${n}/${ROSTER_MAX}명${over>0?` · ${over}명 정리 필요(${period()==='season'||period()==='post'?'정리해야 진행할 수 있습니다':'개막 전까지'})`:''}`; }
+/* 우리 구단 독주 정도: 시즌 중(20경기 이후) 1위일 때 2위와 승차(5경기당 1, 최대 2), 시즌 밖에는 지난 시즌 우승이면 1. 아니면 0 */
+function leaderGap(){ try{ if(period()==='season'){ const S=standingsNow(); if(!S.length||S[0].tid!==G.user)return 0; const r=G.sea.rec[G.user]; if(r.w+r.l<20)return 0; const a=S[0], b=S[1]; const gb=((a.w-b.w)+(b.l-a.l))/2; return Math.max(.5,Math.min(2,gb/5)); }
+  const H=(G.history||[]).find(h=>h.y===G.year-1); return H&&H.champ===G.user?1:0; }catch(e){ return 0; } }
 function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk);
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
@@ -11935,6 +11938,7 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk);
   if(tid!==G.user){ const nT=(G.trades||[]).filter(x=>x.y===G.year&&x.with===tid).length; if(nT)need+=Math.max(1.5,outV)*.25*nT;
     /* 리그 전체 눈치: 한 시즌에 우리가 트레이드를 많이 할수록(세 번째부터) 다른 단장들도 값을 올린다. KBO는 구단당 한 해 트레이드가 몇 건 안 된다 */
     { const nA=(G.trades||[]).filter(x=>x.y===G.year).length; if(nA>=2)need+=Math.max(1.5,outV)*.12*(nA-1); }
+    { const L=leaderGap(); if(L>0)need+=Math.max(1.5,outV)*(t.mode==='rebuild'?.05:.15)*Math.min(2,L); } /* 1위 견제: 우리가 선두면 경쟁 구단 단장은 선두를 돕는 트레이드를 꺼린다(실제로도 그렇다). 리빌딩 구단은 덜 따진다 */
     const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id)))need+=Math.max(1,outV)*.2; }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */
   { const outs=get.map(id=>tval(t,P(id),'out')).filter(x=>x>0); const ins=give.map(id=>tval(t,P(id),'in')); const topO=outs.length?Math.max(...outs):0, topI=ins.length?Math.max(...ins):0;
@@ -21372,7 +21376,7 @@ function fdTicker(){ const F=G.fd; if(!F||F.done)return ''; const pk=F.picks[F.c
   const r2=fresh?`<div class="tk2 steal"><b>뺏겼습니다</b><span>${esc(st.tg)} <button class="lnk" data-a="player" data-v="${st.pid}">${esc(st.nm)}</button>을(를) ${esc(tshort(st.tid))}이(가) ${st.rd}-${st.no}에 지명</span>${fdTrue(top)}</div>`
     :top?`<div class="tk2">${badge(top.tid,16)}<i>${top.rd}-${top.no}</i><button class="lnk" data-a="player" data-v="${top.pid}">${esc(top.nm)}</button><span class="muted">${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}</span>${top.me?'<em class="good">우리 지명</em>':fdTrue(top)}${L.stN?`<span class="tk-l">놓친 관심 ${L.stN}명</span>`:''}</div>`:'';
   const risk=(()=>{ if(pre||ask)return ''; const RK=fdRisk(); const S=(G.shortlist||[]).map(id=>G.players[id]).filter(p=>p&&p.fdPool&&(RK[p.id]||0)>=.35).sort((a,b)=>RK[b.id]-RK[a.id]).slice(0,4); if(!S.length)return ''; return `<div class="tk2 risk"><b>${mine?'지금 안 뽑으면':'우리 차례 전에'} 빠질 수 있는 관심 선수</b>${S.map(p=>`<span class="rk-i"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><em>${Math.round(RK[p.id]*100)}%</em></span>`).join('')}</div>`; })();
-  const tkm=UI.tkMin??(innerWidth<1001); /* 휴대폰만 처음부터 접는다. PC는 한도·남은 순번·최근 지명이 기본으로 보여야 기능을 안다(사용자 11-05) */ /* 휴대폰은 처음부터 한 줄로 접어 선수 목록을 넓게 */ const minB=`<button class="tk-minb" data-a="tkMin" aria-label="${tkm?'상황판 펼치기':'상황판 접기'}">${tkm?'펼치기 ▾':'접기 ▴'}</button>`; /* 휴대폰: 위에 고정된 상황판을 한 줄로 접어 선수 목록을 넓게 */
+  const tkm=UI.tkMin??false; /* 휴대폰·PC 모두 처음부터 펼친다: 한도·남은 순번·최근 지명이 보여야 기능을 안다(사용자 11-05) */ /* 휴대폰은 처음부터 한 줄로 접어 선수 목록을 넓게 */ const minB=`<button class="tk-minb" data-a="tkMin" aria-label="${tkm?'상황판 펼치기':'상황판 접기'}">${tkm?'펼치기 ▾':'접기 ▴'}</button>`; /* 휴대폰: 위에 고정된 상황판을 한 줄로 접어 선수 목록을 넓게 */
   if(fdCompact()){ /* 휴대폰: 구단 줄을 없애고 로고(소식함·처음 화면)·우리 팀을 상황판 첫 줄에, 펼치기는 한도 줄을 눌러서 */
     const unread=G.mail.filter(mailNeeds).length; const my=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const {ln}=fdLineupOf(my.filter(p=>!p.isP)); const emp=['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length+Math.max(0,FD_TGT.P-my.filter(p=>p.isP).length); const tm=UI.fdTab==='team';
     const logo=`<button class="tk-logo" data-a="tkMenu" aria-label="메뉴">${badge(G.user,26)}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`;
@@ -27512,7 +27516,7 @@ Object.assign(A,{
 Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });
 
 /* 드래프트 상황판(휴대폰): 맡기기 메뉴 열기·상황판 접기 */
-Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??(innerWidth<1001)); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
+Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??false); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
 /* ---------- 플레이 기록(익명, 테스트용) ----------
  테스트 배포 때 '단장을 만들고 어디까지, 몇 년 차까지 하는지'와 어느 기능을 쓰는지, 어디서 막히는지를 보기 위한 기록.
  - TELE.ph에 PostHog 프로젝트 키(phc_…)를 넣어야 켜진다. 비어 있으면 아무것도 보내지 않는다(GA4 측정 ID도 넣을 수 있다).
@@ -27690,6 +27694,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05ad',d:'11월 5일',t:'난이도: 다른 구단이 더 똑똑하게 뽑고, 선두를 견제합니다',items:[
+    '창단 드래프트에서 다른 구단이 빈 포지션부터 채우고, 당장 못 쓰는 유망주에 덜 매달리도록 바꿨습니다. 기록을 잘 읽는 단장이 쉽게 전력 1위를 만들던 차이가 줄었습니다.',
+    '창단 드래프트가 끝나면 다른 구단이 외국인 선수를 두 명씩 먼저 계약합니다(전에는 한 명). 시장 최상위 외국인을 모두 가져가기 어렵습니다.',
+    '우리 구단이 선두를 달리면 경쟁 구단 단장이 트레이드에 더 많은 값을 요구합니다(2위와 승차가 클수록, 리빌딩 구단은 덜). 지난 시즌 우승 구단도 겨울 동안 같은 견제를 받습니다.',
+    '창단 드래프트 상황판(우리 차례·맡기기·한도·남은 순번·최근 지명)을 휴대폰과 PC 모두 처음부터 펼쳐 둡니다.']},
   {id:'2026-11-05ac',d:'11월 5일',t:'단장 취임으로 바로 시작',items:[
     '새 게임에서 시작 방식을 고릅니다. 단장 취임은 창단 드래프트 없이 10개 구단 중 하나의 단장으로 부임해 지금 선수단·계약·재정을 이어받습니다. 구단마다 전력이 달라 난이도가 됩니다(예상 1~3위 쉬움, 4~7위 보통, 8~10위 어려움). 외국인 선수와 감독은 취임 후 새로 뽑습니다.',
     '다른 구단이 연봉을 상한 가까이 씁니다. 창단 직후 우승 도전 구단 95~99%, 내년 도전 89~94%, 리빌딩 82~87%를 목표로 하고, 창단 드래프트에서 연봉 때문에 강한 선수를 지나치는 일이 줄었습니다.']},
