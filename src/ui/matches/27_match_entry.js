@@ -51,3 +51,6 @@ function castFit(){ try{ const el=document.querySelector('.cast.match-dashboard'
   const bn=document.querySelector('.bnav'), bh=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0; const top=el.getBoundingClientRect().top+scrollY;
   const h=Math.max(420,Math.floor(innerHeight-top-bh-4))+'px'; if(el.style.height!==h){ el.style.height=h; el.style.minHeight=h; } }catch(e){} }
 addEventListener('resize',castFit); setInterval(castFit,400);
+
+/* 3D가 늦으면 기다리지 않고 기본 중계로 먼저 시작한다(사용자 11-06: 재생을 누르지 않아도 재생). 3D 준비가 끝나면 그때부터 3D로 바뀐다 */
+function castStart2D(c){ if(!c||UI.cast!==c||!c.pre)return; const host=document.getElementById('cs-3d'); if(host&&host.dataset.state!=='ready'){ host.dataset.state='fallback'; if(host.parentElement){ host.parentElement.dataset.renderer='fallback'; host.parentElement.classList.remove('has-3d'); } } A.castStart(); }
