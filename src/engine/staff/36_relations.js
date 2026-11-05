@@ -85,7 +85,7 @@ function grantAmt(y){ return sum(grants().filter(g=>g.y===(y??G.year)&&g.ok).map
 function ownAskLeft(){ const o=dobj(G.day); const mk=o.y*100+o.m; return grants().some(g=>g.mk===mk&&g.by==='gm')?0:1; }
 /* 성사 가능성: 신뢰, 구단주 성향, 순위, 목적 */
 function ownOdds(amt,pur){ const t=team(G.user); if(t.indie)return 0; const ow=t.owner; const rk=uRank(); let p=.35+(t.trust-50)/80;
-  const contend=rk<=5||teamCtx(t).contend; if(ow==='win')p+=contend?.2:-.05; if(ow==='profit')p-=.18; if(austOn(t))p-=.1; if(ow==='pr')p+=.05;
+  const contend=rk<=5||teamCtx(t).contend; if(ow==='win')p+=contend?.2:-.05; if(ow==='profit')p-=.18; if(austOn(t)?.strict)p-=.1; if(ow==='pr')p+=.05;
   if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(q){ if(ovr(q)>=62)p+=ow==='pr'?.2:.1; } p+=.08; } if(pur&&pur.k==='frep')p+=.05;
   { const ex=budgetExtra(); if(ex>0)p+=clamp(ex/Math.max(500,amt),0,1)*.2; } /* 예상보다 수입이 늘었으면(관중·광고) 구단주도 더 내줄 여유가 있다 */
   p-=Math.max(0,amt-1000)/4000; const asked=grants().filter(g=>g.y===G.year&&g.by==='gm').length; p-=asked*.08; p+=cwRapMod(); /* 구단주·사장 친밀도(동석 관람) */ return clamp(p,.03,.92); }

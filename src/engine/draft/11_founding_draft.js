@@ -8,10 +8,12 @@ function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; 
 const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
-/* 앞 순번 받기(구단 고를 때 선택): k순위를 받는 대신 3시즌 긴축. 원래 k순위 구단은 우리 자리로. 구단주는 수익 우선으로 바뀌고, 모기업 지원 한도가 줄고, 시작 현금이 적다 */
-const FD_AUST={1:{r:.3,cash:2000},2:{r:.2,cash:2500},3:{r:.1,cash:3000}}, FD_AUST_Y=3;
-function fdAustApply(tid,k){ const A=FD_AUST[k], O=G.fdOrd, t=team(tid); if(!A||!O)return; const i=O.indexOf(tid); if(i<=k-1)return; [O[i],O[k-1]]=[O[k-1],O[i]]; t.owner='profit'; t.cash=A.cash; t.aust={k,r:A.r,y0:G.year,y1:G.year+FD_AUST_Y-1}; }
+/* 창단 지명 순번은 단장이 먼저 고른다(구단 고르기 전). 앞 순번은 긴축, 뒤 순번은 지원 보너스. 3시즌 동안. 나머지 9개 구단은 돈이 적은 순서(fdOrder)로 남은 자리를 채운다
+   d: 모기업 지원 한도 증감, cash: 시작 현금, strict: 구단주 수익 우선·승인 확률 낮음 */
+const FD_SLOT={1:{d:-.3,cash:2000,strict:1},2:{d:-.2,cash:2500,strict:1},3:{d:-.1,cash:3000,strict:1},4:{d:-.05,cash:3500},5:{d:0,cash:4000},6:{d:0,cash:4000},7:{d:.05,cash:4500},8:{d:.08,cash:4800},9:{d:.12,cash:5200},10:{d:.15,cash:5500}}, FD_AUST_Y=3;
+function fdAustApply(tid,k){ const A=FD_SLOT[k], O=G.fdOrd, t=team(tid); if(!A||!O)return; const i=O.indexOf(tid); if(i<0)return; O.splice(i,1); O.splice(k-1,0,tid); t.cash=A.cash; if(A.strict)t.owner='profit'; if(A.d||A.strict)t.aust={k,d:A.d,strict:!!A.strict,y0:G.year,y1:G.year+FD_AUST_Y-1}; }
 function austOn(t){ return t&&t.aust&&sponSeason()<=t.aust.y1?t.aust:null; }
+function austTxt(a){ return a.d<0?`긴축 ${Math.round(-a.d*100)}% 감액`:a.d>0?`지원 ${Math.round(a.d*100)}% 증액`:'긴축'; }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
 function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
   G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */

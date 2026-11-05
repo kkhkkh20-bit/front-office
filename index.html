@@ -10874,7 +10874,7 @@ function fdFin(tid){ const u0=G.user; if(tid!=null)G.user=tid; try{ const t=team
 function fdWelcome(){ const t=team(G.user); const B=bossOf(G.user); const f=fdFin(); G.fdWait=true;
   G.mail=G.mail.filter(m=>m.subj!=='구단주 서신'&&m.subj!==`${G.year} 시즌 구단 목표`); G.stops=(G.stops||[]).filter(m=>m.subj!==`${G.year} 시즌 구단 목표`); G.goals=null;
   /* 비서 업무 안내와 기존 선수단 기준 재정 경고는 드래프트가 끝난 뒤로 미룬다 */ G.mail=G.mail.filter(m=>m.kind!=='업무'&&m.subj!=='재정 압박 구단입니다'); delete t.tight; if(G.tut&&!G.tut.done)G.tut.step=0;
-  const L=[`예상 수입 ${money(f.I)} (${f.inc.map(x=>`${x[0]} ${money(x[1])}`).join(', ')})`,`선수 연봉 외 지출 ${money(f.other)} (외국인 선수 예산, 감독·코치, 운영비 등)`,t.indie?'모기업 지원 없음: 수입 안에서 꾸려야 합니다':`모기업 지원 한도 ${money(f.sup)}`,`보유 현금 ${money(f.cash)}`]; { const a=austOn(t); if(a)L.push(`긴축 약속: 창단 지명 1라운드 ${a.k}순위를 받는 대신 ${a.y1}시즌까지 모기업 지원 한도 ${Math.round(a.r*100)}% 감액, 시설·추가 지원 요청 승인 가능성 낮음`); } if(f.res)L.push(`창단 첫해 예비비 ${money(f.res.tot)}: 비어 있는 감독·코치 자리 채용비 ${money(f.res.vac)}과 운영 여유분 ${money(f.res.cush)}을 예산 여유에서 미리 뺐습니다`);
+  const L=[`예상 수입 ${money(f.I)} (${f.inc.map(x=>`${x[0]} ${money(x[1])}`).join(', ')})`,`선수 연봉 외 지출 ${money(f.other)} (외국인 선수 예산, 감독·코치, 운영비 등)`,t.indie?'모기업 지원 없음: 수입 안에서 꾸려야 합니다':`모기업 지원 한도 ${money(f.sup)}`,`보유 현금 ${money(f.cash)}`]; { const a=austOn(t); if(a)L.push(`창단 지명 1라운드 ${a.k}순위 조건: ${a.y1}시즌까지 모기업 지원 한도 ${a.d<0?Math.round(-a.d*100)+'% 감액':a.d>0?Math.round(a.d*100)+'% 증액':'그대로'}${a.strict?', 시설·추가 지원 요청 승인 가능성 낮음':''}`); } if(f.res)L.push(`창단 첫해 예비비 ${money(f.res.tot)}: 비어 있는 감독·코치 자리 채용비 ${money(f.res.vac)}과 운영 여유분 ${money(f.res.cush)}을 예산 여유에서 미리 뺐습니다`);
   const verdict=f.avail>=f.cap?`국내 선수 연봉으로 샐러리캡(${money(f.cap)})까지 써도 버틸 수 있습니다.`:f.avail>=f.cap*.75?`국내 선수 연봉은 ${money(f.avail)} 안쪽이 안전합니다. 샐러리캡(${money(f.cap)})을 꽉 채우면 적자입니다.`:`국내 선수 연봉에 쓸 수 있는 돈은 ${money(Math.max(0,f.avail))} 정도입니다. 샐러리캡(${money(f.cap)})보다 한참 적으니, 비싼 선수를 여럿 뽑으면 적자가 납니다.`;
   mail('구단주실',`${B.own.name} 회장: 창단을 함께해 주셔서 반갑습니다`,`${tname(G.user)} 창단 단장으로 와 주셔서 반갑습니다. ${OWNVOICE[t.owner]}\n\n올해 구단 재정 전망입니다.\n${L.map(x=>'· '+x).join('\n')}\n\n${verdict}\n\n리그가 국내 선수 전원을 다시 나누는 창단 드래프트를 엽니다. 선수 연봉과 계약은 그대로 따라오니 재정을 보면서 뽑아 주세요. 준비되면 시작하겠습니다.`,{kind:'구단주',imp:false,acts:[{l:'창단 드래프트 시작',a:'fdBegin'}]});
   addLog(`${tname(G.user)} 창단 단장으로 부임했습니다.`); }
@@ -10898,10 +10898,12 @@ function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; 
 const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
-/* 앞 순번 받기(구단 고를 때 선택): k순위를 받는 대신 3시즌 긴축. 원래 k순위 구단은 우리 자리로. 구단주는 수익 우선으로 바뀌고, 모기업 지원 한도가 줄고, 시작 현금이 적다 */
-const FD_AUST={1:{r:.3,cash:2000},2:{r:.2,cash:2500},3:{r:.1,cash:3000}}, FD_AUST_Y=3;
-function fdAustApply(tid,k){ const A=FD_AUST[k], O=G.fdOrd, t=team(tid); if(!A||!O)return; const i=O.indexOf(tid); if(i<=k-1)return; [O[i],O[k-1]]=[O[k-1],O[i]]; t.owner='profit'; t.cash=A.cash; t.aust={k,r:A.r,y0:G.year,y1:G.year+FD_AUST_Y-1}; }
+/* 창단 지명 순번은 단장이 먼저 고른다(구단 고르기 전). 앞 순번은 긴축, 뒤 순번은 지원 보너스. 3시즌 동안. 나머지 9개 구단은 돈이 적은 순서(fdOrder)로 남은 자리를 채운다
+   d: 모기업 지원 한도 증감, cash: 시작 현금, strict: 구단주 수익 우선·승인 확률 낮음 */
+const FD_SLOT={1:{d:-.3,cash:2000,strict:1},2:{d:-.2,cash:2500,strict:1},3:{d:-.1,cash:3000,strict:1},4:{d:-.05,cash:3500},5:{d:0,cash:4000},6:{d:0,cash:4000},7:{d:.05,cash:4500},8:{d:.08,cash:4800},9:{d:.12,cash:5200},10:{d:.15,cash:5500}}, FD_AUST_Y=3;
+function fdAustApply(tid,k){ const A=FD_SLOT[k], O=G.fdOrd, t=team(tid); if(!A||!O)return; const i=O.indexOf(tid); if(i<0)return; O.splice(i,1); O.splice(k-1,0,tid); t.cash=A.cash; if(A.strict)t.owner='profit'; if(A.d||A.strict)t.aust={k,d:A.d,strict:!!A.strict,y0:G.year,y1:G.year+FD_AUST_Y-1}; }
 function austOn(t){ return t&&t.aust&&sponSeason()<=t.aust.y1?t.aust:null; }
+function austTxt(a){ return a.d<0?`긴축 ${Math.round(-a.d*100)}% 감액`:a.d>0?`지원 ${Math.round(a.d*100)}% 증액`:'긴축'; }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
 function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
   G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
@@ -11361,7 +11363,7 @@ function offerMailDone(oid){ for(const m of G.mail) if(m.oid===oid)m.read=true; 
 function wire(kind,t,o){ o=o||{}; const w={d:G.day,k:kind,t,tid:o.tid??null,ref:o.ref??null}; if(o.x)w.x=o.x; (G.wire=G.wire||[]).unshift(w); if(G.wire.length>150)G.wire.length=150; }
 function addLog(t){ G.log.unshift({y:G.year,d:G.day,t}); G.log=G.log.slice(0,80); }
 function updateModes(){ const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r); rs.forEach((x,i)=>team(x.id).mode=i<6?'contend':i<8&&R()<.5?'contend':'rebuild'); for(const t of G.teams){ if(G.user!=null&&t.id!==ME()&&t.cash<-5000)t.mode='rebuild'; } }
-function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.5+t.trust/100)*(1-((austOn(t)||{}).r||0)))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
+function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.5+t.trust/100)*(1+((austOn(t)||{}).d||0)))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
 /* 상한 초과 제재(2025년 개정 규정): 1회 초과분 30%, 2회 연속 50%, 3회 연속 100% + 다음 해 1라운드 지명권 9단계 하락 */
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
@@ -14111,7 +14113,7 @@ function grantAmt(y){ return sum(grants().filter(g=>g.y===(y??G.year)&&g.ok).map
 function ownAskLeft(){ const o=dobj(G.day); const mk=o.y*100+o.m; return grants().some(g=>g.mk===mk&&g.by==='gm')?0:1; }
 /* 성사 가능성: 신뢰, 구단주 성향, 순위, 목적 */
 function ownOdds(amt,pur){ const t=team(G.user); if(t.indie)return 0; const ow=t.owner; const rk=uRank(); let p=.35+(t.trust-50)/80;
-  const contend=rk<=5||teamCtx(t).contend; if(ow==='win')p+=contend?.2:-.05; if(ow==='profit')p-=.18; if(austOn(t))p-=.1; if(ow==='pr')p+=.05;
+  const contend=rk<=5||teamCtx(t).contend; if(ow==='win')p+=contend?.2:-.05; if(ow==='profit')p-=.18; if(austOn(t)?.strict)p-=.1; if(ow==='pr')p+=.05;
   if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(q){ if(ovr(q)>=62)p+=ow==='pr'?.2:.1; } p+=.08; } if(pur&&pur.k==='frep')p+=.05;
   { const ex=budgetExtra(); if(ex>0)p+=clamp(ex/Math.max(500,amt),0,1)*.2; } /* 예상보다 수입이 늘었으면(관중·광고) 구단주도 더 내줄 여유가 있다 */
   p-=Math.max(0,amt-1000)/4000; const asked=grants().filter(g=>g.y===G.year&&g.by==='gm').length; p-=asked*.08; p+=cwRapMod(); /* 구단주·사장 친밀도(동석 관람) */ return clamp(p,.03,.92); }
@@ -15696,7 +15698,7 @@ function pressTips(){ if(G.unemp)return; const r=pressInit().filter(x=>x.rel>=70
    - 모기업 투자 요청(훈련 시설): 구단주 신뢰·성향·금액에 따라 승인. 거절되면 신뢰 -1, 60일 뒤 다시 요청
    - 지자체 분담 협의(구장): 승인되면 지자체가 절반을 낸다. 구단 인기·팬 여론이 높을수록 잘 된다 */
 function capexState(){ return G.capex=G.capex||{last:{}}; }
-function capexOdds(kind,c){ const t=team(G.user); if(kind==='fac'){ if(t.indie)return 0; return clamp(.3+(t.trust-50)/70+({win:.12,pr:.05,profit:-.15}[t.owner]||0)-(austOn(t)?.15:0)-c/30000+cwRapMod(),.05,.9); }
+function capexOdds(kind,c){ const t=team(G.user); if(kind==='fac'){ if(t.indie)return 0; return clamp(.3+(t.trust-50)/70+({win:.12,pr:.05,profit:-.15}[t.owner]||0)-(austOn(t)?.strict?.15:0)-c/30000+cwRapMod(),.05,.9); }
   return clamp(.35+(t.pop-1)*.4+((G.pr?G.pr.fan:55)-55)/100,.1,.8); }
 function capexAsk(kind,k){ const S=capexState(); const key=kind; if(S.last[key]!=null&&G.day-S.last[key]<60)return `다시 요청하려면 ${dmd(S.last[key]+60)}까지 기다려야 합니다.`; const t=team(G.user);
   if(kind==='fac'){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; if(lv>=FAC_MAX)return '이미 최고 단계입니다.'; if(G.fac.bld[k])return '이미 공사 중입니다.'; if(Object.keys(G.fac.bld).length>=2)return '공사는 동시에 2곳까지만 할 수 있습니다.'; if(t.indie)return '독립구단은 모기업이 없습니다. 보유 현금으로만 지을 수 있습니다.';
@@ -19086,6 +19088,11 @@ function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; set
   }catch(e){ console.error(e); UI.worldErr=true; } finally{ G=G0; UI.worldBusy=false; render(); } },60); }
 const SLK={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜',P:'투수'};
 const G0Y=()=>2026; const eok=v=>`${Math.round(v/100)}억`;
+/* 창단 지명 순번 고르기(구단 고르기 전). 조건은 FD_SLOT(11_founding_draft.js) */
+function fdSlotPick(){ if(typeof FD_SLOT==='undefined')return ''; const cur=UI.fdPk||0, pc=d=>d<0?`${Math.round(-d*100)}% 감액`:d>0?`${Math.round(d*100)}% 증액`:'그대로';
+  return `<section class="card fdpk${UI.fdNeed?' need':''}"><h2 class="sec">창단 지명 순번</h2><p class="small">${UI.fdNeed?'<b class="bad">먼저 순번을 고르세요.</b> ':''}앞 순번은 ${FD_AUST_Y}시즌 동안 긴축, 뒤 순번은 지원 보너스입니다. 1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 독립구단은 지원이 없어 현금만 달라집니다.</p>
+    <div class="chips optrow" role="group">${Object.keys(FD_SLOT).map(k=>`<button type="button" data-a="fdPk" data-v="${k}" class="${+k===cur?'on':''}" aria-pressed="${+k===cur}">${k}순위</button>`).join('')}</div>
+    ${cur?`<p class="small"><b>${cur}순위:</b> 모기업 지원 한도 ${pc(FD_SLOT[cur].d)}(${FD_AUST_Y}시즌) · 시작 현금 ${eok(FD_SLOT[cur].cash)}${FD_SLOT[cur].strict?' · 구단주 수익 우선':''}</p>`:''}<details class="frule"><summary class="small">순번별 조건 전체</summary><div class="tw"><table><thead><tr><th>순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th></tr></thead><tbody>${Object.entries(FD_SLOT).map(([k,A])=>`<tr${+k===cur?' class="on"':''}><td>${k}순위${A.strict?' · 긴축':''}</td><td>${pc(A.d)}</td><td>${eok(A.cash)}</td></tr>`).join('')}</tbody></table></div></details></section>`; }
 function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d,i)=>`<button class="item wa" data-a="start" data-v="${i}">${badge(i,34)}<span class="nm"><b>${d.city} ${d.nick}</b></span><span class="rt small muted">선택</span></button>`).join('')}</div>`;
   if(!UI.world){ ensureWorld(); return `<div class="worldload"><span class="spin"></span><p>리그를 만드는 중입니다. 10개 구단 선수단을 만들고 지난 시즌 144경기를 치르고 있습니다.</p></div>`; }
   const P=[...UI.world.preview].sort((a,b)=>a.proj-b.proj); const OL={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
@@ -19098,16 +19105,15 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
       <div class="tp-t">${tight?'<span class="pill bad">재정 압박 구단</span>':''}${[x.age<=27.8?'젊은 선수단':x.age>=28.8?'노장 위주':'', x.young?`24세 이하 1군급 ${x.young}명`:'', x.vets>=2?`33세 이상 주전급 ${x.vets}명`:'', x.faSoon?`FA 앞둔 주전 ${x.faSoon}명`:'', d.indie?'모기업 지원 없음':''].filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join('')}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
   if(UI.smode==='fd'){ const OLV={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
     const P2=[...UI.world.preview].sort((a,b)=>((b.fin||{}).avail||0)-((a.fin||{}).avail||0));
-    const ORD=UI.world.fdOrd&&UI.world.fdOrd.length?UI.world.fdOrd:[...UI.world.preview].map(x=>({tid:x.tid,v:((x.fin||{}).avail||0)+hn('fdo'+G0Y(),x.tid)*30})).sort((a,b)=>a.v-b.v).map(x=>x.tid);
     const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=x.fin||{}; const ri=P2.indexOf(x), ok=ri<3, mid=ri<7; /* 난이도는 10개 구단 안에서 자금 여유 순위로(모두 캡을 넘겨 다 '쉬움'으로 보이던 문제) */ const age=G0Y()-(STAD_BUILT[x.tid]||2000);
       return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
         <div class="tp-r tp-rf ${ok?'hi':mid?'mid':'lo'}"><i>샐러리캡 대비 여유</i><b>${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>연봉 예산 ${eok(Math.max(0,f.avail||0))} · 자금 ${ri+1}위</span></div></div>
-        <p class="tp-sum">${(()=>{ const o=(ORD.indexOf(x.tid)+1); return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', o<=3?'지명 빠름':o>=8?'지명 늦음':'지명 중간', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
-        <div class="tp-g"><span><i>창단 지명 순서</i><b>1라운드 ${(ORD.indexOf(x.tid)+1)}번째</b></span><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
+        <p class="tp-sum">${(()=>{ return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
+        <div class="tp-g"><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
           <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>${typeof uniRow==='function'?`<div class="tp-uni">${uniRow(x.tid,{sz:64})}</div>`:''}
-        <div class="tp-t"><span class="pill ${ok?'good':mid?'':'bad'}">난이도 ${ok?'쉬움':mid?'보통':'어려움'}</span><span class="pill">1라운드 ${(ORD.indexOf(x.tid)+1)}번째 지명</span>${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
-    return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 차이는 돈과 시장입니다. 구단을 고른 뒤 예산을 줄이는 대신 1~3순위 지명을 받을 수도 있습니다.</p><details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">예산 여유가 적은 구단일수록 먼저 지명하고, 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
+        <div class="tp-t"><span class="pill ${ok?'good':mid?'':'bad'}">난이도 ${ok?'쉬움':mid?'보통':'어려움'}</span>${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
+    return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 차이는 돈과 시장입니다. 먼저 창단 지명 순번을 고르고, 그다음 구단을 고릅니다.</p>${fdSlotPick()}<details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">우리 순번은 위에서 고르고, 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다. 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
     <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>`; }
   return `<p class="small muted">예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
     <div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
@@ -24327,7 +24333,7 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
     <div class="bud-big"><span>${b.indie?'적자 없이':'구단주 목표 안에서'} 예산 여유</span>${big}</div>
     <div class="bud-bar">${segs.map(([k,v,l])=>v>0?`<span class="sg ${k}" style="width:${w(v)}" title="${l} ${money(v)}"></span>`:'').join('')}<span class="mk" style="left:${w(b.E)}"><i>예상 지출 ${money(b.E)}</i></span></div>
     <div class="bud-lg">${segs.map(([k,v,l])=>v>0?`<span><i class="${k}"></i>${l} ${money(v)}</span>`:'').join('')}</div>
-    <div class="bud-t"><div><span>예상 수입</span><b>${money(b.I)}</b></div><div><span>예상 지출</span><b>${money(b.E)}</b></div><div><span>모기업 지원 예상</span><b class="${!b.indie&&b.support>b.goalSup?'bad':''}">${b.indie?'없음':money(b.support)}</b>${b.indie?'':`<em>한도 ${money(b.cap)}${(()=>{ const a=austOn(team(G.user)); return a?` · 긴축 ${Math.round(a.r*100)}% 감액(${a.y1}년까지)`:''; })()}</em>`}</div><div><span>결산 후 예상 현금</span><b class="${b.endCash<0?'bad':''}">${money(b.endCash)}</b></div></div>
+    <div class="bud-t"><div><span>예상 수입</span><b>${money(b.I)}</b></div><div><span>예상 지출</span><b>${money(b.E)}</b></div><div><span>모기업 지원 예상</span><b class="${!b.indie&&b.support>b.goalSup?'bad':''}">${b.indie?'없음':money(b.support)}</b>${b.indie?'':`<em>한도 ${money(b.cap)}${(()=>{ const a=austOn(team(G.user)); return a&&a.d?` · ${austTxt(a)}(${a.y1}년까지)`:''; })()}</em>`}</div><div><span>결산 후 예상 현금</span><b class="${b.endCash<0?'bad':''}">${money(b.endCash)}</b></div></div>
     <p class="small expl">${supTxt}</p>
     <p class="small expl"><b>시즌 예산은 ${b.lockD!=null?dsh(b.lockD):'시즌 시작 때'} 확정됐습니다.</b> 구단주 지원과 예상 수입(입장·중계·광고·스폰서)을 그때 기준으로 정해 두고, 시즌 중에 성적이 좋아 신뢰나 수입이 늘어도 예산 여유는 늘지 않습니다. 더 쓰려면 구단주에게 추가 지원을 받아야 합니다(구단 → 구단주).${b.extra>0?` 지금까지 예상보다 수입이 <b class="ok">${money(b.extra)}</b> 더 들어왔습니다. 이 돈은 구단 몫이고, 구단주에게 요청할 때 근거가 됩니다(승인 가능성이 오릅니다).`:b.extra<0?` 수입이 예상보다 ${money(-b.extra)} 덜 들어오고 있습니다(결산 때 적자 보전이 그만큼 늘어납니다).`:''}</p>
     <p class="small muted">자금이 마이너스가 되면 구단주 신뢰가 크게 떨어집니다. 지원 한도와 보유 현금까지 모두 쓰면 최대 ${money(b.roomMax)}까지 더 쓸 수 있습니다. 새로 맺는 계약은 올해 남은 기간(${Math.round(b.rem*100)}%)만큼만 올해 예산에 잡힙니다.</p></section>
@@ -27231,16 +27237,7 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];
   return `<div class="gut"><div class="wrap" style="max-width:640px"><button class="lnk tsback" data-a="tsGo" data-v="team">← 구단 다시 고르기</button>
-    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(d.city)} ${esc(d.nick)} · `:''}단장 소개</h2>${fdPkView(v)}<section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
-/* 앞 순번 받기: 구단을 고른 뒤 조건을 먼저 보여 주고 고르게 한다(엔진 FD_AUST, 11_founding_draft.js) */
-function fdPkView(v){ const O=UI.world&&UI.world.fdOrd; if(!O||typeof FD_AUST==='undefined')return ''; const base=O.indexOf(v)+1; if(base<=1)return '';
-  const ks=[1,2,3].filter(k=>k<base); const cur=ks.includes(UI.fdPk)?UI.fdPk:0; UI.fdPk=cur; const ind=TEAM_DEF[v].indie;
-  const rows=ks.map(k=>{ const A=FD_AUST[k]; return `<tr${cur===k?' class="on"':''}><td>${k}순위</td><td>${ind?'없음(모기업 없음)':`${Math.round(A.r*100)}% 감액`}</td><td>${eok(A.cash)}</td><td>${tshortDef(O[k-1])} → ${base}순위</td></tr>`; }).join('');
-  return `<section class="card fdpk"><h2 class="sec">창단 지명 순번</h2><p class="small">기본은 1라운드 <b>${base}번째</b>입니다. 앞 순번을 받으면 ${FD_AUST_Y}시즌 동안 긴축 구단으로 운영합니다.</p>
-    <div class="chips optrow" role="group">${[0,...ks].map(k=>`<button type="button" data-a="fdPk" data-v="${k}" class="${cur===k?'on':''}" aria-pressed="${cur===k}">${k?`${k}순위 받기`:`기본(${base}순위)`}</button>`).join('')}</div>
-    <div class="tw"><table><thead><tr><th>받는 순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th><th>자리를 바꾸는 구단</th></tr></thead><tbody><tr${cur?'':' class="on"'}><td>기본 ${base}순위</td><td>그대로</td><td>${eok(4000)}</td><td>-</td></tr>${rows}</tbody></table></div>
-    <p class="small muted">앞 순번을 받으면 구단주가 <b>수익 우선</b> 성향으로 바뀌고, 시설 투자·추가 지원 요청의 승인 가능성이 낮아집니다. 라운드마다 순서가 뒤집히므로 2라운드에는 늦게 뽑습니다.</p></section>`; }
-const tshortDef=i=>TEAM_DEF[i]?`${TEAM_DEF[i].city} ${TEAM_DEF[i].nick}`:'';
+    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(d.city)} ${esc(d.nick)} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
 /* 사이드바 '단장 프로필' */
 /* 야인이어도 돌아보는 경력: 시즌별 재임 구단·순위·성적, 퇴임 시점 마지막 시즌 결산 */
 function meCareerSeasons(C){ const S=(C&&C.seas||[]).slice().reverse(); if(!S.length)return ''; return csec('시즌별 경력',`<div class="tw"><table><thead><tr><th>시즌</th><th>구단</th><th>순위</th><th>성적</th><th></th></tr></thead><tbody>${S.map(x=>`<tr><td>${x.y}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.rank}위</td><td>${x.w}승 ${x.l}패</td><td>${x.ch===1?'<span class="pill good">우승</span>':x.ch===2?'<span class="pill">준우승</span>':''}</td></tr>`).join('')}</tbody></table></div>`); }
@@ -27258,8 +27255,8 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
   const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small primary" data-a="go" data-v="club:build">보기</button></div></section>`;
   return head+tb+(G.unemp?'':personalLifeView())+card+stints+quit; }
 Object.assign(A,{
-  fdPk(v){ UI.fdPk=+v; render(); },
-  start(v){ UI.fdPk=0; UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
+  fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
+  start(v){ if(UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; render(); },
   gpPart(v){ const g=gpSync(); const [k,d]=String(v).split(':'); const L=gpPartList(k,g); g.mod=g.mod||{}; const i=g.mod[k]!=null?L.indexOf(g.mod[k]):-1; g.mod[k]=L[((i<0?(+d>0?-1:0):i)+ +d+L.length)%L.length]; render(); },
@@ -27456,8 +27453,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
-  {id:'2026-11-05k',d:'11월 5일',t:'창단 지명 앞 순번 받기',items:[
-    '구단을 고른 뒤 단장 소개 화면에서 창단 드래프트 1~3순위를 받을 수 있습니다. 대신 3시즌 동안 긴축 구단이 됩니다: 모기업 지원 한도 감액(1순위 30%·2순위 20%·3순위 10%), 시작 현금 감소, 구단주 수익 우선, 시설·추가 지원 승인 가능성 낮음. 원래 그 순번 구단은 우리 자리로 갑니다.']},
+  {id:'2026-11-05k',d:'11월 5일',t:'창단 지명 순번을 먼저 고릅니다',items:[
+    '창단 드래프트는 구단보다 지명 순번(1~10)을 먼저 고릅니다. 앞 순번은 3시즌 동안 모기업 지원 한도 감액(1순위 30%)과 적은 시작 현금, 뒤 순번은 지원 증액(10순위 15%)과 많은 시작 현금입니다. 1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다.']},
   {id:'2026-11-05j',d:'11월 5일',t:'실사 유니폼·모자',items:[
     '구단 소개(구단 선택 자세히·구단 정보·연대기)와 국가대표 화면의 유니폼·모자를 실사 사진 그림으로 바꿨습니다. 10개 구단 홈·원정이 구단마다 다른 디자인입니다.']},
   {id:'2026-11-05i',d:'11월 5일',t:'휴대폰 끌기·목록 공간',items:[
