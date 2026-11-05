@@ -37,12 +37,13 @@ def v3():
     slot={k:{n:v['rect']+[v['max_font_size'],v['fill'],A3[k]['view_box'][2]] for n,v in A3[k]['text_slots'].items() if n in ('department','honoree_name','record_value')} for k in ids}
     return {'svg':{k:s3(k) for k in ids},'slot':{k:v for k,v in slot.items() if v},'stage':w3('awards_stage',1280),'bracket':w3('postseason_bracket_background',1280)}
 D5=os.path.join(ROOT,'assets','v5'); A5=json.load(open(os.path.join(D5,'manifest.json'),encoding='utf8'))['assets']
-def w5(id,w):
+D5B=os.path.join(ROOT,'assets','v5b'); A5B=json.load(open(os.path.join(D5B,'manifest.json'),encoding='utf8'))['assets']
+def w5(id,w,base=None):
     """v5 실사 PNG(투명) → 표시 크기의 약 2배 WebP. 원본 512를 줄여 넣는다"""
-    im=Image.open(os.path.join(D5,A5[id]['png'][max(A5[id]['png'],key=int)])).convert('RGBA'); im=im.resize((w,round(im.height*w/im.width)),Image.LANCZOS); o=io.BytesIO(); im.save(o,'WEBP',quality=78,method=6); return 'data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode()
+    A=(A5B if base=='b' else A5); im=Image.open(os.path.join(D5B if base=='b' else D5,A[id]['png'][max(A[id]['png'],key=int)])).convert('RGBA'); im=im.resize((w,round(im.height*w/im.width)),Image.LANCZOS); o=io.BytesIO(); im.save(o,'WEBP',quality=78,method=6); return 'data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode()
 def kit(t):
-    """v5 실사 유니폼(번호 없는 앞면)·모자. 구단 key로 찾는다. 홈/원정 구분"""
-    k=t['key']; return {'h':w5(k+'_home_front',240),'a':w5(k+'_away_front',240),'c':w5(k,240)}
+    """v5b 실사 유니폼(주름 수정판, 번호 없는 앞면)·v5 모자. 구단 key로 찾는다. 홈/원정 구분"""
+    k=t['key']; return {'h':w5(k+'_home_front',240,'b'),'a':w5(k+'_away_front',240,'b'),'c':w5(k,240)}
 uni={}; seen=set()
 for t in M3['teams']:
     ids=[i for i,(c,n) in enumerate(TD) if c+' '+n==t['name']]
