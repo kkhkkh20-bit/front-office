@@ -1,0 +1,276 @@
+{
+  "algorithm": "sha256",
+  "excluded": [
+    "checksums.json"
+  ],
+  "files": {
+    "ASSET_PREVIEW.png": {
+      "sha256": "438245d24ada89afc9360232d60512ab66a7eac54c8c53a4dc285b68cffe3b37",
+      "bytes": 2307766
+    },
+    "CLAUDE_HANDOFF.md": {
+      "sha256": "01afcfe7d83af97cf7ac7da9bf9dc29707872f4b9625be3b0b85948f443f0ba5",
+      "bytes": 2496
+    },
+    "README.md": {
+      "sha256": "177a86f6428583d605f19c406ee6af91c7fc1de9d12c87b79d357efada03f19d",
+      "bytes": 2148
+    },
+    "REFERENCE_NOTES.md": {
+      "sha256": "d93f27729cbaa560fb58b476fd735260cebe6cf4c453f9042cbb795069650746",
+      "bytes": 1846
+    },
+    "caps/png/128/korea.png": {
+      "sha256": "20c2b7a8bd4bfa747a9dae1001993bcd40024281261bfc8717c6064f479ecfef",
+      "bytes": 8864
+    },
+    "caps/png/256/korea.png": {
+      "sha256": "82b2ab9a8f22d29bea95f3de9408c1fe35b87f5c79b4ff86510633553edb688b",
+      "bytes": 25893
+    },
+    "caps/png/512/korea.png": {
+      "sha256": "546607b097fef9112ad702baf2c3241b13a29600fba6a17e8094a1774ae5b6a0",
+      "bytes": 70938
+    },
+    "caps/webp/128/korea.webp": {
+      "sha256": "cb0b546df1c6ff78af9dc39f6f79e922f76560569b799ed1e6446e9b2f150d93",
+      "bytes": 6544
+    },
+    "caps/webp/256/korea.webp": {
+      "sha256": "c9918dcc9a7a8be0b13c31f5bd41c4cb74aa98f7d41533d78337d46a3e9e763f",
+      "bytes": 17340
+    },
+    "caps/webp/512/korea.webp": {
+      "sha256": "1f81f6ab5323dd4f3e0cc641c0dcfd0c6633c4f859eda5c6a4f1669d04b8b237",
+      "bytes": 44894
+    },
+    "face_kits/png/128/korea_away_kit_overlay.png": {
+      "sha256": "8a1cebda84fec7abbf944852bf397cd74b764e67e817e1d8c7b96b2a69c6e976",
+      "bytes": 11995
+    },
+    "face_kits/png/128/korea_kit_overlay.png": {
+      "sha256": "b1e6493f43fddd07179ab243f829714ef581abe0bfb5fc3999198adb2f7b7bd0",
+      "bytes": 13377
+    },
+    "face_kits/png/256/korea_away_kit_overlay.png": {
+      "sha256": "272cdb2693e9393b1ad58a468d6543f1d1650a5de3065c69289683a2a41f21e4",
+      "bytes": 40123
+    },
+    "face_kits/png/256/korea_kit_overlay.png": {
+      "sha256": "4f4c52ff49c0ba2c84950057bc2c2466b7951e11f659aedca8b97872892e266b",
+      "bytes": 44458
+    },
+    "face_kits/png/512/korea_away_kit_overlay.png": {
+      "sha256": "b3cb8606dc0cc1a0861adf9c63ba33126a005cd940bf359d48e4853678c08728",
+      "bytes": 146849
+    },
+    "face_kits/png/512/korea_kit_overlay.png": {
+      "sha256": "7220041737f1ae263a41d86706eb440014580222a60da9bdb6a5232c33aa72ef",
+      "bytes": 165907
+    },
+    "face_kits/webp/128/korea_away_kit_overlay.webp": {
+      "sha256": "56c2d3ec70384f097a6bcd1b0d34cd03ac2c9efdb4f38488125a740f09ee2b79",
+      "bytes": 8574
+    },
+    "face_kits/webp/128/korea_kit_overlay.webp": {
+      "sha256": "91d045b7cb4506c1c5957b51ffa8698473923dc22d81bdbdfcdda715b79f5286",
+      "bytes": 8952
+    },
+    "face_kits/webp/256/korea_away_kit_overlay.webp": {
+      "sha256": "0997426d47069009b18d80e4a4f9843a195529796ebb966dbe9a86d99eccd9b7",
+      "bytes": 28368
+    },
+    "face_kits/webp/256/korea_kit_overlay.webp": {
+      "sha256": "a1758e1ced8d889789b9e1e31407a44be1825c398d769d0430ca4e80b571275a",
+      "bytes": 29984
+    },
+    "face_kits/webp/512/korea_away_kit_overlay.webp": {
+      "sha256": "33de35a634eb17da00a134d3e3689c9da36da892de3eea082b90c972439a9a62",
+      "bytes": 99140
+    },
+    "face_kits/webp/512/korea_kit_overlay.webp": {
+      "sha256": "3c9344b61a6b4ab44ee888461ca2a98c6359491ec1a87e541e1cba1fa9c89711",
+      "bytes": 106428
+    },
+    "face_marks/png/128/korea_away_chest.png": {
+      "sha256": "d841440eab46d022295a233f7810eeaf44a891f54c98b151a57bb33403f2ceff",
+      "bytes": 1168
+    },
+    "face_marks/png/128/korea_cap.png": {
+      "sha256": "82d9d6749410326e6eabadaa0997468acb82705408fa5c7031618576fbc4636c",
+      "bytes": 946
+    },
+    "face_marks/png/128/korea_chest.png": {
+      "sha256": "8e3a2e651b9f9a93e6e8bae15534b2e3e8f9e146b8d1fd8fc4f1a77c9ffb5093",
+      "bytes": 1249
+    },
+    "face_marks/png/256/korea_away_chest.png": {
+      "sha256": "fb690f0a9c03787a2678941fe614836d9ac90ae13096587c6b510df14afeb4aa",
+      "bytes": 3235
+    },
+    "face_marks/png/256/korea_cap.png": {
+      "sha256": "d818cbd6ac64ba829ba2ec0b418a1bdbf069af14cb738e5fd3f9ecbe2cff6f73",
+      "bytes": 2484
+    },
+    "face_marks/png/256/korea_chest.png": {
+      "sha256": "f49369d7c1029c87e8072576179fea77f891203949b0f99b0cff9f7e68542b9f",
+      "bytes": 3249
+    },
+    "face_marks/png/512/korea_away_chest.png": {
+      "sha256": "b7d5717ffdd4a1808677cca8c552c841ed97f8c80d2a92c05e64d935036758a9",
+      "bytes": 8880
+    },
+    "face_marks/png/512/korea_cap.png": {
+      "sha256": "d9ce7101eb9e7df62b1962dc5d02ed8fb949550c06a3acb6c4d87f9defd40d19",
+      "bytes": 6626
+    },
+    "face_marks/png/512/korea_chest.png": {
+      "sha256": "0a33df9d82abca0a662a12ef3949d319a9bf0faa7cb68e8d6dd8c5c2d8377f1d",
+      "bytes": 8431
+    },
+    "face_marks/webp/128/korea_away_chest.webp": {
+      "sha256": "dbc15ad9e7626cf93b90b37bc46307c49f3e3f1301ea8df130470a5cc2ef916f",
+      "bytes": 836
+    },
+    "face_marks/webp/128/korea_cap.webp": {
+      "sha256": "8b9a2dc6be3fe9a25e359ffac929e2a37719c9049786f74ac7c6b36ad9d88d0d",
+      "bytes": 640
+    },
+    "face_marks/webp/128/korea_chest.webp": {
+      "sha256": "28cb09cc12d02bd2fd65146715cf981d20c9245ba36e914e9e7c989c403b4ca5",
+      "bytes": 828
+    },
+    "face_marks/webp/256/korea_away_chest.webp": {
+      "sha256": "dbb2109f70de0b38cd1368a0389701c72deeaee0d1de6bcc7a99210e025d6e38",
+      "bytes": 2122
+    },
+    "face_marks/webp/256/korea_cap.webp": {
+      "sha256": "b557f7459fb4435c7dbb17424b1129ffd89774afda093e8ed1a4a3c650e9139c",
+      "bytes": 1618
+    },
+    "face_marks/webp/256/korea_chest.webp": {
+      "sha256": "b465254037fb3fb75b56565018b2e7b358dacb20a8a93d884dbccbc836a8e3b4",
+      "bytes": 2082
+    },
+    "face_marks/webp/512/korea_away_chest.webp": {
+      "sha256": "5b80672d8806de4de4c35e7f54339c237934444787df47bc19317cfd9cb3bede",
+      "bytes": 5990
+    },
+    "face_marks/webp/512/korea_cap.webp": {
+      "sha256": "4ec14c55e2cf7e007b522c71b72eb8f59492f0e74568cd28c35384671eb8199a",
+      "bytes": 4140
+    },
+    "face_marks/webp/512/korea_chest.webp": {
+      "sha256": "23ffb7f7ae5ad88f8c3102fff5a7f35d28c5e4ced8a832cf4337266c295f059b",
+      "bytes": 5660
+    },
+    "manifest.json": {
+      "sha256": "5d86155abd4a12eef56cad4bbc3ca3ad1a9ba35cc4ffb28dd957125e51122220",
+      "bytes": 20258
+    },
+    "previews/flag_detail.png": {
+      "sha256": "c5939ee7a60f0a7eba98860f8101bc5574f25e7981012c0e909146d14219e389",
+      "bytes": 313811
+    },
+    "previews/text_slots.png": {
+      "sha256": "657c2d66a6490e9cafe383ec15e79756a8f57c8ec10ab1d14b10515a1928a8ca",
+      "bytes": 370916
+    },
+    "source/k_away.svg": {
+      "sha256": "96e674b1ef0760e3f77646f282ce089aa0056801bbb4bb20aac91d5fb7bee8ba",
+      "bytes": 446
+    },
+    "source/k_home.svg": {
+      "sha256": "42f5a5f3c82ee1d7c6db70bd0db370e6a43465fa7ffb4a8767c991565d722d49",
+      "bytes": 446
+    },
+    "source/korea_embroidery.blend": {
+      "sha256": "6b8c99d42b2dc929753a9d75c4fe92ffd893a324257bdbdebdda960ebf4d96dc",
+      "bytes": 869724
+    },
+    "source/korea_wordmark_away.svg": {
+      "sha256": "d8988a0a14ecd2d192b1395f3e0f9c39153efe20250c4ffdca4c5174fd957543",
+      "bytes": 972
+    },
+    "source/korea_wordmark_home.svg": {
+      "sha256": "a3a040861ac6efeb21d37f96b1bd8268bea28602c3a06926ede14d8b243cbcb6",
+      "bytes": 972
+    },
+    "source/render_metadata.json": {
+      "sha256": "1aca6250b48668952ae379567ef1183b9c0b102a1610dd3245a5bc7102eb862d",
+      "bytes": 1045
+    },
+    "source/taegeukgi.svg": {
+      "sha256": "cc39b7490a894db19113b999831ebf252e1043516c31b4af0fcf4d95e11b15cd",
+      "bytes": 551
+    },
+    "uniforms/png/256/korea_away_back.png": {
+      "sha256": "4ba96571ada055562170ff181ffb2a4b989b614a749b4d5509d9e0dc88fc26aa",
+      "bytes": 52512
+    },
+    "uniforms/png/256/korea_away_front.png": {
+      "sha256": "3fc8b442be19ef656a5550c00ab02cd4e749fb94f52aa685a9595120bd4c764f",
+      "bytes": 62767
+    },
+    "uniforms/png/256/korea_home_back.png": {
+      "sha256": "1a1fefb80f7054fa5ed65dc92448a19c123a600d7251f635c3a3112ce25b614a",
+      "bytes": 54009
+    },
+    "uniforms/png/256/korea_home_front.png": {
+      "sha256": "a79f8570f5a05bf9000dfccd0552a152f320e111d962f4f50bb9f7e04ddb6df6",
+      "bytes": 64914
+    },
+    "uniforms/png/512/korea_away_back.png": {
+      "sha256": "e4b0964b8c449d649a0e62e773af275fb77ef48a4bb4525163e849697ba4b1bd",
+      "bytes": 204279
+    },
+    "uniforms/png/512/korea_away_front.png": {
+      "sha256": "c41a642b9aac8d9a73ee7894dbbe97a1b611c0447d8922597744de800e3d40cf",
+      "bytes": 229286
+    },
+    "uniforms/png/512/korea_home_back.png": {
+      "sha256": "8cd236e0b7a2a6a892a6b779337ef739c93f9d1fd38c79dc1d1645247790ba65",
+      "bytes": 210615
+    },
+    "uniforms/png/512/korea_home_front.png": {
+      "sha256": "9c4501c965ddb4ebd39011880c7657337a1ccd411bdb5a6d1da3982a0bb90e11",
+      "bytes": 236307
+    },
+    "uniforms/webp/256/korea_away_back.webp": {
+      "sha256": "9afcae5d0dec672eb897ebb6ff56df65dd186f794ac1b3bde120a31094c56039",
+      "bytes": 37144
+    },
+    "uniforms/webp/256/korea_away_front.webp": {
+      "sha256": "7f1f1a7876fa120ce755b3039ec672001e621d11a0f3e8aafef6814615d3290c",
+      "bytes": 45448
+    },
+    "uniforms/webp/256/korea_home_back.webp": {
+      "sha256": "41cb67def19c189a64812b819768211cb3ff2ee84c1f99a67a197c16d08f95f6",
+      "bytes": 37330
+    },
+    "uniforms/webp/256/korea_home_front.webp": {
+      "sha256": "ecd40b53bb5b6664481a16a6a45877bb0243f61188cf31a8f86701dfd3043cd8",
+      "bytes": 45712
+    },
+    "uniforms/webp/512/korea_away_back.webp": {
+      "sha256": "189c5d70e887bcb6ee863df81c02a2918190035953dc7aebbf01ed2f5a77d90d",
+      "bytes": 141356
+    },
+    "uniforms/webp/512/korea_away_front.webp": {
+      "sha256": "8ea32575e81f4666443d465ab4cf83017e22efabe522178aa46369a91e234228",
+      "bytes": 161958
+    },
+    "uniforms/webp/512/korea_home_back.webp": {
+      "sha256": "d57e4c7430ed9b0bbd57a6d7ccb7a867ec3ada4693327cab5b44fe26afd64538",
+      "bytes": 143164
+    },
+    "uniforms/webp/512/korea_home_front.webp": {
+      "sha256": "2cb5a5824538cee7f6b622d703f2f5f9ac8d685baaf0abad083b3de8f4518d17",
+      "bytes": 163506
+    },
+    "validation.json": {
+      "sha256": "828e2f5ef2d7dae26e5189d41f20fb95e5a0a21e6979f8b9555119b04c1bb234",
+      "bytes": 14022
+    }
+  }
+}

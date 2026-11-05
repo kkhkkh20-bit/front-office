@@ -1,0 +1,753 @@
+{
+  "schema_version": "5.1",
+  "version": "v5c",
+  "created": "2026-11-05",
+  "request": "docs/asset-requests/2026-11-05-codex-v5c-korea-kit.md",
+  "path_base": "assets/v5c/",
+  "path_policy": "Own asset paths relative to path_base; dependencies/source_* paths repository relative. This is a changed-ID override package.",
+  "teams": [
+    {
+      "key": "korea",
+      "name": "대한민국",
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "wordmark": "KOREA"
+    }
+  ],
+  "assets": {
+    "korea_home_front": {
+      "id": "korea_home_front",
+      "category": "uniforms",
+      "name": "대한민국 홈 앞",
+      "team_key": "korea",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#142E53",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#F3F1E9",
+        "wordmark": "#142E53"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_home_front_blank.png",
+      "production": {
+        "method": "image_gen apparel redesign + exact native national-flag SVG patch projection",
+        "surface": "Matte micro-mesh; four independent small asymmetric local folds, quiet name/number zones",
+        "wordmark": "New custom handwritten Korea; no real federation/club mark",
+        "flag": "3:2 SVG; UL geon111, UR gam010, LL ri101, LR gon000; wearer-left sleeve. Native patch replaces AI approximations."
+      },
+      "design_theme": "Original Korea cursive / clean ivory-navy national kit",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_home_front_blank.png",
+      "source_v5": "assets/v5/uniforms/png/512/korea_home_front.png",
+      "sleeve_flag_quad": [
+        [
+          400,
+          157
+        ],
+        [
+          440,
+          143
+        ],
+        [
+          450,
+          169
+        ],
+        [
+          410,
+          183
+        ]
+      ],
+      "source_v5b": "assets/v5b/uniforms/png/512/korea_home_front.png",
+      "png": {
+        "256": "uniforms/png/256/korea_home_front.png",
+        "512": "uniforms/png/512/korea_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_home_front.webp",
+        "512": "uniforms/webp/512/korea_home_front.webp"
+      }
+    },
+    "korea_home_back": {
+      "id": "korea_home_back",
+      "category": "uniforms",
+      "name": "대한민국 홈 뒤",
+      "team_key": "korea",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#142E53",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#142E53",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#F3F1E9",
+        "wordmark": "#142E53"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_home_back.png",
+      "production": {
+        "method": "image_gen apparel redesign + exact native national-flag SVG patch projection",
+        "surface": "Matte micro-mesh; four independent small asymmetric local folds, quiet name/number zones",
+        "wordmark": "New custom handwritten Korea; no real federation/club mark",
+        "flag": "3:2 SVG; UL geon111, UR gam010, LL ri101, LR gon000; wearer-left sleeve. Native patch replaces AI approximations."
+      },
+      "design_theme": "Original Korea cursive / clean ivory-navy national kit",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_home_back.png",
+      "source_v5": "assets/v5/uniforms/png/512/korea_home_back.png",
+      "sleeve_flag_quad": [
+        [
+          80,
+          140
+        ],
+        [
+          120,
+          154
+        ],
+        [
+          110,
+          180
+        ],
+        [
+          70,
+          166
+        ]
+      ],
+      "source_v5b": "assets/v5b/uniforms/png/512/korea_home_back.png",
+      "png": {
+        "256": "uniforms/png/256/korea_home_back.png",
+        "512": "uniforms/png/512/korea_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_home_back.webp",
+        "512": "uniforms/webp/512/korea_home_back.webp"
+      }
+    },
+    "korea_away_front": {
+      "id": "korea_away_front",
+      "category": "uniforms",
+      "name": "대한민국 원정 앞",
+      "team_key": "korea",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F3F1E9",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#142E53",
+        "wordmark": "#F3F1E9"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_away_front_blank.png",
+      "production": {
+        "method": "image_gen apparel redesign + exact native national-flag SVG patch projection",
+        "surface": "Matte micro-mesh; four independent small asymmetric local folds, quiet name/number zones",
+        "wordmark": "New custom handwritten Korea; no real federation/club mark",
+        "flag": "3:2 SVG; UL geon111, UR gam010, LL ri101, LR gon000; wearer-left sleeve. Native patch replaces AI approximations."
+      },
+      "design_theme": "Original Korea cursive / clean ivory-navy national kit",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_away_front_blank.png",
+      "source_v5": "assets/v5/uniforms/png/512/korea_away_front.png",
+      "sleeve_flag_quad": [
+        [
+          400,
+          157
+        ],
+        [
+          440,
+          143
+        ],
+        [
+          450,
+          169
+        ],
+        [
+          410,
+          183
+        ]
+      ],
+      "source_v5b": "assets/v5b/uniforms/png/512/korea_away_front.png",
+      "png": {
+        "256": "uniforms/png/256/korea_away_front.png",
+        "512": "uniforms/png/512/korea_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_away_front.webp",
+        "512": "uniforms/webp/512/korea_away_front.webp"
+      }
+    },
+    "korea_away_back": {
+      "id": "korea_away_back",
+      "category": "uniforms",
+      "name": "대한민국 원정 뒤",
+      "team_key": "korea",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F3F1E9",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F3F1E9",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#142E53",
+        "wordmark": "#F3F1E9"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_away_back.png",
+      "production": {
+        "method": "image_gen apparel redesign + exact native national-flag SVG patch projection",
+        "surface": "Matte micro-mesh; four independent small asymmetric local folds, quiet name/number zones",
+        "wordmark": "New custom handwritten Korea; no real federation/club mark",
+        "flag": "3:2 SVG; UL geon111, UR gam010, LL ri101, LR gon000; wearer-left sleeve. Native patch replaces AI approximations."
+      },
+      "design_theme": "Original Korea cursive / clean ivory-navy national kit",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_away_back.png",
+      "source_v5": "assets/v5/uniforms/png/512/korea_away_back.png",
+      "sleeve_flag_quad": [
+        [
+          80,
+          140
+        ],
+        [
+          120,
+          154
+        ],
+        [
+          110,
+          180
+        ],
+        [
+          70,
+          166
+        ]
+      ],
+      "source_v5b": "assets/v5b/uniforms/png/512/korea_away_back.png",
+      "png": {
+        "256": "uniforms/png/256/korea_away_back.png",
+        "512": "uniforms/png/512/korea_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_away_back.webp",
+        "512": "uniforms/webp/512/korea_away_back.webp"
+      }
+    },
+    "korea_kit_overlay": {
+      "id": "korea_kit_overlay",
+      "category": "kit_overlays",
+      "team_key": "korea",
+      "kit": "home",
+      "canvas": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "contains": [
+        "solid ivory or navy body/sleeves",
+        "fine collar/cuff lines",
+        "placket piping",
+        "photographic cloth shading",
+        "buttons/seams"
+      ],
+      "no_text_or_marks": true,
+      "registration": "Same canonical ko_late20s_01 coordinates and v5b per-identity UV data; no changed masks.",
+      "png": {
+        "128": "face_kits/png/128/korea_kit_overlay.png",
+        "256": "face_kits/png/256/korea_kit_overlay.png",
+        "512": "face_kits/png/512/korea_kit_overlay.png"
+      },
+      "webp": {
+        "128": "face_kits/webp/128/korea_kit_overlay.webp",
+        "256": "face_kits/webp/256/korea_kit_overlay.webp",
+        "512": "face_kits/webp/512/korea_kit_overlay.webp"
+      }
+    },
+    "korea_away_kit_overlay": {
+      "id": "korea_away_kit_overlay",
+      "category": "kit_overlays",
+      "team_key": "korea",
+      "kit": "away",
+      "canvas": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "contains": [
+        "solid ivory or navy body/sleeves",
+        "fine collar/cuff lines",
+        "placket piping",
+        "photographic cloth shading",
+        "buttons/seams"
+      ],
+      "no_text_or_marks": true,
+      "registration": "Same canonical ko_late20s_01 coordinates and v5b per-identity UV data; no changed masks.",
+      "png": {
+        "128": "face_kits/png/128/korea_away_kit_overlay.png",
+        "256": "face_kits/png/256/korea_away_kit_overlay.png",
+        "512": "face_kits/png/512/korea_away_kit_overlay.png"
+      },
+      "webp": {
+        "128": "face_kits/webp/128/korea_away_kit_overlay.webp",
+        "256": "face_kits/webp/256/korea_away_kit_overlay.webp",
+        "512": "face_kits/webp/512/korea_away_kit_overlay.webp"
+      }
+    },
+    "korea": {
+      "id": "korea",
+      "category": "caps",
+      "team_key": "korea",
+      "kit": "shared",
+      "transparent": true,
+      "canvas": [
+        512,
+        512
+      ],
+      "production": "Blender Cycles80 samples; newly authored K outline, native stitch geometry, matte twill, OIDN color denoise",
+      "source_model": "source/korea_embroidery.blend",
+      "alpha_bbox": [
+        63,
+        144,
+        408,
+        411
+      ],
+      "png": {
+        "128": "caps/png/128/korea.png",
+        "256": "caps/png/256/korea.png",
+        "512": "caps/png/512/korea.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/korea.webp",
+        "256": "caps/webp/256/korea.webp",
+        "512": "caps/webp/512/korea.webp"
+      }
+    },
+    "korea_chest": {
+      "id": "korea_chest",
+      "category": "chest_marks",
+      "team_key": "korea",
+      "kit": "home",
+      "transparent": true,
+      "canvas": [
+        512,
+        512
+      ],
+      "production": "Blender Cycles80 samples; newly authored K outline, native stitch geometry, matte twill, OIDN color denoise",
+      "source_model": "source/korea_embroidery.blend",
+      "alpha_bbox": [
+        335,
+        428,
+        403,
+        496
+      ],
+      "quad": [
+        [
+          337,
+          430
+        ],
+        [
+          401,
+          430
+        ],
+        [
+          401,
+          494
+        ],
+        [
+          337,
+          494
+        ]
+      ],
+      "png": {
+        "128": "face_marks/png/128/korea_chest.png",
+        "256": "face_marks/png/256/korea_chest.png",
+        "512": "face_marks/png/512/korea_chest.png"
+      },
+      "webp": {
+        "128": "face_marks/webp/128/korea_chest.webp",
+        "256": "face_marks/webp/256/korea_chest.webp",
+        "512": "face_marks/webp/512/korea_chest.webp"
+      }
+    },
+    "korea_away_chest": {
+      "id": "korea_away_chest",
+      "category": "chest_marks",
+      "team_key": "korea",
+      "kit": "away",
+      "transparent": true,
+      "canvas": [
+        512,
+        512
+      ],
+      "production": "Blender Cycles80 samples; newly authored K outline, native stitch geometry, matte twill, OIDN color denoise",
+      "source_model": "source/korea_embroidery.blend",
+      "alpha_bbox": [
+        335,
+        428,
+        403,
+        496
+      ],
+      "quad": [
+        [
+          337,
+          430
+        ],
+        [
+          401,
+          430
+        ],
+        [
+          401,
+          494
+        ],
+        [
+          337,
+          494
+        ]
+      ],
+      "png": {
+        "128": "face_marks/png/128/korea_away_chest.png",
+        "256": "face_marks/png/256/korea_away_chest.png",
+        "512": "face_marks/png/512/korea_away_chest.png"
+      },
+      "webp": {
+        "128": "face_marks/webp/128/korea_away_chest.webp",
+        "256": "face_marks/webp/256/korea_away_chest.webp",
+        "512": "face_marks/webp/512/korea_away_chest.webp"
+      }
+    },
+    "korea_cap": {
+      "id": "korea_cap",
+      "category": "cap_marks",
+      "team_key": "korea",
+      "kit": "shared",
+      "transparent": true,
+      "canvas": [
+        512,
+        512
+      ],
+      "production": "Blender Cycles80 samples; newly authored K outline, native stitch geometry, matte twill, OIDN color denoise",
+      "source_model": "source/korea_embroidery.blend",
+      "alpha_bbox": [
+        226,
+        24,
+        286,
+        85
+      ],
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "png": {
+        "128": "face_marks/png/128/korea_cap.png",
+        "256": "face_marks/png/256/korea_cap.png",
+        "512": "face_marks/png/512/korea_cap.png"
+      },
+      "webp": {
+        "128": "face_marks/webp/128/korea_cap.webp",
+        "256": "face_marks/webp/256/korea_cap.webp",
+        "512": "face_marks/webp/512/korea_cap.webp"
+      }
+    }
+  },
+  "collections": {
+    "uniforms": [
+      "korea_home_front",
+      "korea_home_back",
+      "korea_away_front",
+      "korea_away_back"
+    ],
+    "caps": [
+      "korea"
+    ],
+    "kit_overlays": [
+      "korea_kit_overlay",
+      "korea_away_kit_overlay"
+    ],
+    "chest_marks": [
+      "korea_chest",
+      "korea_away_chest"
+    ],
+    "cap_marks": [
+      "korea_cap"
+    ]
+  },
+  "kits": {
+    "korea": {
+      "home": {
+        "kit_overlay": "korea_kit_overlay",
+        "chest": "korea_chest",
+        "cap": "korea_cap",
+        "cap_color": "#142E53",
+        "catalog_front": "korea_home_front",
+        "catalog_back": "korea_home_back"
+      },
+      "away": {
+        "kit_overlay": "korea_away_kit_overlay",
+        "chest": "korea_away_chest",
+        "cap": "korea_cap",
+        "cap_color": "#142E53",
+        "catalog_front": "korea_away_front",
+        "catalog_back": "korea_away_back"
+      }
+    }
+  },
+  "dependencies": {
+    "base_package": "assets/v5b/manifest.json",
+    "reference_identities": [
+      "ko_late20s_01",
+      "black_01"
+    ],
+    "shared_masks_and_registration": "Reuse v5b unchanged. No new per-person files."
+  },
+  "portrait_compositing": {
+    "canvas": [
+      512,
+      512
+    ],
+    "canonical_identity": "ko_late20s_01",
+    "source_over_order": [
+      "original base plate",
+      "UV-registered kit overlay clipped by identity garment mask",
+      "small left chest symbol",
+      "cap key recolor (cap only)",
+      "cap emblem"
+    ],
+    "garment_shading": "Baked into kit_overlay RGB; do not multiply shading twice.",
+    "garment_registration": "Use each identity source_x_rgb16 and source_y_rgb16 coordinate maps; only garment geometry is registered. Original face/neck/background RGB are preserved.",
+    "cap_recolor_formula_srgb": "out = current*(1-cap_key/255) + cap_color_RGB*(cap_shading/255)*(cap_key/255)",
+    "chest_placket_exclusion_x": [
+      244,
+      282
+    ],
+    "chest_policy": "Original compact symbols; alpha entirely on viewer-right chest, no gap cut at center buttons.",
+    "region_partition": [
+      "body",
+      "sleeves",
+      "collar"
+    ],
+    "region_union": "garment",
+    "cap_on": true,
+    "scale_policy": "Composite at512, then downsample completed portrait to256/128."
+  },
+  "integration_owner": "Claude",
+  "game_code_connected": false,
+  "counts": {
+    "uniforms": 4,
+    "caps": 1,
+    "kit_overlays": 2,
+    "chest_marks": 2,
+    "cap_marks": 1
+  },
+  "scope": {
+    "country": "korea",
+    "changed_ids_only": true,
+    "catalog_uniforms": 4,
+    "catalog_caps": 1,
+    "face_kits": 2,
+    "chest_marks": 2,
+    "cap_marks": 1,
+    "new_faces": 0
+  },
+  "reference_notes": "REFERENCE_NOTES.md",
+  "previews": {
+    "all": "ASSET_PREVIEW.png",
+    "flag_detail": "previews/flag_detail.png",
+    "text_slots": "previews/text_slots.png"
+  }
+}

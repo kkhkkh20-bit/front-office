@@ -1,0 +1,79 @@
+{
+  "cap_korea": {
+    "category": "caps",
+    "output_id": "korea",
+    "camera": "cap"
+  },
+  "korea_cap": {
+    "category": "face_marks",
+    "output_id": "korea_cap",
+    "camera": "face",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "style": "away"
+  },
+  "korea_chest": {
+    "category": "face_marks",
+    "output_id": "korea_chest",
+    "camera": "face",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "style": "home"
+  },
+  "korea_away_chest": {
+    "category": "face_marks",
+    "output_id": "korea_away_chest",
+    "camera": "face",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "style": "away"
+  }
+}
