@@ -187,3 +187,23 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 @keyframes cs-cap-hr{0%{background:var(--cap-bg,#6b2225)}50%{background:#e6a817;color:#1a1200}}
 @media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{width:92%;min-height:32px}.match-dashboard .cs-stage.has-3d>.cs-cap.hr{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.match-dashboard .cs-stage.has-3d>.cs-cap.hr{animation:none;background:#e6a817;color:#1a1200}}
+/* 휴대폰 경기 전: 원정·홈 두 팀 라인업을 위아래로 함께 보여 준다(사용자 11-05). 도식 대신 타순 표 */
+@media(max-width:700px){
+ body .cs-prep-teams{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:stretch;justify-content:stretch}
+ body .cs-prep-teams>section.cs-pcard,body .cs-prep-teams>section.cs-pcard[hidden]{display:grid;grid-template-columns:minmax(0,1fr);width:100%;height:100%;min-height:0;animation:none}
+ body .cs-prep-teams .cs-pf{display:none}
+ body .cs-prep-teams .cs-pl{display:flex;padding:6px 9px 5px;min-height:0;overflow:hidden}
+ body .cs-prep-side{display:none}
+ .cs-pl header{gap:6px;margin-bottom:2px}.cs-pl header>:first-child{width:22px;height:22px;flex:none}.cs-pl header b{font-size:12.5px}.cs-pl header small{font-size:10px}
+ .cs-pl-h,.cs-pl li{grid-template-columns:16px minmax(0,1fr) 44px 36px 22px 22px;gap:4px}.cs-pl-h{font-size:9px;padding-bottom:1px}
+ .cs-pl li{padding:0;font-size:11.5px;line-height:1.5}.cs-pl li>em{font-size:10.5px}.cs-pl li b small{display:none}.cs-pl ol{overflow:hidden;gap:0}
+ .cs-pl-sp{padding-top:3px;gap:0 6px}.cs-pl-sp>b{font-size:12px}.cs-pl-sp>em{font-size:10px}.cs-pl-sp>span{font-size:9.5px}
+ .cs-pl li{line-height:1.3;font-size:11px}.cs-pl-sp>em{display:none}.cs-pl-sp{grid-template-columns:auto auto minmax(0,1fr)}
+ body .cs-prep-talk{display:none}body .cs-prep{gap:4px}.cs-prep-heading{display:none}
+ #cs-stage:has(.cs-3d[data-pre])>.md-count-panel{display:none}
+ body .cs-prep-start{display:none}body .cs-prep-go{gap:2px}body .cs-prep-stage{font-size:9.5px}body .cs-prep-bar{height:3px}
+ body .cs-pl li{padding:0;border-bottom:0;line-height:13.5px;font-size:10.5px}.cs-3d .cs-pl li,.cs-3d .cs-pl li>*{line-height:13.5px!important;min-height:0!important}body .cs-pl-h{display:none}
+ .cs-pl header{flex-wrap:nowrap}.cs-pl header>div{display:flex;align-items:baseline;gap:6px}.cs-pl header small{white-space:nowrap}
+}
+/* 휴대폰: 페이지 제목은 상단바(구단 이름 자리)에 보여 주고 본문 제목 줄은 접는다(사용자 11-05: 공간 확보) */
+@media(max-width:1000px){.subhead.notitle>h1{display:none}.subhead.notitle{min-height:0;padding-top:2px;padding-bottom:0;margin-bottom:0;justify-content:flex-end}}

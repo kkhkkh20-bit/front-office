@@ -31,8 +31,15 @@ function matchPrepTalk(g){const before=tid=>tlOf(tid).filter(x=>x[5]<g.day),rec=
  const sp=side=>{const p=G.players[g.box[side].pit[0]?.id];return p?`${tshort(side==='a'?g.away:g.home)} ${p.name}(${p.th}투)`:null;},pa=sp('a'),ph=sp('h');if(pa&&ph)out.push(`선발 투수는 ${pa}, ${ph}입니다.`);
  return out;}
 /* 3D 로딩 진행(fo3d-progress)을 경기 전 화면 막대·문구에 반영. 뒤로 가지 않게 최댓값만 */
-function cPrepProgress(p){const c=UI.cast,el=document.querySelector('#cs-3d[data-pre] .cs-prep-go');if(!c||!el)return;c.prog=Math.max(c.prog||0,p);el.querySelector('.cs-prep-bar i').style.width=Math.round(c.prog*100)+'%';el.querySelector('.cs-prep-stage').textContent=c.prog>=1?'경기 준비를 마쳤습니다':c.prog>=.85?'그라운드 정비를 마치고 있습니다':c.prog>=.3?'선수들이 몸을 풀고 있습니다':'선수들이 경기장에 도착하고 있습니다';}
+function cPrepProgress(p){const c=UI.cast,el=document.querySelector('#cs-3d[data-pre] .cs-prep-go');if(!c||!el)return;c.preAt=c.preAt||Date.now();c.prog=Math.max(c.prog||0,p);el.querySelector('.cs-prep-bar i').style.width=Math.round(c.prog*100)+'%';el.querySelector('.cs-prep-stage').textContent=c.prog>=1?'경기 준비를 마쳤습니다':c.prog>=.85?'그라운드 정비를 마치고 있습니다':c.prog>=.3?'선수들이 몸을 풀고 있습니다':'선수들이 경기장에 도착하고 있습니다';}
 document.addEventListener('fo3d-progress',e=>cPrepProgress(e.detail));
 /* 3D 준비 결과: 성공이면 '경기 시작' 활성(FM처럼 눌러야 시작), 실패(2D 대체)면 경기 전 화면을 닫고 기존처럼 바로 재생 */
-function cPrepDone(ok){const c=UI.cast;if(!c?.pre)return;if(!ok){cPrepClose(c);return;}cPrepProgress(1);const b=document.querySelector('.cs-prep-start');if(b)b.disabled=false;}
+function cPrepDone(ok){const c=UI.cast;if(!c?.pre)return;if(!ok){cPrepClose(c);return;}cPrepProgress(1);const b=document.querySelector('.cs-prep-start');if(b)b.disabled=false;
+ /* 준비가 끝나면 누르지 않아도 시작한다(사용자 11-05). 라인업을 읽을 시간으로 경기 전 화면을 연 뒤 최소 6초는 보여 준다 */
+ const t0=c.preAt||Date.now();setTimeout(()=>{if(UI.cast===c&&c.pre)A.castStart();},Math.max(1200,6000-(Date.now()-t0)));}
 function cPrepClose(c){c.pre=0;document.getElementById('cs-3d')?.removeAttribute('data-pre');}
+/* 휴대폰 중계는 화면 세로에 딱 맞춘다(사용자 11-05: 드래그하지 않게): 중계 판 위쪽부터 아래 탭바 위까지 */
+function castFit(){ try{ const el=document.querySelector('.cast.match-dashboard'); if(!el)return; if(innerWidth>1000){ if(el.style.height){ el.style.height=''; el.style.minHeight=''; } return; }
+  const bn=document.querySelector('.bnav'), bh=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0; const top=el.getBoundingClientRect().top+scrollY;
+  const h=Math.max(420,Math.floor(innerHeight-top-bh-4))+'px'; if(el.style.height!==h){ el.style.height=h; el.style.minHeight=h; } }catch(e){} }
+addEventListener('resize',castFit); setInterval(castFit,400);

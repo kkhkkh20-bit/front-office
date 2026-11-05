@@ -4049,6 +4049,26 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 @keyframes cs-cap-hr{0%{background:var(--cap-bg,#6b2225)}50%{background:#e6a817;color:#1a1200}}
 @media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{width:92%;min-height:32px}.match-dashboard .cs-stage.has-3d>.cs-cap.hr{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.match-dashboard .cs-stage.has-3d>.cs-cap.hr{animation:none;background:#e6a817;color:#1a1200}}
+/* 휴대폰 경기 전: 원정·홈 두 팀 라인업을 위아래로 함께 보여 준다(사용자 11-05). 도식 대신 타순 표 */
+@media(max-width:700px){
+ body .cs-prep-teams{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:stretch;justify-content:stretch}
+ body .cs-prep-teams>section.cs-pcard,body .cs-prep-teams>section.cs-pcard[hidden]{display:grid;grid-template-columns:minmax(0,1fr);width:100%;height:100%;min-height:0;animation:none}
+ body .cs-prep-teams .cs-pf{display:none}
+ body .cs-prep-teams .cs-pl{display:flex;padding:6px 9px 5px;min-height:0;overflow:hidden}
+ body .cs-prep-side{display:none}
+ .cs-pl header{gap:6px;margin-bottom:2px}.cs-pl header>:first-child{width:22px;height:22px;flex:none}.cs-pl header b{font-size:12.5px}.cs-pl header small{font-size:10px}
+ .cs-pl-h,.cs-pl li{grid-template-columns:16px minmax(0,1fr) 44px 36px 22px 22px;gap:4px}.cs-pl-h{font-size:9px;padding-bottom:1px}
+ .cs-pl li{padding:0;font-size:11.5px;line-height:1.5}.cs-pl li>em{font-size:10.5px}.cs-pl li b small{display:none}.cs-pl ol{overflow:hidden;gap:0}
+ .cs-pl-sp{padding-top:3px;gap:0 6px}.cs-pl-sp>b{font-size:12px}.cs-pl-sp>em{font-size:10px}.cs-pl-sp>span{font-size:9.5px}
+ .cs-pl li{line-height:1.3;font-size:11px}.cs-pl-sp>em{display:none}.cs-pl-sp{grid-template-columns:auto auto minmax(0,1fr)}
+ body .cs-prep-talk{display:none}body .cs-prep{gap:4px}.cs-prep-heading{display:none}
+ #cs-stage:has(.cs-3d[data-pre])>.md-count-panel{display:none}
+ body .cs-prep-start{display:none}body .cs-prep-go{gap:2px}body .cs-prep-stage{font-size:9.5px}body .cs-prep-bar{height:3px}
+ body .cs-pl li{padding:0;border-bottom:0;line-height:13.5px;font-size:10.5px}.cs-3d .cs-pl li,.cs-3d .cs-pl li>*{line-height:13.5px!important;min-height:0!important}body .cs-pl-h{display:none}
+ .cs-pl header{flex-wrap:nowrap}.cs-pl header>div{display:flex;align-items:baseline;gap:6px}.cs-pl header small{white-space:nowrap}
+}
+/* 휴대폰: 페이지 제목은 상단바(구단 이름 자리)에 보여 주고 본문 제목 줄은 접는다(사용자 11-05: 공간 확보) */
+@media(max-width:1000px){.subhead.notitle>h1{display:none}.subhead.notitle{min-height:0;padding-top:2px;padding-bottom:0;margin-bottom:0;justify-content:flex-end}}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
   .fm-home .fmmain{height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -19284,11 +19304,11 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   <aside class="rail" aria-label="메뉴"><div class="brand">${badge(G.user,38)}<b>${esc(t.city)}<br>${esc(t.nick)}</b></div>${nav.map(([k,l,i])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}">${ic(i)}${l}${k==='inbox'&&unread?`<span class="cnt">${unread}</span>`:tabAlert(k)?'<i class="sdot"></i>':''}</button>`).join('')}<button class="railme ${UI.tab==='me'?'on':''}" data-a="tab" data-v="me">${avImg(meAv())}<span>${esc(meName()||'단장 프로필')}</span></button><button class="railset" data-a="go" data-v="cfg:set">${ICO2.cog}설정 · 권한</button></aside>
   <div class="mainc">
    <header class="top"><div class="gut"><div class="tbar wrap">
-     ${dk?draftTop():`<div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:`<i class="cb-c">${esc(t.city)} </i>${esc(t.nick)}<i class="cb-v">▾</i>`}</b><span>${wide()?dstr(G.day):`<i class="cb-y">${dobj(G.day).y}.</i>${dsh(G.day)} ${WD[dobj(G.day).w]}`}<i class="cb-p"> · ${PERIOD[per]}</i></span></div></div>`}
+     ${dk?draftTop():`<div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:(!wide()&&UI.tab!=='home'&&TITLE[UI.tab]?`${esc(TITLE[UI.tab])}<i class="cb-v">▾</i>`:`<i class="cb-c">${esc(t.city)} </i>${esc(t.nick)}<i class="cb-v">▾</i>`)}</b><span>${wide()?dstr(G.day):`<i class="cb-y">${dobj(G.day).y}.</i>${dsh(G.day)} ${WD[dobj(G.day).w]}`}<i class="cb-p"> · ${PERIOD[per]}</i></span></div></div>`}
      ${fullOk()?`<button class="mailbtn fullbtn${fullOn()?' on':''}" data-a="fullTg" aria-label="전체 화면" title="전체 화면 켜기·끄기">${ICO.full}</button>`:''}${dk&&!UI.fromMail?`<button class="mailbtn tophelp${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button>`:''}${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}${dk?draftGo():goSet(per,b)}
    </div></div>${topBlocks(b)}</header>
    <div class="gut"><div class="wrap">
-     ${dk&&!UI.fromMail?'':`<div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>`}
+     ${dk&&!UI.fromMail?'':`<div class="subhead${!wide()&&UI.tab!=='home'&&!UI.fromMail?' notitle':''}">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>`}
      <main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
    </div></div>
   </div>
@@ -22518,11 +22538,18 @@ function matchPrepTalk(g){const before=tid=>tlOf(tid).filter(x=>x[5]<g.day),rec=
  const sp=side=>{const p=G.players[g.box[side].pit[0]?.id];return p?`${tshort(side==='a'?g.away:g.home)} ${p.name}(${p.th}투)`:null;},pa=sp('a'),ph=sp('h');if(pa&&ph)out.push(`선발 투수는 ${pa}, ${ph}입니다.`);
  return out;}
 /* 3D 로딩 진행(fo3d-progress)을 경기 전 화면 막대·문구에 반영. 뒤로 가지 않게 최댓값만 */
-function cPrepProgress(p){const c=UI.cast,el=document.querySelector('#cs-3d[data-pre] .cs-prep-go');if(!c||!el)return;c.prog=Math.max(c.prog||0,p);el.querySelector('.cs-prep-bar i').style.width=Math.round(c.prog*100)+'%';el.querySelector('.cs-prep-stage').textContent=c.prog>=1?'경기 준비를 마쳤습니다':c.prog>=.85?'그라운드 정비를 마치고 있습니다':c.prog>=.3?'선수들이 몸을 풀고 있습니다':'선수들이 경기장에 도착하고 있습니다';}
+function cPrepProgress(p){const c=UI.cast,el=document.querySelector('#cs-3d[data-pre] .cs-prep-go');if(!c||!el)return;c.preAt=c.preAt||Date.now();c.prog=Math.max(c.prog||0,p);el.querySelector('.cs-prep-bar i').style.width=Math.round(c.prog*100)+'%';el.querySelector('.cs-prep-stage').textContent=c.prog>=1?'경기 준비를 마쳤습니다':c.prog>=.85?'그라운드 정비를 마치고 있습니다':c.prog>=.3?'선수들이 몸을 풀고 있습니다':'선수들이 경기장에 도착하고 있습니다';}
 document.addEventListener('fo3d-progress',e=>cPrepProgress(e.detail));
 /* 3D 준비 결과: 성공이면 '경기 시작' 활성(FM처럼 눌러야 시작), 실패(2D 대체)면 경기 전 화면을 닫고 기존처럼 바로 재생 */
-function cPrepDone(ok){const c=UI.cast;if(!c?.pre)return;if(!ok){cPrepClose(c);return;}cPrepProgress(1);const b=document.querySelector('.cs-prep-start');if(b)b.disabled=false;}
+function cPrepDone(ok){const c=UI.cast;if(!c?.pre)return;if(!ok){cPrepClose(c);return;}cPrepProgress(1);const b=document.querySelector('.cs-prep-start');if(b)b.disabled=false;
+ /* 준비가 끝나면 누르지 않아도 시작한다(사용자 11-05). 라인업을 읽을 시간으로 경기 전 화면을 연 뒤 최소 6초는 보여 준다 */
+ const t0=c.preAt||Date.now();setTimeout(()=>{if(UI.cast===c&&c.pre)A.castStart();},Math.max(1200,6000-(Date.now()-t0)));}
 function cPrepClose(c){c.pre=0;document.getElementById('cs-3d')?.removeAttribute('data-pre');}
+/* 휴대폰 중계는 화면 세로에 딱 맞춘다(사용자 11-05: 드래그하지 않게): 중계 판 위쪽부터 아래 탭바 위까지 */
+function castFit(){ try{ const el=document.querySelector('.cast.match-dashboard'); if(!el)return; if(innerWidth>1000){ if(el.style.height){ el.style.height=''; el.style.minHeight=''; } return; }
+  const bn=document.querySelector('.bnav'), bh=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0; const top=el.getBoundingClientRect().top+scrollY;
+  const h=Math.max(420,Math.floor(innerHeight-top-bh-4))+'px'; if(el.style.height!==h){ el.style.height=h; el.style.minHeight=h; } }catch(e){} }
+addEventListener('resize',castFit); setInterval(castFit,400);
 /* ---------- C: 트레이드 비교판 ---------- */
 function tradeInsight(tid,give,get){
   if(!give.length&&!get.length)return '';
@@ -24196,9 +24223,8 @@ function tradeView(){
     <p class="small muted">"${side==='get'?'받기':'보내기'}"를 누르면 위 협상안에 올라갑니다. 이름을 누르면 선수 정보가 열립니다. 현재 능력은 정확한 값이고, 잠재력은 우리 선수와 프로 담당 스카우트가 있는 지역 구단만 보입니다. 외국인 선수와 올해 입단 신인은 제외됩니다.</p>
     <div class="trws" data-pg="tpool${side}${seg}${sort}${tr.tid}"><div class="trw-h"><span>선수</span><span>현재 · 잠재력</span><span></span></div>${PGt.items.map(({p})=>trow(p,side,sel.includes(p.id),INT.includes(p.id)?interestWhy(tr.tid,p):'')).join('')||'<p class="small muted">대상 선수가 없습니다.</p>'}</div>${PGt.bar}
   </section>`;
-  const steps=`<ol class="trade-steps" aria-label="협상 순서"><li>1 상대 구단</li><li class="${tr.stage!=='review'?'on':''}">2 선수 선택</li><li class="${tr.stage==='review'?'on':''}">3 제안 확인</li></ol>`;
   const basket=`<div class="trade-basket"><span>보냄 <b>${gv.length}</b> · 받음 <b>${gt.length}</b></span><button class="btn small primary" data-a="tradeReview" ${gv.length||gt.length?'':'disabled'}>제안 확인</button></div>`;
-  return strip+steps+(innerWidth<700?(tr.stage==='review'?`<button class="btn small" data-a="tradePick">‹ 선수 다시 고르기</button>${board}`:basket+poolCard):`<div class="tlay">${board}${poolCard}</div>`);
+  return strip+(innerWidth<700?(tr.stage==='review'?`<button class="btn small" data-a="tradePick">‹ 선수 다시 고르기</button>${board}`:basket+poolCard):`<div class="tlay">${board}${poolCard}</div>`);
 }
 function extBody(){
   const c=domestic(G.user).filter(canExtend).sort((a,b)=>scoutReport(b).ofp-scoutReport(a).ofp).slice(0,6);

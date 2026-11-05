@@ -163,9 +163,8 @@ function tradeView(){
     <p class="small muted">"${side==='get'?'받기':'보내기'}"를 누르면 위 협상안에 올라갑니다. 이름을 누르면 선수 정보가 열립니다. 현재 능력은 정확한 값이고, 잠재력은 우리 선수와 프로 담당 스카우트가 있는 지역 구단만 보입니다. 외국인 선수와 올해 입단 신인은 제외됩니다.</p>
     <div class="trws" data-pg="tpool${side}${seg}${sort}${tr.tid}"><div class="trw-h"><span>선수</span><span>현재 · 잠재력</span><span></span></div>${PGt.items.map(({p})=>trow(p,side,sel.includes(p.id),INT.includes(p.id)?interestWhy(tr.tid,p):'')).join('')||'<p class="small muted">대상 선수가 없습니다.</p>'}</div>${PGt.bar}
   </section>`;
-  const steps=`<ol class="trade-steps" aria-label="협상 순서"><li>1 상대 구단</li><li class="${tr.stage!=='review'?'on':''}">2 선수 선택</li><li class="${tr.stage==='review'?'on':''}">3 제안 확인</li></ol>`;
   const basket=`<div class="trade-basket"><span>보냄 <b>${gv.length}</b> · 받음 <b>${gt.length}</b></span><button class="btn small primary" data-a="tradeReview" ${gv.length||gt.length?'':'disabled'}>제안 확인</button></div>`;
-  return strip+steps+(innerWidth<700?(tr.stage==='review'?`<button class="btn small" data-a="tradePick">‹ 선수 다시 고르기</button>${board}`:basket+poolCard):`<div class="tlay">${board}${poolCard}</div>`);
+  return strip+(innerWidth<700?(tr.stage==='review'?`<button class="btn small" data-a="tradePick">‹ 선수 다시 고르기</button>${board}`:basket+poolCard):`<div class="tlay">${board}${poolCard}</div>`);
 }
 function extBody(){
   const c=domestic(G.user).filter(canExtend).sort((a,b)=>scoutReport(b).ofp-scoutReport(a).ofp).slice(0,6);
