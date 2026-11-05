@@ -3034,6 +3034,7 @@ svg.campus.iso .cpn{font-size:9.5px}
 .tpg.cmp{align-items:start}
 .ds-set{margin:4px 0}.ds-sum{cursor:pointer;font-size:12.5px;padding:6px 0;color:var(--ink)}.ds-basis{margin:6px 0;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
 .fdpk .optrow{margin:8px 0}.fdpk tr.on td{background:color-mix(in srgb,var(--team-hi) 18%,transparent);font-weight:600}
+.fdpk-now{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;margin:6px 0;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--team-hi) 12%,transparent);font-size:13px}.fdpk-now em{font-style:normal;font-weight:700}.fdpk-now .bad,.fdpk-now em.bad{color:var(--bad,#ff6b6b)}.fdpk-now .ok,.fdpk-now em.ok{color:var(--good,#5ad38b)}
 /* ---------- PC 화면(FM식) 위 두 줄 메뉴 ---------- */
 @media (min-width:1100px){
   body.fm .shell.fmsh{display:block;min-height:calc(100vh / var(--z,1))}
@@ -18974,12 +18975,12 @@ function blkLink(b){ if(b.includes('창단'))return '<button data-a="tab" data-v
 function readingContext(host){return host.id==='sheet'?'detail:'+(host.querySelector('.sheet,.cast')?.dataset.detailKey||UI.sheet||UI.person||''):JSON.stringify([UI.tab,UI.sub?.[UI.tab],UI.lseg,UI.it?.[UI.tab],UI.ibOpen||UI.ibSel,UI.homePanel,UI.homeFocus,UI.meet?[UI.meet.k,UI.meet.id,G.day]:null]);}
 function rememberReading(host){if(!host?.dataset.readingContext)return;const context=host.dataset.readingContext;UI.readingOpen=UI.readingOpen||{};UI.readingScroll=UI.readingScroll||{};
  host.querySelectorAll('details[data-reading-key]').forEach(d=>UI.readingOpen[d.dataset.readingKey]=d.open);
- host.querySelectorAll('.ws-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;if(el.scrollHeight>el.clientHeight+2)UI.readingScroll[context+':'+el.className+':'+i]=el.scrollTop;});
+ host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;if(el.scrollHeight>el.clientHeight+2)UI.readingScroll[context+':'+el.className+':'+i]=el.scrollTop;});
  const wf=host.querySelector('main.ws-frame');if(wf&&wf.scrollHeight>wf.clientHeight+2)UI.readingScroll[context+':frame']=wf.scrollTop;
 }
 function restoreReading(host){if(!host)return;const context=readingContext(host),seen={};host.dataset.readingContext=context;UI.readingOpen=UI.readingOpen||{};
  host.querySelectorAll('details').forEach(d=>{const summary=d.querySelector('summary')?.textContent.trim().replace(/\d+/g,'#')||'상세',index=seen[summary]||0;seen[summary]=index+1;const key=context+':'+(d.dataset.k||summary+':'+index);d.dataset.readingKey=key;if(Object.hasOwn(UI.readingOpen,key))d.open=UI.readingOpen[key];});
- host.querySelectorAll('.ws-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;const y=UI.readingScroll?.[context+':'+el.className+':'+i];if(y!=null)el.scrollTop=y;});
+ host.querySelectorAll('.ws-scroll,.tf-scroll,.ibm,.ibx-read,.sheet,.fmmain,.mt-log').forEach((el,i)=>{if(el.matches('.meet-page .mt-log'))return;const y=UI.readingScroll?.[context+':'+el.className+':'+i];if(y!=null)el.scrollTop=y;});
  /* 휴대폰 작업 공간 전체 스크롤(감독 채용·신인 드래프트): 다시 그려도 읽던 위치 유지. 드래프트는 처음 열 때 영입 탭 줄을 위로 밀어 후보 목록부터 보인다 */
  const wf=host.querySelector('main.ws-frame');if(wf){const y=UI.readingScroll?.[context+':frame'],d=wf.querySelector('.draft-page');if(y!=null)wf.scrollTop=y;else if(d&&innerWidth<600)wf.scrollTop=d.getBoundingClientRect().top-wf.getBoundingClientRect().top;}
 }
@@ -19090,9 +19091,10 @@ const SLK={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익
 const G0Y=()=>2026; const eok=v=>`${Math.round(v/100)}억`;
 /* 창단 지명 순번 고르기(구단 고르기 전). 조건은 FD_SLOT(11_founding_draft.js) */
 function fdSlotPick(){ if(typeof FD_SLOT==='undefined')return ''; const cur=UI.fdPk||0, pc=d=>d<0?`${Math.round(-d*100)}% 감액`:d>0?`${Math.round(d*100)}% 증액`:'그대로';
-  return `<section class="card fdpk${UI.fdNeed?' need':''}"><h2 class="sec">창단 지명 순번</h2><p class="small">${UI.fdNeed?'<b class="bad">먼저 순번을 고르세요.</b> ':''}앞 순번은 ${FD_AUST_Y}시즌 동안 긴축, 뒤 순번은 지원 보너스입니다. 1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 독립구단은 지원이 없어 현금만 달라집니다.</p>
+  return `<section class="card fdpk${UI.fdNeed?' need':''}"><h2 class="sec">창단 지명 순번</h2><p class="small">${UI.fdNeed?'<b class="bad">먼저 순번을 고르세요.</b> ':''}앞 순번은 긴축, 뒤 순번은 지원 보너스(${FD_AUST_Y}시즌) ${hiI('1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 독립구단(고양)은 모기업 지원이 없어 시작 현금만 달라집니다. 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다.')}</p>
     <div class="chips optrow" role="group">${Object.keys(FD_SLOT).map(k=>`<button type="button" data-a="fdPk" data-v="${k}" class="${+k===cur?'on':''}" aria-pressed="${+k===cur}">${k}순위</button>`).join('')}</div>
-    ${cur?`<p class="small"><b>${cur}순위:</b> 모기업 지원 한도 ${pc(FD_SLOT[cur].d)}(${FD_AUST_Y}시즌) · 시작 현금 ${eok(FD_SLOT[cur].cash)}${FD_SLOT[cur].strict?' · 구단주 수익 우선':''}</p>`:''}<details class="frule"><summary class="small">순번별 조건 전체</summary><div class="tw"><table><thead><tr><th>순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th></tr></thead><tbody>${Object.entries(FD_SLOT).map(([k,A])=>`<tr${+k===cur?' class="on"':''}><td>${k}순위${A.strict?' · 긴축':''}</td><td>${pc(A.d)}</td><td>${eok(A.cash)}</td></tr>`).join('')}</tbody></table></div></details></section>`; }
+    ${cur?(()=>{ const A=FD_SLOT[cur], s0=((UI.world.preview.find(x=>!TEAM_DEF[x.tid].indie)||{}).fin||{}).sup||0, ds=Math.round(s0*A.d), dc=A.cash-4000, sg=v=>v>0?`+${eok(v)}`:v<0?`-${eok(-v)}`:'변화 없음';
+      return `<div class="fdpk-now"><b>${cur}순위 선택</b><span>모기업 지원 한도 <b>${eok(s0)} → ${eok(s0+ds)}</b> <em class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds)}</em> · 해마다, ${FD_AUST_Y}시즌</span><span>시작 현금 <b>40억 → ${eok(A.cash)}</b> <em class="${dc<0?'bad':dc>0?'ok':''}">${sg(dc)}</em></span><span>${FD_AUST_Y}시즌 합계 <b class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds*FD_AUST_Y+dc)}</b>${A.strict?' · 구단주 수익 우선':''}</span></div>`; })():''}<details class="frule"><summary class="small">순번별 조건 전체</summary><div class="tw"><table><thead><tr><th>순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th></tr></thead><tbody>${Object.entries(FD_SLOT).map(([k,A])=>`<tr${+k===cur?' class="on"':''}><td>${k}순위${A.strict?' · 긴축':''}</td><td>${pc(A.d)}</td><td>${eok(A.cash)}</td></tr>`).join('')}</tbody></table></div></details></section>`; }
 function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d,i)=>`<button class="item wa" data-a="start" data-v="${i}">${badge(i,34)}<span class="nm"><b>${d.city} ${d.nick}</b></span><span class="rt small muted">선택</span></button>`).join('')}</div>`;
   if(!UI.world){ ensureWorld(); return `<div class="worldload"><span class="spin"></span><p>리그를 만드는 중입니다. 10개 구단 선수단을 만들고 지난 시즌 144경기를 치르고 있습니다.</p></div>`; }
   const P=[...UI.world.preview].sort((a,b)=>a.proj-b.proj); const OL={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
@@ -27455,6 +27457,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05l',d:'11월 5일',t:'연봉 협상 방출·창단 순번 금액 표시',items:[
+    'PC 연봉 협상에서 선수를 방출하면 목록이 맨 위로 올라가던 것을 고쳤습니다. 방출해도 보던 자리 그대로입니다.',
+    '창단 지명 순번을 누르면 모기업 지원 한도·시작 현금이 얼마 늘거나 주는지(3시즌 합계 포함) 바로 보이고, 구단 카드 숫자에도 반영됩니다. 난이도 표시는 뺐습니다.']},
   {id:'2026-11-05k',d:'11월 5일',t:'창단 지명 순번을 먼저 고릅니다',items:[
     '창단 드래프트는 구단보다 지명 순번(1~10)을 먼저 고릅니다. 앞 순번은 3시즌 동안 모기업 지원 한도 감액(1순위 30%)과 적은 시작 현금, 뒤 순번은 지원 증액(10순위 15%)과 많은 시작 현금입니다. 1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다.']},
   {id:'2026-11-05j',d:'11월 5일',t:'실사 유니폼·모자',items:[
