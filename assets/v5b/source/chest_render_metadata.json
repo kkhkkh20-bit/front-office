@@ -1,0 +1,574 @@
+{
+  "seoul_comets_chest": {
+    "team_key": "seoul_comets",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#A50034",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "seoul_comets_away_chest": {
+    "team_key": "seoul_comets",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#A50034",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "seoul_hounds_chest": {
+    "team_key": "seoul_hounds",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#131230",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "seoul_hounds_away_chest": {
+    "team_key": "seoul_hounds",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#131230",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "incheon_seagulls_chest": {
+    "team_key": "incheon_seagulls",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#CE0E2D",
+    "mode": "native original symbol; no wordmark crossing placket",
+    "post_render_translation_px": [
+      0,
+      -18
+    ],
+    "final_quad": [
+      [
+        337,
+        412
+      ],
+      [
+        401,
+        412
+      ],
+      [
+        401,
+        476
+      ],
+      [
+        337,
+        476
+      ]
+    ]
+  },
+  "incheon_seagulls_away_chest": {
+    "team_key": "incheon_seagulls",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#CE0E2D",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "suwon_sparks_chest": {
+    "team_key": "suwon_sparks",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#141414",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "suwon_sparks_away_chest": {
+    "team_key": "suwon_sparks",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#141414",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "goyang_storm_chest": {
+    "team_key": "goyang_storm",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#570514",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "goyang_storm_away_chest": {
+    "team_key": "goyang_storm",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#570514",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "daejeon_redfox_chest": {
+    "team_key": "daejeon_redfox",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F37321",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "daejeon_redfox_away_chest": {
+    "team_key": "daejeon_redfox",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#F37321",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "gwangju_blazes_chest": {
+    "team_key": "gwangju_blazes",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#EA0029",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "gwangju_blazes_away_chest": {
+    "team_key": "gwangju_blazes",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#FFD34F",
+    "fabric": "#EA0029",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "daegu_thunders_chest": {
+    "team_key": "daegu_thunders",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#074CA1",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "daegu_thunders_away_chest": {
+    "team_key": "daegu_thunders",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#074CA1",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "busan_waves_chest": {
+    "team_key": "busan_waves",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#041E42",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "busan_waves_away_chest": {
+    "team_key": "busan_waves",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#041E42",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "changwon_anchors_chest": {
+    "team_key": "changwon_anchors",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#1D467B",
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "changwon_anchors_away_chest": {
+    "team_key": "changwon_anchors",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": "#F3F1E9",
+    "fabric": "#1D467B",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "korea_chest": {
+    "team_key": "korea",
+    "kit": "home",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": null,
+    "fabric": "#F3F1E9",
+    "mode": "native original symbol; no wordmark crossing placket"
+  },
+  "korea_away_chest": {
+    "team_key": "korea",
+    "kit": "away",
+    "quad": [
+      [
+        337,
+        430
+      ],
+      [
+        401,
+        430
+      ],
+      [
+        401,
+        494
+      ],
+      [
+        337,
+        494
+      ]
+    ],
+    "ink": null,
+    "fabric": "#142E53",
+    "mode": "native original symbol; no wordmark crossing placket"
+  }
+}

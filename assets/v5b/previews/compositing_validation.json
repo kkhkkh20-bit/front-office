@@ -1,0 +1,314 @@
+{
+  "composition_count": 44,
+  "protected_regions": "outside garment mask, cap key and mark alpha; includes face, neck skin and background",
+  "results": [
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "seoul_comets",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "seoul_comets",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "seoul_comets",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "seoul_comets",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "seoul_hounds",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "seoul_hounds",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "seoul_hounds",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "seoul_hounds",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "incheon_seagulls",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "incheon_seagulls",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "incheon_seagulls",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "incheon_seagulls",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "suwon_sparks",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "suwon_sparks",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "suwon_sparks",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "suwon_sparks",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "goyang_storm",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "goyang_storm",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "goyang_storm",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "goyang_storm",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "daejeon_redfox",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "daejeon_redfox",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "daejeon_redfox",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "daejeon_redfox",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "gwangju_blazes",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "gwangju_blazes",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "gwangju_blazes",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "gwangju_blazes",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "daegu_thunders",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "daegu_thunders",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "daegu_thunders",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "daegu_thunders",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "busan_waves",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "busan_waves",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "busan_waves",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "busan_waves",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "changwon_anchors",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "changwon_anchors",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "changwon_anchors",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "changwon_anchors",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "korea",
+      "kit": "home",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "korea",
+      "kit": "home",
+      "protected_pixels": 154258,
+      "unchanged": true
+    },
+    {
+      "identity_id": "ko_late20s_01",
+      "team_key": "korea",
+      "kit": "away",
+      "protected_pixels": 158868,
+      "unchanged": true
+    },
+    {
+      "identity_id": "black_01",
+      "team_key": "korea",
+      "kit": "away",
+      "protected_pixels": 154258,
+      "unchanged": true
+    }
+  ]
+}
