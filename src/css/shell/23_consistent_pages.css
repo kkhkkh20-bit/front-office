@@ -182,6 +182,21 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .dhead-m .dmore>summary{cursor:pointer;color:var(--muted)}
   .dhead .dpre-no{margin:4px 0 0}
 }
+/* 휴대폰 우리 차례: 우리 차례 칸은 한 줄 띠(더보기는 같은 줄 끝, 펼치면 아래로), 목록 탭·필터 요약은 각각 한 줄. 후보 목록이 첫 화면의 70% 넘게 쓴다 */
+@media(max-width:599px){
+  .dhead.dhead-m{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:3px 8px;margin-bottom:4px}
+  .dhead-m .dhead-mr{flex:1 1 0;min-width:0;flex-wrap:wrap;gap:4px 6px}.dhead-m .dhead-mr>:first-child:not(.dhm-t){display:none}
+  .dhead-m .dhm-t{min-width:96px;flex:1 1 96px}.dhead-m .dhm-t>*{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dhead-m .dnow{font-size:15px}.dhead-m .dhm-t .small{font-size:11px}
+  .dhead-mr>.btn{min-height:36px;padding:4px 8px;font-size:12px;white-space:nowrap;flex:none;margin-left:0}.dhead-mr>.btn:first-of-type{margin-left:auto}
+  .dhead-m .dmore{flex:none;margin:0}.dhead-m .dmore>summary{min-height:36px;display:flex;align-items:center;padding:0 2px}.dhead-m .dmore[open]{flex-basis:100%}
+  .draft-candidate-body>.seg{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0}.draft-candidate-body>.seg button{flex:none;min-height:36px;padding:4px 10px}
+  .dtools{flex-wrap:nowrap;align-items:center}.dtools:has(>.dfilt[open]){flex-wrap:wrap}
+  .dtools{margin:4px 0}.dtools>.dfilt{flex:1 1 0;padding:0}.dtools>.dfilt[open]{padding:0 10px 10px}
+  .dtools>.dfilt>summary{display:block;position:relative;margin:0;padding:8px 24px 8px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:36px;line-height:20px;box-sizing:border-box}
+  .dtools>.dfilt[open]>summary{margin:0 -10px 6px}.dtools>.dfilt>summary::after{position:absolute;right:10px;top:50%;margin:-6px 0 0}
+  .dtools>.row .seg button{min-height:36px}
+  .draft-candidates.card{padding:2px 8px 4px}.draft-candidates .tw{margin-top:0}.draft-candidates .twpg{margin-bottom:2px}
+}
 
 .detail-navigation{position:sticky;top:0;z-index:12}
 

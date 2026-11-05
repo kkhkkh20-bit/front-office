@@ -65,14 +65,14 @@ function draftBoard(){
     const feed=`${dliveBox('am')}${recent.length&&!(dlSame('am')&&UI.dl.feed&&UI.dl.feed.length)?`<div class="dlog">${recent.map(x=>{const q=G.players[x.pid]; return `<span>${badge(x.tid,18)}<i>${x.rd}-${x.no}</i>${x.pass?'<em>건너뜀</em>':q?`<b>${esc(q.name)}</b> <em>${posLabel(q)}</em>`:''}</span>`}).join('')}</div>`:''}`;
     /* 휴대폰·태블릿에서 우리 차례면 후보 목록이 첫 화면을 차지하도록 로스터·일괄 처리·지명 소식을 접는다 */
     const fold=mine&&!wide();
-    const btns=`${mine?`${firstStar?`<button class="btn primary" data-a="pick" data-v="${firstStar.id}">관심 1순위 ${esc(firstStar.name)} 지명</button>`:''}<button class="btn" data-a="autoPick">스카우트 추천 지명</button>${pk.rd>=3?'<button class="btn" data-a="passPick">이번 지명 건너뛰기</button>':''}`:`<button class="btn primary" data-a="advDraft" ${UI.dl&&UI.dl.on?'disabled':''}>${UI.dl&&UI.dl.on?'다른 구단 지명 중…':'다른 구단 지명 보기'}</button>`}`;
+    const btns=`${mine?`${firstStar?`<button class="btn primary" data-a="pick" data-v="${firstStar.id}" title="관심 1순위 지명">${fold?'':'관심 1순위 '}${esc(firstStar.name)} 지명</button>`:''}<button class="btn" data-a="autoPick">${fold?'추천 지명':'스카우트 추천 지명'}</button>${pk.rd>=3&&!fold?'<button class="btn" data-a="passPick">이번 지명 건너뛰기</button>':''}`:`<button class="btn primary" data-a="advDraft" ${UI.dl&&UI.dl.on?'disabled':''}>${UI.dl&&UI.dl.on?'다른 구단 지명 중…':'다른 구단 지명 보기'}</button>`}`;
     const eyeRow=`<span class="eyebrow">${d.y||G.year} 신인 드래프트 · ${DRAFT_ROUNDS}라운드 ${d.picks.length}명</span><span class="small muted">우리 남은 지명 ${myLeft}번</span>`;
-    head=`<section class="card hero dhead${fold?' dhead-m':''}">${fold?`<div class="row dhead-mr">${badge(pk.tid,28)}<div><div class="dnow">${pk.rd}라운드 ${pk.no}순위</div><div class="small"><b>우리 차례</b> · 후보 옆 지명 버튼</div></div>${btns}</div>`
+    head=`<section class="card hero dhead${fold?' dhead-m':''}">${fold?`<div class="row dhead-mr">${badge(pk.tid,28)}<div class="dhm-t"><div class="dnow">${pk.rd}라운드 ${pk.no}순위</div><div class="small"><b>우리 차례</b> · 로스터 <b>${proj}</b>/${ROSTER_MAX}</div></div>${btns}</div>`
       :`<div class="row between">${eyeRow}</div>${capLine}
       <div class="row">${badge(pk.tid,40)}<div><div class="dnow">${pk.rd}라운드 ${pk.no}순위</div><div class="small ${mine?'':'muted'}">${mine?'<b>우리 차례입니다.</b> 후보 옆 지명 버튼으로 고르세요.':tname(pk.tid)+' 차례'}</div></div></div>
       <div class="row">${btns}</div>`}
       ${fold?'':restBox}${d.rest?`<p class="small drest-on">일괄 처리 중: ${d.rest.mode==='pass'?'남은 지명 건너뛰기':`'${d.rest.min>=4?'주전감':'1군 자원'}' 이상만 추천 지명`} <button class="btn small" data-a="draftRest" data-v="off">그만두고 직접 고르기</button></p>`:''}
-      ${fold?`<details class="dmore" data-k="draftMore" ${UI.open?.draftMore?'open':''}><summary class="small">남은 지명 ${myLeft}번 · 로스터 <b>${proj}</b>/${ROSTER_MAX} · 일괄 처리 · 지명 소식</summary><div class="row between">${eyeRow}</div>${capLine}${restBox}${feed}</details>`:feed}
+      ${fold?`<details class="dmore" data-k="draftMore" ${UI.open?.draftMore?'open':''}><summary class="small" aria-label="건너뛰기·일괄 처리·지명 소식 더 보기">더보기</summary>${pk.rd>=3?'<div class="row"><button class="btn small" data-a="passPick">이번 지명 건너뛰기</button></div>':''}<div class="row between">${eyeRow}</div>${capLine}${restBox}${feed}</details>`:feed}
     </section>`;
   } else {
     const left=Math.max(0,G.cal.draft-G.day);
