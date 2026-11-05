@@ -104,7 +104,7 @@ function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; co
 function newStadPick(k){ const S=stadOf(G.user); const N=S.proj; const o=NEWSTAD.find(x=>x.k===k); if(!N||N.stage!=='plan'||!o)return '선택할 수 없습니다.';
   N.stage='build'; N.k=k; N.cap=o.cap; N.cost=o.cost; N.paid=0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); addLog(`신구장 ${o.l} 규모로 착공했습니다. ${dmd(N.done)} ${y}년 개장 예정.`); return ''; }
 /* 분담금은 결산 때 3년에 나눠 낸다 */
-function newStadDue(tid){ const S=stadOf(tid); const N=S.proj; if(!N||N.stage!=='build')return 0; return Math.min(Math.round(N.cost/3),N.cost-(N.paid||0)); }
+function newStadDue(tid){ const S=stadOf(tid); const N=S.proj; if(!N||N.stage!=='build')return 0; const n=Math.round(N.cost/3), left=N.cost-(N.paid||0); return left<=n*1.5?left:n; } /* 마지막 회차는 반올림 잔액까지(검수 11-06: 160억 중 100만 원이 남아 사라졌다) */
 
 /* AI 구단: 돈이 넉넉하면 비시즌에 시설 하나를 손본다 */
 function stadAI(){ for(const t of G.teams){ if(t.id===G.user)continue; const S=stadOf(t.id); if(t.cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); const lv=S.lv[k]; if(lv>=(t.cash>=15000?8:t.cash>=9000?6:4))continue; /* 돈이 많은 구단은 더 높게(우리 상한 12) */ const c=STAD_COST[lv+1]; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); } }

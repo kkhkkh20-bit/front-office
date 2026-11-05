@@ -1578,6 +1578,11 @@ T('[100년] 부실 구단: AI 구단이 2년 넘게 -40억 아래면 매각·재
 T('[검수 11-05] 부상 대체 외국인이 방출돼도 원 선수가 재활 명단에서 풀린다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3);
   const o=foreignOf(G.user).find(p=>p.foreign==='용병'); ok(o,'준비 실패: 외국인 없음'); o.injOut=50; const q=(G.fmarket||[]).map(id=>G.players[id]).find(x=>x&&x.team==null&&x.foreign==='용병'&&!fTmpErr(G.user,o,x)); ok(q,'준비 실패: 대체 후보 없음');
   ok(signTempForeign(G.user,o.id,q.id)==='','대체 등록 실패'); ok(o.frehab===q.id,'재활 명단 표시 없음'); releaseForeign(q.id); ok(!o.frehab,'대체 선수를 내보냈는데 원 선수가 재활 명단에 남음'); });
+T('[검수 11-06] OB 지도자는 한 자리에만: 다른 구단 코치를 우리 감독으로 데려오면 그 코치 자리와 시장 후보에서 빠진다',()=>{ const {ob,c}=obCoachSetup(); const op=G.teams.find(t=>t.id!==G.user); G.coach[G.user].pc=null; G.coach[op.id].pc=c;
+  const m=obMgr(ob); G.mmarket=(G.mmarket||[]).concat([m,obMgr(ob)]); hireMgr(m.id,2); ok(G.mgr[G.user]&&G.mgr[G.user].ob===ob.id,'감독 선임 실패');
+  ok(!(G.coach[op.id].pc&&G.coach[op.id].pc.ob===ob.id),'다른 구단 코치 자리에 그대로 남음'); ok(!(G.mmarket||[]).some(x=>x.ob===ob.id),'감독 시장에 같은 사람이 남음'); });
+T('[검수 11-06] 재제안을 기다리는 직원 후보는 다른 구단이 먼저 데려가지 않고, 기한이 지나면 경쟁 구단이 제시한 연봉으로 간다',()=>{ fresh(); stInit(); const mk=scoutMkt(); const s=mk[0]; ok(s,'준비 실패'); const op=G.teams.find(t=>t.id!==G.user); s.bid={t:op.id,sal:s.sal+50,v:1,k:'sc',exp:G.day+3}; const sal=s.sal+50;
+  for(let i=0;i<5;i++){ stAiMonthly(); stAiStaff(); } ok(mk.includes(s)||(G.scoutMarket||[]).includes(s),'대기 중에 데려감'); G.day+=4; stBidSettle(); const L=G.lgStaff[op.id]; ok(L.sc.includes(s)&&s.sal===sal,'기한 뒤 경쟁 조건으로 가지 않음 '+s.sal); });
 T('[실플레이 11-05c] 트레이드: 선수를 보내며 상대에게 현금을 받을 수 있고, 받으면 상대가 더 많은 값을 요구하며 성사 시 돈이 우리에게 온다',()=>{ fresh(); simTo(()=>tradeOpen()&&period()==='season');
   const op=G.teams.find(t=>t.id!==G.user); op.cash=5000; const mine=domestic(G.user).filter(q=>!q.foreign&&!q.ntc).sort((a,b)=>ovr(b)-ovr(a))[2];
   const a=evalTrade(op.id,[mine.id],[],0), b=evalTrade(op.id,[mine.id],[],-500); ok(b.gain<a.gain,'받는 현금이 상대 평가에 반영 안 됨: '+a.gain.toFixed(2)+' / '+b.gain.toFixed(2));
