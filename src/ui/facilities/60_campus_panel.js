@@ -81,7 +81,7 @@ function cpFacPanel(S,k){ const t=team(G.user);
       ${nb>=2?'<p class="small muted">동시 공사는 2곳까지입니다.</p>':t.cash<D.c[nx]?`<p class="small bad">현금 부족(보유 ${money(t.cash)})</p>`:''}`;
   return `<div class="cpph"><span class="cpnm sm">${esc(D.l)}</span><button class="cpx" data-a="cpSel" data-v="">닫기</button></div>
     <div class="cplv">${cpPips(lv,FAC_MAX,b)} <span>${esc(D.lv[lv])}</span></div>
-    <p class="small">${esc(D.d)} 4단계부터는 전문화 투자로 효과 증가폭이 완만해지고 공사 기간·유지비가 커집니다.</p>
+    <p class="small">${esc(D.d)} 4단계부터는 전문화 투자로 효과 증가폭이 완만해지고 공사 기간·유지비가 커집니다.</p>${(()=>{ const t=facGainTxt(k,lv); return t?`<p class="small"><b>${esc(t)}</b></p>`:''; })()}
     ${UI.facMsg?`<div class="note bad">${esc(UI.facMsg)}</div>`:''}
     ${act}
     ${st?`<div class="cpstat"><span>운영 기록</span>${esc(st)}</div><p class="small muted cpfn">지금 기록을 센 숫자입니다. 성장·부상 변화가 이 시설 때문이라고 단정할 수는 없습니다.</p>`:''}

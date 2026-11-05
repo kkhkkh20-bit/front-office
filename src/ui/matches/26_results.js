@@ -91,7 +91,7 @@ function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=te
   /* 오른쪽: 고른 시설 */
   const [kind,k]=sel.split(':'); let dh='';
   if(kind==='fac'&&FACI[k]){ const D0=FACI[k], lv=F.it[k], b=F.bld[k], nx=lv+1;
-    dh=`<h2>${esc(D0.l)}</h2>${star(lv,FAC_MAX)}<p class="fvx-cur"><b>${lv}단계</b> ${esc(D0.lv[lv])} · 리그 ${rank(lv,fAll(k))}위 · 유지비 연 ${money(D0.up[lv])}</p><p>${esc(D0.d)}</p>
+    dh=`<h2>${esc(D0.l)}</h2>${star(lv,FAC_MAX)}<p class="fvx-cur"><b>${lv}단계</b> ${esc(D0.lv[lv])} · 리그 ${rank(lv,fAll(k))}위 · 유지비 연 ${money(D0.up[lv])}</p><p>${esc(D0.d)}</p>${(()=>{ const t=facGainTxt(k,lv); return t?`<p class="small"><b>${esc(t)}</b></p>`:''; })()}
       ${b?`<div class="note warn">${esc(D0.lv[b.lv])} 공사 중 · ${dmd(b.done)} 완공</div>`:lv>=FAC_MAX?'<div class="note good">최고 단계입니다.</div>':`<dl class="fvx-nx"><div><dt>다음 단계</dt><dd>${nx}단계 · ${esc(D0.lv[nx])}</dd></div><div><dt>공사비</dt><dd>${money(D0.c[nx])}</dd></div><div><dt>공사 기간</dt><dd>${D0.days[nx]}일</dd></div><div><dt>유지비</dt><dd>연 ${money(D0.up[nx])}</dd></div></dl>
       <div class="fvx-btn"><button class="btn small primary" data-a="buildFacItem" data-v="${k}" ${nb>=2||t.cash<D0.c[nx]?'disabled':''}>구단 현금으로 · ${money(D0.c[nx])}</button>${t.indie?'':`<button class="btn small" data-a="capex" data-v="fac:${k}" ${nb>=2?'disabled':''}>모기업 투자 요청 · ${Math.round(capexOdds('fac',D0.c[nx])*100)}%</button>`}</div>${nb>=2?'<p class="muted">동시 공사는 2곳까지입니다.</p>':t.cash<D0.c[nx]?`<p class="bad">현금 부족(보유 ${money(t.cash)})</p>`:''}`}
       <p class="fvx-note">재원 안내 ${hiI('큰 시설 투자는 운영 예산이 아니라 구단 현금(적립금)이나 모기업 투자로 합니다. 모기업 요청은 구단주 신뢰·성향·금액에 따라 승인되고, 거절되면 신뢰 -1, 60일마다 1번입니다. 성장 효과는 겨울 성장 때, 부상·회복 효과는 바로 반영됩니다.')}</p>`; }
