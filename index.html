@@ -3814,6 +3814,15 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
  .match-dashboard .md-pitch-dock .cs-bso i{width:8px;height:8px;border-radius:50%;background:#d0d5db;display:inline-block;margin-right:2px}
  .match-dashboard .md-pitch-dock #cs-B i.on{background:#2fb35c}.match-dashboard .md-pitch-dock #cs-S i.on{background:#f0a400}.match-dashboard .md-pitch-dock #cs-Ob i.on{background:#d8333f}
 }
+/* PC: 아래 '현재 타자·투수' 줄은 오른쪽 아래 스코어 버그와 겹치는 정보라 뺀다(경기 끝 결과 줄은 남김). 버그는 자막 위 */
+@media(min-width:1001px){
+ .match-dashboard .md-field-panel{grid-template-rows:28px minmax(0,1fr) auto}.match-dashboard[data-view="field"] .md-field-panel{grid-template-rows:minmax(0,1fr) auto}
+ .match-dashboard .md-duel:not(:has(.md-final)){display:none}
+ .match-dashboard .md-pitch-dock{bottom:var(--md-dock-b,62px)}
+ .match-dashboard .md-pitch-dock .md-count-panel{grid-template-columns:minmax(0,1fr) auto}
+ .match-dashboard .md-pitch-dock .cs-bso{padding:4px 8px 4px 7px}
+ .match-dashboard .md-pitch-dock .cs-bso>div{white-space:nowrap}
+}
 /* The canvas keeps its own camera aspect ratio; never stretch the 2D stage into a 3D viewport. */
 .match-dashboard .cs-3d{position:absolute;inset:0;z-index:0;pointer-events:none;background:#0b1925;display:grid;place-items:center}
 .match-dashboard .cs-3d canvas{width:100%;height:100%;display:block}
@@ -3990,6 +3999,12 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 @media(max-width:700px){.cs-pfx{padding:3px 6px;font-size:9.5px}.cs-pfx b{font-size:11px}}
 .cs-pl{padding:12px 14px 10px}.cs-pl header{margin-bottom:4px}.cs-pl-h,.cs-pl li{grid-template-columns:22px minmax(0,1fr) 50px 40px 28px 28px;gap:5px}.cs-pl-h>span{white-space:nowrap}
 .cs-pl ol{gap:0;overflow:visible}.cs-pl li{padding:2px 0;font-size:13px;line-height:1.35}.cs-pl-sp{padding-top:6px;gap:0 8px}
+/* 중계 자막(FM처럼): 가운데 정렬 알약 모양, 그 장면 공격 팀 색 바탕에 흰 글씨, '캐스터' 꼬리표 없음 */
+.match-dashboard .cs-stage.has-3d>.cs-cap{left:50%;right:auto;bottom:14px;transform:translateX(-50%);width:max-content;max-width:min(78%,760px);min-height:0;padding:7px 22px;border:0;border-radius:999px;background:var(--cap-bg,#1d4f9a);color:var(--cap-fg,#fff);text-align:center;font-size:15px;box-shadow:0 6px 18px #0007;-webkit-backdrop-filter:none;backdrop-filter:none}
+.cs-cap .cs-voice{display:block;text-align:center}.cs-cap .cs-voice>b{color:inherit}
+.match-dashboard .cs-stage.has-3d>.cs-cap.good,.match-dashboard .cs-stage.has-3d>.cs-cap.bad{color:var(--cap-fg,#fff)}
+.cs-stage.has-3d>.cs-cap.hr{background:var(--cap-bg,#6b2225);color:#fff;border:2px solid #f7cf67}
+@media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{bottom:8px;max-width:92%;padding:5px 12px;font-size:12px}}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
   .fm-home .fmmain{height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -21961,7 +21976,7 @@ function mdBug(g,st){const el=document.getElementById('md-bug');if(!el)return;co
  const row=(tid,sc,at)=>`<div class="mb-t${at?' at':''}"><i style="background:${cTeamCol(tid)}"></i><span>${esc(team(tid).nick)}</span><b>${sc}</b></div>`;
  el.innerHTML=`<div class="mb-who">${bid!=null?`<span>${bl&&bl.o!=null?bl.o+1+'. ':''}${esc(mdPlayer(g,bid).name)}</span><em>${bs?'시즌 '+bs.avg:''}</em>`:'<span>&nbsp;</span>'}</div><div class="mb-who"><span>${pid!=null?'P '+esc(mdPlayer(g,pid).name):'&nbsp;'}</span><em>${pc!=null?pc+'구':''}</em></div><div class="mb-main"><div class="mb-teams">${row(g.away,st.sa,top)}${row(g.home,st.sh,!top)}</div><div class="mb-inn"><b>${Math.floor(st.half/2)+1}</b><i>${top?'▲':'▼'}</i></div><div class="mb-dia">${[1,0,2].map(i=>`<i class="b${i}${st.bases[i]?' on':''}"></i>`).join('')}</div></div>`;}
 
-function cCap(t,cls){const el=document.getElementById('cs-cap');if(!el)return;if(!t&&c3DActive())return;el.className='cs-cap'+(t?' on':'');el.innerHTML=t?`<span class="cs-voice"><i>${cls?.includes('record')?'기록':'캐스터'}</i><b>${esc(t)}</b></span>`:'';if(cls){void el.offsetWidth;el.className+=' '+cls;}el.title=t||'';if(t&&document.querySelector('.match-dashboard'))mdSet('md-comment','<span>캐스터</span><b>'+esc(t)+'</b>');}
+function cCap(t,cls){const el=document.getElementById('cs-cap');if(!el)return;if(!t&&c3DActive())return;el.className='cs-cap'+(t?' on':'');el.innerHTML=t?`<span class="cs-voice"><b>${esc(t)}</b></span>`:''; try{ const c=UI.cast,g=c&&G.games[c.g],x=g&&(g.pbp[c.k]||g.pbp[g.pbp.length-1]),tid=x?(x[0]%2?g.home:g.away):null; if(tid!=null){ const col=cTeamCol(tid); el.style.setProperty('--cap-bg',col); el.style.setProperty('--cap-fg',cLum(col)>.6?'#111':'#fff'); } }catch(e){} /* 자막은 그 장면 공격 팀 색 바탕(FM 중계 자막처럼) */if(cls){void el.offsetWidth;el.className+=' '+cls;}el.title=t||'';if(t&&document.querySelector('.match-dashboard'))mdSet('md-comment','<span>캐스터</span><b>'+esc(t)+'</b>');}
 /* 공 */
 /* 공: arc=뜬공(가운데서 커지고 바닥에 그림자), gb=땅볼(작게 튀며 굴러감), 그 밖은 직선(라인드라이브·송구) */
 function cBall(from,to,ms,arc,gb){ if(typeof Match3D!=='undefined'&&Match3D.flight(from,to,ms/cSpd(),arc,gb,CT.pitch)){CT.pitch=null;return cSleep(ms);} const b=document.getElementById('cs-ball'); if(!b)return Promise.resolve(); const d=ms/cSpd(),token=CT.tok;
@@ -27638,6 +27653,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05y',d:'11월 5일',t:'중계 자막·화면 정리',items:[
+    '중계 자막을 화면 가운데 알약 모양으로, 그 장면 공격 팀 색 바탕에 흰 글씨로 바꿨습니다(캐스터 꼬리표 없음).',
+    'PC 중계 아래 현재 타자·투수 줄을 없애고(오른쪽 아래 스코어 버그와 같은 정보) 3D 화면을 그만큼 넓혔습니다. 스코어 버그의 볼카운트 칸이 잘리던 것도 고쳤습니다.']},
   {id:'2026-11-05x',d:'11월 5일',t:'중계 화면 스코어 버그',items:[
     'PC 3D 중계에서 볼카운트·주자·투구 위치를 실제 야구 중계처럼 화면 오른쪽 아래에 겹쳐 띄웁니다. 반투명 스트라이크존 아래 스코어 버그에 타순·타자(시즌 타율), 투수·투구 수, 두 팀 점수, 이닝, 주자, B·S·O가 나옵니다. 3D 화면이 오른쪽 칸 없이 넓어졌습니다.']},
   {id:'2026-11-05w',d:'11월 5일',t:'경기 전 라인업 화면',items:[

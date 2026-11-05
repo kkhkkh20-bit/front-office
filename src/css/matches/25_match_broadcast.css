@@ -132,3 +132,12 @@
  .match-dashboard .md-pitch-dock .cs-bso i{width:8px;height:8px;border-radius:50%;background:#d0d5db;display:inline-block;margin-right:2px}
  .match-dashboard .md-pitch-dock #cs-B i.on{background:#2fb35c}.match-dashboard .md-pitch-dock #cs-S i.on{background:#f0a400}.match-dashboard .md-pitch-dock #cs-Ob i.on{background:#d8333f}
 }
+/* PC: 아래 '현재 타자·투수' 줄은 오른쪽 아래 스코어 버그와 겹치는 정보라 뺀다(경기 끝 결과 줄은 남김). 버그는 자막 위 */
+@media(min-width:1001px){
+ .match-dashboard .md-field-panel{grid-template-rows:28px minmax(0,1fr) auto}.match-dashboard[data-view="field"] .md-field-panel{grid-template-rows:minmax(0,1fr) auto}
+ .match-dashboard .md-duel:not(:has(.md-final)){display:none}
+ .match-dashboard .md-pitch-dock{bottom:var(--md-dock-b,62px)}
+ .match-dashboard .md-pitch-dock .md-count-panel{grid-template-columns:minmax(0,1fr) auto}
+ .match-dashboard .md-pitch-dock .cs-bso{padding:4px 8px 4px 7px}
+ .match-dashboard .md-pitch-dock .cs-bso>div{white-space:nowrap}
+}

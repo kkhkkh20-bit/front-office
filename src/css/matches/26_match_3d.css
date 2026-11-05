@@ -174,3 +174,9 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 @media(max-width:700px){.cs-pfx{padding:3px 6px;font-size:9.5px}.cs-pfx b{font-size:11px}}
 .cs-pl{padding:12px 14px 10px}.cs-pl header{margin-bottom:4px}.cs-pl-h,.cs-pl li{grid-template-columns:22px minmax(0,1fr) 50px 40px 28px 28px;gap:5px}.cs-pl-h>span{white-space:nowrap}
 .cs-pl ol{gap:0;overflow:visible}.cs-pl li{padding:2px 0;font-size:13px;line-height:1.35}.cs-pl-sp{padding-top:6px;gap:0 8px}
+/* 중계 자막(FM처럼): 가운데 정렬 알약 모양, 그 장면 공격 팀 색 바탕에 흰 글씨, '캐스터' 꼬리표 없음 */
+.match-dashboard .cs-stage.has-3d>.cs-cap{left:50%;right:auto;bottom:14px;transform:translateX(-50%);width:max-content;max-width:min(78%,760px);min-height:0;padding:7px 22px;border:0;border-radius:999px;background:var(--cap-bg,#1d4f9a);color:var(--cap-fg,#fff);text-align:center;font-size:15px;box-shadow:0 6px 18px #0007;-webkit-backdrop-filter:none;backdrop-filter:none}
+.cs-cap .cs-voice{display:block;text-align:center}.cs-cap .cs-voice>b{color:inherit}
+.match-dashboard .cs-stage.has-3d>.cs-cap.good,.match-dashboard .cs-stage.has-3d>.cs-cap.bad{color:var(--cap-fg,#fff)}
+.cs-stage.has-3d>.cs-cap.hr{background:var(--cap-bg,#6b2225);color:#fff;border:2px solid #f7cf67}
+@media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{bottom:8px;max-width:92%;padding:5px 12px;font-size:12px}}
