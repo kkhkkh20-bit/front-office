@@ -3622,6 +3622,8 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
 .trc-y{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:6px}.trc-y span{display:grid;justify-items:center;padding:3px 0;border-radius:4px;background:#ffffff08;font-size:11px;line-height:1.3}.trc-y i{font-style:normal;color:var(--muted)}.trc-y b{font:700 13px var(--f-num,inherit)}.trc-y em{font-style:normal;color:var(--muted);font-size:10.5px}.trc-y .p em{color:var(--good,#5bd17a)}.trc-y .c{background:#f2c14e22}.trc-y .c em{color:#ffd166;font-weight:700}
 .trc-e{font-size:12px;color:var(--muted);padding:10px 0}
 /* 진열장 카드: 구단 이름이 숫자에 밀려 한 글자로 잘리던 것. 이름은 줄이지 않고, 우승·준우승·정규 1위는 이름 아래 줄로 */.trc-h b{flex:1 1 auto;min-width:auto;white-space:nowrap}.trc-h span.num{flex-basis:100%;padding-left:36px;margin-top:-2px}.trc.sm .trc-h span.num{padding-left:30px}
+/* 이름 잘림 전수 점검(2026-11-05): 구단·선수 이름이 들어간 칸은 말줄임 대신 줄바꿈 */body .ltile .l1 i{white-space:normal;word-break:keep-all;overflow:visible;text-overflow:clip}body .fx-ld b{white-space:normal;word-break:keep-all;overflow:visible;text-overflow:clip;line-height:1.25}body .fx-col2 .fx-li b{white-space:normal;word-break:keep-all;overflow:visible;text-overflow:clip;line-height:1.3}body .bk-lg .bk-t,body .bk-t{display:block;min-width:0;overflow:visible;white-space:normal;text-overflow:clip}body .bk-t .badge{vertical-align:-2px}body .bk-t>*{min-width:0;overflow-wrap:anywhere}
+body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!important;text-overflow:clip!important;font-size:10.5px;letter-spacing:-.02em;line-height:1.15}
 /* 경기장은 하나의 화면, 주변 패널은 현재 재생 시점의 기록만 보여 준다. */
 .cast.match-dashboard{height:calc(100dvh / var(--z,1));box-sizing:border-box;padding:10px;gap:6px;grid-template-rows:50px minmax(0,1fr) 30px 45px 84px 32px;background:#0b1118;color:#dce5ec;overflow:hidden;--md-line:#303d48;--md-panel:#17212b}
 .match-dashboard .cs-top{padding:0 8px;background:#141e28;border:1px solid var(--md-line);border-radius:5px;gap:8px;min-width:0}
@@ -27480,6 +27482,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05v',d:'11월 5일',t:'이름 잘림 전수 점검',items:[
+    '모든 메뉴·하위 탭과 선수 정보 창을 PC·휴대폰에서 열어 구단·선수 이름이 잘리는 곳을 찾아 고쳤습니다: 기록 리더 카드의 구단명, 순위 화면 리더 칸, 구단 정보의 최근 구단 기록·일정 칸, 휴대폰 트레이드 매물 줄. 이름이 들어간 칸은 말줄임 대신 줄을 바꿉니다.']},
   {id:'2026-11-05u',d:'11월 5일',t:'진열장 구단 이름',items:[
     '트로피 진열장 카드에서 구단 이름이 한 글자만 남고 잘리던 것을 고쳤습니다. 우승·준우승·정규 1위 횟수는 이름 아래 줄에 나옵니다.']},
   {id:'2026-11-05s',d:'11월 5일',t:'창단 첫해 외국인 영입',items:[
