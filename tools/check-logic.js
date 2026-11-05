@@ -1583,6 +1583,8 @@ T('[검수 11-06] OB 지도자는 한 자리에만: 다른 구단 코치를 우�
   ok(!(G.coach[op.id].pc&&G.coach[op.id].pc.ob===ob.id),'다른 구단 코치 자리에 그대로 남음'); ok(!(G.mmarket||[]).some(x=>x.ob===ob.id),'감독 시장에 같은 사람이 남음'); });
 T('[검수 11-06] 재제안을 기다리는 직원 후보는 다른 구단이 먼저 데려가지 않고, 기한이 지나면 경쟁 구단이 제시한 연봉으로 간다',()=>{ fresh(); stInit(); const mk=scoutMkt(); const s=mk[0]; ok(s,'준비 실패'); const op=G.teams.find(t=>t.id!==G.user); s.bid={t:op.id,sal:s.sal+50,v:1,k:'sc',exp:G.day+3}; const sal=s.sal+50;
   for(let i=0;i<5;i++){ stAiMonthly(); stAiStaff(); } ok(mk.includes(s)||(G.scoutMarket||[]).includes(s),'대기 중에 데려감'); G.day+=4; stBidSettle(); const L=G.lgStaff[op.id]; ok(L.sc.includes(s)&&s.sal===sal,'기한 뒤 경쟁 조건으로 가지 않음 '+s.sal); });
+T('[검수 11-06b] 전역해도 그해 복무 기간 연봉은 빠진 채로 남는다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign); p.sal=1000; const y=G.year; enlist(p,'현역',dnum(y-1,6,1)); p.mil.until=dnum(y,6,1); const f0=payFrac(p,y);
+  G.day=dnum(y,6,1); milDaily(); ok(p.mil&&p.mil.done,'전역 처리 안 됨'); ok(Math.abs(payFrac(p,y)-f0)<1e-9,'전역 뒤 지급 비율 '+f0.toFixed(3)+' → '+payFrac(p,y).toFixed(3)); });
 T('[실플레이 11-05c] 트레이드: 선수를 보내며 상대에게 현금을 받을 수 있고, 받으면 상대가 더 많은 값을 요구하며 성사 시 돈이 우리에게 온다',()=>{ fresh(); simTo(()=>tradeOpen()&&period()==='season');
   const op=G.teams.find(t=>t.id!==G.user); op.cash=5000; const mine=domestic(G.user).filter(q=>!q.foreign&&!q.ntc).sort((a,b)=>ovr(b)-ovr(a))[2];
   const a=evalTrade(op.id,[mine.id],[],0), b=evalTrade(op.id,[mine.id],[],-500); ok(b.gain<a.gain,'받는 현금이 상대 평가에 반영 안 됨: '+a.gain.toFixed(2)+' / '+b.gain.toFixed(2));
