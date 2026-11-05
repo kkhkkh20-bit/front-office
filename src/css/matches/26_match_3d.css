@@ -96,3 +96,18 @@
   .cs-nameplate{padding:1px 3px;min-width:0}.cs-nameplate b{font-size:9px}.cs-nameplate span{font-size:7px}
   .cs-stage[data-renderer="ready"]>.cs-board-view{top:5px;right:5px;padding:2px 6px;font-size:9px}
 }
+/* 경기 전 화면: 3D가 준비돼도 '경기 시작'을 누를 때까지(data-pre) 라인업·해설·진행 막대를 3D 위에 둔다. 2D 대체(fallback)면 감춘다 */
+.cs-prep{pointer-events:auto}
+.cs-3d[data-pre]:not([data-state="fallback"]) .cs-prep{display:flex;z-index:6;top:14px}
+.cs-3d[data-pre][data-state="ready"] .cs-prep{inset:10px;padding:12px;background:#0b1720e6;border-radius:8px}
+.cs-3d[data-pre]:not([data-state="fallback"]) .cs-3d-status{display:none}
+.cs-stage:has(>.cs-3d[data-pre]:not([data-state="fallback"]))>:is(.cs-sit,.cs-cap,.cs-fx,.cs-board-view){visibility:hidden}
+.cs-prep-foot{display:none;flex:none;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:stretch}
+.cs-3d[data-pre] .cs-prep-foot{display:grid}
+.cs-prep-talk{background:#14232ee0;border:1px solid #54728255;border-left:3px solid var(--gold,#e8c46a);border-radius:8px;padding:8px 12px;min-width:0}
+.cs-prep-talk>span{font-size:10px;color:var(--muted)}.cs-prep-talk>p{margin:2px 0 0;font-size:12px;line-height:1.45}
+.cs-prep-go{display:flex;flex-direction:column;justify-content:center;gap:7px}
+.cs-prep-stage{font-size:12px;color:#d9e7ef;text-align:center}
+.cs-prep-bar{height:6px;border-radius:3px;background:#ffffff1c;overflow:hidden}.cs-prep-bar>i{display:block;height:100%;width:3%;background:#e8dbab;transition:width .4s}
+.cs-prep-start{min-height:40px;font-size:14px;font-weight:700}.cs-prep-start:disabled{opacity:.45;cursor:default}
+@media(max-width:700px){.cs-3d[data-pre]:not([data-state="fallback"]) .cs-prep{top:6px}.cs-3d[data-pre][data-state="ready"] .cs-prep{inset:4px;padding:6px}.cs-prep-foot{grid-template-columns:minmax(0,1fr) 112px;gap:6px}.cs-prep-talk{padding:4px 7px}.cs-prep-talk>span{display:none}.cs-prep-talk>p{font-size:10px;line-height:1.35;margin:0}.cs-prep-go{gap:4px}.cs-prep-stage{font-size:9px;line-height:1.25}.cs-prep-start{min-height:30px;font-size:12px;padding:2px 6px}}

@@ -17,15 +17,17 @@ let active=null,loaded=null,pendingData=null,rawModels=null,clipEvents=pack.even
 const v=(x,y,z)=>new T.Vector3(x,y,z),clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function decode(s){const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
 function fallback(host,text){host.dataset.state='fallback';if(host.parentElement)host.parentElement.dataset.renderer='fallback';host.parentElement?.classList.remove('has-3d');const el=host.querySelector('.cs-3d-status');if(el)el.textContent=text;}
-function status(text){if(active?.host&&active.host.dataset.state!=='fallback'){const el=active.host.querySelector('.cs-3d-status');if(el)el.textContent=text;}}
-async function modelBuffer(source){if(typeof source==='string')return decode(source).buffer;const response=await fetch(new URL(source.url,document.baseURI));if(!response.ok)throw new Error('경기장 파일 응답 '+response.status);return response.arrayBuffer();}
-function prefetch(){if(!rawModels)rawModels=Promise.all(['field','stadium','player','bat','ball'].map(async key=>[key,await modelBuffer(pack[key])])).then(Object.fromEntries).catch(e=>{rawModels=null;throw e;});return rawModels;}
+function status(text,p){if(active?.host&&active.host.dataset.state!=='fallback'){const el=active.host.querySelector('.cs-3d-status');if(el)el.textContent=text;}if(p!=null)document.dispatchEvent(new CustomEvent('fo3d-progress',{detail:p}));}
+// 경기 전 화면 진행 막대(fo3d-progress, 0~1): 사이트판은 모델 받기 0~.6, 모델 해석 ~.85, 배치·그래픽 준비 ~1
+const remote=typeof pack.field!=='string',got={},total=['field','stadium','player','bat','ball'].reduce((n,k)=>n+(pack[k].bytes||0),0);
+async function modelBuffer(source,key){if(typeof source==='string')return decode(source).buffer;const response=await fetch(new URL(source.url,document.baseURI));if(!response.ok)throw new Error('경기장 파일 응답 '+response.status);if(!response.body||!total)return response.arrayBuffer();const reader=response.body.getReader(),parts=[];got[key]=0;for(;;){const {done,value}=await reader.read();if(done)break;parts.push(value);got[key]+=value.length;document.dispatchEvent(new CustomEvent('fo3d-progress',{detail:.6*Math.min(1,Object.values(got).reduce((a,b)=>a+b,0)/total)}));}return new Blob(parts).arrayBuffer();}
+function prefetch(){if(!rawModels)rawModels=Promise.all(['field','stadium','player','bat','ball'].map(async key=>[key,await modelBuffer(pack[key],key)])).then(Object.fromEntries).catch(e=>{rawModels=null;throw e;});return rawModels;}
 async function load(renderer){
  if(loaded)return loaded;
  loaded=(async()=>{const urls=[];const blob=(b,type)=>{const u=URL.createObjectURL(new Blob([b],{type}));urls.push(u);return u;};
  const manager=new T.LoadingManager(),js=blob(pack.basisJS,'text/javascript'),wasm=blob(decode(pack.basisWasm),'application/wasm');manager.setURLModifier(u=>u.endsWith('basis_transcoder.js')?js:u.endsWith('basis_transcoder.wasm')?wasm:u);
  const ktx=new KTX2Loader(manager).setTranscoderPath('fo3d-basis/').setWorkerLimit(2).detectSupport(renderer),loader=new GLTFLoader(manager).setMeshoptDecoder(MeshoptDecoder).setKTX2Loader(ktx);
- try{const result={},buffers=await prefetch();const keys=['field','stadium','player','bat','ball'];let count=0;const results=await Promise.allSettled(keys.map(async key=>{const buffer=buffers[key];result[key]=await loader.parseAsync(buffer,'');status(`선수들이 준비하고 있습니다 · ${++count}/${keys.length}`);}));const failed=results.find(r=>r.status==='rejected');if(failed)throw failed.reason;const tuned=retimeBaseballClips(athleticClips(result.player.animations,pack.events),pack.events);result.player.animations=tuned.clips;clipEvents=tuned.events;return result;}finally{ktx.dispose();urls.forEach(u=>URL.revokeObjectURL(u));}
+ try{const result={},buffers=await prefetch();const keys=['field','stadium','player','bat','ball'];let count=0;const results=await Promise.allSettled(keys.map(async key=>{const buffer=buffers[key];result[key]=await loader.parseAsync(buffer,'');status(`선수들이 준비하고 있습니다 · ${++count}/${keys.length}`,(remote?.6:.1)+.25*count/keys.length);}));const failed=results.find(r=>r.status==='rejected');if(failed)throw failed.reason;const tuned=retimeBaseballClips(athleticClips(result.player.animations,pack.events),pack.events);result.player.animations=tuned.clips;clipEvents=tuned.events;return result;}finally{ktx.dispose();urls.forEach(u=>URL.revokeObjectURL(u));}
  })().catch(e=>{loaded=null;throw e;});return loaded;
 }
 // Shared virtual board coordinates map to the same measured 3D diamond (metres).
@@ -85,9 +87,9 @@ async function mount(host,options={}){
  // Build players before shader compilation, yielding between models so the loading UI can paint.
  status('선수와 경기 화면을 준비하고 있습니다');
  if(s.desired){const data=s.desired;for(const t of data.targets){if(active!==s)return false;const a=makeActor(t);s.actors.set(t.k,a);a.root.position.copy(point(t.pt));if(a.pitcher)a.root.position.y=.26;a.root.rotation.y=actorFacing(a);await new Promise(requestAnimationFrame);}scoreboard(data.board||data);}
- setCamera(true);status('그래픽을 준비하고 있습니다');if(renderer.compileAsync)await renderer.compileAsync(scene,camera);
+ setCamera(true);status('그래픽을 준비하고 있습니다',.92);if(renderer.compileAsync)await renderer.compileAsync(scene,camera);
  if(active!==s)return false;s.ready=true;if(s.desired)sync(s.desired);setCamera(true);renderer.render(scene,camera);layoutLabels(s);
- host.dataset.state='ready';host.parentElement.dataset.renderer='ready';host.parentElement.classList.add('has-3d');status('');tick(performance.now());return true;
+ host.dataset.state='ready';host.parentElement.dataset.renderer='ready';host.parentElement.classList.add('has-3d');status('',1);tick(performance.now());return true;
  }catch(e){if(active===s){console.error('3D 경기장 로드 실패',e);fallback(host,'3D 경기장 파일을 불러오지 못해 기본 중계로 표시 중입니다.');}return false;}
 }
 function setCamera(snap=false,dt=1/60){const s=active;if(!s)return;let pos,look;if(s.cameraMode==='incident'){pos=v(0,7.5,-13);look=v(0,1,9);s.camera.fov=s.camera.aspect<1?65:50;s.camera.updateProjectionMatrix();}else if(s.cameraMode==='scoreboard'&&s.boardCenter){look=s.boardCenter.clone();pos=look.clone().addScaledVector(s.boardNormal,29);s.camera.fov=34;s.camera.updateProjectionMatrix();}else if(s.cameraMode==='field'&&s.follow){const target=s.follow;pos=v(clamp(target.x*.2,-12,12),8.5,-10);look=target.clone();look.y=Math.max(1.5,look.y);}else{pos=v(0,3.4,-8.8);look=v(0,1.1,24);s.camera.fov=s.camera.aspect<1?65:46;s.camera.updateProjectionMatrix();}
