@@ -3920,6 +3920,16 @@ body .cs-prep-teams>section.cs-pcard[hidden]{display:none}
  .cs-pl{display:none}
  .cs-pc{width:64px}.cs-pc-av{width:34px;height:34px;border-radius:6px}.cs-pc>b{font-size:9.5px;padding:0 3px}
 }
+/* 경기 전 라인업 v3: 경기장 배경은 선명하게, 카드는 반투명 유리(뒤가 흐리게 비침)로 그 위에 띄운다. 원정·홈이 번갈아 바뀔 때 부드럽게 */
+.cs-3d[data-pre] .cs-prep::before,.cs-3d[data-pre][data-state="ready"] .cs-prep::before{filter:brightness(.85) saturate(1.05);transform:none}
+.cs-3d[data-pre] .cs-prep::after{background:linear-gradient(180deg,rgba(5,12,20,.35),transparent 30%,transparent 70%,rgba(5,12,20,.45))}
+body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50px rgba(0,0,0,.45),inset 0 0 0 1px #ffffff40;animation:prepIn .45s ease}
+.cs-pf{background:rgba(246,243,250,.42);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2)}
+.cs-pf .of{fill:#ffffff5c;stroke:#ffffffb0}.cs-pf .if{fill:#f4e7d6a8;stroke:#e9d6bf}.cs-pf .md{fill:#ead8c4d0}
+.cs-pl{background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 72%,transparent),color-mix(in srgb,var(--tc) 55%,#000 25%));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.cs-prep-talk{background:#0d1a24b8;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@keyframes prepIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){body .cs-prep-teams>section.cs-pcard{animation:none}}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
   .fm-home .fmmain{height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -22280,13 +22290,15 @@ function matchEntrySheet(){const x=nextGames(1)[0];return `<div class="scrim"><s
 
 /* 경기 전 라인업(FM 경기 전 화면처럼): 흐린 경기장 위에 포지션 그림 카드 + 오른쪽 구단색 타순 패널. 원정·홈은 위 버튼으로 바꿔 본다(기본: 우리 팀) */
 const PREP_XY={C:[50,90],P:[50,63],'1B':[73,58],'2B':[62,43],SS:[38,43],'3B':[27,58],LF:[17,22],CF:[50,12],RF:[83,22],DH:[88,88]};
-function matchPrepLineups(g){const me=G.user,def=g.home===me?'h':'a',cur=UI.prepSide&&UI.prepSideG===g.day?UI.prepSide:def;
+function matchPrepLineups(g){UI.prepAt=Date.now();if(UI.prepSideG!==g.day){UI.prepManual=false;UI.prepSide=null;}const me=G.user,def=g.home===me?'h':'a',cur=UI.prepSide&&UI.prepSideG===g.day?UI.prepSide:def;
  const card=side=>{const tid=side==='a'?g.away:g.home,rows=castLineup(g,side,0).slice(0,9),pit=g.box[side].pit[0],col=cTeamCol(tid);
   const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]}%;top:${xy[1]}%"><span class="cs-pc-av">${p?avImg(p):'<span class="av ini">?</span>'}<em>${label}</em></span><b>${esc(p?.name||n||'')}</b></div>`;};
   const field=`<div class="cs-pf"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M50 96 L6 52 Q50 -6 94 52 Z" class="of"/><path d="M50 92 L30 66 L50 44 L70 66 Z" class="if"/><circle cx="50" cy="66" r="4" class="md"/></svg>${rows.map((r,i)=>chip(G.players[r.id],i+1,r.pos,r.n)).join('')}${pit?chip(G.players[pit.id],'P','P'):''}</div>`;
   const list=`<div class="cs-pl" style="--tc:${col}"><header>${badge(tid,40)}<b>${esc(tname(tid))}</b><span>${side==='a'?'원정':'홈'}</span></header><ol>${rows.map((r,i)=>`<li><i>${i+1}</i><b>${esc(G.players[r.id]?.name||r.n||'')}</b><span>${esc(POSK[r.pos]||r.pos)}</span></li>`).join('')}${pit?`<li class="p"><i>P</i><b>${esc(G.players[pit.id]?.name||'')}</b><span>선발투수</span></li>`:''}</ol></div>`;
   return `<section class="cs-pcard" data-side="${side}"${side===cur?'':' hidden'}>${field}${list}</section>`;};
  return `<div class="cs-prep"><div class="cs-prep-heading"><b>선발 라인업</b><span>${esc(stadName(g.home))} · ${dstr(g.day)} · ${[0,6].includes(dobj(g.day).w)?'주간':'야간'} 경기</span><span class="chips optrow cs-prep-side" role="group">${['a','h'].map(sd=>`<button type="button" data-a="prepSide" data-v="${sd}:${g.day}" class="${sd===cur?'on':''}" aria-pressed="${sd===cur}">${badge(sd==='a'?g.away:g.home,14)} ${esc(tshort(sd==='a'?g.away:g.home))}</button>`).join('')}</span></div><div class="cs-prep-teams">${card('a')}${card('h')}</div><div class="cs-prep-foot"><div class="cs-prep-talk"><span>해설</span>${matchPrepTalk(g).map(t=>`<p>${esc(t)}</p>`).join('')}</div><div class="cs-prep-go"><span class="cs-prep-stage">선수들이 경기장에 도착하고 있습니다</span><span class="cs-prep-bar"><i></i></span><button class="btn primary cs-prep-start" data-a="castStart" disabled>경기 시작</button></div></div></div>`;}
+/* 경기 전 화면: 우리 팀 라인업을 보여 준 뒤 5초마다 상대 팀과 번갈아 띄운다(FM처럼). 단장이 버튼을 직접 누르면 멈춘다 */
+setInterval(()=>{ try{ const c=UI.cast; if(!c||!c.pre||UI.prepManual||Date.now()-(UI.prepAt||0)<4800)return; const el=document.querySelector('#cs-3d[data-pre] .cs-pcard:not([hidden])'); const b=el&&document.querySelector(`.cs-prep-side button:not(.on)`); if(b)A.prepSide(b.dataset.v,null,null,true); }catch(e){} },500);
 /* 경기 전 해설: 결과가 미리 계산돼 있으므로 이 경기 날짜 이전 기록만 쓴다(점수·결과·이날 성적 금지) */
 function matchPrepTalk(g){const before=tid=>tlOf(tid).filter(x=>x[5]<g.day),rec=tid=>wlOf(before(tid)),pct=r=>r.w/Math.max(1,r.w+r.l),A=tshort(g.away),H=tshort(g.home),ra=rec(g.away),rh=rec(g.home),out=[];
  const order=G.teams.map(t=>({tid:t.id,r:rec(t.id)})).sort((a,b)=>pct(b.r)-pct(a.r)),rank=tid=>order.findIndex(x=>x.tid===tid)+1;
@@ -24994,7 +25006,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
  matchWatch(){UI.matchPreview=false;A.watchNext();},
  matchSim(){const next=nextGames(1)[0];if(next)G.simPlanned={day:next.d};UI.matchPreview=false;G.watchPlanned=null;G.matchAwait=null;if(G.res&&!G.live)G.res=null;if(blocker()){save();render();return;}const day=G.day;advance('next',{skipMatchStop:true});if(G.res&&G.games[G.res.i]?.day===G.simPlanned?.day)G.simPlanned=null;closeSheets();UI.tab='home';save();render();setTimeout(()=>dayTick(day),30);}
 ,
-  prepSide(v){const [sd,d]=v.split(':');UI.prepSide=sd;UI.prepSideG=+d;document.querySelectorAll('.cs-pcard').forEach(e=>{e.hidden=e.dataset.side!==sd;});document.querySelectorAll('.cs-prep-side button').forEach(b=>{const on=b.dataset.v.startsWith(sd+':');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});},
+  prepSide(v,el,e,auto){const [sd,d]=v.split(':');if(!auto)UI.prepManual=true;UI.prepAt=Date.now();UI.prepSide=sd;UI.prepSideG=+d;document.querySelectorAll('.cs-pcard').forEach(e=>{e.hidden=e.dataset.side!==sd;});document.querySelectorAll('.cs-prep-side button').forEach(b=>{const on=b.dataset.v.startsWith(sd+':');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});},
   prepPage(){const el=document.querySelector('.cs-prep');if(!el)return;el.dataset.page=el.dataset.page==='0'?'1':'0';const b=el.querySelector('[data-a="prepPage"]');if(b)b.textContent=el.dataset.page==='0'?'6~9번 보기':'1~5번 보기';},
   homePanel(v){UI.homePanel=v;UI.homePage=0;UI.homeFocus=null;render();},
   homeNews(v){UI.homeNews=+v;render();},
@@ -27553,7 +27565,7 @@ Object.assign(A,{
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
   {id:'2026-11-05w',d:'11월 5일',t:'경기 전 라인업 화면',items:[
-    '3D 중계 경기 전 화면을 FM처럼 바꿨습니다. 흐린 경기장 사진 위에 수비 위치 그림(선수 얼굴·타순 번호)과 구단색 타순 표가 나옵니다. 위 버튼으로 원정·홈 라인업을 바꿔 봅니다(기본은 우리 팀).']},
+    '3D 중계 경기 전 화면을 FM처럼 바꿨습니다. 선명한 경기장 사진 위에 반투명 유리 카드로 수비 위치 그림(선수 얼굴·타순 번호)과 구단색 타순 표가 뜹니다. 우리 팀 라인업을 보여 준 뒤 5초마다 상대 팀과 번갈아 나오고, 위 버튼을 누르면 그 팀에 멈춥니다.']},
   {id:'2026-11-05v',d:'11월 5일',t:'이름 잘림 전수 점검',items:[
     '모든 메뉴·하위 탭과 선수 정보 창을 PC·휴대폰에서 열어 구단·선수 이름이 잘리는 곳을 찾아 고쳤습니다: 기록 리더 카드의 구단명, 순위 화면 리더 칸, 구단 정보의 최근 구단 기록·일정 칸, 휴대폰 트레이드 매물 줄. 이름이 들어간 칸은 말줄임 대신 줄을 바꿉니다.']},
   {id:'2026-11-05u',d:'11월 5일',t:'진열장 구단 이름',items:[

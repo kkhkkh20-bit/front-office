@@ -138,3 +138,13 @@ body .cs-prep-teams>section.cs-pcard[hidden]{display:none}
  .cs-pl{display:none}
  .cs-pc{width:64px}.cs-pc-av{width:34px;height:34px;border-radius:6px}.cs-pc>b{font-size:9.5px;padding:0 3px}
 }
+/* 경기 전 라인업 v3: 경기장 배경은 선명하게, 카드는 반투명 유리(뒤가 흐리게 비침)로 그 위에 띄운다. 원정·홈이 번갈아 바뀔 때 부드럽게 */
+.cs-3d[data-pre] .cs-prep::before,.cs-3d[data-pre][data-state="ready"] .cs-prep::before{filter:brightness(.85) saturate(1.05);transform:none}
+.cs-3d[data-pre] .cs-prep::after{background:linear-gradient(180deg,rgba(5,12,20,.35),transparent 30%,transparent 70%,rgba(5,12,20,.45))}
+body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50px rgba(0,0,0,.45),inset 0 0 0 1px #ffffff40;animation:prepIn .45s ease}
+.cs-pf{background:rgba(246,243,250,.42);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2)}
+.cs-pf .of{fill:#ffffff5c;stroke:#ffffffb0}.cs-pf .if{fill:#f4e7d6a8;stroke:#e9d6bf}.cs-pf .md{fill:#ead8c4d0}
+.cs-pl{background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 72%,transparent),color-mix(in srgb,var(--tc) 55%,#000 25%));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.cs-prep-talk{background:#0d1a24b8;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@keyframes prepIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){body .cs-prep-teams>section.cs-pcard{animation:none}}
