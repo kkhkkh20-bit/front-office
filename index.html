@@ -21372,7 +21372,7 @@ function fdTicker(){ const F=G.fd; if(!F||F.done)return ''; const pk=F.picks[F.c
   const r2=fresh?`<div class="tk2 steal"><b>뺏겼습니다</b><span>${esc(st.tg)} <button class="lnk" data-a="player" data-v="${st.pid}">${esc(st.nm)}</button>을(를) ${esc(tshort(st.tid))}이(가) ${st.rd}-${st.no}에 지명</span>${fdTrue(top)}</div>`
     :top?`<div class="tk2">${badge(top.tid,16)}<i>${top.rd}-${top.no}</i><button class="lnk" data-a="player" data-v="${top.pid}">${esc(top.nm)}</button><span class="muted">${esc(top.pos)}${top.age!=null?` · ${top.age}세`:''}</span>${top.me?'<em class="good">우리 지명</em>':fdTrue(top)}${L.stN?`<span class="tk-l">놓친 관심 ${L.stN}명</span>`:''}</div>`:'';
   const risk=(()=>{ if(pre||ask)return ''; const RK=fdRisk(); const S=(G.shortlist||[]).map(id=>G.players[id]).filter(p=>p&&p.fdPool&&(RK[p.id]||0)>=.35).sort((a,b)=>RK[b.id]-RK[a.id]).slice(0,4); if(!S.length)return ''; return `<div class="tk2 risk"><b>${mine?'지금 안 뽑으면':'우리 차례 전에'} 빠질 수 있는 관심 선수</b>${S.map(p=>`<span class="rk-i"><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><em>${Math.round(RK[p.id]*100)}%</em></span>`).join('')}</div>`; })();
-  const tkm=UI.tkMin??fdCompact(); /* 휴대폰은 처음부터 한 줄로 접어 선수 목록을 넓게 */ const minB=`<button class="tk-minb" data-a="tkMin" aria-label="${tkm?'상황판 펼치기':'상황판 접기'}">${tkm?'펼치기 ▾':'접기 ▴'}</button>`; /* 휴대폰: 위에 고정된 상황판을 한 줄로 접어 선수 목록을 넓게 */
+  const tkm=UI.tkMin??(innerWidth<1001); /* 휴대폰만 처음부터 접는다. PC는 한도·남은 순번·최근 지명이 기본으로 보여야 기능을 안다(사용자 11-05) */ /* 휴대폰은 처음부터 한 줄로 접어 선수 목록을 넓게 */ const minB=`<button class="tk-minb" data-a="tkMin" aria-label="${tkm?'상황판 펼치기':'상황판 접기'}">${tkm?'펼치기 ▾':'접기 ▴'}</button>`; /* 휴대폰: 위에 고정된 상황판을 한 줄로 접어 선수 목록을 넓게 */
   if(fdCompact()){ /* 휴대폰: 구단 줄을 없애고 로고(소식함·처음 화면)·우리 팀을 상황판 첫 줄에, 펼치기는 한도 줄을 눌러서 */
     const unread=G.mail.filter(mailNeeds).length; const my=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const {ln}=fdLineupOf(my.filter(p=>!p.isP)); const emp=['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).length+Math.max(0,FD_TGT.P-my.filter(p=>p.isP).length); const tm=UI.fdTab==='team';
     const logo=`<button class="tk-logo" data-a="tkMenu" aria-label="메뉴">${badge(G.user,26)}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`;
@@ -27512,7 +27512,7 @@ Object.assign(A,{
 Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });
 
 /* 드래프트 상황판(휴대폰): 맡기기 메뉴 열기·상황판 접기 */
-Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??fdCompact()); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
+Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??(innerWidth<1001)); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
 /* ---------- 플레이 기록(익명, 테스트용) ----------
  테스트 배포 때 '단장을 만들고 어디까지, 몇 년 차까지 하는지'와 어느 기능을 쓰는지, 어디서 막히는지를 보기 위한 기록.
  - TELE.ph에 PostHog 프로젝트 키(phc_…)를 넣어야 켜진다. 비어 있으면 아무것도 보내지 않는다(GA4 측정 ID도 넣을 수 있다).
