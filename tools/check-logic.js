@@ -1581,8 +1581,8 @@ T('[검수 11-05] 부상 대체 외국인이 방출돼도 원 선수가 재활 �
 T('[실플레이 11-05c] 트레이드: 선수를 보내며 상대에게 현금을 받을 수 있고, 받으면 상대가 더 많은 값을 요구하며 성사 시 돈이 우리에게 온다',()=>{ fresh(); simTo(()=>tradeOpen()&&period()==='season');
   const op=G.teams.find(t=>t.id!==G.user); op.cash=5000; const mine=domestic(G.user).filter(q=>!q.foreign&&!q.ntc).sort((a,b)=>ovr(b)-ovr(a))[2];
   const a=evalTrade(op.id,[mine.id],[],0), b=evalTrade(op.id,[mine.id],[],-500); ok(b.gain<a.gain,'받는 현금이 상대 평가에 반영 안 됨: '+a.gain.toFixed(2)+' / '+b.gain.toFixed(2));
-  const u0=team(G.user).cash, o0=op.cash; const r=proposeTrade(op.id,[mine.id],[],-100,null); if(r.ok){ ok(team(G.user).cash===u0+100&&op.cash===o0-100,'현금 이동 틀림: 우리 '+(team(G.user).cash-u0)+' 상대 '+(op.cash-o0)); }
-  ok(!proposeTrade(op.id,[],[],-100,null).ok,'선수 없이 현금만 받기가 통과'); op.cash=50; ok(/현금 여유/.test(proposeTrade(op.id,[mine.id],[],-500,null).msg||''),'상대 현금 부족 확인 없음'); });
+  const u0=G.spend.compIn||0, o0=op.cash; const r=proposeTrade(op.id,[mine.id],[],-100,null); if(r.ok){ ok((G.spend.compIn||0)===u0+100&&op.cash===o0-100,'현금 이동 틀림: 우리 '+((G.spend.compIn||0)-u0)+' 상대 '+(op.cash-o0)); } /* 우리 구단이 받는 돈은 현금이 아니라 올해 예산 수입(compIn, 결산의 보상금·양도금 수령)으로 들어온다 */
+  ok(!proposeTrade(op.id,[],[],-100,null).ok,'선수 없이 현금만 받기가 통과'); op.cash=50; const m2=domestic(G.user).find(q=>!q.foreign&&!q.ntc); ok(/현금 여유/.test(proposeTrade(op.id,[m2.id],[],-500,null).msg||''),'상대 현금 부족 확인 없음'); }); /* 앞의 거래가 성사되면 mine은 이미 상대 선수라 다른 선수로 확인 */
 T('[실플레이 11-05b] FA 미계약 선수: 12월·1월에도 다른 구단 FA에게 제안할 수 있다',()=>{ fresh(); simTo(()=>G.fa&&!G.fa.closed&&G.day>=dnum(G.fa.y0,12,20)); const F=G.fa;
   const L=F.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!==G.user&&q.ask); ok(L.length,'준비 실패: 12월 20일에 남은 FA 없음'); const p=L[0]; const ng=F.neg&&F.neg[p.id];
   const r=faNegotiate(p.id,{annual:round5(p.ask.annual*1.2),years:p.ask.years}); ok(!/협상할 수 없는/.test(r.msg||''),'12월 제안 막힘: '+r.msg+' · unemp '+!!G.unemp+' · neg '+JSON.stringify(ng||null).slice(0,160)+' · out '+faOutN(G.user)+'/'+faCapN());
