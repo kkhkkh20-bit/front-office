@@ -1,0 +1,18 @@
+{
+  "source": "previous review20-identity pilot, all3teams",
+  "method": "deterministic greedy minimax, no optimality or0.40 pass claim",
+  "selected_indices": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    12,
+    13,
+    15,
+    17,
+    19
+  ],
+  "source_max_pair": 0.5399792194366455,
+  "requested_final_uniqueness_threshold": 0.4
+}

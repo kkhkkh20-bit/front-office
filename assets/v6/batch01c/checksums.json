@@ -1,0 +1,132 @@
+{
+  "algorithm": "SHA-256",
+  "excludes": [
+    "checksums.json"
+  ],
+  "files": {
+    "ASSET_PREVIEW.png": {
+      "bytes": 1785376,
+      "sha256": "76c27cdf2f8e42881c441309cf17f84ccc36251ff7ab6124aa57b8b017d4c1a8"
+    },
+    "CLAUDE_HANDOFF.md": {
+      "bytes": 2042,
+      "sha256": "131ebae5c71ea6617b118461206ad3075a83965fb3ce211c0ada891f08b54fb4"
+    },
+    "README.md": {
+      "bytes": 5895,
+      "sha256": "a51be9e6c807d1139ca7981975de6fa544333a321fd0c258ad10e89407b74c98"
+    },
+    "archive/gwangju_blazes.zip": {
+      "bytes": 10169040,
+      "sha256": "7bc1901dedae5a97a5064eec8b9fe24bc3b519d15adb618c31db1a1b05dcab93"
+    },
+    "archive/seoul_comets.zip": {
+      "bytes": 10517245,
+      "sha256": "c96fb4331696c8ac1fb461af97021d0ddb1767e2e4244ce0ae528d9456b426f9"
+    },
+    "archive/seoul_hounds.zip": {
+      "bytes": 9701310,
+      "sha256": "303f6360fde732a019830810ea1a400b25e2b956e2c3f56ad071c7a02101f584"
+    },
+    "archive_manifest.json": {
+      "bytes": 520,
+      "sha256": "9033f7a26a9b0bf66516eef29de6e8f40edbdcc5bed10e7f5bfc5e2ce865f550"
+    },
+    "deployment_manifest.json": {
+      "bytes": 475,
+      "sha256": "eec38ed2f26d736a270e4c836461d460f1214e9316328b46dcfb4820e59f6fb0"
+    },
+    "framing_validation.json": {
+      "bytes": 17247,
+      "sha256": "1c593bc3505422dd9c2bae0605077b95a0b973f3f3a6c711fd24270142366433"
+    },
+    "manifest.json": {
+      "bytes": 30558,
+      "sha256": "f8463bd83111bab477b1e4c9e47bc488247bf96afd8a9ab42a77be81c33c8374"
+    },
+    "previews/cards_256_part01.png": {
+      "bytes": 853065,
+      "sha256": "72731d39f5103128ebea85b420078a5d3c30c2fccd40a80b5950cb076a34240b"
+    },
+    "previews/cards_256_part02.png": {
+      "bytes": 858383,
+      "sha256": "7e8be2cd287339c28557351c108f6192e0b70a951485dcc43e37cc2ab96780f6"
+    },
+    "previews/detail_cap_part01.png": {
+      "bytes": 2500147,
+      "sha256": "bbab7d8144d0e332ae1d3479c190646daabeecd4c60ea2cce96e6243386f1244"
+    },
+    "previews/detail_cap_part02.png": {
+      "bytes": 2446520,
+      "sha256": "3120b429bc812c855a604d0ad66edb930ac7976f899d9854e06a918740edd632"
+    },
+    "previews/detail_collar_part01.png": {
+      "bytes": 2110932,
+      "sha256": "9048080fc4c4313d08cc14e416085e023ccea90ae5a78a45fc776c59f0c70b42"
+    },
+    "previews/detail_collar_part02.png": {
+      "bytes": 2111203,
+      "sha256": "2dda535b1c5287e87595f5cc2487b04503227c85d27b5d0fa1a5c34582f6293a"
+    },
+    "previews/portraits_512_part01.png": {
+      "bytes": 2142116,
+      "sha256": "a9e5aea75f5f659f25712cdbfacbe42d0938013f7926c33992bd432d07c82366"
+    },
+    "previews/portraits_512_part02.png": {
+      "bytes": 2188995,
+      "sha256": "1e103cff3f1cfef3f510e64b08b584d763751b62a620c8d85d0f59afa443e66d"
+    },
+    "previews/portraits_512_part03.png": {
+      "bytes": 2266219,
+      "sha256": "91aa57450b47b141da1aa93d00bf38bf59c24f6c5d6e2c298bc399e10198984a"
+    },
+    "previews/portraits_512_part04.png": {
+      "bytes": 2183888,
+      "sha256": "039a2afd53674e984973af9e860eac21d3893bb339ccb3822b8071849f7d7775"
+    },
+    "previews/portraits_512_part05.png": {
+      "bytes": 2154219,
+      "sha256": "72ce84f24b491a965393db7b971a37a7c0cc6ffb6a8e1f7bd037b6fef1ef2f3d"
+    },
+    "production_notes.json": {
+      "bytes": 4635,
+      "sha256": "577f8055c654088903569b49bfaccba54ffb5742eaeb7dc9c92b776c13aa17c1"
+    },
+    "sheets/128/gwangju_blazes.webp": {
+      "bytes": 31446,
+      "sha256": "2e1ed9c921bbf04b960360d798757afbd23303f73cc5bae42bf4bc8380701fc8"
+    },
+    "sheets/128/seoul_comets.webp": {
+      "bytes": 29296,
+      "sha256": "5d84ccd61c3782d3983473f0b9e809969dcc86d7088fec8507bf1a5700d5cbb0"
+    },
+    "sheets/128/seoul_hounds.webp": {
+      "bytes": 26140,
+      "sha256": "b18582c3ae4facdfbc21b579c31f372f5392ecf9a9391e6a17acc0a4e64f3411"
+    },
+    "sheets/256/gwangju_blazes.webp": {
+      "bytes": 88516,
+      "sha256": "a8718c19bba85349b40d8717f7f0f03bb69fe1011fa6d91c1b06fe68afbbcf7f"
+    },
+    "sheets/256/seoul_comets.webp": {
+      "bytes": 85732,
+      "sha256": "3f565ee8485c02be33792bcd046ed8aae696f9a71e4c86dae1f13f51e34e1e70"
+    },
+    "sheets/256/seoul_hounds.webp": {
+      "bytes": 73162,
+      "sha256": "bf1366e40d36d03af7d7616dc5ed8604b9decb122dd4398334525c92dcfea434"
+    },
+    "source_identity_selection.json": {
+      "bytes": 329,
+      "sha256": "aaf3a8080c937ce07b2d53c27025869d835a1ea62ed72e3b1658e75cd83470c9"
+    },
+    "validation.json": {
+      "bytes": 49568,
+      "sha256": "78a699cd0ab277a2365f207b28d4a597ac843112ae96b5750eb694c884f2b0a0"
+    },
+    "validation_embeddings.npz": {
+      "bytes": 248192,
+      "sha256": "12e7f2dbf56252550c9492b97b65534ccbeb678caa3c9e6964b76688a0c8195c"
+    }
+  }
+}

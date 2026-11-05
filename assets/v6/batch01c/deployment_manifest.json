@@ -1,0 +1,15 @@
+{
+  "do_not_auto_deploy": true,
+  "release_ready": false,
+  "reason": "User requested visual pilot before continuation;0.40 uniqueness failed",
+  "runtime_candidate_files": [
+    "sheets/128/seoul_comets.webp",
+    "sheets/256/seoul_comets.webp",
+    "sheets/128/seoul_hounds.webp",
+    "sheets/256/seoul_hounds.webp",
+    "sheets/128/gwangju_blazes.webp",
+    "sheets/256/gwangju_blazes.webp",
+    "manifest.json"
+  ],
+  "exclude_archives_and_previews_from_runtime": true
+}

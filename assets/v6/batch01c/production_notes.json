@@ -1,0 +1,136 @@
+{
+  "request": "docs/asset-requests/2026-11-05-codex-v6c-player-faces.md",
+  "latest_scope": "10 identities x3clubs, user will assess in game before expansion",
+  "generation_calls": 9,
+  "sources": [
+    {
+      "batch": 1,
+      "team": "seoul_comets",
+      "grid_columns": 2,
+      "grid_rows": 2,
+      "count": 4,
+      "path": "/workspace/generated_images/exec-4386202f-ccbe-43e8-8bb4-773a5b6d2617.png",
+      "generated_file": "exec-4386202f-ccbe-43e8-8bb4-773a5b6d2617.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "sha256": "13d9104e5fedc2519882572e04f0e4afa5a64dc0402f99325f358fb8f7d67dde"
+    },
+    {
+      "batch": 2,
+      "team": "seoul_comets",
+      "grid_columns": 2,
+      "grid_rows": 2,
+      "count": 4,
+      "path": "/workspace/generated_images/exec-c67a2f0f-d595-4549-bedd-03bec39b49af.png",
+      "generated_file": "exec-c67a2f0f-d595-4549-bedd-03bec39b49af.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "sha256": "ea84f285822c73a2aa9e0c3f9ef881057559f55c0ed4bd05deaab52187218487"
+    },
+    {
+      "batch": 3,
+      "team": "seoul_comets",
+      "grid_columns": 2,
+      "grid_rows": 1,
+      "count": 2,
+      "path": "/workspace/generated_images/exec-bc7f9316-c59b-46e0-bd01-bef4a7d1447a.png",
+      "generated_file": "exec-bc7f9316-c59b-46e0-bd01-bef4a7d1447a.png",
+      "native_size": [
+        1774,
+        887
+      ],
+      "sha256": "83b42e9df054c121b53f7fee4c12626d54ffb6eabb5453b1a0ae35afebf069ee"
+    },
+    {
+      "batch": 1,
+      "team": "seoul_hounds",
+      "grid_columns": 2,
+      "grid_rows": 2,
+      "count": 4,
+      "path": "/workspace/generated_images/exec-5b1f2f1e-1ce2-4a8d-bc75-b0b9a1ff81bb.png",
+      "generated_file": "exec-5b1f2f1e-1ce2-4a8d-bc75-b0b9a1ff81bb.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "sha256": "8d5dce29ee464603a0f24d6d99b92211fe962c46e19996c8834b96011f5ab9df"
+    },
+    {
+      "batch": 1,
+      "team": "gwangju_blazes",
+      "grid_columns": 2,
+      "grid_rows": 2,
+      "count": 4,
+      "path": "/workspace/generated_images/exec-d9efd213-ecbf-48c5-a87c-90c50441d7dc.png",
+      "generated_file": "exec-d9efd213-ecbf-48c5-a87c-90c50441d7dc.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "sha256": "0003ece5471238454d02c53e1ba49a629ea1fe5e7b62567f52ebc665ac75596d"
+    },
+    {
+      "batch": 2,
+      "team": "seoul_hounds",
+      "grid_columns": 2,
+      "grid_rows": 2,
+      "count": 4,
+      "path": "/workspace/generated_images/exec-02875e81-72af-4050-a295-d0e0343bf8c3.png",
+      "generated_file": "exec-02875e81-72af-4050-a295-d0e0343bf8c3.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "sha256": "0bf4e263468fd551c0836334a6f98d5e8532a606678d467d674e8201a2fe2096"
+    },
+    {
+      "batch": 2,
+      "team": "gwangju_blazes",
+      "grid_columns": 2,
+      "grid_rows": 2,
+      "count": 4,
+      "path": "/workspace/generated_images/exec-1311e6c7-cc39-4dbc-bfb6-bd1f3a2ff354.png",
+      "generated_file": "exec-1311e6c7-cc39-4dbc-bfb6-bd1f3a2ff354.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "sha256": "b8b360c6247ed64582a6c60fc395ddda85413f4a18152515bdcd7a4823583a4e"
+    },
+    {
+      "batch": 3,
+      "team": "seoul_hounds",
+      "grid_columns": 2,
+      "grid_rows": 1,
+      "count": 2,
+      "path": "/workspace/generated_images/exec-a2e086b0-1b13-497a-874e-2a20b7265aca.png",
+      "generated_file": "exec-a2e086b0-1b13-497a-874e-2a20b7265aca.png",
+      "native_size": [
+        1774,
+        887
+      ],
+      "sha256": "4e7787da86830c7ef873ab5dc6e89c95903d2044ee1525d6238ae537a634f7fa"
+    },
+    {
+      "batch": 3,
+      "team": "gwangju_blazes",
+      "grid_columns": 2,
+      "grid_rows": 1,
+      "count": 2,
+      "path": "/workspace/generated_images/exec-0d954ed8-504a-4a55-b0f5-da8873de53a5.png",
+      "generated_file": "exec-0d954ed8-504a-4a55-b0f5-da8873de53a5.png",
+      "native_size": [
+        1774,
+        887
+      ],
+      "sha256": "aa722e7a858b4b6f609cb3c5c50b487cf42af45479bc38f75ab5a1140f317aac"
+    }
+  ],
+  "source_photos": "re-generated closer photographic composition of10selected fictional identities from prior20-person review; source_pilot_id aliases in manifest",
+  "technical_processing": "trim1pixel source-cell boundary; uniform downsample only; independent image WebP encoding;8px extruded atlas padding; NO background extension, no headroom translation, no face/body paste or cap stretch",
+  "reference_logo": "approved v5b fantasy cap mark alpha bounding box enlarged for imagegen reference; logo texture generated in photograph"
+}

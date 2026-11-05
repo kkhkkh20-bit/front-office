@@ -1,0 +1,1954 @@
+{
+  "passed": false,
+  "release_ready": false,
+  "identity_count": 10,
+  "team_variant_count": 30,
+  "method": "B_direct_photographic_wardrobe",
+  "uniqueness_threshold": 0.4,
+  "within_comparisons": 405,
+  "within_max": 0.6184062361717224,
+  "within_over_threshold_pairs": 145,
+  "within_pair_pass_ratio": 0.6419753086419753,
+  "within_failures": [
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "seoul_comets",
+      "cosine": 0.48683759570121765
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "seoul_comets",
+      "cosine": 0.41150403022766113
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "seoul_comets",
+      "cosine": 0.4515173137187958
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4910043776035309
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4172137379646301
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "seoul_hounds",
+      "cosine": 0.47541481256484985
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5251924991607666
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4275552034378052
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.48303309082984924
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "seoul_comets",
+      "cosine": 0.4785812199115753
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "seoul_comets",
+      "cosine": 0.4346809983253479
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_007",
+      "b_team": "seoul_comets",
+      "cosine": 0.4227283000946045
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "seoul_comets",
+      "cosine": 0.4099537134170532
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4590050280094147
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4713253974914551
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "seoul_hounds",
+      "cosine": 0.43608734011650085
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_007",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4266650378704071
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.465575635433197
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4287664294242859
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4452957212924957
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_comets",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4431252181529999
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "seoul_comets",
+      "cosine": 0.4389020502567291
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_007",
+      "b_team": "seoul_comets",
+      "cosine": 0.4134962260723114
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "seoul_comets",
+      "cosine": 0.44798845052719116
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4607025980949402
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "seoul_hounds",
+      "cosine": 0.46753785014152527
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.42201438546180725
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4079776704311371
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4586620330810547
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.44695404171943665
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4104071855545044
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.45127907395362854
+    },
+    {
+      "a": "v6c10_004",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "seoul_comets",
+      "cosine": 0.4402501881122589
+    },
+    {
+      "a": "v6c10_004",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.428628146648407
+    },
+    {
+      "a": "v6c10_004",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4352869391441345
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "seoul_comets",
+      "cosine": 0.5221961140632629
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "seoul_hounds",
+      "cosine": 0.41853585839271545
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4251587688922882
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.5038756728172302
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.408979594707489
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.41273894906044006
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5138584971427917
+    },
+    {
+      "a": "v6c10_006",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4085279703140259
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "seoul_comets",
+      "cosine": 0.4229390025138855
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "seoul_hounds",
+      "cosine": 0.45539218187332153
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4527216851711273
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4257999360561371
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4463495910167694
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4040159285068512
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_comets",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.40553465485572815
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_comets",
+      "b": "v6c10_009",
+      "b_team": "seoul_comets",
+      "cosine": 0.6184062361717224
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4451844394207001
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_comets",
+      "b": "v6c10_009",
+      "b_team": "seoul_hounds",
+      "cosine": 0.5657346248626709
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.45661821961402893
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_comets",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4306141436100006
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_comets",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5936638116836548
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "seoul_hounds",
+      "cosine": 0.427105188369751
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "seoul_hounds",
+      "cosine": 0.6102777719497681
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.41301247477531433
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_comets",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4157731533050537
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_comets",
+      "b": "v6c10_008",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.6010086536407471
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_comets",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.40188583731651306
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "seoul_hounds",
+      "cosine": 0.40882229804992676
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_002",
+      "b_team": "seoul_hounds",
+      "cosine": 0.43871980905532837
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "seoul_hounds",
+      "cosine": 0.43915289640426636
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_004",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4210245907306671
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "seoul_hounds",
+      "cosine": 0.5127931237220764
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.41301795840263367
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.45074012875556946
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_004",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.45347434282302856
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5046124458312988
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_comets",
+      "b": "v6c10_006",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4252217710018158
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_002",
+      "b_team": "seoul_hounds",
+      "cosine": 0.49902892112731934
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_003",
+      "b_team": "seoul_hounds",
+      "cosine": 0.43506085872650146
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_008",
+      "b_team": "seoul_hounds",
+      "cosine": 0.49918195605278015
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_009",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4304964244365692
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_002",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5096755027770996
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4157399833202362
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_008",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.49008554220199585
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4276385009288788
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_003",
+      "b_team": "seoul_hounds",
+      "cosine": 0.5022363662719727
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_005",
+      "b_team": "seoul_hounds",
+      "cosine": 0.45192933082580566
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_006",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4247319996356964
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_007",
+      "b_team": "seoul_hounds",
+      "cosine": 0.48289960622787476
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4315846860408783
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.48420804738998413
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.43552908301353455
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4611424207687378
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_006",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.41236412525177
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.47421589493751526
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4419539272785187
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_005",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4603540003299713
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_007",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4512358605861664
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_009",
+      "b_team": "seoul_hounds",
+      "cosine": 0.41393613815307617
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4492161273956299
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.431057333946228
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_002",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.45484551787376404
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.44896581768989563
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.47148028016090393
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.45829036831855774
+    },
+    {
+      "a": "v6c10_004",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.437825083732605
+    },
+    {
+      "a": "v6c10_004",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.43232470750808716
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.5137384533882141
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_002",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4359430968761444
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4421261250972748
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5103074908256531
+    },
+    {
+      "a": "v6c10_006",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.41126370429992676
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_008",
+      "b_team": "seoul_hounds",
+      "cosine": 0.42422834038734436
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4318715035915375
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_009",
+      "b_team": "seoul_hounds",
+      "cosine": 0.5858222246170044
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4948332905769348
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4489372968673706
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5984624624252319
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "seoul_hounds",
+      "cosine": 0.4179857671260834
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_001",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.42168891429901123
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4153643250465393
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_008",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5616898536682129
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4159696400165558
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.43349412083625793
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_004",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4516414701938629
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5081906318664551
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_006",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.42979156970977783
+    },
+    {
+      "a": "v6c10_010",
+      "a_team": "seoul_hounds",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4123711884021759
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_002",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5226542949676514
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.446662038564682
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_008",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4920821189880371
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.41655591130256653
+    },
+    {
+      "a": "v6c10_001",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.40880951285362244
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_003",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.42071375250816345
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4377047121524811
+    },
+    {
+      "a": "v6c10_002",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.40157967805862427
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_005",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.43416526913642883
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.45143505930900574
+    },
+    {
+      "a": "v6c10_003",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4660816788673401
+    },
+    {
+      "a": "v6c10_004",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_006",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.40506526827812195
+    },
+    {
+      "a": "v6c10_004",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.4590746760368347
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_006",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.40055030584335327
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_007",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.40474599599838257
+    },
+    {
+      "a": "v6c10_005",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5082162618637085
+    },
+    {
+      "a": "v6c10_006",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.43626293540000916
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_008",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.43195533752441406
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.43823307752609253
+    },
+    {
+      "a": "v6c10_007",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.42055973410606384
+    },
+    {
+      "a": "v6c10_008",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_009",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.5824275612831116
+    },
+    {
+      "a": "v6c10_009",
+      "a_team": "gwangju_blazes",
+      "b": "v6c10_010",
+      "b_team": "gwangju_blazes",
+      "cosine": 0.425294429063797
+    }
+  ],
+  "per_team": {
+    "seoul_comets": {
+      "pairs": 45,
+      "max": 0.6184062361717224,
+      "over_threshold_pairs": 14
+    },
+    "seoul_hounds": {
+      "pairs": 45,
+      "max": 0.5858222246170044,
+      "over_threshold_pairs": 18
+    },
+    "gwangju_blazes": {
+      "pairs": 45,
+      "max": 0.5824275612831116,
+      "over_threshold_pairs": 22
+    }
+  },
+  "v6b_comparisons": 3000,
+  "v6b_max": 0.5292321443557739,
+  "v6b_over_threshold_pairs": 104,
+  "v6b_failures": [
+    {
+      "identity_id": "v6c10_001",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0091",
+      "cosine": 0.4002608060836792
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0001",
+      "cosine": 0.4252367317676544
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0005",
+      "cosine": 0.42030224204063416
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0006",
+      "cosine": 0.5292321443557739
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0014",
+      "cosine": 0.45541876554489136
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0032",
+      "cosine": 0.4693247973918915
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0041",
+      "cosine": 0.4129936099052429
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.4700419008731842
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0081",
+      "cosine": 0.40949565172195435
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0082",
+      "cosine": 0.42737576365470886
+    },
+    {
+      "identity_id": "v6c10_004",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0007",
+      "cosine": 0.41128233075141907
+    },
+    {
+      "identity_id": "v6c10_004",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0010",
+      "cosine": 0.4286631643772125
+    },
+    {
+      "identity_id": "v6c10_004",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0037",
+      "cosine": 0.42863234877586365
+    },
+    {
+      "identity_id": "v6c10_005",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0005",
+      "cosine": 0.4066791832447052
+    },
+    {
+      "identity_id": "v6c10_005",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.43032142519950867
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0027",
+      "cosine": 0.4418865740299225
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0028",
+      "cosine": 0.4312220513820648
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0031",
+      "cosine": 0.4413892328739166
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0041",
+      "cosine": 0.4118892252445221
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0061",
+      "cosine": 0.4057614207267761
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0080",
+      "cosine": 0.4174577295780182
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0088",
+      "cosine": 0.4069805145263672
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0099",
+      "cosine": 0.46293768286705017
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0002",
+      "cosine": 0.4113391041755676
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0051",
+      "cosine": 0.45603638887405396
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0084",
+      "cosine": 0.40054285526275635
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0001",
+      "cosine": 0.4379746913909912
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0008",
+      "cosine": 0.4159386157989502
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0021",
+      "cosine": 0.40193986892700195
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0025",
+      "cosine": 0.4175747334957123
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0043",
+      "cosine": 0.4019460678100586
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0057",
+      "cosine": 0.41593194007873535
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0059",
+      "cosine": 0.4095560908317566
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.40782424807548523
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0064",
+      "cosine": 0.5061608552932739
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0065",
+      "cosine": 0.5040828585624695
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0071",
+      "cosine": 0.43663519620895386
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0074",
+      "cosine": 0.43351802229881287
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_comets",
+      "v6b_identity_id": "v6_b01b_0083",
+      "cosine": 0.4044193923473358
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0006",
+      "cosine": 0.5235413312911987
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0014",
+      "cosine": 0.44561994075775146
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0027",
+      "cosine": 0.403602659702301
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0032",
+      "cosine": 0.44447335600852966
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.4856344759464264
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0076",
+      "cosine": 0.40567684173583984
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0082",
+      "cosine": 0.42259690165519714
+    },
+    {
+      "identity_id": "v6c10_004",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0010",
+      "cosine": 0.4145745635032654
+    },
+    {
+      "identity_id": "v6c10_004",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0037",
+      "cosine": 0.41557052731513977
+    },
+    {
+      "identity_id": "v6c10_005",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.4124342203140259
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0027",
+      "cosine": 0.43978428840637207
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0028",
+      "cosine": 0.41117537021636963
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0031",
+      "cosine": 0.4276745021343231
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0061",
+      "cosine": 0.40556514263153076
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0099",
+      "cosine": 0.43658316135406494
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0002",
+      "cosine": 0.4152390658855438
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0051",
+      "cosine": 0.44833898544311523
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0084",
+      "cosine": 0.40522289276123047
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0001",
+      "cosine": 0.4094507098197937
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0025",
+      "cosine": 0.4261251389980316
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0043",
+      "cosine": 0.4046533405780792
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0059",
+      "cosine": 0.41629475355148315
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0064",
+      "cosine": 0.481052041053772
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0065",
+      "cosine": 0.48281797766685486
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0071",
+      "cosine": 0.4510137438774109
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "seoul_hounds",
+      "v6b_identity_id": "v6_b01b_0096",
+      "cosine": 0.4050644040107727
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0005",
+      "cosine": 0.40491998195648193
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0006",
+      "cosine": 0.5279916524887085
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0014",
+      "cosine": 0.42429494857788086
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0032",
+      "cosine": 0.47413644194602966
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.4656570553779602
+    },
+    {
+      "identity_id": "v6c10_002",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0081",
+      "cosine": 0.4246434271335602
+    },
+    {
+      "identity_id": "v6c10_004",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0010",
+      "cosine": 0.41078492999076843
+    },
+    {
+      "identity_id": "v6c10_004",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0037",
+      "cosine": 0.40493327379226685
+    },
+    {
+      "identity_id": "v6c10_005",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.41408228874206543
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0004",
+      "cosine": 0.405595988035202
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0005",
+      "cosine": 0.4282679557800293
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0027",
+      "cosine": 0.4781199097633362
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0028",
+      "cosine": 0.4593578279018402
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0031",
+      "cosine": 0.4502740204334259
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0039",
+      "cosine": 0.40622448921203613
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0041",
+      "cosine": 0.40719273686408997
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0052",
+      "cosine": 0.4244789481163025
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0061",
+      "cosine": 0.4321671426296234
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0080",
+      "cosine": 0.4502497911453247
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0086",
+      "cosine": 0.4211030900478363
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0088",
+      "cosine": 0.4212862551212311
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0093",
+      "cosine": 0.45183253288269043
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0095",
+      "cosine": 0.4086989760398865
+    },
+    {
+      "identity_id": "v6c10_007",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0099",
+      "cosine": 0.4716494381427765
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0002",
+      "cosine": 0.415485680103302
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0051",
+      "cosine": 0.45130348205566406
+    },
+    {
+      "identity_id": "v6c10_008",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0084",
+      "cosine": 0.41798728704452515
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0001",
+      "cosine": 0.4170467257499695
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0025",
+      "cosine": 0.4343370497226715
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0043",
+      "cosine": 0.41466763615608215
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0057",
+      "cosine": 0.4263486862182617
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0059",
+      "cosine": 0.4451448321342468
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0063",
+      "cosine": 0.43426600098609924
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0064",
+      "cosine": 0.5012766122817993
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0065",
+      "cosine": 0.4931429624557495
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0071",
+      "cosine": 0.45193687081336975
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0074",
+      "cosine": 0.43780800700187683
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0077",
+      "cosine": 0.4239559471607208
+    },
+    {
+      "identity_id": "v6c10_010",
+      "team": "gwangju_blazes",
+      "v6b_identity_id": "v6_b01b_0083",
+      "cosine": 0.4130406081676483
+    }
+  ],
+  "same_identity_operational_threshold": 0.6,
+  "same_identity_minimum": 0.9061986804008484,
+  "same_identity_pairs": [
+    {
+      "identity_id": "v6c10_001",
+      "minimum": 0.944037675857544,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.944037675857544
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9594533443450928
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9493318796157837
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_002",
+      "minimum": 0.9151618480682373,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.915629506111145
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9370459318161011
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9151618480682373
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_003",
+      "minimum": 0.9061986804008484,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.9061986804008484
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9128991961479187
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9354858994483948
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_004",
+      "minimum": 0.942234218120575,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.942234218120575
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9467306137084961
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9500889182090759
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_005",
+      "minimum": 0.9464643597602844,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.9518176317214966
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9543407559394836
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9464643597602844
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_006",
+      "minimum": 0.9384865164756775,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.9519184231758118
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9406634569168091
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9384865164756775
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_007",
+      "minimum": 0.9366039037704468,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.9366039037704468
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.946954071521759
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9431623220443726
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_008",
+      "minimum": 0.9450740218162537,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.9450740218162537
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9526577591896057
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9639296531677246
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_009",
+      "minimum": 0.9460670351982117,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.9460670351982117
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.96250319480896
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9589690566062927
+        }
+      ]
+    },
+    {
+      "identity_id": "v6c10_010",
+      "minimum": 0.9454771876335144,
+      "pairs": [
+        {
+          "a_team": "seoul_comets",
+          "b_team": "seoul_hounds",
+          "cosine": 0.9454771876335144
+        },
+        {
+          "a_team": "seoul_comets",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.955292284488678
+        },
+        {
+          "a_team": "seoul_hounds",
+          "b_team": "gwangju_blazes",
+          "cosine": 0.9564581513404846
+        }
+      ]
+    }
+  ],
+  "input": "actual final256 RGB WebP cells; same v6 ArcFace model,5point alignment, L2 normalization, unmodified cosine",
+  "model_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+  "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+  "v6b_provenance": {
+    "batch": "v6/batch01b",
+    "count": 100,
+    "manifest_sha256": "f0cb82aa60f64ed3ad7853947c60ba00be6af09603cb5f42f46858a3fce4ac39",
+    "sheet256_sha256": "26d27f5e6569f8950ae8a33895da7e4dd046fd2dc2802874896d5a62637f010d",
+    "model_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "source": "Actual main branch256 sheet decoded RGB; embeddings recomputed rather than trusting prior candidate data"
+  },
+  "headroom_min_512_estimate": 42,
+  "generated_headroom": true,
+  "headroom_padding_or_extension_operations": 0,
+  "cap_stretch_operations": 0,
+  "face_body_paste_operations": 0,
+  "visual_review": {
+    "status": "reviewed_for_pilot",
+    "photos_reviewed": 30,
+    "card_size": 256,
+    "detail_sheets": [
+      "detail_cap_part01.png",
+      "detail_cap_part02.png",
+      "detail_collar_part01.png",
+      "detail_collar_part02.png"
+    ],
+    "observations": [
+      "All10people x3teams were checked in actual256px final-WebP crops. Full neck, shoulder line and collar/clavicle area remain visible.",
+      "Caps physically sit low with visor immediately above brows and very little visible bare forehead. No runtime hat stretch, photo translation or background extension.",
+      "Crown panel seams, fabric-covered top button, eyelets, multi-row visor stitch, edge thickness and brow shadow are present. Cap highlights/shadows are generated photography, not flat color replacement.",
+      "Fictional club marks read as embroidered thread; silhouette and stitch microdetails can vary slightly between photographs and are not pixel-identical vector overlays.",
+      "Jersey collar binding, sew-through buttons, buttonholes, textile grain and small natural shoulder folds are visible; no head/torso paste boundaries observed.",
+      "Minor skin/neck lighting differences remain between generated wardrobe versions. Same-person min cosine0.906 is strong but does not prove pixel-identical identity.",
+      "No specific recognizable real-person reproduction was identified during review; this was not an exhaustive comparison against all real people."
+    ],
+    "real_person_generation_photo_inputs": 0,
+    "game_integration_tested": false,
+    "uniqueness_gate_passed": false
+  },
+  "independent_format_validation": {
+    "passed": true,
+    "check_count": 15,
+    "checks": [
+      "10 unique adult IDs x3teams, latest user scope",
+      "6 RGB atlas images +manifest, release gate false",
+      "6WebP modes/dimensions/hash/8px per-cell padding",
+      "all60atlas rectangles and30RGB512 masters/identity mapping",
+      "40 delivered red-cap headroom checks across128/256 >=40px512-equivalent",
+      "all30 final256embeddings independently recomputed",
+      "embedding identity/team ordering and100v6b identities",
+      "all405distinct-identity image pairs +3000v6b pairs, unchanged0.40",
+      "all30same-identity cross-team pairs satisfy operational0.60 guard",
+      "3ZIP CRCs/hashes,99images including9generated source grids",
+      "30generated frames>=40headroom estimates, native sources>=512, no background extension or local warps",
+      "actual main v6b source manifest/sheet SHA",
+      "same fixed v6 model/detector SHA and alignment",
+      "every individual artifact below25MiB",
+      "30actual256px card previews +30photos at512 +cap/collar detail sheets"
+    ],
+    "delivered_red_cap_min_headroom_512": 40.0,
+    "headroom_checks": 40,
+    "max_master_to_final_rgb_mae": 2.5712890625,
+    "navy_headroom_method": "matched silhouette estimate and all10 navy-cap visual inspection; not a semantic alpha mask"
+  },
+  "intended_use": "10person art/large-card pilot for user to assess in game before expansion; not an accepted production face cohort"
+}

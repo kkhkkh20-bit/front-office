@@ -1,0 +1,542 @@
+[
+  {
+    "identity_id": "v6c10_001",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 48,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 208.2063980102539,
+    "face_box_height_512": 229.55280761718748,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-4386202f-ccbe-43e8-8bb4-773a5b6d2617.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_001",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 48,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 208.04071044921875,
+    "face_box_height_512": 230.73133544921876,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-5b1f2f1e-1ce2-4a8d-bc75-b0b9a1ff81bb.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_001",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 49,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 208.42876434326172,
+    "face_box_height_512": 226.64448242187498,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-d9efd213-ecbf-48c5-a87c-90c50441d7dc.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_002",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 50,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 212.341552734375,
+    "face_box_height_512": 217.162890625,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-4386202f-ccbe-43e8-8bb4-773a5b6d2617.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_002",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 48,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 211.97183990478516,
+    "face_box_height_512": 216.28843994140624,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-5b1f2f1e-1ce2-4a8d-bc75-b0b9a1ff81bb.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_002",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 50,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 211.9119873046875,
+    "face_box_height_512": 213.4429931640625,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-d9efd213-ecbf-48c5-a87c-90c50441d7dc.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_003",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 51,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 216.11370086669922,
+    "face_box_height_512": 217.66044921875002,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 2,
+    "generated_source": "exec-4386202f-ccbe-43e8-8bb4-773a5b6d2617.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_003",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 48,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 215.9893035888672,
+    "face_box_height_512": 218.52805175781248,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 2,
+    "generated_source": "exec-5b1f2f1e-1ce2-4a8d-bc75-b0b9a1ff81bb.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_003",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 49,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 215.8349380493164,
+    "face_box_height_512": 217.22745361328123,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 2,
+    "generated_source": "exec-d9efd213-ecbf-48c5-a87c-90c50441d7dc.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_004",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 50,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 219.17572784423828,
+    "face_box_height_512": 231.88459472656248,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 3,
+    "generated_source": "exec-4386202f-ccbe-43e8-8bb4-773a5b6d2617.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_004",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 49,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 218.82463836669922,
+    "face_box_height_512": 232.20133056640623,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 3,
+    "generated_source": "exec-5b1f2f1e-1ce2-4a8d-bc75-b0b9a1ff81bb.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_004",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 49,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 219.10015106201172,
+    "face_box_height_512": 232.76071777343748,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 3,
+    "generated_source": "exec-d9efd213-ecbf-48c5-a87c-90c50441d7dc.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_005",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 44,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 204.1119155883789,
+    "face_box_height_512": 224.83659667968752,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-c67a2f0f-d595-4549-bedd-03bec39b49af.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_005",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 43,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 203.31391143798828,
+    "face_box_height_512": 230.42669677734375,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-02875e81-72af-4050-a295-d0e0343bf8c3.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_005",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 43,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 204.20797729492188,
+    "face_box_height_512": 223.49271240234376,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-1311e6c7-cc39-4dbc-bfb6-bd1f3a2ff354.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_006",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 44,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 200.83307647705078,
+    "face_box_height_512": 232.66064453124997,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-c67a2f0f-d595-4549-bedd-03bec39b49af.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_006",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 43,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 200.99588012695312,
+    "face_box_height_512": 235.79526367187503,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-02875e81-72af-4050-a295-d0e0343bf8c3.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_006",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 43,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 201.62935638427734,
+    "face_box_height_512": 229.195849609375,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-1311e6c7-cc39-4dbc-bfb6-bd1f3a2ff354.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_007",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 44,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 207.34373474121094,
+    "face_box_height_512": 220.47808837890628,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 2,
+    "generated_source": "exec-c67a2f0f-d595-4549-bedd-03bec39b49af.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_007",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 43,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 207.02064514160156,
+    "face_box_height_512": 223.21734619140625,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 2,
+    "generated_source": "exec-02875e81-72af-4050-a295-d0e0343bf8c3.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_007",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 44,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 207.51708984375,
+    "face_box_height_512": 217.86979980468752,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 2,
+    "generated_source": "exec-1311e6c7-cc39-4dbc-bfb6-bd1f3a2ff354.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_008",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 43,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 201.21224212646484,
+    "face_box_height_512": 222.3469055175781,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 3,
+    "generated_source": "exec-c67a2f0f-d595-4549-bedd-03bec39b49af.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_008",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 42,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 200.74905395507812,
+    "face_box_height_512": 224.49085693359376,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 3,
+    "generated_source": "exec-02875e81-72af-4050-a295-d0e0343bf8c3.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_008",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 44,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 201.28128051757812,
+    "face_box_height_512": 217.98140869140627,
+    "source_cell_native_size": [
+      625,
+      625
+    ],
+    "source_cell": 3,
+    "generated_source": "exec-1311e6c7-cc39-4dbc-bfb6-bd1f3a2ff354.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_009",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 56,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 210.55584716796875,
+    "face_box_height_512": 217.7456787109375,
+    "source_cell_native_size": [
+      885,
+      885
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-bc7f9316-c59b-46e0-bd01-bef4a7d1447a.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_009",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 56,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 210.1548309326172,
+    "face_box_height_512": 217.34215087890627,
+    "source_cell_native_size": [
+      885,
+      885
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-a2e086b0-1b13-497a-874e-2a20b7265aca.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_009",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 55,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 210.50025177001953,
+    "face_box_height_512": 216.57088623046877,
+    "source_cell_native_size": [
+      885,
+      885
+    ],
+    "source_cell": 0,
+    "generated_source": "exec-0d954ed8-504a-4a55-b0f5-da8873de53a5.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_010",
+    "team": "seoul_comets",
+    "cap_top_512_estimate": 57,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 212.48782348632812,
+    "face_box_height_512": 228.5791015625,
+    "source_cell_native_size": [
+      885,
+      885
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-bc7f9316-c59b-46e0-bd01-bef4a7d1447a.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_010",
+    "team": "seoul_hounds",
+    "cap_top_512_estimate": 56,
+    "headroom_method": "navy silhouette near matching red-cap geometry",
+    "eye_line_y_512": 212.0456314086914,
+    "face_box_height_512": 228.13568115234375,
+    "source_cell_native_size": [
+      885,
+      885
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-a2e086b0-1b13-497a-874e-2a20b7265aca.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  },
+  {
+    "identity_id": "v6c10_010",
+    "team": "gwangju_blazes",
+    "cap_top_512_estimate": 56,
+    "headroom_method": "red fabric support incl top button",
+    "eye_line_y_512": 212.63693237304688,
+    "face_box_height_512": 226.56801757812497,
+    "source_cell_native_size": [
+      885,
+      885
+    ],
+    "source_cell": 1,
+    "generated_source": "exec-0d954ed8-504a-4a55-b0f5-da8873de53a5.png",
+    "photo_transform_512": "uniform whole-cell downsample only",
+    "cap_stretch": false,
+    "headroom_background_extension": false,
+    "face_body_paste": false
+  }
+]
