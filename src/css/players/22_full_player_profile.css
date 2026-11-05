@@ -186,3 +186,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-fmcard.ph .pf-fm-no,.pf-fmcard.ph .pf-fm-team{z-index:1}
 /* 휴대폰·좁은 화면 선수 상세: 실사 얼굴이면 머리말 사진을 크게(PC는 왼쪽 큰 카드) */
 @media(max-width:1099px){.pf-screen .pf-name>img.av:is([src^="data:image/webp"],[src^="data:image/jpeg"],[src^="data:image/png"]){width:112px!important;height:112px!important;border-radius:8px;object-fit:cover;border:1px solid var(--pt2,var(--line2))}}
+/* 사진 바꾸기 버튼: 사진 왼쪽 아래에 작게 */
+.pf-fm-face .cimg-b{position:absolute;left:6px;bottom:6px;z-index:3;display:flex;gap:4px;opacity:.9}
+.cimg-b .btn{min-height:22px;padding:2px 8px;font-size:11px}
+.sheet-head .cimg-b{display:flex;flex-direction:column;gap:3px;margin-left:6px}

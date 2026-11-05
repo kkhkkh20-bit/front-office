@@ -33,7 +33,9 @@ function suitSwap(svg,jk,tie,female){ const L=svg.split('\n'); let i=L.findIndex
   L.splice(i,j-i+1,suitSVG(jk,tie,female)); return L.join('\n'); }
 /* 큰 얼굴 자리용 흉상: 같은 그림을 더 넓게 잡아 가슴(칼라·단추·넥타이)까지 보인다 */
 function faceBust(src){ if(src&&typeof F6B!=='undefined'&&F6B.has(src)){ const u=face6Bust(F6B.get(src)); if(u)return u; } /* 실사 얼굴: 큰 자리는 가슴까지 */ return src&&src.replace('-30%2070%20460%20460','-65%2075%20530%20530'); }
-function faceSVG(o){
+/* 사용자가 직접 넣은 사진(G.cimg): 선수는 p:id, 인물(감독·코치·단장·구단주·직원)은 P:역할:pid */
+function cimgKey(o){ if(!o||o==='sec')return null; return o.persona?'P:'+o.persona+':'+o.pid:o.id!=null?'p:'+o.id:null; }
+function faceSVG(o){ { const k=cimgKey(o); if(k&&typeof G!=='undefined'&&G&&G.cimg&&G.cimg[k])return G.cimg[k]; }
   if(typeof face6Src==='function'&&o&&o.id!=null&&!o.persona){ const ph=face6Src(o); if(ph)return ph; }
   if(typeof face7Src==='function'&&o&&o.persona){ const ph=face7Src(o); if(ph)return ph; } /* 감독·코치·단장·구단주·직원: v7 실사 얼굴 시범 */ /* 우리 구단 선수: v6b 실사 얼굴 시범(77_assets_ui.js) */
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);

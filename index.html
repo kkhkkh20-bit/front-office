@@ -3402,6 +3402,10 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-fmcard.ph .pf-fm-no,.pf-fmcard.ph .pf-fm-team{z-index:1}
 /* 휴대폰·좁은 화면 선수 상세: 실사 얼굴이면 머리말 사진을 크게(PC는 왼쪽 큰 카드) */
 @media(max-width:1099px){.pf-screen .pf-name>img.av:is([src^="data:image/webp"],[src^="data:image/jpeg"],[src^="data:image/png"]){width:112px!important;height:112px!important;border-radius:8px;object-fit:cover;border:1px solid var(--pt2,var(--line2))}}
+/* 사진 바꾸기 버튼: 사진 왼쪽 아래에 작게 */
+.pf-fm-face .cimg-b{position:absolute;left:6px;bottom:6px;z-index:3;display:flex;gap:4px;opacity:.9}
+.cimg-b .btn{min-height:22px;padding:2px 8px;font-size:11px}
+.sheet-head .cimg-b{display:flex;flex-direction:column;gap:3px;margin-left:6px}
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
 .detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
@@ -13939,7 +13943,9 @@ function suitSwap(svg,jk,tie,female){ const L=svg.split('\n'); let i=L.findIndex
   L.splice(i,j-i+1,suitSVG(jk,tie,female)); return L.join('\n'); }
 /* 큰 얼굴 자리용 흉상: 같은 그림을 더 넓게 잡아 가슴(칼라·단추·넥타이)까지 보인다 */
 function faceBust(src){ if(src&&typeof F6B!=='undefined'&&F6B.has(src)){ const u=face6Bust(F6B.get(src)); if(u)return u; } /* 실사 얼굴: 큰 자리는 가슴까지 */ return src&&src.replace('-30%2070%20460%20460','-65%2075%20530%20530'); }
-function faceSVG(o){
+/* 사용자가 직접 넣은 사진(G.cimg): 선수는 p:id, 인물(감독·코치·단장·구단주·직원)은 P:역할:pid */
+function cimgKey(o){ if(!o||o==='sec')return null; return o.persona?'P:'+o.persona+':'+o.pid:o.id!=null?'p:'+o.id:null; }
+function faceSVG(o){ { const k=cimgKey(o); if(k&&typeof G!=='undefined'&&G&&G.cimg&&G.cimg[k])return G.cimg[k]; }
   if(typeof face6Src==='function'&&o&&o.id!=null&&!o.persona){ const ph=face6Src(o); if(ph)return ph; }
   if(typeof face7Src==='function'&&o&&o.persona){ const ph=face7Src(o); if(ph)return ph; } /* 감독·코치·단장·구단주·직원: v7 실사 얼굴 시범 */ /* 우리 구단 선수: v6b 실사 얼굴 시범(77_assets_ui.js) */
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);
@@ -20339,7 +20345,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('협상실','faOpen',id,1)]; }
   const d=relDelta(k);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
-    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${d>0?'+':''}${d}`:''}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span></div>`}
     ${personTop(k)}${info}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
@@ -24851,7 +24857,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   /* FM 상황판처럼: 왼쪽 위 인물 상자(얼굴·등번호·포지션·종합·잠재력·연봉·올해 성적 3개), 오른쪽에 장점·약점 */
   const pot=rp.ofp==null?'미확인':potTierP(rp,p).s, cur=fsx&&fsx.mid!=null?`${fsx.mid}<small class="pf-rg-s">${fsx.lo}~${fsx.hi}</small>`:rp.cur==null?'?':rg(rp.cur);
   const ph=typeof face6Idx==='function'&&face6Idx(p)!=null&&!!face6Src(p); /* 실사 얼굴: 카드 위쪽을 사진으로 꽉 채우고 이름을 사진 위에(사용자 11-05 참고 이미지) */
-  const fmCard=`<section class="card pf-fmcard${ph?' ph':''}"><div class="pf-fm-face">${avImg(p,true)}${ph?`<span class="pf-fm-ovn">${esc(p.name)}</span>`:''}${p.team!=null?`<span class="pf-fm-no">${jno(p)}</span>`:''}${p.team!=null?`<span class="pf-fm-team">${badge(p.team,22)}</span>`:''}</div><div class="pf-fm-name"><b>${esc(p.name)} <button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}</span></div><div class="pf-fm-key"><div><span>${fsx?'종합 추정':'현재 종합'}</span><b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b><small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></div><div><span>잠재력</span><b class="pf-fm-pot">${esc(pot)}</b></div></div><div class="pf-fm-stats">${(tiles||[]).slice(0,3).map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')||'<div><span>올해 성적</span><b>-</b></div>'}</div><div class="pf-fm-role"><b>${esc(rp.arch||posLabel(p))}</b>${rp.role?`<span>${p.foreign?'올해 역할':'장래 예상'} ${esc(rp.role)}</span>`:''}<span>${!p.foreign?(p.college?'대졸':'고졸')+' · ':''}${esc(milText(p))}${p.draft?' · '+p.draft.y+' '+p.draft.rd+'R '+p.draft.no+'순위':''}</span></div><div class="pf-fm-pay">${fsx?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b></span><small>외국인 1년 계약</small>`:`<span>연봉 <b>${money(p.sal||0)}</b></span><small>${esc(ctText(p))}</small>`}<button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}</div></section>`;
+  const fmCard=`<section class="card pf-fmcard${ph?' ph':''}"><div class="pf-fm-face">${avImg(p,true)}${cimgBtns(cimgKey(p))}${ph?`<span class="pf-fm-ovn">${esc(p.name)}</span>`:''}${p.team!=null?`<span class="pf-fm-no">${jno(p)}</span>`:''}${p.team!=null?`<span class="pf-fm-team">${badge(p.team,22)}</span>`:''}</div><div class="pf-fm-name"><b>${esc(p.name)} <button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}</span></div><div class="pf-fm-key"><div><span>${fsx?'종합 추정':'현재 종합'}</span><b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b><small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></div><div><span>잠재력</span><b class="pf-fm-pot">${esc(pot)}</b></div></div><div class="pf-fm-stats">${(tiles||[]).slice(0,3).map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')||'<div><span>올해 성적</span><b>-</b></div>'}</div><div class="pf-fm-role"><b>${esc(rp.arch||posLabel(p))}</b>${rp.role?`<span>${p.foreign?'올해 역할':'장래 예상'} ${esc(rp.role)}</span>`:''}<span>${!p.foreign?(p.college?'대졸':'고졸')+' · ':''}${esc(milText(p))}${p.draft?' · '+p.draft.y+' '+p.draft.rd+'R '+p.draft.no+'순위':''}</span></div><div class="pf-fm-pay">${fsx?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b></span><small>외국인 1년 계약</small>`:`<span>연봉 <b>${money(p.sal||0)}</b></span><small>${esc(ctText(p))}</small>`}<button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}</div></section>`;
   const good=tools.filter(t=>t.cur>=60).sort((a,b)=>b.cur-a.cur).slice(0,3), weak=tools.filter(t=>t.cur<45).sort((a,b)=>a.cur-b.cur).slice(0,3);
   const proCon=tools.length?`<section class="card pf-procon"><div class="pf-pro"><h3>장점</h3>${good.length?good.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 장점 없음</p>'}</div><div class="pf-con"><h3>약점</h3>${weak.length?weak.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 약점 없음</p>'}</div></section>`:'';
   /* FM처럼 남는 칸을 정보로: 계약·신분(왼쪽), 경력(오른쪽). PC에서만 보인다 */
@@ -27707,6 +27713,13 @@ Object.assign(A,{ gpImgDel(){ const g=gpSync(); delete g.img; render(); } });
 document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||!el.matches('[data-gpimg]')||!el.files||!el.files[0])return; const f=el.files[0]; if(!/^image\//.test(f.type)){ toast('사진 파일만 넣을 수 있습니다.'); return; }
   const url=URL.createObjectURL(f), im=new Image(); im.onload=()=>{ try{ const s=Math.min(im.naturalWidth,im.naturalHeight), c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d'); x.imageSmoothingQuality='high'; x.drawImage(im,(im.naturalWidth-s)/2,Math.max(0,(im.naturalHeight-s)*.3),s,s,0,0,256,256); /* 세로 사진은 얼굴이 있는 위쪽을 조금 더 */
       const g=gpSync(); g.img=c.toDataURL('image/jpeg',.85); render(); }catch(err){ toast('사진을 읽지 못했습니다.'); } URL.revokeObjectURL(url); }; im.onerror=()=>{ URL.revokeObjectURL(url); toast('사진을 읽지 못했습니다.'); }; im.src=url; });
+
+/* 모든 선수·인물 사진을 갤러리 사진으로(사용자 요청 11-06). 이 기기의 저장에만 넣는다(256px JPEG 약 15KB) */
+function cimgBtns(k){ if(!k||!G)return ''; return `<span class="cimg-b"><label class="btn small" title="갤러리 사진으로 바꾸기">사진<input type="file" accept="image/*" data-cimg="${esc(k)}" hidden></label>${G.cimg&&G.cimg[k]?`<button class="btn small" data-a="cimgDel" data-v="${esc(k)}">원래대로</button>`:''}</span>`; }
+Object.assign(A,{ cimgDel(v){ if(G&&G.cimg){ delete G.cimg[v]; save(); render(); try{ renderSheet(); }catch(e){} } } });
+function imgSquare(f,cb){ const url=URL.createObjectURL(f), im=new Image(); im.onload=()=>{ try{ const s=Math.min(im.naturalWidth,im.naturalHeight), c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d'); x.imageSmoothingQuality='high'; x.drawImage(im,(im.naturalWidth-s)/2,Math.max(0,(im.naturalHeight-s)*.3),s,s,0,0,256,256); cb(c.toDataURL('image/jpeg',.82)); }catch(err){ toast('사진을 읽지 못했습니다.'); } URL.revokeObjectURL(url); }; im.onerror=()=>{ URL.revokeObjectURL(url); toast('사진을 읽지 못했습니다.'); }; im.src=url; }
+document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||!el.matches('[data-cimg]')||!el.files||!el.files[0]||!G)return; const f=el.files[0]; if(!/^image\//.test(f.type)){ toast('사진 파일만 넣을 수 있습니다.'); return; }
+  const k=el.dataset.cimg; imgSquare(f,u=>{ (G.cimg=G.cimg||{})[k]=u; save(); render(); try{ renderSheet(); }catch(err){} toast('사진을 바꿨습니다.'); }); });
 /* ---------- 플레이 기록(익명, 테스트용) ----------
  테스트 배포 때 '단장을 만들고 어디까지, 몇 년 차까지 하는지'와 어느 기능을 쓰는지, 어디서 막히는지를 보기 위한 기록.
  - TELE.ph에 PostHog 프로젝트 키(phc_…)를 넣어야 켜진다. 비어 있으면 아무것도 보내지 않는다(GA4 측정 ID도 넣을 수 있다).
@@ -27885,6 +27898,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-06a',d:'11월 6일',t:'모든 사진을 내 사진으로',items:[
+    '선수 상세와 인물 카드(감독·코치·다른 구단 단장·구단주·직원)의 사진 버튼으로 갤러리 사진을 넣을 수 있습니다. 원래대로 버튼으로 되돌립니다. 사진은 이 기기의 저장에만 들어갑니다.']},
   {id:'2026-11-05at',d:'11월 5일',t:'다른 구단 단장도 같은 시장에서 경쟁',items:[
     '다른 구단도 우리와 같은 감독 후보 시장에서 감독을 뽑습니다. 좋은 후보를 먼저 데려가기도 합니다.',
     '다른 구단도 코치 계약이 끝나면 코치 시장에서 더 나은 코치를 데려옵니다.',
