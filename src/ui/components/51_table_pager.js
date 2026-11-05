@@ -137,10 +137,11 @@ function workspaceFit(host){
   workspaceObserve();
 }
 
-/* 휴대폰 세로: 목록 칸을 내려 보면 main에 ws-up을 붙여 위쪽 제목·탭 줄을 접고(30_mobile_workspace.css), 맨 위로 올리면 편다.
-   접으면 칸이 커져 스크롤 범위가 줄어든다. 가장 많이 커져도(main 높이+제목 줄) 스크롤할 거리가 남을 때만 접는다(접기·펴기 반복, 펼 수 없는 상태 방지). render가 main을 새로 만들면 저절로 풀린다 */
-if(typeof addEventListener!=='undefined')addEventListener('scroll',e=>{ const el=e.target, main=el.classList&&el.classList.contains('ws-scroll')&&el.closest('#app main.ws-frame'); if(!main||!matchMedia('(max-width:699px) and (min-height:600px)').matches)return;
-  if(el.scrollTop<=2)main.classList.remove('ws-up'); else if(el.scrollTop>24&&el.scrollHeight-el.clientHeight>main.clientHeight-el.clientHeight+(main.previousElementSibling?.offsetHeight||0)+30)main.classList.add('ws-up'); },{capture:true,passive:true});
+/* 휴대폰 세로: 목록 칸(작업 공간의 ws-scroll·스스로 스크롤하는 ws-own, 소식함 목록·본문)을 내려 보면 main에 ws-up을 붙여 위쪽 제목·탭 줄을 접고(30_mobile_workspace.css), 맨 위로 올리면 편다.
+   접으면 칸이 커져 스크롤 범위가 줄어든다. 실제로 접어 본 뒤(같은 이벤트 안이라 깜박임 없음) 스크롤할 거리가 조금(6px 넘게)이라도 남을 때만 유지한다(남아야 맨 위로 올려 다시 펼 수 있다)(접기·펴기 반복, 펼 수 없는 상태 방지). render가 main을 새로 만들면 저절로 풀린다 */
+if(typeof addEventListener!=='undefined')addEventListener('scroll',e=>{ const el=e.target, main=el.classList&&(el.matches('.ws-scroll,.ws-own')&&el.closest('#app main.ws-frame')||el.matches('.ibx-list,article.ibm')&&el.closest('#app main.inbox-workspace')); if(!main||!matchMedia('(max-width:699px) and (min-height:600px)').matches)return;
+  if(el.scrollTop<=2)main.classList.remove('ws-up'); else if(el.scrollTop>24&&!main.classList.contains('ws-up')){ const r=el.scrollHeight-el.clientHeight, st=el.scrollTop; if(el._wsNo===r)return; main.classList.add('ws-up');
+    if(el.scrollHeight-el.clientHeight<=6){ main.classList.remove('ws-up'); el.scrollTop=st; el._wsNo=r; } } },{capture:true,passive:true}); /* 접어 보면 범위가 줄어 위치가 잘리므로 되돌릴 때 복원하고, 같은 범위에서는 다시 시도하지 않는다 */
 
 // Refit after a filter opens or browser chrome changes height, without replacing the reading DOM.
 let _workspaceObserver=null;

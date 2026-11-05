@@ -31,6 +31,9 @@ button,input,select{font:inherit;color:inherit}
 .top .club b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .top .club span{display:block;font-size:12px;color:#c9d4de;white-space:nowrap}
 .mailbtn{position:relative;border:0;background:#ffffff12;border-radius:4px;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;color:#e6edf2}
+/* 드래프트 중 상단 바 설명 버튼(제목 줄이 없어 여기 둔다, 01_layout.js) */
+.mailbtn.tophelp{font:700 17px var(--f-num,inherit)}.mailbtn.tophelp.on{color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}.dc-rl{font-style:normal}
+@media(max-width:430px){.mailbtn.tophelp{width:26px;font-size:15px}.top .dclub .dc-rl{display:none}} /* 휴대폰: 설명 버튼 자리만큼 '로스터' 글자를 줄인다(숫자는 그대로) */
 .mailbtn i{position:absolute;top:3px;right:3px;min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font:700 11px/16px var(--f-num);font-style:normal;padding:0 3px}
 .goset{display:flex;align-items:stretch}
 .goset .step{border:0;background:#ffffff14;color:#dce5ec;font:600 13px var(--f-num);padding:0 8px;cursor:pointer;border-right:1px solid #00000040;letter-spacing:.02em}
