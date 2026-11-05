@@ -1,0 +1,616 @@
+{
+  "passed": true,
+  "checks_run": 150,
+  "runtime_images": 52,
+  "changed_ids": 10,
+  "uniforms": 4,
+  "reference_composites": 4,
+  "preview_sizes": [
+    128,
+    256,
+    512
+  ],
+  "checks": [
+    {
+      "check": "changed_ids_only",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/256/korea_home_front.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/256/korea_home_front.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/512/korea_home_front.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/512/korea_home_front.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/256/korea_home_front.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/256/korea_home_front.webp",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/512/korea_home_front.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/512/korea_home_front.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_home_front:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_home_front:512",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/256/korea_home_back.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/256/korea_home_back.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/512/korea_home_back.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/512/korea_home_back.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/256/korea_home_back.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/256/korea_home_back.webp",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/512/korea_home_back.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/512/korea_home_back.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_home_back:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_home_back:512",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/256/korea_away_front.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/256/korea_away_front.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/512/korea_away_front.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/512/korea_away_front.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/256/korea_away_front.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/256/korea_away_front.webp",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/512/korea_away_front.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/512/korea_away_front.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_front:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_front:512",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/256/korea_away_back.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/256/korea_away_back.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/png/512/korea_away_back.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/png/512/korea_away_back.png",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/256/korea_away_back.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/256/korea_away_back.webp",
+      "passed": true
+    },
+    {
+      "check": "size:uniforms/webp/512/korea_away_back.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:uniforms/webp/512/korea_away_back.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_back:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_back:512",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/png/128/korea_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/png/128/korea_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/png/256/korea_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/png/256/korea_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/png/512/korea_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/png/512/korea_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/webp/128/korea_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/webp/128/korea_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/webp/256/korea_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/webp/256/korea_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/webp/512/korea_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/webp/512/korea_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_kit_overlay:128",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_kit_overlay:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_kit_overlay:512",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/png/128/korea_away_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/png/128/korea_away_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/png/256/korea_away_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/png/256/korea_away_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/png/512/korea_away_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/png/512/korea_away_kit_overlay.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/webp/128/korea_away_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/webp/128/korea_away_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/webp/256/korea_away_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/webp/256/korea_away_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_kits/webp/512/korea_away_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_kits/webp/512/korea_away_kit_overlay.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_kit_overlay:128",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_kit_overlay:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_kit_overlay:512",
+      "passed": true
+    },
+    {
+      "check": "size:caps/png/128/korea.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:caps/png/128/korea.png",
+      "passed": true
+    },
+    {
+      "check": "size:caps/png/256/korea.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:caps/png/256/korea.png",
+      "passed": true
+    },
+    {
+      "check": "size:caps/png/512/korea.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:caps/png/512/korea.png",
+      "passed": true
+    },
+    {
+      "check": "size:caps/webp/128/korea.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:caps/webp/128/korea.webp",
+      "passed": true
+    },
+    {
+      "check": "size:caps/webp/256/korea.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:caps/webp/256/korea.webp",
+      "passed": true
+    },
+    {
+      "check": "size:caps/webp/512/korea.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:caps/webp/512/korea.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea:128",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea:512",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/128/korea_chest.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/128/korea_chest.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/256/korea_chest.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/256/korea_chest.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/512/korea_chest.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/512/korea_chest.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/128/korea_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/128/korea_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/256/korea_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/256/korea_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/512/korea_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/512/korea_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_chest:128",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_chest:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_chest:512",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/128/korea_away_chest.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/128/korea_away_chest.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/256/korea_away_chest.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/256/korea_away_chest.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/512/korea_away_chest.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/512/korea_away_chest.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/128/korea_away_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/128/korea_away_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/256/korea_away_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/256/korea_away_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/512/korea_away_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/512/korea_away_chest.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_chest:128",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_chest:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_away_chest:512",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/128/korea_cap.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/128/korea_cap.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/256/korea_cap.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/256/korea_cap.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/png/512/korea_cap.png",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/png/512/korea_cap.png",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/128/korea_cap.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/128/korea_cap.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/256/korea_cap.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/256/korea_cap.webp",
+      "passed": true
+    },
+    {
+      "check": "size:face_marks/webp/512/korea_cap.webp",
+      "passed": true
+    },
+    {
+      "check": "alpha:face_marks/webp/512/korea_cap.webp",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_cap:128",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_cap:256",
+      "passed": true
+    },
+    {
+      "check": "lossless:korea_cap:512",
+      "passed": true
+    },
+    {
+      "check": "slots_unchanged:korea_home_front",
+      "passed": true
+    },
+    {
+      "check": "slot_on_cloth:korea_home_front:player_number",
+      "passed": true
+    },
+    {
+      "check": "slots_unchanged:korea_home_back",
+      "passed": true
+    },
+    {
+      "check": "slot_on_cloth:korea_home_back:player_name",
+      "passed": true
+    },
+    {
+      "check": "slot_on_cloth:korea_home_back:player_number",
+      "passed": true
+    },
+    {
+      "check": "slots_unchanged:korea_away_front",
+      "passed": true
+    },
+    {
+      "check": "slot_on_cloth:korea_away_front:player_number",
+      "passed": true
+    },
+    {
+      "check": "slots_unchanged:korea_away_back",
+      "passed": true
+    },
+    {
+      "check": "slot_on_cloth:korea_away_back:player_name",
+      "passed": true
+    },
+    {
+      "check": "slot_on_cloth:korea_away_back:player_number",
+      "passed": true
+    },
+    {
+      "check": "no_placket_overlap:korea_chest",
+      "passed": true
+    },
+    {
+      "check": "no_placket_overlap:korea_away_chest",
+      "passed": true
+    },
+    {
+      "check": "face_unchanged:ko_late20s_01:home",
+      "passed": true
+    },
+    {
+      "check": "face_unchanged:ko_late20s_01:away",
+      "passed": true
+    },
+    {
+      "check": "face_unchanged:black_01:home",
+      "passed": true
+    },
+    {
+      "check": "face_unchanged:black_01:away",
+      "passed": true
+    },
+    {
+      "check": "flag_svg_3_to_2",
+      "passed": true
+    },
+    {
+      "check": "no_new_identity_files",
+      "passed": true
+    },
+    {
+      "check": "runtime_image_count",
+      "passed": true
+    }
+  ],
+  "visual_review": "Home/away front/back, accurate national flag patches, navy K cap, all4 reference composites on one board. No real team-logo images included."
+}
