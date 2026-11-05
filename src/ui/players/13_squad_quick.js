@@ -16,16 +16,16 @@ function myRosterSheet(){ const d=depth(G.user); const tro=tradeOpen(); const rk
   const row=(p,lab)=>{ const rp=scoutReport(p); const h=curLine(p); const st=!h?'-':yrTag(h)+' '+(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)}`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)}`:'-'));
     return `<div class="mr${tro?' tro':''}"><span class="mr-l">${lab}</span><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)}</b><i>${p.age}세 · ${st} · ${money(p.sal)}</i><i class="mr-core">${(p.isP?['stf','ctl','sta']:['con','pow','eye']).map(k=>{const t=(rp.tools||[]).find(t=>t.k===k);return TOOLK[k]+' '+(t?dv(rp.exact?p.r[k]:t.cur):'?');}).join(' · ')} · 피로 ${Math.round(p.fat||0)}</i></span></button><span class="mr-o">${rchip(rp.cur)}${condChip(p)}</span>${tro?(!p.foreign?`<button class="tc-i mr-t" data-a="toTradeGive" data-v="${p.id}" title="트레이드 협상에 내놓을 선수로 올립니다">트레이드</button>`:'<span class="mr-t"></span>'):''}</div>`; };
   const fut=[...d.futB,...d.futP].filter(p=>!p.ys).map(p=>({p,f:scoutReport(p).ofp||0})).sort((a,b)=>b.f-a.f).slice(0,6).map(x=>x.p);
-  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut" data-stop="1" role="dialog" aria-label="우리 선수단">
+  return `<div class="scrim" data-a="closeSheet"><div class="sheet gut mros" data-stop="1" role="dialog" aria-label="우리 선수단">
     <div class="sheet-head"><div><div class="eyebrow">${esc(tname(G.user))}</div><h2 class="sec">우리 팀 현황</h2></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${teamStatusBox()}
     <div class="eyebrow">포지션별 리그 순위 <span class="muted">(10개 구단 중)</span></div>
     ${slotBar(rk)}
     ${tro?'<p class="small muted">선수 옆 "트레이드"를 누르면 트레이드 협상 화면에 내줄 선수로 올라갑니다.</p>':''}
-    <div class="eyebrow">타순</div>${order.map((p,i)=>row(p,`${i+1}번 ${POSS[posOf[p.id]]||''}`)).join('')}
-    <div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>row(p,`${i+1}선발`)).join('')}
-    <div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>row(p,i===0?'마무리':i<4?'필승조':'추격조')).join('')}
-    <div class="eyebrow">벤치</div>${d.bench.slice(0,6).map(p=>row(p,POSS[p.pos]||posLabel(p))).join('')}
-    ${fut.length?`<div class="eyebrow">2군 유망주</div>${fut.map(p=>row(p,posLabel(p))).join('')}`:''}
+    <div class="mros-g"><section class="mros-s"><div class="eyebrow">타순</div>${order.map((p,i)=>row(p,`${i+1}번 ${POSS[posOf[p.id]]||''}`)).join('')}</section>
+    <section class="mros-s"><div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>row(p,`${i+1}선발`)).join('')}
+    <div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>row(p,i===0?'마무리':i<4?'필승조':'추격조')).join('')}</section>
+    <section class="mros-s"><div class="eyebrow">벤치</div>${d.bench.slice(0,6).map(p=>row(p,POSS[p.pos]||posLabel(p))).join('')}
+    ${fut.length?`<div class="eyebrow">2군 유망주</div>${fut.map(p=>row(p,posLabel(p))).join('')}`:''}</section></div>
   </div></div>`; }
 

@@ -76,7 +76,7 @@ function alertWhy(tab,k){ if(!subAlert(tab,k))return ''; let t=TODO[tab+':'+k]; 
   return `<div class="note warn alert-why"><b>${esc(t[0])}</b> · ${esc(t[1])}${t[2]?` <button type="button" class="hi-i" data-tip="${esc(t[2])}">i</button>`:''}</div>`; }
 /* ---------- 전력 요약: 전력 한눈에 + 추천 트레이드 ---------- */
 const SLOTS_S={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜'};
-const rkCls=r=>r<=3?'hi':r<=7?'md':'lo';
+const rkCls=r=>r<=3?'hi':r<=7?'mid':'lo'; /* 'md'는 PC 감독 화면 전체 배치 클래스(.md)와 겹쳐 칸이 화면 높이로 늘어나던 문제 */
 function pMini(p,tag){ const rp=scoutReport(p); const h=curLine(p); const st=!h?'기록 없음':yrTag(h)+' '+(p.isP?(h.outs?`ERA ${pRate(h).era.toFixed(2)}`:'-'):(h.pa?`OPS ${fmt3(bRate(h).ops)}`:'-'));
   return `<button class="pm" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)}${p.team!=null&&team(p.team).cap===p.id?' <em class="capb">C</em>':''}${p.fr&&p.fr.tid===p.team?' <em class="frb">프랜차이즈</em>':''}</b><i>${posLabel(p)} · ${p.age}세 · ${st}</i><i>${money(p.sal)} · ${tContract(p)}</i></span><span class="pm-o">${rchip(rp.cur)}${condChip(p)}</span></button>`; }
 function outTxt(p){ return p.injOut>0?`${p.injK&&INJ[p.injK]?INJ[p.injK].part+' ':''}부상 ${p.injOut}일`:p.susp>G.day?`출장 정지 ${p.susp-G.day}일`:isAway(p)?'군 복무':'출전 불가'; }

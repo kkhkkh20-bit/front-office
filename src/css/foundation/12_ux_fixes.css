@@ -631,3 +631,12 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 /* 연봉 협상 외국인 재계약: 휴대폰에서 오른쪽 버튼 칸에 밀려 이름이 한 글자씩 세로로 쌓이던 문제. 이름·기록 줄 아래로 버튼 칸을 내린다 */
 @media (max-width:700px){ .item.fre-i{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:flex-start}.item.fre-i>.nm{flex:1 1 100%;min-width:0;text-align:left;white-space:normal;word-break:keep-all}.item.fre-i>.sub{flex:1 1 100%;min-width:0}.item.fre-i>.rt{flex:1 1 100%;min-width:0;text-align:left} }
 .fdl-main>.card>.fdvt-m,.fdl-main>.card>.fdbar{flex:none!important} @media (min-width:1100px){ .fdl-main .fdvt-m{max-width:760px}.fdbar>.fdgs{flex:0 1 420px}.fdbar>[data-a="fdS"]{margin-left:auto} }
+/* 우리 팀 현황(PC): 넓은 화면에서 상태는 가로 칸, 타순·마운드·벤치는 세 줄로 나란히(빈 가운데 없이) */
+@media (min-width:1001px){
+  .mros .tsbox{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+  .mros .tsbox .tsb-r{grid-template-columns:1fr;gap:2px;padding:6px 10px;border-left:2px solid var(--line2)}
+  .mros .tsbox .tsb-r>span:last-child{font-size:13.5px;font-weight:600}
+  .mros-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+  .mros-s{border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 10px 8px;min-width:0}
+  .mros-s .mr{grid-template-columns:54px minmax(0,1fr) auto auto}
+}
