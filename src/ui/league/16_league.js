@@ -94,7 +94,7 @@ const fxFact=(l,v)=>`<div class="fx-fact"><span>${l}</span><b>${v}</b></div>`;
 const fxExp=(goal,bar,mark,ok,txt)=>`<div class="fx-exp"><div><span>운영진 기대</span><b>${goal}</b></div><div><span>성과${txt?' · '+txt:''}</span><p class="fx-bar">${bar!=null?`<i class="${ok==null?'':ok?'good':'bad'}" style="width:${clamp(bar,2,100)}%"></i>`:''}</p></div></div>`;
 /* 우리 순위 추이: 점이 찍힌 선 그래프(재정 화면 fmArea). 위가 1위, 점은 최대 10개 */
 function fxRankLine(){ const R=(G.sea&&G.sea.rh)||[], n=G.teams.length; if(R.length<2)return ''; const st=Math.max(1,Math.ceil((R.length-1)/9));
-  return fmArea(R.filter((s,i)=>i%st===0||i===R.length-1).map(s=>({v:n+1-s[1][G.user],l:dsh(s[0])})),'var(--team-hi)',v=>Math.round(n+1-v)+'위'); }
+  return fmArea(R.filter((s,i)=>i%st===0||i===R.length-1).map(s=>({v:n+1-s[1][G.user],l:dsh(s[0])})),'var(--team-hi)',v=>Math.round(n+1-v)+'위',null,null,{lo:1,hi:n}); }
 /* 최근 경기 막대: 승 초록·패 빨강·무 회색(오래된 경기부터) */
 const fxForm=L=>`<span class="fx-form">${L.map(x=>`<i class="${x[0]>0?'w':x[0]<0?'l':'t'}" title="${x[1]}:${x[2]}"></i>`).join('')}</span>`;
 const fxTop=(arr,f)=>arr.length?arr.reduce((a,b)=>f(b)>f(a)?b:a):null;

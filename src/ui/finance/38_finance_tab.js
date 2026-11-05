@@ -47,7 +47,7 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
 /* PC 그래프: 0을 기준선으로 한 면적 그래프(인라인 SVG). p:1인 끝 점들은 예상이라 점선 */
 /* 추이 선 그래프: 면을 채우지 않고 선과 점만. 세로 범위는 값 주변으로(0을 지나면 0선 표시), 점선은 결산까지 예상 */
 function fmArea(P,col,fmt=money,Q,col2,o){ /* o.nodot: 점 없이 선만(마지막 값 표시는 남김) */ if(P.length<2){ P=[P[0],{...P[0],l:''}]; if(Q)Q=[Q[0],Q[0]]; } const V=[...P,...(Q||[])].map(p=>p.v), n=P.length;
-  let hi=Math.max(...V), lo=Math.min(...V); const pad=Math.max((hi-lo)*.15,Math.abs(hi)*.05,1); hi+=pad; lo-=pad; if(lo>0&&lo<hi*.35)lo=0; const rg=hi-lo||1;
+  let hi=Math.max(...V), lo=Math.min(...V); const pad=Math.max((hi-lo)*.15,Math.abs(hi)*.05,1); hi+=pad; lo-=pad; if(lo>0&&lo<hi*.35)lo=0; if(o&&o.lo!=null)lo=o.lo; if(o&&o.hi!=null)hi=o.hi; /* 순위 그래프처럼 범위가 정해진 값(0위·11위 눈금이 생기지 않게) */ const rg=hi-lo||1;
   const X=i=>i/(n-1)*100, Y=v=>(hi-v)/rg*100, k=P.filter(p=>!p.p).length||1;
   const pts=(L,o)=>L.map((p,i)=>`${X(i+o).toFixed(2)},${Y(p.v).toFixed(2)}`).join(' ');
   const grid=[0,1,2,3].map(i=>lo+rg*i/3), zero=lo<0&&hi>0;
