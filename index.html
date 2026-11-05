@@ -3560,6 +3560,9 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   /* 다른 구단 차례: 실시간 지명 상자는 속도 버튼을 한 줄로 */
   .dhead-pop .dlive{margin-top:0}.dhead-pop .dl-h{flex-wrap:nowrap}.dhead-pop .dl-h b{flex:none}
   .dhead-pop .dl-h .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.dhead-pop .dl-h .chips button{flex:none}.dhead-pop .dl-now{padding:4px 8px}.dhead-pop .dl-now b{font-size:16px}
+  /* 실시간 지명 상자(접힌 상태): 방금 지명 한 줄만. 지난 지명 줄은 더보기·지명 현황에서 */
+  .dhead-pop:not(.card) .dl-feed{display:none}.dhead-pop .dl-now{gap:8px}.dhead-pop .dl-now .tlogo,.dhead-pop .dl-now svg{width:22px;height:22px}
+  .dhead-pop .dl-now>div{display:flex;align-items:baseline;gap:6px;min-width:0;white-space:nowrap;overflow:hidden}.dhead-pop .dl-now>div>*{display:inline;flex:none}.dhead-pop .dl-now>div>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
 }
 /* 휴대폰 신인 드래프트: 목록 탭·필터 요약은 각각 한 줄. 후보 목록이 첫 화면의 70% 넘게 쓴다 */
 @media(max-width:599px){
@@ -4255,6 +4258,8 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 .ws-panels>.ws-panel[hidden]{display:none!important}
 .ws-panel>*:not(.ws-scroll){flex-shrink:0}
 .ws-scroll{flex:1;min-width:0;min-height:0;overflow:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable}
+/* 칸 안 목록·표의 -12px 여백이 칸 밖으로 삐져나가 칸이 옆으로도 12px 스크롤되던 것(대각선으로 끌면 목록이 옆으로 같이 밀림). 열을 넘기는 표는 옆으로 스크롤하지 않는다 */
+.ws-scroll>:is(.list,.tw){margin-inline:0}.tw.twp{overflow-x:hidden!important}.tw.twp td.twspan,.tw.twp td.twspan *{white-space:normal}.optrow.wsx{overflow-y:hidden;min-width:0}
 .ws-scroll:focus-visible{outline:2px solid var(--team-hi);outline-offset:-2px}
 .ws-scroll:is(.tgrid,.cgrid,.cgr,.ltiles){align-content:start}
 .ws-panel .tgrid,.ws-panel .cgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));align-content:start}
@@ -4748,7 +4753,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 /* 선택 상자 대신 버튼 줄(optRow, 41_guard_boot.js) */
 .optrow{display:flex;flex-wrap:wrap;gap:4px;margin:0;align-items:center}.optrow>button{font-size:12px;padding:4px 10px;min-height:28px}
 .optrow.wsx{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;max-width:100%}.optrow.wsx>button{flex:none}
-.trade-search-main{grid-template-columns:minmax(0,1fr)!important}.trade-position{display:flex!important;align-items:center;gap:8px!important;min-width:0}.trade-position>span{flex:none;min-width:34px}
+.trade-search-main{grid-template-columns:minmax(0,1fr)!important}.trade-position{display:flex!important;align-items:center;gap:8px!important;min-width:0}.trade-position>span:not(.chips){flex:none;min-width:34px}.trade-position>.chips{flex:1;min-width:0}
 .trade-find-filters{grid-template-columns:minmax(0,1fr) minmax(160px,260px)!important;align-items:center}.trade-filter-grid{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}
 @media(max-width:700px){.trade-find-filters{grid-template-columns:minmax(0,1fr)!important}.trade-find-filters input{grid-row:auto!important}.optrow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.optrow>button{flex:none}}
 .pl-pick{max-height:120px;overflow:auto;scrollbar-width:thin}
@@ -4781,6 +4786,9 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
  #app .roster-list:has(.r2tr) .r2link:not(.r2row){display:none}
  #app .r2tr{display:table-row}#app .r2tr>td{padding:6px 0 2px}#app .r2tr .r2link{margin:0;width:100%}
  #app .ws-panels>.roster-list.card{padding:6px 8px;gap:4px}
+ /* 목록을 내려 보는 동안(ws-up, 51_table_pager.js) 위쪽 제목·탭·안내 줄과 목록 위 머리 줄을 접어 목록이 화면 대부분을 쓴다. 맨 위로 돌아오면 다시 편다 */
+ #app .wrap:has(>main.ws-up)>.subhead,#app main.ws-up :is(.ws-navigation,.roster-heading,.ws-pages,.fahero,.dlb,.vsb,.trade-modes,.trade-steps),#app main.ws-up>:is(p,.note),#app main.ws-up>.ws-page>:is(p,.note),
+ #app main.ws-up .ws-panel>:has(~.ws-scroll):not(.roster-tools,.twpg,.ws-filter-controls[open]),#app main.ws-up .ws-panel>.ws-scroll~:not(.pgr,.twpg){display:none!important}
 }
 /* 협상 상대 구단 카드: PC는 칸 높이를 채우고 주요 선수, 휴대폰은 촘촘히 */
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
@@ -25529,13 +25537,22 @@ function ftMigrateAccept(e){ try{ const d=e&&e.data; if(!d||d.type!=='ft-migrate
     try{ toast('itch에서 하던 저장을 옮겨 왔습니다. 처음 화면에서 이어하기를 누르세요.'); }catch(x){} try{ if(!G)UI.title=true; render(); }catch(x){} return true; }catch(err){ return false; } }
 window.addEventListener('message',ftMigrateAccept);
 
-/* 휴대폰: 화면을 옆으로 끌면 전체나 칸이 통째로 밀려 빈칸이 드러나던 문제(iOS 웹뷰는 overscroll-behavior를 무시). 가로로 끄는 동작은 실제로 옆으로 움직일 수 있는 칸이 있을 때만 허용하고 나머지는 막는다. 세로 스크롤은 그대로 */
-if(typeof addEventListener!=='undefined'&&typeof document!=='undefined'){ let x0=0,y0=0,ax=null;
-  addEventListener('touchstart',e=>{ const t=e.touches[0]; if(!t)return; x0=t.clientX; y0=t.clientY; ax=null; },{passive:true});
+/* 휴대폰: 화면을 옆으로 끌면 전체나 칸이 통째로 밀려 빈칸이 드러나던 문제(iOS 웹뷰는 overscroll-behavior를 무시). 가로로 끄는 동작은 실제로 옆으로 움직일 수 있는 칸이 있을 때만 허용하고 나머지는 막는다.
+   축 잠금: 첫 8px로 정한 방향만 움직인다. iOS는 가로·세로 둘 다 스크롤되는 칸을 대각선으로 끌면 두 축이 같이 움직이므로, 그 끌기(와 손을 뗀 뒤 관성) 동안 다른 축은 시작 위치로 되돌린다.
+   세로로 끌 때 위·아래 끝에서 더 당기면(움직일 칸이 없으면) 막아 화면이 튕기며 밀리지 않게 한다 */
+if(typeof addEventListener!=='undefined'&&typeof document!=='undefined'){ let x0=0,y0=0,ax=null,lock=[],lockT=0;
+  const can=(el,a)=>{ const s=getComputedStyle(el), o=a==='x'?s.overflowX:s.overflowY; return (o==='auto'||o==='scroll')&&(a==='x'?el.scrollWidth>el.clientWidth+1:el.scrollHeight>el.clientHeight+1); };
+  const free=(el,a,d)=>a==='x'?(d>0?el.scrollLeft>0:el.scrollLeft+el.clientWidth<el.scrollWidth-1):(d>0?el.scrollTop>0:el.scrollTop+el.clientHeight<el.scrollHeight-1);
+  addEventListener('touchstart',e=>{ const t=e.touches[0]; if(!t)return; x0=t.clientX; y0=t.clientY; ax=null; clearTimeout(lockT); lock=[];
+    for(let el=e.target;el&&el.nodeType===1&&el!==document.documentElement;el=el.parentElement)if(can(el,'x')&&can(el,'y'))lock.push([el,el.scrollLeft,el.scrollTop]); },{passive:true});
+  addEventListener('touchend',()=>{ clearTimeout(lockT); lockT=setTimeout(()=>{ lock=[]; },900); },{passive:true}); /* 관성 스크롤이 끝날 때까지 잠금 유지 */
+  addEventListener('scroll',e=>{ if(!ax)return; for(const [el,l,t] of lock)if(el===e.target){ if(ax==='y'&&el.scrollLeft!==l)el.scrollLeft=l; else if(ax==='x'&&el.scrollTop!==t)el.scrollTop=t; } },{capture:true,passive:true});
   addEventListener('touchmove',e=>{ if(e.touches.length>1||!e.cancelable)return; const t=e.touches[0], dx=t.clientX-x0, dy=t.clientY-y0;
-    if(!ax){ if(Math.abs(dx)<6&&Math.abs(dy)<6)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; } if(ax!=='x')return;
+    if(!ax){ if(Math.abs(dx)<8&&Math.abs(dy)<8)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; }
     if(e.target.closest&&e.target.closest('input,textarea,canvas,.fdt-w'))return; /* 슬라이더·3D·드래프트 표(자체 처리)는 그대로 */
-    for(let el=e.target;el&&el!==document.documentElement;el=el.parentElement){ if(el.scrollWidth>el.clientWidth+1){ const o=getComputedStyle(el).overflowX; if(o==='auto'||o==='scroll'){ const atL=el.scrollLeft<=0, atR=el.scrollLeft+el.clientWidth>=el.scrollWidth-1; if((dx>0&&!atL)||(dx<0&&!atR))return; } } }
+    const d=ax==='x'?dx:dy;
+    for(let el=e.target;el&&el.nodeType===1&&el!==document.documentElement;el=el.parentElement)if(can(el,ax)&&free(el,ax,d))return;
+    if(ax==='y'){ const se=document.scrollingElement, hid=el=>/hidden|clip/.test(getComputedStyle(el).overflowY); if(se&&!hid(document.documentElement)&&!hid(document.body)&&free(se,'y',d))return; } /* 화면 전체 스크롤(막혀 있지 않을 때) */
     e.preventDefault(); },{passive:false}); }
 /* ---------- 중계 멘트: 캐스터(상황 묘사)와 해설(분석) ----------
    타구 방향, 수비수 이름, 상황(선두 타자·득점권·만루·역전·동점·끝내기), 오늘 기록, 시즌 기록, 결정구, 좌우 대결,
@@ -26035,14 +26052,18 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const hr=tb.tHead.rows[tb.tHead.rows.length-1]; const H=[...hr.cells]; const n=H.length; if(n<3||H.some(c=>c.colSpan>1))return;
     tw.classList.add('twp'); /* 줄인 이름 칸 기준으로 폭을 잰다 */
     const rows=[...tb.rows].filter(r=>r.cells.length===n); /* 그룹 제목처럼 칸이 합쳐진 줄은 그대로 둔다 */
-    const w=H.map(c=>c.getBoundingClientRect().width); const pin=H[n-1].textContent.trim()==='행동'?n-1:-1; /* 지명 같은 행동 버튼 열은 어느 쪽을 넘겨도 보이게 */ const avail=tw.clientWidth-w[0]-2-(pin>0?w[pin]:0); const pages=[]; let cur=[],sum=0;
+    const w=H.map(c=>c.getBoundingClientRect().width); const pin=H[n-1].textContent.trim()==='행동'?n-1:-1; /* 지명 같은 행동 버튼 열은 어느 쪽을 넘겨도 보이게 */ let avail=tw.clientWidth-w[0]-2-(pin>0?w[pin]:0), pages, key, pg;
+    /* 열을 숨기면 남은 열이 넓어져 표가 칸보다 넓어질 수 있다(옆으로 밀림). 넘친 만큼 묶음을 다시 나눈다 */
+    for(let k=0;k<3;k++){ pages=[]; let cur=[],sum=0;
     for(let i=1;i<n;i++){ if(i===pin)continue; if(cur.length&&sum+w[i]>avail){ pages.push(cur); cur=[]; sum=0; } cur.push(i); sum+=w[i]; } if(cur.length)pages.push(cur);
     if(pages.length<2){ tw.classList.remove('twp'); return; }
-    const key=(UI.sheet!=null&&tw.closest('#sheet')?'s':UI.tab)+':'+ix+':'+n; let pg=Math.min(UI.twPg[key]||0,pages.length-1);
+    key=(UI.sheet!=null&&tw.closest('#sheet')?'s':UI.tab)+':'+ix+':'+n; pg=Math.min(UI.twPg[key]||0,pages.length-1);
     const show=new Set([0,...pages[pg],...(pin>0?[pin]:[])]);
+    tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; });
     for(const r of rows)[...r.cells].forEach((c,i)=>{ if(!show.has(i))c.classList.add('twh'); });
     /* '빈자리'처럼 이름 칸 뒤를 한 칸으로 합친 줄: 지금 보이는 열 수만큼만 차지하고 줄바꿈한다(표 밖으로 삐져나가지 않게) */
     for(const r of tb.rows){ const c=r.cells; if(c.length===2&&c[0].colSpan===1&&c[1].colSpan===n-1){ c[1].dataset.cs0=c[1].colSpan; c[1].colSpan=pages[pg].length+(pin>0?1:0); c[1].classList.add('twspan'); } }
+    const over=tb.getBoundingClientRect().width-tw.clientWidth; if(over<=2||pages[pg].length<2)break; avail-=over; }
     tw.classList.add('twp');
     const hn0=c=>{ const e=c.querySelector('button')||c; const t=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(); return (t||e.innerText.split('\n')[0]).replace(/[▲▼]/g,'').trim(); };
     const lab=i=>{ const a=hn0(H[pages[i][0]]), b=hn0(H[pages[i][pages[i].length-1]]); return a===b||!b?a:`${a} ~ ${b}`; };
@@ -26157,6 +26178,11 @@ function workspaceFit(host){
   workspaceObserve();
 }
 
+/* 휴대폰 세로: 목록 칸을 내려 보면 main에 ws-up을 붙여 위쪽 제목·탭 줄을 접고(30_mobile_workspace.css), 맨 위로 올리면 편다.
+   접으면 칸이 커져 스크롤 범위가 줄어든다. 가장 많이 커져도(main 높이+제목 줄) 스크롤할 거리가 남을 때만 접는다(접기·펴기 반복, 펼 수 없는 상태 방지). render가 main을 새로 만들면 저절로 풀린다 */
+if(typeof addEventListener!=='undefined')addEventListener('scroll',e=>{ const el=e.target, main=el.classList&&el.classList.contains('ws-scroll')&&el.closest('#app main.ws-frame'); if(!main||!matchMedia('(max-width:699px) and (min-height:600px)').matches)return;
+  if(el.scrollTop<=2)main.classList.remove('ws-up'); else if(el.scrollTop>24&&el.scrollHeight-el.clientHeight>main.clientHeight-el.clientHeight+(main.previousElementSibling?.offsetHeight||0)+30)main.classList.add('ws-up'); },{capture:true,passive:true});
+
 // Refit after a filter opens or browser chrome changes height, without replacing the reading DOM.
 let _workspaceObserver=null;
 function workspaceRefit(){document.querySelectorAll('.ws-panel:not([hidden])').forEach(panel=>panel._workspaceFit?.());workspaceObserve();}
@@ -26175,6 +26201,7 @@ function workspaceReveal(selector){
 function workspaceDetail(){
   const sheet=document.querySelector('#sheet .psh'),nav=sheet?.querySelector(':scope > .pf-topnav');
   if(!nav||UI.ptab!=='rec'||sheet.classList.contains('ws-detail'))return;
+  if(matchMedia('(max-width:699px) and (min-height:600px)').matches)return; /* 휴대폰 세로: 프로필·버튼 아래 고정 칸에 기록이 2~3줄만 보였다. 다른 탭처럼 창 전체를 스크롤한다 */
   sheet.classList.add('ws-detail');
   const body=document.createElement('div');body.className='ws-detail-body';
   let node=nav.nextSibling;while(node){const next=node.nextSibling;body.append(node);node=next;}
@@ -27414,6 +27441,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05i',d:'11월 5일',t:'휴대폰 끌기·목록 공간',items:[
+    '휴대폰에서 끌기 시작한 방향으로만 움직입니다. 세로로 내리다가 표가 옆으로 같이 밀리거나, 옆으로 넘기다가 위아래로 흔들리던 것을 막았습니다. 목록 끝에서 더 당겨 화면이 튕기던 것도 막았습니다.',
+    '열을 넘기는 표와 목록 칸이 옆으로 몇 px씩 밀리던 것(칸보다 넓던 표·여백)을 고쳤습니다.',
+    '휴대폰 세로 화면에서 목록을 내려 보면 위쪽 제목·탭·안내 줄이 접혀 목록이 화면 대부분을 씁니다. 맨 위로 올리면 다시 나옵니다.',
+    '신인 드래프트 다른 구단 차례의 실시간 지명 상자는 방금 지명 한 줄만 보여 줍니다.']},
   {id:'2026-11-05h',d:'11월 5일',t:'휴대폰 신인 드래프트 상단 바',items:[
     '휴대폰 신인 드래프트 중에는 상단 바에 구단명 대신 지명 순번과 차례(우리 차례·○○ 지명 중), 로스터 인원이 나옵니다. 순번을 누르면 더보기(관심 1순위 지명·건너뛰기·로스터 계산·일괄 처리)가 열립니다.',
     '우리 차례에는 계속 버튼 자리가 추천 지명 버튼이 됩니다. 구단 메뉴는 배지를 누르면 열립니다. 첫 화면에 후보가 7줄 보입니다.']},
