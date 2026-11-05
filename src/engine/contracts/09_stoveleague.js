@@ -302,9 +302,12 @@ function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.us
   const tgU=tval(U,tg.p,'out'); // 우리가 그 선수를 내줄 때 느끼는 가치
   const core=new Set(domestic(t.id).map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id));
   const pool=domestic(t.id).filter(p=>!core.has(p.id)&&healthy(p)&&!p.ys&&!hasNtc(p)).map(p=>({p,v:tval(t,p,'out'),u:tval(U,p,'in')})).filter(x=>x.v>0&&x.u>.3).sort((a,b)=>a.v-b.v);
-  const need=tradeNeed(t,0); const cap=tg.v-need,topRatio=startersOf(G.user).has(tg.p.id)?.9:.8; let best=null,bu=-1;
-  for(let i=0;i<pool.length;i++){ const a=pool[i]; if(a.v<=cap&&a.u>=tgU*.97&&a.u>bu&&!offerBlockMsg({from:t.id,give:[a.p.id],get:[tg.p.id]})){ best=[a]; bu=a.u; }
-    for(let j=i+1;j<pool.length;j++){ const b=pool[j]; const tv=a.v+b.v; const uv=stackIn([a.u,b.u]); if(tv<=cap&&uv>=tgU*.97&&Math.max(a.u,b.u)>=tgU*topRatio&&uv>bu&&!offerBlockMsg({from:t.id,give:[a.p.id,b.p.id],get:[tg.p.id]})){ best=[a,b]; bu=uv; } } }
+  const need=tradeNeed(t,0); const cap=tg.v-need,topRatio=startersOf(G.user).has(tg.p.id)?.9:.8; let best=null,bu=Infinity;
+  /* 실제 단장처럼 상대(우리)가 받아들일 만한 가장 아까운 쪽 조합을 내민다: 우리 평가로 내주는 가치의 .97배 이상 중 가장 작은 것. 예전에는 조건 안에서 우리에게 가장 이득인 조합을 골라 받은 제안이 늘 후했다.
+     성적 압박이 큰 단장(gmHeat)만 조금 더 얹을 수 있다. 우리 쪽 이득이 그 한도를 넘는 조합은 만들지 않는다 */
+  const hi=tgU*(1.08+Math.min(.12,Math.max(0,gmHeat(t.id))*.2))+.3;
+  for(let i=0;i<pool.length;i++){ const a=pool[i]; if(a.v<=cap&&a.u>=tgU*.97&&a.u<=hi&&a.u<bu&&!offerBlockMsg({from:t.id,give:[a.p.id],get:[tg.p.id]})){ best=[a]; bu=a.u; }
+    for(let j=i+1;j<pool.length;j++){ const b=pool[j]; const tv=a.v+b.v; const uv=stackIn([a.u,b.u]); if(tv<=cap&&uv>=tgU*.97&&uv<=hi&&Math.max(a.u,b.u)>=tgU*topRatio&&uv<bu&&!offerBlockMsg({from:t.id,give:[a.p.id,b.p.id],get:[tg.p.id]})){ best=[a,b]; bu=uv; } } }
   if(!best||!incomingOfferFair(best.map(x=>x.p.id),[tg.p.id]))return false;
   const off={id:'o'+Math.floor(R()*1e9),from:t.id,give:best.map(x=>x.p.id),get:[tg.p.id],exp:period()==='season'?Math.min(G.day+3,tradeDL()):G.day+3,day:G.day};
   { const key=off.from+':'+[...off.give].sort().join(',')+':'+off.get.join(','); G.offSeen=G.offSeen||{}; if(G.offSeen[key]!=null&&G.day-G.offSeen[key]<40)return false; G.offSeen[key]=G.day; } /* 같은 제안을 한 달 안에 되풀이하지 않는다 */
