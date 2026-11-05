@@ -69,8 +69,9 @@
  #app .r2tr{display:table-row}#app .r2tr>td{padding:6px 0 2px}#app .r2tr .r2link{margin:0;width:100%}
  #app .ws-panels>.roster-list.card{padding:6px 8px;gap:4px}
  /* 목록을 내려 보는 동안(ws-up, 51_table_pager.js) 위쪽 제목·탭·안내 줄과 목록 위 머리 줄을 접어 목록이 화면 대부분을 쓴다. 맨 위로 돌아오면 다시 편다 */
- #app .wrap:has(>main.ws-up)>.subhead,#app main.ws-up :is(.ws-navigation,.roster-heading,.ws-pages,.fahero,.dlb,.vsb,.trade-modes,.trade-steps),#app main.ws-up>:is(p,.note),#app main.ws-up>.ws-page>:is(p,.note),
- #app main.ws-up .ws-panel>:has(~.ws-scroll):not(.roster-tools,.twpg,.ws-filter-controls[open]),#app main.ws-up .ws-panel>.ws-scroll~:not(.pgr,.twpg){display:none!important}
+ #app .wrap:has(>main.ws-up)>.subhead,#app main.ws-up :is(.ws-navigation,.roster-heading,.ws-pages,.fahero,.dlb,.vsb,.trade-modes,.trade-steps,.fr-ty,.ibx-bar,.ibx-mback),#app main.ws-up>:is(p,.note),#app main.ws-up>:has(~.ws-own),#app main.ws-up>.ws-page>:is(p,.note),
+ #app main.ws-up .ws-panel>:has(~:is(.ws-scroll,.ws-own)):not(.roster-tools,.twpg,.ws-filter-controls[open]),#app main.ws-up .ws-panel>.ws-scroll~:not(.pgr,.twpg){display:none!important}
+ #app main.ws-up .ws-panels>.card{padding-block:4px}#app main.ws-up .ws-panel>.pgr{margin:2px 0 0}#app main.ws-up .ws-panel>.pgr .btn{min-height:32px!important;padding-block:4px} /* 접힌 동안 패널 위아래 여백·페이지 넘김 줄을 줄여 목록 몫을 늘린다 */
 }
 /* 협상 상대 구단 카드: PC는 칸 높이를 채우고 주요 선수, 휴대폰은 촘촘히 */
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
