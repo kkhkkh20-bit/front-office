@@ -34,6 +34,7 @@ nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;wh
 /* 휴대폰에서도 코치·직원 상세를 펼쳐 본다(사용자 11-06: 이름을 눌러도 상세로 가지 않음) */
 .top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{font-style:normal}
 @media (max-width:420px){ .top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{display:none} }
+@media (max-width:699px){ .top .club i.cb-c.cb-hm{display:inline} } /* 홈에서는 '서울 하운즈' 전체 이름(아래 머리 줄을 없앤 대신) */
 .tgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
 .tgrid>*{min-width:0}
 @media (max-width:620px){

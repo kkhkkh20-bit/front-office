@@ -91,7 +91,7 @@
  #app .fm-home main.content{padding-block:8px}
 }
 @media(max-width:699px){
- #app .home-workspace{grid-template-rows:64px 56px minmax(0,1fr) 36px}
+ #app .home-workspace{grid-template-rows:32px 56px minmax(0,1fr) 36px} #app .hw-heading>div{display:none} /* 구단명은 상단 바에(칸 확보) */
  #app .hw-metrics>div,#app .hw-metrics>.hw-record{grid-template-columns:minmax(0,1fr);grid-template-rows:16px 24px;padding:4px 8px}
  #app .hw-metrics small{display:none}
  #app .hw-metrics>.hw-record b{font-size:15px;white-space:nowrap} /* 무승부가 붙은 '75승 67패 2무'도 칸 안에 */

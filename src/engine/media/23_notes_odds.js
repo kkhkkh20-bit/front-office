@@ -2,7 +2,7 @@
 function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(tid)); if(m)L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0]}); } return L; }
 let _spC={k:null};
 function projStarters(tid,n){ // 지금 로테이션 순번과 휴식일로 다음 경기 선발을 예상(부상·피로로 바뀔 수 있음)
-  const k=G.day+':'+G.games.length+':'+G.year; if(_spC.k!==k)_spC={k}; const ck=tid+':'+n; if(_spC[ck])return _spC[ck];
+  const k=G.day+':'+G.games.length+':'+G.year; if(_spC.k!==k)_spC={k}; const ck=tid+':'+n; if(_spC[ck]&&_spC[ck].every(g=>!g.sp||g.sp.team===tid))return _spC[ck]; /* 같은 날 방출·이적한 투수가 남아 있으면 다시 계산 */
   const t=team(tid); const sp=depth(tid).sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[];
   for(const g of games){ let pick=null;
     if(sp.length){ for(let i0=0;i0<sp.length;i0++){ const i=(rot+i0)%sp.length; const p=sp[i]; if(last[p.id]==null||g.d-last[p.id]>=5){ rot=(i+1)%sp.length; pick=p; break; } }
@@ -58,9 +58,10 @@ function mgrTradeView(tid,give,get){ const m=G.mgr[G.user]; if(!m||m.interim)ret
   if(youngOut&&m.youth>=62){ r-=3; why.push('키우던 유망주를 내준다'); }
   if(m.ego>=70&&r<0)r-=1;
   const P=G.mpick; const pk=P&&P.back&&P.y===G.year?give.map(id=>G.players[id]).filter(p=>p&&P.ids.includes(p.id)):[];
+  const ra=r; /* 약속 위반 -6은 mpickTraded가 따로 깎으므로 실제 반영에서는 뺀다 */
   if(pk.length){ r=Math.min(r-3,-2); why.unshift(`함께 밀어주기로 한 ${pk.map(p=>p.name).join('·')}을(를) 내준다(감독 관계 -6)`); }
-  return {r,d,txt:r>=2?`${m.name} 감독: 환영합니다. ${why.join(', ')}고 봅니다.`:r<=-2?`${m.name} 감독: 반대합니다. ${why.join(', ')}고 봅니다.`:`${m.name} 감독: 특별히 반대하지 않습니다.`}; }
-function mgrTradeApply(v){ const m=G.mgr[G.user]; if(!m||!v||!v.r)return; m.rel=clamp(m.rel+v.r,0,100); note('감독',`${v.txt} (감독 관계 ${v.r>0?'+':''}${v.r})`); }
+  return {r,ra,d,txt:r>=2?`${m.name} 감독: 환영합니다. ${why.join(', ')}고 봅니다.`:r<=-2?`${m.name} 감독: 반대합니다. ${why.join(', ')}고 봅니다.`:`${m.name} 감독: 특별히 반대하지 않습니다.`}; }
+function mgrTradeApply(v){ const m=G.mgr[G.user]; if(!m||!v)return; const r=v.ra??v.r; if(!r)return; m.rel=clamp(m.rel+r,0,100); note('감독',`${v.txt} (감독 관계 ${r>0?'+':''}${r})`); }
 function estVal(p){ const rp=scoutReport(p); const cur=rp.cur??45; const fut=rp.ofp??cur; const eff=p.age<=25?cur+Math.max(0,fut-cur)*.6:p.age>=32?cur-(p.age-31)*1.3:cur; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 function asstOpinion(tid,give,get){ // 우리 부단장 의견: 스카우트 평가 기준(실제 능력과 다를 수 있음)
   if(!give.length&&!get.length)return [];
