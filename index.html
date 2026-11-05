@@ -3930,6 +3930,20 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .cs-prep-talk{background:#0d1a24b8;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 @keyframes prepIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){body .cs-prep-teams>section.cs-pcard{animation:none}}
+/* 경기 전 라인업 v4: 실제 비율 야구장 도식(120:100 고정), 어두운 유리 카드, 번호는 얼굴 밖 이름표 앞 */
+.cs-pf{display:flex;align-items:center;justify-content:center;padding:10px 8px;background:rgba(10,20,28,.38);-webkit-backdrop-filter:blur(16px) saturate(1.15);backdrop-filter:blur(16px) saturate(1.15)}
+.cs-pfi{position:relative;height:100%;max-width:100%;aspect-ratio:6/5;margin:auto}
+.cs-pfi>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cs-pfi .gr{fill:#3e8a4f8c;stroke:#ffffff59;stroke-width:.5}.cs-pfi .dt{fill:#c48a5aa6}.cs-pfi .ig{fill:#4a9a5aa6}.cs-pfi .ln{stroke:#ffffffcc;stroke-width:.45;fill:none}.cs-pfi .md{fill:#d29a68;stroke:#ffffff80;stroke-width:.3}.cs-pfi .bs{fill:#fff}
+.cs-pc{position:absolute;transform:translate(-50%,-62%);display:grid;justify-items:center;gap:3px;width:auto;z-index:1}
+.cs-pc>.av{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#f2f2f2;border:2px solid var(--tc,#fff);box-shadow:0 3px 8px #0006}
+.cs-pc>b{display:flex;align-items:center;gap:0;padding:0;border-radius:6px;background:#0f1a24e6;color:#fff;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;box-shadow:0 2px 6px #0005}
+.cs-pc>b>em{font:700 10.5px/18px var(--f-num);font-style:normal;min-width:18px;padding:0 4px;text-align:center;background:var(--tc,#c33);color:#fff}
+.cs-pc>b>em+*,.cs-pc>b{padding-right:7px}
+.cs-pc>b>em{margin-right:5px}
+@media(max-width:700px){.cs-pf{padding:6px 2px}.cs-pc>.av{width:32px;height:32px}.cs-pc>b{font-size:9.5px;padding-right:5px}.cs-pc>b>em{font-size:9px;line-height:15px;min-width:14px;padding:0 3px;margin-right:3px}}
+/* 도식은 칸의 너비·높이 중 작은 쪽에 맞춘다(휴대폰에서 오른쪽이 잘리던 것) */
+.cs-pf{container-type:size}.cs-pfi{height:auto;width:min(100cqw,120cqh);aspect-ratio:6/5;max-width:none}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
   .fm-home .fmmain{height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -22289,11 +22303,11 @@ async function c3DBenchClear(g,k,event){const c=UI.cast,token=CT.tok;if(!c)retur
 function matchEntrySheet(){const x=nextGames(1)[0];return `<div class="scrim"><section class="sheet gut match-entry" role="dialog" aria-label="경기 중계 선택"><div class="sheet-head"><div><span class="eyebrow">경기 시작 전</span><h2 class="sec">이번 경기를 어떻게 볼까요?</h2></div></div>${x?`<div class="match-entry-teams">${badge(G.user,64)}<b>${esc(tshort(G.user))}<span>vs</span>${esc(tshort(x.op))}</b>${badge(x.op,64)}</div><p>${dstr(x.d)} · ${x.home?'홈':'원정'}${x.ps?' · '+esc(x.ps):''}</p><p class="muted">결과를 미리 보여주지 않고 1회부터 중계합니다.</p><div class="match-entry-choices"><button class="btn primary" data-a="matchWatch"><b>3D 중계로 보기</b><span>투구·타격·수비·주루를 처음부터</span></button><button class="btn" data-a="matchSim"><b>결과만 보기</b><span>이 경기 한 경기만 빠르게 진행</span></button></div>`:'<p>예정된 우리 경기가 없습니다.</p>'}<button class="btn" data-a="matchLater">나중에 결정</button></section></div>`;}
 
 /* 경기 전 라인업(FM 경기 전 화면처럼): 흐린 경기장 위에 포지션 그림 카드 + 오른쪽 구단색 타순 패널. 원정·홈은 위 버튼으로 바꿔 본다(기본: 우리 팀) */
-const PREP_XY={C:[50,90],P:[50,63],'1B':[73,58],'2B':[62,43],SS:[38,43],'3B':[27,58],LF:[17,22],CF:[50,12],RF:[83,22],DH:[88,88]};
+const PREP_XY={C:[60,95],P:[60,73],'1B':[81,69],'2B':[71,54],SS:[49,54],'3B':[39,69],LF:[24,38],CF:[60,23],RF:[96,38],DH:[104,90]}; /* 120x100 도식 좌표(홈 60,92) */
 function matchPrepLineups(g){UI.prepAt=Date.now();if(UI.prepSideG!==g.day){UI.prepManual=false;UI.prepSide=null;}const me=G.user,def=g.home===me?'h':'a',cur=UI.prepSide&&UI.prepSideG===g.day?UI.prepSide:def;
  const card=side=>{const tid=side==='a'?g.away:g.home,rows=castLineup(g,side,0).slice(0,9),pit=g.box[side].pit[0],col=cTeamCol(tid);
-  const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]}%;top:${xy[1]}%"><span class="cs-pc-av">${p?avImg(p):'<span class="av ini">?</span>'}<em>${label}</em></span><b>${esc(p?.name||n||'')}</b></div>`;};
-  const field=`<div class="cs-pf"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M50 96 L6 52 Q50 -6 94 52 Z" class="of"/><path d="M50 92 L30 66 L50 44 L70 66 Z" class="if"/><circle cx="50" cy="66" r="4" class="md"/></svg>${rows.map((r,i)=>chip(G.players[r.id],i+1,r.pos,r.n)).join('')}${pit?chip(G.players[pit.id],'P','P'):''}</div>`;
+  const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]/1.2}%;top:${xy[1]}%">${p?avImg(p):'<span class="av ini">?</span>'}<b><em>${label}</em>${esc(p?.name||n||'')}</b></div>`;};
+  const field=`<div class="cs-pf" style="--tc:${col}"><div class="cs-pfi"><svg viewBox="0 0 120 100" aria-hidden="true"><defs><pattern id="pfs" width="10" height="100" patternUnits="userSpaceOnUse"><rect width="5" height="100" fill="#ffffff0d"/></pattern></defs><path d="M60 92 L7.7 39.7 A74 74 0 0 1 112.3 39.7 Z" class="gr"/><path d="M60 92 L7.7 39.7 A74 74 0 0 1 112.3 39.7 Z" fill="url(#pfs)"/><path d="M60 95 L35.5 68.5 A34.6 34.6 0 0 1 84.5 68.5 Z" class="dt"/><path d="M60 88 L76 72 L60 56.5 L44 72 Z" class="ig"/><path d="M60 92 L7.7 39.7 M60 92 L112.3 39.7" class="ln"/><circle cx="60" cy="73.5" r="3.2" class="md"/><rect x="58.9" y="72.4" width="2.2" height=".6" class="bs"/>${[[77,75],[60,58],[43,75]].map(([x,y])=>`<rect x="${x-1.3}" y="${y-1.3}" width="2.6" height="2.6" transform="rotate(45 ${x} ${y})" class="bs"/>`).join('')}<path d="M58.6 91.2 h2.8 v1.3 l-1.4 1.3 l-1.4 -1.3 z" class="bs"/></svg>${rows.map((r,i)=>chip(G.players[r.id],i+1,r.pos,r.n)).join('')}${pit?chip(G.players[pit.id],'P','P'):''}</div></div>`;
   const list=`<div class="cs-pl" style="--tc:${col}"><header>${badge(tid,40)}<b>${esc(tname(tid))}</b><span>${side==='a'?'원정':'홈'}</span></header><ol>${rows.map((r,i)=>`<li><i>${i+1}</i><b>${esc(G.players[r.id]?.name||r.n||'')}</b><span>${esc(POSK[r.pos]||r.pos)}</span></li>`).join('')}${pit?`<li class="p"><i>P</i><b>${esc(G.players[pit.id]?.name||'')}</b><span>선발투수</span></li>`:''}</ol></div>`;
   return `<section class="cs-pcard" data-side="${side}"${side===cur?'':' hidden'}>${field}${list}</section>`;};
  return `<div class="cs-prep"><div class="cs-prep-heading"><b>선발 라인업</b><span>${esc(stadName(g.home))} · ${dstr(g.day)} · ${[0,6].includes(dobj(g.day).w)?'주간':'야간'} 경기</span><span class="chips optrow cs-prep-side" role="group">${['a','h'].map(sd=>`<button type="button" data-a="prepSide" data-v="${sd}:${g.day}" class="${sd===cur?'on':''}" aria-pressed="${sd===cur}">${badge(sd==='a'?g.away:g.home,14)} ${esc(tshort(sd==='a'?g.away:g.home))}</button>`).join('')}</span></div><div class="cs-prep-teams">${card('a')}${card('h')}</div><div class="cs-prep-foot"><div class="cs-prep-talk"><span>해설</span>${matchPrepTalk(g).map(t=>`<p>${esc(t)}</p>`).join('')}</div><div class="cs-prep-go"><span class="cs-prep-stage">선수들이 경기장에 도착하고 있습니다</span><span class="cs-prep-bar"><i></i></span><button class="btn primary cs-prep-start" data-a="castStart" disabled>경기 시작</button></div></div></div>`;}
@@ -27565,7 +27579,7 @@ Object.assign(A,{
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
   {id:'2026-11-05w',d:'11월 5일',t:'경기 전 라인업 화면',items:[
-    '3D 중계 경기 전 화면을 FM처럼 바꿨습니다. 선명한 경기장 사진 위에 반투명 유리 카드로 수비 위치 그림(선수 얼굴·타순 번호)과 구단색 타순 표가 뜹니다. 우리 팀 라인업을 보여 준 뒤 5초마다 상대 팀과 번갈아 나오고, 위 버튼을 누르면 그 팀에 멈춥니다.']},
+    '3D 중계 경기 전 화면을 FM처럼 바꿨습니다. 선명한 경기장 사진 위에 반투명 유리 카드로 실제 비율 야구장 도식 위 수비 위치(선수 얼굴, 이름표 앞 타순 번호)과 구단색 타순 표가 뜹니다. 우리 팀 라인업을 보여 준 뒤 5초마다 상대 팀과 번갈아 나오고, 위 버튼을 누르면 그 팀에 멈춥니다.']},
   {id:'2026-11-05v',d:'11월 5일',t:'이름 잘림 전수 점검',items:[
     '모든 메뉴·하위 탭과 선수 정보 창을 PC·휴대폰에서 열어 구단·선수 이름이 잘리는 곳을 찾아 고쳤습니다: 기록 리더 카드의 구단명, 순위 화면 리더 칸, 구단 정보의 최근 구단 기록·일정 칸, 휴대폰 트레이드 매물 줄. 이름이 들어간 칸은 말줄임 대신 줄을 바꿉니다.']},
   {id:'2026-11-05u',d:'11월 5일',t:'진열장 구단 이름',items:[

@@ -148,3 +148,17 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .cs-prep-talk{background:#0d1a24b8;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 @keyframes prepIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){body .cs-prep-teams>section.cs-pcard{animation:none}}
+/* 경기 전 라인업 v4: 실제 비율 야구장 도식(120:100 고정), 어두운 유리 카드, 번호는 얼굴 밖 이름표 앞 */
+.cs-pf{display:flex;align-items:center;justify-content:center;padding:10px 8px;background:rgba(10,20,28,.38);-webkit-backdrop-filter:blur(16px) saturate(1.15);backdrop-filter:blur(16px) saturate(1.15)}
+.cs-pfi{position:relative;height:100%;max-width:100%;aspect-ratio:6/5;margin:auto}
+.cs-pfi>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cs-pfi .gr{fill:#3e8a4f8c;stroke:#ffffff59;stroke-width:.5}.cs-pfi .dt{fill:#c48a5aa6}.cs-pfi .ig{fill:#4a9a5aa6}.cs-pfi .ln{stroke:#ffffffcc;stroke-width:.45;fill:none}.cs-pfi .md{fill:#d29a68;stroke:#ffffff80;stroke-width:.3}.cs-pfi .bs{fill:#fff}
+.cs-pc{position:absolute;transform:translate(-50%,-62%);display:grid;justify-items:center;gap:3px;width:auto;z-index:1}
+.cs-pc>.av{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#f2f2f2;border:2px solid var(--tc,#fff);box-shadow:0 3px 8px #0006}
+.cs-pc>b{display:flex;align-items:center;gap:0;padding:0;border-radius:6px;background:#0f1a24e6;color:#fff;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;box-shadow:0 2px 6px #0005}
+.cs-pc>b>em{font:700 10.5px/18px var(--f-num);font-style:normal;min-width:18px;padding:0 4px;text-align:center;background:var(--tc,#c33);color:#fff}
+.cs-pc>b>em+*,.cs-pc>b{padding-right:7px}
+.cs-pc>b>em{margin-right:5px}
+@media(max-width:700px){.cs-pf{padding:6px 2px}.cs-pc>.av{width:32px;height:32px}.cs-pc>b{font-size:9.5px;padding-right:5px}.cs-pc>b>em{font-size:9px;line-height:15px;min-width:14px;padding:0 3px;margin-right:3px}}
+/* 도식은 칸의 너비·높이 중 작은 쪽에 맞춘다(휴대폰에서 오른쪽이 잘리던 것) */
+.cs-pf{container-type:size}.cs-pfi{height:auto;width:min(100cqw,120cqh);aspect-ratio:6/5;max-width:none}
