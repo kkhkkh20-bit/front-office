@@ -109,3 +109,4 @@
 .ds-set{margin:4px 0}.ds-sum{cursor:pointer;font-size:12.5px;padding:6px 0;color:var(--ink)}.ds-basis{margin:6px 0;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
 .fdpk .optrow{margin:8px 0}.fdpk tr.on td{background:color-mix(in srgb,var(--team-hi) 18%,transparent);font-weight:600}
 .fdpk-now{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;margin:6px 0;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--team-hi) 12%,transparent);font-size:13px}.fdpk-now em{font-style:normal;font-weight:700}.fdpk-now .bad,.fdpk-now em.bad{color:var(--bad,#ff6b6b)}.fdpk-now .ok,.fdpk-now em.ok{color:var(--good,#5ad38b)}
+.fdpk-seq{flex-basis:100%;color:var(--muted)}.fdpk-seq b{color:var(--text,#fff)}

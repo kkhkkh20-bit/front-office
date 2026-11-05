@@ -8,9 +8,9 @@ function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; 
 const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
-/* 창단 지명 순번은 단장이 먼저 고른다(구단 고르기 전). 앞 순번은 긴축, 뒤 순번은 지원 보너스. 3시즌 동안. 나머지 9개 구단은 돈이 적은 순서(fdOrder)로 남은 자리를 채운다
+/* 창단 지명 순번은 단장이 먼저 고른다(구단 고르기 전). 앞 순번은 긴축, 뒤 순번은 지원 보너스. 3시즌 동안. 대가는 '전체 1번 스타 한 명' 값(3시즌 약 60억)에 맞춤(라운드마다 1→10, 10→1이라 나머지 지명 차이는 작다). 나머지 9개 구단은 돈이 적은 순서(fdOrder)로 남은 자리를 채운다
    d: 모기업 지원 한도 증감, cash: 시작 현금, strict: 구단주 수익 우선·승인 확률 낮음 */
-const FD_SLOT={1:{d:-.3,cash:2000,strict:1},2:{d:-.2,cash:2500,strict:1},3:{d:-.1,cash:3000,strict:1},4:{d:-.05,cash:3500},5:{d:0,cash:4000},6:{d:0,cash:4000},7:{d:.05,cash:4500},8:{d:.08,cash:4800},9:{d:.12,cash:5200},10:{d:.15,cash:5500}}, FD_AUST_Y=3;
+const FD_SLOT={1:{d:-.1,cash:3000,strict:1},2:{d:-.07,cash:3200,strict:1},3:{d:-.05,cash:3500,strict:1},4:{d:-.02,cash:3800},5:{d:0,cash:4000},6:{d:0,cash:4000},7:{d:.01,cash:4100},8:{d:.02,cash:4200},9:{d:.03,cash:4300},10:{d:.04,cash:4400}}, FD_AUST_Y=3;
 function fdAustApply(tid,k){ const A=FD_SLOT[k], O=G.fdOrd, t=team(tid); if(!A||!O)return; const i=O.indexOf(tid); if(i<0)return; O.splice(i,1); O.splice(k-1,0,tid); t.cash=A.cash; if(A.strict)t.owner='profit'; if(A.d||A.strict)t.aust={k,d:A.d,strict:!!A.strict,y0:G.year,y1:G.year+FD_AUST_Y-1}; }
 function austOn(t){ return t&&t.aust&&sponSeason()<=t.aust.y1?t.aust:null; }
 function austTxt(a){ return a.d<0?`긴축 ${Math.round(-a.d*100)}% 감액`:a.d>0?`지원 ${Math.round(a.d*100)}% 증액`:'긴축'; }
