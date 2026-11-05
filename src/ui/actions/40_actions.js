@@ -22,6 +22,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
  matchWatch(){UI.matchPreview=false;A.watchNext();},
  matchSim(){const next=nextGames(1)[0];if(next)G.simPlanned={day:next.d};UI.matchPreview=false;G.watchPlanned=null;G.matchAwait=null;if(G.res&&!G.live)G.res=null;if(blocker()){save();render();return;}const day=G.day;advance('next',{skipMatchStop:true});if(G.res&&G.games[G.res.i]?.day===G.simPlanned?.day)G.simPlanned=null;closeSheets();UI.tab='home';save();render();setTimeout(()=>dayTick(day),30);}
 ,
+  prepSide(v){const [sd,d]=v.split(':');UI.prepSide=sd;UI.prepSideG=+d;document.querySelectorAll('.cs-pcard').forEach(e=>{e.hidden=e.dataset.side!==sd;});document.querySelectorAll('.cs-prep-side button').forEach(b=>{const on=b.dataset.v.startsWith(sd+':');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});},
   prepPage(){const el=document.querySelector('.cs-prep');if(!el)return;el.dataset.page=el.dataset.page==='0'?'1':'0';const b=el.querySelector('[data-a="prepPage"]');if(b)b.textContent=el.dataset.page==='0'?'6~9번 보기':'1~5번 보기';},
   homePanel(v){UI.homePanel=v;UI.homePage=0;UI.homeFocus=null;render();},
   homeNews(v){UI.homeNews=+v;render();},

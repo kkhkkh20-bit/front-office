@@ -111,3 +111,30 @@
 .cs-prep-bar{height:6px;border-radius:3px;background:#ffffff1c;overflow:hidden}.cs-prep-bar>i{display:block;height:100%;width:3%;background:#e8dbab;transition:width .4s}
 .cs-prep-start{min-height:40px;font-size:14px;font-weight:700}.cs-prep-start:disabled{opacity:.45;cursor:default}
 @media(max-width:700px){.cs-3d[data-pre]:not([data-state="fallback"]) .cs-prep{top:6px}.cs-3d[data-pre][data-state="ready"] .cs-prep{inset:4px;padding:6px}.cs-prep-foot{grid-template-columns:minmax(0,1fr) 112px;gap:6px}.cs-prep-talk{padding:4px 7px}.cs-prep-talk>span{display:none}.cs-prep-talk>p{font-size:10px;line-height:1.35;margin:0}.cs-prep-go{gap:4px}.cs-prep-stage{font-size:9px;line-height:1.25}.cs-prep-start{min-height:30px;font-size:12px;padding:2px 6px}}
+/* 경기 전 라인업 v2(FM 경기 전 화면처럼): 흐린 경기장 사진 위에 포지션 그림 카드 + 구단색 타순 패널 */
+.cs-3d[data-pre]:not([data-state="fallback"]) .cs-prep,.cs-3d[data-pre][data-state="ready"] .cs-prep{inset:0;top:0;padding:14px 18px;border-radius:0;background:none;isolation:isolate}
+.cs-3d[data-pre] .cs-prep::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--fb-stadium) center 62%/cover;filter:blur(5px) brightness(.62) saturate(1.1);transform:scale(1.04)}
+.cs-3d[data-pre] .cs-prep::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(70% 60% at 50% 45%,transparent,rgba(5,12,20,.55))}
+.cs-3d[data-pre][data-state="ready"] .cs-prep::before{filter:blur(7px) brightness(.55)}
+.cs-prep-heading{flex-wrap:wrap}.cs-prep-heading>b{font-size:15px;text-shadow:0 1px 3px #000}.cs-prep-heading>span:not(.chips){color:#d5dde3}
+.cs-prep-side{margin-left:auto}.cs-prep-side button{display:inline-flex;align-items:center;gap:5px}
+body .cs-prep-teams{display:flex;justify-content:center;align-items:center;flex:1;min-height:0}
+body .cs-prep-teams>section.cs-pcard{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(190px,1fr);grid-template-rows:minmax(0,1fr);width:min(100%,860px);height:100%;max-height:440px;padding:0;gap:0;background:none;border:0;border-radius:16px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+body .cs-prep-teams>section.cs-pcard[hidden]{display:none}
+.cs-pf{position:relative;min-height:0;background:linear-gradient(180deg,#f4f1f6,#e6e0ea)}
+.cs-pf svg{position:absolute;inset:4% 3% 2%;width:94%;height:94%}.cs-pf .of{fill:#ffffff8c;stroke:#c9c0cf;stroke-width:.5}.cs-pf .if{fill:#efe6dc;stroke:#c9b8a4;stroke-width:.5}.cs-pf .md{fill:#e3d3c1;stroke:#c9b8a4;stroke-width:.4}
+.cs-pc{position:absolute;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;width:84px}
+.cs-pc-av{position:relative;display:block;width:46px;height:46px;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 2px 6px #0003}.cs-pc-av .av{width:100%;height:100%;object-fit:cover;border-radius:0}
+.cs-pc-av em{position:absolute;right:1px;bottom:1px;min-width:15px;padding:0 3px;border-radius:4px;background:#1b2531;color:#fff;font:700 10px/15px var(--f-num);font-style:normal;text-align:center}
+.cs-pc>b{max-width:100%;padding:1px 6px;border-radius:5px;background:#ffffffd9;color:#1d2530;font-size:11px;font-weight:700;white-space:nowrap;word-break:keep-all;text-align:center}
+.cs-pl{display:flex;flex-direction:column;min-height:0;padding:16px 16px 12px;background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 88%,#fff 0%),color-mix(in srgb,var(--tc) 70%,#000));color:#fff}
+.cs-pl header{display:flex;align-items:center;gap:10px;margin-bottom:8px}.cs-pl header b{font-size:16px;line-height:1.2;word-break:keep-all}.cs-pl header span{margin-left:auto;font-size:11px;opacity:.8}
+.cs-pl ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;min-height:0;overflow:auto}
+.cs-pl li{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:3px 0;border-bottom:1px solid #ffffff22;font-size:14px}.cs-pl li i{font:700 12px var(--f-num);font-style:normal;opacity:.75}.cs-pl li b{font-weight:600;word-break:keep-all}.cs-pl li span{font-size:11.5px;opacity:.85}.cs-pl li.p{margin-top:4px;border-top:1px solid #ffffff55}
+@media(max-width:700px){
+ .cs-3d[data-pre]:not([data-state="fallback"]) .cs-prep,.cs-3d[data-pre][data-state="ready"] .cs-prep{padding:8px}
+ .cs-prep-heading>span:not(.chips){display:none}.cs-prep-side button{font-size:11px;padding:3px 8px;min-height:26px}
+ body .cs-prep-teams>section.cs-pcard{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr);max-height:none;border-radius:12px}
+ .cs-pl{display:none}
+ .cs-pc{width:64px}.cs-pc-av{width:34px;height:34px;border-radius:6px}.cs-pc>b{font-size:9.5px;padding:0 3px}
+}
