@@ -1,0 +1,20 @@
+{
+  "archives": [
+    {
+      "path": "archive/batch01/portraits_part01.zip",
+      "bytes": 13900523,
+      "sha256": "bc6053579a8f32e5ffbd6e3b7249e3013e64c17cf7256defd45ca2e07b05ac0e",
+      "entries": 150
+    },
+    {
+      "path": "archive/batch01/portraits_part02.zip",
+      "bytes": 13896377,
+      "sha256": "66b1aa301445b5aa1bbc005545877858a52a40a79e403829f3e34422ae42668f",
+      "entries": 150
+    }
+  ],
+  "individuals_total": 200,
+  "normalized_png512_masters": 100,
+  "deployed": false,
+  "path_base": "assets/v6/"
+}

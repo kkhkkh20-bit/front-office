@@ -1,0 +1,17 @@
+{
+  "status": "BLOCKED_PENDING_ARCFACE_GATE",
+  "do_not_deploy": true,
+  "runtime_files_if_approved": [
+    "sheets/128/b01_s01.webp",
+    "sheets/256/b01_s01.webp",
+    "shared/garment_mask_256.png",
+    "manifest.json"
+  ],
+  "exclude": [
+    "previews/",
+    "ASSET_PREVIEW.png",
+    "validation*.json",
+    "validation_embeddings.npz",
+    "../archive/"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "passed": false,
+  "schema_and_image_io": true,
+  "demographic_counts": {
+    "young": 51,
+    "middle": 26,
+    "older": 8,
+    "foreign": 15
+  },
+  "alpha_rgb_encoding": [
+    {
+      "size": 128,
+      "alpha_roundtrip_exact": true,
+      "hidden_rgb_mae": 2.705764942501287,
+      "face_rgb_preserved": true,
+      "bytes": 261014
+    },
+    {
+      "size": 256,
+      "alpha_roundtrip_exact": true,
+      "hidden_rgb_mae": 2.3408779564043676,
+      "face_rgb_preserved": true,
+      "bytes": 646966
+    }
+  ],
+  "common_garment_mask_count": 1,
+  "individual_auxiliary_file_count": 0,
+  "full_home_kit_composites_checked": 1100,
+  "face_preserved_all_home_kits": true,
+  "browser_decode": {
+    "browser": "Chromium",
+    "decode": "createImageBitmap premultiplyAlpha:none + WebGL UNPACK_PREMULTIPLY_ALPHA_WEBGL:false",
+    "webgl_face_rgb": [
+      169,
+      120,
+      104,
+      255
+    ],
+    "canvas2d_same_pixel": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "webgl_rgb_preserved": true,
+    "canvas2d_loses_hidden_rgb": true,
+    "webgl_error": 0
+  },
+  "arcface_gate_passed": false,
+  "release_ready": false,
+  "threshold": 0.35,
+  "actual_max_cosine": 0.546829342842102,
+  "candidate_pool_count": 223,
+  "pairwise_compatible_subset_in_source_pool": 45,
+  "failure": "Requested100 identities satisfying global cosine<0.35 were not obtained. Do not mark this review set accepted.",
+  "visual_review": {
+    "reviewed": "100 portrait overview and representative home-kit contact sheets",
+    "passed": false,
+    "notes": [
+      "Some faces have exaggerated proportions or expressions; replacement is needed before production admission.",
+      "The required ArcFace gate fails; no production acceptance claimed.",
+      "No real-person photo inputs were used."
+    ]
+  },
+  "format_checks_passed": true,
+  "accepted_identity_count": 0,
+  "browser_decode_actual_sheet": {
+    "browser": "Chromium",
+    "decode": "createImageBitmap premultiplyAlpha:none + WebGL UNPACK_PREMULTIPLY_ALPHA_WEBGL:false",
+    "webgl_face_rgb": [
+      175,
+      133,
+      124,
+      255
+    ],
+    "canvas2d_same_pixel": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "webgl_rgb_preserved": true,
+    "canvas2d_loses_hidden_rgb": true,
+    "webgl_error": 0
+  },
+  "independent_package_check": {
+    "passed": true,
+    "identity_count": 100,
+    "unique_source_count": 100,
+    "sheet_rectangles_checked": 200,
+    "archive_crc_passed": true,
+    "archive_images_checked": 300,
+    "common_garment_exact_512_count": 100,
+    "nearest_neighbor_records_checked": 100,
+    "pairwise_comparisons": 4950,
+    "pairs_failing_requested_threshold": 320,
+    "arcface_embeddings_l2_normalized": true,
+    "runtime_256_sheet_under_2MB": true
+  }
+}

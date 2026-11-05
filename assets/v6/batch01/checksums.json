@@ -1,0 +1,86 @@
+{
+  "algorithm": "SHA-256",
+  "path_base": "assets/v6/batch01/",
+  "files": {
+    "ASSET_PREVIEW.png": {
+      "bytes": 1579274,
+      "sha256": "ed8fb2f3451babd00cdece21086d20789852ea75f8276545ee0887b6463f9ead"
+    },
+    "CLAUDE_HANDOFF.md": {
+      "bytes": 4970,
+      "sha256": "4fea90f7cfe7b6a4d51fe4a132700f6d717d0eba7358eccf57531b4a1688d5f2"
+    },
+    "README.md": {
+      "bytes": 4966,
+      "sha256": "02a463c5a7fdc58b8d723792b9038d71ee58e3b8d9033ab31c923c264830e7bc"
+    },
+    "arcface_validation.json": {
+      "bytes": 47027,
+      "sha256": "ee971d1440ab3da188265cda3ce144339c201f1b3fc56c664805149e28644e8c"
+    },
+    "archive_manifest.json": {
+      "bytes": 531,
+      "sha256": "40d8e90c3f3b68d79102018090835143d1cb98dd6cfd8fc687a6e056f7187cd4"
+    },
+    "deployment_manifest.json": {
+      "bytes": 364,
+      "sha256": "9ff765e105c2056605d7c4fecd5a51e88c1256c9a8390ab0620f7456b4d25067"
+    },
+    "manifest.json": {
+      "bytes": 196936,
+      "sha256": "04d469eed044a3cd4bef3af28eafd05f0e9b6d5264530242c843f1de35e41e3d"
+    },
+    "previews/gwangju_blazes_128.png": {
+      "bytes": 955183,
+      "sha256": "240ee0c06b8be8fbd149ce2d06d1c01f6f786c5ace734550a980c2d67b03e9dd"
+    },
+    "previews/gwangju_blazes_256.png": {
+      "bytes": 2847277,
+      "sha256": "8560ffdb8c0a82ddee586e2728e493fb7debe6289802777813bcd1034a5c98b1"
+    },
+    "previews/seoul_comets_128.png": {
+      "bytes": 976117,
+      "sha256": "8500c774e72c9efe3e649e4d9972f474f01f9f3f399d3c11799090681f70c525"
+    },
+    "previews/seoul_comets_256.png": {
+      "bytes": 2877267,
+      "sha256": "4a174085bf96380ea960b3a0512db41d45377dd155ac9adc084f0941a3ed9fd2"
+    },
+    "previews/seoul_hounds_128.png": {
+      "bytes": 937179,
+      "sha256": "41b9688d43ad6398edf6b1c79f10396d24908bd74a832cac4500d911ae447cf5"
+    },
+    "previews/seoul_hounds_256.png": {
+      "bytes": 2808332,
+      "sha256": "f23651920db44e27abc84ae63c0621bfb5d674da78c1d3ba1af1a1cf85d74624"
+    },
+    "shared/garment_mask_256.png": {
+      "bytes": 2209,
+      "sha256": "b535df149219912bdbcc0ddef6b82feb8800a7f17ab75d73d2ef367bded2d880"
+    },
+    "sheets/128/b01_s01.webp": {
+      "bytes": 261014,
+      "sha256": "21c500f12086e76d7523c55743dc5672727c8df35421f7a465a35ae21044066b"
+    },
+    "sheets/256/b01_s01.webp": {
+      "bytes": 646966,
+      "sha256": "1f017fd70fa162cc64ebc24bf84b9030de9656ec91127907348f5c2ee46ece33"
+    },
+    "source_pool_embeddings.npz": {
+      "bytes": 424381,
+      "sha256": "cb895a4ad7c3a071eb49b6b1b4ad90a29910dcfccae6e138f4e2e4954b6cd364"
+    },
+    "source_pool_validation.json": {
+      "bytes": 29961,
+      "sha256": "b7a84afc28c116722167f33f27b8d3f5f48f340e40d1195069eaaf19f269f28d"
+    },
+    "validation.json": {
+      "bytes": 2739,
+      "sha256": "3260907361b42a2e98e9d15f4fc7e64fb4e82f1acfa3e09382a75dd20e48f425"
+    },
+    "validation_embeddings.npz": {
+      "bytes": 190496,
+      "sha256": "b6e33903935ac6d7b476132157dd6c54ac95a7809ddcb62ca0227f51116d80c4"
+    }
+  }
+}
