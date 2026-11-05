@@ -36,9 +36,13 @@ def v3():
     ids=[k for k in M3['collections']['trophies'] if k not in ('batting_title','pitching_title')]+M3['collections']['feats']
     slot={k:{n:v['rect']+[v['max_font_size'],v['fill'],A3[k]['view_box'][2]] for n,v in A3[k]['text_slots'].items() if n in ('department','honoree_name','record_value')} for k in ids}
     return {'svg':{k:s3(k) for k in ids},'slot':{k:v for k,v in slot.items() if v},'stage':w3('awards_stage',1280),'bracket':w3('postseason_bracket_background',1280)}
+D5=os.path.join(ROOT,'assets','v5'); A5=json.load(open(os.path.join(D5,'manifest.json'),encoding='utf8'))['assets']
+def w5(id,w):
+    """v5 실사 PNG(투명) → 표시 크기의 약 2배 WebP. 원본 512를 줄여 넣는다"""
+    im=Image.open(os.path.join(D5,A5[id]['png'][max(A5[id]['png'],key=int)])).convert('RGBA'); im=im.resize((w,round(im.height*w/im.width)),Image.LANCZOS); o=io.BytesIO(); im.save(o,'WEBP',quality=78,method=6); return 'data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode()
 def kit(t):
-    """v3 유니폼(번호 없는 앞면: 24는 디자인 예시라 쓰지 않는다)·모자. 홈/원정 구분"""
-    U=t['uniform_sets']; return {'h':s3(U['home']['front']),'a':s3(U['away']['front']),'c':s3(t['cap'])}
+    """v5 실사 유니폼(번호 없는 앞면)·모자. 구단 key로 찾는다. 홈/원정 구분"""
+    k=t['key']; return {'h':w5(k+'_home_front',240),'a':w5(k+'_away_front',240),'c':w5(k,240)}
 uni={}; seen=set()
 for t in M3['teams']:
     ids=[i for i,(c,n) in enumerate(TD) if c+' '+n==t['name']]
@@ -51,6 +55,6 @@ out={'uni':uni,
  'comp':{'ps':svg('competition/postseason_mark_light.svg'),'ks':svg('competition/korean_series_mark_light.svg'),'trophy':svg('competition/championship_trophy.svg')},
  'stad':{k:webp(v,960) for k,v in M['backgrounds'].items()},
  'v3':v3()}
-body='/* 자동 생성: python3 tools/gen-assets.py (손으로 고치지 않는다). 에셋 패키지 v2.1(assets/v2_1)·v3(assets/v3). uni 키는 게임 구단 ID(TEAM_DEF 순서, 구단명으로 대조). 구장 배경은 공용 분위기 이미지(특정 구장·구장 효과와 무관) */\nconst ASSET='+json.dumps(out,ensure_ascii=False)+';\n'
+body='/* 자동 생성: python3 tools/gen-assets.py (손으로 고치지 않는다). 에셋 패키지 v2.1(assets/v2_1)·v3(assets/v3)·v5 유니폼·모자(assets/v5). uni 키는 게임 구단 ID(TEAM_DEF 순서, 구단명으로 대조). 구장 배경은 공용 분위기 이미지(특정 구장·구장 효과와 무관) */\nconst ASSET='+json.dumps(out,ensure_ascii=False)+';\n'
 open(source_file('ui','00b_assets_data.js'),'w',encoding='utf8').write(body)
 print('유니폼·모자 %d개 구단: %s · %dKB'%(len(uni),', '.join(f"{i}={u['n']}" for i,u in sorted(uni.items())),len(body)//1024))
