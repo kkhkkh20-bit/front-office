@@ -19,7 +19,8 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
     <div class="small">출신</div><div class="chips">${Object.entries(GM_BG).map(([k,l])=>`<button data-a="gpBg" data-v="${k}" class="${g.bg===k?'on':''}">${l}</button>`).join('')}</div>
     <p class="small">${esc(GM_BG[g.bg]||'')}: ${esc(GM_BGD[g.bg]||'')}.</p><p class="small muted">출신 효과는 처음 취임할 때 한 번 들어갑니다(나중에 출신을 고쳐도 다시 들어가지 않습니다). 이름과 출신은 기사와 경력에도 쓰입니다. 나이는 해마다 한 살씩 듭니다.</p>
     ${UI.gpMsg?`<div class="note">${esc(UI.gpMsg)}</div>`:''}<button class="btn primary block" data-a="${go}">${goL}</button></div></div>
-  <div class="gpg-h"><span class="small">얼굴 후보: 마음에 드는 얼굴을 누르세요</span><button class="btn small" data-a="gpFace">다른 후보 12개</button></div>
+  ${typeof FACE7!=='undefined'?`<div class="gpg-h"><span class="small">사진 얼굴(시범): 마음에 드는 사진을 누르세요</span><button class="btn small" data-a="gpFace7">다른 사진 6명</button></div><div class="gpg">${gp7Seeds(g).map(c=>`<button class="gpg-c${g.face==='p7:'+c?' on':''}" data-a="gpPick" data-v="p7:${c}">${avImg({persona:'staff',pid:'p7:'+c,age:g.age,female:g.female,name:g.name})}</button>`).join('')}</div>`:''}
+  <div class="gpg-h"><span class="small">그림 얼굴 후보</span><button class="btn small" data-a="gpFace">다른 후보 12개</button></div>
   <div class="gpg">${seeds.map(sd=>`<button class="gpg-c${sd===g.face?' on':''}" data-a="gpPick" data-v="${sd}">${avImg({persona:'staff',pid:sd,age:g.age,female:g.female,name:g.name})}</button>`).join('')}</div>`; }
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];

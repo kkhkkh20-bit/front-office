@@ -119,6 +119,7 @@
       "src/ui/assets/00a_badges_data.js",
       "src/ui/assets/00b_assets_data.js",
       "src/ui/assets/00d_faces_data.js",
+      "src/ui/assets/00e_staff_faces_data.js",
       "src/ui/assets/00c_match_stadium_data.js",
       "src/ui/shell/01_layout.js",
       "src/ui/shell/01b_fm_shell.js",

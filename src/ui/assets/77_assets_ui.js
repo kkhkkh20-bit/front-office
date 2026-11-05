@@ -64,10 +64,39 @@ function face6Cut(im,cs,i,x,y,w,o,pad,big){ const c=document.createElement('canv
 function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=o.team; let aw=''; try{ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.away===tid&&g.home!==tid)aw='a'; }catch(e){} /* 원정 경기 중계 중에는 원정 유니폼 */ const k=aw+tid+':'+i; if(F6C.has(k))return F6C.get(k);
   const im=face6Load(tid,aw); if(!im||!im.ok)return null; try{ const u=face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
 /* 큰 자리(선수 상세): 모자부터 가슴 심벌까지. 256px 시트가 있으면(사이트) 선명하게, 없으면(아티팩트) 128px 시트로 */
-function face6Bust(x){ const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; if(bg&&bg.ok)u=face6Cut(bg,256,x.i,12,0,232,464,.1,true); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=face6Cut(im,128,x.i,6,0,116,232,.1,true); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
+function face6Bust(x){ if(x.f7)return face7Bust(x.f7); const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; if(bg&&bg.ok)u=face6Cut(bg,256,x.i,12,0,232,464,.1,true); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=face6Cut(im,128,x.i,6,0,116,232,.1,true); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });
 /* 카페 버그 제보용 게임 정보(이름·저장 내용은 넣지 않는다) */
 function fbInfoText(){ let d=''; try{ if(G)d=`${G.year}년 ${dmd(G.day)} · ${period()} · ${tname(G.user)}`; }catch(e){} return `[게임 정보] 버전 ${GAME_VER} · ${d||'게임 시작 전'} · 화면 ${UI.tab||''}${UI.tab&&UI.sub&&UI.sub[UI.tab]?'/'+UI.sub[UI.tab]:''} · ${innerWidth<=1000?'휴대폰':'PC'} ${innerWidth}x${innerHeight} · ${(navigator.userAgent.match(/(Edg|Chrome|Firefox|Safari)\/[\d.]+/)||[''])[0]}${/iPhone|iPad/.test(navigator.userAgent)?' · iOS':/Android/.test(navigator.userAgent)?' · Android':''}`; }
 Object.assign(A,{ fbInfo(){ const t=fbInfoText(); const ok=()=>{ try{ toast('게임 정보를 복사했습니다. 카페 글에 붙여 넣어 주세요.'); }catch(e){} }; try{ navigator.clipboard.writeText(t).then(ok,()=>{ prompt('아래 내용을 복사해 카페 글에 붙여 넣어 주세요.',t); }); }catch(e){ prompt('아래 내용을 복사해 카페 글에 붙여 넣어 주세요.',t); } } });
 /* 마우스로 끌 때 글자가 선택되거나 사진이 끌려 나오지 않게(사용자 11-05, 전체화면 포함). 입력칸은 그대로 */
 try{ document.addEventListener('dragstart',e=>{ const t=e.target; if(t&&(t.tagName==='IMG'||t.tagName==='A'||(t.closest&&t.closest('img,a'))))e.preventDefault(); },true); }catch(e){}
+/* ===== v7 감독·코치·단장·구단주·직원 실사 얼굴(시범 126명, 00e_staff_faces_data.js의 FACE7) =====
+ - 감독·코치(mgr·coach): 구단 홈 유니폼 시트에서, 같은 구단 안에서는 겹치지 않게. 여성 인물은 그림 얼굴(사진 없음)
+ - 다른 구단 단장(gm)·구단주(own)·직원(staff): 성별 맞춰 리그 전체에서 겹치지 않게. 우리 단장이 고른 사진(G.gmP.face='p7:칸')은 다른 단장에게 쓰지 않는다
+ - 에이전트·팬은 그림 얼굴 */
+function face7Pool(o){ if(typeof FACE7==='undefined')return null; const P=o.persona, f=!!o.female;
+  if(P==='mgr'||P==='coach')return f?null:{k:'c',ids:FACE7.coach.ids};
+  const r=P==='gm'?'gm':P==='own'?'owner':P==='staff'?'front':null; if(!r)return null; return {k:'v',ids:FACE7.civ.ids.filter(x=>x.r===r&&!!x.f===f)}; }
+function face7Idx(o){ if(!o||o.pid==null||(G&&G.f6off))return null; const pid=String(o.pid);
+  if(o.persona==='staff'&&pid.startsWith('p7:'))return typeof FACE7==='undefined'?null:{k:'v',c:+pid.slice(3)}; /* 우리 단장이 고른 사진(새 게임 전 단장 소개 화면에서도) */
+  if(!G)return null;
+  if(o.persona==='staff'&&/^(gm|fan)/.test(pid))return null; /* 그림 얼굴 후보·팬 */
+  const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(o.team??G.user):'L'; const scope=pl.k+team;
+  const M=G.f7=G.f7||{}, Rv=G.f7r=G.f7r||{}, key=o.persona+':'+pid; const mine=(G.gmP&&String(G.gmP.face||'').startsWith('p7:'))?+String(G.gmP.face).slice(3):-1;
+  const cur=M[key]; if(cur!=null&&Rv[scope+':'+cur]===key&&!(pl.k==='v'&&cur===mine))return {k:pl.k,c:cur,team};
+  const free=x=>{ const h=Rv[scope+':'+x.c]; return (h==null||h===key)&&!(pl.k==='v'&&x.c===mine); };
+  let C=pl.ids.filter(free); if(!C.length)C=pl.ids.filter(x=>!(pl.k==='v'&&x.c===mine)); if(!C.length)return null; /* 다 쓰면 겹치는 것을 허용 */
+  const age=o.age||50; C=[...C].sort((a,b)=>Math.abs(a.a-age)-Math.abs(b.a-age)||hn('f7'+a.c,pid)-hn('f7'+b.c,pid)); const c=C[0].c; M[key]=c; Rv[scope+':'+c]=key; return {k:pl.k,c,team}; }
+function face7Img(x,big){ if(x.k==='c'){ const k='c7'+x.team; if(!F6IMG[k]&&FACE7.coach.sheet[String(x.team)]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE7.coach.sheet[String(x.team)]; } return [F6IMG[k],128]; }
+  const k=big?'v7b':'v7s'; if(!F6IMG[k]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=big?FACE7.civ.s256:FACE7.civ.s128; } return [F6IMG[k],big?256:128]; }
+function face7Src(o){ const x=face7Idx(o); if(!x)return null; const k='7'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); const [im]=face7Img(x,false); if(!im||!im.ok)return null;
+  try{ const u=face6Cut(im,128,x.c,26,0,76,128,0); F6C.set(k,u); F6B.set(u,{f7:x}); return u; }catch(e){ return null; } }
+function face7Bust(x){ const k='7B'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); try{ let u; if(x.k==='v'){ const [bg]=face7Img(x,true); if(bg&&bg.ok)u=face6Cut(bg,256,x.c,8,0,240,464,0,true); }
+  if(!u){ const [im]=face7Img(x,false); if(!im||!im.ok)return null; u=face6Cut(im,128,x.c,6,0,116,232,0,true); if(x.k==='v')return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
+/* 단장 소개: 성별·나이에 맞는 단장 사진 6장(가까운 나이 12명 중 무작위). '다른 사진 6명'은 방금 본 사진을 빼고 다시 */
+function gp7Seeds(g,re){ if(typeof FACE7==='undefined')return []; const f=!!g.female, prev=UI.gp7&&UI.gp7.f===f?UI.gp7.L:[];
+  if(!re&&UI.gp7&&UI.gp7.f===f&&UI.gp7.a===g.age)return UI.gp7.L;
+  let P=FACE7.civ.ids.filter(x=>x.r==='gm'&&!!x.f===f).sort((a,b)=>Math.abs(a.a-g.age)-Math.abs(b.a-g.age)); if(re&&P.length>6){ const q=P.filter(x=>!prev.includes(x.c)); if(q.length>=6)P=q; }
+  const W=P.slice(0,Math.max(6,Math.min(12,P.length))).map(x=>x.c).sort(()=>Math.random()-.5).slice(0,6); UI.gp7={f,a:g.age,L:W}; return W; }
+Object.assign(A,{ gpFace7(){ gp7Seeds(UI.gp||gpDefault(),true); render(); } });
