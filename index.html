@@ -10567,6 +10567,7 @@ function settlement(){
     t.pop=clamp(1+(t.pop-1)*.85+(wp-.5)*.5+(mkt-2000)/45000+(ps.champ===t.id?.06:0)+(G.mgr[t.id]&&G.mgr[t.id].fame>=70?.03:0)+localStarPop(t.id),.7,1.45);
     fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,supCut:cut0,selfC:fins_self[t.id]||0,div};
   }
+  try{ clubRescue(y); }catch(e){}
   const u=team(G.user); const uo=order.find(x=>x.tid===G.user); const wp=uo.w/Math.max(1,uo.w+uo.l);
   const made=[ps.champ,ps.runner,ps.poLose,ps.spoLose,ps.wcLose].includes(G.user);
   const psPart=ps.champ===G.user?10:ps.runner===G.user?6:ps.poLose===G.user?4:made?2:-1;
@@ -10622,6 +10623,22 @@ function tsArchive(y){ const T=G.teams.map(t=>({b:Object.assign({},ZB),p:Object.
   for(const p of Object.values(G.players)) for(const h of p.hist){ if(h.y!==y||h.lvl!=='1군'||h.t==null||!T[h.t])continue; const X=p.isP?T[h.t].p:T[h.t].b; for(const k in X)X[k]+=h[k]||0; }
   const tl=(G.sea&&G.sea.tl)||[]; T.forEach((x,i)=>{ const L=tl[i]||[]; x.rs=sum(L.map(z=>z[1])); x.ra=sum(L.map(z=>z[2])); x.g=L.length; });
   G.tsArch=G.tsArch||{}; G.tsArch[y]=T; }
+/* ===== 부실 구단 정리(100년 플레이, 사용자 11-05) =====
+ 시즌 결산 뒤 AI 구단 현금이 -40억 아래로 2년 넘게 이어지면, KBO가 개입해 새 주인을 찾는다(실제: 해태→KIA 매각, 현대 해체→히어로즈 재창단).
+ - 구단 매각: 새 모기업이 인수해 부채를 떠안고 운영 자금을 넣는다. 선수단·구장·이름·상징(팬)은 그대로
+ - 재창단: 모기업을 못 찾으면 협회가 기존 구단을 정리하고 투자사가 세운 신생 구단(독립구단)이 선수단을 그대로 이어받는다
+ 우리 구단은 대상이 아니다(우리 구단 적자는 구단주 신뢰·경질로 다룬다) */
+function clubRescue(y){ for(const t of G.teams){ if(t.id===G.user)continue; t.debtY=t.cash<-4000?(t.debtY||0)+1:0; if(t.debtY<2||R()>.6)continue;
+  const debt=-t.cash, old=bossOf(t.id).own.name, rebirth=t.indie||R()<.3;
+  t.bseed=y; delete G.boss[t.id]; const nb=bossOf(t.id); t.debtY=0; t.trust=60; t.supCut=null;
+  if(rebirth){ t.indie=true; t.owner='profit'; t.cash=4500; }
+  else { t.indie=false; t.owner=pick(['win','pr','profit']); t.cash=3500; }
+  try{ t.gm=mkGM(t.id); }catch(e){}
+  (G.rescues=G.rescues||[]).push({y,tid:t.id,k:rebirth?'re':'sale',debt,old,nw:nb.own.name});
+  const tl=`${t.city} ${t.nick}`;
+  if(rebirth){ news('리그',`${tl} 재창단… 투자사가 선수단 인수`,`누적 적자 ${money(debt)}를 감당하지 못한 기존 운영 법인이 KBO 이사회 결정으로 정리됐습니다. 투자사(대표 ${nb.own.name})가 세운 신생 법인이 선수단·구장·이름을 그대로 이어받아 ${y+1}시즌에 참가합니다. 모기업 지원이 없는 독립구단으로 운영됩니다.`,4,{fanW:2}); wire('구단',`${tl}, KBO 승인 아래 재창단 (투자사 인수 · 부채 ${money(debt)} 정리)`,{tid:t.id}); }
+  else { news('리그',`${tl} 매각… 새 모기업 인수`,`${old} 구단주 시절 쌓인 적자 ${money(debt)}를 정리하기 위해 구단이 매각됐습니다. 새 구단주 ${nb.own.name}는 부채를 떠안고 운영 자금을 넣기로 했습니다. 선수단과 이름은 그대로입니다.`,4,{fanW:2}); wire('구단',`${tl} 매각 · 새 구단주 ${nb.own.name} (부채 ${money(debt)} 인수)`,{tid:t.id}); }
+  try{ chron('lg',`${tl} ${rebirth?'재창단':'매각'}(누적 적자 ${money(debt)})`,null,t.id); }catch(e){} } }
 /* ===== 스토브리그 ===== */
 function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)fdReview(); }catch(e){} for(const t of G.teams){ if(t.id!==G.user&&t.cash<-5000)t.mode='rebuild'; }
   const retired=[], declared=[], obs=[];
@@ -13970,7 +13987,7 @@ function renewMgr(y,tid,mid){ if(G.unemp)return '구단을 맡고 있지 않습�
 /* ===== 인물 관계도: 구단주·사장·감독·코치·선수·타 구단 단장·팬·언론 ===== */
 function nameH(k){ for(let i=0;i<9;i++){ const a=u01(k+'s'+i,7),b=u01(k+'a'+i,11),c=u01(k+'b'+i,13); const n=SUR[Math.floor(a*SUR.length)]+G1[Math.floor(b*G1.length)]+G2[Math.floor(c*G2.length)]; if(!BLOCK.has(n)&&n[1]!==n[2])return n; } return SUR[0]+'도윤'; }
 const OWNTRAIT={win:'우승 트로피를 직접 들고 싶어 합니다. 성적이 나면 지갑을 엽니다.',profit:'숫자에 밝습니다. 적자 보고서를 가장 먼저 펼쳐 봅니다.',pr:'그룹 이미지와 관중석을 봅니다. 화제가 되는 구단을 원합니다.'};
-function bossOf(tid){ G.boss=G.boss||{}; const k=tid??G.user; if(!G.boss[k]){ const s='boss'+k+':'+(team(k).code||k);
+function bossOf(tid){ G.boss=G.boss||{}; const k=tid??G.user; if(!G.boss[k]){ const s='boss'+k+':'+(team(k).code||k)+(team(k).bseed?':'+team(k).bseed:'');
     G.boss[k]={own:{name:nameH(s+'o'),age:58+Math.floor(u01(s,'oa')*18),id:'own'+k},ceo:{name:nameH(s+'c'),age:52+Math.floor(u01(s,'ca')*12),id:'ceo'+k,car:['그룹 전략실 출신','재무 담당 임원 출신','마케팅 임원 출신','계열사 대표 출신'][Math.floor(u01(s,'cc')*4)]}}; }
   return G.boss[k]; }
 /* 단장별 월 협상 횟수: 친분이 높으면 1회 더, 낮으면 1회 덜 */
@@ -27817,6 +27834,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05an',d:'11월 5일',t:'부실 구단 매각·재창단',items:[
+    '다른 구단이 시즌 결산 뒤 40억 넘는 적자를 2년 넘게 이어 가면 KBO가 개입합니다. 새 모기업이 인수(매각)하거나, 투자사가 세운 신생 구단이 선수단을 그대로 이어받아 재창단합니다(실제: 해태→KIA, 현대→히어로즈).',
+    '선수단·구장·구단 이름은 그대로이고, 구단주·단장이 바뀌며 빚이 정리됩니다. 리그 소식과 뉴스로 알려 줍니다.']},
   {id:'2026-11-05am',d:'11월 5일',t:'휴대폰 화면 정리 · 중계 자동 시작',items:[
     '중계는 3D 준비가 끝나면 누르지 않아도 시작합니다. 휴대폰 경기 전 화면에 원정·홈 두 팀 라인업을 함께 보여 줍니다.',
     '휴대폰 중계 판이 화면 세로에 딱 맞아 아래로 끌어내리지 않아도 됩니다.',

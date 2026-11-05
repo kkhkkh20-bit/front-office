@@ -1572,6 +1572,9 @@ T('[100년] 단장 세대 교체: 시즌 밖에서 후임에게 넘기면 구단
   ok(G.user===tid&&domestic(G.user).length===n0&&team(G.user).cash===cash,'구단이 바뀜'); ok((G.gmLine||[]).length===1&&G.gmLine[0].name==='원조단장','계보 '+JSON.stringify(G.gmLine));
   ok(G.myC&&G.myC.tid===G.user&&G.myC.y1>=G.year,'계약 없음'); ok(G.rep>=30&&G.rep<=55,'명성 '+G.rep);
   G.gmP.age=90; gmAgeYear(); ok(G.gmP.name!=='둘째단장'&&G.gmLine.length===2,'정년 자동 교체 안 됨'); });
+T('[100년] 부실 구단: AI 구단이 2년 넘게 -40억 아래면 매각·재창단으로 새 주인이 오고 선수단·이름은 그대로, 우리 구단은 대상이 아니다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); const n0=domestic(t.id).length, nick=t.nick, o0=bossOf(t.id).own.name; const u=team(G.user);
+  t.cash=-9000; u.cash=-9000; const R0=Math.random; let ok2=false; for(let i=0;i<8&&!ok2;i++){ t.cash=Math.min(t.cash,-9000); clubRescue(G.year+i); ok2=t.cash>0; }
+  ok(ok2,'정리 안 됨 '+t.cash); ok(domestic(t.id).length===n0&&t.nick===nick,'선수단·이름이 바뀜'); ok(bossOf(t.id).own.name!==o0||(G.rescues||[]).length,'구단주 그대로'); ok(u.cash===-9000,'우리 구단이 정리됨'); ok((G.rescues||[]).length===1,'기록 '+JSON.stringify(G.rescues)); });
 T('[실플레이 11-05c] 트레이드: 선수를 보내며 상대에게 현금을 받을 수 있고, 받으면 상대가 더 많은 값을 요구하며 성사 시 돈이 우리에게 온다',()=>{ fresh(); simTo(()=>tradeOpen()&&period()==='season');
   const op=G.teams.find(t=>t.id!==G.user); op.cash=5000; const mine=domestic(G.user).filter(q=>!q.foreign&&!q.ntc).sort((a,b)=>ovr(b)-ovr(a))[2];
   const a=evalTrade(op.id,[mine.id],[],0), b=evalTrade(op.id,[mine.id],[],-500); ok(b.gain<a.gain,'받는 현금이 상대 평가에 반영 안 됨: '+a.gain.toFixed(2)+' / '+b.gain.toFixed(2));
