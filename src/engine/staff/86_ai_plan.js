@@ -17,4 +17,4 @@ function aiPlanDaily(){ const o=dobj(G.day); if(o.m===1&&o.d===10&&G.aiPlanY!==G
 /* AI 감독 선임: 후보 여럿 중 지금 선수단과 맞는 감독(원하는 역할을 이미 갖춘 정도)을 구단 설계 능력만큼 더 본다 */
 function aiMgrFit(tid,m){ const L=mgrRolesOf(m); if(!L.length)return .4; return L.reduce((a,k)=>a+Math.min(1,roleHaveAs(tid,k)/MROLE[k].tgt),0)/L.length; }
 function roleHaveAs(tid,k){ const R0=MROLE[k]; return playersOf(tid).filter(p=>!p.prospect&&!p.ys&&roleOk(p,k)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,R0.bat?9:5).filter(p=>ovr(p)>=45).length; }
-function aiMgrPick(t,C){ const ab=t.gm?gmAbil(t.gm):null; const w=ab?ab.plan/100:.5; let best=C[0], bs=-1e9; for(const m of C){ const s=(m.fame||50)*.05+aiMgrFit(t.id,m)*10*w+R()*1.5; if(s>bs){ bs=s; best=m; } } return best; }
+function aiMgrPick(t,C){ const ab=t.gm?gmAbil(t.gm):null; const w=ab?ab.plan/100:.5; let best=C[0], bs=-1e9; for(const m of C){ const s=(m.fame||50)*.05+((m.tac||50)-50)*.08+aiMgrFit(t.id,m)*10*w+R()*1.5; /* 경기 운영(tac)도 본다: 우리가 고르는 기준과 같게(검수 11-05) */ if(s>bs){ bs=s; best=m; } } return best; }

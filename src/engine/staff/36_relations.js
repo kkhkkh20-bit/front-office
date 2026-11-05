@@ -150,7 +150,7 @@ function mpickMult(p){ const P=G.mpick; const m=G.mgr[G.user]; return P&&P.back&
 function mgrEyeReport(){ const m=G.mgr[G.user]; const P=G.mpick; if(!m||!P||P.y!==G.year||!P.ids.length)return; const L=P.ids.map(id=>G.players[id]).filter(Boolean); if(!L.length)return;
   const txt=L.map(p=>{ const h=(p.oh||[]).slice(-2); const d=h.length===2?h[1].o-h[0].o:0; return `${p.name} ${d>=0?'+':''}${d}`; }).join(', '); (G.mpickLog=G.mpickLog||[]).unshift({y:G.year,mid:m.id,txt,back:P.back}); if(G.mpickLog.length>10)G.mpickLog.length=10; }
 /* 관계가 주는 것: 선수단 분위기(경기력), 좋으면 공개 지지, 나쁘면 언론 불화설·사퇴 */
-function mgrRelBoost(p){ if(p.team!==G.user)return 0; const m=G.mgr[G.user]; if(!m||m.interim)return 0; return clamp((m.rel-55)/60,-.5,.4); }
+function mgrRelBoost(p){ if(p.team==null)return 0; const m=G.mgr[p.team]; if(!m||m.interim)return 0; const rel=p.team===G.user?m.rel:65; /* AI 구단은 프런트·감독이 무난한 관계(65)로 본다: 우리만 받던 보정의 비대칭(검수 11-05) */ return clamp((rel-55)/60,-.5,.4); }
 function mgrRelWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||period()!=='season')return; mgrFix(m); prInit();
   if(m.rel>=78&&R()<.08){ news('언론',`${m.name} 감독 "단장님과 호흡 최고"`,'프런트와 현장이 한 방향을 보고 있다는 평가입니다.',2); G.pr.press=clamp(G.pr.press+1,0,100); }
   if(m.rel<=25&&R()<.15){ news('언론',`${tshort(G.user)} 감독-단장 불화설`,`${m.name} 감독이 프런트 결정에 불만을 드러냈습니다.`,-2); G.pr.fan=clamp(G.pr.fan-1,0,100); G.pr.press=clamp(G.pr.press-2,0,100);
