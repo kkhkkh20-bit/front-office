@@ -43,14 +43,18 @@ function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img sr
  - 시트는 구단 홈 유니폼으로 미리 합성돼 있다(tools/gen-faces-v6b.py). 화면에서는 칸 하나를 잘라 작은 그림으로 캐시한다
  - 설정에서 끌 수 있다(G.f6off) */
 const F6IMG={}, F6C=new Map(), F6B=new Map();
-function face6Load(tid){ const k=String(tid); if(F6IMG[k]||typeof FACE6==='undefined'||!FACE6.sheet[k])return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE6.sheet[k]; return im; }
+function face6Load(tid,big){ const k=(big?'b':'')+tid, src=typeof FACE6==='undefined'?null:(big?FACE6.big:FACE6.sheet)?.[String(tid)]; if(F6IMG[k]||!src)return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(!p.foreign)return !x.f; if(!x.f)return false; const asia=x.e==='Japanese'||x.e==='Taiwanese'; return p.foreign==='아시아'?asia:!asia; }); }
 function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user||typeof FACE6==='undefined')return null;
   const M=G.f6=G.f6||{}, Rv=G.f6r=G.f6r||{}; const cur=M[p.id]; if(cur!=null&&Rv[cur]===p.id)return cur;
   const free=i=>{ const o=Rv[i]; if(o==null||o===p.id)return true; const q=G.players[o]; return !q||q.team!==G.user; };
   const C=face6Pool(p).filter(free); if(!C.length)return null;
   C.sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||hn('f6'+a,p.id)-hn('f6'+b,p.id)); const i=C[0]; if(cur!=null&&Rv[cur]===p.id)delete Rv[cur]; M[p.id]=i; Rv[i]=p.id; return i; }
+function face6Cut(im,cs,i,x,y,w,o,pad){ const c=document.createElement('canvas'); c.width=c.height=o; const g=c.getContext('2d'); const sx=(i%10)*cs, sy=Math.floor(i/10)*cs;
+  /* 머리 위 여백: 원본 칸에는 모자 위가 거의 없어서, 배경색(칸 위 가장자리)으로 채운 뒤 사진을 pad 비율만큼 내려 그린다(사용자 11-05: 머리가 천장에 닿지 않게) */
+  const pd=Math.round(o*(pad||0)), sh=w*(o-pd)/o; g.drawImage(im,sx+x,sy,w,1,0,0,o,pd+1); g.drawImage(im,sx+x,sy+y,w,sh,0,pd,o,o-pd); return c.toDataURL('image/jpeg',.88); }
 function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user, k=tid+':'+i; if(F6C.has(k))return F6C.get(k);
-  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const sx=(i%10)*128, sy=Math.floor(i/10)*128; const cut=(x,y,w,o)=>{ const c=document.createElement('canvas'); c.width=c.height=o; c.getContext('2d').drawImage(im,sx+x,sy+y,w,w,0,0,o,o); return c.toDataURL('image/jpeg',.88); };
-    const u=cut(30,3,68,96), bu=cut(0,0,128,128); F6C.set(k,u); F6B.set(u,bu); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대, 큰 자리(faceBust)는 가슴까지 */
+  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const u=face6Cut(im,128,i,26,0,76,96,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
+/* 큰 자리(선수 상세): 모자부터 가슴 심벌까지. 192px 시트가 있으면(사이트) 선명하게, 없으면(아티팩트) 128px 시트로 */
+function face6Bust(x){ const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; if(bg&&bg.ok)u=face6Cut(bg,192,x.i,8,0,176,240,.09); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=face6Cut(im,128,x.i,5,0,118,160,.09); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });
