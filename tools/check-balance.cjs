@@ -15,11 +15,11 @@ const oe=console.error; console.error=()=>{};
 const run=new Function('setSeed','NL','MODES','log',fs.readFileSync(ENGINE,'utf8')+`
 
 /* 고수 지명: 실제 능력(ovr)과 젊은 선수 성장 여지, 포지션 필요, 상한 100% 안에서 */
-let REAL=false, EQ=false; /* eq: 실험용. AI도 고수와 같은 방식으로 지명하면 차이가 사라지는지 */ /* proR: 고수가 실제로 볼 수 있는 기록(분석팀·스카우트 추정)만으로 고른다 */
+let REAL=false, EQ=false; const FL=[]; /* eq: 실험용. AI도 고수와 같은 방식으로 지명하면 차이가 사라지는지 */ /* proR: 고수가 실제로 볼 수 있는 기록(분석팀·스카우트 추정)만으로 고른다 */
 function proPick(tid){ tid=tid??G.user; const X=fdCtx(tid), c=X.c; let best=null,bv=-1e9;
   for(const id of G.fd.pool){ const p=G.players[id]; if(!p||!p.fdPool)continue; const sv=REAL?fdSeenBy(tid,p):null; const o=REAL?sv.an*.6+sv.sc*.4:ovr(p); const pot=REAL?o+Math.max(0,sv.pot-sv.o):(p.pot||o); let e=p.age<=25?o+Math.max(0,pot-o)*.35:p.age>=32?o-(p.age-31)*1.2:o;
     const k=fdSlot(p), tg=FD_TGT[k]||1; let v=Math.pow(Math.max(0,e-34),1.7)/10*((c[k]||0)<tg?1.3:(c[k]||0)<tg+2?.8:.4); if(X.cp+p.sal>X.cap)v*=.2; if(isAway(p))v*=.5; if(v>bv){bv=v;best=id;} } return best; }
-function proForeign(){ for(let g=0;g<8;g++){ const fv=q=>{ if(!REAL)return ovr(q); const f=fScout(q); return f.mid!=null?f.mid:(f.raw??ovr(q)); }; const L=(G.fmarket||[]).map(id=>G.players[id]).filter(q=>q&&q.team==null&&!foreignCheck(G.user,q)).sort((a,b)=>fv(b)-fv(a)); if(!L.length)break; try{ signForeign(G.user,L[0].id); }catch(e){ break; } } }
+function proForeign(){ /* 고수도 경쟁 입찰(foOffer)을 거친다: 상한까지 불러도 매력에서 지면 놓친다 */ const lost=[]; for(let g=0;g<14;g++){ const fv=q=>{ if(!REAL)return ovr(q); const f=fScout(q); return f.mid!=null?f.mid:(f.raw??ovr(q)); }; const L=(G.fmarket||[]).map(id=>G.players[id]).filter(q=>q&&q.team==null&&!lost.includes(q.id)&&!foreignCheck(G.user,q)).sort((a,b)=>fv(b)-fv(a)); if(!L.length)break; const q=L[0]; const cap=foCap(q); const gg=Math.round(cap*.9/USD)*USD; const r=foOffer(q.id,gg,cap-gg,false); if(!r.ok){ lost.push(q.id); if(q.fneg)q.fneg.n=0; } } FL.push(lost.length); }
 function season(mode){ REAL=mode==='proR'||mode==='eq'; EQ=mode==='eq'; if(EQ)mode='proR';
   G=null; buildWorld(); G.fdOrd=fdOrder(); claimTeam(6,5); fdWelcome(); G.fdWait=false; fdStart(); G.fd.open=true;
   let g=0; while(!G.fd.done&&g++<700){ const pk=G.fd.picks[G.fd.cur]; if(!pk){ fdFinish(); break; } const id=pk.tid===G.user?((mode==='pro'||mode==='proD'||mode==='proR')?proPick():fdBest(G.user,true)):(EQ?proPick(pk.tid):fdBest(pk.tid,false)); if(id==null){ fdFinish(); break; } fdPick(id); } if(!G.fd.done)fdFinish();
@@ -35,6 +35,7 @@ function season(mode){ REAL=mode==='proR'||mode==='eq'; EQ=mode==='eq'; if(EQ)mo
   return Object.assign(pre,{w:S[i].w,l:S[i].l,rank:i+1,rd:(RS[G.user]||0)-(RA[G.user]||0),rdTop:Math.max(...G.teams.filter(t=>t.id!==G.user).map(t=>(RS[t.id]||0)-(RA[t.id]||0)))}); }
 const RES={}; for(const m of MODES)RES[m]=[];
 for(let L=0;L<NL;L++)for(const m of MODES){ setSeed(1000+L*77); const r=season(m); RES[m].push(r); log('리그 '+(L+1)+' '+m+': '+r.w+'승 '+r.l+'패 '+r.rank+'위 득실 '+(r.rd>0?'+':'')+r.rd+' (AI 최고 '+r.rdTop+') · 시작 전력 '+r.rRank+'위(평균 대비 '+r.gap.toFixed(1)+') · 연봉 '+Math.round(r.pay*100)+'% · 외국인 우리 '+r.myF.toFixed(1)+' / AI '+r.aiF.toFixed(1)+' · AI 연봉 '+Math.round(r.aiPay*100)+'%'); }
+if(FL.length)log('고수가 상한까지 불렀는데 놓친 외국인 후보: 시즌당 평균 '+avg(FL).toFixed(1)+'명');
 for(const m of MODES){ const L=RES[m]; log('== '+m+': 승률 '+avg(L.map(x=>x.w/(x.w+x.l))).toFixed(3)+' · 평균 '+avg(L.map(x=>x.rank)).toFixed(1)+'위 · 1위 '+L.filter(x=>x.rank===1).length+'/'+L.length+' · 득실 평균 '+Math.round(avg(L.map(x=>x.rd)))+' · 시작 전력 평균 '+avg(L.map(x=>x.rRank)).toFixed(1)+'위'); }
 `);
 try{ run(setSeed,NL,MODES,(...a)=>console.log(...a)); }catch(e){ console.error=oe; console.log('실행 실패: '+(e.stack||e).toString().slice(0,600)); process.exit(1); }

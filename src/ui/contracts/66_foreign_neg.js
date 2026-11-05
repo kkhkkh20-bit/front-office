@@ -1,7 +1,7 @@
 /* ---------- 외국인 선수 협상 패널(선수 상세): 보장·인센티브 정하기, 우리 매력과 경쟁 구단 비교 ---------- */
 function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const open=foreignOpen();
   const cap=foCap(p); let F=UI.fo&&UI.fo.id===p.id?UI.fo:null; if(!F){ const g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F=UI.fo={id:p.id,g,i:Math.max(0,Math.min(cap-g,p.ask-g)),msg:''}; }
-  const me=foAppeal(p,G.user); const Rv=foRivals(p); const best=Rv[0]; const N=p.fneg; const known=!!N||Rv.length===0;
+  const me=foAppeal(p,G.user,{rel:!!F.rel}); const Rv=foRivals(p); const best=Rv[0]; const N=p.fneg; const known=!!N||Rv.length===0;
   const pct=f=>{ const v=Math.round((f-1)*100); return `${v>=0?'+':''}${v}%`; };
   const parts=me.parts.map(x=>`<div class="row between small"><span>${esc(x[0])}</span><b class="${x[1]>0?'good':x[1]<0?'bad':''}">${x[1]>0?'+':''}${Math.round(x[1]*100)}%</b></div>`).join('');
   const v=foVal(F.g,F.i)*me.f, floor=foFloor(p), tgt=Math.max(floor,best?best.v*1.01:0);
@@ -13,6 +13,8 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
       <div><span class="muted small">인센티브(규정 출전 시)</span>${contractMoneyInput('fo','i','인센티브',F.i,true)}<div class="row">${step('i',-5,'-5만')}${step('i',5,'+5만')}</div></div>
     </div>
+    <p class="small">선수 성향: <b>${esc(FO_PREF[me.pref]||'')}</b></p>
+    <div class="row small" style="gap:6px;align-items:center"><button class="btn small${F.rel?' on':''}" data-a="foRel" aria-pressed="${!!F.rel}">${F.rel?'보류권 해제 조항 넣음':'보류권 해제 조항 넣기'}</button>${hiI('재계약하지 않으면 보류권을 풀어 이 선수가 국내 다른 구단과 계약할 수 있게 약속합니다. 선수에게는 매력(1년 뒤 자유를 원하는 선수는 두 배)이지만, 잘하면 재계약 협상에서 국내 다른 구단과도 경쟁해야 하고 결별하면 경쟁 구단으로 갈 수 있습니다.')}</div>
     <p class="small fo-total">총액 ${usdT(F.g+F.i)} · 선수가 느끼는 가치 ${usdT(foVal(F.g,F.i))} x 우리 구단 매력 ${pct(me.f)}</p>
     <details class="small"${UI.foOpen?' open':''}><summary>우리 구단 매력 ${pct(me.f)} 근거</summary>${parts||'<p class="small muted">특별한 장단점이 없습니다.</p>'}</details>
     <div class="fo-cmp small"><div class="row between"><span>경쟁</span><b>${Rv.length?`${Rv.length}개 구단 관심`:'관심 구단 없음'}</b></div>
@@ -24,7 +26,8 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
 Object.assign(A,{ foRe(v){ UI.negWin={k:'fre',id:+v}; renderSheet(); }, /* 재계약 협상도 협상 창으로 */
   foStep(v){ const [k,d]=String(v).split(':'); const F=UI.fo; if(!F)return; const p=G.players[F.id]; if(!p)return; const cap=foCap(p);
     const top=F.re?Math.round(p.newSal*2):cap; if(k==='g')F.g=clamp(F.g+(+d)*USD,MIN_SAL,top-F.i); else F.i=clamp(F.i+(+d)*USD,0,top-F.g); F.msg=''; renderSheet(); },
-  foGo(v){ if(!contractMoneyValid())return; const F=UI.fo; if(!F||F.id!==+v)return; const r=F.re?foReOffer(+v,F.g,F.i):foOffer(+v,F.g,F.i); if(F.re){ F.msg=r.msg; save(); render(); return; } F.msg=r.msg; if(r.ok){ UI.fo=null; toast(r.msg); UI.sheet=null; save(); render(); return; } save(); renderSheet(); } });
+  foRel(){ const F=UI.fo; if(!F)return; F.rel=!F.rel; F.msg=''; renderSheet(); },
+  foGo(v){ if(!contractMoneyValid())return; const F=UI.fo; if(!F||F.id!==+v)return; const r=F.re?foReOffer(+v,F.g,F.i):foOffer(+v,F.g,F.i,!!F.rel); if(F.re){ F.msg=r.msg; save(); render(); return; } F.msg=r.msg; if(r.ok){ UI.fo=null; toast(r.msg); UI.sheet=null; save(); render(); return; } save(); renderSheet(); } });
 /* 우리 외국인 재계약 협상(보류권: 경쟁 상대는 해외 제안뿐) */
 function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.fo&&UI.fo.id===p.id?UI.fo:null;
   if(!F){ F=UI.fo={id:p.id,g:Math.round(p.newSal*.85/USD)*USD,i:0,msg:'',re:true}; }
