@@ -79,7 +79,7 @@ function achFirstDaily(){ if(!G||G.user==null||G.unemp)return; const U=G.user; c
   if(miss('fLead')&&r&&r.w+r.l>=10){ const st=standingsNow(); if(st[0]&&st[0].tid===U)achUnlock('fLead',`${r.w}승 ${r.l}패`); }
   if(miss('fFac')&&G.fac&&G.fac.dn&&Object.keys(G.fac.dn).length)achUnlock('fFac');
   if(miss('fTrade')&&(G.trades||[]).some(t=>t.gi))achUnlock('fTrade');
-  if(miss('fDebut')&&period()==='season'){ const p=playersOf(U).find(q=>{ const h=seasonTotalT(q,G.year,'1군',U); if(!h||!((h.pa||0)+(h.outs||0)))return false; return !q.hist.some(x=>x.lvl==='1군'&&x.y<G.year&&((x.pa||0)+(x.outs||0))>0); }); if(p)achUnlock('fDebut',`${p.name}, ${posLabel(p)}`); } }
+  if(miss('fDebut')&&period()==='season'){ const p=playersOf(U).find(q=>{ const h=seasonTotalT(q,G.year,'1군',U); if(!h||!((h.pa||0)+(h.outs||0)))return false; return !q.hist.some(x=>x.lvl==='1군'&&(x.y<G.year||x.t!==U)&&((x.pa||0)+(x.outs||0))>0); }); /* 같은 해 다른 팀 1군 기록도 데뷔로 본다 */ if(p)achUnlock('fDebut',`${p.name}, ${posLabel(p)}`); } }
 /* ctx.k: season(결산 직후), award(시상식), retNo(영구결번), switch(구단 이동), assoc(협회 결과) */
 function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT(); const U=G.user;
   if(ctx.k==='switch'){ if(G.unemp)T.fired=true; if(ctx.to!=null&&!T.teams.includes(ctx.to))T.teams.push(ctx.to); if(T.teams.length>=3)achUnlock('teams3'); if(T.fired||ctx.wasU)achUnlock('comeback'); return; }

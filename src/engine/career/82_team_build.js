@@ -4,7 +4,7 @@
  - 시즌 중: 내가 꾸린 선수가 10승·20홈런·20세이브에 닿으면 소식이 온다(데뷔 첫 기록이면 따로 표시).
  - 시즌 뒤 회고: 내가 꾸린 선수 WAR 순위와 이번 시즌 처음 주전이 된 선수.
  - 구단 > 연대기 > 내가 꾸린 팀: 순위 변화, 지금 선수단이 어디서 왔는지, 핵심 선수, 기록 연표 */
-const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이드','FA':'외부 FA','외국인':'외국인','보상선수':'보상선수','무적 영입':'무적 선수','해외 복귀':'해외 복귀'};
+const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이드','FA':'외부 FA','외국인':'외국인','보상선수':'보상선수','무적 영입':'무적 선수','해외 복귀':'해외 복귀','웨이버':'웨이버','2차 드래프트':'2차 드래프트'};
 function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; let w0; try{ if(k!=='fd'&&k!=='draft'){ const y=period()==='season'||period()==='post'?G.year:G.year-1; const h=seasonTotal(p,y,'1군'); if(h)w0=Math.round(warOf(h,p)*10)/10; } }catch(e){}
   p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{});
   if(tid===G.user&&!G.unemp){ const L=G.mineL=G.mineL||[]; L.push({id:p.id,o:Object.assign({},p.acq)}); if(L.length>400)L.splice(0,L.length-400); } } /* 내가 데려온 선수: 떠나도 재임 성과에 남긴다 */
@@ -13,7 +13,10 @@ function tbTakeSnap(){ if(G.user==null||G.unemp)return; let d=null; try{ d=depth
 /* 재임 기간에 데려온 선수 전부(지금 우리 선수 + 떠난 선수). 떠난 선수는 우리 팀에서 쌓은 WAR만 */
 function tbMineAll(){ const out=[], seen=new Set(); const since=G.gmSinceD;
   for(const p of Object.values(G.players)){ if(p.team!==G.user||p.joinY>G.year||!mineOf(p))continue; seen.add(p.id); out.push({p,o:tbOrigin(p),gone:false,away:isAway(p)}); } /* 소속·영입 이력 기준(대표팀 차출·군 복무로 잠시 빠져도 집계에 남고, 상태만 따로 표시) */
-  for(const x of (G.mineL||[])){ if(seen.has(x.id)||x.o.tid!==G.user||(since!=null&&x.o.d!=null&&x.o.d<since))continue; const p=G.players[x.id]; if(!p||p.team===G.user)continue; seen.add(x.id); out.push({p,o:x.o,gone:true}); }
+  for(const x of (G.mineL||[])){ if(seen.has(x.id)||x.o.tid!==G.user||(since!=null&&x.o.d!=null&&x.o.d<since))continue; const p=G.players[x.id]; if(p&&p.team===G.user)continue; if(!p){ const a=G.arch&&G.arch[x.id]; if(!a)continue; seen.add(x.id); /* 은퇴 등으로 지워진 선수는 보관 기록으로 이어서 */
+      const R=(a.rows||[]).filter(r=>r.t===G.user&&r.y>=x.o.y); let best=null; for(const r of R)if(!best||r.war>best.w)best={y:r.y,w:r.war||0};
+      out.push({p:{id:a.id,name:a.name,age:a.age,isP:a.isP,role:a.pos==='선발'?'SP':'RP',pos:a.isP?'P':a.pos,arch:true},o:x.o,gone:true,W:{sum:sum(R.map(r=>r.war||0)),best}}); continue; }
+    seen.add(x.id); out.push({p,o:x.o,gone:true}); }
   return out; }
 function warWithT(p,tid,y0){ let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',tid); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }
 /* 요약 줄: 물려받은 선수·내가 데려온 선수, 주전 평균 나이(취임 당시 대비), 이번 시즌 뒤 계약 결정(주전급 FA 예정), 주전 9자리 구성 */

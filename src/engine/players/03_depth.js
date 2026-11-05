@@ -78,7 +78,7 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
 /* 돌아온 주축을 다시 1군에(사용자 피드백 11-05: 대표팀에서 돌아온 핵심 3명이 한국시리즈 1차전까지 2군에 남음).
  후보마다 같은 투수·야수 중 기용 순위가 가장 낮은 1군 선수보다 확실히 나으면 바꾼다. 자리가 비면 그냥 올린다 */
 function entryUpgrade(tid,cands,why){ if(!entryOn())return []; const lean=teamLean(tid), v=p=>entryVal(tid,p,lean), lim=entryLimit(), moves=[];
-  for(const c of cands.filter(p=>p&&p.team===tid&&!p.e1&&!p.ys&&healthy(p)&&psOk(p)).sort((a,b)=>v(b)-v(a))){ const ent=playersOf(tid).filter(p=>p.e1);
+  for(const c of cands.filter(p=>p&&p.team===tid&&!p.e1&&!p.ys&&healthy(p)&&psOk(p)&&!(p.isP&&rpPlanOf(tid,p)==='sp2')) /* 2군 선발 수업 투수는 올리지 않는다(바로 말소됨) */.sort((a,b)=>v(b)-v(a))){ const ent=playersOf(tid).filter(p=>p.e1);
     if(ent.length<lim){ c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록`); continue; }
     const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)).sort((a,b)=>v(a)-v(b))[0]; if(out&&v(c)>v(out)+1){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
   if(tid===G.user&&moves.length)note('엔트리',`감독이 1군 엔트리를 조정했습니다${why?`(${why})`:''}: ${moves.join(', ')}.`); return moves; }

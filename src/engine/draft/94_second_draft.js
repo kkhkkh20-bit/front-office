@@ -32,7 +32,7 @@ function sdAiPick(tid,rd){ if(rosterN(tid)>=ROSTER_MAX)return null; const t=team
 function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.rd); termsClear(q); q.team=s.tid; q.listed=false; if(from===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===pid)delete G.lineup[k];
   payOut(s.tid,fee,'comp'); payIn(from,fee); Object.assign(s,{pid,from,fee,nm:q.name});
   if(s.rd<=SD_REG.length)q.sd2={y:G.year,rd:s.rd,from,to:s.tid,fee,need:SD_REG[s.rd-1],reg:0};
-  story(q,`${G.year} 2차 드래프트 ${s.rd}라운드로 ${tname(s.tid)} 이적`,'move'); mvLog('2차 드래프트',q,from,s.tid,`${s.rd}라운드 · 양도금 ${money(fee)}`,fee);
+  story(q,`${G.year} 2차 드래프트 ${s.rd}라운드로 ${tname(s.tid)} 이적`,'move'); acqStamp(q,'2차 드래프트',s.tid,{rd:s.rd}); mvLog('2차 드래프트',q,from,s.tid,`${s.rd}라운드 · 양도금 ${money(fee)}`,fee);
   wire('2차 드래프트',`${tshort(s.tid)}, ${s.rd}라운드 ${q.name}(${posLabel(q)}, 전 ${tshort(from)}) 지명`,{tid:s.tid,ref:pid});
   if(from===G.user)note('드래프트',`2차 드래프트: ${tname(s.tid)}이(가) ${s.rd}라운드로 ${q.name}을(를) 데려갔습니다. 양도금 ${money(fee)}을(를) 받습니다.`,pid); }
 /* 우리 차례에서 멈춘다. quiet: 화면에서 지명한 직후라 따로 알리지 않는다 */
@@ -50,7 +50,7 @@ function sdPick(pid){ const S=G.sd2; if(!S||S.stage!=='pick')return '2차 드래
 /* 정규시즌이 끝난 다음 날: 1·2라운드 지명자의 1군 등록일수를 더하고, 두 시즌 안에 못 채우면 원소속 구단으로 돌려보낸다 */
 function sdRegCheck(day){ if(!G.cal||day!==G.cal.end+1)return;
   for(const p of Object.values(G.players)){ const o=p.sd2; if(!o||o.y>=G.year)continue; if(p.team!==o.to){ delete p.sd2; continue; }
-    o.reg+=G.regTrk===G.year?regN(p):o.need; /* 시즌 중 불러온 옛 저장은 등록일수를 몰라 채운 것으로 본다 */
+    o.reg+=G.regTrk===G.year?regNT(p,o.to):o.need; /* 지명 구단에서 등록한 날만 */ /* 시즌 중 불러온 옛 저장은 등록일수를 몰라 채운 것으로 본다 */
     if(o.reg>=o.need){ delete p.sd2; continue; } if(G.year<o.y+2)continue; delete p.sd2;
     const back=rosterN(o.from)<ROSTER_MAX&&(o.from===ME()||aiVal(team(o.from),p)>=0);
     if(back){ const r=Math.round(o.fee/2); payOut(o.from,r,'comp'); payIn(o.to,r); termsClear(p); p.team=o.from; p.listed=false; if(o.to===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];

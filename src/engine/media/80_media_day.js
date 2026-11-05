@@ -23,6 +23,7 @@ function mdPlan(){ const open=G.cal.open; const m=G.mgr[G.user]; const who=m&&!m
     {imp:true,kind:'감독',acts:[{l:'감독 추천대로',a:'mdRep',v:'ok'}].concat(alts.map(p=>({l:`건의: ${p.name} (${posLabel(p)}, ${p.age}세)`,a:'mdRep',v:String(p.id)})))}); }
 function mdSuggest(v){ const D=G.md; if(!D||D.y!==G.year||G.day>=D.day)return '이미 지난 일입니다.'; if(D.res)return D.res==='rej'?'감독이 이미 거절했습니다.':'이미 정했습니다.';
   const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'감독대행';
+  for(const k of ['cap','rep']){ const q=G.players[D[k]]; if(!q||q.team!==G.user){ const n=k==='cap'?mdCaptain(G.user):mdRepPool(G.user).find(x=>x.id!==D.cap); if(n)D[k]=D.rec=n.id; } } /* 추천 뒤 방출·이적한 선수는 다음 후보로 */
   if(v==='ok'){ D.res='ok'; return `${who} 추천대로 ${G.players[D.cap].name}, ${G.players[D.rep].name}이(가) 나갑니다.`; }
   const p=G.players[+v]; if(!p||p.team!==G.user)return '우리 선수가 아닙니다.';
   const pr=!m||m.interim?.9:mplOn('listen')?.95:clamp(.9-((m.ego??50)-50)/80,.45,.9);
@@ -52,12 +53,13 @@ const MD_FANQ=[['캠프에서 가장 웃겼던 동료는?','"말하면 큰일 �
 /* 개막 2일 전: 미디어데이 */
 function mdRun(){ const open=G.cal.open; let D=G.md; if(!D||D.y!==G.year){ const cap=mdCaptain(G.user), rec=mdRepPool(G.user)[0]; if(!cap||!rec)return; D=G.md={y:G.year,day:G.day,cap:cap.id,rep:rec.id,rec:rec.id,res:'ok',alts:[]}; }
   if(D.ran)return; D.ran=true; const proj=mdProj(); const r=proj.indexOf(G.user)+1; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'감독대행';
+  for(const k of ['cap','rep']){ const q=G.players[D[k]]; if(!q||q.team!==G.user){ const n=k==='cap'?mdCaptain(G.user):mdRepPool(G.user).find(x=>x.id!==D.cap); if(n)D[k]=n.id; } } /* 당일에도 떠난 대표는 대체 */
   const cap=G.players[D.cap], rep=G.players[D.rep]; const g=mdMgrGoal(G.user,r); const sty=m&&!m.interim?MD_STYLE[mgrVoice(m)]:'';
   const fq=pick(MD_FANQ); const L=[[who,g.t+(sty?' '+sty:'')]];
   if(cap&&cap.team===G.user)L.push([`주장 ${cap.name}`,mdPlayerLine(cap,'cap')]); if(rep&&rep.team===G.user)L.push([`${rep.name}`,mdPlayerLine(rep,'rep')]);
   prInit(); let fan=1; if(g.k==='champ')fan+=2; else if(g.k==='ps')fan+=1; G.pr.fan=clamp(G.pr.fan+fan,0,100);
   if(cap&&cap.team===G.user)cap.mor=clamp((cap.mor??60)+2,0,100); if(rep&&rep.team===G.user){ rep.mor=clamp((rep.mor??60)+(D.res==='acc'&&rep.age<=24?6:4),0,100); }
-  if(g.k&&m&&!m.interim)G.mdProm={y:G.year,k:g.k,mid:m.id,name:m.name};
+  if(g.k&&m&&!m.interim)G.mdProm={y:G.year,k:g.k,mid:m.id,name:m.name,tid:G.user};
   const others=G.teams.filter(t=>t.id!==G.user).map(t=>{ const x=mdMgrGoal(t.id,proj.indexOf(t.id)+1); return `${tshort(t.id)} ${x.w}`; });
   /* 다른 구단: 우승 후보와 몇 팀의 주장 발언, 우리를 겨냥한 한마디 */
   const riv=[], champ=G.last&&G.last.ps?G.last.ps.champ:null; const nk=team(G.user).nick;
@@ -95,6 +97,6 @@ function mdDaily(){ if(G.unemp||!G.cal)return; const open=G.cal.open;
   const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.round!=='wc'&&(s.hi===G.user||s.lo===G.user)&&G.day===s.days[0]-1&&G.psMD!==G.year+':'+s.round){ G.psMD=G.year+':'+s.round; try{ mdPsRun(s); }catch(e){ console.error(e); } }
   try{ mdPsPub(); }catch(e){} }
 /* 시즌 뒤: 감독 공언 점검 */
-function mdPromCheck(){ const P=G.mdProm; if(!P||P.y!==G.year)return; delete G.mdProm; const ok=P.k==='ps'?!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)):!!(G.ps&&G.ps.champ===G.user);
-  const w=P.k==='ps'?'가을야구':'우승'; news('언론',ok?`${P.name} 감독, 미디어데이 '${w}' 약속 지켰다`:`${P.name} 감독의 '${w}' 출사표, 빈말로`,ok?'개막 미디어데이에서 밝힌 목표를 이뤘습니다.':'개막 미디어데이에서 밝힌 목표에 닿지 못했습니다. 감독의 말에 무게가 떨어졌다는 평가입니다.',ok?2:-2);
+function mdPromCheck(){ const P=G.mdProm; if(!P||P.y!==G.year)return; delete G.mdProm; const T=P.tid??G.user; /* 공언한 감독의 구단 성적으로(단장이 이직해도) */ const ok=P.k==='ps'?!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(T)):!!(G.ps&&G.ps.champ===T);
+  const w=P.k==='ps'?'가을야구':'우승'; news('언론',ok?`${P.name} 감독, 미디어데이 '${w}' 약속 지켰다`:`${P.name} 감독의 '${w}' 출사표, 빈말로`,ok?'개막 미디어데이에서 밝힌 목표를 이뤘습니다.':'개막 미디어데이에서 밝힌 목표에 닿지 못했습니다. 감독의 말에 무게가 떨어졌다는 평가입니다.',ok?2:-2,{tid:T});
   const m=G.mgr[G.user]; if(m&&m.id===P.mid&&!ok&&P.k==='champ'){ prInit(); G.pr.fan=clamp(G.pr.fan-1,0,100); } }

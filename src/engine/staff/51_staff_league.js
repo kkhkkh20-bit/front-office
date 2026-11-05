@@ -33,14 +33,14 @@ const starTxt=n=>'★'.repeat(n)+'☆'.repeat(5-n);
 function stScore(s,tid,sal,cur){ const pr=clubPrestige(tid); let v=(sal/Math.max(1,s.sal)-1)*120+pr*(.35+s.amb/200);
   if(s.region&&team(tid).region===s.region)v+=10; if(cur)v+=s.loy*.45+8; return v+hn('stc'+G.year+':'+tid,s.id)*6; }
 /* 후보 관심 구단: 매달 정한다(능력이 높을수록 여러 구단이 노린다) */
-function stInterest(s){ const mk=G.year*100+dobj(G.day).m; if(s._im===mk)return s.int||[]; s._im=mk; const n=s.skill>=5?ri(2,3):s.skill>=4?ri(1,2):s.skill>=3?(R()<.5?1:0):0;
+function stInterest(s){ const mk=G.year*100+dobj(G.day).m; if(s._im===mk)return (s.int||[]).filter(t=>t!==G.user); /* 이직하면 새 소속은 경쟁 구단에서 빠진다 */ s._im=mk; const n=s.skill>=5?ri(2,3):s.skill>=4?ri(1,2):s.skill>=3?(R()<.5?1:0):0;
   s.int=G.teams.filter(t=>t.id!==G.user).sort(()=>R()-.5).slice(0,n).map(t=>t.id); return s.int; }
 /* 우리 제안: 관심 구단과 경쟁. raise=연봉 인상률 */
 function stOffer(kind,id,raise){ stInit(); const mkt=kind==='sc'?scoutMkt():anaMarket(); const s=mkt.find(x=>x.id===id); if(!s)return {ok:false,msg:'후보가 없습니다.'}; stAttr(s);
   if(kind==='sc'&&G.scouts.length>=SCOUT_MAX)return {ok:false,msg:`스카우트는 ${SCOUT_MAX}명까지입니다.`}; if(kind==='an'&&anaList().length>=ANA_MAX)return {ok:false,msg:`분석원은 ${ANA_MAX}명까지입니다.`};
   const sal=round5(s.sal*(1+raise)); const me=stScore(s,G.user,sal,false);
   /* 경쟁 제안이 이미 걸려 있으면(우리가 한 번 밀린 뒤) 그 조건과 다시 겨룬다. 두 번째에도 밀리면 그쪽으로 간다 */
-  const B=s.bid&&s.bid.exp>=G.day?s.bid:null;
+  const B=s.bid&&s.bid.exp>=G.day&&s.bid.t!==G.user?s.bid:null; if(s.bid&&s.bid.t===G.user)delete s.bid;
   if(B){ if(me>B.v){ delete s.bid; } else { delete s.bid; stJoin(kind,s,B.t,B.sal); stResMail(kind,s,false,B.t,B.sal,true); return {ok:false,msg:`${s.name}은(는) 고민 끝에 ${tname(B.t)}을(를) 택했습니다(상대 연 ${money(B.sal)}). ${clubPrestige(B.t)>clubPrestige(G.user)?'구단 위상 차이를 조건으로 메우지 못했습니다.':'조건이 조금 모자랐습니다.'}`}; } }
   const rivals=B?[]:stInterest(s).map(t=>{ const rs=round5(s.sal*rnd(1,1.15)); return {t,sal:rs,v:stScore(s,t,rs,false)}; }).sort((a,b)=>b.v-a.v);
   if(rivals.length&&rivals[0].v>me){ const r=rivals[0]; /* 바로 뺏기지 않는다: 상대 조건을 알려 주고 3일 안에 다시 제안할 기회를 준다 */
@@ -64,8 +64,10 @@ function stAiMonthly(){ stInit(); try{ stBidSettle(); }catch(e){} const off=peri
       const c=mkt.filter(s=>!s.ob&&!(s.bid&&s.bid.exp>=G.day)&&(room||(worst&&s.skill>=worst.skill+2))&&(s.skill<5||t.market>=1.05||R()<.4)).sort((a,b)=>stScore(b,t.id,b.sal,false)-stScore(a,t.id,a.sal,false)+(b.skill-a.skill)*20)[0];
       if(c&&R()<.6){ stAttr(c); if(!room&&worst){ const i=list.indexOf(worst); list.splice(i,1); (kind==='sc'?G.scoutMarket:G.amarket).push(worst); } stJoin(kind,c,t.id); break; } } } }
 /* 비시즌: 다른 구단 스태프 빼오기(연봉 인상 필요). 구단당 한 번, 비시즌 3번까지 */
+/* 겨울 회차(11~1월) 기준: 결산을 지나도 같은 겨울이면 이어서 센다 */
+function stPoNow(){ const o=dobj(G.day), w=o.m>=11?o.y:o.y-1; return G.stPo&&G.stPo.w===w?G.stPo:{w,n:0,t:[]}; }
 function stPoachOpen(){ const o=dobj(G.day); return o.m>=11||o.m<=1; }
-function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 구단 스태프는 11월~1월에만 데려올 수 있습니다.'; const P=G.stPo=G.stPo&&G.stPo.y===sponSeason()?G.stPo:{y:sponSeason(),n:0,t:[]};
+function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 구단 스태프는 11월~1월에만 데려올 수 있습니다.'; const P=G.stPo=stPoNow();
   if(P.n>=3)return '이번 비시즌에는 더 이상 영입 시도를 할 수 없습니다(3번).'; if(P.t.includes(tid))return `${tshort(tid)} 스태프에게는 이미 한 번 접촉했습니다.`;
   const L=G.lgStaff[tid]; const list=kind==='sc'?L.sc:L.an; const s=list.find(x=>x.id===id); if(!s)return '대상이 없습니다.';
   if(kind==='sc'&&G.scouts.length>=SCOUT_MAX)return `스카우트는 ${SCOUT_MAX}명까지입니다.`; if(kind==='an'&&anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`;

@@ -46,9 +46,11 @@ function faAnnounce(){ if(!G.fa)return; G.fa.open=true; try{ agYear(); agPitch()
    고액 연봉(3억 원 이상) 선수가 다치지 않았는데 1군에 없으면 하루 연봉의 1/600을 감액한다(타자는 개막부터, 투수는 개막 7경기 뒤부터). */
 function regDaily(){ const c=G.cal; if(!c||G.day<c.open||G.day>c.end)return; if(G.day===c.open)G.regTrk=G.year; if(G.regTrk!==G.year||!entryOn())return; G.sea.cut=G.sea.cut||{};
   for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year)continue; const R=p.regD&&p.regD.y===G.year?p.regD:(p.regD={y:G.year,n:0,il:0});
-    const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(p.e1){ R.n++; p.e1L=G.day; continue; } if(nt){ R.n++; continue; }
-    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&R.il<30){ R.n++; R.il++; } continue; }
+    const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(p.e1){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; p.e1L=G.day; continue; } if(p.ys||milServing(p))continue; /* 육성선수(정식 등록 전)·입대한 선수는 대표 차출·재활 인정 없음 */ if(nt){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; continue; }
+    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&R.il<30){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; R.il++; } continue; }
     if(!p.foreign&&p.sal>=300&&!milServing(p)&&!p.ys&&(!p.isP||G.day>=c.open+8)){ G.sea.cut[p.team]=(G.sea.cut[p.team]||0)+p.sal/600; R.cut=(R.cut||0)+1; } } }
+/* 그 구단 소속으로 쌓은 등록일수(2차 드래프트 의무 등록) */
+function regNT(p,tid){ const R=p.regD&&p.regD.y===G.year?p.regD:null; return R?(R.tm?(R.tm[tid]||0):R.n):0; }
 function regN(p){ return p.regD&&p.regD.y===G.year?p.regD.n:0; }
 /* 1시즌 인정: 등록 145일 이상. 모자란 해의 등록일수는 쌓아 두었다가 합쳐서 145일이 되면 1시즌(KBO). 등록일수를 세지 못한 해(예전 저장)는 예전 기준(출전량)으로 본다 */
 function svcCredit(p){ if(p.foreign){ p.svc++; return; } if(G.regTrk===G.year){ const n=regN(p); if(n>=145){ p.svc++; return; } p.svcD=(p.svcD||0)+n; if(p.svcD>=145){ p.svcD-=145; p.svc++; } return; } if(faSvcOk(p))p.svc++; }
@@ -235,6 +237,8 @@ function fReFinish(C,tid){ const me=tid===G.user;
     else { if(p.newSal!=null)p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; delete p.fleft; if(p.fInc){ p.ctT=p.team; p.opt={a:p.fInc,until:C.y+1,c:optCrit(p)}; delete p.fInc; } } } }
 /* 이직할 때: 떠나는 구단의 남은 연봉 협상은 그 구단(이제 AI)이 정리하고, 새 구단은 이미 연봉을 마친 상태로 시작한다 */
 function contractHandOff(oldTid){ const C=G.contract; if(!C||C.done)return; try{ salTalkClose(); }catch(e){}
+  for(const p of Object.values(G.players))if(p.team===oldTid&&p.hold){ p.sal=Math.max(MIN_SAL,holdMidAmt(p)); delete p.hold; } /* 미계약 선수: 전 구단 새 단장이 중간 금액으로 마무리(개막 직전 자동 합의와 같은 기준) */
+  { let g=0; while(fReCapInfo().over>0&&g++<4){ const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(!k)break; C.foreignDrop.push(k.id); } } /* 외국인 총액 한도를 넘는 재계약은 비싼 선수부터 포기(평소 확정과 같은 한도) */
   for(const id of C.ended){ const p=G.players[id]; if(p&&p.team===oldTid&&p.newSal!=null){ p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal; } }
   fReFinish(C,oldTid); /* 단장이 내린 결별·합의(인센티브 포함)를 그대로 마무리한다 */
   G.contract={y:C.y,tid:null,ended:[],foreignEnd:[],foreignDrop:[],released:[],done:true}; }
@@ -338,6 +342,7 @@ function answerOffer(id,yes){
   if(!tradeOpen())return {ok:false,msg:'트레이드 기간이 아닙니다.'};
   /* 성사 여부(거부권·소속)를 먼저 보고, 구단주 승인(신뢰 비용)은 실제로 성사될 때만 반영한다 */
   { const why=offerBlockMsg(o); if(why)return {ok:false,msg:why}; }
+  { const cd=tradeCool(o.from,o.give); if(cd){ G.offers.unshift(o); return {ok:false,msg:cd.cap?`올해 ${tshort(o.from)}와(과)는 이미 ${cd.n}번 거래해 더 거래할 수 없습니다.`:`${tshort(o.from)}와(과)는 ${dmd(cd.until)}까지 다시 거래할 수 없습니다(거래 뒤 ${TRADE_COOL}일).`}; } } /* 받아 둔 제안도 수락할 때 거래 간격을 다시 본다 */
   { const oc=tradeOwnerCheck(o.get,o.give,0); if(oc&&!oc.ok){ G.offers.unshift(o); return {ok:false,owner:true,msg:oc.msg}; } if(oc&&oc.ok)tradeOwnerOk(oc); } /* AI 제안은 우리가 o.get을 보내고 o.give를 받는다 */
   const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const grade=tradeGrade(o.from,o.get,o.give);
   o.give.forEach(id=>{ termsClear(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); o.get.forEach(id=>{termsClear(G.players[id]); G.players[id].team=o.from; delete G.players[id].listed; /* 트레이드로 옮기면 계약한 구단에만 걸린 조건은 끝난다(돌아와도 되살아나지 않음) */ story(G.players[id],`트레이드로 ${tname(o.from)} 이적`,'move');});

@@ -5,7 +5,7 @@ function stMktInfo(s){ stAttr(s); const I=stInterest(s); return `<span class="sm
 function stBidLive(s){ return !!(s&&s.bid&&s.bid.exp>=G.day); }
 function stBidBtns(kind,s,cls){ const n=stNeed(s); const a=kind==='sc'?'hireScout':'anaHire'; cls=cls||'btn small';
   return `${n?`<button class="${cls} go primary" data-a="${a}" data-v="${s.id}:${n.x}">다시 제안 · 연 ${money(n.sal)}</button>`:`<span class="small muted">연봉을 두 배로 올려도 이기기 어렵습니다</span>`}<button class="${cls}" data-a="stBidDrop" data-v="${s.id}">포기</button>`; }
-function stOtherView(kind){ stInit(); const open=stPoachOpen(); const P=G.stPo&&G.stPo.y===sponSeason()?G.stPo:{n:0,t:[]};
+function stOtherView(kind){ stInit(); const open=stPoachOpen(); const P=stPoNow();
   const L=[]; for(const tid in G.lgStaff){ for(const s of (kind==='sc'?G.lgStaff[tid].sc:G.lgStaff[tid].an))if(s.skill>=3)L.push({s,tid:+tid}); }
   L.sort((a,b)=>b.s.skill-a.s.skill||a.s.loy-b.s.loy);
   return `<div class="eyebrow" style="margin-top:14px">다른 구단 ${kind==='sc'?'스카우트':'분석원'} (능력 3 이상)</div>

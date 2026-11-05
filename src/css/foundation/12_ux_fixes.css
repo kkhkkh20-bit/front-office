@@ -34,7 +34,7 @@ nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;wh
 /* 휴대폰에서도 코치·직원 상세를 펼쳐 본다(사용자 11-06: 이름을 눌러도 상세로 가지 않음) */
 .top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{font-style:normal}
 @media (max-width:420px){ .top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{display:none} }
-@media (max-width:699px){ .top .club i.cb-c.cb-hm{display:inline} } /* 홈에서는 '서울 하운즈' 전체 이름(아래 머리 줄을 없앤 대신) */
+@media (max-width:699px){ .top .club i.cb-c.cb-hm{display:inline} .top .club b:has(.cb-hm){font-size:14px;letter-spacing:-.04em;overflow:visible;text-overflow:clip} .top .club b:has(.cb-hm) .cb-v{display:none} } /* 홈에서는 '서울 하운즈' 전체 이름(아래 머리 줄을 없앤 대신) */
 .tgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
 .tgrid>*{min-width:0}
 @media (max-width:620px){
@@ -644,3 +644,8 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 /* 끌어서 글자 선택·사진 끌림 방지(앱처럼). 입력칸·코드 상자는 선택 가능 */
 #app,#sheet{-webkit-user-select:none;user-select:none}#app img,#sheet img{-webkit-user-drag:none;user-drag:none}
 #app :is(input,textarea,select,[contenteditable],.code,.selectable),#sheet :is(input,textarea,select,[contenteditable],.code,.selectable){-webkit-user-select:text;user-select:text}
+/* 물음표 도움말(사용자 11-06): 동그랗고 또렷하게, 휴대폰에서는 줄을 따로 차지하지 않고 탭 줄 오른쪽 위에 겹쳐 둔다 */
+#app .helpbtn{width:26px;height:26px;min-height:26px!important;border-radius:50%;padding:0;display:inline-grid;place-items:center;font:800 13px/1 var(--f-num);color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);box-shadow:none}
+#app .helpbtn.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+@media(max-width:1000px){ #app .subhead.notitle{position:relative;height:0!important;min-height:0!important;padding:0!important;margin:0!important;overflow:visible;z-index:6}
+ #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} }

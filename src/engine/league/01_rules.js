@@ -156,21 +156,21 @@ const payroll=tid=>sum(domPayOf(tid).map(p=>p.sal));
 /* 그해 지급 비율: 군 복무 기간은 연봉을 주지 않는다. 입대·전역 날짜를 알면 그 해 복무하지 않는 기간 몫만(전역 예정일 기준으로 미리) */
 function payFrac(p,y){ const m=p&&p.mil; const f=m&&(m.from??m.pf), u=m&&(m.until||m.pu); if(!m||f==null||!u)return 1; const a=dnum(y,1,1), b=dnum(y+1,1,1); const s=Math.max(a,f), e=Math.min(b,u); return 1-Math.max(0,e-s)/(b-a); }
 /* 한 해 국내 선수 연봉 지급액(결산·예산 전망): 복무 중인 선수도 그해 복무하지 않는 기간 몫은 넣는다 */
-function payYear(tid,y){ return Math.round(sum(Object.values(G.players).filter(p=>p.team===tid&&!p.foreign&&!(p.joinY>y)).map(p=>p.sal*payFrac(p,y)))); }
+function payYear(tid,y){ return Math.round(sum(Object.values(G.players).filter(p=>p.team===tid&&!p.foreign&&!(p.joinY>y)).map(p=>(y>G.year||(y===G.year&&dobj(G.day).m<=3&&!(G.cal&&G.cal.open>=dnum(G.year,1,1)&&G.day>=G.cal.open))?salNext(p):p.sal) /* 개막 전 겨울은 합의한 다음 시즌 연봉 */*payFrac(p,y)))); }
 /* 다음 시즌 연봉 한 가지 기준: 이미 합의한 다음 시즌 시작 다년계약(extNext) > 재계약 중 합의 연봉(newSal) > 지금 연봉 */
 function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; return p.newSal??p.sal; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
-function capPayAs(tid,inIds,outIds){ const fid=franId(tid,outIds); const out=new Set(outIds||[]); const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
-  for(const id of (inIds||[])){ const p=G.players[id]; if(p&&!p.foreign&&!isRookie(p))L.push(p.sal); } return sum(L.sort((a,b)=>b-a).slice(0,40)); }
+function capPayAs(tid,inIds,outIds){ const fid=franId(tid,outIds,inIds); const out=new Set(outIds||[]); const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
+  for(const id of (inIds||[])){ const p=G.players[id]; if(p&&!p.foreign&&!isRookie(p))L.push(capAmt(p,tid,p.sal,fid)); } return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
 function capPayNext(tid){ const fid=franId(tid), y=sponSeason(); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 /* 계약 하나를 바꿨을 때의 상한 합계: 실제 샐러리캡과 같은 방식(선수별 금액 정렬 → 상위 40명). s는 계약이 적용되는 시즌.
    지금 시즌(sponSeason)이면 지금 연봉 기준, 그 뒤 시즌이면 다음 시즌 기준(합의한 다음 시즌 계약·재계약 중 금액, 그 시즌까지 남는 계약금 상한 반영) */
-function capPayWith(tid,pid,amt,s){ const fid=franId(tid), y0=sponSeason(); s=s??y0; const nxt=s>y0; const L=[];
+function capPayWith(tid,pid,amt,s){ const fid=franId(tid,null,pid!=null?[pid]:null), y0=sponSeason(); s=s??y0; const nxt=s>y0; const L=[];
   for(const p of (nxt?domPayNext(tid,s):domPayOf(tid))){ if(p.id===pid)continue; if(nxt){ if(p.draft&&p.draft.y===s-1)continue; L.push(capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=s?p.capB.a:0),fid)); } else { if(isRookie(p))continue; L.push(capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)); } }
-  const so=[...L].sort((a,b)=>b-a); const base=sum(so.slice(0,40)), k40=so.length>=40?so[39]:0; if(amt!=null)L.push(amt); const tot=sum(L.sort((a,b)=>b-a).slice(0,40)); return {tot,base,cap:capOf(s),s,room:capOf(s)-base+k40}; } /* room: 이 선수 금액으로 쓸 수 있는 최대(40번째 선수를 밀어내는 몫 포함) */
+  const so=[...L].sort((a,b)=>b-a); const base=sum(so.slice(0,40)), k40=so.length>=40?so[39]:0; if(amt!=null)L.push(pid===fid?amt*.5:amt); const tot=sum(L.sort((a,b)=>b-a).slice(0,40)); return {tot,base,cap:capOf(s),s,room:capOf(s)-base+k40}; } /* room: 이 선수 금액으로 쓸 수 있는 최대(40번째 선수를 밀어내는 몫 포함) */
 /* 프랜차이즈 예외(KBO 2025-09 의결, 2026~): 구단마다 한 해 1명, 그 구단 소속 7시즌 이상인 국내 선수 보수의 50%를 상한 산정에서 뺀다. 가장 많이 받는 대상자를 자동으로 지정한다 */
-let _franC={k:null}; function franId(tid,outIds){ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=domPayOf(tid).filter(p=>!out.has(p.id)); const k=G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+p.sal+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||p.sal>b.sal)b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
+let _franC={k:null}; function franId(tid,outIds,inIds){ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=domPayOf(tid).filter(p=>!out.has(p.id)); for(const id of inIds||[]){ const p=G.players[id]; if(p&&!p.foreign&&!pool.includes(p))pool.push(p); } /* 데려올 선수도 예외 대상 후보(예상 계산이 실제 소속 뒤 계산과 같게) */ const k=G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+p.sal+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||p.sal>b.sal)b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
 const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 예외 대상도 한 번만 조회 */
 function capPay(tid){ const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign&&!p.frehab); /* 재활 선수 명단에 오른 외국인은 등록 인원·총액에서 빠진다(대체 선수가 그 자리) */

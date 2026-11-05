@@ -1,6 +1,6 @@
 /* ---------- 구단 > 연대기 > 내가 꾸린 팀 ---------- */
-const TB_CAT=['창단 지명','신인 지명','트레이드','외부 FA','외국인','보상선수','무적 선수','해외 복귀','물려받음'];
-const TB_COL={'창단 지명':'#e2434b','신인 지명':'#f0a020','트레이드':'#4fa3ff','외부 FA':'#3fd07f','외국인':'#b07cff','보상선수':'#2ec4c4','무적 선수':'#9aa6b2','해외 복귀':'#c9a24a','물려받음':'#5a6672'};
+const TB_CAT=['창단 지명','신인 지명','트레이드','외부 FA','외국인','보상선수','무적 선수','해외 복귀','웨이버','2차 드래프트','물려받음'];
+const TB_COL={'창단 지명':'#e2434b','신인 지명':'#f0a020','트레이드':'#4fa3ff','외부 FA':'#3fd07f','외국인':'#b07cff','보상선수':'#2ec4c4','무적 선수':'#9aa6b2','해외 복귀':'#c9a24a','웨이버':'#7d8cff','2차 드래프트':'#e07ab8','물려받음':'#5a6672'};
 function teamBuildView(){ if(G.unemp)return csec('내가 꾸린 팀','<p class="small muted">지금은 맡은 구단이 없습니다.</p>');
   const y0=meSince(); const S=((G.myC&&G.myC.seas)||[]).filter(x=>x.tid===G.user&&x.y>=y0);
   /* 1) 순위 변화 */
@@ -20,9 +20,9 @@ function teamBuildView(){ if(G.unemp)return csec('내가 꾸린 팀','<p class="
   const legend=`<div class="tbleg">${cats.map(c=>`<span><i style="background:${TB_COL[c]}"></i>${c} <b>${by[c].n}명</b>${tw>0?` · WAR ${Math.round(by[c].w/tw*100)}%`:''}</span>`).join('')}</div>`;
   const mineN=ps.filter(mineOf).length;
   /* 3) 핵심 선수: 내가 꾸린 선수, 우리 팀에서 쌓은 WAR 순 */
-  const core=tbMineAll().map(x=>({p:x.p,o:x.o,gone:x.gone,away:x.away,W:x.gone?warWithT(x.p,G.user,x.o.y):warWithUs(x.p)})).sort((a,b)=>b.W.sum-a.W.sum).slice(0,14);
-  const stOf=x=>{ if(x.gone)return `<span class="muted">떠남${x.p.team!=null?` · ${esc(tshort(x.p.team))}`:x.p.overseas||x.p.abroad?' · 해외':''}</span>`; if(x.away)return `<span class="muted">${milServing(x.p)?'군 복무':'대표팀 차출'} 중</span>`; let r=''; try{ r=squadRole(x.p); }catch(e){} return esc(r||'-'); };
-  const rows=core.map(x=>`<tr><td><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> <span class="muted small">${posLabel(x.p)} · ${x.p.age}세</span></td><td><span class="tbdot" style="background:${TB_COL[ACQ_K[x.o.k]]||'#888'}"></span>${esc(originLabel(x.o))}</td><td class="num">${x.o.o0!=null?`${dv(x.o.o0)} → ${dv(Math.round(ovr(x.p)))}`:dv(Math.round(ovr(x.p)))}${acqJudge(x.o)?`<span class="small muted" style="display:block">그때 판단: ${esc(acqJudge(x.o))}</span>`:''}</td><td class="num">${x.W.sum.toFixed(1)}</td><td class="num small muted">${x.W.best&&x.W.best.w>=.5?`${x.W.best.y} ${x.W.best.w.toFixed(1)}`:'-'}</td><td class="small">${stOf(x)}</td><td class="small">${x.gone?'-':esc(tContract(x.p))}</td></tr>`).join('');
+  const core=tbMineAll().map(x=>({p:x.p,o:x.o,gone:x.gone,away:x.away,W:x.W||(x.gone?warWithT(x.p,G.user,x.o.y):warWithUs(x.p))})).sort((a,b)=>b.W.sum-a.W.sum).slice(0,14);
+  const stOf=x=>{ if(x.p.arch)return '<span class="muted">떠남 · 은퇴·리그 이탈</span>'; if(x.gone)return `<span class="muted">떠남${x.p.team!=null?` · ${esc(tshort(x.p.team))}`:x.p.overseas||x.p.abroad?' · 해외':''}</span>`; if(x.away)return `<span class="muted">${milServing(x.p)?'군 복무':'대표팀 차출'} 중</span>`; let r=''; try{ r=squadRole(x.p); }catch(e){} return esc(r||'-'); };
+  const rows=core.map(x=>`<tr><td><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button> <span class="muted small">${posLabel(x.p)} · ${x.p.age}세</span></td><td><span class="tbdot" style="background:${TB_COL[ACQ_K[x.o.k]]||'#888'}"></span>${esc(originLabel(x.o))}</td><td class="num">${x.p.arch?(x.o.o0!=null?dv(x.o.o0):'-'):x.o.o0!=null?`${dv(x.o.o0)} → ${dv(Math.round(ovr(x.p)))}`:dv(Math.round(ovr(x.p)))}${acqJudge(x.o)?`<span class="small muted" style="display:block">그때 판단: ${esc(acqJudge(x.o))}</span>`:''}</td><td class="num">${x.W.sum.toFixed(1)}</td><td class="num small muted">${x.W.best&&x.W.best.w>=.5?`${x.W.best.y} ${x.W.best.w.toFixed(1)}`:'-'}</td><td class="small">${stOf(x)}</td><td class="small">${x.gone?'-':esc(tContract(x.p))}</td></tr>`).join('');
   /* 4) 기록 연표 */
   const log=(G.tbLog||[]).slice(0,20).map(e=>`<div class="tbl"><span class="muted small">${e.y} ${dsh(e.d)}</span> ${e.pid!=null&&G.players[e.pid]?`<button class="lnk" data-a="player" data-v="${e.pid}">${esc(e.t)}</button>`:esc(e.t)}</div>`).join('');
   const K=tbKpi(); const tl=(l,v,sub)=>`<div class="tile"><span class="g">${v}</span><span class="l">${l}</span>${sub?`<span class="small muted">${sub}</span>`:''}</div>`;

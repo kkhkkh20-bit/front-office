@@ -95,6 +95,7 @@
       "src/engine/staff/79_mgr_pledge.js",
       "src/engine/media/80_media_day.js",
       "src/engine/media/81_fan_pulse.js",
+      "src/engine/media/88_truck_protest.js",
       "src/engine/career/82_team_build.js",
       "src/engine/players/83_stars.js",
       "src/engine/league/84_national.js",
