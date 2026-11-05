@@ -24,7 +24,16 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];
   return `<div class="gut"><div class="wrap" style="max-width:640px"><button class="lnk tsback" data-a="tsGo" data-v="team">← 구단 다시 고르기</button>
-    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(d.city)} ${esc(d.nick)} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
+    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(d.city)} ${esc(d.nick)} · `:''}단장 소개</h2>${fdPkView(v)}<section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
+/* 앞 순번 받기: 구단을 고른 뒤 조건을 먼저 보여 주고 고르게 한다(엔진 FD_AUST, 11_founding_draft.js) */
+function fdPkView(v){ const O=UI.world&&UI.world.fdOrd; if(!O||typeof FD_AUST==='undefined')return ''; const base=O.indexOf(v)+1; if(base<=1)return '';
+  const ks=[1,2,3].filter(k=>k<base); const cur=ks.includes(UI.fdPk)?UI.fdPk:0; UI.fdPk=cur; const ind=TEAM_DEF[v].indie;
+  const rows=ks.map(k=>{ const A=FD_AUST[k]; return `<tr${cur===k?' class="on"':''}><td>${k}순위</td><td>${ind?'없음(모기업 없음)':`${Math.round(A.r*100)}% 감액`}</td><td>${eok(A.cash)}</td><td>${tshortDef(O[k-1])} → ${base}순위</td></tr>`; }).join('');
+  return `<section class="card fdpk"><h2 class="sec">창단 지명 순번</h2><p class="small">기본은 1라운드 <b>${base}번째</b>입니다. 앞 순번을 받으면 ${FD_AUST_Y}시즌 동안 긴축 구단으로 운영합니다.</p>
+    <div class="chips optrow" role="group">${[0,...ks].map(k=>`<button type="button" data-a="fdPk" data-v="${k}" class="${cur===k?'on':''}" aria-pressed="${cur===k}">${k?`${k}순위 받기`:`기본(${base}순위)`}</button>`).join('')}</div>
+    <div class="tw"><table><thead><tr><th>받는 순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th><th>자리를 바꾸는 구단</th></tr></thead><tbody><tr${cur?'':' class="on"'}><td>기본 ${base}순위</td><td>그대로</td><td>${eok(4000)}</td><td>-</td></tr>${rows}</tbody></table></div>
+    <p class="small muted">앞 순번을 받으면 구단주가 <b>수익 우선</b> 성향으로 바뀌고, 시설 투자·추가 지원 요청의 승인 가능성이 낮아집니다. 라운드마다 순서가 뒤집히므로 2라운드에는 늦게 뽑습니다.</p></section>`; }
+const tshortDef=i=>TEAM_DEF[i]?`${TEAM_DEF[i].city} ${TEAM_DEF[i].nick}`:'';
 /* 사이드바 '단장 프로필' */
 /* 야인이어도 돌아보는 경력: 시즌별 재임 구단·순위·성적, 퇴임 시점 마지막 시즌 결산 */
 function meCareerSeasons(C){ const S=(C&&C.seas||[]).slice().reverse(); if(!S.length)return ''; return csec('시즌별 경력',`<div class="tw"><table><thead><tr><th>시즌</th><th>구단</th><th>순위</th><th>성적</th><th></th></tr></thead><tbody>${S.map(x=>`<tr><td>${x.y}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.rank}위</td><td>${x.w}승 ${x.l}패</td><td>${x.ch===1?'<span class="pill good">우승</span>':x.ch===2?'<span class="pill">준우승</span>':''}</td></tr>`).join('')}</tbody></table></div>`); }
@@ -42,7 +51,8 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
   const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small primary" data-a="go" data-v="club:build">보기</button></div></section>`;
   return head+tb+(G.unemp?'':personalLifeView())+card+stints+quit; }
 Object.assign(A,{
-  start(v){ UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
+  fdPk(v){ UI.fdPk=+v; render(); },
+  start(v){ UI.fdPk=0; UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; render(); },
   gpPart(v){ const g=gpSync(); const [k,d]=String(v).split(':'); const L=gpPartList(k,g); g.mod=g.mod||{}; const i=g.mod[k]!=null?L.indexOf(g.mod[k]):-1; g.mod[k]=L[((i<0?(+d>0?-1:0):i)+ +d+L.length)%L.length]; render(); },
