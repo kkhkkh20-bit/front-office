@@ -1,0 +1,26 @@
+{
+  "path_base": "assets/v7/staff01/",
+  "archives": [
+    {
+      "path": "archive/portraits_part01.zip",
+      "bytes": 14352860,
+      "sha256": "faaeb86f0ff22c33e2617b23efef279b6dc8f4750101b035d3840548bb49e663",
+      "entries": 126
+    },
+    {
+      "path": "archive/portraits_part02.zip",
+      "bytes": 13231381,
+      "sha256": "1e757782b43268060da6b0164306c0a4d3de0c898fa385e142aca7b280616700",
+      "entries": 126
+    },
+    {
+      "path": "archive/portraits_part03.zip",
+      "bytes": 13143328,
+      "sha256": "e2d0e5c767cbaf558d21fc99f562e60a1d903a9c205465cc6ed7eef5e2a09e42",
+      "entries": 126
+    }
+  ],
+  "normalized512_masters": 126,
+  "individual_webp": 252,
+  "deployed": false
+}

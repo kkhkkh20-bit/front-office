@@ -1,0 +1,2402 @@
+{
+  "requested_eye_y": 143,
+  "coach_cap_headroom_min": 40,
+  "bare_crown_y_approx": 15,
+  "measurements": [
+    {
+      "identity_id": "v7_staff01_coach_001",
+      "eye_line_y": 167.2581558227539,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 278.45733642578125,
+      "whole_photo_matrix": [
+        [
+          1.012930989265442,
+          0.0,
+          -5.64453125
+        ],
+        [
+          0.0,
+          1.012930989265442,
+          -6.607758522033691
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_002",
+      "eye_line_y": 155.9275665283203,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 267.97294921875,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -2.397705078125
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_003",
+      "eye_line_y": 154.9966583251953,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 265.8982360839844,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -9.40740966796875
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_004",
+      "eye_line_y": 158.0396499633789,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 270.7795715332031,
+      "whole_photo_matrix": [
+        [
+          1.0264630317687988,
+          0.0,
+          -13.522613525390625
+        ],
+        [
+          0.0,
+          1.0264630317687988,
+          -13.402542114257812
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_005",
+      "eye_line_y": 146.70535278320312,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 240.85485229492187,
+      "whole_photo_matrix": [
+        [
+          1.039823055267334,
+          0.0,
+          -10.03265380859375
+        ],
+        [
+          0.0,
+          1.039823055267334,
+          -20.349557876586914
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_006",
+      "eye_line_y": 160.35034942626953,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 273.86341552734376,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -8.964019775390625
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_007",
+      "eye_line_y": 148.24061584472656,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 260.6493713378906,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -7.27288818359375
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_008",
+      "eye_line_y": 148.29413604736328,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 256.3263854980469,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -9.96392822265625
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_009",
+      "eye_line_y": 146.3084945678711,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 242.26621704101564,
+      "whole_photo_matrix": [
+        [
+          1.0375275611877441,
+          0.0,
+          -11.04693603515625
+        ],
+        [
+          0.0,
+          1.0375275611877441,
+          -19.176599502563477
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_010",
+      "eye_line_y": 159.1597900390625,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 273.8136474609375,
+      "whole_photo_matrix": [
+        [
+          1.0284464359283447,
+          0.0,
+          -13.1988525390625
+        ],
+        [
+          0.0,
+          1.0284464359283447,
+          -14.536105155944824
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_011",
+      "eye_line_y": 157.95723724365234,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 268.91693725585935,
+      "whole_photo_matrix": [
+        [
+          1.02173912525177,
+          0.0,
+          -10.866363525390625
+        ],
+        [
+          0.0,
+          1.02173912525177,
+          -11.108695983886719
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_012",
+      "eye_line_y": 158.42508697509766,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 276.2854736328125,
+      "whole_photo_matrix": [
+        [
+          1.012930989265442,
+          0.0,
+          -6.537689208984375
+        ],
+        [
+          0.0,
+          1.012930989265442,
+          -6.607758522033691
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_013",
+      "eye_line_y": 149.78206634521484,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 256.8042907714844,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -9.4122314453125
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_014",
+      "eye_line_y": 157.05686950683594,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 269.3885009765625,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -3.507476806640625
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_015",
+      "eye_line_y": 146.4280548095703,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 251.1988098144531,
+      "whole_photo_matrix": [
+        [
+          1.0329670906066895,
+          0.0,
+          -10.944580078125
+        ],
+        [
+          0.0,
+          1.0329670906066895,
+          -16.846153259277344
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_016",
+      "eye_line_y": 151.66981506347656,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 263.20985107421876,
+      "whole_photo_matrix": [
+        [
+          1.0173159837722778,
+          0.0,
+          -5.547393798828125
+        ],
+        [
+          0.0,
+          1.0173159837722778,
+          -8.848484992980957
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_017",
+      "eye_line_y": 152.70240783691406,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 266.0472045898438,
+      "whole_photo_matrix": [
+        [
+          1.0234546661376953,
+          0.0,
+          -11.985321044921875
+        ],
+        [
+          0.0,
+          1.0234546661376953,
+          -8.125823974609375
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_018",
+      "eye_line_y": 151.00035858154297,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 260.66449584960935,
+      "whole_photo_matrix": [
+        [
+          1.0325870513916016,
+          0.0,
+          -16.6519775390625
+        ],
+        [
+          0.0,
+          1.0325870513916016,
+          -8.564178466796875
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_019",
+      "eye_line_y": 151.65635681152344,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 256.8059448242187,
+      "whole_photo_matrix": [
+        [
+          1.0151188373565674,
+          0.0,
+          -4.992889404296875
+        ],
+        [
+          0.0,
+          1.0151188373565674,
+          -7.725701808929443
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_020",
+      "eye_line_y": 147.8106231689453,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 253.2623718261719,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -6.5645751953125
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_021",
+      "eye_line_y": 154.796875,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 265.68931274414064,
+      "whole_photo_matrix": [
+        [
+          1.0214240550994873,
+          0.0,
+          -10.94769287109375
+        ],
+        [
+          0.0,
+          1.0214240550994873,
+          -10.07120132446289
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_022",
+      "eye_line_y": 166.46786499023438,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 286.3321533203125,
+      "whole_photo_matrix": [
+        [
+          1.0151188373565674,
+          0.0,
+          -4.771484375
+        ],
+        [
+          0.0,
+          1.0151188373565674,
+          -7.725701808929443
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_023",
+      "eye_line_y": 150.32181549072266,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 262.361474609375,
+      "whole_photo_matrix": [
+        [
+          1.02173912525177,
+          0.0,
+          -4.33367919921875
+        ],
+        [
+          0.0,
+          1.02173912525177,
+          -11.108695983886719
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_024",
+      "eye_line_y": 148.89469146728516,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 248.30322875976563,
+      "whole_photo_matrix": [
+        [
+          1.0173159837722778,
+          0.0,
+          -8.544769287109375
+        ],
+        [
+          0.0,
+          1.0173159837722778,
+          -8.848484992980957
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_025",
+      "eye_line_y": 146.75257873535156,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 250.67066650390626,
+      "whole_photo_matrix": [
+        [
+          1.030701756477356,
+          0.0,
+          -8.303619384765625
+        ],
+        [
+          0.0,
+          1.030701756477356,
+          -15.688596725463867
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_026",
+      "eye_line_y": 143.81948852539062,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 247.31088256835938,
+      "whole_photo_matrix": [
+        [
+          1.0284464359283447,
+          0.0,
+          -9.929962158203125
+        ],
+        [
+          0.0,
+          1.0284464359283447,
+          -14.536105155944824
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_027",
+      "eye_line_y": 147.26620483398438,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 236.90709838867187,
+      "whole_photo_matrix": [
+        [
+          1.030701756477356,
+          0.0,
+          -9.288238525390625
+        ],
+        [
+          0.0,
+          1.030701756477356,
+          -15.688596725463867
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_028",
+      "eye_line_y": 149.07838439941406,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 259.0492919921875,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -9.14776611328125
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_029",
+      "eye_line_y": 154.88502502441406,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 258.2091430664062,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -5.670806884765625
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_030",
+      "eye_line_y": 153.14160919189453,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 261.91676635742186,
+      "whole_photo_matrix": [
+        [
+          1.0323622226715088,
+          0.0,
+          -16.537109375
+        ],
+        [
+          0.0,
+          1.0323622226715088,
+          -10.618110656738281
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_031",
+      "eye_line_y": 167.0029754638672,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 283.7605834960938,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -9.969085693359375
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_032",
+      "eye_line_y": 155.85751342773438,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 265.6064147949219,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -3.34381103515625
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_033",
+      "eye_line_y": 161.02098083496094,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 276.83311767578124,
+      "whole_photo_matrix": [
+        [
+          1.0261482000350952,
+          0.0,
+          -13.36175537109375
+        ],
+        [
+          0.0,
+          1.0261482000350952,
+          -12.35970687866211
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_034",
+      "eye_line_y": 161.26673889160156,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 275.7419738769531,
+      "whole_photo_matrix": [
+        [
+          1.030160665512085,
+          0.0,
+          -15.412078857421875
+        ],
+        [
+          0.0,
+          1.030160665512085,
+          -9.47787094116211
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "eye_line_y": 149.18627166748047,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 256.21657104492186,
+      "whole_photo_matrix": [
+        [
+          1.02173912525177,
+          0.0,
+          -4.90740966796875
+        ],
+        [
+          0.0,
+          1.02173912525177,
+          -11.108695983886719
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_036",
+      "eye_line_y": 156.6162338256836,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 261.8964477539063,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -6.342498779296875
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_037",
+      "eye_line_y": 156.0194091796875,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 278.32642822265626,
+      "whole_photo_matrix": [
+        [
+          1.012930989265442,
+          0.0,
+          -6.497650146484375
+        ],
+        [
+          0.0,
+          1.012930989265442,
+          -6.607758522033691
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_038",
+      "eye_line_y": 156.73402404785156,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 273.56829833984375,
+      "whole_photo_matrix": [
+        [
+          1.0151188373565674,
+          0.0,
+          -6.474456787109375
+        ],
+        [
+          0.0,
+          1.0151188373565674,
+          -7.725701808929443
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_039",
+      "eye_line_y": 158.98934173583984,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 282.1910705566406,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -9.216766357421875
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_040",
+      "eye_line_y": 157.41461944580078,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 269.3758605957031,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -6.700927734375
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_041",
+      "eye_line_y": 153.4050521850586,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 252.67315063476562,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -11.26031494140625
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_042",
+      "eye_line_y": 154.93019104003906,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 272.6776489257812,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -10.529541015625
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_043",
+      "eye_line_y": 151.62686157226562,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 260.3486694335937,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -10.703125
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_044",
+      "eye_line_y": 157.49630737304688,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 271.51076049804686,
+      "whole_photo_matrix": [
+        [
+          1.0173159837722778,
+          0.0,
+          -6.931549072265625
+        ],
+        [
+          0.0,
+          1.0173159837722778,
+          -8.848484992980957
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_045",
+      "eye_line_y": 150.04197692871094,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 247.56582641601562,
+      "whole_photo_matrix": [
+        [
+          1.0375275611877441,
+          0.0,
+          -10.692901611328125
+        ],
+        [
+          0.0,
+          1.0375275611877441,
+          -19.176599502563477
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_046",
+      "eye_line_y": 149.59717559814453,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 259.0833984375,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -9.120025634765625
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_047",
+      "eye_line_y": 156.1644515991211,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 271.6993041992188,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -6.42205810546875
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_048",
+      "eye_line_y": 165.65494537353516,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 292.1469482421875,
+      "whole_photo_matrix": [
+        [
+          1.012930989265442,
+          0.0,
+          -4.709716796875
+        ],
+        [
+          0.0,
+          1.012930989265442,
+          -6.607758522033691
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_049",
+      "eye_line_y": 152.465576171875,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 263.4637817382812,
+      "whole_photo_matrix": [
+        [
+          1.0312763452529907,
+          0.0,
+          -15.982208251953125
+        ],
+        [
+          0.0,
+          1.0312763452529907,
+          -11.5950927734375
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_050",
+      "eye_line_y": 146.51339721679688,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 255.3137451171875,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -8.94384765625
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_051",
+      "eye_line_y": 147.14158630371094,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 244.18582153320312,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -8.52752685546875
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_052",
+      "eye_line_y": 146.7618865966797,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 255.9342041015625,
+      "whole_photo_matrix": [
+        [
+          1.0262008905410767,
+          0.0,
+          -7.2576904296875
+        ],
+        [
+          0.0,
+          1.0262008905410767,
+          -13.388646125793457
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_053",
+      "eye_line_y": 166.59283447265625,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 287.76064453125,
+      "whole_photo_matrix": [
+        [
+          1.0160794258117676,
+          0.0,
+          -8.216583251953125
+        ],
+        [
+          0.0,
+          1.0160794258117676,
+          -7.771812438964844
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_054",
+      "eye_line_y": 151.05982971191406,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 260.87603759765625,
+      "whole_photo_matrix": [
+        [
+          1.02173912525177,
+          0.0,
+          -8.103668212890625
+        ],
+        [
+          0.0,
+          1.02173912525177,
+          -11.108695983886719
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_055",
+      "eye_line_y": 154.9581298828125,
+      "head_top_estimate_y": 42,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 276.21282348632815,
+      "whole_photo_matrix": [
+        [
+          1.0173159837722778,
+          0.0,
+          -8.562713623046875
+        ],
+        [
+          0.0,
+          1.0173159837722778,
+          -8.848484992980957
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_056",
+      "eye_line_y": 146.78008270263672,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 257.2957397460938,
+      "whole_photo_matrix": [
+        [
+          1.02173912525177,
+          0.0,
+          -6.028472900390625
+        ],
+        [
+          0.0,
+          1.02173912525177,
+          -11.108695983886719
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_057",
+      "eye_line_y": 161.82344818115234,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 265.2296997070313,
+      "whole_photo_matrix": [
+        [
+          1.0239651203155518,
+          0.0,
+          -5.682464599609375
+        ],
+        [
+          0.0,
+          1.0239651203155518,
+          -12.246187210083008
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_058",
+      "eye_line_y": 161.41255950927734,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 271.95903930664065,
+      "whole_photo_matrix": [
+        [
+          1.019522786140442,
+          0.0,
+          -8.592529296875
+        ],
+        [
+          0.0,
+          1.019522786140442,
+          -9.976139068603516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_059",
+      "eye_line_y": 150.2366180419922,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 259.9039245605469,
+      "whole_photo_matrix": [
+        [
+          1.0239075422286987,
+          0.0,
+          -12.21673583984375
+        ],
+        [
+          0.0,
+          1.0239075422286987,
+          -11.219284057617188
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_coach_060",
+      "eye_line_y": 157.98219299316406,
+      "head_top_estimate_y": 41,
+      "head_top_method": "cap red mask",
+      "chin_bbox_estimate_y": 273.77235107421876,
+      "whole_photo_matrix": [
+        [
+          1.027800440788269,
+          0.0,
+          -14.206024169921875
+        ],
+        [
+          0.0,
+          1.027800440788269,
+          -9.362220764160156
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_001",
+      "eye_line_y": 142.89618682861328,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 258.9052978515625,
+      "whole_photo_matrix": [
+        [
+          1.334702730178833,
+          0.0,
+          -94.56256103515625
+        ],
+        [
+          0.0,
+          1.334702730178833,
+          0.3182697296142578
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_002",
+      "eye_line_y": 144.0591583251953,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 261.0133422851562,
+      "whole_photo_matrix": [
+        [
+          1.0567842721939087,
+          0.0,
+          -30.996551513671875
+        ],
+        [
+          0.0,
+          1.0567842721939087,
+          -20.9306640625
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_003",
+      "eye_line_y": 144.05474090576172,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 264.27353515625,
+      "whole_photo_matrix": [
+        [
+          1.0162053108215332,
+          0.0,
+          -17.1649169921875
+        ],
+        [
+          0.0,
+          1.0162053108215332,
+          -24.632007598876953
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_004",
+      "eye_line_y": 143.81637573242188,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 260.08612060546875,
+      "whole_photo_matrix": [
+        [
+          1.0477741956710815,
+          0.0,
+          -15.086181640625
+        ],
+        [
+          0.0,
+          1.0477741956710815,
+          -21.672096252441406
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_005",
+      "eye_line_y": 142.32174682617188,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 277.43072509765625,
+      "whole_photo_matrix": [
+        [
+          1.5631901025772095,
+          0.0,
+          -146.54745483398438
+        ],
+        [
+          0.0,
+          1.5631901025772095,
+          -27.206130981445312
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_006",
+      "eye_line_y": 143.0690460205078,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 262.567431640625,
+      "whole_photo_matrix": [
+        [
+          1.06960928440094,
+          0.0,
+          -48.61236572265625
+        ],
+        [
+          0.0,
+          1.06960928440094,
+          -18.157886505126953
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_007",
+      "eye_line_y": 143.07952880859375,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 247.675244140625,
+      "whole_photo_matrix": [
+        [
+          1.34669029712677,
+          0.0,
+          -98.15911865234375
+        ],
+        [
+          0.0,
+          1.34669029712677,
+          -24.054019927978516
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_008",
+      "eye_line_y": 142.71348571777344,
+      "head_top_estimate_y": 14,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 260.7001708984375,
+      "whole_photo_matrix": [
+        [
+          1.4385794401168823,
+          0.0,
+          -115.150390625
+        ],
+        [
+          0.0,
+          1.4385794401168823,
+          -18.087326049804688
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_009",
+      "eye_line_y": 143.09996032714844,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 265.96337890625,
+      "whole_photo_matrix": [
+        [
+          1.0612636804580688,
+          0.0,
+          -27.162750244140625
+        ],
+        [
+          0.0,
+          1.0612636804580688,
+          -21.082965850830078
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_010",
+      "eye_line_y": 144.81236267089844,
+      "head_top_estimate_y": 18,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 269.6447021484375,
+      "whole_photo_matrix": [
+        [
+          1.1505870819091797,
+          0.0,
+          -55.99859619140625
+        ],
+        [
+          0.0,
+          1.1505870819091797,
+          -34.475242614746094
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_011",
+      "eye_line_y": 153.29673767089844,
+      "head_top_estimate_y": 3,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 263.34775390625,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_012",
+      "eye_line_y": 145.44696807861328,
+      "head_top_estimate_y": 14,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 274.8678344726562,
+      "whole_photo_matrix": [
+        [
+          1.1717562675476074,
+          0.0,
+          -44.976806640625
+        ],
+        [
+          0.0,
+          1.1717562675476074,
+          -45.93132781982422
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_013",
+      "eye_line_y": 143.42869567871094,
+      "head_top_estimate_y": 11,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 266.297900390625,
+      "whole_photo_matrix": [
+        [
+          1.158913493156433,
+          0.0,
+          -43.213165283203125
+        ],
+        [
+          0.0,
+          1.158913493156433,
+          -47.581329345703125
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_014",
+      "eye_line_y": 141.9852752685547,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 257.5583251953125,
+      "whole_photo_matrix": [
+        [
+          1.2908819913864136,
+          0.0,
+          -90.35986328125
+        ],
+        [
+          0.0,
+          1.2908819913864136,
+          -4.363229751586914
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_015",
+      "eye_line_y": 142.84194946289062,
+      "head_top_estimate_y": 16,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 254.34989013671876,
+      "whole_photo_matrix": [
+        [
+          1.273651123046875,
+          0.0,
+          -85.04287719726562
+        ],
+        [
+          0.0,
+          1.273651123046875,
+          -5.37841796875
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_016",
+      "eye_line_y": 144.9656524658203,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 271.77257080078124,
+      "whole_photo_matrix": [
+        [
+          1.1006722450256348,
+          0.0,
+          -35.1239013671875
+        ],
+        [
+          0.0,
+          1.1006722450256348,
+          -40.03361129760742
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_017",
+      "eye_line_y": 144.18299102783203,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 277.3514770507812,
+      "whole_photo_matrix": [
+        [
+          1.1806689500808716,
+          0.0,
+          -68.1102294921875
+        ],
+        [
+          0.0,
+          1.1806689500808716,
+          -27.50408172607422
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_018",
+      "eye_line_y": 143.57359313964844,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 256.9962646484375,
+      "whole_photo_matrix": [
+        [
+          1.031553030014038,
+          0.0,
+          -18.361114501953125
+        ],
+        [
+          0.0,
+          1.031553030014038,
+          -27.29367446899414
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_019",
+      "eye_line_y": 144.86658477783203,
+      "head_top_estimate_y": 11,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 280.12001342773436,
+      "whole_photo_matrix": [
+        [
+          1.1773405075073242,
+          0.0,
+          -62.288238525390625
+        ],
+        [
+          0.0,
+          1.1773405075073242,
+          -30.916278839111328
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_020",
+      "eye_line_y": 142.26129913330078,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 252.309912109375,
+      "whole_photo_matrix": [
+        [
+          1.380103588104248,
+          0.0,
+          -95.42120361328125
+        ],
+        [
+          0.0,
+          1.380103588104248,
+          -27.78321075439453
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_021",
+      "eye_line_y": 144.06702423095703,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 284.6177001953125,
+      "whole_photo_matrix": [
+        [
+          1.5371695756912231,
+          0.0,
+          -142.22476196289062
+        ],
+        [
+          0.0,
+          1.5371695756912231,
+          -17.280559539794922
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_022",
+      "eye_line_y": 143.86508178710938,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 258.742822265625,
+      "whole_photo_matrix": [
+        [
+          1.4457118511199951,
+          0.0,
+          -121.57427978515625
+        ],
+        [
+          0.0,
+          1.4457118511199951,
+          -12.468524932861328
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_023",
+      "eye_line_y": 143.1219253540039,
+      "head_top_estimate_y": 12,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 242.98923950195314,
+      "whole_photo_matrix": [
+        [
+          1.1180082559585571,
+          0.0,
+          -40.82476806640625
+        ],
+        [
+          0.0,
+          1.1180082559585571,
+          11.645975112915039
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_024",
+      "eye_line_y": 143.41067504882812,
+      "head_top_estimate_y": 3,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 256.26380615234376,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_025",
+      "eye_line_y": 157.48900604248047,
+      "head_top_estimate_y": 24,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 279.77821044921876,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_026",
+      "eye_line_y": 143.03125,
+      "head_top_estimate_y": 13,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 292.0518798828125,
+      "whole_photo_matrix": [
+        [
+          1.2175180912017822,
+          0.0,
+          -66.94796752929688
+        ],
+        [
+          0.0,
+          1.2175180912017822,
+          -47.093421936035156
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_027",
+      "eye_line_y": 144.05885314941406,
+      "head_top_estimate_y": 16,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 263.97740478515624,
+      "whole_photo_matrix": [
+        [
+          1.0660141706466675,
+          0.0,
+          -38.351898193359375
+        ],
+        [
+          0.0,
+          1.0660141706466675,
+          -15.914411544799805
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_028",
+      "eye_line_y": 143.3351593017578,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 268.23455810546875,
+      "whole_photo_matrix": [
+        [
+          1.115457534790039,
+          0.0,
+          -36.715667724609375
+        ],
+        [
+          0.0,
+          1.115457534790039,
+          -35.195587158203125
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_029",
+      "eye_line_y": 144.36526489257812,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 263.7336669921875,
+      "whole_photo_matrix": [
+        [
+          1.0455210208892822,
+          0.0,
+          -26.658447265625
+        ],
+        [
+          0.0,
+          1.0455210208892822,
+          -24.72979736328125
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_030",
+      "eye_line_y": 143.2470245361328,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 249.540966796875,
+      "whole_photo_matrix": [
+        [
+          1.202959418296814,
+          0.0,
+          -62.575225830078125
+        ],
+        [
+          0.0,
+          1.202959418296814,
+          4.173365592956543
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_031",
+      "eye_line_y": 142.66175842285156,
+      "head_top_estimate_y": 14,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 276.3841552734375,
+      "whole_photo_matrix": [
+        [
+          1.1286073923110962,
+          0.0,
+          -37.261810302734375
+        ],
+        [
+          0.0,
+          1.1286073923110962,
+          -16.60100746154785
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_032",
+      "eye_line_y": 142.85062408447266,
+      "head_top_estimate_y": 13,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 281.17974853515625,
+      "whole_photo_matrix": [
+        [
+          1.1412389278411865,
+          0.0,
+          -55.86602783203125
+        ],
+        [
+          0.0,
+          1.1412389278411865,
+          -26.08460235595703
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_033",
+      "eye_line_y": 145.48985290527344,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 265.152685546875,
+      "whole_photo_matrix": [
+        [
+          1.1208767890930176,
+          0.0,
+          -50.365447998046875
+        ],
+        [
+          0.0,
+          1.1208767890930176,
+          -30.955947875976562
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_034",
+      "eye_line_y": 143.2100067138672,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 260.38603515625,
+      "whole_photo_matrix": [
+        [
+          1.0320149660110474,
+          0.0,
+          -26.341888427734375
+        ],
+        [
+          0.0,
+          1.0320149660110474,
+          -30.40865707397461
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_035",
+      "eye_line_y": 143.8196792602539,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 264.2953125,
+      "whole_photo_matrix": [
+        [
+          1.0685865879058838,
+          0.0,
+          -25.100616455078125
+        ],
+        [
+          0.0,
+          1.0685865879058838,
+          -40.56650161743164
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_gm_036",
+      "eye_line_y": 141.91326904296875,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 252.0751220703125,
+      "whole_photo_matrix": [
+        [
+          1.2051239013671875,
+          0.0,
+          -61.07855224609375
+        ],
+        [
+          0.0,
+          1.2051239013671875,
+          -10.307601928710938
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_001",
+      "eye_line_y": 142.6793975830078,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 274.9825927734375,
+      "whole_photo_matrix": [
+        [
+          1.0233172178268433,
+          0.0,
+          -7.447296142578125
+        ],
+        [
+          0.0,
+          1.0233172178268433,
+          6.813462257385254
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_002",
+      "eye_line_y": 141.45972442626953,
+      "head_top_estimate_y": 16,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 288.84296875,
+      "whole_photo_matrix": [
+        [
+          1.157366156578064,
+          0.0,
+          -44.38751220703125
+        ],
+        [
+          0.0,
+          1.157366156578064,
+          -9.304689407348633
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_003",
+      "eye_line_y": 139.40619659423828,
+      "head_top_estimate_y": 11,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 256.58116455078124,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_004",
+      "eye_line_y": 142.75069427490234,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 286.497412109375,
+      "whole_photo_matrix": [
+        [
+          1.0544134378433228,
+          0.0,
+          -31.073638916015625
+        ],
+        [
+          0.0,
+          1.0544134378433228,
+          0.23821163177490234
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_005",
+      "eye_line_y": 143.5195770263672,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 268.98310546875,
+      "whole_photo_matrix": [
+        [
+          1.0056934356689453,
+          0.0,
+          -8.979888916015625
+        ],
+        [
+          0.0,
+          1.0056934356689453,
+          -7.125255584716797
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_006",
+      "eye_line_y": 143.88119506835938,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 302.957861328125,
+      "whole_photo_matrix": [
+        [
+          1.2247357368469238,
+          0.0,
+          -63.939483642578125
+        ],
+        [
+          0.0,
+          1.2247357368469238,
+          -4.595771789550781
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_007",
+      "eye_line_y": 143.3701400756836,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 261.3032470703125,
+      "whole_photo_matrix": [
+        [
+          1.051458716392517,
+          0.0,
+          -27.558135986328125
+        ],
+        [
+          0.0,
+          1.051458716392517,
+          -33.36709976196289
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_008",
+      "eye_line_y": 143.1240005493164,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 278.60570068359374,
+      "whole_photo_matrix": [
+        [
+          1.0983728170394897,
+          0.0,
+          -34.6715087890625
+        ],
+        [
+          0.0,
+          1.0983728170394897,
+          -12.459320068359375
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_009",
+      "eye_line_y": 154.39883422851562,
+      "head_top_estimate_y": 16,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 284.27406005859376,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_010",
+      "eye_line_y": 156.20718383789062,
+      "head_top_estimate_y": 25,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 273.10926513671876,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_011",
+      "eye_line_y": 144.2030487060547,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 265.9968994140625,
+      "whole_photo_matrix": [
+        [
+          1.0023024082183838,
+          0.0,
+          -10.778472900390625
+        ],
+        [
+          0.0,
+          1.0023024082183838,
+          0.9677658081054688
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_012",
+      "eye_line_y": 143.49505615234375,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 273.18092041015626,
+      "whole_photo_matrix": [
+        [
+          1.0184295177459717,
+          0.0,
+          -21.479888916015625
+        ],
+        [
+          0.0,
+          1.0184295177459717,
+          -4.350160598754883
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_013",
+      "eye_line_y": 143.9328842163086,
+      "head_top_estimate_y": 16,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 266.656201171875,
+      "whole_photo_matrix": [
+        [
+          1.0592238903045654,
+          0.0,
+          -32.699798583984375
+        ],
+        [
+          0.0,
+          1.0592238903045654,
+          -21.01361083984375
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_014",
+      "eye_line_y": 146.85472106933594,
+      "head_top_estimate_y": 17,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 272.7271240234375,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_015",
+      "eye_line_y": 143.2957000732422,
+      "head_top_estimate_y": 14,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 295.5697875976563,
+      "whole_photo_matrix": [
+        [
+          1.1162850856781006,
+          0.0,
+          -42.10101318359375
+        ],
+        [
+          0.0,
+          1.1162850856781006,
+          -3.976846694946289
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_016",
+      "eye_line_y": 143.8457260131836,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 269.58409423828124,
+      "whole_photo_matrix": [
+        [
+          1.0875930786132812,
+          0.0,
+          -29.738555908203125
+        ],
+        [
+          0.0,
+          1.0875930786132812,
+          -33.941688537597656
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_017",
+      "eye_line_y": 143.0959014892578,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 266.12401123046874,
+      "whole_photo_matrix": [
+        [
+          1.0130035877227783,
+          0.0,
+          -9.596466064453125
+        ],
+        [
+          0.0,
+          1.0130035877227783,
+          -15.390108108520508
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_018",
+      "eye_line_y": 143.81537628173828,
+      "head_top_estimate_y": 12,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 267.26690673828125,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_019",
+      "eye_line_y": 143.12398529052734,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 280.2658325195313,
+      "whole_photo_matrix": [
+        [
+          1.05423104763031,
+          0.0,
+          -24.618377685546875
+        ],
+        [
+          0.0,
+          1.05423104763031,
+          -0.8134660720825195
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_owner_020",
+      "eye_line_y": 141.81397247314453,
+      "head_top_estimate_y": 14,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 303.80487060546875,
+      "whole_photo_matrix": [
+        [
+          1.2597179412841797,
+          0.0,
+          -60.77288818359375
+        ],
+        [
+          0.0,
+          1.2597179412841797,
+          -20.27210235595703
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_001",
+      "eye_line_y": 143.76885986328125,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 275.4344116210938,
+      "whole_photo_matrix": [
+        [
+          1.0820437669754028,
+          0.0,
+          -35.448333740234375
+        ],
+        [
+          0.0,
+          1.0820437669754028,
+          -6.640874862670898
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_002",
+      "eye_line_y": 144.55760955810547,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 260.2643310546875,
+      "whole_photo_matrix": [
+        [
+          1.0004541873931885,
+          0.0,
+          -8.248931884765625
+        ],
+        [
+          0.0,
+          1.0004541873931885,
+          -7.009992599487305
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_003",
+      "eye_line_y": 134.25130462646484,
+      "head_top_estimate_y": 3,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 259.28626708984376,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_004",
+      "eye_line_y": 133.69131469726562,
+      "head_top_estimate_y": 3,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 267.3923706054687,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_005",
+      "eye_line_y": 131.9889678955078,
+      "head_top_estimate_y": 3,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 253.84486694335936,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_006",
+      "eye_line_y": 143.76058959960938,
+      "head_top_estimate_y": 14,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 279.0493469238281,
+      "whole_photo_matrix": [
+        [
+          1.0755599737167358,
+          0.0,
+          -30.905059814453125
+        ],
+        [
+          0.0,
+          1.0755599737167358,
+          5.319960594177246
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_007",
+      "eye_line_y": 136.67442321777344,
+      "head_top_estimate_y": 3,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 259.9086059570312,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_008",
+      "eye_line_y": 143.5824737548828,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 263.4300048828125,
+      "whole_photo_matrix": [
+        [
+          1.065159559249878,
+          0.0,
+          -26.338592529296875
+        ],
+        [
+          0.0,
+          1.065159559249878,
+          -20.150264739990234
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_009",
+      "eye_line_y": 149.83314514160156,
+      "head_top_estimate_y": 19,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 269.18348388671876,
+      "whole_photo_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v7_staff01_front_010",
+      "eye_line_y": 143.65737915039062,
+      "head_top_estimate_y": 15,
+      "head_top_method": "crown silhouette contrast; estimate",
+      "chin_bbox_estimate_y": 281.9184936523437,
+      "whole_photo_matrix": [
+        [
+          1.111417293548584,
+          0.0,
+          -43.41815185546875
+        ],
+        [
+          0.0,
+          1.111417293548584,
+          -16.11968421936035
+        ]
+      ]
+    }
+  ],
+  "note": "Crown and chin bbox values are detector/contrast estimates. Only whole-photo isotropic camera crops; no local face/neck/body warp."
+}

@@ -1,0 +1,18 @@
+{
+  "applies_to": [
+    "v7_manager_coach",
+    "future_v6c_players"
+  ],
+  "not_applies_to": [
+    "gm",
+    "owner",
+    "front"
+  ],
+  "physical_fit": "Generate a properly fitted broad crown wrapping the skull; visor just above brows, forehead almost invisible, eyes unobstructed; never a cap perched high on hair.",
+  "headroom_512_min": 40,
+  "cap_key_albedo": "#FF0000",
+  "runtime_cap_or_visor_stretch": false,
+  "symbol": "Center front crown; uniform glyph scaling, separate from visor. cap_mark_transform transforms emblem only.",
+  "crown_symbol_formula": "frontBrim=central cap mask lower edge; crownBottom=frontBrim-max(8,.18*(frontBrim-capTop)); centerY=(capTop+crownBottom)/2; glyphHeight=min(42,.55*(crownBottom-capTop)); sourceglyphheight59; preserve aspect.",
+  "future_v6c_generated": false
+}

@@ -1,0 +1,1327 @@
+{
+  "minimum_headroom_512_equivalent_delivered": 40.0,
+  "minimum_symbol_brim_clearance_512": 25.96881355932203,
+  "measurements": [
+    {
+      "identity_id": "v7_staff01_coach_001",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 135.0,
+      "crown_bottom_y_estimate": 118.08,
+      "mark_center": [
+        253.0,
+        79.53999999999999
+      ],
+      "mark_height": 42,
+      "mark_bbox_union_512": [
+        232.71186440677965,
+        58.89593220338982,
+        274.0,
+        100.89593220338982
+      ],
+      "brim_clearance": 34.10406779661018,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 32.258155822753906,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_002",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 127.0,
+      "crown_bottom_y_estimate": 111.52,
+      "mark_center": [
+        253.5,
+        76.25999999999999
+      ],
+      "mark_height": 38.786,
+      "mark_bbox_union_512": [
+        234.7643898305085,
+        57.19569491525423,
+        272.89300000000003,
+        95.98169491525422
+      ],
+      "brim_clearance": 31.018305084745776,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 29.927566528320312,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_003",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 125.0,
+      "crown_bottom_y_estimate": 109.88,
+      "mark_center": [
+        253.5,
+        75.44
+      ],
+      "mark_height": 37.884,
+      "mark_bbox_union_512": [
+        235.20010169491525,
+        56.819050847457625,
+        272.442,
+        94.70305084745763
+      ],
+      "brim_clearance": 30.296949152542368,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 30.996658325195312,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_004",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 131.0,
+      "crown_bottom_y_estimate": 114.8,
+      "mark_center": [
+        251.5,
+        77.9
+      ],
+      "mark_height": 40.59,
+      "mark_bbox_union_512": [
+        231.89296610169492,
+        57.94898305084746,
+        271.795,
+        98.53898305084746
+      ],
+      "brim_clearance": 32.46101694915254,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 27.039649963378906,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_005",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 123.0,
+      "crown_bottom_y_estimate": 108.24,
+      "mark_center": [
+        255.0,
+        74.62
+      ],
+      "mark_height": 36.982,
+      "mark_bbox_union_512": [
+        237.13581355932203,
+        56.44240677966102,
+        273.491,
+        93.42440677966101
+      ],
+      "brim_clearance": 29.575593220338988,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 23.705352783203125,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_006",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 126.0,
+      "crown_bottom_y_estimate": 110.7,
+      "mark_center": [
+        251.5,
+        75.85
+      ],
+      "mark_height": 38.33500000000001,
+      "mark_bbox_union_512": [
+        232.98224576271184,
+        57.00737288135593,
+        270.6675,
+        95.34237288135594
+      ],
+      "brim_clearance": 30.657627118644058,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 34.35034942626953,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_007",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 113.0,
+      "crown_bottom_y_estimate": 100.04,
+      "mark_center": [
+        254.5,
+        70.52000000000001
+      ],
+      "mark_height": 32.47200000000001,
+      "mark_bbox_union_512": [
+        238.81437288135595,
+        54.55918644067797,
+        270.736,
+        87.03118644067797
+      ],
+      "brim_clearance": 25.96881355932203,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 36.24061584472656,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_008",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 118.0,
+      "crown_bottom_y_estimate": 104.32,
+      "mark_center": [
+        253.0,
+        73.16
+      ],
+      "mark_height": 34.275999999999996,
+      "mark_bbox_union_512": [
+        236.44294915254238,
+        56.312474576271185,
+        270.13800000000003,
+        90.58847457627118
+      ],
+      "brim_clearance": 27.41152542372882,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 31.29413604736328,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_009",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 121.0,
+      "crown_bottom_y_estimate": 106.6,
+      "mark_center": [
+        254.5,
+        73.8
+      ],
+      "mark_height": 36.08,
+      "mark_bbox_union_512": [
+        237.07152542372881,
+        56.0657627118644,
+        272.53999999999996,
+        92.14576271186439
+      ],
+      "brim_clearance": 28.854237288135607,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 25.308494567871094,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_010",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 131.0,
+      "crown_bottom_y_estimate": 114.8,
+      "mark_center": [
+        250.5,
+        77.9
+      ],
+      "mark_height": 40.59,
+      "mark_bbox_union_512": [
+        230.89296610169492,
+        57.94898305084746,
+        270.795,
+        98.53898305084746
+      ],
+      "brim_clearance": 32.46101694915254,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 28.1597900390625,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_011",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 130.0,
+      "crown_bottom_y_estimate": 113.98,
+      "mark_center": [
+        253.0,
+        77.49000000000001
+      ],
+      "mark_height": 40.139,
+      "mark_bbox_union_512": [
+        233.6108220338983,
+        57.76066101694916,
+        273.06949999999995,
+        97.89966101694917
+      ],
+      "brim_clearance": 32.10033898305083,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 26.957237243652344,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_012",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 127.0,
+      "crown_bottom_y_estimate": 111.52,
+      "mark_center": [
+        252.0,
+        76.25999999999999
+      ],
+      "mark_height": 38.786,
+      "mark_bbox_union_512": [
+        233.2643898305085,
+        57.19569491525423,
+        271.39300000000003,
+        95.98169491525422
+      ],
+      "brim_clearance": 31.018305084745776,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 32.425086975097656,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_013",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 117.0,
+      "crown_bottom_y_estimate": 103.32,
+      "mark_center": [
+        253.5,
+        72.16
+      ],
+      "mark_height": 34.275999999999996,
+      "mark_bbox_union_512": [
+        236.94294915254238,
+        55.312474576271185,
+        270.63800000000003,
+        89.58847457627118
+      ],
+      "brim_clearance": 27.41152542372882,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 32.782066345214844,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_014",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 134.0,
+      "crown_bottom_y_estimate": 117.44,
+      "mark_center": [
+        254.5,
+        79.72
+      ],
+      "mark_height": 41.492000000000004,
+      "mark_bbox_union_512": [
+        234.45725423728814,
+        59.325627118644064,
+        275.246,
+        100.81762711864407
+      ],
+      "brim_clearance": 33.18237288135593,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 23.056869506835938,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_015",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 122.0,
+      "crown_bottom_y_estimate": 107.42,
+      "mark_center": [
+        254.0,
+        74.21000000000001
+      ],
+      "mark_height": 36.531000000000006,
+      "mark_bbox_union_512": [
+        236.3536694915254,
+        56.25408474576272,
+        272.2655,
+        92.78508474576273
+      ],
+      "brim_clearance": 29.21491525423727,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 24.428054809570312,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_016",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 120.0,
+      "crown_bottom_y_estimate": 105.78,
+      "mark_center": [
+        253.0,
+        73.39
+      ],
+      "mark_height": 35.629000000000005,
+      "mark_bbox_union_512": [
+        235.78938135593222,
+        55.8774406779661,
+        270.8145,
+        91.50644067796611
+      ],
+      "brim_clearance": 28.49355932203389,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 31.669815063476562,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_017",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 117.0,
+      "crown_bottom_y_estimate": 103.5,
+      "mark_center": [
+        250.0,
+        72.75
+      ],
+      "mark_height": 33.825,
+      "mark_bbox_union_512": [
+        233.66080508474576,
+        56.124152542372876,
+        266.9125,
+        89.94915254237287
+      ],
+      "brim_clearance": 27.05084745762713,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 35.70240783691406,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_018",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 118.0,
+      "crown_bottom_y_estimate": 104.14,
+      "mark_center": [
+        252.0,
+        72.57
+      ],
+      "mark_height": 34.727000000000004,
+      "mark_bbox_union_512": [
+        235.22509322033898,
+        55.50079661016949,
+        269.3635,
+        90.22779661016949
+      ],
+      "brim_clearance": 27.77220338983051,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 33.00035858154297,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_019",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 124.0,
+      "crown_bottom_y_estimate": 109.06,
+      "mark_center": [
+        254.0,
+        75.03
+      ],
+      "mark_height": 37.43300000000001,
+      "mark_bbox_union_512": [
+        235.91795762711865,
+        56.630728813559315,
+        272.7165,
+        94.06372881355932
+      ],
+      "brim_clearance": 29.936271186440678,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 27.656356811523438,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_020",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 118.0,
+      "crown_bottom_y_estimate": 104.14,
+      "mark_center": [
+        256.0,
+        72.57
+      ],
+      "mark_height": 34.727000000000004,
+      "mark_bbox_union_512": [
+        239.22509322033898,
+        55.50079661016949,
+        273.3635,
+        90.22779661016949
+      ],
+      "brim_clearance": 27.77220338983051,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 29.810623168945312,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_021",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 125.0,
+      "crown_bottom_y_estimate": 109.88,
+      "mark_center": [
+        251.0,
+        75.44
+      ],
+      "mark_height": 37.884,
+      "mark_bbox_union_512": [
+        232.70010169491525,
+        56.819050847457625,
+        269.942,
+        94.70305084745763
+      ],
+      "brim_clearance": 30.296949152542368,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 29.796875,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_022",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 137.0,
+      "crown_bottom_y_estimate": 119.72,
+      "mark_center": [
+        253.5,
+        80.36
+      ],
+      "mark_height": 42,
+      "mark_bbox_union_512": [
+        233.21186440677965,
+        59.715932203389826,
+        274.5,
+        101.71593220338983
+      ],
+      "brim_clearance": 35.284067796610174,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 30.467864990234375,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_023",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 118.0,
+      "crown_bottom_y_estimate": 104.14,
+      "mark_center": [
+        255.0,
+        72.57
+      ],
+      "mark_height": 34.727000000000004,
+      "mark_bbox_union_512": [
+        238.22509322033898,
+        55.50079661016949,
+        272.3635,
+        90.22779661016949
+      ],
+      "brim_clearance": 27.77220338983051,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 32.321815490722656,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_024",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 121.0,
+      "crown_bottom_y_estimate": 106.78,
+      "mark_center": [
+        253.0,
+        74.39
+      ],
+      "mark_height": 35.629000000000005,
+      "mark_bbox_union_512": [
+        235.78938135593222,
+        56.8774406779661,
+        270.8145,
+        92.50644067796611
+      ],
+      "brim_clearance": 28.49355932203389,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 27.894691467285156,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_025",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 125.0,
+      "crown_bottom_y_estimate": 109.88,
+      "mark_center": [
+        255.0,
+        75.44
+      ],
+      "mark_height": 37.884,
+      "mark_bbox_union_512": [
+        236.70010169491525,
+        56.819050847457625,
+        273.942,
+        94.70305084745763
+      ],
+      "brim_clearance": 30.296949152542368,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 22.752578735351562,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_026",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 115.0,
+      "crown_bottom_y_estimate": 101.68,
+      "mark_center": [
+        253.5,
+        71.34
+      ],
+      "mark_height": 33.37400000000001,
+      "mark_bbox_union_512": [
+        237.37866101694914,
+        54.93583050847458,
+        270.187,
+        88.30983050847459
+      ],
+      "brim_clearance": 26.69016949152541,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 29.819488525390625,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_027",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 118.0,
+      "crown_bottom_y_estimate": 104.14,
+      "mark_center": [
+        254.0,
+        72.57
+      ],
+      "mark_height": 34.727000000000004,
+      "mark_bbox_union_512": [
+        237.22509322033898,
+        55.50079661016949,
+        271.3635,
+        90.22779661016949
+      ],
+      "brim_clearance": 27.77220338983051,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 30.266204833984375,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_028",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 116.0,
+      "crown_bottom_y_estimate": 102.5,
+      "mark_center": [
+        252.5,
+        71.75
+      ],
+      "mark_height": 33.825,
+      "mark_bbox_union_512": [
+        236.16080508474576,
+        55.124152542372876,
+        269.4125,
+        88.94915254237287
+      ],
+      "brim_clearance": 27.05084745762713,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 33.07838439941406,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_029",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 131.0,
+      "crown_bottom_y_estimate": 114.8,
+      "mark_center": [
+        253.5,
+        77.9
+      ],
+      "mark_height": 40.59,
+      "mark_bbox_union_512": [
+        233.89296610169492,
+        57.94898305084746,
+        273.795,
+        98.53898305084746
+      ],
+      "brim_clearance": 32.46101694915254,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 23.885025024414062,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_030",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 117.0,
+      "crown_bottom_y_estimate": 103.32,
+      "mark_center": [
+        251.0,
+        72.16
+      ],
+      "mark_height": 34.275999999999996,
+      "mark_bbox_union_512": [
+        234.44294915254238,
+        55.312474576271185,
+        268.13800000000003,
+        89.58847457627118
+      ],
+      "brim_clearance": 27.41152542372882,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 36.14160919189453,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_031",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 133.0,
+      "crown_bottom_y_estimate": 116.62,
+      "mark_center": [
+        252.5,
+        79.31
+      ],
+      "mark_height": 41.041000000000004,
+      "mark_bbox_union_512": [
+        232.67511016949152,
+        59.13730508474576,
+        273.02049999999997,
+        100.17830508474577
+      ],
+      "brim_clearance": 32.82169491525423,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 35.00297546386719,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_032",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 125.0,
+      "crown_bottom_y_estimate": 109.88,
+      "mark_center": [
+        255.5,
+        75.44
+      ],
+      "mark_height": 37.884,
+      "mark_bbox_union_512": [
+        237.20010169491525,
+        56.819050847457625,
+        274.442,
+        94.70305084745763
+      ],
+      "brim_clearance": 30.296949152542368,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 30.857513427734375,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_033",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 130.0,
+      "crown_bottom_y_estimate": 113.98,
+      "mark_center": [
+        251.0,
+        77.49000000000001
+      ],
+      "mark_height": 40.139,
+      "mark_bbox_union_512": [
+        231.6108220338983,
+        57.76066101694916,
+        271.06949999999995,
+        97.89966101694917
+      ],
+      "brim_clearance": 32.10033898305083,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 40,
+      "eye_to_brim_gap_estimate": 31.020980834960938,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_034",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 134.0,
+      "crown_bottom_y_estimate": 117.44,
+      "mark_center": [
+        251.5,
+        79.72
+      ],
+      "mark_height": 41.492000000000004,
+      "mark_bbox_union_512": [
+        231.45725423728814,
+        59.325627118644064,
+        272.246,
+        100.81762711864407
+      ],
+      "brim_clearance": 33.18237288135593,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 27.266738891601562,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_035",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 113.0,
+      "crown_bottom_y_estimate": 100.04,
+      "mark_center": [
+        256.0,
+        70.52000000000001
+      ],
+      "mark_height": 32.47200000000001,
+      "mark_bbox_union_512": [
+        240.31437288135595,
+        54.55918644067797,
+        272.236,
+        87.03118644067797
+      ],
+      "brim_clearance": 25.96881355932203,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 37.18627166748047,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_036",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 133.0,
+      "crown_bottom_y_estimate": 116.44,
+      "mark_center": [
+        254.0,
+        78.72
+      ],
+      "mark_height": 41.492000000000004,
+      "mark_bbox_union_512": [
+        233.95725423728814,
+        58.325627118644064,
+        274.746,
+        99.81762711864407
+      ],
+      "brim_clearance": 33.18237288135593,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 24.616233825683594,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_037",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 131.0,
+      "crown_bottom_y_estimate": 114.8,
+      "mark_center": [
+        252.0,
+        77.9
+      ],
+      "mark_height": 40.59,
+      "mark_bbox_union_512": [
+        232.39296610169492,
+        57.94898305084746,
+        272.295,
+        98.53898305084746
+      ],
+      "brim_clearance": 32.46101694915254,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 25.0194091796875,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_038",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 123.0,
+      "crown_bottom_y_estimate": 108.42,
+      "mark_center": [
+        253.0,
+        75.21000000000001
+      ],
+      "mark_height": 36.531000000000006,
+      "mark_bbox_union_512": [
+        235.3536694915254,
+        57.25408474576272,
+        271.2655,
+        93.78508474576273
+      ],
+      "brim_clearance": 29.21491525423727,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 33.73402404785156,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_039",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 130.0,
+      "crown_bottom_y_estimate": 113.98,
+      "mark_center": [
+        252.5,
+        77.49000000000001
+      ],
+      "mark_height": 40.139,
+      "mark_bbox_union_512": [
+        233.1108220338983,
+        57.76066101694916,
+        272.56949999999995,
+        97.89966101694917
+      ],
+      "brim_clearance": 32.10033898305083,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 28.989341735839844,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_040",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 127.0,
+      "crown_bottom_y_estimate": 111.52,
+      "mark_center": [
+        250.0,
+        76.25999999999999
+      ],
+      "mark_height": 38.786,
+      "mark_bbox_union_512": [
+        231.2643898305085,
+        57.19569491525423,
+        269.39300000000003,
+        95.98169491525422
+      ],
+      "brim_clearance": 31.018305084745776,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 31.41461944580078,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_041",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 117.0,
+      "crown_bottom_y_estimate": 103.32,
+      "mark_center": [
+        252.5,
+        72.16
+      ],
+      "mark_height": 34.275999999999996,
+      "mark_bbox_union_512": [
+        235.94294915254238,
+        55.312474576271185,
+        269.63800000000003,
+        89.58847457627118
+      ],
+      "brim_clearance": 27.41152542372882,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 36.405052185058594,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_042",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 125.0,
+      "crown_bottom_y_estimate": 109.88,
+      "mark_center": [
+        252.0,
+        75.44
+      ],
+      "mark_height": 37.884,
+      "mark_bbox_union_512": [
+        233.70010169491525,
+        56.819050847457625,
+        270.942,
+        94.70305084745763
+      ],
+      "brim_clearance": 30.296949152542368,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 30.930191040039062,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_043",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 127.0,
+      "crown_bottom_y_estimate": 111.52,
+      "mark_center": [
+        251.5,
+        76.25999999999999
+      ],
+      "mark_height": 38.786,
+      "mark_bbox_union_512": [
+        232.7643898305085,
+        57.19569491525423,
+        270.89300000000003,
+        95.98169491525422
+      ],
+      "brim_clearance": 31.018305084745776,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 24.626861572265625,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_044",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 128.0,
+      "crown_bottom_y_estimate": 112.52,
+      "mark_center": [
+        252.0,
+        77.25999999999999
+      ],
+      "mark_height": 38.786,
+      "mark_bbox_union_512": [
+        233.2643898305085,
+        58.19569491525423,
+        271.39300000000003,
+        96.98169491525422
+      ],
+      "brim_clearance": 31.018305084745776,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 29.496307373046875,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_045",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 122.0,
+      "crown_bottom_y_estimate": 107.42,
+      "mark_center": [
+        255.0,
+        74.21000000000001
+      ],
+      "mark_height": 36.531000000000006,
+      "mark_bbox_union_512": [
+        237.3536694915254,
+        56.25408474576272,
+        273.2655,
+        92.78508474576273
+      ],
+      "brim_clearance": 29.21491525423727,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 29.041976928710938,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_046",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 118.0,
+      "crown_bottom_y_estimate": 104.14,
+      "mark_center": [
+        253.5,
+        72.57
+      ],
+      "mark_height": 34.727000000000004,
+      "mark_bbox_union_512": [
+        236.72509322033898,
+        55.50079661016949,
+        270.8635,
+        90.22779661016949
+      ],
+      "brim_clearance": 27.77220338983051,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 31.59717559814453,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_047",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 128.0,
+      "crown_bottom_y_estimate": 112.34,
+      "mark_center": [
+        254.0,
+        76.67
+      ],
+      "mark_height": 39.237,
+      "mark_bbox_union_512": [
+        235.04653389830509,
+        57.38401694915254,
+        273.61850000000004,
+        96.62101694915253
+      ],
+      "brim_clearance": 31.378983050847467,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 28.164451599121094,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_048",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 138.0,
+      "crown_bottom_y_estimate": 120.53999999999999,
+      "mark_center": [
+        251.5,
+        80.77
+      ],
+      "mark_height": 42,
+      "mark_bbox_union_512": [
+        231.21186440677965,
+        60.12593220338982,
+        272.5,
+        102.12593220338982
+      ],
+      "brim_clearance": 35.87406779661018,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 27.654945373535156,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_049",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 125.0,
+      "crown_bottom_y_estimate": 109.88,
+      "mark_center": [
+        249.5,
+        75.44
+      ],
+      "mark_height": 37.884,
+      "mark_bbox_union_512": [
+        231.20010169491525,
+        56.819050847457625,
+        268.442,
+        94.70305084745763
+      ],
+      "brim_clearance": 30.296949152542368,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 26.465576171875,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_050",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 115.0,
+      "crown_bottom_y_estimate": 101.68,
+      "mark_center": [
+        253.0,
+        71.34
+      ],
+      "mark_height": 33.37400000000001,
+      "mark_bbox_union_512": [
+        236.87866101694914,
+        54.93583050847458,
+        269.687,
+        88.30983050847459
+      ],
+      "brim_clearance": 26.69016949152541,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 31.513397216796875,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_051",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 120.0,
+      "crown_bottom_y_estimate": 105.96000000000001,
+      "mark_center": [
+        254.5,
+        73.98
+      ],
+      "mark_height": 35.178000000000004,
+      "mark_bbox_union_512": [
+        237.50723728813557,
+        56.6891186440678,
+        272.089,
+        91.8671186440678
+      ],
+      "brim_clearance": 28.1328813559322,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 28.141586303710938,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_052",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 118.0,
+      "crown_bottom_y_estimate": 104.14,
+      "mark_center": [
+        254.5,
+        72.57
+      ],
+      "mark_height": 34.727000000000004,
+      "mark_bbox_union_512": [
+        237.72509322033898,
+        55.50079661016949,
+        271.8635,
+        90.22779661016949
+      ],
+      "brim_clearance": 27.77220338983051,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 28.761886596679688,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_053",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 136.0,
+      "crown_bottom_y_estimate": 118.9,
+      "mark_center": [
+        250.5,
+        79.95
+      ],
+      "mark_height": 42,
+      "mark_bbox_union_512": [
+        230.21186440677965,
+        59.30593220338983,
+        271.5,
+        101.30593220338983
+      ],
+      "brim_clearance": 34.69406779661017,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 30.59283447265625,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_054",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 115.0,
+      "crown_bottom_y_estimate": 101.68,
+      "mark_center": [
+        254.5,
+        71.34
+      ],
+      "mark_height": 33.37400000000001,
+      "mark_bbox_union_512": [
+        238.37866101694914,
+        54.93583050847458,
+        271.187,
+        88.30983050847459
+      ],
+      "brim_clearance": 26.69016949152541,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 36.05982971191406,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_055",
+      "cap_top_y": 42.0,
+      "front_brim_y_estimate": 127.0,
+      "crown_bottom_y_estimate": 111.7,
+      "mark_center": [
+        250.0,
+        76.85
+      ],
+      "mark_height": 38.33500000000001,
+      "mark_bbox_union_512": [
+        231.48224576271184,
+        58.00737288135593,
+        269.1675,
+        96.34237288135594
+      ],
+      "brim_clearance": 30.657627118644058,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 27.9581298828125,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_056",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 123.0,
+      "crown_bottom_y_estimate": 108.24,
+      "mark_center": [
+        253.5,
+        74.62
+      ],
+      "mark_height": 36.982,
+      "mark_bbox_union_512": [
+        235.63581355932203,
+        56.44240677966102,
+        271.991,
+        93.42440677966101
+      ],
+      "brim_clearance": 29.575593220338988,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 23.78008270263672,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_057",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 135.0,
+      "crown_bottom_y_estimate": 118.08,
+      "mark_center": [
+        253.0,
+        79.53999999999999
+      ],
+      "mark_height": 42,
+      "mark_bbox_union_512": [
+        232.71186440677965,
+        58.89593220338982,
+        274.0,
+        100.89593220338982
+      ],
+      "brim_clearance": 34.10406779661018,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 26.823448181152344,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_058",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 125.0,
+      "crown_bottom_y_estimate": 109.88,
+      "mark_center": [
+        253.0,
+        75.44
+      ],
+      "mark_height": 37.884,
+      "mark_bbox_union_512": [
+        234.70010169491525,
+        56.819050847457625,
+        271.942,
+        94.70305084745763
+      ],
+      "brim_clearance": 30.296949152542368,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 37.412559509277344,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_059",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 115.0,
+      "crown_bottom_y_estimate": 101.68,
+      "mark_center": [
+        251.0,
+        71.34
+      ],
+      "mark_height": 33.37400000000001,
+      "mark_bbox_union_512": [
+        234.87866101694914,
+        54.93583050847458,
+        267.687,
+        88.30983050847459
+      ],
+      "brim_clearance": 26.69016949152541,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 34.23661804199219,
+      "physical_deep_cap_generated": true
+    },
+    {
+      "identity_id": "v7_staff01_coach_060",
+      "cap_top_y": 41.0,
+      "front_brim_y_estimate": 126.0,
+      "crown_bottom_y_estimate": 110.7,
+      "mark_center": [
+        250.5,
+        75.85
+      ],
+      "mark_height": 38.33500000000001,
+      "mark_bbox_union_512": [
+        231.98224576271184,
+        57.00737288135593,
+        269.6675,
+        95.34237288135594
+      ],
+      "brim_clearance": 30.657627118644058,
+      "no_cap_or_visor_stretch": true,
+      "headroom_512": 41,
+      "eye_to_brim_gap_estimate": 31.982192993164062,
+      "physical_deep_cap_generated": true
+    }
+  ],
+  "note": "Brim/crown estimates derive from cap mask; eyebrow proximity additionally reviewed visually, not falsely claimed as exact anatomical measurement."
+}

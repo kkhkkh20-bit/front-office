@@ -1,0 +1,168 @@
+{
+  "algorithm": "SHA-256",
+  "excludes": [
+    "checksums.json"
+  ],
+  "files": {
+    "ASSET_PREVIEW.png": {
+      "bytes": 2072939,
+      "sha256": "6b9cc24f1d1ca277254dc85b13b7c95d43a3511c1860a2ac7f99aa99121bcfa8"
+    },
+    "CLAUDE_HANDOFF.md": {
+      "bytes": 6452,
+      "sha256": "1a55125223b1a70dfff8863c97efa2c4a5d1b4ba00ea9ec651edbb634acf13b8"
+    },
+    "README.md": {
+      "bytes": 7896,
+      "sha256": "587aa8e20d817ccbdf43738a736b73aac772bc26c711e537f56e9bd3bb385dec"
+    },
+    "arcface_validation.json": {
+      "bytes": 88643,
+      "sha256": "be5abe61c082815bdbbaf9ff60e1e1774a8d1eb974a949e8168b0b0fdba0eab3"
+    },
+    "archive/portraits_part01.zip": {
+      "bytes": 14352860,
+      "sha256": "faaeb86f0ff22c33e2617b23efef279b6dc8f4750101b035d3840548bb49e663"
+    },
+    "archive/portraits_part02.zip": {
+      "bytes": 13231381,
+      "sha256": "1e757782b43268060da6b0164306c0a4d3de0c898fa385e142aca7b280616700"
+    },
+    "archive/portraits_part03.zip": {
+      "bytes": 13143328,
+      "sha256": "e2d0e5c767cbaf558d21fc99f562e60a1d903a9c205465cc6ed7eef5e2a09e42"
+    },
+    "archive_manifest.json": {
+      "bytes": 706,
+      "sha256": "a534284d8a357d85d240ef2b049759d1a0078fb5bf825928f50012adb8bd7507"
+    },
+    "camera_validation.json": {
+      "bytes": 57192,
+      "sha256": "f0a37e83f823c4552c1d6c2aaf91eb702c08cdcb0ed9aaf3bc0cb4c99a3d0e4d"
+    },
+    "candidate_selection.json": {
+      "bytes": 6113,
+      "sha256": "2637c5ebb5300ffbf5b7ee8319669702435914b4a33007e9da43737315a746cc"
+    },
+    "cap_fit_spec.json": {
+      "bytes": 811,
+      "sha256": "f34cdf9b8dcf832b82a5a056bbefb8114be0c04b5daa648bf4dcee909c5dd498"
+    },
+    "cap_fit_validation.json": {
+      "bytes": 36618,
+      "sha256": "36b6e61100399871ab1ada6fb1cf37871cd7a508e4e3f0bb9cd1e4e33b780654"
+    },
+    "deployment_manifest.json": {
+      "bytes": 537,
+      "sha256": "b4f19d0509344831745316cb56c25ff7f1f78cf25b5738daf3793ca998d87db0"
+    },
+    "kit_dependencies.json": {
+      "bytes": 1789,
+      "sha256": "9a58bafd62f9be2a79572ce1139995bf420d735469a5f0e4cfd286640f214d89"
+    },
+    "manifest.json": {
+      "bytes": 315019,
+      "sha256": "ce55aba7ca48fc391a36b423c4ada6c1cb774a728d2c65a1e5d6b4e4475e427b"
+    },
+    "previews/cap_fit_part01.png": {
+      "bytes": 319481,
+      "sha256": "3982150fa7ed2a6b762c97b4cc5b5c428153a23a521b68af604ff2ceef12cda6"
+    },
+    "previews/cap_fit_part02.png": {
+      "bytes": 322856,
+      "sha256": "cff3bd5c17bbed73717d7e801797868b6f4af91646099b7fcc9b1e16ca2f3af6"
+    },
+    "previews/civilian_original_256.png": {
+      "bytes": 3405503,
+      "sha256": "1fd6a94fa4ee25395a1ae108e36a637464bf72486f1ab5a2708a1cc2071844d5"
+    },
+    "previews/coaches_gwangju_blazes_128.png": {
+      "bytes": 1150460,
+      "sha256": "055ea82ab3a60ba85d31800aa5257c1d1474e6e67cfe6208d68185a16b3c436b"
+    },
+    "previews/coaches_gwangju_blazes_256.png": {
+      "bytes": 3890977,
+      "sha256": "3880178167c5765498f849c4cc46591fa85f4d17a2d7957cd932df6fb1b1eb62"
+    },
+    "previews/coaches_original_256.png": {
+      "bytes": 2871367,
+      "sha256": "4b473663fc88b11211ff26c2cf6306c07e33e8a72b38ab366d1d78b41305c546"
+    },
+    "previews/coaches_seoul_comets_128.png": {
+      "bytes": 1189118,
+      "sha256": "90de5ed2cdd3597ee151e1175d061346296814dcd5fe544207a7805a001a8bdd"
+    },
+    "previews/coaches_seoul_comets_256.png": {
+      "bytes": 4024097,
+      "sha256": "883df1dc5e98113b5687d23aeca90c6e080ee124dd14c54298d6f2839a34486f"
+    },
+    "previews/coaches_seoul_hounds_128.png": {
+      "bytes": 1131830,
+      "sha256": "771e88945cc672a62c684f4b21d178a3f13e1d64fd4081007eb400d656343a33"
+    },
+    "previews/coaches_seoul_hounds_256.png": {
+      "bytes": 3698849,
+      "sha256": "832593c8249c60a97f3577afb417f176c21277f6142762e306ed993a9b741ef3"
+    },
+    "previews/gm_selection_01.png": {
+      "bytes": 327628,
+      "sha256": "03f0ea887b2fddef312253535a532911625a1b8390ffd2916570d1ded4de2184"
+    },
+    "previews/gm_selection_02.png": {
+      "bytes": 320023,
+      "sha256": "a88819729a4276d5a607f8a3319e1afca1c4399b363c78a37ca36d3bdefaa6b2"
+    },
+    "previews/gm_selection_03.png": {
+      "bytes": 352317,
+      "sha256": "16bdc4123f291da153e073d617d036a8ca200f650013c959fb63b53649987153"
+    },
+    "previews/gm_selection_04.png": {
+      "bytes": 312892,
+      "sha256": "ddbddf5c539dea010c277eb37b9f9085d7ae0bf1bc7fbd6096cd3dc84468809a"
+    },
+    "previews/gm_selection_05.png": {
+      "bytes": 335896,
+      "sha256": "e4032d31d16c38ed0769caecf37bb62e264c5ba4fece543b68452eab3e1511d8"
+    },
+    "previews/gm_selection_06.png": {
+      "bytes": 312841,
+      "sha256": "36b91ac9088e7567ccb269058f72f628642e23f6a84427351716e8a0df20a4b8"
+    },
+    "production_notes.json": {
+      "bytes": 7405,
+      "sha256": "8438e4e6516bb2eb51191687e07787185edf361a19550299c0a0779b1a1dce9d"
+    },
+    "registration_validation.json": {
+      "bytes": 5774,
+      "sha256": "35e9808f5c3061482b6bda704c7eb1380b33e07d7a8f2a3b997195f9bc68417d"
+    },
+    "sheets/civilian/128/staff01.webp": {
+      "bytes": 121896,
+      "sha256": "5722601f94e6a4f2dcd7e6fa5dcd01ae0b87ce06bc13855be76d86fc4ad9dd7d"
+    },
+    "sheets/civilian/256/staff01.webp": {
+      "bytes": 354596,
+      "sha256": "d62c1616e26a06694357cddb66e2492d80ea916f82df4b9dce3d7acdfcffb1e6"
+    },
+    "sheets/coaches/128/staff01.webp": {
+      "bytes": 136232,
+      "sha256": "5817559246052ea4a70396ad22d87b3f78819d8271a1ef7e8e93be46673d8a36"
+    },
+    "sheets/coaches/256/staff01.webp": {
+      "bytes": 351862,
+      "sha256": "bfa45a76670fce506083589f9c309f549133b0b90b240918a09179638ba9079b"
+    },
+    "sheets/coaches/registration/staff01.webp": {
+      "bytes": 94416,
+      "sha256": "af04322f3439ed5f9fe34eb69a7a6fd416fd21a6bb316da7edc5e4a68575cd21"
+    },
+    "validation.json": {
+      "bytes": 64986,
+      "sha256": "dfb5e90e13bfe7ff9667431a9af9ef74bf50c617365c71a19c0fb08d338e1022"
+    },
+    "validation_embeddings.npz": {
+      "bytes": 430590,
+      "sha256": "613edd1b1c1c21993ad3a88176d5feb211743d56d8a5794402a0fd1e977d3046"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "do_not_deploy": true,
+  "runtime_files_if_approved": [
+    "sheets/coaches/128/staff01.webp",
+    "sheets/coaches/256/staff01.webp",
+    "sheets/civilian/128/staff01.webp",
+    "sheets/civilian/256/staff01.webp",
+    "sheets/coaches/registration/staff01.webp",
+    "manifest.json"
+  ],
+  "exclude": [
+    "archive/",
+    "previews/",
+    "ASSET_PREVIEW.png",
+    "validation*",
+    "*validation.json",
+    "candidate_selection.json",
+    "archive_manifest.json",
+    "README.md",
+    "CLAUDE_HANDOFF.md",
+    "checksums.json"
+  ]
+}
