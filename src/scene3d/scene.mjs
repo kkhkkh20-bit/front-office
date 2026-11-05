@@ -61,6 +61,8 @@ function clearActor(a){a.label?.remove();a.labelLine?.remove();a.mixer.stopAllAc
 function scoreboard(data){const s=active;if(!s?.screen)return;s.boardData=s.screen.update(data);s.dirty=true;}
 function cancelMotion(){const s=active;if(!s)return;for(const p of s.props||[])p.object.removeFromParent();s.props=[];s.incident=null;s.ballMotion=null;s.contactPoint=null;s.receiver=null;s.thrower=null;s.ball.visible=false;s.cameraMode='pitch';s.follow=null;s.followRunner=null;s.followDelay=0;s.cameraHoldUntil=0;s.focusKey=null;if(s.ring)s.ring.visible=false;s.landing=null;s.nextBatted=null;if(s.landingRing)s.landingRing.visible=false;if(s.landingLabel)s.landingLabel.hidden=true;for(const a of s.actors.values()){a.move=null;a.root.visible=true;a.highlight=null;if(a.labelRole)a.labelRole.textContent=a.positionLabel;if(a.bat)a.bat.visible=true;if(a.heldBall)a.heldBall.visible=true;if(a.caughtBall)a.caughtBall.visible=false;pose(a,idle(a),true,{fade:0});}}
 function resize(){const s=active;if(!s)return;const r=s.host.getBoundingClientRect();if(!r.width||!r.height)return;s.renderer.setSize(r.width,r.height,false);s.camera.aspect=r.width/r.height;s.camera.fov=r.width/r.height<1?65:46;s.camera.updateProjectionMatrix();s.dirty=true;}
+/* 걸리면 끝없이 기다리지 않는다(카페 제보 11-06: 안드로이드·PC에서 로딩 막대가 중간에 멈춤). hard는 실패로 기본 중계, soft는 그냥 넘어간다 */
+const waitMax=(p,ms,soft)=>Promise.race([p,new Promise((ok,no)=>setTimeout(()=>soft?ok():no(new Error('3D 준비 시간 초과')),ms))]);
 async function mount(host,options={}){
  if(active?.host===host&&active.ready)return true;
  const initial=pendingData;dispose();let renderer;try{renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',alpha:false});}catch(e){fallback(host,'브라우저에서 3D 그래픽을 시작하지 못해 기본 중계로 표시 중입니다.');return false;}
@@ -69,7 +71,7 @@ async function mount(host,options={}){
  const pmrem=new T.PMREMGenerator(renderer),env=pmrem.fromScene(new RoomEnvironment(),.04);scene.environment=env.texture;pmrem.dispose();s.env=env;scene.environmentIntensity=s.day?.65:.35;scene.background=sky(s.day);s.ownedTextures.push(scene.background);scene.fog=new T.Fog(s.day?0xa6becd:0x1c3048,170,430);
  scene.add(new T.HemisphereLight(s.day?0xd9ebff:0xc6d8ff,0x4b4a35,s.day?1.1:.65));const light=new T.DirectionalLight(s.day?0xfff3d9:0xf4f5ff,s.day?2:2.6);light.position.set(-35,70,-40);light.castShadow=true;Object.assign(light.shadow.camera,{left:-42,right:42,top:52,bottom:-35,near:1,far:200});light.shadow.mapSize.set(1024,1024);light.shadow.bias=-.00025;light.shadow.normalBias=.035;scene.add(light);s.light=light;
  if(!s.day){for(const [x,z]of [[-70,45],[70,45],[0,120]]){const l=new T.DirectionalLight(0xc5d8ff,1.25);l.position.set(x,60,z);l.target.position.set(0,0,30);scene.add(l,l.target);}}
- try{s.assets=await load(renderer);if(active!==s)return false;const scenery=[];
+ try{s.assets=await waitMax(load(renderer),45000);if(active!==s)return false;const scenery=[];
  for(const name of ['field','stadium']){const o=s.assets[name].scene.clone();const tuned=new Map();o.traverse(n=>{if(!n.isMesh)return;n.receiveShadow=true;n.castShadow=/Dugout|Mound/.test(n.name);const apply=m=>{if(tuned.has(m))return tuned.get(m);const q=m.clone();const patch=tuneParkMaterial(q);if(patch)q.onBeforeCompile=patch;s.customMaterials.push(q);tuned.set(m,q);return q;};n.material=Array.isArray(n.material)?n.material.map(apply):apply(n.material);
  // Keep the infield layers separated even at the broadcast camera's far plane.
  if(name==='field'&&['Dirt','Dirt_Cutouts','WarningTrack'].includes(n.name))n.position.y+=.018;if(n.name==='Grass_Infield')n.position.y+=.04;if(n.name==='Chalk')n.position.y+=.06;
@@ -87,7 +89,7 @@ async function mount(host,options={}){
  // Build players before shader compilation, yielding between models so the loading UI can paint.
  status('선수와 경기 화면을 준비하고 있습니다');
  if(s.desired){const data=s.desired;for(const t of data.targets){if(active!==s)return false;const a=makeActor(t);s.actors.set(t.k,a);a.root.position.copy(point(t.pt));if(a.pitcher)a.root.position.y=.26;a.root.rotation.y=actorFacing(a);await new Promise(requestAnimationFrame);}scoreboard(data.board||data);}
- setCamera(true);status('그래픽을 준비하고 있습니다',.92);if(renderer.compileAsync)await renderer.compileAsync(scene,camera);
+ setCamera(true);status('그래픽을 준비하고 있습니다',.92);if(renderer.compileAsync)await waitMax(renderer.compileAsync(scene,camera),8000,true); /* 일부 기기는 병렬 셰이더 컴파일 완료 신호가 오지 않는다: 첫 렌더에서 컴파일된다 */
  if(active!==s)return false;s.ready=true;if(s.desired)sync(s.desired);setCamera(true);renderer.render(scene,camera);layoutLabels(s);
  host.dataset.state='ready';host.parentElement.dataset.renderer='ready';host.parentElement.classList.add('has-3d');status('',1);tick(performance.now());return true;
  }catch(e){if(active===s){console.error('3D 경기장 로드 실패',e);fallback(host,'3D 경기장 파일을 불러오지 못해 기본 중계로 표시 중입니다.');}return false;}
