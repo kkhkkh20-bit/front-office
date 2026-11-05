@@ -75,6 +75,13 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
     for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7).sort((a,b)=>v(a)-v(b))[0]; const inn=playersOf(tid).filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
       if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   if(tid===G.user&&moves.length&&!quiet)note('엔트리',`감독이 1군 엔트리를 조정했습니다: ${moves.join(', ')}.`); }
+/* 돌아온 주축을 다시 1군에(사용자 피드백 11-05: 대표팀에서 돌아온 핵심 3명이 한국시리즈 1차전까지 2군에 남음).
+ 후보마다 같은 투수·야수 중 기용 순위가 가장 낮은 1군 선수보다 확실히 나으면 바꾼다. 자리가 비면 그냥 올린다 */
+function entryUpgrade(tid,cands,why){ if(!entryOn())return []; const lean=teamLean(tid), v=p=>entryVal(tid,p,lean), lim=entryLimit(), moves=[];
+  for(const c of cands.filter(p=>p&&p.team===tid&&!p.e1&&!p.ys&&healthy(p)&&psOk(p)).sort((a,b)=>v(b)-v(a))){ const ent=playersOf(tid).filter(p=>p.e1);
+    if(ent.length<lim){ c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록`); continue; }
+    const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)).sort((a,b)=>v(a)-v(b))[0]; if(out&&v(c)>v(out)+1){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
+  if(tid===G.user&&moves.length)note('엔트리',`감독이 1군 엔트리를 조정했습니다${why?`(${why})`:''}: ${moves.join(', ')}.`); return moves; }
 function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p.team!==G.user)return '대상이 아닙니다.'; if(!entryOn())return '시즌 중에만 엔트리를 바꿀 수 있습니다.'; if(!m)return '감독이 없습니다.';
   if(up&&!canUp(p))return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':!healthy(p)?'부상 중입니다.':`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`;
   if(!up&&!p.e1)return '이미 1군에 없습니다.';

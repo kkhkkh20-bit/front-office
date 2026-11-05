@@ -9777,6 +9777,13 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
     for(const isP of [false,true]){ const out=ent.filter(p=>p.isP===isP&&!core.has(p.id)&&G.day-(p.upDay||0)>=7).sort((a,b)=>v(a)-v(b))[0]; const inn=playersOf(tid).filter(p=>canUp(p)&&p.isP===isP).sort((a,b)=>v(b)-v(a))[0];
       if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   if(tid===G.user&&moves.length&&!quiet)note('엔트리',`감독이 1군 엔트리를 조정했습니다: ${moves.join(', ')}.`); }
+/* 돌아온 주축을 다시 1군에(사용자 피드백 11-05: 대표팀에서 돌아온 핵심 3명이 한국시리즈 1차전까지 2군에 남음).
+ 후보마다 같은 투수·야수 중 기용 순위가 가장 낮은 1군 선수보다 확실히 나으면 바꾼다. 자리가 비면 그냥 올린다 */
+function entryUpgrade(tid,cands,why){ if(!entryOn())return []; const lean=teamLean(tid), v=p=>entryVal(tid,p,lean), lim=entryLimit(), moves=[];
+  for(const c of cands.filter(p=>p&&p.team===tid&&!p.e1&&!p.ys&&healthy(p)&&psOk(p)).sort((a,b)=>v(b)-v(a))){ const ent=playersOf(tid).filter(p=>p.e1);
+    if(ent.length<lim){ c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록`); continue; }
+    const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)).sort((a,b)=>v(a)-v(b))[0]; if(out&&v(c)>v(out)+1){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
+  if(tid===G.user&&moves.length)note('엔트리',`감독이 1군 엔트리를 조정했습니다${why?`(${why})`:''}: ${moves.join(', ')}.`); return moves; }
 function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p.team!==G.user)return '대상이 아닙니다.'; if(!entryOn())return '시즌 중에만 엔트리를 바꿀 수 있습니다.'; if(!m)return '감독이 없습니다.';
   if(up&&!canUp(p))return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':!healthy(p)?'부상 중입니다.':`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`;
   if(!up&&!p.e1)return '이미 1군에 없습니다.';
@@ -10463,6 +10470,7 @@ function seasonEnd(){
   const st=standingsNow(); const s=st.map(x=>x.tid);
   stop('일정',`정규시즌이 끝났습니다. 우리 구단 ${st.findIndex(x=>x.tid===G.user)+1}위. 1위 ${tname(s[0])}.`);
   G.ps={seeds:s.slice(0,5),order:st,res:{},round:'wc',done:false};
+  for(const x of s.slice(0,5)){ try{ entryUpgrade(x.tid??x,playersOf(x.tid??x).filter(canUp),'포스트시즌 최정예'); }catch(e){} } /* 가을야구는 가장 강한 엔트리로 */
   /* KBO: 1위·5위가 승률 같으면 결정전 한 경기(상대 전적 우위 팀 홈). 그 밖의 순위는 상대 전적·다득점으로 정한다 */
   const tbq=[]; if(pctEq(st[0],st[1]))tbq.push([0,s[0],s[1]]); if(st.length>5&&pctEq(st[4],st[5]))tbq.push([4,s[4],s[5]]); G.ps.tbq=tbq;
   if(tbq.length){ const q=tbq.shift(); G.ps.round='tb'; G.ps.tbPos=q[0]; G.ps.cur=mkSeries('tb',q[1],q[2],G.day+1); note('일정',`${q[0]+1}위 결정전: ${tname(q[1])} - ${tname(q[2])} (${tshort(q[1])} 홈)`); }
@@ -13092,7 +13100,7 @@ const EVH={
     pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0)return '선수 정보의 관리 탭에서 다년계약 조건을 제시하세요.'; p.mor=clamp(p.mor-5,0,100); return `${p.name} 기분 -5.`; } },
   /* 주전 슬럼프 */
   slump:{ w:1.1, check(){ const d=depth(G.user); const L=d.start.filter(p=>(p.l10||[]).length>=8).map(p=>{ const L=p.l10; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)),sf=sum(L.map(x=>x[6]||0)); if(ab<25)return null; const hp=sum(L.map(x=>x[7]||0)); const ops=(h+bb+hp)/(ab+bb+hp+sf)+(h+xb)/ab; return ops<.5?{p,ops,avg:h/ab}:null; }).filter(Boolean).sort((a,b)=>a.ops-b.ops); return L[0]||null; },
-    make(x){ const p=x.p; evNew('slump',`${p.name}, 깊은 슬럼프`,`주전 ${p.name}(${posLabel(p)})이(가) 최근 10경기 타율 ${fmt3(x.avg)}, OPS ${fmt3(x.ops)}에 그치고 있습니다. 전력분석팀은 타격 밸런스가 무너졌다고 봅니다.\n시즌 기록: ${evLine(p)}`,
+    make(x){ const p=x.p; evNew('slump',`${p.name}, 깊은 슬럼프`,`주전 ${p.name}(${posLabel(p)})이(가) 최근 10경기(${dmd(G.day)} 기준) 타율 ${fmt3(x.avg)}, OPS ${fmt3(x.ops)}에 그치고 있습니다. 전력분석팀은 타격 밸런스가 무너졌다고 봅니다.\n시즌 기록: ${evLine(p)}`,
       [{l:'2군에서 조정 (말소 요청)',fx:'감독이 받아들이면 10일 이상 2군에서 조정합니다. 돌아오면 2주간 컨디션이 좋아집니다. 본인 기분은 내려갑니다.'},
        {l:'면담으로 다잡기',fx:'프로의식이 높은 선수는 2주간 분발합니다. 아니면 기분만 내려갑니다.'},
        {l:'믿고 기다린다',fx:'변화가 없습니다. 선수 기분이 조금 오릅니다.'}],{ref:p.id,face:p.id,from:'전력분석팀',data:{pid:p.id},def:2}); },
@@ -13481,7 +13489,7 @@ function mail(from,subj,body,o){ o=o||{}; if(G.unemp&&o.kind!=='경력'&&from!==
 /* 이미 보낸 소식을 다시 알릴 때: 새 소식을 만들지 않고 원래 소식을 오늘로 끌어올려 안 읽음으로 되돌린다 */
 function mailBump(m,warn){ const i=G.mail.indexOf(m); if(i<0)return null; G.mail.splice(i,1); G.mail.unshift(m); if(m.day0==null)m.day0=m.day; m.day=G.day; m.read=false; m.imp=true; m.warn=warn||m.warn||''; if(stopOn(m))G.stops.push(m); return m; }
 /* 소식함 한도: 160건을 넘으면 오래된 '읽은' 소식부터 지운다. 안 읽은 소식은 남기고, 그래도 240건을 넘을 때만 가장 오래된 것을 지운다 */
-function mailPrune(){ if(G.mail.length<=160)return; for(let i=G.mail.length-1;i>=0&&G.mail.length>160;i--)if(G.mail[i].read)G.mail.splice(i,1); if(G.mail.length>240)G.mail.length=240; }
+function mailPrune(){ for(const m of G.mail)if(!m.read&&G.day-(m.day??G.day)>14&&!m.imp&&!m.oid&&!(m.acts||[]).length)m.read=true; /* 2주 지난 일반 보고는 읽은 것으로 접는다(사용자 피드백 11-05: 안 읽은 소식 200건 이상). 중요·답할 일은 남긴다 */ if(G.mail.length<=160)return; for(let i=G.mail.length-1;i>=0&&G.mail.length>160;i--)if(G.mail[i].read)G.mail.splice(i,1); if(G.mail.length>240)G.mail.length=240; }
 function headline(t){ const i=t.search(/[.!?](\s|$)/); return i>0&&i<46?t.slice(0,i):t.length>40?t.slice(0,38)+'…':t; }
 function kindActs(kind,ref){ const a=[]; if(ref!=null&&G.players[ref])a.push({l:'선수 보기',a:'player',v:ref}); if(GOTO[kind])a.push({l:'해당 화면으로',a:'goWork',v:GOTO[kind]}); return a; }
 function stop(kind,t,ref){ mail(FROM[kind]||'프런트',headline(t),t,{imp:true,ref,kind,acts:kindActs(kind,ref),face:ref!=null&&kind!=='부상'?ref:null}); }
@@ -14430,7 +14438,7 @@ function mgrView(p){ const m=G.mgr[G.user]; if(!m||m.interim||!p||p.team!==G.use
 function mpickPlan(){ const m=G.mgr[G.user]; if(!m||m.interim)return; mgrAttr(m); const P=G.mpick; if(P&&P.y===G.year&&P.mid===m.id)return;
   const cands=domestic(G.user).filter(p=>p.age<=26&&!p.ys&&!(p.joinY>G.year)).map(p=>({p,v:mgrView(p)})).filter(x=>x.v&&!x.v.mute&&x.v.fut-ovr(x.p)>=5).sort((a,b)=>(b.v.fut-ovr(b.p)*.3)-(a.v.fut-ovr(a.p)*.3)).slice(0,2);
   G.mpick={y:G.year,mid:m.id,ids:cands.map(x=>x.p.id),back:null,day:G.day}; if(!cands.length)return;
-  evNew('mpick',`${m.name} 감독이 미는 선수`,`"${cands.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}. 제가 보기엔 ${cands[0].v.line.replace(/[.]$/,'')}. 올해 출전 기회와 훈련을 몰아주고 싶습니다." 감독의 선수 보는 눈(안목) ${m.eye}.`,
+  evNew('mpick',`${m.name} 감독이 미는 선수`,`"${cands.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세)`).join(', ')}. 제가 보기엔 ${cands[0].v.line.replace(/[.]$/,'')}. 올해 출전 기회와 훈련을 몰아주고 싶습니다." 감독의 선수 보는 눈(안목) ${dv(m.eye)}.`,
     [{l:'함께 밀어준다',fx:`올해 이 선수들의 성장 속도가 30% 빨라지고 기분이 오릅니다. 감독 관계 +4. 대신 같은 자리 경쟁자${(()=>{ const L=[]; for(const x of cands)for(const q of playersOf(G.user))if(q!==x.p&&!cands.some(c=>c.p===q)&&q.isP===x.p.isP&&pSlot(q)===pSlot(x.p)&&!q.ys&&!L.includes(q.name))L.push(q.name); return L.length?`(${L.slice(0,3).join('·')}${L.length>3?' 등':''})`:''; })()}는 출전 기회가 줄어 기분이 내려가고, 시즌 중 이 선수를 트레이드하면 감독이 크게 서운해합니다(-6).`},{l:'성적이 먼저다',fx:'변화 없음. 감독 관계 -2.'}],{from:'감독실',ref:cands[0].p.id,data:{ids:cands.map(x=>x.p.id)},def:0,exp:7}); }
 EVH.mpick={ pick(e,i){ const m=G.mgr[G.user]; if(!m)return ''; if(i===0){ G.mpick.back=true; m.rel=clamp(m.rel+4,0,100); for(const id of e.data.ids){ const p=G.players[id]; if(p)p.mor=clamp((p.mor??60)+5,0,100); } const hurt=[]; for(const id of e.data.ids){ const p=G.players[id]; if(!p)continue; for(const q of playersOf(G.user))if(q!==p&&!e.data.ids.includes(q.id)&&q.isP===p.isP&&pSlot(q)===pSlot(p)&&!q.ys){ q.mor=clamp((q.mor??60)-3,0,100); hurt.push(q.name); } } /* 같은 자리 경쟁자는 출전 기회가 줄어 기분이 내려간다 */ return '감독과 함께 밀어주기로 했습니다. 감독 관계 +4.'; } G.mpick.back=false; m.rel=clamp(m.rel-2,0,100); return '감독 관계 -2.'; } };
 function mpickMult(p){ const P=G.mpick; const m=G.mgr[G.user]; return P&&P.back&&P.y===G.year&&P.ids.includes(p.id)&&p.team===G.user&&m&&!m.interim&&(P.mid==null||P.mid===m.id)?1.3:1; } /* 그 감독이 밀던 선수: 감독이 바뀌거나 대행 체제면 끝 */
@@ -16665,7 +16673,7 @@ function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=p
   if(ms>0)S.gift=cwGift(tags);
   S.ord=cwOrdIssue(who); /* 구단주 지시(이미 진행 중이면 새로 내리지 않는다) */
   G.cwS=S; const c=cwSt(); c.hist.push({d:S.day,y:G.year,why,who,res:rec.res,ms,trD:S.trD,rapD:S.rapD,gift:S.gift?S.gift.k:null,tags,ord:S.ord?S.ord.k:null}); if(c.hist.length>40)c.hist.splice(0,c.hist.length-40);
-  const O=cwOrd(); mail(cwFrom(who),`${who==='ceo'?'사장':'구단주'}과 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} 홈경기를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>=0?'+':''}${S.trD} · ${who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD}(${cwRap(who)})${S.gift?`\n${S.gift.t}`:''}\n감독 관계 +1 · 1군 선수단 기분 +1(단장 직관)${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]});
+  const O=cwOrd(); mail(cwFrom(who),`${who==='ceo'?'사장과':'구단주와'} 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} 홈경기를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>=0?'+':''}${S.trD} · ${who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD}(${cwRap(who)})${S.gift?`\n${S.gift.t}`:''}\n감독 관계 +1 · 1군 선수단 기분 +1(단장 직관)${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]});
   return true; }
 /* 함께 본 경기 중 반응: 리드를 잡거나 빼앗긴 순간, 동점, 우리 홈런, 한 번에 3점 이상 내준 순간. 최대 4번, 구단주 성향별 말투(사장은 수익 쪽) */
 const CW_LIVE={
@@ -16736,7 +16744,7 @@ function cwSuggOpts(S){ S=S||G.cwS; if(!S)return []; const mod=cwMod(S); const l
   else { L.push(['ops:1000','운영비 10억 증액 요청',`${od(ownOdds(1000,null))} · 반려되면 신뢰 -1`,noL]);
     const fa=G.fa&&G.fa.open&&!G.fa.closed?G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null).sort((a,b)=>ovr(b)-ovr(a))[0]:null;
     if(fa)L.push(['fa:'+fa.id,`FA ${fa.name} 영입 자금 요청`,`${money(fa.ask.annual)} · ${od(ownOdds(fa.ask.annual,{k:'fa',pid:fa.id}))} · 목적대로 못 쓰면 신뢰 -3`,noL]);
-    const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 -2, 감독 관계 -5`,'']);
+    const m=G.mgr[G.user]; if(m&&!m.interim)L.push(['fire',`${m.name} 감독 교체 건의`,`승인되면 바로 경질하고 구단주가 잔여 연봉 절반을 지원 · ${oddsTxt(cwFireOdds(S))} · 반려되면 신뢰 -2, 감독 관계 -5`,(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]||{w:0,l:0}, gp=r.w+r.l; return gp<20?'시즌 20경기를 치른 뒤 성적을 보고 건의할 수 있습니다':uRank()>=6||m.rel<40||r.w/Math.max(1,gp)<.45?'':'성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과의 갈등(관계 40 미만)이 있을 때 건의할 수 있습니다'; })()]); /* 사용자 피드백 11-05: 새 감독 첫 경기 패배 직후에도 교체 건의가 떴다 */
     if(fac)L.push(['fac:'+fac.k,`대형 투자: ${FACI[fac.k].l} 모기업 투자 요청`,`공사비 ${money(fac.c)} · ${oddsTxt(clamp(capexOdds('fac',fac.c)+mod,.05,.9))} · 보류되면 신뢰 -1`,cwCapexLeft()?'':'시설 투자 요청은 60일에 한 번입니다']); }
   return L; }
 function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||(S.tid!=null&&S.tid!==G.user))return '건의할 수 있는 때가 아닙니다.'; const o=cwSuggOpts(S).find(x=>x[0]===v); if(!o)return '지금은 건의할 수 없는 일입니다.'; if(o[3])return o[3];
@@ -18206,7 +18214,8 @@ function ntDaily(d){ ntState(); for(const k of Object.keys(NT_EV)){ const e=NT_E
     if(d===D(e.from)){ try{ ntMedCheck(N); }catch(err){} for(const id of N.ids){ const p=G.players[id]; if(p){ p.ntFrom=d; p.ntAway=D(e.to); p.e1=false; } } const mine=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
       if(mine.length)addLog(`${e.n} 대표 소집: ${mine.map(p=>p.name).join(', ')} (${dmd(D(e.to))} 복귀)`); }
     if(d===D(e.res)&&!N.res)ntResult(k);
-    if(d===D(e.to)){ const back=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user); if(back.length)mail('운영팀',`${e.n} 대표 선수 복귀`,`${back.map(p=>p.name).join(', ')}이(가) 돌아왔습니다. 1군 엔트리에 다시 등록하세요.`,{kind:'선수'}); } } }
+    if(d===D(e.to)){ const back=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user); for(const t of G.teams){ try{ entryUpgrade(t.id,N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===t.id),'대표팀 복귀'); }catch(err){} }
+      if(back.length){ const off=back.filter(p=>!p.e1); mail('운영팀',`${e.n} 대표 선수 복귀`,`${back.map(p=>p.name).join(', ')}이(가) 돌아왔습니다.${back.some(p=>p.e1)?` 감독이 ${back.filter(p=>p.e1).map(p=>p.name).join(', ')}을(를) 1군에 다시 등록했습니다.`:''}${off.length?`\n${off.map(p=>p.name).join(', ')}은(는) 아직 2군입니다(부상·기용 순위). 필요하면 선수 화면에서 감독에게 콜업을 요청하세요.`:''}`,{kind:'선수',imp:off.length>0}); } } } }
 function ntAnnounce(k){ const e=NT_EV[k]; const M=ntMgr(); const pre=G.ntPre&&G.ntPre.k===k&&G.ntPre.y===G.year?G.ntPre.ids:null; const S=ntSquad(k,null,{only:pre}); G.nt={k,y:G.year,ids:S.map(x=>x.id),wild:S.filter(x=>x.wild).map(x=>x.id),ref:[],res:null};
   const mine=S.map(x=>G.players[x.id]).filter(p=>p.team===G.user); const D=a=>KD(a[0],a[1]);
   for(const p of mine)p.mor=clamp((p.mor??60)+6,0,100);
@@ -19439,7 +19448,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
       <div class="fb-brand"><h1 class="fb-wordmark"><span class="fb-sr">프런트야구</span></h1></div>
       <nav class="fb-menu" aria-label="시작 메뉴">
         ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${m.active}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
-        <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다니다</span>'}</button>
+        <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다</span>'}</button>
         <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>
@@ -20465,7 +20474,7 @@ function mgrBondView(){ const m=G.mgr[G.user]; if(!m||m.interim)return ''; mgrAt
   const dirBox=(k,l,desc,cur)=>{ const x=d[k]; const st=!x?'지시 없음':x.mid!==m.id?'지시 없음':x.ok?'따르는 중':'거부함'; return `<div class="mdir"><div><b>${l} ${hiI(desc+'.')}</b><span class="small muted">감독 본래 ${cur}</span></div><span class="pill ${x&&x.mid===m.id?(x.ok?'good':'bad'):''}">${st}</span>${(()=>{ const w=mgrDirWait(k); return w?`<button class="btn small" disabled title="${esc(w)}">${esc(w)}</button>`:`<button class="btn small ${x&&x.mid===m.id&&x.ok?'':'primary'}" data-a="mgrDir" data-v="${k}:${x&&x.mid===m.id&&x.ok?0:1}">${x&&x.mid===m.id&&x.ok?'지시 해제':'지시하기'}</button>`; })()}</div>`; };
   const P=G.mpick&&G.mpick.y===G.year&&G.mpick.mid===m.id?G.mpick:null; const picks=P?P.ids.map(id=>G.players[id]).filter(Boolean):[];
   const log=(G.mpickLog||[]).filter(x=>x.mid===m.id).slice(0,4);
-  return csec('감독과의 호흡',`<div class="mbond"><div><span class="small muted">관계</span><b class="num" style="color:${relCol(m.rel)}">${m.rel}</b><i>${relLabel(m.rel)}</i></div><div><span class="small muted">선수단 경기력</span><b class="num" style="color:${bo>=0?'var(--good)':'var(--bad)'}">${bo>=0?'+':''}${bo.toFixed(2)}</b><i>관계에서 오는 보정</i></div><div><span class="small muted">선수 보는 눈</span><b class="num" style="color:${rcol(m.eye)}">${m.eye}</b><i>잠재력 예측 오차 ±${Math.max(1.5,9.5-m.eye/10).toFixed(1)}</i></div></div>
+  return csec('감독과의 호흡',`<div class="mbond"><div><span class="small muted">관계</span><b class="num" style="color:${relCol(m.rel)}">${m.rel}</b><i>${relLabel(m.rel)}</i></div><div><span class="small muted">선수단 경기력</span><b class="num" style="color:${bo>=0?'var(--good)':'var(--bad)'}">${bo>=0?'+':''}${bo.toFixed(2)}</b><i>관계에서 오는 보정</i></div><div><span class="small muted">안목(선수 보는 눈)</span><b class="num" style="color:${rcol(m.eye)}">${dv(m.eye)}</b><i>잠재력 예측 오차 ±${Math.max(1.5,9.5-m.eye/10).toFixed(1)}</i></div></div>
     <p class="small muted">관계가 좋을수록 선수단이 더 잘 뛰고(최대 +0.4), 지시를 잘 따르고, 선수 정보에서 감독의 솔직한 잠재력 예측을 볼 수 있습니다(관계 30 미만이면 말을 아낍니다). 관계 78 이상이면 언론에 "호흡 최고" 기사가 나고, 25 이하면 불화설이 돌며 고집 센 감독은 스스로 물러나기도 합니다.</p>
     <div class="eyebrow" style="margin-top:8px">감독이 미는 선수</div>${picks.length?`<div class="intl">${picks.map(p=>`<button class="pill ${P.back?'good':''}" data-a="player" data-v="${p.id}">${esc(p.name)} · ${posLabel(p)} ${p.age}세</button>`).join('')}</div><p class="small">${P.back?'함께 밀어주는 중 · 올해 성장 속도 +30%':P.back===false?'단장이 성적을 우선했습니다':'답변 대기'}</p>`:'<p class="small muted">시즌이 시작되면 감독이 올해 키우고 싶은 젊은 선수를 고릅니다.</p>'}
     ${log.length?`<p class="small muted">지난 안목 기록: ${log.map(x=>`${x.y} ${esc(x.txt)}${x.back?' (함께 밀어줌)':''}`).join(' / ')} (겨울 종합 능력 변화)</p>`:''}
@@ -21672,8 +21681,9 @@ const mailDoneShow=m=>(m.imp||m.kind==='업무'||m.kind==='결정'||(m.acts&&m.a
 function ibAutoRead(){ for(const m of (G.mail||[])){const st=mailStatus(m);if(st&&!m.closed)m.closed=st;if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&st)m.read=true;} }
 function mailDone(m){return !!mailStatus(m);}
 /* 결정할 일: 읽었어도 수락·거절·선택하기 전까지 남는 일(트레이드 제안·결정 이벤트·인터뷰). 마감일 */
-function ibDecide(m){ if(mailDone(m))return false; if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'); }
-function ibDue(m){ if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return null; }
+const ibSpon=m=>/^스폰서 제안/.test(m.subj||'')?((G.spon&&G.spon.off)||[]).filter(x=>x.day===m.day&&x.exp>G.day):null; /* 기한 있는 기회(사용자 피드백 11-05): 3주 안에 답하지 않으면 사라지는 스폰서 제안 */
+function ibDecide(m){ if(mailDone(m))return false; { const sp=ibSpon(m); if(sp)return sp.length>0; } if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'); }
+function ibDue(m){ { const sp=ibSpon(m); if(sp&&sp.length)return Math.min(...sp.map(x=>x.exp)); } if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return null; }
 function ibDecideList(){ return G.mail.filter(ibDecide).sort((a,b)=>(ibDue(a)??1e9)-(ibDue(b)??1e9)); } /* 마감 빠른 순 */
 function mailEvPick(m){ const a=(m.acts||[]).find(x=>x.a==='evPick'); const e=a&&(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e&&e.pick!=null&&e.opts[e.pick]?` · "${e.opts[e.pick].l}"${e.auto?'(기본안)':''}`:''; }
 /* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 일은 뺀다) */
@@ -22550,7 +22560,15 @@ setInterval(()=>{ try{ const c=UI.cast; if(!c||!c.pre||UI.prepManual||Date.now()
 function matchPrepTalk(g){const before=tid=>tlOf(tid).filter(x=>x[5]<g.day),rec=tid=>wlOf(before(tid)),pct=r=>r.w/Math.max(1,r.w+r.l),A=tshort(g.away),H=tshort(g.home),ra=rec(g.away),rh=rec(g.home),out=[];
  const order=G.teams.map(t=>({tid:t.id,r:rec(t.id)})).sort((a,b)=>pct(b.r)-pct(a.r)),rank=tid=>order.findIndex(x=>x.tid===tid)+1;
  const form=(tid,name)=>{const L=before(tid),r=wlOf(L.slice(-5)),s=L.length?Math.sign(L[L.length-1][0]):0;let n=0;for(let i=L.length-1;i>=0&&Math.sign(L[i][0])===s;i--)n++;return `${name} ${r.w}승 ${r.l}패${s&&n>=2?`(${n}연${s>0?'승':'패'})`:''}`;};
- if(/차전/.test(g.kind||''))out.push(`${g.kind} 경기입니다.`);
+ if(/차전/.test(g.kind||'')){ /* 가을야구: 정규시즌 상대 전적 대신 지금 시리즈 전적과 직전 경기 주인공(사용자 피드백 11-05) */
+  const rn=g.kind.replace(/\s*\d+차전.*$/,''),both=x=>[x.home,x.away].includes(g.home)&&[x.home,x.away].includes(g.away);
+  const prev=(G.games||[]).filter(x=>x!==g&&x.day<g.day&&x.kind&&x.kind.startsWith(rn)&&both(x)).sort((a,b)=>a.day-b.day);
+  const win=x=>x.hs>x.as?x.home:x.as>x.hs?x.away:null,wa=prev.filter(x=>win(x)===g.away).length,wh=prev.filter(x=>win(x)===g.home).length;
+  out.push(`${g.kind}입니다. ${prev.length?`시리즈 전적 ${A} ${wa}승, ${H} ${wh}승${wa===wh?'으로 맞서 있습니다':`으로 ${wa>wh?A:H}이(가) 앞서 있습니다`}.`:'시리즈 첫 경기입니다.'}`);
+  const L=prev[prev.length-1]; if(L){ const w=win(L),wk=w===L.home?'h':'a',bat=(L.box[wk]?.bat||[]).slice().sort((a,b)=>((b.h||0)+(b.hr||0)*2+(b.rbi||0))-((a.h||0)+(a.hr||0)*2+(a.rbi||0)))[0],wp=(L.box[wk]?.pit||[]).find(p=>p.d==='승');
+   out.push(`직전 경기는 ${tshort(L.away)} ${L.as} : ${L.hs} ${tshort(L.home)}${w?`, ${tshort(w)} 승리`:', 무승부'}.${bat&&(bat.h||bat.rbi)?` ${bat.n} ${bat.h}안타${bat.hr?` ${bat.hr}홈런`:''}${bat.rbi?` ${bat.rbi}타점`:''}`:''}${wp?`, 승리투수 ${wp.n}`:''}.`); }
+  const sp=side=>{const p=G.players[g.box[side].pit[0]?.id];return p?`${tshort(side==='a'?g.away:g.home)} ${p.name}(${p.th}투)`:null;},pa=sp('a'),ph=sp('h');if(pa&&ph)out.push(`선발 투수는 ${pa}, ${ph}입니다.`);
+  return out; }
  const gp=r=>r.w+r.l+r.t,who=(tid,name,r)=>gp(r)?`${rank(tid)}위 ${name}(${recStr(r)})`:`${name}(시즌 첫 경기)`;
  if(!gp(ra)&&!gp(rh))out.push(`${A}와(과) ${H}, 두 팀 모두 이번 시즌 첫 경기입니다.`);
  else{out.push(`${who(g.away,A,ra)}와(과) ${who(g.home,H,rh)}의 맞대결입니다.`);out.push(`최근 5경기 ${[[g.away,A,ra],[g.home,H,rh]].filter(x=>gp(x[2])).map(x=>form(x[0],x[1])).join(', ')}.`);}
@@ -24740,7 +24758,7 @@ function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=G.finLog||[], s
     ${fmBox('fmd-inc','올해 예상 수입',money(b.I),[],`<div class="fmd-l">${li(b.inc,'--good')}</div><p class="fmd-note">${dmd(finYearEnd())} 결산까지 연간 예상 · 포스트시즌 배당 제외</p>`)}
     ${fmBox('fmd-exp','올해 예상 지출',money(b.E),[],`<div class="fmd-l">${li([...b.exp].sort((x,y)=>y[1]-x[1]),'--warn')}</div>`)}
     ${bud}<section class="card fmd-rule"><h3 class="fmd-h">규정 준수</h3><div class="fmd-rl">${R.map(([l,ok,d])=>`<div class="${ok?'ok':'ng'}"><b>${l} <span class="pill ${ok?'good':'bad'}">${ok?'준수':/하한/.test(l)?'미달':'초과'}</span></b><p>${d}</p></div>`).join('')}</div></section></div>`; }
-function fBudgetTag(cost){ const b=budget(); if(cost<=b.fRoom)return '<span class="pill good" title="외국인 배정 예산(시즌 전에 따로 떼어 둔 돈) 안에서 씁니다. 그래서 홈의 예산 여유는 줄지 않습니다">배정 예산 안 · 예산 여유 그대로</span>'; const ex=cost-b.fRoom; return b.roomGoal>=ex?`<span class="pill warn" title="외국인 배정 예산을 넘는 ${money(ex)}은 일반 예산에서 씁니다">배정 예산 초과 ${money(ex)} · 일반 예산 사용</span>`:b.roomMax>=ex?`<span class="pill warn">예산 초과 ${money(ex)}</span>`:'<span class="pill bad">자금 부족</span>'; }
+function fBudgetTag(cost){ const b=budget(); if(cost<=b.fRoom)return '<span class="pill good" title="보장액(계약금+연봉)은 외국인 배정 예산(시즌 전에 따로 떼어 둔 돈) 안에서 씁니다. 인센티브는 달성할 것으로 보고 일반 예산의 계약 옵션(예상) 항목에 잡혀서, 계약하면 홈의 예산 여유가 그만큼 줄어듭니다">보장액은 배정 예산 안 · 인센티브는 일반 예산</span>'; const ex=cost-b.fRoom; return b.roomGoal>=ex?`<span class="pill warn" title="외국인 배정 예산을 넘는 ${money(ex)}은 일반 예산에서 씁니다">배정 예산 초과 ${money(ex)} · 일반 예산 사용</span>`:b.roomMax>=ex?`<span class="pill warn">예산 초과 ${money(ex)}</span>`:'<span class="pill bad">자금 부족</span>'; }
 function budgetTag(cost){ const b=budget(); if(b.roomGoal>=cost)return `<span class="pill good">올해 부담 ${money(cost)} · 예산 안</span>`; if(b.roomCap>=cost||b.roomMax>=cost)return `<span class="pill warn">올해 부담 ${money(cost)} · 구단주 목표 초과</span>`; return `<span class="pill bad">올해 부담 ${money(cost)} · 자금 부족</span>`; }
 
 /* 분석 화면: 관측·모형 추정·미집계 항목의 근거를 구분한다. */
@@ -25403,7 +25421,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
-  watchNext(){ G.simPlanned=null; const next=nextGames(1)[0];if(next)G.watchPlanned={day:next.d};UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; UI._castHold=1; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length){ UI._castHold=1; A.cast(G.res.i); } }, /* hold: 방금 계산한 우리 경기라 중계를 마칠 때까지 결과를 감춘다(spoilG) */
+  watchNext(){ G.simPlanned=null; const next=nextGames(1)[0];if(next)G.watchPlanned={day:next.d};UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); { const g0=G.res&&G.games[G.res.i]; if(G.cwS&&!G.cwS.done&&g0&&G.cwS.day===g0.day&&g0.pbp&&g0.pbp.length)UI.cwAuto=G.cwS.id; } /* 함께 본 경기: 중계를 먼저 보고, 닫을 때 동석 결과(사용자 피드백 11-05: 결과가 중계보다 먼저 떴다) */ setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; UI._castHold=1; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length){ UI._castHold=1; A.cast(G.res.i); } }, /* hold: 방금 계산한 우리 경기라 중계를 마칠 때까지 결과를 감춘다(spoilG) */
   smon(v){ UI.smon=+v; render(); },
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },
@@ -27834,6 +27852,17 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05ao',d:'11월 5일',t:'카페 플레이 리뷰 반영',items:[
+    '대표팀에서 돌아온 선수는 감독이 1군 엔트리에 다시 등록합니다. 포스트시즌이 시작될 때도 가장 강한 엔트리로 맞춥니다. 그래도 2군에 남은 선수가 있으면 복귀 소식에 따로 알립니다.',
+    '가을야구 경기 전 해설은 정규시즌 상대 전적 대신 지금 시리즈 전적과 직전 경기 활약 선수·승리투수를 먼저 말합니다.',
+    '구단주와 함께 본 경기는 중계를 먼저 보고, 중계를 닫으면 구단주 반응과 건의로 이어집니다.',
+    '감독 교체 건의는 시즌 20경기 뒤, 성적 부진(6위 아래·승률 4할 5푼 미만)이나 감독과의 갈등이 있을 때만 할 수 있습니다.',
+    '감독 안목은 후보 카드·감독 화면·추천 사건에서 같은 100점 척도로 보여 줍니다.',
+    '외국인 후보의 예산 표시를 고쳤습니다: 보장액은 외국인 배정 예산에서, 인센티브는 일반 예산의 계약 옵션(예상)에서 나가 예산 여유가 그만큼 줄어듭니다.',
+    '스폰서 제안은 3주 안에 답하지 않으면 사라지는 일이라 결정할 일(마감 순)에 셉니다.',
+    '2주 지난 일반 보고는 읽은 것으로 접습니다. 중요한 소식과 답할 일은 그대로 남습니다.',
+    '슬럼프 사건 본문의 최근 10경기 기록에 기준 날짜를 붙였습니다(선수 상세는 오늘 기준).',
+    '오타 수정: 처음 화면 문구, 구단주와 함께 본 경기 제목.']},
   {id:'2026-11-05an',d:'11월 5일',t:'부실 구단 매각·재창단',items:[
     '다른 구단이 시즌 결산 뒤 40억 넘는 적자를 2년 넘게 이어 가면 KBO가 개입합니다. 새 모기업이 인수(매각)하거나, 투자사가 세운 신생 구단이 선수단을 그대로 이어받아 재창단합니다(실제: 해태→KIA, 현대→히어로즈).',
     '선수단·구장·구단 이름은 그대로이고, 구단주·단장이 바뀌며 빚이 정리됩니다. 리그 소식과 뉴스로 알려 줍니다.']},

@@ -36,6 +36,7 @@ function seasonEnd(){
   const st=standingsNow(); const s=st.map(x=>x.tid);
   stop('일정',`정규시즌이 끝났습니다. 우리 구단 ${st.findIndex(x=>x.tid===G.user)+1}위. 1위 ${tname(s[0])}.`);
   G.ps={seeds:s.slice(0,5),order:st,res:{},round:'wc',done:false};
+  for(const x of s.slice(0,5)){ try{ entryUpgrade(x.tid??x,playersOf(x.tid??x).filter(canUp),'포스트시즌 최정예'); }catch(e){} } /* 가을야구는 가장 강한 엔트리로 */
   /* KBO: 1위·5위가 승률 같으면 결정전 한 경기(상대 전적 우위 팀 홈). 그 밖의 순위는 상대 전적·다득점으로 정한다 */
   const tbq=[]; if(pctEq(st[0],st[1]))tbq.push([0,s[0],s[1]]); if(st.length>5&&pctEq(st[4],st[5]))tbq.push([4,s[4],s[5]]); G.ps.tbq=tbq;
   if(tbq.length){ const q=tbq.shift(); G.ps.round='tb'; G.ps.tbPos=q[0]; G.ps.cur=mkSeries('tb',q[1],q[2],G.day+1); note('일정',`${q[0]+1}위 결정전: ${tname(q[1])} - ${tname(q[2])} (${tshort(q[1])} 홈)`); }

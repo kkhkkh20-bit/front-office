@@ -23,7 +23,15 @@ setInterval(()=>{ try{ const c=UI.cast; if(!c||!c.pre||UI.prepManual||Date.now()
 function matchPrepTalk(g){const before=tid=>tlOf(tid).filter(x=>x[5]<g.day),rec=tid=>wlOf(before(tid)),pct=r=>r.w/Math.max(1,r.w+r.l),A=tshort(g.away),H=tshort(g.home),ra=rec(g.away),rh=rec(g.home),out=[];
  const order=G.teams.map(t=>({tid:t.id,r:rec(t.id)})).sort((a,b)=>pct(b.r)-pct(a.r)),rank=tid=>order.findIndex(x=>x.tid===tid)+1;
  const form=(tid,name)=>{const L=before(tid),r=wlOf(L.slice(-5)),s=L.length?Math.sign(L[L.length-1][0]):0;let n=0;for(let i=L.length-1;i>=0&&Math.sign(L[i][0])===s;i--)n++;return `${name} ${r.w}승 ${r.l}패${s&&n>=2?`(${n}연${s>0?'승':'패'})`:''}`;};
- if(/차전/.test(g.kind||''))out.push(`${g.kind} 경기입니다.`);
+ if(/차전/.test(g.kind||'')){ /* 가을야구: 정규시즌 상대 전적 대신 지금 시리즈 전적과 직전 경기 주인공(사용자 피드백 11-05) */
+  const rn=g.kind.replace(/\s*\d+차전.*$/,''),both=x=>[x.home,x.away].includes(g.home)&&[x.home,x.away].includes(g.away);
+  const prev=(G.games||[]).filter(x=>x!==g&&x.day<g.day&&x.kind&&x.kind.startsWith(rn)&&both(x)).sort((a,b)=>a.day-b.day);
+  const win=x=>x.hs>x.as?x.home:x.as>x.hs?x.away:null,wa=prev.filter(x=>win(x)===g.away).length,wh=prev.filter(x=>win(x)===g.home).length;
+  out.push(`${g.kind}입니다. ${prev.length?`시리즈 전적 ${A} ${wa}승, ${H} ${wh}승${wa===wh?'으로 맞서 있습니다':`으로 ${wa>wh?A:H}이(가) 앞서 있습니다`}.`:'시리즈 첫 경기입니다.'}`);
+  const L=prev[prev.length-1]; if(L){ const w=win(L),wk=w===L.home?'h':'a',bat=(L.box[wk]?.bat||[]).slice().sort((a,b)=>((b.h||0)+(b.hr||0)*2+(b.rbi||0))-((a.h||0)+(a.hr||0)*2+(a.rbi||0)))[0],wp=(L.box[wk]?.pit||[]).find(p=>p.d==='승');
+   out.push(`직전 경기는 ${tshort(L.away)} ${L.as} : ${L.hs} ${tshort(L.home)}${w?`, ${tshort(w)} 승리`:', 무승부'}.${bat&&(bat.h||bat.rbi)?` ${bat.n} ${bat.h}안타${bat.hr?` ${bat.hr}홈런`:''}${bat.rbi?` ${bat.rbi}타점`:''}`:''}${wp?`, 승리투수 ${wp.n}`:''}.`); }
+  const sp=side=>{const p=G.players[g.box[side].pit[0]?.id];return p?`${tshort(side==='a'?g.away:g.home)} ${p.name}(${p.th}투)`:null;},pa=sp('a'),ph=sp('h');if(pa&&ph)out.push(`선발 투수는 ${pa}, ${ph}입니다.`);
+  return out; }
  const gp=r=>r.w+r.l+r.t,who=(tid,name,r)=>gp(r)?`${rank(tid)}위 ${name}(${recStr(r)})`:`${name}(시즌 첫 경기)`;
  if(!gp(ra)&&!gp(rh))out.push(`${A}와(과) ${H}, 두 팀 모두 이번 시즌 첫 경기입니다.`);
  else{out.push(`${who(g.away,A,ra)}와(과) ${who(g.home,H,rh)}의 맞대결입니다.`);out.push(`최근 5경기 ${[[g.away,A,ra],[g.home,H,rh]].filter(x=>gp(x[2])).map(x=>form(x[0],x[1])).join(', ')}.`);}

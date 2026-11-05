@@ -146,7 +146,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
       <div class="fb-brand"><h1 class="fb-wordmark"><span class="fb-sr">프런트야구</span></h1></div>
       <nav class="fb-menu" aria-label="시작 메뉴">
         ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${m.active}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
-        <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다니다</span>'}</button>
+        <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다</span>'}</button>
         <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>
