@@ -20,7 +20,7 @@ function stripBar(){ // 지난 3경기 + 다음 2경기
 function nextCard(){
   const per=period(); if(per!=='season'&&per!=='post'&&per!=='pre')return '';
   const L=nextGames(6); if(!L.length)return '';
-  const x=L[0]; const {order,live}=standOrder(); const ri=order.findIndex(o=>o.tid===x.op)+1; const r=G.sea.rec[x.op];
+  const x=L[0]; const {order,live}=standOrder(); const ri=live?tieRank(order,x.op):order.findIndex(o=>o.tid===x.op)+1; const r=G.sea.rec[x.op];
   const hh=h2hOf(G.user,x.op); const l10=l10Of(x.op); const dd=x.d-G.day;
   const mySP=x.ps?null:(projStarters(G.user,1)[0]||{}).sp, thSP=x.ps?null:oppSP(x.op,x.d);
   const spc=(p,tid)=>`<button class="nsp" ${p?`data-a="player" data-v="${p.id}"`:''}>${p?avImg(p):'<span class="av ini">?</span>'}<span><i>${badge(tid,14)} ${tshort(tid)} 예상 선발</i><b>${p?esc(p.name):'미정'}</b><em>${spLine(p)}</em></span></button>`;

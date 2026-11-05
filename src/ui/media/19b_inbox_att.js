@@ -13,8 +13,8 @@ function ibdPlayersIn(m,skip){ const s=ibdTxt(m), seen=new Set(), L=[];
   const all=Object.values(G.players).filter(p=>p.name&&p.name.length>=2&&p.id!==skip&&(p.team!=null||p.foreign||p.watch)).sort((a,b)=>(b.team===G.user)-(a.team===G.user));
   for(const p of all){ if(seen.has(p.name)||!s.includes(p.name))continue; seen.add(p.name); L.push(p); if(L.length>=8)break; }
   return L; }
-function ibdPlayers(L){ return ibdSec(`소식에 나온 선수 <em>${L.length}명</em>`,`<table class="ibd-t"><thead><tr><th>선수</th><th>소속</th><th>포지션</th><th>나이</th><th>종합</th><th>올해 1군</th></tr></thead><tbody>${L.map(p=>{ const o=ibdOvr(p);
-    return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${p.team!=null?badge(p.team,14)+' '+esc(team(p.team).nick):'-'}</td><td>${esc(posLabel(p))}</td><td>${p.age}</td><td><b style="color:${o!=null?rcol(o):'var(--muted)'}">${o!=null?dv(o):'?'}</b></td><td class="small">${esc(statLine(seasonTotal(p,G.year,'1군'),p))}</td></tr>`; }).join('')}</tbody></table>`,'ibd-wide'); }
+function ibdPlayers(L){ const sy=period()!=='season'&&period()!=='post'&&dobj(G.day).m<=3?G.year-1:G.year; /* 겨울(1~3월)에는 지난 시즌 기록: 연봉조정 근거(사용자 피드백 11-05) */ return ibdSec(`소식에 나온 선수 <em>${L.length}명</em>`,`<table class="ibd-t"><thead><tr><th>선수</th><th>소속</th><th>포지션</th><th>나이</th><th>종합</th><th>${sy===G.year?'올해':sy+'년'} 1군</th></tr></thead><tbody>${L.map(p=>{ const o=ibdOvr(p);
+    return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button></td><td>${p.team!=null?badge(p.team,14)+' '+esc(team(p.team).nick):'-'}</td><td>${esc(posLabel(p))}</td><td>${p.age}</td><td><b style="color:${o!=null?rcol(o):'var(--muted)'}">${o!=null?dv(o):'?'}</b></td><td class="small">${esc(statLine(seasonTotal(p,sy,'1군'),p))}</td></tr>`; }).join('')}</tbody></table>`,'ibd-wide'); }
 /* 수비 배치: 세로로 본 구장 위에 선발 야수(타순 번호), 옆에 선발진·불펜 */
 function ibdForm(tid,title){ const d=depth(tid), ord=new Map(d.start.map((p,i)=>[p.id,i+1]));
   const dot=(p,x,y,lab)=>{ if(!p)return ''; const o=ibdOvr(p), r=11;

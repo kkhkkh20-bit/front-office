@@ -27,7 +27,7 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
   </div></div>`; }
 function teamCard(t){
   const live=period()==='season'||period()==='post'; const st=live?standingsNow():(G.history[G.history.length-1]||{}).order||[];
-  const rk=st.findIndex(o=>o.tid===t.id)+1; const rec=st.find(o=>o.tid===t.id);
+  const rk=tieRank(st,t.id); const rec=st.find(o=>o.tid===t.id);
   const top=playersOf(t.id).map(p=>({p,v:ovr(p)})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p);
   const m=G.mgr[t.id]; const ci=capInfo(t.id); const me=t.id===G.user;
   return `<div class="tcard teamc${me?' me':''}" data-a="${me?'tab':'lteam'}" data-v="${me?'roster':t.id}" role="button" tabindex="0" style="--th:${tpal(t)[0]}">

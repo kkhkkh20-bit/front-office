@@ -1,6 +1,6 @@
 /* ---------- 단장 프로필: 새 게임에서 이름·나이·출신·얼굴을 정하고, 사이드바 '단장 프로필'에서 본다 ---------- */
 function gpDefault(){ let n='김단장'; try{ n=genName(); }catch(e){} return {name:n,age:42,bg:'corp',female:false,face:'gm'+Math.floor(Math.random()*1e6)}; }
-function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:(G&&G.gmP===P?meAge():null)||P.age||42,female:!!P.female,name:P.name||'단장',mod:P.mod||null}; }
+function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:(G&&G.gmP===P?meAge():null)||P.age||42,female:!!P.female,name:P.name||'단장',mod:P.mod||null,img:P.img||null}; }
 /* 얼굴 꾸미기: 후보 12개 중에서 고르고, 부위(머리·머리색·수염·안경·표정)를 하나씩 바꾼다 */
 const GP_PART={hair:{l:'머리',m:['short','short2','short3','crop','crop-fade','crop-fade2','short-fade','short-fade-2','middle-part','parted','messy','messy-short','spike','spike2','juice','high','tall-fade','faux-hawk','shortBangs','short-bald','curly','curly2','afro'],f:['female1','female2','female3','female4','female5','female6','female7','female8','female9','female10','female11','female12','longHair','shortBangs','middle-part','parted']},
   hc:{l:'머리색',m:['#1a1a1a','#2b1d14','#4a3121','#6b4a2b','#8a6a43','#6e6e6e','#a7a7a7','#d0d0d0']},
@@ -9,10 +9,10 @@ const GP_PART={hair:{l:'머리',m:['short','short2','short3','crop','crop-fade',
   mouth:{l:'표정',m:['smile-closed','smile','smile2','closed','straight','side']}};
 function gpPartList(k,g){ const P=GP_PART[k]; return (g.female&&P.f)?P.f:P.m; }
 function gpSync(){ const g=UI.gp=UI.gp||gpDefault(); const n=document.getElementById('gp-name'), a=null; if(n)g.name=n.value.trim().slice(0,10); return g; }
-function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'staff',pid:g.face,age:g.age,female:g.female,name:g.name,mod:g.mod||null}; const M=g.mod||{};
+function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'staff',pid:g.face,age:g.age,female:g.female,name:g.name,mod:g.mod||null,img:g.img||null}; const M=g.mod||{};
   const seeds=UI.gpSeeds&&UI.gpSeeds.f===!!g.female?UI.gpSeeds.L:(UI.gpSeeds={f:!!g.female,L:Array.from({length:12},()=>'gm'+Math.floor(Math.random()*1e6))}).L;
   const parts=Object.keys(GP_PART).filter(k=>gpPartList(k,g).length>1).map(k=>{ const L=gpPartList(k,g); const i=M[k]!=null?L.indexOf(M[k]):-1; return `<div class="gpp"><span>${GP_PART[k].l}</span><button class="btn small" data-a="gpPart" data-v="${k}:-1" aria-label="이전">◀</button><b>${i<0?'기본':`${i+1}/${L.length}`}</b><button class="btn small" data-a="gpPart" data-v="${k}:1" aria-label="다음">▶</button></div>`; }).join('');
-  return `<div class="gpf"><div class="gpf-face">${avImg(av,true)}<div class="gpps">${parts}</div>${g.mod?'<button class="lnk small" data-a="gpPartReset">꾸민 것 되돌리기</button>':''}</div><div class="gpf-in">
+  return `<div class="gpf"><div class="gpf-face">${avImg(av,true)}<div class="row gp-up"><label class="btn small">내 사진 넣기<input type="file" accept="image/*" data-gpimg hidden></label>${g.img?'<button class="btn small" data-a="gpImgDel">사진 지우기</button>':''}</div><div class="gpps">${g.img?'':parts}</div>${g.mod?'<button class="lnk small" data-a="gpPartReset">꾸민 것 되돌리기</button>':''}</div><div class="gpf-in">
     <label class="small">이름<input id="gp-name" type="text" maxlength="10" value="${esc(g.name||'')}" placeholder="단장 이름" autocomplete="off"></label>
     <div class="small gp-age">나이 <button class="btn small" data-a="gpAge" data-v="-5">−5</button><button class="btn small" data-a="gpAge" data-v="-1">−1</button><b>${g.age}세</b><button class="btn small" data-a="gpAge" data-v="1">+1</button><button class="btn small" data-a="gpAge" data-v="5">+5</button></div>
     <div class="small">성별</div><div class="chips"><button data-a="gpSex" data-v="m" class="${g.female?'':'on'}">남</button><button data-a="gpSex" data-v="f" class="${g.female?'on':''}">여</button></div>
@@ -54,7 +54,7 @@ Object.assign(A,{
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
-  gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; render(); },
+  gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; delete g.img; render(); },
   gpPart(v){ const g=gpSync(); const [k,d]=String(v).split(':'); const L=gpPartList(k,g); g.mod=g.mod||{}; const i=g.mod[k]!=null?L.indexOf(g.mod[k]):-1; g.mod[k]=L[((i<0?(+d>0?-1:0):i)+ +d+L.length)%L.length]; render(); },
   gpPartReset(){ const g=gpSync(); delete g.mod; render(); },
   gpSex(v){ const g=gpSync(); g.female=v==='f'; g.face='gm'+Math.floor(Math.random()*1e6); delete g.mod; UI.gpSeeds=null; render(); },
@@ -63,7 +63,7 @@ Object.assign(A,{
   gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; if(!UI.newSlot&&!SLOT_IDS.some(n=>!meta().slots[n])){ UI.gpMsg=`저장 슬롯 ${SLOTS}개가 모두 찼습니다. 처음 화면 → 불러오기에서 덮어쓸 슬롯의 '덮어쓰고 새 게임'을 누르거나 슬롯 하나를 지운 뒤 다시 시작하세요. 정한 단장 정보는 그대로 남겨 둡니다.`; render(); return; } /* 슬롯이 없으면 얼굴·이름을 지우지 않고 알린다(전에는 조용히 멈추고 얼굴만 새로 뽑혔다) */
     UI.gp=null; const ok=A.startGo(UI.pickT); if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age}); }catch(e){} } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
-  gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,female:g.female,face:g.face,mod:g.mod||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
+  gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,female:g.female,face:g.face,mod:g.mod||null,img:g.img||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
   gmSuccAsk(){ UI.gsucc=!UI.gsucc; UI.gp=UI.gsucc?gpDefault():null; UI.gpMsg=''; render(); },
   gmSuccGo(){ const g=gpSync(); const r=gmSucceed({...g}); if(r){ UI.gpMsg=r; render(); return; } UI.gsucc=false; UI.gp=null; save(); render(); toast(`${G.gmP.name} 단장이 취임했습니다.`); },
   resignAsk(){ UI.rsAsk=!UI.rsAsk; render(); },
@@ -75,3 +75,9 @@ Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });
 
 /* 드래프트 상황판(휴대폰): 맡기기 메뉴 열기·상황판 접기 */
 Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??false); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
+
+/* 단장 사진을 갤러리에서(사용자 요청 11-05): 가운데를 정사각형으로 잘라 256px JPEG로 줄여 저장에 넣는다(약 20KB). 서버로 보내지 않는다 */
+Object.assign(A,{ gpImgDel(){ const g=gpSync(); delete g.img; render(); } });
+document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||!el.matches('[data-gpimg]')||!el.files||!el.files[0])return; const f=el.files[0]; if(!/^image\//.test(f.type)){ toast('사진 파일만 넣을 수 있습니다.'); return; }
+  const url=URL.createObjectURL(f), im=new Image(); im.onload=()=>{ try{ const s=Math.min(im.naturalWidth,im.naturalHeight), c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d'); x.imageSmoothingQuality='high'; x.drawImage(im,(im.naturalWidth-s)/2,Math.max(0,(im.naturalHeight-s)*.3),s,s,0,0,256,256); /* 세로 사진은 얼굴이 있는 위쪽을 조금 더 */
+      const g=gpSync(); g.img=c.toDataURL('image/jpeg',.85); render(); }catch(err){ toast('사진을 읽지 못했습니다.'); } URL.revokeObjectURL(url); }; im.onerror=()=>{ URL.revokeObjectURL(url); toast('사진을 읽지 못했습니다.'); }; im.src=url; });

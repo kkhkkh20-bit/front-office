@@ -5,8 +5,8 @@
 const ARB_SVC=3;
 function salBasis(p){ const yh=G.contract&&G.contract.y!=null?G.contract.y:(dobj(G.day).m<=2?G.year-1:G.year);
   const hh=seasonTotal(p,yh,'1군'); const enough=hh&&(p.isP?hh.outs>=75:hh.pa>=120); const war=hh?warOf(hh,p):0;
-  const cap=war<=0?0:Math.round(clamp(war*.4,.03,1.9)*100);
-  const band=!enough?'1군 표본 부족':war>=5?'리그 정상급':war>=3?'주전 핵심':war>=2?'주전급':war>=1?'쏠쏠한 활약':war>0?'기여 적음':'부진';
+  const cap=!enough?15:war<=0?0:Math.round(clamp(war*.4,.03,1.9)*100); /* 표본이 적으면 newSalary처럼 1군·2군 기여로 최대 +15%(사용자 피드백 11-05: 상한 +0%인데 인상) */
+  const band=!enough?'1군 표본 부족 · 2군 기여 반영':war>=5?'리그 정상급':war>=3?'주전 핵심':war>=2?'주전급':war>=1?'쏠쏠한 활약':war>0?'기여 적음':'부진';
   return {h:hh,war,enough,band,cap,ref:round5(marketSal(ovr(p)+pvShift(p))*nonFaF(p,false))}; }
 /* 선수 요구액: 깎는 안이면 동결 쪽을, 잘했으면 산정안보다 조금 더(야망이 클수록 더) 원한다 */
 function salAsk(p,off){ const b=salBasis(p); initPers(p); const amb=p.pers.amb;
@@ -39,9 +39,9 @@ function salArbDecide(){ const C=G.contract; if(!C||!C.neg)return; const out=[];
     n.st='ok'; p.newSal=v; p.mor=clamp((p.mor??60)+(win?3:-8),0,100); out.push(`${p.name}: ${win?'선수 승리':'구단 승리'} ${money(v)}`); story(p,`연봉조정 ${win?'승리':'패배'} (${money(v)})`,'move'); }
   if(out.length)mail('운영팀','연봉조정위원회 결정',`${out.join('\n')}\n\n조정에서 진 선수는 서운함이 남아 기분이 크게 떨어집니다.`,{kind:'연봉',acts:[{l:'연봉 협상 보기',a:'go',v:'transfer:contract'}]}); }
 /* 일괄 확정 미리보기: 실제 확정(confirmContracts→salTalkClose)과 같은 규칙. 합의·제시액으로 정해지는 선수(fix)와 연봉조정 중이라 확정 순간 결과가 갈리는 선수(arb: 구단안/선수안)를 나눈다 */
-function confirmPreview(){ const C=G.contract; if(!C)return null; const own=id=>{ const p=G.players[id]; return p&&p.team===G.user; }; const fix=[], arb=[];
-  for(const id of (C.ended||[]).filter(own)){ const p=G.players[id]; const n=C.neg&&C.neg[id]; if(n&&n.st==='arb'&&n.arb){ arb.push({p,from:p.sal,club:n.arb.club,player:n.arb.player}); continue; } const to=n&&n.st==='open'?(n.cur??n.off):p.newSal; if(to==null)continue; fix.push({p,from:p.sal,to:Math.max(MIN_SAL,to)}); }
-  const dFix=sum(fix.map(x=>x.to-x.from)); return {fix,arb,dFix,dArbLo:sum(arb.map(x=>x.club-x.from)),dArbHi:sum(arb.map(x=>x.player-x.from))}; }
+function confirmPreview(){ const C=G.contract; if(!C)return null; const own=id=>{ const p=G.players[id]; return p&&p.team===G.user; }; const fix=[], arb=[], hold=[];
+  for(const id of (C.ended||[]).filter(own)){ const p=G.players[id]; const n=C.neg&&C.neg[id]; if(n&&n.st==='arb'&&n.arb){ arb.push({p,from:p.sal,club:n.arb.club,player:n.arb.player}); continue; } const to=n&&n.st==='open'?(n.cur??n.off):p.newSal; if(to==null)continue; if(n&&n.st==='open'&&n.ask>to*HOLD_GAP){ hold.push({p,from:p.sal,to:Math.max(MIN_SAL,to),ask:n.ask}); continue; } /* 확정 때 사인을 거부할 선수(salTalkClose와 같은 기준) */ fix.push({p,from:p.sal,to:Math.max(MIN_SAL,to)}); }
+  const dFix=sum(fix.map(x=>x.to-x.from)); return {fix,arb,hold,dFix,dArbLo:sum(arb.map(x=>x.club-x.from)),dArbHi:sum(arb.map(x=>x.player-x.from))}; }
 /* 마감(확정): 남은 선수는 구단의 마지막 제시액에 사인한다. 조정 중이면 바로 결정한다 */
 function salTalkClose(){ const C=G.contract; if(!C||!C.neg)return; if(Object.values(C.neg).some(n=>n.st==='arb'))salArbDecide();
   for(const id of Object.keys(C.neg)){ const n=C.neg[id]; const p=G.players[id]; if(!p||p.team!==(C.tid??G.user)||n.st!=='open')continue; const v=n.cur??n.off;

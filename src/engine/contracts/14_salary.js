@@ -138,7 +138,7 @@ function ctInfo(p){ if(!p||!p.faC)return null; const left=Math.max(1,p.yrs||1); 
   tot=Math.max(tot,left); return {tot,k:tot-left+1,left,last:left===1}; }
 /* FA 자격까지 남은 시즌 수(이번 시즌 포함): 등록 연수와 재자격(직전 FA 회차 후 4시즌) 중 늦은 쪽. 계약 만료와는 다르다(FA 계약은 ctInfo) */
 function faLeft(p){ const n=Math.max(0,faSvc(p)-(p.svc||0)); const re=p.lastFA!=null?p.lastFA+4-ctSeason()+1:0; return Math.max(1,n,re); }
-function ctText(p){ const c=ctInfo(p); if(c){ const kind=p.ext?'다년':'FA'; const ox=(ctOn(p)&&p.cOpt&&!p.cOpt.used?` · 구단 옵션 ${p.cOpt.y}년`:'')+(ctOn(p)&&p.pOut&&!p.pOut.used?` · ${p.pOut.y}시즌 뒤 옵트아웃`:''); return (c.tot===1?`${kind} 1년 계약`:c.last?`${kind} ${c.tot}년 중 마지막 해`:`${kind} ${c.tot}년 중 ${c.k}년차`)+ox; }
+function ctText(p){ if(G.fa&&(G.fa.pool||[]).includes(p.id)&&!p.faC&&!p.ext&&(p.team==null||!G.fa.closed))return p.team==null?'FA 미계약':'FA 신분 · 협상 중'; /* 지금 FA인 선수를 다음·올 시즌 뒤 FA로 보이던 것(사용자 피드백 11-05) */ const c=ctInfo(p); if(c){ const kind=p.ext?'다년':'FA'; const ox=(ctOn(p)&&p.cOpt&&!p.cOpt.used?` · 구단 옵션 ${p.cOpt.y}년`:'')+(ctOn(p)&&p.pOut&&!p.pOut.used?` · ${p.pOut.y}시즌 뒤 옵트아웃`:''); return (c.tot===1?`${kind} 1년 계약`:c.last?`${kind} ${c.tot}년 중 마지막 해`:`${kind} ${c.tot}년 중 ${c.k}년차`)+ox; }
   if(p.extNext)return `다년 ${p.extNext.years}년 합의`; if(p.foreign)return '1년 계약';
   const n=Math.max(0,faSvc(p)-(p.svc||0)); const off=G.rolled===G.year;
   /* 등록 연수를 채운 선수: 재자격(직전 FA 후 4시즌)이 남았으면 그만큼, 아니면 이번(다음) 시즌 뒤 */

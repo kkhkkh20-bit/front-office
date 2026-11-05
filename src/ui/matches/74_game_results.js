@@ -25,7 +25,7 @@ function wkPlayers(D){ if(!D||!D.snap)return {hot:[],cold:[]}; const rows=[];
   return {hot,cold}; }
 function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.length){ UI.wkres=null; return ''; }
   const w=gs.filter(x=>x.g.res==='승').length, l=gs.filter(x=>x.g.res==='패').length, t=gs.length-w-l;
-  const st=(()=>{ try{ return standingsNow(); }catch(e){ return []; } })(); const rk=st.findIndex(x=>x.tid===G.user)+1; const me=st[rk-1], top=st[0];
+  const st=(()=>{ try{ return standingsNow(); }catch(e){ return []; } })(); const ri=st.findIndex(x=>x.tid===G.user), rk=tieRank(st,G.user); const me=st[ri], top=st[0];
   const gb=me&&top&&rk>1?((top.w-me.w)+(me.l-top.l))/2:0; const post=gs.some(x=>/차전/.test(x.g.kind||''));
   const D=G.dig&&G.dig.from===R.from&&G.dig.to===R.to?G.dig:null; const {hot,cold}=wkPlayers(D);
   const rkLine=post?'':R.rk0&&rk?(rk<R.rk0?`${R.rk0}위 → <b class="good">${rk}위</b>`:rk>R.rk0?`${R.rk0}위 → <b class="bad">${rk}위</b>`:`${rk}위 유지`):rk?`${rk}위`:'';
