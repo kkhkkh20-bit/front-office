@@ -23,7 +23,7 @@ function homeWorkspace(){
   const device=innerWidth>=1100?'desktop':innerWidth>=700?'tablet':'mobile';
   const cols=device==='desktop'?3:device==='tablet'?2:1;
   const reserved=device==='desktop'?280:device==='tablet'?290:320;
-  const rows=innerHeight-reserved>=440?2:1,size=cols*rows,view=UI.homePanel||'overview',t=team(G.user);
+  const rows=device==='mobile'?(innerHeight>=560?3:2):innerHeight-reserved>=440?2:1, /* 휴대폰은 한 화면에 카드 3장(사용자 11-05) */size=cols*rows,view=UI.homePanel||'overview',t=team(G.user);
   const work=view==='work'?[todoCard(),champHomeCard(),cerHomeCard(),resultHome(),digestCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean):[];
   const raw=view==='work'?work:view==='team'?[myLeaders(),formCard(),clubCard(),deskCard()].filter(Boolean):[];UI.homeCards=raw;
   const overview=view==='overview'?[homeMatchPanel(),`<section class="hw-panel hw-todo"><header><h2>오늘 할 일</h2><button class="tc-i" data-a="homePanel" data-v="work">업무 전체</button></header>${todoCard(2,true)}</section>`,homeStandingPanel(),homeNewsPanel(),`<section class="hw-panel hw-upcoming"><header><h2>다가오는 일정</h2><button class="tc-i" data-a="calOpen">달력</button></header>${upcomingGames(3)||calUpRows(calUpcomingList(6,120))||'<p class="hw-hint">시즌 일정이 확정되면 표시합니다.</p>'}</section>`,homeFinancePanel()]:[];

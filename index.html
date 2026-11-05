@@ -4166,6 +4166,9 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 /* 홈 다음 경기 칸: 시즌 끝 결산 */
 .hw-season{display:grid;gap:6px;padding:4px 10px}.hw-season .hw-hint{padding:0}.hw-season>b{font-size:18px}.hw-season ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:13px}.hw-season li i{font-style:normal;color:var(--muted);margin-right:4px}
 .hw-upcoming .cal-up{display:grid}.hw-upcoming .cal-up{flex:1 1 auto;min-height:0;overflow-y:auto}.hw-upcoming .cal-ur{padding-inline:10px} /* 비시즌 일정 줄이 칸 테두리에 붙고 1366 화면에서 아래 일정이 잘리던 문제(칸 안에서 스크롤) */
+/* 휴대폰 홈: 카드 3장을 한 화면에(사용자 11-05). 카드 안은 넘치면 잘리고 머리글·여백을 줄인다 */
+@media(max-width:699px){.home-workspace[data-rows="3"] :is(.home-grid,.hw-work){grid-template-rows:repeat(3,minmax(0,1fr))}.home-workspace[data-rows="2"] :is(.home-grid,.hw-work){grid-template-rows:repeat(2,minmax(0,1fr))}
+ .home-workspace[data-rows="3"] .hw-panel{min-height:0;overflow:hidden}.home-workspace[data-rows="3"] .hw-panel>header{min-height:24px;padding:3px 8px}.home-workspace[data-rows="3"] .hw-panel>header h2{font-size:13px}#app .home-workspace[data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:11px}#app .home-workspace[data-rows="3"] .hw-panel>header{min-height:28px;padding:2px 8px}}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -20036,7 +20039,7 @@ function homeWorkspace(){
   const device=innerWidth>=1100?'desktop':innerWidth>=700?'tablet':'mobile';
   const cols=device==='desktop'?3:device==='tablet'?2:1;
   const reserved=device==='desktop'?280:device==='tablet'?290:320;
-  const rows=innerHeight-reserved>=440?2:1,size=cols*rows,view=UI.homePanel||'overview',t=team(G.user);
+  const rows=device==='mobile'?(innerHeight>=560?3:2):innerHeight-reserved>=440?2:1, /* 휴대폰은 한 화면에 카드 3장(사용자 11-05) */size=cols*rows,view=UI.homePanel||'overview',t=team(G.user);
   const work=view==='work'?[todoCard(),champHomeCard(),cerHomeCard(),resultHome(),digestCard(),fdBudgetCard(),gapCard(),autoCard(),rebuildCard(),offPrepCard(),decisionCard(),tutCard(),reqHomeCard(),mgrChatCard(true),faHomeCard(),campCard()].filter(Boolean):[];
   const raw=view==='work'?work:view==='team'?[myLeaders(),formCard(),clubCard(),deskCard()].filter(Boolean):[];UI.homeCards=raw;
   const overview=view==='overview'?[homeMatchPanel(),`<section class="hw-panel hw-todo"><header><h2>오늘 할 일</h2><button class="tc-i" data-a="homePanel" data-v="work">업무 전체</button></header>${todoCard(2,true)}</section>`,homeStandingPanel(),homeNewsPanel(),`<section class="hw-panel hw-upcoming"><header><h2>다가오는 일정</h2><button class="tc-i" data-a="calOpen">달력</button></header>${upcomingGames(3)||calUpRows(calUpcomingList(6,120))||'<p class="hw-hint">시즌 일정이 확정되면 표시합니다.</p>'}</section>`,homeFinancePanel()]:[];
@@ -27814,6 +27817,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05am',d:'11월 5일',t:'휴대폰 화면 정리 · 중계 자동 시작',items:[
+    '중계는 3D 준비가 끝나면 누르지 않아도 시작합니다. 휴대폰 경기 전 화면에 원정·홈 두 팀 라인업을 함께 보여 줍니다.',
+    '휴대폰 중계 판이 화면 세로에 딱 맞아 아래로 끌어내리지 않아도 됩니다.',
+    '휴대폰 상단바에 지금 보는 화면 이름(트레이드 등)을 보여 주고, 본문 제목 줄을 접었습니다. 트레이드의 1·2·3 단계 줄을 없앴습니다.',
+    '휴대폰 홈은 한 화면에 카드 3장을 보여 줍니다.']},
   {id:'2026-11-05al',d:'11월 5일',t:'단장 세대 교체 · 구장 12단계 · 큰 사진 확대',items:[
     '단장도 나이를 먹습니다. 시즌이 끝난 뒤 단장 화면에서 후임을 정해 물러날 수 있고, 선수단·시설·재정은 그대로 이어집니다. 65세부터 구단주가 해마다 묻고, 78세가 되는 해에는 구단이 정한 후임에게 넘어갑니다.',
     '물러난 단장은 단장 화면의 단장 계보(대수·재임 기간·우승)에 남습니다.',
