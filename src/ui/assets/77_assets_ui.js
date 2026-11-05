@@ -38,18 +38,21 @@ function featIcon(x,sz){ const old=`<span class="ft-i k-${x.k}">${FEATI[x.k]||'�
 function bgHero(k,inner,cls){ const u=hasAsset()&&ASSET.stad[k]; if(!u)return inner; return `<div class="bg-hero ${cls||''}" style="background-image:linear-gradient(180deg,rgba(8,12,16,.55),rgba(8,12,16,.86)),url(${u})">${inner}</div>`; }
 function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img src="${ASSET.nat.b128}" width="56" height="56" alt="" decoding="async"><div><b>대한민국 야구 국가대표</b><span class="small muted">국제대회 소집 명단·차출 현황</span></div>${uniRow('kr',{sz:64})}</div>`; }
 /* ===== v6b 실사 얼굴(시범 100명, 00d_faces_data.js의 FACE6) =====
- 사용자 결정(2026-11-05): 검수 미통과지만 품질이 좋으니 먼저 연결. 100명뿐이라 '우리 구단' 선수만 사진으로(구단 안에서는 겹치지 않게), 나머지는 기존 그림 얼굴.
+ 사용자 결정(2026-11-05): 검수 미통과지만 품질이 좋으니 먼저 연결. 처음엔 우리 구단만, 이후 모든 구단 선수(구단 안에서는 겹치지 않게). 무소속 선수는 그림 얼굴.
  - 국내 선수는 한국인 얼굴, 외국인은 출신에 맞춰(아시아쿼터: 일본·대만, 용병: 그 밖) 나이가 가까운 얼굴을 하나 정해 저장(G.f6 선수→칸, G.f6r 칸→선수)
  - 시트는 구단 홈 유니폼으로 미리 합성돼 있다(tools/gen-faces-v6b.py). 화면에서는 칸 하나를 잘라 작은 그림으로 캐시한다
  - 설정에서 끌 수 있다(G.f6off) */
 const F6IMG={}, F6C=new Map(), F6B=new Map();
 function face6Load(tid,big){ const k=(big===true?'b':big||'')+tid, src=typeof FACE6==='undefined'?null:(big===true?FACE6.big:big==='a'?FACE6.away:FACE6.sheet)?.[String(tid)]; /* big: true=선수 상세 큰 사진, 'a'=원정 유니폼 */ if(F6IMG[k]||!src)return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(!p.foreign)return !x.f; if(!x.f)return false; const asia=x.e==='Japanese'||x.e==='Taiwanese'; return p.foreign==='아시아'?asia:!asia; }); }
-function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user||typeof FACE6==='undefined')return null;
-  const M=G.f6=G.f6||{}, Rv=G.f6r=G.f6r||{}; const cur=M[p.id]; if(cur!=null&&Rv[cur]===p.id)return cur;
-  const free=i=>{ const o=Rv[i]; if(o==null||o===p.id)return true; const q=G.players[o]; return !q||q.team!==G.user; };
+/* 모든 구단 선수(사용자 11-05): 얼굴 100명을 구단마다 겹치지 않게 나눠 쓴다(리그 전체에서는 같은 얼굴이 여러 구단에 있을 수 있음). G.f6 선수→칸, G.f6r '구단:칸'→선수 */
+function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team==null||typeof FACE6==='undefined'||!FACE6.sheet[String(p.team)])return null;
+  if(G.f6v!==2){ G.f6={}; G.f6r={}; G.f6v=2; } /* 우리 구단만 쓰던 옛 배정은 비우고 새로(얼굴이 한 번 바뀔 수 있음) */
+  const M=G.f6, Rv=G.f6r, t=p.team, key=i=>t+':'+i; const cur=M[p.id]; if(cur!=null&&Rv[key(cur)]===p.id)return cur;
+  const free=i=>{ const o=Rv[key(i)]; if(o==null||o===p.id)return true; const q=G.players[o]; return !q||q.team!==t; };
+  if(cur!=null&&free(cur)&&face6Pool(p).includes(cur)){ Rv[key(cur)]=p.id; return cur; } /* 이적해도 새 구단에서 비어 있으면 같은 얼굴 */
   const C=face6Pool(p).filter(free); if(!C.length)return null;
-  C.sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||hn('f6'+a,p.id)-hn('f6'+b,p.id)); const i=C[0]; if(cur!=null&&Rv[cur]===p.id)delete Rv[cur]; M[p.id]=i; Rv[i]=p.id; return i; }
+  C.sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||hn('f6'+a,p.id)-hn('f6'+b,p.id)); const i=C[0]; M[p.id]=i; Rv[key(i)]=p.id; return i; }
 function face6Cut(im,cs,i,x,y,w,o,pad,big){ const c=document.createElement('canvas'); c.width=c.height=o; const g=c.getContext('2d'); g.imageSmoothingQuality='high'; const sx=(i%10)*cs, sy=Math.floor(i/10)*cs;
   /* 머리 위 여백: 원본 칸에는 모자 위가 거의 없어서, 배경(칸 위 양쪽 모서리 평균색, 왼→오 그라데이션)으로 채운 뒤 사진을 pad 비율만큼 내려 그린다(사용자 11-05) */
   const pd=Math.round(o*(pad||0)), sh=w*(o-pd)/o; if(pd){ const px=(ax)=>{ const t=document.createElement('canvas'); t.width=t.height=1; const tg=t.getContext('2d'); tg.drawImage(im,ax,sy+2,Math.round(cs*.08),Math.round(cs*.08),0,0,1,1); const d=tg.getImageData(0,0,1,1).data; return `rgb(${d[0]},${d[1]},${d[2]})`; };
@@ -58,7 +61,7 @@ function face6Cut(im,cs,i,x,y,w,o,pad,big){ const c=document.createElement('canv
     const m=document.createElement('canvas'); m.width=o; m.height=Math.round(o*.05)+1; const mg=m.getContext('2d'); mg.fillStyle=gr; mg.fillRect(0,0,o,m.height); mg.globalCompositeOperation='destination-in'; const f2=mg.createLinearGradient(0,0,0,m.height); f2.addColorStop(0,'rgba(0,0,0,1)'); f2.addColorStop(1,'rgba(0,0,0,0)'); mg.fillStyle=f2; mg.fillRect(0,0,o,m.height); g.drawImage(m,0,pd); void fd; }
   else g.drawImage(im,sx+x,sy+y,w,w,0,0,o,o);
   return big?c.toDataURL('image/webp',.92):c.toDataURL('image/jpeg',.9); }
-function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user; let aw=''; try{ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.away===G.user&&g.home!==G.user)aw='a'; }catch(e){} /* 원정 경기 중계 중에는 원정 유니폼 */ const k=aw+tid+':'+i; if(F6C.has(k))return F6C.get(k);
+function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=o.team; let aw=''; try{ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.away===tid&&g.home!==tid)aw='a'; }catch(e){} /* 원정 경기 중계 중에는 원정 유니폼 */ const k=aw+tid+':'+i; if(F6C.has(k))return F6C.get(k);
   const im=face6Load(tid,aw); if(!im||!im.ok)return null; try{ const u=face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
 /* 큰 자리(선수 상세): 모자부터 가슴 심벌까지. 256px 시트가 있으면(사이트) 선명하게, 없으면(아티팩트) 128px 시트로 */
 function face6Bust(x){ const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; if(bg&&bg.ok)u=face6Cut(bg,256,x.i,12,0,232,464,.1,true); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=face6Cut(im,128,x.i,6,0,116,232,.1,true); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
@@ -66,3 +69,5 @@ Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} sav
 /* 카페 버그 제보용 게임 정보(이름·저장 내용은 넣지 않는다) */
 function fbInfoText(){ let d=''; try{ if(G)d=`${G.year}년 ${dmd(G.day)} · ${period()} · ${tname(G.user)}`; }catch(e){} return `[게임 정보] 버전 ${GAME_VER} · ${d||'게임 시작 전'} · 화면 ${UI.tab||''}${UI.tab&&UI.sub&&UI.sub[UI.tab]?'/'+UI.sub[UI.tab]:''} · ${innerWidth<=1000?'휴대폰':'PC'} ${innerWidth}x${innerHeight} · ${(navigator.userAgent.match(/(Edg|Chrome|Firefox|Safari)\/[\d.]+/)||[''])[0]}${/iPhone|iPad/.test(navigator.userAgent)?' · iOS':/Android/.test(navigator.userAgent)?' · Android':''}`; }
 Object.assign(A,{ fbInfo(){ const t=fbInfoText(); const ok=()=>{ try{ toast('게임 정보를 복사했습니다. 카페 글에 붙여 넣어 주세요.'); }catch(e){} }; try{ navigator.clipboard.writeText(t).then(ok,()=>{ prompt('아래 내용을 복사해 카페 글에 붙여 넣어 주세요.',t); }); }catch(e){ prompt('아래 내용을 복사해 카페 글에 붙여 넣어 주세요.',t); } } });
+/* 마우스로 끌 때 글자가 선택되거나 사진이 끌려 나오지 않게(사용자 11-05, 전체화면 포함). 입력칸은 그대로 */
+try{ document.addEventListener('dragstart',e=>{ const t=e.target; if(t&&(t.tagName==='IMG'||t.tagName==='A'||(t.closest&&t.closest('img,a'))))e.preventDefault(); },true); }catch(e){}

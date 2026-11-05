@@ -640,3 +640,6 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
   .mros-s{border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 10px 8px;min-width:0}
   .mros-s .mr{grid-template-columns:54px minmax(0,1fr) auto auto}
 }
+/* 끌어서 글자 선택·사진 끌림 방지(앱처럼). 입력칸·코드 상자는 선택 가능 */
+#app,#sheet{-webkit-user-select:none;user-select:none}#app img,#sheet img{-webkit-user-drag:none;user-drag:none}
+#app :is(input,textarea,select,[contenteditable],.code,.selectable),#sheet :is(input,textarea,select,[contenteditable],.code,.selectable){-webkit-user-select:text;user-select:text}
