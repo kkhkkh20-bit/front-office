@@ -111,7 +111,7 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
   const P=[...UI.world.preview].sort((a,b)=>a.proj-b.proj); const OL={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
   const card=x=>{ const d=TEAM_DEF[x.tid]; const over=x.pay>x.cap; const mv=x.prev-x.proj; const tight=over||(x.room!=null&&x.room<0);
     return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${d.city} ${d.nick}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · 시장 ${Math.round(d.market*100)}</span></div>
-      <div class="tp-r ${x.proj<=3?'hi':x.proj<=6?'mid':'lo'}"><i>예상</i><b>${x.proj}<em>위</em></b><span>${x.mode}</span></div></div>
+      <div class="tp-r ${x.proj<=3?'hi':x.proj<=7?'mid':'lo'}"><i>예상</i><b>${x.proj}<em>위</em></b><span>난이도 ${x.proj<=3?'쉬움':x.proj<=7?'보통':'어려움'} · ${x.mode}</span></div></div>
       <div class="tp-g"><span><i>지난 시즌</i><b>${x.prev}위 · ${x.w}승 ${x.l}패</b>${mv?`<em class="${mv<0?'dn':'up'}">${mv>0?'▲':'▼'}${Math.abs(mv)}</em>`:''}</span><span><i>구단주</i><b>${OL[x.owner]}</b></span>
         <span><i>강점</i><b>${x.best.map(([k,r])=>`${SLK[k]} ${r}위`).join(' · ')}</b></span><span><i>약점</i><b class="wk">${x.worst.map(([k,r])=>`${SLK[k]} ${r}위`).join(' · ')}</b></span>
         <span><i>간판</i><b>${x.top.map(p=>`${esc(p.name)}(${p.pos} ${dv(p.o)})`).join(', ')}</b></span><span><i>연봉 총액</i><b class="${over?'wk':''}">${money(x.pay)} / 캡 ${money(x.cap)}${over?' 초과':''}</b></span><span><i>첫해 예산 여유</i><b class="${tight?'wk':''}">${x.room==null?'-':x.room<0?`지원 한도 ${money(-x.room)} 초과`:`여유 ${money(x.room)}`}</b></span></div>
@@ -130,7 +130,7 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
         <div class="tp-t">${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
     return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 구단마다 다른 것은 시장 크기와 구장(입장·광고 수입)이고, 고양은 모기업 지원이 없습니다. 카드의 돈은 고른 순번 조건을 반영한 값입니다. 먼저 창단 지명 순번을 고르고, 그다음 구단을 고릅니다.</p>${fdSlotPick()}<details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">우리 순번은 위에서 고르고, 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다. 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
     <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>`; }
-  return `<p class="small muted">예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
+  return `<p class="small muted">구단마다 전력이 달라 난이도가 됩니다(예상 1~3위 쉬움, 4~7위 보통, 8~10위 어려움). 예상 순위는 전력분석팀 추정치입니다. 외국인 선수는 취임 후 새로 뽑아야 하며, 예상은 비슷한 수준의 외국인을 데려온다고 보고 계산했습니다. 감독도 취임 후 새로 선임합니다.</p>
     <div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
 function inFrame(){ try{ return window.self!==window.top; }catch(e){ return true; } }
 /* 백업 권유: 다른 사이트 안(itch 등)에서 실행 중이면, 마지막 백업(파일·코드 내보내기)에서 게임 날짜로 60일이 지날 때마다 상단에 띄운다. '나중에'는 30일 뒤 */
@@ -146,7 +146,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
       <div class="fb-brand"><h1 class="fb-wordmark"><span class="fb-sr">프런트야구</span></h1></div>
       <nav class="fb-menu" aria-label="시작 메뉴">
         ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${m.active}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
-        <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="team"><b>새 게임</b>${canCont?'':'<span>창단 드래프트로 나만의 팀을 만듭니다</span>'}</button>
+        <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다니다</span>'}</button>
         <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>
@@ -155,16 +155,16 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
   if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면에서 기능 설명을 펼쳐 보일지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine()}</section></div></div>`;
   if(st==='patch')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${patchCard()}</div></div>`;
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}${exportCard()}</div></div>`;
-  if(st==='mode'&&false){ ensureWorld();
+  if(st==='mode'){ ensureWorld();
     return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
     <h2 class="ts-h">${UI.newSlot?`슬롯 ${UI.newSlot} · `:''}어떻게 시작할까요</h2><div class="mbg">
-      <button class="mbig" data-a="smode" data-v="take"><em>현실적인 시작</em><b>단장 취임</b><span>10개 구단 중 하나의 단장으로 부임합니다. 지금 선수단과 계약, 재정을 그대로 이어받아 고쳐 나갑니다.</span></button>
+      <button class="mbig" data-a="smode" data-v="take"><em>바로 시작 · 난이도 선택</em><b>단장 취임</b><span>10개 구단 중 하나의 단장으로 부임합니다. 지금 선수단과 계약, 재정을 그대로 이어받아 고쳐 나갑니다. 구단마다 전력이 달라 강팀은 쉽고 약팀은 어렵습니다. 드래프트 없이 바로 시즌 준비에 들어갑니다.</span></button>
       <button class="mbig mfd" data-a="smode" data-v="fd"><em>드래프트 게임</em><b>창단 드래프트</b><span>리그 국내 선수 전원을 한데 모아 10개 구단이 25라운드에 걸쳐 새로 뽑습니다. 단장은 주전급을 뽑는 앞 10라운드를 직접 지명하고, 나머지는 스카우트에게 맡기거나 더 뽑을 수 있습니다. 능력치는 숨겨져 있고 기록으로 고릅니다. 빈 포지션을 채워 가며 처음부터 내 팀을 만듭니다.</span></button>
     </div>${foot}</div></div>`; }
   if(st==='prof'&&UI.pickT!=null)return gpStartView();
-  UI.smode='fd'; const fd=true;
-  return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
-  ${fdSteps(1)}<h2 class="ts-h">${fd?'창단 드래프트 · 함께할 구단을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
+  if(UI.smode!=='take')UI.smode='fd'; const fd=UI.smode==='fd';
+  return `<div class="gut"><div class="wrap" style="max-width:760px">${back('mode','시작 방식')}
+  ${fd?fdSteps(1):''}<h2 class="ts-h">${fd?'창단 드래프트 · 함께할 구단을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
 
   ${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)} <button class="lnk" data-a="tsGo" data-v="slots">저장 슬롯 보기</button></div>`:''}<section class="card">${pickTeams()}</section>${foot}</div></div>`;
 }

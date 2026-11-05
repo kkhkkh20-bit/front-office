@@ -43,7 +43,7 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
   return head+tb+(G.unemp?'':personalLifeView())+card+stints+quit; }
 Object.assign(A,{
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
-  start(v){ if(UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
+  start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; render(); },
   gpPart(v){ const g=gpSync(); const [k,d]=String(v).split(':'); const L=gpPartList(k,g); g.mod=g.mod||{}; const i=g.mod[k]!=null?L.indexOf(g.mod[k]):-1; g.mod[k]=L[((i<0?(+d>0?-1:0):i)+ +d+L.length)%L.length]; render(); },
