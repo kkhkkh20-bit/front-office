@@ -32,7 +32,8 @@ function calGame(d){ const c=G.cal; let m=null, kind='';
   const log=(G.sea&&G.sea.ulog||[]).find(x=>x.d===d);
   if(!m&&log){ m=[log.h,log.a]; kind=log.k||''; }
   if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
-  return {home,op,kind,res:log?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }
+  const sg=spoilG(); /* 중계로 볼 경기 점수는 중계를 마칠 때까지 감춘다 */
+  return {home,op,kind,res:log&&!(sg&&sg.day===d)?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }
 function calView(){ if(fmOn())return calFM(); /* PC: FM식 주요 일정 */ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
   const first=dnum(ym.y,ym.m,1); const w0=(dobj(first).w+6)%7; /* 월요일 시작 */ const last=dnum(ym.m===12?ym.y+1:ym.y,ym.m===12?1:ym.m+1,1)-1;
   const sel=UI.calSel!=null&&dobj(UI.calSel).m===ym.m&&dobj(UI.calSel).y===ym.y?UI.calSel:(now.y===ym.y&&now.m===ym.m?G.day:first);
@@ -78,7 +79,9 @@ function dayTickPosition(el){
   const head=document.querySelector('#app .fmtop,#app .top,#app .dtop'),after=head?head.getBoundingClientRect().bottom+8:y+8;
   el.style.top=Math.max(y+8,Math.min(after,y+h-el.getBoundingClientRect().height-12))/z+'px';
 }
-function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
+/* 중계로 감춘 날의 날짜 띠는 중계를 닫은 뒤 그날만 다시 띄워 결과를 알린다 */
+function spoilFlush(){ const d=UI._spoilD; if(d==null||spoilG())return; UI._spoilD=null; setTimeout(()=>dayTick(d-1),30); }
+function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const sg=spoilG(); if(sg&&sg.day>d0&&sg.day<=d1)UI._spoilD=sg.day; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
   /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '계속' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */

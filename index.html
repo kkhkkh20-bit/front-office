@@ -3374,6 +3374,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 @media(min-width:1100px){.ch-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr)}.ch-grid.no-aw{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}.ch-top{grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);align-items:start}.ch-aws,.ch-feats,.ch-side{max-height:calc(100dvh / var(--z,1) - 330px);overflow:auto}}
 @media(max-width:600px){.ch-sum{grid-template-columns:repeat(3,minmax(0,1fr))}.ch-shelf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ch-tro{min-width:0;justify-content:start}}
 .pf-screen .ch-grid .card:not(.ch-top),.pf-screen .ch-grid~.card{display:block}.ch-tl li>div{align-items:flex-start;align-content:flex-start}
+/* 선수 화면 행동 버튼: PC(FM 탭)에서만 뒤로 줄 오른쪽(머리 줄이 숨겨질 때) */.detail-navigation .detail-acts{display:none}@media(min-width:1100px){.fm-ptabs .detail-navigation .detail-acts{display:flex;margin-left:auto;flex-wrap:nowrap;overflow-x:auto}.fm-ptabs .pf-screen:has(.pf-topnav .pe-box) .detail-acts{display:none}}
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
 .detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
@@ -18897,8 +18898,15 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const $=s=>document.querySelector(s);
 const hand=p=>p.isP?`${p.th}투`:`${p.th}투${p.bt}타`;
 const recStr=r=>`${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''}`;
-function liveHidden(){ if(!G||!G.live)return false; const g=G.games[G.live.i]; return g&&G.live.upto<g.line.a.length+g.line.h.length; }
-function myRec(){ const r=Object.assign({},G.sea.rec[G.user]); if(liveHidden()){ const g=G.games[G.live.i]; if(!/차전/.test(g.kind||'')){ if(g.res==='승')r.w--; else if(g.res==='패')r.l--; else r.t--; } } return r; }
+/* 결과를 먼저 계산해 둔 우리 경기: 실시간 진행 중이거나 중계를 끝까지 보기(또는 닫기) 전에는 그 경기를 돌려준다. 결과(전적·순위·날짜 띠 점수)는 그동안 감춘다 */
+function spoilG(){ if(!G)return null; if(G.live){ const g=G.games[G.live.i]; return g&&G.live.upto<g.line.a.length+g.line.h.length?g:null; }
+  const c=UI.cast||UI.castRet, g=c&&G.games[c.g]; if(!g||!c.hold||c.fin)return null; if(c.k>=(g.pbp||[]).length){ c.fin=true; return null; } return g; } /* 끝 장면에 한 번 닿으면 되감아도 공개 상태 */
+function liveHidden(){ return !!spoilG(); }
+/* 중계로 볼 경기 날 기사(맞대결·기록·팬 글)는 중계를 마칠 때까지 따로 두었다가(G._nh, 저장에도 남는다) 끝나면 제자리로. render마다 확인 */
+function spoilNews(){ if(!G||!G.news)return; const sg=spoilG();
+  if(sg&&!G._nh){ const h=G.news.filter(n=>n.d>=sg.day); if(h.length){ G._nh=h; G.news=G.news.filter(n=>n.d<sg.day); } }
+  else if(!sg&&G._nh){ G.news=[...G._nh,...G.news].sort((a,b)=>(b.id||0)-(a.id||0)); G._nh=null; } }
+function myRec(){ const r=Object.assign({},G.sea.rec[G.user]); const g=spoilG(); if(g){ if(!/차전/.test(g.kind||'')){ if(g.res==='승')r.w--; else if(g.res==='패')r.l--; else r.t--; } } return r; }
 function myRank(){ return liveHidden()?'-':standingsNow().findIndex(x=>x.tid===G.user)+1; }
 const ICO={full:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',cal:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',mail:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>',brief:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12h.01"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M22 13a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>',users:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>',trophy:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg>',wallet:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>',ff:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>'};
 const wide=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:980px)').matches;
@@ -19000,7 +19008,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');rememberReading(app);try{return render0();}finally{restoreReading(app);workspaceRefit();}}
+function render(){const app=document.getElementById('app');try{spoilNews();}catch(e){}rememberReading(app);try{return render0();}finally{restoreReading(app);workspaceRefit();}}
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -22779,7 +22787,8 @@ function calGame(d){ const c=G.cal; let m=null, kind='';
   const log=(G.sea&&G.sea.ulog||[]).find(x=>x.d===d);
   if(!m&&log){ m=[log.h,log.a]; kind=log.k||''; }
   if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
-  return {home,op,kind,res:log?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }
+  const sg=spoilG(); /* 중계로 볼 경기 점수는 중계를 마칠 때까지 감춘다 */
+  return {home,op,kind,res:log&&!(sg&&sg.day===d)?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }
 function calView(){ if(fmOn())return calFM(); /* PC: FM식 주요 일정 */ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
   const first=dnum(ym.y,ym.m,1); const w0=(dobj(first).w+6)%7; /* 월요일 시작 */ const last=dnum(ym.m===12?ym.y+1:ym.y,ym.m===12?1:ym.m+1,1)-1;
   const sel=UI.calSel!=null&&dobj(UI.calSel).m===ym.m&&dobj(UI.calSel).y===ym.y?UI.calSel:(now.y===ym.y&&now.m===ym.m?G.day:first);
@@ -22825,7 +22834,9 @@ function dayTickPosition(el){
   const head=document.querySelector('#app .fmtop,#app .top,#app .dtop'),after=head?head.getBoundingClientRect().bottom+8:y+8;
   el.style.top=Math.max(y+8,Math.min(after,y+h-el.getBoundingClientRect().height-12))/z+'px';
 }
-function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
+/* 중계로 감춘 날의 날짜 띠는 중계를 닫은 뒤 그날만 다시 띄워 결과를 알린다 */
+function spoilFlush(){ const d=UI._spoilD; if(d==null||spoilG())return; UI._spoilD=null; setTimeout(()=>dayTick(d-1),30); }
+function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const sg=spoilG(); if(sg&&sg.day>d0&&sg.day<=d1)UI._spoilD=sg.day; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
   /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '계속' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */
@@ -24676,6 +24687,7 @@ function detailPageSync(el){
     const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
     const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
     bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
+    { const qa=sh.querySelector('.pf-topnav .qacts'); if(qa){ const c=qa.cloneNode(true); c.classList.add('detail-acts'); bar.appendChild(c); } } /* PC(FM 탭)는 머리 줄(pf-topnav)을 숨기므로 면담·시장 가치·트레이드·매물·연장 버튼을 뒤로 줄 오른쪽에 둔다 */
     if(!cast)sh.prepend(bar);
     if(UI.stamp){ document.querySelectorAll('#app .stamp-w').forEach(x=>x.remove()); el.insertAdjacentHTML('beforeend',stampView()); }
     UI._detailPendingScroll=position.y;
@@ -24893,7 +24905,7 @@ function bondCard(p){
 }
 function devForm(p){const current=(G.ovs||[]).find(x=>x.pid===p.id);return `<section class="card"><h2 class="sec">해외연수 · 목표와 결과</h2>${current?`<p>${OVS[current.prog].l} · ${current.go?'참가 중':'출발 전 예약'}</p>${!current.go?`<button class="btn" data-a="ovsSet" data-v="${p.id}:">예약 취소</button>`:''}`:''}${overseasProgramDetails(p)}${UI.devMsg?`<p class="note" role="status">${esc(UI.devMsg)}</p>`:''}${(p.ovsH||[]).length?'<h3>귀국 후 실제 변화</h3>'+overseasHistory(p):''}</section>`;}
 
-function closeSheets(){ UI.cw=null;UI.matchPreview=false; const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; UI.mgrCandidate=null; UI.fmKeys=false; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();}
+function closeSheets(){ UI.cw=null;UI.matchPreview=false; const kw=UI.wkres&&(UI.game!=null||UI.sheet!=null); /* 결과 창 위에 연 박스스코어·선수 정보만 닫을 때는 결과 창을 남긴다 */ UI.ngt=null; UI.negWin=null; UI.meet=null; UI.mgrCandidate=null; UI.fmKeys=false; if(UI.cfm){ UI.cfm=null; try{ cfmRender(); }catch(e){} } UI.cer=null;UI.cmpSh=null;UI.pcmpSh=null;UI.ivSh=null;UI.teamSh=null;UI.myRos=false;UI.person=null;UI.personMsg=null;if(UI.cast||UI.castRet){CT.tok++;CT.run=false;}UI.cast=null;UI.castRet=null;UI.drawer=false;UI.menu=false;UI.sheet=null;UI.posSheet=null;UI.game=null;UI.mail=null;UI.confirmRel=null;UI.talkMsg=null;UI.devMsg=null;if(!kw)UI.wkres=null;renderSheet();spoilFlush();}
 const A={
   staffTalk(v){const [kind,id,topic]=v.split(':');UI.staffMsgs=UI.staffMsgs||{};UI.staffMsgs[id]=staffTalk(kind,id,topic);save();if(UI.person)renderSheet();else render();},
 homePage(v){UI.homePage=Math.max(0,(UI.homePage||0)+(+v));UI.homeFocus=null;render();},homeOpenCard(v){UI.homeFocus={view:UI.homePanel||'overview',index:+v};render();},homeCloseCard(){UI.homeFocus=null;render();},
@@ -25044,7 +25056,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
-  watchNext(){ G.simPlanned=null; const next=nextGames(1)[0];if(next)G.watchPlanned={day:next.d};UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length)A.cast(G.res.i); },
+  watchNext(){ G.simPlanned=null; const next=nextGames(1)[0];if(next)G.watchPlanned={day:next.d};UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; UI._castHold=1; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length){ UI._castHold=1; A.cast(G.res.i); } }, /* hold: 방금 계산한 우리 경기라 중계를 마칠 때까지 결과를 감춘다(spoilG) */
   smon(v){ UI.smon=+v; render(); },
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },
@@ -25186,8 +25198,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castTeam(v){if(UI.cast&&['a','h'].includes(v)){UI.cast.team=v;castDashboardUpdate(G.games[UI.cast.g],UI.cast.k);cPitchReset(G.games[UI.cast.g],UI.cast.k);}},
   castSeek(v){if(UI.cast)castJump(+v,false);},
   castEvent(v){if(UI.cast&&+v<UI.cast.k)castJump(+v,true);},
-  cast(v){ const gi=+v; const g=G.games[gi]; if(!g||!g.pbp||!g.pbp.length)return; UI.sheet=null;UI.posSheet=null;UI.game=null;UI.menu=false;UI.castRet=null; UI.cast={g:gi,k:0,play:true,spd:UI.castSpd||1,mode:UI.castMode==='all'?'all':'hl'}; render(); }, /* 상단 위치·하위 탭도 '경기 중계'로 바꾼다 */
-  castClose(noCw){ sndStopAll(); CT.tok++; CT.run=false; UI.cast=null; UI.castRet=null; render(); const cw=UI.cwAfter; UI.cwAfter=null; if(!noCw&&cw&&G.cwS&&G.cwS.id===cw)A.cwOpen(); }, /* 함께 본 경기: 중계를 닫으면 동석 결과 */
+  cast(v){ const gi=+v; const g=G.games[gi]; if(!g||!g.pbp||!g.pbp.length)return; UI.sheet=null;UI.posSheet=null;UI.game=null;UI.menu=false;UI.castRet=null; UI.cast={g:gi,k:0,play:true,spd:UI.castSpd||1,mode:UI.castMode==='all'?'all':'hl',hold:UI._castHold?1:0}; UI._castHold=0; render(); }, /* 상단 위치·하위 탭도 '경기 중계'로 바꾼다 */
+  castClose(noCw){ sndStopAll(); CT.tok++; CT.run=false; UI.cast=null; UI.castRet=null; render(); spoilFlush(); const cw=UI.cwAfter; UI.cwAfter=null; if(!noCw&&cw&&G.cwS&&G.cwS.id===cw)A.cwOpen(); }, /* 함께 본 경기: 중계를 닫으면 동석 결과 */
   castBoard(){const c=UI.cast;if(!c||!c3DActive())return;const on=Match3D.info().camera!=='scoreboard';if(c.play)A.castPlay();Match3D.viewBoard(on);const b=document.querySelector('.cs-board-view');if(b)b.textContent=on?'경기로 돌아가기':'전광판 보기';},
   async castRetry3d(){const c=UI.cast,host=document.getElementById('cs-3d');if(!c||!host||typeof Match3D==='undefined')return;c.play=false;CT.tok++;CT.run=false;cBallHide();cDraw(c.k,0);await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)});if(UI.cast===c&&host.isConnected)cDraw(c.k,0);},
   castPlay(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; if(c.k>=L.length)c.k=0; c.play=!c.play; CT.tok++; CT.run=false; cBallHide(); if(c.play){castResumePitch();castLoop();} else { cDraw(c.k,250); sndStop('amb'); sndStop('chant'); } const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play?'일시정지':'재생'; },
@@ -25276,7 +25288,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   findT(v){ UI.findT=v===''?null:+v; UI.deskMsg=null; A.go('trade:find'); },
   findMine(v){ UI.findM=v===''?null:+v; UI.deskMsg=null; A.go('trade:find'); },
   findPos(v){ UI.findPos=v; render(); },
-  gmFix(v){ UI.findPos=v; UI.findT=null; UI.castRet=null; if(UI.cast){ UI.cast.play=false; CT.tok++; CT.run=false; UI.cast=null; } A.go('trade:find'); },
+  gmFix(v){ UI.findPos=v; UI.findT=null; UI.castRet=null; if(UI.cast){ UI.cast.play=false; CT.tok++; CT.run=false; UI.cast=null; } A.go('trade:find'); spoilFlush(); },
   pwatch(v){ pwatchToggle(+v); save(); const c=UI.cast; if(c&&G.games[c.g]){ cSide(G.games[c.g],c.k); } else { render(); renderSheet(); } },
   mktGo(v){ const x=(UI._mkt||[])[+v]; const m=UI.findM; if(!x||m==null)return; const r=proposeTrade(x.tid,[m],x.give); UI.deskMsg=r.msg; UI.deskOk=r.ok; if(r.ok){ UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade}; sfx('cheer_hit',.5); UI.findM=null; G.tsug=null; } save(); render(); },
   jobYes(v){ const r=jobAnswer(+v,true); UI.tab='home'; closeSheets(); UI.calSel=null; UI.calYM=null; UI.mail=null; UI.game=null; /* 옛 구단 화면 상태(달력 선택·열린 경기)를 남기지 않는다 */ UI.gmMsg=r; save(); render(); window.scrollTo(0,0); },
@@ -27458,6 +27470,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05m',d:'11월 5일',t:'중계 전 결과 감춤 · PC 선수 화면 버튼',items:[
+    '우리 경기를 중계로 볼 때, 중계를 마치거나 닫기 전에는 결과가 미리 보이지 않습니다. 날짜 띠의 점수, 전적·순위, 그날 기사(맞대결·기록·팬 글)를 중계가 끝난 뒤에 보여 줍니다.',
+    'PC 선수 화면에 면담·시장 가치·트레이드 협상에 넣기·매물 목록에 올리기·연장 협상 버튼이 보이지 않던 것을 고쳤습니다. 뒤로 줄 오른쪽에 있습니다.']},
   {id:'2026-11-05l',d:'11월 5일',t:'연봉 협상 방출·창단 순번 금액 표시',items:[
     'PC 연봉 협상에서 선수를 방출하면 목록이 맨 위로 올라가던 것을 고쳤습니다. 방출해도 보던 자리 그대로입니다.',
     '창단 지명 순번을 누르면 모기업 지원 한도·시작 현금이 얼마 늘거나 주는지(3시즌 합계 포함) 바로 보이고, 구단 카드 숫자에도 반영됩니다. 난이도 표시는 뺐습니다.']},

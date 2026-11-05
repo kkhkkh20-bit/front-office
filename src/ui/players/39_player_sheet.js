@@ -162,6 +162,7 @@ function detailPageSync(el){
     const scrim=sh.closest('.scrim'); if(scrim){scrim.classList.add('detail-page-wrap');scrim.removeAttribute('data-a');}
     const bar=document.createElement('nav');bar.className='detail-navigation';bar.setAttribute('aria-label','상세 화면 이동');
     bar.innerHTML='<button class="btn small detail-back" data-a="detailBack">‹ 뒤로</button><span>이전 화면으로 · Esc</span>';
+    { const qa=sh.querySelector('.pf-topnav .qacts'); if(qa){ const c=qa.cloneNode(true); c.classList.add('detail-acts'); bar.appendChild(c); } } /* PC(FM 탭)는 머리 줄(pf-topnav)을 숨기므로 면담·시장 가치·트레이드·매물·연장 버튼을 뒤로 줄 오른쪽에 둔다 */
     if(!cast)sh.prepend(bar);
     if(UI.stamp){ document.querySelectorAll('#app .stamp-w').forEach(x=>x.remove()); el.insertAdjacentHTML('beforeend',stampView()); }
     UI._detailPendingScroll=position.y;
