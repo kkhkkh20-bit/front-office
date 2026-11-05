@@ -42,7 +42,7 @@ function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img sr
  - 국내 선수는 한국인 얼굴, 외국인은 출신에 맞춰(아시아쿼터: 일본·대만, 용병: 그 밖) 나이가 가까운 얼굴을 하나 정해 저장(G.f6 선수→칸, G.f6r 칸→선수)
  - 시트는 구단 홈 유니폼으로 미리 합성돼 있다(tools/gen-faces-v6b.py). 화면에서는 칸 하나를 잘라 작은 그림으로 캐시한다
  - 설정에서 끌 수 있다(G.f6off) */
-const F6IMG={}, F6C=new Map();
+const F6IMG={}, F6C=new Map(), F6B=new Map();
 function face6Load(tid){ const k=String(tid); if(F6IMG[k]||typeof FACE6==='undefined'||!FACE6.sheet[k])return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE6.sheet[k]; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(!p.foreign)return !x.f; if(!x.f)return false; const asia=x.e==='Japanese'||x.e==='Taiwanese'; return p.foreign==='아시아'?asia:!asia; }); }
 function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user||typeof FACE6==='undefined')return null;
@@ -51,5 +51,6 @@ function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user
   const C=face6Pool(p).filter(free); if(!C.length)return null;
   C.sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||hn('f6'+a,p.id)-hn('f6'+b,p.id)); const i=C[0]; if(cur!=null&&Rv[cur]===p.id)delete Rv[cur]; M[p.id]=i; Rv[i]=p.id; return i; }
 function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user, k=tid+':'+i; if(F6C.has(k))return F6C.get(k);
-  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const c=document.createElement('canvas'); c.width=c.height=128; c.getContext('2d').drawImage(im,(i%10)*128,Math.floor(i/10)*128,128,128,0,0,128,128); const u=c.toDataURL('image/jpeg',.86); F6C.set(k,u); return u; }catch(e){ return null; } }
+  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const sx=(i%10)*128, sy=Math.floor(i/10)*128; const cut=(x,y,w,o)=>{ const c=document.createElement('canvas'); c.width=c.height=o; c.getContext('2d').drawImage(im,sx+x,sy+y,w,w,0,0,o,o); return c.toDataURL('image/jpeg',.88); };
+    const u=cut(30,3,68,96), bu=cut(0,0,128,128); F6C.set(k,u); F6B.set(u,bu); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대, 큰 자리(faceBust)는 가슴까지 */
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });

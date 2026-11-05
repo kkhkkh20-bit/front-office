@@ -32,7 +32,7 @@ function suitSwap(svg,jk,tie,female){ const L=svg.split('\n'); let i=L.findIndex
   while(i>0&&!/^<g[ >]/.test(L[i]))i--; let d=0,j=i; for(;j<L.length;j++){ if(/^<g[ >]/.test(L[j]))d++; else if(L[j]==='</g>'&&--d===0)break; }
   L.splice(i,j-i+1,suitSVG(jk,tie,female)); return L.join('\n'); }
 /* 큰 얼굴 자리용 흉상: 같은 그림을 더 넓게 잡아 가슴(칼라·단추·넥타이)까지 보인다 */
-function faceBust(src){ return src&&src.replace('-30%2070%20460%20460','-65%2075%20530%20530'); }
+function faceBust(src){ if(src&&typeof F6B!=='undefined'&&F6B.has(src))return F6B.get(src); /* 실사 얼굴: 큰 자리는 가슴까지 */ return src&&src.replace('-30%2070%20460%20460','-65%2075%20530%20530'); }
 function faceSVG(o){
   if(typeof face6Src==='function'&&o&&o.id!=null&&!o.persona){ const ph=face6Src(o); if(ph)return ph; } /* 우리 구단 선수: v6b 실사 얼굴 시범(77_assets_ui.js) */
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);

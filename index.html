@@ -13841,7 +13841,7 @@ function suitSwap(svg,jk,tie,female){ const L=svg.split('\n'); let i=L.findIndex
   while(i>0&&!/^<g[ >]/.test(L[i]))i--; let d=0,j=i; for(;j<L.length;j++){ if(/^<g[ >]/.test(L[j]))d++; else if(L[j]==='</g>'&&--d===0)break; }
   L.splice(i,j-i+1,suitSVG(jk,tie,female)); return L.join('\n'); }
 /* 큰 얼굴 자리용 흉상: 같은 그림을 더 넓게 잡아 가슴(칼라·단추·넥타이)까지 보인다 */
-function faceBust(src){ return src&&src.replace('-30%2070%20460%20460','-65%2075%20530%20530'); }
+function faceBust(src){ if(src&&typeof F6B!=='undefined'&&F6B.has(src))return F6B.get(src); /* 실사 얼굴: 큰 자리는 가슴까지 */ return src&&src.replace('-30%2070%20460%20460','-65%2075%20530%20530'); }
 function faceSVG(o){
   if(typeof face6Src==='function'&&o&&o.id!=null&&!o.persona){ const ph=face6Src(o); if(ph)return ph; } /* 우리 구단 선수: v6b 실사 얼굴 시범(77_assets_ui.js) */
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);
@@ -28655,7 +28655,7 @@ function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img sr
  - 국내 선수는 한국인 얼굴, 외국인은 출신에 맞춰(아시아쿼터: 일본·대만, 용병: 그 밖) 나이가 가까운 얼굴을 하나 정해 저장(G.f6 선수→칸, G.f6r 칸→선수)
  - 시트는 구단 홈 유니폼으로 미리 합성돼 있다(tools/gen-faces-v6b.py). 화면에서는 칸 하나를 잘라 작은 그림으로 캐시한다
  - 설정에서 끌 수 있다(G.f6off) */
-const F6IMG={}, F6C=new Map();
+const F6IMG={}, F6C=new Map(), F6B=new Map();
 function face6Load(tid){ const k=String(tid); if(F6IMG[k]||typeof FACE6==='undefined'||!FACE6.sheet[k])return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE6.sheet[k]; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(!p.foreign)return !x.f; if(!x.f)return false; const asia=x.e==='Japanese'||x.e==='Taiwanese'; return p.foreign==='아시아'?asia:!asia; }); }
 function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user||typeof FACE6==='undefined')return null;
@@ -28664,7 +28664,8 @@ function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user
   const C=face6Pool(p).filter(free); if(!C.length)return null;
   C.sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||hn('f6'+a,p.id)-hn('f6'+b,p.id)); const i=C[0]; if(cur!=null&&Rv[cur]===p.id)delete Rv[cur]; M[p.id]=i; Rv[i]=p.id; return i; }
 function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user, k=tid+':'+i; if(F6C.has(k))return F6C.get(k);
-  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const c=document.createElement('canvas'); c.width=c.height=128; c.getContext('2d').drawImage(im,(i%10)*128,Math.floor(i/10)*128,128,128,0,0,128,128); const u=c.toDataURL('image/jpeg',.86); F6C.set(k,u); return u; }catch(e){ return null; } }
+  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const sx=(i%10)*128, sy=Math.floor(i/10)*128; const cut=(x,y,w,o)=>{ const c=document.createElement('canvas'); c.width=c.height=o; c.getContext('2d').drawImage(im,sx+x,sy+y,w,w,0,0,o,o); return c.toDataURL('image/jpeg',.88); };
+    const u=cut(30,3,68,96), bu=cut(0,0,128,128); F6C.set(k,u); F6B.set(u,bu); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대, 큰 자리(faceBust)는 가슴까지 */
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });
 /* ===== 부팅: 모든 화면 파일이 읽힌 뒤 맨 마지막에 실행 =====
  앞 번호 파일에서 첫 화면을 그리면, 뒤 번호 파일의 상수(const)가 아직 만들어지지 않아 'before initialization' 오류로 화면이 빈다.
