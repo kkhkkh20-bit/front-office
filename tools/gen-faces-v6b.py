@@ -32,10 +32,19 @@ def person(ident,kit,chest,capmark,capRGB):
     cn=samp(NEU[...,None],sx,sy)[...,0]; shade=np.clip(R/np.maximum(cn,50),.55,1.45)[...,None]
     cloth=np.clip(wk[...,:3]*shade,0,255); out=rgb*(1-m[...,None])+cloth*m[...,None]
     wc=samp(chest,sx,sy); ca=(wc[...,3]/255*m)[...,None]; out=out*(1-ca)+wc[...,:3]*ca
-    a=capM[...,None]; out=out*(1-a)+np.array(capRGB,np.float32)*(R/255)[...,None]*a
+    # 모자 층: 모자색(원본 R 명암) + 심벌. 심벌은 중심 기준 78%로 줄이고 크라운(모자 높이 위 62%)에만(챙으로 튀어나오지 않게)
+    capC=np.array(capRGB,np.float32)*(R/255)[...,None]
     s_x,s_y,tx,ty=ident['cap_mark_transform_512']; cm=capmark # 256으로 줄인 심벌
-    mx=(xx-tx/2)/s_x; my=(yy-ty/2)/s_y; wm=samp(cm,mx,my); inside=((mx>=0)&(mx<=255)&(my>=0)&(my<=255)).astype(np.float32)
-    ma=(wm[...,3]/255*capM*inside)[...,None]; out=out*(1-ma)+wm[...,:3]*ma
+    ys,xs=np.nonzero(cm[...,3]>20); cx=s_x*(xs.min()+xs.max())/2+tx/2; cy=s_y*(ys.min()+ys.max())/2+ty/2; K=.78
+    dx=cx+(xx-cx)/K; dy=cy+(yy-cy)/K; mx=(dx-tx/2)/s_x; my=(dy-ty/2)/s_y; wm=samp(cm,mx,my); inside=((mx>=0)&(mx<=255)&(my>=0)&(my<=255)).astype(np.float32)
+    cr=np.nonzero(capM.max(axis=1)>.5)[0]; T,B=(int(cr.min()),int(cr.max())) if len(cr) else (0,0); crown=(yy<T+.62*(B-T)).astype(np.float32)
+    ma=(wm[...,3]/255*capM*inside*crown)[...,None]; capC=capC*(1-ma)+wm[...,:3]*ma
+    # 모자를 깊게 눌러 쓴 모양(사용자 11-05: 걸쳐 쓴 느낌): 모자 윗선은 그대로 두고 아래(챙)를 모자 높이의 20%만큼 늘려 이마를 더 덮는다
+    if B>T:
+        d=.2*(B-T); sy_=np.where(yy<=T,yy,T+(yy-T)*(B-T)/(B+d-T)); capCw=samp(capC,xx,sy_); capMw=samp(capM[...,None],xx,sy_)[...,0]
+        capMw=np.where(yy<=B+d+1,capMw,0)
+        # 원래 모자 자리의 빨간 키 색이 가장자리에 비치지 않게: 원래 자리와 늘린 자리 모두 가장자리 알파를 키워 덮는다
+        a0=np.clip(capM*1.8,0,1)[...,None]; out=out*(1-a0)+capC*a0; a=np.clip(capMw*1.8,0,1)[...,None]; out=out*(1-a)+capCw*a
     return Image.fromarray(np.clip(out+.5,0,255).astype(np.uint8),'RGB')
 ids=M6['identities']; assert len(ids)==100
 sheets={}; big={}; seen=set()
