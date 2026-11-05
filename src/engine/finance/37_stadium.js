@@ -107,7 +107,7 @@ function newStadPick(k){ const S=stadOf(G.user); const N=S.proj; const o=NEWSTAD
 function newStadDue(tid){ const S=stadOf(tid); const N=S.proj; if(!N||N.stage!=='build')return 0; return Math.min(Math.round(N.cost/3),N.cost-(N.paid||0)); }
 
 /* AI 구단: 돈이 넉넉하면 비시즌에 시설 하나를 손본다 */
-function stadAI(){ for(const t of G.teams){ if(t.id===G.user)continue; const S=stadOf(t.id); if(t.cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); const lv=S.lv[k]; if(lv>=4)continue; const c=STAD_COST[lv+1]; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); } }
+function stadAI(){ for(const t of G.teams){ if(t.id===G.user)continue; const S=stadOf(t.id); if(t.cash<6000||R()>.35)continue; const k=pick(['seat','fnb','vis','prem','turf']); const lv=S.lv[k]; if(lv>=(t.cash>=15000?8:t.cash>=9000?6:4))continue; /* 돈이 많은 구단은 더 높게(우리 상한 12) */ const c=STAD_COST[lv+1]; t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1]}); } }
 function starIncome(tid){ return Math.round(teamStar(tid).v*14*team(tid??G.user).market)+smBonus(tid??G.user); } /* 스타 마케팅 캠페인 몫 포함 */
 
 function starAwardsNews(){ const T=teamStar(G.user); const L=T.L.filter(x=>x.s>=25); if(!L.length)return; prInit(); const t=team(G.user);
