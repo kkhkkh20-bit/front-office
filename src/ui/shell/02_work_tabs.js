@@ -168,8 +168,9 @@ function scoutBody(){
   const L=scoutLoad(); const cell=(role,key,label)=>{ const sc=role==='intl'?null:scoutOf(role,key); const n=L[role+':'+key]||0; const lv=role==='intl'?intlLv(key):null;
     return `<div class="cov ${(role==='intl'?lv>=1:n)?'on':''}"><span>${label}${role==='intl'&&n?' · 파견':''}</span><b>${role==='intl'?lv+'단계':n?'★'.repeat(sc.skill):'빈자리'}</b></div>`; };
   const matrix=`<div class="covm"><div class="covr"><i>아마추어</i>${REG.map(r=>cell('am',r,r)).join('')}</div><div class="covr"><i>프로</i>${REG.map(r=>cell('pro',r,r)).join('')}</div><div class="covr"><i>해외</i>${Object.keys(IREG).map(r=>cell('intl',r,IREG[r].l)).join('')}</div></div>`;
-  const opt=s=>{ const cur=(s.role||'am')+':'+s.region; const os=[...REG.map(r=>['am:'+r,'아마추어 · '+r]),...REG.map(r=>['pro:'+r,'프로 · '+r+' 구단']),...Object.keys(IREG).map(r=>['intl:'+r,'해외 · '+IREG[r].l])];
-    return `<select data-a="sAssign" data-v="${s.id}" aria-label="담당 업무">${os.map(([v,l])=>`<option value="${v}" ${v===cur?'selected':''}>${l}</option>`).join('')}</select>`; };
+  /* 담당 업무: 드롭다운 대신 아마추어·프로·해외 세 줄 버튼(optRow) */
+  const opt=s=>{ const cur=(s.role||'am')+':'+s.region; const G3=[['아마',REG.map(r=>['am:'+r,r])],['프로',REG.map(r=>['pro:'+r,r])],['해외',Object.keys(IREG).map(r=>['intl:'+r,IREG[r].l])]];
+    return `<div class="sasg" aria-label="담당 업무">${G3.map(([l,os])=>`<div><i>${l}</i>${optRow('sAssign',cur,os,s.id,'wsx')}</div>`).join('')}</div>`; };
   const it={cur:UI._smk?(UI.smkSrc==='oth'?'oth':'mkt'):'team',bar:''}; /* 채용 후보·다른 구단은 스태프 시장으로 */
   const TEAM=`<p class="small muted">스카우트 한 명은 한 가지 업무만 맡습니다. 투수 감별·타자 감별 특기가 있으면 그 유형 선수를 볼 때 능력이 한 단계 높습니다. 아마추어는 그 지역 고교·대학 선수(드래프트), 프로는 그 지역 연고 구단 선수, 해외는 그 나라 외국인 시장을 봅니다. 해외 담당을 보내면 그 나라 정보 수준이 한 단계 올라갑니다. 업무를 바꾸면 30일 동안 적응 기간이라 능력이 1 낮게 적용됩니다. 최대 ${SCOUT_MAX}명.</p>
     ${matrix}${scoutChiefBox()}
