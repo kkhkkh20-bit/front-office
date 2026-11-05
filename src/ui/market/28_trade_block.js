@@ -3,7 +3,7 @@
 /* 받은 제안 한 줄 요약: 받는/보내는 선수 정보와 거래 뒤 변화 */
 function offerSum(o){ const P=id=>G.players[id]; const inP=o.give.map(P).filter(Boolean), outP=o.get.map(P).filter(Boolean); let d=null; try{ d=depth(G.user); }catch(e){}
   const role=p=>!d?'':d.start.some(x=>x.id===p.id)?`${posLabel(p)} 주전`:d.sp.some(x=>x.id===p.id)?'선발 로테이션':d.pen.slice(0,4).some(x=>x.id===p.id)?'필승조':p.e1?'1군 백업':'2군';
-  const mil=p=>p.foreign?'':p.mil&&p.mil.exempt?'면제':p.mil&&p.mil.done?'군필':milFree(p)?'미필':'';
+  const mil=p=>p.foreign?'':milState(p).k==='svc'?milState(p).l:p.mil&&p.mil.exempt?'면제':p.mil&&p.mil.done?'군필':milFree(p)?'미필':'';
   const ln=p=>`${esc(p.name)} ${rchip(Math.round(scoutReport(p).cur))}(${posLabel(p)} · ${p.age}세 · ${money(p.sal)}${mil(p)?' · '+mil(p):''})`;
   const dS=sum(inP.map(p=>p.sal))-sum(outP.map(p=>p.sal)), dN=inP.filter(p=>!p.ys).length-outP.filter(p=>!p.ys).length; const gone=outP.map(p=>({p,r:role(p)})).filter(x=>/주전|선발|필승조/.test(x.r)); const mf=inP.filter(p=>mil(p)==='미필').length;
   return `<div class="small of-sum"><div><b>받기</b>  ${inP.map(ln).join(', ')||'없음'}</div><div><b>보내기</b> ${outP.map(p=>`${ln(p)} — ${role(p)}`).join(', ')||'없음'}</div><div><b>거래 뒤</b> 연봉 ${dS>=0?'+':''}${money(dS)}/년 · 정식 선수 ${dN>=0?'+':''}${dN}명${gone.length?` · <b class="warn">빠지는 역할: ${gone.map(x=>x.r).join(', ')}</b>`:''}${mf?` · 미필 ${mf}명 받음`:''}</div></div>`; }

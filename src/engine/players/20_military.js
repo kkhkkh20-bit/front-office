@@ -83,3 +83,5 @@ function milWarn(){ const L=domestic(G.user).filter(p=>{ milInit(p); return milF
 const olyYear=y=>y>=2028&&(y-2028)%4===0;
 /* 올림픽 명단·결과는 국가대표(84_national.js)로 옮겼다 */
 
+/* 병역 상태 한 줄(사용자 피드백 11-05: 상무 복무 중인 선수가 검색표에서 군필·면제로 보였다). k: free 미필 · svc 복무 중·입대 예정 · done 군필·면제 */
+function milState(p){ if(p.foreign)return {k:'done',l:'-'}; const m=p.mil; if(m&&m.until&&!m.done){ if(m.from<=G.day&&m.until>G.day)return {k:'svc',l:`${m.unit||'복무'} 중 · ${dmd(m.until)} 전역`}; if(m.from>G.day)return {k:'svc',l:`입대 예정 · ${dmd(m.from)}`}; } return milFree(p)?{k:'free',l:'미필'}:{k:'done',l:'군필·면제'}; }
