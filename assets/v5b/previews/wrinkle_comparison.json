@@ -1,0 +1,35 @@
+{
+  "roi_512": [
+    172,
+    347,
+    340,
+    448
+  ],
+  "crop_scale": 2,
+  "order": [
+    "home_front",
+    "home_back",
+    "away_front",
+    "away_back"
+  ],
+  "overlap_alpha": 0.5,
+  "pair_order": [
+    [
+      "home_front",
+      "home_back"
+    ],
+    [
+      "away_front",
+      "away_back"
+    ],
+    [
+      "home_front",
+      "away_front"
+    ],
+    [
+      "home_back",
+      "away_back"
+    ]
+  ],
+  "limitation": "Photo crops contain flat printed patterns and seam details as well as folds. Differences are a visual review aid, not a quantitative proof of wrinkle independence."
+}

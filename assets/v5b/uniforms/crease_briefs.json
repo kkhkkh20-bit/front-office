@@ -1,0 +1,77 @@
+{
+  "order": [
+    "home_front",
+    "home_back",
+    "away_front",
+    "away_back"
+  ],
+  "teams": {
+    "seoul_comets": [
+      "right low hem diagonal tuck",
+      "left sleeve underarm compression",
+      "right cuff curl and lowest button pull",
+      "left hem short shallow tuck"
+    ],
+    "seoul_hounds": [
+      "left underarm short gather",
+      "right cuff compression and opposite hem drape",
+      "right low side seam pinch",
+      "left low edge short diagonal"
+    ],
+    "incheon_seagulls": [
+      "right underarm short pull",
+      "left low hem diagonal pinch",
+      "left cuff small fold",
+      "right mid-low side seam short crease"
+    ],
+    "suwon_sparks": [
+      "left cuff compression and right bottom tuck",
+      "right armpit fine crease",
+      "left lowest button localized pull",
+      "right offset hem drape"
+    ],
+    "goyang_storm": [
+      "right hem tiny diagonal pinch",
+      "left cuff fine sleeve fold",
+      "right underarm local compression",
+      "left low side seam pull"
+    ],
+    "daejeon_redfox": [
+      "right cuff short crease",
+      "left low side seam compressed stitching",
+      "right second-lowest button pull",
+      "right sleeve local tuck"
+    ],
+    "gwangju_blazes": [
+      "left low hem diagonal tuck",
+      "right sleeve bottom pinch",
+      "left armpit tiny compression",
+      "right low side seam short crease"
+    ],
+    "daegu_thunders": [
+      "left cuff localized sleeve drape",
+      "right low hem shallow oblique crease",
+      "right lower side seam pull",
+      "left sleeve short compression"
+    ],
+    "busan_waves": [
+      "right sleeve edge tiny tuck",
+      "left low hem oblique drape",
+      "left underarm fine pull",
+      "right bottom quarter side seam crease"
+    ],
+    "changwon_anchors": [
+      "right lower side seam short fold",
+      "left cuff tiny compression",
+      "left bottom edge shallow tuck",
+      "right armpit short oblique fold"
+    ],
+    "korea": [
+      "left low placket tiny crease",
+      "right hem very shallow tuck",
+      "right sleeve small fold",
+      "left underarm low-contrast pinch"
+    ]
+  },
+  "note": "Independent photography briefs, not a numerical simulation of cloth. Verify actual folds in previews and crops."
+}

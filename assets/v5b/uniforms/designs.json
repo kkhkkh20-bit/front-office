@@ -1,0 +1,116 @@
+{
+  "source_v5": "assets/v5/uniforms/designs.json",
+  "designs_unchanged": true,
+  "teams": {
+    "seoul_comets": {
+      "name": "서울 코메츠",
+      "word": "COMETS",
+      "theme": "Classic comet pinstripe / wine and ivory sleeves",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#A50034",
+      "home_ink": "#A50034",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: immaculate warm ivory body with VERY FINE, widely spaced wine-crimson #A50034 vertical pinstripes; slim wine piping around a natural shallow V-neck and center button placket; cuffs have one narrow wine stripe. ORIGINAL custom flowing baseball script 'Comets' across chest, extended underline ending with a tiny original shooting-star trail; no copied real-team lettering. Back same fine pinstripes with the central player name/number zone open and only tiny nape star. AWAY: rich wine-crimson #A50034 torso with contrasting IVORY RAGLAN SLEEVES and ivory shoulder panels; ivory flowing 'Comets' wordmark and star underline, narrow ivory placket piping, wine cuffs with fine ivory line. Back wine torso, ivory sleeves; center clean blank wine. Keep original game shooting-star sleeve/nape insignia."
+    },
+    "seoul_hounds": {
+      "name": "서울 하운즈",
+      "word": "HOUNDS",
+      "theme": "Heritage raglan / small chest emblem",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#131230",
+      "home_ink": "#131230",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: premium warm ivory torso, MIDNIGHT NAVY #131230 RAGLAN SLEEVES and modest shoulder yoke, just a fine red #ED1C24 accent running along the raglan seams. Small original WHITE angular running-hound emblem on a navy shield-shaped LEFT CHEST PATCH (wearer's left), tasteful small 'Hounds' cursive underneath the patch; NO huge centered home chest wordmark. Thin navy shallow V-neck binding, natural full button placket, navy cuff with tiny red edge. Back ivory center and navy sleeves, tiny navy original hound at nape. AWAY: midnight navy torso and sleeves, elegant narrow IVORY shoulder piping and thin red SIDE INSERTS at underarms, large IVORY collegiate arched block 'HOUNDS' chest lettering with a subtle red keyline, slim red collar binding and ivory sleeve-cuff line. Center back stays solid navy and blank. Original fictional hound only, no real logos."
+    },
+    "incheon_seagulls": {
+      "name": "인천 시걸스",
+      "word": "SEAGULLS",
+      "theme": "Nautical chest band / shoulder color block",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#CE0E2D",
+      "home_ink": "#F3F1E9",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: crisp ivory/white baseball top with a single broad CRIMSON #CE0E2D HORIZONTAL CHEST BAND, edged by two extremely thin deep-navy #18283D lines, with IVORY 'SEAGULLS' upright condensed athletic block letters centered INSIDE that band. Band only on the front chest; back center stays uninterrupted ivory, with only tiny crimson flying seagull at nape. Thin crimson V-neck binding, slim navy sleeve-cuff stripe, small original gull shoulder badge. AWAY: saturated crimson #CE0E2D torso with IVORY SHOULDER YOKE and ivory upper sleeves, red lower sleeve ends; graceful original ivory 'Seagulls' baseball script across red chest, fine deep-navy contour, slender ivory placket piping. Back crimson center and ivory shoulders, name/number area clean and blank. Restrained nautical horizontal detail at hem, no actual club logos."
+    },
+    "suwon_sparks": {
+      "name": "수원 스파크스",
+      "word": "SPARKS",
+      "theme": "Angular tech yoke / asymmetrical red panels",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#141414",
+      "home_ink": "#141414",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: smooth cool ivory torso, crisp BLACK #141414 ANGULAR SHOULDER YOKE continuing onto black upper sleeves, narrow RED #ED1C24 SIDE PANELS from underarms to hem. Sharp custom slightly forward-leaning geometric 'SPARKS' athletic block lettering in black with thin red edge, tiny abstract lightning incision in one letter. Shallow split V collar with very thin black/red binding and discreet covered full button placket. AWAY: deep matte black body, one controlled RED DIAGONAL FRONT PANEL across the lower-right chest toward side seam, silver/ivory 'SPARKS' lettering clear above/across the panel, faint charcoal diagonal weave print only at side panels, fine red cuff edge. Back center solid clean black with red side panels and tiny original spark nape emblem. Modern premium baseball jersey cut; no soccer sponsor or real sports brand."
+    },
+    "goyang_storm": {
+      "name": "고양 스톰",
+      "word": "STORM",
+      "theme": "Refined burgundy script / tonal swirl jacquard",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#570514",
+      "home_ink": "#570514",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: elegant warm cream torso with restrained burgundy #570514 side piping and very thin muted CHAMPAGNE #C6B18A collar/cuff edge, custom original flowing 'Storm' brush script and wind-like underline in deep burgundy, finely detailed original storm-swirled sleeve patch. No pinstripes on this team's home, clean luxury composition with ivory sleeves. AWAY: rich deep BURGUNDY #570514 with a VERY SUBTLE LOW-CONTRAST FLAT jacquard of large soft swirling wind arcs at SIDE PANELS and shoulders only; no bumpy fabric, no real wrinkles, center back remains quiet solid burgundy. Cream 'Storm' script with hairline champagne outline, slim champagne placket piping, burgundy sleeve cuffs with two fine cream lines. Thin athletic V-neck binding, no thick ribbed collar. Blank back name/number."
+    },
+    "daejeon_redfox": {
+      "name": "대전 레드폭스",
+      "word": "REDFOX",
+      "theme": "Orange / charcoal athletic sleeves",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#F37321",
+      "home_ink": "#F37321",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: clean ivory main torso, full CHARCOAL #282828 RAGLAN SLEEVES, vivid ORANGE #F37321 narrow side inserts and thin orange V-neck/placket binding. Bold original squared compact athletic 'REDFOX' chest lettering orange with charcoal contour, original white angular fox emblem on an orange sleeve badge. AWAY: saturated orange #F37321 torso with broad CHARCOAL SHOULDER YOKE and charcoal sleeve tops, thin ivory piping neatly separates color blocks, ivory 'REDFOX' squared block letters across orange chest, orange cuffs with one charcoal band. Back matches the color-block shoulders/sleeves but keeps central name/number area plain orange. Original fictional fox only, no real logos or sponsors."
+    },
+    "gwangju_blazes": {
+      "name": "광주 블레이즈",
+      "word": "BLAZES",
+      "theme": "Red raglan / gold piping and flame-cut lettering",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#EA0029",
+      "home_ink": "#EA0029",
+      "away_ink": "#FFD34F",
+      "description": "HOME: pristine ivory/white torso with full vivid RED #EA0029 RAGLAN SLEEVES, very slender GOLD #FFD34F seam piping and cuff edging; custom original slightly italic collegiate 'BLAZES' in red with tiny flame-cut terminals and fine gold edge, small original golden flame sleeve patch. Keep white torso broad and clean. AWAY: powerful red #EA0029 torso with VERY DARK CHARCOAL #202027 SHOULDER YOKE and dark sleeve tops, fine gold side-seam piping, GOLD 'BLAZES' athletic wordmark outlined dark red, subtle low-contrast flat flame arcs confined to lower side panels. Back solid red central field with dark shoulders, no printed name/number. Thin red/gold shallow V-neck, natural button placket, premium understated fabric."
+    },
+    "daegu_thunders": {
+      "name": "대구 썬더스",
+      "word": "THUNDERS",
+      "theme": "Royal blue pinstripe / lightning script",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#074CA1",
+      "home_ink": "#074CA1",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: pristine ivory baseball jersey with delicate ROYAL BLUE #074CA1 VERTICAL PINSTRIPES, two crisp blue cuff bands separated by a thin ivory gap, original flowing 'Thunders' script in blue with an underline turning into a small original lightning tail. Thin blue V-neck/placket binding and original cloud-lightning sleeve badge. AWAY: rich ROYAL BLUE #074CA1 torso with deep navy #10305A SIDE INSERTS and underarm panels, slender ivory placket piping, IVORY 'Thunders' script with the same lightning underline; two narrow ivory sleeve bands. No pinstripes on away. Both backs maintain clean center number/name areas, tiny original cloud/lightning at nape. Never copy any real baseball team's script."
+    },
+    "busan_waves": {
+      "name": "부산 웨이브스",
+      "word": "WAVES",
+      "theme": "Navy / cream marine bands and wave underline",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#041E42",
+      "home_ink": "#041E42",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: premium CREAM torso with deep NAVY #041E42 SHOULDER YOKE and navy sleeve cuffs, two slender navy HORIZONTAL LINES across lower chest underneath custom original navy 'Waves' handwritten athletic script, one fluid WAVE-LIKE UNDERLINE; extremely thin RED #D00F31 keyline at collar. No large solid chest band, keep cream breathing room. AWAY: deep navy #041E42 torso with CREAM UPPER SHOULDER PANEL and cream top half of sleeves, fine red piping defines the yoke, cream 'Waves' script and ocean-curve underline across navy chest. Tiny original curling-wave sleeve/nape emblem, no real logo. Back center plain matching cream/navy for dynamic player name/number, color blocks confined to upper yoke and sleeves. Thin elegant V-neck, full baseball button placket."
+    },
+    "changwon_anchors": {
+      "name": "창원 앵커스",
+      "word": "ANCHORS",
+      "theme": "Small anchor chest / slim asymmetric gold detail",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#1D467B",
+      "home_ink": "#1D467B",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: extremely refined ivory/white baseball jersey with a SMALL ORIGINAL NAVY #1D467B ANCHOR EMBLEM on wearer's LEFT CHEST and understated small 'Anchors' text below it, no enormous centered home wordmark. Thin navy full-button placket piping with a hairline MUTED GOLD #C6A269 accent, slim navy cuff band edged gold, ivory sleeves, restrained naval sports-club elegance. AWAY: deep blue #1D467B torso, ONE narrow asymmetrical vertical MUTED GOLD STRIPE at wearer's left side of torso, just outside the player name/number zone, ivory upright condensed 'ANCHORS' across chest, fine gold V-neck/cuff piping. No thick bands, no busy all-over print. Original anchor symbol on sleeve/nape. Center back clean and blank; no player names or numbers."
+    },
+    "korea": {
+      "name": "대한민국",
+      "word": "KOREA",
+      "theme": "National shoulder yoke / restrained taegeuk curve",
+      "home_fabric": "#F3F1E9",
+      "away_fabric": "#142E53",
+      "home_ink": "#142E53",
+      "away_ink": "#F3F1E9",
+      "description": "HOME: beautiful ivory/white baseball jersey with NAVY #142E53 SHOULDER YOKE and a controlled narrow RED #CD2E3A curved seam accent sweeping along shoulder toward side, crisp custom navy 'KOREA' wide-spaced upright block lettering across clear white chest, fine red neckline/placket trim. Tiny original red-blue taegeuk circle sleeve emblem, no actual federation or KBO logos. AWAY: deep navy #142E53 torso with IVORY UPPER SHOULDER PANELS and navy lower sleeves, subtle red flowing piping at yoke and cuffs, ivory KOREA lettering with fine red keyline. Back central field quiet white/navy, shoulder color blocks only; dynamic name and number areas blank. Premium national-team presentation, thin athletic shallow V-neck binding and a full baseball button placket, no thick crew-neck band."
+    }
+  }
+}
