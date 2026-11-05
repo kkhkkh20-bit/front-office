@@ -1,0 +1,36 @@
+{
+  "imagegen_sources": [
+    {
+      "role": "cafe-stadium",
+      "generated_file": "exec-cf5a8b6e-e1e6-4ac7-beaf-15b6bde691b4.png",
+      "sha256": "5dfa54d2f0b30fb82279181dd1741537b91051283056b1711d2bfdb758e9fbd2",
+      "native_size": [
+        1672,
+        941
+      ]
+    },
+    {
+      "role": "cafe-profile-icon",
+      "generated_file": "exec-b55cab75-f7f5-4238-9b8b-5882afa96a71.png",
+      "sha256": "e5d14d3161ca6c9d432c3eca5e552ee75261532045fd0b9bdb7a7d2f4b384ccc",
+      "native_size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "role": "cafe-menu-clean",
+      "generated_file": "exec-c5872425-9bb3-4efd-a116-317296c099e5.png",
+      "sha256": "074303956a019da1fd48ecaeaa3fadc978cf806ab8747df9c5eeefbdde0723cf",
+      "native_size": [
+        1448,
+        1086
+      ]
+    }
+  ],
+  "game_wordmark_source": "src/css/foundation/99_front_baseball_title.css: embedded fb-wordmark",
+  "game_wordmark_sha256": "4bb06a63e0f7d06fa839ccd038e5d582d19f9e9fe8be991ef551de8ba4df2c4d",
+  "menu_processing": "Clean generated white-on-black glyph sheet segmented into11cells; luminance coverage becomes alpha; requested white/gold colors and64/128 resizing. Failed noisy transparent generation was rejected.",
+  "typography": "Requested editable SVG text rendered by Chromium with bundled Noto font subsets.",
+  "code_changes": 0
+}

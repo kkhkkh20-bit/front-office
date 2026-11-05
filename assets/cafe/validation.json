@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "png_exports_checked": 32,
+  "all_text_layout_fonts_loaded": true,
+  "blank_exports_without_text": 16,
+  "missing_font_glyphs": [],
+  "text_bounds_inside_canvas": true,
+  "menu_icon_count_per_color": 11,
+  "menu_64_and_128_alpha_and_color_checks": true,
+  "circle_crop_preview": "previews/icon_circle_crop.png",
+  "mobile_center_crop_preview": "previews/mobile_center_60_percent.png",
+  "visual_review": {
+    "status": "reviewed",
+    "checked": [
+      "PC and mobile mockups",
+      "1080 front/title and square cover",
+      "11white/11gold menu pictograms",
+      "20percent crop retains all mobile text and game wordmark",
+      "circle crop retains baseball/clipboard symbol",
+      "clear Korean tagline and free-play copy",
+      "blank frames intentionally empty",
+      "all3board headers and round150px icon"
+    ],
+    "observed_issues": []
+  },
+  "real_logos_used": false,
+  "real_player_faces_used": false,
+  "game_wordmark_reused_unchanged": true,
+  "screenshot_slots_intentionally_empty": true,
+  "cafe_management_upload_performed": false,
+  "all_layout_manifest_links_resolve": true
+}
