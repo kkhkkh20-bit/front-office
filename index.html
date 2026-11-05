@@ -3550,18 +3550,19 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .dtools>.dfilt{flex:1 1 200px;margin:0;min-width:0}
   .dtools>.row{flex:none;margin:0;gap:6px;flex-wrap:nowrap}
   .dtools>.dfilt[open]{flex-basis:100%}
-  .dhead.dhead-m{padding:8px 10px}.dhead-m .dnow{font-size:17px}.dhead-mr{flex-wrap:wrap;gap:6px 8px;align-items:center}.dhead-mr>.btn{margin-left:auto;min-height:36px}.dhead-m .dmore{margin-top:6px}
   .draft-candidate-body>.seg button{font-size:12px;white-space:nowrap;padding-inline:4px}
-  .dhead-m .dmore>summary{cursor:pointer;color:var(--muted)}
   .dhead .dpre-no{margin:4px 0 0}
+  .dhead.dhead-pop{padding:8px 10px;margin-bottom:6px}.dhead-pop>.row{flex-wrap:wrap;gap:6px}.dhead-pop>.row .btn{min-height:36px}
+  /* 상단 바 드래프트 정보: 배지(구단 메뉴)와 정보(더보기) 두 버튼, 모양은 구단명·날짜 그대로 */
+  .top .dclub button{background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0;min-height:44px;display:flex;align-items:center}
+  .top .dclub .dc-i{flex:1;display:block;overflow:hidden}
+  .top .dclub .dc-i span{overflow:hidden;text-overflow:ellipsis}.top .dclub i.dc-me{font-style:normal;font-weight:700;color:#fff}
+  /* 다른 구단 차례: 실시간 지명 상자는 속도 버튼을 한 줄로 */
+  .dhead-pop .dlive{margin-top:0}.dhead-pop .dl-h{flex-wrap:nowrap}.dhead-pop .dl-h b{flex:none}
+  .dhead-pop .dl-h .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.dhead-pop .dl-h .chips button{flex:none}.dhead-pop .dl-now{padding:4px 8px}.dhead-pop .dl-now b{font-size:16px}
 }
-/* 휴대폰 우리 차례: 우리 차례 칸은 한 줄 띠(더보기는 같은 줄 끝, 펼치면 아래로), 목록 탭·필터 요약은 각각 한 줄. 후보 목록이 첫 화면의 70% 넘게 쓴다 */
+/* 휴대폰 신인 드래프트: 목록 탭·필터 요약은 각각 한 줄. 후보 목록이 첫 화면의 70% 넘게 쓴다 */
 @media(max-width:599px){
-  .dhead.dhead-m{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:3px 8px;margin-bottom:4px}
-  .dhead-m .dhead-mr{flex:1 1 0;min-width:0;flex-wrap:wrap;gap:4px 6px}.dhead-m .dhead-mr>:first-child:not(.dhm-t){display:none}
-  .dhead-m .dhm-t{min-width:96px;flex:1 1 96px}.dhead-m .dhm-t>*{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dhead-m .dnow{font-size:15px}.dhead-m .dhm-t .small{font-size:11px}
-  .dhead-mr>.btn{min-height:36px;padding:4px 8px;font-size:12px;white-space:nowrap;flex:none;margin-left:0}.dhead-mr>.btn:first-of-type{margin-left:auto}
-  .dhead-m .dmore{flex:none;margin:0}.dhead-m .dmore>summary{min-height:36px;display:flex;align-items:center;padding:0 2px}.dhead-m .dmore[open]{flex-basis:100%}
   .draft-candidate-body>.seg{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0}.draft-candidate-body>.seg button{flex:none;min-height:36px;padding:4px 10px}
   .dtools{flex-wrap:nowrap;align-items:center}.dtools:has(>.dfilt[open]){flex-wrap:wrap}
   .dtools{margin:4px 0}.dtools>.dfilt{flex:1 1 0;padding:0}.dtools>.dfilt[open]{padding:0 10px 10px}
@@ -19001,16 +19002,16 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
     document.body.classList.toggle('help',helpOn()); markHints(app); renderSheet(); KS.forEach((q,i)=>{ const e=document.querySelector(q); if(e&&keep[i]){ e.scrollTop=keep[i][0]; e.scrollLeft=keep[i][1]; } }); const fw=document.querySelector('.fdt-w'); if(fw&&fdCompact())fw.onscroll=()=>{ if(fw.scrollTop+fw.clientHeight>=fw.scrollHeight-200&&document.querySelector('.fdmore')&&!UI._fdMoreT){ UI._fdMoreT=1; A.fdListMore(); setTimeout(()=>{ UI._fdMoreT=0; },500); } }; const pc=document.querySelector('.fpcs-m'), on=pc&&pc.querySelector('.fpc.on'); if(on){ const x=on.getBoundingClientRect().left-pc.getBoundingClientRect().left; if(x<0||x+on.offsetWidth>pc.clientWidth)pc.scrollLeft+=x-8; } /* 휴대폰: 끝까지 내리면 다음 60명 */ if(fw&&fdCompact())fdNoBounce(fw); return; }
   if(fmOn()){ fmNavRec(); app.innerHTML=fmShell(t,per,unread,b); document.body.classList.toggle('help',helpOn()); document.body.classList.add('fm'); markHints(app); renderSheet(); try{ autoLink($('#app')); }catch(e){} if(UI.tab==='inbox')inboxWire(); if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); } return; }
   document.body.classList.remove('fm');
-  const nav=NAV; const ic=i=>ICO[i]||ICO2[i]; const inMenu=!BNAV.includes(UI.tab); const menuAlert=NAV.some(([k])=>!BNAV.includes(k)&&tabAlert(k));
+  const dk=draftTopOn(); const nav=NAV; const ic=i=>ICO[i]||ICO2[i]; const inMenu=!BNAV.includes(UI.tab); const menuAlert=NAV.some(([k])=>!BNAV.includes(k)&&tabAlert(k));
   app.innerHTML=`<div class="shell">
   <aside class="rail" aria-label="메뉴"><div class="brand">${badge(G.user,38)}<b>${esc(t.city)}<br>${esc(t.nick)}</b></div>${nav.map(([k,l,i])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}">${ic(i)}${l}${k==='inbox'&&unread?`<span class="cnt">${unread}</span>`:tabAlert(k)?'<i class="sdot"></i>':''}</button>`).join('')}<button class="railme ${UI.tab==='me'?'on':''}" data-a="tab" data-v="me">${avImg(meAv())}<span>${esc(meName()||'단장 프로필')}</span></button><button class="railset" data-a="go" data-v="cfg:set">${ICO2.cog}설정 · 권한</button></aside>
   <div class="mainc">
    <header class="top"><div class="gut"><div class="tbar wrap">
-     <div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:`<i class="cb-c">${esc(t.city)} </i>${esc(t.nick)}<i class="cb-v">▾</i>`}</b><span>${wide()?dstr(G.day):`<i class="cb-y">${dobj(G.day).y}.</i>${dsh(G.day)} ${WD[dobj(G.day).w]}`}<i class="cb-p"> · ${PERIOD[per]}</i></span></div></div>
-     ${fullOk()?`<button class="mailbtn fullbtn${fullOn()?' on':''}" data-a="fullTg" aria-label="전체 화면" title="전체 화면 켜기·끄기">${ICO.full}</button>`:''}${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}${goSet(per,b)}
+     ${dk?draftTop():`<div class="club${G.unemp?'':' clubbtn'}" ${G.unemp?'':'data-a="myRos" role="button" tabindex="0" title="우리 팀 현황"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,30)}<div><b>${G.unemp?`야인 · 명성 ${G.rep}`:`<i class="cb-c">${esc(t.city)} </i>${esc(t.nick)}<i class="cb-v">▾</i>`}</b><span>${wide()?dstr(G.day):`<i class="cb-y">${dobj(G.day).y}.</i>${dsh(G.day)} ${WD[dobj(G.day).w]}`}<i class="cb-p"> · ${PERIOD[per]}</i></span></div></div>`}
+     ${fullOk()?`<button class="mailbtn fullbtn${fullOn()?' on':''}" data-a="fullTg" aria-label="전체 화면" title="전체 화면 켜기·끄기">${ICO.full}</button>`:''}${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` 안 읽음 ${unread}`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}${dk?draftGo():goSet(per,b)}
    </div></div>${topBlocks(b)}</header>
    <div class="gut"><div class="wrap">
-     <div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>
+     ${dk&&!UI.fromMail?'':`<div class="subhead">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>`}
      <main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
    </div></div>
   </div>
@@ -19026,6 +19027,13 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
    그 중계를 보는 동안에는 결과를 먼저 알리지 않게 '포스트시즌'으로 둔다 */
 function perShown(){ const P=G.ps, g=UI.cast&&G.games[UI.cast.g]; return P&&P.done&&g&&P.resD&&g.day===P.resD.ks&&G.day<(P.finDay??G.day+1)?'post':period(); }
 function goSet(per,b){ const hint=!G.unemp&&(per==='season'||nextGames(1).some(x=>x.d<=G.day+7))?'3경기씩 · 예약한 경기만 관전':'최대 7일 · 중요한 소식까지'; return `<div class="goset">${G.unemp?`<button class="continue" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>제의가 오거나 1주일이 지날 때까지</i></span>${ICO.ff}</button>`:per==='season'?`<button class="step" data-a="matchOpen" ${b?'disabled':''} aria-label="경기 중계 선택" title="중계로 보거나 결과만 보기를 선택합니다"><span class="st-l">중계</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="최대 3경기를 자동 진행합니다. 휴식일은 제외하고 예약한 직관과 설정한 중단 조건에서 멈춥니다. 확인할 소식이 있으면 먼저 엽니다"><b>계속</b><i>${esc(b?nextLabel():contSub(hint))}</i></span>${ICO.ff}</button>`:`<button class="step" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="하루만 진행"><span class="st-l">하루</span><span class="st-x"> 진행</span></button><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl"><b>계속</b><i>${esc(b?nextLabel():contSub(hint))}</i></span>${ICO.ff}</button>`}</div>`; }
+/* 휴대폰·태블릿 신인 드래프트 진행 중: 선수 프로필 화면처럼 제목 줄 없이, 상단 바 구단명·날짜 자리에 지명 순서를 굵게, 아래 작게 로스터·지명 중인 구단.
+   배지는 구단 메뉴, 드래프트 정보는 더보기(건너뛰기·일괄 처리·지명 소식), '계속' 자리는 우리 차례면 추천 지명, 아니면 다른 구단 지명 보기 */
+function draftTopOn(){ const d=G.draft; return !wide()&&!G.unemp&&!!d&&!d.done&&!!d.picks[d.cur]&&UI.tab==='transfer'&&curSub('transfer')==='draft'&&!UI.meet; }
+function draftTop(){ const d=G.draft, pk=d.picks[d.cur], mine=pk.tid===G.user, op=!!UI.open?.draftMore;
+  return `<div class="club dclub"><button class="dc-b" data-a="myRos" aria-label="우리 팀 현황" title="우리 팀 현황">${badge(G.user,30)}</button><button class="dc-i" data-a="draftMore" aria-expanded="${op}" title="건너뛰기·일괄 처리·지명 소식"><b>${pk.rd}라운드 ${pk.no}순위<i class="cb-v">${op?'▴':'▾'}</i></b><span>${mine?`<i class="dc-me">우리 차례</i> · 로스터 ${rosterProj(G.user)}/${ROSTER_MAX}`:`${esc(team(pk.tid).nick)} 지명 중 · 로스터 ${rosterProj(G.user)}/${ROSTER_MAX}`}</span></button></div>`; }
+function draftGo(){ const mine=G.draft.picks[G.draft.cur].tid===G.user, on=!!(UI.dl&&UI.dl.on);
+  return `<div class="goset">${mine?'<button class="continue" data-a="autoPick" title="스카우트 추천 지명"><span class="cl"><b>추천 지명</b><i>스카우트 추천</i></span></button>':`<button class="continue" data-a="advDraft" ${on?'disabled':''}><span class="cl"><b>${on?'지명 중…':'지명 보기'}</b><i>다른 구단</i></span></button>`}</div>`; }
 function topBlocks(b){ return `${wide()&&!fmOn()&&UI.tab!=='home'?`<div class="gut sbwrap"><div class="wrap">${stripBar()}</div></div>`:''}${b&&!(G.draft&&!G.draft.done&&UI.tab==='transfer'&&curSub('transfer')==='draft')?`<div class="blk gut"><div class="wrap">${esc(b)}${blkLink(b)}</div></div>`:''}${needBackup()?`<div class="blk bkn gut"><div class="wrap">itch처럼 다른 사이트 안에서 하면 브라우저 정리나 게임 업데이트로 저장이 지워질 수 있습니다. 가끔 파일로 내보내 두세요.<button data-a="expFile">파일로 내보내기</button><button data-a="bkLater">나중에</button></div></div>`:''}`; }
 function tabBody(){
   if(UI.meet)return meetPage();
@@ -23136,16 +23144,16 @@ function draftBoard(){
     const capLine=`<div class="cap-line"><span>정식 로스터 ${rosterN(G.user)}명 + 이번 지명 ${draftedBy(G.user)}명 = <b style="color:${proj>=ROSTER_MAX?'var(--bad)':proj>=ROSTER_MAX-3?'var(--warn)':'var(--good)'}">${proj}</b> / ${ROSTER_MAX}</span>${proj>=ROSTER_MAX&&cut?`<span class="small">더 뽑으면 개막 전 방출이 필요합니다. 1순위 정리 후보: <button class="lnk" data-a="player" data-v="${cut.id}">${esc(cut.name)}</button> (${posLabel(cut)} · ${cut.age}세 · 현재 ${dv(crp.cur)} / ${crp.ofp!=null?potTier(potVal(crp),crp.cur).s:'잠재력 ?'})</span>`:''}</div>`;
     const restBox=`${d.rest?'':(myLeft>1?`<details class="drest"><summary class="small">남은 우리 지명 ${myLeft}번 한꺼번에 처리</summary><div class="row"><button class="btn small" data-a="draftRest" data-v="pass:0">남은 지명 모두 건너뛰기</button><button class="btn small" data-a="draftRest" data-v="cond:3">'1군 자원' 이상만 추천 지명</button><button class="btn small" data-a="draftRest" data-v="cond:4">'주전감' 이상만 추천 지명</button></div><p class="small muted">1라운드부터 적용됩니다. 1·2라운드는 건너뛸 수 없어 기준에 못 미치면 멈추고 직접 고르게 합니다. 등급은 우리 스카우트의 잠재력 추정입니다. 로스터가 한도(${ROSTER_MAX}명)에 차면 더 뽑지 않습니다.</p></details>`:'')}`;
     const feed=`${dliveBox('am')}${recent.length&&!(dlSame('am')&&UI.dl.feed&&UI.dl.feed.length)?`<div class="dlog">${recent.map(x=>{const q=G.players[x.pid]; return `<span>${badge(x.tid,18)}<i>${x.rd}-${x.no}</i>${x.pass?'<em>건너뜀</em>':q?`<b>${esc(q.name)}</b> <em>${posLabel(q)}</em>`:''}</span>`}).join('')}</div>`:''}`;
-    /* 휴대폰·태블릿에서 우리 차례면 후보 목록이 첫 화면을 차지하도록 로스터·일괄 처리·지명 소식을 접는다 */
-    const fold=mine&&!wide();
-    const btns=`${mine?`${firstStar?`<button class="btn primary" data-a="pick" data-v="${firstStar.id}" title="관심 1순위 지명">${fold?'':'관심 1순위 '}${esc(firstStar.name)} 지명</button>`:''}<button class="btn" data-a="autoPick">${fold?'추천 지명':'스카우트 추천 지명'}</button>${pk.rd>=3&&!fold?'<button class="btn" data-a="passPick">이번 지명 건너뛰기</button>':''}`:`<button class="btn primary" data-a="advDraft" ${UI.dl&&UI.dl.on?'disabled':''}>${UI.dl&&UI.dl.on?'다른 구단 지명 중…':'다른 구단 지명 보기'}</button>`}`;
+    /* 휴대폰·태블릿: 순위·우리 차례·추천 지명은 상단 바(draftTop)로 옮기고, 여기에는 일괄 처리 중 안내와 다른 구단 지명 소식만. 나머지는 상단 바 드래프트 정보를 누르면 펼친다 */
+    const fold=!wide(), more=fold&&!!UI.open?.draftMore;
+    const btns=`${mine?`${firstStar?`<button class="btn primary" data-a="pick" data-v="${firstStar.id}" title="관심 1순위 지명">관심 1순위 ${esc(firstStar.name)} 지명</button>`:''}${fold?'':'<button class="btn" data-a="autoPick">스카우트 추천 지명</button>'}${pk.rd>=3?'<button class="btn" data-a="passPick">이번 지명 건너뛰기</button>':''}`:fold?'':`<button class="btn primary" data-a="advDraft" ${UI.dl&&UI.dl.on?'disabled':''}>${UI.dl&&UI.dl.on?'다른 구단 지명 중…':'다른 구단 지명 보기'}</button>`}`;
     const eyeRow=`<span class="eyebrow">${d.y||G.year} 신인 드래프트 · ${DRAFT_ROUNDS}라운드 ${d.picks.length}명</span><span class="small muted">우리 남은 지명 ${myLeft}번</span>`;
-    head=`<section class="card hero dhead${fold?' dhead-m':''}">${fold?`<div class="row dhead-mr">${badge(pk.tid,28)}<div class="dhm-t"><div class="dnow">${pk.rd}라운드 ${pk.no}순위</div><div class="small"><b>우리 차례</b> · 로스터 <b>${proj}</b>/${ROSTER_MAX}</div></div>${btns}</div>`
-      :`<div class="row between">${eyeRow}</div>${capLine}
+    const restOn=d.rest?`<p class="small drest-on">일괄 처리 중: ${d.rest.mode==='pass'?'남은 지명 건너뛰기':`'${d.rest.min>=4?'주전감':'1군 자원'}' 이상만 추천 지명`} <button class="btn small" data-a="draftRest" data-v="off">그만두고 직접 고르기</button></p>`:'';
+    head=fold?(more||!mine||d.rest?`<section class="dhead dhead-pop${more?' card':''}">${more?`${btns?`<div class="row">${btns}</div>`:''}<div class="row between">${eyeRow}</div>${capLine}${restBox}`:''}${restOn}${more||!mine?feed:''}</section>`:'')
+      :`<section class="card hero dhead"><div class="row between">${eyeRow}</div>${capLine}
       <div class="row">${badge(pk.tid,40)}<div><div class="dnow">${pk.rd}라운드 ${pk.no}순위</div><div class="small ${mine?'':'muted'}">${mine?'<b>우리 차례입니다.</b> 후보 옆 지명 버튼으로 고르세요.':tname(pk.tid)+' 차례'}</div></div></div>
-      <div class="row">${btns}</div>`}
-      ${fold?'':restBox}${d.rest?`<p class="small drest-on">일괄 처리 중: ${d.rest.mode==='pass'?'남은 지명 건너뛰기':`'${d.rest.min>=4?'주전감':'1군 자원'}' 이상만 추천 지명`} <button class="btn small" data-a="draftRest" data-v="off">그만두고 직접 고르기</button></p>`:''}
-      ${fold?`<details class="dmore" data-k="draftMore" ${UI.open?.draftMore?'open':''}><summary class="small" aria-label="건너뛰기·일괄 처리·지명 소식 더 보기">더보기</summary>${pk.rd>=3?'<div class="row"><button class="btn small" data-a="passPick">이번 지명 건너뛰기</button></div>':''}<div class="row between">${eyeRow}</div>${capLine}${restBox}${feed}</details>`:feed}
+      <div class="row">${btns}</div>
+      ${restBox}${restOn}${feed}
     </section>`;
   } else {
     const left=Math.max(0,G.cal.draft-G.day);
@@ -25044,6 +25052,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   relCancel(){UI.confirmRel=null;renderSheet();},
   release(v){releasePlayer(+v);UI.sheet=null;UI.confirmRel=null;save();render();},
   advDraft(){ dliveStart('am'); },
+  draftMore(){ UI.open=UI.open||{}; UI.open.draftMore=!UI.open.draftMore; render(); if(UI.open.draftMore)document.querySelector('.dhead-pop')?.scrollIntoView({block:'nearest'}); },
   passPick(){passPick();save();render();},
   draftRest(v){ if(v==='off'){ draftRestSet(null); save(); render(); return; } const [m,n]=String(v).split(':'); draftRestSet(m,+n||3); save(); dliveStart('am'); },
   dmove(v){ const [id,d]=v.split(':').map(Number); const L=G.shortlist||[]; const i=L.indexOf(id), j=i+d; if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; save(); render(); },

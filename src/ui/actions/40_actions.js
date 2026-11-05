@@ -194,6 +194,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   relCancel(){UI.confirmRel=null;renderSheet();},
   release(v){releasePlayer(+v);UI.sheet=null;UI.confirmRel=null;save();render();},
   advDraft(){ dliveStart('am'); },
+  draftMore(){ UI.open=UI.open||{}; UI.open.draftMore=!UI.open.draftMore; render(); if(UI.open.draftMore)document.querySelector('.dhead-pop')?.scrollIntoView({block:'nearest'}); },
   passPick(){passPick();save();render();},
   draftRest(v){ if(v==='off'){ draftRestSet(null); save(); render(); return; } const [m,n]=String(v).split(':'); draftRestSet(m,+n||3); save(); dliveStart('am'); },
   dmove(v){ const [id,d]=v.split(':').map(Number); const L=G.shortlist||[]; const i=L.indexOf(id), j=i+d; if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; save(); render(); },

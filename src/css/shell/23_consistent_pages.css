@@ -177,18 +177,19 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .dtools>.dfilt{flex:1 1 200px;margin:0;min-width:0}
   .dtools>.row{flex:none;margin:0;gap:6px;flex-wrap:nowrap}
   .dtools>.dfilt[open]{flex-basis:100%}
-  .dhead.dhead-m{padding:8px 10px}.dhead-m .dnow{font-size:17px}.dhead-mr{flex-wrap:wrap;gap:6px 8px;align-items:center}.dhead-mr>.btn{margin-left:auto;min-height:36px}.dhead-m .dmore{margin-top:6px}
   .draft-candidate-body>.seg button{font-size:12px;white-space:nowrap;padding-inline:4px}
-  .dhead-m .dmore>summary{cursor:pointer;color:var(--muted)}
   .dhead .dpre-no{margin:4px 0 0}
+  .dhead.dhead-pop{padding:8px 10px;margin-bottom:6px}.dhead-pop>.row{flex-wrap:wrap;gap:6px}.dhead-pop>.row .btn{min-height:36px}
+  /* 상단 바 드래프트 정보: 배지(구단 메뉴)와 정보(더보기) 두 버튼, 모양은 구단명·날짜 그대로 */
+  .top .dclub button{background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0;min-height:44px;display:flex;align-items:center}
+  .top .dclub .dc-i{flex:1;display:block;overflow:hidden}
+  .top .dclub .dc-i span{overflow:hidden;text-overflow:ellipsis}.top .dclub i.dc-me{font-style:normal;font-weight:700;color:#fff}
+  /* 다른 구단 차례: 실시간 지명 상자는 속도 버튼을 한 줄로 */
+  .dhead-pop .dlive{margin-top:0}.dhead-pop .dl-h{flex-wrap:nowrap}.dhead-pop .dl-h b{flex:none}
+  .dhead-pop .dl-h .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.dhead-pop .dl-h .chips button{flex:none}.dhead-pop .dl-now{padding:4px 8px}.dhead-pop .dl-now b{font-size:16px}
 }
-/* 휴대폰 우리 차례: 우리 차례 칸은 한 줄 띠(더보기는 같은 줄 끝, 펼치면 아래로), 목록 탭·필터 요약은 각각 한 줄. 후보 목록이 첫 화면의 70% 넘게 쓴다 */
+/* 휴대폰 신인 드래프트: 목록 탭·필터 요약은 각각 한 줄. 후보 목록이 첫 화면의 70% 넘게 쓴다 */
 @media(max-width:599px){
-  .dhead.dhead-m{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:3px 8px;margin-bottom:4px}
-  .dhead-m .dhead-mr{flex:1 1 0;min-width:0;flex-wrap:wrap;gap:4px 6px}.dhead-m .dhead-mr>:first-child:not(.dhm-t){display:none}
-  .dhead-m .dhm-t{min-width:96px;flex:1 1 96px}.dhead-m .dhm-t>*{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dhead-m .dnow{font-size:15px}.dhead-m .dhm-t .small{font-size:11px}
-  .dhead-mr>.btn{min-height:36px;padding:4px 8px;font-size:12px;white-space:nowrap;flex:none;margin-left:0}.dhead-mr>.btn:first-of-type{margin-left:auto}
-  .dhead-m .dmore{flex:none;margin:0}.dhead-m .dmore>summary{min-height:36px;display:flex;align-items:center;padding:0 2px}.dhead-m .dmore[open]{flex-basis:100%}
   .draft-candidate-body>.seg{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0}.draft-candidate-body>.seg button{flex:none;min-height:36px;padding:4px 10px}
   .dtools{flex-wrap:nowrap;align-items:center}.dtools:has(>.dfilt[open]){flex-wrap:wrap}
   .dtools{margin:4px 0}.dtools>.dfilt{flex:1 1 0;padding:0}.dtools>.dfilt[open]{padding:0 10px 10px}
