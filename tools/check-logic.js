@@ -1560,6 +1560,10 @@ T('[기록] wRC+: 창단 드래프트 기록에도 들어가고, 퓨처스 기�
   ok(one.every(x=>typeof x.s.wrc==='number'),'창단 드래프트 기록에 wrc 없음');
   const fut=P.map(p=>(p.hist||[]).find(h=>h.y===y&&h.lvl==='퓨처스'&&h.pa>=100)).filter(Boolean); if(fut.length>=8){ const a=fut.reduce((s,h)=>s+wrcPlus(h,y)*h.pa,0)/fut.reduce((s,h)=>s+h.pa,0); ok(a>=80&&a<=120,'퓨처스 타석 가중 wRC+ '+a.toFixed(1)); }
   ok(wrcMulti([])==null,'빈 기록 통산 wRC+'); });
+T('[실플레이 11-05b] FA 미계약 선수: 12월·1월에도 다른 구단 FA에게 제안할 수 있다',()=>{ fresh(); simTo(()=>G.fa&&!G.fa.closed&&G.day>=dnum(G.fa.y0,12,20)); const F=G.fa;
+  const L=F.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!==G.user&&q.ask); ok(L.length,'준비 실패: 12월 20일에 남은 FA 없음'); const p=L[0]; const ng=F.neg&&F.neg[p.id];
+  const r=faNegotiate(p.id,{annual:round5(p.ask.annual*1.2),years:p.ask.years}); ok(!/협상할 수 없는/.test(r.msg||''),'12월 제안 막힘: '+r.msg+' · unemp '+!!G.unemp+' · neg '+JSON.stringify(ng||null).slice(0,160)+' · out '+faOutN(G.user)+'/'+faCapN());
+  const fr=freeList().filter(q=>!(q.relBan&&q.relBan[G.user]>G.day)&&q.relT!==G.user); ok(freeOpen(),'12월 무적 선수 등록 기간 닫힘: '+period()+' · preSettle '+preSettle()); if(fr.length){ while(rosterN(G.user)>=ROSTER_MAX)toFree(domestic(G.user).sort((x,y)=>ovr(x)-ovr(y))[0],'테스트'); const e=signFree(fr[0].id); ok(e==='','12월 무적 선수 계약 막힘: '+e); } });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); if(!L.length){ console.log('실패  ONLY='+ONLY+' 에 해당하는 시나리오가 없습니다(0개 실행은 통과가 아님)'); process.exit(1); } } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ const nameSeed=n=>{ let h=2166136261>>>0; for(let i=0;i<n.length;i++){ h^=n.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h|0; }; /* 시나리오마다 이름으로 난수 시작점을 정한다: 앞에 시나리오를 더해도 뒤 시나리오의 세계가 바뀌지 않게 */
