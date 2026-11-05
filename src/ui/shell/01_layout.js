@@ -151,7 +151,7 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const act=m.s
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>
       ${inFrame()&&isIOS()?`<p class="small ts-warn">Safari에서는 가끔 설정의 파일로 내보내기로 저장을 백업하세요. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a></p>`:''}
-      </div><footer class="fb-footer"><span>프런트야구 <i>v${GAME_VER}</i></span><button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button></footer></main>`; }
+      </div><footer class="fb-footer"><span>프런트야구 <i>v${GAME_VER}</i></span><button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button><a class="lnk" href="${FEEDBACK_URL}" target="_blank" rel="noopener">공식 카페 · 질문·피드백</a></footer></main>`; }
   if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면에서 기능 설명을 펼쳐 보일지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine()}</section></div></div>`;
   if(st==='patch')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${patchCard()}</div></div>`;
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}${exportCard()}</div></div>`;
