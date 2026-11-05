@@ -84,7 +84,7 @@ function aiTradeTry(aid){ const tc={}; (G.lgTrades||[]).filter(t=>t.y===G.year).
 function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filter(t=>t.id!==U); const Rb=ai.filter(t=>t.mode==='rebuild'); if(!Rb.length)return 0;
   const C=o.buyers||ai.filter(t=>t.mode!=='rebuild').sort((a,b)=>teamRating(b.id)-teamRating(a.id)).slice(0,4); let n=0;
   for(const A of C)for(let k=0;k<(o.per||2);k++){ const base=teamRating(A.id); const cands=[]; const nx=stanceOf(A)==='next'&&o.buyers;
-    if(o.buyers&&capPay(A.id)>capOf(sponSeason())*.95)break;
+    if(o.buyers&&capPay(A.id)>capOf(sponSeason())*.98)break;
     for(const B of Rb)for(const p of domestic(B.id)){ if(p.ys||!healthy(p)||hasNtc(p)||(nx?p.age<26||p.age>30||ovr(p)<56:p.age<29||ovr(p)<54))continue; p.team=A.id; const d=teamRating(A.id)-base; p.team=B.id; if(d>=.15)cands.push({B,p,d}); }
     cands.sort((x,y)=>y.d-x.d); let done=false;
     for(const best of cands.slice(0,6)){ /* 가장 도움 되는 선수부터, 값이 안 맞으면 다음 후보 */
@@ -102,7 +102,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
 /* 해마다 한 번씩(겨울 1월, 시즌 6월 15일~마감): 상한 여유가 있는 우승 도전·내년 도전 구단이 리빌딩 구단에서 전력을 사 온다. 리그 트레이드 한도(20건) 안에서 */
 function aiStanceBuy(){ const per=period(), o=dobj(G.day); const win=per==='season'?G.day>=KD(6,15)&&G.day<=tradeDL():(per==='off'||per==='pre')&&o.m===1; if(!win)return 0;
   const key=G.year+(per==='season'?'s':'w'); if(G.aiBuyK===key)return 0; if((G.lgTrades||[]).filter(t=>t.y===G.year).length>=18)return 0; G.aiBuyK=key;
-  const cap=capOf(sponSeason()); const B=G.teams.filter(t=>t.id!==ME()&&t.mode!=='rebuild'&&(t.cash||0)>-3000&&capPay(t.id)<cap*.92).sort((a,b)=>(stanceOf(a)==='win'?0:1)-(stanceOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,4);
+  const cap=capOf(sponSeason()); const B=G.teams.filter(t=>t.id!==ME()&&t.mode!=='rebuild'&&(t.cash||0)>-3000&&capPay(t.id)<cap*.96).sort((a,b)=>(stanceOf(a)==='win'?0:1)-(stanceOf(b)==='win'?0:1)||capPay(a.id)-capPay(b.id)).slice(0,4);
   return B.length?fdStrengthen({buyers:B,per:1,wantF:.45}):0; }
 function marketWeek(){ if(!tradeOpen()||G.gameOver)return; gmInit(); const per=period(); const dl=per==='season'&&G.day>=KD(7,1);
   /* 다른 구단끼리 트레이드: 단장 게임답게 시장이 살아 있도록 한 해 15건 안팎(상한 20건, 구단당 5건). 필요한 구단, 압박받는 단장이 먼저 움직이고 마감 직전에 몰린다.

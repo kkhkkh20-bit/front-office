@@ -102,7 +102,7 @@ function fdPeakAge(p){ return Math.max(p.age,DT.norm.grow+1); }
 function fdViews(p){ if(!G.fd)return null; const S=fdSeenBy(G.user,p); const lv=dataLv(G.user); return {sc:S.sc,an:lv>=1?S.an:null,up:p.age<=26&&S.pot-S.o>=6}; }
 function fdSlot(p){ return p.isP?'P':p.pos; }
 /* AI 구단 지명 방향(stanceOf): 우승 도전은 지금 능력과 비싼 주전을 감수(상한 100%까지), 내년 도전은 25~30세, 리빌딩은 유망주를 보고 연봉을 아낀다 */
-const FD_ST={win:{pw:.3,old:.8,cap:1,sal:.03},next:{pw:.55,old:1.3,cap:.95,sal:.06,mid:1.5},rebuild:{pw:.75,old:1.4,cap:.95,sal:.06,young:1}};
+const FD_ST={win:{pw:.3,old:.8,cap:1,sal:.012},next:{pw:.55,old:1.3,cap:1,sal:.025,mid:1.5},rebuild:{pw:.75,old:1.4,cap:.97,sal:.04,young:1}}; /* 사용자는 상한 가까이 쓰므로 AI도 연봉을 아끼느라 전력을 버리지 않게 연봉 감점을 줄였다 */
 function fdScore(tid,p,auto,X){ X=X||fdCtx(tid); const t=team(tid); const S=fdSeenBy(tid,p); const o=S.o, pot=S.pot; const pol=tid===G.user&&auto?(G.fdPol||'need'):null; /* 맡기기 방침 */ const st=tid===G.user?null:FD_ST[stanceOf(t)]; const pw=pol==='now'?0:pol==='young'?.9:st?st.pw:.5;
   let eff=p.age<=25?o+Math.max(0,pot-o)*pw:p.age>=32?o-(p.age-31)*(st?st.old:1.3):o; if(pol==='young')eff+=p.age<=24?2:p.age>=31?-3:0; if(st&&st.young)eff+=p.age<=24?st.young:p.age>=31?-3:0; if(st&&st.mid&&p.age>=25&&p.age<=30)eff+=st.mid; let v=Math.pow(Math.max(0,eff-34),1.7)/10;
   const k=fdSlot(p); const c=X.c; const tg=FD_TGT[k]||1; v*=pol==='now'?((c[k]||0)<tg+2?1:.8):pol==='need'?((c[k]||0)<tg?1.35:(c[k]||0)<tg+2?.8:.45):(c[k]||0)<tg?1.15:(c[k]||0)<tg+2?.85:.55;
@@ -116,11 +116,11 @@ function fdPick(pid){ const F=G.fd; if(!F||F.done)return '드래프트가 없습
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid))(F.lost=F.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,nm:p.name});
   if(F.cur>=F.picks.length)fdFinish(); return ''; }
 /* 창단 드래프트 뒤 AI 구단 연봉 맞추기: 드래프트는 연봉을 따라가므로 어떤 구단은 상한의 50%대에 머문다.
-   AI 구단은 새 선수단 주축과 재계약해 운영 방향만큼(리빌딩 70~76%, 내년 도전 78~84%, 우승 도전 86~92%) 올린다. 우승 도전 구단은 지명·트레이드(fdStrengthen)로 먼저 실제 전력을 채우고, 남은 몫만 연봉으로 맞춘다. 상한은 넘지 않는다 */
+   AI 구단은 새 선수단 주축과 재계약해 운영 방향만큼(리빌딩 82~87%, 내년 도전 89~94%, 우승 도전 95~99%: 실제 KBO 상위권처럼 상한 가까이) 올린다. 우승 도전 구단은 지명·트레이드(fdStrengthen)로 먼저 실제 전력을 채우고, 남은 몫만 연봉으로 맞춘다. 상한은 넘지 않는다 */
 function fdAiPayFill(){ const cap=capOf(G.year);
-  for(const t of G.teams){ if(t.id===ME())continue; const s=stanceOf(t); const tgt=cap*(t.indie?rnd(.7,.76):s==='win'?rnd(.86,.92):s==='next'?rnd(.78,.84):rnd(.7,.76)); let gap=tgt-capPay(t.id); if(gap<=0)continue;
-    for(let pass=0;pass<3&&gap>5;pass++){ const ps=domestic(t.id).filter(p=>!isRookie(p)&&!p.ys&&ovr(p)>=45).sort((a,b)=>ovr(b)-ovr(a)).slice(0,20); const tot=sum(ps.map(p=>Math.max(1,ovr(p)-40)));
-      for(const p of ps){ const lim=p.faC?Math.min(2600,Math.max(p.sal,marketSal(ovr(p))*1.5)):Math.max(p.sal,preCap(p)); const add=Math.min(lim-p.sal,round5(gap*Math.max(1,ovr(p)-40)/tot)); if(add<=0)continue; p.sal=round5(p.sal+add); gap-=add; if(gap<=5)break; } } } }
+  for(const t of G.teams){ if(t.id===ME())continue; const s=stanceOf(t); const tgt=cap*(t.indie?rnd(.8,.86):s==='win'?rnd(.95,.99):s==='next'?rnd(.89,.94):rnd(.82,.87)); let gap=tgt-capPay(t.id); if(gap<=0)continue;
+    for(let pass=0;pass<4&&gap>5;pass++){ const ps=domestic(t.id).filter(p=>!isRookie(p)&&!p.ys&&ovr(p)>=45).sort((a,b)=>ovr(b)-ovr(a)).slice(0,20); const tot=sum(ps.map(p=>Math.max(1,ovr(p)-40)));
+      for(const p of ps){ const lim=p.faC?Math.min(2600,Math.max(p.sal,marketSal(ovr(p))*1.5)):Math.max(p.sal,pass<3?preCap(p):Math.min(2600,marketSal(ovr(p))*1.1)); /* 마지막 회차: 젊은 선수뿐인 구단(리빌딩)도 시장가 다년계약으로 하한 아래에 머물지 않게 */ const add=Math.min(lim-p.sal,round5(gap*Math.max(1,ovr(p)-40)/tot)); if(add<=0)continue; p.sal=round5(p.sal+add); gap-=add; if(gap<=5)break; } } } }
 /* 한 번에 한 명씩: 실시간 드래프트 진행용 */
 function fdStep(){ const F=G.fd; if(!F||F.done||F.open===false)return null; const pk=F.picks[F.cur]; if(!pk)return null; if(fdManDone())return null; if(pk.tid===G.user)return 'user'; const id=fdBest(pk.tid,false); if(id==null){ fdFinish(); return null; } fdPick(id); return {pk,pid:id}; }
 function amStep(){ const d=G.draft; if(!d||d.done)return null; const pk=d.picks[d.cur]; if(!pk)return null; if(pk.tid===G.user)return 'user'; const id=aiDraftPick(pk.tid); if(!id){ finishDraft(); return null; } if(id===-1){ passCurrent(); return {pk,pass:true}; } doPick(id); return {pk,pid:id}; }
