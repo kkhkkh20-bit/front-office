@@ -125,7 +125,14 @@ function cBoard(g,st,cnt){if(c3DActive())Match3D.scoreboard(c3DScore(g,UI.cast.k
   const dots=(id,n)=>s(id).querySelectorAll('i').forEach((el,i)=>el.classList.toggle('on',i<n));
   dots('cs-O',Math.min(2,st.outs)); { const ob=s('cs-Ob'); if(ob)dots('cs-Ob',Math.min(2,st.outs)); } s('cs-on').textContent=Math.min(3,st.outs)+'아웃';const bso=s('cs-bso');if(bso)bso.dataset.outs=Math.min(3,st.outs);const summary=s('cs-count-summary');if(summary){const b=s('cs-B')?.querySelectorAll('.on').length||0,ss=s('cs-S')?.querySelectorAll('.on').length||0;summary.textContent=b+'볼 · '+ss+'스트라이크 · '+Math.min(3,st.outs)+'아웃';}
   mdSet('cs-bases',st.bases.map((id,i)=>`<span class="md-base-pill${id?' occupied':''}" title="${i+1}루 · ${id?esc(mdPlayer(g,id).name):'주자 없음'}"><i>${i+1}루</i><b>${id?esc(mdPlayer(g,id).name):'비어 있음'}</b></span>`).join(''));
-  CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); }
+  CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); try{ mdBug(g,st); }catch(e){} }
+/* 중계 스코어 버그(실제 중계 화면 오른쪽 아래처럼): 타순·타자·시즌 타율 / 투수·투구 수 / 두 팀 점수 / 이닝 / 주자 / 볼카운트(cs-bso 그대로) */
+function mdBug(g,st){const el=document.getElementById('md-bug');if(!el)return;const k=UI.cast?UI.cast.k:0,x=g.pbp[k]||g.pbp[g.pbp.length-1]||[],top=st.half%2===0;
+ const bid=typeof x[1]==='number'?x[1]:null,pid=typeof x[2]==='number'?x[2]:null,side=top?'a':'h',bl=bid!=null&&g.box[side].bat.find(b=>b.id===bid);
+ const bs=bid!=null&&typeof prepSeason==='function'?prepSeason(g,bid,bl):null,pc=pid!=null&&typeof cPitchTotalBefore==='function'?cPitchTotalBefore(g,k,pid):null;
+ const row=(tid,sc,at)=>`<div class="mb-t${at?' at':''}"><i style="background:${cTeamCol(tid)}"></i><span>${esc(team(tid).nick)}</span><b>${sc}</b></div>`;
+ el.innerHTML=`<div class="mb-who">${bid!=null?`<span>${bl&&bl.o!=null?bl.o+1+'. ':''}${esc(mdPlayer(g,bid).name)}</span><em>${bs?'시즌 '+bs.avg:''}</em>`:'<span>&nbsp;</span>'}</div><div class="mb-who"><span>${pid!=null?'P '+esc(mdPlayer(g,pid).name):'&nbsp;'}</span><em>${pc!=null?pc+'구':''}</em></div><div class="mb-main"><div class="mb-teams">${row(g.away,st.sa,top)}${row(g.home,st.sh,!top)}</div><div class="mb-inn"><b>${Math.floor(st.half/2)+1}</b><i>${top?'▲':'▼'}</i></div><div class="mb-dia">${[1,0,2].map(i=>`<i class="b${i}${st.bases[i]?' on':''}"></i>`).join('')}</div></div>`;}
+
 function cCap(t,cls){const el=document.getElementById('cs-cap');if(!el)return;if(!t&&c3DActive())return;el.className='cs-cap'+(t?' on':'');el.innerHTML=t?`<span class="cs-voice"><i>${cls?.includes('record')?'기록':'캐스터'}</i><b>${esc(t)}</b></span>`:'';if(cls){void el.offsetWidth;el.className+=' '+cls;}el.title=t||'';if(t&&document.querySelector('.match-dashboard'))mdSet('md-comment','<span>캐스터</span><b>'+esc(t)+'</b>');}
 /* 공 */
 /* 공: arc=뜬공(가운데서 커지고 바닥에 그림자), gb=땅볼(작게 튀며 굴러감), 그 밖은 직선(라인드라이브·송구) */

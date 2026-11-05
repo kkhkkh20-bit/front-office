@@ -3780,6 +3780,40 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 .match-dashboard .cs-bg .cs-stand-art{filter:saturate(.92) brightness(1.03)}
 .match-dashboard .cs-bg:not(.day) .cs-stand-art{filter:saturate(.75) brightness(.68)}
 .match-dashboard .cs-bg .cs-mast{fill:none;stroke:#748993;stroke-width:.3;stroke-linejoin:round}
+/* PC: 실제 중계처럼 볼카운트·주자·투구 위치를 3D 화면 오른쪽 아래에 겹쳐 띄운다(오른쪽 칸을 따로 두지 않음) */
+@media(min-width:1001px){
+ .match-dashboard .md-play-grid{grid-template-columns:minmax(0,1fr)!important}
+ .match-dashboard .md-pitch-dock{position:absolute;right:14px;bottom:var(--md-dock-b,96px);width:236px;max-height:calc(100% - 120px);z-index:5;border:1px solid #ffffff26;border-top:2px solid #c0505c;border-radius:10px;background:rgba(9,17,25,.8);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 28px #0009;overflow:hidden}
+ .match-dashboard .md-pitch-dock>header{flex:0 0 22px;padding:3px 9px;font-size:11px}.match-dashboard .md-pitch-dock>header>span{display:none}
+ .match-dashboard .md-zone-map{flex:0 0 118px;min-height:0;height:118px;margin:2px 26px 0}
+ .match-dashboard .md-pitch-history{display:none}
+ .match-dashboard .md-pitch-dock .cs-pitch{min-height:44px;margin:2px 8px;padding:4px 8px}
+ .match-dashboard .md-pitch-dock .md-count-panel{margin:4px 8px 8px}
+ .match-dashboard:has(.cs-3d[data-pre]) .md-pitch-dock{display:none}
+}
+/* PC 중계 화면 오른쪽 아래: 반투명 스트라이크존 + 스코어 버그(실제 KBO 중계 그래픽처럼). 패널 바탕 없이 떠 있음 */
+@media(min-width:1001px){
+ .match-dashboard .md-pitch-dock{width:262px;border:0;border-radius:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;overflow:visible;bottom:var(--md-dock-b,142px);right:12px;gap:6px}
+ .match-dashboard .md-pitch-dock>header{display:none}
+ .match-dashboard .md-zone-map{flex:0 0 auto;align-self:flex-end;width:118px;height:132px;margin:0 4px 0 0;background:rgba(20,28,36,.38);border:1px solid #ffffff38;border-radius:4px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+ .match-dashboard .md-zone-grid{border:1.5px solid #ffffffd0;box-shadow:none}.match-dashboard .md-zone-grid>i{border-color:#ffffff40;background:none}
+ .match-dashboard .md-zone-view,.match-dashboard .md-zone-high,.match-dashboard .md-zone-low{display:none}
+ .match-dashboard .md-pitch-dot{width:16px;height:16px;font-size:9px}.match-dashboard .md-pitch-dot.latest{width:19px;height:19px}
+ .match-dashboard .md-pitch-dock .cs-pitch{min-height:0;margin:0;padding:3px 8px;border:0;border-radius:4px;background:rgba(10,16,22,.82);font-size:11px}
+ .match-dashboard .md-pitch-dock .cs-pitch .md-pitch-main>strong{font-size:15px}.match-dashboard .md-pitch-dock .cs-pitch .md-pitch-main>b{font-size:12px}
+ .match-dashboard .md-pitch-dock .md-count-panel{margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) 62px;background:#f4f5f7;color:#16202a;border-radius:3px;overflow:hidden;box-shadow:0 6px 18px #0008;font-family:inherit}
+ .match-dashboard .md-pitch-dock .md-base-state,.match-dashboard .md-pitch-dock #cs-count-summary{display:none}
+ .md-bug{display:grid;min-width:0}
+ .mb-who{display:flex;justify-content:space-between;gap:6px;padding:2px 7px;background:#1a2028;color:#fff;font-size:11.5px;line-height:1.45;border-bottom:1px solid #ffffff1a}.mb-who span{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mb-who em{font:600 11px var(--f-num);font-style:normal;color:#cfd8df;white-space:nowrap}
+ .mb-main{display:grid;grid-template-columns:minmax(0,1fr) 28px 42px;align-items:stretch}
+ .mb-t{display:grid;grid-template-columns:5px minmax(0,1fr) 26px;align-items:center;height:22px;border-bottom:1px solid #d9dde2}.mb-t i{height:100%}.mb-t span{padding:0 6px;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden}.mb-t b{font:800 15px var(--f-num);text-align:center;background:#e2e5ea;height:100%;line-height:22px}.mb-t.at span{color:#000}.mb-t:not(.at) span{color:#5a6570}
+ .mb-inn{display:grid;place-content:center;justify-items:center;border-left:1px solid #d9dde2;line-height:1}.mb-inn b{font:800 15px var(--f-num)}.mb-inn i{font-style:normal;font-size:9px;color:#c0303c}
+ .mb-dia{position:relative;border-left:1px solid #d9dde2}.mb-dia i{position:absolute;width:10px;height:10px;transform:rotate(45deg);background:#c9ced5}.mb-dia i.on{background:#f0a400}.mb-dia .b1{left:16px;top:6px}.mb-dia .b0{left:25px;top:15px}.mb-dia .b2{left:7px;top:15px}
+ .match-dashboard .md-pitch-dock .cs-bso{display:grid;align-content:center;gap:3px;padding:4px 6px;background:#fff;border-left:1px solid #d9dde2;margin:0}
+ .match-dashboard .md-pitch-dock .cs-bso>div{display:flex;align-items:center;gap:4px}.match-dashboard .md-pitch-dock .cs-bso b{font-size:10px;width:9px;color:#16202a}
+ .match-dashboard .md-pitch-dock .cs-bso i{width:8px;height:8px;border-radius:50%;background:#d0d5db;display:inline-block;margin-right:2px}
+ .match-dashboard .md-pitch-dock #cs-B i.on{background:#2fb35c}.match-dashboard .md-pitch-dock #cs-S i.on{background:#f0a400}.match-dashboard .md-pitch-dock #cs-Ob i.on{background:#d8333f}
+}
 /* The canvas keeps its own camera aspect ratio; never stretch the 2D stage into a 3D viewport. */
 .match-dashboard .cs-3d{position:absolute;inset:0;z-index:0;pointer-events:none;background:#0b1925;display:grid;place-items:center}
 .match-dashboard .cs-3d canvas{width:100%;height:100%;display:block}
@@ -21919,7 +21953,14 @@ function cBoard(g,st,cnt){if(c3DActive())Match3D.scoreboard(c3DScore(g,UI.cast.k
   const dots=(id,n)=>s(id).querySelectorAll('i').forEach((el,i)=>el.classList.toggle('on',i<n));
   dots('cs-O',Math.min(2,st.outs)); { const ob=s('cs-Ob'); if(ob)dots('cs-Ob',Math.min(2,st.outs)); } s('cs-on').textContent=Math.min(3,st.outs)+'아웃';const bso=s('cs-bso');if(bso)bso.dataset.outs=Math.min(3,st.outs);const summary=s('cs-count-summary');if(summary){const b=s('cs-B')?.querySelectorAll('.on').length||0,ss=s('cs-S')?.querySelectorAll('.on').length||0;summary.textContent=b+'볼 · '+ss+'스트라이크 · '+Math.min(3,st.outs)+'아웃';}
   mdSet('cs-bases',st.bases.map((id,i)=>`<span class="md-base-pill${id?' occupied':''}" title="${i+1}루 · ${id?esc(mdPlayer(g,id).name):'주자 없음'}"><i>${i+1}루</i><b>${id?esc(mdPlayer(g,id).name):'비어 있음'}</b></span>`).join(''));
-  CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); }
+  CBS.forEach((b,i)=>{ const el=s('cs-b'+i); if(el)el.classList.toggle('on',!!st.bases[i]); }); try{ mdBug(g,st); }catch(e){} }
+/* 중계 스코어 버그(실제 중계 화면 오른쪽 아래처럼): 타순·타자·시즌 타율 / 투수·투구 수 / 두 팀 점수 / 이닝 / 주자 / 볼카운트(cs-bso 그대로) */
+function mdBug(g,st){const el=document.getElementById('md-bug');if(!el)return;const k=UI.cast?UI.cast.k:0,x=g.pbp[k]||g.pbp[g.pbp.length-1]||[],top=st.half%2===0;
+ const bid=typeof x[1]==='number'?x[1]:null,pid=typeof x[2]==='number'?x[2]:null,side=top?'a':'h',bl=bid!=null&&g.box[side].bat.find(b=>b.id===bid);
+ const bs=bid!=null&&typeof prepSeason==='function'?prepSeason(g,bid,bl):null,pc=pid!=null&&typeof cPitchTotalBefore==='function'?cPitchTotalBefore(g,k,pid):null;
+ const row=(tid,sc,at)=>`<div class="mb-t${at?' at':''}"><i style="background:${cTeamCol(tid)}"></i><span>${esc(team(tid).nick)}</span><b>${sc}</b></div>`;
+ el.innerHTML=`<div class="mb-who">${bid!=null?`<span>${bl&&bl.o!=null?bl.o+1+'. ':''}${esc(mdPlayer(g,bid).name)}</span><em>${bs?'시즌 '+bs.avg:''}</em>`:'<span>&nbsp;</span>'}</div><div class="mb-who"><span>${pid!=null?'P '+esc(mdPlayer(g,pid).name):'&nbsp;'}</span><em>${pc!=null?pc+'구':''}</em></div><div class="mb-main"><div class="mb-teams">${row(g.away,st.sa,top)}${row(g.home,st.sh,!top)}</div><div class="mb-inn"><b>${Math.floor(st.half/2)+1}</b><i>${top?'▲':'▼'}</i></div><div class="mb-dia">${[1,0,2].map(i=>`<i class="b${i}${st.bases[i]?' on':''}"></i>`).join('')}</div></div>`;}
+
 function cCap(t,cls){const el=document.getElementById('cs-cap');if(!el)return;if(!t&&c3DActive())return;el.className='cs-cap'+(t?' on':'');el.innerHTML=t?`<span class="cs-voice"><i>${cls?.includes('record')?'기록':'캐스터'}</i><b>${esc(t)}</b></span>`:'';if(cls){void el.offsetWidth;el.className+=' '+cls;}el.title=t||'';if(t&&document.querySelector('.match-dashboard'))mdSet('md-comment','<span>캐스터</span><b>'+esc(t)+'</b>');}
 /* 공 */
 /* 공: arc=뜬공(가운데서 커지고 바닥에 그림자), gb=땅볼(작게 튀며 굴러감), 그 밖은 직선(라인드라이브·송구) */
@@ -22219,7 +22260,7 @@ function mdDuel(g,s,shown=s){
 function mdDuelResult(g,k){if(UI.cast)UI.cast.completed=k;const before=castSnapshot(g,k),after=castSnapshot(g,k+1);mdSet('cs-vs',mdDuel(g,before,after));}
 /* 포수 시점: x=0..1은 존 왼쪽→오른쪽, y=0..1은 높음→낮음.
    공이 존 밖으로 빠진 위치도 표시한다. 공개되는 공은 재생한 순서까지만. */
-function mdPitchDock(){return `<section class="md-pitch-dock md-panel" aria-label="투구판과 볼카운트"><header><b>투구 위치 <small>포수 시점</small></b><span id="cs-pitch-source">포수 시점</span></header><div class="md-zone-map" role="img" aria-label="9칸 스트라이크존 · 투구 대기"><div class="md-zone-grid">${Array.from({length:9},()=>'<i></i>').join('')}</div><div id="md-pitch-dots"></div></div><div class="cs-pitch" id="cs-pitch" aria-live="polite"></div><ol class="md-pitch-history" id="md-pitch-history" aria-label="이번 타석 투구 기록"></ol><div class="md-count-panel"><div class="md-base-state" id="cs-bases" aria-label="현재 주자"></div><div class="cs-bso" id="cs-bso" aria-label="볼카운트"><div><b>B</b><span id="cs-B"><i></i><i></i><i></i></span></div><div><b>S</b><span id="cs-S"><i></i><i></i></span></div><div><b>O</b><span id="cs-Ob"><i></i><i></i></span></div></div><div id="cs-count-summary">0볼 · 0스트라이크 · 0아웃</div></div></section>`;}
+function mdPitchDock(){return `<section class="md-pitch-dock md-panel" aria-label="투구판과 볼카운트"><header><b>투구 위치 <small>포수 시점</small></b><span id="cs-pitch-source">포수 시점</span></header><div class="md-zone-map" role="img" aria-label="9칸 스트라이크존 · 투구 대기"><div class="md-zone-grid">${Array.from({length:9},()=>'<i></i>').join('')}</div><div id="md-pitch-dots"></div></div><div class="cs-pitch" id="cs-pitch" aria-live="polite"></div><ol class="md-pitch-history" id="md-pitch-history" aria-label="이번 타석 투구 기록"></ol><div class="md-count-panel"><div class="md-bug" id="md-bug" aria-hidden="true"></div><div class="md-base-state" id="cs-bases" aria-label="현재 주자"></div><div class="cs-bso" id="cs-bso" aria-label="볼카운트"><div><b>B</b><span id="cs-B"><i></i><i></i><i></i></span></div><div><b>S</b><span id="cs-S"><i></i><i></i></span></div><div><b>O</b><span id="cs-Ob"><i></i><i></i></span></div></div><div id="cs-count-summary">0볼 · 0스트라이크 · 0아웃</div></div></section>`;}
 function cPitchTotalBefore(g,k,pid){
   let total=0;for(let i=0;i<k;i++){const x=g.pbp[i];if(typeof x[1]!=='number'||x[2]!==pid)continue;const seq=storedPitchSequence(x);if(!seq)return null;total+=seq.length;}return total;
 }
@@ -27597,6 +27638,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05x',d:'11월 5일',t:'중계 화면 스코어 버그',items:[
+    'PC 3D 중계에서 볼카운트·주자·투구 위치를 실제 야구 중계처럼 화면 오른쪽 아래에 겹쳐 띄웁니다. 반투명 스트라이크존 아래 스코어 버그에 타순·타자(시즌 타율), 투수·투구 수, 두 팀 점수, 이닝, 주자, B·S·O가 나옵니다. 3D 화면이 오른쪽 칸 없이 넓어졌습니다.']},
   {id:'2026-11-05w',d:'11월 5일',t:'경기 전 라인업 화면',items:[
     '3D 중계 경기 전 화면을 FM처럼 바꿨습니다. 선명한 경기장 사진 위에 반투명 유리 카드로 실제 비율 야구장 도식 위 수비 위치(선수 얼굴, 이름표 앞 타순 번호)과 구단색 타순 표가 뜹니다. 타순 표에는 경기 전 기준 시즌 타율·홈런·타점, 선발투수 승패·평균자책점·이닝, 도식 구석에 팀 성적과 선발투수가 나옵니다(중계 라인업 그래픽처럼). 우리 팀 라인업을 보여 준 뒤 5초마다 상대 팀과 번갈아 나오고, 위 버튼을 누르면 그 팀에 멈춥니다.']},
   {id:'2026-11-05v',d:'11월 5일',t:'이름 잘림 전수 점검',items:[

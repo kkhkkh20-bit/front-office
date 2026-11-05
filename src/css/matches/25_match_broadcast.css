@@ -98,3 +98,37 @@
 .match-dashboard .cs-bg .cs-stand-art{filter:saturate(.92) brightness(1.03)}
 .match-dashboard .cs-bg:not(.day) .cs-stand-art{filter:saturate(.75) brightness(.68)}
 .match-dashboard .cs-bg .cs-mast{fill:none;stroke:#748993;stroke-width:.3;stroke-linejoin:round}
+/* PC: 실제 중계처럼 볼카운트·주자·투구 위치를 3D 화면 오른쪽 아래에 겹쳐 띄운다(오른쪽 칸을 따로 두지 않음) */
+@media(min-width:1001px){
+ .match-dashboard .md-play-grid{grid-template-columns:minmax(0,1fr)!important}
+ .match-dashboard .md-pitch-dock{position:absolute;right:14px;bottom:var(--md-dock-b,96px);width:236px;max-height:calc(100% - 120px);z-index:5;border:1px solid #ffffff26;border-top:2px solid #c0505c;border-radius:10px;background:rgba(9,17,25,.8);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 28px #0009;overflow:hidden}
+ .match-dashboard .md-pitch-dock>header{flex:0 0 22px;padding:3px 9px;font-size:11px}.match-dashboard .md-pitch-dock>header>span{display:none}
+ .match-dashboard .md-zone-map{flex:0 0 118px;min-height:0;height:118px;margin:2px 26px 0}
+ .match-dashboard .md-pitch-history{display:none}
+ .match-dashboard .md-pitch-dock .cs-pitch{min-height:44px;margin:2px 8px;padding:4px 8px}
+ .match-dashboard .md-pitch-dock .md-count-panel{margin:4px 8px 8px}
+ .match-dashboard:has(.cs-3d[data-pre]) .md-pitch-dock{display:none}
+}
+/* PC 중계 화면 오른쪽 아래: 반투명 스트라이크존 + 스코어 버그(실제 KBO 중계 그래픽처럼). 패널 바탕 없이 떠 있음 */
+@media(min-width:1001px){
+ .match-dashboard .md-pitch-dock{width:262px;border:0;border-radius:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;overflow:visible;bottom:var(--md-dock-b,142px);right:12px;gap:6px}
+ .match-dashboard .md-pitch-dock>header{display:none}
+ .match-dashboard .md-zone-map{flex:0 0 auto;align-self:flex-end;width:118px;height:132px;margin:0 4px 0 0;background:rgba(20,28,36,.38);border:1px solid #ffffff38;border-radius:4px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+ .match-dashboard .md-zone-grid{border:1.5px solid #ffffffd0;box-shadow:none}.match-dashboard .md-zone-grid>i{border-color:#ffffff40;background:none}
+ .match-dashboard .md-zone-view,.match-dashboard .md-zone-high,.match-dashboard .md-zone-low{display:none}
+ .match-dashboard .md-pitch-dot{width:16px;height:16px;font-size:9px}.match-dashboard .md-pitch-dot.latest{width:19px;height:19px}
+ .match-dashboard .md-pitch-dock .cs-pitch{min-height:0;margin:0;padding:3px 8px;border:0;border-radius:4px;background:rgba(10,16,22,.82);font-size:11px}
+ .match-dashboard .md-pitch-dock .cs-pitch .md-pitch-main>strong{font-size:15px}.match-dashboard .md-pitch-dock .cs-pitch .md-pitch-main>b{font-size:12px}
+ .match-dashboard .md-pitch-dock .md-count-panel{margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) 62px;background:#f4f5f7;color:#16202a;border-radius:3px;overflow:hidden;box-shadow:0 6px 18px #0008;font-family:inherit}
+ .match-dashboard .md-pitch-dock .md-base-state,.match-dashboard .md-pitch-dock #cs-count-summary{display:none}
+ .md-bug{display:grid;min-width:0}
+ .mb-who{display:flex;justify-content:space-between;gap:6px;padding:2px 7px;background:#1a2028;color:#fff;font-size:11.5px;line-height:1.45;border-bottom:1px solid #ffffff1a}.mb-who span{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mb-who em{font:600 11px var(--f-num);font-style:normal;color:#cfd8df;white-space:nowrap}
+ .mb-main{display:grid;grid-template-columns:minmax(0,1fr) 28px 42px;align-items:stretch}
+ .mb-t{display:grid;grid-template-columns:5px minmax(0,1fr) 26px;align-items:center;height:22px;border-bottom:1px solid #d9dde2}.mb-t i{height:100%}.mb-t span{padding:0 6px;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden}.mb-t b{font:800 15px var(--f-num);text-align:center;background:#e2e5ea;height:100%;line-height:22px}.mb-t.at span{color:#000}.mb-t:not(.at) span{color:#5a6570}
+ .mb-inn{display:grid;place-content:center;justify-items:center;border-left:1px solid #d9dde2;line-height:1}.mb-inn b{font:800 15px var(--f-num)}.mb-inn i{font-style:normal;font-size:9px;color:#c0303c}
+ .mb-dia{position:relative;border-left:1px solid #d9dde2}.mb-dia i{position:absolute;width:10px;height:10px;transform:rotate(45deg);background:#c9ced5}.mb-dia i.on{background:#f0a400}.mb-dia .b1{left:16px;top:6px}.mb-dia .b0{left:25px;top:15px}.mb-dia .b2{left:7px;top:15px}
+ .match-dashboard .md-pitch-dock .cs-bso{display:grid;align-content:center;gap:3px;padding:4px 6px;background:#fff;border-left:1px solid #d9dde2;margin:0}
+ .match-dashboard .md-pitch-dock .cs-bso>div{display:flex;align-items:center;gap:4px}.match-dashboard .md-pitch-dock .cs-bso b{font-size:10px;width:9px;color:#16202a}
+ .match-dashboard .md-pitch-dock .cs-bso i{width:8px;height:8px;border-radius:50%;background:#d0d5db;display:inline-block;margin-right:2px}
+ .match-dashboard .md-pitch-dock #cs-B i.on{background:#2fb35c}.match-dashboard .md-pitch-dock #cs-S i.on{background:#f0a400}.match-dashboard .md-pitch-dock #cs-Ob i.on{background:#d8333f}
+}
