@@ -1,0 +1,31 @@
+{
+  "pilot_identities": 20,
+  "pilot_teams": 3,
+  "pilot_images": 60,
+  "runtime_bytes_by_resolution": {
+    "128": 193676,
+    "256": 552764
+  },
+  "estimated1000_image_bytes_by_resolution": {
+    "128": 3227933,
+    "256": 9212733
+  },
+  "estimate_method": "Linear byte extrapolation from actual quality90 RGB WebP sheets;100-person sheet compression and face detail may differ.",
+  "production_count_not_generated": 1000,
+  "recommended_generation_plan": [
+    "Do not mass-produce this failed diversity cohort.",
+    "Generate and pre-screen individual master identities against all prior accepted players before any team wardrobe edit. Keep threshold0.40 unchanged.",
+    "Approve a larger set of head-shape/age/skin/body references without real-person identity images; use selective regeneration rather than reusing failed lookalikes.",
+    "For each accepted identity, edit wardrobe from that one fixed source photo to each of10home kits, holding skin/face/pose/lighting fixed.",
+    "Require same-identity ArcFace>=0.60 as a separate operational consistency guard (not a user-defined identity uniqueness threshold), plus nearest-ID retrieval and visual inspection.",
+    "Validate240/256px collar/buttons/wordmark/cap and lock fictional emblem geometry before expanding.",
+    "Deliver100persons x10teams home=1000RGB photos. Away kits are outside this pilot.",
+    "Use team-keyed RGB sheets128/256, fetch only relevant team sheets and cache byidentity+team+kit+version. No garment UV/cap-stretch pass."
+  ],
+  "current_risks": [
+    "0.40 uniqueness not met",
+    "exact Hounds glyph varies across batches",
+    "B multiplies art production/QA by team count",
+    "no game integration code provided"
+  ]
+}

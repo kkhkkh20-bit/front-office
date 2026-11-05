@@ -1,0 +1,160 @@
+{
+  "sources": [
+    {
+      "batch": 1,
+      "team": "seoul_comets",
+      "path": "/workspace/generated_images/exec-e37a6f5b-dabd-41cc-b8fe-b8e41a1ed11b.png",
+      "sha256": "40fe86849b822906f5bace6abb7f131ac13f407bcc748a5a58f2915aff2f7c53",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 2,
+      "team": "seoul_comets",
+      "path": "/workspace/generated_images/exec-a14b4915-8c92-49c9-9ee8-f4700226c52a.png",
+      "sha256": "7f6a8cda44a04b5d2b7d0f0b605f84d05b9ae9865ee3dd194776888afe8797a0",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 3,
+      "team": "seoul_comets",
+      "path": "/workspace/generated_images/exec-b5b9e687-bb40-4ed2-8ddc-fdafa31100de.png",
+      "sha256": "44e60e215c473142c6d96c29cbfe8955d3111bcd4ffa1994ffcfcf6acf255e4e",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 4,
+      "team": "seoul_comets",
+      "path": "/workspace/generated_images/exec-9854636e-86b8-4da8-8031-8f8379f2de4a.png",
+      "sha256": "4ed34d0bfadf8643577450fbaa0f2eaa4c8274b7d1002bb2f229ab83bc6654d5",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 5,
+      "team": "seoul_comets",
+      "path": "/workspace/generated_images/exec-73caff4a-532a-4915-a5b1-963d97b2f99a.png",
+      "sha256": "11899c2cd789f22dd0c3681e661a1f6eebcd3ac4431cd89d5d214bc9bbe65d2b",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 1,
+      "team": "seoul_hounds",
+      "path": "/workspace/generated_images/exec-5c45a6ba-a267-4bd0-a819-4f1350201479.png",
+      "sha256": "a881ce025a415a08b889b0f7cbe494f09b6bd36646264cd5c417bc51c2102965",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 1,
+      "team": "gwangju_blazes",
+      "path": "/workspace/generated_images/exec-59f4d9cd-65f5-4981-8a52-5f84016d23aa.png",
+      "sha256": "84f8951c03487c2f880869e7148403b159f022db85dacdc4acb5fc77b090e9b4",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 2,
+      "team": "seoul_hounds",
+      "path": "/workspace/generated_images/exec-a260133e-186c-4380-b84d-ed735be419d2.png",
+      "sha256": "727f7b88052b0803618cbf51d6ab969e5067fa71833ab99091102bab54fffabb",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 2,
+      "team": "gwangju_blazes",
+      "path": "/workspace/generated_images/exec-a2cf1364-a230-45d1-a0cb-f8807155f4d3.png",
+      "sha256": "a15b2d68b195418f1745e7e29a5fbdf28e23138acf26ff014b3f0984f2deb88a",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 3,
+      "team": "seoul_hounds",
+      "path": "/workspace/generated_images/exec-1d6fab54-0fd0-4f20-87d2-f5a657196897.png",
+      "sha256": "95a617bbdca10e62a40cd880b178d50c042beebc6fca8a8176ad1b538c75a6af",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 3,
+      "team": "gwangju_blazes",
+      "path": "/workspace/generated_images/exec-d4aaf059-c48f-413e-8b82-a3e1c24603ee.png",
+      "sha256": "b1a5f4b3c304423118000b42458c6e8d79ce99b64ed281c909810a686a60c53d",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 4,
+      "team": "seoul_hounds",
+      "path": "/workspace/generated_images/exec-215f38df-d76b-486e-be9a-1562d7277730.png",
+      "sha256": "b94771988889e7423f01836660cd9f3fb5777b90b774958b8d642e5de5ee8e6d",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 4,
+      "team": "gwangju_blazes",
+      "path": "/workspace/generated_images/exec-10b4a06a-5c6b-413d-95a1-4abe4c83102c.png",
+      "sha256": "a21d745af1d2d9e38e47fd2f418ef082afb998fa72670e9dba512c7812971390",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 5,
+      "team": "seoul_hounds",
+      "path": "/workspace/generated_images/exec-43950868-d395-4ed8-b242-de54d4b3e44a.png",
+      "sha256": "6814c279ba7d021f8cf280e559d4851cfbc58da8b78253bc14280a534a019e15",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "batch": 5,
+      "team": "gwangju_blazes",
+      "path": "/workspace/generated_images/exec-78212f6f-6ce7-4dcc-9dcb-faad0b255ba7.png",
+      "sha256": "04685f111a32f702ba218791bc713f58a8586b36624a5476a54c712417e2c526",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  ],
+  "native_per_person_source": "625x625 selected2x2 cells (trim1px each edge), downsampled512; no source upscaling",
+  "normalization": "same whole-photo integer vertical translation per identity across3teams; empty source top background extended with horizontally smoothed studio colors; lower photo cropped by same number of pixels; no local warp or cap stretch",
+  "imagegen_calls": 15,
+  "generated_photos": 60,
+  "atlas_encoding": "quality90 RGB WebP with8px extruded padding around every cell; use manifest rect, not sheet-width division",
+  "baseline_comparison_snapshot": "Main snapshot2c2dd42 for existing game big-sheet comparison; raw v6b baseline SHA is fixed in validation. Other developers may subsequently update game renders."
+}

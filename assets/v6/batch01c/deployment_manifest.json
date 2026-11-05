@@ -1,0 +1,15 @@
+{
+  "do_not_deploy": true,
+  "release_ready": false,
+  "reason": "ArcFace uniqueness0.40 failed",
+  "runtime_candidate_files": [
+    "sheets/128/seoul_comets.webp",
+    "sheets/256/seoul_comets.webp",
+    "sheets/128/seoul_hounds.webp",
+    "sheets/256/seoul_hounds.webp",
+    "sheets/128/gwangju_blazes.webp",
+    "sheets/256/gwangju_blazes.webp",
+    "manifest.json"
+  ],
+  "archive_and_previews_are_not_runtime": true
+}

@@ -1,0 +1,3705 @@
+{
+  "schema_version": "6c-pilot-B-1",
+  "path_base": "assets/v6/batch01c/",
+  "method": "B: source Comets photos, identity-preserving imagegen wardrobe edits for Hounds/Blazes",
+  "release_ready": false,
+  "accepted_identity_count": 0,
+  "identity_count": 20,
+  "variant_count": 60,
+  "runtime_files": [
+    "sheets/128/seoul_comets.webp",
+    "sheets/256/seoul_comets.webp",
+    "sheets/128/seoul_hounds.webp",
+    "sheets/256/seoul_hounds.webp",
+    "sheets/128/gwangju_blazes.webp",
+    "sheets/256/gwangju_blazes.webp",
+    "manifest.json"
+  ],
+  "runtime_format": "RGB team portraits, no key-color masks/UV/overlay/stretch",
+  "grid": {
+    "columns": 5,
+    "rows": 4,
+    "ordering": "row-major identity order",
+    "padding_per_cell": 8,
+    "pitch_by_cell_size": {
+      "128": 144,
+      "256": 272
+    }
+  },
+  "sheets": [
+    {
+      "team": "seoul_comets",
+      "cell_size": 128,
+      "path": "sheets/128/seoul_comets.webp",
+      "size": [
+        720,
+        576
+      ],
+      "mode": "RGB",
+      "bytes": 71046,
+      "sha256": "aab6d1706685df979185b281584779a95c0eb46e041ba9237e36f5a810edac0b"
+    },
+    {
+      "team": "seoul_comets",
+      "cell_size": 256,
+      "path": "sheets/256/seoul_comets.webp",
+      "size": [
+        1360,
+        1088
+      ],
+      "mode": "RGB",
+      "bytes": 211242,
+      "sha256": "c70635ae4f5228bca70499b9ec5e8a41cfc9890fefa574687fa6e9d1e1af9d1d"
+    },
+    {
+      "team": "seoul_hounds",
+      "cell_size": 128,
+      "path": "sheets/128/seoul_hounds.webp",
+      "size": [
+        720,
+        576
+      ],
+      "mode": "RGB",
+      "bytes": 48126,
+      "sha256": "d19fbe0ea479711ce0c42f86f8f19df1dc728ecdecd884f8e70bc449192da083"
+    },
+    {
+      "team": "seoul_hounds",
+      "cell_size": 256,
+      "path": "sheets/256/seoul_hounds.webp",
+      "size": [
+        1360,
+        1088
+      ],
+      "mode": "RGB",
+      "bytes": 131800,
+      "sha256": "acd48c7ad835a1cf22b8f0ba8b655e8d863c2afa536540728da1a3967ae35fce"
+    },
+    {
+      "team": "gwangju_blazes",
+      "cell_size": 128,
+      "path": "sheets/128/gwangju_blazes.webp",
+      "size": [
+        720,
+        576
+      ],
+      "mode": "RGB",
+      "bytes": 74504,
+      "sha256": "b841a746368090687da70ef43c85ba83d5c30ec7667ad2e061798a79a77e3932"
+    },
+    {
+      "team": "gwangju_blazes",
+      "cell_size": 256,
+      "path": "sheets/256/gwangju_blazes.webp",
+      "size": [
+        1360,
+        1088
+      ],
+      "mode": "RGB",
+      "bytes": 209722,
+      "sha256": "8d17b1e3f2bd72407a9683a7390f9726f0ff9a7e3186c40483cea3fb00929931"
+    }
+  ],
+  "identities": [
+    {
+      "id": "v6c_pilot_001",
+      "age": 19,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "long narrow oval face, very short buzz cut, prominent angular cheekbones, narrow single-lidded eyes, wide straight nose, slim athletic neck",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_001.png",
+          "source_grid_sha256": "40fe86849b822906f5bace6abb7f131ac13f407bcc748a5a58f2915aff2f7c53",
+          "source_cell": 0,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                8,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                8,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch01.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_001.png",
+          "source_grid_sha256": "a881ce025a415a08b889b0f7cbe494f09b6bd36646264cd5c417bc51c2102965",
+          "source_cell": 0,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                8,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                8,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch01.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_001.png",
+          "source_grid_sha256": "84f8951c03487c2f880869e7148403b159f022db85dacdc4acb5fc77b090e9b4",
+          "source_cell": 0,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                8,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                8,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch01.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_004",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              116.20059204101562,
+              80.99838256835938
+            ],
+            [
+              145.63307189941406,
+              81.1371841430664
+            ],
+            [
+              131.513671875,
+              100.05876922607422
+            ],
+            [
+              120.52072143554688,
+              115.20818328857422
+            ],
+            [
+              141.8382568359375,
+              115.33961486816406
+            ]
+          ],
+          "bbox": [
+            100.05555114746093,
+            57.77753601074219,
+            161.17115783691406,
+            137.25945739746095
+          ],
+          "score": 0.6665106415748596,
+          "alignment_matrix": [
+            [
+              1.2113400154233054,
+              0.0033181970328657173,
+              -103.15750332803633
+            ],
+            [
+              -0.0033181970328657173,
+              1.2113400154233054,
+              -47.03971962682844
+            ]
+          ]
+        },
+        "cosine": 0.7543991208076477
+      },
+      "nearest_v6b_player": {
+        "player_index": 58,
+        "cosine": 0.45313888788223267
+      },
+      "same_identity_variant_min_cosine": 0.9238871932029724
+    },
+    {
+      "id": "v6c_pilot_002",
+      "age": 22,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "broad square face, thick straight eyebrows, slightly hooded eyes, strong wide jaw, close-cropped black hair, stocky power hitter build",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_002.png",
+          "source_grid_sha256": "40fe86849b822906f5bace6abb7f131ac13f407bcc748a5a58f2915aff2f7c53",
+          "source_cell": 1,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                152,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                280,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch01.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_002.png",
+          "source_grid_sha256": "a881ce025a415a08b889b0f7cbe494f09b6bd36646264cd5c417bc51c2102965",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                152,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                280,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch01.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_002.png",
+          "source_grid_sha256": "84f8951c03487c2f880869e7148403b159f022db85dacdc4acb5fc77b090e9b4",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                152,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                280,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch01.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_017",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.59794616699219,
+              85.2288818359375
+            ],
+            [
+              145.34567260742188,
+              84.57279205322266
+            ],
+            [
+              130.0599365234375,
+              101.80133056640625
+            ],
+            [
+              118.04867553710938,
+              119.1781997680664
+            ],
+            [
+              142.85986328125,
+              118.54100036621094
+            ]
+          ],
+          "bbox": [
+            94.11297302246093,
+            57.15485534667969,
+            164.29549865722657,
+            142.58165588378907
+          ],
+          "score": 0.7818458080291748,
+          "alignment_matrix": [
+            [
+              1.1713825751859843,
+              -0.024425146640316166,
+              -93.74492814073233
+            ],
+            [
+              0.024425146640316166,
+              1.1713825751859843,
+              -50.59629028936646
+            ]
+          ]
+        },
+        "cosine": 0.6984618902206421
+      },
+      "nearest_v6b_player": {
+        "player_index": 24,
+        "cosine": 0.5576401948928833
+      },
+      "same_identity_variant_min_cosine": 0.9214548468589783
+    },
+    {
+      "id": "v6c_pilot_003",
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "short round face, soft cheeks, wide-spaced round eyes, small upturned nose, prominent ears, lean smaller frame",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_003.png",
+          "source_grid_sha256": "40fe86849b822906f5bace6abb7f131ac13f407bcc748a5a58f2915aff2f7c53",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                296,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                552,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch01.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_003.png",
+          "source_grid_sha256": "a881ce025a415a08b889b0f7cbe494f09b6bd36646264cd5c417bc51c2102965",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                296,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                552,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch01.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_003.png",
+          "source_grid_sha256": "84f8951c03487c2f880869e7148403b159f022db85dacdc4acb5fc77b090e9b4",
+          "source_cell": 2,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                296,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                552,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch01.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_006",
+        "team": "seoul_comets",
+        "detector": {
+          "landmarks": [
+            [
+              113.63636016845703,
+              86.59268188476562
+            ],
+            [
+              145.31861877441406,
+              86.50777435302734
+            ],
+            [
+              130.2744598388672,
+              103.8192138671875
+            ],
+            [
+              117.81686401367188,
+              120.94276428222656
+            ],
+            [
+              142.57315063476562,
+              120.79266357421875
+            ]
+          ],
+          "bbox": [
+            94.15987548828124,
+            59.41131591796875,
+            163.47117309570314,
+            144.016943359375
+          ],
+          "score": 0.7769062519073486,
+          "alignment_matrix": [
+            [
+              1.165651360896919,
+              -0.01004294882385447,
+              -94.3780356026269
+            ],
+            [
+              0.01004294882385447,
+              1.165651360896919,
+              -50.31824220883543
+            ]
+          ]
+        },
+        "cosine": 0.6185086369514465
+      },
+      "nearest_v6b_player": {
+        "player_index": 13,
+        "cosine": 0.5592648983001709
+      },
+      "same_identity_variant_min_cosine": 0.8983609080314636
+    },
+    {
+      "id": "v6c_pilot_004",
+      "age": 25,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "oblong rectangular face, deep-set eyes, long slightly crooked nose, thin lips, faint acne texture, tall broad shoulders",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_004.png",
+          "source_grid_sha256": "40fe86849b822906f5bace6abb7f131ac13f407bcc748a5a58f2915aff2f7c53",
+          "source_cell": 3,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              33
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                440,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                824,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch01.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_004.png",
+          "source_grid_sha256": "a881ce025a415a08b889b0f7cbe494f09b6bd36646264cd5c417bc51c2102965",
+          "source_cell": 3,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              33
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                440,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                824,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch01.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_004.png",
+          "source_grid_sha256": "84f8951c03487c2f880869e7148403b159f022db85dacdc4acb5fc77b090e9b4",
+          "source_cell": 3,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              33
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                440,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                824,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch01.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_001",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              115.81218719482422,
+              81.76868438720703
+            ],
+            [
+              145.6774444580078,
+              81.59585571289062
+            ],
+            [
+              131.7627716064453,
+              99.96221923828125
+            ],
+            [
+              120.41511535644531,
+              115.79520416259766
+            ],
+            [
+              142.30233764648438,
+              115.5960464477539
+            ]
+          ],
+          "bbox": [
+            99.34229431152343,
+            57.96003112792969,
+            161.04212341308593,
+            137.21783752441405
+          ],
+          "score": 0.6694808006286621,
+          "alignment_matrix": [
+            [
+              1.2086401591767615,
+              -0.009994795265672254,
+              -101.55122273326467
+            ],
+            [
+              0.009994795265672254,
+              1.2086401591767615,
+              -48.99768640662336
+            ]
+          ]
+        },
+        "cosine": 0.7543991208076477
+      },
+      "nearest_v6b_player": {
+        "player_index": 50,
+        "cosine": 0.4540470242500305
+      },
+      "same_identity_variant_min_cosine": 0.9313943386077881
+    },
+    {
+      "id": "v6c_pilot_005",
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "diamond face, sharp high cheekbones, small chin, thick short eyebrows, monolid eyes, dark sun-tanned skin, slender athlete",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_005.png",
+          "source_grid_sha256": "7f6a8cda44a04b5d2b7d0f0b605f84d05b9ae9865ee3dd194776888afe8797a0",
+          "source_cell": 0,
+          "headroom_512_estimate": 64,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              40
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                584,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                1096,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch02.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_005.png",
+          "source_grid_sha256": "727f7b88052b0803618cbf51d6ab969e5067fa71833ab99091102bab54fffabb",
+          "source_cell": 0,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              40
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                584,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                1096,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch02.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_005.png",
+          "source_grid_sha256": "a15b2d68b195418f1745e7e29a5fbdf28e23138acf26ff014b3f0984f2deb88a",
+          "source_cell": 0,
+          "headroom_512_estimate": 64,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              40
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                584,
+                8,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1096,
+                8,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch02.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_006",
+        "team": "seoul_comets",
+        "detector": {
+          "landmarks": [
+            [
+              113.63636016845703,
+              86.59268188476562
+            ],
+            [
+              145.31861877441406,
+              86.50777435302734
+            ],
+            [
+              130.2744598388672,
+              103.8192138671875
+            ],
+            [
+              117.81686401367188,
+              120.94276428222656
+            ],
+            [
+              142.57315063476562,
+              120.79266357421875
+            ]
+          ],
+          "bbox": [
+            94.15987548828124,
+            59.41131591796875,
+            163.47117309570314,
+            144.016943359375
+          ],
+          "score": 0.7769062519073486,
+          "alignment_matrix": [
+            [
+              1.165651360896919,
+              -0.01004294882385447,
+              -94.3780356026269
+            ],
+            [
+              0.01004294882385447,
+              1.165651360896919,
+              -50.31824220883543
+            ]
+          ]
+        },
+        "cosine": 0.7035152316093445
+      },
+      "nearest_v6b_player": {
+        "player_index": 85,
+        "cosine": 0.4468136131763458
+      },
+      "same_identity_variant_min_cosine": 0.8746908903121948
+    },
+    {
+      "id": "v6c_pilot_006",
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "heart-shaped face, fuller lower lip, gently arched brows, slightly protruding ears, light freckles, sturdy neck",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_006.png",
+          "source_grid_sha256": "7f6a8cda44a04b5d2b7d0f0b605f84d05b9ae9865ee3dd194776888afe8797a0",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                8,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                8,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch02.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_006.png",
+          "source_grid_sha256": "727f7b88052b0803618cbf51d6ab969e5067fa71833ab99091102bab54fffabb",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                8,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                8,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch02.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_006.png",
+          "source_grid_sha256": "a15b2d68b195418f1745e7e29a5fbdf28e23138acf26ff014b3f0984f2deb88a",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              32
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                8,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                8,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch02.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_005",
+        "team": "seoul_hounds",
+        "detector": {
+          "landmarks": [
+            [
+              112.84870147705078,
+              90.8609390258789
+            ],
+            [
+              143.70407104492188,
+              90.2830810546875
+            ],
+            [
+              129.07615661621094,
+              109.1818618774414
+            ],
+            [
+              119.08648681640625,
+              125.76956176757812
+            ],
+            [
+              140.0226593017578,
+              125.36460876464844
+            ]
+          ],
+          "bbox": [
+            96.3419677734375,
+            68.34817199707031,
+            161.353857421875,
+            145.2429962158203
+          ],
+          "score": 0.6766573786735535,
+          "alignment_matrix": [
+            [
+              1.1822193816741475,
+              -0.028838641796285307,
+              -93.2952162798062
+            ],
+            [
+              0.028838641796285307,
+              1.1822193816741475,
+              -59.842805485406274
+            ]
+          ]
+        },
+        "cosine": 0.7035152316093445
+      },
+      "nearest_v6b_player": {
+        "player_index": 42,
+        "cosine": 0.46947774291038513
+      },
+      "same_identity_variant_min_cosine": 0.8878598213195801
+    },
+    {
+      "id": "v6c_pilot_007",
+      "age": 28,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "very broad round face, small eyes behind thin rectangular sports eyeglasses, thick neck, heavier catcher body type, warm complexion",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_007.png",
+          "source_grid_sha256": "7f6a8cda44a04b5d2b7d0f0b605f84d05b9ae9865ee3dd194776888afe8797a0",
+          "source_cell": 2,
+          "headroom_512_estimate": 58,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                152,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                280,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch02.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_007.png",
+          "source_grid_sha256": "727f7b88052b0803618cbf51d6ab969e5067fa71833ab99091102bab54fffabb",
+          "source_cell": 2,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                152,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                280,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch02.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_007.png",
+          "source_grid_sha256": "a15b2d68b195418f1745e7e29a5fbdf28e23138acf26ff014b3f0984f2deb88a",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                152,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                280,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch02.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_015",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.21133422851562,
+              84.57698822021484
+            ],
+            [
+              146.0324249267578,
+              83.97698211669922
+            ],
+            [
+              130.29617309570312,
+              100.60202026367188
+            ],
+            [
+              117.46125793457031,
+              118.49021911621094
+            ],
+            [
+              143.38211059570312,
+              117.91748046875
+            ]
+          ],
+          "bbox": [
+            93.38170471191407,
+            56.85115966796875,
+            164.68385620117186,
+            141.50469055175782
+          ],
+          "score": 0.773741602897644,
+          "alignment_matrix": [
+            [
+              1.1530530270206532,
+              -0.018970083810432803,
+              -92.0410095671541
+            ],
+            [
+              0.018970083810432803,
+              1.1530530270206532,
+              -47.155132035334525
+            ]
+          ]
+        },
+        "cosine": 0.5686183571815491
+      },
+      "nearest_v6b_player": {
+        "player_index": 9,
+        "cosine": 0.4363265037536621
+      },
+      "same_identity_variant_min_cosine": 0.8635053038597107
+    },
+    {
+      "id": "v6c_pilot_008",
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "long angular jaw, double-lid eyes, high narrow nose bridge, short neat black hair, naturally dark under-eye tone, slim shoulders",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_008.png",
+          "source_grid_sha256": "7f6a8cda44a04b5d2b7d0f0b605f84d05b9ae9865ee3dd194776888afe8797a0",
+          "source_cell": 3,
+          "headroom_512_estimate": 63,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              39
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                296,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                552,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch02.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_008.png",
+          "source_grid_sha256": "727f7b88052b0803618cbf51d6ab969e5067fa71833ab99091102bab54fffabb",
+          "source_cell": 3,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              39
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                296,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                552,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch02.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_008.png",
+          "source_grid_sha256": "a15b2d68b195418f1745e7e29a5fbdf28e23138acf26ff014b3f0984f2deb88a",
+          "source_cell": 3,
+          "headroom_512_estimate": 62,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              39
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                296,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                552,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch02.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_006",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.7433853149414,
+              86.89421081542969
+            ],
+            [
+              145.1888427734375,
+              86.56964111328125
+            ],
+            [
+              130.25343322753906,
+              103.91188049316406
+            ],
+            [
+              118.23452758789062,
+              121.19216918945312
+            ],
+            [
+              142.49749755859375,
+              120.85961151123047
+            ]
+          ],
+          "bbox": [
+            94.456494140625,
+            60.5697998046875,
+            163.4343994140625,
+            143.56250915527343
+          ],
+          "score": 0.7617847919464111,
+          "alignment_matrix": [
+            [
+              1.1717982746547195,
+              -0.017469346600392777,
+              -94.47351284429715
+            ],
+            [
+              0.017469346600392777,
+              1.1717982746547195,
+              -52.10279954965519
+            ]
+          ]
+        },
+        "cosine": 0.6375750303268433
+      },
+      "nearest_v6b_player": {
+        "player_index": 86,
+        "cosine": 0.5342128872871399
+      },
+      "same_identity_variant_min_cosine": 0.8489193916320801
+    },
+    {
+      "id": "v6c_pilot_009",
+      "age": 24,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "compact square face, flatter wide nose, thick lips, thick low straight brows, medium-deep warm tan, muscular broad chest",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_009.png",
+          "source_grid_sha256": "44e60e215c473142c6d96c29cbfe8955d3111bcd4ffa1994ffcfcf6acf255e4e",
+          "source_cell": 0,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                440,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                824,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch03.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_009.png",
+          "source_grid_sha256": "95a617bbdca10e62a40cd880b178d50c042beebc6fca8a8176ad1b538c75a6af",
+          "source_cell": 0,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                440,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                824,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch03.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_009.png",
+          "source_grid_sha256": "b1a5f4b3c304423118000b42458c6e8d79ce99b64ed281c909810a686a60c53d",
+          "source_cell": 0,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                440,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                824,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch03.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_012",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.49054718017578,
+              82.274169921875
+            ],
+            [
+              143.55038452148438,
+              82.0799331665039
+            ],
+            [
+              129.18362426757812,
+              100.09178924560547
+            ],
+            [
+              118.24590301513672,
+              116.19691467285156
+            ],
+            [
+              140.4379425048828,
+              116.03640747070312
+            ]
+          ],
+          "bbox": [
+            96.59187927246094,
+            58.188558959960936,
+            160.41270141601564,
+            137.70459594726563
+          ],
+          "score": 0.6932531595230103,
+          "alignment_matrix": [
+            [
+              1.2068258734937738,
+              -0.014443667231329218,
+              -98.19749528720062
+            ],
+            [
+              0.014443667231329218,
+              1.2068258734937738,
+              -49.84325322578093
+            ]
+          ]
+        },
+        "cosine": 0.6061192750930786
+      },
+      "nearest_v6b_player": {
+        "player_index": 0,
+        "cosine": 0.3991319537162781
+      },
+      "same_identity_variant_min_cosine": 0.8860713243484497
+    },
+    {
+      "id": "v6c_pilot_010",
+      "age": 32,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "narrow long face, high cheekbones, mild receding hairline hidden by cap, faint neat moustache and chin stubble, wiry build",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_010.png",
+          "source_grid_sha256": "44e60e215c473142c6d96c29cbfe8955d3111bcd4ffa1994ffcfcf6acf255e4e",
+          "source_cell": 1,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                584,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                1096,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch03.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_010.png",
+          "source_grid_sha256": "95a617bbdca10e62a40cd880b178d50c042beebc6fca8a8176ad1b538c75a6af",
+          "source_cell": 1,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                584,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                1096,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch03.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_010.png",
+          "source_grid_sha256": "b1a5f4b3c304423118000b42458c6e8d79ce99b64ed281c909810a686a60c53d",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                584,
+                152,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1096,
+                280,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch03.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_018",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.54119110107422,
+              84.73580169677734
+            ],
+            [
+              144.8933868408203,
+              84.46109008789062
+            ],
+            [
+              129.93080139160156,
+              103.6640853881836
+            ],
+            [
+              117.82793426513672,
+              118.41500854492188
+            ],
+            [
+              141.94482421875,
+              118.07038879394531
+            ]
+          ],
+          "bbox": [
+            95.43525695800781,
+            56.96910705566406,
+            161.9146240234375,
+            139.59729614257813
+          ],
+          "score": 0.722277820110321,
+          "alignment_matrix": [
+            [
+              1.1844927149967055,
+              -0.012721826738966003,
+              -96.22085742184477
+            ],
+            [
+              0.012721826738966003,
+              1.1844927149967055,
+              -50.41173294052299
+            ]
+          ]
+        },
+        "cosine": 0.6554411053657532
+      },
+      "nearest_v6b_player": {
+        "player_index": 31,
+        "cosine": 0.3946797251701355
+      },
+      "same_identity_variant_min_cosine": 0.8874167203903198
+    },
+    {
+      "id": "v6c_pilot_011",
+      "age": 19,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "round wide cheekbones tapering to pointed chin, unusually large ears, narrow slightly downturned eyes, small mouth, fair uneven skin",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_011.png",
+          "source_grid_sha256": "44e60e215c473142c6d96c29cbfe8955d3111bcd4ffa1994ffcfcf6acf255e4e",
+          "source_cell": 2,
+          "headroom_512_estimate": 58,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              26
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                8,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                8,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch03.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_011.png",
+          "source_grid_sha256": "95a617bbdca10e62a40cd880b178d50c042beebc6fca8a8176ad1b538c75a6af",
+          "source_cell": 2,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              26
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                8,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                8,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch03.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_011.png",
+          "source_grid_sha256": "b1a5f4b3c304423118000b42458c6e8d79ce99b64ed281c909810a686a60c53d",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              26
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                8,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                8,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch03.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_006",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.7433853149414,
+              86.89421081542969
+            ],
+            [
+              145.1888427734375,
+              86.56964111328125
+            ],
+            [
+              130.25343322753906,
+              103.91188049316406
+            ],
+            [
+              118.23452758789062,
+              121.19216918945312
+            ],
+            [
+              142.49749755859375,
+              120.85961151123047
+            ]
+          ],
+          "bbox": [
+            94.456494140625,
+            60.5697998046875,
+            163.4343994140625,
+            143.56250915527343
+          ],
+          "score": 0.7617847919464111,
+          "alignment_matrix": [
+            [
+              1.1717982746547195,
+              -0.017469346600392777,
+              -94.47351284429715
+            ],
+            [
+              0.017469346600392777,
+              1.1717982746547195,
+              -52.10279954965519
+            ]
+          ]
+        },
+        "cosine": 0.6108003854751587
+      },
+      "nearest_v6b_player": {
+        "player_index": 5,
+        "cosine": 0.3884240984916687
+      },
+      "same_identity_variant_min_cosine": 0.8829023241996765
+    },
+    {
+      "id": "v6c_pilot_012",
+      "age": 26,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "large oval face, broad straight nose, heavy low brows, small vertical scar beside left eyebrow, clean shaved, strong pitcher shoulders",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_012.png",
+          "source_grid_sha256": "44e60e215c473142c6d96c29cbfe8955d3111bcd4ffa1994ffcfcf6acf255e4e",
+          "source_cell": 3,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                152,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                280,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch03.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_012.png",
+          "source_grid_sha256": "95a617bbdca10e62a40cd880b178d50c042beebc6fca8a8176ad1b538c75a6af",
+          "source_cell": 3,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                152,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                280,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch03.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_012.png",
+          "source_grid_sha256": "b1a5f4b3c304423118000b42458c6e8d79ce99b64ed281c909810a686a60c53d",
+          "source_cell": 3,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              27
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                152,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                280,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch03.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_020",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.2789535522461,
+              85.7922134399414
+            ],
+            [
+              145.56544494628906,
+              85.46910858154297
+            ],
+            [
+              129.89297485351562,
+              103.87773132324219
+            ],
+            [
+              117.80078125,
+              121.28498077392578
+            ],
+            [
+              142.9650421142578,
+              120.92652130126953
+            ]
+          ],
+          "bbox": [
+            93.63890380859375,
+            56.26121215820312,
+            164.6746856689453,
+            146.35661926269532
+          ],
+          "score": 0.8129795789718628,
+          "alignment_matrix": [
+            [
+              1.1344281441155932,
+              -0.017545976286726883,
+              -89.52129768467545
+            ],
+            [
+              0.017545976286726883,
+              1.1344281441155932,
+              -47.75785871184315
+            ]
+          ]
+        },
+        "cosine": 0.6285089254379272
+      },
+      "nearest_v6b_player": {
+        "player_index": 0,
+        "cosine": 0.4964967966079712
+      },
+      "same_identity_variant_min_cosine": 0.8961736559867859
+    },
+    {
+      "id": "v6c_pilot_013",
+      "age": 35,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "short rectangular face, visible smile lines, dark short stubble, rounded nose tip, sparse sideburns, thickset athletic veteran",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_013.png",
+          "source_grid_sha256": "4ed34d0bfadf8643577450fbaa0f2eaa4c8274b7d1002bb2f229ab83bc6654d5",
+          "source_cell": 0,
+          "headroom_512_estimate": 59,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                296,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                552,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch04.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_013.png",
+          "source_grid_sha256": "b94771988889e7423f01836660cd9f3fb5777b90b774958b8d642e5de5ee8e6d",
+          "source_cell": 0,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                296,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                552,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch04.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_013.png",
+          "source_grid_sha256": "a21d745af1d2d9e38e47fd2f418ef082afb998fa72670e9dba512c7812971390",
+          "source_cell": 0,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                296,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                552,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch04.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_015",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.21133422851562,
+              84.57698822021484
+            ],
+            [
+              146.0324249267578,
+              83.97698211669922
+            ],
+            [
+              130.29617309570312,
+              100.60202026367188
+            ],
+            [
+              117.46125793457031,
+              118.49021911621094
+            ],
+            [
+              143.38211059570312,
+              117.91748046875
+            ]
+          ],
+          "bbox": [
+            93.38170471191407,
+            56.85115966796875,
+            164.68385620117186,
+            141.50469055175782
+          ],
+          "score": 0.773741602897644,
+          "alignment_matrix": [
+            [
+              1.1530530270206532,
+              -0.018970083810432803,
+              -92.0410095671541
+            ],
+            [
+              0.018970083810432803,
+              1.1530530270206532,
+              -47.155132035334525
+            ]
+          ]
+        },
+        "cosine": 0.5042428970336914
+      },
+      "nearest_v6b_player": {
+        "player_index": 24,
+        "cosine": 0.35677412152290344
+      },
+      "same_identity_variant_min_cosine": 0.8786642551422119
+    },
+    {
+      "id": "v6c_pilot_014",
+      "age": 20,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "small oval face, pronounced upper eyelids, medium aquiline nose, wide mouth, asymmetric natural eyebrows, light olive skin",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_014.png",
+          "source_grid_sha256": "4ed34d0bfadf8643577450fbaa0f2eaa4c8274b7d1002bb2f229ab83bc6654d5",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                440,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                824,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch04.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_014.png",
+          "source_grid_sha256": "b94771988889e7423f01836660cd9f3fb5777b90b774958b8d642e5de5ee8e6d",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                440,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                824,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch04.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_014.png",
+          "source_grid_sha256": "a21d745af1d2d9e38e47fd2f418ef082afb998fa72670e9dba512c7812971390",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                440,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                824,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch04.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_008",
+        "team": "seoul_hounds",
+        "detector": {
+          "landmarks": [
+            [
+              114.2785415649414,
+              91.41254425048828
+            ],
+            [
+              144.96609497070312,
+              90.83654022216797
+            ],
+            [
+              130.10458374023438,
+              110.05137634277344
+            ],
+            [
+              118.48541259765625,
+              127.15663146972656
+            ],
+            [
+              141.81202697753906,
+              126.85729217529297
+            ]
+          ],
+          "bbox": [
+            95.95191040039063,
+            64.18895263671875,
+            162.28305358886718,
+            150.67536010742188
+          ],
+          "score": 0.7646914720535278,
+          "alignment_matrix": [
+            [
+              1.152172970929808,
+              -0.011271545823165365,
+              -92.44334326173724
+            ],
+            [
+              0.011271545823165365,
+              1.152172970929808,
+              -55.45345682108994
+            ]
+          ]
+        },
+        "cosine": 0.5446401238441467
+      },
+      "nearest_v6b_player": {
+        "player_index": 92,
+        "cosine": 0.4619385898113251
+      },
+      "same_identity_variant_min_cosine": 0.8856364488601685
+    },
+    {
+      "id": "v6c_pilot_015",
+      "age": 23,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "wide trapezoid face, broad angular jaw, short flat nose, thin long eyes, very short hair, muscular stocky neck",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_015.png",
+          "source_grid_sha256": "4ed34d0bfadf8643577450fbaa0f2eaa4c8274b7d1002bb2f229ab83bc6654d5",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                584,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                1096,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch04.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_015.png",
+          "source_grid_sha256": "b94771988889e7423f01836660cd9f3fb5777b90b774958b8d642e5de5ee8e6d",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                584,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                1096,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch04.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_015.png",
+          "source_grid_sha256": "a21d745af1d2d9e38e47fd2f418ef082afb998fa72670e9dba512c7812971390",
+          "source_cell": 2,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              36
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                584,
+                296,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1096,
+                552,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch04.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_002",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              114.11351776123047,
+              82.74906921386719
+            ],
+            [
+              143.95518493652344,
+              82.29759216308594
+            ],
+            [
+              129.25531005859375,
+              97.30829620361328
+            ],
+            [
+              118.08963775634766,
+              115.3177719116211
+            ],
+            [
+              141.21600341796875,
+              114.89651489257812
+            ]
+          ],
+          "bbox": [
+            96.31168823242187,
+            57.13422546386719,
+            161.9259796142578,
+            137.91747436523437
+          ],
+          "score": 0.7017276287078857,
+          "alignment_matrix": [
+            [
+              1.232206819832637,
+              -0.015266605342626824,
+              -101.8261625083427
+            ],
+            [
+              0.015266605342626824,
+              1.232206819832637,
+              -51.46302366804836
+            ]
+          ]
+        },
+        "cosine": 0.6331449151039124
+      },
+      "nearest_v6b_player": {
+        "player_index": 24,
+        "cosine": 0.5660614371299744
+      },
+      "same_identity_variant_min_cosine": 0.8991362452507019
+    },
+    {
+      "id": "v6c_pilot_016",
+      "age": 29,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "long tapered face, prominent ears, downturned mouth corners, long straight narrow nose, slightly rough sun-weathered skin, lean build",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_016.png",
+          "source_grid_sha256": "4ed34d0bfadf8643577450fbaa0f2eaa4c8274b7d1002bb2f229ab83bc6654d5",
+          "source_cell": 3,
+          "headroom_512_estimate": 58,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              37
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                8,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                8,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch04.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_016.png",
+          "source_grid_sha256": "b94771988889e7423f01836660cd9f3fb5777b90b774958b8d642e5de5ee8e6d",
+          "source_cell": 3,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              37
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                8,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                8,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch04.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_016.png",
+          "source_grid_sha256": "a21d745af1d2d9e38e47fd2f418ef082afb998fa72670e9dba512c7812971390",
+          "source_cell": 3,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              37
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                8,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                8,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch04.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_004",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              116.20059204101562,
+              80.99838256835938
+            ],
+            [
+              145.63307189941406,
+              81.1371841430664
+            ],
+            [
+              131.513671875,
+              100.05876922607422
+            ],
+            [
+              120.52072143554688,
+              115.20818328857422
+            ],
+            [
+              141.8382568359375,
+              115.33961486816406
+            ]
+          ],
+          "bbox": [
+            100.05555114746093,
+            57.77753601074219,
+            161.17115783691406,
+            137.25945739746095
+          ],
+          "score": 0.6665106415748596,
+          "alignment_matrix": [
+            [
+              1.2113400154233054,
+              0.0033181970328657173,
+              -103.15750332803633
+            ],
+            [
+              -0.0033181970328657173,
+              1.2113400154233054,
+              -47.03971962682844
+            ]
+          ]
+        },
+        "cosine": 0.6419231295585632
+      },
+      "nearest_v6b_player": {
+        "player_index": 83,
+        "cosine": 0.4368700087070465
+      },
+      "same_identity_variant_min_cosine": 0.8798125982284546
+    },
+    {
+      "id": "v6c_pilot_017",
+      "age": 21,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "broad youthful oval face, full cheeks, thick arched brows, wider eyes, round nose tip, small mole near right cheek, stout build",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_017.png",
+          "source_grid_sha256": "11899c2cd789f22dd0c3681e661a1f6eebcd3ac4431cd89d5d214bc9bbe65d2b",
+          "source_cell": 0,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                152,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                280,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch05.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_017.png",
+          "source_grid_sha256": "6814c279ba7d021f8cf280e559d4851cfbc58da8b78253bc14280a534a019e15",
+          "source_cell": 0,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                152,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                280,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch05.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_017.png",
+          "source_grid_sha256": "04685f111a32f702ba218791bc713f58a8586b36624a5476a54c712417e2c526",
+          "source_cell": 0,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                152,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                280,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch05.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_020",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.2789535522461,
+              85.7922134399414
+            ],
+            [
+              145.56544494628906,
+              85.46910858154297
+            ],
+            [
+              129.89297485351562,
+              103.87773132324219
+            ],
+            [
+              117.80078125,
+              121.28498077392578
+            ],
+            [
+              142.9650421142578,
+              120.92652130126953
+            ]
+          ],
+          "bbox": [
+            93.63890380859375,
+            56.26121215820312,
+            164.6746856689453,
+            146.35661926269532
+          ],
+          "score": 0.8129795789718628,
+          "alignment_matrix": [
+            [
+              1.1344281441155932,
+              -0.017545976286726883,
+              -89.52129768467545
+            ],
+            [
+              0.017545976286726883,
+              1.1344281441155932,
+              -47.75785871184315
+            ]
+          ]
+        },
+        "cosine": 0.731905460357666
+      },
+      "nearest_v6b_player": {
+        "player_index": 24,
+        "cosine": 0.5330101251602173
+      },
+      "same_identity_variant_min_cosine": 0.8874933123588562
+    },
+    {
+      "id": "v6c_pilot_018",
+      "age": 34,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "diamond face with hollow cheeks, fine lines around small eyes, dark close-shaved moustache, long narrow jaw, medium tan",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_018.png",
+          "source_grid_sha256": "11899c2cd789f22dd0c3681e661a1f6eebcd3ac4431cd89d5d214bc9bbe65d2b",
+          "source_cell": 1,
+          "headroom_512_estimate": 58,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                296,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                552,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch05.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_018.png",
+          "source_grid_sha256": "6814c279ba7d021f8cf280e559d4851cfbc58da8b78253bc14280a534a019e15",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                296,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                552,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch05.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_018.png",
+          "source_grid_sha256": "04685f111a32f702ba218791bc713f58a8586b36624a5476a54c712417e2c526",
+          "source_cell": 1,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                296,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                552,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch05.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_010",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.8555679321289,
+              81.69365692138672
+            ],
+            [
+              143.01669311523438,
+              81.4426498413086
+            ],
+            [
+              128.86557006835938,
+              100.08663177490234
+            ],
+            [
+              118.25897979736328,
+              114.00053405761719
+            ],
+            [
+              139.49139404296875,
+              113.86744689941406
+            ]
+          ],
+          "bbox": [
+            98.11556091308594,
+            58.66575622558594,
+            159.179833984375,
+            132.86460876464844
+          ],
+          "score": 0.7333727478981018,
+          "alignment_matrix": [
+            [
+              1.2568623295780423,
+              -0.007230891361029528,
+              -105.01885193118142
+            ],
+            [
+              0.007230891361029528,
+              1.2568623295780423,
+              -52.47655260862064
+            ]
+          ]
+        },
+        "cosine": 0.6554411053657532
+      },
+      "nearest_v6b_player": {
+        "player_index": 1,
+        "cosine": 0.3911977708339691
+      },
+      "same_identity_variant_min_cosine": 0.9145685434341431
+    },
+    {
+      "id": "v6c_pilot_019",
+      "age": 18,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "triangular face, slim pointed chin, broad forehead hidden beneath deep cap, close-set monolid eyes, short black hair, wiry neck",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_019.png",
+          "source_grid_sha256": "11899c2cd789f22dd0c3681e661a1f6eebcd3ac4431cd89d5d214bc9bbe65d2b",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                440,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                824,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch05.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_019.png",
+          "source_grid_sha256": "6814c279ba7d021f8cf280e559d4851cfbc58da8b78253bc14280a534a019e15",
+          "source_cell": 2,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                440,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                824,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch05.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_019.png",
+          "source_grid_sha256": "04685f111a32f702ba218791bc713f58a8586b36624a5476a54c712417e2c526",
+          "source_cell": 2,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                440,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                824,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch05.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_008",
+        "team": "seoul_hounds",
+        "detector": {
+          "landmarks": [
+            [
+              114.2785415649414,
+              91.41254425048828
+            ],
+            [
+              144.96609497070312,
+              90.83654022216797
+            ],
+            [
+              130.10458374023438,
+              110.05137634277344
+            ],
+            [
+              118.48541259765625,
+              127.15663146972656
+            ],
+            [
+              141.81202697753906,
+              126.85729217529297
+            ]
+          ],
+          "bbox": [
+            95.95191040039063,
+            64.18895263671875,
+            162.28305358886718,
+            150.67536010742188
+          ],
+          "score": 0.7646914720535278,
+          "alignment_matrix": [
+            [
+              1.152172970929808,
+              -0.011271545823165365,
+              -92.44334326173724
+            ],
+            [
+              0.011271545823165365,
+              1.152172970929808,
+              -55.45345682108994
+            ]
+          ]
+        },
+        "cosine": 0.6182724833488464
+      },
+      "nearest_v6b_player": {
+        "player_index": 50,
+        "cosine": 0.4336486756801605
+      },
+      "same_identity_variant_min_cosine": 0.8750747442245483
+    },
+    {
+      "id": "v6c_pilot_020",
+      "age": 27,
+      "sex": "male",
+      "ethnicity": "Korean",
+      "appearance_brief": "large round-square face, thick expressive dark eyebrows, broad nose bridge, clearly textured skin, softly heavy athletic body",
+      "variants": {
+        "seoul_comets": {
+          "archive_master": "archive/seoul_comets.zip::masters512/v6c_pilot_020.png",
+          "source_grid_sha256": "11899c2cd789f22dd0c3681e661a1f6eebcd3ac4431cd89d5d214bc9bbe65d2b",
+          "source_cell": 3,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_comets.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_comets.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_comets.zip::generated_grids/batch05.png"
+        },
+        "seoul_hounds": {
+          "archive_master": "archive/seoul_hounds.zip::masters512/v6c_pilot_020.png",
+          "source_grid_sha256": "6814c279ba7d021f8cf280e559d4851cfbc58da8b78253bc14280a534a019e15",
+          "source_cell": 3,
+          "headroom_512_estimate": 56,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/seoul_hounds.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/seoul_hounds.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/seoul_hounds.zip::generated_grids/batch05.png"
+        },
+        "gwangju_blazes": {
+          "archive_master": "archive/gwangju_blazes.zip::masters512/v6c_pilot_020.png",
+          "source_grid_sha256": "04685f111a32f702ba218791bc713f58a8586b36624a5476a54c712417e2c526",
+          "source_cell": 3,
+          "headroom_512_estimate": 57,
+          "whole_photo_transform_512": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              34
+            ]
+          ],
+          "sheets": {
+            "128": {
+              "path": "sheets/128/gwangju_blazes.webp",
+              "rect": [
+                584,
+                440,
+                128,
+                128
+              ]
+            },
+            "256": {
+              "path": "sheets/256/gwangju_blazes.webp",
+              "rect": [
+                1096,
+                824,
+                256,
+                256
+              ]
+            }
+          },
+          "source_archive": "archive/gwangju_blazes.zip::generated_grids/batch05.png"
+        }
+      },
+      "nearest_other_identity": {
+        "identity_id": "v6c_pilot_017",
+        "team": "gwangju_blazes",
+        "detector": {
+          "landmarks": [
+            [
+              113.59794616699219,
+              85.2288818359375
+            ],
+            [
+              145.34567260742188,
+              84.57279205322266
+            ],
+            [
+              130.0599365234375,
+              101.80133056640625
+            ],
+            [
+              118.04867553710938,
+              119.1781997680664
+            ],
+            [
+              142.85986328125,
+              118.54100036621094
+            ]
+          ],
+          "bbox": [
+            94.11297302246093,
+            57.15485534667969,
+            164.29549865722657,
+            142.58165588378907
+          ],
+          "score": 0.7818458080291748,
+          "alignment_matrix": [
+            [
+              1.1713825751859843,
+              -0.024425146640316166,
+              -93.74492814073233
+            ],
+            [
+              0.024425146640316166,
+              1.1713825751859843,
+              -50.59629028936646
+            ]
+          ]
+        },
+        "cosine": 0.731905460357666
+      },
+      "nearest_v6b_player": {
+        "player_index": 0,
+        "cosine": 0.4867488443851471
+      },
+      "same_identity_variant_min_cosine": 0.8810276985168457
+    }
+  ],
+  "archives": [
+    {
+      "path": "archive/seoul_comets.zip",
+      "bytes": 19175086,
+      "sha256": "f6dfd16cad96c2190d202a25d1ac4374d16e1151f10e270f92a009116d73e29f",
+      "entries": 65
+    },
+    {
+      "path": "archive/seoul_hounds.zip",
+      "bytes": 16328578,
+      "sha256": "a9f379ee933e46a4f73677dab22deed6854ba3754e64e9e3d141e948ecf4fdc4",
+      "entries": 65
+    },
+    {
+      "path": "archive/gwangju_blazes.zip",
+      "bytes": 18077014,
+      "sha256": "a746efb9c9870e68e9332d8ce7aef4bd127d4e994f5664e8b4350379bcf1e2b5",
+      "entries": 65
+    }
+  ]
+}

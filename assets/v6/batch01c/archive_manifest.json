@@ -1,0 +1,20 @@
+[
+  {
+    "path": "archive/seoul_comets.zip",
+    "bytes": 19175086,
+    "sha256": "f6dfd16cad96c2190d202a25d1ac4374d16e1151f10e270f92a009116d73e29f",
+    "entries": 65
+  },
+  {
+    "path": "archive/seoul_hounds.zip",
+    "bytes": 16328578,
+    "sha256": "a9f379ee933e46a4f73677dab22deed6854ba3754e64e9e3d141e948ecf4fdc4",
+    "entries": 65
+  },
+  {
+    "path": "archive/gwangju_blazes.zip",
+    "bytes": 18077014,
+    "sha256": "a746efb9c9870e68e9332d8ce7aef4bd127d4e994f5664e8b4350379bcf1e2b5",
+    "entries": 65
+  }
+]

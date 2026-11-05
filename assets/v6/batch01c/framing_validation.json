@@ -1,0 +1,602 @@
+[
+  {
+    "identity_id": "v6c_pilot_001",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 25,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_001",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_001",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_002",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 25,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_002",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_002",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_003",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 25,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_003",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 25,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_003",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_004",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 33,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_004",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 33,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_004",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 33,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_005",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 40,
+    "headroom_512_estimate": 64,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_005",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 16,
+    "whole_photo_translation_y": 40,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_005",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 40,
+    "headroom_512_estimate": 64,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_006",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_006",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_006",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 32,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_007",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 58,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_007",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 22,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_007",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_008",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 39,
+    "headroom_512_estimate": 63,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_008",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 17,
+    "whole_photo_translation_y": 39,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_008",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 39,
+    "headroom_512_estimate": 62,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_009",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 30,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_009",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 30,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_009",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 29,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_010",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 30,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_010",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 30,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_010",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 29,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_011",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 32,
+    "whole_photo_translation_y": 26,
+    "headroom_512_estimate": 58,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_011",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 30,
+    "whole_photo_translation_y": 26,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_011",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 31,
+    "whole_photo_translation_y": 26,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_012",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 29,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_012",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 29,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_012",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 29,
+    "whole_photo_translation_y": 27,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_013",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 59,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_013",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 21,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_013",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 20,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_014",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 20,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_014",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 20,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_014",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 20,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_015",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 21,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_015",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 21,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_015",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 20,
+    "whole_photo_translation_y": 36,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_016",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 21,
+    "whole_photo_translation_y": 37,
+    "headroom_512_estimate": 58,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_016",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 20,
+    "whole_photo_translation_y": 37,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_016",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 19,
+    "whole_photo_translation_y": 37,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_017",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_017",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 22,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_017",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 22,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_018",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 24,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 58,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_018",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 22,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_018",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 22,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_019",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_019",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 22,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_019",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_020",
+    "team": "seoul_comets",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_020",
+    "team": "seoul_hounds",
+    "cap_top_method": "local crown silhouette contrast around matched red-cap variants",
+    "source_cap_top_estimate": 22,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 56,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  },
+  {
+    "identity_id": "v6c_pilot_020",
+    "team": "gwangju_blazes",
+    "cap_top_method": "red fabric support",
+    "source_cap_top_estimate": 23,
+    "whole_photo_translation_y": 34,
+    "headroom_512_estimate": 57,
+    "runtime_cap_stretch": false,
+    "local_face_body_paste": false
+  }
+]
