@@ -50,11 +50,16 @@ function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user
   const free=i=>{ const o=Rv[i]; if(o==null||o===p.id)return true; const q=G.players[o]; return !q||q.team!==G.user; };
   const C=face6Pool(p).filter(free); if(!C.length)return null;
   C.sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||hn('f6'+a,p.id)-hn('f6'+b,p.id)); const i=C[0]; if(cur!=null&&Rv[cur]===p.id)delete Rv[cur]; M[p.id]=i; Rv[i]=p.id; return i; }
-function face6Cut(im,cs,i,x,y,w,o,pad){ const c=document.createElement('canvas'); c.width=c.height=o; const g=c.getContext('2d'); const sx=(i%10)*cs, sy=Math.floor(i/10)*cs;
-  /* 머리 위 여백: 원본 칸에는 모자 위가 거의 없어서, 배경색(칸 위 가장자리)으로 채운 뒤 사진을 pad 비율만큼 내려 그린다(사용자 11-05: 머리가 천장에 닿지 않게) */
-  const pd=Math.round(o*(pad||0)), sh=w*(o-pd)/o; g.drawImage(im,sx+x,sy,w,1,0,0,o,pd+1); g.drawImage(im,sx+x,sy+y,w,sh,0,pd,o,o-pd); return c.toDataURL('image/jpeg',.88); }
+function face6Cut(im,cs,i,x,y,w,o,pad,big){ const c=document.createElement('canvas'); c.width=c.height=o; const g=c.getContext('2d'); g.imageSmoothingQuality='high'; const sx=(i%10)*cs, sy=Math.floor(i/10)*cs;
+  /* 머리 위 여백: 원본 칸에는 모자 위가 거의 없어서, 배경(칸 위 양쪽 모서리 평균색, 왼→오 그라데이션)으로 채운 뒤 사진을 pad 비율만큼 내려 그린다(사용자 11-05) */
+  const pd=Math.round(o*(pad||0)), sh=w*(o-pd)/o; if(pd){ const px=(ax)=>{ const t=document.createElement('canvas'); t.width=t.height=1; const tg=t.getContext('2d'); tg.drawImage(im,ax,sy+2,Math.round(cs*.08),Math.round(cs*.08),0,0,1,1); const d=tg.getImageData(0,0,1,1).data; return `rgb(${d[0]},${d[1]},${d[2]})`; };
+    const gr=g.createLinearGradient(0,0,o,0); gr.addColorStop(0,px(sx+2)); gr.addColorStop(1,px(sx+cs-2-Math.round(cs*.08))); g.fillStyle=gr; g.fillRect(0,0,o,pd+2);
+    g.drawImage(im,sx+x,sy+y,w,sh,0,pd,o,o-pd); const fd=g.createLinearGradient(0,pd,0,pd+Math.round(o*.05)); fd.addColorStop(0,'rgba(0,0,0,1)'); fd.addColorStop(1,'rgba(0,0,0,0)'); /* 이음새를 부드럽게: 배경색 띠를 사진 위쪽으로 살짝 번지게 */
+    const m=document.createElement('canvas'); m.width=o; m.height=Math.round(o*.05)+1; const mg=m.getContext('2d'); mg.fillStyle=gr; mg.fillRect(0,0,o,m.height); mg.globalCompositeOperation='destination-in'; const f2=mg.createLinearGradient(0,0,0,m.height); f2.addColorStop(0,'rgba(0,0,0,1)'); f2.addColorStop(1,'rgba(0,0,0,0)'); mg.fillStyle=f2; mg.fillRect(0,0,o,m.height); g.drawImage(m,0,pd); void fd; }
+  else g.drawImage(im,sx+x,sy+y,w,w,0,0,o,o);
+  return big?c.toDataURL('image/webp',.92):c.toDataURL('image/jpeg',.9); }
 function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user, k=tid+':'+i; if(F6C.has(k))return F6C.get(k);
-  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const u=face6Cut(im,128,i,26,0,76,96,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
-/* 큰 자리(선수 상세): 모자부터 가슴 심벌까지. 192px 시트가 있으면(사이트) 선명하게, 없으면(아티팩트) 128px 시트로 */
-function face6Bust(x){ const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; if(bg&&bg.ok)u=face6Cut(bg,192,x.i,8,0,176,240,.09); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=face6Cut(im,128,x.i,5,0,118,160,.09); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
+  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const u=face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
+/* 큰 자리(선수 상세): 모자부터 가슴 심벌까지. 256px 시트가 있으면(사이트) 선명하게, 없으면(아티팩트) 128px 시트로 */
+function face6Bust(x){ const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; if(bg&&bg.ok)u=face6Cut(bg,256,x.i,12,0,232,464,.1,true); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=face6Cut(im,128,x.i,6,0,116,232,.1,true); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });

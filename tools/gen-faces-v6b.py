@@ -46,13 +46,13 @@ for t in M5['teams']:
     K=M5['kits'][t['key']]['home']; kit=load(A5[K['kit_overlay']]['png']['512']); chest=load(A5[K['chest']]['png']['512'])
     capmark=np.asarray(Image.open(os.path.join(D5B,A5[K['cap']]['png']['512'])).convert('RGBA').resize((256,256),Image.LANCZOS)).astype(np.float32)
     h=K['cap_color'].lstrip('#'); capRGB=[int(h[i:i+2],16) for i in (0,2,4)]
-    sh=Image.new('RGB',(1280,1280)); bg=Image.new('RGB',(1920,1920))
-    for i,ident in enumerate(ids): im=person(ident,kit,chest,capmark,capRGB); sh.paste(im.resize((128,128),Image.LANCZOS),((i%10)*128,(i//10)*128)); bg.paste(im.resize((192,192),Image.LANCZOS),((i%10)*192,(i//10)*192))
+    sh=Image.new('RGB',(1280,1280)); bg=Image.new('RGB',(2560,2560))
+    for i,ident in enumerate(ids): im=person(ident,kit,chest,capmark,capRGB); sh.paste(im.resize((128,128),Image.LANCZOS),((i%10)*128,(i//10)*128)); bg.paste(im,((i%10)*256,(i//10)*256))
     o=io.BytesIO(); sh.save(o,'WEBP',quality=80,method=6); sheets[tid[0]]='data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode(); seen.add(tid[0])
-    o=io.BytesIO(); bg.save(o,'WEBP',quality=74,method=6); big[tid[0]]='data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode() # 선수 상세 큰 사진용(192px 칸)
+    o=io.BytesIO(); bg.save(o,'WEBP',quality=86,method=6); big[tid[0]]='data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode() # 선수 상세 큰 사진용(256px 칸 원본 그대로. 사이트는 따로 받는 파일이라 우리 구단 시트 하나만 내려받는다)
     if os.environ.get('PREVIEW'): sh.save(os.path.join(os.environ['PREVIEW'],t['key']+'.png'))
 if len(seen)!=len(TD): sys.exit('얼굴 시트가 없는 구단이 있음')
 meta=[{'a':x['age'],'f':0 if x['ethnicity']=='Korean' else 1,'e':x['ethnicity'],'g':int(bool(x['tags'].get('glasses'))),'b':int(bool(x['tags'].get('beard')))} for x in ids]
-body='/* 자동 생성: python3 tools/gen-faces-v6b.py (손으로 고치지 않는다). v6b 실사 얼굴 시범 100명 × 구단 홈 유니폼 10x10 시트(sheet 128px 칸, big 192px 칸: 선수 상세 큰 사진). ids[i]는 시트 i번째 칸(a 나이·f 외국인·e 출신·g 안경·b 수염) */\nconst FACE6='+json.dumps({'ids':meta,'sheet':{str(k):v for k,v in sorted(sheets.items())},'big':{str(k):v for k,v in sorted(big.items())}},ensure_ascii=False,separators=(',',':'))+';\n'
+body='/* 자동 생성: python3 tools/gen-faces-v6b.py (손으로 고치지 않는다). v6b 실사 얼굴 시범 100명 × 구단 홈 유니폼 10x10 시트(sheet 128px 칸, big 256px 칸: 선수 상세 큰 사진). ids[i]는 시트 i번째 칸(a 나이·f 외국인·e 출신·g 안경·b 수염) */\nconst FACE6='+json.dumps({'ids':meta,'sheet':{str(k):v for k,v in sorted(sheets.items())},'big':{str(k):v for k,v in sorted(big.items())}},ensure_ascii=False,separators=(',',':'))+';\n'
 open(source_file('ui','00d_faces_data.js'),'w',encoding='utf8').write(body)
 print('얼굴 시트 %d개 구단 · %dKB'%(len(sheets),len(body)//1024))
