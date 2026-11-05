@@ -50,6 +50,8 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
 .ws-panels>.ws-panel[hidden]{display:none!important}
 .ws-panel>*:not(.ws-scroll){flex-shrink:0}
 .ws-scroll{flex:1;min-width:0;min-height:0;overflow:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:stable}
+/* 칸 안 목록·표의 -12px 여백이 칸 밖으로 삐져나가 칸이 옆으로도 12px 스크롤되던 것(대각선으로 끌면 목록이 옆으로 같이 밀림). 열을 넘기는 표는 옆으로 스크롤하지 않는다 */
+.ws-scroll>:is(.list,.tw){margin-inline:0}.tw.twp{overflow-x:hidden!important}.tw.twp td.twspan,.tw.twp td.twspan *{white-space:normal}.optrow.wsx{overflow-y:hidden;min-width:0}
 .ws-scroll:focus-visible{outline:2px solid var(--team-hi);outline-offset:-2px}
 .ws-scroll:is(.tgrid,.cgrid,.cgr,.ltiles){align-content:start}
 .ws-panel .tgrid,.ws-panel .cgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));align-content:start}

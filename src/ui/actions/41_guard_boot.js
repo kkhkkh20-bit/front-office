@@ -221,11 +221,20 @@ function ftMigrateAccept(e){ try{ const d=e&&e.data; if(!d||d.type!=='ft-migrate
     try{ toast('itch에서 하던 저장을 옮겨 왔습니다. 처음 화면에서 이어하기를 누르세요.'); }catch(x){} try{ if(!G)UI.title=true; render(); }catch(x){} return true; }catch(err){ return false; } }
 window.addEventListener('message',ftMigrateAccept);
 
-/* 휴대폰: 화면을 옆으로 끌면 전체나 칸이 통째로 밀려 빈칸이 드러나던 문제(iOS 웹뷰는 overscroll-behavior를 무시). 가로로 끄는 동작은 실제로 옆으로 움직일 수 있는 칸이 있을 때만 허용하고 나머지는 막는다. 세로 스크롤은 그대로 */
-if(typeof addEventListener!=='undefined'&&typeof document!=='undefined'){ let x0=0,y0=0,ax=null;
-  addEventListener('touchstart',e=>{ const t=e.touches[0]; if(!t)return; x0=t.clientX; y0=t.clientY; ax=null; },{passive:true});
+/* 휴대폰: 화면을 옆으로 끌면 전체나 칸이 통째로 밀려 빈칸이 드러나던 문제(iOS 웹뷰는 overscroll-behavior를 무시). 가로로 끄는 동작은 실제로 옆으로 움직일 수 있는 칸이 있을 때만 허용하고 나머지는 막는다.
+   축 잠금: 첫 8px로 정한 방향만 움직인다. iOS는 가로·세로 둘 다 스크롤되는 칸을 대각선으로 끌면 두 축이 같이 움직이므로, 그 끌기(와 손을 뗀 뒤 관성) 동안 다른 축은 시작 위치로 되돌린다.
+   세로로 끌 때 위·아래 끝에서 더 당기면(움직일 칸이 없으면) 막아 화면이 튕기며 밀리지 않게 한다 */
+if(typeof addEventListener!=='undefined'&&typeof document!=='undefined'){ let x0=0,y0=0,ax=null,lock=[],lockT=0;
+  const can=(el,a)=>{ const s=getComputedStyle(el), o=a==='x'?s.overflowX:s.overflowY; return (o==='auto'||o==='scroll')&&(a==='x'?el.scrollWidth>el.clientWidth+1:el.scrollHeight>el.clientHeight+1); };
+  const free=(el,a,d)=>a==='x'?(d>0?el.scrollLeft>0:el.scrollLeft+el.clientWidth<el.scrollWidth-1):(d>0?el.scrollTop>0:el.scrollTop+el.clientHeight<el.scrollHeight-1);
+  addEventListener('touchstart',e=>{ const t=e.touches[0]; if(!t)return; x0=t.clientX; y0=t.clientY; ax=null; clearTimeout(lockT); lock=[];
+    for(let el=e.target;el&&el.nodeType===1&&el!==document.documentElement;el=el.parentElement)if(can(el,'x')&&can(el,'y'))lock.push([el,el.scrollLeft,el.scrollTop]); },{passive:true});
+  addEventListener('touchend',()=>{ clearTimeout(lockT); lockT=setTimeout(()=>{ lock=[]; },900); },{passive:true}); /* 관성 스크롤이 끝날 때까지 잠금 유지 */
+  addEventListener('scroll',e=>{ if(!ax)return; for(const [el,l,t] of lock)if(el===e.target){ if(ax==='y'&&el.scrollLeft!==l)el.scrollLeft=l; else if(ax==='x'&&el.scrollTop!==t)el.scrollTop=t; } },{capture:true,passive:true});
   addEventListener('touchmove',e=>{ if(e.touches.length>1||!e.cancelable)return; const t=e.touches[0], dx=t.clientX-x0, dy=t.clientY-y0;
-    if(!ax){ if(Math.abs(dx)<6&&Math.abs(dy)<6)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; } if(ax!=='x')return;
+    if(!ax){ if(Math.abs(dx)<8&&Math.abs(dy)<8)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; }
     if(e.target.closest&&e.target.closest('input,textarea,canvas,.fdt-w'))return; /* 슬라이더·3D·드래프트 표(자체 처리)는 그대로 */
-    for(let el=e.target;el&&el!==document.documentElement;el=el.parentElement){ if(el.scrollWidth>el.clientWidth+1){ const o=getComputedStyle(el).overflowX; if(o==='auto'||o==='scroll'){ const atL=el.scrollLeft<=0, atR=el.scrollLeft+el.clientWidth>=el.scrollWidth-1; if((dx>0&&!atL)||(dx<0&&!atR))return; } } }
+    const d=ax==='x'?dx:dy;
+    for(let el=e.target;el&&el.nodeType===1&&el!==document.documentElement;el=el.parentElement)if(can(el,ax)&&free(el,ax,d))return;
+    if(ax==='y'){ const se=document.scrollingElement, hid=el=>/hidden|clip/.test(getComputedStyle(el).overflowY); if(se&&!hid(document.documentElement)&&!hid(document.body)&&free(se,'y',d))return; } /* 화면 전체 스크롤(막혀 있지 않을 때) */
     e.preventDefault(); },{passive:false}); }

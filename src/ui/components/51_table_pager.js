@@ -11,14 +11,18 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     const hr=tb.tHead.rows[tb.tHead.rows.length-1]; const H=[...hr.cells]; const n=H.length; if(n<3||H.some(c=>c.colSpan>1))return;
     tw.classList.add('twp'); /* 줄인 이름 칸 기준으로 폭을 잰다 */
     const rows=[...tb.rows].filter(r=>r.cells.length===n); /* 그룹 제목처럼 칸이 합쳐진 줄은 그대로 둔다 */
-    const w=H.map(c=>c.getBoundingClientRect().width); const pin=H[n-1].textContent.trim()==='행동'?n-1:-1; /* 지명 같은 행동 버튼 열은 어느 쪽을 넘겨도 보이게 */ const avail=tw.clientWidth-w[0]-2-(pin>0?w[pin]:0); const pages=[]; let cur=[],sum=0;
+    const w=H.map(c=>c.getBoundingClientRect().width); const pin=H[n-1].textContent.trim()==='행동'?n-1:-1; /* 지명 같은 행동 버튼 열은 어느 쪽을 넘겨도 보이게 */ let avail=tw.clientWidth-w[0]-2-(pin>0?w[pin]:0), pages, key, pg;
+    /* 열을 숨기면 남은 열이 넓어져 표가 칸보다 넓어질 수 있다(옆으로 밀림). 넘친 만큼 묶음을 다시 나눈다 */
+    for(let k=0;k<3;k++){ pages=[]; let cur=[],sum=0;
     for(let i=1;i<n;i++){ if(i===pin)continue; if(cur.length&&sum+w[i]>avail){ pages.push(cur); cur=[]; sum=0; } cur.push(i); sum+=w[i]; } if(cur.length)pages.push(cur);
     if(pages.length<2){ tw.classList.remove('twp'); return; }
-    const key=(UI.sheet!=null&&tw.closest('#sheet')?'s':UI.tab)+':'+ix+':'+n; let pg=Math.min(UI.twPg[key]||0,pages.length-1);
+    key=(UI.sheet!=null&&tw.closest('#sheet')?'s':UI.tab)+':'+ix+':'+n; pg=Math.min(UI.twPg[key]||0,pages.length-1);
     const show=new Set([0,...pages[pg],...(pin>0?[pin]:[])]);
+    tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; });
     for(const r of rows)[...r.cells].forEach((c,i)=>{ if(!show.has(i))c.classList.add('twh'); });
     /* '빈자리'처럼 이름 칸 뒤를 한 칸으로 합친 줄: 지금 보이는 열 수만큼만 차지하고 줄바꿈한다(표 밖으로 삐져나가지 않게) */
     for(const r of tb.rows){ const c=r.cells; if(c.length===2&&c[0].colSpan===1&&c[1].colSpan===n-1){ c[1].dataset.cs0=c[1].colSpan; c[1].colSpan=pages[pg].length+(pin>0?1:0); c[1].classList.add('twspan'); } }
+    const over=tb.getBoundingClientRect().width-tw.clientWidth; if(over<=2||pages[pg].length<2)break; avail-=over; }
     tw.classList.add('twp');
     const hn0=c=>{ const e=c.querySelector('button')||c; const t=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(); return (t||e.innerText.split('\n')[0]).replace(/[▲▼]/g,'').trim(); };
     const lab=i=>{ const a=hn0(H[pages[i][0]]), b=hn0(H[pages[i][pages[i].length-1]]); return a===b||!b?a:`${a} ~ ${b}`; };
@@ -133,6 +137,11 @@ function workspaceFit(host){
   workspaceObserve();
 }
 
+/* 휴대폰 세로: 목록 칸을 내려 보면 main에 ws-up을 붙여 위쪽 제목·탭 줄을 접고(30_mobile_workspace.css), 맨 위로 올리면 편다.
+   접으면 칸이 커져 스크롤 범위가 줄어든다. 가장 많이 커져도(main 높이+제목 줄) 스크롤할 거리가 남을 때만 접는다(접기·펴기 반복, 펼 수 없는 상태 방지). render가 main을 새로 만들면 저절로 풀린다 */
+if(typeof addEventListener!=='undefined')addEventListener('scroll',e=>{ const el=e.target, main=el.classList&&el.classList.contains('ws-scroll')&&el.closest('#app main.ws-frame'); if(!main||!matchMedia('(max-width:699px) and (min-height:600px)').matches)return;
+  if(el.scrollTop<=2)main.classList.remove('ws-up'); else if(el.scrollTop>24&&el.scrollHeight-el.clientHeight>main.clientHeight-el.clientHeight+(main.previousElementSibling?.offsetHeight||0)+30)main.classList.add('ws-up'); },{capture:true,passive:true});
+
 // Refit after a filter opens or browser chrome changes height, without replacing the reading DOM.
 let _workspaceObserver=null;
 function workspaceRefit(){document.querySelectorAll('.ws-panel:not([hidden])').forEach(panel=>panel._workspaceFit?.());workspaceObserve();}
@@ -151,6 +160,7 @@ function workspaceReveal(selector){
 function workspaceDetail(){
   const sheet=document.querySelector('#sheet .psh'),nav=sheet?.querySelector(':scope > .pf-topnav');
   if(!nav||UI.ptab!=='rec'||sheet.classList.contains('ws-detail'))return;
+  if(matchMedia('(max-width:699px) and (min-height:600px)').matches)return; /* 휴대폰 세로: 프로필·버튼 아래 고정 칸에 기록이 2~3줄만 보였다. 다른 탭처럼 창 전체를 스크롤한다 */
   sheet.classList.add('ws-detail');
   const body=document.createElement('div');body.className='ws-detail-body';
   let node=nav.nextSibling;while(node){const next=node.nextSibling;body.append(node);node=next;}

@@ -27,6 +27,30 @@ async function swipe(page,selector){const loc=page.locator(selector).first(),box
  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(180);
 }finally{await cdp.detach();}}
 
+async function drag(page,x,y,dx,dy,mid){const cdp=await page.context().newCDPSession(page);try{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+ for(let i=1;i<=10;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*i/10,y:y+dy*i/10}]});if(i===5&&mid)await page.evaluate(mid);await page.waitForTimeout(20);}
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(150);}finally{await cdp.detach();}}
+/* 끌기 축 잠금(41_guard_boot.js): Chromium은 스스로 한 축으로 잠그므로, iOS처럼 다른 축이 같이 밀린 상황을 끌기 중간에 직접 만들고 되돌려지는지 본다.
+   또 끝에서 더 당기는 세로 끌기는 막고(튕김), 움직일 수 있는 쪽은 그대로 두는지, 휴대폰 세로에서 목록을 내리면 위 줄이 접히는지(ws-up) 본다 */
+async function axisLock(page,base,label,phone){
+ await restore(page,base,'roster');
+ await page.evaluate(()=>{const d=document.createElement('div');d.id='axt';d.style.cssText='position:fixed;left:40px;top:140px;width:200px;height:200px;overflow:auto;z-index:99;background:#222';d.innerHTML='<div style="width:900px;height:900px"></div>';document.body.append(d);d.scrollLeft=300;d.scrollTop=300;
+  window.__pv=[];addEventListener('touchmove',e=>window.__pv.push(e.defaultPrevented),{passive:true});});
+ await drag(page,140,240,-12,-120,()=>{document.querySelector('#axt').scrollLeft+=40;});
+ let r=await page.evaluate(()=>{const d=document.querySelector('#axt');return {l:d.scrollLeft,t:d.scrollTop};});assert.ok(r.l===300&&r.t>330,label+' 세로 끌기 중 가로 밀림 되돌림 '+JSON.stringify(r));
+ await page.waitForTimeout(1000);await page.evaluate(()=>{const d=document.querySelector('#axt');d.scrollLeft=300;d.scrollTop=300;});
+ await drag(page,140,240,-120,-12,()=>{document.querySelector('#axt').scrollTop+=40;});
+ r=await page.evaluate(()=>{const d=document.querySelector('#axt');return {l:d.scrollLeft,t:d.scrollTop};});assert.ok(r.t===300&&r.l>330,label+' 가로 끌기 중 세로 밀림 되돌림 '+JSON.stringify(r));
+ await page.waitForTimeout(1000);/* 손을 뗀 뒤 관성 잠금(0.9초)이 풀린 다음 */await page.evaluate(()=>{const d=document.querySelector('#axt');d.scrollTop=0;window.__pv=[];});await drag(page,140,200,0,120);
+ r=await page.evaluate(()=>window.__pv);assert.ok(r.length&&r.at(-1)===true,label+' 위 끝에서 더 당기면 막음 '+JSON.stringify(r));
+ await page.evaluate(()=>{window.__pv=[];});await drag(page,140,300,0,-120);r=await page.evaluate(()=>({pv:window.__pv,t:document.querySelector('#axt').scrollTop}));assert.ok(!r.pv.some(Boolean)&&r.t>60,label+' 움직일 수 있는 쪽은 그대로 '+JSON.stringify(r));
+ await page.evaluate(()=>document.querySelector('#axt').remove());
+ /* 휴대폰은 두 축으로 스크롤되는 칸이 없어야 한다. 태블릿의 넓은 명단 표는 일부러 두 축(위 축 잠금이 처리) */
+ for(const route of ['roster','league:stand','trade:market','transfer:fa','league:score']){await restore(page,base,route);const o=await page.evaluate(()=>({sx:scrollX,w:document.documentElement.scrollWidth,iw:innerWidth,two:[...document.querySelectorAll('main .ws-scroll,main .ws-filter-options,main .tw')].filter(e=>e.scrollWidth>e.clientWidth+1&&e.scrollHeight>e.clientHeight+1&&/auto|scroll/.test(getComputedStyle(e).overflowX)).map(e=>e.className)}));assert.ok(o.sx===0&&o.w<=o.iw+1&&(!phone||!o.two.length),label+' '+route+' 화면·목록이 옆으로 밀리지 않음 '+JSON.stringify(o));}
+ if(phone){await restore(page,base,'transfer:fa');const sc=page.locator('main .ws-scroll').first();const before=await sc.evaluate(e=>e.getBoundingClientRect().height/innerHeight);await sc.evaluate(e=>{e.scrollTop=120;});await page.waitForTimeout(120);
+  const up=await sc.evaluate(e=>({on:e.closest('main').classList.contains('ws-up'),ratio:e.getBoundingClientRect().height/innerHeight}));assert.ok(up.on&&up.ratio>=.7&&up.ratio>before,label+' 목록을 내리면 위 줄을 접어 목록 70% 이상 '+before.toFixed(2)+' '+JSON.stringify(up));
+  await sc.evaluate(e=>{e.scrollTop=0;});await page.waitForTimeout(120);assert.ok(await sc.evaluate(e=>!e.closest('main').classList.contains('ws-up')),label+' 맨 위로 오면 다시 펼침');}
+}
 (async()=>{buildSite();const server=await startSiteServer(path.resolve(__dirname,'../site'));let browser;
 try{if(output)fs.mkdirSync(output,{recursive:true});browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
  const seed=await browser.newPage();await seed.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await seed.goto(server.url);const base=await prepare(seed);await seed.close();
@@ -61,6 +85,7 @@ try{if(output)fs.mkdirSync(output,{recursive:true});browser=await chromium.launc
    await restore(page,base);await page.evaluate(()=>{G.day=G.cal.open-1;G.stopCfg={trade:false,inj:false,mgr:false,squad:false,owner:false,spon:false,press:false,info:false};for(const t of G.teams)setEntry(t.id);G.entryY=G.year;for(const m of G.mail)m.read=true;render();});await page.locator('button.continue').tap();const batch=await page.evaluate(()=>({games:G.dig?.games.length,must:G.stops.some(m=>stopCat(m)==='must'),stops:G.stops.map(m=>[m.kind,m.subj])}));assert.ok(batch.games>=1&&batch.games<=3&&(batch.games===3||batch.must),name+' 최대 3경기·필수 계약 결정에서 먼저 중단 '+JSON.stringify(batch));assert.ok(await page.evaluate(()=>UI.wkres&&!UI.cast),name+' 개별 경기 대신 결과 묶음');await assertTick(page,name+'-three-games');
    const day=await page.evaluate(()=>{saveNow();return G.day;});await page.reload();await page.waitForSelector('[data-a="tsCont"]');await page.locator('[data-a="tsCont"]').tap();assert.equal(await page.evaluate(()=>G.day),day,name+' 재접속 후 날짜 복원');console.log(name,'필터·메뉴·동작 줄이기·홈 일정 바로가기·달력 진행·연속 진행 중 회전·최대 3경기/필수 결정 중단·결과 묶음·재접속 저장 복원 통과');
   }
+  if(['phone','tablet','android'].includes(name)){await page.setViewportSize(config.viewport);await page.waitForTimeout(200);await axisLock(page,base,name,name!=='tablet');console.log(name,'끌기 축 잠금·끝 당김 막기·화면 옆 밀림 없음'+(name!=='tablet'?'·목록 내리면 위 줄 접기':'')+' 통과');}
   await context.close();
  }
  if(output)fs.writeFileSync(path.join(output,process.env.TOUCH_DEVICES?'results-'+process.env.TOUCH_DEVICES.replace(/,/g,'-')+'.json':'results.json'),JSON.stringify(results,null,2));
