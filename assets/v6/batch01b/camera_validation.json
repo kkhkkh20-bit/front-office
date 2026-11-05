@@ -1,0 +1,1911 @@
+{
+  "requested_512": {
+    "eye_y": 143,
+    "cap_top_y": 15,
+    "chin_y": 266,
+    "placket_x": 256
+  },
+  "measurements": [
+    {
+      "identity_id": "v6_b01b_0001",
+      "eye_line_y": 143.28826904296875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 250.67833862304687,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2616987228393555,
+          0.0,
+          -73.806396484375
+        ],
+        [
+          0.0,
+          1.2616987228393555,
+          -1.4020843505859375
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0002",
+      "eye_line_y": 142.4344940185547,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 274.6737060546875,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1668139696121216,
+          0.0,
+          -39.950042724609375
+        ],
+        [
+          0.0,
+          1.1668139696121216,
+          -8.336278915405273
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0003",
+      "eye_line_y": 141.4413299560547,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 250.309521484375,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1875509023666382,
+          0.0,
+          -48.10552978515625
+        ],
+        [
+          0.0,
+          1.1875509023666382,
+          -7.563467025756836
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0004",
+      "eye_line_y": 143.0943603515625,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 265.8239501953125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.113342523574829,
+          0.0,
+          -32.119903564453125
+        ],
+        [
+          0.0,
+          1.113342523574829,
+          -0.5867958068847656
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0005",
+      "eye_line_y": 143.18124389648438,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 253.15189208984376,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0334068536758423,
+          0.0,
+          -8.217864990234375
+        ],
+        [
+          0.0,
+          1.0334068536758423,
+          -4.634729385375977
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0006",
+      "eye_line_y": 138.40357971191406,
+      "cap_top_y": 6,
+      "chin_bbox_estimate_y": 252.97568359375,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0007",
+      "eye_line_y": 140.41957092285156,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 250.87192993164064,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2097233533859253,
+          0.0,
+          -53.464874267578125
+        ],
+        [
+          0.0,
+          1.2097233533859253,
+          -6.775020599365234
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0008",
+      "eye_line_y": 143.15432739257812,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 260.437353515625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0803427696228027,
+          0.0,
+          -23.1531982421875
+        ],
+        [
+          0.0,
+          1.0803427696228027,
+          0.9555435180664062
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0009",
+      "eye_line_y": 142.47265625,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 256.65904541015624,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.3064993619918823,
+          0.0,
+          -79.83151245117188
+        ],
+        [
+          0.0,
+          1.3064993619918823,
+          -5.903989791870117
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0010",
+      "eye_line_y": 141.62167358398438,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 252.42609252929688,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2287441492080688,
+          0.0,
+          -60.688690185546875
+        ],
+        [
+          0.0,
+          1.2287441492080688,
+          -4.659906387329102
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0011",
+      "eye_line_y": 142.19554138183594,
+      "cap_top_y": 11,
+      "chin_bbox_estimate_y": 260.99095458984374,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0012",
+      "eye_line_y": 135.67034912109375,
+      "cap_top_y": 7,
+      "chin_bbox_estimate_y": 250.39141845703125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0013",
+      "eye_line_y": 143.72068786621094,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 254.29873046875,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.066189169883728,
+          0.0,
+          -15.8658447265625
+        ],
+        [
+          0.0,
+          1.066189169883728,
+          3.2719192504882812
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0014",
+      "eye_line_y": 144.09922790527344,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 253.59527587890625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0171626806259155,
+          0.0,
+          -9.8934326171875
+        ],
+        [
+          0.0,
+          1.0171626806259155,
+          7.879861354827881
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0015",
+      "eye_line_y": 143.12274169921875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 262.1276611328125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0673643350601196,
+          0.0,
+          -21.85595703125
+        ],
+        [
+          0.0,
+          1.0673643350601196,
+          1.1242637634277344
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0016",
+      "eye_line_y": 142.67288208007812,
+      "cap_top_y": 16,
+      "chin_bbox_estimate_y": 263.0523254394531,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0347495079040527,
+          0.0,
+          -11.585113525390625
+        ],
+        [
+          0.0,
+          1.0347495079040527,
+          13.965250015258789
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0017",
+      "eye_line_y": 142.0266571044922,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 262.75364990234374,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1104846000671387,
+          0.0,
+          -37.34320068359375
+        ],
+        [
+          0.0,
+          1.1104846000671387,
+          3.8951539993286133
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0018",
+      "eye_line_y": 143.63897705078125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 251.517529296875,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.027668833732605,
+          0.0,
+          -11.667510986328125
+        ],
+        [
+          0.0,
+          1.027668833732605,
+          2.6679744720458984
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0019",
+      "eye_line_y": 142.2305908203125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 255.6894775390625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.3061773777008057,
+          0.0,
+          -79.14404296875
+        ],
+        [
+          0.0,
+          1.3061773777008057,
+          -5.898838043212891
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0020",
+      "eye_line_y": 142.74111938476562,
+      "cap_top_y": 16,
+      "chin_bbox_estimate_y": 260.0463500976563,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0359270572662354,
+          0.0,
+          -12.151123046875
+        ],
+        [
+          0.0,
+          1.0359270572662354,
+          13.964073181152344
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0021",
+      "eye_line_y": 143.25921630859375,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 254.218212890625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0651497840881348,
+          0.0,
+          -18.167572021484375
+        ],
+        [
+          0.0,
+          1.0651497840881348,
+          2.218202590942383
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0022",
+      "eye_line_y": 142.56161499023438,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 267.9229309082031,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.153327226638794,
+          0.0,
+          -42.141571044921875
+        ],
+        [
+          0.0,
+          1.153327226638794,
+          3.4667282104492188
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0023",
+      "eye_line_y": 143.32278442382812,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 253.35013427734376,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0681389570236206,
+          0.0,
+          -19.0133056640625
+        ],
+        [
+          0.0,
+          1.0681389570236206,
+          -1.022085189819336
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0024",
+      "eye_line_y": 142.66891479492188,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 267.44908447265624,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1408640146255493,
+          0.0,
+          -41.422210693359375
+        ],
+        [
+          0.0,
+          1.1408640146255493,
+          -2.1129608154296875
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0025",
+      "eye_line_y": 144.24514770507812,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 256.29932861328126,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.008890986442566,
+          0.0,
+          -5.051544189453125
+        ],
+        [
+          0.0,
+          1.008890986442566,
+          5.919981002807617
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0026",
+      "eye_line_y": 143.4986114501953,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 261.9040161132813,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.079928994178772,
+          0.0,
+          -20.26141357421875
+        ],
+        [
+          0.0,
+          1.079928994178772,
+          2.040851593017578
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0027",
+      "eye_line_y": 143.060791015625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 267.79201049804686,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1555960178375244,
+          0.0,
+          -46.034149169921875
+        ],
+        [
+          0.0,
+          1.1555960178375244,
+          -1.1783447265625
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0028",
+      "eye_line_y": 143.80264282226562,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 255.73627319335938,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0485519170761108,
+          0.0,
+          -16.339385986328125
+        ],
+        [
+          0.0,
+          1.0485519170761108,
+          1.3688249588012695
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0029",
+      "eye_line_y": 142.04425048828125,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 244.70194091796876,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1907422542572021,
+          0.0,
+          -49.133056640625
+        ],
+        [
+          0.0,
+          1.1907422542572021,
+          -6.433361053466797
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0030",
+      "eye_line_y": 144.08331298828125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 258.7492370605469,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0724196434020996,
+          0.0,
+          -20.146484375
+        ],
+        [
+          0.0,
+          1.0724196434020996,
+          -2.1587142944335938
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0031",
+      "eye_line_y": 143.0660858154297,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 253.97462158203126,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.064360499382019,
+          0.0,
+          -20.131011962890625
+        ],
+        [
+          0.0,
+          1.064360499382019,
+          3.292034149169922
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0032",
+      "eye_line_y": 143.5028839111328,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 270.19627075195314,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1356711387634277,
+          0.0,
+          -30.858551025390625
+        ],
+        [
+          0.0,
+          1.1356711387634277,
+          -7.713422775268555
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0033",
+      "eye_line_y": 142.04901123046875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 245.20818481445312,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2245837450027466,
+          0.0,
+          -57.238677978515625
+        ],
+        [
+          0.0,
+          1.2245837450027466,
+          -3.368755340576172
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0034",
+      "eye_line_y": 143.58689880371094,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 253.77260131835936,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0566672086715698,
+          0.0,
+          -18.736114501953125
+        ],
+        [
+          0.0,
+          1.0566672086715698,
+          -2.9633426666259766
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0035",
+      "eye_line_y": 145.23138427734375,
+      "cap_top_y": 11,
+      "chin_bbox_estimate_y": 261.74498291015624,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0036",
+      "eye_line_y": 143.33804321289062,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 275.3009094238281,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1144996881484985,
+          0.0,
+          -29.19183349609375
+        ],
+        [
+          0.0,
+          1.1144996881484985,
+          11.656500816345215
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0037",
+      "eye_line_y": 144.43846130371094,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 271.901220703125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1136871576309204,
+          0.0,
+          -30.136077880859375
+        ],
+        [
+          0.0,
+          1.1136871576309204,
+          -7.27374267578125
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0038",
+      "eye_line_y": 142.33743286132812,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 266.359814453125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.172680377960205,
+          0.0,
+          -48.069366455078125
+        ],
+        [
+          0.0,
+          1.172680377960205,
+          2.100515365600586
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0039",
+      "eye_line_y": 140.9227294921875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 249.46967163085938,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2399965524673462,
+          0.0,
+          -62.547454833984375
+        ],
+        [
+          0.0,
+          1.2399965524673462,
+          -3.5999488830566406
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0040",
+      "eye_line_y": 140.8961639404297,
+      "cap_top_y": 10,
+      "chin_bbox_estimate_y": 258.0981506347656,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0041",
+      "eye_line_y": 144.4937744140625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 257.66171875,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0651012659072876,
+          0.0,
+          -18.000946044921875
+        ],
+        [
+          0.0,
+          1.0651012659072876,
+          -3.106721878051758
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0042",
+      "eye_line_y": 142.53379821777344,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 273.14466552734376,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.098480463027954,
+          0.0,
+          -33.8104248046875
+        ],
+        [
+          0.0,
+          1.098480463027954,
+          9.507597923278809
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0043",
+      "eye_line_y": 144.27415466308594,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 257.4235107421875,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0653198957443237,
+          0.0,
+          -18.93426513671875
+        ],
+        [
+          0.0,
+          1.0653198957443237,
+          0.08552169799804688
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0044",
+      "eye_line_y": 143.4739227294922,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 245.17686157226564,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0157580375671387,
+          0.0,
+          -8.67633056640625
+        ],
+        [
+          0.0,
+          1.0157580375671387,
+          -2.2678871154785156
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0045",
+      "eye_line_y": 142.55026245117188,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 250.85300903320314,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0562479496002197,
+          0.0,
+          -17.30517578125
+        ],
+        [
+          0.0,
+          1.0562479496002197,
+          -2.9562149047851562
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0046",
+      "eye_line_y": 143.239501953125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 257.8766784667969,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0660290718078613,
+          0.0,
+          -18.357574462890625
+        ],
+        [
+          0.0,
+          1.0660290718078613,
+          5.405738830566406
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0047",
+      "eye_line_y": 143.453857421875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 264.1522155761719,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.000462532043457,
+          0.0,
+          -0.06121826171875
+        ],
+        [
+          0.0,
+          1.000462532043457,
+          4.99537467956543
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0048",
+      "eye_line_y": 142.81817626953125,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 254.4898193359375,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0488625764846802,
+          0.0,
+          -14.083892822265625
+        ],
+        [
+          0.0,
+          1.0488625764846802,
+          -4.928388595581055
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0049",
+      "eye_line_y": 141.5338134765625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 271.063037109375,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1462637186050415,
+          0.0,
+          -40.826904296875
+        ],
+        [
+          0.0,
+          1.1462637186050415,
+          4.683626174926758
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0050",
+      "eye_line_y": 144.09579467773438,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 254.80254516601562,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0347095727920532,
+          0.0,
+          -9.70343017578125
+        ],
+        [
+          0.0,
+          1.0347095727920532,
+          5.687613487243652
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0051",
+      "eye_line_y": 142.4154052734375,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 252.65517578125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2688802480697632,
+          0.0,
+          -73.0877685546875
+        ],
+        [
+          0.0,
+          1.2688802480697632,
+          -4.033203125
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0052",
+      "eye_line_y": 143.19049072265625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 256.690234375,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1046313047409058,
+          0.0,
+          -29.45947265625
+        ],
+        [
+          0.0,
+          1.1046313047409058,
+          -1.5694694519042969
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0053",
+      "eye_line_y": 142.1865997314453,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 265.1676025390625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0673562288284302,
+          0.0,
+          -15.904693603515625
+        ],
+        [
+          0.0,
+          1.0673562288284302,
+          11.797931671142578
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0054",
+      "eye_line_y": 142.58010864257812,
+      "cap_top_y": 16,
+      "chin_bbox_estimate_y": 268.1589294433594,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0625990629196167,
+          0.0,
+          -19.1668701171875
+        ],
+        [
+          0.0,
+          1.0625990629196167,
+          13.937400817871094
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0055",
+      "eye_line_y": 143.48748779296875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 252.04800415039062,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0496848821640015,
+          0.0,
+          -13.343353271484375
+        ],
+        [
+          0.0,
+          1.0496848821640015,
+          -2.8446426391601562
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0056",
+      "eye_line_y": 142.48089599609375,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 256.7829284667969,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2987147569656372,
+          0.0,
+          -79.9415283203125
+        ],
+        [
+          0.0,
+          1.2987147569656372,
+          -9.675580978393555
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0057",
+      "eye_line_y": 141.09945678710938,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 247.1703369140625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.210349440574646,
+          0.0,
+          -55.545135498046875
+        ],
+        [
+          0.0,
+          1.210349440574646,
+          -4.365591049194336
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0058",
+      "eye_line_y": 140.9521484375,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 249.11448974609374,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2641721963882446,
+          0.0,
+          -68.78326416015625
+        ],
+        [
+          0.0,
+          1.2641721963882446,
+          -10.283443450927734
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0059",
+      "eye_line_y": 143.90036010742188,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 258.672998046875,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0674175024032593,
+          0.0,
+          -20.989501953125
+        ],
+        [
+          0.0,
+          1.0674175024032593,
+          1.1235723495483398
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0060",
+      "eye_line_y": 143.48312377929688,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 256.1438354492187,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0579365491867065,
+          0.0,
+          -14.0653076171875
+        ],
+        [
+          0.0,
+          1.0579365491867065,
+          -6.158731460571289
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0061",
+      "eye_line_y": 143.41490173339844,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 259.1277099609375,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0671565532684326,
+          0.0,
+          -21.45782470703125
+        ],
+        [
+          0.0,
+          1.0671565532684326,
+          2.1941213607788086
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0062",
+      "eye_line_y": 142.2034912109375,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 276.43535766601565,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1782227754592896,
+          0.0,
+          -48.045166015625
+        ],
+        [
+          0.0,
+          1.1782227754592896,
+          3.2177724838256836
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0063",
+      "eye_line_y": 143.35235595703125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 266.2617431640625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0639959573745728,
+          0.0,
+          -20.338134765625
+        ],
+        [
+          0.0,
+          1.0639959573745728,
+          6.488032341003418
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0064",
+      "eye_line_y": 143.60557556152344,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 260.0015625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0667105913162231,
+          0.0,
+          -17.300628662109375
+        ],
+        [
+          0.0,
+          1.0667105913162231,
+          1.1327619552612305
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0065",
+      "eye_line_y": 144.28445434570312,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 258.8892883300781,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.059179663658142,
+          0.0,
+          -16.60760498046875
+        ],
+        [
+          0.0,
+          1.059179663658142,
+          1.2306642532348633
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0066",
+      "eye_line_y": 142.970703125,
+      "cap_top_y": 12,
+      "chin_bbox_estimate_y": 251.66741333007812,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0067",
+      "eye_line_y": 142.22607421875,
+      "cap_top_y": 16,
+      "chin_bbox_estimate_y": 277.5149353027344,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1032335758209229,
+          0.0,
+          -27.21075439453125
+        ],
+        [
+          0.0,
+          1.1032335758209229,
+          13.896766662597656
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0068",
+      "eye_line_y": 142.92111206054688,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 257.1034301757812,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0927857160568237,
+          0.0,
+          -24.47705078125
+        ],
+        [
+          0.0,
+          1.0927857160568237,
+          0.7937860488891602
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0069",
+      "eye_line_y": 142.71212768554688,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 264.7310546875,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0367392301559448,
+          0.0,
+          -11.277679443359375
+        ],
+        [
+          0.0,
+          1.0367392301559448,
+          10.853042602539062
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0070",
+      "eye_line_y": 144.47933959960938,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 251.16456909179686,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.067884087562561,
+          0.0,
+          -22.359344482421875
+        ],
+        [
+          0.0,
+          1.067884087562561,
+          -1.0182609558105469
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0071",
+      "eye_line_y": 142.91456604003906,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 253.80099487304688,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0578997135162354,
+          0.0,
+          -15.558837890625
+        ],
+        [
+          0.0,
+          1.0578997135162354,
+          1.2473039627075195
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0072",
+      "eye_line_y": 141.51727294921875,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 248.24121704101563,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.070940613746643,
+          0.0,
+          -21.379547119140625
+        ],
+        [
+          0.0,
+          1.070940613746643,
+          -4.2769317626953125
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0073",
+      "eye_line_y": 143.03768920898438,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 263.14776000976565,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0836766958236694,
+          0.0,
+          -23.456298828125
+        ],
+        [
+          0.0,
+          1.0836766958236694,
+          0.9122028350830078
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0074",
+      "eye_line_y": 143.64715576171875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 263.2519104003906,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0096532106399536,
+          0.0,
+          -4.15130615234375
+        ],
+        [
+          0.0,
+          1.0096532106399536,
+          3.893815040588379
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0075",
+      "eye_line_y": 143.92266845703125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 261.0195007324219,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1030278205871582,
+          0.0,
+          -29.509857177734375
+        ],
+        [
+          0.0,
+          1.1030278205871582,
+          -1.5454177856445312
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0076",
+      "eye_line_y": 142.92315673828125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 262.82957153320314,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0722935199737549,
+          0.0,
+          -23.6243896484375
+        ],
+        [
+          0.0,
+          1.0722935199737549,
+          8.566238403320312
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0077",
+      "eye_line_y": 143.73037719726562,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 270.3829284667969,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1577595472335815,
+          0.0,
+          -41.980682373046875
+        ],
+        [
+          0.0,
+          1.1577595472335815,
+          -8.155191421508789
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0078",
+      "eye_line_y": 142.07823181152344,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 243.56189575195313,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2095760107040405,
+          0.0,
+          -56.85528564453125
+        ],
+        [
+          0.0,
+          1.2095760107040405,
+          -4.353216171264648
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0079",
+      "eye_line_y": 142.06234741210938,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 272.7109680175781,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1173858642578125,
+          0.0,
+          -31.494537353515625
+        ],
+        [
+          0.0,
+          1.1173858642578125,
+          1.59136962890625
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0080",
+      "eye_line_y": 143.738525390625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 258.57130126953126,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1076292991638184,
+          0.0,
+          -30.3995361328125
+        ],
+        [
+          0.0,
+          1.1076292991638184,
+          -1.6144390106201172
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0081",
+      "eye_line_y": 134.4766845703125,
+      "cap_top_y": 6,
+      "chin_bbox_estimate_y": 246.39552612304686,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0082",
+      "eye_line_y": 141.60595703125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 252.184033203125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.272961974143982,
+          0.0,
+          -72.51144409179688
+        ],
+        [
+          0.0,
+          1.272961974143982,
+          -7.9133148193359375
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0083",
+      "eye_line_y": 143.8196563720703,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 255.68621215820312,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0419498682022095,
+          0.0,
+          -13.508636474609375
+        ],
+        [
+          0.0,
+          1.0419498682022095,
+          5.622450828552246
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0084",
+      "eye_line_y": 142.78305053710938,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 270.6077514648438,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1285686492919922,
+          0.0,
+          -33.068023681640625
+        ],
+        [
+          0.0,
+          1.1285686492919922,
+          -3.057098388671875
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0085",
+      "eye_line_y": 142.1780548095703,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 253.4707275390625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2720147371292114,
+          0.0,
+          -71.978759765625
+        ],
+        [
+          0.0,
+          1.2720147371292114,
+          -6.624250411987305
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0086",
+      "eye_line_y": 142.69540405273438,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 257.17584838867185,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0648328065872192,
+          0.0,
+          -16.80267333984375
+        ],
+        [
+          0.0,
+          1.0648328065872192,
+          5.416504859924316
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0087",
+      "eye_line_y": 143.73199462890625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 254.41615600585936,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0428754091262817,
+          0.0,
+          -14.17999267578125
+        ],
+        [
+          0.0,
+          1.0428754091262817,
+          5.614121437072754
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0088",
+      "eye_line_y": 143.20516967773438,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 255.37977294921876,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0624064207077026,
+          0.0,
+          -17.251617431640625
+        ],
+        [
+          0.0,
+          1.0624064207077026,
+          -4.123315811157227
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0089",
+      "eye_line_y": 143.0489044189453,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 258.9705322265625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0774273872375488,
+          0.0,
+          -21.213775634765625
+        ],
+        [
+          0.0,
+          1.0774273872375488,
+          2.070871353149414
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0090",
+      "eye_line_y": 142.524658203125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 255.2084533691406,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.042629361152649,
+          0.0,
+          -9.49176025390625
+        ],
+        [
+          0.0,
+          1.042629361152649,
+          -6.89521598815918
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0091",
+      "eye_line_y": 142.06520080566406,
+      "cap_top_y": 14,
+      "chin_bbox_estimate_y": 252.778369140625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.247574806213379,
+          0.0,
+          -65.34060668945312
+        ],
+        [
+          0.0,
+          1.247574806213379,
+          -6.208770751953125
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0092",
+      "eye_line_y": 144.49249267578125,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 254.4025085449219,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0273408889770508,
+          0.0,
+          -7.292205810546875
+        ],
+        [
+          0.0,
+          1.0273408889770508,
+          5.753931999206543
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0093",
+      "eye_line_y": 143.4051513671875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 252.09454345703125,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0559368133544922,
+          0.0,
+          -17.76470947265625
+        ],
+        [
+          0.0,
+          1.0559368133544922,
+          1.2728214263916016
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0094",
+      "eye_line_y": 143.5962677001953,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 260.4796081542969,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.006213665008545,
+          0.0,
+          -8.4429931640625
+        ],
+        [
+          0.0,
+          1.006213665008545,
+          3.931650161743164
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0095",
+      "eye_line_y": 143.59783935546875,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 255.1358215332031,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0494909286499023,
+          0.0,
+          -15.8134765625
+        ],
+        [
+          0.0,
+          1.0494909286499023,
+          5.554581642150879
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0096",
+      "eye_line_y": 142.60379028320312,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 249.45983276367187,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.2641850709915161,
+          0.0,
+          -72.69094848632812
+        ],
+        [
+          0.0,
+          1.2641850709915161,
+          -1.4344062805175781
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0097",
+      "eye_line_y": 143.75299072265625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 256.4599609375,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.027283787727356,
+          0.0,
+          -10.481903076171875
+        ],
+        [
+          0.0,
+          1.027283787727356,
+          5.754446029663086
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0098",
+      "eye_line_y": 143.21343994140625,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 264.119140625,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0192928314208984,
+          0.0,
+          -7.275970458984375
+        ],
+        [
+          0.0,
+          1.0192928314208984,
+          2.7684860229492188
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0099",
+      "eye_line_y": 142.76722717285156,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 261.4645568847656,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.1222357749938965,
+          0.0,
+          -37.835693359375
+        ],
+        [
+          0.0,
+          1.1222357749938965,
+          -1.833536148071289
+        ]
+      ]
+    },
+    {
+      "identity_id": "v6_b01b_0100",
+      "eye_line_y": 143.45114135742188,
+      "cap_top_y": 15,
+      "chin_bbox_estimate_y": 267.31231079101565,
+      "chin_measurement": "detector bbox bottom is an estimate, not anatomical chin annotation",
+      "whole_photo_transform": [
+        [
+          1.0073665380477905,
+          0.0,
+          -5.075347900390625
+        ],
+        [
+          0.0,
+          1.0073665380477905,
+          4.926334381103516
+        ]
+      ]
+    }
+  ],
+  "note": "Eye and cap measured from fixed detector/mask. Detector bbox bottom is only a chin estimate; no false exact chin claim."
+}

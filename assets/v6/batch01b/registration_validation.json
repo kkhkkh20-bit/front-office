@@ -1,0 +1,507 @@
+{
+  "passed": true,
+  "minimum_mask_iou": 0.9963903410505353,
+  "pixel_channels": "R mask / G source_x / B source_y",
+  "results": [
+    {
+      "identity_id": "v6_b01b_0001",
+      "mask_iou": 0.9976747190285493,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0002",
+      "mask_iou": 0.9973205257836198,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0003",
+      "mask_iou": 0.9970423078571735,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0004",
+      "mask_iou": 0.997781239673323,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0005",
+      "mask_iou": 0.9980307692307693,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0006",
+      "mask_iou": 0.9977017590382745,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0007",
+      "mask_iou": 0.9975433152314456,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0008",
+      "mask_iou": 0.9977447196079282,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0009",
+      "mask_iou": 0.9971672725555922,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0010",
+      "mask_iou": 0.9975257194947259,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0011",
+      "mask_iou": 0.9981092523326072,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0012",
+      "mask_iou": 0.9976375015542753,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0013",
+      "mask_iou": 0.997630231475604,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0014",
+      "mask_iou": 0.9977440347071583,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0015",
+      "mask_iou": 0.9979240550125422,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0016",
+      "mask_iou": 0.9981860158311345,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0017",
+      "mask_iou": 0.9977851605758582,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0018",
+      "mask_iou": 0.9976785412797569,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0019",
+      "mask_iou": 0.9973130317957905,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0020",
+      "mask_iou": 0.9984211401030414,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0021",
+      "mask_iou": 0.9976055073331338,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0022",
+      "mask_iou": 0.9976880750913211,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0023",
+      "mask_iou": 0.9976533833944876,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0024",
+      "mask_iou": 0.9976010966415353,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0025",
+      "mask_iou": 0.9982352941176471,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0026",
+      "mask_iou": 0.9980358667805295,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0027",
+      "mask_iou": 0.9980195345906288,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0028",
+      "mask_iou": 0.997558886509636,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0029",
+      "mask_iou": 0.9972229235041656,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0030",
+      "mask_iou": 0.9978324301792414,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0031",
+      "mask_iou": 0.9972840847365562,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0032",
+      "mask_iou": 0.9974070872947277,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0033",
+      "mask_iou": 0.9963903410505353,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0034",
+      "mask_iou": 0.9971963462060234,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0035",
+      "mask_iou": 0.9976169198689306,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0036",
+      "mask_iou": 0.9978209784234138,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0037",
+      "mask_iou": 0.9985076536050825,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0038",
+      "mask_iou": 0.9981150746901654,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0039",
+      "mask_iou": 0.997751798561151,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0040",
+      "mask_iou": 0.9977360665184819,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0041",
+      "mask_iou": 0.9975014246263095,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0042",
+      "mask_iou": 0.9982164355464396,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0043",
+      "mask_iou": 0.9979026845637584,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0044",
+      "mask_iou": 0.9975996358068121,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0045",
+      "mask_iou": 0.9975501113585746,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0046",
+      "mask_iou": 0.9977908689248896,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0047",
+      "mask_iou": 0.9971450937053921,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0048",
+      "mask_iou": 0.9972857377858201,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0049",
+      "mask_iou": 0.9980126467931346,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0050",
+      "mask_iou": 0.9979086641058472,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0051",
+      "mask_iou": 0.997076557646629,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0052",
+      "mask_iou": 0.9973267988416128,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0053",
+      "mask_iou": 0.9981603813027845,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0054",
+      "mask_iou": 0.9978918075641945,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0055",
+      "mask_iou": 0.9975623316084334,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0056",
+      "mask_iou": 0.9976313340664918,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0057",
+      "mask_iou": 0.9975242149155192,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0058",
+      "mask_iou": 0.9975285633255003,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0059",
+      "mask_iou": 0.9976468574851324,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0060",
+      "mask_iou": 0.9978330090217583,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0061",
+      "mask_iou": 0.9978114252534727,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0062",
+      "mask_iou": 0.9972572418439034,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0063",
+      "mask_iou": 0.9978964328872577,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0064",
+      "mask_iou": 0.9976470588235294,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0065",
+      "mask_iou": 0.9980787704130644,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0066",
+      "mask_iou": 0.9975308641975309,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0067",
+      "mask_iou": 0.9977890373099954,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0068",
+      "mask_iou": 0.9975638924569252,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0069",
+      "mask_iou": 0.9975343887879574,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0070",
+      "mask_iou": 0.9973339257942679,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0071",
+      "mask_iou": 0.9973454358623052,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0072",
+      "mask_iou": 0.9971594633570773,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0073",
+      "mask_iou": 0.9980183517856374,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0074",
+      "mask_iou": 0.9979172865218685,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0075",
+      "mask_iou": 0.9977696761741368,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0076",
+      "mask_iou": 0.997579908675799,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0077",
+      "mask_iou": 0.9974895397489539,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0078",
+      "mask_iou": 0.9967320261437909,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0079",
+      "mask_iou": 0.9983728396147588,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0080",
+      "mask_iou": 0.9974346499181742,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0081",
+      "mask_iou": 0.997980902704749,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0082",
+      "mask_iou": 0.9979153371623058,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0083",
+      "mask_iou": 0.9977488744372186,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0084",
+      "mask_iou": 0.9975129047395589,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0085",
+      "mask_iou": 0.9975643556040819,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0086",
+      "mask_iou": 0.9981269510926118,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0087",
+      "mask_iou": 0.9978308026030369,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0088",
+      "mask_iou": 0.9975437656305823,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0089",
+      "mask_iou": 0.9975905805337092,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0090",
+      "mask_iou": 0.9974878801234024,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0091",
+      "mask_iou": 0.9972323446653444,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0092",
+      "mask_iou": 0.9970794392523364,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0093",
+      "mask_iou": 0.9981713572097587,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0094",
+      "mask_iou": 0.997375672483926,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0095",
+      "mask_iou": 0.9975385412618215,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0096",
+      "mask_iou": 0.9976532962496197,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0097",
+      "mask_iou": 0.998155236821473,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0098",
+      "mask_iou": 0.9979241199593658,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0099",
+      "mask_iou": 0.9975813544415127,
+      "lossless_channels_exact": true
+    },
+    {
+      "identity_id": "v6_b01b_0100",
+      "mask_iou": 0.9975812340270171,
+      "lossless_channels_exact": true
+    }
+  ]
+}

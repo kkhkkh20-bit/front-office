@@ -1,0 +1,295 @@
+{
+  "tool": "image_gen",
+  "initial_identity_candidates": 144,
+  "whole_photo_reframe_outputs": 18,
+  "local_face_transplants": 0,
+  "common_torso_templates": 0,
+  "source_images": [
+    {
+      "batch": "10",
+      "file": "exec-89110643-762c-41cb-9d62-9122c27bafdf.png",
+      "sha256": "f50a9f86b9e57f16047fcd56fef5161d93c7373fbe3fc9bb25f086bcf2406e02",
+      "reframed": false
+    },
+    {
+      "batch": "11",
+      "file": "exec-8258d362-6480-4b52-820a-0e280760f3e7.png",
+      "sha256": "0e160ea7759aba24cff5a9d95025c5e07740ddca32aa37e7cab7c51fdd6a2c9d",
+      "reframed": false
+    },
+    {
+      "batch": "12",
+      "file": "exec-4938ef3c-ed47-4574-86b6-b35986c48e54.png",
+      "sha256": "4ed44308ea2528f1c1b187c7cf3ac88b1b3123abe5725f06a9b0c83acfe9fcfd",
+      "reframed": false
+    },
+    {
+      "batch": "13",
+      "file": "exec-989279b1-b102-4b0c-abe0-235647702876.png",
+      "sha256": "63488fca580feb5795e966197d4328afc8f88566f03caefa98beed7cc4a6645e",
+      "reframed": true
+    },
+    {
+      "batch": "14",
+      "file": "exec-ffef7c4b-1acb-4ed4-b491-e237122cdabb.png",
+      "sha256": "ba634a461251984214ccab985c1406f3eaf612e061304ab408b3e59af9a3982e",
+      "reframed": false
+    },
+    {
+      "batch": "15",
+      "file": "exec-89650dbe-b6c3-4bff-b83c-a61f77f5349a.png",
+      "sha256": "803d41eb67b285e49ad41b114c7626ca6ea622d46255ae94ec4d3f0b690f8fd4",
+      "reframed": true
+    },
+    {
+      "batch": "16",
+      "file": "exec-dbacf5f7-d24b-4ab8-946b-48ff51d38fb9.png",
+      "sha256": "76bc165ab20d29277bd13efbadbff045d72322213cc29ce535019b89e5dab257",
+      "reframed": false
+    },
+    {
+      "batch": "01",
+      "file": "exec-a68d9d81-a2cd-4895-bd0f-8ea3416d683d.png",
+      "sha256": "3b2ec8821d937a89e7956b90a20742f826e74eec12b39a23da8e81325ef96203",
+      "reframed": false
+    },
+    {
+      "batch": "02",
+      "file": "exec-0c1a1238-1826-4100-bc98-e56d59f6a506.png",
+      "sha256": "050af0214e41985a6c890dcbeef81a79b7532d69824a59096f949353a72566f4",
+      "reframed": false
+    },
+    {
+      "batch": "03",
+      "file": "exec-a6ac17c7-e920-4bdc-ad14-0642ed125bf9.png",
+      "sha256": "d22224e7cc722d45020c8f46cad5f939266d16ca4a0570d010841cbef8be5e4f",
+      "reframed": false
+    },
+    {
+      "batch": "04",
+      "file": "exec-cb35aaaf-1bf1-4c33-b8e6-b1b89e7cbd1e.png",
+      "sha256": "b3aa2412e0f827527232897a7350f61c5afd6bb24b58e12e8df71b543dbdf624",
+      "reframed": false
+    },
+    {
+      "batch": "05",
+      "file": "exec-6f41e550-d6b3-4b34-a83e-9b0013958353.png",
+      "sha256": "ad94066f71f976a865cc54db3d5ea9b4fd5ccaefe64d40b09e2fb4d7a69b3e9c",
+      "reframed": false
+    },
+    {
+      "batch": "06",
+      "file": "exec-e6e02ff5-8a2c-400d-afe4-ad3ef1c6d350.png",
+      "sha256": "b495a671574aa7e970d0fe5b0ea3db5fcf2e7c0648ed303c2471e1a5d168f4c9",
+      "reframed": false
+    },
+    {
+      "batch": "07",
+      "file": "exec-579dbe56-b66c-4569-b8d0-daef6100d3e7.png",
+      "sha256": "9c6fa1cd7fd0ed21107d39d182208fd4b9fcb8e96f778e757ec3bfa25e23842c",
+      "reframed": false
+    },
+    {
+      "batch": "08",
+      "file": "exec-dceeed3e-6a88-426b-81a6-2fb424353454.png",
+      "sha256": "4c52c28387daf4bb62d0c494bbca9467c37f2ee0bb6ee8ab8850605847d22a78",
+      "reframed": false
+    },
+    {
+      "batch": "09",
+      "file": "exec-80c9f2e2-363d-4e0d-9b9f-4b7342b7f18c.png",
+      "sha256": "a6a8c16ba16da3b3577bc84d46af9b90f8f976f91a9a10378eb46fc322b6e637",
+      "reframed": false
+    }
+  ],
+  "source_note": "Generated image originals retained in workspace; selected normalized512 complete photos retained in archives. Reframing is a whole-photo image_gen edit, never face/body pasting.",
+  "initial_source_images": [
+    {
+      "batch": "10",
+      "file": "exec-89110643-762c-41cb-9d62-9122c27bafdf.png",
+      "sha256": "f50a9f86b9e57f16047fcd56fef5161d93c7373fbe3fc9bb25f086bcf2406e02"
+    },
+    {
+      "batch": "11",
+      "file": "exec-8258d362-6480-4b52-820a-0e280760f3e7.png",
+      "sha256": "0e160ea7759aba24cff5a9d95025c5e07740ddca32aa37e7cab7c51fdd6a2c9d"
+    },
+    {
+      "batch": "12",
+      "file": "exec-4938ef3c-ed47-4574-86b6-b35986c48e54.png",
+      "sha256": "4ed44308ea2528f1c1b187c7cf3ac88b1b3123abe5725f06a9b0c83acfe9fcfd"
+    },
+    {
+      "batch": "13",
+      "file": "exec-4197158d-39c6-4e70-a6ca-b7a39fee328e.png",
+      "sha256": "10e974433463856d64b47f1e8cd52a1cca3e2ef612d4fa516322f2bbf3909bd4"
+    },
+    {
+      "batch": "14",
+      "file": "exec-ffef7c4b-1acb-4ed4-b491-e237122cdabb.png",
+      "sha256": "ba634a461251984214ccab985c1406f3eaf612e061304ab408b3e59af9a3982e"
+    },
+    {
+      "batch": "15",
+      "file": "exec-ddb14cf9-4a74-406e-a13d-b9d55f545cba.png",
+      "sha256": "ceb57e22ad1351f25a184c4c9f8eecd27fcbdb72853931832047001a919032c7"
+    },
+    {
+      "batch": "16",
+      "file": "exec-dbacf5f7-d24b-4ab8-946b-48ff51d38fb9.png",
+      "sha256": "76bc165ab20d29277bd13efbadbff045d72322213cc29ce535019b89e5dab257"
+    },
+    {
+      "batch": "01",
+      "file": "exec-a68d9d81-a2cd-4895-bd0f-8ea3416d683d.png",
+      "sha256": "3b2ec8821d937a89e7956b90a20742f826e74eec12b39a23da8e81325ef96203"
+    },
+    {
+      "batch": "02",
+      "file": "exec-0c1a1238-1826-4100-bc98-e56d59f6a506.png",
+      "sha256": "050af0214e41985a6c890dcbeef81a79b7532d69824a59096f949353a72566f4"
+    },
+    {
+      "batch": "03",
+      "file": "exec-a6ac17c7-e920-4bdc-ad14-0642ed125bf9.png",
+      "sha256": "d22224e7cc722d45020c8f46cad5f939266d16ca4a0570d010841cbef8be5e4f"
+    },
+    {
+      "batch": "04",
+      "file": "exec-cb35aaaf-1bf1-4c33-b8e6-b1b89e7cbd1e.png",
+      "sha256": "b3aa2412e0f827527232897a7350f61c5afd6bb24b58e12e8df71b543dbdf624"
+    },
+    {
+      "batch": "05",
+      "file": "exec-6f41e550-d6b3-4b34-a83e-9b0013958353.png",
+      "sha256": "ad94066f71f976a865cc54db3d5ea9b4fd5ccaefe64d40b09e2fb4d7a69b3e9c"
+    },
+    {
+      "batch": "06",
+      "file": "exec-e6e02ff5-8a2c-400d-afe4-ad3ef1c6d350.png",
+      "sha256": "b495a671574aa7e970d0fe5b0ea3db5fcf2e7c0648ed303c2471e1a5d168f4c9"
+    },
+    {
+      "batch": "07",
+      "file": "exec-579dbe56-b66c-4569-b8d0-daef6100d3e7.png",
+      "sha256": "9c6fa1cd7fd0ed21107d39d182208fd4b9fcb8e96f778e757ec3bfa25e23842c"
+    },
+    {
+      "batch": "08",
+      "file": "exec-dceeed3e-6a88-426b-81a6-2fb424353454.png",
+      "sha256": "4c52c28387daf4bb62d0c494bbca9467c37f2ee0bb6ee8ab8850605847d22a78"
+    },
+    {
+      "batch": "09",
+      "file": "exec-80c9f2e2-363d-4e0d-9b9f-4b7342b7f18c.png",
+      "sha256": "a6a8c16ba16da3b3577bc84d46af9b90f8f976f91a9a10378eb46fc322b6e637"
+    }
+  ],
+  "framing_excluded_batches": [
+    "01",
+    "02",
+    "14"
+  ],
+  "selected_candidate_ids": [
+    "b15_07",
+    "b09_03",
+    "b13_01",
+    "b06_03",
+    "b09_05",
+    "b04_07",
+    "b13_03",
+    "b08_06",
+    "b13_09",
+    "b13_06",
+    "b16_08",
+    "b04_08",
+    "b05_02",
+    "b04_06",
+    "b07_06",
+    "b12_08",
+    "b11_04",
+    "b07_08",
+    "b15_05",
+    "b12_04",
+    "b05_01",
+    "b11_09",
+    "b03_04",
+    "b06_06",
+    "b04_01",
+    "b07_07",
+    "b08_04",
+    "b07_05",
+    "b13_02",
+    "b08_08",
+    "b06_05",
+    "b09_01",
+    "b15_08",
+    "b03_03",
+    "b16_05",
+    "b12_01",
+    "b09_04",
+    "b11_07",
+    "b13_08",
+    "b16_04",
+    "b08_02",
+    "b11_06",
+    "b06_01",
+    "b08_07",
+    "b03_01",
+    "b05_04",
+    "b16_03",
+    "b09_06",
+    "b11_01",
+    "b05_08",
+    "b13_07",
+    "b03_08",
+    "b12_02",
+    "b12_09",
+    "b08_01",
+    "b15_01",
+    "b13_05",
+    "b15_02",
+    "b06_02",
+    "b09_07",
+    "b07_09",
+    "b11_08",
+    "b04_02",
+    "b07_02",
+    "b07_03",
+    "b07_01",
+    "b12_07",
+    "b06_08",
+    "b12_03",
+    "b03_07",
+    "b06_07",
+    "b03_02",
+    "b08_09",
+    "b10_09",
+    "b06_04",
+    "b04_04",
+    "b09_08",
+    "b15_06",
+    "b11_02",
+    "b03_05",
+    "b04_09",
+    "b15_03",
+    "b05_09",
+    "b08_03",
+    "b15_04",
+    "b05_03",
+    "b05_06",
+    "b09_09",
+    "b07_04",
+    "b09_02",
+    "b13_04",
+    "b11_05",
+    "b03_09",
+    "b16_06",
+    "b05_05",
+    "b15_09",
+    "b04_03",
+    "b16_01",
+    "b03_06",
+    "b16_09"
+  ]
+}

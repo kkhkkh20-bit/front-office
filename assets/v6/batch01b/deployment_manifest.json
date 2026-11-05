@@ -1,0 +1,18 @@
+{
+  "do_not_deploy": true,
+  "runtime_files_if_approved": [
+    "sheets/256/b01b_s01.webp",
+    "sheets/128/b01b_s01.webp",
+    "sheets/registration/b01b_s01.webp",
+    "manifest.json"
+  ],
+  "exclude": [
+    "previews/",
+    "ASSET_PREVIEW.png",
+    "validation*",
+    "arcface_validation.json",
+    "camera_validation.json",
+    "archive_manifest.json",
+    "../archive/"
+  ]
+}

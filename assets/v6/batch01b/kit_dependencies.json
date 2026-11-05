@@ -1,0 +1,45 @@
+{
+  "files": {
+    "assets/v5b/face_kits/png/512/gwangju_blazes_kit_overlay.png": {
+      "bytes": 172749,
+      "sha256": "801838a296cc9319a186deedc07ecfa87a19ef23d89d12c9fb449fbdcba61960"
+    },
+    "assets/v5b/face_kits/png/512/seoul_comets_kit_overlay.png": {
+      "bytes": 159722,
+      "sha256": "ea23b0362acdf1dff1829712bf0917d64fb9898844810a3d9ff4070c24d31067"
+    },
+    "assets/v5b/face_kits/png/512/seoul_hounds_kit_overlay.png": {
+      "bytes": 156560,
+      "sha256": "55a30234017fb1e567a007003020ef283734f72e27afd9173e37982704789d33"
+    },
+    "assets/v5b/face_marks/png/512/gwangju_blazes_cap.png": {
+      "bytes": 9613,
+      "sha256": "b41bfa3e9b8002d221b711695757d21bc78119961a0afb13cda882e8e8cf41d6"
+    },
+    "assets/v5b/face_marks/png/512/gwangju_blazes_chest.png": {
+      "bytes": 5961,
+      "sha256": "02b30afc9693d5e508946649dfdfd7cf101dc1b931165b56c43a14299cc4d795"
+    },
+    "assets/v5b/face_marks/png/512/seoul_comets_cap.png": {
+      "bytes": 8201,
+      "sha256": "ea2a92f77730be7afe9545ee69012fd45f54f30c1ec6f24994ed6d759fbd0e63"
+    },
+    "assets/v5b/face_marks/png/512/seoul_comets_chest.png": {
+      "bytes": 4918,
+      "sha256": "db5dcecf7b9fa34641ef2a462540a7628bd159b9e82b88359c349a1ee352b235"
+    },
+    "assets/v5b/face_marks/png/512/seoul_hounds_cap.png": {
+      "bytes": 8319,
+      "sha256": "1406594a4524be87d83a6cb2d24cf6ee08d2c77c6c7371d128e7a999fc62fa15"
+    },
+    "assets/v5b/face_marks/png/512/seoul_hounds_chest.png": {
+      "bytes": 9861,
+      "sha256": "225e69eb30ba9df44a1590ef444bd1d90078b9f08265e1244aef1503603f7552"
+    },
+    "assets/v5b/faces_test/png/512/ko_late20s_01.png": {
+      "bytes": 346107,
+      "sha256": "7250a98e8404602f80aa398a656ad32dd2dee1e17e36ac6ba39c65895b056849"
+    }
+  },
+  "modified": false
+}

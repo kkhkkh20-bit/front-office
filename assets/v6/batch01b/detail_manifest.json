@@ -1,0 +1,39 @@
+{
+  "count": 20,
+  "identities": [
+    "v6_b01b_0001",
+    "v6_b01b_0006",
+    "v6_b01b_0011",
+    "v6_b01b_0016",
+    "v6_b01b_0021",
+    "v6_b01b_0026",
+    "v6_b01b_0031",
+    "v6_b01b_0036",
+    "v6_b01b_0041",
+    "v6_b01b_0046",
+    "v6_b01b_0051",
+    "v6_b01b_0056",
+    "v6_b01b_0061",
+    "v6_b01b_0066",
+    "v6_b01b_0071",
+    "v6_b01b_0076",
+    "v6_b01b_0081",
+    "v6_b01b_0086",
+    "v6_b01b_0091",
+    "v6_b01b_0096"
+  ],
+  "crop_256": [
+    67,
+    88,
+    190,
+    192
+  ],
+  "columns": [
+    "key_color",
+    "seoul_comets",
+    "seoul_hounds",
+    "gwangju_blazes"
+  ],
+  "magnification": 3,
+  "interpolation": "nearest, to expose actual edge pixels"
+}
