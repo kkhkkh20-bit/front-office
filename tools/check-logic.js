@@ -1565,6 +1565,11 @@ T('[난이도] 1위 견제: 우리가 선두를 달리면 경쟁 구단은 같�
   const R0=JSON.parse(JSON.stringify(G.sea.rec)); for(const t of G.teams)G.sea.rec[t.id]={w:15,l:15,t:0}; G.sea.rec[G.user]={w:30,l:5,t:0}; ok(leaderGap()>=1.5,'준비 실패: 독주 '+leaderGap());
   const a=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec[G.user]={w:10,l:25,t:0}; ok(leaderGap()===0,'선두가 아닌데 견제 '+leaderGap()); const b=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec=R0;
   ok(a>b+.1,'선두일 때 요구 '+a.toFixed(2)+' · 아닐 때 '+b.toFixed(2)); });
+T('[실플레이 11-05c] 트레이드: 선수를 보내며 상대에게 현금을 받을 수 있고, 받으면 상대가 더 많은 값을 요구하며 성사 시 돈이 우리에게 온다',()=>{ fresh(); simTo(()=>tradeOpen()&&period()==='season');
+  const op=G.teams.find(t=>t.id!==G.user); op.cash=5000; const mine=domestic(G.user).filter(q=>!q.foreign&&!q.ntc).sort((a,b)=>ovr(b)-ovr(a))[2];
+  const a=evalTrade(op.id,[mine.id],[],0), b=evalTrade(op.id,[mine.id],[],-500); ok(b.gain<a.gain,'받는 현금이 상대 평가에 반영 안 됨: '+a.gain.toFixed(2)+' / '+b.gain.toFixed(2));
+  const u0=team(G.user).cash, o0=op.cash; const r=proposeTrade(op.id,[mine.id],[],-100,null); if(r.ok){ ok(team(G.user).cash===u0+100&&op.cash===o0-100,'현금 이동 틀림: 우리 '+(team(G.user).cash-u0)+' 상대 '+(op.cash-o0)); }
+  ok(!proposeTrade(op.id,[],[],-100,null).ok,'선수 없이 현금만 받기가 통과'); op.cash=50; ok(/현금 여유/.test(proposeTrade(op.id,[mine.id],[],-500,null).msg||''),'상대 현금 부족 확인 없음'); });
 T('[실플레이 11-05b] FA 미계약 선수: 12월·1월에도 다른 구단 FA에게 제안할 수 있다',()=>{ fresh(); simTo(()=>G.fa&&!G.fa.closed&&G.day>=dnum(G.fa.y0,12,20)); const F=G.fa;
   const L=F.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!==G.user&&q.ask); ok(L.length,'준비 실패: 12월 20일에 남은 FA 없음'); const p=L[0]; const ng=F.neg&&F.neg[p.id];
   const r=faNegotiate(p.id,{annual:round5(p.ask.annual*1.2),years:p.ask.years}); ok(!/협상할 수 없는/.test(r.msg||''),'12월 제안 막힘: '+r.msg+' · unemp '+!!G.unemp+' · neg '+JSON.stringify(ng||null).slice(0,160)+' · out '+faOutN(G.user)+'/'+faCapN());
