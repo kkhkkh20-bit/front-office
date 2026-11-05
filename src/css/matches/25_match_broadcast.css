@@ -143,7 +143,7 @@
 }
 /* 휴대폰 중계: PC처럼 경기장 오른쪽 아래에 점수판(스코어 버그·볼카운트)을 겹친다(사용자 11-05). 패널은 mdBug가 #cs-stage 안으로 옮긴다 */
 @media(max-width:1000px){
- #cs-stage>.md-count-panel{position:absolute;right:6px;bottom:6px;z-index:7;width:min(214px,58%);margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) 44px;background:#f4f5f7;color:#16202a;border-radius:3px;overflow:hidden;box-shadow:0 4px 14px #0009;font-family:inherit;pointer-events:none}
+ #cs-stage>.md-count-panel{position:absolute;right:6px;top:44px;bottom:auto;z-index:7;width:min(214px,58%);margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) 44px;background:#f4f5f7;color:#16202a;border-radius:3px;overflow:hidden;box-shadow:0 4px 14px #0009;font-family:inherit;pointer-events:none}
  #cs-stage>.md-count-panel .md-base-state,#cs-stage>.md-count-panel #cs-count-summary{display:none}
  #cs-stage>.md-count-panel .cs-bso{display:grid;align-content:center;gap:2px;padding:3px 4px;background:#fff;border-left:1px solid #d9dde2;margin:0}
  #cs-stage>.md-count-panel .cs-bso>div{display:flex;align-items:center;gap:3px}#cs-stage>.md-count-panel .cs-bso b{font-size:9px;width:8px;color:#16202a}

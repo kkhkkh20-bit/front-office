@@ -73,7 +73,7 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
   const vw=`<div class="seg smk-vw"><button data-a="cmkView" data-v="t" class="${UI.cmkView!=='c'?'on':''}">비교 표</button><button data-a="cmkView" data-v="c" class="${UI.cmkView==='c'?'on':''}">카드</button></div>`;
   if(UI.cmkView==='c'){ const P=pager('cmk'+role+srt,L,cardPageSize()); return modeBar+chips+vw+`<div class="cgrid" data-pg="${'cmk'+role+srt}">${P.items.map(card).join('')}</div>${P.bar}`; }
   /* 비교 목록: 한 줄에 후보·지도·육성·연봉·계약 버튼, 아래 줄에 이 자리 핵심 능력. 이름을 누르면 그 줄 아래에 상세 카드 */
-  const rows=L.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}`,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:UI.cmkOpen===c.id,openA:'cmkOpen',
+  const rows=L.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}`,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:String(UI.cmkOpen)===String(c.id),openA:'cmkOpen',
     acts:`<button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년</button>`,detail:()=>card(c)})).join('');
   return modeBar+chips+vw+`<div class="st-list">${stHead()}${rows}</div><p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 이름을 누르면 능력 카드가 열립니다.</p>`; }
 /* 스태프 한 줄(시장·우리 코치진 공용) */

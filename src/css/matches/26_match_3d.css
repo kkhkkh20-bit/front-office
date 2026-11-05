@@ -207,3 +207,12 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 }
 /* 휴대폰: 페이지 제목은 상단바(구단 이름 자리)에 보여 주고 본문 제목 줄은 접는다(사용자 11-05: 공간 확보) */
 @media(max-width:1000px){.subhead.notitle>h1{display:none}.subhead.notitle{min-height:0;padding-top:2px;padding-bottom:0;margin-bottom:0;justify-content:flex-end}}
+/* 휴대폰: 9칸 투구 위치표를 이번 투구 줄 왼쪽에 작게 다시 보인다(사용자 11-06) */
+@media(max-width:600px){
+ .match-dashboard .md-pitch-dock{grid-template-columns:64px minmax(0,1fr) auto}
+ .match-dashboard .md-pitch-dock>.md-zone-map{display:block;grid-column:1;grid-row:1;height:60px;width:auto;aspect-ratio:auto;margin:3px 0 3px 4px;min-height:0;max-height:none}
+ .match-dashboard .md-pitch-dock>.cs-pitch{grid-column:2}
+ .match-dashboard .md-pitch-dock>.md-count-panel{grid-column:3}
+ .match-dashboard .md-zone-map .md-pitch-dot{width:9px;height:9px;font-size:6px}.match-dashboard .md-zone-map .md-pitch-dot.latest{width:12px;height:12px}
+ .match-dashboard .md-zone-map .md-zone-high,.match-dashboard .md-zone-map .md-zone-low{display:none}
+}

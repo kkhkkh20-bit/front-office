@@ -31,7 +31,7 @@ nav.subtabs{-webkit-overflow-scrolling:touch}nav.subtabs button{flex:0 0 auto;wh
 .cp-r{display:grid;grid-template-columns:minmax(80px,1fr) minmax(120px,1.4fr) auto auto auto;gap:8px;align-items:center;padding:4px 0;border-top:1px solid var(--line,#2a2a2a)}
 .cp-r .cp-n{text-align:left;font-weight:700}
 @media (max-width:520px){ .cp-r{grid-template-columns:1fr auto auto;row-gap:2px} .cp-r .small.muted{grid-column:1/-1;order:5} }
-@media (max-width:1100px){ .st-x{display:none} }
+/* 휴대폰에서도 코치·직원 상세를 펼쳐 본다(사용자 11-06: 이름을 눌러도 상세로 가지 않음) */
 .top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{font-style:normal}
 @media (max-width:420px){ .top .club i.cb-c,.top .club i.cb-y,.top .club i.cb-p{display:none} }
 .tgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
