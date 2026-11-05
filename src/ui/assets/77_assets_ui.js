@@ -43,7 +43,7 @@ function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img sr
  - 시트는 구단 홈 유니폼으로 미리 합성돼 있다(tools/gen-faces-v6b.py). 화면에서는 칸 하나를 잘라 작은 그림으로 캐시한다
  - 설정에서 끌 수 있다(G.f6off) */
 const F6IMG={}, F6C=new Map(), F6B=new Map();
-function face6Load(tid,big){ const k=(big?'b':'')+tid, src=typeof FACE6==='undefined'?null:(big?FACE6.big:FACE6.sheet)?.[String(tid)]; if(F6IMG[k]||!src)return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
+function face6Load(tid,big){ const k=(big===true?'b':big||'')+tid, src=typeof FACE6==='undefined'?null:(big===true?FACE6.big:big==='a'?FACE6.away:FACE6.sheet)?.[String(tid)]; /* big: true=선수 상세 큰 사진, 'a'=원정 유니폼 */ if(F6IMG[k]||!src)return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(!p.foreign)return !x.f; if(!x.f)return false; const asia=x.e==='Japanese'||x.e==='Taiwanese'; return p.foreign==='아시아'?asia:!asia; }); }
 function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user||typeof FACE6==='undefined')return null;
   const M=G.f6=G.f6||{}, Rv=G.f6r=G.f6r||{}; const cur=M[p.id]; if(cur!=null&&Rv[cur]===p.id)return cur;
@@ -58,8 +58,8 @@ function face6Cut(im,cs,i,x,y,w,o,pad,big){ const c=document.createElement('canv
     const m=document.createElement('canvas'); m.width=o; m.height=Math.round(o*.05)+1; const mg=m.getContext('2d'); mg.fillStyle=gr; mg.fillRect(0,0,o,m.height); mg.globalCompositeOperation='destination-in'; const f2=mg.createLinearGradient(0,0,0,m.height); f2.addColorStop(0,'rgba(0,0,0,1)'); f2.addColorStop(1,'rgba(0,0,0,0)'); mg.fillStyle=f2; mg.fillRect(0,0,o,m.height); g.drawImage(m,0,pd); void fd; }
   else g.drawImage(im,sx+x,sy+y,w,w,0,0,o,o);
   return big?c.toDataURL('image/webp',.92):c.toDataURL('image/jpeg',.9); }
-function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user, k=tid+':'+i; if(F6C.has(k))return F6C.get(k);
-  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const u=face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
+function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user; let aw=''; try{ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.away===G.user&&g.home!==G.user)aw='a'; }catch(e){} /* 원정 경기 중계 중에는 원정 유니폼 */ const k=aw+tid+':'+i; if(F6C.has(k))return F6C.get(k);
+  const im=face6Load(tid,aw); if(!im||!im.ok)return null; try{ const u=face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
 /* 큰 자리(선수 상세): 모자부터 가슴 심벌까지. 256px 시트가 있으면(사이트) 선명하게, 없으면(아티팩트) 128px 시트로 */
 function face6Bust(x){ const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; if(bg&&bg.ok)u=face6Cut(bg,256,x.i,12,0,232,464,.1,true); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=face6Cut(im,128,x.i,6,0,116,232,.1,true); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });

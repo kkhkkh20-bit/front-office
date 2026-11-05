@@ -184,3 +184,5 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-fm-ovn{position:absolute;left:0;right:0;bottom:8px;z-index:1;text-align:center;font:700 22px/1.1 var(--f-ui);letter-spacing:.02em;color:#f3d68a;text-shadow:0 2px 6px #000}
 .pf-fmcard.ph .pf-fm-name b{font-size:0}.pf-fmcard.ph .pf-fm-name b .pe-b{font-size:12px}
 .pf-fmcard.ph .pf-fm-no,.pf-fmcard.ph .pf-fm-team{z-index:1}
+/* 휴대폰·좁은 화면 선수 상세: 실사 얼굴이면 머리말 사진을 크게(PC는 왼쪽 큰 카드) */
+@media(max-width:1099px){.pf-screen .pf-name>img.av:is([src^="data:image/webp"],[src^="data:image/jpeg"],[src^="data:image/png"]){width:112px!important;height:112px!important;border-radius:8px;object-fit:cover;border:1px solid var(--pt2,var(--line2))}}
