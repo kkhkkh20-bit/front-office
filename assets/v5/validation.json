@@ -8,7 +8,7 @@
     "faces_test": 2
   },
   "runtime_images_checked": 400,
-  "runtime_image_bytes": 28596814,
+  "runtime_image_bytes": 24995053,
   "portrait_webp": [
     {
       "id": "ko_late20s_01",
@@ -83,5 +83,16 @@
     "samples": 96,
     "external_images": [],
     "embedded_scripts": 0
+  },
+  "uniform_redesign": {
+    "revision": "2026-11-05-overseas-reference-redesign",
+    "views": 44,
+    "distinct_club_design_themes": 11,
+    "research_cases": 9,
+    "research_note": "Public third-party product-photo archives inspected; official sites unavailable. External reference photos not included in asset files.",
+    "canonical_team_palette_preserved": true,
+    "new_kit_color_metadata_checked": true,
+    "other_asset_metadata_and_files_preserved": true,
+    "visual_review": "All 44 views: thinner V-neck binding, club-specific home/away graphics and lettering, smoother cloth; compare uniform_design_directions.png and uniforms_before_after.png."
   }
 }

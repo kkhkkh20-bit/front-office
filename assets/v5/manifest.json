@@ -283,10 +283,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_comets_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_comets_home_front.png",
@@ -295,7 +297,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_comets_home_front.webp",
         "512": "uniforms/webp/512/seoul_comets_home_front.webp"
-      }
+      },
+      "design_theme": "Classic comet pinstripe / wine and ivory sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_comets_home_front_blank.png"
     },
     "seoul_comets_home_back": {
       "id": "seoul_comets_home_back",
@@ -372,10 +377,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_comets_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_comets_home_back.png",
@@ -384,7 +391,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_comets_home_back.webp",
         "512": "uniforms/webp/512/seoul_comets_home_back.webp"
-      }
+      },
+      "design_theme": "Classic comet pinstripe / wine and ivory sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_comets_home_back.png"
     },
     "seoul_comets_away_front": {
       "id": "seoul_comets_away_front",
@@ -418,7 +428,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -430,15 +440,17 @@
       "kit_colors": {
         "primary": "#A50034",
         "secondary": "#A50034",
-        "fabric": "#4A4E54",
-        "wordmark": "#F5F3EC"
+        "fabric": "#A50034",
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_comets_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_comets_away_front.png",
@@ -447,7 +459,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_comets_away_front.webp",
         "512": "uniforms/webp/512/seoul_comets_away_front.webp"
-      }
+      },
+      "design_theme": "Classic comet pinstripe / wine and ivory sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_comets_away_front_blank.png"
     },
     "seoul_comets_away_back": {
       "id": "seoul_comets_away_back",
@@ -481,7 +496,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -507,7 +522,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -519,15 +534,17 @@
       "kit_colors": {
         "primary": "#A50034",
         "secondary": "#A50034",
-        "fabric": "#4A4E54",
-        "wordmark": "#F5F3EC"
+        "fabric": "#A50034",
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_comets_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_comets_away_back.png",
@@ -536,7 +553,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_comets_away_back.webp",
         "512": "uniforms/webp/512/seoul_comets_away_back.webp"
-      }
+      },
+      "design_theme": "Classic comet pinstripe / wine and ivory sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_comets_away_back.png"
     },
     "seoul_hounds_home_front": {
       "id": "seoul_hounds_home_front",
@@ -587,10 +607,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_hounds_home_front.png",
@@ -599,7 +621,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_hounds_home_front.webp",
         "512": "uniforms/webp/512/seoul_hounds_home_front.webp"
-      }
+      },
+      "design_theme": "Heritage raglan / small chest emblem",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_hounds_home_front_blank.png"
     },
     "seoul_hounds_home_back": {
       "id": "seoul_hounds_home_back",
@@ -676,10 +701,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_hounds_home_back.png",
@@ -688,7 +715,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_hounds_home_back.webp",
         "512": "uniforms/webp/512/seoul_hounds_home_back.webp"
-      }
+      },
+      "design_theme": "Heritage raglan / small chest emblem",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_hounds_home_back.png"
     },
     "seoul_hounds_away_front": {
       "id": "seoul_hounds_away_front",
@@ -722,7 +752,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -735,14 +765,16 @@
         "primary": "#131230",
         "secondary": "#ED1C24",
         "fabric": "#131230",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_hounds_away_front.png",
@@ -751,7 +783,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_hounds_away_front.webp",
         "512": "uniforms/webp/512/seoul_hounds_away_front.webp"
-      }
+      },
+      "design_theme": "Heritage raglan / small chest emblem",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_hounds_away_front_blank.png"
     },
     "seoul_hounds_away_back": {
       "id": "seoul_hounds_away_back",
@@ -785,7 +820,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -811,7 +846,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -824,14 +859,16 @@
         "primary": "#131230",
         "secondary": "#ED1C24",
         "fabric": "#131230",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/seoul_hounds_away_back.png",
@@ -840,7 +877,10 @@
       "webp": {
         "256": "uniforms/webp/256/seoul_hounds_away_back.webp",
         "512": "uniforms/webp/512/seoul_hounds_away_back.webp"
-      }
+      },
+      "design_theme": "Heritage raglan / small chest emblem",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/seoul_hounds_away_back.png"
     },
     "incheon_seagulls_home_front": {
       "id": "incheon_seagulls_home_front",
@@ -887,14 +927,16 @@
         "primary": "#CE0E2D",
         "secondary": "#CE0E2D",
         "fabric": "#F3F1E9",
-        "wordmark": "#CE0E2D"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/incheon_seagulls_home_front.png",
@@ -903,7 +945,10 @@
       "webp": {
         "256": "uniforms/webp/256/incheon_seagulls_home_front.webp",
         "512": "uniforms/webp/512/incheon_seagulls_home_front.webp"
-      }
+      },
+      "design_theme": "Nautical chest band / shoulder color block",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/incheon_seagulls_home_front_blank.png"
     },
     "incheon_seagulls_home_back": {
       "id": "incheon_seagulls_home_back",
@@ -976,14 +1021,16 @@
         "primary": "#CE0E2D",
         "secondary": "#CE0E2D",
         "fabric": "#F3F1E9",
-        "wordmark": "#CE0E2D"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/incheon_seagulls_home_back.png",
@@ -992,7 +1039,10 @@
       "webp": {
         "256": "uniforms/webp/256/incheon_seagulls_home_back.webp",
         "512": "uniforms/webp/512/incheon_seagulls_home_back.webp"
-      }
+      },
+      "design_theme": "Nautical chest band / shoulder color block",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/incheon_seagulls_home_back.png"
     },
     "incheon_seagulls_away_front": {
       "id": "incheon_seagulls_away_front",
@@ -1026,7 +1076,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -1039,14 +1089,16 @@
         "primary": "#CE0E2D",
         "secondary": "#CE0E2D",
         "fabric": "#CE0E2D",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/incheon_seagulls_away_front.png",
@@ -1055,7 +1107,10 @@
       "webp": {
         "256": "uniforms/webp/256/incheon_seagulls_away_front.webp",
         "512": "uniforms/webp/512/incheon_seagulls_away_front.webp"
-      }
+      },
+      "design_theme": "Nautical chest band / shoulder color block",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/incheon_seagulls_away_front_blank.png"
     },
     "incheon_seagulls_away_back": {
       "id": "incheon_seagulls_away_back",
@@ -1089,7 +1144,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -1115,7 +1170,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -1128,14 +1183,16 @@
         "primary": "#CE0E2D",
         "secondary": "#CE0E2D",
         "fabric": "#CE0E2D",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/incheon_seagulls_away_back.png",
@@ -1144,7 +1201,10 @@
       "webp": {
         "256": "uniforms/webp/256/incheon_seagulls_away_back.webp",
         "512": "uniforms/webp/512/incheon_seagulls_away_back.webp"
-      }
+      },
+      "design_theme": "Nautical chest band / shoulder color block",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/incheon_seagulls_away_back.png"
     },
     "suwon_sparks_home_front": {
       "id": "suwon_sparks_home_front",
@@ -1195,10 +1255,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/suwon_sparks_home_front.png",
@@ -1207,7 +1269,10 @@
       "webp": {
         "256": "uniforms/webp/256/suwon_sparks_home_front.webp",
         "512": "uniforms/webp/512/suwon_sparks_home_front.webp"
-      }
+      },
+      "design_theme": "Angular tech yoke / asymmetrical red panels",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/suwon_sparks_home_front_blank.png"
     },
     "suwon_sparks_home_back": {
       "id": "suwon_sparks_home_back",
@@ -1284,10 +1349,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/suwon_sparks_home_back.png",
@@ -1296,7 +1363,10 @@
       "webp": {
         "256": "uniforms/webp/256/suwon_sparks_home_back.webp",
         "512": "uniforms/webp/512/suwon_sparks_home_back.webp"
-      }
+      },
+      "design_theme": "Angular tech yoke / asymmetrical red panels",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/suwon_sparks_home_back.png"
     },
     "suwon_sparks_away_front": {
       "id": "suwon_sparks_away_front",
@@ -1330,7 +1400,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -1343,14 +1413,16 @@
         "primary": "#141414",
         "secondary": "#ED1C24",
         "fabric": "#141414",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/suwon_sparks_away_front.png",
@@ -1359,7 +1431,10 @@
       "webp": {
         "256": "uniforms/webp/256/suwon_sparks_away_front.webp",
         "512": "uniforms/webp/512/suwon_sparks_away_front.webp"
-      }
+      },
+      "design_theme": "Angular tech yoke / asymmetrical red panels",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/suwon_sparks_away_front_blank.png"
     },
     "suwon_sparks_away_back": {
       "id": "suwon_sparks_away_back",
@@ -1393,7 +1468,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -1419,7 +1494,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -1432,14 +1507,16 @@
         "primary": "#141414",
         "secondary": "#ED1C24",
         "fabric": "#141414",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/suwon_sparks_away_back.png",
@@ -1448,7 +1525,10 @@
       "webp": {
         "256": "uniforms/webp/256/suwon_sparks_away_back.webp",
         "512": "uniforms/webp/512/suwon_sparks_away_back.webp"
-      }
+      },
+      "design_theme": "Angular tech yoke / asymmetrical red panels",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/suwon_sparks_away_back.png"
     },
     "goyang_storm_home_front": {
       "id": "goyang_storm_home_front",
@@ -1499,10 +1579,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/goyang_storm_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/goyang_storm_home_front.png",
@@ -1511,7 +1593,10 @@
       "webp": {
         "256": "uniforms/webp/256/goyang_storm_home_front.webp",
         "512": "uniforms/webp/512/goyang_storm_home_front.webp"
-      }
+      },
+      "design_theme": "Refined burgundy script / tonal swirl jacquard",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/goyang_storm_home_front_blank.png"
     },
     "goyang_storm_home_back": {
       "id": "goyang_storm_home_back",
@@ -1588,10 +1673,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/goyang_storm_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/goyang_storm_home_back.png",
@@ -1600,7 +1687,10 @@
       "webp": {
         "256": "uniforms/webp/256/goyang_storm_home_back.webp",
         "512": "uniforms/webp/512/goyang_storm_home_back.webp"
-      }
+      },
+      "design_theme": "Refined burgundy script / tonal swirl jacquard",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/goyang_storm_home_back.png"
     },
     "goyang_storm_away_front": {
       "id": "goyang_storm_away_front",
@@ -1634,7 +1724,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -1647,14 +1737,16 @@
         "primary": "#570514",
         "secondary": "#570514",
         "fabric": "#570514",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/goyang_storm_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/goyang_storm_away_front.png",
@@ -1663,7 +1755,10 @@
       "webp": {
         "256": "uniforms/webp/256/goyang_storm_away_front.webp",
         "512": "uniforms/webp/512/goyang_storm_away_front.webp"
-      }
+      },
+      "design_theme": "Refined burgundy script / tonal swirl jacquard",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/goyang_storm_away_front_blank.png"
     },
     "goyang_storm_away_back": {
       "id": "goyang_storm_away_back",
@@ -1697,7 +1792,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -1723,7 +1818,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -1736,14 +1831,16 @@
         "primary": "#570514",
         "secondary": "#570514",
         "fabric": "#570514",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/goyang_storm_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/goyang_storm_away_back.png",
@@ -1752,7 +1849,10 @@
       "webp": {
         "256": "uniforms/webp/256/goyang_storm_away_back.webp",
         "512": "uniforms/webp/512/goyang_storm_away_back.webp"
-      }
+      },
+      "design_theme": "Refined burgundy script / tonal swirl jacquard",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/goyang_storm_away_back.png"
     },
     "daejeon_redfox_home_front": {
       "id": "daejeon_redfox_home_front",
@@ -1803,10 +1903,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daejeon_redfox_home_front.png",
@@ -1815,7 +1917,10 @@
       "webp": {
         "256": "uniforms/webp/256/daejeon_redfox_home_front.webp",
         "512": "uniforms/webp/512/daejeon_redfox_home_front.webp"
-      }
+      },
+      "design_theme": "Orange / charcoal athletic sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daejeon_redfox_home_front_blank.png"
     },
     "daejeon_redfox_home_back": {
       "id": "daejeon_redfox_home_back",
@@ -1892,10 +1997,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daejeon_redfox_home_back.png",
@@ -1904,7 +2011,10 @@
       "webp": {
         "256": "uniforms/webp/256/daejeon_redfox_home_back.webp",
         "512": "uniforms/webp/512/daejeon_redfox_home_back.webp"
-      }
+      },
+      "design_theme": "Orange / charcoal athletic sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daejeon_redfox_home_back.png"
     },
     "daejeon_redfox_away_front": {
       "id": "daejeon_redfox_away_front",
@@ -1938,7 +2048,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -1951,14 +2061,16 @@
         "primary": "#F37321",
         "secondary": "#282828",
         "fabric": "#F37321",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daejeon_redfox_away_front.png",
@@ -1967,7 +2079,10 @@
       "webp": {
         "256": "uniforms/webp/256/daejeon_redfox_away_front.webp",
         "512": "uniforms/webp/512/daejeon_redfox_away_front.webp"
-      }
+      },
+      "design_theme": "Orange / charcoal athletic sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daejeon_redfox_away_front_blank.png"
     },
     "daejeon_redfox_away_back": {
       "id": "daejeon_redfox_away_back",
@@ -2001,7 +2116,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -2027,7 +2142,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -2040,14 +2155,16 @@
         "primary": "#F37321",
         "secondary": "#282828",
         "fabric": "#F37321",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daejeon_redfox_away_back.png",
@@ -2056,7 +2173,10 @@
       "webp": {
         "256": "uniforms/webp/256/daejeon_redfox_away_back.webp",
         "512": "uniforms/webp/512/daejeon_redfox_away_back.webp"
-      }
+      },
+      "design_theme": "Orange / charcoal athletic sleeves",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daejeon_redfox_away_back.png"
     },
     "gwangju_blazes_home_front": {
       "id": "gwangju_blazes_home_front",
@@ -2107,10 +2227,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/gwangju_blazes_home_front.png",
@@ -2119,7 +2241,10 @@
       "webp": {
         "256": "uniforms/webp/256/gwangju_blazes_home_front.webp",
         "512": "uniforms/webp/512/gwangju_blazes_home_front.webp"
-      }
+      },
+      "design_theme": "Red raglan / gold piping and flame-cut lettering",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/gwangju_blazes_home_front_blank.png"
     },
     "gwangju_blazes_home_back": {
       "id": "gwangju_blazes_home_back",
@@ -2196,10 +2321,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/gwangju_blazes_home_back.png",
@@ -2208,7 +2335,10 @@
       "webp": {
         "256": "uniforms/webp/256/gwangju_blazes_home_back.webp",
         "512": "uniforms/webp/512/gwangju_blazes_home_back.webp"
-      }
+      },
+      "design_theme": "Red raglan / gold piping and flame-cut lettering",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/gwangju_blazes_home_back.png"
     },
     "gwangju_blazes_away_front": {
       "id": "gwangju_blazes_away_front",
@@ -2259,10 +2389,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/gwangju_blazes_away_front.png",
@@ -2271,7 +2403,10 @@
       "webp": {
         "256": "uniforms/webp/256/gwangju_blazes_away_front.webp",
         "512": "uniforms/webp/512/gwangju_blazes_away_front.webp"
-      }
+      },
+      "design_theme": "Red raglan / gold piping and flame-cut lettering",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/gwangju_blazes_away_front_blank.png"
     },
     "gwangju_blazes_away_back": {
       "id": "gwangju_blazes_away_back",
@@ -2348,10 +2483,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/gwangju_blazes_away_back.png",
@@ -2360,7 +2497,10 @@
       "webp": {
         "256": "uniforms/webp/256/gwangju_blazes_away_back.webp",
         "512": "uniforms/webp/512/gwangju_blazes_away_back.webp"
-      }
+      },
+      "design_theme": "Red raglan / gold piping and flame-cut lettering",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/gwangju_blazes_away_back.png"
     },
     "daegu_thunders_home_front": {
       "id": "daegu_thunders_home_front",
@@ -2411,10 +2551,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daegu_thunders_home_front.png",
@@ -2423,7 +2565,10 @@
       "webp": {
         "256": "uniforms/webp/256/daegu_thunders_home_front.webp",
         "512": "uniforms/webp/512/daegu_thunders_home_front.webp"
-      }
+      },
+      "design_theme": "Royal blue pinstripe / lightning script",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daegu_thunders_home_front_blank.png"
     },
     "daegu_thunders_home_back": {
       "id": "daegu_thunders_home_back",
@@ -2500,10 +2645,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daegu_thunders_home_back.png",
@@ -2512,7 +2659,10 @@
       "webp": {
         "256": "uniforms/webp/256/daegu_thunders_home_back.webp",
         "512": "uniforms/webp/512/daegu_thunders_home_back.webp"
-      }
+      },
+      "design_theme": "Royal blue pinstripe / lightning script",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daegu_thunders_home_back.png"
     },
     "daegu_thunders_away_front": {
       "id": "daegu_thunders_away_front",
@@ -2546,7 +2696,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -2559,14 +2709,16 @@
         "primary": "#074CA1",
         "secondary": "#074CA1",
         "fabric": "#074CA1",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daegu_thunders_away_front.png",
@@ -2575,7 +2727,10 @@
       "webp": {
         "256": "uniforms/webp/256/daegu_thunders_away_front.webp",
         "512": "uniforms/webp/512/daegu_thunders_away_front.webp"
-      }
+      },
+      "design_theme": "Royal blue pinstripe / lightning script",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daegu_thunders_away_front_blank.png"
     },
     "daegu_thunders_away_back": {
       "id": "daegu_thunders_away_back",
@@ -2609,7 +2764,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -2635,7 +2790,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -2648,14 +2803,16 @@
         "primary": "#074CA1",
         "secondary": "#074CA1",
         "fabric": "#074CA1",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/daegu_thunders_away_back.png",
@@ -2664,7 +2821,10 @@
       "webp": {
         "256": "uniforms/webp/256/daegu_thunders_away_back.webp",
         "512": "uniforms/webp/512/daegu_thunders_away_back.webp"
-      }
+      },
+      "design_theme": "Royal blue pinstripe / lightning script",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/daegu_thunders_away_back.png"
     },
     "busan_waves_home_front": {
       "id": "busan_waves_home_front",
@@ -2715,10 +2875,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/busan_waves_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/busan_waves_home_front.png",
@@ -2727,7 +2889,10 @@
       "webp": {
         "256": "uniforms/webp/256/busan_waves_home_front.webp",
         "512": "uniforms/webp/512/busan_waves_home_front.webp"
-      }
+      },
+      "design_theme": "Navy / cream marine bands and wave underline",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/busan_waves_home_front_blank.png"
     },
     "busan_waves_home_back": {
       "id": "busan_waves_home_back",
@@ -2804,10 +2969,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/busan_waves_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/busan_waves_home_back.png",
@@ -2816,7 +2983,10 @@
       "webp": {
         "256": "uniforms/webp/256/busan_waves_home_back.webp",
         "512": "uniforms/webp/512/busan_waves_home_back.webp"
-      }
+      },
+      "design_theme": "Navy / cream marine bands and wave underline",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/busan_waves_home_back.png"
     },
     "busan_waves_away_front": {
       "id": "busan_waves_away_front",
@@ -2850,7 +3020,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -2863,14 +3033,16 @@
         "primary": "#041E42",
         "secondary": "#D00F31",
         "fabric": "#041E42",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/busan_waves_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/busan_waves_away_front.png",
@@ -2879,7 +3051,10 @@
       "webp": {
         "256": "uniforms/webp/256/busan_waves_away_front.webp",
         "512": "uniforms/webp/512/busan_waves_away_front.webp"
-      }
+      },
+      "design_theme": "Navy / cream marine bands and wave underline",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/busan_waves_away_front_blank.png"
     },
     "busan_waves_away_back": {
       "id": "busan_waves_away_back",
@@ -2913,7 +3088,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -2939,7 +3114,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -2952,14 +3127,16 @@
         "primary": "#041E42",
         "secondary": "#D00F31",
         "fabric": "#041E42",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/busan_waves_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/busan_waves_away_back.png",
@@ -2968,7 +3145,10 @@
       "webp": {
         "256": "uniforms/webp/256/busan_waves_away_back.webp",
         "512": "uniforms/webp/512/busan_waves_away_back.webp"
-      }
+      },
+      "design_theme": "Navy / cream marine bands and wave underline",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/busan_waves_away_back.png"
     },
     "changwon_anchors_home_front": {
       "id": "changwon_anchors_home_front",
@@ -3019,10 +3199,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/changwon_anchors_home_front.png",
@@ -3031,7 +3213,10 @@
       "webp": {
         "256": "uniforms/webp/256/changwon_anchors_home_front.webp",
         "512": "uniforms/webp/512/changwon_anchors_home_front.webp"
-      }
+      },
+      "design_theme": "Small anchor chest / slim asymmetric gold detail",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/changwon_anchors_home_front_blank.png"
     },
     "changwon_anchors_home_back": {
       "id": "changwon_anchors_home_back",
@@ -3108,10 +3293,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/changwon_anchors_home_back.png",
@@ -3120,7 +3307,10 @@
       "webp": {
         "256": "uniforms/webp/256/changwon_anchors_home_back.webp",
         "512": "uniforms/webp/512/changwon_anchors_home_back.webp"
-      }
+      },
+      "design_theme": "Small anchor chest / slim asymmetric gold detail",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/changwon_anchors_home_back.png"
     },
     "changwon_anchors_away_front": {
       "id": "changwon_anchors_away_front",
@@ -3154,7 +3344,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -3167,14 +3357,16 @@
         "primary": "#1D467B",
         "secondary": "#C6A269",
         "fabric": "#1D467B",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/changwon_anchors_away_front.png",
@@ -3183,7 +3375,10 @@
       "webp": {
         "256": "uniforms/webp/256/changwon_anchors_away_front.webp",
         "512": "uniforms/webp/512/changwon_anchors_away_front.webp"
-      }
+      },
+      "design_theme": "Small anchor chest / slim asymmetric gold detail",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/changwon_anchors_away_front_blank.png"
     },
     "changwon_anchors_away_back": {
       "id": "changwon_anchors_away_back",
@@ -3217,7 +3412,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -3243,7 +3438,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -3256,14 +3451,16 @@
         "primary": "#1D467B",
         "secondary": "#C6A269",
         "fabric": "#1D467B",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/changwon_anchors_away_back.png",
@@ -3272,7 +3469,10 @@
       "webp": {
         "256": "uniforms/webp/256/changwon_anchors_away_back.webp",
         "512": "uniforms/webp/512/changwon_anchors_away_back.webp"
-      }
+      },
+      "design_theme": "Small anchor chest / slim asymmetric gold detail",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/changwon_anchors_away_back.png"
     },
     "korea_home_front": {
       "id": "korea_home_front",
@@ -3323,10 +3523,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/korea_home_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/korea_home_front.png",
@@ -3335,7 +3537,10 @@
       "webp": {
         "256": "uniforms/webp/256/korea_home_front.webp",
         "512": "uniforms/webp/512/korea_home_front.webp"
-      }
+      },
+      "design_theme": "National shoulder yoke / restrained taegeuk curve",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_home_front_blank.png"
     },
     "korea_home_back": {
       "id": "korea_home_back",
@@ -3412,10 +3617,12 @@
       },
       "source_v3": "assets/v3/uniforms/png/512/korea_home_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/korea_home_back.png",
@@ -3424,7 +3631,10 @@
       "webp": {
         "256": "uniforms/webp/256/korea_home_back.webp",
         "512": "uniforms/webp/512/korea_home_back.webp"
-      }
+      },
+      "design_theme": "National shoulder yoke / restrained taegeuk curve",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_home_back.png"
     },
     "korea_away_front": {
       "id": "korea_away_front",
@@ -3458,7 +3668,7 @@
           "max_font_size": 45,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -3471,14 +3681,16 @@
         "primary": "#142E53",
         "secondary": "#CD2E3A",
         "fabric": "#142E53",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/korea_away_front_blank.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/korea_away_front.png",
@@ -3487,7 +3699,10 @@
       "webp": {
         "256": "uniforms/webp/256/korea_away_front.webp",
         "512": "uniforms/webp/512/korea_away_front.webp"
-      }
+      },
+      "design_theme": "National shoulder yoke / restrained taegeuk curve",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_away_front_blank.png"
     },
     "korea_away_back": {
       "id": "korea_away_back",
@@ -3521,7 +3736,7 @@
           "max_font_size": 28,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         },
         "player_number": {
@@ -3547,7 +3762,7 @@
           "max_font_size": 148,
           "coordinate_space": "512x512 image pixels",
           "align": "center",
-          "fill": "#F5F3EC",
+          "fill": "#F3F1E9",
           "blank": true
         }
       },
@@ -3560,14 +3775,16 @@
         "primary": "#142E53",
         "secondary": "#CD2E3A",
         "fabric": "#142E53",
-        "wordmark": "#F5F3EC"
+        "wordmark": "#F3F1E9"
       },
       "source_v3": "assets/v3/uniforms/png/512/korea_away_back.png",
       "production": {
-        "method": "image_gen; four-view product study from v3 design references",
+        "method": "image_gen; original bespoke club kit redesign informed by the documented overseas baseball/football reference study",
         "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
         "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
-        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+        "note": "v3 supplies fictional club identity only. Panel construction, wordmark style, neckline, home/away composition and selected kit colors have been redesigned per user feedback.",
+        "surface": "Smooth freshly pressed premium fabric; quiet torso/back, broad soft shading, restrained drape; pattern graphics are flat, not cloth wrinkles.",
+        "surface_revision": "2026-11-05-overseas-reference-redesign"
       },
       "png": {
         "256": "uniforms/png/256/korea_away_back.png",
@@ -3576,7 +3793,10 @@
       "webp": {
         "256": "uniforms/webp/256/korea_away_back.webp",
         "512": "uniforms/webp/512/korea_away_back.webp"
-      }
+      },
+      "design_theme": "National shoulder yoke / restrained taegeuk curve",
+      "design_spec": "uniforms/designs.json",
+      "identity_reference": "assets/v3/uniforms/png/512/korea_away_back.png"
     },
     "seoul_comets": {
       "id": "seoul_comets",
@@ -5488,11 +5708,12 @@
   },
   "v6_spec": "v6_face_spec.json",
   "production": {
-    "jerseys": "image_gen from v3 references; same product study style; no real photos used",
+    "jerseys": "image_gen; independent baseball jersey designs with thin V-neck binding, club-specific lettering and football-inspired panel/color construction",
     "base_plates": "image_gen apparel-only edits of two existing fictional v4 identities",
     "caps_marks_digits": "Blender Cycles 4.3.2 / 96 samples / physically modeled thread rows and cloth shader / OIDN color denoise",
     "native_logo_reference": "Original v3 path/glyph geometry, no actual team logos",
-    "color_reference": "assets/v2_1/manifest.json for 10 clubs; v3 Korea palette"
+    "color_reference": "assets/v2_1/manifest.json for 10 clubs; v3 Korea palette",
+    "jersey_surface_revision": "2026-11-05: original club-specific redesign after baseball/football reference study; smooth premium fabric across 44 tops"
   },
   "integration_owner": "Claude",
   "game_code_connected": false,
@@ -5505,6 +5726,15 @@
     "base_plates": "previews/base_plates.png",
     "composites": "previews/composites_all_teams.png",
     "digits": "previews/digits.png",
-    "text_slots": "previews/text_slots.png"
+    "text_slots": "previews/text_slots.png",
+    "uniforms_before_after": "previews/uniforms_before_after.png",
+    "uniforms_redesign": "previews/uniform_design_directions.png"
+  },
+  "uniform_redesign": {
+    "revision": "2026-11-05-overseas-reference-redesign",
+    "reference_study": "UNIFORM_REFERENCE_STUDY.md",
+    "design_spec": "uniforms/designs.json",
+    "scope": "44 A product jersey views; canonical team palette retained; kit body/pattern/lettering composition revised",
+    "face_compositing": "B reference plates/marks remain the original white key-kit system. New A pinstripes, panels and cursive lettering are not automatically added to B portraits."
   }
 }
