@@ -1,0 +1,521 @@
+{
+  "version": "cafe-branding-1",
+  "created": "2026-11-05",
+  "request": "docs/asset-requests/2026-11-05-codex-cafe-branding.md",
+  "path_base": "assets/cafe/",
+  "game_name": "프런트야구",
+  "english_name": "Front Time",
+  "tagline": "경기는 감독이 합니다. 팀은 단장이 만듭니다.",
+  "layouts": {
+    "cafe_title_1080x220": {
+      "size": [
+        1080,
+        220
+      ],
+      "blank": "cafe_title_1080x220_blank.png",
+      "editable": "editable/cafe_title_1080x220.svg",
+      "text_layer": "text_layers/cafe_title_1080x220.svg",
+      "screenshot_slots": [],
+      "safe_variant": false,
+      "png": "cafe_title_1080x220.png",
+      "png_2x": "cafe_title_1080x220_2x.png",
+      "blank_2x": "cafe_title_1080x220_blank_2x.png"
+    },
+    "cafe_front_1080x600": {
+      "size": [
+        1080,
+        600
+      ],
+      "blank": "cafe_front_1080x600_blank.png",
+      "editable": "editable/cafe_front_1080x600.svg",
+      "text_layer": "text_layers/cafe_front_1080x600.svg",
+      "screenshot_slots": [
+        {
+          "id": "main_game_capture",
+          "rect": [
+            565,
+            107,
+            460,
+            254
+          ]
+        },
+        {
+          "id": "detail_game_capture",
+          "rect": [
+            651,
+            384,
+            374,
+            172
+          ]
+        }
+      ],
+      "safe_variant": false,
+      "png": "cafe_front_1080x600.png",
+      "png_2x": "cafe_front_1080x600_2x.png",
+      "blank_2x": "cafe_front_1080x600_blank_2x.png"
+    },
+    "cafe_mobile_cover_1080x1080": {
+      "size": [
+        1080,
+        1080
+      ],
+      "blank": "cafe_mobile_cover_1080x1080_blank.png",
+      "editable": "editable/cafe_mobile_cover_1080x1080.svg",
+      "text_layer": "text_layers/cafe_mobile_cover_1080x1080.svg",
+      "screenshot_slots": [],
+      "safe_variant": false,
+      "png": "cafe_mobile_cover_1080x1080.png",
+      "png_2x": "cafe_mobile_cover_1080x1080_2x.png",
+      "blank_2x": "cafe_mobile_cover_1080x1080_blank_2x.png"
+    },
+    "cafe_title_1080x220_safe": {
+      "size": [
+        1080,
+        220
+      ],
+      "blank": "safe/cafe_title_1080x220_safe_blank.png",
+      "editable": "editable/cafe_title_1080x220_safe.svg",
+      "text_layer": "text_layers/cafe_title_1080x220_safe.svg",
+      "screenshot_slots": [],
+      "safe_variant": true,
+      "png": "safe/cafe_title_1080x220_safe.png",
+      "png_2x": "safe/cafe_title_1080x220_safe_2x.png",
+      "blank_2x": "safe/cafe_title_1080x220_safe_blank_2x.png"
+    },
+    "cafe_front_1080x600_safe": {
+      "size": [
+        1080,
+        600
+      ],
+      "blank": "safe/cafe_front_1080x600_safe_blank.png",
+      "editable": "editable/cafe_front_1080x600_safe.svg",
+      "text_layer": "text_layers/cafe_front_1080x600_safe.svg",
+      "screenshot_slots": [
+        {
+          "id": "main_game_capture",
+          "rect": [
+            565,
+            107,
+            460,
+            254
+          ]
+        },
+        {
+          "id": "detail_game_capture",
+          "rect": [
+            651,
+            384,
+            374,
+            172
+          ]
+        }
+      ],
+      "safe_variant": true,
+      "png": "safe/cafe_front_1080x600_safe.png",
+      "png_2x": "safe/cafe_front_1080x600_safe_2x.png",
+      "blank_2x": "safe/cafe_front_1080x600_safe_blank_2x.png"
+    },
+    "board_header_notice": {
+      "size": [
+        1080,
+        160
+      ],
+      "blank": "board_header_notice_blank.png",
+      "editable": "editable/board_header_notice.svg",
+      "text_layer": "text_layers/board_header_notice.svg",
+      "screenshot_slots": [],
+      "safe_variant": false,
+      "png": "board_header_notice.png",
+      "png_2x": "board_header_notice_2x.png",
+      "blank_2x": "board_header_notice_blank_2x.png"
+    },
+    "board_header_patch_notes": {
+      "size": [
+        1080,
+        160
+      ],
+      "blank": "board_header_patch_notes_blank.png",
+      "editable": "editable/board_header_patch_notes.svg",
+      "text_layer": "text_layers/board_header_patch_notes.svg",
+      "screenshot_slots": [],
+      "safe_variant": false,
+      "png": "board_header_patch_notes.png",
+      "png_2x": "board_header_patch_notes_2x.png",
+      "blank_2x": "board_header_patch_notes_blank_2x.png"
+    },
+    "board_header_bug_report": {
+      "size": [
+        1080,
+        160
+      ],
+      "blank": "board_header_bug_report_blank.png",
+      "editable": "editable/board_header_bug_report.svg",
+      "text_layer": "text_layers/board_header_bug_report.svg",
+      "screenshot_slots": [],
+      "safe_variant": false,
+      "png": "board_header_bug_report.png",
+      "png_2x": "board_header_bug_report_2x.png",
+      "blank_2x": "board_header_bug_report_blank_2x.png"
+    }
+  },
+  "profile_icons": {
+    "150": "cafe_icon_150.png",
+    "300": "cafe_icon_300.png",
+    "512": "cafe_icon_512.png",
+    "1024": "cafe_icon_1024.png"
+  },
+  "menu_icons": {
+    "names": [
+      "notice",
+      "patch_notes",
+      "guide",
+      "bug_report",
+      "suggestions",
+      "balance",
+      "questions",
+      "general_chat",
+      "our_club",
+      "strategy",
+      "club_name_sharing"
+    ],
+    "size": 64,
+    "source_size": 128,
+    "colors": {
+      "white": "#FFFFFF",
+      "gold": "#D3B274"
+    },
+    "path_template": "menu_icons/{color}/{name}.png",
+    "source_2x_template": "menu_icons/2x/{color}/{name}.png"
+  },
+  "rendered_files": [
+    {
+      "file": "cafe_title_1080x220.png",
+      "size": [
+        1080,
+        220
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_title_1080x220_2x.png",
+      "size": [
+        2160,
+        440
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_title_1080x220_blank.png",
+      "size": [
+        1080,
+        220
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_title_1080x220_blank_2x.png",
+      "size": [
+        2160,
+        440
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_front_1080x600.png",
+      "size": [
+        1080,
+        600
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_front_1080x600_2x.png",
+      "size": [
+        2160,
+        1200
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_front_1080x600_blank.png",
+      "size": [
+        1080,
+        600
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_front_1080x600_blank_2x.png",
+      "size": [
+        2160,
+        1200
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_mobile_cover_1080x1080.png",
+      "size": [
+        1080,
+        1080
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_mobile_cover_1080x1080_2x.png",
+      "size": [
+        2160,
+        2160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_mobile_cover_1080x1080_blank.png",
+      "size": [
+        1080,
+        1080
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "cafe_mobile_cover_1080x1080_blank_2x.png",
+      "size": [
+        2160,
+        2160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_title_1080x220_safe.png",
+      "size": [
+        1080,
+        220
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_title_1080x220_safe_2x.png",
+      "size": [
+        2160,
+        440
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_title_1080x220_safe_blank.png",
+      "size": [
+        1080,
+        220
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_title_1080x220_safe_blank_2x.png",
+      "size": [
+        2160,
+        440
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_front_1080x600_safe.png",
+      "size": [
+        1080,
+        600
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_front_1080x600_safe_2x.png",
+      "size": [
+        2160,
+        1200
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_front_1080x600_safe_blank.png",
+      "size": [
+        1080,
+        600
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "safe/cafe_front_1080x600_safe_blank_2x.png",
+      "size": [
+        2160,
+        1200
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_notice.png",
+      "size": [
+        1080,
+        160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_notice_2x.png",
+      "size": [
+        2160,
+        320
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_notice_blank.png",
+      "size": [
+        1080,
+        160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_notice_blank_2x.png",
+      "size": [
+        2160,
+        320
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_patch_notes.png",
+      "size": [
+        1080,
+        160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_patch_notes_2x.png",
+      "size": [
+        2160,
+        320
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_patch_notes_blank.png",
+      "size": [
+        1080,
+        160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_patch_notes_blank_2x.png",
+      "size": [
+        2160,
+        320
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_bug_report.png",
+      "size": [
+        1080,
+        160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_bug_report_2x.png",
+      "size": [
+        2160,
+        320
+      ],
+      "png_decoded": true,
+      "text_font_loaded": true,
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_bug_report_blank.png",
+      "size": [
+        1080,
+        160
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    },
+    {
+      "file": "board_header_bug_report_blank_2x.png",
+      "size": [
+        2160,
+        320
+      ],
+      "png_decoded": true,
+      "text_font_loaded": "not needed: no text",
+      "text_bounds_inside_canvas": true
+    }
+  ],
+  "photography_source": {
+    "path": "sources/stadium.png",
+    "native_dimensions": [
+      1672,
+      941
+    ],
+    "note": "2x PNGs are full 2x SVG-layout exports; generated photographic background is resampled, not claimed to be native2160px."
+  },
+  "text_editing": "Editable SVG with named background, frames_and_accents and editable_typography groups; separate transparent text_layers SVG; Noto Sans CJK KR subset WOFF + SIL OFL."
+}

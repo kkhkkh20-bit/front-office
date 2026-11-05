@@ -1,0 +1,492 @@
+{
+  "algorithm": "SHA-256",
+  "excludes": [
+    "checksums.json"
+  ],
+  "files": {
+    "ASSET_PREVIEW.png": {
+      "bytes": 547231,
+      "sha256": "0260ca51fc18207b9ec7ed8a964663545e6ea15534f0d120633d80d5ff20658b"
+    },
+    "README.md": {
+      "bytes": 3261,
+      "sha256": "2062ed658d040779703977299d791fb22e1b8d19b2536daab624a4ced18d5143"
+    },
+    "board_header_bug_report.png": {
+      "bytes": 187883,
+      "sha256": "da57441c133e05cc3b0878ef9f3d2250488ea9f30a5bb3f830d699ba8b3b090b"
+    },
+    "board_header_bug_report_2x.png": {
+      "bytes": 600170,
+      "sha256": "c13c0d9486de06e4de1c88cdfb7859eb82eaba6c0fbb7a2175787bf5218a5c11"
+    },
+    "board_header_bug_report_blank.png": {
+      "bytes": 185546,
+      "sha256": "9ee847ce27e4d41c9967bd8f087125b852fd6c588b19caaad7ed8b1de34c3e03"
+    },
+    "board_header_bug_report_blank_2x.png": {
+      "bytes": 602333,
+      "sha256": "afa71a9e6db19344f2ca92b173ad75addfc7004af61e0829fb3631176d895e15"
+    },
+    "board_header_notice.png": {
+      "bytes": 187108,
+      "sha256": "646e95fee7456599b7d6e8ef67f4c3326de16845afc811ae0ad3c7460f50080b"
+    },
+    "board_header_notice_2x.png": {
+      "bytes": 599297,
+      "sha256": "9dddb72d928ebe91e7af27c3e5d7d77710fa3bf99fe99577f8948ec068d32dea"
+    },
+    "board_header_notice_blank.png": {
+      "bytes": 185546,
+      "sha256": "9ee847ce27e4d41c9967bd8f087125b852fd6c588b19caaad7ed8b1de34c3e03"
+    },
+    "board_header_notice_blank_2x.png": {
+      "bytes": 602333,
+      "sha256": "afa71a9e6db19344f2ca92b173ad75addfc7004af61e0829fb3631176d895e15"
+    },
+    "board_header_patch_notes.png": {
+      "bytes": 187808,
+      "sha256": "ef8e6da12af6240aad68c84c4b1fc2512c8aa7a3b17e9000d6399af5c99ab58f"
+    },
+    "board_header_patch_notes_2x.png": {
+      "bytes": 600342,
+      "sha256": "2761758eab5cb2ab787e86a9a75ec0114103e5fe86b64167d9e8870d81a2aa23"
+    },
+    "board_header_patch_notes_blank.png": {
+      "bytes": 185546,
+      "sha256": "9ee847ce27e4d41c9967bd8f087125b852fd6c588b19caaad7ed8b1de34c3e03"
+    },
+    "board_header_patch_notes_blank_2x.png": {
+      "bytes": 602333,
+      "sha256": "afa71a9e6db19344f2ca92b173ad75addfc7004af61e0829fb3631176d895e15"
+    },
+    "cafe_front_1080x600.png": {
+      "bytes": 560904,
+      "sha256": "0bd2a1d614a8aa24c96f1f3ccd525122e52830deefb67ce49d3b763b9d744459"
+    },
+    "cafe_front_1080x600_2x.png": {
+      "bytes": 1732486,
+      "sha256": "166cc9ae544e3d7ff85f5485cd4f1bcce68fbea6808b11b895f4f48182a28ced"
+    },
+    "cafe_front_1080x600_blank.png": {
+      "bytes": 526125,
+      "sha256": "035d03c0117117400548c6eb3ff8e6b4cfe5f08f766965224c3da48565775d30"
+    },
+    "cafe_front_1080x600_blank_2x.png": {
+      "bytes": 1654265,
+      "sha256": "1b72574ea60dcaea58eb82c5f083a28eaea1de2cb1deed1a7e487f08ec0be46d"
+    },
+    "cafe_icon_1024.png": {
+      "bytes": 825719,
+      "sha256": "61400171f8c1cd7585a85c2cc71d37197712dd2962f2198f9a31cb4e1dc1e0c4"
+    },
+    "cafe_icon_150.png": {
+      "bytes": 25295,
+      "sha256": "6e8950b431d15ef5c72bd001593b1f70bde92f56e05de23097807d5d1e759ee6"
+    },
+    "cafe_icon_300.png": {
+      "bytes": 93426,
+      "sha256": "274bd5c136da2ff34673f08df1a24f4a2735d6f93414623f006423ab5ad64164"
+    },
+    "cafe_icon_512.png": {
+      "bytes": 248396,
+      "sha256": "b60a0b082b5bcb092550c217ab4fd6b249f1de40aa39ca9c81a169d98f555cc3"
+    },
+    "cafe_mobile_cover_1080x1080.png": {
+      "bytes": 901267,
+      "sha256": "052639362c2e9afd48bfd6ffebd18d835d7b80375954c1537cf4c257ca87448e"
+    },
+    "cafe_mobile_cover_1080x1080_2x.png": {
+      "bytes": 2393589,
+      "sha256": "b5d168a35c5ae6fb938ae857c2e48df9e02942a8c6eec9c7043b6febaf66d50e"
+    },
+    "cafe_mobile_cover_1080x1080_blank.png": {
+      "bytes": 901131,
+      "sha256": "a0b23bc32cf2498c47d8fa0475314f3200923e9012f533d5572c0709c12683e5"
+    },
+    "cafe_mobile_cover_1080x1080_blank_2x.png": {
+      "bytes": 2413998,
+      "sha256": "d440b92e3d07dbc2a0244faa627e0e73755f39962589bc59d98f9248bf8bcf10"
+    },
+    "cafe_title_1080x220.png": {
+      "bytes": 271355,
+      "sha256": "96b07c3f4ab8c091ed1ca27f6a24bd9ff01531fb346eea8a0db4b1262c59d3ce"
+    },
+    "cafe_title_1080x220_2x.png": {
+      "bytes": 860057,
+      "sha256": "09780ad08d938f7ccd34090cce5866f5d1d3322f7b3327e5f3fbaea737a71c27"
+    },
+    "cafe_title_1080x220_blank.png": {
+      "bytes": 250980,
+      "sha256": "9d01a01509c377d6b687f9d0b02494f685903559508415965e31d6531c619773"
+    },
+    "cafe_title_1080x220_blank_2x.png": {
+      "bytes": 810271,
+      "sha256": "5dd1999ca81b940527c9fe1065930e294a4a55e16931075f4adb39881b977216"
+    },
+    "editable/board_header_bug_report.svg": {
+      "bytes": 1269,
+      "sha256": "ef26b4ef649b571cac93d28f18925d2a9938240f7dbfb6a99693348cd3ed68fa"
+    },
+    "editable/board_header_bug_report_blank.svg": {
+      "bytes": 914,
+      "sha256": "2d5d420957869456c0e16e698acae18be892a453a3477b2af3925905f23be9b9"
+    },
+    "editable/board_header_notice.svg": {
+      "bytes": 1258,
+      "sha256": "851487d35e7fd22790c7c6cc52cc03b439da795cbc640257ffa9f7dae4ca5716"
+    },
+    "editable/board_header_notice_blank.svg": {
+      "bytes": 914,
+      "sha256": "2d5d420957869456c0e16e698acae18be892a453a3477b2af3925905f23be9b9"
+    },
+    "editable/board_header_patch_notes.svg": {
+      "bytes": 1270,
+      "sha256": "fea9e6ca2af7a1a0d8a1cb1af908554ed2094eb5caa0d9146a4673ebf45b02f2"
+    },
+    "editable/board_header_patch_notes_blank.svg": {
+      "bytes": 914,
+      "sha256": "2d5d420957869456c0e16e698acae18be892a453a3477b2af3925905f23be9b9"
+    },
+    "editable/cafe_front_1080x600.svg": {
+      "bytes": 2159,
+      "sha256": "fb25e63d6977824e89cadcce946fc052764fd4bac7a5ca3d1eb076c0d2410fad"
+    },
+    "editable/cafe_front_1080x600_blank.svg": {
+      "bytes": 1407,
+      "sha256": "ef8450422060c97281a2cb116b0065f0551fc437cbca5c16a92c1aca63fae416"
+    },
+    "editable/cafe_front_1080x600_safe.svg": {
+      "bytes": 2159,
+      "sha256": "f5d7bcb43774f85578c57c07244e72e10e225a7221836fd1293676c48b5562ea"
+    },
+    "editable/cafe_front_1080x600_safe_blank.svg": {
+      "bytes": 1407,
+      "sha256": "e7b3bafad6bafad9cd4ba949173e07d1e39e72bd5a32dc6e9722a563c3d43bf3"
+    },
+    "editable/cafe_mobile_cover_1080x1080.svg": {
+      "bytes": 1450,
+      "sha256": "f8de64d3a579046f517536acdaf0683553aa8f7b75f051db852d52d78eac6370"
+    },
+    "editable/cafe_mobile_cover_1080x1080_blank.svg": {
+      "bytes": 935,
+      "sha256": "da1976802c9066c67aaa28f88fefc2ee78195a3639da35ad0dea893d7bbc999c"
+    },
+    "editable/cafe_title_1080x220.svg": {
+      "bytes": 1186,
+      "sha256": "63b792ebf318475194200e4407ae1e0ba11743ecaa027900ecc5825fa2037fa2"
+    },
+    "editable/cafe_title_1080x220_blank.svg": {
+      "bytes": 916,
+      "sha256": "743915d9e2cd9012b3336fc6705dd072922275750a3a75e8223a5c31b9a8ed3a"
+    },
+    "editable/cafe_title_1080x220_safe.svg": {
+      "bytes": 1186,
+      "sha256": "3e9af7c8a2a2ae83055cba658ca2a9e40bf5e3384fb956721e920b5951e7dc6b"
+    },
+    "editable/cafe_title_1080x220_safe_blank.svg": {
+      "bytes": 916,
+      "sha256": "743915d9e2cd9012b3336fc6705dd072922275750a3a75e8223a5c31b9a8ed3a"
+    },
+    "fonts/LICENSE.txt": {
+      "bytes": 14712,
+      "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+    },
+    "fonts/NotoSansCJKkr-Bold-subset.woff": {
+      "bytes": 1473912,
+      "sha256": "69f75ba02b74cfe75daf6020a9416833ceb5bcde182c1fb0e9c6fcec2897a5e0"
+    },
+    "fonts/NotoSansCJKkr-Regular-subset.woff": {
+      "bytes": 1390688,
+      "sha256": "5884071f9994d59adfb1a3f222df8fdc989f3cc7ddc533bc5c3c92b5a4e4b451"
+    },
+    "manifest.json": {
+      "bytes": 12975,
+      "sha256": "dfa6f4f7910a309ec8de860f77bdd04b50ea5544f23cf166902348a5f7b1f58a"
+    },
+    "menu_icons/2x/gold/balance.png": {
+      "bytes": 5013,
+      "sha256": "7a790a171c3dec8a1556a4735c2346e77f6e0f46945bebc3ab066a1d57225ca2"
+    },
+    "menu_icons/2x/gold/bug_report.png": {
+      "bytes": 5778,
+      "sha256": "d92875a57aec642f5431057dbd6214fe92b2b5b2855842cc999c8ae5236067b2"
+    },
+    "menu_icons/2x/gold/club_name_sharing.png": {
+      "bytes": 4354,
+      "sha256": "7ef09254dac7fa3739bc04f47cb9d26d8428e7c1c10bd27f1834104f6fde7160"
+    },
+    "menu_icons/2x/gold/general_chat.png": {
+      "bytes": 4519,
+      "sha256": "e71e4b443642ff039870145b8f86351c0a2462fe6a31661ff881cb33863e6a94"
+    },
+    "menu_icons/2x/gold/guide.png": {
+      "bytes": 3208,
+      "sha256": "7c8ee00f857b9d8f6ef65e3701f1e3f7dd452176b14a84e7ab52587dc1fcc6e4"
+    },
+    "menu_icons/2x/gold/notice.png": {
+      "bytes": 4299,
+      "sha256": "c1e0dc7c69566c7c3034a56b064d49a8d21a465479d99cbfc58b677f5bf02a72"
+    },
+    "menu_icons/2x/gold/our_club.png": {
+      "bytes": 5674,
+      "sha256": "a4ee1e7269dffdb873daa5145c02b14a3be2b5f0afce4ee1cc2c1b932c63c084"
+    },
+    "menu_icons/2x/gold/patch_notes.png": {
+      "bytes": 3037,
+      "sha256": "09be049c6c374a95fa3ed0d92e9883d6b1877c3b297c8ae1ba6ef0c60b68dba2"
+    },
+    "menu_icons/2x/gold/questions.png": {
+      "bytes": 5426,
+      "sha256": "7f25665dd2f4943accdf86e3e9b2fd9177f686efab054010637c1dcb07f97450"
+    },
+    "menu_icons/2x/gold/strategy.png": {
+      "bytes": 5064,
+      "sha256": "612813b8b37826e06d3dcbad9c442927ad05111cb73c25bf93d74b1c21cb275c"
+    },
+    "menu_icons/2x/gold/suggestions.png": {
+      "bytes": 4459,
+      "sha256": "2f3214300aa59bffdd1d15d7403cda5b2bd89c2dc44fdc40ddebe79b7b097288"
+    },
+    "menu_icons/2x/white/balance.png": {
+      "bytes": 4916,
+      "sha256": "13a5d31449ea084a9a8b51d8c93d505b4e92187277749450a2c03ce426bb7a34"
+    },
+    "menu_icons/2x/white/bug_report.png": {
+      "bytes": 5688,
+      "sha256": "b980266baf51123d12494acbdfb883387a6eecadb4cf149274e20222722317e1"
+    },
+    "menu_icons/2x/white/club_name_sharing.png": {
+      "bytes": 4263,
+      "sha256": "8e762dd2e5fce2ba4bd4e5e41413776631da2321cd4ce1dfcf7288585763c27c"
+    },
+    "menu_icons/2x/white/general_chat.png": {
+      "bytes": 4470,
+      "sha256": "b2862241f9f86e4a4f255dd1e592b5f8e742af4ce0afb26834ad5e98e8bd1fcb"
+    },
+    "menu_icons/2x/white/guide.png": {
+      "bytes": 3150,
+      "sha256": "d3e74fa7b4b7e1827f29c810a3c33b352454339ff835fa7f6802b78aa465ad96"
+    },
+    "menu_icons/2x/white/notice.png": {
+      "bytes": 4343,
+      "sha256": "16f8bb20a5d38ed791776b0b5fbae9dc44595b648c33af41f3c2e5d1b20485bb"
+    },
+    "menu_icons/2x/white/our_club.png": {
+      "bytes": 5046,
+      "sha256": "f6a9696255a939623206a4eb2e9acc5e0b18d226250e94249ad90d7bbf1bb677"
+    },
+    "menu_icons/2x/white/patch_notes.png": {
+      "bytes": 2993,
+      "sha256": "4e5b05961621efa69812dd16b439e97c1c0900991e440327ae5ba59160b8c071"
+    },
+    "menu_icons/2x/white/questions.png": {
+      "bytes": 5253,
+      "sha256": "3dd7eea88bdc7064e11e054df3ab8cf59c519dc7e9a0d7e72f52039b66b30728"
+    },
+    "menu_icons/2x/white/strategy.png": {
+      "bytes": 5065,
+      "sha256": "e9642de4aad4dc65cada17da0080a38c2bd5e80cbc14b88d492c7a827453b864"
+    },
+    "menu_icons/2x/white/suggestions.png": {
+      "bytes": 4357,
+      "sha256": "7b3521de9336dbb6c64cb9e61c9d08a7c8210ea5fca998ab401b42235d6468e1"
+    },
+    "menu_icons/gold/balance.png": {
+      "bytes": 2138,
+      "sha256": "cf965ccc4e19ca0ad2b0b4f3ac584454a6c3b8096a952eabaf15fc89d62ad6ef"
+    },
+    "menu_icons/gold/bug_report.png": {
+      "bytes": 2460,
+      "sha256": "d08b371b37da3beb5d2cc75f4076ae83ed76d44b3276ddce24e7e7c646fd2149"
+    },
+    "menu_icons/gold/club_name_sharing.png": {
+      "bytes": 1940,
+      "sha256": "60e83d153de56f25013ee3db49f985478e835d9d8e55abe083c91979e3f60779"
+    },
+    "menu_icons/gold/general_chat.png": {
+      "bytes": 1930,
+      "sha256": "6da658782296f9bf73b7141f90e137ad5d8c2fcadbab9bdce57e8c469bfce39d"
+    },
+    "menu_icons/gold/guide.png": {
+      "bytes": 1373,
+      "sha256": "807d008e3fcc6cb164dded79c4ba22afcfa157db592a520078442d02592284ec"
+    },
+    "menu_icons/gold/notice.png": {
+      "bytes": 1887,
+      "sha256": "ee63914731f0fe69cb978c815f45bdcf45d415a0a7cab30b63c63bb76ad64088"
+    },
+    "menu_icons/gold/our_club.png": {
+      "bytes": 2295,
+      "sha256": "af344e80abbdc94aad8d616d2348b25a27db04b0555c92b524dd605ccc2f0331"
+    },
+    "menu_icons/gold/patch_notes.png": {
+      "bytes": 1383,
+      "sha256": "1a9b84551ff51a0b1020348b6d10604a477190f97aa97a48641edf6acd68af88"
+    },
+    "menu_icons/gold/questions.png": {
+      "bytes": 2290,
+      "sha256": "1975209d303dd201b0d58f8811c93769c0acd446846ca030d8c1a29b7219d837"
+    },
+    "menu_icons/gold/strategy.png": {
+      "bytes": 2118,
+      "sha256": "9dee0263156e86d00f3b107876f1e1f7773d6461dd62589a1a173455e166df63"
+    },
+    "menu_icons/gold/suggestions.png": {
+      "bytes": 2009,
+      "sha256": "1313a79adac4b15f9964237e9c43c78ccdfab9d409ff7623959cadd784b555a3"
+    },
+    "menu_icons/white/balance.png": {
+      "bytes": 1967,
+      "sha256": "384c72783e7a5d3b95b6a198487fd15964dd105325e995fc439ea0c73e7a87d8"
+    },
+    "menu_icons/white/bug_report.png": {
+      "bytes": 2343,
+      "sha256": "91908778b0fdc0a3fd9365e8d5f7ec7634faa27eee4d8a14a1dd9d574bceaa66"
+    },
+    "menu_icons/white/club_name_sharing.png": {
+      "bytes": 1779,
+      "sha256": "1b871d18ca5d332cdc66518a7c39f572916727a3b30baba0d25009cf3b8567de"
+    },
+    "menu_icons/white/general_chat.png": {
+      "bytes": 1767,
+      "sha256": "7a96f45bce28f4cc9fedd29c3c4f79f2300e9d608a3f3dce7e3301e8df103e08"
+    },
+    "menu_icons/white/guide.png": {
+      "bytes": 1350,
+      "sha256": "ef30bb943b4e004d166aacf013c2e14fff15a7d51374e745b705bbf03ecfb742"
+    },
+    "menu_icons/white/notice.png": {
+      "bytes": 1812,
+      "sha256": "d2b2ca07c6eea852da6995ceffba9a760652b1815495f2ef750ad074676e6a83"
+    },
+    "menu_icons/white/our_club.png": {
+      "bytes": 1931,
+      "sha256": "ec78ac31f872017b7a150909d13a32e30d3c1076c31394eaa2f08e8ec423e76e"
+    },
+    "menu_icons/white/patch_notes.png": {
+      "bytes": 1374,
+      "sha256": "9305f5105d3874fb2c42181b30a2ec2fa8d0b3b96538f87eebf14df9b2609792"
+    },
+    "menu_icons/white/questions.png": {
+      "bytes": 2148,
+      "sha256": "fedd7f06962eb8293a81a7851dd7967cbbe8a4cebbe6392995ae06c5a58861b3"
+    },
+    "menu_icons/white/strategy.png": {
+      "bytes": 2121,
+      "sha256": "47c3c3f7d9f6103ac9b3edc42f2d72f982111645a8433819d1c1cb670cfd51ac"
+    },
+    "menu_icons/white/suggestions.png": {
+      "bytes": 1905,
+      "sha256": "2c77a0a5dca74ef2d86d0866eb6407723616e469aaabfba513b47f15afe25f95"
+    },
+    "previews/icon_circle_crop.png": {
+      "bytes": 285158,
+      "sha256": "cb88bbcaa6cd77c2461c0640c5755e2c4d8375cec3b10b289987e2d8f1f92f52"
+    },
+    "previews/menu_icons.png": {
+      "bytes": 61540,
+      "sha256": "b7a969f0f125810949fbd98e7892ee0cd98a9d386b94d5292192cd18d3ee1c1a"
+    },
+    "previews/mobile_center_60_percent.png": {
+      "bytes": 407903,
+      "sha256": "de5d215fde5c332c7c6d3ad7d379f8edb78d6ad019d185b861ba03c7a533e744"
+    },
+    "previews/mobile_mockup.png": {
+      "bytes": 180606,
+      "sha256": "627b024099c415d9ddf876c9e5bb6e0724f3b41dcdd226738b02589bc9a8a092"
+    },
+    "previews/pc_mockup.png": {
+      "bytes": 699929,
+      "sha256": "6ea975f45f91cb94283f90e2088c9b649d803062791b31c98d18a7526a6c7497"
+    },
+    "production_notes.json": {
+      "bytes": 1347,
+      "sha256": "806478eb2edc8483d701928e90dbc1fae4bf81f95ea7053d39eacb7e9f210743"
+    },
+    "safe/cafe_front_1080x600_safe.png": {
+      "bytes": 560493,
+      "sha256": "4ffd17fd87b176bdc517707ba97b10fde7d4595dacf12673cd5a17ae58770b33"
+    },
+    "safe/cafe_front_1080x600_safe_2x.png": {
+      "bytes": 1731366,
+      "sha256": "e15daa3466bc3a3a6f8ee1971d3ce7cb7be163763e8e9c0386f11a8160a69098"
+    },
+    "safe/cafe_front_1080x600_safe_blank.png": {
+      "bytes": 526115,
+      "sha256": "9921d131eca5196b4e87323ded0d44bcd119047f57614419973da52a71285cf3"
+    },
+    "safe/cafe_front_1080x600_safe_blank_2x.png": {
+      "bytes": 1654270,
+      "sha256": "9f5b89ac2eaf44c96126e7b5e360ef7ba12ebf579c9df0ac7187599d586a2d80"
+    },
+    "safe/cafe_title_1080x220_safe.png": {
+      "bytes": 271316,
+      "sha256": "7623bb4a81ff1b6a7afd257fdacee67660c9e3dc61fa8e115ec150f00a66bd22"
+    },
+    "safe/cafe_title_1080x220_safe_2x.png": {
+      "bytes": 859802,
+      "sha256": "2ab26dce9a7bf41ab6d44ecbe19782c7f8226ecd73855bf2869e8dfd128afb58"
+    },
+    "safe/cafe_title_1080x220_safe_blank.png": {
+      "bytes": 250980,
+      "sha256": "9d01a01509c377d6b687f9d0b02494f685903559508415965e31d6531c619773"
+    },
+    "safe/cafe_title_1080x220_safe_blank_2x.png": {
+      "bytes": 810271,
+      "sha256": "5dd1999ca81b940527c9fe1065930e294a4a55e16931075f4adb39881b977216"
+    },
+    "sources/game_wordmark.webp": {
+      "bytes": 94390,
+      "sha256": "4bb06a63e0f7d06fa839ccd038e5d582d19f9e9fe8be991ef551de8ba4df2c4d"
+    },
+    "sources/menu_icons.png": {
+      "bytes": 778001,
+      "sha256": "074303956a019da1fd48ecaeaa3fadc978cf806ab8747df9c5eeefbdde0723cf"
+    },
+    "sources/profile_icon.png": {
+      "bytes": 1349364,
+      "sha256": "e5d14d3161ca6c9d432c3eca5e552ee75261532045fd0b9bdb7a7d2f4b384ccc"
+    },
+    "sources/stadium.png": {
+      "bytes": 2011802,
+      "sha256": "5dfa54d2f0b30fb82279181dd1741537b91051283056b1711d2bfdb758e9fbd2"
+    },
+    "text_layers/board_header_bug_report.svg": {
+      "bytes": 738,
+      "sha256": "292256ecdaade0efabee94b8b620dacf8934a58fa043726375ebb1eb54154203"
+    },
+    "text_layers/board_header_notice.svg": {
+      "bytes": 727,
+      "sha256": "b9b62b12531475ada2cf8c05e8bef236057fcee7165d35a3052a4a489b1555e4"
+    },
+    "text_layers/board_header_patch_notes.svg": {
+      "bytes": 739,
+      "sha256": "406520b025d2cda3bbece0de0d4099614121609038dca6f8d1922c9713d009b8"
+    },
+    "text_layers/cafe_front_1080x600.svg": {
+      "bytes": 1135,
+      "sha256": "28f562968a0688d7ae815a7ad35fb76552d9a0b743e6308f67b9802c1f412f97"
+    },
+    "text_layers/cafe_front_1080x600_safe.svg": {
+      "bytes": 1135,
+      "sha256": "48d884e8d5205662d5c46dbec84c9e78136ee83b34bdbb210ed4a1e69aa0e88f"
+    },
+    "text_layers/cafe_mobile_cover_1080x1080.svg": {
+      "bytes": 900,
+      "sha256": "6a3907886ee277ef1583f528a86e25cf272c25bf118dc937553dbd3fe5063c0d"
+    },
+    "text_layers/cafe_title_1080x220.svg": {
+      "bytes": 653,
+      "sha256": "d9cc2e1bbac3ecbccb7de9178f7ab0ac5defe96c964affb2339ff65258408863"
+    },
+    "text_layers/cafe_title_1080x220_safe.svg": {
+      "bytes": 653,
+      "sha256": "668a9b4f3f91b96e6db4026a14a0046c59148fe23a991875f026c7a7de2dee86"
+    },
+    "validation.json": {
+      "bytes": 1125,
+      "sha256": "ac8ac43458a322f3b0057dd3fb2f2f2ee34a28815fe8f0565b1ed88c08e35794"
+    }
+  }
+}
