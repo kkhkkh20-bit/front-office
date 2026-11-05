@@ -22,6 +22,7 @@ P256=np.asarray(Image.open(os.path.join(D6,'sheets/256/b01b_s01.webp')).convert(
 REG=np.asarray(Image.open(os.path.join(D6,'sheets/registration/b01b_s01.webp')).convert('RGB')).astype(np.float32)
 NEU=load(A5['ko_late20s_01']['png']['512'])[...,0]
 yy,xx=np.mgrid[0:256,0:256].astype(np.float32)
+EYEB=143/2-14 # 256 기준 눈썹 바로 위(코덱스 카메라 규격: 512 기준 눈높이 y≈143)
 def person(ident,kit,chest,capmark,capRGB):
     x0,y0,_,_=ident['sheets']['256']['rect']; rx,ry,_,_=ident['registration']['rect']
     pl=P256[y0:y0+256,x0:x0+256]; rgb=pl[...,:3]; capM=pl[...,3]/255; R=rgb[...,0]; G=rgb[...,1]; B=rgb[...,2]
@@ -41,7 +42,8 @@ def person(ident,kit,chest,capmark,capRGB):
     ma=(wm[...,3]/255*capM*inside*crown)[...,None]; capC=capC*(1-ma)+wm[...,:3]*ma
     # 모자를 깊게 눌러 쓴 모양(사용자 11-05: 걸쳐 쓴 느낌): 모자 윗선은 그대로 두고 아래(챙)를 모자 높이의 20%만큼 늘려 이마를 더 덮는다
     if B>T:
-        d=.2*(B-T); sy_=np.where(yy<=T,yy,T+(yy-T)*(B-T)/(B+d-T)); capCw=samp(capC,xx,sy_); capMw=samp(capM[...,None],xx,sy_)[...,0]
+        # 실제 KBO 프로필처럼 챙 끝을 눈썹 바로 위(눈 높이 y≈71.5에서 14px 위)까지. 너무 늘어나지 않게 모자 높이의 75%까지만
+        d=min(max(.2*(B-T),EYEB-B),.75*(B-T)); sy_=np.where(yy<=T,yy,T+(yy-T)*(B-T)/(B+d-T)); capCw=samp(capC,xx,sy_); capMw=samp(capM[...,None],xx,sy_)[...,0]
         capMw=np.where(yy<=B+d+1,capMw,0)
         # 원래 모자 자리의 빨간 키 색이 가장자리에 비치지 않게: 원래 자리와 늘린 자리 모두 가장자리 알파를 키워 덮는다
         a0=np.clip(capM*1.8,0,1)[...,None]; out=out*(1-a0)+capC*a0; a=np.clip(capMw*1.8,0,1)[...,None]; out=out*(1-a)+capCw*a
