@@ -144,7 +144,7 @@ function compHandOff(old){ for(const c of (G.comp||[])){ if(c.stage==='done')con
   try{ if(c.stage==='protect'&&c.to!==G.user){ c.prot=aiProtect(c.to,COMP[c.grade].prot); c.stage='pick'; } if(c.stage==='pick'&&c.from!==G.user)compAiPick(c); }catch(e){} } }
 /* 떠나는 구단의 일회성 지출·수입(FA 보상금·계약금·방출 정산금·단장 결정 지출, 보상금 수령)은 그 구단 현금에서 바로 정산한다.
    스태프 연봉·프로그램 비용은 AI 구단처럼 운영비 안에서 처리한다 */
-function spendHandOff(old){ const S=G.spend||{}; const t=team(old); if(t){ const out=(S.comp||0)+(S.rel||0)+(S.faB||0)+(S.etc||0), inn=S.compIn||0; t.cash+=Math.round(inn-out); }
+function spendHandOff(old){ const S=G.spend||{}; const t=team(old); if(t){ const out=(S.comp||0)+(S.rel||0)+(S.faB||0)+(S.etc||0), inn=(S.compIn||0)+(S.postIn||0); t.cash+=Math.round(inn-out); }
   G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,faB:0,scout:0}; }
 function firedFlow(y,msg,kind){ try{ if(typeof teleEv==='function')teleEv('gm_out',{kind:kind||'fired',rep:G.rep}); }catch(e){} gmInit(); const old=G.user; const ot=team(old);
   let pay=''; try{ if(kind){ if(G.myC&&G.myC.tid!=null)myCEnd(kind==='leave'?'재계약 고사':kind==='resign'?'자진 사임':'계약 만료',y); } else pay=myCFired(y); }catch(e){}

@@ -10336,7 +10336,7 @@ function settlement(){
     if(flo)exp.push(['하한 미달 발전기금',flo]);
     if(t.id===ME()){ const gs=myCPay(); if(gs>0)exp.push(['단장 연봉',gs]); }
     if(t.id===G.user&&G.unemp)G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; /* 야인 기간: 전 소속 구단은 AI 구단처럼 운영비 안에서 스태프·감독 비용을 처리한다(따로 더 내지 않는다) */
-    if(t.id===G.user){ const S=G.spend; [['감독 연봉',S.mgr],['코치진 연봉',S.coach||0],['부상 방지 프로그램',S.med],['병원 제휴',S.hosp],['해외 연수',S.dev],['해외 스카우트망',S.intl||0],['전력분석원 연봉',S.data||0],['훈련 시설 유지비',S.fac||0],['단장 결정 지출',S.etc||0],['FA 보상금·양도금',S.comp||0],['방출 정산금',S.rel||0],['FA·다년 계약금',S.faB||0],['계약 옵션 지급',optSettle(t.id)]].forEach(x=>{ if(x[1]>0)exp.push([x[0],Math.round(x[1])]); }); if(S.compIn>0)inc.push(['보상금·양도금 수령',Math.round(S.compIn)]); if(S.devRef>0)inc.push(['연수비 환급',Math.round(S.devRef)]); G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; }
+    if(t.id===G.user){ const S=G.spend; [['감독 연봉',S.mgr],['코치진 연봉',S.coach||0],['부상 방지 프로그램',S.med],['병원 제휴',S.hosp],['해외 연수',S.dev],['해외 스카우트망',S.intl||0],['전력분석원 연봉',S.data||0],['훈련 시설 유지비',S.fac||0],['단장 결정 지출',S.etc||0],['FA 보상금·양도금',S.comp||0],['방출 정산금',S.rel||0],['FA·다년 계약금',S.faB||0],['계약 옵션 지급',optSettle(t.id)]].forEach(x=>{ if(x[1]>0)exp.push([x[0],Math.round(x[1])]); }); if(S.compIn>0)inc.push(['보상금·양도금 수령',Math.round(S.compIn)]); if(S.postIn>0)inc.push(['포스팅 수입',Math.round(S.postIn)]); if(S.devRef>0)inc.push(['연수비 환급',Math.round(S.devRef)]); G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; }
     const gap=sum(exp.map(x=>x[1]))-sum(inc.map(x=>x[1]));
     let support=0; const supCap=supportCap(t);
     /* 구단 보유 현금이 30억을 넘으면 적자의 일부(초과분의 절반까지)를 먼저 자체 자금으로 메운다 */
@@ -12035,7 +12035,7 @@ function budget(){ const t=team(G.user); const ci=capInfo(G.user); const S=G.spe
   const r=G.sea&&G.sea.rec&&!settled?G.sea.rec[G.user]:null; const wp=r&&r.w+r.l>=10?r.w/(r.w+r.l):.5;
   const att=SPj.att;
   const inc=[['입장 수입',SPj.ticket],['중계권 배분',Math.round(9000*ecoIdx()*asRev())],['광고·상품',Math.round((2200*ecoIdx()+G.marketing*1.6)*t.market*t.pop*(0.85+G.pr.fan/333)*(0.95+G.pr.press/1000))]]; { const sx=SPj.fnb+SPj.prem+SPj.ad; if(sx>0)inc.push(['구장 부대 수입',sx]); }
-  { sponInit(); const sp=sponIncome(); if(sp>0)inc.push(['스폰서 계약',sp]); } { const si=starIncome(G.user); if(si>0)inc.push(['스타 마케팅',si]); } { const due=newStadDue(G.user); if(due)inc.push(['모기업 신구장 출자',Math.round(due*.7)]); } if((S.compIn||0)>0)inc.push(['보상금·양도금 수령',Math.round(S.compIn)]); /* 결산과 같은 항목 */
+  { sponInit(); const sp=sponIncome(); if(sp>0)inc.push(['스폰서 계약',sp]); } { const si=starIncome(G.user); if(si>0)inc.push(['스타 마케팅',si]); } { const due=newStadDue(G.user); if(due)inc.push(['모기업 신구장 출자',Math.round(due*.7)]); } if((S.compIn||0)>0)inc.push(['보상금·양도금 수령',Math.round(S.compIn)]); if((S.postIn||0)>0)inc.push(['포스팅 수입',Math.round(S.postIn)]); /* 결산과 같은 항목 */
   const E=sum(exp.map(x=>x[1])), I=sum(inc.map(x=>x[1])); const gap=E-I; const cap=supportCap(t);
   const g=G.goals&&G.goals.y===G.year&&!settled?G.goals:null; const plan=!g&&!settled&&G.supPlan&&G.supPlan.y===G.year?G.supPlan.gf:null; const gf=g?g.sup:plan!=null?plan:settled?(G.goals&&G.goals.sup!=null?G.goals.sup:.6):clamp((cap?Math.max(0,gap)/cap:0)*(t.owner==='profit'?.85:t.owner==='pr'?1:1.15)+.05,.2,1); const goalSup=t.indie?0:Math.round(gf*cap);
   const selfC=gap>0?Math.min(gap,Math.max(0,t.cash-3000)*.5):0, need=gap-selfC; /* 결산처럼 보유 현금 30억 초과분의 절반으로 적자를 먼저 메운다 */
@@ -13120,7 +13120,7 @@ function compHandOff(old){ for(const c of (G.comp||[])){ if(c.stage==='done')con
   try{ if(c.stage==='protect'&&c.to!==G.user){ c.prot=aiProtect(c.to,COMP[c.grade].prot); c.stage='pick'; } if(c.stage==='pick'&&c.from!==G.user)compAiPick(c); }catch(e){} } }
 /* 떠나는 구단의 일회성 지출·수입(FA 보상금·계약금·방출 정산금·단장 결정 지출, 보상금 수령)은 그 구단 현금에서 바로 정산한다.
    스태프 연봉·프로그램 비용은 AI 구단처럼 운영비 안에서 처리한다 */
-function spendHandOff(old){ const S=G.spend||{}; const t=team(old); if(t){ const out=(S.comp||0)+(S.rel||0)+(S.faB||0)+(S.etc||0), inn=S.compIn||0; t.cash+=Math.round(inn-out); }
+function spendHandOff(old){ const S=G.spend||{}; const t=team(old); if(t){ const out=(S.comp||0)+(S.rel||0)+(S.faB||0)+(S.etc||0), inn=(S.compIn||0)+(S.postIn||0); t.cash+=Math.round(inn-out); }
   G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,faB:0,scout:0}; }
 function firedFlow(y,msg,kind){ try{ if(typeof teleEv==='function')teleEv('gm_out',{kind:kind||'fired',rep:G.rep}); }catch(e){} gmInit(); const old=G.user; const ot=team(old);
   let pay=''; try{ if(kind){ if(G.myC&&G.myC.tid!=null)myCEnd(kind==='leave'?'재계약 고사':kind==='resign'?'자진 사임':'계약 만료',y); } else pay=myCFired(y); }catch(e){}
@@ -13971,7 +13971,7 @@ function ovsDaily(){ try{ ovsBackSweep(); }catch(e){} for(const x of G.posting||
     const pm=o>=68?.9:o>=64?.6:o>=61?.3:.1; let lg=null; if(R()<pm)lg='MLB'; else if(R()<(o>=60?.35:.1))lg='NPB';
     if(!lg){ x.res='무산'; p.mor=clamp((p.mor??60)-5,0,100); p.mlb=clamp(p.mlb-15,0,100); wire('해외',`${p.name} 포스팅 무산, ${tshort(x.tid)} 잔류`,{tid:x.tid,ref:p.id}); if(x.tid===G.user)note('선수',`${p.name}의 포스팅이 무산됐습니다. 계약을 제시한 구단이 없었습니다. 선수는 남습니다(기분 -5).`,p.id); continue; }
     const yrs=lg==='MLB'?(o>=70?ri(4,6):o>=66?ri(2,4):ri(1,2)):ri(2,3); const amt=Math.round(lg==='MLB'?clamp((o-58)*90+N(0,80),100,2500):clamp((o-55)*45+N(0,30),80,600)); const fee=usd(postFee(amt*yrs)); x.res=lg;
-    team(x.tid).cash+=fee; if(x.tid===G.user){ G.ovsIncome=(G.ovsIncome||0)+fee; }
+    if(x.tid===G.user&&!G.unemp){ G.ovsIncome=(G.ovsIncome||0)+fee; G.spend.postIn=(G.spend.postIn||0)+fee; } else team(x.tid).cash+=fee; /* 우리 구단 포스팅 수입은 그 시즌 결산(재정 화면 '포스팅 수입' 줄)으로 들어간다 */
     ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'포스팅',fee); } }
 /* 해외 FA: 9시즌을 채운 FA 선수는 해외로 갈 수 있다 */
 function ovsFA(pool){ for(const id of [...pool]){ const p=G.players[id]; if(!p||p.foreign||p.svc<9||p.age>33)continue; const o=ovr(p); if(o<61)continue; mlbOf(p);
@@ -27470,6 +27470,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-05o',d:'11월 5일',t:'재정: 포스팅 수입',items:[
+    '우리 선수를 포스팅으로 보내고 받은 이적료가 재정 화면 수입과 시즌 결산에 "포스팅 수입" 줄로 나옵니다. 전에는 보유 현금에만 바로 더해져 어디서 들어온 돈인지 보이지 않았습니다.']},
   {id:'2026-11-05n',d:'11월 5일',t:'유니폼 주름 다듬기',items:[
     '구단 소개 유니폼 그림의 주름을 장마다 자연스럽게 다르게 다시 그렸습니다(디자인은 같습니다).']},
   {id:'2026-11-05m',d:'11월 5일',t:'중계 전 결과 감춤 · PC 선수 화면 버튼',items:[

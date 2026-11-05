@@ -60,7 +60,7 @@ function ovsDaily(){ try{ ovsBackSweep(); }catch(e){} for(const x of G.posting||
     const pm=o>=68?.9:o>=64?.6:o>=61?.3:.1; let lg=null; if(R()<pm)lg='MLB'; else if(R()<(o>=60?.35:.1))lg='NPB';
     if(!lg){ x.res='무산'; p.mor=clamp((p.mor??60)-5,0,100); p.mlb=clamp(p.mlb-15,0,100); wire('해외',`${p.name} 포스팅 무산, ${tshort(x.tid)} 잔류`,{tid:x.tid,ref:p.id}); if(x.tid===G.user)note('선수',`${p.name}의 포스팅이 무산됐습니다. 계약을 제시한 구단이 없었습니다. 선수는 남습니다(기분 -5).`,p.id); continue; }
     const yrs=lg==='MLB'?(o>=70?ri(4,6):o>=66?ri(2,4):ri(1,2)):ri(2,3); const amt=Math.round(lg==='MLB'?clamp((o-58)*90+N(0,80),100,2500):clamp((o-55)*45+N(0,30),80,600)); const fee=usd(postFee(amt*yrs)); x.res=lg;
-    team(x.tid).cash+=fee; if(x.tid===G.user){ G.ovsIncome=(G.ovsIncome||0)+fee; }
+    if(x.tid===G.user&&!G.unemp){ G.ovsIncome=(G.ovsIncome||0)+fee; G.spend.postIn=(G.spend.postIn||0)+fee; } else team(x.tid).cash+=fee; /* 우리 구단 포스팅 수입은 그 시즌 결산(재정 화면 '포스팅 수입' 줄)으로 들어간다 */
     ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'포스팅',fee); } }
 /* 해외 FA: 9시즌을 채운 FA 선수는 해외로 갈 수 있다 */
 function ovsFA(pool){ for(const id of [...pool]){ const p=G.players[id]; if(!p||p.foreign||p.svc<9||p.age>33)continue; const o=ovr(p); if(o<61)continue; mlbOf(p);
