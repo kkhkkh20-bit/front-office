@@ -14717,12 +14717,9 @@ function buildFacItem(k){ facInit(); const F=FACI[k]; if(!F)return '없는 시�
   const c=F.c[lv+1]; const t=team(G.user); if(t.cash<c)return `보유 현금이 부족합니다. 공사비 ${money(c)}이 필요합니다(보유 ${money(t.cash)}).`;
   t.cash-=c; G.spend.facB=(G.spend.facB||0); G.fac.bld[k]={lv:lv+1,done:G.day+F.days[lv+1],c}; addLog(`${F.l} ${F.lv[lv+1]} 공사를 시작했습니다(공사비 ${money(c)}, ${F.days[lv+1]}일).`); t.trust=clamp(t.trust+1,0,100); return ''; }
 function facDaily(){ if(!G.fac||!G.fac.bld)return; for(const k of Object.keys(G.fac.bld)){ const b=G.fac.bld[k]; if(G.day>=b.done){ G.fac.it[k]=b.lv; (G.fac.dn=G.fac.dn||{})[k]=G.day; delete G.fac.bld[k]; facRecalc(); addLog(`${FACI[k].l} ${FACI[k].lv[b.lv]} 완공.`); chron('fac',`${FACI[k].l} ${FACI[k].lv[b.lv]} 완공`); mail('육성팀',`${FACI[k].l} 완공: ${FACI[k].lv[b.lv]}`,`${FACI[k].l}이(가) ${b.lv}단계(${FACI[k].lv[b.lv]})로 완공됐습니다. ${FACI[k].d} 연 유지비는 ${money(FACI[k].up[b.lv])}입니다.`,{kind:'시설',acts:[{l:'시설 보기',a:'go',v:'staff:fac'}]}); } } }
-/* 시설 한 단계 효과를 숫자로(사용자 피드백 11-05: "성장이 조금씩 빨라집니다"만으로는 40억을 쓸 이유를 판단하기 어렵다). facEff 계산식 그대로 */
-function facGainTxt(k,lv){ if(lv>=FAC_MAX)return ''; const d=facImpact(lv+1)-facImpact(lv), pc=x=>`${(Math.round(x*1000)/10).toFixed(1)}%`; const L=domestic(G.user).filter(p=>!p.foreign);
-  const fut=L.filter(p=>{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); return f&&(!a||(p.isP?(f.outs||0)>(a.outs||0):(f.pa||0)>(a.pa||0))); }).length;
-  const T={indoor:[`모든 선수 성장 속도 +${pc(d*.012)}`,L.length],lab:[`모든 선수 성장 속도 +${pc(d*.015*(1+anaPow('trk')*.08))}${anaPow('trk')?' (트래킹 분석원 보정 포함)':''}`,L.length],dorm:[`23세 이하 성장 속도 +${pc(d*.015)}`,L.filter(p=>p.age<=23).length],
-    fut:[`2군에서 주로 뛰는 선수 성장 속도 +${pc(d*.02)}`,fut],weight:[`노화·하락 폭 -${pc(d*.03)} · 부상 감소`,L.filter(p=>p.age>=30).length],rehab:[`노화·하락 폭 -${pc(d*.015)} · 부상 복귀·피로 회복 빨라짐`,L.length]}[k];
-  if(!T)return ''; const g=facEff({team:G.user,age:22,isP:false,hist:[]}).g; return `다음 단계 효과: ${T[0]} · 지금 해당 선수 ${T[1]}명 · 현재 우리 성장 배수 x${g.toFixed(2)}(리그 기본 x1.00)`; }
+/* 시설 한 단계 효과를 말로만(사용자 11-05: 시뮬 게임이라 수치는 보여 주지 않고 '영향을 준다' 정도로. 실제 배수는 facEff) */
+function facGainTxt(k,lv){ if(lv>=FAC_MAX)return ''; const who={indoor:'모든 선수의 성장',lab:'모든 선수의 성장(트래킹 분석원이 있으면 더)',dorm:'23세 이하 선수의 성장과 기분',fut:'2군에서 주로 뛰는 선수의 성장',weight:'30대 선수의 하락 속도와 부상',rehab:'부상 복귀와 피로 회복'}[k]; if(!who)return '';
+  return `다음 단계로 올리면 ${who}에 영향을 줍니다${lv>=3?'(4단계부터는 효과가 완만해집니다)':''}.`; }
 /* ===== 전력분석팀: 분석원 고용·역할·효과·월간 보고 ===== */
 /* 전력분석·데이터팀: 분석원을 사람으로 뽑아 배치한다(스카우트처럼). 역할 3가지
    상대 전력분석: 상대 타자별 수비 위치·투구 계획 → 실점 억제 / 트래킹 데이터: 장비 운용 → 선수 평가 정확도·랩 성장 / 영상 분석: 상대 투수 공략 → 타격 */
@@ -27874,7 +27871,7 @@ const PATCH=[
     '2주 지난 일반 보고는 읽은 것으로 접습니다. 중요한 소식과 답할 일은 그대로 남습니다.',
     '슬럼프 사건 본문의 최근 10경기 기록에 기준 날짜를 붙였습니다(선수 상세는 오늘 기준).',
     '오타 수정: 처음 화면 문구, 구단주와 함께 본 경기 제목.',
-    '훈련 시설마다 다음 단계 효과를 숫자로 보여 줍니다(예: 모든 선수 성장 속도 +1.2% · 해당 선수 52명 · 지금 우리 성장 배수).']},
+    '훈련 시설마다 다음 단계가 무엇에 영향을 주는지 알려 줍니다.']},
   {id:'2026-11-05an',d:'11월 5일',t:'부실 구단 매각·재창단',items:[
     '다른 구단이 시즌 결산 뒤 40억 넘는 적자를 2년 넘게 이어 가면 KBO가 개입합니다. 새 모기업이 인수(매각)하거나, 투자사가 세운 신생 구단이 선수단을 그대로 이어받아 재창단합니다(실제: 해태→KIA, 현대→히어로즈).',
     '선수단·구장·구단 이름은 그대로이고, 구단주·단장이 바뀌며 빚이 정리됩니다. 리그 소식과 뉴스로 알려 줍니다.']},
