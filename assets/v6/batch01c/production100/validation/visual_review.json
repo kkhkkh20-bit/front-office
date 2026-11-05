@@ -1,0 +1,117 @@
+{
+  "canonical_native100": true,
+  "delivered256": {
+    "seoul_hounds": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep cap, >20px headroom visually, natural glasses and collars, consistent navy/red home raglan and angular wolf embroidery."
+    },
+    "incheon_seagulls": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep red cap, seagull embroidery, ivory jersey/red V collar, natural face/neck/collar, no apparent visual defects."
+    },
+    "seoul_comets": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed, after prior native100 review; photographic deep caps, burgundy pinstripes, natural collars and individual body proportions."
+    },
+    "suwon_sparks": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep black cap/lightning/rays, angular black shoulders/white accents, natural collar/skin, no obvious defects."
+    },
+    "goyang_storm": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep burgundy caps/white storm emblem, ivory home jerseys and fine burgundy collar trim, natural skin/neck/collar."
+    },
+    "daejeon_redfox": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; orange deep caps/white angular fox, charcoal raglan shoulders/orange collar, natural individual face/neck/shoulder boundaries."
+    },
+    "gwangju_blazes": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep red cap/yellow flame, red raglan shoulders/gold edging and photographic ivory front, natural boundaries."
+    },
+    "daegu_thunders": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep blue cap/cloud lightning, blue pinstripe/blue V collar, natural face/collar boundary and individual builds."
+    },
+    "busan_waves": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep navy cap/wave underline, cream jersey/navy shoulder yoke/red collar, natural boundaries."
+    },
+    "changwon_anchors": {
+      "count": 100,
+      "all_four_parts_reviewed": true,
+      "notes": "All100 actual delivered256 reviewed; deep blue cap/white anchor, ivory/navy/gold V collar, natural individual face/neck/shoulder and glasses."
+    }
+  },
+  "pending": [],
+  "headroom_guides": {
+    "seoul_comets": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "seoul_hounds": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "incheon_seagulls": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "suwon_sparks": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "goyang_storm": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "daejeon_redfox": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "gwangju_blazes": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "daegu_thunders": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "busan_waves": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    },
+    "changwon_anchors": {
+      "reviewed_count": 100,
+      "all_caps_below_128px_y10_guide": true,
+      "method": "Visual examination of decoded128px atlas top crops at2x nearest-neighbor, with guide at128px y10(512-equivalent40px); corroborated by all1000 actual256 full-photo reviews."
+    }
+  },
+  "random20": {
+    "reviewed": true,
+    "identity_count": 20,
+    "team_count": 10,
+    "board_count": 10,
+    "source": "Final decoded256 WebP cells; enlargement of existing pixels, not a higher native resolution.",
+    "notes": "All20 across10clubs reviewed for cap seams, visor depth, embroidery, collar/buttons, natural neck boundary. No apparent defects."
+  },
+  "reviewed_utc": "2026-11-05T18:18:26.119309+00:00"
+}

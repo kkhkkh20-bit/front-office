@@ -1,0 +1,59 @@
+{
+  "seed": 20261105,
+  "algorithm": "Python random.Random(MT19937).sample of ordered100identityIDs",
+  "identity_ids": [
+    "v6c100_017",
+    "v6c100_088",
+    "v6c100_020",
+    "v6c100_078",
+    "v6c100_013",
+    "v6c100_053",
+    "v6c100_079",
+    "v6c100_082",
+    "v6c100_022",
+    "v6c100_055",
+    "v6c100_039",
+    "v6c100_085",
+    "v6c100_096",
+    "v6c100_098",
+    "v6c100_059",
+    "v6c100_041",
+    "v6c100_024",
+    "v6c100_004",
+    "v6c100_040",
+    "v6c100_035"
+  ],
+  "team_order": [
+    "seoul_comets",
+    "seoul_hounds",
+    "incheon_seagulls",
+    "suwon_sparks",
+    "goyang_storm",
+    "daejeon_redfox",
+    "gwangju_blazes",
+    "daegu_thunders",
+    "busan_waves",
+    "changwon_anchors"
+  ],
+  "cap_crop_from_delivered256": [
+    64,
+    18,
+    128,
+    92
+  ],
+  "cap_display": [
+    256,
+    184
+  ],
+  "collar_crop_from_delivered256": [
+    44,
+    168,
+    168,
+    88
+  ],
+  "collar_display": [
+    256,
+    134
+  ],
+  "note": "Enlarged technical crops from actual delivered256WebP; not native512photos."
+}

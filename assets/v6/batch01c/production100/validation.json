@@ -1,0 +1,236 @@
+{
+  "schema_version": "v6c-production100-validation-1",
+  "asset_validation_passed": true,
+  "production_complete": true,
+  "game_integration_review": "pending_user_review_on_review_branch",
+  "identity_count": 100,
+  "team_count": 10,
+  "home_photo_count": 1000,
+  "runtime_sheet_count": 20,
+  "runtime_sheet_bytes": 10607372,
+  "stage1_identity_prescreen": {
+    "status": "passed",
+    "passed": true,
+    "completed_utc": "2026-11-05T16:09:47.031195+00:00",
+    "identity_count": 100,
+    "generated_candidate_count": 200,
+    "candidate_rejected_reasons": {
+      "k001_16": "Exaggerated puckered lips, not a relaxed roster expression",
+      "k002_12": "Exaggerated protruded/pursed lips",
+      "k002_14": "Exaggerated puckered lips",
+      "k002_15": "Exaggerated puckered lips",
+      "f001_14": "Visual age appears above requested18-38range; regenerate role",
+      "k018_02": "Both eyes unnaturally rolled upward; not a usable frontal roster portrait"
+    },
+    "required_comparison_scope": "within_new100",
+    "threshold_strictly_less_than": 0.4,
+    "pair_count": 4950,
+    "max_cosine": 0.3997032344341278,
+    "group_counts": {
+      "Korean": 85,
+      "White": 4,
+      "Black": 4,
+      "Latin": 5,
+      "East Asian foreign": 2
+    },
+    "age_band_counts": {
+      "18-22": 24,
+      "23-27": 24,
+      "28-32": 24,
+      "33-38": 28
+    },
+    "age_range": [
+      18,
+      38
+    ],
+    "glasses_count": 19,
+    "beard_count": 19,
+    "visual_review_complete": true,
+    "visual_review_notes": "All100 reviewed at actual256; natural adult faces, clear gaze, no obvious facial distortion or recognized real-person likeness. This is visual review, not exhaustive celebrity identification.",
+    "independent_recomputation": true,
+    "model": "w600k_r50.onnx",
+    "model_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+    "method": "SCRFD640 RGB threshold0.55; five-landmark ArcFace112; L2 raw512D cosine, no whitening, calibration or score rescaling",
+    "master_imageset_sha256": "f93c8e58445262e78c22aa49901be93a60e84ba17f84dd976aba848e106581da",
+    "prior_v6b_cross_informational": {
+      "required": false,
+      "max_cosine": 0.4862017035484314,
+      "pairs_ge040": 7,
+      "note": "Replacement cohort default stated to user; v6b cross is reported separately, not passed or claimed as a combined200-identity gate."
+    },
+    "wardrobe_stage_unlocked": true
+  },
+  "stage2_same_identity_across_clubs_from_final_webp": {
+    "128": {
+      "threshold_greater_than_or_equal": 0.6,
+      "comparison_count": 4500,
+      "min_cosine": 0.8444136381149292,
+      "mean_cosine": 0.928858248035113,
+      "failures": 0,
+      "worst_pair": {
+        "id": "v6c100_062",
+        "a": "seoul_comets",
+        "b": "seoul_hounds",
+        "cosine": 0.8444136381149292
+      },
+      "passed": true
+    },
+    "256": {
+      "threshold_greater_than_or_equal": 0.6,
+      "comparison_count": 4500,
+      "min_cosine": 0.8579791784286499,
+      "mean_cosine": 0.9440272249115838,
+      "failures": 0,
+      "worst_pair": {
+        "id": "v6c100_062",
+        "a": "seoul_comets",
+        "b": "seoul_hounds",
+        "cosine": 0.8579791784286499
+      },
+      "passed": true
+    }
+  },
+  "runtime_face_detection_count": 2000,
+  "runtime_master_top1_correct": 2000,
+  "runtime_face_comparisons_note": "2000 detections/top1 checks =100identities x10clubs x2sizes. Club-to-club same-person checks are4500 per size,9000total.",
+  "identity_threshold_scope": "Strict<0.40 is applied to the frozen100 independent bareheaded masters before wardrobe generation. Final uniform cross-ID and prior-v6b statistics are informational and are NOT claimed to pass0.40.",
+  "final_uniform_different_identity_informational": {
+    "seoul_comets": {
+      "128": {
+        "max_cosine": 0.5656150579452515,
+        "pairs_ge040": 139
+      },
+      "256": {
+        "max_cosine": 0.5901029109954834,
+        "pairs_ge040": 160
+      }
+    },
+    "seoul_hounds": {
+      "128": {
+        "max_cosine": 0.5825949907302856,
+        "pairs_ge040": 270
+      },
+      "256": {
+        "max_cosine": 0.5714497566223145,
+        "pairs_ge040": 322
+      }
+    },
+    "incheon_seagulls": {
+      "128": {
+        "max_cosine": 0.6017258167266846,
+        "pairs_ge040": 236
+      },
+      "256": {
+        "max_cosine": 0.5944717526435852,
+        "pairs_ge040": 309
+      }
+    },
+    "suwon_sparks": {
+      "128": {
+        "max_cosine": 0.5930231213569641,
+        "pairs_ge040": 264
+      },
+      "256": {
+        "max_cosine": 0.6227844953536987,
+        "pairs_ge040": 290
+      }
+    },
+    "goyang_storm": {
+      "128": {
+        "max_cosine": 0.5712078809738159,
+        "pairs_ge040": 227
+      },
+      "256": {
+        "max_cosine": 0.602948784828186,
+        "pairs_ge040": 298
+      }
+    },
+    "daejeon_redfox": {
+      "128": {
+        "max_cosine": 0.5578140616416931,
+        "pairs_ge040": 183
+      },
+      "256": {
+        "max_cosine": 0.587134063243866,
+        "pairs_ge040": 254
+      }
+    },
+    "gwangju_blazes": {
+      "128": {
+        "max_cosine": 0.5746575593948364,
+        "pairs_ge040": 232
+      },
+      "256": {
+        "max_cosine": 0.6090359687805176,
+        "pairs_ge040": 297
+      }
+    },
+    "daegu_thunders": {
+      "128": {
+        "max_cosine": 0.5648400783538818,
+        "pairs_ge040": 264
+      },
+      "256": {
+        "max_cosine": 0.5683047771453857,
+        "pairs_ge040": 315
+      }
+    },
+    "busan_waves": {
+      "128": {
+        "max_cosine": 0.6160869002342224,
+        "pairs_ge040": 268
+      },
+      "256": {
+        "max_cosine": 0.5983046293258667,
+        "pairs_ge040": 329
+      }
+    },
+    "changwon_anchors": {
+      "128": {
+        "max_cosine": 0.576930582523346,
+        "pairs_ge040": 251
+      },
+      "256": {
+        "max_cosine": 0.584839940071106,
+        "pairs_ge040": 310
+      }
+    }
+  },
+  "headroom": {
+    "required_min_512_equivalent_px": 40,
+    "all1000_visual_passed": true,
+    "method": "All1000 final256px photos reviewed; all1000 decoded128px cap-top crops checked against y10 guide (=40px at512). Not an automatic universal semantic segmentation measurement.",
+    "evidence": "validation/headroom/",
+    "supplemental_red_cap_estimates": "validation/teams/*.json; only red/orange/burgundy caps, other colors null; estimates do not define pass."
+  },
+  "kit_reference": {
+    "source": "assets/v5b/manifest.json",
+    "sha256": "44edc25dbd6d7fceb1bb0d13fa3868780aa81484f2c783eeb308b98c921b056b",
+    "review": "All1000 delivered256 photos visually checked against v5b home cap/jersey references in the visible clavicle framing. Colors, pinstripes, collar/piping and emblem shapes retained; embroidery is a photographic interpretation with stitch variation, not pixel-identical vector compositing."
+  },
+  "visual_review": "validation/visual_review.json",
+  "model_protocol": {
+    "recognizer": "w600k_r50.onnx",
+    "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "detector": "det_10g.onnx",
+    "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+    "detector_input": "RGB640;(pixel-127.5)/128;threshold0.55",
+    "alignment": "five landmark similarity affine to ArcFace112 canonical using OpenCV LMEDS",
+    "recognizer_input": "RGB112;(pixel-127.5)/127.5",
+    "metric": "L2-normalized512D raw dot-product cosine; no whitening, calibration, score scaling or threshold changes"
+  },
+  "manifest_contract_checked": true,
+  "checksums": "checksums.sha256",
+  "code_changes": false,
+  "stage_order_evidence": {
+    "prescreen_completed_utc": "2026-11-05T16:09:47.031195+00:00",
+    "first_accepted_wardrobe_source_saved_utc": "2026-11-05T16:13:50.881064+00:00",
+    "first_source_png": "exec-2ea555cd-d21b-42e0-bac7-31e6d4e7b079.png",
+    "identity_gate_preceded_accepted_wardrobe_generation": true
+  },
+  "numeric_recheck": {
+    "frozen_embedding_matrix_recomputed_max": 0.39970308542251587,
+    "note": "Float32 matrix multiplication can differ by <1e-6 across BLAS thread settings; both values remain strictly below0.40. Threshold and raw scores are not rescaled."
+  }
+}

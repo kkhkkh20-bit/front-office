@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "passed": true,
+  "completed_utc": "2026-11-05T16:09:47.031195+00:00",
+  "identity_count": 100,
+  "generated_candidate_count": 200,
+  "candidate_rejected_reasons": {
+    "k001_16": "Exaggerated puckered lips, not a relaxed roster expression",
+    "k002_12": "Exaggerated protruded/pursed lips",
+    "k002_14": "Exaggerated puckered lips",
+    "k002_15": "Exaggerated puckered lips",
+    "f001_14": "Visual age appears above requested18-38range; regenerate role",
+    "k018_02": "Both eyes unnaturally rolled upward; not a usable frontal roster portrait"
+  },
+  "required_comparison_scope": "within_new100",
+  "threshold_strictly_less_than": 0.4,
+  "pair_count": 4950,
+  "max_cosine": 0.3997032344341278,
+  "group_counts": {
+    "Korean": 85,
+    "White": 4,
+    "Black": 4,
+    "Latin": 5,
+    "East Asian foreign": 2
+  },
+  "age_band_counts": {
+    "18-22": 24,
+    "23-27": 24,
+    "28-32": 24,
+    "33-38": 28
+  },
+  "age_range": [
+    18,
+    38
+  ],
+  "glasses_count": 19,
+  "beard_count": 19,
+  "visual_review_complete": true,
+  "visual_review_notes": "All100 reviewed at actual256; natural adult faces, clear gaze, no obvious facial distortion or recognized real-person likeness. This is visual review, not exhaustive celebrity identification.",
+  "independent_recomputation": true,
+  "model": "w600k_r50.onnx",
+  "model_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+  "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+  "method": "SCRFD640 RGB threshold0.55; five-landmark ArcFace112; L2 raw512D cosine, no whitening, calibration or score rescaling",
+  "master_imageset_sha256": "f93c8e58445262e78c22aa49901be93a60e84ba17f84dd976aba848e106581da",
+  "prior_v6b_cross_informational": {
+    "required": false,
+    "max_cosine": 0.4862017035484314,
+    "pairs_ge040": 7,
+    "note": "Replacement cohort default stated to user; v6b cross is reported separately, not passed or claimed as a combined200-identity gate."
+  },
+  "wardrobe_stage_unlocked": true
+}
