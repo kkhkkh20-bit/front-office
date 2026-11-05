@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+"""v6b 실사 얼굴(시범 100명) → 구단별 홈 유니폼 합성 시트 → src/ui/assets/00d_faces_data.js
+ - 합성식은 assets/v6/batch01b/CLAUDE_HANDOFF.md 4절 그대로(판256 RGB + 정렬 시트 UV로 v5b 홈 유니폼·가슴 심벌·모자색·모자 심벌).
+ - 브라우저에서 WebGL로 합성하지 않고 빌드 전에 한 번 만든다: Safari 비결합 알파 문제가 없고, 화면은 그림 한 장만 잘라 쓴다.
+ - 구단마다 128px 10x10 시트 1장(WebP). 검수 미통과 시범판(사용자 결정 2026-11-05: 품질이 좋으니 먼저 연결해 보고 다양성은 다음 회차)
+ 사용: python3 tools/gen-faces-v6b.py  (얼굴·유니폼 에셋을 바꿨을 때만)"""
+import json, io, os, base64, re, sys
+import numpy as np
+from PIL import Image
+from source_manifest import source_file
+ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+D6=os.path.join(ROOT,'assets','v6','batch01b'); D5B=os.path.join(ROOT,'assets','v5b')
+M6=json.load(open(os.path.join(D6,'manifest.json'),encoding='utf8')); M5=json.load(open(os.path.join(D5B,'manifest.json'),encoding='utf8')); A5=M5['assets']
+src=open(source_file('engine','01_rules.js'),encoding='utf8').read()
+TD=re.findall(r"\{city:'([^']+)',nick:'([^']+)'",src.split('const TEAM_DEF=[')[1].split('];')[0])
+def load(rel,base=D5B,mode='RGBA'): return np.asarray(Image.open(os.path.join(base,rel)).convert(mode)).astype(np.float32)
+def samp(img,x,y):
+    """bilinear: img[H,W,C], x,y 같은 모양의 픽셀 좌표(픽셀 중심=정수)"""
+    H,W=img.shape[:2]; x=np.clip(x,0,W-1); y=np.clip(y,0,H-1); x0=np.floor(x).astype(int); y0=np.floor(y).astype(int); x1=np.minimum(x0+1,W-1); y1=np.minimum(y0+1,H-1); fx=(x-x0)[...,None]; fy=(y-y0)[...,None]
+    return (img[y0,x0]*(1-fx)+img[y0,x1]*fx)*(1-fy)+(img[y1,x0]*(1-fx)+img[y1,x1]*fx)*fy
+P256=np.asarray(Image.open(os.path.join(D6,'sheets/256/b01b_s01.webp')).convert('RGBA')).astype(np.float32)
+REG=np.asarray(Image.open(os.path.join(D6,'sheets/registration/b01b_s01.webp')).convert('RGB')).astype(np.float32)
+NEU=load(A5['ko_late20s_01']['png']['512'])[...,0]
+yy,xx=np.mgrid[0:256,0:256].astype(np.float32)
+def person(ident,kit,chest,capmark,capRGB):
+    x0,y0,_,_=ident['sheets']['256']['rect']; rx,ry,_,_=ident['registration']['rect']
+    pl=P256[y0:y0+256,x0:x0+256]; rgb=pl[...,:3]; capM=pl[...,3]/255; R=rgb[...,0]; G=rgb[...,1]; B=rgb[...,2]
+    cell=REG[ry:ry+128,rx:rx+128]; q=lambda v:np.clip((v+.5)*128/256-.5,0,127)
+    rg=samp(cell,q(xx),q(yy)); gm=rg[...,0]/255; sx=rg[...,1]/255*511; sy=rg[...,2]/255*511
+    kc=np.clip((R-1.65*np.maximum(G,B)-12)/28,0,1)*np.clip((R-35)/35,0,1); m=gm*kc
+    wk=samp(kit,sx,sy); m=m*np.clip(wk[...,3]/255*4,0,1) # 유니폼 그림 밖(투명)은 원래 사진을 남긴다
+    cn=samp(NEU[...,None],sx,sy)[...,0]; shade=np.clip(R/np.maximum(cn,50),.55,1.45)[...,None]
+    cloth=np.clip(wk[...,:3]*shade,0,255); out=rgb*(1-m[...,None])+cloth*m[...,None]
+    wc=samp(chest,sx,sy); ca=(wc[...,3]/255*m)[...,None]; out=out*(1-ca)+wc[...,:3]*ca
+    a=capM[...,None]; out=out*(1-a)+np.array(capRGB,np.float32)*(R/255)[...,None]*a
+    s_x,s_y,tx,ty=ident['cap_mark_transform_512']; cm=capmark # 256으로 줄인 심벌
+    mx=(xx-tx/2)/s_x; my=(yy-ty/2)/s_y; wm=samp(cm,mx,my); inside=((mx>=0)&(mx<=255)&(my>=0)&(my<=255)).astype(np.float32)
+    ma=(wm[...,3]/255*capM*inside)[...,None]; out=out*(1-ma)+wm[...,:3]*ma
+    return Image.fromarray(np.clip(out+.5,0,255).astype(np.uint8),'RGB')
+ids=M6['identities']; assert len(ids)==100
+sheets={}; seen=set()
+for t in M5['teams']:
+    if t['key']=='korea': continue
+    tid=[i for i,(c,n) in enumerate(TD) if c+' '+n==t['name']]
+    if len(tid)!=1: sys.exit('게임 구단과 맞지 않는 이름: '+t['name'])
+    K=M5['kits'][t['key']]['home']; kit=load(A5[K['kit_overlay']]['png']['512']); chest=load(A5[K['chest']]['png']['512'])
+    capmark=np.asarray(Image.open(os.path.join(D5B,A5[K['cap']]['png']['512'])).convert('RGBA').resize((256,256),Image.LANCZOS)).astype(np.float32)
+    h=K['cap_color'].lstrip('#'); capRGB=[int(h[i:i+2],16) for i in (0,2,4)]
+    sh=Image.new('RGB',(1280,1280))
+    for i,ident in enumerate(ids): sh.paste(person(ident,kit,chest,capmark,capRGB).resize((128,128),Image.LANCZOS),((i%10)*128,(i//10)*128))
+    o=io.BytesIO(); sh.save(o,'WEBP',quality=80,method=6); sheets[tid[0]]='data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode(); seen.add(tid[0])
+    if os.environ.get('PREVIEW'): sh.save(os.path.join(os.environ['PREVIEW'],t['key']+'.png'))
+if len(seen)!=len(TD): sys.exit('얼굴 시트가 없는 구단이 있음')
+meta=[{'a':x['age'],'f':0 if x['ethnicity']=='Korean' else 1,'e':x['ethnicity'],'g':int(bool(x['tags'].get('glasses'))),'b':int(bool(x['tags'].get('beard')))} for x in ids]
+body='/* 자동 생성: python3 tools/gen-faces-v6b.py (손으로 고치지 않는다). v6b 실사 얼굴 시범 100명 × 구단 홈 유니폼 128px 10x10 시트. ids[i]는 시트 i번째 칸(a 나이·f 외국인·e 출신·g 안경·b 수염) */\nconst FACE6='+json.dumps({'ids':meta,'sheet':{str(k):v for k,v in sorted(sheets.items())}},ensure_ascii=False,separators=(',',':'))+';\n'
+open(source_file('ui','00d_faces_data.js'),'w',encoding='utf8').write(body)
+print('얼굴 시트 %d개 구단 · %dKB'%(len(sheets),len(body)//1024))

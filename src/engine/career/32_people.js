@@ -34,6 +34,7 @@ function suitSwap(svg,jk,tie,female){ const L=svg.split('\n'); let i=L.findIndex
 /* 큰 얼굴 자리용 흉상: 같은 그림을 더 넓게 잡아 가슴(칼라·단추·넥타이)까지 보인다 */
 function faceBust(src){ return src&&src.replace('-30%2070%20460%20460','-65%2075%20530%20530'); }
 function faceSVG(o){
+  if(typeof face6Src==='function'&&o&&o.id!=null&&!o.persona){ const ph=face6Src(o); if(ph)return ph; } /* 우리 구단 선수: v6b 실사 얼굴 시범(77_assets_ui.js) */
   const key=faceKey(o); if(FACEC.has(key))return FACEC.get(key);
   let out='';
   try{ if(typeof window!=='undefined'&&window.FJS){

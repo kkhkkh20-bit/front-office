@@ -37,3 +37,19 @@ function featIcon(x,sz){ const old=`<span class="ft-i k-${x.k}">${FEATI[x.k]||'�
   return im?`<span class="ft-i ft-im k-${x.k}">${im}</span>`:old; }
 function bgHero(k,inner,cls){ const u=hasAsset()&&ASSET.stad[k]; if(!u)return inner; return `<div class="bg-hero ${cls||''}" style="background-image:linear-gradient(180deg,rgba(8,12,16,.55),rgba(8,12,16,.86)),url(${u})">${inner}</div>`; }
 function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img src="${ASSET.nat.b128}" width="56" height="56" alt="" decoding="async"><div><b>대한민국 야구 국가대표</b><span class="small muted">국제대회 소집 명단·차출 현황</span></div>${uniRow('kr',{sz:64})}</div>`; }
+/* ===== v6b 실사 얼굴(시범 100명, 00d_faces_data.js의 FACE6) =====
+ 사용자 결정(2026-11-05): 검수 미통과지만 품질이 좋으니 먼저 연결. 100명뿐이라 '우리 구단' 선수만 사진으로(구단 안에서는 겹치지 않게), 나머지는 기존 그림 얼굴.
+ - 국내 선수는 한국인 얼굴, 외국인은 출신에 맞춰(아시아쿼터: 일본·대만, 용병: 그 밖) 나이가 가까운 얼굴을 하나 정해 저장(G.f6 선수→칸, G.f6r 칸→선수)
+ - 시트는 구단 홈 유니폼으로 미리 합성돼 있다(tools/gen-faces-v6b.py). 화면에서는 칸 하나를 잘라 작은 그림으로 캐시한다
+ - 설정에서 끌 수 있다(G.f6off) */
+const F6IMG={}, F6C=new Map();
+function face6Load(tid){ const k=String(tid); if(F6IMG[k]||typeof FACE6==='undefined'||!FACE6.sheet[k])return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE6.sheet[k]; return im; }
+function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(!p.foreign)return !x.f; if(!x.f)return false; const asia=x.e==='Japanese'||x.e==='Taiwanese'; return p.foreign==='아시아'?asia:!asia; }); }
+function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team!==G.user||typeof FACE6==='undefined')return null;
+  const M=G.f6=G.f6||{}, Rv=G.f6r=G.f6r||{}; const cur=M[p.id]; if(cur!=null&&Rv[cur]===p.id)return cur;
+  const free=i=>{ const o=Rv[i]; if(o==null||o===p.id)return true; const q=G.players[o]; return !q||q.team!==G.user; };
+  const C=face6Pool(p).filter(free); if(!C.length)return null;
+  C.sort((a,b)=>Math.abs(FACE6.ids[a].a-p.age)-Math.abs(FACE6.ids[b].a-p.age)||hn('f6'+a,p.id)-hn('f6'+b,p.id)); const i=C[0]; if(cur!=null&&Rv[cur]===p.id)delete Rv[cur]; M[p.id]=i; Rv[i]=p.id; return i; }
+function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=G.user, k=tid+':'+i; if(F6C.has(k))return F6C.get(k);
+  const im=face6Load(tid); if(!im||!im.ok)return null; try{ const c=document.createElement('canvas'); c.width=c.height=128; c.getContext('2d').drawImage(im,(i%10)*128,Math.floor(i/10)*128,128,128,0,0,128,128); const u=c.toDataURL('image/jpeg',.86); F6C.set(k,u); return u; }catch(e){ return null; } }
+Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });
