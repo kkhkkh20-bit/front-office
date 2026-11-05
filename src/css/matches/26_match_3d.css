@@ -180,3 +180,10 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .match-dashboard .cs-stage.has-3d>.cs-cap.good,.match-dashboard .cs-stage.has-3d>.cs-cap.bad{color:var(--cap-fg,#fff)}
 .cs-stage.has-3d>.cs-cap.hr{background:var(--cap-bg,#6b2225);color:#fff;border:2px solid #f7cf67}
 @media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{bottom:8px;max-width:92%;padding:5px 12px;font-size:12px}}
+/* 자막 창은 문장 길이와 상관없이 같은 폭(넉넉하게 고정). 홈런은 바탕이 팀 색↔금색으로 깜빡인다 */
+.match-dashboard .cs-stage.has-3d>.cs-cap{width:min(72%,780px);max-width:none;min-height:40px;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.match-dashboard .cs-stage.has-3d>.cs-cap .cs-voice{width:100%}
+.match-dashboard .cs-stage.has-3d>.cs-cap.hr{font-size:19px;color:#fff;border:2px solid #f7cf67;animation:cs-cap-hr .45s steps(1,end) 8}
+@keyframes cs-cap-hr{0%{background:var(--cap-bg,#6b2225)}50%{background:#e6a817;color:#1a1200}}
+@media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{width:92%;min-height:32px}.match-dashboard .cs-stage.has-3d>.cs-cap.hr{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.match-dashboard .cs-stage.has-3d>.cs-cap.hr{animation:none;background:#e6a817;color:#1a1200}}

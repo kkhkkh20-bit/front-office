@@ -4005,6 +4005,13 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .match-dashboard .cs-stage.has-3d>.cs-cap.good,.match-dashboard .cs-stage.has-3d>.cs-cap.bad{color:var(--cap-fg,#fff)}
 .cs-stage.has-3d>.cs-cap.hr{background:var(--cap-bg,#6b2225);color:#fff;border:2px solid #f7cf67}
 @media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{bottom:8px;max-width:92%;padding:5px 12px;font-size:12px}}
+/* 자막 창은 문장 길이와 상관없이 같은 폭(넉넉하게 고정). 홈런은 바탕이 팀 색↔금색으로 깜빡인다 */
+.match-dashboard .cs-stage.has-3d>.cs-cap{width:min(72%,780px);max-width:none;min-height:40px;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.match-dashboard .cs-stage.has-3d>.cs-cap .cs-voice{width:100%}
+.match-dashboard .cs-stage.has-3d>.cs-cap.hr{font-size:19px;color:#fff;border:2px solid #f7cf67;animation:cs-cap-hr .45s steps(1,end) 8}
+@keyframes cs-cap-hr{0%{background:var(--cap-bg,#6b2225)}50%{background:#e6a817;color:#1a1200}}
+@media(max-width:600px){.match-dashboard .cs-stage.has-3d>.cs-cap{width:92%;min-height:32px}.match-dashboard .cs-stage.has-3d>.cs-cap.hr{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.match-dashboard .cs-stage.has-3d>.cs-cap.hr{animation:none;background:#e6a817;color:#1a1200}}
 /* 본문 높이는 메뉴·필수 알림을 제외한 실제 남은 화면에 맞춘다. */
 
   .fm-home .fmmain{height:calc(calc(100dvh / var(--z,1)) - var(--fm-top-height));display:flex;flex-direction:column;overflow:hidden}
@@ -27654,7 +27661,7 @@ Object.assign(A,{
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
   {id:'2026-11-05y',d:'11월 5일',t:'중계 자막·화면 정리',items:[
-    '중계 자막을 화면 가운데 알약 모양으로, 그 장면 공격 팀 색 바탕에 흰 글씨로 바꿨습니다(캐스터 꼬리표 없음).',
+    '중계 자막을 화면 가운데 알약 모양으로, 그 장면 공격 팀 색 바탕에 흰 글씨로 바꿨습니다(캐스터 꼬리표 없음). 자막 창은 대사 길이와 상관없이 같은 폭이고, 홈런이면 바탕이 금색으로 깜빡입니다.',
     'PC 중계 아래 현재 타자·투수 줄을 없애고(오른쪽 아래 스코어 버그와 같은 정보) 3D 화면을 그만큼 넓혔습니다. 스코어 버그의 볼카운트 칸이 잘리던 것도 고쳤습니다.']},
   {id:'2026-11-05x',d:'11월 5일',t:'중계 화면 스코어 버그',items:[
     'PC 3D 중계에서 볼카운트·주자·투구 위치를 실제 야구 중계처럼 화면 오른쪽 아래에 겹쳐 띄웁니다. 반투명 스트라이크존 아래 스코어 버그에 타순·타자(시즌 타율), 투수·투구 수, 두 팀 점수, 이닝, 주자, B·S·O가 나옵니다. 3D 화면이 오른쪽 칸 없이 넓어졌습니다.']},
