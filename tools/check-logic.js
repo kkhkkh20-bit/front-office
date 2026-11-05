@@ -1565,6 +1565,13 @@ T('[난이도] 1위 견제: 우리가 선두를 달리면 경쟁 구단은 같�
   const R0=JSON.parse(JSON.stringify(G.sea.rec)); for(const t of G.teams)G.sea.rec[t.id]={w:15,l:15,t:0}; G.sea.rec[G.user]={w:30,l:5,t:0}; ok(leaderGap()>=1.5,'준비 실패: 독주 '+leaderGap());
   const a=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec[G.user]={w:10,l:25,t:0}; ok(leaderGap()===0,'선두가 아닌데 견제 '+leaderGap()); const b=evalTrade(op.id,[mine.id],[their.id],0).need; G.sea.rec=R0;
   ok(a>b+.1,'선두일 때 요구 '+a.toFixed(2)+' · 아닐 때 '+b.toFixed(2)); });
+T('[100년] 단장 세대 교체: 시즌 밖에서 후임에게 넘기면 구단·선수단은 그대로, 전임은 계보에 남고, 78세가 되는 해에는 자동으로 넘어간다',()=>{ fresh(); G.gmP={name:'원조단장',age:60,bg:'corp',female:false,face:'gm1',y0:G.year,bgDone:true};
+  simTo(()=>period()==='season'); ok(gmSucceed({name:'둘째단장',age:41})!=='','시즌 중에 넘어감');
+  simTo(()=>period()!=='season'&&period()!=='post'&&G.year>=G.gmP.y0); const n0=domestic(G.user).length, cash=team(G.user).cash, tid=G.user;
+  ok(gmSucceed({name:'둘째단장',age:41,bg:'data'})==='','넘기기 실패'); ok(G.gmP.name==='둘째단장'&&meAge()===41,'후임 '+G.gmP.name+' '+meAge());
+  ok(G.user===tid&&domestic(G.user).length===n0&&team(G.user).cash===cash,'구단이 바뀜'); ok((G.gmLine||[]).length===1&&G.gmLine[0].name==='원조단장','계보 '+JSON.stringify(G.gmLine));
+  ok(G.myC&&G.myC.tid===G.user&&G.myC.y1>=G.year,'계약 없음'); ok(G.rep>=30&&G.rep<=55,'명성 '+G.rep);
+  G.gmP.age=90; gmAgeYear(); ok(G.gmP.name!=='둘째단장'&&G.gmLine.length===2,'정년 자동 교체 안 됨'); });
 T('[실플레이 11-05c] 트레이드: 선수를 보내며 상대에게 현금을 받을 수 있고, 받으면 상대가 더 많은 값을 요구하며 성사 시 돈이 우리에게 온다',()=>{ fresh(); simTo(()=>tradeOpen()&&period()==='season');
   const op=G.teams.find(t=>t.id!==G.user); op.cash=5000; const mine=domestic(G.user).filter(q=>!q.foreign&&!q.ntc).sort((a,b)=>ovr(b)-ovr(a))[2];
   const a=evalTrade(op.id,[mine.id],[],0), b=evalTrade(op.id,[mine.id],[],-500); ok(b.gain<a.gain,'받는 현금이 상대 평가에 반영 안 됨: '+a.gain.toFixed(2)+' / '+b.gain.toFixed(2));

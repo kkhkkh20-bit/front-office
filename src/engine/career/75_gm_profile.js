@@ -57,3 +57,24 @@ function aiGmTags(tid){ const s=aiGmStats(tid); if(!s)return []; const L=[];
   return L; }
 /* 기사에서 단장을 부르는 말: 별명이 붙었으면 '트레이드 귀재' 광주 단장처럼 */
 function meCall(){ let n=''; try{ n=meNick(); }catch(e){} return n?`'${n}' ${tshort(G.user)} 단장`:`${tshort(G.user)} 단장`; }
+/* ===== 단장 세대 교체(100년 플레이): 단장도 나이를 먹는다. 물러날 때 구단·세계는 그대로 두고 후임 단장으로 이어 한다.
+ 물러난 단장은 G.gmLine(단장 계보)에 남는다. 65세부터 구단주가 해마다 세대 교체를 묻고, 78세가 되는 해 1월 1일에는 구단이 정한 후임에게 넘어간다 */
+const GM_SUCC_ASK=65, GM_SUCC_FORCE=78;
+function gmSuccInfo(){ const P=G.gmP||{}; const from=(G.myC&&G.myC.y0)??G.gmSince??P.y0??G.year; const H=(G.history||[]).filter(h=>h.y>=from&&h.y<G.year+1);
+  return {name:P.name||'단장',face:P.face||null,female:!!P.female,mod:P.mod||null,bg:P.bg||null,tid:G.user,from,to:G.year,age:meAge(),champ:H.filter(h=>h.champ===G.user).length,seas:H.length,rep:G.rep??50}; }
+function gmSucceed(np,why){ if(G.unemp||G.user==null||!G.gmP)return '지금은 넘길 수 없습니다.'; if(period()==='season'||period()==='post')return '시즌이 끝난 뒤(10월 말~3월)에 넘길 수 있습니다.';
+  if(!np||!np.name||String(np.name).length<2)return '후임 이름을 두 글자 이상 적어 주세요.';
+  const old=gmSuccInfo(); (G.gmLine=G.gmLine||[]).push(old);
+  G.gmP={name:np.name,age:clamp(+np.age||42,30,65),bg:np.bg||'corp',female:!!np.female,face:np.face||('gm'+Math.floor(R()*1e6)),mod:np.mod||null,y0:G.year,bgDone:false};
+  G.me=null; G.gmSince=G.year; meInit(); G.personal=null; G.rep=Math.round(clamp(35+((G.rep??50)-50)*.3,30,55)); /* 명성은 사람을 따른다: 후임은 전임 덕을 조금만 본다 */
+  const st=(G.myC&&G.myC.stints)||[]; st.unshift({tid:G.user,y0:old.from,y1:G.year,how:`${old.name} 단장 용퇴(${why||'세대 교체'})`}); myCStart(G.user,{yrs:3},'후임 단장 취임'); G.myC.stints=st; G.myC.earn=0;
+  gmBgApply(); const t=team(G.user); t.trust=clamp(Math.round(((t.trust??55)+60)/2),0,100);
+  chron('join',`${old.name} 단장 퇴임(${old.from}~${old.to}, 우승 ${old.champ}회) · ${G.gmP.name} 단장 취임`,null,G.user);
+  try{ news('구단',`${tshort(G.user)}, ${old.name} 단장 용퇴… 후임 ${G.gmP.name}`,`${old.from}년부터 ${old.seas}시즌 동안 구단을 이끈 ${old.name} 단장이 물러났습니다(한국시리즈 우승 ${old.champ}회). 구단은 ${G.gmP.name} 단장에게 다음 시대를 맡깁니다.`,3); }catch(e){}
+  mail('구단주실',`${G.gmP.name} 단장 취임`,`${old.name} 단장이 ${old.from}~${old.to}년 ${old.seas}시즌을 마치고 물러났습니다. 이제 ${G.gmP.name} 단장(${G.gmP.age}세)이 구단을 맡습니다.\n선수단·시설·재정·코치진은 그대로 이어집니다. 명성은 새로 쌓아야 합니다(지금 ${G.rep}). 단장 계약은 ${G.myC.y0}~${G.myC.y1}년.\n물러난 단장은 단장 화면의 '단장 계보'에 남습니다.`,{imp:true,kind:'경력'});
+  return ''; }
+function gmAutoSucc(){ return {name:(()=>{ try{ return genName(); }catch(e){ return '김단장'; } })(),age:ri(40,48),bg:pick(['player','scout','data','corp']),female:R()<.15}; }
+/* 1월 1일: 65세부터 해마다 묻고, 78세면 구단이 정한 후임에게 넘긴다(시즌 밖이라 바로 넘길 수 있다) */
+function gmAgeYear(){ if(G.unemp||!G.gmP)return; const a=meAge(); if(a==null)return;
+  if(a>=GM_SUCC_FORCE){ const r=gmSucceed(gmAutoSucc(),'정년'); if(!r)return; }
+  if(a>=GM_SUCC_ASK)mail('구단주실',`세대 교체를 생각해 볼 때입니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 이번 겨울(3월 개막 전까지) 후임을 직접 정하고 물러날 수 있습니다. 선수단·시설·재정은 그대로 후임에게 이어집니다.\n${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }

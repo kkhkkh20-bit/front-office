@@ -11,8 +11,9 @@ const STAD_ITEMS=[
   {k:'prem',l:'프리미엄석',d:'스카이박스·테이블석·캠핑존. 기업 고객 판매로 고정 수입이 생기지만 일반 좌석이 조금 줄어듭니다.'},
   {k:'vis',l:'전광판·영상',d:'대형 전광판과 영상 설비. 구장 광고 수입이 오르고 관중 수요도 조금 늡니다.'},
   {k:'turf',l:'그라운드·잔디',d:'잔디·배수·조명 정비. 홈경기에서 부상이 조금 줄어듭니다.'}];
-const STAD_MAX=8;const stadPower=lv=>lv<=5?lv:5+(lv-5)*.45;
-const STAD_COST=[0,0,600,1200,2200,3600,5500,8000,12000], STAD_UP=[0,30,60,110,180,280,400,560,780], STAD_DAYS=[0,0,60,90,120,150,210,270,330];
+/* 12단계(사용자 11-05: 100년 플레이에 오래 쌓을 목표). 9단계부터는 효과가 더 작고(단계당 0.3) 비싸다 */
+const STAD_MAX=12;const stadPower=lv=>lv<=5?lv:lv<=8?5+(lv-5)*.45:6.35+(lv-8)*.3;
+const STAD_COST=[0,0,600,1200,2200,3600,5500,8000,12000,16000,21000,27000,34000], STAD_UP=[0,30,60,110,180,280,400,560,780,1000,1250,1550,1900], STAD_DAYS=[0,0,60,90,120,150,210,270,330,345,360,365,365];
 const PRICE=[{l:'할인',m:.8,dem:1.12,fan:.5,d:'관중이 늘고 팬 여론이 오르지만 표값 수입이 줄어듭니다.'},{l:'보통',m:1,dem:1,fan:0,d:'리그 평균 수준입니다.'},{l:'인상',m:1.15,dem:.87,fan:-.5,d:'표값 수입이 늘지만 관중과 팬 여론이 조금 줄어듭니다.'},{l:'고가',m:1.3,dem:.72,fan:-1.2,d:'매진이 잦은 인기 구단이 아니면 손해입니다. 팬 여론이 매달 떨어집니다.'}];
 const TICKET=.014; // 관중 1명당 표값 수입 1만4천원(백만원 단위, 게임 재정 기준)
 function stadOf(tid){ const t=team(tid); if(!t.stad){ const r=k=>2+(hn('st'+k,tid)>.35?1:0); t.stad={lv:{seat:r('s'),fnb:r('f'),prem:r('p'),vis:r('v'),turf:r('t')},price:1,build:[]}; } return t.stad; }
@@ -34,7 +35,7 @@ let _pkN={k:null}; function parkNorm(){ const k=G.teams.map(t=>JSON.stringify(st
 function parkHRM(tid,side){ if(tid==null||!G||!G.teams)return 1; return parkRaw(tid,side)/parkNorm(); }
 /* 홈런 방향: 기본 비중에 그 구장 방향별 홈런 쉬움을 곱해 고른다 */
 function parkHRDir(tid,side){ const D=stadDim(tid); const pl=side==='R'?'l':'r', op=side==='R'?'r':'l'; const w=[.6*parkSideF(D,pl),.28*parkSideF(D,'c'),.12*parkSideF(D,op)]; let x=R()*(w[0]+w[1]+w[2]); return x<w[0]?'pull':x<w[0]+w[1]?'mid':'oppo'; }
-function stadTurfM(tid){ return 1-(stadPower(stadOf(tid).lv.turf)-2)*.05; }
+function stadTurfM(tid){ return Math.max(.75,1-(stadPower(stadOf(tid).lv.turf)-2)*.05); }
 function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;
   const fan=h===G.user&&G.pr?(.9+G.pr.fan/500):1; const late=o.m>=8&&wp<.44?.9:1;

@@ -41,7 +41,15 @@ function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }ca
     <ul class="small muted"><li>남은 계약 ${left}년 치 연봉은 받지 않습니다(경질과 다릅니다).</li><li>명성 ${pen?`-${pen}`:'변화 없음'}${mid?' (시즌 도중 사임은 -3 더)':''}${left>0?' (계약 기간 중 -2)':''}. 지금 명성 ${G.rep??50}.</li><li>구단은 새 단장(AI)이 맡습니다. 진행 중인 협상·약속은 넘어가지 않습니다.</li></ul>
     ${UI.rsAsk?`<div class="note bad">${esc(tname(G.user))} 단장직에서 물러납니다. 되돌릴 수 없습니다.</div><div class="row"><button class="btn danger" data-a="resignGo">사임합니다</button><button class="btn" data-a="resignAsk">취소</button></div>`:'<button class="btn" data-a="resignAsk">단장직 사임</button>'}`);
   const tb=G.unemp?'':`<section class="card"><div class="row between"><div><h2 class="sec">내가 꾸린 팀</h2><p class="small muted">순위 변화, 지금 선수단이 어디서 왔는지, 내가 데려온 핵심 선수</p></div><button class="btn small primary" data-a="go" data-v="club:build">보기</button></div></section>`;
-  return head+tb+(G.unemp?'':personalLifeView())+card+stints+quit; }
+  return head+tb+(G.unemp?'':personalLifeView())+card+stints+gmSuccView()+quit; }
+/* 단장 세대 교체와 단장 계보(100년 플레이) */
+function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge(); const can=!G.unemp&&!G.gameOver&&G.gmP&&G.user!=null;
+  const line=L.length?`<div class="tw"><table><thead><tr><th>대</th><th>단장</th><th>구단</th><th>재임</th><th>우승</th></tr></thead><tbody>${L.map((x,i)=>`<tr><td>${L.length-i}대</td><td>${esc(x.name)}${x.age?` <span class="muted">(퇴임 ${x.age}세)</span>`:''}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.from}~${x.to}</td><td>${x.champ?`<b>${x.champ}회</b>`:'-'}</td></tr>`).join('')}<tr class="me"><td>${L.length+1}대</td><td><b>${esc(G.gmP?.name||'')}</b> <span class="muted">(지금)</span></td><td>${G.user!=null?badge(G.user,14)+' '+esc(tshort(G.user)):'-'}</td><td>${G.gmSince??''}~</td><td></td></tr></tbody></table></div>`:'';
+  if(!can)return line?csec('단장 계보',line):'';
+  const off=period()!=='season'&&period()!=='post';
+  const body=UI.gsucc?`<p class="small">후임 단장을 정합니다. 선수단·시설·재정·코치진은 그대로 이어지고, 명성은 새로 쌓습니다.</p>${gpForm('gmSuccGo','이 사람에게 넘기기')}<button class="btn block" data-a="gmSuccAsk" style="margin-top:6px">취소</button>`
+    :`<div class="row between"><p class="small muted">${a!=null?`지금 ${a}세. `:''}${GM_SUCC_FORCE}세가 되는 해에는 구단이 정한 후임에게 넘어갑니다.${off?'':' 시즌이 끝난 뒤 넘길 수 있습니다.'}</p><button class="btn small${a>=GM_SUCC_ASK?' primary':''}" data-a="gmSuccAsk"${off?'':' disabled'}>후임에게 넘기기</button></div>`;
+  return csec('세대 교체 · 단장 계보',body+line); }
 Object.assign(A,{
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
@@ -56,6 +64,8 @@ Object.assign(A,{
     UI.gp=null; const ok=A.startGo(UI.pickT); if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age}); }catch(e){} } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
   gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,female:g.female,face:g.face,mod:g.mod||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
+  gmSuccAsk(){ UI.gsucc=!UI.gsucc; UI.gp=UI.gsucc?gpDefault():null; UI.gpMsg=''; render(); },
+  gmSuccGo(){ const g=gpSync(); const r=gmSucceed({...g}); if(r){ UI.gpMsg=r; render(); return; } UI.gsucc=false; UI.gp=null; save(); render(); toast(`${G.gmP.name} 단장이 취임했습니다.`); },
   resignAsk(){ UI.rsAsk=!UI.rsAsk; render(); },
   resignGo(){ UI.rsAsk=false; const r=resignGM(); if(r){ toast(r); return; } save(); UI.tab='inbox'; UI.mf='all'; UI._ibFirst=true; render(); }
 });
