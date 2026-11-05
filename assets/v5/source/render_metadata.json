@@ -1,0 +1,846 @@
+{
+  "cap_seoul_comets": {
+    "category": "caps",
+    "team_key": "seoul_comets",
+    "camera": "cap",
+    "output_id": "seoul_comets"
+  },
+  "cap_seoul_hounds": {
+    "category": "caps",
+    "team_key": "seoul_hounds",
+    "camera": "cap",
+    "output_id": "seoul_hounds"
+  },
+  "cap_incheon_seagulls": {
+    "category": "caps",
+    "team_key": "incheon_seagulls",
+    "camera": "cap",
+    "output_id": "incheon_seagulls"
+  },
+  "cap_suwon_sparks": {
+    "category": "caps",
+    "team_key": "suwon_sparks",
+    "camera": "cap",
+    "output_id": "suwon_sparks"
+  },
+  "cap_goyang_storm": {
+    "category": "caps",
+    "team_key": "goyang_storm",
+    "camera": "cap",
+    "output_id": "goyang_storm"
+  },
+  "cap_daejeon_redfox": {
+    "category": "caps",
+    "team_key": "daejeon_redfox",
+    "camera": "cap",
+    "output_id": "daejeon_redfox"
+  },
+  "cap_gwangju_blazes": {
+    "category": "caps",
+    "team_key": "gwangju_blazes",
+    "camera": "cap",
+    "output_id": "gwangju_blazes"
+  },
+  "cap_daegu_thunders": {
+    "category": "caps",
+    "team_key": "daegu_thunders",
+    "camera": "cap",
+    "output_id": "daegu_thunders"
+  },
+  "cap_busan_waves": {
+    "category": "caps",
+    "team_key": "busan_waves",
+    "camera": "cap",
+    "output_id": "busan_waves"
+  },
+  "cap_changwon_anchors": {
+    "category": "caps",
+    "team_key": "changwon_anchors",
+    "camera": "cap",
+    "output_id": "changwon_anchors"
+  },
+  "cap_korea": {
+    "category": "caps",
+    "team_key": "korea",
+    "camera": "cap",
+    "output_id": "korea"
+  },
+  "seoul_comets_chest_mark": {
+    "category": "face_marks",
+    "team_key": "seoul_comets",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "seoul_comets_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "seoul_comets_cap_mark": {
+    "category": "face_marks",
+    "team_key": "seoul_comets",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "seoul_comets_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "seoul_hounds_chest_mark": {
+    "category": "face_marks",
+    "team_key": "seoul_hounds",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "seoul_hounds_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "seoul_hounds_cap_mark": {
+    "category": "face_marks",
+    "team_key": "seoul_hounds",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "seoul_hounds_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "incheon_seagulls_chest_mark": {
+    "category": "face_marks",
+    "team_key": "incheon_seagulls",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "incheon_seagulls_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "incheon_seagulls_cap_mark": {
+    "category": "face_marks",
+    "team_key": "incheon_seagulls",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "incheon_seagulls_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "suwon_sparks_chest_mark": {
+    "category": "face_marks",
+    "team_key": "suwon_sparks",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "suwon_sparks_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "suwon_sparks_cap_mark": {
+    "category": "face_marks",
+    "team_key": "suwon_sparks",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "suwon_sparks_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "goyang_storm_chest_mark": {
+    "category": "face_marks",
+    "team_key": "goyang_storm",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "goyang_storm_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "goyang_storm_cap_mark": {
+    "category": "face_marks",
+    "team_key": "goyang_storm",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "goyang_storm_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "daejeon_redfox_chest_mark": {
+    "category": "face_marks",
+    "team_key": "daejeon_redfox",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "daejeon_redfox_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "daejeon_redfox_cap_mark": {
+    "category": "face_marks",
+    "team_key": "daejeon_redfox",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "daejeon_redfox_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "gwangju_blazes_chest_mark": {
+    "category": "face_marks",
+    "team_key": "gwangju_blazes",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "gwangju_blazes_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "gwangju_blazes_cap_mark": {
+    "category": "face_marks",
+    "team_key": "gwangju_blazes",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "gwangju_blazes_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "daegu_thunders_chest_mark": {
+    "category": "face_marks",
+    "team_key": "daegu_thunders",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "daegu_thunders_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "daegu_thunders_cap_mark": {
+    "category": "face_marks",
+    "team_key": "daegu_thunders",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "daegu_thunders_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "busan_waves_chest_mark": {
+    "category": "face_marks",
+    "team_key": "busan_waves",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "busan_waves_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "busan_waves_cap_mark": {
+    "category": "face_marks",
+    "team_key": "busan_waves",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "busan_waves_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "changwon_anchors_chest_mark": {
+    "category": "face_marks",
+    "team_key": "changwon_anchors",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "changwon_anchors_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "changwon_anchors_cap_mark": {
+    "category": "face_marks",
+    "team_key": "changwon_anchors",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "changwon_anchors_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "korea_chest_mark": {
+    "category": "face_marks",
+    "team_key": "korea",
+    "kind": "chest",
+    "camera": "face",
+    "output_id": "korea_chest",
+    "quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "korea_cap_mark": {
+    "category": "face_marks",
+    "team_key": "korea",
+    "kind": "cap",
+    "camera": "face",
+    "output_id": "korea_cap",
+    "quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "canvas": [
+      512,
+      512
+    ]
+  },
+  "digit_0_fill": {
+    "category": "digits",
+    "digit": 0,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "0_fill"
+  },
+  "digit_0_outline": {
+    "category": "digits",
+    "digit": 0,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "0_outline"
+  },
+  "digit_1_fill": {
+    "category": "digits",
+    "digit": 1,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "1_fill"
+  },
+  "digit_1_outline": {
+    "category": "digits",
+    "digit": 1,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "1_outline"
+  },
+  "digit_2_fill": {
+    "category": "digits",
+    "digit": 2,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "2_fill"
+  },
+  "digit_2_outline": {
+    "category": "digits",
+    "digit": 2,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "2_outline"
+  },
+  "digit_3_fill": {
+    "category": "digits",
+    "digit": 3,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "3_fill"
+  },
+  "digit_3_outline": {
+    "category": "digits",
+    "digit": 3,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "3_outline"
+  },
+  "digit_4_fill": {
+    "category": "digits",
+    "digit": 4,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "4_fill"
+  },
+  "digit_4_outline": {
+    "category": "digits",
+    "digit": 4,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "4_outline"
+  },
+  "digit_5_fill": {
+    "category": "digits",
+    "digit": 5,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "5_fill"
+  },
+  "digit_5_outline": {
+    "category": "digits",
+    "digit": 5,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "5_outline"
+  },
+  "digit_6_fill": {
+    "category": "digits",
+    "digit": 6,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "6_fill"
+  },
+  "digit_6_outline": {
+    "category": "digits",
+    "digit": 6,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "6_outline"
+  },
+  "digit_7_fill": {
+    "category": "digits",
+    "digit": 7,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "7_fill"
+  },
+  "digit_7_outline": {
+    "category": "digits",
+    "digit": 7,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "7_outline"
+  },
+  "digit_8_fill": {
+    "category": "digits",
+    "digit": 8,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "8_fill"
+  },
+  "digit_8_outline": {
+    "category": "digits",
+    "digit": 8,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "8_outline"
+  },
+  "digit_9_fill": {
+    "category": "digits",
+    "digit": 9,
+    "layer": "fill",
+    "camera": "face",
+    "output_id": "9_fill"
+  },
+  "digit_9_outline": {
+    "category": "digits",
+    "digit": 9,
+    "layer": "outline",
+    "camera": "face",
+    "output_id": "9_outline"
+  }
+}

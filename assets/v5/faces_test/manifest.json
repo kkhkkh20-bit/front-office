@@ -1,0 +1,131 @@
+{
+  "path_base": "assets/v5/",
+  "count": 2,
+  "status": "compositing_reference_only; no v6 mass identities generated",
+  "assets": {
+    "ko_late20s_01": {
+      "id": "ko_late20s_01",
+      "category": "faces_test",
+      "name": "ko_late20s_01 기준 판",
+      "identity_id": "ko_late20s_01",
+      "source_v4": "assets/v4/faces_test/png/512/ko_late20s_01_cap_on.png",
+      "fictional": true,
+      "age": 27,
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "hair": "short black crew cut",
+      "cap": true,
+      "transparent": false,
+      "kit": "blank white home jersey; cap/collar/placket/cuff red key; no lettering or marks",
+      "key_color": "#FF0000",
+      "key_policy": "Pure FF0000 albedo layer + soft key mask + R-channel shading map. The photographic plate has naturally shaded red pixels; do not use RGB equality for keying.",
+      "masks": {
+        "key_mask": "faces_test/masks/512/ko_late20s_01_key_mask.png",
+        "key_albedo": "faces_test/masks/512/ko_late20s_01_key_albedo.png",
+        "key_shading": "faces_test/masks/512/ko_late20s_01_key_shading.png"
+      },
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_01.png"
+      },
+      "webp": {
+        "128": "faces_test/webp/128/ko_late20s_01.webp",
+        "256": "faces_test/webp/256/ko_late20s_01.webp"
+      },
+      "webp_encoding": {
+        "128": {
+          "quality": 82,
+          "bytes": 2406,
+          "target_bytes": 3072
+        },
+        "256": {
+          "quality": 82,
+          "bytes": 5686,
+          "target_bytes": 7168
+        }
+      },
+      "reference_anchors": {
+        "canvas": [
+          512,
+          512
+        ],
+        "eye_line_y": 143,
+        "cap_top_y": 15,
+        "chin_y": 266,
+        "placket_center_x": 256
+      },
+      "tags": [
+        "Korean",
+        "27",
+        "medium warm",
+        "short_black_hair",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on"
+      ]
+    },
+    "black_01": {
+      "id": "black_01",
+      "category": "faces_test",
+      "name": "black_01 기준 판",
+      "identity_id": "black_01",
+      "source_v4": "assets/v4/faces_test/png/512/black_01_cap_on.png",
+      "fictional": true,
+      "age": 28,
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "hair": "short tight black curls with low fade",
+      "cap": true,
+      "transparent": false,
+      "kit": "blank white home jersey; cap/collar/placket/cuff red key; no lettering or marks",
+      "key_color": "#FF0000",
+      "key_policy": "Pure FF0000 albedo layer + soft key mask + R-channel shading map. The photographic plate has naturally shaded red pixels; do not use RGB equality for keying.",
+      "masks": {
+        "key_mask": "faces_test/masks/512/black_01_key_mask.png",
+        "key_albedo": "faces_test/masks/512/black_01_key_albedo.png",
+        "key_shading": "faces_test/masks/512/black_01_key_shading.png"
+      },
+      "png": {
+        "512": "faces_test/png/512/black_01.png"
+      },
+      "webp": {
+        "128": "faces_test/webp/128/black_01.webp",
+        "256": "faces_test/webp/256/black_01.webp"
+      },
+      "webp_encoding": {
+        "128": {
+          "quality": 82,
+          "bytes": 2246,
+          "target_bytes": 3072
+        },
+        "256": {
+          "quality": 82,
+          "bytes": 5292,
+          "target_bytes": 7168
+        }
+      },
+      "reference_anchors": {
+        "canvas": [
+          512,
+          512
+        ],
+        "eye_line_y": 143,
+        "cap_top_y": 15,
+        "chin_y": 266,
+        "placket_center_x": 256
+      },
+      "tags": [
+        "Black",
+        "28",
+        "deep brown",
+        "short_black_hair",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on"
+      ]
+    }
+  }
+}

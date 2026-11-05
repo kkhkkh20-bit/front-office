@@ -1,0 +1,148 @@
+{
+  "status": "specification_only; production not started; future user request required",
+  "count_total": 10000,
+  "batch_size": 1000,
+  "batch_count": 10,
+  "generated_mass_identities": 0,
+  "delivery_started": false,
+  "reference_plates": [
+    "ko_late20s_01",
+    "black_01"
+  ],
+  "cap_variants_per_identity": 1,
+  "age_policy": "Young appearance only; no separate aged variants",
+  "composition": {
+    "Korean": 8500,
+    "foreign": 1500,
+    "Korean_per_batch": 850,
+    "foreign_per_batch": 150,
+    "Korean_age_counts_total": {
+      "18_23": 5100,
+      "24_29": 2550,
+      "30_34": 850
+    },
+    "Korean_age_counts_per_batch": {
+      "18_23": 510,
+      "24_29": 255,
+      "30_34": 85
+    },
+    "foreign_age_range": [
+      24,
+      33
+    ],
+    "foreign_examples": [
+      "US",
+      "Latin America",
+      "Japan",
+      "Taiwan"
+    ]
+  },
+  "required_tags": [
+    "age",
+    "skin_tone",
+    "hair",
+    "beard",
+    "glasses"
+  ],
+  "duplicate_gate": {
+    "method": "Aligned face-only ArcFace embeddings, fixed model/version/hash and L2 normalization; cosine similarity",
+    "max_allowed_cosine_similarity": 0.35,
+    "action_if_at_or_above_threshold": "Reject and regenerate candidate; re-run against every accepted prior identity, including all previous batches",
+    "calibration": "Confirm threshold on the v6 pilot before bulk generation; log any threshold revision and regenerate/revalidate the full accepted set if changed",
+    "fallback": "If using CLIP, use aligned face-only crop, fixed model and separately calibrated threshold; do not apply 0.35 to CLIP or embed the full jersey/background",
+    "validation_fields": [
+      "model_id",
+      "model_sha256",
+      "crop_alignment",
+      "threshold",
+      "threshold_calibration",
+      "nearest_neighbor_per_identity",
+      "max_pair_cosine_per_batch",
+      "max_pair_cosine_global",
+      "rejected_and_regenerated_count",
+      "compared_previous_batches"
+    ],
+    "real_person_policy": "No real player/celebrity photo inputs or requested likeness. Embedding distinctness does not establish absence of resemblance to all real people; include visual review."
+  },
+  "geometry": {
+    "canvas": [
+      512,
+      512
+    ],
+    "eye_line_y": 143,
+    "cap_top_y": 15,
+    "chin_y": 266,
+    "placket_center_x": 256,
+    "normalization": "Match B reference pose/camera/background/lighting and normalize facial anchors before delivery; reject drift that breaks overlay alignment"
+  },
+  "kit": {
+    "body": "white home jersey",
+    "key_albedo": "#FF0000",
+    "marks": "none",
+    "cap": "on",
+    "background_target": "#20262e"
+  },
+  "delivery": {
+    "sizes": [
+      128,
+      256
+    ],
+    "format": "WebP",
+    "approx_target_bytes": {
+      "128": 3072,
+      "256": 7168
+    },
+    "individual_files": true,
+    "sheets": {
+      "identities_per_sheet": 100,
+      "grid": [
+        10,
+        10
+      ],
+      "sizes_px": {
+        "128": [
+          1280,
+          1280
+        ],
+        "256": [
+          2560,
+          2560
+        ]
+      },
+      "gutter": 0,
+      "sheet_count_per_resolution": 100,
+      "sheet_files_per_batch": 20,
+      "coordinates": "top-left pixel rectangle, no rotation; manifest includes sheet path, index, row, column, x, y, width, height for each identity"
+    }
+  },
+  "batch_manifest_example": {
+    "identity_id": "v6_b01_0001",
+    "sheets": {
+      "128": {
+        "path": "sheets/128/b01_s01.webp",
+        "index": 0,
+        "row": 0,
+        "column": 0,
+        "rect": [
+          0,
+          0,
+          128,
+          128
+        ]
+      },
+      "256": {
+        "path": "sheets/256/b01_s01.webp",
+        "index": 0,
+        "row": 0,
+        "column": 0,
+        "rect": [
+          0,
+          0,
+          256,
+          256
+        ]
+      }
+    }
+  },
+  "deployment_note": "10000 identities x 2 individual sizes = 20000 files before other game assets. Publish sheet files + manifest for Cloudflare, keep individual files in archive/storage rather than deploying both by default."
+}

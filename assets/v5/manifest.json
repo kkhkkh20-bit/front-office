@@ -1,0 +1,5510 @@
+{
+  "schema_version": "5.0",
+  "version": "v5",
+  "created": "2026-11-05",
+  "request": "docs/asset-requests/2026-11-05-codex-v5-photoreal-kit.md",
+  "path_base": "assets/v5/",
+  "path_policy": "Paths within asset records are relative to path_base unless source_v3/source_v4, which are repository relative.",
+  "scope": {
+    "A": "complete: 44 jersey tops, 11 caps, 10 digits x fill/outline",
+    "B": "complete: 11 chest + 11 cap marks, 2 blank keyed reference plates",
+    "C": "specification and two designated reference plates only; no mass generation"
+  },
+  "teams": [
+    {
+      "key": "seoul_comets",
+      "name": "서울 코메츠",
+      "design_palette": {
+        "background": "#A50034",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "wordmark": "COMETS"
+    },
+    {
+      "key": "seoul_hounds",
+      "name": "서울 하운즈",
+      "design_palette": {
+        "background": "#131230",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "wordmark": "HOUNDS"
+    },
+    {
+      "key": "incheon_seagulls",
+      "name": "인천 시걸스",
+      "design_palette": {
+        "background": "#CE0E2D",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "wordmark": "SEAGULLS"
+    },
+    {
+      "key": "suwon_sparks",
+      "name": "수원 스파크스",
+      "design_palette": {
+        "background": "#141414",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "wordmark": "SPARKS"
+    },
+    {
+      "key": "goyang_storm",
+      "name": "고양 스톰",
+      "design_palette": {
+        "background": "#570514",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "wordmark": "STORM"
+    },
+    {
+      "key": "daejeon_redfox",
+      "name": "대전 레드폭스",
+      "design_palette": {
+        "background": "#F37321",
+        "symbol": "#FFFFFF",
+        "ring": "#282828"
+      },
+      "wordmark": "REDFOX"
+    },
+    {
+      "key": "gwangju_blazes",
+      "name": "광주 블레이즈",
+      "design_palette": {
+        "background": "#EA0029",
+        "symbol": "#FFD34F",
+        "ring": "#FFD34F"
+      },
+      "wordmark": "BLAZES"
+    },
+    {
+      "key": "daegu_thunders",
+      "name": "대구 썬더스",
+      "design_palette": {
+        "background": "#074CA1",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "wordmark": "THUNDERS"
+    },
+    {
+      "key": "busan_waves",
+      "name": "부산 웨이브스",
+      "design_palette": {
+        "background": "#041E42",
+        "symbol": "#FFFFFF",
+        "ring": "#D00F31"
+      },
+      "wordmark": "WAVES"
+    },
+    {
+      "key": "changwon_anchors",
+      "name": "창원 앵커스",
+      "design_palette": {
+        "background": "#1D467B",
+        "symbol": "#FFFFFF",
+        "ring": "#C6A269"
+      },
+      "wordmark": "ANCHORS"
+    },
+    {
+      "key": "korea",
+      "name": "대한민국",
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "wordmark": "KOREA"
+    }
+  ],
+  "collections": {
+    "uniforms": [
+      "seoul_comets_home_front",
+      "seoul_comets_home_back",
+      "seoul_comets_away_front",
+      "seoul_comets_away_back",
+      "seoul_hounds_home_front",
+      "seoul_hounds_home_back",
+      "seoul_hounds_away_front",
+      "seoul_hounds_away_back",
+      "incheon_seagulls_home_front",
+      "incheon_seagulls_home_back",
+      "incheon_seagulls_away_front",
+      "incheon_seagulls_away_back",
+      "suwon_sparks_home_front",
+      "suwon_sparks_home_back",
+      "suwon_sparks_away_front",
+      "suwon_sparks_away_back",
+      "goyang_storm_home_front",
+      "goyang_storm_home_back",
+      "goyang_storm_away_front",
+      "goyang_storm_away_back",
+      "daejeon_redfox_home_front",
+      "daejeon_redfox_home_back",
+      "daejeon_redfox_away_front",
+      "daejeon_redfox_away_back",
+      "gwangju_blazes_home_front",
+      "gwangju_blazes_home_back",
+      "gwangju_blazes_away_front",
+      "gwangju_blazes_away_back",
+      "daegu_thunders_home_front",
+      "daegu_thunders_home_back",
+      "daegu_thunders_away_front",
+      "daegu_thunders_away_back",
+      "busan_waves_home_front",
+      "busan_waves_home_back",
+      "busan_waves_away_front",
+      "busan_waves_away_back",
+      "changwon_anchors_home_front",
+      "changwon_anchors_home_back",
+      "changwon_anchors_away_front",
+      "changwon_anchors_away_back",
+      "korea_home_front",
+      "korea_home_back",
+      "korea_away_front",
+      "korea_away_back"
+    ],
+    "caps": [
+      "seoul_comets",
+      "seoul_hounds",
+      "incheon_seagulls",
+      "suwon_sparks",
+      "goyang_storm",
+      "daejeon_redfox",
+      "gwangju_blazes",
+      "daegu_thunders",
+      "busan_waves",
+      "changwon_anchors",
+      "korea"
+    ],
+    "digits": [
+      "0_fill",
+      "0_outline",
+      "1_fill",
+      "1_outline",
+      "2_fill",
+      "2_outline",
+      "3_fill",
+      "3_outline",
+      "4_fill",
+      "4_outline",
+      "5_fill",
+      "5_outline",
+      "6_fill",
+      "6_outline",
+      "7_fill",
+      "7_outline",
+      "8_fill",
+      "8_outline",
+      "9_fill",
+      "9_outline"
+    ],
+    "face_marks": [
+      "seoul_comets_chest",
+      "seoul_comets_cap",
+      "seoul_hounds_chest",
+      "seoul_hounds_cap",
+      "incheon_seagulls_chest",
+      "incheon_seagulls_cap",
+      "suwon_sparks_chest",
+      "suwon_sparks_cap",
+      "goyang_storm_chest",
+      "goyang_storm_cap",
+      "daejeon_redfox_chest",
+      "daejeon_redfox_cap",
+      "gwangju_blazes_chest",
+      "gwangju_blazes_cap",
+      "daegu_thunders_chest",
+      "daegu_thunders_cap",
+      "busan_waves_chest",
+      "busan_waves_cap",
+      "changwon_anchors_chest",
+      "changwon_anchors_cap",
+      "korea_chest",
+      "korea_cap"
+    ],
+    "faces_test": [
+      "ko_late20s_01",
+      "black_01"
+    ]
+  },
+  "assets": {
+    "seoul_comets_home_front": {
+      "id": "seoul_comets_home_front",
+      "category": "uniforms",
+      "name": "서울 코메츠 홈 앞",
+      "team_key": "seoul_comets",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#A50034",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#A50034",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#A50034",
+        "secondary": "#A50034",
+        "fabric": "#F3F1E9",
+        "wordmark": "#A50034"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_comets_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_comets_home_front.png",
+        "512": "uniforms/png/512/seoul_comets_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_comets_home_front.webp",
+        "512": "uniforms/webp/512/seoul_comets_home_front.webp"
+      }
+    },
+    "seoul_comets_home_back": {
+      "id": "seoul_comets_home_back",
+      "category": "uniforms",
+      "name": "서울 코메츠 홈 뒤",
+      "team_key": "seoul_comets",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#A50034",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#A50034",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#A50034",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#A50034",
+        "secondary": "#A50034",
+        "fabric": "#F3F1E9",
+        "wordmark": "#A50034"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_comets_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_comets_home_back.png",
+        "512": "uniforms/png/512/seoul_comets_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_comets_home_back.webp",
+        "512": "uniforms/webp/512/seoul_comets_home_back.webp"
+      }
+    },
+    "seoul_comets_away_front": {
+      "id": "seoul_comets_away_front",
+      "category": "uniforms",
+      "name": "서울 코메츠 원정 앞",
+      "team_key": "seoul_comets",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#A50034",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#A50034",
+        "secondary": "#A50034",
+        "fabric": "#4A4E54",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_comets_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_comets_away_front.png",
+        "512": "uniforms/png/512/seoul_comets_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_comets_away_front.webp",
+        "512": "uniforms/webp/512/seoul_comets_away_front.webp"
+      }
+    },
+    "seoul_comets_away_back": {
+      "id": "seoul_comets_away_back",
+      "category": "uniforms",
+      "name": "서울 코메츠 원정 뒤",
+      "team_key": "seoul_comets",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#A50034",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#A50034",
+        "secondary": "#A50034",
+        "fabric": "#4A4E54",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_comets_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_comets_away_back.png",
+        "512": "uniforms/png/512/seoul_comets_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_comets_away_back.webp",
+        "512": "uniforms/webp/512/seoul_comets_away_back.webp"
+      }
+    },
+    "seoul_hounds_home_front": {
+      "id": "seoul_hounds_home_front",
+      "category": "uniforms",
+      "name": "서울 하운즈 홈 앞",
+      "team_key": "seoul_hounds",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#131230",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#131230",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#131230",
+        "secondary": "#ED1C24",
+        "fabric": "#F3F1E9",
+        "wordmark": "#131230"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_hounds_home_front.png",
+        "512": "uniforms/png/512/seoul_hounds_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_hounds_home_front.webp",
+        "512": "uniforms/webp/512/seoul_hounds_home_front.webp"
+      }
+    },
+    "seoul_hounds_home_back": {
+      "id": "seoul_hounds_home_back",
+      "category": "uniforms",
+      "name": "서울 하운즈 홈 뒤",
+      "team_key": "seoul_hounds",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#131230",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#131230",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#131230",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#131230",
+        "secondary": "#ED1C24",
+        "fabric": "#F3F1E9",
+        "wordmark": "#131230"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_hounds_home_back.png",
+        "512": "uniforms/png/512/seoul_hounds_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_hounds_home_back.webp",
+        "512": "uniforms/webp/512/seoul_hounds_home_back.webp"
+      }
+    },
+    "seoul_hounds_away_front": {
+      "id": "seoul_hounds_away_front",
+      "category": "uniforms",
+      "name": "서울 하운즈 원정 앞",
+      "team_key": "seoul_hounds",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#131230",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#131230",
+        "secondary": "#ED1C24",
+        "fabric": "#131230",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_hounds_away_front.png",
+        "512": "uniforms/png/512/seoul_hounds_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_hounds_away_front.webp",
+        "512": "uniforms/webp/512/seoul_hounds_away_front.webp"
+      }
+    },
+    "seoul_hounds_away_back": {
+      "id": "seoul_hounds_away_back",
+      "category": "uniforms",
+      "name": "서울 하운즈 원정 뒤",
+      "team_key": "seoul_hounds",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#131230",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#131230",
+        "secondary": "#ED1C24",
+        "fabric": "#131230",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/seoul_hounds_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/seoul_hounds_away_back.png",
+        "512": "uniforms/png/512/seoul_hounds_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/seoul_hounds_away_back.webp",
+        "512": "uniforms/webp/512/seoul_hounds_away_back.webp"
+      }
+    },
+    "incheon_seagulls_home_front": {
+      "id": "incheon_seagulls_home_front",
+      "category": "uniforms",
+      "name": "인천 시걸스 홈 앞",
+      "team_key": "incheon_seagulls",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#CE0E2D",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#CE0E2D",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#CE0E2D",
+        "secondary": "#CE0E2D",
+        "fabric": "#F3F1E9",
+        "wordmark": "#CE0E2D"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/incheon_seagulls_home_front.png",
+        "512": "uniforms/png/512/incheon_seagulls_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/incheon_seagulls_home_front.webp",
+        "512": "uniforms/webp/512/incheon_seagulls_home_front.webp"
+      }
+    },
+    "incheon_seagulls_home_back": {
+      "id": "incheon_seagulls_home_back",
+      "category": "uniforms",
+      "name": "인천 시걸스 홈 뒤",
+      "team_key": "incheon_seagulls",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#CE0E2D",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#CE0E2D",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#CE0E2D",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#CE0E2D",
+        "secondary": "#CE0E2D",
+        "fabric": "#F3F1E9",
+        "wordmark": "#CE0E2D"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/incheon_seagulls_home_back.png",
+        "512": "uniforms/png/512/incheon_seagulls_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/incheon_seagulls_home_back.webp",
+        "512": "uniforms/webp/512/incheon_seagulls_home_back.webp"
+      }
+    },
+    "incheon_seagulls_away_front": {
+      "id": "incheon_seagulls_away_front",
+      "category": "uniforms",
+      "name": "인천 시걸스 원정 앞",
+      "team_key": "incheon_seagulls",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#CE0E2D",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#CE0E2D",
+        "secondary": "#CE0E2D",
+        "fabric": "#CE0E2D",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/incheon_seagulls_away_front.png",
+        "512": "uniforms/png/512/incheon_seagulls_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/incheon_seagulls_away_front.webp",
+        "512": "uniforms/webp/512/incheon_seagulls_away_front.webp"
+      }
+    },
+    "incheon_seagulls_away_back": {
+      "id": "incheon_seagulls_away_back",
+      "category": "uniforms",
+      "name": "인천 시걸스 원정 뒤",
+      "team_key": "incheon_seagulls",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#CE0E2D",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#CE0E2D",
+        "secondary": "#CE0E2D",
+        "fabric": "#CE0E2D",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/incheon_seagulls_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/incheon_seagulls_away_back.png",
+        "512": "uniforms/png/512/incheon_seagulls_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/incheon_seagulls_away_back.webp",
+        "512": "uniforms/webp/512/incheon_seagulls_away_back.webp"
+      }
+    },
+    "suwon_sparks_home_front": {
+      "id": "suwon_sparks_home_front",
+      "category": "uniforms",
+      "name": "수원 스파크스 홈 앞",
+      "team_key": "suwon_sparks",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#141414",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#141414",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#141414",
+        "secondary": "#ED1C24",
+        "fabric": "#F3F1E9",
+        "wordmark": "#141414"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/suwon_sparks_home_front.png",
+        "512": "uniforms/png/512/suwon_sparks_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/suwon_sparks_home_front.webp",
+        "512": "uniforms/webp/512/suwon_sparks_home_front.webp"
+      }
+    },
+    "suwon_sparks_home_back": {
+      "id": "suwon_sparks_home_back",
+      "category": "uniforms",
+      "name": "수원 스파크스 홈 뒤",
+      "team_key": "suwon_sparks",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#141414",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#141414",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#141414",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#141414",
+        "secondary": "#ED1C24",
+        "fabric": "#F3F1E9",
+        "wordmark": "#141414"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/suwon_sparks_home_back.png",
+        "512": "uniforms/png/512/suwon_sparks_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/suwon_sparks_home_back.webp",
+        "512": "uniforms/webp/512/suwon_sparks_home_back.webp"
+      }
+    },
+    "suwon_sparks_away_front": {
+      "id": "suwon_sparks_away_front",
+      "category": "uniforms",
+      "name": "수원 스파크스 원정 앞",
+      "team_key": "suwon_sparks",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#141414",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#141414",
+        "secondary": "#ED1C24",
+        "fabric": "#141414",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/suwon_sparks_away_front.png",
+        "512": "uniforms/png/512/suwon_sparks_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/suwon_sparks_away_front.webp",
+        "512": "uniforms/webp/512/suwon_sparks_away_front.webp"
+      }
+    },
+    "suwon_sparks_away_back": {
+      "id": "suwon_sparks_away_back",
+      "category": "uniforms",
+      "name": "수원 스파크스 원정 뒤",
+      "team_key": "suwon_sparks",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#141414",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "kit_colors": {
+        "primary": "#141414",
+        "secondary": "#ED1C24",
+        "fabric": "#141414",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/suwon_sparks_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/suwon_sparks_away_back.png",
+        "512": "uniforms/png/512/suwon_sparks_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/suwon_sparks_away_back.webp",
+        "512": "uniforms/webp/512/suwon_sparks_away_back.webp"
+      }
+    },
+    "goyang_storm_home_front": {
+      "id": "goyang_storm_home_front",
+      "category": "uniforms",
+      "name": "고양 스톰 홈 앞",
+      "team_key": "goyang_storm",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#570514",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#570514",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#570514",
+        "secondary": "#570514",
+        "fabric": "#F3F1E9",
+        "wordmark": "#570514"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/goyang_storm_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/goyang_storm_home_front.png",
+        "512": "uniforms/png/512/goyang_storm_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/goyang_storm_home_front.webp",
+        "512": "uniforms/webp/512/goyang_storm_home_front.webp"
+      }
+    },
+    "goyang_storm_home_back": {
+      "id": "goyang_storm_home_back",
+      "category": "uniforms",
+      "name": "고양 스톰 홈 뒤",
+      "team_key": "goyang_storm",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#570514",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#570514",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#570514",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#570514",
+        "secondary": "#570514",
+        "fabric": "#F3F1E9",
+        "wordmark": "#570514"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/goyang_storm_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/goyang_storm_home_back.png",
+        "512": "uniforms/png/512/goyang_storm_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/goyang_storm_home_back.webp",
+        "512": "uniforms/webp/512/goyang_storm_home_back.webp"
+      }
+    },
+    "goyang_storm_away_front": {
+      "id": "goyang_storm_away_front",
+      "category": "uniforms",
+      "name": "고양 스톰 원정 앞",
+      "team_key": "goyang_storm",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#570514",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#570514",
+        "secondary": "#570514",
+        "fabric": "#570514",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/goyang_storm_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/goyang_storm_away_front.png",
+        "512": "uniforms/png/512/goyang_storm_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/goyang_storm_away_front.webp",
+        "512": "uniforms/webp/512/goyang_storm_away_front.webp"
+      }
+    },
+    "goyang_storm_away_back": {
+      "id": "goyang_storm_away_back",
+      "category": "uniforms",
+      "name": "고양 스톰 원정 뒤",
+      "team_key": "goyang_storm",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#570514",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#570514",
+        "secondary": "#570514",
+        "fabric": "#570514",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/goyang_storm_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/goyang_storm_away_back.png",
+        "512": "uniforms/png/512/goyang_storm_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/goyang_storm_away_back.webp",
+        "512": "uniforms/webp/512/goyang_storm_away_back.webp"
+      }
+    },
+    "daejeon_redfox_home_front": {
+      "id": "daejeon_redfox_home_front",
+      "category": "uniforms",
+      "name": "대전 레드폭스 홈 앞",
+      "team_key": "daejeon_redfox",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F37321",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#F37321",
+        "symbol": "#FFFFFF",
+        "ring": "#282828"
+      },
+      "kit_colors": {
+        "primary": "#F37321",
+        "secondary": "#282828",
+        "fabric": "#F3F1E9",
+        "wordmark": "#F37321"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daejeon_redfox_home_front.png",
+        "512": "uniforms/png/512/daejeon_redfox_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daejeon_redfox_home_front.webp",
+        "512": "uniforms/webp/512/daejeon_redfox_home_front.webp"
+      }
+    },
+    "daejeon_redfox_home_back": {
+      "id": "daejeon_redfox_home_back",
+      "category": "uniforms",
+      "name": "대전 레드폭스 홈 뒤",
+      "team_key": "daejeon_redfox",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F37321",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F37321",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#F37321",
+        "symbol": "#FFFFFF",
+        "ring": "#282828"
+      },
+      "kit_colors": {
+        "primary": "#F37321",
+        "secondary": "#282828",
+        "fabric": "#F3F1E9",
+        "wordmark": "#F37321"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daejeon_redfox_home_back.png",
+        "512": "uniforms/png/512/daejeon_redfox_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daejeon_redfox_home_back.webp",
+        "512": "uniforms/webp/512/daejeon_redfox_home_back.webp"
+      }
+    },
+    "daejeon_redfox_away_front": {
+      "id": "daejeon_redfox_away_front",
+      "category": "uniforms",
+      "name": "대전 레드폭스 원정 앞",
+      "team_key": "daejeon_redfox",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#F37321",
+        "symbol": "#FFFFFF",
+        "ring": "#282828"
+      },
+      "kit_colors": {
+        "primary": "#F37321",
+        "secondary": "#282828",
+        "fabric": "#F37321",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daejeon_redfox_away_front.png",
+        "512": "uniforms/png/512/daejeon_redfox_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daejeon_redfox_away_front.webp",
+        "512": "uniforms/webp/512/daejeon_redfox_away_front.webp"
+      }
+    },
+    "daejeon_redfox_away_back": {
+      "id": "daejeon_redfox_away_back",
+      "category": "uniforms",
+      "name": "대전 레드폭스 원정 뒤",
+      "team_key": "daejeon_redfox",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#F37321",
+        "symbol": "#FFFFFF",
+        "ring": "#282828"
+      },
+      "kit_colors": {
+        "primary": "#F37321",
+        "secondary": "#282828",
+        "fabric": "#F37321",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daejeon_redfox_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daejeon_redfox_away_back.png",
+        "512": "uniforms/png/512/daejeon_redfox_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daejeon_redfox_away_back.webp",
+        "512": "uniforms/webp/512/daejeon_redfox_away_back.webp"
+      }
+    },
+    "gwangju_blazes_home_front": {
+      "id": "gwangju_blazes_home_front",
+      "category": "uniforms",
+      "name": "광주 블레이즈 홈 앞",
+      "team_key": "gwangju_blazes",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#EA0029",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#EA0029",
+        "symbol": "#FFD34F",
+        "ring": "#FFD34F"
+      },
+      "kit_colors": {
+        "primary": "#EA0029",
+        "secondary": "#FFD34F",
+        "fabric": "#F3F1E9",
+        "wordmark": "#EA0029"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/gwangju_blazes_home_front.png",
+        "512": "uniforms/png/512/gwangju_blazes_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/gwangju_blazes_home_front.webp",
+        "512": "uniforms/webp/512/gwangju_blazes_home_front.webp"
+      }
+    },
+    "gwangju_blazes_home_back": {
+      "id": "gwangju_blazes_home_back",
+      "category": "uniforms",
+      "name": "광주 블레이즈 홈 뒤",
+      "team_key": "gwangju_blazes",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#EA0029",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#EA0029",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#EA0029",
+        "symbol": "#FFD34F",
+        "ring": "#FFD34F"
+      },
+      "kit_colors": {
+        "primary": "#EA0029",
+        "secondary": "#FFD34F",
+        "fabric": "#F3F1E9",
+        "wordmark": "#EA0029"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/gwangju_blazes_home_back.png",
+        "512": "uniforms/png/512/gwangju_blazes_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/gwangju_blazes_home_back.webp",
+        "512": "uniforms/webp/512/gwangju_blazes_home_back.webp"
+      }
+    },
+    "gwangju_blazes_away_front": {
+      "id": "gwangju_blazes_away_front",
+      "category": "uniforms",
+      "name": "광주 블레이즈 원정 앞",
+      "team_key": "gwangju_blazes",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#FFD34F",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#EA0029",
+        "symbol": "#FFD34F",
+        "ring": "#FFD34F"
+      },
+      "kit_colors": {
+        "primary": "#EA0029",
+        "secondary": "#FFD34F",
+        "fabric": "#EA0029",
+        "wordmark": "#FFD34F"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/gwangju_blazes_away_front.png",
+        "512": "uniforms/png/512/gwangju_blazes_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/gwangju_blazes_away_front.webp",
+        "512": "uniforms/webp/512/gwangju_blazes_away_front.webp"
+      }
+    },
+    "gwangju_blazes_away_back": {
+      "id": "gwangju_blazes_away_back",
+      "category": "uniforms",
+      "name": "광주 블레이즈 원정 뒤",
+      "team_key": "gwangju_blazes",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#FFD34F",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#FFD34F",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#EA0029",
+        "symbol": "#FFD34F",
+        "ring": "#FFD34F"
+      },
+      "kit_colors": {
+        "primary": "#EA0029",
+        "secondary": "#FFD34F",
+        "fabric": "#EA0029",
+        "wordmark": "#FFD34F"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/gwangju_blazes_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/gwangju_blazes_away_back.png",
+        "512": "uniforms/png/512/gwangju_blazes_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/gwangju_blazes_away_back.webp",
+        "512": "uniforms/webp/512/gwangju_blazes_away_back.webp"
+      }
+    },
+    "daegu_thunders_home_front": {
+      "id": "daegu_thunders_home_front",
+      "category": "uniforms",
+      "name": "대구 썬더스 홈 앞",
+      "team_key": "daegu_thunders",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#074CA1",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#074CA1",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#074CA1",
+        "secondary": "#074CA1",
+        "fabric": "#F3F1E9",
+        "wordmark": "#074CA1"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daegu_thunders_home_front.png",
+        "512": "uniforms/png/512/daegu_thunders_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daegu_thunders_home_front.webp",
+        "512": "uniforms/webp/512/daegu_thunders_home_front.webp"
+      }
+    },
+    "daegu_thunders_home_back": {
+      "id": "daegu_thunders_home_back",
+      "category": "uniforms",
+      "name": "대구 썬더스 홈 뒤",
+      "team_key": "daegu_thunders",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#074CA1",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#074CA1",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#074CA1",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#074CA1",
+        "secondary": "#074CA1",
+        "fabric": "#F3F1E9",
+        "wordmark": "#074CA1"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daegu_thunders_home_back.png",
+        "512": "uniforms/png/512/daegu_thunders_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daegu_thunders_home_back.webp",
+        "512": "uniforms/webp/512/daegu_thunders_home_back.webp"
+      }
+    },
+    "daegu_thunders_away_front": {
+      "id": "daegu_thunders_away_front",
+      "category": "uniforms",
+      "name": "대구 썬더스 원정 앞",
+      "team_key": "daegu_thunders",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#074CA1",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#074CA1",
+        "secondary": "#074CA1",
+        "fabric": "#074CA1",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daegu_thunders_away_front.png",
+        "512": "uniforms/png/512/daegu_thunders_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daegu_thunders_away_front.webp",
+        "512": "uniforms/webp/512/daegu_thunders_away_front.webp"
+      }
+    },
+    "daegu_thunders_away_back": {
+      "id": "daegu_thunders_away_back",
+      "category": "uniforms",
+      "name": "대구 썬더스 원정 뒤",
+      "team_key": "daegu_thunders",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#074CA1",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "kit_colors": {
+        "primary": "#074CA1",
+        "secondary": "#074CA1",
+        "fabric": "#074CA1",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/daegu_thunders_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/daegu_thunders_away_back.png",
+        "512": "uniforms/png/512/daegu_thunders_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/daegu_thunders_away_back.webp",
+        "512": "uniforms/webp/512/daegu_thunders_away_back.webp"
+      }
+    },
+    "busan_waves_home_front": {
+      "id": "busan_waves_home_front",
+      "category": "uniforms",
+      "name": "부산 웨이브스 홈 앞",
+      "team_key": "busan_waves",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#041E42",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#041E42",
+        "symbol": "#FFFFFF",
+        "ring": "#D00F31"
+      },
+      "kit_colors": {
+        "primary": "#041E42",
+        "secondary": "#D00F31",
+        "fabric": "#F3F1E9",
+        "wordmark": "#041E42"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/busan_waves_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/busan_waves_home_front.png",
+        "512": "uniforms/png/512/busan_waves_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/busan_waves_home_front.webp",
+        "512": "uniforms/webp/512/busan_waves_home_front.webp"
+      }
+    },
+    "busan_waves_home_back": {
+      "id": "busan_waves_home_back",
+      "category": "uniforms",
+      "name": "부산 웨이브스 홈 뒤",
+      "team_key": "busan_waves",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#041E42",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#041E42",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#041E42",
+        "symbol": "#FFFFFF",
+        "ring": "#D00F31"
+      },
+      "kit_colors": {
+        "primary": "#041E42",
+        "secondary": "#D00F31",
+        "fabric": "#F3F1E9",
+        "wordmark": "#041E42"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/busan_waves_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/busan_waves_home_back.png",
+        "512": "uniforms/png/512/busan_waves_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/busan_waves_home_back.webp",
+        "512": "uniforms/webp/512/busan_waves_home_back.webp"
+      }
+    },
+    "busan_waves_away_front": {
+      "id": "busan_waves_away_front",
+      "category": "uniforms",
+      "name": "부산 웨이브스 원정 앞",
+      "team_key": "busan_waves",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#041E42",
+        "symbol": "#FFFFFF",
+        "ring": "#D00F31"
+      },
+      "kit_colors": {
+        "primary": "#041E42",
+        "secondary": "#D00F31",
+        "fabric": "#041E42",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/busan_waves_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/busan_waves_away_front.png",
+        "512": "uniforms/png/512/busan_waves_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/busan_waves_away_front.webp",
+        "512": "uniforms/webp/512/busan_waves_away_front.webp"
+      }
+    },
+    "busan_waves_away_back": {
+      "id": "busan_waves_away_back",
+      "category": "uniforms",
+      "name": "부산 웨이브스 원정 뒤",
+      "team_key": "busan_waves",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#041E42",
+        "symbol": "#FFFFFF",
+        "ring": "#D00F31"
+      },
+      "kit_colors": {
+        "primary": "#041E42",
+        "secondary": "#D00F31",
+        "fabric": "#041E42",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/busan_waves_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/busan_waves_away_back.png",
+        "512": "uniforms/png/512/busan_waves_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/busan_waves_away_back.webp",
+        "512": "uniforms/webp/512/busan_waves_away_back.webp"
+      }
+    },
+    "changwon_anchors_home_front": {
+      "id": "changwon_anchors_home_front",
+      "category": "uniforms",
+      "name": "창원 앵커스 홈 앞",
+      "team_key": "changwon_anchors",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#1D467B",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#1D467B",
+        "symbol": "#FFFFFF",
+        "ring": "#C6A269"
+      },
+      "kit_colors": {
+        "primary": "#1D467B",
+        "secondary": "#C6A269",
+        "fabric": "#F3F1E9",
+        "wordmark": "#1D467B"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/changwon_anchors_home_front.png",
+        "512": "uniforms/png/512/changwon_anchors_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/changwon_anchors_home_front.webp",
+        "512": "uniforms/webp/512/changwon_anchors_home_front.webp"
+      }
+    },
+    "changwon_anchors_home_back": {
+      "id": "changwon_anchors_home_back",
+      "category": "uniforms",
+      "name": "창원 앵커스 홈 뒤",
+      "team_key": "changwon_anchors",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#1D467B",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#1D467B",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#1D467B",
+        "symbol": "#FFFFFF",
+        "ring": "#C6A269"
+      },
+      "kit_colors": {
+        "primary": "#1D467B",
+        "secondary": "#C6A269",
+        "fabric": "#F3F1E9",
+        "wordmark": "#1D467B"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/changwon_anchors_home_back.png",
+        "512": "uniforms/png/512/changwon_anchors_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/changwon_anchors_home_back.webp",
+        "512": "uniforms/webp/512/changwon_anchors_home_back.webp"
+      }
+    },
+    "changwon_anchors_away_front": {
+      "id": "changwon_anchors_away_front",
+      "category": "uniforms",
+      "name": "창원 앵커스 원정 앞",
+      "team_key": "changwon_anchors",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#1D467B",
+        "symbol": "#FFFFFF",
+        "ring": "#C6A269"
+      },
+      "kit_colors": {
+        "primary": "#1D467B",
+        "secondary": "#C6A269",
+        "fabric": "#1D467B",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/changwon_anchors_away_front.png",
+        "512": "uniforms/png/512/changwon_anchors_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/changwon_anchors_away_front.webp",
+        "512": "uniforms/webp/512/changwon_anchors_away_front.webp"
+      }
+    },
+    "changwon_anchors_away_back": {
+      "id": "changwon_anchors_away_back",
+      "category": "uniforms",
+      "name": "창원 앵커스 원정 뒤",
+      "team_key": "changwon_anchors",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#1D467B",
+        "symbol": "#FFFFFF",
+        "ring": "#C6A269"
+      },
+      "kit_colors": {
+        "primary": "#1D467B",
+        "secondary": "#C6A269",
+        "fabric": "#1D467B",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/changwon_anchors_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/changwon_anchors_away_back.png",
+        "512": "uniforms/png/512/changwon_anchors_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/changwon_anchors_away_back.webp",
+        "512": "uniforms/webp/512/changwon_anchors_away_back.webp"
+      }
+    },
+    "korea_home_front": {
+      "id": "korea_home_front",
+      "category": "uniforms",
+      "name": "대한민국 홈 앞",
+      "team_key": "korea",
+      "kit": "home",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#142E53",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#F3F1E9",
+        "wordmark": "#142E53"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_home_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/korea_home_front.png",
+        "512": "uniforms/png/512/korea_home_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_home_front.webp",
+        "512": "uniforms/webp/512/korea_home_front.webp"
+      }
+    },
+    "korea_home_back": {
+      "id": "korea_home_back",
+      "category": "uniforms",
+      "name": "대한민국 홈 뒤",
+      "team_key": "korea",
+      "kit": "home",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#142E53",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#142E53",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#F3F1E9",
+        "wordmark": "#142E53"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_home_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/korea_home_back.png",
+        "512": "uniforms/png/512/korea_home_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_home_back.webp",
+        "512": "uniforms/webp/512/korea_home_back.webp"
+      }
+    },
+    "korea_away_front": {
+      "id": "korea_away_front",
+      "category": "uniforms",
+      "name": "대한민국 원정 앞",
+      "team_key": "korea",
+      "kit": "away",
+      "view": "front",
+      "transparent": true,
+      "text_slots": {
+        "player_number": {
+          "quad": [
+            [
+              289,
+              282
+            ],
+            [
+              349,
+              282
+            ],
+            [
+              350,
+              334
+            ],
+            [
+              288,
+              334
+            ]
+          ],
+          "baseline": 329,
+          "max_font_size": 45,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#142E53",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_away_front_blank.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/korea_away_front.png",
+        "512": "uniforms/png/512/korea_away_front.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_away_front.webp",
+        "512": "uniforms/webp/512/korea_away_front.webp"
+      }
+    },
+    "korea_away_back": {
+      "id": "korea_away_back",
+      "category": "uniforms",
+      "name": "대한민국 원정 뒤",
+      "team_key": "korea",
+      "kit": "away",
+      "view": "back",
+      "transparent": true,
+      "text_slots": {
+        "player_name": {
+          "quad": [
+            [
+              170,
+              147
+            ],
+            [
+              342,
+              147
+            ],
+            [
+              341,
+              181
+            ],
+            [
+              171,
+              181
+            ]
+          ],
+          "baseline": 176,
+          "max_font_size": 28,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        },
+        "player_number": {
+          "quad": [
+            [
+              190,
+              207
+            ],
+            [
+              322,
+              207
+            ],
+            [
+              322,
+              366
+            ],
+            [
+              190,
+              366
+            ]
+          ],
+          "baseline": 357,
+          "max_font_size": 148,
+          "coordinate_space": "512x512 image pixels",
+          "align": "center",
+          "fill": "#F5F3EC",
+          "blank": true
+        }
+      },
+      "design_palette": {
+        "background": "#142E53",
+        "symbol": "#FFFFFF",
+        "ring": "#CD2E3A"
+      },
+      "kit_colors": {
+        "primary": "#142E53",
+        "secondary": "#CD2E3A",
+        "fabric": "#142E53",
+        "wordmark": "#F5F3EC"
+      },
+      "source_v3": "assets/v3/uniforms/png/512/korea_away_back.png",
+      "production": {
+        "method": "image_gen; four-view product study from v3 design references",
+        "framing": "frontal ghost mannequin top only; no pants/belt; normalized 480px maximum garment dimension on 512px canvas",
+        "alpha_cleanup": "Discard alpha<8 and isolated matting speckles; preserve photographed garment RGB and folds",
+        "note": "Generated thread, fold and small emblem details have photographic variation; native v3 geometry is authoritative for face overlay marks."
+      },
+      "png": {
+        "256": "uniforms/png/256/korea_away_back.png",
+        "512": "uniforms/png/512/korea_away_back.png"
+      },
+      "webp": {
+        "256": "uniforms/webp/256/korea_away_back.webp",
+        "512": "uniforms/webp/512/korea_away_back.webp"
+      }
+    },
+    "seoul_comets": {
+      "id": "seoul_comets",
+      "category": "caps",
+      "name": "서울 코메츠 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_seoul_comets"
+      },
+      "team_key": "seoul_comets",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/seoul_comets.png",
+        "256": "caps/png/256/seoul_comets.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/seoul_comets.webp",
+        "256": "caps/webp/256/seoul_comets.webp"
+      }
+    },
+    "seoul_hounds": {
+      "id": "seoul_hounds",
+      "category": "caps",
+      "name": "서울 하운즈 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_seoul_hounds"
+      },
+      "team_key": "seoul_hounds",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/seoul_hounds.png",
+        "256": "caps/png/256/seoul_hounds.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/seoul_hounds.webp",
+        "256": "caps/webp/256/seoul_hounds.webp"
+      }
+    },
+    "incheon_seagulls": {
+      "id": "incheon_seagulls",
+      "category": "caps",
+      "name": "인천 시걸스 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_incheon_seagulls"
+      },
+      "team_key": "incheon_seagulls",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/incheon_seagulls.png",
+        "256": "caps/png/256/incheon_seagulls.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/incheon_seagulls.webp",
+        "256": "caps/webp/256/incheon_seagulls.webp"
+      }
+    },
+    "suwon_sparks": {
+      "id": "suwon_sparks",
+      "category": "caps",
+      "name": "수원 스파크스 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_suwon_sparks"
+      },
+      "team_key": "suwon_sparks",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/suwon_sparks.png",
+        "256": "caps/png/256/suwon_sparks.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/suwon_sparks.webp",
+        "256": "caps/webp/256/suwon_sparks.webp"
+      }
+    },
+    "goyang_storm": {
+      "id": "goyang_storm",
+      "category": "caps",
+      "name": "고양 스톰 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_goyang_storm"
+      },
+      "team_key": "goyang_storm",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/goyang_storm.png",
+        "256": "caps/png/256/goyang_storm.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/goyang_storm.webp",
+        "256": "caps/webp/256/goyang_storm.webp"
+      }
+    },
+    "daejeon_redfox": {
+      "id": "daejeon_redfox",
+      "category": "caps",
+      "name": "대전 레드폭스 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_daejeon_redfox"
+      },
+      "team_key": "daejeon_redfox",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/daejeon_redfox.png",
+        "256": "caps/png/256/daejeon_redfox.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/daejeon_redfox.webp",
+        "256": "caps/webp/256/daejeon_redfox.webp"
+      }
+    },
+    "gwangju_blazes": {
+      "id": "gwangju_blazes",
+      "category": "caps",
+      "name": "광주 블레이즈 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_gwangju_blazes"
+      },
+      "team_key": "gwangju_blazes",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/gwangju_blazes.png",
+        "256": "caps/png/256/gwangju_blazes.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/gwangju_blazes.webp",
+        "256": "caps/webp/256/gwangju_blazes.webp"
+      }
+    },
+    "daegu_thunders": {
+      "id": "daegu_thunders",
+      "category": "caps",
+      "name": "대구 썬더스 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_daegu_thunders"
+      },
+      "team_key": "daegu_thunders",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/daegu_thunders.png",
+        "256": "caps/png/256/daegu_thunders.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/daegu_thunders.webp",
+        "256": "caps/webp/256/daegu_thunders.webp"
+      }
+    },
+    "busan_waves": {
+      "id": "busan_waves",
+      "category": "caps",
+      "name": "부산 웨이브스 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_busan_waves"
+      },
+      "team_key": "busan_waves",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/busan_waves.png",
+        "256": "caps/png/256/busan_waves.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/busan_waves.webp",
+        "256": "caps/webp/256/busan_waves.webp"
+      }
+    },
+    "changwon_anchors": {
+      "id": "changwon_anchors",
+      "category": "caps",
+      "name": "창원 앵커스 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_changwon_anchors"
+      },
+      "team_key": "changwon_anchors",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/changwon_anchors.png",
+        "256": "caps/png/256/changwon_anchors.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/changwon_anchors.webp",
+        "256": "caps/webp/256/changwon_anchors.webp"
+      }
+    },
+    "korea": {
+      "id": "korea",
+      "category": "caps",
+      "name": "대한민국 모자",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "cap_korea"
+      },
+      "team_key": "korea",
+      "angle": "front 3/4",
+      "png": {
+        "128": "caps/png/128/korea.png",
+        "256": "caps/png/256/korea.png"
+      },
+      "webp": {
+        "128": "caps/webp/128/korea.webp",
+        "256": "caps/webp/256/korea.webp"
+      }
+    },
+    "seoul_comets_chest": {
+      "id": "seoul_comets_chest",
+      "category": "face_marks",
+      "name": "seoul_comets_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "seoul_comets_chest_mark"
+      },
+      "team_key": "seoul_comets",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/seoul_comets_chest.png",
+        "512": "face_marks/png/512/seoul_comets_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/seoul_comets_chest.webp",
+        "512": "face_marks/webp/512/seoul_comets_chest.webp"
+      }
+    },
+    "seoul_comets_cap": {
+      "id": "seoul_comets_cap",
+      "category": "face_marks",
+      "name": "seoul_comets_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "seoul_comets_cap_mark"
+      },
+      "team_key": "seoul_comets",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/seoul_comets_cap.png",
+        "512": "face_marks/png/512/seoul_comets_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/seoul_comets_cap.webp",
+        "512": "face_marks/webp/512/seoul_comets_cap.webp"
+      }
+    },
+    "seoul_hounds_chest": {
+      "id": "seoul_hounds_chest",
+      "category": "face_marks",
+      "name": "seoul_hounds_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "seoul_hounds_chest_mark"
+      },
+      "team_key": "seoul_hounds",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/seoul_hounds_chest.png",
+        "512": "face_marks/png/512/seoul_hounds_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/seoul_hounds_chest.webp",
+        "512": "face_marks/webp/512/seoul_hounds_chest.webp"
+      }
+    },
+    "seoul_hounds_cap": {
+      "id": "seoul_hounds_cap",
+      "category": "face_marks",
+      "name": "seoul_hounds_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "seoul_hounds_cap_mark"
+      },
+      "team_key": "seoul_hounds",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/seoul_hounds_cap.png",
+        "512": "face_marks/png/512/seoul_hounds_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/seoul_hounds_cap.webp",
+        "512": "face_marks/webp/512/seoul_hounds_cap.webp"
+      }
+    },
+    "incheon_seagulls_chest": {
+      "id": "incheon_seagulls_chest",
+      "category": "face_marks",
+      "name": "incheon_seagulls_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "incheon_seagulls_chest_mark"
+      },
+      "team_key": "incheon_seagulls",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/incheon_seagulls_chest.png",
+        "512": "face_marks/png/512/incheon_seagulls_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/incheon_seagulls_chest.webp",
+        "512": "face_marks/webp/512/incheon_seagulls_chest.webp"
+      }
+    },
+    "incheon_seagulls_cap": {
+      "id": "incheon_seagulls_cap",
+      "category": "face_marks",
+      "name": "incheon_seagulls_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "incheon_seagulls_cap_mark"
+      },
+      "team_key": "incheon_seagulls",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/incheon_seagulls_cap.png",
+        "512": "face_marks/png/512/incheon_seagulls_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/incheon_seagulls_cap.webp",
+        "512": "face_marks/webp/512/incheon_seagulls_cap.webp"
+      }
+    },
+    "suwon_sparks_chest": {
+      "id": "suwon_sparks_chest",
+      "category": "face_marks",
+      "name": "suwon_sparks_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "suwon_sparks_chest_mark"
+      },
+      "team_key": "suwon_sparks",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/suwon_sparks_chest.png",
+        "512": "face_marks/png/512/suwon_sparks_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/suwon_sparks_chest.webp",
+        "512": "face_marks/webp/512/suwon_sparks_chest.webp"
+      }
+    },
+    "suwon_sparks_cap": {
+      "id": "suwon_sparks_cap",
+      "category": "face_marks",
+      "name": "suwon_sparks_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "suwon_sparks_cap_mark"
+      },
+      "team_key": "suwon_sparks",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/suwon_sparks_cap.png",
+        "512": "face_marks/png/512/suwon_sparks_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/suwon_sparks_cap.webp",
+        "512": "face_marks/webp/512/suwon_sparks_cap.webp"
+      }
+    },
+    "goyang_storm_chest": {
+      "id": "goyang_storm_chest",
+      "category": "face_marks",
+      "name": "goyang_storm_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "goyang_storm_chest_mark"
+      },
+      "team_key": "goyang_storm",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/goyang_storm_chest.png",
+        "512": "face_marks/png/512/goyang_storm_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/goyang_storm_chest.webp",
+        "512": "face_marks/webp/512/goyang_storm_chest.webp"
+      }
+    },
+    "goyang_storm_cap": {
+      "id": "goyang_storm_cap",
+      "category": "face_marks",
+      "name": "goyang_storm_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "goyang_storm_cap_mark"
+      },
+      "team_key": "goyang_storm",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/goyang_storm_cap.png",
+        "512": "face_marks/png/512/goyang_storm_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/goyang_storm_cap.webp",
+        "512": "face_marks/webp/512/goyang_storm_cap.webp"
+      }
+    },
+    "daejeon_redfox_chest": {
+      "id": "daejeon_redfox_chest",
+      "category": "face_marks",
+      "name": "daejeon_redfox_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "daejeon_redfox_chest_mark"
+      },
+      "team_key": "daejeon_redfox",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/daejeon_redfox_chest.png",
+        "512": "face_marks/png/512/daejeon_redfox_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/daejeon_redfox_chest.webp",
+        "512": "face_marks/webp/512/daejeon_redfox_chest.webp"
+      }
+    },
+    "daejeon_redfox_cap": {
+      "id": "daejeon_redfox_cap",
+      "category": "face_marks",
+      "name": "daejeon_redfox_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "daejeon_redfox_cap_mark"
+      },
+      "team_key": "daejeon_redfox",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/daejeon_redfox_cap.png",
+        "512": "face_marks/png/512/daejeon_redfox_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/daejeon_redfox_cap.webp",
+        "512": "face_marks/webp/512/daejeon_redfox_cap.webp"
+      }
+    },
+    "gwangju_blazes_chest": {
+      "id": "gwangju_blazes_chest",
+      "category": "face_marks",
+      "name": "gwangju_blazes_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "gwangju_blazes_chest_mark"
+      },
+      "team_key": "gwangju_blazes",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/gwangju_blazes_chest.png",
+        "512": "face_marks/png/512/gwangju_blazes_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/gwangju_blazes_chest.webp",
+        "512": "face_marks/webp/512/gwangju_blazes_chest.webp"
+      }
+    },
+    "gwangju_blazes_cap": {
+      "id": "gwangju_blazes_cap",
+      "category": "face_marks",
+      "name": "gwangju_blazes_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "gwangju_blazes_cap_mark"
+      },
+      "team_key": "gwangju_blazes",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/gwangju_blazes_cap.png",
+        "512": "face_marks/png/512/gwangju_blazes_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/gwangju_blazes_cap.webp",
+        "512": "face_marks/webp/512/gwangju_blazes_cap.webp"
+      }
+    },
+    "daegu_thunders_chest": {
+      "id": "daegu_thunders_chest",
+      "category": "face_marks",
+      "name": "daegu_thunders_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "daegu_thunders_chest_mark"
+      },
+      "team_key": "daegu_thunders",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/daegu_thunders_chest.png",
+        "512": "face_marks/png/512/daegu_thunders_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/daegu_thunders_chest.webp",
+        "512": "face_marks/webp/512/daegu_thunders_chest.webp"
+      }
+    },
+    "daegu_thunders_cap": {
+      "id": "daegu_thunders_cap",
+      "category": "face_marks",
+      "name": "daegu_thunders_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "daegu_thunders_cap_mark"
+      },
+      "team_key": "daegu_thunders",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/daegu_thunders_cap.png",
+        "512": "face_marks/png/512/daegu_thunders_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/daegu_thunders_cap.webp",
+        "512": "face_marks/webp/512/daegu_thunders_cap.webp"
+      }
+    },
+    "busan_waves_chest": {
+      "id": "busan_waves_chest",
+      "category": "face_marks",
+      "name": "busan_waves_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "busan_waves_chest_mark"
+      },
+      "team_key": "busan_waves",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/busan_waves_chest.png",
+        "512": "face_marks/png/512/busan_waves_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/busan_waves_chest.webp",
+        "512": "face_marks/webp/512/busan_waves_chest.webp"
+      }
+    },
+    "busan_waves_cap": {
+      "id": "busan_waves_cap",
+      "category": "face_marks",
+      "name": "busan_waves_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "busan_waves_cap_mark"
+      },
+      "team_key": "busan_waves",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/busan_waves_cap.png",
+        "512": "face_marks/png/512/busan_waves_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/busan_waves_cap.webp",
+        "512": "face_marks/webp/512/busan_waves_cap.webp"
+      }
+    },
+    "changwon_anchors_chest": {
+      "id": "changwon_anchors_chest",
+      "category": "face_marks",
+      "name": "changwon_anchors_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "changwon_anchors_chest_mark"
+      },
+      "team_key": "changwon_anchors",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/changwon_anchors_chest.png",
+        "512": "face_marks/png/512/changwon_anchors_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/changwon_anchors_chest.webp",
+        "512": "face_marks/webp/512/changwon_anchors_chest.webp"
+      }
+    },
+    "changwon_anchors_cap": {
+      "id": "changwon_anchors_cap",
+      "category": "face_marks",
+      "name": "changwon_anchors_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "changwon_anchors_cap_mark"
+      },
+      "team_key": "changwon_anchors",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/changwon_anchors_cap.png",
+        "512": "face_marks/png/512/changwon_anchors_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/changwon_anchors_cap.webp",
+        "512": "face_marks/webp/512/changwon_anchors_cap.webp"
+      }
+    },
+    "korea_chest": {
+      "id": "korea_chest",
+      "category": "face_marks",
+      "name": "korea_chest",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "korea_chest_mark"
+      },
+      "team_key": "korea",
+      "kind": "chest",
+      "quad": [
+        [
+          94,
+          440
+        ],
+        [
+          418,
+          440
+        ],
+        [
+          424,
+          510
+        ],
+        [
+          88,
+          510
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": [
+        256,
+        0,
+        10,
+        512
+      ],
+      "png": {
+        "256": "face_marks/png/256/korea_chest.png",
+        "512": "face_marks/png/512/korea_chest.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/korea_chest.webp",
+        "512": "face_marks/webp/512/korea_chest.webp"
+      }
+    },
+    "korea_cap": {
+      "id": "korea_cap",
+      "category": "face_marks",
+      "name": "korea_cap",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "korea_cap_mark"
+      },
+      "team_key": "korea",
+      "kind": "cap",
+      "quad": [
+        [
+          231,
+          26
+        ],
+        [
+          280,
+          26
+        ],
+        [
+          285,
+          83
+        ],
+        [
+          227,
+          83
+        ]
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "placement": "Prewarped 512px full-canvas overlay. Alpha composite at (0,0) onto the 512px v5 base plate. Do not warp again.",
+      "placket_gap": null,
+      "png": {
+        "256": "face_marks/png/256/korea_cap.png",
+        "512": "face_marks/png/512/korea_cap.png"
+      },
+      "webp": {
+        "256": "face_marks/webp/256/korea_cap.webp",
+        "512": "face_marks/webp/512/korea_cap.webp"
+      }
+    },
+    "0_fill": {
+      "id": "0_fill",
+      "category": "digits",
+      "name": "0_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_0_fill"
+      },
+      "digit": 0,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/0_fill.png",
+        "512": "digits/png/512/0_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/0_fill.webp",
+        "512": "digits/webp/512/0_fill.webp"
+      }
+    },
+    "0_outline": {
+      "id": "0_outline",
+      "category": "digits",
+      "name": "0_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_0_outline"
+      },
+      "digit": 0,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/0_outline.png",
+        "512": "digits/png/512/0_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/0_outline.webp",
+        "512": "digits/webp/512/0_outline.webp"
+      }
+    },
+    "1_fill": {
+      "id": "1_fill",
+      "category": "digits",
+      "name": "1_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_1_fill"
+      },
+      "digit": 1,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/1_fill.png",
+        "512": "digits/png/512/1_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/1_fill.webp",
+        "512": "digits/webp/512/1_fill.webp"
+      }
+    },
+    "1_outline": {
+      "id": "1_outline",
+      "category": "digits",
+      "name": "1_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_1_outline"
+      },
+      "digit": 1,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/1_outline.png",
+        "512": "digits/png/512/1_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/1_outline.webp",
+        "512": "digits/webp/512/1_outline.webp"
+      }
+    },
+    "2_fill": {
+      "id": "2_fill",
+      "category": "digits",
+      "name": "2_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_2_fill"
+      },
+      "digit": 2,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/2_fill.png",
+        "512": "digits/png/512/2_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/2_fill.webp",
+        "512": "digits/webp/512/2_fill.webp"
+      }
+    },
+    "2_outline": {
+      "id": "2_outline",
+      "category": "digits",
+      "name": "2_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_2_outline"
+      },
+      "digit": 2,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/2_outline.png",
+        "512": "digits/png/512/2_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/2_outline.webp",
+        "512": "digits/webp/512/2_outline.webp"
+      }
+    },
+    "3_fill": {
+      "id": "3_fill",
+      "category": "digits",
+      "name": "3_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_3_fill"
+      },
+      "digit": 3,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/3_fill.png",
+        "512": "digits/png/512/3_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/3_fill.webp",
+        "512": "digits/webp/512/3_fill.webp"
+      }
+    },
+    "3_outline": {
+      "id": "3_outline",
+      "category": "digits",
+      "name": "3_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_3_outline"
+      },
+      "digit": 3,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/3_outline.png",
+        "512": "digits/png/512/3_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/3_outline.webp",
+        "512": "digits/webp/512/3_outline.webp"
+      }
+    },
+    "4_fill": {
+      "id": "4_fill",
+      "category": "digits",
+      "name": "4_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_4_fill"
+      },
+      "digit": 4,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/4_fill.png",
+        "512": "digits/png/512/4_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/4_fill.webp",
+        "512": "digits/webp/512/4_fill.webp"
+      }
+    },
+    "4_outline": {
+      "id": "4_outline",
+      "category": "digits",
+      "name": "4_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_4_outline"
+      },
+      "digit": 4,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/4_outline.png",
+        "512": "digits/png/512/4_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/4_outline.webp",
+        "512": "digits/webp/512/4_outline.webp"
+      }
+    },
+    "5_fill": {
+      "id": "5_fill",
+      "category": "digits",
+      "name": "5_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_5_fill"
+      },
+      "digit": 5,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/5_fill.png",
+        "512": "digits/png/512/5_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/5_fill.webp",
+        "512": "digits/webp/512/5_fill.webp"
+      }
+    },
+    "5_outline": {
+      "id": "5_outline",
+      "category": "digits",
+      "name": "5_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_5_outline"
+      },
+      "digit": 5,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/5_outline.png",
+        "512": "digits/png/512/5_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/5_outline.webp",
+        "512": "digits/webp/512/5_outline.webp"
+      }
+    },
+    "6_fill": {
+      "id": "6_fill",
+      "category": "digits",
+      "name": "6_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_6_fill"
+      },
+      "digit": 6,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/6_fill.png",
+        "512": "digits/png/512/6_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/6_fill.webp",
+        "512": "digits/webp/512/6_fill.webp"
+      }
+    },
+    "6_outline": {
+      "id": "6_outline",
+      "category": "digits",
+      "name": "6_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_6_outline"
+      },
+      "digit": 6,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/6_outline.png",
+        "512": "digits/png/512/6_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/6_outline.webp",
+        "512": "digits/webp/512/6_outline.webp"
+      }
+    },
+    "7_fill": {
+      "id": "7_fill",
+      "category": "digits",
+      "name": "7_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_7_fill"
+      },
+      "digit": 7,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/7_fill.png",
+        "512": "digits/png/512/7_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/7_fill.webp",
+        "512": "digits/webp/512/7_fill.webp"
+      }
+    },
+    "7_outline": {
+      "id": "7_outline",
+      "category": "digits",
+      "name": "7_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_7_outline"
+      },
+      "digit": 7,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/7_outline.png",
+        "512": "digits/png/512/7_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/7_outline.webp",
+        "512": "digits/webp/512/7_outline.webp"
+      }
+    },
+    "8_fill": {
+      "id": "8_fill",
+      "category": "digits",
+      "name": "8_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_8_fill"
+      },
+      "digit": 8,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/8_fill.png",
+        "512": "digits/png/512/8_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/8_fill.webp",
+        "512": "digits/webp/512/8_fill.webp"
+      }
+    },
+    "8_outline": {
+      "id": "8_outline",
+      "category": "digits",
+      "name": "8_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_8_outline"
+      },
+      "digit": 8,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/8_outline.png",
+        "512": "digits/png/512/8_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/8_outline.webp",
+        "512": "digits/webp/512/8_outline.webp"
+      }
+    },
+    "9_fill": {
+      "id": "9_fill",
+      "category": "digits",
+      "name": "9_fill",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_9_fill"
+      },
+      "digit": 9,
+      "layer": "fill",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/9_fill.png",
+        "512": "digits/png/512/9_fill.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/9_fill.webp",
+        "512": "digits/webp/512/9_fill.webp"
+      }
+    },
+    "9_outline": {
+      "id": "9_outline",
+      "category": "digits",
+      "name": "9_outline",
+      "transparent": true,
+      "production": "Blender 4.3.2 Cycles / 96 samples / Standard sRGB -0.4 EV / physical twill + clipped satin-stitch rows / OIDN color denoise",
+      "source_model": {
+        "file": "source/embroidery_studio.blend",
+        "collection": "digit_9_outline"
+      },
+      "digit": 9,
+      "layer": "outline",
+      "recolor": "White shaded twill source; tint RGB by target color while retaining alpha and luminance; outline and fill are registered.",
+      "png": {
+        "256": "digits/png/256/9_outline.png",
+        "512": "digits/png/512/9_outline.png"
+      },
+      "webp": {
+        "256": "digits/webp/256/9_outline.webp",
+        "512": "digits/webp/512/9_outline.webp"
+      }
+    },
+    "ko_late20s_01": {
+      "id": "ko_late20s_01",
+      "category": "faces_test",
+      "name": "ko_late20s_01 기준 판",
+      "identity_id": "ko_late20s_01",
+      "source_v4": "assets/v4/faces_test/png/512/ko_late20s_01_cap_on.png",
+      "fictional": true,
+      "age": 27,
+      "ethnicity": "Korean",
+      "skin_tone": "medium warm",
+      "beard": false,
+      "glasses": false,
+      "hair": "short black crew cut",
+      "cap": true,
+      "transparent": false,
+      "kit": "blank white home jersey; cap/collar/placket/cuff red key; no lettering or marks",
+      "key_color": "#FF0000",
+      "key_policy": "Pure FF0000 albedo layer + soft key mask + R-channel shading map. The photographic plate has naturally shaded red pixels; do not use RGB equality for keying.",
+      "masks": {
+        "key_mask": "faces_test/masks/512/ko_late20s_01_key_mask.png",
+        "key_albedo": "faces_test/masks/512/ko_late20s_01_key_albedo.png",
+        "key_shading": "faces_test/masks/512/ko_late20s_01_key_shading.png"
+      },
+      "png": {
+        "512": "faces_test/png/512/ko_late20s_01.png"
+      },
+      "webp": {
+        "128": "faces_test/webp/128/ko_late20s_01.webp",
+        "256": "faces_test/webp/256/ko_late20s_01.webp"
+      },
+      "webp_encoding": {
+        "128": {
+          "quality": 82,
+          "bytes": 2406,
+          "target_bytes": 3072
+        },
+        "256": {
+          "quality": 82,
+          "bytes": 5686,
+          "target_bytes": 7168
+        }
+      },
+      "reference_anchors": {
+        "canvas": [
+          512,
+          512
+        ],
+        "eye_line_y": 143,
+        "cap_top_y": 15,
+        "chin_y": 266,
+        "placket_center_x": 256
+      },
+      "tags": [
+        "Korean",
+        "27",
+        "medium warm",
+        "short_black_hair",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on"
+      ]
+    },
+    "black_01": {
+      "id": "black_01",
+      "category": "faces_test",
+      "name": "black_01 기준 판",
+      "identity_id": "black_01",
+      "source_v4": "assets/v4/faces_test/png/512/black_01_cap_on.png",
+      "fictional": true,
+      "age": 28,
+      "ethnicity": "Black",
+      "skin_tone": "deep brown",
+      "beard": false,
+      "glasses": false,
+      "hair": "short tight black curls with low fade",
+      "cap": true,
+      "transparent": false,
+      "kit": "blank white home jersey; cap/collar/placket/cuff red key; no lettering or marks",
+      "key_color": "#FF0000",
+      "key_policy": "Pure FF0000 albedo layer + soft key mask + R-channel shading map. The photographic plate has naturally shaded red pixels; do not use RGB equality for keying.",
+      "masks": {
+        "key_mask": "faces_test/masks/512/black_01_key_mask.png",
+        "key_albedo": "faces_test/masks/512/black_01_key_albedo.png",
+        "key_shading": "faces_test/masks/512/black_01_key_shading.png"
+      },
+      "png": {
+        "512": "faces_test/png/512/black_01.png"
+      },
+      "webp": {
+        "128": "faces_test/webp/128/black_01.webp",
+        "256": "faces_test/webp/256/black_01.webp"
+      },
+      "webp_encoding": {
+        "128": {
+          "quality": 82,
+          "bytes": 2246,
+          "target_bytes": 3072
+        },
+        "256": {
+          "quality": 82,
+          "bytes": 5292,
+          "target_bytes": 7168
+        }
+      },
+      "reference_anchors": {
+        "canvas": [
+          512,
+          512
+        ],
+        "eye_line_y": 143,
+        "cap_top_y": 15,
+        "chin_y": 266,
+        "placket_center_x": 256
+      },
+      "tags": [
+        "Black",
+        "28",
+        "deep brown",
+        "short_black_hair",
+        "clean_shaven",
+        "no_glasses",
+        "cap_on"
+      ]
+    }
+  },
+  "counts": {
+    "uniforms": 44,
+    "caps": 11,
+    "digits": 20,
+    "face_marks": 22,
+    "faces_test": 2
+  },
+  "portrait_compositing": {
+    "canvas": [
+      512,
+      512
+    ],
+    "quad_order": [
+      "TL",
+      "TR",
+      "BR",
+      "BL"
+    ],
+    "chest_quad": [
+      [
+        94,
+        440
+      ],
+      [
+        418,
+        440
+      ],
+      [
+        424,
+        510
+      ],
+      [
+        88,
+        510
+      ]
+    ],
+    "cap_quad": [
+      [
+        231,
+        26
+      ],
+      [
+        280,
+        26
+      ],
+      [
+        285,
+        83
+      ],
+      [
+        227,
+        83
+      ]
+    ],
+    "overlay_mode": "All face marks are already curved/projected into full 512x512 transparent canvases; alpha composite at (0,0), do not warp twice. For other sizes scale entire overlay with base.",
+    "placket_exclusion_x": [
+      256,
+      266
+    ],
+    "recolor_formula_srgb": "out = plate*(1-mask/255) + team_rgb*(key_shading/255)*(mask/255); then source-over chest mark; then source-over cap mark",
+    "key_albedo": "#FF0000; exact red in key_albedo PNG, illuminated red in photographic base",
+    "source_faces": [
+      "ko_late20s_01",
+      "black_01"
+    ],
+    "background": "Opaque generated near-solid dark #20262e target, minor studio tonal variation"
+  },
+  "v6_spec": "v6_face_spec.json",
+  "production": {
+    "jerseys": "image_gen from v3 references; same product study style; no real photos used",
+    "base_plates": "image_gen apparel-only edits of two existing fictional v4 identities",
+    "caps_marks_digits": "Blender Cycles 4.3.2 / 96 samples / physically modeled thread rows and cloth shader / OIDN color denoise",
+    "native_logo_reference": "Original v3 path/glyph geometry, no actual team logos",
+    "color_reference": "assets/v2_1/manifest.json for 10 clubs; v3 Korea palette"
+  },
+  "integration_owner": "Claude",
+  "game_code_connected": false,
+  "previews": {
+    "all": "ASSET_PREVIEW.png",
+    "uniforms_home": "previews/uniforms_home.png",
+    "uniforms_away": "previews/uniforms_away.png",
+    "caps": "previews/caps.png",
+    "marks": "previews/face_marks.png",
+    "base_plates": "previews/base_plates.png",
+    "composites": "previews/composites_all_teams.png",
+    "digits": "previews/digits.png",
+    "text_slots": "previews/text_slots.png"
+  }
+}

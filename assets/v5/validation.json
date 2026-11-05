@@ -1,0 +1,87 @@
+{
+  "status": "pass",
+  "scope": {
+    "uniforms": 44,
+    "caps": 11,
+    "digits": 20,
+    "face_marks": 22,
+    "faces_test": 2
+  },
+  "runtime_images_checked": 400,
+  "runtime_image_bytes": 28596814,
+  "portrait_webp": [
+    {
+      "id": "ko_late20s_01",
+      "size": 128,
+      "bytes": 2406,
+      "quality": 82
+    },
+    {
+      "id": "ko_late20s_01",
+      "size": 256,
+      "bytes": 5686,
+      "quality": 82
+    },
+    {
+      "id": "black_01",
+      "size": 128,
+      "bytes": 2246,
+      "quality": 82
+    },
+    {
+      "id": "black_01",
+      "size": 256,
+      "bytes": 5292,
+      "quality": 82
+    }
+  ],
+  "key_color": "#FF0000 exact in key_albedo; shaded in photograph",
+  "compositing_checks": {
+    "base_identities": 2,
+    "team_kits": 11,
+    "views": 22,
+    "mask_outside_unchanged": true,
+    "face_roi_excluded": true,
+    "marks_registered_full_canvas": true
+  },
+  "similarity_embedding_validation": {
+    "performed": false,
+    "reason": "This is the two existing-identity reference plate trial, not v6 mass face production. No 10000-person similarity results are claimed.",
+    "future_protocol": "v6_face_spec.json",
+    "initial_arcface_threshold": 0.35,
+    "requires_v6_pilot_calibration": true
+  },
+  "visual_review": [
+    "44 product jersey views / blank backs",
+    "11 cap models with embroidered symbols",
+    "11 kits x same 2 base plates",
+    "name and number quad placement",
+    "digit fill/outline registration"
+  ],
+  "checks": [
+    "team keys and palette equal v2.1",
+    "all requested category counts and raster sizes",
+    "all runtime images decode",
+    "transparent product alpha and edge padding",
+    "lossless WebP matches PNG visible RGB/alpha",
+    "name/number quads inside garment alpha",
+    "face mark quads and placket exclusion",
+    "exact FF0000 key layer and registered grayscale mask/shading",
+    "recolor preserves all unmasked pixels for 22 combinations",
+    "portrait WebP byte targets",
+    "v6 is specification only; no bulk face files",
+    "asset paths, source, previews; no generator/game code"
+  ],
+  "errors": [],
+  "blender_source_check": {
+    "collections": 54,
+    "objects": 672,
+    "meshes": 193,
+    "curves": 474,
+    "materials": 40,
+    "engine": "CYCLES",
+    "samples": 96,
+    "external_images": [],
+    "embedded_scripts": 0
+  }
+}
