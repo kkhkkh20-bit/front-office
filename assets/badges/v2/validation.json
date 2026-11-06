@@ -1,0 +1,1455 @@
+{
+  "version": 2,
+  "revision": "cap-locked-03",
+  "passed": true,
+  "team_count": 10,
+  "svg_count": 70,
+  "rgba_png_count": 60,
+  "flat_primary_svg": 10,
+  "flat_mark_svg": 10,
+  "dedicated_mark32_svg": 10,
+  "derived_relief_svg": 30,
+  "layout_counts": {
+    "open": 5,
+    "roundel": 3,
+    "diamond": 1,
+    "homeplate": 1
+  },
+  "flat_solid_colors_max": 4,
+  "real_outlined_font": {
+    "family": "Alfa Slab One",
+    "style": "Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "source": "https://github.com/google/fonts/tree/main/ofl/alfaslabone",
+    "license": "licenses/AlfaSlabOne-OFL.txt",
+    "no_runtime_font_dependency": true
+  },
+  "new_direction": {
+    "wordmark_led": true,
+    "shared_ribbon_count": 0,
+    "original_cap_geometry_locked": true,
+    "baseball_pendants": false,
+    "cap_marks_are_exact_existing_cap_symbols": true
+  },
+  "effect_limits": {
+    "bevel_levels_max": 1,
+    "metal_effect_only_existing_rims": true,
+    "field_tones_max": 2,
+    "field_lower_brightness": 0.94,
+    "shadow_y_at512": 6,
+    "shadow_ratio": 0.01171875,
+    "shadow_blur": 0,
+    "filters": 0,
+    "lighting": "top-left"
+  },
+  "research": {
+    "kbo_teams_reviewed": 10,
+    "mlb_teams_reviewed": 12,
+    "source_notes": "REFERENCES.md",
+    "real_logo_art_in_delivery": false,
+    "identical_long_research_paths_reused": 0,
+    "method": "manual comparison of actual public KBO/MLB logo SVGs and fresh fictional design; not an exhaustive trademark clearance"
+  },
+  "visual_review": {
+    "dark": "#11161D",
+    "light": "#F4F5F7",
+    "actual_32_and64_marks_reviewed": true,
+    "exact_english_spelling_reviewed": true,
+    "all_10_cap_locked_compositions_reviewed": true,
+    "new_vs_previous_own_designs": "previews/before_after.png",
+    "professional_quality_claim": "Technical checks do not certify design approval or parity with real professional clubs. User visual review pending."
+  },
+  "team_results": [
+    {
+      "key": "seoul_comets",
+      "layout": "open",
+      "wordmark": "SEOUL COMETS",
+      "flat_paints": {
+        "primary": [
+          "#A50034",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#A50034",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#A50034",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "SEOUL": 5,
+        "COMETS": 6
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "seoul_hounds",
+      "layout": "roundel",
+      "wordmark": "SEOUL HOUNDS",
+      "flat_paints": {
+        "primary": [
+          "#11161D",
+          "#131230",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#131230",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#131230",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "SEOUL": 5,
+        "HOUNDS": 6
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "incheon_seagulls",
+      "layout": "open",
+      "wordmark": "INCHEON SEAGULLS",
+      "flat_paints": {
+        "primary": [
+          "#CE0E2D",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#CE0E2D",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#CE0E2D",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "INCHEON": 7,
+        "SEAGULLS": 8
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "suwon_sparks",
+      "layout": "diamond",
+      "wordmark": "SUWON SPARKS",
+      "flat_paints": {
+        "primary": [
+          "#11161D",
+          "#141414",
+          "#ED1C24",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#141414",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#141414",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "SUWON": 5,
+        "SPARKS": 6
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "goyang_storm",
+      "layout": "open",
+      "wordmark": "GOYANG STORM",
+      "flat_paints": {
+        "primary": [
+          "#570514",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#570514",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#570514",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "GOYANG": 6,
+        "STORM": 5
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "daejeon_redfox",
+      "layout": "homeplate",
+      "wordmark": "DAEJEON RED FOX",
+      "flat_paints": {
+        "primary": [
+          "#282828",
+          "#F37321",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#F37321",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#F37321",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "DAEJEON": 7,
+        "RED FOX": 6
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "gwangju_blazes",
+      "layout": "open",
+      "wordmark": "GWANGJU BLAZES",
+      "flat_paints": {
+        "primary": [
+          "#EA0029",
+          "#FFD34F",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#EA0029",
+          "#FFD34F",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#EA0029",
+          "#FFD34F",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "GWANGJU": 7,
+        "BLAZES": 6
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "daegu_thunders",
+      "layout": "roundel",
+      "wordmark": "DAEGU THUNDERS",
+      "flat_paints": {
+        "primary": [
+          "#074CA1",
+          "#11161D",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#074CA1",
+          "#11161D",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#074CA1",
+          "#11161D",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "DAEGU": 5,
+        "THUNDERS": 8
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "busan_waves",
+      "layout": "open",
+      "wordmark": "BUSAN WAVES",
+      "flat_paints": {
+        "primary": [
+          "#041E42",
+          "#D00F31",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#041E42",
+          "#11161D",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#041E42",
+          "#11161D",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "BUSAN": 5,
+        "WAVES": 5
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    },
+    {
+      "key": "changwon_anchors",
+      "layout": "roundel",
+      "wordmark": "CHANGWON ANCHORS",
+      "flat_paints": {
+        "primary": [
+          "#11161D",
+          "#1D467B",
+          "#C6A269",
+          "#FFFFFF"
+        ],
+        "mark": [
+          "#11161D",
+          "#1D467B",
+          "#C6A269",
+          "#FFFFFF"
+        ],
+        "mark32": [
+          "#11161D",
+          "#1D467B",
+          "#C6A269",
+          "#FFFFFF"
+        ]
+      },
+      "outlined_glyph_counts": {
+        "CHANGWON": 8,
+        "ANCHORS": 7
+      },
+      "palette_and_key_match_v1": true,
+      "dedicated_mark32": true,
+      "derived_geometry_matches": true,
+      "passed": true
+    }
+  ],
+  "pngs": [
+    {
+      "path": "png/crest/512/seoul_comets.png",
+      "source_svg": "svg/relief/crest/seoul_comets.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        39,
+        61,
+        472,
+        437
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 49571,
+      "sha256": "edb1a10088a672885971236c6d32d8170cbabd496d5eee4fa9d164b2d41cb6cb"
+    },
+    {
+      "path": "png/crest/256/seoul_comets.png",
+      "source_svg": "svg/relief/crest/seoul_comets.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        19,
+        30,
+        236,
+        219
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 22380,
+      "sha256": "7e2c72c25ea5c0220df6ff71bef15bcf30d58a8132a08a7f736adf26cbe2ebae"
+    },
+    {
+      "path": "png/crest/128/seoul_comets.png",
+      "source_svg": "svg/relief/crest/seoul_comets.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        15,
+        118,
+        110
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 9687,
+      "sha256": "21b4f1ce9f133a29c05872b1cd28edfb73cffa733321c9b3c43d7a76727219ff"
+    },
+    {
+      "path": "png/mark/128/seoul_comets.png",
+      "source_svg": "svg/relief/mark/seoul_comets.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 8864,
+      "sha256": "5795f8974361f26e217bbf5801b90da4d4f76dd40f4f4183fba41972673764eb"
+    },
+    {
+      "path": "png/mark/64/seoul_comets.png",
+      "source_svg": "svg/relief/mark/seoul_comets.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3833,
+      "sha256": "33aead8a6d7e40bc71d819c9b80435c79bb9eb3cc0699c2a30e91ee824075327"
+    },
+    {
+      "path": "png/mark/32/seoul_comets.png",
+      "source_svg": "svg/relief/mark32/seoul_comets.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1729,
+      "sha256": "fc8158a3d2a1984367884c0e49290ad413264756a108fbeac459c60af7684442"
+    },
+    {
+      "path": "png/crest/512/seoul_hounds.png",
+      "source_svg": "svg/relief/crest/seoul_hounds.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        35,
+        37,
+        474,
+        467
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 62110,
+      "sha256": "3bf6376694e80a5ea47a131f9532d74437d96db7d1fad30126b243fc350a2748"
+    },
+    {
+      "path": "png/crest/256/seoul_hounds.png",
+      "source_svg": "svg/relief/crest/seoul_hounds.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        17,
+        18,
+        237,
+        234
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 28926,
+      "sha256": "150cf91c966c1f456e546c765957e0ccefd022fc7ca06f9d9fa34eaf187ee6b4"
+    },
+    {
+      "path": "png/crest/128/seoul_hounds.png",
+      "source_svg": "svg/relief/crest/seoul_hounds.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        8,
+        9,
+        119,
+        117
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 12937,
+      "sha256": "72a81c669861bdf40d23be883e66acce54250a53c85d6db929ac0c033f26a57e"
+    },
+    {
+      "path": "png/mark/128/seoul_hounds.png",
+      "source_svg": "svg/relief/mark/seoul_hounds.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 9056,
+      "sha256": "79d198b2516792af0db65a4d4f67037b89e3c5a3e932d09b84ef2f0e83fbb75e"
+    },
+    {
+      "path": "png/mark/64/seoul_hounds.png",
+      "source_svg": "svg/relief/mark/seoul_hounds.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3916,
+      "sha256": "83acbb99deb669f94c26d2c7dcb9ed115eb878ec5a154d92b79fe7c66755da2f"
+    },
+    {
+      "path": "png/mark/32/seoul_hounds.png",
+      "source_svg": "svg/relief/mark32/seoul_hounds.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1780,
+      "sha256": "62cd8114779477b2a726bbb86cf1d60039f851302bda363377a2dce72bff0bcb"
+    },
+    {
+      "path": "png/crest/512/incheon_seagulls.png",
+      "source_svg": "svg/relief/crest/incheon_seagulls.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        38,
+        95,
+        472,
+        439
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 49048,
+      "sha256": "4d0302147fde2ef54b1bf52d1d27d911e4c4b9d7d866c7fd00404ff705a50245"
+    },
+    {
+      "path": "png/crest/256/incheon_seagulls.png",
+      "source_svg": "svg/relief/crest/incheon_seagulls.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        19,
+        47,
+        236,
+        220
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 22222,
+      "sha256": "c7451d866602a380df60239208fc8cb451df1945dacf3b8ae37115e2eee5ae0e"
+    },
+    {
+      "path": "png/crest/128/incheon_seagulls.png",
+      "source_svg": "svg/relief/crest/incheon_seagulls.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        23,
+        118,
+        110
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 9548,
+      "sha256": "ff24fb7588a29b6de89701781c928c8c2fe5d04ef4401219f8e1e44af69c4512"
+    },
+    {
+      "path": "png/mark/128/incheon_seagulls.png",
+      "source_svg": "svg/relief/mark/incheon_seagulls.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 8640,
+      "sha256": "85dc97c860c6c71333e86114b58ca1309033aefd527adec2760bc0cc32026ed3"
+    },
+    {
+      "path": "png/mark/64/incheon_seagulls.png",
+      "source_svg": "svg/relief/mark/incheon_seagulls.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3683,
+      "sha256": "2ed276b05b3a0d1152fb54ec0f9bc4cb6706ad9a3318ec8b7b4076dcbc99c029"
+    },
+    {
+      "path": "png/mark/32/incheon_seagulls.png",
+      "source_svg": "svg/relief/mark32/incheon_seagulls.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1698,
+      "sha256": "e009526ca49330fa8a2b2a65610646f163d7f4c0270884bf212e55f92282f4ec"
+    },
+    {
+      "path": "png/crest/512/suwon_sparks.png",
+      "source_svg": "svg/relief/crest/suwon_sparks.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        35,
+        38,
+        474,
+        455
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 36160,
+      "sha256": "64d200c8e4fe180527e02773eac1023523804677ff034b3267062b6487d47f0e"
+    },
+    {
+      "path": "png/crest/256/suwon_sparks.png",
+      "source_svg": "svg/relief/crest/suwon_sparks.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        17,
+        19,
+        237,
+        228
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 17252,
+      "sha256": "c5e539cc0c5490173dea24bcdc1ad1e54cdf4a43d523dff098e8c8c3efc17930"
+    },
+    {
+      "path": "png/crest/128/suwon_sparks.png",
+      "source_svg": "svg/relief/crest/suwon_sparks.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        8,
+        9,
+        119,
+        114
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 7930,
+      "sha256": "47ac44c7709fcc89647ad7b6f0a061b91e3e9b00073d944c2171d8d43db6758a"
+    },
+    {
+      "path": "png/mark/128/suwon_sparks.png",
+      "source_svg": "svg/relief/mark/suwon_sparks.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 8321,
+      "sha256": "c6e560a8d7f4711e6b4aa82b80abe3b4fbe2bbfe7df6de16c6a32ee0b352eedc"
+    },
+    {
+      "path": "png/mark/64/suwon_sparks.png",
+      "source_svg": "svg/relief/mark/suwon_sparks.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3633,
+      "sha256": "2a2339cf1592b7ec9f075910bf5de0366051e93cd6b9f2ec3065f770b53e6f89"
+    },
+    {
+      "path": "png/mark/32/suwon_sparks.png",
+      "source_svg": "svg/relief/mark32/suwon_sparks.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1687,
+      "sha256": "fb6e7b063d3511d0fe77270c45fb1e0505d4796e3e376a56d30c5e3ca33aacec"
+    },
+    {
+      "path": "png/crest/512/goyang_storm.png",
+      "source_svg": "svg/relief/crest/goyang_storm.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        37,
+        55,
+        475,
+        433
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 54033,
+      "sha256": "1df624ec8e2a9f5313fc49469d00f3317e26da59bf350131e56fa190bbfbd46c"
+    },
+    {
+      "path": "png/crest/256/goyang_storm.png",
+      "source_svg": "svg/relief/crest/goyang_storm.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        18,
+        27,
+        238,
+        217
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 24216,
+      "sha256": "cea5beeaa5c0081ea58f5d48000a2c19c141bc54fc666527b358674d5baedc66"
+    },
+    {
+      "path": "png/crest/128/goyang_storm.png",
+      "source_svg": "svg/relief/crest/goyang_storm.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        13,
+        119,
+        109
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 10345,
+      "sha256": "91b9a1c6a066406fa944b7846758ef548b690aa442dfcb37164d28dc74e42f77"
+    },
+    {
+      "path": "png/mark/128/goyang_storm.png",
+      "source_svg": "svg/relief/mark/goyang_storm.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 9441,
+      "sha256": "ab111d954bac9c32a9dae50de7e47f6cc307cd3d12d50a7225603e5c4fd2a9e4"
+    },
+    {
+      "path": "png/mark/64/goyang_storm.png",
+      "source_svg": "svg/relief/mark/goyang_storm.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 4048,
+      "sha256": "bd2c52e49e5c09087f9b5a0b051e153377d7a803639cde0a9456ac85e47ef4e0"
+    },
+    {
+      "path": "png/mark/32/goyang_storm.png",
+      "source_svg": "svg/relief/mark32/goyang_storm.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1783,
+      "sha256": "4c6df09fa584017a3f843c1824f36581aa206d4c0d38f51d61c2dae8886ea343"
+    },
+    {
+      "path": "png/crest/512/daejeon_redfox.png",
+      "source_svg": "svg/relief/crest/daejeon_redfox.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        37,
+        64,
+        474,
+        461
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 36319,
+      "sha256": "8d9deb7ad9b94c5da197d7a54074f4c74099a102961596d4b2bc49fbcf90955a"
+    },
+    {
+      "path": "png/crest/256/daejeon_redfox.png",
+      "source_svg": "svg/relief/crest/daejeon_redfox.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        18,
+        32,
+        237,
+        231
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 17118,
+      "sha256": "a1f2c040dbdb3afd0a388a4f9632437f41843843098148401c88b1539ff693eb"
+    },
+    {
+      "path": "png/crest/128/daejeon_redfox.png",
+      "source_svg": "svg/relief/crest/daejeon_redfox.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        16,
+        119,
+        116
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 7893,
+      "sha256": "6e963dcdc287bc915da54f960d0bac633e68c5bc9b990fe2c463ff9b9704b351"
+    },
+    {
+      "path": "png/mark/128/daejeon_redfox.png",
+      "source_svg": "svg/relief/mark/daejeon_redfox.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 8910,
+      "sha256": "559e59562a5c25827132f2a80bd24e0e0c34f916ab21b94f644e852f427ea4e9"
+    },
+    {
+      "path": "png/mark/64/daejeon_redfox.png",
+      "source_svg": "svg/relief/mark/daejeon_redfox.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3898,
+      "sha256": "7ba37d030265bb911208809df72dae35a5f38d4c3c4c4c1ba8750634f92c49fd"
+    },
+    {
+      "path": "png/mark/32/daejeon_redfox.png",
+      "source_svg": "svg/relief/mark32/daejeon_redfox.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1828,
+      "sha256": "38da16a0b817e3dc1a24fd8d3651df93ef3438d3d999664d5eecba0f2b63f1bc"
+    },
+    {
+      "path": "png/crest/512/gwangju_blazes.png",
+      "source_svg": "svg/relief/crest/gwangju_blazes.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        36,
+        51,
+        472,
+        447
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 46065,
+      "sha256": "a21198f13a9981d65860f8894c3a27c83ab323481ac54b32ff9a79d867e567c9"
+    },
+    {
+      "path": "png/crest/256/gwangju_blazes.png",
+      "source_svg": "svg/relief/crest/gwangju_blazes.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        18,
+        25,
+        236,
+        224
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 21107,
+      "sha256": "16b59998868ff2224457846d9f2e77efedea9a170399a4707f1bec7789f868aa"
+    },
+    {
+      "path": "png/crest/128/gwangju_blazes.png",
+      "source_svg": "svg/relief/crest/gwangju_blazes.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        12,
+        118,
+        112
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 9402,
+      "sha256": "21d2522ee40f56c889c3f77fdf8f945b81fead8886097f67d0ac64f11f771fb4"
+    },
+    {
+      "path": "png/mark/128/gwangju_blazes.png",
+      "source_svg": "svg/relief/mark/gwangju_blazes.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 8675,
+      "sha256": "252d96e235d51f19027915034ae1064b3c0e64f4c05af8221d23dc5203cf3137"
+    },
+    {
+      "path": "png/mark/64/gwangju_blazes.png",
+      "source_svg": "svg/relief/mark/gwangju_blazes.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3717,
+      "sha256": "959123217ff5d5df743851fc5c2d0edbe9d6508fa436d8255fee3e35c1b0ff75"
+    },
+    {
+      "path": "png/mark/32/gwangju_blazes.png",
+      "source_svg": "svg/relief/mark32/gwangju_blazes.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1730,
+      "sha256": "1306b2037c9fc6ad19f2f365ae06a03a43a9e2993fbac22f9154111e2de6433a"
+    },
+    {
+      "path": "png/crest/512/daegu_thunders.png",
+      "source_svg": "svg/relief/crest/daegu_thunders.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        38,
+        37,
+        474,
+        467
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 63572,
+      "sha256": "8d3b498869d074aae8757c80b759e919b85671a11680ed64c238353054e3cc52"
+    },
+    {
+      "path": "png/crest/256/daegu_thunders.png",
+      "source_svg": "svg/relief/crest/daegu_thunders.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        19,
+        18,
+        237,
+        234
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 29246,
+      "sha256": "a1753fb2b380bba17920350da99fcdb5f5c8f204a068d69062ff61ca9bf8cb5d"
+    },
+    {
+      "path": "png/crest/128/daegu_thunders.png",
+      "source_svg": "svg/relief/crest/daegu_thunders.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        9,
+        119,
+        117
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 12972,
+      "sha256": "df7435a839e1468541b9a16da095fe7e83b947b2420fd2744535ddb68404b466"
+    },
+    {
+      "path": "png/mark/128/daegu_thunders.png",
+      "source_svg": "svg/relief/mark/daegu_thunders.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 7943,
+      "sha256": "179a20b413263198ed10b9c38bb408390cebc8c84729305840f72da14197edb6"
+    },
+    {
+      "path": "png/mark/64/daegu_thunders.png",
+      "source_svg": "svg/relief/mark/daegu_thunders.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3422,
+      "sha256": "0f92d9f80acedf1162d5b4339b08973bc72130ff83682ee0da169a1bf16218f9"
+    },
+    {
+      "path": "png/mark/32/daegu_thunders.png",
+      "source_svg": "svg/relief/mark32/daegu_thunders.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1572,
+      "sha256": "03ac50994407fd17273bb666de03e072eea647992ad994bb6deb3997266b562a"
+    },
+    {
+      "path": "png/crest/512/busan_waves.png",
+      "source_svg": "svg/relief/crest/busan_waves.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        41,
+        87,
+        471,
+        456
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 54006,
+      "sha256": "afd515c29693333d04075fb9baee355af4a633df173fcd096c38c7aecaa16213"
+    },
+    {
+      "path": "png/crest/256/busan_waves.png",
+      "source_svg": "svg/relief/crest/busan_waves.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        20,
+        43,
+        236,
+        228
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 24801,
+      "sha256": "0fc76a091f212bc0d1fe715dbec24e1b7403edc5a575e5d699f9da3ef2f655e2"
+    },
+    {
+      "path": "png/crest/128/busan_waves.png",
+      "source_svg": "svg/relief/crest/busan_waves.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        10,
+        21,
+        118,
+        114
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 10778,
+      "sha256": "c3c2fb83efc3365309fa40c98e1f5625dab414b7974c1ef18847bed05f578f3a"
+    },
+    {
+      "path": "png/mark/128/busan_waves.png",
+      "source_svg": "svg/relief/mark/busan_waves.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 9576,
+      "sha256": "ffe53cbf2106cff10139b2bcc66e807a79f380d14fc5afe20fcb5c2f9e032aa5"
+    },
+    {
+      "path": "png/mark/64/busan_waves.png",
+      "source_svg": "svg/relief/mark/busan_waves.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 4031,
+      "sha256": "809c812112dae3fe49b983ffb578c81e2afa3b68ccd02791fc8094df33803a01"
+    },
+    {
+      "path": "png/mark/32/busan_waves.png",
+      "source_svg": "svg/relief/mark32/busan_waves.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1833,
+      "sha256": "97e092d2cfb310dba85a122a8967a5699b1e87e803e5778609e6612a8e42ad33"
+    },
+    {
+      "path": "png/crest/512/changwon_anchors.png",
+      "source_svg": "svg/relief/crest/changwon_anchors.svg",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bbox": [
+        35,
+        37,
+        474,
+        467
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 65179,
+      "sha256": "cb7c4fd8d0855799b6ee05af6ed5dc8807eaaf8163f81aa05e186b9ef368eb72"
+    },
+    {
+      "path": "png/crest/256/changwon_anchors.png",
+      "source_svg": "svg/relief/crest/changwon_anchors.svg",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "bbox": [
+        17,
+        18,
+        237,
+        234
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 30016,
+      "sha256": "f1a2aad5e414a7aa2bf2e5fbb6cd7c45c30254dea1532a2aa50dfaea94f0b0e5"
+    },
+    {
+      "path": "png/crest/128/changwon_anchors.png",
+      "source_svg": "svg/relief/crest/changwon_anchors.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        8,
+        9,
+        119,
+        117
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 13176,
+      "sha256": "2c1534b0de15ddcff3b98484b5245434aa4283b028615a4dd8463a73be3b58c5"
+    },
+    {
+      "path": "png/mark/128/changwon_anchors.png",
+      "source_svg": "svg/relief/mark/changwon_anchors.svg",
+      "width": 128,
+      "height": 128,
+      "mode": "RGBA",
+      "bbox": [
+        9,
+        8,
+        119,
+        119
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 9053,
+      "sha256": "0e926c74b4ab266d363bf0568d9d9f063ba640095135b9a0d7c2df41daa8a982"
+    },
+    {
+      "path": "png/mark/64/changwon_anchors.png",
+      "source_svg": "svg/relief/mark/changwon_anchors.svg",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 3962,
+      "sha256": "777453331f7c6cd8341e85d61b82a4896c58ef4a9883892d62f1c1c67555a6ad"
+    },
+    {
+      "path": "png/mark/32/changwon_anchors.png",
+      "source_svg": "svg/relief/mark32/changwon_anchors.svg",
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "transparent_edges": true,
+      "pixels_equal_svg_render": true,
+      "bytes": 1817,
+      "sha256": "babb5bbc5561db8496f9f21b388e0ef53800b405b70400758bfc6ab788be90fb"
+    }
+  ],
+  "total_png_bytes": 1002094,
+  "runtime_png_bytes_excluding512": 486031,
+  "delivery_scope": "assets/badges/v2 only; same review branch; game connection pending",
+  "cap_identity_lock": {
+    "passed": true,
+    "source": "cap_provenance.json",
+    "exact_native_paths_in_all_60_runtime_svg_sources": true,
+    "original_fill_stroke_and_counter_colors_preserved": true,
+    "only_uniform_scaling_and_translation": true,
+    "original_v5_embroidery_geometry_comparison": [
+      {
+        "key": "seoul_comets",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 2
+      },
+      {
+        "key": "seoul_hounds",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 3
+      },
+      {
+        "key": "incheon_seagulls",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 2
+      },
+      {
+        "key": "suwon_sparks",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 2
+      },
+      {
+        "key": "goyang_storm",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 1
+      },
+      {
+        "key": "daejeon_redfox",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 4
+      },
+      {
+        "key": "gwangju_blazes",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 2
+      },
+      {
+        "key": "daegu_thunders",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 2
+      },
+      {
+        "key": "busan_waves",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 2
+      },
+      {
+        "key": "changwon_anchors",
+        "matches_original_v5_embroidery_input": true,
+        "shape_count": 2
+      }
+    ],
+    "frozen_existing_asset_files_verified": 2543,
+    "frozen_assets_changed": 0,
+    "caps_uniforms_and_portraits_regenerated": 0
+  },
+  "native_cap_symbol_svg": 10
+}

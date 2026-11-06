@@ -31,6 +31,8 @@ function guarLeft(p){ if(!p||p.foreign)return 0; return (p.faC?p.sal*Math.max(1,
 function termsLostTxt(p){ if(!p||!ctOn(p))return ''; const L=[]; if(p.capB)L.push(`계약금 상한 반영(연 ${money(p.capB.a)})`); if(p.opt)L.push(`성과 옵션(연 최대 ${money(p.opt.a)})`); if(p.ntc)L.push('트레이드 거부권'); if(p.roleProm)L.push('역할 약속'); if(p.cOpt&&!p.cOpt.used)L.push(`구단 연장 옵션 ${p.cOpt.y}년`); if(p.pOut&&!p.pOut.used)L.push('선수 옵트아웃'); return L.join(' · '); }
 /* 계약의 현금 지급 연도: 계약금은 합의할 때 바로 나가 지금 결산 연도(sponSeason)에 잡히고, 연봉은 계약 적용 시즌마다. '계약 적용 시즌'과 '돈이 나가는 해'를 나눈다 */
 function ctCashYears(T,s0){ const py=sponSeason(), yrs=Math.max(1,T.years||1), s1=s0+yrs-1; const out=[]; for(let y=Math.min(py,s0);y<=s1;y++){ const sal=y>=s0?(T.annual||0):0, bon=y===py?(T.bonus||0):0; if(sal||bon)out.push({y,sal,bon,v:sal+bon}); } return out; }
+/* 트레이드로 옮길 때: 이미 달성한 성과 옵션은 원소속 구단이 지급하고 조항을 정리한다(방출 경로와 같게, 검수 11-06) */
+function tradeTerms(p){ try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ payOut(p.team,p.opt.a,'rel'); if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} termsClear(p); }
 function termsClear(p){ delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; delete p.cOpt; delete p.pOut; delete p.ctB; delete p.cOptAdd; }
 /* 옵트아웃을 넣을 수 있는 해: 그 시즌을 마쳤을 때 FA 자격(등록 연수)이 생기는 해부터. 비FA 다년계약에서 자격 전 옵트아웃은 FA로 나갈 수 없어 막는다.
    st: 계약 첫 시즌(지금 시즌이면 0, 다음 시즌 시작이면 1을 더한다) */

@@ -518,7 +518,7 @@ const QUICK=process.env.QUICK==='1';
       setTeamLogo(2,{img:'data:image/png;base64,iVBORw0KGgo='}); out.img=/<image[^>]+href="data:image\/png/.test(badge(2,24))&&/clip-path/.test(badge(2,24));
       A.lgReset('2'); out.reset=badge(2,40)===d0; UI.lgEdit=null; const k=JSON.parse(keep); if(k)G.teams[2].logo=k; else delete G.teams[2].logo; render(); return out; });
     if(r){ if(r.none)add('구단 로고','로고 바꾸기 기능이 없음'); else { if(!r.ed)add('구단 로고','로고 편집(상징·색·이미지·기본으로)이 없음'); if(!r.emb)add('구단 로고','상징을 바꿔도 배지가 그대로'); if(!r.code)add('구단 로고','글자 로고가 배지에 안 나옴'); if(!r.img)add('구단 로고','이미지 로고가 방패 모양으로 안 나옴'); if(!r.reset)add('구단 로고','기본으로 되돌려도 원래 배지가 아님'); } } }
-  /* 승인된 구단 원형 배지(assets/badges/v1): 10개 구단 이름으로 매핑, 게임 전(구단 선택)에도, 작은 표시는 64px·큰 표시는 128px, 별칭을 바꿔도 같은 배지, 직접 바꾼 로고가 우선, 깨진 이미지 없음 */
+  /* 구단 배지(assets/badges/v2): 10개 구단 이름으로 매핑, 게임 전(구단 선택)에도, 작은 표시는 64px·큰 표시는 128px, 별칭을 바꿔도 같은 배지, 직접 바꾼 로고가 우선, 깨진 이미지 없음 */
   { where='구단 배지'; const r=await ev(()=>{ if(typeof BADGE_IMG==='undefined')return {none:true}; const out={};
       out.map=TEAM_DEF.every((d,i)=>BADGE_IMG[i]&&BADGE_IMG[i].n===d.city+' '+d.nick); out.all=G.teams.every(t=>/<img class="badge bimg" src="data:image\/png/.test(badge(t.id,24)));
       out.size=badge(3,24).indexOf(BADGE_IMG[3].s)>=0&&badge(3,40).indexOf(BADGE_IMG[3].l)>=0&&/alt=""/.test(badge(3,24));

@@ -1,0 +1,122 @@
+[
+  {
+    "key": "seoul_comets",
+    "wordmark": "SEOUL COMETS",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "SEOUL",
+    "nickname": "COMETS",
+    "layout": "open",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "seoul_hounds",
+    "wordmark": "SEOUL HOUNDS",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "SEOUL",
+    "nickname": "HOUNDS",
+    "layout": "roundel",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "incheon_seagulls",
+    "wordmark": "INCHEON SEAGULLS",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "INCHEON",
+    "nickname": "SEAGULLS",
+    "layout": "open",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "suwon_sparks",
+    "wordmark": "SUWON SPARKS",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "SUWON",
+    "nickname": "SPARKS",
+    "layout": "diamond",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "goyang_storm",
+    "wordmark": "GOYANG STORM",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "GOYANG",
+    "nickname": "STORM",
+    "layout": "open",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "daejeon_redfox",
+    "wordmark": "DAEJEON RED FOX",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "DAEJEON",
+    "nickname": "RED FOX",
+    "layout": "homeplate",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "gwangju_blazes",
+    "wordmark": "GWANGJU BLAZES",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "GWANGJU",
+    "nickname": "BLAZES",
+    "layout": "open",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "daegu_thunders",
+    "wordmark": "DAEGU THUNDERS",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "DAEGU",
+    "nickname": "THUNDERS",
+    "layout": "roundel",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "busan_waves",
+    "wordmark": "BUSAN WAVES",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "BUSAN",
+    "nickname": "WAVES",
+    "layout": "open",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  },
+  {
+    "key": "changwon_anchors",
+    "wordmark": "CHANGWON ANCHORS",
+    "font": "Alfa Slab One Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "city": "CHANGWON",
+    "nickname": "ANCHORS",
+    "layout": "roundel",
+    "optical_arrangement": "club-specific width, tracking, oblique and shallow baseline arch; original glyph contours retained"
+  }
+]

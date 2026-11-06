@@ -112,7 +112,7 @@ function settlement(){
     const exp=[['국내 선수 연봉',ci.all],['외국인 선수 연봉',G.sea.fspend[t.id]||0],['구단 운영비',Math.round((t.indie?19000:24000)*EI)],['스카우트 운영',scoutCost],['마케팅',mkt]];
     if(tax)exp.push(['경쟁균형세(야구발전기금)',tax]);
     { const bn=G.sea.bonus&&G.sea.bonus[t.id]; if(bn)exp.push(['신인 계약금',bn]); }
-    { const due=newStadDue(t.id); if(due){ exp.push(['신구장 분담금',due]); if(!t.indie)inc.push(['모기업 신구장 출자(분담금의 70%)',Math.round(due*.7)]); /* 독립구단은 모기업 출자 없음 */ stadOf(t.id).proj.paid=(stadOf(t.id).proj.paid||0)+due; } }
+    { const due=newStadDue(t.id); if(due){ exp.push(['신구장 분담금',due]); if(!t.indie)inc.push(['모기업 신구장 출자(분담금의 70%)',Math.round(due*.7)]); /* 독립구단은 모기업 출자 없음 */ { const N=newStadAcct(t.id); N.paid=(N.paid||0)+due; if(N===stadOf(t.id).debt&&N.paid>=N.cost)delete stadOf(t.id).debt; } } }
     { const up=sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2])); if(up>0)exp.push(['구장 시설 유지비',up]); }
     if(t.id!==ME()){ const fu=aiFacUpExtra(t); if(fu>0)exp.push(['훈련 시설 유지비(증설분)',fu]); }
     if(flo)exp.push(['하한 미달 발전기금',flo]);

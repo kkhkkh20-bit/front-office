@@ -86,11 +86,12 @@ function tradeHint(tid,give,get,cash,pk){ // 상대가 무엇을 더 원할지 �
   const cn=cashFor(t,gap+hn('tc'+tid+G.year,G.day)*sd*.3); return {add:add?add.p:null,drop:drop?drop.p:null,big:gap>12,cash:cn&&cn+(cash||0)<=3000?cn+(cash||0):null}; }
 
 function draftPickOrder(){ // 드래프트 전: 실제 드래프트와 같은 기준(끝난 지난 시즌 순위의 역순, 경쟁균형세 벌칙 반영) 1라운드
+  { const P=draftPlan(); if(P)return P.filter(k=>k.rd===1); } /* 지명권 거래 반영: 넘긴 순번은 받은 구단 차례(검수 11-06) */
   const st=G.history.length?G.history[G.history.length-1].order:standingsNow(); const o1=[...st].reverse().map(o=>o.tid);
   for(const t of G.teams){ if(t.pickPen!==G.year)continue; const i=o1.indexOf(t.id); if(i<0)continue; o1.splice(i,1); o1.splice(Math.min(o1.length,i+9),0,t.id); }
   return o1.map((tid,i)=>({tid,rd:1,no:i+1})); }
-function mockPick(tid,pool){ const t=team(tid); let best=null,bs=-1e9;
-  for(const id of pool){ const p=G.players[id]; const rp=scoutReport(p); const sc=(rp.ofp??rp.cur+6)+hn('mk'+tid+G.year,id)*(t.scoutSd+3)+(rp.cur-35)*(t.mode==='contend'?.5:.25); if(sc>bs){bs=sc;best=id;} } return best; }
+function mockPick(tid,pool){ const need=draftNeed(tid); let best=null,bs=-1e9; /* 상대 구단은 실제 AI 지명과 같은 평가로(우리 스카우트 평가와 무관, 검수 11-06) */
+  for(const id of pool){ const sc=aiDraftScore(tid,G.players[id],need); if(sc>bs){bs=sc;best=id;} } return best; }
 function mockDraft(n){ // 우리 다음 순번 전까지(드래프트 전에는 1라운드) 다른 구단 지명 예상
   const d=G.draft; const live=d&&!d.done; const pool=new Set((live?d.cls:G.draftClass||[]).filter(id=>G.players[id]&&G.players[id].prospect)); const out=[];
   if(live){ let i=d.cur+(d.picks[d.cur].tid===G.user?1:0); for(;i<d.picks.length&&out.length<(n||12);i++){ const pk=d.picks[i]; if(pk.tid===G.user)break; const id=mockPick(pk.tid,pool); if(id==null)break; pool.delete(id); out.push({pk,id}); } }

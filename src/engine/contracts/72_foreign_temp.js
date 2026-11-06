@@ -33,7 +33,8 @@ function fTmpEnd(q,why){ const o=G.players[q.ftmp.o]; if(o&&o.frehab===q.id)dele
 /* 대체 선수를 정식 계약으로 돌린다: 원 선수는 방출(남은 연봉 지급), 교체 1회 차감, 남은 경기 비율만큼 연봉 */
 function fTmpConvert(q){ const tid=q.team, o=G.players[q.ftmp.o];
   if(fReplLeft(tid)<=0||G.day>foreignDL())return '교체 횟수가 없거나 8월 15일이 지나 정식 계약할 수 없습니다.';
-  { const yb=foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==o&&x!==q), cap=F_TOTAL_CAP+10*USD*sum(yb.map(x=>x.rsy||0)), tot=sum(yb.map(fCommit))+q.sal; if(q.foreign==='용병'&&tot>cap)return `${o?o.name+'을(를) 내보내면 ':''}외국인 총액 한도가 ${money(cap)}(으)로 줄어 ${q.name}과(와) 정식 계약하면 ${money(tot-cap)} 넘습니다.`; } /* 원 선수 재계약 가산분이 빠진 한도로 다시 확인(검수 11-06) */
+  { const yb=foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==o&&x!==q), cap=F_TOTAL_CAP+10*USD*sum(yb.map(x=>x.rsy||0)), tot=sum(yb.map(fCommit))+q.sal; if(q.foreign==='용병'&&tot>cap)return `${o?o.name+'을(를) 내보내면 ':''}외국인 총액 한도가 ${money(cap)}(으)로 줄어 ${q.name}과(와) 정식 계약하면 ${money(tot-cap)} 넘습니다.`;
+    if(yb.length>=3||(yb.length===2&&yb.every(x=>x.isP===q.isP)))return `정식 계약하면 일반 외국인 3명이 모두 ${q.isP?'투수':'타자'}가 됩니다.`; } /* 일반 영입과 같은 구성 제한(검수 11-06) */ /* 원 선수 재계약 가산분이 빠진 한도로 다시 확인(검수 11-06) */
   if(o&&o.team===tid){ delete o.frehab; releaseForeign(o.id); }
   delete q.ftmp; G.sea.repl[tid]=(G.sea.repl[tid]||0)+1; G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+Math.round(q.sal*remainFrac());
   story(q,`${tname(tid)}과(와) 정식 계약 전환 (${money(q.sal)})`,'move'); mvLog('외국인',q,null,tid,'부상 대체 → 정식 계약',q.sal);
@@ -50,11 +51,12 @@ function fTmpDaily(){ const per=period();
   const evOpen=(k,q)=>(G.evs||[]).some(e=>!e.done&&e.k===k&&e.data&&e.data.qid===q.id);
   for(const t of G.teams)for(const q of playersOf(t.id).filter(x=>x.ftmp)){ const o=G.players[q.ftmp.o]; if(t.id===G.user){ if(q.ftmp.ask&&!evOpen('ftmp',q))delete q.ftmp.ask; if(q.ftmp.left&&!evOpen('ftmp2',q))delete q.ftmp.left; } /* 이직으로 결정 메일이 닫혔으면 다시 묻는다(재활 명단에 묶이지 않게, 검수 11-06) */
     if(per!=='season'){ fTmpEnd(q,'정규시즌 종료'); continue; }
+    if(G.day-q.ftmp.d>=q.ftmp.paid){ q.ftmp.paid+=30; G.sea.fspend[t.id]=(G.sea.fspend[t.id]||0)+q.ftmp.fee; } /* 등록돼 있는 동안은 한 달씩 지급(복귀 결정을 미뤄도, 검수 11-06) */
     if(!o||o.team!==t.id||o.frehab!==q.id){ if(t.id===G.user&&!G.unemp){ if(q.ftmp.left)continue; q.ftmp.left=G.day; const can=fReplLeft(t.id)>0&&G.day<=foreignDL(); /* 우리 구단은 자동 전환하지 않고 묻는다(검수 11-06: 원 선수를 방출했더니 대체 선수가 저절로 정식 계약됨) */
         evNew('ftmp2',`대체 선수 ${q.name} 거취`,`원 선수가 팀을 떠났습니다. 부상 대체로 뛰는 ${q.name}(${posLabel(q)}, 능력 ${dvo(q)})을(를) 어떻게 할지 정해야 합니다.`,[...(can?[{l:`${q.name} 정식 계약`,fx:`교체 횟수 1회 차감, 남은 경기 비율만큼 연봉 ${money(Math.round(q.sal*remainFrac()))}.`}]:[{l:'정식 계약 불가',fx:'교체 횟수가 없거나 8월 15일이 지났습니다. 고르면 대체 계약을 끝냅니다.'}]),{l:'대체 계약 종료',fx:`${q.name}이(가) 떠납니다. 교체 횟수는 그대로입니다.`}],{from:'운영팀',ref:q.id,data:{qid:q.id},def:1,exp:5}); continue; }
       if(fTmpConvert(q))fTmpEnd(q,'원 선수 이탈'); continue; } /* AI: 원 선수가 떠났으면 정식 계약으로(못 하면 계약 종료) */
-    if(o.injOut>0){ if(G.day-q.ftmp.d>=q.ftmp.paid){ q.ftmp.paid+=30; G.sea.fspend[t.id]=(G.sea.fspend[t.id]||0)+q.ftmp.fee; } continue; } /* 원 선수 재활 중: 한 달씩 연장 */
-    if(t.id!==G.user){ if(fBackClash(o,q)){ fBackResolve(q,o); continue; } if(ovr(q)>ovr(o)+3&&!fTmpConvert(q))continue; fTmpEnd(q,'원 선수 복귀'); continue; }
+    if(o.injOut>0)continue; /* 원 선수 재활 중 */
+    if(t.id!==G.user||G.unemp){ if(fBackClash(o,q)){ fBackResolve(q,o); continue; } if(ovr(q)>ovr(o)+3&&!fTmpConvert(q))continue; fTmpEnd(q,'원 선수 복귀'); continue; }
     if(q.ftmp.ask)continue; q.ftmp.ask=G.day; const can=fReplLeft(t.id)>0&&G.day<=foreignDL();
     evNew('ftmp',`${o.name} 복귀: 대체 선수 ${q.name} 거취`,`${o.name}(${posLabel(o)}, 능력 ${dvo(o)})이(가) 재활을 마쳤습니다. 부상 대체로 뛴 ${q.name}(${posLabel(q)}, 능력 ${dvo(q)})을(를) 어떻게 할지 정해야 합니다. 정할 때까지 ${o.name}은(는) 재활 선수 명단에 남습니다.`,
       [{l:`${o.name} 복귀`,fx:`${q.name}의 대체 계약을 끝냅니다. 교체 횟수는 그대로입니다.${fBackClash(o,q)?` 다만 지금은 ${o.name}이(가) 돌아오면 외국인 3명이 모두 ${o.isP?'투수':'타자'}가 되므로, 다른 외국인을 정리할 때까지 재활 선수 명단에 남습니다.`:''}`},...(can?[{l:`${q.name} 정식 계약`,fx:`${o.name}을(를) 방출하고(남은 연봉 지급) ${q.name}과(와) 정식 계약합니다. 교체 횟수 1회 차감, 남은 경기 비율만큼 연봉 ${money(Math.round(q.sal*remainFrac()))}.`}]:[])],

@@ -31,13 +31,14 @@ function gmContact(tid,kind){ const t=team(tid), g=gmOf(tid); if(!g)return {msg:
     return {msg:`${g.name} 단장과 저녁 식사를 했습니다(1천만 원). 친분 +${d}. ${g.trait==='hard'?'식사는 즐겁게 했지만 협상은 별개라고 선을 긋습니다.':'다음 거래 때 잘 봐 달라는 말이 오갔습니다.'}${(()=>{ /* 식사 자리에서 속내를 조금 듣는다: 우리 선수 중 누구를 탐내는지 */ try{ const L=aiInterest(tid).map(x=>typeof x==='object'?x:G.players[x]).filter(Boolean); return L.length?` 술잔이 돌자 ${L[0].name}(${posLabel(L[0])}) 이야기를 슬쩍 꺼냈습니다.`:' 지금은 우리 선수에게 특별히 눈독 들이는 사람은 없어 보입니다.'; }catch(e){ return ''; } })()}`,ok:true}; }
   return {msg:''}; }
 /* 역제안: 조금 모자랄 때 상대가 조건을 바꿔 다시 제시 */
-function counterOffer(tid,give,get,cash){ cash=cash||0; const e=evalTrade(tid,give,get,cash); const gap=e.need-e.gain; if(gap<=0||gap>9)return [];
+function counterOffer(tid,give,get,cash,pk){ cash=cash||0; const ev=(g,t)=>evalTrade(tid,g,t,cash,pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(gap<=0||gap>9)return [];
   const out=[]; const U=team(G.user);
-  const add=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)&&!p.ys&&healthy(p)&&!ntcOf([p.id])) /* 거부권 선수는 역제안에 넣지 않는다(제출 검사와 같게) */.map(p=>({p,ng:give.concat(p.id)})).filter(x=>{ const e2=evalTrade(tid,x.ng,get,cash); return e2.ok&&e2.theirN<=ROSTER_MAX; }).map(x=>({...x,c:tval(U,x.p,'out')})).sort((a,b)=>a.c-b.c)[0];
+  const add=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)&&!p.ys&&healthy(p)&&!ntcOf([p.id])) /* 거부권 선수는 역제안에 넣지 않는다(제출 검사와 같게) */.map(p=>({p,ng:give.concat(p.id)})).filter(x=>{ const e2=ev(x.ng,get); return e2.ok&&e2.theirN<=ROSTER_MAX; }).map(x=>({...x,c:tval(U,x.p,'out')})).sort((a,b)=>a.c-b.c)[0];
   if(add)out.push({give:add.ng,get:[...get],why:`${add.p.name}을(를) 더 얹어 주시면 하겠습니다.`});
-  if(get.length>1){ for(const id of [...get].sort((a,b)=>tval(team(tid),G.players[b],'out')-tval(team(tid),G.players[a],'out'))){ const ng=get.filter(x=>x!==id); if(evalTrade(tid,give,ng,cash).ok){ out.push({give:[...give],get:ng,why:`${G.players[id].name}은(는) 못 드립니다. 나머지로 하시죠.`}); break; } } }
-  if(out.length<2&&get.length===1){ const p=G.players[get[0]]; const k=pSlot(p); const alt=domestic(tid).filter(q=>q.id!==p.id&&!q.ys&&healthy(q)&&pSlot(q)===k&&!ntcOf([q.id])).map(q=>({q,e:evalTrade(tid,give,[q.id],cash)})).filter(x=>x.e.ok).sort((a,b)=>ovr(b.q)-ovr(a.q))[0];
+  if(get.length>1){ for(const id of [...get].sort((a,b)=>tval(team(tid),G.players[b],'out')-tval(team(tid),G.players[a],'out'))){ const ng=get.filter(x=>x!==id); if(ev(give,ng).ok){ out.push({give:[...give],get:ng,why:`${G.players[id].name}은(는) 못 드립니다. 나머지로 하시죠.`}); break; } } }
+  if(out.length<2&&get.length===1){ const p=G.players[get[0]]; const k=pSlot(p); const alt=domestic(tid).filter(q=>q.id!==p.id&&!q.ys&&healthy(q)&&pSlot(q)===k&&!ntcOf([q.id])).map(q=>({q,e:ev(give,[q.id])})).filter(x=>x.e.ok).sort((a,b)=>ovr(b.q)-ovr(a.q))[0];
     if(alt&&ovr(alt.q)>=ovr(p)-8)out.push({give:[...give],get:[alt.q.id],why:`${p.name} 대신 ${alt.q.name}(${posLabel(alt.q)})이면 됩니다.`}); }
+  for(const c of out){ c.cash=cash; c.pk=pkNorm(pk); } /* 역제안은 그때 현금·지명권 조건으로 고정 */
   return gmTrait(tid)==='hard'?out.slice(0,1):out.slice(0,2); }
 const NEG_MONTH=4;
 function negTurn(tid){ G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={}); const o=dobj(G.day); const mk=o.y*100+o.m; if(c.negM!==mk){ c.negM=mk; c.neg=0; } delete c.negDay; c.seen=c.seen||{}; for(const k in c.seen)if(c.seen[k]<G.day-30)delete c.seen[k]; return c; }
@@ -53,7 +54,7 @@ function tradeSnap(ids){ const o={}; for(const id of ids){ const p=G.players[id]
 /* 트레이드 이후 WAR: 은퇴 등으로 목록에서 빠진 선수는 보관 기록(G.arch)으로 계속 센다(은퇴했다고 지난 거래 평가가 바뀌지 않게) */
 function warSince(id,y,snap){ const p=G.players[id]; if(!p){ const a=G.arch&&G.arch[id]; if(!a)return 0; let w=0; for(const r of a.rows)if(r.y>=y&&r.y<=G.year)w+=r.war||0; return w-(snap&&snap[id]||0); } let w=0; for(let yy=y;yy<=G.year;yy++)w+=warSoFar(p,yy); return w-(snap&&snap[id]||0); }
 function tradeReport(tr){ if(!tr.gi)return null; const got=sum(tr.gi.map(id=>warSince(id,tr.y,tr.snap))), gave=sum(tr.go.map(id=>warSince(id,tr.y,tr.snap))); return {got,gave,net:got-gave}; }
-function tradeGrade(tid,give,get,cash){ const U=team(G.user); const d=stackIn(get.map(id=>tval(U,G.players[id],'in')))-sum(give.map(id=>tval(U,G.players[id],'out')))-(cash||0)/2500; /* cash: 우리가 낸 현금(+) 받은 현금(-). 10억이면 4점 */ return d>=8?'A':d>=3?'B':d>=-3?'C':d>=-8?'D':'F'; }
+function tradeGrade(tid,give,get,cash,pk){ const U=team(G.user); pk=pkNorm(pk); const d=stackIn(get.map(id=>tval(U,G.players[id],'in')))-sum(give.map(id=>tval(U,G.players[id],'out')))-(cash||0)/2500+sum(pk.get.map(k=>pkVal(U,k)))-sum(pk.give.map(k=>pkVal(U,k))); /* 지명권도 등급에(검수 11-06) */ /* cash: 우리가 낸 현금(+) 받은 현금(-). 10억이면 4점 */ return d>=8?'A':d>=3?'B':d>=-3?'C':d>=-8?'D':'F'; }
 /* 다른 구단끼리 트레이드 */
 function aiTradeTry(aid){ const tc={}; (G.lgTrades||[]).filter(t=>t.y===G.year).forEach(t=>{ tc[t.a]=(tc[t.a]||0)+1; tc[t.b]=(tc[t.b]||0)+1; }); const teams=G.teams.filter(t=>t.id!==ME()&&(tc[t.id]||0)<5); const buyers=teams.filter(t=>teamCtx(t).contend); const A=aid!=null?teams.find(t=>t.id===aid):pick(buyers.length?buyers:teams); if(!A)return null;
   const rk=slotRanks(A.id); const nd=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0]; if(!nd||nd.r<(gmHeat(A.id)>=.4?5:6))return null;
@@ -72,7 +73,7 @@ function aiTradeTry(aid){ const tc={}; (G.lgTrades||[]).filter(t=>t.y===G.year).
     if(rosterN(B.id)+best.length-gets.length>ROSTER_MAX)continue;
     { const gs=sum(best.map(x=>x.q.sal)), ps=sum(gets.map(q=>q.sal)); const capY=capOf(G.year); const gI=gets.map(q=>q.id), bI=best.map(x=>x.q.id); if((ps>gs&&capPayAs(A.id,gI,bI)>capY)||(gs>ps&&capPayAs(B.id,bI,gI)>capY))continue; }
     const give=best.map(x=>x.q.id); const snap=tradeSnap([...gets.map(q=>q.id),...give]);
-    gets.forEach(q=>{ termsClear(q); q.team=A.id; story(q,`트레이드로 ${tname(A.id)} 이적`,'move'); delete q.aiListed; delete q.aiWhy; delete q.aiUrg; }); give.forEach(id=>{ termsClear(G.players[id]); G.players[id].team=B.id; story(G.players[id],`트레이드로 ${tname(B.id)} 이적`,'move'); delete G.players[id].aiListed; });
+    gets.forEach(q=>{ tradeTerms(q); q.team=A.id; story(q,`트레이드로 ${tname(A.id)} 이적`,'move'); delete q.aiListed; delete q.aiWhy; delete q.aiUrg; }); give.forEach(id=>{ termsClear(G.players[id]); G.players[id].team=B.id; story(G.players[id],`트레이드로 ${tname(B.id)} 이적`,'move'); delete G.players[id].aiListed; });
     G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ag:gets.map(q=>q.id),bg:give,snap}); gets.forEach(q=>mvLog('트레이드',q,B.id,A.id)); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id)); if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}–${tshort(B.id)} ${gets.length}대${give.length} 트레이드: ${tshort(A.id)}은(는) ${gets.map(q=>`${q.name}(${posLabel(q)})`).join(', ')}을(를) 얻고 ${give.map(id=>G.players[id].name).join(', ')}을(를) 내줬습니다.${gets.some(q=>q.aiWhy)?' 매물로 나와 있던 선수입니다.':''}`,{tid:A.id,ref:p.id});
     return true; }
@@ -93,8 +94,8 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     const want=vOut*(nx?.6:o.wantF||.3)+1; const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!hasNtc(q)&&q.age<=27&&!core.has(q.id)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
     let pay=null; for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<0)continue; pay=arr; break; }
     if(!pay)continue; const give=pay.map(x=>x.q.id); if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year))continue;
-    const snap=tradeSnap([p.id,...give]); termsClear(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
-    give.forEach(id=>{ const q=G.players[id]; termsClear(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
+    const snap=tradeSnap([p.id,...give]); tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
+    give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
     G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ag:[p.id],bg:give,snap,...(o.buyers?{}:{fd:1})}); mvLog('트레이드',p,B.id,A.id); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id)); if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}, 리빌딩 ${tshort(B.id)}에서 ${p.name}(${posLabel(p)}, ${p.age}세) 영입: ${give.map(id=>G.players[id].name).join(', ')} 내줌`,{tid:A.id,ref:p.id}); n++; done=true; break; }
     if(!done)break; }

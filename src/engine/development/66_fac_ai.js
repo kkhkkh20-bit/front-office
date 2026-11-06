@@ -33,14 +33,14 @@ function facSt(tid){ if(tid==null)return null; if(tid===G.user){ if(!G.fac||!G.f
 function facLvK(tid,k){ if(tid==null)return 2; if(tid===G.user)return facOf(k); const t=G.teams[tid]; return t&&t.fi&&t.fi.it?(t.fi.it[k]||0):2; }
 /* 다른 구단 부상·회복·2군 효과는 리그 중간인 2단계를 기준(예전 값)으로 본다. 예전엔 이 효과가 없었으므로 2단계 구단은 그대로다 */
 function facAiInj(tid){ return tid==null?1:1-(facImpact(facLvK(tid,'weight'))-2)*.05; }
-function facAiRec(tid){ return tid==null?1:1-(facImpact(facLvK(tid,'rehab'))-2)*.07; }
-function facAiFat(tid){ return tid==null?1:1+(facImpact(facLvK(tid,'rehab'))-2)*.06; }
+function facAiRec(tid){ return tid==null?1:1-facImpact(facLvK(tid,'rehab'))*.07; } /* 재활·회복은 우리 구단과 같은 식: 단장이 바뀌어도 같은 재활센터면 같은 효과(검수 11-06) */
+function facAiFat(tid){ return tid==null?1:1+facImpact(facLvK(tid,'rehab'))*.06; }
 function facAiFut(tid){ return tid==null?0:(facImpact(facLvK(tid,'fut'))-2)*.05; }
 /* 증설분 유지비: 시작 때보다 늘어난 유지비만 결산에 붙인다(기본 시설 유지비는 구단 운영비에 들어 있다) */
-function aiFacUpExtra(t){ if(!t.fi||!t.fi.it)return 0; return Math.max(0,facUpOf(t.fi.it)-(t.fi.up0||0)); }
+function aiFacUpExtra(t){ const bus=t.bus!=null?Math.max(0,BUS[t.bus].up-BUS[1].up):0; /* 우리가 산 리무진의 추가 운영비(다른 구단 기본은 우등 버스, 검수 11-06) */ if(!t.fi||!t.fi.it)return bus; return Math.max(0,facUpOf(t.fi.it)-(t.fi.up0||0))+bus; }
 /* 구단 이동: 떠나는 구단에 시설을 그대로 남기고, 가는 구단의 시설을 그대로 가져온다 */
 function facMoveTeam(oldTid,newTid){ if(oldTid===newTid)return; const ot=team(oldTid), nt=team(newTid); facInit();
-  const S=G.fac; S.dn=S.dn||{}; S.hist=S.hist||[]; if(S.up0==null)S.up0=facUpOf(facAlloc(ot,ot.fac||3).it); if(!S.pf)S.pf=facAlloc(ot,ot.fac||3).pf;
+  const S=G.fac; S.dn=S.dn||{}; S.hist=S.hist||[]; if(S.up0==null)S.up0=Math.min(facUpOf(S.it),facUpOf(facAlloc(ot,2).it)); /* 예전 저장: 증설된 현재 단계가 아니라 리그 기본(2단계) 기준(검수 11-06) */ if(!S.pf)S.pf=facAlloc(ot,ot.fac||3).pf;
   ot.fi=S; ot.fac=S.lv; ot.bus=G.bus!=null?G.bus:1;
   const N=aiFacInit(nt); delete nt.fi; N.build=null; G.fac=N; G.bus=nt.bus!=null?nt.bus:1; delete nt.bus; facInit(); }
 /* 완공과 투자 결정(매일). 야인일 때 전 소속 구단 시설도 그 구단(AI)이 운영한다 */

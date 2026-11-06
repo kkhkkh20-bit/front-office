@@ -102,12 +102,14 @@ function tradeCool(tid,get){ if(get&&get.length&&get.every(id=>{ const q=G.playe
   if(h2h)return null; const L=Y.filter(x=>x.d!=null&&G.day-x.d<TRADE_COOL&&G.day>=x.d); if(!L.length)return null; const d=Math.max(...L.map(x=>x.d)); return {d,until:d+TRADE_COOL}; }
 /* 예산을 넘겨 연봉을 떠안는 트레이드는 구단주 승인이 필요하다. 연봉은 한 해 치로 이번 결산에 잡힌다(budget의 국내 선수 연봉).
    허용 폭: 성적 우선 구단주 15억·인기 10억·수익 5억, 신뢰 70 이상이면 1.5배, 50 미만이면 절반. 승인하면 신뢰 -2 */
+/* 올해 결산에 잡히는 연봉 비율: 시즌 중이면 남은 정규시즌 기간만(payTeamFrac와 같은 기준) */
+function tradeYrFrac(){ const C=G.cal, per=period(); if(per!=='season'||!C)return per==='post'?0:1; return clamp((C.end+1-G.day)/(C.end+1-C.open),0,1); }
 function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)return null; const P=id=>G.players[id];
-  const dSal=sum(get.map(id=>P(id)?P(id).sal:0))-sum(give.map(id=>P(id)?P(id).sal:0))+(cash||0); if(dSal<=0)return null; let b; try{ b=budget(); }catch(e){ return null; }
+  const fr=tradeYrFrac(); const dSal=Math.round((sum(get.map(id=>P(id)?P(id).sal:0))-sum(give.map(id=>P(id)?P(id).sal:0)))*fr)+(cash||0); /* 시즌 중 트레이드는 남은 기간 연봉만(검수 11-06) */ if(dSal<=0)return null; let b; try{ b=budget(); }catch(e){ return null; }
   const room=after?b.roomGoal+dSal:b.roomGoal; const over=dSal-room; if(over<=0)return null; const t=team(G.user);
   const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
   if(over<=lim)return {ok:true,over,lim,dSal};
-  return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(연간 선수 연봉 ${money(dSal-(cash||0))}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 올해 예산(지원 목표)을 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
+  return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(선수 연봉 ${money(dSal-(cash||0))}${fr<1?`(남은 시즌 ${Math.round(fr*100)}% 몫)`:''}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 올해 예산(지원 목표)을 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
 function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 -2.`,{kind:'구단주'}); }catch(e){} }
 /* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
 function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }
@@ -159,16 +161,16 @@ function proposeTrade(tid,give,get,cash,pk){
   { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
   const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
   { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)})에 대한 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
-  { const oc=tradeOwnerCheck(give,get,cash); if(oc&&!oc.ok)return {ok:false,owner:true,msg:oc.msg}; }
+  const oc0=tradeOwnerCheck(give,get,cash); if(oc0&&!oc0.ok)return {ok:false,owner:true,msg:oc0.msg};
   const isCtr=nt.ctr&&nt.ctr[sig]===G.day; /* 상대가 직접 낸 역제안·보완안은 횟수·중복 제한 없이 받는다 */
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
   if(!isCtr&&!ni.left)return {ok:false,msg:`${gmn}: 이번 달은 더 시간을 내기 어렵습니다. ${ni.next}에 다시 연락 주십시오.${ni.free?'':' (우리와 맞대결하는 기간에는 경기장에서 따로 만날 수 있습니다)'}`,closed:true};
   const e=evalTrade(tid,give,get,cash,pk);
   if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
   if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${t.city} ${t.nick} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
-  if(e.theirPay>capOf(G.year)&&e.theirPay>capPay(tid))return {ok:false,msg:`${t.city} ${t.nick} 단장: 샐러리캡 때문에 연봉을 더 떠안을 수 없습니다.`};
-  if(e.ok){ const mv=mgrTradeView(tid,give,get); const grade=tradeGrade(tid,give,get,cash); const snap=tradeSnap([...give,...get]);
-    give.forEach(id=>{ termsClear(G.players[id]); G.players[id].team=tid; story(G.players[id],`트레이드로 ${tname(tid)} 이적`,'move'); }); get.forEach(id=>{ termsClear(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); try{ leaveSweep(); }catch(e){} /* 보낸 선수에게 붙인 우리 구단 약속·명단 표시 정리 */
+  { const cy=sponSeason(); if(e.theirPay>capOf(cy)&&e.theirPay>(cy>G.year?capPayNext(tid):capPay(tid)))return {ok:false,msg:`${t.city} ${t.nick} 단장: 샐러리캡 때문에 연봉을 더 떠안을 수 없습니다.`}; }
+  if(e.ok){ const mv=mgrTradeView(tid,give,get); const grade=tradeGrade(tid,give,get,cash,pk); const snap=tradeSnap([...give,...get]);
+    give.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=tid; story(G.players[id],`트레이드로 ${tname(tid)} 이적`,'move'); }); get.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); try{ leaveSweep(); }catch(e){} /* 보낸 선수에게 붙인 우리 구단 약속·명단 표시 정리 */
     for(const k in G.lineup) if(give.includes(G.lineup[k]))delete G.lineup[k];
     const diff=sum(get.map(id=>trueVal(G.players[id])))-sum(give.map(id=>trueVal(G.players[id])));
     try{ frBacklash(give); }catch(e){}
@@ -178,14 +180,14 @@ function proposeTrade(tid,give,get,cash,pk){
     if(cash>0){ payOut(G.user,cash,'etc'); payIn(tid,cash); } else if(cash<0){ payOut(tid,-cash,'etc'); payIn(G.user,-cash); }
     const pkT=(L,s)=>L.length?`${s}${L.map(pkName).join(', ')}`:''; const pkG=pkT(pk.give,' + 지명권 '), pkR=pkT(pk.get,' + 지명권 '); pkMove(pk,tid); if(pkG||pkR){ const T=G.trades[G.trades.length-1]; T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)}; wire('트레이드',`${tshort(G.user)}·${tshort(tid)} 트레이드로 신인 지명권 이동: ${[...pk.give.map(k=>pkName(k)+' → '+tshort(tid)),...pk.get.map(k=>pkName(k)+' → '+tshort(G.user))].join(', ')}`,{tid}); }
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash>0?` + 현금 ${money(cash)}`:''}${pkG} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}${cash<0?` + 현금 ${money(-cash)}`:''}${pkR}`);
-    { const oc=tradeOwnerCheck(give,get,cash,true); if(oc&&oc.ok&&oc.over>0)tradeOwnerOk(oc); }
+    if(oc0&&oc0.ok&&oc0.over>0)tradeOwnerOk(oc0); /* 승인 판정은 거래 전 한 번으로(검수 11-06: 거래 뒤 다시 계산하면 승인 대상이 사라져 신뢰 차감이 빠짐) */
     mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}(관계 ${mv.r>0?'+':''}${mv.r}).`:''}`};
   }
   const gap=e.need-e.gain; if(!ni.free&&!isCtr)nt.neg++; nt.seen[sig]=G.day; nt.ask=nt.ask||{}; for(const id of get){ const a=nt.ask[id]||{m:0,until:0}; a.m=Math.min(.25,(a.until>=G.day?a.m:0)+.04); a.until=G.day+7; nt.ask[id]=a; }
   for(const id of give){ const q=G.players[id]; if(q&&R()<.12){ q.mor=clamp((q.mor??60)-4,0,100); if(R()<.5)wire('루머',`${q.name}, ${t.city} ${t.nick}와(과) 트레이드 대상으로 거론됐다는 소문`,{ref:q.id}); } } if(gmTrait(tid)==='hard'&&nt.neg>=3)t.rel=clamp(t.rel-1,0,100);
   const why=tradeWhyNot(t,give,get);
   if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''} (친분 -2)`}; }
-  const co=counterOffer(tid,give,get,cash); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,cash)+pkSig(pk)]=G.day; /* 현금은 그대로 두고 선수 구성만 바꾼 안 */ if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.`,counters:co};
+  const co=counterOffer(tid,give,get,cash,pk); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,cash)+pkSig(pk)]=G.day; /* 현금은 그대로 두고 선수 구성만 바꾼 안 */ if(co.length)return {ok:false,msg:`${gmn}: 조금 모자랍니다.${why?` ${why}`:''} 이렇게 하시면 응하겠습니다.`,counters:co};
   const cand=domestic(G.user).filter(p=>!give.includes(p.id)&&!(p.joinY>G.year)).map(p=>({p,v:tval(t,p,'in')*.72})).filter(x=>x.v>=gap*.8).sort((a,b)=>a.v-b.v)[0];
   if(cand)nt.ctr[tsig([...give,cand.p.id],get,cash)+pkSig(pk)]=G.day;
   const cashNeed=cashFor(t,gap); if(cashNeed&&cashNeed+cash<=3000)nt.ctr[tsig(give,get,cashNeed+cash)+pkSig(pk)]=G.day; const cT=cashNeed+cash; const cTxt=cashNeed&&cT<=3000?(cT>0?` 아니면 현금 ${money(cT)}을(를) 얹어도 됩니다.`:cT<0?` 아니면 받는 현금을 ${money(-cT)}로 줄이면 됩니다.`:' 아니면 현금을 받지 않으면 됩니다.'):'';

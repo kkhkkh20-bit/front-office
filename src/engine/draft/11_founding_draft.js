@@ -186,18 +186,21 @@ function rosterProj(tid){ return rosterN(tid)+draftedBy(tid); }
 function dGrp(p){ if(p.isP)return p.role==='RP'?'RP':'SP'; return p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':p.pos==='DH'?'IF':'OF'; }
 function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,OF:.2,SP:.25,RP:.2}; const L=domestic(tid).filter(p=>p.age<=26); const n=L.length||1; const o={};
   for(const g of k){ const c=L.filter(p=>dGrp(p)===g).length; o[g]=clamp((share[g]*n-c)*.6,-2,3); } return o; }
+function aiDraftScore(tid,p,need){ const t=team(tid); return p.pot+hn('ai'+tid+G.year,p.id)*t.scoutSd+(ovr(p)-35)*(t.mode==='contend'?.5:.25)+(need[dGrp(p)]||0); }
 function aiDraftPick(tid){
   const t=team(tid); const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect);
   let best=null,bs=-1e9;
-  const need=draftNeed(tid); for(const id of av){ const p=G.players[id]; const sc=p.pot+hn('ai'+tid+G.year,id)*t.scoutSd+(ovr(p)-35)*(t.mode==='contend'?.5:.25)+(need[dGrp(p)]||0); if(sc>bs){bs=sc;best=id;} }
+  const need=draftNeed(tid); for(const id of av){ const sc=aiDraftScore(tid,G.players[id],need); if(sc>bs){bs=sc;best=id;} }
   // 로스터가 찼으면 최하위 선수보다 나은 신인만 뽑는다
   const rd=G.draft.picks[G.draft.cur].rd;
   if(best&&rd>=3&&rosterProj(tid)>=ROSTER_MAX-2){ const worst=Math.min(...domestic(tid).map(keepScore)); const bp=G.players[best]; if(keepScore(bp)+hn('ak'+tid,best)*t.scoutSd*.5<worst+1)return -1; }
   return best;
 }
 function passCurrent(){ const d=G.draft; const pk=d.picks[d.cur]; pk.pid=-1; pk.pass=true; d.cur++; if(pk.tid===G.user)addLog(`${pk.rd}라운드 ${pk.no}순위 지명을 건너뛰었습니다.`); if(d.cur>=d.picks.length)finishDraft(); }
+/* 우리 지명 요청: 우리 차례일 때만(검수 11-06) */
+function userPick(pid){ const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return '지금은 우리 차례가 아닙니다.'; return doPick(pid)?'':'지명할 수 없는 선수입니다.'; }
 function doPick(pid){
-  const d=G.draft; const pk=d.picks[d.cur]; const p=G.players[pid];
+  const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; const p=G.players[pid]; if(!pk||!p||!p.prospect||!d.cls.includes(pid))return false; /* 이미 지명된 선수·후보 아닌 선수는 다시 뽑지 않는다(검수 11-06) */
   if(pk.tid===G.user){ try{ const rp=scoutReport(p); if(rp.ofp!=null)p.dEst={ofp:rp.ofp,sd:rp.sd,who:rp.who}; }catch(e){} }
   p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p)}; acqStamp(p,'draft',pk.tid,Object.assign({rd:pk.rd,no:pk.no},pk.tid===G.user?{how:pk.rule?'rule':pk.auto?'auto':'gm'}:{})); if(pk.tid===G.user)try{ const rp=scoutReport(p); p.acq.e0=rp.cur; if(rp.ofp!=null)p.acq.ep=rp.ofp; }catch(e){} story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
   { G.sea.bonus=G.sea.bonus||{}; G.sea.bonus[pk.tid]=(G.sea.bonus[pk.tid]||0)+p.draft.bonus; } pk.pid=pid; d.cur++;
@@ -205,11 +208,11 @@ function doPick(pid){
   if(pk.tid===G.user)addLog(`${pk.rd}라운드 ${pk.no}순위로 ${p.name}(${p.college?'대졸':'고졸'}·${posLabel(p)})을(를) 지명했습니다.`);
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid)){ (d.lost=d.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,no:pk.no,nm:p.name}); }
   G.shortlist=(G.shortlist||[]).filter(x=>x!==pid);
-  if(d.cur>=d.picks.length)finishDraft();
+  if(d.cur>=d.picks.length)finishDraft(); return true;
 }
 function passPick(){ const d=G.draft; const pk=d.picks[d.cur]; if(!pk||pk.tid!==G.user||pk.rd<3)return; passCurrent(); }
-function finishDraft(){ const d=G.draft; d.done=true; G.dlog=G.dlog||{}; G.dlog[d.y]=d.picks.filter(x=>x.pid>0).map(x=>{ const p=G.players[x.pid]; return {id:x.pid,nm:p?p.name:'',t:x.tid,rd:x.rd,no:x.no,pos:p?posLabel(p):'',pr:p?p.press||null:null}; }); for(const id of d.cls){ const p=G.players[id]; if(p&&p.prospect)delete G.players[id]; } G.draftClass=[];
-  const mine=d.picks.filter(x=>x.tid===G.user&&x.pid>0).map(x=>G.players[x.pid]).filter(Boolean); G.shortlist=[];
+function finishDraft(){ const d=G.draft; d.done=true; G.dlog=G.dlog||{}; G.dlog[d.y]=d.picks.filter(x=>x.pid>0).map(x=>{ const p=G.players[x.pid]; return {id:x.pid,nm:p?p.name:'',t:x.tid,rd:x.rd,no:x.no,pos:p?posLabel(p):'',pr:p?p.press||null:null}; }); for(const id of d.cls){ const p=G.players[id]; if(p&&p.prospect)delete G.players[id]; } G.draftClass=[]; const cls=new Set(d.cls);
+  const mine=d.picks.filter(x=>x.tid===G.user&&x.pid>0).map(x=>G.players[x.pid]).filter(Boolean); G.shortlist=(G.shortlist||[]).filter(id=>!cls.has(id)&&G.players[id]); /* 신인 후보만 정리하고 현역 관심 선수는 남긴다(검수 11-06) */
   note('드래프트',`드래프트를 마쳤습니다. 우리 구단 지명: ${mine.map(p=>p.name).join(', ')}. 내년 1월에 합류합니다.`); }
 function advanceDraft(stopAtUser){
   const d=G.draft;

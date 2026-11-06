@@ -341,12 +341,13 @@ function answerOffer(id,yes){
   G.offers=G.offers.filter(x=>x.id!==id);
   if(!yes){ addLog(`${tname(o.from)}의 트레이드 제안을 거절했습니다.`); return {ok:true,msg:'거절했습니다.'}; }
   if(!tradeOpen())return {ok:false,msg:'트레이드 기간이 아닙니다.'};
+  if(o.exp<G.day){ offerMailDone(o.id); return {ok:false,msg:'기한이 지난 제안입니다.'}; } /* 일일 정리 전이라도 만료 제안은 받지 않는다(검수 11-06) */
   /* 성사 여부(거부권·소속)를 먼저 보고, 구단주 승인(신뢰 비용)은 실제로 성사될 때만 반영한다 */
   { const why=offerBlockMsg(o); if(why)return {ok:false,msg:why}; }
   { const cd=tradeCool(o.from,o.give); if(cd){ G.offers.unshift(o); return {ok:false,msg:cd.cap?`올해 ${tshort(o.from)}와(과)는 이미 ${cd.n}번 거래해 더 거래할 수 없습니다.`:`${tshort(o.from)}와(과)는 ${dmd(cd.until)}까지 다시 거래할 수 없습니다(거래 뒤 ${TRADE_COOL}일).`}; } } /* 받아 둔 제안도 수락할 때 거래 간격을 다시 본다 */
   { const oc=tradeOwnerCheck(o.get,o.give,0); if(oc&&!oc.ok){ G.offers.unshift(o); return {ok:false,owner:true,msg:oc.msg}; } if(oc&&oc.ok)tradeOwnerOk(oc); } /* AI 제안은 우리가 o.get을 보내고 o.give를 받는다 */
-  const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const grade=tradeGrade(o.from,o.get,o.give);
-  o.give.forEach(id=>{ termsClear(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); o.get.forEach(id=>{termsClear(G.players[id]); G.players[id].team=o.from; delete G.players[id].listed; /* 트레이드로 옮기면 계약한 구단에만 걸린 조건은 끝난다(돌아와도 되살아나지 않음) */ story(G.players[id],`트레이드로 ${tname(o.from)} 이적`,'move');});
+  const t=team(o.from); const mv=mgrTradeView(o.from,o.get,o.give); const snap=tradeSnap([...o.give,...o.get]); const grade=tradeGrade(o.from,o.get,o.give,0,o.pk);
+  o.give.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); o.get.forEach(id=>{tradeTerms(G.players[id]); G.players[id].team=o.from; delete G.players[id].listed; /* 트레이드로 옮기면 계약한 구단에만 걸린 조건은 끝난다(돌아와도 되살아나지 않음) */ story(G.players[id],`트레이드로 ${tname(o.from)} 이적`,'move');});
   for(const k in G.lineup) if(o.get.includes(G.lineup[k]))delete G.lineup[k];
   const diff=sum(o.give.map(id=>trueVal(G.players[id])))-sum(o.get.map(id=>trueVal(G.players[id])));
   try{ frBacklash(o.get); }catch(e){}

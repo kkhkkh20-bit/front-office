@@ -14,10 +14,11 @@ function pkName(k){ const [rd,o]=k.split(':').map(Number); return `${pkYear()} �
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
 function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; const o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); const i=o.indexOf(orig); return i<0?5:i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
 function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1; return (PK_V[rd-1]||.2)*(1.3-.06*pkSlot(o,rd))*m; }
-const pkNorm=pk=>({give:[...new Set((pk&&pk.give)||[])],get:[...new Set((pk&&pk.get)||[])]}); /* 같은 지명권을 두 번 넣어도 한 장(검수 11-06) */
-const pkSig=pk=>{ pk=pkNorm(pk); return pk.give.length||pk.get.length?'|p'+[...pk.give].sort().join(',')+'/'+[...pk.get].sort().join(','):''; };
+const pkNorm=pk=>({give:[...new Set((pk&&pk.give)||[])],get:[...new Set((pk&&pk.get)||[])],y:pk&&pk.y!=null?pk.y:pkYear()}); /* y: 거래안에 넣을 때의 드래프트 연도. 드래프트가 끝나도 다음 해 것으로 바뀌지 않게(검수 11-06) */ /* 같은 지명권을 두 번 넣어도 한 장(검수 11-06) */
+const pkSig=pk=>{ pk=pkNorm(pk); return pk.give.length||pk.get.length?'|p'+pk.y+':'+[...pk.give].sort().join(',')+'/'+[...pk.get].sort().join(','):''; };
 function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.length)return '';
   if(G.draft&&!G.draft.done)return '신인 드래프트가 진행 중이라 지명권을 주고받을 수 없습니다.';
+  if(pk.y!==pkYear())return `거래안의 지명권은 ${pk.y} 드래프트 것입니다. 지금 주고받을 수 있는 것은 ${pkYear()} 드래프트 지명권입니다. 다시 골라 주세요.`;
   const mine=pkHeld(G.user), their=pkHeld(tid); if(pk.give.some(k=>!mine.includes(k))||pk.get.some(k=>!their.includes(k)))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
   if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return 'KBO 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
   return ''; }

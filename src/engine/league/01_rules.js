@@ -58,6 +58,9 @@ const OWNER={
   pr:{label:'그룹 홍보 우선',msg:'구단주는 관중과 인기를 중요하게 봅니다.',w:[.9,.9,.6,1.6]},
 };
 const SUR='김이박최정강조윤장임한오서신권황안송류홍전고문손양배백허남심노하곽성차주우구민유나진지엄채원천방공현함변염여추도소석선설마길연위표명기반왕금옥육인맹제모탁국'.split('');
+/* 성씨 비중(%): 통계청 2015 인구주택총조사 근사. 고르게 뽑으면 희성이 너무 많이 나온다(사용자 피드백 11-06) */
+const SUR_W=[21.6,14.8,8.5,4.7,4.4,2.4,2.1,2.1,2.0,1.7,1.5,1.5,1.5,1.5,1.4,1.4,1.4,1.3,0.3,1.1,1.1,0.9,0.9,0.9,0.9,0.8,0.8,0.6,0.5,0.5,0.5,0.5,0.4,0.4,0.4,0.4,0.4,0.4,0.3,1.4,0.3,0.3,0.3,0.3,0.3,0.3,0.2,0.2,0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.06,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.03,0.03,0.03,0.03,0.03]; const SUR_C=(()=>{ let a=0; const t=SUR_W.reduce((x,y)=>x+y,0); return SUR_W.map(v=>(a+=v)/t); })();
+function surAt(u){ const i=SUR_C.findIndex(c=>u<c); return SUR[i<0?SUR.length-1:i]; }
 const G1='민서준도현우지성태재승동진영상형규호원석한세윤건시유은하주경범정희용인수기종'.split('');
 const G2='호준우민혁수현진훈석빈원성규찬결율환섭철영욱범완택열균식겸후언'.split(''); /* '기'로 끝나는 이름(지기·경기·성기·종기…)은 낱말처럼 읽혀 뺐다 */
 /* 낱말처럼 읽히는 이름(성 뒤 두 글자): 야구·구단 용어와 헷갈리거나 어색한 것 */
@@ -86,7 +89,7 @@ const intlLv=r=>Math.min(3,((G.intl&&G.intl[r])||0)+(G&&G.scouts&&G.scouts.some(
 /* 국내 이름: 현역·은퇴 선수(OB) 이름과 겹치지 않게(하루 단위로 이름 목록을 모아 둔다) */
 let _nmSet=null, _nmDay=null;
 function nameTaken(n){ if(typeof G==='undefined'||!G||!G.players)return false; if(_nmDay!==G.day||!_nmSet){ _nmSet=new Set(Object.values(G.players).map(p=>p.name)); for(const o of (G.ob||[]))_nmSet.add(o.name); _nmDay=G.day; } return _nmSet.has(n); }
-function genName(){ for(let i=0;i<60;i++){ const n=pick(SUR)+pick(G1)+pick(G2); if(!BLOCK.has(n)&&!nameBad(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return pick(SUR)+'도윤'; }
+function genName(){ for(let i=0;i<60;i++){ const n=surAt(R())+pick(G1)+pick(G2); if(!BLOCK.has(n)&&!nameBad(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return surAt(R())+'도윤'; }
 function genFName(k){ const d=FN[k]; for(let i=0;i<30;i++){ const n=d.rev?pick(d.l)+' '+pick(d.f):pick(d.f)+' '+pick(d.l); if(!BLOCK.has(n)&&!Object.values(G.players).some(p=>p.name===n))return n; } return pick(d.f)+' '+pick(d.l); }
 /* 종합 능력: 타자는 컨택·파워·선구·주력·수비가 득점에 기여하는 비중(+10 실험과 일치).
    투수는 선발 275명(8개 세계) WAR 회귀 비중 구위 .47·제구 .46·체력 .07에 맞춰 구위 .44·제구 .44·체력 .12(체력은 선발을 맡을 수 있는지가 더 크다). 리그 평균 종합 능력은 그대로 */
@@ -164,7 +167,8 @@ function payYear(tid,y){ return Math.round(sum(Object.values(G.players).filter(p
 /* 다음 시즌 연봉 한 가지 기준: 이미 합의한 다음 시즌 시작 다년계약(extNext) > 재계약 중 합의 연봉(newSal) > 지금 연봉 */
 function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; { const C=G.contract, n=C&&!C.done&&C.neg&&C.neg[p.id]; if(n&&n.st==='open'&&n.cur!=null)return n.cur; if(n&&n.st==='arb'&&n.arb)return n.arb.club; } /* 조정 중: 판정 전까지 구단안(양측 제시액 중 하나, 검수 11-06) */ /* 협상 중이면 마지막 제시액(확정 미리보기와 같게) */ return p.newSal??p.sal; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
-function capPayAs(tid,inIds,outIds){ const fid=franId(tid,outIds,inIds); const out=new Set(outIds||[]); const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
+function capPayAs(tid,inIds,outIds){ const fid=franId(tid,outIds,inIds); const out=new Set(outIds||[]);
+  { const y=sponSeason(); if(y>G.year){ const L=domPayNext(tid,y).filter(p=>!out.has(p.id)&&!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)); for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||(p.draft&&p.draft.y===y-1))continue; L.push(capAmt(p,tid,salNext(p),fid)); } return sum(L.sort((a,b)=>b-a).slice(0,40)); } } /* 결산 뒤 겨울: 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06) */ const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
   for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||isRookie(p))continue; const wc=p.wv&&p.team==null?p.wv.c:null; L.push(capAmt(p,tid,wc?wc.sal+(wc.capB&&wc.capB.until>=G.year?wc.capB.a:0):p.newSal??p.sal,fid)); } /* 웨이버 양수는 계약금 상한 반영액까지 승계하므로 미리보기에도 넣는다(검수 11-06) */ /* 재계약 합의 연봉은 이적 때 확정되므로 그 금액으로(mvLog) */ return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
 function capPayNext(tid){ const fid=franId(tid), y=sponSeason(); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
