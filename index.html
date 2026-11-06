@@ -4280,6 +4280,7 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .hw-metrics>*{flex:0 0 44%!important;width:44%!important;max-width:none!important;scroll-snap-align:start;min-width:0;box-sizing:border-box}
 .home-workspace[data-rows="2"] .home-grid.home-dashboard{grid-template-rows:repeat(2,minmax(0,max-content));align-content:start}
 }
+.hw-wd.past{opacity:.55}.hw-wd.past.w,.hw-wd.past.l,.hw-wd.past.t{opacity:.8}.hw-week h2 small{font-size:11px;font-weight:500;margin-left:4px}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -20384,8 +20385,8 @@ function homeSpDuel(n){ const sp=tid=>{ try{ return (projStarters(tid,4).find(g=
   const c=(p,tid)=>p?`<button class="hw-sp" data-a="player" data-v="${p.id}" aria-label="${esc(tshort(tid))} 선발 예정 ${esc(p.name)} 능력 ${dv(ovr(p))}"><span class="hw-sp-face">${avImg(p,true)}<i class="hw-sp-bd">${badge(tid,22)}</i><em class="num">${dv(ovr(p))}</em></span><b>${esc(p.name)}</b></button>`:`<div class="hw-sp none"><span class="hw-sp-face">${badge(tid,40)}</span><b>선발 미정</b></div>`;
   return `<div class="hw-spduel">${c(a,G.user)}<span class="hw-sp-vs">VS<small>선발</small></span>${c(b,n.op)}</div>`; }
 /* 이번 주 일정: 오늘부터 7일. 중계로 볼 경기 결과는 calGame이 감춘다 */
-function homeWeekPanel(){ const D=[]; for(let d=G.day;d<G.day+7;d++){ const g=calGame(d), o=dobj(d); D.push(`<button class="hw-wd${d===G.day?' today':''}${g&&g.res?(g.res.r==='승'?' w':g.res.r==='패'?' l':' t'):''}" data-a="calJump" data-v="${d}"><small>${o.m}/${o.d} ${WD[o.w]}</small>${g?`${badge(g.op,22)}<b>${esc(team(g.op).city)}</b><i>${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:g.home?'홈':'원정'}</i>`:'<i class="muted">일정 없음</i>'}</button>`); }
-  return `<section class="hw-panel hw-week"><header><h2>이번 주 일정</h2><button class="tc-i" data-a="calOpen">달력</button></header><div class="hw-wk">${D.join('')}</div></section>`; }
+function homeWeekPanel(){ const D=[], mon=G.day-((dobj(G.day).w+6)%7); /* 월요일부터 일요일까지 한 주. 지난 날은 흐리게, 결과는 그대로(사용자 11-06) */ for(let d=mon;d<mon+7;d++){ const g=calGame(d), o=dobj(d); D.push(`<button class="hw-wd${d===G.day?' today':d<G.day?' past':''}${g&&g.res?(g.res.r==='승'?' w':g.res.r==='패'?' l':' t'):''}" data-a="calJump" data-v="${d}"><small>${o.m}/${o.d} ${WD[o.w]}</small>${g?`${badge(g.op,22)}<b>${esc(team(g.op).city)}</b><i>${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:g.home?'홈':'원정'}</i>`:'<i class="muted">일정 없음</i>'}</button>`); }
+  return `<section class="hw-panel hw-week"><header><h2>이번 주 일정 <small class="muted">${(()=>{ const a=dobj(mon), b=dobj(mon+6); return `${a.m}/${a.d}~${b.m}/${b.d}`; })()}</small></h2><button class="tc-i" data-a="calOpen">달력</button></header><div class="hw-wk">${D.join('')}</div></section>`; }
 /* 최근 10경기 승패(정규시즌). 중계로 아직 볼 경기는 뺀다 */
 function homeFormPanel(){ const sg=spoilG(); const L=tlOf(G.user).filter(x=>!(sg&&sg.day===x[5]&&(sg.home===G.user||sg.away===G.user))).slice(-10); const w=L.filter(x=>x[0]>0).length, l=L.filter(x=>x[0]<0).length;
   return `<section class="hw-panel hw-form"><header><h2>최근 경기 결과</h2><button class="tc-i" data-a="go" data-v="league:score">더보기</button></header>${L.length?`<div class="hw-wl">${L.map(x=>{ const o=dobj(x[5]); return `<span class="${x[0]>0?'w':x[0]<0?'l':'t'}" title="${o.m}/${o.d} ${esc(tshort(x[4]))} ${x[1]}:${x[2]}"><b>${x[0]>0?'승':x[0]<0?'패':'무'}</b><small>${o.m}/${o.d}</small></span>`; }).join('')}</div><p class="hw-hint">최근 ${L.length}경기 ${w}승 ${l}패 ${L.length-w-l}무</p>`:'<p class="hw-hint">정규시즌 경기를 치르면 표시합니다.</p>'}</section>`; }
