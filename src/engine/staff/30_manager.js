@@ -10,7 +10,9 @@ function mgrLean(m){ return clamp((m.youth-50)/40,-1,1); }
 function teamLean(tid){ const m=mgrOf(tid);
   if(tid!==G.user){ const want=team(tid).mode==='rebuild'?.6:-.5; return clamp(want*.5+mgrLean(m)*.5,-1,1); }
   if(!G.policy)return mgrLean(m); const f=G.policy.follow??1; return clamp(POL[G.policy.k].lean*f+mgrLean(m)*(1-f),-1,1); }
-function polBonus(tid,p,lean){ return polBonus0(tid,p,lean)+mgrFitB(tid,p); } /* 감독이 원하는 역할에 맞는 선수를 기용에서 조금 더 쳐준다(85_mgr_fit) */
+function polBonus(tid,p,lean){ return polBonus0(tid,p,lean)+mgrFitB(tid,p)+promB(tid,p); }
+/* 출전 기회 약속(선수 면담·감독 상의): 약속 기간에는 1군 등록·라인업·불펜 기용에 가산. 기강을 중시하는 감독은 덜 따른다(사용자 제보 11-07: 약속해도 한 번도 안 뜀) */
+function promB(tid,p){ if(tid!==G.user||!p.promise||!(p.promise.until>=G.day))return 0; const m=G.mgr[tid]; return m&&!m.interim&&m.disc>=62?4:7; } /* 감독이 원하는 역할에 맞는 선수를 기용에서 조금 더 쳐준다(85_mgr_fit) */
 function polBonus0(tid,p,lean){ if(lean==null)lean=teamLean(tid); const pa=tid===G.user?pactB(p):0; if(Math.abs(lean)<.05)return pa;
   if(lean>0){ const gap=Math.max(0,p.pot-ovr(p)); return pa+lean*(p.age<=24?3+gap*.18:p.age<=26?1.5:p.age>=31?-1:0); }
   return pa-lean*(p.age>=28?1.5:p.age<=23?-1.5:0); }

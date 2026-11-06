@@ -27,7 +27,7 @@ const ORDER=['C','SS','CF','2B','3B','RF','LF','1B','DH'];
 function makeLineup(tid,pool){
   const bats=(pool||actOf(tid)).filter(p=>!p.isP&&healthy(p));
   const used=new Set(); const ln={};
-  const ov={}; const mg=G.mgr[tid]; const promo=p=>p.promise&&tid===G.user&&mg&&mg.disc<62?2:0;
+  const ov={}; const mg=G.mgr[tid]; const promo=()=>0; void mg; /* 약속 가산은 polBonus(promB)로 옮김: 등록·투수 기용에도 반영 */
   for(const pos of ORDER){ const id=ov[pos]; const p=id&&G.players[id]; if(p&&p.team===tid&&!p.isP&&healthy(p)&&!used.has(p.id)){ln[pos]=p;used.add(p.id);} }
   /* 감독은 이기는 배치를 찾는다: 공격(시즌 득점) + 그 자리 수비가 막는 실점(자리별 무게 DWR, 감독 수비 성향만큼)이 가장 큰 9명 조합.
      낯선 자리는 숙련도가 낮을수록 꺼린다(fitPen). 포수는 포수·지명 말고는 거의 옮기지 않는다 */
