@@ -27,7 +27,8 @@ const rkPill=(r)=>`<span class="rk ${r<=3?'hi':r>=8?'lo':''}">${r}위</span>`;
 let _prC=null;
 function playerRows(y){ const key=y+':'+G.day+':'+G.games.length; if(_prC&&_prC.k===key)return _prC.v;
   const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(!h)continue; if(p.isP?!h.outs:!h.pa)continue; rows.push({p,h,w:wOf(h,p),r:p.isP?pRate(h):bRate(h)}); }
+  for(const id in (G.arch||{})){ if(G.players[id])continue; const q=archP(G.arch[id]); const h=seasonTotal(q,y,'1군'); if(!h||(q.isP?!h.outs:!h.pa))continue; rows.push({p:q,h,w:wOf(h,q),r:q.isP?pRate(h):bRate(h)}); } /* 시즌 중 리그를 떠난 선수도 그해 기록에 남는다(시상 집계와 같은 대상, 검수 11-06) */
   _prC={k:key,v:rows}; return rows; }
 function qualOf(tid){ const r=G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0; return g; }
-function isQual(x,y){ const live=y===G.year&&(period()==='season'||period()==='post'); const g=live?qualOf(x.h.t??x.p.team):144; return x.p.isP?x.h.outs>=Math.max(3,g*3):x.h.pa>=Math.max(3,g*3.1); }
+function isQual(x,y){ const live=y===G.year&&(period()==='season'||period()==='post'); const g=live?qualOf(x.h.t??x.p.team):144; return x.p.isP?x.h.outs>=Math.max(3,g*3):x.h.pa>=Math.max(3,Math.round(g*3.1)); } /* 규정타석은 반올림(144경기 446), 시상·타이틀과 같은 기준(검수 11-06) */
 

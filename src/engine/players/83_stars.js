@@ -15,6 +15,8 @@ function tgp(tid){ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r
 function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; if(k==='obp'){ const d=(h.ab||0)+(h.bb||0)+(h.hbp||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0)+(h.hbp||0))/d:0; } if(k==='slg')return h.ab?((h.h||0)+(h.d||0)+2*(h.tr||0)+3*(h.hr||0))/h.ab:0; if(k==='wpct'){ const n=(h.w||0)+(h.l||0); return n?(h.w||0)/n:0; } return h[k]||0; }
 function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
 /* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
+/* 보관 기록을 선수처럼 읽는 얼굴: 모든 보관 시즌을 1군 이력으로 두어 시즌 합계·신인 자격·수비 포지션을 현역과 같은 함수로 판정한다 */
+function archP(a){ const pos0=a.isP?'P':a.pos; return {id:a.id,name:a.name,isP:!!a.isP,team:null,pos:pos0,role:a.pos==='선발'?'SP':'RP',foreign:a.foreign||null,age:a.age,arch:a,hist:(a.rows||[]).map(r=>Object.assign({lvl:'1군',pos:pos0},r)),r:new Proxy({},{get:()=>50})}; }
 function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.t=R[R.length-1].t; return h; }
 function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
   for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const g=tgp(h.t??p.team);

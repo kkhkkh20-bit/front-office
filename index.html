@@ -12714,8 +12714,8 @@ function awCand(x,extra){ const rk=(()=>{ try{ return G.ps.order.findIndex(o=>o.
   const big=x.p.isP?(x.h.w||0)*.06+(x.h.sv||0)*.03+(x.h.so||0)*.002:(x.h.hr||0)*.045+(x.h.rbi||0)*.008+(x.h.sb||0)*.005;
   return {id:x.p.id,name:x.p.name,t:x.p.team,line:statLine(x.h,x.p),w:+x.w.toFixed(1),s:x.w+big+(rk>=0&&rk<=2?.35:0)+N(0,.45)+(extra||0)}; }
 function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(h)rows.push({p,h,w:warOf(h,p)}); }
-  for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const h={t:R[R.length-1].t}; for(const r of R)for(const k of ARCH_K)h[k]=(h[k]||0)+(r[k]||0);
-    rows.push({p:{id:a.id,name:a.name,isP:a.isP,team:h.t,pos:a.isP?'P':a.pos,role:a.pos==='선발'?'SP':'RP',foreign:a.foreign,hist:[],arch:true,r:new Proxy({},{get:()=>50})},h,w:sum(R.map(r=>r.war||0))}); } /* 시즌 중 리그를 떠난 선수도 같은 성적이면 같은 후보(타이틀과 같은 기준) */
+  for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const q=archP(a); const h=seasonTotal(q,y,'1군'); if(!h)continue; q.team=h.t;
+    rows.push({p:q,h,w:sum(R.map(r=>r.war||0))}); } /* 이전 시즌 보관 기록도 이력으로 읽어 신인 자격을 현역과 같게 판정하고, 수비 포지션도 넘긴다(검수 11-06) */ /* 시즌 중 리그를 떠난 선수도 같은 성적이면 같은 후보(타이틀과 같은 기준) */
   /* 후보 자격은 KBO 규정대로(2025 KBO 표창규정·골든글러브 기준):
      투수 = 규정이닝(팀 경기 수×1이닝) 또는 10승·30세이브·30홀드 중 하나 / 야수 = 규정타석(팀 경기 수×3.1) / 각 부문 1위(타이틀 홀더)는 자동 후보.
      MVP 후보는 타이틀 홀더와 성적 상위로 투수 8명·야수 10명(실제 2025년 18명) */
@@ -15243,7 +15243,7 @@ const ARCH_K=['g','pa','ab','h','d','tr','hr','bb','so','sb','cs','e','rbi','out
 function archFull(r){ const o=Object.assign({},r); for(const k of ARCH_K)o[k]=o[k]||0; return o; }
 function archLine(r){ const h=archFull(r); return Object.assign(bRate(h),{era:h.outs?h.er*27/h.outs:null}); }
 function archPlayer(p){ if(!p||!p.hist)return; const H=p.hist.filter(h=>h.lvl==='1군'&&!h.y2&&((h.pa||0)+(h.outs||0)+(h.bf||0)+(h.er||0)+(h.g||0))>0); /* 아웃 없이 실점한 등판도 남긴다(리그 합계 유지) */ if(!H.length)return; const A=G.arch=G.arch||{};
-  const rows=H.map(h=>{ const o={y:h.y,t:h.t}; for(const k of ARCH_K)if(h[k])o[k]=h[k]; let w=0; try{ w=Math.round(warOf(h,p)*10)/10; }catch(e){} o.war=w; return o; });
+  const rows=H.map(h=>{ const o={y:h.y,t:h.t}; for(const k of ARCH_K)if(h[k])o[k]=h[k]; if(!p.isP&&h.pos)o.pos=h.pos; if(h.pp)o.pp=h.pp; /* 그 시즌 수비 포지션(골든글러브 판정) */ let w=0; try{ w=Math.round(warOf(h,p)*10)/10; }catch(e){} o.war=w; return o; });
   const last=(p.story||[]).slice(-1)[0]; A[p.id]={id:p.id,name:p.name,isP:!!p.isP,pos:p.isP?(p.role==='SP'?'선발':'불펜'):p.pos,foreign:p.foreign||null,age:p.age,y:G.year,t:p.team??(rows[rows.length-1]||{}).t,why:last&&last.y===G.year?last.t:'',rows,...(p.aw&&p.aw.length?{aw:p.aw.slice()}:{})};
   const ks=Object.keys(A).filter(id=>A[id]&&!archKeep(A[id])); if(ks.length>900){ const tw=id=>A[id].rows.reduce((a,r)=>a+(r.war||0),0); ks.sort((a,b)=>tw(a)-tw(b)).slice(0,ks.length-900).forEach(id=>delete A[id]); } }
 /* 지우지 않는 보관 기록: 우리 구단에서 뛴 선수, 우리 트레이드에 들어간 선수(기억할 이유가 WAR만은 아니다). 나머지만 900명 한도로 통산 WAR 낮은 순 정리 */
@@ -18368,6 +18368,8 @@ function tgp(tid){ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r
 function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; if(k==='obp'){ const d=(h.ab||0)+(h.bb||0)+(h.hbp||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0)+(h.hbp||0))/d:0; } if(k==='slg')return h.ab?((h.h||0)+(h.d||0)+2*(h.tr||0)+3*(h.hr||0))/h.ab:0; if(k==='wpct'){ const n=(h.w||0)+(h.l||0); return n?(h.w||0)/n:0; } return h[k]||0; }
 function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
 /* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
+/* 보관 기록을 선수처럼 읽는 얼굴: 모든 보관 시즌을 1군 이력으로 두어 시즌 합계·신인 자격·수비 포지션을 현역과 같은 함수로 판정한다 */
+function archP(a){ const pos0=a.isP?'P':a.pos; return {id:a.id,name:a.name,isP:!!a.isP,team:null,pos:pos0,role:a.pos==='선발'?'SP':'RP',foreign:a.foreign||null,age:a.age,arch:a,hist:(a.rows||[]).map(r=>Object.assign({lvl:'1군',pos:pos0},r)),r:new Proxy({},{get:()=>50})}; }
 function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.t=R[R.length-1].t; return h; }
 function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
   for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const g=tgp(h.t??p.team);
@@ -20181,9 +20183,10 @@ const rkPill=(r)=>`<span class="rk ${r<=3?'hi':r>=8?'lo':''}">${r}위</span>`;
 let _prC=null;
 function playerRows(y){ const key=y+':'+G.day+':'+G.games.length; if(_prC&&_prC.k===key)return _prC.v;
   const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(!h)continue; if(p.isP?!h.outs:!h.pa)continue; rows.push({p,h,w:wOf(h,p),r:p.isP?pRate(h):bRate(h)}); }
+  for(const id in (G.arch||{})){ if(G.players[id])continue; const q=archP(G.arch[id]); const h=seasonTotal(q,y,'1군'); if(!h||(q.isP?!h.outs:!h.pa))continue; rows.push({p:q,h,w:wOf(h,q),r:q.isP?pRate(h):bRate(h)}); } /* 시즌 중 리그를 떠난 선수도 그해 기록에 남는다(시상 집계와 같은 대상, 검수 11-06) */
   _prC={k:key,v:rows}; return rows; }
 function qualOf(tid){ const r=G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0; return g; }
-function isQual(x,y){ const live=y===G.year&&(period()==='season'||period()==='post'); const g=live?qualOf(x.h.t??x.p.team):144; return x.p.isP?x.h.outs>=Math.max(3,g*3):x.h.pa>=Math.max(3,g*3.1); }
+function isQual(x,y){ const live=y===G.year&&(period()==='season'||period()==='post'); const g=live?qualOf(x.h.t??x.p.team):144; return x.p.isP?x.h.outs>=Math.max(3,g*3):x.h.pa>=Math.max(3,Math.round(g*3.1)); } /* 규정타석은 반올림(144경기 446), 시상·타이틀과 같은 기준(검수 11-06) */
 
 /* ---------- 홈 ---------- */
 /* 다음 일까지 진행한 동안의 요약 */
@@ -21337,15 +21340,15 @@ function recView(){
   const g=qualOf(G.user);
   return head+`<section class="card"><div class="row between"><h2 class="sec">${y} ${pit?'투수':'타자'} 기록</h2><span class="small muted">${R.length}명</span></div>
     <div class="row">${tsel}<label class="chk"><input type="checkbox" data-a="lrfQ" ${f.q?'checked':''}> 비율 기록은 규정${pit?'이닝':'타석'} 이상${y===G.year&&period()==='season'?` (${pit?Math.round(g):Math.round(g*3.1)}${pit?'이닝':'타석'})`:''}</label></div>
-    ${stbl(pit?'pit':'bat',cols,R,{def:pit?{k:'era',dir:1}:{k:'ops',dir:-1},num:true,limit:UI.lrAll?120:25,me:x=>x.p.team===G.user,click:x=>` data-a="player" data-v="${x.p.id}"`})}
+    ${stbl(pit?'pit':'bat',cols,R,{def:pit?{k:'era',dir:1}:{k:'ops',dir:-1},num:true,limit:UI.lrAll?120:25,me:x=>(x.h.t??x.p.team)===G.user,click:x=>` data-a="player" data-v="${x.p.id}"`})}
     ${R.length>25?`<button class="btn small" data-a="lrAll">${UI.lrAll?'25명만 보기':`전체 ${Math.min(120,R.length)}명 보기`}</button>`:''}
     <p class="small muted">머리글을 누르면 그 기록 순으로 정렬합니다. 우리 선수는 강조 표시됩니다.${pit?'':' wRC+는 리그 평균을 100으로 한 득점 창출력입니다(구장 보정 없음).'} 규정 기준(팀 경기 수 × 3.1타석, × 1이닝)은 ${pit?'ERA·WHIP·K/9·BB/9':'타율·출루율·장타율·OPS·wRC+·BABIP·볼삼비'} 같은 비율 기록 순위에만 적용되고, ${pit?'승·세이브·탈삼진':'홈런·타점·안타'} 같은 누적 기록 순위에는 모든 선수가 나옵니다.</p></section>`;
 }
 function leaderTiles(rows,y){
   const T=leaderCats(rows,y);
   const tile=([l,arr,v,f])=>{ const s=[...arr].sort((a,b)=>v(b)-v(a)).slice(0,5); if(!s.length)return ''; const fm=f||v; const a=s[0];
-    return `<div class="ltile"><div class="lh">${l}</div><button class="l1${a.p.team===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.p.team,14)} ${tshort(a.p.team)}</i></span><em class="num">${fm(a)}</em></button>
-      <ol>${s.slice(1).map((x,i)=>`<li class="${x.p.team===G.user?'me':''}"><button data-a="player" data-v="${x.p.id}"><i>${i+2}</i>${esc(x.p.name)} <span class="muted">${tshort(x.p.team)}</span><b class="num">${fm(x)}</b></button></li>`).join('')}</ol></div>`; };
+    return `<div class="ltile"><div class="lh">${l}</div><button class="l1${(a.h.t??a.p.team)===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.h.t??a.p.team,14)} ${tshort(a.h.t??a.p.team)}</i></span><em class="num">${fm(a)}</em></button>
+      <ol>${s.slice(1).map((x,i)=>`<li class="${(x.h.t??x.p.team)===G.user?'me':''}"><button data-a="player" data-v="${x.p.id}"><i>${i+2}</i>${esc(x.p.name)} <span class="muted">${tshort(x.h.t??x.p.team)}</span><b class="num">${fm(x)}</b></button></li>`).join('')}</ol></div>`; };
   return `<section class="card"><div class="row between"><h2 class="sec">${y} 부문별 순위</h2><span class="small muted">타율·OPS·wRC+·평균자책점·WHIP는 규정 기준 이상</span></div><div class="ltiles">${T.map(tile).join('')}</div></section>`;
 }
 /* 부문별 순위 항목: [이름, 대상, 정렬값, 표시] (부문별 1위 타일·PC 대회 화면 공용) */
