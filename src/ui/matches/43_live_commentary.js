@@ -1,6 +1,6 @@
 /* Short, original caster calls. Facts come from pregame snapshots and revealed plays. */
 function pcVoice(g,k,key,lines,all=false){let previous=-1;const type=row=>typeof row?.[1]==='number'?row[3]:row?.[1],wanted=type(g.pbp[k]);for(let i=0;i<=k;i++){if(all?typeof g.pbp[i]?.[1]!=='number':type(g.pbp[i])!==wanted)continue;let index=Math.floor(pcH(g,i,'voice:'+key)*lines.length);if(index===previous)index=(index+1)%lines.length;previous=index;}return lines[Math.max(0,previous)]||'';}
-function pcName(g,id){return G.players[id]?.name||g.box?.h?.bat?.find(p=>p.id===id)?.n||g.box?.a?.bat?.find(p=>p.id===id)?.n||'선수';}
+function pcName(g,id){ if(G.players[id])return G.players[id].name; for(const sd of ['h','a'])for(const k of ['bat','pit']){ const q=(g.box?.[sd]?.[k]||[]).find(p=>p.id===id); if(q&&q.n)return q.n; } return (typeof pNmAny==='function'&&pNmAny(id))||'선수'; } /* 투수 목록·보관 기록까지(검수 11-06) */
 function pcMoment(g,k){const x=g.pbp[k],pre=pcBefore(g,k),top=x[0]%2===0,before=top?pre.sa-pre.sh:pre.sh-pre.sa,after=top?x[7]-x[8]:x[8]-x[7],inn=Math.floor(x[0]/2)+1;return {x,pre,top,inn,before,after,runs:x[6]||0,risp:!!(pre.bases[1]||pre.bases[2]),loaded:pre.bases.every(Boolean),walkoff:!top&&inn>=9&&before<=0&&after>0,team:top?g.away:g.home};}
 function pcScoreFinish(g,k){const m=pcMoment(g,k);if(!m.runs)return '';if(m.walkoff)return ` 끝내기! ${tshort(m.team)}, 승부를 끝냅니다!`;if(m.before<0&&m.after>0)return ` 역전입니다! ${m.x[7]}:${m.x[8]}!`;if(m.before<0&&m.after===0)return ` 다시 동점! ${m.x[7]}:${m.x[8]}!`;return ` ${m.x[7]}:${m.x[8]}.`;}
 function pcKnownTotals(g,k,id,key,pitcher=false){
@@ -21,6 +21,7 @@ function pcPitchingRun(g,k,attack){
 function pcNoHitRecords(g,k){
  const x=g.pbp[k];if(!x||(typeof x[1]!=='number'&&x[1]!=='CS'))return [];
  const out=[],add=(kind,text,priority)=>out.push({kind,text,priority});
+ if(k===g.pbp.length-1&&x[0]%2===1){ const r2=pcPitchingRun(g,k,0); if(r2.outs>=27&&!r2.hits&&!r2.runs){ const pf=r2.pitchers.length===1&&!r2.reached&&r2.bf===r2.outs, pn=r2.pitchers.length===1?pcName(g,r2.pitchers[0]):tshort(g.home)+' 투수진'; add(pf?'perfect':'nohit',`끝내기로 경기가 끝나면서 ${pn}, ${pf?'퍼펙트게임':r2.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}을 완성합니다!`,110); return out; } } /* 홈 투수 대기록은 9회말 끝내기로 확정된다(검수 11-06) */
  const attack=x[0]%2,run=pcPitchingRun(g,k,attack),pitcher=run.pitchers.length===1?pcName(g,run.pitchers[0]):tshort(attack?g.away:g.home)+' 투수진';
  if(!run.hits&&!run.runs){
   if(k===g.pbp.length-1&&run.outs>=27){const perfect=run.pitchers.length===1&&!run.reached&&run.bf===run.outs;add(perfect?'perfect':'nohit',`${pitcher}, ${perfect?'퍼펙트게임':run.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}! 대기록을 완성합니다!`,110);}

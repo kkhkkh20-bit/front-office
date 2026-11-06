@@ -3,14 +3,14 @@ function broadcastFormOf(p){
   if(p.castForm?.y===G.year)return {...p.castForm};
   const f={y:G.year,hitless:0,streak:0,known:false};
   if(p.gl?.y!==G.year)return f;
-  for(const x of p.gl.g||[]){if(!x[1])continue;if(x[3]>0){f.hitless=0;f.known=true;f.streak++;}else{f.hitless++;if(x[2]>0)f.streak=0;}}
+  for(const x of p.gl.g||[]){if(!x[1])continue;if(x[3]>0){f.hitless=0;f.known=true;f.streak++;}else if(x[2]>0){f.hitless++;f.streak=0;}} /* 볼넷만 얻은 경기는 연속 안타도 무안타도 아니다(검수 11-06) */
   return f;
 }
 function broadcastFormUpdate(p,x){
   if(!x.pa)return;
   const f=broadcastFormOf(p);
   if(x.h){f.hitless=0;f.known=true;f.streak++;}
-  else{f.hitless++;if(x.ab>0||x.sf>0)f.streak=0;}
+  else if(x.ab>0||x.sf>0){f.hitless++;f.streak=0;}
   p.castForm=f;
 }
 function gameBroadcastContext(day,S,regular){

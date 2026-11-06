@@ -10369,14 +10369,14 @@ function broadcastFormOf(p){
   if(p.castForm?.y===G.year)return {...p.castForm};
   const f={y:G.year,hitless:0,streak:0,known:false};
   if(p.gl?.y!==G.year)return f;
-  for(const x of p.gl.g||[]){if(!x[1])continue;if(x[3]>0){f.hitless=0;f.known=true;f.streak++;}else{f.hitless++;if(x[2]>0)f.streak=0;}}
+  for(const x of p.gl.g||[]){if(!x[1])continue;if(x[3]>0){f.hitless=0;f.known=true;f.streak++;}else if(x[2]>0){f.hitless++;f.streak=0;}} /* 볼넷만 얻은 경기는 연속 안타도 무안타도 아니다(검수 11-06) */
   return f;
 }
 function broadcastFormUpdate(p,x){
   if(!x.pa)return;
   const f=broadcastFormOf(p);
   if(x.h){f.hitless=0;f.known=true;f.streak++;}
-  else{f.hitless++;if(x.ab>0||x.sf>0)f.streak=0;}
+  else if(x.ab>0||x.sf>0){f.hitless++;f.streak=0;}
   p.castForm=f;
 }
 function gameBroadcastContext(day,S,regular){
@@ -12804,7 +12804,7 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y,y-Math.max(0,(p.svc||0)-1)])); /* 기록은 최근 3년치만 있어 등록 연차로도 입단 연도를 잡는다 */
   A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
   const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ const P={}; for(const k in u.pos){ const kk=['LF','CF','RF'].includes(k)?'OF':k; P[kk]=(P[kk]||0)+u.pos[k]; } let b=null,n=-1; for(const k in P)if(P[k]>n){ n=P[k]; b=k; } if(b)return b; } return ['LF','CF','RF'].includes(x.h.pos)?'OF':x.h.pos; }; /* 외야 세 자리는 합쳐서 비교 */ /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
-  const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
+  const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):((['LF','CF','RF'].includes(x.h.pos)?'OF':x.h.pos)===pos?(x.h.g||0):0); return gAt>=Math.round(tg(x)*5/9); }; /* 포지션별 출장 정보가 없으면 그 시즌 주 포지션만 전체 출장 수로 본다(지명타자가 포수 후보가 되지 않게, 검수 11-06) */ /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
   const gposQ=x=>{ const g=gpos(x); if(ggQ(x,g))return g; const u=x.p.use, n=k=>!u||u.y!==y||!u.pos?0:k==='OF'?['LF','CF','RF'].reduce((s2,q)=>s2+(u.pos[q]||0),0):(u.pos[k]||0); return ['C','1B','2B','3B','SS','DH','OF'].filter(k=>ggQ(x,k)).sort((a,b)=>n(b)-n(a))[0]||null; }; /* 가장 많이 선 자리가 기준 미달이면 기준을 채운 다른 자리로(한 선수 한 자리) */
   const voteGG=(pos,L,seats)=>{if(!L.length)return;const C=L.map(x=>ggCandidate(x,pos));A.ggVote.ballots[pos]=ggReporterVote(C,288,seats,y).length; /* 투표지 원본은 읽는 곳이 없어 수만 남긴다(저장 크기) */A.cand.gg[pos]=C;};
   for(const pos of ['C','1B','2B','3B','SS','DH'])voteGG(pos,rows.filter(x=>!x.p.isP&&gposQ(x)===pos),1);
@@ -15323,7 +15323,7 @@ function archFull(r){ const o=Object.assign({},r); for(const k of ARCH_K)o[k]=o[
 function archLine(r){ const h=archFull(r); return Object.assign(bRate(h),{era:h.outs?h.er*27/h.outs:null}); }
 function archPlayer(p){ if(!p||!p.hist)return; const H=p.hist.filter(h=>h.lvl==='1군'&&!h.y2&&((h.pa||0)+(h.outs||0)+(h.bf||0)+(h.er||0)+(h.g||0))>0); /* 아웃 없이 실점한 등판도 남긴다(리그 합계 유지) */ if(!H.length)return; const A=G.arch=G.arch||{};
   const rows=H.map(h=>{ const o={y:h.y,t:h.t}; for(const k of ARCH_K)if(h[k])o[k]=h[k]; if(!p.isP&&h.pos)o.pos=h.pos; if(h.pp)o.pp=h.pp; /* 그 시즌 수비 포지션(골든글러브 판정) */ let w=0; try{ w=Math.round(warOf(h,p)*10)/10; }catch(e){} o.war=w; return o; });
-  const last=(p.story||[]).slice(-1)[0]; A[p.id]={id:p.id,name:p.name,isP:!!p.isP,pos:p.isP?(p.role==='SP'?'선발':'불펜'):p.pos,foreign:p.foreign||null,age:p.age,y:G.year,t:p.team??(rows[rows.length-1]||{}).t,why:last&&last.y===G.year?last.t:'',rows,...(p.aw&&p.aw.length?{aw:p.aw.slice()}:{})};
+  const last=(p.story||[]).slice(-1)[0]; A[p.id]={id:p.id,name:p.name,isP:!!p.isP,pos:p.isP?(p.role==='SP'?'선발':'불펜'):p.pos,foreign:p.foreign||null,age:p.age,y:G.year,t:p.team??(rows[rows.length-1]||{}).t,why:last&&last.y===G.year?last.t:'',rows,...(p.draft&&p.draft.y!=null?{dy:p.draft.y}:{}),...(p.svc?{svc:p.svc}:{}),fy:Math.min(...p.hist.map(h=>h.y).concat([G.year])), /* 입단 연도·등록 연차·첫 기록 연도: 보관 뒤에도 신인 자격을 같게(검수 11-06) */...(p.aw&&p.aw.length?{aw:p.aw.slice()}:{})};
   const ks=Object.keys(A).filter(id=>A[id]&&!archKeep(A[id])); if(ks.length>900){ const tw=id=>A[id].rows.reduce((a,r)=>a+(r.war||0),0); ks.sort((a,b)=>tw(a)-tw(b)).slice(0,ks.length-900).forEach(id=>delete A[id]); } }
 /* 지우지 않는 보관 기록: 우리 구단에서 뛴 선수, 우리 트레이드에 들어간 선수(기억할 이유가 WAR만은 아니다). 나머지만 900명 한도로 통산 WAR 낮은 순 정리 */
 function archKeep(a){ if(!a||!a.rows)return false; if(a.rows.some(r=>r.t===G.user))return true; const id=a.id; return (G.trades||[]).some(t=>(t.gi||[]).includes(id)||(t.go||[]).includes(id)); }
@@ -18453,7 +18453,7 @@ function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.
 function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
 /* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
 /* 보관 기록을 선수처럼 읽는 얼굴: 모든 보관 시즌을 1군 이력으로 두어 시즌 합계·신인 자격·수비 포지션을 현역과 같은 함수로 판정한다 */
-function archP(a){ const pos0=a.isP?'P':a.pos; return {id:a.id,name:a.name,isP:!!a.isP,team:null,pos:pos0,role:a.pos==='선발'?'SP':'RP',foreign:a.foreign||null,age:a.age,arch:a,hist:(a.rows||[]).map(r=>Object.assign({lvl:'1군',pos:pos0},r)),r:new Proxy({},{get:()=>50})}; }
+function archP(a){ const pos0=a.isP?'P':a.pos; return {id:a.id,name:a.name,isP:!!a.isP,team:null,pos:pos0,role:a.pos==='선발'?'SP':'RP',foreign:a.foreign||null,age:a.age,...(a.dy!=null?{draft:{y:a.dy}}:{}),svc:a.svc||0,arch:a,hist:(a.fy!=null&&!(a.rows||[]).some(r=>r.y<=a.fy)?[{y:a.fy,lvl:'2군',pa:0}]:[]).concat((a.rows||[]).map(r=>Object.assign({lvl:'1군',pos:pos0},r))),r:new Proxy({},{get:()=>50})}; }
 function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.t=R[R.length-1].t; return h; }
 function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
   for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const g=tgp(h.t??p.team);
@@ -20932,14 +20932,17 @@ function wpHome(st){ const D0=st.sh-st.sa; const half=st.half; const outs=Math.m
   const bot=half%2===1; if(half>=17&&bot&&D0>0)return 1; let D=D0+(bot?re:.48-re); /* 초 공격 중이면 홈팀은 아직 말 공격이 남아 있음 */ const remHalf=Math.max(0,17-half)+(st.outs>=3?0:(3-outs)/3); const v=Math.max(.25,remHalf*.95);
   return clamp(.5+.5*cErf((D+.08)/Math.sqrt(2*v)),.005,.995); }
 function cOrderNo(g,half,id){ const s=g.box[half%2?'h':'a']; const i=s.bat.findIndex(b=>b.id===id); return i<0?null:(s.bat[i].o!=null?s.bat[i].o:i%9)+1; }
-function cNext(g,half,id){ const s=g.box[half%2?'h':'a']; const B=s.bat.slice(0,9); const i=B.findIndex(b=>b.id===id); if(i<0)return []; return [B[(i+1)%9],B[(i+2)%9]].filter(Boolean); }
+/* 대기 타자: 그 타석 시점의 타순(경기 끝 타순이 아니라). 자리마다 그 타석 전까지 마지막으로 타석에 선 선수, 없으면 선발(검수 11-06) */
+function cNext(g,half,id,k){ const s=g.box[half%2?'h':'a']; const slot=(b,i)=>b.o!=null?b.o:i%9; const L=g.pbp||[], seen=new Set(); for(let i=0;i<Math.min(k??L.length,L.length);i++){ const x=L[i]; if(typeof x[1]==='number'&&x[0]%2===half%2)seen.add(x[1]); }
+  const cur=[...Array(9)].map((_,sl)=>{ const C=s.bat.map((b,i)=>({b,i})).filter(z=>slot(z.b,z.i)===sl); let pick=C[0]&&C[0].b; for(const z of C)if(seen.has(z.b.id)||z.b.id===id)pick=z.b; return pick; });
+  const me=s.bat.findIndex(b=>b.id===id); if(me<0)return []; const i=slot(s.bat[me],me); return [cur[(i+1)%9],cur[(i+2)%9]].filter(Boolean); }
 const PAK={'1B':['안타','h'],'2B':['2루타','h'],'3B':['3루타','h'],HR:['홈런','hr'],HBP:['사구','bb'],BB:['볼넷','bb'],K:['삼진','k'],OUT:['범타','o'],DP:['병살','o'],SAC:['희생번트','o']};
 function cChips(g,k,id){ const L=g.pbp; const out=[]; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[1]===id){ const r=PAK[x[3]]||['?','o']; out.push(`<i class="pk ${r[1]}">${cHalfTxt(x[0]).replace('회초','').replace('회말','')}${r[0]}</i>`); } } return out.join('')||'<i class="pk n">첫 타석</i>'; }
 function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const bid=k<L.length&&typeof x[1]==='number'?x[1]:null; const pid=cPit(g,Math.min(k,L.length-1));
   const b=bid&&G.players[bid], p=pid&&G.players[pid]; if(!b||!p)return '';
   const st=cBefore(g,k); const no=cOrderNo(g,x[0],bid); const r=batAt(g,k,bid); const h=r; const ov=scoutReport(b).cur, pv=scoutReport(p).cur;
   let pitch=''; try{ const d=detailOf(p,scoutReport(p)); const ars=d.groups.find(gx=>gx[0]==='구종'); const best=ars?[...ars[1]].sort((a,c)=>c[1]-a[1])[0]:null; pitch=`직구 평균 ${veloOf(p)}·최고 ${veloMax(p)}km${best?` · ${best[0].replace(' · 결정구','')}`:''}`; }catch(e){}
-  const nx=cNext(g,x[0],bid).map(n=>{ const q=G.players[n.id]; return q?`${cOrderNo(g,x[0],n.id)}번 ${esc(fname(q))}`:''; }).filter(Boolean).join(' · ');
+  const nx=cNext(g,x[0],bid,k).map(n=>{ const q=G.players[n.id]; return q?`${cOrderNo(g,x[0],n.id)}번 ${esc(fname(q))}`:''; }).filter(Boolean).join(' · ');
   const risp=!!(st.bases[1]||st.bases[2]); const late=st.half>=14&&Math.abs(st.sa-st.sh)<=2;
   return `<div class="ab ${risp?'risp':''}${late?' late':''}"><button class="ab-b" data-a="castPlayer" data-v="${bid}"><span class="ab-f">${avImg(b,true)}<b class="ab-o" style="--c:${rcol(ov)}">${dv(ov??'-')}</b><span class="ab-res" id="cs-abr"></span></span>
       <span class="ab-t"><em>${no?no+'번 타자':'타자'} · ${posLabel(b)} · ${hand(b)} ${acqTag(b)}</em><b>${esc(b.name)}</b><span class="ab-s">${r?`타율 <strong>${fmt3(r.avg)}</strong> · ${h.hr}홈런 · OPS ${fmt3(r.ops)}`:'시즌 기록 없음'}</span><span class="ab-pk">${cChips(g,k,bid)}</span></span></button>
@@ -23408,7 +23411,7 @@ function seasonAt(g,k,id,isP){ const p=G.players[id]; if(!p)return null; const t
   if(gi>=0)for(let i=0;i<=gi;i++){ const r=G.games[i]; if(!r||!r.box||/차전/.test(r.kind||'')||dobj(r.day).y!==yr)continue; for(const sd of ['h','a']){ const S=r.box[sd]; if(!S)continue;
       if(isP){ const q=(S.pit||[]).find(x=>x.id===id); if(q){ o.outs-=q.outs||0; o.er-=q.er||0; o.h-=q.h||0; o.bb-=q.bb||0;o.hbp-=q.hbp||0; o.so-=q.so||0; o.hr-=q.hr||0; } }
       else { const q=(S.bat||[]).find(x=>x.id===id); if(q){ o.ab-=q.ab||0; o.h-=q.h||0; o.d-=q.d||0; o.tr-=q.tr||0; o.hr-=q.hr||0; o.bb-=q.bb||0;o.hbp-=q.hbp||0; o.so-=q.so||0; o.sf-=q.sf||0; o.pa-=q.pa??((q.ab||0)+(q.bb||0)+(q.hbp||0)+(q.sf||0)); } } } }
-  if(g&&g.pbp){ const L=g.pbp; let half=-1,o0=0,cp=null; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[0]!==half){ half=x[0]; o0=0; } if(x[1]==='PC'){ cp=x[2]; continue; } if(x[1]==='SB'||x[1]==='CS'){ if(isP&&x[1]==='CS'&&cp===id)o.outs+=Math.max(0,x[3]-o0); o0=x[3]; continue; } if(typeof x[1]!=='number')continue; cp=x[2];
+  if(g&&g.pbp&&!/차전/.test(g.kind||'')){ /* 포스트시즌 경기는 정규시즌 누적에 더하지 않는다(검수 11-06) */ const L=g.pbp; let half=-1,o0=0,cp=null; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[0]!==half){ half=x[0]; o0=0; } if(x[1]==='PC'){ cp=x[2]; continue; } if(x[1]==='SB'||x[1]==='CS'){ if(isP&&x[1]==='CS'&&cp===id)o.outs+=Math.max(0,x[3]-o0); o0=x[3]; continue; } if(typeof x[1]!=='number')continue; cp=x[2];
       if(isP&&Array.isArray(x[11]))o.er+=x[11].filter(z=>z===id).length;
       if(isP&&x[2]===id){ o.outs+=Math.max(0,x[4]-o0); if(!Array.isArray(x[11]))o.er+=x[6]||0; if(x[3]==='K')o.so++; if(x[3]==='HBP')o.hbp++;if(x[3]==='BB')o.bb++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='HR')o.hr++; }
       if(!isP&&x[1]===id){ o.pa++; if(x[3]==='HBP')o.hbp++;if(x[3]==='BB')o.bb++; else if(x[3]!=='HBP'&&x[3]!=='SAC'&&!x[13])o.ab++; if(x[13])o.sf++; if(['1B','2B','3B','HR'].includes(x[3]))o.h++; if(x[3]==='2B')o.d++; if(x[3]==='3B')o.tr++; if(x[3]==='HR')o.hr++; if(x[3]==='K')o.so++; }
@@ -25371,20 +25374,21 @@ function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R)
     ${M.map(([k,l])=>`<div class="spl-r"><span>${l}</span>${bar(L,k,'l')}${bar(Rr,k,'r')}</div>`).join('')}
     <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다.</p></div>`; }
 /* 이동 구간 추세(최근 100타석·상대 100타자 창을 옮기며): 우리 선수만 경기별 기록을 보관 */
-function rollSeries(p,W){ const G0=(p.gl&&p.gl.g)||[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j]; n+=g[1]; for(let k=0;k<8;k++)a[k]+=g[k+1]||0; } if(n<W)continue; out.push({i,day:G0[i][0],a}); } return out; }
-function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.g)||[]).map(g=>g[1]));
+/* 최근 W타석: 마지막에 걸친 경기는 W에 맞게 비율로 잘라 더한다(경기 통째로 더하면 102타석이 됐다). 올해 로그만(검수 11-06) */
+function rollSeries(p,W){ const G0=p.gl&&p.gl.y===G.year?p.gl.g||[]:[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j], f=g[1]>0?Math.min(1,(W-n)/g[1]):1; n+=g[1]*f; for(let k=0;k<8;k++)a[k]+=(g[k+1]||0)*f; } if(n<W-1e-9)continue; out.push({i,day:G0[i][0],a}); } return out; }
+function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.y===G.year&&p.gl.g)||[]).map(g=>g[1]));
   const st=seasonTotal(p,G.year,'1군'), sAll=st?(p.isP?(st.bf||0):(st.pa||0)):0, u=p.isP?'명':'타석'; const part=sAll>tot; /* 경기별 기록은 우리 구단에서 뛴 경기만 보관한다(이적 전 경기는 시즌 합계에만) */
   const scope=part?`우리 구단에서 모은 경기별 기록 ${tot}${u}(이번 시즌 전체 ${sAll}${u} 중 이적 전 기록은 경기별로 없음)`:`이번 시즌 ${tot}${u}`;
   if(L.length<2)return `<p class="small muted">이동 구간 추세: ${scope}. ${W}${u}부터 추세를 표시합니다.</p>`;
-  const w=520,h=130,l=40,r=10,t=8,b=18; const n=(p.gl.g||[]).length; const X=i=>l+(w-l-r)*i/Math.max(1,n-1);
+  const w=520,h=130,l=40,r=10,t=8,b=18; const n=L.length?L[L.length-1].i+1:1; const X=i=>l+(w-l-r)*i/Math.max(1,n-1);
   const chart=(vals,lo,hi,fmt,lab,ref)=>{ const Y=v=>t+(h-t-b)*(1-(clamp(v,lo,hi)-lo)/(hi-lo)); return `<p class="small">${lab}</p><svg class="ds" viewBox="0 0 ${w} ${h}" role="img" aria-label="${lab}">${[lo,(lo+hi)/2,hi].map(v=>`<line class="gr" x1="${l}" x2="${w-r}" y1="${Y(v)}" y2="${Y(v)}"></line><text class="tk" x="${l-4}" y="${Y(v)+4}" text-anchor="end">${fmt(v)}</text>`).join('')}${ref!=null?`<line class="md" x1="${l}" x2="${w-r}" y1="${Y(ref)}" y2="${Y(ref)}"></line>`:''}<polyline class="gl-l" points="${vals.map(x=>`${X(x.i).toFixed(1)},${Y(x.v).toFixed(1)}`).join(' ')}"></polyline><circle class="gl-d" cx="${X(vals[vals.length-1].i).toFixed(1)}" cy="${Y(vals[vals.length-1].v).toFixed(1)}" r="4"><title>최근 ${W}${p.isP?'명':'타석'} ${fmt(vals[vals.length-1].v)}</title></circle></svg>`; };
   const lg=lgRates(p.isP);
   if(p.isP){ const k=L.map(x=>({i:x.i,v:x.a[2]/x.a[0]*100})), bb=L.map(x=>({i:x.i,v:x.a[3]/x.a[0]*100}));
     return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 상대 타자 ${W}명</span>${chart(k,0,40,v=>v.toFixed(0)+'%','탈삼진율(K%)',lg.k)}${chart(bb,0,20,v=>v.toFixed(0)+'%','볼넷율(BB%)',lg.bb)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
   const ob=L.map(x=>({i:x.i,v:(x.a[2]+x.a[4]+x.a[7])/x.a[0]})), kp=L.map(x=>({i:x.i,v:x.a[5]/x.a[0]*100}));
   return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 ${W}타석</span>${chart(ob,.2,.5,v=>fmt3(v),'출루율(타석 기준)',lg.obp)}${chart(kp,0,40,v=>v.toFixed(0)+'%','삼진율(K%)',lg.k)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
-let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; so+=x.so||0; } }
-  const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb)/pa:null,k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
+let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,hbp=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; hbp+=x.hbp||0; so+=x.so||0; } }
+  const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb+hbp)/pa:null, /* 선수 선과 같게 사구 포함(검수 11-06) */k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
 /* 타구 분포도: 방향(자리)별 타구 비중과 안타 비율, 유형(땅볼·라인드라이브·뜬공·팝플라이) 비중. 정규시즌 1군 기록 */
 const SPR_Z={LF:[-45,-15,1],CF:[-15,15,1],RF:[15,45,1],'3B':[-45,-22.5,0],SS:[-22.5,0,0],'2B':[0,22.5,0],'1B':[22.5,45,0]}; const SPR_TL={GB:'땅볼',LD:'라인드라이브',FB:'뜬공',PU:'팝플라이'};
 function sprayCard(p,selected){ const S=selected||(UI.sprP&&p.sprP?p.sprP:p.spr); if(!S)return ''; const T=S.t||{}; const tot=Object.values(T).reduce((a,x)=>a+x[0],0); if(!tot)return '';
@@ -26440,7 +26444,7 @@ function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; cons
   return {c,a}; }
 /* Short, original caster calls. Facts come from pregame snapshots and revealed plays. */
 function pcVoice(g,k,key,lines,all=false){let previous=-1;const type=row=>typeof row?.[1]==='number'?row[3]:row?.[1],wanted=type(g.pbp[k]);for(let i=0;i<=k;i++){if(all?typeof g.pbp[i]?.[1]!=='number':type(g.pbp[i])!==wanted)continue;let index=Math.floor(pcH(g,i,'voice:'+key)*lines.length);if(index===previous)index=(index+1)%lines.length;previous=index;}return lines[Math.max(0,previous)]||'';}
-function pcName(g,id){return G.players[id]?.name||g.box?.h?.bat?.find(p=>p.id===id)?.n||g.box?.a?.bat?.find(p=>p.id===id)?.n||'선수';}
+function pcName(g,id){ if(G.players[id])return G.players[id].name; for(const sd of ['h','a'])for(const k of ['bat','pit']){ const q=(g.box?.[sd]?.[k]||[]).find(p=>p.id===id); if(q&&q.n)return q.n; } return (typeof pNmAny==='function'&&pNmAny(id))||'선수'; } /* 투수 목록·보관 기록까지(검수 11-06) */
 function pcMoment(g,k){const x=g.pbp[k],pre=pcBefore(g,k),top=x[0]%2===0,before=top?pre.sa-pre.sh:pre.sh-pre.sa,after=top?x[7]-x[8]:x[8]-x[7],inn=Math.floor(x[0]/2)+1;return {x,pre,top,inn,before,after,runs:x[6]||0,risp:!!(pre.bases[1]||pre.bases[2]),loaded:pre.bases.every(Boolean),walkoff:!top&&inn>=9&&before<=0&&after>0,team:top?g.away:g.home};}
 function pcScoreFinish(g,k){const m=pcMoment(g,k);if(!m.runs)return '';if(m.walkoff)return ` 끝내기! ${tshort(m.team)}, 승부를 끝냅니다!`;if(m.before<0&&m.after>0)return ` 역전입니다! ${m.x[7]}:${m.x[8]}!`;if(m.before<0&&m.after===0)return ` 다시 동점! ${m.x[7]}:${m.x[8]}!`;return ` ${m.x[7]}:${m.x[8]}.`;}
 function pcKnownTotals(g,k,id,key,pitcher=false){
@@ -26461,6 +26465,7 @@ function pcPitchingRun(g,k,attack){
 function pcNoHitRecords(g,k){
  const x=g.pbp[k];if(!x||(typeof x[1]!=='number'&&x[1]!=='CS'))return [];
  const out=[],add=(kind,text,priority)=>out.push({kind,text,priority});
+ if(k===g.pbp.length-1&&x[0]%2===1){ const r2=pcPitchingRun(g,k,0); if(r2.outs>=27&&!r2.hits&&!r2.runs){ const pf=r2.pitchers.length===1&&!r2.reached&&r2.bf===r2.outs, pn=r2.pitchers.length===1?pcName(g,r2.pitchers[0]):tshort(g.home)+' 투수진'; add(pf?'perfect':'nohit',`끝내기로 경기가 끝나면서 ${pn}, ${pf?'퍼펙트게임':r2.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}을 완성합니다!`,110); return out; } } /* 홈 투수 대기록은 9회말 끝내기로 확정된다(검수 11-06) */
  const attack=x[0]%2,run=pcPitchingRun(g,k,attack),pitcher=run.pitchers.length===1?pcName(g,run.pitchers[0]):tshort(attack?g.away:g.home)+' 투수진';
  if(!run.hits&&!run.runs){
   if(k===g.pbp.length-1&&run.outs>=27){const perfect=run.pitchers.length===1&&!run.reached&&run.bf===run.outs;add(perfect?'perfect':'nohit',`${pitcher}, ${perfect?'퍼펙트게임':run.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}! 대기록을 완성합니다!`,110);}

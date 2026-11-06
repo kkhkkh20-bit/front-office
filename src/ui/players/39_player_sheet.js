@@ -66,20 +66,21 @@ function splitCard(p){ const S=UI.splP&&p.splP?p.splP:p.spl; if(!S||(!S.L&&!S.R)
     ${M.map(([k,l])=>`<div class="spl-r"><span>${l}</span>${bar(L,k,'l')}${bar(Rr,k,'r')}</div>`).join('')}
     <p class="small muted">실제 경기 기록입니다(능력치의 좌우 평가와 다를 수 있음). 40타석 미만은 적은 표본입니다. 실제 기용은 감독이 정합니다.</p></div>`; }
 /* 이동 구간 추세(최근 100타석·상대 100타자 창을 옮기며): 우리 선수만 경기별 기록을 보관 */
-function rollSeries(p,W){ const G0=(p.gl&&p.gl.g)||[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j]; n+=g[1]; for(let k=0;k<8;k++)a[k]+=g[k+1]||0; } if(n<W)continue; out.push({i,day:G0[i][0],a}); } return out; }
-function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.g)||[]).map(g=>g[1]));
+/* 최근 W타석: 마지막에 걸친 경기는 W에 맞게 비율로 잘라 더한다(경기 통째로 더하면 102타석이 됐다). 올해 로그만(검수 11-06) */
+function rollSeries(p,W){ const G0=p.gl&&p.gl.y===G.year?p.gl.g||[]:[]; const out=[]; for(let i=0;i<G0.length;i++){ let n=0,a=[0,0,0,0,0,0,0,0]; for(let j=i;j>=0&&n<W;j--){ const g=G0[j], f=g[1]>0?Math.min(1,(W-n)/g[1]):1; n+=g[1]*f; for(let k=0;k<8;k++)a[k]+=(g[k+1]||0)*f; } if(n<W-1e-9)continue; out.push({i,day:G0[i][0],a}); } return out; }
+function rollCard(p){ if(p.team!==G.user)return ''; const W=100; const L=rollSeries(p,W); const tot=sum(((p.gl&&p.gl.y===G.year&&p.gl.g)||[]).map(g=>g[1]));
   const st=seasonTotal(p,G.year,'1군'), sAll=st?(p.isP?(st.bf||0):(st.pa||0)):0, u=p.isP?'명':'타석'; const part=sAll>tot; /* 경기별 기록은 우리 구단에서 뛴 경기만 보관한다(이적 전 경기는 시즌 합계에만) */
   const scope=part?`우리 구단에서 모은 경기별 기록 ${tot}${u}(이번 시즌 전체 ${sAll}${u} 중 이적 전 기록은 경기별로 없음)`:`이번 시즌 ${tot}${u}`;
   if(L.length<2)return `<p class="small muted">이동 구간 추세: ${scope}. ${W}${u}부터 추세를 표시합니다.</p>`;
-  const w=520,h=130,l=40,r=10,t=8,b=18; const n=(p.gl.g||[]).length; const X=i=>l+(w-l-r)*i/Math.max(1,n-1);
+  const w=520,h=130,l=40,r=10,t=8,b=18; const n=L.length?L[L.length-1].i+1:1; const X=i=>l+(w-l-r)*i/Math.max(1,n-1);
   const chart=(vals,lo,hi,fmt,lab,ref)=>{ const Y=v=>t+(h-t-b)*(1-(clamp(v,lo,hi)-lo)/(hi-lo)); return `<p class="small">${lab}</p><svg class="ds" viewBox="0 0 ${w} ${h}" role="img" aria-label="${lab}">${[lo,(lo+hi)/2,hi].map(v=>`<line class="gr" x1="${l}" x2="${w-r}" y1="${Y(v)}" y2="${Y(v)}"></line><text class="tk" x="${l-4}" y="${Y(v)+4}" text-anchor="end">${fmt(v)}</text>`).join('')}${ref!=null?`<line class="md" x1="${l}" x2="${w-r}" y1="${Y(ref)}" y2="${Y(ref)}"></line>`:''}<polyline class="gl-l" points="${vals.map(x=>`${X(x.i).toFixed(1)},${Y(x.v).toFixed(1)}`).join(' ')}"></polyline><circle class="gl-d" cx="${X(vals[vals.length-1].i).toFixed(1)}" cy="${Y(vals[vals.length-1].v).toFixed(1)}" r="4"><title>최근 ${W}${p.isP?'명':'타석'} ${fmt(vals[vals.length-1].v)}</title></circle></svg>`; };
   const lg=lgRates(p.isP);
   if(p.isP){ const k=L.map(x=>({i:x.i,v:x.a[2]/x.a[0]*100})), bb=L.map(x=>({i:x.i,v:x.a[3]/x.a[0]*100}));
     return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 상대 타자 ${W}명</span>${chart(k,0,40,v=>v.toFixed(0)+'%','탈삼진율(K%)',lg.k)}${chart(bb,0,20,v=>v.toFixed(0)+'%','볼넷율(BB%)',lg.bb)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
   const ob=L.map(x=>({i:x.i,v:(x.a[2]+x.a[4]+x.a[7])/x.a[0]})), kp=L.map(x=>({i:x.i,v:x.a[5]/x.a[0]*100}));
   return `<div class="roll"><span class="eyebrow">이동 구간 추세 · 최근 ${W}타석</span>${chart(ob,.2,.5,v=>fmt3(v),'출루율(타석 기준)',lg.obp)}${chart(kp,0,40,v=>v.toFixed(0)+'%','삼진율(K%)',lg.k)}<p class="small muted">${part?scope+'. ':''}점선은 리그 평균. 기록의 오르내림은 표본·상대 영향이 크고, 능력 변화를 뜻하지는 않습니다.</p></div>`; }
-let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; so+=x.so||0; } }
-  const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb)/pa:null,k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
+let _lgR={k:null}; function lgRates(isP){ const k=G.day+':'+isP; if(_lgR.k===k)return _lgR.v; let pa=0,h=0,bb=0,hbp=0,so=0,bf=0,pso=0,pbb=0; for(const q of Object.values(G.players)){ const x=seasonTotal(q,G.year,'1군'); if(!x)continue; if(q.isP){ bf+=x.bf||0; pso+=x.so||0; pbb+=x.bb||0; } else { pa+=x.pa||0; h+=x.h||0; bb+=x.bb||0; hbp+=x.hbp||0; so+=x.so||0; } }
+  const v=isP?{k:bf?pso/bf*100:null,bb:bf?pbb/bf*100:null}:{obp:pa?(h+bb+hbp)/pa:null, /* 선수 선과 같게 사구 포함(검수 11-06) */k:pa?so/pa*100:null}; _lgR={k,v}; return v; }
 /* 타구 분포도: 방향(자리)별 타구 비중과 안타 비율, 유형(땅볼·라인드라이브·뜬공·팝플라이) 비중. 정규시즌 1군 기록 */
 const SPR_Z={LF:[-45,-15,1],CF:[-15,15,1],RF:[15,45,1],'3B':[-45,-22.5,0],SS:[-22.5,0,0],'2B':[0,22.5,0],'1B':[22.5,45,0]}; const SPR_TL={GB:'땅볼',LD:'라인드라이브',FB:'뜬공',PU:'팝플라이'};
 function sprayCard(p,selected){ const S=selected||(UI.sprP&&p.sprP?p.sprP:p.spr); if(!S)return ''; const T=S.t||{}; const tot=Object.values(T).reduce((a,x)=>a+x[0],0); if(!tot)return '';

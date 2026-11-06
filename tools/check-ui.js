@@ -189,6 +189,18 @@ const QUICK=process.env.QUICK==='1';
   { where='백업 권유'; const r=await ev(()=>{ const f0=inFrame; inFrame=()=>true; try{ G.bkAt=G.day-61; closeSheets(); A.tab('home'); const on=!!document.querySelector('.blk.bkn'); A.bkLater(); const off=!document.querySelector('.blk.bkn'); G.bkAt=G.day; A.expCode(); const set=G.bkAt===G.day; UI.expCode=null; return {on,off,set}; } finally { inFrame=f0; render(); } });
     if(r){ if(!r.on)add('백업 권유','다른 사이트 안에서 60일이 지났는데 백업 권유가 안 뜸'); if(!r.off)add('백업 권유',"'나중에'를 눌러도 안 닫힘"); if(!r.set)add('백업 권유','내보내기를 해도 백업 날짜가 기록되지 않음'); } }
   /* 저장은 몰아서(0.7초) 한다: 하루 진행·버튼마다 압축 저장(수백 ms)을 하면 굼떴다. 탭을 숨기면 바로 저장한다. 코드 내보내기는 복사 버튼으로 */
+  /* 중계·기록 화면(검수 11-06): 포스트시즌은 정규시즌 누적과 분리, 대기 타자는 그 시점 타순, 끝내기 퍼펙트, 올해 로그만·정확히 100타석, 투수 이름 */
+  { where='중계·기록 화면'; const r=await ev(()=>{ const bad=[]; const keep=JSON.stringify(G); try{
+      const p=domestic(G.user).find(q=>!q.isP); p.hist=(p.hist||[]).filter(h=>h.y!==G.year).concat([{y:G.year,lvl:'1군',t:G.user,pa:100,ab:100,h:30,g:25}]);
+      const OT=G.teams.find(t=>t.id!==G.user).id; const g={day:G.day,home:G.user,away:OT,kind:'한국시리즈 1차전',box:{h:{bat:[],pit:[]},a:{bat:[],pit:[]}},pbp:[[1,p.id,0,'1B',0,[p.id],0]]}; const b=batAt(g,1,p.id); if(!b||Math.abs(b.avg-.3)>1e-9)bad.push('포스트시즌 안타가 정규시즌 타율에 섞임: '+(b&&b.avg));
+      const ids=domestic(G.user).filter(q=>!q.isP).slice(0,10).map(q=>q.id); const bat=ids.slice(0,9).map((id,i)=>({id,o:i})); bat.push({id:ids[9],o:0}); const g2={box:{h:{bat:[],pit:[]},a:{bat,pit:[]}},pbp:[[0,ids[8],0,'K',1,[],0],[0,ids[0],0,'K',2,[],0],[2,ids[1],0,'K',1,[],0],[16,ids[9],0,'K',1,[],0]]}; const nx=cNext(g2,0,ids[8],0); if(!nx[0]||nx[0].id!==ids[0])bad.push('대기 타자에 아직 안 들어온 교체 선수');
+      const H=G.user, Aw=OT, hp=domestic(H).find(q=>q.isP).id, ap=domestic(Aw).find(q=>q.isP).id, ab=domestic(Aw).find(q=>!q.isP).id, hb=domestic(H).find(q=>!q.isP).id, L=[]; for(let hf=0;hf<18;hf++){ if(hf%2===0)for(let o=1;o<=3;o++)L.push([hf,ab,hp,'K',o,[],0]); else if(hf<17)for(let o=1;o<=3;o++)L.push([hf,hb,ap,'K',o,[],0]); else L.push([hf,hb,ap,'HR',0,[],1]); }
+      const g3={home:H,away:Aw,pbp:L,box:{h:{bat:[],pit:[{id:hp,n:'홈투수'}]},a:{bat:[],pit:[]}}}; const rec=pcNoHitRecords(g3,L.length-1); if(!rec.some(x=>x.kind==='perfect'))bad.push('끝내기 승리 퍼펙트게임 멘트 없음');
+      const q={team:G.user,isP:false,gl:{y:G.year-1,g:[[1,4,4,1,1,0,0,0,0]]}}; if(rollSeries(q,100).length)bad.push('작년 로그로 추세 그래프');
+      const z={team:G.user,isP:false,gl:{y:G.year,g:[...Array(20)].map((_,i)=>[i,6,6,2,2,0,1,0,0])}}; const S=rollSeries(z,100); if(!S.length||S.some(x=>Math.abs(x.a[0]-100)>1e-6))bad.push('최근 100타석이 '+(S[0]&&S[0].a[0])+'타석');
+      const gone=9999901; const g4={box:{h:{bat:[],pit:[{id:gone,n:'떠난투수'}]},a:{bat:[],pit:[]}}}; if(pcName(g4,gone)!=='떠난투수')bad.push('박스스코어 투수 이름을 못 읽음');
+    }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ G=JSON.parse(keep); } return bad; });
+    if(r)for(const m of r)add('중계·기록 화면',m); }
   /* 일정·순위·기록(검수 11-06): 중계 중에는 어떤 화면에서도 최종 박스스코어를 열 수 없다. 선수가 현역 목록에서 보관 기록으로 옮겨져도 그 시즌 팀 합계는 바뀌지 않는다 */
   { where='일정·순위·기록'; const r=await ev(()=>{ const bad=[]; const keep=JSON.stringify(G); const UI0={sheet:UI.sheet,game:UI.game}; try{
       const y=G.year, me=G.user; const d0=G.day; const g={day:d0,home:me,away:G.teams.find(t=>t.id!==me).id,hs:3,as:1,line:{a:[0,1,0],h:[1,0,2]},res:'승',box:{h:{bat:[],pit:[]},a:{bat:[],pit:[]}},pbp:[],kind:'노히트 도전'}; G.games.unshift(g); G.sea.ulog=(G.sea.ulog||[]).concat([{d:d0,h:me,a:g.away,hs:3,as:1,res:'승',k:'노히트 도전'}]); G.cal.sched[d0]=[[me,g.away]];

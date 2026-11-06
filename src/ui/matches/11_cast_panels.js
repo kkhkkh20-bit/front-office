@@ -6,14 +6,17 @@ function wpHome(st){ const D0=st.sh-st.sa; const half=st.half; const outs=Math.m
   const bot=half%2===1; if(half>=17&&bot&&D0>0)return 1; let D=D0+(bot?re:.48-re); /* 초 공격 중이면 홈팀은 아직 말 공격이 남아 있음 */ const remHalf=Math.max(0,17-half)+(st.outs>=3?0:(3-outs)/3); const v=Math.max(.25,remHalf*.95);
   return clamp(.5+.5*cErf((D+.08)/Math.sqrt(2*v)),.005,.995); }
 function cOrderNo(g,half,id){ const s=g.box[half%2?'h':'a']; const i=s.bat.findIndex(b=>b.id===id); return i<0?null:(s.bat[i].o!=null?s.bat[i].o:i%9)+1; }
-function cNext(g,half,id){ const s=g.box[half%2?'h':'a']; const B=s.bat.slice(0,9); const i=B.findIndex(b=>b.id===id); if(i<0)return []; return [B[(i+1)%9],B[(i+2)%9]].filter(Boolean); }
+/* 대기 타자: 그 타석 시점의 타순(경기 끝 타순이 아니라). 자리마다 그 타석 전까지 마지막으로 타석에 선 선수, 없으면 선발(검수 11-06) */
+function cNext(g,half,id,k){ const s=g.box[half%2?'h':'a']; const slot=(b,i)=>b.o!=null?b.o:i%9; const L=g.pbp||[], seen=new Set(); for(let i=0;i<Math.min(k??L.length,L.length);i++){ const x=L[i]; if(typeof x[1]==='number'&&x[0]%2===half%2)seen.add(x[1]); }
+  const cur=[...Array(9)].map((_,sl)=>{ const C=s.bat.map((b,i)=>({b,i})).filter(z=>slot(z.b,z.i)===sl); let pick=C[0]&&C[0].b; for(const z of C)if(seen.has(z.b.id)||z.b.id===id)pick=z.b; return pick; });
+  const me=s.bat.findIndex(b=>b.id===id); if(me<0)return []; const i=slot(s.bat[me],me); return [cur[(i+1)%9],cur[(i+2)%9]].filter(Boolean); }
 const PAK={'1B':['안타','h'],'2B':['2루타','h'],'3B':['3루타','h'],HR:['홈런','hr'],HBP:['사구','bb'],BB:['볼넷','bb'],K:['삼진','k'],OUT:['범타','o'],DP:['병살','o'],SAC:['희생번트','o']};
 function cChips(g,k,id){ const L=g.pbp; const out=[]; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[1]===id){ const r=PAK[x[3]]||['?','o']; out.push(`<i class="pk ${r[1]}">${cHalfTxt(x[0]).replace('회초','').replace('회말','')}${r[0]}</i>`); } } return out.join('')||'<i class="pk n">첫 타석</i>'; }
 function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const bid=k<L.length&&typeof x[1]==='number'?x[1]:null; const pid=cPit(g,Math.min(k,L.length-1));
   const b=bid&&G.players[bid], p=pid&&G.players[pid]; if(!b||!p)return '';
   const st=cBefore(g,k); const no=cOrderNo(g,x[0],bid); const r=batAt(g,k,bid); const h=r; const ov=scoutReport(b).cur, pv=scoutReport(p).cur;
   let pitch=''; try{ const d=detailOf(p,scoutReport(p)); const ars=d.groups.find(gx=>gx[0]==='구종'); const best=ars?[...ars[1]].sort((a,c)=>c[1]-a[1])[0]:null; pitch=`직구 평균 ${veloOf(p)}·최고 ${veloMax(p)}km${best?` · ${best[0].replace(' · 결정구','')}`:''}`; }catch(e){}
-  const nx=cNext(g,x[0],bid).map(n=>{ const q=G.players[n.id]; return q?`${cOrderNo(g,x[0],n.id)}번 ${esc(fname(q))}`:''; }).filter(Boolean).join(' · ');
+  const nx=cNext(g,x[0],bid,k).map(n=>{ const q=G.players[n.id]; return q?`${cOrderNo(g,x[0],n.id)}번 ${esc(fname(q))}`:''; }).filter(Boolean).join(' · ');
   const risp=!!(st.bases[1]||st.bases[2]); const late=st.half>=14&&Math.abs(st.sa-st.sh)<=2;
   return `<div class="ab ${risp?'risp':''}${late?' late':''}"><button class="ab-b" data-a="castPlayer" data-v="${bid}"><span class="ab-f">${avImg(b,true)}<b class="ab-o" style="--c:${rcol(ov)}">${dv(ov??'-')}</b><span class="ab-res" id="cs-abr"></span></span>
       <span class="ab-t"><em>${no?no+'번 타자':'타자'} · ${posLabel(b)} · ${hand(b)} ${acqTag(b)}</em><b>${esc(b.name)}</b><span class="ab-s">${r?`타율 <strong>${fmt3(r.avg)}</strong> · ${h.hr}홈런 · OPS ${fmt3(r.ops)}`:'시즌 기록 없음'}</span><span class="ab-pk">${cChips(g,k,bid)}</span></span></button>
