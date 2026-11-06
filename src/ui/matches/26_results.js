@@ -33,7 +33,7 @@ function fullBox(g,openOpp){
   const hl=[]; const ms=g.box[me];
   const star=[...ms.bat].sort((a,b)=>(b.h*2+b.hr*3+b.rbi*1.5)-(a.h*2+a.hr*3+a.rbi*1.5))[0];
   if(star&&star.h)hl.push(`${esc(star.n)} ${star.ab}타수 ${star.h}안타${star.hr?` ${star.hr}홈런`:''}${star.rbi?` ${star.rbi}타점`:''}`);
-  const sp=ms.pit[0]; if(sp)hl.push(`선발 ${esc(sp.n)} ${ipStr(sp.outs)}이닝 ${sp.er}실점 ${sp.so}탈삼진${sp.d?` (${sp.d})`:''}`);
+  const sp=ms.pit[0]; if(sp)hl.push(`선발 ${esc(sp.n)} ${ipStr(sp.outs)}이닝 ${sp.er}자책 ${sp.so}탈삼진${sp.d?` (${sp.d})`:''}`);
   const sv=ms.pit.find(q=>q.d==='세'); if(sv)hl.push(`${esc(sv.n)} 세이브`);
   return `${lineScore(g,null)}
     ${hl.length?`<div class="hl">${hl.map(x=>`<span>${x}</span>`).join('')}</div>`:''}

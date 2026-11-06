@@ -12,14 +12,14 @@ function gmKey(g){ const W=g.hs>g.as?'h':g.as>g.hs?'a':null; const all=[...g.box
   return {dec,
     gw:gw?`${Math.floor(gw.h/2)+1}회${gw.h%2?'말':'초'} ${gw.t.replace(/\s*·\s*\d+:\d+\s*$/,'')}`:null,
     bat:bt&&bt.h?{id:bt.id,t:`${bt.n} ${bt.ab}타수 ${bt.h}안타${bt.hr?` ${bt.hr}홈런`:''}${bt.rbi?` ${bt.rbi}타점`:''}`}:null,
-    sp:sp?{id:sp.id,t:`선발 ${sp.n} ${ipStr(sp.outs)}이닝 ${sp.er}실점${sp.so?` ${sp.so}삼진`:''}`}:null}; }
+    sp:sp?{id:sp.id,t:`선발 ${sp.n} ${ipStr(sp.outs)}이닝 ${sp.er}자책${sp.so?` ${sp.so}삼진`:''}`}:null}; }
 /* 기간 안의 우리 경기(최근 기록에 남은 것) */
 function wkGames(from,to){ const L=[]; G.games.forEach((g,i)=>{ if(g.day>=from&&g.day<=to&&(g.home===G.user||g.away===G.user))L.push({g,i}); }); return L.sort((a,b)=>a.g.day-b.g.day); }
 /* 잘한·부진한 선수: 진행 직전 기록(G.dig.snap)과 비교. 그 기간 정리가 아직 남아 있을 때만 */
 function wkPlayers(D){ if(!D||!D.snap)return {hot:[],cold:[]}; const rows=[];
   for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-(a[i]||0));
     if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,isP:true,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3+d.hld*.15,t:`${ipStr(d.outs)}이닝 ${d.er}자책${d.w?` ${d.w}승`:''}${d.l?` ${d.l}패`:''}${d.sv?` ${d.sv}세이브`:''}${d.hld?` ${d.hld}홀드`:''}`}); }
-    else { if(d.pa<4)continue; const ops=d.ab?obpOf(d)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,isP:false,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} ${d.rbi}타점 · OPS ${fmt3(ops)}`}); } }
+    else { if(d.pa<4)continue; const ops=obpOf(d)+(d.ab?(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0); /* 타수 0(볼넷만)이어도 출루율은 OPS에 들어간다 */ rows.push({p,isP:false,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} ${d.rbi}타점 · OPS ${fmt3(ops)}`}); } }
   rows.sort((a,b)=>b.sc-a.sc); const B=rows.filter(x=>!x.isP), P=rows.filter(x=>x.isP);
   const hot=[...B.slice(0,2),...P.slice(0,1)].filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc); const cold=[B[B.length-1],P[P.length-1]].filter(x=>x&&x.sc<0&&!hot.includes(x));
   return {hot,cold}; }

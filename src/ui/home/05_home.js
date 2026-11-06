@@ -7,7 +7,7 @@ function digestCard(){ const D=G.dig; if(!D||!D.games||!D.games.length||G.res)re
     return `<button class="dg-g ${g.res==='승'?'w':g.res==='패'?'l':''}" data-a="openGame" data-v="${x.i}"><i>${dsh(g.day)}</i><b>${g.res}</b><span>${ms}:${os}</span><em>${home?'vs':'@'} ${esc(team(op).nick)}</em></button>`; }).join('');
   const rows=[]; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-(a[i]||0));
     if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,isP:true,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3+d.hld*.15,t:`${ipStr(d.outs)}이닝 ${d.er}자책${d.w?` ${d.w}승`:''}${d.l?` ${d.l}패`:''}${d.sv?` ${d.sv}세이브`:''}${d.hld?` ${d.hld}홀드`:''}`}); }
-    else { if(d.pa<5)continue; const ops=d.ab?obpOf(d)+(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0; rows.push({p,isP:false,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} ${d.rbi}타점 · OPS ${fmt3(ops)}`}); } }
+    else { if(d.pa<5)continue; const ops=obpOf(d)+(d.ab?(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0); /* 타수 0(볼넷만)이어도 출루율은 OPS에 들어간다 */ rows.push({p,isP:false,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} ${d.rbi}타점 · OPS ${fmt3(ops)}`}); } }
   rows.sort((a,b)=>b.sc-a.sc); const B=rows.filter(x=>!x.isP), P=rows.filter(x=>x.isP); const hot=[...B.slice(0,2),...P.slice(0,1)].filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc), cold=[B[B.length-1],P[P.length-1]].filter(x=>x&&x.sc<0&&!hot.includes(x));
   const li=x=>`<button class="dg-p" data-a="player" data-v="${x.p.id}">${avImg(x.p)}<span><b>${esc(x.p.name)}</b><i>${posLabel(x.p)} · ${x.t}</i></span></button>`;
   const inj=playersOf(G.user).filter(p=>p.injOut>=5).slice(0,3);
@@ -25,7 +25,7 @@ function gameChar(g){ if(!g||!g.line)return null; const me=g.home===G.user?'h':'
   const fm=me==='h'?g.hs:g.as, fo=me==='h'?g.as:g.hs; let lead=-1, trail=-1; cum.forEach(([a,b],i)=>{ if(a>b)lead=i; if(a<b)trail=i; });
   /* 승패를 가른 장면을 먼저(마지막으로 앞섰던·뒤졌던 이닝), 선발·타선은 뒤에 보조 설명 */
   const B=g.box&&g.box[me]; const sp=B&&B.pit&&B.pit[0]; const hits=B&&B.bat?sum(B.bat.map(b=>b.h||0)):null; const ip=o=>`${Math.floor(o/3)}${o%3?` ${o%3}/3`:''}`;
-  const gem=sp&&sp.outs>=18&&sp.er<=1?`${sp.n}의 ${ip(sp.outs)}이닝 ${sp.er?`${sp.er}실점`:'무실점'} 호투`:null; const batS=hits!=null&&fm<=2?`타선은 ${hits}안타로 ${fm}득점에 그쳤습니다.`:'';
+  const gem=sp&&sp.outs>=18&&sp.er<=1?`${sp.n}의 ${ip(sp.outs)}이닝 ${sp.er?`${sp.er}자책`:'무자책'} 호투`:null; const batS=hits!=null&&fm<=2?`타선은 ${hits}안타로 ${fm}득점에 그쳤습니다.`:'';
   if(fm<fo&&lead>=5){ const [a,b]=cum[lead]; return {k:'blown',t:`역전패 · ${lead+1}회까지 ${a}:${b}로 앞서다 ${lead+2}회 이후 ${fo-b}실점`,sub:[gem?`${gem}에도 승리를 지키지 못했습니다.`:'',batS].filter(Boolean).join(' ')}; }
   if(fm>fo&&trail>=5){ const [a,b]=cum[trail]; return {k:'comeback',t:`역전승 · ${trail+1}회까지 ${a}:${b}로 뒤지다 ${trail+2}회 이후 ${fm-a}득점`}; }
   if(fm<fo&&fo-fm>=5)return {k:'rout',t:`완패 · ${fo-fm}점 차`}; if(fm>fo&&fm-fo>=5)return {k:'romp',t:`완승 · ${fm-fo}점 차`};

@@ -17,7 +17,7 @@ function unz15(s){ const n=((s.charCodeAt(1)-32)<<15)|(s.charCodeAt(2)-32), u=ne
   for(let i=3;i<s.length&&k<n;i++){ acc=(acc<<15)|(s.charCodeAt(i)-32); bits+=15; while(bits>=8&&k<n){ bits-=8; u[k++]=(acc>>>bits)&255; } acc&=(1<<bits)-1; } return u; }
 let ZERR=''; const ZOK=typeof fflate!=='undefined'&&typeof TextEncoder!=='undefined';
 /* 저장본에서만 무적 선수의 최근 경기·기용 기록을 뺀다(지금 플레이 중인 데이터는 그대로: 검수 11-06) */
-function prepG(){ const F=new Set(Object.values(G.players).filter(p=>p.team==null&&(p.l10||p.use))); if(!F.size)return JSON.stringify(G); return JSON.stringify(G,function(k,v){ return (k==='l10'||k==='use')&&F.has(this)?undefined:v; }); }
+function prepG(){ { const c=UI.cast||UI.castRet; if(c&&c.hold&&!c.fin&&G.games[c.g])G.castHold={g:c.g,k:c.k||0}; } /* 결과를 숨긴 채 보던 중계 위치 */ const F=new Set(Object.values(G.players).filter(p=>p.team==null&&(p.l10||p.use))); if(!F.size)return JSON.stringify(G); return JSON.stringify(G,function(k,v){ return (k==='l10'||k==='use')&&F.has(this)?undefined:v; }); }
 function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:6})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
 async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
 function packG(){ return packJ(prepG()); }
@@ -50,7 +50,8 @@ const hand=p=>p.isP?`${p.th}투`:`${p.th}투${p.bt}타`;
 const recStr=r=>`${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''}`;
 /* 결과를 먼저 계산해 둔 우리 경기: 실시간 진행 중이거나 중계를 끝까지 보기(또는 닫기) 전에는 그 경기를 돌려준다. 결과(전적·순위·날짜 띠 점수)는 그동안 감춘다 */
 function spoilG(){ if(!G)return null; if(G.live){ const g=G.games[G.live.i]; return g&&G.live.upto<g.line.a.length+g.line.h.length?g:null; }
-  const c=UI.cast||UI.castRet, g=c&&G.games[c.g]; if(!g||!c.hold||c.fin)return null; if(c.k>=(g.pbp||[]).length){ c.fin=true; return null; } return g; } /* 끝 장면에 한 번 닿으면 되감아도 공개 상태 */
+  if(!UI.cast&&!UI.castRet&&G.castHold&&!UI.title){ const H=G.castHold; if(G.games[H.g]){ UI.cast={g:H.g,k:H.k||0,play:false,pre:0,spd:UI.castSpd||1,mode:UI.castMode==='all'?'all':'hl',hold:1}; setTimeout(()=>{ try{ render(); }catch(e){} },0); } else delete G.castHold; } /* 새로고침해도 보던 중계를 그 장면에서 다시 열어 결과를 숨긴다(검수 11-06) */
+  const c=UI.cast||UI.castRet||(G.castHold&&UI.title?{g:G.castHold.g,k:G.castHold.k||0,hold:1}:null), g=c&&G.games[c.g]; if(!g||!c.hold||c.fin)return null; if(c.k>=(g.pbp||[]).length){ c.fin=true; delete G.castHold; return null; } return g; } /* 끝 장면에 한 번 닿으면 되감아도 공개 상태 */
 function liveHidden(){ return !!spoilG(); }
 /* 중계로 볼 경기 날 기사(맞대결·기록·팬 글)는 중계를 마칠 때까지 따로 두었다가(G._nh, 저장에도 남는다) 끝나면 제자리로. render마다 확인 */
 function spoilNews(){ if(!G||!G.news)return; const sg=spoilG();

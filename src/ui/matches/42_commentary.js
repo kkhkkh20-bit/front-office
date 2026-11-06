@@ -16,7 +16,7 @@ function pcNum(n){ return n>0?n:0; }
 /* 메인: {c:캐스터, a:해설} */
 /* 실책한 야수의 자리(기록에 남은 경우) */
 function pcErrPos(g,k){ const x=g.pbp[k]; if(!x||!x[9])return null; const f=(g.box[x[0]%2?'a':'h'].bat||[]).find(z=>z.id===x[9]); return f&&f.pos&&f.pos!=='DH'?f.pos:null; }
-function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; const nm=id=>{ const p=G.players[id]; return p?p.name:'?'; };
+function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; const nm=id=>pNmAny(id,g);
   const half=x[0], inn=Math.floor(half/2)+1, top=half%2===0, atT=top?g.away:g.home, dfT=top?g.home:g.away; const pk=(s,a)=>pcPick(g,k,s,a);
   if(x[1]==='PC'){ const p=G.players[x[2]]; const st=pbpState(g,k); const diff=top?st.sh-st.sa:st.sa-st.sh; /* 수비 팀 기준 */
     const c=`${tshort(dfT)} 마운드 교체. ${nm(x[2])} 투수가 올라옵니다.${p?` 시즌 평균자책점 ${eraAt(g,k,x[2])}.`:''}`;
@@ -34,7 +34,7 @@ function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; cons
   const sa=x[7], sh=x[8], befA=pre.sa, befH=pre.sh; const myB=top?sa:sh, opB=top?sh:sa, myB0=top?befA:befH, opB0=top?befH:befA;
   const lead0=myB0-opB0, lead1=myB-opB; const walkoff=!top&&inn>=9&&lead0<=0&&lead1>0;
   const risp=!!(pre.bases[1]||pre.bases[2]), loaded=pre.bases.every(Boolean), leadoff=pre.outs===0&&!pre.bases.some(Boolean)&&(k===0||L[k-1][0]!==half||L.slice(0,k).filter(y=>y[0]===half&&typeof y[1]==='number').length===0);
-  const BN=b?b.name:'?', PN=p?p.name:'?'; const fld=pos=>{ const n=pcFielder(g,half,pos,k); return n?`${PC_POS[pos]} ${n}`:PC_POS[pos]; };
+  const BN=b?b.name:pNmAny(x[1],g), PN=p?p.name:pNmAny(x[2],g); const fld=pos=>{ const n=pcFielder(g,half,pos,k); return n?`${PC_POS[pos]} ${n}`:PC_POS[pos]; };
   const batAfter=x[5].includes(x[1]); const today=pcToday(g,k,x[1]);
   let c='', a='';
   switch(o){

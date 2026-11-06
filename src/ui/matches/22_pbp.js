@@ -9,7 +9,9 @@ function pbpState(g,k){ // k번째 기록까지 반영한 상태
     outs=x[4]; bases=x[5]; sa=x[7]; sh=x[8]; cur[x[0]%2?'a':'h']=x[2]; }
   if(outs>=3)bases=[0,0,0];
   return {sa,sh,outs,bases,half,cur}; }
-function pbpText(x){ const nm=id=>{ const p=G.players[id]; return p?p.name:'?'; };
+/* 지난 경기 기록 속 이름: 지금 선수 목록에 없으면 보관 기록·그 경기 박스스코어에서 찾는다(검수 11-06) */
+function pNmAny(id,g){ const p=G.players[id]; if(p)return p.name; const a=G.arch&&G.arch[id]; if(a&&a.name)return a.name; const B=g&&g.box; if(B)for(const s of ['h','a'])for(const k of ['bat','pit']){ const x=((B[s]||{})[k]||[]).find(r=>r.id===id); if(x&&x.n)return x.n; } return '?'; }
+function pbpText(x){ const nm=id=>pNmAny(id);
   if(x[1]==='PC')return `투수 교체: ${nm(x[2])}`;
   if(x[1]==='SB')return `${nm(x[2])} 도루 성공`; if(x[1]==='CS')return `${nm(x[2])} 도루 실패`;
   return `${nm(x[1])} ${OUTK[x[3]]||x[3]}${x[6]?` · ${x[6]}점`:''}${(x[14]||[]).map(m=>` · ${nm(m.id)} ${m.to===4?'홈':m.to+'루'} ${m.result==='out'?'아웃':'진루'}`).join('')}`; }
