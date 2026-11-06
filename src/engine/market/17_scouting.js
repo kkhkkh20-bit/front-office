@@ -41,7 +41,8 @@ function scoutReport1(p){ // KBO 소속 선수는 현재 능력(오버롤)을 �
   if(ofp!=null&&p.age>=29)ofp=Math.min(ofp,cur+Math.max(0,31-p.age)*2);
   const tools=Object.keys(p.r).map(k=>{ const c=Math.round(p.r[k]); const f=ofp!=null&&p.age<=26?clamp(Math.round(c+(ofp-cur)*.9),c,80):c; return {k,cur:c,fut:f}; });
   const tv={}; tools.forEach(t=>tv[t.k]=t.cur);
-  const notes=r.cur!=null&&r.notes&&r.notes.length?r.notes.slice():[GOOD[[...tools].sort((a,b)=>b.cur-a.cur)[0].k]];
+  const gb=new Set([...Object.values(GOOD),...Object.values(typeof BAD!=='undefined'?BAD:{})]), srt=[...tools].sort((a,b)=>b.cur-a.cur), top=srt[0], low=srt[srt.length-1]; /* 강점·약점 문장은 실제 툴 숫자로 다시 고른다(오차 섞인 예전 평가 문장이 표와 어긋나지 않게, 검수 11-06) */
+  const notes=[...(top&&top.cur>=53&&GOOD[top.k]?[GOOD[top.k]]:[]),...(low&&low.cur<47&&typeof BAD!=='undefined'&&BAD[low.k]?[BAD[low.k]]:[]),...((r.cur!=null&&r.notes)||[]).filter(n=>!gb.has(n))]; if(!notes.length&&top&&GOOD[top.k])notes.push(GOOD[top.k]);
   if(!own&&ofp==null)notes.push('잠재력은 그 지역 프로 담당 스카우트가 있어야 알 수 있습니다.');
   return Object.assign({},r,{who,sc,cur,ofp,tools,arch:archetype(tv,p),role:ofp!=null?roleOf(ofp,p):null,notes,risk:r.risk||'판단 불가',sd:ofp!=null?psd:99,conf:ofp!=null?sdConf(psd):'현재 능력만',exact:true});
 }
@@ -62,7 +63,7 @@ function scoutReport0(p){
   let ofp=futKnown?clamp(Math.max(cur,r5(p.pot+bias+hn('f'+key,p.id)*sd)),20,80):null;
   if(ofp!=null&&!p.prospect&&p.age>=29)ofp=Math.min(ofp,cur+Math.max(0,31-p.age)*2);
   /* 아마추어: 담당 스카우트마다 좋아하는 툴이 있어 그 툴이 좋아 보이면 잠재력을 후하게 보고, 선수마다 마음에 들고 안 드는 인상도 있다(관찰을 늘려도 줄지 않는 오차) */
-  if(ofp!=null&&p.prospect&&sc&&p.gmSeen!==G.year){ const pk=scoutPet(sc,p.isP); const t=tools.find(x=>x.k===pk); ofp=clamp(ofp+(t&&t.fut>=55?DC_PET_ADD:0)+hn('lk'+sc.id,p.id)*DC_LIKE_SD,20,80); }
+  if(ofp!=null&&p.prospect&&sc&&p.gmSeen!==G.year){ const pk=scoutPet(sc,p.isP); const t=tools.find(x=>x.k===pk); ofp=clamp(Math.max(cur,ofp+(t&&t.fut>=55?DC_PET_ADD:0)+hn('lk'+sc.id,p.id)*DC_LIKE_SD),20,80); } /* 인상 보정 뒤에도 현재 능력 아래로 내려가지 않는다(검수 11-06) */
   const tv={}; tools.forEach(t=>tv[t.k]=t.cur);
   const arch=archetype(tv,p);
   const sorted=[...tools].sort((a,b)=>b.cur-a.cur);

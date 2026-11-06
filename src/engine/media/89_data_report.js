@@ -13,7 +13,7 @@ function pctPool(isP,y){ const k=G.day+':'+y+':'+isP+':'+(G.games||[]).length+':
   for(const q of Object.values(G.players)){ if(!!q.isP!==isP||q.fdPool)continue; const h=seasonTotal(q,y,'1군'); if(!pctQual(isP,h))continue; L.push(pctVals(q,h)); }
   for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==isP)continue; const h=archSeason(a,y); if(!pctQual(isP,h))continue; L.push(pctVals({isP:a.isP,arch:a},h)); }
   _pctC={k,v:L}; return L; }
-function pctOf(p,k,v,y){ const M=(p.isP?PCT_P:PCT_B).find(x=>x[0]===k); if(!M||v==null||!isFinite(v))return null; const all=pctPool(!!p.isP,y).map(x=>x[k]).filter(x=>x!=null&&isFinite(x)); if(!all.length)return null; const below=all.filter(x=>M[2]>0?x<v:x>v).length; return Math.round(below/all.length*100); }
+function pctOf(p,k,v,y){ const M=(p.isP?PCT_P:PCT_B).find(x=>x[0]===k); if(!M||v==null||!isFinite(v))return null; const all=pctPool(!!p.isP,y).map(x=>x[k]).filter(x=>x!=null&&isFinite(x)); if(!all.length)return null; const below=all.filter(x=>M[2]>0?x<v:x>v).length, eq=all.filter(x=>x===v).length; return Math.round((below+eq/2)/all.length*100); } /* 같은 값은 절반씩 나눠 가진다(모두 0이면 전원 50, 검수 11-06) */
 /* 월간 전력 분석 보고(40_analysts dataReport)에 붙는 데이터 줄: 득실·피타고리안·최근 흐름·백분위 상하위 */
 function dataLines(){ const me=teamRuns(G.user); if(me.g<10)return [];
   const T=G.teams.map(t=>({t:t.id,s:teamRuns(t.id)})); const rk=(f,desc)=>[...T].sort((a,b)=>desc?f(b.s)-f(a.s):f(a.s)-f(b.s)).findIndex(x=>x.t===G.user)+1;

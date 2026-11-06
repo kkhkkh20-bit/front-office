@@ -4,7 +4,7 @@
 /* 기준(내부 20~80 척도): 1군 주전 평균 약 53, 리그 상위 5% 약 60 */
 const POT_T=[[66,'세계적인 선수가 될 재목','세계적 재목',6],[60,'리그 정상급으로 클 재목','정상급 재목',5],[53,'1군 주전으로 자리 잡을 선수','주전감',4],[48,'1군에서 쓸 만한 선수','1군 자원',3],[44,'1군과 2군 경계에 설 선수','경계선',2],[0,'1군은 어려워 보이는 선수','2군 자원',1]];
 /* 오차가 큰 추정은 한가운데 쪽으로 당겨서 말한다(관찰이 적은 고교 선수를 '세계적'으로 쉽게 부르지 않게) */
-function potVal(rp){ if(!rp||rp.ofp==null)return null; const sd=Math.min(8,rp.sd||0); const v=rp.ofp-Math.max(0,sd-3)*.7; return rp.cur!=null&&rp.ofp>rp.cur+1?Math.max(v,Math.min(rp.ofp,rp.cur+2)):v; }
+function potVal(rp){ if(!rp||rp.ofp==null)return null; const sd=Math.min(8,rp.sd||0); const v=rp.ofp-Math.max(0,sd-3)*.7; const w=rp.cur!=null&&rp.ofp>rp.cur+1?Math.max(v,Math.min(rp.ofp,rp.cur+2)):v; return rp.cur!=null?Math.max(w,rp.cur):w; } /* 예상 잠재력은 현재 능력보다 낮게 보이지 않는다 */
 function potTier(v,cur){ if(v==null||isNaN(v))return null; const tf=x=>POT_T.find(t=>x>=t[0])||POT_T[POT_T.length-1]; if(cur!=null&&v<=cur+1)return {l:'지금이 거의 완성된 모습',s:'완성형',n:Math.max(1,tf(v)[3]),done:true};
   const t=tf(v); return {l:t[1],s:t[2],n:t[3]}; }
 /* 우리 쪽 추정으로 본 '더 클 여지'(진짜 잠재력은 쓰지 않는다) */

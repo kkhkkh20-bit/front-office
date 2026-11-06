@@ -5,15 +5,15 @@ const TOOL_LV=[[64,'최상급'],[58,'플러스'],[53,'평균 이상'],[47,'1군 
 function toolLv(v){ return (TOOL_LV.find(t=>v>=t[0])||TOOL_LV[TOOL_LV.length-1])[1]; }
 function curBand(c){ return c>=60?'리그 상위 5% 수준':c>=56?'확실한 주전급':c>=52?'1군 주전 평균 수준':c>=48?'1군 백업 수준':c>=44?'1군과 2군 경계':'2군 수준'; }
 let _pjC={};
-function projFit(isP){ const key=G.year+':'+Math.floor(G.day/14)+':'+(isP?1:0); if(_pjC[key]!==undefined)return _pjC[key];
+function projFit(isP){ const key=G.year+':'+Math.floor(G.day/14)+':'+(isP?1:0); if(_pjC.g===G&&_pjC[key]!==undefined)return _pjC[key]; /* 다른 세이브면 같은 날짜라도 다시 계산(검수 11-06) */
   const fit=y=>{ const X=[],Y=[]; for(const p of Object.values(G.players)){ if(p.team==null||!!p.isP!==!!isP)continue; const h=seasonTotal(p,y,'1군'); if(!h)continue;
       if(isP){ if(h.outs<150)continue; X.push(ovr(p)); Y.push(pRate(h).era); } else { if(h.pa<200)continue; X.push(ovr(p)); Y.push(bRate(h).ops); } }
     if(X.length<25)return null; const n=X.length, mx=sum(X)/n, my=sum(Y)/n; let sxy=0,sxx=0; for(let i=0;i<n;i++){ sxy+=(X[i]-mx)*(Y[i]-my); sxx+=(X[i]-mx)**2; }
     const b=sxx?sxy/sxx:0, a=my-b*mx; let ss=0; for(let i=0;i<n;i++)ss+=(Y[i]-(a+b*X[i]))**2; return {a,b,r:Math.sqrt(ss/Math.max(1,n-2)),n,y}; };
-  const v=fit(G.year)||fit(G.year-1)||null; _pjC={[key]:v}; return v; }
+  const F=G.pjFit=G.pjFit||{}, kk=isP?'p':'b'; let v=fit(G.year); if(v)F[kk]=v; else v=F[kk]&&F[kk].y===G.year-1?F[kk]:null; /* 지난해 표본은 지난해에 그 능력으로 낸 성적으로 맞춘 식을 쓴다(작년 기록을 올해 능력과 짝짓지 않는다, 검수 11-06) */ _pjC={g:G,[key]:v}; return v; }
 /* 올해 KBO 예상: 가운데 값과 범위(대략 3명 중 2명이 들어오는 폭) */
 function projKBO(p,cur,sd){ if(cur==null)return null; const f=projFit(p.isP); if(!f)return null; const m=f.a+f.b*cur; const s=Math.sqrt(f.r*f.r+(f.b*(sd||0))**2);
-  const lo=Math.min(m-s,m+s), hi=Math.max(m-s,m+s); if(p.isP){ const L=Math.max(1,lo), M=Math.max(L,m), H=Math.max(M+.3,hi); /* 하한을 1.00으로 막으면 가운데·상한도 그 위로(범위가 뒤집히지 않게) */ return {k:'era',m:M,lo:L,hi:H,txt:`평균자책점 ${L.toFixed(2)}~${H.toFixed(2)}`,mid:M.toFixed(2),n:f.n,y:f.y}; } return {k:'ops',m,lo,hi,txt:`OPS ${fmt3(lo)}~${fmt3(hi)}`,mid:fmt3(m),n:f.n,y:f.y}; }
+  const lo=Math.min(m-s,m+s), hi=Math.max(m-s,m+s); if(p.isP){ const L=Math.max(1,lo), M=Math.max(L,m), H=Math.max(M+.3,hi); /* 하한을 1.00으로 막으면 가운데·상한도 그 위로(범위가 뒤집히지 않게) */ return {k:'era',m:M,lo:L,hi:H,txt:`평균자책점 ${L.toFixed(2)}~${H.toFixed(2)}`,mid:M.toFixed(2),n:f.n,y:f.y}; } const oL=Math.max(0,lo), oM=Math.max(oL,m), oH=Math.max(oM,hi); return {k:'ops',m:oM,lo:oL,hi:oH,txt:`OPS ${fmt3(oL)}~${fmt3(oH)}`, /* OPS는 0 아래로 내려가지 않는다 */mid:fmt3(oM),n:f.n,y:f.y}; }
 /* 설명 줄 */
 function curExplain(p,rp){ rp=rp||scoutReport(p); const fsx=p.foreign&&p.team==null?fScout(p,rp):null; /* 외국인 후보는 스카우트 평가와 기록을 합친 종합 추정으로 설명한다 */ const c=fsx&&fsx.raw!=null?fsx.raw:rp.cur; if(c==null)return null; const L=[];
   const sd=rp.exact?0:fsx&&fsx.ms!=null?fsx.ms:(rp.sd||0); /* KBO 소속 선수의 현재 능력은 정확히 보인다(오차 없음). 추정인 것은 잠재력뿐 */

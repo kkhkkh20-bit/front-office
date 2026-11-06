@@ -41,13 +41,15 @@ function FD_ROLE_RANK(r){ for(const k of ['SP','RP','B']){ const i=FD_ROLES[k].f
 
 /* ---------- 지명 평가: 같은 순번대(앞뒤 8명) 지명자들의 실제 WAR과 비교 ---------- */
 function fdOverall(x){ return (x.rd-1)*10+x.no; }
+/* 창단 지명 선수: 리그를 떠나 보관 기록으로 옮겨도 평가에 남긴다(검수 11-06) */
+function fdP(pid){ return G.players[pid]||(G.arch&&G.arch[pid]?archP(G.arch[pid]):null); }
 function fdWarY(p,y,tid){ return (p.hist||[]).filter(h=>h.y===y&&!h.y2&&h.lvl==='1군'&&(tid==null||h.t===tid)).reduce((a,h)=>a+warOf(h,p),0); }
 function fdEvalRows(stage){ const F=G.fd; const y=F.y;
-  const all=F.picks.filter(x=>x.pid&&G.players[x.pid]).map(x=>{ const p=G.players[x.pid]; return {x,p,n:fdOverall(x),w:fdWarY(p,y)}; });
+  const all=F.picks.filter(x=>x.pid&&fdP(x.pid)).map(x=>{ const p=fdP(x.pid); return {x,p,n:fdOverall(x),w:fdWarY(p,y)}; });
   const mine=all.filter(z=>z.x.tid===G.user);
   return mine.map(z=>{ const peers=all.filter(q=>q!==z&&Math.abs(q.n-z.n)<=8); const ws=peers.map(q=>q.w).sort((a,b)=>a-b);
     const lt=peers.filter(q=>q.w<z.w-.05).length, eq=peers.filter(q=>Math.abs(q.w-z.w)<=.05).length; const pct=peers.length?(lt+eq*.5)/peers.length:.5;
-    const med=ws.length?ws[ws.length>>1]:0; const s=fdSample(z.p); const few=z.p.isP?s.outs1<30:s.pa1<40; const ours=fdWarY(z.p,y,G.user);
+    const med=ws.length?(ws.length%2?ws[ws.length>>1]:(ws[ws.length/2-1]+ws[ws.length/2])/2):0; /* 짝수 표본은 가운데 두 값의 평균 */ const s=fdSample(z.p); const few=z.p.isP?s.outs1<30:s.pa1<40; const ours=fdWarY(z.p,y,G.user);
     const m=stage==='mid';
     let k, t;
     if(pct>=.75&&z.w>=(m?.3:.6)){ k='good'; t=m?'지금까지는 좋은 지명입니다':'좋은 지명이었습니다'; }
@@ -57,10 +59,10 @@ function fdEvalRows(stage){ const F=G.fd; const y=F.y;
     const g0=GRD(fdE0(z.p,z.x)); const gNow=GRD(ovr(z.p)); /* 종합 능력 등급(게임 공통) */
     return {pid:z.p.id,nm:z.p.name,pos:posLabel(z.p),rd:z.x.rd,no:z.x.no,n:z.n,auto:!!z.x.auto,w:Math.round(z.w*10)/10,ours:Math.round(ours*10)/10,med:Math.round(med*10)/10,pct:Math.round(pct*100),k,t,g0,gNow,role:z.x.role||fdRole(z.p,fdE0(z.p,z.x)),pa:Math.round(s.pa1),outs:Math.round(s.outs1),gone:z.p.team!==G.user}; }); }
 /* 다른 구단 포함 이 시점 최고 성과(5라운드 이후 스틸) */
-function fdEvalSteal(){ const F=G.fd; const L=F.picks.filter(x=>x.pid&&x.rd>=5&&G.players[x.pid]).map(x=>({x,p:G.players[x.pid],w:fdWarY(G.players[x.pid],F.y)})).sort((a,b)=>b.w-a.w); return L[0]&&L[0].w>=1?L[0]:null; }
+function fdEvalSteal(){ const F=G.fd; const L=F.picks.filter(x=>x.pid&&x.rd>=5&&fdP(x.pid)).map(x=>({x,p:fdP(x.pid),w:fdWarY(fdP(x.pid),F.y)})).sort((a,b)=>b.w-a.w); return L[0]&&L[0].w>=1?L[0]:null; }
 function fdEvalRun(stage){ const F=G.fd; if(!F||!F.done||!F.picks||G.unemp)return; G.fdEval=G.fdEval||{}; if(G.fdEval[stage])return;
   const rows=fdEvalRows(stage).sort((a,b)=>a.n-b.n); if(!rows.length)return; const st=fdEvalSteal();
-  const tot=rows.reduce((a,r)=>a+r.ours,0); const byT={}; for(const x of F.picks){ const p=x.pid&&G.players[x.pid]; if(!p)continue; byT[x.tid]=(byT[x.tid]||0)+fdWarY(p,F.y,x.tid); }
+  const tot=rows.reduce((a,r)=>a+r.ours,0); const byT={}; for(const x of F.picks){ const p=x.pid&&fdP(x.pid); if(!p)continue; byT[x.tid]=(byT[x.tid]||0)+fdWarY(p,F.y,x.tid); }
   const rk=Object.entries(byT).sort((a,b)=>b[1]-a[1]).findIndex(e=>+e[0]===G.user)+1;
   G.fdEval[stage]={d:G.day,y:F.y,rows,tot:Math.round(tot*10)/10,rk,steal:st?{pid:st.p.id,nm:st.p.name,tid:st.x.tid,rd:st.x.rd,no:st.x.no,w:Math.round(st.w*10)/10}:null};
   const good=rows.filter(r=>r.k==='good'), bad=rows.filter(r=>r.k==='bad'&&r.n<=60);
