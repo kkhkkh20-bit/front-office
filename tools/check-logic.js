@@ -1761,6 +1761,11 @@ T('[공통 점검] 경기 엔진 주자 보존: 타석 전 주자와 타자는 �
       if(x[4]<3){ n++; const nb=x[5].filter(Boolean).length; const after=nb+(x[6]||0)+(x[4]-so); if(sb+1!==after&&bad.length<5)bad.push(x[3]+' 전 주자 '+sb+'·아웃 '+so+' → 주자 '+nb+'·득점 '+(x[6]||0)+'·아웃 '+x[4]); }
       sb=x[5].filter(Boolean).length; so=x[4]; } }
   ok(n>1000,'준비 실패: 타석 '+n); ok(!bad.length,'주자가 사라지거나 생김: '+bad.join(' / ')); });
+T('[공통 점검] 홀드: 등판 중 리드를 한 번이라도 잃으면 타선이 재역전한 뒤 교체돼도 홀드가 없고, 박스스코어에 도루 실패가 남는다',()=>{ fresh(); const T2=G.teams.map(t=>t.id); let n=0, bad=[], csB=0, csP=0;
+  for(let i=0;i<300;i++){ const h=T2[i%T2.length], a=T2[(i+3)%T2.length]; const g=simGame(G.day,h,a,false); const H=g.dec.hld||[];
+    for(const k of ['h','a']){ const s=g.S[k]; for(const id of H)if(s.blown&&s.blown[id]&&s.pitchers.includes(id)&&bad.length<3)bad.push(id); for(const x of s.box.values())csB+=x.cs||0; }
+    for(const x of g.pbp||[])if(x[1]==='CS')csP++; n+=H.length; }
+  ok(n>20,'준비 실패: 홀드 '+n); ok(!bad.length,'리드를 잃은 투수에게 홀드 '+bad.join(',')); ok(csP===0||csB>=csP,'박스스코어 도루 실패 '+csB+' / 중계 '+csP); });
 T('[공통 점검] 감독이 바뀌면 전임 감독의 거절로 보직 요청이 막히지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&q.age<=27); const m=G.mgr[G.user]; (G.proleNo=G.proleNo||{})[p.id]={u:G.day+7,mid:m.id}; const r1=proleSet(p.id,'sp'); ok(/거절/.test(r1),'같은 감독은 막혀야 함: '+r1); G.proleNo[p.id].mid=-999; const r2=proleSet(p.id,'sp'); ok(!/얼마 전 거절/.test(r2),'새 감독인데 막힘: '+r2); });
 T('[검수 11-06m] 웨이버로 넘어가도 성과 옵션·구단 옵션·옵트아웃이 이어진다',()=>{ fresh(); simTo(()=>period()==='season'&&tradeOpen()&&G.day<dnum(G.year,7,20)); const [A,B]=G.teams.map(t=>t.id).filter(t=>t!==G.user); const p=domestic(A).find(q=>!q.foreign); p.ctT=A; p.opt={a:250,until:G.year+2,c:'x'}; p.cOpt={y:1,a:800}; p.pOut={y:G.year+1};
   wvStart(p,0); p.team=null; p.wv.cl=[B]; p.wv.end=G.day; const ow=wvWants; wvWants=()=>false; try{ wvDaily(); } finally{ wvWants=ow; } ok(p.team===B,'준비 실패 '+p.team); ok(p.opt&&p.cOpt&&p.pOut&&p.ctT===B,'옵션 사라짐'); });

@@ -76,24 +76,30 @@ try{ document.addEventListener('dragstart',e=>{ const t=e.target; if(t&&(t.tagNa
  - 감독·코치(mgr·coach): 구단 홈 유니폼 시트에서, 같은 구단 안에서는 겹치지 않게. 여성 인물은 그림 얼굴(사진 없음)
  - 다른 구단 단장(gm)·구단주(own)·직원(staff): 성별 맞춰 리그 전체에서 겹치지 않게. 우리 단장이 고른 사진(G.gmP.face='p7:칸')은 다른 단장에게 쓰지 않는다
  - 에이전트·팬은 그림 얼굴 */
-function face7Pool(o){ if(typeof FACE7==='undefined')return null; const P=o.persona, f=!!o.female;
+/* v8(남은 인물 120명): 역할을 o.role로 받거나 pid로 알아낸다. 단장 소개 사진(p7:)·그림 단장 후보(gm)·감독·코치·단장·구단주는 v7 그대로 */
+function face8Role(o){ if(typeof FACE8==='undefined'||!o)return null; if(o.role)return o.role; const pid=String(o.pid??''), P=o.persona;
+  if(P==='agent')return /^press/.test(pid)?'press':/^agt/.test(pid)?'agent':'press'; /* 에이전트 외 agent 얼굴은 기자 */
+  if(P!=='staff'||/^(p7:|gm)/.test(pid))return null; if(/^st:비서:/.test(pid))return 'sec'; if(/^doc/.test(pid))return 'doc'; if(/^fan/.test(pid))return 'fan'; if(/^ceo/.test(pid))return 'ceo'; return null; }
+function face7Pool(o){ if(typeof FACE7==='undefined')return null; const P=o.persona, f=!!o.female; { const r8=face8Role(o); if(r8){ const L=FACE8.ids.map((x,i)=>Object.assign({c:i},x)).filter(x=>x.r===r8); const Lf=L.filter(x=>!!x.f===f); return {k:'8',ids:Lf.length?Lf:L}; } }
   if(P==='mgr'||P==='coach')return f?null:{k:'c',ids:FACE7.coach.ids};
   const r=P==='gm'?'gm':P==='own'?'owner':P==='staff'?'front':null; if(!r)return null; return {k:'v',ids:FACE7.civ.ids.filter(x=>x.r===r&&!!x.f===f)}; }
 function face7Idx(o){ if(!o||o.pid==null||(G&&G.f6off))return null; const pid=String(o.pid);
   if(o.persona==='staff'&&pid.startsWith('p7:'))return typeof FACE7==='undefined'?null:{k:'v',c:+pid.slice(3)}; /* 우리 단장이 고른 사진(새 게임 전 단장 소개 화면에서도) */
   if(!G)return null;
-  if(o.persona==='staff'&&/^(gm|fan)/.test(pid))return null; /* 그림 얼굴 후보·팬 */
-  const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(o.team??G.user):'L'; const scope=pl.k+team;
+  if(o.persona==='staff'&&/^gm/.test(pid))return null; /* 그림 얼굴 후보 */
+  const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(o.team??G.user):'L'; const scope=pl.k+team+(pl.k==='8'?face8Role(o):'');
   const M=G.f7=G.f7||{}, Rv=G.f7r=G.f7r||{}, key=o.persona+':'+pid; const mine=(G.gmP&&String(G.gmP.face||'').startsWith('p7:'))?+String(G.gmP.face).slice(3):-1;
   const cur=M[key]; if(cur!=null&&Rv[scope+':'+cur]===key&&!(pl.k==='v'&&cur===mine))return {k:pl.k,c:cur,team};
   const free=x=>{ const h=Rv[scope+':'+x.c]; return (h==null||h===key)&&!(pl.k==='v'&&x.c===mine); };
   let C=pl.ids.filter(free); if(!C.length)C=pl.ids.filter(x=>!(pl.k==='v'&&x.c===mine)); if(!C.length)return null; /* 다 쓰면 겹치는 것을 허용 */
   const age=o.age||50; C=[...C].sort((a,b)=>Math.abs(a.a-age)-Math.abs(b.a-age)||hn('f7'+a.c,pid)-hn('f7'+b.c,pid)); const c=C[0].c; M[key]=c; Rv[scope+':'+c]=key; return {k:pl.k,c,team}; }
-function face7Img(x,big){ if(x.k==='c'){ const k='c7'+x.team; if(!F6IMG[k]&&FACE7.coach.sheet[String(x.team)]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE7.coach.sheet[String(x.team)]; } return [F6IMG[k],128]; }
+function face7Img(x,big){ if(x.k==='8'){ const pg=FACE8.ids[x.c].p, k='v8_'+pg; if(!F6IMG[k]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=FACE8.s128[pg]; } return [F6IMG[k],128]; }
+  if(x.k==='c'){ const k='c7'+x.team; if(!F6IMG[k]&&FACE7.coach.sheet[String(x.team)]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE7.coach.sheet[String(x.team)]; } return [F6IMG[k],128]; }
   const k=big?'v7b':'v7s'; if(!F6IMG[k]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=big?FACE7.civ.s256:FACE7.civ.s128; } return [F6IMG[k],big?256:128]; }
-function face7Src(o){ const x=face7Idx(o); if(!x)return null; const k='7'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); if(x.k==='v'&&FACE7.civ.s256){ const [bg]=face7Img(x,true); if(bg&&bg.ok){ try{ const u=face6Cut(bg,256,x.c,52,0,152,256,0); F6C.set(k,u); F6B.set(u,{f7:x}); return u; }catch(e){} } } const [im]=face7Img(x,false); if(!im)return null; if(!im.ok)return F6WAIT;
+function face7Src(o){ const x=face7Idx(o); if(!x)return null; const k='7'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); if(x.k==='8'){ const [im]=face7Img(x,false); if(!im)return null; if(!im.ok)return F6WAIT; try{ const u=face6Cut(im,128,FACE8.ids[x.c].c,26,0,76,128,0); F6C.set(k,u); F6B.set(u,{f7:x}); return u; }catch(e){ return null; } }
+  if(x.k==='v'&&FACE7.civ.s256){ const [bg]=face7Img(x,true); if(bg&&bg.ok){ try{ const u=face6Cut(bg,256,x.c,52,0,152,256,0); F6C.set(k,u); F6B.set(u,{f7:x}); return u; }catch(e){} } } const [im]=face7Img(x,false); if(!im)return null; if(!im.ok)return F6WAIT;
   try{ const u=face6Cut(im,128,x.c,26,0,76,128,0); F6C.set(k,u); F6B.set(u,{f7:x}); return u; }catch(e){ return null; } }
-function face7Bust(x){ const k='7B'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); try{ let u; if(x.k==='v'){ const [bg]=face7Img(x,true); if(bg&&bg.ok)u=face6Cut(bg,256,x.c,36,0,184,464,0,true); }
+function face7Bust(x){ const k='7B'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); if(x.k==='8'){ try{ const [im]=face7Img(x,false); if(!im||!im.ok)return null; const u=face6Cut(im,128,FACE8.ids[x.c].c,18,0,92,232,0,true); F6C.set(k,u); return u; }catch(e){ return null; } } try{ let u; if(x.k==='v'){ const [bg]=face7Img(x,true); if(bg&&bg.ok)u=face6Cut(bg,256,x.c,36,0,184,464,0,true); }
   if(!u){ const [im]=face7Img(x,false); if(!im||!im.ok)return null; u=face6Cut(im,128,x.c,18,0,92,232,0,true); if(x.k==='v')return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
 /* 단장 소개: 성별·나이에 맞는 단장 사진 6장(가까운 나이 12명 중 무작위). '다른 사진 6명'은 방금 본 사진을 빼고 다시 */
 function gp7Seeds(g,re){ if(typeof FACE7==='undefined')return []; const f=!!g.female, prev=UI.gp7&&UI.gp7.f===f?UI.gp7.L:[];
