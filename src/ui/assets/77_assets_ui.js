@@ -42,7 +42,7 @@ function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img sr
  - 국내 선수는 한국인 얼굴, 외국인은 출신에 맞춰(아시아쿼터: 일본·대만, 용병: 그 밖) 나이가 가까운 얼굴을 하나 정해 저장(G.f6 선수→칸, G.f6r 칸→선수)
  - 시트는 구단 홈 유니폼으로 미리 합성돼 있다(tools/gen-faces-v6b.py). 화면에서는 칸 하나를 잘라 작은 그림으로 캐시한다
  - 설정에서 끌 수 있다(G.f6off) */
-const F6IMG={}, F6C=new Map(), F6B=new Map();
+const F6IMG={}, F6C=new Map(), F6B=new Map(); const F6WAIT='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><rect width="8" height="8" fill="#2b3442"/></svg>');
 function face6Load(tid,big){ const k=(big===true?'b':big||'')+tid, src=typeof FACE6==='undefined'?null:(big===true?FACE6.big:big==='a'?FACE6.away:FACE6.sheet)?.[String(tid)]; /* big: true=선수 상세 큰 사진, 'a'=원정 유니폼 */ if(F6IMG[k]||!src)return F6IMG[k]; const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.f6=true; im.src=src; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(!p.foreign)return !x.f; if(!x.f)return false; const asia=x.e==='Japanese'||x.e==='Taiwanese'; return p.foreign==='아시아'?asia:!asia; }); }
 /* 모든 구단 선수(사용자 11-05): 얼굴 100명을 구단마다 겹치지 않게 나눠 쓴다(리그 전체에서는 같은 얼굴이 여러 구단에 있을 수 있음). G.f6 선수→칸, G.f6r '구단:칸'→선수 */
@@ -62,7 +62,7 @@ function face6Cut(im,cs,i,x,y,w,o,pad,big){ const c=document.createElement('canv
   else g.drawImage(im,sx+x,sy+y,w,w,0,0,o,o);
   return big?c.toDataURL('image/webp',.92):c.toDataURL('image/jpeg',.9); }
 function face6Src(o){ const i=face6Idx(o); if(i==null)return null; const tid=o.team; let aw=''; try{ const c=UI.cast, g=c&&G.games[c.g]; if(g&&g.away===tid&&g.home!==tid&&FACE6.away)aw='a'; }catch(e){} /* 원정 경기 중계 중에는 원정 유니폼 */ const k=aw+tid+':'+i; if(F6C.has(k))return F6C.get(k);
-  const im=face6Load(tid,aw); if(!im||!im.ok)return null; try{ const u=FACE6.v==='6c'?face6Cut(im,128,i,26,16,76,128,0):face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
+  const im=face6Load(tid,aw); if(!im)return null; if(!im.ok)return F6WAIT; /* 사진을 푸는 동안 그림 얼굴이 잠깐 보였다가 바뀌지 않게 빈 칸(사용자 11-06) */ try{ const u=FACE6.v==='6c'?face6Cut(im,128,i,26,16,76,128,0):face6Cut(im,128,i,26,0,76,128,.1); F6C.set(k,u); F6B.set(u,{tid,i}); return u; }catch(e){ return null; } } /* 작은 자리(목록·카드)는 모자~턱 확대 */
 /* 큰 자리(선수 상세): 모자부터 가슴 심벌까지. 256px 시트가 있으면(사이트) 선명하게, 없으면(아티팩트) 128px 시트로 */
 function face6Bust(x){ if(x.f7)return face7Bust(x.f7); const k='B'+x.tid+':'+x.i; if(F6C.has(k))return F6C.get(k); try{ const bg=face6Load(x.tid,true); let u; const c6=FACE6.v==='6c'; /* v6c: 완성 사진이라 머리 위 여백을 덧대지 않고 모자~쇄골 */ if(bg&&bg.ok)u=c6?face6Cut(bg,256,x.i,14,14,228,464,0,true):face6Cut(bg,256,x.i,40,0,176,464,.1,true); else { const im=face6Load(x.tid); if(!im||!im.ok)return null; u=c6?face6Cut(im,128,x.i,7,7,114,232,0,true):face6Cut(im,128,x.i,20,0,88,232,.1,true); if(bg)return u; } F6C.set(k,u); return u; }catch(e){ return null; } }
 Object.assign(A,{ f6Tog(){ G.f6off=!G.f6off; try{ FACEC.clear(); }catch(e){} save(); render(); } });
@@ -90,7 +90,7 @@ function face7Idx(o){ if(!o||o.pid==null||(G&&G.f6off))return null; const pid=St
   const age=o.age||50; C=[...C].sort((a,b)=>Math.abs(a.a-age)-Math.abs(b.a-age)||hn('f7'+a.c,pid)-hn('f7'+b.c,pid)); const c=C[0].c; M[key]=c; Rv[scope+':'+c]=key; return {k:pl.k,c,team}; }
 function face7Img(x,big){ if(x.k==='c'){ const k='c7'+x.team; if(!F6IMG[k]&&FACE7.coach.sheet[String(x.team)]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE7.coach.sheet[String(x.team)]; } return [F6IMG[k],128]; }
   const k=big?'v7b':'v7s'; if(!F6IMG[k]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; if(big)F6C.clear(); clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=big?FACE7.civ.s256:FACE7.civ.s128; } return [F6IMG[k],big?256:128]; }
-function face7Src(o){ const x=face7Idx(o); if(!x)return null; const k='7'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); const [im]=face7Img(x,false); if(!im||!im.ok)return null;
+function face7Src(o){ const x=face7Idx(o); if(!x)return null; const k='7'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); const [im]=face7Img(x,false); if(!im)return null; if(!im.ok)return F6WAIT;
   try{ const u=face6Cut(im,128,x.c,26,0,76,128,0); F6C.set(k,u); F6B.set(u,{f7:x}); return u; }catch(e){ return null; } }
 function face7Bust(x){ const k='7B'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))return F6C.get(k); try{ let u; if(x.k==='v'){ const [bg]=face7Img(x,true); if(bg&&bg.ok)u=face6Cut(bg,256,x.c,36,0,184,464,0,true); }
   if(!u){ const [im]=face7Img(x,false); if(!im||!im.ok)return null; u=face6Cut(im,128,x.c,18,0,92,232,0,true); if(x.k==='v')return u; } F6C.set(k,u); return u; }catch(e){ return null; } }

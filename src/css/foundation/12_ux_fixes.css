@@ -648,7 +648,7 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 #app .helpbtn{width:26px;height:26px;min-height:26px!important;border-radius:50%;padding:0;display:inline-grid;place-items:center;font:800 13px/1 var(--f-num);color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);box-shadow:none}
 #app .helpbtn.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 @media(max-width:1000px){ #app .subhead.notitle{position:relative;height:0!important;min-height:0!important;padding:0!important;margin:0!important;overflow:visible;z-index:6}
- #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} #app .subhead.notitle>.meta>:not(.helpbtn){display:none} #app .shell:has(.subhead.notitle) main.content :is(.ibx-tabs,.ws-tab-row,.subtabs){padding-right:34px;box-sizing:border-box} }
+ #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} #app .subhead.notitle>.meta>:not(.helpbtn){display:none} #app .shell:has(.subhead.notitle) main.content :is(.ibx-tabs,.ws-tab-row,.subtabs,.ibx-mback){padding-right:34px;box-sizing:border-box} }
 /* 트럭 시위 기사 그림(LED 전광판 트럭) */
 .trk{position:relative;margin:6px 0 4px;height:132px;border-radius:8px;overflow:hidden;background:linear-gradient(#1b2433,#0e141d);border:1px solid var(--line)}
 .trk-bld{position:absolute;left:0;right:0;top:10px;height:70px;background:repeating-linear-gradient(90deg,#1f2b3b 0 26px,#18222f 26px 30px);opacity:.9}.trk-bld span{position:absolute;right:8px;top:6px;font-size:10px;color:#8fa1b6;letter-spacing:.04em}
@@ -670,3 +670,7 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 @keyframes trk2run{to{transform:translateX(-100%)}}
 @media (prefers-reduced-motion:reduce){.trk2-run{animation:none;padding-left:0;white-space:normal;font-size:clamp(10px,18cqh,20px);text-align:center;width:100%}}
 .trk2 figcaption{position:absolute;left:0;right:0;bottom:0;padding:3px 8px;font-size:11px;color:#eee;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+/* 소식 상세: 보낸 사람 사진을 크게(사용자 11-06) */
+header.ibm-h{grid-template-columns:76px minmax(0,1fr) auto}
+header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
+@media (max-width:979px){ header.ibm-h{grid-template-columns:64px minmax(0,1fr)} header.ibm-h>.av,header.ibm-h>.ob-av{width:64px;height:64px} } /* 13_inbox.css가 뒤에 오므로 header로 우선순위를 올린다 */
