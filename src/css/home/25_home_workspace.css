@@ -98,3 +98,20 @@
 /* 휴대폰 홈: 카드 3장을 한 화면에(사용자 11-05). 카드 안은 넘치면 잘리고 머리글·여백을 줄인다 */
 @media(max-width:699px){.home-workspace[data-rows="3"] :is(.home-grid,.hw-work){grid-template-rows:repeat(3,minmax(0,1fr))}.home-workspace[data-rows="2"] :is(.home-grid,.hw-work){grid-template-rows:repeat(2,minmax(0,1fr))}
  .home-workspace[data-rows="3"] .hw-panel{min-height:0;overflow:hidden}.home-workspace[data-rows="3"] .hw-panel>header{min-height:24px;padding:3px 8px}.home-workspace[data-rows="3"] .hw-panel>header h2{font-size:13px}#app .home-workspace[data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:11px}#app .home-workspace[data-rows="3"] .hw-panel>header{min-height:28px;padding:2px 8px}}
+/* 홈 추가 패널(사용자 11-06): 선발 매치업·이번 주 일정·최근 10경기·선수단 현황 */
+.hw-spduel{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
+.hw-sp{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:6px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);text-align:left;min-width:0}
+.hw-sp .av,.hw-sp img{width:34px!important;height:34px!important;min-width:0;border-radius:6px;object-fit:cover;position:static}.hw-sp span{display:grid;min-width:0}.hw-sp small{font-size:10px;color:var(--muted)}.hw-sp b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hw-sp em{font-style:normal;font-weight:800;font-size:15px}
+.hw-sp.none{display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.hw-wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;padding:8px;align-items:start;align-content:center;flex:1;min-height:0}
+.hw-wd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 2px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);min-width:0;font-size:11px}
+.hw-wd small{font-size:10px;color:var(--muted);white-space:nowrap}.hw-wd b{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.hw-wd i{font-style:normal;font-size:10px}
+.hw-wd.today{border-color:var(--team-hi)}.hw-wd.w i{color:var(--good)}.hw-wd.l i{color:var(--bad)}
+.hw-wl{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;padding:14px 8px 4px}
+.hw-wl span{display:grid;justify-items:center;gap:2px}.hw-wl b{font-size:15px}.hw-wl small{font-size:9px;color:var(--muted)}.hw-wl .w b{color:var(--good)}.hw-wl .l b{color:var(--bad)}.hw-wl .t b{color:var(--muted)}
+.hw-form .hw-hint{text-align:center}
+.hw-rs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:8px 10px;flex:1;min-height:0}
+.hw-rs dl{margin:0;display:grid;gap:3px;align-content:start}.hw-rs dl>div{display:flex;justify-content:space-between;font-size:12px}.hw-rs dt{color:var(--muted)}.hw-rs dd{margin:0;font-weight:700}
+.hw-rs .hd{display:flex;justify-content:space-between;color:var(--ink);font-weight:700;font-size:13px;padding-bottom:3px;border-bottom:1px solid var(--line)}.hw-rs .bad{color:var(--bad)}
+
+.hw-match .hw-match-main{gap:5px;padding:6px 10px}.hw-match .hw-match-main>.small{display:none} /* 선발 매치업이 들어가 안내 한 줄은 뺀다 */
