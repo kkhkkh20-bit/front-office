@@ -65,7 +65,7 @@ function allStarSelect(){
 function allStarDaily(){
   if(!G.cal||!G.sea||G.sea.y!==G.year||G.day<G.cal.asg-14||G.day>G.cal.asg+1)return;
   const A=allStarSelect();
-  if(G.day>=G.cal.asg-1){
+  if(G.day>=G.cal.asg-1&&!A.played){ /* 행사가 끝나면 명단·수상 이력은 확정 */
     const pool=allStarPool(G.year);
     for(const side of ['나눔','드림'])for(let i=0;i<A.teams[side].length;i++){
       const old=A.teams[side][i],p=G.players[old.id];

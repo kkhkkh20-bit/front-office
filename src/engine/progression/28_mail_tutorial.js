@@ -8,7 +8,7 @@ const GOTO={구장:'구장',연봉:'연봉협상',드래프트:'신인드래프�
 const STOP_CATS=[['must','계약·협상·등록·규정·구단주 주문','항상 멈춤: 정하지 않으면 손해가 크거나 규정 문제가 생기는 일'],['trade','트레이드 제안','다른 구단이 보낸 제안'],['inj','부상·복귀','선수 이탈·복귀 소식'],['mgr','감독 요청','보강·기용·미디어데이 등 감독이 묻는 일'],['squad','선수단 사건','지각·징계·충돌·슬럼프 등 선수단 관리'],['owner','구단주 초대·행사','관전 초대 등 구단주와의 일정'],['spon','스폰서·팬 행사','스폰서 제안·팬 행사 제안'],['press','언론 인터뷰 요청','인터뷰·후속 질문'],['info','일반 소식','일정·시상식·결산·캠프 결산 알림(결정할 것이 없는 소식)']];
 const STOP_DEF={trade:true,inj:true,mgr:true,squad:true,owner:true,spon:true,press:true,info:false};
 const STOP_INFO=new Set(['일정','새해','포스트시즌알림','기록','캠프','스토브리그','업무','결산','월간','경기','연수']);
-function stopCat(m){ const k=m&&m.kind, f=m&&m.from||'';
+function stopCat(m){ if(m&&m.cat)return m.cat; const k=m&&m.kind, f=m&&m.from||'';
   if(k==='부상'||k==='복귀'||k==='의무')return 'inj'; if(k==='트레이드')return 'trade'; if(k==='스폰서'||f==='마케팅팀')return 'spon'; if(k==='언론')return 'press'; if(k==='면담')return 'squad';
   if(k==='감독')return 'mgr'; if(k==='결정'){ if(f==='감독실')return 'mgr'; if(f==='구단주실')return 'owner'; if(f==='에이전트'||f==='부단장')return 'must'; return 'squad'; }
   if(STOP_INFO.has(k))return 'info'; return 'must'; }
@@ -30,7 +30,7 @@ function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>
 function mail(from,subj,body,o){ o=o||{}; if(G.unemp&&o.kind!=='경력'&&from!=='야인')return {read:true,acts:[]}; /* 야인일 때는 전 소속 구단 업무 메일을 받지 않는다 */
   { const d=G.mail.slice(0,60).find(x=>!x.read&&x.subj===subj&&x.body===body&&G.day-x.day<=7); if(d)return d; } /* 같은 소식이 아직 안 읽힌 채 있으면 다시 보내지 않는다 */
   const m={id:'m'+(G.mailSeq=(G.mailSeq||0)+1),day:G.day,from,subj,body,read:false,imp:!!o.imp,acts:o.acts||[],ref:o.ref??null,kind:o.kind||'일반',face:o.face??null,ctx:mailContext(subj,o.acts)};
-  G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }
+  if(o.cat)m.cat=o.cat; G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }
 /* 이미 보낸 소식을 다시 알릴 때: 새 소식을 만들지 않고 원래 소식을 오늘로 끌어올려 안 읽음으로 되돌린다 */
 function mailBump(m,warn){ const i=G.mail.indexOf(m); if(i<0)return null; G.mail.splice(i,1); G.mail.unshift(m); if(m.day0==null)m.day0=m.day; m.day=G.day; m.read=false; m.imp=true; m.warn=warn||m.warn||''; if(stopOn(m))G.stops.push(m); return m; }
 /* 소식함 한도: 160건을 넘으면 오래된 '읽은' 소식부터 지운다. 안 읽은 소식은 남기고, 그래도 240건을 넘을 때만 가장 오래된 것을 지운다 */

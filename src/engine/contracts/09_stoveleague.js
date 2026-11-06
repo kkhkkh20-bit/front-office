@@ -33,7 +33,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
       if(p.faFrom===G.user)declared.push(p.id); }
   }
   try{ ovsFA(pool); }catch(e){}
-  G.fa={pool,offers:{},ai:{},open:false,openDay:KD(11,6),closed:false,results:[],cap:pool.length<=20?2:3,outN:{},y0:G.year};
+  G.fa={pool,offers:{},ai:{},open:false,openDay:KD(11,6),closed:false,results:[],cap:pool.length<=20?2:3,outN:{},y0:G.year}; try{ allInPick(); }catch(e){}
   if(G._faSkip&&G._faSkip.length){ note('FA',`FA 자격이 있지만 신청하지 않고 남은 우리 선수: ${G._faSkip.join(', ')}. 내년에도 자격은 유지됩니다.`); } G._faSkip=null;
   G.retired=retired; G.rolled=G.year; try{ obRetireEvents(obs); }catch(e){} try{ abroadYear(); }catch(e){} try{ fOverseas(); }catch(e){} try{ postingSeason(); }catch(e){}
   const mine=retired.filter(r=>r.team===G.user);
@@ -60,9 +60,9 @@ function faDeclP(p){ const o2=ovr(p)+pvShift(p); let dp=o2>=58?.97:o2>=52?.8:o2>
 /* 올 시즌 뒤 FA 예정자(시즌 중 미리 보기): FA 계약 마지막 해, 자격을 채우고도 남았던 선수, 올해 1군 등록일수를 채우면 자격을 얻는 선수.
    why: end(계약 만료) · re(자격 보유) · svc(등록일수 필요, sure=지금 이미 채웠나) */
 function faUpcoming(){ if(G.rolled===G.year||(G.fa&&G.fa.y0===G.year))return []; const L=[];
-  for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.extNext||(p.joinY>G.year)||p.age>37)continue; if(p.age>=40||(p.age>=35&&ovr(p)<44))continue; /* 은퇴 예상 */
+  for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.extNext||(p.joinY>G.year))continue; /* KBO FA는 나이 제한이 없다: 38세 이상도 은퇴 예상만 빼고 올린다(검수 11-06) */ if(p.age>=40||(p.age>=35&&ovr(p)<44))continue; /* 은퇴 예상 */
     let why=null, sure=true; const svcEnd=(p.svc||0)+(faSvcOk(p)?1:0);
-    if(p.faC){ if((p.yrs||0)>1)continue; why='end'; }
+    if(p.faC){ if((p.yrs||0)>1)continue; if(p.cOpt&&!p.cOpt.used&&ctOn(p)&&(p.team===G.user&&!G.unemp?p.cOpt.dec:false))continue; /* 실행하기로 한 구단 옵션: FA가 아니라 계약 연장 */ why='end'; }
     else if((p.svc||0)>=faSvc(p))why='re';
     else if((p.svc||0)===faSvc(p)-1){ why='svc'; sure=faSvcOk(p); }
     else continue;
@@ -78,7 +78,7 @@ function faOfferLive(id){ const F=G.fa; const o=F&&F.offers&&F.offers[id]; const
 /* AI 구단의 비FA 다년계약: 상한 여유가 있으면 FA를 앞둔(또는 막 자격을 얻은) 핵심 선수를 미리 묶는다(실제 KBO의 비FA 다년계약 흐름).
    선수풀이 작아 시장에 내보내면 잡기 어렵다는 계산이다. 새 계약은 다음 시즌부터(extNext) */
 function aiExtensions(all){ const done=[];
-  for(const t of G.teams){ if(t.id===ME()||t.cash<-3000)continue; let room=capOf(G.year+1)*(t.mode==='contend'?1.0:.96)-capPay(t.id); let n=0;
+  for(const t of G.teams){ if(t.id===ME()||t.cash<-3000)continue; let room=capOf(G.year+1)*(t.mode==='contend'?1.0:.96)*aiCapMul(t)-capPay(t.id); let n=0;
     const C=all.filter(p=>p.team===t.id&&!p.foreign&&!p.ys&&!p.extNext&&!p.faC&&!p.ext&&p.age<=33&&ovr(p)>=56&&faSvc(p)-(p.svc||0)<=1&&faSvc(p)-(p.svc||0)>=0).sort((a,b)=>ovr(b)-ovr(a));
     for(const p of C){ if(n>=2)break; const ytf=faSvc(p)-(p.svc||0); const years=p.age<=29?4:p.age<=32?3:2; const d=round5(extDemand(p,years)*(hasAgent(p)?agExtMul(p):1));
       if(d-p.sal>room)continue; if(R()>(ytf===0?.4:.28)*(t.mode==='contend'?1.2:1))continue;
@@ -89,7 +89,7 @@ function faWorth(t,p){ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+
 function faInterest(t,p){
   const room=capOf(sponSeason())-capPay(t.id); const po=ovr(p)+hn('o'+t.id,p.id)*3;
   if(faOutBlocked(t.id,p))return 0;
-  if(t.id!==ME()&&capPay(t.id)+p.ask.annual*.9>capOf(sponSeason())*((t.id===p.faFrom?1.02:1)+(t.mode==='contend'&&t.cash>3000?.04:0)))return 0;
+  if(t.id!==ME()&&capPay(t.id)+p.ask.annual*.9>capOf(sponSeason())*((t.id===p.faFrom?1.02:1)+(t.mode==='contend'&&t.cash>3000?.04:0))*aiCapMul(t))return 0; /* 지난해 초과 구단은 더 아끼고, 올인 구단은 넘겨도 산다 */
   if(t.id!==p.faFrom&&t.cash<-3000)return 0;
   if(t.id!==p.faFrom&&ovr(p)<47)return 0;
   /* 보상 비용(보상금)을 계약 총액과 견준다: 몸값보다 보상금이 크면 외부 구단은 거의 손대지 않는다 */
@@ -350,7 +350,7 @@ function answerOffer(id,yes){
   const diff=sum(o.give.map(id=>trueVal(G.players[id])))-sum(o.get.map(id=>trueVal(G.players[id])));
   try{ frBacklash(o.get); }catch(e){}
   chron('trade',`${tshort(o.from)}와(과) 트레이드: ${o.get.map(id=>G.players[id]?G.players[id].name:'').join('·')} 보내고 ${o.give.map(id=>G.players[id]?G.players[id].name:'').join('·')} 받음`);
-  G.trades.push({y:G.year,d:G.day,with:o.from,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade});
+  G.trades.push({me:G.user,y:G.year,d:G.day,with:o.from,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade});
   t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user)); try{ if(o.get.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from)); G.offers=(G.offers||[]).filter(x=>!x.get.some(id=>o.get.includes(id))&&!x.give.some(id=>o.give.includes(id)));
   mgrTradeApply(mv); churnCheck(); mpickTraded(o.get); addLog(`${tname(o.from)}의 제안을 받아들였습니다: ${o.get.map(id=>G.players[id].name).join(', ')} ↔ ${o.give.map(id=>G.players[id].name).join(', ')}`);
   return {ok:true,grade,msg:'트레이드가 성사되었습니다.'};

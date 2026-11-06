@@ -12,8 +12,8 @@ function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return
 function pkHeld(tid){ const y=pkYear(), L=[]; for(let rd=1;rd<=DRAFT_ROUNDS;rd++)for(const t of G.teams)if(pkOwner(y,rd,t.id)===tid)L.push(rd+':'+t.id); return L; }
 function pkName(k){ const [rd,o]=k.split(':').map(Number); return `${pkYear()} 드래프트 ${rd}라운드(${tshort(o)} 순번)`; }
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
-function pkSlot(orig){ const D=pkYear()===G.year?draftOrders():null; const o=D?D.r2:standingsNow().map(x=>x.tid).reverse(); const i=o.indexOf(orig); return i<0?5:i; }
-function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1; return (PK_V[rd-1]||.2)*(1.3-.06*pkSlot(o))*m; }
+function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; const o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); const i=o.indexOf(orig); return i<0?5:i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
+function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1; return (PK_V[rd-1]||.2)*(1.3-.06*pkSlot(o,rd))*m; }
 const pkNorm=pk=>({give:[...((pk&&pk.give)||[])],get:[...((pk&&pk.get)||[])]});
 const pkSig=pk=>{ pk=pkNorm(pk); return pk.give.length||pk.get.length?'|p'+[...pk.give].sort().join(',')+'/'+[...pk.get].sort().join(','):''; };
 function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.length)return '';

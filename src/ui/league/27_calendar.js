@@ -4,7 +4,7 @@
    진행 버튼을 누르면 지나간 날짜가 화면 위에서 하루씩 넘어가는 띠로 보인다(FM의 진행 표시처럼) */
 const CAL_K={dl:{c:'#ff6b6b',l:'마감'},lg:{c:'#5aa9ff',l:'리그'},me:{c:'#ffb547',l:'우리 일'},pl:{c:'#9be27a',l:'선수'}};
 /* 해마다 같은 날짜에 돌아오는 일정 */
-const CAL_FIX=[[1,8,'연봉 미계약 점검','me'],[1,10,'연봉조정 신청 마감','dl'],[1,20,'연봉조정 결정 · 입대일','lg'],[1,24,'FA 시장 사실상 마감','dl'],[7,31,'트레이드 마감','dl'],[8,15,'외국인 등록 마감','dl'],[11,2,'FA 공시','lg'],[11,6,'FA 협상 시작','lg'],[12,1,'연봉 협상 시작','me'],[3,1,'상무 지원 시작(6월 입대)','me'],[4,14,'상무 지원 마감(6월 입대)','dl'],[9,1,'상무 지원 시작(12월 입대)','me'],[10,14,'상무 지원 마감(12월 입대)','dl']];
+const CAL_FIX=[[1,8,'연봉 미계약 점검','me'],[1,10,'연봉조정 신청 마감','dl'],[1,20,'연봉조정 결정 · 입대일','lg'],[1,24,'FA 시장 사실상 마감','dl'],[1,31,'연봉 계약 마감(미확정은 자동 확정)','dl'],[7,31,'트레이드 마감','dl'],[8,15,'외국인 등록 마감','dl'],[11,2,'FA 공시','lg'],[11,6,'FA 협상 시작','lg'],[12,1,'연봉 협상 시작','me'],[3,1,'상무 지원 시작(6월 입대)','me'],[4,14,'상무 지원 마감(6월 입대)','dl'],[9,1,'상무 지원 시작(12월 입대)','me'],[10,14,'상무 지원 마감(12월 입대)','dl']];
 /* 시상식: 엔진이 이 날 발표한다(07_daily.js KD(11,24)·KD(12,9)). 발표 뒤에는 그날을 눌러 시상식 화면으로 */
 const CAL_CER=[[11,24,'mvp',()=>`${ASSOC.s} 시상식(MVP·신인왕)`],[12,9,'gg',()=>'골든글러브 시상식']];
 function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
@@ -18,7 +18,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   for(const e of (G.evs||[]))if(!e.done&&e.exp===d)out.push({k:'me',t:`결정 기한: ${e.title}`});
   for(const of of (G.offers||[]))if(of.exp===d)out.push({k:'me',t:`트레이드 제안 기한: ${tshort(of.from)}`});
   try{ for(const r of mreqOpen())if(r.until===d)out.push({k:'dl',t:`감독과 약속한 기한: ${MREQK[r.k]||'요청'}`}); }catch(e){}
-  if(G.fac&&G.fac.build&&G.fac.build.done===d)out.push({k:'me',t:'훈련 시설 완공 예정'});
+  if(G.fac&&G.fac.build&&G.fac.build.done===d)out.push({k:'me',t:'훈련 시설 완공 예정'}); if(G.fac&&G.fac.bld)for(const k in G.fac.bld){ const b=G.fac.bld[k]; if(b&&b.done===d)out.push({k:'me',t:`${(FACI[k]||{}).l||'시설'} 완공 예정`}); } /* 시설별 공사(bld) */
   try{ const m=G.mgr[G.user]; const D=mgrDir(); for(const k of ['arm','rest']){ const x=D[k]; if(m&&x&&!x.ok&&x.mid===m.id&&x.day+30===d)out.push({k:'me',t:`감독 재논의 가능: ${k==='arm'?'투수 관리':'주전 휴식'}`}); } }catch(e){}
   if(G.fa){ for(const id in (G.fa.pitch||{})){ const x=G.fa.pitch[id]; const p=G.players[id]; if(p&&x.until===d)out.push({k:'me',t:`우선 제안 기한: ${p.name}`}); }
     for(const id in (G.fa.mk||{})){ const x=G.fa.mk[id]; const p=G.players[id]; if(!p||p.team!=null)continue; if(x.ll&&x.ll.until===d)out.push({k:'dl',t:`라스트 룩 기한: ${p.name}`}); else if(!x.done&&x.next===d&&(G.fa.offers[id]||p.faFrom===G.user))out.push({k:'me',t:`시장 보고: ${p.name}`}); } }
@@ -31,6 +31,7 @@ function calGame(d){ const c=G.cal; let m=null, kind='';
   if(c&&c.sched[d])m=c.sched[d].find(x=>x.includes(G.user));
   const log=(G.sea&&G.sea.ulog||[]).find(x=>x.d===d);
   if(!m&&log){ m=[log.h,log.a]; kind=log.k||''; }
+  if(!m){ const q=typeof psOursAt==='function'?psOursAt(d):null; if(q){ m=q.home?[G.user,q.op]:[q.op,G.user]; kind=`${ROUNDK[q.round]||'포스트시즌'} ${q.n}차전`; } } /* 앞으로 열릴 포스트시즌 경기 */
   if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
   const sg=spoilG(); /* 중계로 볼 경기 점수는 중계를 마칠 때까지 감춘다 */
   return {home,op,kind,res:log&&!(sg&&sg.day===d)?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user))}; }

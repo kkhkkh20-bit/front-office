@@ -14,12 +14,14 @@ function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P
   if(k==='scout'&&!gmTourn(d))return '그날은 고교 대회가 없습니다.';
   if(k==='scout'&&!REG.includes(x))return '지역을 고르세요.';
   if(k==='farm'&&!(dobj(d).m>=4&&dobj(d).m<=9))return '2군 경기가 없는 시기입니다.';
-  if(k==='attend'&&x==='owner'){ const n=Object.entries(P).filter(([dd,p])=>p.k==='attend'&&p.x==='owner'&&!p.done&&+dd>=G.day).length; /* 앞으로 유효한 일정만 센다 */ if(n>=2)return '구단주와의 직관은 한 번에 두 경기까지만 잡을 수 있습니다.'; }
+  if(k==='attend'&&x==='owner'){ const n=Object.entries(P).filter(([dd,p])=>p.k==='attend'&&p.x==='owner'&&!p.done&&+dd>=G.day&&+dd!==+d).length; /* 같은 날을 다시 잡는 것은 새 예약이 아니다 */ /* 앞으로 유효한 일정만 센다 */ if(n>=2)return '구단주와의 직관은 한 번에 두 경기까지만 잡을 수 있습니다.'; }
   P[d]={k,x:x||null,done:false};
+  if(k==='attend'&&+d===G.day+1)gmAttendWarn(P[d]); /* 내일 경기를 오늘 잡으면 전날 알림을 바로 보낸다(검수 11-06) */
   return k==='attend'?`${dmd(d)} 경기 직관을 잡았습니다${x==='owner'?'(구단주 동행)':x==='ceo'?'(사장 동행)':''}. 전날 알려 드립니다.`:k==='scout'?`${dmd(d)} ${x} ${gmTourn(d)} 관전 출장을 잡았습니다.`:`${dmd(d)} 2군 방문을 잡았습니다.`; }
 /* 전날: 직관 알림(진행을 멈춘다). 당일: 출장·방문 결과 */
 function gmPlanDaily(){ if(G.unemp)return; const P=gmPlans(); const tm=P[G.day+1];
-  if(tm&&tm.k==='attend'&&!tm.warned){ tm.warned=true; mail('비서실',`내일 직관: ${(()=>{ const g=(G.cal.sched[G.day+1]||[]).find(m=>m.includes(G.user)); return g?`${g[0]===G.user?'vs':'@'} ${tname(g[0]===G.user?g[1]:g[0])}`:'우리 경기'; })()}`,`내일 경기장에 가는 일정입니다${tm.x==='owner'?'. 구단주께서 함께 보십니다':tm.x==='ceo'?'. 사장께서 함께 보십니다':''}. '경기장으로 가기'를 누르면 경기를 처음부터 봅니다.`,{imp:true,kind:'일정',acts:[{l:'경기장으로 가기',a:'watchNext'}]}); }
+  if(tm&&tm.k==='attend'&&!tm.done&&!(G.cal.sched[G.day+1]||[]).some(m=>m.includes(G.user))&&!psOursAt(G.day+1)&&G.ps&&!(G.ps.done)&&period()==='post'){ tm.done=true; tm.miss=true; note('일정',`${dmd(G.day+1)} 경기는 시리즈가 끝나 열리지 않아 직관 일정을 취소했습니다.`); }
+  if(tm&&!tm.done&&tm.k==='attend'&&!tm.warned)gmAttendWarn(tm);
   /* 우천 순연 등으로 열리지 않은 직관 일정은 취소한다(구단주 동행 한도를 계속 차지하지 않게). 오늘 할 일이 없어도 먼저 정리한다 */
   for(const d in P){ const q=P[d]; if(+d<G.day&&!q.done&&q.k==='attend'){ q.done=true; q.miss=true; note('일정',`${dmd(+d)} 직관하려던 경기가 열리지 않아 일정을 취소했습니다.`); } }
   /* 포스트시즌이 끝났으면 열리지 않을 남은 경기(6·7차전 등) 직관도 바로 취소 */
@@ -44,3 +46,6 @@ function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.
 function gmFarmVisit(){ const d=depth(G.user); const F=[...d.futB,...d.futP].filter(p=>!p.ys); for(const p of F)p.mor=clamp((p.mor??60)+2,0,100);
   const best=F.filter(p=>p.age<=24).map(p=>({p,g:potGapEst(p)})).sort((a,b)=>b.g-a.g).slice(0,3).map(x=>x.p);
   mail('단장 노트','2군 방문',`2군 선수 ${F.length}명의 기분이 올랐습니다(+2).\n코치진이 가장 크게 볼 만하다고 보는 선수: ${best.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세, 현재 ${dvo(p)})`).join(', ')||'-'}\n2군 감독: "단장님이 직접 오시니 선수들 눈빛이 다릅니다."`,{kind:'육성'}); }
+
+/* 직관 전날 알림. 구단주 동행은 '구단주 초대·행사' 멈춤 설정을 따른다(검수 11-06) */
+function gmAttendWarn(tm){ tm.warned=true; mail('비서실',`내일 직관: ${(()=>{ const g=(G.cal.sched[G.day+1]||[]).find(m=>m.includes(G.user)); return g?`${g[0]===G.user?'vs':'@'} ${tname(g[0]===G.user?g[1]:g[0])}`:'우리 경기'; })()}`,`내일 경기장에 가는 일정입니다${tm.x==='owner'?'. 구단주께서 함께 보십니다':tm.x==='ceo'?'. 사장께서 함께 보십니다':''}. '경기장으로 가기'를 누르면 경기를 처음부터 봅니다.`,{imp:true,kind:'일정',...(tm.x==='owner'?{cat:'owner'}:{}),acts:[{l:'경기장으로 가기',a:'watchNext'}]}); }

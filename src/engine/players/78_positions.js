@@ -22,12 +22,13 @@ function posWeek(){ const per=period(); const y=G.year; const done=[];
   for(const p of Object.values(G.players)){ if(p.isP||p.team==null)continue; const u=p.use;
     if(u&&u.y===y&&u.pos){ const seen=p.useSeen&&p.useSeen.y===y?p.useSeen.pos:{}; for(const k in u.pos){ const n=u.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*posLearnRate(p)); } p.useSeen={y,pos:Object.assign({},u.pos)}; }
     const f=p.fuse; if(f&&f.y===y&&f.pos){ const seen=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen.pos:{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*.75*posLearnRate(p)*(p.team!=null?posCoachF(p.team):1)); } p.fuseSeen={y,pos:Object.assign({},f.pos)}; }
-    const C=p.pconv; if(!C)continue; if(per!=='pre'&&per!=='season')continue; if(p.injOut>0||milServing(p))continue; /* 군 복무 중에는 구단 훈련을 받지 못한다 */
-    posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
+    const C=p.pconv; if(!C)continue; if(p.joinY>G.year){ delete p.pconv; continue; } /* 합류 전 신인은 구단 훈련으로 포지션이 바뀌지 않는다(검수 11-06) */
+    if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold)) /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
+    posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 전환 완료 검사는 비시즌에도 한다: 마무리캠프에서 기준을 넘길 수 있다(검수 11-06) */ /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
     if(posExp(p,C.pos)>=90){ const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
   if(done.length){ const m=G.mgr[G.user]; mail('감독실',`포지션 전환 완료 (${done.length}명)`,`${m?m.name+' 감독':'코치진'}: 전환 훈련을 마쳐 주 포지션을 바꿉니다.\n\n${done.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
 /* 단장 요청: 전환 훈련 시작·중단 */
-function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP)return '우리 야수만 정할 수 있습니다.'; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'코치진';
+function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP)return '우리 야수만 정할 수 있습니다.'; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년에 합류하는 신인이라 아직 구단 훈련을 지시할 수 없습니다.`; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'코치진';
   if(!pos){ if(!p.pconv)return ''; const k=p.pconv.pos; delete p.pconv; return `${p.name}의 ${POSK[k]} 전환 훈련을 멈춥니다. 지금까지 익힌 숙련도는 남습니다.`; }
   if(milServing(p))return `${p.name}은(는) 군 복무 중이라 포지션 전환 훈련을 시작할 수 없습니다.`;
   if(!POS_F.includes(pos)||pos===p.pos)return ''; if(p.pconv&&p.pconv.pos===pos)return `${p.name}은(는) 이미 ${POSK[pos]} 전환 훈련 중입니다.`; /* 같은 전환을 다시 눌러도 바뀌는 것이 없다(감독 반응도 다시 없음) */ const v=versOf(p), need=POS_NEED[pos];

@@ -6,11 +6,11 @@ const FREE_YEARS=2;
 /* 구단을 떠나며 유니폼을 벗는 선수: 통산 은퇴 기록·명예의 전당 심사·OB를 거친 뒤 지운다(어느 경로든 같게) */
 /* 리그를 떠나는 선수(은퇴·해외·방출·시장 정리): 1군 시즌 기록을 따로 보관해 시즌 결산·통산 순위에서 계속 열어 볼 수 있게 한다.
    1군 기록이 없으면 보관하지 않는다. 너무 많아지면 통산 WAR이 낮은 선수부터 지운다 */
-const ARCH_K=['g','pa','ab','h','d','tr','hr','bb','so','sb','cs','e','rbi','outs','er','w','l','sv','hld','gs','hbp','sf','r','bf']; /* cs 도루 실패·e 실책도 보관(검수 11-06) */
+const ARCH_K=['g','pa','ab','h','d','tr','hr','bb','so','sb','cs','e','rbi','outs','er','w','l','sv','hld','gs','hbp','sf','r','bf','sh']; /* cs 도루 실패·e 실책도 보관(검수 11-06) */
 /* 보관 기록 한 줄 읽기: 저장할 때 0인 칸은 빼므로 읽을 때 모두 0으로 되살린다. 비율 기록은 현역과 같은 계산(bRate: 출루율 분모 타수+볼넷+희생플라이)을 쓴다 */
 function archFull(r){ const o=Object.assign({},r); for(const k of ARCH_K)o[k]=o[k]||0; return o; }
 function archLine(r){ const h=archFull(r); return Object.assign(bRate(h),{era:h.outs?h.er*27/h.outs:null}); }
-function archPlayer(p){ if(!p||!p.hist)return; const H=p.hist.filter(h=>h.lvl==='1군'&&!h.y2&&((h.pa||0)+(h.outs||0))>0); if(!H.length)return; const A=G.arch=G.arch||{};
+function archPlayer(p){ if(!p||!p.hist)return; const H=p.hist.filter(h=>h.lvl==='1군'&&!h.y2&&((h.pa||0)+(h.outs||0)+(h.bf||0)+(h.er||0)+(h.g||0))>0); /* 아웃 없이 실점한 등판도 남긴다(리그 합계 유지) */ if(!H.length)return; const A=G.arch=G.arch||{};
   const rows=H.map(h=>{ const o={y:h.y,t:h.t}; for(const k of ARCH_K)if(h[k])o[k]=h[k]; let w=0; try{ w=Math.round(warOf(h,p)*10)/10; }catch(e){} o.war=w; return o; });
   const last=(p.story||[]).slice(-1)[0]; A[p.id]={id:p.id,name:p.name,isP:!!p.isP,pos:p.isP?(p.role==='SP'?'선발':'불펜'):p.pos,foreign:p.foreign||null,age:p.age,y:G.year,t:p.team??(rows[rows.length-1]||{}).t,why:last&&last.y===G.year?last.t:'',rows,...(p.aw&&p.aw.length?{aw:p.aw.slice()}:{})};
   const ks=Object.keys(A).filter(id=>A[id]&&!archKeep(A[id])); if(ks.length>900){ const tw=id=>A[id].rows.reduce((a,r)=>a+(r.war||0),0); ks.sort((a,b)=>tw(a)-tw(b)).slice(0,ks.length-900).forEach(id=>delete A[id]); } }

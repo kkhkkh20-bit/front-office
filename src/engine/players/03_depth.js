@@ -83,7 +83,7 @@ function entryUpgrade(tid,cands,why){ if(!entryOn())return []; const lean=teamLe
     const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)).sort((a,b)=>v(a)-v(b))[0]; if(out&&v(c)>v(out)+1){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
   if(tid===G.user&&moves.length)note('엔트리',`감독이 1군 엔트리를 조정했습니다${why?`(${why})`:''}: ${moves.join(', ')}.`); return moves; }
 function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p.team!==G.user)return '대상이 아닙니다.'; if(!entryOn())return '시즌 중에만 엔트리를 바꿀 수 있습니다.'; if(!m)return '감독이 없습니다.';
-  if(up&&!canUp(p))return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':!healthy(p)?'부상 중입니다.':`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`;
+  if(up&&!canUp(p))return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':!healthy(p)?'부상 중입니다.':p.e1?'이미 1군에 있습니다.':!psOk(p)?'8월 15일 이후 영입한 선수는 포스트시즌 엔트리에 넣을 수 없습니다.':isAway(p)?'대표팀 차출·군 복무 중입니다.':p.joinY>G.year?'다음 시즌 입단 선수입니다.':p.downDay!=null?`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`:'지금은 등록할 수 없습니다.';
   if(!up&&!p.e1)return '이미 1군에 없습니다.';
   { const br=mplBreakListen(`${p.name} ${up?'콜업':'말소'}`); if(br){ m.rel=clamp(m.rel,0,100); return br; } }
   mgrFix(m); const a=clamp(.78-(m.ego-50)/70+(m.rel-60)/120+(mplOn('listen')?.3:0),.15,mplOn('listen')?.98:.95); /* 영입 면담에서 '단장 건의 존중'을 약속받았으면 거의 받아들인다 */ const ok=hn('req'+G.day,id)>-1.2&&R()<a;

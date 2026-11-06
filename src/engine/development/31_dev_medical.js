@@ -64,16 +64,20 @@ function fallRoll(tid,k){ const F=FALL[k]; const L=[]; const ps=domestic(tid).fi
 /* 다른 구단: 구단마다 육성 투자 성향이 있고, 그해 형편(현금·리빌딩)에 따라 정한다. 안 보내는 구단도 있다 */
 function ovsAiPlan(){ const out={fall:{},abl:{},us:{},jpl:{}};
   for(const t of G.teams){ if(t.id===ME())continue; const lean=hn('ovsL',t.id)*.6+(t.mode==='rebuild'?.25:0)+(t.cash>3000?.15:t.cash<0?-.35:0)+N(0,.15);
-    const fk=lean>.15?(hn('ovsF',t.id)>0?'jp':'ul'):lean>-.25?'ul':null; if(fk){ out.fall[t.id]=fk; t.cash-=FALL[fk].c; }
+    const pre=G.fallT&&G.fallT[t.id]&&G.fallT[t.id].y===G.year?G.fallT[t.id].k:null; const fk=pre||(lean>.15?(hn('ovsF',t.id)>0?'jp':'ul'):lean>-.25?'ul':null); if(fk){ out.fall[t.id]=fk; if(!pre)t.cash-=FALL[fk].c; } /* 전 단장이 신청·결제한 교육리그는 그대로 */
     const used=new Set(); const young=domestic(t.id).filter(p=>p.age<=25&&ovsElig(p)).sort((a,b)=>(b.pot-ovr(b))-(a.pot-ovr(a)));
     const pickN=(k,n)=>{ if(n<=0)return; const o=OVS[k]; const L=young.filter(p=>!used.has(p.id)&&(k!=='us'||p.isP||R()<.3)).slice(0,n).map(p=>p.id); if(L.length){ L.forEach(i=>used.add(i)); out[k][t.id]=L; t.cash-=o.c*L.length+o.fix; } };
     pickN('abl',lean>-.1?ri(2,6):0); pickN('us',lean>.25?ri(2,5):0); pickN('jpl',lean>.35&&R()<.5?ri(2,3):0); }
   return out; }
 const md=(d,a)=>d.m===a[0]&&d.d===a[1];
 /* 이직: 이미 떠난 연수는 그 구단에서 마무리(옛 구단 AI 목록으로 넘김), 출발 전 예약은 옛 구단이 정리. 새 구단이 보낸 연수는 우리 목록으로 이어받는다 */
+/* 그 연수가 이미 출국했는가(10월~2월 주기 기준) */
+function ovsGone(k){ const g=OVS[k].go, o=dobj(G.day); const m=o.m<3?o.m+12:o.m, gm=g[0]<3?g[0]+12:g[0]; return m>gm||(m===gm&&o.d>=g[1]); }
 function ovsHandOff(old,tid){ const A=G.ovsAi=G.ovsAi||{y:G.year,fall:{},abl:{},us:{},jpl:{}}; for(const k of ['abl','us','jpl'])A[k]=A[k]||{};
-  for(const x of (G.ovs||[]))if(x.go&&A[x.prog]){ (A[x.prog][old]=A[x.prog][old]||[]).push(x.pid); }
-  const N=[]; for(const k of ['abl','us','jpl']){ const L=A[k][tid]||[]; for(const id of L)if(G.players[id]&&G.players[id].team===tid)N.push({pid:id,prog:k,go:true,inh:1}); delete A[k][tid]; } G.ovs=N; }
+  const fx=new Set(); for(const x of (G.ovs||[]))if(A[x.prog]&&!x.inh){ (A[x.prog][old]=A[x.prog][old]||[]).push(x.pid); if(!x.go)fx.add(x.prog); } /* 출국 전 예약도 옛 구단이 그대로 보낸다(참가비는 이미 옛 구단이 냄) */
+  for(const k of fx){ const t=team(old); if(t)t.cash-=OVS[k].fix; } /* 출국일에 낼 동행 비용은 옛 구단 몫 */
+  if(G.fall&&G.fall.y===G.year&&G.fall.k){ (G.fallT=G.fallT||{})[old]={y:G.year,k:G.fall.k}; delete G.fall; } /* 교육리그 신청은 낸 구단이 참가 */
+  const N=[]; for(const k of ['abl','us','jpl']){ const L=A[k][tid]||[]; for(const id of L)if(G.players[id]&&G.players[id].team===tid)N.push({pid:id,prog:k,go:ovsGone(k),inh:1,paid:1}); delete A[k][tid]; } G.ovs=N; } /* 새 구단 AI가 낸 예약: 출국 전이면 아직 취소할 수 있고, 비용은 이미 냈다(paid) */
 /* 출발일 재확인: 여전히 우리 소속이고 복무·부상으로 못 가는 상황이 아닌 선수만 떠난다. 못 가는 선수는 예약을 풀고 참가비를 돌려받으며, 남은 선수가 없으면 동행 비용도 없다 */
 function ovsGoCheck(k){ const L=(G.ovs||[]).filter(x=>x.prog===k&&!x.go); const out=[]; for(const x of L){ const p=G.players[x.pid]; const enl=p&&p.mil&&p.mil.from!=null&&p.mil.until>G.day&&!p.mil.done&&!p.mil.exempt&&p.mil.from<=ovsEndD(k); const why=!p?'리그를 떠남':p.team!==G.user?`${tshort(p.team)}(으)로 이적`:isAway(p)?'군 복무·대표팀':enl?`연수 기간 중 입대(${dmd(p.mil.from)})`:(p.injOut||0)>14?'부상':null; if(why){ out.push(`${p?p.name:'선수'}: ${why}`); ovsRefund(x); G.ovs=G.ovs.filter(y=>y!==x); } } /* 프로그램 끝나는 날까지의 입대 일정도 본다 */
   if(out.length&&!G.unemp)mail('육성팀',`${OVS[k].l} 출발 전 확인: ${out.length}명 취소`,`${out.join('\n')}\n\n참가할 수 없어 예약을 취소하고 1인 참가비를 돌려받았습니다.`,{kind:'연수'}); return out; }
@@ -89,12 +93,13 @@ function tabDaily(day){ const d=dobj(day); const y=G.year;
   if(md(d,[10,11])){ G.ovsAi=ovsAiPlan(); G.ovsAi.y=y; const f=G.ovsAi.fall; const jp=Object.keys(f).filter(t=>f[t]==='jp').map(t=>tshort(+t)), ul=Object.keys(f).filter(t=>f[t]==='ul').map(t=>tshort(+t));
     const me=!G.unemp&&G.fall&&G.fall.y===y&&G.fall.k; if(me==='jp')jp.push(tshort(G.user)); if(me==='ul')ul.push(tshort(G.user)); const rest=G.teams.length-jp.length-ul.length;
     news('리그','가을 교육리그 개막',[jp.length?`일본 미야자키 피닉스 교육리그: ${jp.join(', ')}.`:'',ul.length?`국내 울산 교육리그: ${ul.join(', ')}.`:'',rest>0?`나머지 ${rest}개 구단은 자체 마무리 훈련을 합니다.`:''].filter(Boolean).join(' '),0); }
-  if(md(d,[11,15])){ const A=G.ovsAi&&G.ovsAi.y===y?G.ovsAi:null;
+  if(md(d,[11,15])){ try{ ovsGoCheck('abl'); }catch(e){} /* 출국 자격 확인 뒤 기사 */ const A=G.ovsAi&&G.ovsAi.y===y?G.ovsAi:null;
     if(A)for(const t in A.fall){ try{ fallRoll(+t,A.fall[t]); }catch(e){} }
     const me=!G.unemp&&G.fall&&G.fall.y===y&&G.fall.k; if(me){ const r=fallRoll(G.user,me); mail('육성팀',`${FALL[me].l} 결과`,`${r.n}명이 ${FALL[me].l}를 마쳤습니다. 대부분 실전 감각을 이어 가는 정도의 작은 성장입니다.${r.hot.length?`\n눈에 띄게 좋아진 선수: ${r.hot.join(', ')}.`:''}`,{kind:'연수'}); }
     const L=A?Object.entries(A.abl).map(([t,ids])=>`${tshort(+t)} ${ids.length}명`):[]; const mine=(G.ovs||[]).filter(x=>x.prog==='abl'); if(mine.length)L.push(`${tshort(G.user)} ${mine.length}명`);
     if(L.length)news('리그','호주리그 파견 선수단 출국',`${L.join(', ')}이(가) 호주 프로리그로 떠났습니다. 약 10주 동안 실전을 치르고 돌아옵니다.`,0); }
-  for(const k in OVS)if(md(d,OVS[k].go)){ try{ ovsGoCheck(k); }catch(e){} const mine=(G.ovs||[]).filter(x=>x.prog===k); mine.forEach(x=>x.go=true); if(mine.length)G.spend.dev=(G.spend.dev||0)+OVS[k].fix; }
+  for(const k in OVS)if(md(d,OVS[k].go)){ try{ ovsGoCheck(k); }catch(e){} const mine=(G.ovs||[]).filter(x=>x.prog===k); const unpaid=mine.some(x=>!x.paid); mine.forEach(x=>x.go=true); if(unpaid)G.spend.dev=(G.spend.dev||0)+OVS[k].fix; /* 이어받은 AI 예약은 동행 비용을 이미 냈다 */
+    const A=G.ovsAi; if(A&&A[k])for(const t in A[k]){ const T=team(+t); A[k][t]=A[k][t].filter(id=>{ const p=G.players[id]; const ok=p&&p.team===+t&&!milServing(p)&&!isAway(p)&&!(p.injOut>14); if(!ok&&T)T.cash+=OVS[k].c; return ok; }); } } /* AI도 출국일에 부상·복무·이적 선수는 빼고 참가비를 돌려받는다 */
   if(md(d,[1,5])){ ovsFin('us'); ovsFin('jpl'); }
   if(md(d,[2,1]))ovsFin('abl'); }
 

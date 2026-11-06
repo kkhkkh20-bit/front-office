@@ -7,13 +7,13 @@ function blocker(){
   if(G.fdWait)return '창단 드래프트를 시작하세요.';
   if(G.fd&&!G.fd.done)return '창단 드래프트를 먼저 마치세요.';
   if(G.draft&&!G.draft.done)return '신인 드래프트를 먼저 마치세요.';
-  const cp=(G.comp||[]).find(c=>(c.stage==='protect'&&c.to===G.user)||(c.stage==='pick'&&c.from===G.user));
+  const cp=(G.comp||[]).find(c=>((c.stage==='protect'&&c.to===G.user)||(c.stage==='pick'&&c.from===G.user))&&G.day>=c.exp); /* 기한 전에는 진행할 수 있고, 기한 날 자동 처리(compDaily)된다 */
   if(cp)return cp.stage==='protect'?`${cp.name} 영입 보상: 보호선수 명단을 먼저 제출하세요.`:`${cp.name} 이적 보상: 보상선수(또는 보상금)를 먼저 고르세요.`;
   const per=period();
   if(per==='pre'&&G.day>=G.cal.open-1&&!G.mgr[G.user])return '감독이 없습니다. 스태프·육성 → 감독에서 감독을 선임해야 개막할 수 있습니다.';
   if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done)){ const n=rosterN(G.user); /* 포스트시즌도 같은 등록 규정 */
     if(n>ROSTER_MAX){ const L=milReturns(7); return `로스터가 ${n}명입니다. ${ROSTER_MAX}명 이하로 줄여야 진행할 수 있습니다.${L.length?` 7일 안에 군 복귀 ${L.length}명(${milRetTxt(L)})이 더 있어, 복귀까지 고려하면 ${n+L.length-ROSTER_MAX}자리를 비워야 다시 막히지 않습니다.`:''}`; }
-    const d=depth(G.user); if(d.start.length<9)return '건강한 야수가 9명이 안 됩니다.'; if(d.sp.length+d.pen.length<8)return '건강한 투수가 부족합니다.'; }
+    if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다: 그동안 부상 회복·대표팀 복귀·말소 10일이 지나 부족이 풀린다(검수 11-06) */ const d=depth(G.user); if(d.start.length<9)return '건강한 야수가 9명이 안 됩니다.'; if(d.sp.length+d.pen.length<8)return '건강한 투수가 부족합니다.'; }
   return '';
 }
 function ourGameOn(day){return !G.unemp&&(!!(G.cal.sched[day]||[]).find(pair=>pair.includes(G.user))||psOursOn(day));}
@@ -30,6 +30,7 @@ function advance(mode,options={}){
   if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+(gameBatch?21:7); } else G.dig=null;
   while(G.day<target){
     if(G.unemp)unempAuto();
+    if(/^건강한/.test(blocker()))try{ entryManage(G.user,false); }catch(e){} /* 부족하면 감독이 먼저 2군에서 채운다 */
     if(blocker())break;
     /* 포스트시즌: 다른 팀 경기를 넘기다가 우리 경기까지 한 번에 지나치지 않게, 우리 경기 전날에 멈춘다(바로 다음 날이 우리 경기면 그 경기를 진행) */
     if(days>0&&(!weekly||period()==='post')&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
@@ -41,11 +42,12 @@ function advance(mode,options={}){
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); G.res=null; }
       if(gameBatch&&D.games.length>=(period()==='post'||(G.ps&&G.ps.done&&G.ps.finDay>=G.day)?1:3))break; /* 포스트시즌은 우리 경기마다 멈춘다(라인업·선발 확인) */
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
-      { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ { const last=op.find(e=>EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(last){ last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); break; } } if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
+      { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ if(evLastWarn())break; if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
       if(G.unemp&&days>=14)break;
       continue; }
     if(G.stops.length||G.live||G.res||(G.draft&&!G.draft.done)||G.gameOver)break;
+    if(evLastWarn())break; /* 한 달 진행 등 다른 버튼도 핵심 결정 기한 하루 전에 멈춘다(검수 11-06) */
   }
   if(weekly&&G.dig&&!G.dig.games.length)G.dig=null;
   const r1=G.sea.rec[G.user];
@@ -88,14 +90,14 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   milDaily();
   recoverAll(1);
   if(o.w===0)for(const p of Object.values(G.players)){ if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)*.65+N(0,(p.foreign?.75:.55)*volF(p)),-2.5,2.5); /* 기복이 큰 선수는 슬럼프·상승세 폭도 크다 */ }
-  for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0]}; if(p.team===G.user){ const fx=injFxNow(p); note('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
+  for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0]}; if(p.team===G.user){ const fx=injFxNow(p); const hd=((p.injHist||[]).slice(-1)[0]||{}).days||0; (hd>=10?(k,t,r)=>mail(FROM[k],headline(t),t,{ref:r,kind:k,acts:kindActs(k,r),imp:true}):note)('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
   try{ injDaily(); loadDaily(); if(o.w===1&&G.day>G.cal.open)loadWeekly(); }catch(e){}
   const c=G.cal;
   if(day===KD(2,1)||day===KD(6,1))try{ posPlanAll(); }catch(e){}
   if(day===KD(2,1))for(const t of G.teams)if(t.id!==ME()){aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);}
   if(day===KD(1,10))faUnsignedNote();
   if(day===KD(1,24)&&G.fa&&!G.fa.closed)faClose();
-  if(day===KD(1,31)&&G.contract&&!G.contract.done){ { let g=0; while(fReCapInfo().over>0&&g++<4){ const C=G.contract; const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(!k)break; C.foreignDrop.push(k.id); } } confirmContracts(); { const h=Object.values(G.players).filter(p=>p.hold&&p.team===G.user).length; stop('연봉',`연봉 계약 마감일입니다. 남은 선수는 제시안대로 계약했습니다.${h?` 요구액과 차이가 큰 ${h}명은 사인하지 않아 미계약입니다.`:''}`); } }
+  if(day===KD(1,31)&&G.contract&&!G.contract.done){ { let g=0; while(fReCapInfo().over>0&&g++<4){ const C=G.contract; const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(!k)break; C.foreignDrop.push(k.id); (G._fDropAuto=G._fDropAuto||[]).push(k.name); } } confirmContracts(); { const L=G._fDropAuto||[]; delete G._fDropAuto; if(L.length)mail('운영팀','연봉 마감: 외국인 총액 한도로 결별',`외국인 재계약 합계가 총액 한도를 넘어 연봉이 가장 높은 선수부터 결별했습니다: ${L.join(', ')}. 나머지 선수는 합의한 조건으로 계약했습니다.`,{imp:true,kind:'연봉'}); } { const h=Object.values(G.players).filter(p=>p.hold&&p.team===G.user).length; stop('연봉',`연봉 계약 마감일입니다. 남은 선수는 제시안대로 계약했습니다.${h?` 요구액과 차이가 큰 ${h}명은 사인하지 않아 미계약입니다.`:''}`); } }
   if(day===c.camp)campStart();
   if(day===c.campEnd)campEnd();
   if(day===c.exh)note('일정','시범경기가 시작됩니다. 개막까지 2주 남았습니다.');
@@ -170,7 +172,7 @@ function futuresWeek(){
   for(const t of G.teams){ const d=depth(t.id); const B=d.futB.filter(healthy); const ln=futLineupE(t.id,B); const st=new Set(Object.values(ln).map(p=>p.id));
     G.futLn[t.id]={d:G.day,ln:Object.fromEntries(Object.entries(ln).map(([k,p])=>[k,p.id]))};
     for(const k in ln)futBat(ln[k],t.id,k,3); for(const p of B)if(!st.has(p.id))futBat(p,t.id,null,1);
-    { const FP=d.futP.filter(healthy); const rot=FP.slice().sort((a,b)=>(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,5); for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; } /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
+    { const FP=d.futP.filter(healthy); const rot=FP.slice().sort((a,b)=>(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,clamp(FP.filter(p=>rpPlanOf(t.id,p)==='sp2').length,5,7)); /* 선발 수업 투수가 많으면 2군 로테이션을 7명까지 늘린다: 수업 표기인데 구원만 나가지 않게(검수 11-06) */ for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; } /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
     for(const p of d.futP)if(healthy(p))futPit(p,t.id);
   }
   /* 상무 복무 선수: 상무 야구단으로 퓨처스리그에 나간다(기록은 원소속 구단 퓨처스 기록에 합쳐 남는다). 현역은 야구를 못 한다 */
@@ -205,3 +207,6 @@ function standingsNow(){ const r=G.sea.rec; const pct=x=>x.w/Math.max(1,x.w+x.l)
   return G.teams.map(t=>({tid:t.id,w:r[t.id].w,l:r[t.id].l,t:r[t.id].t||0})).sort((a,b)=>(pct(b)-pct(a))||(h2hPct(b.tid,a.tid)-h2hPct(a.tid,b.tid))||(rsOf(b.tid)-rsOf(a.tid))||(pr(a.tid)-pr(b.tid))); }
 const pctEq=(a,b)=>Math.abs(a.w/Math.max(1,a.w+a.l)-b.w/Math.max(1,b.w+b.l))<1e-12;
 
+
+/* 핵심 결정 기한 하루 전 한 번 더 알림: 알렸으면 true(진행을 멈춘다) */
+function evLastWarn(){ const last=(G.evs||[]).find(e=>!e.done&&evStops(e)&&EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(!last)return false; last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); return true; }

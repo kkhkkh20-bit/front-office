@@ -57,10 +57,10 @@ function sponCounter(id,pct){ const S=G.spon; const o=S.off.find(x=>x.id===id); 
   if(R()<.45){ S.off=S.off.filter(x=>x.id!==id); return `${o.co}: 그 금액은 어렵습니다. 이번 제안은 철회하겠습니다.`; }
   return `${o.co}: 조건 상향은 어렵습니다. 처음 제안 그대로라면 계약하겠습니다.`; }
 /* 시즌 결산: 기본 금액 + 성과 보너스, 이미지 조항, 만료 처리 */
-function sponSettle(y,ps){ const S=G.spon; if(!S)return {base:0,bonus:0,L:[]}; let base=0,bonus=0; const L=[];
+function sponSettle(y,ps,tid,S0){ tid=tid??G.user; const S=S0||G.spon; /* tid·S0: 단장이 떠난 구단의 남은 계약서(G.sponT)로 결산 */ if(!S)return {base:0,bonus:0,L:[]}; let base=0,bonus=0; const L=[];
   for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; base+=c.amt*eff; if(!(eff>0))continue; /* 올해 효력이 없는 계약(시즌 뒤 계약)은 올해 성과 보너스도 없다 */
-    const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)); if(inPS&&c.ps){ bonus+=c.ps; L.push(`${c.co} 가을야구 보너스 ${money(c.ps)}`); } if(ps&&ps.champ===G.user&&c.champ){ bonus+=c.champ; L.push(`${c.co} 우승 보너스 ${money(c.champ)}`); }
-    if(c.img&&G.pr&&G.pr.press<30&&c.until>y){ c.amt=round5(c.amt*.8); L.push(`${c.co}: 이미지 조항으로 다음 해 금액 20% 감액`); } }
+    const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(tid)); if(inPS&&c.ps){ bonus+=c.ps; L.push(`${c.co} 가을야구 보너스 ${money(c.ps)}`); } if(ps&&ps.champ===tid&&c.champ){ bonus+=c.champ; L.push(`${c.co} 우승 보너스 ${money(c.champ)}`); }
+    if(tid===G.user&&c.img&&G.pr&&G.pr.press<30&&c.until>y){ c.amt=round5(c.amt*.8); L.push(`${c.co}: 이미지 조항으로 다음 해 금액 20% 감액`); } }
   for(const c of (S.cutL||[]))if(c.until===y){ const v=c.amt*c.cutF; base+=v; if(v>0)L.push(`${c.co}: 해지(${dsh(c.cut.d)}) 전까지 몫 ${money(Math.round(v))}`); }
   for(const k in S.c){ if(S.c[k].until===y){ S.hist.push(Object.assign({slot:k},S.c[k])); } }
   if(S.cutL&&S.cutL.length){ for(const c of S.cutL)if(c.until<=y)S.hist.push(c); S.cutL=S.cutL.filter(c=>c.until>y); }

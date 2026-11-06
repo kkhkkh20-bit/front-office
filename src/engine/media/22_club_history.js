@@ -79,10 +79,12 @@ function awCand(x,extra){ const rk=(()=>{ try{ return G.ps.order.findIndex(o=>o.
   const big=x.p.isP?(x.h.w||0)*.06+(x.h.sv||0)*.03+(x.h.so||0)*.002:(x.h.hr||0)*.045+(x.h.rbi||0)*.008+(x.h.sb||0)*.005;
   return {id:x.p.id,name:x.p.name,t:x.p.team,line:statLine(x.h,x.p),w:+x.w.toFixed(1),s:x.w+big+(rk>=0&&rk<=2?.35:0)+N(0,.45)+(extra||0)}; }
 function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(h)rows.push({p,h,w:warOf(h,p)}); }
+  for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const h={t:R[R.length-1].t}; for(const r of R)for(const k of ARCH_K)h[k]=(h[k]||0)+(r[k]||0);
+    rows.push({p:{id:a.id,name:a.name,isP:a.isP,team:h.t,pos:a.isP?'P':a.pos,role:a.pos==='선발'?'SP':'RP',foreign:a.foreign,hist:[],arch:true,r:new Proxy({},{get:()=>50})},h,w:sum(R.map(r=>r.war||0))}); } /* 시즌 중 리그를 떠난 선수도 같은 성적이면 같은 후보(타이틀과 같은 기준) */
   /* 후보 자격은 KBO 규정대로(2025 KBO 표창규정·골든글러브 기준):
      투수 = 규정이닝(팀 경기 수×1이닝) 또는 10승·30세이브·30홀드 중 하나 / 야수 = 규정타석(팀 경기 수×3.1) / 각 부문 1위(타이틀 홀더)는 자동 후보.
      MVP 후보는 타이틀 홀더와 성적 상위로 투수 8명·야수 10명(실제 2025년 18명) */
-  const tg=x=>tgp(x.h.t??x.p.team)||144; const tit=new Set(); try{ for(const [,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(B[0])B.filter(z=>!z.p.arch&&Math.abs(z.v-B[0].v)<1e-9).forEach(z=>tit.add(z.p.id)); /* 1위는 떠난 선수까지 포함한 실제 순위로 정하고, 혜택은 그 1위(공동)만 */ } }catch(e){}
+  const tg=x=>tgp(x.h.t??x.p.team)||144; const tit=new Set(); try{ for(const [,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(B[0])B.filter(z=>Math.abs(z.v-B[0].v)<1e-9).forEach(z=>tit.add(z.p.id)); /* 1위는 떠난 선수까지 포함한 실제 순위, 혜택도 그 1위(공동)만 */ } }catch(e){}
   const qB=x=>!x.p.isP&&((x.h.pa||0)>=Math.round(tg(x)*3.1)||tit.has(x.p.id)), qP=x=>x.p.isP&&((x.h.outs||0)>=tg(x)*3||(x.h.w||0)>=10||(x.h.sv||0)>=30||(x.h.hld||0)>=30||tit.has(x.p.id));
   const A={y,gg:{},cand:{gg:{}},pend:{mvp:true,gg:true},ggVote:{voters:288,start:dnum(y,11,25),end:dnum(y,12,5),ballots:{},news:{}}};
   { const pick=(L,n)=>{ const t=L.filter(x=>tit.has(x.p.id)); const rest=L.filter(x=>!tit.has(x.p.id)).sort((a,b)=>b.w-a.w); return t.concat(rest).slice(0,Math.max(n,t.length)); };
@@ -92,9 +94,10 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
   const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ const P={}; for(const k in u.pos){ const kk=['LF','CF','RF'].includes(k)?'OF':k; P[kk]=(P[kk]||0)+u.pos[k]; } let b=null,n=-1; for(const k in P)if(P[k]>n){ n=P[k]; b=k; } if(b)return b; } return ['LF','CF','RF'].includes(x.h.pos)?'OF':x.h.pos; }; /* 외야 세 자리는 합쳐서 비교 */ /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
   const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):(x.h.g||0); return gAt>=Math.round(tg(x)*5/9); }; /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
+  const gposQ=x=>{ const g=gpos(x); if(ggQ(x,g))return g; const u=x.p.use, n=k=>!u||u.y!==y||!u.pos?0:k==='OF'?['LF','CF','RF'].reduce((s2,q)=>s2+(u.pos[q]||0),0):(u.pos[k]||0); return ['C','1B','2B','3B','SS','DH','OF'].filter(k=>ggQ(x,k)).sort((a,b)=>n(b)-n(a))[0]||null; }; /* 가장 많이 선 자리가 기준 미달이면 기준을 채운 다른 자리로(한 선수 한 자리) */
   const voteGG=(pos,L,seats)=>{if(!L.length)return;const C=L.map(x=>ggCandidate(x,pos));A.ggVote.ballots[pos]=ggReporterVote(C,288,seats,y).length; /* 투표지 원본은 읽는 곳이 없어 수만 남긴다(저장 크기) */A.cand.gg[pos]=C;};
-  for(const pos of ['C','1B','2B','3B','SS','DH'])voteGG(pos,rows.filter(x=>!x.p.isP&&gpos(x)===pos&&ggQ(x,pos)),1);
-  voteGG('OF',rows.filter(x=>!x.p.isP&&gpos(x)==='OF'&&ggQ(x,'OF')),3);
+  for(const pos of ['C','1B','2B','3B','SS','DH'])voteGG(pos,rows.filter(x=>!x.p.isP&&gposQ(x)===pos),1);
+  voteGG('OF',rows.filter(x=>!x.p.isP&&gposQ(x)==='OF'),3);
   voteGG('P',rows.filter(qP),1);
   /* 수상자(발표 전까지 비공개) */
   const pick=c=>c&&c[0]?{id:c[0].id,name:c[0].name,t:c[0].t,line:c[0].line,v:c[0].v}:null;

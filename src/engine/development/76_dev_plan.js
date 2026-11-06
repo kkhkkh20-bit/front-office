@@ -53,17 +53,17 @@ function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by
 function trnSetMany(P){ const L=[]; for(const id in (P||{})){ const p=G.players[+id]; if(!p)continue; const t=trnSet(+id,P[id]); if(t)L.push(t); } return L; }
 function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 정할 수 있습니다.'; G.trn=G.trn||{};
   if(f==='coach'){ delete G.trn[pid]; return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
-  if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; /* 복무 중에는 상무·군 일정대로 지낸다 */
+  if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년 합류 예정이라 아직 구단 훈련 지시를 받지 않습니다.`; /* 복무 중에는 상무·군 일정대로 지낸다 */
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
   G.trn[pid]={f,by:'gm',since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p)};
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
   if(m&&f!==rec&&(m.ego||50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel||50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
-/* 매주: 모든 구단 국내 선수(부상·군 복무 제외, 33세 이하) */
+/* 매주: 모든 구단 국내 선수(부상·군 복무·대표팀·미계약·합류 전 제외) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
-  for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.joinY>G.year||p.hold||p.age>33|| /* 내년 합류 신인은 합류 전까지 구단 집중 훈련을 받지 않는다 */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
+  for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
-    const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:.35;
+    const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
     const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
@@ -97,9 +97,9 @@ function trnStatLine(p,f,snap,yy){ yy=yy??G.year; /* yy: 어느 시즌 기록으
 function trnOpinion(p){ const L=trnLearn(p); const lr=L>=1.15?' 배우는 속도가 빠른 선수입니다.':L<=.82?' 새로 익히는 데 시간이 걸리는 선수입니다.':''; return `"${trnAdvice(p).t}${lr}"`; }
 /* 관찰 보고: 능력 변화(코치 관찰, 정확한 숫자 대신 정도) */
 function trnObs(p,yy){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; const D=TRN[trnG(p)][T.f]; const k=D.k[0]; const d=p.r[k]-(T.base[k]??p.r[k]); const w=Math.floor((G.day-T.since)/7);
-  const lv=d<.3?(w<4?'아직 판단하기 이릅니다':'변화가 거의 관찰되지 않습니다'):d<1?'작은 개선이 관찰됩니다':d<2?'눈에 띄게 좋아졌습니다':'확실히 달라졌습니다';
+  const lv=d<=-.3?'오히려 조금 떨어졌습니다':d<.3?(w<4?'아직 판단하기 이릅니다':'변화가 거의 관찰되지 않습니다'):d<1?'작은 개선이 관찰됩니다':d<2?'눈에 띄게 좋아졌습니다':'확실히 달라졌습니다';
   const g0=dvGrade(T.base[k]??p.r[k]), g1=dvGrade(p.r[k]); const th=[40,50,60,70].find(x=>p.r[k]<x); const next=th==null?null:Math.max(0,th-p.r[k]); /* 등급은 훈련 목록과 같은 기준 */
-  const prog=g1!==g0?`${g0} → ${g1}로 한 단계 올랐습니다`:d<.3?`${g1} 그대로`:next!=null&&next<=1.5?`${g1} 안에서 개선 · 다음 등급에 근접`:`${g1} 안에서 소폭 개선`;
+  const prog=g1!==g0?(d>0?`${g0} → ${g1}로 한 단계 올랐습니다`:`${g0} → ${g1}로 한 단계 내려갔습니다`):d<=-.3?`${g1} 안에서 조금 떨어짐`:d<.3?`${g1} 그대로`:next!=null&&next<=1.5?`${g1} 안에서 개선 · 다음 등급에 근접`:`${g1} 안에서 소폭 개선`;
   const stat=trnStatLine(p,T.f,T.snap,yy); const none=!stat||/아직 경기 기록이 없습니다/.test(stat);
   return {w,lv,d,stat,since:T.since,k,g0,g1,next,prog,real:none?'기록 없음(1군·2군 정규 경기 기준, 시범경기 제외)':'기록 있음(아래 경기 기록 참고)'}; }
 /* 새 시즌: 단장이 정한 방향은 이어 가되, 관찰 기준(능력·기록)은 새로 잡는다 */

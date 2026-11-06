@@ -41,12 +41,19 @@ function updateModes(){ const rs=G.teams.map(t=>({id:t.id,r:teamRating(t.id)})).
 function stanceOf(t){ return t.mode==='rebuild'?'rebuild':t.stance||'win'; }
 function supportCap(t){ return t.indie?0:Math.max(0,Math.round(16000*ecoIdx()*(.5+t.trust/100)*(1+((austOn(t)||{}).d||0)))-(t.supCut&&t.supCut.y===sponSeason()?t.supCut.amt:0))+(t.grant&&t.grant.y===sponSeason()?t.grant.amt:0); } /* 지원금은 그 시즌 몫(결산 뒤 겨울에 받으면 다음 시즌) */ /* 쌓인 현금이 많으면 그만큼 지원 한도가 줄어든다(supCut) */
 /* 상한 초과 제재(2025년 개정 규정): 1회 초과분 30%, 2회 연속 50%, 3회 연속 100% + 다음 해 1라운드 지명권 9단계 하락 */
+/* 경쟁균형세(KBO 2025-09 개정, 2026~): 초과분 1회 30%·2회 연속 50%·3회 연속 100% + 3회 연속이면 다음 해 1라운드 지명 9단계 하락.
+   AI 구단의 상한 감각: 지난해 넘은 구단은 2회 연속을 피하려고 더 아낀다(실제 LG 2024 초과 뒤 FA 포기 사례). 가끔 한 구단은 세금을 감수하고 우승에 올인한다 */
+function aiCapMul(t){ if(!t||t.id===ME())return 1; if(t.allIn===sponSeason())return t.capOver>=2?1.02:1.12; return t.capOver>=1?.97:1; }
+/* FA 시장이 열릴 때 올인 구단을 고른다: 구단주가 우승형·현금 여유·전력 상위·최근 3년 올인 없음·연속 초과 2회 미만. 한 해 많아야 한 구단 */
+function allInPick(){ const sy=sponSeason(); if(G.teams.some(t=>t.allIn===sy))return; const ord=(G.last&&G.last.order)||[]; const rk=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?6:i+1; };
+  const C=G.teams.filter(t=>t.id!==ME()&&!t.indie&&t.owner==='win'&&(t.cash||0)>5000&&rk(t.id)<=4&&(t.capOver||0)<2&&!(t.allInY&&sy-t.allInY<3)); if(!C.length||R()>=.22)return;
+  const t=C[Math.floor(R()*C.length)]; t.allIn=sy; t.allInY=sy; news('구단',`${tshort(t.id)}, 경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다. 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); }
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
 function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */
 const ME=()=>G.unemp?-99:G.user;
-function aiCapFix(tid,frac,noRel,maxN){ const t=team(tid); if(!t||tid===ME())return 0; const cap=capOf(sponSeason())*(frac||.985); let n=0, guard=0;
+function aiCapFix(tid,frac,noRel,maxN){ const t=team(tid); if(!t||tid===ME())return 0; if(t.allIn===sponSeason()&&(t.cash||0)>0)return 0; /* 올인 구단은 세금을 내고 버틴다 */ const cap=capOf(sponSeason())*(frac||.985)*Math.min(1,aiCapMul(t)); let n=0, guard=0;
   while(capPay(tid)>cap&&guard++<12&&n<(maxN||99)){
     const core=new Set(domestic(tid).sort((a,b)=>ovr(b)-ovr(a)).slice(0,4).map(p=>p.id));
     const c=domestic(tid).filter(p=>!core.has(p.id)&&!isRookie(p)&&p.sal>=150&&!(p.joinY>G.year)&&!hasNtc(p)) /* 거부권 선수는 동의 없이 보낼 수 없다(일반 트레이드와 같은 규칙). 못 맞추면 초과 제재를 받는다 */.sort((a,b)=>aiVal(t,a)/a.sal-aiVal(t,b)/b.sal)[0];
@@ -70,5 +77,5 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027)return; const fl=floorOf(G.
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME()||t.cash>=-4000)continue; t.mode='rebuild'; n+=aiCapFix(t.id,.8,true,3); } return n; }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
 /* 경쟁균형세 상한 결정(capCouncil)은 68_assoc.js의 실행위원회·이사회로 옮겼다 */
-function capInfo(tid){ const pay=capPay(tid), cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:floorOf(sponSeason()),over:Math.max(0,pay-cap)}; }
+function capInfo(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:floorOf(sponSeason()),over:Math.max(0,pay-cap)}; }
 

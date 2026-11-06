@@ -7,6 +7,7 @@ function news(kind,title,body,tone,o){ prInit(); o=o||{};
   if((G.news||[]).some(x=>x.t===title&&G.day-x.d<30))return null; /* 같은 제목 기사는 한 달 안에 다시 내지 않는다 */
   const it={d:G.day,o:outlet,t:title,b:body,v:tone,k:kind,ref:o.ref??null,id:(G.newsSeq=(G.newsSeq||0)+1)};
   try{ const ut=tshort(G.user); if(o.tid!=null&&o.tid!==G.user)it.oth=true; else if(!title.includes(ut)&&!title.includes(team(G.user).nick)&&G.teams.some(x=>x.id!==G.user&&title.includes(tshort(x.id))))it.oth=true; }catch(e){} /* 다른 구단 기사: 우리 구단 기사 묶음에서 뺀다 */
+  if(o.img)it.img=o.img; /* 기사 사진 대신 그림(예: 트럭 시위 LED 전광판) */
   if(o.by)it.by=o.by; else { const rp0=kind==='팬'?null:outletRep(outlet); if(rp0)it.by=rp0.name; }
   G.news.unshift(it); if(G.news.length>80)G.news.length=80;
   const om=kind==='팬'?1:outletMul(outlet,tone); /* 비판 매체는 나쁜 소식을, 우호 매체는 좋은 소식을 키운다. 영향력이 클수록 크게 */

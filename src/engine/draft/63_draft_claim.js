@@ -12,7 +12,7 @@ function dcObs(p,sc){ const gm=p.gmSeen===G.year?2:0; if(!sc)return gm; const mo
 const DC_CONF=sd=>sd<=4.6?'높음':sd<=7?'보통':'낮음';
 let _dcc=null; /* 저장하지 않는 계산 캐시 */
 function draftClaims(){ const live=G.draft&&!G.draft.done; const ids=(live?G.draft.cls:G.draftClass)||[];
-  const pool=ids.map(id=>G.players[id]).filter(p=>p&&p.prospect); const key=G.day+':'+pool.length+':'+(G.scouts||[]).map(s=>s.id+'.'+s.skill+'.'+s.region).join(',');
+  const pool=ids.map(id=>G.players[id]).filter(p=>p&&p.prospect); const key=G.day+':'+pool.length+':'+(G.scouts||[]).map(s=>s.id+'.'+s.skill+'.'+s.region).join(',')+':'+pool.filter(p=>p&&p.gmSeen===G.year).length; /* 단장이 직접 본 후보 수도 키에(같은 날 출장 반영) */
   if(_dcc&&_dcc.k===key)return _dcc.m; const m={};
   const L=pool.map(p=>{ const rp=scoutReport(p); return {p,rp,v:(rp.ofp??rp.cur+6)+rp.cur*.2}; }).sort((a,b)=>b.v-a.v); L.forEach((x,i)=>x.rk=i+1);
   [...L].sort((a,b)=>(a.p.press||999)-(b.p.press||999)).forEach((x,i)=>x.prk=i+1); /* 남은 후보 안에서 언론 순위 */

@@ -54,11 +54,11 @@ function holdStart(p,off,ask){ p.hold={off:Math.max(MIN_SAL,off),ask,d:G.day}; d
 function holdMidAmt(p){ return round5((p.hold.off+p.hold.ask)/2); }
 function holdSign(p,sal,why){ if(!p||!p.hold)return '미계약 선수가 아닙니다.'; p.sal=Math.max(MIN_SAL,sal); delete p.hold; addLog(`${p.name} 연봉 ${money(p.sal)}에 계약(${why})`); return `${p.name}과(와) 연봉 ${money(p.sal)}에 계약했습니다.`; }
 function holdPay(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; return holdSign(p,p.hold.ask,'요구액 수용'); }
-function holdMid(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; if(p.hold.midNo===G.day)return '오늘은 이미 제시했습니다.';
-  const wk=Math.floor((G.day-p.hold.d)/7); if(R()<.45+wk*.1)return holdSign(p,holdMidAmt(p),'중간 금액 합의'); p.hold.midNo=G.day; p.mor=clamp((p.mor??60)-2,0,100); return `${p.name}이(가) 중간 금액을 거절했습니다. 며칠 뒤 다시 제시할 수 있습니다.`; }
+function holdMid(id){ const p=G.players[id]; if(!p||!p.hold||p.team!==G.user)return '미계약 선수가 아닙니다.'; if(p.hold.midNo!=null&&G.day<p.hold.midNo)return `${dmd(p.hold.midNo)}부터 다시 제시할 수 있습니다.`;
+  const wk=Math.floor((G.day-p.hold.d)/7); if(R()<.45+wk*.1)return holdSign(p,holdMidAmt(p),'중간 금액 합의'); p.hold.midNo=G.day+3; p.mor=clamp((p.mor??60)-2,0,100); return `${p.name}이(가) 중간 금액을 거절했습니다. ${dmd(p.hold.midNo)}부터 다시 제시할 수 있습니다.`; }
 function holdDaily(day){ for(const p of Object.values(G.players)){ if(!p.hold)continue; if(p.team!==G.user){ delete p.hold; continue; }
     if((day-p.hold.d)%7===6)p.mor=clamp((p.mor??60)-3,0,100);
-    if(day>=G.cal.open-1){ const r=holdSign(p,holdMidAmt(p),'개막 전 합의'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 개막을 앞두고 중간 금액으로 합의했습니다.`,{kind:'연봉'}); continue; } /* shortcut: 개막 뒤까지 버티는 경우·임의해지는 다루지 않음, 실제 사례가 생기면 확장 */
+    if(day>=G.cal.open-2){ const r=holdSign(p,holdMidAmt(p),'개막 전 합의'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 개막을 앞두고 중간 금액으로 합의했습니다.`,{kind:'연봉'}); continue; } /* 개막 이틀 전: 개막 엔트리(개막 전날)를 정하기 전에 계약 */ /* shortcut: 개막 뒤까지 버티는 경우·임의해지는 다루지 않음, 실제 사례가 생기면 확장 */
     if(R()<.015+.01*Math.floor((day-p.hold.d)/7)){ const r=holdSign(p,p.hold.off,'구단 제시액 수용'); mail('운영팀',`${p.name} 연봉 계약`,`${r} 선수가 구단 제시액을 받아들였습니다.`,{kind:'연봉'}); } } }
 function salTalkDaily(day){ const C=G.contract; if(!C||C.done||!C.neg)return; if(day===KD(1,8)){ const n=Object.values(C.neg).filter(x=>x.st==='open').length; if(n){ stop('연봉',`연봉 미계약 국내 선수 ${n}명. 1월 10일이 지나면 3년차 이상 선수는 연봉조정을 신청할 수 있습니다.`); if(G.mail[0])G.mail[0].auto=['sal']; } }
   if(day===KD(1,10))salArbFile(); if(day===KD(1,20))salArbDecide(); }
