@@ -4316,6 +4316,14 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .hw-lr{display:grid;grid-template-columns:auto minmax(0,1fr) 14px auto;align-items:center;gap:5px;padding:3px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;min-width:0}
 .hw-lr>i{font-style:normal;font-size:11px;color:var(--muted);min-width:30px}.hw-lr .av{width:24px!important;height:24px!important;border-radius:50%}.hw-lr>b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hw-lr>em{font-style:normal;font-weight:800;font-size:13px}
 .hw-lr.own>b{color:var(--team-hi)}
+/* 홈 글자 크기 통일(사용자 11-06): 4단계만 쓴다 — 카드 제목 14, 본문 12.5, 보조 11, 강조 숫자 16 */
+#app .home-workspace{--hw-t:14px;--hw-b:12.5px;--hw-s:11px;--hw-n:16px}
+#app .home-workspace .hw-panel>header h2{font-size:var(--hw-t)!important}#app .home-workspace .hw-panel>header h2 small{font-size:var(--hw-s)!important}
+#app .home-workspace .hw-panel :is(td,th,.hw-lr>b,.hw-lr>em,.hw-sr,.hw-sr>em,.hw-rs dl>div,.hw-rs .hd,.fx-pl b,.hw-news h3,.hw-news-art b,.hw-sp>b,.hw-todo b,.hw-news-list b){font-size:var(--hw-b)!important}
+#app .home-workspace .hw-panel :is(th,.hw-lr>i,.hw-sr>span:first-child,.hw-sr>i,.hw-sr>small,.fx-pl i,.fx-pl em,.hw-news-art small,.hw-kicker,.hw-news article>p,.hw-hint,.hw-sp-vs small,.hw-finance dt,.hw-rs dt,.hw-match-main .hw-kicker,.hw-news-list span){font-size:var(--hw-s)!important}
+#app .home-workspace .hw-panel :is(.hw-finance dd,.hw-sp-vs){font-size:var(--hw-n)!important}#app .home-workspace .hw-finance dd small{font-size:var(--hw-s)!important}
+#app .home-workspace .hw-metrics :is(span,small){font-size:var(--hw-s)!important}#app .home-workspace .hw-metrics b{font-size:var(--hw-n)!important}
+#app .home-workspace .hw-sp-face em{font-size:var(--hw-s)!important}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
