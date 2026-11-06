@@ -28,14 +28,14 @@ function sponMake(slot,o){ o=o||{}; const S=G.spon; const ind=pick(SPON_IND[slot
   return x; }
 function sponSign(o,silent){ const S=G.spon; const y0=sponSeason(); const inSea=y0===G.year&&G.cal&&G.day>G.cal.open; const over=inSea&&G.day>=G.cal.end; /* 정규시즌이 끝난 뒤 결산 전 계약: 올해 몫은 없고 계약 기간은 다음 시즌부터 센다 */
   const first=over?0:inSea?Math.max(.15,(G.cal.end-G.day)/(G.cal.end-G.cal.open)):1;
-  S.c[o.slot]={co:o.co,ind:o.ind,amt:o.amt,ps:o.ps,champ:o.champ,img:o.img,y0,until:y0+o.yrs-1+(over?1:0),first,id:o.id};
+  S.c[o.slot]={co:o.co,ind:o.ind,amt:o.amt,ps:o.ps,champ:o.champ,img:o.img,y0,until:y0+o.yrs-1+(over?1:0),first,id:o.id,d0:G.day};
   S.off=S.off.filter(x=>x.slot!==o.slot); if(!silent){ addLog(`${o.co}(${o.ind})와(과) ${SPON_SLOT[o.slot].l} 계약: ${o.yrs}년, 연 ${money(o.amt)}.`); chron&&chron('spon',`${o.co} ${SPON_SLOT[o.slot].l} 계약 (${o.yrs}년 연 ${money(o.amt)})`);
     if(o.amt>=SPON_SLOT[o.slot].b*1.15)news('구단',`${tshort(G.user)}, ${o.co}와(과) ${SPON_SLOT[o.slot].l} 계약`,`${o.yrs}년 연 ${money(o.amt)} 규모입니다. 구단 가치가 올랐다는 평가가 나옵니다.`,1); } }
 /* 올해(진행 중이거나 다음) 시즌에 들어올 기본 금액 */
 function sponIncome(y){ const S=G.spon; if(!S)return 0; y=y??sponSeason(); let s=0; for(const k in S.c){ const c=S.c[k]; if(c.y0<=y&&c.until>=y)s+=c.amt*(c.y0===y?c.first:1); } for(const c of (S.cutL||[]))if(c.until===y)s+=c.amt*c.cutF; return Math.round(s); }
 /* 중도 해지: 해지 전까지 지난 기간 몫(정규시즌 날짜 비율)은 그해 결산에 남기고, 남은 몫만 취소한다. 해지 날짜·사유는 이력에 남는다 */
 function sponCancel(k,why){ const S=G.spon; const c=S&&S.c[k]; if(!c)return null; const y=G.year; let f=0;
-  if(c.y0<=y&&c.until>=y&&G.cal){ const eff=c.y0===y?(c.first??1):1, o=G.cal.open, e=G.cal.end; f=G.day<=o?0:G.day>=e?eff:Math.max(0,eff-(e-G.day)/(e-o)); }
+  if(c.y0<=y&&c.until>=y&&G.cal){ const eff=c.y0===y?(c.first??1):1, o=G.cal.open, e=G.cal.end; const s0=c.y0===y&&c.d0!=null?Math.max(o,c.d0):o; f=G.day<=s0?0:G.day>=e?eff:eff*clamp((G.day-s0)/Math.max(1,e-s0),0,1); } /* 계약한 날부터 해지한 날까지 지난 비율만큼(같은 날 해지면 0, 검수 11-06) */
   const effY=c.y0<=y&&c.until>=y?(c.y0===y?(c.first??1):1):0, later=c.until-Math.max(y,c.y0-1); /* 남은 몫: 올해 남은 기간 + 다음 해부터 */
   const x=Object.assign({slot:k},c,{until:y,cutF:Math.round(f*1000)/1000,cut:{d:G.day,why,lost:Math.round(c.amt*(effY-f+Math.max(0,later)))}});
   (S.cutL=S.cutL||[]).push(x); delete S.c[k]; return x; }
@@ -65,7 +65,7 @@ function sponSettle(y,ps,tid,S0){ tid=tid??G.user; const S=S0||G.spon; /* tid·S
   for(const k in S.c){ if(S.c[k].until===y){ S.hist.push(Object.assign({slot:k},S.c[k])); } }
   if(S.cutL&&S.cutL.length){ for(const c of S.cutL)if(c.until<=y)S.hist.push(c); S.cutL=S.cutL.filter(c=>c.until>y); }
   if(S.hist.length>40)S.hist=S.hist.slice(-40);
-  { const exp=Object.keys(S.c).filter(k=>S.c[k].until===y); mail('마케팅팀',`${y} 스폰서 결산: ${money(Math.round(base+bonus))}`,`기본 계약 ${money(Math.round(base))}${bonus?`, 성과 보너스 ${money(Math.round(bonus))}`:''}.${L.length?'\n'+L.join('\n'):''}${exp.length?`\n\n이번 시즌으로 끝나는 계약: ${exp.map(k=>`${S.c[k].co}(${SPON_SLOT[k].l})`).join(', ')}. 11월 중순부터 재계약·신규 제안이 들어옵니다.`:''}`,{kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
+  if(tid===G.user&&!S0){ const exp=Object.keys(S.c).filter(k=>S.c[k].until===y); mail('마케팅팀',`${y} 스폰서 결산: ${money(Math.round(base+bonus))}`,`기본 계약 ${money(Math.round(base))}${bonus?`, 성과 보너스 ${money(Math.round(bonus))}`:''}.${L.length?'\n'+L.join('\n'):''}${exp.length?`\n\n이번 시즌으로 끝나는 계약: ${exp.map(k=>`${S.c[k].co}(${SPON_SLOT[k].l})`).join(', ')}. 11월 중순부터 재계약·신규 제안이 들어옵니다.`:''}`,{kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
   return {base:Math.round(base),bonus:Math.round(bonus),L}; }
 /* 팬 여론이 바닥이면 드물게 계약 해지 */
 function sponMonthly(){ const S=G.spon; if(!S||!G.pr||G.pr.fan>=25)return; for(const k in S.c){ const c=S.c[k]; if(c.until<sponSeason()||R()>=.06)continue; /* 결산까지 끝난 계약은 해지 대상 아님 */ const x=sponCancel(k,'팬 여론 악화'); const kept=Math.round(x.amt*x.cutF); mail('마케팅팀',`${c.co} 스폰서 계약 해지`,`팬 여론 악화로 ${c.co}이(가) ${SPON_SLOT[k].l} 계약을 해지했습니다. 해지 전까지 지난 기간 몫 ${money(kept)}은 올해 결산에 들어오고, 남은 기간 금액은 들어오지 않습니다. 이 자리에는 새 스폰서와 계약할 수 있습니다.`,{kind:'스폰서',imp:true}); news('구단',`${c.co}, ${tshort(G.user)} 스폰서 철수`,'성난 팬심이 기업 이미지에도 부담이 된다는 판단입니다.',-2); break; } }
