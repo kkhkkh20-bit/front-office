@@ -189,6 +189,19 @@ const QUICK=process.env.QUICK==='1';
   { where='백업 권유'; const r=await ev(()=>{ const f0=inFrame; inFrame=()=>true; try{ G.bkAt=G.day-61; closeSheets(); A.tab('home'); const on=!!document.querySelector('.blk.bkn'); A.bkLater(); const off=!document.querySelector('.blk.bkn'); G.bkAt=G.day; A.expCode(); const set=G.bkAt===G.day; UI.expCode=null; return {on,off,set}; } finally { inFrame=f0; render(); } });
     if(r){ if(!r.on)add('백업 권유','다른 사이트 안에서 60일이 지났는데 백업 권유가 안 뜸'); if(!r.off)add('백업 권유',"'나중에'를 눌러도 안 닫힘"); if(!r.set)add('백업 권유','내보내기를 해도 백업 날짜가 기록되지 않음'); } }
   /* 저장은 몰아서(0.7초) 한다: 하루 진행·버튼마다 압축 저장(수백 ms)을 하면 굼떴다. 탭을 숨기면 바로 저장한다. 코드 내보내기는 복사 버튼으로 */
+  /* 일정·순위·기록(검수 11-06): 중계 중에는 어떤 화면에서도 최종 박스스코어를 열 수 없다. 선수가 현역 목록에서 보관 기록으로 옮겨져도 그 시즌 팀 합계는 바뀌지 않는다 */
+  { where='일정·순위·기록'; const r=await ev(()=>{ const bad=[]; const keep=JSON.stringify(G); const UI0={sheet:UI.sheet,game:UI.game}; try{
+      const y=G.year, me=G.user; const d0=G.day; const g={day:d0,home:me,away:G.teams.find(t=>t.id!==me).id,hs:3,as:1,line:{a:[0,1,0],h:[1,0,2]},res:'승',box:{h:{bat:[],pit:[]},a:{bat:[],pit:[]}},pbp:[],kind:'노히트 도전'}; G.games.unshift(g); G.sea.ulog=(G.sea.ulog||[]).concat([{d:d0,h:me,a:g.away,hs:3,as:1,res:'승',k:'노히트 도전'}]); G.cal.sched[d0]=[[me,g.away]];
+      G.live={i:0,upto:0}; const cg=calGame(d0); if(cg&&cg.gi>=0)bad.push('중계 중인데 캘린더가 박스스코어 번호를 넘김'); UI.game=null; A.openGame(0); if(UI.game===0)bad.push('중계 중인데 박스스코어가 열림'); delete G.live;
+      const cg2=calGame(d0); if(!cg2||cg2.kind!=='노히트 도전')bad.push('캘린더에서 정규시즌 경기 특수 표시가 사라짐: '+(cg2&&cg2.kind));
+      const p=domestic(me).find(q=>!q.isP); p.hist=(p.hist||[]).filter(h=>h.y!==y).concat([{y,lvl:'1군',t:me,pa:100,ab:90,h:30,hr:10,bb:10,g:30}]); _tsC=null; const hr0=teamStats(y).find(t=>t.tid===me).hr; dropP(p.id); _tsC=null; const hr1=teamStats(y).find(t=>t.tid===me).hr; if(hr1!==hr0)bad.push('보관 기록으로 옮긴 뒤 팀 홈런 '+hr0+' → '+hr1);
+      _tsC=null; delete (G.tsArch||{})[y-1]; const past=teamStats(y-1).find(t=>t.tid===me); if(past&&past.g!=null)bad.push('지난 시즌 팀 기록에 올해 경기 수');
+      const L=calUpcomingList(1,60); if(L.length>1)bad.push('다가오는 일정 개수 초과: '+L.length);
+      const N=ntUpcoming(4)[0]; if(N){ const ev=calEvents(N.to).map(e=>e.t).join(' '); if(/대표 소집 중/.test(ev))bad.push('복귀일에도 소집 중'); }
+      const S=stadOf(me); const old=stadName(me); S.names=[{until:d0,n:'옛 구장'}]; S.name='새 구장'; if(stadNameAt(me,d0-10)!=='옛 구장')bad.push('개장 전 경기를 새 구장으로 표시');
+      const st=standingsNow(); G.ps={seeds:st.slice(0,5).map(x=>x.tid),order:st.slice(),res:{},round:'wc',done:false}; const a=G.ps.order[3]; G.ps.order[3]=G.ps.order[4]; G.ps.order[4]=a; const pr=period; period=()=>'post'; try{ const so=standOrder(); if(so.order[3].tid!==a.tid&&so.order[4].tid!==a.tid)bad.push('준비 실패'); if(so.order[4].tid!==a.tid)bad.push('결정전 결과가 순위표에 없음'); }finally{ period=pr; }
+    }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ G=JSON.parse(keep); UI.sheet=UI0.sheet; UI.game=UI0.game; _tsC=null; closeSheets(); render(); } return bad; });
+    if(r)for(const m of r)add('일정·순위·기록',m); }
   /* 슬롯 전환(검수 11-06): 현재 게임 저장과 활성 슬롯 변경이 모두 성공한 뒤에만 새 슬롯으로 전환한다. 기록 캐시는 세이브를 구분한다 */
   { where='슬롯 전환'; const r=await ev(()=>{  const bad=[]; const cur=meta().active||1, other=cur===1?2:1; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); }
   const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; closeSheets(); UI.title=false; render(); };

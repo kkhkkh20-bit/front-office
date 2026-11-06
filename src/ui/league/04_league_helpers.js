@@ -7,7 +7,7 @@ function splitOf(tid){ const L=tlOf(tid); const f=h=>{ const r=wlOf(L.filter(x=>
 function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
 const pctStr=o=>o.w+o.l?fmt3(o.w/(o.w+o.l)):'-';
-function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:standingsNow()}; const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order:standingsNow()}; }
+function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order:standingsNow()}; }
 const gbOf=(top,o)=>((top.w-o.w)-(top.l-o.l))/2;
 const gbStr=v=>v<=0?'-':v.toFixed(1);
 function strkPill(tid){ const s=streakOf(tid); if(!s)return ''; return `<span class="strk ${s.includes('승')?'w':s.includes('패')?'l':''}" data-a="go" data-v="league:stand">${s}</span>`; }
@@ -17,8 +17,8 @@ let _tsC=null;
 function teamStats(y){ const key=y+':'+G.day+':'+G.games.length; if(_tsC&&_tsC.k===key&&_tsC.g===G)return _tsC.v; /* 다른 세이브면 날짜·경기 수가 같아도 다시 센다(검수 11-06) */
   { const A=G.tsArch&&G.tsArch[y]; if(A&&!(G.sea&&G.sea.y===y&&period()==='season')){ const T=A.map((x,i)=>{ const br=bRate(x.b), pr=pRate(x.p); return {tid:i,b:x.b,p:x.p,g:x.g,rs:x.rs,ra:x.ra,avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,era:pr.era,whip:pr.whip,hr:x.b.hr,sb:x.b.sb,so:x.p.so,hra:x.p.hr}; }); _tsC={k:key,v:T,g:G}; return T; } }
   const T=G.teams.map(t=>({tid:t.id,b:Object.assign({},ZB),p:Object.assign({},ZP)}));
-  for(const p of Object.values(G.players)) for(const h of p.hist){ if(h.y!==y||h.lvl!=='1군'||h.t==null||!T[h.t])continue; const X=p.isP?T[h.t].p:T[h.t].b; for(const k in X)X[k]+=h[k]||0; }
-  for(const t of T){ const L=tlOf(t.tid); const cur=G.sea&&G.sea.y===y; t.g=L.length; t.rs=cur?sum(L.map(x=>x[1])):t.b.r; t.ra=cur?sum(L.map(x=>x[2])):null; const br=bRate(t.b), pr=pRate(t.p); Object.assign(t,{avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,era:pr.era,whip:pr.whip,hr:t.b.hr,sb:t.b.sb,so:t.p.so,hra:t.p.hr}); }
+  for(const z of y1Rows(y)){ const h=z.h; if(h.t==null||!T[h.t])continue; const X=z.isP?T[h.t].p:T[h.t].b; for(const k in X)X[k]+=h[k]||0; } /* 시즌 중 떠난 선수(보관 기록)도 그 구단 합계에 넣는다(검수 11-06) */
+  for(const t of T){ const L=tlOf(t.tid); const cur=G.sea&&G.sea.y===y; t.g=cur?L.length:null; /* 지난 시즌에 올해 경기 수를 붙이지 않는다 */ t.rs=cur?sum(L.map(x=>x[1])):t.b.r; t.ra=cur?sum(L.map(x=>x[2])):null; const br=bRate(t.b), pr=pRate(t.p); Object.assign(t,{avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,era:pr.era,whip:pr.whip,hr:t.b.hr,sb:t.b.sb,so:t.p.so,hra:t.p.hr}); }
   _tsC={k:key,v:T,g:G}; return T; }
 function rankIn(T,tid,k,asc){ const s=[...T].sort((a,b)=>asc?a[k]-b[k]:b[k]-a[k]); return s.findIndex(x=>x.tid===tid)+1; }
 const rkPill=(r)=>`<span class="rk ${r<=3?'hi':r>=8?'lo':''}">${r}위</span>`;

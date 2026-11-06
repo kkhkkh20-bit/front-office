@@ -169,7 +169,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },
   liveDone(){ G.live=null; save(); render(); },
-  openGame(v){ UI.sheet=null; UI.posSheet=null; UI.game=+v; UI.gtab='box'; renderSheet(); },
+  openGame(v){ const sg=spoilG(); if(sg&&G.games[+v]===sg){ if(UI.cast&&G.games[UI.cast.g]===sg){ A.castView('data'); return; } toast('중계를 마친 뒤에 박스스코어를 볼 수 있습니다.'); return; } /* 중계 중에는 어느 화면에서도 최종 박스스코어를 열지 않는다(검수 11-06) */ UI.sheet=null; UI.posSheet=null; UI.game=+v; UI.gtab='box'; renderSheet(); },
   offerYes(v){ offerMailDone(v); const r=answerOffer(v,true); if(!r.ok)UI._cfmWhy=r.msg; note('트레이드',r.msg); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
   offerNo(v){ offerMailDone(v); answerOffer(v,false); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
   buildFacItem(v){ UI.facMsg=buildFacItem(v)||null; save(); render(); },

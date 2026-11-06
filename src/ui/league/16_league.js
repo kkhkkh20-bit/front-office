@@ -138,7 +138,7 @@ function bkGames(D,x){ const s=bkSeries(D,x), S=s.sc; if(!S)return null;
 const bkRes=(g,sz)=>g.p?g.w!=null?`<u class="bk-rs">${badge(g.w,sz)}<b>${esc(team(g.w).nick)}</b><em>${Math.max(g.p.hs,g.p.as)}:${Math.min(g.p.hs,g.p.as)}</em><s>승</s></u>`:`<u class="bk-rs t"><em>${g.p.hs}:${g.p.as}</em><s>무</s></u>`:'';
 /* 칸 아래 차전별 날짜·홈 구장·결과(일정이 정해진 시리즈만) */
 function bkSched(D,x){ const L=bkGames(D,x);
-  return `<div class="bk-sc bk-sc-${x[0]}"><b>${x[3]}</b>${L?L.map(g=>`<span class="${g.st}" title="${g.i+1}차전 ${dmd(g.d)} ${esc(stadName(g.h))}"><i>${g.i+1}차전</i><time>${dobj(g.d).m}/${dobj(g.d).d}</time><em>${esc(stadName(g.h))}</em>${bkRes(g,14)}</span>`).join(''):`<span class="muted">${D.proj?'정규시즌이 끝나면 일정이 정해집니다':'앞 시리즈가 끝나면 일정이 정해집니다'}</span>`}</div>`; }
+  return `<div class="bk-sc bk-sc-${x[0]}"><b>${x[3]}</b>${L?L.map(g=>`<span class="${g.st}" title="${g.i+1}차전 ${dmd(g.d)} ${esc(stadNameAt(g.h,g.d))}"><i>${g.i+1}차전</i><time>${dobj(g.d).m}/${dobj(g.d).d}</time><em>${esc(stadNameAt(g.h,g.d))}</em>${bkRes(g,14)}</span>`).join(''):`<span class="muted">${D.proj?'정규시즌이 끝나면 일정이 정해집니다':'앞 시리즈가 끝나면 일정이 정해집니다'}</span>`}</div>`; }
 /* 고른 시리즈 결과: 우리 경기는 경기별 기록(박스스코어)이 남고, 다른 구단 시리즈는 승패 결과만 남는다 */
 function bkDet(D,k){ const x=BK_R.find(r=>r[0]===k), s=bkSeries(D,x), nm=t=>`${badge(t,20)} ${esc(tname(t))}`;
   let b='';
@@ -148,7 +148,7 @@ function bkDet(D,k){ const x=BK_R.find(r=>r[0]===k), s=bkSeries(D,x), nm=t=>`${b
   else b=`<p>${s.hi!=null?nm(s.hi):''}${s.lo!=null?` 대 ${nm(s.lo)}`:` · ${BK_S[x[2]]||''} 승자를 기다리는 중`}</p><p class="muted">아직 시작 전입니다.</p>`;
   const L=D.proj?null:bkGames(D,x), me=G.user;
   const gl=L?`<h4>차전별 결과</h4><div class="bk-gr">${L.map(g=>{ const tg=g.u>=0?'button':'span', o=g.w==null?'t':[g.h,g.a].includes(me)?(g.w===me?'w':'l'):'';
-    return `<${tg}${g.u>=0?` data-a="openGame" data-v="${g.u}"`:''} class="bk-g ${g.p?o:'yet'}"${g.p?` title="${esc(tshort(g.a))} ${g.p.as} : ${g.p.hs} ${esc(tshort(g.h))}(원정 : 홈)"`:''}><i>${g.i+1}차전</i><span>${dmd(g.d)} · ${esc(stadName(g.h))}</span>${g.p?bkRes(g,16):`<b class="muted">${g.st==='now'?'다음 경기':'예정'}</b>`}</${tg}>`; }).join('')}</div>${L.some(g=>g.st==='past'&&!g.p)?'<p class="small muted">이 시리즈는 점수가 남지 않은 차전이 있습니다(우리 구단 경기만 기록된 저장).</p>':''}${L.some(g=>g.u>=0)?'<p class="small muted">우리 경기는 눌러서 박스스코어를 봅니다.</p>':''}`:'';
+    return `<${tg}${g.u>=0?` data-a="openGame" data-v="${g.u}"`:''} class="bk-g ${g.p?o:'yet'}"${g.p?` title="${esc(tshort(g.a))} ${g.p.as} : ${g.p.hs} ${esc(tshort(g.h))}(원정 : 홈)"`:''}><i>${g.i+1}차전</i><span>${dmd(g.d)} · ${esc(stadNameAt(g.h,g.d))}</span>${g.p?bkRes(g,16):`<b class="muted">${g.st==='now'?'다음 경기':'예정'}</b>`}</${tg}>`; }).join('')}</div>${L.some(g=>g.st==='past'&&!g.p)?'<p class="small muted">이 시리즈는 점수가 남지 않은 차전이 있습니다(우리 구단 경기만 기록된 저장).</p>':''}${L.some(g=>g.u>=0)?'<p class="small muted">우리 경기는 눌러서 박스스코어를 봅니다.</p>':''}`:'';
   return `<section class="bk-box bk-det"><h3>${ROUNDK[k]}</h3>${b}${gl}${k==='wc'?'<p class="small muted">4위는 1승을 안고 시작해 한 번만 이기거나 비겨도 올라갑니다. 칸의 숫자는 실제로 이긴 경기 수입니다.</p>':''}</section>`; }
 function psBracket(){
   const ys=bkYears(), so=standOrder(), projOk=!G.ps&&so.live, def=G.ps?psYearOf(G.ps):projOk||!ys.length?G.year:ys[ys.length-1];
@@ -216,7 +216,7 @@ function scoreView(){
   let d=UI.sbd; if(d==null||!days.includes(d))d=days[days.length-1];
   const i=days.indexOf(d); const gs=[]; for(const t of G.teams) for(const x of tlOf(t.id)) if(x[5]===d&&x[3]===1)gs.push({h:t.id,a:x[4],hs:x[1],as:x[2]});
   const card=s=>{ const gi=G.games.findIndex(g=>g.day===d&&g.home===s.h&&g.away===s.a); const me=s.h===G.user||s.a===G.user;
-    const tr=(tid,r,o)=>`<div class="sbr ${r>o?'w':''}">${badge(tid,22)}<a class="tl" data-a="lteam" data-v="${tid}">${tshort(tid)}</a><span class="small muted">${wlStr(G.sea.rec[tid])}</span><b class="num">${r}</b></div>`;
+    const tr=(tid,r,o)=>`<div class="sbr ${r>o?'w':''}">${badge(tid,22)}<a class="tl" data-a="lteam" data-v="${tid}">${tshort(tid)}</a><span class="small muted" title="이 날 경기까지 전적">${(()=>{ const r={w:0,l:0,t:0}; for(const x of tlOf(tid))if(x[5]<=d){ if(x[0]>0)r.w++; else if(x[0]<0)r.l++; else r.t++; } return wlStr(r); })()}</span><b class="num">${r}</b></div>`;
     return `<div class="sbc${me?' me':''}"${gi>=0?` data-a="openGame" data-v="${gi}" role="button" tabindex="0"`:''}>${tr(s.a,s.as,s.hs)}${tr(s.h,s.hs,s.as)}<span class="small muted">${gi>=0?'박스스코어 보기':'종료'}</span></div>`; };
   return `<section class="card"><div class="row between"><h2 class="sec">경기 결과</h2><div class="row"><button class="btn small" data-a="sbd" data-v="${days[i-1]??''}" ${i<=0?'disabled':''}>← 이전</button><b class="num">${dmd(d)} ${WD[dobj(d).w]}</b><button class="btn small" data-a="sbd" data-v="${days[i+1]??''}" ${i>=days.length-1?'disabled':''}>다음 →</button></div></div>
     <div class="sbg">${gs.map(card).join('')}</div>
@@ -241,7 +241,7 @@ function newsView(){ return ourNewsView(); }
    값은 일정(G.cal.sched)·우리 정규시즌 기록(G.sea.ulog)·구단별 경기 기록(tlOf)만 쓴다 */
 function scoreFm(){ const me=G.user, c=G.cal, U=(G.sea.ulog||[]).filter(x=>!/차전/.test(x.k)), log=new Map(U.map(x=>[x.d,x])), so=standOrder(), rkOf=t=>{ const i=(so.order||[]).findIndex(o=>o.tid===t); return so.live&&i>=0?i+1:null; };
   const days=Object.keys(c.sched).map(Number).filter(d=>c.sched[d].some(m=>m.includes(me))).sort((a,b)=>a-b), ni=days.findIndex(d=>!log.has(d)&&d>=G.day);
-  let w=0,l=0,t=0,mo=0; const rows=days.map((d,i)=>{ const m=c.sched[d].find(x=>x.includes(me)), h=m[0]===me, op=h?m[1]:m[0], r=log.get(d), o=dobj(d), gi=G.games.findIndex(g=>g.day===d&&!g.kind);
+  let w=0,l=0,t=0,mo=0; const rows=days.map((d,i)=>{ const m=c.sched[d].find(x=>x.includes(me)), h=m[0]===me, op=h?m[1]:m[0], r=log.get(d), o=dobj(d), gi=G.games.findIndex(g=>g.day===d&&!/차전/.test(g.kind||'')); /* 정규시즌 경기는 '노히트 도전' 같은 표시가 붙어도 연결(포스트시즌만 뺀다, 검수 11-06) */
     if(r){ if(r.res==='승')w++; else if(r.res==='패')l++; else t++; }
     const sep=o.m!==mo?`<tr class="fx-mo"><td colspan="7">${G.year}년 ${o.m}월</td></tr>`:''; mo=o.m; const rk=rkOf(op);
     return sep+`<tr class="${i===ni?'now ':''}${r?'':'up'}${gi>=0?' click':''}"${gi>=0?` data-a="openGame" data-v="${gi}"`:''}><td>${o.m}/${o.d} <i>${WD[o.w]}</i></td><td>${r?'':d>G.day?`${d-G.day}일 뒤`:''}</td><td>${h?'홈':'원정'}</td><td>${badge(op,16)} ${esc(team(op).nick)}${rk?` <i>${rk}위</i>`:''}</td><td>${r?`<span class="pill ${r.res==='승'?'good':r.res==='패'?'bad':''}">${r.res}</span>`:d<G.day?'<span class="muted">-</span>':''}</td><td>${r?`${h?r.hs:r.as} : ${h?r.as:r.hs}`:''}</td><td>${r?`${w}-${l}${t?'-'+t:''}`:''}</td></tr>`; }).join('');
