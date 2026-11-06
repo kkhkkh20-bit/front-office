@@ -214,7 +214,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   fview2(v){ UI.fview2=v; render(); }, cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ v=String(v); UI.cmkOpen=String(UI.cmkOpen)===v?null:v; render(); }, cslotOpen(v){ UI.cslotOpen=UI.cslotOpen===v?null:v; render(); },
   sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
-  coachFind(v){ UI.crole=v; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
+  coachFind(v){ UI.crole=v; UI.coachRet=true; UI.cMsg=null; UI.cfire=null; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); }, /* 빈자리 채용은 스태프 시장(코치)으로 */
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
   wk(v){ UI.wk=v||null; render(); },
@@ -223,7 +223,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   promoteCoach(v){ const r=promoteCoach(v); UI.cprom=null; UI.cMsg=typeof r==='string'?r:r.msg; toast(UI.cMsg); save(); render(); },
   extMgr(v){ const r=extendMgr(+v); toast(r||`감독 계약을 ${v}년 연장했습니다.`); save(); render(); },
   fireCoach(v){ fireCoach(v); UI.cfire=null; UI.cMsg=`${CROLE[v].l} 자리를 비웠습니다.`; save(); render(); },
-  hireCoach(v){ const [id,y]=v.split(':'); const c=(G.cmarket||[]).find(x=>x.id===id); const e=hireCoach(id,+y); UI.cMsg=e||(c?`${CROLE[c.role].l} ${c.name} 영입 (${y}년)`:''); if(!e&&c){ UI.it=UI.it||{}; UI.it.coach=CROLE[c.role].g===2?'g2':'g1'; } save(); render(); },
+  hireCoach(v){ const [id,y]=v.split(':'); const c=(G.cmarket||[]).find(x=>x.id===id); const e=hireCoach(id,+y); UI.cMsg=e||(c?`${CROLE[c.role].l} ${c.name} 영입 (${y}년)`:''); if(!e&&c){ UI.it=UI.it||{}; UI.it.coach=CROLE[c.role].g===2?'g2':'g1'; if(UI.coachRet){ UI.coachRet=null; save(); A.go('staff:coach'); return; } } save(); render(); }, /* 보직의 '교체'로 시장에 왔으면 영입 뒤 코치 보직 화면으로 돌아간다(사용자 피드백 11-07) */
   hy(v){UI.hy=+v;render();},
   fmBack(){ fmBack(); }, fmFwd(){ fmFwd(); }, fmKeysX(){ UI.fmKeys=false; render(); }, fmKeysOpen(){ UI.fmKeys=true; render(); }, fmPlan(){ UI.tab='roster'; UI.rosterTeam=null; UI.it=UI.it||{}; UI.it.roster='depth'; UI.it.rdepth='glance'; closeSheets(); render(); },
   retNo(v){ note('기록',retireNumber(v)); save(); render(); },
