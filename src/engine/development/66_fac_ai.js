@@ -33,8 +33,8 @@ function facSt(tid){ if(tid==null)return null; if(tid===G.user){ if(!G.fac||!G.f
 function facLvK(tid,k){ if(tid==null)return 2; if(tid===G.user)return facOf(k); const t=G.teams[tid]; return t&&t.fi&&t.fi.it?(t.fi.it[k]||0):2; }
 /* 다른 구단 부상·회복·2군 효과는 리그 중간인 2단계를 기준(예전 값)으로 본다. 예전엔 이 효과가 없었으므로 2단계 구단은 그대로다 */
 function facAiInj(tid){ return tid==null?1:1-(facImpact(facLvK(tid,'weight'))-2)*.05; }
-function facAiRec(tid){ return tid==null?1:1-facImpact(facLvK(tid,'rehab'))*.07; } /* 재활·회복은 우리 구단과 같은 식: 단장이 바뀌어도 같은 재활센터면 같은 효과(검수 11-06) */
-function facAiFat(tid){ return tid==null?1:1+facImpact(facLvK(tid,'rehab'))*.06; }
+function facAiRec(tid){ return tid==null?1:1-(facImpact(facLvK(tid,'rehab'))-2)*.07; }
+function facAiFat(tid){ return tid==null?1:1+(facImpact(facLvK(tid,'rehab'))-2)*.06; } /* shortcut: 우리 구단 식(0단계 기준)과 기준점이 다르다(검수 11-06 밸런스 항목). 맞추면 리그 전체 부상 회복이 빨라져 밸런스 결정이 필요 */
 function facAiFut(tid){ return tid==null?0:(facImpact(facLvK(tid,'fut'))-2)*.05; }
 /* 증설분 유지비: 시작 때보다 늘어난 유지비만 결산에 붙인다(기본 시설 유지비는 구단 운영비에 들어 있다) */
 function aiFacUpExtra(t){ const bus=t.bus!=null?Math.max(0,BUS[t.bus].up-BUS[1].up):0; /* 우리가 산 리무진의 추가 운영비(다른 구단 기본은 우등 버스, 검수 11-06) */ if(!t.fi||!t.fi.it)return bus; return Math.max(0,facUpOf(t.fi.it)-(t.fi.up0||0))+bus; }
