@@ -222,7 +222,7 @@ function fReCapInfo(){ const C=G.contract; if(!C)return null; const keep=C.forei
    성적은 계약 협상이 열린 시즌(C.y) 기준. 1월 1일이 지나도 지난 시즌 성적으로 본다 */
 function fReNegChance(p){ const C=G.contract; initPers(p); const y=(C&&C.y)??(period()==='pre'?G.year-1:G.year); const h=seasonTotal(p,y,'1군'); const star=!!(h&&warOf(h,p)>=3);
   return {ch:clamp(.62+(p.pers.loy-10)*.03+((p.adapt||50)-50)/150-(star?.2:0),.1,.9),star}; }
-function fReNeg(id){ const C=G.contract; const p=G.players[id]; if(!C||!p||C.done)return ''; C.fneg=C.fneg||{}; if(C.fneg[id])return '이미 한 번 협상했습니다.'; C.fneg[id]=true;
+function fReNeg(id){ const C=G.contract; const p=G.players[id]; if(!C||!p||C.done)return ''; if(C.fre&&C.fre[id]&&C.fre[id].ok)return '이미 재계약에 합의한 선수입니다.'; if((C.foreignDrop||[]).includes(id))return '이미 결별하기로 한 선수입니다.'; /* 새 협상 합의와 겹치지 않게(검수 11-06) */ C.fneg=C.fneg||{}; if(C.fneg[id])return '이미 한 번 협상했습니다.'; C.fneg[id]=true;
   const ask=p.newSal; const off=round5(ask*.85); const {ch,star}=fReNegChance(p);
   if(R()<ch){ p.newSal=off; return `${p.name} 측이 ${money(off)}에 동의했습니다. (요구액 ${money(ask)})`; }
   C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return `${p.name} 측이 거절했습니다. ${star?'일본 구단에서 더 좋은 조건을 받았다고 합니다.':'다른 리그를 알아보겠다고 합니다.'} 결별로 처리됩니다. 보류권은 우리에게 있어 국내 다른 구단에는 갈 수 없습니다.`; }
@@ -232,8 +232,8 @@ function fReIdleOut(p){ const O=foReOut(p); return O&&!O.none&&O.v*.97>p.newSal?
 function fReFinish(C,tid){ const me=tid===G.user;
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||p.team!==tid)continue;
     if(!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok)){ const O=fReIdleOut(p); if(O){ const rel=(C.fFree||[]).includes(id)||p.fRel; /* 계약에 보류권 해제 조항이 있으면 그대로 지킨다(검수 11-06) */ if(me)addLog(`외국인 선수 ${p.name}이(가) 재계약 협상 없이 ${O.k} 구단 제안(${usdT(O.v)})을 받아들여 떠났습니다(${rel?'계약 조항대로 보류권 해제':'보류권 유지: 5년간 국내 다른 구단 입단 불가'}).`); if(!rel)try{ foResAdd(p,tid); }catch(e){} dropP(id); continue; } }
-    if(C.foreignDrop.includes(id)){ const free=((C.fFree||[]).includes(id)||p.fRel)&&!p.fleft; /* 계약 때 보류권 해제 조항을 넣었으면 약속대로 푼다 */ const mkt=free&&ovr(p)>=50&&p.age<=34; if(me)addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${!free?'보류권 유지: 5년간 국내 다른 구단 입단 불가':mkt?'보류권 해제: 다른 구단과 계약 가능':'보류권은 풀었지만 국내에서 찾는 구단이 없어 해외로 떠났습니다'}).`);
-      if(mkt){ delete p.newSal; delete p.fInc; termsClear(p); p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(tid)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid}); } else { if(!free)try{ foResAdd(p,tid); }catch(e){} dropP(id); } }
+    if(C.foreignDrop.includes(id)){ const free=((C.fFree||[]).includes(id)||p.fRel); /* 조항은 누가 결렬시켰든 지킨다(선수가 거절해도 보류권을 다시 잡지 않음, 검수 11-06) */ /* 계약 때 보류권 해제 조항을 넣었으면 약속대로 푼다 */ const mkt=free&&ovr(p)>=50&&p.age<=34; if(me)addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${!free?'보류권 유지: 5년간 국내 다른 구단 입단 불가':mkt?'보류권 해제: 다른 구단과 계약 가능':'보류권은 풀었지만 국내에서 찾는 구단이 없어 해외로 떠났습니다'}).`);
+      if(mkt){ delete p.newSal; delete p.fInc; delete p.fRel; delete p.fleft; termsClear(p); /* 옛 계약 조항은 새 계약으로 따라가지 않는다 */ p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(tid)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid}); } else { if(!free)try{ foResAdd(p,tid); }catch(e){} dropP(id); } }
     else { if(p.newSal!=null)p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; delete p.fleft; if(p.fInc){ p.ctT=p.team; p.opt={a:p.fInc,until:C.y+1,c:optCrit(p)}; delete p.fInc; } } } }
 /* 이직할 때: 떠나는 구단의 남은 연봉 협상은 그 구단(이제 AI)이 정리하고, 새 구단은 이미 연봉을 마친 상태로 시작한다 */
 function contractHandOff(oldTid){ const C=G.contract; if(!C||C.done)return; try{ salTalkClose(); }catch(e){}

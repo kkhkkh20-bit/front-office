@@ -33,6 +33,7 @@ function fTmpEnd(q,why){ const o=G.players[q.ftmp.o]; if(o&&o.frehab===q.id)dele
 /* 대체 선수를 정식 계약으로 돌린다: 원 선수는 방출(남은 연봉 지급), 교체 1회 차감, 남은 경기 비율만큼 연봉 */
 function fTmpConvert(q){ const tid=q.team, o=G.players[q.ftmp.o];
   if(fReplLeft(tid)<=0||G.day>foreignDL())return '교체 횟수가 없거나 8월 15일이 지나 정식 계약할 수 없습니다.';
+  { const yb=foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==o&&x!==q), cap=F_TOTAL_CAP+10*USD*sum(yb.map(x=>x.rsy||0)), tot=sum(yb.map(fCommit))+q.sal; if(q.foreign==='용병'&&tot>cap)return `${o?o.name+'을(를) 내보내면 ':''}외국인 총액 한도가 ${money(cap)}(으)로 줄어 ${q.name}과(와) 정식 계약하면 ${money(tot-cap)} 넘습니다.`; } /* 원 선수 재계약 가산분이 빠진 한도로 다시 확인(검수 11-06) */
   if(o&&o.team===tid){ delete o.frehab; releaseForeign(o.id); }
   delete q.ftmp; G.sea.repl[tid]=(G.sea.repl[tid]||0)+1; G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+Math.round(q.sal*remainFrac());
   story(q,`${tname(tid)}과(와) 정식 계약 전환 (${money(q.sal)})`,'move'); mvLog('외국인',q,null,tid,'부상 대체 → 정식 계약',q.sal);
@@ -46,7 +47,8 @@ EVH.ftmp={ pick(e,i){ const q=G.players[e.data.qid]; if(!q||!q.ftmp)return '이�
 EVH.ftmp2={ pick(e,i){ const q=G.players[e.data.qid]; if(!q||!q.ftmp)return '이미 정리된 계약입니다.'; if(i===0){ const err=fTmpConvert(q); if(!err)return `${q.name}과(와) 정식 계약했습니다.`; fTmpEnd(q,'정식 전환 불가'); return err; } fTmpEnd(q,'원 선수 이탈'); return `${q.name}의 대체 계약을 끝냈습니다.`; } };
 /* 매일: 연장 비용, 원 선수 복귀 처리, 시즌 종료 정리, 우리 선수 장기 부상 안내 */
 function fTmpDaily(){ const per=period();
-  for(const t of G.teams)for(const q of playersOf(t.id).filter(x=>x.ftmp)){ const o=G.players[q.ftmp.o];
+  const evOpen=(k,q)=>(G.evs||[]).some(e=>!e.done&&e.k===k&&e.data&&e.data.qid===q.id);
+  for(const t of G.teams)for(const q of playersOf(t.id).filter(x=>x.ftmp)){ const o=G.players[q.ftmp.o]; if(t.id===G.user){ if(q.ftmp.ask&&!evOpen('ftmp',q))delete q.ftmp.ask; if(q.ftmp.left&&!evOpen('ftmp2',q))delete q.ftmp.left; } /* 이직으로 결정 메일이 닫혔으면 다시 묻는다(재활 명단에 묶이지 않게, 검수 11-06) */
     if(per!=='season'){ fTmpEnd(q,'정규시즌 종료'); continue; }
     if(!o||o.team!==t.id||o.frehab!==q.id){ if(t.id===G.user&&!G.unemp){ if(q.ftmp.left)continue; q.ftmp.left=G.day; const can=fReplLeft(t.id)>0&&G.day<=foreignDL(); /* 우리 구단은 자동 전환하지 않고 묻는다(검수 11-06: 원 선수를 방출했더니 대체 선수가 저절로 정식 계약됨) */
         evNew('ftmp2',`대체 선수 ${q.name} 거취`,`원 선수가 팀을 떠났습니다. 부상 대체로 뛰는 ${q.name}(${posLabel(q)}, 능력 ${dvo(q)})을(를) 어떻게 할지 정해야 합니다.`,[...(can?[{l:`${q.name} 정식 계약`,fx:`교체 횟수 1회 차감, 남은 경기 비율만큼 연봉 ${money(Math.round(q.sal*remainFrac()))}.`}]:[{l:'정식 계약 불가',fx:'교체 횟수가 없거나 8월 15일이 지났습니다. 고르면 대체 계약을 끝냅니다.'}]),{l:'대체 계약 종료',fx:`${q.name}이(가) 떠납니다. 교체 횟수는 그대로입니다.`}],{from:'운영팀',ref:q.id,data:{qid:q.id},def:1,exp:5}); continue; }

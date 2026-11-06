@@ -77,7 +77,7 @@ function foReFloor(p){ initPers(p); const O=foReOut(p); const stay=p.newSal*clam
 function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.done||!p||!C.foreignEnd.includes(id))return {ok:false,msg:'재계약 기간이 아닙니다.'};
   if(C.foreignDrop.includes(id))return {ok:false,msg:'이미 결별하기로 한 선수입니다.'}; C.fre=C.fre||{}; const N=C.fre[id]=C.fre[id]||{n:0,mood:70};
   if(N.ok)return {ok:false,msg:'이미 합의했습니다.'}; if(N.n>=3)return {ok:false,msg:'재계약 제안은 세 번까지입니다.'};
-  g=Math.round(g); i=Math.round(Math.max(0,i)); N.n++; const f=foReComfort(p); const v=foVal(g,i)*f; const target=foReFloor(p); const O=foReOut(p);
+  g=Math.round(g); i=Math.round(Math.max(0,i)); if(p.foreign==='아시아'&&g+i>ASIA_CAP)return {ok:false,msg:`아시아쿼터는 보장·인센티브 합계 ${usdT(ASIA_CAP)}(${money(ASIA_CAP)})까지입니다.`}; /* 화면 안내 상한과 같게(검수 11-06) */ N.n++; const f=foReComfort(p); const v=foVal(g,i)*f; const target=foReFloor(p); const O=foReOut(p);
   const out=O&&!O.none?`${O.k} 구단이 ${usdT(O.v)} 수준을 제시했다고 합니다.`:'해외 제안은 없다고 합니다. 국내 다른 구단은 보류권 때문에 접촉할 수 없습니다.';
   if(v>=target){ N.ok=true; p.newSal=g; if(i>0)p.fInc=i; else delete p.fInc; return {ok:true,msg:`${p.name} 측이 재계약에 합의했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}. ${O&&!O.none?out:''}`}; }
   const r=v/target; N.mood-=r<.85?15:r<.95?6:2;

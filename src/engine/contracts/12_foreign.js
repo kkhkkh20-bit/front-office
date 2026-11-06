@@ -152,8 +152,9 @@ function foreignCheck(tid,p,excludeId,tmp){
 function remainFrac(){ const c=G.cal; if(G.day<c.open)return 1; if(G.day>c.end)return 0; const left=Object.keys(c.sched).filter(d=>+d>G.day).length; return left/144; }
 function signForeign(tid,id){
   const p=G.players[id];
-  if(period()==='season'&&p&&p.foreign!=='아시아'&&p.ask>fNewCap())p.ask=fNewCap(); /* 시즌 중 교체는 KBO 상한(월 10만 달러)으로 계약 */
-  const err=foreignCheck(tid,p); if(err)return err;
+  if(p&&(period()==='post'||(period()==='season'&&G.day>foreignDL())))return '8월 15일이 지나 이번 시즌에는 외국인 선수를 새로 등록할 수 없습니다.'; /* 기본 계약 함수도 등록 마감을 지킨다(검수 11-06) */
+  const ask0=p&&p.ask; if(period()==='season'&&p&&p.foreign!=='아시아'&&p.ask>fNewCap())p.ask=fNewCap(); /* 시즌 중 교체는 KBO 상한(월 10만 달러)으로 계약 */
+  const err=foreignCheck(tid,p); if(err){ if(p)p.ask=ask0; return err; } /* 실패한 시도는 시장 요구액을 바꾸지 않는다 */
   const mid=period()==='season';
   story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
   const cost=Math.round(p.ask*remainFrac());

@@ -37,8 +37,9 @@ function payOut(tid,amt,key){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.sp
 function payIn(tid,amt){ if(!amt)return; if(tid===ME()){ G.spend.compIn=(G.spend.compIn||0)+amt; } else team(tid).cash+=amt; }
 function compStart(p,from,to,rec){ const g=COMP[p.faGrade]; const prev=p.faPrevSal;
   if(p.faGrade==='C'){ const cash=Math.round(prev*1.5); payOut(to,cash,'comp'); payIn(from,cash); rec.compCash=cash; return; }
-  const c={id:'cp'+(G.compSeq=(G.compSeq||0)+1),pid:p.id,name:p.name,grade:p.faGrade,from,to,prev,day:G.day,stage:'protect',exp:G.day+3,prot:null,rec:rec.id}; /* 계약 결과는 객체를 들고 있지 않고 식별자로 다시 찾는다(저장·불러오기 뒤 복사본이 갈라지지 않게) */
+  const c={id:'cp'+(G.compSeq=(G.compSeq||0)+1),pid:p.id,name:p.name,grade:p.faGrade,from,to,prev,day:G.day,stage:'protect',exp:G.day+3,prot:null,rec:rec.id}; c._rec=rec; /* AI끼리는 계약 결과가 목록에 들어가기 전에 바로 보상을 정하므로 그 객체에 직접 적는다(검수 11-06). 저장 전에 지운다 */ /* 계약 결과는 객체를 들고 있지 않고 식별자로 다시 찾는다(저장·불러오기 뒤 복사본이 갈라지지 않게) */
   (G.comp=G.comp||[]).unshift(c); if(G.comp.length>30)G.comp.length=30;
+  if(to===G.user||from===G.user)delete c._rec;
   if(to!==G.user){ c.prot=aiProtect(to,g.prot); c.away0=awayOf(to).map(q=>q.id); c.pool0=compPool(to).map(q=>q.id); c.stage='pick'; c.exp=G.day+3;
     if(from!==G.user){ compAiPick(c); return; }
     mail('운영팀',`보상선수 지명: ${tname(to)} 보호명단 도착`,`${p.name}(${p.faGrade}등급)을 데려간 ${tname(to)}이(가) 보호선수 ${g.prot}명 명단을 보냈습니다. 명단 밖 선수 1명과 직전 연봉 ${g.withP*100}%(${money(prev*g.withP)})를 받거나, 선수 없이 ${g.cash*100}%(${money(prev*g.cash)})를 받을 수 있습니다. ${dmd(c.exp)}까지 정하세요.`,{imp:true,kind:'FA',acts:[{l:'보상선수 고르기',a:'go',v:'trade:fa'}]}); stop('FA',`${tname(to)}의 보호선수 명단이 왔습니다. 보상선수를 고르세요.`); return; }
@@ -52,7 +53,7 @@ function compResolve(c,pid){
   if(pid&&!compCands(c).some(q=>q.id===pid))return null; /* 지급·단계 변경 전에 현재 자격을 다시 검사(명단 낼 때 대표팀이라 자동 보호였던 선수는 계속 보호) */
   if(pid&&rosterN(c.from)>=ROSTER_MAX){ if(c.from===G.user)return null; pid=null; } /* 정원이 차면 선수 대신 보상금 */
   const g=COMP[c.grade]; const mult=pid?g.withP:g.cash; const cash=Math.round(c.prev*mult); payOut(c.to,cash,'comp'); payIn(c.from,cash); c.cash=cash; c.stage='done'; c.done=G.day;
-  const R0=(G.fa&&G.fa.results||[]).find(r=>r.id===(c.rec??c.pid)&&r.to===c.to); delete c._rec; if(R0)R0.compCash=cash;
+  const R0=(G.fa&&G.fa.results||[]).find(r=>r.id===(c.rec??c.pid)&&r.to===c.to)||c._rec; delete c._rec; if(R0)R0.compCash=cash;
   if(pid){ const q=G.players[pid]; termsClear(q); q.team=c.from; q.listed=false; /* 남은 계약(연봉·기간)은 새 구단이 그대로 이어받는다. 상한 반영·옵션·거부권·약속처럼 계약한 구단에만 걸린 조건만 끝난다 */ for(const k in G.lineup)if(G.lineup[k]===q.id)delete G.lineup[k]; story(q,`FA ${c.name} 보상선수로 ${tname(c.from)} 이적`,'move'); mvLog('보상선수',q,c.to,c.from,`FA ${c.name} 보상`); try{ acqStamp(q,'보상선수',c.from); }catch(e){} c.player=q.name; c.cpid=q.id; if(R0)R0.compPlayer=q.name;
     wire('FA',`${tname(c.from)}, ${c.name} 보상선수로 ${tname(c.to)} ${q.name}(${posLabel(q)}) 지명`,{tid:c.from,ref:q.id}); }
   else wire('FA',`${tname(c.from)}, ${c.name} 보상으로 선수 대신 현금 ${money(cash)}`,{tid:c.from});
@@ -60,6 +61,7 @@ function compResolve(c,pid){
   if(c.to===G.user)note('FA',pid?`${tname(c.from)}이(가) 보상선수로 ${G.players[pid].name}을(를) 데려갔습니다. 보상금 ${money(cash)}.`:`${tname(c.from)}이(가) 선수 대신 보상금 ${money(cash)}을(를) 받았습니다.`,pid);
   return c; }
 function compSubmit(id,prot){ const c=(G.comp||[]).find(x=>x.id===id); if(!c||c.stage!=='protect'||c.to!==G.user)return '처리할 명단이 없습니다.'; const g=COMP[c.grade]; const pool=compPool(G.user).map(q=>q.id); const P=[...new Set(prot)].filter(x=>pool.includes(x)).slice(0,g.prot); /* 같은 선수를 여러 번 넣어도 한 칸 */
+  if(!P.length&&pool.length)return `보호선수를 한 명 이상 고르세요(최대 ${g.prot}명). 내지 않으면 ${dmd(c.exp)} 다음 날 운영팀이 능력 순으로 냅니다.`; /* 빈 명단은 제출로 보지 않는다(검수 11-06) */
   c.prot=P; c.away0=awayOf(G.user).map(q=>q.id); c.pool0=pool; c.stage='pick'; compAiPick(c); return c.player?`${tname(c.from)}이(가) ${c.player}을(를) 지명했습니다.`:`${tname(c.from)}이(가) 선수 대신 보상금을 택했습니다.`; }
 function compAuto(c){ if(c.stage==='protect'&&c.to===G.user){ compSubmit(c.id,aiProtect(G.user,COMP[c.grade].prot)); note('FA','보호선수 명단을 운영팀이 능력 순으로 제출했습니다.'); }
     else if(c.stage==='pick'&&c.from===G.user){ if(!compAiPick(c))compResolve(c,null); } } /* 우리 자동 처리도 AI와 같은 기준(선수 가치와 현금 차액 비교). 정원이 차면 보상금 */
