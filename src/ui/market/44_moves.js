@@ -49,7 +49,7 @@ function kboView(){ return wvBox()+sdBox(); }
 function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
   const row=p=>{ const w=p.wv, on=w.cl.includes(G.user);
     const btn=w.from===G.user?'<span class="pill">우리가 공시</span>':!w.ok?'<span class="pill">양수 신청 불가(기간 밖)</span>':G.unemp?'':`<button class="btn small ${on?'':'primary'}" data-a="wvClaim" data-v="${p.id}">${on?'신청 취소':'양수 신청'}</button>`;
-    return `<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(w.c.sal)}${w.c.yrs>1?` · ${w.c.yrs}년 남음`:''} · 전 ${esc(tshort(w.from))} · ${dsh(w.end)}까지</span></span>${btn}</div>`; };
+    return `<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(w.c.sal)}${w.c.yrs>1?` · ${w.c.yrs}년 남음`:''} · 전 ${esc(tshort(w.from))} · ${dsh(w.end-1)}까지 신청</span></span>${btn}</div>`; };
   const log=(G.wvLog||[]).slice(0,8).map(r=>`<p class="small">${dsh(r.d)} <button class="lnk" data-a="player" data-v="${r.pid}">${esc(r.n)}</button> ${esc(tshort(r.from))} → ${r.to!=null?esc(tshort(r.to))+' (계약 승계)':'자유계약'}</p>`).join('');
   const rule=`KBO 규약: 시즌 중·겨울에 방출한 등록 선수는 ${WV_DAYS}일 동안 웨이버 공시됩니다. 양수를 신청한 구단 중 지금 성적이 낮은 구단이 남은 계약을 그대로 이어받고, 방출한 구단은 낸 정산금을 돌려받습니다. 아무도 신청하지 않으면 자유계약 선수가 됩니다. 7월 25일 이후 공시는 양수 신청을 받지 않고, 11월 보류선수 정리는 웨이버 없이 바로 자유계약입니다.`;
   if(!L.length&&!log)return `<p class="small muted"><b>웨이버 공시</b> 지금 공시 중인 선수가 없습니다.${hiI(rule)}</p>`; /* 비어 있으면 칸 대신 한 줄 */
@@ -75,7 +75,7 @@ function sdBox(){ const S=G.sd2&&G.sd2.y===G.year?G.sd2:null;
   return csec(`${S.y} 2차 드래프트 · ${S.stage==='done'?'종료':'지명 중'}${rule}`,`${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}`); }
 Object.assign(A,{
   wvClaim(v){ toast(wvClaim(+v)); save(); render(); },
-  sdTog(v){ const id=+v; const L=UI.sdProt||[]; const i=L.indexOf(id); if(i>=0)L.splice(i,1); else if(L.length<SD_PROT)L.push(id); else { toast(`보호선수는 ${SD_PROT}명까지입니다. 먼저 한 명을 빼세요.`); return; } UI.sdProt=L; render(); },
+  sdTog(v){ const id=+v; if(UI.sdProt)UI.sdProt=UI.sdProt.filter(x=>G.players[x]&&G.players[x].team===G.user); /* 그사이 떠난 선수는 명단에서 뺀다(검수 11-07: 34/35인데 추가가 막힘) */ const L=UI.sdProt||[]; const i=L.indexOf(id); if(i>=0)L.splice(i,1); else if(L.length<SD_PROT)L.push(id); else { toast(`보호선수는 ${SD_PROT}명까지입니다. 먼저 한 명을 빼세요.`); return; } UI.sdProt=L; render(); },
   sdAuto(){ UI.sdProt=sdProtAI(G.user); render(); },
   sdSubmit(){ toast(sdSubmit(UI.sdProt||[])); save(); render(); },
   sdPick(v){ toast(sdPick(v==='skip'?null:+v)); save(); render(); },

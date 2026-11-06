@@ -10,7 +10,7 @@ function wvNeed(p){ return !!p&&p.team!=null&&!p.foreign&&!p.ys&&!p.prospect&&!(
 function wvClaimable(){ const per=period(); if(per==='post'||preSettle())return false; return per==='season'?G.day+WV_DAYS<=tradeDL():true; }
 /* toFree가 계약을 지우기 전에 부른다: 양수 구단이 이어받을 계약을 남겨 둔다 */
 function wvStart(p,paid){ if(!wvNeed(p))return; const from=p.team;
-  p.wv={from,d:G.day,end:G.day+WV_DAYS,ok:wvClaimable(),paid:paid||0,cl:[],c:{role:p.role,sal:p.sal,yrs:p.yrs,faC:!!p.faC,ext:!!p.ext,cyrs:p.cyrs,extNext:p.extNext,...(p.ctT===p.team?{opt:p.opt,cOpt:p.cOpt,pOut:p.pOut,cOptAdd:p.cOptAdd,ntc:p.ntc,capB:p.capB}:{})}}; /* 남은 계약 승계: 성과 옵션·구단 옵션·옵트아웃도 함께 */
+  p.wv={from,d:G.day,end:G.day+WV_DAYS,ok:wvClaimable(),paid:paid||0,cl:[],c:{role:p.role,sal:p.sal,yrs:p.yrs,faC:!!p.faC,ext:!!p.ext,cyrs:p.cyrs,extNext:p.extNext?JSON.parse(JSON.stringify(p.extNext)):undefined, /* 방출 기록이 원본을 바꾸기 전에 복사(검수 11-07) */...(p.ctT===p.team?{opt:p.opt,cOpt:p.cOpt,pOut:p.pOut,cOptAdd:p.cOptAdd,ntc:p.ntc,capB:p.capB}:{})}}; /* 남은 계약 승계: 성과 옵션·구단 옵션·옵트아웃도 함께 */
   if(ovr(p)>=40)wire('웨이버',`${tname(from)}, ${p.name}(${posLabel(p)}) 웨이버 공시`,{tid:from,ref:p.id});
   if(from!==G.user&&p.wv.ok&&!G.unemp&&ovr(p)>=wvBar(G.user))mail('운영팀',`웨이버 공시: ${tshort(from)} ${p.name}`,`${tname(from)}이(가) ${p.name}(${posLabel(p)}, ${p.age}세, 연 ${money(p.sal)})을(를) 웨이버 공시했습니다. ${dmd(p.wv.end-1)}까지 양수를 신청하면 ${dmd(p.wv.end)}에 정하며, 신청한 구단 중 성적이 낮은 구단이 남은 계약을 이어받아 데려갑니다.`,{kind:'트레이드',ref:p.id,acts:[{l:'웨이버 보기',a:'go',v:'transfer:kbo'}]}); }
 /* 우선순위: 지금 순위의 역순(standingsNow가 동률을 전년도 순위로 가른다). 새해 뒤 경기가 없으면 지난 시즌 순위 역순 */
@@ -18,9 +18,10 @@ function wvStart(p,paid){ if(!wvNeed(p))return; const from=p.team;
 function wvOrder(){ const ord=(G.last&&G.last.order)||[]; const prv=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?-1:i; }; const rec=(G.sea&&G.sea.rec)||{}; const pct=id=>{ const r=rec[id]; const n=r?r.w+r.l:0; return n?r.w/n:.5; };
   return G.teams.map(t=>t.id).sort((a,b)=>pct(a)-pct(b)||prv(b)-prv(a)); }
 function wvBar(tid){ const own=domestic(tid).filter(q=>!q.ys).map(ovr).sort((a,b)=>b-a); return (own[Math.min(own.length-1,30)]||35)+2; }
-function wvWants(tid,p,w){ if(tid===w.from||rosterN(tid)>=ROSTER_MAX-1)return false; return ovr(p)>=wvBar(tid)&&p.age<=34&&aiVal(team(tid),p)>=1&&capPayAs(tid,[p.id],[])<=capOf(sponSeason())*aiCapMul(team(tid)); } /* 상위 40명 기준(안 들어가면 합계 그대로) */
+function wvWants(tid,p,w){ if(tid===w.from||rosterN(tid)>=ROSTER_MAX)return false; /* 한 자리만 있어도 신청(우리와 같은 기준, 검수 11-07) */ return ovr(p)>=wvBar(tid)&&p.age<=34&&aiVal(team(tid),p)>=1&&capPayAs(tid,[p.id],[])<=capOf(sponSeason())*aiCapMul(team(tid)); } /* 상위 40명 기준(안 들어가면 합계 그대로) */
 function wvList(){ return Object.values(G.players).filter(p=>p.wv&&p.team==null); }
 function wvClaim(id){ const p=G.players[id]; const w=p&&p.wv; if(!w||p.team!=null)return '웨이버 공시 중인 선수가 아닙니다.'; if(w.from===G.user)return '우리 구단이 공시한 선수는 신청할 수 없습니다.';
+  if(G.day>=w.end)return `신청 기한(${dmd(w.end-1)})이 지났습니다. 오늘 우선권을 정합니다.`; /* 마감일(공시+7일)에는 결정만(검수 11-07) */
   if(!w.ok)return '양도 가능 기간 밖(7월 25일 이후~포스트시즌)에 공시된 선수라 양수 신청을 받지 않습니다.';
   const i=w.cl.indexOf(G.user); if(i>=0){ w.cl.splice(i,1); return `${p.name} 양수 신청을 취소했습니다.`; }
   if(rosterN(G.user)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;

@@ -46,11 +46,11 @@ function faAnnounce(){ if(!G.fa)return; G.fa.open=true; try{ agYear(); agPitch()
    고액 연봉(3억 원 이상) 선수가 다치지 않았는데 1군에 없으면 하루 연봉의 1/600을 감액한다(타자는 개막부터, 투수는 개막 7경기 뒤부터). */
 function regDaily(){ const c=G.cal; if(!c||G.day<c.open||G.day>c.end)return; if(G.day===c.open)G.regTrk=G.year; if(G.regTrk!==G.year||!entryOn())return; G.sea.cut=G.sea.cut||{};
   for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year)continue; const R=p.regD&&p.regD.y===G.year?p.regD:(p.regD={y:G.year,n:0,il:0});
-    const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(p.e1){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; p.e1L=G.day; continue; } if(p.ys||milServing(p))continue; /* 육성선수(정식 등록 전)·입대한 선수는 대표 차출·재활 인정 없음 */ if(nt){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; continue; }
-    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&R.il<30){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; R.il++; } continue; }
+    const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(milServing(p))continue; /* 복무 중이면 1군 표시가 남아 있어도 등록일 없음(검수 11-07) */ if(p.e1){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; p.e1L=G.day; p.e1T=p.team; continue; } if(p.ys)continue; /* 육성선수(정식 등록 전)·입대한 선수는 대표 차출·재활 인정 없음 */ if(nt){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; continue; }
+    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&(p.e1T??p.team)===p.team&&R.il<30){ /* 부상자 등록 인정은 그 구단에서 1군이었다가 다친 경우만(검수 11-07) */ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; R.il++; } continue; }
     if(!p.foreign&&p.sal>=300&&!milServing(p)&&!p.ys&&(!p.isP||G.day>=c.open+8)){ G.sea.cut[p.team]=(G.sea.cut[p.team]||0)+p.sal/600; R.cut=(R.cut||0)+1; } } }
 /* 그 구단 소속으로 쌓은 등록일수(2차 드래프트 의무 등록) */
-function regNT(p,tid){ const R=p.regD&&p.regD.y===G.year?p.regD:null; return R?(R.tm?(R.tm[tid]||0):R.n):0; }
+function regNT(p,tid){ const R=p.regD&&p.regD.y===G.year?p.regD:null; return R?(R.tm?(R.tm[tid]||0):(p.team===tid&&!(p.tLog||[]).some(x=>x.y===G.year&&G.cal&&x.d>=G.cal.open&&x.d<=G.cal.end)?R.n:0)):0; } /* 구단별 기록이 없는 옛 저장: 그 정규시즌 중 이적이 없을 때만 전부 그 구단 몫(검수 11-07) */
 function regN(p){ return p.regD&&p.regD.y===G.year?p.regD.n:0; }
 /* 1시즌 인정: 등록 145일 이상. 모자란 해의 등록일수는 쌓아 두었다가 합쳐서 145일이 되면 1시즌(KBO). 등록일수를 세지 못한 해(예전 저장)는 예전 기준(출전량)으로 본다 */
 function svcCredit(p){ if(p.foreign){ p.svc++; return; } if(G.regTrk===G.year){ const n=regN(p); if(n>=145){ p.svc++; return; } p.svcD=(p.svcD||0)+n; if(p.svcD>=145){ p.svcD-=145; p.svc++; } return; } if(faSvcOk(p))p.svc++; }

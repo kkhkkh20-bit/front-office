@@ -9751,7 +9751,7 @@ function payYear(tid,y){ return Math.round(sum(Object.values(G.players).filter(p
 function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; { const C=G.contract, n=C&&!C.done&&C.neg&&C.neg[p.id]; if(n&&n.st==='open'&&n.cur!=null)return n.cur; if(n&&n.st==='arb'&&n.arb)return n.arb.club; } /* 조정 중: 판정 전까지 구단안(양측 제시액 중 하나, 검수 11-06) */ /* 협상 중이면 마지막 제시액(확정 미리보기와 같게) */ return p.newSal??p.sal; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
 function capPayAs(tid,inIds,outIds){ const fid=franId(tid,outIds,inIds); const out=new Set(outIds||[]);
-  { const y=sponSeason(); if(y>G.year){ const L=domPayNext(tid,y).filter(p=>!out.has(p.id)&&!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)); for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||(p.draft&&p.draft.y===y-1))continue; L.push(capAmt(p,tid,salNext(p),fid)); } return sum(L.sort((a,b)=>b-a).slice(0,40)); } } /* 결산 뒤 겨울: 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06) */ const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
+  { const y=sponSeason(); if(y>G.year){ const L=domPayNext(tid,y).filter(p=>!out.has(p.id)&&!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)); for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||(p.draft&&p.draft.y===y-1))continue; const wc=p.wv&&p.team==null?p.wv.c:null; L.push(capAmt(p,tid,wc?(wc.extNext?wc.extNext.annual:wc.sal):salNext(p),fid)); } /* 웨이버 양수: 승계하는 다음 시즌 계약(검수 11-07) */ return sum(L.sort((a,b)=>b-a).slice(0,40)); } } /* 결산 뒤 겨울: 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06) */ const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
   for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||isRookie(p))continue; const wc=p.wv&&p.team==null?p.wv.c:null; L.push(capAmt(p,tid,wc?wc.sal+(wc.capB&&wc.capB.until>=G.year?wc.capB.a:0):p.newSal??p.sal,fid)); } /* 웨이버 양수는 계약금 상한 반영액까지 승계하므로 미리보기에도 넣는다(검수 11-06) */ /* 재계약 합의 연봉은 이적 때 확정되므로 그 금액으로(mvLog) */ return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
 function capPayNext(tid){ const fid=franId(tid), y=sponSeason(); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
@@ -10894,11 +10894,11 @@ function faAnnounce(){ if(!G.fa)return; G.fa.open=true; try{ agYear(); agPitch()
    고액 연봉(3억 원 이상) 선수가 다치지 않았는데 1군에 없으면 하루 연봉의 1/600을 감액한다(타자는 개막부터, 투수는 개막 7경기 뒤부터). */
 function regDaily(){ const c=G.cal; if(!c||G.day<c.open||G.day>c.end)return; if(G.day===c.open)G.regTrk=G.year; if(G.regTrk!==G.year||!entryOn())return; G.sea.cut=G.sea.cut||{};
   for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year)continue; const R=p.regD&&p.regD.y===G.year?p.regD:(p.regD={y:G.year,n:0,il:0});
-    const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(p.e1){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; p.e1L=G.day; continue; } if(p.ys||milServing(p))continue; /* 육성선수(정식 등록 전)·입대한 선수는 대표 차출·재활 인정 없음 */ if(nt){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; continue; }
-    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&R.il<30){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; R.il++; } continue; }
+    const nt=p.ntAway>G.day&&p.ntFrom<=G.day; if(milServing(p))continue; /* 복무 중이면 1군 표시가 남아 있어도 등록일 없음(검수 11-07) */ if(p.e1){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; p.e1L=G.day; p.e1T=p.team; continue; } if(p.ys)continue; /* 육성선수(정식 등록 전)·입대한 선수는 대표 차출·재활 인정 없음 */ if(nt){ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; continue; }
+    if(p.injOut>0){ const lh=(p.injHist||[]).slice(-1)[0]; if(lh&&p.e1L!=null&&p.e1L>=lh.d-1&&(p.e1T??p.team)===p.team&&R.il<30){ /* 부상자 등록 인정은 그 구단에서 1군이었다가 다친 경우만(검수 11-07) */ R.n++; (R.tm=R.tm||{})[p.team]=(R.tm[p.team]||0)+1; R.il++; } continue; }
     if(!p.foreign&&p.sal>=300&&!milServing(p)&&!p.ys&&(!p.isP||G.day>=c.open+8)){ G.sea.cut[p.team]=(G.sea.cut[p.team]||0)+p.sal/600; R.cut=(R.cut||0)+1; } } }
 /* 그 구단 소속으로 쌓은 등록일수(2차 드래프트 의무 등록) */
-function regNT(p,tid){ const R=p.regD&&p.regD.y===G.year?p.regD:null; return R?(R.tm?(R.tm[tid]||0):R.n):0; }
+function regNT(p,tid){ const R=p.regD&&p.regD.y===G.year?p.regD:null; return R?(R.tm?(R.tm[tid]||0):(p.team===tid&&!(p.tLog||[]).some(x=>x.y===G.year&&G.cal&&x.d>=G.cal.open&&x.d<=G.cal.end)?R.n:0)):0; } /* 구단별 기록이 없는 옛 저장: 그 정규시즌 중 이적이 없을 때만 전부 그 구단 몫(검수 11-07) */
 function regN(p){ return p.regD&&p.regD.y===G.year?p.regD.n:0; }
 /* 1시즌 인정: 등록 145일 이상. 모자란 해의 등록일수는 쌓아 두었다가 합쳐서 145일이 되면 1시즌(KBO). 등록일수를 세지 못한 해(예전 저장)는 예전 기준(출전량)으로 본다 */
 function svcCredit(p){ if(p.foreign){ p.svc++; return; } if(G.regTrk===G.year){ const n=regN(p); if(n>=145){ p.svc++; return; } p.svcD=(p.svcD||0)+n; if(p.svcD>=145){ p.svcD-=145; p.svc++; } return; } if(faSvcOk(p))p.svc++; }
@@ -15388,7 +15388,7 @@ function freeList(){ return Object.values(G.players).filter(p=>isFree(p)&&!p.wv)
 /* 무적 선수의 요구 연봉: 시장가의 35%와 직전 연봉의 60% 중 낮은 쪽, 최저연봉 이상 */
 function freeAsk(p){ return round5(Math.max(MIN_SAL,Math.min(marketSal(ovr(p)+pvShift(p))*.35,(p.sal||MIN_SAL)*.6))); }
 function freeOpen(){ const per=period(); return !((per==='season'&&G.day>foreignDL())||per==='post'||preSettle()); } /* 8월 15일 뒤부터 포스트시즌이 끝날 때까지 등록 불가 */
-function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p))return '계약할 수 없는 선수입니다.'; if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return `방출한 구단은 1년 동안 ${p.name}과(와) 다시 계약할 수 없습니다.`; /* 방출 후 헐값 재계약 반복 방지 */ if(p.wv)return `${p.name}은(는) ${dmd(p.wv.end)}까지 웨이버 공시 중입니다. 영입·계약 → 웨이버·2차에서 양수를 신청하세요.`; if(!freeOpen())return '8월 15일 이후에는 시즌이 끝날 때까지 새 선수를 등록할 수 없습니다.';
+function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p))return '계약할 수 없는 선수입니다.'; if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return `방출한 구단은 1년 동안 ${p.name}과(와) 다시 계약할 수 없습니다.`; /* 방출 후 헐값 재계약 반복 방지 */ if(p.wv)return `${p.name}은(는) ${dmd(p.wv.end-1)}까지 웨이버 공시 중입니다. 영입·계약 → 웨이버·2차에서 양수를 신청하세요.`; if(!freeOpen())return '8월 15일 이후에는 시즌이 끝날 때까지 새 선수를 등록할 수 없습니다.';
   if(rosterN(tid)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;
   const sal=freeAsk(p); mvLog('무적 영입',p,null,tid,`연 ${money(sal)}`,sal); p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100);
   story(p,`${tname(tid)}와(과) 계약 (무적 선수, 연 ${money(sal)})`,'move');
@@ -15795,8 +15795,8 @@ function sponPitchOld(){ for(const tid in (G.sponT||{})){ const S=G.sponT[tid]; 
 function mvLog(type,p,from,to,note,amt){ if(!p)return; G.mvN=(G.mvN||0)+1; if((from!=null||to!=null)&&from!==to&&!p.foreign){ /* 방출·무적 영입도 남긴다: 시즌 마지막 날 방출해도 그해 연봉은 그날까지 낸다 */ const L=p.tLog=(p.tLog||[]).filter(x=>x.y>=G.year-1); L.push({y:G.year,d:G.day,f:from,t:to}); } /* 구단 사이 이동: 그해 연봉을 소속 기간대로 나눈다(payYear) */ /* 선수 이동 횟수: 전력표 캐시를 다시 계산하는 기준 */
   { const C=G.contract; if(to!==from&&C&&!C.done&&from!=null&&from===(C.tid??G.user)&&(C.ended||[]).includes(p.id)){ const n=C.neg&&C.neg[p.id]; const v=n?(n.st==='ok'?p.newSal:(n.cur??n.off)):p.newSal; if(v!=null){ p.sal=Math.max(MIN_SAL,v); } delete p.newSal; if(C.neg)delete C.neg[p.id]; C.ended=C.ended.filter(x=>x!==p.id); } } /* 연봉 협상 중 떠나는 선수: 그때까지의 구단 제시액(합의했으면 합의액)으로 새 연봉을 확정 */ if(to!==from){ p.e1=false; delete p.downDay; /* 1군 등록은 새 구단이 다시 정한다(엔트리 한도 초과 방지). 말소 10일 규정은 같은 구단 재등록이라 새 구단은 바로 올릴 수 있다 */
     delete p.listed; delete p.lw; delete p.urgent; delete p.promise; delete p.pconv; delete p.treq; delete p.aiListed; /* 옛 구단·단장이 건 표시는 끝난다 */
-    if(p.extNext&&p.extNext.terms)p.extNext.terms=null; /* 미리 맺은 다년계약의 구단 한정 조건(거부권·옵션·약속)은 옮기면 끝난다 */
-    if(from===G.user&&(G.ovs||[]).some(x=>x.pid===p.id&&!x.go))try{ setOvs(p.id,null); }catch(e){} } try{ if(to!=null&&to!==from&&ACQ_K[type])acqStamp(p,type,to,{from:from??null}); }catch(e){} const L=G.moves=G.moves||[]; L.unshift({y:G.year,d:G.day,t:type,pid:p.id,n:p.name,pos:posLabel(p),age:p.age,o:Math.round(ovr(p)),from:from??null,to:to??null,note:note||'',amt:amt||0}); if(L.length>600)L.length=600; }
+    if(p.extNext&&p.extNext.terms){ if(type==='2차 드래프트'||type==='웨이버 양수')delete p.extNext.terms.role; else p.extNext.terms=null; } /* 트레이드·방출이면 미리 맺은 다년계약의 구단 한정 조건은 끝난다. 계약을 통째로 승계하는 2차 드래프트·웨이버는 옵션·거부권을 잇고 주전 약속만 끝(검수 11-07) */
+    if(from===G.user&&(G.ovs||[]).some(x=>x.pid===p.id&&!x.go))try{ setOvs(p.id,null); }catch(e){} } try{ if(to!=null&&to!==from&&ACQ_K[type]&&type!=='2차 드래프트')acqStamp(p,type,to,{from:from??null}); /* 2차 드래프트는 지명 때 라운드와 함께 한 번 남긴다(검수 11-07: 두 번 기록·라운드 덮어씀) */ }catch(e){} const L=G.moves=G.moves||[]; L.unshift({y:G.year,d:G.day,t:type,pid:p.id,n:p.name,pos:posLabel(p),age:p.age,o:Math.round(ovr(p)),from:from??null,to:to??null,note:note||'',amt:amt||0}); if(L.length>600)L.length=600; }
 /* 지금 이적시장 구간의 시작일: 시즌 중이면 개막일, 아니면 11월 1일 */
 function mvWinStart(){ const per=period(); if(per==='season'||per==='post')return G.cal.open; return G.day>=KD(11,1)?KD(11,1):dnum(G.year-1,11,1); }
 function mvWindow(){ const s=mvWinStart(); return (G.moves||[]).filter(m=>m.d>=s); }
@@ -19060,7 +19060,7 @@ function wvNeed(p){ return !!p&&p.team!=null&&!p.foreign&&!p.ys&&!p.prospect&&!(
 function wvClaimable(){ const per=period(); if(per==='post'||preSettle())return false; return per==='season'?G.day+WV_DAYS<=tradeDL():true; }
 /* toFree가 계약을 지우기 전에 부른다: 양수 구단이 이어받을 계약을 남겨 둔다 */
 function wvStart(p,paid){ if(!wvNeed(p))return; const from=p.team;
-  p.wv={from,d:G.day,end:G.day+WV_DAYS,ok:wvClaimable(),paid:paid||0,cl:[],c:{role:p.role,sal:p.sal,yrs:p.yrs,faC:!!p.faC,ext:!!p.ext,cyrs:p.cyrs,extNext:p.extNext,...(p.ctT===p.team?{opt:p.opt,cOpt:p.cOpt,pOut:p.pOut,cOptAdd:p.cOptAdd,ntc:p.ntc,capB:p.capB}:{})}}; /* 남은 계약 승계: 성과 옵션·구단 옵션·옵트아웃도 함께 */
+  p.wv={from,d:G.day,end:G.day+WV_DAYS,ok:wvClaimable(),paid:paid||0,cl:[],c:{role:p.role,sal:p.sal,yrs:p.yrs,faC:!!p.faC,ext:!!p.ext,cyrs:p.cyrs,extNext:p.extNext?JSON.parse(JSON.stringify(p.extNext)):undefined, /* 방출 기록이 원본을 바꾸기 전에 복사(검수 11-07) */...(p.ctT===p.team?{opt:p.opt,cOpt:p.cOpt,pOut:p.pOut,cOptAdd:p.cOptAdd,ntc:p.ntc,capB:p.capB}:{})}}; /* 남은 계약 승계: 성과 옵션·구단 옵션·옵트아웃도 함께 */
   if(ovr(p)>=40)wire('웨이버',`${tname(from)}, ${p.name}(${posLabel(p)}) 웨이버 공시`,{tid:from,ref:p.id});
   if(from!==G.user&&p.wv.ok&&!G.unemp&&ovr(p)>=wvBar(G.user))mail('운영팀',`웨이버 공시: ${tshort(from)} ${p.name}`,`${tname(from)}이(가) ${p.name}(${posLabel(p)}, ${p.age}세, 연 ${money(p.sal)})을(를) 웨이버 공시했습니다. ${dmd(p.wv.end-1)}까지 양수를 신청하면 ${dmd(p.wv.end)}에 정하며, 신청한 구단 중 성적이 낮은 구단이 남은 계약을 이어받아 데려갑니다.`,{kind:'트레이드',ref:p.id,acts:[{l:'웨이버 보기',a:'go',v:'transfer:kbo'}]}); }
 /* 우선순위: 지금 순위의 역순(standingsNow가 동률을 전년도 순위로 가른다). 새해 뒤 경기가 없으면 지난 시즌 순위 역순 */
@@ -19068,9 +19068,10 @@ function wvStart(p,paid){ if(!wvNeed(p))return; const from=p.team;
 function wvOrder(){ const ord=(G.last&&G.last.order)||[]; const prv=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?-1:i; }; const rec=(G.sea&&G.sea.rec)||{}; const pct=id=>{ const r=rec[id]; const n=r?r.w+r.l:0; return n?r.w/n:.5; };
   return G.teams.map(t=>t.id).sort((a,b)=>pct(a)-pct(b)||prv(b)-prv(a)); }
 function wvBar(tid){ const own=domestic(tid).filter(q=>!q.ys).map(ovr).sort((a,b)=>b-a); return (own[Math.min(own.length-1,30)]||35)+2; }
-function wvWants(tid,p,w){ if(tid===w.from||rosterN(tid)>=ROSTER_MAX-1)return false; return ovr(p)>=wvBar(tid)&&p.age<=34&&aiVal(team(tid),p)>=1&&capPayAs(tid,[p.id],[])<=capOf(sponSeason())*aiCapMul(team(tid)); } /* 상위 40명 기준(안 들어가면 합계 그대로) */
+function wvWants(tid,p,w){ if(tid===w.from||rosterN(tid)>=ROSTER_MAX)return false; /* 한 자리만 있어도 신청(우리와 같은 기준, 검수 11-07) */ return ovr(p)>=wvBar(tid)&&p.age<=34&&aiVal(team(tid),p)>=1&&capPayAs(tid,[p.id],[])<=capOf(sponSeason())*aiCapMul(team(tid)); } /* 상위 40명 기준(안 들어가면 합계 그대로) */
 function wvList(){ return Object.values(G.players).filter(p=>p.wv&&p.team==null); }
 function wvClaim(id){ const p=G.players[id]; const w=p&&p.wv; if(!w||p.team!=null)return '웨이버 공시 중인 선수가 아닙니다.'; if(w.from===G.user)return '우리 구단이 공시한 선수는 신청할 수 없습니다.';
+  if(G.day>=w.end)return `신청 기한(${dmd(w.end-1)})이 지났습니다. 오늘 우선권을 정합니다.`; /* 마감일(공시+7일)에는 결정만(검수 11-07) */
   if(!w.ok)return '양도 가능 기간 밖(7월 25일 이후~포스트시즌)에 공시된 선수라 양수 신청을 받지 않습니다.';
   const i=w.cl.indexOf(G.user); if(i>=0){ w.cl.splice(i,1); return `${p.name} 양수 신청을 취소했습니다.`; }
   if(rosterN(G.user)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;
@@ -19115,7 +19116,7 @@ function sdSubmit(ids){ const S=G.sd2; if(!S||S.stage!=='protect'||G.unemp)retur
   const L=[...new Set(ids)].filter(x=>pool.has(x)).slice(0,SD_PROT); if(!L.length&&pool.size)return `보호선수를 한 명 이상 고르세요. 내지 않으면 ${dmd(S.exp)}에 운영팀이 대신 정합니다.`; /* 빈 명단은 제출로 보지 않는다(검수 11-06) */ S.prot[G.user]=L; S.sub=true; return `보호선수 ${S.prot[G.user].length}명 명단을 냈습니다. ${dmd(S.exp)}에 지명이 시작됩니다. 그 전까지는 고칠 수 있습니다.`; }
 function sdStart(){ const S=G.sd2; for(const t of G.teams)if(t.id!==ME())S.prot[t.id]=sdProtAI(t.id); /* 보호 기간에 바뀐 AI 선수단을 반영해 지명 시작 때 확정 */ if(!S.prot[G.user]&&!G.unemp){ S.prot[G.user]=sdProtAI(G.user); note('드래프트','2차 드래프트 보호선수 명단을 운영팀이 능력 순으로 냈습니다.'); }
   S.stage='pick'; sdRun(); }
-function sdAiPick(tid,rd){ if(rosterN(tid)>=ROSTER_MAX)return null; const t=team(tid); let best=null,bv=-1e9; for(const q of sdCands(tid)){ const v=aiVal(t,q); if(v>bv){ bv=v; best=q; } } return best&&bv>=sdFee(rd)/100?best.id:null; }
+function sdAiPick(tid,rd){ if(rosterN(tid)>=ROSTER_MAX)return null; const t=team(tid); if((t.cash||0)<sdFee(rd))return null; /* 양도금을 낼 현금(검수 11-07) */ let best=null,bv=-1e9; for(const q of sdCands(tid)){ if(capPayAs(tid,[q.id],[])>capOf(sponSeason())*aiCapMul(t))continue; /* 다음 시즌 샐러리캡 안에서만 */ const v=aiVal(t,q); if(v>bv){ bv=v; best=q; } } return best&&bv>=sdFee(rd)/100?best.id:null; }
 function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.rd); const keep=q.ctT===from; delete q.capB; delete q.roleProm; q.team=s.tid; if(keep)q.ctT=s.tid; else termsClear(q); /* 계약은 이어진다: 성과 옵션·구단 옵션·옵트아웃·거부권도 승계(계약금 상한 반영·주전 약속은 원구단 몫) */ q.listed=false; if(from===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===pid)delete G.lineup[k];
   payOut(s.tid,fee,'comp'); payIn(from,fee); Object.assign(s,{pid,from,fee,nm:q.name});
   if(s.rd<=SD_REG.length)q.sd2={y:G.year,rd:s.rd,from,to:s.tid,fee,need:SD_REG[s.rd-1],reg:0};
@@ -19139,7 +19140,7 @@ function sdRegCheck(day){ if(!G.cal||day!==G.cal.end+1)return;
   for(const p of Object.values(G.players)){ const o=p.sd2; if(!o||o.y>=G.year)continue; if(p.team!==o.to){ delete p.sd2; continue; }
     o.reg+=G.regTrk===G.year?regNT(p,o.to):o.need; /* 지명 구단에서 등록한 날만 */ /* 시즌 중 불러온 옛 저장은 등록일수를 몰라 채운 것으로 본다 */
     if(o.reg>=o.need){ delete p.sd2; continue; } if(G.year<o.y+2)continue; delete p.sd2;
-    if(o.from===G.user&&!G.unemp&&rosterN(G.user)<ROSTER_MAX){ evNew('sd2back',`${p.name} 2차 드래프트 복귀 여부`,`${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})이(가) ${tname(o.to)}에서 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못했습니다. 원소속 구단으로서 복귀를 받을지 정해야 합니다.`,[{l:'복귀를 받는다',fx:`양도금 절반 ${money(Math.round(o.fee/2))}을(를) ${tshort(o.to)}에 돌려줍니다.`},{l:'받지 않는다',fx:'선수는 자유계약으로 풀립니다.'}],{def:0,exp:5,from:'운영팀',ref:p.id,data:{pid:p.id,o}}); continue; } /* 우리 구단으로 돌아오는 선수는 단장이 정한다 */
+    if(o.from===G.user&&!G.unemp){ evNew('sd2back',`${p.name} 2차 드래프트 복귀 여부`,`${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})이(가) ${tname(o.to)}에서 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못했습니다. 원소속 구단으로서 복귀를 받을지 정해야 합니다.`,[{l:'복귀를 받는다',fx:`양도금 절반 ${money(Math.round(o.fee/2))}을(를) ${tshort(o.to)}에 돌려줍니다.`},{l:'받지 않는다',fx:'선수는 자유계약으로 풀립니다.'}],{def:0,exp:5,from:'운영팀',ref:p.id,data:{pid:p.id,o}}); continue; } /* 우리 구단으로 돌아오는 선수는 단장이 정한다 */
     sdBackDo(p,o,rosterN(o.from)<ROSTER_MAX&&(o.from===ME()||aiVal(team(o.from),p)>=0)); } }
 function sdBackDo(p,o,back){
   if(back){ const r=Math.round(o.fee/2); payOut(o.from,r,'comp'); payIn(o.to,r); { const keep=p.ctT===o.to; delete p.capB; delete p.roleProm; p.team=o.from; if(keep)p.ctT=o.from; else termsClear(p); } /* 지명 이적 때처럼 남은 계약 조건(옵션·거부권)은 이어진다(검수 11-06) */ p.listed=false; if(o.to===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];
@@ -26696,7 +26697,7 @@ function kboView(){ return wvBox()+sdBox(); }
 function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
   const row=p=>{ const w=p.wv, on=w.cl.includes(G.user);
     const btn=w.from===G.user?'<span class="pill">우리가 공시</span>':!w.ok?'<span class="pill">양수 신청 불가(기간 밖)</span>':G.unemp?'':`<button class="btn small ${on?'':'primary'}" data-a="wvClaim" data-v="${p.id}">${on?'신청 취소':'양수 신청'}</button>`;
-    return `<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(w.c.sal)}${w.c.yrs>1?` · ${w.c.yrs}년 남음`:''} · 전 ${esc(tshort(w.from))} · ${dsh(w.end)}까지</span></span>${btn}</div>`; };
+    return `<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 능력 ${dvo(p)} · 연 ${money(w.c.sal)}${w.c.yrs>1?` · ${w.c.yrs}년 남음`:''} · 전 ${esc(tshort(w.from))} · ${dsh(w.end-1)}까지 신청</span></span>${btn}</div>`; };
   const log=(G.wvLog||[]).slice(0,8).map(r=>`<p class="small">${dsh(r.d)} <button class="lnk" data-a="player" data-v="${r.pid}">${esc(r.n)}</button> ${esc(tshort(r.from))} → ${r.to!=null?esc(tshort(r.to))+' (계약 승계)':'자유계약'}</p>`).join('');
   const rule=`KBO 규약: 시즌 중·겨울에 방출한 등록 선수는 ${WV_DAYS}일 동안 웨이버 공시됩니다. 양수를 신청한 구단 중 지금 성적이 낮은 구단이 남은 계약을 그대로 이어받고, 방출한 구단은 낸 정산금을 돌려받습니다. 아무도 신청하지 않으면 자유계약 선수가 됩니다. 7월 25일 이후 공시는 양수 신청을 받지 않고, 11월 보류선수 정리는 웨이버 없이 바로 자유계약입니다.`;
   if(!L.length&&!log)return `<p class="small muted"><b>웨이버 공시</b> 지금 공시 중인 선수가 없습니다.${hiI(rule)}</p>`; /* 비어 있으면 칸 대신 한 줄 */
@@ -26722,7 +26723,7 @@ function sdBox(){ const S=G.sd2&&G.sd2.y===G.year?G.sd2:null;
   return csec(`${S.y} 2차 드래프트 · ${S.stage==='done'?'종료':'지명 중'}${rule}`,`${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}`); }
 Object.assign(A,{
   wvClaim(v){ toast(wvClaim(+v)); save(); render(); },
-  sdTog(v){ const id=+v; const L=UI.sdProt||[]; const i=L.indexOf(id); if(i>=0)L.splice(i,1); else if(L.length<SD_PROT)L.push(id); else { toast(`보호선수는 ${SD_PROT}명까지입니다. 먼저 한 명을 빼세요.`); return; } UI.sdProt=L; render(); },
+  sdTog(v){ const id=+v; if(UI.sdProt)UI.sdProt=UI.sdProt.filter(x=>G.players[x]&&G.players[x].team===G.user); /* 그사이 떠난 선수는 명단에서 뺀다(검수 11-07: 34/35인데 추가가 막힘) */ const L=UI.sdProt||[]; const i=L.indexOf(id); if(i>=0)L.splice(i,1); else if(L.length<SD_PROT)L.push(id); else { toast(`보호선수는 ${SD_PROT}명까지입니다. 먼저 한 명을 빼세요.`); return; } UI.sdProt=L; render(); },
   sdAuto(){ UI.sdProt=sdProtAI(G.user); render(); },
   sdSubmit(){ toast(sdSubmit(UI.sdProt||[])); save(); render(); },
   sdPick(v){ toast(sdPick(v==='skip'?null:+v)); save(); render(); },
