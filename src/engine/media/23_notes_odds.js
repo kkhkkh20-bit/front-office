@@ -138,14 +138,14 @@ let _poC={k:null};
 function mulberry(a){ return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function playoffOdds(){
   if(period()!=='season')return null; const k=G.year+':'+G.day; if(_poC.k===k)return _poC.v;
-  const rec=G.sea.rec; if(sum(G.teams.map(t=>rec[t.id].w+rec[t.id].l))/G.teams.length<20){ _poC={k,v:null}; return null; } /* 20경기 전에는 확률을 내지 않는다 */
+  const rec=G.sea.rec; if(sum(G.teams.map(t=>rec[t.id].w+rec[t.id].l+(rec[t.id].t||0)))/G.teams.length<20){ _poC={k,v:null}; return null; } /* 20경기 전에는 확률을 내지 않는다(무승부도 치른 경기, 검수 11-06) */
   const str0=G.teams.map(t=>{ const r=rec[t.id]; return (r.w+(t.expW||.5)*60)/(r.w+r.l+60); });
   const rem=[]; for(const d in G.cal.sched){ if(+d>G.day)for(const m of G.cal.sched[d])rem.push(m); }
   const n=G.teams.length, N=400, top5=new Array(n).fill(0), first=new Array(n).fill(0), rnd=mulberry(G.day*7919+G.year);
   const w0=G.teams.map(t=>rec[t.id].w), l0=G.teams.map(t=>rec[t.id].l);
   for(let s=0;s<N;s++){ const w=w0.slice(), l=l0.slice(); const str=str0.map(x=>clamp(x+(rnd()+rnd()+rnd()-1.5)*.06,.25,.75)); /* 팀 실력 자체의 불확실성 */
     for(const [h,a] of rem){ const ph=str[h], pa=str[a]; const p=ph*(1-pa)/(ph*(1-pa)+pa*(1-ph))+.015; if(rnd()<p){w[h]++;l[a]++;} else {w[a]++;l[h]++;} }
-    const ord=[...Array(n).keys()].sort((x,y)=>(w[y]/(w[y]+l[y]))-(w[x]/(w[x]+l[x]))||rnd()-.5);
+    const tb=G.teams.map(()=>rnd()), pc=i=>w[i]+l[i]?w[i]/(w[i]+l[i]):.5; const ord=[...Array(n).keys()].sort((x,y)=>pc(y)-pc(x)||tb[x]-tb[y]); /* 동률은 팀마다 한 번 뽑은 값으로 가른다(정렬 중 난수 비교는 한쪽으로 치우쳤다, 검수 11-06) */
     for(let i=0;i<5;i++)top5[ord[i]]++; first[ord[0]]++; }
   const v=G.teams.map(t=>({tid:t.id,ps:top5[t.id]/N,first:first[t.id]/N,str:str0[t.id]})); _poC={k,v}; return v; }
 

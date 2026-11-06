@@ -23,7 +23,7 @@ function budget(){ const t=team(G.user); const ci=capInfo(G.user); const S=G.spe
      시즌 중에 신뢰가 오르거나 수입이 늘어도 단장이 쓸 수 있는 돈(예산 여유)은 늘지 않는다. 늘어난 수입은 구단(모기업) 몫이고, 구단주에게 추가 지원을 요청할 근거가 된다.
      예산을 늘리는 길은 구단주 승인(추가 지원)뿐이다. 실제 결산(적자 보전)은 실제 수입·지출로 한다 */
   const fy=sponSeason(); const grantNow=t.grant&&t.grant.y===fy?t.grant.amt:0;
-  let lock=G.bLock&&G.bLock.fy===fy&&G.bLock.tid===G.user?G.bLock:null; if(!lock&&!G.unemp)lock=G.bLock={fy,tid:G.user,I,capB:cap-grantNow,gf,d:G.day};
+  const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf,d:G.day};
   const IL=lock?lock.I:I, capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round(lock.gf*lock.capB)+grantNow:goalSup);
   const gapL=E-IL, selfCL=gapL>0?Math.min(gapL,Math.max(0,t.cash-3000)*.5):0, needL=gapL-selfCL;
   return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,cash:t.cash,endCash:t.cash+I+support-E,
@@ -39,7 +39,7 @@ function foundReserve(tid){ tid=tid??G.user; const C=G.coach&&G.coach[tid]; let 
   if(!G.mgr[tid]||G.mgr[tid].interim){ const L=(G.mmarket||[]).map(m=>m.sal).sort((a,b)=>a-b); vac+=L.length?L[Math.floor(L.length/2)]:300; }
   const rem=Math.max(0,finYearEnd()-G.day)/365; const cap=supportCap(team(tid)); const cush=Math.max(1500,Math.round(cap*.08));
   return {vac:Math.round(vac*rem),cush,tot:Math.round(vac*rem)+cush}; } /* vac: 감독·코치 빈자리 채용비 */
-function planSup(){ delete G.supPlan; delete G.bLock; try{ const b=budget(); let gf=b.goalFrac; if(G.startY===G.year&&b.cap){ const want=(b.gap+foundReserve().tot)/b.cap; gf=Math.round(clamp(Math.max(gf,want),.2,1)*100)/100; } G.supPlan={y:G.year,gf}; delete G.bLock; }catch(e){} } /* 창단 첫해는 드래프트 직후 예산 여유가 마이너스로 시작하지 않게 지원 목표에 여유분을 둔다 */
+function planSup(){ delete G.supPlan; delete G.bLock; if(G.bLocks)delete G.bLocks[G.user]; try{ const b=budget(); let gf=b.goalFrac; if(G.startY===G.year&&b.cap){ const want=(b.gap+foundReserve().tot)/b.cap; gf=Math.round(clamp(Math.max(gf,want),.2,1)*100)/100; } G.supPlan={y:G.year,gf}; delete G.bLock; }catch(e){} } /* 창단 첫해는 드래프트 직후 예산 여유가 마이너스로 시작하지 않게 지원 목표에 여유분을 둔다 */
 function projSupport(){ const b=budget(); if(b.indie||!b.cap)return 0; return clamp((b.gap-(b.selfC||0))/b.cap,0,2); }
 /* 코치진 정기 보고: 단장이 처리할 일을 골라 버튼과 함께 보낸다 */
 function staffReport(when){ if(G.unemp||!G.mgr[G.user])return; const tid=G.user; const ps=playersOf(tid); const items=[], acts=[];
