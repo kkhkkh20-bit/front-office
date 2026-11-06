@@ -54,7 +54,7 @@ const hand=p=>p.isP?`${p.th}투`:`${p.th}투${p.bt}타`;
 const recStr=r=>`${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''}`;
 /* 결과를 먼저 계산해 둔 우리 경기: 실시간 진행 중이거나 중계를 끝까지 보기(또는 닫기) 전에는 그 경기를 돌려준다. 결과(전적·순위·날짜 띠 점수)는 그동안 감춘다 */
 function spoilG(){ if(!G)return null; if(G.live){ const g=G.games[G.live.i]; return g&&G.live.upto<g.line.a.length+g.line.h.length?g:null; }
-  if(!UI.cast&&!UI.castRet&&G.castHold&&!UI.title){ const H=G.castHold; if(G.games[H.g]){ UI.cast={g:H.g,k:H.k||0,play:false,pre:0,spd:UI.castSpd||1,mode:UI.castMode==='all'?'all':'hl',hold:1}; setTimeout(()=>{ try{ render(); }catch(e){} },0); } else delete G.castHold; } /* 새로고침해도 보던 중계를 그 장면에서 다시 열어 결과를 숨긴다(검수 11-06) */
+  if(!UI.cast&&!UI.castRet&&G.castHold&&!UI.title){ const H=G.castHold; if(G.games[H.g]){ UI.cast={g:H.g,k:H.k||0,play:true,pre:0,spd:1, /* 다시 열어도 바로 재생(사용자 피드백 11-06) */mode:UI.castMode==='all'?'all':'hl',hold:1}; setTimeout(()=>{ try{ render(); }catch(e){} },0); } else delete G.castHold; } /* 새로고침해도 보던 중계를 그 장면에서 다시 열어 결과를 숨긴다(검수 11-06) */
   const c=UI.cast||UI.castRet||(G.castHold&&UI.title?{g:G.castHold.g,k:G.castHold.k||0,hold:1}:null), g=c&&G.games[c.g]; if(!g||!c.hold||c.fin)return null; if(c.k>=(g.pbp||[]).length){ c.fin=true; delete G.castHold; return null; } return g; } /* 끝 장면에 한 번 닿으면 되감아도 공개 상태 */
 function liveHidden(){ return !!spoilG(); }
 /* 중계로 볼 경기 날 기사(맞대결·기록·팬 글)는 중계를 마칠 때까지 따로 두었다가(G._nh, 저장에도 남는다) 끝나면 제자리로. render마다 확인 */
