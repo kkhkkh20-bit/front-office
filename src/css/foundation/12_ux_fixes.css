@@ -693,3 +693,9 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 #app .home-workspace .hw-stand :is(td,th){height:24px;padding:0 8px;font-size:13px;line-height:18px}
 #app .home-workspace .hw-stand td button{height:22px;font-size:13px}
 #app .home-workspace .hw-stand td :is(svg,img,.badge){width:18px!important;height:18px!important}
+/* 시설 투자: 고른 시설 정보를 시설 칸 바로 옆(가운데)에, 구장 정보·리그 비교는 오른쪽으로(사용자 11-06) */
+@media(min-width:1100px){ #app .fvx{grid-template-columns:minmax(0,1.05fr) minmax(340px,.9fr) minmax(0,1fr)} #app .fvx>.fvx-det{grid-column:2;grid-row:1/3} #app .fvx>.fvx-stad{grid-column:3;grid-row:1} #app .fvx>.fvx-cmp{grid-column:3;grid-row:2} }
+/* 스폰서 계약 조항 펼침 */
+#app .spd{margin-top:4px}#app .spd summary{cursor:pointer;color:var(--team-hi,#4fa3ff);width:max-content}
+#app .spd dl{display:grid;gap:3px;margin:6px 0 2px;padding:8px 10px;background:var(--panel2);border-radius:4px;min-width:260px}
+#app .spd dl>div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;font-size:12px}#app .spd dt{color:var(--muted)}#app .spd dd{margin:0;white-space:normal}

@@ -10,6 +10,7 @@ function staffView(){
     coach:coachView,
     scouts:scoutTeamPage,
     smkt:staffMarketView,
+    anl:anlView,
     tc:trainCoachView,
     camp:campView,
     data:dataPage,
@@ -104,6 +105,8 @@ function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* P
   return (fmOn()?'<div class="ws-own sfw">':'')+(UI.cMsg?`<div class="note">${esc(UI.cMsg)}</div>`:'')+(fmOn()?'<div class="row" style="margin-bottom:8px"><button class="btn small" data-a="sfCards">◀ 스태프 개요</button></div>':'')+csec('1군·2군 코치 보직',coachTable(),`<span class="small muted">${slots.length}개 보직 · ${vac1||vac2?'빈 보직은 아래쪽':'전원 배치'}</span>`)+sumC+smkLink('coach','코치 채용')+(fmOn()?'</div>':''); }
 /* 스태프 시장(FM의 스태프 찾기처럼 한 곳): 감독·코치·스카우트·분석원 후보와 다른 구단 소속 스태프 */
 function smkLink(k,l){ return `<div class="row" style="margin:8px 0"><button class="btn small" data-a="smkGo" data-v="${k}">${l} → 스태프 시장</button></div>`; }
+/* 분석원 관리(사용자 11-06: 전력분석원 채용·해지가 데이터 화면 오른쪽 좁은 칸에 묻혀 있었다): 우리 분석원·역할·해지와 채용 후보를 한 화면에 크게 */
+function anlView(){ UI._smk=true; let mine='', mk=''; try{ UI._anlMine=true; mine=dataPage(); UI._anlMine=false; mk=dataPage(); }finally{ UI._smk=false; UI._anlMine=false; } const out=csec('우리 전력분석팀 · 역할·해지',mine,`<span class="small muted">${anaList().length}/${ANA_MAX}명 · 연 ${money(anaSal())}</span>`)+csec('채용 후보',mk,`<span class="small muted">${anaList().length}/${ANA_MAX}명 · 연 ${money(anaSal())}</span>`); return fmOn()?`<div class="ws-own sfw">${out}</div>`:out; }
 function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free'; const K=[['mgr','감독'],['coach','코치'],['sc','스카우트'],['an','분석원']];
   const chips=`<div class="chips staff-market-modes" style="margin:4px 0 8px">${K.map(([v,l])=>`<button data-a="smkK" data-v="${v}" class="${k===v?'on':''}">${l}</button>`).join('')}</div>${k==='coach'||k==='sc'?`<div class="chips" style="margin:0 0 10px">${[['free','자유 계약 후보'],['oth','다른 구단 소속']].map(([v,l])=>`<button data-a="smkSrc" data-v="${v}" class="${src===v?'on':''}">${l}</button>`).join('')}</div>`:''}`;
   UI._smk=true; let h=''; try{ h=k==='mgr'?mgrBody():k==='coach'?coachView():k==='sc'?scoutBody():dataPage(); }finally{ UI._smk=false; }

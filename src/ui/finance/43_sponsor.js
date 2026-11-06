@@ -1,9 +1,18 @@
 /* ---------- 스폰서 화면 ---------- */
+/* 계약 조항 펼쳐 보기(사용자 11-06: 세부 조항을 볼 수 없었다). 엔진 정산(49_sponsors.js)과 같은 조건을 그대로 적는다 */
+function sponTerms(c,k,y){ const press=G.pr?Math.round(G.pr.press):null, fan=G.pr?Math.round(G.pr.fan):null; const L=[
+  ['계약',`${c.y0??'-'}~${c.until}년 · 연 ${money(c.amt)}${c.y0===y&&c.first!=null&&c.first<1?` · 첫해는 남은 기간만큼 ${Math.round(c.first*100)}%`:''}`],
+  ['가을야구 보너스',c.ps?`정규시즌 5위 안에 들면 그해 +${money(c.ps)}`:'없음'],
+  ['우승 보너스',c.champ?`한국시리즈 우승하면 그해 +${money(c.champ)}`:'없음'],
+  ['이미지 조항',c.img?`시즌 결산 때 언론 논조가 30 밑이면 다음 해 금액 20% 감액(지금 언론 논조 ${press??'-'})`:'없음'],
+  ['해지 위험',`팬 여론이 25 밑이면 매달 약 6% 확률로 스폰서가 계약을 해지합니다(지금 팬 여론 ${fan??'-'}). 해지 전까지 몫은 받습니다`],
+  ['정산','시즌 결산 때 기본 금액과 보너스를 함께 받습니다']];
+  return `<details class="spd"><summary class="small">계약 조항</summary><dl>${L.map(([a,b])=>`<div><dt>${a}</dt><dd>${esc(b)}</dd></div>`).join('')}</dl></details>`; }
 function sponView(){ sponInit(); const S=G.spon, t=team(G.user); const y=sponSeason(); const v=sponVal();
   const parts=sponValParts().filter(x=>Math.abs(x[1])>=.005).map(([l,d])=>`<span class="pill ${d>0?'good':'bad'}">${l} ${d>0?'+':''}${Math.round(d*100)}</span>`).join('');
   const slots=Object.keys(SPON_SLOT).filter(k=>!SPON_SLOT[k].indie||t.indie);
   const row=k=>{ const c=S.c[k]; const live=c&&c.until>=y; const nOff=S.off.filter(x=>x.slot===k).length;
-    return `<tr><td><b>${SPON_SLOT[k].l}</b><div class="small muted">기준 ${money(Math.round(SPON_SLOT[k].b*v))}</div></td>${live?`<td>${esc(c.co)} <span class="small muted">${esc(c.ind)}</span>${c.img?' <span class="pill warn" title="언론 논조가 30 밑이면 다음 해 20% 감액">이미지 조항</span>':''}</td><td class="num">${money(c.amt)}</td><td>${c.until}년까지${c.until===y?' <span class="pill warn">올해 만료</span>':''}</td><td class="small">${c.ps?`가을야구 +${money(c.ps)}`:''}${c.champ?`<br>우승 +${money(c.champ)}`:''}</td>`:`<td colspan="4" class="muted">빈자리${nOff?` · 제안 ${nOff}건 도착`:''} ${(S.pitch||[]).some(x=>x.slot===k&&!x.done)?'<span class="pill">영업 중</span>':`<button class="btn small" data-a="sponPitch" data-v="${k}">영업 지시 · 3천만</button>`}</td>`}</tr>`; };
+    return `<tr><td><b>${SPON_SLOT[k].l}</b><div class="small muted">기준 ${money(Math.round(SPON_SLOT[k].b*v))}</div></td>${live?`<td>${esc(c.co)} <span class="small muted">${esc(c.ind)}</span>${c.img?' <span class="pill warn" title="언론 논조가 30 밑이면 다음 해 20% 감액">이미지 조항</span>':''}${sponTerms(c,k,y)}</td><td class="num">${money(c.amt)}</td><td>${c.until}년까지${c.until===y?' <span class="pill warn">올해 만료</span>':''}</td><td class="small">${c.ps?`가을야구 +${money(c.ps)}`:''}${c.champ?`<br>우승 +${money(c.champ)}`:''}</td>`:`<td colspan="4" class="muted">빈자리${nOff?` · 제안 ${nOff}건 도착`:''} ${(S.pitch||[]).some(x=>x.slot===k&&!x.done)?'<span class="pill">영업 중</span>':`<button class="btn small" data-a="sponPitch" data-v="${k}">영업 지시 · 3천만</button>`}</td>`}</tr>`; };
   const tot=sponIncome(y);
   const offers=S.off.slice().sort((a,b)=>a.slot.localeCompare(b.slot)||b.amt-a.amt);
   const card=o=>{ const cur=S.c[o.slot]; const tag={bonus:'성과형',safe:'안정형',long:'장기형',std:'표준'}[o.style];
