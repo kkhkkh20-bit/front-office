@@ -1,0 +1,1942 @@
+{
+  "schema_version": "truck-protest-1",
+  "path_base": "assets/truck-protest/",
+  "asset_count": 30,
+  "runtime_image_count": 60,
+  "required_asset_count": 30,
+  "production_complete": true,
+  "review_status": "pending_game_integration_review",
+  "style": "Synthetic fictional documentary news photography;1-ton LED protest truck",
+  "teams": [
+    {
+      "key": "seoul_comets",
+      "name": "서울 코메츠",
+      "banner_color": "#A50034"
+    },
+    {
+      "key": "seoul_hounds",
+      "name": "서울 하운즈",
+      "banner_color": "#131230"
+    },
+    {
+      "key": "incheon_seagulls",
+      "name": "인천 시걸스",
+      "banner_color": "#CE0E2D"
+    },
+    {
+      "key": "suwon_sparks",
+      "name": "수원 스파크스",
+      "banner_color": "#141414"
+    },
+    {
+      "key": "goyang_storm",
+      "name": "고양 스톰",
+      "banner_color": "#570514"
+    },
+    {
+      "key": "daejeon_redfox",
+      "name": "대전 레드폭스",
+      "banner_color": "#F37321"
+    },
+    {
+      "key": "gwangju_blazes",
+      "name": "광주 블레이즈",
+      "banner_color": "#EA0029"
+    },
+    {
+      "key": "daegu_thunders",
+      "name": "대구 썬더스",
+      "banner_color": "#074CA1"
+    },
+    {
+      "key": "busan_waves",
+      "name": "부산 웨이브스",
+      "banner_color": "#041E42"
+    },
+    {
+      "key": "changwon_anchors",
+      "name": "창원 앵커스",
+      "banner_color": "#1D467B"
+    }
+  ],
+  "scenes": [
+    {
+      "key": "stadium_day",
+      "name": "홈구장 앞 낮",
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ]
+    },
+    {
+      "key": "stadium_night",
+      "name": "홈구장 앞 밤",
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ]
+    },
+    {
+      "key": "headquarters_day",
+      "name": "모기업 본사 빌딩 앞 낮",
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ]
+    }
+  ],
+  "aspect_ratio": [
+    16,
+    9
+  ],
+  "rect_format": "[x,y,width,height],image pixels,origin top-left,end exclusive",
+  "led_rect_note": "Conservatively inset axis-aligned usable LED display area,excluding bezel; no perspective transform needed. Use each variant own rect.",
+  "text_safe_rect_note": "Suggested inset text area; game overlays the protest message. Delivered photos contain no message.",
+  "runtime_bytes": 3544190,
+  "runtime_bytes_by_width": {
+    "960": 2700884,
+    "480": 843306
+  },
+  "images": [
+    {
+      "id": "seoul_comets__stadium_day",
+      "team": "seoul_comets",
+      "scene": "stadium_day",
+      "banner_color": "#A50034",
+      "variants": {
+        "960": {
+          "path": "960/seoul_comets/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 90258,
+          "sha256": "3376d6f43759affa65df9524fad867082199791a0992fb872aeb536eb1a749b3"
+        },
+        "480": {
+          "path": "480/seoul_comets/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 27414,
+          "sha256": "d1821c65e88c5bf6f478d275709e58bf3a78390f80902bdbfeb40f8bcf6c42ef"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png",
+        "sha256": "76e8f48e7c53139bb2d0a41a29f8bb3801e3ba285f3f22cf41af309f40689bf1",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen base photograph plus background text cleanup"
+      }
+    },
+    {
+      "id": "seoul_comets__stadium_night",
+      "team": "seoul_comets",
+      "scene": "stadium_night",
+      "banner_color": "#A50034",
+      "variants": {
+        "960": {
+          "path": "960/seoul_comets/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 92822,
+          "sha256": "9a4c836f6d31d3ed814b927d622e03d807f8f7fd7b2d2ef5cb0b1ecf2d536a45"
+        },
+        "480": {
+          "path": "480/seoul_comets/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 28488,
+          "sha256": "150b78f07598d6d21f6bc65759296d06019ecb32dcea53e06302c2dc78776d55"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png",
+        "sha256": "a99564ab2884ca0d12a23e8be13aec6674ad49cbdcdb674982d2b27693f6099a",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen base photograph plus background text cleanup"
+      }
+    },
+    {
+      "id": "seoul_comets__headquarters_day",
+      "team": "seoul_comets",
+      "scene": "headquarters_day",
+      "banner_color": "#A50034",
+      "variants": {
+        "960": {
+          "path": "960/seoul_comets/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 97994,
+          "sha256": "2df16aad9a26c378d47dfd969d11a925884d6d86030ed24b5d2e6059421fbcde"
+        },
+        "480": {
+          "path": "480/seoul_comets/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 29198,
+          "sha256": "3827c6a1bfcc20178e1d289b6b92a3a6b23a6513718514eb660aeb6df5997bdb"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png",
+        "sha256": "6553fac207a497e8b9cc1d4fce5359447e74fab58b30ac9b06f40f33370f0d2b",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen base photograph"
+      }
+    },
+    {
+      "id": "seoul_hounds__stadium_day",
+      "team": "seoul_hounds",
+      "scene": "stadium_day",
+      "banner_color": "#131230",
+      "variants": {
+        "960": {
+          "path": "960/seoul_hounds/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 83710,
+          "sha256": "13f329a4b16b2305bb678f35a45f608c07a5d8eff5739350da37a040eb482a8b"
+        },
+        "480": {
+          "path": "480/seoul_hounds/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 27032,
+          "sha256": "a85b47f1d38f9e5e280b89d04a6ff4fd9af9f15ad0f1ab369ceaaeac3c87dd6c"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-8f570cff-8858-4026-a268-b9cb73e65071.png",
+        "sha256": "41246e8274264043b653ae55ae41c97821a90a94fe8960a8cfc7c5e36de61c14",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "seoul_hounds__stadium_night",
+      "team": "seoul_hounds",
+      "scene": "stadium_night",
+      "banner_color": "#131230",
+      "variants": {
+        "960": {
+          "path": "960/seoul_hounds/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 90140,
+          "sha256": "f3d5897b34e40053cf7ae46e901be3bfc2451b259d44d20d75d8ebbf2a0bab99"
+        },
+        "480": {
+          "path": "480/seoul_hounds/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 28126,
+          "sha256": "d0fb6919682e0abb461206100af43c22a2c2375bd7210acc095a9ddda6072539"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-2bb1d00c-5358-4ef8-a11a-650753c1a374.png",
+        "sha256": "48c30df4104d670809a06249118d36bba676d72a72048e4967e759e5ea418ba1",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "seoul_hounds__headquarters_day",
+      "team": "seoul_hounds",
+      "scene": "headquarters_day",
+      "banner_color": "#131230",
+      "variants": {
+        "960": {
+          "path": "960/seoul_hounds/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 89866,
+          "sha256": "556e119e9689e3974f79f3d98807f47f1c6ffd9bc54fa13dba738104340758c3"
+        },
+        "480": {
+          "path": "480/seoul_hounds/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 27198,
+          "sha256": "40425975e9013045beb9e08a891c0e254d4595b84643561a692cc3256d7356e9"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-3199080a-c508-4ff9-adeb-5f15a639ccb5.png",
+        "sha256": "5493c8f77f72796337222c94c715f2bc2acf19dddbe10294f65f98bd264fd5c1",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit"
+      }
+    },
+    {
+      "id": "incheon_seagulls__stadium_day",
+      "team": "incheon_seagulls",
+      "scene": "stadium_day",
+      "banner_color": "#CE0E2D",
+      "variants": {
+        "960": {
+          "path": "960/incheon_seagulls/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 86548,
+          "sha256": "868c0af74fa0148f34b16b29634c470e4120a9b7815f0b288c50b226de6c1a51"
+        },
+        "480": {
+          "path": "480/incheon_seagulls/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 27198,
+          "sha256": "f7ffca4ea965d83e1abba59b6c40e0180a99efd89fcf6ba0656e83a187966d98"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-2c6320c0-761c-4754-9ada-558f806edaec.png",
+        "sha256": "416b0600d8be63c08b4d0ab2eb4b54d494d2238c7e8300877c47673fb6f2005e",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "incheon_seagulls__stadium_night",
+      "team": "incheon_seagulls",
+      "scene": "stadium_night",
+      "banner_color": "#CE0E2D",
+      "variants": {
+        "960": {
+          "path": "960/incheon_seagulls/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 88380,
+          "sha256": "8e51308c6f9690b3c80b93729bf8f2e3463f7812fc5f321ca01a3f743ab35b2f"
+        },
+        "480": {
+          "path": "480/incheon_seagulls/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 27772,
+          "sha256": "9e012aaa09075005a44dcfbe70566558a86c60147a1ef640a80a378142bfea15"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-aabb0454-93cc-45d1-bdd3-8869fe664276.png",
+        "sha256": "315565c0ba68dc7e58c8324edeaa057078beae9a084711ba755c99df451a874a",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "incheon_seagulls__headquarters_day",
+      "team": "incheon_seagulls",
+      "scene": "headquarters_day",
+      "banner_color": "#CE0E2D",
+      "variants": {
+        "960": {
+          "path": "960/incheon_seagulls/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 92036,
+          "sha256": "aab017299791cd86275eb02bbbf8e96774f4bafef535b98613c0a5d1928f1fa0"
+        },
+        "480": {
+          "path": "480/incheon_seagulls/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 28898,
+          "sha256": "f017c4ece4f5110e07171a84abfae057a4a86d220cf2926564584d001b9fd87c"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-03c82335-61fd-4312-bdc9-ebf613f6b9ca.png",
+        "sha256": "bb1de295a9b15b4ad335aafc8c7bc5add99cb2ba1aea9a4a57617fac5afae81e",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    },
+    {
+      "id": "suwon_sparks__stadium_day",
+      "team": "suwon_sparks",
+      "scene": "stadium_day",
+      "banner_color": "#141414",
+      "variants": {
+        "960": {
+          "path": "960/suwon_sparks/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 85218,
+          "sha256": "7877465349069dddaa142b3272eaa2eb3527bcb88770145cfe6d855dacbaa3a3"
+        },
+        "480": {
+          "path": "480/suwon_sparks/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 27442,
+          "sha256": "b5f5da0311bb30ffe7ed8d54630681be568e5b75e8e739b573ab8c8a91414f67"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-32bcada1-7e96-44a8-8cfb-a33495683401.png",
+        "sha256": "6277432a114e895c6a589263a06bd6aee0dc2153306e0f21a787ae967b785182",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "suwon_sparks__stadium_night",
+      "team": "suwon_sparks",
+      "scene": "stadium_night",
+      "banner_color": "#141414",
+      "variants": {
+        "960": {
+          "path": "960/suwon_sparks/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 89370,
+          "sha256": "ed9dcca74203daee67b7299d8b1867e3ee351042baf90138126d9bee3ddf63e0"
+        },
+        "480": {
+          "path": "480/suwon_sparks/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 28136,
+          "sha256": "4bf63323c391ed326e81bcb0b7235fd20ce46662c70a6dd41b9705cf194016ff"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-8aac9acf-a14c-4003-be3c-817f4d851eab.png",
+        "sha256": "b7c5092a9ed7bd6609ced7e028890b5576219b47bfe3a3cacf68903e702d74ed",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "suwon_sparks__headquarters_day",
+      "team": "suwon_sparks",
+      "scene": "headquarters_day",
+      "banner_color": "#141414",
+      "variants": {
+        "960": {
+          "path": "960/suwon_sparks/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 89038,
+          "sha256": "b34fa55743fef59a2e12bfc24df16a8559e775a1e559449c56414a64051b65e9"
+        },
+        "480": {
+          "path": "480/suwon_sparks/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 27338,
+          "sha256": "d091e1eacf59b9b9f52f0907e496069f73ed9b7e5ec88881c91cae7bdd4f669a"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-0a3be076-05ce-4bc4-8b3a-1fff10c78f21.png",
+        "sha256": "84e7384f11d30701e1c28e3ae87cc1d6eac187e93d20c2b2a28de6a0ef7dc373",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    },
+    {
+      "id": "goyang_storm__stadium_day",
+      "team": "goyang_storm",
+      "scene": "stadium_day",
+      "banner_color": "#570514",
+      "variants": {
+        "960": {
+          "path": "960/goyang_storm/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 82656,
+          "sha256": "3e5ae313dbc7d9239c70f8c0537cd340b587250c8dfbdb50b8c6625491eb24e3"
+        },
+        "480": {
+          "path": "480/goyang_storm/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 26726,
+          "sha256": "d025adfeaccc22fea1c1eb46345528364cb3ce26638a749e30318fe9c2ed7046"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-b13caaa7-e5cd-4763-a585-597fac5073f3.png",
+        "sha256": "f5afe24f85db1e9997c423ca24ed0bec45203e6401e4c03666dabf248c465fa7",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "goyang_storm__stadium_night",
+      "team": "goyang_storm",
+      "scene": "stadium_night",
+      "banner_color": "#570514",
+      "variants": {
+        "960": {
+          "path": "960/goyang_storm/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 90306,
+          "sha256": "1dfeb79b51751b38a5f52481d3d8f1b3ad1de2c7a53e03fdb25a881a8877a48d"
+        },
+        "480": {
+          "path": "480/goyang_storm/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 27994,
+          "sha256": "2ef174b3d7b35f0f842f6795b8e6721b67cc72b5808c3fe6dbdf68711e8df497"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-2f9ff943-aedd-4f41-bb9a-1ff6c0150a8d.png",
+        "sha256": "5eb8eeb06270bf64a4f6281adec2c5c24e448ade15a25299ee47a4f1fb6bb1aa",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "goyang_storm__headquarters_day",
+      "team": "goyang_storm",
+      "scene": "headquarters_day",
+      "banner_color": "#570514",
+      "variants": {
+        "960": {
+          "path": "960/goyang_storm/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 90200,
+          "sha256": "9715c03e87eaca04cfaa958fb95b72bcd5357e12353fe1198aa3b4dd69577c31"
+        },
+        "480": {
+          "path": "480/goyang_storm/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 27586,
+          "sha256": "ce0801fcd409e5abaf3766cdd3254a13916e3fffcce704ac624d735ab9451d96"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-18452fe1-a347-4f80-9df1-31690b76a79e.png",
+        "sha256": "6501ce375609dcad79a4bebc849dccd01508663baac167ed5dea4fdd1f4a4d23",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    },
+    {
+      "id": "daejeon_redfox__stadium_day",
+      "team": "daejeon_redfox",
+      "scene": "stadium_day",
+      "banner_color": "#F37321",
+      "variants": {
+        "960": {
+          "path": "960/daejeon_redfox/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 91866,
+          "sha256": "7b5f6af0639303ca2e74dcca5fbd834bb56ebc05b186f0c8908a9450c851599a"
+        },
+        "480": {
+          "path": "480/daejeon_redfox/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 28412,
+          "sha256": "ac46afef0d613492d728da5fd5b2f25d17371be48006f5468e2308117541fb6e"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-8056acd5-ea35-46e3-af27-a84c2bb45884.png",
+        "sha256": "f41c28cfa993c6a11e50c9acf6a6d4b4c693e62e4303c81a243e4b58ba5b4373",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "daejeon_redfox__stadium_night",
+      "team": "daejeon_redfox",
+      "scene": "stadium_night",
+      "banner_color": "#F37321",
+      "variants": {
+        "960": {
+          "path": "960/daejeon_redfox/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 93138,
+          "sha256": "54a515ad2dc1628b9a755a2fef8a920ea88dcf0e84de73f20eec51710487bada"
+        },
+        "480": {
+          "path": "480/daejeon_redfox/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 29482,
+          "sha256": "4d66847352382d7ad7c9d5458d7733c5d6bad256e4d4912adaceb892859ac8be"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-5b9aab37-54b5-47cf-8be3-cc1e75ecafd3.png",
+        "sha256": "19632e4865aaf7a3fa755ba507078b824a2438dc2077609c717bf7a4ba19fc32",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "daejeon_redfox__headquarters_day",
+      "team": "daejeon_redfox",
+      "scene": "headquarters_day",
+      "banner_color": "#F37321",
+      "variants": {
+        "960": {
+          "path": "960/daejeon_redfox/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 93340,
+          "sha256": "85356b79d6a552728a1a86c906a9d9efb55afc243de51ac0674e9394606bbabb"
+        },
+        "480": {
+          "path": "480/daejeon_redfox/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 28934,
+          "sha256": "45078e5c6a5cd08bf6a4b2927bf9568e1d4a64fef7d85d3f67a7684b4967ac54"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-7e6c917c-0b7a-4813-9b22-1b5737b4e2fa.png",
+        "sha256": "4dcd8e0e0fba3012f4da925c06d95d9970a6ae742f9e94cc1015e687319a1d55",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    },
+    {
+      "id": "gwangju_blazes__stadium_day",
+      "team": "gwangju_blazes",
+      "scene": "stadium_day",
+      "banner_color": "#EA0029",
+      "variants": {
+        "960": {
+          "path": "960/gwangju_blazes/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 88310,
+          "sha256": "7818845e8e1af39295eab620c1bdfb8aeb898edefb9d9e459119e32da39fe1ff"
+        },
+        "480": {
+          "path": "480/gwangju_blazes/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 27868,
+          "sha256": "ae5a2fb853fd53c94a19edebe7fd06b6d4c9a5b5887e6e33a33c3136a570f107"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-45a7e843-d575-46eb-9889-bc32d9e2d9df.png",
+        "sha256": "4da80171ddec08c4adba79f8146d27c15b730dc2ae3532f82a03e20c1fca5765",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "gwangju_blazes__stadium_night",
+      "team": "gwangju_blazes",
+      "scene": "stadium_night",
+      "banner_color": "#EA0029",
+      "variants": {
+        "960": {
+          "path": "960/gwangju_blazes/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 93354,
+          "sha256": "65053d59fd4c3df38a28530c5ad08844871bdae8f87cf8e22e49e43fa1f0eeaf"
+        },
+        "480": {
+          "path": "480/gwangju_blazes/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 29440,
+          "sha256": "b0396e76421fa2a346a6d3b703d255491b53a07e7ffbf77b6d4137fb591fc874"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-7a49e11b-21ce-41db-8279-3e6861f76bb0.png",
+        "sha256": "87ad0c0b4530933e697947090f73f1e30f7f5e75058f27ee403349e2722e6cb2",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "gwangju_blazes__headquarters_day",
+      "team": "gwangju_blazes",
+      "scene": "headquarters_day",
+      "banner_color": "#EA0029",
+      "variants": {
+        "960": {
+          "path": "960/gwangju_blazes/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 92896,
+          "sha256": "545a01fcef46c66e1bef72877980c91e3f75619a322ae3284d9c0a8ec4b921c8"
+        },
+        "480": {
+          "path": "480/gwangju_blazes/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 28368,
+          "sha256": "c1eadb782d342dc3fbc6e22253a0977ced67a640f35fc91c07d0786cbc45a433"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-7a3db027-7e98-4a69-aad9-b8151b77bacd.png",
+        "sha256": "b3b9c1d25808218589ddc556c7813e0525c685133d31bc3372593bf707d7c4c4",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    },
+    {
+      "id": "daegu_thunders__stadium_day",
+      "team": "daegu_thunders",
+      "scene": "stadium_day",
+      "banner_color": "#074CA1",
+      "variants": {
+        "960": {
+          "path": "960/daegu_thunders/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 88912,
+          "sha256": "e769868d3bddcb833cf10d886dc256e80a38e43dc422bcf5f2f13e447c6bec2b"
+        },
+        "480": {
+          "path": "480/daegu_thunders/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 28248,
+          "sha256": "3eab5da23fb3376d6d921bd339cba5f67708e85cf82ec563ff71f8c51059aced"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-d937257c-b544-4fb1-8c20-e8bcfb8d7a84.png",
+        "sha256": "28387cfa826e562078ae726e759f0d291dab09dbebfa18b79d5dd8e3fb0aa457",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "daegu_thunders__stadium_night",
+      "team": "daegu_thunders",
+      "scene": "stadium_night",
+      "banner_color": "#074CA1",
+      "variants": {
+        "960": {
+          "path": "960/daegu_thunders/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 90852,
+          "sha256": "1a6b31e502a0daf7ee05355e2cb3ccca2cada2ad91e10b6ee367b627606178ab"
+        },
+        "480": {
+          "path": "480/daegu_thunders/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 28780,
+          "sha256": "eaee668a0939b3ae7209b4ed3ff143bab8d573857487d154467c6c6ad8e87b63"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-b03974f0-70e0-481a-9da4-b8b7ea6912e6.png",
+        "sha256": "24c5fb6fe9db29979ad062b232b6385220ed678b185239d297af5191f3731d0b",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "daegu_thunders__headquarters_day",
+      "team": "daegu_thunders",
+      "scene": "headquarters_day",
+      "banner_color": "#074CA1",
+      "variants": {
+        "960": {
+          "path": "960/daegu_thunders/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 90650,
+          "sha256": "56ff968cffc202e8f1c169445b7afa468c14368c454f2db87372cab3280d2203"
+        },
+        "480": {
+          "path": "480/daegu_thunders/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 28552,
+          "sha256": "e3d0d45a8fa53ee96dd56a73838aacc3625f40f7fd09172dec77d304fa6923fd"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-5f2eeeb5-71c2-4f05-962b-120ec80c7d80.png",
+        "sha256": "601567b25fe805e056b2fba1ae8fc03fb76abca88b5b8ee4abea1619b10dde6d",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    },
+    {
+      "id": "busan_waves__stadium_day",
+      "team": "busan_waves",
+      "scene": "stadium_day",
+      "banner_color": "#041E42",
+      "variants": {
+        "960": {
+          "path": "960/busan_waves/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 87994,
+          "sha256": "19fe8cb16203b56629007cb10f61716a731835d8c21b127b34b49b22de0a1f37"
+        },
+        "480": {
+          "path": "480/busan_waves/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 27626,
+          "sha256": "55ae4dea663d43c272f615a4a48f8c0492a13ab1d6250a173d5bbbcadf759601"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-948f1e99-ff90-42a3-a20e-d5f2736b7503.png",
+        "sha256": "f94278d02694864f58ad425b92c87311e5441afdbdaad7549ffa5aa8799acb51",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "busan_waves__stadium_night",
+      "team": "busan_waves",
+      "scene": "stadium_night",
+      "banner_color": "#041E42",
+      "variants": {
+        "960": {
+          "path": "960/busan_waves/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 91068,
+          "sha256": "880b04f90c08bce0f921dbb811df98d469d8f679cae868b08c591cb858220167"
+        },
+        "480": {
+          "path": "480/busan_waves/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 28336,
+          "sha256": "9b15d943f942726c8c1b75f9dd3bee506dea6b17528bc68f9c3dd7ccb74abe01"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-85497b64-1208-4863-a5ba-063e851d20ed.png",
+        "sha256": "cd584d59bb1dd874a85e1c1d722e7e147c21f928a74cd5d6d9b3d51a78102de3",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "busan_waves__headquarters_day",
+      "team": "busan_waves",
+      "scene": "headquarters_day",
+      "banner_color": "#041E42",
+      "variants": {
+        "960": {
+          "path": "960/busan_waves/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 89698,
+          "sha256": "0ebdb8b5113b44b402ded4722c70145fb0e5f53041893816b778917187b1dba1"
+        },
+        "480": {
+          "path": "480/busan_waves/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 27782,
+          "sha256": "53919645dc268332d9c9fde62dcc29dba51a2e7a15b82dc4716f40eceb2dda8c"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-764cd0e1-1184-4f20-a622-63947b4dc076.png",
+        "sha256": "707b3f4d572ea9aa7497052f78f222d312f12fe9c768d4b2e9ae312d970d7d57",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    },
+    {
+      "id": "changwon_anchors__stadium_day",
+      "team": "changwon_anchors",
+      "scene": "stadium_day",
+      "banner_color": "#1D467B",
+      "variants": {
+        "960": {
+          "path": "960/changwon_anchors/stadium_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            346,
+            76,
+            474,
+            226
+          ],
+          "text_safe_rect": [
+            360,
+            86,
+            446,
+            206
+          ],
+          "bytes": 87228,
+          "sha256": "4657bf87a4704a72f74f2c196bf47157631a0b1c5869c629009e49aa290d8061"
+        },
+        "480": {
+          "path": "480/changwon_anchors/stadium_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            173,
+            38,
+            237,
+            113
+          ],
+          "text_safe_rect": [
+            180,
+            43,
+            223,
+            103
+          ],
+          "bytes": 28042,
+          "sha256": "656973a0e0d7b13d180d5dd59f4ba75e8c4b32463c6dbea938105d93ef1bfd87"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-ad094cef-bd2b-4c1a-b52b-1ebd2fa382de.png",
+        "sha256": "7e153e0c8eff5e7339eca911acb85476917eab068047b4ff725a1abcea0b1653",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-ab68ea15-efe5-4659-a43e-a6fdc6fea551.png"
+      }
+    },
+    {
+      "id": "changwon_anchors__stadium_night",
+      "team": "changwon_anchors",
+      "scene": "stadium_night",
+      "banner_color": "#1D467B",
+      "variants": {
+        "960": {
+          "path": "960/changwon_anchors/stadium_night.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            338,
+            78,
+            504,
+            220
+          ],
+          "text_safe_rect": [
+            352,
+            88,
+            476,
+            200
+          ],
+          "bytes": 92560,
+          "sha256": "ee0c79c453eae40c0aaae1dd09aa479b189c8383f26bb82b6e6f667f9696c65e"
+        },
+        "480": {
+          "path": "480/changwon_anchors/stadium_night.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            169,
+            39,
+            252,
+            110
+          ],
+          "text_safe_rect": [
+            176,
+            44,
+            238,
+            100
+          ],
+          "bytes": 28954,
+          "sha256": "336a6ed956faf897e62271fea7e4d9b908e8f01d103dd387fa327b87373db025"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-b0cfdfc6-e7f4-43de-8772-56098a80d17b.png",
+        "sha256": "1d72eed2aaff5968d24cc668eb37306ac73b0543ef98c2105ae6c438809c840b",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-743115ad-8fdc-4ad0-b6e4-82f089cd4b36.png"
+      }
+    },
+    {
+      "id": "changwon_anchors__headquarters_day",
+      "team": "changwon_anchors",
+      "scene": "headquarters_day",
+      "banner_color": "#1D467B",
+      "variants": {
+        "960": {
+          "path": "960/changwon_anchors/headquarters_day.webp",
+          "width": 960,
+          "height": 540,
+          "led_rect": [
+            350,
+            82,
+            498,
+            224
+          ],
+          "text_safe_rect": [
+            364,
+            92,
+            470,
+            204
+          ],
+          "bytes": 90476,
+          "sha256": "e445947c671e884739d17a4da18db43e5173b1d3ec53ab96639398ea66a60d36"
+        },
+        "480": {
+          "path": "480/changwon_anchors/headquarters_day.webp",
+          "width": 480,
+          "height": 270,
+          "led_rect": [
+            175,
+            41,
+            249,
+            112
+          ],
+          "text_safe_rect": [
+            182,
+            46,
+            235,
+            102
+          ],
+          "bytes": 27936,
+          "sha256": "ea4670ecaf4bb637ee6c47594fadd363939674548bcb9d98f003258aca902fc8"
+        }
+      },
+      "source": {
+        "generator": "image_gen",
+        "file": "exec-725f3f22-c5af-4be4-8aa9-4807a847c808.png",
+        "sha256": "2ede0cf7cda103daee010520cfd8c51265e92823b51b259f6ba2b372ad4da3b4",
+        "pixel_size": [
+          1672,
+          941
+        ],
+        "method": "image_gen banner color edit",
+        "reference_file": "exec-9feb37f1-3aee-4bda-aab5-1b5f0e0088d8.png"
+      }
+    }
+  ],
+  "lookup": {
+    "seoul_comets": {
+      "stadium_day": "seoul_comets__stadium_day",
+      "stadium_night": "seoul_comets__stadium_night",
+      "headquarters_day": "seoul_comets__headquarters_day"
+    },
+    "seoul_hounds": {
+      "stadium_day": "seoul_hounds__stadium_day",
+      "stadium_night": "seoul_hounds__stadium_night",
+      "headquarters_day": "seoul_hounds__headquarters_day"
+    },
+    "incheon_seagulls": {
+      "stadium_day": "incheon_seagulls__stadium_day",
+      "stadium_night": "incheon_seagulls__stadium_night",
+      "headquarters_day": "incheon_seagulls__headquarters_day"
+    },
+    "suwon_sparks": {
+      "stadium_day": "suwon_sparks__stadium_day",
+      "stadium_night": "suwon_sparks__stadium_night",
+      "headquarters_day": "suwon_sparks__headquarters_day"
+    },
+    "goyang_storm": {
+      "stadium_day": "goyang_storm__stadium_day",
+      "stadium_night": "goyang_storm__stadium_night",
+      "headquarters_day": "goyang_storm__headquarters_day"
+    },
+    "daejeon_redfox": {
+      "stadium_day": "daejeon_redfox__stadium_day",
+      "stadium_night": "daejeon_redfox__stadium_night",
+      "headquarters_day": "daejeon_redfox__headquarters_day"
+    },
+    "gwangju_blazes": {
+      "stadium_day": "gwangju_blazes__stadium_day",
+      "stadium_night": "gwangju_blazes__stadium_night",
+      "headquarters_day": "gwangju_blazes__headquarters_day"
+    },
+    "daegu_thunders": {
+      "stadium_day": "daegu_thunders__stadium_day",
+      "stadium_night": "daegu_thunders__stadium_night",
+      "headquarters_day": "daegu_thunders__headquarters_day"
+    },
+    "busan_waves": {
+      "stadium_day": "busan_waves__stadium_day",
+      "stadium_night": "busan_waves__stadium_night",
+      "headquarters_day": "busan_waves__headquarters_day"
+    },
+    "changwon_anchors": {
+      "stadium_day": "changwon_anchors__stadium_day",
+      "stadium_night": "changwon_anchors__stadium_night",
+      "headquarters_day": "changwon_anchors__headquarters_day"
+    }
+  },
+  "asset_validation_passed": true,
+  "runtime_files": [
+    "manifest.json",
+    "480/busan_waves/headquarters_day.webp",
+    "480/busan_waves/stadium_day.webp",
+    "480/busan_waves/stadium_night.webp",
+    "480/changwon_anchors/headquarters_day.webp",
+    "480/changwon_anchors/stadium_day.webp",
+    "480/changwon_anchors/stadium_night.webp",
+    "480/daegu_thunders/headquarters_day.webp",
+    "480/daegu_thunders/stadium_day.webp",
+    "480/daegu_thunders/stadium_night.webp",
+    "480/daejeon_redfox/headquarters_day.webp",
+    "480/daejeon_redfox/stadium_day.webp",
+    "480/daejeon_redfox/stadium_night.webp",
+    "480/goyang_storm/headquarters_day.webp",
+    "480/goyang_storm/stadium_day.webp",
+    "480/goyang_storm/stadium_night.webp",
+    "480/gwangju_blazes/headquarters_day.webp",
+    "480/gwangju_blazes/stadium_day.webp",
+    "480/gwangju_blazes/stadium_night.webp",
+    "480/incheon_seagulls/headquarters_day.webp",
+    "480/incheon_seagulls/stadium_day.webp",
+    "480/incheon_seagulls/stadium_night.webp",
+    "480/seoul_comets/headquarters_day.webp",
+    "480/seoul_comets/stadium_day.webp",
+    "480/seoul_comets/stadium_night.webp",
+    "480/seoul_hounds/headquarters_day.webp",
+    "480/seoul_hounds/stadium_day.webp",
+    "480/seoul_hounds/stadium_night.webp",
+    "480/suwon_sparks/headquarters_day.webp",
+    "480/suwon_sparks/stadium_day.webp",
+    "480/suwon_sparks/stadium_night.webp",
+    "960/busan_waves/headquarters_day.webp",
+    "960/busan_waves/stadium_day.webp",
+    "960/busan_waves/stadium_night.webp",
+    "960/changwon_anchors/headquarters_day.webp",
+    "960/changwon_anchors/stadium_day.webp",
+    "960/changwon_anchors/stadium_night.webp",
+    "960/daegu_thunders/headquarters_day.webp",
+    "960/daegu_thunders/stadium_day.webp",
+    "960/daegu_thunders/stadium_night.webp",
+    "960/daejeon_redfox/headquarters_day.webp",
+    "960/daejeon_redfox/stadium_day.webp",
+    "960/daejeon_redfox/stadium_night.webp",
+    "960/goyang_storm/headquarters_day.webp",
+    "960/goyang_storm/stadium_day.webp",
+    "960/goyang_storm/stadium_night.webp",
+    "960/gwangju_blazes/headquarters_day.webp",
+    "960/gwangju_blazes/stadium_day.webp",
+    "960/gwangju_blazes/stadium_night.webp",
+    "960/incheon_seagulls/headquarters_day.webp",
+    "960/incheon_seagulls/stadium_day.webp",
+    "960/incheon_seagulls/stadium_night.webp",
+    "960/seoul_comets/headquarters_day.webp",
+    "960/seoul_comets/stadium_day.webp",
+    "960/seoul_comets/stadium_night.webp",
+    "960/seoul_hounds/headquarters_day.webp",
+    "960/seoul_hounds/stadium_day.webp",
+    "960/seoul_hounds/stadium_night.webp",
+    "960/suwon_sparks/headquarters_day.webp",
+    "960/suwon_sparks/stadium_day.webp",
+    "960/suwon_sparks/stadium_night.webp"
+  ],
+  "previews": {
+    "all_teams": {
+      "stadium_day": "previews/stadium_day_all10.png",
+      "stadium_night": "previews/stadium_night_all10.png",
+      "headquarters_day": "previews/headquarters_day_all10.png"
+    },
+    "overlay_examples": {
+      "stadium_day": "previews/stadium_day_overlay_example.png",
+      "stadium_night": "previews/stadium_night_overlay_example.png",
+      "headquarters_day": "previews/headquarters_day_overlay_example.png"
+    }
+  }
+}

@@ -1,0 +1,1241 @@
+{
+  "schema_version": "truck-protest-validation-1",
+  "asset_validation_passed": true,
+  "logical_photo_count": 30,
+  "runtime_webp_count": 60,
+  "sizes": [
+    [
+      960,
+      540
+    ],
+    [
+      480,
+      270
+    ]
+  ],
+  "rgb": true,
+  "bytes": 3544190,
+  "dimensions_and_hashes_checked": 60,
+  "rect_bounds_checked": 60,
+  "safe_text_rect_bounds_checked": 60,
+  "half_size_rect_scaling_exact": true,
+  "all_team_scene_combinations_present": true,
+  "metadata_exif_xmp_absent": true,
+  "visual_review": {
+    "all30_delivered480_in_scene_contact_sheets": true,
+    "three960_overlay_examples_reviewed": true,
+    "no_visible_logos_or_real_team_company_names": true,
+    "people_distant_back_view_no_identifiable_faces": true,
+    "all_led_and_banner_blank": true,
+    "team_color_only_intentional_variation_within_each_scene": true,
+    "note": "Visual inspection of synthetic fictional photographs; not an OCR or biometric recognition claim."
+  },
+  "display_metrics": [
+    {
+      "id": "seoul_comets__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.2985698816325,
+          28.17586161831149,
+          29.565624883312797
+        ],
+        "max_channel": 38,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_comets__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.284194018147193,
+          28.2158993316157,
+          29.56879877525111
+        ],
+        "max_channel": 41,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_comets__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.319823232323234,
+          24.105023448773448,
+          25.21585497835498
+        ],
+        "max_channel": 31,
+        "p99_luma": 27.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_comets__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.322655122655124,
+          24.092027417027417,
+          25.209343434343435
+        ],
+        "max_channel": 36,
+        "p99_luma": 27.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_comets__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.27908957257602,
+          25.87244513769363,
+          27.942206325301203
+        ],
+        "max_channel": 36,
+        "p99_luma": 29.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_comets__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.28524813539874,
+          25.93757171543316,
+          28.000215146299485
+        ],
+        "max_channel": 35,
+        "p99_luma": 29.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_hounds__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.04281953623838,
+          27.802275867219297,
+          27.766924312012247
+        ],
+        "max_channel": 37,
+        "p99_luma": 33.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_hounds__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.04633882229939,
+          27.773272095888878,
+          27.777752884507674
+        ],
+        "max_channel": 39,
+        "p99_luma": 33.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_hounds__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.796843434343433,
+          24.208703102453104,
+          24.633549783549782
+        ],
+        "max_channel": 32,
+        "p99_luma": 28.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_hounds__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.849819624819624,
+          24.20349927849928,
+          24.644877344877344
+        ],
+        "max_channel": 32,
+        "p99_luma": 28.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_hounds__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.14500860585198,
+          26.827614027538726,
+          28.694160570854848
+        ],
+        "max_channel": 36,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "seoul_hounds__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.158706253585773,
+          26.812751004016064,
+          28.746163224325876
+        ],
+        "max_channel": 37,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "incheon_seagulls__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.552695941152308,
+          28.567603898286098,
+          28.587776782046973
+        ],
+        "max_channel": 39,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "incheon_seagulls__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.53242970762854,
+          28.584742914752997,
+          28.593219073223555
+        ],
+        "max_channel": 38,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "incheon_seagulls__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.74645562770563,
+          25.20501443001443,
+          24.988915945165946
+        ],
+        "max_channel": 32,
+        "p99_luma": 28.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "incheon_seagulls__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.819083694083695,
+          25.194805194805195,
+          25.11489898989899
+        ],
+        "max_channel": 33,
+        "p99_luma": 28.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "incheon_seagulls__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.35751039873781,
+          26.48557623350545,
+          28.455410929432013
+        ],
+        "max_channel": 35,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "incheon_seagulls__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.4517355134825,
+          26.469700229489387,
+          28.512729489386118
+        ],
+        "max_channel": 35,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "suwon_sparks__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.063272469287927,
+          26.070973824726487,
+          26.084322840819983
+        ],
+        "max_channel": 36,
+        "p99_luma": 30.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "suwon_sparks__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.06724916918711,
+          26.106792128747994,
+          26.092677644598783
+        ],
+        "max_channel": 37,
+        "p99_luma": 30.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "suwon_sparks__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          27.138834776334775,
+          25.388113275613275,
+          25.99099025974026
+        ],
+        "max_channel": 32,
+        "p99_luma": 29.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "suwon_sparks__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          27.16287878787879,
+          25.384415584415585,
+          26.018867243867245
+        ],
+        "max_channel": 33,
+        "p99_luma": 29.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "suwon_sparks__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.884547117039588,
+          23.87781483075158,
+          25.57020940906483
+        ],
+        "max_channel": 33,
+        "p99_luma": 28.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "suwon_sparks__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.95040877796902,
+          23.88568559954102,
+          25.645689902467012
+        ],
+        "max_channel": 34,
+        "p99_luma": 28.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "goyang_storm__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.736277584854935,
+          28.826780179978343,
+          29.398108733803817
+        ],
+        "max_channel": 39,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "goyang_storm__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.778649042231432,
+          28.80194914304918,
+          29.400918561666852
+        ],
+        "max_channel": 41,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "goyang_storm__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.836886724386723,
+          26.827308802308803,
+          26.806141774891774
+        ],
+        "max_channel": 33,
+        "p99_luma": 29.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "goyang_storm__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.86525974025974,
+          26.8511544011544,
+          26.83502886002886
+        ],
+        "max_channel": 33,
+        "p99_luma": 29.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "goyang_storm__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.6072504302926,
+          26.503648522662075,
+          28.252931368330465
+        ],
+        "max_channel": 35,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "goyang_storm__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          26.665232358003443,
+          26.499713138267357,
+          28.288116752725188
+        ],
+        "max_channel": 37,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daejeon_redfox__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.33025279115791,
+          28.308091557447444,
+          28.518529927933983
+        ],
+        "max_channel": 40,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daejeon_redfox__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.295657369030284,
+          28.324297076285426,
+          28.53911355065158
+        ],
+        "max_channel": 40,
+        "p99_luma": 33.06666666666691,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daejeon_redfox__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.894065656565658,
+          23.592613636363637,
+          23.663465007215006
+        ],
+        "max_channel": 30,
+        "p99_luma": 26.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daejeon_redfox__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.865656565656565,
+          23.56583694083694,
+          23.63903318903319
+        ],
+        "max_channel": 30,
+        "p99_luma": 26.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daejeon_redfox__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.409611660929432,
+          25.599657558806655,
+          27.36303248709122
+        ],
+        "max_channel": 36,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daejeon_redfox__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.4598752151463,
+          25.630378657487093,
+          27.425451807228917
+        ],
+        "max_channel": 38,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "gwangju_blazes__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          29.215908666591986,
+          29.211185168589672,
+          28.939948097531833
+        ],
+        "max_channel": 37,
+        "p99_luma": 34.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "gwangju_blazes__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          29.185691348343976,
+          29.23744445689108,
+          28.928494081625033
+        ],
+        "max_channel": 36,
+        "p99_luma": 33.333333333333336,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "gwangju_blazes__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.5734126984127,
+          23.877732683982686,
+          23.962608225108227
+        ],
+        "max_channel": 30,
+        "p99_luma": 27.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "gwangju_blazes__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.618759018759018,
+          23.8975468975469,
+          24.026839826839826
+        ],
+        "max_channel": 31,
+        "p99_luma": 27.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "gwangju_blazes__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.19513769363167,
+          26.130817914515205,
+          27.85861302352266
+        ],
+        "max_channel": 38,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "gwangju_blazes__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.243187033849683,
+          26.162435456110156,
+          27.917670682730925
+        ],
+        "max_channel": 36,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daegu_thunders__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          27.696249206527014,
+          27.723703371793437,
+          27.560640005974385
+        ],
+        "max_channel": 36,
+        "p99_luma": 33.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daegu_thunders__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          27.647996714088347,
+          27.728725589037005,
+          27.57159926813786
+        ],
+        "max_channel": 38,
+        "p99_luma": 33.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daegu_thunders__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.212653318903318,
+          22.87798520923521,
+          23.250270562770563
+        ],
+        "max_channel": 29,
+        "p99_luma": 26.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daegu_thunders__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.239141414141415,
+          22.87135642135642,
+          23.19671717171717
+        ],
+        "max_channel": 30,
+        "p99_luma": 26.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daegu_thunders__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.690691336775675,
+          23.72932802639128,
+          25.047968660355707
+        ],
+        "max_channel": 31,
+        "p99_luma": 27.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "daegu_thunders__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.77004446356856,
+          23.75179288582903,
+          25.134072002294893
+        ],
+        "max_channel": 31,
+        "p99_luma": 27.333333333333332,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "busan_waves__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.219782681751987,
+          28.26744707068444,
+          28.02210522385273
+        ],
+        "max_channel": 35,
+        "p99_luma": 31.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "busan_waves__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          28.19943243344162,
+          28.264851947276053,
+          28.07326089391733
+        ],
+        "max_channel": 37,
+        "p99_luma": 31.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "busan_waves__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.629906204906206,
+          24.011661255411255,
+          24.071681096681097
+        ],
+        "max_channel": 32,
+        "p99_luma": 28.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "busan_waves__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          24.689862914862914,
+          23.984992784992784,
+          24.082539682539682
+        ],
+        "max_channel": 31,
+        "p99_luma": 28.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "busan_waves__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.713209982788296,
+          24.012397805507746,
+          25.655371485943775
+        ],
+        "max_channel": 35,
+        "p99_luma": 28.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "busan_waves__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.793925702811244,
+          23.973823866896154,
+          25.71048479632817
+        ],
+        "max_channel": 33,
+        "p99_luma": 28.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "changwon_anchors__stadium_day",
+      "width": 960,
+      "led_rect": [
+        346,
+        76,
+        474,
+        226
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.39585900451813,
+          25.228510884582352,
+          26.392311713528247
+        ],
+        "max_channel": 36,
+        "p99_luma": 29.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "changwon_anchors__stadium_day",
+      "width": 480,
+      "led_rect": [
+        173,
+        38,
+        237,
+        113
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.399200926029646,
+          25.253836675254846,
+          26.452447630783016
+        ],
+        "max_channel": 36,
+        "p99_luma": 29.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "changwon_anchors__stadium_night",
+      "width": 960,
+      "led_rect": [
+        338,
+        78,
+        504,
+        220
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.055266955266955,
+          22.79214466089466,
+          22.922564935064933
+        ],
+        "max_channel": 29,
+        "p99_luma": 26.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "changwon_anchors__stadium_night",
+      "width": 480,
+      "led_rect": [
+        169,
+        39,
+        252,
+        110
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          23.075,
+          22.78174603174603,
+          22.918506493506495
+        ],
+        "max_channel": 31,
+        "p99_luma": 26.0,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "changwon_anchors__headquarters_day",
+      "width": 960,
+      "led_rect": [
+        350,
+        82,
+        498,
+        224
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.810877438324727,
+          26.300344234079173,
+          28.038511187607572
+        ],
+        "max_channel": 39,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    },
+    {
+      "id": "changwon_anchors__headquarters_day",
+      "width": 480,
+      "led_rect": [
+        175,
+        41,
+        249,
+        112
+      ],
+      "display_stats": {
+        "mean_rgb": [
+          25.824548192771083,
+          26.300200803212853,
+          28.08304647160069
+        ],
+        "max_channel": 34,
+        "p99_luma": 30.666666666666668,
+        "bright_pixels_fraction_gt80": 0.0
+      }
+    }
+  ],
+  "display_check_note": "Supplementary brightness check on decoded final WebP usable LED rect; p99 max34/255,zero pixels with mean RGB>80. Visual review establishes blank content.",
+  "game_code_changed": false,
+  "game_integration_review": "pending",
+  "source_color_palette": "assets/v5b/manifest.json",
+  "source_color_palette_sha256": "44edc25dbd6d7fceb1bb0d13fa3868780aa81484f2c783eeb308b98c921b056b",
+  "checksums": "checksums.sha256"
+}
