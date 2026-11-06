@@ -189,6 +189,16 @@ const QUICK=process.env.QUICK==='1';
   { where='백업 권유'; const r=await ev(()=>{ const f0=inFrame; inFrame=()=>true; try{ G.bkAt=G.day-61; closeSheets(); A.tab('home'); const on=!!document.querySelector('.blk.bkn'); A.bkLater(); const off=!document.querySelector('.blk.bkn'); G.bkAt=G.day; A.expCode(); const set=G.bkAt===G.day; UI.expCode=null; return {on,off,set}; } finally { inFrame=f0; render(); } });
     if(r){ if(!r.on)add('백업 권유','다른 사이트 안에서 60일이 지났는데 백업 권유가 안 뜸'); if(!r.off)add('백업 권유',"'나중에'를 눌러도 안 닫힘"); if(!r.set)add('백업 권유','내보내기를 해도 백업 날짜가 기록되지 않음'); } }
   /* 저장은 몰아서(0.7초) 한다: 하루 진행·버튼마다 압축 저장(수백 ms)을 하면 굼떴다. 탭을 숨기면 바로 저장한다. 코드 내보내기는 복사 버튼으로 */
+  /* 슬롯 전환(검수 11-06): 현재 게임 저장과 활성 슬롯 변경이 모두 성공한 뒤에만 새 슬롯으로 전환한다. 기록 캐시는 세이브를 구분한다 */
+  { where='슬롯 전환'; const r=await ev(()=>{  const bad=[]; const cur=meta().active||1, other=cur===1?2:1; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); }
+  const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; closeSheets(); UI.title=false; render(); };
+  try{ saveNow(); const snap=localStorage.getItem(slotKey(cur)); G.day+=0; const gB=JSON.parse(JSON.stringify(G)); gB.name='슬롯검사'; G=gB; G._slotMark='B'; si.call(localStorage,slotKey(other),packG()); G=g0; delete G._slotMark;
+    /* 1) 활성 슬롯 변경만 실패 */ LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
+    if(G!==g0)bad.push('활성 슬롯 변경에 실패했는데 다른 슬롯으로 전환함'); if((meta().active||1)!==cur)bad.push('활성 슬롯 번호가 바뀜'); saveNow(); const o2=unpack(localStorage.getItem(slotKey(other))); if(!o2||o2._slotMark!=='B')bad.push('다른 슬롯이 덮어써짐');
+    /* 2) 현재 게임 저장 실패 */ LS.setItem=function(k,v){ if(k===slotKey(cur))throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
+    if(G!==g0)bad.push('현재 게임 저장에 실패했는데 다른 슬롯으로 이동함');
+    /* 3) 기록 캐시: 다른 세이브면 다시 센다 */ const r1=playerRows(G.year); const gC=unpack(packG()); const ids=Object.keys(gC.players); gC.players={[ids[0]]:gC.players[ids[0]]}; const gk=G; G=gC; const r2=playerRows(G.year); G=gk; if(r2===r1)bad.push('다른 세이브인데 직전 세이브 선수 기록 캐시를 씀');
+  }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ restore(); } return bad;  }); if(r){ for(const m of r)add('슬롯 전환',m); } }
   { where='저장 몰아 하기'; const r=await ev(async()=>{ saveNow(); const k=slotKey(meta().active||1); const a=localStorage.getItem(k); G.day+=0; G._svProbe=(G._svProbe||0)+1; save(); const b=localStorage.getItem(k); let c=b; for(let i=0;i<30&&c===b;i++){ await new Promise(z=>setTimeout(z,100)); c=localStorage.getItem(k); }
       G._svProbe++; save(); saveFlush(); const d=localStorage.getItem(k); delete G._svProbe; saveNow(); return {same:a===b,changed:b!==c,flushed:c!==d}; });
     if(r){ if(!r.same)add('저장','save()가 바로 저장함(몰아 하기가 안 됨)'); if(!r.changed)add('저장','0.9초가 지나도 저장되지 않음'); if(!r.flushed)add('저장','탭을 숨길 때(saveFlush) 남은 저장이 끝나지 않음'); } }

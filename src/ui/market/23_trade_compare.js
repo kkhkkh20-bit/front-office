@@ -76,7 +76,7 @@ function careerStory(p){
 
 /* ---------- 상황판: 리그 판도 · 우리 구단 진단 · 구단별 전력 ---------- */
 let _psC={k:null};
-function allStrength(){ const k=G.day+':'+G.games.length+':'+G.year; if(_psC.k===k)return _psC.v; const v={}; for(const t of G.teams)v[t.id]=posStrength(rosterList(t.id)); _psC={k,v}; return v; }
+function allStrength(){ const k=G.day+':'+G.games.length+':'+G.year; if(_psC.k===k&&_psC.g===G)return _psC.v; const v={}; for(const t of G.teams)v[t.id]=posStrength(rosterList(t.id)); _psC={k,v,g:G}; return v; }
 function pct(v){ return v==null?'-':v>=.995?'99%+':v<=.005&&v>0?'1% 미만':v===0?'0%':Math.round(v*100)+'%'; }
 function raceCard(){
   const per=period(); const {order,live,y}=standOrder(); const odds=playoffOdds(); const top=order[0];

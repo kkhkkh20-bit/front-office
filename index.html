@@ -19429,7 +19429,7 @@ const UI={open:{},mail:null,mf:'all',talkMsg:null,tab:'home',sheet:null,posSheet
 /* 저장: 슬롯 10개, lz-string 압축. 브라우저 저장 공간(보통 5MB 안팎)을 넘으면 저장 오류를 띄우고 파일 내보내기를 권한다 */
 const SLOTS=10, META='danjang-meta'; const SLOT_IDS=Array.from({length:SLOTS},(_,i)=>i+1);
 function meta(){ try{ const m=JSON.parse(localStorage.getItem(META)||'null'); if(m)return m; }catch(e){} return {active:1,slots:{}}; }
-function setMeta(m){ try{localStorage.setItem(META,JSON.stringify(m));}catch(e){} }
+function setMeta(m){ try{ const s=JSON.stringify(m); localStorage.setItem(META,s); return localStorage.getItem(META)===s; }catch(e){ return false; } } /* 성공 여부: 활성 슬롯 변경이 실패하면 전환하지 않는다(검수 11-06) */
 const slotKey=n=>`${SAVE}-s${n}`;
 /* 저장 형식: '\u0001' + 원래 바이트 길이(15비트 두 글자) + deflate(raw) 바이트를 15비트씩 글자로 담는다(0xD800 아래 글자만 써서 브라우저 저장소에서 깨지지 않게).
    예전 LZ 저장('\u0001'로 시작하지 않음)과 아주 옛날 JSON 저장('{')도 그대로 읽는다. LZ는 시즌이 쌓이면 한 번에 0.8초 넘게 걸려 화면이 굳었다 */
@@ -20170,21 +20170,21 @@ function strkPill(tid){ const s=streakOf(tid); if(!s)return ''; return `<span cl
 function blockNow(){ const r=G.res; G.res=null; const b=blocker(); G.res=r; return b; }
 
 let _tsC=null;
-function teamStats(y){ const key=y+':'+G.day+':'+G.games.length; if(_tsC&&_tsC.k===key)return _tsC.v;
-  { const A=G.tsArch&&G.tsArch[y]; if(A&&!(G.sea&&G.sea.y===y&&period()==='season')){ const T=A.map((x,i)=>{ const br=bRate(x.b), pr=pRate(x.p); return {tid:i,b:x.b,p:x.p,g:x.g,rs:x.rs,ra:x.ra,avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,era:pr.era,whip:pr.whip,hr:x.b.hr,sb:x.b.sb,so:x.p.so,hra:x.p.hr}; }); _tsC={k:key,v:T}; return T; } }
+function teamStats(y){ const key=y+':'+G.day+':'+G.games.length; if(_tsC&&_tsC.k===key&&_tsC.g===G)return _tsC.v; /* 다른 세이브면 날짜·경기 수가 같아도 다시 센다(검수 11-06) */
+  { const A=G.tsArch&&G.tsArch[y]; if(A&&!(G.sea&&G.sea.y===y&&period()==='season')){ const T=A.map((x,i)=>{ const br=bRate(x.b), pr=pRate(x.p); return {tid:i,b:x.b,p:x.p,g:x.g,rs:x.rs,ra:x.ra,avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,era:pr.era,whip:pr.whip,hr:x.b.hr,sb:x.b.sb,so:x.p.so,hra:x.p.hr}; }); _tsC={k:key,v:T,g:G}; return T; } }
   const T=G.teams.map(t=>({tid:t.id,b:Object.assign({},ZB),p:Object.assign({},ZP)}));
   for(const p of Object.values(G.players)) for(const h of p.hist){ if(h.y!==y||h.lvl!=='1군'||h.t==null||!T[h.t])continue; const X=p.isP?T[h.t].p:T[h.t].b; for(const k in X)X[k]+=h[k]||0; }
   for(const t of T){ const L=tlOf(t.tid); const cur=G.sea&&G.sea.y===y; t.g=L.length; t.rs=cur?sum(L.map(x=>x[1])):t.b.r; t.ra=cur?sum(L.map(x=>x[2])):null; const br=bRate(t.b), pr=pRate(t.p); Object.assign(t,{avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,era:pr.era,whip:pr.whip,hr:t.b.hr,sb:t.b.sb,so:t.p.so,hra:t.p.hr}); }
-  _tsC={k:key,v:T}; return T; }
+  _tsC={k:key,v:T,g:G}; return T; }
 function rankIn(T,tid,k,asc){ const s=[...T].sort((a,b)=>asc?a[k]-b[k]:b[k]-a[k]); return s.findIndex(x=>x.tid===tid)+1; }
 const rkPill=(r)=>`<span class="rk ${r<=3?'hi':r>=8?'lo':''}">${r}위</span>`;
 
 /* 시즌 개인 기록(리그 전체) */
 let _prC=null;
-function playerRows(y){ const key=y+':'+G.day+':'+G.games.length; if(_prC&&_prC.k===key)return _prC.v;
+function playerRows(y){ const key=y+':'+G.day+':'+G.games.length; if(_prC&&_prC.k===key&&_prC.g===G)return _prC.v;
   const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(!h)continue; if(p.isP?!h.outs:!h.pa)continue; rows.push({p,h,w:wOf(h,p),r:p.isP?pRate(h):bRate(h)}); }
   for(const id in (G.arch||{})){ if(G.players[id])continue; const q=archP(G.arch[id]); const h=seasonTotal(q,y,'1군'); if(!h||(q.isP?!h.outs:!h.pa))continue; rows.push({p:q,h,w:wOf(h,q),r:q.isP?pRate(h):bRate(h)}); } /* 시즌 중 리그를 떠난 선수도 그해 기록에 남는다(시상 집계와 같은 대상, 검수 11-06) */
-  _prC={k:key,v:rows}; return rows; }
+  _prC={k:key,v:rows,g:G}; return rows; }
 function qualOf(tid){ const r=G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0; return g; }
 function isQual(x,y){ const live=y===G.year&&(period()==='season'||period()==='post'); const g=live?qualOf(x.h.t??x.p.team):144; return x.p.isP?x.h.outs>=Math.max(3,g*3):x.h.pa>=Math.max(3,Math.round(g*3.1)); } /* 규정타석은 반올림(144경기 446), 시상·타이틀과 같은 기준(검수 11-06) */
 
@@ -22962,7 +22962,7 @@ function careerStory(p){
 
 /* ---------- 상황판: 리그 판도 · 우리 구단 진단 · 구단별 전력 ---------- */
 let _psC={k:null};
-function allStrength(){ const k=G.day+':'+G.games.length+':'+G.year; if(_psC.k===k)return _psC.v; const v={}; for(const t of G.teams)v[t.id]=posStrength(rosterList(t.id)); _psC={k,v}; return v; }
+function allStrength(){ const k=G.day+':'+G.games.length+':'+G.year; if(_psC.k===k&&_psC.g===G)return _psC.v; const v={}; for(const t of G.teams)v[t.id]=posStrength(rosterList(t.id)); _psC={k,v,g:G}; return v; }
 function pct(v){ return v==null?'-':v>=.995?'99%+':v<=.005&&v>0?'1% 미만':v===0?'0%':Math.round(v*100)+'%'; }
 function raceCard(){
   const per=period(); const {order,live,y}=standOrder(); const odds=playoffOdds(); const top=order[0];
@@ -25991,8 +25991,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   askNew(){UI.confirmNew=true;render();},
   cancelNew(){UI.confirmNew=false;render();},
   newgame(){ saveNow(); G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
-  slotLoad(v){ if(G)saveNow(); const m=meta(); const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){UI.slotMsg='불러오지 못했습니다.';render();return;} const g0=G; G=g; try{migrateDraft();}catch(e){ G=g0; try{ migrateDraft(); }catch(x){} UI.slotMsg=`슬롯 ${v}의 데이터를 복원하다 오류가 나 열지 않았습니다(${String(e&&e.message||e).slice(0,60)}). 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } m.active=+v; setMeta(m); /* 복원이 끝난 뒤에만 활성 슬롯을 바꾼다(검수 11-06) */ UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
-  slotNew(v){ if(G)saveNow(); UI.newSlot=+v; const m=meta(); m.active=+v; setMeta(m); G=null; UI.slotMsg=''; UI.title=true; UI.sstep='mode'; render(); window.scrollTo(0,0); },
+  slotLoad(v){ if(G&&+v!==(meta().active||1)&&!saveNow()){ UI.slotMsg=`지금 게임을 저장하지 못해 슬롯 ${v}(으)로 옮기지 않았습니다. ${SAVE_ERR||''}`.trim(); render(); return; } /* 현재 게임 저장이 성공해야 다른 슬롯으로 간다(검수 11-06) */ if(G&&+v===(meta().active||1))saveNow(); const m=meta(); const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){UI.slotMsg='불러오지 못했습니다.';render();return;} const g0=G; G=g; try{migrateDraft();}catch(e){ G=g0; try{ migrateDraft(); }catch(x){} UI.slotMsg=`슬롯 ${v}의 데이터를 복원하다 오류가 나 열지 않았습니다(${String(e&&e.message||e).slice(0,60)}). 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } m.active=+v; if(!setMeta(m)){ G=g0; try{ if(G)migrateDraft(); }catch(e){} UI.slotMsg=`슬롯 ${v}(으)로 바꾸는 기록을 저장하지 못해 열지 않았습니다. 지금 게임은 그대로입니다.`; render(); return; } /* 복원과 활성 슬롯 변경이 모두 끝난 뒤에만 전환한다(검수 11-06: 변경이 실패하면 다음 저장이 옛 슬롯을 덮어썼다) */ UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
+  slotNew(v){ if(G&&!saveNow()){ UI.slotMsg=`지금 게임을 저장하지 못해 새 게임을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim(); render(); return; } const m=meta(); m.active=+v; if(!setMeta(m)){ UI.slotMsg=`슬롯 ${v}(으)로 바꾸는 기록을 저장하지 못했습니다.`; render(); return; } UI.newSlot=+v; G=null; UI.slotMsg=''; UI.title=true; UI.sstep='mode'; render(); window.scrollTo(0,0); },
   slotDel(v){ const m=meta(); if(UI.delAsk!==+v){ UI.delAsk=+v; UI.slotMsg=`슬롯 ${v}을(를) 지우려면 삭제를 한 번 더 누르세요.`; render(); return; } let gone=false; try{ localStorage.removeItem(slotKey(+v)); gone=localStorage.getItem(slotKey(+v))==null; }catch(e){} UI.delAsk=null; if(!gone){ UI.slotMsg=`슬롯 ${v}을(를) 지우지 못했습니다. 브라우저 저장소가 삭제를 막았습니다.`; render(); return; } /* 실제로 지워졌을 때만 목록에서 뺀다(검수 11-06) */ delete m.slots[+v]; setMeta(m); UI.slotMsg=`슬롯 ${v}을(를) 지웠습니다.`; render(); },
   async expFile(){ if(G){ G.bkAt=G.day; try{ saveNow(); }catch(e){} } const code=LZString.compressToBase64(JSON.stringify(G)); if(!DL){ try{ const blob=new Blob([code],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`danjang-${G.year}.txt`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); UI.impMsg='파일을 내려받았습니다. 내려받기가 막혀 있으면 "코드 만들기"를 쓰세요.'; }catch(err){ UI.impMsg='이 화면에서는 파일 저장을 쓸 수 없습니다. "코드 만들기"를 쓰세요.'; } render(); return; } if(false){ render(); return; }
     try{ await DL.save({filename:`danjang-${tshort(G.user)}-${G.year}.txt`,data:code}); UI.impMsg='파일을 저장했습니다.'; }catch(err){ UI.impMsg=err&&err.code==='declined'?'파일 저장을 취소했습니다.':err&&err.code==='rate_limited'?'잠시 뒤 다시 눌러 주세요.':'파일로 저장하지 못했습니다. "코드 만들기"를 쓰세요.'; } render(); },
