@@ -157,3 +157,8 @@
 @media(min-width:1100px) and (max-height:860px){.home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{-webkit-line-clamp:1;font-size:14px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>p{-webkit-line-clamp:1}}
 @media(min-width:1100px) and (max-height:860px){#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>:is(p,.hw-kicker){display:none}#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;margin:4px 0}}
 @media(max-width:699px){.hw-finance dl{gap:4px!important;padding:6px 10px!important}.hw-finance dd{font-size:16px!important}}
+/* 리그 부문별 1위 카드 */
+.hw-lt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px;padding:6px 10px;align-content:start;min-height:0;overflow:hidden}
+.hw-lr{display:grid;grid-template-columns:auto minmax(0,1fr) 14px auto;align-items:center;gap:5px;padding:3px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;min-width:0}
+.hw-lr>i{font-style:normal;font-size:11px;color:var(--muted);min-width:30px}.hw-lr .av{width:24px!important;height:24px!important;border-radius:50%}.hw-lr>b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hw-lr>em{font-style:normal;font-weight:800;font-size:13px}
+.hw-lr.own>b{color:var(--team-hi)}
