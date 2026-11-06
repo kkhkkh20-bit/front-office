@@ -2,221 +2,131 @@
   {
     "key": "seoul_comets",
     "wordmark": "SEOUL COMETS",
-    "lines": [
-      "SEOUL",
-      "COMETS"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "open",
+    "city": "SEOUL",
+    "nickname": "COMETS",
+    "curved_outline_placement": false
   },
   {
     "key": "seoul_hounds",
     "wordmark": "SEOUL HOUNDS",
-    "lines": [
-      "SEOUL",
-      "HOUNDS"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "open",
+    "city": "SEOUL",
+    "nickname": "HOUNDS",
+    "curved_outline_placement": false
   },
   {
     "key": "incheon_seagulls",
     "wordmark": "INCHEON SEAGULLS",
-    "lines": [
-      "INCHEON",
-      "SEAGULLS"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "roundel",
+    "city": "INCHEON",
+    "nickname": "SEAGULLS",
+    "curved_outline_placement": true
   },
   {
     "key": "suwon_sparks",
     "wordmark": "SUWON SPARKS",
-    "lines": [
-      "SUWON",
-      "SPARKS"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "open",
+    "city": "SUWON",
+    "nickname": "SPARKS",
+    "curved_outline_placement": false
   },
   {
     "key": "goyang_storm",
     "wordmark": "GOYANG STORM",
-    "lines": [
-      "GOYANG",
-      "STORM"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "roundel",
+    "city": "GOYANG",
+    "nickname": "STORM",
+    "curved_outline_placement": true
   },
   {
     "key": "daejeon_redfox",
     "wordmark": "DAEJEON RED FOX",
-    "lines": [
-      "DAEJEON",
-      "RED FOX"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "diamond",
+    "city": "DAEJEON",
+    "nickname": "RED FOX",
+    "curved_outline_placement": false
   },
   {
     "key": "gwangju_blazes",
     "wordmark": "GWANGJU BLAZES",
-    "lines": [
-      "GWANGJU",
-      "BLAZES"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "diamond",
+    "city": "GWANGJU",
+    "nickname": "BLAZES",
+    "curved_outline_placement": false
   },
   {
     "key": "daegu_thunders",
     "wordmark": "DAEGU THUNDERS",
-    "lines": [
-      "DAEGU",
-      "THUNDERS"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "baseball_seal",
+    "city": "DAEGU",
+    "nickname": "THUNDERS",
+    "curved_outline_placement": false
   },
   {
     "key": "busan_waves",
     "wordmark": "BUSAN WAVES",
-    "lines": [
-      "BUSAN",
-      "WAVES"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "open",
+    "city": "BUSAN",
+    "nickname": "WAVES",
+    "curved_outline_placement": false
   },
   {
     "key": "changwon_anchors",
     "wordmark": "CHANGWON ANCHORS",
-    "lines": [
-      "CHANGWON",
-      "ANCHORS"
-    ],
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
+    "font": "Barlow Semi Condensed ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
     "weight": 800,
-    "shaping": "HarfBuzz kern on, liga off",
-    "tracking_font_units": {
-      "city": 125,
-      "nickname": 15
-    },
-    "cap_height_512": {
-      "city": 21,
-      "nickname": 54
-    },
-    "glyph_paths_only": true
+    "outlined": true,
+    "shaping": "HarfBuzz, kern enabled, liga disabled",
+    "layout": "roundel",
+    "city": "CHANGWON",
+    "nickname": "ANCHORS",
+    "curved_outline_placement": true
   }
 ]

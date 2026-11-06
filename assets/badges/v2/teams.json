@@ -1,10 +1,11 @@
 {
   "version": 2,
+  "revision": "professional-02",
   "path_base": "assets/badges/v2/",
-  "note": "Original fictional club crests. Flat SVG masters use 2–4 solid colors. All PNGs are rendered from the same masters with a single rim bevel, two-tone field and 8/512 short downward shadow. Asset keys are not game team IDs.",
   "request": "docs/asset-requests/2026-11-06-codex-badges-v2-crests.md",
   "request_sha256": "63bf3d5ccbcf546e443dbcd69b5e2ad2f16831a86f9082b15109e9b26734ba03",
-  "base_main_commit": "13e5e8f200b35913d114ffc8c9c8cab5a938e723",
+  "supersedes_commit": "88e94b6e3aea3ba18aa877b34b6d8ee106ffddc8",
+  "direction": "User feedback: study real KBO and MLB identities; professional wordmarks and compact abstract cap marks, individual club layouts, no common mascot shield/ribbon.",
   "teams": [
     {
       "key": "seoul_comets",
@@ -21,9 +22,8 @@
         "secondary": "#FFFFFF",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "homeplate",
-      "symbol_concept": "Comet baseball and three swept flame tails",
-      "baseball_element": "baseball and sewn seams",
+      "layout": "open",
+      "symbol_concept": "A leading baseball and a single swept trajectory",
       "assets": {
         "crest": {
           "512": "png/crest/512/seoul_comets.png",
@@ -45,11 +45,11 @@
         "relief_mark32": "svg/relief/mark32/seoul_comets.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "SEOUL",
           "COMETS"
@@ -71,9 +71,8 @@
         "secondary": "#ED1C24",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "shield",
-      "symbol_concept": "Lean right-facing sighthound profile, swept-back ear",
-      "baseball_element": "baseball collar medallion",
+      "layout": "open",
+      "symbol_concept": "Eyeless sighthound profile and one red speed slash",
       "assets": {
         "crest": {
           "512": "png/crest/512/seoul_hounds.png",
@@ -95,11 +94,11 @@
         "relief_mark32": "svg/relief/mark32/seoul_hounds.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "SEOUL",
           "HOUNDS"
@@ -121,9 +120,8 @@
         "secondary": "#FFFFFF",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "medallion",
-      "symbol_concept": "Front-facing sea gull with broad three-tip wings",
-      "baseball_element": "baseball cradled at the chest",
+      "layout": "roundel",
+      "symbol_concept": "Broad wishbone gull silhouette, no character face",
       "assets": {
         "crest": {
           "512": "png/crest/512/incheon_seagulls.png",
@@ -145,11 +143,11 @@
         "relief_mark32": "svg/relief/mark32/incheon_seagulls.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "INCHEON",
           "SEAGULLS"
@@ -171,9 +169,8 @@
         "secondary": "#ED1C24",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "octagon",
-      "symbol_concept": "Asymmetric six-ray electric charge and red bolt",
-      "baseball_element": "home-plate keystone below the wordmark",
+      "layout": "open",
+      "symbol_concept": "One angular electric charge with a red cut",
       "assets": {
         "crest": {
           "512": "png/crest/512/suwon_sparks.png",
@@ -195,11 +192,11 @@
         "relief_mark32": "svg/relief/mark32/suwon_sparks.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "SUWON",
           "SPARKS"
@@ -221,9 +218,8 @@
         "secondary": "#FFFFFF",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "medallion",
-      "symbol_concept": "Three counter-clockwise wind arcs and piercing bolt",
-      "baseball_element": "home-plate keystone below the wordmark",
+      "layout": "roundel",
+      "symbol_concept": "Three flowing wind arcs and central lightning",
       "assets": {
         "crest": {
           "512": "png/crest/512/goyang_storm.png",
@@ -245,11 +241,11 @@
         "relief_mark32": "svg/relief/mark32/goyang_storm.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "GOYANG",
           "STORM"
@@ -271,9 +267,8 @@
         "secondary": "#282828",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "shield",
-      "symbol_concept": "Long-muzzled angular fox with outturned ears",
-      "baseball_element": "baseball below the muzzle",
+      "layout": "diamond",
+      "symbol_concept": "Tall ears and long muzzle cut in one fox silhouette",
       "assets": {
         "crest": {
           "512": "png/crest/512/daejeon_redfox.png",
@@ -295,11 +290,11 @@
         "relief_mark32": "svg/relief/mark32/daejeon_redfox.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "DAEJEON",
           "RED FOX"
@@ -321,9 +316,8 @@
         "secondary": "#FFD34F",
         "metal_flat": "#FFD34F"
       },
-      "frame": "homeplate",
-      "symbol_concept": "Broad gold flame tongues and red inner fire",
-      "baseball_element": "baseball in the flame base",
+      "layout": "diamond",
+      "symbol_concept": "Two complementary flame tongues",
       "assets": {
         "crest": {
           "512": "png/crest/512/gwangju_blazes.png",
@@ -345,11 +339,11 @@
         "relief_mark32": "svg/relief/mark32/gwangju_blazes.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "GWANGJU",
           "BLAZES"
@@ -371,9 +365,8 @@
         "secondary": "#FFFFFF",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "octagon",
-      "symbol_concept": "Heavy two-lobe thundercloud and descending lightning",
-      "baseball_element": "baseball seam in a cloud lobe",
+      "layout": "baseball_seal",
+      "symbol_concept": "Two-lobe cloud with one lightning counter",
       "assets": {
         "crest": {
           "512": "png/crest/512/daegu_thunders.png",
@@ -395,11 +388,11 @@
         "relief_mark32": "svg/relief/mark32/daegu_thunders.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "DAEGU",
           "THUNDERS"
@@ -421,9 +414,8 @@
         "secondary": "#D00F31",
         "metal_flat": "#FFFFFF"
       },
-      "frame": "medallion",
-      "symbol_concept": "Single hooked left-folding wave and red undertow",
-      "baseball_element": "baseball caught in the curling lip",
+      "layout": "open",
+      "symbol_concept": "Single curling wave silhouette and one red undertow",
       "assets": {
         "crest": {
           "512": "png/crest/512/busan_waves.png",
@@ -445,11 +437,11 @@
         "relief_mark32": "svg/relief/mark32/busan_waves.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "BUSAN",
           "WAVES"
@@ -471,9 +463,8 @@
         "secondary": "#C6A269",
         "metal_flat": "#C6A269"
       },
-      "frame": "shield",
-      "symbol_concept": "Broad-fluked anchor with one looping rope",
-      "baseball_element": "baseball anchor eye",
+      "layout": "roundel",
+      "symbol_concept": "Broad anchor and one rope loop",
       "assets": {
         "crest": {
           "512": "png/crest/512/changwon_anchors.png",
@@ -495,11 +486,11 @@
         "relief_mark32": "svg/relief/mark32/changwon_anchors.svg"
       },
       "wordmark_font": {
-        "family": "Barlow Condensed",
-        "style": "ExtraBold",
+        "family": "Barlow Semi Condensed",
+        "style": "ExtraBold Italic",
         "weight": 800,
         "outlined": true,
-        "shaping": "HarfBuzz kern enabled",
+        "shaping": "HarfBuzz kern on",
         "lines": [
           "CHANGWON",
           "ANCHORS"
@@ -513,8 +504,7 @@
     "dedicated_mark32_svg": 10,
     "derived_relief_svg": 30,
     "rgba_png": 60,
-    "max_primary_outline_512": 11,
-    "shadow_y_512": 8,
+    "shadow_y_512": 6,
     "shadow_blur": 0,
     "lighting": "top-left",
     "runtime_crest_sizes": [
@@ -529,13 +519,13 @@
     "archive_only_crest_size": 512
   },
   "typography": {
-    "family": "Barlow Condensed",
-    "style": "ExtraBold",
-    "font_source": "https://github.com/google/fonts/tree/main/ofl/barlowcondensed",
-    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
-    "license": "licenses/BarlowCondensed-OFL.txt",
-    "outlined_glyphs": true,
-    "no_font_runtime_dependency": true
+    "family": "Barlow Semi Condensed",
+    "style": "ExtraBold Italic",
+    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
+    "source": "https://github.com/google/fonts/tree/main/ofl/barlowsemicondensed",
+    "license": "licenses/BarlowSemiCondensed-OFL.txt",
+    "no_runtime_font_dependency": true
   },
-  "review_status": "asset review branch, game connection pending"
+  "research": "REFERENCES.md",
+  "review_status": "review branch; game connection pending"
 }
