@@ -2587,6 +2587,20 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 header.ibm-h{grid-template-columns:76px minmax(0,1fr) auto}
 header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 @media (max-width:979px){ header.ibm-h{grid-template-columns:64px minmax(0,1fr)} header.ibm-h>.av,header.ibm-h>.ob-av{width:64px;height:64px} } /* 13_inbox.css가 뒤에 오므로 header로 우선순위를 올린다 */
+/* 프로필 사진을 전체적으로 크게(사용자 11-06: "프사가 너무 작아"). 실사 사진이라 얼굴이 보일 만큼 */
+#app .pm{grid-template-columns:48px minmax(0,1fr) auto;gap:10px}
+#app .pm .av{width:48px;height:48px}
+#app .fdr .pm{grid-template-columns:48px minmax(0,1fr)}
+#app .ibr{grid-template-columns:44px minmax(0,1fr)}#app .ibr .av{width:44px;height:44px}
+#app .cmp-s{grid-template-columns:38px minmax(0,1fr) auto}#app .cmp-s .av{width:38px;height:38px}
+#app .tstrip button .av,#app .mko-h .av,#app .sqt .pn .av{width:40px;height:40px}
+#app .spn-dt .av{width:36px;height:36px}
+#app .job{grid-template-columns:48px minmax(0,1fr) auto auto}#app .job .av{width:48px;height:48px}
+#app .gmc-h .av{width:52px;height:52px}
+#app .pc-top .av{width:52px;height:52px}#app .dec-t .av{width:52px;height:52px}#app .dc-p .av{width:44px;height:44px}
+#app .fx-pl .av{width:44px;height:44px}#app .fx-l1{grid-template-columns:48px minmax(0,1fr) auto}
+/* 물음표 버튼이 가로로 넘기는 탭 줄 위에 떠 있을 때 뒤 글자가 비쳐 겹쳐 보이지 않게 불투명하게(사용자 11-06 화면) */
+#app .subhead.notitle .helpbtn:not(.on){background:color-mix(in srgb,var(--acc) 16%,var(--bg,#0e141b));box-shadow:-8px 0 8px var(--bg,#0e141b)}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
