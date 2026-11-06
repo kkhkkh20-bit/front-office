@@ -26,7 +26,7 @@ function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.don
 function evFollow(days,k,data){ evInit(); G.evf.push({day:G.day+days,k,data}); }
 function evResult(evId,txt){ const L=(G.evlog||[]).find(x=>x.id===evId); if(L)L.f=txt; }
 function evDaily(){ if(!G.evs)return;
-  for(const e of G.evs)if(!e.done&&G.day>=e.exp)evPick(e.id,e.def,true);
+  for(const e of G.evs)if(!e.done&&G.day>e.exp)evPick(e.id,e.def,true); /* 안내한 기한 날짜까지는 고를 수 있고, 다음 날 처리를 시작할 때 기본안(검수 11-06) */
   const due=(G.evf||[]).filter(f=>f.day<=G.day); if(due.length){ G.evf=G.evf.filter(f=>f.day>G.day); for(const f of due){ try{ EVH[f.k]&&EVH[f.k].follow&&EVH[f.k].follow(f.data); }catch(err){} } } }
 function aiScandalWeek(){ if(period()!=='season'||R()>.025)return; const t=pick(G.teams.filter(x=>x.id!==G.user)); const L=playersOf(t.id).filter(p=>!(p.susp>G.day)); if(!L.length)return; const p=pick(L); const ty=wpick({gamble:.3,drink:.35,sns:.35}); const S=SCAND[ty];
   if(S.kbo)p.susp=G.day+gDays(S.kbo+(R()<.5?S.club:0)); story(p,`${S.t}로 징계`,'inj'); wire('징계',`${tshort(t.id)} ${p.name}, ${S.t}로 ${S.kbo?`출장정지 ${S.kbo}경기`:'제재금'} 징계`,{tid:t.id,ref:p.id}); }

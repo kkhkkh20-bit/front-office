@@ -1176,7 +1176,7 @@ T('[KBO 부상 대체 외국인] 6주 이상 부상만 대체 가능하고 교�
   ok(!G.players[q.id].ftmp&&G.players[q.id].team===G.user,'정식 전환 실패'); ok(!(G.players[o.id]&&G.players[o.id].team===G.user),'원 선수가 남아 있음'); ok(fReplUsed(G.user)===used+1,'정식 전환이 교체 1회를 쓰지 않음'); });
 T('[KBO 부상 대체 외국인] 원 선수가 돌아오면 대체 선수가 떠나고, 정규시즌이 끝나면 대체 계약도 끝난다',()=>{ fresh(); G.day=G.cal.open+20; const o=foreignOf(G.user).find(p=>p.foreign==='용병'); o.injOut=60; const q=newForeign('용병',{isP:o.isP,market:true}); G.fmarket.push(q.id);
   const sp0=G.sea.fspend[G.user]||0; ok(!signTempForeign(G.user,o.id,q.id),'준비 실패'); ok((G.sea.fspend[G.user]||0)>sp0,'대체 보수가 지출에 안 잡힘');
-  G.day+=45; const paid=q.ftmp.paid; fTmpDaily(); ok(q.ftmp.paid===paid+30,'6주 뒤 연장 비용이 붙지 않음'); o.injOut=0; fTmpDaily(); const e=G.evs.find(x=>x.k==='ftmp'&&!x.done); ok(e,'결정 없음'); G.day=e.exp; evDaily();
+  G.day+=45; const paid=q.ftmp.paid; fTmpDaily(); ok(q.ftmp.paid===paid+30,'6주 뒤 연장 비용이 붙지 않음'); o.injOut=0; fTmpDaily(); const e=G.evs.find(x=>x.k==='ftmp'&&!x.done); ok(e,'결정 없음'); G.day=e.exp+1; evDaily();
   ok(!G.players[q.id],'기본 선택(원 선수 복귀)인데 대체 선수가 남음'); ok(!o.frehab&&healthy(o)&&foreignOf(G.user).includes(o),'원 선수가 돌아오지 않음');
   const o2=foreignOf(G.user).find(p=>p.foreign==='용병'); o2.injOut=60; const q3=newForeign('용병',{isP:o2.isP,market:true}); G.fmarket.push(q3.id); ok(!signTempForeign(G.user,o2.id,q3.id),'두 번째 대체 실패');
   G.day=G.cal.end+1; fTmpDaily(); ok(!G.players[q3.id]&&!o2.frehab,'정규시즌 뒤에도 대체 선수가 남음(포스트시즌 출전 불가)'); });
@@ -1735,6 +1735,11 @@ T('[공통 점검] 해외: 복무 중 포스팅 불가, 재활 중이면 해외 
   delete p.mil; const x=postStart(p); ok(x&&x.day===Math.max(G.day+20,KD(12,12)),'발표일 계산이 다름'); G.posting=[];
   ovsLeave(p,'MLB','테스트',1,300,'포스팅'); const a=G.abroad.find(r=>r.pid===p.id||(r.pj&&JSON.parse(r.pj).id===p.id)); ok(a,'준비 실패: 해외 명단'); const q=JSON.parse(a.pj); q.injOut=500; q.mil={from:G.day-100,until:G.day+30,unit:'현역'}; q.r.con=Math.max(q.r.con||0,90); a.pj=JSON.stringify(q); a.yrs=1; a.y1=G.year;
   const R0=Math.random; abroadYear(); const ln=(a.lines||[]).slice(-1)[0]; ok(ln&&((ln.pa||0)<=60&&(ln.outs||0)<=60),'재활 500일인데 해외 출전 '+JSON.stringify(ln&&{pa:ln.pa,outs:ln.outs})); });
+T('[공통 점검] 협회: 이직해도 던진 표는 그 구단 표로 남고, 안내한 기한 날짜에는 아직 고를 수 있으며, 89.99%는 소집 요건이 아니고, 새 협회장 효과는 임기 시작부터',()=>{ fresh(); G.year=2029; const A=asInit(); const [a,b]=[G.user,G.teams.map(t=>t.id).find(t=>t!==G.user)];
+  A.cur={y:G.year+1,near:G.teams.map(t=>t.id),on:true}; G.user=a; EVH.cmt.pick({},CMT_OPT.length-1); const myV=A.cur.uv; G.user=b; G.capY={}; capCouncil(); const rec=A.cmt[0]; G.user=a; ok(rec.vote[a]===myV,'원래 구단 표가 바뀜: '+rec.vote[a]+' vs '+myV); ok(rec.uvT===a,'표 던진 구단 기록 없음');
+  const e=evNew('mreq','기한 테스트','상황',[{l:'예',fx:''},{l:'아니오',fx:''}],{def:1,exp:2}); G.day=e.exp; evDaily(); ok(!e.done,'안내한 기한 날짜에 이미 처리됨'); G.day=e.exp+1; evDaily(); ok(e.done,'기한 다음 날에도 처리 안 됨');
+  const cap=capOf(G.year); A.snap={y:G.year,r:G.teams.map(()=>0.5)}; A.snap.r[a]=0.899956; ok(cmtRatio(team(a))<CMT_TH,'89.99%가 90%로 올라감');
+  A.head.stance='grow'; A.head.since=sponSeason()+1; ok(asRev()===1,'임기 전 협회장 효과가 켜짐'); A.head.since=sponSeason(); ok(asRev()>1,'임기 중 효과 없음'); });
 T('[공통 점검] 감독이 바뀌면 전임 감독의 거절로 보직 요청이 막히지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&q.age<=27); const m=G.mgr[G.user]; (G.proleNo=G.proleNo||{})[p.id]={u:G.day+7,mid:m.id}; const r1=proleSet(p.id,'sp'); ok(/거절/.test(r1),'같은 감독은 막혀야 함: '+r1); G.proleNo[p.id].mid=-999; const r2=proleSet(p.id,'sp'); ok(!/얼마 전 거절/.test(r2),'새 감독인데 막힘: '+r2); });
 T('[검수 11-06m] 웨이버로 넘어가도 성과 옵션·구단 옵션·옵트아웃이 이어진다',()=>{ fresh(); simTo(()=>period()==='season'&&tradeOpen()&&G.day<dnum(G.year,7,20)); const [A,B]=G.teams.map(t=>t.id).filter(t=>t!==G.user); const p=domestic(A).find(q=>!q.foreign); p.ctT=A; p.opt={a:250,until:G.year+2,c:'x'}; p.cOpt={y:1,a:800}; p.pOut={y:G.year+1};
   wvStart(p,0); p.team=null; p.wv.cl=[B]; p.wv.end=G.day; const ow=wvWants; wvWants=()=>false; try{ wvDaily(); } finally{ wvWants=ow; } ok(p.team===B,'준비 실패 '+p.team); ok(p.opt&&p.cOpt&&p.pOut&&p.ctT===B,'옵션 사라짐'); });
