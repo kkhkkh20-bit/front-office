@@ -4274,6 +4274,12 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 .hw-rs .hd{display:flex;justify-content:space-between;color:var(--ink);font-weight:700;font-size:13px;padding-bottom:3px;border-bottom:1px solid var(--line)}.hw-rs .bad{color:var(--bad)}
 
 .hw-match .hw-match-main{gap:5px;padding:6px 10px}.hw-match .hw-match-main>.small{display:none} /* 선발 매치업이 들어가 안내 한 줄은 뺀다 */
+/* 휴대폰 홈(사용자 11-06): 요약 칸은 옆으로 밀어 보는 한 줄 띠, 카드는 내용만큼만 높이 */
+@media(max-width:699px){
+.hw-metrics{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}.hw-metrics::-webkit-scrollbar{display:none}
+.hw-metrics>*{flex:0 0 44%!important;width:44%!important;max-width:none!important;scroll-snap-align:start;min-width:0;box-sizing:border-box}
+.home-workspace[data-rows="2"] .home-grid.home-dashboard{grid-template-rows:repeat(2,minmax(0,max-content));align-content:start}
+}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -20408,6 +20414,10 @@ function homeWorkspace(){
   const focused=UI.homeFocus&&UI.homeFocus.view===view&&raw[UI.homeFocus.index],heading=`<div class="hw-heading"><div>${badge(G.user,30)}<span><b>${esc(tshort(G.user))}</b><small>${G.year} ${PERIOD[period()]}</small></span></div><nav aria-label="홈 화면">${[['overview','구단 현황'],['work','업무·보고'],['team','선수단']].map(([k,l])=>`<button class="${view===k?'on':''}" data-a="homePanel" data-v="${k}">${l}</button>`).join('')}</nav></div>`;
   return `<div class="home-workspace" data-device="${device}" data-columns="${cols}" data-rows="${Math.min(rows,Math.ceil(Math.min(cards.length-page*size,size)/cols))}">${heading}${homeMetrics()}${focused?`<div class="hw-full-report"><button class="btn small" data-a="homeCloseCard">‹ 카드 목록으로</button>${focused}</div>`:`<div class="${view==='overview'?'home-priority home-dashboard home-grid':'hw-work'}">${cards.slice(page*size,(page+1)*size).join('')}</div>`}<nav class="hw-pager" aria-label="홈 카드 페이지"><button class="btn small" data-a="homePage" data-v="-1" ${page>0&&!focused?'':'disabled'}>이전</button><span aria-live="polite">${focused?'보고 상세':`${page+1} / ${pages} · ${cards.length}개 카드`}</span><button class="btn small" data-a="homePage" data-v="1" ${page<pages-1&&!focused?'':'disabled'}>다음</button></nav></div>`;
 }
+/* 휴대폰 홈: 카드 칸을 옆으로 밀어 다음·이전 장으로(사용자 11-06). 세로 스크롤·표 가로 스크롤과 헷갈리지 않게 가로로 충분히 밀었을 때만 */
+if(typeof document!=='undefined'&&!window._hwSwipe){ window._hwSwipe=1; let x0=null,y0=null;
+  document.addEventListener('touchstart',e=>{ const t=e.target&&e.target.closest&&e.target.closest('.home-workspace .home-grid,.home-workspace .hw-work'); if(!t||e.target.closest('.hw-stand,.hw-wk')){ x0=null; return; } x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
+  document.addEventListener('touchend',e=>{ if(x0==null)return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){ try{ A.homePage(dx<0?1:-1); }catch(err){} } },{passive:true}); }
 /* ---------- FA 센터 ---------- */
 function agAv(ag,expr){ return avImg({persona:'agent',pid:'agt'+ag.id+ag.name,age:ag.size==='big'?52:ag.size==='mid'?46:39,female:!!ag.female,expr:expr||null,name:ag.name}); }
 function agentAv(p,expr){ return agAv(agentOf(p),expr); }

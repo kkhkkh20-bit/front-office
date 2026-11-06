@@ -120,3 +120,9 @@
 .hw-rs .hd{display:flex;justify-content:space-between;color:var(--ink);font-weight:700;font-size:13px;padding-bottom:3px;border-bottom:1px solid var(--line)}.hw-rs .bad{color:var(--bad)}
 
 .hw-match .hw-match-main{gap:5px;padding:6px 10px}.hw-match .hw-match-main>.small{display:none} /* 선발 매치업이 들어가 안내 한 줄은 뺀다 */
+/* 휴대폰 홈(사용자 11-06): 요약 칸은 옆으로 밀어 보는 한 줄 띠, 카드는 내용만큼만 높이 */
+@media(max-width:699px){
+.hw-metrics{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}.hw-metrics::-webkit-scrollbar{display:none}
+.hw-metrics>*{flex:0 0 44%!important;width:44%!important;max-width:none!important;scroll-snap-align:start;min-width:0;box-sizing:border-box}
+.home-workspace[data-rows="2"] .home-grid.home-dashboard{grid-template-rows:repeat(2,minmax(0,max-content));align-content:start}
+}
