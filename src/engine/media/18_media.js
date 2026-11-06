@@ -46,7 +46,7 @@ function prMonth(m){ prInit(); if(G.unemp)return; const st=standingsNow(); const
   if(best&&best.v>=1.2&&R()<.6){ const h=seasonTotal(best.p,G.year,'1군'); news('선수',`${nm}의 기둥 ${best.p.name}`,`${best.p.name}이(가) ${statLine(h,best.p)}(으)로 팀을 이끌고 있습니다.`,1,{ref:best.p.id}); }
   // 티켓 가격과 구장 관중
   { const S=stadOf(G.user); const pf=PRICE[S.price].fan+(stadPower(S.lv.seat)-2)*.25; if(pf)G.pr.fan=clamp(G.pr.fan+pf*2,0,100); const A=G.sea.att&&G.sea.att[G.user];
-    if(A&&A.n>=8){ const occ=A.sum/A.n/stadCap(G.user); if(occ>=.95&&R()<.5)news('구단',`${nm} 홈경기 표 구하기 전쟁`,`${stadName(G.user)} 좌석 점유율이 ${Math.round(occ*100)}%입니다. 올해 매진 ${A.so}회.`,1); else if(occ<.6&&R()<.5)news('구단',`${nm} 홈 관중석 썰렁`,`${stadName(G.user)} 경기당 평균 ${Math.round(A.sum/A.n).toLocaleString('ko-KR')}명으로 좌석 점유율 ${Math.round(occ*100)}%에 그쳤습니다.`,-1); } }
+    if(A&&A.n>=8){ const occ=A.sum/(A.cap||A.n*stadCap(G.user)); if(occ>=.95&&R()<.5)news('구단',`${nm} 홈경기 표 구하기 전쟁`,`${stadName(G.user)} 좌석 점유율이 ${Math.round(occ*100)}%입니다. 올해 매진 ${A.so}회.`,1); else if(occ<.6&&R()<.5)news('구단',`${nm} 홈 관중석 썰렁`,`${stadName(G.user)} 경기당 평균 ${Math.round(A.sum/A.n).toLocaleString('ko-KR')}명으로 좌석 점유율 ${Math.round(occ*100)}%에 그쳤습니다.`,-1); } }
   ownerMonth(m,rk); try{ staffReport(`${m}월`); }catch(err){}
 }
 function prTrade(give,get,partner){ prInit(); const v=ids=>sum(ids.map(id=>{const p=G.players[id]; if(!p)return 0; const h=seasonTotal(p,G.year,'1군')||seasonTotal(p,G.year-1,'1군'); return h?Math.max(-1,warOf(h,p)):0;}));

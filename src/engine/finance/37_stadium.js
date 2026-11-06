@@ -52,7 +52,7 @@ function homeGames(tid,from,to){ const L=[]; for(let d=from;d<=to;d++){ const gs
 function stadProj(tid,next){ const S=stadOf(tid); const c=G.cal;
   /* 시즌이 끝난 뒤 예산 전망(next): 지난 일정에 지금 가격·시설을 넣어 다음 시즌 기대 관중을 낸다 */
   if(next&&c&&c.sched){ const N=S.proj, y1=dobj(G.day).m>=10?G.year+1:G.year; const nw=N&&N.stage==='build'&&N.done<=dnum(y1,4,1); /* 다음 시즌 전에 문을 여는 신구장: 그 구장 기준으로 본다(검수 11-06) */
-    const keep=nw?{cap:S.cap,dome:S.dome,lv:S.lv,built:S.built}:null; if(nw){ S.lv=Object.fromEntries(Object.entries(S.lv).map(([k,v])=>[k,Math.max(v,4)])); S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; S.dome=N.k==='dome'; S.built=y1; }
+    const keep=nw?{cap:S.cap,dome:S.dome,lv:S.lv,built:S.built,proj:S.proj}:null; if(nw){ S.lv=Object.fromEntries(Object.entries(S.lv).map(([k,v])=>[k,Math.max(v,4)])); S.cap=N.cap+(stadPower(S.lv.prem)-2)*300; S.dome=N.k==='dome'; S.built=G.year; S.proj=null; } /* 개장 첫해와 같은 구장 나이(0년)·공사 중 감소 없음 */
     try{ let att=0,n=0; for(const [d,a] of homeGames(tid,c.open,c.end)){ att+=attOf(tid,a,d,null); n++; } att=Math.round(att);
     return {att,n,avg:n?Math.round(att/n):0,ticket:Math.round(att*TICKET*ecoIdx()*PRICE[S.price].m),fnb:Math.round(att*.0003*(stadPower(S.lv.fnb)-2)),prem:(stadPower(S.lv.prem)-2)*600,ad:(stadPower(S.lv.vis)-2)*400+(S.dome?2500:0),up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; } finally{ if(keep)Object.assign(S,keep); } }
   const A=(G.sea&&G.sea.att&&G.sea.att[tid])||{n:0,sum:0}; let rest=0, rn=0;
@@ -90,7 +90,7 @@ function newStadTalk(){ const S=stadOf(G.user); if(!newStadCan())return S.retry&
 /* 신구장 사업은 구단 몫이다: 단장이 떠나도 협상·공사는 그 구단(AI)이 이어서 마친다 */
 function newStadDaily(){ for(const t of G.teams){ if(t.stad&&t.stad.proj)try{ newStadTeam(t.id); }catch(e){} } }
 function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; const t=team(tid); const me=tid===ME();
-  if(!me&&N.stage==='plan'){ const o=NEWSTAD[0]; N.stage='build'; N.k=o.k; N.cap=o.cap; N.cost=o.cost; N.paid=N.paid||0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); wire('구장',`${t.city} ${t.nick}, 신구장 ${o.l} 규모로 착공`,{tid}); return; } /* 단장이 없는 구단은 실속형으로 정한다 */
+  if(!me&&N.stage==='plan'){ const o=NEWSTAD[0]; if(t.indie&&(t.cash||0)<Math.round(o.cost/3)){ S.proj=null; S.retry=G.year+1; wire('구장',`${t.city} ${t.nick}, 신구장 착공 자금 부족으로 보류`,{tid}); return; } /* 독립구단은 단장이 있든 없든 첫 분담금을 낼 현금이 있어야 착공(검수 11-06) */ N.stage='build'; N.k=o.k; N.cap=o.cap; N.cost=o.cost; N.paid=N.paid||0; const y=dobj(G.day).m>=10?G.year+4:G.year+3; N.done=dnum(y,3,1); wire('구장',`${t.city} ${t.nick}, 신구장 ${o.l} 규모로 착공`,{tid}); return; } /* 단장이 없는 구단은 실속형으로 정한다 */
   if(N.stage==='talk'&&G.day>=N.res){ const pr=clamp(.35+(t.trust-50)/100+(t.market-1)*.6+((me?G.rep:50)-50)/200,.15,.85);
     if(!me){ if(R()<pr)N.stage='plan'; else { S.proj=null; S.retry=G.year+1; } return; }
     if(R()<pr){ N.stage='plan'; stop('구장',`${t.city}시가 신구장 건립에 합의했습니다. 시가 공사비 대부분을 내고 구단이 일부를 분담합니다. 구단·재정 → 시설 투자 → 신구장에서 규모를 고르세요.`); news('구단',`${t.city}시-${t.nick}, 신구장 건립 합의`,'새 야구장 시대가 열립니다.',2); }
