@@ -88,10 +88,10 @@ function importText(t){
  if(t[0]==='{'){try{g=JSON.parse(t);}catch(e){}}
  else for(const v of [t,t.replace(/[\r\n\t]/g,''),t.replace(/\s+/g,''),t.replace(/[\r\n\t]/g,'').replace(/ /g,'+')]){ try{ const j=LZString.decompressFromBase64(v); if(j){ g=JSON.parse(j); break; } }catch(e){} }
  if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.teams.length||!g.players||!g.cal||!Number.isFinite(g.day)||!Number.isFinite(g.year)){UI.impMsg=t&&t[0]!=='{'&&t.length>100?`코드를 읽지 못했습니다(붙여 넣은 길이 ${t.length.toLocaleString()}자). 코드가 끝까지 복사되지 않았을 가능성이 큽니다. 저장 코드는 수십만 자라 메신저로 보내면 잘리기 쉽습니다. 기기를 옮길 때는 '파일로 내보내기'로 받은 .txt 파일을 불러오기에 넣어 주세요.`:'저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.';render();return;}
- const m=meta(),fromTitle=UI.title,slot=fromTitle?SLOT_IDS.find(n=>!m.slots[n]):m.active;
+ const m=meta(),fromTitle=UI.title,slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
  if(fromTitle&&!slot){UI.impMsg='빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.';render();return;}
  const old=G;try{G=g;migrateDraft();}catch(e){G=old;UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.';render();return;}
- if(fromTitle){m.active=slot;setMeta(m);}closeSheets();UI.title=false;UI.sstep='main';UI.tab='home';UI.readingOpen={};UI.readingScroll={};UI.impMsg=saveNow()?'불러왔습니다.':'불러왔지만 저장 공간이 부족해 슬롯에 저장하지 못했습니다. 이대로 닫으면 이전 세이브가 열립니다. 다른 슬롯을 지운 뒤 다시 가져오세요.';render(); /* 저장까지 확인한 뒤 성공 안내(검수 11-06) */
+ if(fromTitle){ m.active=slot; if(!setMeta(m)){ G=old; try{ if(G)migrateDraft(); }catch(e){} UI.impMsg=`슬롯 ${slot}(으)로 바꾸는 기록을 저장하지 못해 가져오지 않았습니다. 기존 세이브는 그대로입니다.`; render(); return; } } CUR_SLOT=slot; /* 가져온 게임은 새 슬롯에만 쓴다(검수 11-06: 활성 기록 실패 때 기존 슬롯을 덮어씀) */ closeSheets();UI.title=false;UI.sstep='main';UI.tab='home';UI.readingOpen={};UI.readingScroll={};UI.impMsg=saveNow()?'불러왔습니다.':'불러왔지만 저장 공간이 부족해 슬롯에 저장하지 못했습니다. 이대로 닫으면 이전 세이브가 열립니다. 다른 슬롯을 지운 뒤 다시 가져오세요.';render(); /* 저장까지 확인한 뒤 성공 안내(검수 11-06) */
 }
 
 function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G; try{ G.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */

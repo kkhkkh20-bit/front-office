@@ -214,6 +214,20 @@ const QUICK=process.env.QUICK==='1';
       const st=standingsNow(); G.ps={seeds:st.slice(0,5).map(x=>x.tid),order:st.slice(),res:{},round:'wc',done:false}; const a=G.ps.order[3]; G.ps.order[3]=G.ps.order[4]; G.ps.order[4]=a; const pr=period; period=()=>'post'; try{ const so=standOrder(); if(so.order[3].tid!==a.tid&&so.order[4].tid!==a.tid)bad.push('준비 실패'); if(so.order[4].tid!==a.tid)bad.push('결정전 결과가 순위표에 없음'); }finally{ period=pr; }
     }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ G=JSON.parse(keep); UI.sheet=UI0.sheet; UI.game=UI0.game; _tsC=null; closeSheets(); render(); } return bad; });
     if(r)for(const m of r)add('일정·순위·기록',m); }
+  /* 저장 안전(검수 11-06): 저장이 실패하면 현재 진행과 기존 슬롯이 보존되고, 다른 탭이 활성 슬롯을 바꿔도 각 탭은 자신이 연 슬롯에만 쓴다 */
+  { where='저장 안전'; const r=await ev(()=>{ const bad=[]; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); } const g0=G, cur0=CUR_SLOT, LS=Storage.prototype, si=LS.setItem;
+    const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; CUR_SLOT=cur0; UI.title=false; closeSheets(); render(); };
+    try{ saveNow(); const me=curSlot(), other=me===1?2:1; const otherBody=localStorage.getItem(slotKey(other));
+      { const m=meta(); m.active=other; setMeta(m); G.day+=0; saveNow(); if(localStorage.getItem(slotKey(other))!==otherBody)bad.push('다른 탭이 바꾼 활성 슬롯에 저장됨'); const m2=meta(); m2.active=me; setMeta(m2); }
+      const mine0=localStorage.getItem(slotKey(me));
+      LS.setItem=function(k,v){ if(k===slotKey(me))throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(me); if(G!==g0)bad.push('저장 실패 뒤 같은 슬롯을 다시 열어 진행이 사라짐'); A.newgame(); if(G!==g0)bad.push('저장 실패인데 새 구단 시작으로 현재 게임을 닫음'); LS.setItem=si;
+      LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; const ok=saveNow(); LS.setItem=si; if(ok)bad.push('목록 기록이 실패했는데 저장 성공');
+      { const m=meta(); const empty=SLOT_IDS.find(n=>!m.slots[n]); if(empty){ si.call(localStorage,slotKey(empty),'x'); A.slotCopy(); if(localStorage.getItem(slotKey(empty))!=='x')bad.push('목록에 빠진 세이브를 빈 슬롯으로 보고 덮어씀'); localStorage.removeItem(slotKey(empty)); } }
+      { const before=localStorage.getItem(slotKey(me)); const txt=prepG(); UI.title=true; LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; importText(txt); LS.setItem=si; UI.title=false; G=g0; if(localStorage.getItem(slotKey(me))!==before)bad.push('새 슬롯 가져오기가 기존 세이브를 덮어씀'); }
+      { const q=Object.values(G.players).find(p=>p.team!=null&&!p.isP); const t0=q.team; q.team=null; q.use={y:G.year,pos:{SS:81}}; q.l10=[1,2,3]; const J=JSON.parse(prepG()); if(!J.players[q.id].use||!J.players[q.id].l10)bad.push('무적 선수 기용 기록이 저장에서 빠짐'); q.team=t0; delete q.use; delete q.l10; }
+      if(G.games&&G.games[0]){ const c0=UI.cast; UI.cast={hold:true,g:0,k:17}; const J=JSON.parse(prepG()); UI.cast=c0; delete G.castHold; if(!J.castHold||J.castHold.k!==17)bad.push('저장의 중계 재개 위치가 다름'); }
+    }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ restore(); } return bad; });
+    if(r)for(const m of r)add('저장 안전',m); }
   /* 슬롯 전환(검수 11-06): 현재 게임 저장과 활성 슬롯 변경이 모두 성공한 뒤에만 새 슬롯으로 전환한다. 기록 캐시는 세이브를 구분한다 */
   { where='슬롯 전환'; const r=await ev(()=>{  const bad=[]; const cur=meta().active||1, other=cur===1?2:1; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); }
   const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; closeSheets(); UI.title=false; render(); };

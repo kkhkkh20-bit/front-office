@@ -7,6 +7,9 @@ const SLOTS=10, META='danjang-meta'; const SLOT_IDS=Array.from({length:SLOTS},(_
 function meta(){ try{ const m=JSON.parse(localStorage.getItem(META)||'null'); if(m)return m; }catch(e){} return {active:1,slots:{}}; }
 function setMeta(m){ try{ const s=JSON.stringify(m); localStorage.setItem(META,s); return localStorage.getItem(META)===s; }catch(e){ return false; } } /* 성공 여부: 활성 슬롯 변경이 실패하면 전환하지 않는다(검수 11-06) */
 const slotKey=n=>`${SAVE}-s${n}`;
+/* 이 탭이 연 슬롯: 저장은 늘 여기로. 다른 탭이 활성 슬롯 기록을 바꿔도 이 탭의 저장 대상은 바뀌지 않는다(검수 11-06) */
+let CUR_SLOT=null; function curSlot(){ return CUR_SLOT??(meta().active||1); }
+function slotUsed(n,m){ m=m||meta(); try{ return !!m.slots[n]||localStorage.getItem(slotKey(n))!=null; }catch(e){ return !!m.slots[n]; } } /* 목록에 빠졌어도 본문이 있으면 빈 슬롯이 아니다 */
 /* 저장 형식: '\u0001' + 원래 바이트 길이(15비트 두 글자) + deflate(raw) 바이트를 15비트씩 글자로 담는다(0xD800 아래 글자만 써서 브라우저 저장소에서 깨지지 않게).
    예전 LZ 저장('\u0001'로 시작하지 않음)과 아주 옛날 JSON 저장('{')도 그대로 읽는다. LZ는 시즌이 쌓이면 한 번에 0.8초 넘게 걸려 화면이 굳었다 */
 const ZMK='\u0001';
@@ -17,7 +20,8 @@ function unz15(s){ const n=((s.charCodeAt(1)-32)<<15)|(s.charCodeAt(2)-32), u=ne
   for(let i=3;i<s.length&&k<n;i++){ acc=(acc<<15)|(s.charCodeAt(i)-32); bits+=15; while(bits>=8&&k<n){ bits-=8; u[k++]=(acc>>>bits)&255; } acc&=(1<<bits)-1; } return u; }
 let ZERR=''; const ZOK=typeof fflate!=='undefined'&&typeof TextEncoder!=='undefined';
 /* 저장본에서만 무적 선수의 최근 경기·기용 기록을 뺀다(지금 플레이 중인 데이터는 그대로: 검수 11-06) */
-function prepG(){ { const c=UI.cast||UI.castRet; if(c&&c.hold&&!c.fin&&G.games[c.g])G.castHold={g:c.g,k:c.k||0}; } /* 결과를 숨긴 채 보던 중계 위치 */ const F=new Set(Object.values(G.players).filter(p=>p.team==null&&(p.l10||p.use))); if(!F.size)return JSON.stringify(G); return JSON.stringify(G,function(k,v){ return (k==='l10'||k==='use')&&F.has(this)?undefined:v; }); }
+function castHoldSync(){ const c=UI.cast||UI.castRet; if(G&&c&&c.hold&&!c.fin&&G.games[c.g])G.castHold={g:c.g,k:c.k||0}; } /* 결과를 숨긴 채 보던 중계 위치(로컬 저장·내보내기 공용) */
+function prepG(){ castHoldSync(); return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
 function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:6})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
 async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
 function packG(){ return packJ(prepG()); }
@@ -35,14 +39,14 @@ try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('v
 let _svSeq=0, _svBusy=false;
 function slotInfo(){ return {tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; }
 /* 성공(true)은 같은 슬롯을 다시 읽어 방금 쓴 내용과 같을 때만(검수 11-06: 저장 실패인데 성공 안내) */
-function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); if(localStorage.getItem(slotKey(n))!==data)throw new Error('read-back'); const m=meta(); const memo=m.slots[n]&&m.slots[n].memo; m.slots[n]=info; if(memo&&info&&info.memo==null)info.memo=memo; /* 슬롯 메모는 저장해도 남긴다 */ setMeta(m); SAVE_ERR=''; return true; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; return false; } }
-function saveStore(){ if(!G)return false; const n=meta().active||1; ++_svSeq; _svBusy=false; return writeSlot(n,packG(),slotInfo()); }
-async function saveStoreAsync(){ if(!G)return; const n=meta().active||1, seq=++_svSeq, g=G, info=slotInfo(); _svBusy=true; let data=null;
+function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); if(localStorage.getItem(slotKey(n))!==data)throw new Error('read-back'); const m=meta(); const memo=m.slots[n]&&m.slots[n].memo; m.slots[n]=info; if(memo&&info&&info.memo==null)info.memo=memo; /* 슬롯 메모는 저장해도 남긴다 */ if(!setMeta(m)){ SAVE_ERR='저장 목록을 기록하지 못했습니다. 저장 공간을 확인한 뒤 다시 저장하세요.'; return false; } /* 본문만 쓰이고 목록이 빠지면 실패 */ SAVE_ERR=''; return true; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; return false; } }
+function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; return writeSlot(n,packG(),slotInfo()); }
+async function saveStoreAsync(){ if(!G)return; const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(); _svBusy=true; let data=null;
   try{ data=await packJAsync(prepG()); }catch(e){ data=null; }
   if(seq!==_svSeq||G!==g)return; _svBusy=false; if(data==null){ saveStore(); return; } writeSlot(n,data,info); }
 function load(){ const m=meta();
-  try{ const old=localStorage.getItem(SAVE); if(old&&!Object.keys(m.slots).length){ const g=unpack(old); if(g){ try{ localStorage.setItem(slotKey(1),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(localStorage.getItem(slotKey(1)))){ m.active=1; m.slots[1]={tid:g.user,name:'',date:'',y:g.year,at:Date.now()}; setMeta(m); localStorage.removeItem(SAVE); } }catch(e){} return g; } } }catch(e){} /* 새 슬롯을 읽을 수 있을 때만 원본을 지우고, 못 옮겨도 읽은 원본으로 이어서 시작한다(검수 11-06) */
-  try{ return unpack(localStorage.getItem(slotKey(m.active||1))); }catch(e){ return null; } }
+  try{ const old=localStorage.getItem(SAVE); if(old&&!Object.keys(m.slots).length){ const g=unpack(old); if(g){ try{ localStorage.setItem(slotKey(1),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(localStorage.getItem(slotKey(1)))){ m.active=1; CUR_SLOT=1; m.slots[1]={tid:g.user,name:'',date:'',y:g.year,at:Date.now()}; setMeta(m); localStorage.removeItem(SAVE); } }catch(e){} return g; } } }catch(e){} /* 새 슬롯을 읽을 수 있을 때만 원본을 지우고, 못 옮겨도 읽은 원본으로 이어서 시작한다(검수 11-06) */
+  CUR_SLOT=m.active||1; try{ return unpack(localStorage.getItem(slotKey(m.active||1))); }catch(e){ return null; } }
 function slotSize(n){ try{ const s=localStorage.getItem(slotKey(n)); return s?Math.round(s.length*2/1024):0; }catch(e){ return 0; } }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=s=>document.querySelector(s);

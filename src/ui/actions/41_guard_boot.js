@@ -216,7 +216,7 @@ document.addEventListener('keydown',e=>{
 function ftMigrateAccept(e){ try{ const d=e&&e.data; if(!d||d.type!=='ft-migrate'||!d.items)return false; if(e.source&&e.source!==window.parent)return false;
     if(!/(^|\.)itch\.(zone|io)$/.test(String(e.origin||'').replace(/^https?:\/\//,'')))return false;
     const it=d.items; const m0=meta(); if(Object.keys(m0.slots||{}).length)return false; let mm=null; try{ mm=JSON.parse(it[META]||'null'); }catch(x){} if(!mm||!mm.slots||!Object.keys(mm.slots).length)return false;
-    for(const k of Object.keys(it)){ if(/^danjang-/.test(k)&&typeof it[k]==='string')localStorage.setItem(k,it[k]); }
+    { const ks=Object.keys(it).filter(k=>/^danjang-/.test(k)&&typeof it[k]==='string'&&k!==META), done=[]; try{ for(const k of ks){ localStorage.setItem(k,it[k]); if(localStorage.getItem(k)!==it[k])throw new Error('read-back'); done.push(k); } localStorage.setItem(META,it[META]); if(localStorage.getItem(META)!==it[META])throw new Error('meta'); }catch(x){ for(const k of done.concat([META]))try{ localStorage.removeItem(k); }catch(y){} try{ toast('itch 저장을 옮기다 저장 공간이 부족해 멈췄습니다. 옮기던 내용은 지웠습니다.'); }catch(y){} return false; } } /* 슬롯 본문을 모두 쓴 뒤 목록을 마지막에: 도중에 실패하면 되돌려 열 수 없는 슬롯이 목록에 남지 않게(검수 11-06) */
     try{ window.parent.postMessage({type:'ft-migrated'},e.origin); }catch(x){}
     try{ toast('itch에서 하던 저장을 옮겨 왔습니다. 처음 화면에서 이어하기를 누르세요.'); }catch(x){} try{ if(!G)UI.title=true; render(); }catch(x){} return true; }catch(err){ return false; } }
 window.addEventListener('message',ftMigrateAccept);
