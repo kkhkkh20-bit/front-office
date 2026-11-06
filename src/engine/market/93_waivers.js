@@ -10,7 +10,7 @@ function wvNeed(p){ return !!p&&p.team!=null&&!p.foreign&&!p.ys&&!p.prospect&&!(
 function wvClaimable(){ const per=period(); if(per==='post'||preSettle())return false; return per==='season'?G.day+WV_DAYS<=tradeDL():true; }
 /* toFree가 계약을 지우기 전에 부른다: 양수 구단이 이어받을 계약을 남겨 둔다 */
 function wvStart(p,paid){ if(!wvNeed(p))return; const from=p.team;
-  p.wv={from,d:G.day,end:G.day+WV_DAYS,ok:wvClaimable(),paid:paid||0,cl:[],c:{sal:p.sal,yrs:p.yrs,faC:!!p.faC,ext:!!p.ext,cyrs:p.cyrs,extNext:p.extNext,...(p.ctT===p.team?{opt:p.opt,cOpt:p.cOpt,pOut:p.pOut,cOptAdd:p.cOptAdd,ntc:p.ntc,capB:p.capB}:{})}}; /* 남은 계약 승계: 성과 옵션·구단 옵션·옵트아웃도 함께 */
+  p.wv={from,d:G.day,end:G.day+WV_DAYS,ok:wvClaimable(),paid:paid||0,cl:[],c:{role:p.role,sal:p.sal,yrs:p.yrs,faC:!!p.faC,ext:!!p.ext,cyrs:p.cyrs,extNext:p.extNext,...(p.ctT===p.team?{opt:p.opt,cOpt:p.cOpt,pOut:p.pOut,cOptAdd:p.cOptAdd,ntc:p.ntc,capB:p.capB}:{})}}; /* 남은 계약 승계: 성과 옵션·구단 옵션·옵트아웃도 함께 */
   if(ovr(p)>=40)wire('웨이버',`${tname(from)}, ${p.name}(${posLabel(p)}) 웨이버 공시`,{tid:from,ref:p.id});
   if(from!==G.user&&p.wv.ok&&!G.unemp&&ovr(p)>=wvBar(G.user))mail('운영팀',`웨이버 공시: ${tshort(from)} ${p.name}`,`${tname(from)}이(가) ${p.name}(${posLabel(p)}, ${p.age}세, 연 ${money(p.sal)})을(를) 웨이버 공시했습니다. ${dmd(p.wv.end-1)}까지 양수를 신청하면 ${dmd(p.wv.end)}에 정하며, 신청한 구단 중 성적이 낮은 구단이 남은 계약을 이어받아 데려갑니다.`,{kind:'트레이드',ref:p.id,acts:[{l:'웨이버 보기',a:'go',v:'transfer:kbo'}]}); }
 /* 우선순위: 지금 순위의 역순(standingsNow가 동률을 전년도 순위로 가른다). 새해 뒤 경기가 없으면 지난 시즌 순위 역순 */
@@ -28,7 +28,7 @@ function wvClaim(id){ const p=G.players[id]; const w=p&&p.wv; if(!w||p.team!=nul
 function wvDaily(){ for(const p of wvList()){ const w=p.wv; if(G.day<w.end)continue; delete p.wv; let to=null;
     if(w.ok&&tradeOpen()){ const want=new Set(w.cl.filter(t=>t!==w.from&&rosterN(t)<ROSTER_MAX)); /* 신청한 구단 기준(단장이 이직해도 전 구단 신청은 유효) */ for(const t of G.teams)if(t.id!==ME()&&wvWants(t.id,p,w))want.add(t.id); to=wvOrder().find(t=>want.has(t)); if(to===undefined)to=null; }
     const row={d:G.day,pid:p.id,n:p.name,from:w.from,to}; (G.wvLog=G.wvLog||[]).unshift(row); if(G.wvLog.length>30)G.wvLog.length=30;
-    if(to!=null){ p.team=to; p.sal=w.c.sal; p.yrs=w.c.yrs; p.faC=w.c.faC; p.ext=w.c.ext; if(w.c.cyrs)p.cyrs=w.c.cyrs; if(w.c.extNext)p.extNext=w.c.extNext; for(const k of ['opt','cOpt','pOut','cOptAdd','ntc','capB'])if(w.c[k]!=null){ p[k]=JSON.parse(JSON.stringify(w.c[k])); p.ctT=to; } delete p.freeSince; delete p.freeDay;
+    if(to!=null){ p.team=to; if(w.c.role)p.role=w.c.role; /* 보직도 승계(양수만으로 선발·불펜이 바뀌지 않게, 검수 11-06) */ p.sal=w.c.sal; p.yrs=w.c.yrs; p.faC=w.c.faC; p.ext=w.c.ext; if(w.c.cyrs)p.cyrs=w.c.cyrs; if(w.c.extNext)p.extNext=w.c.extNext; for(const k of ['opt','cOpt','pOut','cOptAdd','ntc','capB'])if(w.c[k]!=null){ p[k]=JSON.parse(JSON.stringify(w.c[k])); p.ctT=to; } delete p.freeSince; delete p.freeDay;
       if(w.paid)payOut(w.from,-w.paid,'rel'); /* 계약을 넘겼으니 방출 정산금은 돌려받는다 */
       mvLog('웨이버 양수',p,w.from,to,`계약 승계 연 ${money(p.sal)}`,p.sal); story(p,`웨이버로 ${tname(to)} 이적(계약 승계)`,'move'); acqStamp(p,'웨이버',to); wire('웨이버',`${tname(to)}, 웨이버 공시된 ${p.name} 영입(전 소속 ${tshort(w.from)})`,{tid:to,ref:p.id});
       if(to===G.user)note('트레이드',`웨이버로 ${p.name}을(를) 데려왔습니다. 남은 계약(연 ${money(p.sal)})을 이어받습니다.`,p.id);

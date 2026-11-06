@@ -16,10 +16,10 @@ function featAdd(k,p,txt,o){ o=o||{}; G.feats=G.feats||[]; const tid=o.tid??(p?p
   return f; }
 /* 타석 기록(pbp)에서: 만루 홈런, 연타석 홈런(3연타석 이상, 경기를 넘어 이어짐), 끝내기 홈런·안타. 조회만 하고 난수는 쓰지 않는다 */
 function featPbp(day,g){ const P=g.pbp||[]; const sideOf=id=>g.S.h.box.has(id)?'h':'a'; const vsOf=k=>`${dmd(day)} vs ${tshort(g.S[k==='h'?'a':'h'].tid)}`;
-  const B=P.filter(r=>typeof r[1]==='number'); const cut=P.length>=260; /* 기록 상한에 걸려 뒤 타석이 빠진 경기는 연타석을 끊는다 */
+  const B=P.filter(r=>typeof r[1]==='number'); const cut=P.length>=1000; /* 경기 엔진 보존 상한(1000줄)과 같게(검수 11-06) */ /* 기록 상한에 걸려 뒤 타석이 빠진 경기는 연타석을 끊는다 */
   for(const r of B){ const p=G.players[r[1]]; if(!p)continue; const k=sideOf(p.id);
     if(r[3]==='HR'&&r[6]===4)featAdd('gs',p,'만루 홈런',{vs:vsOf(k)});
-    if(r[3]==='HR'){ p.hrab=(p.hrab||0)+1; if(p.hrab>=3){ const L=pFeats(p), f0=L.find(x=>x.i===p.hrabF); const txt=`${p.hrab}연타석 홈런`; if(f0){ f0.txt=txt; f0.d=G.day; const lf=(G.feats||[]).find(x=>x.id===f0.i); if(lf){ lf.txt=txt; lf.v=p.hrab; lf.maj=p.hrab>=4; } } else p.hrabF=featAdd('hrc',p,txt,{vs:vsOf(k),v:p.hrab,wire:1}).id; } }
+    if(r[3]==='HR'){ p.hrab=(p.hrab||0)+1; if(p.hrab>=3){ const L=pFeats(p), f0=L.find(x=>x.i===p.hrabF); const txt=`${p.hrab}연타석 홈런`; if(f0){ f0.txt=txt; f0.d=G.day; if('vs' in f0)f0.vs=vsOf(k); const lf=(G.feats||[]).find(x=>x.id===f0.i); if(lf){ lf.txt=txt; lf.v=p.hrab; lf.maj=p.hrab>=4; lf.d=G.day; lf.vs=vsOf(k); } } /* 기록이 갱신된 날짜·상대로 리그·선수 연표를 같게(검수 11-06) */ else p.hrabF=featAdd('hrc',p,txt,{vs:vsOf(k),v:p.hrab,wire:1}).id; } }
     else if(p.hrab){ delete p.hrab; delete p.hrabF; } }
   if(cut)for(const r of B){ const p=G.players[r[1]]; if(p){ delete p.hrab; delete p.hrabF; } }
   if(g.walk){ const r=B[B.length-1]; const p=r&&G.players[r[1]]; if(p&&!cut&&['HR','1B','2B','3B'].includes(r[3])){ const k=sideOf(p.id), hr=r[3]==='HR'; featAdd(hr?'wohr':'woh',p,hr?`끝내기 ${r[6]===4?'만루 홈런':'홈런'} (${g.inn}회말)`:`끝내기 ${({'1B':'안타','2B':'2루타','3B':'3루타'})[r[3]]} (${g.inn}회말)`,{vs:vsOf(k),wire:hr}); } } }

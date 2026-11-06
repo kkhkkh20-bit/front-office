@@ -1,6 +1,6 @@
 /* ---------- 스폰서 화면 ---------- */
 /* 계약 조항 펼쳐 보기(사용자 11-06: 세부 조항을 볼 수 없었다). 엔진 정산(49_sponsors.js)과 같은 조건을 그대로 적는다 */
-function sponTerms(c,k,y){ const press=G.pr?Math.round(G.pr.press):null, fan=G.pr?Math.round(G.pr.fan):null; const L=[
+function sponTerms(c,k,y){ const press=G.pr?(G.pr.press<30&&Math.round(G.pr.press)>=30?(Math.floor(G.pr.press*10)/10).toFixed(1):Math.round(G.pr.press)):null, /* 30 바로 밑(29.6 등)을 30으로 반올림해 기준을 넘은 것처럼 보이지 않게(검수 11-06) */ fan=G.pr?Math.round(G.pr.fan):null; const L=[
   ['계약',`${c.y0??'-'}~${c.until}년 · 연 ${money(c.amt)}${c.y0===y&&c.first!=null&&c.first<1?` · 첫해는 남은 기간만큼 ${Math.round(c.first*100)}%`:''}`],
   ['가을야구 보너스',c.ps?`정규시즌 5위 안에 들면 그해 +${money(c.ps)}`:'없음'],
   ['우승 보너스',c.champ?`한국시리즈 우승하면 그해 +${money(c.champ)}`:'없음'],
