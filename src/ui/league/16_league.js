@@ -73,7 +73,7 @@ function recView(){
 function leaderTiles(rows,y){
   const T=leaderCats(rows,y);
   const tile=([l,arr,v,f])=>{ const s=[...arr].sort((a,b)=>v(b)-v(a)).slice(0,5); if(!s.length)return ''; const fm=f||v; const a=s[0];
-    return `<div class="ltile"><div class="lh">${l}</div><button class="l1${(a.h.t??a.p.team)===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.h.t??a.p.team,14)} ${tshort(a.h.t??a.p.team)}</i></span><em class="num">${fm(a)}</em></button>
+    return `<div class="ltile"><div class="lh">${l}</div><button class="l1${(a.h.t??a.p.team)===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.h.t??a.p.team,14)} ${(a.h.t??a.p.team)!=null?esc(team(a.h.t??a.p.team).nick):''}</i></span><em class="num">${fm(a)}</em></button>
       <ol>${s.slice(1).map((x,i)=>`<li class="${(x.h.t??x.p.team)===G.user?'me':''}"><button data-a="player" data-v="${x.p.id}"><i>${i+2}</i>${esc(x.p.name)} <span class="muted">${tshort(x.h.t??x.p.team)}</span><b class="num">${fm(x)}</b></button></li>`).join('')}</ol></div>`; };
   return `<section class="card"><div class="row between"><h2 class="sec">${y} 부문별 순위</h2><span class="small muted">타율·OPS·wRC+·평균자책점·WHIP는 규정 기준 이상</span></div><div class="ltiles">${T.map(tile).join('')}</div></section>`;
 }

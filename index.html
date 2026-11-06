@@ -516,7 +516,7 @@ table.lst td.t-hi{color:var(--good)}table.lst td.t-lo{color:var(--bad)}
 .ltile{background:#0b1014;border:1px solid var(--line);border-radius:3px;display:grid;align-content:start}
 .ltile .lh{font-size:12px;color:var(--muted);padding:6px 10px;border-bottom:1px solid var(--line)}
 .ltile .l1{all:unset;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px}
-.ltile .l1 .av{width:48px;height:48px}.ltile .l1 span{display:grid;min-width:0}.ltile .l1 b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ltile .l1 i{font-style:normal;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.ltile .l1 .av{width:64px;height:64px}.ltile .l1 span{display:grid;min-width:0}.ltile .l1 b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ltile .l1 i{font-style:normal;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
 .ltile .l1 em{font:700 24px var(--f-num);font-style:normal;color:var(--team-hi)}
 .ltile .l1.me b{color:#9cc4f2}
 .ltile ol{list-style:none;margin:0;padding:0 0 4px}
@@ -531,7 +531,7 @@ table.lst td.t-hi{color:var(--good)}table.lst td.t-lo{color:var(--bad)}
 .sbr span:nth-child(2),.sbr a.tl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-size:14px}.sbr .small{font-size:11px}
 .sbr b{font:700 20px var(--f-num);min-width:22px;text-align:right}.sbr.w{color:var(--ink)}.sbr.w b{color:var(--ink)}
 @media (max-width:979px){ .homeg{grid-template-columns:minmax(0,1fr)} .top .tbar{gap:6px} .mailbtn{width:38px;height:38px} }
-@media (max-width:620px){ .ltiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px} .ltile .l1{gap:6px;padding:6px 8px} .ltile .l1 .av{width:34px;height:34px} .ltile .l1 em{font-size:18px} .ltile .l1 b{font-size:13px} .ltile li button{padding:2px 8px;font-size:12px} .ltile .lh{padding:5px 8px} }
+@media (max-width:620px){ .ltiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px} .ltile .l1{gap:6px;padding:6px 8px} .ltile .l1 .av{width:52px;height:52px} .ltile .l1 em{font-size:18px} .ltile .l1 b{font-size:13px} .ltile li button{padding:2px 8px;font-size:12px} .ltile .lh{padding:5px 8px} }
 .item.mail .nm,.item.mail .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lst .pn{min-width:0}
 @media (max-width:420px){ .tstat{grid-template-columns:repeat(2,minmax(0,1fr))} .fsq em{display:none} }
@@ -698,6 +698,8 @@ button.ggf-m{cursor:pointer}button.ggf-m:hover{filter:brightness(1.12)}button.gg
 @media(max-width:600px){.ggf{aspect-ratio:1/1.12}.ggf-v,.ggf-m em{display:none}.ggf-m>i{font-size:8.5px}.ggf-tro{width:17cqw}}
 @media(min-width:1100px){.ggf{max-width:min(980px,calc((100dvh / var(--z,1) - 220px) * 1.25))}}
 .ggf-m em,.asf-p em{display:inline-flex;align-items:center;gap:3px}.ggf-m em .badge,.asf-p em .badge,.ggf-m em img,.asf-p em img{width:16px;height:16px;flex:none} /* 수상자·올스타 구단 마크 */
+body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowrap;word-break:keep-all} /* 사진을 키운 뒤에도 구단 별칭은 한 줄(별칭만 써서 짧다) */
+@media (max-width:620px){ .ltile .l1{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center} .ltile .l1>.av{grid-row:1 / span 2} .ltile .l1>em{grid-column:2;justify-self:start;line-height:1.1} } /* 휴대폰: 사진을 키운 대신 기록 숫자는 이름 아래(겹치지 않게) */
 /* 중계 */
 .pbp{display:grid;gap:8px}
 .pbp-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pbp-sc{font-size:20px;font-weight:700}
@@ -21524,7 +21526,7 @@ function recView(){
 function leaderTiles(rows,y){
   const T=leaderCats(rows,y);
   const tile=([l,arr,v,f])=>{ const s=[...arr].sort((a,b)=>v(b)-v(a)).slice(0,5); if(!s.length)return ''; const fm=f||v; const a=s[0];
-    return `<div class="ltile"><div class="lh">${l}</div><button class="l1${(a.h.t??a.p.team)===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.h.t??a.p.team,14)} ${tshort(a.h.t??a.p.team)}</i></span><em class="num">${fm(a)}</em></button>
+    return `<div class="ltile"><div class="lh">${l}</div><button class="l1${(a.h.t??a.p.team)===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.h.t??a.p.team,14)} ${(a.h.t??a.p.team)!=null?esc(team(a.h.t??a.p.team).nick):''}</i></span><em class="num">${fm(a)}</em></button>
       <ol>${s.slice(1).map((x,i)=>`<li class="${(x.h.t??x.p.team)===G.user?'me':''}"><button data-a="player" data-v="${x.p.id}"><i>${i+2}</i>${esc(x.p.name)} <span class="muted">${tshort(x.h.t??x.p.team)}</span><b class="num">${fm(x)}</b></button></li>`).join('')}</ol></div>`; };
   return `<section class="card"><div class="row between"><h2 class="sec">${y} 부문별 순위</h2><span class="small muted">타율·OPS·wRC+·평균자책점·WHIP는 규정 기준 이상</span></div><div class="ltiles">${T.map(tile).join('')}</div></section>`;
 }
