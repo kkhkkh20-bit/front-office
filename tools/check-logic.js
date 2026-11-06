@@ -1755,6 +1755,12 @@ T('[공통 점검] 구장: 예전 저장에서 홈경기를 더 치러도 앞 �
   const g=homeGames(u,G.day+1,G.cal.end)[0]; stadGame(g[0],u,g[1]); ok(stadProj(u).ticket>tk0*.8,'앞 경기 입장 수입이 빠짐 '+tk0+' → '+stadProj(u).ticket); ok(A.cap>stadCap(u)*(A.n-1),'점유율 분모에 앞 경기 좌석이 없음');
   const S=stadOf(u); const cap0=stadCap(u); S.proj={stage:'build',k:'dome',cap:cap0+8000,cost:28000,paid:28000,done:dnum(G.year+1,3,1)}; G.day=G.cal.end+20; const P=stadProj(u,true); ok(P.avg>0&&stadCap(u)===cap0,'원래 구장 값이 바뀜'); S.proj=null; const P0=stadProj(u,true); ok(P.ad>P0.ad,'돔 대관 수입이 전망에 없음'); 
   const t=team(u); t.indie=true; t.cash=0; S.proj={stage:'plan'}; ok(/독립구단/.test(newStadPick('dome')||''),'현금 0 독립구단 돔 착공이 통과'); });
+T('[공통 점검] 경기 엔진 주자 보존: 타석 전 주자와 타자는 타석 뒤에 베이스 잔류·득점·아웃 중 하나로 설명된다(번트·병살·추가 진루 포함)',()=>{ fresh(); const T2=G.teams.map(t=>t.id); for(const t of G.teams){ const m=G.mgr[t.id]; if(m)m.small=95; } let bad=[], n=0;
+  for(let i=0;i<120;i++){ const h=T2[i%T2.length], a=T2[(i+3)%T2.length]; const g=simGame(G.day,h,a,false); const L=g.pbp||[]; let half=null, sb=0, so=0;
+    for(const x of L){ if(x[0]!==half){ half=x[0]; sb=0; so=0; } if(x[1]==='SB'||x[1]==='CS'){ sb=(x[4]||[]).filter(Boolean).length; so=x[3]; continue; } if(typeof x[1]!=='number'||!Array.isArray(x[5]))continue;
+      if(x[4]<3){ n++; const nb=x[5].filter(Boolean).length; const after=nb+(x[6]||0)+(x[4]-so); if(sb+1!==after&&bad.length<5)bad.push(x[3]+' 전 주자 '+sb+'·아웃 '+so+' → 주자 '+nb+'·득점 '+(x[6]||0)+'·아웃 '+x[4]); }
+      sb=x[5].filter(Boolean).length; so=x[4]; } }
+  ok(n>1000,'준비 실패: 타석 '+n); ok(!bad.length,'주자가 사라지거나 생김: '+bad.join(' / ')); });
 T('[공통 점검] 감독이 바뀌면 전임 감독의 거절로 보직 요청이 막히지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.isP&&q.age<=27); const m=G.mgr[G.user]; (G.proleNo=G.proleNo||{})[p.id]={u:G.day+7,mid:m.id}; const r1=proleSet(p.id,'sp'); ok(/거절/.test(r1),'같은 감독은 막혀야 함: '+r1); G.proleNo[p.id].mid=-999; const r2=proleSet(p.id,'sp'); ok(!/얼마 전 거절/.test(r2),'새 감독인데 막힘: '+r2); });
 T('[검수 11-06m] 웨이버로 넘어가도 성과 옵션·구단 옵션·옵트아웃이 이어진다',()=>{ fresh(); simTo(()=>period()==='season'&&tradeOpen()&&G.day<dnum(G.year,7,20)); const [A,B]=G.teams.map(t=>t.id).filter(t=>t!==G.user); const p=domestic(A).find(q=>!q.foreign); p.ctT=A; p.opt={a:250,until:G.year+2,c:'x'}; p.cOpt={y:1,a:800}; p.pOut={y:G.year+1};
   wvStart(p,0); p.team=null; p.wv.cl=[B]; p.wv.end=G.day; const ow=wvWants; wvWants=()=>false; try{ wvDaily(); } finally{ wvWants=ow; } ok(p.team===B,'준비 실패 '+p.team); ok(p.opt&&p.cOpt&&p.pOut&&p.ctT===B,'옵션 사라짐'); });

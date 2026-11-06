@@ -98,7 +98,7 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     if(fs.curIsSP){ const hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&x.er>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)||x.er>=6||(x.er>=4&&x.pc>=lim(fs)-25)||hook; }
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
-    { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<260)pbp.push([half,'PC',ace.id]); return; } }
+    { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<400)pbp.push([half,'PC',ace.id]); return; } }
     const av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day,ps)); if(!av.length)return;
     const closer=fs.pen[0], setup=fs.pen.slice(1,4), mid=fs.pen.slice(4);
     let nxt=null;
@@ -107,7 +107,7 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     if(!nxt&&(lead<-3||lead>4)) nxt=[...av].reverse().find(p=>p!==closer);
     if(!nxt) nxt=av.find(p=>mid.includes(p))||av.find(p=>p!==closer)||av[0];
     fs.exit[fs.cur.id]=lead; fs.cur=nxt; fs.curIsSP=false; fs.used.add(nxt.id); { const pu=mgrPush(fs.tid); if(nxt!==closer&&inn<=7&&R()<clamp((pu-52)/45,0,.6)*(Math.abs(lead)<=3?1:.5))(fs.multi=fs.multi||{})[nxt.id]=1; } /* 멀티이닝 */ fs.box.set(nxt.id,pz()); fs.entry[nxt.id]=lead; (fs.entryR=fs.entryR||{})[nxt.id]=nr||0; fs.pitchers.push(nxt.id);
-    if(ev.length<400)ev.push({h:half,t:`투수 교체: ${nxt.name}`}); if(pbp.length<260)pbp.push([half,'PC',nxt.id]);
+    if(ev.length<400)ev.push({h:half,t:`투수 교체: ${nxt.name}`}); if(pbp.length<400)pbp.push([half,'PC',nxt.id]);
   }
   function half(bk,inn){
     const bs=S[bk], fs=S[opp(bk)], isBot=bk==='h', half=(inn-1)*2+(isBot?1:0);
@@ -118,13 +118,13 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     while(outs<3){
       /* 도루: KBO 2024~25 구단 평균 시즌 120~140개, 성공률 72~75%, 1위 50~65개 수준에 맞춘다. 2루 도루가 대부분이고 빠른 주자는 3루도 노린다 */
       if(base[1]&&!base[2]&&outs<2&&base[1].r.spd>=60&&R()<(base[1].r.spd-57)*.0045*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)){
-        const r=base[1], rb=bs.box.get(r.id); if(R()<clamp(.6+(r.r.spd-60)*.008+coachRunAdj(bs.tid)+stealAdj(r,fs),.4,.92)){rb.sb++;base[2]=r;base[1]=null; if(pbp.length<260)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[1]=null;outs++; fs.box.get(fs.cur.id).outs++; if(pbp.length<260)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
+        const r=base[1], rb=bs.box.get(r.id); if(R()<clamp(.6+(r.r.spd-60)*.008+coachRunAdj(bs.tid)+stealAdj(r,fs),.4,.92)){rb.sb++;base[2]=r;base[1]=null; if(pbp.length<400)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[1]=null;outs++; fs.box.get(fs.cur.id).outs++; if(pbp.length<400)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
       if(base[0]&&!base[1]&&outs<2&&base[0].r.spd>=45&&R()<Math.min(.36,(base[0].r.spd-41)*.0105)*(.65+mgrOf(bs.tid).small/100*.9)*stealTry(fs)){
-        const r=base[0], rb=bs.box.get(r.id); if(R()<clamp(.65+(r.r.spd-50)*.007+coachRunAdj(bs.tid)+stealAdj(r,fs),.35,.92)){rb.sb++;base[1]=r;base[0]=null; if(pbp.length<260)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[0]=null;outs++; fs.box.get(fs.cur.id).outs++; if(pbp.length<260)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
+        const r=base[0], rb=bs.box.get(r.id); if(R()<clamp(.65+(r.r.spd-50)*.007+coachRunAdj(bs.tid)+stealAdj(r,fs),.35,.92)){rb.sb++;base[1]=r;base[0]=null; if(pbp.length<400)pbp.push([half,'SB',r.id,outs,base.map(x=>x?x.id:0)]);} else {rb.cs++;base[0]=null;outs++; fs.box.get(fs.cur.id).outs++; if(pbp.length<400)pbp.push([half,'CS',r.id,outs,base.map(x=>x?x.id:0)]); continue;} }
       const b=bs.order[bs.idx%bs.order.length]; bs.idx++;
       const p=fs.cur; const xb=bs.box.get(b.id), xp=fs.box.get(p.id);
       const pc0=xp.pc;xb.pa++; xp.bf++; xp.pc+=Math.max(1,Math.round(N(3.9-(cc(p.r.ctl,0)-.5)*PW.eff,1.3))); /* 제구가 좋으면 타석당 투구 수가 준다 */ resp.set(b.id,p.id); let eRun=false; ueR.delete(b.id); const xo0=outs+eOuts; if(eAt[p.id]==null)eAt[p.id]=eOuts; /* 이 타석 전 '실책 없었다면' 아웃 수 */
-      const before=lead(); const sc=[]; let dp=false; let o=null;
+      const before=lead(); const sc=[]; let dp=false; let o=null; let xFO=null; /* 번트 실패로 포스아웃된 주자(중계 기록에 남긴다) */
       /* 희생번트: 스몰볼 감독이 무사 1루(1·2루) 접전에서 하위 타선에게 시킨다. 빅볼 감독은 거의 대지 않는다 */
       if(outs===0&&base[0]&&!base[2]&&inn<=10){ const mm=mgrOf(bs.tid), sm=mm.interim?50:mm.small, slot=(bs.idx-1)%9; const close=before>=-2&&before<=1;
         const pr=sm<=40?0:(sm-40)/60*(close?(inn>=7?.85:.36):.07)*(slot>=6||offV(b)<45?1:.25)*(base[1]?.7:1);
@@ -132,12 +132,12 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
           if(r<.7){ o='SAC'; outs++; xp.outs++; xb.sh=(xb.sh||0)+1; /* 희생번트도 박스스코어에 */ base[2]=base[1]; base[1]=base[0]; base[0]=null; }
           else if(r<.8){ o='1B'; xb.ab++; xb.h++; xp.h++; hh++; base[2]=base[1]; base[1]=base[0]; base[0]=b; }
           else if(r<.9){ o='OUT'; xb.ab++; outs++; xp.outs++; }
-          else { o='OUT'; xb.ab++; outs++; xp.outs++; if(base[1]){ base[1]=base[0]; } base[0]=b; } } }
-      if(o){ if(!ps)splAdd(b,p,o==='SAC'?'SAC':o); /* 번트도 좌우 기록에 */ const rec=trace(half,b,p,o,xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;if(pbp.length<260){const row=[half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h];if(rec)row[15]=rec;pbp.push(row);} if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+6)bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
+          else { o='OUT'; xb.ab++; outs++; xp.outs++; const fo=base[1]||base[0], fb=base[1]?3:2; /* 번트 실패: 앞 주자가 포스아웃(1·2루면 3루에서, 1루만이면 2루에서) */ if(base[1]){ base[1]=base[0]; } base[0]=b; if(fo){ xFO=fo; if(ev.length<400)ev.push({h:half,t:`${b.name} 번트 실패 · ${fo.name} ${fb}루 포스아웃`}); } } } }
+      if(o){ if(!ps)splAdd(b,p,o==='SAC'?'SAC':o); /* 번트도 좌우 기록에 */ const rec=trace(half,b,p,o,xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;if(pbp.length<400){const row=[half,b.id,p.id,o,outs,base.map(x=>x?x.id:0),0,score.a,score.h];if(rec)row[15]=rec;if(xFO)row[16]=xFO.id;pbp.push(row);} if(ev.length<400&&o==='SAC')ev.push({h:half,t:`${b.name} 희생번트`}); if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+6)bringIn(fs,inn,-lead(),half,base.filter(Boolean).length); continue; }
       CLUTCH=Math.min(1.1,((base[1]||base[2])?.5:0)+(inn>=7&&Math.abs(before)<=2?.4:0)+(ps?.4:0)); /* 득점권 · 7회 이후 2점 차 이내 · 포스트시즌 */
       o=outcome(b,p,fs.defv,Math.max(0,xp.pc-(PW.ft0+p.r.sta*PW.fts))/PW.ftd-PW.fm+ttoPen(p,xp.bf),fs); /* 체력만큼 던진 뒤부터 9구마다 능력 1씩 떨어진다 */ let eFld=0; if(!ps){ if(LBIP)sprAdd(b,p,o,LBIP); } /* 좌우 기록은 타석 결과(희생플라이 등)가 확정된 뒤 */
       const rec=trace(half,b,p,o,xp.pc-pc0);if(rec)xp.pc=pc0+rec.pitches.length;
-      let chg=null, chgE=null, rbiN=0, sfN=0;const moves=[]; const PB=()=>{ if(pbp.length<260){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); if(moves.length)r[14]=moves;if(rec)r[15]=rec;pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
+      let chg=null, chgE=null, rbiN=0, sfN=0;const moves=[]; const PB=()=>{ if(pbp.length<400){ const r=[half,b.id,p.id,dp?'DP':o,outs,base.map(x=>x?x.id:0),sc.length,score.a,score.h]; if(eFld||chg)r.push(eFld||0); if(chg)r.push(chg,chgE,rbiN,sfN); if(moves.length)r[14]=moves;if(rec)r[15]=rec;pbp.push(r); } }; /* 10번째 칸: 실책한 야수 id, 11~14번째: 실점 책임 투수들·자책 책임 투수들·타점·희생플라이(중계 화면이 경기 기록과 같게 계산) */
       const advanceRunner=(r,from,to,chance,spd)=>{const z=runAdvance(r,fs,{base:chance,from,to,spd,outs});if(!z.send)return 'hold';const result=z.safe?'safe':'out';moves.push({id:r.id,from,to,result});if(!z.safe){outs++;xp.outs++;}if(ev.length<400)ev.push({h:half,t:`주루 판단: ${r.name} ${from}루 → ${to===4?'홈':to+'루'} ${z.safe?'진루':'아웃'}`});return result;};
       if(o==='BB'||o==='HBP'){ const key=o==='HBP'?'hbp':'bb';xb[key]++; xp[key]++; if(base[0]){ if(base[1]){ if(base[2])sc.push(base[2]); base[2]=base[1]; } base[1]=base[0]; } base[0]=b; }
       else { xb.ab++;

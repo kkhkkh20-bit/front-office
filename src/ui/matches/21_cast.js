@@ -238,7 +238,7 @@ async function castLoop(){ const host=document.getElementById('cs-3d');if(CT.run
   catch(e){if(e!=='stop')console.error('중계 재생 오류',e);} finally{ if(my===CT.tok)CT.run=false; } }
 function castMount(){ const c=UI.cast; if(!c)return; CT.tok++; CT.run=false; setTimeout(()=>castStart2D(c),12000); requestAnimationFrame(async()=>{if(UI.cast!==c)return; cDraw(c.k,0); const host=document.getElementById('cs-3d'); const ok=host&&typeof Match3D!=='undefined'&&await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)}); if(UI.cast!==c||!host?.isConnected)return; cPrepDone(ok); cDraw(c.k,0); if(c.play&&!CT.run){castResumePitch();castLoop();} }); }
 /* 결승점: 이긴 팀이 마지막으로 앞서기 시작한 타석(그 뒤로 다시 따라잡히지 않음) */
-function castWinIdx(g){ const L=g.pbp||[]; if(!L.length||g.hs===g.as)return -1; const W=g.hs>g.as?'h':'a'; let last=-1, prev=0; for(let i=0;i<L.length;i++){ const a=L[i][7], h=L[i][8]; const lead=h>a?'h':a>h?'a':''; if(lead===W&&prev!==W)last=i; prev=lead||'t'; } return last; }
+function castWinIdx(g){ const L=g.pbp||[]; if(!L.length||g.hs===g.as)return -1; const W=g.hs>g.as?'h':'a'; let last=-1, prev=0; for(let i=0;i<L.length;i++){ const a=L[i][7], h=L[i][8]; if(typeof a!=='number'||typeof h!=='number')continue; /* 도루·투구 수 줄은 점수가 없다: 리드를 끊지 않는다(검수 11-06) */ const lead=h>a?'h':a>h?'a':''; if(lead===W&&prev!==W)last=i; prev=lead||'t'; } return last; }
 function castJump(k,play){ const c=UI.cast; if(c.pre)cPrepClose(c); const L=G.games[c.g].pbp; c.k=clamp(k,0,L.length); c.pitch=null;c.lastHalf=null; CT.tok++; CT.run=false; cBallHide(); cTrailClear(); cDraw(c.k,250); if(play!=null)c.play=play; if(c.play&&c.k<L.length)castLoop(); else { sndStop('amb'); sndStop('chant'); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; } }
 
 

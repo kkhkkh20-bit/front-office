@@ -41,7 +41,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
   const sr=G.sea&&G.sea.rec&&G.sea.rec[G.user];
   return `<div class="scrim" data-a="wkClose"><div class="sheet gut wkres" data-stop="1" role="dialog" aria-label="경기 결과">
     <div class="sheet-head"><div><div class="eyebrow">경기 결과 · ${dmd(gs[0].g.day)}${gs.length>1?` ~ ${dmd(gs[gs.length-1].g.day)}`:''} · ${gs.length}경기</div><h2 class="sec">${title} · ${w}승 ${l}패${t?` ${t}무`:''}</h2></div><button class="x" data-a="wkClose" aria-label="닫기">×</button></div>
-    ${!post&&sr?`<div class="wk-sum"><span>시즌 <b>${sr.w}승 ${sr.l}패${sr.t?` ${sr.t}무`:''}</b></span>${rkLine?`<span>순위 ${rkLine}</span>`:''}${rk>1?`<span>1위와 <b>${gb}</b>경기 차</span>`:rk===1&&st[1]?`<span>2위와 <b>${((me.w-st[1].w)+(st[1].l-me.l))/2}</b>경기 차</span>`:''}</div>`:''}
+    ${!post&&sr?`<div class="wk-sum"><span>${gs[gs.length-1].g.day<G.day-1?`${dmd(G.day)} 현재 `:''}시즌 <b>${sr.w}승 ${sr.l}패${sr.t?` ${sr.t}무`:''}</b></span>${rkLine?`<span>순위 ${rkLine}</span>`:''}${rk>1?`<span>1위와 <b>${gb}</b>경기 차</span>`:rk===1&&st[1]?`<span>2위와 <b>${((me.w-st[1].w)+(st[1].l-me.l))/2}</b>경기 차</span>`:''}</div>`:''}
     <div class="wk-list">${gs.map(row).join('')}</div>
     ${hot.length?`<div class="eyebrow">이 기간 잘한 선수</div><div class="dg-ps">${hot.map(li).join('')}</div>`:''}
     ${cold.length?`<div class="eyebrow">이 기간 부진한 선수</div><div class="dg-ps">${cold.map(li).join('')}</div>`:''}
