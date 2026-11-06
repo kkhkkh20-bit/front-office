@@ -5,7 +5,7 @@ const up=new Vector3(0,1,0),smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3
 function valuesAt(track,t){return Array.from(track.createInterpolant().evaluate(t));}
 export function powerSwing(source){
  const C=SWING_CONTACT,tail=Math.max(.01,source.duration-C),weights={Hips:.18,Spine:.32,Spine1:.28,Spine2:.22};
- const tracks=source.tracks.map(track=>{const copy=track.clone(),sourceTimes=[...new Set([...track.times,C,...Array.from({length:Math.ceil(source.duration*60)},(_,i)=>i/60)])].filter(t=>t<=source.duration).sort((a,b)=>a-b) /* 60Hz로 촘촘히: 스윙 프레임이 끊겨 보이지 않게(사용자 피드백 11-07) */,sourceValues=sourceTimes.flatMap(t=>valuesAt(track,t)),joint=track.name.match(/(Hips|Spine[12]?)\.quaternion$/)?.[1];
+ const tracks=source.tracks.map(track=>{const copy=track.clone(),sourceTimes=[...new Set([...track.times,C,...Array.from({length:Math.ceil(source.duration*60)},(_,i)=>i/60).filter(g=>!track.times.some(k=>Math.abs(k-g)<.004)&&Math.abs(g-C)>.004)])].filter(t=>t<=source.duration).sort((a,b)=>a-b) /* 60Hz로 촘촘히: 스윙 프레임이 끊겨 보이지 않게(사용자 피드백 11-07) */,sourceValues=sourceTimes.flatMap(t=>valuesAt(track,t)),joint=track.name.match(/(Hips|Spine[12]?)\.quaternion$/)?.[1];
   copy.times=new Float32Array(Array.from(sourceTimes,t=>t<=C?C*Math.pow(Math.max(0,t/C),.72):C+(t-C)/tail*SWING_FOLLOW));
   copy.values=new Float32Array(sourceValues);
   if(joint){const q=new Quaternion(),turn=new Quaternion();for(let i=0;i<copy.times.length;i++){const t=copy.times[i],angle=t<C?-.20*Math.sin(Math.PI*t/C):.78*smooth((t-C)/SWING_FOLLOW);q.fromArray(sourceValues,i*4);turn.setFromAxisAngle(up,angle*weights[joint]);q.premultiply(turn).normalize().toArray(copy.values,i*4);}}
