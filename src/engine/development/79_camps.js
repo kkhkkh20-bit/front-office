@@ -36,8 +36,10 @@ function campEvLine(p,e){ if(e.t==='big')return `${p.name}: 한 단계 성장했
 function campGrowAll(kind,userFocus){ const mine=[], evs=[]; for(const t of G.teams){ const CP=kind==='fall'?G.fcamp:G.camp; const focus=t.id===ME()?userFocus:((CP&&CP.byT&&CP.byT[t.id])||campFocusAi(t.id,kind)); /* 캠프 도중 떠난 옛 구단은 단장이 정해 둔 방향으로 마친다 */ for(const p of campWho(t.id,kind)){ const ev=campGrow(p,kind,focus); if(t.id===ME())for(const e of ev){ mine.push(campEvLine(p,e)); evs.push({p,e}); } } } mine.ev=evs; return mine; } /* 문장 목록 + 결산 머리말용 사건(ev) */
 /* 캠프에서 익힌 구종이 결정구가 된 투수: 처음으로 삼진을 여럿 잡은 경기(선발 5개·구원 2개 이상)를 캠프와 이어 남긴다(구종별 결과는 경기에서 따로 세지 않는다) */
 function campPitchHit(rec){ if(!rec||!rec.box||G.unemp)return; const me=rec.home===G.user?'h':rec.away===G.user?'a':null; if(!me)return;
-  (rec.box[me].pit||[]).forEach((q,i)=>{ const p=G.players[q.id]; if(!p||!p.addP)return; const e=p.addP.find(x=>!x.hit&&x.y>=G.year-1); if(!e)return; const A=arsenal(p,p.r.stf); const best=A.reduce((a,b)=>b[1]>a[1]?b:a); if(best[0]!==e.k||(q.so||0)<(i===0?5:2))return;
-    e.hit={d:rec.day??G.day,so:q.so}; story(p,`${e.y} 캠프에서 익힌 ${e.k}을(를) 결정구로 ${q.so}탈삼진`,'grow'); try{ addLog(`${p.name}: 캠프에서 익힌 ${e.k}이(가) 실전에서 통했습니다(${q.so}탈삼진).`); }catch(err){} }); }
+  (rec.box[me].pit||[]).forEach((q,i)=>{ const p=G.players[q.id]; if(!p||!p.addP)return; const e=p.addP.find(x=>!x.hit&&x.y>=G.year-1); if(!e)return; const need=i===0?5:2; const Ks=(rec.pbp||[]).filter(r=>r[2]===p.id&&r[3]==='K'), seq=Ks.map(r=>{ try{ return storedPitchSequence(r); }catch(err){ return null; } }).filter(Boolean); let so;
+    if(seq.length){ so=seq.filter(S=>S[S.length-1].t===e.k).length; } /* 공별 기록이 있으면 실제 삼진 결정구로 센다(검수 11-06) */
+    else { const A=arsenal(p,p.r.stf); const best=A.reduce((a,b)=>b[1]>a[1]?b:a); so=best[0]===e.k?(q.so||0):0; } /* 공별 기록이 없는 옛 경기: 가장 좋은 구종으로 추정 */
+    if(so<need)return; e.hit={d:rec.day??G.day,so}; story(p,`${e.y} 캠프에서 익힌 ${e.k}을(를) 결정구로 ${so}탈삼진`,'grow'); try{ addLog(`${p.name}: 캠프에서 익힌 ${e.k}이(가) 실전에서 통했습니다(${so}탈삼진).`); }catch(err){} }); }
 function campHitTxt(p,g){ const e=(p&&p.addP||[]).find(x=>x.hit&&x.hit.d===g.day); return e?` · 캠프에서 익힌 ${e.k}이(가) 결정구로 통함`:''; }
 /* 캠프 결산 머리말: 최대 성장 · 예상 밖 부진 · 새 구종 한 명씩 */
 function campHeads(up,dn,evs){ const L=[]; const used=new Set(); const nm=p=>`${p.name}(${posLabel(p)}, ${p.age}세)`;

@@ -36,7 +36,7 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
   if(p.age>=33)return `${who}: "이 나이에 새 자리를 익히기는 어렵습니다."`;
   p.pconv={pos,d:G.day}; let tail='';
   if(m&&!m.interim&&m.ego>=70&&!mplOn('listen')&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다(관계 -1).`; }
-  let wk=0; { let e=posExp(p,pos); const g=(1.5+(p.e1?0:2))*posLearnRate(p); while(e<90&&wk<200){ e=Math.min(100,+(e+g*(1-e/120)).toFixed(1)); wk++; } } /* posGain과 같이: 숙련도가 높을수록 한 주 효과가 줄어든다 */
+  let wk=posEtaW(p,pos,p.e1,p.team);
   return `${p.name}: ${POSK[pos]} 전환 훈련을 시작합니다. ${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가면 그 자리로 경기에도 나갑니다.':'2군에서 그 자리로 경기에도 나갑니다.'} 지금 속도면 약 ${wk}주 뒤 주 포지션으로 바꿀 수 있습니다.${tail}`; }
 function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
 /* 자리 정착: 지난 시즌 1군 선발의 6할 이상을 다른 자리에서 뛰었고(50경기 이상) 그 자리 숙련이 75를 넘으면, 감독이 그 자리를 주 포지션으로 바꾼다.
@@ -68,7 +68,9 @@ function posCoachF(tid){ const C=coachesOf(tid); const v=(effC(C.fm,tid,'dv')+ef
 function posChallenge(p,ln){ if(!p||p.isP||p.foreign||p.pos==='C'||p.pconv||p.age>=32||!healthy(p))return null; if(Object.values(ln).includes(p))return null;
   let best=null; for(const q of POS_F){ if(q===p.pos||q==='C'||posExp(p,q)>=90||versOf(p)<POS_NEED[q])continue; const s=ln[q]; const v=posValLearn(p,q), sv=s?posValAt(s,q):-99; const g=v-sv; if(g>=1&&(!best||g>best.g))best={q,g,s}; }
   return best; }
-function posReqWeeks(p,q,tid){ return Math.max(1,Math.ceil((90-posExp(p,q))/((1.5+2)*posLearnRate(p)*posCoachF(tid)))); }
+/* 전환 예상 주: posGain처럼 숙련도가 높을수록 한 주 효과가 줄고, 2군에서는 코치진 육성력이 붙는다. 요청 단계와 승인 직후가 같은 식(검수 11-06) */
+function posEtaW(p,q,e1,tid){ let e=posExp(p,q), wk=0; const g=(1.5+(e1?0:2))*posLearnRate(p)*(e1||tid==null?1:posCoachF(tid)); while(e<90&&wk<200){ e=Math.min(100,+(e+g*(1-e/120)).toFixed(1)); wk++; } return Math.max(1,wk); }
+function posReqWeeks(p,q,tid){ return posEtaW(p,q,false,tid); }
 function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
   for(const t of G.teams){ const ln=makeLineup(t.id);
     for(const p of domestic(t.id)){ if(p.posReq&&G.day-p.posReq.d<150)continue; const c=posChallenge(p,ln); if(!c)continue; const amb=(p.pers&&p.pers.amb)||10; if(R()>clamp(amb/20,.15,1)*.45)continue;
