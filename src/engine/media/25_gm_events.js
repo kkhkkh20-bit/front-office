@@ -178,7 +178,7 @@ const EVH={
     follow(d){ const p=evP(d.pid); if(!p||p.team!==G.user)return; const h=seasonTotal(p,G.year,'1군'); const t=`${p.name} 한 달 뒤: ${h?statLine(h,p):'기록 없음'}.`; evResult(d.ev,t); note('경기',t,p.id); } },
   /* 부상 조기 복귀 (부상 순간에 발생) */
   inj:{ pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0&&p.injOut>0){ const before=p.injOut; p.injOut=Math.max(2,Math.round(p.injOut*.6)); p.rush=G.day+p.injOut+30; evFollow(p.injOut+30,'inj',{pid:p.id,n:p.injHist.length,ev:e.id}); return `복귀 예정 ${before}일 → ${p.injOut}일. 복귀 후 한 달은 부상 위험 3배.`; } return '예정대로 재활합니다.'; },
-    follow(d){ const p=evP(d.pid); if(!p)return; const t=p.injHist.length>d.n?`${p.name} 조기 복귀 뒤 다시 다쳤습니다.`:`${p.name} 조기 복귀 뒤 한 달 동안 탈 없이 뛰었습니다.`; evResult(d.ev,t); note('복귀',t,p.id); } }
+    follow(d){ const p=evP(d.pid); if(!p)return; const t=p.injHist.length>d.n||p.injOut>0?`${p.name} 조기 복귀 뒤 다시 다쳤습니다.`:p.team!==G.user?`${p.name}은(는) 조기 복귀 뒤 팀을 떠났습니다.`:`${p.name} 조기 복귀 뒤 한 달 동안 탈 없이 지냈습니다.`; /* 검수 11-07 */ evResult(d.ev,t); note('복귀',t,p.id); } }
 };
 function evInjury(p,days){ if(p.team!==G.user||period()!=='season'||days<12||days>70||evOpen().some(e=>e.k==='inj'))return; if(!isRegular(p))return;
   evNew('inj',`${p.name} 복귀 시점`,`${p.name}이(가) 부상으로 약 ${days}일 빠집니다. 의무팀은 무리하면 일찍 돌아올 수 있다고 합니다.`,

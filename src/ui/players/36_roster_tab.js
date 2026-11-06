@@ -75,10 +75,10 @@ function rosterView(){
   if(seg==='bat'){
     const lineup=orderList(d.start,tid);
     const posf=p=>posOf[p.id]?POSS[posOf[p.id]]+(posOf[p.id]!==p.pos&&posOf[p.id]!=='DH'?`(${POSS[p.pos]})`:''):POSS[p.pos];
-    groups=[['주전 (타순)',lineup,posf],[entryOn()?'1군 백업':'백업',d.bench],['부상·출장 정지',d.inj.filter(p=>!p.isP)],['군 복무',awayOf(tid).filter(p=>!p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>!p.isP)]];
+    groups=[['주전 (타순)',lineup,posf],[entryOn()?'1군 백업':'백업',d.bench],['부상·정지·미계약',d.inj.filter(p=>!p.isP)],['군 복무',awayOf(tid).filter(p=>!p.isP&&milServing(p))],['대표팀 차출',awayOf(tid).filter(p=>!p.isP&&!milServing(p))],['입단 예정',rookies.filter(p=>!p.isP)]];
   } else {
     const role=arr=>p=>arr===d.pen?(arr.indexOf(p)===0?'마무리':arr.indexOf(p)<4?'필승조':'추격조'):arr===d.sp?(arr.indexOf(p)+1)+'선발':posLabel(p);
-    groups=[['선발 로테이션',d.sp,role(d.sp)],[entryOn()?'1군 불펜':'불펜',d.pen,role(d.pen)],['부상·출장 정지',d.inj.filter(p=>p.isP)],['군 복무',awayOf(tid).filter(p=>p.isP&&p.mil&&p.mil.until)],['입단 예정',rookies.filter(p=>p.isP)]];
+    groups=[['선발 로테이션',d.sp,role(d.sp)],[entryOn()?'1군 불펜':'불펜',d.pen,role(d.pen)],['부상·정지·미계약',d.inj.filter(p=>p.isP)],['군 복무',awayOf(tid).filter(p=>p.isP&&milServing(p))],['대표팀 차출',awayOf(tid).filter(p=>p.isP&&!milServing(p))],['입단 예정',rookies.filter(p=>p.isP)]];
   }
   const f2all=(seg==='bat'?d.futB:d.futP).filter(vis); const sc=UI.rscope||'one';
   if(sc==='two')groups=[['2군',f2all]]; else if(sc==='all')groups=groups.concat([['2군',f2all]]);

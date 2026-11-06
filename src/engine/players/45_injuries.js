@@ -68,8 +68,8 @@ function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team===G.user?({a:.6,b
     if(p.isP&&I.fx.stf&&(I.part==='어깨')&&pf>0){ fx.v=-Math.round(sum(Object.values(fx.P))*VELO_K*10)/10; } }
   roundR(p);
   for(const s in fx.P)if(fx.P[s]>0)p.pot=Math.max(ovr(p),p.pot-fx.P[s]*.5);
-  const has=Object.values(fx.L).some(x=>x>.05);
-  if(has||fx.v||fx.fail){ (p.injFx=p.injFx||[]).push(fx); if(!has)fx.need=0; }
+  const has=Object.values(fx.L).some(x=>x>.05), perm=Object.values(fx.P).some(x=>x>.05);
+  if(has||perm||fx.v||fx.fail){ /* 되찾을 수 없는 손실만 있어도 기록(검수 11-07) */ (p.injFx=p.injFx||[]).push(fx); if(!has)fx.need=0; }
   return fx; }
 /* 실전량만큼 손실을 되찾는다 */
 function injRecover(p,u){ if(!p.injFx||!p.injFx.length||!(u>0))return; for(const fx of p.injFx){ if(!fx.need||fx.got>=fx.need)continue;

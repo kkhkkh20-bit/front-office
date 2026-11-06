@@ -54,7 +54,7 @@ function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
   if(p.injOut>0)L.push(`현재 ${injNow(p)}, 복귀까지 약 ${p.injOut}일`);
   for(const f of injFxText(p))L.push(`${f.n}: ${f.t}`);
   if(p.ucl)L.push('팔꿈치 인대 손상 이력: 수술로 이어질 위험이 있습니다');
-  if(p.isP&&armRatio(p)>=1.1)L.push(`팔 부하가 높습니다(${Math.round(armRatio(p)*100)}%). 전 소속팀에서 많이 던졌습니다`);
+  if(p.isP&&armRatio(p)>=1.1)L.push(`팔 부하가 높습니다(${Math.round(armRatio(p)*100)}%). ${p.team!==G.user?'소속팀에서 최근 많이 던졌습니다':p.acq&&p.acq.tid===G.user&&p.acq.d!=null&&(p.ld||[]).filter(x=>x[0]>=p.acq.d).length<(p.ld||[]).length/2?'이적 전 소속팀에서 많이 던졌습니다':'최근 우리 경기에서 많이 던졌습니다'}`); /* 부하를 쌓은 팀을 맞게(검수 11-07) */
   const sure=p.team===G.user||G.med.hosp==='a'; return {g,c,v,L,sure,note:sure?'':'제휴 병원 등급이 낮아 검진 정확도가 떨어집니다'}; }
 /* 트레이드 가치에 반영할 몸 상태 계수(AI 의무팀은 실제 체질을 안다) */
 function medTradeF(p){ let f=1-clamp((p.inj-.14)*1.3,-.05,.3); f*=1-Math.min(.2,injDays2(p)/600); if(injFxNow(p).length)f*=.92; if(p.ucl)f*=.92; if(p.isP&&armRatio(p)>=1.1)f*=.95; return f; }
