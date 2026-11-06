@@ -95,5 +95,5 @@ function injRetTxt(p){ const d=injRet(p); if(d==null)return ''; const o=dobj(d);
 function injNow(p){ return p.injOut>0?(p.injK?injName(p.injK):'부상'):''; }
 /* 매일: 재발 위험 기간 감소, 시즌 중 1군에 없는 회복 중 선수는 2군 실전으로 조금씩 되찾는다 */
 function injDaily(){ const inSea=period()==='season';
-  for(const p of Object.values(G.players)){ if(p.reInj&&p.injOut<=0){ p.reInj.left--; if(p.reInj.left<=0)delete p.reInj; }
+  for(const p of Object.values(G.players)){ if(p.reInj&&p.injOut<=0&&p.reInj.d!==G.day){ p.reInj.left--; /* 복귀한 날은 빼지 않는다 */ if(p.reInj.left<=0)delete p.reInj; }
   } void inSea; } /* 퓨처스 실전 회복은 futBat·futPit에서 실제 타석·아웃카운트로 처리한다 */

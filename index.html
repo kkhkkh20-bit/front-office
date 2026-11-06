@@ -10234,7 +10234,7 @@ function applyGame(day,hid,aid,g,ps){
         if(!ps){ const i=sIn?-1:sOut?s.outI[id]:s.order.findIndex(q=>q.id===id); if(i>=0){ const u=(p.use&&p.use.y===y)?p.use:(p.use={y,g:0,pos:{},slot:{}}); u.g++; const ps_=s.posOf[id]||'DH'; u.pos[ps_]=(u.pos[ps_]||0)+1; u.slot[i+1]=(u.slot[i+1]||0)+1; } }
         if(sOut||s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm*(sIn?.3:sOut?.85:1),0,100); if(!ps&&!sIn)p.wear=(p.wear||0)+1; if(!ps&&(!sIn||(x.pa||0)>0)){ (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3,x.sf||0,x.hbp||0]); if(p.l10.length>10)p.l10.shift(); } } /* 교체 출전도 타석에 섰으면 최근 경기에 넣는다 */
         if(R()<p.inj*.026*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60)*(sIn?.3:sOut?.85:1))injure(p,day);
-        else if(p.injFx){ p.injPlay=day; injRecover(p,(x.ab||0)+(x.bb||0)); }
+        else if(p.injFx){ p.injPlay=day; injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); } /* 사구·희생타도 실전 타석(검수 11-06) */
       }
     }
   }
@@ -10408,7 +10408,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   milDaily();
   recoverAll(1);
   if(o.w===0)for(const p of Object.values(G.players)){ if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)*.65+N(0,(p.foreign?.75:.55)*volF(p)),-2.5,2.5); /* 기복이 큰 선수는 슬럼프·상승세 폭도 크다 */ }
-  for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0]}; if(p.team===G.user){ const fx=injFxNow(p); const hd=((p.injHist||[]).slice(-1)[0]||{}).days||0; (hd>=10?(k,t,r)=>mail(FROM[k],headline(t),t,{ref:r,kind:k,acts:kindActs(k,r),imp:true}):note)('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
+  for(const p of Object.values(G.players)) if(p.injOut>0){ p.injOut--; if(p.injOut===0){ const I=INJ[p.injK]; if(I&&I.re)p.reInj={k:p.injK,left:I.re[1],m:I.re[0],d:G.day}; if(p.team===G.user){ const fx=injFxNow(p); const hd=((p.injHist||[]).slice(-1)[0]||{}).days||0; (hd>=10?(k,t,r)=>mail(FROM[k],headline(t),t,{ref:r,kind:k,acts:kindActs(k,r),imp:true}):note)('복귀',`${p.name}이(가) ${I?I.n+'에서':'부상에서'} 돌아왔습니다.${fx.length?' 실전 감각과 몸 상태는 경기를 뛰면서 되찾아야 합니다.':''}${(()=>{ const f=(p.injFx||[]).slice(-1)[0]; if(!f||f.k!==p.injK)return ''; return (f.v?` 복귀 후 측정한 직구 구속은 수술 전보다 ${f.v>0?f.v+'km/h 빨라졌습니다':(-f.v)+'km/h 느려졌습니다'}.`:'')+(f.fail?' 의무팀은 예전 구위를 완전히 되찾기는 어렵다고 봅니다.':''); })()}${I&&I.re?` 복귀 후 ${I.re[1]}일 동안은 재발 위험이 높습니다.`:''}`,p.id); } delete p.injK; } }
   try{ injDaily(); loadDaily(); if(o.w===1&&G.day>G.cal.open)loadWeekly(); }catch(e){}
   const c=G.cal;
   if(day===KD(2,1)||day===KD(6,1))try{ posPlanAll(); }catch(e){}
@@ -12490,6 +12490,7 @@ function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFre
 function sangmuWave(){ const d=G.day; if(d>=KD(9,1)&&d<KD(10,15))return 'dec'; if(d>=KD(3,1)&&d<KD(4,15))return 'jun'; return null; }
 /* 단장이 예약한 현역 입대는 입대일 전까지 취소할 수 있다(28세 강제 입대·상무 합격은 제외) */
 function enlistCancel(id){ const p=G.players[id]; const m=p&&p.mil; if(!p||p.team!==G.user||!m||!m.until||!m.byGM||m.from<=G.day)return '취소할 수 있는 입대 예약이 없습니다.'; p.mil=null; { const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.mil&&cn.milPrev){ const q=cn.milPrev; cn.st=q.st; delete cn.mil; delete cn.milPrev; if(q.has)p.newSal=q.ns; else delete p.newSal;
+    if(G.contract.done&&cn.st==='arb'){ try{ salArbDecide(); }catch(e){} if(p.newSal!=null){ p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal; } } /* 확정이 끝난 뒤 취소하면 조정을 바로 판정(미결로 남지 않게, 검수 11-06) */
     if(G.contract.done&&cn.st==='open'){ const v=cn.cur??cn.off; delete p.newSal; if(cn.ask>v*HOLD_GAP){ holdStart(p,v,cn.ask); cn.st='hold'; } else { p.sal=Math.max(MIN_SAL,v); cn.st='ok'; } } } } /* 계약을 이미 확정한 뒤 취소하면 그때 확정했을 결과(구단안 계약 또는 미계약)로 */ /* 입대 예약이 연봉 합의가 되지 않게: 예약 전 협상 상태(구단안·선수안·진행 중)로 */ story(p,'현역 입대 예약 취소','mil'); return ''; }
 function enlistNow(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; enlist(p,'현역',G.day+14); p.mil.byGM=true; return ''; }
 /* 상무 추천: 스카우트팀장·감독이 선수별로 의견을 낸다.
@@ -15367,7 +15368,7 @@ function injRetTxt(p){ const d=injRet(p); if(d==null)return ''; const o=dobj(d);
 function injNow(p){ return p.injOut>0?(p.injK?injName(p.injK):'부상'):''; }
 /* 매일: 재발 위험 기간 감소, 시즌 중 1군에 없는 회복 중 선수는 2군 실전으로 조금씩 되찾는다 */
 function injDaily(){ const inSea=period()==='season';
-  for(const p of Object.values(G.players)){ if(p.reInj&&p.injOut<=0){ p.reInj.left--; if(p.reInj.left<=0)delete p.reInj; }
+  for(const p of Object.values(G.players)){ if(p.reInj&&p.injOut<=0&&p.reInj.d!==G.day){ p.reInj.left--; /* 복귀한 날은 빼지 않는다 */ if(p.reInj.left<=0)delete p.reInj; }
   } void inSea; } /* 퓨처스 실전 회복은 futBat·futPit에서 실제 타석·아웃카운트로 처리한다 */
 /* ===== 투수 부하와 감독의 투수 운용 =====
    감독의 '투수 혹사' 성향에 성적 압박(성적 우선 기조, 시즌 막판 순위 싸움, 가을야구)을 더해 실제로 얼마나 밀어붙이는지 정한다.

@@ -214,7 +214,7 @@ function applyGame(day,hid,aid,g,ps){
         if(!ps){ const i=sIn?-1:sOut?s.outI[id]:s.order.findIndex(q=>q.id===id); if(i>=0){ const u=(p.use&&p.use.y===y)?p.use:(p.use={y,g:0,pos:{},slot:{}}); u.g++; const ps_=s.posOf[id]||'DH'; u.pos[ps_]=(u.pos[ps_]||0)+1; u.slot[i+1]=(u.slot[i+1]||0)+1; } }
         if(sOut||s.order.some(q=>q.id===id)){ p.fat=clamp((p.fat||0)+((s.posOf[id]==='C'?15:s.posOf[id]==='DH'?6:10)-(p.r.vit||52)*.04)*bm*(sIn?.3:sOut?.85:1),0,100); if(!ps&&!sIn)p.wear=(p.wear||0)+1; if(!ps&&(!sIn||(x.pa||0)>0)){ (p.l10=p.l10||[]).push([x.ab,x.h,x.hr,x.bb,x.rbi,x.d+x.tr*2+x.hr*3,x.sf||0,x.hbp||0]); if(p.l10.length>10)p.l10.shift(); } } /* 교체 출전도 타석에 섰으면 최근 경기에 넣는다 */
         if(R()<p.inj*.026*injMult(p)*turfM*(1+Math.max(0,(p.fat||0)-60)/60)*(sIn?.3:sOut?.85:1))injure(p,day);
-        else if(p.injFx){ p.injPlay=day; injRecover(p,(x.ab||0)+(x.bb||0)); }
+        else if(p.injFx){ p.injPlay=day; injRecover(p,x.pa??((x.ab||0)+(x.bb||0))); } /* 사구·희생타도 실전 타석(검수 11-06) */
       }
     }
   }

@@ -19,6 +19,7 @@ function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFre
 function sangmuWave(){ const d=G.day; if(d>=KD(9,1)&&d<KD(10,15))return 'dec'; if(d>=KD(3,1)&&d<KD(4,15))return 'jun'; return null; }
 /* 단장이 예약한 현역 입대는 입대일 전까지 취소할 수 있다(28세 강제 입대·상무 합격은 제외) */
 function enlistCancel(id){ const p=G.players[id]; const m=p&&p.mil; if(!p||p.team!==G.user||!m||!m.until||!m.byGM||m.from<=G.day)return '취소할 수 있는 입대 예약이 없습니다.'; p.mil=null; { const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.mil&&cn.milPrev){ const q=cn.milPrev; cn.st=q.st; delete cn.mil; delete cn.milPrev; if(q.has)p.newSal=q.ns; else delete p.newSal;
+    if(G.contract.done&&cn.st==='arb'){ try{ salArbDecide(); }catch(e){} if(p.newSal!=null){ p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal; } } /* 확정이 끝난 뒤 취소하면 조정을 바로 판정(미결로 남지 않게, 검수 11-06) */
     if(G.contract.done&&cn.st==='open'){ const v=cn.cur??cn.off; delete p.newSal; if(cn.ask>v*HOLD_GAP){ holdStart(p,v,cn.ask); cn.st='hold'; } else { p.sal=Math.max(MIN_SAL,v); cn.st='ok'; } } } } /* 계약을 이미 확정한 뒤 취소하면 그때 확정했을 결과(구단안 계약 또는 미계약)로 */ /* 입대 예약이 연봉 합의가 되지 않게: 예약 전 협상 상태(구단안·선수안·진행 중)로 */ story(p,'현역 입대 예약 취소','mil'); return ''; }
 function enlistNow(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; enlist(p,'현역',G.day+14); p.mil.byGM=true; return ''; }
 /* 상무 추천: 스카우트팀장·감독이 선수별로 의견을 낸다.
