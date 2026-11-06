@@ -15,7 +15,7 @@ function sdProtAI(tid){ const t=team(tid); return sdPool(tid).sort((a,b)=>aiVal(
 function sdSeq(order){ const s=[]; for(let rd=1;rd<=SD_RD+SD_XRD;rd++)(rd<=SD_RD?order:order.slice(0,3)).forEach(tid=>s.push({rd,tid})); return s; }
 function sdLost(tid){ return G.sd2.seq.filter(s=>s.pid&&s.from===tid).length; }
 /* 지명 후보: 다른 구단의 보호명단 밖 선수. 이번 드래프트로 이미 옮긴 선수와 4명을 잃은 구단 선수는 뺀다 */
-function sdCands(tid){ const S=G.sd2; const taken=new Set(S.seq.map(s=>s.pid).filter(Boolean)); if(S.stage==='pick')for(const t of G.teams)if(t.id!==G.user){ const cur=new Set(S.prot[t.id]||[]); const now=sdProtAI(t.id); if(now.some(id=>!cur.has(id)))S.prot[t.id]=now; } /* 보호 기간에 AI 구단 선수단이 바뀌면 보호명단도 다시 짠다 */
+function sdCands(tid){ const S=G.sd2; const taken=new Set(S.seq.map(s=>s.pid).filter(Boolean)); /* 지명이 시작되면 보호명단은 확정: 후보 조회가 명단을 다시 짜지 않는다(검수 11-06). AI 명단은 지명 시작 때(sdStart) 한 번 새로 짠다 */
   return G.teams.filter(t=>t.id!==tid&&sdLost(t.id)<SD_LOSS).flatMap(t=>sdPool(t.id).filter(q=>!taken.has(q.id)&&!(S.prot[t.id]||[]).includes(q.id))); }
 function sdOpen(){ const order=((G.last&&G.last.y===G.year&&G.last.order)||standingsNow()).map(x=>x.tid).reverse();
   const prot={}; for(const t of G.teams)if(t.id!==ME())prot[t.id]=sdProtAI(t.id);
@@ -23,10 +23,10 @@ function sdOpen(){ const order=((G.last&&G.last.y===G.year&&G.last.order)||stand
   wire('2차 드래프트',`${G.year} KBO 2차 드래프트: 구단별 보호선수 ${SD_PROT}명 명단 제출`,{});
   if(G.unemp)return; const my=order.indexOf(G.user)+1;
   mail('운영팀',`${G.year} 2차 드래프트: 보호선수 ${SD_PROT}명을 정하세요`,`격년으로 열리는 2차 드래프트입니다. ${dmd(G.sd2.exp)}까지 보호선수 ${SD_PROT}명을 내면, 다른 구단이 명단 밖 선수를 지명해 데려갑니다(우리 구단에서는 최대 ${SD_LOSS}명).\n\n저절로 빠지는 선수: 외국인, 입단 1~3년 차, 육성선수, 군 보류, 이번 겨울 FA 계약.\n지명 순서는 지난 시즌 성적 역순이고 우리는 ${my}번째입니다${my<=3?'(하위 3개 구단이라 4·5라운드까지 최대 5명)':''}. 양도금은 1라운드 4억, 2라운드 3억, 3라운드 2억, 4라운드 이하 1억입니다.`,{imp:true,kind:'드래프트',acts:[{l:'보호명단 정하기',a:'go',v:'transfer:kbo'}]});
-  stop('드래프트',`2차 드래프트 보호선수 ${SD_PROT}명을 ${dmd(G.sd2.exp)}까지 정하세요.`); }
+  stop('드래프트',`2차 드래프트 보호선수 ${SD_PROT}명을 정하세요. ${dmd(G.sd2.exp)}에 지명이 시작되며, 그 전날까지 고칠 수 있습니다.`); }
 function sdSubmit(ids){ const S=G.sd2; if(!S||S.stage!=='protect'||G.unemp)return '보호선수 명단을 낼 때가 아닙니다.'; const pool=new Set(sdPool(G.user).map(q=>q.id));
   S.prot[G.user]=[...new Set(ids)].filter(x=>pool.has(x)).slice(0,SD_PROT); S.sub=true; return `보호선수 ${S.prot[G.user].length}명 명단을 냈습니다. ${dmd(S.exp)}에 지명이 시작됩니다. 그 전까지는 고칠 수 있습니다.`; }
-function sdStart(){ const S=G.sd2; if(!S.prot[G.user]&&!G.unemp){ S.prot[G.user]=sdProtAI(G.user); note('드래프트','2차 드래프트 보호선수 명단을 운영팀이 능력 순으로 냈습니다.'); }
+function sdStart(){ const S=G.sd2; for(const t of G.teams)if(t.id!==ME())S.prot[t.id]=sdProtAI(t.id); /* 보호 기간에 바뀐 AI 선수단을 반영해 지명 시작 때 확정 */ if(!S.prot[G.user]&&!G.unemp){ S.prot[G.user]=sdProtAI(G.user); note('드래프트','2차 드래프트 보호선수 명단을 운영팀이 능력 순으로 냈습니다.'); }
   S.stage='pick'; sdRun(); }
 function sdAiPick(tid,rd){ if(rosterN(tid)>=ROSTER_MAX)return null; const t=team(tid); let best=null,bv=-1e9; for(const q of sdCands(tid)){ const v=aiVal(t,q); if(v>bv){ bv=v; best=q; } } return best&&bv>=sdFee(rd)/100?best.id:null; }
 function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.rd); const keep=q.ctT===from; delete q.capB; delete q.roleProm; q.team=s.tid; if(keep)q.ctT=s.tid; else termsClear(q); /* 계약은 이어진다: 성과 옵션·구단 옵션·옵트아웃·거부권도 승계(계약금 상한 반영·주전 약속은 원구단 몫) */ q.listed=false; if(from===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===pid)delete G.lineup[k];
@@ -55,7 +55,7 @@ function sdRegCheck(day){ if(!G.cal||day!==G.cal.end+1)return;
     if(o.from===G.user&&!G.unemp&&rosterN(G.user)<ROSTER_MAX){ evNew('sd2back',`${p.name} 2차 드래프트 복귀 여부`,`${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})이(가) ${tname(o.to)}에서 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못했습니다. 원소속 구단으로서 복귀를 받을지 정해야 합니다.`,[{l:'복귀를 받는다',fx:`양도금 절반 ${money(Math.round(o.fee/2))}을(를) ${tshort(o.to)}에 돌려줍니다.`},{l:'받지 않는다',fx:'선수는 자유계약으로 풀립니다.'}],{def:0,exp:5,from:'운영팀',ref:p.id,data:{pid:p.id,o}}); continue; } /* 우리 구단으로 돌아오는 선수는 단장이 정한다 */
     sdBackDo(p,o,rosterN(o.from)<ROSTER_MAX&&(o.from===ME()||aiVal(team(o.from),p)>=0)); } }
 function sdBackDo(p,o,back){
-  if(back){ const r=Math.round(o.fee/2); payOut(o.from,r,'comp'); payIn(o.to,r); termsClear(p); p.team=o.from; p.listed=false; if(o.to===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];
+  if(back){ const r=Math.round(o.fee/2); payOut(o.from,r,'comp'); payIn(o.to,r); { const keep=p.ctT===o.to; delete p.capB; delete p.roleProm; p.team=o.from; if(keep)p.ctT=o.from; else termsClear(p); } /* 지명 이적 때처럼 남은 계약 조건(옵션·거부권)은 이어진다(검수 11-06) */ p.listed=false; if(o.to===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];
       story(p,`2차 드래프트 의무 등록(1군 ${o.need}일) 미달로 ${tname(o.from)} 복귀`,'move'); mvLog('2차 드래프트',p,o.to,o.from,`의무 등록 미달 복귀 · 양도금 반환 ${money(r)}`,r);
       if(o.to===G.user||o.from===G.user)note('드래프트',`${p.name}이(가) 2차 드래프트 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못해 ${tname(o.from)}(으)로 돌아갑니다. 양도금 절반 ${money(r)}을(를) ${tname(o.from)}이(가) 돌려줍니다.`,p.id); }
     else { toFree(p,`2차 드래프트 의무 등록 미달 · ${tname(o.from)} 복귀 거부`,0,true); if(o.to===G.user)note('드래프트',`${p.name}이(가) 의무 등록을 채우지 못했고 ${tname(o.from)}이(가) 복귀를 원하지 않아 자유계약 선수가 됐습니다.`,p.id); }
@@ -65,4 +65,4 @@ function sd2Daily(day){ try{ sdRegCheck(day); }catch(e){}
   if(sdYear(G.year)&&day>=dnum(G.year,...SD_OPEN)&&!(G.sd2&&G.sd2.y===G.year)&&G.last&&G.last.y===G.year&&period()==='off')sdOpen();
   const S=G.sd2; if(!S||S.y!==G.year)return;
   if(S.stage==='protect'&&day>=S.exp)sdStart();
-  else if(S.stage==='pick'&&S.wait===S.cur&&day>=S.exp){ const s=S.seq[S.cur]; s.pass=true; note('드래프트',`2차 드래프트 ${s.rd}라운드 지명 기한이 지나 건너뛰었습니다.`); S.cur++; sdRun(); } }
+  else if(S.stage==='pick'&&S.wait===S.cur&&day>S.exp){ /* '내일까지' 안내한 날까지는 고를 수 있다(검수 11-06) */ const s=S.seq[S.cur]; s.pass=true; note('드래프트',`2차 드래프트 ${s.rd}라운드 지명 기한이 지나 건너뛰었습니다.`); S.cur++; sdRun(); } }
