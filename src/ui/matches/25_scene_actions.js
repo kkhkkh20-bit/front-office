@@ -4,10 +4,11 @@ function c3DActive(){return typeof Match3D!=='undefined'&&Match3D.ready();}
 function c3DFielder(g,k,pos){if(pos==='P'){const id=cPit(g,k);return id?{id,pos}:null;}return cFielders(g,g.pbp[k][0],k).find(a=>a.pos===pos);}
 function c3DRunTime(id){return FrontOfficeCore.baseRunTime(G.players[id]?.r.spd??50);}
 function c3DName(f){return f?G.players[f.id]?.name||'수비수':'수비수';}
-async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase){
+async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
  const receiver=c3DFielder(g,k,toPos);if(!from||!receiver)return;
- const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50,travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
- const cover=(Match3D.actorDistance('d'+receiver.id,toPt)??Match3D.distance(CFP[toPos],toPt))/7*1000,wind=Math.max(320,cover-travel+80);
+ const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50;let travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
+ const cover=(Match3D.actorDistance('d'+receiver.id,toPt)??Match3D.distance(CFP[toPos],toPt))/7*1000;let wind=Math.max(320,cover-travel+80);
+ if(by){ const left=(by-performance.now())*cSpd()-120, f=left>0?Math.min(1,left/(wind+travel)):.2; if(f<1){ const s=Math.max(.2,f); wind=Math.round(wind*s); travel=Math.round(Math.max(120,travel*s)); } } /* by: 주자가 베이스에 닿는 시각. 아웃이면 공이 그보다 먼저(빠른 송구) */
  Match3D.move('d'+receiver.id,toPt,cover/cSpd());
  Match3D.throwing('d'+from.id,toPt,wind/cSpd());cSpeak(g,k,'throw',{fielder:c3DName(from),receiver:c3DName(receiver),relay:phase==='중계 플레이'});
  await cSleep(wind);Match3D.receive('d'+receiver.id,'stretch',travel/cSpd(),fromPt);await cBall(fromPt,toPt,travel,false);Match3D.caught('d'+receiver.id,phase);
@@ -25,10 +26,10 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else{cover(relayPos,relayPt);if(path)cover(basePos,base);}}}
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');Match3D.hide('o'+id);};
- const short=i=>CPATH[i-1].map((v,j)=>v+(CPATH[i][j]-v)*.86); /* 아웃될 주자는 베이스 앞에서 멈춘다: 공이 먼저 오게(사용자 피드백 11-06: 주자·수비 도착과 아웃 판정이 어긋남) */
- const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,m.to);i++){if(retired.has(m.id))return;const lastOut=m.out&&i===Math.min(4,m.to),duration=isHR?4600:c3DRunTime(m.id)*(lastOut?1.6:1);cPlace(el,lastOut?short(i):CPATH[i],duration);await cSleep(duration);}if(retired.has(m.id))return;if(m.out||m.score)retire(m.id);}));
+ const t0=performance.now(), arrive=(id,legs,start)=>t0+(start||0)+legs*c3DRunTime(id)/cSpd(); /* 아웃 판정: 주자는 끝까지 전력으로 뛰고, 송구가 그보다 먼저 도착하게 맞춘다(사용자 피드백 11-07) */
+ const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,m.to);i++){if(retired.has(m.id))return;const duration=isHR?4600:c3DRunTime(m.id);cPlace(el,CPATH[i],duration);await cSleep(duration);}if(retired.has(m.id))return;if(m.out||m.score)retire(m.id);}));
  runners.catch(()=>{});
- const batter=(async()=>{await cSleep(620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(350);}const target=bTo>0?Math.min(4,bTo):1,batOut=outPlay&&!after.includes(x[1]);for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?4600:c3DRunTime(x[1])*(batOut?1.6:1);cPlace(bat,batOut?short(i):CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&bTo>=4)retire(x[1]);})();
+ const batter=(async()=>{await cSleep(620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(350);}const target=bTo>0?Math.min(4,bTo):1;for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?4600:c3DRunTime(x[1]);cPlace(bat,CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&bTo>=4)retire(x[1]);})();
  batter.catch(()=>{});
  sfx('crack',1,1);Match3D.batted(o,(isHR?1150:650)/cSpd());
  const ball=cBall([50,88],path?path.land:spot,timing.flight,arc,!!UI.cast.gb);
@@ -41,13 +42,13 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
   Match3D.caught('d'+f.id,airOut?'포구 · 아웃':'포구');
   if(outPlay&&!UI.cast.errPos){
    if(airOut){cCap(`${POSK[f.pos]||f.pos} ${c3DName(f)} 포구 · 아웃`,'bad');cFx('아웃','out');}
-   else if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);await c3DThrow(g,k,f,spot,pat[1],CBS[1],'포스 아웃');for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,c3DFielder(g,k,pat[1]),CBS[1],'1B',CBS[0],'병살 · 아웃');cFx(pat[2]+' 병살','bad');}
-   else if(f.pos==='1B'){const cover=Math.max(180,Match3D.distance(spot,CBS[0])/7*1000);Match3D.move('d'+f.id,CBS[0],cover/cSpd());await cSleep(cover);Match3D.focus('d'+f.id,'베이스 터치 · 아웃');cCap(`1루수 ${c3DName(f)} 직접 베이스 터치 · 아웃`,'bad');cFx('아웃','out');}
-   else await c3DThrow(g,k,f,spot,'1B',CBS[0],'아웃');
+   else if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);{ const fm=moves.find(m=>m.out); await c3DThrow(g,k,f,spot,pat[1],CBS[1],'포스 아웃',fm?arrive(fm.id,fm.to-fm.from):0); }for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,c3DFielder(g,k,pat[1]),CBS[1],'1B',CBS[0],'병살 · 아웃',arrive(x[1],1,620));cFx(pat[2]+' 병살','bad');}
+   else if(f.pos==='1B'){const cover=Math.min(Math.max(180,Match3D.distance(spot,CBS[0])/7*1000),Math.max(150,(arrive(x[1],1,620)-performance.now())*cSpd()-120));Match3D.move('d'+f.id,CBS[0],cover/cSpd());await cSleep(cover);Match3D.focus('d'+f.id,'베이스 터치 · 아웃');cCap(`1루수 ${c3DName(f)} 직접 베이스 터치 · 아웃`,'bad');cFx('아웃','out');}
+   else await c3DThrow(g,k,f,spot,'1B',CBS[0],'아웃',arrive(x[1],1,620));
    if(!after.includes(x[1])&&bat)retire(x[1]);
   }else{
    const thrownOut=moves.find(m=>m.out);
-   if(thrownOut){const pos=['','1B','2B','3B','C'][thrownOut.to];const thrown=await c3DThrow(g,k,f,spot,pos,CPATH[thrownOut.to],'주루 송구');await runners;if(thrown){Match3D.tag('d'+thrown.receiver.id,CPATH[Math.max(0,thrownOut.to-1)],240/cSpd());await cSleep(240);Match3D.focus('d'+thrown.receiver.id,thrownOut.to===4?'홈 태그 아웃':'주루 아웃');}retire(thrownOut.id);}
+   if(thrownOut){const pos=['','1B','2B','3B','C'][thrownOut.to];const thrown=await c3DThrow(g,k,f,spot,pos,CPATH[thrownOut.to],'주루 송구',arrive(thrownOut.id,thrownOut.to-thrownOut.from));await runners;if(thrown){Match3D.tag('d'+thrown.receiver.id,CPATH[Math.max(0,thrownOut.to-1)],240/cSpd());await cSleep(240);Match3D.focus('d'+thrown.receiver.id,thrownOut.to===4?'홈 태그 아웃':'주루 아웃');}retire(thrownOut.id);}
    else {if(f.pos!==relayPos){const relay=await c3DThrow(g,k,f,chase,relayPos,relayPt,'중계 플레이');if(path&&relay){ await batter; await c3DThrow(g,k,relay.receiver,relayPt,basePos,base,o==='3B'?'3루 송구':'2루 송구'); } /* 2루타·3루타는 타자가 베이스에 닿은 뒤 공이 오게(사용자 피드백 11-06: 공이 먼저 왔는데 2루타) */}Match3D.trackRunner('o'+x[1]);}
    cFx((o==='OUT'?'실책 출루':OUTK[o]||'안타')+(thrownOut?' · 주루 아웃':''),'hit');
   }
