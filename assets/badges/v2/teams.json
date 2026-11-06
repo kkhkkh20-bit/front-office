@@ -1,0 +1,541 @@
+{
+  "version": 2,
+  "path_base": "assets/badges/v2/",
+  "note": "Original fictional club crests. Flat SVG masters use 2–4 solid colors. All PNGs are rendered from the same masters with a single rim bevel, two-tone field and 8/512 short downward shadow. Asset keys are not game team IDs.",
+  "request": "docs/asset-requests/2026-11-06-codex-badges-v2-crests.md",
+  "request_sha256": "63bf3d5ccbcf546e443dbcd69b5e2ad2f16831a86f9082b15109e9b26734ba03",
+  "base_main_commit": "13e5e8f200b35913d114ffc8c9c8cab5a938e723",
+  "teams": [
+    {
+      "key": "seoul_comets",
+      "name": "서울 코메츠",
+      "wordmark": "SEOUL COMETS",
+      "design_palette": {
+        "background": "#A50034",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#A50034",
+        "secondary": "#FFFFFF",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "homeplate",
+      "symbol_concept": "Comet baseball and three swept flame tails",
+      "baseball_element": "baseball and sewn seams",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/seoul_comets.png",
+          "256": "png/crest/256/seoul_comets.png",
+          "128": "png/crest/128/seoul_comets.png"
+        },
+        "mark": {
+          "128": "png/mark/128/seoul_comets.png",
+          "64": "png/mark/64/seoul_comets.png",
+          "32": "png/mark/32/seoul_comets.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/seoul_comets.svg",
+        "relief_crest": "svg/relief/crest/seoul_comets.svg",
+        "mark": "svg/mark/seoul_comets.svg",
+        "relief_mark": "svg/relief/mark/seoul_comets.svg",
+        "mark32": "svg/mark32/seoul_comets.svg",
+        "relief_mark32": "svg/relief/mark32/seoul_comets.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "SEOUL",
+          "COMETS"
+        ]
+      }
+    },
+    {
+      "key": "seoul_hounds",
+      "name": "서울 하운즈",
+      "wordmark": "SEOUL HOUNDS",
+      "design_palette": {
+        "background": "#131230",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#131230",
+        "secondary": "#ED1C24",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "shield",
+      "symbol_concept": "Lean right-facing sighthound profile, swept-back ear",
+      "baseball_element": "baseball collar medallion",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/seoul_hounds.png",
+          "256": "png/crest/256/seoul_hounds.png",
+          "128": "png/crest/128/seoul_hounds.png"
+        },
+        "mark": {
+          "128": "png/mark/128/seoul_hounds.png",
+          "64": "png/mark/64/seoul_hounds.png",
+          "32": "png/mark/32/seoul_hounds.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/seoul_hounds.svg",
+        "relief_crest": "svg/relief/crest/seoul_hounds.svg",
+        "mark": "svg/mark/seoul_hounds.svg",
+        "relief_mark": "svg/relief/mark/seoul_hounds.svg",
+        "mark32": "svg/mark32/seoul_hounds.svg",
+        "relief_mark32": "svg/relief/mark32/seoul_hounds.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "SEOUL",
+          "HOUNDS"
+        ]
+      }
+    },
+    {
+      "key": "incheon_seagulls",
+      "name": "인천 시걸스",
+      "wordmark": "INCHEON SEAGULLS",
+      "design_palette": {
+        "background": "#CE0E2D",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#CE0E2D",
+        "secondary": "#FFFFFF",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "medallion",
+      "symbol_concept": "Front-facing sea gull with broad three-tip wings",
+      "baseball_element": "baseball cradled at the chest",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/incheon_seagulls.png",
+          "256": "png/crest/256/incheon_seagulls.png",
+          "128": "png/crest/128/incheon_seagulls.png"
+        },
+        "mark": {
+          "128": "png/mark/128/incheon_seagulls.png",
+          "64": "png/mark/64/incheon_seagulls.png",
+          "32": "png/mark/32/incheon_seagulls.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/incheon_seagulls.svg",
+        "relief_crest": "svg/relief/crest/incheon_seagulls.svg",
+        "mark": "svg/mark/incheon_seagulls.svg",
+        "relief_mark": "svg/relief/mark/incheon_seagulls.svg",
+        "mark32": "svg/mark32/incheon_seagulls.svg",
+        "relief_mark32": "svg/relief/mark32/incheon_seagulls.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "INCHEON",
+          "SEAGULLS"
+        ]
+      }
+    },
+    {
+      "key": "suwon_sparks",
+      "name": "수원 스파크스",
+      "wordmark": "SUWON SPARKS",
+      "design_palette": {
+        "background": "#141414",
+        "symbol": "#FFFFFF",
+        "ring": "#ED1C24"
+      },
+      "crest_palette": {
+        "ink": "#141414",
+        "primary": "#141414",
+        "secondary": "#ED1C24",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "octagon",
+      "symbol_concept": "Asymmetric six-ray electric charge and red bolt",
+      "baseball_element": "home-plate keystone below the wordmark",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/suwon_sparks.png",
+          "256": "png/crest/256/suwon_sparks.png",
+          "128": "png/crest/128/suwon_sparks.png"
+        },
+        "mark": {
+          "128": "png/mark/128/suwon_sparks.png",
+          "64": "png/mark/64/suwon_sparks.png",
+          "32": "png/mark/32/suwon_sparks.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/suwon_sparks.svg",
+        "relief_crest": "svg/relief/crest/suwon_sparks.svg",
+        "mark": "svg/mark/suwon_sparks.svg",
+        "relief_mark": "svg/relief/mark/suwon_sparks.svg",
+        "mark32": "svg/mark32/suwon_sparks.svg",
+        "relief_mark32": "svg/relief/mark32/suwon_sparks.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "SUWON",
+          "SPARKS"
+        ]
+      }
+    },
+    {
+      "key": "goyang_storm",
+      "name": "고양 스톰",
+      "wordmark": "GOYANG STORM",
+      "design_palette": {
+        "background": "#570514",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#570514",
+        "secondary": "#FFFFFF",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "medallion",
+      "symbol_concept": "Three counter-clockwise wind arcs and piercing bolt",
+      "baseball_element": "home-plate keystone below the wordmark",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/goyang_storm.png",
+          "256": "png/crest/256/goyang_storm.png",
+          "128": "png/crest/128/goyang_storm.png"
+        },
+        "mark": {
+          "128": "png/mark/128/goyang_storm.png",
+          "64": "png/mark/64/goyang_storm.png",
+          "32": "png/mark/32/goyang_storm.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/goyang_storm.svg",
+        "relief_crest": "svg/relief/crest/goyang_storm.svg",
+        "mark": "svg/mark/goyang_storm.svg",
+        "relief_mark": "svg/relief/mark/goyang_storm.svg",
+        "mark32": "svg/mark32/goyang_storm.svg",
+        "relief_mark32": "svg/relief/mark32/goyang_storm.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "GOYANG",
+          "STORM"
+        ]
+      }
+    },
+    {
+      "key": "daejeon_redfox",
+      "name": "대전 레드폭스",
+      "wordmark": "DAEJEON RED FOX",
+      "design_palette": {
+        "background": "#F37321",
+        "symbol": "#FFFFFF",
+        "ring": "#282828"
+      },
+      "crest_palette": {
+        "ink": "#282828",
+        "primary": "#F37321",
+        "secondary": "#282828",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "shield",
+      "symbol_concept": "Long-muzzled angular fox with outturned ears",
+      "baseball_element": "baseball below the muzzle",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/daejeon_redfox.png",
+          "256": "png/crest/256/daejeon_redfox.png",
+          "128": "png/crest/128/daejeon_redfox.png"
+        },
+        "mark": {
+          "128": "png/mark/128/daejeon_redfox.png",
+          "64": "png/mark/64/daejeon_redfox.png",
+          "32": "png/mark/32/daejeon_redfox.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/daejeon_redfox.svg",
+        "relief_crest": "svg/relief/crest/daejeon_redfox.svg",
+        "mark": "svg/mark/daejeon_redfox.svg",
+        "relief_mark": "svg/relief/mark/daejeon_redfox.svg",
+        "mark32": "svg/mark32/daejeon_redfox.svg",
+        "relief_mark32": "svg/relief/mark32/daejeon_redfox.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "DAEJEON",
+          "RED FOX"
+        ]
+      }
+    },
+    {
+      "key": "gwangju_blazes",
+      "name": "광주 블레이즈",
+      "wordmark": "GWANGJU BLAZES",
+      "design_palette": {
+        "background": "#EA0029",
+        "symbol": "#FFD34F",
+        "ring": "#FFD34F"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#EA0029",
+        "secondary": "#FFD34F",
+        "metal_flat": "#FFD34F"
+      },
+      "frame": "homeplate",
+      "symbol_concept": "Broad gold flame tongues and red inner fire",
+      "baseball_element": "baseball in the flame base",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/gwangju_blazes.png",
+          "256": "png/crest/256/gwangju_blazes.png",
+          "128": "png/crest/128/gwangju_blazes.png"
+        },
+        "mark": {
+          "128": "png/mark/128/gwangju_blazes.png",
+          "64": "png/mark/64/gwangju_blazes.png",
+          "32": "png/mark/32/gwangju_blazes.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/gwangju_blazes.svg",
+        "relief_crest": "svg/relief/crest/gwangju_blazes.svg",
+        "mark": "svg/mark/gwangju_blazes.svg",
+        "relief_mark": "svg/relief/mark/gwangju_blazes.svg",
+        "mark32": "svg/mark32/gwangju_blazes.svg",
+        "relief_mark32": "svg/relief/mark32/gwangju_blazes.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "GWANGJU",
+          "BLAZES"
+        ]
+      }
+    },
+    {
+      "key": "daegu_thunders",
+      "name": "대구 썬더스",
+      "wordmark": "DAEGU THUNDERS",
+      "design_palette": {
+        "background": "#074CA1",
+        "symbol": "#FFFFFF",
+        "ring": "#FFFFFF"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#074CA1",
+        "secondary": "#FFFFFF",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "octagon",
+      "symbol_concept": "Heavy two-lobe thundercloud and descending lightning",
+      "baseball_element": "baseball seam in a cloud lobe",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/daegu_thunders.png",
+          "256": "png/crest/256/daegu_thunders.png",
+          "128": "png/crest/128/daegu_thunders.png"
+        },
+        "mark": {
+          "128": "png/mark/128/daegu_thunders.png",
+          "64": "png/mark/64/daegu_thunders.png",
+          "32": "png/mark/32/daegu_thunders.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/daegu_thunders.svg",
+        "relief_crest": "svg/relief/crest/daegu_thunders.svg",
+        "mark": "svg/mark/daegu_thunders.svg",
+        "relief_mark": "svg/relief/mark/daegu_thunders.svg",
+        "mark32": "svg/mark32/daegu_thunders.svg",
+        "relief_mark32": "svg/relief/mark32/daegu_thunders.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "DAEGU",
+          "THUNDERS"
+        ]
+      }
+    },
+    {
+      "key": "busan_waves",
+      "name": "부산 웨이브스",
+      "wordmark": "BUSAN WAVES",
+      "design_palette": {
+        "background": "#041E42",
+        "symbol": "#FFFFFF",
+        "ring": "#D00F31"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#041E42",
+        "secondary": "#D00F31",
+        "metal_flat": "#FFFFFF"
+      },
+      "frame": "medallion",
+      "symbol_concept": "Single hooked left-folding wave and red undertow",
+      "baseball_element": "baseball caught in the curling lip",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/busan_waves.png",
+          "256": "png/crest/256/busan_waves.png",
+          "128": "png/crest/128/busan_waves.png"
+        },
+        "mark": {
+          "128": "png/mark/128/busan_waves.png",
+          "64": "png/mark/64/busan_waves.png",
+          "32": "png/mark/32/busan_waves.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/busan_waves.svg",
+        "relief_crest": "svg/relief/crest/busan_waves.svg",
+        "mark": "svg/mark/busan_waves.svg",
+        "relief_mark": "svg/relief/mark/busan_waves.svg",
+        "mark32": "svg/mark32/busan_waves.svg",
+        "relief_mark32": "svg/relief/mark32/busan_waves.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "BUSAN",
+          "WAVES"
+        ]
+      }
+    },
+    {
+      "key": "changwon_anchors",
+      "name": "창원 앵커스",
+      "wordmark": "CHANGWON ANCHORS",
+      "design_palette": {
+        "background": "#1D467B",
+        "symbol": "#FFFFFF",
+        "ring": "#C6A269"
+      },
+      "crest_palette": {
+        "ink": "#11161D",
+        "primary": "#1D467B",
+        "secondary": "#C6A269",
+        "metal_flat": "#C6A269"
+      },
+      "frame": "shield",
+      "symbol_concept": "Broad-fluked anchor with one looping rope",
+      "baseball_element": "baseball anchor eye",
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/changwon_anchors.png",
+          "256": "png/crest/256/changwon_anchors.png",
+          "128": "png/crest/128/changwon_anchors.png"
+        },
+        "mark": {
+          "128": "png/mark/128/changwon_anchors.png",
+          "64": "png/mark/64/changwon_anchors.png",
+          "32": "png/mark/32/changwon_anchors.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/changwon_anchors.svg",
+        "relief_crest": "svg/relief/crest/changwon_anchors.svg",
+        "mark": "svg/mark/changwon_anchors.svg",
+        "relief_mark": "svg/relief/mark/changwon_anchors.svg",
+        "mark32": "svg/mark32/changwon_anchors.svg",
+        "relief_mark32": "svg/relief/mark32/changwon_anchors.svg"
+      },
+      "wordmark_font": {
+        "family": "Barlow Condensed",
+        "style": "ExtraBold",
+        "weight": 800,
+        "outlined": true,
+        "shaping": "HarfBuzz kern enabled",
+        "lines": [
+          "CHANGWON",
+          "ANCHORS"
+        ]
+      }
+    }
+  ],
+  "delivery": {
+    "flat_primary_svg": 10,
+    "flat_mark_svg": 10,
+    "dedicated_mark32_svg": 10,
+    "derived_relief_svg": 30,
+    "rgba_png": 60,
+    "max_primary_outline_512": 11,
+    "shadow_y_512": 8,
+    "shadow_blur": 0,
+    "lighting": "top-left",
+    "runtime_crest_sizes": [
+      256,
+      128
+    ],
+    "runtime_mark_sizes": [
+      128,
+      64,
+      32
+    ],
+    "archive_only_crest_size": 512
+  },
+  "typography": {
+    "family": "Barlow Condensed",
+    "style": "ExtraBold",
+    "font_source": "https://github.com/google/fonts/tree/main/ofl/barlowcondensed",
+    "font_sha256": "724c9c25952d5f4a2d87185d9767aa006144c5f0d944dc05bf7d5d603551c260",
+    "license": "licenses/BarlowCondensed-OFL.txt",
+    "outlined_glyphs": true,
+    "no_font_runtime_dependency": true
+  },
+  "review_status": "asset review branch, game connection pending"
+}

@@ -1,0 +1,529 @@
+{
+  "algorithm": "sha256",
+  "path_base": "assets/badges/v2/",
+  "excluded": [
+    "checksums.json"
+  ],
+  "files": {
+    "CLAUDE_HANDOFF.md": {
+      "sha256": "f4c8258d0e9060bc3913fef4045e86a79f47487fb77f36912437a795bd51eae5",
+      "bytes": 4497
+    },
+    "README.md": {
+      "sha256": "3f72745fd1f283d25ef27d3e824e8fa356e5b189eeddf4d32d82ed01b37a1957",
+      "bytes": 5470
+    },
+    "licenses/BarlowCondensed-OFL.txt": {
+      "sha256": "10b0e6bb43166a50fbe7cde2895bd7f703738a5da843acb5c97c95dc9ea26817",
+      "bytes": 4376
+    },
+    "png/crest/128/busan_waves.png": {
+      "sha256": "3bf4c6444b9973c7d3b93a02194f16397c0398cca6fac7c774818d6686ec78dc",
+      "bytes": 14566
+    },
+    "png/crest/128/changwon_anchors.png": {
+      "sha256": "df369d1362486efb4349e38e2264111929add4ebaee02b38797e9b1881162ac7",
+      "bytes": 13922
+    },
+    "png/crest/128/daegu_thunders.png": {
+      "sha256": "b5b3acb84b21a30bf88193df66872066c6cedb3a3a634b1d031087194a202f9f",
+      "bytes": 10075
+    },
+    "png/crest/128/daejeon_redfox.png": {
+      "sha256": "b249fe76dfc94d85b7112e569cbb85c193240ae72e453199ba8c87d58e499868",
+      "bytes": 12944
+    },
+    "png/crest/128/goyang_storm.png": {
+      "sha256": "b1d1c8a396f51661d0e9aca2c02750e4e31e4cbe2a08e7a52121bb47e7311016",
+      "bytes": 14193
+    },
+    "png/crest/128/gwangju_blazes.png": {
+      "sha256": "c2afba60d65462ff6de0b8ed8635b549ced54381ba4599ff8f29e0989693ba21",
+      "bytes": 10930
+    },
+    "png/crest/128/incheon_seagulls.png": {
+      "sha256": "e704cf555408d307145aad9057470ecf14105fff43c7804fab2f10624734f762",
+      "bytes": 15567
+    },
+    "png/crest/128/seoul_comets.png": {
+      "sha256": "280f2119337c32bb241aceffc6e89a1d89fa463ecdb95075863ba5c8c38d3518",
+      "bytes": 11273
+    },
+    "png/crest/128/seoul_hounds.png": {
+      "sha256": "98e89a81dac6eef860c2a68315230c569a159457a702bbf6cbb7416f941c0ba7",
+      "bytes": 12965
+    },
+    "png/crest/128/suwon_sparks.png": {
+      "sha256": "3699dda3805d832e260287182477b749d540adb2076ef64c97f66f962e06ec4f",
+      "bytes": 7387
+    },
+    "png/crest/256/busan_waves.png": {
+      "sha256": "73b0cb0f6e5cf4d63163c2e814538efd578692afb1bda7b4863dbdf2168d4fe8",
+      "bytes": 30447
+    },
+    "png/crest/256/changwon_anchors.png": {
+      "sha256": "13c699b2b7fd03ec480c312c3b42410634d6958421f3c24beaaafe8262eb204f",
+      "bytes": 28624
+    },
+    "png/crest/256/daegu_thunders.png": {
+      "sha256": "066c5bbb7a5b4a00bb8aebbc52ab717d4fc453abc876248609ca5d30d40d1f02",
+      "bytes": 19911
+    },
+    "png/crest/256/daejeon_redfox.png": {
+      "sha256": "e13b213602bc601198f4c8eea4f1ee1fcde22e9e2dab3198f19b8c504e572ffc",
+      "bytes": 25850
+    },
+    "png/crest/256/goyang_storm.png": {
+      "sha256": "ea2dc5ccfb9abc60e4fab89717c45b161c874f0408fcdc30c8bdc357352222c1",
+      "bytes": 29745
+    },
+    "png/crest/256/gwangju_blazes.png": {
+      "sha256": "696a8af089c0af869246df52eb5f2634c41feeeab08934531d3bbf57d4fa3333",
+      "bytes": 22905
+    },
+    "png/crest/256/incheon_seagulls.png": {
+      "sha256": "7b236795f9b7e9e3199df8e60d87c6650c50284d46d63a07d4fc7aa7f0b54203",
+      "bytes": 32640
+    },
+    "png/crest/256/seoul_comets.png": {
+      "sha256": "c76c12708b9a872817b23abcafb9e24b560de55a3adec48f24e8c1ec92f62bac",
+      "bytes": 23137
+    },
+    "png/crest/256/seoul_hounds.png": {
+      "sha256": "88076eb6cde68a746b6b1927e8a3868453b3327eea922492fc42ca3f5406efac",
+      "bytes": 26751
+    },
+    "png/crest/256/suwon_sparks.png": {
+      "sha256": "4621e5d45746b260d297ef2a93b0a129810f0162122a9cb6569c2c28279ffd95",
+      "bytes": 14732
+    },
+    "png/crest/512/busan_waves.png": {
+      "sha256": "d624bf931d764e6c69fe55877d4f588990f0b5bc29144860acca9316a1ab9818",
+      "bytes": 63757
+    },
+    "png/crest/512/changwon_anchors.png": {
+      "sha256": "92392e8be4812be3ab843a1a1f2da5e4fa42c9acf7ceaa694b02a938fa2c7a52",
+      "bytes": 59043
+    },
+    "png/crest/512/daegu_thunders.png": {
+      "sha256": "db0e390834a41fbfd62e004d4e48b1c1cc6c5ae08bd7d24ca1fd5b476784f010",
+      "bytes": 40110
+    },
+    "png/crest/512/daejeon_redfox.png": {
+      "sha256": "2db3ca834efaf923b36bd28991fec552350c34977ae59224c60d0eac143a7067",
+      "bytes": 52272
+    },
+    "png/crest/512/goyang_storm.png": {
+      "sha256": "09009113af950f76b0f98735724f7318f17df62fba6ab996b4402e6857115586",
+      "bytes": 61727
+    },
+    "png/crest/512/gwangju_blazes.png": {
+      "sha256": "92adca6d147b75360b1a78d1b3b01e8d409a4ba83876622fbcb65dde98b07990",
+      "bytes": 47170
+    },
+    "png/crest/512/incheon_seagulls.png": {
+      "sha256": "531488d0597e544b4cdf9bf6fae2baa9801a5d80687cf85f2a51234cbb7fa863",
+      "bytes": 67875
+    },
+    "png/crest/512/seoul_comets.png": {
+      "sha256": "e95820663f59180622621386c3bdcd0e0b6c872c83d3847da8b3897e96c36607",
+      "bytes": 47617
+    },
+    "png/crest/512/seoul_hounds.png": {
+      "sha256": "2d4d390f84aa0a1d8e3bc248388b6dce7a878da5501f38ff72654056af9dff10",
+      "bytes": 54968
+    },
+    "png/crest/512/suwon_sparks.png": {
+      "sha256": "d8a38fcaace3911f1f00f2d9dc6b0a754bd1146324d5defde5724341aac43071",
+      "bytes": 30407
+    },
+    "png/mark/128/busan_waves.png": {
+      "sha256": "b695441e6e5b8e049a0842a9652b0b443940e18feb45fa9ddb748b261b472c62",
+      "bytes": 14041
+    },
+    "png/mark/128/changwon_anchors.png": {
+      "sha256": "07b71f0cbbef56ef2b48bbdb3a2f24a4a5603f19c142b61530114fd046c74978",
+      "bytes": 13777
+    },
+    "png/mark/128/daegu_thunders.png": {
+      "sha256": "19b23ead5d114efac383d310243fbbac59b7d0feec3a388e4306daf2e5ff5c24",
+      "bytes": 8774
+    },
+    "png/mark/128/daejeon_redfox.png": {
+      "sha256": "874ccef061f662e97012b4b3608e806a721ac39028775485d2bc0d96209d77ff",
+      "bytes": 13106
+    },
+    "png/mark/128/goyang_storm.png": {
+      "sha256": "88f0c3c84582bd112ff6971d4be9ab13baaa121a27aa8ec5032e26dfdbbfc272",
+      "bytes": 14942
+    },
+    "png/mark/128/gwangju_blazes.png": {
+      "sha256": "e984428da8a1212efddabaadca534cc7be2750990894fd1b0261f5f7188cb241",
+      "bytes": 9660
+    },
+    "png/mark/128/incheon_seagulls.png": {
+      "sha256": "1ff33c2be7e735194652154b918faa5d181d7ee91865d516c1b8a9c7d99ba5da",
+      "bytes": 14812
+    },
+    "png/mark/128/seoul_comets.png": {
+      "sha256": "aff5fcca6ccf53eb5b0c60b2e4712ea627a61bf3b876bdfc5076be1990e6275e",
+      "bytes": 10994
+    },
+    "png/mark/128/seoul_hounds.png": {
+      "sha256": "e5374f1478c14f2eaa7b945a72912020f2cbb48e34c2626ff140139a8363c266",
+      "bytes": 11643
+    },
+    "png/mark/128/suwon_sparks.png": {
+      "sha256": "cd764cc88f529f5ba5543e4ef9d238759a4bddf6aba02d09ebd32211098d6310",
+      "bytes": 6634
+    },
+    "png/mark/32/busan_waves.png": {
+      "sha256": "0d09c2a5256730c0ccd561232433e7e00bcccbe948d700ec49775d0041996582",
+      "bytes": 2252
+    },
+    "png/mark/32/changwon_anchors.png": {
+      "sha256": "a81a4a7a3500499e2c08dd8fe090e691c67e1207fbacfb65de87ffb9098310f0",
+      "bytes": 2007
+    },
+    "png/mark/32/daegu_thunders.png": {
+      "sha256": "c0bf5e490470893dc9c50e3c596a28f8e8fa854e6a091cd9e87eb4c553881b8d",
+      "bytes": 1687
+    },
+    "png/mark/32/daejeon_redfox.png": {
+      "sha256": "2ebb7f04294c2735bce14e57999424a418d26d0c3a197fc0628c6c23d2dbbd52",
+      "bytes": 2020
+    },
+    "png/mark/32/goyang_storm.png": {
+      "sha256": "fb83e0b3a483efb61247048c43bd431cba595fae68c0763c2244f38e8b01b8b7",
+      "bytes": 2344
+    },
+    "png/mark/32/gwangju_blazes.png": {
+      "sha256": "e581e6bf0c02178031ecb4c309e5dda6c200c05c3a9db7362bcf218174ba3786",
+      "bytes": 1637
+    },
+    "png/mark/32/incheon_seagulls.png": {
+      "sha256": "e48915cef456bbb70907e61c34fd22e4b26749fb722220943eafe447e1764c28",
+      "bytes": 2172
+    },
+    "png/mark/32/seoul_comets.png": {
+      "sha256": "60e1a8625972d943f7ab23a8a1d50167a2369488b2bf80358a931ef541bd5b6f",
+      "bytes": 1802
+    },
+    "png/mark/32/seoul_hounds.png": {
+      "sha256": "5e6796ab853b4122039996afab02009ece5878fc6d4774a32951129cd700731d",
+      "bytes": 1803
+    },
+    "png/mark/32/suwon_sparks.png": {
+      "sha256": "fa73aa18411d4978edcb798af4ac2fe6ade56587aa4d2be5d5f32e0ad3b3067b",
+      "bytes": 1624
+    },
+    "png/mark/64/busan_waves.png": {
+      "sha256": "deb5804c10632fc71442d20bc1768aba2f71595d414f3237476ee5bdbd76c130",
+      "bytes": 5992
+    },
+    "png/mark/64/changwon_anchors.png": {
+      "sha256": "75854fa94c4c0c26df9301b109025a11fe75a8982867ca2210c48d20416330cf",
+      "bytes": 5687
+    },
+    "png/mark/64/daegu_thunders.png": {
+      "sha256": "a1a7e700e1e18cf29c3816b65bdc90bfa46c2b7a987fa12954f59dd8dc9dd862",
+      "bytes": 4020
+    },
+    "png/mark/64/daejeon_redfox.png": {
+      "sha256": "8fb7e68f00b0ed17119a051656c1f8534e8d2d9edbb5bf50c3d84faacb884312",
+      "bytes": 5611
+    },
+    "png/mark/64/goyang_storm.png": {
+      "sha256": "15405ac5e09e9aa16cebf574a72a177f1a5610b1cd9b29075924e334d41774d8",
+      "bytes": 6424
+    },
+    "png/mark/64/gwangju_blazes.png": {
+      "sha256": "6b1c03fbbc60cafcf082f96d27555a9b164accfd0850f4bcc767bb76079ad9ac",
+      "bytes": 4120
+    },
+    "png/mark/64/incheon_seagulls.png": {
+      "sha256": "5b062f6eb97d82721b317210e7aaac1b09fc33f61b5eb6c315de4d613b95cfec",
+      "bytes": 6125
+    },
+    "png/mark/64/seoul_comets.png": {
+      "sha256": "053d962299b5a765f41102ac1dfe409d23e1bf2c0a059d750951ea4a6437c9c5",
+      "bytes": 4532
+    },
+    "png/mark/64/seoul_hounds.png": {
+      "sha256": "e6315262abe436977d7879372fd548a942cd64ecda4341750640b365d879847d",
+      "bytes": 4981
+    },
+    "png/mark/64/suwon_sparks.png": {
+      "sha256": "9ae920f912c7810ba354a14c96dd33dd06cdcc4d85e6e1d049d84e5e871ca5ea",
+      "bytes": 3454
+    },
+    "preview.png": {
+      "sha256": "3a308eecb97a099f33beeb9d15a6e5fe42f26b83bdaa9e11c564caf9341a78f7",
+      "bytes": 613272
+    },
+    "previews/crests_dark_light.png": {
+      "sha256": "f169f27a720d829f6649d4eeec4e23a9bf99a7f81349572316cb39c101546e61",
+      "bytes": 472064
+    },
+    "previews/flat_masters.png": {
+      "sha256": "0422d521bd2e7d150dfcb1b0e003309b35c0112df66211c2c77d1b416309d2f8",
+      "bytes": 226669
+    },
+    "previews/marks_actual_size.png": {
+      "sha256": "2683d82b9e245b4353f4c63725ec4db1caebb4f89cd382d11c47e6d97b0770ef",
+      "bytes": 142343
+    },
+    "svg/mark/busan_waves.svg": {
+      "sha256": "830dcb4e4adf34b125da0a3aa1349b330c7728cea11c7ec8373fcb16f30c9454",
+      "bytes": 2093
+    },
+    "svg/mark/changwon_anchors.svg": {
+      "sha256": "b4f92b0edaac7ebc60d458dd30f3507a121ba1532f53702e25c3186f76303c28",
+      "bytes": 2075
+    },
+    "svg/mark/daegu_thunders.svg": {
+      "sha256": "f4b7e84ae07b6062c326991d813c8418df83c7aa644a19b172020d6cfdfff0f3",
+      "bytes": 1928
+    },
+    "svg/mark/daejeon_redfox.svg": {
+      "sha256": "3b4c0fbaa84676c662819a53edcc80e92a919d443291563468dcf79a7bc016db",
+      "bytes": 2222
+    },
+    "svg/mark/goyang_storm.svg": {
+      "sha256": "685a092175b158dfd788c1fa0b910afe66daf8a39a153f34daa5c2cfb25c8522",
+      "bytes": 1909
+    },
+    "svg/mark/gwangju_blazes.svg": {
+      "sha256": "e960aa17dd76201b78b50f01df37821b66da6a70605d4eea718497d9e1e4710f",
+      "bytes": 1992
+    },
+    "svg/mark/incheon_seagulls.svg": {
+      "sha256": "b3929e12a5746e1aeb52ce389a72cba3f82f50cb2535faca3a04aae37bc46907",
+      "bytes": 2432
+    },
+    "svg/mark/seoul_comets.svg": {
+      "sha256": "95304e0c02b0efe4ee2aadf009c162be8912ccc812074c16a29759314b2bd39b",
+      "bytes": 2683
+    },
+    "svg/mark/seoul_hounds.svg": {
+      "sha256": "99367b59723aba5d71aba4473daecab24ad0c7fd7baf30c1f5f6caae98d6a131",
+      "bytes": 2203
+    },
+    "svg/mark/suwon_sparks.svg": {
+      "sha256": "894c64f3804b84c671dee9aeb7480fbf6a0f806ac2ec6e0be62a789350399a63",
+      "bytes": 1206
+    },
+    "svg/mark32/busan_waves.svg": {
+      "sha256": "87cce87b85fba4736bde6cbe8cc4bdd501a7746caccf84ca8114dc392f67c875",
+      "bytes": 1798
+    },
+    "svg/mark32/changwon_anchors.svg": {
+      "sha256": "2ad791ae5f9ee66ded71e786ff9c2ac7d5b3eee2d35fd747d2f31e6e453d5a9a",
+      "bytes": 1718
+    },
+    "svg/mark32/daegu_thunders.svg": {
+      "sha256": "e68c146ffefbbbf5cdbdc7810e00620ccf7a62dc5ca5ba3696f005c4366b8fcf",
+      "bytes": 1594
+    },
+    "svg/mark32/daejeon_redfox.svg": {
+      "sha256": "78073df19232387acd51e233515e07e7dc4ba096050eebb5d5437e6412b246ee",
+      "bytes": 1929
+    },
+    "svg/mark32/goyang_storm.svg": {
+      "sha256": "fd74c7f258be8cdd05594da82d0f4a15e6bdbf1d4eb2d85fecc31dcec1871652",
+      "bytes": 1909
+    },
+    "svg/mark32/gwangju_blazes.svg": {
+      "sha256": "e731bddec467b86687ace850d011bb337936aadd3460305a81eea028a915825b",
+      "bytes": 1783
+    },
+    "svg/mark32/incheon_seagulls.svg": {
+      "sha256": "754e731b9f3de7eb9cba7b6a209b36794eb3b4b8006b4b2e98cba021f89651a9",
+      "bytes": 2127
+    },
+    "svg/mark32/seoul_comets.svg": {
+      "sha256": "ba6d96374d4eb1e09fe154aa52f26bcdccb9ba10c8f4a3841753c523da30dcc1",
+      "bytes": 1452
+    },
+    "svg/mark32/seoul_hounds.svg": {
+      "sha256": "689874f735689f7546f70c8eee4b31b6cc34643ffbbd5aa44b29ad47bf5e0446",
+      "bytes": 1753
+    },
+    "svg/mark32/suwon_sparks.svg": {
+      "sha256": "3ef17753348e76669ee022a461cb1b0ebc05caabef674f5ae9a3b88fca4654b3",
+      "bytes": 1204
+    },
+    "svg/primary/busan_waves.svg": {
+      "sha256": "dad9c5350be13b793034634d4ff67b40d769e9dcb1ead4bd0a020bc350388835",
+      "bytes": 10765
+    },
+    "svg/primary/changwon_anchors.svg": {
+      "sha256": "49ae17c15590da157a95c6f318c94b8222d48a13aed22df96835c78e946435d7",
+      "bytes": 14535
+    },
+    "svg/primary/daegu_thunders.svg": {
+      "sha256": "c1a3fa2d823c96273166448137ad7b51ac7d6d2b5dee3fe434ef05c3e7054b2e",
+      "bytes": 12525
+    },
+    "svg/primary/daejeon_redfox.svg": {
+      "sha256": "72509bc30dc252373d1f28cf08ddc2939e5356f810a7e45005cde9c930c50b76",
+      "bytes": 12037
+    },
+    "svg/primary/goyang_storm.svg": {
+      "sha256": "44b833a5801950b92abb5f3139455f731236f944ca5ad7a8af05355af95d4be7",
+      "bytes": 11271
+    },
+    "svg/primary/gwangju_blazes.svg": {
+      "sha256": "ea5a7f3a4a2560508faccde83e57ebbf7abb381045c89c9b07fc175bb5ccf711",
+      "bytes": 12781
+    },
+    "svg/primary/incheon_seagulls.svg": {
+      "sha256": "34caa133a90417d4e1702280b23aca8db7bf90d84f77be131a5588314c514093",
+      "bytes": 14365
+    },
+    "svg/primary/seoul_comets.svg": {
+      "sha256": "c0d5513ec6b7c434b7acbbda69a1f327c85b8ffbedad46a3073769ee74849fed",
+      "bytes": 12048
+    },
+    "svg/primary/seoul_hounds.svg": {
+      "sha256": "40976b655e1b11305d5579e8f76b0adf90927af8922df8655a2bbd644188ceef",
+      "bytes": 11311
+    },
+    "svg/primary/suwon_sparks.svg": {
+      "sha256": "a54e32828a5d86c335654214500742ec2abdb1fe090fc8d78859f85847b87e02",
+      "bytes": 11519
+    },
+    "svg/relief/crest/busan_waves.svg": {
+      "sha256": "9637ca7f1adce0e9325a156f63c467949ccb88ae0c697780c58c355560da13fb",
+      "bytes": 11736
+    },
+    "svg/relief/crest/changwon_anchors.svg": {
+      "sha256": "de0335bd0b8910e668c27ec81eec8053526c4b27efa4d52cb2a29bace63a6ec1",
+      "bytes": 15488
+    },
+    "svg/relief/crest/daegu_thunders.svg": {
+      "sha256": "ec699af2ed1831b77b5311e258ee87195a94b96159420f1ce690108bb758d044",
+      "bytes": 13450
+    },
+    "svg/relief/crest/daejeon_redfox.svg": {
+      "sha256": "2591b5a1c0a3949ca38f453955457aff763db93cfb69d43e4a29d16a3535f7e7",
+      "bytes": 12994
+    },
+    "svg/relief/crest/goyang_storm.svg": {
+      "sha256": "4f7e181fd7c61d0a5742acc09fe5eedefdeea085a81c7f1937ff7462bb31b808",
+      "bytes": 12242
+    },
+    "svg/relief/crest/gwangju_blazes.svg": {
+      "sha256": "3891d9a4fc72f291c81add5c66df12366f4b1ac946f8ee1154caa7efa4671de8",
+      "bytes": 13699
+    },
+    "svg/relief/crest/incheon_seagulls.svg": {
+      "sha256": "70cdee81b0023f57d7188e67deb5c4722ff838369edf193e08b3219b7cbf7579",
+      "bytes": 15344
+    },
+    "svg/relief/crest/seoul_comets.svg": {
+      "sha256": "70d34aa8576cae1fa1e65830c5370b8ae3a440276b08e3f38de5ff54a97ffed9",
+      "bytes": 12970
+    },
+    "svg/relief/crest/seoul_hounds.svg": {
+      "sha256": "35956894e471904ea9ca37151241f3fe9142972bc364bd7ce8b113b7c91ea5fe",
+      "bytes": 12264
+    },
+    "svg/relief/crest/suwon_sparks.svg": {
+      "sha256": "16a021d8ecfdef69e6abc1b0530ea72907dbd6ebd26fa4255c74295f6b7d7f0a",
+      "bytes": 12439
+    },
+    "svg/relief/mark/busan_waves.svg": {
+      "sha256": "94e00bd27ab537b6a41c2ace0b24a0f5f3664b9aa88264613980dd5f3626dc4e",
+      "bytes": 3049
+    },
+    "svg/relief/mark/changwon_anchors.svg": {
+      "sha256": "254862c73e9010ca516137762bfe8c8db2a0b5d14b67df0e3e1dd1c3af4fefd5",
+      "bytes": 3008
+    },
+    "svg/relief/mark/daegu_thunders.svg": {
+      "sha256": "b9097dcb94c3c1611d07be6b636e560beee2b5c1fdc016be2993c2d964e6f47e",
+      "bytes": 2835
+    },
+    "svg/relief/mark/daejeon_redfox.svg": {
+      "sha256": "35a7279727fed0150d99209a5967f0a857f613d72390b7c1d97c8f37575f7d7c",
+      "bytes": 3161
+    },
+    "svg/relief/mark/goyang_storm.svg": {
+      "sha256": "9f21838f9a39296d710fda71a4259f0cc1c98d34fe8ec4cb4f6e0299144687fc",
+      "bytes": 2864
+    },
+    "svg/relief/mark/gwangju_blazes.svg": {
+      "sha256": "5e7bf72cf11bbddf5853db8df9ea439095fc58661647ccb08cf59873dc93c33c",
+      "bytes": 2892
+    },
+    "svg/relief/mark/incheon_seagulls.svg": {
+      "sha256": "a7b2dd69eca7793566828b4f020ed71528eb0e94c81c3591b2285ac18dae1e37",
+      "bytes": 3391
+    },
+    "svg/relief/mark/seoul_comets.svg": {
+      "sha256": "c7b6f7607913113e93d6ae14f4c33258b48ca81d1015aaf1c5423eeb7810c33c",
+      "bytes": 3589
+    },
+    "svg/relief/mark/seoul_hounds.svg": {
+      "sha256": "74a72aee8bde14e4edd0435841ca26bdea7557abdd46b8075d6c4197e89019fb",
+      "bytes": 3140
+    },
+    "svg/relief/mark/suwon_sparks.svg": {
+      "sha256": "654de6208ee8b0d9661fddcfc2a5a33ecc53be90792f3dc33c693456c68c99c8",
+      "bytes": 2110
+    },
+    "svg/relief/mark32/busan_waves.svg": {
+      "sha256": "d87cdd9ba53542055e1287b2375e228129ef293e8a2f37e0b452d3fa2a6b6b8c",
+      "bytes": 2752
+    },
+    "svg/relief/mark32/changwon_anchors.svg": {
+      "sha256": "6497644ab42b265407a7f95fa07406d9d2c8a28b2d98b569e310685e26fadd2d",
+      "bytes": 2650
+    },
+    "svg/relief/mark32/daegu_thunders.svg": {
+      "sha256": "d997a9b044e60f368604bba29bd3acf52e7fd41175db8f7108412d7dce8af5fc",
+      "bytes": 2499
+    },
+    "svg/relief/mark32/daejeon_redfox.svg": {
+      "sha256": "ca17f44703e861bbc62fba54b4064d2724451477fce0993b8689f1c0306cf12b",
+      "bytes": 2866
+    },
+    "svg/relief/mark32/goyang_storm.svg": {
+      "sha256": "9157da12f9b325076eba117c9f65308de614f87aa96c25848882e9fb7d0129af",
+      "bytes": 2864
+    },
+    "svg/relief/mark32/gwangju_blazes.svg": {
+      "sha256": "e0586f39a18605ce47e83ba57dd6882202c1f424c5ddad85de35bc9807f533fe",
+      "bytes": 2682
+    },
+    "svg/relief/mark32/incheon_seagulls.svg": {
+      "sha256": "9688f88a82f3ebd59c3ac1728834d502ccdce6e5579000832ee5a2aaf9d5b55b",
+      "bytes": 3083
+    },
+    "svg/relief/mark32/seoul_comets.svg": {
+      "sha256": "f09f95d583dc2665cb4da8f9291d2b972888d8235da25bd77c4deca22ff2c483",
+      "bytes": 2351
+    },
+    "svg/relief/mark32/seoul_hounds.svg": {
+      "sha256": "9f578063076bfcfd3ba5578d98cfe1a911d1502ac36047c027f5e2982d64bdcf",
+      "bytes": 2687
+    },
+    "svg/relief/mark32/suwon_sparks.svg": {
+      "sha256": "4f9930fb9f4a943024d1545395dee7953dac4fa40bc98e1db44730d90d484573",
+      "bytes": 2108
+    },
+    "teams.json": {
+      "sha256": "8c146e27a88d0c00c3e60ef63c54f93353e91d1189f2cfb1457d381198bf1fa1",
+      "bytes": 17014
+    },
+    "typography.json": {
+      "sha256": "89a601fc1ec9c474b6c42f4c0214d8736c669e9bbf9f3df5325fc12d71c2208f",
+      "bytes": 5104
+    },
+    "validation.json": {
+      "sha256": "fadfb83195a50c356940c64f506c0c9a37ffc9745e68b81d2138e4dcf1c45bb8",
+      "bytes": 33853
+    }
+  }
+}
