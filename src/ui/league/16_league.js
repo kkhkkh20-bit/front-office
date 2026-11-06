@@ -123,8 +123,10 @@ function bkData(y){ const P=G.ps;
 function bkSeries(D,[k,hs,src]){ const R=D.res||{}, r=R[k], c=D.cur&&D.cur.round===k?D.cur:null, hi=D.seeds[hs];
   let lo=typeof src==='number'?D.seeds[src]:R[src]?R[src][0]:null, wh=null, wl=null;
   if(r){ lo=r[0]===hi?r[1]:r[0]; wh=r[0]===hi?r[2]:r[3]; wl=r[0]===hi?r[3]:r[2]; } else if(c){ lo=c.lo; wh=c.wh; wl=c.wl; }
-  const sc=c?{d:c.days,h:c.homes,gi:c.gi,p:c.pts}:D.days[k]?{d:D.days[k].d,h:D.days[k].h,gi:D.days[k].d.length,p:D.days[k].p}:null;
-  return {k,hi,lo,wh,wl,r,c,sc,win:r?r[0]:null}; }
+  let sc=c?{d:c.days,h:c.homes,gi:c.gi,p:c.pts}:D.days[k]?{d:D.days[k].d,h:D.days[k].h,gi:D.days[k].d.length,p:D.days[k].p}:null;
+  let R2=r; { const g=typeof spoilG==='function'?spoilG():null; if(g&&sc&&sc.gi>0&&sc.d[sc.gi-1]===g.day&&sc.p&&sc.p.length>=sc.gi){ /* 중계로 볼 경기(결과 숨김)는 대진표에서도 빼고 센다(검수 11-07: 중계 중 대진표에 최종 점수 노출) */
+    const gi=sc.gi-1; wh=0; wl=0; for(let i=0;i<gi;i++){ const [a,b]=sc.p[i], h=sc.h[i], w=a>b?h:b>a?(h===hi?lo:hi):null; if(w===hi)wh++; else if(w===lo)wl++; } sc={...sc,gi,p:sc.p.slice(0,gi)}; R2=null; } }
+  return {k,hi,lo,wh,wl,r:R2,c:c||(R2!==r?{}:null),sc,win:R2?R2[0]:null}; }
 function bkSlot(D,t,w,win,alt){ if(t==null)return `<span class="bk-s tbd"><b>TBD</b><i>${alt}</i></span>`;
   const P=tpal(t); return `<span class="bk-s${win==null?'':win===t?' win':' out'}${t===G.user?' me':''}" style="--c1:${P[0]};--c2:${P[2]}">${badge(t,40)}<b title="${esc(tshort(t))}"><s>${esc(team(t).city)} </s>${esc(team(t).nick)}<sup>${D.seeds.indexOf(t)+1}</sup></b><em>${w??''}</em></span>`; }
 function bkCard(D,x,sel){ const s=bkSeries(D,x), [k,,src]=x;
