@@ -25,9 +25,10 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else{cover(relayPos,relayPt);if(path)cover(basePos,base);}}}
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');Match3D.hide('o'+id);};
- const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,m.to);i++){if(retired.has(m.id))return;const duration=isHR?4600:c3DRunTime(m.id);cPlace(el,CPATH[i],duration);await cSleep(duration);}if(retired.has(m.id))return;if(m.out||m.score)retire(m.id);}));
+ const short=i=>CPATH[i-1].map((v,j)=>v+(CPATH[i][j]-v)*.86); /* 아웃될 주자는 베이스 앞에서 멈춘다: 공이 먼저 오게(사용자 피드백 11-06: 주자·수비 도착과 아웃 판정이 어긋남) */
+ const runners=Promise.all(moves.map(async m=>{const el=document.querySelector(`#cs-stage .cc[data-k="o${m.id}"]`);if(!el)return;for(let i=m.from+1;i<=Math.min(4,m.to);i++){if(retired.has(m.id))return;const lastOut=m.out&&i===Math.min(4,m.to),duration=isHR?4600:c3DRunTime(m.id)*(lastOut?1.6:1);cPlace(el,lastOut?short(i):CPATH[i],duration);await cSleep(duration);}if(retired.has(m.id))return;if(m.out||m.score)retire(m.id);}));
  runners.catch(()=>{});
- const batter=(async()=>{await cSleep(620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(350);}const target=bTo>0?Math.min(4,bTo):1;for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?4600:c3DRunTime(x[1]);cPlace(bat,CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&bTo>=4)retire(x[1]);})();
+ const batter=(async()=>{await cSleep(620);if(!bat)return;if(isHR){Match3D.batFlip(bat.dataset.k,1000/cSpd());await cSleep(350);}const target=bTo>0?Math.min(4,bTo):1,batOut=outPlay&&!after.includes(x[1]);for(let i=1;i<=target;i++){if(retired.has(x[1]))return;const duration=isHR?4600:c3DRunTime(x[1])*(batOut?1.6:1);cPlace(bat,batOut?short(i):CPATH[i],duration);await cSleep(duration);}if(!retired.has(x[1])&&bTo>=4)retire(x[1]);})();
  batter.catch(()=>{});
  sfx('crack',1,1);Match3D.batted(o,(isHR?1150:650)/cSpd());
  const ball=cBall([50,88],path?path.land:spot,timing.flight,arc,!!UI.cast.gb);
