@@ -105,5 +105,5 @@ function face7Bust(x){ const k='7B'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))retu
 function gp7Seeds(g,re){ if(typeof FACE7==='undefined')return []; const f=!!g.female, prev=UI.gp7&&UI.gp7.f===f?UI.gp7.L:[];
   if(!re&&UI.gp7&&UI.gp7.f===f&&UI.gp7.a===g.age)return UI.gp7.L;
   let P=FACE7.civ.ids.filter(x=>x.r==='gm'&&!!x.f===f).sort((a,b)=>Math.abs(a.a-g.age)-Math.abs(b.a-g.age)); if(re&&P.length>6){ const q=P.filter(x=>!prev.includes(x.c)); if(q.length>=6)P=q; }
-  const W=P.slice(0,Math.max(6,Math.min(12,P.length))).map(x=>x.c).sort(()=>Math.random()-.5).slice(0,6); UI.gp7={f,a:g.age,L:W}; return W; }
+  const W=P.slice(0,Math.max(12,Math.min(18,P.length))).map(x=>x.c).sort(()=>Math.random()-.5).slice(0,12); /* 그림 얼굴을 없앤 대신 사진 후보 12장 */ UI.gp7={f,a:g.age,L:W}; return W; }
 Object.assign(A,{ gpFace7(){ gp7Seeds(UI.gp||gpDefault(),true); render(); } });
