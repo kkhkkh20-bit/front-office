@@ -8,7 +8,7 @@ const GM_TOURN=[[3,25,4,10,'이마트배 전국고교야구'],[4,25,5,15,'황금
 function gmTourn(d){ const o=dobj(d); for(const t of GM_TOURN){ const a=dnum(o.y,t[0],t[1]), b=dnum(o.y,t[2],t[3]); if(d>=a&&d<=b)return t[4]; } const w=o.w; if(o.m>=3&&o.m<=10&&(w===0||w===6))return '고교야구 주말리그'; return null; }
 function gmPlans(){ return G.gmPlan=G.gmPlan||{}; }
 function gmPlanAt(d){ return gmPlans()[d]||null; }
-function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); if(!k){ delete P[d]; return '일정을 지웠습니다.'; }
+function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); { const o=P[d]; if(o&&o.mid)G.mail=G.mail.filter(m=>m.id!==o.mid); } /* 같은 날 일정을 바꾸거나 지우면 옛 '내일 직관' 알림은 지운다(검수 11-06) */ if(!k){ delete P[d]; return '일정을 지웠습니다.'; }
   const g=(G.cal&&G.cal.sched[d]||[]).find(m=>m.includes(G.user));
   if(k==='attend'&&!g){ const ps=G.ps&&G.ps.cur; if(!(ps&&(ps.hi===G.user||ps.lo===G.user)&&ps.days&&ps.days.includes(d)))return '그날은 우리 경기가 없습니다.'; }
   if(k==='scout'&&!gmTourn(d))return '그날은 고교 대회가 없습니다.';
@@ -48,4 +48,4 @@ function gmFarmVisit(){ const d=depth(G.user); const F=[...d.futB,...d.futP].fil
   mail('단장 노트','2군 방문',`2군 선수 ${F.length}명의 기분이 올랐습니다(+2).\n코치진이 가장 크게 볼 만하다고 보는 선수: ${best.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세, 현재 ${dvo(p)})`).join(', ')||'-'}\n2군 감독: "단장님이 직접 오시니 선수들 눈빛이 다릅니다."`,{kind:'육성'}); }
 
 /* 직관 전날 알림. 구단주 동행은 '구단주 초대·행사' 멈춤 설정을 따른다(검수 11-06) */
-function gmAttendWarn(tm){ tm.warned=true; mail('비서실',`내일 직관: ${(()=>{ const g=(G.cal.sched[G.day+1]||[]).find(m=>m.includes(G.user)); return g?`${g[0]===G.user?'vs':'@'} ${tname(g[0]===G.user?g[1]:g[0])}`:'우리 경기'; })()}`,`내일 경기장에 가는 일정입니다${tm.x==='owner'?'. 구단주께서 함께 보십니다':tm.x==='ceo'?'. 사장께서 함께 보십니다':''}. '경기장으로 가기'를 누르면 경기를 처음부터 봅니다.`,{imp:true,kind:'일정',...(tm.x==='owner'?{cat:'owner'}:{}),acts:[{l:'경기장으로 가기',a:'watchNext'}]}); }
+function gmAttendWarn(tm){ const d=G.day+1; if(!(G.cal.sched[d]||[]).some(m=>m.includes(G.user))&&!psOursAt(d))return; /* 열리지 않는 경기면 알리지 않는다(검수 11-06) */ tm.warned=true; tm.mid=mail('비서실',`내일 직관: ${(()=>{ const g=(G.cal.sched[G.day+1]||[]).find(m=>m.includes(G.user)); return g?`${g[0]===G.user?'vs':'@'} ${tname(g[0]===G.user?g[1]:g[0])}`:'우리 경기'; })()}`,`내일 경기장에 가는 일정입니다${tm.x==='owner'?'. 구단주께서 함께 보십니다':tm.x==='ceo'?'. 사장께서 함께 보십니다':''}. '경기장으로 가기'를 누르면 경기를 처음부터 봅니다.`,{imp:true,kind:'일정',...(tm.x==='owner'?{cat:'owner'}:{}),acts:[{l:'경기장으로 가기',a:'watchPlan',v:String(G.day+1)}]}).id; }

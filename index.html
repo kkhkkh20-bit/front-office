@@ -16072,7 +16072,7 @@ const GM_TOURN=[[3,25,4,10,'이마트배 전국고교야구'],[4,25,5,15,'황금
 function gmTourn(d){ const o=dobj(d); for(const t of GM_TOURN){ const a=dnum(o.y,t[0],t[1]), b=dnum(o.y,t[2],t[3]); if(d>=a&&d<=b)return t[4]; } const w=o.w; if(o.m>=3&&o.m<=10&&(w===0||w===6))return '고교야구 주말리그'; return null; }
 function gmPlans(){ return G.gmPlan=G.gmPlan||{}; }
 function gmPlanAt(d){ return gmPlans()[d]||null; }
-function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); if(!k){ delete P[d]; return '일정을 지웠습니다.'; }
+function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); { const o=P[d]; if(o&&o.mid)G.mail=G.mail.filter(m=>m.id!==o.mid); } /* 같은 날 일정을 바꾸거나 지우면 옛 '내일 직관' 알림은 지운다(검수 11-06) */ if(!k){ delete P[d]; return '일정을 지웠습니다.'; }
   const g=(G.cal&&G.cal.sched[d]||[]).find(m=>m.includes(G.user));
   if(k==='attend'&&!g){ const ps=G.ps&&G.ps.cur; if(!(ps&&(ps.hi===G.user||ps.lo===G.user)&&ps.days&&ps.days.includes(d)))return '그날은 우리 경기가 없습니다.'; }
   if(k==='scout'&&!gmTourn(d))return '그날은 고교 대회가 없습니다.';
@@ -16112,7 +16112,7 @@ function gmFarmVisit(){ const d=depth(G.user); const F=[...d.futB,...d.futP].fil
   mail('단장 노트','2군 방문',`2군 선수 ${F.length}명의 기분이 올랐습니다(+2).\n코치진이 가장 크게 볼 만하다고 보는 선수: ${best.map(p=>`${p.name}(${posLabel(p)}, ${p.age}세, 현재 ${dvo(p)})`).join(', ')||'-'}\n2군 감독: "단장님이 직접 오시니 선수들 눈빛이 다릅니다."`,{kind:'육성'}); }
 
 /* 직관 전날 알림. 구단주 동행은 '구단주 초대·행사' 멈춤 설정을 따른다(검수 11-06) */
-function gmAttendWarn(tm){ tm.warned=true; mail('비서실',`내일 직관: ${(()=>{ const g=(G.cal.sched[G.day+1]||[]).find(m=>m.includes(G.user)); return g?`${g[0]===G.user?'vs':'@'} ${tname(g[0]===G.user?g[1]:g[0])}`:'우리 경기'; })()}`,`내일 경기장에 가는 일정입니다${tm.x==='owner'?'. 구단주께서 함께 보십니다':tm.x==='ceo'?'. 사장께서 함께 보십니다':''}. '경기장으로 가기'를 누르면 경기를 처음부터 봅니다.`,{imp:true,kind:'일정',...(tm.x==='owner'?{cat:'owner'}:{}),acts:[{l:'경기장으로 가기',a:'watchNext'}]}); }
+function gmAttendWarn(tm){ const d=G.day+1; if(!(G.cal.sched[d]||[]).some(m=>m.includes(G.user))&&!psOursAt(d))return; /* 열리지 않는 경기면 알리지 않는다(검수 11-06) */ tm.warned=true; tm.mid=mail('비서실',`내일 직관: ${(()=>{ const g=(G.cal.sched[G.day+1]||[]).find(m=>m.includes(G.user)); return g?`${g[0]===G.user?'vs':'@'} ${tname(g[0]===G.user?g[1]:g[0])}`:'우리 경기'; })()}`,`내일 경기장에 가는 일정입니다${tm.x==='owner'?'. 구단주께서 함께 보십니다':tm.x==='ceo'?'. 사장께서 함께 보십니다':''}. '경기장으로 가기'를 누르면 경기를 처음부터 봅니다.`,{imp:true,kind:'일정',...(tm.x==='owner'?{cat:'owner'}:{}),acts:[{l:'경기장으로 가기',a:'watchPlan',v:String(G.day+1)}]}).id; }
 /* ===== 기자단: 기자도 인물이다 =====
    기자마다 소속 매체·성향(우호·중립·비판)·전문 분야·영향력·단장과의 관계가 있다.
    인터뷰에 성실히 응하면 관계가 오르고, 거절·회피·공격적 답변은 관계를 깎는다.
@@ -25713,6 +25713,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
   resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
+  watchPlan(v){ const d=+v, P=gmPlanAt(d), nx=nextGames(1)[0]; if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d){ toast('이 직관 일정은 취소됐거나 이미 지난 경기입니다.'); render(); return; } A.watchNext(); }, /* 직관 알림 버튼: 그 예약이 아직 유효하고 다음 경기가 그 날일 때만(검수 11-06) */
   watchNext(){ G.simPlanned=null; const next=nextGames(1)[0];if(next)G.watchPlanned={day:next.d};UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); { const g0=G.res&&G.games[G.res.i]; if(G.cwS&&!G.cwS.done&&g0&&G.cwS.day===g0.day&&g0.pbp&&g0.pbp.length)UI.cwAuto=G.cwS.id; } /* 함께 본 경기: 중계를 먼저 보고, 닫을 때 동석 결과(사용자 피드백 11-05: 결과가 중계보다 먼저 떴다) */ setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; UI._castHold=1; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length){ UI._castHold=1; A.cast(G.res.i); } }, /* hold: 방금 계산한 우리 경기라 중계를 마칠 때까지 결과를 감춘다(spoilG) */
   smon(v){ UI.smon=+v; render(); },
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
