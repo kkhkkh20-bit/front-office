@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "revision": "professional-02",
+  "revision": "cap-locked-03",
   "path_base": "assets/badges/v2/",
   "request": "docs/asset-requests/2026-11-06-codex-badges-v2-crests.md",
   "request_sha256": "63bf3d5ccbcf546e443dbcd69b5e2ad2f16831a86f9082b15109e9b26734ba03",
-  "supersedes_commit": "88e94b6e3aea3ba18aa877b34b6d8ee106ffddc8",
-  "direction": "User feedback: study real KBO and MLB identities; professional wordmarks and compact abstract cap marks, individual club layouts, no common mascot shield/ribbon.",
+  "supersedes_commit": "abc2f3aded9cd274c092c9d76c8861a7593df58a",
+  "direction": "User clarification: retain our EXISTING cap marks and colors exactly. Redesign main lettering and layout only. Do not regenerate caps, uniforms or people.",
   "teams": [
     {
       "key": "seoul_comets",
@@ -23,7 +23,7 @@
         "metal_flat": "#FFFFFF"
       },
       "layout": "open",
-      "symbol_concept": "A leading baseball and a single swept trajectory",
+      "symbol_concept": "Original cap star and angular trail; rising slab lettering",
       "assets": {
         "crest": {
           "512": "png/crest/512/seoul_comets.png",
@@ -42,12 +42,19 @@
         "mark": "svg/mark/seoul_comets.svg",
         "relief_mark": "svg/relief/mark/seoul_comets.svg",
         "mark32": "svg/mark32/seoul_comets.svg",
-        "relief_mark32": "svg/relief/mark32/seoul_comets.svg"
+        "relief_mark32": "svg/relief/mark32/seoul_comets.svg",
+        "native_cap": "svg/native/seoul_comets.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "37b011ed5cbc14514b16176399949b0d132c4b2689004ef6c5902f98eafcd5d3",
+        "source_cap": "assets/v5/caps/png/256/seoul_comets.png",
+        "source_cap_sha256": "a3f3756e21104f64f143b6e74251fe9de06756fb9d2007373eca0ec4e5f37178",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -71,8 +78,8 @@
         "secondary": "#ED1C24",
         "metal_flat": "#FFFFFF"
       },
-      "layout": "open",
-      "symbol_concept": "Eyeless sighthound profile and one red speed slash",
+      "layout": "roundel",
+      "symbol_concept": "Original angular cap hound inside navy seal",
       "assets": {
         "crest": {
           "512": "png/crest/512/seoul_hounds.png",
@@ -91,12 +98,19 @@
         "mark": "svg/mark/seoul_hounds.svg",
         "relief_mark": "svg/relief/mark/seoul_hounds.svg",
         "mark32": "svg/mark32/seoul_hounds.svg",
-        "relief_mark32": "svg/relief/mark32/seoul_hounds.svg"
+        "relief_mark32": "svg/relief/mark32/seoul_hounds.svg",
+        "native_cap": "svg/native/seoul_hounds.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "c6bf337b38de1bbff641eaee6a765247151ae812a172a35ee028b05ad771a72c",
+        "source_cap": "assets/v5/caps/png/256/seoul_hounds.png",
+        "source_cap_sha256": "3a100b1aabe6f36af7d5d6fad28b27c3b0c8851ad0cf46dd410a5f5f2518229f",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -120,8 +134,8 @@
         "secondary": "#FFFFFF",
         "metal_flat": "#FFFFFF"
       },
-      "layout": "roundel",
-      "symbol_concept": "Broad wishbone gull silhouette, no character face",
+      "layout": "open",
+      "symbol_concept": "Original gull and lower arc; broad ascending wordmark",
       "assets": {
         "crest": {
           "512": "png/crest/512/incheon_seagulls.png",
@@ -140,12 +154,19 @@
         "mark": "svg/mark/incheon_seagulls.svg",
         "relief_mark": "svg/relief/mark/incheon_seagulls.svg",
         "mark32": "svg/mark32/incheon_seagulls.svg",
-        "relief_mark32": "svg/relief/mark32/incheon_seagulls.svg"
+        "relief_mark32": "svg/relief/mark32/incheon_seagulls.svg",
+        "native_cap": "svg/native/incheon_seagulls.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "0b62b740b534b266c4699d1229ae30925372533a71befb6395bf2d082867682c",
+        "source_cap": "assets/v5/caps/png/256/incheon_seagulls.png",
+        "source_cap_sha256": "a18dd0ebc47a17b9a9562585fe6d05007b039c37bda07d1883514afe53e4fefe",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -164,13 +185,13 @@
         "ring": "#ED1C24"
       },
       "crest_palette": {
-        "ink": "#141414",
+        "ink": "#11161D",
         "primary": "#141414",
         "secondary": "#ED1C24",
         "metal_flat": "#FFFFFF"
       },
-      "layout": "open",
-      "symbol_concept": "One angular electric charge with a red cut",
+      "layout": "diamond",
+      "symbol_concept": "Original bolt and three sparks; home diamond",
       "assets": {
         "crest": {
           "512": "png/crest/512/suwon_sparks.png",
@@ -189,12 +210,19 @@
         "mark": "svg/mark/suwon_sparks.svg",
         "relief_mark": "svg/relief/mark/suwon_sparks.svg",
         "mark32": "svg/mark32/suwon_sparks.svg",
-        "relief_mark32": "svg/relief/mark32/suwon_sparks.svg"
+        "relief_mark32": "svg/relief/mark32/suwon_sparks.svg",
+        "native_cap": "svg/native/suwon_sparks.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "d33b866a9d2f27b6e2b8c20b7ef215535639b0088a5c125686ab1c668c01423a",
+        "source_cap": "assets/v5/caps/png/256/suwon_sparks.png",
+        "source_cap_sha256": "36b88aa0ab3af87b91608e8837b27968e41e602d346fc2c98a911c85bfe43834",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -218,8 +246,8 @@
         "secondary": "#FFFFFF",
         "metal_flat": "#FFFFFF"
       },
-      "layout": "roundel",
-      "symbol_concept": "Three flowing wind arcs and central lightning",
+      "layout": "open",
+      "symbol_concept": "Original curved cyclone; compact burgundy wordmark",
       "assets": {
         "crest": {
           "512": "png/crest/512/goyang_storm.png",
@@ -238,12 +266,19 @@
         "mark": "svg/mark/goyang_storm.svg",
         "relief_mark": "svg/relief/mark/goyang_storm.svg",
         "mark32": "svg/mark32/goyang_storm.svg",
-        "relief_mark32": "svg/relief/mark32/goyang_storm.svg"
+        "relief_mark32": "svg/relief/mark32/goyang_storm.svg",
+        "native_cap": "svg/native/goyang_storm.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "d5f6f4af5c4809e1e5aac693af7018fb6dab0b6ac85b6deedc8eac76f6181132",
+        "source_cap": "assets/v5/caps/png/256/goyang_storm.png",
+        "source_cap_sha256": "0c3c70f2b4c3475674912d60c2e0c87b9a2e581e4055305913138e71e9c839b6",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -267,8 +302,8 @@
         "secondary": "#282828",
         "metal_flat": "#FFFFFF"
       },
-      "layout": "diamond",
-      "symbol_concept": "Tall ears and long muzzle cut in one fox silhouette",
+      "layout": "homeplate",
+      "symbol_concept": "Original geometric fox; orange home plate",
       "assets": {
         "crest": {
           "512": "png/crest/512/daejeon_redfox.png",
@@ -287,12 +322,19 @@
         "mark": "svg/mark/daejeon_redfox.svg",
         "relief_mark": "svg/relief/mark/daejeon_redfox.svg",
         "mark32": "svg/mark32/daejeon_redfox.svg",
-        "relief_mark32": "svg/relief/mark32/daejeon_redfox.svg"
+        "relief_mark32": "svg/relief/mark32/daejeon_redfox.svg",
+        "native_cap": "svg/native/daejeon_redfox.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "a8f1ff05254c517c5772924d179eadc034db0556059e2580a5c999d5386030cd",
+        "source_cap": "assets/v5/caps/png/256/daejeon_redfox.png",
+        "source_cap_sha256": "8f029eab442b89ed07b21253e7658cde702c9c676d326f201a37bf8bbde1cde1",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -316,8 +358,8 @@
         "secondary": "#FFD34F",
         "metal_flat": "#FFD34F"
       },
-      "layout": "diamond",
-      "symbol_concept": "Two complementary flame tongues",
+      "layout": "open",
+      "symbol_concept": "Original gold flame; gold supported red wordmark",
       "assets": {
         "crest": {
           "512": "png/crest/512/gwangju_blazes.png",
@@ -336,12 +378,19 @@
         "mark": "svg/mark/gwangju_blazes.svg",
         "relief_mark": "svg/relief/mark/gwangju_blazes.svg",
         "mark32": "svg/mark32/gwangju_blazes.svg",
-        "relief_mark32": "svg/relief/mark32/gwangju_blazes.svg"
+        "relief_mark32": "svg/relief/mark32/gwangju_blazes.svg",
+        "native_cap": "svg/native/gwangju_blazes.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "07ad71f3fa06cf3337e76c6d50e2951d15f05a71f6145e0b5fdc609d0095db7f",
+        "source_cap": "assets/v5/caps/png/256/gwangju_blazes.png",
+        "source_cap_sha256": "3aba4b6163e1db74660d80098d66d8f010b1d131576cd0e1e1dc0c37cf898384",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -365,8 +414,8 @@
         "secondary": "#FFFFFF",
         "metal_flat": "#FFFFFF"
       },
-      "layout": "baseball_seal",
-      "symbol_concept": "Two-lobe cloud with one lightning counter",
+      "layout": "roundel",
+      "symbol_concept": "Original cap cloud and lightning; blue baseball seal",
       "assets": {
         "crest": {
           "512": "png/crest/512/daegu_thunders.png",
@@ -385,12 +434,19 @@
         "mark": "svg/mark/daegu_thunders.svg",
         "relief_mark": "svg/relief/mark/daegu_thunders.svg",
         "mark32": "svg/mark32/daegu_thunders.svg",
-        "relief_mark32": "svg/relief/mark32/daegu_thunders.svg"
+        "relief_mark32": "svg/relief/mark32/daegu_thunders.svg",
+        "native_cap": "svg/native/daegu_thunders.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "31af53fb5bd3a3261c37dc3b4d68e672765a2794f0fae469e8865c727b3e2501",
+        "source_cap": "assets/v5/caps/png/256/daegu_thunders.png",
+        "source_cap_sha256": "3ade5312bb07dc4ebc00629e1f8e4f6c0e81479362f8b26a0a299287b276890d",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -415,7 +471,7 @@
         "metal_flat": "#FFFFFF"
       },
       "layout": "open",
-      "symbol_concept": "Single curling wave silhouette and one red undertow",
+      "symbol_concept": "Original wave and lower arc; low swept lettering",
       "assets": {
         "crest": {
           "512": "png/crest/512/busan_waves.png",
@@ -434,12 +490,19 @@
         "mark": "svg/mark/busan_waves.svg",
         "relief_mark": "svg/relief/mark/busan_waves.svg",
         "mark32": "svg/mark32/busan_waves.svg",
-        "relief_mark32": "svg/relief/mark32/busan_waves.svg"
+        "relief_mark32": "svg/relief/mark32/busan_waves.svg",
+        "native_cap": "svg/native/busan_waves.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "7985e7bd991e0c7b9bcbbdff16dd2a2ecf3235424017833f3f9f5b24f8002923",
+        "source_cap": "assets/v5/caps/png/256/busan_waves.png",
+        "source_cap_sha256": "8dac103b6cbcd6e0b724daad75a484889e9486ce0e01455aff4960a3b6ba0929",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -464,7 +527,7 @@
         "metal_flat": "#C6A269"
       },
       "layout": "roundel",
-      "symbol_concept": "Broad anchor and one rope loop",
+      "symbol_concept": "Original cap anchor; gold edged maritime seal",
       "assets": {
         "crest": {
           "512": "png/crest/512/changwon_anchors.png",
@@ -483,12 +546,19 @@
         "mark": "svg/mark/changwon_anchors.svg",
         "relief_mark": "svg/relief/mark/changwon_anchors.svg",
         "mark32": "svg/mark32/changwon_anchors.svg",
-        "relief_mark32": "svg/relief/mark32/changwon_anchors.svg"
+        "relief_mark32": "svg/relief/mark32/changwon_anchors.svg",
+        "native_cap": "svg/native/changwon_anchors.svg"
+      },
+      "native_cap_symbol": {
+        "canonical_sha256": "f338d168588edada97dc12ee3dfe8b5e75aa395c864dea6583c64faee48fb0cf",
+        "source_cap": "assets/v5/caps/png/256/changwon_anchors.png",
+        "source_cap_sha256": "9b4107967db6132e81397a712e7614b725ff74fb06225d24248928f6c82961b4",
+        "shape_and_colors_locked": true,
+        "only_uniform_scale_and_translation": true
       },
       "wordmark_font": {
-        "family": "Barlow Semi Condensed",
-        "style": "ExtraBold Italic",
-        "weight": 800,
+        "family": "Alfa Slab One",
+        "style": "Regular",
         "outlined": true,
         "shaping": "HarfBuzz kern on",
         "lines": [
@@ -502,11 +572,9 @@
     "flat_primary_svg": 10,
     "flat_mark_svg": 10,
     "dedicated_mark32_svg": 10,
+    "native_cap_symbol_svg": 10,
     "derived_relief_svg": 30,
     "rgba_png": 60,
-    "shadow_y_512": 6,
-    "shadow_blur": 0,
-    "lighting": "top-left",
     "runtime_crest_sizes": [
       256,
       128
@@ -519,13 +587,13 @@
     "archive_only_crest_size": 512
   },
   "typography": {
-    "family": "Barlow Semi Condensed",
-    "style": "ExtraBold Italic",
-    "font_sha256": "b9f5c879fa952b2b5356200a079b3f600f53d273c4dbc088585678d6c7456ae7",
-    "source": "https://github.com/google/fonts/tree/main/ofl/barlowsemicondensed",
-    "license": "licenses/BarlowSemiCondensed-OFL.txt",
+    "family": "Alfa Slab One",
+    "style": "Regular",
+    "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+    "source": "https://github.com/google/fonts/tree/main/ofl/alfaslabone",
+    "license": "licenses/AlfaSlabOne-OFL.txt",
     "no_runtime_font_dependency": true
   },
   "research": "REFERENCES.md",
-  "review_status": "review branch; game connection pending"
+  "review_status": "design proposal; review branch only; user and in-game review pending"
 }
