@@ -31,7 +31,6 @@ function nextGames(n){
 /* 지금 전력 예상 순위(홈 상단 타일과 오른쪽 전력 예상이 같은 값을 쓴다) */
 function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G)UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r)}; return UI._trk.R; }
 /* 승률이 같은 팀: 동률 표시(순서는 상대 전적 등 동률 기준) */
-const tieOf=(a,b)=>a&&b&&a.w===b.w&&a.l===b.l&&(a.t||0)===(b.t||0);
 function miniStand(){
   const {order,live,y}=standOrder(); if(!order||!order.length)return '';
   if(!live&&G.startY===G.year){ /* 창단 첫해 개막 전: 지난 시즌 순위는 의미가 없으니 전문가 전력 평가를 보여 준다 */

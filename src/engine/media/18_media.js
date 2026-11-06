@@ -29,7 +29,7 @@ function prAfterGame(rec){ prInit(); const S=G.sea; const won=rec.res==='승', l
   if(period()==='season'&&G.day>dnum(G.year,6,1)){ const rk=standingsNow().findIndex(x=>x.tid===G.user)+1; const inn=rk<=5; if(S.inPS!=null&&inn!==S.inPS&&G.day-(S.psNewsDay||0)>=12&&(S.psNewsDay=G.day))news('분석',inn?`${nm}, 5위권 진입… 가을야구 보인다`:`${nm}, 5위권 밖으로 밀려나`,inn?`${tname(G.user)}이(가) ${rk}위로 올라서며 포스트시즌 진출권에 들어왔습니다.`:`${tname(G.user)}이(가) ${rk}위로 내려앉았습니다. 가을야구 경쟁이 험난해졌습니다.`,inn?2:-2); S.inPS=inn; }
   if(/한국시리즈/.test(rec.kind||'')&&won&&G.ps&&G.ps.done&&G.ps.res.ks&&G.ps.res.ks[0]===G.user)news('경기',`${nm} 한국시리즈 우승`,`${tname(G.user)}이(가) 한국시리즈 정상에 올랐습니다. 단장의 선수단 구성이 결실을 맺었다는 평가가 나옵니다.`,4,{fanW:3});
 }
-function prMonth(m){ prInit(); if(G.unemp)return; const st=standingsNow(); const rk=st.findIndex(x=>x.tid===G.user)+1; const g=G.goals; const nm=tshort(G.user);
+function prMonth(m){ prInit(); if(G.unemp)return; const st=standingsNow(); const rk=tieRank(st,G.user); const g=G.goals; const nm=tshort(G.user);
   G.pr.hist.push({m:`${G.year}.${m}`,fan:Math.round(G.pr.fan),press:Math.round(G.pr.press)}); if(G.pr.hist.length>24)G.pr.hist.shift();
   if(g&&rk<=g.rank-2)news('분석',`${m}월 결산: ${nm}, 예상 밖 선전`,`시즌 전 예상보다 높은 ${rk}위를 달리고 있습니다. 프런트의 겨울 준비가 통했다는 분석입니다.`,2);
   else if(g&&rk>=g.rank+3)news('분석',`${m}월 결산: ${nm}, 목표와 거리 멀어져`,`구단 목표였던 ${g.rank}위 이내와 달리 ${rk}위에 머물고 있습니다. 반등 카드가 필요하다는 지적입니다.`,-2);
@@ -70,6 +70,6 @@ function setGoals(intro,first){ prInit(); delete G.bLock; if(G.bLocks)delete G.b
   mail('구단주실',`${G.year} 시즌 구단 목표`,`${intro?intro+'\n\n':''}구단주께서 올 시즌 목표를 정하셨습니다.\n\n${lines.map((l,i)=>`${i+1}. ${l}`).join('\n')}\n\n전력분석팀 예상 순위는 ${proj}위입니다. ${OWNER[ow].msg} 매달 말 구단주께서 진행 상황을 보고받으십니다.`,{imp:true,kind:'구단주',acts:[{l:'목표 보기',a:'go',v:'club:owner'}]});
 }
 function goalStatus(){ const g=G.goals; if(!g||g.y!==G.year)return null; const t=team(G.user); const per=period();
-  const st=per==='season'||per==='post'?standingsNow():null; const rk=st?st.findIndex(x=>x.tid===G.user)+1:(G.last&&G.last.y===G.year&&G.last.order?G.last.order.findIndex(o=>o.tid===G.user)+1||null:null); /* 시즌이 끝난 뒤에는 최종 순위 */
-  const proj=projSupport(); const yc=domestic(G.user).filter(p=>p.age<=24).filter(p=>{ const h=seasonTotalT(p,G.year,'1군',G.user); return h&&(p.isP?h.outs>=240:h.pa>=223); }).length;
-  return {rank:{t:g.rank,cur:rk,ok:rk!=null&&rk<=g.rank},sup:{t:g.sup,cur:proj,ok:proj<=g.sup},fan:{t:g.fan,cur:Math.round(G.pr.fan),ok:G.pr.fan>=g.fan},youth:g.youth?{t:1,cur:yc,ok:yc>=1}:null}; }
+  const st=per==='season'||per==='post'?standingsNow():null; const rk=st?tieRank(st,G.user)||null:(G.last&&G.last.y===G.year&&G.last.order?G.last.order.findIndex(o=>o.tid===G.user)+1||null:null); /* 시즌이 끝난 뒤에는 최종 순위 */
+  const proj=projSupport(); const yc=Object.values(G.players).filter(p=>!p.foreign&&p.age<=24&&(p.hist||[]).some(h=>h.y===G.year&&h.t===G.user)).filter(p=>{ const h=seasonTotalT(p,G.year,'1군',G.user); /* 우리 팀에서 쌓은 기록: 트레이드로 떠나도 달성은 남는다(검수 11-06) */ return h&&(p.isP?h.outs>=240:h.pa>=223); }).length;
+  return {rank:{t:g.rank,cur:rk,ok:rk!=null&&rk<=g.rank},sup:{t:g.sup,cur:proj,ok:proj<=g.sup},fan:{t:g.fan,cur:Math.round(G.pr.fan),ok:Math.round(G.pr.fan)>=g.fan} /* 화면에 보이는 정수와 같은 기준 */,youth:g.youth?{t:1,cur:yc,ok:yc>=1}:null}; }

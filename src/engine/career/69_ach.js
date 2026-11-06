@@ -17,7 +17,7 @@ function achT(){ if(!G.achT){ G.achT={seasons:0,teams:[],titles:{},profit:0,taxe
 /* 도전과제가 생기기 전 저장: 연대기(취임·경질·우승)로 경력을 되살린다. 시즌 수는 첫 취임 뒤 치른 시즌에서 야인으로 보낸 해를 대략 뺀다 */
 function achBackfill(T){ const C=G.chron||[]; const J=C.filter(c=>c.k==='join'); for(const c of J)if(!T.teams.includes(c.tid))T.teams.push(c.tid);
   for(const c of C.filter(c=>c.k==='champ'&&c.gm!==0))(T.titles[c.tid]=T.titles[c.tid]||[]).push(c.y);
-  T.fired=C.some(c=>c.k==='fired'); const y0=J.length?Math.min(...J.map(c=>c.y)):G.year; T.seasons=Math.max(0,(G.history||[]).filter(h=>h.user&&h.y>=y0).length-C.filter(c=>c.k==='fired').length); }
+  T.fired=C.some(c=>c.k==='fired'&&/^단장 경질/.test(c.t||'')); /* 사임·고사·만료는 경질이 아니다 */ const y0=J.length?Math.min(...J.map(c=>c.y)):G.year; T.seasons=Math.max(0,(G.history||[]).filter(h=>h.user&&h.y>=y0).length-C.filter(c=>c.k==='fired').length); }
 function achTitlesN(T){ return sum(Object.values(T.titles).map(a=>a.length)); }
 function achTeamsWon(T){ return Object.keys(T.titles).filter(k=>T.titles[k].length).map(Number); }
 function achMetaTeamsWon(){ const M=achMeta(); return Object.keys(M.champ).filter(k=>(M.champ[k]||0)>0).map(Number); }
@@ -82,7 +82,7 @@ function achFirstDaily(){ if(!G||G.user==null||G.unemp)return; const U=G.user; c
   if(miss('fDebut')&&period()==='season'){ const p=playersOf(U).find(q=>{ const h=seasonTotalT(q,G.year,'1군',U); if(!h||!((h.pa||0)+(h.outs||0)))return false; return !q.hist.some(x=>x.lvl==='1군'&&(x.y<G.year||x.t!==U)&&((x.pa||0)+(x.outs||0))>0); }); /* 같은 해 다른 팀 1군 기록도 데뷔로 본다 */ if(p)achUnlock('fDebut',`${p.name}, ${posLabel(p)}`); } }
 /* ctx.k: season(결산 직후), award(시상식), retNo(영구결번), switch(구단 이동), assoc(협회 결과) */
 function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT(); const U=G.user;
-  if(ctx.k==='switch'){ if(G.unemp)T.fired=true; if(ctx.to!=null&&!T.teams.includes(ctx.to))T.teams.push(ctx.to); if(T.teams.length>=3)achUnlock('teams3'); if(T.fired||ctx.wasU)achUnlock('comeback'); return; }
+  if(ctx.k==='switch'){ if(G.unemp&&(G.unemp.k||'fired')==='fired')T.fired=true; /* 자진 사임·재계약 고사·계약 만료는 경질이 아니다(검수 11-06) */ if(ctx.to!=null&&!T.teams.includes(ctx.to))T.teams.push(ctx.to); if(T.teams.length>=3)achUnlock('teams3'); if(T.fired&&G.unemp)achUnlock('comeback'); return; }
   if(G.unemp)return;
   if(ctx.k==='season'){ const L=G.last; if(!L||!L.ps)return; const y=L.y; const ps=L.ps; const t=team(U); const fin=L.fins&&L.fins[U];
     T.seasons++; if(fin&&fin.net>0)T.profit++; if(fin&&fin.tax>0)T.taxed=true;
@@ -97,7 +97,7 @@ function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT();
     if(fin&&t.cash>=20000)achUnlock('cash200');
     if((G.rep??0)>=80)achUnlock('rep80');
     for(const tr of (G.trades||[]).filter(x=>x.gi&&x.y<y)){ let r=null; try{ r=tradeReport(tr); }catch(e){} if(r&&r.net>=8){ achUnlock('steal',`${tr.y}년 ${tshort(tr.with)}와의 트레이드: 받은 쪽 WAR ${r.got.toFixed(1)}, 준 쪽 ${r.gave.toFixed(1)}.`); break; } } }
-  if(ctx.k==='award'){ const y=G.year, A=G.awards&&G.awards[y]; if(!A)return; const mine=x=>x&&x.t===U; const drafted=x=>{ const p=x&&G.players[x.id]; return !!(p&&p.draft&&p.draft.tid===U); };
+  if(ctx.k==='award'){ const y=G.year, A=G.awards&&G.awards[y]; if(!A)return; const mine=x=>x&&x.t===U; const drafted=x=>{ const p=x&&(G.players[x.id]||(G.arch&&G.arch[x.id]&&archP(G.arch[x.id]))); /* 보관 기록으로 옮겨진 수상자도(검수 11-06) */ return !!(p&&p.draft&&p.draft.tid===U); };
     if(ctx.a==='mvp'){ if(mine(A.mvp)&&drafted(A.mvp))achUnlock('draftMvp',`${y} MVP ${A.mvp.name}.`); if(mine(A.roy)&&drafted(A.roy))achUnlock('draftRoy',`${y} 신인왕 ${A.roy.name}.`); }
     if(ctx.a==='gg'){ const L=Object.values(A.gg||{}).filter(mine); if(L.length>=3)achUnlock('gg3',`${y} 골든글러브 ${L.map(x=>x.name).join(', ')}.`); T.ggMine+=L.filter(drafted).length; } }
   if(ctx.k==='retNo')achUnlock('retNo');

@@ -203,6 +203,9 @@ function monthReport(m){
 /* 순위(KBO): 승률(무승부 제외) → 같으면 상대 전적 → 다득점 → 전년도 순위. 1위·5위 동률은 시즌 뒤 결정전(seasonEnd) */
 function h2hPct(a,b){ const L=((G.sea&&G.sea.tl)||[])[a]||[]; let w=0,l=0; for(const x of L)if(x[4]===b){ if(x[0]>0)w++; else if(x[0]<0)l++; } return w+l?w/(w+l):.5; }
 function rsOf(a){ const L=((G.sea&&G.sea.tl)||[])[a]||[]; let s=0; for(const x of L)s+=x[1]||0; return s; }
+/* 동률이면 같은 순위(공동 n위): 홈·일정·카드·리그 화면과 구단주 목표가 같은 기준을 쓴다 */
+const tieOf=(a,b)=>a&&b&&a.w===b.w&&a.l===b.l&&(a.t||0)===(b.t||0);
+function tieRank(order,tid){ const i=order.findIndex(o=>(o.tid??o)===tid); if(i<0)return 0; let j=i; while(j>0&&tieOf(order[j-1],order[i]))j--; return j+1; }
 function standingsNow(){ const r=G.sea.rec; const pct=x=>x.w/Math.max(1,x.w+x.l); const prev=(G.last&&G.last.order)||[]; const pr=t=>{ const i=prev.findIndex(x=>(x.tid??x)===t); return i<0?99:i; };
   return G.teams.map(t=>({tid:t.id,w:r[t.id].w,l:r[t.id].l,t:r[t.id].t||0})).sort((a,b)=>(pct(b)-pct(a))||(h2hPct(b.tid,a.tid)-h2hPct(a.tid,b.tid))||(rsOf(b.tid)-rsOf(a.tid))||(pr(a.tid)-pr(b.tid))); }
 const pctEq=(a,b)=>Math.abs(a.w/Math.max(1,a.w+a.l)-b.w/Math.max(1,b.w+b.l))<1e-12;
