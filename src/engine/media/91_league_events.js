@@ -19,7 +19,7 @@ function rivalAfterGame(day,h,a,g,post){
   if(born){r.emerged=day;r.label=team(r.a).city+'·'+team(r.b).city+' 라이벌';}
   if(!r.label||(!born&&r.lastNews!=null&&day-r.lastNews<28))return;
   const title=born?`${r.label}, 맞대결이 쌓여 만든 새 이야기`:`${r.label}… ${tshort(h)} ${g.score.h}:${g.score.a} ${tshort(a)}`;
-  const intro=born?`${r.seasons.length}시즌 동안 ${r.games}번 만나 ${r.close}번의 두 점 차 이내 승부와 ${r.post}번의 포스트시즌 맞대결을 남겼습니다. 팬들이 두 팀의 다음 대결을 기다립니다.`:key==='6:7'?'광주와 대구가 만나는 달빛대전입니다.':named==='엘롯기 맞대결'?'서울·부산·광주 구단을 함께 묶어 부르는 팬 문화에서 가져온 맞대결입니다.':'같은 연고지 두 구단의 맞대결입니다.';
+  const intro=born?`${r.seasons.length}시즌 동안 ${r.games}번 만나 ${r.close}번의 두 점 차 이내 승부와 ${r.post}번의 포스트시즌 맞대결을 남겼습니다. 팬들이 두 팀의 다음 대결을 기다립니다.`:key==='6:7'?'광주와 대구가 만나는 달빛대전입니다.':named==='엘롯기 맞대결'?'서울·부산·광주 구단을 함께 묶어 부르는 팬 문화에서 가져온 맞대결입니다.':team(r.a).city===team(r.b).city?'같은 연고지 두 구단의 맞대결입니다.':`${team(r.a).city}·${team(r.b).city} 두 구단이 이어 온 맞대결입니다.`; /* 연고지가 다르면 '같은 연고지'라고 하지 않는다(검수 11-06) */
   const it=news('경기',title,`${intro}\n이번 경기 ${tname(h)} ${g.score.h}:${g.score.a} ${tname(a)}. 이 게임에서 집계한 맞대결은 ${r.games}경기입니다.`,0,{tid:[h,a].includes(G.user)?G.user:h});
   if(it)r.lastNews=day;
 }
@@ -69,10 +69,10 @@ function allStarDaily(){
     const pool=allStarPool(G.year);
     for(const side of ['나눔','드림'])for(let i=0;i<A.teams[side].length;i++){
       const old=A.teams[side][i],p=G.players[old.id];
-      if(p&&p.team!=null&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p))continue;
+      if(p&&p.team!=null&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p)){ if(old.t!==p.team)A.teams[side][i]={...old,t:p.team}; continue; } /* 같은 진영 안 이적: 자격은 그대로, 소속은 지금 구단으로(검수 11-06) */
       const used=new Set(Object.values(A.teams).flat().map(x=>x.id));
       const x=pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&x.slot===old.slot)||pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&!!x.p.isP===old.isP);
-      if(!x)continue;
+      if(!x){ A.withdrawn.push({...old,replacement:null,day:G.day}); A.teams[side].splice(i,1); i--; continue; } /* 대체 후보가 없어도 출전 불가 선수는 확정 명단에서 뺀다(검수 11-06) */
       const next=allStarSnapshot(x,old.starter,'출전 불가 선수의 대체 추천');A.withdrawn.push({...old,replacement:next.id,day:G.day});A.teams[side][i]=next;
       const label=`${G.year} 올스타(${side})`;if(!(x.p.aw||[]).includes(label))addAward(x.p,label);
       news('선수',`${side} 올스타 ${next.name}, ${old.name} 대신 선정`,`${old.name}의 출전이 어려워 ${tshort(next.t)} ${next.name}을 대체 선수로 선정했습니다.`,0,{tid:next.t,ref:next.id});

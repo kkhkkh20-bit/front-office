@@ -53,8 +53,8 @@ const MD_FANQ=[['캠프에서 가장 웃겼던 동료는?','"말하면 큰일 �
 /* 개막 2일 전: 미디어데이 */
 function mdRun(){ const open=G.cal.open; let D=G.md; if(!D||D.y!==G.year){ const cap=mdCaptain(G.user), rec=mdRepPool(G.user)[0]; if(!cap||!rec)return; D=G.md={y:G.year,day:G.day,cap:cap.id,rep:rec.id,rec:rec.id,res:'ok',alts:[]}; }
   if(D.ran)return; D.ran=true; const proj=mdProj(); const r=proj.indexOf(G.user)+1; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'감독대행';
-  for(const k of ['cap','rep']){ const q=G.players[D[k]]; if(!q||q.team!==G.user){ const n=k==='cap'?mdCaptain(G.user):mdRepPool(G.user).find(x=>x.id!==D.cap); if(n)D[k]=n.id; } } /* 당일에도 떠난 대표는 대체 */
-  const cap=G.players[D.cap], rep=G.players[D.rep]; const g=mdMgrGoal(G.user,r); const sty=m&&!m.interim?MD_STYLE[mgrVoice(m)]:'';
+  for(const k of ['cap','rep']){ const q=G.players[D[k]]; const bad=!q||q.team!==G.user||(k==='rep'&&(q.id===D.cap||!healthy(q))); if(bad){ const n=k==='cap'?mdCaptain(G.user):mdRepPool(G.user).find(x=>x.id!==D.cap); if(n)D[k]=n.id; else if(k==='rep')D.rep=null; } } /* 당일에도 떠난·다친 대표, 새 주장이 된 대표는 대체(한 사람이 두 역할로 나오지 않게, 검수 11-06) */
+  const cap=G.players[D.cap], rep0=G.players[D.rep], rep=rep0&&rep0!==cap&&healthy(rep0)?rep0:null; const g=mdMgrGoal(G.user,r); const sty=m&&!m.interim?MD_STYLE[mgrVoice(m)]:'';
   const fq=pick(MD_FANQ); const L=[[who,g.t+(sty?' '+sty:'')]];
   if(cap&&cap.team===G.user)L.push([`주장 ${cap.name}`,mdPlayerLine(cap,'cap')]); if(rep&&rep.team===G.user)L.push([`${rep.name}`,mdPlayerLine(rep,'rep')]);
   prInit(); let fan=1; if(g.k==='champ')fan+=2; else if(g.k==='ps')fan+=1; G.pr.fan=clamp(G.pr.fan+fan,0,100);
@@ -82,7 +82,7 @@ function mdPsRun(s){ const op=s.hi===G.user?s.lo:s.hi; const m=G.mgr[G.user]; co
   const key=playersOf(G.user).map(p=>({p,h:seasonTotal(p,G.year,'1군')})).filter(x=>x.h&&healthy(x.p)).sort((a,b)=>warOf(b.h,b.p)-warOf(a.h,a.p));
   const bat=key.find(x=>!x.p.isP), pit=key.find(x=>x.p.isP); const two=[bat,pit].filter(Boolean).map(x=>x.p);
   const n=s.need[0]; const bold=m&&!m.interim&&(m.ego>=65||mgrVoice(m)==='fire'); const fin=bold?n:n+1; const len=s.days.length;
-  const mq=`"${Math.min(fin,len)}차전에서 끝내겠습니다." ${s.hi===G.user?'"정규시즌 순위가 높은 만큼 우리 홈에서 마무리하겠습니다."':'"도전자 입장이라 잃을 게 없습니다."'}`;
+  const mq=`"${Math.min(fin,len)}차전에서 끝내겠습니다." ${s.hi===G.user?(((s.homes||[])[Math.min(fin,len)-1]??s.hi)===G.user?'"정규시즌 순위가 높은 만큼 우리 홈에서 마무리하겠습니다."':'"정규시즌 순위가 높은 만큼 끝까지 주도권을 잡겠습니다."'):'"도전자 입장이라 잃을 게 없습니다."'}`; /* 끝내겠다는 경기가 실제로 우리 홈일 때만 '홈에서 마무리'(검수 11-06) */
   const pl=two.map(p=>{ initPers(p); return [p.name,p.pers.amb>=14?`"큰 경기에 강하다는 걸 보여 드리겠습니다."`:p.isP?`"제 공을 믿고 던지겠습니다. 한 이닝이라도 더 막겠습니다."`:`"한 타석 한 타석 집중하겠습니다. 팬들과 함께 이기고 싶습니다."`]; });
   const om=G.mgr[op]; const oq=om&&!om.interim?`${om.name} 감독(${tshort(op)}): "${s.hi===op?'우리 홈에서 시작하는 만큼 기선을 잡겠습니다.':'정규시즌과는 다를 겁니다.'}"`:'';
   for(const p of two)p.mor=clamp((p.mor??60)+3,0,100);

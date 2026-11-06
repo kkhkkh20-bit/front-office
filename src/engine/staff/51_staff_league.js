@@ -75,7 +75,7 @@ function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 
   const L=G.lgStaff[tid]; const list=kind==='sc'?L.sc:L.an; const s=list.find(x=>x.id===id); if(!s)return '대상이 없습니다.';
   if(kind==='sc'&&G.scouts.length>=SCOUT_MAX)return `스카우트는 ${SCOUT_MAX}명까지입니다.`; if(kind==='an'&&anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`;
   P.n++; P.t.push(tid); const sal=round5(s.sal*(1+raise)); const go=stScore(s,G.user,sal,false), stay=stScore(s,tid,s.sal*1.05,true);
-  const t=team(tid); t.rel=clamp((t.rel||50)-3,0,100);
+  const t=team(tid); t.rel=clamp((t.rel??50)-3,0,100);
   if(go<=stay)return `${s.name}: "제안은 감사하지만 ${tshort(tid)}에 남겠습니다." ${s.loy>=60?'오래 몸담은 구단이라 마음이 쉽게 움직이지 않습니다.':'조건이나 구단 위상이 부족했습니다.'} (${tshort(tid)} 관계 -3)`;
   list.splice(list.indexOf(s),1); if(kind==='sc')stSync(tid); s.sal=sal; s.since=G.day; s.loy=15; if(kind==='sc'){ s.role=s.role||'am'; G.scouts.push(s); } else G.analysts.push(s);
   wire('스태프',`${tshort(G.user)}, ${tshort(tid)} ${kind==='sc'?'스카우트':'전력분석원'} ${s.name} 영입`,{tid:G.user}); addLog(`${tshort(tid)}의 ${kind==='sc'?'스카우트':'분석원'} ${s.name}(능력 ${s.skill})을(를) 연 ${money(sal)}에 데려왔습니다.`);
