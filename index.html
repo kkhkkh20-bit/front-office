@@ -2612,6 +2612,8 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 #app .spd{margin-top:4px}#app .spd summary{cursor:pointer;color:var(--team-hi,#4fa3ff);width:max-content}
 #app .spd dl{display:grid;gap:3px;margin:6px 0 2px;padding:8px 10px;background:var(--panel2);border-radius:4px;min-width:260px}
 #app .spd dl>div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;font-size:12px}#app .spd dt{color:var(--muted)}#app .spd dd{margin:0;white-space:normal}
+/* 창단 드래프트 직접 지명 마친 뒤(맡길 방침·맡기기·더 뽑기): 휴대폰 한 줄 고정이면 버튼 글자가 세로로 깨진다(사용자 제보 11-07). 이때는 줄바꿈 */
+.tk.m .tk1:has(>.fdpol){flex-wrap:wrap}.tk.m .tk1:has(>.fdpol)>b{white-space:normal;flex:1 1 100%}.tk.m .tk1:has(>.fdpol)>.btn{white-space:nowrap;flex:1 1 auto}.tk.m .tk1:has(>.fdpol)>.fdpol{flex:1 1 100%}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
