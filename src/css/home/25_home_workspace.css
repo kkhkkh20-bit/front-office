@@ -124,6 +124,36 @@
 @media(max-width:699px){
 .hw-metrics{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}.hw-metrics::-webkit-scrollbar{display:none}
 .hw-metrics>*{flex:0 0 44%!important;width:44%!important;max-width:none!important;scroll-snap-align:start;min-width:0;box-sizing:border-box}
-.home-workspace[data-rows="2"] .home-grid.home-dashboard{grid-template-rows:repeat(2,minmax(0,max-content));align-content:start}
+.home-workspace[data-rows="2"] .home-grid.home-dashboard{grid-template-rows:repeat(2,auto);align-content:stretch}.home-workspace[data-rows="3"] .home-grid.home-dashboard{grid-template-rows:repeat(3,auto);align-content:stretch} /* auto 줄은 내용 높이에서 시작해 남는 높이를 똑같이 나눠 가진다: 어느 장이든 카드 바닥이 화면 아래에 맞는다(사용자 11-06) */
 }
 .hw-wd.past{opacity:.55}.hw-wd.past.w,.hw-wd.past.l,.hw-wd.past.t{opacity:.8}.hw-week h2 small{font-size:11px;font-weight:500;margin-left:4px}
+/* PC 현황 한 화면 9장(사용자 11-06): 구단명 줄은 상단 바에 있으니 숨기고, 요약·카드 머리를 줄여 3줄을 똑같은 높이로 */
+@media(min-width:700px){
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-heading>div{display:none}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-metrics>*{padding-block:5px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-metrics b{font-size:17px}
+.home-workspace[data-device="desktop"][data-rows="3"] .home-grid{grid-template-rows:repeat(3,minmax(0,1fr));gap:8px}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel{min-height:0;overflow:hidden}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header{min-height:30px;padding:3px 10px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header h2{font-size:14px}
+#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:11px}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-match .hw-match-main{padding:4px 10px;gap:3px}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face,.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face .av{width:54px!important;height:54px!important}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-match-main>.btn{min-height:26px;padding-block:3px}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-wl{padding-top:6px}
+}
+@media(min-width:700px){#app .home-workspace[data-device="desktop"][data-rows="3"]{grid-template-rows:50px minmax(0,1fr);gap:8px}#app .home-workspace[data-device="desktop"][data-rows="3"]>:is(.hw-heading,.hw-pager){display:none} /* 한 장이라 넘기기·빈 머리줄 없음 */}
+
+/* 홈 새 카드(사용자 11-06): 리그 화면 부품(fx-form·fx-pl)을 휴대폰에서도 쓰도록 홈 범위로 복사 */
+.home-workspace .fx-form{display:inline-flex;gap:2px;align-items:flex-end;height:16px}.home-workspace .fx-form i{width:5px;height:100%;border-radius:1px;background:var(--muted)}.home-workspace .fx-form i.w{background:var(--good)}.home-workspace .fx-form i.l{background:var(--bad);height:60%}.home-workspace .fx-form i.t{height:35%}
+.home-workspace .fx-pls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 10px}
+.home-workspace .fx-pl{display:flex;align-items:center;gap:8px;min-width:0;padding:3px 0;border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}.home-workspace .fx-pl .av{width:34px;height:34px;flex:none}
+.home-workspace .fx-pl>span{display:grid;min-width:0}.home-workspace .fx-pl i{font-style:normal;font-size:10.5px;color:var(--muted)}.home-workspace .fx-pl b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.home-workspace .fx-pl em{font-style:normal;font-size:11.5px;color:var(--warn)}
+.hw-stand tr.cut td{border-bottom:1px dashed var(--warn)}.hw-stand td.pos{color:var(--good)}.hw-stand td.neg{color:var(--bad)}.hw-stand td:last-child{text-align:left}.hw-stand .fx-form{height:12px}.hw-stand .fx-form i{width:4px}
+.hw-sl{display:grid;align-content:start;gap:1px;padding:4px 8px;overflow:auto;min-height:0}.hw-sl hr{border:0;border-top:1px solid var(--line);margin:3px 0;width:100%}
+.hw-sr{display:grid;grid-template-columns:62px 30px minmax(0,1fr) auto minmax(0,auto);align-items:center;gap:6px;padding:4px 4px;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;font-size:12px;text-align:left;min-width:0}
+.hw-sr>span:first-child{color:var(--muted);font-size:11px}.hw-sr>i{font-style:normal;font-size:11px;color:var(--muted)}.hw-sr-op{display:flex;align-items:center;gap:5px;min-width:0}.hw-sr-op b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hw-sr>em{font-style:normal;font-weight:700;font-size:12px}.hw-sr>small{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hw-sr.past{opacity:.85}.hw-sr .good{color:var(--good)}.hw-sr .bad{color:var(--bad)}
+.hw-leaders .fx-pls{padding:6px 10px}
+@media(min-width:1100px){.home-workspace[data-device="desktop"] .home-grid.home-dashboard>.hw-stand{grid-row:span 2}}
+@media(min-width:1100px) and (max-height:860px){.home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{-webkit-line-clamp:1;font-size:14px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>p{-webkit-line-clamp:1}}
+@media(min-width:1100px) and (max-height:860px){#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news article>:is(p,.hw-kicker){display:none}#app .home-workspace[data-device="desktop"][data-rows="3"] .hw-news h3{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;margin:4px 0}}
+@media(max-width:699px){.hw-finance dl{gap:4px!important;padding:6px 10px!important}.hw-finance dd{font-size:16px!important}}

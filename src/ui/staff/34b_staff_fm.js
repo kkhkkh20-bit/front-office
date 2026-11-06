@@ -73,10 +73,7 @@ function dhTeams(){ const so=standOrder(), y=so.y, O=so.order||[], cur=y===G.yea
   return {y,cur,T}; }
 function dataFM(){ const {y,cur,T}=dhTeams(), me=T.find(t=>t.tid===G.user), has=!!(me&&me.g), all=k=>T.map(t=>t[k]), R=(l,k,f,low)=>({l,v:me[k],all:all(k),f,low}), rk=(k,low)=>sfRk({v:me[k],all:all(k)},low);
   const sg=v=>(v>0?'+':'')+v, f2=v=>v.toFixed(2), f3=v=>fmt3(v), pc=v=>fmt3(v);
-  /* 왼쪽 위: 리그 팀 지표 */
-  const form=t=>cur?tlOf(t).slice(-5).map(x=>`<i class="${x[0]>0?'w':x[0]<0?'l':''}"></i>`).join(''):'';
-  const tbl=`<section class="card dh-tbl"><div class="row between"><h3>${y} 리그 팀 지표 <em>${cur?'정규시즌 진행 중':'지난 시즌 최종'}</em></h3><button class="btn small" data-a="go" data-v="league:stat">리그 통계</button></div><div class="sf-tw"><table class="sf-t dh-t"><thead><tr><th>순위</th><th>팀</th><th class="dh-x">경기</th><th>승-패-무</th><th class="dh-x">승률</th><th>득점/경기</th><th>실점/경기</th><th>득실</th><th title="득점과 실점으로 계산한 피타고리안 기대 승수, 오른쪽은 실제 승수와의 차이">기대 승</th><th class="dh-x">OPS</th><th class="dh-x">평균자책점</th><th>${cur?'최근 5경기':''}</th></tr></thead><tbody>${[...T].sort((a,b)=>a.rk-b.rk).map(t=>{ const dw=t.w-t.xw;
-    return `<tr class="${t.tid===G.user?'me':''}"><td>${t.rk||'-'}</td><td><button class="lnk" data-a="lteamGo" data-v="${t.tid}">${badge(t.tid,16)} <span><span class="dh-x">${esc(team(t.tid).city)} </span>${esc(team(t.tid).nick)}</span></button></td><td class="dh-x">${t.g}</td><td>${t.w}-${t.l}-${t.d}</td><td class="dh-x">${pc(t.wp)}</td><td>${f2(t.rpg)}</td><td>${f2(t.rapg)}</td><td class="${t.rd>0?'good':t.rd<0?'bad':''}">${sg(t.rd)}</td><td>${t.xw.toFixed(1)} <i class="dh-d ${dw>=.5?'good':dw<=-.5?'bad':''}">${dw>=0?'+':''}${dw.toFixed(1)}</i></td><td class="dh-x">${f3(t.ops)}</td><td class="dh-x">${f2(t.era)}</td><td><span class="dh-form">${form(t.tid)}</span></td></tr>`; }).join('')}</tbody></table></div></section>`;
+  /* 리그 팀 지표 표는 홈으로 옮김(homeStandingPanel) */
   /* 가운데: 전반·공격·수비 리그 비교(항목당 한 줄 순위 막대) + 한 줄 요약 */
   const say=(nm,rows)=>{ const K=rows.map(r=>({l:r.l,k:sfRk(r,r.low)})).sort((a,b)=>a.k-b.k), a=avg(K.map(x=>x.k));
     return `우리는 ${nm} 지표에서 평균 ${a.toFixed(1)}위로 ${a<=3?'리그 상위권':a<=5.5?'평균보다 좋은 편':a<8?'평균보다 처지는 편':'리그 하위권'}입니다. 가장 좋은 항목은 ${esc(K[0].l)}(${K[0].k}위), 가장 약한 항목은 ${esc(K[K.length-1].l)}(${K[K.length-1].k}위)입니다.`; };
@@ -111,7 +108,7 @@ function dataFM(){ const {y,cur,T}=dhTeams(), me=T.find(t=>t.tid===G.user), has=
   const cmp=`<section class="card dh-acmp">${sfChart('분석 인력 비교 · 리그 10개 구단',[{l:'분석원 수',v:L.length,all:tids.map(t=>anOf(t).length)},...Object.keys(AROLE).map(r=>({l:AROLE[r].l.replace(' 데이터',''),v:anaPow(r,G.user),all:tids.map(t=>anaPow(r,t))}))],0,6,f1)}</section>`;
   const RM=(G.mail||[]).filter(m=>m.from==='전력분석팀').slice(0,10);
   const rep=`<section class="card dh-rep"><h3>분석 보고 <em>${RM.length}건</em></h3><div class="dh-rl">${RM[0]?`<div class="dh-last"><div class="row between"><b>${esc(RM[0].subj)}</b><span class="small muted">${dsh(RM[0].day)}</span></div><p>${esc(RM[0].body)}</p><button class="btn small" data-a="openMail" data-v="${RM[0].id}">소식함에서 열기</button></div>`:'<p class="small muted">시즌 중 매달 말 보고가 옵니다.</p>'}${RM.slice(1).map(m=>`<button class="dh-ri" data-a="openMail" data-v="${m.id}"><b>${esc(m.subj)}</b><span>${dsh(m.day)}</span></button>`).join('')}</div></section>`;
-  return `<div class="dh ws-own"><div class="dh-l">${tbl}<div class="dh-lb">${find}${trend}</div></div><div class="dh-m">${mid}</div><div class="dh-r">${an}${cmp}${rep}</div></div>`; }
+  return `<div class="dh ws-own"><div class="dh-l">${an}<div class="dh-lb">${find}${trend}</div></div><div class="dh-m">${mid}</div><div class="dh-r">${cmp}${rep}</div></div>`; } /* 리그 팀 지표 표는 홈 리그 순위로 옮기고, 왼쪽 위는 전력분석팀(사용자 11-06) */
 /* PC 스카우팅 센터(FM 스카우팅 센터 구성): 스카우트 배정 · 진행 중인 과제 | 지식 범위(담당 지역) · 관심 명단 | 예산·리그 비교 · 팀장 · 스카우트 보고.
    배치는 '배치 바꾸기'를 누른 뒤 지식 범위 칸을 누른다(선택 상자 없음) */
 function scoutFM(){ const S=G.scouts||[], ch=scoutChief(), sel=UI.scSel&&S.find(s=>s.id===UI.scSel)||null, slot=s=>scoutSlotTxt(s.role||'am',s.region);
