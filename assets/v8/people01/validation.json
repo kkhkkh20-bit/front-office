@@ -1,0 +1,4901 @@
+{
+  "schema_version": "8.1",
+  "batch_id": "people01",
+  "status": "PASSED",
+  "passed": true,
+  "game_review": "PENDING: review branch only, no game connection in this change",
+  "identity_count": 120,
+  "gender_counts": {
+    "male": 79,
+    "female": 41
+  },
+  "role_sex_age_quotas_passed": true,
+  "role_counts": {
+    "agent": {
+      "count": 16,
+      "male": 12,
+      "female": 4,
+      "age_min": 32,
+      "age_max": 58,
+      "label_ko": "에이전트"
+    },
+    "doc": {
+      "count": 12,
+      "male": 9,
+      "female": 3,
+      "age_min": 30,
+      "age_max": 60,
+      "label_ko": "팀 닥터·트레이너"
+    },
+    "sec": {
+      "count": 8,
+      "male": 2,
+      "female": 6,
+      "age_min": 25,
+      "age_max": 38,
+      "label_ko": "비서"
+    },
+    "scout": {
+      "count": 16,
+      "male": 14,
+      "female": 2,
+      "age_min": 30,
+      "age_max": 65,
+      "label_ko": "스카우트"
+    },
+    "ana": {
+      "count": 12,
+      "male": 8,
+      "female": 4,
+      "age_min": 26,
+      "age_max": 45,
+      "label_ko": "전력분석원"
+    },
+    "ceo": {
+      "count": 12,
+      "male": 11,
+      "female": 1,
+      "age_min": 50,
+      "age_max": 68,
+      "label_ko": "구단 사장"
+    },
+    "fan": {
+      "count": 12,
+      "male": 6,
+      "female": 6,
+      "age_min": 20,
+      "age_max": 55,
+      "label_ko": "팬 대표"
+    },
+    "press": {
+      "count": 12,
+      "male": 7,
+      "female": 5,
+      "age_min": 27,
+      "age_max": 55,
+      "label_ko": "기자"
+    },
+    "front": {
+      "count": 20,
+      "male": 10,
+      "female": 10,
+      "age_min": 27,
+      "age_max": 55,
+      "label_ko": "프런트 직원"
+    }
+  },
+  "runtime_sheet_count": 4,
+  "runtime_sheet_bytes": 9379140,
+  "runtime_modes": [
+    "RGB"
+  ],
+  "runtime_codec": "lossless WebP",
+  "sizes": [
+    128,
+    256
+  ],
+  "page_occupancy": [
+    100,
+    20
+  ],
+  "unused_cells_black_rgb": true,
+  "pixel_roundtrip_exact": true,
+  "manifest_rects_passed": true,
+  "faces_detected": 240,
+  "camera_eye_y256_min": 65.5593032836914,
+  "camera_eye_y256_max": 77.50763702392578,
+  "threshold": 0.4,
+  "pass_rule": "All required raw ArcFace cosine scores strictly below 0.40. Scores are not calibrated, rescaled, whitened, averaged, or rounded for admission.",
+  "protocol": {
+    "detector": "SCRFD det_10g, 640x640 RGB, threshold >0.55, highest-score face",
+    "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+    "detector_normalization": "(RGB-127.5)/128",
+    "recognizer": "ArcFace w600k_r50",
+    "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "alignment": "existing v6/v7 5-landmark canonical template; OpenCV estimateAffinePartial2D LMEDS; warpAffine 112x112 black border",
+    "recognizer_normalization": "(RGB-127.5)/127.5, CHW float32",
+    "embedding": "512D L2-normalized, unmodified dot product",
+    "resolution_scope": "128-to-128 and 256-to-256, each independently detected/aligned from final decoded runtime atlases",
+    "reference_scope": "100 v6c player identities, all 10 home variants =1000 portraits, plus all 126 v7 identities. Existing-reference-to-existing-reference pairs are outside this delivery validation.",
+    "onnxruntime": "1.31.1",
+    "opencv": "5.0.0",
+    "numpy": "2.5.4"
+  },
+  "comparisons": {
+    "128": {
+      "within": {
+        "pair_count": 7140,
+        "max_cosine": 0.3943159878253937,
+        "pair": [
+          "v8_people01_doc_009",
+          "v8_people01_ceo_004"
+        ],
+        "failed_pairs": 0,
+        "passed": true
+      },
+      "v6c": {
+        "identity_count": 100,
+        "reference_photo_count": 1000,
+        "pair_count": 120000,
+        "max_cosine": 0.3901221752166748,
+        "pair": [
+          "v8_people01_fan_002",
+          "v6c100_064@goyang_storm"
+        ],
+        "failed_pairs": 0,
+        "passed": true
+      },
+      "v7": {
+        "identity_count": 126,
+        "reference_photo_count": 126,
+        "pair_count": 15120,
+        "max_cosine": 0.3972284495830536,
+        "pair": [
+          "v8_people01_doc_002",
+          "v7_staff01_gm_011"
+        ],
+        "failed_pairs": 0,
+        "passed": true
+      }
+    },
+    "256": {
+      "within": {
+        "pair_count": 7140,
+        "max_cosine": 0.3985053300857544,
+        "pair": [
+          "v8_people01_sec_003",
+          "v8_people01_press_008"
+        ],
+        "failed_pairs": 0,
+        "passed": true
+      },
+      "v6c": {
+        "identity_count": 100,
+        "reference_photo_count": 1000,
+        "pair_count": 120000,
+        "max_cosine": 0.39540550112724304,
+        "pair": [
+          "v8_people01_ana_005",
+          "v6c100_096@daegu_thunders"
+        ],
+        "failed_pairs": 0,
+        "passed": true
+      },
+      "v7": {
+        "identity_count": 126,
+        "reference_photo_count": 126,
+        "pair_count": 15120,
+        "max_cosine": 0.3995988070964813,
+        "pair": [
+          "v8_people01_sec_007",
+          "v7_staff01_gm_016"
+        ],
+        "failed_pairs": 0,
+        "passed": true
+      }
+    }
+  },
+  "total_required_comparisons": 284520,
+  "failed_comparisons": 0,
+  "reference_hashes_verified": true,
+  "per_identity": [
+    {
+      "id": "v8_people01_agent_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_001",
+            "cosine": 0.3599339723587036,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_024@busan_waves",
+            "cosine": 0.2888277769088745,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_058",
+            "cosine": 0.24291104078292847,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_001",
+            "cosine": 0.3758862018585205,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_024@changwon_anchors",
+            "cosine": 0.3391290009021759,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_019",
+            "cosine": 0.30810654163360596,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_005",
+            "cosine": 0.38119375705718994,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@changwon_anchors",
+            "cosine": 0.32593658566474915,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_012",
+            "cosine": 0.3338703513145447,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_006",
+            "cosine": 0.3916972279548645,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@daejeon_redfox",
+            "cosine": 0.33596861362457275,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_006",
+            "cosine": 0.3318867087364197,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_008",
+            "cosine": 0.3361959755420685,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_023@changwon_anchors",
+            "cosine": 0.33626654744148254,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_024",
+            "cosine": 0.25003865361213684,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_008",
+            "cosine": 0.35675084590911865,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_023@changwon_anchors",
+            "cosine": 0.3624822199344635,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_023",
+            "cosine": 0.2623111605644226,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_009",
+            "cosine": 0.3280816674232483,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@suwon_sparks",
+            "cosine": 0.25960078835487366,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_019",
+            "cosine": 0.38556012511253357,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_006",
+            "cosine": 0.31735798716545105,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@seoul_comets",
+            "cosine": 0.31178581714630127,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_033",
+            "cosine": 0.381399005651474,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_002",
+            "cosine": 0.38119375705718994,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_064@seoul_comets",
+            "cosine": 0.3452244699001312,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_003",
+            "cosine": 0.34376034140586853,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_002",
+            "cosine": 0.38246288895606995,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_064@seoul_hounds",
+            "cosine": 0.34964698553085327,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_003",
+            "cosine": 0.36625078320503235,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_009",
+            "cosine": 0.3611433207988739,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@daegu_thunders",
+            "cosine": 0.36444446444511414,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_002",
+            "cosine": 0.24318203330039978,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_009",
+            "cosine": 0.3850316107273102,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@gwangju_blazes",
+            "cosine": 0.36730730533599854,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.23741967976093292,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_003",
+            "cosine": 0.3145265579223633,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_040@seoul_comets",
+            "cosine": 0.36386606097221375,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.24323157966136932,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_003",
+            "cosine": 0.342762291431427,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_040@goyang_storm",
+            "cosine": 0.3847537338733673,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_020",
+            "cosine": 0.2665937542915344,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_009",
+            "cosine": 0.37149226665496826,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_023@gwangju_blazes",
+            "cosine": 0.22623507678508759,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_001",
+            "cosine": 0.30897530913352966,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_003",
+            "cosine": 0.37248462438583374,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_023@busan_waves",
+            "cosine": 0.2700675129890442,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_001",
+            "cosine": 0.31793269515037537,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_007",
+            "cosine": 0.31626567244529724,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_034@busan_waves",
+            "cosine": 0.22131428122520447,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_017",
+            "cosine": 0.34189024567604065,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_007",
+            "cosine": 0.32516682147979736,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_075@goyang_storm",
+            "cosine": 0.24204608798027039,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_031",
+            "cosine": 0.36250343918800354,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_011",
+            "cosine": 0.3737064003944397,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@suwon_sparks",
+            "cosine": 0.24925413727760315,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_060",
+            "cosine": 0.3144925534725189,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_008",
+            "cosine": 0.3952753245830536,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@daejeon_redfox",
+            "cosine": 0.26907214522361755,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_007",
+            "cosine": 0.32768499851226807,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.3337165415287018,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_019@daejeon_redfox",
+            "cosine": 0.25400209426879883,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_017",
+            "cosine": 0.32295146584510803,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.31526637077331543,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_019@daejeon_redfox",
+            "cosine": 0.2526037395000458,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_030",
+            "cosine": 0.34351736307144165,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_003",
+            "cosine": 0.29294493794441223,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_018@daejeon_redfox",
+            "cosine": 0.3044074475765228,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_040",
+            "cosine": 0.34348708391189575,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_007",
+            "cosine": 0.29347312450408936,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_018@daegu_thunders",
+            "cosine": 0.30669406056404114,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_040",
+            "cosine": 0.3643033802509308,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_013",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_020",
+            "cosine": 0.34516894817352295,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_024@daejeon_redfox",
+            "cosine": 0.24092452228069305,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_018",
+            "cosine": 0.29928356409072876,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_008",
+            "cosine": 0.3541353940963745,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_024@goyang_storm",
+            "cosine": 0.25483405590057373,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_018",
+            "cosine": 0.2942017912864685,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_014",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_016",
+            "cosine": 0.3721170425415039,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_050@daejeon_redfox",
+            "cosine": 0.2852271795272827,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_010",
+            "cosine": 0.273389607667923,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_016",
+            "cosine": 0.3709879517555237,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_050@suwon_sparks",
+            "cosine": 0.3043428361415863,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.30915606021881104,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_015",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_009",
+            "cosine": 0.3544634282588959,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_088@daegu_thunders",
+            "cosine": 0.2823179066181183,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_004",
+            "cosine": 0.2793525159358978,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_009",
+            "cosine": 0.35274359583854675,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_088@seoul_comets",
+            "cosine": 0.2717343866825104,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_004",
+            "cosine": 0.29348140954971313,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_agent_016",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_014",
+            "cosine": 0.3721170425415039,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@daegu_thunders",
+            "cosine": 0.2646971046924591,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_004",
+            "cosine": 0.2899666428565979,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_007",
+            "cosine": 0.37210753560066223,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@goyang_storm",
+            "cosine": 0.2838565707206726,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_004",
+            "cosine": 0.30592605471611023,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_009",
+            "cosine": 0.36165863275527954,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_026@suwon_sparks",
+            "cosine": 0.3048509955406189,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_020",
+            "cosine": 0.27538520097732544,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_009",
+            "cosine": 0.34650376439094543,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@suwon_sparks",
+            "cosine": 0.3209969699382782,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_021",
+            "cosine": 0.32313913106918335,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_005",
+            "cosine": 0.3671244978904724,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_058@seoul_comets",
+            "cosine": 0.261115700006485,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_011",
+            "cosine": 0.3972284495830536,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_005",
+            "cosine": 0.38246288895606995,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@seoul_comets",
+            "cosine": 0.28624215722084045,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_011",
+            "cosine": 0.3811880648136139,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_006",
+            "cosine": 0.347726047039032,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_060@seoul_hounds",
+            "cosine": 0.3383435904979706,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.32559359073638916,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_006",
+            "cosine": 0.3598223328590393,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_060@gwangju_blazes",
+            "cosine": 0.36426615715026855,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.3443430960178375,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_006",
+            "cosine": 0.28859177231788635,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_041@goyang_storm",
+            "cosine": 0.29713860154151917,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_023",
+            "cosine": 0.24089673161506653,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_006",
+            "cosine": 0.30880507826805115,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_041@daejeon_redfox",
+            "cosine": 0.2869292199611664,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_023",
+            "cosine": 0.2577042579650879,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_006",
+            "cosine": 0.35003140568733215,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_003@changwon_anchors",
+            "cosine": 0.3277028203010559,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_038",
+            "cosine": 0.3098728358745575,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_006",
+            "cosine": 0.36200881004333496,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_003@gwangju_blazes",
+            "cosine": 0.3316281735897064,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_038",
+            "cosine": 0.31351712346076965,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_002",
+            "cosine": 0.3682814836502075,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@busan_waves",
+            "cosine": 0.27210184931755066,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.30249956250190735,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_002",
+            "cosine": 0.3916972279548645,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@daejeon_redfox",
+            "cosine": 0.29453325271606445,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_008",
+            "cosine": 0.3386719822883606,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_009",
+            "cosine": 0.31626567244529724,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_030@gwangju_blazes",
+            "cosine": 0.28256380558013916,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.32169273495674133,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_004",
+            "cosine": 0.3370162546634674,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_030@gwangju_blazes",
+            "cosine": 0.30377718806266785,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.33930522203445435,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_006",
+            "cosine": 0.3719395101070404,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_060@goyang_storm",
+            "cosine": 0.2659198045730591,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_036",
+            "cosine": 0.36509355902671814,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.3952753245830536,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_060@goyang_storm",
+            "cosine": 0.30323997139930725,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_036",
+            "cosine": 0.3543526232242584,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.3943159878253937,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_088@gwangju_blazes",
+            "cosine": 0.3155648410320282,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_004",
+            "cosine": 0.35671767592430115,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.38297271728515625,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@seoul_hounds",
+            "cosine": 0.30613258481025696,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_001",
+            "cosine": 0.3681061863899231,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_012",
+            "cosine": 0.3760682940483093,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_083@suwon_sparks",
+            "cosine": 0.28590643405914307,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.2906986176967621,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_012",
+            "cosine": 0.3951619267463684,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_074@changwon_anchors",
+            "cosine": 0.27182888984680176,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.31329333782196045,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_007",
+            "cosine": 0.3220060169696808,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@goyang_storm",
+            "cosine": 0.23543564975261688,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.3118310868740082,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_012",
+            "cosine": 0.3492300808429718,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@goyang_storm",
+            "cosine": 0.2915659546852112,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.3953617215156555,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_doc_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_010",
+            "cosine": 0.3760682940483093,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_074@goyang_storm",
+            "cosine": 0.26925408840179443,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_009",
+            "cosine": 0.20538638532161713,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_010",
+            "cosine": 0.39366716146469116,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_063@busan_waves",
+            "cosine": 0.2936638593673706,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.19781231880187988,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_002",
+            "cosine": 0.37132179737091064,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_080@incheon_seagulls",
+            "cosine": 0.26125258207321167,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.31563833355903625,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_002",
+            "cosine": 0.36088329553604126,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_054@daejeon_redfox",
+            "cosine": 0.3197256922721863,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.3395789861679077,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_009",
+            "cosine": 0.35146987438201904,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_026@suwon_sparks",
+            "cosine": 0.3756565451622009,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_019",
+            "cosine": 0.2784058749675751,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_001",
+            "cosine": 0.3603260815143585,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_026@suwon_sparks",
+            "cosine": 0.36034807562828064,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_019",
+            "cosine": 0.2808513641357422,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_008",
+            "cosine": 0.36895155906677246,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_074@gwangju_blazes",
+            "cosine": 0.29778245091438293,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.30098456144332886,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_008",
+            "cosine": 0.3985053300857544,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_016@goyang_storm",
+            "cosine": 0.34825435280799866,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.3022422790527344,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_011",
+            "cosine": 0.35414963960647583,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_099@goyang_storm",
+            "cosine": 0.34647712111473083,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_015",
+            "cosine": 0.3231128454208374,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_009",
+            "cosine": 0.3820118010044098,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_099@daejeon_redfox",
+            "cosine": 0.3397485613822937,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_015",
+            "cosine": 0.3387312889099121,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.38417142629623413,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_065@incheon_seagulls",
+            "cosine": 0.33207637071609497,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_011",
+            "cosine": 0.29582247138023376,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_010",
+            "cosine": 0.397565096616745,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_065@incheon_seagulls",
+            "cosine": 0.31992992758750916,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_011",
+            "cosine": 0.3334522843360901,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.34248608350753784,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_015@seoul_hounds",
+            "cosine": 0.3310137689113617,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_015",
+            "cosine": 0.22004249691963196,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.35114380717277527,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_015@seoul_hounds",
+            "cosine": 0.33681103587150574,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_007",
+            "cosine": 0.22752836346626282,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_016",
+            "cosine": 0.3496091067790985,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_076@gwangju_blazes",
+            "cosine": 0.3055982291698456,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_029",
+            "cosine": 0.36921337246894836,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_016",
+            "cosine": 0.37210753560066223,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_076@goyang_storm",
+            "cosine": 0.31958717107772827,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.3995988070964813,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_sec_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_007",
+            "cosine": 0.3613376021385193,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_016@seoul_comets",
+            "cosine": 0.2794401943683624,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.37062692642211914,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_007",
+            "cosine": 0.3968784511089325,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_016@seoul_comets",
+            "cosine": 0.3168712854385376,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.3629973530769348,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_003",
+            "cosine": 0.38251715898513794,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_001@busan_waves",
+            "cosine": 0.2735005021095276,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_011",
+            "cosine": 0.2967641353607178,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_003",
+            "cosine": 0.3928835391998291,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_001@seoul_comets",
+            "cosine": 0.3088102340698242,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_007",
+            "cosine": 0.35642337799072266,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.3147876262664795,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_058@seoul_hounds",
+            "cosine": 0.37318116426467896,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_006",
+            "cosine": 0.2665080726146698,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_008",
+            "cosine": 0.3206835389137268,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_058@busan_waves",
+            "cosine": 0.3876887559890747,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_016",
+            "cosine": 0.26609984040260315,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_001",
+            "cosine": 0.38251715898513794,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_059@daejeon_redfox",
+            "cosine": 0.2920616567134857,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.3147340416908264,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_001",
+            "cosine": 0.3928835391998291,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_077@goyang_storm",
+            "cosine": 0.344955712556839,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_006",
+            "cosine": 0.3248159885406494,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.3628528118133545,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_039@gwangju_blazes",
+            "cosine": 0.28395846486091614,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.22234684228897095,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.37285906076431274,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_039@gwangju_blazes",
+            "cosine": 0.29255130887031555,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_015",
+            "cosine": 0.19276072084903717,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_003",
+            "cosine": 0.3403078317642212,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_091@daegu_thunders",
+            "cosine": 0.3077605366706848,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_007",
+            "cosine": 0.33468228578567505,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.3299189507961273,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@daejeon_redfox",
+            "cosine": 0.3300800621509552,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_018",
+            "cosine": 0.39716631174087524,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_006",
+            "cosine": 0.3584718108177185,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_046@seoul_hounds",
+            "cosine": 0.3043360710144043,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_011",
+            "cosine": 0.33174166083335876,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.3666633367538452,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_044@seoul_comets",
+            "cosine": 0.35840940475463867,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_011",
+            "cosine": 0.2978907525539398,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_002",
+            "cosine": 0.33821290731430054,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_078@suwon_sparks",
+            "cosine": 0.33246248960494995,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.3723268508911133,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_009",
+            "cosine": 0.35453253984451294,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_014@daejeon_redfox",
+            "cosine": 0.3342643976211548,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_020",
+            "cosine": 0.39530444145202637,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_001",
+            "cosine": 0.3911915719509125,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_080@suwon_sparks",
+            "cosine": 0.3566015958786011,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.26107269525527954,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_001",
+            "cosine": 0.3967096209526062,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_080@suwon_sparks",
+            "cosine": 0.3567228615283966,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.3175458610057831,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_009",
+            "cosine": 0.3552338182926178,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_014@seoul_comets",
+            "cosine": 0.2781190872192383,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_020",
+            "cosine": 0.27483269572257996,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_009",
+            "cosine": 0.36249202489852905,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_014@seoul_comets",
+            "cosine": 0.2853514850139618,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.29828932881355286,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_012",
+            "cosine": 0.29477357864379883,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_015@seoul_hounds",
+            "cosine": 0.18316875398159027,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_002",
+            "cosine": 0.2660508453845978,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_008",
+            "cosine": 0.28749364614486694,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_060@seoul_comets",
+            "cosine": 0.23748750984668732,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_002",
+            "cosine": 0.2447843998670578,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_012",
+            "cosine": 0.3369089663028717,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_059@goyang_storm",
+            "cosine": 0.35948047041893005,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_019",
+            "cosine": 0.33906781673431396,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_012",
+            "cosine": 0.3742610514163971,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_059@goyang_storm",
+            "cosine": 0.37666580080986023,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_019",
+            "cosine": 0.3761439025402069,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_011",
+            "cosine": 0.3369089663028717,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_014@seoul_comets",
+            "cosine": 0.29095223546028137,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_020",
+            "cosine": 0.27549615502357483,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_011",
+            "cosine": 0.3742610514163971,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_003@seoul_comets",
+            "cosine": 0.29374799132347107,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.2978140115737915,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_013",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_006",
+            "cosine": 0.31565579771995544,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@daejeon_redfox",
+            "cosine": 0.19096185266971588,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_013",
+            "cosine": 0.2531753480434418,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_006",
+            "cosine": 0.36021119356155396,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_028@daejeon_redfox",
+            "cosine": 0.25400620698928833,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_051",
+            "cosine": 0.2779737412929535,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_014",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_006",
+            "cosine": 0.2942146360874176,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@busan_waves",
+            "cosine": 0.19172267615795135,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_023",
+            "cosine": 0.2313992828130722,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_007",
+            "cosine": 0.2918488383293152,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@seoul_comets",
+            "cosine": 0.24463754892349243,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_023",
+            "cosine": 0.22411136329174042,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_015",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_003",
+            "cosine": 0.3328758180141449,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_071@busan_waves",
+            "cosine": 0.29262447357177734,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.1712721884250641,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_003",
+            "cosine": 0.3604292869567871,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_071@changwon_anchors",
+            "cosine": 0.30075523257255554,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.1965033859014511,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_scout_016",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_015",
+            "cosine": 0.314075231552124,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_018@daegu_thunders",
+            "cosine": 0.2982887923717499,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.23865266144275665,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_015",
+            "cosine": 0.3310810923576355,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_090@daejeon_redfox",
+            "cosine": 0.26747167110443115,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.2999575138092041,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_003",
+            "cosine": 0.3526037633419037,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_059@seoul_comets",
+            "cosine": 0.34556177258491516,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_023",
+            "cosine": 0.3264261484146118,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_003",
+            "cosine": 0.3859415352344513,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_024@goyang_storm",
+            "cosine": 0.36466383934020996,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.3521817922592163,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_001",
+            "cosine": 0.37132179737091064,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_040@goyang_storm",
+            "cosine": 0.3210144340991974,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.26521363854408264,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_001",
+            "cosine": 0.36088329553604126,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_052@seoul_comets",
+            "cosine": 0.3234197199344635,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.2830119729042053,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_001",
+            "cosine": 0.34786298871040344,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_064@seoul_comets",
+            "cosine": 0.20665356516838074,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_034",
+            "cosine": 0.3330366313457489,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_001",
+            "cosine": 0.34933891892433167,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_076@goyang_storm",
+            "cosine": 0.22357675433158875,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_033",
+            "cosine": 0.3385131061077118,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_012",
+            "cosine": 0.33189302682876587,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@incheon_seagulls",
+            "cosine": 0.3201090097427368,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_005",
+            "cosine": 0.2859914302825928,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_003",
+            "cosine": 0.343751460313797,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@daejeon_redfox",
+            "cosine": 0.3439963459968567,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_005",
+            "cosine": 0.3454670011997223,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_007",
+            "cosine": 0.32325318455696106,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_096@daegu_thunders",
+            "cosine": 0.37361767888069153,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_032",
+            "cosine": 0.31463727355003357,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_003",
+            "cosine": 0.3411521017551422,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_096@daegu_thunders",
+            "cosine": 0.39540550112724304,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_005",
+            "cosine": 0.2924497127532959,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_006",
+            "cosine": 0.3584718108177185,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@changwon_anchors",
+            "cosine": 0.216155543923378,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.2818916440010071,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_013",
+            "cosine": 0.36021119356155396,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_065@seoul_comets",
+            "cosine": 0.25294849276542664,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_008",
+            "cosine": 0.32894447445869446,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.33264198899269104,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_059@suwon_sparks",
+            "cosine": 0.24413156509399414,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_006",
+            "cosine": 0.2520196735858917,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.3278709650039673,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_059@seoul_comets",
+            "cosine": 0.29821139574050903,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_035",
+            "cosine": 0.2412024289369583,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_007",
+            "cosine": 0.360907644033432,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_047@suwon_sparks",
+            "cosine": 0.3280825614929199,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_032",
+            "cosine": 0.27852994203567505,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_007",
+            "cosine": 0.34735023975372314,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_047@suwon_sparks",
+            "cosine": 0.35707196593284607,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_028",
+            "cosine": 0.2821810841560364,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_019",
+            "cosine": 0.3819591701030731,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_096@suwon_sparks",
+            "cosine": 0.2815955877304077,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_006",
+            "cosine": 0.2227776050567627,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_019",
+            "cosine": 0.36946865916252136,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_051@seoul_comets",
+            "cosine": 0.31315162777900696,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_006",
+            "cosine": 0.22638356685638428,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.3800206184387207,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@daegu_thunders",
+            "cosine": 0.29582178592681885,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.3235839605331421,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.397565096616745,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@daegu_thunders",
+            "cosine": 0.3176099359989166,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.3581477403640747,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.37802204489707947,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@seoul_comets",
+            "cosine": 0.2831231355667114,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.2821492552757263,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.3585830330848694,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@seoul_comets",
+            "cosine": 0.30717068910598755,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.30186569690704346,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ana_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_015",
+            "cosine": 0.36021173000335693,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_097@suwon_sparks",
+            "cosine": 0.2500508427619934,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.34162580966949463,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.361348420381546,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_085@changwon_anchors",
+            "cosine": 0.25208818912506104,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.3658033013343811,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.3911915719509125,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@daejeon_redfox",
+            "cosine": 0.31786519289016724,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_006",
+            "cosine": 0.3048950433731079,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.3967096209526062,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_071@daejeon_redfox",
+            "cosine": 0.3201877176761627,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_006",
+            "cosine": 0.3088526129722595,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_011",
+            "cosine": 0.3710123300552368,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@daejeon_redfox",
+            "cosine": 0.3081330955028534,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_017",
+            "cosine": 0.32948026061058044,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_011",
+            "cosine": 0.3342103362083435,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_093@changwon_anchors",
+            "cosine": 0.35103410482406616,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_017",
+            "cosine": 0.3699367046356201,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_002",
+            "cosine": 0.3352983891963959,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@daegu_thunders",
+            "cosine": 0.26053735613822937,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_037",
+            "cosine": 0.3622048795223236,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.3527206778526306,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_091@daejeon_redfox",
+            "cosine": 0.2791546881198883,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_037",
+            "cosine": 0.3812657594680786,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_009",
+            "cosine": 0.3943159878253937,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@suwon_sparks",
+            "cosine": 0.285796195268631,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_048",
+            "cosine": 0.33217287063598633,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_009",
+            "cosine": 0.38297271728515625,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@incheon_seagulls",
+            "cosine": 0.3066957890987396,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_006",
+            "cosine": 0.3677944839000702,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_013",
+            "cosine": 0.2794037461280823,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_086@seoul_comets",
+            "cosine": 0.23061875998973846,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_007",
+            "cosine": 0.3083597719669342,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_012",
+            "cosine": 0.3119347393512726,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_086@seoul_comets",
+            "cosine": 0.24525023996829987,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_020",
+            "cosine": 0.29322993755340576,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_011",
+            "cosine": 0.355309396982193,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_022@goyang_storm",
+            "cosine": 0.30259469151496887,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_042",
+            "cosine": 0.34607556462287903,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_008",
+            "cosine": 0.3862345218658447,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_013@daejeon_redfox",
+            "cosine": 0.31454208493232727,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_042",
+            "cosine": 0.3120410442352295,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.30611878633499146,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@seoul_comets",
+            "cosine": 0.2148902714252472,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_010",
+            "cosine": 0.2775728106498718,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.2999584674835205,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@seoul_comets",
+            "cosine": 0.23955272138118744,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_058",
+            "cosine": 0.2770848870277405,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_006",
+            "cosine": 0.3550853729248047,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_051@seoul_comets",
+            "cosine": 0.23625074326992035,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_001",
+            "cosine": 0.22869664430618286,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_006",
+            "cosine": 0.3862345218658447,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_051@seoul_comets",
+            "cosine": 0.2869502007961273,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_042",
+            "cosine": 0.24817511439323425,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_006",
+            "cosine": 0.3611433207988739,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_047@gwangju_blazes",
+            "cosine": 0.2165403664112091,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_005",
+            "cosine": 0.20049306750297546,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_006",
+            "cosine": 0.3850316107273102,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_030@busan_waves",
+            "cosine": 0.21648286283016205,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_027",
+            "cosine": 0.1777118295431137,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_006",
+            "cosine": 0.27672451734542847,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@daejeon_redfox",
+            "cosine": 0.18962176144123077,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_002",
+            "cosine": 0.32288992404937744,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_004",
+            "cosine": 0.3013983368873596,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_080@daegu_thunders",
+            "cosine": 0.21464048326015472,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_012",
+            "cosine": 0.34255707263946533,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.3737064003944397,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_023@busan_waves",
+            "cosine": 0.24963681399822235,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_042",
+            "cosine": 0.3309195339679718,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_010",
+            "cosine": 0.36460477113723755,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_023@daejeon_redfox",
+            "cosine": 0.27433520555496216,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_042",
+            "cosine": 0.31728285551071167,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_ceo_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_004",
+            "cosine": 0.348871648311615,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@seoul_comets",
+            "cosine": 0.15670789778232574,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.30829113721847534,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_011",
+            "cosine": 0.3359626531600952,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@seoul_comets",
+            "cosine": 0.19033615291118622,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.3232831656932831,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_003",
+            "cosine": 0.387950599193573,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@daejeon_redfox",
+            "cosine": 0.34431377053260803,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_035",
+            "cosine": 0.34032419323921204,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_001",
+            "cosine": 0.3758862018585205,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@daejeon_redfox",
+            "cosine": 0.3693154752254486,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_035",
+            "cosine": 0.3617557883262634,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_001",
+            "cosine": 0.3926897943019867,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_064@goyang_storm",
+            "cosine": 0.3901221752166748,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_033",
+            "cosine": 0.27119824290275574,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_001",
+            "cosine": 0.35704293847084045,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@changwon_anchors",
+            "cosine": 0.368412047624588,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.28612422943115234,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_001",
+            "cosine": 0.387950599193573,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@seoul_comets",
+            "cosine": 0.34501174092292786,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.28725340962409973,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_001",
+            "cosine": 0.38629624247550964,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@suwon_sparks",
+            "cosine": 0.3693064749240875,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.33077719807624817,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_005",
+            "cosine": 0.28742170333862305,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_028@suwon_sparks",
+            "cosine": 0.25800952315330505,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_008",
+            "cosine": 0.25614869594573975,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_005",
+            "cosine": 0.2688261568546295,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_028@gwangju_blazes",
+            "cosine": 0.25607603788375854,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_008",
+            "cosine": 0.25343239307403564,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_009",
+            "cosine": 0.3271019458770752,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_040@daegu_thunders",
+            "cosine": 0.324288010597229,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_021",
+            "cosine": 0.2670470178127289,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_009",
+            "cosine": 0.32591891288757324,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_040@daejeon_redfox",
+            "cosine": 0.3751189708709717,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.2385331243276596,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_008",
+            "cosine": 0.3719395101070404,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_099@incheon_seagulls",
+            "cosine": 0.27182674407958984,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_019",
+            "cosine": 0.3404148817062378,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_008",
+            "cosine": 0.3844791650772095,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_099@incheon_seagulls",
+            "cosine": 0.27126339077949524,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_019",
+            "cosine": 0.3591564893722534,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_008",
+            "cosine": 0.3613376021385193,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@changwon_anchors",
+            "cosine": 0.2500525712966919,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.2886420786380768,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_008",
+            "cosine": 0.3968784511089325,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@changwon_anchors",
+            "cosine": 0.2897491455078125,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.3807496130466461,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_009",
+            "cosine": 0.3045293092727661,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_015@goyang_storm",
+            "cosine": 0.2631623446941376,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_034",
+            "cosine": 0.2321150302886963,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_009",
+            "cosine": 0.31094250082969666,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_053@gwangju_blazes",
+            "cosine": 0.2831583619117737,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.21360629796981812,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.36208245158195496,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_078@gwangju_blazes",
+            "cosine": 0.27124908566474915,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_004",
+            "cosine": 0.3177291750907898,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_004",
+            "cosine": 0.3820118010044098,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_093@gwangju_blazes",
+            "cosine": 0.3013342320919037,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_004",
+            "cosine": 0.30084702372550964,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_013",
+            "cosine": 0.31871557235717773,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_082@busan_waves",
+            "cosine": 0.24322083592414856,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.24474382400512695,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_013",
+            "cosine": 0.3527373969554901,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_082@incheon_seagulls",
+            "cosine": 0.24560317397117615,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_010",
+            "cosine": 0.2378469854593277,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_004",
+            "cosine": 0.3487517535686493,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_071@seoul_hounds",
+            "cosine": 0.3150639832019806,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_004",
+            "cosine": 0.26126694679260254,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_004",
+            "cosine": 0.35732683539390564,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_080@seoul_comets",
+            "cosine": 0.32453158497810364,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_004",
+            "cosine": 0.2888769209384918,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_fan_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_010",
+            "cosine": 0.3730125427246094,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_082@goyang_storm",
+            "cosine": 0.23464474081993103,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_018",
+            "cosine": 0.30595141649246216,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_010",
+            "cosine": 0.3951619267463684,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_074@seoul_hounds",
+            "cosine": 0.2519860863685608,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_018",
+            "cosine": 0.3387816846370697,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_002",
+            "cosine": 0.3926897943019867,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@daejeon_redfox",
+            "cosine": 0.3643352687358856,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.33859890699386597,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_003",
+            "cosine": 0.38629624247550964,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_002@seoul_comets",
+            "cosine": 0.3591940999031067,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_028",
+            "cosine": 0.3736014664173126,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_004",
+            "cosine": 0.35084784030914307,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@daegu_thunders",
+            "cosine": 0.3747001886367798,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_021",
+            "cosine": 0.25318843126296997,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_004",
+            "cosine": 0.34521591663360596,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@daejeon_redfox",
+            "cosine": 0.3746246099472046,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.24981443583965302,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_010",
+            "cosine": 0.3874782919883728,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@incheon_seagulls",
+            "cosine": 0.2962568700313568,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_006",
+            "cosine": 0.2304089516401291,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_010",
+            "cosine": 0.36773446202278137,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@suwon_sparks",
+            "cosine": 0.30963778495788574,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_033",
+            "cosine": 0.22374632954597473,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.3777567446231842,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_003@changwon_anchors",
+            "cosine": 0.3674076795578003,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_024",
+            "cosine": 0.25946545600891113,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.3583213686943054,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_003@seoul_hounds",
+            "cosine": 0.3618852496147156,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_026",
+            "cosine": 0.27702951431274414,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.3237178325653076,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@daejeon_redfox",
+            "cosine": 0.27224668860435486,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_024",
+            "cosine": 0.28422850370407104,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ceo_004",
+            "cosine": 0.337509423494339,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_042@daejeon_redfox",
+            "cosine": 0.27396273612976074,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_024",
+            "cosine": 0.3459095358848572,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_005",
+            "cosine": 0.2991325557231903,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_083@daejeon_redfox",
+            "cosine": 0.23300161957740784,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_013",
+            "cosine": 0.2951410710811615,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_005",
+            "cosine": 0.3332207500934601,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_083@seoul_comets",
+            "cosine": 0.22747962176799774,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_008",
+            "cosine": 0.31146377325057983,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ceo_002",
+            "cosine": 0.33290496468544006,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_019@busan_waves",
+            "cosine": 0.289108008146286,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_042",
+            "cosine": 0.3119743764400482,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_009",
+            "cosine": 0.31703072786331177,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_019@busan_waves",
+            "cosine": 0.30506056547164917,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_003",
+            "cosine": 0.3562116324901581,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_003",
+            "cosine": 0.36895155906677246,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_076@suwon_sparks",
+            "cosine": 0.3202103078365326,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.3706645965576172,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_003",
+            "cosine": 0.3985053300857544,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@goyang_storm",
+            "cosine": 0.3110426664352417,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.3761320114135742,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_016",
+            "cosine": 0.3789563775062561,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_025@changwon_anchors",
+            "cosine": 0.2912035286426544,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_024",
+            "cosine": 0.27471494674682617,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_016",
+            "cosine": 0.37443724274635315,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_088@seoul_comets",
+            "cosine": 0.2978591322898865,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_004",
+            "cosine": 0.28471195697784424,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_012",
+            "cosine": 0.35718363523483276,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_016@incheon_seagulls",
+            "cosine": 0.21747948229312897,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.24691028892993927,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_012",
+            "cosine": 0.35790592432022095,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_003@seoul_comets",
+            "cosine": 0.2259272038936615,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.3022538721561432,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_008",
+            "cosine": 0.3562249541282654,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_099@daegu_thunders",
+            "cosine": 0.2985002398490906,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.3686791658401489,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_doc_008",
+            "cosine": 0.3714323043823242,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@seoul_comets",
+            "cosine": 0.30057668685913086,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_015",
+            "cosine": 0.36638495326042175,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_press_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_013",
+            "cosine": 0.3761845827102661,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_053@seoul_hounds",
+            "cosine": 0.27319782972335815,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_018",
+            "cosine": 0.2996085584163666,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_013",
+            "cosine": 0.3577425181865692,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_092@gwangju_blazes",
+            "cosine": 0.2782450318336487,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_010",
+            "cosine": 0.338729590177536,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_001",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_003",
+            "cosine": 0.34786298871040344,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@suwon_sparks",
+            "cosine": 0.2304547131061554,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_021",
+            "cosine": 0.23735351860523224,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_003",
+            "cosine": 0.34933891892433167,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_052@incheon_seagulls",
+            "cosine": 0.25594279170036316,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_021",
+            "cosine": 0.23950208723545074,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_002",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_agent_005",
+            "cosine": 0.355110228061676,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_071@suwon_sparks",
+            "cosine": 0.390018105506897,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_006",
+            "cosine": 0.34582221508026123,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_agent_005",
+            "cosine": 0.34417471289634705,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_071@suwon_sparks",
+            "cosine": 0.3797565698623657,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_006",
+            "cosine": 0.3707703649997711,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_003",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.3762173354625702,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_001@daegu_thunders",
+            "cosine": 0.2721719443798065,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_007",
+            "cosine": 0.3225729763507843,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.3879348039627075,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@changwon_anchors",
+            "cosine": 0.27714231610298157,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_007",
+            "cosine": 0.32943302392959595,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_004",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_011",
+            "cosine": 0.33802172541618347,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@incheon_seagulls",
+            "cosine": 0.27467307448387146,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.35795676708221436,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_011",
+            "cosine": 0.3536544144153595,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_055@incheon_seagulls",
+            "cosine": 0.29072266817092896,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.28132328391075134,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_005",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_doc_004",
+            "cosine": 0.23720921576023102,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_088@suwon_sparks",
+            "cosine": 0.3513807952404022,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_035",
+            "cosine": 0.22517773509025574,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_009",
+            "cosine": 0.2774106562137604,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_088@incheon_seagulls",
+            "cosine": 0.3746790587902069,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_010",
+            "cosine": 0.22687512636184692,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_006",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.27810895442962646,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_053@incheon_seagulls",
+            "cosine": 0.2375534474849701,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_033",
+            "cosine": 0.16364821791648865,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_001",
+            "cosine": 0.29943832755088806,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_053@seoul_comets",
+            "cosine": 0.2677694857120514,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_017",
+            "cosine": 0.1557597517967224,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_007",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_008",
+            "cosine": 0.360907644033432,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_099@seoul_comets",
+            "cosine": 0.3188042938709259,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_032",
+            "cosine": 0.3535800576210022,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_008",
+            "cosine": 0.34735023975372314,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_099@seoul_comets",
+            "cosine": 0.34046676754951477,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_032",
+            "cosine": 0.351923406124115,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_008",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_008",
+            "cosine": 0.35604310035705566,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@changwon_anchors",
+            "cosine": 0.3661586046218872,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_009",
+            "cosine": 0.27142444252967834,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_003",
+            "cosine": 0.3671942949295044,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_087@changwon_anchors",
+            "cosine": 0.38377049565315247,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_coach_025",
+            "cosine": 0.2834421396255493,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_009",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_scout_009",
+            "cosine": 0.3552338182926178,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_040@busan_waves",
+            "cosine": 0.27072253823280334,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_033",
+            "cosine": 0.31090685725212097,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_scout_009",
+            "cosine": 0.36249202489852905,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_040@goyang_storm",
+            "cosine": 0.27190133929252625,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_022",
+            "cosine": 0.33307331800460815,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_010",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_003",
+            "cosine": 0.3874782919883728,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_045@seoul_hounds",
+            "cosine": 0.2864520847797394,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_025",
+            "cosine": 0.2941654622554779,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_003",
+            "cosine": 0.36773446202278137,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_045@daejeon_redfox",
+            "cosine": 0.29025423526763916,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_020",
+            "cosine": 0.2968890368938446,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_011",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.38417142629623413,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_068@seoul_hounds",
+            "cosine": 0.29067379236221313,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_015",
+            "cosine": 0.3572118580341339,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_015",
+            "cosine": 0.38860589265823364,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_085@changwon_anchors",
+            "cosine": 0.3348121643066406,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_029",
+            "cosine": 0.37222009897232056,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_012",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_sec_004",
+            "cosine": 0.3334595263004303,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_078@gwangju_blazes",
+            "cosine": 0.22809533774852753,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.3180236518383026,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_007",
+            "cosine": 0.36375680565834045,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_078@busan_waves",
+            "cosine": 0.21757984161376953,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_013",
+            "cosine": 0.36042821407318115,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_013",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_012",
+            "cosine": 0.3761845827102661,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_064@goyang_storm",
+            "cosine": 0.3157378137111664,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.2860593795776367,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_012",
+            "cosine": 0.3577425181865692,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_064@incheon_seagulls",
+            "cosine": 0.32714295387268066,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.27904435992240906,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_014",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.2906759977340698,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_100@changwon_anchors",
+            "cosine": 0.2785256505012512,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_001",
+            "cosine": 0.28379788994789124,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_sec_005",
+            "cosine": 0.3357165455818176,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_100@busan_waves",
+            "cosine": 0.25895774364471436,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_016",
+            "cosine": 0.26544004678726196,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_015",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.380320280790329,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@busan_waves",
+            "cosine": 0.299198180437088,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_010",
+            "cosine": 0.2840782105922699,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_011",
+            "cosine": 0.38860589265823364,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@incheon_seagulls",
+            "cosine": 0.3465536832809448,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_010",
+            "cosine": 0.36341771483421326,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_016",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_press_009",
+            "cosine": 0.3789563775062561,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_078@daegu_thunders",
+            "cosine": 0.2440410852432251,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.2770383656024933,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_press_009",
+            "cosine": 0.37443724274635315,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_078@daegu_thunders",
+            "cosine": 0.25233057141304016,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_029",
+            "cosine": 0.2968160808086395,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_017",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_012",
+            "cosine": 0.2931935489177704,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_060@seoul_comets",
+            "cosine": 0.2251298427581787,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_001",
+            "cosine": 0.2637060582637787,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_012",
+            "cosine": 0.3258957266807556,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_060@seoul_comets",
+            "cosine": 0.27833372354507446,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_front_001",
+            "cosine": 0.3370346426963806,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_018",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_front_015",
+            "cosine": 0.30293118953704834,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_078@seoul_comets",
+            "cosine": 0.22025083005428314,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.2609606981277466,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_front_013",
+            "cosine": 0.2796179950237274,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_004@busan_waves",
+            "cosine": 0.2320757359266281,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_007",
+            "cosine": 0.32711249589920044,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_019",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_ana_009",
+            "cosine": 0.3819591701030731,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_022@seoul_hounds",
+            "cosine": 0.23342254757881165,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_023",
+            "cosine": 0.26671090722084045,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_ana_009",
+            "cosine": 0.36946865916252136,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_043@seoul_comets",
+            "cosine": 0.25430598855018616,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_gm_023",
+            "cosine": 0.3507293164730072,
+            "passed": true
+          }
+        }
+      }
+    },
+    {
+      "id": "v8_people01_front_020",
+      "nearest": {
+        "128": {
+          "within": {
+            "id": "v8_people01_fan_012",
+            "cosine": 0.372289776802063,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_018@suwon_sparks",
+            "cosine": 0.1806388795375824,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_011",
+            "cosine": 0.32827016711235046,
+            "passed": true
+          }
+        },
+        "256": {
+          "within": {
+            "id": "v8_people01_fan_012",
+            "cosine": 0.3586907982826233,
+            "passed": true
+          },
+          "v6c": {
+            "id": "v6c100_003@changwon_anchors",
+            "cosine": 0.19440332055091858,
+            "passed": true
+          },
+          "v7": {
+            "id": "v7_staff01_owner_011",
+            "cosine": 0.34272658824920654,
+            "passed": true
+          }
+        }
+      }
+    }
+  ],
+  "visual_review": {
+    "reviewed_count": 120,
+    "size": 256,
+    "whole_coherent_head_neck_shoulders_clothing": true,
+    "hat_count": 0,
+    "team_compositing": false,
+    "visible_logos_or_readable_text": false,
+    "glasses_beard_tags_reviewed": true,
+    "obvious_recognizable_public_figure_likeness_observed": false,
+    "likeness_review_method": "manual inspection of all 120 fictional portraits; no exhaustive real-person database comparison claimed"
+  },
+  "proof": {
+    "embeddings": "validation/arcface_embeddings.npz",
+    "scores": "validation/arcface_scores.npz",
+    "detections": "validation/runtime_detections.json",
+    "reference_provenance": "validation/reference_provenance.json",
+    "source_portraits": "validation/source_portraits.json"
+  }
+}

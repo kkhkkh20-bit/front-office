@@ -1,0 +1,6119 @@
+{
+  "schema_version": "8.1",
+  "batch_id": "people01",
+  "path_base": "assets/v8/people01/",
+  "request": "docs/asset-requests/2026-11-06-codex-v8-people-faces.md",
+  "request_sha256": "6905f5c963e101bc3d317afa487b6857a94679f71c4d9a5b1da663525f2354ba",
+  "reference_main_commit": "b4761781230d73a058d491cd432e33d46e53f1eb",
+  "status": "review_branch; ASSET_VALIDATION_PASSED; GAME_REVIEW_PENDING",
+  "game_connected": false,
+  "count": 120,
+  "accepted_identity_count": 120,
+  "role_counts": {
+    "agent": {
+      "count": 16,
+      "male": 12,
+      "female": 4,
+      "age_min": 32,
+      "age_max": 58,
+      "label_ko": "에이전트"
+    },
+    "doc": {
+      "count": 12,
+      "male": 9,
+      "female": 3,
+      "age_min": 30,
+      "age_max": 60,
+      "label_ko": "팀 닥터·트레이너"
+    },
+    "sec": {
+      "count": 8,
+      "male": 2,
+      "female": 6,
+      "age_min": 25,
+      "age_max": 38,
+      "label_ko": "비서"
+    },
+    "scout": {
+      "count": 16,
+      "male": 14,
+      "female": 2,
+      "age_min": 30,
+      "age_max": 65,
+      "label_ko": "스카우트"
+    },
+    "ana": {
+      "count": 12,
+      "male": 8,
+      "female": 4,
+      "age_min": 26,
+      "age_max": 45,
+      "label_ko": "전력분석원"
+    },
+    "ceo": {
+      "count": 12,
+      "male": 11,
+      "female": 1,
+      "age_min": 50,
+      "age_max": 68,
+      "label_ko": "구단 사장"
+    },
+    "fan": {
+      "count": 12,
+      "male": 6,
+      "female": 6,
+      "age_min": 20,
+      "age_max": 55,
+      "label_ko": "팬 대표"
+    },
+    "press": {
+      "count": 12,
+      "male": 7,
+      "female": 5,
+      "age_min": 27,
+      "age_max": 55,
+      "label_ko": "기자"
+    },
+    "front": {
+      "count": 20,
+      "male": 10,
+      "female": 10,
+      "age_min": 27,
+      "age_max": 55,
+      "label_ko": "프런트 직원"
+    }
+  },
+  "gender_counts": {
+    "male": 79,
+    "female": 41
+  },
+  "layout": {
+    "columns": 10,
+    "rows": 10,
+    "capacity_per_page": 100,
+    "page_count_per_resolution": 2,
+    "cell_sizes": [
+      128,
+      256
+    ],
+    "pitch_equals_cell_size": true,
+    "padding": 0,
+    "order": "row-major, zero-based page/cell/index",
+    "unused_cells": "page 1: cells20..99 black RGB; do not select"
+  },
+  "camera": {
+    "reference": "v7 civilian portraits",
+    "full_coherent_upper_body": true,
+    "face_pasting": false,
+    "team_compositing": false,
+    "hat": false,
+    "background": "dark charcoal-blue studio",
+    "processing": "whole-photo square crop and uniform Lanczos downsample only"
+  },
+  "arcface": {
+    "threshold": 0.4,
+    "pass_rule": "every required raw cosine < 0.40, both same-size 128 and 256",
+    "reference_identities": {
+      "v6c": 100,
+      "v7": 126
+    },
+    "v6c_home_variants_per_identity": 10,
+    "validation": "validation.json"
+  },
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/people01_01.webp",
+        "width": 1280,
+        "height": 1280,
+        "cell_size": 128,
+        "pitch": 128,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 0,
+        "count": 100,
+        "empty_cells": 0,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 1636342,
+        "sha256": "992c5b37d250422da93b399ae55dbf63025bfa56089c08d31d73b3ca023c2eca"
+      },
+      {
+        "path": "sheets/128/people01_02.webp",
+        "width": 1280,
+        "height": 1280,
+        "cell_size": 128,
+        "pitch": 128,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 1,
+        "count": 20,
+        "empty_cells": 80,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 331242,
+        "sha256": "989ce04c51691e2f1880533be89c7606ee7591349704e47e8ab7cf1deed60359"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/people01_01.webp",
+        "width": 2560,
+        "height": 2560,
+        "cell_size": 256,
+        "pitch": 256,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 0,
+        "count": 100,
+        "empty_cells": 0,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 6167988,
+        "sha256": "081684368d69562c12488b912b5dd94901ecfc8dfd02febd0340a7f9173660b2"
+      },
+      {
+        "path": "sheets/256/people01_02.webp",
+        "width": 2560,
+        "height": 2560,
+        "cell_size": 256,
+        "pitch": 256,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 1,
+        "count": 20,
+        "empty_cells": 80,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 1243568,
+        "sha256": "592ef3a2370d6ff76f56782708282e8078afa9c02261bd7dd417fe029dadf88c"
+      }
+    ]
+  },
+  "runtime_sheet_count": 4,
+  "runtime_files": [
+    "sheets/128/people01_01.webp",
+    "sheets/128/people01_02.webp",
+    "sheets/256/people01_01.webp",
+    "sheets/256/people01_02.webp",
+    "manifest.json"
+  ],
+  "runtime_sheet_bytes": 9379140,
+  "role_previews": {
+    "agent": "previews/agent_256.png",
+    "doc": "previews/doc_256.png",
+    "sec": "previews/sec_256.png",
+    "scout": "previews/scout_256.png",
+    "ana": "previews/ana_256.png",
+    "ceo": "previews/ceo_256.png",
+    "fan": "previews/fan_256.png",
+    "press": "previews/press_256.png",
+    "front": "previews/front_256.png"
+  },
+  "identities": [
+    {
+      "id": "v8_people01_agent_001",
+      "r": "agent",
+      "age": 33,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 0,
+      "page": 0,
+      "cell": 0,
+      "row": 0,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        }
+      },
+      "source_candidate": "b033_06",
+      "identity_id": "v8_people01_agent_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_002",
+      "r": "agent",
+      "age": 36,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 1,
+      "page": 0,
+      "cell": 1,
+      "row": 0,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        }
+      },
+      "source_candidate": "c010_05",
+      "identity_id": "v8_people01_agent_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_003",
+      "r": "agent",
+      "age": 40,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 2,
+      "page": 0,
+      "cell": 2,
+      "row": 0,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        }
+      },
+      "source_candidate": "d121_01",
+      "identity_id": "v8_people01_agent_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_004",
+      "r": "agent",
+      "age": 43,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 3,
+      "page": 0,
+      "cell": 3,
+      "row": 0,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        }
+      },
+      "source_candidate": "b033_02",
+      "identity_id": "v8_people01_agent_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_005",
+      "r": "agent",
+      "age": 44,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 4,
+      "page": 0,
+      "cell": 4,
+      "row": 0,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        }
+      },
+      "source_candidate": "d001_01",
+      "identity_id": "v8_people01_agent_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_006",
+      "r": "agent",
+      "age": 44,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 5,
+      "page": 0,
+      "cell": 5,
+      "row": 0,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        }
+      },
+      "source_candidate": "d067_01",
+      "identity_id": "v8_people01_agent_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_007",
+      "r": "agent",
+      "age": 48,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 6,
+      "page": 0,
+      "cell": 6,
+      "row": 0,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        }
+      },
+      "source_candidate": "d049_01",
+      "identity_id": "v8_people01_agent_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_008",
+      "r": "agent",
+      "age": 51,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 7,
+      "page": 0,
+      "cell": 7,
+      "row": 0,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            0,
+            256,
+            256
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        }
+      },
+      "source_candidate": "b033_12",
+      "identity_id": "v8_people01_agent_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_009",
+      "r": "agent",
+      "age": 52,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 8,
+      "page": 0,
+      "cell": 8,
+      "row": 0,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            0,
+            128,
+            128
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            0,
+            256,
+            256
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        }
+      },
+      "source_candidate": "b033_08",
+      "identity_id": "v8_people01_agent_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_010",
+      "r": "agent",
+      "age": 55,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 9,
+      "page": 0,
+      "cell": 9,
+      "row": 0,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            0,
+            128,
+            128
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            0,
+            256,
+            256
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        }
+      },
+      "source_candidate": "c001_01",
+      "identity_id": "v8_people01_agent_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_011",
+      "r": "agent",
+      "age": 55,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 10,
+      "page": 0,
+      "cell": 10,
+      "row": 1,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            256,
+            256,
+            256
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        }
+      },
+      "source_candidate": "d108_01",
+      "identity_id": "v8_people01_agent_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_012",
+      "r": "agent",
+      "age": 58,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 11,
+      "page": 0,
+      "cell": 11,
+      "row": 1,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            256,
+            256,
+            256
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        }
+      },
+      "source_candidate": "b033_09",
+      "identity_id": "v8_people01_agent_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_013",
+      "r": "agent",
+      "age": 47,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 12,
+      "page": 0,
+      "cell": 12,
+      "row": 1,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            256,
+            256,
+            256
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        }
+      },
+      "source_candidate": "d054_01",
+      "identity_id": "v8_people01_agent_013",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_014",
+      "r": "agent",
+      "age": 50,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 13,
+      "page": 0,
+      "cell": 13,
+      "row": 1,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            256,
+            256,
+            256
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        }
+      },
+      "source_candidate": "b033_13",
+      "identity_id": "v8_people01_agent_014",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_015",
+      "r": "agent",
+      "age": 51,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 14,
+      "page": 0,
+      "cell": 14,
+      "row": 1,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            256,
+            256,
+            256
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        }
+      },
+      "source_candidate": "d082_01",
+      "identity_id": "v8_people01_agent_015",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_agent_016",
+      "r": "agent",
+      "age": 53,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 15,
+      "page": 0,
+      "cell": 15,
+      "row": 1,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            256,
+            256,
+            256
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        }
+      },
+      "source_candidate": "b033_14",
+      "identity_id": "v8_people01_agent_016",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_001",
+      "r": "doc",
+      "age": 33,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 16,
+      "page": 0,
+      "cell": 16,
+      "row": 1,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            256,
+            256,
+            256
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        }
+      },
+      "source_candidate": "b034_04",
+      "identity_id": "v8_people01_doc_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_002",
+      "r": "doc",
+      "age": 35,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 17,
+      "page": 0,
+      "cell": 17,
+      "row": 1,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            256,
+            256,
+            256
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        }
+      },
+      "source_candidate": "d113_01",
+      "identity_id": "v8_people01_doc_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_003",
+      "r": "doc",
+      "age": 38,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 18,
+      "page": 0,
+      "cell": 18,
+      "row": 1,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            128,
+            128,
+            128
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            256,
+            256,
+            256
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        }
+      },
+      "source_candidate": "c002_07",
+      "identity_id": "v8_people01_doc_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_004",
+      "r": "doc",
+      "age": 46,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 19,
+      "page": 0,
+      "cell": 19,
+      "row": 1,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            128,
+            128,
+            128
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            256,
+            256,
+            256
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        }
+      },
+      "source_candidate": "d091_01",
+      "identity_id": "v8_people01_doc_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_005",
+      "r": "doc",
+      "age": 47,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 20,
+      "page": 0,
+      "cell": 20,
+      "row": 2,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            512,
+            256,
+            256
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        }
+      },
+      "source_candidate": "d079_01",
+      "identity_id": "v8_people01_doc_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_006",
+      "r": "doc",
+      "age": 47,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 21,
+      "page": 0,
+      "cell": 21,
+      "row": 2,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            512,
+            256,
+            256
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        }
+      },
+      "source_candidate": "d097_01",
+      "identity_id": "v8_people01_doc_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_007",
+      "r": "doc",
+      "age": 49,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 22,
+      "page": 0,
+      "cell": 22,
+      "row": 2,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            512,
+            256,
+            256
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        }
+      },
+      "source_candidate": "b034_05",
+      "identity_id": "v8_people01_doc_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_008",
+      "r": "doc",
+      "age": 54,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 23,
+      "page": 0,
+      "cell": 23,
+      "row": 2,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            512,
+            256,
+            256
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        }
+      },
+      "source_candidate": "c002_09",
+      "identity_id": "v8_people01_doc_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_009",
+      "r": "doc",
+      "age": 58,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 24,
+      "page": 0,
+      "cell": 24,
+      "row": 2,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            512,
+            256,
+            256
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        }
+      },
+      "source_candidate": "b034_10",
+      "identity_id": "v8_people01_doc_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_010",
+      "r": "doc",
+      "age": 35,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 25,
+      "page": 0,
+      "cell": 25,
+      "row": 2,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            512,
+            256,
+            256
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        }
+      },
+      "source_candidate": "d112_01",
+      "identity_id": "v8_people01_doc_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_011",
+      "r": "doc",
+      "age": 45,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 26,
+      "page": 0,
+      "cell": 26,
+      "row": 2,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            512,
+            256,
+            256
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        }
+      },
+      "source_candidate": "d100_01",
+      "identity_id": "v8_people01_doc_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_doc_012",
+      "r": "doc",
+      "age": 46,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 27,
+      "page": 0,
+      "cell": 27,
+      "row": 2,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            512,
+            256,
+            256
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        }
+      },
+      "source_candidate": "d056_01",
+      "identity_id": "v8_people01_doc_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_001",
+      "r": "sec",
+      "age": 25,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 28,
+      "page": 0,
+      "cell": 28,
+      "row": 2,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            256,
+            128,
+            128
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            512,
+            256,
+            256
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        }
+      },
+      "source_candidate": "c009_09",
+      "identity_id": "v8_people01_sec_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_002",
+      "r": "sec",
+      "age": 36,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 29,
+      "page": 0,
+      "cell": 29,
+      "row": 2,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            256,
+            128,
+            128
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            512,
+            256,
+            256
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        }
+      },
+      "source_candidate": "d123_01",
+      "identity_id": "v8_people01_sec_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_003",
+      "r": "sec",
+      "age": 26,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 30,
+      "page": 0,
+      "cell": 30,
+      "row": 3,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            768,
+            256,
+            256
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        }
+      },
+      "source_candidate": "d086_01",
+      "identity_id": "v8_people01_sec_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_004",
+      "r": "sec",
+      "age": 28,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 31,
+      "page": 0,
+      "cell": 31,
+      "row": 3,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            768,
+            256,
+            256
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        }
+      },
+      "source_candidate": "d003_01",
+      "identity_id": "v8_people01_sec_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_005",
+      "r": "sec",
+      "age": 29,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 32,
+      "page": 0,
+      "cell": 32,
+      "row": 3,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            768,
+            256,
+            256
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        }
+      },
+      "source_candidate": "c009_07",
+      "identity_id": "v8_people01_sec_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_006",
+      "r": "sec",
+      "age": 32,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 33,
+      "page": 0,
+      "cell": 33,
+      "row": 3,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            768,
+            256,
+            256
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        }
+      },
+      "source_candidate": "d058_01",
+      "identity_id": "v8_people01_sec_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_007",
+      "r": "sec",
+      "age": 35,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 34,
+      "page": 0,
+      "cell": 34,
+      "row": 3,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            768,
+            256,
+            256
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        }
+      },
+      "source_candidate": "b034_15",
+      "identity_id": "v8_people01_sec_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_sec_008",
+      "r": "sec",
+      "age": 36,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 35,
+      "page": 0,
+      "cell": 35,
+      "row": 3,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            768,
+            256,
+            256
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        }
+      },
+      "source_candidate": "d074_01",
+      "identity_id": "v8_people01_sec_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_001",
+      "r": "scout",
+      "age": 31,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 36,
+      "page": 0,
+      "cell": 36,
+      "row": 3,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            768,
+            256,
+            256
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        }
+      },
+      "source_candidate": "b036_02",
+      "identity_id": "v8_people01_scout_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_002",
+      "r": "scout",
+      "age": 31,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 37,
+      "page": 0,
+      "cell": 37,
+      "row": 3,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            768,
+            256,
+            256
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        }
+      },
+      "source_candidate": "d033_01",
+      "identity_id": "v8_people01_scout_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_003",
+      "r": "scout",
+      "age": 33,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 38,
+      "page": 0,
+      "cell": 38,
+      "row": 3,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            384,
+            128,
+            128
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            768,
+            256,
+            256
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        }
+      },
+      "source_candidate": "b035_10",
+      "identity_id": "v8_people01_scout_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_004",
+      "r": "scout",
+      "age": 36,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 39,
+      "page": 0,
+      "cell": 39,
+      "row": 3,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            384,
+            128,
+            128
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            768,
+            256,
+            256
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        }
+      },
+      "source_candidate": "d013_01",
+      "identity_id": "v8_people01_scout_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_005",
+      "r": "scout",
+      "age": 41,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 40,
+      "page": 0,
+      "cell": 40,
+      "row": 4,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "index": 40,
+          "row": 4,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            1024,
+            256,
+            256
+          ],
+          "index": 40,
+          "row": 4,
+          "column": 0
+        }
+      },
+      "source_candidate": "b035_16",
+      "identity_id": "v8_people01_scout_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_006",
+      "r": "scout",
+      "age": 45,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "index": 41,
+      "page": 0,
+      "cell": 41,
+      "row": 4,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            512,
+            128,
+            128
+          ],
+          "index": 41,
+          "row": 4,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            1024,
+            256,
+            256
+          ],
+          "index": 41,
+          "row": 4,
+          "column": 1
+        }
+      },
+      "source_candidate": "c005_04",
+      "identity_id": "v8_people01_scout_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_007",
+      "r": "scout",
+      "age": 48,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 42,
+      "page": 0,
+      "cell": 42,
+      "row": 4,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            512,
+            128,
+            128
+          ],
+          "index": 42,
+          "row": 4,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            1024,
+            256,
+            256
+          ],
+          "index": 42,
+          "row": 4,
+          "column": 2
+        }
+      },
+      "source_candidate": "b035_05",
+      "identity_id": "v8_people01_scout_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_008",
+      "r": "scout",
+      "age": 49,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 43,
+      "page": 0,
+      "cell": 43,
+      "row": 4,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            512,
+            128,
+            128
+          ],
+          "index": 43,
+          "row": 4,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            1024,
+            256,
+            256
+          ],
+          "index": 43,
+          "row": 4,
+          "column": 3
+        }
+      },
+      "source_candidate": "d037_01",
+      "identity_id": "v8_people01_scout_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_009",
+      "r": "scout",
+      "age": 50,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "index": 44,
+      "page": 0,
+      "cell": 44,
+      "row": 4,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            512,
+            128,
+            128
+          ],
+          "index": 44,
+          "row": 4,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            1024,
+            256,
+            256
+          ],
+          "index": 44,
+          "row": 4,
+          "column": 4
+        }
+      },
+      "source_candidate": "d081_01",
+      "identity_id": "v8_people01_scout_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_010",
+      "r": "scout",
+      "age": 52,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 45,
+      "page": 0,
+      "cell": 45,
+      "row": 4,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            512,
+            128,
+            128
+          ],
+          "index": 45,
+          "row": 4,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            1024,
+            256,
+            256
+          ],
+          "index": 45,
+          "row": 4,
+          "column": 5
+        }
+      },
+      "source_candidate": "d023_01",
+      "identity_id": "v8_people01_scout_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_011",
+      "r": "scout",
+      "age": 55,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "index": 46,
+      "page": 0,
+      "cell": 46,
+      "row": 4,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            512,
+            128,
+            128
+          ],
+          "index": 46,
+          "row": 4,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            1024,
+            256,
+            256
+          ],
+          "index": 46,
+          "row": 4,
+          "column": 6
+        }
+      },
+      "source_candidate": "d099_01",
+      "identity_id": "v8_people01_scout_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_012",
+      "r": "scout",
+      "age": 60,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 47,
+      "page": 0,
+      "cell": 47,
+      "row": 4,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            512,
+            128,
+            128
+          ],
+          "index": 47,
+          "row": 4,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            1024,
+            256,
+            256
+          ],
+          "index": 47,
+          "row": 4,
+          "column": 7
+        }
+      },
+      "source_candidate": "d116_01",
+      "identity_id": "v8_people01_scout_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_013",
+      "r": "scout",
+      "age": 62,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 48,
+      "page": 0,
+      "cell": 48,
+      "row": 4,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            512,
+            128,
+            128
+          ],
+          "index": 48,
+          "row": 4,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            1024,
+            256,
+            256
+          ],
+          "index": 48,
+          "row": 4,
+          "column": 8
+        }
+      },
+      "source_candidate": "d017_01",
+      "identity_id": "v8_people01_scout_013",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_014",
+      "r": "scout",
+      "age": 64,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 49,
+      "page": 0,
+      "cell": 49,
+      "row": 4,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            512,
+            128,
+            128
+          ],
+          "index": 49,
+          "row": 4,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            1024,
+            256,
+            256
+          ],
+          "index": 49,
+          "row": 4,
+          "column": 9
+        }
+      },
+      "source_candidate": "d109_01",
+      "identity_id": "v8_people01_scout_014",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_015",
+      "r": "scout",
+      "age": 30,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 50,
+      "page": 0,
+      "cell": 50,
+      "row": 5,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            640,
+            128,
+            128
+          ],
+          "index": 50,
+          "row": 5,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            1280,
+            256,
+            256
+          ],
+          "index": 50,
+          "row": 5,
+          "column": 0
+        }
+      },
+      "source_candidate": "d126_01",
+      "identity_id": "v8_people01_scout_015",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_scout_016",
+      "r": "scout",
+      "age": 35,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 51,
+      "page": 0,
+      "cell": 51,
+      "row": 5,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            640,
+            128,
+            128
+          ],
+          "index": 51,
+          "row": 5,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            1280,
+            256,
+            256
+          ],
+          "index": 51,
+          "row": 5,
+          "column": 1
+        }
+      },
+      "source_candidate": "b035_12",
+      "identity_id": "v8_people01_scout_016",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_001",
+      "r": "ana",
+      "age": 26,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 52,
+      "page": 0,
+      "cell": 52,
+      "row": 5,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            640,
+            128,
+            128
+          ],
+          "index": 52,
+          "row": 5,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            1280,
+            256,
+            256
+          ],
+          "index": 52,
+          "row": 5,
+          "column": 2
+        }
+      },
+      "source_candidate": "d117_01",
+      "identity_id": "v8_people01_ana_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_002",
+      "r": "ana",
+      "age": 33,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 53,
+      "page": 0,
+      "cell": 53,
+      "row": 5,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            640,
+            128,
+            128
+          ],
+          "index": 53,
+          "row": 5,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            1280,
+            256,
+            256
+          ],
+          "index": 53,
+          "row": 5,
+          "column": 3
+        }
+      },
+      "source_candidate": "d073_01",
+      "identity_id": "v8_people01_ana_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_003",
+      "r": "ana",
+      "age": 34,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 54,
+      "page": 0,
+      "cell": 54,
+      "row": 5,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            640,
+            128,
+            128
+          ],
+          "index": 54,
+          "row": 5,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            1280,
+            256,
+            256
+          ],
+          "index": 54,
+          "row": 5,
+          "column": 4
+        }
+      },
+      "source_candidate": "d035_01",
+      "identity_id": "v8_people01_ana_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_004",
+      "r": "ana",
+      "age": 35,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 55,
+      "page": 0,
+      "cell": 55,
+      "row": 5,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            640,
+            128,
+            128
+          ],
+          "index": 55,
+          "row": 5,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            1280,
+            256,
+            256
+          ],
+          "index": 55,
+          "row": 5,
+          "column": 5
+        }
+      },
+      "source_candidate": "b036_16",
+      "identity_id": "v8_people01_ana_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_005",
+      "r": "ana",
+      "age": 37,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 56,
+      "page": 0,
+      "cell": 56,
+      "row": 5,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            640,
+            128,
+            128
+          ],
+          "index": 56,
+          "row": 5,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            1280,
+            256,
+            256
+          ],
+          "index": 56,
+          "row": 5,
+          "column": 6
+        }
+      },
+      "source_candidate": "d039_01",
+      "identity_id": "v8_people01_ana_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_006",
+      "r": "ana",
+      "age": 40,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 57,
+      "page": 0,
+      "cell": 57,
+      "row": 5,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            640,
+            128,
+            128
+          ],
+          "index": 57,
+          "row": 5,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            1280,
+            256,
+            256
+          ],
+          "index": 57,
+          "row": 5,
+          "column": 7
+        }
+      },
+      "source_candidate": "c006_03",
+      "identity_id": "v8_people01_ana_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_007",
+      "r": "ana",
+      "age": 40,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 58,
+      "page": 0,
+      "cell": 58,
+      "row": 5,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            640,
+            128,
+            128
+          ],
+          "index": 58,
+          "row": 5,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            1280,
+            256,
+            256
+          ],
+          "index": 58,
+          "row": 5,
+          "column": 8
+        }
+      },
+      "source_candidate": "d063_01",
+      "identity_id": "v8_people01_ana_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_008",
+      "r": "ana",
+      "age": 41,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 59,
+      "page": 0,
+      "cell": 59,
+      "row": 5,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            640,
+            128,
+            128
+          ],
+          "index": 59,
+          "row": 5,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            1280,
+            256,
+            256
+          ],
+          "index": 59,
+          "row": 5,
+          "column": 9
+        }
+      },
+      "source_candidate": "d083_01",
+      "identity_id": "v8_people01_ana_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_009",
+      "r": "ana",
+      "age": 26,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 60,
+      "page": 0,
+      "cell": 60,
+      "row": 6,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            768,
+            128,
+            128
+          ],
+          "index": 60,
+          "row": 6,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            1536,
+            256,
+            256
+          ],
+          "index": 60,
+          "row": 6,
+          "column": 0
+        }
+      },
+      "source_candidate": "d060_01",
+      "identity_id": "v8_people01_ana_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_010",
+      "r": "ana",
+      "age": 30,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 61,
+      "page": 0,
+      "cell": 61,
+      "row": 6,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            768,
+            128,
+            128
+          ],
+          "index": 61,
+          "row": 6,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            1536,
+            256,
+            256
+          ],
+          "index": 61,
+          "row": 6,
+          "column": 1
+        }
+      },
+      "source_candidate": "c006_01",
+      "identity_id": "v8_people01_ana_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_011",
+      "r": "ana",
+      "age": 31,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 62,
+      "page": 0,
+      "cell": 62,
+      "row": 6,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            768,
+            128,
+            128
+          ],
+          "index": 62,
+          "row": 6,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            1536,
+            256,
+            256
+          ],
+          "index": 62,
+          "row": 6,
+          "column": 2
+        }
+      },
+      "source_candidate": "d090_01",
+      "identity_id": "v8_people01_ana_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ana_012",
+      "r": "ana",
+      "age": 43,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 63,
+      "page": 0,
+      "cell": 63,
+      "row": 6,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            768,
+            128,
+            128
+          ],
+          "index": 63,
+          "row": 6,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            1536,
+            256,
+            256
+          ],
+          "index": 63,
+          "row": 6,
+          "column": 3
+        }
+      },
+      "source_candidate": "b036_06",
+      "identity_id": "v8_people01_ana_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_001",
+      "r": "ceo",
+      "age": 52,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 64,
+      "page": 0,
+      "cell": 64,
+      "row": 6,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            768,
+            128,
+            128
+          ],
+          "index": 64,
+          "row": 6,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            1536,
+            256,
+            256
+          ],
+          "index": 64,
+          "row": 6,
+          "column": 4
+        }
+      },
+      "source_candidate": "d005_01",
+      "identity_id": "v8_people01_ceo_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_002",
+      "r": "ceo",
+      "age": 57,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "index": 65,
+      "page": 0,
+      "cell": 65,
+      "row": 6,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            768,
+            128,
+            128
+          ],
+          "index": 65,
+          "row": 6,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            1536,
+            256,
+            256
+          ],
+          "index": 65,
+          "row": 6,
+          "column": 5
+        }
+      },
+      "source_candidate": "d009_01",
+      "identity_id": "v8_people01_ceo_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_003",
+      "r": "ceo",
+      "age": 57,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 66,
+      "page": 0,
+      "cell": 66,
+      "row": 6,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            768,
+            128,
+            128
+          ],
+          "index": 66,
+          "row": 6,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            1536,
+            256,
+            256
+          ],
+          "index": 66,
+          "row": 6,
+          "column": 6
+        }
+      },
+      "source_candidate": "d101_01",
+      "identity_id": "v8_people01_ceo_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_004",
+      "r": "ceo",
+      "age": 59,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 67,
+      "page": 0,
+      "cell": 67,
+      "row": 6,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            768,
+            128,
+            128
+          ],
+          "index": 67,
+          "row": 6,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            1536,
+            256,
+            256
+          ],
+          "index": 67,
+          "row": 6,
+          "column": 7
+        }
+      },
+      "source_candidate": "c003_05",
+      "identity_id": "v8_people01_ceo_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_005",
+      "r": "ceo",
+      "age": 61,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 68,
+      "page": 0,
+      "cell": 68,
+      "row": 6,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            768,
+            128,
+            128
+          ],
+          "index": 68,
+          "row": 6,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            1536,
+            256,
+            256
+          ],
+          "index": 68,
+          "row": 6,
+          "column": 8
+        }
+      },
+      "source_candidate": "d002_01",
+      "identity_id": "v8_people01_ceo_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_006",
+      "r": "ceo",
+      "age": 61,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 69,
+      "page": 0,
+      "cell": 69,
+      "row": 6,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            768,
+            128,
+            128
+          ],
+          "index": 69,
+          "row": 6,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            1536,
+            256,
+            256
+          ],
+          "index": 69,
+          "row": 6,
+          "column": 9
+        }
+      },
+      "source_candidate": "d053_01",
+      "identity_id": "v8_people01_ceo_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_007",
+      "r": "ceo",
+      "age": 62,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 70,
+      "page": 0,
+      "cell": 70,
+      "row": 7,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            896,
+            128,
+            128
+          ],
+          "index": 70,
+          "row": 7,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            1792,
+            256,
+            256
+          ],
+          "index": 70,
+          "row": 7,
+          "column": 0
+        }
+      },
+      "source_candidate": "d118_01",
+      "identity_id": "v8_people01_ceo_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_008",
+      "r": "ceo",
+      "age": 63,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 71,
+      "page": 0,
+      "cell": 71,
+      "row": 7,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            896,
+            128,
+            128
+          ],
+          "index": 71,
+          "row": 7,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            1792,
+            256,
+            256
+          ],
+          "index": 71,
+          "row": 7,
+          "column": 1
+        }
+      },
+      "source_candidate": "d027_01",
+      "identity_id": "v8_people01_ceo_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_009",
+      "r": "ceo",
+      "age": 64,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "index": 72,
+      "page": 0,
+      "cell": 72,
+      "row": 7,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            896,
+            128,
+            128
+          ],
+          "index": 72,
+          "row": 7,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            1792,
+            256,
+            256
+          ],
+          "index": 72,
+          "row": 7,
+          "column": 2
+        }
+      },
+      "source_candidate": "d019_01",
+      "identity_id": "v8_people01_ceo_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_010",
+      "r": "ceo",
+      "age": 64,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 73,
+      "page": 0,
+      "cell": 73,
+      "row": 7,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            896,
+            128,
+            128
+          ],
+          "index": 73,
+          "row": 7,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            1792,
+            256,
+            256
+          ],
+          "index": 73,
+          "row": 7,
+          "column": 3
+        }
+      },
+      "source_candidate": "d041_01",
+      "identity_id": "v8_people01_ceo_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_011",
+      "r": "ceo",
+      "age": 68,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 74,
+      "page": 0,
+      "cell": 74,
+      "row": 7,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            896,
+            128,
+            128
+          ],
+          "index": 74,
+          "row": 7,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            1792,
+            256,
+            256
+          ],
+          "index": 74,
+          "row": 7,
+          "column": 4
+        }
+      },
+      "source_candidate": "d085_01",
+      "identity_id": "v8_people01_ceo_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_ceo_012",
+      "r": "ceo",
+      "age": 63,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 75,
+      "page": 0,
+      "cell": 75,
+      "row": 7,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            896,
+            128,
+            128
+          ],
+          "index": 75,
+          "row": 7,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            1792,
+            256,
+            256
+          ],
+          "index": 75,
+          "row": 7,
+          "column": 5
+        }
+      },
+      "source_candidate": "d092_01",
+      "identity_id": "v8_people01_ceo_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_001",
+      "r": "fan",
+      "age": 28,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 76,
+      "page": 0,
+      "cell": 76,
+      "row": 7,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            896,
+            128,
+            128
+          ],
+          "index": 76,
+          "row": 7,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            1792,
+            256,
+            256
+          ],
+          "index": 76,
+          "row": 7,
+          "column": 6
+        }
+      },
+      "source_candidate": "d055_01",
+      "identity_id": "v8_people01_fan_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_002",
+      "r": "fan",
+      "age": 29,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 77,
+      "page": 0,
+      "cell": 77,
+      "row": 7,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            896,
+            128,
+            128
+          ],
+          "index": 77,
+          "row": 7,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            1792,
+            256,
+            256
+          ],
+          "index": 77,
+          "row": 7,
+          "column": 7
+        }
+      },
+      "source_candidate": "c008_04",
+      "identity_id": "v8_people01_fan_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_003",
+      "r": "fan",
+      "age": 29,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 78,
+      "page": 0,
+      "cell": 78,
+      "row": 7,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            896,
+            128,
+            128
+          ],
+          "index": 78,
+          "row": 7,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            1792,
+            256,
+            256
+          ],
+          "index": 78,
+          "row": 7,
+          "column": 8
+        }
+      },
+      "source_candidate": "d103_01",
+      "identity_id": "v8_people01_fan_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_004",
+      "r": "fan",
+      "age": 35,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 79,
+      "page": 0,
+      "cell": 79,
+      "row": 7,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            896,
+            128,
+            128
+          ],
+          "index": 79,
+          "row": 7,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            1792,
+            256,
+            256
+          ],
+          "index": 79,
+          "row": 7,
+          "column": 9
+        }
+      },
+      "source_candidate": "d087_01",
+      "identity_id": "v8_people01_fan_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_005",
+      "r": "fan",
+      "age": 47,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 80,
+      "page": 0,
+      "cell": 80,
+      "row": 8,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            1024,
+            128,
+            128
+          ],
+          "index": 80,
+          "row": 8,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            2048,
+            256,
+            256
+          ],
+          "index": 80,
+          "row": 8,
+          "column": 0
+        }
+      },
+      "source_candidate": "d043_01",
+      "identity_id": "v8_people01_fan_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_006",
+      "r": "fan",
+      "age": 55,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 81,
+      "page": 0,
+      "cell": 81,
+      "row": 8,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            1024,
+            128,
+            128
+          ],
+          "index": 81,
+          "row": 8,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            2048,
+            256,
+            256
+          ],
+          "index": 81,
+          "row": 8,
+          "column": 1
+        }
+      },
+      "source_candidate": "d119_01",
+      "identity_id": "v8_people01_fan_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_007",
+      "r": "fan",
+      "age": 31,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 82,
+      "page": 0,
+      "cell": 82,
+      "row": 8,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            1024,
+            128,
+            128
+          ],
+          "index": 82,
+          "row": 8,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            2048,
+            256,
+            256
+          ],
+          "index": 82,
+          "row": 8,
+          "column": 2
+        }
+      },
+      "source_candidate": "d102_01",
+      "identity_id": "v8_people01_fan_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_008",
+      "r": "fan",
+      "age": 34,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 83,
+      "page": 0,
+      "cell": 83,
+      "row": 8,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            1024,
+            128,
+            128
+          ],
+          "index": 83,
+          "row": 8,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            2048,
+            256,
+            256
+          ],
+          "index": 83,
+          "row": 8,
+          "column": 3
+        }
+      },
+      "source_candidate": "d080_01",
+      "identity_id": "v8_people01_fan_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_009",
+      "r": "fan",
+      "age": 35,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 84,
+      "page": 0,
+      "cell": 84,
+      "row": 8,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            1024,
+            128,
+            128
+          ],
+          "index": 84,
+          "row": 8,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            2048,
+            256,
+            256
+          ],
+          "index": 84,
+          "row": 8,
+          "column": 4
+        }
+      },
+      "source_candidate": "c008_09",
+      "identity_id": "v8_people01_fan_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_010",
+      "r": "fan",
+      "age": 50,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 85,
+      "page": 0,
+      "cell": 85,
+      "row": 8,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            1024,
+            128,
+            128
+          ],
+          "index": 85,
+          "row": 8,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            2048,
+            256,
+            256
+          ],
+          "index": 85,
+          "row": 8,
+          "column": 5
+        }
+      },
+      "source_candidate": "c008_02",
+      "identity_id": "v8_people01_fan_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_011",
+      "r": "fan",
+      "age": 50,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 86,
+      "page": 0,
+      "cell": 86,
+      "row": 8,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            1024,
+            128,
+            128
+          ],
+          "index": 86,
+          "row": 8,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            2048,
+            256,
+            256
+          ],
+          "index": 86,
+          "row": 8,
+          "column": 6
+        }
+      },
+      "source_candidate": "c008_07",
+      "identity_id": "v8_people01_fan_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_fan_012",
+      "r": "fan",
+      "age": 51,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 87,
+      "page": 0,
+      "cell": 87,
+      "row": 8,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            1024,
+            128,
+            128
+          ],
+          "index": 87,
+          "row": 8,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            2048,
+            256,
+            256
+          ],
+          "index": 87,
+          "row": 8,
+          "column": 7
+        }
+      },
+      "source_candidate": "d062_01",
+      "identity_id": "v8_people01_fan_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_001",
+      "r": "press",
+      "age": 30,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 88,
+      "page": 0,
+      "cell": 88,
+      "row": 8,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            1024,
+            128,
+            128
+          ],
+          "index": 88,
+          "row": 8,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            2048,
+            256,
+            256
+          ],
+          "index": 88,
+          "row": 8,
+          "column": 8
+        }
+      },
+      "source_candidate": "c007_07",
+      "identity_id": "v8_people01_press_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_002",
+      "r": "press",
+      "age": 31,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 89,
+      "page": 0,
+      "cell": 89,
+      "row": 8,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            1024,
+            128,
+            128
+          ],
+          "index": 89,
+          "row": 8,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            2048,
+            256,
+            256
+          ],
+          "index": 89,
+          "row": 8,
+          "column": 9
+        }
+      },
+      "source_candidate": "d093_01",
+      "identity_id": "v8_people01_press_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_003",
+      "r": "press",
+      "age": 45,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 90,
+      "page": 0,
+      "cell": 90,
+      "row": 9,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            0,
+            1152,
+            128,
+            128
+          ],
+          "index": 90,
+          "row": 9,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            0,
+            2304,
+            256,
+            256
+          ],
+          "index": 90,
+          "row": 9,
+          "column": 0
+        }
+      },
+      "source_candidate": "d120_01",
+      "identity_id": "v8_people01_press_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_004",
+      "r": "press",
+      "age": 48,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 91,
+      "page": 0,
+      "cell": 91,
+      "row": 9,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            128,
+            1152,
+            128,
+            128
+          ],
+          "index": 91,
+          "row": 9,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            256,
+            2304,
+            256,
+            256
+          ],
+          "index": 91,
+          "row": 9,
+          "column": 1
+        }
+      },
+      "source_candidate": "d105_01",
+      "identity_id": "v8_people01_press_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_005",
+      "r": "press",
+      "age": 51,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 92,
+      "page": 0,
+      "cell": 92,
+      "row": 9,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            256,
+            1152,
+            128,
+            128
+          ],
+          "index": 92,
+          "row": 9,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            512,
+            2304,
+            256,
+            256
+          ],
+          "index": 92,
+          "row": 9,
+          "column": 2
+        }
+      },
+      "source_candidate": "c007_04",
+      "identity_id": "v8_people01_press_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_006",
+      "r": "press",
+      "age": 51,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 93,
+      "page": 0,
+      "cell": 93,
+      "row": 9,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            384,
+            1152,
+            128,
+            128
+          ],
+          "index": 93,
+          "row": 9,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            768,
+            2304,
+            256,
+            256
+          ],
+          "index": 93,
+          "row": 9,
+          "column": 3
+        }
+      },
+      "source_candidate": "d057_01",
+      "identity_id": "v8_people01_press_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_007",
+      "r": "press",
+      "age": 54,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "index": 94,
+      "page": 0,
+      "cell": 94,
+      "row": 9,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            512,
+            1152,
+            128,
+            128
+          ],
+          "index": 94,
+          "row": 9,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1024,
+            2304,
+            256,
+            256
+          ],
+          "index": 94,
+          "row": 9,
+          "column": 4
+        }
+      },
+      "source_candidate": "c007_08",
+      "identity_id": "v8_people01_press_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_008",
+      "r": "press",
+      "age": 29,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 95,
+      "page": 0,
+      "cell": 95,
+      "row": 9,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            640,
+            1152,
+            128,
+            128
+          ],
+          "index": 95,
+          "row": 9,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1280,
+            2304,
+            256,
+            256
+          ],
+          "index": 95,
+          "row": 9,
+          "column": 5
+        }
+      },
+      "source_candidate": "d014_01",
+      "identity_id": "v8_people01_press_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_009",
+      "r": "press",
+      "age": 40,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 96,
+      "page": 0,
+      "cell": 96,
+      "row": 9,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            768,
+            1152,
+            128,
+            128
+          ],
+          "index": 96,
+          "row": 9,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1536,
+            2304,
+            256,
+            256
+          ],
+          "index": 96,
+          "row": 9,
+          "column": 6
+        }
+      },
+      "source_candidate": "d022_01",
+      "identity_id": "v8_people01_press_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_010",
+      "r": "press",
+      "age": 42,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 97,
+      "page": 0,
+      "cell": 97,
+      "row": 9,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            896,
+            1152,
+            128,
+            128
+          ],
+          "index": 97,
+          "row": 9,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            1792,
+            2304,
+            256,
+            256
+          ],
+          "index": 97,
+          "row": 9,
+          "column": 7
+        }
+      },
+      "source_candidate": "d104_01",
+      "identity_id": "v8_people01_press_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_011",
+      "r": "press",
+      "age": 46,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 98,
+      "page": 0,
+      "cell": 98,
+      "row": 9,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1024,
+            1152,
+            128,
+            128
+          ],
+          "index": 98,
+          "row": 9,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2048,
+            2304,
+            256,
+            256
+          ],
+          "index": 98,
+          "row": 9,
+          "column": 8
+        }
+      },
+      "source_candidate": "c007_06",
+      "identity_id": "v8_people01_press_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_press_012",
+      "r": "press",
+      "age": 51,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 99,
+      "page": 0,
+      "cell": 99,
+      "row": 9,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_01.webp",
+          "rect": [
+            1152,
+            1152,
+            128,
+            128
+          ],
+          "index": 99,
+          "row": 9,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_01.webp",
+          "rect": [
+            2304,
+            2304,
+            256,
+            256
+          ],
+          "index": 99,
+          "row": 9,
+          "column": 9
+        }
+      },
+      "source_candidate": "d050_01",
+      "identity_id": "v8_people01_press_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_001",
+      "r": "front",
+      "age": 27,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 100,
+      "page": 1,
+      "cell": 0,
+      "row": 0,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        }
+      },
+      "source_candidate": "d011_01",
+      "identity_id": "v8_people01_front_001",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_002",
+      "r": "front",
+      "age": 28,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 101,
+      "page": 1,
+      "cell": 1,
+      "row": 0,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        }
+      },
+      "source_candidate": "c011_07",
+      "identity_id": "v8_people01_front_002",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_003",
+      "r": "front",
+      "age": 31,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 102,
+      "page": 1,
+      "cell": 2,
+      "row": 0,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        }
+      },
+      "source_candidate": "c004_09",
+      "identity_id": "v8_people01_front_003",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_004",
+      "r": "front",
+      "age": 31,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 103,
+      "page": 1,
+      "cell": 3,
+      "row": 0,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        }
+      },
+      "source_candidate": "d095_01",
+      "identity_id": "v8_people01_front_004",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_005",
+      "r": "front",
+      "age": 33,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 104,
+      "page": 1,
+      "cell": 4,
+      "row": 0,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        }
+      },
+      "source_candidate": "d125_01",
+      "identity_id": "v8_people01_front_005",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_006",
+      "r": "front",
+      "age": 41,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 105,
+      "page": 1,
+      "cell": 5,
+      "row": 0,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        }
+      },
+      "source_candidate": "d061_01",
+      "identity_id": "v8_people01_front_006",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_007",
+      "r": "front",
+      "age": 45,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 106,
+      "page": 1,
+      "cell": 6,
+      "row": 0,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        }
+      },
+      "source_candidate": "d015_01",
+      "identity_id": "v8_people01_front_007",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_008",
+      "r": "front",
+      "age": 47,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 107,
+      "page": 1,
+      "cell": 7,
+      "row": 0,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1792,
+            0,
+            256,
+            256
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        }
+      },
+      "source_candidate": "c011_06",
+      "identity_id": "v8_people01_front_008",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_009",
+      "r": "front",
+      "age": 48,
+      "f": false,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "index": 108,
+      "page": 1,
+      "cell": 8,
+      "row": 0,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            1024,
+            0,
+            128,
+            128
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            2048,
+            0,
+            256,
+            256
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        }
+      },
+      "source_candidate": "d065_01",
+      "identity_id": "v8_people01_front_009",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_010",
+      "r": "front",
+      "age": 50,
+      "f": false,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 109,
+      "page": 1,
+      "cell": 9,
+      "row": 0,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            1152,
+            0,
+            128,
+            128
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            2304,
+            0,
+            256,
+            256
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        }
+      },
+      "source_candidate": "d047_01",
+      "identity_id": "v8_people01_front_010",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_011",
+      "r": "front",
+      "age": 30,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 110,
+      "page": 1,
+      "cell": 10,
+      "row": 1,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            0,
+            256,
+            256,
+            256
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        }
+      },
+      "source_candidate": "c004_05",
+      "identity_id": "v8_people01_front_011",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_012",
+      "r": "front",
+      "age": 31,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 111,
+      "page": 1,
+      "cell": 11,
+      "row": 1,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            256,
+            256,
+            256,
+            256
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        }
+      },
+      "source_candidate": "d004_01",
+      "identity_id": "v8_people01_front_012",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_013",
+      "r": "front",
+      "age": 35,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 112,
+      "page": 1,
+      "cell": 12,
+      "row": 1,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            512,
+            256,
+            256,
+            256
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        }
+      },
+      "source_candidate": "d052_01",
+      "identity_id": "v8_people01_front_013",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_014",
+      "r": "front",
+      "age": 40,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 113,
+      "page": 1,
+      "cell": 13,
+      "row": 1,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            768,
+            256,
+            256,
+            256
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        }
+      },
+      "source_candidate": "d124_01",
+      "identity_id": "v8_people01_front_014",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_015",
+      "r": "front",
+      "age": 44,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 114,
+      "page": 1,
+      "cell": 14,
+      "row": 1,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1024,
+            256,
+            256,
+            256
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        }
+      },
+      "source_candidate": "c004_07",
+      "identity_id": "v8_people01_front_015",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_016",
+      "r": "front",
+      "age": 44,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 115,
+      "page": 1,
+      "cell": 15,
+      "row": 1,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1280,
+            256,
+            256,
+            256
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        }
+      },
+      "source_candidate": "d006_01",
+      "identity_id": "v8_people01_front_016",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_017",
+      "r": "front",
+      "age": 46,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 116,
+      "page": 1,
+      "cell": 16,
+      "row": 1,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1536,
+            256,
+            256,
+            256
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        }
+      },
+      "source_candidate": "d094_01",
+      "identity_id": "v8_people01_front_017",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_018",
+      "r": "front",
+      "age": 47,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 117,
+      "page": 1,
+      "cell": 17,
+      "row": 1,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            1792,
+            256,
+            256,
+            256
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        }
+      },
+      "source_candidate": "d048_01",
+      "identity_id": "v8_people01_front_018",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_019",
+      "r": "front",
+      "age": 48,
+      "f": true,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "index": 118,
+      "page": 1,
+      "cell": 18,
+      "row": 1,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            1024,
+            128,
+            128,
+            128
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            2048,
+            256,
+            256,
+            256
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        }
+      },
+      "source_candidate": "d098_01",
+      "identity_id": "v8_people01_front_019",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    },
+    {
+      "id": "v8_people01_front_020",
+      "r": "front",
+      "age": 54,
+      "f": true,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "index": 119,
+      "page": 1,
+      "cell": 19,
+      "row": 1,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/people01_02.webp",
+          "rect": [
+            1152,
+            128,
+            128,
+            128
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/people01_02.webp",
+          "rect": [
+            2304,
+            256,
+            256,
+            256
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        }
+      },
+      "source_candidate": "d010_01",
+      "identity_id": "v8_people01_front_020",
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true
+    }
+  ]
+}
