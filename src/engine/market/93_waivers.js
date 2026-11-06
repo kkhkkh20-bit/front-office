@@ -12,7 +12,7 @@ function wvClaimable(){ const per=period(); if(per==='post'||preSettle())return 
 function wvStart(p,paid){ if(!wvNeed(p))return; const from=p.team;
   p.wv={from,d:G.day,end:G.day+WV_DAYS,ok:wvClaimable(),paid:paid||0,cl:[],c:{sal:p.sal,yrs:p.yrs,faC:!!p.faC,ext:!!p.ext,cyrs:p.cyrs,extNext:p.extNext,...(p.ctT===p.team?{opt:p.opt,cOpt:p.cOpt,pOut:p.pOut,cOptAdd:p.cOptAdd,ntc:p.ntc,capB:p.capB}:{})}}; /* 남은 계약 승계: 성과 옵션·구단 옵션·옵트아웃도 함께 */
   if(ovr(p)>=40)wire('웨이버',`${tname(from)}, ${p.name}(${posLabel(p)}) 웨이버 공시`,{tid:from,ref:p.id});
-  if(from!==G.user&&p.wv.ok&&!G.unemp&&ovr(p)>=wvBar(G.user))mail('운영팀',`웨이버 공시: ${tshort(from)} ${p.name}`,`${tname(from)}이(가) ${p.name}(${posLabel(p)}, ${p.age}세, 연 ${money(p.sal)})을(를) 웨이버 공시했습니다. ${dmd(p.wv.end)}까지 양수를 신청하면, 신청한 구단 중 성적이 낮은 구단이 남은 계약을 이어받아 데려갑니다.`,{kind:'트레이드',ref:p.id,acts:[{l:'웨이버 보기',a:'go',v:'transfer:kbo'}]}); }
+  if(from!==G.user&&p.wv.ok&&!G.unemp&&ovr(p)>=wvBar(G.user))mail('운영팀',`웨이버 공시: ${tshort(from)} ${p.name}`,`${tname(from)}이(가) ${p.name}(${posLabel(p)}, ${p.age}세, 연 ${money(p.sal)})을(를) 웨이버 공시했습니다. ${dmd(p.wv.end-1)}까지 양수를 신청하면 ${dmd(p.wv.end)}에 정하며, 신청한 구단 중 성적이 낮은 구단이 남은 계약을 이어받아 데려갑니다.`,{kind:'트레이드',ref:p.id,acts:[{l:'웨이버 보기',a:'go',v:'transfer:kbo'}]}); }
 /* 우선순위: 지금 순위의 역순(standingsNow가 동률을 전년도 순위로 가른다). 새해 뒤 경기가 없으면 지난 시즌 순위 역순 */
 /* 우선권: 지금 성적 역순, 승률이 같으면(개막 직후·겨울 포함) 직전 시즌 순위 역순(검수 11-06) */
 function wvOrder(){ const ord=(G.last&&G.last.order)||[]; const prv=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?-1:i; }; const rec=(G.sea&&G.sea.rec)||{}; const pct=id=>{ const r=rec[id]; const n=r?r.w+r.l:0; return n?r.w/n:.5; };
@@ -33,5 +33,5 @@ function wvDaily(){ for(const p of wvList()){ const w=p.wv; if(G.day<w.end)conti
       mvLog('웨이버 양수',p,w.from,to,`계약 승계 연 ${money(p.sal)}`,p.sal); story(p,`웨이버로 ${tname(to)} 이적(계약 승계)`,'move'); acqStamp(p,'웨이버',to); wire('웨이버',`${tname(to)}, 웨이버 공시된 ${p.name} 영입(전 소속 ${tshort(w.from)})`,{tid:to,ref:p.id});
       if(to===G.user)note('트레이드',`웨이버로 ${p.name}을(를) 데려왔습니다. 남은 계약(연 ${money(p.sal)})을 이어받습니다.`,p.id);
       else if(w.from===G.user)note('트레이드',`${tname(to)}이(가) 웨이버로 ${p.name}을(를) 데려갔습니다. 계약을 넘겨 방출 정산금${w.paid?` ${money(w.paid)}`:''}을(를) 돌려받습니다.`,p.id);
-      else if(w.cl.includes(G.user))note('트레이드',`${p.name} 양수 신청은 우선순위에서 밀렸습니다. 성적이 더 낮은 ${tname(to)}이(가) 데려갔습니다.`,p.id); }
+      else if(w.cl.includes(G.user))note('트레이드',rosterN(G.user)>=ROSTER_MAX?`${p.name} 양수 신청은 정식 선수 정원(${ROSTER_MAX}명)이 차서 빠졌습니다. ${tname(to)}이(가) 데려갔습니다.`:`${p.name} 양수 신청은 우선순위에서 밀렸습니다. 성적이 더 낮은 ${tname(to)}이(가) 데려갔습니다.`,p.id); } /* 실제 빠진 이유대로(검수 11-06) */
     else { if(w.from===G.user)note('트레이드',`웨이버 공시 7일 동안 ${p.name}을(를) 데려간 구단이 없어 자유계약 선수가 됐습니다.`,p.id); else if(w.cl.includes(G.user))note('트레이드',`${p.name} 양수가 성사되지 않았습니다(정식 선수 자리 부족 또는 양도 기간 종료). 자유계약 선수가 됐습니다.`,p.id); } } }
