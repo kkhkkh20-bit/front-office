@@ -1863,6 +1863,10 @@ T('[검수 11-07] 웨이버·2차 드래프트: 승계 계약은 다음 계약 �
   const q=domestic(A).find(x=>x!==p&&!x.isP); q.regD={y:G.year,n:52,il:0}; q.tLog=[{y:G.year,d:G.cal.open+10,f:B,t:A}]; ok(regNT(q,A)===0,'이적한 해 옛 저장 등록일을 지명 구단 몫으로 인정'); delete q.tLog; ok(regNT(q,A)===52,'이적 없으면 전부 인정');
   team(B).cash=0; G.sd2={stage:'pick',prot:{},seq:[],cur:0}; ok(sdAiPick(B,1)==null,'현금 0원인데 양도금 지명');
   const w=domestic(B).find(x=>!x.isP&&!x.ys); w.team=null; w.wv={from:B,d:G.day-7,end:G.day,ok:true,paid:0,cl:[],c:{sal:w.sal}}; ok(/기한/.test(wvClaim(w.id)),'마감일에 신청이 들어감'); });
+T('[검수 11-07] 해외 진출·복귀: 아시아쿼터 잔류 연봉 상한, 출국 때 다음 계약 정리·출국 기록 보존, 포스팅 발표일은 안내한 날, 야인이면 포스팅 요청 없음, 복귀 불발 선수 몸값',()=>{ fresh(); const a={foreign:'아시아',sal:ASIA_CAP}; ok(fovsKeepSal(a,{amt:300})<=ASIA_CAP,'아시아쿼터 잔류 연봉이 상한 초과');
+  const p=domestic(G.user).find(q=>!q.isP&&!q.ys&&!(q.joinY>G.year)); p.extNext={annual:300,years:4}; ovsLeave(p,'NPB','오사카',2,100,'포스팅',0); const rec=G.abroad[0]; const pj=JSON.parse(rec.pj); ok(!pj.extNext,'출국 전 다음 계약이 보관본에 남음'); ok((pj.tLog||[]).some(x=>x.y===G.year&&x.t==null),'보관본에 출국 기록 없음');
+  const q=domestic(G.user).find(x=>!x.isP&&x!==p); const x=postStart(q,G.day+40); ok(x.day===G.day+40,'안내한 발표일과 실제 발표일이 다름');
+  const r=domestic(G.user).find(x=>!x.isP&&x!==p&&x!==q); r._retQ={sal:2000,yrs:3}; r.retFrom=G.user; r.retAsk={sal:2000,yrs:3}; ovsBackFree(r); ok(freeAsk(r)>=1700,'복귀 불발 직후 다른 구단이 헐값에 영입 가능: '+freeAsk(r)); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
