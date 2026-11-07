@@ -35,8 +35,7 @@ function sndSynth(c){ const sr=c.sampleRate, mk=(sec,fn,ch=1)=>{ const n=Math.fl
   const crowd=(sec,shape,v)=>mk(sec,(d,n,ch)=>{ const L=[[.02,.9],[.05,.6],[.12,.35]]; const tmp=new Float32Array(n); for(const [a,w] of L){ for(let i=0;i<n;i++)tmp[i]=Math.random()*2-1; lp(tmp,a); hp(tmp,.995); let m=0, ph=Math.random()*9; for(let i=0;i<n;i++){ if(i%2400===0)m=.6+Math.random()*.4; d[i]+=tmp[i]*w*(m+.15*Math.sin(ph+i/sr*3)); } } for(let i=0;i<n;i++)d[i]*=shape(i/n); norm(d,v); },2);
   SND.buf.cheer_hit=crowd(2.6,f=>Math.min(1,f/.1)*Math.pow(1-f,1.4),.7);
   SND.buf.cheer_big=crowd(4.5,f=>Math.min(1,f/.08)*(f<.5?1:Math.pow((1-f)/.5,1.2)),.9);
-  SND.buf.amb=crowd(6,()=>1,.35); /* 반복 재생하는 배경 웅성임 */
-  SND.buf.chant=crowd(3,f=>.75+.25*Math.sin(f*Math.PI*6),.55); /* 득점권 응원: 박자 있는 함성 */
+  /* 배경 웅성임·득점권 응원 반복음은 바람 소리처럼 들려 뺐다(사용자 11-08). 안타·홈런 함성만 짧게 */
 }
 function sndReady(){ if(!sndOn())return null; sndInit(); const c=SND.ctx; if(!c)return null; if(c.state==='suspended')c.resume(); return c; }
 function sfx(k,vol,rate){ const c=sndReady(); if(!c||!SND.buf[k])return null; const s=c.createBufferSource(); s.buffer=SND.buf[k]; if(rate)s.playbackRate.value=rate;
