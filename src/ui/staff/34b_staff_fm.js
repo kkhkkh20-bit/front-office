@@ -90,7 +90,7 @@ function dataFM(){ const {y,cur,T}=dhTeams(), me=T.find(t=>t.tid===G.user), has=
   try{ const SR=slotRanks(G.user), ks=PSLOTS.filter(k=>k!=='DH'), w=[...ks].sort((a,b)=>SR[b].rank-SR[a].rank).slice(0,2), s=[...ks].sort((a,b)=>SR[a].rank-SR[b].rank)[0];
     F.push(['자리별 전력',`지금 선수 구성으로 가장 약한 자리는 ${w.map(k=>`${SLOTK[k]}(리그 ${SR[k].rank}위)`).join(', ')}, 가장 강한 자리는 ${SLOTK[s]}(${SR[s].rank}위)입니다.`]); }catch(e){}
   if(cur&&lv>=2){ const ps=domestic(G.user).concat(foreignOf(G.user)).filter(p=>!p.isP).map(p=>({p,h:seasonTotal(p,G.year,'1군')})).filter(x=>x.h&&x.h.pa>=60).map(x=>({p:x.p,o:bRate(x.h).ops,d:bRate(x.h).ops-(.62+(ovr(x.p)-40)*.006)})).sort((a,b)=>a.d-b.d);
-    if(ps.length)F.push(['능력 대비 기록',`능력에 비해 기록이 낮은 타자는 ${esc(ps[0].p.name)}(OPS ${f3(ps[0].o)}), 능력 이상으로 잘하는 타자는 ${esc(ps[ps.length-1].p.name)}(OPS ${f3(ps[ps.length-1].o)})입니다.`]); }
+    { const a=ps[0]&&ps[0].d<-.03?ps[0]:null, b=ps.length&&ps[ps.length-1].d>.03?ps[ps.length-1]:null; const t=[a?`능력에 비해 기록이 낮은 타자는 ${esc(a.p.name)}(OPS ${f3(a.o)})`:'',b&&b!==a?`능력 이상으로 잘하는 타자는 ${esc(b.p.name)}(OPS ${f3(b.o)})`:''].filter(Boolean); if(t.length)F.push(['능력 대비 기록',t.join(', ')+'입니다.']); } }
   if(cur&&lv>=3){ try{ const q=(playoffOdds()||[]).find(x=>x.tid===G.user); if(q)F.push(['가을야구 전망',`데이터 랩 시뮬레이션으로 본 가을야구(5위 안) 진출 확률은 ${Math.round(q.ps*100)}%입니다.`]); }catch(e){} }
   if(lv<3)F.push(['분석 수준',`전력분석 보고 수준 ${lv}/3단계 ${hiI(`${lv<2?'2단계부터 능력 대비 기록이 엇갈린 타자를, ':''}3단계부터 가을야구 진출 확률을 함께 보고합니다. 분석원 능력이 높을수록 단계가 오릅니다.`)}`]);
   const find=`<section class="card dh-find"><h3>주요 발견 <em>${F.length}건</em></h3><ol class="dh-fl">${F.map(([h,t],i)=>`<li><b>${i+1}</b><div><strong>${h}</strong><p>${t}</p></div></li>`).join('')}</ol></section>`;

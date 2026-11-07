@@ -1911,6 +1911,10 @@ T('[커뮤니티 요청 11-07] 외국인 2년 계약은 다음 겨울 재계약 
 T('[커뮤니티 요청 11-07] 우리 선수 대표팀 추천 +5, 현역 복무 선수는 대표 후보가 아니다',()=>{ fresh(); { const q=domestic(G.user).find(x=>milFree(x)&&x.age<=26); enlist(q,'현역',G.day-3); ok(!ntPool().includes(q),'현역 복무 선수가 대표 후보'); }
   const k='ag'; const p=domestic(G.user).find(q=>ntU25(q)); if(p){ const m=ntRecToggle(k,p.id); ok(ntRecIds(k).has(p.id),'추천 안 됨: '+m); }
   ok(Array.isArray(vetSelfTrain([])),'베테랑 개인 훈련 오류'); });
+T('[검수 11-07 스카우트] 관찰 못 한 2군 선수는 상세에서도 능력·잠재력 없음, 파견 스카우트는 30일 뒤 해외망에 더해지고, 잘못된 배치는 상태를 바꾸지 않는다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user); G.scouts.forEach(s=>{ s.role='am'; }); const q=domestic(t.id).find(x=>!publicP(x)); if(q){ const r=scoutReport(q); ok(r.cur==null&&r.ofp==null&&!(r.tools||[]).length,'미관찰 선수 능력 노출 '+r.cur+'/'+r.ofp); }
+  const sc=G.scouts[0]; const reg=Object.keys(IREG)[0]; G.intl={}; sc.role='intl'; sc.region=reg; sc.since=G.day; ok(intlLv(reg)===0,'첫날부터 해외망 단계 증가'); sc.since=G.day-31; ok(intlLv(reg)===1,'적응 뒤 해외망 단계 없음');
+  const role0=sc.role, reg0=sc.region; const e=assignScout(sc.id,'intl','zz'); ok(e&&sc.role===role0&&sc.region===reg0,'잘못된 배치로 상태 변경'); });
+T('[검수 11-07 스카우트] 새해 시장 교체에도 재제안 기한이 남은 후보는 남는다',()=>{ fresh(); scoutMkt(); const s=G.scoutMarket[0]; s.bid={t:1,sal:100,v:1,exp:G.day+3}; refreshScoutMarket(); ok(G.scoutMarket.includes(s),'재제안 후보가 사라짐'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
