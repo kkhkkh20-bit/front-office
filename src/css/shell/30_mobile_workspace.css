@@ -85,3 +85,5 @@
  main.ws-frame:has(.mgrg)>.ws-panels>.ws-panel,main.ws-frame:has(.draft-page)>.ws-panels>.ws-panel{overflow:visible}
  main.ws-frame:has(.mgrg) .ws-panel>.ws-scroll,main.ws-frame:has(.draft-page) .ws-panel>.ws-scroll{flex:none;overflow:visible!important}
 }
+
+@media(max-width:699px) and (min-height:600px){ #app main.ws-frame,#app main.inbox-workspace{position:relative;z-index:1;background:var(--bg,#0d1117);will-change:margin-top} #app .wrap:has(>main.ws-slid){overflow:hidden} } /* 머리가 밀려 올라가는 동안 위 제목 줄 위로 덮는다 */

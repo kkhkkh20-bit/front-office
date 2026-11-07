@@ -137,11 +137,23 @@ function workspaceFit(host){
   workspaceObserve();
 }
 
-/* 휴대폰 세로: 목록 칸(작업 공간의 ws-scroll·스스로 스크롤하는 ws-own, 소식함 목록·본문)을 내려 보면 main에 ws-up을 붙여 위쪽 제목·탭 줄을 접고(30_mobile_workspace.css), 맨 위로 올리면 편다.
+/* 휴대폰 세로: 목록 칸(작업 공간의 ws-scroll·스스로 스크롤하는 ws-own, 소식함 목록·본문)을 내려 보면 위쪽 제목·탭 줄이 밀려 올라간다(아래 wsSet).
    접으면 칸이 커져 스크롤 범위가 줄어든다. 실제로 접어 본 뒤(같은 이벤트 안이라 깜박임 없음) 스크롤할 거리가 조금(6px 넘게)이라도 남을 때만 유지한다(남아야 맨 위로 올려 다시 펼 수 있다)(접기·펴기 반복, 펼 수 없는 상태 방지). render가 main을 새로 만들면 저절로 풀린다 */
-if(typeof addEventListener!=='undefined')addEventListener('scroll',e=>{ const el=e.target, main=el.classList&&(el.matches('.ws-scroll,.ws-own')&&el.closest('#app main.ws-frame')||el.matches('.ibx-list,article.ibm')&&el.closest('#app main.inbox-workspace')); if(!main||!matchMedia('(max-width:699px) and (min-height:600px)').matches)return;
-  if(el.scrollTop<=2)main.classList.remove('ws-up'); else if(el.scrollTop>24&&!main.classList.contains('ws-up')){ const r=el.scrollHeight-el.clientHeight, st=el.scrollTop; if(el._wsNo===r)return; main.classList.add('ws-up');
-    if(el.scrollHeight-el.clientHeight<=6){ main.classList.remove('ws-up'); el.scrollTop=st; el._wsNo=r; } } },{capture:true,passive:true}); /* 접어 보면 범위가 줄어 위치가 잘리므로 되돌릴 때 복원하고, 같은 범위에서는 다시 시도하지 않는다 */
+/* 휴대폰: 목록을 내리면 위쪽 제목·탭이 손가락이 움직인 만큼 부드럽게 밀려 올라가고, 맨 위에서 아래로 끌면 다시 내려온다(사용자 11-07: 갑자기 사라지지 않게).
+   목록 안 스크롤 양을 위쪽 머리가 밀려 올라가는 양으로 옮겨 쓴다(내용은 손가락만큼만 움직인다). 다 접히면 그때부터 목록이 스크롤된다 */
+const wsMain=el=>el&&el.classList&&(el.matches('.ws-scroll,.ws-own')&&el.closest('#app main.ws-frame')||el.matches('.ibx-list,article.ibm')&&el.closest('#app main.inbox-workspace'));
+const wsMobile=()=>matchMedia('(max-width:699px) and (min-height:600px)').matches;
+function wsMax(main,el){ const w=main.parentElement; if(!w)return 0; const y=main._wsy||0, pan=el.closest('.ws-panel')||el; const top=w.getBoundingClientRect().top; return Math.max(0,Math.round(pan.getBoundingClientRect().top+y-top)); }
+function wsSet(main,y){ main._wsy=y; main.style.marginTop=y?(-y)+'px':''; main.classList.toggle('ws-slid',y>0); if(y===0||y>=(main._wsMx||1e9))main._wsHold=false; }
+if(typeof addEventListener!=='undefined'){
+  addEventListener('scroll',e=>{ const el=e.target, main=wsMain(el); if(!main||!wsMobile())return; const st=el.scrollTop, last=el._wsLast??0; el._wsLast=st; let y=main._wsy||0;
+    if(!y)main._wsMx=wsMax(main,el); const mx=main._wsMx||0;
+    if(st>0&&y<mx){ const d=Math.min(mx-y,st); y+=d; wsSet(main,y); el.scrollTop=st-d; el._wsLast=st-d; }
+    else if(st<=0&&st<last&&y>0){ wsSet(main,Math.max(0,y-(last-st||8))); } },{capture:true,passive:true});
+  let tY=null, tEl=null;
+  addEventListener('touchstart',e=>{ const el=e.target.closest&&e.target.closest('.ws-scroll,.ws-own,.ibx-list,article.ibm'); tEl=el&&wsMain(el)?el:null; tY=e.touches[0].clientY; },{passive:true});
+  addEventListener('touchmove',e=>{ if(!tEl||tY==null||!wsMobile())return; const cy=e.touches[0].clientY, dy=cy-tY; tY=cy; const main=wsMain(tEl); if(!main)return; const y=main._wsy||0;
+    if(dy>0&&tEl.scrollTop<=0&&y>0)wsSet(main,Math.max(0,y-dy)); },{passive:true}); }
 
 // Refit after a filter opens or browser chrome changes height, without replacing the reading DOM.
 let _workspaceObserver=null;
