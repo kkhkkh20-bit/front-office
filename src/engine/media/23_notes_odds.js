@@ -138,7 +138,7 @@ function storySeason(y){ // 시즌이 끝나면: 커리어 하이와 규정 이�
 let _poC={k:null};
 function mulberry(a){ return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function playoffOdds(){
-  if(period()!=='season')return null; const k=G.year+':'+G.day; if(_poC.k===k)return _poC.v;
+  if(period()!=='season')return null; const k=G.year+':'+G.day+':'+G.teams.map(t=>{ const r=G.sea.rec[t.id]; return r.w+'-'+r.l; }).join(','); if(_poC.k===k)return _poC.v; /* 세이브가 바뀌어도 같은 날짜면 재사용하던 캐시(검수 11-07) */
   const rec=G.sea.rec; if(sum(G.teams.map(t=>rec[t.id].w+rec[t.id].l+(rec[t.id].t||0)))/G.teams.length<20){ _poC={k,v:null}; return null; } /* 20경기 전에는 확률을 내지 않는다(무승부도 치른 경기, 검수 11-06) */
   const str0=G.teams.map(t=>{ const r=rec[t.id]; return (r.w+(t.expW||.5)*60)/(r.w+r.l+60); });
   const rem=[]; for(const d in G.cal.sched){ if(+d>G.day)for(const m of G.cal.sched[d])rem.push(m); }

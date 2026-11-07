@@ -19,7 +19,7 @@ function relAvail(p,day,ps){ const ae=mgrPush(p.team)+(ps?18:0); /* 가을야구
   if(cd>=1&&(p.lastPc||0)>25+(ae-50)*.4)return false; if(cd>=2&&(ae<55||(p.lastPc||0)>22))return false; if(cd>=3&&ae<72)return false; if(cd>=4)return false;
   if(ae<=38&&pc7(p,day)>60)return false; return true; }
 /* 가을야구 총력전: 좋은 선발 셋으로 돌리고(4일 휴식이면 등판), 탈락 위기면 에이스가 3일만 쉬고도 나온다 */
-function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastStart; const top=[...d.sp].filter(healthy).sort((a,b)=>spV(b)-spV(a)); const need=ps.elim?3:4;
+function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastStart; const top=[...d.sp].filter(healthy).sort((a,b)=>spV(b)-spV(a)); const need=(ps.elimT?ps.elimT.includes(tid):ps.elim)?3:4;
   const ok=p=>p.lastApp!==day; return top.slice(0,3).find(p=>ok(p)&&rest(p)>=need)||top.find(p=>ok(p)&&rest(p)>=4)||null; }
 /* 최종전 접전 7회 이후: 오늘 선발이 아닌 에이스(선발 상위 2명, 2일 이상 쉼)를 불펜으로 */
 function psAceRelief(fs,inn,lead,day,ps){ if(!ps||!(ps.fin||ps.elim)||inn<7||Math.abs(lead)>3||!fs.spAll)return null; const top=[...fs.spAll].filter(p=>healthy(p)&&p!==fs.sp&&!fs.used.has(p.id)).sort((a,b)=>spV(b)-spV(a)).slice(0,2);

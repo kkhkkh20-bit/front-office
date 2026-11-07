@@ -121,12 +121,13 @@ function bkData(y){ const P=G.ps;
   const so=standOrder(); return {y:G.year,seeds:so.order.slice(0,5).map(o=>o.tid),order:so.order,res:{},resD:{},days:{},proj:true,live:so.live}; }
 /* 한 라운드의 두 팀·승수·상태·차전 일정(진행 중이면 지금 일정, 끝났으면 치른 날짜) */
 function bkSeries(D,[k,hs,src]){ const R=D.res||{}, r=R[k], c=D.cur&&D.cur.round===k?D.cur:null, hi=D.seeds[hs];
-  let lo=typeof src==='number'?D.seeds[src]:R[src]?R[src][0]:null, wh=null, wl=null;
+  let lo=typeof src==='number'?D.seeds[src]:R[src]&&!bkHid(D,src)?R[src][0]:null, wh=null, wl=null; /* 앞 라운드 마지막 경기를 중계로 아직 안 봤으면 승자도 숨긴다(검수 11-07) */
   if(r){ lo=r[0]===hi?r[1]:r[0]; wh=r[0]===hi?r[2]:r[3]; wl=r[0]===hi?r[3]:r[2]; } else if(c){ lo=c.lo; wh=c.wh; wl=c.wl; }
   let sc=c?{d:c.days,h:c.homes,gi:c.gi,p:c.pts}:D.days[k]?{d:D.days[k].d,h:D.days[k].h,gi:D.days[k].d.length,p:D.days[k].p}:null;
   let R2=r; { const g=typeof spoilG==='function'?spoilG():null; if(g&&sc&&sc.gi>0&&sc.d[sc.gi-1]===g.day&&sc.p&&sc.p.length>=sc.gi){ /* 중계로 볼 경기(결과 숨김)는 대진표에서도 빼고 센다(검수 11-07: 중계 중 대진표에 최종 점수 노출) */
     const gi=sc.gi-1; wh=0; wl=0; for(let i=0;i<gi;i++){ const [a,b]=sc.p[i], h=sc.h[i], w=a>b?h:b>a?(h===hi?lo:hi):null; if(w===hi)wh++; else if(w===lo)wl++; } sc={...sc,gi,p:sc.p.slice(0,gi)}; R2=null; } }
-  return {k,hi,lo,wh,wl,r:R2,c:c||(R2!==r?{}:null),sc,win:R2?R2[0]:null}; }
+  return {k,hi,lo,wh,wl,r:R2,c:c||(R2!==r?{round:k,hi,lo,wh,wl,gi:sc.gi,days:sc.d,homes:sc.h,pts:sc.p}:null),sc,win:R2?R2[0]:null}; } /* 결과를 숨긴 시리즈도 상세가 읽는 값(날짜·홈·승수)을 채운다(검수 11-07: 빈 객체라 오류) */
+function bkHid(D,k){ const g=typeof spoilG==='function'?spoilG():null; if(!g)return false; const c=D.cur&&D.cur.round===k?D.cur:null; const S=c?{d:c.days,gi:c.gi,p:c.pts}:D.days&&D.days[k]?{d:D.days[k].d,gi:D.days[k].d.length,p:D.days[k].p}:null; return !!(S&&S.gi>0&&S.d[S.gi-1]===g.day&&S.p&&S.p.length>=S.gi); }
 function bkSlot(D,t,w,win,alt){ if(t==null)return `<span class="bk-s tbd"><b>TBD</b><i>${alt}</i></span>`;
   const P=tpal(t); return `<span class="bk-s${win==null?'':win===t?' win':' out'}${t===G.user?' me':''}" style="--c1:${P[0]};--c2:${P[2]}">${badge(t,40)}<b title="${esc(tshort(t))}"><s>${esc(team(t).city)} </s>${esc(team(t).nick)}<sup>${D.seeds.indexOf(t)+1}</sup></b><em>${w??''}</em></span>`; }
 function bkCard(D,x,sel){ const s=bkSeries(D,x), [k,,src]=x;
@@ -145,7 +146,7 @@ function bkSched(D,x){ const L=bkGames(D,x);
 function bkDet(D,k){ const x=BK_R.find(r=>r[0]===k), s=bkSeries(D,x), nm=t=>`${badge(t,20)} ${esc(tname(t))}`;
   let b='';
   if(D.proj)b=`<p>${s.lo!=null?`${nm(s.hi)} 대 ${nm(s.lo)}`:`${nm(s.hi)}이(가) ${BK_S[x[2]]} 승자를 기다립니다`}</p><p class="muted">${D.live?'지금 순위대로라면 이렇게 붙습니다.':'지난 시즌 최종 순위 기준입니다.'}</p>`;
-  else if(s.r)b=`<p class="bk-big">${nm(s.r[0])} <b>${s.r[2]}승 ${s.r[3]}패</b> 승리</p><p class="muted">${nm(s.r[1])} 탈락${D.resD[k]!=null?` · ${dmd(D.resD[k])} 종료`:''}</p>`;
+  else if(s.r)b=`<p class="bk-big">${nm(s.r[0])} <b>${s.r[2]}승 ${s.r[3]}패</b> 승리</p><p class="muted">${nm(s.r[1])} 탈락${(D.resD[k]??(D.days&&D.days[k]&&D.days[k].d?D.days[k].d.slice(-1)[0]:null))!=null?` · ${dmd(D.resD[k]??D.days[k].d.slice(-1)[0])} 종료`:''}</p>`;
   else if(s.c)b=`<p class="bk-big">${nm(s.c.hi)} <b>${s.c.wh} : ${s.c.wl}</b> ${nm(s.c.lo)}</p><p class="muted">다음 ${s.c.gi+1}차전 ${dmd(s.c.days[s.c.gi])} · ${esc(stadName(s.c.homes[s.c.gi]))}</p>`;
   else b=`<p>${s.hi!=null?nm(s.hi):''}${s.lo!=null?` 대 ${nm(s.lo)}`:` · ${BK_S[x[2]]||''} 승자를 기다리는 중`}</p><p class="muted">아직 시작 전입니다.</p>`;
   const L=D.proj?null:bkGames(D,x), me=G.user;
@@ -157,20 +158,21 @@ function psBracket(){
   const y=UI.psY!=null&&(ys.includes(UI.psY)||(projOk&&UI.psY===G.year))?UI.psY:def, D=bkData(y), R=D.res||{};
   const sel=BK_R.some(r=>r[0]===UI.psSel)?UI.psSel:D.cur&&BK_R.some(r=>r[0]===D.cur.round)?D.cur.round:R.ks?'ks':'wc';
   const opts=ys.map(v=>[v,v+'']); if(projOk)opts.push([G.year,G.year+' 예상']);
-  const st=D.proj?(D.live?'지금 순위대로라면 이렇게 붙습니다(예상 대진)':'지난 시즌 최종 순위 기준 예상 대진'):R.ks?`${tname(R.ks[0])} 우승 · 준우승 ${tname(R.ks[1])}`:D.cur?(D.cur.round==='tb'?'순위 결정전 진행 중 · 끝나면 시드가 정해집니다':`${ROUNDK[D.cur.round]} 진행 중`):'포스트시즌';
+  const st=D.proj?(D.live?'지금 순위대로라면 이렇게 붙습니다(예상 대진)':'지난 시즌 최종 순위 기준 예상 대진'):R.ks&&!bkHid(D,'ks')?`${tname(R.ks[0])} 우승 · 준우승 ${tname(R.ks[1])}`:D.cur?(D.cur.round==='tb'?'순위 결정전 진행 중 · 끝나면 시드가 정해집니다':`${ROUNDK[D.cur.round]} 진행 중`):'포스트시즌';
   const head=`<div class="bk-hd"><span class="eyebrow">가을야구 대진표</span><h2>${D.y} 포스트시즌</h2><p>${esc(st)}</p>${opts.length>1?optRow('psY',y,opts):''}<div class="bk-sum">${BK_R.map(x=>{ const s=bkSeries(D,x), r=s.r; return `<div class="${[s.hi,s.lo].includes(G.user)?'me':''}"><i>${BK_S[x[0]]||'한국시리즈'}</i><span>${r?`${badge(r[0],16)} ${esc(tshort(r[0]))} ${r[2]}승 ${r[3]}패로 ${esc(tshort(r[1]))} 꺾음`:s.c?`${esc(tshort(s.c.hi))} ${s.c.wh} : ${s.c.wl} ${esc(tshort(s.c.lo))} · 진행 중`:`${s.hi!=null?esc(tshort(s.hi)):'TBD'} 대 ${s.lo!=null?esc(tshort(s.lo)):'TBD'}${D.proj?' (예상)':''}`}</span></div>`; }).join('')}</div></div>`;
+  { const TB=(D.y===G.year&&G.ps&&G.ps.tbRes)||(D.res&&D.res.tbRes)||[]; const live=D.y===G.year&&G.ps&&G.ps.cur&&G.ps.cur.round==='tb'?G.ps.cur:null; D.tbHtml=TB.length||live?`<section class="bk-box"><h3>순위 결정전</h3>${TB.map(x=>`<p>${x.pos}위 결정전 · ${badge(x.w,16)} ${esc(tshort(x.w))} 승리 · ${badge(x.l,16)} ${esc(tshort(x.l))}${x.p?` · ${x.p[0]}:${x.p[1]}`:''}${x.d!=null?` · ${dmd(x.d)}`:''}</p>`).join('')}${live?`<p>${G.ps.tbPos+1}위 결정전 진행 중 · ${badge(live.hi,16)} ${esc(tshort(live.hi))} 대 ${badge(live.lo,16)} ${esc(tshort(live.lo))} · ${dmd(live.days[live.gi]??live.days[0])}</p>`:''}</section>`:''; }
   /* 아래 줄: 5위 → 1위(왼쪽→오른쪽), 정규시즌 성적 */
   const seeds=`<div class="bk-sd">${[4,3,2,1,0].map(i=>{ const o=D.order[i]; return o?`<div class="bk-q bk-q${i+1}${o.tid===G.user?' me':''}">${badge(o.tid,44)}<span title="${esc(tshort(o.tid))}"><i>${i+1}위</i><b><s>${esc(team(o.tid).city)} </s>${esc(team(o.tid).nick)}</b><em>${o.w}승 ${o.l}패${o.t?` <s>${o.t}무</s>`:''}</em></span></div>`:''; }).join('')}</div>`;
   const ruleT='정규시즌 1~5위가 나갑니다. 아래 단계에서 이긴 팀이 위에서 기다리는 상위 팀과 붙습니다. 칸을 누르면 그 시리즈 결과를 봅니다.';
   /* PC 대진표에서는 칸이 작아 긴 설명은 i 버튼으로, 짧은 안내만 남긴다 */
   const rule=`<section class="bk-box bk-rule"><h3>진행 방식 ${hiI(ruleT)}</h3><p class="bk-rule-l">${ruleT}</p><p class="bk-rule-s">1~5위 · 아래 단계 승자가 위 칸 상위 팀과 붙습니다.</p></section>`;
-  const ks=R.ks, ch=`<div class="bk-ch${ks?' on':''}${ks&&ks[0]===G.user?' me':''}"><span class="eyebrow">${D.y} 우승</span>${ks?`${champTrophyImg(80)}<span class="bk-cht">${badge(ks[0],48)}<b>${esc(tname(ks[0]))}</b></span><i>한국시리즈 ${ks[2]}승 ${ks[3]}패</i>`:'<b class="muted">TBD</b><i>한국시리즈 승자</i>'}</div>`;
+  const ks=R.ks&&!bkHid(D,'ks')?R.ks:null, ch=`<div class="bk-ch${ks?' on':''}${ks&&ks[0]===G.user?' me':''}"><span class="eyebrow">${D.y} 우승</span>${ks?`${champTrophyImg(80)}<span class="bk-cht">${badge(ks[0],48)}<b>${esc(tname(ks[0]))}</b></span><i>한국시리즈 ${ks[2]}승 ${ks[3]}패</i>`:'<b class="muted">TBD</b><i>한국시리즈 승자</i>'}</div>`;
   /* 선: 칸(두 팀 사이) → 다음 칸 아래 팀, 아래 줄 구단 → 그 구단이 들어가는 칸 */
   const my=i=>BK_Y[i]+BK_H*.61, lowY=i=>BK_Y[i]+BK_H*.805, bot=i=>BK_Y[i]+BK_H;
   const ln=BK_R.map(([k],i)=>{ const x0=BK_X[i]+BK_W, x1=BK_X[i+1], y0=my(i), y1=i<3?lowY(i+1):my(i), m=(x0+x1)/2;
     return `<path class="${R[k]?'on':''}" d="M${x0} ${y0}H${m}V${y1}H${x1}"/>`; }).join('')
     +[[0,BK_W*.25],[0,BK_W*.75],[1,BK_W/2],[2,BK_W/2],[3,BK_W/2]].map(([c,dx])=>`<path d="M${BK_X[c]+dx} ${BK_SY}V${bot(c)}"/>`).join(''); /* 일정 칸이 줄기를 덮는다 */
-  return `<div class="bk ws-own"${v3('bracket')?` style="--bk-bg:url(${v3('bracket')})"`:''}>${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${rule}</div>`; }
+  return `<div class="bk ws-own"${v3('bracket')?` style="--bk-bg:url(${v3('bracket')})"`:''}>${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${D.tbHtml||''}${rule}</div>`; }
 function standFm(order,live,y){
   const me=G.user, n=order.length, top=order[0], rk=live?tieRank(order,me):order.findIndex(o=>o.tid===me)+1, gs=G.unemp?null:goalStatus(), od=live?playoffOdds():null, om=new Map((od||[]).map(o=>[o.tid,o]));
   const R=playerRows(y), mine=R.filter(x=>(x.h.t??x.p.team)===me), B=mine.filter(x=>!x.p.isP), P=mine.filter(x=>x.p.isP), rc=fxRankLine();

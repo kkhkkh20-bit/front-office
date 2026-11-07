@@ -1938,6 +1938,11 @@ T('[검수 11-07 드래프트] 보드와 추천 지명이 같은 점수, 보관 
   const sc=G.scouts[0]; sc.since=G.day; ok(dcObs({id:1},sc)===0||G.day<dnum(G.year,3,1),'배치 첫날 관찰 1회');
   const t=G.teams.find(x=>x.id!==G.user).id; const n0=draftNeed(t).C; const q=newPlayer({age:18,isP:false,base:40,pot:60,team:t}); q.pos='C'; q.joinY=G.year+1; ok(draftNeed(t).C<n0||n0<=-2,'내년 합류 포수가 수요에 없음');
   const r=domestic(G.user).find(x=>!x.foreign&&!postDone(x)); r.svc=8; G.rolled=G.year; G.day=dnum(G.year,11,10); r.mlb=60; const m=postGM(r.id); ok(/신청했습니다/.test(m),'포스팅 신청 실패: '+m); ok((G.posting||[]).some(x=>x.pid===r.id),'포스팅 목록 없음'); });
+T('[검수 11-07 포스트시즌] 3팀 순환 동률은 팀 배열 순서와 무관, 같은 승률은 공동 순위, 진출 확률 캐시는 성적이 바뀌면 다시',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+40); const T=G.teams.map(t=>t.id); for(const id of T){ G.sea.rec[id]={w:50,l:50,t:0}; } const [A,B,C]=T;
+  const mk=(a,b,n)=>{ for(let i=0;i<n;i++){ G.sea.tl[a].push([1,5,3,1,b,G.day,0,0]); G.sea.tl[b].push([-1,3,5,0,a,G.day,0,0]); } }; for(const id of T)G.sea.tl[id]=[]; mk(A,B,3); mk(B,C,3); mk(C,A,3);
+  const o1=standingsNow().map(x=>x.tid).filter(x=>[A,B,C].includes(x)).join(','); const tm=G.teams; G.teams=[...tm].reverse(); let o2; try{ o2=standingsNow().map(x=>x.tid).filter(x=>[A,B,C].includes(x)).join(','); }finally{ G.teams=tm; } ok(o1===o2,'배열 순서에 따라 바뀜 '+o1+' / '+o2);
+  ok(tieOf({w:80,l:64,t:0},{w:75,l:60,t:9}),'같은 승률 공동 아님');
+  for(const id of T)G.sea.rec[id]={w:30,l:0,t:0}; const p1=JSON.stringify(playoffOdds()); G.sea.rec[A]={w:0,l:30,t:0}; const p2=JSON.stringify(playoffOdds()); ok(p1!==p2,'성적이 바뀌어도 같은 확률'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

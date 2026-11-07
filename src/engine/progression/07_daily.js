@@ -205,10 +205,15 @@ function monthReport(m){
 function h2hPct(a,b){ const L=((G.sea&&G.sea.tl)||[])[a]||[]; let w=0,l=0; for(const x of L)if(x[4]===b){ if(x[0]>0)w++; else if(x[0]<0)l++; } return w+l?w/(w+l):.5; }
 function rsOf(a){ const L=((G.sea&&G.sea.tl)||[])[a]||[]; let s=0; for(const x of L)s+=x[1]||0; return s; }
 /* 동률이면 같은 순위(공동 n위): 홈·일정·카드·리그 화면과 구단주 목표가 같은 기준을 쓴다 */
-const tieOf=(a,b)=>a&&b&&a.w===b.w&&a.l===b.l&&(a.t||0)===(b.t||0);
+const tieOf=(a,b)=>a&&b&&a.w*Math.max(1,b.w+b.l)===b.w*Math.max(1,a.w+a.l); /* KBO 순위는 승률(무승부 제외)이 같으면 공동: 결정전 판정과 같은 기준(검수 11-07) */
 function tieRank(order,tid){ const i=order.findIndex(o=>(o.tid??o)===tid); if(i<0)return 0; let j=i; while(j>0&&tieOf(order[j-1],order[i]))j--; return j+1; }
 function standingsNow(){ const r=G.sea.rec; const pct=x=>x.w/Math.max(1,x.w+x.l); const prev=(G.last&&G.last.order)||[]; const pr=t=>{ const i=prev.findIndex(x=>(x.tid??x)===t); return i<0?99:i; };
-  return G.teams.map(t=>({tid:t.id,w:r[t.id].w,l:r[t.id].l,t:r[t.id].t||0})).sort((a,b)=>(pct(b)-pct(a))||(h2hPct(b.tid,a.tid)-h2hPct(a.tid,b.tid))||(rsOf(b.tid)-rsOf(a.tid))||(pr(a.tid)-pr(b.tid))); }
+  const L=G.teams.map(t=>({tid:t.id,w:r[t.id].w,l:r[t.id].l,t:r[t.id].t||0})).sort((a,b)=>pct(b)-pct(a)); const out=[];
+  /* 같은 승률 묶음은 묶음 안 상대 전적 합계로(3팀 이상 순환 우세에도 팀 배열 순서와 무관, 검수 11-07) → 득실 → 지난 순위 */
+  for(let i=0;i<L.length;){ let j=i; while(j<L.length&&Math.abs(pct(L[j])-pct(L[i]))<1e-12)j++; const grp=L.slice(i,j); const ids=new Set(grp.map(x=>x.tid));
+    const gp=x=>{ let w=0,l=0; for(const g of ((G.sea&&G.sea.tl)||[])[x.tid]||[])if(ids.has(g[4])&&g[4]!==x.tid){ if(g[0]>0)w++; else if(g[0]<0)l++; } return w+l?w/(w+l):.5; };
+    out.push(...grp.sort((a,b)=>(gp(b)-gp(a))||(rsOf(b.tid)-rsOf(a.tid))||(pr(a.tid)-pr(b.tid))||(a.tid-b.tid))); i=j; }
+  return out; }
 const pctEq=(a,b)=>Math.abs(a.w/Math.max(1,a.w+a.l)-b.w/Math.max(1,b.w+b.l))<1e-12;
 
 
