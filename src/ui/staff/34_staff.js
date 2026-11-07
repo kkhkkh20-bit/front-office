@@ -40,7 +40,7 @@ function coachSlot(k){ const C=coachesOf(G.user); const c=C[k]; const r=CROLE[k]
   return `<div class="csl" data-role="${k}" data-selected="${UI.cslot===k}"><div class="csl-h"><b>${r.l}</b>${coachTag(c)}</div>
     <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user})}${esc(c.name)} <span class="small muted">${c.age}세</span></div>
     <div class="csl-s">${coachStats(c,G.user)}</div>${coachAbBox(c)}
-    <div class="small muted">${esc(c.car)} · 연 ${money(c.sal)} · 잔여 ${Math.max(0,c.yrs)}년</div>
+    <div class="small muted">${esc(c.car)} · 연 ${money(c.sal)} · ${ctLeftTxt(c)}</div>
     ${staffBioBox(c,'coach',G.user)}<div class="csl-acts">${coachDealRow(k,c)}<div class="row"><button class="btn small" data-a="person" data-v="c:${k}">인물 카드</button><button class="btn small" data-a="coachFind" data-v="${k}">교체</button>${UI.cfire===k?`<button class="btn small danger" data-a="fireCoach" data-v="${k}">정말 계약 해지</button>`:`<button class="btn small" data-a="cfireAsk" data-v="${k}">계약 해지</button>`}</div></div></div>`; }
 function chanceTxt(p){ return p>=.65?'응할 가능성 큼':p>=.45?'반반':p>=.25?'쉽지 않음':'거의 어려움'; }
 function coachOther(role,srt){ const C=coachesOf(G.user); const SF={tot:c=>-(c.sk+c.dv),sk:c=>-c.sk,dv:c=>-c.dv,sal:c=>c.sal};
@@ -51,7 +51,7 @@ function coachOther(role,srt){ const C=coachesOf(G.user); const SF={tot:c=>-(c.s
     const b=(T,l)=>`<button class="btn small ${T.promo?'':'primary'}" data-a="poach" data-v="${t.id}:${k}:${T.toRole}" ${cd?'disabled':''}>${l}<i class="pc-s">연 ${money(T.sal)}${T.comp?` · 보상 ${money(T.comp)}`:''} · ${chanceTxt(T.chance)}</i></button>`;
     return `<div class="csl" data-role="${k}" data-selected="${UI.cslot===k}"><div class="csl-h"><b>${badge(t.id,14)} ${esc(t.city+' '+t.nick)} ${CROLE[k].l}</b>${cur?`<span class="small muted">우리 ${esc(cur.name)} 대비 ${diff>0?'+':''}${diff}</span>`:'<span class="pill bad">우리 빈자리</span>'}</div>
       <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:t.id})}${esc(c.name)} <span class="small muted">${c.age}세</span>${c.star?' <span class="pill acc">스타 코치</span>':''}${obTag(c.ob)}${clan?` <span class="pill warn">${esc(m.name)} 감독 사단</span>`:''}</div><div class="csl-s">${coachStats({...c,clan:null},G.user)}</div>
-      <div class="small muted">${esc(c.car)} · 현재 연 ${money(c.sal)} · 계약 ${Math.max(0,c.yrs)}년 남음</div>
+      <div class="small muted">${esc(c.car)} · 현재 연 ${money(c.sal)} · ${ctLeftTxt(c)}</div>
       ${coachAbBox(c)}${staffBioBox(c,'coach',t.id)}<div class="pcb">${b(T1,'같은 자리로 영입')}${T2?b(T2,`${CROLE[pr].l}로 승격 제의`):''}</div>${cd?`<p class="small muted">${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.</p>`:''}</div>`; };
   return `<p class="small muted tipme">다른 구단 코치는 연봉을 올려 주거나(+35%) 한 단계 높은 자리를 주면(+15%, 응할 가능성 크게 오름) 옮겨 옵니다. ${poachOff()?'지금은 비시즌이라 계약이 1년 이하 남은 코치는 보상금 없이 데려올 수 있습니다.':'시즌 중에는 남은 계약에 대한 보상금을 원 소속 구단에 냅니다.'} 감독 사단 코치는 감독 곁을 잘 떠나지 않고, 우리 구단 출신은 잘 돌아옵니다. 빼 오면 그 구단 단장과 친분이 떨어집니다. 거절당하면 30일 동안 다시 제의할 수 없습니다.</p>
     ${(()=>{ const P=pager('cpo',L.slice(0,40),cardPageSize()); return `<div class="cgrid" data-pg="cpo">${P.items.map(card).join('')}</div>${P.bar}`; })()}`; }
@@ -83,13 +83,13 @@ function stRow(o){ const c=o.c, a=cAb(c), cur=o.cur;
   const dl=k=>{ if(!cur||cur===c)return ''; const v=dv(effC(c,G.user,k))-dv(effC(cur,G.user,k)); return `<em class="${v>0?'good':v<0?'bad':'muted'}">${v>0?'+':''}${v}</em>`; };
   const ab=[...new Set([...(CDOM[c.role]||[]),'yng'])].map(k=>`<span class="st-ab"><i>${CAB[k].replace(' 지도','').replace(' 관리','').replace('유망주 육성','유망주')}</i>${rchip(a[k])}</span>`).join('');
   return `<div class="st-r${o.open?' on':''}"><button class="st-n" data-a="${o.openA}" data-v="${o.key??c.id}">${avImg(o.face)}<span><b>${esc(c.name)}${o.tag?' '+o.tag:''}</b><i>${o.sub}</i></span></button>
-    <span class="st-v"><i>지도</i>${rchip(effC(c,G.user,'sk'))}${dl('sk')}</span><span class="st-v"><i>육성</i>${rchip(effC(c,G.user,'dv'))}${dl('dv')}</span><span class="st-sal">${money(c.sal)}${o.yrs!=null?`<i>잔여 ${o.yrs}년</i>`:''}</span>
+    <span class="st-v"><i>지도</i>${rchip(effC(c,G.user,'sk'))}${dl('sk')}</span><span class="st-v"><i>육성</i>${rchip(effC(c,G.user,'dv'))}${dl('dv')}</span><span class="st-sal">${money(c.sal)}${o.yrs!=null?`<i>${o.ct||`잔여 ${o.yrs}년`}</i>`:''}</span>
     <span class="st-act">${o.acts}</span><span class="st-abs">${ab}</span></div>${o.open?`<div class="st-x">${o.detail()}</div>`:''}`; }
 /* 우리 코치진 표: 보직마다 한 줄, 빈자리는 후보 보기. 이름을 누르면 그 줄 아래에 능력 카드(연장·승격·해지 버튼 포함) */
 function coachTable(){ const C=coachesOf(G.user); const slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];
   const row=k=>{ const c=C[k], r=CROLE[k];
     if(!c)return `<div class="st-r st-emp"><span class="st-n"><span class="av ini">-</span><span><b>${r.l}</b><i class="bad">빈자리</i></span></span><span class="st-act"><button class="btn small primary" data-a="coachFind" data-v="${k}">후보 보기</button></span><span class="st-abs small muted">${r.d}</span></div>`;
-    return stRow({c,key:k,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user},sub:`${r.l} · ${c.age}세`,tag:'',cur:null,open:UI.cslotOpen===k,openA:'cslotOpen',yrs:Math.max(0,c.yrs),
+    return stRow({c,key:k,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user},sub:`${r.l} · ${c.age}세`,tag:'',cur:null,open:UI.cslotOpen===k,openA:'cslotOpen',yrs:Math.max(0,c.yrs),ct:ctLeftTxt(c),
       acts:`<button class="btn small" data-a="coachFind" data-v="${k}">교체</button>`,detail:()=>coachSlot(k)}); };
   return `<div class="st-list">${stHead()}${slots.map(row).join('')}</div>`; }
 function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* PC: FM식 스태프 개요(34b_staff_fm.js), '보직 카드 보기'로 아래 카드 화면 */ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=coachGrade(G.user); const cn=clanCount(G.user);
