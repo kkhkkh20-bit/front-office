@@ -9,6 +9,12 @@ function setMeta(m){ try{ const s=JSON.stringify(m); localStorage.setItem(META,s
 const slotKey=n=>`${SAVE}-s${n}`;
 /* 이 탭이 연 슬롯: 저장은 늘 여기로. 다른 탭이 활성 슬롯 기록을 바꿔도 이 탭의 저장 대상은 바뀌지 않는다(검수 11-06) */
 let CUR_SLOT=null; function curSlot(){ return CUR_SLOT??(meta().active||1); }
+/* 슬롯 판번호(rev): 이 탭이 열거나 저장할 때 기억한 판번호와 지금 목록의 판번호가 다르면 다른 탭이 그사이 저장한 것. 늦게 쓴 탭이 앞선 진행을 덮지 않게 이 탭의 저장을 막는다(검수 11-07) */
+let SLOT_REV=0, SAVE_CONFL=false; function slotRevSync(n,m){ m=m||meta(); SLOT_REV=(m.slots[n]&&m.slots[n].rev)||0; SAVE_CONFL=false; }
+function slotHas(n){ try{ return localStorage.getItem(slotKey(n))!=null; }catch(e){ return false; } }
+function slotInfoOf(g){ const t=(g.teams||[]).find(x=>x.id===g.user); return {tid:g.user,name:t?`${t.city} ${t.nick}`:'',date:'',y:g.year,at:Date.now()}; }
+/* 화면을 옮기기 전 저장: 다른 탭과 겹쳐 저장을 막은 상태면 이미 안내했으니 그대로 옮긴다 */
+function saveOK(){ return saveNow()||SAVE_CONFL; }
 function slotUsed(n,m){ m=m||meta(); try{ return !!m.slots[n]||localStorage.getItem(slotKey(n))!=null; }catch(e){ return !!m.slots[n]; } } /* 목록에 빠졌어도 본문이 있으면 빈 슬롯이 아니다 */
 /* 저장 형식: '\u0001' + 원래 바이트 길이(15비트 두 글자) + deflate(raw) 바이트를 15비트씩 글자로 담는다(0xD800 아래 글자만 써서 브라우저 저장소에서 깨지지 않게).
    예전 LZ 저장('\u0001'로 시작하지 않음)과 아주 옛날 JSON 저장('{')도 그대로 읽는다. LZ는 시즌이 쌓이면 한 번에 0.8초 넘게 걸려 화면이 굳었다 */
@@ -39,14 +45,17 @@ try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('v
 let _svSeq=0, _svBusy=false;
 function slotInfo(){ return {tid:G.user,name:tname(G.user),date:dstr(G.day),y:G.year,at:Date.now(),over:!!G.gameOver}; }
 /* 성공(true)은 같은 슬롯을 다시 읽어 방금 쓴 내용과 같을 때만(검수 11-06: 저장 실패인데 성공 안내) */
-function writeSlot(n,data,info){ try{ localStorage.setItem(slotKey(n),data); if(localStorage.getItem(slotKey(n))!==data)throw new Error('read-back'); const m=meta(); const memo=m.slots[n]&&m.slots[n].memo; m.slots[n]=info; if(memo&&info&&info.memo==null)info.memo=memo; /* 슬롯 메모는 저장해도 남긴다 */ if(!setMeta(m)){ SAVE_ERR='저장 목록을 기록하지 못했습니다. 저장 공간을 확인한 뒤 다시 저장하세요.'; return false; } /* 본문만 쓰이고 목록이 빠지면 실패 */ SAVE_ERR=''; return true; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; return false; } }
+function writeSlot(n,data,info){ const own=n===curSlot()&&info; if(own){ const r0=(meta().slots[n]||{}).rev||0; if(SAVE_CONFL||r0!==SLOT_REV){ if(!SAVE_CONFL){ try{ toast('다른 탭(창)에서 이 슬롯을 더 최근에 저장했습니다. 이 탭의 진행은 저장하지 않습니다. 이 탭을 닫거나 처음 화면에서 슬롯을 다시 여세요.'); }catch(e){} } SAVE_CONFL=true; SAVE_ERR='다른 탭(창)에서 이 슬롯을 더 최근에 저장해, 이 탭의 진행은 저장하지 않았습니다. 이 탭 진행을 남기려면 파일로 내보내기를 하세요.'; return false; } info.rev=r0+1; }
+  try{ localStorage.setItem(slotKey(n),data); if(localStorage.getItem(slotKey(n))!==data)throw new Error('read-back'); const m=meta(); const memo=m.slots[n]&&m.slots[n].memo; m.slots[n]=info; if(memo&&info&&info.memo==null)info.memo=memo; /* 슬롯 메모는 저장해도 남긴다 */ if(!setMeta(m)){ SAVE_ERR='저장 목록을 기록하지 못했습니다. 저장 공간을 확인한 뒤 다시 저장하세요.'; return false; } /* 본문만 쓰이고 목록이 빠지면 실패 */ if(own)SLOT_REV=info.rev; SAVE_ERR=''; return true; }catch(e){ SAVE_ERR='저장 공간이 부족해 저장하지 못했습니다. 다른 슬롯을 지우거나 내보내기로 백업하세요.'; return false; } }
 function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; return writeSlot(n,packG(),slotInfo()); }
 async function saveStoreAsync(){ if(!G)return; const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(); _svBusy=true; let data=null;
   try{ data=await packJAsync(prepG()); }catch(e){ data=null; }
   if(seq!==_svSeq||G!==g)return; _svBusy=false; if(data==null){ saveStore(); return; } writeSlot(n,data,info); }
 function load(){ const m=meta();
-  try{ const old=localStorage.getItem(SAVE); if(old&&!Object.keys(m.slots).length){ const g=unpack(old); if(g){ try{ localStorage.setItem(slotKey(1),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(localStorage.getItem(slotKey(1)))){ m.active=1; CUR_SLOT=1; m.slots[1]={tid:g.user,name:'',date:'',y:g.year,at:Date.now()}; setMeta(m); localStorage.removeItem(SAVE); } }catch(e){} return g; } } }catch(e){} /* 새 슬롯을 읽을 수 있을 때만 원본을 지우고, 못 옮겨도 읽은 원본으로 이어서 시작한다(검수 11-06) */
-  CUR_SLOT=m.active||1; try{ return unpack(localStorage.getItem(slotKey(m.active||1))); }catch(e){ return null; } }
+  try{ const old=localStorage.getItem(SAVE); if(old&&!Object.keys(m.slots).length){ const g=unpack(old); if(g){ /* 목록만 비고 슬롯 본문이 남아 있으면 그 본문을 목록에 다시 올리고, 구형 세이브는 빈 슬롯으로 옮긴다(검수 11-07: 슬롯 1을 덮어씀) */ let act=null; for(const n of SLOT_IDS){ if(!slotHas(n))continue; const h=unpack(localStorage.getItem(slotKey(n))); if(h){ m.slots[n]=slotInfoOf(h); if(act==null)act=n; } }
+    const to=SLOT_IDS.find(n=>!slotHas(n)); if(act!=null&&!m.slots[m.active])m.active=act; try{ if(to==null)throw 0; localStorage.setItem(slotKey(to),old); /* 이미 압축된 형식이면 그대로 옮긴다(다시 압축하면 다음 실행에서 못 연다) */ if(unpack(localStorage.getItem(slotKey(to)))){ m.slots[to]=slotInfoOf(g); if(act==null)m.active=to; if(setMeta(m))localStorage.removeItem(SAVE); } }catch(e){ if(act!=null)setMeta(m); }
+    if(act==null){ CUR_SLOT=m.slots[m.active]?m.active:(to||1); slotRevSync(CUR_SLOT,m); return g; } } } }catch(e){} /* 새 슬롯을 읽을 수 있을 때만 원본을 지우고, 못 옮겨도 읽은 원본으로 이어서 시작한다(검수 11-06) */
+  CUR_SLOT=m.active||1; slotRevSync(CUR_SLOT,m); try{ return unpack(localStorage.getItem(slotKey(m.active||1))); }catch(e){ return null; } }
 function slotSize(n){ try{ const s=localStorage.getItem(slotKey(n)); return s?Math.round(s.length*2/1024):0; }catch(e){ return 0; } }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=s=>document.querySelector(s);
