@@ -49,7 +49,7 @@ function rosterView(){
   const vis0=p=>tid===G.user||!scoutReport(p).unseen||publicP(p);
   /* 포지션별 리그 전력 진단은 전력 구성 아래에서 독립 탭으로 분리한다. */
   { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='fut'){ UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
-  const RT=[['list','선수 명단'],['depth','전력 구성'],...(own?[['plan','선수단 계획'],['diag','포지션 진단'],['st','현황'],['mil','병역']]:[])];
+  const RT=[['list','선수 명단'],['depth','전력 구성'],['sal','연봉'],...(own?[['plan','선수단 계획'],['diag','포지션 진단'],['st','현황'],['mil','병역']]:[])];
   const it=inTabs('roster',RT,'list'); const seg=UI.seg==='pit'?'pit':'bat';
   const rookies=own?Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year):[];
   const pf=(UI.rpos=UI.rpos||{bat:'all',pit:'all'})[seg];
@@ -66,6 +66,7 @@ function rosterView(){
   if(it.cur==='plan'&&own)return head+it.bar+(fmOn()?planFM():plannerCard()); /* PC: FM식 선수단 계획표(25_squad_glance.js) */
   if(it.cur==='st'&&own)return head+it.bar+teamStatusView();
   if(it.cur==='mil'&&tid===G.user)return head+it.bar+milView();
+  if(it.cur==='sal')return head+it.bar+salView(tid);
   if(it.cur==='lineup')return head+it.bar+lineupCard(tid);
   if(it.cur==='staff')return head+it.bar+staffCard(tid);
   if(it.cur==='field')return head+it.bar+fieldC;
@@ -182,3 +183,14 @@ function playerRow(p,showTeam){
   const tags=[p.foreign?`<span class="pill">${p.foreign==='아시아'?'아시아':'외국인'}</span>`:'',p.faC?`<span class="pill">${p.ext?'다년':'FA'} ${p.yrs}년</span>`:'',p.extNext?'<span class="pill good">다년 합의</span>':'',p.injOut>0?`<span class="pill bad">부상 ${p.injOut}일</span>`:'',isRookie(p)?'<span class="pill acc">신인</span>':'',p.team===G.user&&p.mor!=null&&p.mor<45?`<span class="pill ${moodClass(p.mor)}">${moodLabel(p.mor)}</span>`:'',p.listed?'<span class="pill warn">매물</span>':''].join(' ');
   return `<button class="item wa" data-a="player" data-v="${p.id}">${avImg(p)}<span class="nm">${esc(p.name)} <span class="small muted">${showTeam?tshort(p.team)+' · ':''}${posLabel(p)} · ${p.age}세</span> ${tags}</span><span class="sub">${esc(rp.arch)} · ${h?yrTag(h)+' ':''}${statLine(h,p)}</span><span class="rt num">${money(p.sal)}</span></button>`;
 }
+
+/* 연봉 정렬표(카페 요청 11-07): 소속 선수 전원(1군·2군·육성·군 복무·외국인) 한 해 연봉 순위. 머리글을 누르면 정렬 */
+function salView(tid){ const nx=sponSeason()>G.year||(G.contract&&!G.contract.done);
+  const L=Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)).map(p=>({p,s:p.sal||0,n:salNext(p)||p.sal||0,o:ovr(p),g:p.foreign?'외국인':milServing(p)?'군 복무':p.ys?'육성':isAway(p)?'대표팀':!entryOn()?'정식':p.e1?'1군':'2군'}));
+  const K=UI.salSort||{k:'s',d:-1}; const f={s:x=>x.s,n:x=>x.n,o:x=>x.o,a:x=>x.p.age,name:x=>x.p.name}[K.k]||(x=>x.s); L.sort((a,b)=>{ const va=f(a), vb=f(b); return (typeof va==='string'?va.localeCompare(vb):va-vb)*K.d||b.s-a.s; });
+  const tot=sum(L.map(x=>x.s)), dom=L.filter(x=>!x.p.foreign), med=(A=>A.length?A[Math.floor(A.length/2)]:0)(dom.map(x=>x.s).sort((a,b)=>a-b)), cap=capOf(sponSeason()), top40=capPay(tid);
+  const th=(k,l,c)=>`<th data-a="salSort" data-v="${k}" class="sortable${c?' '+c:''}${K.k===k?' on':''}">${l}${K.k===k?(K.d<0?' ▼':' ▲'):''}</th>`;
+  const rows=L.map((x,i)=>`<tr class="click" data-a="player" data-v="${x.p.id}"><td class="num">${i+1}</td><td class="sal-n"><span class="candidate-name">${avImg(x.p)}<span>${esc(x.p.name)}<small>${posLabel(x.p)} · ${x.p.age}세 · ${x.g}</small></span></span></td><td class="num"><b>${money(x.s)}</b></td>${nx?`<td class="num${x.n>x.s?' good':x.n<x.s?' bad':''}">${money(x.n)}</td>`:''}<td class="small">${esc(ctText(x.p))}</td><td class="num">${dvo(x.p)}</td><td class="num">${x.p.age}</td></tr>`).join('');
+  return `<section class="card"><div class="row between"><h2 class="sec">연봉 순위 · ${G.year}</h2><span class="small muted">${L.length}명</span></div>
+    <dl class="tsum"><div><dt>전체 합계</dt><dd>${money(tot)}</dd></div><div><dt>국내 상위 40명(상한 기준)</dt><dd class="${top40>cap?'bad':''}">${money(top40)} / ${money(cap)}</dd></div><div><dt>국내 평균</dt><dd>${money(Math.round(dom.length?sum(dom.map(x=>x.s))/dom.length:0))}</dd></div><div><dt>국내 중간값</dt><dd>${money(med)}</dd></div></dl>
+    <div class="tw"><table class="sqt candidate-table sal-t"><thead><tr><th>#</th>${th('name','선수')}${th('s','올해 연봉','num')}${nx?th('n','다음 시즌','num'):''}<th>계약</th>${th('o','능력','num')}${th('a','나이','num')}</tr></thead><tbody>${rows}</tbody></table></div></section>`; }

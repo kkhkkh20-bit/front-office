@@ -296,6 +296,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   devSeed(){ const r=devSeedUser(); UI.devMsg=r; save(); render(); toast(r); },
   rcolTg(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const L=rcolKeys(pit).slice(); const i=L.indexOf(v); if(i>=0){ if(L.length<=1)return; L.splice(i,1); } else L.push(v); rcolLoad()[k]=L; rcolSave(); render(); },
   rcolMv(v){ const pit=UI.seg==='pit'; const k=pit?'pit':'bat'; const [c,d]=v.split(':'); const L=rcolKeys(pit).slice(); const i=L.indexOf(c), j=i+(+d); if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; rcolLoad()[k]=L; rcolSave(); render(); },
+  salSort(v){ const c=UI.salSort; UI.salSort={k:v,d:c&&c.k===v?-c.d:(v==='name'?1:-1)}; render(); },
   rsort(v){ const k=UI.seg==='pit'?'pit':'bat'; UI.rs=UI.rs||{}; if(!v){UI.rs[k]=null;} else { const c=UI.rs[k]; UI.rs[k]={k:v,dir:c&&c.k===v?-c.dir:-1}; } render(); },
   rpos(v){ UI.rpos=UI.rpos||{bat:'all',pit:'all'}; UI.rpos[UI.seg==='pit'?'pit':'bat']=v; render(); },
   relNow(v){releasePlayer(+v);save();render();},
