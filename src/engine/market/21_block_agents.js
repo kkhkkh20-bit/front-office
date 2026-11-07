@@ -43,8 +43,10 @@ const offScore=o=>o.annual*(1+.06*(o.years-1));
 function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; if(!F||F.closed||!p||p.team!=null||G.unemp)return {msg:'이미 계약했거나 협상할 수 없는 선수입니다.'}; const ag=agentOf(p); const n=negOf(id);
   const T=o.terms?{...o.terms}:null; const D=T?termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}):null; if(T)o={annual:Math.round(termsVal(T,D)),years:T.years,terms:T};
   if(faOutBlocked(G.user,p))return {msg:`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조). 이미 ${faOutN(G.user)}명을 데려왔습니다.`};
-  if(n.closed)return {msg:`${ag.name} 에이전트가 더 이상 우리와 협상하지 않습니다.`};
-  const RM=agRoundsMax(p); if(n.rounds>=RM)return {msg:`협상 횟수(${RM}회)를 다 썼습니다. 지금 조건이 마지막입니다.`};
+  const RM=agRoundsMax(p); /* 오래 팀을 찾지 못한 FA(시장 개장 45일 뒤, 마지막 협상 14일 뒤): 에이전트가 협상을 다시 연다(요구액도 그동안 내려갔다) */
+  if((n.closed||n.rounds>=RM)&&G.day-F.openDay>=45&&G.day-(n.lastD??-999)>=14){ n.closed=false; n.rounds=0; n.counter=null; n.mood=Math.max(n.mood,45); }
+  if(n.closed)return {msg:`${ag.name} 에이전트가 더 이상 우리와 협상하지 않습니다.${G.day-F.openDay>=45?` ${dmd(Math.max(G.day+1,(n.lastD??G.day)+14))}부터 다시 제안할 수 있습니다.`:''}`};
+  if(n.rounds>=RM)return {msg:`협상 횟수(${RM}회)를 다 썼습니다. 지금 조건이 마지막입니다.${G.day-F.openDay>=31?` 계약하지 못하면 ${dmd(Math.max(F.openDay+45,(n.lastD??G.day)+14))}부터 다시 협상할 수 있습니다.`:''}`}; n.lastD=G.day;
   /* 대형 에이전트의 역제안을 무시하고 더 낮게 부르면 기분이 상한다 */
   if(n.counter&&ag.size==='big'&&offScore(o)<offScore(n.counter)*.97){ n.mood=clamp(n.mood-6,0,100); agRelAdd(ag,-2,`${p.name} 역제안 무시`); }
   n.rounds++; n.log.push({d:G.day,w:'구단',a:o.annual,y:o.years,...(T?{tm:T}:{})});

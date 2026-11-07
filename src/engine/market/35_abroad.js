@@ -13,9 +13,9 @@ function fOverseas(){ for(const p of Object.values(G.players)){ if(!p.foreign||p
       [{l:`잔류 설득 (연봉 ${Math.round(fovsKeepSal(p,{amt})/USD)}만 달러)`,fx:`${lg==='MLB'?'성공 확률이 낮습니다(약 20%)':'성공 확률은 절반 정도입니다'}. 실패하면 연봉 부담 없이 떠납니다. 재계약 선수는 개인 연봉 상한이 없지만 3명 총액 한도는 지켜야 합니다.`},
        {l:'축하하며 보내 준다',fx:'떠납니다. 대체 외국인을 찾아야 합니다.'}],{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id,ks:fovsKeepSal(p,{amt})},def:1,exp:12}); } } /* ks: 버튼에 적은 금액을 그대로 계약한다(그사이 연봉이 바뀌어도: 검수 11-06) */
 /* 해외 제안을 받은 외국인 잔류 연봉: 버튼 안내와 실제 계약이 같은 계산 */
-function fovsKeepSal(p,o){ return p.foreign==='아시아'?Math.min(ASIA_CAP,round5(p.sal+10*USD)) /* 아시아쿼터 상한(검수 11-07) */:round5(usd(Math.max(p.sal/USD*1.5,o.amt*.85))); }
+function fovsKeepSal(p,o){ return p.foreign==='아시아'?Math.min(asiaReCap(p),round5(p.sal+10*USD)) /* 아시아쿼터 상한(검수 11-07) */:round5(usd(Math.max(p.sal/USD*1.5,o.amt*.85))); }
 EVH.fovs={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.ovsOffer)return ''; const o=p.ovsOffer;
-    if(i===0){ const asia=p.foreign==='아시아'; const ns=e.data.ks??fovsKeepSal(p,o); /* 버튼에 적은 금액 그대로 */ const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'&&x.id!==p.id); const own=p.opt&&p.ctT===p.team&&p.opt.until>=ctSeason()?(p.opt.a||0):0; const capOk=asia?ns<=ASIA_CAP:sum(yb.map(fCommit))+ns+own<=fCap(G.user); /* 본인 인센티브도 총액에(검수 11-07) */
+    if(i===0){ const asia=p.foreign==='아시아'; const ns=e.data.ks??fovsKeepSal(p,o); /* 버튼에 적은 금액 그대로 */ const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'&&x.id!==p.id); const own=p.opt&&p.ctT===p.team&&p.opt.until>=ctSeason()?(p.opt.a||0):0; const capOk=asia?ns<=asiaReCap(p):sum(yb.map(fCommit))+ns+own<=fCap(G.user); /* 본인 인센티브도 총액에(검수 11-07) */
       if(!capOk)return `외국인 연봉 총액 한도(${money(fCap(G.user))})를 넘어 설득할 수 없습니다. ${ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인')}`;
       const ok=R()<((o.lg==='MLB'?.2:.5)+((p.mor??60)-60)/200)*(asia?.5:1); if(ok){ p.sal=ns; p.kept={y:G.year,sal:ns}; delete p.ovsOffer; news('선수',`${p.name}, ${o.lg} 제안 뿌리치고 잔류`,`${tshort(G.user)}이(가) 연봉 ${money(ns)}에 붙잡았습니다.`,2,{ref:p.id}); return `설득 성공. 연봉 ${money(ns)}.`; }
       return `설득에 실패했습니다. ${ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인')}`; }
