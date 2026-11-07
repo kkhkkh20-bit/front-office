@@ -15,20 +15,22 @@ function mreqWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||G.gameOver||G.unem
   const recent=mreqs().filter(r=>r.day>G.day-28).length; if(recent)return;
   const C=[];
   if(per==='season'&&tradeOpen()&&!open.some(r=>r.k==='slot')&&!mreqs().some(r=>r.k==='slot'&&r.day>G.day-50)){ const rk=slotRanks(G.user); const w=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r)[0];
-    if(w&&w.r>=8)C.push(['slot',w,1.2+(m.ego-50)/60]); }
+    const back=w&&domestic(G.user).some(p=>pSlot(p)===w.k&&p.injOut>0&&p.injOut<=45&&ovr(p)>=rk[w.k].v+3); /* 그 자리 주전이 부상 중이고 곧 돌아오면 보강을 조르지 않는다(커뮤니티 피드백 11-07) */ if(w&&w.r>=8&&!back)C.push(['slot',w,1.2+(m.ego-50)/60]); }
   if(per==='season'&&G.day>G.cal.open+25&&!open.some(r=>r.k==='out')){ const bad=domestic(G.user).filter(p=>{ if(p.ys||p.age<29)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(h.outs>=60&&pRate(h).era>6):(h.pa>=90&&bRate(h).ops<.600); }).sort((a,b)=>b.sal-a.sal)[0]; if(bad&&!mreqs().some(r=>r.k==='out'&&r.data.pid===bad.id))C.push(['out',bad,.8+(m.disc-50)/80]); }
   if(per==='season'&&G.day<=foreignDL()&&!open.some(r=>r.k==='frep')){ const f=foreignOf(G.user).find(p=>{ if(fReplLeft(G.user,p.foreign)<=0)return false; const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=90&&pRate(h).era>5.4):(h.pa>=130&&bRate(h).ops<.690)); }); if(f)C.push(['frep',f,1]); }
   if((per==='season'&&tradeOpen()||G.fa&&G.fa.open&&!G.fa.closed)&&!open.some(r=>r.k==='fit')&&G.day-(G.mgrFitD??-99)>=50){ const nd=mgrNeedRole(G.user); if(nd)C.push(['fit',nd,1.3+(m.ego-50)/80]); }
   if(G.day>=KD(8,20)&&G.day<KD(9,10)&&!mreqs().some(r=>r.k==='draft'&&r.y===G.year))C.push(['draft',null,3]);
   if(G.fa&&G.fa.open&&!G.fa.closed&&!mreqs().some(r=>r.k==='fa'&&r.y===G.year))C.push(['fa',null,3]);
   if(!C.length||R()>.45)return; let x=R()*sum(C.map(c=>Math.max(.2,c[2]))); for(const c of C){ x-=Math.max(.2,c[2]); if(x<=0){ mreqMake(c[0],c[1]); return; } } }
+/* 현실적으로 데려오기 어려운 선수: 그 구단 핵심(능력 상위 3명)·프랜차이즈 스타·트레이드 거부권 보유·우리 상한 여유로 감당 못 할 연봉(커뮤니티 피드백 11-07: 다른 구단 간판을 자꾸 요구) */
+function mgrUnreal(p){ try{ const top=domestic(p.team).filter(q=>!q.ys).map(ovr).sort((a,b)=>b-a); if(ovr(p)>=(top[2]??99))return true; if(p.ntc||franId(p.team)===p.id)return true; if(p.sal>Math.max(0,capOf(sponSeason())-capPay(G.user))+3000)return true; }catch(e){} return false; }
 function mreqMake(k,d){ const m=G.mgr[G.user]; const nm=mgrSays(m);
   if(k==='fit'){ G.mgrFitD=G.day; const R0=MROLE[d.k]; const cs=roleCands(G.user,d.k,3); const ins=roleInside(G.user,d.k); const ty=mgrType(m); const until=period()==='season'?Math.min(G.day+35,tradeDL()):G.day+40;
     const r=mreqAdd('fit',{role:d.k,have:d.have,cands:cs.map(p=>p.id)},until);
     mreqAsk(r,`${nm}: ${R0.l}이(가) 필요합니다`,`"제 야구는 ${ty.n}입니다. 지금 주전 중 ${R0.l}이(가) ${d.have}명뿐입니다(${R0.tgt}명은 있어야 합니다). ${R0.need}이(가) 좋은 선수를 찾아 주십시오. ${R0.acc}은(는) 감수하겠습니다. 쓰임새는 ${R0.role}입니다."${cs.length?`\n예: ${cs.map(p=>`${p.name}(${p.team!=null?tshort(p.team):'FA'}, ${posLabel(p)}, ${roleTags(p,d.k)})`).join(' / ')}`:''}\n내부 대안: ${ins?`${ins.name}(${posLabel(ins)}, ${roleTags(ins,d.k)})`:'없음'}. 꼭 이 선수들이 아니어도 조건에 맞는 선수면 됩니다.`,
       [{l:'맞는 선수를 찾아보겠다',fx:`${dmd(until)}까지 조건에 맞는 선수를 데려오면 감독 관계 +5. 감독은 그 선수를 원하는 자리에 씁니다. 못 하면 -3.`},{l:'지금 선수로 간다',fx:`감독 관계 -${m.ego>=70?4:2}.`}],1,cs[0]?cs[0].id:null); return; }
   if(k==='slot'){ if(G.day-(G.mgrReqD??-99)<45)return; G.mgrReqD=G.day; const sk=d.k; const cur=slotRanks(G.user)[sk]; const rv=cur.v;
-    const cands=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)&&pSlot(p)===sk&&ovr(p)>=rv+4&&healthy(p)).sort((a,b)=>(ovr(b)+mgrFitB(G.user,b)*3)-(ovr(a)+mgrFitB(G.user,a)*3)).slice(0,8); /* 같은 자리라도 감독 야구에 맞는 선수를 먼저 */
+    const cands=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.ys&&!(p.joinY>G.year)&&pSlot(p)===sk&&ovr(p)>=rv+4&&healthy(p)&&!mgrUnreal(p)).sort((a,b)=>(ovr(b)+mgrFitB(G.user,b)*3)-(ovr(a)+mgrFitB(G.user,a)*3)).slice(0,8); /* 같은 자리라도 감독 야구에 맞는 선수를 먼저 */
     const t=cands.find(p=>{ try{ return findPackages(p.id).length>0; }catch(e){ return false; } })||null; const until=Math.min(G.day+30,tradeDL());
     const r=mreqAdd('slot',{sk,rank:d.r,v:rv,target:t?t.id:null},until);
     mreqAsk(r,`${nm}: ${SLOTK[sk]} 보강 요청`,`"${SLOTK[sk]} 자리가 리그 ${d.r}위입니다. 이대로는 버티기 어렵습니다.${t?` ${tname(t.team)}의 ${t.name}(${posLabel(t)}, ${t.age}세) 같은 선수가 필요합니다.`:''}" ${dmd(until)}까지 ${SLOTK[sk]}을(를) 보강해 달라고 합니다.`,

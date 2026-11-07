@@ -21,7 +21,7 @@ function draftLevelAdj(){ const m=lgMeanDom(); if(m==null)return 0; if(G.lgBase=
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
   for(let i=0;i<DRAFT_POOL;i++){
-    const college=R()<.3; const age=college?22:18; const T=clamp(N(44,9)+(R()<.06?rnd(4,9):0)-lvAdj,26,79); /* 해마다 리그 상위권(60+)으로 클 재목이 7~8명 섞인다. 사실성보다 '대어'가 꾸준히 나오는 쪽을 택했다 */
+    const college=R()<.3; const age=college?22:18; const T=clamp(N(43,8)+(R()<.04?rnd(3,8):0)-lvAdj,26,77); /* 해마다 리그 상위권(60+)으로 클 재목이 몇 명 섞인다. 커뮤니티 피드백(11-07: 탱킹 2~3년이면 주전이 대어로 채워짐)으로 폭을 줄였다 */
     const cur=clamp(T-(27-age)*rnd(2.2,3.4),20,60);
     const b=newPlayer({age,base:cur,pot:T,college}); b.prospect=true;
     b.school=pick(SCH_CITY[b.region])+(college?pick(SCH_UN):pick(SCH_HS)); b.schoolHue=Math.floor(u01('sh',b.school)*360);

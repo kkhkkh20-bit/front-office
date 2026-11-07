@@ -32,9 +32,15 @@ function mgrFitWhy(tid,p){ const m=G.mgr[tid]; if(!m||m.interim)return ''; const
 /* 역할 후보: 다른 구단 선수와 FA. 1군에서 쓸 만한 선수만(우리 주전 평균보다 크게 낮지 않게) */
 function roleCands(tid,k,n){ const R=MROLE[k]; let d=null; try{ d=depth(tid); }catch(e){} const base=R.bat?(d&&d.start.length?d.start.reduce((a,p)=>a+ovr(p),0)/d.start.length:50):(d&&d.sp.length?d.sp.reduce((a,p)=>a+ovr(p),0)/d.sp.length:50);
   const fa=new Set(G.fa&&G.fa.open&&!G.fa.closed?(G.fa.pool||[]):[]);
-  return Object.values(G.players).filter(p=>((p.team!=null&&p.team!==tid)||fa.has(p.id))&&!p.foreign&&!p.ys&&!p.prospect&&!(p.joinY>G.year)&&healthy(p)&&roleOk(p,k)&&ovr(p)>=base-6)
+  return Object.values(G.players).filter(p=>((p.team!=null&&p.team!==tid)||fa.has(p.id))&&!p.foreign&&!p.ys&&!p.prospect&&!(p.joinY>G.year)&&healthy(p)&&roleOk(p,k)&&ovr(p)>=base-6&&!(p.team!=null&&tid===G.user&&mgrUnreal(p)))
     .sort((a,b)=>(R.f(b)+ovr(b)*.6)-(R.f(a)+ovr(a)*.6)).slice(0,n||3); }
 function roleInside(tid,k){ let d=null; try{ d=depth(tid); }catch(e){ return null; } const R=MROLE[k]; const cur=new Set((R.bat?d.start:k==='penS'?d.pen.slice(0,5):d.sp).map(p=>p.id)); return playersOf(tid).filter(p=>!cur.has(p.id)&&!p.prospect&&roleOk(p,k)).sort((a,b)=>ovr(b)-ovr(a))[0]||null; }
 /* 감독 화면: 원하는 역할별 주전 현황 + 그 야구가 먹히는지 보여 주는 기록 */
 function mgrPlayStat(tid,m){ const y=G.year; let sb=0,cs=0,hr=0,pa=0; for(const p of playersOf(tid)){ const h=seasonTotalT(p,y,'1군',tid); if(!h||p.isP)continue; sb+=h.sb||0; cs+=h.cs||0; hr+=h.hr||0; pa+=h.pa||0; } if(!pa)return '';
   const L=mgrRolesOf(m); if(L.includes('runSPD'))return `올 시즌 도루 ${sb}개 · 실패 ${cs}개(성공률 ${sb+cs?Math.round(sb/(sb+cs)*100):0}%)`; if(L.includes('pow'))return `올 시즌 팀 홈런 ${hr}개`; return ''; }
+
+/* 영입 전 미리 보기: 이 선수가 지금 우리 팀에 오면 감독이 어디에 쓰는가(1군 등록 가정). 계산 뒤 소속은 그대로 되돌린다 */
+function mgrPlanPos(p){ if(!p||G.unemp||p.team===G.user||!G.mgr[G.user])return ''; const t0=p.team, e0=p.e1; p.team=G.user; p.e1=true;
+  try{ const d=depth(G.user); if(p.isP){ const i=d.sp.findIndex(x=>x.id===p.id); if(i>=0)return `${i+1}선발`; const j=d.pen.findIndex(x=>x.id===p.id); return j<0?'2군':j===0?'마무리':j<=3?'필승조':'불펜'; }
+    const k=Object.keys(d.ln||{}).find(x=>d.ln[x]&&d.ln[x].id===p.id); return k?`주전 ${POSK[k]||k}`:d.start.some(x=>x.id===p.id)?'주전':`백업 ${POSK[p.pos]||p.pos}`; }
+  catch(e){ return ''; } finally{ p.team=t0; p.e1=e0; } }

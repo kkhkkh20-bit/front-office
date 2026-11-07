@@ -30,6 +30,7 @@ function develop(p){
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
     if(R()<.05*play*fac.g)p.pot+=ri(3,7);
+    if(!p.foreign&&age<=24&&p.pot<54&&p.draft&&p.draft.rd>=3&&R()<.07*play*pg){ const up=ri(4,9); p.pot+=up; if(p.team===G.user)story(p,`${G.year} 하위 지명의 반란: 잠재력이 눈에 띄게 올랐다`); } /* 하위 지명 선수도 기대 이상으로 크는 사례(커뮤니티 피드백 11-07) */
     if(R()<(p.dt==='stall'?.12:.05))p.pot-=ri(3,8);
     if(p.dt==='late'&&age>=25)p.pot+=rnd(0,1.5);
     if(T.vl&&svc!=='현역'&&age>=28&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */

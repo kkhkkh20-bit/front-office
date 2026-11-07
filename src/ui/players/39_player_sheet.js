@@ -24,6 +24,7 @@ function valueLine(p,rp){ if(p.prospect||p.fdPool||p.team==null)return ''; const
   if(p.team===G.user&&!p.foreign&&p.age<=25){ if(rp.ofp!=null)L.push(`<span><i>스카우트</i>${esc(potLine(p,rp,{who:false}))}</span>`);
     try{ const d=depth(G.user); const k=pSlot(p); const st=k==='SP'?d.sp[4]:k==='RP'?d.pen[3]:d.ln[k]; const reg=[...d.start,...d.sp,...d.pen.slice(0,4)].some(x=>x.id===p.id);
       const v=reg?'주전으로 씁니다':st&&ovr(st)-ovr(p)>=6?`지금은 ${esc(st.name)}(${dvo(st)}) 뒤입니다. 1군 기용은 어렵다고 봅니다`:st?`${esc(st.name)}(${dvo(st)})와 경쟁할 수 있다고 봅니다`:'기회를 줄 수 있다고 봅니다'; L.push(`<span><i>감독</i>${v}</span>`); }catch(e){} }
+  if(p.team!==G.user&&!G.unemp&&!p.foreign){ const v=mgrPlanPos(p); if(v)L.push(`<span><i>영입하면 감독</i>${esc(v)}</span>`); } /* 영입 전에 감독이 쓸 자리(커뮤니티 피드백 11-07) */
   return `<div class="vline">${L.join('')}</div>`; }
 function curExBox(p,rp){ let L=null; try{ L=curExplain(p,rp); }catch(e){} return L&&L.length?`<div class="curex"><div class="eyebrow">현재 평가 근거</div><ul>${L.map(x=>`<li>${tipRest(x)}</li>`).join('')}</ul></div>`:''; }
 /* 외국인 후보: 얼마나 조사했는지, 그래서 추정을 얼마나 믿을 수 있는지 한눈에 */
