@@ -43,7 +43,7 @@ function sfx(k,vol,rate){ const c=sndReady(); if(!c||!SND.buf[k])return null; co
 function sndLoop(name,k,vol,fade){ if(SND.loops[name]&&SND.loops[name].k===k)return; sndStop(name,.2); const c=sndReady(); if(!c||!SND.buf[k])return; const s=c.createBufferSource(); s.buffer=SND.buf[k]; s.loop=true;
   const g=c.createGain(); g.gain.setValueAtTime(0,c.currentTime); g.gain.linearRampToValueAtTime(vol,c.currentTime+(fade??.8)); s.connect(g); g.connect(SND.master); s.start(); SND.loops[name]={s,g,k}; }
 function sndStop(name,fade){ const L=SND.loops[name]; if(!L||!SND.ctx)return; const c=SND.ctx; const f=fade??.6; try{ L.g.gain.cancelScheduledValues(c.currentTime); L.g.gain.setValueAtTime(L.g.gain.value,c.currentTime); L.g.gain.linearRampToValueAtTime(0,c.currentTime+f); L.s.stop(c.currentTime+f+.05); }catch(e){} delete SND.loops[name]; }
-function sndStopAll(){ for(const k in SND.loops)sndStop(k,.3); }
+function sndStopAll(){ for(const k in SND.loops)sndStop(k,.3); try{ window.speechSynthesis&&speechSynthesis.cancel(); }catch(e){} }
 /* 오르간: 야구장 전통 나팔 신호(차지) 음형. 직접 합성 */
 function organ(seq,vol){ const c=sndReady(); if(!c)return; let t=c.currentTime+.02;
   for(const [m,d] of seq){ if(m){ const f=440*Math.pow(2,(m-69)/12); const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime((vol||.22),t+.02); g.gain.setValueAtTime((vol||.22),t+d*.85); g.gain.linearRampToValueAtTime(0,t+d);
@@ -54,6 +54,8 @@ const ORG_WIN=[[72,.14],[76,.14],[79,.14],[84,.5],[0,.08],[79,.14],[84,.7]];
 function siren(){ const c=sndReady(); if(!c)return; const t=c.currentTime; const o=c.createOscillator(); o.type='sawtooth'; const g=c.createGain(); const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1400;
   o.frequency.setValueAtTime(380,t); o.frequency.linearRampToValueAtTime(620,t+.9); o.frequency.linearRampToValueAtTime(560,t+1.8);
   g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.12,t+.15); g.gain.setValueAtTime(.12,t+1.4); g.gain.linearRampToValueAtTime(0,t+1.9); o.connect(lp); lp.connect(g); g.connect(SND.master); o.start(t); o.stop(t+2); }
+/* 심판 콜(세이프·아웃·스트라이크 아웃): 브라우저 음성 합성으로 짧고 굵게. 소리를 끄면 나지 않는다(사용자 11-08) */
+function umpCall(w){ if(!sndOn())return; try{ const S=window.speechSynthesis; if(!S||typeof SpeechSynthesisUtterance==='undefined')return; S.cancel(); const u=new SpeechSynthesisUtterance(w); u.lang='ko-KR'; u.rate=1.15; u.pitch=.6; u.volume=1; const v=(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)&&/male|남/i.test(x.name))||(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)); if(v)u.voice=v; S.speak(u); }catch(e){} }
 function buzz(ms){ try{ if(navigator.vibrate)navigator.vibrate(ms); }catch(e){} }
 addEventListener('pointerdown',()=>{ if(sndOn())sndInit(); if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume(); },{passive:true});
 

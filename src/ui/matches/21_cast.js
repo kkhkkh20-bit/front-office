@@ -93,7 +93,7 @@ function cDraw(k,ms){ const boardButton=document.querySelector('.cs-board-view')
   const targets=k>=L.length?[]:cTargets(g,k,st); cSync(targets,ms); if(typeof Match3D!=='undefined')Match3D.sync({targets,away:tshort(g.away),home:tshort(g.home),sa:st.sa,sh:st.sh,inning:cHalfTxt(st.half),outs:st.outs,board:c3DScore(g,k,st)}); if(k>=L.length){ st.sa=g.as; st.sh=g.hs; } cBoard(g,st,null); cSide(g,k); cSit(st,L[k]); c.wp=k>=L.length?(g.hs===g.as?.5:g.hs>g.as?1:0):wpHome(st); try{ if(k>=L.length){ const bar=document.getElementById('cs-wpa'); if(bar)bar.style.width=(c.wp*100)+'%'; const tx=document.getElementById('cs-wpt'); if(tx)tx.textContent=g.hs===g.as?'무승부':`${tshort(g.hs>g.as?g.home:g.away)} 승리`; } else cWp(g,st,null); }catch(e){}
   cCap(c3DActive()?(k>=L.length?'경기가 끝났습니다':typeof L[k]?.[1]==='number'?'다음 투구를 준비합니다':'주루 상황을 확인합니다'):''); cPitchReset(g,k); if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); { const eb=document.getElementById('cs-endbtn'); if(eb)eb.hidden=k<L.length; } /* 경기가 끝나면 큰 닫기 버튼 */ const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&!c.pre&&k<L.length?'일시정지':'재생'; }
 /* 연출 */
-function cFx(t,cls,stay){ const el=document.getElementById('cs-fx'); if(!el)return; el.className='cs-fx'; void el.offsetWidth; if(!t){ el.textContent=''; return; } el.textContent=t; el.className='cs-fx on '+(cls||'')+(stay?' stay':''); el.style.animationDuration=(1.5/cSpd())+'s'; }
+function cFx(t,cls,stay){ if(t==='삼진')umpCall('스트라이크 아웃'); else if(/아웃$|병살$/.test(t||''))umpCall('아웃'); const el=document.getElementById('cs-fx'); if(!el)return; el.className='cs-fx'; void el.offsetWidth; if(!t){ el.textContent=''; return; } el.textContent=t; el.className='cs-fx on '+(cls||'')+(stay?' stay':''); el.style.animationDuration=(1.5/cSpd())+'s'; }
 /* 홈런 축포: 구장 위 하늘에 폭죽 몇 발(사용자 피드백 11-06). 2.6초 뒤 스스로 지운다. 움직임 줄이기 설정이면 생략 */
 function cFireworks(){ const st=document.getElementById('cs-stage'); if(!st||matchMedia('(prefers-reduced-motion: reduce)').matches)return; const cv=document.createElement('canvas'); cv.className='cs-fw'; const r=st.getBoundingClientRect(), dpr=Math.min(2,devicePixelRatio||1); cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); st.appendChild(cv); const x=cv.getContext('2d'); if(!x){ cv.remove(); return; } x.scale(dpr,dpr);
   const W=r.width, H=r.height, P=[], cols=['#ffd54a','#ff6b6b','#6be3ff','#ffffff','#9cff7a','#ff9df2']; const burst=(t)=>{ const cx=W*(.18+Math.random()*.64), cy=H*(.1+Math.random()*.25), c=cols[Math.floor(Math.random()*cols.length)]; for(let i=0;i<46;i++){ const a=Math.PI*2*i/46, v=1.6+Math.random()*2.2; P.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,c,t0:t,life:1100+Math.random()*500}); } };
@@ -203,7 +203,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const runAll2=async(per)=>Promise.all(moves.map(async m=>{ const el=card('o'+m.id); if(!el)return; for(let i=m.from+1;i<=Math.min(4,m.to);i++){ cPlace(el,CPATH[i],per); await cSleep(per); } if(m.out||m.score)el.classList.add('gone'); }));
   let cap='', cls='';
   const oc=cTeamCol(x[0]%2?g.home:g.away);
-  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
+  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } else umpCall('스트라이크 아웃'); if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
   else if(o==='BB'||o==='HBP'){if(o==='HBP'&&scene3d){Match3D.hitByPitch();await cSleep(650);} if(!cam)cFx(o==='HBP'?'몸에 맞는 공':'볼넷','bb'); const pr=[]; if(bat){ cPlace(bat,CBS[0],700); pr.push(cSleep(700)); } pr.push(runAll2(600)); await Promise.all(pr); }
   else if(scene3d){await c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo});}
   else {
@@ -235,7 +235,7 @@ function castResumePitch(){const c=UI.cast;if(!c||c.pitch?.k!==c.k)return;const 
 function castRestart(){CT.tok++;CT.run=false;cBallHide();castResumePitch();castLoop();}
 async function castLoop(){ const host=document.getElementById('cs-3d');if(CT.run||UI.cast?.pre||host&&['pending','loading'].includes(host.dataset.state))return; CT.run=true; const my=CT.tok;
   if(UI.cast&&UI.cast.play)sndLoop('amb','amb',.4,1.2);
-  try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); siren(); if(g.hs>g.as)sfx('cheer_big',.8); if(g.res==='승'){ setTimeout(()=>organ(ORG_WIN,.18),900); } break; }
+  try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); /* 경기 종료 효과음(사이렌·함성·오르간)은 뺐다(사용자 11-08) */ break; }
       const x=L[c.k]; const md=c.mode||'all'; if(md!=='all'&&!cKeep(g,c.k,md)){ c.k++; continue; }
       cDraw(c.k,md==='all'?300:0); await cSleep(md==='all'?260:200);
       if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); }

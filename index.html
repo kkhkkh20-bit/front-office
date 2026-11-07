@@ -22815,7 +22815,7 @@ function sfx(k,vol,rate){ const c=sndReady(); if(!c||!SND.buf[k])return null; co
 function sndLoop(name,k,vol,fade){ if(SND.loops[name]&&SND.loops[name].k===k)return; sndStop(name,.2); const c=sndReady(); if(!c||!SND.buf[k])return; const s=c.createBufferSource(); s.buffer=SND.buf[k]; s.loop=true;
   const g=c.createGain(); g.gain.setValueAtTime(0,c.currentTime); g.gain.linearRampToValueAtTime(vol,c.currentTime+(fade??.8)); s.connect(g); g.connect(SND.master); s.start(); SND.loops[name]={s,g,k}; }
 function sndStop(name,fade){ const L=SND.loops[name]; if(!L||!SND.ctx)return; const c=SND.ctx; const f=fade??.6; try{ L.g.gain.cancelScheduledValues(c.currentTime); L.g.gain.setValueAtTime(L.g.gain.value,c.currentTime); L.g.gain.linearRampToValueAtTime(0,c.currentTime+f); L.s.stop(c.currentTime+f+.05); }catch(e){} delete SND.loops[name]; }
-function sndStopAll(){ for(const k in SND.loops)sndStop(k,.3); }
+function sndStopAll(){ for(const k in SND.loops)sndStop(k,.3); try{ window.speechSynthesis&&speechSynthesis.cancel(); }catch(e){} }
 /* 오르간: 야구장 전통 나팔 신호(차지) 음형. 직접 합성 */
 function organ(seq,vol){ const c=sndReady(); if(!c)return; let t=c.currentTime+.02;
   for(const [m,d] of seq){ if(m){ const f=440*Math.pow(2,(m-69)/12); const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime((vol||.22),t+.02); g.gain.setValueAtTime((vol||.22),t+d*.85); g.gain.linearRampToValueAtTime(0,t+d);
@@ -22826,6 +22826,8 @@ const ORG_WIN=[[72,.14],[76,.14],[79,.14],[84,.5],[0,.08],[79,.14],[84,.7]];
 function siren(){ const c=sndReady(); if(!c)return; const t=c.currentTime; const o=c.createOscillator(); o.type='sawtooth'; const g=c.createGain(); const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1400;
   o.frequency.setValueAtTime(380,t); o.frequency.linearRampToValueAtTime(620,t+.9); o.frequency.linearRampToValueAtTime(560,t+1.8);
   g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.12,t+.15); g.gain.setValueAtTime(.12,t+1.4); g.gain.linearRampToValueAtTime(0,t+1.9); o.connect(lp); lp.connect(g); g.connect(SND.master); o.start(t); o.stop(t+2); }
+/* 심판 콜(세이프·아웃·스트라이크 아웃): 브라우저 음성 합성으로 짧고 굵게. 소리를 끄면 나지 않는다(사용자 11-08) */
+function umpCall(w){ if(!sndOn())return; try{ const S=window.speechSynthesis; if(!S||typeof SpeechSynthesisUtterance==='undefined')return; S.cancel(); const u=new SpeechSynthesisUtterance(w); u.lang='ko-KR'; u.rate=1.15; u.pitch=.6; u.volume=1; const v=(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)&&/male|남/i.test(x.name))||(S.getVoices()||[]).find(x=>/^ko/i.test(x.lang)); if(v)u.voice=v; S.speak(u); }catch(e){} }
 function buzz(ms){ try{ if(navigator.vibrate)navigator.vibrate(ms); }catch(e){} }
 addEventListener('pointerdown',()=>{ if(sndOn())sndInit(); if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume(); },{passive:true});
 
@@ -22924,7 +22926,7 @@ function cDraw(k,ms){ const boardButton=document.querySelector('.cs-board-view')
   const targets=k>=L.length?[]:cTargets(g,k,st); cSync(targets,ms); if(typeof Match3D!=='undefined')Match3D.sync({targets,away:tshort(g.away),home:tshort(g.home),sa:st.sa,sh:st.sh,inning:cHalfTxt(st.half),outs:st.outs,board:c3DScore(g,k,st)}); if(k>=L.length){ st.sa=g.as; st.sh=g.hs; } cBoard(g,st,null); cSide(g,k); cSit(st,L[k]); c.wp=k>=L.length?(g.hs===g.as?.5:g.hs>g.as?1:0):wpHome(st); try{ if(k>=L.length){ const bar=document.getElementById('cs-wpa'); if(bar)bar.style.width=(c.wp*100)+'%'; const tx=document.getElementById('cs-wpt'); if(tx)tx.textContent=g.hs===g.as?'무승부':`${tshort(g.hs>g.as?g.home:g.away)} 승리`; } else cWp(g,st,null); }catch(e){}
   cCap(c3DActive()?(k>=L.length?'경기가 끝났습니다':typeof L[k]?.[1]==='number'?'다음 투구를 준비합니다':'주루 상황을 확인합니다'):''); cPitchReset(g,k); if(k>=L.length)cFx(`경기 종료 ${g.as} : ${g.hs}`,'end',true); else cFx(''); { const eb=document.getElementById('cs-endbtn'); if(eb)eb.hidden=k<L.length; } /* 경기가 끝나면 큰 닫기 버튼 */ const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play&&!c.pre&&k<L.length?'일시정지':'재생'; }
 /* 연출 */
-function cFx(t,cls,stay){ const el=document.getElementById('cs-fx'); if(!el)return; el.className='cs-fx'; void el.offsetWidth; if(!t){ el.textContent=''; return; } el.textContent=t; el.className='cs-fx on '+(cls||'')+(stay?' stay':''); el.style.animationDuration=(1.5/cSpd())+'s'; }
+function cFx(t,cls,stay){ if(t==='삼진')umpCall('스트라이크 아웃'); else if(/아웃$|병살$/.test(t||''))umpCall('아웃'); const el=document.getElementById('cs-fx'); if(!el)return; el.className='cs-fx'; void el.offsetWidth; if(!t){ el.textContent=''; return; } el.textContent=t; el.className='cs-fx on '+(cls||'')+(stay?' stay':''); el.style.animationDuration=(1.5/cSpd())+'s'; }
 /* 홈런 축포: 구장 위 하늘에 폭죽 몇 발(사용자 피드백 11-06). 2.6초 뒤 스스로 지운다. 움직임 줄이기 설정이면 생략 */
 function cFireworks(){ const st=document.getElementById('cs-stage'); if(!st||matchMedia('(prefers-reduced-motion: reduce)').matches)return; const cv=document.createElement('canvas'); cv.className='cs-fw'; const r=st.getBoundingClientRect(), dpr=Math.min(2,devicePixelRatio||1); cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); st.appendChild(cv); const x=cv.getContext('2d'); if(!x){ cv.remove(); return; } x.scale(dpr,dpr);
   const W=r.width, H=r.height, P=[], cols=['#ffd54a','#ff6b6b','#6be3ff','#ffffff','#9cff7a','#ff9df2']; const burst=(t)=>{ const cx=W*(.18+Math.random()*.64), cy=H*(.1+Math.random()*.25), c=cols[Math.floor(Math.random()*cols.length)]; for(let i=0;i<46;i++){ const a=Math.PI*2*i/46, v=1.6+Math.random()*2.2; P.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,c,t0:t,life:1100+Math.random()*500}); } };
@@ -23034,7 +23036,7 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   const runAll2=async(per)=>Promise.all(moves.map(async m=>{ const el=card('o'+m.id); if(!el)return; for(let i=m.from+1;i<=Math.min(4,m.to);i++){ cPlace(el,CPATH[i],per); await cSleep(per); } if(m.out||m.score)el.classList.add('gone'); }));
   let cap='', cls='';
   const oc=cTeamCol(x[0]%2?g.home:g.away);
-  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
+  if(o==='K'){ if(!cam){ sfx('mitt',.9); cFx('삼진','k'); } else umpCall('스트라이크 아웃'); if(scene3d)await cSleep(650);if(bat)bat.classList.add('gone'); await cSleep(cam?200:900); }
   else if(o==='BB'||o==='HBP'){if(o==='HBP'&&scene3d){Match3D.hitByPitch();await cSleep(650);} if(!cam)cFx(o==='HBP'?'몸에 맞는 공':'볼넷','bb'); const pr=[]; if(bat){ cPlace(bat,CBS[0],700); pr.push(cSleep(700)); } pr.push(runAll2(600)); await Promise.all(pr); }
   else if(scene3d){await c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo});}
   else {
@@ -23066,7 +23068,7 @@ function castResumePitch(){const c=UI.cast;if(!c||c.pitch?.k!==c.k)return;const 
 function castRestart(){CT.tok++;CT.run=false;cBallHide();castResumePitch();castLoop();}
 async function castLoop(){ const host=document.getElementById('cs-3d');if(CT.run||UI.cast?.pre||host&&['pending','loading'].includes(host.dataset.state))return; CT.run=true; const my=CT.tok;
   if(UI.cast&&UI.cast.play)sndLoop('amb','amb',.4,1.2);
-  try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); siren(); if(g.hs>g.as)sfx('cheer_big',.8); if(g.res==='승'){ setTimeout(()=>organ(ORG_WIN,.18),900); } break; }
+  try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); /* 경기 종료 효과음(사이렌·함성·오르간)은 뺐다(사용자 11-08) */ break; }
       const x=L[c.k]; const md=c.mode||'all'; if(md!=='all'&&!cKeep(g,c.k,md)){ c.k++; continue; }
       cDraw(c.k,md==='all'?300:0); await cSleep(md==='all'?260:200);
       if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); }
@@ -23316,7 +23318,7 @@ async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
  if(by){ const left=(by-performance.now())*cSpd()-120, f=left>0?Math.min(1,left/(wind+travel)):.2; if(f<1){ const s=Math.max(.2,f); wind=Math.round(wind*s); travel=Math.round(Math.max(120,travel*s)); } } /* by: 주자가 베이스에 닿는 시각. 아웃이면 공이 그보다 먼저(빠른 송구) */
  Match3D.move('d'+receiver.id,toPt,cover/cSpd());
  Match3D.throwing('d'+from.id,toPt,wind/cSpd());cSpeak(g,k,'throw',{fielder:c3DName(from),receiver:c3DName(receiver),relay:phase==='중계 플레이'});
- await cSleep(wind);Match3D.receive('d'+receiver.id,'stretch',travel/cSpd(),fromPt);await cBall(fromPt,toPt,travel,false);Match3D.caught('d'+receiver.id,phase);
+ await cSleep(wind);sfx('pitch',.28,1.15);Match3D.receive('d'+receiver.id,'stretch',travel/cSpd(),fromPt);await cBall(fromPt,toPt,travel,false);Match3D.caught('d'+receiver.id,phase);sfx('mitt',.5,1.1); /* 송구·포구 소리(사용자 11-08) */
  cCap(`${POSK[toPos]||toPos} ${c3DName(receiver)} · ${phase}`,phase.includes('아웃')?'bad':'');
  return {receiver,travel,wind};
 }
@@ -23348,7 +23350,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
   if(!outPlay){await ball;const landing=Match3D.landed(true);cCap(landing,'good');if(path){const rollMs=Math.max(600,timing.reaction+run0-timing.flight);Match3D.roll(chase,rollMs/cSpd());await cSleep(rollMs);if(extra){Match3D.roll(chase2,extra/cSpd());await cSleep(extra);}}else await cSleep(Math.max(0,timing.reaction+timing.run-timing.flight));Match3D.receive('d'+f.id,'ground',timing.pickup/cSpd(),CHM);await cSleep(timing.pickup);}
   else {const lead=airOut?180:timing.pickup;await cSleep(Math.max(0,Math.max(timing.reaction+timing.run,timing.flight-lead)-timing.reaction));Match3D.receive('d'+f.id,airOut?(arc?'fly':'line'):'ground',lead/cSpd(),CHM);await ball;if(!airOut)await cSleep(timing.pickup);}
   if(UI.cast.errPos){Match3D.focus('d'+f.id,'실책');cFx('실책','bad');await cSleep(500);}
-  Match3D.caught('d'+f.id,airOut?'포구 · 아웃':'포구');
+  Match3D.caught('d'+f.id,airOut?'포구 · 아웃':'포구');sfx('mitt',.45,1.05);
   if(outPlay&&!UI.cast.errPos){
    if(airOut){cCap(`${POSK[f.pos]||f.pos} ${c3DName(f)} 포구 · 아웃`,'bad');cFx('아웃','out');}
    else if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);{ const fm=moves.find(m=>m.out); await c3DThrow(g,k,f,spot,pat[1],CBS[1],'포스 아웃',fm?arrive(fm.id,fm.to-fm.from):0); }for(const m of moves)if(m.out)retire(m.id);await c3DThrow(g,k,c3DFielder(g,k,pat[1]),CBS[1],'1B',CBS[0],'병살 · 아웃',arrive(x[1],1,620));cFx(pat[2]+' 병살','bad');}
@@ -23362,7 +23364,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
    cFx((o==='OUT'?'실책 출루':OUTK[o]||'안타')+(thrownOut?' · 주루 아웃':''),'hit');
   }
  }else{await ball;const landing=Match3D.landed();cSpeak(g,k,'homer',{landing},'hr');cFlash();cFireworks();cFx(x[6]===4?'만루 홈런':x[6]>1?x[6]+'점 홈런':'홈런','hr');sfx('cheer_big',.85);}
- await Promise.all([runners,batter]);if(!outPlay||UI.cast.errPos){const confirmed=Match3D.confirmLanding();if(confirmed)cCap(confirmed+' · 세이프','good');}
+ await Promise.all([runners,batter]);if(!outPlay||UI.cast.errPos){const confirmed=Match3D.confirmLanding();if(confirmed){cCap(confirmed+' · 세이프','good');umpCall('세이프');}}
 }
 
 /* Warm only model bytes on an explicit match-view intent; no WebGL work in menus. */
@@ -28802,7 +28804,7 @@ const PATCH=[
     '선수 화면의 능력 균형을 "능력 차트"로 바꾸고 현재 상태와 자리를 바꿨습니다.'
   ]},
   {id:'2026-11-08a',d:'11월 8일',t:'경기 사운드 · 중계 배속 · 예상 제재금',items:[
-    '중계에 소리가 생겼습니다. 안타·홈런 때 관중 함성, 투구할 때 공이 바람을 가르는 소리, 배트 휘두르는 소리, 맞히는 순간의 타구음이 납니다. 재생 버튼 옆 "소리" 버튼으로 끄고 켭니다.',
+    '중계에 소리가 생겼습니다. 안타·홈런 때 관중 함성, 투구할 때 공이 바람을 가르는 소리, 배트 휘두르는 소리, 맞히는 순간의 타구음, 송구·포구 소리, 심판의 세이프·아웃 콜이 납니다. 재생 버튼 옆 "소리" 버튼으로 끄고 켭니다.',
     '중계 재생 속도를 다시 고를 수 있습니다(1·1.5·2·3배속, 마지막에 고른 속도를 기억).',
     '연봉 협상·FA 협상 화면에 상한을 넘길 때 낼 예상 제재금이 나옵니다. 상한을 넘겨도 계약할 수 있고, 넘기고 우승을 노릴지 고를 수 있습니다.',
     '하위권 구단의 상위 3순번 1라운드 지명권도 원래 가치의 두 배를 치르면 트레이드로 얻을 수 있습니다.',
