@@ -310,6 +310,9 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .spo-n i{display:block;font-style:normal;font-size:11px;opacity:.65}
 @media (max-width:480px){.spo-top{grid-template-columns:1fr 1fr 1fr}.spo-top b{font-size:15px}.spo-n{grid-template-columns:1fr 1fr}}
 .spt th,.spt td{text-align:left}.spt td.num{text-align:right}
+.spt-w{overflow-x:auto}.spt{width:100%}
+/* 휴대폰: 표 대신 자리마다 한 칸으로 쌓는다(가로로 밀리던 문제, 사용자 피드백 11-07) */
+@media (max-width:699px){.spt thead{display:none}.spt,.spt tbody,.spt tr,.spt td{display:block;width:auto}.spt tr{padding:8px 0;border-top:1px solid var(--line,#333)}.spt td{padding:2px 4px!important;height:auto!important;max-height:none!important;border:0;min-width:0;overflow-wrap:anywhere;position:static!important}.spt td.num{text-align:left}.spt td[data-l]::before{content:attr(data-l) ' ';font-size:12px;opacity:.65;margin-right:4px}.spt td:empty{display:none}.spt dl,.spt dl *{max-width:100%;min-width:0}}
 /* 이적 현황 */
 .mvl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 0;border-top:1px solid var(--line,#2a2a2a);cursor:pointer}
 .mvl:first-of-type{border-top:0}.mvl.me{background:color-mix(in srgb,var(--acc,#4a8) 8%,transparent)}
