@@ -50,7 +50,7 @@ function ngtGap(N,D){ const p=G.players[N.id]; let r;
 /* 제안 결과 줄: 말풍선과 따로, 합의·역제안·거절·검토 중·결렬과 다음에 할 수 있는 일을 한 줄로 못 박는다 */
 function ngtResOf(N){ const p=G.players[N.id]; if(N.res)return N.res;
   if(N.k==='ext'&&p.extLast&&G.day-p.extLast.d<=6){ const c=p.extCounter&&p.extCounter.until>=G.day; const nx=extNextDay(p); if(p.extLast.st==='counter'&&c)return {st:'counter'}; if(nx)return {st:p.extLast.st,next:nx}; }
-  if(N.k==='fa'){ const n=G.fa&&G.fa.neg&&G.fa.neg[p.id]; if(n&&n.closed)return {st:'closed'}; }
+  if(N.k==='fa'){ const n=G.fa&&G.fa.neg&&G.fa.neg[p.id]; if(n&&n.closed&&!faReopenOk(p.id))return {st:'closed'}; }
   return null; }
 function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const p=G.players[N.id]; const nx=R.next!=null?`다음 제안은 ${dsh(R.next)}부터 할 수 있습니다(한 선수와 한 주에 한 번).`:'';
   const c=N.k==='ext'?p.extCounter:N.k==='fa'?(G.fa&&G.fa.neg&&G.fa.neg[p.id]||{}).counter:null;
@@ -77,7 +77,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
   const ctr=N.k==='fa'?fn&&fn.counter:N.k==='ext'?(p.extCounter&&p.extCounter.until>=G.day?p.extCounter:null):null;
   const ctrTx=ctr?(ctr.terms?termsTxt(ctr.terms,true):`${ctr.years}년 연 ${money(ctr.annual)}`):'';
   const rounds=fn?`협상 ${fn.rounds}/${agRoundsMax(p)}회 · 분위기 ${fn.mood}`:N.k==='sal'?'한 주에 한 번 제시':'한 주에 한 번 제안';
-  const closed=fn&&fn.closed;
+  const closed=fn&&fn.closed&&!(N.k==='fa'&&faReopenOk(p.id)); /* 다시 열 수 있는 날이 되면 제안 버튼을 살린다 */
   return `<div class="scrim" data-a="ngtClose"><div class="sheet gut ngt" data-stop="1" role="dialog" aria-label="계약 협상">
     <div class="sheet-head"><div class="ng-h">${avImg(p)}<div><span class="eyebrow">${NGT_K[N.k]} · ${esc(posLabel(p))} · ${p.age}세</span><h2 class="sec">${esc(p.name)}</h2><span class="small muted">${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:`지금 연봉 ${money(p.sal)} · ${ctText(p)}`}${!p.foreign&&N.k!=='sal'?` · ${esc(milText(p))}`:''}</span></div></div><button class="x" data-a="ngtClose" aria-label="닫기">×</button></div>
     ${ngtResHtml(N)}
@@ -97,7 +97,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       <div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div>
     </div>`}
     <div class="ng-acts">
-      ${closed?'<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.</div>':`<button class="btn" data-a="ngtDemand">요구 조건대로 채우기</button>${ctr?`<button class="btn" data-a="ngtCounter">역제안 수락 · ${esc(ctrTx)}</button>`:''}${N.k==='ext'&&extNextDay(p)?`<button class="btn primary" data-a="ngtSubmit" disabled>다음 제안 ${dsh(extNextDay(p))}부터</button>`:'<button class="btn primary" data-a="ngtSubmit">제안하기</button>'}`}
+      ${closed?`<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.${N.k==='fa'&&!G.fa.closed?` ${dmd(faReopenDay(p.id))}부터 다시 제안할 수 있습니다.`:''}</div>`:`<button class="btn" data-a="ngtDemand">요구 조건대로 채우기</button>${ctr?`<button class="btn" data-a="ngtCounter">역제안 수락 · ${esc(ctrTx)}</button>`:''}${N.k==='ext'&&extNextDay(p)?`<button class="btn primary" data-a="ngtSubmit" disabled>다음 제안 ${dsh(extNextDay(p))}부터</button>`:'<button class="btn primary" data-a="ngtSubmit">제안하기</button>'}`}
       ${N.k==='fa'&&G.fa.offers[p.id]?'<button class="btn danger" data-a="ngtWithdraw">제안 철회</button>':''}<button class="btn ng-close" data-a="ngtClose">협상 마치기</button></div></div></div>`; }
 function ngtSet(v){ const N=UI.ngt; if(!N)return; const [f,x]=v.split(':'); const T=N.T;
   if(x[0]==='='){ const val=+x.slice(1); if(f==='ntc')T.ntc=!!val; else if(f==='years'){ ngtYears(N,val); if(N.k==='ext')N.msg=null; } else T[f]=val; }

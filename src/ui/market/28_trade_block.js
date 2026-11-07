@@ -39,5 +39,5 @@ function negPanel(p){ const F=G.fa; if(!F||!F.neg)return ''; const n=F.neg[p.id]
     ${n?`<span class="gauge"><i style="width:${n.mood}%;background:${n.mood>=60?'var(--good)':n.mood>=35?'var(--warn)':'var(--bad)'}"></i></span>`:''}
     ${log?`<div class="chats">${log}</div>`:'<p class="small muted">아직 제안하지 않았습니다. 조건을 내면 에이전트가 바로 답합니다. 너무 낮은 조건을 계속 내면 협상이 깨집니다.</p>'}
     ${n&&n.counter?`<div class="row"><button class="btn primary" data-a="faAccept" data-v="${p.id}">역제안 수락 (${n.counter.terms?esc(termsTxt(n.counter.terms,true)):`${n.counter.years}년 연 ${money(n.counter.annual)}`})</button></div>`:''}
-    ${n&&n.closed?'<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.</div>':''}</section>`; }
+    ${n&&n.closed?(faReopenOk(p.id)?'<div class="note good">시간이 지나 에이전트가 다시 협상할 뜻을 보입니다. 협상 테이블에서 제안하세요.</div>':`<div class="note bad">에이전트가 우리와의 협상을 끝냈습니다.${G.fa.closed?'':` ${dmd(faReopenDay(p.id))}부터 다시 제안할 수 있습니다.`}</div>`):''}</section>`; }
 

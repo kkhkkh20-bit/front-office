@@ -46,11 +46,20 @@ export function pitchSideOn(source,e,windup=false){const q=new Quaternion(),turn
 /* 투구 마무리: 릴리스 뒤 끌려오던 뒷다리(축발)가 앞으로 나와 디딤발 옆에 내려서고, 던진 팔은 몸 반대쪽 무릎 쪽으로 감기며 글러브는 가슴으로 당긴다(사용자 피드백 11-07).
    로컬 축 값은 player.glb 리그에서 잰 것(오른손 기준, 좌투는 모델 좌우 반전으로 같이 맞는다) */
 export const PITCH_FINISH={RightUpLeg:[[1,0,0,-.2]],RightLeg:[[1,0,0,-.4]],RightArm:[[1,0,0,-.9]],LeftArm:[[0,0,1,-.6]],LeftForeArm:[[0,0,1,-.4]]};
-export function pitchFinish(source,e){if(!e)return source;const q=new Quaternion(),turn=new Quaternion(),axis=new Vector3(),rel=e.release;
- const ramp=j=>/Leg/.test(j)?[rel+.08,.3]:[rel,.25]; /* 다리는 릴리스 직후 차고 나와 0.3초에 걸쳐 내려선다 */
- const tracks=source.tracks.map(track=>{const j=track.name.match(/(?:^|[:.\/])(\w+)\.quaternion$/)?.[1]?.replace(/^mixamorig:?/,''),rots=j&&PITCH_FINISH[j];if(!rots)return track;
-  const [t0,len]=ramp(j),grid=[];for(let t=t0;t<source.duration;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t));
-  for(let i=0;i<times.length;i++){const k=smooth((times[i]-t0)/len);if(!k)continue;q.fromArray(values,i*4);for(const [x,y,z,a] of rots)q.multiply(turn.setFromAxisAngle(axis.set(x,y,z),a*k));q.normalize().toArray(values,i*4);}
+/* 뼈별 로컬 회전 덧셈(가중치 k(t, 뼈이름)로 섞는다): 투구 마무리·타격 준비 자세가 같이 쓴다 */
+function boneOffsets(source,map,kf,from=0){const q=new Quaternion(),turn=new Quaternion(),axis=new Vector3();
+ const tracks=source.tracks.map(track=>{const j=track.name.match(/(?:^|[:.\/])(\w+)\.quaternion$/)?.[1]?.replace(/^mixamorig:?/,''),rots=j&&map[j];if(!rots)return track;
+  const t0=typeof from==='function'?from(j):from,grid=[];for(let t=t0;t<source.duration;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t));
+  for(let i=0;i<times.length;i++){const k=kf(times[i],j);if(!k)continue;q.fromArray(values,i*4);for(const [x,y,z,a] of rots)q.multiply(turn.setFromAxisAngle(axis.set(x,y,z),a*k));q.normalize().toArray(values,i*4);}
   const copy=track.clone();copy.times=new Float32Array(times);copy.values=new Float32Array(values);return copy;});
  return new AnimationClip(source.name,source.duration,tracks);}
-export function athleticClips(clips,events={}){const swing=clips.find(c=>c.name==='swing'),throwing=clips.find(c=>c.name==='throw'),crouch=clips.find(c=>c.name==='catcher_crouch');if(!swing||!throwing||!crouch)return clips;return [...clips.map(c=>c===swing?powerSwing(c):c.name==='pitcher_set'?pitchSideOn(c,null):/^pitch_.*_stretch$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name]):/^pitch_.*_windup$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name],true):c),catcherThrow(throwing,crouch)];}
+export function pitchFinish(source,e){if(!e)return source;const rel=e.release,ramp=j=>/Leg/.test(j)?[rel+.08,.3]:[rel,.25]; /* 다리는 릴리스 직후 차고 나와 0.3초에 걸쳐 내려선다 */
+ return boneOffsets(source,PITCH_FINISH,(t,j)=>{const [t0,len]=ramp(j);return smooth((t-t0)/len);},j=>ramp(j)[0]);}
+/* 타격 준비 자세: KBO 타자처럼 두 손을 뒤쪽 귀 높이로 모아 올린다(사용자 레퍼런스 11-07). 손 목표점에 맞춰 잰 값(오른손 타자 기준, 좌타는 좌우 반전).
+   스윙은 같은 자세에서 시작해 테이크백(원본 0.35초)부터 원래 궤적으로 풀어 준다 */
+export const BAT_STANCE={RightArm:[[1,0,0,-.671],[0,0,1,.544],[0,1,0,-.146]],RightForeArm:[[1,0,0,.083],[0,0,1,-.094]],LeftArm:[[0,1,0,.109],[0,0,1,-.586],[1,0,0,-.313]],LeftForeArm:[[1,0,0,.267],[0,0,1,-.001]],RightHand:[[.695,.654,-.298,.72]],LeftHand:[[.796,-.378,.472,.443]]}; /* 손목은 원본 손 방향을 되돌려 배트가 원래처럼 비스듬히 선다 */
+export function batStance(source,fade=null){return boneOffsets(source,BAT_STANCE,t=>fade?1-smooth((t-fade[0])/(fade[1]-fade[0])):1);}
+/* 호쾌한 스윙: 맞히는 순간 두 팔을 쭉 뻗어(번트처럼 팔을 접은 채 밀지 않게) 배트 끝이 큰 원을 그리고, 팔로스루에서 다시 접어 어깨 위로 감는다(사용자 피드백 11-07). 접촉 순간 손 위치를 어깨에서 12cm 더 멀리 뻗도록 잰 값 */
+export const SWING_EXT={RightForeArm:[[1,0,0,.691],[0,0,1,-.053]],LeftForeArm:[[1,0,0,.761],[0,0,1,-.279]],RightArm:[[1,0,0,-.059],[0,0,1,.331]],LeftArm:[[0,1,0,.327],[0,0,1,-.376],[1,0,0,-.094]]};
+export function swingExtend(source){const C=SWING_CONTACT,a=C-.2,b=C+.28;return boneOffsets(source,SWING_EXT,t=>t<a||t>b?0:t<C?smooth((t-a)/(C-a)):1-smooth((t-C)/(b-C)));}
+export function athleticClips(clips,events={}){const swing=clips.find(c=>c.name==='swing'),throwing=clips.find(c=>c.name==='throw'),crouch=clips.find(c=>c.name==='catcher_crouch');if(!swing||!throwing||!crouch)return clips;return [...clips.map(c=>c===swing?swingExtend(powerSwing(batStance(c,[.35,.7]))):c.name==='batting_stance'?batStance(c):c.name==='pitcher_set'?pitchSideOn(c,null):/^pitch_.*_stretch$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name]):/^pitch_.*_windup$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name],true):c),catcherThrow(throwing,crouch)];}

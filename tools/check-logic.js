@@ -1982,6 +1982,11 @@ T('[검수 11-07 내 팀] 취임 당시 인원은 기록값, 재계약해도 재
 T('[검수 11-07 위임] 정원이 차 복귀를 못 받으면 결정 기록도 받지 않음으로, 군 복무로 전환을 못 하면 요청은 열린 채',()=>{ fresh(); const A0=G.teams.find(t=>t.id!==G.user).id; const p=domestic(G.user).find(q=>!q.isP&&!q.foreign); p.team=A0; const o={from:G.user,to:A0,fee:100,need:30}; evNew('sd2back','복귀 테스트','본문',[{l:'복귀를 받는다'},{l:'받지 않는다'}],{def:0,exp:5,from:'운영팀',ref:p.id,data:{pid:p.id,o}}); const e=G.evs[G.evs.length-1]; while(rosterN(G.user)<ROSTER_MAX){ const q=domestic(A0).find(x=>!x.foreign&&x.id!==p.id); q.team=G.user; }
   e.deleg=true; evPick(e.id,0,true); ok(G.evlog[0].c==='받지 않는다','기록 '+G.evlog[0].c); ok(p.team==null,'자유계약 아님');
   const q=domestic(G.user).find(x=>!x.isP&&x.pos!=='SS'); q.posReq={open:true,q:'SS'}; q.mil={unit:'상무',from:G.day-10,until:G.day+300}; posReqAnswer(q.id,true); ok(q.posReq.open,'요청이 닫힘'); });
+T('[테스터 11-07] 결렬된 미계약 FA: 45일·14일이 지나면 다시 열 수 있다고 판정하고(화면 제안 버튼도 이 판정) 제안이 들어간다',()=>{ fresh(); simTo(()=>G.fa&&G.fa.open&&!G.fa.closed&&G.fa.pool.some(id=>G.players[id]&&G.players[id].team==null&&G.players[id].ask)); const F=G.fa;
+  const p=F.pool.map(id=>G.players[id]).find(q=>q&&q.team==null&&q.ask); const n=negOf(p.id); n.closed=true; n.mood=10; n.lastD=G.day; F.openDay=G.day-10;
+  ok(!faReopenOk(p.id),'너무 일찍 다시 열림');
+  G.day=Math.max(F.openDay+45,n.lastD+14); ok(faReopenOk(p.id),'기한이 지나도 다시 열 수 없음');
+  const r=faNegotiate(p.id,{annual:round5(p.ask.annual*1.2),years:p.ask.years}); ok(!/더 이상 우리와 협상하지/.test(r.msg),'제안이 막힘: '+r.msg); ok(F.offers[p.id]&&!n.closed,'제안이 남지 않음'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
