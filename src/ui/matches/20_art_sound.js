@@ -14,11 +14,30 @@ function cardTier(o){ return o==null?'':o>=64?'t-gold':o>=57?'t-silver':o>=50?'t
 
 /* ---------- 효과음 ---------- */
 const SND={ctx:null,buf:{},loops:{}};
-function sndOn(){ return false; } /* 효과음 제거 */
-function sndInit(){ if(SND.ctx||!sndOn())return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC||typeof SNDDATA==='undefined')return;
+/* 중계 화면에서만 소리를 낸다(메뉴·버튼 효과음은 계속 없음). 끄고 켜기는 중계 화면 '소리' 버튼, 이 브라우저에 기억 */
+function sndPref(){ try{ return localStorage.getItem('fo_snd')!=='0'; }catch(e){ return true; } }
+function sndOn(){ return sndPref()&&typeof UI!=='undefined'&&!!UI.cast; }
+function sndInit(){ if(SND.ctx||!sndOn())return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return;
   try{ SND.ctx=new AC(); }catch(e){ return; } SND.master=SND.ctx.createGain(); SND.master.gain.value=.85; SND.master.connect(SND.ctx.destination);
-  for(const k in SNDDATA){ try{ const bin=atob(SNDDATA[k].split(',')[1]); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
-      SND.ctx.decodeAudioData(u.buffer,b=>{ SND.buf[k]=b; },()=>{}); }catch(e){} } }
+  try{ sndSynth(SND.ctx); }catch(e){} }
+/* 효과음은 파일 없이 직접 합성한다(사용자 요청 11-08: 함성·투구·스윙·타구음) */
+function sndSynth(c){ const sr=c.sampleRate, mk=(sec,fn,ch=1)=>{ const n=Math.floor(sec*sr), b=c.createBuffer(ch,n,sr); for(let k=0;k<ch;k++){ const d=b.getChannelData(k); fn(d,n,k); } return b; };
+  const lp=(d,a)=>{ let y=0; for(let i=0;i<d.length;i++){ y+=a*(d[i]-y); d[i]=y; } }, hp=(d,a)=>{ let y=0,x0=0; for(let i=0;i<d.length;i++){ const x=d[i]; y=a*(y+x-x0); x0=x; d[i]=y; } };
+  const norm=(d,v)=>{ let m=0; for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i])); if(m)for(let i=0;i<d.length;i++)d[i]*=v/m; };
+  /* 타구음 '땅': 나무 배트의 짧은 충격 + 높은 공명 몇 개가 빠르게 사라진다 */
+  SND.buf.crack=mk(.5,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=(Math.random()*2-1)*Math.exp(-t*900)*.9+Math.sin(2*Math.PI*1180*t)*Math.exp(-t*38)*.55+Math.sin(2*Math.PI*2470*t)*Math.exp(-t*55)*.35+Math.sin(2*Math.PI*3900*t)*Math.exp(-t*80)*.2+Math.sin(2*Math.PI*150*t)*Math.exp(-t*30)*.5; } norm(d,.95); });
+  /* 포수 미트 '퍽' */
+  SND.buf.mitt=mk(.25,(d,n)=>{ for(let i=0;i<n;i++){ const t=i/sr; d[i]=(Math.random()*2-1)*Math.exp(-t*160)+Math.sin(2*Math.PI*190*t)*Math.exp(-t*45)*.8; } lp(d,.25); norm(d,.8); });
+  /* 바람 가르는 소리: 투구(길고 낮게), 스윙(짧고 날카롭게) */
+  const whoosh=(sec,peak,a1,a2,v)=>mk(sec,(d,n)=>{ for(let i=0;i<n;i++)d[i]=Math.random()*2-1; let y=0,z=0; for(let i=0;i<n;i++){ const f=i/n, a=a1+(a2-a1)*Math.sin(Math.PI*f); y+=a*(d[i]-y); z+=a*(y-z); const env=Math.pow(Math.sin(Math.PI*Math.pow(f,peak)),2); d[i]=(y-z)*env; } norm(d,v); });
+  SND.buf.pitch=whoosh(.32,.7,.05,.32,.45); SND.buf.swing=whoosh(.22,.45,.08,.55,.7);
+  /* 관중: 여러 겹 잡음을 사람 목소리 대역으로 거르고 크기를 천천히 흔든다 */
+  const crowd=(sec,shape,v)=>mk(sec,(d,n,ch)=>{ const L=[[.02,.9],[.05,.6],[.12,.35]]; const tmp=new Float32Array(n); for(const [a,w] of L){ for(let i=0;i<n;i++)tmp[i]=Math.random()*2-1; lp(tmp,a); hp(tmp,.995); let m=0, ph=Math.random()*9; for(let i=0;i<n;i++){ if(i%2400===0)m=.6+Math.random()*.4; d[i]+=tmp[i]*w*(m+.15*Math.sin(ph+i/sr*3)); } } for(let i=0;i<n;i++)d[i]*=shape(i/n); norm(d,v); },2);
+  SND.buf.cheer_hit=crowd(2.6,f=>Math.min(1,f/.1)*Math.pow(1-f,1.4),.7);
+  SND.buf.cheer_big=crowd(4.5,f=>Math.min(1,f/.08)*(f<.5?1:Math.pow((1-f)/.5,1.2)),.9);
+  SND.buf.amb=crowd(6,()=>1,.35); /* 반복 재생하는 배경 웅성임 */
+  SND.buf.chant=crowd(3,f=>.75+.25*Math.sin(f*Math.PI*6),.55); /* 득점권 응원: 박자 있는 함성 */
+}
 function sndReady(){ if(!sndOn())return null; sndInit(); const c=SND.ctx; if(!c)return null; if(c.state==='suspended')c.resume(); return c; }
 function sfx(k,vol,rate){ const c=sndReady(); if(!c||!SND.buf[k])return null; const s=c.createBufferSource(); s.buffer=SND.buf[k]; if(rate)s.playbackRate.value=rate;
   const g=c.createGain(); g.gain.value=vol??1; s.connect(g); g.connect(SND.master); s.start(); return {s,g}; }

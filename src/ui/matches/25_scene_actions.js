@@ -4,11 +4,12 @@ function c3DActive(){return typeof Match3D!=='undefined'&&Match3D.ready();}
 function c3DFielder(g,k,pos){if(pos==='P'){const id=cPit(g,k);return id?{id,pos}:null;}return cFielders(g,g.pbp[k][0],k).find(a=>a.pos===pos);}
 function c3DRunTime(id){return FrontOfficeCore.baseRunTime(G.players[id]?.r.spd??50);}
 function c3DName(f){return f?G.players[f.id]?.name||'수비수':'수비수';}
-async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by){
+async function c3DThrow(g,k,from,fromPt,toPos,toPt,phase,by,after){
  const receiver=c3DFielder(g,k,toPos);if(!from||!receiver)return;
  const arm=G.players[from.id]?.r.arm??G.players[from.id]?.r.stf??50;let travel=FrontOfficeCore.throwTime(Match3D.distance(fromPt,toPt),arm);
  const cover=(Match3D.actorDistance('d'+receiver.id,toPt)??Match3D.distance(CFP[toPos],toPt))/8*1000;let wind=Math.max(220,Math.min(650,cover-travel+60)); /* 받을 선수를 오래 기다리며 공을 쥐고 있지 않게(사용자 피드백 11-07) */
  if(by){ const left=(by-performance.now())*cSpd()-120, f=left>0?Math.min(1,left/(wind+travel)):.2; if(f<1){ const s=Math.max(.2,f); wind=Math.round(wind*s); travel=Math.round(Math.max(120,travel*s)); } } /* by: 주자가 베이스에 닿는 시각. 아웃이면 공이 그보다 먼저(빠른 송구) */
+ if(after){ const left=(after-performance.now())*cSpd()+80-(wind+travel); if(left>0)wind+=Math.min(450,left); } /* after: 세이프 송구. 주자보다 너무 일찍 닿지 않게 받은 뒤 잠깐 자세를 잡는다(최대 0.45초) */
  Match3D.move('d'+receiver.id,toPt,cover/cSpd());
  Match3D.throwing('d'+from.id,toPt,wind/cSpd());cSpeak(g,k,'throw',{fielder:c3DName(from),receiver:c3DName(receiver),relay:phase==='중계 플레이'});
  await cSleep(wind);Match3D.receive('d'+receiver.id,'stretch',travel/cSpd(),fromPt);await cBall(fromPt,toPt,travel,false);Match3D.caught('d'+receiver.id,phase);
@@ -22,7 +23,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
  const airOut=outPlay&&!UI.cast.errPos&&!UI.cast.gb&&!['DP','SAC'].includes(o),timing=FrontOfficeCore.contactTiming({distance:Match3D.distance(CHM,spot),fieldDistance:f?Match3D.distance(CFP[f.pos],spot):0,speed:G.players[f?.id]?.r.spd??50,arc,airOut,homer:isHR}),retired=new Set();
  // 외야 장타: 공이 펜스·잔디에 맞고 멈춘 곳까지 외야수가 가서 줍고, 중계를 거쳐 타자 주자가 가는 베이스로 던진다.
  const path=['2B','3B'].includes(o)&&['LF','CF','RF'].includes(f?.pos)?Match3D.carom(spot,o):null,chase=path?path.roll:spot,relayPos=path?(chase[0]<50?'SS':'2B'):f?.pos==='LF'?'SS':'2B',base=o==='3B'?CBS[2]:CBS[1],basePos=o==='3B'?'3B':relayPos==='SS'?'2B':'SS',relayPt=path?base.map((v,i)=>v*.62+chase[i]*.38):spot.map((v,i)=>CBS[1][i]*.72+v*.28),run=path?Math.round(Match3D.distance(CFP[f.pos],chase)/7.2*1000):timing.run;
- const cover=(pos,target)=>{const receiver=c3DFielder(g,k,pos);if(receiver&&receiver.id!==f?.id)Match3D.move('d'+receiver.id,target,Match3D.distance(CFP[pos],target)/7*1000/cSpd());};
+ const cover=(pos,target)=>{const receiver=c3DFielder(g,k,pos);if(receiver&&receiver.id!==f?.id)Match3D.move('d'+receiver.id,target,Match3D.distance(CFP[pos],target)/8.5*1000/cSpd());};
  if(f&&!isHR){if(outPlay){cover('1B',CBS[0]);if(o==='DP'){const pat=pcPick(g,k,'dp',[['SS','2B','6-4-3'],['2B','SS','4-6-3'],['3B','2B','5-4-3']]);cover(pat[1],CBS[1]);}}else{const thrownOut=moves.find(m=>m.out);if(thrownOut)cover(['','1B','2B','3B','C'][thrownOut.to],CPATH[thrownOut.to]);else{cover(relayPos,relayPt);if(path)cover(basePos,base);}}}
 
  const retire=id=>{retired.add(id);document.querySelector(`#cs-stage .cc[data-k="o${id}"]`)?.classList.add('gone');Match3D.hide('o'+id);};
@@ -49,7 +50,7 @@ async function c3DContact(g,k,{x,b,spot,arc,opos,bat,after,moves,bTo}){
   }else{
    const thrownOut=moves.find(m=>m.out);
    if(thrownOut){const pos=['','1B','2B','3B','C'][thrownOut.to];const thrown=await c3DThrow(g,k,f,spot,pos,CPATH[thrownOut.to],'주루 송구',arrive(thrownOut.id,thrownOut.to-thrownOut.from));await runners;if(thrown){Match3D.tag('d'+thrown.receiver.id,CPATH[Math.max(0,thrownOut.to-1)],240/cSpd());await cSleep(240);Match3D.focus('d'+thrown.receiver.id,thrownOut.to===4?'홈 태그 아웃':'주루 아웃');}retire(thrownOut.id);}
-   else {if(f.pos!==relayPos){await c3DThrow(g,k,f,chase,relayPos,relayPt,'중계 플레이'); /* 승부가 없으면 중계 선수는 공을 받고 끝(주자가 도착한 뒤 늦게 던지는 송구는 없앤다, 사용자 피드백 11-07) */}Match3D.trackRunner('o'+x[1]);}
+   else {if(f.pos!==relayPos){const relay=await c3DThrow(g,k,f,chase,relayPos,relayPt,'중계 플레이');if(path&&relay)await c3DThrow(g,k,relay.receiver,relayPt,basePos,base,o==='3B'?'3루 송구':'2루 송구',null,arrive(x[1],o==='3B'?3:2,620)); /* 중계 선수는 받자마자 베이스로 던진다. 커버 야수는 타구 직후부터 베이스로 가 먼저 서 있고, 공은 주자와 거의 같이 닿는다(사용자 피드백 11-07) */}Match3D.trackRunner('o'+x[1]);}
    cFx((o==='OUT'?'실책 출루':OUTK[o]||'안타')+(thrownOut?' · 주루 아웃':''),'hit');
   }
  }else{await ball;const landing=Match3D.landed();cSpeak(g,k,'homer',{landing},'hr');cFlash();cFireworks();cFx(x[6]===4?'만루 홈런':x[6]>1?x[6]+'점 홈런':'홈런','hr');sfx('cheer_big',.85);}

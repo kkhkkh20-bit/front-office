@@ -51,6 +51,8 @@ function allInPick(){ const sy=sponSeason(); if(G.teams.some(t=>t.allIn===sy))re
   const C=G.teams.filter(t=>t.id!==ME()&&!t.indie&&t.owner==='win'&&(t.cash||0)>5000&&rk(t.id)<=4&&(t.capOver||0)<2&&!(t.allInY&&sy-t.allInY<3)); if(!C.length||R()>=.22)return;
   const t=C[Math.floor(R()*C.length)]; t.allIn=sy; t.allInY=sy; news('구단',`${tshort(t.id)}, 경쟁균형세 감수하고 우승 올인`,`${t.city} ${t.nick} 구단주가 "세금을 내더라도 올해는 우승"이라며 FA 시장에 큰돈을 풀 준비를 마쳤다는 소식입니다. 상한을 넘기면 초과분의 30% 이상을 내야 하고, 3년 연속이면 신인 1라운드 지명이 9단계 밀립니다.`,0,{tid:t.id}); }
 function capRate(n){ return n>=3?1:n===2?.5:.3; }
+/* 초과액으로 낼 제재금 예상: 지금까지 연속 초과 횟수에 이번을 더한 단계(재계약 화면에서 넘길지 고르게, 유저 피드백 11-07) */
+function capTaxEst(over,tid=G.user){ const n=((team(tid)||{}).capOver||0)+1; return {n,tax:Math.round(Math.max(0,over)*capRate(n)),pen:n>=3}; }
 function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
 /* 야인일 때는 전 소속 구단도 AI가 운영한다 */

@@ -10,7 +10,7 @@ function buildWorld(){ const userTid=0; worldReset();
   for(const t of G.teams){
     const tb=N(0,1.6);
     const mk=(isP,pos)=>{ const age=clamp(Math.round(N(27,4.6)),19,37); const T=clamp(N(48+tb,7.5),30,75);
-      const cur=age<28?T-(28-age)*(R()<.3?rnd(.25,.75):rnd(.8,1.6)):age<=32?T:T-(age-32)*rnd(.6,1.4)-Math.max(0,age-36)*rnd(1.2,2.2); /* 전성기 29~32세(성장 곡선 2년 이동) */
+      const cur=age<28?T-(28-age)*(R()<.3?rnd(.1,.45):rnd(.8,1.6)):age<=32?T:T-(age-32)*rnd(.6,1.4)-Math.max(0,age-36)*rnd(1.2,2.2); /* 전성기 29~32세(성장 곡선 2년 이동) */
       return newPlayer({age,isP,pos,base:clamp(cur,22,76),pot:age<28?T+N(0,3):cur,team:t.id,svc:clamp(age-19-ri(0,3),0,18)}); };
     for(let i=0;i<14;i++)mk(true);
     // 2군 선수층: 젊은 유망주와 대기 전력 (정식 선수 약 58명)
