@@ -10,7 +10,7 @@ function fposList(tid,pos){ if(!pos)return '';
   let L, title;
   if(pos==='P'){ const pit=ps.filter(p=>p.isP); const ord=p=>d.sp.includes(p)?d.sp.indexOf(p):d.pen.includes(p)?10+d.pen.indexOf(p):100-ovr(p); L=pit.sort((a,b)=>ord(a)-ord(b)); title=`투수 ${L.length}명`; }
   else { L=ps.filter(p=>!p.isP&&(pos==='DH'||p.pos===pos||(subsOf(p)||[]).includes(pos))).sort((a,b)=>posScore(b,pos)-posScore(a,pos)); title=`${POSK[pos]} 가능 ${L.length}명`; }
-  const [fx,fy]=FPOS[pos]||[180,160]; const up=fy>200; const pos2=up?`bottom:${((330-(fy-26))/330*100).toFixed(1)}%`:`top:${((fy+26)/330*100).toFixed(1)}%`;
+  const [fx,fy]=FPOS[pos]||[180,160]; const up=fy>=290; /* 1루·3루·투수는 아래로 편다: 위로 펴면 패널 위쪽에서 잘렸다(카페 11-08) */ const pos2=up?`bottom:${((330-(fy-26))/330*100).toFixed(1)}%`:`top:${((fy+26)/330*100).toFixed(1)}%`;
   return `<div class="fdd ${up?'up':''}" style="${pos2};--cx:${(fx/360*100).toFixed(1)}%"><div class="fdd-h"><b>${title}</b><button class="x" data-a="fpos" data-v="" aria-label="닫기">×</button></div><div class="fdd-l">${L.map(p=>row(p,!p.isP&&pos!=='DH'?`<span class="small muted">수비 ${dv(defAt(p,pos))}</span>`:'')).join('')||'<p class="small muted">선수가 없습니다.</p>'}</div></div>`; }
 function fieldSVG(tid,interactive,inline){
   const d=depth(tid); const ps=playersOf(tid); const order=orderList(d.start,tid); const t=team(tid);

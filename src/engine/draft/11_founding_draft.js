@@ -181,7 +181,9 @@ function fdReview(){ const F=G.fd; if(!F||!F.picks||G.fdRev)return; G.fdRev=true
   const steal=all.find(z=>z.x.rd>=5); const L=mine.map(z=>z.gone?`${z.x.rd}라운드 · 은퇴 또는 정리`:`${z.x.rd}라운드 ${z.p.name}: 지명 때 ${dv(z.x.o0??'-')} → 지금 ${dv(z.now)} · 우리 팀 WAR ${z.war.toFixed(1)}${z.p.team!==G.user?' (지금은 다른 구단)':''}`);
   mail('스카우트팀장','창단 드래프트 3년 회고',`창단 드래프트 뒤 3시즌이 지났습니다. 우리 상위 지명 선수들입니다.\n\n${L.join('\n')}\n\n리그 전체 최고 성과: ${all[0]?`${all[0].p.name}(${tshort(all[0].x.tid)} ${all[0].x.rd}라운드) WAR ${all[0].war.toFixed(1)}`:'-'}${steal?`\n최고의 스틸: ${steal.p.name}(${tshort(steal.x.tid)} ${steal.x.rd}라운드) WAR ${steal.war.toFixed(1)}`:''}`,{kind:'업무',imp:true}); }
 function draftedBy(tid){ return G.draft?G.draft.picks.filter(x=>x.tid===tid&&x.pid>0).length:0; }
-function rosterProj(tid){ return rosterN(tid)+draftedBy(tid); }
+function rosterProj(tid){ return rosterN(tid)+draftedBy(tid)+milBackBy(tid); }
+/* 다음 개막 전까지 전역해 돌아오는 선수(검수 11-08: 지명 화면 예상 인원에서 빠짐). shortcut: 다음 개막일을 3월 22일로 본다, 일정이 미리 생기면 그 날짜로 */
+function milBackBy(tid){ const op=G.cal&&G.cal.open>G.day?G.cal.open:dnum(G.year+1,3,22); return awayOf(tid).filter(p=>!p.ys&&p.mil&&p.mil.until>G.day&&p.mil.until<=op).length; }
 /* 포지션 필요도: 구단 안 26세 이하 유망주가 적은 자리(포수·내야·외야·선발·불펜)일수록 가산점(최대 +3) */
 function dGrp(p){ if(p.isP)return p.role==='RP'?'RP':'SP'; return p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':p.pos==='DH'?'IF':'OF'; }
 function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,OF:.2,SP:.25,RP:.2}; const L=domestic(tid).filter(p=>p.age<=26).concat(Object.values(G.players).filter(p=>p.team===tid&&!p.foreign&&p.joinY>G.year)); /* 이번 드래프트에서 이미 뽑은(내년 합류) 선수도 수요에 반영(검수 11-07) */ const n=L.length||1; const o={};

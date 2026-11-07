@@ -11,12 +11,13 @@ const sdFee=rd=>SD_FEE[Math.min(rd,4)-1];
 /* shortcut: 게임 시작 때 만든 선수는 지명 기록이 없어 만 21세 이하를 입단 3년 차 이내로 본다. 시작 선수가 다 지명 기록을 갖게 되면 지운다 */
 function sdExempt(p){ const y=G.year; return !!(p.foreign||p.ys||p.prospect||p.joinY>y||(p.draft?p.draft.y>=y-3:p.age<=21)||milServing(p)||(p.lastFA!=null&&p.lastFA>=y)); }
 function sdPool(tid){ return Object.values(G.players).filter(p=>p.team===tid&&!sdExempt(p)); }
-function sdProtAI(tid){ const t=team(tid); return sdPool(tid).sort((a,b)=>aiVal(t,b)-aiVal(t,a)).slice(0,SD_PROT).map(p=>p.id); }
+function sdProtAI(tid){ return sdPool(tid).sort((a,b)=>keepScore(b)-keepScore(a)).slice(0,SD_PROT).map(p=>p.id); } /* 보호는 전력 순(연봉 비용을 빼지 않는다): 비싼 주전이 명단 밖으로 나오지 않게(카페 11-08) */
 function sdSeq(order){ const s=[]; for(let rd=1;rd<=SD_RD+SD_XRD;rd++)(rd<=SD_RD?order:order.slice(0,3)).forEach(tid=>s.push({rd,tid})); return s; }
 function sdLost(tid){ return G.sd2.seq.filter(s=>s.pid&&s.from===tid).length; }
 /* 지명 후보: 다른 구단의 보호명단 밖 선수. 이번 드래프트로 이미 옮긴 선수와 4명을 잃은 구단 선수는 뺀다 */
 function sdCands(tid){ const S=G.sd2; const taken=new Set(S.seq.map(s=>s.pid).filter(Boolean)); /* 지명이 시작되면 보호명단은 확정: 후보 조회가 명단을 다시 짜지 않는다(검수 11-06). AI 명단은 지명 시작 때(sdStart) 한 번 새로 짠다 */
-  return G.teams.filter(t=>t.id!==tid&&sdLost(t.id)<SD_LOSS).flatMap(t=>sdPool(t.id).filter(q=>!taken.has(q.id)&&!(S.prot[t.id]||[]).includes(q.id))); }
+  return G.teams.filter(t=>t.id!==tid&&sdLost(t.id)<SD_LOSS).flatMap(t=>sdPool(t.id).filter(q=>!taken.has(q.id)&&!(S.prot[t.id]||[]).includes(q.id)&&(!S.pool||(S.pool[t.id]||[]).includes(q.id)))); } /* 지명 시작 뒤 영입한 선수는 새 구단이 보호할 기회가 없었다: 시작 때 명단 대상만(검수 11-08) */
+function sdCash(tid){ const S=G.sd2; let c=team(tid).cash||0; if(tid===ME()&&S)for(const s of S.seq){ if(!s.pid)continue; if(s.tid===tid)c-=s.fee; if(s.from===tid)c+=s.fee; } return c; } /* 우리 양도금은 결산 장부에 쌓이므로 이번 드래프트에서 낸·받은 몫을 더해 본다(검수 11-08) */
 function sdOpen(){ const order=((G.last&&G.last.y===G.year&&G.last.order)||standingsNow()).map(x=>x.tid).reverse();
   const prot={}; for(const t of G.teams)if(t.id!==ME())prot[t.id]=sdProtAI(t.id);
   G.sd2={y:G.year,stage:'protect',exp:Math.max(dnum(G.year,...SD_DAY),G.day+5),order,prot,seq:sdSeq(order),cur:0};
@@ -27,7 +28,7 @@ function sdOpen(){ const order=((G.last&&G.last.y===G.year&&G.last.order)||stand
 function sdSubmit(ids){ const S=G.sd2; if(!S||S.stage!=='protect'||G.unemp)return '보호선수 명단을 낼 때가 아닙니다.'; const pool=new Set(sdPool(G.user).map(q=>q.id));
   const L=[...new Set(ids)].filter(x=>pool.has(x)).slice(0,SD_PROT); if(!L.length&&pool.size)return `보호선수를 한 명 이상 고르세요. 내지 않으면 ${dmd(S.exp)}에 운영팀이 대신 정합니다.`; /* 빈 명단은 제출로 보지 않는다(검수 11-06) */ S.prot[G.user]=L; S.sub=true; return `보호선수 ${S.prot[G.user].length}명 명단을 냈습니다. ${dmd(S.exp)}에 지명이 시작됩니다. 그 전까지는 고칠 수 있습니다.`; }
 function sdStart(){ const S=G.sd2; for(const t of G.teams)if(t.id!==ME())S.prot[t.id]=sdProtAI(t.id); /* 보호 기간에 바뀐 AI 선수단을 반영해 지명 시작 때 확정 */ if(!S.prot[G.user]&&!G.unemp){ S.prot[G.user]=sdProtAI(G.user); note('드래프트','2차 드래프트 보호선수 명단을 운영팀이 능력 순으로 냈습니다.'); }
-  S.stage='pick'; sdRun(); }
+  S.pool={}; for(const t of G.teams)S.pool[t.id]=sdPool(t.id).map(q=>q.id); S.stage='pick'; sdRun(); }
 function sdAiPick(tid,rd){ if(rosterN(tid)>=ROSTER_MAX)return null; const t=team(tid); if((t.cash||0)<sdFee(rd))return null; /* 양도금을 낼 현금(검수 11-07) */ let best=null,bv=-1e9; for(const q of sdCands(tid)){ if(capPayAs(tid,[q.id],[])>capOf(sponSeason())*aiCapMul(t))continue; /* 다음 시즌 샐러리캡 안에서만 */ const v=aiVal(t,q); if(v>bv){ bv=v; best=q; } } return best&&bv>=sdFee(rd)/100?best.id:null; }
 function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.rd); const keep=q.ctT===from; delete q.capB; delete q.roleProm; q.team=s.tid; if(keep)q.ctT=s.tid; else termsClear(q); /* 계약은 이어진다: 성과 옵션·구단 옵션·옵트아웃·거부권도 승계(계약금 상한 반영·주전 약속은 원구단 몫) */ q.listed=false; if(from===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===pid)delete G.lineup[k];
   payOut(s.tid,fee,'comp'); payIn(from,fee); Object.assign(s,{pid,from,fee,nm:q.name});
@@ -45,7 +46,7 @@ function sdRun(quiet){ const S=G.sd2; if(!S||S.stage!=='pick')return;
   news('드래프트',`${G.year} 2차 드래프트 ${P.length}명 이동`,P.length?P.map(s=>`${s.rd}라운드 ${tshort(s.tid)}: ${s.nm}(전 ${tshort(s.from)})`).join('\n'):'지명된 선수가 없습니다.',0);
   if(!G.unemp){ const got=P.filter(s=>s.tid===G.user), lost=P.filter(s=>s.from===G.user); note('드래프트',`2차 드래프트가 끝났습니다. 데려온 선수 ${got.length}명${got.length?`(${got.map(s=>s.nm).join(', ')})`:''}, 내준 선수 ${lost.length}명${lost.length?`(${lost.map(s=>s.nm).join(', ')})`:''}.`); } }
 function sdPick(pid){ const S=G.sd2; if(!S||S.stage!=='pick')return '2차 드래프트 지명 시간이 아닙니다.'; const s=S.seq[S.cur]; if(!s||s.tid!==G.user)return '우리 차례가 아닙니다.';
-  if(pid!=null){ if(rosterN(G.user)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다.`; if(!sdCands(G.user).some(q=>q.id===pid))return '지명할 수 없는 선수입니다(보호선수이거나 원소속 구단이 이미 4명을 잃음).'; if((team(G.user).cash||0)<sdFee(s.rd))return `양도금 ${money(sdFee(s.rd))}을(를) 낼 보유 현금이 없습니다(다른 구단과 같은 기준).`; sdTake(s,pid); } /* 검수 11-08: 플레이어만 현금 없이 지명하던 차이 */ else s.pass=true;
+  if(pid!=null){ if(rosterN(G.user)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다.`; if(!sdCands(G.user).some(q=>q.id===pid))return '지명할 수 없는 선수입니다(보호선수이거나 원소속 구단이 이미 4명을 잃음).'; if(sdCash(G.user)<sdFee(s.rd))return `양도금 ${money(sdFee(s.rd))}을(를) 낼 보유 현금이 없습니다(다른 구단과 같은 기준).`; sdTake(s,pid); } /* 검수 11-08: 플레이어만 현금 없이 지명하던 차이 */ else s.pass=true;
   S.cur++; sdRun(true); return pid!=null?`${s.rd}라운드에서 ${G.players[pid].name}을(를) 지명했습니다. 양도금 ${money(s.fee)}.`:`${s.rd}라운드 지명을 건너뛰었습니다.`; }
 /* 정규시즌이 끝난 다음 날: 1·2라운드 지명자의 1군 등록일수를 더하고, 두 시즌 안에 못 채우면 원소속 구단으로 돌려보낸다 */
 function sdRegCheck(day){ if(!G.cal||day!==G.cal.end+1)return;

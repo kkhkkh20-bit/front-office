@@ -30,6 +30,7 @@ function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p)
   if(rosterN(tid)>=ROSTER_MAX)return `정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`;
   const sal=freeAsk(p); mvLog('무적 영입',p,null,tid,`연 ${money(sal)}`,sal); p.team=tid; p.sal=sal; p.yrs=1; p.joinY=undefined; const yrs=G.year-p.freeSince; delete p.freeSince; delete p.freeDay; p.mor=clamp((p.mor??55)+8,0,100);
   story(p,`${tname(tid)}와(과) 계약 (무적 선수, 연 ${money(sal)})`,'move');
+  try{ milInit(p); if(milFree(p)&&p.age>=28&&!(p.mil&&p.mil.app)){ enlist(p,'현역',G.day+14); if(tid===G.user)mail('운영팀',`${p.name} 현역 입대 예정 · ${dmd(G.day+14)}`,`${p.name}은(는) 입대 연기 한도(28세)를 넘긴 미필 선수라 계약 2주 뒤 현역으로 입대합니다.`,{kind:'병역',ref:p.id}); } }catch(e){} /* 무적으로 해를 넘겨 새해 입대 검사를 피한 선수(검수 11-08) */
   if(tid===G.user)addLog(`무적 선수 ${p.name}(${posLabel(p)}, ${p.age}세)과(와) 연 ${money(sal)}에 계약했습니다.`); else if(ovr(p)>=50)wire('이적',`${tname(tid)}, 무적 선수 ${p.name} 영입`,{tid,ref:p.id});
   void yrs; return ''; }
 /* 새해: 2년 동안 계약하지 못한 선수, 38세 이상은 은퇴 */

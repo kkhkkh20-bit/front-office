@@ -23,6 +23,7 @@ function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.le
   if(pk.y!==pkYear())return `거래안의 지명권은 ${pk.y} 드래프트 것입니다. 지금 주고받을 수 있는 것은 ${pkYear()} 드래프트 지명권입니다. 다시 골라 주세요.`;
   const mine=pkHeld(G.user), their=pkHeld(tid); if(pk.give.some(k=>!mine.includes(k))||pk.get.some(k=>!their.includes(k)))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
   if(mine.filter(k=>+k.split(':')[0]===1).length-pk.give.filter(k=>+k.split(':')[0]===1).length+pk.get.filter(k=>+k.split(':')[0]===1).length>PK_R1_MAX)return `한 드래프트에서 1라운드 지명권은 ${PK_R1_MAX}장까지 가질 수 있습니다(게임 규정: 지명권 독점 방지).`;
+  { const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; if(r1(their)-r1(pk.get)+r1(pk.give)>PK_R1_MAX)return `${tshort(tid)}은(는) 이 거래로 1라운드 지명권이 ${PK_R1_MAX}장을 넘습니다(게임 규정: 지명권 독점 방지).`; } /* 상대 구단도 같은 한도(검수 11-08) */
   if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return 'KBO 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
   return ''; }
 function pkMove(pk,tid){ pk=pkNorm(pk); const y=pkYear(); G.pkOwn=G.pkOwn||{};

@@ -75,7 +75,7 @@ function sdBox(){ const S=G.sd2&&G.sd2.y===G.year?G.sd2:null;
   return csec(`${S.y} 2차 드래프트 · ${S.stage==='done'?'종료':'지명 중'}${rule}`,`${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}`); }
 Object.assign(A,{
   wvClaim(v){ toast(wvClaim(+v)); save(); render(); },
-  sdTog(v){ const id=+v; if(UI.sdProt)UI.sdProt=UI.sdProt.filter(x=>G.players[x]&&G.players[x].team===G.user); /* 그사이 떠난 선수는 명단에서 뺀다(검수 11-07: 34/35인데 추가가 막힘) */ const L=UI.sdProt||[]; const i=L.indexOf(id); if(i>=0)L.splice(i,1); else if(L.length<SD_PROT)L.push(id); else { toast(`보호선수는 ${SD_PROT}명까지입니다. 먼저 한 명을 빼세요.`); return; } UI.sdProt=L; render(); },
+  sdTog(v){ const id=+v; if(UI.sdProt){ const pool=new Set(sdPool(G.user).map(q=>q.id)); UI.sdProt=UI.sdProt.filter(x=>pool.has(x)); } /* 입대 등으로 대상에서 빠진 선수도 뺀다: 화면 인원과 같은 기준(검수 11-08) */ /* 그사이 떠난 선수는 명단에서 뺀다(검수 11-07: 34/35인데 추가가 막힘) */ const L=UI.sdProt||[]; const i=L.indexOf(id); if(i>=0)L.splice(i,1); else if(L.length<SD_PROT)L.push(id); else { toast(`보호선수는 ${SD_PROT}명까지입니다. 먼저 한 명을 빼세요.`); return; } UI.sdProt=L; render(); },
   sdAuto(){ UI.sdProt=sdProtAI(G.user); render(); },
   sdSubmit(){ toast(sdSubmit(UI.sdProt||[])); save(); render(); },
   sdPick(v){ toast(sdPick(v==='skip'?null:+v)); save(); render(); },

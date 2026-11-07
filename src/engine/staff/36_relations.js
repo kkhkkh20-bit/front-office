@@ -37,7 +37,7 @@ function mreqMake(k,d){ const m=G.mgr[G.user]; const nm=mgrSays(m);
       [{l:'알겠다, 보강하겠다',fx:`${dmd(until)}까지 ${SLOTK[sk]} 자리에 지금보다 나은 선수를 데려오면 감독 관계 +6. 못 하면 -5.`},{l:'지금 전력으로 간다',fx:`감독 관계 -${m.ego>=70?5:3}.`}],1,t?t.id:null); return; }
   if(k==='out'){ const p=d; const h=seasonTotal(p,G.year,'1군'); const r=mreqAdd('out',{pid:p.id},G.day+30);
     mreqAsk(r,`${nm}: ${p.name} 정리 요청`,`"${p.name}은(는) ${statLine(h,p)}입니다. 엔트리 한 자리가 아깝습니다. 정리하고 그 자리를 다른 선수에게 주고 싶습니다." 연봉 ${money(p.sal)}${p.faC?` · 잔여 ${p.yrs}년`:''}.`,
-      [{l:'트레이드 매물로 내놓는다',fx:'30일 안에 내보내면 감독 관계 +4. 매물로 내놓기만 해도 감독은 일단 받아들입니다.'},{l:'방출한다',fx:`바로 정리합니다. ${relCost(p).tot?`확정 보장액 절반(${money(relCost(p).tot)})을 지급합니다. `:''}감독 관계 +4, 선수단 분위기 조금 하락.`},{l:'더 기회를 준다',fx:`감독 관계 -${m.ego>=70?5:3}. 선수 기분은 오릅니다.`}],2,p.id); return; }
+      [{l:'트레이드 매물로 내놓는다',fx:'30일 안에 내보내면 감독 관계 +4. 매물로 내놓기만 해도 감독은 일단 받아들입니다.'},{l:'방출한다',fx:`바로 정리합니다. ${relCost(p).tot?`확정 보장액 절반(${money(relCost(p).tot)})을 지급합니다. `:''}감독 관계 +4, 선수단 분위기 조금 하락.`},{l:'2군으로 내린다',fx:'1군에서 말소합니다(KBO처럼 계약은 그대로 두고 엔트리만 정리). 감독 관계 +2, 선수 기분 조금 하락.'},{l:'더 기회를 준다',fx:`감독 관계 -${m.ego>=70?5:3}. 선수 기분은 오릅니다.`}],3,p.id); return; }
   if(k==='frep'){ const p=d; const alt=(G.fwatch||[]).map(w=>G.players[w.id]).filter(q=>q&&q.isP===p.isP&&q.foreign===p.foreign); const dl=foreignDL(); const r=mreqAdd('frep',{pid:p.id},Math.min(G.day+21,dl)); r.an=G.acqSeq||0; const left=Math.max(0,r.until-G.day); /* 기한: 21일과 외국인 등록 마감 중 빠른 날 */
     mreqAsk(r,`${nm}: 외국인 ${p.name} 교체 요청`,`"${p.name}로는 안 됩니다. 시즌을 포기할 수 없으니 바꿔 주십시오."${alt.length?` 관찰 명단의 ${alt.map(q=>q.name).join(', ')}을(를) 언급합니다.`:' 관찰 명단에 같은 유형 후보가 없습니다.'}`,
       [{l:'교체를 추진한다',fx:`${dmd(r.until)}까지(${left}일${r.until===dl?', 외국인 등록 마감':''}) 기존 선수를 내보내고 새 외국인을 데려오면 감독 관계 +5. 못 하면 -4. 내보내기만 하면 정리 완료로 보고 고마워하지 않습니다.`},{l:'좀 더 지켜본다',fx:'감독 관계 -3.'}],1,p.id); return; }
@@ -63,6 +63,7 @@ EVH.mreq={ pick(e,i){ const r=mreqs().find(x=>x.id===e.data.rid); const m=G.mgr[
     if(r.k==='out'){ const p=G.players[r.data.pid]; if(!p||p.team!==G.user){ r.st='done'; return ''; }
       if(i===0){ p.listed=true; p.mor=clamp((p.mor??60)-4,0,100); r.st='open'; m.rel=clamp(m.rel+1,0,100); return `${p.name}을(를) 트레이드 매물로 내놓았습니다. 감독 관계 +1.`; }
       if(i===1){ const nm=p.name; releasePlayer(p.id); r.st='done'; m.rel=clamp(m.rel+4,0,100); for(const q of playersOf(G.user))q.mor=clamp((q.mor??60)-1,0,100); return `${nm}을(를) 방출했습니다. 감독 관계 +4.`; }
+      if(i===2){ r.st='done'; m.rel=clamp(m.rel+2,0,100); p.mor=clamp((p.mor??60)-2,0,100); if(p.e1){ p.e1=false; p.downDay=G.day; try{ entryManage(G.user,false,true); }catch(e){} } return `${p.name}을(를) 2군으로 내렸습니다(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 +2.`; } /* 감독이 정리를 요청한 선수는 말소로도 요청을 들어준다(카페 11-08) */
       r.st='no'; p.mor=clamp((p.mor??60)+5,0,100); return `${p.name}에게 기회를 더 줍니다(기분 +5). `+neg(m.ego>=70?5:3); }
     if(r.k==='frep'){ if(i===0){ r.st='open'; return `${dmd(r.until)}까지 교체를 추진합니다(기존 선수 정리 + 새 외국인 영입). 외국인 시장과 관찰 명단을 확인하세요.`; } r.st='no'; return neg(3); }
     if(r.k==='fa'){ if(i===0){ r.st='open'; return 'FA 협상에 나섭니다.'; } r.st='no'; return neg(2); }
