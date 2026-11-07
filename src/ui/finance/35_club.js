@@ -253,7 +253,7 @@ function contractView(){
 
 /* 진행 설정: 스페이스바·계속 버튼으로 진행할 때 확인 창 */
 /* 진행 멈춤 조건(위임과 별개): 어떤 소식에서 진행을 멈출지 고른다. 끈 분류는 소식함에만 남고, 결정은 기한이 지나면 기본안으로 처리된다 */
-function stopCard(){ const S=G.stopCfg||{}; return `<section class="card" id="stopCard"><h2 class="sec">진행 멈춤</h2><p class="small muted">'계속'을 눌렀을 때 어떤 소식에서 멈출지 고릅니다. 업무 위임(누가 처리하나)과는 따로입니다. 끈 분류는 소식함에 중요 표시로 남고 진행만 멈추지 않습니다. 그 안의 결정은 기한이 지나면 적힌 기본안으로 처리됩니다.</p>
+function stopCard(){ const S=G.stopCfg||{}; return `<section class="card" id="stopCard"><h2 class="sec">진행 멈춤</h2><p class="small muted">'진행하기'를 눌렀을 때 어떤 소식에서 멈출지 고릅니다. 업무 위임(누가 처리하나)과는 따로입니다. 끈 분류는 소식함에 중요 표시로 남고 진행만 멈추지 않습니다. 그 안의 결정은 기한이 지나면 적힌 기본안으로 처리됩니다.</p>
   <div class="stop-l">${STOP_CATS.map(([k,l,d])=>{ const lock=k==='must'; const on=lock||(S[k]!=null?!!S[k]:STOP_DEF[k]); return `<label class="chk stop-r${lock?' lock':''}"><input type="checkbox" ${lock?'checked disabled':`data-a="stopTg" data-v="${k}" ${on?'checked':''}`}> <b>${l}</b> <span class="small muted">${d}${lock?'':STOP_DEF[k]?'':' · 기본은 멈추지 않음'}</span></label>`; }).join('')}</div></section>`; }
 function advSetCard(){ const on=!!G.advAsk; return `<section class="card"><div class="row between"><h2 class="sec">진행 방식</h2><button class="btn small" data-a="advAskTog">${on?'묻지 않기':'매번 묻기'}</button></div><p class="small muted">${on?'지금: 진행할 때마다 어디까지 갈지 확인 창을 띄웁니다.':'지금: 남은 결정·트레이드 제안·안 읽은 중요 소식이 없으면 묻지 않고 바로 진행합니다. 있으면 진행 전에 알려 줍니다.'}</p></section>`; }
 

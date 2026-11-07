@@ -113,3 +113,20 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 @keyframes fmProg{to{width:100%}}
 .fmtop .goset>button.fm-busy .cl i{font-size:0}.fmtop .goset>button.fm-busy .cl i::after{content:'날짜 진행 중…';font-size:11px}
 @media (prefers-reduced-motion: reduce){.fmtop .fm-date.fm-flip b,.fmtop .goset>button.fm-busy::after{animation:none}}
+/* 진행하기 띠(FM식, 사용자 11-08): 다음 경기 요약 + 날짜 칸이 하루씩 왼쪽으로 지나간다 */
+#fmadv{position:fixed;left:var(--app-side-w,0px);right:0;top:var(--app-header-h,56px);z-index:130;background:var(--bg,#0e131a);border-bottom:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45);transform:translateY(-12px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+#fmadv.on{opacity:1;transform:none;pointer-events:auto}
+#fmadv .fa-top{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:20px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line)}
+#fmadv .fa-today{display:grid;justify-items:center;text-align:center;gap:2px}#fmadv .fa-today i{font-style:normal;color:#6fb4ff;font-size:18px}#fmadv .fa-today b{font-size:20px}#fmadv .fa-today span{font-size:12px;color:var(--muted)}
+#fmadv .fa-vs{display:flex;align-items:center;gap:18px}#fmadv .fa-vs>b{font-size:30px;font-weight:800}
+#fmadv .fa-list{display:grid;gap:3px;font-size:12px;justify-self:start;min-width:260px}#fmadv .fa-list>div{display:grid;grid-template-columns:48px 34px minmax(0,1fr) 44px;gap:6px;align-items:center}#fmadv .fa-list em{font-style:normal;text-align:right;font-family:var(--f-num)}
+#fmadv .fa-strip{overflow:hidden;padding:0 0 10px}
+#fmadv .fa-in{display:flex;transition-property:transform;transition-timing-function:ease-out;will-change:transform}
+#fmadv .fa-c{flex:0 0 var(--faw);box-sizing:border-box;border-right:1px solid var(--line);min-height:130px;padding:0 6px;opacity:.85}
+#fmadv .fa-c.done{opacity:.55}#fmadv .fa-c.cur{opacity:1;background:rgba(111,180,255,.08)}
+#fmadv .fa-h{display:grid;padding:8px 2px 6px}#fmadv .fa-h b{font-size:20px;font-family:var(--f-num)}#fmadv .fa-h i{font-style:normal;font-size:12px;color:var(--muted)}
+#fmadv .fa-g{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px;align-items:center;background:var(--team-dk,#22303d);border-radius:3px;padding:5px 6px;margin-bottom:4px}#fmadv .fa-g span{display:grid;line-height:1.15}#fmadv .fa-g b{font-size:12px}#fmadv .fa-g i{font-style:normal;font-size:10px;color:var(--muted)}
+#fmadv .fa-g em{font-style:normal;font-size:12px;font-weight:700;opacity:0;transition:opacity .2s}#fmadv .fa-c.done .fa-g em{opacity:1}#fmadv .fa-g em.w{color:var(--good)}#fmadv .fa-g em.l{color:var(--bad)}
+#fmadv .fa-rest,#fmadv .fa-e{font-size:11px;padding:4px 6px;margin-bottom:4px;border-radius:3px;background:rgba(255,255,255,.05);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fmadv .fa-e{background:rgba(139,92,246,.22);color:#e7dcff}
+@media (prefers-reduced-motion: reduce){#fmadv .fa-in{transition:none}}

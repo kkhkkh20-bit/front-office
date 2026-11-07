@@ -16,7 +16,7 @@ const STAD_MAX=12;const stadPower=lv=>lv<=5?lv:lv<=8?5+(lv-5)*.45:6.35+(lv-8)*.3
 const STAD_COST=[0,0,600,1200,2200,3600,5500,8000,12000,16000,21000,27000,34000], STAD_UP=[0,30,60,110,180,280,400,560,780,1000,1250,1550,1900], STAD_DAYS=[0,0,60,90,120,150,210,270,330,345,360,365,365];
 const PRICE=[{l:'할인',m:.8,dem:1.12,fan:.5,d:'관중이 늘고 팬 여론이 오르지만 표값 수입이 줄어듭니다.'},{l:'보통',m:1,dem:1,fan:0,d:'리그 평균 수준입니다.'},{l:'인상',m:1.15,dem:.87,fan:-.5,d:'표값 수입이 늘지만 관중과 팬 여론이 조금 줄어듭니다.'},{l:'고가',m:1.3,dem:.72,fan:-1.2,d:'매진이 잦은 인기 구단이 아니면 손해입니다. 팬 여론이 매달 떨어집니다.'}];
 const TICKET=.014; // 관중 1명당 표값 수입 1만4천원(백만원 단위, 게임 재정 기준)
-function stadOf(tid){ const t=team(tid); if(!t.stad){ const r=k=>2+(hn('st'+k,tid)>.35?1:0); t.stad={lv:{seat:r('s'),fnb:r('f'),prem:r('p'),vis:r('v'),turf:r('t')},price:1,build:[]}; } if(t.stad.dome==null&&!t.stad.built&&/돔/.test(STAD_NM[tid]||''))t.stad.dome=true; /* 기본 고양 돔구장은 돔 */ return t.stad; }
+function stadOf(tid){ const t=team(tid); if(!t.stad){ const mk=(TEAM_DEF[tid]||t).market||1, poor=mk<=.9||(TEAM_DEF[tid]||t).indie, rich=mk>=1.15; const r=k=>poor?2:rich?(k==='f'||k==='v'?4:3):2+(hn('st'+k,tid)>.35?1:0); /* 큰 시장 구단은 매장·전광판까지 개발된 구장(자체 수입), 작은 시장·독립 구단은 기본 구장에서 시작(사용자 11-08: 쉬운 구단·어려운 구단) */ t.stad={lv:{seat:r('s'),fnb:r('f'),prem:r('p'),vis:r('v'),turf:r('t')},price:1,build:[]}; } if(t.stad.dome==null&&!t.stad.built&&/돔/.test(STAD_NM[tid]||''))t.stad.dome=true; /* 기본 고양 돔구장은 돔 */ return t.stad; }
 function stadCap(tid){ const S=stadOf(tid); return Math.round((S.cap||STAD_CAP[tid])-(stadPower(S.lv.prem)-2)*300); }
 function stadBuilt(tid){ const S=stadOf(tid); return S.built||STAD_BUILT[tid]||2000; }
 /* 구장 연식 효과: 30년 넘으면 관람 환경이 낡아 수요 -4%, 새 구장은 개장 3년간 +12%에서 서서히 줄어든다, 공사 중 -2% */

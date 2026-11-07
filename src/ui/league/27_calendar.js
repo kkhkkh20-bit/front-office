@@ -82,15 +82,32 @@ function dayTickPosition(el){
 }
 /* 중계로 감춘 날의 날짜 띠는 중계를 닫은 뒤 그날만 다시 띄워 결과를 알린다 */
 function spoilFlush(){ const d=UI._spoilD; if(d==null||spoilG())return; UI._spoilD=null; setTimeout(()=>dayTick(d-1),30); }
+
+/* PC 진행하기(FM처럼): 위쪽에 다음 경기·일정 요약과 날짜 칸 띠를 띄우고, 지나간 날짜를 하루씩 밀어 보여 준다(사용자 11-08) */
+const FMADV_W=150;
+function fmAdvPanel(d0,d1,st){ let el=document.getElementById('fmadv'); if(!el){ el=document.createElement('div'); el.id='fmadv'; el.setAttribute('aria-hidden','true'); el.addEventListener('click',()=>el.classList.remove('on')); document.body.appendChild(el); }
+  const days=[]; for(let d=d0-1;d<=d1+6;d++)days.push(d);
+  const col=d=>{ const o=dobj(d), g=calGame(d), ev=calEvents(d).slice(0,2), per=period();
+    const gm=g?`<div class="fa-g${g.res?' has':''}">${badge(g.op,18)}<span><b>${esc(tshort(g.op))}</b><i>${g.home?'홈':'원정'}${g.kind?' · '+esc(g.kind):''}</i></span>${g.res?`<em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:''}</div>`:(per==='season'?'<div class="fa-rest">휴식</div>':'');
+    return `<div class="fa-c${d<=d0?' done':''}${d===d0?' cur':''}" data-d="${d}"><div class="fa-h"><b>${o.d}</b><i>${WD[o.w]}${o.d===1||d===days[0]?` · ${o.m}월`:''}</i></div>${gm}${ev.map(e=>`<div class="fa-e">${esc(e.t)}</div>`).join('')}</div>`; };
+  const nx=(()=>{ for(let d=d1;d<=d1+30;d++){ const g=calGame(d); if(g&&!g.res)return {d,g}; } return null; })();
+  const host=nx?(nx.g.home?G.user:nx.g.op):null;
+  const up=[]; for(let d=d1;d<=d1+40&&up.length<4;d++){ const g=calGame(d); if(g)up.push({d,g}); }
+  el.innerHTML=`<div class="fa-top"><div class="fa-today"><i>${nx&&nx.d===d1?'오늘':nx?dsh(nx.d):''}</i>${nx?`<b>${esc(tshort(nx.g.home?G.user:nx.g.op))} vs ${esc(tshort(nx.g.home?nx.g.op:G.user))}</b><span>${esc(nx.g.kind||'정규시즌')}${host!=null&&typeof STAD_NM!=='undefined'&&STAD_NM[host]?' · '+esc(STAD_NM[host]):''}</span>`:'<b>예정된 경기 없음</b>'}</div>
+    ${nx?`<div class="fa-vs">${badge(nx.g.home?G.user:nx.g.op,64)}<b>vs</b>${badge(nx.g.home?nx.g.op:G.user,64)}</div>`:''}
+    <div class="fa-list">${up.map(x=>`<div><span>${dsh(x.d)}</span><span>${x.g.home?'홈':'원정'}</span><span>${badge(x.g.op,14)} ${esc(tshort(x.g.op))}</span><em class="${x.g.res?(x.g.res.r==='승'?'w':x.g.res.r==='패'?'l':''):''}">${x.g.res?`${x.g.res.my}-${x.g.res.op}`:'-'}</em></div>`).join('')}</div></div>
+    <div class="fa-strip"><div class="fa-in" style="--faw:${FMADV_W}px;transition-duration:${Math.round(st*.85)}ms">${days.map(col).join('')}</div></div>`;
+  el._n=0; el.className='on'; clearTimeout(fmAdvPanel._t); fmAdvPanel._t=setTimeout(()=>el.classList.remove('on'),st*(d1-d0)+1400); }
+function fmAdvStep(i){ const el=document.getElementById('fmadv'); if(!el||!el.classList.contains('on'))return; const inn=el.querySelector('.fa-in'); if(!inn)return; inn.style.transform=`translateX(${-i*FMADV_W}px)`; const cs=[...inn.children]; cs.forEach((c,k)=>{ c.classList.toggle('cur',k===i+1); if(k<=i+1)c.classList.add('done'); }); }
 function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const sg=spoilG(); if(sg&&sg.day>d0&&sg.day<=d1)UI._spoilD=sg.day; } let still=false; try{ still=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
-  /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '계속' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */
+  /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '진행하기' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */
   if(fmOn()&&!still){ const de=document.querySelector('.fmtop .fm-date'), bt=document.querySelector('.fmtop .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child'); const L=[]; for(let d=d0+1;d<=d1;d++)L.push(d);
-    const st=Math.max(90,Math.min(260,1400/L.length)), tot=st*L.length;
+    const st=Math.max(180,Math.min(420,2400/L.length)), tot=st*L.length; /* 날짜 칸이 지나가는 게 보이게 하루 0.18~0.42초 */
     if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',tot+'ms'); }
     const put=d=>{ if(!de)return; const o=dobj(d), g=calGame(d); de.classList.remove('fm-flip'); void de.offsetWidth; de.classList.add('fm-flip'); const b=de.querySelector('b'); if(b)b.textContent=`${WD[o.w]} ${o.m}월 ${o.d}일`; let r=de.querySelector('.fm-dres'); if(!r){ r=document.createElement('i'); r.className='fm-dres'; de.appendChild(r); } r.innerHTML=g&&g.res?`${badge(g.op,14)} <em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:''; };
-    put(d0); dayTick._steps=L.map((d,i)=>setTimeout(()=>{ put(d); tkShow(d); },(i+1)*st));
+    put(d0); try{ fmAdvPanel(d0,d1,st); }catch(e){} dayTick._steps=L.map((d,i)=>setTimeout(()=>{ put(d); tkShow(d); fmAdvStep(i+1); },(i+1)*st));
     if(UI._tk)UI._tk.until=Date.now()+tot+200; dayTick._t2=setTimeout(tkDone,tot+50);
     dayTick._t=setTimeout(()=>{ if(bt)bt.classList.remove('fm-busy'); const r=de&&de.querySelector('.fm-dres'); if(r)setTimeout(()=>r.remove(),900); },tot+250); return; }
   let el=document.getElementById('dtick'); if(!el){ el=document.createElement('div'); el.id='dtick'; el.setAttribute('aria-hidden','true'); document.body.appendChild(el); }

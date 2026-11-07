@@ -58,17 +58,19 @@ function buildWorld(){ const userTid=0; worldReset();
   // 2026년 1월 2일에서 시작
   G.year=2026; G.cal=buildCalendar(2026); G.day=dnum(2026,1,2); G.ps=null;
   G.sea={y:2026,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
-  G.teams.forEach(t=>{t.cash=ri(3000,5000);});
+  G.teams.forEach(t=>{t.cash=mktCash(t.id)+ri(-500,500);});
   G.fmarket=[]; refreshFMarket(12); updateModes(); makeDraftClass();
   G.stops=[]; G.games=[];
   for(const t of G.teams){ const rs=G.teams.map(x=>({id:x.id,r:teamRating(x.id)})); const a=avg(rs.map(x=>x.r)); t.expW=clamp(.5+(teamRating(t.id)-a)*.03,.36,.64); }
   G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id);
   try{ G.preview=worldPreview(); }catch(e){ G.preview=null; }
 }
-function claimTeam(userTid,austK){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=G.day; G.myC=null; delete G.preview; G.lineup={}; team(userTid).cash=4000; if(austK)fdAustApply(userTid,austK);
+/* 시작 자금은 시장 크기대로: 큰 구단 약 60억, 작은 구단 약 26억, 독립 구단 약 20억(사용자 11-08: 쉬운 구단·어려운 구단) */
+function mktCash(tid){ const d=TEAM_DEF[tid]||{}; return Math.round(4000*Math.pow(d.indie?.7:d.market||1,2)/10)*10; }
+function claimTeam(userTid,austK){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=G.day; G.myC=null; delete G.preview; G.lineup={}; team(userTid).cash=mktCash(userTid); if(austK)fdAustApply(userTid,austK);
   if(G.scouts[2])G.scouts[2].region=TEAM_DEF[userTid].region==='수도권'?'영남':'수도권';
   for(const p of foreignOf(userTid)) delete G.players[p.id];
-  G.r68=true; for(const p of Object.values(G.players)){ delete p.story; delete p.cum; delete p.fl; cumInit(p); } G.mgr[userTid]=null; refreshMgrMarket(); G.coach=null; coachInit(); for(const t of G.teams)delete t.gm; G.rep=50; G.jobs=[]; G.lgTrades=[]; G.gmc={}; gmInit(); G.ob=null; G.obFace={}; try{ obInit(); refreshCoachMarket(); refreshScoutMarket(); }catch(e){} G.mail=[]; G.stops=[]; G.spend={mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0}; G.intl={us:1,la:0,jp:0,tw:0,au:0}; G.fac={lv:2,build:null}; G.pr=null; G.news=[]; G.ownerLog=[]; prInit(); for(const p of Object.values(G.players))milInit(p);
+  G.r68=true; for(const p of Object.values(G.players)){ delete p.story; delete p.cum; delete p.fl; cumInit(p); } G.mgr[userTid]=null; refreshMgrMarket(); G.coach=null; coachInit(); for(const t of G.teams)delete t.gm; G.rep=50; G.jobs=[]; G.lgTrades=[]; G.gmc={}; gmInit(); G.ob=null; G.obFace={}; try{ obInit(); refreshCoachMarket(); refreshScoutMarket(); }catch(e){} G.mail=[]; G.stops=[]; G.spend={mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0}; G.intl={us:1,la:0,jp:0,tw:0,au:0}; G.fac={lv:(d=>d.market>=1.15?4:d.market<=.9||d.indie?1:2)(TEAM_DEF[userTid]||{}),build:null}; /* 시설도 구단 형편대로: 큰 시장은 개발된 상태, 작은 시장·독립 구단은 낮게(사용자 11-08) */ G.pr=null; G.news=[]; G.ownerLog=[]; prInit(); for(const p of Object.values(G.players))milInit(p);
   for(const p of Object.values(G.players)){ if(p.team!=null){ p.mor=clamp(Math.round(N(62,9)),30,88);} }
   addLog(`${tname(userTid)} 단장에 취임했습니다. ${OWNER[team(userTid).owner].msg}`); chron('join','단장 취임',null,userTid);
   mail('구단주실','구단주 서신',`${tname(userTid)}의 새 단장을 맡아 주셔서 감사합니다. ${OWNER[team(userTid).owner].msg} 기대 승률은 약 ${fmt3(team(userTid).expW)}입니다. 구단 운영을 믿고 맡기겠습니다.`,{kind:'구단주'});
