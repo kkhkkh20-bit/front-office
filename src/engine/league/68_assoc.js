@@ -54,8 +54,9 @@ EVH.cmt={ pick(e,i){ const A=asInit(); if(!A.cur)return ''; A.cur.uv=i<CMT_OPT.l
 function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; if(G.capY[y])return; const A=asInit(); const cap=capOf(G.year);
   if(!A.cur||A.cur.y!==y){ const near=cmtNear(); A.cur={y,near:near.map(t=>t.id),on:near.length>=CMT_N}; }
   const C=A.cur;
-  if(!C.on){ G.capY[y]=cap; A.cmt.unshift({y,n:C.near.length,held:false,fin:0}); A.cmt.length=Math.min(A.cmt.length,15);
-    note('일정',`${y}년 경쟁균형세 상한은 ${money(cap)}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳤습니다.`); A.cur=null; return; }
+  if(!C.on){ const fr=(()=>{ let n=0; for(const x of A.cmt){ if(x.held||x.fin)break; n++; } return n; })(); const idx=fr>=2; /* 2년 연속 동결이면 3년째는 물가 연동 3% 인상(구단들이 돈을 안 써 상한이 수년째 묶이던 문제, 커뮤니티 피드백 11-07) */
+    G.capY[y]=idx?Math.round(cap*1.03):cap; A.cmt.unshift({y,n:C.near.length,held:false,fin:idx?.03:0,idx}); A.cmt.length=Math.min(A.cmt.length,15);
+    note('일정',idx?`${y}년 경쟁균형세 상한은 물가 연동으로 3% 올라 ${money(G.capY[y])}입니다. 실행위원회 소집 요건(상한 90% 이상 구단 5곳)에는 못 미쳤지만 ${fr}년 연속 동결이라 자동 조정했습니다.`:`${y}년 경쟁균형세 상한은 ${money(cap)}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳤습니다.`); A.cur=null; return; }
   /* 1차 표결 */
   const ideal={}, vote={}; const vt=C.uvT??G.user; /* 표는 던질 때 구단 것(이직해도 옮겨 가지 않는다: 검수 11-06) */ const userVotes=C.uvT!=null?C.uv!==undefined:asEmp();
   for(const t of G.teams){ ideal[t.id]=cmtIdeal(t); if(userVotes&&t.id===vt){ if(C.uv!=null)vote[t.id]=C.uv; continue; } vote[t.id]=cmtSnap(ideal[t.id]); }

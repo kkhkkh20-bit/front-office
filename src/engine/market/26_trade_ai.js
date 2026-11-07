@@ -41,15 +41,18 @@ const RTYPE={now:'즉시 전력',cheap:'저비용',grow:'성장형'};
 function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=depth(G.user); const core=myCoreIds();
   const base=k==='SP'?(d.sp.slice(0,5).length<5?30:Math.min(...d.sp.slice(0,5).map(spV))):k==='RP'?(d.pen.slice(0,4).length<4?30:Math.min(...d.pen.slice(0,4).map(penV))):rk.v;
   const fits=p=>k==='SP'?p.isP&&isSPr(p):k==='RP'?p.isP:!p.isP&&(p.pos===k||subsOf(p).includes(k));
-  const C=[]; for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.ys||(p.joinY>G.year)||!fits(p))continue; if(c.age&&p.age>c.age)continue; if(c.sal&&p.sal>c.sal)continue;
-      const now=slotGain(k,p)-base; const rp=scoutReport(p); const fut=(rp.ofp??rp.cur)-(rk.v||40);
+  const scan=(base,ref)=>{ const C=[]; for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.ys||(p.joinY>G.year)||!fits(p))continue; if(c.age&&p.age>c.age)continue; if(c.sal&&p.sal>c.sal)continue;
+      const now=slotGain(k,p)-base; const rp=scoutReport(p); const fut=(rp.ofp??rp.cur)-ref;
       let sc=c.type==='now'?now:c.type==='cheap'?now-p.sal/150:(p.age<=25?fut*1.2+(25-p.age)*.6:-99);
-      if(c.type!=='grow'&&now<1)continue; if(c.type==='grow'&&(p.age>25||fut<2))continue; C.push({p,t,now,fut,rp,sc}); } }
+      if(c.type!=='grow'&&now<1)continue; if(c.type==='grow'&&(p.age>25||fut<2))continue; C.push({p,t,now,fut,rp,sc}); } } return C; };
+  let C=scan(base,rk.v||40), bkUp=false;
+  if(!C.length){ /* 이미 리그 최상위 자리여도 백업·미래 자원은 추천한다(커뮤니티 피드백 11-07): 주전 대신 우리 두 번째 선수, 성장형은 리그 평균 주전(50) 기준 */
+    const mine=domestic(G.user).filter(q=>!q.ys&&fits(q)).map(q=>slotGain(k,q)).sort((a,b)=>b-a); const n0=k==='SP'?5:k==='RP'?4:1; C=scan(mine[n0]??30,50); bkUp=C.length>0; }
   C.sort((a,b)=>b.sc-a.sc); const out=[]; const open=tradeOpen();
   const fl=[]; for(const x of C.slice(0,30)){ if(out.length>=3)break; const give=open?buildPackage(x.t,x.p,core):null; if(open&&!give){ fl.push(x); continue; }
     const why=[]; const r1=k==='SP'||k==='RP'?null:rankWith(k,slotGain(k,x.p));
-    if(c.type==='now')why.push(`지금 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다${r1?`(리그 ${rk.rank}위 → ${r1}위)`:''}.`);
-    if(c.type==='cheap')why.push(`연봉 ${money(x.p.sal)}으로 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다.`);
+    if(bkUp&&c.type!=='grow')why.push(`우리 ${SLOTK[k]}는 이미 리그 ${rk.rank}위라 주전을 바꿀 후보는 없습니다. 주전 뒤를 받칠 백업으로 지금 2번째 선수보다 ${Math.round(x.now)}만큼 낫습니다.`); else if(c.type==='now')why.push(`지금 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다${r1?`(리그 ${rk.rank}위 → ${r1}위)`:''}.`);
+    if(c.type==='cheap'&&!bkUp)why.push(`연봉 ${money(x.p.sal)}으로 우리 ${SLOTK[k]}보다 ${Math.round(x.now)}만큼 낫습니다.`);
     if(c.type==='grow')why.push(`${x.p.age}세, ${x.rp.ofp!=null?`${potTier(potVal(x.rp),x.rp.cur).l}(${x.rp.who||'스카우트'} 전망)`:'잠재력은 아직 관찰이 부족합니다'}. 지금 능력 ${dv(x.rp.cur)}.`);
     const h=curLine(x.p); if(h)why.push(x.p.isP?(h.outs?`${yrTag(h)} ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:''):(h.pa?`${yrTag(h)} ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`:''));
     if(x.p.listed||x.p.aiListed)why.push(`${tshort(x.t.id)}이(가) 트레이드 매물로 내놓은 선수입니다.`);
