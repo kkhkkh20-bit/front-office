@@ -1758,7 +1758,8 @@ T('[공통 점검] 구장: 예전 저장에서 홈경기를 더 치러도 앞 �
 T('[공통 점검] 경기 엔진 주자 보존: 타석 전 주자와 타자는 타석 뒤에 베이스 잔류·득점·아웃 중 하나로 설명된다(번트·병살·추가 진루 포함)',()=>{ fresh(); const T2=G.teams.map(t=>t.id); for(const t of G.teams){ const m=G.mgr[t.id]; if(m)m.small=95; } let bad=[], n=0;
   for(let i=0;i<120;i++){ const h=T2[i%T2.length], a=T2[(i+3)%T2.length]; const g=simGame(G.day,h,a,false); const L=g.pbp||[]; let half=null, sb=0, so=0;
     for(const x of L){ if(x[0]!==half){ half=x[0]; sb=0; so=0; } if(x[1]==='SB'||x[1]==='CS'){ sb=(x[4]||[]).filter(Boolean).length; so=x[3]; continue; } if(typeof x[1]!=='number'||!Array.isArray(x[5]))continue;
-      if(x[4]<3){ n++; const nb=x[5].filter(Boolean).length; const after=nb+(x[6]||0)+(x[4]-so); if(sb+1!==after&&bad.length<5)bad.push(x[3]+' 전 주자 '+sb+'·아웃 '+so+' → 주자 '+nb+'·득점 '+(x[6]||0)+'·아웃 '+x[4]); }
+      const wo=x[0]%2===1&&x[8]>x[7]&&!L.slice(L.indexOf(x)+1).some(z=>typeof z[1]==='number'); /* 끝내기: 결승점이 들어오면 나머지 주자는 진루를 멈춘다(실제 규칙) */
+      if(x[4]<3&&!wo){ n++; const nb=x[5].filter(Boolean).length; const after=nb+(x[6]||0)+(x[4]-so); if(sb+1!==after&&bad.length<5)bad.push(x[3]+' 전 주자 '+sb+'·아웃 '+so+' → 주자 '+nb+'·득점 '+(x[6]||0)+'·아웃 '+x[4]); }
       sb=x[5].filter(Boolean).length; so=x[4]; } }
   ok(n>1000,'준비 실패: 타석 '+n); ok(!bad.length,'주자가 사라지거나 생김: '+bad.join(' / ')); });
 T('[공통 점검] 홀드: 등판 중 리드를 한 번이라도 잃으면 타선이 재역전한 뒤 교체돼도 홀드가 없고, 박스스코어에 도루 실패가 남는다',()=>{ fresh(); const T2=G.teams.map(t=>t.id); let n=0, bad=[], csB=0, csP=0;
