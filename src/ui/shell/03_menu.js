@@ -30,7 +30,7 @@ function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter
   const it=inTabs(`mg_${tab}_${s}`,ks.map(k=>[k,lab(k)]),s); return why+it.bar+H[it.cur](); }
 const GW={구장:['club','stad'],감독:['staff','mgr'],코치진:['staff','coach'],외국인선수:['transfer','foreign'],'부상방지·병원':['staff','med'],'2군연수':['staff','dev'],트레이드:['trade','block'],병역:['staff','mil'],비FA다년계약:['transfer','contract'],드래프트후보:['transfer','draft'],스카우트팀:['staff','scouts'],해외스카우트망:['scout','intl'],전력분석:['staff','data'],마케팅:['club','mkt'],일지:['club','log'],연봉협상:['transfer','contract'],신인드래프트:['transfer','draft'],FA시장:['transfer','fa'],시즌결산:['club','result'],스프링캠프:['train','dev'],순위:['league','stand']};
 function curSub(tab){ if(tab==='league')return (ALIAS.league[UI.lseg]||UI.lseg); UI.sub=UI.sub||{}; const raw=UI.sub[tab]||SUBS[tab][0][0]; return (ALIAS[tab]&&ALIAS[tab][raw])||raw; }
-function faLive(){ return !!(G.fa&&!G.fa.closed&&G.day>=KD(11,1)); }
+function faLive(){ return !!(G.fa&&!G.fa.closed&&(G.fa.open||G.day>=dnum(G.fa.y0??G.year,11,1))); } /* 해가 바뀐 1월에도 열린 시장(검수 11-08 카페 제보: 1월에 FA 예정자 화면이 떠서 미계약 FA와 협상할 수 없던 원인) */
 function subAlert(tab,k){
   const f=foreignOf(G.user);
   const A2={
