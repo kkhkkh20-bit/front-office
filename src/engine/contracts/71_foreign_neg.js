@@ -81,7 +81,7 @@ function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.
   const out=O&&!O.none?`${O.k} 구단이 ${usdT(O.v)} 수준을 제시했다고 합니다.`:'해외 제안은 없다고 합니다. 국내 다른 구단은 보류권 때문에 접촉할 수 없습니다.';
   if(v>=target){ N.ok=true; p.newSal=g; if(i>0)p.fInc=i; else delete p.fInc; return {ok:true,msg:`${p.name} 측이 재계약에 합의했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}. ${O&&!O.none?out:''}`}; }
   const r=v/target; N.mood-=r<.85?15:r<.95?6:2;
-  if(N.mood<40||N.n>=3){ C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return {ok:false,msg:`${p.name} 측이 재계약을 거절했습니다. ${out} 보류권은 우리에게 있으니 5년 동안 국내 다른 구단에는 갈 수 없고, ${O&&!O.none?O.k+'으로':'해외로'} 떠납니다.`}; }
+  if(N.mood<40||N.n>=3){ C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return {ok:false,msg:`${p.name} 측이 재계약을 거절했습니다. ${out} ${(C.fFree||[]).includes(id)||p.fRel?'계약에 보류권 해제 조항이 있어 국내 다른 구단과도 계약할 수 있는 자유계약 선수가 됩니다.':`보류권은 우리에게 있으니 5년 동안 국내 다른 구단에는 갈 수 없고, ${O&&!O.none?O.k+'으로':'해외로'} 떠납니다.`}`}; } /* 해제 조항이 있으면 실제 처리(자유계약)와 같은 안내(검수 11-08) */
   const need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD; return {ok:false,need,msg:`${p.name} 측: 보장 ${usdT(need)}(${money(need)})${i?` + 인센티브 ${usdT(i)}`:''} 이상이면 사인하겠다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; }
 /* 보류 명단: 보류권을 쥐고 결별한 외국인(5년간 국내 다른 구단 입단 불가) */
 function foResFor(p){ if(!p)return null; return (G.fRes||[]).find(x=>x.until>=G.year&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat))||null; }
@@ -90,5 +90,5 @@ function foResAdd(p,tid){ G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year); if(G.f
 
 /* 외국인 2년 계약(커뮤니티 요청 11-07, KBO도 재계약 외국인 다년 계약을 허용): 재계약에 합의한 뒤 2년으로 묶으면 연봉 5%를 더 주고, 다음 겨울 재계약 협상 없이 같은 연봉으로 한 해 더 뛴다 */
 function fReMulti(id){ const C=G.contract; const p=G.players[id]; if(!C||C.done||!p||p.team!==G.user||!C.foreignEnd.includes(id))return '재계약 기간이 아닙니다.'; const N=(C.fre||{})[id]; if(!(N&&N.ok))return '먼저 1년 재계약에 합의해야 합니다.'; if(p.fMulti>C.y)return '이미 2년 계약입니다.'; if(p.age>=35)return `${p.age}세라 다년 계약은 하지 않습니다.`;
-  const s0=p.newSal; p.newSal=round5(s0*1.05); p.fMulti=C.y+2; const f=fReCapInfo(); if(f&&f.over>0){ p.newSal=s0; delete p.fMulti; return `외국인 3명 연봉 총액 한도를 ${money(f.over)} 넘어 2년 계약으로 바꿀 수 없습니다.`; }
+  const s0=p.newSal; p.newSal=round5(s0*1.05); if(p.foreign==='아시아'&&p.newSal>asiaReCap(p)){ p.newSal=s0; return `아시아쿼터 재계약 상한 ${money(asiaReCap(p))}을(를) 넘어 2년 계약(5% 인상)으로 바꿀 수 없습니다.`; } /* 검수 11-08 */ p.fMulti=C.y+2; const f=fReCapInfo(); if(f&&f.over>0){ p.newSal=s0; delete p.fMulti; return `외국인 3명 연봉 총액 한도를 ${money(f.over)} 넘어 2년 계약으로 바꿀 수 없습니다.`; }
   story(p,`${C.y+1}~${C.y+2} 2년 계약 (연 ${money(p.newSal)})`,'move'); return `${p.name}과(와) ${C.y+1}~${C.y+2} 2년 계약으로 바꿨습니다. 연봉 ${money(s0)} → ${money(p.newSal)}, 다음 겨울에는 재계약 협상 없이 같은 연봉입니다.`; }

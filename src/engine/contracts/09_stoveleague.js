@@ -335,7 +335,7 @@ function offerBlockMsg(o){
   if(o.give.some(id=>G.players[id].team!==o.from)||o.get.some(id=>G.players[id].team!==G.user))return '선수 상황이 바뀌어 성사되지 않았습니다.';
   const ev=evalTrade(o.from,o.get,o.give,0); const t0=team(o.from);
   if(ev.theirN>ROSTER_MAX||ev.theirN<ROSTER_MIN)return `${t0.city} ${t0.nick} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${ev.theirN}명).`;
-  if(ev.theirPay>capOf(G.year)&&ev.theirPay>capPay(o.from))return `${t0.city} ${t0.nick} 단장: 그사이 샐러리캡 여유가 줄어 이 제안을 지킬 수 없습니다.`;
+  if(ev.theirPay>capOf(sponSeason())&&ev.theirPay>capPay(o.from))return `${t0.city} ${t0.nick} 단장: 그사이 샐러리캡 여유가 줄어 이 제안을 지킬 수 없습니다.`;
   return null;
 }
 function answerOffer(id,yes){

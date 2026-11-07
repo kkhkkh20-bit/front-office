@@ -21,7 +21,7 @@ function armRatio(p){ return (p.armw||0)/armCap(p); }
 function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastApp=day; p.lastPc=pc; } else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
 function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; { const same=L.find(x=>x[0]===day); if(same)same[1]+=pc; else { L.push([day,pc]); L.sort((a,b)=>a[0]-b[0]); } } if(L.length>10)L.shift(); /* 날짜순 유지·같은 날은 합친다(퓨처스 주간 기록이 1군 기록 뒤에 들어와도 연투 계산이 맞게) */
   const prevS=p.lsS; let add=pc*(cd>=2?1.8:cd>=1?1.3:1);
-  if(isStart){ const past=prevS!=null&&day<prevS; /* 늦게 들어온 과거 선발 기록: 짧은 휴식 가산·마지막 선발일을 거꾸로 바꾸지 않는다(검수 11-07) */ if(pc>105)add+=(pc-105)*3; if(!past&&prevS!=null&&day-prevS<5)add+=pc*.4; if(!past)p.lsS=day; }
+  if(isStart){ const past=prevS!=null&&day<prevS; /* 늦게 들어온 과거 선발 기록: 짧은 휴식 가산·마지막 선발일을 거꾸로 바꾸지 않는다(검수 11-07) */ if(pc>105)add+=(pc-105)*3; const SD=p.lsD=(p.lsD||[]).filter(d=>d!==day); const nb=SD.filter(d=>Math.abs(d-day)<5).length; if(nb)add+=pc*.4; SD.push(day); SD.sort((a,b)=>a-b); if(SD.length>6)SD.shift(); if(!past)p.lsS=day; } /* 짧은 휴식은 앞뒤 선발과 비교: 기록이 늦게 들어와도 같은 부하(검수 11-08) */
   if(!isStart&&pc>=35)add+=(pc-35)*1.5; /* 불펜 멀티이닝 */
   p.armw=(p.armw||0)+add;
   if(cd>=2&&p.team===G.user&&period()==='season'){ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
@@ -48,7 +48,7 @@ function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user)
 const MED_SD={none:.07,c:.05,b:.035,a:0};
 function medInj(p){ if(p.team===G.user)return p.inj; const sd=MED_SD[G.med&&G.med.hosp]??.07; return clamp(p.inj+hn('med'+G.year,p.id)*sd,.02,.45); }
 function durGrade(v){ return v<.08?['강철 몸','good']:v<.12?['튼튼함','good']:v<.18?['보통','']:v<.26?['잔부상 주의','warn']:['부상 병동','bad']; }
-function injDays2(p){ return sum((p.injHist||[]).filter(h=>h.y>=G.year-1).map(h=>h.days)); }
+function injDays2(p){ return sum((p.injHist||[]).filter(h=>h.y>=G.year-1).map(h=>h.d!=null?Math.max(0,Math.min(h.days,G.day-h.d)):h.days)); } /* 이미 빠진 날만(앞으로 남은 재활은 아직 결장 이력이 아님, 검수 11-08) */
 function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
   const H=(p.injHist||[]).filter(h=>h.y>=G.year-2); if(H.length)L.push(`최근 부상: ${H.slice(-4).map(h=>`${h.y}년 ${h.k?injName(h.k):'부상'} ${h.days}일`).join(', ')}`);
   if(p.injOut>0)L.push(`현재 ${injNow(p)}, 복귀까지 약 ${p.injOut}일`);

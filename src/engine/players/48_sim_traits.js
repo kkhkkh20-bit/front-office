@@ -59,12 +59,16 @@ function futBoost(p){ try{ return boostOf(p)*.6; }catch(e){ return 0; } }
 function futBat(p,t,pos,games){ games=games||3; const pa=games>=3?ri(9,14):ri(3,6); const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
   if(p.injFx)injRecover(p,pa);
   if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
-function futPit(p,t){ const sp=isSPr(p); const outs=sp?ri(12,18):ri(4,8); const o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:2; o.gs=sp?1:0; addTo(lineFor(p,G.year,t,'퓨처스'),o);
+function futPit(p,t){ const sp=isSPr(p);
+  const had=d=>(p.ld||[]).some(x=>x[0]===d); /* 그날 이미(1군 등) 던졌으면 퓨처스 등판을 겹쳐 넣지 않는다(검수 11-07) */
+  const days=sp?[G.day]:(p.downDay!=null&&p.downDay>G.day-2)?[G.day]:[G.day-2,G.day]; /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */
+  const D=days.filter(d=>!had(d)); if(!D.length)return; /* 실제로 던질 날을 먼저 정하고 기록·재활을 그만큼만(검수 11-08: 중복 막고도 성적·재활 진척이 들어감, 1회 등판이 2경기로 기록) */
+  let outs=sp?ri(12,18):ri(4,8); if(!sp)outs=Math.max(1,Math.round(outs*D.length/2)); const o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:D.length; o.gs=sp?1:0; addTo(lineFor(p,G.year,t,'퓨처스'),o);
   /* 투구 수 = 상대 타자 수 × 타석당 3.9구(KBO 평균 수준). 예전 식(아웃당 5.4구 + 출루당 4구)은 출루를 두 번 세어 퓨처스 선발이 130~200구를 던진 것으로 잡혔다 */
   const pc=Math.min(sp?110:45,Math.round((outs+(o.h||0)+(o.bb||0)+(o.hbp||0))*3.9)); if(p.injFx)injRecover(p,outs);
-  const had=d=>(p.ld||[]).some(x=>x[0]===d); /* 그날 이미(1군 등) 던졌으면 퓨처스 등판을 겹쳐 넣지 않는다(검수 11-07) */
-  if(sp){ if(had(G.day))return; const cd=pitchApp(p,G.day,pc,true); p.fat=clamp((p.fat||0)+pitFatGain(p,pc,true),0,100); if(R()<p.inj*.075*pc/95*injMult(p)*loadMult(p,cd,G.day)/LOAD_NORM)injure(p,G.day,{sp:true,pc,farm:1}); }
-  else for(const [d,q] of ((p.downDay!=null&&p.downDay>G.day-2)?[[G.day,pc]]:[[G.day-2,Math.round(pc/2)],[G.day,pc-Math.round(pc/2)]])){ /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */ if(had(d))continue; const cd=pitchApp(p,d,q,false); p.fat=clamp((p.fat||0)+pitFatGain(p,q,false)*(d===G.day?1:.5),0,100); /* 이틀 전 등판 피로도 절반 남는다(검수 11-07) */ if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,G.day,{pc:q,farm:1}); break; } } }
+  if(sp){ const cd=pitchApp(p,G.day,pc,true); p.fat=clamp((p.fat||0)+pitFatGain(p,pc,true),0,100); if(R()<p.inj*.075*pc/95*injMult(p)*loadMult(p,cd,G.day)/LOAD_NORM)injure(p,G.day,{sp:true,pc,farm:1}); return; }
+  const parts=D.length===2?[[D[0],Math.round(pc/2)],[D[1],pc-Math.round(pc/2)]]:[[D[0],pc]];
+  for(const [d,q] of parts){ const cd=pitchApp(p,d,q,false); p.fat=clamp((p.fat||0)+pitFatGain(p,q,false)*(d===G.day?1:.5),0,100); /* 이틀 전 등판 피로도 절반 남는다(검수 11-07) */ if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,G.day,{pc:q,farm:1}); break; } } }
 const arsenal_=arsenal;
 
 /* 화면과 경기가 공유하는 구종 자료. 추정 구위로 볼 때는 원본 선수를 변경하지 않는다. */

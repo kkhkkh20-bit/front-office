@@ -2,7 +2,7 @@
 function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(tid)); if(m)L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0]}); } return L; }
 let _spC={k:null};
 function projStarters(tid,n){ // 지금 로테이션 순번과 휴식일로 다음 경기 선발을 예상(부상·피로로 바뀔 수 있음)
-  const k=G.day+':'+G.games.length+':'+G.year; if(_spC.k!==k)_spC={k}; const ck=tid+':'+n; if(_spC[ck]&&_spC[ck].every(g=>!g.sp||g.sp.team===tid))return _spC[ck]; /* 같은 날 방출·이적한 투수가 남아 있으면 다시 계산 */
+  const k=G.day+':'+G.games.length+':'+G.year; if(_spC.k!==k)_spC={k}; const ck=tid+':'+n; if(_spC[ck]&&_spC[ck].every(g=>!g.sp||(g.sp.team===tid&&healthy(g.sp)&&rpPlanOf(tid,g.sp)!=='sp2')))return _spC[ck]; /* 같은 날 2군 선발 수업·부상으로 빠진 투수도 다시 계산(검수 11-08) */ /* 같은 날 방출·이적한 투수가 남아 있으면 다시 계산 */
   const t=team(tid); const sp=depth(tid).sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[];
   for(const g of games){ let pick=null;
     if(sp.length){ for(let i0=0;i0<sp.length;i0++){ const i=(rot+i0)%sp.length; const p=sp[i]; if(last[p.id]==null||g.d-last[p.id]>=5){ rot=(i+1)%sp.length; pick=p; break; } }
@@ -39,11 +39,12 @@ function tradeCompare(tid,give,get){
   const myAfter=mine.filter(p=>!give.includes(p.id)).concat(gt), thAfter=theirs.filter(p=>!get.includes(p.id)).concat(gv);
   return {my:[posStrength(mine),posStrength(myAfter)],th:[posStrength(theirs),posStrength(thAfter)]}; }
 /* 선발진 변화: 평균 대신 빠지는 선발, 대신 로테이션에 들어갈 다음 후보, 선발 가능 인원 */
-function spRot(list){ return list.filter(p=>p&&p.isP&&isSPr(p)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)); }
+const spSeen=p=>p.team===G.user?ovr(p):(scoutReport(p).cur??-1); /* 남의 선수는 스카우트가 본 능력만(미확인은 맨 뒤, 검수 11-08) */
+function spRot(list){ return list.filter(p=>p&&p.isP&&isSPr(p)&&healthy(p)&&!(p.team===G.user&&rpPlanOf(p.team,p)==='sp2')).sort((a,b)=>spSeen(b)-spSeen(a)); } /* 2군 선발 수업 중인 투수는 1군 로테이션이 아니다(검수 11-08) */
 function spSwap(tid,give,get){ const mine=rosterList(G.user); const after=mine.filter(p=>!give.includes(p.id)).concat(get.map(id=>G.players[id]).filter(Boolean));
   const b=spRot(mine), a=spRot(after); const t0=b.slice(0,5), t1=a.slice(0,5); const out=t0.filter(p=>!t1.includes(p)), inn=t1.filter(p=>!t0.includes(p));
   if(!out.length&&!inn.length&&b.length===a.length)return null; return {out:out.map(p=>({p,slot:t0.indexOf(p)+1})),inn,n0:b.length,n1:a.length}; }
-function spSwapTxt(x){ if(!x)return ''; const v=p=>dv(Math.round(ovr(p)));
+function spSwapTxt(x){ if(!x)return ''; const v=p=>spSeen(p)<0?'?':dv(Math.round(spSeen(p)));
   const o=x.out.map(o=>`${o.p.name}(${o.slot}선발, 능력 ${v(o.p)})`).join(', '); const i=x.inn.map(p=>`${p.name}(능력 ${v(p)})`).join(', ');
   return `선발진: ${o?`${o} 빠짐 → `:''}${i?`${i}이(가) 로테이션에 들어감`:o?'로테이션을 채울 선발 자원이 없어 불펜·2군에서 메워야 함':''} · 선발 가능 ${x.n0}명 → ${x.n1}명`; }
 /* 감독 반응: 우리 트레이드가 전력과 감독 성향에 맞는지 */
