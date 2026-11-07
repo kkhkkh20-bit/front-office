@@ -1,0 +1,329 @@
+{
+  "reference_main_commit": "453d988",
+  "v6c_identity_count": 100,
+  "v6c_home_variants": 10,
+  "v7_identity_count": 126,
+  "v8_identity_count": 120,
+  "photos_per_resolution": 1306,
+  "sizes": [
+    128,
+    256
+  ],
+  "sources": [
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+      "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/seoul_comets.webp",
+      "sha256": "cd0fceb7f769f8194140fea8bd336f60547d6915173c5b4168767b76d3acd7ea",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/seoul_hounds.webp",
+      "sha256": "fb44c3e064259d479450fa0b9782495b5f2378d2675bd3dad69f7f041958c476",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/seoul_hounds.webp",
+      "sha256": "810dc329b54227bf2959bce39f5b7e803f4e460c29948156c3d18cf500b330d0",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/incheon_seagulls.webp",
+      "sha256": "bfa782f591157ea93468fe34eeff55c88a5ea4fbc03fcef214578e2268cffb03",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/incheon_seagulls.webp",
+      "sha256": "f1d5a82617f7244aaa6b4d0bad9c86ca87ed1c341b4e987e8aa9ea05c95d506c",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/suwon_sparks.webp",
+      "sha256": "2c32783b926621b0dc9833b84ecd8ae79c6b110dc750f1a644725d5b3db74831",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/suwon_sparks.webp",
+      "sha256": "ea2d2ce8be51d5345bffdfd7c95ed4fc4cff75577c85366ed6eae5a66798c1a3",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/goyang_storm.webp",
+      "sha256": "9b8eb5ce7b3888991ed0ee6c2483d35a5a2cbccbcd960494e7c0ee7f66888bbb",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/goyang_storm.webp",
+      "sha256": "cf327290ecff635d727727178f5915f537acefa7cc1218f6b876a3b61f13f9c1",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/daejeon_redfox.webp",
+      "sha256": "b3fa4ef5b126716029f5564b86365690b5071b363cbe8f88c33b6498631472b8",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/daejeon_redfox.webp",
+      "sha256": "e9d39994d08769ba4c025786d9112037984d21d7409f62add74d0eab7594067d",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/gwangju_blazes.webp",
+      "sha256": "133d8d4198bd4246c8d9948b7f183e3201c3df521918768a5c2f13197b1cb4c8",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/gwangju_blazes.webp",
+      "sha256": "a877be329a267fff031560a65156294d07ac1fe947b93d67b325ac7f085c94de",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/daegu_thunders.webp",
+      "sha256": "f57cde75db76351adae7483e5fd3ebcaa9c4da490c4ca3c2833e13378441722e",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/daegu_thunders.webp",
+      "sha256": "90fee784e94fa5c5ec27b6afe70de6bbacfd8b46ea2a9937e18ed258a10e8b12",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/busan_waves.webp",
+      "sha256": "9681f250a34fcbe2b2ca6fe73f9402da495f88cb83d8a507b7e422b12e768231",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/busan_waves.webp",
+      "sha256": "bcbab9b1f546994a9b5c1e60b4a86489b1a082972e6508e728c89f398dff8c48",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/128/changwon_anchors.webp",
+      "sha256": "d8006bafc726df43a1c85ede5d70216a79cab9f7195d7ba27dee740647b4b741",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v6/batch01c/production100/sheets/256/changwon_anchors.webp",
+      "sha256": "e7c5498484718c7f4c89bf5b2404320efd593c41f4b28cd2fd43b42bbab9f60f",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v7/staff01/sheets/coaches/128/staff01.webp",
+      "sha256": "5817559246052ea4a70396ad22d87b3f78819d8271a1ef7e8e93be46673d8a36",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v7/staff01/sheets/coaches/256/staff01.webp",
+      "sha256": "bfa45a76670fce506083589f9c309f549133b0b90b240918a09179638ba9079b",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v7/staff01/sheets/civilian/128/staff01.webp",
+      "sha256": "5722601f94e6a4f2dcd7e6fa5dcd01ae0b87ce06bc13855be76d86fc4ad9dd7d",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v7/staff01/sheets/civilian/256/staff01.webp",
+      "sha256": "d62c1616e26a06694357cddb66e2492d80ea916f82df4b9dce3d7acdfcffb1e6",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v8/people01/sheets/128/people01_01.webp",
+      "sha256": "992c5b37d250422da93b399ae55dbf63025bfa56089c08d31d73b3ca023c2eca",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v8/people01/sheets/256/people01_01.webp",
+      "sha256": "081684368d69562c12488b912b5dd94901ecfc8dfd02febd0340a7f9173660b2",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v8/people01/sheets/128/people01_02.webp",
+      "sha256": "989ce04c51691e2f1880533be89c7606ee7591349704e47e8ab7cf1deed60359",
+      "resolution": 128
+    },
+    {
+      "path": "assets/v8/people01/sheets/256/people01_02.webp",
+      "sha256": "592ef3a2370d6ff76f56782708282e8078afa9c02261bd7dd417fe029dadf88c",
+      "resolution": 256
+    },
+    {
+      "path": "assets/v9/gm01/sheets/128/gm01.webp",
+      "sha256": "1ec1f6f91fc6371970e3740438bc557fe2ee6c98674a7ab4c060a37c5daf5a56",
+      "resolution": 128,
+      "review_branch": "assets/v9-gm01-review",
+      "commit": "81d5bbb3d0ce7c58efac1273b638ddb1b51248a2"
+    },
+    {
+      "path": "assets/v9/gm01/sheets/256/gm01.webp",
+      "sha256": "ebd6e6f39810b2b9056208e9d1e1f32108dbfa49cd8ead932dc7274d88c33f8f",
+      "resolution": 256,
+      "review_branch": "assets/v9-gm01-review",
+      "commit": "81d5bbb3d0ce7c58efac1273b638ddb1b51248a2"
+    }
+  ],
+  "manifest_sha256": {
+    "v7": "ce55aba7ca48fc391a36b423c4ada6c1cb774a728d2c65a1e5d6b4e4475e427b",
+    "v8": "784436e1b61f3d2cc6229b9ae928be887b2d5113a08d9afcc7e73289d0f79c21"
+  },
+  "v6c_manifest_sha256": "abda6d5d12c6c9c31c0fe91a01c727c631834e44c6ea9c2895cb01bb4b7d34df",
+  "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+  "model_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+  "v6c_embedding_provenance": "Previously decoded production runtime 100 identities x10 home variants at128/256; all current atlas SHA256 matched the verified sources. Raw vectors reused without changes.",
+  "v7_v8_embedding_provenance": "Recomputed from current main actual decoded runtime portraits at128/256, independently detected/aligned at each size.",
+  "latest_main_reverified": {
+    "main_commit_checked": "0a55fcfcaa3a71e34b087b4226d5b4cb8c5a4136",
+    "reference_atlases_checked": 28,
+    "all_reference_atlas_sha256_unchanged": true,
+    "v6c_v7_v8_reference_manifest_bytes_unchanged": true,
+    "sources": [
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/seoul_comets.webp",
+        "sha256": "725c816a85a401d487894259e1c3711e28675352c108a4b2869cf1bd7b545f88",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/seoul_comets.webp",
+        "sha256": "cd0fceb7f769f8194140fea8bd336f60547d6915173c5b4168767b76d3acd7ea",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/seoul_hounds.webp",
+        "sha256": "fb44c3e064259d479450fa0b9782495b5f2378d2675bd3dad69f7f041958c476",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/seoul_hounds.webp",
+        "sha256": "810dc329b54227bf2959bce39f5b7e803f4e460c29948156c3d18cf500b330d0",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/incheon_seagulls.webp",
+        "sha256": "bfa782f591157ea93468fe34eeff55c88a5ea4fbc03fcef214578e2268cffb03",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/incheon_seagulls.webp",
+        "sha256": "f1d5a82617f7244aaa6b4d0bad9c86ca87ed1c341b4e987e8aa9ea05c95d506c",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/suwon_sparks.webp",
+        "sha256": "2c32783b926621b0dc9833b84ecd8ae79c6b110dc750f1a644725d5b3db74831",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/suwon_sparks.webp",
+        "sha256": "ea2d2ce8be51d5345bffdfd7c95ed4fc4cff75577c85366ed6eae5a66798c1a3",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/goyang_storm.webp",
+        "sha256": "9b8eb5ce7b3888991ed0ee6c2483d35a5a2cbccbcd960494e7c0ee7f66888bbb",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/goyang_storm.webp",
+        "sha256": "cf327290ecff635d727727178f5915f537acefa7cc1218f6b876a3b61f13f9c1",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/daejeon_redfox.webp",
+        "sha256": "b3fa4ef5b126716029f5564b86365690b5071b363cbe8f88c33b6498631472b8",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/daejeon_redfox.webp",
+        "sha256": "e9d39994d08769ba4c025786d9112037984d21d7409f62add74d0eab7594067d",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/gwangju_blazes.webp",
+        "sha256": "133d8d4198bd4246c8d9948b7f183e3201c3df521918768a5c2f13197b1cb4c8",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/gwangju_blazes.webp",
+        "sha256": "a877be329a267fff031560a65156294d07ac1fe947b93d67b325ac7f085c94de",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/daegu_thunders.webp",
+        "sha256": "f57cde75db76351adae7483e5fd3ebcaa9c4da490c4ca3c2833e13378441722e",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/daegu_thunders.webp",
+        "sha256": "90fee784e94fa5c5ec27b6afe70de6bbacfd8b46ea2a9937e18ed258a10e8b12",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/busan_waves.webp",
+        "sha256": "9681f250a34fcbe2b2ca6fe73f9402da495f88cb83d8a507b7e422b12e768231",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/busan_waves.webp",
+        "sha256": "bcbab9b1f546994a9b5c1e60b4a86489b1a082972e6508e728c89f398dff8c48",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/128/changwon_anchors.webp",
+        "sha256": "d8006bafc726df43a1c85ede5d70216a79cab9f7195d7ba27dee740647b4b741",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v6/batch01c/production100/sheets/256/changwon_anchors.webp",
+        "sha256": "e7c5498484718c7f4c89bf5b2404320efd593c41f4b28cd2fd43b42bbab9f60f",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v7/staff01/sheets/coaches/128/staff01.webp",
+        "sha256": "5817559246052ea4a70396ad22d87b3f78819d8271a1ef7e8e93be46673d8a36",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v7/staff01/sheets/coaches/256/staff01.webp",
+        "sha256": "bfa45a76670fce506083589f9c309f549133b0b90b240918a09179638ba9079b",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v7/staff01/sheets/civilian/128/staff01.webp",
+        "sha256": "5722601f94e6a4f2dcd7e6fa5dcd01ae0b87ce06bc13855be76d86fc4ad9dd7d",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v7/staff01/sheets/civilian/256/staff01.webp",
+        "sha256": "d62c1616e26a06694357cddb66e2492d80ea916f82df4b9dce3d7acdfcffb1e6",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v8/people01/sheets/128/people01_01.webp",
+        "sha256": "992c5b37d250422da93b399ae55dbf63025bfa56089c08d31d73b3ca023c2eca",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v8/people01/sheets/256/people01_01.webp",
+        "sha256": "081684368d69562c12488b912b5dd94901ecfc8dfd02febd0340a7f9173660b2",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v8/people01/sheets/128/people01_02.webp",
+        "sha256": "989ce04c51691e2f1880533be89c7606ee7591349704e47e8ab7cf1deed60359",
+        "matches_validated_reference": true
+      },
+      {
+        "path": "assets/v8/people01/sheets/256/people01_02.webp",
+        "sha256": "592ef3a2370d6ff76f56782708282e8078afa9c02261bd7dd417fe029dadf88c",
+        "matches_validated_reference": true
+      }
+    ]
+  },
+  "v9_identity_count": 60,
+  "v9_review_commit": "81d5bbb3d0ce7c58efac1273b638ddb1b51248a2",
+  "v9_manifest_sha256": "9893040ebc2e75433971360a5725b8bde2d8ad2c21e32d27321d204e9fd7f9e2",
+  "v9_embedding_provenance": "Reused independently re-detected/re-aligned vectors from final decoded lossless RGB128/256 v9 runtime atlases. Exact atlas and model SHA256 checked."
+}

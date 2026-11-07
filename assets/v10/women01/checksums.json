@@ -1,0 +1,73 @@
+{
+  "algorithm": "sha256",
+  "path_base": "assets/v10/women01/",
+  "excluded": [
+    "checksums.json"
+  ],
+  "files": {
+    "CLAUDE_HANDOFF.md": {
+      "sha256": "8c17179f90f5ea64c54e3b5531edb93de2dd2e43e9c913a3c58a2b87afd44cf0",
+      "bytes": 3616
+    },
+    "README.md": {
+      "sha256": "f800bbbf0105478aa215394608d12c642bf25e26f4d8ec3305462298128c8a3e",
+      "bytes": 5313
+    },
+    "manifest.json": {
+      "sha256": "3dced2af30541e8b18fd7dfafbb7175e9a73032b55a335c541464eb00e6eed55",
+      "bytes": 52807
+    },
+    "previews/front_256.png": {
+      "sha256": "a408a6da557389983a8d9dbb678dad7405a8ae29899b7b5f1fed1c26fcc9b891",
+      "bytes": 1395673
+    },
+    "previews/gm_256.png": {
+      "sha256": "63fa3b40a1577dfbf39dd58d52f41d1cf0e77f9f986c19d3909a0a99f46c50b5",
+      "bytes": 1033857
+    },
+    "previews/overview_128.png": {
+      "sha256": "ce851901c6d4ed5c1bd1d078f9924595383a87909a77f556f3d9e11299bacd3d",
+      "bytes": 905765
+    },
+    "previews/staff_256.png": {
+      "sha256": "2f2b1cfd67b50802be736845e3377812b26b94a47ac0b7475d20411839adaf48",
+      "bytes": 1040115
+    },
+    "sheets/128/women01.webp": {
+      "sha256": "8277ac6d67b01a5872a3c861f41a79a698d98f9352431c7d3b0e7f015d8ef869",
+      "bytes": 667028
+    },
+    "sheets/256/women01.webp": {
+      "sha256": "2e771cd5f923ef08308f45b1de5e2a11aee23cc66e91ce639b3e1a9da11aed5d",
+      "bytes": 2585510
+    },
+    "validation/arcface_embeddings.npz": {
+      "sha256": "8f54b8e38a9c0eefa8e76ac670dce5b3d6b242cf77942fc82f09af2e054e6507",
+      "bytes": 5116137
+    },
+    "validation/arcface_scores.npz": {
+      "sha256": "c4bd6f34f3160da3fbcf45ef80045291b115d550a83fc311e879ac5cb1ca2252",
+      "bytes": 389745
+    },
+    "validation/reference_provenance.json": {
+      "sha256": "df72014f23d0b30e89c4ce483cced8ff6cfdd6f60bf003ea1f145bb562e74395",
+      "bytes": 14077
+    },
+    "validation/runtime_detections.json": {
+      "sha256": "29db9273ff5c9429ab78d8f5248adacb2898c4880026550654cb7380bec4ac73",
+      "bytes": 71789
+    },
+    "validation/source_portraits.json": {
+      "sha256": "ee6ab775a68b1d02971adc4ecb1399cc70d4edb19267c987fd773ff445a3e112",
+      "bytes": 33101
+    },
+    "validation/visual_review.json": {
+      "sha256": "d3cbf720cf6acc93e868c1117e76d24f692e0c126cfef3ab531ef23173284bdd",
+      "bytes": 1361
+    },
+    "validation.json": {
+      "sha256": "27551360c4a033b943d9af7d6704886889cc994d33790343a9f9ce6b400a92fe",
+      "bytes": 69876
+    }
+  }
+}
