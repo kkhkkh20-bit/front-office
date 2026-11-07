@@ -1,5 +1,12 @@
+/* 가을야구 진행 중 홈: 라운드별 대진·시리즈 전적과 지금 진행 중인 시리즈를 한눈에 */
+function homePsPanel(){ const D=bkData(psYearOf(G.ps)); const nm={wc:'와일드카드',spo:'준플레이오프',po:'플레이오프',ks:'한국시리즈'};
+  const rows=BK_R.map(r=>{ const S=bkSeries(D,r); const cur=D.cur&&D.cur.round===r[0]; const st=S.win!=null?'종료':cur?'진행 중':'대기'; const t=x=>x!=null?`${badge(x,17)}<b>${esc(tshort(x))}</b>`:'<b class="muted">미정</b>';
+    return `<tr class="${cur?'own':''}${S.hi===G.user||S.lo===G.user?' me':''}"><td>${nm[r[0]]}</td><td><span class="hw-ps-t${S.win!=null&&S.win!==S.hi?' lose':''}">${t(S.hi)}</span></td><td class="num">${S.wh??0}-${S.wl??0}</td><td><span class="hw-ps-t${S.win!=null&&S.win!==S.lo?' lose':''}">${t(S.lo)}</span></td><td class="muted">${st}</td></tr>`; }).join('');
+  const c=G.ps.cur; const head=c&&c.round==='tb'?'순위 결정전':c?`${nm[c.round]||''} ${c.gi+1}차전 예정`:'';
+  return `<section class="hw-panel hw-stand hw-ps"><header><h2>${psYearOf(G.ps)} 포스트시즌 <small class="muted">${esc(head)}</small></h2><button class="tc-i" data-a="psOpen">대진표</button></header><table><thead><tr><th>라운드</th><th>상위</th><th>전적</th><th>하위</th><th></th></tr></thead><tbody>${rows}</tbody></table></section>`; }
 /* 노트북 홈: 오늘 할 일·기사·순위·다음 경기를 고정된 본문 안에 배치한다. */
 function homeStandingPanel(){
+  if(G.ps&&!G.ps.done&&typeof bkData==='function')try{ return homePsPanel(); }catch(e){} /* 가을야구 중에는 순위 대신 대진(사용자 11-08) */
   /* 리그 순위 + 팀 지표(득실·최근 5경기). 시즌 중엔 올해, 비시즌엔 지난 시즌 최종(사용자 11-06: 리그 팀 지표를 홈으로) */
   let {order,live,y}=standOrder(); if(!live&&!(order&&order.length)){ order=standingsNow(); live=true; } const ranks=[], L=order.map((x,i)=>{ ranks[i]=live&&i&&tieOf(order[i-1],x)?ranks[i-1]:i+1; return {...x,rank:ranks[i]}; });
   const rows=L.map((x,i)=>{ const sp=live?splitOf(x.tid):null, d=sp?sp.rs-sp.ra:null; return `<tr class="${x.tid===G.user?'own':''}${i===4?' cut':''}"><td>${x.rank}</td><td><button data-a="lteamGo" data-v="${x.tid}">${badge(x.tid,17)}<b>${esc(team(x.tid).nick)}</b></button></td><td>${x.w}-${x.l}${x.t?'-'+x.t:''}</td><td>${i?gbStr(gbOf(L[0],x)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${sp&&sp.n?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(x.tid).slice(-5)):''}</td></tr>`; }).join('');

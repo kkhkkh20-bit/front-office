@@ -4421,6 +4421,7 @@ body .cs-prep-teams>section.cs-pcard{background:transparent;box-shadow:0 18px 50
 #app .home-workspace :is(.hw-lr,.fx-pl):hover .av{transform:scale(1.12);box-shadow:0 0 0 2px var(--team-hi,#4fa3ff)}
 #app .home-workspace .hw-sp:hover .hw-sp-face .av{transform:scale(1.05);box-shadow:0 0 0 3px var(--team-hi,#4fa3ff),0 6px 18px rgba(0,0,0,.45)}
 #app .home-workspace :is(.hw-lr,.fx-pl,.hw-sp) .av{transition:transform .15s,box-shadow .15s}
+.hw-ps .hw-ps-t{display:inline-flex;align-items:center;gap:4px}.hw-ps .hw-ps-t.lose{opacity:.45}.hw-ps tr.me td:first-child{color:var(--team-hi)}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -20799,8 +20800,15 @@ function cmpView(T0,mini){ const L=nextGames(1); const def=L.length?L[0].op:stan
   return `<section class="card cmp"><div class="row between"><h2 class="sec">전력 비교</h2><span class="small muted">상대 전적 ${hh.w}승 ${hh.l}패${hh.t?` ${hh.t}무`:''}</span></div>${chips}
     <div class="cmp-hd"><span>${badge(G.user,22)} ${esc(tshort(G.user))} <b class="ok">우위 ${w}</b></span><span>${badge(T,22)} ${esc(tshort(T))} <b class="bad">우위 ${l}</b></span></div>
     <div class="cmp-rows">${rows}</div><p class="small muted">숫자는 자리별 전력(현재 능력 기준), 순위는 10개 구단 중 순위입니다. 자리를 누르면 그 자리 보강 트레이드를 찾습니다.</p></section>${help}`; }
+/* 가을야구 진행 중 홈: 라운드별 대진·시리즈 전적과 지금 진행 중인 시리즈를 한눈에 */
+function homePsPanel(){ const D=bkData(psYearOf(G.ps)); const nm={wc:'와일드카드',spo:'준플레이오프',po:'플레이오프',ks:'한국시리즈'};
+  const rows=BK_R.map(r=>{ const S=bkSeries(D,r); const cur=D.cur&&D.cur.round===r[0]; const st=S.win!=null?'종료':cur?'진행 중':'대기'; const t=x=>x!=null?`${badge(x,17)}<b>${esc(tshort(x))}</b>`:'<b class="muted">미정</b>';
+    return `<tr class="${cur?'own':''}${S.hi===G.user||S.lo===G.user?' me':''}"><td>${nm[r[0]]}</td><td><span class="hw-ps-t${S.win!=null&&S.win!==S.hi?' lose':''}">${t(S.hi)}</span></td><td class="num">${S.wh??0}-${S.wl??0}</td><td><span class="hw-ps-t${S.win!=null&&S.win!==S.lo?' lose':''}">${t(S.lo)}</span></td><td class="muted">${st}</td></tr>`; }).join('');
+  const c=G.ps.cur; const head=c&&c.round==='tb'?'순위 결정전':c?`${nm[c.round]||''} ${c.gi+1}차전 예정`:'';
+  return `<section class="hw-panel hw-stand hw-ps"><header><h2>${psYearOf(G.ps)} 포스트시즌 <small class="muted">${esc(head)}</small></h2><button class="tc-i" data-a="psOpen">대진표</button></header><table><thead><tr><th>라운드</th><th>상위</th><th>전적</th><th>하위</th><th></th></tr></thead><tbody>${rows}</tbody></table></section>`; }
 /* 노트북 홈: 오늘 할 일·기사·순위·다음 경기를 고정된 본문 안에 배치한다. */
 function homeStandingPanel(){
+  if(G.ps&&!G.ps.done&&typeof bkData==='function')try{ return homePsPanel(); }catch(e){} /* 가을야구 중에는 순위 대신 대진(사용자 11-08) */
   /* 리그 순위 + 팀 지표(득실·최근 5경기). 시즌 중엔 올해, 비시즌엔 지난 시즌 최종(사용자 11-06: 리그 팀 지표를 홈으로) */
   let {order,live,y}=standOrder(); if(!live&&!(order&&order.length)){ order=standingsNow(); live=true; } const ranks=[], L=order.map((x,i)=>{ ranks[i]=live&&i&&tieOf(order[i-1],x)?ranks[i-1]:i+1; return {...x,rank:ranks[i]}; });
   const rows=L.map((x,i)=>{ const sp=live?splitOf(x.tid):null, d=sp?sp.rs-sp.ra:null; return `<tr class="${x.tid===G.user?'own':''}${i===4?' cut':''}"><td>${x.rank}</td><td><button data-a="lteamGo" data-v="${x.tid}">${badge(x.tid,17)}<b>${esc(team(x.tid).nick)}</b></button></td><td>${x.w}-${x.l}${x.t?'-'+x.t:''}</td><td>${i?gbStr(gbOf(L[0],x)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${sp&&sp.n?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(x.tid).slice(-5)):''}</td></tr>`; }).join('');
@@ -21793,7 +21801,7 @@ function standView(){
   const msg=live&&period()==='season'?(mi<=4?`가을야구권 ${mi+1}위 · 6위와 ${Math.max(0,gbOf(me,order[5])).toFixed(1)}경기 차`:`5위 ${tshort(fifth.tid)}와(과) ${gbOf(fifth,me).toFixed(1)}경기 차`):'';
   // 상대 전적
   const h2h=hasTl?`<div class="tw"><table class="h2h"><thead><tr><th>상대</th>${G.teams.filter(t=>t.id!==G.user).map(t=>`<th>${badge(t.id,16)}</th>`).join('')}</tr></thead><tbody><tr class="me"><td>${tshort(G.user)}</td>${G.teams.filter(t=>t.id!==G.user).map(t=>{ const r=h2hOf(G.user,t.id); return `<td class="${r.w>r.l?'pos':r.w<r.l?'neg':''}">${r.w+r.l+r.t?`${r.w}-${r.l}${r.t?'-'+r.t:''}`:'-'}</td>`; }).join('')}</tr></tbody></table></div>`:'';
-  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),['map','구단 전력'],['ps','포스트시즌']]);
+  const tt=inTabs('stand',[['tbl','순위표'],...(live&&rankChart(false)?[['chart','순위 변동']]:[]),...(h2h?[['h2h','상대 전적']]:[]),['map','구단 전력'],['ps','포스트시즌']],G.ps&&!G.ps.done?'ps':undefined); /* 가을야구 중에는 대진표를 먼저(사용자 11-08) */
   if(tt.cur==='teams')return tt.bar+teamsView();
   if(tt.cur==='tbl'&&fmOn())return tt.bar+standFm(order,live,y);
   if(tt.cur==='tbl')return tt.bar+`<section class="card"><div class="row between"><h2 class="sec">${live?`${G.year} 정규시즌 순위`:`${y} 최종 순위`}</h2>${msg?`<span class="small">${msg}</span>`:''}</div>
@@ -26471,6 +26479,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castStep(v){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp, pa=i=>i>=0&&i<L.length&&typeof L[i][1]==='number'; let i=c.k; if(+v>0){ i++; while(i<L.length&&!pa(i))i++; } else { i--; while(i>0&&!pa(i))i--; } castJump(i); }, /* 다음·이전 '타석'으로(도루·교체 줄은 건너뜀), 재생 상태는 그대로(검수 11-07) */
   castWin(){ const c=UI.cast; if(!c)return; const i=castWinIdx(G.games[c.g]); if(i<0)return toast('결승점을 찾지 못했습니다(무승부이거나 기록이 짧음).'); castJump(i,false); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; },
   castInn(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; const h=L[Math.min(c.k,L.length-1)][0]; const i=L.findIndex((y,j)=>j>c.k&&y[0]!==h); castJump(i<0?L.length:i); },
+  psOpen(){ UI.it=UI.it||{}; UI.it.stand='ps'; A.go('league:stand'); },
   castSnd(){ const on=!sndPref(); try{ localStorage.setItem('fo_snd',on?'1':'0'); }catch(e){} if(!on)sndStopAll(); else { sndInit(); if(UI.cast&&UI.cast.play)sndLoop('amb','amb',.4,1.2); } const b=document.getElementById('cs-snd'); if(b){ b.textContent=on?'소리 켬':'소리 끔'; b.setAttribute('aria-pressed',on); } },
   castSpd(){ const c=UI.cast; if(!c)return; const L=[1,1.5,2,3]; c.spd=L[(L.indexOf(c.spd)+1)%L.length]; UI.castSpd=c.spd; const b=document.getElementById('cs-spd'); if(b)b.textContent=c.spd+'배속'; if(c.play)castRestart(); },
   castMode(v){ const c=UI.cast; if(!c)return; c.mode=v; UI.castMode=v; document.querySelectorAll('.cs-mode button').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); if(c.play)castRestart(); },

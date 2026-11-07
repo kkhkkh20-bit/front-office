@@ -204,3 +204,4 @@
 #app .home-workspace :is(.hw-lr,.fx-pl):hover .av{transform:scale(1.12);box-shadow:0 0 0 2px var(--team-hi,#4fa3ff)}
 #app .home-workspace .hw-sp:hover .hw-sp-face .av{transform:scale(1.05);box-shadow:0 0 0 3px var(--team-hi,#4fa3ff),0 6px 18px rgba(0,0,0,.45)}
 #app .home-workspace :is(.hw-lr,.fx-pl,.hw-sp) .av{transition:transform .15s,box-shadow .15s}
+.hw-ps .hw-ps-t{display:inline-flex;align-items:center;gap:4px}.hw-ps .hw-ps-t.lose{opacity:.45}.hw-ps tr.me td:first-child{color:var(--team-hi)}
