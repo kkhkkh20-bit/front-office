@@ -157,12 +157,14 @@ const domPayNext=(tid,s)=>Object.values(G.players).filter(p=>p.team===tid&&!p.fo
 const forPayOf=tid=>ownedOf(tid).filter(p=>p.foreign);
 const payroll=tid=>sum(domPayOf(tid).map(p=>p.sal));
 /* 그해 지급 비율: 군 복무 기간은 연봉을 주지 않는다. 입대·전역 날짜를 알면 그 해 복무하지 않는 기간 몫만(전역 예정일 기준으로 미리) */
-function payFrac(p,y){ const m=p&&p.mil; const f=m&&(m.from??m.pf), u=m&&(m.until||m.pu); if(!m||f==null||!u)return 1; const a=dnum(y,1,1), b=dnum(y+1,1,1); const s=Math.max(a,f), e=Math.min(b,u); return 1-Math.max(0,e-s)/(b-a); }
+/* 연봉을 나눠 받는 기간(정규시즌): 복무 비율과 이적 비율이 같은 기준을 써야 한다(검수 11-07: 개막 전 전역 선수가 이적 여부에 따라 83.8%/100%) */
+function payWin(y){ const C=G.cal&&dobj(G.cal.open).y===y?G.cal:null; return C?[C.open,C.end+1]:[dnum(y,3,22),dnum(y,10,1)]; }
+function payFrac(p,y){ const m=p&&p.mil; const f=m&&(m.from??m.pf), u=m&&(m.until||m.pu); if(!m||f==null||!u)return 1; const [a,b]=payWin(y); const s=Math.max(a,f), e=Math.min(b,u); return 1-Math.max(0,e-s)/(b-a); }
 /* 한 해 국내 선수 연봉 지급액(결산·예산 전망): 복무 중인 선수도 그해 복무하지 않는 기간 몫은 넣는다 */
 /* y시즌이 아직 개막 전인가(겨울): 그 시즌 연봉은 합의한 다음 시즌 기준(salNext)으로 본다. 결산 뒤 12월과 해가 바뀐 1월이 같은 값 */
 function preSeason(y){ return y>G.year||(y===G.year&&dobj(G.day).m<=3&&!(G.cal&&G.cal.open>=dnum(G.year,1,1)&&G.day>=G.cal.open)); }
 /* 그해 그 구단 소속 비율: 구단 사이 이동 기록(tLog)이 있으면 날짜로 나눈다 */
-function payTeamFrac(p,tid,y){ const L=(p.tLog||[]).filter(x=>x.y===y); if(!L.length)return p.team===tid?1:0; const C=G.cal&&dobj(G.cal.open).y===y?G.cal:null, a=C?C.open:dnum(y,3,22), b=C?C.end+1:dnum(y,10,1); /* 연봉은 정규시즌 기간에 나눠 받는다 */ const m=p.mil, mf=m&&(m.from??m.pf), mu=m&&(m.until||m.pu), sv=(s,e)=>mf==null||!mu?0:Math.max(0,Math.min(e,mu)-Math.max(s,mf)); /* 그 구단 소속일 때 복무한 날은 뺀다 */ let cur=L[0].f, d0=a, n=0; for(const x of L){ const d=clamp(x.d,a,b); if(cur===tid)n+=d-d0-sv(d0,d); cur=x.t; d0=d; } if(cur===tid)n+=b-d0-sv(d0,b); return n/(b-a); }
+function payTeamFrac(p,tid,y){ const L=(p.tLog||[]).filter(x=>x.y===y); if(!L.length)return p.team===tid?1:0; const [a,b]=payWin(y); /* 연봉은 정규시즌 기간에 나눠 받는다 */ const m=p.mil, mf=m&&(m.from??m.pf), mu=m&&(m.until||m.pu), sv=(s,e)=>mf==null||!mu?0:Math.max(0,Math.min(e,mu)-Math.max(s,mf)); /* 그 구단 소속일 때 복무한 날은 뺀다 */ let cur=L[0].f, d0=a, n=0; for(const x of L){ const d=clamp(x.d,a,b); if(cur===tid)n+=d-d0-sv(d0,d); cur=x.t; d0=d; } if(cur===tid)n+=b-d0-sv(d0,b); return n/(b-a); }
 function payYear(tid,y){ return Math.round(sum(Object.values(G.players).filter(p=>!p.foreign&&!(p.joinY>y)&&(p.team===tid||(p.tLog||[]).some(x=>x.y===y&&(x.f===tid||x.t===tid)))).map(p=>(preSeason(y)?salNext(p):p.sal) /* 개막 전 겨울은 합의한 다음 시즌 연봉 */*(y>G.year||!(p.tLog||[]).some(x=>x.y===y)?payFrac(p,y)*(p.team===tid?1:0):payTeamFrac(p,tid,y))+(p.team===tid?ysAdj(p,y):0) /* 시즌 중 육성 전환: 전환 전 기간은 원래 연봉 */ /* 이적한 해는 구단별 소속 기간에서 그 구단 소속 중 복무한 날을 빼서 나눈다(복무 비율을 따로 곱하면 어느 구단에서 복무했는지가 사라졌다, 검수 11-06) */))); }
 /* 다음 시즌 연봉 한 가지 기준: 이미 합의한 다음 시즌 시작 다년계약(extNext) > 재계약 중 합의 연봉(newSal) > 지금 연봉 */
 function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; { const C=G.contract, n=C&&!C.done&&C.neg&&C.neg[p.id]; if(n&&n.st==='open'&&n.cur!=null)return n.cur; if(n&&n.st==='arb'&&n.arb)return n.arb.club; } /* 조정 중: 판정 전까지 구단안(양측 제시액 중 하나, 검수 11-06) */ /* 협상 중이면 마지막 제시액(확정 미리보기와 같게) */ return p.newSal??p.sal; }
