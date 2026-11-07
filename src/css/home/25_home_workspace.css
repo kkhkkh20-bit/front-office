@@ -173,3 +173,6 @@
 
 /* 현황은 요약 줄 없이 머리줄·카드·넘기기(사용자 11-06) */
 #app .home-workspace[data-view="overview"]:not([data-device="desktop"][data-rows="3"]){grid-template-rows:auto minmax(0,1fr) auto}
+
+/* 다음 경기: 새 메인 로고(64px 이상)를 이름 위에 크게(사용자 11-07: 로고가 안 바뀐 것처럼 보였다) */
+.hw-match-teams .hw-mt{display:grid;justify-items:center;gap:3px;min-width:0}.hw-match-teams .hw-mt b{max-width:110px;overflow:hidden;text-overflow:ellipsis}
