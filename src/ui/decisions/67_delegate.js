@@ -14,7 +14,7 @@ function handOffBtns(m){ if(G.unemp||mailDone(m))return ''; let h='';
   for(const k of (m.auto||[])){ if(autoOn(k))continue; if(k==='tro'&&m.oid&&!(G.offers||[]).some(o=>o.id===m.oid))continue; const a=AUTO_AREAS.find(x=>x[0]===k); if(a)h+=`<button class="btn small" data-a="handOff" data-v="${k}">${a[1]}: ${AUTO_WHO[k]||'비서'}에게 넘기기</button>`; }
   return h?`<div class="ibm-acts hand">${h}</div>`:''; }
 Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v){ toast(takeBack(v)); save(); render(); },
-  troMode(){ G.auto=G.auto||{}; G.auto.tro=G.auto.tro==='good'?true:'good'; toast(G.auto.tro==='good'?'부단장이 우리 평가로 공정 이상인 제안은 올리고, 나머지만 거절합니다.':'부단장이 받은 제안을 모두 거절합니다.'); save(); render(); },
+  troMode(){ G.auto=G.auto||{}; autoSet('tro',G.auto.tro==='good'?true:'good'); /* 공통 처리: '모두 거절'로 바꾸면 이미 올라온 제안도 정리(검수 11-07) */ toast(G.auto.tro==='good'?'부단장이 우리 평가로 공정 이상인 제안은 올리고, 나머지만 거절합니다.':'부단장이 받은 제안을 모두 거절합니다.'); save(); render(); },
   evHand(v){ toast(handOffEv(v)); save(); render(); }, evTake(v){ if(G.deleg)delete G.deleg[v]; save(); render(); }, evGive(v){ G.deleg=G.deleg||{}; G.deleg[v]=true; toast(`${EV_NAME[v]||'이 종류'} 결정은 앞으로 비서가 기본안으로 처리합니다. 권한 화면에서 다시 가져올 수 있습니다.`); save(); render(); },
   foRec(v){ const F=UI.fo; const p=G.players[+v]; if(!F||!p)return; if(F.re){ const t=foReFloor(p), f=foReComfort(p); F.g=Math.max(MIN_SAL,Math.ceil((t/f-F.i*FO_INC_W)/USD)*USD); F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; renderSheet(); return; }
     const me=foAppeal(p,G.user), Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);

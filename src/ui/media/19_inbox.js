@@ -55,14 +55,14 @@ const mailNeeds=m=>ibMust(m);
  - 저절로 소식을 골라 열지 않는다(고른 것만 읽음). 날짜가 바뀌어도 보던 위치를 지킨다.
  - 스페이스바(와 '계속' 버튼): 화면 위에서부터 안 읽은 소식을 연다(확인할 소식 먼저). 다 읽었으면 진행한다. */
 function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
-  list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep)return true; const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
+  list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
 /* 반드시 확인할 소식: 살아 있는 결정·제안·인터뷰와 중단 설정에 해당하는 중요 소식. 안내 버튼만 있는 소식은 넣지 않는다. */
-const ibMust=m=>!m.read&&!mailDone(m)&&stopOn(m)&&(ibTask(m)||ibDecide(m));
+const ibMust=m=>!mailDone(m)&&stopOn(m)&&((!m.read&&ibTask(m))||ibDecide(m)); /* 결정할 일은 읽기만 해서는 빠지지 않는다(검수 11-07) */
 function ibNeedList(){ return G.mail.filter(ibMust); } /* 최신부터(화면 순서) */
 /* 스페이스바·'안 읽음'이 여는 순서: 확인할 소식 먼저, 그다음 나머지 안 읽은 소식(각각 최신부터) = 화면 맨 위 묶음 순서 */
-function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).concat(u.filter(m=>!ibMust(m))).reverse(); } /* 화면 맨 위 묶음의 맨 아래(가장 오래된)부터 위로 올라가며 연다 */
+function ibUnreadOrder(){ const u=G.mail.filter(m=>!m.read); return u.filter(ibMust).reverse().concat(u.filter(m=>!ibMust(m)).reverse()); } /* 묶음마다 오래된 것부터, 확인할 소식이 먼저(검수 11-07: 전체를 뒤집어 일반 소식부터 열림) */ /* 화면 맨 위 묶음의 맨 아래(가장 오래된)부터 위로 올라가며 연다 */
 /* 맨 위 묶음에 고정할 소식: 지금 안 읽은 소식 + 이번에 소식함을 연 뒤(같은 날) 읽은 소식 */
 function ibPinned(list){ let S=UI._ibStk; if(!S||S.day!==G.day||UI._ibFirst)S=UI._ibStk={day:G.day,g:{}};
   for(const m of list)if(!m.read&&S.g[m.id]==null)S.g[m.id]=ibMust(m)?0:1;

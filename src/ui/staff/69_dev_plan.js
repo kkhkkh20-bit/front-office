@@ -95,7 +95,7 @@ function posCard(p,info){ const own=p.team===G.user&&!(p.joinY>G.year); const hi
   ${conv}${UI.posMsg&&UI.posMsg.id===p.id?`<div class="note">${esc(UI.posMsg.t)}</div>`:''}</section>`; }
 /* 한 번 누르면 끝나는 메일 버튼: 누른 뒤 버튼 대신 결과 문구를 남긴다 */
 const MAIL_ONCE=/^(posConv|posReqOk|posReqNo|fcampSet)$/;
-Object.assign(A,{ fcampSet(v){ UI.actRes=fcampSet(v); save(); render(); }, posReqOk(v){ const t=posReqAnswer(+v,true); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posReqNo(v){ const t=posReqAnswer(+v,false); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posConv(v){ const [id,k]=v.split(':'); const t=posConv(+id,k||null); UI.posMsg=t?{id:+id,t}:null; UI.actRes=t||null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
+Object.assign(A,{ fcampSet(v){ UI.actRes=fcampSet(v); save(); render(); }, posReqOk(v){ const t=posReqAnswer(+v,true); UI.actRes=t; { const q=G.players[+v]; if(q&&q.posReq&&q.posReq.open)UI.actFail=true; } if(t)note('면담',t,+v); save(); render(); }, posReqNo(v){ const t=posReqAnswer(+v,false); UI.actRes=t; if(t)note('면담',t,+v); save(); render(); }, posConv(v){ const [id,k]=v.split(':'); const t=posConv(+id,k||null); UI.posMsg=t?{id:+id,t}:null; UI.actRes=t||null; save(); if(UI.sheet!=null)renderSheet(); render(); } });
 /* 선수 화면 요약: 올해 2군 기록과 2군에서 뛴 자리 */
 function fut2Card(p){ if(p.prospect||p.team==null)return ''; const y=period()==='pre'?G.year-1:G.year; const h=seasonTotal(p,y,'퓨처스'); if(!h||!(p.isP?h.outs:h.pa))return '';
   const T=p.isP?[['경기',`${h.g||0}${h.gs?` (선발 ${h.gs})`:''}`],['ERA',pRate(h).era.toFixed(2)],['이닝',ipStr(h.outs)],['삼진',h.so],['볼넷/9',pRate(h).bb9.toFixed(1)]]

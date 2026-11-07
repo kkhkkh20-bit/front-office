@@ -19,12 +19,12 @@ function autoLogAdd(t,c,r){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t,c,r:r||
 /* 국내 연봉: 12월 5일 1차 제시(중간값), 12월 19일 남은 선수에게 다시 제시, 1월 5일 확정 */
 function autoSalRound(first){ const C=G.contract; if(!C||C.done)return; salTalkInit(); let ok=0, left=0; if(first)C.salR1=G.day; else C.salR2=G.day; /* 차수별 처리일: 예약 처리와 수동 넘기기가 겹쳐 두 번 부르지 않게(검수 11-07) */
   for(const id of Object.keys(C.neg||{})){ const n=C.neg[id]; if(n.st!=='open')continue; const base=first?round5(n.off+(n.ask-n.off)*.5):(n.ask<=n.off*1.15?n.ask:round5(n.off+(n.ask-n.off)*.6)); const amt=Math.min(n.ask,Math.max(base,n.cur??0)); /* 단장이 이미 제시한 금액 아래로 다시 부르지 않는다(검수 11-07) */ salOffer(+id,amt,true); if(C.neg[id].st==='ok')ok++; else left++; }
-  autoLogAdd(first?'연봉 협상 1차(운영팀)':'연봉 협상 2차(운영팀)',`${ok}명 합의${left?`, ${left}명 남음`:''}`); note('연봉',`운영팀이 연봉 협상 ${first?'1차':'2차'} 제시를 했습니다. ${ok}명 합의${left?`, ${left}명은 더 원합니다`:''}. ${first?'12월 19일 한 번 더 제시하고 1월 5일에 확정합니다.':'1월 5일에 확정합니다.'}`); }
+  autoLogAdd(first?'연봉 협상 1차(운영팀)':'연봉 협상 2차(운영팀)',`${ok}명 합의${left?`, ${left}명 남음`:''}`); note('연봉',`운영팀이 연봉 협상 ${first?'1차':'2차'} 제시를 했습니다. ${ok}명 합의${left?`, ${left}명은 더 원합니다`:''}. ${first?(G.day>=dnum(C.y,12,19)?'다음 날 한 번 더 제시한 뒤 확정합니다.':'12월 19일 한 번 더 제시하고 1월 5일에 확정합니다.'):G.day>=dnum(C.y+1,1,5)?'곧 확정합니다.':'1월 5일에 확정합니다.'}`); }
 /* 외국인 재계약: 12월 3일 */
 function autoFre(){ const C=G.contract; if(!C||C.done)return; C.freTry=G.day; let fail=0; const L=[];
   for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||C.foreignDrop.includes(id))continue; const h=seasonTotal(p,C.y,'1군'); const war=h?warOf(h,p):0;
     if(C.fre&&C.fre[id]&&C.fre[id].ok){ L.push(`${p.name}: 이미 재계약 합의${p.newSal?` ${usdT(p.newSal)}`:''}`); continue; }
-    if(war>=1.5||ovr(p)>=55){ const f=foReComfort(p); const cap=p.foreign==='아시아'?asiaReCap(p):Infinity; const g0=Math.ceil(foReFloor(p)*1.04/f/USD)*USD; const g=g0>cap?Math.max(Math.ceil(foReFloor(p)/f/USD)*USD,Math.floor(cap/USD)*USD):g0; /* 가산·올림이 아시아쿼터 상한을 넘으면 상한 안으로(검수 11-07) */ const r=foReOffer(id,Math.min(g,cap),0); if(!r.ok){ fail++; C.freFail=C.freFail||{}; C.freFail[id]=(C.freFail[id]||0)+1; if(C.freFail[id]>=3){ C.foreignDrop.push(id); L.push(`${p.name}: 세 번 제시했지만 합의하지 못해 결별(보류권 유지)`); continue; } } L.push(`${p.name}: ${r.ok?`재계약 ${usdT(Math.min(g,cap))}`:`합의 실패(${String(r.msg||'').replace(/[.。]\s*$/,'').slice(0,40)}) · 다음 날 다시 제시`}`); }
+    if(war>=1.5||ovr(p)>=55){ const f=foReComfort(p); const cap=p.foreign==='아시아'?asiaReCap(p):Infinity; const g0=Math.ceil(foReFloor(p)*1.04/f/USD)*USD; const g=g0>cap?Math.max(Math.ceil(foReFloor(p)/f/USD)*USD,Math.floor(cap/USD)*USD):g0; /* 가산·올림이 아시아쿼터 상한을 넘으면 상한 안으로(검수 11-07) */ const r=foReOffer(id,Math.min(g,cap),0); if(!r.ok){ fail++; C.freFail=C.freFail||{}; C.freFail[id]=(C.freFail[id]||0)+1; if(C.freFail[id]>=3){ if(!C.foreignDrop.includes(id))C.foreignDrop.push(id); L.push(`${p.name}: 세 번 제시했지만 합의하지 못해 결별(보류권 유지)`); continue; } } L.push(`${p.name}: ${r.ok?`재계약 ${usdT(Math.min(g,cap))}`:`합의 실패(${String(r.msg||'').replace(/[.。]\s*$/,'').slice(0,40)}) · 다음 날 다시 제시`}`); }
     else { C.foreignDrop.push(id); L.push(`${p.name}: 결별(보류권 유지)`); } }
   /* 총액 한도: 아직 합의 안 한 선수부터, 그래도 넘으면 합의한 선수도 결별하되 합의 상태를 풀고 따로 알린다(검수 11-06) */
   const agreed=id=>!!(C.fre&&C.fre[id]&&C.fre[id].ok); let g=0; while(fReCapInfo().over>0&&g++<4){ const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>agreed(a.id)-agreed(b.id)||ovr(a)-ovr(b))[0]; if(!k)break; C.foreignDrop.push(k.id);
@@ -33,7 +33,11 @@ function autoFre(){ const C=G.contract; if(!C||C.done)return; C.freTry=G.day; le
   if(L.length){ autoLogAdd('외국인 재계약(운영팀)',L.join(' · ')); note('연봉',`운영팀이 외국인 재계약을 처리했습니다.\n${L.join('\n')}`); } }
 /* 남은 외국인 재계약 결정(결별도 합의도 안 한 선수). 외국인 위임을 껐더라도 이게 없으면 국내 연봉 확정을 미루지 않는다(리뷰 2026-11-01) */
 function fRePending(){ const C=G.contract; if(!C||C.done)return []; return C.foreignEnd.filter(id=>{ const p=G.players[id]; return p&&p.team===G.user&&!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok); }); }
-function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sal'))return; if(C.salR1&&!C.salR2&&C.salR1!==G.day){ try{ autoSalRound(false); }catch(e){} } /* 확정 전에 2차 제시를 빠뜨리지 않는다 */ const pend=fRePending(); if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
+function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sal'))return; if(C.salR1&&!C.salR2&&C.salR1!==G.day){ try{ autoSalRound(false); }catch(e){} } /* 확정 전에 2차 제시를 빠뜨리지 않는다 */
+  if((!C.salR1||!C.salR2)&&Object.values(C.neg||{}).some(n=>n.st==='open')){ C.autoWait={d:G.day,why:'연봉 협상 2차 제시를 한 뒤(다음 날) 확정합니다'}; return; } /* 오늘 1차를 했으면 2차를 건너뛰고 확정하지 않는다(검수 11-07) */
+  if(autoOn('fre')&&fRePending().length&&C.freTry!==G.day)try{ autoFre(); }catch(e){} /* 외국인 위임: 실패한 선수는 다시 시도한 뒤에만 확정 */
+  const pend=fRePending(); if(pend.length&&autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 협상 중 — 합의하거나 결별이 정해지면 확정합니다`}; return; } /* 협상이 끝나기 전에 기본 산정 연봉으로 확정하지 않는다(검수 11-07) */
+  if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
   const r=confirmContracts(); if(r){ C.autoWait={d:G.day,why:String(r)}; return; } delete C.autoWait; C.autoDone={d:G.day,n:C.ended.length,f:C.foreignEnd.filter(id=>!C.foreignDrop.includes(id)).length}; /* 결별한 선수는 빼고 센다(검수 11-07) */ autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
 /* 위임 업무 처리 상태(처리 예정·완료·대기와 이유). 지금은 연봉 계약 */
 function delegStatus(k){ if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
@@ -60,7 +64,7 @@ function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[]
 const AUTO_WHO={sal:'운영팀',fre:'운영팀',ev:'비서',mgr:'비서',scout:'스카우트팀장',tro:'부단장',raid:'운영팀'};
 function autoNow(k){ const C=G.contract; const out=[];
   if(k==='sal'&&C&&!C.done&&!C.salR1&&G.day>=dnum(C.y,12,5)){ autoSalRound(true); out.push('연봉 협상 1차 제시를 마쳤습니다'); } /* 1차는 한 번만(예약 처리와 겹치지 않게). 12월 5일 전에 맡기면 그날 제시 */ /* 맡기기를 반복해도 강제 제시는 주 1회 */
-  if(k==='fre'&&C&&!C.done){ const d0=C.foreignDrop.length; autoFre(); const cut=C.foreignDrop.slice(d0).map(id=>G.players[id]).filter(Boolean); out.push(`외국인 재계약을 처리했습니다${cut.length?`(결별: ${cut.map(p=>p.name).join(', ')})`:''}`); }
+  if(k==='fre'&&C&&!C.done){ const d0=C.foreignDrop.length; if(C.freTry!==G.day)autoFre(); /* 하루 한 번만 제시(가져왔다 다시 넘겨도 같은 날 재시도를 다 쓰지 않게, 검수 11-07) */ const cut=C.foreignDrop.slice(d0).map(id=>G.players[id]).filter(Boolean); out.push(`외국인 재계약을 처리했습니다${cut.length?`(결별: ${cut.map(p=>p.name).join(', ')})`:''}`); }
   if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
   if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
   if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치를 맡았습니다'); } /* 실제 결과대로 안내(검수 11-07) */

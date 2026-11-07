@@ -26,7 +26,7 @@ function mailActionStatus(m,a){
     if(a.a==='proleSet')return !G.prole?.[id]||G.prole[id].k!=='sp2'||old?mailEnd('이미 투수 보직을 정했거나 지난 시즌의 제안입니다.'):null;
   }
   if(a.a==='fcampSet')return !G.fcamp||G.fcamp.done||G.fcamp.y!==dobj(d).y?mailEnd('이 마무리캠프는 종료되었습니다.',true):null;
-  if(a.a==='stKeep'||a.a==='stLet'){const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid!=null?x.exp===c.raid:x.exp===d+7));return !r?mailEnd('이미 직원 잔류·이적을 결정한 제안입니다.'):G.day>=r.exp?mailEnd('직원 영입 제안의 답변 기한이 지났습니다.',true):null;}
+  if(a.a==='stKeep'||a.a==='stLet'){const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid!=null?x.exp===c.raid:x.exp===d+7));return !r?mailEnd('이미 직원 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('직원 영입 제안의 답변 기한이 지났습니다.',true):null;} /* 마감일 당일까지 답할 수 있다(자동 처리는 다음 날, 검수 11-07) */
   if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답변했거나 종료된 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 종료되었습니다.'):null;}
   if(a.a==='scoutPlanGo'){
@@ -64,7 +64,7 @@ function mailStatus(m){
   if(/스프링캠프가 시작/.test(s))return old||!G.camp||G.camp.done?end('이 스프링캠프는 종료되었습니다.',true):G.camp.seen?end('이미 스프링캠프 훈련 방향을 확인했습니다.'):null;
   if(/스폰서 제안/.test(s)){const L=(G.spon?.off||[]).filter(x=>c.spon?c.spon.includes(x.id):(x.day??x.exp-21)<=d);return !L.length?end('이 소식의 스폰서 제안은 모두 처리되었거나 종료되었습니다.'):L.every(x=>G.day>x.exp)?end('스폰서 제안 기한이 지났습니다.',true):null;}
   if(/상무 지원 기간/.test(s)&&(!sangmuWave()||old||sangmuWave()!==(dobj(d).m>=9?'dec':'jun')))return end('이 상무 지원 기간은 종료되었습니다.',true);
-  if(/보호선수 명단|보상선수 지명|영입 보상: 보호선수/.test(s)){const L=(G.comp||[]).filter(x=>((x.stage==='protect'&&x.to===G.user)||(x.stage==='pick'&&x.from===G.user))&&(c.comp!=null?x.id===c.comp:x.day==null||x.day<=d));if(!L.length)return end('이미 보상 절차를 마쳤거나 해당 지명 기간이 끝났습니다.');if(L.every(x=>G.day>=x.exp))return end('보상 절차의 답변 기한이 지났습니다.',true);}
+  if(/보호선수 명단|보상선수 지명|영입 보상: 보호선수/.test(s)){const L=(G.comp||[]).filter(x=>((x.stage==='protect'&&x.to===G.user)||(x.stage==='pick'&&x.from===G.user))&&(c.comp!=null?x.id===c.comp:x.day==null||x.day<=d));if(!L.length)return end('이미 보상 절차를 마쳤거나 해당 지명 기간이 끝났습니다.');if(L.every(x=>G.day>x.exp))return end('보상 절차의 답변 기한이 지났습니다.',true);}
   if(/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/.test(s)&&(!G.fa||G.fa.closed||G.fa.y0!==(c.fa??dobj(d).y)))return end('이 FA 협상 기간은 종료되었습니다.',true);
   if(/관심 FA|우리 FA|시장 보고/.test(s)){const a=A.find(a=>a.a==='player'),p=a&&G.players[+a.v];if(p?.team!=null)return end('이미 계약을 마친 선수의 FA 소식입니다.');}
   if(/트레이드 마감|마감 보강안/.test(s)&&(old||!tradeOpen()||G.day>tradeDL()))return end('이 시즌의 트레이드 마감일이 지났습니다.',true);

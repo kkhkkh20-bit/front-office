@@ -84,7 +84,7 @@ function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
       if(ok2||R()<.3){ p.pconv={pos:c.q,d:G.day}; p.posReq.open=false; story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[c.q]} 전환 도전`); } else p.posReq.open=false; } } }
 /* 단장의 답 */
 function posReqAnswer(id,yes){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return '우리 선수가 아닙니다.'; const r=p.posReq; if(!r||!r.open)return `${p.name}: "이미 말씀 나눴습니다."`; r.open=false;
-  if(yes){ const msg=posConv(p.id,r.q); if(p.pconv&&p.pconv.pos===r.q){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[r.q]} 전환 도전`); return msg+` ${p.name}의 기분이 좋아졌습니다.`; } return msg; }
+  if(yes){ const msg=posConv(p.id,r.q); if(p.pconv&&p.pconv.pos===r.q){ p.mor=clamp((p.mor??60)+5,0,100); story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[r.q]} 전환 도전`); return msg+` ${p.name}의 기분이 좋아졌습니다.`; } r.open=true; return msg; } /* 전환을 시작하지 못하면(군 복무 등) 요청을 열어 둔다(검수 11-07) */
   const amb=(p.pers&&p.pers.amb)||10; const d=Math.round(2+amb/4); p.mor=clamp((p.mor??60)-d,0,100); return `${p.name}: "알겠습니다. 기다려 보겠습니다." (기분 -${d})`; }
 function posYear(){ const y=G.year-1; try{ posSettle(y); }catch(e){} for(const p of Object.values(G.players)){ if(p.isP||!p.pexp)continue; const used=k=>(p.use&&p.use.y===y&&p.use.pos&&p.use.pos[k])||(p.fuse&&p.fuse.y===y&&p.fuse.pos&&p.fuse.pos[k]);
   for(const k in p.pexp){ const e=p.pexp[k]; if(e<50&&!used(k)&&!(p.pconv&&p.pconv.pos===k))p.pexp[k]=+(e*.9).toFixed(1); if(p.pexp[k]<3)delete p.pexp[k]; } } } /* 반쯤 익히다 만 자리(숙련 50 미만)는 그해 안 뛰었으면 감각이 떨어진다. 한 번 맡을 만해진 자리는 남는다 */

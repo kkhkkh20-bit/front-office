@@ -4,11 +4,11 @@ export const SWING_CONTACT=.9167,SWING_FOLLOW=.6,CATCHER_PREP=.24,THROW_RELEASE=
 const up=new Vector3(0,1,0),smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 function valuesAt(track,t){return Array.from(track.createInterpolant().evaluate(t));}
 export function powerSwing(source){
- const C=SWING_CONTACT,tail=Math.max(.01,source.duration-C),weights={Hips:.18,Spine:.32,Spine1:.28,Spine2:.22};
+ const C=SWING_CONTACT,tail=Math.max(.01,source.duration-C),weights={Hips:.24,Spine:.34,Spine1:.28,Spine2:.22};
  const tracks=source.tracks.map(track=>{const copy=track.clone(),sourceTimes=[...new Set([...track.times,C,...Array.from({length:Math.ceil(source.duration*60)},(_,i)=>i/60).filter(g=>!track.times.some(k=>Math.abs(k-g)<.004)&&Math.abs(g-C)>.004)])].filter(t=>t<=source.duration).sort((a,b)=>a-b) /* 60Hz로 촘촘히: 스윙 프레임이 끊겨 보이지 않게(사용자 피드백 11-07) */,sourceValues=sourceTimes.flatMap(t=>valuesAt(track,t)),joint=track.name.match(/(Hips|Spine[12]?)\.quaternion$/)?.[1];
-  copy.times=new Float32Array(Array.from(sourceTimes,t=>t<=C?C*Math.pow(Math.max(0,t/C),.72):C+(t-C)/tail*SWING_FOLLOW));
+  copy.times=new Float32Array(Array.from(sourceTimes,t=>t<=C?C*Math.pow(Math.max(0,t/C),.6):C+(t-C)/tail*SWING_FOLLOW));
   copy.values=new Float32Array(sourceValues);
-  if(joint){const q=new Quaternion(),turn=new Quaternion();for(let i=0;i<copy.times.length;i++){const t=copy.times[i],angle=t<C?-.20*Math.sin(Math.PI*t/C):.78*smooth((t-C)/SWING_FOLLOW);q.fromArray(sourceValues,i*4);turn.setFromAxisAngle(up,angle*weights[joint]);q.premultiply(turn).normalize().toArray(copy.values,i*4);}}
+  if(joint){const q=new Quaternion(),turn=new Quaternion();for(let i=0;i<copy.times.length;i++){const t=copy.times[i],angle=t<C?-.30*Math.sin(Math.PI*t/C):1.12*smooth((t-C)/SWING_FOLLOW) /* 꼬임(로드)을 더 깊게, 접촉 뒤 몸통 회전을 크게: 호쾌한 풀스윙(사용자 피드백 11-07) */;q.fromArray(sourceValues,i*4);turn.setFromAxisAngle(up,angle*weights[joint]);q.premultiply(turn).normalize().toArray(copy.values,i*4);}}
   return copy;
  });
  return new AnimationClip('swing',C+SWING_FOLLOW,tracks);
@@ -22,7 +22,7 @@ export function catcherThrow(source,crouch){
  return new AnimationClip('catcher_throw',CATCHER_PREP+source.duration,tracks);
 }
 // 투구 팔로스루: 릴리스 뒤 상체를 홈 쪽으로 깊게 숙인다(척추 세 마디에 나눠 로컬 축으로 더함). 릴리스 순간 자세는 그대로.
-export const FOLLOW_FLEX=.8;
+export const FOLLOW_FLEX=1.05; /* 투구 뒤 상체를 더 깊게 숙인다(사용자 피드백 11-07) */
 export function pitchFollowThrough(source,release){const axis=new Vector3(1,0,0),q=new Quaternion(),turn=new Quaternion(),weights={Spine:.3,Spine1:.35,Spine2:.35},ramp=.22;
  const tracks=source.tracks.map(track=>{const joint=track.name.match(/(Spine[12]?)\.quaternion$/)?.[1];if(!joint)return track;const grid=[];for(let t=release;t<source.duration;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t));
   for(let i=0;i<times.length;i++){const k=smooth((times[i]-release)/ramp);if(!k)continue;q.fromArray(values,i*4);q.multiply(turn.setFromAxisAngle(axis,FOLLOW_FLEX*weights[joint]*k)).normalize().toArray(values,i*4);}
