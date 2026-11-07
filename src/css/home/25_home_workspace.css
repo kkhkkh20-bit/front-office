@@ -99,13 +99,13 @@
 @media(max-width:699px){.home-workspace[data-rows="3"] :is(.home-grid,.hw-work){grid-template-rows:repeat(3,minmax(0,1fr))}.home-workspace[data-rows="2"] :is(.home-grid,.hw-work){grid-template-rows:repeat(2,minmax(0,1fr))}
  .home-workspace[data-rows="3"] .hw-panel{min-height:0;overflow:hidden}.home-workspace[data-rows="3"] .hw-panel>header{min-height:24px;padding:3px 8px}.home-workspace[data-rows="3"] .hw-panel>header h2{font-size:13px}#app .home-workspace[data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:11px}#app .home-workspace[data-rows="3"] .hw-panel>header{min-height:28px;padding:2px 8px}}
 /* 홈 추가 패널(사용자 11-06): 선발 매치업·이번 주 일정·최근 10경기·선수단 현황 */
-.hw-spduel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;width:100%;max-width:340px}
+.hw-spduel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;width:100%;max-width:460px}
 .hw-sp{display:grid;justify-items:center;gap:4px;padding:0;border:0;background:none;min-width:0}
-.hw-sp-face{position:relative;width:76px;height:76px;display:grid;place-items:center}
-.hw-sp-face .av,.hw-sp-face img.av{width:76px!important;height:76px!important;object-fit:cover;object-position:50% 18%;border-radius:50%;border:2px solid var(--line2);background:var(--panel2);position:static}
-.hw-sp-bd{position:absolute;left:-2px;bottom:-2px;line-height:0}.hw-sp-bd .badge{width:22px;height:22px}
-.hw-sp-face em{position:absolute;right:2px;bottom:2px;font-style:normal;font-weight:800;font-size:13px;padding:1px 5px;border-radius:9px;background:rgba(0,0,0,.72);color:#fff}
-.hw-sp>b{font-size:12px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hw-sp-face{position:relative;width:132px;height:132px;display:grid;place-items:center} /* 선발 사진 크게(사용자 11-07) */
+.hw-sp-face .av,.hw-sp-face img.av{width:132px!important;height:132px!important;object-fit:cover;object-position:50% 12%;border-radius:16px;border:2px solid var(--line2);background:var(--panel2);position:static}
+.hw-sp-bd{position:absolute;left:-2px;bottom:-2px;line-height:0}.hw-sp-bd .badge{width:30px;height:30px}
+.hw-sp-face em{position:absolute;right:4px;bottom:4px;font-style:normal;font-weight:800;font-size:15px;padding:1px 5px;border-radius:9px;background:rgba(0,0,0,.72);color:#fff}
+.hw-sp>b{font-size:14px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hw-sp.none b{color:var(--muted);font-weight:600}
 .hw-sp-vs{display:grid;justify-items:center;font-weight:800;font-size:15px;color:var(--muted)}.hw-sp-vs small{font-size:10px;font-weight:600}
 .hw-wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;padding:8px;align-items:start;align-content:center;flex:1;min-height:0}
@@ -136,7 +136,7 @@
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header{min-height:30px;padding:3px 10px}.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header h2{font-size:14px}
 #app .home-workspace[data-device="desktop"][data-rows="3"] .hw-panel>header :is(.btn,.tc-i){min-height:22px;height:24px;padding:2px 8px;font-size:11px}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-match .hw-match-main{padding:4px 10px;gap:3px}
-.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face,.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face .av{width:54px!important;height:54px!important}
+.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face,.home-workspace[data-device="desktop"][data-rows="3"] .hw-sp-face .av{width:88px!important;height:88px!important} /* 선발 사진 크게(사용자 11-07, 예전 54px) */
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-match-main>.btn{min-height:26px;padding-block:3px}
 .home-workspace[data-device="desktop"][data-rows="3"] .hw-wl{padding-top:6px}
 }
@@ -187,3 +187,20 @@
 
 /* 연봉 정렬표 */
 .sal-t td.sal-n{text-align:left}.sal-t .candidate-name{display:flex;align-items:center;gap:8px}.sal-t .candidate-name img,.sal-t .candidate-name svg{width:32px;height:32px;border-radius:50%}.sal-t .candidate-name small{display:block;color:var(--muted);font-size:11px}.sal-t th.sortable{cursor:pointer}
+
+@media (max-width:699px){.hw-sp-face{width:104px;height:104px}.hw-sp-face .av,.hw-sp-face img.av{width:104px!important;height:104px!important}}
+
+/* 선수단 현황: 글씨를 키우고 칸 높이에 맞춰 줄을 고르게 나눈다(사용자 11-07) */
+#app .home-workspace .hw-rs{gap:16px;padding:10px 14px}
+#app .home-workspace .hw-rs dl{grid-auto-rows:1fr;align-content:stretch;gap:2px}
+#app .home-workspace .hw-rs dl>*{display:flex;align-items:center;justify-content:space-between}
+#app .home-workspace .hw-panel .hw-rs dl>dt.hd,#app .home-workspace .hw-panel .hw-rs dl>dt.hd b{font-size:16px!important;padding-bottom:4px}
+#app .home-workspace .hw-panel .hw-rs :is(.hw-rs-b,dl>div)>dt.x0,#app .home-workspace .hw-panel .hw-rs dl :is(.hw-rs-b,div)>dt{font-size:14px!important}
+#app .home-workspace .hw-panel .hw-rs dd{font-size:16px!important}
+#app .home-workspace .hw-panel .hw-rs dl>div{font-size:14px!important}
+/* 선수 마우스 오버: 행은 밝게, 얼굴은 살짝 키운다 */
+#app .home-workspace :is(.hw-lr,.fx-pl,.hw-sp,.hw-rs-b,.hw-pl){transition:background .15s,transform .15s;border-radius:8px;cursor:pointer}
+#app .home-workspace :is(.hw-lr,.fx-pl,.hw-rs-b):hover{background:color-mix(in srgb,var(--team-hi,#4fa3ff) 14%,transparent)}
+#app .home-workspace :is(.hw-lr,.fx-pl):hover .av{transform:scale(1.12);box-shadow:0 0 0 2px var(--team-hi,#4fa3ff)}
+#app .home-workspace .hw-sp:hover .hw-sp-face .av{transform:scale(1.05);box-shadow:0 0 0 3px var(--team-hi,#4fa3ff),0 6px 18px rgba(0,0,0,.45)}
+#app .home-workspace :is(.hw-lr,.fx-pl,.hw-sp) .av{transition:transform .15s,box-shadow .15s}

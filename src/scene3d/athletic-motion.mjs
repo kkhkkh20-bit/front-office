@@ -28,4 +28,29 @@ export function pitchFollowThrough(source,release){const axis=new Vector3(1,0,0)
   for(let i=0;i<times.length;i++){const k=smooth((times[i]-release)/ramp);if(!k)continue;q.fromArray(values,i*4);q.multiply(turn.setFromAxisAngle(axis,FOLLOW_FLEX*weights[joint]*k)).normalize().toArray(values,i*4);}
   const copy=track.clone();copy.times=new Float32Array(times);copy.values=new Float32Array(values);return copy;});
  return new AnimationClip(source.name,source.duration,tracks);}
-export function athleticClips(clips,events={}){const swing=clips.find(c=>c.name==='swing'),throwing=clips.find(c=>c.name==='throw'),crouch=clips.find(c=>c.name==='catcher_crouch');if(!swing||!throwing||!crouch)return clips;return [...clips.map(c=>c===swing?powerSwing(c):/^pitch_.*_(windup|stretch)$/.test(c.name)&&events[c.name]?pitchFollowThrough(c,events[c.name].release):c),catcherThrow(throwing,crouch)];}
+/* 세트 포지션: 투수는 글러브 쪽 어깨를 홈으로 두고 옆으로 선다(우투수는 3루 쪽을 본다). 원본 세트·킥이 반쯤 정면이라
+   골반 방향을 정확히 옆(SIDE_YAW)으로 맞추고, 다리 정점(hand_break) 뒤 릴리스까지 풀어 정면으로 던지게 한다. 고개는 홈을 보게 되돌린다(사용자 피드백 11-07) */
+export const SIDE_YAW=-Math.PI/2;
+const yawOf=q=>{const f=new Vector3(0,0,1).applyQuaternion(q);return Math.atan2(f.x,f.z);},wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
+export function pitchSideOn(source,e,windup=false){const q=new Quaternion(),turn=new Quaternion(),head={Neck:.5,Head:.4};
+ /* 세트: 처음부터 옆. 와인드업: 정면에서 시작해 다리를 들 때까지 옆으로 꼬고, 다리 정점 뒤 릴리스까지 풀며 정면으로 던진다 */
+ const hb=e?e.hand_break:null,rel=e?e.release:null,end=e?rel:source.duration;
+ const k=t=>!e?1:t<=hb?(windup?smooth(t/Math.max(.05,hb*.75)):1):1-smooth((t-hb)/Math.max(.05,rel-hb));
+ const hipTrack=source.tracks.find(t=>/Hips\.quaternion$/.test(t.name));if(!hipTrack)return source;
+ const delta=t=>{const f=k(t);return f?wrap(SIDE_YAW-yawOf(q.fromArray(valuesAt(hipTrack,t))))*f:0;}; /* 원본 골반 방향과 목표의 차이만큼만 돌린다(과회전 방지) */
+ const tracks=source.tracks.map(track=>{const hip=track===hipTrack,hj=track.name.match(/(Neck|Head)\.quaternion$/)?.[1];if(!hip&&!hj)return track;
+  const grid=[];for(let t=0;t<=end+1e-6;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t)),d=times.map(delta);
+  for(let i=0;i<times.length;i++){if(!d[i])continue;const ang=hip?d[i]:-d[i]*head[hj];q.fromArray(values,i*4);q.premultiply(turn.setFromAxisAngle(up,ang)).normalize().toArray(values,i*4);}
+  const copy=track.clone();copy.times=new Float32Array(times);copy.values=new Float32Array(values);return copy;});
+ return new AnimationClip(source.name,source.duration,tracks);}
+/* 투구 마무리: 릴리스 뒤 끌려오던 뒷다리(축발)가 앞으로 나와 디딤발 옆에 내려서고, 던진 팔은 몸 반대쪽 무릎 쪽으로 감기며 글러브는 가슴으로 당긴다(사용자 피드백 11-07).
+   로컬 축 값은 player.glb 리그에서 잰 것(오른손 기준, 좌투는 모델 좌우 반전으로 같이 맞는다) */
+export const PITCH_FINISH={RightUpLeg:[[1,0,0,-.2]],RightLeg:[[1,0,0,-.4]],RightArm:[[1,0,0,-.9]],LeftArm:[[0,0,1,-.6]],LeftForeArm:[[0,0,1,-.4]]};
+export function pitchFinish(source,e){if(!e)return source;const q=new Quaternion(),turn=new Quaternion(),axis=new Vector3(),rel=e.release;
+ const ramp=j=>/Leg/.test(j)?[rel+.08,.3]:[rel,.25]; /* 다리는 릴리스 직후 차고 나와 0.3초에 걸쳐 내려선다 */
+ const tracks=source.tracks.map(track=>{const j=track.name.match(/(?:^|[:.\/])(\w+)\.quaternion$/)?.[1]?.replace(/^mixamorig:?/,''),rots=j&&PITCH_FINISH[j];if(!rots)return track;
+  const [t0,len]=ramp(j),grid=[];for(let t=t0;t<source.duration;t+=1/30)grid.push(t);const times=[...new Set([...track.times,...grid,source.duration])].filter(t=>t<=source.duration).sort((a,b)=>a-b),values=times.flatMap(t=>valuesAt(track,t));
+  for(let i=0;i<times.length;i++){const k=smooth((times[i]-t0)/len);if(!k)continue;q.fromArray(values,i*4);for(const [x,y,z,a] of rots)q.multiply(turn.setFromAxisAngle(axis.set(x,y,z),a*k));q.normalize().toArray(values,i*4);}
+  const copy=track.clone();copy.times=new Float32Array(times);copy.values=new Float32Array(values);return copy;});
+ return new AnimationClip(source.name,source.duration,tracks);}
+export function athleticClips(clips,events={}){const swing=clips.find(c=>c.name==='swing'),throwing=clips.find(c=>c.name==='throw'),crouch=clips.find(c=>c.name==='catcher_crouch');if(!swing||!throwing||!crouch)return clips;return [...clips.map(c=>c===swing?powerSwing(c):c.name==='pitcher_set'?pitchSideOn(c,null):/^pitch_.*_stretch$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name]):/^pitch_.*_windup$/.test(c.name)&&events[c.name]?pitchSideOn(pitchFinish(pitchFollowThrough(c,events[c.name].release),events[c.name]),events[c.name],true):c),catcherThrow(throwing,crouch)];}

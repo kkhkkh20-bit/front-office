@@ -727,7 +727,7 @@ T('[야인 경력] 물러날 때 재임 구단의 마지막 시즌 결산과 사
   firedFlow(G.year,'점검'); const st=G.myC.stints[0]; ok(st&&st.tid===tid&&st.how,'퇴임 기록'); ok(st.fin&&st.fin.y===G.last.y&&st.fin.f&&Array.isArray(st.fin.f.inc),'퇴임 시점 결산 보관 '+JSON.stringify(st.fin||null).slice(0,80)); });
 T('[재임 성과] 내가 데려온 선수는 떠나도 재임 성과 목록에 남고, 주전 9자리 구성과 취임 당시 주전 나이를 기록한다',()=>{ fresh(); ok(G.tbSnap&&G.tbSnap.tid===G.user&&G.tbSnap.age>0,'창단 뒤 취임 당시 기록 '+JSON.stringify(G.tbSnap||null));
   const L=G.mineL||[]; ok(L.length>=20,'데려온 선수 기록 '+L.length); const p=L.map(x=>G.players[x.id]).find(q=>q&&q.team===G.user); const to=G.teams.find(t=>t.id!==G.user).id; p.team=to; ok(tbMineAll().some(x=>x.p===p&&x.gone),'떠난 선수가 목록에서 빠짐'); p.team=G.user;
-  const K=tbKpi(); ok(K.comp.inh+K.comp.dr+K.comp.ext===K.ln&&K.ln>=8,'주전 구성 '+JSON.stringify(K.comp)); ok(K.age>0,'주전 평균 나이');
+  const K=tbKpi(); ok(K.comp.inh+K.comp.dr+(K.comp.auto||0)+K.comp.ext===K.ln&&K.ln>=8,'주전 구성 '+JSON.stringify(K.comp)); ok(K.age>0,'주전 평균 나이');
   const tid=G.teams.find(t=>t.id!==G.user).id; G.jobs=[]; jobOffer(tid,true); jobAnswer(tid,true); ok(G.tbSnap.tid===tid,'이직 뒤 취임 당시 기록'); });
 T('[떠난 선수 기록] 리그를 떠나는 선수(은퇴·해외·방출)는 1군 시즌 기록을 보관해 나중에도 열어 볼 수 있다',()=>{ fresh(); const p=Object.values(G.players).find(q=>q.foreign&&q.hist.some(h=>h.lvl==='1군'&&(h.pa>=100||h.outs>=150))); ok(p,'준비 실패'); const id=p.id, nm=p.name;
   ok(typeof dropP==='function','보관 함수 없음'); dropP(id); ok(!G.players[id],'삭제 안 됨'); const a=G.arch&&G.arch[id]; ok(a&&a.name===nm&&a.rows.length>=1&&a.rows.every(r=>r.war!=null&&r.t!=null),'보관 '+JSON.stringify(a||null).slice(0,120));
