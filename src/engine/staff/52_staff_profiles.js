@@ -17,7 +17,7 @@ function staffQuality(s,kind,tid){if(!s)return 1;const P=staffProfile(s,kind),M=
 function staffOfficeV(s,kind,key){const P=staffProfile(s,kind);return clamp(25+s.skill*11+(P.office[key]||0),20,90);}
 function staffScoutFactor(s,p,tid){if(!G.coach)return 1;const P=staffProfile(s,'scout'),key=p?.isP?'pitch':'bat',type=P.office[key]||0,pot=P.office.potential||0;return clamp((1-(type*(p?.prospect ? .45 : .8)+pot*(p?.prospect ? .55 : .2))/200)/staffQuality(s,'scout',tid??G.user),.88,1.12);}
 function anaRoleQuality(tid,role){if(!G.coach)return 1;const L=tid===G.user&&!G.unemp?anaList():(G.lgStaff?.[tid]?.an||[]),S=L.filter(s=>s.role===role).sort((a,b)=>anaNow(b)-anaNow(a));let sumV=0,w=0;S.slice(0,3).forEach((s,i)=>{const z=[1,.6,.3][i]*anaNow(s);sumV+=z*(1+(staffProfile(s,'analyst').office[role]||0)/200)*staffQuality(s,'analyst',tid);w+=z;});return w?clamp(sumV/w,.9,1.1):1;}
-function staffOwned(kind,id){const L=kind==='coach'?Object.values(coachesOf(G.user)):kind==='scout'?G.scouts:kind==='analyst'?anaList():[];return (L||[]).find(s=>s&&s.id===id);}
+function staffOwned(kind,id){const L=kind==='coach'?Object.values(coachesOf(G.user)).concat(G.coachX||[]):kind==='scout'?G.scouts:kind==='analyst'?anaList():[];return (L||[]).find(s=>s&&s.id===id);}
 function staffTalk(kind,id,topic){
   if(G.unemp||!['listen','coord'].includes(topic))return '지금은 면담할 수 없습니다.';
   const s=staffOwned(kind,id);if(!s)return '우리 구단 직원만 면담할 수 있습니다.';
