@@ -41,7 +41,7 @@ function advance(mode,options={}){
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
     if(weekly){ const D=G.dig; D.to=G.day;
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); G.res=null; }
-      if(gameBatch&&D.games.length>=(period()==='post'||(G.ps&&G.ps.done&&G.ps.finDay>=G.day)?1:3))break; /* 포스트시즌은 우리 경기마다 멈춘다(라인업·선발 확인) */
+      if(gameBatch&&D.games.length&&(period()==='post'||(G.ps&&G.ps.done&&G.ps.finDay>=G.day)||D.games.length>=4||seriesEnd(G.day)))break; /* 포스트시즌은 우리 경기마다 멈춘다(라인업·선발 확인). 정규시즌은 같은 상대와의 한 시리즈가 끝나면 멈춘다(검수 11-08: 다음 상대 경기까지 넘김) */
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
       { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ if(evLastWarn())break; if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
@@ -58,6 +58,9 @@ function advance(mode,options={}){
 /* 주간 요약용: 우리 선수 시즌 누적 기록 스냅숏 */
 const DIGK=['pa','ab','h','bb','hr','rbi','d','tr','sb','outs','er','so','w','l','sv','hld','g','gs','sf','hbp'];
 function digSnap(){ const o={}; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); o[p.id]=h?DIGK.map(k=>h[k]||0):DIGK.map(()=>0); } return o; }
+/* 오늘 치른 우리 경기가 이 상대와의 시리즈 마지막인가: 다음 우리 경기 상대가 다르거나(휴식일 넘어도) 시즌이 끝나면 */
+function seriesEnd(d){ const S=G.cal&&G.cal.sched; if(!S)return true; const op=x=>x?(x[0]===G.user?x[1]:x[0]):null; let cur=null; for(let k=d;k>=d-1&&cur==null;k--)cur=op((S[k]||[]).find(x=>x.includes(G.user))); if(cur==null)return true;
+  for(let k=d+1;k<=d+5;k++){ const m=(S[k]||[]).find(x=>x.includes(G.user)); if(m)return op(m)!==cur; } return true; }
 function userRank(){ try{ return tieRank(standingsNow(),G.user); }catch(e){ return 0; } } /* 공동 순위 기준(검수 11-08: 같은 순위인데 3위 → 1위로 보임) */
 /* 시즌 제한(현재 꺼 둠): 켜면 첫 시즌을 마치고 스토브리그 직전에서 멈춘다 */
 const GAME_VER='0.9'; const DEMO={on:false,seasons:1}; /* 무료 정식 공개: 시즌 제한 없음 */

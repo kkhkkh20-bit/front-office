@@ -18,7 +18,7 @@ function ngtYears(N,y){ const p=G.players[N.id]; const T=N.T; T.years=y; if(N.k!
   if(N.ed==='dem'){ const D=ngtDemand(N); Object.assign(T,{bonus:D.bonus,annual:D.annual,opt:D.opt}); N.kept=false; return; }
   if(!N.ed){ const D=termsDemand(p,'ext',{annual:ngtExtDem(p,y),years:y}); Object.assign(T,{bonus:D.bonus,opt:D.opt,annual:round5(Math.max(MIN_SAL,D.annual*.94))}); N.kept=false; return; }
   N.kept=true; }
-function ngtSeasons(N){ const st=N.k==='ext'&&(period()==='season'||period()==='post')?G.year+1:sponSeason(); return [st,st+(N.T.years||1)-1]; }
+function ngtSeasons(N){ const now=(G.rolled===G.year&&G.day>=KD(11,1))||period()==='pre'; const st=N.k==='ext'?(now?ctSeason():G.year+1):sponSeason(); return [st,st+(N.T.years||1)-1]; } /* 다년계약 시작 시즌은 실제 저장(14_salary extOffer)과 같은 기준(검수 11-08: 한국시리즈 뒤~결산 전 표시가 한 해 이름) */
 function ngtMil(N){ const p=G.players[N.id]; if(p.foreign||N.k==='sal')return ''; const m=p.mil; const free=milFree(p), srv=!!(m&&m.until&&m.until>G.day); if(!free&&!srv)return '';
   const [s0,s1]=ngtSeasons(N); const due=G.year+Math.max(0,27-p.age); const inK=free&&due<=s1;
   return `<div class="ng-mil small"><b>병역</b> ${esc(milText(p))}${inK?` · 계약 기간(${s0}~${s1}) 안에 입대해야 합니다`:''}<span class="muted">복무(1년 6개월) 중에도 계약 연수는 줄어듭니다. 복무하는 동안 연봉은 예산·상한 합계에서 빠지고, 그 시즌은 FA 등록 시즌으로 치지 않습니다.</span></div>`; }
