@@ -43,11 +43,11 @@ function truckFire(sev,kind,K){ const S=truckState(); S.n++; S.last=G.day; const
   news('구단',sev===3?`성난 ${t.nick} 팬, ${where}까지 트럭 시위…"${line}"`:`${tshort(G.user)} 팬 트럭 시위…"${line}"`,body,sev===3?-3:-2,{fanW:1,img:{k:'truck',line,where,tid:G.user,sev}});
   if(sev===3&&!t.indie){ const t0=team(G.user); t0.trust=clamp((t0.trust??50)-3,0,100);
     mail('구단주실','본사 앞 트럭 시위에 대해',`${on}: 본사 앞에 ${days}일째 우리 팬들 트럭이 서 있습니다. 전광판에 "${line}"라고 떠 있더군요. 그룹 안에서도 말이 많습니다.\n남은 시즌을 어떻게 수습할지 단장이 직접 정리해서 움직여 주세요. 결과로 보여 주길 바랍니다.`,{imp:true,kind:'구단주'}); }
-  const F=sev===3?{fan:[3,5,-4],own:[0,0,-5],cost:400}:{fan:[2,4,-2],own:[0,0,-1],cost:250};
+  const F=sev===3?{fan:[3,5,-4],own:[0,0,t.indie?-1:-5],cost:400}:{fan:[2,4,-2],own:[0,0,-1],cost:250}; /* 독립구단은 모기업 본사가 없어 구단주실이 나서지 않는다(검수 11-08) */
   evNew('truck',`팬 트럭 시위 대응 (${where})`,`${body}\n기자들이 구단 입장을 묻고 있습니다.`,[
     {l:'사과 입장문 발표',fx:`팬 여론 +${F.fan[0]}, 언론 +1. 책임을 인정하는 모양이 됩니다`},
     {l:'팬 간담회 열기',fx:`비용 ${money(F.cost)}, 팬 여론 +${F.fan[1]}. 단장이 직접 팬 대표를 만납니다`},
-    {l:'무대응',fx:`팬 여론 ${F.fan[2]}, 구단주 신뢰 ${F.own[2]}. "특별한 입장 없다"`}],{def:2,exp:3,from:sev===3?'구단주실':'홍보팀',data:{sev,F,line}});
+    {l:'무대응',fx:`팬 여론 ${F.fan[2]}, 구단주 신뢰 ${F.own[2]}. "특별한 입장 없다"`}],{def:2,exp:3,from:sev===3&&!t.indie?'구단주실':'홍보팀',data:{sev,F,line}});
   if(R()<.1)evFollow(20+Math.floor(R()*20),'truck',{fund,line}); }
 EVH.truck={ pick(e,i){ const {F}=e.data; prInit();
     if(i===0){ G.pr.fan=clamp(G.pr.fan+F.fan[0],0,100); G.pr.press=clamp(G.pr.press+1,0,100); return '입장문이 나갔습니다. "팬 여러분의 질책을 무겁게 받아들입니다." 시위대는 일단 해산했습니다.'; }
