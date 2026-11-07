@@ -61,11 +61,22 @@ function postFee(amtTot){ const a=amtTot; const f=Math.min(a,2500)*.2+Math.max(0
 /* 해외 복귀 협상 정리: 우리 구단 몫이 아니거나(이직·야인) 결정할 이벤트가 없이 기한이 지난 선수는 원소속 구단(AI) 판단으로 끝낸다(예전에 꼬여 저장된 선수 복구 포함) */
 function ovsBackSweep(){ for(const p of Object.values(G.players)){ if(!p.retAsk)continue; if(p.retFrom!==G.user||G.unemp){ ovsBackAI(p); continue; } const live=(G.evs||[]).some(e=>!e.done&&e.k==='ovsback'&&e.data&&e.data.pid===p.id); if(!live&&G.day>(p.retAsk.exp||0))ovsBackFree(p,'해외 복귀 우선협상 기한 만료'); } }
 function ovsDaily(){ try{ ovsBackSweep(); }catch(e){} for(const x of G.posting||[]){ if(x.done||G.day<x.day)continue; x.done=true; const p=G.players[x.pid]; if(!p||p.team!==x.tid||milServing(p)){ x.res='취소'; x.void=true; if(p&&x.tid===G.user&&!G.unemp)note('운영팀',`${p.name}의 포스팅 신청이 ${p.team!==x.tid?`${tname(p.team)}(으)로 옮겨`:'군 복무로'} 무효가 됐습니다.`,p.id); continue; } /* 신청 뒤 이적·이탈: 신청 무효(새 구단이 다시 신청할 수 있게) */ const o=ovr(p);
-    const pm=o>=68?.9:o>=64?.6:o>=61?.3:.1; let lg=null; if(R()<pm)lg='MLB'; else if(R()<(o>=60?.35:.1))lg='NPB';
-    if(!lg){ x.res='무산'; p.mor=clamp((p.mor??60)-5,0,100); p.mlb=clamp(p.mlb-15,0,100); wire('해외',`${p.name} 포스팅 무산, ${tshort(x.tid)} 잔류`,{tid:x.tid,ref:p.id}); if(x.tid===G.user)note('선수',`${p.name}의 포스팅이 무산됐습니다. 계약을 제시한 구단이 없었습니다. 선수는 남습니다(기분 -5).`,p.id); continue; }
-    const yrs=lg==='MLB'?(o>=70?ri(4,6):o>=66?ri(2,4):ri(1,2)):ri(2,3); const amt=Math.round(lg==='MLB'?clamp((o-58)*90+N(0,80),100,2500):clamp((o-55)*45+N(0,30),80,600)); const fee=usd(postFee(amt*yrs)); x.res=lg;
+    const pm=o>=68?.9:o>=64?.6:o>=61?.3:.1;
+    /* 제안 목록: MLB·NPB 구단별 기간·연봉(만 달러). 선수는 MLB 꿈(mlb)과 금액을 보고 고르거나 모두 거절한다(커뮤니티 요청 11-07: 금액·거절 사유·리그를 보여 달라) */
+    const offs=[]; { const nM=R()<pm?1+(R()<pm*.6?1:0)+(R()<pm*.3?1:0):0, nN=R()<(o>=60?.45:.15)?1+(R()<.3?1:0):0; const used=new Set(); const club=L=>{ let c; do c=pick(L); while(used.has(c)&&used.size<L.length); used.add(c); return c; };
+      for(let i=0;i<nM;i++){ const yrs=o>=70?ri(4,6):o>=66?ri(2,4):ri(1,2); offs.push({lg:'MLB',club:club(MLBT),yrs,amt:Math.round(clamp((o-58)*90+N(0,80),100,2500)),minor:o<62&&R()<.5}); }
+      for(let i=0;i<nN;i++)offs.push({lg:'NPB',club:club(NPBT),yrs:ri(2,3),amt:Math.round(clamp((o-55)*45+N(0,30),80,600))}); }
+    const want=mlbOf(p); const ask=Math.round(clamp((o-58)*60,100,1500)); /* MLB 최소 기대 연봉 */
+    const score=f=>f.amt*f.yrs*(f.lg==='MLB'?1+want/50:1)*(f.minor?.5:1);
+    const okF=offs.filter(f=>f.lg==='MLB'?(!f.minor||want>=45)&&f.amt>=ask*(want>=50?.5:.8):want<45).sort((a,b)=>score(b)-score(a)); const best=okF[0]||null;
+    const offTxt=offs.length?offs.map(f=>`${f.lg} ${f.club}: ${f.yrs}년 연 ${f.amt}만 달러${f.minor?'(스플릿·마이너 계약)':''}`).join('\n'):'제안 없음';
+    const why=!offs.length?'계약을 제시한 구단이 없었습니다.':best?'':offs.every(f=>f.lg==='NPB')?`MLB 제안이 없었고, 선수가 일본행은 원하지 않아(메이저리그 의지 ${want}) NPB 제안을 거절했습니다.`:offs.some(f=>f.lg==='MLB'&&f.minor)&&!offs.some(f=>f.lg==='MLB'&&!f.minor)?'MLB 제안이 마이너 계약(스플릿)뿐이라 선수가 거절했습니다.':`제안 금액이 선수 기대(연 ${ask}만 달러 이상)에 못 미쳐 선수가 거절했습니다.`;
+    x.offs=offs; x.why=why;
+    if(!best){ x.res=offs.length?'선수 거절':'무산'; p.mor=clamp((p.mor??60)-(offs.length?2:5),0,100); p.mlb=clamp(p.mlb-15,0,100); wire('해외',`${p.name} 포스팅 ${offs.length?'선수가 제안 거절':'무산'}, ${tshort(x.tid)} 잔류`,{tid:x.tid,ref:p.id}); if(x.tid===G.user)mail('운영팀',`${p.name} 포스팅 ${offs.length?'결과: 선수가 제안을 모두 거절':'무산'}`,`${why}\n\n받은 제안:\n${offTxt}\n\n선수는 우리 구단에 남습니다(기분 ${offs.length?-2:-5}).`,{kind:'해외',ref:p.id}); continue; }
+    const lg=best.lg, yrs=best.yrs, amt=best.amt; const fee=usd(postFee(amt*yrs)); x.res=lg; x.club=best.club;
+    if(x.tid===G.user&&!G.unemp)mail('운영팀',`${p.name} 포스팅 결과: ${lg} ${best.club} 선택`,`받은 제안:\n${offTxt}\n\n${p.name}은(는) ${best.club}(${lg})의 ${yrs}년 연 ${amt}만 달러 제안을 골랐습니다${lg==='MLB'&&want>=50?'(메이저리그 의지가 강해 금액보다 리그를 먼저 봤습니다)':''}. 구단은 포스팅 비용 ${money(fee)}을 받습니다.`,{kind:'해외',ref:p.id});
     if(x.tid===G.user&&!G.unemp){ G.ovsIncome=(G.ovsIncome||0)+fee; G.spend.postIn=(G.spend.postIn||0)+fee; note('재정',`${p.name} 포스팅 비용 ${money(fee)}은 이번 결산 때 '포스팅 수입'으로 들어옵니다(지금 현금에는 바로 더해지지 않음). 재정 > 예산에서 확인할 수 있습니다.`,p.id); } /* 카페 문의: 안내가 없어 안 들어온 줄 앎 */ else team(x.tid).cash+=fee; /* 우리 구단 포스팅 수입은 그 시즌 결산(재정 화면 '포스팅 수입' 줄)으로 들어간다 */
-    ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'포스팅',fee); } }
+    ovsLeave(p,lg,best.club,yrs,amt,'포스팅',fee); } }
 /* 해외 FA: 9시즌을 채운 FA 선수는 해외로 갈 수 있다 */
 function ovsFA(pool){ for(const id of [...pool]){ const p=G.players[id]; if(!p||p.foreign||p.svc<9||p.age>33||milServing(p))continue; const o=ovr(p); if(o<61)continue; mlbOf(p);
     if(R()<p.mlb/100*(o>=66?.8:.45)){ const lg=o>=65&&R()<.7?'MLB':'NPB'; const yrs=ri(1,3); const amt=Math.round(lg==='MLB'?clamp((o-58)*80,100,2000):clamp((o-55)*40,80,500)); ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'해외 FA'); const i=pool.indexOf(id); if(i>=0)pool.splice(i,1); } } }

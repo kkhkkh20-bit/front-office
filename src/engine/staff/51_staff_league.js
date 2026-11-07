@@ -37,7 +37,7 @@ function stInterest(s){ const mk=G.year*100+dobj(G.day).m; if(s._im===mk)return 
   s.int=G.teams.filter(t=>t.id!==G.user).sort(()=>R()-.5).slice(0,n).map(t=>t.id); return s.int; }
 /* 우리 제안: 관심 구단과 경쟁. raise=연봉 인상률 */
 function stOffer(kind,id,raise){ stInit(); const mkt=kind==='sc'?scoutMkt():anaMarket(); const s=mkt.find(x=>x.id===id); if(!s)return {ok:false,msg:'후보가 없습니다.'}; stAttr(s);
-  if(kind==='sc'&&G.scouts.length>=SCOUT_MAX)return {ok:false,msg:`스카우트는 ${SCOUT_MAX}명까지입니다.`}; if(kind==='an'&&anaList().length>=ANA_MAX)return {ok:false,msg:`분석원은 ${ANA_MAX}명까지입니다.`};
+  if(kind==='sc'&&G.scouts.length>=scoutMax())return {ok:false,msg:`스카우트는 ${scoutMax()}명까지입니다.`}; if(kind==='an'&&anaList().length>=ANA_MAX)return {ok:false,msg:`분석원은 ${ANA_MAX}명까지입니다.`};
   const sal=round5(s.sal*(1+raise)); const me=stScore(s,G.user,sal,false);
   /* 경쟁 제안이 이미 걸려 있으면(우리가 한 번 밀린 뒤) 그 조건과 다시 겨룬다. 두 번째에도 밀리면 그쪽으로 간다 */
   const B=s.bid&&s.bid.exp>=G.day&&s.bid.t!==G.user?s.bid:null; if(s.bid&&s.bid.t===G.user)delete s.bid;
@@ -73,7 +73,7 @@ function stPoachOpen(){ const o=dobj(G.day); return o.m>=11||o.m<=1; }
 function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 구단 스태프는 11월~1월에만 데려올 수 있습니다.'; const P=G.stPo=stPoNow();
   if(P.n>=3)return '이번 비시즌에는 더 이상 영입 시도를 할 수 없습니다(3번).'; if(P.t.includes(tid))return `${tshort(tid)} 스태프에게는 이미 한 번 접촉했습니다.`;
   const L=G.lgStaff[tid]; const list=kind==='sc'?L.sc:L.an; const s=list.find(x=>x.id===id); if(!s)return '대상이 없습니다.';
-  if(kind==='sc'&&G.scouts.length>=SCOUT_MAX)return `스카우트는 ${SCOUT_MAX}명까지입니다.`; if(kind==='an'&&anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`;
+  if(kind==='sc'&&G.scouts.length>=scoutMax())return `스카우트는 ${scoutMax()}명까지입니다.`; if(kind==='an'&&anaList().length>=ANA_MAX)return `분석원은 ${ANA_MAX}명까지입니다.`;
   P.n++; P.t.push(tid); const sal=round5(s.sal*(1+raise)); const go=stScore(s,G.user,sal,false), stay=stScore(s,tid,s.sal*1.05,true);
   const t=team(tid); t.rel=clamp((t.rel??50)-3,0,100);
   if(go<=stay)return `${s.name}: "제안은 감사하지만 ${tshort(tid)}에 남겠습니다." ${s.loy>=60?'오래 몸담은 구단이라 마음이 쉽게 움직이지 않습니다.':'조건이나 구단 위상이 부족했습니다.'} (${tshort(tid)} 관계 -3)`;

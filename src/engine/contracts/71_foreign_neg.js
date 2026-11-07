@@ -87,3 +87,8 @@ function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.
 function foResFor(p){ if(!p)return null; return (G.fRes||[]).find(x=>x.until>=G.year&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat))||null; }
 function foResAdd(p,tid){ G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year); if(G.fRes.some(x=>x.tid===tid&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat)))return;
   G.fRes.unshift({pid:p.id,name:p.name,pos:posLabel(p),nat:p.nat,tid,y:G.year,until:G.year+5}); } /* 유효한 권리는 화면 표시 개수와 무관하게 모두 유지 */
+
+/* 외국인 2년 계약(커뮤니티 요청 11-07, KBO도 재계약 외국인 다년 계약을 허용): 재계약에 합의한 뒤 2년으로 묶으면 연봉 5%를 더 주고, 다음 겨울 재계약 협상 없이 같은 연봉으로 한 해 더 뛴다 */
+function fReMulti(id){ const C=G.contract; const p=G.players[id]; if(!C||C.done||!p||p.team!==G.user||!C.foreignEnd.includes(id))return '재계약 기간이 아닙니다.'; const N=(C.fre||{})[id]; if(!(N&&N.ok))return '먼저 1년 재계약에 합의해야 합니다.'; if(p.fMulti>C.y)return '이미 2년 계약입니다.'; if(p.age>=35)return `${p.age}세라 다년 계약은 하지 않습니다.`;
+  const s0=p.newSal; p.newSal=round5(s0*1.05); p.fMulti=C.y+2; const f=fReCapInfo(); if(f&&f.over>0){ p.newSal=s0; delete p.fMulti; return `외국인 3명 연봉 총액 한도를 ${money(f.over)} 넘어 2년 계약으로 바꿀 수 없습니다.`; }
+  story(p,`${C.y+1}~${C.y+2} 2년 계약 (연 ${money(p.newSal)})`,'move'); return `${p.name}과(와) ${C.y+1}~${C.y+2} 2년 계약으로 바꿨습니다. 연봉 ${money(s0)} → ${money(p.newSal)}, 다음 겨울에는 재계약 협상 없이 같은 연봉입니다.`; }

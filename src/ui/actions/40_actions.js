@@ -222,6 +222,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   cpromAsk(v){ UI.cprom=v; render(); }, cpromCancel(){ UI.cprom=null; render(); },
   promoteCoach(v){ const r=promoteCoach(v); UI.cprom=null; UI.cMsg=typeof r==='string'?r:r.msg; toast(UI.cMsg); save(); render(); },
   extMgr(v){ const r=extendMgr(+v); toast(r||`감독 계약을 ${v}년 연장했습니다.`); save(); render(); },
+  hireAsst(v){ const [id,y]=v.split(':'); const e=hireAsst(id,+y); UI.cMsg=e||'보조 코치를 영입했습니다.'; save(); render(); },
+  fireAsst(v){ const e=fireAsst(v); UI.cMsg=e||'보조 코치를 내보냈습니다.'; save(); render(); },
   fireCoach(v){ fireCoach(v); UI.cfire=null; UI.cMsg=`${CROLE[v].l} 자리를 비웠습니다.`; save(); render(); },
   hireCoach(v){ const [id,y]=v.split(':'); const c=(G.cmarket||[]).find(x=>x.id===id); const e=hireCoach(id,+y); UI.cMsg=e||(c?`${CROLE[c.role].l} ${c.name} 영입 (${y}년)`:''); if(!e&&c){ UI.it=UI.it||{}; UI.it.coach=CROLE[c.role].g===2?'g2':'g1'; if(UI.coachRet){ UI.coachRet=null; save(); A.go('staff:coach'); return; } } save(); render(); }, /* 보직의 '교체'로 시장에 왔으면 영입 뒤 코치 보직 화면으로 돌아간다(사용자 피드백 11-07) */
   hy(v){UI.hy=+v;render();},
@@ -388,7 +390,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   obAct(v){ const [id,k]=v.split(':'); const ob=obOf(id); if(!ob)return; G.obFace=G.obFace||{};
     if(k==='coach'){ let c=(G.cmarket||[]).find(x=>x.ob===id); if(!c){ c=obCoach(ob); G.cmarket.unshift(c); } UI.crole=c.role; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); return; }
     if(k==='mgr'){ if(!(G.mmarket||[]).some(m=>m.ob===id))G.mmarket.unshift(obMgr(ob)); A.go('staff:mgr'); return; }
-    if(k==='scout'){ if(G.scouts.length>=SCOUT_MAX)return; const s=(G.scoutMarket||[]).find(x=>x.ob===id)||obScout(ob); G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.ob!==id); s.since=G.day; G.scouts.push(s); obHireBonus(id,'스카우트'); addLog(`OB ${ob.name}을(를) 스카우트로 영입했습니다.`); save(); render(); return; }
+    if(k==='scout'){ if(G.scouts.length>=scoutMax())return; const s=(G.scoutMarket||[]).find(x=>x.ob===id)||obScout(ob); G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.ob!==id); s.since=G.day; G.scouts.push(s); obHireBonus(id,'스카우트'); addLog(`OB ${ob.name}을(를) 스카우트로 영입했습니다.`); save(); render(); return; }
     if(k==='front'){ ob.alt={k:'front',tid:G.user,t:`${tshort(G.user)} 프런트`}; ob.bond+=5; obHireBonus(id,'프런트'); addLog(`OB ${ob.name}이(가) 우리 프런트에 합류했습니다.`); save(); render(); } },
   reroll(){ UI.world=null; render(); },
   person(v){ UI.person=v; UI.personMsg=null; renderSheet(); },
@@ -408,7 +410,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   frF(v){ UI.frF=v; render(); }, ctF(v){ UI.ctF=v; render(); },
   signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
   scF(v){ UI.scF=v; render(); },
-  hireScout(v){ const [sid,rz]=String(v).split(':'); const res=stOffer('sc',sid,+rz||0); toast(res.msg); if(!res.ok){ save(); render(); return; } const s=res.s; v=sid; if(s&&G.scouts.length<SCOUT_MAX){ s.since=G.day; s.role=s.role||'am';
+  hireScout(v){ const [sid,rz]=String(v).split(':'); const res=stOffer('sc',sid,+rz||0); toast(res.msg); if(!res.ok){ save(); render(); return; } const s=res.s; v=sid; if(s&&G.scouts.length<scoutMax()){ s.since=G.day; s.role=s.role||'am';
     /* 이미 사람이 있는 자리면 같은 지역의 빈 업무, 없으면 다른 지역 빈자리로 보낸다 */
     { const L=scoutLoad(); if(L[s.role+':'+s.region]){ const fr=['am','pro'].flatMap(r=>[s.region,...REG.filter(x=>x!==s.region)].map(g=>r+':'+g)).sort((a,b)=>(b.endsWith(s.region)?1:0)-(a.endsWith(s.region)?1:0)).find(k=>!L[k]); if(fr){ const [r,g]=fr.split(':'); s.role=r; s.region=g; } } }
     G.scouts.push(s);try{obHireBonus(s.ob,'스카우트');}catch(e){}addLog(`스카우트 ${s.name}(${s.region}·능력 ${s.skill})을 영입했습니다.`);save();render();}},

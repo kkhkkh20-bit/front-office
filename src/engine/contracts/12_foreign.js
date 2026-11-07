@@ -157,7 +157,7 @@ function signForeign(tid,id){
   const err=foreignCheck(tid,p); if(err){ if(p)p.ask=ask0; return err; } /* 실패한 시도는 시장 요구액을 바꾸지 않는다 */
   const mid=period()==='season';
   { const h=foResFor(p); if(!(h&&h.tid===tid))p.rsy=0; } /* 재계약 연차는 그 구단에서 쌓은 것만: 다른 구단이 새로 데려오면 한도 가산 없음(검수 11-06) */
-  story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
+  story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; delete p.fMulti; /* 새 구단 계약은 1년부터. shortcut: 2년 계약 도중 방출해도 다음 해 보장분은 따로 물리지 않는다, 방출 정산을 다년으로 넓힐 때 함께 */ if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
   const cost=Math.round(p.ask*remainFrac());
   if(mid||G.day>=G.cal.open){ G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+cost; }
   if(mid){ const key=p.foreign==='아시아'?'asiaRepl':'repl'; G.sea[key]=G.sea[key]||{}; G.sea[key][tid]=(G.sea[key][tid]||0)+1; try{ gmInc(tid,'fRep'); }catch(e){} }

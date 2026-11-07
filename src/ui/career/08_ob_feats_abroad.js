@@ -11,7 +11,7 @@ function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
   const mgrC=new Set(obMgrCands().map(o=>o.id));
   const act=(o,w)=>{ if(w.k==='free'||w.k==='wait'&&o.path==='media'){ if(mgrC.has(o.id))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:mgr">감독 후보로</button>`;
       if(w.k==='free'&&(o.path==='coach'||o.path==='media'&&o.my>=3))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:coach">코치로 영입</button>`;
-      if(w.k==='free'&&o.path==='scout')return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:scout" ${G.scouts.length>=SCOUT_MAX?'disabled':''}>스카우트로 영입</button>`;
+      if(w.k==='free'&&o.path==='scout')return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:scout" ${G.scouts.length>=scoutMax()?'disabled':''}>스카우트로 영입</button>`;
       if(w.k==='free'&&o.path==='front')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">프런트로 채용</button>`; }
     if(w.k==='front'&&w.tid!==G.user&&o.path!=='media')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">우리 프런트로</button>`; return ''; };
   const row=({o,w})=>`<div class="obc">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${o.retNo?` <span class="pill acc">${o.no||''}번 영구결번</span>`:''}${o.hof?' <span class="pill warn">명예의 전당</span>':''}</b>

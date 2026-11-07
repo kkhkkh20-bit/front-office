@@ -21,6 +21,7 @@ function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); c
   else if(pre){ const mine=pre.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
     h+=csec(`${G.year} ${NT_EV[pre.k].n} 예비 명단 · ${pre.ids.length}명`,`<p class="small muted">최종 발표 ${dmd(KD(NT_EV[pre.k].ann[0],NT_EV[pre.k].ann[1]))}</p>${ntImpact(pre.ids,pre.k)}${ntRows(pre.ids)}`); }
   else if(nx){ const S=ntProj(nx.k); h+=csec(`상비군 · ${nx.y} ${nx.n} 지금 뽑는다면`,ntImpact(S.map(x=>x.id),nx.k)+ntRows(S.map(x=>x.id),{wild:S.filter(x=>x.wild).map(x=>x.id)})); }
+  { const rx=up.find(x=>NT_EV[x.k].ex&&x.y===G.year); const rb=rx?ntRecBox(rx):''; if(rb)h+=csec(`구단 추천 · ${rx.y} ${rx.n}`,rb); }
   const H=(G.ntHist||[]).slice().reverse();
   if(fmOn()){ /* PC(FM식): 대표팀·대회 | 명단(한 줄 표) | 우리 선수(얼굴)·구단별 선발 인원, 지난 대회 */
     const sq=live?{t:`${ntTxt(live)} 최종 명단`,ids:live.ids,k:live.k,o:{N:live,act:canRef?p=>p.team===G.user?`<button class="btn small" data-a="ntRefuse" data-v="${p.id}">거부</button>`:'':null},s:canRef?`소집 전까지 차출 거부 가능(여론 악화) · 소집일 ${dmd(KD(e.from[0],e.from[1]))}`:'확정 명단'}
@@ -32,7 +33,10 @@ function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); c
     const list=fxBox('fxn-sq',fxHead(sq?sq.t:'명단 없음',sq?sq.s:''),sq?`<div class="fx-scr">${ntRows(sq.ids,sq.o)}</div>`:'<p class="fx-none">다가오는 대회가 없습니다.</p>');
     const me=fxBox('fxn-me',fxHead(`우리 선수 ${mine.length}명`,sq?NT_EV[sq.k].n:''),sq?ntImpact(sq.ids,sq.k)+(mine.length?`<div class="fx-pls fx-pl1">${mine.map(p=>`<button class="fx-pl" data-a="player" data-v="${p.id}">${avImg(p)}<span><i>${esc(posLabel(p))} · ${p.age}세${milFree(p)?' · 미필':''}</i><b>${esc(p.name)}</b><em>능력 ${dvo(p)}</em></span></button>`).join('')}</div>`:''):'<p class="fx-none">명단이 없습니다.</p>');
     const tm=fxBox('fxn-tm',fxHead('구단별 선발 인원',sq?`${P.length}명`:''),cnt.map((x,i)=>`<div class="fx-odd${x.t.id===G.user?' me':''}"><span>${i+1}</span>${badge(x.t.id,16)}<b>${esc(x.t.nick)}</b><p class="fx-bar"><i style="width:${Math.max(2,x.n/mx*100)}%"></i></p><em>${x.n}명</em></div>`).join(''));
-    return `<div class="fmx fmx-fit fmx-nt nolink ws-own">${info}${list}${me}${past}${tm}</div>`; }
+    const rx=up.find(x=>NT_EV[x.k].ex&&x.y===G.year); const rb=rx?ntRecBox(rx):''; return `<div class="fmx fmx-fit fmx-nt nolink ws-own">${info}${list}${me}${rb?fxBox('fxn-rc',fxHead('구단 추천',`${rx.y} ${rx.n}`),rb):''}${past}${tm}</div>`; }
   if(H.length)h+=csec('지난 대회',`<div class="tw"><table class="sqt rt lst"><thead><tr><th>대회</th><th>성적</th><th>대표팀 영웅</th></tr></thead><tbody>${H.map(x=>{ const p=x.hero&&G.players[x.hero]; return `<tr><td>${x.y} ${NT_EV[x.k]?NT_EV[x.k].n:x.k}</td><td>${v3Img(awV3(`${NT_EV[x.k]?NT_EV[x.k].n:x.k} ${x.res}`)[0]||'',20,'nt-md')}${esc(x.res)}</td><td>${p?`${esc(p.name)} <span class="small muted">${esc(tshort(p.team))}</span>`:'-'}</td></tr>`; }).join('')}</tbody></table></div>`);
   return h; }
-Object.assign(A,{ ntRefuse(v){ UI.ntMsg=ntRefuse(+v); render(); } });
+Object.assign(A,{ ntRefuse(v){ UI.ntMsg=ntRefuse(+v); render(); }, ntRec(v){ const [k,id]=v.split(':'); UI.ntMsg=ntRecToggle(k,+id); UI._ntP=null; save(); render(); } });
+/* 구단 추천 칸: 다음 특례 대회 최종 발표 전 */
+function ntRecBox(nx){ if(!nx||!NT_EV[nx.k].ex||nx.y!==G.year||(G.nt&&G.nt.k===nx.k&&G.nt.y===G.year))return ''; const e=NT_EV[nx.k]; const rec=ntRecIds(nx.k); const L=domestic(G.user).filter(p=>!p.prospect&&(!e.u25||ntU25(p))).sort((a,b)=>(rec.has(b.id)-rec.has(a.id))||(milFree(b)-milFree(a))||ovr(b)-ovr(a)).slice(0,8);
+  return `<p class="small muted">구단 추천 ${rec.size}/${NT_REC_MAX}명 · 최종 발표 전까지 대표팀 감독에게 추천합니다(평가 +5). 미필 선수가 위에 있습니다.</p>${L.map(p=>`<div class="item row between"><span>${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세 · 능력 ${dvo(p)}${milFree(p)?' · 미필':''}</span></span><button class="btn small${rec.has(p.id)?' primary':''}" data-a="ntRec" data-v="${nx.k}:${p.id}">${rec.has(p.id)?'추천 취소':'추천'}</button></div>`).join('')}`; }
