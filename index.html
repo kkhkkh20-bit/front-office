@@ -9775,14 +9775,14 @@ function capPayAs(tid,inIds,outIds){ const fid=franId(tid,outIds,inIds); const o
   { const y=sponSeason(); if(y>G.year){ const L=domPayNext(tid,y).filter(p=>!out.has(p.id)&&!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)); for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||(p.draft&&p.draft.y===y-1))continue; const wc=p.wv&&p.team==null?p.wv.c:null; L.push(capAmt(p,tid,wc?(wc.extNext?wc.extNext.annual:wc.sal):salNext(p),fid)); } /* 웨이버 양수: 승계하는 다음 시즌 계약(검수 11-07) */ return sum(L.sort((a,b)=>b-a).slice(0,40)); } } /* 결산 뒤 겨울: 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06) */ const L=domPayOf(tid).filter(p=>!out.has(p.id)&&!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid));
   for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||isRookie(p))continue; const wc=p.wv&&p.team==null?p.wv.c:null; L.push(capAmt(p,tid,wc?wc.sal+(wc.capB&&wc.capB.until>=G.year?wc.capB.a:0):p.newSal??p.sal,fid)); } /* 웨이버 양수는 계약금 상한 반영액까지 승계하므로 미리보기에도 넣는다(검수 11-06) */ /* 재계약 합의 연봉은 이적 때 확정되므로 그 금액으로(mvLog) */ return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */
-function capPayNext(tid){ const fid=franId(tid), y=sponSeason(); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
+function capPayNext(tid){ const fid=franId(tid,null,null,salNext), y=sponSeason(); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=y?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 /* 계약 하나를 바꿨을 때의 상한 합계: 실제 샐러리캡과 같은 방식(선수별 금액 정렬 → 상위 40명). s는 계약이 적용되는 시즌.
    지금 시즌(sponSeason)이면 지금 연봉 기준, 그 뒤 시즌이면 다음 시즌 기준(합의한 다음 시즌 계약·재계약 중 금액, 그 시즌까지 남는 계약금 상한 반영) */
 function capPayWith(tid,pid,amt,s){ const fid=franId(tid,null,pid!=null?[pid]:null), y0=sponSeason(); s=s??y0; const nxt=s>y0||preSeason(s); /* 개막 전이면 합의한 인상분까지 */ const L=[];
   for(const p of (nxt?domPayNext(tid,s):domPayOf(tid))){ if(p.id===pid)continue; if(nxt){ if(p.draft&&p.draft.y===s-1)continue; L.push(capAmt(p,tid,salNext(p)+(p.capB&&p.ctT===p.team&&p.capB.until>=s?p.capB.a:0),fid)); } else { if(isRookie(p))continue; L.push(capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)); } }
   const so=[...L].sort((a,b)=>b-a); const base=sum(so.slice(0,40)), k40=so.length>=40?so[39]:0; const pp=pid!=null?G.players[pid]:null; if(amt!=null&&!(pp&&!nxt&&isRookie(pp))&&!(pp&&nxt&&pp.draft&&pp.draft.y===s-1))L.push(pid===fid?amt*.5:amt); /* 신인 제외 조건은 바꾸려는 선수에게도 똑같이(검수 11-06) */ const tot=sum(L.sort((a,b)=>b-a).slice(0,40)); const room0=capOf(s)-base+k40; return {tot,base,cap:capOf(s),s,room:pid!=null&&pid===fid?room0*2:room0}; } /* 프랜차이즈 예외 선수는 보수의 절반만 들어가니 쓸 수 있는 연봉은 두 배(검수 11-06) */ /* room: 이 선수 금액으로 쓸 수 있는 최대(40번째 선수를 밀어내는 몫 포함) */
 /* 프랜차이즈 예외(KBO 2025-09 의결, 2026~): 구단마다 한 해 1명, 그 구단 소속 7시즌 이상인 국내 선수 보수의 50%를 상한 산정에서 뺀다. 가장 많이 받는 대상자를 자동으로 지정한다 */
-let _franC={k:null}; function franId(tid,outIds,inIds){ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=domPayOf(tid).filter(p=>!out.has(p.id)); for(const id of inIds||[]){ const p=G.players[id]; if(p&&!p.foreign&&!pool.includes(p))pool.push(p); } /* 데려올 선수도 예외 대상 후보(예상 계산이 실제 소속 뒤 계산과 같게) */ const k=G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+p.sal+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||p.sal>b.sal)b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
+let _franC={k:null}; function franId(tid,outIds,inIds,sf){ const sv=p=>sf?sf(p):p.sal; /* sf: 다음 시즌 합계는 다음 시즌 연봉으로 고른다(검수 11-07) */ if(G.year<2026)return null; const out=new Set(outIds||[]); const pool=domPayOf(tid).filter(p=>!out.has(p.id)); for(const id of inIds||[]){ const p=G.players[id]; if(p&&!p.foreign&&!pool.includes(p))pool.push(p); } /* 데려올 선수도 예외 대상 후보(예상 계산이 실제 소속 뒤 계산과 같게) */ const k=(sf?'n':'c')+G.year+':'+G.day+':'+tid+':'+pool.map(p=>p.id+':'+sv(p)+':'+(p.hist||[]).filter(h=>h.t===tid).map(h=>h.y).join(',')).join(';'); if(_franC.k===k)return _franC.v; let b=null; for(const p of pool){ const ys=new Set((p.hist||[]).filter(h=>h.t===tid).map(h=>h.y)); if(ys.size<7)continue; if(!b||sv(p)>sv(b))b=p; } _franC={k,v:b?b.id:null}; return _franC.v; }
 const capAmt=(p,tid,a,fid=franId(tid))=>p.id===fid?a*.5:a; /* 합계 한 번당 예외 대상도 한 번만 조회 */
 function capPay(tid){ const fid=franId(tid); const s=domPayOf(tid).filter(p=>!isRookie(p)).map(p=>capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 const foreignOf=tid=>playersOf(tid).filter(p=>p.foreign&&!p.frehab); /* 재활 선수 명단에 오른 외국인은 등록 인원·총액에서 빠진다(대체 선수가 그 자리) */
@@ -11323,7 +11323,10 @@ function migrateDraft(){ worldReset(); try{ syncMinSal(); }catch(e){} /* 불러�
 /* 그해 신인 드래프트 지명 순서: 지난 시즌 순위의 역순(r2: 2라운드부터). 경쟁균형세 3회 연속 초과 구단은 1라운드(r1)에서 9단계 내려간다.
    드래프트 날 전에도 같은 순서를 미리 알려 줄 수 있게 따로 계산한다 */
 function draftOrders(){ const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid);
-  const o1=[...order]; const pen=[]; for(const t of G.teams){ if(t.pickPen!==G.year)continue; const i=o1.indexOf(t.id); if(i<0)continue; o1.splice(i,1); o1.splice(Math.min(o1.length,i+9),0,t.id); pen.push(t.id); }
+  const n=order.length, pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id).sort((a,b)=>order.indexOf(b)-order.indexOf(a)); const slot=new Array(n).fill(null);
+  /* 제재 구단은 원래 순번에서 9칸 아래 자리에 둔다. 여러 구단이 함께 받아도 서로 밀어 올리지 않게 자리를 먼저 잡고 나머지를 순서대로 채운다(검수 11-07) */
+  for(const t of pen){ let j=Math.min(n-1,order.indexOf(t)+9); while(j<n&&slot[j]!=null)j++; if(j>=n){ j=n-1; while(slot[j]!=null)j--; } slot[j]=t; }
+  const rest=order.filter(t=>!pen.includes(t)); for(let j=0;j<n;j++)if(slot[j]==null)slot[j]=rest.shift(); const o1=slot;
   return {r1:o1,r2:order,pen,y:h.y}; }
 /* 실제 드래프트 순번표(지명권 거래 반영): 사전 안내·모의 지명·드래프트 시작이 같은 표를 쓴다(검수 11-06) */
 function draftPlan(){ const D=draftOrders(); if(!D)return null; const picks=[]; for(let r=0;r<DRAFT_ROUNDS;r++)(r===0?D.r1:D.r2).forEach((tid,i)=>{ const own=pkOwner(G.year,r+1,tid); picks.push(own===tid?{rd:r+1,no:i+1,tid,pid:null}:{rd:r+1,no:i+1,tid:own,from:tid,pid:null}); }); return picks; }
@@ -11333,7 +11336,7 @@ const draftVal=rp=>(rp.ofp??rp.cur+6)+rp.cur*.2;
 const draftFirstTxt=n=>n&&n.first?`${n.first.rd}라운드 ${n.first.no}순위`:'지명권 없음';
 /* 3월 1일: 드래프트 시즌 시작 안내(첫 시즌 포함) */
 function draftSeasonMail(){ if(G.unemp||G.user==null)return; const n=draftNo(G.user); if(!n||!G.cal||!G.cal.draft)return; const c=scoutChief&&scoutChief();
-  let own1=true, pkT=''; try{ const H=pkHeld(G.user); own1=H.includes('1:'+G.user); const gone=[1,2].filter(rd=>!H.includes(rd+':'+G.user)), got=H.filter(k=>+k.split(':')[1]!==G.user); if(gone.length||got.length)pkT=` 지명권 거래 반영: ${gone.length?`넘긴 지명권 ${gone.map(rd=>rd+'라운드').join('·')}`:''}${gone.length&&got.length?', ':''}${got.length?`받은 지명권 ${got.map(pkName).join(', ')}`:''}.`; }catch(e){} /* 거래한 지명권을 반영해 안내(검수 11-06) */
+  let own1=true, pkT=''; try{ const H=pkHeld(G.user); own1=H.includes('1:'+G.user); const gone=Array.from({length:DRAFT_ROUNDS},(_,i)=>i+1).filter(rd=>!H.includes(rd+':'+G.user)) /* 모든 라운드(검수 11-07) */, got=H.filter(k=>+k.split(':')[1]!==G.user); if(gone.length||got.length)pkT=` 지명권 거래 반영: ${gone.length?`넘긴 지명권 ${gone.map(rd=>rd+'라운드').join('·')}`:''}${gone.length&&got.length?', ':''}${got.length?`받은 지명권 ${got.map(pkName).join(', ')}`:''}.`; }catch(e){} /* 거래한 지명권을 반영해 안내(검수 11-06) */
   const f1=(draftPlan()||[]).find(k=>k.tid===G.user); /* 실제 첫 지명(받은 지명권 포함) */
   mail('스카우트팀',`${G.year} 신인 드래프트: ${f1?`우리 첫 지명은 ${f1.rd}라운드 ${f1.no}순위`:'이번 드래프트 지명권이 없습니다'}`,`${dmd(G.cal.draft)}에 ${G.year} 신인 드래프트가 열립니다. 지명 순서는 지난 시즌(${n.y}) 성적의 역순이라 원래 우리 순번은 1라운드 ${n.r1}순위${n.r2!==n.r1?`, 2라운드부터 ${n.r2}순위`:''}입니다.${f1&&!(f1.rd===1&&f1.no===n.r1)?` 지명권 거래를 반영한 실제 첫 지명은 ${f1.rd}라운드 ${f1.no}순위입니다.`:''}${pkT}${n.pen?` 경쟁균형세 3회 연속 초과로 1라운드 순서가 ${n.r2}순위에서 ${n.r1}순위로 내려갔습니다.`:''}\n\n오늘부터 드래프트 시즌입니다. ${c?`${c.name} 스카우트팀장이 `:''}아마추어 담당 스카우트를 고교·대학 선수 관찰에 보냅니다. 관찰이 쌓일수록 평가가 정확해집니다.\n영입·계약 → 신인 드래프트에서 후보 순위를 보고 관심 선수를 표시해 두세요. 지명한 신인은 내년 1월에 합류합니다.`,{kind:'업무',acts:[{l:'신인 드래프트 보기',a:'go',v:'transfer:draft'}]}); }
 function startDraft(){
@@ -17241,7 +17244,7 @@ const CMT_OPT=[0,.03,.05,.08], CMT_TH=.9, CMT_N=5;
 const pctTxt=x=>x?`${Math.round(x*100)}% 인상`:'동결';
 
 function asMk(y,st){ return {name:genName(),age:ri(58,72),stance:st||pick(Object.keys(AS_STANCE)),car:pick(AS_CAR),since:y+1,until:y+3,terms:1}; }
-function asInit(){ if(G.assoc)return G.assoc; const h=asMk(2025); h.since=2026; h.until=2028; G.assoc={head:h,cmt:[],els:[],rel:50,cur:null,el:null}; return G.assoc; }
+function asInit(){ if(G.assoc){ const A=G.assoc; if(A.next&&G.year>=A.next.since){ A.head=A.next; delete A.next; } /* 당선자는 다음 해 취임(검수 11-07: 12월에 바로 바뀜) */ return A; } const h=asMk(2025); h.since=2026; h.until=2028; G.assoc={head:h,cmt:[],els:[],rel:50,cur:null,el:null}; return G.assoc; }
 function asHead(){ return asInit().head; }
 /* 확장형 협회장은 중계권 계약을 키운다 */
 function asRev(){ try{ const H=G&&G.assoc&&G.assoc.head; if(!H||H.stance!=='grow')return 1; return (H.since??0)<=sponSeason()?1.03:1; }catch(e){ return 1; } } /* 새 협회장 효과는 임기 시작 시즌부터(검수 11-06) */
@@ -17280,7 +17283,7 @@ EVH.cmt={ pick(e,i){ const A=asInit(); if(!A.cur)return ''; A.cur.uv=i<CMT_OPT.l
 function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; if(G.capY[y])return; const A=asInit(); const cap=capOf(G.year);
   if(!A.cur||A.cur.y!==y){ const near=cmtNear(); A.cur={y,near:near.map(t=>t.id),on:near.length>=CMT_N}; }
   const C=A.cur;
-  if(!C.on){ const fr=(()=>{ let n=0; for(const x of A.cmt){ if(x.held||x.fin)break; n++; } return n; })(); const idx=fr>=2; /* 2년 연속 동결이면 3년째는 물가 연동 3% 인상(구단들이 돈을 안 써 상한이 수년째 묶이던 문제, 커뮤니티 피드백 11-07) */
+  if(!C.on){ const fr=(()=>{ let n=0; for(const x of A.cmt){ if(x.fin)break; n++; } /* 회의를 열어 정한 동결도 동결로 센다(검수 11-07) */ return n; })(); const idx=fr>=2; /* 2년 연속 동결이면 3년째는 물가 연동 3% 인상(구단들이 돈을 안 써 상한이 수년째 묶이던 문제, 커뮤니티 피드백 11-07) */
     G.capY[y]=idx?Math.round(cap*1.03):cap; A.cmt.unshift({y,n:C.near.length,held:false,fin:idx?.03:0,idx}); A.cmt.length=Math.min(A.cmt.length,15);
     note('일정',idx?`${y}년 경쟁균형세 상한은 물가 연동으로 3% 올라 ${money(G.capY[y])}입니다. 실행위원회 소집 요건(상한 90% 이상 구단 5곳)에는 못 미쳤지만 ${fr}년 연속 동결이라 자동 조정했습니다.`:`${y}년 경쟁균형세 상한은 ${money(cap)}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳤습니다.`); A.cur=null; return; }
   /* 1차 표결 */
@@ -17293,7 +17296,7 @@ function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; i
   const t1=tally(vote); const rank=CMT_OPT.slice().sort((a,b)=>t1[b]-t1[a]||a-b);
   let res=rank[0], run=null;
   if(t1[res]<half){ const [a,b]=rank; const v2={}; for(const id of voters){ const x=id===vt&&userVotes&&C.uv!=null?C.uv:ideal[id]; v2[id]=Math.abs(a-x)<Math.abs(b-x)?a:Math.abs(b-x)<Math.abs(a-x)?b:Math.min(a,b); }
-    const ca=voters.filter(id=>v2[id]===a).length, cb=voters.length-ca; res=ca>cb?a:cb>ca?b:Math.min(a,b); run={a,b,ca,cb}; }
+    const ca=voters.filter(id=>v2[id]===a).length, cb=voters.length-ca; res=ca>=half?a:cb>=half?b:0; run={a,b,ca,cb,tie:ca<half&&cb<half}; } /* 결선도 과반이어야 올린다. 못 넘으면 동결(검수 11-07: 5대5인데 한 안 통과) */
   /* 이사회: 협회장 성향에 따라 한 단계 조정할 때가 있다. 협회장과 우리 사이가 좋고 우리 안이 통과안이면 손대지 않는다 */
   const H=A.head; let fin=res, adj=null; const keep=userVotes&&vt===G.user&&C.uv===res&&A.rel>=62;
   if(res>0&&!keep){ const i=CMT_OPT.indexOf(res);
@@ -17303,7 +17306,7 @@ function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; i
   const rec={y,n:C.near.length,held:true,vote,t1,run,res,fin,adj,head:H.name,uv:userVotes?C.uv:undefined,uvT:userVotes?vt:undefined,sw:swayed};
   A.cmt.unshift(rec); A.cmt.length=Math.min(A.cmt.length,15); A.cur=null;
   const t1s=CMT_OPT.filter(o=>t1[o]).map(o=>`${pctTxt(o)} ${t1[o]}표`).join(', ');
-  const runs=run?` 과반이 없어 상위 두 안으로 결선을 치렀습니다: ${pctTxt(run.a)} ${run.ca}표, ${pctTxt(run.b)} ${run.cb}표.`:'';
+  const runs=run?` 과반이 없어 상위 두 안으로 결선을 치렀습니다: ${pctTxt(run.a)} ${run.ca}표, ${pctTxt(run.b)} ${run.cb}표.${run.tie?' 결선에서도 과반이 없어 이사회에 올릴 안이 없었고 상한은 동결됩니다.':''}`:'';
   const adjs=adj?` 이사회에서 ${H.name} ${ASSOC.head}(${AS_STANCE[H.stance].l})의 의견으로 ${pctTxt(fin)}로 ${adj==='down'?'낮춰':'올려'} 의결했습니다.`:' 이사회는 실행위원회 안을 그대로 의결했습니다.';
   news('리그',`${ASSOC.s} 이사회, ${y}년 경쟁균형세 상한 ${fin?`${money(G.capY[y])}으로 ${Math.round(fin*100)}% 인상`:'동결'}`,`실행위원회 1차 표결: ${t1s}.${runs}${adjs} 하한은 ${money(floorOf(y))}입니다.`,0);
   if(userVotes&&vt===G.user&&asEmp()){ const my=C.uv==null?'우리 구단은 기권했습니다.':`우리 구단은 ${pctTxt(C.uv)}에 표를 던졌고 ${C.uv===fin?'최종안과 같습니다':C.uv===res?'실행위원회는 통과했지만 이사회에서 조정됐습니다':'다른 안이 채택됐습니다'}.`;
@@ -17336,15 +17339,16 @@ function asElect(){ const A=asInit(); const E=A.el; if(!E||E.y!==G.year||E.done)
   let lead=cn.indexOf(Math.max(...cn));
   if(cn[lead]<need&&C.length>2){ set=cn.map((n,i)=>[n,i]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>x[1]); for(const id of ids)v[id]=best(id,set); cn=count(v); rounds.push({l:'결선',cn}); lead=cn.indexOf(Math.max(...cn)); }
   if(cn[lead]<need){ /* 조율: 뒤진 후보 쪽 구단들이 대세를 따라갈지 정한다 */ for(const id of ids){ if(v[id]===lead||(id===vt&&uv!=null))continue; if(R()<.55)v[id]=lead; } cn=count(v); rounds.push({l:'조율',cn}); }
-  const ok=cn[lead]>=need; E.rounds=rounds; E.v=v; E.ok=ok; const c1=rounds[0].cn;
-  if(ok){ const w=C[lead]; const nh={name:w.name,age:w.age,stance:w.stance,car:w.car,since:G.year+1,until:G.year+3,terms:w.inc?(A.head.terms||1)+1:1}; E.win=lead; A.head=nh;
-    news('리그',`${ASSOC.s} 차기 ${ASSOC.head}에 ${w.name}${w.inc?' 연임':''}`,`이사회가 ${cn[lead]}표(재적 ${ids.length}명 중 4분의 3 이상)로 추천했고 구단주 총회가 선출했습니다. ${AS_STANCE[w.stance].l}. 임기는 ${G.year+1}~${G.year+3}년입니다.`,0); }
-  else { A.head.until++; E.win=null; news('리그',`${ASSOC.s} ${ASSOC.head} 추천 무산, ${A.head.name} ${ASSOC.head} 1년 더 직무`,`이사회가 어느 후보에게도 4분의 3(${need}표)을 모으지 못했습니다. 최다 득표는 ${C[lead].name} ${cn[lead]}표. 내년에 다시 뽑습니다.`,0); }
+  let ok=cn[lead]>=need; if(ok){ /* 구단주 총회 선출(4분의 3): 이사회에서 이 후보를 민 구단 구단주는 찬성, 나머지는 성향에 따라(검수 11-07: 총회 표결 생략) */ let yes=0; for(const id of ids){ const s=pref[id], top=Math.max(...s); if(v[id]===lead||s[lead]>=top-.4||R()<.5)yes++; } rounds.push({l:'총회',yes,no:ids.length-yes}); ok=yes>=need; }
+  E.rounds=rounds; E.v=v; E.ok=ok; const c1=rounds[0].cn;
+  if(ok){ const w=C[lead]; const nh={name:w.name,age:w.age,stance:w.stance,car:w.car,since:G.year+1,until:G.year+3,terms:w.inc?(A.head.terms||1)+1:1}; E.win=lead; A.next=nh;
+    news('리그',`${ASSOC.s} 차기 ${ASSOC.head}에 ${w.name}${w.inc?' 연임':''}`,`이사회가 ${cn[lead]}표(재적 ${ids.length}명 중 4분의 3 이상)로 추천했고 구단주 총회가 ${rounds[rounds.length-1].yes}표로 선출했습니다. ${AS_STANCE[w.stance].l}. 임기는 ${G.year+1}~${G.year+3}년입니다.`,0); }
+  else { A.head.until++; E.win=null; const ga=rounds[rounds.length-1].yes!=null; news('리그',`${ASSOC.s} ${ASSOC.head} ${ga?'선출':'추천'} 무산, ${A.head.name} ${ASSOC.head} 1년 더 직무`,`${ga?`이사회가 ${C[lead].name} 후보를 추천했지만 구단주 총회가 4분의 3(${need}표)을 넘기지 못했습니다(찬성 ${rounds[rounds.length-1].yes}표).`:`이사회가 어느 후보에게도 4분의 3(${need}표)을 모으지 못했습니다.`} 최다 득표는 ${C[lead].name} ${cn[lead]}표. 내년에 다시 뽑습니다.`,0); }
   A.els.unshift(E); A.els.length=Math.min(A.els.length,8); A.el=null;
   if(uv==null||!asEmp()||vt!==G.user)return;
   const won=ok&&lead===uv; A.rel=clamp(won?Math.max(A.rel,50)+12:ok?A.rel-8:A.rel,0,100);
   const same=[], diff=[]; for(const t of G.teams){ if(t.id===G.user)continue; if(v1[t.id]===uv){ t.rel=clamp((t.rel??50)+2,0,100); same.push(t.id); } else { t.rel=clamp((t.rel??50)-1,0,100); diff.push(t.id); } }
-  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 +2, 다른 후보를 민 ${diff.length}곳과 -1.`); }
+  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.filter(r=>r.cn).length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 +2, 다른 후보를 민 ${diff.length}곳과 -1.`); }
 
 /* 매일 훅: 07_daily에서 부른다 */
 function assocDaily(day){ try{ asInit(); }catch(e){ return; }
@@ -19216,7 +19220,7 @@ function wvStart(p,paid){ if(!wvNeed(p))return; const from=p.team;
 function wvOrder(){ const ord=(G.last&&G.last.order)||[]; const prv=id=>{ const i=ord.findIndex(o=>(o.tid??o)===id); return i<0?-1:i; }; const rec=(G.sea&&G.sea.rec)||{}; const pct=id=>{ const r=rec[id]; const n=r?r.w+r.l:0; return n?r.w/n:.5; };
   return G.teams.map(t=>t.id).sort((a,b)=>pct(a)-pct(b)||prv(b)-prv(a)); }
 function wvBar(tid){ const own=domestic(tid).filter(q=>!q.ys).map(ovr).sort((a,b)=>b-a); return (own[Math.min(own.length-1,30)]||35)+2; }
-function wvWants(tid,p,w){ if(tid===w.from||rosterN(tid)>=ROSTER_MAX)return false; /* 한 자리만 있어도 신청(우리와 같은 기준, 검수 11-07) */ return ovr(p)>=wvBar(tid)&&p.age<=34&&aiVal(team(tid),p)>=1&&capPayAs(tid,[p.id],[])<=capOf(sponSeason())*aiCapMul(team(tid)); } /* 상위 40명 기준(안 들어가면 합계 그대로) */
+function wvWants(tid,p,w){ if(tid===w.from||rosterN(tid)>=ROSTER_MAX)return false; /* 한 자리만 있어도 신청(우리와 같은 기준, 검수 11-07) */ if(!(ovr(p)>=wvBar(tid)&&p.age<=34&&aiVal(team(tid),p)>=1))return false; const ks=Object.keys(w.c||{}), sv=ks.map(k=>[k,p[k]]); try{ for(const k of ks)if(w.c[k]!==undefined)p[k]=w.c[k]; return capPayAs(tid,[p.id],[])<=capOf(sponSeason())*aiCapMul(team(tid)); } finally{ for(const [k,v] of sv)p[k]=v; } } /* 상한은 이어받을 계약으로 계산(검수 11-07: 방출로 지워진 싼 연봉으로 계산해 상한을 넘겨 영입) */ /* 상위 40명 기준(안 들어가면 합계 그대로) */
 function wvList(){ return Object.values(G.players).filter(p=>p.wv&&p.team==null); }
 function wvClaim(id){ const p=G.players[id]; const w=p&&p.wv; if(!w||p.team!=null)return '웨이버 공시 중인 선수가 아닙니다.'; if(w.from===G.user)return '우리 구단이 공시한 선수는 신청할 수 없습니다.';
   if(G.day>=w.end)return `신청 기한(${dmd(w.end-1)})이 지났습니다. 오늘 우선권을 정합니다.`; /* 마감일(공시+7일)에는 결정만(검수 11-07) */
@@ -19317,7 +19321,7 @@ function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return
 function pkHeld(tid){ const y=pkYear(), L=[]; for(let rd=1;rd<=DRAFT_ROUNDS;rd++)for(const t of G.teams)if(pkOwner(y,rd,t.id)===tid)L.push(rd+':'+t.id); return L; }
 function pkName(k){ const [rd,o]=k.split(':').map(Number); return `${pkYear()} 드래프트 ${rd}라운드(${tshort(o)} 순번)`; }
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
-function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; const o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); const i=o.indexOf(orig); return i<0?5:i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
+function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; const o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); let i=o.indexOf(orig); if(i<0)i=5; if(!D&&rd===1&&team(orig).pickPen===pkYear())i=Math.min(o.length-1,i+9); /* 이미 확정된 다음 드래프트 순번 하락 제재(검수 11-07) */ return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
 function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1; return (PK_V[rd-1]||.2)*(1.3-.06*pkSlot(o,rd))*m; }
 const pkNorm=pk=>({give:[...new Set((pk&&pk.give)||[])],get:[...new Set((pk&&pk.get)||[])],y:pk&&pk.y!=null?pk.y:pkYear()}); /* y: 거래안에 넣을 때의 드래프트 연도. 드래프트가 끝나도 다음 해 것으로 바뀌지 않게(검수 11-06) */ /* 같은 지명권을 두 번 넣어도 한 장(검수 11-06) */
 const pkSig=pk=>{ pk=pkNorm(pk); return pk.give.length||pk.get.length?'|p'+pk.y+':'+[...pk.give].sort().join(',')+'/'+[...pk.get].sort().join(','):''; };
@@ -27978,7 +27982,7 @@ function assocView(){ const A=asInit(); const H=A.head; const S=AS_STANCE[H.stan
     <div><span class="muted">성향</span><b>${S.l}</b> · ${S.d}</div>
     <div><span class="muted">임기</span>${H.since}~${H.until}년${H.terms>1?` (${H.terms}선)`:''}</div>
     ${G.unemp?'':`<div><span class="muted">우리 구단과</span>${asRelLabel()}</div>`}</div>
-    <p class="small">${H.until===G.year?'올해 선거가 있습니다: 11월 10일 후보 발표, 12월 15일 이사회 추천.':`다음 선거는 ${H.until}년 12월입니다.`}</p>`);
+    <p class="small">${A.next?`차기 ${ASSOC.head}: ${esc(A.next.name)}(${A.next.since}년 1월 취임). `:''}${A.next?'':H.until===G.year?'올해 선거가 있습니다: 11월 10일 후보 발표, 12월 15일 이사회 추천.':`다음 선거는 ${H.until}년 12월입니다.`}</p>`);
   const rule=csec(`실행위원회(단장 회의) ${hiI(`10개 구단 단장이 안건을 먼저 심의합니다. 과반이 지지한 안만 이사회(사장단)에 올라가고, 이사회는 대부분 그대로 의결합니다.\n경쟁균형세 상한은 ${G.year+1<=2028?'2028년까지 매년 5%로 정해져 있고, 2029년부터':''} 시즌을 마친 시점에 연봉이 상한의 90% 이상인(또는 상한을 넘긴) 구단이 5곳 이상일 때만 회의가 열려 조정됩니다(동결·3%·5%·8%). 요건이 안 되면 동결입니다.`)}`,`
     <div class="tiles"><div class="tile"><span class="g">${near.length}곳</span><span class="l">${asInit().snap&&asInit().snap.y===G.year?'올 시즌':'지금'} 상한 90% 이상</span></div><div class="tile"><span class="g">${money(cap)}</span><span class="l">${G.year}년 상한</span></div><div class="tile"><span class="g">${money(floorOf(G.year))}</span><span class="l">하한</span></div></div>
     ${near.length?`<p class="small muted">${near.map(t=>`${tshort(t.id)} ${Math.round(cmtRatio(t)*100)}%`).join(' · ')}</p>`:''}`);
@@ -27986,8 +27990,8 @@ function assocView(){ const A=asInit(); const H=A.head; const S=AS_STANCE[H.stan
     `<details class="item"><summary><b>${r.y}년</b> ${pctTxt(r.fin)} <span class="small muted">· 90% 이상 ${r.n}곳 · 1차 ${CMT_OPT.filter(o=>r.t1[o]).map(o=>`${pctTxt(o)} ${r.t1[o]}`).join(' / ')}${r.run?` · 결선 ${pctTxt(r.run.a)} ${r.run.ca} : ${pctTxt(r.run.b)} ${r.run.cb}`:''}${r.adj?` · 이사회 ${r.adj==='down'?'하향':'상향'} 조정(${esc(r.head)})`:''}</span></summary>
       <div class="list">${G.teams.map(t=>{ const v=r.vote[t.id]; return `<div class="row between small"><span>${badge(t.id,18)} ${tshort(t.id)}${t.id===G.user?' (우리)':''}</span><span>${v==null?'기권':pctTxt(v)}${(r.sw||[]).includes(t.id)?' · 우리 안에 동조':''}</span></div>`; }).join('')}</div></details>`).join('');
   const hist=csec('상한 결정 기록',rows||'<p class="small muted">2028년 12월 첫 회의 전입니다. 2026~2028년 상한은 이미 정해져 있습니다.</p>');
-  const els=A.els.map(E=>`<details class="item"><summary><b>${E.y}년 선거</b> ${E.win!=null?`${esc(E.c[E.win].name)} 당선(${AS_STANCE[E.c[E.win].stance].l})`:'추천 무산'}${E.uv!=null?` <span class="small muted">· 우리 지지: ${esc(E.c[E.uv].name)}</span>`:''}</summary>
-    <p class="small">${E.rounds.map(r=>`${r.l}: ${E.c.map((c,j)=>`${esc(c.name)} ${r.cn[j]}`).join(' / ')}`).join('<br>')} · 추천 기준 ${Math.ceil(G.teams.length*.75)}표</p></details>`).join('');
+  const els=A.els.map(E=>`<details class="item"><summary><b>${E.y}년 선거</b> ${E.win!=null?`${esc(E.c[E.win].name)} 당선(${AS_STANCE[E.c[E.win].stance].l})`:'추천 무산'}${E.uv!=null?` <span class="small muted">· ${E.uvT==null||E.uvT===G.user?'우리':esc(tshort(E.uvT))+'(전 소속)'} 지지: ${esc(E.c[E.uv].name)}</span>`:''} /* 지지한 구단 기준(검수 11-07) */</summary>
+    <p class="small">${E.rounds.map(r=>r.yes!=null?`${r.l}: 찬성 ${r.yes} / 반대 ${r.no}`:`${r.l}: ${E.c.map((c,j)=>`${esc(c.name)} ${r.cn[j]}`).join(' / ')}`).join('<br>')} · 추천 기준 ${Math.ceil(G.teams.length*.75)}표</p></details>`).join('');
   if(fmOn()){ /* PC(FM식): 협회장 | 경쟁균형세(상한·하한·구단별 상한 대비 연봉) | 상한 결정 기록 · 협회장 선거 기록 */
     const R=G.teams.map(t=>({t,r:cmtRatio(t)})).sort((a,b)=>b.r-a.r);
     const ratio=R.map((x,i)=>`<div class="fx-odd${x.t.id===G.user?' me':''}"><span>${i+1}</span>${badge(x.t.id,16)}<b>${esc(x.t.nick)}</b><p class="fx-bar"><i class="${x.r>1?'bad':x.r>=CMT_TH?'warn':''}" style="width:${clamp(x.r/1.2*100,2,100)}%"></i></p><em class="${x.r>=CMT_TH?'neg':''}">${Math.round(x.r*100)}%</em></div>`).join('');

@@ -15,7 +15,7 @@ const CMT_OPT=[0,.03,.05,.08], CMT_TH=.9, CMT_N=5;
 const pctTxt=x=>x?`${Math.round(x*100)}% 인상`:'동결';
 
 function asMk(y,st){ return {name:genName(),age:ri(58,72),stance:st||pick(Object.keys(AS_STANCE)),car:pick(AS_CAR),since:y+1,until:y+3,terms:1}; }
-function asInit(){ if(G.assoc)return G.assoc; const h=asMk(2025); h.since=2026; h.until=2028; G.assoc={head:h,cmt:[],els:[],rel:50,cur:null,el:null}; return G.assoc; }
+function asInit(){ if(G.assoc){ const A=G.assoc; if(A.next&&G.year>=A.next.since){ A.head=A.next; delete A.next; } /* 당선자는 다음 해 취임(검수 11-07: 12월에 바로 바뀜) */ return A; } const h=asMk(2025); h.since=2026; h.until=2028; G.assoc={head:h,cmt:[],els:[],rel:50,cur:null,el:null}; return G.assoc; }
 function asHead(){ return asInit().head; }
 /* 확장형 협회장은 중계권 계약을 키운다 */
 function asRev(){ try{ const H=G&&G.assoc&&G.assoc.head; if(!H||H.stance!=='grow')return 1; return (H.since??0)<=sponSeason()?1.03:1; }catch(e){ return 1; } } /* 새 협회장 효과는 임기 시작 시즌부터(검수 11-06) */
@@ -54,7 +54,7 @@ EVH.cmt={ pick(e,i){ const A=asInit(); if(!A.cur)return ''; A.cur.uv=i<CMT_OPT.l
 function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; if(G.capY[y])return; const A=asInit(); const cap=capOf(G.year);
   if(!A.cur||A.cur.y!==y){ const near=cmtNear(); A.cur={y,near:near.map(t=>t.id),on:near.length>=CMT_N}; }
   const C=A.cur;
-  if(!C.on){ const fr=(()=>{ let n=0; for(const x of A.cmt){ if(x.held||x.fin)break; n++; } return n; })(); const idx=fr>=2; /* 2년 연속 동결이면 3년째는 물가 연동 3% 인상(구단들이 돈을 안 써 상한이 수년째 묶이던 문제, 커뮤니티 피드백 11-07) */
+  if(!C.on){ const fr=(()=>{ let n=0; for(const x of A.cmt){ if(x.fin)break; n++; } /* 회의를 열어 정한 동결도 동결로 센다(검수 11-07) */ return n; })(); const idx=fr>=2; /* 2년 연속 동결이면 3년째는 물가 연동 3% 인상(구단들이 돈을 안 써 상한이 수년째 묶이던 문제, 커뮤니티 피드백 11-07) */
     G.capY[y]=idx?Math.round(cap*1.03):cap; A.cmt.unshift({y,n:C.near.length,held:false,fin:idx?.03:0,idx}); A.cmt.length=Math.min(A.cmt.length,15);
     note('일정',idx?`${y}년 경쟁균형세 상한은 물가 연동으로 3% 올라 ${money(G.capY[y])}입니다. 실행위원회 소집 요건(상한 90% 이상 구단 5곳)에는 못 미쳤지만 ${fr}년 연속 동결이라 자동 조정했습니다.`:`${y}년 경쟁균형세 상한은 ${money(cap)}으로 동결됩니다. 올 시즌 상한 90% 이상 구단이 ${C.near.length}곳으로 실행위원회 소집 요건(5곳)에 못 미쳤습니다.`); A.cur=null; return; }
   /* 1차 표결 */
@@ -67,7 +67,7 @@ function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; i
   const t1=tally(vote); const rank=CMT_OPT.slice().sort((a,b)=>t1[b]-t1[a]||a-b);
   let res=rank[0], run=null;
   if(t1[res]<half){ const [a,b]=rank; const v2={}; for(const id of voters){ const x=id===vt&&userVotes&&C.uv!=null?C.uv:ideal[id]; v2[id]=Math.abs(a-x)<Math.abs(b-x)?a:Math.abs(b-x)<Math.abs(a-x)?b:Math.min(a,b); }
-    const ca=voters.filter(id=>v2[id]===a).length, cb=voters.length-ca; res=ca>cb?a:cb>ca?b:Math.min(a,b); run={a,b,ca,cb}; }
+    const ca=voters.filter(id=>v2[id]===a).length, cb=voters.length-ca; res=ca>=half?a:cb>=half?b:0; run={a,b,ca,cb,tie:ca<half&&cb<half}; } /* 결선도 과반이어야 올린다. 못 넘으면 동결(검수 11-07: 5대5인데 한 안 통과) */
   /* 이사회: 협회장 성향에 따라 한 단계 조정할 때가 있다. 협회장과 우리 사이가 좋고 우리 안이 통과안이면 손대지 않는다 */
   const H=A.head; let fin=res, adj=null; const keep=userVotes&&vt===G.user&&C.uv===res&&A.rel>=62;
   if(res>0&&!keep){ const i=CMT_OPT.indexOf(res);
@@ -77,7 +77,7 @@ function capCouncil(){ const y=G.year+1; if(y<=2028)return; G.capY=G.capY||{}; i
   const rec={y,n:C.near.length,held:true,vote,t1,run,res,fin,adj,head:H.name,uv:userVotes?C.uv:undefined,uvT:userVotes?vt:undefined,sw:swayed};
   A.cmt.unshift(rec); A.cmt.length=Math.min(A.cmt.length,15); A.cur=null;
   const t1s=CMT_OPT.filter(o=>t1[o]).map(o=>`${pctTxt(o)} ${t1[o]}표`).join(', ');
-  const runs=run?` 과반이 없어 상위 두 안으로 결선을 치렀습니다: ${pctTxt(run.a)} ${run.ca}표, ${pctTxt(run.b)} ${run.cb}표.`:'';
+  const runs=run?` 과반이 없어 상위 두 안으로 결선을 치렀습니다: ${pctTxt(run.a)} ${run.ca}표, ${pctTxt(run.b)} ${run.cb}표.${run.tie?' 결선에서도 과반이 없어 이사회에 올릴 안이 없었고 상한은 동결됩니다.':''}`:'';
   const adjs=adj?` 이사회에서 ${H.name} ${ASSOC.head}(${AS_STANCE[H.stance].l})의 의견으로 ${pctTxt(fin)}로 ${adj==='down'?'낮춰':'올려'} 의결했습니다.`:' 이사회는 실행위원회 안을 그대로 의결했습니다.';
   news('리그',`${ASSOC.s} 이사회, ${y}년 경쟁균형세 상한 ${fin?`${money(G.capY[y])}으로 ${Math.round(fin*100)}% 인상`:'동결'}`,`실행위원회 1차 표결: ${t1s}.${runs}${adjs} 하한은 ${money(floorOf(y))}입니다.`,0);
   if(userVotes&&vt===G.user&&asEmp()){ const my=C.uv==null?'우리 구단은 기권했습니다.':`우리 구단은 ${pctTxt(C.uv)}에 표를 던졌고 ${C.uv===fin?'최종안과 같습니다':C.uv===res?'실행위원회는 통과했지만 이사회에서 조정됐습니다':'다른 안이 채택됐습니다'}.`;
@@ -110,15 +110,16 @@ function asElect(){ const A=asInit(); const E=A.el; if(!E||E.y!==G.year||E.done)
   let lead=cn.indexOf(Math.max(...cn));
   if(cn[lead]<need&&C.length>2){ set=cn.map((n,i)=>[n,i]).sort((a,b)=>b[0]-a[0]).slice(0,2).map(x=>x[1]); for(const id of ids)v[id]=best(id,set); cn=count(v); rounds.push({l:'결선',cn}); lead=cn.indexOf(Math.max(...cn)); }
   if(cn[lead]<need){ /* 조율: 뒤진 후보 쪽 구단들이 대세를 따라갈지 정한다 */ for(const id of ids){ if(v[id]===lead||(id===vt&&uv!=null))continue; if(R()<.55)v[id]=lead; } cn=count(v); rounds.push({l:'조율',cn}); }
-  const ok=cn[lead]>=need; E.rounds=rounds; E.v=v; E.ok=ok; const c1=rounds[0].cn;
-  if(ok){ const w=C[lead]; const nh={name:w.name,age:w.age,stance:w.stance,car:w.car,since:G.year+1,until:G.year+3,terms:w.inc?(A.head.terms||1)+1:1}; E.win=lead; A.head=nh;
-    news('리그',`${ASSOC.s} 차기 ${ASSOC.head}에 ${w.name}${w.inc?' 연임':''}`,`이사회가 ${cn[lead]}표(재적 ${ids.length}명 중 4분의 3 이상)로 추천했고 구단주 총회가 선출했습니다. ${AS_STANCE[w.stance].l}. 임기는 ${G.year+1}~${G.year+3}년입니다.`,0); }
-  else { A.head.until++; E.win=null; news('리그',`${ASSOC.s} ${ASSOC.head} 추천 무산, ${A.head.name} ${ASSOC.head} 1년 더 직무`,`이사회가 어느 후보에게도 4분의 3(${need}표)을 모으지 못했습니다. 최다 득표는 ${C[lead].name} ${cn[lead]}표. 내년에 다시 뽑습니다.`,0); }
+  let ok=cn[lead]>=need; if(ok){ /* 구단주 총회 선출(4분의 3): 이사회에서 이 후보를 민 구단 구단주는 찬성, 나머지는 성향에 따라(검수 11-07: 총회 표결 생략) */ let yes=0; for(const id of ids){ const s=pref[id], top=Math.max(...s); if(v[id]===lead||s[lead]>=top-.4||R()<.5)yes++; } rounds.push({l:'총회',yes,no:ids.length-yes}); ok=yes>=need; }
+  E.rounds=rounds; E.v=v; E.ok=ok; const c1=rounds[0].cn;
+  if(ok){ const w=C[lead]; const nh={name:w.name,age:w.age,stance:w.stance,car:w.car,since:G.year+1,until:G.year+3,terms:w.inc?(A.head.terms||1)+1:1}; E.win=lead; A.next=nh;
+    news('리그',`${ASSOC.s} 차기 ${ASSOC.head}에 ${w.name}${w.inc?' 연임':''}`,`이사회가 ${cn[lead]}표(재적 ${ids.length}명 중 4분의 3 이상)로 추천했고 구단주 총회가 ${rounds[rounds.length-1].yes}표로 선출했습니다. ${AS_STANCE[w.stance].l}. 임기는 ${G.year+1}~${G.year+3}년입니다.`,0); }
+  else { A.head.until++; E.win=null; const ga=rounds[rounds.length-1].yes!=null; news('리그',`${ASSOC.s} ${ASSOC.head} ${ga?'선출':'추천'} 무산, ${A.head.name} ${ASSOC.head} 1년 더 직무`,`${ga?`이사회가 ${C[lead].name} 후보를 추천했지만 구단주 총회가 4분의 3(${need}표)을 넘기지 못했습니다(찬성 ${rounds[rounds.length-1].yes}표).`:`이사회가 어느 후보에게도 4분의 3(${need}표)을 모으지 못했습니다.`} 최다 득표는 ${C[lead].name} ${cn[lead]}표. 내년에 다시 뽑습니다.`,0); }
   A.els.unshift(E); A.els.length=Math.min(A.els.length,8); A.el=null;
   if(uv==null||!asEmp()||vt!==G.user)return;
   const won=ok&&lead===uv; A.rel=clamp(won?Math.max(A.rel,50)+12:ok?A.rel-8:A.rel,0,100);
   const same=[], diff=[]; for(const t of G.teams){ if(t.id===G.user)continue; if(v1[t.id]===uv){ t.rel=clamp((t.rel??50)+2,0,100); same.push(t.id); } else { t.rel=clamp((t.rel??50)-1,0,100); diff.push(t.id); } }
-  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 +2, 다른 후보를 민 ${diff.length}곳과 -1.`); }
+  note('일정',`${ASSOC.head} 선거 결과: ${ok?`${C[lead].name} 당선`:'추천 무산(현 협회장 1년 연장)'}. 우리 구단이 지지한 ${C[uv].name} 후보는 1차에서 ${c1[uv]}표${rounds.filter(r=>r.cn).length>1?`, 마지막 표결에서 ${cn[uv]}표`:''}를 받았습니다. ${won?`${ASSOC.head}과의 관계가 좋아졌습니다.`:ok?`새 ${ASSOC.head}과는 서먹하게 시작합니다.`:''} 1차에서 같은 후보를 민 구단 ${same.length}곳 단장과 친분 +2, 다른 후보를 민 ${diff.length}곳과 -1.`); }
 
 /* 매일 훅: 07_daily에서 부른다 */
 function assocDaily(day){ try{ asInit(); }catch(e){ return; }
