@@ -47,7 +47,7 @@ function trnAdvice(p){ const r=p.r; const rm=k=>trnRoom(p,k); const m=p.team!=nu
   return {f:'bal',t:`특별한 약점이 없습니다. 당장 생산성을 높일지(컨택), 장기적으로 타격 유형을 만들지(장타·선구) 정하시면 됩니다.`}; }
 const pow0=p=>p.r.pow>=p.r.con;
 function trnCoachPick(p){ return trnAdvice(p).f; }
-function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by==='gm'?T.f:trnCoachPick(p); }
+function trnPlan(p){ const T=G.trn&&G.trn[p.id]; return p.team===G.user&&T&&T.by==='gm'&&(T.tid==null||T.tid===G.user)?T.f:trnCoachPick(p); } /* 다른 구단에서 내린 지시는 되살아나지 않는다(검수 11-08) */
 /* 단장 지정(또는 코치에게 돌려주기) */
 /* 여러 선수 훈련 방향을 한꺼번에: 선수별 화면과 같은 뜻으로 적용한다(고른 집중 항목은 코치 추천과 같아도 단장 요청으로 고정. 코치진 계획으로 돌리려면 'coach') */
 function trnSetMany(P){ const L=[]; for(const id in (P||{})){ const p=G.players[+id]; if(!p)continue; const t=trnSet(+id,P[id]); if(t)L.push(t); } return L; }
@@ -55,13 +55,13 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
   if(f==='coach'){ delete G.trn[pid]; try{ p.trnF=trnPlan(p); }catch(e){} /* 부상 배수도 바로 새 방향(검수 11-07) */ return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
   if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년 합류 예정이라 아직 구단 훈련 지시를 받지 않습니다.`; /* 복무 중에는 상무·군 일정대로 지낸다 */
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
-  p.trnF=f; G.trn[pid]={f,by:'gm',since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p)};
+  p.trnF=f; G.trn[pid]={f,by:'gm',tid:G.user,since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p)};
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
   if(m&&f!==rec&&(m.ego??50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel??50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
 /* 매주: 모든 구단 국내 선수(부상·군 복무·대표팀·미계약·합류 전 제외) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
-  for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
+  for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)||ovsAbroad(p))continue; /* 해외 연수 중이면 구단 훈련 없음 */
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
     const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
@@ -104,7 +104,7 @@ function trnObs(p,yy){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return nul
   return {w,lv,d,stat,since:T.since,k,g0,g1,next,prog,real:none?'기록 없음(1군·2군 정규 경기 기준, 시범경기 제외)':'기록 있음(아래 경기 기록 참고)'}; }
 /* 새 시즌: 단장이 정한 방향은 이어 가되, 관찰 기준(능력·기록)은 새로 잡는다 */
 /* 새해에 관찰 기준을 새로 잡기 전, 작년 훈련 방향·기간·코치 관찰을 그 시즌 회고(연대기)에 한 줄씩 남긴다 */
-function trnYearNote(y0){ const y=y0??G.year-1; if(G.trnNoteY===y)return; G.trnNoteY=y; /* 겨울 성장·노화 전에 쓴다(검수 11-07) */ const L=[]; for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user||!T||T.f==='bal')continue; const o=trnObs(p,y); if(!o)continue; const D=TRN[trnG(p)][T.f];
+function trnYearNote(y0){ const y=y0??G.year-1; if(G.trnNoteY===y)return; G.trnNoteY=y; /* 겨울 성장·노화 전에 쓴다(검수 11-07) */ const L=[]; for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user||!T||T.f==='bal'||(T.tid!=null&&T.tid!==G.user)||T.since>=payWin(y)[1])continue; /* 시즌이 끝난 뒤 내린 지시는 그 시즌 회고에 넣지 않는다(검수 11-08) */ const o=trnObs(p,y); if(!o)continue; const D=TRN[trnG(p)][T.f];
     L.push(`${p.name}(${posLabel(p)}) ${D.l} ${o.w}주 · ${o.lv}${o.stat?` · ${o.stat}`:''}`); }
   if(!L.length)return; G.reviews=G.reviews||{}; const R=G.reviews[y]=G.reviews[y]||{tid:G.user,L:[]}; R.L=R.L.filter(x=>!/^\[훈련 방향\]/.test(x)); R.L.push('[훈련 방향] '+L.slice(0,12).join(' / ')+(L.length>12?` 외 ${L.length-12}명`:'')); }
 function trnNewYear(){ try{ trnYearNote(); }catch(e){} for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user){ delete G.trn[id]; continue; }

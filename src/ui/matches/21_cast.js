@@ -17,8 +17,8 @@ function cBefore(g,k){ const L=g.pbp; if(k<=0)return {sa:0,sh:0,outs:0,bases:[0,
 function cFielders(g,half,k){ return castLineup(g,half%2===0?'h':'a',k??0).filter(x=>CFP[x.pos]&&x.pos!=='P'); }
 function cTeamCol(tid){ const t=G.teams[tid]; return t?tpal(t)[3]:'#888'; }
 /* 새 기록의 송구 아웃 목적지를 우선하고, 옛 기록은 베이스·득점 변화로 복원한다. */
-function cRunnerMoves(g,k){const x=g.pbp[k];if(!x||typeof x[1]!=='number')return [];const before=cBefore(g,k),after=x[5],hr=x[3]==='HR',recorded=Array.isArray(x[14])?x[14]:[],moves=[];let scores=x[6]-(hr?1:0);
-  for(const r of before.bases.map((id,i)=>id?{id,i}:null).filter(Boolean).sort((a,b)=>b.i-a.i)){const m=recorded.find(m=>m.id===r.id),j=after.indexOf(r.id),from=r.i+1;if(m?.result==='out')moves.push({id:r.id,from,to:m.to,out:1});else if(j>=0&&j!==r.i)moves.push({id:r.id,from,to:j+1});else if(j<0){if(scores>0){scores--;moves.push({id:r.id,from,to:4,score:1});}else moves.push({id:r.id,from,to:Math.min(4,r.i+2),out:1});}}
+function cRunnerMoves(g,k){const x=g.pbp[k];if(!x||typeof x[1]!=='number')return [];const before=cBefore(g,k),after=x[5],hr=x[3]==='HR',recorded=Array.isArray(x[14])?x[14]:[],moves=[];let scores=x[6]-(hr?1:0); let outsLeft=Math.max(0,(x[4]??0)-before.outs-(['OUT','K','SAC','DP'].includes(x[3])?1:0)); /* 이 플레이에서 실제로 늘어난 아웃만큼만 주자 아웃(끝내기에서 없던 주루사가 생기던 문제, 검수 11-08) */
+  for(const r of before.bases.map((id,i)=>id?{id,i}:null).filter(Boolean).sort((a,b)=>b.i-a.i)){const m=recorded.find(m=>m.id===r.id),j=after.indexOf(r.id),from=r.i+1;if(m?.result==='out')moves.push({id:r.id,from,to:m.to,out:1});else if(j>=0&&j!==r.i)moves.push({id:r.id,from,to:j+1});else if(j<0){if(scores>0){scores--;moves.push({id:r.id,from,to:4,score:1});}else if(outsLeft>0){outsLeft--;moves.push({id:r.id,from,to:Math.min(4,r.i+2),out:1});}else moves.push({id:r.id,from,to:Math.min(3,r.i+2)});}}
   return moves;
 }
 /* 카드 배치: 키가 같은 카드는 이동, 없어진 카드는 사라지고 새 카드는 나타남 */

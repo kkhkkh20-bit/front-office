@@ -1,6 +1,6 @@
 /* ---------- 경기 결과 확인 ---------- */
 /* 중계 시점 기록: 이 경기 시작 전 누적 + 지금 타석 직전까지의 오늘 기록. 경기 결과가 미리 새지 않게 한다 */
-function seasonAt(g,k,id,isP){ const p=G.players[id]; if(!p)return null; const gy=g?dobj(g.day).y:G.year, tot=seasonTotal(p,gy,'1군'); /* 지난 시즌 경기는 그 시즌 기록 기준(검수 11-07) */ const z=isP?{outs:0,er:0,h:0,bb:0,hbp:0,so:0,hr:0}:{pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,sf:0};
+function seasonAt(g,k,id,isP){ const p=G.players[id]; const hasPre=g&&g.box&&['h','a'].some(sd=>((g.box[sd]||{})[isP?'pit':'bat']||[]).some(x=>x.id===id&&x.pre)); if(!p&&!hasPre)return null; /* 리그를 떠난 선수도 경기 직전 저장값으로(검수 11-08) */ const gy=g?dobj(g.day).y:G.year, tot=p?seasonTotal(p,gy,'1군'):null; /* 지난 시즌 경기는 그 시즌 기록 기준(검수 11-07) */ const z=isP?{outs:0,er:0,h:0,bb:0,hbp:0,so:0,hr:0}:{pa:0,ab:0,h:0,d:0,tr:0,hr:0,bb:0,hbp:0,so:0,sf:0};
   const o=Object.assign({},z); if(tot)for(const key in z)o[key]=tot[key]||0;
   const gi=g?G.games.indexOf(g):-1; const yr=gy; const pre=g&&g.box&&(()=>{ for(const sd of ['h','a']){ const q=((g.box[sd]||{})[isP?'pit':'bat']||[]).find(x=>x.id===id); if(q&&q.pre)return q.pre; } return null; })();
   if(pre){ (isP?PRE_P:PRE_B).forEach((k,i)=>{ if(k in o)o[k]=pre[i]; }); } /* 경기 직전 저장값이 있으면 그대로(검수 11-08) */

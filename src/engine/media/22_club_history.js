@@ -106,7 +106,7 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   if(A.cand.gg.OF)A.cand.gg.OF.slice(0,3).forEach((c,i)=>{ A.gg['OF'+i]={id:c.id,name:c.name,t:c.t,line:c.line,v:c.v}; });
   (G.awards=G.awards||{})[y]=A;
   const mineC=[...(A.cand.mvp||[]).slice(0,5),...(A.cand.roy||[]).slice(0,3)].filter(c=>c.t===G.user);
-  mail('홍보팀',`${y} ${ASSOC.s} 시상식 후보 발표`,`MVP 후보: ${(A.cand.mvp||[]).slice(0,5).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n신인왕 후보: ${(A.cand.roy||[]).slice(0,3).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n\nMVP·신인왕은 ${dmd(KD(11,24))} ${ASSOC.s} 시상식, 골든글러브는 ${dmd(KD(12,9))}에 발표됩니다.${mineC.length?`\n우리 구단 후보: ${mineC.map(c=>c.name).join(', ')}`:''}`,{kind:'기록'});
+  mail('홍보팀',`${y} ${ASSOC.s} 시상식 후보 발표`,`MVP 후보: ${[...(A.cand.mvp||[]).slice(0,5)].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n신인왕 후보: ${[...(A.cand.roy||[]).slice(0,3)].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'} (이름순)\n\nMVP·신인왕은 ${dmd(KD(11,24))} ${ASSOC.s} 시상식, 골든글러브는 ${dmd(KD(12,9))}에 발표됩니다.${mineC.length?`\n우리 구단 후보: ${mineC.map(c=>c.name).join(', ')}`:''}`,{kind:'기록'});
   return A; }
 /* 발표 시점에만 수상자를 공개한다 */
 function awShown(A,k){ return A&&!(A.pend&&A.pend[k]); }
@@ -119,7 +119,7 @@ function awAbroad(id,label){ const a=(G.abroad||[]).find(r=>r.id===id&&!r.back&&
 function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A||!A.pend||!A.pend[k])return; A.pend[k]=false;
   const lst=k==='mvp'?[['MVP',A.mvp,A.cand.mvp],['신인왕',A.roy,A.cand.roy]]:Object.entries(A.gg).map(([pos,x])=>[`골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x,pos.startsWith('OF')?A.cand.gg.OF:A.cand.gg[pos]]);
   const mine=[];
-  for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; if(p){ addAward(p,`${y} ${lab}`); if(p.team===G.user){ p.mor=clamp((p.mor??60)+6,0,100); mine.push(x.name+' '+lab); } }
+  for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; if(p){ addAward(p,`${y} ${lab}`); if((x.t??p.team)===G.user){ /* 성적을 낸 구단 기준(시상 전 이적해도, 검수 11-08) */ p.mor=clamp((p.mor??60)+6,0,100); mine.push(x.name+' '+lab); } }
     else if(awAbroad(x.id,`${y} ${lab}`)){} /* 시상식 전에 해외로 떠난 선수: 해외 보관 정보(복귀 때 되살아나는 선수 정보)에 넣는다 */
     else { const ar=G.arch&&G.arch[x.id]; if(ar){ (ar.aw=ar.aw||[]).includes(`${y} ${lab}`)||ar.aw.push(`${y} ${lab}`); } /* 시상식 전에 방출·은퇴로 지워진 선수: 보관 기록에 */
       const r=(G.legends||[]).find(r=>r.id===x.id&&r.awP&&r.awP.includes(`${y} ${lab}`)); if(r){ r.awP=r.awP.filter(l=>l!==`${y} ${lab}`); r.aw.push(`${y} ${lab}`); if(lab==='MVP')r.mvp++; if(lab.includes('골든'))r.gg++;
