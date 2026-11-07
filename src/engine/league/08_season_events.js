@@ -33,12 +33,13 @@ function campEnd(){
 }
 function seasonEnd(){
   updateLg(G.year); try{ _pjC={}; projFit(true); projFit(false); }catch(e){} /* 올 시즌 능력→성적 식을 시즌 끝 상태로 남긴다(다음 시즌 초 예측용) */ try{ cOptAsk(); }catch(e){} /* 구단 연장 옵션 결정(스토브리그 전) */
-  const st=standingsNow(); const s=st.map(x=>x.tid);
-  stop('일정',`정규시즌이 끝났습니다. 우리 구단 ${tieRank(st,G.user)}위. ${pctEq(st[0],st[1])?`1위는 ${tname(s[0])}·${tname(s[1])} 결정전으로 정합니다.`:`1위 ${tname(s[0])}.`}`); /* 공동 1위면 결정전 전에 1위를 발표하지 않는다(검수 11-07) */
+  const st=standingsNow(); const s=st.map(x=>x.tid); const two0=pctEq(st[0],st[1])&&!(st[2]&&pctEq(st[1],st[2]));
+  stop('일정',`정규시즌이 끝났습니다. 우리 구단 ${tieRank(st,G.user)}위. ${two0?`1위는 ${tname(s[0])}·${tname(s[1])} 결정전으로 정합니다.`:`1위 ${tname(s[0])}.`}`); /* 공동 1위면 결정전 전에 1위를 발표하지 않는다(검수 11-07) */
   G.ps={seeds:s.slice(0,5),order:st,res:{},round:'wc',done:false};
-  G.ps.upg=[]; for(const x of s.slice(0,pctEq(st[4],st[5])?6:5)){ /* 5위 결정전에 들어가는 6위도 같은 날 최정예 엔트리(검수 11-07) */ G.ps.upg.push(x.tid??x); try{ entryUpgrade(x.tid??x,playersOf(x.tid??x).filter(canUp),'포스트시즌 최정예'); }catch(e){} } /* 가을야구는 가장 강한 엔트리로 */
+  G.ps.upg=[]; for(const x of s.slice(0,st.length>5&&pctEq(st[4],st[5])&&!(st[3]&&pctEq(st[3],st[4]))&&!(st[6]&&pctEq(st[5],st[6]))?6:5)){ /* 5위 결정전에 들어가는 6위도 같은 날 최정예 엔트리(검수 11-07) */ G.ps.upg.push(x.tid??x); try{ entryUpgrade(x.tid??x,playersOf(x.tid??x).filter(canUp),'포스트시즌 최정예'); }catch(e){} } /* 가을야구는 가장 강한 엔트리로 */
   /* KBO: 1위·5위가 승률 같으면 결정전 한 경기(상대 전적 우위 팀 홈). 그 밖의 순위는 상대 전적·다득점으로 정한다 */
-  const tbq=[]; if(pctEq(st[0],st[1]))tbq.push([0,s[0],s[1]]); if(st.length>5&&pctEq(st[4],st[5]))tbq.push([4,s[4],s[5]]); G.ps.tbq=tbq;
+  const two=i=>pctEq(st[i],st[i+1])&&!(st[i-1]&&pctEq(st[i-1],st[i]))&&!(st[i+2]&&pctEq(st[i+1],st[i+2])); /* KBO: 결정전은 두 팀 동률일 때만. 세 팀 이상이면 상대 전적·상대 경기 다득점·전년도 순위로 정한다(검수 11-08) */
+  const tbq=[]; if(two(0))tbq.push([0,s[0],s[1]]); if(st.length>5&&two(4))tbq.push([4,s[4],s[5]]); G.ps.tbq=tbq;
   if(tbq.length){ const q=tbq.shift(); G.ps.round='tb'; G.ps.tbPos=q[0]; G.ps.cur=mkSeries('tb',q[1],q[2],G.day+1); note('일정',`${q[0]+1}위 결정전: ${tname(q[1])} - ${tname(q[2])} (${tshort(q[1])} 홈)`); }
   else G.ps.cur=mkSeries('wc',s[3],s[4],G.day+2);
   if(G.ps.round==='wc')try{ psSeedNews(); }catch(e){ console.error(e); }

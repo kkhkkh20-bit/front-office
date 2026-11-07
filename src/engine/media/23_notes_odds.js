@@ -9,7 +9,7 @@ function projStarters(tid,n){ // 지금 로테이션 순번과 휴식일로 다�
       if(!pick)pick=[...sp].sort((a,b)=>(last[a.id]||0)-(last[b.id]||0))[0]; last[pick.id]=g.d; }
     out.push(Object.assign({},g,{sp:pick})); }
   _spC[ck]=out; return out; }
-function rankSnap(day){ if(period()!=='season')return; const st=standingsNow(); const rk=G.teams.map(()=>0); st.forEach((o,i)=>rk[o.tid]=i+1);
+function rankSnap(day){ if(period()!=='season')return; const st=standingsNow(); const rk=G.teams.map(()=>0); st.forEach(o=>rk[o.tid]=tieRank(st,o.tid)); /* 그래프도 공동 순위(검수 11-08) */
   const S=G.sea; S.rh=S.rh||[]; if(S.rh.length&&S.rh[S.rh.length-1][0]===day)return; S.rh.push([day,rk,G.teams.map(t=>{ const r=S.rec[t.id]; return r.w-r.l; })]); }
 
 const FIELDK=['C','1B','2B','3B','SS','LF','CF','RF'];

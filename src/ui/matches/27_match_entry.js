@@ -22,7 +22,7 @@ setInterval(()=>{ try{ const c=UI.cast; if(!c||!c.pre||UI.prepManual||Date.now()
 /* 경기 전 해설: 결과가 미리 계산돼 있으므로 이 경기 날짜 이전 기록만 쓴다(점수·결과·이날 성적 금지) */
 function matchPrepTalk(g){const before=tid=>tlOf(tid).filter(x=>x[5]<g.day),rec=tid=>wlOf(before(tid)),pct=r=>r.w/Math.max(1,r.w+r.l),A=tshort(g.away),H=tshort(g.home),ra=rec(g.away),rh=rec(g.home),out=[];
  const order=G.teams.map(t=>({tid:t.id,r:rec(t.id)})).sort((a,b)=>pct(b.r)-pct(a.r)),rank=tid=>order.findIndex(x=>x.tid===tid)+1;
- const form=(tid,name)=>{const L=before(tid),r=wlOf(L.slice(-5)),s=L.length?Math.sign(L[L.length-1][0]):0;let n=0;for(let i=L.length-1;i>=0&&Math.sign(L[i][0])===s;i--)n++;return `${name} ${r.w}승 ${r.l}패${s&&n>=2?`(${n}연${s>0?'승':'패'})`:''}`;};
+ const form=(tid,name)=>{const L=before(tid),r=wlOf(L.slice(-5)),s=L.length?Math.sign(L[L.length-1][0]):0;let n=0;for(let i=L.length-1;i>=0&&Math.sign(L[i][0])===s;i--)n++;return `${name} ${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''}${s&&n>=2?`(${n}연${s>0?'승':'패'})`:''}`;};
  if(/차전/.test(g.kind||'')){ /* 가을야구: 정규시즌 상대 전적 대신 지금 시리즈 전적과 직전 경기 주인공(사용자 피드백 11-05) */
   const rn=g.kind.replace(/\s*\d+차전.*$/,''),both=x=>[x.home,x.away].includes(g.home)&&[x.home,x.away].includes(g.away);
   const prev=(G.games||[]).filter(x=>x!==g&&x.day<g.day&&x.kind&&x.kind.startsWith(rn)&&both(x)).sort((a,b)=>a.day-b.day);

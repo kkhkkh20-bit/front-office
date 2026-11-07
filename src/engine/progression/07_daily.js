@@ -58,7 +58,7 @@ function advance(mode,options={}){
 /* 주간 요약용: 우리 선수 시즌 누적 기록 스냅숏 */
 const DIGK=['pa','ab','h','bb','hr','rbi','d','tr','sb','outs','er','so','w','l','sv','hld','g','gs','sf','hbp'];
 function digSnap(){ const o={}; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); o[p.id]=h?DIGK.map(k=>h[k]||0):DIGK.map(()=>0); } return o; }
-function userRank(){ try{ const st=standingsNow(); return st.findIndex(x=>x.tid===G.user)+1; }catch(e){ return 0; } }
+function userRank(){ try{ return tieRank(standingsNow(),G.user); }catch(e){ return 0; } } /* 공동 순위 기준(검수 11-08: 같은 순위인데 3위 → 1위로 보임) */
 /* 시즌 제한(현재 꺼 둠): 켜면 첫 시즌을 마치고 스토브리그 직전에서 멈춘다 */
 const GAME_VER='0.9'; const DEMO={on:false,seasons:1}; /* 무료 정식 공개: 시즌 제한 없음 */
 function demoOver(){ return DEMO.on&&G.year>=(G.startY||2026)+DEMO.seasons-1&&!G.unemp; }
@@ -166,7 +166,7 @@ function milestones(g,me){
   for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue;
     if(!p.isP&&x.hr>=3){ note('기록',`${p.name}이(가) 한 경기 홈런 ${x.hr}개를 쳤습니다.`,id); if(G.S_me===s.tid||s.tid===G.user)news('선수',`${p.name}, 한 경기 ${x.hr}홈런 폭발`,`${p.name}이(가) 한 경기에 홈런 ${x.hr}개를 몰아쳤습니다.`,1,{ref:id}); }
     if(p.isP&&x.so>=12)note('기록',`${p.name}이(가) 탈삼진 ${x.so}개를 잡았습니다.`,id);
-    if(p.isP&&id===s.sp?.id&&x.outs>=27&&x.h===0&&g.score[me==='h'?'a':'h']===0){ /* 노히트노런: 안타도 실점도 없어야 */ stop('기록',`${p.name}이(가) 노히트노런을 달성했습니다.`,id); if(s.tid===G.user)news('선수',`${p.name} 노히트노런 대기록`,`${p.name}이(가) 9이닝 동안 안타를 하나도 내주지 않았습니다.`,4,{ref:id,fanW:2}); } }
+    if(p.isP&&id===s.sp?.id&&x.outs>=27&&x.h===0&&g.score[me==='h'?'a':'h']===0&&sum([...g.S[me==='h'?'a':'h'].box.values()].map(b=>b.h||0))===0&&[...s.box].filter(([pid,b])=>pid!==id&&G.players[pid]?.isP&&((b.outs||0)+(b.bf||0)+(b.h||0))>0).length===0){ /* 노히트노런: 혼자 끝까지 던지고(완투) 팀이 안타·실점을 하나도 내주지 않아야. 연장에 구원이 안타를 맞으면 아님(검수 11-08) */ stop('기록',`${p.name}이(가) 노히트노런을 달성했습니다.`,id); if(s.tid===G.user)news('선수',`${p.name} 노히트노런 대기록`,`${p.name}이(가) 9이닝 동안 안타를 하나도 내주지 않았습니다.`,4,{ref:id,fanW:2}); } }
 }
 function futuresWeek(){
   if(period()!=='season')return;
@@ -213,7 +213,8 @@ function standingsNow(){ const r=G.sea.rec; const pct=x=>x.w/Math.max(1,x.w+x.l)
   /* 같은 승률 묶음은 묶음 안 상대 전적 합계로(3팀 이상 순환 우세에도 팀 배열 순서와 무관, 검수 11-07) → 득실 → 지난 순위 */
   for(let i=0;i<L.length;){ let j=i; while(j<L.length&&Math.abs(pct(L[j])-pct(L[i]))<1e-12)j++; const grp=L.slice(i,j); const ids=new Set(grp.map(x=>x.tid));
     const gp=x=>{ let w=0,l=0; for(const g of ((G.sea&&G.sea.tl)||[])[x.tid]||[])if(ids.has(g[4])&&g[4]!==x.tid){ if(g[0]>0)w++; else if(g[0]<0)l++; } return w+l?w/(w+l):.5; };
-    out.push(...grp.sort((a,b)=>(gp(b)-gp(a))||(rsOf(b.tid)-rsOf(a.tid))||(pr(a.tid)-pr(b.tid))||(a.tid-b.tid))); i=j; }
+    const gr=x=>{ let r=0; for(const g of ((G.sea&&G.sea.tl)||[])[x.tid]||[])if(ids.has(g[4])&&g[4]!==x.tid)r+=g[1]||0; return r; }; /* KBO: 상대 경기 다득점(맞대결에서 낸 점수, 검수 11-08) */
+    out.push(...grp.sort((a,b)=>(gp(b)-gp(a))||(gr(b)-gr(a))||(pr(a.tid)-pr(b.tid))||(a.tid-b.tid))); i=j; }
   return out; }
 const pctEq=(a,b)=>Math.abs(a.w/Math.max(1,a.w+a.l)-b.w/Math.max(1,b.w+b.l))<1e-12;
 

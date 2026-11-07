@@ -169,8 +169,9 @@ async function cAnim(k){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; c
   /* 타구 방향은 먼저 정한다(타석 장면과 필드 장면이 같은 타구를 보여주도록) */
   let spot=null, arc=false, flight=650, kind='', opos=null; c.gb=false; c.errPos=null;
   if(o==='HR'){ const th=-38+rnd()*76; spot=cPolar(th,96); arc=true; flight=1100; kind='홈런'; }
-  else if(o==='3B'){ const th=(rnd()<.5?-1:1)*(26+rnd()*14); spot=cPolar(th,70+rnd()*6); arc=true; flight=900; kind='3루타'; }
-  else if(o==='2B'){ const th=(rnd()<.5?-1:1)*(10+rnd()*28); spot=cPolar(th,60+rnd()*12); arc=rnd()<.6; flight=800; kind='2루타'; }
+  /* 장타는 외야수 사이(좌중간·우중간)를 가르거나 선상으로 빠진다. 외야수 바로 앞뒤가 아니라 뛰어가서 줍는 거리(사용자 피드백 11-08). 외야수 자리: 좌·우 약 ±29도, 중견 0도, 홈에서 66~72 */
+  else if(o==='3B'){ const gap=rnd()<.6, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:39+rnd()*5); spot=cPolar(th,gap?84+rnd()*8:76+rnd()*8); arc=true; flight=900; kind='3루타'; }
+  else if(o==='2B'){ const gap=rnd()<.65, th=(rnd()<.5?-1:1)*(gap?11+rnd()*8:38+rnd()*6); spot=cPolar(th,gap?76+rnd()*12:64+rnd()*12); arc=rnd()<.6; flight=800; kind='2루타'; }
   else if(o==='1B'){ c.gb=false; if(rnd()<.6){ const th=-36+rnd()*72; spot=cPolar(th,44+rnd()*10); arc=rnd()<.5; } else { const th=[-28,-9,9,28][Math.floor(rnd()*4)]+rnd()*6-3; spot=cPolar(th,46); c.gb=true; } flight=650; kind='안타'; }
   else if(o==='SAC'){ opos=['P','3B','1B'][Math.floor(rnd()*3)]; const base=CFP[opos]; spot=[base[0]+rnd()*4-2,base[1]+rnd()*6]; arc=false; flight=420; kind='희생번트'; }
   else if(o==='OUT'||o==='DP'){ /* 해설과 같은 결정(어느 야수 쪽, 땅볼·뜬공·직선타)을 그대로 쓴다 */
