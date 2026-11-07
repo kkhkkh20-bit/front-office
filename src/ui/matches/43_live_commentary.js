@@ -21,7 +21,7 @@ function pcPitchingRun(g,k,attack){
 function pcNoHitRecords(g,k){
  const x=g.pbp[k];if(!x||(typeof x[1]!=='number'&&x[1]!=='CS'))return [];
  const out=[],add=(kind,text,priority)=>out.push({kind,text,priority});
- if(k===g.pbp.length-1&&x[0]%2===1){ const r2=pcPitchingRun(g,k,0); if(r2.outs>=27&&!r2.hits&&!r2.runs){ const pf=r2.pitchers.length===1&&!r2.reached&&r2.bf===r2.outs, pn=r2.pitchers.length===1?pcName(g,r2.pitchers[0]):tshort(g.home)+' 투수진'; add(pf?'perfect':'nohit',`끝내기로 경기가 끝나면서 ${pn}, ${pf?'퍼펙트게임':r2.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}을 완성합니다!`,110); return out; } } /* 홈 투수 대기록은 9회말 끝내기로 확정된다(검수 11-06) */
+ if(k===g.pbp.length-1&&x[0]%2===1){ const r2=pcPitchingRun(g,k,0); if(r2.outs>=27&&!r2.hits&&!r2.runs){ const pf=r2.pitchers.length===1&&!r2.reached&&r2.bf===r2.outs, pn=r2.pitchers.length===1?pcName(g,r2.pitchers[0]):tshort(g.home)+' 투수진'; const wk=x[8]>x[7]; /* 무승부로 끝나면 끝내기가 아니고, 원정 투수 기록도 함께 본다(검수 11-07) */ add(pf?'perfect':'nohit',`${wk?'끝내기로 경기가 끝나면서':'무승부로 경기가 끝나면서'} ${pn}, ${pf?'퍼펙트게임':r2.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}을 완성합니다!`,110); if(wk)return out; } } /* 홈 투수 대기록은 9회말 끝내기로 확정된다(검수 11-06) */
  const attack=x[0]%2,run=pcPitchingRun(g,k,attack),pitcher=run.pitchers.length===1?pcName(g,run.pitchers[0]):tshort(attack?g.away:g.home)+' 투수진';
  if(!run.hits&&!run.runs){
   if(k===g.pbp.length-1&&run.outs>=27){const perfect=run.pitchers.length===1&&!run.reached&&run.bf===run.outs;add(perfect?'perfect':'nohit',`${pitcher}, ${perfect?'퍼펙트게임':run.pitchers.length>1?'팀 합작 노히트 노런':'노히트 노런'}! 대기록을 완성합니다!`,110);}
