@@ -205,3 +205,6 @@
 #app .home-workspace .hw-sp:hover .hw-sp-face .av{transform:scale(1.05);box-shadow:0 0 0 3px var(--team-hi,#4fa3ff),0 6px 18px rgba(0,0,0,.45)}
 #app .home-workspace :is(.hw-lr,.fx-pl,.hw-sp) .av{transition:transform .15s,box-shadow .15s}
 .hw-ps .hw-ps-t{display:inline-flex;align-items:center;gap:4px}.hw-ps .hw-ps-t.lose{opacity:.45}.hw-ps tr.me td:first-child{color:var(--team-hi)}
+/* 낮은 PC 화면(1366x768 등)에서 패널 내용이 잘려 버튼·목록이 안 보이던 문제: 잘라 내지 않고 패널 안에서 스크롤(리뷰 11-08) */
+.home-workspace[data-device="desktop"] .hw-panel,.home-workspace[data-device="desktop"][data-rows="3"] .hw-panel{overflow-y:auto;scrollbar-width:thin}
+.home-workspace[data-device="desktop"] .hw-panel>header{position:sticky;top:0;z-index:1;background:var(--panel)}

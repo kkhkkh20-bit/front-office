@@ -5,7 +5,7 @@ const FD_ROUNDS=25;
 /* 창단 드래프트는 10라운드 직접 지명. 끝나면 단장이 고른다: 나머지를 스카우트에게 맡기거나(빈 포지션 우선 자동 지명), 5라운드 더 뽑는다 */
 const FD_MAN=10, FD_MORE=5;
 function fdManDone(){ const F=G.fd; if(!F||F.done||F.open===false)return false; const nx=F.picks.slice(F.cur).find(x=>x.tid===G.user); return !!nx&&nx.rd>(F.man||FD_ROUNDS); }
-const FD_TGT={P:13,C:2,'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
+const FD_TGT={P:13,C:3, /* 포수 2명만 뽑아 한 명이 다치면 2군 포수가 없던 문제(리뷰 11-08) */'1B':1,'2B':2,'3B':1,SS:2,LF:1,CF:2,RF:1};
 /* 창단 지명 순서: 쓸 수 있는 연봉이 적은 구단이 먼저 뽑는다. 돈과 지명 순번이 맞바뀌는 균형 장치 */
 function fdCapOf(tid){ try{ return fdFin(tid).avail; }catch(e){ return capOf(G.year); } }
 /* 창단 지명 순번은 단장이 먼저 고른다(구단 고르기 전). 앞 순번은 긴축, 뒤 순번은 지원 보너스. 3시즌 동안. 대가는 '전체 1번 스타 한 명' 값(3시즌 약 60억)에 맞춤(라운드마다 1→10, 10→1이라 나머지 지명 차이는 작다). 나머지 9개 구단은 돈이 적은 순서(fdOrder)로 남은 자리를 채운다

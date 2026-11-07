@@ -41,7 +41,7 @@ function mdMgrGoal(tid,r){ const m=G.mgr[tid]; if(!m||m.interim)return {k:null,t
 /* 선수 발언: 성격(욕심·충성·프로의식)과 지난 기록 */
 function mdPlayerLine(p,role){ initPers(p); const h=seasonTotal(p,G.year-1,'1군'); const P=p.pers;
   const pk=L=>L[Math.floor(u01('mdl'+G.year+role,p.id)*L.length)];
-  if(role==='cap'){ return pk(P.loy>=13?[`"팬들께 받은 응원, 올해는 꼭 돌려드리겠습니다. 마지막까지 이 팀에서 웃고 싶습니다."`,`"이 유니폼을 입고 우승하는 게 꿈입니다. 올해가 그해였으면 합니다."`,`"원정 경기장에서도 우리 팬 목소리가 제일 큽니다. 그 응원에 답하겠습니다."`]
+  if(role==='cap'||role==='cap2'){ return pk(P.loy>=13?[`"팬들께 받은 응원, 올해는 꼭 돌려드리겠습니다. 마지막까지 이 팀에서 웃고 싶습니다."`,`"이 유니폼을 입고 우승하는 게 꿈입니다. 올해가 그해였으면 합니다."`,`"원정 경기장에서도 우리 팬 목소리가 제일 큽니다. 그 응원에 답하겠습니다."`]
       :P.pro>=13?[`"캠프에서 선수들 몸을 잘 만들었습니다. 부상 없이 끝까지 가는 게 주장으로서 목표입니다."`,`"작년에 부족했던 걸 겨울 내내 고쳤습니다. 숫자로 보여 드리겠습니다."`,`"주장은 말보다 행동입니다. 제일 먼저 나와서 제일 늦게 들어가겠습니다."`]
       :P.amb>=13?[`"목표는 높게 잡았습니다. 가을 끝까지 야구하겠습니다."`,`"올해는 우리가 주인공이 될 차례입니다."`]
       :[`"선수들끼리 분위기가 정말 좋습니다. 그 분위기를 시즌 끝까지 가져가겠습니다."`,`"고참과 어린 선수들이 잘 섞였습니다. 끈끈한 야구를 보여 드리겠습니다."`,`"한 경기 한 경기 즐기면서 하겠습니다. 결과는 따라올 겁니다."`]); }
@@ -64,7 +64,7 @@ function mdRun(){ const open=G.cal.open; let D=G.md; if(!D||D.y!==G.year){ const
   /* 다른 구단: 우승 후보와 몇 팀의 주장 발언, 우리를 겨냥한 한마디 */
   const riv=[], champ=G.last&&G.last.ps?G.last.ps.champ:null; const nk=team(G.user).nick;
   const pickT=[proj[0],proj[1],champ].filter((x,i,a)=>x!=null&&x!==G.user&&a.indexOf(x)===i).slice(0,2);
-  for(const tid of pickT){ const c=mdCaptain(tid); if(c)riv.push([`${tshort(tid)} 주장 ${c.name}`,mdPlayerLine(c,'cap')]); }
+  const said=new Set(L.map(x=>x[1])); for(const tid of pickT){ const c=mdCaptain(tid); if(!c)continue; let t=mdPlayerLine(c,'cap'); if(said.has(t))t=mdPlayerLine(c,'cap2'); if(said.has(t))continue; said.add(t); riv.push([`${tshort(tid)} 주장 ${c.name}`,t]); } /* 같은 발언이 두 번 나오지 않게(리뷰 11-08) */
   let jab=null; for(const t of G.teams){ if(t.id===G.user||jab)continue; const m=G.mgr[t.id]; if(!m||m.interim)continue; mgrFix(m); const bold=m.ego>=68||mgrVoice(m)==='fire'; if(!bold)continue;
     if(champ===G.user)jab={tid:t.id,t:`"지난해 챔피언 ${nk}을(를) 끌어내리겠습니다. 그게 올해 목표입니다."`};
     else if(r<=3&&proj.indexOf(t.id)+1>r)jab={tid:t.id,t:`"${nk}이(가) 우승 후보라던데, 붙어 보면 알 겁니다."`};

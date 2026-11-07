@@ -71,7 +71,7 @@ function ibFolds(){ return G.ibFold=G.ibFold||{}; }
 function inboxView(){
   if(!['all','task','squad','move','club','media'].includes(UI.mf))UI.mf='all'; const f=UI.mf;
   const list=ibList(f); const unread=G.mail.filter(m=>!m.read).length; const need=ibNeedList().length;
-  const cnt=k=>mailFilter(k).filter(m=>!m.read).length; const F=ibFolds();
+  const cnt=k=>k==='task'?ibNeedList().length:mailFilter(k).filter(m=>!m.read).length; /* 확인할 소식은 읽었어도 결정 전이면 센다: 상단 배지와 같은 수(리뷰 11-08) */ const F=ibFolds();
   const days=[...new Set(list.map(m=>m.day))]; const foldN=days.filter(d=>F[d]).length;
   const bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
     <div class="ibx-meta">${unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${need?`<button class="lnk ibx-need" data-a="ibNeedGo">확인할 소식 ${need}건</button>`:''}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · 가장 빠른 마감 D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · J/K: 다음/이전">Space 다음 소식·진행</span>':''}</div></div>`;

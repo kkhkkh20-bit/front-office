@@ -13,11 +13,11 @@ function homeStandingPanel(){
   return `<section class="hw-panel hw-stand"><header><h2>${live?'리그 순위':y+' 최종 순위'}</h2><button class="tc-i" data-a="go" data-v="league:stand">전체</button></header><table><thead><tr><th>순위</th><th>구단</th><th>승-패</th><th>차</th><th>득실</th><th>최근 5</th></tr></thead><tbody>${rows}</tbody></table></section>`;
 }
 /* 경기 일정·결과: 지난 3경기 결과 + 다음 4경기(장소·상대 순위·우리 예상 선발). 중계로 볼 경기 결과는 숨긴다 */
-function homeSchedPanel(){ const sg=spoilG(), st=standingsNow(), rk=tid=>st.findIndex(x=>x.tid===tid)+1, md=d=>{ const o=dobj(d); return `${o.m}/${o.d} ${WD[o.w]}`; };
+function homeSchedPanel(){ const sg=spoilG(), SO=standOrder(), st=SO.order, rk=tid=>{ const i=st.findIndex(x=>(x.tid??x)===tid)+1; return i?(SO.live?i+'위':`작년 ${i}위`):''; }, /* 시즌 전에는 지난 시즌 순위라고 밝힌다(리뷰 11-08) */ md=d=>{ const o=dobj(d); return `${o.m}/${o.d} ${WD[o.w]}`; };
   const past=tlOf(G.user).filter(x=>!(sg&&sg.day===x[5]&&(sg.home===G.user||sg.away===G.user))).slice(-2);
   let spm={}; try{ for(const g of projStarters(G.user,10))if(g.sp)spm[g.d]=g.sp; }catch(e){}
   const fut=nextGames(10), /* 남은 일정을 최대한(칸 안에서 스크롤, 사용자 11-07) */ row=(d,home,op,mid,end,cls)=>`<button class="hw-sr${cls?' '+cls:''}" data-a="calJump" data-v="${d}"><span>${md(d)}</span><i>${home?'홈':'원정'}</i><span class="hw-sr-op">${badge(op,16)}<b>${esc(team(op).nick)}</b></span><em>${mid}</em><small>${end}</small></button>`;
-  const P=past.map(x=>row(x[5],x[3]===1,x[4],`<span class="${x[0]>0?'good':x[0]<0?'bad':'muted'}">${x[0]>0?'승':x[0]<0?'패':'무'} ${x[1]}:${x[2]}</span>`,'','past')).join(''), F=fut.map(g=>row(g.d,g.home,g.op,`${rk(g.op)||'-'}위`,spm[g.d]?`예상 ${esc(spm[g.d].name)}`:'')).join('');
+  const P=past.map(x=>row(x[5],x[3]===1,x[4],`<span class="${x[0]>0?'good':x[0]<0?'bad':'muted'}">${x[0]>0?'승':x[0]<0?'패':'무'} ${x[1]}:${x[2]}</span>`,'','past')).join(''), F=fut.map(g=>row(g.d,g.home,g.op,rk(g.op)||'-',spm[g.d]?`선발 ${esc(spm[g.d].name)}`:'')).join('');
   return `<section class="hw-panel hw-sched"><header><h2>경기 일정·결과</h2><button class="tc-i" data-a="calOpen">달력</button></header>${P||F?`<div class="hw-sl">${P}${P&&F?'<hr>':''}${F}</div>`:'<p class="hw-hint">시즌 일정이 확정되면 표시합니다.</p>'}</section>`; }
 /* 리그 부문별 1위: 리그 기록 화면과 같은 항목·기준(규정 타석·이닝) */
 function homeLeagueTopPanel(){ const {y,live}=standOrder(), yy=live?G.year:y; const rows=playerRows(yy); const want=['타율','홈런','타점','안타','도루','OPS','평균자책점','승리','탈삼진','세이브','홀드','WHIP']; /* 12개 부문, 얼굴과 함께(사용자 11-07) */
