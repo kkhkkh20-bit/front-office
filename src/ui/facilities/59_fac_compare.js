@@ -16,6 +16,6 @@ function facCompare(){ try{ aiFacAll(); }catch(e){} if(!G||!G.teams)return '';
   const recent=H.slice(0,6).map(h=>`<li><span class="muted">${dobj(h.d).y}년 ${dmd(h.d)}</span> ${esc(h.t.city)} ${esc(h.t.nick)} · ${esc(FACI[h.k].lv[h.lv])} 착공 <span class="muted">${money(h.c)}${h.src==='cap'?' · 모기업 투자':''}</span></li>`).join('');
   return `<div class="eyebrow" style="margin-top:10px">리그 시설 비교</div>
     <table class="fcmp">${head}${body}${foot}</table>
-    <p class="small muted">0~3단계. ↑는 공사 중입니다. 칸을 누르고 있거나 마우스를 올리면 시설 이름과 완공일이 보입니다. 다른 구단도 재정과 전략에 따라 시설에 투자합니다.</p>
+    <p class="small muted">0~6단계(4 전문화·5 통합 캠퍼스·6 선도 연구센터). ↑는 공사 중입니다. 칸을 누르고 있거나 마우스를 올리면 시설 이름과 완공일이 보입니다. 다른 구단도 재정과 전략에 따라 시설에 투자합니다.</p>
     ${recent?`<details class="moreg"><summary><span>최근 다른 구단 시설 투자</span></summary><div class="moreb"><ul class="fcmp-l">${recent}</ul></div></details>`:''}`; }
 Object.assign(A,{ facCmpSort(v){ UI.facCmp=v&&(v==='lv'||FACI[v])?v:'lv'; render(); } });

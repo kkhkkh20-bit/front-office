@@ -28,8 +28,8 @@ function sponMake(slot,o){ o=o||{}; const S=o.S||G.spon; const ind=pick(SPON_IND
   return x; }
 function sponSign(o,silent){ const S=G.spon; let y0=sponSeason(); const inSea=y0===G.year&&G.cal&&G.day>G.cal.open; const over=inSea&&G.day>=G.cal.end; /* 정규시즌이 끝난 뒤 결산 전 계약: 올해 몫은 없고 계약 기간은 다음 시즌부터 센다 */
   if(over)y0++; /* 정규시즌 뒤 계약은 다음 시즌부터 시작하는 계약으로 적는다(1년 계약이 2개 연도로 기록되지 않게, 검수 11-06) */ const first=over?1:inSea?clamp((G.cal.end-G.day)/(G.cal.end-G.cal.open),0,1):1; /* 남은 기간 비율 그대로(하한 없음, 검수 11-07) */
-  const lateSign=inSea&&first<1; /* 시즌 중 계약: 첫해 성과 보너스도 남은 기간 비율만(이미 확정된 가을야구는 보너스 없음, 검수 11-07) */
-  S.c[o.slot]={co:o.co,ind:o.ind,amt:o.amt,ps:o.ps,champ:o.champ,img:o.img,y0,until:y0+o.yrs-1,first,id:o.id,d0:G.day,...(lateSign?{bf:first}:{})};
+  const lateSign=inSea&&first<1; let psLock=false; try{ psLock=inSea&&psClinched(G.user); }catch(e){} /* 이미 가을야구를 확정한 뒤 맺은 계약은 진출 보너스 없음(검수 11-07) */ /* 시즌 중 계약: 첫해 성과 보너스도 남은 기간 비율만(이미 확정된 가을야구는 보너스 없음, 검수 11-07) */
+  S.c[o.slot]={co:o.co,ind:o.ind,amt:o.amt,ps:o.ps,champ:o.champ,img:o.img,y0,until:y0+o.yrs-1,first,id:o.id,d0:G.day,...(lateSign?{bf:first}:{}),...(psLock?{psNo:1}:{})};
   S.off=S.off.filter(x=>x.slot!==o.slot); if(!silent){ addLog(`${o.co}(${o.ind})와(과) ${SPON_SLOT[o.slot].l} 계약: ${o.yrs}년, 연 ${money(o.amt)}.`); chron&&chron('spon',`${o.co} ${SPON_SLOT[o.slot].l} 계약 (${o.yrs}년 연 ${money(o.amt)})`);
     if(o.amt>=SPON_SLOT[o.slot].b*1.15)news('구단',`${tshort(G.user)}, ${o.co}와(과) ${SPON_SLOT[o.slot].l} 계약`,`${o.yrs}년 연 ${money(o.amt)} 규모입니다. 구단 가치가 올랐다는 평가가 나옵니다.`,1); } }
 /* 올해(진행 중이거나 다음) 시즌에 들어올 기본 금액 */
@@ -59,11 +59,11 @@ function sponCounter(id,pct){ const S=G.spon; const o=S.off.find(x=>x.id===id); 
   return `${o.co}: 조건 상향은 어렵습니다. 처음 제안 그대로라면 계약하겠습니다.`; }
 /* 시즌 결산: 기본 금액 + 성과 보너스, 이미지 조항, 만료 처리 */
 function sponSettle(y,ps,tid,S0){ tid=tid??G.user; const S=S0||G.spon; /* tid·S0: 단장이 떠난 구단의 남은 계약서(G.sponT)로 결산 */ if(!S)return {base:0,bonus:0,L:[]}; let base=0,bonus=0; const L=[];
-  for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; base+=c.amt*eff; if(!(eff>0))continue; /* 올해 효력이 없는 계약(시즌 뒤 계약)은 올해 성과 보너스도 없다 */
-    const bf=c.y0===y&&c.bf!=null?c.bf:1; const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(tid)); if(inPS&&c.ps){ const v=Math.round(c.ps*bf); bonus+=v; if(v)L.push(`${c.co} 가을야구 보너스 ${money(v)}${bf<1?' (계약 기간 비율)':''}`); } if(ps&&ps.champ===tid&&c.champ){ const v=Math.round(c.champ*bf); bonus+=v; if(v)L.push(`${c.co} 우승 보너스 ${money(v)}${bf<1?' (계약 기간 비율)':''}`); }
+  for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; base+=c.amt*eff; c.paidY=c.amt; if(!(eff>0))continue; /* 올해 효력이 없는 계약(시즌 뒤 계약)은 올해 성과 보너스도 없다 */
+    const bf=c.y0===y&&c.bf!=null?c.bf:1; const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(tid)); if(inPS&&c.ps&&!(c.psNo&&c.y0===y)){ const v=Math.round(c.ps*bf); bonus+=v; if(v)L.push(`${c.co} 가을야구 보너스 ${money(v)}${bf<1?' (계약 기간 비율)':''}`); } if(ps&&ps.champ===tid&&c.champ){ const v=Math.round(c.champ*bf); bonus+=v; if(v)L.push(`${c.co} 우승 보너스 ${money(v)}${bf<1?' (계약 기간 비율)':''}`); }
     if(c.base0==null)c.base0=c.amt; c.amt=c.base0; const press=tid===G.user&&!S0?(G.pr?G.pr.press:50):(S.press??50); if(c.img&&press<30&&c.until>y){ c.amt=round5(c.base0*.8); L.push(`${c.co}: 이미지 조항으로 다음 해 금액 20% 감액`); } } /* 감액은 그다음 한 해만(원래 금액 기준으로 해마다 다시 판단). 이직 뒤 남은 계약서도 같은 판단(검수 11-07) */
   for(const c of (S.cutL||[]))if(c.until===y){ const v=c.amt*c.cutF; base+=v; if(v>0)L.push(`${c.co}: 해지(${dsh(c.cut.d)}) 전까지 몫 ${money(Math.round(v))}`); }
-  for(const k in S.c){ if(S.c[k].until===y){ S.hist.push(Object.assign({slot:k},S.c[k])); } }
+  for(const k in S.c){ if(S.c[k].until===y){ S.hist.push(Object.assign({slot:k},S.c[k],{amt:S.c[k].paidY??S.c[k].amt})); } } /* 이력에는 마지막 해 실제로 받은 금액(검수 11-07) */
   if(S.cutL&&S.cutL.length){ for(const c of S.cutL)if(c.until<=y)S.hist.push(c); S.cutL=S.cutL.filter(c=>c.until>y); }
   if(S.hist.length>40)S.hist=S.hist.slice(-40);
   if(tid===G.user&&!S0){ const exp=Object.keys(S.c).filter(k=>S.c[k].until===y); mail('마케팅팀',`${y} 스폰서 결산: ${money(Math.round(base+bonus))}`,`기본 계약 ${money(Math.round(base))}${bonus?`, 성과 보너스 ${money(Math.round(bonus))}`:''}.${L.length?'\n'+L.join('\n'):''}${exp.length?`\n\n이번 시즌으로 끝나는 계약: ${exp.map(k=>`${S.c[k].co}(${SPON_SLOT[k].l})`).join(', ')}. 11월 중순부터 재계약·신규 제안이 들어옵니다.`:''}`,{kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
@@ -79,9 +79,15 @@ function sponPitch(slot){ const S=sponInit(); if(!SPON_SLOT[slot])return '없는
   G.spend.etc=(G.spend.etc||0)+30; S.pitch.push({slot,day:G.day,due:G.day+ri(7,14),done:false});
   return `마케팅팀이 ${SPON_SLOT[slot].l} 영업을 시작했습니다(영업비 3천만 원). 1~2주 뒤 결과를 보고합니다.`; }
 function sponPitchDaily(){ const S=G.spon; if(!S||!S.pitch)return; for(const x of S.pitch){ if(x.done||x.due>G.day)continue; x.done=true; if(!sponOpen(x.slot))continue;
-    const p=clamp(.45+(sponVal()-1)*.8+((G.rep??50)-50)/200,.15,.9); if(R()<p){ const n=R()<.35?2:1; const made=[]; for(let i=0;i<n;i++){ const o=sponMake(x.slot); o.amt=round5(o.amt*rnd(.92,1.02)); S.off.push(o); made.push(o); }
+    const p=clamp(.45+(sponVal()-1)*.8+((G.rep??50)-50)/200,.15,.9); if(R()<p){ const n=R()<.35?2:1; const made=[]; for(let i=0;i<n;i++){ const o=sponMake(x.slot); o.amt=round5(o.amt*rnd(.92,1.02)); if(S.off.some(z=>z.slot===x.slot&&z.co===o.co))continue; /* 같은 자리 같은 기업 중복 없음(검수 11-07) */ S.off.push(o); made.push(o); }
       mail('마케팅팀',`영업 성과: ${SPON_SLOT[x.slot].l} 제안 ${made.length}건`,`${made.map(o=>`${o.co}(${o.ind}) ${o.yrs}년 연 ${money(o.amt)}`).join('\n')}\n\n먼저 찾아간 영업이라 기업이 먼저 보낸 제안보다 금액이 조금 낮을 수 있습니다.`,{imp:true,kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
     else mail('마케팅팀',`영업 결과: ${SPON_SLOT[x.slot].l} 관심 기업 없음`,`여러 기업을 만났지만 지금 구단 가치(지수 ${Math.round(sponVal()*100)})로는 조건이 맞지 않았습니다. 성적과 팬 여론이 오르면 다시 시도해 보세요.`,{kind:'스폰서'}); }
   S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); }
 /* 단장이 떠난 구단의 영업(돈은 이미 냈다)도 예정일에 결과를 낸다: 제안은 그 구단 계약서에 남아 돌아오면 볼 수 있다(검수 11-06) */
 function sponPitchOld(){ const L=Object.assign({},G.sponT||{}); if(G.unemp&&G.spon&&G.unemp.from!=null)L[G.unemp.from]=G.spon; /* 무직 중엔 G.spon이 떠난 구단 것 */ for(const tid in L){ const S=L[tid]; if(!S||!S.pitch)continue; for(const x of S.pitch){ if(x.done||x.due>G.day)continue; x.done=true; const c=S.c&&S.c[x.slot]; if(c&&c.until>=sponSeason())continue; const p=clamp(.45+(sponVal(+tid)-1)*.8,.15,.9); if(R()<p){ const o=sponMake(x.slot,{tid:+tid,S}); o.amt=round5(o.amt*rnd(.92,1.02)); (S.off=S.off||[]).push(o); } } S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); } }
+/* 가을야구 확정(수학적): 우리 승수 이상을 아직 낼 수 있는 구단이 4곳 이하면 5위 안이 확정. 무승부·동률 결정전은 보수적으로 동률도 위협으로 센다 */
+function psClinched(tid){ const R=G.sea&&G.sea.rec; if(!R||!R[tid])return false; const gp=r=>r.w+r.l+(r.t||0), N=144; const me=R[tid];
+  return G.teams.filter(t=>t.id!==tid&&R[t.id]&&R[t.id].w+(N-gp(R[t.id]))>=me.w).length<=4; }
+
+/* 결산 전 예상: 가을야구·우승 성과 보너스(결산 sponSettle과 같은 기준, 상태는 바꾸지 않는다) */
+function sponBonusEst(y,champ){ const S=G.spon; if(!S)return 0; const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)); let b=0; for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; if(!(eff>0))continue; const bf=c.y0===y&&c.bf!=null?c.bf:1; if(inPS&&c.ps&&!(c.psNo&&c.y0===y))b+=Math.round(c.ps*bf); if(champ===G.user&&c.champ)b+=Math.round(c.champ*bf); } return b; }
