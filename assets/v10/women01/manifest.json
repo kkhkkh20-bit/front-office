@@ -1,0 +1,2409 @@
+{
+  "schema_version": "10.1",
+  "batch_id": "women01",
+  "path_base": "assets/v10/women01/",
+  "request": "docs/asset-requests/2026-11-07-codex-v10-women-staff-faces.md",
+  "request_sha256": "847f3b5d59e1059f869c0762489292f305a3e210e24168193ac79575292e6dd4",
+  "reference_main_commit": "2b4d0d36dcc39a3fdbb317d3185891f0b082f3c9",
+  "status": "review_branch; ASSET_VALIDATION_PASSED; GAME_REVIEW_PENDING",
+  "game_connected": false,
+  "count": 40,
+  "accepted_identity_count": 40,
+  "gender_counts": {
+    "female": 40
+  },
+  "group_counts": {
+    "front": {
+      "label_ko": "프런트 직원",
+      "group": "front",
+      "r": "front",
+      "count": 16,
+      "age_min": 24,
+      "age_max": 34,
+      "male": 0,
+      "female": 16
+    },
+    "staff": {
+      "label_ko": "전력분석원·코치 보조",
+      "group": "staff",
+      "r": "staff",
+      "count": 12,
+      "age_min": 26,
+      "age_max": 36,
+      "male": 0,
+      "female": 12
+    },
+    "gm": {
+      "label_ko": "여성 단장 후보",
+      "group": "gm",
+      "r": "gm",
+      "count": 12,
+      "age_min": 30,
+      "age_max": 42,
+      "male": 0,
+      "female": 12
+    }
+  },
+  "layout": {
+    "columns": 10,
+    "rows": 10,
+    "capacity_per_page": 100,
+    "page_count_per_resolution": 1,
+    "cell_sizes": [
+      128,
+      256
+    ],
+    "pitch_equals_cell_size": true,
+    "padding": 0,
+    "order": "row-major, zero-based index",
+    "unused_cells": "cells40..99 black RGB; do not select"
+  },
+  "camera": {
+    "reference": "v7 civilian portraits",
+    "full_coherent_upper_body": true,
+    "face_pasting": false,
+    "shared_torso": false,
+    "team_compositing": false,
+    "hat": false,
+    "background": "dark charcoal-blue studio",
+    "target_eye_y256": 72,
+    "eye_y256_validation_range": [
+      65,
+      87
+    ],
+    "processing": "whole-photo square camera crop and uniform Lanczos resize only; no face warp or compositing"
+  },
+  "arcface": {
+    "threshold": 0.4,
+    "pass_rule": "every required unmodified raw cosine <0.40, independently at128 and256",
+    "reference_identities": {
+      "v6c": 100,
+      "v7": 126,
+      "v8": 120,
+      "v9": 60
+    },
+    "v6c_home_variants_per_identity": 10,
+    "validation": "validation.json"
+  },
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/women01.webp",
+        "width": 1280,
+        "height": 1280,
+        "cell_size": 128,
+        "pitch": 128,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 0,
+        "count": 40,
+        "empty_cells": 60,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 667028,
+        "sha256": "8277ac6d67b01a5872a3c861f41a79a698d98f9352431c7d3b0e7f015d8ef869"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/women01.webp",
+        "width": 2560,
+        "height": 2560,
+        "cell_size": 256,
+        "pitch": 256,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 0,
+        "count": 40,
+        "empty_cells": 60,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 2585510,
+        "sha256": "2e771cd5f923ef08308f45b1de5e2a11aee23cc66e91ce639b3e1a9da11aed5d"
+      }
+    ]
+  },
+  "runtime_sheet_count": 2,
+  "runtime_files": [
+    "sheets/128/women01.webp",
+    "sheets/256/women01.webp",
+    "manifest.json"
+  ],
+  "runtime_sheet_bytes": 3252538,
+  "group_previews": {
+    "front": "previews/front_256.png",
+    "staff": "previews/staff_256.png",
+    "gm": "previews/gm_256.png"
+  },
+  "identities": [
+    {
+      "id": "v10_women01_front_001",
+      "identity_id": "v10_women01_front_001",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 0,
+      "page": 0,
+      "cell": 0,
+      "cell_index": 0,
+      "row": 0,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        }
+      },
+      "source_candidate": "m12_03_03",
+      "casting_origin": "Black"
+    },
+    {
+      "id": "v10_women01_front_002",
+      "identity_id": "v10_women01_front_002",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 1,
+      "page": 0,
+      "cell": 1,
+      "cell_index": 1,
+      "row": 0,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        }
+      },
+      "source_candidate": "m15_07_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_003",
+      "identity_id": "v10_women01_front_003",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 2,
+      "page": 0,
+      "cell": 2,
+      "cell_index": 2,
+      "row": 0,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        }
+      },
+      "source_candidate": "m04_02_08",
+      "casting_origin": "European"
+    },
+    {
+      "id": "v10_women01_front_004",
+      "identity_id": "v10_women01_front_004",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 3,
+      "page": 0,
+      "cell": 3,
+      "cell_index": 3,
+      "row": 0,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        }
+      },
+      "source_candidate": "m12_05_06",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_005",
+      "identity_id": "v10_women01_front_005",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 4,
+      "page": 0,
+      "cell": 4,
+      "cell_index": 4,
+      "row": 0,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        }
+      },
+      "source_candidate": "z09_06_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_006",
+      "identity_id": "v10_women01_front_006",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 28,
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 5,
+      "page": 0,
+      "cell": 5,
+      "cell_index": 5,
+      "row": 0,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        }
+      },
+      "source_candidate": "m15_07_04",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_007",
+      "identity_id": "v10_women01_front_007",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 28,
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 6,
+      "page": 0,
+      "cell": 6,
+      "cell_index": 6,
+      "row": 0,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        }
+      },
+      "source_candidate": "m17_01_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_008",
+      "identity_id": "v10_women01_front_008",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 29,
+      "age": 29,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 7,
+      "page": 0,
+      "cell": 7,
+      "cell_index": 7,
+      "row": 0,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1792,
+            0,
+            256,
+            256
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        }
+      },
+      "source_candidate": "z11_03_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_009",
+      "identity_id": "v10_women01_front_009",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 8,
+      "page": 0,
+      "cell": 8,
+      "cell_index": 8,
+      "row": 0,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1024,
+            0,
+            128,
+            128
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2048,
+            0,
+            256,
+            256
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        }
+      },
+      "source_candidate": "h001_05",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_010",
+      "identity_id": "v10_women01_front_010",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 9,
+      "page": 0,
+      "cell": 9,
+      "cell_index": 9,
+      "row": 0,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1152,
+            0,
+            128,
+            128
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2304,
+            0,
+            256,
+            256
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        }
+      },
+      "source_candidate": "m15_08_06",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_011",
+      "identity_id": "v10_women01_front_011",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 10,
+      "page": 0,
+      "cell": 10,
+      "cell_index": 10,
+      "row": 1,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            0,
+            256,
+            256,
+            256
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        }
+      },
+      "source_candidate": "z10_06_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_012",
+      "identity_id": "v10_women01_front_012",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 11,
+      "page": 0,
+      "cell": 11,
+      "cell_index": 11,
+      "row": 1,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            256,
+            256,
+            256,
+            256
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        }
+      },
+      "source_candidate": "m17_03_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_013",
+      "identity_id": "v10_women01_front_013",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 12,
+      "page": 0,
+      "cell": 12,
+      "cell_index": 12,
+      "row": 1,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            512,
+            256,
+            256,
+            256
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        }
+      },
+      "source_candidate": "m06_04_03",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_014",
+      "identity_id": "v10_women01_front_014",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 13,
+      "page": 0,
+      "cell": 13,
+      "cell_index": 13,
+      "row": 1,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            768,
+            256,
+            256,
+            256
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        }
+      },
+      "source_candidate": "m15_08_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_015",
+      "identity_id": "v10_women01_front_015",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 14,
+      "page": 0,
+      "cell": 14,
+      "cell_index": 14,
+      "row": 1,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1024,
+            256,
+            256,
+            256
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        }
+      },
+      "source_candidate": "m17_01_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_front_016",
+      "identity_id": "v10_women01_front_016",
+      "r": "front",
+      "role_group": "front",
+      "group": "front",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "natural_office"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 15,
+      "page": 0,
+      "cell": 15,
+      "cell_index": 15,
+      "row": 1,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1280,
+            256,
+            256,
+            256
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        }
+      },
+      "source_candidate": "r03_01_03",
+      "casting_origin": "European mixed heritage"
+    },
+    {
+      "id": "v10_women01_staff_001",
+      "identity_id": "v10_women01_staff_001",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 16,
+      "page": 0,
+      "cell": 16,
+      "cell_index": 16,
+      "row": 1,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1536,
+            256,
+            256,
+            256
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        }
+      },
+      "source_candidate": "m15_03_05",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_002",
+      "identity_id": "v10_women01_staff_002",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 28,
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 17,
+      "page": 0,
+      "cell": 17,
+      "cell_index": 17,
+      "row": 1,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1792,
+            256,
+            256,
+            256
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        }
+      },
+      "source_candidate": "m15_01_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_003",
+      "identity_id": "v10_women01_staff_003",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 29,
+      "age": 29,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 18,
+      "page": 0,
+      "cell": 18,
+      "cell_index": 18,
+      "row": 1,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1024,
+            128,
+            128,
+            128
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2048,
+            256,
+            256,
+            256
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        }
+      },
+      "source_candidate": "m15_07_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_004",
+      "identity_id": "v10_women01_staff_004",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 19,
+      "page": 0,
+      "cell": 19,
+      "cell_index": 19,
+      "row": 1,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1152,
+            128,
+            128,
+            128
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2304,
+            256,
+            256,
+            256
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        }
+      },
+      "source_candidate": "m04_03_08",
+      "casting_origin": "Latino"
+    },
+    {
+      "id": "v10_women01_staff_005",
+      "identity_id": "v10_women01_staff_005",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 20,
+      "page": 0,
+      "cell": 20,
+      "cell_index": 20,
+      "row": 2,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            0,
+            512,
+            256,
+            256
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        }
+      },
+      "source_candidate": "r03_02_06",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_006",
+      "identity_id": "v10_women01_staff_006",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 31,
+      "age": 31,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 21,
+      "page": 0,
+      "cell": 21,
+      "cell_index": 21,
+      "row": 2,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            256,
+            512,
+            256,
+            256
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        }
+      },
+      "source_candidate": "p05_005_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_007",
+      "identity_id": "v10_women01_staff_007",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 22,
+      "page": 0,
+      "cell": 22,
+      "cell_index": 22,
+      "row": 2,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            512,
+            512,
+            256,
+            256
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        }
+      },
+      "source_candidate": "z10_01_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_008",
+      "identity_id": "v10_women01_staff_008",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 34,
+      "age": 34,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 23,
+      "page": 0,
+      "cell": 23,
+      "cell_index": 23,
+      "row": 2,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            768,
+            512,
+            256,
+            256
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        }
+      },
+      "source_candidate": "m12_04_03",
+      "casting_origin": "Latino"
+    },
+    {
+      "id": "v10_women01_staff_009",
+      "identity_id": "v10_women01_staff_009",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 34,
+      "age": 34,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 24,
+      "page": 0,
+      "cell": 24,
+      "cell_index": 24,
+      "row": 2,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1024,
+            512,
+            256,
+            256
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        }
+      },
+      "source_candidate": "z11_09_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_010",
+      "identity_id": "v10_women01_staff_010",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 35,
+      "age": 35,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 25,
+      "page": 0,
+      "cell": 25,
+      "cell_index": 25,
+      "row": 2,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1280,
+            512,
+            256,
+            256
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        }
+      },
+      "source_candidate": "m15_04_04",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_011",
+      "identity_id": "v10_women01_staff_011",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 35,
+      "age": 35,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 26,
+      "page": 0,
+      "cell": 26,
+      "cell_index": 26,
+      "row": 2,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1536,
+            512,
+            256,
+            256
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        }
+      },
+      "source_candidate": "m15_05_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_staff_012",
+      "identity_id": "v10_women01_staff_012",
+      "r": "staff",
+      "role_group": "staff",
+      "group": "staff",
+      "a": 36,
+      "age": 36,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "light_sports"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 27,
+      "page": 0,
+      "cell": 27,
+      "cell_index": 27,
+      "row": 2,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1792,
+            512,
+            256,
+            256
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        }
+      },
+      "source_candidate": "z08_09_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_001",
+      "identity_id": "v10_women01_gm_001",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 31,
+      "age": 31,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 28,
+      "page": 0,
+      "cell": 28,
+      "cell_index": 28,
+      "row": 2,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1024,
+            256,
+            128,
+            128
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2048,
+            512,
+            256,
+            256
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        }
+      },
+      "source_candidate": "m12_06_03",
+      "casting_origin": "European"
+    },
+    {
+      "id": "v10_women01_gm_002",
+      "identity_id": "v10_women01_gm_002",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 29,
+      "page": 0,
+      "cell": 29,
+      "cell_index": 29,
+      "row": 2,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1152,
+            256,
+            128,
+            128
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2304,
+            512,
+            256,
+            256
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        }
+      },
+      "source_candidate": "z11_07_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_003",
+      "identity_id": "v10_women01_gm_003",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 34,
+      "age": 34,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 30,
+      "page": 0,
+      "cell": 30,
+      "cell_index": 30,
+      "row": 3,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            0,
+            768,
+            256,
+            256
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        }
+      },
+      "source_candidate": "h003_05",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_004",
+      "identity_id": "v10_women01_gm_004",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 35,
+      "age": 35,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 31,
+      "page": 0,
+      "cell": 31,
+      "cell_index": 31,
+      "row": 3,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            256,
+            768,
+            256,
+            256
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        }
+      },
+      "source_candidate": "r03_03_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_005",
+      "identity_id": "v10_women01_gm_005",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 38,
+      "age": 38,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 32,
+      "page": 0,
+      "cell": 32,
+      "cell_index": 32,
+      "row": 3,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            512,
+            768,
+            256,
+            256
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        }
+      },
+      "source_candidate": "m12_04_08",
+      "casting_origin": "Black"
+    },
+    {
+      "id": "v10_women01_gm_006",
+      "identity_id": "v10_women01_gm_006",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 38,
+      "age": 38,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 33,
+      "page": 0,
+      "cell": 33,
+      "cell_index": 33,
+      "row": 3,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            768,
+            768,
+            256,
+            256
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        }
+      },
+      "source_candidate": "r01_03_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_007",
+      "identity_id": "v10_women01_gm_007",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 38,
+      "age": 38,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 34,
+      "page": 0,
+      "cell": 34,
+      "cell_index": 34,
+      "row": 3,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1024,
+            768,
+            256,
+            256
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        }
+      },
+      "source_candidate": "r03_03_04",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_008",
+      "identity_id": "v10_women01_gm_008",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 39,
+      "age": 39,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 35,
+      "page": 0,
+      "cell": 35,
+      "cell_index": 35,
+      "row": 3,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1280,
+            768,
+            256,
+            256
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        }
+      },
+      "source_candidate": "r01_03_07",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_009",
+      "identity_id": "v10_women01_gm_009",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 39,
+      "age": 39,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 36,
+      "page": 0,
+      "cell": 36,
+      "cell_index": 36,
+      "row": 3,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1536,
+            768,
+            256,
+            256
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        }
+      },
+      "source_candidate": "r03_03_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_010",
+      "identity_id": "v10_women01_gm_010",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 39,
+      "age": 39,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 37,
+      "page": 0,
+      "cell": 37,
+      "cell_index": 37,
+      "row": 3,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            1792,
+            768,
+            256,
+            256
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        }
+      },
+      "source_candidate": "z11_08_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v10_women01_gm_011",
+      "identity_id": "v10_women01_gm_011",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 40,
+      "age": 40,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 38,
+      "page": 0,
+      "cell": 38,
+      "cell_index": 38,
+      "row": 3,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1024,
+            384,
+            128,
+            128
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2048,
+            768,
+            256,
+            256
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        }
+      },
+      "source_candidate": "m12_02_08",
+      "casting_origin": "Black"
+    },
+    {
+      "id": "v10_women01_gm_012",
+      "identity_id": "v10_women01_gm_012",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "gm",
+      "a": 40,
+      "age": 40,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "makeup": "polished_professional"
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 39,
+      "page": 0,
+      "cell": 39,
+      "cell_index": 39,
+      "row": 3,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/women01.webp",
+          "rect": [
+            1152,
+            384,
+            128,
+            128
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/women01.webp",
+          "rect": [
+            2304,
+            768,
+            256,
+            256
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        }
+      },
+      "source_candidate": "m16_02_01",
+      "casting_origin": "Korean"
+    }
+  ],
+  "casting_composition": {
+    "korean_min_fraction": 0.8,
+    "international_max_fraction": 0.2,
+    "counts": {
+      "Black": 3,
+      "Korean": 32,
+      "European": 2,
+      "European mixed heritage": 1,
+      "Latino": 2
+    },
+    "meaning": "fictional generation casting description, not a mandatory in-game nationality"
+  },
+  "reference_v9_review": {
+    "branch": "assets/v9-gm01-review",
+    "commit": "81d5bbb3d0ce7c58efac1273b638ddb1b51248a2",
+    "manifest_sha256": "9893040ebc2e75433971360a5725b8bde2d8ad2c21e32d27321d204e9fd7f9e2"
+  }
+}

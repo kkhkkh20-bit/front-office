@@ -123,6 +123,7 @@
       "src/ui/assets/00d_faces_data.js",
       "src/ui/assets/00e_truck_data.js",
       "src/ui/assets/00f_people_faces_data.js",
+      "src/ui/assets/00g_more_faces_data.js",
       "src/ui/assets/00e_staff_faces_data.js",
       "src/ui/assets/00c_match_stadium_data.js",
       "src/ui/shell/01_layout.js",

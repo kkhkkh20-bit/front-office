@@ -10,7 +10,7 @@ const GP_PART={hair:{l:'머리',m:['short','short2','short3','crop','crop-fade',
 function gpPartList(k,g){ const P=GP_PART[k]; return (g.female&&P.f)?P.f:P.m; }
 function gpSync(){ const g=UI.gp=UI.gp||gpDefault(); const n=document.getElementById('gp-name'), a=null; if(n)g.name=n.value.trim().slice(0,10); return g; }
 function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'staff',pid:g.face,age:g.age,female:g.female,name:g.name,mod:g.mod||null,img:g.img||null}; const M=g.mod||{};
-  void M; const ph=gp7Seeds(g); if(!g.img&&!/^p7:/.test(g.face||'')&&ph.length){ g.face='p7:'+ph[0]; av.pid=g.face; } /* 얼굴은 내 사진 또는 사진 얼굴만(그림 얼굴·부위 꾸미기 없음, 사용자 결정 11-07) */
+  void M; const ph=gp7Seeds(g); if(!g.img&&!/^p[78]:/.test(g.face||'')&&ph.length){ g.face=ph[0]; av.pid=g.face; } /* 얼굴은 내 사진 또는 사진 얼굴만(그림 얼굴·부위 꾸미기 없음, 사용자 결정 11-07) */
   return `<div class="gpf"><div class="gpf-face">${avImg(av,true)}<div class="row gp-up"><label class="btn small">내 사진 넣기<input type="file" accept="image/*" data-gpimg hidden></label>${g.img?'<button class="btn small" data-a="gpImgDel">사진 지우기</button>':''}</div></div><div class="gpf-in">
     <label class="small">이름<input id="gp-name" type="text" maxlength="10" value="${esc(g.name||'')}" placeholder="단장 이름" autocomplete="off"></label>
     <div class="small gp-age">나이 <button class="btn small" data-a="gpAge" data-v="-5">−5</button><button class="btn small" data-a="gpAge" data-v="-1">−1</button><b>${g.age}세</b><button class="btn small" data-a="gpAge" data-v="1">+1</button><button class="btn small" data-a="gpAge" data-v="5">+5</button></div>
@@ -18,7 +18,7 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
     <div class="small">출신</div><div class="chips">${Object.entries(GM_BG).map(([k,l])=>`<button data-a="gpBg" data-v="${k}" class="${g.bg===k?'on':''}">${l}</button>`).join('')}</div>
     <p class="small">${esc(GM_BG[g.bg]||'')}: ${esc(GM_BGD[g.bg]||'')}.</p><p class="small muted">출신 효과는 처음 취임할 때 한 번 들어갑니다(나중에 출신을 고쳐도 다시 들어가지 않습니다). 이름과 출신은 기사와 경력에도 쓰입니다. 나이는 해마다 한 살씩 듭니다.</p>
     ${UI.gpMsg?`<div class="note">${esc(UI.gpMsg)}</div>`:''}<button class="btn primary block" data-a="${go}">${goL}</button></div></div>
-  ${typeof FACE7!=='undefined'?`<div class="gpg-h"><span class="small">얼굴: 마음에 드는 사진을 누르거나 위에서 내 사진을 넣으세요</span><button class="btn small" data-a="gpFace7">다른 사진</button></div><div class="gpg">${ph.map(c=>`<button class="gpg-c${g.face==='p7:'+c?' on':''}" data-a="gpPick" data-v="p7:${c}">${avImg({persona:'staff',pid:'p7:'+c,age:g.age,female:g.female,name:g.name})}</button>`).join('')}</div>`:''}
+  ${typeof FACE7!=='undefined'?`<div class="gpg-h"><span class="small">얼굴: 마음에 드는 사진을 누르거나 위에서 내 사진을 넣으세요</span><button class="btn small" data-a="gpFace7">다른 사진</button></div><div class="gpg">${ph.map(c=>`<button class="gpg-c${g.face===c?' on':''}" data-a="gpPick" data-v="${c}">${avImg({persona:'staff',pid:c,age:g.age,female:g.female,name:g.name})}</button>`).join('')}</div>`:''}
 `; }
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];

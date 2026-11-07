@@ -80,18 +80,23 @@ try{ document.addEventListener('dragstart',e=>{ const t=e.target; if(t&&(t.tagNa
 function face8Role(o){ if(typeof FACE8==='undefined'||!o)return null; if(o.role)return o.role; const pid=String(o.pid??''), P=o.persona;
   if(P==='agent')return /^press/.test(pid)?'press':/^agt/.test(pid)?'agent':'press'; /* 에이전트 외 agent 얼굴은 기자 */
   if(P!=='staff'||/^(p7:|gm)/.test(pid))return null; if(/^st:비서:/.test(pid))return 'sec'; if(/^doc/.test(pid))return 'doc'; if(/^fan/.test(pid))return 'fan'; if(/^ceo/.test(pid))return 'ceo'; return null; }
-function face7Pool(o){ if(typeof FACE7==='undefined')return null; const P=o.persona, f=!!o.female; { const r8=face8Role(o); if(r8){ const L=FACE8.ids.map((x,i)=>Object.assign({c:i},x)).filter(x=>x.r===r8); const Lf=L.filter(x=>!!x.f===f); return {k:'8',ids:Lf.length?Lf:L}; } }
-  if(P==='mgr'||P==='coach')return f?null:{k:'c',ids:FACE7.coach.ids};
+/* v9 젊은 단장·v10 여성 스태프(FACE8 뒤에 붙음): 단장은 52세 아래면 v9·v10, 여성 코치·분석원은 v10 staff, 여성 직원은 v10 front까지 */
+const F8L=(r,f)=>typeof FACE8==='undefined'?[]:FACE8.ids.map((x,i)=>Object.assign({},x,{c:i})) /* c = FACE8 목록 번호(칸 번호 x.c가 덮지 않게, 11-07) */.filter(x=>x.r===r&&(f==null||!!x.f===f));
+function face7Pool(o){ if(typeof FACE7==='undefined')return null; const P=o.persona, f=!!o.female; { const r8=face8Role(o); if(r8){ const L=FACE8.ids.map((x,i)=>Object.assign({},x,{c:i})) /* c = FACE8 목록 번호(칸 번호 x.c가 덮지 않게, 11-07) */.filter(x=>x.r===r8||(r8==='ana'&&f&&x.r==='staff')); const Lf=L.filter(x=>!!x.f===f); return {k:'8',ids:Lf.length?Lf:L}; } }
+  if(P==='mgr'||P==='coach'){ if(!f)return {k:'c',ids:FACE7.coach.ids}; const L=F8L('staff',true); return L.length?{k:'8',ids:L}:null; }
+  if(P==='gm'&&(o.age||50)<52){ const L=F8L('gm',f); if(L.length)return {k:'8',ids:L}; }
+  if(P==='staff'&&f&&!/^(p7:|p8:|gm)/.test(String(o.pid??''))){ const L=F8L('front',true); if(L.length)return {k:'8',ids:L}; }
   const r=P==='gm'?'gm':P==='own'?'owner':P==='staff'?'front':null; if(!r)return null; return {k:'v',ids:FACE7.civ.ids.filter(x=>x.r===r&&!!x.f===f)}; }
 function face7Idx(o){ if(!o||o.pid==null||(G&&G.f6off))return null; const pid=String(o.pid);
-  if(o.persona==='staff'&&pid.startsWith('p7:'))return typeof FACE7==='undefined'?null:{k:'v',c:+pid.slice(3)}; /* 우리 단장이 고른 사진(새 게임 전 단장 소개 화면에서도) */
+  if(o.persona==='staff'&&pid.startsWith('p7:'))return typeof FACE7==='undefined'?null:{k:'v',c:+pid.slice(3)};
+  if(o.persona==='staff'&&pid.startsWith('p8:'))return typeof FACE8==='undefined'||!FACE8.ids[+pid.slice(3)]?null:{k:'8',c:+pid.slice(3)}; /* v9·v10 단장 사진을 고른 경우 */ /* 우리 단장이 고른 사진(새 게임 전 단장 소개 화면에서도) */
   if(!G)return null;
   if(o.persona==='staff'&&/^gm/.test(pid))return null; /* 그림 얼굴 후보 */
   const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(o.team??G.user):'L'; const scope=pl.k+team+(pl.k==='8'?face8Role(o):'');
-  const M=G.f7=G.f7||{}, Rv=G.f7r=G.f7r||{}, key=o.persona+':'+pid; const mine=(G.gmP&&String(G.gmP.face||'').startsWith('p7:'))?+String(G.gmP.face).slice(3):-1;
-  const cur=M[key]; if(cur!=null&&Rv[scope+':'+cur]===key&&!(pl.k==='v'&&cur===mine))return {k:pl.k,c:cur,team};
-  const free=x=>{ const h=Rv[scope+':'+x.c]; return (h==null||h===key)&&!(pl.k==='v'&&x.c===mine); };
-  let C=pl.ids.filter(free); if(!C.length)C=pl.ids.filter(x=>!(pl.k==='v'&&x.c===mine)); if(!C.length)return null; /* 다 쓰면 겹치는 것을 허용 */
+  const M=G.f7=G.f7||{}, Rv=G.f7r=G.f7r||{}, key=o.persona+':'+pid; const mf=String((G.gmP&&G.gmP.face)||''), mine=/^p[78]:/.test(mf)?+mf.slice(3):-1, mk=mf.startsWith('p8:')?'8':'v';
+  const cur=M[key]; if(cur!=null&&Rv[scope+':'+cur]===key&&!(pl.k===mk&&cur===mine))return {k:pl.k,c:cur,team};
+  const free=x=>{ const h=Rv[scope+':'+x.c]; return (h==null||h===key)&&!(pl.k===mk&&x.c===mine); };
+  let C=pl.ids.filter(free); if(!C.length)C=pl.ids.filter(x=>!(pl.k===mk&&x.c===mine)); if(!C.length)return null; /* 다 쓰면 겹치는 것을 허용 */
   const age=o.age||50; C=[...C].sort((a,b)=>Math.abs(a.a-age)-Math.abs(b.a-age)||hn('f7'+a.c,pid)-hn('f7'+b.c,pid)); const c=C[0].c; M[key]=c; Rv[scope+':'+c]=key; return {k:pl.k,c,team}; }
 function face7Img(x,big){ if(x.k==='8'){ const pg=FACE8.ids[x.c].p, k='v8_'+pg; if(!F6IMG[k]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=FACE8.s128[pg]; } return [F6IMG[k],128]; }
   if(x.k==='c'){ const k='c7'+x.team; if(!F6IMG[k]&&FACE7.coach.sheet[String(x.team)]){ const im=new Image(); F6IMG[k]=im; im.onload=()=>{ im.ok=true; clearTimeout(face6Load.t); face6Load.t=setTimeout(()=>{ try{ render(); }catch(e){} },30); }; im.src=FACE7.coach.sheet[String(x.team)]; } return [F6IMG[k],128]; }
@@ -104,6 +109,6 @@ function face7Bust(x){ const k='7B'+x.k+(x.team??'')+':'+x.c; if(F6C.has(k))retu
 /* 단장 소개: 성별·나이에 맞는 단장 사진 6장(가까운 나이 12명 중 무작위). '다른 사진 6명'은 방금 본 사진을 빼고 다시 */
 function gp7Seeds(g,re){ if(typeof FACE7==='undefined')return []; const f=!!g.female, prev=UI.gp7&&UI.gp7.f===f?UI.gp7.L:[];
   if(!re&&UI.gp7&&UI.gp7.f===f&&UI.gp7.a===g.age)return UI.gp7.L;
-  let P=FACE7.civ.ids.filter(x=>x.r==='gm'&&!!x.f===f).sort((a,b)=>Math.abs(a.a-g.age)-Math.abs(b.a-g.age)); if(re&&P.length>6){ const q=P.filter(x=>!prev.includes(x.c)); if(q.length>=6)P=q; }
-  const W=P.slice(0,Math.max(12,Math.min(18,P.length))).map(x=>x.c).sort(()=>Math.random()-.5).slice(0,12); /* 그림 얼굴을 없앤 대신 사진 후보 12장 */ UI.gp7={f,a:g.age,L:W}; return W; }
+  let P=FACE7.civ.ids.filter(x=>x.r==='gm'&&!!x.f===f).map(x=>({a:x.a,k:'p7:'+x.c})).concat(F8L('gm',f).map(x=>({a:x.a,k:'p8:'+x.c}))).sort((a,b)=>Math.abs(a.a-g.age)-Math.abs(b.a-g.age)); /* v7 단장 + v9·v10 젊은 단장 */ if(re&&P.length>6){ const q=P.filter(x=>!prev.includes(x.k)); if(q.length>=6)P=q; }
+  const W=P.slice(0,Math.max(12,Math.min(18,P.length))).map(x=>x.k).sort(()=>Math.random()-.5).slice(0,12); /* 그림 얼굴을 없앤 대신 사진 후보 12장 */ UI.gp7={f,a:g.age,L:W}; return W; }
 Object.assign(A,{ gpFace7(){ gp7Seeds(UI.gp||gpDefault(),true); render(); } });
