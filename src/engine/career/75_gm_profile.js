@@ -69,7 +69,7 @@ function gmSucceed(np,why){ if(G.unemp||G.user==null||!G.gmP)return '지금은 �
   const old=gmSuccInfo(); if(G.myC){ try{ const S0=myCStats(); old.w=S0.w; old.l=S0.l; old.n=S0.n; }catch(e){} } (G.gmLine=G.gmLine||[]).push(old);
   for(const j of [...(G.jobs||[])])if(!j.done)try{ jobAnswer(j.tid,false,true); }catch(e){} /* 전임에게 온 단장직 제의는 끝낸다(검수 11-07) */
   G.gmP={name:np.name,age:clamp(+np.age||42,30,65),bg:np.bg||'corp',female:!!np.female,face:np.face||('gm'+Math.floor(R()*1e6)),mod:np.mod||null,y0:G.year,d0:G.day,bgDone:false};
-  G.me=null; G.gmSince=G.year; meInit(); G.personal=null; G.rep=Math.round(clamp(35+((G.rep??50)-50)*.3,30,55)); /* 명성은 사람을 따른다: 후임은 전임 덕을 조금만 본다 */
+  G.me=null; G.gmSince=G.year; G.gmSinceD=G.day; try{ tbTakeSnap(); }catch(e){} /* 후임의 영입 판정·취임 당시 비교는 후임 취임일부터(검수 11-07) */ meInit(); G.personal=null; G.rep=Math.round(clamp(35+((G.rep??50)-50)*.3,30,55)); /* 명성은 사람을 따른다: 후임은 전임 덕을 조금만 본다 */
   const st=(G.myC&&G.myC.stints)||[]; st.unshift({tid:G.user,y0:old.from,y1:G.year,how:`${old.name} 단장 용퇴(${why||'세대 교체'})`}); myCStart(G.user,{yrs:3},'후임 단장 취임'); G.myC.stints=[]; G.myC.seas=[]; G.myC.earn=0; delete G.myC.offer; G.gmJoin=null; void st; /* 새 사람의 경력은 새로 시작(검수 11-07: 전임 승패·우승을 물려받음). 전임 기록은 단장 계보에 */
   gmBgApply(); const t=team(G.user); t.trust=clamp(Math.round(((t.trust??55)+60)/2),0,100);
   chron('join',`${old.name} 단장 퇴임(${old.from}~${old.to}, 우승 ${old.champ}회) · ${G.gmP.name} 단장 취임`,null,G.user);

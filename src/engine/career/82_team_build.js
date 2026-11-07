@@ -5,7 +5,9 @@
  - 시즌 뒤 회고: 내가 꾸린 선수 WAR 순위와 이번 시즌 처음 주전이 된 선수.
  - 구단 > 연대기 > 내가 꾸린 팀: 순위 변화, 지금 선수단이 어디서 왔는지, 핵심 선수, 기록 연표 */
 const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이드','FA':'외부 FA','외국인':'외국인','보상선수':'보상선수','무적 영입':'무적 선수','해외 복귀':'해외 복귀','웨이버':'웨이버','2차 드래프트':'2차 드래프트'};
-function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; let w0; try{ if(k!=='fd'&&k!=='draft'){ const y=period()==='season'||period()==='post'?G.year:G.year-1; const h=seasonTotal(p,y,'1군'); if(h)w0=Math.round(warOf(h,p)*10)/10; } }catch(e){}
+/* 방금 끝났거나 진행 중인 시즌: 11~12월(off)은 그해, 1~3월(pre)은 지난해(검수 11-07: 11월에 한 해 전 시즌을 읽음) */
+function tbLastY(){ return period()==='pre'?G.year-1:G.year; }
+function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; let w0; try{ if(k!=='fd'&&k!=='draft'){ const y=tbLastY(); const h=seasonTotal(p,y,'1군'); if(h)w0=Math.round(warOf(h,p)*10)/10; } }catch(e){}
   p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{});
   if(tid===G.user&&!G.unemp){ const L=G.mineL=G.mineL||[]; L.push({id:p.id,o:Object.assign({},p.acq)}); if(L.length>400)L.splice(0,L.length-400); } } /* 내가 데려온 선수: 떠나도 재임 성과에 남긴다 */
 /* 취임 당시 주전 9자리(창단 구단은 창단 드래프트가 끝난 때): 나이·인원. 재임 성과의 비교 기준 */
@@ -20,11 +22,13 @@ function tbMineAll(){ const out=[], seen=new Set(); const since=G.gmSinceD;
   return out; }
 function warWithT(p,tid,y0){ let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',tid); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }
 /* 요약 줄: 물려받은 선수·내가 데려온 선수, 주전 평균 나이(취임 당시 대비), 이번 시즌 뒤 계약 결정(주전급 FA 예정), 주전 9자리 구성 */
-function tbKpi(){ const ps=playersOf(G.user).filter(p=>!p.prospect); const mine=ps.filter(mineOf).length; let d=null; try{ d=depth(G.user); }catch(e){} const ln=d?d.start:[];
-  const age=ln.length?ln.reduce((a,p)=>a+p.age,0)/ln.length:null; const S=G.tbSnap&&G.tbSnap.tid===G.user?G.tbSnap:null;
+/* 소속 선수 전부(대표팀 차출·군 복무로 잠시 빠진 선수 포함, 검수 11-07) */
+function tbOwn(){ return Object.values(G.players).filter(p=>p.team===G.user&&!p.prospect&&!(p.joinY>G.year)); }
+function tbKpi(){ const ps=tbOwn(); const mine=ps.filter(mineOf).length; let d=null; try{ d=depth(G.user); }catch(e){} const ln=d?d.start:[];
+  const age=ln.length?ln.reduce((a,p)=>a+p.age,0)/ln.length:null; if(!(G.tbSnap&&G.tbSnap.tid===G.user)&&G.gmSince===G.year&&!(G.mineL||[]).some(x=>x.o.tid===G.user&&x.o.d>=(G.gmSinceD??0)))try{ tbTakeSnap(); }catch(e){} /* 기존 구단을 맡아 시작한 첫해: 아직 아무도 데려오지 않았으면 지금이 취임 당시 */ const S=G.tbSnap&&G.tbSnap.tid===G.user?G.tbSnap:null;
   const reg=new Set(d?[...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id):[]); let fa=[]; try{ fa=faUpcoming().filter(x=>x.p.team===G.user&&reg.has(x.p.id)).map(x=>x.p); }catch(e){}
-  const comp={inh:0,dr:0,ext:0}; for(const p of ln){ const c=originCat(p); if(c==='물려받음')comp.inh++; else if(c==='창단 지명'||c==='신인 지명')comp.dr++; else comp.ext++; }
-  return {n:ps.length,inh:ps.length-mine,mine,age,age0:S?S.age:null,fa,comp,ln:ln.length}; }
+  const comp={inh:0,dr:0,auto:0,ext:0}; for(const p of ln){ const c=originCat(p); if(c==='물려받음')comp.inh++; else if(c==='창단 지명'||c==='신인 지명'){ const o=tbOrigin(p); if(o&&(o.how==='auto'||o.how==='rule'||o.auto))comp.auto++; else comp.dr++; } else comp.ext++; } /* 자동 배분·조건 위임 지명은 직접 지명과 따로(검수 11-07) */
+  return {n:ps.length,n0:S?S.n:null,inh:ps.length-mine,mine,age,age0:S?S.age:null,fa,comp,ln:ln.length}; }
 /* 지명 경로: 단장이 직접 / 자동(진행을 넘겨 스카우트 순위대로) / 조건 위임 */
 const ACQ_HOW={gm:'직접 지명',auto:'자동 지명',rule:'조건 위임 지명'};
 /* 데려올 때의 판단: 지명은 우리 스카우트 추정, 트레이드·FA는 직전 시즌 WAR */
@@ -38,18 +42,18 @@ function acqFromStory(p){ const nm=tname(p.team); const L=(p.story||[]).slice().
     if(/보상선수/.test(t))return {k:'보상선수',y:s.y,tid:p.team}; if(/입단 \((외국인|아시아쿼터)/.test(t))return {k:'외국인',y:s.y,tid:p.team}; if(/무적 선수/.test(t))return {k:'무적 영입',y:s.y,tid:p.team}; }
   return null; }
 function tbOrigin(p){ if(!p||p.team==null)return null; const A=p.acq; if(A&&A.tid===p.team)return A; if(p.draft&&p.draft.tid===p.team)return {k:'draft',y:p.draft.y,rd:p.draft.rd,no:p.draft.no,tid:p.team}; return acqFromStory(p); }
-function meSince(){ const C=G.myC; if(C&&C.tid===G.user&&C.y0!=null)return C.y0; return G.gmSince??G.startY??G.year; }
+function meSince(){ if(G.gmSince!=null)return G.gmSince; const C=G.myC; if(C&&C.tid===G.user&&C.y0!=null)return C.y0; return G.startY??G.year; } /* 이 구단 첫 부임 해(재계약 시작 해가 아님, 검수 11-07) */
 /* 지금 단장이 데려온 선수인가: 창단 지명은 창단 해, 그 밖은 재임 시작 해 이후(지명은 그해 가을에 하므로 한 해 앞까지) */
 function mineOf(p){ const o=tbOrigin(p); if(!o||o.tid!==G.user)return false; if(o.d!=null&&G.gmSinceD!=null)return o.d>=G.gmSinceD; /* 취임한 날 이후 데려온 선수만(전임 단장의 영입 제외) */ return o.y>=meSince(); }
 function originLabel(o){ if(!o)return '물려받은 선수'; const k=o.k; return k==='fd'?(o.auto?`${o.y} 창단 배분`:`${o.y} 창단 드래프트${o.rd?` ${o.rd}라운드`:''}${o.how?` · ${ACQ_HOW[o.how]}`:''}`):k==='draft'?`${o.y} 신인 드래프트${o.rd?` ${o.rd}라운드`:''}${o.how?` · ${ACQ_HOW[o.how]}`:''}`:k==='트레이드'?`${o.y} 트레이드${o.from!=null?`(${tshort(o.from)})`:''}`:`${o.y} ${ACQ_K[k]||k}`; }
 function originCat(p){ const o=tbOrigin(p); if(!o||!mineOf(p))return '물려받음'; return ACQ_K[o.k]||'기타'; }
 /* 우리 팀에서 쌓은 WAR(데려온 해부터) */
 function warWithUs(p){ const o=tbOrigin(p); const y0=o?o.y:G.year-10; let s=0, best=null; for(let y=y0;y<=G.year;y++){ const h=seasonTotalT(p,y,'1군',G.user); if(!h)continue; const w=warOf(h,p); s+=w; if(!best||w>best.w)best={y,w}; } return {sum:s,best}; }
-function tbLogAdd(pid,t){ const L=G.tbLog=G.tbLog||[]; L.unshift({y:G.year,d:G.day,pid,t}); if(L.length>120)L.length=120; }
+function tbLogAdd(pid,t){ const L=G.tbLog=G.tbLog||[]; L.unshift({y:G.year,d:G.day,pid,t,tid:G.user}); /* 구단을 남긴다: 이직하면 옛 구단 연표는 보이지 않게 */ if(L.length>120)L.length=120; }
 const TB_MS=[{k:'w10',isP:true,v:h=>h.w||0,n:10,t:'10승'},{k:'sv20',isP:true,v:h=>h.sv||0,n:20,t:'20세이브'},{k:'hr20',isP:false,v:h=>h.hr||0,n:20,t:'20홈런'},{k:'hld20',isP:true,v:h=>h.hld||0,n:20,t:'20홀드'}];
 function tbPrev(p,ms){ for(let y=G.year-1;y>=G.year-25;y--){ const h=seasonTotal(p,y,'1군'); if(h&&ms.v(h)>=ms.n)return true; } return false; }
 /* 매주(시즌 중): 내가 꾸린 선수의 기록 달성 */
-function tbWeek(){ if(G.unemp||period()!=='season')return; const out=[];
+function tbWeek(fin){ if(G.unemp||(period()!=='season'&&!fin))return; const out=[]; /* fin: 정규시즌 마지막 날 다음 날 한 번 더(마지막 주 기록, 검수 11-07) */
   for(const p of playersOf(G.user)){ if(!mineOf(p))continue; const h=seasonTotalT(p,G.year,'1군',G.user); if(!h)continue; /* 우리 구단에서 쌓은 기록만(이적 전 성적을 새 단장 성과로 세지 않는다, 검수 11-06) */ const M=p.msY&&p.msY.y===G.year?p.msY:(p.msY={y:G.year,k:[]});
     for(const ms of TB_MS){ if(ms.isP!==!!p.isP||M.k.includes(ms.k)||ms.v(h)<ms.n)continue; M.k.push(ms.k); const first=!tbPrev(p,ms); out.push({p,ms,first}); } }
   if(!out.length)return; const o=tbOrigin;
@@ -60,10 +64,10 @@ function tbWeek(){ if(G.unemp||period()!=='season')return; const out=[];
 /* 시즌 회고에 붙일 줄: 내가 꾸린 선수 WAR, 처음 주전이 된 선수 */
 function tbReviewLines(y){ const ps=playersOf(G.user); const W=p=>{ if(p.arch){ const a=G.arch&&G.arch[p.id]; return a?sum((a.rows||[]).filter(r=>r.y===y&&r.t===G.user).map(r=>r.war||0)):0; } const h=seasonTotalT(p,y,'1군',G.user); return h?warOf(h,p):0; }; const L=[];
   /* 시즌 도중 떠난 선수도 우리 구단에서 쌓은 WAR는 회고에 넣는다(검수 11-06) */ const gone=Object.values(G.players).filter(p=>p.team!==G.user&&(p.hist||[]).some(h=>h.y===y&&h.t===G.user&&h.lvl==='1군')); const arch=Object.values(G.arch||{}).filter(a=>!G.players[a.id]&&(a.rows||[]).some(r=>r.y===y&&r.t===G.user)).map(a=>({id:a.id,arch:true}));
-  const mine=tbMineAll().map(x=>({p:x.p,o:x.o,w:W(x.p)})).filter(x=>x.w>=.5).sort((a,b)=>b.w-a.w);
-  const all=ps.concat(gone,arch).map(W).reduce((a,b)=>a+Math.max(0,b),0), mw=mine.reduce((a,x)=>a+Math.max(0,x.w),0);
+  const mineA=tbMineAll().map(x=>({p:x.p,o:x.o,w:W(x.p)})), mine=mineA.filter(x=>x.w>=.5).sort((a,b)=>b.w-a.w);
+  const all=ps.concat(gone,arch).map(W).reduce((a,b)=>a+Math.max(0,b),0), mw=mineA.reduce((a,x)=>a+Math.max(0,x.w),0); /* 기여율은 데려온 선수 전부(0.5 미만 포함, 검수 11-07) */
   if(mine.length)L.push(`[내가 꾸린 선수] 팀 WAR의 ${all>0?Math.round(mw/all*100):0}%. `+mine.slice(0,6).map(x=>`${x.p.name}(${originLabel(x.o)}) WAR ${x.w.toFixed(1)}`).join(' / '));
-  const reg=p=>{ const h=seasonTotal(p,y,'1군'); if(!h)return false; return p.isP?(h.outs>=330||(h.g||0)>=50):h.pa>=400; };
+  const reg=p=>{ const h=seasonTotalT(p,y,'1군',G.user); if(!h)return false; /* 우리 구단에서 주전급으로 뛴 시즌(검수 11-07) */ return p.isP?(h.outs>=330||(h.g||0)>=50):h.pa>=400; };
   const prevReg=p=>{ for(let k=y-1;k>=y-20;k--){ const h=seasonTotal(p,k,'1군'); if(h&&(p.isP?(h.outs>=330||(h.g||0)>=50):h.pa>=400))return true; } return false; };
   const nr=ps.filter(p=>reg(p)&&!prevReg(p));
   if(nr.length){ L.push('[처음 주전이 된 선수] '+nr.slice(0,6).map(p=>`${p.name}(${posLabel(p)}, ${p.age}세${mineOf(p)?` · ${originLabel(tbOrigin(p))}`:''})`).join(', ')); for(const p of nr.slice(0,6))if(mineOf(p))tbLogAdd(p.id,`${p.name}, 처음 주전 시즌 (${originLabel(tbOrigin(p))})`); }
