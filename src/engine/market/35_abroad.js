@@ -134,3 +134,8 @@ function interestKnown(tid){ return team(tid).rel>=35; }
 function interestWhy(tid,p){ const w=[]; let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){} if(weak.includes(pSlot(p)))w.push(`${SLOTK[pSlot(p)]} 보강`); const tr=gmTrait(tid);
   if(tr==='prospect'&&p.age<=24)w.push('유망주 선호'); if(tr==='miser'&&p.sal<=150)w.push('싼 연봉'); if(tr==='gambler'&&ovr(p)>=60)w.push('즉시 전력'); if(teamCtx(team(tid)).contend&&ovr(p)>=55)w.push('우승 경쟁용'); if(!teamCtx(team(tid)).contend&&p.age<=25)w.push('리빌딩 자원'); return w.slice(0,2).join(' · ')||'전력 보강'; }
 
+
+/* 단장이 먼저 포스팅 신청(카페 문의 11-07): 시즌 결산 뒤 12월까지, 서비스 7년 이상 보류 선수. 선수가 해외 진출을 원하지 않으면 거절한다 */
+function postGMWhy(p){ if(!p||p.team!==G.user||G.unemp||p.foreign)return '우리 국내 선수만 신청할 수 있습니다.'; if(!(G.rolled===G.year&&dobj(G.day).m>=10))return '포스팅은 시즌 결산 뒤 12월까지 신청할 수 있습니다.'; if(milServing(p))return '군 복무 중에는 해외에 나갈 수 없습니다.'; if(postDone(p))return 'FA 계약을 했거나 해외에 다녀온 선수는 포스팅 대상이 아닙니다.'; if((p.svc||0)<7)return `서비스 7년이 지나야 포스팅할 수 있습니다(지금 ${p.svc||0}년).`; if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))return '이미 포스팅을 신청했습니다.'; return ''; }
+function postGM(id){ const p=G.players[id]; const why=postGMWhy(p); if(why)return why; if(mlbOf(p)<25){ return `${p.name}은(는) 지금 해외 진출을 원하지 않습니다(메이저리그 의지 ${p.mlb}).`; }
+  const x=postStart(p); story(p,`${G.year} 구단 주도 포스팅 신청`,'move'); return `${p.name} 포스팅을 신청했습니다. ${dmd(x.day)}에 MLB·NPB 구단 제안과 결과가 나옵니다.`; }

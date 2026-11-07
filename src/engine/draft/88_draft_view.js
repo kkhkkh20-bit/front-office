@@ -21,7 +21,7 @@ function draftView(p,rp){ rp=rp||scoutReport(p); const cl=draftClaim(p); const o
 /* 위험 원인: 건강 · 평가 불확실 · 긴 육성 · 기술 약점 */
 function riskWhy(p,rp){ rp=rp||scoutReport(p); const L=[];
   if(p.amInj||p.inj>.24)L.push(p.amInj?'건강 위험(수술·부상 이력)':'건강 위험(잔부상 체질)');
-  if((rp.sd||9)>=7)L.push('평가 확신 낮음');
+  if((rp.sd||9)>7)L.push('평가 확신 낮음'); /* 확신도 구간(sdConf: 7 이하 보통)과 같은 경계(검수 11-07) */
   if(rp.eta>=5)L.push('긴 육성 기간');
   const low=[...(rp.tools||[])].filter(t=>!(p.isP?['vit','con','pow','eye','spd','def']:['stf','ctl','sta']).includes(t.k)).sort((a,b)=>a.cur-b.cur)[0]; if(low&&low.cur<40)L.push(`기술 약점(${TOOLK[low.k]})`);
   return L; }

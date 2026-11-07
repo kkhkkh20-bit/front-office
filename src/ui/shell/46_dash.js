@@ -16,7 +16,7 @@ function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team
   if(G.pr)T.push(tile('팬 여론',Math.round(G.pr.fan),`언론 논조 ${Math.round(G.pr.press)}${prSpark()}`,'club:media',G.pr.fan>=60?'good':G.pr.fan<40?'bad':'',G.pr.fan,G.pr.fan<30?'여론 악화':''));
   { const v=clubPrestige(G.user); const L=G.teams.map(x=>clubPrestige(x.id)).sort((a,b)=>b-a); T.push(tile('구단 명성',`<span class="stars-t">${starTxt(prestigeStars(v))}</span>`,`${v}점 · 리그 ${L.indexOf(v)+1}위`,'club:owner','',v)); }
   /* 드래프트 시즌(3월 ~ 그해 신인 드래프트 전): 남은 날과 우리 1라운드 순위 */
-  { const c=G.cal; if(c&&c.draft&&G.day>=KD(3,1)&&G.day<c.draft&&!(G.draft&&G.draft.y===G.year)){ const n=draftNo(G.user); if(n)T.push(tile('신인 드래프트',`D-${c.draft-G.day}`,`${dsh(c.draft)} · 1라운드 ${n.r1}순위`,'transfer:draft','dtl-dr')); } }
+  { const c=G.cal; if(c&&c.draft&&G.day>=KD(3,1)&&G.day<c.draft&&!(G.draft&&G.draft.y===G.year)){ const n=draftNo(G.user); if(n)T.push(tile('신인 드래프트',`D-${c.draft-G.day}`,`${dsh(c.draft)} · 첫 지명 ${draftFirstTxt(n)}`,'transfer:draft','dtl-dr')); } }
   /* 급한 항목은 앞으로, 두 칸 크기로 */ const U=T.filter(x=>/ urg"/.test(x)), N=T.filter(x=>!/ urg"/.test(x));
   return `<div class="dtiles">${U.join('')}${N.join('')}</div>`; }
 /* 핵심 선수: 능력 상위 13명(부상자도 포함해서 본다) */

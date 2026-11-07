@@ -225,6 +225,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   hireAsst(v){ const [id,y]=v.split(':'); const e=hireAsst(id,+y); UI.cMsg=e||'보조 코치를 영입했습니다.'; save(); render(); },
   fireAsst(v){ const e=fireAsst(v); UI.cMsg=e||'보조 코치를 내보냈습니다.'; save(); render(); },
   homeRos(v){ const [sc,seg]=String(v).split(':'); UI.rscope=sc; UI.seg=seg; A.tab('roster'); }, /* 홈 선수단 현황 칸을 누르면 그 묶음(1군·2군 투수·야수) 선수단으로(사용자 11-07) */
+  postGM(v){ toast(postGM(+v)); save(); render(); },
   fireCoach(v){ fireCoach(v); UI.cfire=null; UI.cMsg=`${CROLE[v].l} 자리를 비웠습니다.`; save(); render(); },
   hireCoach(v){ const [id,y]=v.split(':'); const c=(G.cmarket||[]).find(x=>x.id===id); const e=hireCoach(id,+y); UI.cMsg=e||(c?`${CROLE[c.role].l} ${c.name} 영입 (${y}년)`:''); if(!e&&c){ UI.it=UI.it||{}; UI.it.coach=CROLE[c.role].g===2?'g2':'g1'; if(UI.coachRet){ UI.coachRet=null; save(); A.go('staff:coach'); return; } } save(); render(); }, /* 보직의 '교체'로 시장에 왔으면 영입 뒤 코치 보직 화면으로 돌아간다(사용자 피드백 11-07) */
   hy(v){UI.hy=+v;render();},
