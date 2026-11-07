@@ -1,0 +1,73 @@
+{
+  "algorithm": "sha256",
+  "path_base": "assets/v9/gm01/",
+  "excluded": [
+    "checksums.json"
+  ],
+  "files": {
+    "CLAUDE_HANDOFF.md": {
+      "sha256": "84d92f4ce14238d4778228babd94451486175864062ef4bbb1a5012138867874",
+      "bytes": 3740
+    },
+    "README.md": {
+      "sha256": "825001a9e65d8f0f1b595d468fa82ba804ac0120e3457920a47a7b9f0052de2f",
+      "bytes": 5234
+    },
+    "manifest.json": {
+      "sha256": "9893040ebc2e75433971360a5725b8bde2d8ad2c21e32d27321d204e9fd7f9e2",
+      "bytes": 73449
+    },
+    "previews/athlete_256.png": {
+      "sha256": "54274abe22e9ac5972a1e16f3accdef000c840fa14520e4d5f94fd50d4d02640",
+      "bytes": 2485413
+    },
+    "previews/data_256.png": {
+      "sha256": "770b3c1afb9d2765524393fa4bd88bd1b6e8edcab8881de17671cc4d9fd04d0a",
+      "bytes": 1728236
+    },
+    "previews/midcareer_256.png": {
+      "sha256": "c138d9a994f5fc4c8b16d1901eb69604f112d9404d2c0eeff12e6930bbebc94c",
+      "bytes": 861042
+    },
+    "previews/overview_128.png": {
+      "sha256": "556817f478c5b98d0c90de4ba95b1c5dfdba20674cfd6131ee5bf3b96ff6b6cb",
+      "bytes": 1333962
+    },
+    "sheets/128/gm01.webp": {
+      "sha256": "1ec1f6f91fc6371970e3740438bc557fe2ee6c98674a7ab4c060a37c5daf5a56",
+      "bytes": 986478
+    },
+    "sheets/256/gm01.webp": {
+      "sha256": "ebd6e6f39810b2b9056208e9d1e1f32108dbfa49cd8ead932dc7274d88c33f8f",
+      "bytes": 3803008
+    },
+    "validation/arcface_embeddings.npz": {
+      "sha256": "b73b93d44a341626c8f8109143693ab4006ed4cfda396210f6a92dabc11e352e",
+      "bytes": 4964084
+    },
+    "validation/arcface_scores.npz": {
+      "sha256": "84ec82214b78c22e9dc9a38b2614d7daa8c5910c0cfcab480537b7e63cabd3b3",
+      "bytes": 565759
+    },
+    "validation/reference_provenance.json": {
+      "sha256": "b131c97660cb219f8722b061c61b01c1998111f1ed97747f4979861d248ba0d0",
+      "bytes": 13147
+    },
+    "validation/runtime_detections.json": {
+      "sha256": "359a89cd26f8e7df890cc10e4bfa7144f3eb9148bfbc184fca75833c20b43b34",
+      "bytes": 106961
+    },
+    "validation/source_portraits.json": {
+      "sha256": "b83975393171dd5a6c251f13dafeba446236e5f5f8f679291e45d356a45d9c7f",
+      "bytes": 53668
+    },
+    "validation/visual_review.json": {
+      "sha256": "27fb52e128dd3408bd9f4de242e23e63ef752f1728b556c80162cc2e56099081",
+      "bytes": 1547
+    },
+    "validation.json": {
+      "sha256": "da568f746f7e1f9ed5e2af67d59da7df410e7a1cbd9a43f48d267f4c2fe89039",
+      "bytes": 83214
+    }
+  }
+}

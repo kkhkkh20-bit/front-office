@@ -1,0 +1,3464 @@
+{
+  "schema_version": "9.1",
+  "batch_id": "gm01",
+  "path_base": "assets/v9/gm01/",
+  "request": "docs/asset-requests/2026-11-07-codex-v9-gm-young-faces.md",
+  "request_sha256": "312fdf807508dd65af7b98c5e7f3c537e90c78986b0269d6a9768a6adb85a127",
+  "reference_main_commit": "453d98884cde675f3a51032865cd4ee46a8ac03e",
+  "status": "review_branch; ASSET_VALIDATION_PASSED; GAME_REVIEW_PENDING",
+  "game_connected": false,
+  "count": 60,
+  "accepted_identity_count": 60,
+  "gender_counts": {
+    "male": 45,
+    "female": 15
+  },
+  "group_counts": {
+    "athlete": {
+      "label_ko": "젊은 단장 · 선수 출신 인상",
+      "group": "athlete",
+      "count": 30,
+      "age_min": 28,
+      "age_max": 36,
+      "male": 24,
+      "female": 6
+    },
+    "data": {
+      "label_ko": "젊은 단장 · 프런트·데이터 출신 인상",
+      "group": "data",
+      "count": 20,
+      "age_min": 30,
+      "age_max": 40,
+      "male": 14,
+      "female": 6
+    },
+    "midcareer": {
+      "label_ko": "중년 단장",
+      "group": "midcareer",
+      "count": 10,
+      "age_min": 40,
+      "age_max": 50,
+      "male": 7,
+      "female": 3
+    }
+  },
+  "layout": {
+    "columns": 10,
+    "rows": 10,
+    "capacity_per_page": 100,
+    "page_count_per_resolution": 1,
+    "cell_sizes": [
+      128,
+      256
+    ],
+    "pitch_equals_cell_size": true,
+    "padding": 0,
+    "order": "row-major, zero-based index",
+    "unused_cells": "cells60..99 black RGB; do not select"
+  },
+  "camera": {
+    "reference": "v7 civilian portraits",
+    "full_coherent_upper_body": true,
+    "face_pasting": false,
+    "shared_torso": false,
+    "team_compositing": false,
+    "hat": false,
+    "background": "dark charcoal-blue studio",
+    "target_eye_y256": 72,
+    "eye_y256_validation_range": [
+      65,
+      87
+    ],
+    "processing": "whole-photo square camera crop and uniform Lanczos resize only; no face warp or compositing"
+  },
+  "arcface": {
+    "threshold": 0.4,
+    "pass_rule": "every required unmodified raw cosine <0.40, independently at128 and256",
+    "reference_identities": {
+      "v6c": 100,
+      "v7": 126,
+      "v8": 120
+    },
+    "v6c_home_variants_per_identity": 10,
+    "validation": "validation.json"
+  },
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/gm01.webp",
+        "width": 1280,
+        "height": 1280,
+        "cell_size": 128,
+        "pitch": 128,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 0,
+        "count": 60,
+        "empty_cells": 40,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 986478,
+        "sha256": "1ec1f6f91fc6371970e3740438bc557fe2ee6c98674a7ab4c060a37c5daf5a56"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/gm01.webp",
+        "width": 2560,
+        "height": 2560,
+        "cell_size": 256,
+        "pitch": 256,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "page": 0,
+        "count": 60,
+        "empty_cells": 40,
+        "empty_rgb": [
+          0,
+          0,
+          0
+        ],
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 3803008,
+        "sha256": "ebd6e6f39810b2b9056208e9d1e1f32108dbfa49cd8ead932dc7274d88c33f8f"
+      }
+    ]
+  },
+  "runtime_sheet_count": 2,
+  "runtime_files": [
+    "sheets/128/gm01.webp",
+    "sheets/256/gm01.webp",
+    "manifest.json"
+  ],
+  "runtime_sheet_bytes": 4789486,
+  "group_previews": {
+    "athlete": "previews/athlete_256.png",
+    "data": "previews/data_256.png",
+    "midcareer": "previews/midcareer_256.png"
+  },
+  "identities": [
+    {
+      "id": "v9_gm01_gm_001",
+      "identity_id": "v9_gm01_gm_001",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 28,
+      "age": 28,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 0,
+      "page": 0,
+      "cell": 0,
+      "cell_index": 0,
+      "row": 0,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        }
+      },
+      "source_candidate": "b003_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_002",
+      "identity_id": "v9_gm01_gm_002",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 28,
+      "age": 28,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 1,
+      "page": 0,
+      "cell": 1,
+      "cell_index": 1,
+      "row": 0,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        }
+      },
+      "source_candidate": "s005_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_003",
+      "identity_id": "v9_gm01_gm_003",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 28,
+      "age": 28,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 2,
+      "page": 0,
+      "cell": 2,
+      "cell_index": 2,
+      "row": 0,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        }
+      },
+      "source_candidate": "z08_02_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_004",
+      "identity_id": "v9_gm01_gm_004",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 29,
+      "age": 29,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 3,
+      "page": 0,
+      "cell": 3,
+      "cell_index": 3,
+      "row": 0,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        }
+      },
+      "source_candidate": "m05_02_03",
+      "casting_origin": "Latino"
+    },
+    {
+      "id": "v9_gm01_gm_005",
+      "identity_id": "v9_gm01_gm_005",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 29,
+      "age": 29,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 4,
+      "page": 0,
+      "cell": 4,
+      "cell_index": 4,
+      "row": 0,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        }
+      },
+      "source_candidate": "r03_01_03",
+      "casting_origin": "Black mixed heritage"
+    },
+    {
+      "id": "v9_gm01_gm_006",
+      "identity_id": "v9_gm01_gm_006",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 29,
+      "age": 29,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 5,
+      "page": 0,
+      "cell": 5,
+      "cell_index": 5,
+      "row": 0,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        }
+      },
+      "source_candidate": "z09_03_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_007",
+      "identity_id": "v9_gm01_gm_007",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 30,
+      "age": 30,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 6,
+      "page": 0,
+      "cell": 6,
+      "cell_index": 6,
+      "row": 0,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        }
+      },
+      "source_candidate": "h001_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_008",
+      "identity_id": "v9_gm01_gm_008",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 30,
+      "age": 30,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 7,
+      "page": 0,
+      "cell": 7,
+      "cell_index": 7,
+      "row": 0,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1792,
+            0,
+            256,
+            256
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        }
+      },
+      "source_candidate": "r03_04_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_009",
+      "identity_id": "v9_gm01_gm_009",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 30,
+      "age": 30,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 8,
+      "page": 0,
+      "cell": 8,
+      "cell_index": 8,
+      "row": 0,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1024,
+            0,
+            128,
+            128
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2048,
+            0,
+            256,
+            256
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        }
+      },
+      "source_candidate": "s015_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_010",
+      "identity_id": "v9_gm01_gm_010",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 31,
+      "age": 31,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 9,
+      "page": 0,
+      "cell": 9,
+      "cell_index": 9,
+      "row": 0,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1152,
+            0,
+            128,
+            128
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2304,
+            0,
+            256,
+            256
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        }
+      },
+      "source_candidate": "h001_04",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_011",
+      "identity_id": "v9_gm01_gm_011",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 31,
+      "age": 31,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 10,
+      "page": 0,
+      "cell": 10,
+      "cell_index": 10,
+      "row": 1,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            0,
+            256,
+            256,
+            256
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        }
+      },
+      "source_candidate": "h001_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_012",
+      "identity_id": "v9_gm01_gm_012",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 31,
+      "age": 31,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 11,
+      "page": 0,
+      "cell": 11,
+      "cell_index": 11,
+      "row": 1,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            256,
+            256,
+            256,
+            256
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        }
+      },
+      "source_candidate": "m04_05_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_013",
+      "identity_id": "v9_gm01_gm_013",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 31,
+      "age": 31,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 12,
+      "page": 0,
+      "cell": 12,
+      "cell_index": 12,
+      "row": 1,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            512,
+            256,
+            256,
+            256
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        }
+      },
+      "source_candidate": "r03_01_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_014",
+      "identity_id": "v9_gm01_gm_014",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 32,
+      "age": 32,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 13,
+      "page": 0,
+      "cell": 13,
+      "cell_index": 13,
+      "row": 1,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            768,
+            256,
+            256,
+            256
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        }
+      },
+      "source_candidate": "m04_02_03",
+      "casting_origin": "Black"
+    },
+    {
+      "id": "v9_gm01_gm_015",
+      "identity_id": "v9_gm01_gm_015",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 32,
+      "age": 32,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 14,
+      "page": 0,
+      "cell": 14,
+      "cell_index": 14,
+      "row": 1,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1024,
+            256,
+            256,
+            256
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        }
+      },
+      "source_candidate": "r03_04_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_016",
+      "identity_id": "v9_gm01_gm_016",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 32,
+      "age": 32,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 15,
+      "page": 0,
+      "cell": 15,
+      "cell_index": 15,
+      "row": 1,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1280,
+            256,
+            256,
+            256
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        }
+      },
+      "source_candidate": "s011_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_017",
+      "identity_id": "v9_gm01_gm_017",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 32,
+      "age": 32,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 16,
+      "page": 0,
+      "cell": 16,
+      "cell_index": 16,
+      "row": 1,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1536,
+            256,
+            256,
+            256
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        }
+      },
+      "source_candidate": "unused7_b14_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_018",
+      "identity_id": "v9_gm01_gm_018",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 33,
+      "age": 33,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 17,
+      "page": 0,
+      "cell": 17,
+      "cell_index": 17,
+      "row": 1,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1792,
+            256,
+            256,
+            256
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        }
+      },
+      "source_candidate": "m04_05_03",
+      "casting_origin": "European"
+    },
+    {
+      "id": "v9_gm01_gm_019",
+      "identity_id": "v9_gm01_gm_019",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 34,
+      "age": 34,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 18,
+      "page": 0,
+      "cell": 18,
+      "cell_index": 18,
+      "row": 1,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1024,
+            128,
+            128,
+            128
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2048,
+            256,
+            256,
+            256
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        }
+      },
+      "source_candidate": "m04_05_05",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_020",
+      "identity_id": "v9_gm01_gm_020",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 34,
+      "age": 34,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 19,
+      "page": 0,
+      "cell": 19,
+      "cell_index": 19,
+      "row": 1,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1152,
+            128,
+            128,
+            128
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2304,
+            256,
+            256,
+            256
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        }
+      },
+      "source_candidate": "m05_02_08",
+      "casting_origin": "Japanese"
+    },
+    {
+      "id": "v9_gm01_gm_021",
+      "identity_id": "v9_gm01_gm_021",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 35,
+      "age": 35,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 20,
+      "page": 0,
+      "cell": 20,
+      "cell_index": 20,
+      "row": 2,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            0,
+            512,
+            256,
+            256
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        }
+      },
+      "source_candidate": "m04_04_03",
+      "casting_origin": "European"
+    },
+    {
+      "id": "v9_gm01_gm_022",
+      "identity_id": "v9_gm01_gm_022",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 35,
+      "age": 35,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 21,
+      "page": 0,
+      "cell": 21,
+      "cell_index": 21,
+      "row": 2,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            256,
+            512,
+            256,
+            256
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        }
+      },
+      "source_candidate": "unused7_b15_03",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_023",
+      "identity_id": "v9_gm01_gm_023",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 36,
+      "age": 36,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 22,
+      "page": 0,
+      "cell": 22,
+      "cell_index": 22,
+      "row": 2,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            512,
+            512,
+            256,
+            256
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        }
+      },
+      "source_candidate": "b004_06",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_024",
+      "identity_id": "v9_gm01_gm_024",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 36,
+      "age": 36,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 23,
+      "page": 0,
+      "cell": 23,
+      "cell_index": 23,
+      "row": 2,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            768,
+            512,
+            256,
+            256
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        }
+      },
+      "source_candidate": "r02_04_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_025",
+      "identity_id": "v9_gm01_gm_025",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 28,
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 24,
+      "page": 0,
+      "cell": 24,
+      "cell_index": 24,
+      "row": 2,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1024,
+            512,
+            256,
+            256
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        }
+      },
+      "source_candidate": "m04_03_03",
+      "casting_origin": "Southeast Asian"
+    },
+    {
+      "id": "v9_gm01_gm_026",
+      "identity_id": "v9_gm01_gm_026",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 29,
+      "age": 29,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 25,
+      "page": 0,
+      "cell": 25,
+      "cell_index": 25,
+      "row": 2,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1280,
+            512,
+            256,
+            256
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        }
+      },
+      "source_candidate": "r03_04_08",
+      "casting_origin": "Latino"
+    },
+    {
+      "id": "v9_gm01_gm_027",
+      "identity_id": "v9_gm01_gm_027",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 26,
+      "page": 0,
+      "cell": 26,
+      "cell_index": 26,
+      "row": 2,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1536,
+            512,
+            256,
+            256
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        }
+      },
+      "source_candidate": "r03_04_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_028",
+      "identity_id": "v9_gm01_gm_028",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 31,
+      "age": 31,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 27,
+      "page": 0,
+      "cell": 27,
+      "cell_index": 27,
+      "row": 2,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1792,
+            512,
+            256,
+            256
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        }
+      },
+      "source_candidate": "h001_06",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_029",
+      "identity_id": "v9_gm01_gm_029",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 28,
+      "page": 0,
+      "cell": 28,
+      "cell_index": 28,
+      "row": 2,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1024,
+            256,
+            128,
+            128
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2048,
+            512,
+            256,
+            256
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        }
+      },
+      "source_candidate": "m05_01_08",
+      "casting_origin": "Black"
+    },
+    {
+      "id": "v9_gm01_gm_030",
+      "identity_id": "v9_gm01_gm_030",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "athlete",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 29,
+      "page": 0,
+      "cell": 29,
+      "cell_index": 29,
+      "row": 2,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1152,
+            256,
+            128,
+            128
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2304,
+            512,
+            256,
+            256
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        }
+      },
+      "source_candidate": "h001_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_031",
+      "identity_id": "v9_gm01_gm_031",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 30,
+      "age": 30,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 30,
+      "page": 0,
+      "cell": 30,
+      "cell_index": 30,
+      "row": 3,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            0,
+            768,
+            256,
+            256
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        }
+      },
+      "source_candidate": "r02_02_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_032",
+      "identity_id": "v9_gm01_gm_032",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 33,
+      "age": 33,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 31,
+      "page": 0,
+      "cell": 31,
+      "cell_index": 31,
+      "row": 3,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            256,
+            768,
+            256,
+            256
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        }
+      },
+      "source_candidate": "h003_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_033",
+      "identity_id": "v9_gm01_gm_033",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 33,
+      "age": 33,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 32,
+      "page": 0,
+      "cell": 32,
+      "cell_index": 32,
+      "row": 3,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            512,
+            768,
+            256,
+            256
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        }
+      },
+      "source_candidate": "r03_02_03",
+      "casting_origin": "European mixed heritage"
+    },
+    {
+      "id": "v9_gm01_gm_034",
+      "identity_id": "v9_gm01_gm_034",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 33,
+      "age": 33,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 33,
+      "page": 0,
+      "cell": 33,
+      "cell_index": 33,
+      "row": 3,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            768,
+            768,
+            256,
+            256
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        }
+      },
+      "source_candidate": "s006_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_035",
+      "identity_id": "v9_gm01_gm_035",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 34,
+      "age": 34,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 34,
+      "page": 0,
+      "cell": 34,
+      "cell_index": 34,
+      "row": 3,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1024,
+            768,
+            256,
+            256
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        }
+      },
+      "source_candidate": "r02_02_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_036",
+      "identity_id": "v9_gm01_gm_036",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 34,
+      "age": 34,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 35,
+      "page": 0,
+      "cell": 35,
+      "cell_index": 35,
+      "row": 3,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1280,
+            768,
+            256,
+            256
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        }
+      },
+      "source_candidate": "r03_02_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_037",
+      "identity_id": "v9_gm01_gm_037",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 35,
+      "age": 35,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": true,
+      "tags": {
+        "glasses": true,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 36,
+      "page": 0,
+      "cell": 36,
+      "cell_index": 36,
+      "row": 3,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1536,
+            768,
+            256,
+            256
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        }
+      },
+      "source_candidate": "r01_02_07",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_038",
+      "identity_id": "v9_gm01_gm_038",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 36,
+      "age": 36,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 37,
+      "page": 0,
+      "cell": 37,
+      "cell_index": 37,
+      "row": 3,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1792,
+            768,
+            256,
+            256
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        }
+      },
+      "source_candidate": "m06_06_08",
+      "casting_origin": "Southeast Asian"
+    },
+    {
+      "id": "v9_gm01_gm_039",
+      "identity_id": "v9_gm01_gm_039",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 37,
+      "age": 37,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 38,
+      "page": 0,
+      "cell": 38,
+      "cell_index": 38,
+      "row": 3,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1024,
+            384,
+            128,
+            128
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2048,
+            768,
+            256,
+            256
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        }
+      },
+      "source_candidate": "b009_04",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_040",
+      "identity_id": "v9_gm01_gm_040",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 38,
+      "age": 38,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 39,
+      "page": 0,
+      "cell": 39,
+      "cell_index": 39,
+      "row": 3,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1152,
+            384,
+            128,
+            128
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2304,
+            768,
+            256,
+            256
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        }
+      },
+      "source_candidate": "h003_09",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_041",
+      "identity_id": "v9_gm01_gm_041",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 38,
+      "age": 38,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 40,
+      "page": 0,
+      "cell": 40,
+      "cell_index": 40,
+      "row": 4,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "index": 40,
+          "row": 4,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            0,
+            1024,
+            256,
+            256
+          ],
+          "index": 40,
+          "row": 4,
+          "column": 0
+        }
+      },
+      "source_candidate": "m06_04_07",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_042",
+      "identity_id": "v9_gm01_gm_042",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 38,
+      "age": 38,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 41,
+      "page": 0,
+      "cell": 41,
+      "cell_index": 41,
+      "row": 4,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            128,
+            512,
+            128,
+            128
+          ],
+          "index": 41,
+          "row": 4,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            256,
+            1024,
+            256,
+            256
+          ],
+          "index": 41,
+          "row": 4,
+          "column": 1
+        }
+      },
+      "source_candidate": "r03_02_06",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_043",
+      "identity_id": "v9_gm01_gm_043",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 39,
+      "age": 39,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 42,
+      "page": 0,
+      "cell": 42,
+      "cell_index": 42,
+      "row": 4,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            256,
+            512,
+            128,
+            128
+          ],
+          "index": 42,
+          "row": 4,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            512,
+            1024,
+            256,
+            256
+          ],
+          "index": 42,
+          "row": 4,
+          "column": 2
+        }
+      },
+      "source_candidate": "r01_02_05",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_044",
+      "identity_id": "v9_gm01_gm_044",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 40,
+      "age": 40,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 43,
+      "page": 0,
+      "cell": 43,
+      "cell_index": 43,
+      "row": 4,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            384,
+            512,
+            128,
+            128
+          ],
+          "index": 43,
+          "row": 4,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            768,
+            1024,
+            256,
+            256
+          ],
+          "index": 43,
+          "row": 4,
+          "column": 3
+        }
+      },
+      "source_candidate": "s007_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_045",
+      "identity_id": "v9_gm01_gm_045",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 44,
+      "page": 0,
+      "cell": 44,
+      "cell_index": 44,
+      "row": 4,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            512,
+            512,
+            128,
+            128
+          ],
+          "index": 44,
+          "row": 4,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1024,
+            1024,
+            256,
+            256
+          ],
+          "index": 44,
+          "row": 4,
+          "column": 4
+        }
+      },
+      "source_candidate": "r01_02_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_046",
+      "identity_id": "v9_gm01_gm_046",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 31,
+      "age": 31,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 45,
+      "page": 0,
+      "cell": 45,
+      "cell_index": 45,
+      "row": 4,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            640,
+            512,
+            128,
+            128
+          ],
+          "index": 45,
+          "row": 4,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1280,
+            1024,
+            256,
+            256
+          ],
+          "index": 45,
+          "row": 4,
+          "column": 5
+        }
+      },
+      "source_candidate": "unused7_b17_03",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_047",
+      "identity_id": "v9_gm01_gm_047",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 46,
+      "page": 0,
+      "cell": 46,
+      "cell_index": 46,
+      "row": 4,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            768,
+            512,
+            128,
+            128
+          ],
+          "index": 46,
+          "row": 4,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1536,
+            1024,
+            256,
+            256
+          ],
+          "index": 46,
+          "row": 4,
+          "column": 6
+        }
+      },
+      "source_candidate": "h003_03",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_048",
+      "identity_id": "v9_gm01_gm_048",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 47,
+      "page": 0,
+      "cell": 47,
+      "cell_index": 47,
+      "row": 4,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            896,
+            512,
+            128,
+            128
+          ],
+          "index": 47,
+          "row": 4,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1792,
+            1024,
+            256,
+            256
+          ],
+          "index": 47,
+          "row": 4,
+          "column": 7
+        }
+      },
+      "source_candidate": "unused7_b14_03",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_049",
+      "identity_id": "v9_gm01_gm_049",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 48,
+      "page": 0,
+      "cell": 48,
+      "cell_index": 48,
+      "row": 4,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1024,
+            512,
+            128,
+            128
+          ],
+          "index": 48,
+          "row": 4,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2048,
+            1024,
+            256,
+            256
+          ],
+          "index": 48,
+          "row": 4,
+          "column": 8
+        }
+      },
+      "source_candidate": "b008_08",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_050",
+      "identity_id": "v9_gm01_gm_050",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "data",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 49,
+      "page": 0,
+      "cell": 49,
+      "cell_index": 49,
+      "row": 4,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1152,
+            512,
+            128,
+            128
+          ],
+          "index": 49,
+          "row": 4,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2304,
+            1024,
+            256,
+            256
+          ],
+          "index": 49,
+          "row": 4,
+          "column": 9
+        }
+      },
+      "source_candidate": "z08_03_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_051",
+      "identity_id": "v9_gm01_gm_051",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 41,
+      "age": 41,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 50,
+      "page": 0,
+      "cell": 50,
+      "cell_index": 50,
+      "row": 5,
+      "column": 0,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            0,
+            640,
+            128,
+            128
+          ],
+          "index": 50,
+          "row": 5,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            0,
+            1280,
+            256,
+            256
+          ],
+          "index": 50,
+          "row": 5,
+          "column": 0
+        }
+      },
+      "source_candidate": "r01_03_03",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_052",
+      "identity_id": "v9_gm01_gm_052",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 44,
+      "age": 44,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 51,
+      "page": 0,
+      "cell": 51,
+      "cell_index": 51,
+      "row": 5,
+      "column": 1,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            128,
+            640,
+            128,
+            128
+          ],
+          "index": 51,
+          "row": 5,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            256,
+            1280,
+            256,
+            256
+          ],
+          "index": 51,
+          "row": 5,
+          "column": 1
+        }
+      },
+      "source_candidate": "g003_03",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_053",
+      "identity_id": "v9_gm01_gm_053",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 44,
+      "age": 44,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "tags": {
+        "glasses": true,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 52,
+      "page": 0,
+      "cell": 52,
+      "cell_index": 52,
+      "row": 5,
+      "column": 2,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            256,
+            640,
+            128,
+            128
+          ],
+          "index": 52,
+          "row": 5,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            512,
+            1280,
+            256,
+            256
+          ],
+          "index": 52,
+          "row": 5,
+          "column": 2
+        }
+      },
+      "source_candidate": "r01_03_07",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_054",
+      "identity_id": "v9_gm01_gm_054",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 45,
+      "age": 45,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 53,
+      "page": 0,
+      "cell": 53,
+      "cell_index": 53,
+      "row": 5,
+      "column": 3,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            384,
+            640,
+            128,
+            128
+          ],
+          "index": 53,
+          "row": 5,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            768,
+            1280,
+            256,
+            256
+          ],
+          "index": 53,
+          "row": 5,
+          "column": 3
+        }
+      },
+      "source_candidate": "r02_03_07",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_055",
+      "identity_id": "v9_gm01_gm_055",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 46,
+      "age": 46,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "tags": {
+        "glasses": false,
+        "beard": true
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 54,
+      "page": 0,
+      "cell": 54,
+      "cell_index": 54,
+      "row": 5,
+      "column": 4,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            512,
+            640,
+            128,
+            128
+          ],
+          "index": 54,
+          "row": 5,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1024,
+            1280,
+            256,
+            256
+          ],
+          "index": 54,
+          "row": 5,
+          "column": 4
+        }
+      },
+      "source_candidate": "h004_07",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_056",
+      "identity_id": "v9_gm01_gm_056",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 49,
+      "age": 49,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 55,
+      "page": 0,
+      "cell": 55,
+      "cell_index": 55,
+      "row": 5,
+      "column": 5,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            640,
+            640,
+            128,
+            128
+          ],
+          "index": 55,
+          "row": 5,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1280,
+            1280,
+            256,
+            256
+          ],
+          "index": 55,
+          "row": 5,
+          "column": 5
+        }
+      },
+      "source_candidate": "r03_03_04",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_057",
+      "identity_id": "v9_gm01_gm_057",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 50,
+      "age": 50,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 56,
+      "page": 0,
+      "cell": 56,
+      "cell_index": 56,
+      "row": 5,
+      "column": 6,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            768,
+            640,
+            128,
+            128
+          ],
+          "index": 56,
+          "row": 5,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1536,
+            1280,
+            256,
+            256
+          ],
+          "index": 56,
+          "row": 5,
+          "column": 6
+        }
+      },
+      "source_candidate": "h004_06",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_058",
+      "identity_id": "v9_gm01_gm_058",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 44,
+      "age": 44,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 57,
+      "page": 0,
+      "cell": 57,
+      "cell_index": 57,
+      "row": 5,
+      "column": 7,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            896,
+            640,
+            128,
+            128
+          ],
+          "index": 57,
+          "row": 5,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            1792,
+            1280,
+            256,
+            256
+          ],
+          "index": 57,
+          "row": 5,
+          "column": 7
+        }
+      },
+      "source_candidate": "r03_03_02",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_059",
+      "identity_id": "v9_gm01_gm_059",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 46,
+      "age": 46,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 58,
+      "page": 0,
+      "cell": 58,
+      "cell_index": 58,
+      "row": 5,
+      "column": 8,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1024,
+            640,
+            128,
+            128
+          ],
+          "index": 58,
+          "row": 5,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2048,
+            1280,
+            256,
+            256
+          ],
+          "index": 58,
+          "row": 5,
+          "column": 8
+        }
+      },
+      "source_candidate": "s010_01",
+      "casting_origin": "Korean"
+    },
+    {
+      "id": "v9_gm01_gm_060",
+      "identity_id": "v9_gm01_gm_060",
+      "r": "gm",
+      "role_group": "gm",
+      "group": "midcareer",
+      "a": 48,
+      "age": 48,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "tags": {
+        "glasses": false,
+        "beard": false
+      },
+      "kind": "rgb_portrait",
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 59,
+      "page": 0,
+      "cell": 59,
+      "cell_index": 59,
+      "row": 5,
+      "column": 9,
+      "sheets": {
+        "128": {
+          "path": "sheets/128/gm01.webp",
+          "rect": [
+            1152,
+            640,
+            128,
+            128
+          ],
+          "index": 59,
+          "row": 5,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/gm01.webp",
+          "rect": [
+            2304,
+            1280,
+            256,
+            256
+          ],
+          "index": 59,
+          "row": 5,
+          "column": 9
+        }
+      },
+      "source_candidate": "r03_03_08",
+      "casting_origin": "Black mixed heritage"
+    }
+  ],
+  "casting_composition": {
+    "korean_min_fraction": 0.8,
+    "international_max_fraction": 0.2,
+    "counts": {
+      "Korean": 48,
+      "Latino": 2,
+      "Black mixed heritage": 2,
+      "Black": 2,
+      "European": 2,
+      "Japanese": 1,
+      "Southeast Asian": 2,
+      "European mixed heritage": 1
+    },
+    "meaning": "fictional generation casting description, not a mandatory in-game nationality"
+  }
+}
