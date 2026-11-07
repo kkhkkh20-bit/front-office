@@ -7,7 +7,7 @@ function fullOn(){ return typeof document!=='undefined'&&!!(document.fullscreenE
 if(typeof document!=='undefined'){ const fs=()=>{ document.querySelectorAll('[data-a="fullTg"]').forEach(b=>b.classList.toggle('on',fullOn())); }; document.addEventListener('fullscreenchange',fs); document.addEventListener('webkitfullscreenchange',fs); }
 function uiZ(){ return typeof document==='undefined'?1:(+document.documentElement.dataset.z||1); }
 function appZoom(){ if(typeof document==='undefined')return false; const r=document.documentElement,z=Math.min(innerWidth/1920,innerHeight/1080),v=z>1.05?Math.round(z*100)/100:1; if(uiZ()===v)return false; r.dataset.z=v; r.style.zoom=v>1?String(v):''; r.style.setProperty('--z',String(v)); return true; }
-function render(){const app=document.getElementById('app');try{spoilNews();}catch(e){}rememberReading(app);try{return render0();}finally{restoreReading(app);workspaceRefit();}}
+function render(){const app=document.getElementById('app');try{spoilNews();}catch(e){}rememberReading(app);try{return render0();}finally{restoreReading(app);workspaceRefit();try{champSceneShow();}catch(e){}}}
 function render0(){appZoom();document.documentElement.classList.toggle('meeting-page-open',!!(G&&!UI.title&&UI.meet)); UI._rN=(UI._rN||0)+1;
   const app=$('#app');
   if(!G||UI.title){ setTeamVars(null); app.innerHTML=startScreen(); renderSheet(); return; }
@@ -216,3 +216,15 @@ function fdNoBounce(el){ let x0=0,y0=0,ax=null;
     if(!ax){ if(Math.abs(dx)<6&&Math.abs(dy)<6)return; ax=Math.abs(dx)>Math.abs(dy)?'x':'y'; }
     if(ax==='x'){ if(e.cancelable)e.preventDefault(); if(!el._sw&&Math.abs(dx)>50&&el._twGo){ el._sw=1; el._twGo(dx<0?1:-1); } return; }
     const top=el.scrollTop<=0, bot=el.scrollTop+el.clientHeight>=el.scrollHeight-1; if(((dy>0&&top)||(dy<0&&bot))&&e.cancelable)e.preventDefault(); },{passive:false}); }
+
+/* 우승 장면: 한국시리즈 우승을 확정하면 한 번, 트로피를 든 기념 장면을 띄운다(중계로 볼 마지막 경기는 중계를 마친 뒤, 사용자 11-08) */
+function champSceneShow(){ const C=G&&G.champScene; let el=document.getElementById('champScene'); if(!C||C.seen||UI.cast||(typeof spoilG==='function'&&spoilG())){ if(el&&(!C||C.seen))el.remove(); return; } if(el)return;
+  const t=team(G.user), m=G.mgr&&G.mgr[G.user], pal=tpal(t); const top=playersOf(G.user).filter(p=>!p.prospect).map(p=>({p,w:(()=>{ const h=seasonTotal(p,C.y,'1군'); return h?warOf(h,p):0; })()})).sort((a,b)=>b.w-a.w||ovr(b.p)-ovr(a.p)).slice(0,5);
+  el=document.createElement('div'); el.id='champScene'; el.className='champ-scene'; el.style.setProperty('--c1',pal[0]); el.style.setProperty('--c2',pal[3]||pal[1]);
+  el.innerHTML=`<div class="cs-bg"></div><div class="cs-conf">${Array.from({length:60},(_,i)=>`<i style="left:${(i*37)%100}%;animation-delay:${(i%12)*.25}s;animation-duration:${3+(i%5)*.6}s;background:${['#ffd24d',pal[0],'#fff',pal[3]||'#e8ecf2'][i%4]}"></i>`).join('')}</div>
+    <div class="cs-card" role="dialog" aria-label="한국시리즈 우승"><span class="cs-eyebrow">${C.y} KBO 한국시리즈</span><h1>우승</h1>
+      <div class="cs-trophy">${trophyImg(220)}</div><div class="cs-team">${badge(G.user,72)}<b>${esc(tname(G.user))}</b></div>
+      <p class="cs-sub">${esc(tname(C.op))}에 ${C.w}승 ${C.l}패${m&&!m.interim?` · ${esc(m.name)} 감독`:''}${meName()?` · ${esc(meName())} 단장`:''}</p>
+      <div class="cs-team-photo">${top.map(x=>`<figure>${avImg(x.p,true)}<figcaption>${esc(x.p.name)}${x.w?`<i>WAR ${x.w.toFixed(1)}</i>`:''}</figcaption></figure>`).join('')}</div>
+      <button class="btn primary" data-a="champSceneClose">기념 장면 닫기</button></div>`;
+  document.body.appendChild(el); try{ sfx('cheer_big',.9); }catch(e){} }

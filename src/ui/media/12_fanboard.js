@@ -50,7 +50,10 @@ const FB={
   drReach:{neg:['{p}? 처음 듣는 이름인데','이 순번에 이 선수는 좀...','언론 {r}위를 {n}순위에? 오버드래프트 아님?','다른 좋은 선수 남았는데 왜','스카우트 무슨 생각이냐'],mix:['스카우트가 뭘 봤겠지 믿어보자','몇 년 뒤에 판단하자','{pos} 급했나 보네']},
   drOk:{mix:['무난한 픽','예상대로 갔네','{pos} 보강 필요했지','{p} 잘 커라','군대 문제부터 잘 풀자'],pos:['{p} 환영한다','이 정도면 괜찮은 지명']},
   drSum:{pos:['올해 드래프트 만족한다','상위 라운드 잘 뽑은 듯','몇 년 뒤가 기대된다'],neg:['올해 드래프트 망한 듯','스카우트팀 교체해라','상위 픽 아깝다'],mix:['드래프트는 5년 뒤에 평가하는 거다','신인은 키우기 나름','2군 코치들 어깨가 무겁다']},
-  newsPos:{pos:['좋은 기사네','이런 기사 보고 싶었다','{p} 응원한다','기자님 일 잘하시네'],mix:['기사 제목 좀 과장 아님?']},
+  newsPos:{pos:['이런 기사만 보고 살고 싶다','{p} 응원한다 진짜','요즘 우리 팀 기사 볼 맛 난다','기자님 오늘 일 잘하셨네','캡처해 둔다 이 기사','{T} 분위기 좋다 확실히','이 흐름 시즌 끝까지 가자'],mix:['좋은 소식인데 아직 김칫국은 이르다','기사는 좋은데 결과로 보여 주자']},
+  champ:{pos:['우승 ㅠㅠㅠ 몇 년을 기다렸냐','올해 선수들 전원 레전드 인정','퍼레이드 다녀왔는데 사람 진짜 미쳤음','우승 굿즈 언제 나오냐 지갑 열어 둠','{T} 왕조 시작이다','기사 읽다가 또 울컥함','단장 감독 다 업어 줘라','이 맛에 야구 본다 진짜','내년에도 이 멤버 그대로 가자','우승 반지 끼는 장면 계속 돌려 봄','평생 기억할 시즌이다','{T} 팬이라 행복하다 오늘은'],fun:['오늘 회사 반차 냄 ㅋㅋ','우승 기념 치킨 두 마리 시킴','엄마한테 우승했다고 전화함','우승 기념 할인 안 하냐 구단아']},
+  champOther:{neg:['남의 팀 우승 기사 보니 배 아프다','우리는 언제 저런 거 해 보냐','내년엔 우리 차례다'],mix:['축하는 해 줘야지 잘했더라','저 팀 올해 확실히 강했음']},
+  awardB:{pos:['{p} 상 받을 만했다','{p} 올해 진짜 미쳤었지','수상 축하한다 {p}','{p} 연봉 협상 볼만하겠네 ㅋㅋ'],mix:['다른 후보도 아까웠는데','표 차이 생각보다 적더라']},
   newsNeg:{neg:['기사 뼈 때리네','반박 불가','프런트 이 기사 보고 있냐','팩트라 할 말이 없다'],mix:['기자가 너무 몰아가는 듯','한두 경기로 판단하긴 이르지']},
   newsNeu:{mix:['그렇구나','다음 소식 기다림','이건 좀 더 지켜보자','{p} 관련 소식 더 없냐','결국 성적으로 말하는 거지','오 이건 몰랐네','프런트 일 하긴 하네','시즌 끝나고 다시 보자','기사 잘 봤습니다','이게 우리한테 득일지 실일지'],fun:['ㅋㅋㅋ 기사 제목','댓글 1등','출근길에 읽음','점심 먹으면서 봄']}
 };
@@ -130,12 +133,15 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
     else if(w.k==='외국인'&&w.tid===me){ add({id:'fo'+w.d+w.t.length,d:w.d,cat:'외국인',title:w.t,body:'',tid:me,cm:fComments('foc'+w.d,'forChg','mix',{},4,me,fa)}); } }
   /* 8) 우리 구단 기사 */
   for(const n of (G.news||[]).slice(0,14)){ if(n.k==='경기')continue; const p=n.ref!=null?G.players[n.ref]:null;
-    const bank=n.k==='선수'&&p&&p.foreign?(n.v<0?'forBad':'forGood'):n.v>=1?'newsPos':n.v<=-1?'newsNeg':'newsNeu';
-    add({id:'n'+n.id,d:n.d,cat:'기사',title:`[${n.o}] ${n.t}`,body:n.b||'',tid:me,ref:n.ref,nid:n.id,cm:fComments('nc'+n.id,bank,n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:''},5,me,fa)}); }
+    const bank=newsBank(n,p);
+    add({id:'n'+n.id,d:n.d,cat:'기사',title:`[${n.o}] ${n.t}`,body:n.b||'',tid:me,ref:n.ref,nid:n.id,cm:fComments('nc'+n.id,bank,bank==='champ'||bank==='awardB'?'pos':n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:'',T:team(me).nick},5,me,fa)}); }
   const seen=new Set(); return T.filter(t=>{ if(seen.has(t.id))return false; seen.add(t.id); return true; }).sort((a,b)=>b.d-a.d||(b.hot?1:0)-(a.hot?1:0)).slice(0,40); }
+/* 기사 내용으로 반응 묶음 고르기: 우승·시상은 전용 반응(우승 기사에 '제목 과장 아님?' 같은 댓글이 달리던 문제, 사용자 11-08) */
+function newsBank(n,p){ const t=(n.t||'')+' '+(n.b||''); if(/우승|퍼레이드|정상 등극|챔피언/.test(t))return n.v>=0&&(t.includes(team(G.user).nick)||(G.ps&&G.ps.champ===G.user))?'champ':'champOther';
+  if(/MVP|신인왕|골든글러브|수상/.test(t)&&n.v>=0)return 'awardB'; return n.k==='선수'&&p&&p.foreign?(n.v<0?'forBad':'forGood'):n.v>=1?'newsPos':n.v<=-1?'newsNeg':'newsNeu'; }
 /* 기사 하나의 댓글 */
-function newsComments(n){ const p=n.ref!=null?G.players[n.ref]:null; const bank=n.k==='선수'&&p&&p.foreign?(n.v<0?'forBad':'forGood'):n.k==='경기'?(n.v>=0?'win':'loss'):n.v>=1?'newsPos':n.v<=-1?'newsNeg':'newsNeu';
-  return fComments('nc'+n.id,bank,n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:'',r:p?p.name:'',O:''},5,G.user,fanAdj()); }
+function newsComments(n){ const p=n.ref!=null?G.players[n.ref]:null; const b0=newsBank(n,p); const bank=b0==='newsPos'||b0==='newsNeg'||b0==='newsNeu'?(n.k==='경기'?(n.v>=0?'win':'loss'):b0):b0;
+  return fComments('nc'+n.id,bank,bank==='champ'||bank==='awardB'?'pos':bank==='champOther'?'neg':n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:'',r:p?p.name:'',O:'',T:team(G.user).nick},5,G.user,fanAdj()); }
 /* 최근 우리 트레이드 반응 두 줄 (트레이드 성사 도장에 붙인다) */
 function tradeFanLines(){ const t=(G.trades||[])[G.trades.length-1]; if(!t)return []; const th=fanThreads().find(x=>x.id==='tr'+t.d+(t.gi||[]).join('.')); return th?th.cm.slice(0,3):[]; }
 function gameFanLines(g){ if(!g)return []; const th=fanThreads().find(x=>x.id==='g'+g.day); return th?th.cm.slice(0,2):[]; }

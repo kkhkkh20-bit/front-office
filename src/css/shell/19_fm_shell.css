@@ -130,3 +130,16 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 #fmadv .fa-rest,#fmadv .fa-e{font-size:11px;padding:4px 6px;margin-bottom:4px;border-radius:3px;background:rgba(255,255,255,.05);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #fmadv .fa-e{background:rgba(139,92,246,.22);color:#e7dcff}
 @media (prefers-reduced-motion: reduce){#fmadv .fa-in{transition:none}}
+/* 우승 장면(사용자 11-08) */
+.champ-scene{position:fixed;inset:0;z-index:400;display:grid;place-items:center;overflow:hidden;animation:csIn .5s ease-out}
+.champ-scene .cs-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,color-mix(in srgb,var(--c1) 70%,#000) 0%,#05080c 75%)}
+.champ-scene .cs-conf{position:absolute;inset:0;pointer-events:none}.champ-scene .cs-conf i{position:absolute;top:-20px;width:8px;height:14px;border-radius:2px;opacity:.9;animation:csFall linear infinite}
+.champ-scene .cs-card{position:relative;display:grid;justify-items:center;gap:10px;padding:24px 28px;max-width:min(860px,94vw);max-height:94vh;overflow:auto;text-align:center;color:#fff}
+.champ-scene .cs-eyebrow{letter-spacing:.2em;font-size:13px;color:#ffd24d}.champ-scene h1{margin:0;font-size:clamp(44px,8vw,88px);line-height:1;font-weight:900;color:#ffd24d;text-shadow:0 6px 30px rgba(255,210,77,.45)}
+.champ-scene .cs-trophy{filter:drop-shadow(0 12px 40px rgba(255,210,77,.55));animation:csGlow 2.4s ease-in-out infinite}.champ-scene .cs-trophy img,.champ-scene .cs-trophy svg{width:min(220px,40vw);height:auto}
+.champ-scene .cs-team{display:flex;align-items:center;gap:12px}.champ-scene .cs-team b{font-size:clamp(22px,3.4vw,34px)}
+.champ-scene .cs-sub{margin:0;color:#dfe6ee;font-size:14px}
+.champ-scene .cs-team-photo{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:6px 0}.champ-scene figure{margin:0;display:grid;justify-items:center;gap:4px;width:96px}
+.champ-scene figure .av{width:84px;height:84px;border-radius:50%;border:3px solid #ffd24d;object-fit:cover;background:#111}.champ-scene figcaption{font-size:12px;display:grid}.champ-scene figcaption i{font-style:normal;color:#ffd24d;font-size:11px}
+@keyframes csFall{to{transform:translateY(110vh) rotate(540deg)}}@keyframes csGlow{50%{filter:drop-shadow(0 12px 60px rgba(255,210,77,.85))}}@keyframes csIn{from{opacity:0}}
+@media (prefers-reduced-motion: reduce){.champ-scene .cs-conf,.champ-scene .cs-trophy{animation:none}.champ-scene .cs-conf{display:none}}

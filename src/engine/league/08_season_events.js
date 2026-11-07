@@ -79,7 +79,7 @@ function psDay(day){
     const nx={wc:['spo',P.seeds[2]],spo:['po',P.seeds[1]],po:['ks',P.seeds[0]]}[s.round];
     try{ psOutNews(s.round,P.res[s.round]); }catch(e){ console.error(e); }
     if(nx){ P.round=nx[0]; P.cur=mkSeries(nx[0],nx[1],done[0],day+2); }
-    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
+    else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; if(done[0]===G.user&&!G.unemp)G.champScene={y:G.year,day,op:done[1],w:P.res.ks[2],l:P.res.ks[3]}; /* 우승 장면을 한 번 띄운다(사용자 11-08) */ stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
   }
 }
 /* 상한 초과(경쟁균형세)는 세금과 별개로 구단주가 부담으로 본다: 초과 폭만큼 신뢰 점수가 깎이고(상한의 10% 초과면 -4, 25% 넘으면 -10), 다음 시즌 모기업 지원 한도가 초과분의 절반만큼 준다. 신뢰 감점 값을 돌려준다(결산이 더한다) */
