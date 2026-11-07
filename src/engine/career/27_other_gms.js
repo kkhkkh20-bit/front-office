@@ -11,7 +11,7 @@ function gmAbil(g){ if(!g||g.interim)return null; if(!g.ab){ const u=k=>u01('gma
 const gmAbOf=tid=>{ if(tid==null||tid===G.user)return null; const t=team(tid); return t&&t.gm?gmAbil(t.gm):null; };
 /* 재임 성적: 이 단장이 맡은 뒤 시즌별 순위(지난 시즌까지) */
 function gmRecord(tid){ const g=team(tid).gm; if(!g||g.interim)return null; const H=(G.history||[]).filter(h=>h.y>=g.since&&h.order); const rk=H.map(h=>h.order.findIndex(o=>o.tid===tid)+1).filter(x=>x>0); return {n:rk.length,avg:rk.length?rk.reduce((a,x)=>a+x,0)/rk.length:null,best:rk.length?Math.min(...rk):null,ch:H.filter(h=>h.champ===tid).length,ps:rk.filter(x=>x<=5).length}; }
-function gmOf(tid){ if(tid===G.user)return null; const t=team(tid); if(!t.gm)t.gm=mkGM(tid); return t.gm; }
+function gmOf(tid){ if(tid===ME())return null; /* 야인이면 전 구단도 그 구단 단장(검수 11-07) */ const t=team(tid); if(!t.gm)t.gm=mkGM(tid); return t.gm; }
 function gmTrait(tid){ const g=tid===G.user?null:team(tid).gm; return g&&!g.interim?g.trait:null; }
 function gmInit(){ for(const t of G.teams){ if(t.id!==G.user&&!t.gm)t.gm=mkGM(t.id); } if(G.rep==null)G.rep=50; G.gmc=G.gmc||{}; G.jobs=G.jobs||[]; G.lgTrades=G.lgTrades||[]; }
 function relLabel(r){ return r>=80?'막역한 사이':r>=65?'친한 편':r>=45?'무난한 사이':r>=30?'서먹한 사이':'껄끄러운 사이'; }
@@ -190,9 +190,9 @@ function userLogRebuild(tid){ const S=G.sea; if(!S)return; const L=((S.tl||[])[t
   S.ulog=L.filter(z=>z[5]!=null).map(z=>({d:z[5],h:z[3]?tid:z[4],a:z[3]?z[4]:tid,hs:z[3]?z[1]:z[2],as:z[3]?z[2]:z[1],res:z[0]>0?'승':z[0]<0?'패':'무',k:''}));
   { const P=G.ps; if(P&&P.order&&dobj((P.cur&&P.cur.days[0])||Object.values(P.resD||{})[0]||G.day).y===G.year){ const add=(k,hi,lo,v)=>{ if(!v||!v.p||(hi!==tid&&lo!==tid))return; v.d.forEach((d,i)=>{ const sc=v.p[i]; if(!sc||i>=v.p.length)return; const h=v.h[i], a=h===hi?lo:hi, hs=sc[0], as=sc[1], my=h===tid?hs-as:as-hs; S.ulog.push({d,h,a,hs,as,res:my>0?'승':my<0?'패':'무',k:`${ROUNDK[k.replace(/\d+$/,'')]||ROUNDK[k]} ${i+1}차전`}); }); };
     for(const [k,r] of Object.entries(P.res||{}))if(r)add(k,r[0],r[1],(P.days||{})[k]); if(P.cur&&P.cur.pts)add(P.cur.round,P.cur.hi,P.cur.lo,{d:P.cur.days,h:P.cur.homes,p:P.cur.pts}); S.ulog.sort((x,y)=>x.d-y.d); } } /* 새 구단이 이미 치른 포스트시즌 경기도 달력·최근 경기에(검수 11-07) */
-  const cm=dobj(G.day).m, cy=dobj(G.day).y; const by={}; for(const x of S.ulog){ const o=dobj(x.d); if(o.y!==cy||o.m>=cm)continue; const b=by[o.m]=by[o.m]||{w:0,l:0,t:0}; b[x.res==='승'?'w':x.res==='패'?'l':'t']++; }
+  const cm=dobj(G.day).m, cy=dobj(G.day).y; const by={}; for(const x of S.ulog){ const o=dobj(x.d); if(x.k||o.y!==cy||o.m>=cm)continue; /* 월별은 정규시즌만(검수 11-07) */ const b=by[o.m]=by[o.m]||{w:0,l:0,t:0}; b[x.res==='승'?'w':x.res==='패'?'l':'t']++; }
   S.months=Object.keys(by).map(Number).sort((a,b)=>a-b).map(m=>Object.assign({m:m+'월'},by[m])); const mk={w:0,l:0,t:0}; for(const o of S.months){ mk.w+=o.w; mk.l+=o.l; mk.t+=o.t; } S.mark=mk;
-  G.games=(G.games||[]).filter(g=>g.home===tid||g.away===tid); G.res=null; }
+  G.games=(G.games||[]).filter(g=>g.home===tid||g.away===tid); for(const g of G.games){ if(g.hs==null||g.as==null)continue; const my=g.home===tid?g.hs-g.as:g.as-g.hs; g.res=my>0?'승':my<0?'패':'무'; } /* 승패를 새 구단 기준으로(검수 11-07) */ G.res=null; }
 /* 단장직 제의 요약: 맡기 전에 얼마나 어려운 팀인지(지금 순위·연봉 상한 대비·장기 부상·내년 연봉·구단주 성향) */
 function jobBrief(tid){ const t=team(tid); const L=[]; const per=period(); const r=G.sea&&G.sea.rec&&G.sea.rec[tid];
   if((per==='season'||per==='post')&&r&&r.w+r.l>0){ const st=standingsNow(); L.push(`지금 ${st.findIndex(x=>x.tid===tid)+1}위(${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''})`); } else L.push(`지난 시즌 ${G.last&&G.last.order?G.last.order.findIndex(o=>o.tid===tid)+1:'-'}위`);
@@ -206,7 +206,7 @@ function switchTeam(tid){ champEventsInit(); const old=G.user; if(G.spon)G.spon.
   { const O=G.orgT=G.orgT||{}; O[old]={med:G.med,intl:G.intl,data:G.data,retNos:G.retNos||[],capex:G.capex||null,truck:G.truck||null,coachX:G.coachX||[]}; const n=O[tid]; delete O[tid]; G.coachX=n&&n.coachX?n.coachX:[]; /* 보조 코치도 구단 것(검수 11-07) */ G.retNos=n&&n.retNos?n.retNos:[]; G._capexN=n?n.capex:null; G.truck=n&&n.truck?n.truck:null; /* 시설 투자 요청 제한·트럭 시위 이력도 구단 것 */ /* 영구결번도 그 구단 것 */
     G.med=n&&n.med?n.med:{prev:1,hosp:'none'}; G.intl=n&&n.intl?n.intl:{us:1,la:0,jp:0,tw:0,au:0}; G.data=n&&n.data?n.data:{lv:1}; }
   { const m=G.mgr[tid]; if(m&&m.act){ m.interim=true; m.sal=m.sal||150; } } /* AI 구단 감독대행은 부임하면 우리 대행과 같은 대행으로(정식 감독처럼 면담·경질되지 않게, 검수 11-07) */
-  ot.gm=mkGM(old); ot.rel=60; nt.gm=null; G.user=tid; champAdopt(tid); nt.trust=55; nt.rel=50;
+  if(!G.unemp||!ot.gm||ot.gm.interim){ ot.gm=mkGM(old); ot.rel=60; } /* 야인이던 때 전 구단은 이미 후임이 있다(검수 11-07) */ nt.gm=null; G.user=tid; champAdopt(tid); nt.trust=55; nt.rel=50;
   G.goals=null; G.policy=null; G.devProg=[]; try{ ovsHandOff(old,tid); }catch(e){ G.ovs=[]; } G.lineup={}; G.offers=[]; G.shortlist=[]; G.tsug=null; G.mentor=null;
   /* 캠프: 옛 구단 훈련 방향·시작 기록은 두고, 새 구단 캠프를 합류 시점 기준으로 이어받는다(방향은 기본 '균형', 결산 비교는 합류일부터) */
   G.camp=G.camp&&!G.camp.done?{focus:'balance',done:false,snap:campSnap(),join:G.day,byT:Object.assign({},G.camp.byT||{},G.camp.focus?{[old]:G.camp.focus}:{})}:null;

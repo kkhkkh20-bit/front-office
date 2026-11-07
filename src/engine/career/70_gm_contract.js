@@ -12,7 +12,12 @@ function myCStart(tid,terms,why){ const old=G.myC; const sal=terms&&terms.sal||m
   const y0=period()==='season'||period()==='post'?G.year:(dobj(G.day).m>=10?G.year+1:G.year);
   G.myC={tid,sal,y0,y1:y0+yrs-1,earn:old?old.earn:0,stints:old?old.stints:[],seas:old?old.seas:[]};
   chron('join',`${tname(tid)} 단장 계약: 연봉 ${money(sal)}, ${y0}~${y0+yrs-1}년${why?` (${why})`:''}`,null,tid); }
-function myCEnd(how,y){ const C=G.myC; if(!C)return; let fin=null; try{ const L=G.last; if(L&&L.fins&&L.fins[C.tid]&&L.y>=C.y0){ const o=L.order&&L.order.find(x=>x.tid===C.tid); fin={y:L.y,f:JSON.parse(JSON.stringify(L.fins[C.tid])),rank:L.order?L.order.findIndex(x=>x.tid===C.tid)+1:null,w:o?o.w:null,l:o?o.l:null}; } }catch(e){} /* 퇴임 시점의 마지막 시즌 결산: 야인이 되어도 복기할 수 있게 경력에 남긴다 */
+function myCEnd(how,y){ const C=G.myC; if(!C)return; if(C.tid!=null){ const per=period(), r=G.sea&&G.sea.rec&&G.sea.rec[C.tid];
+    /* 시즌 중 떠나면 그 구단에서 쌓은 그해 승패를 통산에 남긴다(검수 11-07: 이직하면 사라짐). 순위·우승은 시즌을 마친 구단 기준이라 part 표시 */
+    if((per==='season'||per==='post')&&r&&!(C.seas||[]).some(s=>s.y===G.year&&s.tid===C.tid)){ const J=G.gmJoin&&G.gmJoin.y===G.year&&G.gmJoin.tid===C.tid?G.gmJoin:null; let rk=null; try{ rk=standingsNow().findIndex(x=>x.tid===C.tid)+1||null; }catch(e){} (C.seas=C.seas||[]).push({y:G.year,tid:C.tid,rank:rk,w:Math.max(0,(r.w||0)-(J?J.w:0)),l:Math.max(0,(r.l||0)-(J?J.l:0)),ch:0,part:1}); }
+    /* 이 구단에서 이미 받은 월급은 이 구단이 낸다(검수 11-07: 지갑엔 들어왔는데 어느 구단 장부에도 없음) */
+    try{ const S=personalState(), fy=fyNow(), ak=fy+':'+C.tid, adv=S.advance[ak]||0; if(adv>0&&!S.settled[fy]){ team(C.tid).cash-=adv; C.earn+=adv; delete S.advance[ak]; } }catch(e){} }
+  let fin=null; try{ const L=G.last; if(L&&L.fins&&L.fins[C.tid]&&L.y>=C.y0){ const o=L.order&&L.order.find(x=>x.tid===C.tid); fin={y:L.y,f:JSON.parse(JSON.stringify(L.fins[C.tid])),rank:L.order?L.order.findIndex(x=>x.tid===C.tid)+1:null,w:o?o.w:null,l:o?o.l:null}; } }catch(e){} /* 퇴임 시점의 마지막 시즌 결산: 야인이 되어도 복기할 수 있게 경력에 남긴다 */
   const ye=Math.min(C.y1,y??G.year); C.stints.unshift({tid:C.tid,y0:Math.min(C.y0,ye),y1:ye, /* 다음 시즌부터인 계약을 시작 전에 끝내면 끝낸 해로 적는다 */sal:C.sal,how,fin}); C.stints.length=Math.min(C.stints.length,20); C.tid=null; }
 /* 결산 지출: 단장 연봉 */
 function myCPay(){ const C=myCInit(); if(!C||G.unemp)return 0; if(personalState().settled[fyNow()])return 0; /* 같은 회계연도 두 번째 정산: 지갑·경력 수입·구단 지출 모두 한 번만(검수 11-06) */C.earn+=C.sal;personalSettle(C.sal); return C.sal; }
@@ -53,4 +58,4 @@ EV_KEY.add('gmRenew');
 function myCNewYear(){ const C=myCInit(); if(!C||G.unemp)return; if(C.y1===G.year)note('구단주',`올해가 단장 계약 마지막 해입니다(연봉 ${money(C.sal)}). 시즌이 끝나면 구단주가 재계약 여부를 정합니다. 구단주 신뢰 45 이상이면 재계약 제안이 오고, 명성 58 이상이면 다른 구단 제의도 올 수 있습니다.`); }
 /* 단장 카드용 통산 */
 function myCStats(){ const C=myCInit()||G.myC; if(!C)return null; const S=C.seas||[]; const w=sum(S.map(s=>s.w)), l=sum(S.map(s=>s.l));
-  const teams=new Set(S.map(s=>s.tid)); return {n:S.length,w,l,pct:w+l?w/(w+l):0,ch:S.filter(s=>s.ch===1).length,ru:S.filter(s=>s.ch===2).length,ps:S.filter(s=>s.rank<=5).length,teams:teams.size,chT:[...new Set(S.filter(s=>s.ch===1).map(s=>s.tid))]}; }
+  const teams=new Set(S.map(s=>s.tid)); return {n:new Set(S.map(s=>s.y)).size, /* 시즌 중 이직한 해는 한 시즌 */w,l,pct:w+l?w/(w+l):0,ch:S.filter(s=>s.ch===1).length,ru:S.filter(s=>s.ch===2).length,ps:S.filter(s=>!s.part&&s.rank!=null&&s.rank<=5).length,teams:teams.size,chT:[...new Set(S.filter(s=>s.ch===1).map(s=>s.tid))]}; }
