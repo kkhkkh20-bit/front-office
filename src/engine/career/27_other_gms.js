@@ -149,7 +149,7 @@ function leaveTeamState(old){
   G.ownOrder=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=[]; G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
   for(const c of (G.coachX||[])){ delete c.ax; c.yrs=0; c.clan=null; (G.cmarket=G.cmarket||[]).push(c); } G.coachX=[]; /* 보조 코치는 단장이 꾸린 계약: 떠나면 시장으로(나이·계약이 멈춘 채 남지 않게, 검수 11-08) */
   G.trn={}; /* 훈련 지시는 그 구단 선수에게 내린 것 */
-  G.supPlan=null; G.fanOps=null; /* 응원단·채널·이벤트는 그 구단 것 */ G.campInj=1; G.form=null; G.leadAdj=null; G.pact=null; G.mpick=null;
+  G.supPlan=null; if(G.fanOps){ (G.fanYrT=G.fanYrT||{})[old]={yr:{...(G.fanOps.yr||{})},sup:G.fanOps.sup}; } G.fanOps=null; /* 응원단·채널·이벤트는 그 구단 것 */ G.campInj=1; G.form=null; G.leadAdj=null; G.pact=null; G.mpick=null;
   for(const p of Object.values(G.players)){ if(p.team!==old)continue; delete p.listed; delete p.urgent; delete p.promise; delete p.treq; delete p.pconv; } }
 /* 떠난 구단이 걸려 있는 FA 보상 절차는 그 구단(이제 AI)이 마무리한다 */
 function compHandOff(old){ for(const c of (G.comp||[])){ if(c.stage==='done')continue; if(c.to!==old&&c.from!==old)continue;

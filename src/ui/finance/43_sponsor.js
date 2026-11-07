@@ -2,8 +2,8 @@
 /* 계약 조항 펼쳐 보기(사용자 11-06: 세부 조항을 볼 수 없었다). 엔진 정산(49_sponsors.js)과 같은 조건을 그대로 적는다 */
 function sponTerms(c,k,y){ const press=G.pr?(G.pr.press<30&&Math.round(G.pr.press)>=30?(Math.floor(G.pr.press*10)/10).toFixed(1):Math.round(G.pr.press)):null, /* 30 바로 밑(29.6 등)을 30으로 반올림해 기준을 넘은 것처럼 보이지 않게(검수 11-06) */ fan=G.pr?Math.round(G.pr.fan):null; const L=[
   ['계약',`${c.y0??'-'}~${c.until}년 · 연 ${money(c.amt)}${c.y0===y&&c.first!=null&&c.first<1?` · 첫해는 남은 기간만큼 ${Math.round(c.first*100)}%`:''}`],
-  ['가을야구 보너스',c.ps?`정규시즌 5위 안에 들면 그해 +${money(c.ps)}`:'없음'],
-  ['우승 보너스',c.champ?`한국시리즈 우승하면 그해 +${money(c.champ)}`:'없음'],
+  ['가을야구 보너스',c.ps?`정규시즌 5위 안에 들면 그해 +${money(c.ps)}${c.y0===y&&c.psNo?' · 첫해는 가을야구 확정 뒤 계약이라 없음':c.y0===y&&c.bf!=null&&c.bf<1?` · 첫해는 ${Math.round(c.bf*100)}%(${money(Math.round(c.ps*c.bf))})`:''}`:'없음'],
+  ['우승 보너스',c.champ?`한국시리즈 우승하면 그해 +${money(c.champ)}${c.y0===y&&c.bf!=null&&c.bf<1?` · 첫해는 ${Math.round(c.bf*100)}%(${money(Math.round(c.champ*c.bf))})`:''}`:'없음'],
   ['이미지 조항',c.img?`시즌 결산 때 언론 논조가 30 밑이면 다음 해 금액 20% 감액(지금 언론 논조 ${press??'-'})`:'없음'],
   ['해지 위험',`팬 여론이 25 밑이면 매달 약 6% 확률로 스폰서가 계약을 해지합니다(지금 팬 여론 ${fan??'-'}). 해지 전까지 몫은 받습니다`],
   ['정산','시즌 결산 때 기본 금액과 보너스를 함께 받습니다']];
@@ -18,7 +18,7 @@ function sponView(){ sponInit(); const S=G.spon, t=team(G.user); const y=sponSea
   const card=o=>{ const cur=S.c[o.slot]; const tag={bonus:'성과형',safe:'안정형',long:'장기형',std:'표준'}[o.style];
     return `<div class="spo"><div class="row between"><b>${esc(o.co)} <span class="small muted">${esc(o.ind)}</span></b><span class="pill">${tag}</span></div>
       <div class="small">${SPON_SLOT[o.slot].l}${o.renew?' · 재계약 제안':''}${cur&&cur.until>=y?' · <span class="warn">계약 중인 자리</span>':''}</div>
-      <div class="spo-n"><span><i>연 금액</i><b class="num">${money(o.amt)}</b></span><span><i>기간</i><b>${o.yrs}년</b></span><span><i>가을야구</i><b class="num">+${money(o.ps)}</b></span><span><i>우승</i><b class="num">+${money(o.champ)}</b></span></div>
+      <div class="spo-n"><span><i>연 금액</i><b class="num">${money(o.amt)}</b></span><span><i>기간</i><b>${o.yrs}년</b></span><span><i>가을야구</i><b class="num">+${money(o.ps)}</b></span><span><i>우승</i><b class="num">+${money(o.champ)}</b></span></div>${(()=>{ const f=sponFirstTerms(); return f.lateSign||f.psLock?`<div class="small muted">지금 계약하면 첫해 보너스: ${f.psLock?'가을야구 확정 뒤라 진출 보너스 없음, ':''}${f.lateSign?`남은 기간 비율 ${Math.round(f.first*100)}%만`:'우승 보너스 전액'}</div>`:''; })()}
       ${o.img?'<div class="small warn">이미지 조항: 언론 논조가 30 밑으로 떨어지면 다음 해 금액 20% 감액</div>':''}
       <div class="small muted">${o.exp-G.day}일 안에 답해야 합니다.</div>
       <div class="row"><button class="btn primary small" data-a="sponAcc" data-v="${o.id}">수락</button>${o.cnt?'':`<button class="btn small" data-a="sponCnt" data-v="${o.id}:0.1">10% 올려 요청</button><button class="btn small" data-a="sponCnt" data-v="${o.id}:0.2">20% 올려 요청</button>`}<button class="btn small" data-a="sponRej" data-v="${o.id}">거절</button></div></div>`; };

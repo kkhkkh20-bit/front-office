@@ -26,12 +26,16 @@ function sponMake(slot,o){ o=o||{}; const S=o.S||G.spon; const ind=pick(SPON_IND
   const bon=style==='bonus'?[.35,.7]:style==='safe'?[0,.1]:[.12,.3];
   const x={id:S.nid++,slot,co,ind,amt:round5(amt),yrs,ps:round5(amt*rnd(bon[0],bon[0]+.1)),champ:round5(amt*rnd(bon[1]-.05,bon[1]+.15)),img:R()<(o.base?.2:.35),style,day:G.day,exp:G.day+21,cnt:0,renew:!!o.renew};
   return x; }
+/* 지금 계약하면 첫해 조건(계약 화면 안내와 실제 계약이 같은 계산을 쓴다, 검수 11-08) */
+function sponFirstTerms(){ let y0=sponSeason(); const inSea=y0===G.year&&G.cal&&G.day>G.cal.open; const over=inSea&&G.day>=G.cal.end; if(over)y0++; const first=over?1:inSea?clamp((G.cal.end-G.day)/(G.cal.end-G.cal.open),0,1):1; let psLock=false; try{ psLock=inSea&&psClinched(G.user); }catch(e){} return {y0,first,lateSign:inSea&&first<1,psLock}; }
 function sponSign(o,silent){ const S=G.spon; let y0=sponSeason(); const inSea=y0===G.year&&G.cal&&G.day>G.cal.open; const over=inSea&&G.day>=G.cal.end; /* 정규시즌이 끝난 뒤 결산 전 계약: 올해 몫은 없고 계약 기간은 다음 시즌부터 센다 */
   if(over)y0++; /* 정규시즌 뒤 계약은 다음 시즌부터 시작하는 계약으로 적는다(1년 계약이 2개 연도로 기록되지 않게, 검수 11-06) */ const first=over?1:inSea?clamp((G.cal.end-G.day)/(G.cal.end-G.cal.open),0,1):1; /* 남은 기간 비율 그대로(하한 없음, 검수 11-07) */
   const lateSign=inSea&&first<1; let psLock=false; try{ psLock=inSea&&psClinched(G.user); }catch(e){} /* 이미 가을야구를 확정한 뒤 맺은 계약은 진출 보너스 없음(검수 11-07) */ /* 시즌 중 계약: 첫해 성과 보너스도 남은 기간 비율만(이미 확정된 가을야구는 보너스 없음, 검수 11-07) */
   S.c[o.slot]={co:o.co,ind:o.ind,amt:o.amt,ps:o.ps,champ:o.champ,img:o.img,y0,until:y0+o.yrs-1,first,id:o.id,d0:G.day,...(lateSign?{bf:first}:{}),...(psLock?{psNo:1}:{})};
   S.off=S.off.filter(x=>x.slot!==o.slot); if(!silent){ addLog(`${o.co}(${o.ind})와(과) ${SPON_SLOT[o.slot].l} 계약: ${o.yrs}년, 연 ${money(o.amt)}.`); chron&&chron('spon',`${o.co} ${SPON_SLOT[o.slot].l} 계약 (${o.yrs}년 연 ${money(o.amt)})`);
     if(o.amt>=SPON_SLOT[o.slot].b*1.15)news('구단',`${tshort(G.user)}, ${o.co}와(과) ${SPON_SLOT[o.slot].l} 계약`,`${o.yrs}년 연 ${money(o.amt)} 규모입니다. 구단 가치가 올랐다는 평가가 나옵니다.`,1); } }
+/* 단장이 떠난 구단의 계약서: 이직하면 G.sponT, 무직이면 G.spon이 떠난 구단 것(검수 11-08: 사임 뒤 결산에서 계약이 빠짐) */
+function sponLeft(tid){ return (G.sponT&&G.sponT[tid])||(G.unemp&&G.unemp.from===tid&&G.spon)||null; }
 /* 올해(진행 중이거나 다음) 시즌에 들어올 기본 금액 */
 function sponIncome(y){ const S=G.spon; if(!S)return 0; y=y??sponSeason(); let s=0; for(const k in S.c){ const c=S.c[k]; if(c.y0<=y&&c.until>=y)s+=c.amt*(c.y0===y?c.first:1); } for(const c of (S.cutL||[]))if(c.until===y)s+=c.amt*c.cutF; return Math.round(s); }
 /* 중도 해지: 해지 전까지 지난 기간 몫(정규시즌 날짜 비율)은 그해 결산에 남기고, 남은 몫만 취소한다. 해지 날짜·사유는 이력에 남는다 */
@@ -47,7 +51,7 @@ function sponDaily(){ try{ sponPitchOld(); }catch(e){} /* 무직 중에도 떠�
   const off=(o.m===11&&o.d===10)||(o.m===12&&o.d===1)||(o.m===1&&o.d===10)||(o.m===2&&o.d===1)||(o.m===3&&o.d===1); const sea=o.d===1&&period()==='season'&&R()<.35;
   if(!off&&!sea)return; const made=[];
   for(const k of Object.keys(SPON_SLOT)){ if(SPON_SLOT[k].indie&&!t.indie)continue; if(!sponOpen(k))continue; const have=S.off.filter(x=>x.slot===k).length; const n=off?ri(1,2):(R()<.5?1:0);
-    for(let i=0;i<n&&have+i<3;i++){ const old=S.c[k]; const x=sponMake(k,{renew:old&&old.until===sponSeason()-1&&i===0 /* 막 끝난 계약 시즌 기준(1월에도 재계약 제안, 검수 11-07) */&&!S.off.some(z=>z.slot===k&&z.renew)}); if(x.renew){ x.co=old.co; x.ind=old.ind; } if(S.off.some(z=>z.slot===k&&z.co===x.co))continue; /* 같은 자리 같은 기업 중복 제안 없음(검수 11-07) */ S.off.push(x); made.push(x); } }
+    for(let i=0;i<n&&have+i<3;i++){ const old=S.c[k]||[...(S.hist||[])].reverse().find(h=>h.slot===k&&!h.cut&&h.until===sponSeason()-1); /* 떠난 사이 결산으로 계약서에서 빠진 만료 계약도 이력으로 재계약 제안(검수 11-08) */ const x=sponMake(k,{renew:old&&old.until===sponSeason()-1&&i===0 /* 막 끝난 계약 시즌 기준(1월에도 재계약 제안, 검수 11-07) */&&!S.off.some(z=>z.slot===k&&z.renew)}); if(x.renew){ x.co=old.co; x.ind=old.ind; } if(S.off.some(z=>z.slot===k&&z.co===x.co))continue; /* 같은 자리 같은 기업 중복 제안 없음(검수 11-07) */ S.off.push(x); made.push(x); } }
   if(made.length)mail('마케팅팀',`스폰서 제안 ${made.length}건`,`${made.map(x=>`${SPON_SLOT[x.slot].l}: ${x.co}(${x.ind}) ${x.yrs}년 연 ${money(x.amt)}${x.renew?' · 재계약':''}`).join('\n')}\n\n제안은 3주 동안 유효합니다. 구단 가치 지수 ${Math.round(sponVal()*100)}.`,{kind:'스폰서',imp:true,acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
 function sponAccept(id){ const S=G.spon; const o=S.off.find(x=>x.id===id); if(!o)return '제안이 없습니다.'; if(o.exp<G.day){ S.off=S.off.filter(x=>x.id!==id); return '기한이 지난 제안입니다.'; } if(SPON_SLOT[o.slot].indie&&!team(G.user).indie)return '모기업이 있는 구단은 메인 스폰서(구단 명칭) 계약을 할 수 없습니다.'; /* 검수 11-07 */ if(!sponOpen(o.slot))return '이미 계약된 자리입니다.'; sponSign(o); return `계약 완료: ${o.co}, ${SPON_SLOT[o.slot].l} ${o.yrs}년 연 ${money(o.amt)}`; }
 function sponReject(id){ const S=G.spon; S.off=S.off.filter(x=>x.id!==id); return '제안을 거절했습니다.'; }
@@ -79,8 +83,8 @@ function sponPitch(slot){ const S=sponInit(); if(!SPON_SLOT[slot])return '없는
   G.spend.etc=(G.spend.etc||0)+30; S.pitch.push({slot,day:G.day,due:G.day+ri(7,14),done:false});
   return `마케팅팀이 ${SPON_SLOT[slot].l} 영업을 시작했습니다(영업비 3천만 원). 1~2주 뒤 결과를 보고합니다.`; }
 function sponPitchDaily(){ const S=G.spon; if(!S||!S.pitch)return; for(const x of S.pitch){ if(x.done||x.due>G.day)continue; x.done=true; if(!sponOpen(x.slot))continue;
-    const p=clamp(.45+(sponVal()-1)*.8+((G.rep??50)-50)/200,.15,.9); if(R()<p){ const n=R()<.35?2:1; const made=[]; for(let i=0;i<n;i++){ const o=sponMake(x.slot); o.amt=round5(o.amt*rnd(.92,1.02)); if(S.off.some(z=>z.slot===x.slot&&z.co===o.co))continue; /* 같은 자리 같은 기업 중복 없음(검수 11-07) */ S.off.push(o); made.push(o); }
-      mail('마케팅팀',`영업 성과: ${SPON_SLOT[x.slot].l} 제안 ${made.length}건`,`${made.map(o=>`${o.co}(${o.ind}) ${o.yrs}년 연 ${money(o.amt)}`).join('\n')}\n\n먼저 찾아간 영업이라 기업이 먼저 보낸 제안보다 금액이 조금 낮을 수 있습니다.`,{imp:true,kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
+    const p=clamp(.45+(sponVal()-1)*.8+((G.rep??50)-50)/200,.15,.9); if(R()<p){ const n=R()<.35?2:1; const made=[]; let tries=0; for(let i=0;i<n&&tries<12;i++){ tries++; const o=sponMake(x.slot); o.amt=round5(o.amt*rnd(.92,1.02)); if(S.off.some(z=>z.slot===x.slot&&z.co===o.co)){ i--; continue; } /* 이미 제안한 기업이 뽑히면 다른 기업을 찾는다(검수 11-08: 제안 0건 성과 메일) */ /* 같은 자리 같은 기업 중복 없음(검수 11-07) */ S.off.push(o); made.push(o); }
+      if(made.length)mail('마케팅팀',`영업 성과: ${SPON_SLOT[x.slot].l} 제안 ${made.length}건`,`${made.map(o=>`${o.co}(${o.ind}) ${o.yrs}년 연 ${money(o.amt)}`).join('\n')}\n\n먼저 찾아간 영업이라 기업이 먼저 보낸 제안보다 금액이 조금 낮을 수 있습니다.`,{imp:true,kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); else mail('마케팅팀',`영업 결과: ${SPON_SLOT[x.slot].l} 새 제안 없음`,'관심을 보인 기업이 모두 이미 제안을 보낸 곳이었습니다. 받은 제안은 그대로 유효합니다.',{kind:'스폰서'}); }
     else mail('마케팅팀',`영업 결과: ${SPON_SLOT[x.slot].l} 관심 기업 없음`,`여러 기업을 만났지만 지금 구단 가치(지수 ${Math.round(sponVal()*100)})로는 조건이 맞지 않았습니다. 성적과 팬 여론이 오르면 다시 시도해 보세요.`,{kind:'스폰서'}); }
   S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); }
 /* 단장이 떠난 구단의 영업(돈은 이미 냈다)도 예정일에 결과를 낸다: 제안은 그 구단 계약서에 남아 돌아오면 볼 수 있다(검수 11-06) */
