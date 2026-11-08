@@ -204,3 +204,8 @@ button.st-n:hover b{text-decoration:underline}
 .cmk-grp{display:grid;gap:0;margin:4px 0}
 .cmk-mi .anstar{display:block;white-space:nowrap;font-size:11px}.cmk-mi .anstar .off{font-style:normal;opacity:.3}
 .cmk-mi .cmk-v{grid-column:2/-1;display:flex;gap:8px;flex-wrap:wrap}.cmk-v span{display:flex;align-items:center;gap:3px}.cmk-v i{font-style:normal;color:var(--muted);font-size:11px}.cmk-v .rc{font-size:11px;min-width:24px;padding:1px 3px}
+.cmk-det>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;padding:2px 0}
+.cmk-det>summary::-webkit-details-marker{display:none}
+.cmk-det>summary::after{content:'▾';margin-left:auto;color:var(--muted)}.cmk-det[open]>summary::after{content:'▴'}
+@media(max-width:899px){.cmk-cur{padding:6px 8px}}
+.cmk-v .cmk-fire{margin-left:auto;color:var(--bad);font-size:11px;padding:1px 6px}

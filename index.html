@@ -4680,6 +4680,11 @@ button.st-n:hover b{text-decoration:underline}
 .cmk-grp{display:grid;gap:0;margin:4px 0}
 .cmk-mi .anstar{display:block;white-space:nowrap;font-size:11px}.cmk-mi .anstar .off{font-style:normal;opacity:.3}
 .cmk-mi .cmk-v{grid-column:2/-1;display:flex;gap:8px;flex-wrap:wrap}.cmk-v span{display:flex;align-items:center;gap:3px}.cmk-v i{font-style:normal;color:var(--muted);font-size:11px}.cmk-v .rc{font-size:11px;min-width:24px;padding:1px 3px}
+.cmk-det>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;padding:2px 0}
+.cmk-det>summary::-webkit-details-marker{display:none}
+.cmk-det>summary::after{content:'▾';margin-left:auto;color:var(--muted)}.cmk-det[open]>summary::after{content:'▴'}
+@media(max-width:899px){.cmk-cur{padding:6px 8px}}
+.cmk-v .cmk-fire{margin-left:auto;color:var(--bad);font-size:11px;padding:1px 6px}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -24936,16 +24941,19 @@ function axSec(){ const n=axSlots(), X=G.coachX||[]; const rows=X.map(c=>`<div c
   return csec('보조 코치',`<p class="small muted">세부 훈련 시설이 4단계 이상인 곳마다 보조 코치 1자리(최대 3)가 열립니다. 보조 코치는 투수 또는 타자 성장에 1명당 최대 +2.5%를 보탭니다.</p>${rows||(n?'':'<p class="small muted">아직 열린 자리가 없습니다.</p>')}${cand?`<div class="eyebrow">후보</div>${cand}`:''}`,`<span class="small muted">${X.length}/${n}자리</span>`); }
 
 /* 코치 시장: 보직을 고르면 지금 우리 코치 카드를 옆(휴대폰은 위)에 붙여 후보와 나란히 비교(카페 11-08) */
-function cmkCmp(role,inner){ if(role==='all')return inner; return `<div class="cmk-split"><aside class="cmk-cur"><div class="eyebrow">지금 우리 ${CROLE[role].l}</div>${coachSlot(role)}</aside><div class="cmk-list">${inner}</div></div>`; }
+function cmkCmp(role,inner){ if(role==='all')return inner; const c=coachesOf(G.user)[role]; return `<div class="cmk-split"><aside class="cmk-cur">${cmkFold(`지금 우리 ${CROLE[role].l}`,c?`${esc(c.name)} · 지도 ${dv(effC(c,G.user,'sk'))} · 육성 ${dv(effC(c,G.user,'dv'))}`:'빈자리',coachSlot(role))}</aside><div class="cmk-list">${inner}</div></div>`; }
+/* 휴대폰은 접힌 한 줄(요약)로 시작해 후보 목록 자리를 지킨다. PC는 펼친 채(사용자 11-08) */
+function cmkFold(title,sum,body){ const mob=typeof matchMedia==='function'&&matchMedia('(max-width:899px)').matches; return `<details class="cmk-det"${mob&&!UI.cmkFoldOpen?'':' open'}><summary data-a="cmkFold"><b class="eyebrow">${title}</b><span class="small muted">${sum}</span></summary>${body}</details>`; }
 
 /* 스태프 시장 왼쪽: 지금 우리 스카우트·분석원 전원(능력 낮은 순 = 바꿀 후보부터). 고른 필터에 맞는 사람은 강조 */
 function stMineAside(k){ const st=n=>'★'.repeat(n)+'<i class="off">'+'★'.repeat(5-n)+'</i>';
   if(k==='sc'){ const f=UI.scF||'all'; const L=[...G.scouts].sort((a,b)=>a.skill-b.skill||b.sal-a.sal); const job=s=>s.role==='intl'?`해외 ${IREG[s.region]?IREG[s.region].l:s.region}`:`${s.role==='pro'?'프로':'아마'} ${s.region||''}`;
-    const row=s=>{ const hit=f==='hi'?s.skill<4:f==='P'||f==='B'?s.spec===f:false; return `<div class="cmk-mi${hit?' hit':''}">${avImg({persona:'staff',role:'sc',pid:s.id,name:s.name,age:s.age})}<span><b>${esc(s.name)}</b><i>${esc(job(s))}${s.spec?` · ${SC_SPEC[s.spec]}`:''}</i></span><span class="anstar">${st(s.skill)}</span><em>${money(s.sal)}</em><small class="cmk-v">${[['pitch','투수'],['bat','타자'],['potential','잠재력']].map(([x,l])=>`<span><i>${l}</i>${rchip(staffOfficeV(s,'scout',x))}</span>`).join('')}</small></div>`; }; /* 후보 카드와 같은 평가값으로 비교 */
-    return `<aside class="cmk-cur"><div class="eyebrow">지금 우리 스카우트 ${G.scouts.length}/${scoutMax()}명</div>${L.length?L.map(row).join(''):'<p class="small muted">스카우트가 없습니다.</p>'}<p class="small muted">능력 낮은 순. ${f==='P'||f==='B'?`${SC_SPEC[f]} 특기자 강조`:f==='hi'?'능력 4 미만 강조(교체 후보)':'필터를 고르면 해당 인원이 강조됩니다'}${G.scouts.length>=scoutMax()?' · 자리가 차서 새로 뽑으려면 먼저 한 명을 내보내야 합니다':''}</p></aside>`; }
+    const row=s=>{ const hit=f==='hi'?s.skill<4:f==='P'||f==='B'?s.spec===f:false; return `<div class="cmk-mi${hit?' hit':''}">${avImg({persona:'staff',role:'sc',pid:s.id,name:s.name,age:s.age})}<span><b>${esc(s.name)}</b><i>${esc(job(s))}${s.spec?` · ${SC_SPEC[s.spec]}`:''}</i></span><span class="anstar">${st(s.skill)}</span><em>${money(s.sal)}</em><small class="cmk-v">${[['pitch','투수'],['bat','타자'],['potential','잠재력']].map(([x,l])=>`<span><i>${l}</i>${rchip(staffOfficeV(s,'scout',x))}</span>`).join('')}<button class="tc-i cmk-fire" data-a="fireScout" data-v="${s.id}">계약 해지</button></small></div>`; }; /* 그 자리에서 바로 정리(사용자 11-08, 확인창은 기존 결재 안내) */ /* 후보 카드와 같은 평가값으로 비교 */
+    return `<aside class="cmk-cur">${cmkFold(`지금 우리 스카우트 ${G.scouts.length}/${scoutMax()}명`,L.length?`가장 낮은 ${esc(L[0].name)} ★${L[0].skill}`:'없음',`${L.length?L.map(row).join(''):'<p class="small muted">스카우트가 없습니다.</p>'}<p class="small muted">능력 낮은 순. ${f==='P'||f==='B'?`${SC_SPEC[f]} 특기자 강조`:f==='hi'?'능력 4 미만 강조(교체 후보)':'필터를 고르면 해당 인원이 강조됩니다'}${G.scouts.length>=scoutMax()?' · 자리가 차서 새로 뽑으려면 먼저 한 명을 내보내야 합니다':''}</p>`)}</aside>`; }
   const L=anaList(); const f=UI.anF||'all'; const byR=r=>L.filter(a=>a.role===r);
-  const row=a=>{ const hit=f==='hi'?a.skill<4:AROLE[f]?a.role===f:false; return `<div class="cmk-mi${hit?' hit':''}">${avImg({persona:'staff',role:'ana',pid:a.id,name:a.name,age:a.age})}<span><b>${esc(a.name)}</b><i>${AROLE[a.role].l}</i></span><span class="anstar">${st(a.skill)}</span><em>${money(a.sal)}</em><small class="cmk-v">${[['opp','상대분석'],['trk','트래킹'],['vid','영상']].map(([x,l])=>`<span><i>${l}</i>${rchip(staffOfficeV(a,'analyst',x))}</span>`).join('')}</small></div>`; };
-  return `<aside class="cmk-cur"><div class="eyebrow">지금 우리 분석원 ${L.length}/${ANA_MAX}명</div>${Object.keys(AROLE).map(r=>`<div class="cmk-grp"><span class="small muted">${AROLE[r].l}${byR(r).length?'':' · <b class="bad">비어 있음</b>'}</span>${byR(r).sort((a,b)=>b.skill-a.skill).map(row).join('')}</div>`).join('')}<p class="small muted">역할마다 가장 뛰어난 분석원이 가장 크게 반영됩니다(두 번째 60%, 세 번째 30%).${L.length>=ANA_MAX?' 자리가 차서 새로 뽑으려면 먼저 한 명을 내보내야 합니다.':''}</p></aside>`; }
+  const row=a=>{ const hit=f==='hi'?a.skill<4:AROLE[f]?a.role===f:false; return `<div class="cmk-mi${hit?' hit':''}">${avImg({persona:'staff',role:'ana',pid:a.id,name:a.name,age:a.age})}<span><b>${esc(a.name)}</b><i>${AROLE[a.role].l}</i></span><span class="anstar">${st(a.skill)}</span><em>${money(a.sal)}</em><small class="cmk-v">${[['opp','상대분석'],['trk','트래킹'],['vid','영상']].map(([x,l])=>`<span><i>${l}</i>${rchip(staffOfficeV(a,'analyst',x))}</span>`).join('')}<button class="tc-i cmk-fire" data-a="anaFire" data-v="${a.id}">계약 해지</button></small></div>`; };
+  const empty=Object.keys(AROLE).filter(r=>!byR(r).length).map(r=>AROLE[r].l);
+  return `<aside class="cmk-cur">${cmkFold(`지금 우리 분석원 ${L.length}/${ANA_MAX}명`,empty.length?`비어 있는 역할: ${empty.join(', ')}`:'역할 모두 채움',`${Object.keys(AROLE).map(r=>`<div class="cmk-grp"><span class="small muted">${AROLE[r].l}${byR(r).length?'':' · <b class="bad">비어 있음</b>'}</span>${byR(r).sort((a,b)=>b.skill-a.skill).map(row).join('')}</div>`).join('')}<p class="small muted">역할마다 가장 뛰어난 분석원이 가장 크게 반영됩니다(두 번째 60%, 세 번째 30%).${L.length>=ANA_MAX?' 자리가 차서 새로 뽑으려면 먼저 한 명을 내보내야 합니다.':''}</p>`)}</aside>`; }
 /* PC 스태프 개요(FM '스탭 기본 정보'처럼): 코치진 | 스카우트·전력분석 | 의무·부상 세 칸.
    칸마다 위에 인원 현황, 가운데 리그 10개 구단 비교 막대(우리 값·리그 최고·최저·평균), 아래 명단 표. */
 const sfStars=k=>`<span class="sf-st">${'★'.repeat(k)}<i>${'★'.repeat(Math.max(0,5-k))}</i></span>`;
@@ -26628,6 +26636,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castStep(v){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp, pa=i=>i>=0&&i<L.length&&typeof L[i][1]==='number'; let i=c.k; if(+v>0){ i++; while(i<L.length&&!pa(i))i++; } else { i--; while(i>0&&!pa(i))i--; } castJump(i); }, /* 다음·이전 '타석'으로(도루·교체 줄은 건너뜀), 재생 상태는 그대로(검수 11-07) */
   castWin(){ const c=UI.cast; if(!c)return; const i=castWinIdx(G.games[c.g]); if(i<0)return toast('결승점을 찾지 못했습니다(무승부이거나 기록이 짧음).'); castJump(i,false); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; },
   castInn(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; const h=L[Math.min(c.k,L.length-1)][0]; const i=L.findIndex((y,j)=>j>c.k&&y[0]!==h); castJump(i<0?L.length:i); },
+  cmkFold(v,el){ const d=el&&el.closest('details'); UI.cmkFoldOpen=d?!d.open:!UI.cmkFoldOpen; render(); document.querySelectorAll(".cmk-det").forEach(x=>x.open=UI.cmkFoldOpen); }, /* 휴대폰에서 펼친 상태를 다시 그려도 유지 */
   attrCmp(v){ UI.attrCmp=v; render(); },
   champSceneClose(){ if(G.champScene){ G.champScene.seen=true; save(); } document.getElementById('champScene')?.remove(); },
   psOpen(){ UI.it=UI.it||{}; UI.it.stand='ps'; A.go('league:stand'); },
