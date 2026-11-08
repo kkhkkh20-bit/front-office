@@ -1,8 +1,8 @@
 /* ---------- 스태프·육성 > 훈련·육성 > 스프링캠프: 장소 예약 · 훈련 강도 · 연습경기 · 시범경기 기록 ---------- */
 function sprcSiteBtns(lvl){ const T=lvl===1?SPRC1:SPRC2, P=sprcPlan(G.user), cur=P[lvl===1?'s1':'s2'], open=sprcOpen();
-  return `<div class="talk sprc-sites">${Object.entries(T).map(([k,D])=>{ const left=D.sl-sprcTaken(lvl,k), mine=cur===k, o=sprcOdds(G.user,lvl,k); const full=left<=0&&!mine;
+  return `<div class="talk sprc-sites">${Object.entries(T).map(([k,D])=>{ const left=D.sl-sprcTaken(lvl,k), mine=cur===k, o=sprcOdds(G.user,lvl,k); const full=left<=0&&!mine&&!o.sb;
     const odds=k==='home'?'':o.q>=.8?' · 성사 높음':o.q>=.55?' · 성사 보통':' · 성사 낮음';
-    return `<button class="btn small ${mine?'on':''}" data-a="sprcBook" data-v="${lvl}:${k}" ${!open||full?'disabled':''}><b>${esc(D.l)}</b> <span class="small">${mine?'예약됨':full?'마감':`+${money(o.c)} · ${left}자리 남음${odds}`}${o.pv&&!mine?' · 지난해 사용':''}</span></button>`; }).join('')}</div>`; }
+    return `<button class="btn small ${mine?'on':''}" data-a="sprcBook" data-v="${lvl}:${k}" ${!open||full?'disabled':''}><b>${esc(D.l)}</b> <span class="small">${mine?'예약됨':full?'마감':`+${money(o.c)} · ${left}자리 남음${odds}`}${o.pv&&!mine?' · 지난해 사용':''}${o.sb?' · 자매구단':''}</span></button>`; }).join('')}</div>`; }
 function sprcStatTable(st,isP){ const rows=Object.entries(st||{}).map(([id,a])=>({p:G.players[id],a})).filter(x=>x.p&&x.p.team===G.user&&!!x.p.isP===isP&&x.a.length===(isP?6:8)).sort((x,y)=>isP?y.a[1]-x.a[1]:y.a[1]-x.a[1]).slice(0,14);
   if(!rows.length)return '';
   const ip=o=>`${Math.floor(o/3)}${o%3?'.'+o%3:''}`;
@@ -27,7 +27,7 @@ function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small m
   if(!pre&&G.scp&&G.scp.y===G.year&&G.scp.t[G.user]&&G.scp.t[G.user].s1){ const Q=G.scp.t[G.user]; const R0=Q.pgR||[]; const w=R0.filter(x=>x.us>x.op).length, l=R0.filter(x=>x.us<x.op).length;
     const wx=v=>v>=1.04?'맑고 따뜻함':v>=.97?'무난함':'쌀쌀하고 비가 잦음';
     out.push((inCamp?campCard():'')+csec(`${G.year} 스프링캠프`,`<dl class="tsum"><div><dt>1차</dt><dd>${esc(SPRC1[Q.s1].l)}${Q.wx1?` · ${wx(Q.wx1/SPRC1[Q.s1].wx)}`:''}</dd></div><div><dt>2차</dt><dd>${esc((SPRC2[Q.s2]||SPRC2.home).l)}${Q.wx2?` · ${wx(Q.wx2/(SPRC2[Q.s2]||SPRC2.home).wx)}`:''}</dd></div><div><dt>훈련 강도</dt><dd>${SPRC_INT[Q.int].l}${Q.gap?' · 감독과 이견':''}</dd></div><div><dt>연습경기</dt><dd>${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''} · ${R0.length}/${(Q.pg||[]).length}경기</dd></div></dl>
-      ${(Q.pg||[]).length?`<div class="list">${Q.pg.map(g=>{ const r=R0.find(x=>x.d===g.d); const nm=g.k==='kbo'?tname(g.tid):SPRC_OPP[g.k].l; return `<div class="small">${dmd(g.d)} ${esc(nm)} ${r?`<b>${r.us}:${r.op}</b> ${r.us>r.op?'승':r.us<r.op?'패':'무'}`:'<span class="muted">예정</span>'}</div>`; }).join('')}</div>`:'<p class="small muted">잡힌 연습경기가 없습니다.</p>'}
+      ${(Q.pg||[]).length?`<div class="list">${Q.pg.map(g=>{ const r=R0.find(x=>x.d===g.d); const nm=sprcOppName(g); return `<div class="small">${dmd(g.d)} ${esc(nm)} ${r?`<b>${r.us}:${r.op}</b> ${r.us>r.op?'승':r.us<r.op?'패':'무'}`:'<span class="muted">예정</span>'}</div>`; }).join('')}</div>`:'<p class="small muted">잡힌 연습경기가 없습니다.</p>'}
       ${sprcStatTable(G.scp.pgS,false)}${sprcStatTable(G.scp.pgS,true)}`)); }
   const E=G.exh&&G.exh.y===G.year?G.exh:null;
   if(E){ const st=exhStand(); const ds=Object.keys(E.days).map(Number).sort((a,b)=>a-b); const mine=E.res.filter(x=>x.h===G.user||x.a===G.user); const nx=ds.find(d=>d>G.day);

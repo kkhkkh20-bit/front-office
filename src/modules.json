@@ -119,7 +119,8 @@
       "src/engine/draft/94_second_draft.js",
       "src/engine/market/96_pick_trade.js",
       "src/engine/league/95_game_rules.js",
-      "src/engine/league/97_spring_camp.js"
+      "src/engine/league/97_spring_camp.js",
+      "src/engine/league/98_sister_club.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -131,6 +132,7 @@
       "src/ui/assets/00f_people_faces_data.js",
       "src/ui/assets/00g_more_faces_data.js",
       "src/ui/assets/00g_korea_map.js",
+      "src/ui/assets/00h_overseas_map.js",
       "src/ui/assets/00e_staff_faces_data.js",
       "src/ui/assets/00c_match_stadium_data.js",
       "src/ui/shell/01_layout.js",
@@ -222,6 +224,7 @@
       "src/ui/career/65_gm_card.js",
       "src/ui/contracts/66_foreign_neg.js",
       "src/ui/staff/33b_scout_map.js",
+      "src/ui/staff/33c_sister_club.js",
       "src/ui/decisions/67_delegate.js",
       "src/ui/media/68_press_play.js",
       "src/ui/staff/69_dev_plan.js",

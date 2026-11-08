@@ -36,11 +36,12 @@ function sprcPlan(tid){ const S=sprcInit(); if(!S.t[tid]){ const m=G.mgr[tid]; S
 function sprcTaken(lvl,k){ const S=sprcInit(); return Object.values(S.t).filter(P=>P&&P[lvl===1?'s1':'s2']===k).length; }
 /* 예약 성공 확률·값: 명성(현지 네트워크) · 지난해에도 쓴 곳 · 자리가 얼마나 찼는지 · 예약 시기 */
 function sprcOdds(tid,lvl,k){ const D=(lvl===1?SPRC1:SPRC2)[k]; if(!D)return {q:0,c:0}; const S=sprcInit(); const pv=S.prev[tid]&&S.prev[tid][lvl===1?'s1':'s2']===k; const rep=tid===G.user?(G.rep??50):50; const m=dobj(G.day).m; const late=m===1?.1:m===12?.04:0;
-  const q=k==='home'?1:clamp(.62+(rep-50)/100+(pv?.2:0)-sprcTaken(lvl,k)/D.sl*.25-late,.25,.97);
-  const c=Math.max(0,Math.round(D.c*(1-(rep-50)/250+late)/10)*10); return {q,c,pv}; }
+  const sb=k!=='home'&&sisSite(tid,lvl,k); /* 자매구단 캠프지: 성사 +25%p, 비용 20% 할인(98_sister_club.js) */
+  const q=k==='home'?1:clamp(.62+(rep-50)/100+(pv?.2:0)-sprcTaken(lvl,k)/D.sl*.25-late+(sb?.25:0),.25,.97);
+  const c=Math.max(0,Math.round(D.c*(1-(rep-50)/250+late)*(sb?.8:1)/10)*10); return {q,c,pv,sb}; }
 /* 예약: 성공하면 비용을 내고 자리를 잡는다. 이미 잡은 자리를 바꾸면 위약금 30%를 뺀 나머지를 돌려받는다 */
 function sprcBook(lvl,k){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!sprcOpen())return '캠프 장소는 11월부터 1월 24일까지 정합니다.'; lvl=+lvl; const D=(lvl===1?SPRC1:SPRC2)[k]; if(!D)return '없는 장소입니다.';
-  const P=sprcPlan(G.user), key=lvl===1?'s1':'s2'; if(P[key]===k)return ''; if(sprcTaken(lvl,k)>=D.sl)return `${D.l}은(는) 이미 다른 구단으로 꽉 찼습니다.`;
+  const P=sprcPlan(G.user), key=lvl===1?'s1':'s2'; if(P[key]===k)return ''; if(sprcTaken(lvl,k)>=D.sl&&!sisSite(G.user,lvl,k))return `${D.l}은(는) 이미 다른 구단으로 꽉 찼습니다.`; /* 자매구단이 자리를 마련해 준다 */
   const f=P.fail[lvl+k]; if(f!=null&&G.day-f<7)return `${D.l} 측과 협상이 결렬된 지 얼마 안 됐습니다. ${7-(G.day-f)}일 뒤 다시 시도할 수 있습니다.`;
   const o=sprcOdds(G.user,lvl,k); if(R()>=o.q){ P.fail[lvl+k]=G.day; return `${D.l} 예약 협상이 결렬됐습니다. 현지 측이 다른 구단과 먼저 이야기 중이라고 합니다. 7일 뒤 다시 시도하거나 다른 곳을 잡으세요.`; }
   const old=P[key]&&P['c'+lvl]||0; const back=Math.round(old*.7); G.spend.etc=Math.max(0,(G.spend.etc||0)-back)+o.c; P[key]=k; P['c'+lvl]=o.c; P.c=(P.c1||0)+(P.c2||0);
@@ -49,7 +50,7 @@ function sprcSetInt(k){ if(!SPRC_INT[k])return '없는 강도입니다.'; if(!(s
 function sprcSetPg(n,lv){ if(!(G.cal&&G.day<G.cal.camp))return '연습경기는 캠프 시작 전에 잡습니다.'; const P=sprcPlan(G.user); if(n!=null&&n!==''&&SPRC_PGN.includes(+n))P.pgN=+n; if(lv&&SPRC_LV[lv])P.pgLv=lv; return ''; }
 /* 다른 구단 예약: 11월엔 드문드문, 12월엔 많이, 1월이면 거의 다 끝난다 */
 function sprcAiPick(t,lvl){ const T=lvl===1?SPRC1:SPRC2; const S=sprcInit(); const pv=S.prev[t.id]; const rich=(t.cash||0)>3000, poor=(t.cash||0)<0;
-  let best=null, bs=-9; for(const k in T){ const D=T[k]; if(sprcTaken(lvl,k)>=D.sl)continue; const s=D.ap+hn('sprc'+lvl+k,t.id)*.15+N(0,.08)+(pv&&pv[lvl===1?'s1':'s2']===k?.35:0)-(D.c>=500?(rich?-.05:poor?.5:.15):0); if(s>bs){ bs=s; best=k; } } return best; }
+  let best=null, bs=-9; for(const k in T){ const D=T[k]; if(sprcTaken(lvl,k)>=D.sl)continue; const s=D.ap+hn('sprc'+lvl+k,t.id)*.15+N(0,.08)+(pv&&pv[lvl===1?'s1':'s2']===k?.35:0)+(sisSite(t.id,lvl,k)?.3:0)-(D.c>=500?(rich?-.05:poor?.5:.15):0); if(s>bs){ bs=s; best=k; } } return best; }
 function sprcAiBook(force){ const m=dobj(G.day).m; const pr=force?1:m===11?.03:m===12?.07:.22;
   for(const t of G.teams){ if(t.id===G.user&&!G.unemp)continue; const P=sprcPlan(t.id); if(P.s1&&P.s2)continue; if(R()>=pr)continue;
     if(!P.s1){ const k=sprcAiPick(t,1); if(k){ P.s1=k; t.cash-=SPRC1[k].c; } } if(!P.s2){ const k=sprcAiPick(t,2); if(k){ P.s2=k; t.cash-=SPRC2[k].c; } } P.int=sprcMgrPref(G.mgr[t.id]); P.pgN=SPRC2[P.s2]&&SPRC2[P.s2].pg>=3?8:4; } }
@@ -61,12 +62,12 @@ function sprcGrowMul(tid){ const S=G.scp; const P=S&&S.y===G.year&&S.t[tid]; if(
 /* 연습경기 일정: 1차 장소 2월 8~18일, 2차 장소 2월 21일~3월 4일. 잡을 수 있는 수는 장소에 따라 다르고, 경기마다 성사 여부를 굴린다 */
 function sprcPgCap(P){ const a=SPRC1[P.s1], b=SPRC2[P.s2]; return (a?a.pg:0)+(b?b.pg*2:0); }
 function sprcSchedule(tid){ const P=sprcPlan(tid); const a=SPRC1[P.s1], b=SPRC2[P.s2]; const want=Math.min(P.pgN||0,sprcPgCap(P)); const n2=Math.min(want,b?b.pg*2:0), n1=Math.min(want-n2,a?a.pg:0);
-  const rep=tid===G.user?(G.rep??50):50; const rel=avg(G.teams.filter(t=>t.id!==tid).map(t=>t.rel??50)); const q=clamp(.62+(rep-50)/120+(rel-50)/200,.35,.95);
+  const rep=tid===G.user?(G.rep??50):50; const rel=avg(G.teams.filter(t=>t.id!==tid).map(t=>t.rel??50)); const q=clamp(.62+(rep-50)/120+(rel-50)/200+(sisSite(tid,1,P.s1)||sisSite(tid,2,P.s2)?.1:0),.35,.95); /* 자매구단이 연습경기를 주선 */
   const mates=lvl=>G.teams.filter(t=>t.id!==tid&&(G.scp.t[t.id]||{})[lvl===1?'s1':'s2']===(lvl===1?P.s1:P.s2)).map(t=>t.id);
   const oppOf=(lvl,D)=>{ const M=mates(lvl); const r=R(); if(D.opp==='npb'){ const lv=P.pgLv; if(M.length&&r<(lv==='hard'?.2:lv==='mix'?.35:.45))return {k:'kbo',tid:pick(M)}; return {k:R()<(lv==='hard'?.8:lv==='mix'?.5:.15)?'npb1':'npb2'}; } if(M.length&&r<.35)return {k:'kbo',tid:pick(M)}; return D.opp?{k:D.opp}:null; };
   const days=(d0,d1,n)=>{ const L=[]; for(let d=d0;d<=d1;d++)L.push(d); shuffle(L); return L.slice(0,n).sort((x,y)=>x-y); };
   const out=[]; let miss=0;
-  for(const [lvl,D,n,d0,d1] of [[1,a,n1,KD(2,8),KD(2,18)],[2,b,n2,KD(2,21),KD(3,4)]]){ if(!D||!n)continue; for(const d of days(d0,d1,n)){ if(R()>=q){ miss++; continue; } const o=oppOf(lvl,D); if(o)out.push(Object.assign({d},o)); else miss++; } }
+  for(const [lvl,D,n,d0,d1] of [[1,a,n1,KD(2,8),KD(2,18)],[2,b,n2,KD(2,21),KD(3,4)]]){ if(!D||!n)continue; for(const d of days(d0,d1,n)){ if(R()>=q){ miss++; continue; } const o=oppOf(lvl,D); if(o&&o.k!=='kbo'){ const cid=sisOppClub(tid,lvl,lvl===1?P.s1:P.s2); if(cid)o.cid=cid; } if(o)out.push(Object.assign({d},o)); else miss++; } }
   P.pg=out; P.pgMiss=miss; P.pgR=[]; return out; }
 /* 가벼운 경기 모형: 선발 9명 3타석 + 교체 3명 2타석, 선발 투수가 정한 아웃만큼 던지고 나머지는 계투(젊은 투수 포함)가 한 이닝씩.
    득점 = 우리 타자 득점 추정과 상대 투수 자책을 반씩. 연장 없음(비기면 무승부). 기록은 정규 기록(hist)에 남지 않는다 */
@@ -97,6 +98,7 @@ function sprcCampStart(){ sprcInit(); for(const t of G.teams){ const P=sprcPlan(
       const wx=P.wx1<a.wx-.04?` 1차 ${a.l}은(는) 올해 날씨가 좋지 않다고 합니다.`:P.wx1>a.wx+.04?` 1차 ${a.l} 날씨가 아주 좋습니다.`:'';
       mail(`${m.name} 감독`,gap?`캠프 강도, 제 생각과는 다릅니다`:'캠프 출발합니다',gap?`단장님이 정한 ${SPRC_INT[P.int].l}로 갑니다. 다만 저는 ${SPRC_INT[pref].l}이(가) 맞다고 봤습니다. 선수들 앞에서는 티 내지 않겠지만, 제 방식이 아니라 코치진도 손에 덜 익을 겁니다(감독 관계 -${3*gap}, 캠프 효과 조금 감소).${wx}`:`말씀 나눈 대로 ${SPRC_INT[P.int].l}로 갑니다. 1차 ${a.l}, 2차 ${b.l}. 연습경기는 ${P.pg.length}경기 잡혔습니다${P.pgMiss?`(원한 ${P.pg.length+P.pgMiss}경기 중 ${P.pgMiss}경기는 상대를 못 구함)`:''}.${wx} (감독 관계 +1)`,{kind:'감독',acts:[{l:'캠프 계획',a:'goWork',v:'스프링캠프'}]}); } }
   const L={}; for(const t of G.teams){ const P=G.scp.t[t.id]; (L[P.s1]=L[P.s1]||[]).push(tshort(t.id)); }
+  try{ sisCampStart(); }catch(e){ console.error(e); }
   news('리그',`${G.year} 스프링캠프 출국`,Object.entries(L).map(([k,v])=>`${SPRC1[k].l}: ${v.join(', ')}`).join('\n'),0); }
 /* 캠프 기간: 강도·이동 부담에 따른 캠프 부상(캠프 동안 고르게) · 우리 연습경기 */
 function sprcCampDay(day){ const c=G.cal; const len=Math.max(20,c.campEnd-c.camp);
@@ -105,7 +107,7 @@ function sprcCampDay(day){ const c=G.cal; const len=Math.max(20,c.campEnd-c.camp
   const P=!G.unemp&&G.scp&&G.scp.t[G.user]; const g=P&&(P.pg||[]).find(x=>x.d===day); if(!g)return;
   const S=G.scp.pgS; const me=lightSide(G.user,g.k==='kbo'?0:SPRC_OPP[g.k].b,6,'pg',S); let them;
   if(g.k==='kbo')them=lightSide(g.tid,0,6,'pg',null); else { const b=SPRC_OPP[g.k].b; them={r:Math.max(0,4.4-b*.35+N(0,1.6)),er:Math.max(0,4.4-b*.35+N(0,1.6))}; }
-  const us=lightRuns(me,them), op=lightRuns(them,me); const nm=g.k==='kbo'?tname(g.tid):SPRC_OPP[g.k].l; P.pgR.push({d:day,o:nm,us,op});
+  const us=lightRuns(me,them), op=lightRuns(them,me); const nm=sprcOppName(g); P.pgR.push({d:day,o:nm,us,op});
   addLog(`연습경기 ${nm}전 ${us}:${op} ${us>op?'승':us<op?'패':'무'}`); }
 /* 캠프 끝: 개막 컨디션(강도·이동·실전 수) 반영, 감독의 캠프 총평 */
 function sprcCampEnd(){ const S=G.scp; if(!S||S.y!==G.year)return;

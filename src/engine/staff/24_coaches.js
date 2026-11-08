@@ -32,7 +32,7 @@ function mkClan(m){ // 이름난 감독은 사단을 거느린다
   const roles=['hc',...['pc','bc','cc','rc','dc','fm','bp','ab'].sort(()=>R()-.5)].slice(0,n);
   return roles.map(r=>mkCoach(r,{clan:m.id,boost:3})); }
 function coachesOf(tid){ return (G.coach&&G.coach[tid])||{}; }
-function effC(c,tid,k){ if(!c)return 45; const m=G.mgr[tid]; let v=c[k||'sk']; if(m&&c.clan&&c.clan===m.id)v+=6; else if(m&&(m.ego||0)>=70)v-=2; return v; }
+function effC(c,tid,k){ if(!c||c.sisAway>G.day)return 45; /* 해외 연수 중이면 빈자리와 같다 */ const m=G.mgr[tid]; let v=c[k||'sk']; if(m&&c.clan&&c.clan===m.id)v+=6; else if(m&&(m.ego||0)>=70)v-=2; return v; }
 function clanCount(tid){ const m=G.mgr[tid]; if(!m)return 0; return Object.values(coachesOf(tid)).filter(c=>c&&c.clan===m.id).length; }
 /* 옛 저장: 새로 생긴 코치 자리(불펜·보조 타격·컨디셔닝·2군 수비주루·2군 배터리)를 채운다. undefined만 채우고, 사용자가 비워 둔 자리(null)는 그대로 둔다 */
 function coachFill(){ if(!G.coach)return 0; let n=0; for(const t of G.teams){ const C=G.coach[t.id]; if(!C)continue; for(const k of CKEYS){ if(C[k]!==undefined)continue; const c=mkCoach(k,t.id===G.user?{boost:-2}:{}); staffCt(c,ri(1,2),G.year); C[k]=c; n++; } }

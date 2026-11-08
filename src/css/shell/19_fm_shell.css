@@ -162,6 +162,10 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .scm-sch{border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:grid;gap:2px}.scm-sch.none{opacity:.55}.scm-sch>div{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline}
 @media(min-width:1100px){.scm{grid-template-columns:minmax(340px,460px) minmax(0,1fr);height:100%;min-height:0;overflow-y:auto}.scm-r{overflow-y:auto}}
 .scm-n.sm{font-size:5.5px;stroke-width:1.4px}.scm-v.sm{font-size:7px;stroke-width:1.6px}
+/* 해외 네트워크 지도(33c_sister_club.js) */
+.sis-svg.jp{max-width:330px}.sis-land{fill:color-mix(in srgb,var(--line) 70%,var(--card,#1b2229));stroke:var(--muted,#8a96a3);stroke-width:.4;stroke-linejoin:round}.sis-hl{fill:color-mix(in srgb,var(--acc) 35%,transparent);stroke:var(--acc);stroke-width:.6}
+.sis-site{fill:none;stroke:var(--acc);stroke-width:.9}.sis-sl{font:700 7px var(--f-ui);fill:var(--acc);paint-order:stroke;stroke:#0b1014;stroke-width:1.6px}.sis-cn{font:700 8px var(--f-ui);fill:#fff;paint-order:stroke;stroke:#0b1014;stroke-width:2px;pointer-events:none}
+.sis-m{cursor:pointer}.sis-mine{fill:none;stroke:#e8b43a;stroke-width:1.6}
 /* 설정: 맨 위 공식 카페 띠(사용자 11-08: 카페 가기가 바로 보이게) */
 .setx>.set-cafe{grid-column:1/-1;margin:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center;padding:16px 18px;border:1px solid color-mix(in srgb,#03c75a 45%,var(--line));background:linear-gradient(110deg,color-mix(in srgb,#03c75a 22%,var(--panel)) 0%,var(--panel) 55%,color-mix(in srgb,var(--acc) 14%,var(--panel)) 100%)}
 .set-cafe .eyebrow{color:#2fd877}.set-cafe h2{margin:2px 0 4px;font-size:20px}.set-cafe p{margin:0;font-size:12.5px;color:var(--muted);max-width:760px;line-height:1.55}
