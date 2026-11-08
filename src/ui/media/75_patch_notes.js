@@ -4,6 +4,10 @@
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-08i',d:'11월 8일',t:'1군 포수 2명 유지 · 설정 카페 안내',items:[
+    '감독이 1군 엔트리를 조정할 때 포수를 2명 이상 둡니다. 백업 포수를 2군으로 내리지 않고, 모자라면 2군 포수를 올립니다. 지친 주전 포수를 쉬게 할 수 있습니다.',
+    '게임 설정 맨 위에서 공식 네이버 카페로 바로 갈 수 있습니다. 업데이트 소식 창에도 카페 링크가 있습니다.'
+  ]},
   {id:'2026-11-08h',d:'11월 8일',t:'스카우트 지역 정보망 · 구단 정보 · 설정 한 페이지',items:[
     '스태프 > 스카우트에 지역 정보망 탭이 생겼습니다. 전국을 9개 권역으로 나눈 지도에서 권역마다 우리 구단의 정보망(0~100)과 학교별 드래프트 후보를 봅니다.',
     '연고 권역의 정보망이 가장 높습니다(광주 구단이면 광주·전남). 그 지역 담당 스카우트를 오래 둘수록, 고향이 그 권역인 스카우트가 있을수록, 단장이 그 권역 대회를 직접 볼수록 올라갑니다. 정보망이 높으면 그 권역 후보의 평가 오차가 줄어듭니다.',
@@ -977,7 +981,7 @@ function patchBlock(x,fold){ const body=`<ul class="pn-l">${x.items.map(t=>`<li>
   return fold?`<details class="pn-i"><summary class="pn-h">${head}</summary>${body}</details>`:`<div class="pn-i"><div class="pn-h">${head}</div>${body}</div>`; }
 /* 게임 화면에서 한 번 띄우는 공지(자동화 점검에서는 UI.patchTest일 때만) */
 function patchPop(){ if(!G||UI.title||!PATCH.length)return ''; if(navigator.webdriver&&!UI.patchTest)return ''; if(UI.patchClosed)return ''; const L=patchUnseen(); if(!L.length)return '';
-  return `<div class="rv-w pn-w"><div class="rv pn"><div class="pn-top"><span class="eyebrow">업데이트 소식</span><span class="small muted">새 업데이트 ${L.length}개 · 위에서부터 최신</span></div><div class="pn-body">${L.map((x,i)=>patchBlock(x,i>=3)).join('')}</div><div class="pn-foot"><button class="btn primary block" data-a="patchOk">확인</button></div></div></div>`; }
+  return `<div class="rv-w pn-w"><div class="rv pn"><div class="pn-top"><span class="eyebrow">업데이트 소식</span><span class="small muted">새 업데이트 ${L.length}개 · 위에서부터 최신</span></div><div class="pn-body">${L.map((x,i)=>patchBlock(x,i>=3)).join('')}</div><a class="pn-cafe" href="${FEEDBACK_URL}" target="_blank" rel="noopener"><b>공식 카페 · 프런트야구</b><span>질문·건의·버그 제보는 네이버 카페에 남겨 주세요. 다음 업데이트에 반영합니다.</span><i>카페 가기 ›</i></a><div class="pn-foot"><button class="btn primary block" data-a="patchOk">확인</button></div></div></div>`; }
 /* 처음 화면·게임 설정용 카드 */
 function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map((x,i)=>patchBlock(x,all&&i>=3)).join('')}</section>`; }
 Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); }, patchShow(){ UI.patchClosed=false; try{ localStorage.removeItem(PATCH_KEY); }catch(e){ UI.patchSeenMem=''; } render(); } });
