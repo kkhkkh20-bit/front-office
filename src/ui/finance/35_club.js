@@ -134,7 +134,7 @@ function tradeView(){
   const gv=tr.give.map(id=>G.players[id]), gt=tr.get.map(id=>G.players[id]);
   const dPay=sum(gt.map(p=>p.sal))-sum(gv.map(p=>p.sal));
   const capAfter=capPayAs(G.user,tr.get||[],tr.give||[]), cap=capOf(sponSeason()); /* 엔진과 같이 상위 40명을 다시 고른다 */
-  const myN=rosterN(G.user)-gv.filter(p=>!p.ys).length+gt.filter(p=>!p.ys).length, thN=rosterN(tr.tid)+gv.filter(p=>!p.ys).length-gt.filter(p=>!p.ys).length; /* 정식 선수 기준(육성 제외) */
+  const myN=rosterN(G.user)-tr.give.filter(tradeCntN).length+tr.get.filter(tradeCntN).length, thN=rosterN(tr.tid)+tr.give.filter(tradeCntN).length-tr.get.filter(tradeCntN).length; /* 엔진·확인창과 같은 정식 선수 기준(육성·복무 제외, 검수 11-08c) */
   { const P=pkNorm(tr.pk), hm=pkHeld(G.user), ht=pkHeld(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; } /* 지명권 보유가 바뀌었으면 뺀다 */
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
