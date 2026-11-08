@@ -1,0 +1,4024 @@
+{
+  "schema_version": "12.1",
+  "batch_id": "cheer01",
+  "path_base": "assets/v12/cheer01/",
+  "request": "docs/asset-requests/2026-11-08-codex-v12-cheer-front-faces.md",
+  "request_sha256": "1c0395f6e5d13a554f4ef1098d10a65d520b632e9e52b21d9800867bc2f05da7",
+  "reference_main_commit": "c895da0f3fc8a89c116befa3b80c9edef0ea673f",
+  "requested_review_branch": "assets/v12-cheer01-review",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "game_connected": false,
+  "count": 48,
+  "group_counts": {
+    "clead": 16,
+    "ccap": 16,
+    "front": 16
+  },
+  "gender_counts": {
+    "male": 28,
+    "female": 20
+  },
+  "layout": {
+    "rows": 10,
+    "columns": 10,
+    "pitch_equals_cell_size": true,
+    "padding": 0,
+    "occupied": 48,
+    "unused_cells": "48..99 black RGB"
+  },
+  "framing": "Latest user override: enlarged complete head/shoulders/upper chest, relaxed natural poses like v11, slight three-quarter shoulders, partial arms/props only at lower edge. Replaces original strict frontal no-hands composition.",
+  "arcface": {
+    "threshold": 0.4,
+    "passed": true,
+    "reference_identity_counts": {
+      "v6c": 100,
+      "v7": 126,
+      "v8": 120,
+      "v9": 60,
+      "v10": 40
+    },
+    "v6c_home_variants": 10,
+    "reference_photos_per_resolution": 1346,
+    "validation": "validation.json"
+  },
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/cheer01.webp",
+        "width": 1280,
+        "height": 1280,
+        "cell_size": 128,
+        "pitch": 128,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "count": 48,
+        "page": 0,
+        "empty_cells": 52,
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 881588,
+        "sha256": "ec191a91369f38e64f22a1d1b71bf4337e82aa5e8fe9f9605c0fd4d63e1c86c5"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/cheer01.webp",
+        "width": 2560,
+        "height": 2560,
+        "cell_size": 256,
+        "pitch": 256,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "count": 48,
+        "page": 0,
+        "empty_cells": 52,
+        "mode": "RGB",
+        "encoding": "lossless WebP",
+        "bytes": 3291058,
+        "sha256": "897aff3849df3ed0f8a30a511c47703f79d7fe680236e0308a09a5ba372c5846"
+      }
+    ]
+  },
+  "identities": [
+    {
+      "id": "v12_cheer01_clead_001",
+      "identity_id": "v12_cheer01_clead_001",
+      "r": "clead",
+      "group": "clead",
+      "a": 31,
+      "age": 31,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 0,
+      "cell": 0,
+      "cell_index": 0,
+      "row": 0,
+      "column": 0,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c058",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ],
+          "index": 0,
+          "row": 0,
+          "column": 0
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.3564254641532898
+          },
+          "reference": {
+            "id": "v6c100_060@goyang_storm",
+            "version": "v6c",
+            "cosine": 0.37238019704818726
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.32000893354415894
+          },
+          "reference": {
+            "id": "v6c100_060@goyang_storm",
+            "version": "v6c",
+            "cosine": 0.39741528034210205
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_002",
+      "identity_id": "v12_cheer01_clead_002",
+      "r": "clead",
+      "group": "clead",
+      "a": 36,
+      "age": 36,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "pose": "other",
+      "pose_requested": "hand_on_hip",
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "pose": "other"
+      },
+      "index": 1,
+      "cell": 1,
+      "cell_index": 1,
+      "row": 0,
+      "column": 1,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c067",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ],
+          "index": 1,
+          "row": 0,
+          "column": 1
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.3764336407184601
+          },
+          "reference": {
+            "id": "v9_gm01_gm_022",
+            "version": "v9",
+            "cosine": 0.38762128353118896
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.3777499496936798
+          },
+          "reference": {
+            "id": "v9_gm01_gm_022",
+            "version": "v9",
+            "cosine": 0.363281786441803
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_003",
+      "identity_id": "v12_cheer01_clead_003",
+      "r": "clead",
+      "group": "clead",
+      "a": 38,
+      "age": 38,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 2,
+      "cell": 2,
+      "cell_index": 2,
+      "row": 0,
+      "column": 2,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c070",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ],
+          "index": 2,
+          "row": 0,
+          "column": 2
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_009",
+            "cosine": 0.2381504625082016
+          },
+          "reference": {
+            "id": "v8_people01_doc_001",
+            "version": "v8",
+            "cosine": 0.24412605166435242
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_009",
+            "cosine": 0.2424108386039734
+          },
+          "reference": {
+            "id": "v8_people01_doc_001",
+            "version": "v8",
+            "cosine": 0.2542839050292969
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_004",
+      "identity_id": "v12_cheer01_clead_004",
+      "r": "clead",
+      "group": "clead",
+      "a": 37,
+      "age": 37,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "pose": "arms_crossed"
+      },
+      "index": 3,
+      "cell": 3,
+      "cell_index": 3,
+      "row": 0,
+      "column": 3,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c076",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ],
+          "index": 3,
+          "row": 0,
+          "column": 3
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_003",
+            "cosine": 0.3100903630256653
+          },
+          "reference": {
+            "id": "v9_gm01_gm_017",
+            "version": "v9",
+            "cosine": 0.2946489453315735
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_003",
+            "cosine": 0.3091398775577545
+          },
+          "reference": {
+            "id": "v6c100_075@suwon_sparks",
+            "version": "v6c",
+            "cosine": 0.30376774072647095
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_005",
+      "identity_id": "v12_cheer01_clead_005",
+      "r": "clead",
+      "group": "clead",
+      "a": 43,
+      "age": 43,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "pose": "other"
+      },
+      "index": 4,
+      "cell": 4,
+      "cell_index": 4,
+      "row": 0,
+      "column": 4,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c087",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ],
+          "index": 4,
+          "row": 0,
+          "column": 4
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_006",
+            "cosine": 0.29059794545173645
+          },
+          "reference": {
+            "id": "v6c100_097@seoul_comets",
+            "version": "v6c",
+            "cosine": 0.39689019322395325
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_006",
+            "cosine": 0.286088764667511
+          },
+          "reference": {
+            "id": "v7_staff01_coach_025",
+            "version": "v7",
+            "cosine": 0.3858073949813843
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_006",
+      "identity_id": "v12_cheer01_clead_006",
+      "r": "clead",
+      "group": "clead",
+      "a": 29,
+      "age": 29,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_on_hip",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 5,
+      "cell": 5,
+      "cell_index": 5,
+      "row": 0,
+      "column": 5,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c092",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ],
+          "index": 5,
+          "row": 0,
+          "column": 5
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_006",
+            "cosine": 0.3673124611377716
+          },
+          "reference": {
+            "id": "v9_gm01_gm_006",
+            "version": "v9",
+            "cosine": 0.33487987518310547
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_006",
+            "cosine": 0.36562520265579224
+          },
+          "reference": {
+            "id": "v9_gm01_gm_006",
+            "version": "v9",
+            "cosine": 0.3227309584617615
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_007",
+      "identity_id": "v12_cheer01_clead_007",
+      "r": "clead",
+      "group": "clead",
+      "a": 30,
+      "age": 30,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "pose": "other",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "pose": "other"
+      },
+      "index": 6,
+      "cell": 6,
+      "cell_index": 6,
+      "row": 0,
+      "column": 6,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c095",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ],
+          "index": 6,
+          "row": 0,
+          "column": 6
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_013",
+            "cosine": 0.24088016152381897
+          },
+          "reference": {
+            "id": "v6c100_075@suwon_sparks",
+            "version": "v6c",
+            "cosine": 0.25065508484840393
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_013",
+            "cosine": 0.21856680512428284
+          },
+          "reference": {
+            "id": "v6c100_075@seoul_hounds",
+            "version": "v6c",
+            "cosine": 0.25033241510391235
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_008",
+      "identity_id": "v12_cheer01_clead_008",
+      "r": "clead",
+      "group": "clead",
+      "a": 42,
+      "age": 42,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_on_hip",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 7,
+      "cell": 7,
+      "cell_index": 7,
+      "row": 0,
+      "column": 7,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c124",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1792,
+            0,
+            256,
+            256
+          ],
+          "index": 7,
+          "row": 0,
+          "column": 7
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_016",
+            "cosine": 0.3044968247413635
+          },
+          "reference": {
+            "id": "v9_gm01_gm_041",
+            "version": "v9",
+            "cosine": 0.27398204803466797
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_016",
+            "cosine": 0.28430676460266113
+          },
+          "reference": {
+            "id": "v7_staff01_gm_017",
+            "version": "v7",
+            "cosine": 0.27062708139419556
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_009",
+      "identity_id": "v12_cheer01_clead_009",
+      "r": "clead",
+      "group": "clead",
+      "a": 27,
+      "age": 27,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 8,
+      "cell": 8,
+      "cell_index": 8,
+      "row": 0,
+      "column": 8,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c135",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1024,
+            0,
+            128,
+            128
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2048,
+            0,
+            256,
+            256
+          ],
+          "index": 8,
+          "row": 0,
+          "column": 8
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_009",
+            "cosine": 0.20978905260562897
+          },
+          "reference": {
+            "id": "v6c100_011@daegu_thunders",
+            "version": "v6c",
+            "cosine": 0.28577834367752075
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_009",
+            "cosine": 0.20763608813285828
+          },
+          "reference": {
+            "id": "v6c100_011@seoul_comets",
+            "version": "v6c",
+            "cosine": 0.2829301059246063
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_010",
+      "identity_id": "v12_cheer01_clead_010",
+      "r": "clead",
+      "group": "clead",
+      "a": 40,
+      "age": 40,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_on_hip",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 9,
+      "cell": 9,
+      "cell_index": 9,
+      "row": 0,
+      "column": 9,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c148",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1152,
+            0,
+            128,
+            128
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2304,
+            0,
+            256,
+            256
+          ],
+          "index": 9,
+          "row": 0,
+          "column": 9
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.2932831943035126
+          },
+          "reference": {
+            "id": "v7_staff01_gm_009",
+            "version": "v7",
+            "cosine": 0.3221510946750641
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.2881819009780884
+          },
+          "reference": {
+            "id": "v7_staff01_gm_009",
+            "version": "v7",
+            "cosine": 0.31077268719673157
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_011",
+      "identity_id": "v12_cheer01_clead_011",
+      "r": "clead",
+      "group": "clead",
+      "a": 29,
+      "age": 29,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 10,
+      "cell": 10,
+      "cell_index": 10,
+      "row": 1,
+      "column": 0,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c151",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            0,
+            256,
+            256,
+            256
+          ],
+          "index": 10,
+          "row": 1,
+          "column": 0
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_002",
+            "cosine": 0.3530192971229553
+          },
+          "reference": {
+            "id": "v9_gm01_gm_015",
+            "version": "v9",
+            "cosine": 0.36087170243263245
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_002",
+            "cosine": 0.3867560029029846
+          },
+          "reference": {
+            "id": "v9_gm01_gm_015",
+            "version": "v9",
+            "cosine": 0.3836696445941925
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_012",
+      "identity_id": "v12_cheer01_clead_012",
+      "r": "clead",
+      "group": "clead",
+      "a": 33,
+      "age": 33,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 11,
+      "cell": 11,
+      "cell_index": 11,
+      "row": 1,
+      "column": 1,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c156",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            256,
+            256,
+            256,
+            256
+          ],
+          "index": 11,
+          "row": 1,
+          "column": 1
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_016",
+            "cosine": 0.34742090106010437
+          },
+          "reference": {
+            "id": "v7_staff01_gm_025",
+            "version": "v7",
+            "cosine": 0.34225428104400635
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_016",
+            "cosine": 0.3777550458908081
+          },
+          "reference": {
+            "id": "v6c100_085@busan_waves",
+            "version": "v6c",
+            "cosine": 0.37321582436561584
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_013",
+      "identity_id": "v12_cheer01_clead_013",
+      "r": "clead",
+      "group": "clead",
+      "a": 35,
+      "age": 35,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_on_hip",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 12,
+      "cell": 12,
+      "cell_index": 12,
+      "row": 1,
+      "column": 2,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c140",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            512,
+            256,
+            256,
+            256
+          ],
+          "index": 12,
+          "row": 1,
+          "column": 2
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.327658474445343
+          },
+          "reference": {
+            "id": "v8_people01_scout_015",
+            "version": "v8",
+            "cosine": 0.3363860249519348
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.3645714521408081
+          },
+          "reference": {
+            "id": "v8_people01_scout_015",
+            "version": "v8",
+            "cosine": 0.3699541985988617
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_014",
+      "identity_id": "v12_cheer01_clead_014",
+      "r": "clead",
+      "group": "clead",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 13,
+      "cell": 13,
+      "cell_index": 13,
+      "row": 1,
+      "column": 3,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_e002",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            768,
+            256,
+            256,
+            256
+          ],
+          "index": 13,
+          "row": 1,
+          "column": 3
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_016",
+            "cosine": 0.2716439962387085
+          },
+          "reference": {
+            "id": "v10_women01_staff_005",
+            "version": "v10",
+            "cosine": 0.32704225182533264
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_016",
+            "cosine": 0.30705195665359497
+          },
+          "reference": {
+            "id": "v10_women01_gm_011",
+            "version": "v10",
+            "cosine": 0.3259463310241699
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_015",
+      "identity_id": "v12_cheer01_clead_015",
+      "r": "clead",
+      "group": "clead",
+      "a": 35,
+      "age": 35,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 14,
+      "cell": 14,
+      "cell_index": 14,
+      "row": 1,
+      "column": 4,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_e003",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1024,
+            256,
+            256,
+            256
+          ],
+          "index": 14,
+          "row": 1,
+          "column": 4
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_002",
+            "cosine": 0.34097713232040405
+          },
+          "reference": {
+            "id": "v10_women01_gm_011",
+            "version": "v10",
+            "cosine": 0.3231399357318878
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_002",
+            "cosine": 0.30434250831604004
+          },
+          "reference": {
+            "id": "v10_women01_gm_011",
+            "version": "v10",
+            "cosine": 0.33075228333473206
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_clead_016",
+      "identity_id": "v12_cheer01_clead_016",
+      "r": "clead",
+      "group": "clead",
+      "a": 34,
+      "age": 34,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 15,
+      "cell": 15,
+      "cell_index": 15,
+      "row": 1,
+      "column": 5,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_e004",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1280,
+            256,
+            256,
+            256
+          ],
+          "index": 15,
+          "row": 1,
+          "column": 5
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_009",
+            "cosine": 0.31414905190467834
+          },
+          "reference": {
+            "id": "v8_people01_front_011",
+            "version": "v8",
+            "cosine": 0.3910294473171234
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_009",
+            "cosine": 0.30902180075645447
+          },
+          "reference": {
+            "id": "v8_people01_front_011",
+            "version": "v8",
+            "cosine": 0.3783845603466034
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_001",
+      "identity_id": "v12_cheer01_ccap_001",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 16,
+      "cell": 16,
+      "cell_index": 16,
+      "row": 1,
+      "column": 6,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c050",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1536,
+            256,
+            256,
+            256
+          ],
+          "index": 16,
+          "row": 1,
+          "column": 6
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_010",
+            "cosine": 0.2702464163303375
+          },
+          "reference": {
+            "id": "v8_people01_ana_011",
+            "version": "v8",
+            "cosine": 0.3035094141960144
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_010",
+            "cosine": 0.293231725692749
+          },
+          "reference": {
+            "id": "v8_people01_ana_011",
+            "version": "v8",
+            "cosine": 0.3187845051288605
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_002",
+      "identity_id": "v12_cheer01_ccap_002",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 28,
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 17,
+      "cell": 17,
+      "cell_index": 17,
+      "row": 1,
+      "column": 7,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c065",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1792,
+            256,
+            256,
+            256
+          ],
+          "index": 17,
+          "row": 1,
+          "column": 7
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_015",
+            "cosine": 0.34097713232040405
+          },
+          "reference": {
+            "id": "v8_people01_press_012",
+            "version": "v8",
+            "cosine": 0.3086708188056946
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_015",
+            "cosine": 0.30434250831604004
+          },
+          "reference": {
+            "id": "v10_women01_gm_011",
+            "version": "v10",
+            "cosine": 0.2865910530090332
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_003",
+      "identity_id": "v12_cheer01_ccap_003",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 18,
+      "cell": 18,
+      "cell_index": 18,
+      "row": 1,
+      "column": 8,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c074",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1024,
+            128,
+            128,
+            128
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2048,
+            256,
+            256,
+            256
+          ],
+          "index": 18,
+          "row": 1,
+          "column": 8
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_008",
+            "cosine": 0.33816882967948914
+          },
+          "reference": {
+            "id": "v10_women01_front_008",
+            "version": "v10",
+            "cosine": 0.3845904767513275
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_010",
+            "cosine": 0.36964234709739685
+          },
+          "reference": {
+            "id": "v10_women01_front_008",
+            "version": "v10",
+            "cosine": 0.38550493121147156
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_004",
+      "identity_id": "v12_cheer01_ccap_004",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 29,
+      "age": 29,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 19,
+      "cell": 19,
+      "cell_index": 19,
+      "row": 1,
+      "column": 9,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c082",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1152,
+            128,
+            128,
+            128
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2304,
+            256,
+            256,
+            256
+          ],
+          "index": 19,
+          "row": 1,
+          "column": 9
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_013",
+            "cosine": 0.3267798125743866
+          },
+          "reference": {
+            "id": "v8_people01_sec_006",
+            "version": "v8",
+            "cosine": 0.3906071186065674
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_013",
+            "cosine": 0.35784757137298584
+          },
+          "reference": {
+            "id": "v8_people01_sec_006",
+            "version": "v8",
+            "cosine": 0.37176766991615295
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_005",
+      "identity_id": "v12_cheer01_ccap_005",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 20,
+      "cell": 20,
+      "cell_index": 20,
+      "row": 2,
+      "column": 0,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c085",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            0,
+            512,
+            256,
+            256
+          ],
+          "index": 20,
+          "row": 2,
+          "column": 0
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_010",
+            "cosine": 0.37212052941322327
+          },
+          "reference": {
+            "id": "v6c100_022@suwon_sparks",
+            "version": "v6c",
+            "cosine": 0.34073248505592346
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_010",
+            "cosine": 0.3849950432777405
+          },
+          "reference": {
+            "id": "v10_women01_front_008",
+            "version": "v10",
+            "cosine": 0.34400275349617004
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_006",
+      "identity_id": "v12_cheer01_ccap_006",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 23,
+      "age": 23,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 21,
+      "cell": 21,
+      "cell_index": 21,
+      "row": 2,
+      "column": 1,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c088",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            256,
+            512,
+            256,
+            256
+          ],
+          "index": 21,
+          "row": 2,
+          "column": 1
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_011",
+            "cosine": 0.3693116009235382
+          },
+          "reference": {
+            "id": "v10_women01_front_008",
+            "version": "v10",
+            "cosine": 0.39527714252471924
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_011",
+            "cosine": 0.35676684975624084
+          },
+          "reference": {
+            "id": "v7_staff01_gm_013",
+            "version": "v7",
+            "cosine": 0.3792722225189209
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_007",
+      "identity_id": "v12_cheer01_ccap_007",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 22,
+      "cell": 22,
+      "cell_index": 22,
+      "row": 2,
+      "column": 2,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c090",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            512,
+            512,
+            256,
+            256
+          ],
+          "index": 22,
+          "row": 2,
+          "column": 2
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_008",
+            "cosine": 0.23128733038902283
+          },
+          "reference": {
+            "id": "v10_women01_staff_012",
+            "version": "v10",
+            "cosine": 0.29929184913635254
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_008",
+            "cosine": 0.21875207126140594
+          },
+          "reference": {
+            "id": "v10_women01_staff_012",
+            "version": "v10",
+            "cosine": 0.29581061005592346
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_008",
+      "identity_id": "v12_cheer01_ccap_008",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 29,
+      "age": 29,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 23,
+      "cell": 23,
+      "cell_index": 23,
+      "row": 2,
+      "column": 3,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c096",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            768,
+            512,
+            256,
+            256
+          ],
+          "index": 23,
+          "row": 2,
+          "column": 3
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_003",
+            "cosine": 0.33816882967948914
+          },
+          "reference": {
+            "id": "v10_women01_front_010",
+            "version": "v10",
+            "cosine": 0.34297794103622437
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_003",
+            "cosine": 0.35441339015960693
+          },
+          "reference": {
+            "id": "v10_women01_front_010",
+            "version": "v10",
+            "cosine": 0.3688322603702545
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_009",
+      "identity_id": "v12_cheer01_ccap_009",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 24,
+      "cell": 24,
+      "cell_index": 24,
+      "row": 2,
+      "column": 4,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c106",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1024,
+            512,
+            256,
+            256
+          ],
+          "index": 24,
+          "row": 2,
+          "column": 4
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_016",
+            "cosine": 0.31414905190467834
+          },
+          "reference": {
+            "id": "v10_women01_staff_001",
+            "version": "v10",
+            "cosine": 0.3436003029346466
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_016",
+            "cosine": 0.30902180075645447
+          },
+          "reference": {
+            "id": "v10_women01_staff_001",
+            "version": "v10",
+            "cosine": 0.29643669724464417
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_010",
+      "identity_id": "v12_cheer01_ccap_010",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 33,
+      "age": 33,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 25,
+      "cell": 25,
+      "cell_index": 25,
+      "row": 2,
+      "column": 5,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c109",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1280,
+            512,
+            256,
+            256
+          ],
+          "index": 25,
+          "row": 2,
+          "column": 5
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.37212052941322327
+          },
+          "reference": {
+            "id": "v10_women01_staff_001",
+            "version": "v10",
+            "cosine": 0.3475758135318756
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.3849950432777405
+          },
+          "reference": {
+            "id": "v6c100_015@seoul_hounds",
+            "version": "v6c",
+            "cosine": 0.355564147233963
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_011",
+      "identity_id": "v12_cheer01_ccap_011",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 29,
+      "age": 29,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 26,
+      "cell": 26,
+      "cell_index": 26,
+      "row": 2,
+      "column": 6,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c133",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1536,
+            512,
+            256,
+            256
+          ],
+          "index": 26,
+          "row": 2,
+          "column": 6
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_006",
+            "cosine": 0.3693116009235382
+          },
+          "reference": {
+            "id": "v10_women01_gm_010",
+            "version": "v10",
+            "cosine": 0.3552498519420624
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_006",
+            "cosine": 0.35676684975624084
+          },
+          "reference": {
+            "id": "v10_women01_gm_010",
+            "version": "v10",
+            "cosine": 0.35344600677490234
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_012",
+      "identity_id": "v12_cheer01_ccap_012",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 27,
+      "cell": 27,
+      "cell_index": 27,
+      "row": 2,
+      "column": 7,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c136",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1792,
+            512,
+            256,
+            256
+          ],
+          "index": 27,
+          "row": 2,
+          "column": 7
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_003",
+            "cosine": 0.2978685796260834
+          },
+          "reference": {
+            "id": "v10_women01_staff_003",
+            "version": "v10",
+            "cosine": 0.3935408592224121
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.31109410524368286
+          },
+          "reference": {
+            "id": "v10_women01_staff_003",
+            "version": "v10",
+            "cosine": 0.3952968120574951
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_013",
+      "identity_id": "v12_cheer01_ccap_013",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 28,
+      "cell": 28,
+      "cell_index": 28,
+      "row": 2,
+      "column": 8,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c141",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1024,
+            256,
+            128,
+            128
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2048,
+            512,
+            256,
+            256
+          ],
+          "index": 28,
+          "row": 2,
+          "column": 8
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_004",
+            "cosine": 0.3267798125743866
+          },
+          "reference": {
+            "id": "v10_women01_front_008",
+            "version": "v10",
+            "cosine": 0.33660224080085754
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_004",
+            "cosine": 0.35784757137298584
+          },
+          "reference": {
+            "id": "v10_women01_front_013",
+            "version": "v10",
+            "cosine": 0.3702286183834076
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_014",
+      "identity_id": "v12_cheer01_ccap_014",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 29,
+      "cell": 29,
+      "cell_index": 29,
+      "row": 2,
+      "column": 9,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c146",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1152,
+            256,
+            128,
+            128
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2304,
+            512,
+            256,
+            256
+          ],
+          "index": 29,
+          "row": 2,
+          "column": 9
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_003",
+            "cosine": 0.3049430549144745
+          },
+          "reference": {
+            "id": "v10_women01_front_004",
+            "version": "v10",
+            "cosine": 0.3940061926841736
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_013",
+            "cosine": 0.32166627049446106
+          },
+          "reference": {
+            "id": "v10_women01_gm_002",
+            "version": "v10",
+            "cosine": 0.391666978597641
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_015",
+      "identity_id": "v12_cheer01_ccap_015",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 30,
+      "cell": 30,
+      "cell_index": 30,
+      "row": 3,
+      "column": 0,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_s003",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            0,
+            768,
+            256,
+            256
+          ],
+          "index": 30,
+          "row": 3,
+          "column": 0
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.32703569531440735
+          },
+          "reference": {
+            "id": "v9_gm01_gm_010",
+            "version": "v9",
+            "cosine": 0.3806231915950775
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.33538341522216797
+          },
+          "reference": {
+            "id": "v10_women01_gm_009",
+            "version": "v10",
+            "cosine": 0.39242425560951233
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_ccap_016",
+      "identity_id": "v12_cheer01_ccap_016",
+      "r": "ccap",
+      "group": "ccap",
+      "a": 32,
+      "age": 32,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 31,
+      "cell": 31,
+      "cell_index": 31,
+      "row": 3,
+      "column": 1,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_s004",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            256,
+            768,
+            256,
+            256
+          ],
+          "index": 31,
+          "row": 3,
+          "column": 1
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_001",
+            "cosine": 0.24085932970046997
+          },
+          "reference": {
+            "id": "v10_women01_gm_010",
+            "version": "v10",
+            "cosine": 0.3084453046321869
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_001",
+            "cosine": 0.2362351268529892
+          },
+          "reference": {
+            "id": "v10_women01_front_013",
+            "version": "v10",
+            "cosine": 0.30584603548049927
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_001",
+      "identity_id": "v12_cheer01_front_001",
+      "r": "front",
+      "group": "front",
+      "a": 32,
+      "age": 32,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "pose": "holding_tablet",
+      "pose_requested": "holding_tablet",
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "pose": "holding_tablet"
+      },
+      "index": 32,
+      "cell": 32,
+      "cell_index": 32,
+      "row": 3,
+      "column": 2,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c063",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            512,
+            768,
+            256,
+            256
+          ],
+          "index": 32,
+          "row": 3,
+          "column": 2
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_016",
+            "cosine": 0.28336381912231445
+          },
+          "reference": {
+            "id": "v9_gm01_gm_036",
+            "version": "v9",
+            "cosine": 0.3557383716106415
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_008",
+            "cosine": 0.2791101634502411
+          },
+          "reference": {
+            "id": "v8_people01_fan_001",
+            "version": "v8",
+            "cosine": 0.3610256612300873
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_002",
+      "identity_id": "v12_cheer01_front_002",
+      "r": "front",
+      "group": "front",
+      "a": 29,
+      "age": 29,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 33,
+      "cell": 33,
+      "cell_index": 33,
+      "row": 3,
+      "column": 3,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c072",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            768,
+            768,
+            256,
+            256
+          ],
+          "index": 33,
+          "row": 3,
+          "column": 3
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_011",
+            "cosine": 0.3530192971229553
+          },
+          "reference": {
+            "id": "v6c100_053@daegu_thunders",
+            "version": "v6c",
+            "cosine": 0.3711816966533661
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_011",
+            "cosine": 0.3867560029029846
+          },
+          "reference": {
+            "id": "v6c100_053@seoul_comets",
+            "version": "v6c",
+            "cosine": 0.3965897560119629
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_003",
+      "identity_id": "v12_cheer01_front_003",
+      "r": "front",
+      "group": "front",
+      "a": 37,
+      "age": 37,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "holding_tablet",
+      "pose_requested": "holding_tablet",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "holding_tablet"
+      },
+      "index": 34,
+      "cell": 34,
+      "cell_index": 34,
+      "row": 3,
+      "column": 4,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c075",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1024,
+            768,
+            256,
+            256
+          ],
+          "index": 34,
+          "row": 3,
+          "column": 4
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_004",
+            "cosine": 0.3100903630256653
+          },
+          "reference": {
+            "id": "v10_women01_front_016",
+            "version": "v10",
+            "cosine": 0.23832598328590393
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_004",
+            "cosine": 0.3091398775577545
+          },
+          "reference": {
+            "id": "v10_women01_front_016",
+            "version": "v10",
+            "cosine": 0.23760321736335754
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_004",
+      "identity_id": "v12_cheer01_front_004",
+      "r": "front",
+      "group": "front",
+      "a": 34,
+      "age": 34,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 35,
+      "cell": 35,
+      "cell_index": 35,
+      "row": 3,
+      "column": 5,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c081",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1280,
+            768,
+            256,
+            256
+          ],
+          "index": 35,
+          "row": 3,
+          "column": 5
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_002",
+            "cosine": 0.3764336407184601
+          },
+          "reference": {
+            "id": "v9_gm01_gm_051",
+            "version": "v9",
+            "cosine": 0.3663201630115509
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_002",
+            "cosine": 0.3777499496936798
+          },
+          "reference": {
+            "id": "v9_gm01_gm_013",
+            "version": "v9",
+            "cosine": 0.37556469440460205
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_005",
+      "identity_id": "v12_cheer01_front_005",
+      "r": "front",
+      "group": "front",
+      "a": 26,
+      "age": 26,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 36,
+      "cell": 36,
+      "cell_index": 36,
+      "row": 3,
+      "column": 6,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c086",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1536,
+            768,
+            256,
+            256
+          ],
+          "index": 36,
+          "row": 3,
+          "column": 6
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_007",
+            "cosine": 0.3572140336036682
+          },
+          "reference": {
+            "id": "v8_people01_fan_001",
+            "version": "v8",
+            "cosine": 0.34038275480270386
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_007",
+            "cosine": 0.3886989653110504
+          },
+          "reference": {
+            "id": "v8_people01_fan_001",
+            "version": "v8",
+            "cosine": 0.34447360038757324
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_006",
+      "identity_id": "v12_cheer01_front_006",
+      "r": "front",
+      "group": "front",
+      "a": 36,
+      "age": 36,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 37,
+      "cell": 37,
+      "cell_index": 37,
+      "row": 3,
+      "column": 7,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c089",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1792,
+            768,
+            256,
+            256
+          ],
+          "index": 37,
+          "row": 3,
+          "column": 7
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_006",
+            "cosine": 0.3673124611377716
+          },
+          "reference": {
+            "id": "v8_people01_ana_002",
+            "version": "v8",
+            "cosine": 0.3820558190345764
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_006",
+            "cosine": 0.36562520265579224
+          },
+          "reference": {
+            "id": "v8_people01_ana_002",
+            "version": "v8",
+            "cosine": 0.3842669129371643
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_007",
+      "identity_id": "v12_cheer01_front_007",
+      "r": "front",
+      "group": "front",
+      "a": 26,
+      "age": 26,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 38,
+      "cell": 38,
+      "cell_index": 38,
+      "row": 3,
+      "column": 8,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c091",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1024,
+            384,
+            128,
+            128
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2048,
+            768,
+            256,
+            256
+          ],
+          "index": 38,
+          "row": 3,
+          "column": 8
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_005",
+            "cosine": 0.3572140336036682
+          },
+          "reference": {
+            "id": "v10_women01_staff_002",
+            "version": "v10",
+            "cosine": 0.3003557324409485
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_005",
+            "cosine": 0.3886989653110504
+          },
+          "reference": {
+            "id": "v9_gm01_gm_015",
+            "version": "v9",
+            "cosine": 0.31511545181274414
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_008",
+      "identity_id": "v12_cheer01_front_008",
+      "r": "front",
+      "group": "front",
+      "a": 38,
+      "age": 38,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "holding_tablet",
+      "pose_requested": "holding_tablet",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "holding_tablet"
+      },
+      "index": 39,
+      "cell": 39,
+      "cell_index": 39,
+      "row": 3,
+      "column": 9,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c102",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            1152,
+            384,
+            128,
+            128
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            2304,
+            768,
+            256,
+            256
+          ],
+          "index": 39,
+          "row": 3,
+          "column": 9
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_002",
+            "cosine": 0.28590187430381775
+          },
+          "reference": {
+            "id": "v9_gm01_gm_051",
+            "version": "v9",
+            "cosine": 0.3298194706439972
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_002",
+            "cosine": 0.26083508133888245
+          },
+          "reference": {
+            "id": "v9_gm01_gm_052",
+            "version": "v9",
+            "cosine": 0.34587162733078003
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_009",
+      "identity_id": "v12_cheer01_front_009",
+      "r": "front",
+      "group": "front",
+      "a": 34,
+      "age": 34,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 40,
+      "cell": 40,
+      "cell_index": 40,
+      "row": 4,
+      "column": 0,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c105",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "index": 40,
+          "row": 4,
+          "column": 0
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            0,
+            1024,
+            256,
+            256
+          ],
+          "index": 40,
+          "row": 4,
+          "column": 0
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_005",
+            "cosine": 0.2552762031555176
+          },
+          "reference": {
+            "id": "v9_gm01_gm_004",
+            "version": "v9",
+            "cosine": 0.26772236824035645
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_003",
+            "cosine": 0.2424108386039734
+          },
+          "reference": {
+            "id": "v9_gm01_gm_004",
+            "version": "v9",
+            "cosine": 0.30005478858947754
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_010",
+      "identity_id": "v12_cheer01_front_010",
+      "r": "front",
+      "group": "front",
+      "a": 27,
+      "age": 27,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 41,
+      "cell": 41,
+      "cell_index": 41,
+      "row": 4,
+      "column": 1,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c107",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            128,
+            512,
+            128,
+            128
+          ],
+          "index": 41,
+          "row": 4,
+          "column": 1
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            256,
+            1024,
+            256,
+            256
+          ],
+          "index": 41,
+          "row": 4,
+          "column": 1
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_007",
+            "cosine": 0.30076363682746887
+          },
+          "reference": {
+            "id": "v6c100_092@gwangju_blazes",
+            "version": "v6c",
+            "cosine": 0.35911375284194946
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_005",
+            "cosine": 0.2834629416465759
+          },
+          "reference": {
+            "id": "v8_people01_ana_001",
+            "version": "v8",
+            "cosine": 0.3308091461658478
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_011",
+      "identity_id": "v12_cheer01_front_011",
+      "r": "front",
+      "group": "front",
+      "a": 29,
+      "age": 29,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "pose": "arms_crossed",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "pose": "arms_crossed"
+      },
+      "index": 42,
+      "cell": 42,
+      "cell_index": 42,
+      "row": 4,
+      "column": 2,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c113",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            256,
+            512,
+            128,
+            128
+          ],
+          "index": 42,
+          "row": 4,
+          "column": 2
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            512,
+            1024,
+            256,
+            256
+          ],
+          "index": 42,
+          "row": 4,
+          "column": 2
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.2826932668685913
+          },
+          "reference": {
+            "id": "v9_gm01_gm_043",
+            "version": "v9",
+            "cosine": 0.3571089506149292
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_004",
+            "cosine": 0.3063356876373291
+          },
+          "reference": {
+            "id": "v9_gm01_gm_043",
+            "version": "v9",
+            "cosine": 0.39165231585502625
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_012",
+      "identity_id": "v12_cheer01_front_012",
+      "r": "front",
+      "group": "front",
+      "a": 31,
+      "age": 31,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "pose": "other",
+      "pose_requested": "three_quarter",
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "pose": "other"
+      },
+      "index": 43,
+      "cell": 43,
+      "cell_index": 43,
+      "row": 4,
+      "column": 3,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c134",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            384,
+            512,
+            128,
+            128
+          ],
+          "index": 43,
+          "row": 4,
+          "column": 3
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            768,
+            1024,
+            256,
+            256
+          ],
+          "index": 43,
+          "row": 4,
+          "column": 3
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_front_015",
+            "cosine": 0.31401142477989197
+          },
+          "reference": {
+            "id": "v7_staff01_gm_011",
+            "version": "v7",
+            "cosine": 0.3669125735759735
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_front_015",
+            "cosine": 0.3240952789783478
+          },
+          "reference": {
+            "id": "v9_gm01_gm_051",
+            "version": "v9",
+            "cosine": 0.34491822123527527
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_013",
+      "identity_id": "v12_cheer01_front_013",
+      "r": "front",
+      "group": "front",
+      "a": 28,
+      "age": 28,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "arms_crossed",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 44,
+      "cell": 44,
+      "cell_index": 44,
+      "row": 4,
+      "column": 4,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c145",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            512,
+            512,
+            128,
+            128
+          ],
+          "index": 44,
+          "row": 4,
+          "column": 4
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1024,
+            1024,
+            256,
+            256
+          ],
+          "index": 44,
+          "row": 4,
+          "column": 4
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_007",
+            "cosine": 0.24088016152381897
+          },
+          "reference": {
+            "id": "v9_gm01_gm_005",
+            "version": "v9",
+            "cosine": 0.26392662525177
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_002",
+            "cosine": 0.23192158341407776
+          },
+          "reference": {
+            "id": "v9_gm01_gm_005",
+            "version": "v9",
+            "cosine": 0.3236353099346161
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_014",
+      "identity_id": "v12_cheer01_front_014",
+      "r": "front",
+      "group": "front",
+      "a": 33,
+      "age": 33,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": false,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 45,
+      "cell": 45,
+      "cell_index": 45,
+      "row": 4,
+      "column": 5,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c150",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            640,
+            512,
+            128,
+            128
+          ],
+          "index": 45,
+          "row": 4,
+          "column": 5
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1280,
+            1024,
+            256,
+            256
+          ],
+          "index": 45,
+          "row": 4,
+          "column": 5
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_007",
+            "cosine": 0.20694716274738312
+          },
+          "reference": {
+            "id": "v9_gm01_gm_019",
+            "version": "v9",
+            "cosine": 0.1937403380870819
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_007",
+            "cosine": 0.19586125016212463
+          },
+          "reference": {
+            "id": "v6c100_010@incheon_seagulls",
+            "version": "v6c",
+            "cosine": 0.18059566617012024
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_015",
+      "identity_id": "v12_cheer01_front_015",
+      "r": "front",
+      "group": "front",
+      "a": 31,
+      "age": 31,
+      "f": 0,
+      "sex": "male",
+      "glasses": false,
+      "beard": true,
+      "pose": "other",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": false,
+        "beard": true,
+        "pose": "other"
+      },
+      "index": 46,
+      "cell": 46,
+      "cell_index": 46,
+      "row": 4,
+      "column": 6,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c153",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            768,
+            512,
+            128,
+            128
+          ],
+          "index": 46,
+          "row": 4,
+          "column": 6
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1536,
+            1024,
+            256,
+            256
+          ],
+          "index": 46,
+          "row": 4,
+          "column": 6
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.3398128151893616
+          },
+          "reference": {
+            "id": "v9_gm01_gm_037",
+            "version": "v9",
+            "cosine": 0.28318026661872864
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_ccap_005",
+            "cosine": 0.3318597376346588
+          },
+          "reference": {
+            "id": "v9_gm01_gm_037",
+            "version": "v9",
+            "cosine": 0.2813076078891754
+          },
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v12_cheer01_front_016",
+      "identity_id": "v12_cheer01_front_016",
+      "r": "front",
+      "group": "front",
+      "a": 36,
+      "age": 36,
+      "f": 0,
+      "sex": "male",
+      "glasses": true,
+      "beard": false,
+      "pose": "other",
+      "pose_requested": "hand_pocket",
+      "tags": {
+        "glasses": true,
+        "beard": false,
+        "pose": "other"
+      },
+      "index": 47,
+      "cell": 47,
+      "cell_index": 47,
+      "row": 4,
+      "column": 7,
+      "page": 0,
+      "fictional": true,
+      "kind": "rgb_portrait",
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c155",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer01.webp",
+          "rect": [
+            896,
+            512,
+            128,
+            128
+          ],
+          "index": 47,
+          "row": 4,
+          "column": 7
+        },
+        "256": {
+          "path": "sheets/256/cheer01.webp",
+          "rect": [
+            1792,
+            1024,
+            256,
+            256
+          ],
+          "index": 47,
+          "row": 4,
+          "column": 7
+        }
+      },
+      "arcface": {
+        "128": {
+          "within": {
+            "id": "v12_cheer01_clead_012",
+            "cosine": 0.34742090106010437
+          },
+          "reference": {
+            "id": "v7_staff01_gm_025",
+            "version": "v7",
+            "cosine": 0.34450292587280273
+          },
+          "passed": true
+        },
+        "256": {
+          "within": {
+            "id": "v12_cheer01_clead_012",
+            "cosine": 0.3777550458908081
+          },
+          "reference": {
+            "id": "v8_people01_ana_006",
+            "version": "v8",
+            "cosine": 0.33401405811309814
+          },
+          "passed": true
+        }
+      }
+    }
+  ],
+  "accepted_identity_count": 48,
+  "visual_review": "validation/visual_review.json"
+}
