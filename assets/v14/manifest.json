@@ -1,0 +1,18 @@
+{
+  "schema_version": "14.1",
+  "delivery_branch": "assets/v14-review",
+  "path_base": "assets/v14/",
+  "request": "docs/asset-requests/2026-11-08-codex-v14-gm-cheer-scout-scenes.md",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "game_connected": false,
+  "main_merged": false,
+  "code_changed": false,
+  "portrait_photos": 72,
+  "portrait_identities": 32,
+  "scene_count": 22,
+  "gm_age_manifest": "gm_age/manifest.json",
+  "cheer_portrait_manifest": "cheer/portraits/manifest.json",
+  "scene_manifest": "scene_manifest.json",
+  "validation": "validation.json",
+  "asset_validation_passed": true
+}

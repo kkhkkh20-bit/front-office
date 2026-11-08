@@ -1,0 +1,666 @@
+{
+  "schema_version": "14.1",
+  "batch_id": "cheer_members",
+  "path_base": "assets/v14/cheer/portraits/",
+  "count": 12,
+  "group_counts": {
+    "cheer": 12
+  },
+  "gender_counts": {
+    "female": 12
+  },
+  "layout": {
+    "columns": 10,
+    "rows": 10,
+    "padding": 0,
+    "pitch_equals_cell_size": true,
+    "occupied": 12,
+    "unused": 88,
+    "unused_fill": "#000000"
+  },
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/cheer_members.webp",
+        "bytes": 220642,
+        "sha256": "b23a0e69271b36732ba185b895144867dd1a207158d8d3666c44299c429cadba",
+        "size": [
+          1280,
+          1280
+        ],
+        "mode": "RGB",
+        "cell_size": 128,
+        "pitch": 128,
+        "padding": 0,
+        "count": 12,
+        "empty_cells": 88,
+        "encoding": "lossless WebP"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/cheer_members.webp",
+        "bytes": 811934,
+        "sha256": "106dfa3a6bd71d57236b0d13ff560d3927bf5149ead846febbec268695641147",
+        "size": [
+          2560,
+          2560
+        ],
+        "mode": "RGB",
+        "cell_size": 256,
+        "pitch": 256,
+        "padding": 0,
+        "count": 12,
+        "empty_cells": 88,
+        "encoding": "lossless WebP"
+      }
+    ]
+  },
+  "identities": [
+    {
+      "id": "v14_cheer_member_001",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 0,
+      "page": 0,
+      "cell": 0,
+      "row": 0,
+      "column": 0,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c005",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_clead_014",
+          "cosine": 0.23091334104537964
+        },
+        "256": {
+          "id": "v12_cheer01_ccap_002",
+          "cosine": 0.28943198919296265
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_002",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 1,
+      "page": 0,
+      "cell": 1,
+      "row": 0,
+      "column": 1,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c011",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            128,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.31435829401016235
+        },
+        "256": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.31205761432647705
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_003",
+      "r": "cheer",
+      "a": 29,
+      "age": 29,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 2,
+      "page": 0,
+      "cell": 2,
+      "row": 0,
+      "column": 2,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c037",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            256,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_clead_014",
+          "cosine": 0.30855488777160645
+        },
+        "256": {
+          "id": "v12_cheer01_clead_014",
+          "cosine": 0.3152775764465332
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_004",
+      "r": "cheer",
+      "a": 28,
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 3,
+      "page": 0,
+      "cell": 3,
+      "row": 0,
+      "column": 3,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c040",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            384,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_clead_016",
+          "cosine": 0.31106480956077576
+        },
+        "256": {
+          "id": "v12_cheer01_clead_016",
+          "cosine": 0.32595568895339966
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_005",
+      "r": "cheer",
+      "a": 30,
+      "age": 30,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 4,
+      "page": 0,
+      "cell": 4,
+      "row": 0,
+      "column": 4,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c043",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            512,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_clead_014",
+          "cosine": 0.353350967168808
+        },
+        "256": {
+          "id": "v12_cheer01_clead_014",
+          "cosine": 0.35061657428741455
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_006",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 5,
+      "page": 0,
+      "cell": 5,
+      "row": 0,
+      "column": 5,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c059",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            640,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_ccap_004",
+          "cosine": 0.3526398241519928
+        },
+        "256": {
+          "id": "v12_cheer01_clead_016",
+          "cosine": 0.3681730031967163
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_007",
+      "r": "cheer",
+      "a": 28,
+      "age": 28,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 6,
+      "page": 0,
+      "cell": 6,
+      "row": 0,
+      "column": 6,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c068",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            768,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_ccap_013",
+          "cosine": 0.3679811656475067
+        },
+        "256": {
+          "id": "v12_cheer01_ccap_010",
+          "cosine": 0.37697267532348633
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_008",
+      "r": "cheer",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 7,
+      "page": 0,
+      "cell": 7,
+      "row": 0,
+      "column": 7,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c114",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            896,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            1792,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_clead_006",
+          "cosine": 0.3416821360588074
+        },
+        "256": {
+          "id": "v12_cheer01_ccap_010",
+          "cosine": 0.3421945571899414
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_009",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 8,
+      "page": 0,
+      "cell": 8,
+      "row": 0,
+      "column": 8,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c138",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            1024,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            2048,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_ccap_006",
+          "cosine": 0.38896676898002625
+        },
+        "256": {
+          "id": "v12_cheer01_clead_013",
+          "cosine": 0.39917874336242676
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_010",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 9,
+      "page": 0,
+      "cell": 9,
+      "row": 0,
+      "column": 9,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_c152",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            1152,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            2304,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_clead_011",
+          "cosine": 0.35171785950660706
+        },
+        "256": {
+          "id": "v12_cheer01_clead_011",
+          "cosine": 0.3635759949684143
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_011",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 10,
+      "page": 0,
+      "cell": 10,
+      "row": 1,
+      "column": 0,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_s001",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            0,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            0,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_ccap_006",
+          "cosine": 0.36499178409576416
+        },
+        "256": {
+          "id": "v12_cheer01_ccap_006",
+          "cosine": 0.3640158176422119
+        }
+      }
+    },
+    {
+      "id": "v14_cheer_member_012",
+      "r": "cheer",
+      "a": 27,
+      "age": 27,
+      "f": 1,
+      "sex": "female",
+      "glasses": false,
+      "beard": false,
+      "pose": "relaxed_natural_shoulders",
+      "index": 11,
+      "page": 0,
+      "cell": 11,
+      "row": 1,
+      "column": 1,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v12_s002",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_members.webp",
+          "rect": [
+            128,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_members.webp",
+          "rect": [
+            256,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface_vs_v12": {
+        "128": {
+          "id": "v12_cheer01_clead_001",
+          "cosine": 0.31795817613601685
+        },
+        "256": {
+          "id": "v12_cheer01_clead_001",
+          "cosine": 0.33537617325782776
+        }
+      }
+    }
+  ],
+  "framing": "natural relaxed close head/shoulder portraits, no caps, unbranded modest jackets",
+  "casting_provenance": "Previously generated but UNUSED fictional v12 casting candidates; none was delivered in v12. Complete own photographs, no common body/face paste.",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "game_connected": false,
+  "asset_validation_passed": true
+}

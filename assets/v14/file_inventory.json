@@ -1,0 +1,370 @@
+{
+  "files": [
+    {
+      "path": "CLAUDE_HANDOFF.md",
+      "bytes": 5013,
+      "sha256": "b987233254c1ce1ded90cd1d381a666bde1492a676f25847a4d38f588785891d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5446,
+      "sha256": "727ec9acd9344e21d9341a97905cb5d05fdb9ee26d2534fdbe121defb61f49dd"
+    },
+    {
+      "path": "cheer/events/event_fan_highfive.webp",
+      "bytes": 236050,
+      "sha256": "fb1f236ec8731669cf3bd275a24cfd30d70d7dec90a70a483e3f2b855a69327a"
+    },
+    {
+      "path": "cheer/events/event_first_pitch.webp",
+      "bytes": 246796,
+      "sha256": "c0e8d44ed1ee5891cd2d5bf9c4b31a79ff6fbdac21790b97677f13f7be1d1101"
+    },
+    {
+      "path": "cheer/events/event_retro_uniform.webp",
+      "bytes": 249392,
+      "sha256": "652a6cbc73e41af825eefa3579a246c7f62ebcbd10c769b8412af011a541815a"
+    },
+    {
+      "path": "cheer/portraits/manifest.json",
+      "bytes": 14741,
+      "sha256": "23bf2ef4873fdf9c6940c2cb8b310c9c42df9ebb2dab58a7cae755d0cd6c07ea"
+    },
+    {
+      "path": "cheer/portraits/sheets/128/cheer_members.webp",
+      "bytes": 220642,
+      "sha256": "b23a0e69271b36732ba185b895144867dd1a207158d8d3666c44299c429cadba"
+    },
+    {
+      "path": "cheer/portraits/sheets/256/cheer_members.webp",
+      "bytes": 811934,
+      "sha256": "106dfa3a6bd71d57236b0d13ff560d3927bf5149ead846febbec268695641147"
+    },
+    {
+      "path": "cheer/portraits/validation/source_candidates.json",
+      "bytes": 46562,
+      "sha256": "fd60db88e80afc840264eab2412d7a0e17860ac78a8fd278fff8b02417b88e8a"
+    },
+    {
+      "path": "cheer/portraits/validation.json",
+      "bytes": 1264,
+      "sha256": "a85c991437e37830986ad06ea4e7816e930f8e69d098adbb4fe0cc8869be47a5"
+    },
+    {
+      "path": "cheer/previews/cheer_event_overview.jpg",
+      "bytes": 290725,
+      "sha256": "9d9ab8c9a60e16e5e35407551f577e544e1fa2216ed4329de253c87d48b41c60"
+    },
+    {
+      "path": "cheer/previews/cheer_stage_overview.jpg",
+      "bytes": 1002111,
+      "sha256": "ec0ccd704826e8d4223b0cd6d7988252312f06c9af7af0d5ddf09a050ae3afd7"
+    },
+    {
+      "path": "cheer/previews/members12_256.jpg",
+      "bytes": 271777,
+      "sha256": "3e0e899f1e11fc58a67e74bd31784ef40153f166f2fdea3d0ccd95f285a48c3d"
+    },
+    {
+      "path": "cheer/stage/cheer_basic_1.webp",
+      "bytes": 261440,
+      "sha256": "971970d4208357ba9b7a621d15bd32db19cd07ed8da892f27ce6af4ccb4b3409"
+    },
+    {
+      "path": "cheer/stage/cheer_basic_2.webp",
+      "bytes": 200888,
+      "sha256": "d77824c7ed3d1aa7fe4edf3d9874e4abff2693bb99b61e92d3c8805f0f3183cf"
+    },
+    {
+      "path": "cheer/stage/cheer_basic_3.webp",
+      "bytes": 245436,
+      "sha256": "b683f1b43010200775a0bf8ed2341d6325296dc437028306005c0c4218996853"
+    },
+    {
+      "path": "cheer/stage/cheer_expanded_1.webp",
+      "bytes": 330518,
+      "sha256": "6ef1685e2f256a32e5708b9c8405e872c964a28620f4fdc0015c4b9657f84189"
+    },
+    {
+      "path": "cheer/stage/cheer_expanded_2.webp",
+      "bytes": 242062,
+      "sha256": "f1f5ff6f701c3b8ffba65a00a7c79c9aeb67fd27580a4759847a2ed03cc9cbb1"
+    },
+    {
+      "path": "cheer/stage/cheer_expanded_3.webp",
+      "bytes": 262716,
+      "sha256": "06450f8789a0aa2dc26ed57ae23b6c8d1cc650ee25ab57baa8385652913e1376"
+    },
+    {
+      "path": "cheer/stage/cheer_large_1.webp",
+      "bytes": 428340,
+      "sha256": "8c5de2617356b985389ac1269754ebc722d13eb41bc1ac35f34559f18a65c35f"
+    },
+    {
+      "path": "cheer/stage/cheer_large_2.webp",
+      "bytes": 309452,
+      "sha256": "69c8ad97aa8bb793d5c5c261b37d5658c0bb7e8b9314c7615c7ae33a890ca73d"
+    },
+    {
+      "path": "cheer/stage/cheer_large_3.webp",
+      "bytes": 295478,
+      "sha256": "04bbda28492fbcca21823a952a58c5b4bd9715f43baf9aab1d413537620525a5"
+    },
+    {
+      "path": "gm_age/manifest.json",
+      "bytes": 58453,
+      "sha256": "b18e22b7498d976869ee13263faf2d899251ce74f06077defbb0e7d83c32aa06"
+    },
+    {
+      "path": "gm_age/previews/age_group_1.jpg",
+      "bytes": 284672,
+      "sha256": "1ebecff10434764a11cd03214e24c755aea4b51ea8f3b77953665dc6bf85ab1a"
+    },
+    {
+      "path": "gm_age/previews/age_group_2.jpg",
+      "bytes": 294975,
+      "sha256": "6511b1fcb122a9f3bbd0a3aea9182fa08075c6a7a9517a9dbf5d673e670bb237"
+    },
+    {
+      "path": "gm_age/previews/age_group_3.jpg",
+      "bytes": 297996,
+      "sha256": "df8b4dc6edf87a7ce0d2c8069f04ea221229f3903a54f4a37956fb838461a29d"
+    },
+    {
+      "path": "gm_age/previews/age_group_4.jpg",
+      "bytes": 292121,
+      "sha256": "e762d11ca5349695787d73ecc1cadf479b1656412a63ff6938d3aed074670f7f"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_001_age_triptych.jpg",
+      "bytes": 58728,
+      "sha256": "589997cac7fa0e156ba3dfd410d12b5e20e65bba2f8031e1d43ff3a95cf7429f"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_002_age_triptych.jpg",
+      "bytes": 58438,
+      "sha256": "dc0df01f91921e1cfa7be8cedb3a9faf259b17a17b2dcea660c0f85a19fdac5f"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_003_age_triptych.jpg",
+      "bytes": 58340,
+      "sha256": "f3accbab30b1ce813d04a38753057ece8a9ebd8bdc2da84fb917f5134e16622e"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_004_age_triptych.jpg",
+      "bytes": 62550,
+      "sha256": "d3d2d9d616c34547b214fd2fdb06a2508a051d7bc4c7eff224f5b6ba278ed0c0"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_005_age_triptych.jpg",
+      "bytes": 57889,
+      "sha256": "1f4a99d271ce510082aa78fd1570cd4064658720f34cad4ccc720008c66954a7"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_006_age_triptych.jpg",
+      "bytes": 62839,
+      "sha256": "a6ddc4e9208cbbfe6ea64480311b58559606b6b61cb8cda30ff1bf59192593ff"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_007_age_triptych.jpg",
+      "bytes": 58453,
+      "sha256": "a21af4c08749fed4b1776a59ff0005b03bb1d95dc23c57a112ecab478d83b491"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_008_age_triptych.jpg",
+      "bytes": 64630,
+      "sha256": "aca90e3bb8b63a0191f437030a9d262b3d2dae69908b6de7b5d13956c9948c9f"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_009_age_triptych.jpg",
+      "bytes": 62650,
+      "sha256": "7da3ed7c357beeeaf478c53d6a02a7eb05012643aaa0995178bb8d319957ab92"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_010_age_triptych.jpg",
+      "bytes": 58262,
+      "sha256": "4d667f65cba188d60bc3ba0208344b559c619bc99e6610ae0806eabbb2681f16"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_011_age_triptych.jpg",
+      "bytes": 64676,
+      "sha256": "2a1439b389c35fa2353fa1950325174941328cee4e47e0b19d68b475378faebf"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_012_age_triptych.jpg",
+      "bytes": 59561,
+      "sha256": "a84ead90f57107d2743d364f04e498f357c34f77fe25a0eb45cfa7fad29cc946"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_013_age_triptych.jpg",
+      "bytes": 58664,
+      "sha256": "484d9aba069681ab8e1c0f820b1065771ec94b52300e089afb4db7ffd43ae110"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_014_age_triptych.jpg",
+      "bytes": 64174,
+      "sha256": "66e39bf023a1574c8ebfb9f13752d3f4b9f457bc853473eef4f8ba6f84d20967"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_015_age_triptych.jpg",
+      "bytes": 62858,
+      "sha256": "06eae06c58628656942583088b11f3de923e74215778a46a94f909e8c97df22f"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_016_age_triptych.jpg",
+      "bytes": 62280,
+      "sha256": "006e0364d23412d3560ab903d82206e20989042cd02ca41e805a1ca056545fc0"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_017_age_triptych.jpg",
+      "bytes": 61078,
+      "sha256": "7af2d9ccb94b989525be6f46fa267e3d49c9ed87c4eeea8b5413101361b6c837"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_018_age_triptych.jpg",
+      "bytes": 57134,
+      "sha256": "b2c4f26665fc7f4090dc73c36ac207ed323bc456523e080bb5eac36a27b51dd9"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_019_age_triptych.jpg",
+      "bytes": 68096,
+      "sha256": "28d81b3b9afc347f37c6276fd5a54171752a4b395433d1501b6d34e81d284c68"
+    },
+    {
+      "path": "gm_age/previews/v14_gmage_020_age_triptych.jpg",
+      "bytes": 55418,
+      "sha256": "99156d58ec87eeb28ce1425935cf7c3b99c016f5d546d4b3316a3caf8eb0e950"
+    },
+    {
+      "path": "gm_age/sheets/128/gm_age.webp",
+      "bytes": 1002386,
+      "sha256": "0c3981baa4c186b00ebb6b77ab85232885753577534e9d335625073ad6097cd5"
+    },
+    {
+      "path": "gm_age/sheets/256/gm_age.webp",
+      "bytes": 3817350,
+      "sha256": "e861edb1bc4e3adc36d3ead4104fbb09544c7c61f165cc4a4a1216071fb0b176"
+    },
+    {
+      "path": "gm_age/validation/source_photographs.json",
+      "bytes": 37847,
+      "sha256": "06f6b49a471429a724634c883de07399a7ae629b9bae7c4b7020711f3abed42d"
+    },
+    {
+      "path": "gm_age/validation/source_selection.json",
+      "bytes": 28322,
+      "sha256": "f46e96a7fa421de4e06ddd88cb644686ab90508f2d6e23e540a9a27977939d89"
+    },
+    {
+      "path": "gm_age/validation.json",
+      "bytes": 13777,
+      "sha256": "e18bb473c941ee9eec4627b10ca833479147d0b6b2257054faa0e8649f613a9e"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 615,
+      "sha256": "8835e00e2c5df5916ae734fc0ab8390a149a6d58794ddcdb31824c125eaf7c5f"
+    },
+    {
+      "path": "scene_manifest.json",
+      "bytes": 19930,
+      "sha256": "779d4374ee5a7618715173d72065799a93263cc2b8235558267d8d6cc7722f76"
+    },
+    {
+      "path": "scout/previews/scenes10_overview.jpg",
+      "bytes": 954889,
+      "sha256": "9e4541350af0c208d2ce126ffdc29b2680234ea5a5a5d5e4417a67c4d8c30fd0"
+    },
+    {
+      "path": "scout/scenes/scout_draft_meeting.webp",
+      "bytes": 203952,
+      "sha256": "b93fd43d998f7c9c9c0c53d33493e052369d7e9ad39fc68787e109c83fdf8c01"
+    },
+    {
+      "path": "scout/scenes/scout_dugout_1.webp",
+      "bytes": 273318,
+      "sha256": "2c656b575da9cdb2507de6d3fb91e34f9b5e702fbd8c10d4675c735158794566"
+    },
+    {
+      "path": "scout/scenes/scout_dugout_2.webp",
+      "bytes": 329086,
+      "sha256": "50fc568e891c8e4095b463cef0f54f3202ba00ac9ff7246e8f7236d2a246bb11"
+    },
+    {
+      "path": "scout/scenes/scout_tournament_1.webp",
+      "bytes": 330422,
+      "sha256": "e43b45d88fc4b923e62d2f68841194e26b85d5c48040c140375b33a353da8e26"
+    },
+    {
+      "path": "scout/scenes/scout_tournament_2.webp",
+      "bytes": 274332,
+      "sha256": "3d1155386faf6f8b2c6f2061cee080ae1b31be5c4b754bcf0be4ab9c60fd6ff2"
+    },
+    {
+      "path": "scout/scenes/scout_weekend_1.webp",
+      "bytes": 283104,
+      "sha256": "ee4dfdb113d4103f9ab5c72e9eb4feafd3b7c441f48db78a97ed94356b6e10a3"
+    },
+    {
+      "path": "scout/scenes/scout_weekend_2.webp",
+      "bytes": 306714,
+      "sha256": "360fd4dfcc72cbc2300aee5169237b0355b8a5cda90984ba5b16726ff36f6c99"
+    },
+    {
+      "path": "scout/scenes/scout_weekend_3.webp",
+      "bytes": 279518,
+      "sha256": "33f109baa5eaa249d7a56f8e5ab7624928a3b89f1366a1ad8a3d78787cbfe6c6"
+    },
+    {
+      "path": "scout/scenes/scout_winter_1.webp",
+      "bytes": 275800,
+      "sha256": "292523ca94e18db26b773e98a4cf70437048f4cca37fcc8cf77f0402a3a6bba0"
+    },
+    {
+      "path": "scout/scenes/scout_winter_2.webp",
+      "bytes": 221158,
+      "sha256": "aaa4a536a9c5b72ef1777110c77f8973b25d350469ceabbf0bbcae1967b326be"
+    },
+    {
+      "path": "validation/cheer_decoded_pixels.json",
+      "bytes": 26332,
+      "sha256": "91d49c6b24c2bbeeb52e9afdcb76fefb650776f3bdb0191812c4ffd7f266da90"
+    },
+    {
+      "path": "validation/cheer_embeddings.npz",
+      "bytes": 46253,
+      "sha256": "8970f65b8a9ffdc06e9d67f95b3301238fcfe427a7dae7731a485d3bf7b20473"
+    },
+    {
+      "path": "validation/cheer_scores_128.npz",
+      "bytes": 2934,
+      "sha256": "85a41b313076a8160110e83c5d1f74efca634c1d55b8a597879590e251c221d4"
+    },
+    {
+      "path": "validation/cheer_scores_256.npz",
+      "bytes": 2931,
+      "sha256": "c602c4ff17e352544d634529ac56c0da02495d5ebed7c7f0e38b90e397f49003"
+    },
+    {
+      "path": "validation/gm_age_decoded_pixels.json",
+      "bytes": 30593,
+      "sha256": "ee06a4148bdfa09aef45515503b353fcc598d59a64413d91b3ecda97d73c6931"
+    },
+    {
+      "path": "validation/gm_age_embeddings.npz",
+      "bytes": 228610,
+      "sha256": "718cb27f7bcf5d89c87e1d6e783e2c6451c26b4166de336b5ebaa3ced4d2f16c"
+    },
+    {
+      "path": "validation/visual_review.json",
+      "bytes": 2022,
+      "sha256": "965c1f6620bd7fb0245d3a2da5b7fa045f4eb22dce9b33493aa914faa51b91ff"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 20739,
+      "sha256": "ef8de3b8c0e446489576815f72bfa7f22b26c1504a1088c096100817fb628230"
+    }
+  ],
+  "total_bytes": 17436652
+}

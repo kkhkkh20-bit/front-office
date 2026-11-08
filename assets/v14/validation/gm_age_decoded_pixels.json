@@ -1,0 +1,606 @@
+{
+  "128": [
+    {
+      "id": "v14_gmage_001_p0",
+      "rgb_sha256": "716f55df5d35932522fe22adb0f0d9f6ec1553e3f68e668f16383b0169b3716f",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_001_p10",
+      "rgb_sha256": "14e8132bea3a394427f349489ca884b35d6c1ed7a88506fcb0ed283bf6dc76eb",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_001_p20",
+      "rgb_sha256": "1ff468f332403e0953f0fe0380d99aacf00a8d238b2f2f525b4934fdbe1b016b",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_002_p0",
+      "rgb_sha256": "06bfa65387695c616f3d8aa3548c9e2c46bb6395c1c52796436b1c9c8318269c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_002_p10",
+      "rgb_sha256": "98cef47736a939e75b04002b7a882438aa70103f96714dd86ce4000d9e08ef62",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_002_p20",
+      "rgb_sha256": "d2183cbba801f8f3a990dab6a96664e5d98dd6e322602459eeecbc0fb769cbf9",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_003_p0",
+      "rgb_sha256": "e19448a5a4bfed15c40f57fd280e6e713f7c7cc65bb0b8d84478d3dd13c32830",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_003_p10",
+      "rgb_sha256": "8052fa197479151ef5439cad19f4768ad1c30db3e411b4b133e28172d55a1fbc",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_003_p20",
+      "rgb_sha256": "ccbcf5ebf9fe8b13a02a06c165b47a858fae8f16e8ab6322b49efe730e8f1a3a",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_004_p0",
+      "rgb_sha256": "c5d7827a6ca2cf076cbe2673d54ad57198230fe2d1013ecf7ac1888883070fa0",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_004_p10",
+      "rgb_sha256": "d60117f8de0acfe6ade16fa36c27fc04895e9b77be7193c02e7ceb27cb96519c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_004_p20",
+      "rgb_sha256": "952ff2eacc86812f2d5540be4fabfdab33a86767da8f0231d40433cad11c4d85",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_005_p0",
+      "rgb_sha256": "c6993b54caefa3bf29592449d7f8d8e3bb0201533d4fb32be0efeec427b1f642",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_005_p10",
+      "rgb_sha256": "bbe3f4deec28ab85c4cbd8fede609e6bb41824f7af2a57ede94d7946f89bdc2c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_005_p20",
+      "rgb_sha256": "0c63de6a1893cd94cb454b99b94746cbfa3000cb785ae906c85f0e3fae3abdcc",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_006_p0",
+      "rgb_sha256": "95e1a29092b023692663df7c7080a8893e4afd1f6a5ba498f9673bcc73c081f5",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_006_p10",
+      "rgb_sha256": "2ce60019a502007c42b63806a28e716500735530f7fec508d2cf9e5dc4516e9e",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_006_p20",
+      "rgb_sha256": "68606af9bc22f3501be22dcdf47db19d4b2f493d3e4057140eb33192a8e184ac",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_007_p0",
+      "rgb_sha256": "cb546e222ff4b09324219a977c34425d2ec2a7be4c92c21092347f45611dbe43",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_007_p10",
+      "rgb_sha256": "51796825089b581413f9dd568ad9f022689fe51904ba6f0ab826592cff82bffa",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_007_p20",
+      "rgb_sha256": "3e99b4a0c6e6cb2e06af0c5ca9ed24940d19c1cb7c3bf34303a441368f1c05fa",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_008_p0",
+      "rgb_sha256": "17eb72c802df1f9867b8c323aee91b0f43d1db982eecb300bc1b28b9605587b3",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_008_p10",
+      "rgb_sha256": "f07ff94187d44ea922af0a553d81c7755beee0fb3683979ba0d645360a94e488",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_008_p20",
+      "rgb_sha256": "891940b71574c166582fe7d7d0e5310dcb63805338245b98a0de471624142b67",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_009_p0",
+      "rgb_sha256": "12e20a7f1c27aa17c67ce5459a86ec01fceedce7fe0a751ab5deaf4d0168a9e4",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_009_p10",
+      "rgb_sha256": "71dd099b2f1146e597722dd6df50ec6e6f9fe897e4290400cec3fc180c8c85a3",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_009_p20",
+      "rgb_sha256": "5297161e0eaed053753db7703b9f9a9bcaddb881bdc56ce31875a9418448aa2d",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_010_p0",
+      "rgb_sha256": "15dc78f825926855d469f423439d3265afc94f0bd0c74301f4280c6337b406c4",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_010_p10",
+      "rgb_sha256": "a521f892549df32035f207897abd5db7d77ebde8a9515547c94e1392272bb61e",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_010_p20",
+      "rgb_sha256": "b458a8db7a57a29e3a57c20d0cf7019537c329197825c4526fce2b4c12b281f4",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_011_p0",
+      "rgb_sha256": "d798641354c820ca5162973d0a1661cbb1b4dba169b1a30b33f317601561eb99",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_011_p10",
+      "rgb_sha256": "2555879d7a3eff559646e10d728cfde9c0cb00da40a1d65ecee6da6b7321d62f",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_011_p20",
+      "rgb_sha256": "8592fe91f8b651b0cafdc62394d4cc5e1f34f786eea5553dd7cbbe5432ee2bff",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_012_p0",
+      "rgb_sha256": "508f5a3c504ad6187877bce4f0a4ea48d5b92c49b47f0240dec4fc09e598d811",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_012_p10",
+      "rgb_sha256": "118c51599a199da81119dd134dcd92edc131a9e19e8d0cd9bb570624682519df",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_012_p20",
+      "rgb_sha256": "59a998a50e95647306d395d44580d0997353b16f613d6d93aea63516b0059f16",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_013_p0",
+      "rgb_sha256": "a5f14dd5b962ea748f2b59216a3b097a1c03041a20ad8dc7b7e7e02169d29eff",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_013_p10",
+      "rgb_sha256": "e64a44666ee17ed09601d1d26fc8c2bdb62c7fc27edcfbb9004838c217613385",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_013_p20",
+      "rgb_sha256": "121a6f65e38a08fe6439c6e89925651cd9d62e0eb01c44e3bebeb4df7e9aff62",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_014_p0",
+      "rgb_sha256": "de0a61c67645e14566c6e31a6e96ff0844f4e2d07d0165e3e2aa7e1e0ff9555c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_014_p10",
+      "rgb_sha256": "79a2d9621a0db7718796d25723a40d135b1354ee36f05d4bec3d5e8b69dc3cb7",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_014_p20",
+      "rgb_sha256": "d8d92d45941f02288ca906fa2e58962a2646393fcb2af9d944f1d5a36857f08b",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_015_p0",
+      "rgb_sha256": "1dbda0b639f2d53955b90caeaeb0fcf9faa8bf942e28b148c56a622ee7a84610",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_015_p10",
+      "rgb_sha256": "be93a573b4f86bb25e94a1f7f5ec47c0762e46e26c0a43ee03ff71dc6aa424cb",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_015_p20",
+      "rgb_sha256": "c010d7d5a6bc555e48501a50b460b99669c7a3949a9bdaf13095f6ce632c766c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_016_p0",
+      "rgb_sha256": "0ada5b2379c903f78287947283df275e7810956e6291a64135e2e54f0be9163c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_016_p10",
+      "rgb_sha256": "35da18abc30ad907157924dd581f51cb8d3ef55de0bd67650b10c71f43c92ec4",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_016_p20",
+      "rgb_sha256": "3b070044ceff9a597398cdbc4ae262900127d206de54d989661781542f6d09b9",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_017_p0",
+      "rgb_sha256": "7543386ce5ee25f60408b68cdfe47dfca9bdb7722342c94d29b03608caf5d481",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_017_p10",
+      "rgb_sha256": "ef20931f7e5805741f7952ea6fde6fbbe871bf9eaafc1d7aeb0527ecf66a3601",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_017_p20",
+      "rgb_sha256": "f47eb25df9853d4d2e2c6502959a858f0ffb697f4a740670bc0b7d190d911dc5",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_018_p0",
+      "rgb_sha256": "6c3413cd48ab050351fc9739ef48cbeb108a973096d50e08c20805763e10b176",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_018_p10",
+      "rgb_sha256": "8adfb803c80eacd760f36a95cdd96272c1d74fbe86674cff9143519c4802e53c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_018_p20",
+      "rgb_sha256": "3247277e4bdde7b1282ac2f485c930c8fcfc56164612704f4d80614c71d76753",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_019_p0",
+      "rgb_sha256": "0f0685ef37a5aa4376a28edf7eaa1d23251c41b26de1d02de5da498a342a76d6",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_019_p10",
+      "rgb_sha256": "5dce1fc854f131cd044a78549814e03caaae1cc8f43e69f459a9a59f99074386",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_019_p20",
+      "rgb_sha256": "ca18f73bcc0892ace7210029f6c0420a7d0ee10cde6e5e547838d090bc140748",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_020_p0",
+      "rgb_sha256": "4a4805ca195077f3bcafd99e7ec3ca4b63ad705812edaef77370c63d5be9f5ad",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_020_p10",
+      "rgb_sha256": "ce5bee963e2a786da7e83c4ac2b3f2a304906842a5db5887e8a0f603f52329d4",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_020_p20",
+      "rgb_sha256": "e3a71c9422f0f4e9a975de1eb26c378c7de376d8d08c93a397ec1a35cf5dd526",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    }
+  ],
+  "256": [
+    {
+      "id": "v14_gmage_001_p0",
+      "rgb_sha256": "6cb563186272a60dd9f988ea836b99fc7d30c83b6f550031e7ad3bf1310e9072",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_001_p10",
+      "rgb_sha256": "a027af68e11aabb60eb575708e345c6f2ae8122620c91a47318b7e97a6377504",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_001_p20",
+      "rgb_sha256": "b0a008352ab85f9e388e58b38c9025f3d97045fd2d3bd3605cbcd5ca5cc70822",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_002_p0",
+      "rgb_sha256": "b65043c6ab8bf527d8a3415816625d7349f81ebdbf4e2ac96b2f12e689ea5f47",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_002_p10",
+      "rgb_sha256": "4600beefd1d5735746e4de1b479410902257135e3484a57a9979146fea375d29",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_002_p20",
+      "rgb_sha256": "c305cbcbab5016a046877a52f0ebaa7a96c7b6cf03f2bdf6735d01ab813b12ab",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_003_p0",
+      "rgb_sha256": "5bdde74af9b1df5eb4c83c52e1080217c4744cff12408835cfba3dd17d456ea0",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_003_p10",
+      "rgb_sha256": "1f5997c995ff4d02d6f1a196950f614bea35b9d0357aac12186e129567175e57",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_003_p20",
+      "rgb_sha256": "9ab47f093c306f5830ca425772e04bbdaeeb5216d7fb11f1124ec09a7213559e",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_004_p0",
+      "rgb_sha256": "2e57bdc61f275f8bb6f39ebd9ee8ebfa4e33f5d15706dc00ce6054420c99ad74",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_004_p10",
+      "rgb_sha256": "63f5950bc1d294e846c9097a3b245fcd48bbc135e2084f7065e1a57adb2deff2",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_004_p20",
+      "rgb_sha256": "f6186217608e6550c7de0ad56d7f4f8e1e33f87649610b484027f522c577ee7f",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_005_p0",
+      "rgb_sha256": "685fa4be30a7484f5a15b4e9ba37fed895d9399024cde094737970c503664477",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_005_p10",
+      "rgb_sha256": "bf8e1383b20b957798c3758dabedc684b55ac0bb1634754f0fc82bab42bd08b9",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_005_p20",
+      "rgb_sha256": "3790ad9fd66cf74bf8f53b2a7fb9b32a1a286bf02ec31a3ab93e8b756316a471",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_006_p0",
+      "rgb_sha256": "c3c9356bd76c84399d610aaa93339cfbe257c0942c407fdc6ba1e95a217bb61b",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_006_p10",
+      "rgb_sha256": "b7c90831f815a3aca4b5622e3c10389a3d0a67b75f579c0de9ae5e69179e9b41",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_006_p20",
+      "rgb_sha256": "48e6a8b0ab0757a0f65a3c1c76aaa3787835499996e6b5a1819d13829c4ebf12",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_007_p0",
+      "rgb_sha256": "deecfec54e31e03a003ade28c862fca4aa5be21d56895e4e80464e6031bb7bef",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_007_p10",
+      "rgb_sha256": "4f93a000b5a31db7e7b4e6ec8e3de53fd471e381af70a02d622612c0cf5e6492",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_007_p20",
+      "rgb_sha256": "904ad7f3ad36e20534e675b9c6815da6e83c0488718b7622943994d4e90a49d4",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_008_p0",
+      "rgb_sha256": "1b1343ffed80434c79128b9f473a0a982f8c94288dc8f8bcb4773bee93c4d55f",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_008_p10",
+      "rgb_sha256": "fb21356b46f5a36763c8fd90634196b72edc56b56a0a6e7ba4c30b8f26c9335d",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_008_p20",
+      "rgb_sha256": "6adc60c93d0c1eeec9211a0b2d11cdf9c9daa1986d8782898998e8c331bbe245",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_009_p0",
+      "rgb_sha256": "d1648dc73b7dd9440e1e8569bcf29ef9653084095482923512cd39143144c5dd",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_009_p10",
+      "rgb_sha256": "dee30a24a737ec580e91ac85a064c7b7a3f9319aa79efb1c2e7b36571736eec8",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_009_p20",
+      "rgb_sha256": "2d7c319210ac238467f35a14b9894ec4d157a2fbbc85d8afb5619583d6a702b2",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_010_p0",
+      "rgb_sha256": "5ccbc927b47563e693cae55af47db4e6ccc481c85dcbecab5aa2fb75fbd29f42",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_010_p10",
+      "rgb_sha256": "95b1aaf7730deb2f98fc00d2b4b796769ed287767e95a807b8430b220b881398",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_010_p20",
+      "rgb_sha256": "2fc8a6c1c6768896f7ca50f6bdaeb878dceb34c5949cdaf663993efc693a3f32",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_011_p0",
+      "rgb_sha256": "f004cf292492dbb3226b9f9802807ba4cfced2bad977597b22d1f4cefc8a4c0c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_011_p10",
+      "rgb_sha256": "0c9b5b8a4c74114454c99f17276fc1fb377864da85e3f1396356537d9c71c079",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_011_p20",
+      "rgb_sha256": "ef0e7be1410f6d0753e20f4900310302ee88561e530c757c79efade6f8e3d6dc",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_012_p0",
+      "rgb_sha256": "bed4615689bfc0dbebc463e9fdb52c772fc7f2f98629c67f49c1cffc1a62e752",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_012_p10",
+      "rgb_sha256": "bc233663f963b34843589a2a8a897b1c9bb912d2e9c7a7f871422a049a5b2b38",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_012_p20",
+      "rgb_sha256": "ff799cc49408531875f204b806a824c56555ff243f70e0d4ff6d27b114300cb2",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_013_p0",
+      "rgb_sha256": "2b1ccc00f9af3b0024cb1f0f0d4352b1cb1fde2104e45d5bff08a4e3b00d49b7",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_013_p10",
+      "rgb_sha256": "5ca4a8342cc8412aa8378c81e28a96a1f00e3aeefe4a5a26ff1d6001326107ed",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_013_p20",
+      "rgb_sha256": "c537b1c0665b09b083f1ca3dbc600c038c43f18dc7cfd1f3a343340048ed48b7",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_014_p0",
+      "rgb_sha256": "2f6066aaa4190b0d47dd13c8bb6aeab7f50dda51d96a1195cf510563e7ecbf2a",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_014_p10",
+      "rgb_sha256": "a300d05414a11e6da1099fea66ba9082d235ffa5371fc7b6197439b7c98d5f30",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_014_p20",
+      "rgb_sha256": "145843a1f554e20e73ab378b1cfc96e70ab9e97a0e9a4aa2f399e678edbece0c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_015_p0",
+      "rgb_sha256": "0ae6d96b568b4a3b244b55c89b1163aa7fc96b8ec996aa5c179b7f8f6a95a640",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_015_p10",
+      "rgb_sha256": "43d1ef87fe17eb1812cd95474d32ca006604888b04b606e87f59427513e87492",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_015_p20",
+      "rgb_sha256": "dd169425626f5577e4e48f1bcb971b49f81cf934e1dfa6754f4a9edaf71e4228",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_016_p0",
+      "rgb_sha256": "48ec5f5946c752521e3cb72e7d71a5d1fc64dcdad82fc598328eb941fbaddcc7",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_016_p10",
+      "rgb_sha256": "06bff329b1fd62885f15553bfdd122300137f1e05dea299749947edeac8c442a",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_016_p20",
+      "rgb_sha256": "d73909c6c0f38e57b34c508d1304c5e4be10a1bf3a11b6407476e81d9a9b637c",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_017_p0",
+      "rgb_sha256": "b4c184145366da8edafe4f805e60f7d8a559f40e16abb5d481c3b2b4fba00780",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_017_p10",
+      "rgb_sha256": "382578e47db4e090898fa5cf042ae5ab545d24685ad5676f5c90bf16c5ae571b",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_017_p20",
+      "rgb_sha256": "2b7cc5777e0a5c08aef2804647c8e07b03b9135e5593d49c6a11bec456974216",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_018_p0",
+      "rgb_sha256": "eddb6510fad0779beaa2bda0e352862108432911b6e51bdc10293f6027719459",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_018_p10",
+      "rgb_sha256": "0328db375b65707a4bfb0107f73c961ffe7ac5507f5607adef6ca429bca1d916",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_018_p20",
+      "rgb_sha256": "e59032ba9a083de87de2530a8276c3af09fc4fd1793f77f591af76f8af42afcd",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_019_p0",
+      "rgb_sha256": "3d5ff4f367509ea964d98372161bcd6d85df2af8721b8024aadf97d50769ef3e",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_019_p10",
+      "rgb_sha256": "5a72f4efa05bafc62e6470c0962bc435bd3373b711e9eaf327a32657811c6a77",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_019_p20",
+      "rgb_sha256": "cc5b6660dbc5d9347a5f6354bf64279ae74f954c4daf0e811363581a90a89754",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_020_p0",
+      "rgb_sha256": "5b6978599142e6f625d9a61a8c8318435a9e604fb23b001e39ccb1094d4f1eef",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_020_p10",
+      "rgb_sha256": "c3548b1beb567b0f6a920f3d4a1d457c0bbbc8e3dcc9265b0bf322e040c91afb",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    },
+    {
+      "id": "v14_gmage_020_p20",
+      "rgb_sha256": "08736b3213ef6691a7cafbfad4bc6b2df1c0f189191ba1e2d5ecaa286740298b",
+      "embedding_source": "cached numerical result reused ONLY after exact decoded RGB equality to validated PNG resize"
+    }
+  ]
+}
