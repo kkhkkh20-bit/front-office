@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "wardrobe_stage_unlocked": true,
+  "identity_count": 60,
+  "candidate_pool": 218,
+  "threshold": 0.4,
+  "metrics": {
+    "128": {
+      "within_max": 0.3977821171283722,
+      "reference_max": 0.39050590991973877
+    },
+    "256": {
+      "within_max": 0.387416809797287,
+      "reference_max": 0.39506423473358154
+    }
+  },
+  "quotas": {
+    "US White": 7,
+    "Canadian": 2,
+    "US Black": 7,
+    "Dominican": 5,
+    "Venezuelan": 4,
+    "Cuban": 2,
+    "Puerto Rican": 1,
+    "Japanese": 3,
+    "Taiwanese": 2,
+    "Australian White": 1,
+    "Australian Asian": 1,
+    "Filipino": 1,
+    "Korean": 24
+  },
+  "foreign_beards": 13,
+  "foreign_total": 36,
+  "source_photographs": "own coherent generated head/neck/shoulders/jersey; unused fictional civilian identity edits explicitly recorded in candidate metadata where applicable",
+  "references": "v6c1000home variants, raw128and256, same existing SCRFD/ArcFace pipeline",
+  "visual_review_completed": true,
+  "source_camera_note": "Native face detail checked; whole original-photo camera registration in wardrobe reference only. Final game portrait camera/cap headroom evaluated after generation."
+}

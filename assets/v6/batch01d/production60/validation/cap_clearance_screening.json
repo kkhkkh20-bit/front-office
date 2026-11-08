@@ -1,0 +1,4202 @@
+[
+  {
+    "id": "v6d60_001",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_001",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "busan_waves",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_002",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "busan_waves",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_003",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "busan_waves",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_004",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "busan_waves",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_005",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "busan_waves",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_006",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 38,
+    "estimated512": 76,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "busan_waves",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_007",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "busan_waves",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_008",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "busan_waves",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_009",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "busan_waves",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_010",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "busan_waves",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_011",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "busan_waves",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_012",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "busan_waves",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_013",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "busan_waves",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_014",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "busan_waves",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_015",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "busan_waves",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_016",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "busan_waves",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_017",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "busan_waves",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_018",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "busan_waves",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 21,
+    "estimated512": 42,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 21,
+    "estimated512": 42,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_019",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "busan_waves",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_020",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_021",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "busan_waves",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_022",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "busan_waves",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 38,
+    "estimated512": 76,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 38,
+    "estimated512": 76,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_023",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 37,
+    "estimated512": 74,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "busan_waves",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_024",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "busan_waves",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_025",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "busan_waves",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_026",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "busan_waves",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_027",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "busan_waves",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_028",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "busan_waves",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_029",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 38,
+    "estimated512": 76,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "busan_waves",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_030",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "busan_waves",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_031",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "busan_waves",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_032",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "busan_waves",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_033",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "busan_waves",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_034",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "busan_waves",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_035",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "busan_waves",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_036",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_037",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "busan_waves",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_038",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "busan_waves",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_039",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "busan_waves",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_040",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "busan_waves",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_041",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "busan_waves",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_042",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "busan_waves",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_043",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "busan_waves",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 33,
+    "estimated512": 66,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 34,
+    "estimated512": 68,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 36,
+    "estimated512": 72,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_044",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 35,
+    "estimated512": 70,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "busan_waves",
+    "estimated_cap_top256": 21,
+    "estimated512": 42,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 20,
+    "estimated512": 40,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 20,
+    "estimated512": 40,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 20,
+    "estimated512": 40,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 20,
+    "estimated512": 40,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 20,
+    "estimated512": 40,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_045",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "busan_waves",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_046",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "busan_waves",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_047",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 27,
+    "estimated512": 54,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_048",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "busan_waves",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_049",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_050",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "busan_waves",
+    "estimated_cap_top256": 31,
+    "estimated512": 62,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 29,
+    "estimated512": 58,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 30,
+    "estimated512": 60,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_051",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 32,
+    "estimated512": 64,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_052",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_053",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_054",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "busan_waves",
+    "estimated_cap_top256": 21,
+    "estimated512": 42,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 22,
+    "estimated512": 44,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_055",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 28,
+    "estimated512": 56,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_056",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "busan_waves",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_057",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_058",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_059",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 26,
+    "estimated512": 52,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "busan_waves",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "changwon_anchors",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "daegu_thunders",
+    "estimated_cap_top256": 23,
+    "estimated512": 46,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "daejeon_redfox",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "goyang_storm",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "gwangju_blazes",
+    "estimated_cap_top256": 24,
+    "estimated512": 48,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "incheon_seagulls",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "seoul_comets",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "seoul_hounds",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  },
+  {
+    "id": "v6d60_060",
+    "team": "suwon_sparks",
+    "estimated_cap_top256": 25,
+    "estimated512": 50,
+    "below40_estimate": false
+  }
+]

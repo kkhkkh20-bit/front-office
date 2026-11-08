@@ -1,0 +1,506 @@
+{
+  "status": "COMPLETED",
+  "reviewer": "assistant visual inspection",
+  "count": 60,
+  "viewed_boards": [
+    "foundation_review_1.png",
+    "foundation_review_2.png",
+    "foundation_review_3.png"
+  ],
+  "resolution": 256,
+  "checks": [
+    "all60 fictional male adult faces",
+    "declared age range/role presentation",
+    "casting group visual consistency",
+    "glasses and facial-hair flags",
+    "distinct facial anatomy and body build",
+    "no readable logos/letters in neutral source photos"
+  ],
+  "notes": [
+    "Some mature athletic faces retain natural sun/weathering lines. Ages are fictional casting settings.",
+    "Neutral gray-cap photos and technical background padding are reference material; final club photographs are regenerated and checked separately.",
+    "No real-person database search was performed; no real-person photo was provided to the generator."
+  ],
+  "identities": [
+    {
+      "id": "v6d60_001",
+      "candidate_id": "v13_c017",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "de0d09c60f07b70218bea61a0c7ad2d134d18981c878059f70cc243c3f3d5cd2",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_002",
+      "candidate_id": "v13_c052",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "cb3d8b51deb4d3f5c1fc271529a861beccf20a0b0a1e68be3305b38c67413816",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_003",
+      "candidate_id": "v13_c056",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "d5ed22be54f9ff689b12cd161c9f59a144aa248593729a02ab1e2dfe723c2338",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_004",
+      "candidate_id": "v13_c071",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "f10bebd4007a73431829a108ea7539a00f717fd47c8fef1e4887ad1380a3a076",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_005",
+      "candidate_id": "v13_c101",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "e7593232ad221bebdba368da47e83e83e3aedf4dc2ea87fdc1bc09106ead711e",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_006",
+      "candidate_id": "v13_c116",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "97be314557cf30664ee6e310a82da78cdcb2654e1c9a44d66ae6fce6eebc0e1e",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_007",
+      "candidate_id": "v13_c120",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "67fd4900e053c04abf7ad60d9957e60f1775d04bfea394d0d7d2448d38da9f4e",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_008",
+      "candidate_id": "v13_c020",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "3e411a877c75abc041f5d45fb86037949565af276692ff8e5f87906dce663565",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_009",
+      "candidate_id": "v13_c108",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "b7eb2d5c90cc2105e6321553c8851d11749d884a828ab12831a18513c106c80d",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_010",
+      "candidate_id": "v13_c002",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "7af5529026a928f1499c4c702f297e94f2059bf79b3031e145492d9b108bbc78",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_011",
+      "candidate_id": "v13_c028",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "8770da189807a7508eb1c3b2ed82f109a2243c30d30b77603344f3ad397ba7fd",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_012",
+      "candidate_id": "v13_c032",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "63b8b17980de51d7fa64b0a659f20108db8d2121686e9567e99eb6b3b0f692d4",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_013",
+      "candidate_id": "v13_c033",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "4d656851adb5bf026ac1945353dbcbe538bb510c41eb7e0fd3bad56e73a68e77",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_014",
+      "candidate_id": "v13_c094",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "6f079aa8ffb87a2f5aa7f633ee812c22d1bb222396ab78e799ecd0b2da525a49",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_015",
+      "candidate_id": "v13_c098",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "59fed8d8687601cc01b9cbd2137f790cb6766b57c0f9557bd7ea3cf52c84eeef",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_016",
+      "candidate_id": "v13_c103",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "235a655c081cdc2bd4c824d147ef88db1c00fe3b2185c041a8ab344cbdf7e619",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_017",
+      "candidate_id": "v13_c007",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "cb857954000cb7d9632a5a8a99afcb64b75ca6344e9585349fad2eea35d99daa",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_018",
+      "candidate_id": "v13_c036",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "f5f35ac7fefcd03dbcf97d354fc26095af18437384fd2247f160638dec0bffc0",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_019",
+      "candidate_id": "v13_c038",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "1cf0a1360adad513ba1488240a9c072e02572fb6a362ff12e593b6d6194f737b",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_020",
+      "candidate_id": "v13_c039",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "16146b570ead11a3dfb671e232c8743a4ea978ca53fce163f1cf51f802b6a6d1",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_021",
+      "candidate_id": "v13_c086",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "fc99ccb4878c6aa60d939dda4ec98bf76de96bf20f77f9d5e71eb141c0526139",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_022",
+      "candidate_id": "v13_c019",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "ab07d6c76c2bd6213f916a60c00e5150de4910cc4cb58759142aa7c903a9be49",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_023",
+      "candidate_id": "v13_c073",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "80710d48bb06001ca15a13c9cc7474376f365b9fb8b6282211a7dbb53ed4bfa4",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_024",
+      "candidate_id": "v13_c105",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "b5981d05ab041ebb5400c270644e0331eda1c189357b3ee6e9408f8db6eee57e",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_025",
+      "candidate_id": "v13_c111",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "0f9d5fbd0c424bca8eb58aedbd76feb8d9e5dc5ddefa47a38d3468c72ef469df",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_026",
+      "candidate_id": "v13_m129",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "fb20ef5856037433a7c250ff77ec32db799cf8d288c944ef51e4b27a462f9ca7",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_027",
+      "candidate_id": "v13_m153",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "9771f04c5e3efdb83a8d4b934c301b2b755f2956fdae66413e11f59f6297bbd8",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_028",
+      "candidate_id": "v13_c078",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "1b79a6273947152beced2f04a0412014540b5d8a9be3d636e63c511334958336",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_029",
+      "candidate_id": "v13_m125",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "cfbc7699fbcc571e1bcce3df2075634c36afe25e5a40b8716fbe15409cf2b054",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_030",
+      "candidate_id": "v13_m137",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "a3bc05835c5189f082e09c089dc73ee514c4104c6eafba8da3f413a19aeef6bb",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_031",
+      "candidate_id": "v13_m161",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "22b59bfcd565819b8b35aaab62b4051cb9243dccf507b039b058032efc05faf2",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_032",
+      "candidate_id": "v13_c054",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "eb24c3c5ad69a748328aab6604858ba292487b25b15fc6a9f8b5110d9622793d",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_033",
+      "candidate_id": "v13_m149",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "f9f3361dde556cf86601854fe0de05747788a98169578d8a899472ebcc89845c",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_034",
+      "candidate_id": "v13_c090",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "09347fe58f60218e647c3dc9af529eef8ad45c63f22d8ae73a40f1be03039c8b",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_035",
+      "candidate_id": "v13_m165",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "f5444bd4b4a9348cad86bc600f87bc10cdf598082888cbff3ff810b5c871f507",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_036",
+      "candidate_id": "v13_c079",
+      "glasses": true,
+      "facial_hair": true,
+      "reference_sha256": "73224365a531166bafc4d3b0ac68d872fc88995ba9f93d0e1cdf716a20d6f93b",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_037",
+      "candidate_id": "v13_c001",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "d33407aaac7375465a22e5e1c4d935d3eb0269124798a53036160f64575dfed2",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_038",
+      "candidate_id": "v13_c006",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "44b1ae14e37b61fb51e7ac233afe2e98da23576bc717a747fc648cffce787258",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_039",
+      "candidate_id": "v13_c022",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "0633684e9db07705bfcf405fb6a4491e721d720c4bf46ec96c44c233726ba43b",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_040",
+      "candidate_id": "v13_c023",
+      "glasses": false,
+      "facial_hair": true,
+      "reference_sha256": "1542455eea00d34f8e5f12c9e381f5ddabff423159626fe85d0bb9af7618533f",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_041",
+      "candidate_id": "v13_c040",
+      "glasses": true,
+      "facial_hair": true,
+      "reference_sha256": "16e58b7817eea93fd60447b7a86f16de132d690684501751b7e7522b860b6d72",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_042",
+      "candidate_id": "v13_c088",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "718bd8f1904611299e8763bda89236c9fb9dee89a8389b5141085e9d527d01db",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_043",
+      "candidate_id": "v13_c097",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "4ba6d12cb10e7f179da00b81c0cc7963dbf15849c30eff168f96bdcd3e5b947c",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_044",
+      "candidate_id": "v13_m130",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "a09e9aeca4b8277d1dca7a041431b734a77b6884cd512f22f93af2b7610d2eed",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_045",
+      "candidate_id": "v13_m148",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "e19cda9bf5943110dbdcdfeb457b7a38004f06e916bf625b7580404661b5aa39",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_046",
+      "candidate_id": "v13_u002",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "c3ab67814f4a4949697e45c59761a3fe5a49c81617dc0a8f431471c4e79e08a1",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_047",
+      "candidate_id": "v13_u006",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "d0d97dba3cac003179a0e800a5e67015c4b49caa15387bb89aaba500229aba55",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_048",
+      "candidate_id": "v13_u007",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "ba1e235c5d5750ed01c0d346fe2150f0aafd5c6fe9b5b6624e2a8a70ead3b20d",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_049",
+      "candidate_id": "v13_u008",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "4bf6e61ec588cd4e7426555bf19ab2ae4303ca548bca93e76c038bb123cb2971",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_050",
+      "candidate_id": "v13_u009",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "6959b424f1f6612a1315ac39da1fbaaf94cb432ecb4b032610b63293fe40564a",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_051",
+      "candidate_id": "v13_u010",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "f3b9a898b48f66c8cfd7f3e92f6626f0ced67285756db6fdfd2a6231ee660ef7",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_052",
+      "candidate_id": "v13_u012",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "250c07227584b89588a2a09ca837e9b4ca8f78f7cc2f3d80449babbdcc58ae98",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_053",
+      "candidate_id": "v13_y001",
+      "glasses": true,
+      "facial_hair": true,
+      "reference_sha256": "0b9325106071834b1dc572702514010d000776fc9a0a7a17a05e5236c17a8a7b",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_054",
+      "candidate_id": "v13_y005",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "d13bf22836ed130ab1b4d6126453a8e69eafb393453348975a76a68e74cc1ae6",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_055",
+      "candidate_id": "v13_y006",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "d347003627f83b0373d49a1f2512e4ead5c5c7f5d49924adecd046a53b4fbfff",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_056",
+      "candidate_id": "v13_y008",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "955c84871b74acae162dc96e300fd13541c1e72037a9fc7833a9dbba48547d35",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_057",
+      "candidate_id": "v13_y012",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "9c91d294e25f7ce28ec513dc97ae64e07a7955c08174baa2aa500ff8231c6ff5",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_058",
+      "candidate_id": "v13_y013",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "d4af1421bbb588cfa040ba6ae32a9ef632de1ff70af3e17ed10f134cd0345a27",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_059",
+      "candidate_id": "v13_z001",
+      "glasses": true,
+      "facial_hair": false,
+      "reference_sha256": "d24a85df10b1df03f6f3096d63d40a38a03a62e262ee57d8c1ffab088c631028",
+      "reviewed": true
+    },
+    {
+      "id": "v6d60_060",
+      "candidate_id": "v13_z006",
+      "glasses": false,
+      "facial_hair": false,
+      "reference_sha256": "5f86198b6bfe2416f7e40a2d5ff3f3a9b8a6cbabae69a5d7fdbea8954751efd4",
+      "reviewed": true
+    }
+  ]
+}

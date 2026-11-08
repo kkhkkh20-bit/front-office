@@ -1,0 +1,962 @@
+{
+  "v6d60_001": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.872291624546051,
+      "minimum_same_person_to_prescreen": 0.8806604743003845,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8862090110778809,
+      "minimum_same_person_to_prescreen": 0.9069497585296631,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_002": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8500159978866577,
+      "minimum_same_person_to_prescreen": 0.8158263564109802,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8725961446762085,
+      "minimum_same_person_to_prescreen": 0.807269275188446,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_003": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8562119007110596,
+      "minimum_same_person_to_prescreen": 0.8471585512161255,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8583462834358215,
+      "minimum_same_person_to_prescreen": 0.869785726070404,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_004": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8311818838119507,
+      "minimum_same_person_to_prescreen": 0.7888998985290527,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8429341912269592,
+      "minimum_same_person_to_prescreen": 0.8239515423774719,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_005": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8392271399497986,
+      "minimum_same_person_to_prescreen": 0.8095852732658386,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.836031973361969,
+      "minimum_same_person_to_prescreen": 0.8165971636772156,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_006": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8609963059425354,
+      "minimum_same_person_to_prescreen": 0.8382799029350281,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.868092954158783,
+      "minimum_same_person_to_prescreen": 0.8345995545387268,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_007": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8050263524055481,
+      "minimum_same_person_to_prescreen": 0.8060987591743469,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8331096768379211,
+      "minimum_same_person_to_prescreen": 0.826216995716095,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_008": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8853448629379272,
+      "minimum_same_person_to_prescreen": 0.8914656639099121,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.9063791036605835,
+      "minimum_same_person_to_prescreen": 0.9185723662376404,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_009": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8463775515556335,
+      "minimum_same_person_to_prescreen": 0.8673927783966064,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8702517151832581,
+      "minimum_same_person_to_prescreen": 0.8667057752609253,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_010": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.876708447933197,
+      "minimum_same_person_to_prescreen": 0.8564637303352356,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8822445869445801,
+      "minimum_same_person_to_prescreen": 0.841931939125061,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_011": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8475116491317749,
+      "minimum_same_person_to_prescreen": 0.8398974537849426,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8287075757980347,
+      "minimum_same_person_to_prescreen": 0.8259381055831909,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_012": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.857753574848175,
+      "minimum_same_person_to_prescreen": 0.8562284111976624,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8732489347457886,
+      "minimum_same_person_to_prescreen": 0.8325889706611633,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_013": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8683784008026123,
+      "minimum_same_person_to_prescreen": 0.8610852360725403,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8896489143371582,
+      "minimum_same_person_to_prescreen": 0.8764422535896301,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_014": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8626196384429932,
+      "minimum_same_person_to_prescreen": 0.8347367644309998,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8655254244804382,
+      "minimum_same_person_to_prescreen": 0.8593668341636658,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_015": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8538489937782288,
+      "minimum_same_person_to_prescreen": 0.8513482809066772,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8689976930618286,
+      "minimum_same_person_to_prescreen": 0.8223394155502319,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_016": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.88694167137146,
+      "minimum_same_person_to_prescreen": 0.8857893943786621,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8626430630683899,
+      "minimum_same_person_to_prescreen": 0.8730995655059814,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_017": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8922659158706665,
+      "minimum_same_person_to_prescreen": 0.8759079575538635,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.9046069979667664,
+      "minimum_same_person_to_prescreen": 0.9005165696144104,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_018": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8641539812088013,
+      "minimum_same_person_to_prescreen": 0.8332169651985168,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8766614198684692,
+      "minimum_same_person_to_prescreen": 0.8561615943908691,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_019": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8878369927406311,
+      "minimum_same_person_to_prescreen": 0.8651819229125977,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8824321031570435,
+      "minimum_same_person_to_prescreen": 0.8677896857261658,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_020": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8676570057868958,
+      "minimum_same_person_to_prescreen": 0.8455193042755127,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8838027715682983,
+      "minimum_same_person_to_prescreen": 0.864412784576416,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_021": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8729521632194519,
+      "minimum_same_person_to_prescreen": 0.8671438694000244,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8813274502754211,
+      "minimum_same_person_to_prescreen": 0.8711435198783875,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_022": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.856026291847229,
+      "minimum_same_person_to_prescreen": 0.8420412540435791,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.872265100479126,
+      "minimum_same_person_to_prescreen": 0.8381848931312561,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_023": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8859747648239136,
+      "minimum_same_person_to_prescreen": 0.8592361807823181,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8963902592658997,
+      "minimum_same_person_to_prescreen": 0.8871119022369385,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_024": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8694848418235779,
+      "minimum_same_person_to_prescreen": 0.8612470626831055,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.869834303855896,
+      "minimum_same_person_to_prescreen": 0.8627344369888306,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_025": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8576706051826477,
+      "minimum_same_person_to_prescreen": 0.8415342569351196,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8766806721687317,
+      "minimum_same_person_to_prescreen": 0.8557092547416687,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_026": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8454589247703552,
+      "minimum_same_person_to_prescreen": 0.8584758043289185,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8717944025993347,
+      "minimum_same_person_to_prescreen": 0.8635175228118896,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_027": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.9049752950668335,
+      "minimum_same_person_to_prescreen": 0.8894041180610657,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.9109911918640137,
+      "minimum_same_person_to_prescreen": 0.8910857439041138,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_028": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8519924879074097,
+      "minimum_same_person_to_prescreen": 0.8218578100204468,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8634611368179321,
+      "minimum_same_person_to_prescreen": 0.8626875281333923,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_029": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8617960214614868,
+      "minimum_same_person_to_prescreen": 0.8184471130371094,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8771629333496094,
+      "minimum_same_person_to_prescreen": 0.8183210492134094,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_030": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8312998414039612,
+      "minimum_same_person_to_prescreen": 0.8121704459190369,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8652887344360352,
+      "minimum_same_person_to_prescreen": 0.855516254901886,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_031": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8472182154655457,
+      "minimum_same_person_to_prescreen": 0.8342006206512451,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8750622272491455,
+      "minimum_same_person_to_prescreen": 0.854673445224762,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_032": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8203915953636169,
+      "minimum_same_person_to_prescreen": 0.7698675990104675,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.853162944316864,
+      "minimum_same_person_to_prescreen": 0.7841850519180298,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_033": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8440636992454529,
+      "minimum_same_person_to_prescreen": 0.8079196810722351,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.870630145072937,
+      "minimum_same_person_to_prescreen": 0.8432974815368652,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_034": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.9015482664108276,
+      "minimum_same_person_to_prescreen": 0.9051625728607178,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.9202393889427185,
+      "minimum_same_person_to_prescreen": 0.9236722588539124,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_035": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8575746417045593,
+      "minimum_same_person_to_prescreen": 0.8545595407485962,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8711251616477966,
+      "minimum_same_person_to_prescreen": 0.8631064295768738,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_036": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8707347512245178,
+      "minimum_same_person_to_prescreen": 0.833859920501709,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8762826323509216,
+      "minimum_same_person_to_prescreen": 0.856490433216095,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_037": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8056715130805969,
+      "minimum_same_person_to_prescreen": 0.8419731855392456,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8318092226982117,
+      "minimum_same_person_to_prescreen": 0.867608904838562,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_038": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8341200947761536,
+      "minimum_same_person_to_prescreen": 0.8260506987571716,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8378035426139832,
+      "minimum_same_person_to_prescreen": 0.8306429386138916,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_039": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8872869610786438,
+      "minimum_same_person_to_prescreen": 0.8644028306007385,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.9023943543434143,
+      "minimum_same_person_to_prescreen": 0.8953805565834045,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_040": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8803254961967468,
+      "minimum_same_person_to_prescreen": 0.8805294036865234,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8960927724838257,
+      "minimum_same_person_to_prescreen": 0.9028140306472778,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_041": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8824926614761353,
+      "minimum_same_person_to_prescreen": 0.8106598258018494,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8906416296958923,
+      "minimum_same_person_to_prescreen": 0.8439087271690369,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_042": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.7969467639923096,
+      "minimum_same_person_to_prescreen": 0.8058295845985413,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8403908610343933,
+      "minimum_same_person_to_prescreen": 0.8354179263114929,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_043": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8440490365028381,
+      "minimum_same_person_to_prescreen": 0.8419708013534546,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8701483011245728,
+      "minimum_same_person_to_prescreen": 0.858642578125,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_044": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8688015341758728,
+      "minimum_same_person_to_prescreen": 0.8638275861740112,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8849634528160095,
+      "minimum_same_person_to_prescreen": 0.8613696098327637,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_045": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8050261735916138,
+      "minimum_same_person_to_prescreen": 0.8216930627822876,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8347407579421997,
+      "minimum_same_person_to_prescreen": 0.8265819549560547,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_046": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8216427564620972,
+      "minimum_same_person_to_prescreen": 0.8269854187965393,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8436870574951172,
+      "minimum_same_person_to_prescreen": 0.8344088792800903,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_047": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.7567281126976013,
+      "minimum_same_person_to_prescreen": 0.8172131180763245,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.7824147939682007,
+      "minimum_same_person_to_prescreen": 0.8075193166732788,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_048": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8694761991500854,
+      "minimum_same_person_to_prescreen": 0.8543846011161804,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8819695115089417,
+      "minimum_same_person_to_prescreen": 0.8743879795074463,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_049": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8584558367729187,
+      "minimum_same_person_to_prescreen": 0.8543901443481445,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8731721639633179,
+      "minimum_same_person_to_prescreen": 0.8593942523002625,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_050": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.815456211566925,
+      "minimum_same_person_to_prescreen": 0.8011751174926758,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8348222970962524,
+      "minimum_same_person_to_prescreen": 0.8315330743789673,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_051": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8283995985984802,
+      "minimum_same_person_to_prescreen": 0.8148525357246399,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8607897758483887,
+      "minimum_same_person_to_prescreen": 0.8221889138221741,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_052": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8587646484375,
+      "minimum_same_person_to_prescreen": 0.8714136481285095,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8643074631690979,
+      "minimum_same_person_to_prescreen": 0.8820553421974182,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_053": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8061131238937378,
+      "minimum_same_person_to_prescreen": 0.827040433883667,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.83484947681427,
+      "minimum_same_person_to_prescreen": 0.8293150067329407,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_054": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8714070916175842,
+      "minimum_same_person_to_prescreen": 0.8585476279258728,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8820328116416931,
+      "minimum_same_person_to_prescreen": 0.8737531900405884,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_055": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8688061833381653,
+      "minimum_same_person_to_prescreen": 0.8482620120048523,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8893847465515137,
+      "minimum_same_person_to_prescreen": 0.8810044527053833,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_056": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8823819756507874,
+      "minimum_same_person_to_prescreen": 0.8734829425811768,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8999334573745728,
+      "minimum_same_person_to_prescreen": 0.8953611850738525,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_057": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8620878458023071,
+      "minimum_same_person_to_prescreen": 0.8108895421028137,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8842523694038391,
+      "minimum_same_person_to_prescreen": 0.8377607464790344,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_058": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8703538775444031,
+      "minimum_same_person_to_prescreen": 0.8699122071266174,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8980914950370789,
+      "minimum_same_person_to_prescreen": 0.8962226510047913,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_059": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8791758418083191,
+      "minimum_same_person_to_prescreen": 0.8629074096679688,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.9054273366928101,
+      "minimum_same_person_to_prescreen": 0.8709979057312012,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  },
+  "v6d60_060": {
+    "128": {
+      "minimum_same_person_between_clubs": 0.8533900380134583,
+      "minimum_same_person_to_prescreen": 0.8581363558769226,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    },
+    "256": {
+      "minimum_same_person_between_clubs": 0.8804493546485901,
+      "minimum_same_person_to_prescreen": 0.8693426847457886,
+      "own_prescreen_top1_correct": 10,
+      "expected": 10,
+      "passed": true
+    }
+  }
+}
