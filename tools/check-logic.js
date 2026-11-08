@@ -2132,7 +2132,7 @@ T('[검수 11-08i] 시설·예산·팬 운영: 현금 공사비 기록, AI 증�
   fanSet('cheer',2); G.fanOps.mx={}; fanSet('cheer',0); const f0=G.spend.fan; fanMonthly(); fanSet('cheer',2); ok(G.spend.fan-f0>=FAN_OPS.cheer.m[2],'월초에 낮춰 비용 회피: '+(G.spend.fan-f0));
   const b=budget(); const m=G.mgr[G.user]; ok(b.exp.some(x=>x[0]==='팬 마케팅·구단 이벤트'&&x[1]>f0),'응원단 월 운영비 전망 없음');
   m.cs=G.year+1; ok(!budget().exp.some(x=>x[0]==='감독 연봉'&&x[1]>Math.round(G.spend.mgr||0)+1),'다음 시즌 감독 연봉이 올해 전망에'); m.cs=null;
-  G.goals={y:G.year,sup:.3}; const b2=budget(); ok(Math.abs(b2.goalFrac-.3)<1e-9,'예산 목표 비율이 확정 목표와 다름: '+b2.goalFrac);
+  budget(); G.pitchCommit=[{y:G.year,k:'sup',v:.1,l:'시험'}]; setGoals(); const b2=budget(); ok(Math.abs(b2.goalFrac-G.goals.sup)<1e-9,'예산 목표 비율이 확정 목표와 다름: '+b2.goalFrac+' / '+G.goals.sup); G.pitchCommit=[];
   G.last={y:G.year}; const L=budget(); ok(L.exp.find(x=>x[0]==='구단 운영비')[1]===Math.round(24000*ecoIdx(G.year+1))||t.indie,'다음 시즌 예산 운영비가 올해 지수'); ok(supportCap(t)>=Math.round(16000*ecoIdx(G.year+1)*(.5+t.trust/100))-((t.supCut&&t.supCut.y===sponSeason())?t.supCut.amt:0)-1,'지원 한도 지수');
   G.fanOps.yr={}; ok(/레트로 유니폼을 냈/.test(fanEvent('retro')),'레트로 준비'); ok(G.fanOps.yr.retro===G.year+1,'결산 뒤 레트로가 다음 시즌으로 기록되지 않음'); G.year++; ok(/이미/.test(fanEvent('retro')),'같은 결산 시즌에 두 번'); G.year--; });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });

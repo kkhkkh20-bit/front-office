@@ -26,9 +26,9 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
      예산을 늘리는 길은 구단주 승인(추가 지원)뿐이다. 실제 결산(적자 보전)은 실제 수입·지출로 한다 */
   const fy=sponSeason(); const grantNow=t.grant&&t.grant.y===fy?t.grant.amt:0;
   const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf,d:G.day};
-  const IL=lock?lock.I:I, capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round((g&&g.sup!=null?g.sup:lock.gf)*lock.capB)+grantNow:goalSup); /* 구단주와 확정한 목표(재정 약속으로 바뀐 값)를 그대로(검수 11-08) */
+  const IL=lock?lock.I:I, capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round(lock.gf*lock.capB)+grantNow:goalSup);
   const gapL=E-IL, selfCL=gapL>0?Math.min(gapL,Math.max(0,t.cash-3000)*.5):0, needL=gapL-selfCL;
-  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?(g&&g.sup!=null?g.sup:lock.gf):gf,cash:t.cash,endCash:(c0=>t.indie&&c0>8000?c0-Math.round((c0-8000)*.5):c0)(t.cash+I+support-E),divEst:(c0=>t.indie&&c0>8000?Math.round((c0-8000)*.5):0)(t.cash+I+support-E), /* 독립구단은 결산 뒤 80억 초과분의 절반을 투자사가 배당으로 가져간다(검수 11-07) */
+  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,cash:t.cash,endCash:(c0=>t.indie&&c0>8000?c0-Math.round((c0-8000)*.5):c0)(t.cash+I+support-E),divEst:(c0=>t.indie&&c0>8000?Math.round((c0-8000)*.5):0)(t.cash+I+support-E), /* 독립구단은 결산 뒤 80억 초과분의 절반을 투자사가 배당으로 가져간다(검수 11-07) */
     lockI:IL, extra:Math.round(I-IL), lockD:lock?lock.d:null, capLock:capL, goalLive:goalSup,
     roomGoal:goalL-needL, roomCap:capL-needL, roomMax:capL-gapL+Math.max(0,t.cash), rem, indie:!!t.indie, trust:t.trust,
     fR,fRoom:Math.max(0,fR-fs),fUsed:sum(foreignOf(G.user).filter(p=>p.foreign==='용병').map(fCommit)), fCap:fCap(G.user), aUsed:sum(foreignOf(G.user).filter(p=>p.foreign==='아시아').map(p=>p.sal)), ci}; }
