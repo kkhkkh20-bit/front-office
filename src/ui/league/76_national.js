@@ -7,8 +7,8 @@ function ntRows(ids,o){ o=o||{}; const N=o.N; const BO={P:0,C:1,IF:2,OF:3}, BL={
 /* 우리 팀 영향: 뽑힌(뽑힐) 우리 선수 수 · 역할별 공백 · 미필 */
 function ntImpact(ids,k){ const L=ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user); if(!L.length)return '<p class="small"><b>우리 팀 영향</b> 없음</p>'; let d=null; try{ d=depth(G.user); }catch(e){} const RS=G.nt&&G.nt.k===k&&G.nt.role||{}; /* 소집 뒤에는 소집 직전 역할(검수 11-07: 빠진 라인업으로 다시 판단해 주전이 백업으로) */
   const role=p=>RS[p.id]?({sp:'선발투수',pen:'불펜',start:`주전 ${posLabel(p)}`,bench:`백업 ${posLabel(p)}`})[RS[p.id]]:!d?posLabel(p):d.sp.some(x=>x.id===p.id)?'선발투수':p.isP?'불펜':d.start.some(x=>x.id===p.id)?`주전 ${posLabel(p)}`:`백업 ${posLabel(p)}`; const by={}; L.forEach(p=>{ const r=role(p); by[r]=(by[r]||0)+1; });
-  const mf=L.filter(milFree).length; const e=NT_EV[k];
-  return `<p class="small"><b>우리 팀 영향</b> ${L.length}명 · ${Object.entries(by).map(([r,n])=>`${r} ${n}명`).join(' · ')}${mf?` · 미필 ${mf}명${e.ex?`(${e.ex==='gold'?'금메달':'3위 이내'}이면 병역 특례)`:''}`:''}</p>`; }
+  const M=L.filter(p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt))), mf=M.length; const e=NT_EV[k]; /* 입대 예정·복무 중도 특례 대상(ntResult와 같은 기준, 검수 11-09g) */
+  return `<p class="small"><b>우리 팀 영향</b> ${L.length}명 · ${Object.entries(by).map(([r,n])=>`${r} ${n}명`).join(' · ')}${mf?e.ex?` · 병역 특례 가능 ${mf}명(${M.map(p=>esc(p.name)).join(', ')}: ${e.ex==='gold'?'금메달':'3위 이내'}이면 특례, 입대 예정·복무 중 포함)`:` · 미필 ${mf}명`:''}</p>`; }
 function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); const nx=up[0];
   const exL=k=>NT_EV[k].ex==='gold'?'금메달':NT_EV[k].ex==='top3'?'3위 이내':'없음';
   const live=N&&N.y===G.year&&!N.res?N:null; const e=live&&NT_EV[live.k]; const canRef=live&&G.day<KD(e.from[0],e.from[1]);
