@@ -157,4 +157,11 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 .crew-h{display:flex;align-items:center;gap:8px;position:relative}.crew-h>div{display:grid;gap:1px;min-width:0}.crew-h .cimg-b{margin-left:auto}
 .crew-av{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center;background:var(--panel);color:var(--accent,var(--good))}
 .crew-av img{width:100%;height:100%;object-fit:cover}.crew-av svg{width:24px;height:24px}
+/* 치어리더 단원 카드(사용자 11-09) */
+.chm-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.chm{border:1px solid var(--line);border-radius:6px;padding:8px;display:grid;gap:6px;background:var(--panel2);min-width:0}.chm.up{border-color:var(--good)}.chm.inj{opacity:.7}
+.chm .crew-h b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.crew-at.chm-at{grid-template-columns:repeat(3,1fr)}.chm-at i{white-space:nowrap;font-size:10.5px}.chm .crew-h .small{line-height:1.3}
+.chm-f{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center}.chm-f>i{height:5px;border-radius:3px;background:var(--panel);overflow:hidden}.chm-f u{display:block;height:100%}
+.scene-im{display:block;width:100%;height:auto;max-height:240px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin:6px 0 8px}.scene-im.fo-ev-im{width:96px;flex:none;margin:0}.scene-im.ibm-scene{max-width:640px}
+@media (max-width:480px){.scene-im.fo-ev-im{width:64px}}
 .crew-at{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.crew-at span{display:grid;justify-items:center;font-size:11px;color:var(--muted)}.crew-at i{font-style:normal}.crew-at b{font:700 16px var(--f-num,inherit)}

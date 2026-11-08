@@ -1,0 +1,101 @@
+{
+  "passed": true,
+  "all600_photo_overview_visually_reviewed": true,
+  "all600_caps_reviewed_with_y10_128_guide": true,
+  "minimum_headroom_target512": 40,
+  "automated_estimates_are_screening_not_a_mathematical_segmentation_guarantee": true,
+  "automated_below40_flags": 0,
+  "deep_cap_brim_above_brows": true,
+  "natural_relaxed_close_head_shoulders_clavicle": true,
+  "kit_colors_and_fictional_cap_symbols_reviewed": true,
+  "texture256_sample_count": 20,
+  "texture256_samples": [
+    {
+      "id": "v6d60_004",
+      "team": "seoul_comets"
+    },
+    {
+      "id": "v6d60_005",
+      "team": "seoul_hounds"
+    },
+    {
+      "id": "v6d60_012",
+      "team": "incheon_seagulls"
+    },
+    {
+      "id": "v6d60_014",
+      "team": "suwon_sparks"
+    },
+    {
+      "id": "v6d60_015",
+      "team": "goyang_storm"
+    },
+    {
+      "id": "v6d60_017",
+      "team": "daejeon_redfox"
+    },
+    {
+      "id": "v6d60_020",
+      "team": "gwangju_blazes"
+    },
+    {
+      "id": "v6d60_022",
+      "team": "daegu_thunders"
+    },
+    {
+      "id": "v6d60_023",
+      "team": "busan_waves"
+    },
+    {
+      "id": "v6d60_024",
+      "team": "changwon_anchors"
+    },
+    {
+      "id": "v6d60_028",
+      "team": "seoul_comets"
+    },
+    {
+      "id": "v6d60_030",
+      "team": "seoul_hounds"
+    },
+    {
+      "id": "v6d60_038",
+      "team": "incheon_seagulls"
+    },
+    {
+      "id": "v6d60_041",
+      "team": "suwon_sparks"
+    },
+    {
+      "id": "v6d60_044",
+      "team": "goyang_storm"
+    },
+    {
+      "id": "v6d60_045",
+      "team": "daejeon_redfox"
+    },
+    {
+      "id": "v6d60_052",
+      "team": "gwangju_blazes"
+    },
+    {
+      "id": "v6d60_053",
+      "team": "daegu_thunders"
+    },
+    {
+      "id": "v6d60_058",
+      "team": "busan_waves"
+    },
+    {
+      "id": "v6d60_060",
+      "team": "changwon_anchors"
+    }
+  ],
+  "photo_grid_borders_removed": "009 whole-photo content crop by source row;024 5px grid boundary trim;022 full-bleed regeneration",
+  "reviewer": "Codex visual inspection",
+  "limitations": [
+    "Small variation in camera angle and embroidered symbol stitching is retained as photographic variation.",
+    "No in-game integration/rendering test.",
+    "No exhaustive search against all real people."
+  ]
+}

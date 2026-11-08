@@ -1,0 +1,713 @@
+{
+  "schema_version": "14.1",
+  "path_base": "assets/v14/",
+  "scene_count": 22,
+  "scene_files_standalone": true,
+  "app_inline": false,
+  "scenes": [
+    {
+      "id": "cheer_basic_1",
+      "group": "cheer_stage",
+      "title": "기본 응원 무대 1",
+      "file": {
+        "path": "cheer/stage/cheer_basic_1.webp",
+        "bytes": 261440,
+        "sha256": "971970d4208357ba9b7a621d15bd32db19cd07ed8da892f27ce6af4ccb4b3409",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-40e8b589-12bd-4d57-81a4-b03e1f9fc080.png",
+        "sha256": "ded671ebd43095b05a5d94a269de82f46a043337bf8ff6f8dc2e95ff05bdbafa",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_basic_2",
+      "group": "cheer_stage",
+      "title": "기본 응원 무대 2",
+      "file": {
+        "path": "cheer/stage/cheer_basic_2.webp",
+        "bytes": 200888,
+        "sha256": "d77824c7ed3d1aa7fe4edf3d9874e4abff2693bb99b61e92d3c8805f0f3183cf",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-a927e27b-8563-48bb-bc4a-e7e004c08941.png",
+        "sha256": "07cbc1697dab83e6dba94702cc66fa5402e17e145af32c7d24f274072a3744e5",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_basic_3",
+      "group": "cheer_stage",
+      "title": "기본 응원 무대 3",
+      "file": {
+        "path": "cheer/stage/cheer_basic_3.webp",
+        "bytes": 245436,
+        "sha256": "b683f1b43010200775a0bf8ed2341d6325296dc437028306005c0c4218996853",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-9bf033ab-b8df-40df-aba5-4113d1847eaa.png",
+        "sha256": "c8cfa86bdd7229c76ff64a19a6f38ae4cd95615abc36a01eacfaba90e350cdde",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_expanded_1",
+      "group": "cheer_stage",
+      "title": "확대 응원 무대 1",
+      "file": {
+        "path": "cheer/stage/cheer_expanded_1.webp",
+        "bytes": 330518,
+        "sha256": "6ef1685e2f256a32e5708b9c8405e872c964a28620f4fdc0015c4b9657f84189",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-d5251dab-1d52-4f3c-aa16-5a4e3f5e0b48.png",
+        "sha256": "bd5de4f0253f10ab642459cef4d0581b66cac48f4acc0c939f70b027e086519e",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_expanded_2",
+      "group": "cheer_stage",
+      "title": "확대 응원 무대 2",
+      "file": {
+        "path": "cheer/stage/cheer_expanded_2.webp",
+        "bytes": 242062,
+        "sha256": "f1f5ff6f701c3b8ffba65a00a7c79c9aeb67fd27580a4759847a2ed03cc9cbb1",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-ef644ef8-5c04-43ca-a120-a072e5b52121.png",
+        "sha256": "46e8a097d2151ea622334ba37bb5b6d0c790000048ee7da747d3fa96bf4e645e",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_expanded_3",
+      "group": "cheer_stage",
+      "title": "확대 응원 무대 3",
+      "file": {
+        "path": "cheer/stage/cheer_expanded_3.webp",
+        "bytes": 262716,
+        "sha256": "06450f8789a0aa2dc26ed57ae23b6c8d1cc650ee25ab57baa8385652913e1376",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-cd02d026-9165-4da6-925b-8332811c6bcc.png",
+        "sha256": "a79c67e2c017e4605a5a6c11feb1a8fde928fb71ef80f8fd9e075df2263190be",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_large_1",
+      "group": "cheer_stage",
+      "title": "대폭 확대 응원 무대 1",
+      "file": {
+        "path": "cheer/stage/cheer_large_1.webp",
+        "bytes": 428340,
+        "sha256": "8c5de2617356b985389ac1269754ebc722d13eb41bc1ac35f34559f18a65c35f",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-765dce8f-5663-4d3f-b4e9-1fa5feac0020.png",
+        "sha256": "9f8473509cb09b7f52bc94f5338dff05418361ddea7accf2e6d6c85d82a2ea42",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_large_2",
+      "group": "cheer_stage",
+      "title": "대폭 확대 응원 무대 2",
+      "file": {
+        "path": "cheer/stage/cheer_large_2.webp",
+        "bytes": 309452,
+        "sha256": "69c8ad97aa8bb793d5c5c261b37d5658c0bb7e8b9314c7615c7ae33a890ca73d",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-de23da87-b965-44b5-bb2a-92f2b76153fb.png",
+        "sha256": "e38a0f7390ac7d72b8d9f158542b2b63aedaa3bb4e52a35e4666083d3de8c568",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "cheer_large_3",
+      "group": "cheer_stage",
+      "title": "대폭 확대 응원 무대 3",
+      "file": {
+        "path": "cheer/stage/cheer_large_3.webp",
+        "bytes": 295478,
+        "sha256": "04bbda28492fbcca21823a952a58c5b4bd9715f43baf9aab1d413537620525a5",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-1791d4a6-776a-4fe3-bab5-e183ee15354e.png",
+        "sha256": "c05b641d0f98ccba6b5e595108823ed960500694acb761f84131ac6739f8e838",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "event_fan_highfive",
+      "group": "cheer_event",
+      "title": "팬 사인회·하이파이브",
+      "file": {
+        "path": "cheer/events/event_fan_highfive.webp",
+        "bytes": 236050,
+        "sha256": "fb1f236ec8731669cf3bd275a24cfd30d70d7dec90a70a483e3f2b855a69327a",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-795fee5e-1f29-46cb-b30a-262bcdcfaf36.png",
+        "sha256": "fc13f390ad9c9e16d6fbb0c28745fd4bfc0c7ec50d979cd608a6698be4a23ec4",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "event_retro_uniform",
+      "group": "cheer_event",
+      "title": "레트로 유니폼 데이",
+      "file": {
+        "path": "cheer/events/event_retro_uniform.webp",
+        "bytes": 249392,
+        "sha256": "652a6cbc73e41af825eefa3579a246c7f62ebcbd10c769b8412af011a541815a",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-b9f7170e-c189-45cd-bddd-cbefcf942f4b.png",
+        "sha256": "e76f191648777e6784e70a119502a71f013c7503bb9c6619516ebe8a9b98ae78",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "event_first_pitch",
+      "group": "cheer_event",
+      "title": "시구 행사",
+      "file": {
+        "path": "cheer/events/event_first_pitch.webp",
+        "bytes": 246796,
+        "sha256": "c0e8d44ed1ee5891cd2d5bf9c4b31a79ff6fbdac21790b97677f13f7be1d1101",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-fa3f9bcb-c099-49a5-9281-c6a08421ca43.png",
+        "sha256": "11d5a27b4bfac452d09d976b6afea4528047381da3897c305a2e272b4617e0df",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_weekend_1",
+      "group": "scout",
+      "title": "고교 주말리그 스카우트 1",
+      "file": {
+        "path": "scout/scenes/scout_weekend_1.webp",
+        "bytes": 283104,
+        "sha256": "ee4dfdb113d4103f9ab5c72e9eb4feafd3b7c441f48db78a97ed94356b6e10a3",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-ddae3d01-b9a7-49d5-a9c6-19fbce7b112b.png",
+        "sha256": "37dc71a9439f86faae511ee6758105afe38845f80a5eeada9ce4f10906d12d8c",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_weekend_2",
+      "group": "scout",
+      "title": "고교 주말리그 스카우트 2",
+      "file": {
+        "path": "scout/scenes/scout_weekend_2.webp",
+        "bytes": 306714,
+        "sha256": "360fd4dfcc72cbc2300aee5169237b0355b8a5cda90984ba5b16726ff36f6c99",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-49b2a27c-ccaa-447d-9e16-d5ebd38e59f2.png",
+        "sha256": "bf9cb6b1da8abcfd05eac339b5b7e30643bd1f831e316420d8bbeee4f96a958c",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_weekend_3",
+      "group": "scout",
+      "title": "고교 주말리그 스카우트 3",
+      "file": {
+        "path": "scout/scenes/scout_weekend_3.webp",
+        "bytes": 279518,
+        "sha256": "33f109baa5eaa249d7a56f8e5ab7624928a3b89f1366a1ad8a3d78787cbfe6c6",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-b179890f-641b-4b98-959f-88e387477df1.png",
+        "sha256": "474c13fcacdb1320b85380d560e39420760f7c5585801c9d304140ef05f70f6f",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_tournament_1",
+      "group": "scout",
+      "title": "전국대회 큰 구장 1",
+      "file": {
+        "path": "scout/scenes/scout_tournament_1.webp",
+        "bytes": 330422,
+        "sha256": "e43b45d88fc4b923e62d2f68841194e26b85d5c48040c140375b33a353da8e26",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-5a2dc480-afc9-4443-b489-de754c1c9a5a.png",
+        "sha256": "ec8f5d9aa3499a47356aadbd5e3aadb4f59f70bc96992cc5439374d05dd4cb1e",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_tournament_2",
+      "group": "scout",
+      "title": "전국대회 큰 구장 2",
+      "file": {
+        "path": "scout/scenes/scout_tournament_2.webp",
+        "bytes": 274332,
+        "sha256": "3d1155386faf6f8b2c6f2061cee080ae1b31be5c4b754bcf0be4ab9c60fd6ff2",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-b95c6c14-ffde-45ce-87c0-d959432a3545.png",
+        "sha256": "0c2e5ee9ea6f49dfdce6183658bd5cd20f608780966864740c01acebcfa0dd5a",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_dugout_1",
+      "group": "scout",
+      "title": "더그아웃 앞 면담 1",
+      "file": {
+        "path": "scout/scenes/scout_dugout_1.webp",
+        "bytes": 273318,
+        "sha256": "2c656b575da9cdb2507de6d3fb91e34f9b5e702fbd8c10d4675c735158794566",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-9a15dd06-9ea0-4eec-9073-b58aaf493e30.png",
+        "sha256": "3501e256d3171e0f88cff03b0f34b66ca3dac25d32f808b9ce65b0621721aaf9",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_dugout_2",
+      "group": "scout",
+      "title": "더그아웃 앞 면담 2",
+      "file": {
+        "path": "scout/scenes/scout_dugout_2.webp",
+        "bytes": 329086,
+        "sha256": "50fc568e891c8e4095b463cef0f54f3202ba00ac9ff7246e8f7236d2a246bb11",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-d3e5747c-38b6-4b0d-a1ce-626583b8c6bf.png",
+        "sha256": "27229302e64b5dcc5241b71cfc3a2644c33d771d6508b2addfa13ce4e0f370fa",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_winter_1",
+      "group": "scout",
+      "title": "겨울 전지훈련 1",
+      "file": {
+        "path": "scout/scenes/scout_winter_1.webp",
+        "bytes": 275800,
+        "sha256": "292523ca94e18db26b773e98a4cf70437048f4cca37fcc8cf77f0402a3a6bba0",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-a401deb5-0de3-4f12-8091-01129ccea251.png",
+        "sha256": "873fa3160a278ea32c4c45e61d4b859b4b466a5b1860e012e05262e6891f5527",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_winter_2",
+      "group": "scout",
+      "title": "겨울 전지훈련 2",
+      "file": {
+        "path": "scout/scenes/scout_winter_2.webp",
+        "bytes": 221158,
+        "sha256": "aaa4a536a9c5b72ef1777110c77f8973b25d350469ceabbf0bbcae1967b326be",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-58298570-6d89-41a3-b564-9dfaea58dfe9.png",
+        "sha256": "ec4dc8f3ee303504c4e0e52974bf6022c71aa911b5bae468eef82b2e766b5a54",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    },
+    {
+      "id": "scout_draft_meeting",
+      "group": "scout",
+      "title": "스카우트 지명 회의",
+      "file": {
+        "path": "scout/scenes/scout_draft_meeting.webp",
+        "bytes": 203952,
+        "sha256": "b93fd43d998f7c9c9c0c53d33493e052369d7e9ad39fc68787e109c83fdf8c01",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 96
+      },
+      "source": {
+        "path": "/workspace/generated_images/exec-4e724256-5ae3-4274-9e4a-e1c064b887da.png",
+        "sha256": "c305c58d261d2ea09a53774dba68943d8432b0f2b72eb379247c9a7aa2e5fb58",
+        "size": [
+          1672,
+          941
+        ],
+        "whole_photo_crop": [
+          0,
+          0,
+          1672,
+          940
+        ]
+      },
+      "usage": "site-only standalone file; do not inline into app or combine as runtime atlas"
+    }
+  ]
+}
