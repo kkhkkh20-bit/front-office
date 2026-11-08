@@ -1570,7 +1570,7 @@ T('[난이도] 1위 견제: 우리가 선두를 달리면 경쟁 구단은 같�
   ok(a>b+.1,'선두일 때 요구 '+a.toFixed(2)+' · 아닐 때 '+b.toFixed(2)); });
 T('[100년] 단장 세대 교체: 시즌 밖에서 후임에게 넘기면 구단·선수단은 그대로, 전임은 계보에 남고, 78세가 되는 해에는 자동으로 넘어간다',()=>{ fresh(); G.gmP={name:'원조단장',age:60,bg:'corp',female:false,face:'gm1',y0:G.year,bgDone:true};
   simTo(()=>period()==='season'); ok(gmSucceed({name:'둘째단장',age:41})!=='','시즌 중에 넘어감');
-  simTo(()=>period()!=='season'&&period()!=='post'&&G.year>=G.gmP.y0); const n0=domestic(G.user).length, cash=team(G.user).cash, tid=G.user;
+  simTo(()=>period()!=='season'&&period()!=='post'&&G.year>=G.gmP.y0); const n0=domestic(G.user).length, tid=G.user; let adv=0; try{ const S=personalState(); adv=S.settled[fyNow()]?0:(S.advance[fyNow()+':'+G.user]||0); }catch(e){} const cash=team(G.user).cash-adv; /* 전임이 이미 받은 월급은 구단 현금에서 정산(검수 11-08) */
   ok(gmSucceed({name:'둘째단장',age:41,bg:'data'})==='','넘기기 실패'); ok(G.gmP.name==='둘째단장'&&meAge()===41,'후임 '+G.gmP.name+' '+meAge());
   ok(G.user===tid&&domestic(G.user).length===n0&&team(G.user).cash===cash,'구단이 바뀜'); ok((G.gmLine||[]).length===1&&G.gmLine[0].name==='원조단장','계보 '+JSON.stringify(G.gmLine));
   ok(G.myC&&G.myC.tid===G.user&&G.myC.y1>=G.year,'계약 없음'); ok(G.rep>=30&&G.rep<=55,'명성 '+G.rep);
