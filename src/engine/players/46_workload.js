@@ -46,7 +46,7 @@ function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user)
    다른 구단 선수의 부상 체질은 우리 의무팀이 검진해야 알 수 있다. 제휴 병원 등급이 높을수록 정확하다.
    우리 선수는 매일 보기 때문에 정확히 안다. AI 구단은 자기 의무팀이 있어서 트레이드 때 실제 체질을 반영한다 */
 const MED_SD={none:.07,c:.05,b:.035,a:0};
-function medInj(p){ if(p.team===G.user)return p.inj; const sd=MED_SD[G.med&&G.med.hosp]??.07; return clamp(p.inj+hn('med'+G.year,p.id)*sd,.02,.45); }
+function medInj(p){ const v=p.inj*injStam(p); /* 체력까지 반영한 실제 부상 위험(사용자 11-08) */ if(p.team===G.user)return v; const sd=MED_SD[G.med&&G.med.hosp]??.07; return clamp(v+hn('med'+G.year,p.id)*sd,.02,.45); }
 function durGrade(v){ return v<.08?['강철 몸','good']:v<.12?['튼튼함','good']:v<.18?['보통','']:v<.26?['잔부상 주의','warn']:['부상 병동','bad']; }
 function injDays2(p){ return sum((p.injHist||[]).filter(h=>h.y>=G.year-1).map(h=>h.d!=null?Math.max(0,Math.min(h.days,G.day-h.d)):h.days)); } /* 이미 빠진 날만(앞으로 남은 재활은 아직 결장 이력이 아님, 검수 11-08) */
 function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];

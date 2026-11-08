@@ -48,6 +48,7 @@ function develop(p){
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=typeof trnCost==='function'?trnCost(p):null; /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
+  const stam0=(p.isP?p.r.sta:p.r.vit)??50; initPers(p); const agK=clamp(1-(stam0-50)*.012-((p.pers.pro??10)-10)*.025,.55,1.4); /* 노화 하락 폭: 체력이 높고 프로의식이 강하면 덜 떨어진다(사용자 11-08). 부상 후유증 하락은 따로(injury) */
   for(const k in p.r){
     let dk=base+N(0,(p.foreign?2.2:1.0)*(k==='eye'||k==='ctl'?.6:1));
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
@@ -57,6 +58,7 @@ function develop(p){
     if(dk>0&&club)dk*=coachToolMult(p,k);
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k])dk-=tc[k];
+    if(dk<0&&age>=T.fall-1&&svc!=='현역')dk*=agK;
     if(dk<0&&age>=T.fall-1&&svc!=='현역'&&!p.foreign){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }

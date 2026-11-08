@@ -151,3 +151,10 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
  .own-w{display:grid;grid-template-columns:120px minmax(0,1fr) 34px;gap:4px 10px;align-items:center;font-size:12px}.own-w b{text-align:right;font:600 12px var(--f-num)}
  .own-lg{margin-left:10px;font-weight:400;color:var(--muted)}.own-lg i{display:inline-block;width:10px;height:3px;margin:0 4px 2px 8px;vertical-align:middle;background:var(--good)}.own-lg i.p{background:var(--warn)}
 }
+/* 응원단장·치어리더 팀장 카드(사용자 11-08) */
+.fo-row.crew{display:block}.crew-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:8px}
+.crew-c{border:1px solid var(--line);border-radius:6px;padding:8px;display:grid;gap:6px;background:var(--panel2)}.crew-c.empty{opacity:.75}
+.crew-h{display:flex;align-items:center;gap:8px;position:relative}.crew-h>div{display:grid;gap:1px;min-width:0}.crew-h .cimg-b{margin-left:auto}
+.crew-av{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center;background:var(--panel);color:var(--accent,var(--good))}
+.crew-av img{width:100%;height:100%;object-fit:cover}.crew-av svg{width:24px;height:24px}
+.crew-at{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.crew-at span{display:grid;justify-items:center;font-size:11px;color:var(--muted)}.crew-at i{font-style:normal}.crew-at b{font:700 16px var(--f-num,inherit)}
