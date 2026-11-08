@@ -2,12 +2,12 @@
 function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(tid)); if(m)L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0]}); } return L; }
 let _spC={k:null};
 function projStarters(tid,n){ // 지금 로테이션 순번과 휴식일로 다음 경기 선발을 예상(부상·피로로 바뀔 수 있음)
-  const k=G.day+':'+G.games.length+':'+G.year; if(_spC.k!==k)_spC={k}; const ck=tid+':'+n; if(_spC[ck]&&_spC[ck].every(g=>!g.sp||(g.sp.team===tid&&healthy(g.sp)&&rpPlanOf(tid,g.sp)!=='sp2')))return _spC[ck]; /* 같은 날 2군 선발 수업·부상으로 빠진 투수도 다시 계산(검수 11-08) */ /* 같은 날 방출·이적한 투수가 남아 있으면 다시 계산 */
-  const t=team(tid); const sp=depth(tid).sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[];
+  const k=G.day+':'+G.games.length+':'+G.year; if(_spC.k!==k)_spC={k}; const ck=tid+':'+n; if(_spC[ck]&&_spC[ck].every(g=>!g.sp||(g.sp.team===tid&&healthy(g.sp)&&(!entryOn()||g.sp.e1)&&g.la===g.sp.lastApp&&rpPlanOf(tid,g.sp)!=='sp2')))return _spC[ck]; /* 같은 날 2군 선발 수업·부상으로 빠진 투수도 다시 계산(검수 11-08) */ /* 같은 날 방출·이적한 투수가 남아 있으면 다시 계산 */
+  const t=team(tid); const sp=depth(tid).sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[]; const fr=(p,d)=>!(p.lastApp!=null&&p.lastApp!==p.lastStart&&last[p.id]===p.lastStart&&d-p.lastApp<2); /* 실제 선발 선택처럼 어제·그제 구원 등판한 투수는 순번을 넘긴다(검수 11-08) */
   for(const g of games){ let pick=null;
-    if(sp.length){ for(let i0=0;i0<sp.length;i0++){ const i=(rot+i0)%sp.length; const p=sp[i]; if(last[p.id]==null||g.d-last[p.id]>=5){ rot=(i+1)%sp.length; pick=p; break; } }
-      if(!pick)pick=[...sp].sort((a,b)=>(last[a.id]||0)-(last[b.id]||0))[0]; last[pick.id]=g.d; }
-    out.push(Object.assign({},g,{sp:pick})); }
+    if(sp.length){ for(let i0=0;i0<sp.length;i0++){ const i=(rot+i0)%sp.length; const p=sp[i]; if((last[p.id]==null||g.d-last[p.id]>=5)&&fr(p,g.d)){ rot=(i+1)%sp.length; pick=p; break; } }
+      if(!pick){ const pool=[...sp].sort((a,b)=>(last[a.id]||0)-(last[b.id]||0)); pick=pool.find(p=>fr(p,g.d))||pool[0]; } last[pick.id]=g.d; }
+    out.push(Object.assign({},g,{sp:pick,la:pick?pick.lastApp:null})); }
   _spC[ck]=out; return out; }
 function rankSnap(day){ if(period()!=='season')return; const st=standingsNow(); const rk=G.teams.map(()=>0); st.forEach(o=>rk[o.tid]=tieRank(st,o.tid)); /* 그래프도 공동 순위(검수 11-08) */
   const S=G.sea; S.rh=S.rh||[]; if(S.rh.length&&S.rh[S.rh.length-1][0]===day)return; S.rh.push([day,rk,G.teams.map(t=>{ const r=S.rec[t.id]; return r.w-r.l; })]); }

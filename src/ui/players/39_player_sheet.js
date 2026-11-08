@@ -116,7 +116,7 @@ function entryForm(p){
   if(p.ys)st=`<b>육성선수</b> · 정식 로스터(${ROSTER_MAX}명) 밖에서 2군 경기에 나갑니다.`;
   else if(!on)st='시즌 중이 아니라 1군 엔트리가 없습니다.';
   else if(p.e1)st=`<b>1군 등록</b> · ${p.upDay!=null?dmd(p.upDay)+' 등록':''}`;
-  else st=`<b>2군</b>${p.downDay!=null?` · ${dmd(p.downDay)} 말소 · ${G.day-p.downDay>=10?'재등록 가능':dmd(p.downDay+10)+'부터 재등록 가능'}`:''}`;
+  else st=`<b>2군</b>${p.downDay!=null?` · ${dmd(p.downDay)} 말소 · ${G.day-p.downDay>=10?(p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중이라 보직을 바꿔야 등록 가능':'재등록 가능'):dmd(p.downDay+10)+'부터 재등록 가능'}`:p.isP&&rpPlanOf(p.team,p)==='sp2'?' · 2군 선발 수업 중(보직을 바꿔야 등록 가능)':''}`; /* 콜업이 잠긴 이유를 같이(검수 11-08) */
   const btns=[];
   if(on&&!p.ys)btns.push(p.e1?`<button class="btn small" data-a="reqDown" data-v="${p.id}">2군 말소 요청</button>`:`<button class="btn small" data-a="reqUp" data-v="${p.id}" ${canUp(p)?'':'disabled'}>1군 콜업 요청</button>`);
   if(p.ys)btns.push(`<button class="btn small" data-a="fromYS" data-v="${p.id}">정식 선수로 등록</button>`);

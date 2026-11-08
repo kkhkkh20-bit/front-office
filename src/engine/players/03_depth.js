@@ -112,7 +112,7 @@ function depth(tid){
   const bat=by(act.filter(p=>!p.isP&&healthy(p)&&!startIds.has(p.id)),p=>ovr(p)+pb(p));
   const futB0=by(ps.filter(p=>!p.isP&&healthy(p)&&!actIds.has(p.id)),ovr), futP0=by(ps.filter(p=>p.isP&&healthy(p)&&!actIds.has(p.id)),ovr);
   const pit=act.filter(p=>p.isP&&healthy(p));
-  const sp=by(pit,p=>spV(p)+roleBias(tid,p)+pb(p)).slice(0,5); for(const p of pit)p.role=sp.includes(p)?'SP':'RP';
+  const spF=p=>spV(p)+roleBias(tid,p)+pb(p), sp=[...by(pit.filter(p=>rpPlanOf(tid,p)!=='rp'),spF),...by(pit.filter(p=>rpPlanOf(tid,p)==='rp'),spF)].slice(0,5); /* 계투로 정한 투수는 선발 자리가 남을 때만(검수 11-08: 계투 요청을 받아들였는데 선발 등판) */ for(const p of pit)p.role=sp.includes(p)?'SP':'RP';
   const rest=by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+pb(p)*.6);
   const start=ORDER.filter(k=>ln[k]).map(k=>ln[k]);
   const on=entryOn();

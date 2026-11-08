@@ -13,8 +13,9 @@ function blocker(){
   if(per==='pre'&&G.day>=G.cal.open-1&&!G.mgr[G.user])return '감독이 없습니다. 스태프·육성 → 감독에서 감독을 선임해야 개막할 수 있습니다.';
   if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done&&((G.ps.seeds||[]).includes(G.user)||(G.ps.cur&&G.ps.cur.round==='tb'&&(G.ps.cur.hi===G.user||G.ps.cur.lo===G.user))||(G.ps.tbq||[]).some(q=>q[1]===G.user||q[2]===G.user))&&!Object.values(G.ps.res||{}).some(r=>r&&r[1]===G.user))){ const n=rosterN(G.user); /* 포스트시즌은 아직 남은 경기가 있는 팀만(탈락한 팀 정원 때문에 한국시리즈가 막히지 않게, 검수 11-07) */ /* 포스트시즌도 같은 등록 규정 */
     if(n>ROSTER_MAX){ const L=milReturns(7); return `로스터가 ${n}명입니다. ${ROSTER_MAX}명 이하로 줄여야 진행할 수 있습니다.${L.length?` 7일 안에 군 복귀 ${L.length}명(${milRetTxt(L)})이 더 있어, 복귀까지 고려하면 ${n+L.length-ROSTER_MAX}자리를 비워야 다시 막히지 않습니다.`:''}`; }
-    if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다: 그동안 부상 회복·대표팀 복귀·말소 10일이 지나 부족이 풀린다(검수 11-06) */ const d=depth(G.user); const d1=G.day+1, rt=p=>(p.ntAway===d1&&p.ntFrom<=G.day)||(milServing(p)&&p.mil.until===d1); /* 내일 대표팀·군에서 돌아오는 선수(검수 11-07) */ const tmr=p=>!p.ys&&!(p.joinY>G.year)&&(rt(p)?!(p.injOut>1):!isAway(p)&&p.injOut===1)&&!(p.susp>G.day+1)&&!p.frehab&&!p.hold&&psOk(p)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10); /* 내일 복귀해 내일 등록할 수 있는 선수(말소 10일 규정 포함, 검수 11-07) */ const back=Object.values(G.players).filter(p=>p.team===G.user&&tmr(p));
-    const can=Object.values(G.players).filter(p=>p.team===G.user&&!p.ys&&!(p.joinY>G.year)&&!p.frehab&&!p.hold&&psOk(p)&&(rt(p)?!(p.injOut>1):!isAway(p)&&!(p.injOut>1))&&!(p.susp>G.day+1)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10)); /* 내일 뛸 수 있는 선수 전체: 감독이 2군에서 올릴 선수, 내일 말소 10일·출장정지가 풀리는 선수까지(검수 11-08: 콜업 가능한 선수가 있어도 진행이 막힘) */
+    if(ourGameOn(G.day+1)){ const L1=milReturns(1); if(L1.length&&n+L1.length>ROSTER_MAX)return `내일 ${milRetTxt(L1)}이(가) 전역해 로스터가 ${n+L1.length}명이 됩니다. 경기 전에 ${ROSTER_MAX}명 이하로 맞춰야 진행할 수 있습니다.`; } /* 전역일 경기도 등록 규정 안에서(검수 11-08) */
+    if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다: 그동안 부상 회복·대표팀 복귀·말소 10일이 지나 부족이 풀린다(검수 11-06) */ const d1=G.day+1, NT=G.nt&&G.nt.y===G.year&&NT_EV[G.nt.k]&&KD(...NT_EV[G.nt.k].from)===d1?new Set(G.nt.ids||[]):null, lv=p=>(p.mil&&p.mil.from===d1)||!!(NT&&NT.has(p.id)); /* 내일 입대·대표 소집으로 빠지는 선수(검수 11-08) */ const d0=depth(G.user), d={start:d0.start.filter(p=>!lv(p)),sp:d0.sp.filter(p=>!lv(p)),pen:d0.pen.filter(p=>!lv(p))}, rt=p=>(p.ntAway===d1&&p.ntFrom<=G.day)||(milServing(p)&&p.mil.until===d1); /* 내일 대표팀·군에서 돌아오는 선수(검수 11-07) */ const tmr=p=>!p.ys&&!(p.joinY>G.year)&&(rt(p)?!(p.injOut>1):!isAway(p)&&p.injOut===1)&&!(p.susp>G.day+1)&&!p.frehab&&!p.hold&&psOk(p)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10); /* 내일 복귀해 내일 등록할 수 있는 선수(말소 10일 규정 포함, 검수 11-07) */ const back=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&tmr(p));
+    const can=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&!p.ys&&!(p.joinY>G.year)&&!p.frehab&&!p.hold&&psOk(p)&&(rt(p)?!(p.injOut>1):!isAway(p)&&!(p.injOut>1))&&!(p.susp>G.day+1)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10)); /* 내일 뛸 수 있는 선수 전체: 감독이 2군에서 올릴 선수, 내일 말소 10일·출장정지가 풀리는 선수까지(검수 11-08: 콜업 가능한 선수가 있어도 진행이 막힘) */
     if(Math.max(d.start.length+back.filter(p=>!p.isP).length,can.filter(p=>!p.isP).length)<9)return '건강한 야수가 9명이 안 됩니다.'; if(Math.max(d.sp.length+d.pen.length+back.filter(p=>p.isP).length,can.filter(p=>p.isP).length)<8)return '건강한 투수가 부족합니다.'; } /* 내일 복귀하는 1군 투수는 내일 경기 인원에 넣는다(검수 11-07: 복귀일까지 갈 수 없었다) */
   return '';
 }
@@ -122,7 +123,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(3,1)&&day<c.draft)try{ draftSeasonMail(); }catch(e){}
   if(day===c.draft)startDraft();
   if(entryOn()&&(period()==='season'||period()==='post')){ const wk=o.w===1&&period()==='season'; for(const t of G.teams)entryManage(t.id,wk&&(t.id!==ME()||R()<.7)); } try{ regDaily(); }catch(e){} /* 포스트시즌에 들어가면 확장 엔트리(33명)를 기본 한도로 줄인다 */
-  if(c.sched[day])playDay(day);
+  if(c.sched[day]||(G.makeup||[]).length&&period()==='season')playDay(day);
   if(day===KD(9,1)||day===c.end+1){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} } /* AI 구단은 시즌 막판 하한을 다시 확인해 주축과 연장계약으로 맞춘다 */
   if(day===c.end+1)seasonEnd();
   if(G.ps&&!G.ps.done)psDay(day);
@@ -152,12 +153,12 @@ function specialKind(day,hid,aid){
     if(Math.max(ia,ib)<=6&&gb(st[ia],st[ib])<=1.5&&Math.min(ia,ib)<=4)return '순위 경쟁'; }
   return null;
 }
-function playDay(day){
-  let userRec=null;
-  for(const [h,a] of G.cal.sched[day]){
+function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
+  let userRec=null; const mk=(G.makeup||[]).filter(x=>x.y===G.year); G.makeup=[];
+  for(const [h,a] of [...mk.map(x=>[x.h,x.a]),...(G.cal.sched[day]||[])]){
     const kind=specialKind(day,h,a);
-    const g=simGame(day,h,a,false); applyGame(day,h,a,g,false); try{ gtAdd(gameMin(g)); }catch(e){} rivalAfterGame(day,h,a,g,false); let st=null; try{ st=stadGame(day,h,a); }catch(e){}
-    if(h===G.user||a===G.user){ userRec=gameRecord(day,h,a,g,kind); if(st){ userRec.att=st.att; userRec.so=st.so; } milestones(g,h===G.user?'h':'a'); }
+    let g; try{ g=simGame(day,h,a,false); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,false); }catch(e2){ G.makeup.push({y:G.year,h,a,d:day}); try{ console.error('경기 처리 실패, 다음 경기일로 미룸',dmd(day),h,a,e2); }catch(x){} continue; } } /* 한 경기 오류로 같은 날 다른 경기·날짜만 반영되고 이 경기가 사라지지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 다음 경기일에 치른다(검수 11-08) */ applyGame(day,h,a,g,false); try{ gtAdd(gameMin(g)); }catch(e){} rivalAfterGame(day,h,a,g,false); let st=null; try{ st=stadGame(day,h,a); }catch(e){}
+    if(h===G.user||a===G.user){ if(userRec){ keepGame(userRec); ulog(userRec); } /* 미룬 경기와 같은 날: 앞 경기도 기록 */ userRec=gameRecord(day,h,a,g,kind); if(st){ userRec.att=st.att; userRec.so=st.so; } milestones(g,h===G.user?'h':'a'); }
   }
   if(userRec){
     const me=userRec.home===G.user?'h':'a', op=me==='h'?'a':'h';
@@ -180,7 +181,7 @@ function futuresWeek(){
   for(const t of G.teams){ const d=depth(t.id); const B=d.futB.filter(healthy); const ln=futLineupE(t.id,B); const st=new Set(Object.values(ln).map(p=>p.id));
     G.futLn[t.id]={d:G.day,ln:Object.fromEntries(Object.entries(ln).map(([k,p])=>[k,p.id]))};
     for(const k in ln)futBat(ln[k],t.id,k,3); for(const p of B)if(!st.has(p.id))futBat(p,t.id,null,1);
-    { const FP=d.futP.filter(healthy); const rot=FP.slice().sort((a,b)=>(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,clamp(FP.filter(p=>rpPlanOf(t.id,p)==='sp2').length,5,7)); /* 선발 수업 투수가 많으면 2군 로테이션을 7명까지 늘린다: 수업 표기인데 구원만 나가지 않게(검수 11-06) */ for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; } /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
+    { const FP=d.futP.filter(healthy); const rot=FP.slice().sort((a,b)=>(rpPlanOf(t.id,b)==='sp2')-(rpPlanOf(t.id,a)==='sp2')||(spV(b)+roleBias(t.id,b))-(spV(a)+roleBias(t.id,a))).slice(0,clamp(FP.filter(p=>rpPlanOf(t.id,p)==='sp2').length,5,8)); /* 선발 수업 투수가 많으면 2군 로테이션을 7명까지 늘린다: 수업 표기인데 구원만 나가지 않게(검수 11-06) */ for(const p of FP)p.role=rot.includes(p)?'SP':'RP'; } /* 2군도 선발 5명(2군 선발 수업 투수 먼저)과 불펜으로 나눈다 */
     for(const p of d.futP)if(healthy(p))futPit(p,t.id);
   }
   /* 상무 복무 선수: 상무 야구단으로 퓨처스리그에 나간다(기록은 원소속 구단 퓨처스 기록에 합쳐 남는다). 현역은 야구를 못 한다 */

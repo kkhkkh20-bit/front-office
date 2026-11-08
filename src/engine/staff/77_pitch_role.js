@@ -32,7 +32,7 @@ function rpWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return; G.
       if(!x&&isNewP(p)&&!(p.joinY>G.year)){ const k=mgrRolePlan(p,t.id,ctx); G.rplan[p.id]={k:k||'auto',tid:t.id,y}; if(t.id===G.user&&!G.unemp)myNew.push(p); continue; }
       if(!x)continue;
       if(x.k==='rp'&&x.y<y)delete G.rplan[p.id]; /* 계투 시작은 첫해만: 다음 해부터는 체력과 투구 내용으로 경쟁 */
-      else if(x.k==='sp2'){ if(p.r.sta>=thr||y-x.y>=2){ delete G.rplan[p.id]; if(t.id===G.user&&!(G.prole&&G.prole[p.id]&&G.prole[p.id].k==='sp2'))grad.push(p); } /* 단장 요청이 남아 있으면 실제 보직은 그대로라 '마침' 메일을 보내지 않는다. 그 선수는 아래 '선발 수업 성과' 메일로 전환을 묻는다(검수 11-06) */ else if(p.age>25){ delete G.rplan[p.id]; } } /* 체력이 선발 기준에 닿거나 두 시즌을 채우면 수업을 마치고 선발 경쟁에 들어간다 */
+      else if(x.k==='sp2'){ if(p.r.sta>=thr||y-x.y>=2){ G.rplan[p.id]={k:'done',tid:t.id,y}; /* 마친 기록을 남겨 다음 주 신인 배정에서 다시 수업으로 보내지 않는다(검수 11-08) */ if(t.id===G.user&&!(G.prole&&G.prole[p.id]&&G.prole[p.id].k==='sp2'))grad.push(p); } /* 단장 요청이 남아 있으면 실제 보직은 그대로라 '마침' 메일을 보내지 않는다. 그 선수는 아래 '선발 수업 성과' 메일로 전환을 묻는다(검수 11-06) */ else if(p.age>25){ G.rplan[p.id]={k:'done',tid:t.id,y}; } } /* 체력이 선발 기준에 닿거나 두 시즌을 채우면 수업을 마치고 선발 경쟁에 들어간다 */
       else if(x.k==='auto'&&x.y<y)delete G.rplan[p.id]; } }
   /* 2군 선발 수업 중이면 2군에서 선발로 나간다 */
   for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p)&&!isAway(p)){ /* 대표팀 차출 중에도 구단 수업 효과 없음(검수 11-08) */ const rm=trnRoom(p,'sta'); if(rm>0)addR(p,'sta',.05*clamp(rm/8,.2,1)); } } /* 체력 성장 여력이 없으면 오르지 않는다(검수 11-06) */ } /* 선발로 길게 던지며 체력이 붙는다 */

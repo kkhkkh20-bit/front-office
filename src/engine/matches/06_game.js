@@ -23,10 +23,10 @@ function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastS
   const ok=p=>p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2); /* 어제 불펜으로 던진 투수는 쉬어 온 선발 뒤로(정규시즌과 같은 기준, 검수 11-08) */ return top.slice(0,3).find(p=>ok(p)&&rest(p)>=need)||top.find(p=>ok(p)&&rest(p)>=4)||null; }
 /* 최종전 접전 7회 이후: 오늘 선발이 아닌 에이스(선발 상위 2명, 2일 이상 쉼)를 불펜으로 */
 function psAceRelief(fs,inn,lead,day,ps){ if(!ps||!(ps.fin||(ps.elimT?ps.elimT.includes(fs.tid):ps.elim))||inn<7||Math.abs(lead)>3||!fs.spAll)return null; const top=[...fs.spAll].filter(p=>healthy(p)&&p!==fs.sp&&!fs.used.has(p.id)).sort((a,b)=>spV(b)-spV(a)).slice(0,2);
-  return top.find(p=>(p.lastStart==null||day-p.lastStart>=2)&&p.lastApp!==day)||null; }
+  return top.find(p=>(p.lastStart==null||day-p.lastStart>=2)&&p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2&&!relAvail(p,day,ps)))||null; } /* 전날 구원으로 많이 던져 불펜 판정에서 못 나오는 에이스는 빼고(검수 11-08) */
 function pickStarter(tid,d,day,ps){
   const t=team(tid); const sp=d.sp; if(ps&&sp.length){ const c=psStarter(tid,d,day,ps); if(c)return c; }
-  if(!sp.length){ const el=playersOf(tid).filter(p=>p.isP&&psOk(p)); return d.pen[0]||el.find(healthy)||el[0]||null; } /* 가을야구 자격 없는 투수는 고르지 않는다. 부상자는 건강한 투수가 하나도 없을 때만(경기를 못 여는 것을 막는 마지막 수단, 검수 11-08) */
+  if(!sp.length){ const el=playersOf(tid).filter(p=>p.isP&&psOk(p)&&!(p.susp>day)&&!isAway(p)&&(!entryOn()||p.e1||canUp(p))); const c=d.pen[0]||el.find(healthy)||el[0]||null; if(c&&entryOn()&&!c.e1){ c.e1=true; c.upDay=G.day; } return c; } /* 마지막 후보도 출장정지·재등록 제한·2군 선발 수업은 빼고, 2군에서 올리면 등록한다(검수 11-08) */ /* 가을야구 자격 없는 투수는 고르지 않는다. 부상자는 건강한 투수가 하나도 없을 때만(경기를 못 여는 것을 막는 마지막 수단, 검수 11-08) */
   const fresh=p=>p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2); /* 오늘 던졌거나 어제·그제 불펜으로 던진 투수는 선발 순번을 넘긴다(새로 들어온 선발 포함, 검수 11-07) */
   for(let k=0;k<sp.length;k++){ const i=((t.rot||0)+k)%sp.length; const p=sp[i]; if((p.lastStart==null||day-p.lastStart>=5)&&fresh(p)){ t.rot=(i+1)%sp.length; return p; } }
   const pool=[...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0)); return pool.find(fresh)||d.pen.find(fresh)||pool.find(p=>p.lastApp!==day)||d.pen.find(p=>p.lastApp!==day)||sp[0]; /* 쉬어 온 투수(불펜 포함)를 전날 등판한 투수보다 먼저(검수 11-08) */
@@ -43,9 +43,9 @@ function orderList(start,tid){
 }
 function gameSide(tid,day,ps){
   const d=depth(tid); const ln=Object.assign({},d.ln); const bench=[...d.bench];
-  const ov={};
+  const ov={}, rest=new Set();
   for(const pos of ORDER){ const p=ln[pos]; if(!p||ov[pos]===p.id||!bench.length)continue;
-    const m=mgrOf(tid), re=m.interim?50:mgrRestEff(m); const fat=p.fat||0, thr=(pos==='C'?55:66)+(50-re)*.35; if(R()<.004+re/4000||(fat>thr&&R()<clamp((fat-thr)/30+(re-50)/150,.12,.95))){ let best=null,bs=-1e9; for(const q of bench){const s=posScore(q,pos); if(s>bs){bs=s;best=q}} ln[pos]=best; bench.splice(bench.indexOf(best),1); } }
+    const m=mgrOf(tid), re=m.interim?50:mgrRestEff(m); const fat=p.fat||0, thr=(pos==='C'?55:66)+(50-re)*.35; if(R()<.004+re/4000||(fat>thr&&R()<clamp((fat-thr)/30+(re-50)/150,.12,.95))){ let best=null,bs=-1e9; for(const q of bench){ if(rest.has(q.id))continue; const s=posScore(q,pos); if(s>bs){bs=s;best=q}} if(!best)continue; rest.add(p.id); ln[pos]=best; bench.splice(bench.indexOf(best),1,p); } } /* 쉬는 주전은 벤치에 남아 대타·대수비로 나갈 수 있다(검수 11-08) */
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k;
   const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),tid);
   const sp=pickStarter(tid,d,day,ps);
@@ -102,7 +102,7 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
     { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<1000)pbp.push([half,'PC',ace.id]); return; } }
-    const av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day,ps)); if(!av.length)return;
+    let av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day,ps)); if(!av.length&&fs.curIsSP){ const x0=fs.box.get(fs.cur.id); if(armDirOn(fs.tid)||(x0&&x0.pc>=lim(fs)+25))av=fs.pen.filter(p=>!fs.used.has(p.id)&&healthy(p)&&p.lastApp!==day); } if(!av.length)return; /* 쉴 불펜이 없어도 혹사 금지·한계를 크게 넘긴 선발은 지친 불펜으로라도 바꾼다(검수 11-08) */
     const closer=fs.pen[0], setup=fs.pen.slice(1,4), mid=fs.pen.slice(4);
     let nxt=null;
     if(inn>=9&&lead>=1&&lead<=3) nxt=av.find(p=>p===closer);
