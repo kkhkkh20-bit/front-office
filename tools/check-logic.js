@@ -2209,6 +2209,23 @@ T('[검수 11-08d] 2차 드래프트 우리 차례에서 이직하면 전 구단
 T('[검수 11-08d] 같은 날 같은 상대와 한 별도 트레이드도 따로 센다',()=>{ fresh(); G.moves=[]; const B=otherT(); const ps=domestic(B).filter(q=>!q.foreign).slice(0,4); for(const p of ps){ const tr=mvTr(); mvLog('트레이드',p,B,G.user,'',0,tr); } ok(mvTrN(G.moves)===4,'4건이 '+mvTrN(G.moves)+'건'); G.news=[]; mvWeekly(); ok((G.news||[]).some(n=>(n.t+n.b).includes('트레이드 4건')),'기사: '+((G.news||[])[0]||{}).t); });
 T('[검수 11-08d] 포스트시즌이 끝난 뒤 11월 전에는 올해 스토브리그 구간을 쓴다(여름 거래 제외)',()=>{ fresh(); G.day=KD(10,26); G.ps={done:true}; ok(period()==='off','준비 실패 '+period()); ok(mvWinStart()>=KD(7,31),'시작일 '+dmd(mvWinStart())); ok(mvWinLabel().startsWith(G.year+'~'),'기간 '+mvWinLabel()); });
 T('[검수 11-08d] 트레이드로 받은 현금은 보상금·양도금과 따로 장부에 잡히고 금액은 같다',()=>{ fresh(); const c0=G.spend.compIn||0; payIn(G.user,300,'tradeIn'); ok((G.spend.compIn||0)===c0&&G.spend.tradeIn===300,'수입 항목이 섞임'); ok(budget().inc.some(x=>x[0]==='트레이드 현금 수령'&&x[1]===300),'예산에 트레이드 현금 항목 없음'); });
+T('[피드백 11-08b] 팬 댓글: 갤러리식 유동 닉·답글·비추가 나오고, 빈 칸 문구·중복·첫 줄 답글이 없으며 같은 시드는 같은 댓글',()=>{ fresh(); const me=G.user; const P=playersOf(me); const a=P.find(p=>!p.isP).name, b=P.find(p=>p.isP).name; let dc=0, re=0, total=0, bad=0, dupe=0, orphan=0;
+  for(let i=0;i<60;i++){ const C=fComments('tst'+i,['loss','win','tradeB','lstreak','injury','faSign'][i%6],i%2?'neg':'pos',{p:a,q:b,r:a,O:'상대',n:5,pos:'유격수'},7,me,0); const seen=new Set();
+    C.forEach((c,j)=>{ total++; if(c.nick.startsWith('ㅇㅇ(')&&c.nick.endsWith(')'))dc++; if(c.re){ re++; if(j===0)orphan++; } if(c.t.includes('{')||c.t.includes('}')||!c.t.trim())bad++; if(seen.has(c.t))dupe++; seen.add(c.t); ok(typeof c.dis==='number','비추 수 없음'); }); }
+  ok(dc>total*.2,'유동 닉이 적음 '+dc+'/'+total); ok(re>total*.08,'답글이 적음 '+re+'/'+total); ok(!bad,'빈 칸 문구 '+bad); ok(!dupe,'한 글 안 같은 댓글 '+dupe); ok(!orphan,'첫 줄이 답글');
+  ok(JSON.stringify(fComments('같은키','loss','neg',{p:a},6,me,0))===JSON.stringify(fComments('같은키','loss','neg',{p:a},6,me,0)),'같은 시드인데 다른 댓글');
+  const g=fComments('빈칸','hot','pos',{},20,me,0); ok(g.every(c=>c.t!=='갓'&&!c.t.startsWith(' ')&&!c.t.startsWith('갓 ')),'선수 이름 없는 문구가 깨져 나옴: '+g.map(c=>c.t).join('/')); });
+T('[피드백 11-08b] 기사 댓글: 부상·FA·트레이드·감독 경질·드래프트·트럭 기사는 그 상황 반응 묶음을 쓴다',()=>{ fresh(); const nb=(k,t,v)=>newsBank({k,t,b:'',v},null);
+  ok(nb('선수','악재, 홍길동 장기 이탈',-2)==='injury','부상 '+nb('선수','악재, 홍길동 장기 이탈',-2)); ok(nb('FA','코메츠, FA 홍길동 영입',2)==='faSign','FA'); ok(nb('트레이드','대형 트레이드',-1)==='tradeB','트레이드'); ok(nb('구단','감독 전격 경질',-1)==='mgrFire','경질');
+  ok(nb('드래프트','신인 지명 결과',0)==='drSum','드래프트'); ok(nb('구단','팬, 구장 앞에 트럭 시위',-1)==='truck','트럭'); ok(nb('선수','홍길동 시즌 첫 안타',0)==='newsNeu','평범한 기사');
+  const C=fComments('부상','injury','neg',{p:'홍길동'},6,G.user,0); ok(C.length>=6&&C.some(c=>c.t.includes('홍길동')),'부상 댓글에 선수 이름 없음'); });
+T('[피드백 11-08b] 창단 드래프트 규정타석·규정이닝: 지난 시즌 1군 446타석·144이닝 기준으로 가른다',()=>{ fresh(); const ly=((G.fd&&G.fd.y)||G.year)-1; const A=Object.values(G.players).filter(p=>p.hist&&p.hist.some(h=>h.y===ly));
+  const bq=A.filter(p=>!p.isP&&fdQual(p,ly)), bn=A.filter(p=>!p.isP&&!fdQual(p,ly)), pq=A.filter(p=>p.isP&&fdQual(p,ly)), pn=A.filter(p=>p.isP&&!fdQual(p,ly));
+  ok(bq.length>0&&bn.length>0&&pq.length>0&&pn.length>0,'규정 충족 분포 이상 '+[bq.length,bn.length,pq.length,pn.length].join('/'));
+  ok(bq.every(p=>seasonTotal(p,ly,'1군').pa>=446),'446타석 미만이 규정타석'); ok(bn.every(p=>{ const h=seasonTotal(p,ly,'1군'); return !h||h.pa<446; }),'446타석 이상이 빠짐');
+  ok(pq.every(p=>seasonTotal(p,ly,'1군').outs>=432),'144이닝 미만이 규정이닝'); ok(pn.every(p=>{ const h=seasonTotal(p,ly,'1군'); return !h||h.outs<432; }),'144이닝 이상이 빠짐');
+  const mk=(isP,o)=>({isP,hist:[Object.assign({y:ly,lvl:'1군',pos:isP?'P':'SS'},o)]}); ok(fdQual(mk(false,{pa:446}),ly)&&!fdQual(mk(false,{pa:445}),ly),'446타석 경계');
+  ok(fdQual(mk(true,{outs:432}),ly)&&!fdQual(mk(true,{outs:431}),ly),'144이닝 경계'); ok(!fdQual(mk(false,{pa:600,lvl:'퓨처스'}),ly),'퓨처스 기록으로 규정타석'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

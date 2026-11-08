@@ -1,79 +1,10 @@
 /* ---------- 팬 게시판: 야구 커뮤니티식 글과 댓글 ----------
    글과 댓글은 저장하지 않는다. 사건(기사·트레이드·감독·경기·순위)과 고정 시드로 매번 같은 내용을 만든다. */
-function fRng(key){ let h=1779033703^key.length; for(let i=0;i<key.length;i++){ h=Math.imul(h^key.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
-  return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
-const fPick=(r,a)=>a[Math.floor(r()*a.length)];
-const FNICK_A=['직관','외야석','치맥','퇴근길','주말','9회말','불펜','2군','만루','삼진','도루','번트','홈런','개막전','올드','야알못','통계','유니폼','응원가','우천취소','더블헤더','끝내기','대타','마무리','에이스','포수','외국인','신인','FA','엔트리'];
-const FNICK_B=['러','요정','장인','지킴이','전문가','소식통','단골','덕후','매니아','개근','수집가','관찰자','중독','사랑','고인물','뉴비','팬','아재','청년'];
-function fNick(r,tid){ const t=tid!=null?team(tid):null; const x=r();
-  if(t&&x<.32)return t.city+fPick(r,['토박이','사람','직관러','올드팬','지킴이','청년','아재','댁'])+(r()<.4?Math.floor(r()*99):'');
-  if(t&&x<.5)return t.nick+fPick(r,['빠','사랑','만세','덕후','외길','평생팬','지킴이'])+(r()<.5?Math.floor(r()*999):'');
-  return fPick(r,FNICK_A)+fPick(r,FNICK_B)+(r()<.35?Math.floor(r()*99):''); }
-/* 반응 문구: pos 좋음 · neg 나쁨 · mix 반반 · fun 잡담. {p}선수 {q}다른 선수 {T}우리 별칭 {O}상대 별칭 {m}감독 {n}숫자 {pos}포지션 */
-const FB={
-  win:{pos:['오늘 {p} 미쳤다 진짜','{p} 연봉 올려줘라 제발','이 맛에 야구 본다','직관 갔는데 이겼다 ㅋㅋ 집 가는 길 행복','{q} 오늘 공 좋더라','{p} 타석 들어올 때마다 뭔가 해줄 것 같음','오늘 같은 경기만 해라','{O} 상대로 이기니까 더 좋네','수훈선수 {p} 인정합니다','중계 보다가 소리 질렀다 ㅋㅋㅋ'],
-       mix:['이겼으니 됐다 근데 불펜은 좀...','이긴 건 좋은데 {r} 오늘 왜 저럼','점수 차 벌릴 때 못 벌린 건 아쉽다','이겨도 불안한 이 느낌 뭐냐'],
-       fun:['오늘 치킨 맛있게 먹었다','내일도 이 기세로 가자','다음 주 직관 예매 완료','응원가 아직도 귀에서 맴돈다']},
-  blown:{neg:['다 이긴 경기를 왜 놓치냐','선발이 버텨 줬는데 또 후반에','9회까지 기대했다가 이게 뭐냐','불펜 정비 안 하면 이런 경기 계속 나온다','오늘 진 건 진짜 잠 안 온다'],mix:['{p}는 잘했는데 아깝다','선발은 할 만큼 했다','그래도 7회까지는 좋았다']},
-  comeback:{pos:['이런 맛에 끝까지 본다','포기 안 한 보람 있다','오늘 뒤집은 거 진짜 크다','{p} 마지막에 해줬다'],mix:['초반은 답답했는데 결국 이겼네']},
-  rout:{neg:['오늘은 그냥 졌다 말할 게 없음','초반에 무너지니 볼 게 없었다','{O}한테 이렇게 밀리냐','점수 차 보고 그냥 껐다'],mix:['이런 날도 있지 내일 보자']},
-  nobat:{neg:['방망이가 이렇게 안 맞냐','점수를 못 내는데 어떻게 이기냐','투수들 불쌍하다 오늘','득점권에서 한 방이 없다'],mix:['{q} 혼자 고생했다']},
-  loss:{neg:['{r} 오늘 왜 저럼','{r} 2군 한 번 보내라 제발','불펜 방화 언제까지 볼 거냐','치킨 시켰는데 체함','오늘 경기는 기억에서 지운다','투수 교체 타이밍 실화냐','득점권에서 한 방이 그렇게 어렵냐','{O}한테 이렇게 털릴 일이냐','타선 집단 슬럼프 아님?','이럴 거면 리빌딩이나 하자'],
-       mix:['그래도 {p} 하나는 잘했다','질 수도 있지 내일 이기면 됨','144경기 중 하나일 뿐이다 진정하자','{p} 혼자 야구하네'],
-       fun:['중계 끄고 산책 나감','오늘은 일찍 잔다','야구 끊는다 (내일 또 봄)']},
-  psWin:{pos:['이게 가을야구지 소름 돋았다','{p} 큰 경기에 강하네','한 경기만 더 가자','오늘 직관 간 사람 평생 자랑해라','{q} 오늘 미쳤다 진짜'],mix:['이겼지만 내일이 더 중요하다','긴장돼서 끝까지 못 봤다','불펜만 버텨 주면 된다'],fun:['목 다 쉬었다','내일 연차 냈다']},
-  psAdv:{pos:['{R} 통과! 이 기세로 끝까지 가자','{O} 잡고 올라간다','가을에 강한 팀 맞네','다음 시리즈도 이렇게만 하자','선수들 표정이 정규시즌이랑 다르다'],mix:['올라간 건 좋은데 투수 소모가 걱정','다음 상대가 훨씬 세다, 방심 금지'],fun:['다음 시리즈 표 구한 사람?']},
-  psUpset:{pos:['업셋 실화냐 ㅋㅋㅋ','{O} 상대로 업셋 미쳤다','정규시즌 막판 연패는 다 잊었다','이게 가을야구지','하위 시드의 반란 제대로 보여 줬다'],mix:['업셋은 좋은데 다음은 더 세다','투수 다 쓰고 올라가서 걱정이긴 함'],fun:['단톡방 난리 났다']},
-  psOut:{neg:['여기서 끝이네...','{R}에서 탈락, 아쉽다','결국 투수 깊이 차이','큰 경기 경험이 부족했다'],mix:['그래도 가을야구 맛은 봤다','여기까지 온 것도 잘했다','선수들 한 해 고생 많았다','내년엔 더 높은 곳에서 시작하자','스토브리그에서 보강 제대로 하자']},
-  psChamp:{pos:['우승이다!!!','이 순간을 위해 응원했다','올해 선수들 전부 레전드','단장님 감독님 다 고생했다','평생 기억할 시즌'],fun:['내일 출근 못 함']},
-  psLoss:{neg:['가을에 이렇게 무너지면 어떡하냐','{r} 큰 경기에서 왜 저래','여기까지 와서 이렇게 지냐','단기전은 투수 교체가 전부인데','오늘 경기는 두고두고 생각날 듯'],mix:['그래도 여기까지 온 게 어디냐','아직 끝난 거 아니다 다음 경기 이기자','올해 정말 고생 많았다','{p} 혼자 끝까지 싸웠다'],fun:['오늘은 말없이 잔다','내년 가을에 다시 보자']},
-  wstreak:{pos:['{n}연승 실화냐 ㅋㅋ','이 기세면 가을야구 간다','연승할 때는 뭘 해도 됨','요즘 야구 볼 맛 난다','작년이랑 완전 다른 팀이네'],mix:['연승 끝나면 연패 올까 봐 무섭다']},
-  lstreak:{neg:['{n}연패... 프런트 책임론 나와야 함','연패 끊을 생각은 있냐','분위기 너무 안 좋다','감독이랑 단장 둘 다 뭐 하냐','이 정도면 선수단 문제 맞음'],mix:['이럴 때 에이스가 끊어줘야 하는데','연패는 언젠가 끝난다... 언젠가']},
-  tradeG:{pos:['와 이걸 받아준다고? 단장 협상 잘하네','{p} 데려오고 {q} 보낸 거면 이득 아님?','솔직히 이 트레이드는 박수 쳐줘야 함','상대 단장 무슨 생각임 ㅋㅋㅋ','드디어 프런트가 일을 하네','{pos} 구멍 이걸로 메웠다','{q} 아깝긴 한데 {p} 정도면 납득','단장 일 잘한다 인정'],
-          mix:['일단 시즌 끝나고 판단하자','{q} 정들었는데 아쉽다 ㅠ','윈나우 하겠다는 거네']},
-  tradeB:{neg:['{q} 왜 줌? 미쳤냐','이거 손해 아님? 누가 설명 좀','{p} 성적 보고 데려온 거 맞냐','단장 나가라 진짜','{q} 저쪽 가서 터지면 어쩔 건데','또 퍼주기 시작이네','트레이드 소식 보고 밥 먹다 체함','이게 맞는 트레이드냐 진짜 모르겠다'],
-          mix:['{p} 우리 구장 오면 다를 수도','결과 보고 욕하자 일단','{q} 보낸 건 아깝다']},
-  tradeE:{mix:['등가교환 같은데','서로 필요한 거 맞바꾼 듯','윈윈 트레이드로 보임','{q} 잘 가라 그동안 고마웠다','{p} 환영한다 잘해보자','둘 다 어떻게 될지 모르겠다'],pos:['{pos} 보강은 필요했지'],neg:['굳이 지금?']},
-  rival:{pos:['{O}팬인데 우리가 이득 본 듯 ㅋㅋ','저쪽 단장 감사합니다','{p} 우리 팀 와서 잘해라'],neg:['{O}팬인데 우리 단장 뭐 하냐','{q} 보낸 거 실화냐 우리 팀','이거 우리가 손해 아님?'],mix:['{O}팬인데 일단 지켜봄']},
-  mgrHire:{pos:['검증된 감독 데려왔네','경력 보니까 믿음 간다','{m} 감독 야구 스타일 좋아함','{ob}','이번엔 제대로 뽑은 듯'],neg:['처음 듣는 이름인데?','왜 하필 이 감독임','돈 아끼려고 뽑은 거 아니냐','전 팀에서 어땠는지 아는 사람?'],mix:['일단 시즌 보고 판단','선수단이랑 잘 맞으면 좋겠다','코치진은 누가 오는지가 더 중요함']},
-  mgrFire:{pos:['늦었다 진짜','이제라도 바꾸네','결단 잘했다'],neg:['감독이 무슨 죄냐 선수 구성이 문제지','시즌 중에 이게 맞냐','단장도 같이 책임져라'],mix:['감독대행 체제로 버틸 수 있나','새 감독 누가 올지 궁금하다']},
-  hot:{pos:['{p} 요즘 폼 미쳤다','{p} 최근 10경기 보고 놀람','{p} 국대 가자','{p} 다년 계약 잡아라 단장아','{p} 타석은 화장실도 못 감','{p} 없었으면 어쩔 뻔'],mix:['{p} 이 폼 오래 가야 할 텐데']},
-  cold:{neg:['{p} 슬럼프 너무 길다','{p} 언제 살아나냐','{p} 2군 가서 조정 좀 하고 와라','{p} 라인업에서 빼라','{p} 자리 다른 선수 써보자'],mix:['{p} 원래 이런 선수 아닌데','{p} 믿고 기다려 보자','{p} 몸이 안 좋은 거 아님?']},
-  forBad:{neg:['{p} 교체 언제 함?','외국인 스카우트 누가 했냐','{p} 이 돈 주고 데려온 거 맞냐','대체 외국인 알아봐라 제발'],mix:['{p} 적응 기간이라 치자','{p} 한 달만 더 보자']},
-  forGood:{pos:['{p} 재계약 무조건','{p} 해외 갈까 봐 벌써 무섭다','{p} 역대급 외국인 아님?','외국인 이번엔 잘 뽑았네'],mix:['{p} 내년에도 이렇게 할까']},
-  rankTop:{pos:['솔직히 올해 우승 각 아님?','{n}위 실화냐 행복하다','시즌 끝까지 이대로만','가을야구 예매 준비해라'],mix:['아직 시즌 길다 방심 금지','윗팀들도 만만치 않음']},
-  rankMid:{mix:['5강 싸움 피 말린다','한 경기 한 경기가 결승이다','트레이드로 한 자리만 보강하면 될 듯','{pos} 하나만 채우면 위로 간다'],pos:['요즘 분위기 나쁘지 않다'],neg:['이도 저도 아닌 시즌 될 듯']},
-  rankLow:{neg:['이럴 거면 리빌딩이나 하자','꼴찌 싸움 실화냐','단장 경질 언제 함?','올해도 가을야구 글렀다','리빌딩 할 거면 확실하게 해라','{pos} 자리가 구멍인데 프런트는 뭐 하냐'],mix:['내년 드래프트나 기대하자','그래도 응원은 한다']},
-  feat:{pos:['ㄷㄷ {p} 미쳤다','이걸 실시간으로 봤다','{p} 이름 기록에 남겠네','역사적인 날이다'],fun:['오늘 중계 본 사람 승리자','하이라이트 열 번 돌려봄']},
-  forChg:{mix:['교체 빠르네','새 외국인 영상 찾아봤는데 괜찮아 보임','이번엔 제대로 된 선수 오길'],neg:['또 바꿈? 처음부터 잘 뽑지']},
-  drSteal:{pos:['{n}순위에 {p}? 이건 스틸이다','언론 {r}위를 여기서 줍네 ㅋㅋ','스카우트팀 일했다','{p} 고교 때 영상 봤는데 물건임','올해 드래프트 성공한 듯'],mix:['남아 있던 데는 이유가 있겠지','일단 몸부터 만들어라']},
-  drReach:{neg:['{p}? 처음 듣는 이름인데','이 순번에 이 선수는 좀...','언론 {r}위를 {n}순위에? 오버드래프트 아님?','다른 좋은 선수 남았는데 왜','스카우트 무슨 생각이냐'],mix:['스카우트가 뭘 봤겠지 믿어보자','몇 년 뒤에 판단하자','{pos} 급했나 보네']},
-  drOk:{mix:['무난한 픽','예상대로 갔네','{pos} 보강 필요했지','{p} 잘 커라','군대 문제부터 잘 풀자'],pos:['{p} 환영한다','이 정도면 괜찮은 지명']},
-  drSum:{pos:['올해 드래프트 만족한다','상위 라운드 잘 뽑은 듯','몇 년 뒤가 기대된다'],neg:['올해 드래프트 망한 듯','스카우트팀 교체해라','상위 픽 아깝다'],mix:['드래프트는 5년 뒤에 평가하는 거다','신인은 키우기 나름','2군 코치들 어깨가 무겁다']},
-  newsPos:{pos:['이런 기사만 보고 살고 싶다','{p} 응원한다 진짜','요즘 우리 팀 기사 볼 맛 난다','기자님 오늘 일 잘하셨네','캡처해 둔다 이 기사','{T} 분위기 좋다 확실히','이 흐름 시즌 끝까지 가자'],mix:['좋은 소식인데 아직 김칫국은 이르다','기사는 좋은데 결과로 보여 주자']},
-  champ:{pos:['우승 ㅠㅠㅠ 몇 년을 기다렸냐','올해 선수들 전원 레전드 인정','퍼레이드 다녀왔는데 사람 진짜 미쳤음','우승 굿즈 언제 나오냐 지갑 열어 둠','{T} 왕조 시작이다','기사 읽다가 또 울컥함','단장 감독 다 업어 줘라','이 맛에 야구 본다 진짜','내년에도 이 멤버 그대로 가자','우승 반지 끼는 장면 계속 돌려 봄','평생 기억할 시즌이다','{T} 팬이라 행복하다 오늘은'],fun:['오늘 회사 반차 냄 ㅋㅋ','우승 기념 치킨 두 마리 시킴','엄마한테 우승했다고 전화함','우승 기념 할인 안 하냐 구단아']},
-  champOther:{neg:['남의 팀 우승 기사 보니 배 아프다','우리는 언제 저런 거 해 보냐','내년엔 우리 차례다'],mix:['축하는 해 줘야지 잘했더라','저 팀 올해 확실히 강했음']},
-  awardB:{pos:['{p} 상 받을 만했다','{p} 올해 진짜 미쳤었지','수상 축하한다 {p}','{p} 연봉 협상 볼만하겠네 ㅋㅋ'],mix:['다른 후보도 아까웠는데','표 차이 생각보다 적더라']},
-  newsNeg:{neg:['기사 뼈 때리네','반박 불가','프런트 이 기사 보고 있냐','팩트라 할 말이 없다'],mix:['기자가 너무 몰아가는 듯','한두 경기로 판단하긴 이르지']},
-  newsNeu:{mix:['그렇구나','다음 소식 기다림','이건 좀 더 지켜보자','{p} 관련 소식 더 없냐','결국 성적으로 말하는 거지','오 이건 몰랐네','프런트 일 하긴 하네','시즌 끝나고 다시 보자','기사 잘 봤습니다','이게 우리한테 득일지 실일지'],fun:['ㅋㅋㅋ 기사 제목','댓글 1등','출근길에 읽음','점심 먹으면서 봄']}
-};
-const FMOOD_W={pos:{pos:.72,mix:.2,neg:.03,fun:.05},neg:{neg:.68,mix:.25,pos:.02,fun:.05},mix:{mix:.5,pos:.22,neg:.22,fun:.06}};
-function fFill(t,v){ return t.replace(/\{(\w+)\}/g,(m,k)=>v[k]!=null&&v[k]!==''?v[k]:''); }
-function fComments(key,bank,mood,vars,n,tid,fanAdj){ const r=fRng(key); const B=FB[bank]||FB.newsNeu; const W={...(FMOOD_W[mood]||FMOOD_W.mix)};
-  if(fanAdj){ W.pos=(W.pos||0)*(1+fanAdj); W.neg=(W.neg||0)*(1-fanAdj); }
-  const out=[]; const used=new Set();
-  for(let i=0;i<n;i++){ let x=r()*Object.values(W).reduce((a,b)=>a+b,0), cat='mix'; for(const [k,w] of Object.entries(W)){ if((x-=w)<=0){ cat=k; break; } }
-    let L=B[cat]||B.mix||B.pos||B.neg; if(!L||!L.length)L=FB.newsNeu.mix; let t=null; for(let a=0;a<4;a++){ const c=fPick(r,L); if(!used.has(c)){ t=c; break; } } if(!t)continue; used.add(t);
-    const txt=fFill(t,vars).replace(/\s+/g,' ').trim(); if(!txt||/^[ ,.]/.test(txt))continue;
-    const like=Math.floor(Math.pow(r(),2.2)*(cat==='fun'?60:240)); const ftid=vars.rivalTid!=null&&r()<.3?vars.rivalTid:tid;
-    out.push({nick:fNick(r,ftid),tid:ftid,t:txt,like,cat,ago:Math.floor(r()*180)}); }
-  out.sort((a,b)=>b.like-a.like); if(out[0]&&out[0].like>=40)out[0].best=true; if(out[1]&&out[1].like>=80)out[1].best=true; return out; }
 /* 우리 팬 분위기: 여론 지수 50 기준 */
 /* 지명 반응: 전체 순번과 언론 순위 차이로 스틸·오버드래프트를 가른다 */
 function draftFan(p){ const d=p.draft; if(!d)return {mood:'mix',bank:'drOk',lines:[]}; const n=(d.rd-1)*10+d.no; const r=p.press||n;
   const bank=r<=n-6?'drSteal':r>=n+12&&d.rd<=3?'drReach':'drOk'; const mood=bank==='drSteal'?'pos':bank==='drReach'?'neg':'mix';
   return {bank,mood,n,r,lines:fComments('dr'+p.id,bank,mood,{p:p.name,n,r,pos:posLabel(p)},3,G.user,fanAdj())}; }
-function fanAdj(){ const f=G.pr?G.pr.fan:50; return clamp((f-50)/80,-.45,.45); }
 const sn=id=>{ const p=G.players[id]; return p?p.name:''; };
 /* ---- 글 만들기 ---- */
 function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; const fa=fanAdj();
@@ -136,18 +67,15 @@ function fanThreads(){ const T=[]; const me=G.user; const MN=team(me).nick; cons
     const bank=newsBank(n,p);
     add({id:'n'+n.id,d:n.d,cat:'기사',title:`[${n.o}] ${n.t}`,body:n.b||'',tid:me,ref:n.ref,nid:n.id,cm:fComments('nc'+n.id,bank,bank==='champ'||bank==='awardB'?'pos':n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:'',T:team(me).nick},5,me,fa)}); }
   const seen=new Set(); return T.filter(t=>{ if(seen.has(t.id))return false; seen.add(t.id); return true; }).sort((a,b)=>b.d-a.d||(b.hot?1:0)-(a.hot?1:0)).slice(0,40); }
-/* 기사 내용으로 반응 묶음 고르기: 우승·시상은 전용 반응(우승 기사에 '제목 과장 아님?' 같은 댓글이 달리던 문제, 사용자 11-08) */
-function newsBank(n,p){ const t=(n.t||'')+' '+(n.b||''); if(/우승|퍼레이드|정상 등극|챔피언/.test(t))return n.v>=0&&(t.includes(team(G.user).nick)||(G.ps&&G.ps.champ===G.user))?'champ':'champOther';
-  if(/MVP|신인왕|골든글러브|수상/.test(t)&&n.v>=0)return 'awardB'; return n.k==='선수'&&p&&p.foreign?(n.v<0?'forBad':'forGood'):n.v>=1?'newsPos':n.v<=-1?'newsNeg':'newsNeu'; }
 /* 기사 하나의 댓글 */
 function newsComments(n){ const p=n.ref!=null?G.players[n.ref]:null; const b0=newsBank(n,p); const bank=b0==='newsPos'||b0==='newsNeg'||b0==='newsNeu'?(n.k==='경기'?(n.v>=0?'win':'loss'):b0):b0;
   return fComments('nc'+n.id,bank,bank==='champ'||bank==='awardB'?'pos':bank==='champOther'?'neg':n.v>=1?'pos':n.v<=-1?'neg':'mix',{p:p?p.name:'',r:p?p.name:'',O:'',T:team(G.user).nick},5,G.user,fanAdj()); }
 /* 최근 우리 트레이드 반응 두 줄 (트레이드 성사 도장에 붙인다) */
-function tradeFanLines(){ const t=(G.trades||[])[G.trades.length-1]; if(!t)return []; const th=fanThreads().find(x=>x.id==='tr'+t.d+(t.gi||[]).join('.')); return th?th.cm.slice(0,3):[]; }
-function gameFanLines(g){ if(!g)return []; const th=fanThreads().find(x=>x.id==='g'+g.day); return th?th.cm.slice(0,2):[]; }
+function tradeFanLines(){ const t=(G.trades||[])[G.trades.length-1]; if(!t)return []; const th=fanThreads().find(x=>x.id==='tr'+t.d+(t.gi||[]).join('.')); return th?th.cm.filter(c=>!c.re).slice(0,3):[]; }
+function gameFanLines(g){ if(!g)return []; const th=fanThreads().find(x=>x.id==='g'+g.day); return th?th.cm.filter(c=>!c.re).slice(0,2):[]; }
 /* ---- 화면 ---- */
 const FCAT={경기:'',트레이드:'tr',오피셜:'of',감독:'mg',선수:'pl',기록:'ft',외국인:'fo',잡담:'',기사:'nw'};
-function cmtRow(c){ return `<div class="fcm${c.best?' best':''}"><div class="fcm-h">${c.best?'<i class="fbest">베스트</i>':''}${c.tid!=null?badge(c.tid,12):''}<b>${esc(c.nick)}</b><span>${c.ago<60?c.ago+'분 전':Math.floor(c.ago/60)+'시간 전'}</span><em>추천 ${c.like}</em></div><p>${lk(c.t)}</p></div>`; }
+function cmtRow(c){ return `<div class="fcm${c.best?' best':''}${c.re?' re':''}"><div class="fcm-h">${c.re?'<i class="fre">└</i>':''}${c.best?'<i class="fbest">베스트</i>':''}${c.tid!=null?badge(c.tid,12):''}<b>${esc(c.nick)}</b><span>${c.ago<60?c.ago+'분 전':Math.floor(c.ago/60)+'시간 전'}</span><em>추천 ${c.like}${c.dis?` · 비추 ${c.dis}`:''}</em></div><p>${lk(c.t)}</p></div>`; }
 function fanBoard(){ const L=fanThreads(); const f=UI.fbf||'all'; const cats=['all','경기','트레이드','감독','선수','기사'];
   const pass=t=>f==='all'||(f==='트레이드'?(t.cat==='트레이드'||t.cat==='오피셜'):f==='선수'?(t.cat==='선수'||t.cat==='외국인'||t.cat==='기록'):t.cat===f);
   const R=L.filter(pass); const open=UI.fbo;
