@@ -103,4 +103,11 @@ function futLineupE(tid,list){ const used=new Set(), ln={};
 function futUse(p,pos,g){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0,pos:{}}; p.fuse.g+=g; if(pos)p.fuse.pos[pos]=(p.fuse.pos[pos]||0)+g; }
 function futText(p){ const u=p.fuse&&p.fuse.y===G.year?p.fuse:null; if(!u||!u.g)return ''; const L=Object.entries(u.pos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${POSK[k]||k} ${n}`); return `2군 ${u.g}경기${L.length?' · '+L.join(' · '):''}`; }
 /* 해마다 1월 1일(겨울 성장 뒤) 능력치를 남겨 둔다: 선수 화면에서 지난 시즌과 비교 */
+/* 우리 선수 능력치 기록(FM '최근 능력치 변화'·능력치 기록 그래프처럼, 사용자 11-08): 매달 1일과 창단·이직 때 남긴다. 최근 14개만 */
+function rmSnap(force){ for(const p of playersOf(G.user)){ if(p.prospect)continue; const L=p.rm=p.rm||[]; const last=L[L.length-1]; if(last&&last.d===G.day)continue; if(!force&&last&&G.day-last.d<20)continue; L.push({d:G.day,r:Object.assign({},p.r)}); if(L.length>14)L.shift(); } }
+/* 비교 기준 능력치: m='1m'(약 한 달 전), 'sea'(올해 첫 기록), '1y'(1년 전). 기록이 모자라면 가장 오래된 것 */
+function rmBase(p,m){ const L=p.rm||[]; if(!L.length)return null; const tgt=m==='1y'?G.day-365:m==='sea'?dnum(G.year,1,1):G.day-28; let b=null; for(const x of L){ if(x.d<=tgt)b=x; } if(!b&&m!=='1m')b=L[0]; if(!b)b=L[0].d<G.day?L[0]:null; return b; }
+function rmDelta(p,m){ const b=rmBase(p,m); if(!b)return null; const d={}; for(const k of Object.keys(p.r))if(b.r[k]!=null)d[k]=p.r[k]-b.r[k]; return {d,from:b.d,r:b.r}; }
+/* 종합 능력 변화(100점 척도): 표의 '변화' 열과 현재 칸 화살표 */
+function ovrDelta(p,m){ const b=rmBase(p,m||'1m'); if(!b)return null; return dv(ovr(p))-dv(ovr({isP:p.isP,r:b.r})); }
 function rhSnap(){ const y=G.year; for(const p of Object.values(G.players)){ if(p.team==null||p.prospect)continue; p.rh=p.rh||{}; p.rh[y]=Object.assign({},p.r); for(const k of Object.keys(p.rh))if(+k<y-2)delete p.rh[k]; } }

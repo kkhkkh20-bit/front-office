@@ -3538,6 +3538,14 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 }
 @media(min-width:1100px) and (min-height:860px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:auto;height:min(240px,19vh);object-position:50% 18%}}
 @media(min-width:1100px) and (max-width:1919px) and (min-height:860px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
+/* 능력 변화 표시(사용자 11-08) */
+.pf-dl{font-style:normal;font:700 11px var(--f-num);margin-left:4px;padding:0 3px;border-radius:3px}
+.pf-dl.up{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.pf-dl.dn{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.pf-cmp{display:grid;gap:6px;margin:4px 0 8px}
+.pf-trend{display:flex;flex-wrap:wrap;gap:6px 14px}.pf-trend span{display:flex;align-items:center;gap:5px;font-size:12px}.pf-trend i{font-style:normal;color:var(--muted)}.pf-trend b{font:700 12px var(--f-num)}
+.pf-spark{display:block}
+.ovc .pf-dl{margin-left:2px}
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
 .detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
@@ -4659,6 +4667,9 @@ button.st-n:hover b{text-decoration:underline}
 .smk-vw button{white-space:nowrap}
 /* 스카우트 담당 업무 버튼: 아마·프로·해외 세 줄, 넘치면 그 줄만 가로로 민다 */
 .sasg{flex:1 1 100%;display:grid;gap:3px;min-width:0}.sasg>div{display:flex;align-items:center;gap:6px;min-width:0}.sasg>div>i{flex:none;width:26px;font-style:normal;font-size:11px;color:var(--muted)}.sasg .optrow{flex:1;min-width:0}.sasg .optrow>button{padding:3px 8px;min-height:26px}
+/* 스태프 시장: 지금 그 자리 코치 고정 줄, 핵심 능력 차이(카페 11-08) */
+.st-pin{border-left:3px solid var(--acc);background:color-mix(in srgb,var(--acc) 7%,transparent)}
+.st-ab em{font-style:normal;font:700 10px var(--f-num);margin-left:2px}.st-ab em.good{color:var(--good)}.st-ab em.bad{color:var(--bad)}
 /* 면담은 상단바·사이드바 안의 작업 화면이다. 기록과 화제만 각자 스크롤한다. */
 .meet-page{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line2);border-radius:6px;background:var(--panel)}
 .meet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line2);background:var(--panel2);flex:none}
@@ -10605,7 +10616,8 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   G.day++; const day=G.day, o=dobj(day);
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }
   if(o.m===9&&o.d===1){ try{ coachExpNote(); }catch(e){} }
-  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ rhSnap(); }catch(e){} try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} }
+  if(o.d===1&&o.m!==1)try{ rmSnap(); }catch(e){} /* 우리 선수 월별 능력치 기록(1월은 겨울 성장 뒤에) */
+  if(o.m===1&&o.d===1){ newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} }
   else if(o.d===1&&foreignOpen())refreshFMarket(12,3);
   if(o.d===1)try{ freeAiMonthly(); sponMonthly(); }catch(e){}
   if(o.d===1)try{ scoutAutoMonthly(); }catch(e){}
@@ -12247,7 +12259,7 @@ function claimTeam(userTid,austK){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=
   for(const p of Object.values(G.players)){ if(p.team!=null){ p.mor=clamp(Math.round(N(62,9)),30,88);} }
   addLog(`${tname(userTid)} 단장에 취임했습니다. ${OWNER[team(userTid).owner].msg}`); chron('join','단장 취임',null,userTid);
   mail('구단주실','구단주 서신',`${tname(userTid)}의 새 단장을 맡아 주셔서 감사합니다. ${OWNER[team(userTid).owner].msg} 기대 승률은 약 ${fmt3(team(userTid).expW)}입니다. 구단 운영을 믿고 맡기겠습니다.`,{kind:'구단주'});
-  planSup(); try{ ovrSnap(); growSnap(); rhSnap(); }catch(e){}
+  planSup(); try{ ovrSnap(); growSnap(); rhSnap(); rmSnap(true); }catch(e){}
   try{ const b=budget(); const ci=capInfo(userTid); if(b.roomGoal<0||ci.over>0){ team(userTid).tight=G.year;
     mail('운영팀','재정 압박 구단입니다',`올해 예상 지출이 구단주가 정한 지원 한도를 ${money(-Math.min(0,b.roomGoal))} 넘습니다.${ci.over>0?` 연봉 총액(${money(ci.pay)})이 샐러리캡(${money(ci.cap)})도 ${money(ci.over)} 넘어 경쟁균형세가 붙습니다.`:''}\n\n이 구단의 첫 과제는 연봉 정리입니다. 고액 연봉 선수를 트레이드하거나, 외국인 선수 몸값을 낮추거나, 구단주에게 지원을 요청할 수 있습니다. 한도를 넘긴 채 시즌을 마치면 구단주 신뢰가 떨어집니다.`,{kind:'재정',acts:[{l:'재정 보기',a:'go',v:'club:fin'}]}); } }catch(e){}
   sendTut(); tutTick(); G.stops=[];
@@ -13884,7 +13896,7 @@ function switchTeam(tid){ champEventsInit(); const old=G.user; if(G.spon)G.spon.
   { const O=G.orgT=G.orgT||{}; O[old]={med:G.med,intl:G.intl,data:G.data,retNos:G.retNos||[],capex:G.capex||null,truck:G.truck||null,coachX:G.coachX||[]}; const n=O[tid]; delete O[tid]; G.coachX=n&&n.coachX?n.coachX:[]; /* 보조 코치도 구단 것(검수 11-07) */ G.retNos=n&&n.retNos?n.retNos:[]; G._capexN=n?n.capex:null; G.truck=n&&n.truck?n.truck:null; /* 시설 투자 요청 제한·트럭 시위 이력도 구단 것 */ /* 영구결번도 그 구단 것 */
     G.med=n&&n.med?n.med:{prev:1,hosp:'none'}; G.intl=n&&n.intl?n.intl:{us:1,la:0,jp:0,tw:0,au:0}; G.data=n&&n.data?n.data:{lv:1}; }
   { const m=G.mgr[tid]; if(m&&m.act){ m.interim=true; m.sal=m.sal||150; } } /* AI 구단 감독대행은 부임하면 우리 대행과 같은 대행으로(정식 감독처럼 면담·경질되지 않게, 검수 11-07) */
-  if(!G.unemp||!ot.gm||ot.gm.interim){ ot.gm=mkGM(old); ot.rel=60; } /* 야인이던 때 전 구단은 이미 후임이 있다(검수 11-07) */ nt.gm=null; G.user=tid; champAdopt(tid); nt.trust=55; nt.rel=50;
+  if(!G.unemp||!ot.gm||ot.gm.interim){ ot.gm=mkGM(old); ot.rel=60; } /* 야인이던 때 전 구단은 이미 후임이 있다(검수 11-07) */ nt.gm=null; G.user=tid; try{ rmSnap(true); }catch(e){} /* 새 구단 선수 능력치 기록 시작 */ champAdopt(tid); nt.trust=55; nt.rel=50;
   G.goals=null; G.policy=null; G.devProg=[]; try{ ovsHandOff(old,tid); }catch(e){ G.ovs=[]; } G.lineup={}; G.offers=[]; G.shortlist=[]; G.tsug=null; G.mentor=null;
   /* 캠프: 옛 구단 훈련 방향·시작 기록은 두고, 새 구단 캠프를 합류 시점 기준으로 이어받는다(방향은 기본 '균형', 결산 비교는 합류일부터) */
   G.camp=G.camp&&!G.camp.done?{focus:'balance',done:false,snap:campSnap(),join:G.day,byT:Object.assign({},G.camp.byT||{},G.camp.focus?{[old]:G.camp.focus}:{})}:null;
@@ -18478,6 +18490,13 @@ function futLineupE(tid,list){ const used=new Set(), ln={};
 function futUse(p,pos,g){ const y=G.year; if(!p.fuse||p.fuse.y!==y)p.fuse={y,g:0,pos:{}}; p.fuse.g+=g; if(pos)p.fuse.pos[pos]=(p.fuse.pos[pos]||0)+g; }
 function futText(p){ const u=p.fuse&&p.fuse.y===G.year?p.fuse:null; if(!u||!u.g)return ''; const L=Object.entries(u.pos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${POSK[k]||k} ${n}`); return `2군 ${u.g}경기${L.length?' · '+L.join(' · '):''}`; }
 /* 해마다 1월 1일(겨울 성장 뒤) 능력치를 남겨 둔다: 선수 화면에서 지난 시즌과 비교 */
+/* 우리 선수 능력치 기록(FM '최근 능력치 변화'·능력치 기록 그래프처럼, 사용자 11-08): 매달 1일과 창단·이직 때 남긴다. 최근 14개만 */
+function rmSnap(force){ for(const p of playersOf(G.user)){ if(p.prospect)continue; const L=p.rm=p.rm||[]; const last=L[L.length-1]; if(last&&last.d===G.day)continue; if(!force&&last&&G.day-last.d<20)continue; L.push({d:G.day,r:Object.assign({},p.r)}); if(L.length>14)L.shift(); } }
+/* 비교 기준 능력치: m='1m'(약 한 달 전), 'sea'(올해 첫 기록), '1y'(1년 전). 기록이 모자라면 가장 오래된 것 */
+function rmBase(p,m){ const L=p.rm||[]; if(!L.length)return null; const tgt=m==='1y'?G.day-365:m==='sea'?dnum(G.year,1,1):G.day-28; let b=null; for(const x of L){ if(x.d<=tgt)b=x; } if(!b&&m!=='1m')b=L[0]; if(!b)b=L[0].d<G.day?L[0]:null; return b; }
+function rmDelta(p,m){ const b=rmBase(p,m); if(!b)return null; const d={}; for(const k of Object.keys(p.r))if(b.r[k]!=null)d[k]=p.r[k]-b.r[k]; return {d,from:b.d,r:b.r}; }
+/* 종합 능력 변화(100점 척도): 표의 '변화' 열과 현재 칸 화살표 */
+function ovrDelta(p,m){ const b=rmBase(p,m||'1m'); if(!b)return null; return dv(ovr(p))-dv(ovr({isP:p.isP,r:b.r})); }
 function rhSnap(){ const y=G.year; for(const p of Object.values(G.players)){ if(p.team==null||p.prospect)continue; p.rh=p.rh||{}; p.rh[y]=Object.assign({},p.r); for(const k of Object.keys(p.rh))if(+k<y-2)delete p.rh[k]; } }
 /* ===== 캠프: 선수가 크게 바뀌는 때 =====
  스프링캠프(1월 25일~3월 5일)와 마무리캠프(11월 5일~25일)는 모든 구단에서 열린다. 시즌 중 주간 훈련은 몸을 유지하는 정도로 줄였다.
@@ -24860,12 +24879,14 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
   /* 비교 목록: 한 줄에 후보·지도·육성·연봉·계약 버튼, 아래 줄에 이 자리 핵심 능력. 이름을 누르면 그 줄 아래에 상세 카드 */
   const rows=L.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}`,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:String(UI.cmkOpen)===String(c.id),openA:'cmkOpen',
     acts:`<button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년</button>`,detail:()=>card(c)})).join('');
-  return modeBar+chips+vw+`<div class="st-list">${stHead()}${rows}</div><p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 이름을 누르면 능력 카드가 열립니다.</p>`; }
+  const pins=(role==='all'?[...new Set(L.map(c=>c.role))]:[role]).map(k=>C[k]).filter(Boolean).slice(0,role==='all'?0:1).map(cur=>stRow({c:cur,face:{persona:'coach',pid:cur.id,name:cur.name,age:cur.age,team:G.user},sub:`지금 우리 ${CROLE[cur.role].l} · ${cur.age}세`,tag:'<span class="pill acc">현재</span>',cur:null,yrs:cur.yrs,open:String(UI.cmkOpen)==='cur'+cur.role,openA:'cmkOpen',key:'cur'+cur.role,acts:'',detail:()=>`<div class="csl"><div class="csl-s">${coachStats({...cur,clan:null},G.user)}</div>${staffBioBox(cur,'coach',null)}</div>`})).join(''); /* 보직을 고르면 지금 그 자리 코치를 맨 위에 고정(카페 11-08) */
+  return modeBar+chips+vw+`<div class="st-list">${stHead()}${pins?`<div class="st-pin">${pins}</div>`:''}${rows}</div>${role==='all'?'<p class="small muted">보직을 고르면 지금 그 자리 코치가 맨 위에 함께 나옵니다.</p>':''}<p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 이름을 누르면 능력 카드가 열립니다.</p>`; }
 /* 스태프 한 줄(시장·우리 코치진 공용) */
 const stHead=()=>`<div class="st-r st-h"><span>코치</span><span>지도</span><span>육성</span><span>연봉</span><span>이 자리 핵심 능력</span></div>`;
 function stRow(o){ const c=o.c, a=cAb(c), cur=o.cur;
   const dl=k=>{ if(!cur||cur===c)return ''; const v=dv(effC(c,G.user,k))-dv(effC(cur,G.user,k)); return `<em class="${v>0?'good':v<0?'bad':'muted'}">${v>0?'+':''}${v}</em>`; };
-  const ab=[...new Set([...(CDOM[c.role]||[]),'yng'])].map(k=>`<span class="st-ab"><i>${CAB[k].replace(' 지도','').replace(' 관리','').replace('유망주 육성','유망주')}</i>${rchip(a[k])}</span>`).join('');
+  const ca=cur&&cur!==c?cAb(cur):null; /* 핵심 능력도 지금 그 자리 코치와의 차이(카페 11-08: 화면을 오가며 비교하던 불편) */
+  const ab=[...new Set([...(CDOM[c.role]||[]),'yng'])].map(k=>{ const v=ca&&a[k]!=null&&ca[k]!=null?dv(a[k])-dv(ca[k]):null; return `<span class="st-ab"><i>${CAB[k].replace(' 지도','').replace(' 관리','').replace('유망주 육성','유망주')}</i>${rchip(a[k])}${v?`<em class="${v>0?'good':'bad'}">${v>0?'+':''}${v}</em>`:''}</span>`; }).join('');
   return `<div class="st-r${o.open?' on':''}"><button class="st-n" data-a="${o.openA}" data-v="${o.key??c.id}">${avImg(o.face)}<span><b>${esc(c.name)}${o.tag?' '+o.tag:''}</b><i>${o.sub}</i></span></button>
     <span class="st-v"><i>지도</i>${rchip(effC(c,G.user,'sk'))}${dl('sk')}</span><span class="st-v"><i>육성</i>${rchip(effC(c,G.user,'dv'))}${dl('dv')}</span><span class="st-sal">${money(c.sal)}${o.yrs!=null?`<i>${o.ct||`잔여 ${o.yrs}년`}</i>`:''}</span>
     <span class="st-act">${o.acts}</span><span class="st-abs">${ab}</span></div>${o.open?`<div class="st-x">${o.detail()}</div>`:''}`; }
@@ -25457,12 +25478,12 @@ function rfmt(k,v,p){ if(v==null)return '-';
   if(k==='whip'||k==='fip')return v.toFixed(2); if(k==='ip')return ipStr(v); if(k==='war')return `<b style="color:${v>=3?'var(--good)':v<0?'var(--bad)':'inherit'}">${v.toFixed(1)}</b>`; return v; }
 /* ===== 선수 표 열 설정: 사용자가 보이는 열과 순서를 고른다(브라우저에 저장) ===== */
 const RCOL_X_B=[['h','안타'],['d','2루타'],['r','득점'],['cs','도루자']], RCOL_X_P=[['h','피안타'],['hra','피홈런'],['fip','FIP'],['arm','팔 부하']];
-const RBASE=[['cur','현재'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
+const RBASE=[['cur','현재'],['chg','변화(1개월)'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
 /* 능력 열: 선수 화면 스카우트 리포트와 같은 평가(우리 코치진·스카우트가 본 값). 다른 구단 선수는 담당 스카우트가 본 범위만, 못 본 선수는 '-' */
 const RCOL_AB_P=[['t_stf','구위'],['t_ctl','제구'],['t_sta','체력'],['velo','구속'],['conf','평가 확신도']], RCOL_AB_B=[['t_con','컨택'],['t_pow','파워'],['t_eye','선구'],['t_spd','주력'],['t_def','수비'],['conf','평가 확신도']];
 function rcolAll(pit){ return RBASE.map(([k,l])=>[k,k==='pos'&&pit?'역할':l]).concat(pit?RCOL_AB_P:RCOL_AB_B,pit?RCOL_P:RCOL_B,pit?RCOL_X_P:RCOL_X_B,[['ct','계약'],['org','입단'],['inj','부상']]); }
 const rTool=(rp,k)=>{ const t=(rp.tools||[]).find(x=>x.k===k); return t?t.cur:null; };
-function rcolDef(pit){ return ['cur','pos','age','fut','sal','fat'].concat(pit?['g','gs','ip','w','l','sv','hld','era','whip','so','war']:['g','pa','avg','obp','slg','ops','hr','rbi','sb','war']); }
+function rcolDef(pit){ return ['cur','chg','pos','age','fut','sal','fat'].concat(pit?['g','gs','ip','w','l','sv','hld','era','whip','so','war']:['g','pa','avg','obp','slg','ops','hr','rbi','sb','war']); }
 function rcolLoad(){ if(UI.rcols)return UI.rcols; try{ UI.rcols=JSON.parse(localStorage.getItem('danjang-rcols')||'null')||{}; }catch(e){ UI.rcols={}; } return UI.rcols; }
 function rvUser(){ try{ return JSON.parse(localStorage.getItem('danjang-rviewsU')||'{}')||{}; }catch(e){ return UI._rvU||(UI._rvU={}); } }
 function rvUserSave(U){ try{ localStorage.setItem('danjang-rviewsU',JSON.stringify(U)); }catch(e){ UI._rvU=U; } }
@@ -25480,7 +25501,7 @@ function rosterTable(groups,pit,tail){
   const head=`<tr>${th('name','선수')}${keys.map(k=>['ct','org'].includes(k)?`<th>${lab(k)}</th>`:th(k,lab(k))).join('')}</tr>`;
   const row=(p,pos,grp)=>{ const rp=scoutReport(p); const m=p.mor??60; const h=rline(p); const fut=h&&h.lvl==='퓨처스'; const mine=p.team===G.user;
     const tags=[p.injOut>0||p.susp>G.day?`<span class="pill bad">${outTxt(p)}</span>`:'',p.foreign?'<span class="pill">외국인</span>':'',isRookie(p)?'<span class="pill acc">신인</span>':''].join('');
-    const td=k=>{ switch(k){ case 'cur':return `<td class="ovc"><span class="ovw">${rchip(rp.cur)}${condChip(p)}</span></td>`; case 'sal':return `<td class="num">${money(p.sal)}</td>`;
+    const td=k=>{ switch(k){ case 'cur':return `<td class="ovc"><span class="ovw">${rchip(rp.cur)}${condChip(p)}</span></td>`; case 'chg':{ const x=mine&&!p.prospect?ovrDelta(p,'1m'):null; return `<td class="num">${x==null?'-':x?`<i class="pf-dl ${x>0?'up':'dn'}">${x>0?'▲':'▼'}${Math.abs(x)}</i>`:'<span class="muted">0</span>'}</td>`; } /* FM처럼 한 달 사이 오르내림(사용자 11-08) */ case 'sal':return `<td class="num">${money(p.sal)}</td>`;
       case 'pos':return `<td>${grp?`<span class="muted">${grp}</span> `:''}${pos||posLabel(p)}${!p.isP&&subsOf(p).length?` <i class="f">${subsOf(p).map(k=>POSS[k]).join('·')}</i>`:''}</td>`; case 'age':return `<td>${p.age}</td>`; case 'fut':return `<td>${potChip(rp,p)}</td>`;
       case 'mor':return `<td>${mine?`<span class="mood" style="--c:${m>=65?'var(--good)':m>=45?'var(--r50)':m>=30?'var(--warn)':'var(--bad)'}" title="${moodLabel(m)}"></span>`:'-'}</td>`; case 'fat':return `<td>${mine?fatBar(p):'-'}</td>`; case 'arm':{ const r=armRatio(p), cd=consecDays(p,G.day+1); return `<td class="num ${r>=1.3?'bad':r>=1.1?'warn':''}" title="${esc(loadText(p))}">${Math.round(r*100)}%${cd>=2?` <i class="f">${cd}연투</i>`:''}</td>`; }
       case 'velo':return `<td class="num">${p.isP?veloOf(p):'-'}</td>`; case 'conf':return `<td class="small">${esc(rp.conf||'-')}</td>`;
@@ -25492,7 +25513,7 @@ function rosterTable(groups,pit,tail){
   if(!sk){ return cfg+`<div class="tw"><table class="sqt rt"><thead>${head}</thead><tbody>${groups.filter(g=>g[1].length).map(([g,arr,posf])=>`<tr class="grp"><td colspan="${n}">${g} · ${arr.length}명</td></tr>`+arr.map(p=>row(p,posf?posf(p):null)).join('')).join('')}${tr2}</tbody></table></div>`; }
   const allR=[]; for(const [g,arr,posf] of groups)for(const p of arr)allR.push({p,g,pos:posf?posf(p):null});
   const rpC=new Map(); const rpv=p=>{ if(!rpC.has(p.id))rpC.set(p.id,scoutReport(p)); return rpC.get(p.id); };
-  const val=x=>{ const p=x.p; switch(sk.k){ case 'name':return p.name; case 'pos':return x.pos||posLabel(p); case 'age':return p.age; case 'cur':return rpv(p).cur; case 'fut':return rpv(p).ofp??0; case 'mor':return p.mor??60; case 'fat':return p.fat||0; case 'arm':return armRatio(p); case 'sal':return p.sal; case 'inj':return p.injOut||0; case 'velo':return p.isP?veloOf(p):null; case 'conf':return -(rpv(p).sd||99); default:{ if(sk.k.startsWith('t_'))return rTool(rpv(p),sk.k.slice(2)); const v=rstat(p,sk.k); return v==null?null:v; } } };
+  const val=x=>{ const p=x.p; switch(sk.k){ case 'name':return p.name; case 'pos':return x.pos||posLabel(p); case 'age':return p.age; case 'cur':return rpv(p).cur; case 'chg':return p.team===G.user?(ovrDelta(p,'1m')??-99):-99; case 'fut':return rpv(p).ofp??0; case 'mor':return p.mor??60; case 'fat':return p.fat||0; case 'arm':return armRatio(p); case 'sal':return p.sal; case 'inj':return p.injOut||0; case 'velo':return p.isP?veloOf(p):null; case 'conf':return -(rpv(p).sd||99); default:{ if(sk.k.startsWith('t_'))return rTool(rpv(p),sk.k.slice(2)); const v=rstat(p,sk.k); return v==null?null:v; } } };
   const asc=['era','whip','l','bb9','fip','hra'].includes(sk.k)&&pit;
   allR.sort((a,b)=>{ const va=val(a),vb=val(b); if(va==null&&vb==null)return 0; if(va==null)return 1; if(vb==null)return -1; const c=typeof va==='string'?va.localeCompare(vb):va-vb; let s=sk.dir<0?-c:c; if(asc)s=-s; return s; });
   return cfg+`<div class="row between"><span class="small muted">${allR.length}명 · ${sk.k==='name'?'선수':lab(sk.k)} 기준 정렬</span><button class="tc-i" data-a="rsort" data-v="">기본 배치로</button></div>
@@ -25800,13 +25821,17 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const own=p.team===G.user&&!G.unemp, state=playerState(p), keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit'];
   const tools=keys.map(k=>{const t=(rp.tools||[]).find(t=>t.k===k);return t?{...t,cur:rp.exact?p.r[k]:t.cur}:null;}).filter(Boolean);
   const shown={...rp,tools}, d=tools.length?detailOf(p,shown):null;
+  /* 능력 변화(FM '최근 능력치 변화'처럼, 사용자 11-08): 우리 선수만. 기준 시점의 핵심 능력으로 세부 능력도 같은 식으로 다시 계산해 차이를 보인다 */
+  const cmpM=own&&rp.exact&&!p.prospect?(UI.attrCmp||'1m'):'off', dl=cmpM!=='off'?rmDelta(p,cmpM):null;
+  const dOld=dl&&d?detailOf(p,{...shown,tools:tools.map(t=>({...t,cur:dl.r[t.k]??t.cur}))}):null; const oldV=new Map(); if(dOld)for(const g of dOld.groups)for(const r of g[1])oldV.set(g[0]+'|'+r[0],r[1]);
+  const dTag=(a,b)=>{ if(a==null||b==null||typeof a!=='number'||typeof b!=='number')return ''; const x=dv(a)-dv(b); return Math.abs(x)>=1?`<i class="pf-dl ${x>0?'up':'dn'}" title="${dl?dmd(dl.from):''} 대비">${x>0?'▲':'▼'}${Math.abs(x)}</i>`:''; };
   /* 모르는 능력은 범위로(외국인 후보·확인 전 선수): 스카우트 오차(rp.sd)를 100점 척도 폭으로 바꿔 '62~70'처럼 보인다 */
   const fcand=p.foreign&&p.team==null, fsx=fcand?fScout(p,rp):null, rsd=rp.exact?0:(rp.sd||0)*.9;
   const rg=v=>{ const b=rsd>=1.5?dvSd(v,rsd):0; return b>=2?`${Math.max(20,dv(v)-b)}~${Math.min(100,dv(v)+b)}`:dv(v); };
-  const core=tools.map(t=>`<div class="pr-tool pf-core-cell"><span>${TOOLK[t.k]}</span><strong class="${typeof rg(t.cur)==='string'?'pf-rg':''}" style="color:${rcol(t.cur)}">${rg(t.cur)}</strong><small>${rp.ofp!=null&&t.fut>t.cur?'잠재 '+dv(t.fut):rp.exact?'현재':'추정'}</small></div>`).join('');
+  const core=tools.map(t=>`<div class="pr-tool pf-core-cell"><span>${TOOLK[t.k]}</span><strong class="${typeof rg(t.cur)==='string'?'pf-rg':''}" style="color:${rcol(t.cur)}">${rg(t.cur)}</strong>${dl?dTag(t.cur,dl.r[t.k]):''}<small>${rp.ofp!=null&&t.fut>t.cur?'잠재 '+dv(t.fut):rp.exact?'현재':'추정'}</small></div>`).join('');
   const cols=fmOn()?(p.isP?[['투구','체력·몸','구종'],['투구 정보','성격']]:[['타격','주루'],['수비','체력·몸','성격']]):p.isP?[['투구','체력·몸'],['구종','투구 정보'],['성격']]:[['타격','주루'],['수비','체력·몸'],['성격']];
-  const row=([label,v,type])=>{const numeric=!type||type==='n'||type==='i',value=numeric?(type==='n'||type==='i'?Math.round(v):rg(v)):v;return `<div class="pf-attribute-row${numeric?'':' text'}"><span>${esc(label)}</span><b class="pf-score" style="color:${numeric&&type!=='n'?rcol(type==='i'?100-v:v):'var(--ink)'}">${esc(String(value))}</b></div>`;};
-  const attributes=d?cols.map(col=>`<div class="pf-attribute-column">${col.map(name=>{const g=d.groups.find(g=>g[0]===name);return g?`<section class="pf-attribute-group" data-group="${name}"><h3>${name}</h3>${g[1].map(row).join('')}</section>`:'';}).join('')}</div>`).join(''):'<p class="small muted keep">평가 자료가 없습니다. 스카우트 관찰이 필요합니다.</p>';
+  const row=([label,v,type],gn)=>{const numeric=!type||type==='n'||type==='i',value=numeric?(type==='n'||type==='i'?Math.round(v):rg(v)):v;return `<div class="pf-attribute-row${numeric?'':' text'}"><span>${esc(label)}</span><b class="pf-score" style="color:${numeric&&type!=='n'?rcol(type==='i'?100-v:v):'var(--ink)'}">${esc(String(value))}</b>${dOld&&numeric&&!type?dTag(v,oldV.get(gn+'|'+label)):''}</div>`;};
+  const attributes=d?cols.map(col=>`<div class="pf-attribute-column">${col.map(name=>{const g=d.groups.find(g=>g[0]===name);return g?`<section class="pf-attribute-group" data-group="${name}"><h3>${name}</h3>${g[1].map(r=>row(r,name)).join('')}</section>`:'';}).join('')}</div>`).join(''):'<p class="small muted keep">평가 자료가 없습니다. 스카우트 관찰이 필요합니다.</p>';
   const stateRow=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`;
   const pitch=p.isP&&tools.length?pitchProfile(p,rp.exact?undefined:tools.find(t=>t.k==='stf').cur):null;
   const active=pitch?pitch.pitches.filter(x=>x.active):[];
@@ -25834,7 +25859,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const track=fmOn()&&!p.isP?trackCard(p):''; /* 투수는 구속 상자와 겹친다 */
   const ST=[...(p.story||[])].slice(-4).reverse(), storyBox=ST.length?`<section class="card pf-fm-box pf-story"><h3>최근 이력</h3>${ST.map(s=>`<div class="pf-st"><span>${s.y||''}</span><p>${esc(s.t)}</p></div>`).join('')}</section>`:'';
   return `<div class="pf-overview"><aside class="pf-sidebar">${fmCard}<section class="card pr-readout pf-state"><h3>${fsx?'스카우트 조사':'현재 상태'}</h3><div class="pf-status">${state.labels.map(l=>`<span class="pill${state.blocked?' bad':''}">${esc(l)}</span>`).join('')}</div>${own?`${stateRow('피로',Math.round(state.fat)+'/100')}${stateRow('기분',state.morale==null?'미확인':Math.round(state.morale)+'/100')}${p.isP?`${stateRow('팔 부하',Math.round(state.arm*100)+'%')}${stateRow('최근 등판',state.rest==null?'기록 없음':(state.rest===0?'오늘':state.rest+'일 전')+(state.lastPc!=null?' · '+state.lastPc+'구':''))}`:''}${state.fat>45?'<p class="small bad keep">피로 누적으로 경기력 저하</p>':''}`:fsx?`${(G.fmarket||[]).includes(p.id)?negDoor('fm',p):''}${(()=>{ const e=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; return e?`<p class="small warn keep">${esc(e)}</p>`:''; })()}${stateRow('종합 추정',fsx.mid!=null?`${fsx.mid} <span class="muted">(대체로 ${fsx.lo}~${fsx.hi})</span>`:'미확인')}${stateRow('조사 단계',esc(fsx.l||'-'))}${stateRow('출신',esc(p.nat||'-'))}<p class="small muted keep">${esc(fsx.d||'')}</p><button class="btn small" data-a="fwatch" data-v="${p.id}">${fwatchOn(p.id)?'관찰 명단에서 빼기':'관찰 명단에 올리기'}</button>`:'<p class="small muted keep">상세 컨디션은 우리 구단 선수만 확인합니다.</p>'}${own&&p.isP&&!state.blocked&&!isSPr(p)?`<p class="pf-availability ${relAvail(p,G.day,false)?'good':'warn'}">${relAvail(p,G.day,false)?'불펜 가용 조건 충족':'오늘 불펜 운용 제한'}</p>`:''}</section>${fmOn()?recent:''}<section class="card pf-bio"><h3>선수 정보</h3><div class="pf-dup">${stateRow('나이',p.age+'세')}</div>${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}<div class="pf-dup">${stateRow('손잡이',hand(p))}</div>${stateRow('병역',esc(milText(p)))}<div class="pf-dup">${stateRow('계약',esc(ctText(p)))}</div>${p.draft?stateRow('드래프트',p.draft.y+' · '+p.draft.rd+'R '+p.draft.no+'순위'):''}</section><section class="card pf-role"><h3>포지션·역할</h3><b>${posLabel(p)}</b>${!p.isP&&subsOf(p).length?`<p class="small keep">가능 포지션 ${subsOf(p).map(k=>POSK[k]||k).join(' · ')}</p>`:''}<p class="small keep">${esc(rp.arch||'평가 없음')}</p>${rp.role?`<p class="small keep"><span class="muted">${p.foreign?'올해 역할':'장래 예상'}</span> ${esc(rp.role)}</p>`:''}</section></aside>
-  <main class="pf-main"><div class="pf-main-top"><section class="card pf-attributes"><div class="pf-section-title"><h3>세부 능력</h3><span>핵심 능력과 경기 성향을 구분해 표시</span></div><div class="pf-attribute-grid">${attributes}</div><div class="pf-attribute-legend"><span>높을수록 우수</span><span>성격의 야망은 성향</span><span>해외 진출 의지는 낮을수록 구단에 유리</span></div></section>${fmOn()?(()=>{ let N=[],X=[]; try{ N=staffNotes(p); }catch(e){} try{ X=curExplain(p,rp)||[]; }catch(e){} const f=l10Text(p);
+  <main class="pf-main"><div class="pf-main-top"><section class="card pf-attributes"><div class="pf-section-title"><h3>세부 능력</h3><span>핵심 능력과 경기 성향을 구분해 표시</span></div>${own&&rp.exact&&!p.prospect?attrCmpBar(p,cmpM,dl):''}<div class="pf-attribute-grid">${attributes}</div><div class="pf-attribute-legend"><span>높을수록 우수</span><span>성격의 야망은 성향</span><span>해외 진출 의지는 낮을수록 구단에 유리</span></div></section>${fmOn()?(()=>{ let N=[],X=[]; try{ N=staffNotes(p); }catch(e){} try{ X=curExplain(p,rp)||[]; }catch(e){} const f=l10Text(p);
       return `<section class="card pf-report"><h3>보고서</h3>${f?`<div class="pf-rp-form"><span>최근 폼</span><b>${f}</b></div>`:''}${N.map(x=>`<div class="pf-rp-note"><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}${X.slice(0,3).map(t=>`<p class="pf-rp-why">${tipRest(t)}</p>`).join('')}${mop?`<div class="pf-rp-mop">${mop}</div>`:''}</section>`; })():''}</div><section class="card pf-season pf-season-inline pf-mobile-only"><h3>${h?h.y+' '+(h.lvl||'1군'):'시즌'} 성적</h3>${tiles?`<div class="pf-season-grid">${tiles.map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')}</div>`:'<p class="small muted keep">아직 경기 기록이 없습니다.</p>'}</section><section class="card pf-season-table"><h3>시즌 통계</h3><div class="tw">${statTable(p)}</div>${fmOn()?'':'</section>'}<details class="pf-more" data-k="player-more:${p.id}" ${UI.open['player-more:'+p.id]?'open':''}><summary>구종·성장 추이·코치 의견 자세히 보기</summary><div class="pf-more-grid">${injBox||''}${pitcherRepertoireCard(p,rp)}${mgrOpinion(p)}${detailCard(p)}${reportCard(p,true)}${!p.isP?posCard(p,true):''}${growthCard(p)}</div></details>${fmOn()?'</section>':''}</main>
   <aside class="pf-insights"><section class="card pf-radar"><h3>능력 차트</h3>${d?radarSVG(d.radar,rp.ofp!=null&&tools.some(t=>t.fut>t.cur)):'<p>평가 미확인</p>'}<p class="small keep">실선 현재 · 점선 잠재력</p><div class="pf-core-compact"><div class="pf-core-caption">핵심 능력 <span>100점 · 63 = 1군 평균</span></div><div class="pf-core-grid${p.isP?' pitcher':''}">${core||'<p>평가 미확인</p>'}</div></div></section>${pitch?`<section class="card pf-pitch-head"><h3>구속·사용 구종</h3>${stateRow('평균',pitch.velo+' km/h')}${stateRow('최고 상한',pitch.max+' km/h')}<p class="small keep">경기 적용 ${pitch.activeCount}구종</p><div class="pf-status">${active.map(x=>`<span class="pill">${esc(x.name)} ${dv(x.value)}</span>`).join('')}</div></section>`:''}${proCon}${!p.isP?`<div class="pf-pos-mini">${fmOn()?posFieldBox(p):posCard(p,true)}</div>`:''}${track?`<div class="pf-track">${track}</div>`:''}</aside><aside class="pf-extra">${infoCard}${teamPos}${career.replace(/<\/section>$/,storyBox.replace(/^<section[^>]*>/,'').replace(/<\/section>$/,'')+'</section>')}</aside>
 </div>`;
@@ -25873,6 +25898,14 @@ function careerHub(p){
     ${aw.length?`<section class="card ch-aws"><h3>수상 연표</h3>${awT}</section>`:''}
     <section class="card ch-feats"><h3>대기록 <span class="small muted">${fe.length}건</span></h3>${featBox}</section>
     <section class="card ch-side"><h3>통산 이정표</h3>${mile}<h3>소속 구단</h3>${clubs||'<p class="small muted keep">소속 기록이 없습니다.</p>'}${mvT?`<div class="ch-mvl">${mvT}</div>`:''}${dr?`<h3>입단</h3>${dr}`:''}</section></div>`; }
+
+/* 능력 변화 기준 고르기 + 핵심 능력 월별 흐름(FM 능력치 기록 그래프처럼, 사용자 11-08) */
+function attrCmpBar(p,m,dl){ const opts=[['1m','최근 1개월'],['sea','올해'],['1y','1년'],['off','끄기']];
+  const keys=p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def','vit']; const L=(p.rm||[]).concat([{d:G.day,r:p.r}]);
+  const spark=k=>{ const v=L.map(x=>dv(x.r[k]??p.r[k])); if(v.length<2)return ''; const lo=Math.min(...v)-1, hi=Math.max(...v)+1, W=64, H=18; const pts=v.map((y,i)=>`${(i/(v.length-1)*W).toFixed(1)},${(H-(y-lo)/(hi-lo)*H).toFixed(1)}`).join(' '); const up=v[v.length-1]-v[0]; return `<svg class="pf-spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="${up>0?'var(--good)':up<0?'var(--bad)':'var(--muted)'}" stroke-width="1.6"/></svg>`; };
+  const ch=dl?keys.map(k=>{ const x=dv(p.r[k])-dv(dl.r[k]??p.r[k]); return {k,x}; }):[]; const sum=ch.length?ch.reduce((a,c)=>a+c.x,0):0;
+  return `<div class="pf-cmp"><div class="row" style="gap:4px;flex-wrap:wrap"><span class="small muted">능력 변화</span>${opts.map(([k,l])=>`<button class="chipn${m===k?' on':''}" data-a="attrCmp" data-v="${k}">${l}</button>`).join('')}${dl?`<span class="small muted">${dmd(dl.from)} 대비 · 핵심 합계 <b class="${sum>0?'good':sum<0?'bad':''}">${sum>0?'+':''}${sum}</b></span>`:m!=='off'?'<span class="small muted">비교할 기록이 아직 없습니다(매달 1일 기록)</span>':''}</div>
+    ${L.length>=2?`<div class="pf-trend">${keys.map(k=>`<span><i>${TOOLK[k]}</i>${spark(k)}<b>${dv(p.r[k])}</b></span>`).join('')}</div>`:''}</div>`; }
 /* ---------- 선수 카드와 경기 기록 ---------- */
 function statTable(p){
   const rows=[...p.hist].sort((a,b)=>b.y-a.y||(a.lvl<b.lvl?-1:1));
@@ -26573,6 +26606,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castStep(v){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp, pa=i=>i>=0&&i<L.length&&typeof L[i][1]==='number'; let i=c.k; if(+v>0){ i++; while(i<L.length&&!pa(i))i++; } else { i--; while(i>0&&!pa(i))i--; } castJump(i); }, /* 다음·이전 '타석'으로(도루·교체 줄은 건너뜀), 재생 상태는 그대로(검수 11-07) */
   castWin(){ const c=UI.cast; if(!c)return; const i=castWinIdx(G.games[c.g]); if(i<0)return toast('결승점을 찾지 못했습니다(무승부이거나 기록이 짧음).'); castJump(i,false); const pb=document.getElementById('cs-play'); if(pb)pb.textContent='재생'; },
   castInn(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; const h=L[Math.min(c.k,L.length-1)][0]; const i=L.findIndex((y,j)=>j>c.k&&y[0]!==h); castJump(i<0?L.length:i); },
+  attrCmp(v){ UI.attrCmp=v; render(); },
   champSceneClose(){ if(G.champScene){ G.champScene.seen=true; save(); } document.getElementById('champScene')?.remove(); },
   psOpen(){ UI.it=UI.it||{}; UI.it.stand='ps'; A.go('league:stand'); },
   castSnd(){ const on=!sndPref(); try{ localStorage.setItem('fo_snd',on?'1':'0'); }catch(e){} if(!on)sndStopAll(); else { sndInit(); if(UI.cast&&UI.cast.play)sndLoop('amb','amb',.4,1.2); } const b=document.getElementById('cs-snd'); if(b){ b.textContent=on?'소리 켬':'소리 끔'; b.setAttribute('aria-pressed',on); } },
@@ -28902,6 +28936,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-08e',d:'11월 8일',t:'능력치 성장·하락 표시 · 스태프 시장 비교',items:[
+    '우리 선수 능력치를 매달 기록합니다. 선수 화면 세부 능력 옆에 최근 1개월·올해·1년 기준 오르내림(▲▼)과 핵심 능력 흐름 그래프가 나옵니다.',
+    '선수단 표에 "변화(1개월)" 열이 생겼습니다. 열 설정을 바꿔 둔 경우 열 설정에서 추가하세요.',
+    '스태프 시장에서 보직을 고르면 지금 그 자리 코치가 맨 위에 함께 나오고, 핵심 능력마다 현재 코치와의 차이가 표시됩니다.'
+  ]},
   {id:'2026-11-08d',d:'11월 8일',t:'감독 정리 요청 2군 말소 · 수비 실책 장면',items:[
     '감독의 선수 정리 요청에 "2군으로 내린다"를 고를 수 있습니다. 감독이 정리를 요청한 선수는 말소 건의도 바로 받아들입니다.',
     '3D 중계에서 수비 실책이 포구 실책(공이 글러브를 맞고 튐), 1루 악송구, 낙구 장면으로 나옵니다.'

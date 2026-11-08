@@ -76,12 +76,14 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
   /* 비교 목록: 한 줄에 후보·지도·육성·연봉·계약 버튼, 아래 줄에 이 자리 핵심 능력. 이름을 누르면 그 줄 아래에 상세 카드 */
   const rows=L.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}`,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:String(UI.cmkOpen)===String(c.id),openA:'cmkOpen',
     acts:`<button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년</button>`,detail:()=>card(c)})).join('');
-  return modeBar+chips+vw+`<div class="st-list">${stHead()}${rows}</div><p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 이름을 누르면 능력 카드가 열립니다.</p>`; }
+  const pins=(role==='all'?[...new Set(L.map(c=>c.role))]:[role]).map(k=>C[k]).filter(Boolean).slice(0,role==='all'?0:1).map(cur=>stRow({c:cur,face:{persona:'coach',pid:cur.id,name:cur.name,age:cur.age,team:G.user},sub:`지금 우리 ${CROLE[cur.role].l} · ${cur.age}세`,tag:'<span class="pill acc">현재</span>',cur:null,yrs:cur.yrs,open:String(UI.cmkOpen)==='cur'+cur.role,openA:'cmkOpen',key:'cur'+cur.role,acts:'',detail:()=>`<div class="csl"><div class="csl-s">${coachStats({...cur,clan:null},G.user)}</div>${staffBioBox(cur,'coach',null)}</div>`})).join(''); /* 보직을 고르면 지금 그 자리 코치를 맨 위에 고정(카페 11-08) */
+  return modeBar+chips+vw+`<div class="st-list">${stHead()}${pins?`<div class="st-pin">${pins}</div>`:''}${rows}</div>${role==='all'?'<p class="small muted">보직을 고르면 지금 그 자리 코치가 맨 위에 함께 나옵니다.</p>':''}<p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 이름을 누르면 능력 카드가 열립니다.</p>`; }
 /* 스태프 한 줄(시장·우리 코치진 공용) */
 const stHead=()=>`<div class="st-r st-h"><span>코치</span><span>지도</span><span>육성</span><span>연봉</span><span>이 자리 핵심 능력</span></div>`;
 function stRow(o){ const c=o.c, a=cAb(c), cur=o.cur;
   const dl=k=>{ if(!cur||cur===c)return ''; const v=dv(effC(c,G.user,k))-dv(effC(cur,G.user,k)); return `<em class="${v>0?'good':v<0?'bad':'muted'}">${v>0?'+':''}${v}</em>`; };
-  const ab=[...new Set([...(CDOM[c.role]||[]),'yng'])].map(k=>`<span class="st-ab"><i>${CAB[k].replace(' 지도','').replace(' 관리','').replace('유망주 육성','유망주')}</i>${rchip(a[k])}</span>`).join('');
+  const ca=cur&&cur!==c?cAb(cur):null; /* 핵심 능력도 지금 그 자리 코치와의 차이(카페 11-08: 화면을 오가며 비교하던 불편) */
+  const ab=[...new Set([...(CDOM[c.role]||[]),'yng'])].map(k=>{ const v=ca&&a[k]!=null&&ca[k]!=null?dv(a[k])-dv(ca[k]):null; return `<span class="st-ab"><i>${CAB[k].replace(' 지도','').replace(' 관리','').replace('유망주 육성','유망주')}</i>${rchip(a[k])}${v?`<em class="${v>0?'good':'bad'}">${v>0?'+':''}${v}</em>`:''}</span>`; }).join('');
   return `<div class="st-r${o.open?' on':''}"><button class="st-n" data-a="${o.openA}" data-v="${o.key??c.id}">${avImg(o.face)}<span><b>${esc(c.name)}${o.tag?' '+o.tag:''}</b><i>${o.sub}</i></span></button>
     <span class="st-v"><i>지도</i>${rchip(effC(c,G.user,'sk'))}${dl('sk')}</span><span class="st-v"><i>육성</i>${rchip(effC(c,G.user,'dv'))}${dl('dv')}</span><span class="st-sal">${money(c.sal)}${o.yrs!=null?`<i>${o.ct||`잔여 ${o.yrs}년`}</i>`:''}</span>
     <span class="st-act">${o.acts}</span><span class="st-abs">${ab}</span></div>${o.open?`<div class="st-x">${o.detail()}</div>`:''}`; }

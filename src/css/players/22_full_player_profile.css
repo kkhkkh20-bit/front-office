@@ -209,3 +209,11 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 }
 @media(min-width:1100px) and (min-height:860px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:auto;height:min(240px,19vh);object-position:50% 18%}}
 @media(min-width:1100px) and (max-width:1919px) and (min-height:860px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
+/* 능력 변화 표시(사용자 11-08) */
+.pf-dl{font-style:normal;font:700 11px var(--f-num);margin-left:4px;padding:0 3px;border-radius:3px}
+.pf-dl.up{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.pf-dl.dn{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.pf-cmp{display:grid;gap:6px;margin:4px 0 8px}
+.pf-trend{display:flex;flex-wrap:wrap;gap:6px 14px}.pf-trend span{display:flex;align-items:center;gap:5px;font-size:12px}.pf-trend i{font-style:normal;color:var(--muted)}.pf-trend b{font:700 12px var(--f-num)}
+.pf-spark{display:block}
+.ovc .pf-dl{margin-left:2px}
