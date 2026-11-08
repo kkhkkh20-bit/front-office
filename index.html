@@ -3546,7 +3546,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:7/2/9/3}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:7/3/9/4}
 }
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:auto;height:min(240px,19vh);object-position:50% 18%}}
+@media(min-width:1100px) and (min-height:860px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:auto;height:min(240px,19vh);object-position:50% 0} /* 모자 끝이 잘리지 않게 위를 맞추고 가슴 쪽을 줄인다(사용자 11-08) */}
 @media(min-width:1100px) and (max-width:1919px) and (min-height:860px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
 /* 능력 변화 표시(사용자 11-08) */
 .pf-attribute-row:has(>.pf-ar){grid-template-columns:minmax(0,1fr) 14px auto}
@@ -3567,7 +3567,19 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview>*>*,#sheet .pf-main-top>*{scrollbar-width:none}
   #sheet .pf-overview>*>*::-webkit-scrollbar,#sheet .pf-main-top>*::-webkit-scrollbar{display:none}
   #sheet .pf-attributes .pf-trend{display:none} /* 핵심 능력 추이 선은 높이가 넉넉할 때만 */
-  #sheet .pf-overview{grid-template-rows:minmax(0,2.25fr) minmax(0,2.25fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)} /* 위 줄(세부 능력·보고서)에 높이를 더 */
+  #sheet .pf-overview{grid-template-rows:minmax(0,1.7fr) minmax(0,1.7fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}
+  /* 능력 차트는 왼쪽 아래 칸 전체, 최근 경기는 현재 상태 아래 빈자리로(사용자 11-08: 능력 차트가 핵심) */
+  #sheet .pf-overview:has(.pf-recent) .pf-state{grid-area:1/4/2/5}
+  #sheet .pf-overview .pf-recent{grid-area:2/4/3/5}
+  #sheet .pf-overview:not(:has(.pf-track,.pf-pitch-head)) .pf-recent{grid-area:2/4/4/5}
+  #sheet .pf-overview .pf-radar,#sheet .pf-overview:not(:has(.pf-recent)) .pf-radar{grid-area:4/1/7/2;padding-bottom:6px}
+  #sheet .pf-overview .pf-radar>h3{margin-bottom:2px}
+  #sheet .pf-overview .pf-radar .radar{flex:1 1 0;min-height:0;width:100%;height:100%;max-height:none}
+  #sheet .pf-overview .pf-radar>p{margin:2px 0 0;text-align:center}
+  #sheet .pf-overview .pf-fmcard{gap:4px;align-content:start;overflow-y:auto!important;scrollbar-width:none} /* 인물 카드: 연봉·비교 버튼까지 칸 안에 */
+  #sheet .pf-fmcard .pf-fm-pay{padding-bottom:6px}
+  #sheet .pf-overview .pf-fmcard.ph{position:relative}#sheet .pf-fmcard.ph .pf-fm-name b{position:absolute;right:6px;top:calc(min(240px,19vh) - 30px);z-index:3} /* 이름 고치기 버튼은 사진 오른쪽 아래(사진 버튼 맞은편)로 */
+  #sheet .pf-fmcard .pf-fm-key>*{padding-block:5px}#sheet .pf-fmcard .pf-fm-stats>*{padding-block:4px}
   #sheet .pf-screen .pf-attribute-row,#sheet .pf-attribute-row{min-height:22px;padding-block:1px;font-size:12px}
   #sheet .pf-attribute-row .pf-score{font-size:15px}
   #sheet .pf-attribute-group{margin-bottom:6px}#sheet .pf-attribute-group h3{padding-bottom:4px;font-size:12px}
@@ -29078,6 +29090,13 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-08g',d:'11월 8일',t:'구단 레전드·대기록 · 포스팅 확대 · 감독 기준 표시',items:[
+    '서비스 7년이 지난 선수는 FA 계약 뒤에도 구단 주도로 포스팅을 신청할 수 있습니다. 해외에 다녀온 선수만 대상에서 빠집니다.',
+    '화면 위쪽과 단장 카드에 단장 나이가 나옵니다. 단장 재임 500경기마다, 5년마다 소식과 연대기가 남고 1000경기를 넘기면 구단 명성이 오릅니다.',
+    '시즌 200안타·40홈런·50홈런·20승·40세이브는 달성한 그 경기에 선수 이력·기록 속보·소식으로 남습니다.',
+    '구단 명성에 구단 레전드 수와 최근 10년 대기록이 반영됩니다. 우리 구단에서 8시즌 이상 뛴 레전드는 지도자 3년이면 감독 후보가 되고, 감독 시장에 먼저 나옵니다. 다른 구단도 자기 구단 레전드를 코치·감독으로 먼저 씁니다.',
+    '감독 요청·선수 카드에 역할 기준(예: 장타형은 파워·컨택이 몇 이상)이 표시되고, 기준을 조금 낮췄습니다.'
+  ]},
   {id:'2026-11-08f',d:'11월 8일',t:'응원단장·치어리더 팀장 영입 · 능력치 화살표',items:[
     '구단 > 팬 마케팅에서 응원단장과 치어리더 팀장을 영입할 수 있습니다. 호응 유도(홈 관중)·영향력(팬 여론)·구단 충성도(재계약)·스타성(화제성·상품 수입)을 1~20으로 보고 1~3년 계약합니다. 갤러리 사진도 넣을 수 있습니다.',
     '선수 화면 세부 능력 숫자 옆에 에펨처럼 상승·하락 화살표가 나옵니다. 마우스를 올리면 이전 값과 지금 값을 보여 줍니다.',
