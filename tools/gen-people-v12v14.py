@@ -9,7 +9,12 @@ import json, os, base64, re, sys
 from source_manifest import source_file
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 J=lambda p:json.load(open(os.path.join(ROOT,p),encoding='utf8'))
-uri=lambda p:'data:image/webp;base64,'+base64.b64encode(open(os.path.join(ROOT,p),'rb').read()).decode()
+def uri(p):
+    # 납품 시트는 무손실이라 무겁다: 128px 얼굴은 손실 WebP q60으로도 차이가 거의 없어 1/15 크기(앱 한 파일 16MB 한도)
+    import io
+    from PIL import Image
+    bio=io.BytesIO(); Image.open(os.path.join(ROOT,p)).convert('RGB').save(bio,'WEBP',quality=60,method=6)
+    return 'data:image/webp;base64,'+base64.b64encode(bio.getvalue()).decode()
 # v13 선수 얼굴: 구단 이름으로 게임 구단 ID에 맞춘다
 src=open(source_file('engine','01_rules.js'),encoding='utf8').read()
 TD=re.findall(r"\{city:'([^']+)',nick:'([^']+)'",src.split('const TEAM_DEF=[')[1].split('];')[0])
