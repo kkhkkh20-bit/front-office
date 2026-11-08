@@ -192,3 +192,11 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .ipl-gs{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}.ipl-g{font-size:11px;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06);white-space:nowrap}.ipl-g i{font-style:normal;color:var(--muted);margin-right:3px}
 .ipl-g.w{background:rgba(42,138,60,.3)}.ipl-g.l{background:rgba(179,48,42,.3)}.ipl-g.nx{outline:1px dashed #e8b64a;outline-offset:-1px;white-space:normal}
 @media(max-width:700px){.ipl-c{min-width:118px}}
+
+/* 휴대폰 날짜 진행(사용자 11-09): PC와 같게 위 날짜가 하루씩 넘어가고 진행하기 버튼에 막대가 찬다 */
+.top .tbar .club>div>span.fm-flip b{display:inline-block;animation:fmFlip .22s ease-out}
+.top .tbar .club>div>span{position:relative}.top .fm-dres{position:absolute;top:100%;left:0;margin-top:2px;display:flex;align-items:center;gap:4px;font-style:normal;font-size:11px;white-space:nowrap;background:rgba(0,0,0,.6);padding:1px 6px;border-radius:3px;z-index:5}.top .fm-dres:empty{display:none}
+.top .fm-dres em{font-style:normal;font-weight:700}.top .fm-dres em.w{color:var(--good)}.top .fm-dres em.l{color:var(--bad)}
+.top .goset>button.fm-busy{position:relative;overflow:hidden}
+.top .goset>button.fm-busy::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85);animation:fmProg var(--fmdur,1200ms) linear forwards}
+.top .tbar .club>div>span>b{font:inherit;color:inherit}
