@@ -40,9 +40,9 @@ const netLbl=v=>v>=75?'촘촘함':v>=55?'좋음':v>=35?'보통':v>=20?'약함':'
 /* 스카우트 고향(연줄) 권역: 배치와 상관없이 고정. 그 권역 학교 감독·코치와 아는 사이 */
 function scHome(s){ if(!s)return null; if(s.area)return s.area; const tot=AREA.reduce((a,x)=>a+x.w,0); let x=u01('sh',s.id)*tot; for(const a of AREA){ x-=a.w; if(x<=0)return a.k; } return AREA[0].k; }
 /* 평가 오차 배수: 정보망 100이면 0.75배, 0이면 1.3배 */
-function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)return 1; return 1.3-areaNet(tid??G.user,k)*.0055; }
+function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)return 1; return (1.3-areaNet(tid??G.user,k)*.0055)*((tid??G.user)===G.user?schSdM(p):1); } /* 학교 감독 친분(91_schools.js) */
 /* 권역 요약(지도·목록): 올해 드래프트 후보 */
 function areaSummary(tid){ const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect);
   return AREA.map(a=>{ const L=C.filter(p=>areaOf(p)===a.k); return {k:a.k,reg:a.reg,net:areaNet(tid,a.k),n:L.length,home:teamArea(tid)===a.k,L}; }); }
 /* 단장 고교 대회 관전(53_gm_schedule gmScoutTrip): 후보가 가장 많은 권역을 다녀온 것으로 센다 */
-function areaVisitAdd(L){ const c={}; for(const p of L||[]){ const k=areaOf(p); if(k)c[k]=(c[k]||0)+1; } const k=Object.keys(c).sort((a,b)=>c[b]-c[a])[0]; if(k){ G.areaVisit=G.areaVisit||{}; G.areaVisit[k]=(G.areaVisit[k]||0)+1; } return k; }
+function areaVisitAdd(L){ const c={}; for(const p of L||[]){ const k=areaOf(p); if(k)c[k]=(c[k]||0)+1; } const k=Object.keys(c).sort((a,b)=>c[b]-c[a])[0]; if(k){ G.areaVisit=G.areaVisit||{}; G.areaVisit[k]=(G.areaVisit[k]||0)+1; } try{ const seen=new Set(); for(const p of L||[]){ const S=schOf(p); if(S&&!seen.has(S.n)){ seen.add(S.n); schAdd(S,3); } } }catch(e){} /* 대회장에서 감독들과 인사(친분 +3) */ return k; }

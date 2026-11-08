@@ -183,6 +183,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   stKeep(v){ const [id,f]=String(v).split(':'); toast(stKeep(id,f==='1')); save(); render(); },
   stBidDrop(v){ toast(stBidDrop(v)); save(); render(); },
   stLet(v){ const r=stRaidFind(v); toast(r?stLeave(r):'이미 끝난 일입니다.'); save(); render(); },
+  cmKeep(v){ const [id,f]=String(v).split(':'); toast(cmKeep(id,f==='1')); save(); render(); }, cmLet(v){ toast(cmLet(String(v).split(':')[0])); save(); render(); }, /* 다른 구단의 우리 코치 영입 제안(11-08c) */
   anaFire(v){ fireAna(v); save(); render(); },
   camp(v){ if(G.camp){G.camp.focus=v; G.camp.seen=true; save(); render();} },
   confirmContracts(){ const r=confirmContracts(); UI.ctMsg=r||''; save(); render(); },

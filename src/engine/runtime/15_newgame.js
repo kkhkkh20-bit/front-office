@@ -28,6 +28,7 @@ function buildWorld(){ const userTid=0; worldReset();
     const fc=ps.filter(p=>p.faC); const fs=sum(fc.map(p=>p.sal)); if(fs>0&&over>0)fc.forEach(p=>p.sal=round5(p.sal*(1+over/fs))); }
   G.scouts=[mkScout(ri(2,3)),mkScout(2),mkScout(2)]; G.scouts[0].role='am'; G.scouts[1].role='am'; G.scouts[1].region=REG.find(r=>r!==G.scouts[0].region); G.scouts[2].role='pro'; G.scouts[2].region='영남';
   if(G.scouts[0].region===G.scouts[1].region)G.scouts[1].region=REG.find(r=>r!==G.scouts[0].region);
+  { const a=mkScout(2); a.role='am'; a.region=REG.find(r=>r!==G.scouts[0].region&&r!==G.scouts[1].region)||a.region; const b=mkScout(1); b.role='pro'; b.region=REG.find(r=>r!==G.scouts[2].region)||b.region; G.scouts.push(a,b); } /* 스카우트 5명으로 시작(사용자 11-08c: 스태프가 너무 적다) */
   refreshScoutMarket();
   for(const t of G.teams){ const m=mkMgr(); m.yrs=ri(1,3); G.mgr[t.id]=m; }
   // 지난 시즌(2025) 기록은 기존 모형으로 만든다. 다시 볼 수 없는 사전 경기는 공별 기록을 만들지 않아 초기 세계·후보 생성 난수와 성능을 보존한다.

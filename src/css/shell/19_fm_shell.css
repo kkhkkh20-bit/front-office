@@ -174,3 +174,6 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .pn-cafe b{font-size:13.5px}.pn-cafe span{grid-column:1;font-size:11.5px;color:var(--muted)}.pn-cafe i{grid-row:1/3;grid-column:2;font-style:normal;font-weight:800;color:#fff;background:#03c75a;border-radius:6px;padding:7px 12px}
 #app .set-cafe-b a.btn.primary,#app a.pn-cafe{text-decoration:none}#app .set-cafe-b a.btn.primary{background:#03c75a;border-color:#03c75a;color:#fff;font-weight:800;font-size:15px;padding:10px 22px;min-height:42px;display:inline-flex;align-items:center}
 .pn .pn-cafe{margin:8px 20px 0}
+/* 고교 감독·친분 줄(11-08c) */
+.scm-sch>.scm-hc{display:grid;gap:1px;border-top:1px dashed var(--line);padding-top:4px;margin-top:2px}
+.scm-hc .btn{justify-self:start}

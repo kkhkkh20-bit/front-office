@@ -15,14 +15,16 @@ function scoutMapPage(){ const S=areaSummary(G.user), home=teamArea(G.user); con
   const ev=p=>{ try{ const r=scoutReport(p); return r.ofp??r.cur??0; }catch(e){ return 0; } };
   const bySch={}; for(const p of A.L){ (bySch[p.school]=bySch[p.school]||[]).push(p); }
   const schools=[...new Set([...D.hs,...D.un,...Object.keys(bySch)])].map(n=>({n,L:(bySch[n]||[]).sort((a,b)=>ev(b)-ev(a)),un:D.un.includes(n)})).sort((a,b)=>b.L.length-a.L.length||a.un-b.un);
-  const rowS=s=>`<div class="scm-sch${s.L.length?'':' none'}"><b>${esc(s.n)}</b><span class="small muted">${s.un?'대학':'고교'} · 후보 ${s.L.length}명</span><div>${s.L.slice(0,3).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i class="small muted">${posLabel(p)}</i>`).join(' ')}</div></div>`;
+  const SL=schList(); /* 고교 감독·친분(11-08c) */
+  const coachS=S=>{ if(!S)return ''; const c=S.coach, r=schRel(S); return `<div class="scm-hc small"><span>${esc(c.name)} 감독 ${c.age}세 · ${esc(c.sty)}${c.alma?' · 모교':''}</span><span class="muted">${esc(c.car)}</span><span>친분 <b style="color:${netCol(r)}">${r}</b> ${schRelLbl(r)} · 전력 ${S.lv}${c.from===G.user&&c.ob?' · <span class="pill good">우리 구단 출신</span>':''}</span>${S.gy===G.year?'<span class="muted">올해 후원함</span>':`<button class="btn small" data-a="schGift" data-v="${esc(S.n)}">야구부 후원 ${money(10)}</button>`}</div>`; };
+  const rowS=s=>`<div class="scm-sch${s.L.length||SL[s.n]?'':' none'}"><b>${esc(s.n)}</b><span class="small muted">${s.un?'대학':'고교'} · 후보 ${s.L.length}명</span><div>${s.L.slice(0,3).map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><i class="small muted">${posLabel(p)}${p.schTip===G.year?' · 감독 귀띔':''}</i>`).join(' ')}</div>${s.un?'':coachS(SL[s.n])}</div>`;
   const map=`<div class="scm-map">${scoutMapSVG(S,sel)}<p class="small muted scm-key">${[[75,'촘촘함'],[55,'좋음'],[35,'보통'],[20,'약함'],[0,'거의 없음']].map(([v,l])=>`<i style="background:${netCol(v)}"></i>${l}`).join(' ')} · 흰 점 = 연고</p></div>`;
   const list=`<table class="tbl scm-tbl"><thead><tr><th>권역</th><th class="num">정보망</th><th class="num">후보</th></tr></thead><tbody>${S.map(a=>`<tr class="${a.k===sel?'on':''}" data-a="scArea" data-v="${esc(a.k)}"><td>${esc(a.k)}${a.home?' <span class="pill">연고</span>':''}</td><td class="num"><b style="color:${netCol(a.net)}">${a.net}</b> <span class="small muted">${netLbl(a.net)}</span></td><td class="num">${a.n}</td></tr>`).join('')}</tbody></table>`;
   const det=`<div class="scm-det"><div class="row between"><h3 class="sec">${esc(sel)}</h3><span><b style="color:${netCol(A.net)}">정보망 ${A.net}</b> · ${netLbl(A.net)}</span></div>
     <div class="scm-bar"><i style="width:${A.net}%;background:${netCol(A.net)}"></i></div>
     <p class="small">${why.join(' · ')}</p>
-    <p class="small muted">정보망이 높을수록 이 권역 후보의 평가 오차가 줄고(최대 25%), 숨은 재능을 알아볼 확률이 오릅니다. ${A.reg} 담당 스카우트를 오래 둘수록, 이 권역이 고향인 스카우트가 있을수록, 단장이 이 권역 대회를 직접 볼수록 올라갑니다.</p>
+    <p class="small muted">정보망이 높을수록 이 권역 후보의 평가 오차가 줄고(최대 25%), 숨은 재능을 알아볼 확률이 오릅니다. ${A.reg} 담당 스카우트를 오래 둘수록, 이 권역이 고향인 스카우트가 있을수록, 단장이 이 권역 대회를 직접 볼수록 올라갑니다. 학교마다 감독과의 친분도 따로 있어, 친할수록 그 학교 선수 평가가 정확해지고 감독이 좋은 선수를 먼저 귀띔합니다(스카우트 방문·대회 관전·그 학교 선수 지명·후원으로 오름).</p>
     <h4 class="small">학교 · 올해 드래프트 후보 ${A.n}명</h4><div class="scm-schs">${schools.map(rowS).join('')}</div></div>`;
   return `<div class="scm ws-own"><section class="card scm-l">${map}${list}</section><section class="card scm-r">${det}</section></div>`; }
 function scoutPage2(base){ const it=inTabs('scoutpg',[['team','스카우트 팀'],['map','지역 정보망']]); return it.bar+(it.cur==='map'?scoutMapPage():base()); }
-Object.assign(A,{ scArea(v){ UI.scArea=v; UI.it=Object.assign(UI.it||{},{scoutpg:'map'}); render(); } });
+Object.assign(A,{ schGift(v){ toast(schGift(v)); save(); render(); }, scArea(v){ UI.scArea=v; UI.it=Object.assign(UI.it||{},{scoutpg:'map'}); render(); } });

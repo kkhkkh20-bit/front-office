@@ -1,5 +1,5 @@
 /* 당시 소식의 업무 상태. 읽음과 완료는 별개이며, 기록을 여는 링크는 계속 쓸 수 있다. */
-const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
+const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
 const mailOldYear=m=>dobj(mailStamp(m)).y!==G.year;
@@ -28,6 +28,7 @@ function mailActionStatus(m,a){
   }
   if(a.a==='fcampSet')return !G.fcamp||G.fcamp.done||G.fcamp.y!==dobj(d).y?mailEnd('이 마무리캠프는 종료되었습니다.',true):null;
   if(a.a==='stKeep'||a.a==='stLet'){const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid!=null?x.exp===c.raid:x.exp===d+7));return !r?mailEnd('이미 직원 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('직원 영입 제안의 답변 기한이 지났습니다.',true):null;} /* 마감일 당일까지 답할 수 있다(자동 처리는 다음 날, 검수 11-07) */
+  if(a.a==='cmKeep'||a.a==='cmLet'){const ex=+String(a.v).split(':')[2],r=(G.cmRaid||[]).find(x=>x.id===id&&x.exp===ex);return !r?mailEnd('이미 코치 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('코치 영입 제안의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답변했거나 종료된 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 종료되었습니다.'):null;}
   if(a.a==='scoutPlanGo'){
