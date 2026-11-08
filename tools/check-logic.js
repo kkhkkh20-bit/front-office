@@ -2414,6 +2414,28 @@ T('[검수 11-09c] 고교 설득은 현금 안에서, 1순위를 쥔 동안만 �
   G.draftClass=G.draftClass.filter(id=>id!==p.id); p.prospect=false; G.day=KD(8,20); ovsLeave(p,'MLB','뉴욕',3,100,'고교 직행'); const a=G.abroad.find(x=>x.id===p.id); ok(a&&a.y1===G.year+1,'고교 직행 첫 해외 시즌이 계약한 해 '+(a&&a.y1)); abroadYear(); ok(!a.lines.length,'계약한 해에 해외 기록이 생김'); });
 T('[검수 11-09c] MLB 스카우트는 부상 선수를 보러 오지 않고, 방문 횟수는 시즌마다 센다',()=>{ fresh(); const L=Object.values(G.players).filter(q=>q.team!=null&&!q.foreign&&!q.prospect&&!milServing(q)).sort((a,b)=>ovr(b)-ovr(a)); const h=L[0], p=L[1]; for(const q of [h,p]){ q.svc=7; q.age=27; q.mlb=70; q.ovsY=null; q.retFrom=null; } h.injOut=70; p.injOut=0;
   p.mlbSeen=1; p.mlbSeenY=G.year-1; G.ovsVisit={}; for(let d=G.cal.open+1;d<G.cal.end&&G.ovsVisit[p.id]==null;d++){ G.day=d; h.injOut=70; ovsScoutVisit(); } ok(G.ovsVisit[h.id]==null,'재활 중인 선수에게 스카우트 방문'); ok(G.ovsVisit[p.id]!=null,'준비 실패: 방문 없음'); ok(p.mlbSeen===1,'지난해 방문까지 올해 횟수로 셈 '+p.mlbSeen); });
+T('[검수 11-09b] 외국인 목록 협상 버튼은 최소 제안 기준, 경쟁 구단은 실제로 계약 가능한 곳만, 이직하면 관찰 명단·자동 관찰 제외는 구단별',()=>{ fresh();
+  const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'); ok(yb.length,'준비 실패: 용병 없음'); const d=yb[0]; releaseForeign(d.id);
+  const q=(G.fmarket||[]).map(i=>G.players[i]).find(x=>x&&x.team==null&&x.foreign==='용병'&&x.isP===d.isP); ok(q,'준비 실패: 후보 없음'); const a0=q.ask; q.ask=fCap(G.user);
+  ok(/총액/.test(foreignCheck(G.user,q)),'준비 실패: '+foreignCheck(G.user,q)); ok(!foListErr(q),'낮춰 부르면 되는데 목록에서 협상이 막힘: '+foListErr(q)); q.ask=a0;
+  /* 교체를 노리는 AI 구단: 기존 선수를 빼도 총액 한도를 넘으면 경쟁자가 아니다 */
+  const tid=G.teams.find(t=>t.id!==G.user).id; for(const x of foreignOf(tid))releaseForeign(x.id); for(const o of [{isP:true},{isP:true},{isP:false}]){ const x=newForeign('용병',o); x.team=tid; x.sal=x.ask; } { const x=newForeign('아시아',{}); x.team=tid; x.sal=x.ask; } /* AI 구단 외국인 3명 + 아시아쿼터를 채운다 */ const ty=foreignOf(tid).filter(x=>x.foreign==='용병'); const w=ty.find(x=>x.isP===q.isP)||ty[0]; for(const x of ty)setOvr(x,60); setOvr(w,45); team(tid).cash=0;
+  setOvr(q,70); q.fpub=0; const nd=fNeed(tid); ok(nd&&nd.up===w.id,'준비 실패: 교체 수요 '+JSON.stringify(nd));
+  for(const x of ty)if(x!==w)x.sal=Math.round(fCap(tid)/2); ok(foreignCheck(tid,q,w.id),'준비 실패: 한도 안');
+  ok(!foRivalTeams(q).includes(tid)&&!foRivals(q).some(r=>r.tid===tid),'계약할 수 없는 구단이 경쟁 입찰자로 나옴'); ok(aiForeignPick(tid)!==q,'준비 확인');
+  /* 이직: 옛 구단 관찰 명단은 시장 정리에서 보호, 자동 관찰 제외 기록은 새 구단에 따라오지 않는다 */
+  const old=G.user; const z=(G.fmarket||[]).map(i=>G.players[i]).find(x=>x&&x.team==null&&x!==q); ok(z,'준비 실패: 시장 후보 없음'); G.fwatch=[{id:z.id,since:G.day,k:10}]; G.fwNo=[z.id];
+  const to=G.teams.find(t=>t.id!==old).id; switchTeam(to); ok(!(G.fwNo||[]).includes(z.id),'전 구단의 자동 관찰 제외가 새 구단에 따라옴'); ok(!fwatchOn(z.id),'준비 확인: 관찰 명단 넘어옴');
+  z.fday=G.day-200; refreshFMarket(0,30); ok((G.fmarket||[]).includes(z.id)&&G.players[z.id],'옛 구단 관찰 후보가 시장 정리로 삭제됨');
+  switchTeam(old); ok(fwatchOn(z.id)&&(G.fwNo||[]).includes(z.id),'복귀하면 옛 구단 관찰·제외 기록이 돌아와야 함'); });
+T('[검수 11-09b] 기다려 주는 기한은 등록 마감을 넘지 않고, 그 기한에는 관찰 이벤트로 사라지지 않는다',()=>{ fresh(); G.day=foreignDL()-1; ok(period()==='season'&&foreignOpen(),'준비 실패: 시즌 등록 기간 아님 '+period());
+  const tid=G.teams.find(t=>t.id!==G.user).id; const w=foreignOf(tid).find(x=>x.foreign==='용병'); releaseForeign(w.id); const nd=fNeed(tid); ok(nd&&nd.kind==='용병','준비 실패: AI 수요');
+  const L=(G.fmarket||[]).map(i=>G.players[i]).filter(x=>x&&x.team==null&&x.foreign==='용병'&&(nd.isP==null||x.isP===nd.isP)); L.forEach(x=>x.fpub=0); const q=L.sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a))[0]; ok(q&&foRivals(q).length,'준비 실패: 경쟁 구단 없음');
+  const m=foreignOf(G.user).find(x=>x.foreign==='용병'&&x.isP===q.isP); if(m)releaseForeign(m.id); G.sea.repl[G.user]=0;
+  const r=foOffer(q.id,MIN_SAL,0); ok(!r.ok&&q.fneg&&q.fneg.dl,'준비 실패: '+r.msg); ok(q.fneg.dl<=foreignDL(),'등록 마감('+dmd(foreignDL())+') 뒤 '+dmd(q.fneg.dl)+'까지 기다린다고 함');
+  G.fwatch=[{id:q.id,since:G.day,k:0}]; for(let i=0;i<300;i++)fwatchWeek(); /* 기한 안에는 몇 주를 돌려도(평소 주당 1.5~3%) 해외로 빠지지 않아야 */ ok((G.fmarket||[]).includes(q.id)&&G.players[q.id],'기다려 주는 후보가 주간 관찰 이벤트로 사라짐'); });
+T('[검수 11-09b] 재계약 협상 없이 해외 제안을 받아 떠난 외국인은 해외파 기록에 남는다',()=>{ const C=reNow(); const id=C.foreignEnd.find(i=>!C.foreignDrop.includes(i)&&!(C.fre&&C.fre[i])); const p=G.players[id]; p.fout={y:C.y,k:'일본',v:Math.round(p.newSal*1.4)};
+  fReFinish(C,G.user); ok(!G.players[id]||G.players[id].team!==G.user,'준비 실패: 남음'); ok((G.abroad||[]).some(a=>a.id===id&&a.lg==='NPB'&&a.foreign),'일본행이 해외파 기록에 없음'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

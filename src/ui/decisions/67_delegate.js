@@ -16,8 +16,9 @@ function handOffBtns(m){ if(G.unemp||mailDone(m))return ''; let h='';
 Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v){ toast(takeBack(v)); save(); render(); },
   troMode(){ G.auto=G.auto||{}; autoSet('tro',G.auto.tro==='good'?true:'good'); /* 공통 처리: '모두 거절'로 바꾸면 이미 올라온 제안도 정리(검수 11-07) */ toast(G.auto.tro==='good'?'부단장이 우리 평가로 공정 이상인 제안은 올리고, 나머지만 거절합니다.':'부단장이 받은 제안을 모두 거절합니다.'); save(); render(); },
   evHand(v){ toast(handOffEv(v)); save(); render(); }, evTake(v){ if(G.deleg)delete G.deleg[v]; save(); render(); }, evGive(v){ G.deleg=G.deleg||{}; G.deleg[v]=true; toast(`${EV_NAME[v]||'이 종류'} 결정은 앞으로 비서가 기본안으로 처리합니다. 권한 화면에서 다시 가져올 수 있습니다.`); save(); render(); },
-  foRec(v){ const F=UI.fo; const p=G.players[+v]; if(!F||!p)return; if(F.re){ const t=foReFloor(p), f=foReComfort(p); F.g=Math.max(MIN_SAL,Math.ceil((t/f-F.i*FO_INC_W)/USD)*USD); F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; renderSheet(); return; }
-    const me=foAppeal(p,G.user), Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);
+  foRec(v){ const F=UI.fo; const p=G.players[+v]; if(!F||!p)return; if(F.re){ const t=foReFloor(p), f=foReComfort(p), cap=p.foreign==='아시아'?asiaReCap(p):Infinity; const need=i=>Math.max(MIN_SAL,Math.ceil((t/f-i*FO_INC_W)/USD)*USD); /* 아시아쿼터 재계약 상한 안에서만 추천(검수 11-09b). 상한이 있으면 인센티브 없이 보장으로 주는 쪽이 값이 크다 */
+    if(need(F.i)+F.i>cap)F.i=0; const g=need(F.i); if(g+F.i>cap){ F.g=Math.max(MIN_SAL,cap-F.i); F.msg=`재계약 상한 ${usdT(cap)} 안에서는 합의할 수 있는 조건이 없습니다. 상한까지 맞췄습니다.`; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); return; }
+    const me=foAppeal(p,G.user,{rel:!!F.rel}) /* 넣은 보류권 해제 조항도 반영(검수 11-09b) */, Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);
     if(!known){ F.g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F.i=Math.max(0,Math.min(cap-F.g,p.ask-F.g)); F.msg='경쟁 구단 조건을 아직 모릅니다. 요구액 기준(보장 85% + 인센티브 15%)으로 맞췄습니다. 한 번 제안하면 정확한 조건을 알려 줍니다.'; renderSheet(); return; }
     const tgt=Math.max(foFloor(p),best?best.v*1.01:0); let g=foNeedG(p,F.i,tgt,me.f); if(g==null){ F.i=0; g=foNeedG(p,0,tgt,me.f); }
     if(g==null){ F.msg='상한 안에서는 사인시킬 수 있는 조건이 없습니다.'; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); } });
