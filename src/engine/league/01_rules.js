@@ -26,10 +26,10 @@ const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
 const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 /* 아시아쿼터 재계약 상한: 신규는 20만 달러, 재계약은 직전 연봉에서 해마다 10만 달러까지 올릴 수 있다(KBO 2026 아시아쿼터 규정, 유저 제보 11-07) */
-function asiaReCap(p){ return p&&p.foreign==='아시아'&&p.team!=null?Math.max(ASIA_CAP,(p.sal||0)+10*USD):ASIA_CAP; }
+function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return ASIA_CAP; const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); return Math.max(ASIA_CAP,b+10*USD); } /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
 /* 외국인 선수 한 명이 총액 한도에 차지하는 금액: 보장 연봉 + 아직 유효한 인센티브(신규·재계약·화면이 모두 이 계산을 쓴다) */
-function fCommit(p,sy){ sy=sy??ctSeason(); return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
-function fCap(tid){ return F_TOTAL_CAP+10*USD*sum(playersOf(tid).filter(x=>x.foreign==='용병').map(x=>x.rsy||0)); } /* 재활 명단 선수의 재계약 가산도 유지(대체 등록 직후 한도가 줄어 초과되지 않게) */
+function fCommit(p,sy){ sy=sy>999?sy:ctSeason(); /* map(fCommit)이 넘기는 순번을 시즌으로 보지 않게(검수 11-09a: 끝난 인센티브가 한도에 남음) */ return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
+function fCap(tid,ex){ return F_TOTAL_CAP+10*USD*sum(playersOf(tid).filter(x=>x.foreign==='용병'&&x.id!==ex).map(x=>x.rsy||0)); } /* ex: 내보낼 선수(그 선수의 재계약 가산도 빠진 한도, 검수 11-09a) */ /* 재활 명단 선수의 재계약 가산도 유지(대체 등록 직후 한도가 줄어 초과되지 않게) */
 const F_REPL_MAX=2, ASIA_REPL_MAX=1;
 const fReplMax=kind=>kind==='아시아'?ASIA_REPL_MAX:F_REPL_MAX;
 function fReplUsed(tid,kind){ const S=G.sea; if(!S||S.y!==G.year)return 0; const by=kind==='아시아'?S.asiaRepl:S.repl; return (by&&by[tid])||0; }

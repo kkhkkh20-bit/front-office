@@ -19,7 +19,7 @@ function fTmpErr(tid,o,q){
   const a0=q.ask; q.ask=Math.min(q.ask,fNewCap()); const e=foreignCheck(tid,q,o.id,true); q.ask=a0; return e; }
 function signTempForeign(tid,oid,qid){ const o=G.players[oid], q=G.players[qid]; if(!q)return '후보를 찾을 수 없습니다.'; const err=fTmpErr(tid,o,q); if(err)return err;
   q.ask=Math.min(q.ask,fNewCap()); const fee=fTmpFee(q);
-  story(q,`${tname(tid)} 입단 (부상 대체 외국인 · ${o.name} 대신, 월 ${money(fee)})`,'move'); q.team=tid; q.sal=q.ask; q.yrs=1; q.fy=G.year; if(q.adapt==null)q.adapt=Math.round(clamp(N(50,13),20,80));
+  story(q,`${tname(tid)} 입단 (부상 대체 외국인 · ${o.name} 대신, 월 ${money(fee)})`,'move'); { const h=foResFor(q); if(!(h&&h.tid===tid))q.rsy=0; } /* 전 구단 재계약 연차는 가져오지 않는다(검수 11-09a) */ q.team=tid; q.sal=q.ask; q.yrs=1; q.fy=G.year; if(q.adapt==null)q.adapt=Math.round(clamp(N(50,13),20,80));
   q.ftmp={o:o.id,d:G.day,fee,paid:F_TMP_DAYS}; o.frehab=q.id; for(const k in G.lineup)if(G.lineup[k]===o.id)delete G.lineup[k];
   G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+Math.round(fee*F_TMP_DAYS/30); /* 첫 6주치 */
   G.fmarket=(G.fmarket||[]).filter(x=>x!==q.id); mvLog('외국인',q,null,tid,`부상 대체 · ${o.name} 대신 월 ${money(fee)}`,fee);

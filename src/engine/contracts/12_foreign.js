@@ -151,7 +151,7 @@ function foreignCheck(tid,p,excludeId,tmp){
   if(yb.length>=3)return '외국인 선수(아시아쿼터 제외)는 3명까지입니다. 먼저 한 명을 방출하세요.';
   if(yb.length===2&&yb.every(x=>x.isP===p.isP))return `외국인 3명을 모두 ${p.isP?'투수':'타자'}로 채울 수 없습니다.`;
   if(tid===G.user&&G.contract&&!G.contract.done&&p.foreign==='용병'){ const f=fReCapInfo(); if(f&&f.tot+p.ask>f.cap)return `재계약 중인 선수 조건까지 합치면 외국인 총액이 한도를 ${money(f.tot+p.ask-f.cap)} 넘습니다.`; return ''; } /* 재계약 확정 검사와 같은 기준(재계약 연봉으로 본다. 아래 옛 연봉 검사는 하지 않음) */
-  const cap=fCap(tid); const tot=sum(yb.map(fCommit))+p.ask; if(tot>cap)return `외국인 3명 연봉 총액이 한도 ${Math.round(cap/USD)}만 달러(약 ${money(cap)})를 넘습니다.`;
+  const cap=fCap(tid,tmp?null:excludeId); const tot=sum(yb.map(fCommit))+p.ask; /* 교체는 기존 선수를 뺀 한도로(부상 대체는 원 선수가 재활 명단에 남아 가산 유지) */ if(tot>cap)return `외국인 3명 연봉 총액이 한도 ${Math.round(cap/USD)}만 달러(약 ${money(cap)})를 넘습니다.`;
   return '';
 }
 function remainFrac(){ const c=G.cal; if(G.day<c.open)return 1; if(G.day>c.end)return 0; const left=Object.keys(c.sched).filter(d=>+d>G.day).length; return left/144; }
@@ -173,7 +173,7 @@ function signForeign(tid,id){
 /* 방출해도 남은 보장 연봉은 낸다: 개막 전(또는 결산 뒤 다음 시즌 계약)에 방출하면 그 시즌 외국인 지출에 따로 남겨 개막 때 더한다. 개막 뒤 방출은 이미 시즌 지출에 들어 있다 */
 function fDeadOf(tid,y){ const D=G.fDead; return D&&D.y===y?(D.by[tid]||0):0; }
 function fDeadAdd(tid,amt){ const y=sponSeason(); if(G.sea&&G.sea.y===y&&G.cal&&G.day>=G.cal.open)return; if(!G.fDead||G.fDead.y!==y)G.fDead={y,by:{}}; G.fDead.by[tid]=(G.fDead.by[tid]||0)+amt; }
-function fNextOwed(p){ if(sponSeason()===G.year)return true; /* 결산 뒤 겨울: 다음 시즌 계약(재계약 확정·이번 겨울 신규 계약)이 있는 선수만 연봉을 낸다 */ const C=G.contract; if(p.fy===sponSeason())return true; if(C&&C.y===G.year&&C.done&&(C.foreignEnd||[]).includes(p.id)&&!(C.foreignDrop||[]).includes(p.id))return true; return false; }
+function fNextOwed(p){ if(sponSeason()===G.year)return true; /* 결산 뒤 겨울: 다음 시즌 계약(재계약 확정·이번 겨울 신규 계약)이 있는 선수만 연봉을 낸다 */ const C=G.contract; if(p.fy===sponSeason()||Math.max(p.fMulti||0,p.fCtY||0)>=sponSeason())return true; /* 2년 계약 둘째 해·확정된 재계약(AI 포함)도 보장(검수 11-09a) */ if(C&&C.y===G.year&&C.done&&(C.foreignEnd||[]).includes(p.id)&&!(C.foreignDrop||[]).includes(p.id))return true; return false; }
 function releaseForeign(id){ const p=G.players[id]; if(!p)return; if(p.team!=null&&!(p.joinY>sponSeason())&&fNextOwed(p))fDeadAdd(p.team,p.sal||0); { let oa=0; try{ if(p.team!=null&&G.sea&&G.sea.fspend&&optEarned(p)&&p.opt.paidY!==G.year)oa=p.opt.a; /* 결산에서 이미 준 옵션은 다시 주지 않는다(검수 11-08) */ }catch(e){} if(oa){ G.sea.fspend[p.team]=(G.sea.fspend[p.team]||0)+oa; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(oa)}도 지급합니다.`); } } /* 방출해도 달성한 옵션은 준다(검수 11-06) */ termsClear(p); mvLog('방출',p,p.team,null,'외국인 선수'); if(p.team===G.user)addLog(`외국인 선수 ${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 지급합니다.`); for(const k in G.lineup)if(G.lineup[k]===id)delete G.lineup[k]; dropP(id); }
 /* 외국인 시장은 10개 구단이 함께 쓴다. 구단마다 스카우트 오차를 안고 후보를 평가한다 */
 function fNeed(tid){ const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병'); if(yb.length<3&&fReplLeft(tid)>0){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1; return {kind:'용병',isP:needP?true:needB?false:null}; } if(!fs.some(x=>x.foreign==='아시아')&&fReplLeft(tid,'아시아')>0)return {kind:'아시아',isP:null};

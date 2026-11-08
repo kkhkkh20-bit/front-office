@@ -194,7 +194,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ffree(v){ const id=+v; const C=G.contract; if(!C)return; const a=C.fFree=C.fFree||[]; const i=a.indexOf(id); i>=0?a.splice(i,1):a.push(id); save(); render(); },
   fdrop(v){const id=+v; const C=G.contract; const a=C.foreignDrop; const i=a.indexOf(id); const p=G.players[id]; if(!p)return;
     if(i>=0){ if(p.fleft){ toast('선수가 재계약을 거절하고 떠나기로 했습니다.'); return; } const fs=foreignOf(G.user).filter(x=>x.id!==id&&!a.includes(x.id)); const full=p.foreign==='아시아'?fs.filter(x=>x.foreign==='아시아').length>=1:fs.filter(x=>x.foreign==='용병').length>=3;
-      if(full){ toast('그 사이 새 외국인과 계약해 자리가 없습니다. 재계약으로 되돌릴 수 없습니다.'); return; } a.splice(i,1); } else a.push(id); save(); render();},
+      if(full){ toast('그 사이 새 외국인과 계약해 자리가 없습니다. 재계약으로 되돌릴 수 없습니다.'); return; } a.splice(i,1); if(fReMixBad()){ a.splice(i,0,id); toast(`되돌리면 일반 외국인 3명이 모두 ${p.isP?'투수':'타자'}가 됩니다. 재계약으로 되돌릴 수 없습니다.`); return; } } else a.push(id); save(); render();},
   relAsk(v){UI.confirmRel=+v;renderSheet();},
   relCancel(){UI.confirmRel=null;renderSheet();},
   release(v){releasePlayer(+v);UI.sheet=null;UI.confirmRel=null;save();render();},

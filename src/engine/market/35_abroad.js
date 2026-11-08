@@ -17,7 +17,7 @@ function fovsKeepSal(p,o){ return p.foreign==='아시아'?Math.min(asiaReCap(p),
 EVH.fovs={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.ovsOffer)return ''; const o=p.ovsOffer;
     if(i===0){ const asia=p.foreign==='아시아'; const ns=e.data.ks??fovsKeepSal(p,o); /* 버튼에 적은 금액 그대로 */ const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'&&x.id!==p.id); const own=p.opt&&p.ctT===p.team&&p.opt.until>=ctSeason()?(p.opt.a||0):0; const capOk=asia?ns<=asiaReCap(p):sum(yb.map(fCommit))+ns+own<=fCap(G.user); /* 본인 인센티브도 총액에(검수 11-07) */
       if(!capOk)return `외국인 연봉 총액 한도(${money(fCap(G.user))})를 넘어 설득할 수 없습니다. ${ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인')}`;
-      const ok=R()<((o.lg==='MLB'?.2:.5)+((p.mor??60)-60)/200)*(asia?.5:1); if(ok){ p.sal=ns; p.kept={y:G.year,sal:ns}; delete p.ovsOffer; news('선수',`${p.name}, ${o.lg} 제안 뿌리치고 잔류`,`${tshort(G.user)}이(가) 연봉 ${money(ns)}에 붙잡았습니다.`,2,{ref:p.id}); return `설득 성공. 연봉 ${money(ns)}.`; }
+      const ok=R()<((o.lg==='MLB'?.2:.5)+((p.mor??60)-60)/200)*(asia?.5:1); if(ok){ p.kept={y:G.year,sal:ns,base:p.sal}; p.sal=ns; delete p.ovsOffer; news('선수',`${p.name}, ${o.lg} 제안 뿌리치고 잔류`,`${tshort(G.user)}이(가) 연봉 ${money(ns)}에 붙잡았습니다.`,2,{ref:p.id}); return `설득 성공. 연봉 ${money(ns)}.`; }
       return `설득에 실패했습니다. ${ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인')}`; }
     return ovsLeave(p,o.lg,o.club,o.yrs,o.amt,'외국인'); } };
 /* 떠나는 선수를 해외파 명단으로 옮긴다 (국내 선수는 나중에 돌아올 수 있다) */
