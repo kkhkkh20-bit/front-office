@@ -118,7 +118,8 @@
       "src/engine/market/93_waivers.js",
       "src/engine/draft/94_second_draft.js",
       "src/engine/market/96_pick_trade.js",
-      "src/engine/league/95_game_rules.js"
+      "src/engine/league/95_game_rules.js",
+      "src/engine/league/97_spring_camp.js"
     ],
     "ui": [
       "src/ui/runtime/00_core.js",
@@ -233,6 +234,7 @@
       "src/ui/media/75_patch_notes.js",
       "src/ui/league/76_national.js",
       "src/ui/assets/77_assets_ui.js",
+      "src/ui/league/97_spring_camp_ui.js",
       "src/ui/runtime/99_boot.js"
     ],
     "styles": [

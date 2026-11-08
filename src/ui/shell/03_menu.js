@@ -16,19 +16,19 @@ const SUBS={
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['stat','통계'],['wire','리그 소식'],['assoc','협회'],['nt','국가대표'],['hist','역사']],
   club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
-const MERGE={trade:{block:['block']},staff:{train:['tc','camp','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
+const MERGE={trade:{block:['block']},staff:{train:['tc','camp','sc','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
   league:{hist:['hist','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','crew','news','media'],chron:['build','chron','result','ob','log']}};
 const ALIAS={}; for(const t in MERGE){ ALIAS[t]={}; for(const v in MERGE[t])for(const k of MERGE[t][v])ALIAS[t][k]=v; } ALIAS.trade.offers='block';
 /* 합친 탭에서 부가 화면은 접어 둔다(제목만 보이고 누르면 펼침) */
 const MFOLD={'trade:find':'선수 찾기','trade:report':'트레이드 성적표','league:teams':'구단 둘러보기','league:feat':'대기록 연표','league:dist':'리그 분포','league:tdata':'구단 지표','league:park':'구장 효과','league:abroad':'해외파','club:rel':'관계도','club:ob':'OB·레전드','club:log':'구단 일지','club:result':'지난 시즌 결산','staff:mil':'병역','staff:coach':'코치진'};
 /* 합쳐진 메뉴는 세로로 쌓지 않고 안쪽 탭으로 나눈다: 한 화면에 한 주제 */
-const MLBL={'staff:tc':'코치 배정','staff:camp':'훈련장','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:crew':'응원단장·치어리더','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
+const MLBL={'staff:tc':'코치 배정','staff:camp':'훈련장','staff:sc':'스프링캠프','staff:lead':'리더십','club:media':'여론·기자','club:fans':'팬 게시판','club:crew':'응원단장·치어리더','club:build':'내가 꾸린 팀','club:news':'우리 구단 기사','club:mkt':'마케팅','trade:market':'추천·영입 요청','trade:gms':'단장들','staff:mgr':'감독','staff:dev':'육성','staff:med':'부상 관리','league:stand':'순위','league:rec':'기록','league:hist':'역사','club:owner':'구단주·목표','club:fin':'재정','club:chron':'연대기'};
 function mergedBody(tab,s,H){ const ks=((MERGE[tab]&&MERGE[tab][s])||[s]).filter(k=>H[k]); if(!ks.length)return H[SUBS[tab][0][0]]?H[SUBS[tab][0][0]]():'';
   const why=ks.map(k=>{ try{ return alertWhy(tab,k); }catch(e){ return ''; } }).join('');
   if(ks.length===1)return why+H[ks[0]]();
   const lab=k=>MLBL[tab+':'+k]||MFOLD[tab+':'+k]||((SUBS[tab].find(x=>x[0]===k)||[])[1])||k;
   const it=inTabs(`mg_${tab}_${s}`,ks.map(k=>[k,lab(k)]),s); return why+it.bar+H[it.cur](); }
-const GW={구장:['club','stad'],감독:['staff','mgr'],코치진:['staff','coach'],외국인선수:['transfer','foreign'],'부상방지·병원':['staff','med'],'2군연수':['staff','dev'],트레이드:['trade','block'],병역:['staff','mil'],비FA다년계약:['transfer','contract'],드래프트후보:['transfer','draft'],스카우트팀:['staff','scouts'],해외스카우트망:['scout','intl'],전력분석:['staff','data'],마케팅:['club','mkt'],일지:['club','log'],연봉협상:['transfer','contract'],신인드래프트:['transfer','draft'],FA시장:['transfer','fa'],시즌결산:['club','result'],스프링캠프:['train','dev'],순위:['league','stand']};
+const GW={구장:['club','stad'],감독:['staff','mgr'],코치진:['staff','coach'],외국인선수:['transfer','foreign'],'부상방지·병원':['staff','med'],'2군연수':['staff','dev'],트레이드:['trade','block'],병역:['staff','mil'],비FA다년계약:['transfer','contract'],드래프트후보:['transfer','draft'],스카우트팀:['staff','scouts'],해외스카우트망:['scout','intl'],전력분석:['staff','data'],마케팅:['club','mkt'],일지:['club','log'],연봉협상:['transfer','contract'],신인드래프트:['transfer','draft'],FA시장:['transfer','fa'],시즌결산:['club','result'],스프링캠프:['staff','sc'],순위:['league','stand']};
 function curSub(tab){ if(tab==='league')return (ALIAS.league[UI.lseg]||UI.lseg); UI.sub=UI.sub||{}; const raw=UI.sub[tab]||SUBS[tab][0][0]; return (ALIAS[tab]&&ALIAS[tab][raw])||raw; }
 function faLive(){ return !!(G.fa&&!G.fa.closed&&(G.fa.open||G.day>=dnum(G.fa.y0??G.year,11,1))); } /* 해가 바뀐 1월에도 열린 시장(검수 11-08 카페 제보: 1월에 FA 예정자 화면이 떠서 미계약 FA와 협상할 수 없던 원인) */
 function subAlert(tab,k){

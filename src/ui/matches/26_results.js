@@ -61,7 +61,7 @@ function busView(){ const t=team(G.user); return csec('구단 버스',`<div clas
 function invView(){ if(fmOn()){ /* PC: 훈련 시설·버스·홈구장을 한 화면(invFM)으로, 신구장은 따로 */ UI.it=UI.it||{}; const m={bus:'bus',home:'stad:seat'}[UI.it.inv]; if(m){ UI.invSel=m; UI.it.inv='train'; }
     const it=inTabs('inv',[['train','시설 현황'],['new','신구장']],'train'); return it.bar+(it.cur==='new'?stadView('new'):invFM()); }
   const it=inTabs('inv',[['train','훈련 시설'],['bus','구단 버스'],['home','홈구장'],['new','신구장']],'train');
-  if(it.cur==='bus')return it.bar+busView(); if(it.cur==='home')return it.bar+stadView('now')+stadView('fac')+`<details class="moreg"><summary><span>리그 관중 비교</span></summary><div class="moreb">${stadView('lg')}</div></details>`; if(it.cur==='new')return it.bar+stadView('new'); return it.bar+facView(); }
+  if(it.cur==='bus')return it.bar+busView(); if(it.cur==='home')return it.bar+stadView('now')+stadView('fac')+`<details class="moreg"><summary><span>리그 관중 비교</span></summary><div class="moreb">${stadView('lg')}</div></details>`; if(it.cur==='new')return it.bar+stadView('new'); return it.bar+facView()+acadCard(); }
 /* PC 시설(FM '구단 정보'의 시설·구장 칸처럼): 왼쪽 위 훈련·육성 시설, 왼쪽 아래 구장 시설·구단 버스(별 + 단계 + 등급 이름 + 리그 순위),
    가운데 위 구장 정보, 가운데 아래 리그 비교(항목당 한 줄 순위 막대), 오른쪽 고른 시설의 효과·다음 단계·투자 버튼. 값은 모두 실제 시설·구장 데이터 */
 function invFM(){ facInit(); try{ aiFacAll(); }catch(e){} const tid=G.user, t=team(tid), F=G.fac, S=stadOf(tid), nb=Object.keys(F.bld).length, tids=G.teams.map(x=>x.id);

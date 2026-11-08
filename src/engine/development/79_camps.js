@@ -21,7 +21,7 @@ function addPitch(p,q){ const have=new Set(arsenalAll(p,p.r.stf).map(x=>x[0])); 
   (p.addP=p.addP||[]).push({k,q:Math.round(q*10)/10,y:G.year}); return k; }
 function campGrow(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
   const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const o0=ovr(p), cap=Math.max(p.pot,o0)+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
-  let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5); let tot=0;
+  let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5)*(kind==='spring'&&p.team!=null?sprcGrowMul(p.team):1); /* 캠프 장소·날씨·훈련 강도(97_spring_camp.js) */ let tot=0;
   /* 확 늘어나는 선수 */ if(p.age<=25&&p.pot-ovr(p)>=4&&R()<(focus==='skill'?.05:.03)*f.will){ amt+=rnd(2,4); ev.push({t:'big'}); }
   if(amt>0){ const w=ks.map(()=>.3+R()); const ws=w.reduce((a,b)=>a+b,0); ks.forEach((k,i)=>{ if(p.r[k]<cap)tot+=addR(p,k,amt*w[i]/ws*(ks.length===3?1.6:1)*coachToolMult(p,k)); }); }
   /* 구종 추가 */ if(p.isP&&p.age<=31){ const pr=kind==='fall'?(focus==='pitch'?.2:.05):(focus==='skill'?.1:.06); const n=arsenal(p,p.r.stf).length; if(n<(isSPr(p)?6:4)&&R()<pr*clamp(f.will,.8,1.2)){ const q=N(-1.5,4)+(f.coach-1)*6; const k=addPitch(p,q); if(k)ev.push({t:'pitch',k,q}); } }
