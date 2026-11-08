@@ -3,16 +3,16 @@
    후보는 연봉, 구단 위상(시장 규모·인기·최근 성적·단장 평판), 연고 지역, 야망을 보고 행선지를 고른다.
    비시즌(11~1월)에는 다른 구단 스태프를 데려올 수 있고, 다른 구단도 우리 스태프에게 손을 뻗는다.
    스태프는 해마다 경험이 쌓여 성장하고(젊을수록), 오래 일하면 충성도가 올라 잘 떠나지 않는다 */
-const ST_SC_N=[3,5], ST_AN_N=[2,4];
+const ST_SC_N=[4,7], ST_AN_N=[2,4];
 function stAttr(s){ if(s.amb==null)s.amb=Math.round(clamp(N(50,20),5,95)); if(s.loy==null)s.loy=20; if(s.age==null)s.age=ri(30,58); return s; }
 function stInit(){ if(G.lgStaff)return G.lgStaff; const L=G.lgStaff={}; for(const t of G.teams){ if(t.id===ME())continue; L[t.id]=stMakeTeam(t); stSync(t.id); }
   for(const s of G.scouts||[]){ stAttr(s); s.loy=Math.max(s.loy,ri(30,55)); } for(const a of anaList()){ stAttr(a); a.loy=Math.max(a.loy,ri(30,55)); } return L; }
 /* AI 구단 스태프 목록(없으면 만든다). 우리 구단은 G.scouts/G.analysts를 쓰므로 null */
 function stTeamL(tid){ if(tid===ME())return null; const L=stInit(); return L[tid]=L[tid]||stMakeTeam(team(tid)); }
-/* 창단 리그라 모든 구단이 우리와 같은 조건(스카우트 3명: 능력 2~3·2·2, 분석원 3명: 능력 2)에서 시작한다.
+/* 창단 리그라 모든 구단이 우리와 같은 조건(스카우트 5명: 능력 2~3·2·2·2·1, 분석원 3명: 능력 2)에서 시작한다.
    그 뒤 해마다 비시즌에 구단 재정·시장 규모에 따라 스태프를 늘리고 바꾼다(stAiHire) */
 function stMakeTeam(t){ const sc=[], an=[];
-  [ri(2,3),2,2].forEach(k=>{ const s=stAttr(mkScout(k)); s.loy=ri(20,70); sc.push(s); });
+  [ri(2,3),2,2,2,1].forEach(k=>{ const s=stAttr(mkScout(k)); s.loy=ri(20,70); sc.push(s); });
   ['opp','trk','vid'].forEach(r=>{ const a=stAttr(mkAnalyst(2,r)); a.loy=ri(20,70); an.push(a); });
   return {sc,an}; }
 /* AI 구단의 스카우트 오차(scoutSd)를 실제 스카우트 실력에서 계산 */
@@ -125,7 +125,7 @@ function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...a
    목표 인원·수준은 구단 재정(보유 현금)·시장 규모·전략으로 정한다. 빈자리는 아무 달에나 채우고, 사람 바꾸기(약한 사람 내보내고 더 나은 사람)는 11~2월에.
    비시즌(11~1월)에는 다른 AI 구단 스태프를 연봉을 올려 빼 오기도 한다. 들어간 연봉은 시즌 결산 지출(스카우트 운영)에 실제로 잡힌다 */
 function stAiPlan(t){ const cash=t.cash||0; const rich=(t.market-1)*2+(t.indie?-.6:0)+clamp(cash/4000,-1,1.2);
-  return {rich,tSc:clamp(3+Math.round(rich+(t.mode==='rebuild'?.6:0)),2,6),tAn:clamp(3+Math.round(rich*.8+(t.mode==='contend'?.6:0)),2,6),payMax:Math.round(clamp(400+rich*220,250,1300))}; }
+  return {rich,tSc:clamp(5+Math.round(rich+(t.mode==='rebuild'?.6:0)),4,8),tAn:clamp(3+Math.round(rich*.8+(t.mode==='contend'?.6:0)),2,6),payMax:Math.round(clamp(700+rich*250,500,1700))}; }
 function stAiPay(S){ return sum(S.sc.map(x=>x.sal||0))+sum(S.an.map(x=>x.sal||0)); }
 function stAiStaff(){ if(G.unemp&&G.user==null)return; const L=stInit(); try{ stBidSettle(); }catch(e){} const m=dobj(G.day).m, off=m>=11||m<=2; const ids=Object.keys(L).map(Number).sort(()=>R()-.5); const moved=[]; let top=0; /* 능력 4 이상은 리그 전체에서 한 달에 한 명만 AI가 데려간다(우리에게도 기회가 남게) */
   for(const tid of ids){ const t=team(tid); if(!t||tid===G.user)continue; const S=L[tid]; const P=stAiPlan(t);
@@ -136,6 +136,6 @@ function stAiStaff(){ if(G.unemp&&G.user==null)return; const L=stInit(); try{ st
     fill('sc'); fill('an');
     /* 비시즌 빼 오기: 부유한 구단이 다른 AI 구단의 능력 4 이상을 노린다 */
     if((m>=11||m<=1)&&P.rich>.4&&R()<.12){ const pool=[]; for(const o in L){ if(+o===tid)continue; for(const x of L[o].sc)if(x.skill>=4)pool.push([+o,x]); } const tg=pick(pool);
-      if(tg&&S.sc.length<6){ const [o,x]=tg; const sal=round5(x.sal*1.3); if(stAiPay(S)+sal<=P.payMax+200&&stScore(x,tid,sal,false)>stScore(x,o,x.sal*1.05,true)){ L[o].sc.splice(L[o].sc.indexOf(x),1); x.sal=sal; x.loy=15; x.since=G.day; S.sc.push(x); stSync(o); moved.push(`${tshort(tid)}, ${tshort(o)} 스카우트 ${x.name} 영입`); try{ wire('스태프',`${tshort(tid)}, ${tshort(o)} 스카우트 ${x.name} 영입`,{tid}); }catch(e){} } } }
+      if(tg&&S.sc.length<8){ const [o,x]=tg; const sal=round5(x.sal*1.3); if(stAiPay(S)+sal<=P.payMax+200&&stScore(x,tid,sal,false)>stScore(x,o,x.sal*1.05,true)){ L[o].sc.splice(L[o].sc.indexOf(x),1); x.sal=sal; x.loy=15; x.since=G.day; S.sc.push(x); stSync(o); moved.push(`${tshort(tid)}, ${tshort(o)} 스카우트 ${x.name} 영입`); try{ wire('스태프',`${tshort(tid)}, ${tshort(o)} 스카우트 ${x.name} 영입`,{tid}); }catch(e){} } } }
     stSync(tid); }
   return moved; }

@@ -209,3 +209,9 @@ button.st-n:hover b{text-decoration:underline}
 .cmk-det>summary::after{content:'▾';margin-left:auto;color:var(--muted)}.cmk-det[open]>summary::after{content:'▴'}
 @media(max-width:899px){.cmk-cur{padding:6px 8px}}
 .cmk-v .cmk-fire{margin-left:auto;color:var(--bad);font-size:11px;padding:1px 6px}
+/* 스태프 시장 동향: 우리 코치 영입 제안 · 최근 이동 소식(11-08c) */
+.smk-pulse{border:1px solid var(--line,#2a323c);border-radius:8px;padding:8px 10px;margin:0 0 10px;display:grid;gap:6px;min-width:0}
+.smk-raid{display:grid;gap:4px;padding:6px 0;border-bottom:1px dashed var(--line,#2a323c)}
+.smk-raid .row{flex-wrap:wrap;gap:6px}
+.smk-news{margin:0;padding-left:16px;display:grid;gap:2px;font-size:13px}
+.smk-news li{overflow-wrap:anywhere}

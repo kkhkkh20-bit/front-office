@@ -23,7 +23,7 @@ const SC_CAR=['전 프로 투수','전 프로 포수','전 프로 내야수','�
 function mkScout(skill){ const region=pick(REG); const x=R(); const spec=x<.4?'P':x<.75?'B':null; return staffAttach({id:'s'+Math.floor(R()*1e9),name:genName(),skill,region,role:'am',since:-999,sal:SCOUT_SAL[skill],spec,car:pick(SC_CAR),age:ri(31,63)},'scout'); }
 function scSd(sc,p){ if(!sc)return SCOUT_SD[0]*netSdM(p); const b=sc.spec&&p&&((sc.spec==='P')===!!p.isP)?1:0; return SCOUT_SD[clamp(sc.skill+b,0,5)]*staffScoutFactor(sc,p)*netSdM(p); } /* 아마추어 후보는 권역 정보망만큼 오차가 줄거나 는다(12_scout_area) */
 /* 스카우트 업무: 아마추어(지역) · 프로(지역 연고 구단) · 해외(나라) 중 하나를 맡는다. 바꾸면 30일 적응 기간 동안 능력이 1 낮다. */
-const SCOUT_MAX=6;
+const SCOUT_MAX=8;
 /* 스카우트 한도: 피칭·타격 랩(데이터 시설) 4단계부터 1명, 6단계에 1명 더(커뮤니티 요청 11-07) */
 function scoutMax(){ const l=typeof facOf==='function'?facOf('lab'):0; return SCOUT_MAX+(l>=4?1:0)+(l>=6?1:0); }
 const SROLE={am:'아마추어',pro:'프로',intl:'해외'};

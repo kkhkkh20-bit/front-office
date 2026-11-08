@@ -89,7 +89,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   try{ draftPressNews(day); }catch(e){} try{ ovsStoryDaily(); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
   if(o.w===1)try{ tbWeek(); }catch(e){} if(G.cal&&day===G.cal.end+1)try{ tbWeek(true); }catch(e){}
-  try{ stDaily(); }catch(e){}
+  try{ stDaily(); }catch(e){} try{ cmDaily(); }catch(e){}
   try{ ivDaily(); }catch(e){}
   try{ fanPulseDaily(); }catch(e){} try{ truckWeekly(); }catch(e){}
   try{ cwDaily(); }catch(e){} try{ aiPlanDaily(); }catch(e){} try{ achFirstDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}

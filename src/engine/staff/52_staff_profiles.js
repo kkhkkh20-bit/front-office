@@ -42,7 +42,7 @@ function coachToolV(p,k){
 }
 function coachToolMult(p,k){return clamp(1+(coachToolV(p,k)-55)/200,.85,1.18);}
 function coachBatteryPlan(tid){if(tid==null||!G.coach)return 0;const c=coachesOf(tid).cc;if(!c)return -.2;const a=cAb(c);return clamp(((a.cat*.6+a.ana*.25+a.ctl*.15+(effC(c,tid)-c.sk))*staffQuality(c,'coach',tid)-55)*.025,-.75,.75);}
-function coachRunAdj(tid){if(tid==null||!G.coach)return 0;const c=coachesOf(tid).rc;if(!c)return -.01;const a=cAb(c);return clamp(((a.spd*.65+a.ana*.2+a.com*.15+(effC(c,tid)-c.sk))*staffQuality(c,'coach',tid)-55)*.0012,-.035,.035);}
+function coachRunAdj(tid){if(tid==null||!G.coach)return 0;const f=c=>{if(!c)return 47;const a=cAb(c);return (a.spd*.65+a.ana*.2+a.com*.15+(effC(c,tid)-c.sk))*staffQuality(c,'coach',tid);};const C=coachesOf(tid);if(!C.rc)return -.01;return clamp((f(C.rc)*.8+(C.r1===undefined?f(C.rc):f(C.r1))*.2-55)*.0012,-.035,.035);} /* 1루 주루코치가 20% 몫(11-08c) */
 /* 진루는 보내기/정지와 송구 승부를 분리한다. 강제 진루·홈런에는 적용하지 않는다. */
 function runAdvance(r,fs,ctx,roll){
   /* 사전 기록 생성처럼 코치진 구성 전인 단계는 검증된 중립 진루 모형을 유지한다. */

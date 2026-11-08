@@ -88,7 +88,7 @@ function faceSVG(o){ { const k=cimgKey(o); if(k&&typeof G!=='undefined'&&G&&G.ci
 }
 function offseasonMgr(){
   try{ obYear(); }catch(e){}
-  if(G.coach){ coachYear(); try{ if(!G.unemp)asstYear(); }catch(e){} } try{ gmTurnover(); }catch(e){} try{ mgrFireOff(); }catch(e){}
+  if(G.coach){ coachYear(); try{ if(!G.unemp)asstYear(); }catch(e){} } try{ schYear(); }catch(e){} /* 코치 시장을 새로 짠 뒤 고교 감독 후보를 올린다 */ try{ gmTurnover(); }catch(e){} try{ mgrFireOff(); }catch(e){}
   for(const t of G.teams){ const m=G.mgr[t.id]; if(!m)continue; if(m.age)m.age++; if(m.cs!=null&&m.cs>G.year)continue; /* 시즌이 끝난 뒤 맺은 계약은 다음 시즌부터 센다 */ m.yrs--;
     if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<70&&R()<.6)staffCt(m,2,G.year+1); else { const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrHire(t); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ staffCt(n,n.yrs||ri(2,3),G.year+1); G.mgr[t.id]=n; n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){ staffCt(c,n.yrs,G.year+1); G.coach[t.id][c.role]=c; } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
   refreshMgrMarket();
