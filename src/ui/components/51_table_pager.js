@@ -144,7 +144,7 @@ function workspaceFit(host){
 const wsMain=el=>el&&el.classList&&(el.matches('.ws-scroll,.ws-own')&&el.closest('#app main.ws-frame')||el.matches('.ibx-list,article.ibm')&&el.closest('#app main.inbox-workspace'));
 const wsMobile=()=>matchMedia('(max-width:699px) and (min-height:600px)').matches;
 function wsMax(main,el){ const w=main.parentElement; if(!w)return 0; const y=main._wsy||0, pan=el.closest('.ws-panel')||el; const top=w.getBoundingClientRect().top; return Math.max(0,Math.round(pan.getBoundingClientRect().top+y-top)); }
-function wsSet(main,y){ main._wsy=y; main.style.marginTop=y?(-y)+'px':''; main.classList.toggle('ws-slid',y>0); if(y===0||y>=(main._wsMx||1e9))main._wsHold=false; }
+function wsSet(main,y){ main._wsy=y; main.style.marginTop=y?(-y)+'px':''; main.style.height=y?`calc(100% + ${y}px)`:''; /* 위로 밀린 만큼 아래도 늘려 바닥에 빈칸이 생기지 않게(사용자 11-08 소식함) */ main.classList.toggle('ws-slid',y>0); if(y===0||y>=(main._wsMx||1e9))main._wsHold=false; }
 if(typeof addEventListener!=='undefined'){
   addEventListener('scroll',e=>{ const el=e.target, main=wsMain(el); if(!main||!wsMobile())return; const st=el.scrollTop, last=el._wsLast??st; el._wsLast=st; let y=main._wsy||0;
     if(!y)main._wsMx=wsMax(main,el); const mx=main._wsMx||0;

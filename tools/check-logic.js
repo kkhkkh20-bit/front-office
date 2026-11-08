@@ -2162,6 +2162,10 @@ T('[피드백 11-08] 스카우트 지역 정보망: 연고 권역이 가장 높�
 T('[피드백 11-08] 1군 엔트리에 포수는 2명 이상: 백업 포수를 내려도 감독이 다시 채우고, 주간 정리에서도 내리지 않는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const tid=G.user; const C=playersOf(tid).filter(p=>p.e1&&p.pos==='C'&&!p.isP);
   ok(C.length>=2,'개막 엔트리 포수 '+C.length); for(const p of C.slice(1)){ p.e1=false; p.downDay=G.day-20; } entryManage(tid,true,true); const n=playersOf(tid).filter(p=>p.e1&&p.pos==='C'&&!p.isP).length; ok(n>=2,'다시 채운 포수 '+n); ok(playersOf(tid).filter(p=>p.e1).length<=entryLimit(),'엔트리 인원 초과');
   for(let i=0;i<4;i++)entryManage(tid,true,true); ok(playersOf(tid).filter(p=>p.e1&&p.pos==='C'&&!p.isP).length>=2,'주간 정리 뒤 포수 부족'); });
+T('[피드백 11-08] 새 도전과제: 포스팅·신구장·1000경기가 조건대로 열린다',()=>{ fresh(); const U=G.user; G.ach={}; achFirstDaily(); ok(!achHas('post1')&&!achHas('stadNew'),'조건 없이 열림');
+  G.abroad=[{id:-1,name:'시험',from:U,how:'포스팅',club:'시험 구단',y:G.year,foreign:null}]; achFirstDaily(); ok(achHas('post1'),'포스팅 과제 안 열림');
+  const S=stadOf(U); S.names=[{until:G.day,n:'옛 구장'}]; S.built=G.year; S.proj=null; achFirstDaily(); ok(achHas('stadNew'),'신구장 과제 안 열림');
+  G.gmTen={tid:U,g:1000}; achCheck({}); ok(achHas('gm1000'),'1000경기 과제 안 열림'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

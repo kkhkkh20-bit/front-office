@@ -87,3 +87,8 @@
 }
 
 @media(max-width:699px) and (min-height:600px){ #app main.ws-frame,#app main.inbox-workspace{position:relative;z-index:1;background:var(--bg,#0d1117);will-change:margin-top} #app .wrap:has(>main.ws-slid){overflow:hidden} } /* 머리가 밀려 올라가는 동안 위 제목 줄 위로 덮는다 */
+/* 스스로 스크롤하는 칸 안의 표 머리는 칸 맨 위에 붙는다(화면 머리 높이만큼 내려 붙어 줄 사이에 뜨던 문제, 사용자 11-08 연봉 순위) */
+#app main.ws-frame :is(.ws-scroll,.ws-own,.tw) :is(.tw,.fdt-w).twp thead th,#app main.ws-frame :is(.tw,.fdt-w).twp thead th{top:0}
+/* 휴대폰: 목록 칸 전체가 옆으로 밀리지 않게(넓은 표는 열 묶음 넘기기·표 자체 가로 스크롤로 본다, 사용자 11-08 연봉 순위) */
+@media(max-width:699px){ #app main.ws-frame .ws-scroll{overflow-x:hidden!important;overflow-y:auto!important} #app main.ws-frame .ws-scroll .tw{overflow-x:auto;max-width:100%} }
+@media(max-width:699px){ #app main.ws-frame .ws-scroll table.sal-t{width:100%;min-width:0}#app main.ws-frame .ws-scroll table.sal-t td.small{white-space:normal}#app main.ws-frame .ws-scroll table.sal-t .candidate-name{min-width:0} }

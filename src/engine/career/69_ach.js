@@ -48,6 +48,13 @@ const ACH=[
   {id:'gg3',c:'선수',n:'골든글러브 군단',d:'한 해에 우리 선수 3명 이상이 골든글러브를 받습니다.',r:null},
   {id:'gg5',c:'선수',n:'우리가 키운 별',d:'우리가 지명한 선수의 골든글러브가 통산 5개.',r:{trust:2},p:T=>[T.ggMine,5]},
   {id:'retNo',c:'선수',n:'영구결번',d:'우리 구단의 등번호를 영구결번합니다.',r:null},
+  {id:'sea50',c:'선수',n:'대기록의 해',d:'우리 선수가 시즌 50홈런·200안타·20승·40세이브 가운데 하나를 해냅니다.',r:null},
+  {id:'youth5',c:'선수',n:'우리가 키운 주전',d:'우리가 지명한 선수 5명 이상이 한 시즌 주전 라인업에 섭니다.',r:{trust:2,title:'육성의 명가'}},
+  {id:'post1',c:'선수',n:'해외로 보낸 꿈',d:'우리 선수를 포스팅으로 해외 리그에 보냅니다.',r:{rep:1}},
+  {id:'legendMgr',c:'경력',n:'레전드의 귀환',d:'우리 구단 레전드 출신이 우리 구단 감독으로 시즌을 치릅니다.',r:{title:'레전드를 부른 단장'}},
+  {id:'turn',c:'경력',n:'구원투수',d:'직전 시즌 8위 이하였던 구단을 맡아 두 시즌 안에 가을야구에 나갑니다.',r:{rep:2,title:'구원투수'}},
+  {id:'gm1000',c:'경력',n:'1000경기',d:'한 구단에서 단장으로 1000경기를 치릅니다.',r:{trust:2},p:()=>[G.gmTen&&G.gmTen.tid===G.user?G.gmTen.g:0,1000]},
+  {id:'stadNew',c:'재정',n:'새 집',d:'신구장을 지어 문을 엽니다.',r:{cash:500}},
   {id:'profit5',c:'재정',n:'흑자 경영',d:'흑자 시즌 5번.',r:{cash:500},p:T=>[T.profit,5]},
   {id:'cash200',c:'재정',n:'곳간',d:'시즌을 마칠 때 구단 현금 200억 원 이상.',r:null},
   {id:'trade10',c:'트레이드',n:'협상가',d:'트레이드 10건.',r:null,p:()=>[(G.trades||[]).filter(t=>t.gi).length,10]},
@@ -79,6 +86,8 @@ function achFirstDaily(){ if(!G||G.user==null||G.unemp)return; const U=G.user; c
   if(miss('fLead')&&r&&r.w+r.l>=10){ const st=standingsNow(); if(st[0]&&st[0].tid===U)achUnlock('fLead',`${r.w}승 ${r.l}패`); }
   if(miss('fFac')&&G.fac&&G.fac.dn&&Object.keys(G.fac.dn).length)achUnlock('fFac');
   if(miss('fTrade')&&(G.trades||[]).some(t=>t.gi))achUnlock('fTrade');
+  if(miss('post1')){ const a=(G.abroad||[]).find(x=>x.from===U&&!x.foreign&&/포스팅/.test(x.how||'')&&x.y>=(G.gmSince??0)); if(a)achUnlock('post1',`${a.name} → ${a.club||a.lg}`); }
+  if(miss('stadNew')){ const S=G.teams[U]&&G.teams[U].stad; if(S&&S.names&&S.names.length&&S.built>=(G.gmSince??9999)&&!S.proj)achUnlock('stadNew',`${S.built}년 개장`); }
   if(miss('fDebut')&&period()==='season'){ const p=playersOf(U).find(q=>{ const h=seasonTotalT(q,G.year,'1군',U); if(!h||!((h.pa||0)+(h.outs||0)))return false; return !q.hist.some(x=>x.lvl==='1군'&&(x.y<G.year||x.t!==U)&&((x.pa||0)+(x.outs||0))>0); }); /* 같은 해 다른 팀 1군 기록도 데뷔로 본다 */ if(p)achUnlock('fDebut',`${p.name}, ${posLabel(p)}`); } }
 /* ctx.k: season(결산 직후), award(시상식), retNo(영구결번), switch(구단 이동), assoc(협회 결과) */
 function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT(); const U=G.user;
@@ -94,6 +103,10 @@ function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT();
       const pr=G.proj?G.proj.indexOf(U)+1:0; if(pr>=8)achUnlock('under',`시즌 전 예상 ${pr}위.`);
       if(t.indie)achUnlock('indie'); if(!T.taxed)achUnlock('noTax'); }
     if(rec&&rec.w>=90)achUnlock('w90',`${rec.w}승.`);
+    { const big=playersOf(U).find(p=>p.sct&&p.sct.y===y&&(p.sct.hr>=50||p.sct.h>=200||p.sct.w>=20||p.sct.sv>=40)); if(big)achUnlock('sea50',`${y} ${big.name}`); }
+    { let d=null; try{ d=depth(U); }catch(e){} const n=d?d.start.filter(p=>p.draft&&p.draft.tid===U).length:0; if(n>=5)achUnlock('youth5',`${y} 주전 ${n}명이 우리 지명 선수.`); }
+    { const m=G.mgr[U], ob=m&&m.ob&&(G.ob||[]).find(o=>o.id===m.ob); if(ob&&ob.team===U)achUnlock('legendMgr',`${m.name} 감독.`); }
+    if(inPs&&G.gmSince!=null&&y<=G.gmSince+1){ const H=(G.history||[]).find(h=>h.y===G.gmSince-1); const i=H&&H.order?H.order.findIndex(o=>(o.tid??o)===U):-1; if(i>=7)achUnlock('turn',`${G.gmSince-1}년 ${i+1}위 → ${y}년 가을야구.`); }
     if(fin&&t.cash>=20000)achUnlock('cash200');
     if((G.rep??0)>=80)achUnlock('rep80');
     for(const tr of (G.trades||[]).filter(x=>x.gi&&x.y<y)){ let r=null; try{ r=tradeReport(tr); }catch(e){} if(r&&r.net>=8){ achUnlock('steal',`${tr.y}년 ${tshort(tr.with)}와의 트레이드: 받은 쪽 WAR ${r.got.toFixed(1)}, 준 쪽 ${r.gave.toFixed(1)}.`); break; } } }
