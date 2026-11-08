@@ -72,7 +72,7 @@ Object.assign(A,{
 Object.assign(A,{ advAskTog(){ G.advAsk=!G.advAsk; save(); render(); } });
 
 /* 드래프트 상황판(휴대폰): 맡기기 메뉴 열기·상황판 접기 */
-Object.assign(A,{ tkDel(){ UI.tkDel=!UI.tkDel; render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??false); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
+Object.assign(A,{ tkDel(){ UI.tkDel=!(UI.tkDel??true); /* 휴대폰도 처음엔 맡기기 펼침: 지명 이탈이 휴대폰에서 더 컸다(GA 11-08) */ render(); }, tkMin(){ UI.tkMin=!(UI.tkMin??false); render(); }, tkMenu(){ UI.tkMenu=!UI.tkMenu; render(); } });
 
 /* 단장 사진을 갤러리에서(사용자 요청 11-05): 가운데를 정사각형으로 잘라 256px JPEG로 줄여 저장에 넣는다(약 20KB). 서버로 보내지 않는다 */
 Object.assign(A,{ gpImgDel(){ const g=gpSync(); delete g.img; render(); } });
