@@ -91,11 +91,10 @@ function draftPickOrder(){ // 드래프트 전: 실제 드래프트와 같은 �
   const st=G.history.length?G.history[G.history.length-1].order:standingsNow(); const o1=[...st].reverse().map(o=>o.tid);
   for(const t of G.teams){ if(t.pickPen!==G.year)continue; const i=o1.indexOf(t.id); if(i<0)continue; o1.splice(i,1); o1.splice(Math.min(o1.length,i+9),0,t.id); }
   return o1.map((tid,i)=>({tid,rd:1,no:i+1})); }
-function mockPick(tid,pool){ const need=draftNeed(tid); let best=null,bs=-1e9; /* 상대 구단은 실제 AI 지명과 같은 평가로(우리 스카우트 평가와 무관, 검수 11-06) */
-  for(const id of pool){ const sc=aiDraftScore(tid,G.players[id],need); if(sc>bs){bs=sc;best=id;} } return best; }
+function mockPick(tid,pool,rd,proj){ return aiDraftChoose(tid,[...pool],rd||1,proj||0); } /* 상대 구단은 실제 AI 지명과 같은 평가·같은 패스 조건으로(검수 11-06, 11-09d) */
 function mockDraft(n){ // 우리 다음 순번 전까지(드래프트 전에는 1라운드) 다른 구단 지명 예상
   const d=G.draft; const live=d&&!d.done; const pool=new Set((live?d.cls:G.draftClass||[]).filter(id=>G.players[id]&&G.players[id].prospect)); const out=[];
-  if(live){ let i=d.cur+(d.picks[d.cur].tid===G.user?1:0); for(;i<d.picks.length&&out.length<(n||12);i++){ const pk=d.picks[i]; if(pk.tid===G.user)break; const id=mockPick(pk.tid,pool); if(id==null)break; pool.delete(id); out.push({pk,id}); } }
+  if(live){ const ex={}; /* 모의로 뽑은 만큼 예상 인원에 더한다 */ let i=d.cur+(d.picks[d.cur].tid===G.user?1:0); for(;i<d.picks.length&&out.length<(n||12);i++){ const pk=d.picks[i]; if(pk.tid===G.user)break; const id=mockPick(pk.tid,pool,pk.rd,rosterProj(pk.tid)+(ex[pk.tid]||0)); if(id===-1)continue; if(id==null)break; ex[pk.tid]=(ex[pk.tid]||0)+1; pool.delete(id); out.push({pk,id}); } }
   else { for(const pk of draftPickOrder()){ const id=mockPick(pk.tid,pool); if(id==null)break; pool.delete(id); out.push({pk,id,mine:pk.tid===G.user}); } }
   return out; }
 

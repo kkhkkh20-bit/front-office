@@ -8,6 +8,8 @@ function mreqAdd(k,data,until){ const r={id:'r'+(G.mreqSeq=(G.mreqSeq||0)+1),k,d
 function mgrSays(m){ return `${m.name} 감독`; }
 function mreqAsk(r,title,sit,opts,def,face){ const m=G.mgr[G.user]; evNew('mreq',title,sit,opts,{from:'감독실',face:null,ref:face??null,data:{rid:r.id},def:def??opts.length-1,exp:7}); }
 const DPOL={P:'투수 위주',C:'포수',IF:'내야수',OF:'외야수',HS:'고졸 유망주',COL:'대졸 즉시 전력'};
+/* 감독 드래프트 기조: 수락한 그 구단·그해에만(검수 11-09d: 이직 뒤에도 전 구단 기조가 남음) */
+function draftPolK(){ const P=G.draftPol; return P&&P.y===G.year&&P.tid===G.user&&!G.unemp?P.k:null; }
 function draftFit(p,k){ if(!k||!p)return false; return k==='P'?p.isP:k==='C'?p.pos==='C':k==='IF'?['1B','2B','3B','SS'].includes(p.pos)&&!p.isP:k==='OF'?['LF','CF','RF'].includes(p.pos)&&!p.isP:k==='HS'?!p.college:k==='COL'?p.college:false; }
 /* 매주: 새 요청을 꺼내고, 진행 중인 요청을 점검한다 */
 function mreqWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||G.gameOver||G.unemp)return; mgrFix(m); mreqCheck();
@@ -19,7 +21,7 @@ function mreqWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||G.gameOver||G.unem
   if(per==='season'&&G.day>G.cal.open+25&&!open.some(r=>r.k==='out')){ const bad=domestic(G.user).filter(p=>{ if(p.ys||p.age<29)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return p.isP?(h.outs>=60&&pRate(h).era>6):(h.pa>=90&&bRate(h).ops<.600); }).sort((a,b)=>b.sal-a.sal)[0]; if(bad&&!mreqs().some(r=>r.k==='out'&&r.data.pid===bad.id))C.push(['out',bad,.8+(m.disc-50)/80]); }
   if(per==='season'&&G.day<=foreignDL()&&!open.some(r=>r.k==='frep')){ const f=foreignOf(G.user).find(p=>{ if(fReplLeft(G.user,p.foreign)<=0)return false; const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=90&&pRate(h).era>5.4):(h.pa>=130&&bRate(h).ops<.690)); }); if(f)C.push(['frep',f,1]); }
   if((per==='season'&&tradeOpen()||G.fa&&G.fa.open&&!G.fa.closed)&&!open.some(r=>r.k==='fit')&&G.day-(G.mgrFitD??-99)>=50){ const nd=mgrNeedRole(G.user); if(nd)C.push(['fit',nd,1.3+(m.ego-50)/80]); }
-  if(G.day>=KD(8,20)&&G.day<KD(9,10)&&!mreqs().some(r=>r.k==='draft'&&r.y===G.year))C.push(['draft',null,3]);
+  if(G.day>=KD(8,20)&&G.day<KD(9,10)&&!mreqs().some(r=>r.k==='draft'&&r.y===G.year&&(r.tid==null||r.tid===G.user)))C.push(['draft',null,3]); /* 이직한 구단 감독은 따로 낸다 */
   if(G.fa&&G.fa.open&&!G.fa.closed&&!mreqs().some(r=>r.k==='fa'&&r.y===G.year))C.push(['fa',null,3]);
   if(!C.length||R()>.45)return; let x=R()*sum(C.map(c=>Math.max(.2,c[2]))); for(const c of C){ x-=Math.max(.2,c[2]); if(x<=0){ mreqMake(c[0],c[1]); return; } } }
 /* 현실적으로 데려오기 어려운 선수: 그 구단 핵심(능력 상위 3명)·프랜차이즈 스타·트레이드 거부권 보유·우리 상한 여유로 감당 못 할 연봉(커뮤니티 피드백 11-07: 다른 구단 간판을 자꾸 요구) */
@@ -68,7 +70,7 @@ EVH.mreq={ pick(e,i){ const r=mreqs().find(x=>x.id===e.data.rid); const m=G.mgr[
       r.st='no'; p.mor=clamp((p.mor??60)+5,0,100); return `${p.name}에게 기회를 더 줍니다(기분 +5). `+neg(m.ego>=70?5:3); }
     if(r.k==='frep'){ if(i===0){ r.st='open'; return `${dmd(r.until)}까지 교체를 추진합니다(기존 선수 정리 + 새 외국인 영입). 외국인 시장과 관찰 명단을 확인하세요.`; } r.st='no'; return neg(3); }
     if(r.k==='fa'){ if(i===0){ r.st='open'; return 'FA 협상에 나섭니다.'; } r.st='no'; return neg(2); }
-    if(r.k==='draft'){ if(i===0){ r.st='open'; G.draftPol={y:G.year,k:r.data.pol}; return `드래프트 기조: ${DPOL[r.data.pol]}.`; } r.st='no'; G.draftPol=null; return neg(1); }
+    if(r.k==='draft'){ if(i===0){ r.st='open'; G.draftPol={y:G.year,k:r.data.pol,tid:G.user}; return `드래프트 기조: ${DPOL[r.data.pol]}.`; } r.st='no'; if(draftPolK())G.draftPol=null; /* 다른 구단 기조는 건드리지 않는다 */ return neg(1); }
     return ''; } };
 /* 약속을 지켰는지 */
 function mreqCheck(){ const m=G.mgr[G.user]; if(!m)return; for(const r of mreqs()){ if(r.st!=='open')continue; if((r.mid!=null&&r.mid!==m.id)||(r.tid!=null&&r.tid!==G.user)){ r.st='void'; continue; } /* 그 감독·그 구단과 한 약속 */ let ok=false, fail=false;

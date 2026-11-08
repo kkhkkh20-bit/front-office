@@ -30,7 +30,7 @@ function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; i
 
 /* 창단 지명 평가: 우리 지명 선수별 지명 때 추정 → 지금 코치진 평가 범위, 올해 기록, 중간·첫해 평가 */
 function fdEvalView(){ const F=G.fd; if(!F||!F.done)return csec('창단 지명 평가','<p class="small muted">창단 드래프트가 끝나면 볼 수 있습니다.</p>');
-  const E=G.fdEval||{}; const ev=E.end||E.mid||null; const isEnd=!!E.end; const Rm=new Map(ev?ev.rows.map(r=>[r.pid,r]):[]);
+  const ev=fdEvOf('end')||fdEvOf('mid'); const isEnd=!!ev&&ev===fdEvOf('end'); const Rm=new Map(ev?ev.rows.map(r=>[r.pid,r]):[]);
   const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]).map(x=>({x,p:G.players[x.pid]}));
   const w0=fdEsd()*1.15+.8;
   const head=ev?`${isEnd?`${ev.y} 정규시즌 뒤 첫해 평가`:`${ev.y} 7월 1일 중간 평가`} 기준입니다. 같은 순번대(앞뒤 8순번) 지명자들이 그해 1군에서 낸 WAR과 비교했습니다.${isEnd?'':' 첫해 평가는 정규시즌이 끝난 다음 날 나옵니다.'}`

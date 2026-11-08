@@ -3,7 +3,7 @@ function draftYears(){ const S=new Set(Object.keys(G.dlog||{}).map(Number)); for
 function draftHist(ys){ const y=UI.dhy&&ys.includes(UI.dhy)?UI.dhy:ys[0]; const L=draftClass(y); const yrs=G.year-y;
   const chips=`<div class="chips">${ys.map(v=>`<button data-a="dhy" data-v="${v}" class="${v===y?'on':''}">${v}</button>`).join('')}</div>`;
   const g=draftGrades(y); const rk=g.findIndex(x=>x.t===G.user)+1; const mine=L.filter(x=>x.t===G.user).sort((a,b)=>a.n-b.n); const mw=mine.reduce((a,x)=>a+x.war,0);
-  const best=[...L].filter(x=>x.p).sort((a,b)=>b.war-a.war).slice(0,10);
+  const best=[...L].sort((a,b)=>b.war-a.war).slice(0,10);
   const row=x=>`<tr class="${x.t===G.user?'me':''}"><td class="num">${x.rd}-${x.no}</td><td>${x.t!=null?badge(x.t,14):''}</td><td style="text-align:left">${x.p?`<button class="lnk" data-a="player" data-v="${x.id}">${esc(x.nm)}</button>`:`${esc(x.nm)} <span class="small muted">은퇴</span>`}<br><span class="small muted">${esc(x.pos||'')}${x.p&&x.now!=null&&x.now!==x.t?` · 현 ${esc(tshort(x.now))}`:''}</span></td><td class="num">${x.p?rchip(scoutReport(x.p).cur):'-'}</td><td class="num">${x.war.toFixed(1)}</td></tr>`;
   const tbl=rows=>`<table><thead><tr><th>순번</th><th></th><th style="text-align:left">선수</th><th>능력</th><th>통산 WAR</th></tr></thead><tbody>${rows.map(row).join('')}</tbody></table>`;
   const grade=rk?(rk<=2?'A':rk<=4?'B':rk<=7?'C':'D'):'-';
