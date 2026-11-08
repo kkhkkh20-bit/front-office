@@ -69,9 +69,9 @@ function warKey(h){ return h.y+':'+(h.lvl||'')+':'+(h.t??'')+':'+(h.pa||0); }
 function ppTop(pp){ let k=null,v=-1; for(const x in pp||{})if(pp[x]>v){ v=pp[x]; k=x; } return k; }
 function ppMerge(a,b){ if(!a&&!b)return undefined; const o=Object.assign({},a||{}); for(const k in b||{})o[k]=(o[k]||0)+b[k]; return o; }
 function warOf(h,p){ if(!h||!p)return 0; if(p.arch&&h.war!=null)return h.war; /* 보관 선수는 보관할 때 저장한 WAR(기본 능력으로 다시 계산하지 않는다, 검수 11-07) */ if(p.isP||!h.pa||h.y==null||h.y2)return warRaw(h,p);
-  const pre=h.y<(G.startY??-1); if(!pre&&h.y>=G.year)return warRaw(h,p);
+  const pre=h.y<(G.startY??-1); if(!pre&&h.y>=G.year&&G.warFz!==h.y)return warRaw(h,p); /* 정규시즌이 끝나 고정한 해는 고정값(마무리캠프로 바뀌지 않게, 검수 11-08) */
   p.pw=p.pw||{}; const k=warKey(h); if(p.pw[k]==null){ const old=pre?p.pw[h.y+':'+(h.lvl||'')]:null; /* 이전 저장 형식 */ p.pw[k]=old!=null?old:Math.round((pre?fdWar(p,h):warRaw(h,p))*100)/100; } return p.pw[k]; }
-function warFreeze(y){ for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; const L=p.hist.filter(h=>h.y===y&&!h.y2&&h.pa); if(!L.length)continue; p.pw=p.pw||{};
+function warFreeze(y){ G.warFz=y; for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; const L=p.hist.filter(h=>h.y===y&&!h.y2&&h.pa); if(!L.length)continue; p.pw=p.pw||{};
   const lv=[...new Set(L.map(h=>h.lvl))]; for(const h of L.concat(lv.map(l=>seasonTotal(p,y,l)).filter(Boolean))){ const k=warKey(h); if(p.pw[k]==null)p.pw[k]=Math.round(warRaw(h,p)*100)/100; } } }
 function warRaw(h,p){
   if(!h)return 0; const lg=lgOf(h.y);

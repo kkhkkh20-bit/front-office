@@ -7,9 +7,9 @@ function ggCandidate(x,pos){
   const mark=(yes,n,v)=>{if(yes){milestones.push(n);milestone+=v;}};
   if(p.isP){mark((h.w||0)>=20,'20승',1.6);mark((h.so||0)>=200,'200탈삼진',.5);mark((h.sv||0)>=40,'40세이브',.8);}
   else{mark((h.h||0)>=200,'200안타',1.5);mark((h.hr||0)>=40,'40홈런',.8);mark((h.hr||0)>=30&&(h.sb||0)>=30,'30홈런·30도루',1.1);}
-  let rank=5;try{rank=G.ps.order.findIndex(t=>t.tid===p.team);}catch(e){}
+  const tt=awTeamOf(p,h); /* 성적을 낸 구단: MVP 후보(awCand)와 같은 기준(검수 11-08) */ let rank=5;try{rank=G.ps.order.findIndex(t=>t.tid===tt);}catch(e){}
   const merit={war:x.w,record,milestone,domestic:p.foreign?0:.25,team:rank>=0&&rank<3?.2:0};
-  return {id:p.id,name:p.name,t:p.team,line:statLine(h,p),w:+x.w.toFixed(1),s:x.w*.65+record+milestone+merit.domestic+merit.team,merit,milestones,pos,v:0};
+  return {id:p.id,name:p.name,t:tt,line:statLine(h,p),w:+x.w.toFixed(1),s:x.w*.65+record+milestone+merit.domestic+merit.team,merit,milestones,pos,v:0};
 }
 function ggReporterVote(cands,voters,seats,y){
   cands.forEach(c=>c.v=0);const ballots=[];

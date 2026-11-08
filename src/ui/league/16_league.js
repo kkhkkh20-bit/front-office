@@ -54,7 +54,7 @@ function recView(){
   if(seg==='team')return head+teamRecCard();
   if(seg==='top')return head+(fmOn()?recFm(rows,y):leaderTiles(rows,y));
   const pit=seg==='pit'; const f=UI.lrf||{q:true,t:'all'};
-  let R=rows.filter(x=>x.p.isP===pit&&(f.t==='all'||(f.t==='me'?x.h.t===G.user||x.p.team===G.user:String(x.h.t)===f.t)));
+  let R=(f.t==='all'?rows:playerRowsT(y,f.t==='me'?G.user:+f.t,true)).filter(x=>x.p.isP===pit); /* 구단 필터는 그 구단 성적만(검수 11-08) */
   /* 규정 기준은 비율 기록(타율·OPS·ERA 등) 순위에만 건다. 홈런·타점 같은 누적 기록은 타석 수와 관계없이 모두 보여 준다 */
   const RATE=pit?['era','whip','k9','bb9']:['avg','bbk','babip','obp','slg','ops','wrc']; const sk=((UI.ls||{})[pit?'pit':'bat']||{k:pit?'era':'ops'}).k; const rateSort=RATE.includes(sk);
   if(f.q&&rateSort)R=R.filter(x=>isQual(x,y));
@@ -74,7 +74,7 @@ function leaderTiles(rows,y){
   const T=leaderCats(rows,y);
   const tile=([l,arr,v,f])=>{ const s=[...arr].sort((a,b)=>v(b)-v(a)).slice(0,5); if(!s.length)return ''; const fm=f||v; const a=s[0];
     return `<div class="ltile"><div class="lh">${l}</div><button class="l1${(a.h.t??a.p.team)===G.user?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p,true)}<span><b>${esc(a.p.name)}</b><i>${badge(a.h.t??a.p.team,14)} ${(a.h.t??a.p.team)!=null?esc(team(a.h.t??a.p.team).nick):''}</i></span><em class="num">${fm(a)}</em></button>
-      <ol>${s.slice(1).map((x,i)=>`<li class="${(x.h.t??x.p.team)===G.user?'me':''}"><button data-a="player" data-v="${x.p.id}"><i>${i+2}</i>${esc(x.p.name)} <span class="muted">${tshort(x.h.t??x.p.team)}</span><b class="num">${fm(x)}</b></button></li>`).join('')}</ol></div>`; };
+      <ol>${s.slice(1).map((x,i)=>`<li class="${(x.h.t??x.p.team)===G.user?'me':''}"><button data-a="player" data-v="${x.p.id}"><i>${s.findIndex(z=>Math.abs(v(z)-v(x))<1e-9)+1}</i>${esc(x.p.name)} <span class="muted">${tshort(x.h.t??x.p.team)}</span><b class="num">${fm(x)}</b></button></li>`).join('')}</ol></div>`; };
   return `<section class="card"><div class="row between"><h2 class="sec">${y} 부문별 순위</h2><span class="small muted">타율·OPS·wRC+·평균자책점·WHIP는 규정 기준 이상</span></div><div class="ltiles">${T.map(tile).join('')}</div></section>`;
 }
 /* 부문별 순위 항목: [이름, 대상, 정렬값, 표시] (부문별 1위 타일·PC 대회 화면 공용) */
@@ -176,7 +176,7 @@ function psBracket(){
   return `<div class="bk ws-own"${v3('bracket')?` style="--bk-bg:url(${v3('bracket')})"`:''}>${head}<svg class="bk-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ln}</svg>${BK_R.map(x=>bkCard(D,x,sel)+bkSched(D,x)).join('')}${ch}${bkDet(D,sel)}${seeds}${D.tbHtml||''}${rule}</div>`; }
 function standFm(order,live,y){
   const me=G.user, n=order.length, top=order[0], rk=live?tieRank(order,me):order.findIndex(o=>o.tid===me)+1, gs=G.unemp?null:goalStatus(), od=live?playoffOdds():null, om=new Map((od||[]).map(o=>[o.tid,o]));
-  const R=playerRows(y), mine=R.filter(x=>(x.h.t??x.p.team)===me), B=mine.filter(x=>!x.p.isP), P=mine.filter(x=>x.p.isP), rc=fxRankLine();
+  const R=playerRows(y), mine=playerRowsT(y,me), B=mine.filter(x=>!x.p.isP), P=mine.filter(x=>x.p.isP), rc=fxRankLine();
   /* 1. 정규시즌 */
   /* 개막 전에는 지난 시즌 최종 순위를 보여 준다: 득실도 그 시즌 기록에서, 새 시즌 경기 기록(최근 5)은 섞지 않는다(검수 11-07) */
   let TS=null; if(!live)try{ TS=new Map(teamStats(y).map(r=>[r.tid,r])); }catch(e){}
@@ -284,8 +284,8 @@ function scoreFm(){ const me=G.user, c=G.cal, U=(G.sea.ulog||[]).filter(x=>!/차
    네 칸에 부문 네 개씩, 부문마다 1위는 얼굴과 함께 크게, 2~5위는 한 줄. 마지막 자리는 우리 선수의 부문별 최고 순위 */
 function recFm(rows,y){ const me=G.user, C=leaderCats(rows,y), by=l=>C.find(c=>c[0]===l), tt=x=>x.h.t??x.p.team, srt=([,arr,v])=>[...arr].sort((a,b)=>v(b)-v(a));
   const cat=c=>{ const [l,,v,f]=c, s=srt(c).slice(0,5), fm=f||v; if(!s.length)return `<div class="fx-cat"><h4>${l}</h4><p class="fx-none">기록 없음</p></div>`; const a=s[0];
-    return `<div class="fx-cat"><h4>${l}</h4><button class="fx-l1${tt(a)===me?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt(a)!=null?badge(tt(a),12)+' '+esc(team(tt(a)).nick):'무소속'}</i></b><em>${fm(a)}</em></button>${s.slice(1).map((x,i)=>`<button class="fx-rk${tt(x)===me?' me':''}" data-a="player" data-v="${x.p.id}"><i>${i+2}</i><b>${esc(x.p.name)}</b><span>${tt(x)!=null?esc(team(tt(x)).nick):''}</span><em>${fm(x)}</em></button>`).join('')}</div>`; };
-  const ours=`<div class="fx-cat"><h4>우리 선수 최고 순위</h4>${C.map(c=>{ const s=srt(c), i=s.findIndex(x=>tt(x)===me); return i<0?'':`<button class="fx-rk${i<3?' me':''}" data-a="player" data-v="${s[i].p.id}"><i>${i+1}</i><b>${esc(s[i].p.name)}</b><span>${c[0]}</span><em>${(c[3]||c[2])(s[i])}</em></button>`; }).join('')||'<p class="fx-none">기록 없음</p>'}</div>`;
+    return `<div class="fx-cat"><h4>${l}</h4><button class="fx-l1${tt(a)===me?' me':''}" data-a="player" data-v="${a.p.id}">${avImg(a.p)}<b>${esc(a.p.name)}<i>${tt(a)!=null?badge(tt(a),12)+' '+esc(team(tt(a)).nick):'무소속'}</i></b><em>${fm(a)}</em></button>${s.slice(1).map((x,i)=>`<button class="fx-rk${tt(x)===me?' me':''}" data-a="player" data-v="${x.p.id}"><i>${s.findIndex(z=>Math.abs(v(z)-v(x))<1e-9)+1}</i><b>${esc(x.p.name)}</b><span>${tt(x)!=null?esc(team(tt(x)).nick):''}</span><em>${fm(x)}</em></button>`).join('')}</div>`; };
+  const ours=`<div class="fx-cat"><h4>우리 선수 최고 순위</h4>${C.map(c=>{ const s=srt(c), i=s.findIndex(x=>tt(x)===me); return i<0?'':`<button class="fx-rk${i<3?' me':''}" data-a="player" data-v="${s[i].p.id}"><i>${s.findIndex(z=>Math.abs(c[2](z)-c[2](s[i]))<1e-9)+1}</i><b>${esc(s[i].p.name)}</b><span>${c[0]}</span><em>${(c[3]||c[2])(s[i])}</em></button>`; }).join('')||'<p class="fx-none">기록 없음</p>'}</div>`;
   const col=(cls,t,s,ls,foot,extra)=>fxBox('fxr '+cls,fxHead(t,s),ls.map(by).filter(Boolean).map(cat).join('')+(extra||''),foot);
   return `<div class="fmx fmx-fit fmx-rec nolink ws-own">${col('fxr-b1',`${y} 타격 · 정확성`,'타율·OPS·wRC+는 규정타석 이상',['타율','안타','OPS','wRC+'],fxBtn('lrec','bat','타자 기록'))}${col('fxr-b2',`${y} 타격 · 힘과 발`,'누적 기록은 모든 타자',['홈런','타점','도루','타자 WAR'],fxBtn('go','league:stat','리그 통계'))}${col('fxr-p1',`${y} 투수 · 실점 억제`,'평균자책점·WHIP는 규정이닝 이상',['평균자책점','승리','탈삼진','WHIP'],fxBtn('lrec','pit','투수 기록'))}${col('fxr-p2',`${y} 투수 · 불펜과 종합`,'누적 기록은 모든 투수',['세이브','홀드','투수 WAR'],fxBtn('lrec','team','팀 기록'),ours)}</div>`; }
 

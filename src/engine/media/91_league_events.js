@@ -26,7 +26,7 @@ function rivalAfterGame(day,h,a,g,post){
 function allStarPool(y){
   const L=[];
   for(const p of Object.values(G.players)){
-    if(p.team==null||p.prospect||p.joinY>y||p.injOut>0||p.susp>G.day||isAway(p))continue;
+    if(p.team==null||p.prospect||p.joinY>y||p.injOut>0||p.susp>G.day||isAway(p)||p.frehab)continue; /* 재활 명단(부상 대체 복귀 대기)도 출전 불가(검수 11-08) */
     const h=seasonTotal(p,y,'1군');if(!h||(p.isP?(h.outs||0)<30:(h.pa||0)<50))continue;
     const w=warOf(h,p),rate=p.isP?pRate(h):bRate(h);
     const stats=p.isP?w*.8+(h.w||0)*.04+(h.sv||0)*.025+clamp(5-rate.era,-2,3)*.15:w*.8+(h.hr||0)*.035+(h.h||0)*.005+(h.sb||0)*.01;
@@ -38,16 +38,16 @@ function allStarPool(y){
   }
   return L.sort((a,b)=>b.score-a.score||a.p.id-b.p.id);
 }
-function allStarSnapshot(x,starter,reason){return {id:x.p.id,name:x.p.name,t:x.p.team,slot:x.slot,isP:!!x.p.isP,starter,reason,line:statLine(x.h,x.p),w:+x.w.toFixed(1)};}
+function allStarSnapshot(x,starter,reason,slot){return {id:x.p.id,name:x.p.name,t:x.p.team,t0:x.p.team,pos:x.h.pos||x.p.pos,slot:slot||x.slot,isP:!!x.p.isP,starter,reason,line:statLine(x.h,x.p),w:+x.w.toFixed(1)};}
 function allStarSelect(){
   const y=G.year;G.allStars=G.allStars||{};if(G.allStars[y])return G.allStars[y];
   const pool=allStarPool(y),A={y,day:G.day,event:G.cal.asg,teams:{},withdrawn:[],played:false};
   for(const side of ['나눔','드림']){
     const P=pool.filter(x=>allStarSide(x.p.team)===side),L=[],used=new Set();
-    const add=(x,starter,reason)=>{if(!x||used.has(x.p.id))return;used.add(x.p.id);L.push(allStarSnapshot(x,starter,reason));};
+    const add=(x,starter,reason,slot)=>{if(!x||used.has(x.p.id))return;used.add(x.p.id);L.push(allStarSnapshot(x,starter,reason,slot));};
     for(const slot of ['SP','MR','CP','C','1B','2B','3B','SS','OF','OF','OF','DH']){
       const x=P.find(x=>!used.has(x.p.id)&&x.slot===slot)||(['SP','MR','CP'].includes(slot)?P.find(x=>x.p.isP&&!used.has(x.p.id)):slot==='DH'?P.find(x=>!x.p.isP&&!used.has(x.p.id)):null);
-      add(x,true,'팬·선수 평가를 합친 베스트12');
+      add(x,true,'팬·선수 평가를 합친 베스트12',x&&x.slot!==slot&&!['SP','MR','CP'].includes(slot)?slot:null); /* 다른 포지션으로 채운 지명타자는 명단에도 지명타자(검수 11-08) */
     }
     for(const t of G.teams.filter(t=>allStarSide(t.id)===side))if(!L.some(x=>x.t===t.id))add(P.find(x=>x.p.team===t.id&&!used.has(x.p.id)),false,'구단 대표 추천');
     for(const x of P){if(L.length>=26)break;add(x,false,'전반기 기록을 바탕으로 추천');}
@@ -69,11 +69,11 @@ function allStarDaily(){
     const pool=allStarPool(G.year);
     for(const side of ['나눔','드림'])for(let i=0;i<A.teams[side].length;i++){
       const old=A.teams[side][i],p=G.players[old.id];
-      if(p&&p.team!=null&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p)){ if(old.t!==p.team)A.teams[side][i]={...old,t:p.team}; continue; } /* 같은 진영 안 이적: 자격은 그대로, 소속은 지금 구단으로(검수 11-06) */
+      if(p&&p.team!=null&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p)&&!p.frehab){ if(old.t!==p.team)A.teams[side][i]={...old,t:p.team}; continue; } /* 같은 진영 안 이적: 자격은 그대로, 소속은 지금 구단으로(검수 11-06) */
       const used=new Set(Object.values(A.teams).flat().map(x=>x.id));
       const x=pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&x.slot===old.slot)||pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&!!x.p.isP===old.isP);
       if(!x){ A.withdrawn.push({...old,replacement:null,day:G.day}); A.teams[side].splice(i,1); i--; continue; } /* 대체 후보가 없어도 출전 불가 선수는 확정 명단에서 뺀다(검수 11-06) */
-      const next=allStarSnapshot(x,old.starter,'출전 불가 선수의 대체 추천');A.withdrawn.push({...old,replacement:next.id,day:G.day});A.teams[side][i]=next;
+      const next=allStarSnapshot(x,old.starter,'출전 불가 선수의 대체 추천',old.slot);A.withdrawn.push({...old,replacement:next.id,day:G.day});A.teams[side][i]=next;
       const label=`${G.year} 올스타(${side})`;if(!(x.p.aw||[]).includes(label))addAward(x.p,label);
       news('선수',`${side} 올스타 ${next.name}, ${old.name} 대신 선정`,`${old.name}의 출전이 어려워 ${tshort(next.t)} ${next.name}을 대체 선수로 선정했습니다.`,0,{tid:next.t,ref:next.id});
     }
