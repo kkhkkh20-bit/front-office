@@ -2043,6 +2043,15 @@ T('[검수 11-08b] 외국인·트레이드·부상·퓨처스: 전환 불가 결
   const fp=playersOf(G.user).find(p=>p.isP&&!isSPr(p)); fp.ld=[[G.day,80]]; fp.downDay=G.day; const L0=JSON.stringify(lineFor(fp,G.year,G.user,'퓨처스')); futPit(fp,G.user); ok(JSON.stringify(lineFor(fp,G.year,G.user,'퓨처스'))===L0,'같은 날 던진 투수에게 퓨처스 기록');
   fp.ld=[]; fp.downDay=G.day; const g0=(lineFor(fp,G.year,G.user,'퓨처스').g||0); futPit(fp,G.user); ok((lineFor(fp,G.year,G.user,'퓨처스').g||0)-g0===1,'오늘 말소 불펜 1회 등판이 2경기로');
 });
+T('[검수 11-08c] FA·포스팅: 전임 단장 AI 제안, 정원 찬 AI 제안, 결렬 뒤 맞추기, 이중 포스팅, 약속 연도, 라스트 룩 기한',()=>{ fresh(); G.day=KD(11,20);
+  const op=G.teams.find(t=>t.id!==G.user).id; const p=Object.values(G.players).find(x=>x.team!=null&&x.team!==G.user&&!x.foreign&&ovr(x)>=55&&!x.prospect); p.faFrom=p.team; p.team=null; p.faGrade='B'; p.ask={annual:800,years:2}; const id=p.id; G.fa={pool:[id],offers:{},ai:{},open:true,openDay:G.day-5,closed:false,results:[],cap:2,outN:{},y0:G.year}; G.fa.ai[id]={[G.user]:{annual:1100,years:2}}; G.fa.offers={}; faPruneAi(id); ok(!G.fa.ai[id][G.user],'우리 구단 이름의 AI 제안이 남음');
+  const full=G.teams.find(t=>t.id!==G.user&&t.id!==p.faFrom).id; while(rosterN(full)<ROSTER_MAX){ const q=Object.values(G.players).find(x=>x.team==null&&!x.foreign&&x.isP!=null&&x.id!==id); if(!q)break; q.team=full; } G.fa.ai[id]={[full]:{annual:900,years:2}}; faPruneAi(id); ok(!G.fa.ai[id][full],'정원 찬 구단 제안이 남음');
+  G.fa.ai[id]={[op===full?p.faFrom:op]:{annual:1000,years:2}}; negOf(id).closed=true; ok(agMatchOffer(id)===null,'결렬인데 맞추기 금액 계산');
+  G.day=KD(1,22); G.fa.mk=G.fa.mk||{}; G.fa.mk[id]={round:3,need:3}; const mk=G.fa.mk[id]; mk.ll={tid:G.user,until:Math.min(G.day+2,KD(1,24)-1),annual:900,years:2}; ok(mk.ll.until<KD(1,24),'라스트 룩 기한이 마감 뒤');
+  mk.ll.tid=op; ok(/이전 구단/.test(agLastLook(id)),'전 구단 라스트 룩 수락');
+  const q=playersOf(G.user).find(x=>!x.foreign&&!x.faC&&!x.faN); q.svc=8; q.lastFA=null; q.faN=0; G.posting=[]; G.rolled=G.year; G.day=dnum(G.year,11,25); const e=evNew('post','t','s',[{l:'a'},{l:'b'},{l:'c'}],{data:{pid:q.id,promised:false,day:postDay()},def:2}); postStart(q); const r=evPick(e.id,0); ok((G.posting||[]).filter(x=>x.pid===q.id).length===1,'포스팅 두 번 접수 '+r);
+  G.posting=[]; q.postPromise=G.year; const e2=evNew('post','t','s',[{l:'a'},{l:'b'},{l:'c'}],{data:{pid:q.id,promised:true,day:postDay()},def:0}); evPick(e2.id,1); ok(q.postPromise===G.year+1,'약속을 미뤘는데 연도 그대로 '+q.postPromise);
+});
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
