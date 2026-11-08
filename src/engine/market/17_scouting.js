@@ -3,10 +3,13 @@ const TOOLK={con:'컨택',pow:'파워',eye:'선구안',spd:'주루',def:'수비'
 const GOOD={vit:'체력이 좋아 연속 출장에도 지치지 않습니다.',con:'배트 컨트롤이 좋아 삼진을 잘 당하지 않습니다.',pow:'타구에 힘이 실려 장타를 기대할 수 있습니다.',eye:'공을 오래 보고 볼넷을 골라냅니다.',spd:'발이 빨라 내야안타와 도루가 됩니다.',def:'수비 범위와 송구가 안정적입니다.',stf:'구위로 타자를 압도합니다.',ctl:'원하는 곳에 던지는 제구가 됩니다.',sta:'긴 이닝을 버틸 체력이 있습니다.'};
 const BAD={vit:'체력이 약해 연속 출장이 이어지면 성적이 떨어집니다.',con:'변화구 대처가 약해 삼진이 많습니다.',pow:'장타력이 부족합니다.',eye:'유인구에 방망이가 쉽게 나갑니다.',spd:'주력이 느립니다.',def:'수비에서 실수가 잦습니다.',stf:'구위가 평범해 정타를 자주 허용합니다.',ctl:'제구가 흔들려 볼넷이 많습니다.',sta:'투구 수가 늘면 구위가 떨어집니다.'};
 /* 숨은 재능을 못 알아본 만큼 잠재력에서 뺀다: 1군 기록이 쌓여 드러나면(hidR) 0. 스카우트 능력 3부터 알아볼 수 있고(능력 5면 45%), 우리 팀에서 지켜본 시즌만큼 줄어든다 */
-function hidPen(p,sc,own){ if(!p||!p.hidT||p.hidR)return 0; if(sc&&u01('hid'+sc.id,p.id)<Math.max(0,((sc.skill||1)-2)*.15))return 0; return own?p.hidT*Math.max(0,1-ownObs(p)*.5):p.hidT; }
+function hidPen(p,sc,own){ if(!p||!p.hidT||p.hidR)return 0; const ak=sc&&p.prospect?areaOf(p):null, nb=ak?(areaNet(G.user,ak)-50)*.003:0; /* 권역 정보망이 촘촘할수록 더 알아본다(정보망 100이면 +15%p, 검수 11-09e #18) */ if(sc&&(sc.skill||1)>=3&&u01('hid'+sc.id,p.id)<((sc.skill||1)-2)*.15+nb)return 0; return own?p.hidT*Math.max(0,1-ownObs(p)*.5):p.hidT; }
 function coverOf(tid){ const reg=team(tid).region; return {reg,sc:scoutOf('pro',reg)}; }
 function publicP(p){ return p.hist.some(h=>h.lvl==='1군'&&h.y>=G.year-1&&(h.pa>=10||h.outs>=9)); }
-function bestScout(region){ if(region)return scoutOf('am',region); const s=[...G.scouts].sort((a,b)=>effSkill(b)-effSkill(a))[0]; return s?Object.assign({},s,{skill:effSkill(s)}):null; }
+/* 아마추어 후보 오차: 스카우트 실력·특기·정보망에 실제로 본 횟수까지 */
+const prosSd=(sc,p)=>scSd(sc,p)*(1.35-.35*Math.min(1,dcObs(p,sc)/6));
+/* 담당 고르기: 후보를 주면 그 후보 오차가 가장 작은 사람(검수 11-09e #20). 지역 없이 부르면 국내(아마추어·프로) 담당 중 최고, 해외 파견자는 국내 선수를 보지 않는다(#26) */
+function bestScout(region,p){ if(region){ if(!p)return scoutOf('am',region); return G.scouts.filter(x=>(x.role||'am')==='am'&&x.region===region).map(s=>Object.assign({},s,{skill:effSkill(s)})).sort((a,b)=>prosSd(a,p)-prosSd(b,p))[0]||null; } const s=G.scouts.filter(x=>x.role!=='intl').sort((a,b)=>effSkill(b)-effSkill(a))[0]; return s?Object.assign({},s,{skill:effSkill(s)}):null; }
 function archetype(t,p){ // t: 평가된 도구 점수
   if(p.isP){
     if(t.stf>=62&&t.ctl<50)return '강속구 투수(제구 불안)'; if(t.stf>=60&&t.ctl>=57)return '에이스형'; if(t.ctl>=60&&t.stf<53)return '제구형 기교파';
@@ -50,7 +53,7 @@ function scoutReport1(p){ // KBO 소속 선수는 현재 능력(오버롤)을 �
 }
 function scoutReport0(p){
   const own=p.team===G.user&&!p.prospect; let sc=null, sd, who, futKnown=true, bias=0;
-  if(p.prospect){ sc=bestScout(p.region); sd=scSd(sc,p)*(1.35-.35*Math.min(1,dcObs(p,sc)/6)); /* 달력 월이 아니라 그 스카우트가 실제로 본 횟수만큼 오차가 준다(검수 11-08) */ futKnown=!!sc; who=sc?`${sc.name} 스카우트(${p.region})`:'담당 스카우트 없음'; if(p.gmSeen===G.year){ sd=sc?sd*.7:SCOUT_SD[2]; futKnown=true; who+=' · 단장 직접 관찰'; } }
+  if(p.prospect){ sc=bestScout(p.region,p); sd=prosSd(sc,p); /* 달력 월이 아니라 그 스카우트가 실제로 본 횟수만큼 오차가 준다(검수 11-08) */ futKnown=!!sc; who=sc?`${sc.name} 스카우트(${p.region})`:'담당 스카우트 없음'; if(p.gmSeen===G.year){ sd=sc?sd*.7:SCOUT_SD[2]; futKnown=true; who+=' · 단장 직접 관찰'; } }
   else if(own){ sc=bestScout(); const o=ownObs(p); sd=ownSd(p,sc); who=`전력분석팀·${sc?`${sc.name} 스카우트`:'코치진'} 합동 · 우리 팀에서 ${o?`${o}시즌 관찰`:'관찰 시작'}`; }
   else if(p.foreign&&p.team==null){ const r=origOf(p), lv=intlLv(r); const mf=fMineFind(p); const isc0=G.scouts.filter(s=>s.role==='intl'&&s.region===r).sort((a,b)=>effSkill(b)-effSkill(a))[0]; /* 같은 나라에 여럿이면 가장 뛰어난 사람 기준(검수 11-08) */ sd=INET[lv].sd*(1-fwatchK(p.id)/100*.7)*(mf?.7:1)*(p.fsis?.8:1)*(isc0?1-(effSkill(isc0)-1)*.06:1); /* 파견 스카우트 능력도 즉시 평가에 반영(능력 5면 오차 24% 감소, 적응 기간엔 한 단계 낮게, 검수 11-07) */ futKnown=mf||lv>=1||fwatchK(p.id)>=40; const isc=isc0; who=`${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 스카우트 파견`:''}${mf?' · 우리 스카우트가 직접 찾아 관찰':''}`; sc={id:'intl'+r+lv,skill:lv+1,name:IREG[r].l};
     /* 툴 평가는 실전 감각(p.sx)을 못 본다. 현지 사무소와 오래 지켜본 관찰 명단 선수, 우리가 직접 찾은 선수만 일부 보인다 */ bias=-(p.sx||0)*(lv>=3?.6:1)*(1-fwatchK(p.id)/100*.6)*(mf?.6:1); }

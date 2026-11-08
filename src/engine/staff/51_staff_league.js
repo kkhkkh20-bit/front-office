@@ -52,11 +52,12 @@ function stOffer(kind,id,raise){ stInit(); const mkt=kind==='sc'?scoutMkt():anaM
     /* 상대 조건은 제안한 자리에서 바로 보이고, 후보 카드에 '다시 제안·포기' 버튼이 생긴다. 소식함에는 결과(영입 완료·무산)만 남긴다 */
     return {ok:false,bid:true,msg:head+' '+tail+' 후보 카드에서 다시 제안하거나 포기할 수 있습니다.'}; }
   s.sal=sal; s.since=G.day; s.loy=20; if(kind==='sc')G.scoutMarket=G.scoutMarket.filter(x=>x.id!==id); else G.amarket=G.amarket.filter(x=>x.id!==id);
+  try{ obTaken(s.ob,s); }catch(e){} /* 고교 감독·은퇴 선수 출신이면 다른 자리를 비운다(검수 11-09e #15) */
   stResMail(kind,s,true,G.user,sal,true,B?B.t:null);
   return {ok:true,s,msg:`${s.name}이(가) 연 ${money(sal)}에 합류합니다.${rivals.length?` ${rivals.map(r=>tshort(r.t)).join('·')}도 노렸지만 우리를 택했습니다.`:''}`}; }
 /* 돌려주는 값: 후보가 그 구단 명단에 실제로 남았는가(계약 완료 메일은 이때만 보낸다). 우리 구단(이직해 온 구단)이면 AI 명단이 없으니 처리하지 않는다 */
 function stJoin(kind,s,tid,sal){ const L=stTeamL(tid); if(!L||!team(tid))return false; if(sal)s.sal=sal; /* 경쟁 구단이 제시한 연봉으로 계약 */ s.since=G.day; s.loy=20; const sc=kind==='sc', mk=sc?'scoutMarket':'amarket', list=sc?L.sc:L.an, cap=(sc?ST_SC_N:ST_AN_N)[1]+1;
-  G[mk]=(G[mk]||[]).filter(x=>x.id!==s.id); list.push(s);
+  G[mk]=(G[mk]||[]).filter(x=>x.id!==s.id); list.push(s); try{ obTaken(s.ob,s); }catch(e){} /* 한 사람은 한 곳에만(검수 11-09e #15) */
   if(list.length>cap){ const out=list.filter(x=>x!==s).sort((a,b)=>a.skill-b.skill)[0]; list.splice(list.indexOf(out),1); G[mk].push(out); } /* 인원을 줄일 때 방금 데려온 사람은 빼지 않고, 밀려난 사람은 시장으로 나간다(검수 11-06) */
   if(sc)stSync(tid);
   if(s.skill>=4)wire('스태프',`${tshort(tid)}, ${kind==='sc'?'스카우트':'전력분석원'} ${s.name}(능력 ${s.skill}) 영입`,{tid}); return list.includes(s); }

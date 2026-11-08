@@ -190,7 +190,7 @@ function milBackBy(tid){ const op=G.cal&&G.cal.open>G.day?G.cal.open:dnum(G.year
 function dGrp(p){ if(p.isP)return p.role==='RP'?'RP':'SP'; return p.pos==='C'?'C':['1B','2B','3B','SS'].includes(p.pos)?'IF':p.pos==='DH'?'IF':'OF'; }
 function draftNeed(tid){ const k=['C','IF','OF','SP','RP'], share={C:.08,IF:.27,OF:.2,SP:.25,RP:.2}; const L=domestic(tid).filter(p=>p.age<=26).concat(Object.values(G.players).filter(p=>p.team===tid&&!p.foreign&&p.joinY>G.year)); /* 이번 드래프트에서 이미 뽑은(내년 합류) 선수도 수요에 반영(검수 11-07) */ const n=L.length||1; const o={};
   for(const g of k){ const c=L.filter(p=>dGrp(p)===g).length; o[g]=clamp((share[g]*n-c)*.6,-2,3); } return o; }
-function aiDraftScore(tid,p,need){ const t=team(tid); return p.pot-(p.hidT&&u01('aih'+tid,p.id)>=.2?p.hidT:0)+ /* 숨은 재능은 AI 구단도 대부분 놓친다 */hn('ai'+tid+G.year,p.id)*t.scoutSd+(ovr(p)-35)*(t.mode==='contend'?.5:.25)+(need[dGrp(p)]||0); }
+function aiDraftScore(tid,p,need){ const t=team(tid); return p.pot-(p.hidT&&u01('aih'+tid,p.id)>=.2?p.hidT:0)+ /* 숨은 재능은 AI 구단도 대부분 놓친다 */hn('ai'+tid+G.year,p.id)*t.scoutSd*netSdM(p,tid)+ /* 후보 권역 정보망만큼 오차가 줄거나 는다(검수 11-09e #29) */(ovr(p)-35)*(t.mode==='contend'?.5:.25)+(need[dGrp(p)]||0); }
 function aiDraftPick(tid){
   const t=team(tid); const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect);
   let best=null,bs=-1e9;
