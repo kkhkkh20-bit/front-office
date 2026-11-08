@@ -124,6 +124,8 @@ function storyGame(p,x,day,opp,dec,game){ // 1군 경기 하나가 끝난 뒤
   cumInit(p); const f=p.fl, c=p.cum; const vs=`${dmd(day)} vs ${tshort(opp)}`;
   if(!f.deb){ f.deb=1; story(p,`1군 데뷔 · ${vs}`,'debut'); }
   const add=(k,v)=>{ if(!v)return; const b=c[k]; c[k]+=v; for(const m of MILE[k]) if(b<m&&c[k]>=m){ story(p,`통산 ${m}${MILEK[k]} 달성 · ${vs}`,'mile'); try{ featAdd('mile',p,`통산 ${m}${MILEK[k]}`,{vs,maj:m>=({hr:400,h:2000,w:150,sv:300,so:2000})[k]}); }catch(e){} } };
+  { const S=p.sct=p.sct&&p.sct.y===G.year?p.sct:{y:G.year,h:0,hr:0,w:0,sv:0}; const up=(k,v,ms,txt)=>{ if(!v||G.ps&&G.ps.cur&&period()==='post')return; const b=S[k]; S[k]+=v; for(const m of ms)if(b<m&&S[k]>=m){ story(p,`시즌 ${m}${txt} · ${vs}`,'mile'); if(G.user!=null)wire('기록',`${p.name}(${tshort(p.team)}) 시즌 ${m}${txt} 달성`,{tid:p.team,ref:p.id}); if(p.team===G.user&&G.pr)news('선수',`${p.name}, 시즌 ${m}${txt} 고지`,`${p.name}이(가) ${vs} 경기에서 올 시즌 ${jEulReul(m+txt)} 채웠습니다. 구단 기록에 이름을 올립니다.`,2,{ref:p.id}); } }; /* 시즌 대기록은 달성한 그 경기에 바로 알린다(시즌 끝 진기록과 별도, 사용자 11-08) */
+    if(p.isP){ up('w',dec.w===p.id?1:0,[20],'승'); up('sv',dec.sv===p.id?1:0,[40],'세이브'); } else { up('h',x.h||0,[200],'안타'); up('hr',x.hr||0,[40,50],'홈런'); } }
   if(p.isP){ if(dec.w===p.id&&!f.w1){ f.w1=1; story(p,`1군 첫 승 · ${vs}`,'first'); } if(dec.sv===p.id&&!f.sv1){ f.sv1=1; story(p,`1군 첫 세이브 · ${vs}`,'first'); }
     add('w',dec.w===p.id?1:0); add('sv',dec.sv===p.id?1:0); add('so',x.so||0);
     if(x.outs>=27&&x.h===0&&game?.runsAllowed===0&&game.solo)story(p,`노히트노런 · ${vs}`,'mile'); }

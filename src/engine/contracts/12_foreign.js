@@ -36,8 +36,9 @@ function newForeign(kind,opts){
   lvl.push(...LG_ADJ[lvl[0]]);
   if(lvl[0]==='NPB 1군')base=clamp(base+5,40,66); if(lvl[0]==='일본 독립리그')base=clamp(base-1.5,40,60);
   if(lvl[0]==='더블A'||lvl[0]==='독립리그')base=clamp(base-2.5,40,72); if(lvl[0]==='MLB')base=clamp(base+2,44,72); /* KBO 시장 후보는 트리플A가 중심이고, 더블A·독립리그 출신은 드물고 한 수 아래다. MLB에서 뛰던 선수는 평균이 조금 높다 */
+  if(base>59)base=59+(base-59)*.55; /* 최상위 꼬리를 눌러 '폰세급' 에이스가 해마다 나오지 않게: 화면 80 이상은 몇 해에 한 번(커뮤니티 피드백 11-08) */
   /* 좋아 보이는 선수일수록 이유가 있다 */
-  const fp=lvl[0]==='MLB'||base>=63?.7:base>=58?.28:.1; const flaw=R()<fp?pick(['inj','inj','age','adapt']):null;
+  const fp=lvl[0]==='MLB'||base>=61?.7:base>=57?.28:.1; const flaw=R()<fp?pick(['inj','inj','age','adapt']):null;
   const age=flaw==='age'?ri(33,35):ri(25,32);
   /* 포지션: KBO 외국인 타자는 거포 1루수·코너 외야수가 대부분이고, 2루·유격·포수는 드물다(2024~25 개막 명단 기준 1루·외야가 9할 안팎).
      아시아쿼터 타자는 내야·중견수 비중이 더 높다 */

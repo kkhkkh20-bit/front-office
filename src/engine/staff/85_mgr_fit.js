@@ -6,18 +6,21 @@
  - 영입 판단: AI 구단은 자기 감독 야구에 맞고 모자란 역할의 선수를 더 비싸게 본다(tval). 그래서 AI 제안도 감독 요청에서 나온다.
  - 시너지는 따로 숫자를 얹지 않는다. 뛰는 야구 감독은 원래 도루·번트를 많이 시도하고(경기 엔진), 그 성공은 주자 주력에 달려 있어서 맞는 선수가 있어야 득이 된다 */
 const MROLE={
-  runSPD:{l:'발 빠른 타자',need:'주력',acc:'장타 부족',role:'1·2번·9번 타자, 대주자',bat:1,tgt:3,ok:p=>p.r.spd>=62&&p.r.eye>=46,f:p=>(p.r.spd-52)*.65+(p.r.eye-52)*.35},
-  runOB:{l:'출루형 테이블세터',need:'선구(출루)·컨택',acc:'장타 부족',role:'1·2번 타자',bat:1,tgt:3,ok:p=>p.r.eye>=58&&p.r.con>=52,f:p=>(p.r.eye-52)*.6+(p.r.con-52)*.3+(p.r.spd-52)*.2},
-  pow:{l:'장타형 중심 타자',need:'파워',acc:'수비 약점 일부',role:'3~5번 타자',bat:1,tgt:3,ok:p=>p.r.pow>=62&&p.r.con>=45,f:p=>(p.r.pow-52)*.7+(p.r.con-52)*.3},
-  defC:{l:'센터라인 수비수',need:'수비 범위',acc:'타격 부족',role:'주전 포수·유격수·2루수·중견수',bat:1,tgt:3,ok:p=>p.r.def>=63&&['SS','2B','CF','C'].includes(p.pos),f:p=>p.r.def-52},
-  penS:{l:'구위형 필승조',need:'구위',acc:'긴 이닝 소화 부족',role:'필승조',bat:0,tgt:2,ok:p=>p.r.stf>=63,f:p=>(p.r.stf-52)*.8+(p.r.ctl-52)*.2},
-  spK:{l:'삼진형 선발',need:'구위(헛스윙)',acc:'볼넷·투구 수',role:'선발 로테이션',bat:0,tgt:2,ok:p=>p.r.stf>=63&&p.r.sta>=50,f:p=>(p.r.stf-52)*.8+(p.r.sta-52)*.2},
-  spL:{l:'긴 이닝 선발',need:'체력·제구',acc:'탈삼진 부족',role:'선발 로테이션',bat:0,tgt:3,ok:p=>p.r.sta>=60&&p.r.ctl>=53,f:p=>(p.r.sta-52)*.5+(p.r.ctl-52)*.3+(p.r.stf-52)*.2}};
+  runSPD:{l:'발 빠른 타자',need:'주력',acc:'장타 부족',role:'1·2번·9번 타자, 대주자',bat:1,tgt:3,cr:[['주력','spd',58],['선구','eye',45]],ok:p=>crOk(p,'runSPD'),f:p=>(p.r.spd-52)*.65+(p.r.eye-52)*.35},
+  runOB:{l:'출루형 테이블세터',need:'선구(출루)·컨택',acc:'장타 부족',role:'1·2번 타자',bat:1,tgt:3,cr:[['선구','eye',55],['컨택','con',50]],ok:p=>crOk(p,'runOB'),f:p=>(p.r.eye-52)*.6+(p.r.con-52)*.3+(p.r.spd-52)*.2},
+  pow:{l:'장타형 중심 타자',need:'파워',acc:'수비 약점 일부',role:'3~5번 타자',bat:1,tgt:3,cr:[['파워','pow',57],['컨택','con',44]],ok:p=>crOk(p,'pow'),f:p=>(p.r.pow-52)*.7+(p.r.con-52)*.3},
+  defC:{l:'센터라인 수비수',need:'수비 범위',acc:'타격 부족',role:'주전 포수·유격수·2루수·중견수',bat:1,tgt:3,cr:[['수비','def',58]],ok:p=>crOk(p,'defC')&&['SS','2B','CF','C'].includes(p.pos),f:p=>p.r.def-52},
+  penS:{l:'구위형 필승조',need:'구위',acc:'긴 이닝 소화 부족',role:'필승조',bat:0,tgt:2,cr:[['구위','stf',58]],ok:p=>crOk(p,'penS'),f:p=>(p.r.stf-52)*.8+(p.r.ctl-52)*.2},
+  spK:{l:'삼진형 선발',need:'구위(헛스윙)',acc:'볼넷·투구 수',role:'선발 로테이션',bat:0,tgt:2,cr:[['구위','stf',58],['체력','sta',48]],ok:p=>crOk(p,'spK'),f:p=>(p.r.stf-52)*.8+(p.r.sta-52)*.2},
+  spL:{l:'긴 이닝 선발',need:'체력·제구',acc:'탈삼진 부족',role:'선발 로테이션',bat:0,tgt:3,cr:[['체력','sta',56],['제구','ctl',51]],ok:p=>crOk(p,'spL'),f:p=>(p.r.sta-52)*.5+(p.r.ctl-52)*.3+(p.r.stf-52)*.2}};
 /* 수비가 약해도 치는 쪽(빅볼·타격 중시)은 수비에 맡기는 타구를 줄이는 삼진형 선발을, 수비 중시는 맞혀 잡아도 되는 이닝형 선발을 찾는다 */
 const MT_ROLES={small:['runSPD','runOB'],combo_d:['defC','runSPD','runOB'],big:['pow','spK'],combo_o:['pow','spK'],bat:['pow','spK'],dfn:['defC','spL'],pen_all:['penS'],gamble:['penS','spK'],sp_care:['spL'],care:['spL']};
+/* 역할 기준(내부 능력): 커뮤니티 피드백(11-08) '파워 센 선수를 데려와도 장타형으로 안 잡힌다' → 화면 70 안팎이면 그 역할로 본다. 화면에는 crTxt로 기준을 보여 준다 */
+function crOk(p,k){ return MROLE[k].cr.every(([,key,v])=>(p.r[key]??0)>=v); }
+function crTxt(k){ const R=MROLE[k]; return R&&R.cr?R.cr.map(([l,,v])=>`${l} ${dv(v)} 이상`).join(' · ')+(k==='defC'?' (포수·유격수·2루수·중견수)':''):''; }
 function mgrRolesOf(m){ if(!m||m.interim)return []; return MT_ROLES[mgrType(m).k]||[]; }
 function roleOk(p,k){ const R=MROLE[k]; if(!p||!R||!p.r)return false; if(R.bat?p.isP:!p.isP)return false; try{ return !!R.ok(p); }catch(e){ return false; } }
-function roleTags(p,k){ const R=MROLE[k]; if(!R||!p)return ''; const g=v=>v>=62?'강점':v<=45?'약함':'보통'; const T=R.bat?{runSPD:[['주력','spd'],['선구','eye']],runOB:[['선구','eye'],['컨택','con'],['주력','spd']],pow:[['파워','pow'],['컨택','con'],['수비','def']],defC:[['수비','def'],['컨택','con']]}[k]:{penS:[['구위','stf'],['제구','ctl']],spL:[['체력','sta'],['제구','ctl'],['구위','stf']],spK:[['구위','stf'],['제구','ctl'],['체력','sta']]}[k];
+function roleTags(p,k){ const R=MROLE[k]; if(!R||!p)return ''; const g=v=>v>=57?'강점':v<=45?'약함':'보통'; const T=R.bat?{runSPD:[['주력','spd'],['선구','eye']],runOB:[['선구','eye'],['컨택','con'],['주력','spd']],pow:[['파워','pow'],['컨택','con'],['수비','def']],defC:[['수비','def'],['컨택','con']]}[k]:{penS:[['구위','stf'],['제구','ctl']],spL:[['체력','sta'],['제구','ctl'],['구위','stf']],spK:[['구위','stf'],['제구','ctl'],['체력','sta']]}[k];
   return (T||[]).map(([l,key])=>`${l} ${g(p.r[key])}`).join(' · '); }
 /* 기용 가산: 감독이 원하는 역할에 맞으면 +1.2(능력 단위). 주전·선발·불펜 순서 정할 때만 쓰고 경기력에는 더하지 않는다 */
 function mgrFitB(tid,p){ if(tid==null||!p)return 0; const m=mgrOf(tid); const L=mgrRolesOf(m); for(const k of L)if(roleOk(p,k))return 1.2; return 0; }

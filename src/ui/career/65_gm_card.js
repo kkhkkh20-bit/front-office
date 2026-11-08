@@ -2,7 +2,7 @@
 function gmCardView(){ if(G.unemp)return ''; const C=myCInit(); if(!C)return ''; const S=myCStats(); const left=C.y1-G.year;
   const stint=x=>`<div class="row between small"><span>${badge(x.tid,18)} ${esc(tshort(x.tid))} · ${x.y0}~${x.y1}</span><span class="muted">${money(x.sal)} · ${esc(x.how)}</span></div>`;
   const chT=S.chT.length?`<div class="small">우승한 구단: ${S.chT.map(t=>`${badge(t,16)} ${esc(tshort(t))}`).join(' · ')}</div>`:'';
-  return `<section class="card gmcard"><div class="row between"><div><div class="eyebrow">단장 카드</div><h2 class="sec">${esc(tname(C.tid))} 단장${(()=>{ const n=meNick(); return n?` <span class="pill acc">${esc(n)}</span>`:''; })()}</h2></div>${badge(C.tid,44)}</div>
+  return `<section class="card gmcard"><div class="row between"><div><div class="eyebrow">단장 카드${G.gmP?` · ${esc(G.gmP.name)} ${meAge()}세`:''}</div><h2 class="sec">${esc(tname(C.tid))} 단장${(()=>{ const n=meNick(); return n?` <span class="pill acc">${esc(n)}</span>`:''; })()}</h2></div>${badge(C.tid,44)}</div>
     <div class="gmc-grid">
       <div><span class="muted">연봉</span><b>${money(C.sal)}</b></div>
       <div><span class="muted">계약</span><b>${C.y0}~${C.y1}</b><i class="small ${left<=0?'warn':'muted'}">${left<=0?'올해 만료':`${left}년 남음`}</i></div>
