@@ -360,7 +360,7 @@ function answerOffer(id,yes){
   try{ frBacklash(o.get); }catch(e){}
   chron('trade',`${tshort(o.from)}와(과) 트레이드: ${o.get.map(id=>G.players[id]?G.players[id].name:'').join('·')} 보내고 ${o.give.map(id=>G.players[id]?G.players[id].name:'').join('·')} 받음`);
   G.trades.push({me:G.user,y:G.year,d:G.day,with:o.from,gw:(team(o.from).gm||{}).id,give:o.get.map(id=>G.players[id].name),get:o.give.map(id=>G.players[id].name),diff,revealed:false,gi:[...o.give],go:[...o.get],snap,grade});
-  t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user)); try{ if(o.get.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from)); G.offers=(G.offers||[]).filter(x=>!x.get.some(id=>o.get.includes(id))&&!x.give.some(id=>o.give.includes(id)));
+  t.rel=clamp(t.rel+3,0,100); prTrade(o.get,o.give,o.from); o.give.forEach(id=>mvLog('트레이드',G.players[id],o.from,G.user)); try{ if(o.get.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} o.get.forEach(id=>mvLog('트레이드',G.players[id],G.user,o.from)); offerDropMoved([...o.get,...o.give]);
   mgrTradeApply(mv); churnCheck(); mpickTraded(o.get); addLog(`${tname(o.from)}의 제안을 받아들였습니다: ${o.get.map(id=>G.players[id].name).join(', ')} ↔ ${o.give.map(id=>G.players[id].name).join(', ')}`);
   return {ok:true,grade,msg:'트레이드가 성사되었습니다.'};
 }

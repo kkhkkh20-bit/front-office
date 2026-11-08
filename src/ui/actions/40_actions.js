@@ -368,7 +368,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tsort(v){UI.trade.sort=v;render();},
   tpick(v){const [side,id]=v.split(':');const arr=UI.trade[side];const i=arr.indexOf(+id);i>=0?arr.splice(i,1):arr.push(+id);UI.trade.msg='';UI.trade.want=null;render();},
   pkT(v){ const tr=UI.trade; const i=v.indexOf(':'), side=v.slice(0,i), k=v.slice(i+1); tr.pk=pkNorm(tr.pk); const L=tr.pk[side]; const j=L.indexOf(k); if(j>=0)L.splice(j,1); else L.push(k); render(); },
-  treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.msg='';UI.trade.want=null;render();},
+  treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.cash=0;UI.trade.counters=null; /* 현금·지난 역제안도 비운다(검수 11-08c) */UI.trade.msg='';UI.trade.want=null;render();},
   tcash(v){ UI.trade.cash=+v||0; render(); },
   tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);tr.msg=r.msg;tr.ok=r.ok;tr.want=r.want||null;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];tr.cash=0;tr.pk=null;UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
   tcounter(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; tr.give=[...c.give]; tr.get=[...c.get]; if(c.cash!=null)tr.cash=c.cash; if(c.pk)tr.pk=c.pk; tr.counters=null; A.tpropose(); }, /* 상대가 낸 조건 그대로(현금·지명권 포함) */

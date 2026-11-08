@@ -43,7 +43,7 @@ function counterOffer(tid,give,get,cash,pk){ cash=cash||0; const ev=(g,t)=>evalT
 const NEG_MONTH=4;
 function negTurn(tid){ G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={}); const o=dobj(G.day); const mk=o.y*100+o.m; if(c.negM!==mk){ c.negM=mk; c.neg=0; } delete c.negDay; c.seen=c.seen||{}; for(const k in c.seen)if(c.seen[k]<G.day-30)delete c.seen[k]; return c; }
 /* 맞대결: 오늘(쉬는 날이면 내일) 우리와 경기하는 구단은 경기장에서 만나므로 횟수 제한이 없다 */
-function seriesOpp(){ const c=G.cal; if(!c||!c.sched)return null; for(const d of [G.day,G.day+1]){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(G.user)); return m?(m[0]===G.user?m[1]:m[0]):null; } return null; }
+function seriesOpp(){ const c=G.cal; if(!c||!c.sched)return null; for(const d of [G.day,G.day+1]){ const m=(c.sched[d]||[]).find(x=>x.includes(G.user)); if(m)return m[0]===G.user?m[1]:m[0]; } return null; } /* 오늘 다른 구단만 경기해도 우리 일정 기준으로 내일을 본다(검수 11-08c) */
 function negInfo(tid){ const c=negTurn(tid); const free=seriesOpp()===tid; const o=dobj(G.day); const nx=o.m===12?1:o.m+1; const cap=negCap(tid); return {used:c.neg,cap,left:free?99:Math.max(0,cap-c.neg),free,next:`${nx}월 1일`}; }
 const tsig=(give,get,cash)=>[...give].sort((a,b)=>a-b).join(',')+'|'+[...get].sort((a,b)=>a-b).join(',')+(cash?'|c'+cash:''); /* 받는 현금(음수)도 조건으로 구분(검수 11-06) */
 /* 트레이드 기록과 성적표 */
@@ -209,7 +209,7 @@ function switchTeam(tid){ champEventsInit(); const old=G.user; G.unemp0=!!G.unem
     { const W=G.fwatchT=G.fwatchT||{}; if(!(G.unemp&&W[old]))W[old]=G.fwatch||[]; G.fwatch=W[tid]||[]; delete W[tid]; } /* 외국인 관찰 명단·파악도는 구단 스카우트의 것(검수 11-08) */ G.med=n&&n.med?n.med:{prev:1,hosp:'none'}; G.intl=n&&n.intl?n.intl:{us:1,la:0,jp:0,tw:0,au:0}; G.data=n&&n.data?n.data:{lv:1}; }
   { const m=G.mgr[tid]; if(m&&m.act){ m.interim=true; m.sal=m.sal||150; } } /* AI 구단 감독대행은 부임하면 우리 대행과 같은 대행으로(정식 감독처럼 면담·경질되지 않게, 검수 11-07) */
   if(!G.unemp||!ot.gm||ot.gm.interim){ ot.gm=mkGM(old); ot.rel=60; } /* 야인이던 때 전 구단은 이미 후임이 있다(검수 11-07) */ try{ stRaidSettle(); }catch(e){} /* 다른 구단이 낸 우리 스태프 영입 제안은 아직 옛 구단 단장일 때 정리: 그 구단으로 이직해도 스태프가 시장으로 새지 않게(검수 11-08) */ nt.gm=null; G.user=tid; try{ rmSnap(true); }catch(e){} /* 새 구단 선수 능력치 기록 시작 */ champAdopt(tid); nt.trust=55; nt.rel=50;
-  G.goals=null; G.policy=null; G.devProg=[]; try{ ovsHandOff(old,tid); }catch(e){ G.ovs=[]; } G.lineup={}; G.offers=[]; G.shortlist=[]; G.tsug=null; G.mentor=null;
+  G.goals=null; G.policy=null; G.devProg=[]; try{ ovsHandOff(old,tid); }catch(e){ G.ovs=[]; } G.lineup={}; G.offers=[]; G.offerContact={}; /* 제안 연락 제한도 전 구단 것(검수 11-08c) */ G.shortlist=[]; G.tsug=null; G.mentor=null;
   /* 캠프: 옛 구단 훈련 방향·시작 기록은 두고, 새 구단 캠프를 합류 시점 기준으로 이어받는다(방향은 기본 '균형', 결산 비교는 합류일부터) */
   G.camp=G.camp&&!G.camp.done?{focus:'balance',done:false,snap:campSnap(),join:G.day,byT:Object.assign({},G.camp.byT||{},G.camp.focus?{[old]:G.camp.focus}:{})}:null;
   /* 마무리캠프도 같은 방식: 옛 구단은 정해 둔 방향으로 캠프를 마치고(byT), 새 구단은 기본 방향·합류일 기준 시작 기록으로 이어받는다 */
