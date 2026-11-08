@@ -2180,6 +2180,28 @@ T('[피드백 11-08] 포스팅 중간 보도와 MLB 스카우트 방문 보도',
 T('[피드백 11-08] 해외파 신인: 고교 직행 선수가 해외 생활을 마치고 돌아오면 2년 뒤 신인 드래프트 후보로 나온다',()=>{ fresh(); const p=G.draftClass.map(id=>G.players[id]).find(q=>!q.college); G.draftClass=G.draftClass.filter(id=>id!==p.id); p.prospect=false; ovsLeave(p,'MLB','뉴욕',2,50,'고교 직행');
   const a=G.abroad.find(x=>x.id===p.id); ok(a&&a.from==null,'고교 직행 기록 없음'); a.y1=G.year-1; a.yrs=1; a.lines=[]; abroadYear(); ok(a.back,'돌아오지 않음(능력이 높아 남았을 수 있음 '+ovr(JSON.parse(a.pj||'null')||p)+')'); const q=G.players[p.id]; ok(q&&q.ovsWait===G.year+2&&q.team==null&&!q.retFrom,'2년 유예 표시 없음');
   ok(!isFree(q),'무적 선수 목록에 들어감'); G.year+=2; makeDraftClass(); ok(G.draftClass.includes(q.id)&&q.prospect&&q.ovsRet,'2년 뒤 드래프트 후보에 없음'); });
+T('[검수 11-08b] 현금 트레이드: 앞선 거래 약정 현금을 빼고 검사하고, 상대 손익(시즌 말 평가)에 현금을 넣는다',()=>{ fresh(); const oe=evalTrade, oo=tradeOwnerCheck; try{ evalTrade=(...a)=>{ const e=oe(...a); e.ok=true; e.theirPay=0; return e; }; tradeOwnerCheck=()=>null;
+  team(G.user).cash=600; const ops=G.teams.filter(t=>t.id!==G.user).slice(0,2); const mine=domestic(G.user).filter(q=>!q.foreign&&!q.ntc).sort((a,b)=>a.sal-b.sal);
+  const g1=domestic(ops[0].id).find(q=>!q.foreign&&!q.ntc); const pd=trueVal(g1)-trueVal(mine[0]); const r1=proposeTrade(ops[0].id,[mine[0].id],[g1.id],600); ok(r1.ok,'첫 거래 실패: '+r1.msg);
+  const T1=G.trades[G.trades.length-1]; ok(T1.diff<pd-1,'받은 현금이 상대 손익에 빠짐 '+T1.diff+' / '+pd);
+  const g2=domestic(ops[1].id).find(q=>!q.foreign&&!q.ntc); const r2=proposeTrade(ops[1].id,[mine[1].id],[g2.id],600); ok(!r2.ok&&/보유 현금/.test(r2.msg||''),'같은 현금으로 두 번째 현금 거래가 성사: '+(r2.msg||''));
+  } finally{ evalTrade=oe; tradeOwnerCheck=oo; } });
+T('[검수 11-08b] 겨울 트레이드: 구단주 승인은 합의한 다음 시즌 연봉으로, 받은 제안 캡 검사는 양쪽 다음 시즌 기준',()=>{ fresh(); const L0=G.last; try{ G.last={...(L0||{}),y:G.year}; ok(preSeason(sponSeason()),'준비 실패: 겨울 아님');
+  const op=G.teams.find(t=>t.id!==G.user).id; const p=domestic(G.user).find(q=>!q.foreign&&!q.extNext&&!q.ntc), q=domestic(op).find(x=>!x.foreign&&!x.ntc&&!x.extNext); q.sal=p.sal; delete p.newSal; q.newSal=p.sal+1900;
+  G.spend.etc=(G.spend.etc||0)+Math.max(0,budget().roomGoal); const oc=tradeOwnerCheck([p.id],[q.id],0); ok(oc&&oc.dSal>=1900,'합의한 연봉 인상이 빠짐: '+JSON.stringify(oc&&oc.dSal));
+  delete q.newSal; const cy=sponSeason(); const big=domestic(op).filter(x=>!x.foreign&&!x.ntc&&!x.extNext&&x!==q).slice(0,2); big[0].newSal=capOf(cy); big[1].newSal=capOf(cy);
+  ok(capPayAs(op,[p.id],[big[0].id])<capPayNext(op)&&capPayAs(op,[p.id],[big[0].id])>capOf(cy),'준비 실패');
+  const why=offerBlockMsg({from:op,give:[big[0].id],get:[p.id]}); ok(!/샐러리캡/.test(why||''),'상대 연봉을 줄이는 제안이 캡으로 막힘: '+why);
+  } finally{ G.last=L0; } });
+T('[검수 11-08b] 웨이버: 다음 시즌 계약 조항 승계, 승계 계약금 포함 심사, 장부 넘긴 뒤 환급은 현금으로, 새해 최저 연봉',()=>{ fresh(); simTo(()=>period()==='season'&&tradeOpen()); const [A,B]=G.teams.map(t=>t.id).filter(t=>t!==G.user);
+  const p=domestic(A).find(q=>!q.foreign&&!q.ys); p.extNext={annual:500,years:3,terms:{annual:500,years:3,bonus:300,ntc:true,role:'SP'}}; toFree(p,'점검');
+  ok(p.wv&&p.wv.c.extNext&&p.wv.c.extNext.terms&&p.wv.c.extNext.terms.bonus===300,'공시 전에 다음 시즌 조항이 지워짐');
+  let seen=null; const ow=wvWants; p.wv.cl=[B]; p.wv.ok=true; G.day=p.wv.end; try{ wvWants=(t,q)=>{ if(q===p&&seen==null)seen=!!q.wv; return false; }; wvDaily(); } finally{ wvWants=ow; }
+  ok(seen===true,'AI 심사 전에 공시 정보가 지워짐'); ok(p.team===B&&p.extNext&&p.extNext.terms&&p.extNext.terms.bonus===300&&p.extNext.terms.ntc,'양수 구단에 조항 없는 계약이 넘어감');
+  const u=G.user; const m=domestic(u).find(q=>!q.foreign&&!q.ys); m.sal=30; toFree(m,'점검',400); ok(m.wv,'준비 실패');
+  G.spend.rel=0; /* 이직·결산으로 방출 정산금이 이미 장부에서 빠진 상태 */ const c0=team(u).cash, m0=MIN_SAL; m.wv.cl=[B]; m.wv.ok=true; m.wv.c.sal=30; G.day=m.wv.end;
+  try{ MIN_SAL=33; wvWants=()=>false; wvDaily(); } finally{ wvWants=ow; MIN_SAL=m0; }
+  ok(m.team===B,'준비 실패: 양수 안 됨 '+m.team); ok(team(u).cash-c0===400&&(G.spend.rel||0)===0,'환급이 사라짐: 현금 '+(team(u).cash-c0)+' 장부 '+G.spend.rel); ok(m.sal===33,'새해 최저 연봉 아래로 되돌림: '+m.sal); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
