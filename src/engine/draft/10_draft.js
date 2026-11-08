@@ -85,11 +85,12 @@ function migrateDraft(){ worldReset(); try{ syncMinSal(); }catch(e){} /* 불러�
 /* 그해 신인 드래프트 지명 순서: 지난 시즌 순위의 역순(r2: 2라운드부터). 경쟁균형세 3회 연속 초과 구단은 1라운드(r1)에서 9단계 내려간다.
    드래프트 날 전에도 같은 순서를 미리 알려 줄 수 있게 따로 계산한다 */
 function draftOrders(){ const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid);
-  const n=order.length, pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id).sort((a,b)=>order.indexOf(b)-order.indexOf(a)); const slot=new Array(n).fill(null);
-  /* 제재 구단은 원래 순번에서 9칸 아래 자리에 둔다. 여러 구단이 함께 받아도 서로 밀어 올리지 않게 자리를 먼저 잡고 나머지를 순서대로 채운다(검수 11-07) */
+  const pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id);
+  return {r1:penOrder(order,pen),r2:order,pen,y:h.y}; }
+/* 1라운드 제재 반영 순서: 제재 구단은 원래 순번에서 9칸 아래 자리에 둔다. 여러 구단이 함께 받아도 서로 밀어 올리지 않게 자리를 먼저 잡고 나머지를 순서대로 채운다(검수 11-07). 지명권 예상 순번도 같은 식(검수 11-08d) */
+function penOrder(order,pen){ const n=order.length; pen=pen.filter(t=>order.includes(t)).sort((a,b)=>order.indexOf(b)-order.indexOf(a)); const slot=new Array(n).fill(null);
   for(const t of pen){ let j=Math.min(n-1,order.indexOf(t)+9); while(j<n&&slot[j]!=null)j++; if(j>=n){ j=n-1; while(slot[j]!=null)j--; } slot[j]=t; }
-  const rest=order.filter(t=>!pen.includes(t)); for(let j=0;j<n;j++)if(slot[j]==null)slot[j]=rest.shift(); const o1=slot;
-  return {r1:o1,r2:order,pen,y:h.y}; }
+  const rest=order.filter(t=>!pen.includes(t)); for(let j=0;j<n;j++)if(slot[j]==null)slot[j]=rest.shift(); return slot; }
 /* 실제 드래프트 순번표(지명권 거래 반영): 사전 안내·모의 지명·드래프트 시작이 같은 표를 쓴다(검수 11-06) */
 function draftPlan(){ const D=draftOrders(); if(!D)return null; const picks=[]; for(let r=0;r<DRAFT_ROUNDS;r++)(r===0?D.r1:D.r2).forEach((tid,i)=>{ const own=pkOwner(G.year,r+1,tid); picks.push(own===tid?{rd:r+1,no:i+1,tid,pid:null}:{rd:r+1,no:i+1,tid:own,from:tid,pid:null}); }); return picks; }
 function draftNo(tid){ const o=draftOrders(); if(!o)return null; const r1=o.r1.indexOf(tid)+1, r2=o.r2.indexOf(tid)+1, r1o=[...o.r2].indexOf(tid)+1; const f=(draftPlan()||[]).find(k=>k.tid===tid); /* 지명권 거래를 반영한 실제 첫 지명(검수 11-07) */ return {r1,r2,pen:o.pen.includes(tid)&&r1!==r1o,y:o.y,first:f?{rd:f.rd,no:f.no}:null}; } /* pen: 실제로 순번이 내려간 때만(검수 11-07) */

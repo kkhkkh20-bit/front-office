@@ -34,7 +34,7 @@ function compPool(tid){ return domestic(tid).concat(awayOf(tid).filter(q=>!q.for
 function aiProtect(tid,n){ const t=team(tid); return compPool(tid).sort((a,b)=>aiVal(t,b)-aiVal(t,a)).slice(0,n).map(q=>q.id); }
 /* 우리 구단의 일회성 현금 지출·수입은 결산 장부(G.spend)에 올려 예산 여유와 결산에 함께 반영한다 */
 function payOut(tid,amt,key){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } else team(tid).cash-=amt; }
-function payIn(tid,amt){ if(!amt)return; if(tid===ME()){ G.spend.compIn=(G.spend.compIn||0)+amt; } else team(tid).cash+=amt; }
+function payIn(tid,amt,key='compIn'){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } /* key: 장부 수입 항목(기본 보상금·양도금, 트레이드 현금은 tradeIn) */ else team(tid).cash+=amt; }
 function compStart(p,from,to,rec){ const g=COMP[p.faGrade]; const prev=p.faPrevSal;
   if(p.faGrade==='C'){ const cash=Math.round(prev*1.5); payOut(to,cash,'comp'); payIn(from,cash); rec.compCash=cash; return; }
   const c={id:'cp'+(G.compSeq=(G.compSeq||0)+1),pid:p.id,name:p.name,grade:p.faGrade,from,to,prev,day:G.day,stage:'protect',exp:G.day+3,prot:null,rec:rec.id}; c._rec=rec; /* AI끼리는 계약 결과가 목록에 들어가기 전에 바로 보상을 정하므로 그 객체에 직접 적는다(검수 11-06). 저장 전에 지운다 */ /* 계약 결과는 객체를 들고 있지 않고 식별자로 다시 찾는다(저장·불러오기 뒤 복사본이 갈라지지 않게) */
