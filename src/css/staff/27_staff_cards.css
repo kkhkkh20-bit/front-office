@@ -198,3 +198,9 @@ button.st-n:hover b{text-decoration:underline}
 .cmk-cur{position:sticky;top:0;border:1px solid var(--acc);border-radius:6px;padding:8px;background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
 .cmk-cur .eyebrow{color:var(--acc);margin-bottom:4px}
 @media(max-width:899px){.cmk-split{grid-template-columns:1fr}.cmk-cur{position:static}}
+.cmk-mi{display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:4px 2px;border-bottom:1px solid var(--line2);font-size:12px}
+.cmk-mi .av,.cmk-mi img{width:28px;height:28px;border-radius:50%}.cmk-mi span{display:grid;min-width:0}.cmk-mi span i{font-style:normal;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmk-mi em{font-style:normal;font:600 11px var(--f-num);color:var(--muted)}.cmk-mi.hit{background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:4px}
+.cmk-grp{display:grid;gap:0;margin:4px 0}
+.cmk-mi .anstar{display:block;white-space:nowrap;font-size:11px}.cmk-mi .anstar .off{font-style:normal;opacity:.3}
+.cmk-mi .cmk-v{grid-column:2/-1;display:flex;gap:8px;flex-wrap:wrap}.cmk-v span{display:flex;align-items:center;gap:3px}.cmk-v i{font-style:normal;color:var(--muted);font-size:11px}.cmk-v .rc{font-size:11px;min-width:24px;padding:1px 3px}

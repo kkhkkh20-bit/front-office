@@ -111,6 +111,7 @@ function anlView(){ UI._smk=true; let mine='', mk=''; try{ UI._anlMine=true; min
 function staffMarketView(){ const k=UI.smkK||'mgr'; const src=UI.smkSrc||'free'; const K=[['mgr','감독'],['coach','코치'],['sc','스카우트'],['an','분석원']];
   const chips=`<div class="chips staff-market-modes" style="margin:4px 0 8px">${K.map(([v,l])=>`<button data-a="smkK" data-v="${v}" class="${k===v?'on':''}">${l}</button>`).join('')}</div>${k==='coach'||k==='sc'?`<div class="chips" style="margin:0 0 10px">${[['free','자유 계약 후보'],['oth','다른 구단 소속']].map(([v,l])=>`<button data-a="smkSrc" data-v="${v}" class="${src===v?'on':''}">${l}</button>`).join('')}</div>`:''}`;
   UI._smk=true; let h=''; try{ h=k==='mgr'?mgrBody():k==='coach'?coachView():k==='sc'?scoutBody():dataPage(); }finally{ UI._smk=false; }
+  if((k==='sc'||k==='an')&&src==='free')h=`<div class="cmk-split">${stMineAside(k)}<div class="cmk-list">${h}</div></div>`; /* 여러 명인 스카우트·분석원도 지금 우리 인원을 옆에 두고 비교(사용자 11-08) */
   const out=csec('스태프 시장',chips+h,`<span class="small muted">${esc(stPrestigeLine())}</span>`); return fmOn()?`<div class="ws-own sfw">${out}</div>`:out; } /* PC: 자동 칸 나누기가 버튼 줄을 카드 아래로 보내던 문제. 버튼 위, 카드는 칸 안 스크롤 */
 /* 감독 후보의 사단 */
 function clanBox(x){ const L=x.clan||[]; if(!L.length)return '<p class="small muted">사단 없음 · 코치진은 그대로 유지됩니다.</p>';
@@ -123,3 +124,12 @@ function axSec(){ const n=axSlots(), X=G.coachX||[]; const rows=X.map(c=>`<div c
 
 /* 코치 시장: 보직을 고르면 지금 우리 코치 카드를 옆(휴대폰은 위)에 붙여 후보와 나란히 비교(카페 11-08) */
 function cmkCmp(role,inner){ if(role==='all')return inner; return `<div class="cmk-split"><aside class="cmk-cur"><div class="eyebrow">지금 우리 ${CROLE[role].l}</div>${coachSlot(role)}</aside><div class="cmk-list">${inner}</div></div>`; }
+
+/* 스태프 시장 왼쪽: 지금 우리 스카우트·분석원 전원(능력 낮은 순 = 바꿀 후보부터). 고른 필터에 맞는 사람은 강조 */
+function stMineAside(k){ const st=n=>'★'.repeat(n)+'<i class="off">'+'★'.repeat(5-n)+'</i>';
+  if(k==='sc'){ const f=UI.scF||'all'; const L=[...G.scouts].sort((a,b)=>a.skill-b.skill||b.sal-a.sal); const job=s=>s.role==='intl'?`해외 ${IREG[s.region]?IREG[s.region].l:s.region}`:`${s.role==='pro'?'프로':'아마'} ${s.region||''}`;
+    const row=s=>{ const hit=f==='hi'?s.skill<4:f==='P'||f==='B'?s.spec===f:false; return `<div class="cmk-mi${hit?' hit':''}">${avImg({persona:'staff',role:'sc',pid:s.id,name:s.name,age:s.age})}<span><b>${esc(s.name)}</b><i>${esc(job(s))}${s.spec?` · ${SC_SPEC[s.spec]}`:''}</i></span><span class="anstar">${st(s.skill)}</span><em>${money(s.sal)}</em><small class="cmk-v">${[['pitch','투수'],['bat','타자'],['potential','잠재력']].map(([x,l])=>`<span><i>${l}</i>${rchip(staffOfficeV(s,'scout',x))}</span>`).join('')}</small></div>`; }; /* 후보 카드와 같은 평가값으로 비교 */
+    return `<aside class="cmk-cur"><div class="eyebrow">지금 우리 스카우트 ${G.scouts.length}/${scoutMax()}명</div>${L.length?L.map(row).join(''):'<p class="small muted">스카우트가 없습니다.</p>'}<p class="small muted">능력 낮은 순. ${f==='P'||f==='B'?`${SC_SPEC[f]} 특기자 강조`:f==='hi'?'능력 4 미만 강조(교체 후보)':'필터를 고르면 해당 인원이 강조됩니다'}${G.scouts.length>=scoutMax()?' · 자리가 차서 새로 뽑으려면 먼저 한 명을 내보내야 합니다':''}</p></aside>`; }
+  const L=anaList(); const f=UI.anF||'all'; const byR=r=>L.filter(a=>a.role===r);
+  const row=a=>{ const hit=f==='hi'?a.skill<4:AROLE[f]?a.role===f:false; return `<div class="cmk-mi${hit?' hit':''}">${avImg({persona:'staff',role:'ana',pid:a.id,name:a.name,age:a.age})}<span><b>${esc(a.name)}</b><i>${AROLE[a.role].l}</i></span><span class="anstar">${st(a.skill)}</span><em>${money(a.sal)}</em><small class="cmk-v">${[['opp','상대분석'],['trk','트래킹'],['vid','영상']].map(([x,l])=>`<span><i>${l}</i>${rchip(staffOfficeV(a,'analyst',x))}</span>`).join('')}</small></div>`; };
+  return `<aside class="cmk-cur"><div class="eyebrow">지금 우리 분석원 ${L.length}/${ANA_MAX}명</div>${Object.keys(AROLE).map(r=>`<div class="cmk-grp"><span class="small muted">${AROLE[r].l}${byR(r).length?'':' · <b class="bad">비어 있음</b>'}</span>${byR(r).sort((a,b)=>b.skill-a.skill).map(row).join('')}</div>`).join('')}<p class="small muted">역할마다 가장 뛰어난 분석원이 가장 크게 반영됩니다(두 번째 60%, 세 번째 30%).${L.length>=ANA_MAX?' 자리가 차서 새로 뽑으려면 먼저 한 명을 내보내야 합니다.':''}</p></aside>`; }
