@@ -192,5 +192,10 @@ button.st-n:hover b{text-decoration:underline}
 /* 스카우트 담당 업무 버튼: 아마·프로·해외 세 줄, 넘치면 그 줄만 가로로 민다 */
 .sasg{flex:1 1 100%;display:grid;gap:3px;min-width:0}.sasg>div{display:flex;align-items:center;gap:6px;min-width:0}.sasg>div>i{flex:none;width:26px;font-style:normal;font-size:11px;color:var(--muted)}.sasg .optrow{flex:1;min-width:0}.sasg .optrow>button{padding:3px 8px;min-height:26px}
 /* 스태프 시장: 지금 그 자리 코치 고정 줄, 핵심 능력 차이(카페 11-08) */
-.st-pin{border-left:3px solid var(--acc);background:color-mix(in srgb,var(--acc) 7%,transparent)}
 .st-ab em{font-style:normal;font:700 10px var(--f-num);margin-left:2px}.st-ab em.good{color:var(--good)}.st-ab em.bad{color:var(--bad)}
+/* 코치 시장: 지금 우리 코치 카드와 나란히(카페 11-08) */
+.cmk-split{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:12px;align-items:start}
+.cmk-cur{position:sticky;top:0;border:1px solid var(--acc);border-radius:6px;padding:8px;background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
+.cmk-cur .eyebrow,.cmk-pair .eyebrow{color:var(--acc);margin-bottom:4px}
+.cmk-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:899px){.cmk-split{grid-template-columns:1fr}.cmk-cur{position:static}.cmk-pair{grid-template-columns:1fr}}
