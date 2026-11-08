@@ -2053,6 +2053,16 @@ T('[검수 11-08c] FA·포스팅: 전임 단장 AI 제안, 정원 찬 AI 제안,
   G.posting=[]; q.postPromise=G.year; const e2=evNew('post','t','s',[{l:'a'},{l:'b'},{l:'c'}],{data:{pid:q.id,promised:true,day:postDay()},def:0}); evPick(e2.id,1); ok(q.postPromise===G.year+1,'약속을 미뤘는데 연도 그대로 '+q.postPromise);
 });
 T('[사용자 11-08] 우리 선수 능력치는 매달 기록되고, 한 달·올해·1년 전과 비교한 변화를 낸다',()=>{ fresh(); const p=playersOf(G.user).find(x=>!x.isP&&!x.prospect); p.rm=[]; rmSnap(true); ok(p.rm.length===1,'기록 없음'); G.day+=5; rmSnap(); ok(p.rm.length===1,'20일 안에 또 기록'); G.day-=5; const k=Object.keys(p.r)[0]; const v0=p.r[k]; p.rm[0].d=G.day-40; p.r[k]=v0+3; const D=rmDelta(p,'1m'); ok(D&&Math.abs(D.d[k]-3)<1e-9,'변화 '+JSON.stringify(D&&D.d)); ok(typeof ovrDelta(p,'1m')==='number','종합 변화'); p.r[k]=v0; });
+T('[검수 11-08d] 이직·세대교체 장부·경력: 보조 코치 인계와 나이, 은퇴 선수 연봉, 육성 방출 연봉, 경기 상세 보존, 단장 시즌 수, AI 단장 거래 귀속',()=>{ fresh(); G.day=G.cal.open+40; const A0=G.user; const B=G.teams.find(t=>t.id!==A0).id;
+  const cx={id:'cx1',name:'보조',age:36,yrs:2,dv:60,sk:50,role:'pc',sal:50}; G.coachX=[cx]; G.games=[{day:G.day-1,home:A0,away:B,hs:3,as:2,box:{x:1}}];
+  switchTeam(B); ok(!(G.coachX||[]).includes(cx)&&cx.yrs===2,'떠난 구단 보조 코치를 풀어 버림 '+cx.yrs);
+  G.year++; try{ asstYear(); }catch(e){} G.year--; ok(cx.age===37&&cx.yrs===1,'떠난 구단 보조 코치 나이·계약이 멈춤 '+cx.age+'/'+cx.yrs);
+  switchTeam(A0); ok((G.coachX||[]).includes(cx),'돌아왔는데 보조 코치가 없음'); ok((G.games||[]).some(g=>g.box&&g.home===A0&&g.away===B),'돌아오니 박스스코어가 사라짐');
+  const p=playersOf(A0).find(x=>!x.foreign&&x.sal>=500); const y=G.year; const before=payYear(A0,y); toFree(p,'정리',false,true); const mid=payYear(A0,y); dropP(p.id); ok(Math.abs(payYear(A0,y)-mid)<=1&&mid>0,'은퇴하면 이미 생긴 연봉이 사라짐 '+before+' '+mid+' '+payYear(A0,y));
+  const q=playersOf(A0).find(x=>!x.foreign&&!x.ys&&x.sal>=5000&&!x.ext&&!x.extNext); if(q){ q.sal=10000; const [w0,w1]=payWin(y); G.day=w0+30; ysSet(q); G.day=w0+60; const wB=payYear(A0,y); toFree(q,'정리',false,true); const wA=payYear(A0,y); const exp=(10000*30+q.sal*30)/(w1-w0); ok(wA>=wB-Math.round(q.sal*(w1-G.day)/(w1-w0))-5,'육성 방출 뒤 전환 전 연봉이 빠짐 '+wB+'→'+wA); }
+  G.day=G.cal.open+60; G.myC=G.myC||{}; G.myC.seas=[{y:G.year,tid:B,w:10,l:10,part:1}]; ok(meSeasons()===1,'같은 해를 두 시즌으로 '+meSeasons());
+  const gm=team(B).gm||gmOf(B); G.lgTrades=[{y:G.year,d:G.day,a:B,b:A0,ga:'old',gb:null,ag:[],bg:[]}]; G.trades=[]; const st=aiGmStats(B); ok(st&&(st.tr??st.trades??0)===0||!st,'전임 AI 단장 거래를 물려받음 '+JSON.stringify(st&&{tr:st.tr}));
+});
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

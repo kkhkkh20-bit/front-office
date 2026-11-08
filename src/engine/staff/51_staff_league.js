@@ -5,10 +5,10 @@
    스태프는 해마다 경험이 쌓여 성장하고(젊을수록), 오래 일하면 충성도가 올라 잘 떠나지 않는다 */
 const ST_SC_N=[3,5], ST_AN_N=[2,4];
 function stAttr(s){ if(s.amb==null)s.amb=Math.round(clamp(N(50,20),5,95)); if(s.loy==null)s.loy=20; if(s.age==null)s.age=ri(30,58); return s; }
-function stInit(){ if(G.lgStaff)return G.lgStaff; const L=G.lgStaff={}; for(const t of G.teams){ if(t.id===G.user)continue; L[t.id]=stMakeTeam(t); stSync(t.id); }
+function stInit(){ if(G.lgStaff)return G.lgStaff; const L=G.lgStaff={}; for(const t of G.teams){ if(t.id===ME())continue; L[t.id]=stMakeTeam(t); stSync(t.id); }
   for(const s of G.scouts||[]){ stAttr(s); s.loy=Math.max(s.loy,ri(30,55)); } for(const a of anaList()){ stAttr(a); a.loy=Math.max(a.loy,ri(30,55)); } return L; }
 /* AI 구단 스태프 목록(없으면 만든다). 우리 구단은 G.scouts/G.analysts를 쓰므로 null */
-function stTeamL(tid){ if(tid===G.user)return null; const L=stInit(); return L[tid]=L[tid]||stMakeTeam(team(tid)); }
+function stTeamL(tid){ if(tid===ME())return null; const L=stInit(); return L[tid]=L[tid]||stMakeTeam(team(tid)); }
 /* 창단 리그라 모든 구단이 우리와 같은 조건(스카우트 3명: 능력 2~3·2·2, 분석원 3명: 능력 2)에서 시작한다.
    그 뒤 해마다 비시즌에 구단 재정·시장 규모에 따라 스태프를 늘리고 바꾼다(stAiHire) */
 function stMakeTeam(t){ const sc=[], an=[];
@@ -62,7 +62,7 @@ function stJoin(kind,s,tid,sal){ const L=stTeamL(tid); if(!L||!team(tid))return 
 /* 매달 1일: AI 구단이 시장에서 사람을 데려간다(좋은 후보부터 사라진다) */
 /* 재제안 기한이 지난 후보는 경쟁 제안을 낸 구단이 그 조건으로 데려간다(검수 11-06: 기한·경쟁 금액이 무시되고 다른 AI가 기본 연봉에 먼저 데려갔다) */
 function stBidSettle(){ for(const [kind,mk] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]])for(const s of [...mk]){ const B=s.bid; if(!B||B.exp>=G.day)continue; delete s.bid; if(team(B.t)&&B.t!==G.user){ stAttr(s); stJoin(kind,s,B.t,B.sal); } } }
-function stAiMonthly(){ stInit(); try{ stBidSettle(); }catch(e){} const off=period()!=='season'; for(const t of G.teams){ if(t.id===G.user)continue; if(R()>(off?.35:.12)*clamp(t.market,.7,1.3))continue; const L=G.lgStaff[t.id];
+function stAiMonthly(){ stInit(); try{ stBidSettle(); }catch(e){} const off=period()!=='season'; for(const t of G.teams){ if(t.id===ME())continue; /* 야인이면 전 구단도 후임 단장이 채용(검수 11-08) */ if(R()>(off?.35:.12)*clamp(t.market,.7,1.3))continue; const L=G.lgStaff[t.id];
     for(const [kind,list,mkt] of [['sc',L.sc,scoutMkt()],['an',L.an,anaMarket()]]){ const worst=[...list].sort((a,b)=>a.skill-b.skill)[0]; const room=list.length<(kind==='sc'?ST_SC_N[1]:ST_AN_N[1]);
       const c=mkt.filter(s=>!s.ob&&!(s.bid&&s.bid.exp>=G.day)&&(room||(worst&&s.skill>=worst.skill+2))&&(s.skill<5||t.market>=1.05||R()<.4)).sort((a,b)=>stScore(b,t.id,b.sal,false)-stScore(a,t.id,a.sal,false)+(b.skill-a.skill)*20)[0];
       if(c&&R()<.6){ stAttr(c); if(!room&&worst){ const i=list.indexOf(worst); list.splice(i,1); (kind==='sc'?G.scoutMarket:G.amarket).push(worst); } stJoin(kind,c,t.id); break; } } } }

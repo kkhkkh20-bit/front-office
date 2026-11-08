@@ -14,7 +14,7 @@ function myCStart(tid,terms,why){ const old=G.myC; const sal=terms&&terms.sal||m
   chron('join',`${tname(tid)} 단장 계약: 연봉 ${money(sal)}, ${y0}~${y0+yrs-1}년${why?` (${why})`:''}`,null,tid); }
 function myCEnd(how,y){ const C=G.myC; if(!C)return; if(C.tid!=null){ const per=period(), r=G.sea&&G.sea.rec&&G.sea.rec[C.tid];
     /* 시즌 중 떠나면 그 구단에서 쌓은 그해 승패를 통산에 남긴다(검수 11-07: 이직하면 사라짐). 순위·우승은 시즌을 마친 구단 기준이라 part 표시 */
-    if((per==='season'||per==='post')&&r&&!(C.seas||[]).some(s=>s.y===G.year&&s.tid===C.tid)){ const J=G.gmJoin&&G.gmJoin.y===G.year&&G.gmJoin.tid===C.tid?G.gmJoin:null; let rk=null; try{ rk=standingsNow().findIndex(x=>x.tid===C.tid)+1||null; }catch(e){} (C.seas=C.seas||[]).push({y:G.year,tid:C.tid,rank:rk,w:Math.max(0,(r.w||0)-(J?J.w:0)),l:Math.max(0,(r.l||0)-(J?J.l:0)),ch:0,part:1}); }
+    const J0=G.gmJoin&&G.gmJoin.y===G.year&&G.gmJoin.tid===C.tid?G.gmJoin:null; if((per==='season'||per==='post')&&r&&!(J0&&J0.rec)&&!(C.seas||[]).some(s=>s.y===G.year&&s.tid===C.tid&&(!s.part||!J0))){ const J=J0; if(J)J.rec=true; /* 같은 해 같은 구단 두 번째 재임도 그 기간 승패로 남긴다(검수 11-08) */ let rk=null; try{ rk=standingsNow().findIndex(x=>x.tid===C.tid)+1||null; }catch(e){} (C.seas=C.seas||[]).push({y:G.year,tid:C.tid,rank:rk,w:Math.max(0,(r.w||0)-(J?J.w:0)),l:Math.max(0,(r.l||0)-(J?J.l:0)),ch:0,part:1}); }
     /* 이 구단에서 이미 받은 월급은 이 구단이 낸다(검수 11-07: 지갑엔 들어왔는데 어느 구단 장부에도 없음) */
     try{ const S=personalState(), fy=fyNow(), ak=fy+':'+C.tid, adv=S.advance[ak]||0; if(adv>0&&!S.settled[fy]){ team(C.tid).cash-=adv; C.earn+=adv; delete S.advance[ak]; } }catch(e){} }
   let fin=null; try{ const L=G.last; if(L&&L.fins&&L.fins[C.tid]&&L.y>=C.y0){ const o=L.order&&L.order.find(x=>x.tid===C.tid); fin={y:L.y,f:JSON.parse(JSON.stringify(L.fins[C.tid])),rank:L.order?L.order.findIndex(x=>x.tid===C.tid)+1:null,w:o?o.w:null,l:o?o.l:null}; } }catch(e){} /* 퇴임 시점의 마지막 시즌 결산: 야인이 되어도 복기할 수 있게 경력에 남긴다 */
@@ -22,7 +22,7 @@ function myCEnd(how,y){ const C=G.myC; if(!C)return; if(C.tid!=null){ const per=
 /* 결산 지출: 단장 연봉 */
 function myCPay(){ const C=myCInit(); if(!C||G.unemp)return 0; if(personalState().settled[fyNow()])return 0; /* 같은 회계연도 두 번째 정산: 지갑·경력 수입·구단 지출 모두 한 번만(검수 11-06) */C.earn+=C.sal;personalSettle(C.sal); return C.sal; }
 /* 시즌 기록(경질 판정 전에 남긴다) */
-function myCRecord(y,rank,ps,uo){ const C=myCInit(); if(!C||G.unemp)return; const J=G.gmJoin&&G.gmJoin.y===y&&G.gmJoin.tid===G.user?G.gmJoin:null; /* 시즌 중 부임: 전임 단장 때 승패는 빼고 부임 뒤 승패만(검수 11-06) */ C.seas.push({y,tid:G.user,rank,w:uo.w-(J?J.w:0),l:uo.l-(J?J.l:0),ch:ps.champ===G.user?1:ps.runner===G.user?2:0}); if(C.seas.length>120)C.seas.splice(0,C.seas.length-120); }
+function myCRecord(y,rank,ps,uo){ const C=myCInit(); if(!C||G.unemp)return; const J=G.gmJoin&&G.gmJoin.y===y&&G.gmJoin.tid===G.user?G.gmJoin:null; /* 시즌 중 부임: 전임 단장 때 승패는 빼고 부임 뒤 승패만(검수 11-06) */ C.seas.push({y,tid:G.user,rank,w:uo.w-(J?J.w:0),l:uo.l-(J?J.l:0),ch:J&&J.psDone?0:ps.champ===G.user?1:ps.runner===G.user?2:0}); if(C.seas.length>120)C.seas.splice(0,C.seas.length-120); }
 /* 경질: 남은 기간 연봉을 구단이 정산한다 */
 function myCFired(y){ const C=G.myC; if(!C||C.tid==null)return ''; const left=Math.max(0,C.y1-y); const owed=left*C.sal; if(owed>0){ team(C.tid).cash-=owed;personalState(); C.earn+=owed;personalSalary(owed,'경질 잔여 연봉 정산'); } myCEnd('경질',y); return owed>0?` 남은 계약 ${left}년 치 연봉 ${money(owed)}을 구단이 정산합니다.`:''; }
 
