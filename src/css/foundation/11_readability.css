@@ -484,3 +484,4 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .fo-evs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
 .fo-ev{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px;border:1px solid var(--line,#333);border-radius:8px;min-width:0}
 .fo-ev p{margin:2px 0 0}
+.rv-w>.still,.rv-w>.still *{animation:none!important}
