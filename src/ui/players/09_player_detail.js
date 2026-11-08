@@ -20,9 +20,17 @@ function detailOf(p,rp){ const tv={}, tf={}; for(const t of rp.tools){ tv[t.k]=t
   const radar=!p.isP?[['컨택',c(tv.con),c(tf.con)],['파워',c(tv.pow),c(tf.pow)],['선구안',c(tv.eye),c(tf.eye)],['주루',c(tv.spd),c(tf.spd)],['수비',tv.def,tf.def],['체력',c(tv.vit),c(tf.vit)]]
     :[['구위',c(tv.stf),c(tf.stf)],['제구',c(tv.ctl),c(tf.ctl)],['스태미나',c(tv.sta),c(tf.sta)],['무브먼트',c((tv.stf+tv.ctl)/2+o('mv')),c((tf.stf+tf.ctl)/2+o('mv'))],['구속',c(20+(veloOf(p)-130)/25*60),c(20+(veloOf(p)-130)/25*60)],['결정구',Math.max(...G2[1][1].map(x=>x[1])),Math.max(...G2[1][1].map(x=>x[1]))]];
   return {groups:G2,radar}; }
-function radarSVG(ax,showFut){ const n=ax.length, cx=110, cy=104, R=78; const pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n, r=R*clamp((v-20)/60,0,1); return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; };
+function radarSVG(ax,showFut,big){ const n=ax.length, cx=big?130:110, cy=big?122:104, R=big?100:78; const pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n, r=R*clamp((v-20)/60,0,1); return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; };
   const ring=v=>ax.map((_,i)=>pt(i,v).map(x=>x.toFixed(1)).join(',')).join(' ');
   const poly=k=>ax.map((a,i)=>pt(i,a[k]).map(x=>x.toFixed(1)).join(',')).join(' ');
+  if(big){ /* 선수 상황판 큰 차트: 축 이름 위·수치 아래 두 줄, 꼭짓점 점, 점선 원 = 1군 평균(사용자 11-08) */
+    const L=ax.map((a,i)=>{ const an=-Math.PI/2+i*2*Math.PI/n, x=cx+(R+24)*Math.cos(an), y=cy+(R+20)*Math.sin(an); return `<text x="${x.toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" class="rd-n">${a[0]}</text><text x="${x.toFixed(1)}" y="${(y+14).toFixed(1)}" text-anchor="middle" class="rd-v" fill="${rcol(Math.round(a[1]))}">${dv(a[1])}</text>`; }).join('');
+    const dots=ax.map((a,i)=>{ const [x,y]=pt(i,a[1]); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="var(--acc)" stroke="#0b1014" stroke-width="1"/>`; }).join('');
+    return `<svg class="radar rd-big" viewBox="0 -6 260 262" role="img" aria-label="능력치 레이더">
+    ${[35,50,65,80].map(v=>`<polygon points="${ring(v)}" fill="${v===80?'rgba(255,255,255,.025)':'none'}" stroke="${v===50?'#7d8896':'#2a333e'}" stroke-dasharray="${v===50?'4 3':''}" stroke-width="${v===50?1.3:1}"/>`).join('')}
+    ${ax.map((_,i)=>{ const [x,y]=pt(i,80); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#2a333e"/>`; }).join('')}
+    ${showFut?`<polygon points="${poly(2)}" fill="rgba(230,185,59,.08)" stroke="#e6b93b" stroke-dasharray="4 3" stroke-width="1.6"/>`:''}
+    <polygon points="${poly(1)}" fill="color-mix(in srgb, var(--acc) 34%, transparent)" stroke="var(--acc)" stroke-width="2.4"/>${dots}${L}</svg>`; }
   const lab=ax.map((a,i)=>{ const [x,y]=pt(i,92); const anc=Math.abs(x-cx)<8?'middle':x>cx?'start':'end'; return `<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="${anc}" class="rd-l">${a[0]} <tspan fill="${rcol(Math.round(a[1]))}" font-weight="800">${dv(a[1])}</tspan></text>`; }).join('');
   return `<svg class="radar" viewBox="-30 0 280 208" role="img" aria-label="능력치 레이더">
     ${[35,50,65,80].map(v=>`<polygon points="${ring(v)}" fill="none" stroke="${v===50?'#55606e':'#2a333e'}" stroke-dasharray="${v===50?'3 3':''}"/>`).join('')}
