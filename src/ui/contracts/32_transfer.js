@@ -9,7 +9,7 @@ function transferView(){
 function fsPill(p,rp,f){ f=f||fScout(p,rp); return `<span class="pill fsp ${f.cls}" title="${esc(f.d+' 근거: '+f.why.join(', '))}">${f.l}</span>`; } /* 예상·범위는 카드 왼쪽 숫자에, 여기는 조사 단계만 */
 function netPill(r){ const lv=intlLv(r); return `<span class="pill net${lv}" title="${esc(INET[lv].d)}">${IREG[r].l} · ${INET[lv].l}</span>`; }
 function foreignView(){
-  const fs=foreignOf(G.user); const yb=fs.filter(p=>p.foreign==='용병'); const as=fs.filter(p=>p.foreign==='아시아'); const tot=sum(yb.map(fCommit));
+  const fs=fStayOf(G.user); const yb=fs.filter(p=>p.foreign==='용병'); const as=fs.filter(p=>p.foreign==='아시아'); const tot=sum(yb.map(fCommit));
   const per=period(); const mid=per==='season'; const open=foreignOpen();
   const ff=Object.assign({t:'yb',r:'all',s:'rk'},UI.ff||{}); const asia=ff.t==='asia'; const kind=asia?'아시아':'용병', used=fReplUsed(G.user,kind), max=fReplMax(kind);
   const regs=Object.keys(IREG).filter(r=>IREG[r].asia===asia);
@@ -28,7 +28,7 @@ function foreignView(){
   const summary=`<section class="card">${rule}
     <p class="small muted">${mid?`${asia?'아시아쿼터':'일반 외국인'} 시즌 중 교체 ${used}/${max}회, 영입하면 남은 경기 비율만큼 연봉을 냅니다. `:''}${open?'후보는 매달 1일 일부 바뀝니다. 8월 15일 이후에는 영입할 수 없습니다.':'<b>지금은 영입 기간이 아닙니다.</b> (12월~8월 15일)'}</p>
     <div class="netrow">${regs.map(netPill).join('')}<button class="tc-i" data-a="itab" data-v="fview${asia?'a':''}:net">해외 스카우트망 관리</button></div>
-    ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(foreignOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)} <button type="button" class="hi-i" data-tip="${esc('배정 예산 안에서 영입하면 홈의 예산 여유는 그대로이고, 넘는 만큼만 줄어듭니다.\n'+(G.gmSince===G.year?'첫 시즌: 규정 한도만큼 구단주가 미리 배정했습니다.':'지난 시즌 리그 평균 외국인 지출 기준입니다.'))}">i</button></p>`; })()}
+    ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(fStayOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)} <button type="button" class="hi-i" data-tip="${esc('배정 예산 안에서 영입하면 홈의 예산 여유는 그대로이고, 넘는 만큼만 줄어듭니다.\n'+(G.gmSince===G.year?'첫 시즌: 규정 한도만큼 구단주가 미리 배정했습니다.':'지난 시즌 리그 평균 외국인 지출 기준입니다.'))}">i</button></p>`; })()}
     ${UI.fmsg2?`<div class="note bad">${esc(UI.fmsg2)}</div>`:''}</section>`;
   const mine=(asia?as:yb).map(p=>pcard(p,{sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)}`,tags:p.fy===G.year||p.fy===G.year+1?'<span class="pill">리그 첫 시즌</span>':'',foot:`<b class="num">${money(p.sal)}</b><span>${Math.round(p.sal/USD)}만 달러 · ${p.rsy?`재계약 ${p.rsy}년차`:'첫 계약'}</span><button class="tc-i" data-a="player" data-v="${p.id}">상세</button><button class="tc-i" data-a="relNow" data-v="${p.id}">방출</button>`})).join('');
   const cards=market.map(({p,rp,fs})=>{ const est=fs.mid!=null?{v:fs.mid,raw:fs.raw,lo:fs.lo,hi:fs.hi}:null; const err=open?foreignCheck(G.user,p):'영입 기간이 아닙니다.'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const pay=mid?Math.round(p.ask*remainFrac()):p.ask;
@@ -70,7 +70,7 @@ function contractPage(){
 
 
 /* PC 외국인(FM 선수 검색처럼): 위 한도 요약, 왼쪽 후보 표(능력은 스카우트가 아는 만큼 범위로), 오른쪽 우리 외국인 · 관찰 명단 · 해외 스카우트망 */
-function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,market,fchips,rule}=o, b=budget(), mine=asia?as:yb, cap=asia?1:3, fsU=sum(foreignOf(G.user).map(p=>p.sal));
+function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,market,fchips,rule}=o, b=budget(), mine=asia?as:yb, cap=asia?1:3, fsU=sum(fStayOf(G.user).map(p=>p.sal));
   const tabs=`<div class="seg tf-seg"><button data-a="ffset" data-v="t:yb" class="${!asia?'on':''}">외국인 선수 ${yb.length}/3</button><button data-a="ffset" data-v="t:asia" class="${asia?'on':''}">아시아쿼터 ${as.length}/1</button></div>`;
   const top=tfKpi([tabs,...(asia?[['아시아쿼터',`${as.length} / 1`,as.length?'good':'warn','일반 외국인 3명과 별도'],['연봉 상한','신규 20만 달러','',`재계약은 직전 연봉 +10만 달러/년 · 총액 한도 밖`],['대상','일본·대만·호주']]
       :[['외국인',`${yb.length} / 3`,yb.length<3?'warn':'good'],['투수 · 타자',`${yb.filter(p=>p.isP).length} · ${yb.filter(p=>!p.isP).length}`,'','3명 모두 한쪽은 불가'],['총액 / 한도',`${Math.round(tot/USD)}만 / ${Math.round(capT/USD)}만 달러`,tot>capT?'bad':'','신규 계약 1인 100만 달러까지']]),
@@ -111,10 +111,10 @@ function contractFM(){ const live=!!(G.contract&&!G.contract.done), ps=playersOf
 function fTmpBox(market){ const mine=playersOf(G.user).filter(q=>q.ftmp).map(q=>`<p class="small"><span class="pill">부상 대체</span> <button class="lnk" data-a="player" data-v="${q.id}">${esc(q.name)}</button> · ${esc((G.players[q.ftmp.o]||{}).name||'')} 대신 · 월 ${money(q.ftmp.fee)} · 정규시즌 끝에 계약 종료</p>`).join('');
   const inj=foreignOf(G.user).filter(o=>o.foreign==='용병'&&!fTmpErr(G.user,o)); const sel=UI.ftmpFor!=null&&inj.find(o=>o.id===UI.ftmpFor);
   if(!mine&&!inj.length)return '';
-  const pick=sel?`<div class="note">${esc(sel.name)}(${esc(posLabel(sel))}, ${sel.injOut}일 진단) 대신 등록할 후보를 고르세요. 보수는 월 10만 달러(${money(F_TMP_MON)})까지이고 교체 횟수는 쓰지 않습니다.</div>
+  const pick=sel?`<div class="note">${esc(sel.name)}(${esc(posLabel(sel))}, ${fTmpDx(sel)}일 진단 · 남은 재활 ${sel.injOut}일) 대신 등록할 후보를 고르세요. 보수는 월 10만 달러(${money(F_TMP_MON)})까지이고 교체 횟수는 쓰지 않습니다.</div>
     ${market.filter(x=>!fTmpErr(G.user,sel,x.p)).slice(0,8).map(({p})=>`<div class="row between wrapr"><span><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 월 ${money(fTmpFee(p))}</span></span><button class="btn small primary" data-a="fTmpSign" data-v="${p.id}">부상 대체로 등록</button></div>`).join('')||'<p class="small muted">조건에 맞는 후보가 없습니다.</p>'}
     <div class="btns"><button class="btn small" data-a="fTmpStart" data-v="">고르기 취소</button></div>`:'';
-  return `<div class="eyebrow">부상 대체 외국인</div>${mine}${sel?'':inj.map(o=>`<div class="row between wrapr"><span class="small">${esc(o.name)}(${esc(posLabel(o))}) ${o.injOut}일 치료 진단 · 6주 이상이라 대체 선수를 쓸 수 있습니다</span><button class="btn small" data-a="fTmpStart" data-v="${o.id}">대체 선수 고르기</button></div>`).join('')}${pick}`; }
+  return `<div class="eyebrow">부상 대체 외국인</div>${mine}${sel?'':inj.map(o=>`<div class="row between wrapr"><span class="small">${esc(o.name)}(${esc(posLabel(o))}) ${fTmpDx(o)}일 치료 진단(남은 재활 ${o.injOut}일) · 6주 이상이라 대체 선수를 쓸 수 있습니다</span><button class="btn small" data-a="fTmpStart" data-v="${o.id}">대체 선수 고르기</button></div>`).join('')}${pick}`; }
 
 /* 휴대폰 외국인 후보 목록: 한 줄에 이름·포지션·예상 능력(범위)·요구 연봉·관심 구단·협상 버튼, 아래 줄에 지난 리그 기록. 이름을 누르면 선수 정보 */
 function fRows(market,open,mid){ if(!market.length)return '<p class="small muted">조건에 맞는 후보가 없습니다.</p>';

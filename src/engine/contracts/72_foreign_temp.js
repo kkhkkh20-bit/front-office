@@ -42,9 +42,11 @@ function fTmpConvertErr(q){ const tid=q.team, o=G.players[q.ftmp.o];
 function fTmpConvertDo(q,tid){
   { const f=q.ftmp, pre=Math.round(f.fee*Math.max(0,f.d+f.paid-G.day)/30); if(pre>0)G.sea.fspend[tid]=Math.max(0,(G.sea.fspend[tid]||0)-pre); } /* 이미 낸 대체 보수 중 전환 뒤 기간은 돌려받는다: 정식 연봉과 겹치지 않게(검수 11-08) */
   delete q.ftmp; G.sea.repl[tid]=(G.sea.repl[tid]||0)+1; G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+Math.round(q.sal*remainFrac());
-  story(q,`${tname(tid)}과(와) 정식 계약 전환 (${money(q.sal)})`,'move'); mvLog('외국인',q,null,tid,'부상 대체 → 정식 계약',q.sal);
+  story(q,`${tname(tid)}과(와) 정식 계약 전환 (${money(q.sal)})`,'move'); mvLog('외국인',q,tid,tid,'부상 대체 → 정식 계약',q.sal); /* 이미 우리 선수: 무소속 → 영입으로 두 번 세지 않는다(검수 11-09c) */
   if(tid===G.user)addLog(`${q.name}을(를) 정식 외국인 선수로 계약했습니다. 교체 횟수 1회를 썼습니다.`); else wire('외국인',`${tshort(tid)}, 부상 대체 ${q.name}과(와) 정식 계약`,{tid,ref:q.id});
   return ''; }
+/* 대체 선수가 방출 등 다른 길로 떠나면 열려 있던 거취 결정도 닫는다(검수 11-09c: 방출 뒤에도 미처리로 남음). dropP에서 부른다 */
+function fTmpEvClose(q){ for(const e of G.evs||[]){ if(e.done||(e.k!=='ftmp'&&e.k!=='ftmp2')||!e.data||e.data.qid!==q.id)continue; e.done=true; e.void=true; e.res=`대체 선수 ${q.name}이(가) 떠나 결정이 끝났습니다.`; const m=(G.mail||[]).find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[종료] ${e.res}`; } G.stops=(G.stops||[]).filter(x=>x.id!==e.mid); } }
 /* 원 선수가 돌아오면 같은 유형 외국인 3명이 되는가(그사이 다른 외국인을 바꿨을 때) */
 function fBackClash(o,q){ if(!o||o.foreign!=='용병')return false; const yb=Object.values(G.players).filter(x=>x.team===o.team&&x.foreign==='용병'&&x!==o&&x!==q&&!x.ftmp); return yb.length>=3||(yb.length===2&&yb.every(x=>x.isP===o.isP)); }
 /* 복귀하면 규정이 깨지는 경우: 대체 선수를 정식 계약으로(원 선수 방출), 못 하면 원 선수 방출·대체 계약 종료 */
@@ -69,7 +71,7 @@ function fTmpDaily(){ const per=period();
       {from:'운영팀',ref:q.id,data:{qid:q.id},def:0,exp:5}); }
   for(const t of G.teams)for(const o of playersOf(t.id))if(o.frehab==='hold'&&!fBackClash(o,null)){ delete o.frehab; if(t.id===G.user)note('운영팀',`${o.name}이(가) 재활 선수 명단에서 돌아와 다시 뛸 수 있습니다.`); } /* 다른 외국인을 정리하면 복귀 */
   if(per==='season'&&G.day<=foreignDL()&&!G.unemp)for(const o of foreignOf(G.user)){ if(fTmpErr(G.user,o)||o.ftmpM>=G.day-60)continue; o.ftmpM=G.day;
-    mail('운영팀',`${o.name} ${o.injOut}일 진단: 부상 대체 외국인 등록 가능`,`${o.name}(${posLabel(o)})이(가) ${o.injOut}일 치료 진단을 받았습니다. KBO 규정상 6주 이상 부상이면 재활 선수 명단에 올리고 대체 외국인을 등록할 수 있습니다. 교체 횟수는 쓰지 않고, 보수는 한 달 10만 달러(약 ${money(F_TMP_MON)})까지입니다. 원 선수가 돌아오면 둘 중 한 명을 고릅니다.`,{kind:'외국인',ref:o.id,acts:[{l:'대체 선수 고르기',a:'fTmpStart',v:o.id}]}); } }
+    mail('운영팀',`${o.name} ${fTmpDx(o)}일 진단: 부상 대체 외국인 등록 가능`,`${o.name}(${posLabel(o)})이(가) ${fTmpDx(o)}일 치료 진단을 받았습니다(남은 재활 ${o.injOut}일). KBO 규정상 6주 이상 부상이면 재활 선수 명단에 올리고 대체 외국인을 등록할 수 있습니다. 교체 횟수는 쓰지 않고, 보수는 한 달 10만 달러(약 ${money(F_TMP_MON)})까지입니다. 원 선수가 돌아오면 둘 중 한 명을 고릅니다.`,{kind:'외국인',ref:o.id,acts:[{l:'대체 선수 고르기',a:'fTmpStart',v:o.id}]}); } }
 /* AI: 시즌 안에 돌아올 부상이면 대체 선수, 시즌 아웃이면 기존처럼 교체 */
 function aiForeignTemp(tid){ const left=Math.max(0,G.cal.end-G.day); /* 남은 날짜로 비교(경기 수와 재활 일수를 비교해 대체를 건너뛰었다, 검수 11-08) */
   for(const o of foreignOf(tid)){ if(fTmpErr(tid,o)||o.injOut>left*1.1)continue;

@@ -2,7 +2,7 @@
 function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; if(y===G.year&&G.ps&&G.ps.finDay!=null)return G.ps.finDay; if(y===G.year&&G.cal&&G.cal.end)return Math.min(dnum(y,11,5),G.cal.end+30); return dnum(y,11,5); } /* 결산은 한국시리즈 이틀 뒤: 알면 그날, 모르면 정규시즌 끝 +30일로 어림 */
 function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경제 지수로(검수 11-08) */ const t=team(G.user); const ci=capInfo(G.user); const S=G.spend||{}; const m=G.mgr[G.user]; prInit();
   const rem=Math.max(0,finYearEnd()-G.day)/365; const acc=(spent,annual)=>Math.round((spent||0)+annual*rem);
-  const settled=G.last&&G.last.y>=G.year; const SPj=stadProj(G.user,settled); const fsNow=sum(forPayOf(G.user).map(p=>p.sal))+fDeadOf(G.user,sponSeason()); /* 개막 전 방출 선수의 보장 연봉 포함 */
+  const settled=G.last&&G.last.y>=G.year; const SPj=stadProj(G.user,settled); const fsNow=sum(forPayOf(G.user).filter(p=>!fDropIds(G.user).includes(p.id)).map(p=>p.sal))+fDeadOf(G.user,sponSeason()); /* 개막 전 방출 선수의 보장 연봉 포함 */
   const fs=!settled&&G.sea&&G.sea.fspend&&G.sea.fspend[G.user]!=null?G.sea.fspend[G.user]:fsNow;
   const fR=settled?((G.lgFor&&G.lgFor[G.year])||3200):(G.cal&&G.day>=G.cal.open&&G.sea&&G.sea.y===G.year)?0:fReserve(); const fsB=Math.max(fs,fR);
   const intlA=sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c));
@@ -31,7 +31,7 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,cash:t.cash,endCash:(c0=>t.indie&&c0>8000?c0-Math.round((c0-8000)*.5):c0)(t.cash+I+support-E),divEst:(c0=>t.indie&&c0>8000?Math.round((c0-8000)*.5):0)(t.cash+I+support-E), /* 독립구단은 결산 뒤 80억 초과분의 절반을 투자사가 배당으로 가져간다(검수 11-07) */
     lockI:IL, extra:Math.round(I-IL), lockD:lock?lock.d:null, capLock:capL, goalLive:goalSup,
     roomGoal:goalL-needL, roomCap:capL-needL, roomMax:capL-gapL+Math.max(0,t.cash), rem, indie:!!t.indie, trust:t.trust,
-    fR,fRoom:Math.max(0,fR-fs),fUsed:sum(foreignOf(G.user).filter(p=>p.foreign==='용병').map(fCommit)), fCap:fCap(G.user), aUsed:sum(foreignOf(G.user).filter(p=>p.foreign==='아시아').map(p=>p.sal)), ci}; }
+    fR,fRoom:Math.max(0,fR-fs),fUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='용병').map(fCommit)), fCap:fCap(G.user), aUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='아시아').map(p=>p.sal)), ci}; }
 /* 외국인 선수 연봉은 어느 구단이나 미리 잡아 두는 돈이다. 단장 첫 시즌은 규정 한도(신규 외국인 3명 각 100만 달러 + 아시아쿼터 20만 달러)까지 배정하고, 이후에는 지난 시즌 리그 평균 외국인 지출을 배정한다 */
 function fReserve(){ if(G.gmSince===G.year)return 3*F_NEW_CAP+ASIA_CAP; const L=G.lgFor&&G.lgFor[G.year-1]; return L||3200; }
 /* 개막 전 구단주 지원 목표는 시즌 시작 때 한 번 정해 둔다(지출할수록 여유가 줄어들도록) */
