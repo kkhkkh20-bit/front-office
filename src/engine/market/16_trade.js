@@ -178,8 +178,8 @@ function proposeTrade(tid,give,get,cash,pk){
     try{ frBacklash(give); }catch(e){}
     chron('trade',`${tshort(tid)}와(과) 트레이드: ${give.map(id=>G.players[id]?G.players[id].name:'').join('·')} 보내고 ${get.map(id=>G.players[id]?G.players[id].name:'').join('·')} 받음`);
     G.trades.push({y:G.year,d:G.day,with:tid,gw:(team(tid).gm||{}).id,give:give.map(id=>G.players[id].name),get:get.map(id=>G.players[id].name),diff,revealed:false,gi:[...get],go:[...give],snap,grade,me:G.user,...(cash?{cash}:{})}); /* me: 거래한 우리 구단(이직 뒤 시즌 평가 구분) */
-    t.rel=clamp(t.rel+2,0,100); prTrade(give,get,tid); give.forEach(id=>mvLog('트레이드',G.players[id],G.user,tid)); try{ if(give.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} get.forEach(id=>mvLog('트레이드',G.players[id],tid,G.user));
-    if(cash>0){ payOut(G.user,cash,'etc'); payIn(tid,cash); } else if(cash<0){ payOut(tid,-cash,'etc'); payIn(G.user,-cash); }
+    t.rel=clamp(t.rel+2,0,100); prTrade(give,get,tid); const tr=mvTr(); give.forEach(id=>mvLog('트레이드',G.players[id],G.user,tid,'',0,tr)); try{ if(give.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} get.forEach(id=>mvLog('트레이드',G.players[id],tid,G.user,'',0,tr));
+    if(cash>0){ payOut(G.user,cash,'etc'); payIn(tid,cash); } else if(cash<0){ payOut(tid,-cash,'etc'); payIn(G.user,-cash,'tradeIn'); } /* 트레이드로 받은 현금은 보상금·양도금과 따로(검수 11-08d) */
     const pkT=(L,s)=>L.length?`${s}${L.map(pkName).join(', ')}`:''; const pkG=pkT(pk.give,' + 지명권 '), pkR=pkT(pk.get,' + 지명권 '); pkMove(pk,tid); if(pkG||pkR){ const T=G.trades[G.trades.length-1]; T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)}; wire('트레이드',`${tshort(G.user)}·${tshort(tid)} 트레이드로 신인 지명권 이동: ${[...pk.give.map(k=>pkName(k)+' → '+tshort(tid)),...pk.get.map(k=>pkName(k)+' → '+tshort(G.user))].join(', ')}`,{tid}); }
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash>0?` + 현금 ${money(cash)}`:''}${pkG} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}${cash<0?` + 현금 ${money(-cash)}`:''}${pkR}`);
     if(oc0&&oc0.ok&&oc0.over>0)tradeOwnerOk(oc0); /* 승인 판정은 거래 전 한 번으로(검수 11-06: 거래 뒤 다시 계산하면 승인 대상이 사라져 신뢰 차감이 빠짐) */
