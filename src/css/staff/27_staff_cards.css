@@ -196,6 +196,5 @@ button.st-n:hover b{text-decoration:underline}
 /* 코치 시장: 지금 우리 코치 카드와 나란히(카페 11-08) */
 .cmk-split{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:12px;align-items:start}
 .cmk-cur{position:sticky;top:0;border:1px solid var(--acc);border-radius:6px;padding:8px;background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
-.cmk-cur .eyebrow,.cmk-pair .eyebrow{color:var(--acc);margin-bottom:4px}
-.cmk-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:899px){.cmk-split{grid-template-columns:1fr}.cmk-cur{position:static}.cmk-pair{grid-template-columns:1fr}}
+.cmk-cur .eyebrow{color:var(--acc);margin-bottom:4px}
+@media(max-width:899px){.cmk-split{grid-template-columns:1fr}.cmk-cur{position:static}}
