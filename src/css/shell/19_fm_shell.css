@@ -143,3 +143,5 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .champ-scene figure .av{width:84px;height:84px;border-radius:50%;border:3px solid #ffd24d;object-fit:cover;background:#111}.champ-scene figcaption{font-size:12px;display:grid}.champ-scene figcaption i{font-style:normal;color:#ffd24d;font-size:11px}
 @keyframes csFall{to{transform:translateY(110vh) rotate(540deg)}}@keyframes csGlow{50%{filter:drop-shadow(0 12px 60px rgba(255,210,77,.85))}}@keyframes csIn{from{opacity:0}}
 @media (prefers-reduced-motion: reduce){.champ-scene .cs-conf,.champ-scene .cs-trophy{animation:none}.champ-scene .cs-conf{display:none}}
+/* 휴대폰: 상단 '하루 진행' 버튼을 빼서 구단 이름·날짜 자리를 확보(사용자 11-08). 하루씩은 달력·진행하기 안 단계로 */
+@media (max-width:699px){ button.step[data-a="adv"][data-v="day"]{display:none!important} }
