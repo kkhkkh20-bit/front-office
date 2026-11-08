@@ -177,3 +177,14 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 /* 고교 감독·친분 줄(11-08c) */
 .scm-sch>.scm-hc{display:grid;gap:1px;border-top:1px dashed var(--line);padding-top:4px;margin-top:2px}
 .scm-hc .btn{justify-self:start}
+/* 소식함 가을야구 사다리(사용자 11-08) */
+.ipl{background:var(--card,#141b22);border:1px solid var(--line,#2a3540);border-radius:8px;padding:8px 10px;margin:6px 0 8px}
+.ipl header{display:flex;align-items:center;gap:8px;margin-bottom:6px}.ipl header b{flex:1;font-size:13px}.ipl header .eyebrow{color:#e8b64a}
+.ipl-r{display:flex;align-items:stretch;gap:4px;overflow-x:auto}.ipl-ar{align-self:center;color:var(--muted);flex:none}
+.ipl-c{flex:1 1 0;min-width:128px;border:1px solid var(--line,#2a3540);border-radius:6px;padding:5px 6px;font-size:12px}
+.ipl-c.on{border-color:#e8b64a;box-shadow:0 0 0 1px #e8b64a inset}.ipl-c.my{background:rgba(232,182,74,.07)}
+.ipl-h{display:flex;justify-content:space-between;margin-bottom:3px}.ipl-h i{color:var(--muted);font-style:normal;font-size:11px}
+.ipl-t{display:flex;align-items:center;gap:4px;line-height:20px}.ipl-t b{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ipl-t b.me{color:#e8b64a}.ipl-t em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums}
+.ipl-gs{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}.ipl-g{font-size:11px;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06);white-space:nowrap}.ipl-g i{font-style:normal;color:var(--muted);margin-right:3px}
+.ipl-g.w{background:rgba(42,138,60,.3)}.ipl-g.l{background:rgba(179,48,42,.3)}.ipl-g.nx{outline:1px dashed #e8b64a;outline-offset:-1px;white-space:normal}
+@media(max-width:700px){.ipl-c{min-width:118px}}

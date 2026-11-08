@@ -68,13 +68,22 @@ function ibPinned(list){ let S=UI._ibStk; if(!S||S.day!==G.day||UI._ibFirst)S=UI
   for(const m of list)if(!m.read&&S.g[m.id]==null)S.g[m.id]=ibMust(m)?0:1;
   const P=list.filter(m=>S.g[m.id]!=null); return P.filter(m=>S.g[m.id]===0).concat(P.filter(m=>S.g[m.id]===1)); }
 function ibFolds(){ return G.ibFold=G.ibFold||{}; }
+/* 가을야구 사다리(사용자 11-08: 포스트시즌이 메인 이벤트라 소식함에서도 계속 보인다). 라운드마다 두 팀·시리즈 전적·차전별 결과(1차전 7:3)·다음 경기 */
+function ibPsLadder(){ if(!G.ps||G.ps.done||typeof bkData!=='function')return ''; try{ const D=bkData(psYearOf(G.ps)); const nm={wc:'WC',spo:'준PO',po:'PO',ks:'KS'};
+  const t=x=>x!=null?`${badge(x,16)}<b class="${x===G.user?'me':''}">${esc(team(x).nick)}</b>`:'<b class="muted">미정</b>';
+  const cols=BK_R.map(r=>{ const S=bkSeries(D,r), L=bkGames(D,r)||[], cur=D.cur&&D.cur.round===r[0], st=S.win!=null?'종료':cur?'진행 중':'대기';
+    const gs=L.map(g=>g.p?`<span class="ipl-g${g.w===G.user?' w':[g.h,g.a].includes(G.user)&&g.w!=null?' l':''}"><i>${g.i+1}차전</i>${g.w!=null?`${esc(team(g.w).nick)} ${Math.max(g.p.hs,g.p.as)}:${Math.min(g.p.hs,g.p.as)}`:`무 ${g.p.hs}:${g.p.as}`}</span>`:g.st==='now'?`<span class="ipl-g nx"><i>${g.i+1}차전</i>${dobj(g.d).m}/${dobj(g.d).d} ${esc(team(g.h).nick)} 홈</span>`:'').join('');
+    return `<div class="ipl-c${cur?' on':''}${[S.hi,S.lo].includes(G.user)?' my':''}"><div class="ipl-h"><b>${nm[r[0]]}</b><i>${st}</i></div><div class="ipl-t">${t(S.lo)}<em>${S.wl??0}</em></div><div class="ipl-t">${t(S.hi)}<em>${S.wh??0}</em></div>${gs?`<div class="ipl-gs">${gs}</div>`:''}</div>`; }).join('<span class="ipl-ar">›</span>');
+  const c=G.ps.cur; const head=c&&c.round==='tb'?'순위 결정전 진행 중':c?`${ROUNDK[c.round]} ${c.gi+1}차전 예정`:'';
+  return `<section class="ipl"><header><span class="eyebrow">${psYearOf(G.ps)} 가을야구</span><b>${esc(head)}</b><button class="lnk" data-a="psOpen">대진표 ›</button></header><div class="ipl-r">${cols}</div></section>`; }catch(e){ return ''; } }
 function inboxView(){
   if(!['all','task','squad','move','club','media'].includes(UI.mf))UI.mf='all'; const f=UI.mf;
   const list=ibList(f); const unread=G.mail.filter(m=>!m.read).length; const need=ibNeedList().length;
   const cnt=k=>k==='task'?ibNeedList().length:mailFilter(k).filter(m=>!m.read).length; /* 확인할 소식은 읽었어도 결정 전이면 센다: 상단 배지와 같은 수(리뷰 11-08) */ const F=ibFolds();
   const days=[...new Set(list.map(m=>m.day))]; const foldN=days.filter(d=>F[d]).length;
-  const bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
+  let bar=`<div class="ibx-bar"><div class="ibx-tabs" role="tablist">${IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join('')}</div>
     <div class="ibx-meta">${unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${need?`<button class="lnk ibx-need" data-a="ibNeedGo">확인할 소식 ${need}건</button>`:''}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · 가장 빠른 마감 D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · J/K: 다음/이전">Space 다음 소식·진행</span>':''}</div></div>`;
+  const lad=ibPsLadder(); if(lad)bar+=lad;
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const pin=ibPinned(list); const pinS=new Set(pin.map(m=>m.id)); const rest=list.filter(m=>!pinS.has(m.id));
   const all0=pin.concat(rest).map(m=>m.id); const W=wide();
