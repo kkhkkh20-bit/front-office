@@ -192,7 +192,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .sheet-head .cimg-b{display:flex;flex-direction:column;gap:3px;margin-left:6px}
 /* 선수 상황판(PC): 상자 안에 스크롤바(드래그)가 생기지 않게 한다. 상자는 내용만큼 커지고, 줄 높이는 같은 줄 상자끼리 맞춘다.
    화면이 넉넉하면 남는 높이를 줄끼리 나누고, 모자라면 화면 전체가 한 번에 내려간다(사용자 11-08) */
-@media(min-width:1100px) and (min-height:860px){
+@media(min-width:1100px) and (min-height:1300px){
   #sheet .sheet.pf-screen:has(.pf-overview){overflow-y:auto!important;overflow-x:hidden!important}
   #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 0 auto}
   #sheet .pf-overview{height:auto;min-height:100%;grid-template-rows:repeat(6,auto);align-content:stretch}
@@ -201,7 +201,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-season-table .tw{overflow-x:auto;overflow-y:visible;flex:none} /* 아주 좁은 화면에서만 표가 옆으로 남는다 */
   #sheet .pf-season-table table{width:100%}
 }
-@media(min-width:1100px) and (max-width:1599px) and (min-height:860px){
+@media(min-width:1100px) and (max-width:1599px) and (min-height:1300px){
   #sheet .pf-overview{grid-template-rows:repeat(8,auto)}
   #sheet .pf-overview .pf-season-table{grid-area:4/2/7/4}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:7/2/9/3}
@@ -210,6 +210,11 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 @media(min-width:1100px) and (min-height:860px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:auto;height:min(240px,19vh);object-position:50% 18%}}
 @media(min-width:1100px) and (max-width:1919px) and (min-height:860px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
 /* 능력 변화 표시(사용자 11-08) */
+.pf-attribute-row:has(>.pf-ar){grid-template-columns:minmax(0,1fr) 14px auto}
+.pf-ar{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;font-style:normal;vertical-align:middle;cursor:help}
+.pf-ar svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pf-ar.up{color:var(--good)}.pf-ar.dn{color:var(--bad)}.pf-ar.big svg{stroke-width:2.8;width:13px;height:13px}
+.pf-core-cell .pf-ar{margin-left:3px}
 .pf-dl{font-style:normal;font:700 11px var(--f-num);margin-left:4px;padding:0 3px;border-radius:3px}
 .pf-dl.up{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
 .pf-dl.dn{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
@@ -217,3 +222,16 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-trend{display:flex;flex-wrap:wrap;gap:6px 14px}.pf-trend span{display:flex;align-items:center;gap:5px;font-size:12px}.pf-trend i{font-style:normal;color:var(--muted)}.pf-trend b{font:700 12px var(--f-num)}
 .pf-spark{display:block}
 .ovc .pf-dl{margin-left:2px}
+
+/* 선수 상황판(PC, 보통 높이): 화면 한 장에 꽉 차게 맞춘다. 상자는 줄 비율대로 나누고, 넘치는 내용은 상자 안에서 휠로만 내려간다(스크롤바·화면 끌기 없음, 사용자 11-08) */
+@media(min-width:1100px) and (max-height:1299px){
+  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{scrollbar-width:none}
+  #sheet .pf-overview>*>*::-webkit-scrollbar,#sheet .pf-main-top>*::-webkit-scrollbar{display:none}
+  #sheet .pf-attributes .pf-trend{display:none} /* 핵심 능력 추이 선은 높이가 넉넉할 때만 */
+  #sheet .pf-overview{grid-template-rows:minmax(0,2.25fr) minmax(0,2.25fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)} /* 위 줄(세부 능력·보고서)에 높이를 더 */
+  #sheet .pf-screen .pf-attribute-row,#sheet .pf-attribute-row{min-height:22px;padding-block:1px;font-size:12px}
+  #sheet .pf-attribute-row .pf-score{font-size:15px}
+  #sheet .pf-attribute-group{margin-bottom:6px}#sheet .pf-attribute-group h3{padding-bottom:4px;font-size:12px}
+  #sheet .pf-cmp{margin-bottom:4px}
+  #sheet .pf-overview{padding-bottom:12px!important} /* 아래 빈 띠를 줄여 아래 줄 상자에 */
+}
