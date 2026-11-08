@@ -279,4 +279,4 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 /* 큰 능력 차트 글자·범례 */
 .rd-big .rd-n{font-size:12px;fill:#aeb8c4;font-weight:600}.rd-big .rd-v{font:800 16px var(--f-num)}
 .pf-rd-key{display:flex;justify-content:center;align-items:center;gap:5px;margin:0;color:var(--muted)}
-.pf-rd-key i{display:inline-block;width:14px;height:0;border-top:2px solid var(--acc);margin-left:6px}.pf-rd-key i.k2{border-top:2px dashed #e6b93b}.pf-rd-key i.k3{border-top:1.5px dashed #7d8896}
+.pf-rd-key i{display:inline-block;width:14px;height:0;border-top:2.5px solid #fff;margin-left:6px}.pf-rd-key i.k2{border-top:2px dashed #ffd85a}.pf-rd-key i.k3{border-top:1.5px dashed #c5ccd4}
