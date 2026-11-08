@@ -146,3 +146,6 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 /* 휴대폰: 상단 '하루 진행' 버튼을 빼서 구단 이름·날짜 자리를 확보(사용자 11-08). 하루씩은 달력·진행하기 안 단계로 */
 @media (max-width:699px){ button.step[data-a="adv"][data-v="day"]{display:none!important} }
 @media (max-width:699px){.fm-age{display:none}} /* 휴대폰은 이름이 잘리지 않게 단장 나이는 프로필에서 */
+/* 설정 한 페이지(사용자 11-08) */
+.setx{display:grid;gap:10px;align-content:start}.setx .setc{display:grid;gap:10px;align-content:start;min-width:0}.setx .setc>.card{margin:0}
+@media(min-width:1100px){.setx{grid-template-columns:repeat(3,minmax(0,1fr));height:100%;min-height:0;overflow-y:auto;scrollbar-width:thin}}
