@@ -7,7 +7,20 @@ function reqLine(r){ const p=r.data&&r.data.pid!=null?G.players[r.data.pid]:r.da
 function mreqView(){ const L=mreqs().slice(0,10); const m=G.mgr[G.user];
   return csec('감독의 요청',(L.length?`<div class="rql">${L.map(reqLine).join('')}</div>`:'<p class="small muted">아직 감독이 따로 요청한 일이 없습니다.</p>')+`<p class="small muted">감독은 시즌 중 약한 자리 보강, 부진한 선수 정리, 외국인 교체를 먼저 요청하고, 8월 말에는 드래프트 기조를, FA 기간에는 꼭 잡고 싶은 선수를 말합니다. 들어주면 관계가 오르고, 약속하고 못 지키면 크게 깎입니다.${m&&m.ego>=70?' 고집 센 감독이라 거절하면 더 서운해합니다.':''}</p>`); }
 function grantLine(g){ const p=g.pur&&g.pur.pid!=null?G.players[g.pur.pid]:null; const st=g.ok?(RST[g.st]||['승인','good']):['반려','bad']; const st2=g.ok&&g.st==='done'&&!g.pur?['승인','good']:st;
-  return `<div class="rq"><span class="pill ${st2[1]}">${st2[0]}</span><div><b>${g.by==='own'?'구단주 주문':'단장 요청'} · ${money(g.amt)}</b><span>${g.pur?g.pur.k==='fa'?`FA ${esc(p?p.name:'')} 영입`:g.pur.k==='frep'?'외국인 교체':'전력 보강':'운영비 증액'}</span><i>${dsh(g.d)}${g.st==='open'&&g.until?` · ${dmd(g.until)}까지`:''}</i></div></div>`; }
+  return `<div class="rq"><span class="pill ${st2[1]}">${st2[0]}</span><div><b>${g.by==='own'?'구단주 주문':'단장 요청'} · ${money(g.amt)}</b><span>${g.why&&OWN_WHY[g.why]?`사유: ${OWN_WHY[g.why].l} · `:''}${g.pur?g.pur.k==='fa'?`FA ${esc(p?p.name:'')} 영입`:g.pur.k==='frep'?'외국인 교체':'전력 보강':'운영비 증액'}</span><i>${dsh(g.d)}${g.st==='open'&&g.until?` · ${dmd(g.until)}까지`:''}</i></div></div>`; }
+/* 구단주 자금 요청: 사유 → 대상·금액 → 가능성 확인 → 요청. 고르는 건 모두 버튼 */
+function ownFundView(){ const t=team(G.user); if(t.indie||G.unemp)return ''; const left=ownAskLeft(); const S=UI.ow=UI.ow||{}; const B=bossOf(G.user);
+  const chip=(a,v,l,on,dis,ti)=>`<button data-a="${a}" data-v="${v}" class="${on?'on':''}"${dis?' disabled':''}${ti?` title="${esc(ti)}"`:''}>${l}</button>`;
+  let body=`<div class="small">요청 사유</div><div class="chips ow-why">${Object.entries(OWN_WHY).map(([k,W])=>chip('owWhy',k,esc(W.l),S.k===k)).join('')}</div>`;
+  if(S.k){ const W=OWN_WHY[S.k]; let pick='';
+    if(S.k==='fa'||S.k==='frep'){ const L=S.k==='fa'?ownWhyFA():ownWhyBadF(); if(L.length){ if(!L.some(p=>p.id===S.pid))S.pid=L[0].id; pick=`<div class="small">${S.k==='fa'?'영입할 FA':'바꿀 외국인'}</div><div class="chips">${L.map(p=>chip('owPid',p.id,`${esc(p.name)} · ${money(S.k==='fa'?p.ask.annual:frepAmtOf(p))}`,S.pid===p.id)).join('')}</div>`; } else S.pid=null; }
+    if(!(S.k==='fa'&&S.pid!=null)&&S.k!=='frep'){ const A=OWN_AMT[S.k]; if(!A.includes(S.amt))S.amt=A[0]; pick+=`<div class="small">금액</div><div class="chips">${A.map(a=>chip('owAmt',a,money(a),S.amt===a)).join('')}</div>`; }
+    const w=ownWhy(S.k,S.amt,S.pid); const F=w.f.filter(x=>x[0]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0])).slice(0,4);
+    body+=pick+`<div class="ow-box">${w.block?`<p class="small warn">${esc(w.block)}</p>`:`<p class="ow-odds"><b>가능성: ${ownChance(w.p)}</b><span class="small muted">${esc(W.d)}</span></p>
+      ${F.length?`<ul class="small ow-f">${F.map(x=>`<li class="${x[0]>0?'good':'bad'}">${x[0]>0?'+':'−'} ${esc(x[1])}</li>`).join('')}</ul>`:''}
+      <p class="small ow-my">내 말: "${esc(w.my)}"</p><button class="btn primary block" data-a="owGo"${left?'':' disabled'}>${left?`${esc(W.l)} 자금 ${money(w.amt)} 요청하기`:'이번 달에는 이미 요청했습니다'}</button>`}</div>`; }
+  const R0=S.res; if(R0)body+=`<div class="note ${R0.ok?'good':R0.said?'bad':''}" role="status">${R0.said?`${esc(B.own.name)} 회장: "${esc(R0.said)}"<br>`:''}${esc(R0.msg)}</div>`;
+  return `<div class="ow-fund"><div class="eyebrow">자금 요청</div>${body}</div>`; }
 function ownerAskView(){ const t=team(G.user); if(t.indie)return csec('구단주에게 요청','<p class="small muted">독립구단이라 모기업 지원이 없습니다. 스폰서와 자체 수익으로 운영합니다.</p>');
   const left=ownAskLeft(); const b=budget(); const amts=[1000,2000,3000];
   const faL=G.fa&&G.fa.open&&!G.fa.closed?G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null).sort((a,c)=>ovr(c)-ovr(a)).slice(0,4):[];
@@ -15,7 +28,7 @@ function ownerAskView(){ const t=team(G.user); if(t.indie)return csec('구단주
   const btn=(l,v,amt,pur)=>{ const o=ownOdds(amt,pur); return `<button class="oa" data-a="ownAsk" data-v="${v}" ${left?'':'disabled'}><b>${l}</b><span>${money(amt)} · ${oddsTxt(o)}</span></button>`; };
   const H=grants().slice(0,8);
   return csec(`구단주에게 요청 ${hiI(`승인 여부는 구단주 신뢰, 성향(${OWNER[t.owner].label}), 순위, 요청 금액과 목적에 따라 달라집니다. 반려되면 신뢰 -1, 한 해에 자주 요청할수록 승인이 어려워집니다. 목적을 정해 받은 돈은 그 목적을 이루면 신뢰가 오르고, 못 이루면 깎입니다. 구단주가 먼저 스타 FA 영입이나 7월 우승 보강을 주문하며 돈을 내놓기도 합니다.`)}`,`<p class="small">지금 예산 여유 <b>${money(b.roomGoal)}</b> · 올해 추가 지원 ${money(grantAmt())}${b.extra>0?` · 예상보다 더 들어온 수입 <b class="ok">${money(b.extra)}</b>(요청 근거)`:''} · 구단주 신뢰 ${t.trust}</p>
-    ${meetDoor('own')}
+    ${ownFundView()}${meetDoor('own')}
     <p class="small muted keep">${left?'한 달에 한 번 요청할 수 있습니다.':'이번 달에는 이미 요청했습니다.'}</p>
     ${H.length?`<div class="eyebrow" style="margin-top:8px">요청·지원 기록</div><div class="rql">${H.map(grantLine).join('')}</div>`:''}`); }
 function reqHomeCard(){ const M=mreqs().filter(r=>r.st==='open'); const O=grants().filter(g=>g.st==='open'&&g.pur); if(!M.length&&!O.length)return '';

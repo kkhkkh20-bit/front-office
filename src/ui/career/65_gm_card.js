@@ -10,8 +10,10 @@ function gmCardView(){ if(G.unemp)return ''; const C=myCInit(); if(!C)return '';
       <div><span class="muted">통산(마친 시즌)</span><b>${S.n}시즌</b><i class="small muted">${S.w}승 ${S.l}패 · 승률 ${fmt3(S.pct)}${(()=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user]; return r&&(r.w+r.l)&&!G.unemp?` · 올해 ${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''} 진행 중`:''; })()}</i></div>
       <div><span class="muted">우승</span><b>${S.ch}회</b><i class="small muted">준우승 ${S.ru} · 가을야구 ${S.ps}</i></div>
       <div><span class="muted">통산 연봉</span><b>${money(C.earn)}</b><i class="small muted">맡은 구단 ${Math.max(1,S.teams)}곳</i></div>
+      <div><span class="muted">개인 잔액</span><b>${money(personalState().cash)}</b><i class="small muted">월급 ${money(Math.round(C.sal/12))} · ${esc(PERSONAL_LIFE[personalState().life||0].l)}</i></div>
+      <div><span class="muted">말투</span><b>${myVoice()?esc(GMV[myVoice()].l):'담백'}</b><i class="small muted">${myVoice()?esc(GMV[myVoice()].d):'단장 정보 고치기에서 정합니다'}</i></div>
     </div>${chT}
-    <p class="small muted">계약 마지막 해 시즌이 끝나면 구단주가 재계약 여부를 정합니다(구단주 신뢰 45 이상이면 제안). 명성 58 이상이면 그때 다른 구단 제의도 올 수 있습니다. 경질되면 남은 기간 연봉은 구단이 정산합니다.</p>
+    <p class="small muted">계약 마지막 해 시즌이 끝나면 구단주가 재계약 여부를 정합니다(구단주 신뢰 45 이상이면 제안). 명성 58 이상이면 그때 다른 구단 제의도 올 수 있습니다. 경질되면 남은 기간 연봉은 구단이 정산합니다. 연봉은 매달 개인 지갑으로 들어오고, 우승하면 연봉의 30%, 준우승 15%, 가을야구 5%를 성과급으로 받습니다.</p>
     ${C.stints.length?`<details><summary class="small">지난 계약 ${C.stints.length}건</summary>${C.stints.map(stint).join('')}</details>`:''}</section>${gmProfileView()}`; }
 
 /* 단장 프로필: 행동으로 쌓인 스타일, 행동 기록, 트레이드 성적, 시즌별 팀 성적 */

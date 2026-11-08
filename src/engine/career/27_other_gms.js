@@ -4,6 +4,54 @@ const GMT={hard:{l:'강경 협상가',d:'쉽게 양보하지 않고 조건을 �
 const GMCAR=['스카우트 출신','전력분석원 출신','구단 프런트 공채','선수 출신','모기업 기획실 출신','에이전트 출신'];
 const GMTALK=['요즘 어떻게 지내십니까. 시즌 길게 보고 갑시다.','좋은 선수 있으면 저희 먼저 생각해 주십시오.','다음에 식사 한번 하시죠.','우리 감독이 요즘 불펜 걱정이 많습니다.','시장 분위기가 조용하네요. 큰 거래 하나 나올 때가 됐는데.','작년 트레이드 얘기는 이제 그만합시다. 하하.'];
 function mkGM(tid){ return {id:'m'+Math.floor(R()*1e9),name:genName(),age:ri(38,60),trait:pick(Object.keys(GMT)),car:pick(GMCAR),since:G.year,tid,f:R()<.12}; }
+/* 다른 구단 단장 계약: 연봉·계약 기간. 능력·재임·구단 규모로 정하고 예전 저장은 단장 id로 같은 값을 만든다(난수 흐름을 건드리지 않는다).
+   재계약은 시즌 뒤 단장 교체 판정(gmTurnover)에서 성적에 따라 인상한다. 결산에서는 구단 운영비 안의 '단장 연봉'으로 따로 적는다 */
+function gmCon(g,tid){ if(!g||g.interim)return null; if(!g.c){ const id=tid??g.tid, t=id!=null?team(id):null; const A=gmAbil(g)||{eye:50,neg:50,plan:50,money:50}; const ab=(A.eye+A.neg+A.plan+A.money)/4;
+    let s=(180+(ab-55)*3+Math.min(10,Math.max(0,G.year-g.since))*8)*clamp(t&&t.market||1,.8,1.25); if(t&&t.indie)s*=.75; const yrs=2+Math.floor(u01('gmcy',g.id)*2); let y1=g.since+yrs-1; while(y1<G.year)y1+=yrs;
+    g.c={sal:Math.round(clamp(s,150,450)/10)*10,y1}; } return g.c; }
+function gmConRenew(g,rk,champ){ const c=gmCon(g); if(!c||c.y1>G.year)return; const up=(champ?.15:0)+(rk<=1?.12:rk<=3?.08:rk<=5?.04:0); c.sal=Math.round(clamp(c.sal*(1+up),150,500)/10)*10; c.y1=G.year+(champ||rk<=3?3:2); }
+/* ===== 단장 말투: 내 단장(G.gmP.voice)과 다른 구단 단장(g.v)이 말할 때의 색깔 =====
+   말투는 효과 없이 대사만 바꾼다. 다른 구단 단장은 성향(GMT)에 맞춘 말투가 기본이고 셋 중 하나꼴로 성향과 다른 말투를 쓴다(단장 id로 고정) */
+const GMV={ana:{l:'냉철한 분석가',d:'숫자로 말하고 감정은 뺍니다.'},bro:{l:'정 많은 맏형',d:'사람부터 챙기고 말끝이 따뜻합니다.'},gam:{l:'승부사',d:'판을 키우고 지는 걸 못 참습니다.'},fox:{l:'능구렁이 협상가',d:'웃으며 돌려 말하고 끝까지 계산합니다.'},blunt:{l:'직설파',d:'돌려 말하지 않습니다. 짧고 셉니다.'}};
+const GMVL={
+  ana:{hello:['요즘 리그 득실차 보셨습니까. 재미있는 숫자가 많더군요.','감보다 표본입니다. 이번 달도 표본을 쌓는 중입니다.','우리 불펜 피OPS가 좀 거슬려서요. 그쪽은 어떻습니까.'],
+    pitch:['기대 승리로 따지면 양쪽 다 남는 거래입니다. 계산서는 붙여 두었습니다.','감정은 빼고 숫자만 보시면 답이 나올 겁니다.'],
+    yes:['계산이 맞습니다. 도장 찍죠.','기대값이 플러스입니다. 진행하겠습니다.'],short:['격차가 아직 남습니다. 조금만 좁혀 주시죠.','모형상 저희가 손해입니다. 몇 점만 더 얹어 주십시오.'],no:['이건 계산이 안 나옵니다. 다시 뽑아 오시죠.','표준편차 밖의 제안입니다.'],
+    up:['근거는 이미 숫자에 있습니다.','확률은 저희 편입니다.'],flat:['표본이 더 쌓이면 분명해질 겁니다.','데이터가 말해 줄 겁니다.'],down:['감정 섞인 해석은 사양하겠습니다.','숫자 밖의 이야기는 하지 않겠습니다.'],
+    ask:'회장님, 근거 자료부터 보시죠.',renew:'조건 확인했습니다. 합리적입니다.',raise:'시장 가격으로 보면 15%가 맞습니다.',leave:'제 계산으로는 여기까지가 최선입니다.',treat:'오늘은 기록 얘기 금지입니다. 저도 노력해 보겠습니다.'},
+  bro:{hello:['밥은 잘 챙겨 드시죠? 시즌 길어요, 몸부터 챙깁시다.','우리 애들이 요즘 고생이 많습니다. 그쪽 애들도 그렇죠?','언제 소주 한잔해요. 이번엔 제가 사겠습니다.'],
+    pitch:['우리 애 하나 보내는 거라 마음이 쓰입니다. 그쪽에서 잘 좀 써 주세요.','서로 좋자고 하는 얘기입니다. 한번 봐 주십시오.'],
+    yes:['좋습니다. 보내는 녀석 잘 부탁드립니다.','하하, 이렇게 또 한 식구가 됐네요.'],short:['마음은 알겠는데 조금만 더 써 주시죠. 저도 애들 볼 면목은 있어야죠.','형님 동생 하는 사이에 조금만 더 봐 주십시오.'],no:['이건 좀 서운합니다. 우리 애들 그렇게 싸지 않아요.','정으로 넘어가기엔 차이가 너무 큽니다.'],
+    up:['선수들이 다 해 준 겁니다.','우리 애들 믿고 갑니다.'],flat:['다 같이 가는 겁니다.','선수들한테 먼저 고맙다고 하고 싶습니다.'],down:['선수들 탓은 아닙니다. 제 몫입니다.','애들 마음 다치지 않게 따로 얘기하겠습니다.'],
+    ask:'회장님, 선수들 생각해서 한 번만 도와주십시오.',renew:'믿어 주셔서 감사합니다. 애들이랑 더 해 보겠습니다.',raise:'저보다 식구들 생각해서 조금만 더 써 주십시오.',leave:'정들었는데 여기까지인가 봅니다.',treat:'오늘은 다 내려놓고 먹자. 고기는 내가 굽는다.'},
+  gam:{hello:['요즘 판이 너무 조용하네요. 하나 크게 터뜨릴 때가 됐는데.','올해는 무조건 위에서 끝냅니다. 그쪽은 어떠세요?','마감 전에 한 판 붙어 보시겠습니까?'],
+    pitch:['지금 타이밍 놓치면 후회합니다. 크게 한번 갑시다.','판을 키워 보죠. 이 정도는 걸어야 재미있지 않습니까.'],
+    yes:['좋습니다, 질러 봅시다!','콜. 승부는 지금입니다.'],short:['배팅이 조금 짭니다. 한 장만 더 올리시죠.','이 판에 그 정도로는 안 됩니다. 조금 더 거시죠.'],no:['이걸로 판을 엎자는 겁니까? 다음엔 제대로 들고 오시죠.','패가 너무 약합니다.'],
+    up:['지는 건 계획에 없습니다.','이번엔 판을 끝까지 갑니다.'],flat:['승부는 9회 말부터입니다.','끝날 때까지 끝난 게 아닙니다.'],down:['진 경기는 갚아 주면 됩니다.','다음 판에서 돌려받겠습니다.'],
+    ask:'회장님, 지금이 승부처입니다.',renew:'좋습니다. 이번엔 반지까지 갑니다.',raise:'우승할 단장 값은 따로 있습니다.',leave:'새 판에서 다시 붙어 보겠습니다.',treat:'오늘 먹고 내일부터 연승이다. 알겠지?'},
+  fox:{hello:['아이고 단장님, 마침 생각나서 연락드렸습니다. 별일은 아니고요, 허허.','요즘 그쪽 불펜이 고생한다던데, 혹시 도와드릴 일 없나 해서요.','바쁘시죠? 저야 늘 한가합니다, 허허.'],
+    pitch:['단장님이니까 먼저 말씀드리는 겁니다. 다른 데는 아직 모릅니다, 허허.','서로 웃자고 하는 거래입니다. 천천히 보시죠.'],
+    yes:['허허, 역시 말이 통하십니다.','좋습니다. 이건 우리끼리 얘기로 해 두죠.'],short:['아이고, 거의 다 왔는데 말입니다. 요만큼만 더 보태 주시면…','제가 위에 보고하기가 좀 그렇네요. 조금만 더 얹어 주시죠.'],no:['허허, 농담이시죠? 차 한잔하고 다시 얘기합시다.','이건 제가 못 들은 걸로 하겠습니다.'],
+    up:['자세한 건 결과를 보시면 아실 겁니다, 허허.','좋은 일은 조용히 오는 법입니다.'],flat:['뭐, 두고 보시면 압니다.','말씀드릴 수 있는 건 여기까지입니다, 허허.'],down:['그 부분은 다들 사정이 있으니까요.','오해가 있으신 것 같은데, 천천히 풀겠습니다.'],
+    ask:'회장님, 요즘 안색이 좋으십니다. 다름이 아니라…',renew:'허허, 회장님 마음 다 압니다. 잘 부탁드립니다.',raise:'다른 데서도 연락이 오긴 하던데요, 허허.',leave:'좋은 인연이었습니다. 또 뵙겠죠, 허허.',treat:'자, 오늘은 제가 쏩니다. 대신 내일 훈련은 아시죠? 허허.'},
+  blunt:{hello:['용건만 하죠. 지금 내놓을 선수 있습니까?','돌려 말 안 합니다. 우리 내야가 급합니다.','통화 짧게 합시다. 시장에 뭐 있습니까?'],
+    pitch:['이 조건입니다. 길게 말 안 하겠습니다.','필요한 거 주고 필요한 거 받읍시다. 끝.'],
+    yes:['됐습니다. 진행하죠.','좋습니다. 끝.'],short:['모자랍니다. 하나 더.','거의 됐습니다. 조금만 더 얹으세요.'],no:['안 됩니다. 다음.','이건 제안이 아닙니다.'],
+    up:['이상입니다.','결과로 보여 드리겠습니다.'],flat:['할 말은 다 했습니다.','그게 답니다.'],down:['변명 안 하겠습니다.','못한 건 못한 겁니다.'],
+    ask:'회장님, 돈이 필요합니다.',renew:'하겠습니다.',raise:'15% 올려 주십시오.',leave:'여기까지 하겠습니다.',treat:'먹어. 잘했다. 이상.'}};
+const GMV_TRAIT={data:'ana',loyal:'bro',gambler:'gam',miser:'fox',hard:'blunt',prospect:'ana'};
+function gmVoice(g){ if(!g||g.interim)return null; if(!g.v){ const K=Object.keys(GMV), u=u01('gmv',g.id); g.v=u<.33?K[Math.floor(u/.33*K.length)%K.length]:(GMV_TRAIT[g.trait]||'fox'); } return g.v; }
+/* 내 단장 말투(정하지 않은 예전 저장은 null: 대사를 바꾸지 않는다) */
+function myVoice(){ const v=G&&G.gmP&&G.gmP.voice; return GMV[v]?v:null; }
+/* 상황별 한 줄: 같은 날 같은 상황이면 같은 대사(난수 흐름을 건드리지 않는다) */
+function vLine(v,k,salt){ const L=GMVL[v]&&GMVL[v][k]; if(!L)return ''; if(typeof L==='string')return L; return L[Math.floor(u01('gv'+k+(salt??''),G.day)*L.length)]; }
+function aiSay(tid,k){ const g=tid===G.user?null:team(tid).gm; const v=gmVoice(g); return v?vLine(v,k,tid):''; }
+function mySay(k,salt){ const v=myVoice(); return v?vLine(v,k,salt):''; }
+const aiQ=(tid,k)=>{ const x=aiSay(tid,k); return x?` "${x}"`:''; }; /* 다른 구단 단장 대사 끝에 붙이는 말투 한마디 */
+const myQ=k=>{ const x=mySay(k); return x?` · "${x}"`:''; }; /* 선택 버튼에 붙이는 내 한마디 */
+/* 인터뷰 답변 끝에 내 말투 한마디: 답의 결(자신감·담담·방어)에 맞춰 따옴표 안에 붙인다 */
+const VTONE_UP=['자신감','고수','영입','기대','지지','감사','육성'], VTONE_DN=['비판','냉정','압박','정면','회피','노코멘트','한발 물러섬','공 넘기기'];
+function mySayTail(t,tone){ const k=VTONE_UP.includes(tone)?'up':VTONE_DN.includes(tone)?'down':'flat'; const x=mySay(k,tone); if(!x||typeof t!=='string'||!t.endsWith('"'))return t; return t.slice(0,-1)+' '+x+'"'; }
 /* 단장 능력(20~95): 선수 보는 눈(성적 운에 덜 속음), 협상력(트레이드 요구 수준), 구단 설계(감독 야구에 맞는 역할을 얼마나 일관되게 찾나), 재정 운영(노장 FA에 덜 씀).
    성향(GMT)과 따로 정해지고, 성향이 한쪽을 조금 끌어올린다. 예전 저장은 단장 id로 같은 값을 만든다 */
 function gmAbil(g){ if(!g||g.interim)return null; if(!g.ab){ const u=k=>u01('gma'+k,g.id); const v=x=>Math.round(clamp(30+x*60,25,92)); g.ab={eye:v(u('e')),neg:v(u('n')),plan:v(u('p')),money:v(u('m'))};
@@ -25,7 +73,7 @@ function gmRelYear(){ for(const t of G.teams){ if(t.id===G.user||t.rel==null)con
 function gmContact(tid,kind){ const t=team(tid), g=gmOf(tid); if(!g)return {msg:''}; G.gmc=G.gmc||{}; const c=G.gmc[tid]||(G.gmc[tid]={});
   if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return {msg:`${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`};
     c.call=G.day; const d=Math.round(Math.max(0,(g.trait==='loyal'?2:1)*ri(1,2)-(g.trait==='hard'?1:0))*gmRelDim(t)); t.rel=clamp(t.rel+d,0,100);
-    return {msg:`${g.name} 단장: "${pick(GMTALK)}" (친분 +${d}) 들어 보니 ${needText(tid)}입니다.`,ok:true}; }
+    return {msg:`${g.name} 단장: "${aiSay(tid,'hello')||pick(GMTALK)}" (친분 +${d}) 들어 보니 ${needText(tid)}입니다.`,ok:true}; }
   if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return {msg:`식사 자리는 한 달에 한 번입니다(${dmd(c.meal+30)}부터).`};
     c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.round(ri(3,5)*(g.trait==='loyal'?1.5:g.trait==='hard'?.6:1)*gmRelDim(t)); t.rel=clamp(t.rel+d,0,100);
     return {msg:`${g.name} 단장과 저녁 식사를 했습니다(1천만 원). 친분 +${d}. ${g.trait==='hard'?'식사는 즐겁게 했지만 협상은 별개라고 선을 긋습니다.':'다음 거래 때 잘 봐 달라는 말이 오갔습니다.'}${(()=>{ /* 식사 자리에서 속내를 조금 듣는다: 우리 선수 중 누구를 탐내는지 */ try{ const L=aiInterest(tid).map(x=>typeof x==='object'?x:G.players[x]).filter(Boolean); return L.length?` 술잔이 돌자 ${L[0].name}(${posLabel(L[0])}) 이야기를 슬쩍 꺼냈습니다.`:' 지금은 우리 선수에게 특별히 눈독 들이는 사람은 없어 보입니다.'; }catch(e){ return ''; } })()}`,ok:true}; }
@@ -127,7 +175,7 @@ function repSeason(y,rank,champ,runner,trustD){ G.rep=G.rep??50; let d=0; if(cha
 function repLabel(r){ return r>=80?'리그 최고의 단장':r>=65?'유능한 단장':r>=45?'평범한 단장':r>=30?'흔들리는 단장':'평판이 나쁜 단장'; }
 function gmTurnover(){ gmInit(); const st=G.last&&G.last.order?G.last.order:null;
   for(const t of G.teams){ if(t.id===ME())continue; /* 야인일 때 전 소속 구단도 새 단장이 성적으로 평가받는다 */ const g=gmOf(t.id); if(!g)continue; g.age++; const rk=st?st.findIndex(o=>o.tid===t.id)+1:5; const ten=G.year-g.since;
-    const fire=(rk>=8&&ten>=2&&R()<.4)||(rk>=6&&ten>=4&&R()<.2)||(g.age>=64&&R()<.35); if(!fire)continue;
+    const fire=(rk>=8&&ten>=2&&R()<.4)||(rk>=6&&ten>=4&&R()<.2)||(g.age>=64&&R()<.35); if(!fire){ gmConRenew(g,rk,!!(G.last&&G.last.ps&&G.last.ps.champ===t.id)); continue; }
     const old=g.name; const want=G.unemp?R()<clamp((G.rep-10)/60,.15,.85):(G.rep>=45&&R()<clamp((G.rep-35)/50,.2,.7)); /* 현직이어도 명성 45부터 다른 구단이 빼 오려 한다 */ if(want&&!G.gameOver&&!(G.unemp&&G.unemp.from===t.id)&&!G.jobs.some(j=>!j.done)){ t.gm={...mkGM(t.id),name:'단장대행',interim:true}; jobOffer(t.id,false); wire('단장',`${t.city} ${t.nick}, ${old} 단장 경질. 후임을 물색 중입니다.`,{tid:t.id}); try{ gmFireNews(t,old,rk,ten,g.age,null); }catch(e){} }
     else { const og=(()=>{ try{ return obAiGM(t.id); }catch(e){ return null; } })(); t.gm=og||mkGM(t.id); if(!og)t.rel=clamp(Math.round(N(50,6)),35,65); wire('단장',`${t.city} ${t.nick}, ${old} 단장 후임으로 ${t.gm.name} 단장 선임 (${GMT[t.gm.trait].l})`,{tid:t.id}); try{ gmFireNews(t,old,rk,ten,g.age,t.gm); }catch(e){} } } }
 function jobOffer(tid,fired,terms,exp0){ const t=team(tid); terms=terms||myCOffer(tid,fired); G.jobs.push({tid,exp:G.day+(fired?20:exp0?20:12),fired:!!fired,done:false,terms,exp0:!!exp0});

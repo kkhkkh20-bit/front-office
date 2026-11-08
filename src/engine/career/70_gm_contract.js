@@ -21,6 +21,10 @@ function myCEnd(how,y){ const C=G.myC; if(!C)return; if(C.tid!=null){ const per=
   const ye=Math.min(C.y1,y??G.year); C.stints.unshift({tid:C.tid,y0:Math.min(C.y0,ye),y1:ye, /* 다음 시즌부터인 계약을 시작 전에 끝내면 끝낸 해로 적는다 */sal:C.sal,how,fin}); C.stints.length=Math.min(C.stints.length,20); C.tid=null; }
 /* 결산 지출: 단장 연봉 */
 function myCPay(){ const C=myCInit(); if(!C||G.unemp)return 0; if(personalState().settled[fyNow()])return 0; /* 같은 회계연도 두 번째 정산: 지갑·경력 수입·구단 지출 모두 한 번만(검수 11-06) */C.earn+=C.sal;personalSettle(C.sal); return C.sal; }
+/* 결산 지출: 단장 성과급(우승 30%·준우승 15%·가을야구 5%). 구단이 내고 개인 지갑으로 들어온다. 한 해 한 번 */
+function myCBonus(ps,order){ const C=myCInit(); if(!C||G.unemp||C.tid!==G.user||C.bonusY===G.year)return 0; const rk=(order||[]).findIndex(o=>o.tid===G.user)+1;
+  const k=ps&&ps.champ===G.user?'우승':ps&&ps.runner===G.user?'준우승':rk&&rk<=5?'가을야구':null; if(!k)return 0; const b=Math.round(C.sal*{우승:.3,준우승:.15,가을야구:.05}[k]/10)*10;
+  C.bonusY=G.year; C.earn+=b; personalSalary(b,`${k} 성과급`); return b; }
 /* 시즌 기록(경질 판정 전에 남긴다) */
 function myCRecord(y,rank,ps,uo){ const C=myCInit(); if(!C||G.unemp)return; const J=G.gmJoin&&G.gmJoin.y===y&&G.gmJoin.tid===G.user?G.gmJoin:null; /* 시즌 중 부임: 전임 단장 때 승패는 빼고 부임 뒤 승패만(검수 11-06) */ C.seas.push({y,tid:G.user,rank,w:uo.w-(J?J.w:0),l:uo.l-(J?J.l:0),ch:J&&J.psDone?0:ps.champ===G.user?1:ps.runner===G.user?2:0}); if(C.seas.length>120)C.seas.splice(0,C.seas.length-120); }
 /* 경질: 남은 기간 연봉을 구단이 정산한다 */
@@ -43,9 +47,9 @@ function myCSeasonEnd(y,ps){ const C=myCInit(); if(!C||G.unemp||C.y1!==y)return;
   evNew('gmRenew',`재계약 제안: 연봉 ${money(sal)}, ${yrs}년`,`${B.own.name} 회장이 재계약을 제안했습니다. "${tr>=70?'단장님 없이는 다음 시즌을 생각하기 어렵습니다.':tr>=55?'지금처럼만 해 주시면 됩니다.':'기대만큼은 아니었지만 한 번 더 맡겨 보겠습니다.'}"
 지금 계약: 연봉 ${money(C.sal)}, ${C.y0}~${C.y1}년. 제안: 연봉 ${money(sal)}(${sal>=C.sal?'+':''}${Math.round((sal/C.sal-1)*100)}%), ${y+1}~${y+yrs}년.
 구단주 신뢰 ${tr} · 단장 명성 ${rep}.${(G.jobs||[]).some(j=>!j.done&&j.exp0)?' 다른 구단 제의도 와 있습니다. 소식함에서 조건을 비교해 보세요.':''}`,
-    [{l:'수락',fx:`연봉 ${money(sal)}, ${yrs}년 계약.`},
-     {l:'연봉 인상 요구(+15%)',fx:'구단주 신뢰가 높을수록 받아들입니다. 거절되면 원래 조건으로 계약하고 신뢰가 조금 내려가며, 신뢰가 낮으면 제안을 거둘 수도 있습니다.'},
-     {l:'재계약 거절',fx:'계약이 끝나 구단을 떠납니다. 명성에 따라 다른 구단 제의를 기다립니다.'}],{from:'구단주실',exp:14,def:0}); }
+    [{l:'수락'+myQ('renew'),fx:`연봉 ${money(sal)}, ${yrs}년 계약.`},
+     {l:'연봉 인상 요구(+15%)'+myQ('raise'),fx:'구단주 신뢰가 높을수록 받아들입니다. 거절되면 원래 조건으로 계약하고 신뢰가 조금 내려가며, 신뢰가 낮으면 제안을 거둘 수도 있습니다.'},
+     {l:'재계약 거절'+myQ('leave'),fx:'계약이 끝나 구단을 떠납니다. 명성에 따라 다른 구단 제의를 기다립니다.'}],{from:'구단주실',exp:14,def:0}); }
 EVH.gmRenew={ pick(e,i){ const C=G.myC; const O=C&&C.offer; if(!O||G.unemp)return ''; const t=team(G.user); delete C.offer;
   const sign=(sal)=>{ C.stints.unshift({tid:C.tid,y0:C.y0,y1:C.y1,sal:C.sal,how:'재계약'}); C.sal=sal; C.y0=O.y+1; C.y1=O.y+O.yrs; chron('join',`재계약: 연봉 ${money(sal)}, ${C.y0}~${C.y1}년`,null,G.user); return `재계약했습니다. 연봉 ${money(sal)}, ${C.y0}~${C.y1}년.`; };
   if(i===0)return sign(O.sal);
