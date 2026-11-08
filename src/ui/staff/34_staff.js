@@ -13,6 +13,7 @@ function staffView(){
     anl:anlView,
     tc:trainCoachView,
     camp:campView,
+    sc:sprcView,
     data:dataPage,
     fac:facView,
     lead:leadCard,
