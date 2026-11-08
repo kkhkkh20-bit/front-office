@@ -107,7 +107,7 @@ function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const 
   /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '진행하기' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */
   if(fmOn()&&!still){ const de=document.querySelector('.fmtop .fm-date'), bt=document.querySelector('.fmtop .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child'); const L=[]; for(let d=d0+1;d<=d1;d++)L.push(d);
     const st=Math.max(180,Math.min(420,2400/L.length)), tot=st*L.length; /* 날짜 칸이 지나가는 게 보이게 하루 0.18~0.42초 */
-    if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',tot+'ms'); }
+    dayTick._until=Date.now()+tot; if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',tot+'ms'); }
     const put=d=>{ if(!de)return; const o=dobj(d), g=calGame(d); de.classList.remove('fm-flip'); void de.offsetWidth; de.classList.add('fm-flip'); const b=de.querySelector('b'); if(b)b.textContent=`${WD[o.w]} ${o.m}월 ${o.d}일`; let r=de.querySelector('.fm-dres'); if(!r){ r=document.createElement('i'); r.className='fm-dres'; de.appendChild(r); } r.innerHTML=g&&g.res?`${badge(g.op,14)} <em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:''; };
     put(d0); try{ fmAdvPanel(d0,d1,st); }catch(e){} dayTick._steps=L.map((d,i)=>setTimeout(()=>{ put(d); tkShow(d); fmAdvStep(i+1); },(i+1)*st));
     if(UI._tk)UI._tk.until=Date.now()+tot+200; dayTick._t2=setTimeout(tkDone,tot+50);

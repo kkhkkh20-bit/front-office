@@ -4,7 +4,7 @@ const ibdRow=(l,v)=>`<div class="pf-fact"><span>${l}</span><b>${v}</b></div>`;
 const ibdSec=(t,body,cls='')=>`<section class="ibd-sec ${cls}"><h3>${t}</h3>${body}</section>`;
 const ibdTxt=m=>(m.subj||'')+'\n'+(m.body||'');
 const ibdRec=tid=>{ const r=(G.sea&&G.sea.rec&&G.sea.rec[tid])||{w:0,l:0,t:0}; return `${r.w}승 ${r.l}패${r.t?' '+r.t+'무':''}`; };
-const ibdRank=tid=>{ const o=standOrder().order||[]; const i=o.findIndex(x=>(x.tid??x)===tid); return i<0?null:i+1; };
+const ibdRank=tid=>{ const S=standOrder(), o=S.order||[]; const i=o.findIndex(x=>(x.tid??x)===tid); if(i<0)return null; try{ if(S.live&&period()==='season')return tieRank(o,tid); }catch(e){} return i+1; }; /* 시즌 중 동률은 순위표·상단과 같은 공동 순위(검수 11-08) */
 /* 남의 선수는 스카우트가 아는 만큼만(모르면 '?') */
 function ibdOvr(p){ if(!p||hideOvr(p))return null; if(p.team===G.user)return ovr(p); const r=scoutReport(p); return r&&r.cur!=null?r.cur:null; }
 function ibdTeamsIn(m){ const s=ibdTxt(m); return G.teams.map(t=>t.id).filter(id=>id!==G.user&&(s.includes(tshort(id))||s.includes(team(id).nick))); }
