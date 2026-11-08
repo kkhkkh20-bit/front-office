@@ -1,0 +1,1337 @@
+{
+  "schema_version": "12.1",
+  "batch_id": "cheer01",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "arcface_passed": true,
+  "passed": true,
+  "reason": "Required quotas, final decoded RGB sheets, raw ArcFace128/256 and48-cell visual review passed. Game connection is pending.",
+  "identity_count": 48,
+  "group_sex_age_quotas_passed": true,
+  "group_counts": {
+    "clead": 16,
+    "ccap": 16,
+    "front": 16
+  },
+  "gender_counts": {
+    "male": 28,
+    "female": 20
+  },
+  "threshold": 0.4,
+  "pass_rule": "Every unmodified raw cosine strictly below0.40, independently detected/aligned from final128 and256 RGB WebP; no score rescaling/calibration.",
+  "comparisons": {
+    "128": {
+      "within": {
+        "pairs": 1128,
+        "max_cosine": 0.3764336407184601,
+        "pair": [
+          "v12_cheer01_clead_002",
+          "v12_cheer01_front_004"
+        ],
+        "passed": true
+      },
+      "reference": {
+        "pairs": 64608,
+        "max_cosine": 0.39689019322395325,
+        "pair": [
+          "v12_cheer01_clead_005",
+          "v6c100_097@seoul_comets"
+        ],
+        "passed": true
+      }
+    },
+    "256": {
+      "within": {
+        "pairs": 1128,
+        "max_cosine": 0.3886989653110504,
+        "pair": [
+          "v12_cheer01_front_005",
+          "v12_cheer01_front_007"
+        ],
+        "passed": true
+      },
+      "reference": {
+        "pairs": 64608,
+        "max_cosine": 0.39741528034210205,
+        "pair": [
+          "v12_cheer01_clead_001",
+          "v6c100_060@goyang_storm"
+        ],
+        "passed": true
+      }
+    }
+  },
+  "nearest": {
+    "v12_cheer01_clead_001": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.3564254641532898
+        },
+        "reference": {
+          "id": "v6c100_060@goyang_storm",
+          "version": "v6c",
+          "cosine": 0.37238019704818726
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.32000893354415894
+        },
+        "reference": {
+          "id": "v6c100_060@goyang_storm",
+          "version": "v6c",
+          "cosine": 0.39741528034210205
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_002": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.3764336407184601
+        },
+        "reference": {
+          "id": "v9_gm01_gm_022",
+          "version": "v9",
+          "cosine": 0.38762128353118896
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.3777499496936798
+        },
+        "reference": {
+          "id": "v9_gm01_gm_022",
+          "version": "v9",
+          "cosine": 0.363281786441803
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_003": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_009",
+          "cosine": 0.2381504625082016
+        },
+        "reference": {
+          "id": "v8_people01_doc_001",
+          "version": "v8",
+          "cosine": 0.24412605166435242
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_009",
+          "cosine": 0.2424108386039734
+        },
+        "reference": {
+          "id": "v8_people01_doc_001",
+          "version": "v8",
+          "cosine": 0.2542839050292969
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_004": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_003",
+          "cosine": 0.3100903630256653
+        },
+        "reference": {
+          "id": "v9_gm01_gm_017",
+          "version": "v9",
+          "cosine": 0.2946489453315735
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_003",
+          "cosine": 0.3091398775577545
+        },
+        "reference": {
+          "id": "v6c100_075@suwon_sparks",
+          "version": "v6c",
+          "cosine": 0.30376774072647095
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_005": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_006",
+          "cosine": 0.29059794545173645
+        },
+        "reference": {
+          "id": "v6c100_097@seoul_comets",
+          "version": "v6c",
+          "cosine": 0.39689019322395325
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_006",
+          "cosine": 0.286088764667511
+        },
+        "reference": {
+          "id": "v7_staff01_coach_025",
+          "version": "v7",
+          "cosine": 0.3858073949813843
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_006": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_006",
+          "cosine": 0.3673124611377716
+        },
+        "reference": {
+          "id": "v9_gm01_gm_006",
+          "version": "v9",
+          "cosine": 0.33487987518310547
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_006",
+          "cosine": 0.36562520265579224
+        },
+        "reference": {
+          "id": "v9_gm01_gm_006",
+          "version": "v9",
+          "cosine": 0.3227309584617615
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_007": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_013",
+          "cosine": 0.24088016152381897
+        },
+        "reference": {
+          "id": "v6c100_075@suwon_sparks",
+          "version": "v6c",
+          "cosine": 0.25065508484840393
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_013",
+          "cosine": 0.21856680512428284
+        },
+        "reference": {
+          "id": "v6c100_075@seoul_hounds",
+          "version": "v6c",
+          "cosine": 0.25033241510391235
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_008": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_016",
+          "cosine": 0.3044968247413635
+        },
+        "reference": {
+          "id": "v9_gm01_gm_041",
+          "version": "v9",
+          "cosine": 0.27398204803466797
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_016",
+          "cosine": 0.28430676460266113
+        },
+        "reference": {
+          "id": "v7_staff01_gm_017",
+          "version": "v7",
+          "cosine": 0.27062708139419556
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_009": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_009",
+          "cosine": 0.20978905260562897
+        },
+        "reference": {
+          "id": "v6c100_011@daegu_thunders",
+          "version": "v6c",
+          "cosine": 0.28577834367752075
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_009",
+          "cosine": 0.20763608813285828
+        },
+        "reference": {
+          "id": "v6c100_011@seoul_comets",
+          "version": "v6c",
+          "cosine": 0.2829301059246063
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_010": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.2932831943035126
+        },
+        "reference": {
+          "id": "v7_staff01_gm_009",
+          "version": "v7",
+          "cosine": 0.3221510946750641
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.2881819009780884
+        },
+        "reference": {
+          "id": "v7_staff01_gm_009",
+          "version": "v7",
+          "cosine": 0.31077268719673157
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_011": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_002",
+          "cosine": 0.3530192971229553
+        },
+        "reference": {
+          "id": "v9_gm01_gm_015",
+          "version": "v9",
+          "cosine": 0.36087170243263245
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_002",
+          "cosine": 0.3867560029029846
+        },
+        "reference": {
+          "id": "v9_gm01_gm_015",
+          "version": "v9",
+          "cosine": 0.3836696445941925
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_012": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_016",
+          "cosine": 0.34742090106010437
+        },
+        "reference": {
+          "id": "v7_staff01_gm_025",
+          "version": "v7",
+          "cosine": 0.34225428104400635
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_016",
+          "cosine": 0.3777550458908081
+        },
+        "reference": {
+          "id": "v6c100_085@busan_waves",
+          "version": "v6c",
+          "cosine": 0.37321582436561584
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_013": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.327658474445343
+        },
+        "reference": {
+          "id": "v8_people01_scout_015",
+          "version": "v8",
+          "cosine": 0.3363860249519348
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.3645714521408081
+        },
+        "reference": {
+          "id": "v8_people01_scout_015",
+          "version": "v8",
+          "cosine": 0.3699541985988617
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_014": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_016",
+          "cosine": 0.2716439962387085
+        },
+        "reference": {
+          "id": "v10_women01_staff_005",
+          "version": "v10",
+          "cosine": 0.32704225182533264
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_016",
+          "cosine": 0.30705195665359497
+        },
+        "reference": {
+          "id": "v10_women01_gm_011",
+          "version": "v10",
+          "cosine": 0.3259463310241699
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_015": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_002",
+          "cosine": 0.34097713232040405
+        },
+        "reference": {
+          "id": "v10_women01_gm_011",
+          "version": "v10",
+          "cosine": 0.3231399357318878
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_002",
+          "cosine": 0.30434250831604004
+        },
+        "reference": {
+          "id": "v10_women01_gm_011",
+          "version": "v10",
+          "cosine": 0.33075228333473206
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_clead_016": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_009",
+          "cosine": 0.31414905190467834
+        },
+        "reference": {
+          "id": "v8_people01_front_011",
+          "version": "v8",
+          "cosine": 0.3910294473171234
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_009",
+          "cosine": 0.30902180075645447
+        },
+        "reference": {
+          "id": "v8_people01_front_011",
+          "version": "v8",
+          "cosine": 0.3783845603466034
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_001": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_010",
+          "cosine": 0.2702464163303375
+        },
+        "reference": {
+          "id": "v8_people01_ana_011",
+          "version": "v8",
+          "cosine": 0.3035094141960144
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_010",
+          "cosine": 0.293231725692749
+        },
+        "reference": {
+          "id": "v8_people01_ana_011",
+          "version": "v8",
+          "cosine": 0.3187845051288605
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_002": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_015",
+          "cosine": 0.34097713232040405
+        },
+        "reference": {
+          "id": "v8_people01_press_012",
+          "version": "v8",
+          "cosine": 0.3086708188056946
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_015",
+          "cosine": 0.30434250831604004
+        },
+        "reference": {
+          "id": "v10_women01_gm_011",
+          "version": "v10",
+          "cosine": 0.2865910530090332
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_003": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_008",
+          "cosine": 0.33816882967948914
+        },
+        "reference": {
+          "id": "v10_women01_front_008",
+          "version": "v10",
+          "cosine": 0.3845904767513275
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_010",
+          "cosine": 0.36964234709739685
+        },
+        "reference": {
+          "id": "v10_women01_front_008",
+          "version": "v10",
+          "cosine": 0.38550493121147156
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_004": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_013",
+          "cosine": 0.3267798125743866
+        },
+        "reference": {
+          "id": "v8_people01_sec_006",
+          "version": "v8",
+          "cosine": 0.3906071186065674
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_013",
+          "cosine": 0.35784757137298584
+        },
+        "reference": {
+          "id": "v8_people01_sec_006",
+          "version": "v8",
+          "cosine": 0.37176766991615295
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_005": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_010",
+          "cosine": 0.37212052941322327
+        },
+        "reference": {
+          "id": "v6c100_022@suwon_sparks",
+          "version": "v6c",
+          "cosine": 0.34073248505592346
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_010",
+          "cosine": 0.3849950432777405
+        },
+        "reference": {
+          "id": "v10_women01_front_008",
+          "version": "v10",
+          "cosine": 0.34400275349617004
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_006": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_011",
+          "cosine": 0.3693116009235382
+        },
+        "reference": {
+          "id": "v10_women01_front_008",
+          "version": "v10",
+          "cosine": 0.39527714252471924
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_011",
+          "cosine": 0.35676684975624084
+        },
+        "reference": {
+          "id": "v7_staff01_gm_013",
+          "version": "v7",
+          "cosine": 0.3792722225189209
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_007": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_008",
+          "cosine": 0.23128733038902283
+        },
+        "reference": {
+          "id": "v10_women01_staff_012",
+          "version": "v10",
+          "cosine": 0.29929184913635254
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_008",
+          "cosine": 0.21875207126140594
+        },
+        "reference": {
+          "id": "v10_women01_staff_012",
+          "version": "v10",
+          "cosine": 0.29581061005592346
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_008": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_003",
+          "cosine": 0.33816882967948914
+        },
+        "reference": {
+          "id": "v10_women01_front_010",
+          "version": "v10",
+          "cosine": 0.34297794103622437
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_003",
+          "cosine": 0.35441339015960693
+        },
+        "reference": {
+          "id": "v10_women01_front_010",
+          "version": "v10",
+          "cosine": 0.3688322603702545
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_009": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_016",
+          "cosine": 0.31414905190467834
+        },
+        "reference": {
+          "id": "v10_women01_staff_001",
+          "version": "v10",
+          "cosine": 0.3436003029346466
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_016",
+          "cosine": 0.30902180075645447
+        },
+        "reference": {
+          "id": "v10_women01_staff_001",
+          "version": "v10",
+          "cosine": 0.29643669724464417
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_010": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.37212052941322327
+        },
+        "reference": {
+          "id": "v10_women01_staff_001",
+          "version": "v10",
+          "cosine": 0.3475758135318756
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.3849950432777405
+        },
+        "reference": {
+          "id": "v6c100_015@seoul_hounds",
+          "version": "v6c",
+          "cosine": 0.355564147233963
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_011": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_006",
+          "cosine": 0.3693116009235382
+        },
+        "reference": {
+          "id": "v10_women01_gm_010",
+          "version": "v10",
+          "cosine": 0.3552498519420624
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_006",
+          "cosine": 0.35676684975624084
+        },
+        "reference": {
+          "id": "v10_women01_gm_010",
+          "version": "v10",
+          "cosine": 0.35344600677490234
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_012": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_003",
+          "cosine": 0.2978685796260834
+        },
+        "reference": {
+          "id": "v10_women01_staff_003",
+          "version": "v10",
+          "cosine": 0.3935408592224121
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.31109410524368286
+        },
+        "reference": {
+          "id": "v10_women01_staff_003",
+          "version": "v10",
+          "cosine": 0.3952968120574951
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_013": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_004",
+          "cosine": 0.3267798125743866
+        },
+        "reference": {
+          "id": "v10_women01_front_008",
+          "version": "v10",
+          "cosine": 0.33660224080085754
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_004",
+          "cosine": 0.35784757137298584
+        },
+        "reference": {
+          "id": "v10_women01_front_013",
+          "version": "v10",
+          "cosine": 0.3702286183834076
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_014": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_003",
+          "cosine": 0.3049430549144745
+        },
+        "reference": {
+          "id": "v10_women01_front_004",
+          "version": "v10",
+          "cosine": 0.3940061926841736
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_013",
+          "cosine": 0.32166627049446106
+        },
+        "reference": {
+          "id": "v10_women01_gm_002",
+          "version": "v10",
+          "cosine": 0.391666978597641
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_015": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.32703569531440735
+        },
+        "reference": {
+          "id": "v9_gm01_gm_010",
+          "version": "v9",
+          "cosine": 0.3806231915950775
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.33538341522216797
+        },
+        "reference": {
+          "id": "v10_women01_gm_009",
+          "version": "v10",
+          "cosine": 0.39242425560951233
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_ccap_016": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_001",
+          "cosine": 0.24085932970046997
+        },
+        "reference": {
+          "id": "v10_women01_gm_010",
+          "version": "v10",
+          "cosine": 0.3084453046321869
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_001",
+          "cosine": 0.2362351268529892
+        },
+        "reference": {
+          "id": "v10_women01_front_013",
+          "version": "v10",
+          "cosine": 0.30584603548049927
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_001": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_016",
+          "cosine": 0.28336381912231445
+        },
+        "reference": {
+          "id": "v9_gm01_gm_036",
+          "version": "v9",
+          "cosine": 0.3557383716106415
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_008",
+          "cosine": 0.2791101634502411
+        },
+        "reference": {
+          "id": "v8_people01_fan_001",
+          "version": "v8",
+          "cosine": 0.3610256612300873
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_002": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_011",
+          "cosine": 0.3530192971229553
+        },
+        "reference": {
+          "id": "v6c100_053@daegu_thunders",
+          "version": "v6c",
+          "cosine": 0.3711816966533661
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_011",
+          "cosine": 0.3867560029029846
+        },
+        "reference": {
+          "id": "v6c100_053@seoul_comets",
+          "version": "v6c",
+          "cosine": 0.3965897560119629
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_003": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_004",
+          "cosine": 0.3100903630256653
+        },
+        "reference": {
+          "id": "v10_women01_front_016",
+          "version": "v10",
+          "cosine": 0.23832598328590393
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_004",
+          "cosine": 0.3091398775577545
+        },
+        "reference": {
+          "id": "v10_women01_front_016",
+          "version": "v10",
+          "cosine": 0.23760321736335754
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_004": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_002",
+          "cosine": 0.3764336407184601
+        },
+        "reference": {
+          "id": "v9_gm01_gm_051",
+          "version": "v9",
+          "cosine": 0.3663201630115509
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_002",
+          "cosine": 0.3777499496936798
+        },
+        "reference": {
+          "id": "v9_gm01_gm_013",
+          "version": "v9",
+          "cosine": 0.37556469440460205
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_005": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_007",
+          "cosine": 0.3572140336036682
+        },
+        "reference": {
+          "id": "v8_people01_fan_001",
+          "version": "v8",
+          "cosine": 0.34038275480270386
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_007",
+          "cosine": 0.3886989653110504
+        },
+        "reference": {
+          "id": "v8_people01_fan_001",
+          "version": "v8",
+          "cosine": 0.34447360038757324
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_006": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_006",
+          "cosine": 0.3673124611377716
+        },
+        "reference": {
+          "id": "v8_people01_ana_002",
+          "version": "v8",
+          "cosine": 0.3820558190345764
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_006",
+          "cosine": 0.36562520265579224
+        },
+        "reference": {
+          "id": "v8_people01_ana_002",
+          "version": "v8",
+          "cosine": 0.3842669129371643
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_007": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_005",
+          "cosine": 0.3572140336036682
+        },
+        "reference": {
+          "id": "v10_women01_staff_002",
+          "version": "v10",
+          "cosine": 0.3003557324409485
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_005",
+          "cosine": 0.3886989653110504
+        },
+        "reference": {
+          "id": "v9_gm01_gm_015",
+          "version": "v9",
+          "cosine": 0.31511545181274414
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_008": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_002",
+          "cosine": 0.28590187430381775
+        },
+        "reference": {
+          "id": "v9_gm01_gm_051",
+          "version": "v9",
+          "cosine": 0.3298194706439972
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_002",
+          "cosine": 0.26083508133888245
+        },
+        "reference": {
+          "id": "v9_gm01_gm_052",
+          "version": "v9",
+          "cosine": 0.34587162733078003
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_009": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_005",
+          "cosine": 0.2552762031555176
+        },
+        "reference": {
+          "id": "v9_gm01_gm_004",
+          "version": "v9",
+          "cosine": 0.26772236824035645
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_003",
+          "cosine": 0.2424108386039734
+        },
+        "reference": {
+          "id": "v9_gm01_gm_004",
+          "version": "v9",
+          "cosine": 0.30005478858947754
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_010": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_007",
+          "cosine": 0.30076363682746887
+        },
+        "reference": {
+          "id": "v6c100_092@gwangju_blazes",
+          "version": "v6c",
+          "cosine": 0.35911375284194946
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_005",
+          "cosine": 0.2834629416465759
+        },
+        "reference": {
+          "id": "v8_people01_ana_001",
+          "version": "v8",
+          "cosine": 0.3308091461658478
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_011": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.2826932668685913
+        },
+        "reference": {
+          "id": "v9_gm01_gm_043",
+          "version": "v9",
+          "cosine": 0.3571089506149292
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_004",
+          "cosine": 0.3063356876373291
+        },
+        "reference": {
+          "id": "v9_gm01_gm_043",
+          "version": "v9",
+          "cosine": 0.39165231585502625
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_012": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_front_015",
+          "cosine": 0.31401142477989197
+        },
+        "reference": {
+          "id": "v7_staff01_gm_011",
+          "version": "v7",
+          "cosine": 0.3669125735759735
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_front_015",
+          "cosine": 0.3240952789783478
+        },
+        "reference": {
+          "id": "v9_gm01_gm_051",
+          "version": "v9",
+          "cosine": 0.34491822123527527
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_013": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_007",
+          "cosine": 0.24088016152381897
+        },
+        "reference": {
+          "id": "v9_gm01_gm_005",
+          "version": "v9",
+          "cosine": 0.26392662525177
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_002",
+          "cosine": 0.23192158341407776
+        },
+        "reference": {
+          "id": "v9_gm01_gm_005",
+          "version": "v9",
+          "cosine": 0.3236353099346161
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_014": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_007",
+          "cosine": 0.20694716274738312
+        },
+        "reference": {
+          "id": "v9_gm01_gm_019",
+          "version": "v9",
+          "cosine": 0.1937403380870819
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_007",
+          "cosine": 0.19586125016212463
+        },
+        "reference": {
+          "id": "v6c100_010@incheon_seagulls",
+          "version": "v6c",
+          "cosine": 0.18059566617012024
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_015": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.3398128151893616
+        },
+        "reference": {
+          "id": "v9_gm01_gm_037",
+          "version": "v9",
+          "cosine": 0.28318026661872864
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_ccap_005",
+          "cosine": 0.3318597376346588
+        },
+        "reference": {
+          "id": "v9_gm01_gm_037",
+          "version": "v9",
+          "cosine": 0.2813076078891754
+        },
+        "passed": true
+      }
+    },
+    "v12_cheer01_front_016": {
+      "128": {
+        "within": {
+          "id": "v12_cheer01_clead_012",
+          "cosine": 0.34742090106010437
+        },
+        "reference": {
+          "id": "v7_staff01_gm_025",
+          "version": "v7",
+          "cosine": 0.34450292587280273
+        },
+        "passed": true
+      },
+      "256": {
+        "within": {
+          "id": "v12_cheer01_clead_012",
+          "cosine": 0.3777550458908081
+        },
+        "reference": {
+          "id": "v8_people01_ana_006",
+          "version": "v8",
+          "cosine": 0.33401405811309814
+        },
+        "passed": true
+      }
+    }
+  },
+  "reference_identity_counts": {
+    "v6c": 100,
+    "v7": 126,
+    "v8": 120,
+    "v9": 60,
+    "v10": 40
+  },
+  "reference_photos_per_resolution": 1346,
+  "v6c_home_variants": 10,
+  "pixel_roundtrip_exact": true,
+  "manifest_rects_passed": true,
+  "unused_cells_black_rgb": true,
+  "runtime_mode": "RGB",
+  "runtime_codec": "lossless WebP",
+  "faces_detected": 96,
+  "runtime_bytes": 4172646,
+  "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+  "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+  "protocol": "Same v6/v7/v9/v10 SCRFD/ArcFace pipeline: RGB640 SCRFD score>.55, five landmarks LMEDS112px alignment, w600k_r50 RGB float32[-1,1],512D L2 raw dot. Verified unchanged reference atlas hashes before cached reference embeddings reuse.",
+  "real_person_database_comparison": "NOT_PERFORMED",
+  "game_connected": false,
+  "candidate_pool_size": 144,
+  "natural_pose_user_override": true,
+  "visual_review": "validation/visual_review.json"
+}

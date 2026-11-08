@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "reviewer": "Codex visual inspection",
+  "gm": {
+    "all60_portraits_reviewed_at256": true,
+    "own_head_neck_shoulders_clothes_coherent": true,
+    "natural_relaxed_close_framing": true,
+    "age_progression_subtle10_and20_years_not_elderly_caricature": true,
+    "same_person_visual_consistency": true,
+    "glasses_beard_tags_checked": true,
+    "no_caps": true
+  },
+  "cheer_portraits": {
+    "all12_reviewed_at256": true,
+    "natural_close_head_shoulder_photographs": true,
+    "modest_plain_sports_jackets": true,
+    "no_cap_or_logo_or_visible_text": true,
+    "delivered_v12_source_ids_excluded": true
+  },
+  "stages": {
+    "basic": [
+      "1male captain+4female dancers",
+      "1male captain+4female dancers",
+      "1male captain+4female dancers"
+    ],
+    "expanded": [
+      "8female dancers+1male drummer",
+      "8female dancers+1male drummer",
+      "8female dancers+1male drummer"
+    ],
+    "large": [
+      "at least12female dancers+captain/drum/crowd",
+      "at least12female dancers+captain/drum/crowd",
+      "at least12female dancers+captain/drum/crowd"
+    ],
+    "day_night_mix": true,
+    "modest_sportswear": true,
+    "real_brands_or_readable_team_names_not_observed": true,
+    "spectators_unidentifiable": true
+  },
+  "events": [
+    "fan high-five/signing",
+    "retro-uniform day",
+    "ceremonial first pitch"
+  ],
+  "scout": {
+    "all10_reviewed": true,
+    "category_counts": {
+      "weekend": 3,
+      "tournament": 2,
+      "dugout": 2,
+      "winter": 2,
+      "office": 1
+    },
+    "radar_guns_notebooks_observed": true,
+    "youth_faces_tiny_or_back_view": true,
+    "dugout_coaches_revised_to_rear_view": true,
+    "no_readable_school_names_or_actual_emblems_observed": true
+  },
+  "limitations": [
+    "Manual likeness review cannot exhaustively compare all real people.",
+    "Scene casts are independent fictional people and are not promised to match the portrait identities.",
+    "No in-game connection/render test; review branches only."
+  ]
+}

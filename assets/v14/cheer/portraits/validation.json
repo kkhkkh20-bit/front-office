@@ -1,0 +1,45 @@
+{
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "passed": true,
+  "metrics": {
+    "128": {
+      "count": 12,
+      "within_pair_count": 66,
+      "within_maximum": 0.38604187965393066,
+      "nearest_within_pair": [
+        "v14_cheer_member_002",
+        "v14_cheer_member_010"
+      ],
+      "v12_reference_count": 48,
+      "v12_comparison_count": 576,
+      "v12_maximum": 0.38896676898002625,
+      "nearest_v12_pair": [
+        "v14_cheer_member_009",
+        "v12_cheer01_ccap_006"
+      ],
+      "passed": true
+    },
+    "256": {
+      "count": 12,
+      "within_pair_count": 66,
+      "within_maximum": 0.38317903876304626,
+      "nearest_within_pair": [
+        "v14_cheer_member_002",
+        "v14_cheer_member_010"
+      ],
+      "v12_reference_count": 48,
+      "v12_comparison_count": 576,
+      "v12_maximum": 0.39917874336242676,
+      "nearest_v12_pair": [
+        "v14_cheer_member_009",
+        "v12_cheer01_clead_013"
+      ],
+      "passed": true
+    }
+  },
+  "scope": {
+    "gm_same_person": ">=0.55 against own original v9 AND between three ages",
+    "gm_different_people": "<0.40 between the20selected identities across all their age variants",
+    "cheer": "<0.40 within12new members and versus all48deliveredv12"
+  }
+}

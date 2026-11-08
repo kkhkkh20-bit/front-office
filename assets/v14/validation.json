@@ -1,0 +1,670 @@
+{
+  "schema_version": "14.1",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "passed": true,
+  "portrait_photos": 72,
+  "identity_count": 32,
+  "scene_count": 22,
+  "arcface_protocol": "Same unmodified v9/v12 SCRFD640 five-landmark LMEDS112 ArcFace w600k_r50 RGB[-1,1]512D L2 raw cosine. Actual decoded final RGB WebP; cached results only reused where decoded pixel equality is asserted.",
+  "thresholds": {
+    "gm_same_person": ">=0.55 against own original v9 AND between three ages",
+    "gm_different_people": "<0.40 between the20selected identities across all their age variants",
+    "cheer": "<0.40 within12new members and versus all48deliveredv12"
+  },
+  "no_global_reference_claim": "Ages are intentionally the same v9 identities. This is not a global non-match claim against every previous asset version.",
+  "metrics": {
+    "gm_age": {
+      "128": {
+        "count": 60,
+        "same_identity_minimum": 0.8046729564666748,
+        "same_original_v9_minimum": 0.7310956716537476,
+        "different_identity_maximum": 0.3690357506275177,
+        "nearest_different_pair": [
+          "v14_gmage_006_p20",
+          "v14_gmage_017_p20"
+        ],
+        "different_identity_pair_count": 1710,
+        "passed": true,
+        "individual": {
+          "v14_gmage_001": {
+            "base": "v9_gm01_gm_002",
+            "minimum_between_age_variants": 0.84068763256073,
+            "to_v9_original": {
+              "0": 0.8382236361503601,
+              "10": 0.8238421678543091,
+              "20": 0.7650370597839355
+            },
+            "passed": true
+          },
+          "v14_gmage_002": {
+            "base": "v9_gm01_gm_007",
+            "minimum_between_age_variants": 0.8880468606948853,
+            "to_v9_original": {
+              "0": 0.9215248227119446,
+              "10": 0.9191723465919495,
+              "20": 0.8321559429168701
+            },
+            "passed": true
+          },
+          "v14_gmage_003": {
+            "base": "v9_gm01_gm_010",
+            "minimum_between_age_variants": 0.872639000415802,
+            "to_v9_original": {
+              "0": 0.8791327476501465,
+              "10": 0.8793796300888062,
+              "20": 0.7818946838378906
+            },
+            "passed": true
+          },
+          "v14_gmage_004": {
+            "base": "v9_gm01_gm_012",
+            "minimum_between_age_variants": 0.8194525241851807,
+            "to_v9_original": {
+              "0": 0.8438969254493713,
+              "10": 0.7971757650375366,
+              "20": 0.7310956716537476
+            },
+            "passed": true
+          },
+          "v14_gmage_005": {
+            "base": "v9_gm01_gm_014",
+            "minimum_between_age_variants": 0.8791812658309937,
+            "to_v9_original": {
+              "0": 0.9217658638954163,
+              "10": 0.8389870524406433,
+              "20": 0.7961456775665283
+            },
+            "passed": true
+          },
+          "v14_gmage_006": {
+            "base": "v9_gm01_gm_017",
+            "minimum_between_age_variants": 0.9001032710075378,
+            "to_v9_original": {
+              "0": 0.9151074886322021,
+              "10": 0.8439233303070068,
+              "20": 0.8151654005050659
+            },
+            "passed": true
+          },
+          "v14_gmage_007": {
+            "base": "v9_gm01_gm_021",
+            "minimum_between_age_variants": 0.840939462184906,
+            "to_v9_original": {
+              "0": 0.9185484647750854,
+              "10": 0.8496950268745422,
+              "20": 0.7895552515983582
+            },
+            "passed": true
+          },
+          "v14_gmage_008": {
+            "base": "v9_gm01_gm_026",
+            "minimum_between_age_variants": 0.8623508214950562,
+            "to_v9_original": {
+              "0": 0.8016026020050049,
+              "10": 0.8816553354263306,
+              "20": 0.7978390455245972
+            },
+            "passed": true
+          },
+          "v14_gmage_009": {
+            "base": "v9_gm01_gm_029",
+            "minimum_between_age_variants": 0.8693742156028748,
+            "to_v9_original": {
+              "0": 0.8843521475791931,
+              "10": 0.896474301815033,
+              "20": 0.8707546591758728
+            },
+            "passed": true
+          },
+          "v14_gmage_010": {
+            "base": "v9_gm01_gm_030",
+            "minimum_between_age_variants": 0.8727409243583679,
+            "to_v9_original": {
+              "0": 0.8902645111083984,
+              "10": 0.8894094824790955,
+              "20": 0.8454692959785461
+            },
+            "passed": true
+          },
+          "v14_gmage_011": {
+            "base": "v9_gm01_gm_031",
+            "minimum_between_age_variants": 0.8212013244628906,
+            "to_v9_original": {
+              "0": 0.9135263562202454,
+              "10": 0.8441103100776672,
+              "20": 0.736016035079956
+            },
+            "passed": true
+          },
+          "v14_gmage_012": {
+            "base": "v9_gm01_gm_032",
+            "minimum_between_age_variants": 0.8808695673942566,
+            "to_v9_original": {
+              "0": 0.9499280452728271,
+              "10": 0.8957752585411072,
+              "20": 0.8394153118133545
+            },
+            "passed": true
+          },
+          "v14_gmage_013": {
+            "base": "v9_gm01_gm_033",
+            "minimum_between_age_variants": 0.8046729564666748,
+            "to_v9_original": {
+              "0": 0.9158542156219482,
+              "10": 0.8329813480377197,
+              "20": 0.7410768270492554
+            },
+            "passed": true
+          },
+          "v14_gmage_014": {
+            "base": "v9_gm01_gm_034",
+            "minimum_between_age_variants": 0.8212760090827942,
+            "to_v9_original": {
+              "0": 0.916589081287384,
+              "10": 0.8841338157653809,
+              "20": 0.8193947672843933
+            },
+            "passed": true
+          },
+          "v14_gmage_015": {
+            "base": "v9_gm01_gm_037",
+            "minimum_between_age_variants": 0.858021080493927,
+            "to_v9_original": {
+              "0": 0.9008026123046875,
+              "10": 0.8443307876586914,
+              "20": 0.806609034538269
+            },
+            "passed": true
+          },
+          "v14_gmage_016": {
+            "base": "v9_gm01_gm_038",
+            "minimum_between_age_variants": 0.8539530634880066,
+            "to_v9_original": {
+              "0": 0.8983868360519409,
+              "10": 0.8739843368530273,
+              "20": 0.8008162975311279
+            },
+            "passed": true
+          },
+          "v14_gmage_017": {
+            "base": "v9_gm01_gm_041",
+            "minimum_between_age_variants": 0.8476774096488953,
+            "to_v9_original": {
+              "0": 0.8685872554779053,
+              "10": 0.8874673247337341,
+              "20": 0.8282604217529297
+            },
+            "passed": true
+          },
+          "v14_gmage_018": {
+            "base": "v9_gm01_gm_047",
+            "minimum_between_age_variants": 0.859128475189209,
+            "to_v9_original": {
+              "0": 0.879157543182373,
+              "10": 0.8783642053604126,
+              "20": 0.7944178581237793
+            },
+            "passed": true
+          },
+          "v14_gmage_019": {
+            "base": "v9_gm01_gm_048",
+            "minimum_between_age_variants": 0.8674070239067078,
+            "to_v9_original": {
+              "0": 0.8199469447135925,
+              "10": 0.882103443145752,
+              "20": 0.8399619460105896
+            },
+            "passed": true
+          },
+          "v14_gmage_020": {
+            "base": "v9_gm01_gm_049",
+            "minimum_between_age_variants": 0.8415819406509399,
+            "to_v9_original": {
+              "0": 0.8664958477020264,
+              "10": 0.8165279626846313,
+              "20": 0.7586736679077148
+            },
+            "passed": true
+          }
+        }
+      },
+      "256": {
+        "count": 60,
+        "same_identity_minimum": 0.8045522570610046,
+        "same_original_v9_minimum": 0.7304775714874268,
+        "different_identity_maximum": 0.3987595736980438,
+        "nearest_different_pair": [
+          "v14_gmage_006_p20",
+          "v14_gmage_017_p20"
+        ],
+        "different_identity_pair_count": 1710,
+        "passed": true,
+        "individual": {
+          "v14_gmage_001": {
+            "base": "v9_gm01_gm_002",
+            "minimum_between_age_variants": 0.8450911641120911,
+            "to_v9_original": {
+              "0": 0.8624733090400696,
+              "10": 0.8377386927604675,
+              "20": 0.7813620567321777
+            },
+            "passed": true
+          },
+          "v14_gmage_002": {
+            "base": "v9_gm01_gm_007",
+            "minimum_between_age_variants": 0.8998740315437317,
+            "to_v9_original": {
+              "0": 0.9334944486618042,
+              "10": 0.929462730884552,
+              "20": 0.8553069829940796
+            },
+            "passed": true
+          },
+          "v14_gmage_003": {
+            "base": "v9_gm01_gm_010",
+            "minimum_between_age_variants": 0.8773136138916016,
+            "to_v9_original": {
+              "0": 0.8835494518280029,
+              "10": 0.8745508193969727,
+              "20": 0.7947208881378174
+            },
+            "passed": true
+          },
+          "v14_gmage_004": {
+            "base": "v9_gm01_gm_012",
+            "minimum_between_age_variants": 0.8045522570610046,
+            "to_v9_original": {
+              "0": 0.8685014247894287,
+              "10": 0.8064047694206238,
+              "20": 0.7501226663589478
+            },
+            "passed": true
+          },
+          "v14_gmage_005": {
+            "base": "v9_gm01_gm_014",
+            "minimum_between_age_variants": 0.8894959092140198,
+            "to_v9_original": {
+              "0": 0.9262312650680542,
+              "10": 0.849677324295044,
+              "20": 0.8151969909667969
+            },
+            "passed": true
+          },
+          "v14_gmage_006": {
+            "base": "v9_gm01_gm_017",
+            "minimum_between_age_variants": 0.8959985971450806,
+            "to_v9_original": {
+              "0": 0.9150285720825195,
+              "10": 0.8516809940338135,
+              "20": 0.8170478343963623
+            },
+            "passed": true
+          },
+          "v14_gmage_007": {
+            "base": "v9_gm01_gm_021",
+            "minimum_between_age_variants": 0.8537573218345642,
+            "to_v9_original": {
+              "0": 0.9288194179534912,
+              "10": 0.8577635288238525,
+              "20": 0.8126904368400574
+            },
+            "passed": true
+          },
+          "v14_gmage_008": {
+            "base": "v9_gm01_gm_026",
+            "minimum_between_age_variants": 0.8561185598373413,
+            "to_v9_original": {
+              "0": 0.7974907755851746,
+              "10": 0.8742403984069824,
+              "20": 0.785176157951355
+            },
+            "passed": true
+          },
+          "v14_gmage_009": {
+            "base": "v9_gm01_gm_029",
+            "minimum_between_age_variants": 0.8618150949478149,
+            "to_v9_original": {
+              "0": 0.8638463616371155,
+              "10": 0.8957124948501587,
+              "20": 0.8531014919281006
+            },
+            "passed": true
+          },
+          "v14_gmage_010": {
+            "base": "v9_gm01_gm_030",
+            "minimum_between_age_variants": 0.8815563917160034,
+            "to_v9_original": {
+              "0": 0.9162169098854065,
+              "10": 0.8792825937271118,
+              "20": 0.8489048480987549
+            },
+            "passed": true
+          },
+          "v14_gmage_011": {
+            "base": "v9_gm01_gm_031",
+            "minimum_between_age_variants": 0.8163647651672363,
+            "to_v9_original": {
+              "0": 0.9126721024513245,
+              "10": 0.8356411457061768,
+              "20": 0.7304775714874268
+            },
+            "passed": true
+          },
+          "v14_gmage_012": {
+            "base": "v9_gm01_gm_032",
+            "minimum_between_age_variants": 0.89046710729599,
+            "to_v9_original": {
+              "0": 0.9534732103347778,
+              "10": 0.9051113724708557,
+              "20": 0.8631443977355957
+            },
+            "passed": true
+          },
+          "v14_gmage_013": {
+            "base": "v9_gm01_gm_033",
+            "minimum_between_age_variants": 0.8154677748680115,
+            "to_v9_original": {
+              "0": 0.9132228493690491,
+              "10": 0.8274778127670288,
+              "20": 0.7315842509269714
+            },
+            "passed": true
+          },
+          "v14_gmage_014": {
+            "base": "v9_gm01_gm_034",
+            "minimum_between_age_variants": 0.8392398953437805,
+            "to_v9_original": {
+              "0": 0.9129738211631775,
+              "10": 0.8780792355537415,
+              "20": 0.826865553855896
+            },
+            "passed": true
+          },
+          "v14_gmage_015": {
+            "base": "v9_gm01_gm_037",
+            "minimum_between_age_variants": 0.8619903922080994,
+            "to_v9_original": {
+              "0": 0.9227333664894104,
+              "10": 0.8516120910644531,
+              "20": 0.8129507303237915
+            },
+            "passed": true
+          },
+          "v14_gmage_016": {
+            "base": "v9_gm01_gm_038",
+            "minimum_between_age_variants": 0.8636674880981445,
+            "to_v9_original": {
+              "0": 0.9139227867126465,
+              "10": 0.8928298354148865,
+              "20": 0.8116064071655273
+            },
+            "passed": true
+          },
+          "v14_gmage_017": {
+            "base": "v9_gm01_gm_041",
+            "minimum_between_age_variants": 0.8768739104270935,
+            "to_v9_original": {
+              "0": 0.8721370100975037,
+              "10": 0.8826203942298889,
+              "20": 0.8386609554290771
+            },
+            "passed": true
+          },
+          "v14_gmage_018": {
+            "base": "v9_gm01_gm_047",
+            "minimum_between_age_variants": 0.8587083220481873,
+            "to_v9_original": {
+              "0": 0.8764049410820007,
+              "10": 0.870218813419342,
+              "20": 0.7902278900146484
+            },
+            "passed": true
+          },
+          "v14_gmage_019": {
+            "base": "v9_gm01_gm_048",
+            "minimum_between_age_variants": 0.8611419796943665,
+            "to_v9_original": {
+              "0": 0.803841233253479,
+              "10": 0.8957833051681519,
+              "20": 0.8508615493774414
+            },
+            "passed": true
+          },
+          "v14_gmage_020": {
+            "base": "v9_gm01_gm_049",
+            "minimum_between_age_variants": 0.8631940484046936,
+            "to_v9_original": {
+              "0": 0.8893877267837524,
+              "10": 0.8356413841247559,
+              "20": 0.7944676876068115
+            },
+            "passed": true
+          }
+        }
+      }
+    },
+    "cheer": {
+      "128": {
+        "count": 12,
+        "within_pair_count": 66,
+        "within_maximum": 0.38604187965393066,
+        "nearest_within_pair": [
+          "v14_cheer_member_002",
+          "v14_cheer_member_010"
+        ],
+        "v12_reference_count": 48,
+        "v12_comparison_count": 576,
+        "v12_maximum": 0.38896676898002625,
+        "nearest_v12_pair": [
+          "v14_cheer_member_009",
+          "v12_cheer01_ccap_006"
+        ],
+        "passed": true
+      },
+      "256": {
+        "count": 12,
+        "within_pair_count": 66,
+        "within_maximum": 0.38317903876304626,
+        "nearest_within_pair": [
+          "v14_cheer_member_002",
+          "v14_cheer_member_010"
+        ],
+        "v12_reference_count": 48,
+        "v12_comparison_count": 576,
+        "v12_maximum": 0.39917874336242676,
+        "nearest_v12_pair": [
+          "v14_cheer_member_009",
+          "v12_cheer01_clead_013"
+        ],
+        "passed": true
+      }
+    }
+  },
+  "scene_files": [
+    {
+      "id": "cheer_basic_1",
+      "bytes": 261440,
+      "passed": true
+    },
+    {
+      "id": "cheer_basic_2",
+      "bytes": 200888,
+      "passed": true
+    },
+    {
+      "id": "cheer_basic_3",
+      "bytes": 245436,
+      "passed": true
+    },
+    {
+      "id": "cheer_expanded_1",
+      "bytes": 330518,
+      "passed": true
+    },
+    {
+      "id": "cheer_expanded_2",
+      "bytes": 242062,
+      "passed": true
+    },
+    {
+      "id": "cheer_expanded_3",
+      "bytes": 262716,
+      "passed": true
+    },
+    {
+      "id": "cheer_large_1",
+      "bytes": 428340,
+      "passed": true
+    },
+    {
+      "id": "cheer_large_2",
+      "bytes": 309452,
+      "passed": true
+    },
+    {
+      "id": "cheer_large_3",
+      "bytes": 295478,
+      "passed": true
+    },
+    {
+      "id": "event_fan_highfive",
+      "bytes": 236050,
+      "passed": true
+    },
+    {
+      "id": "event_retro_uniform",
+      "bytes": 249392,
+      "passed": true
+    },
+    {
+      "id": "event_first_pitch",
+      "bytes": 246796,
+      "passed": true
+    },
+    {
+      "id": "scout_weekend_1",
+      "bytes": 283104,
+      "passed": true
+    },
+    {
+      "id": "scout_weekend_2",
+      "bytes": 306714,
+      "passed": true
+    },
+    {
+      "id": "scout_weekend_3",
+      "bytes": 279518,
+      "passed": true
+    },
+    {
+      "id": "scout_tournament_1",
+      "bytes": 330422,
+      "passed": true
+    },
+    {
+      "id": "scout_tournament_2",
+      "bytes": 274332,
+      "passed": true
+    },
+    {
+      "id": "scout_dugout_1",
+      "bytes": 273318,
+      "passed": true
+    },
+    {
+      "id": "scout_dugout_2",
+      "bytes": 329086,
+      "passed": true
+    },
+    {
+      "id": "scout_winter_1",
+      "bytes": 275800,
+      "passed": true
+    },
+    {
+      "id": "scout_winter_2",
+      "bytes": 221158,
+      "passed": true
+    },
+    {
+      "id": "scout_draft_meeting",
+      "bytes": 203952,
+      "passed": true
+    }
+  ],
+  "visual_review": {
+    "passed": true,
+    "reviewer": "Codex visual inspection",
+    "gm": {
+      "all60_portraits_reviewed_at256": true,
+      "own_head_neck_shoulders_clothes_coherent": true,
+      "natural_relaxed_close_framing": true,
+      "age_progression_subtle10_and20_years_not_elderly_caricature": true,
+      "same_person_visual_consistency": true,
+      "glasses_beard_tags_checked": true,
+      "no_caps": true
+    },
+    "cheer_portraits": {
+      "all12_reviewed_at256": true,
+      "natural_close_head_shoulder_photographs": true,
+      "modest_plain_sports_jackets": true,
+      "no_cap_or_logo_or_visible_text": true,
+      "delivered_v12_source_ids_excluded": true
+    },
+    "stages": {
+      "basic": [
+        "1male captain+4female dancers",
+        "1male captain+4female dancers",
+        "1male captain+4female dancers"
+      ],
+      "expanded": [
+        "8female dancers+1male drummer",
+        "8female dancers+1male drummer",
+        "8female dancers+1male drummer"
+      ],
+      "large": [
+        "at least12female dancers+captain/drum/crowd",
+        "at least12female dancers+captain/drum/crowd",
+        "at least12female dancers+captain/drum/crowd"
+      ],
+      "day_night_mix": true,
+      "modest_sportswear": true,
+      "real_brands_or_readable_team_names_not_observed": true,
+      "spectators_unidentifiable": true
+    },
+    "events": [
+      "fan high-five/signing",
+      "retro-uniform day",
+      "ceremonial first pitch"
+    ],
+    "scout": {
+      "all10_reviewed": true,
+      "category_counts": {
+        "weekend": 3,
+        "tournament": 2,
+        "dugout": 2,
+        "winter": 2,
+        "office": 1
+      },
+      "radar_guns_notebooks_observed": true,
+      "youth_faces_tiny_or_back_view": true,
+      "dugout_coaches_revised_to_rear_view": true,
+      "no_readable_school_names_or_actual_emblems_observed": true
+    },
+    "limitations": [
+      "Manual likeness review cannot exhaustively compare all real people.",
+      "Scene casts are independent fictional people and are not promised to match the portrait identities.",
+      "No in-game connection/render test; review branches only."
+    ]
+  },
+  "all_unused_cells_black_rgb": true,
+  "pixel_roundtrip_exact": true,
+  "models": {
+    "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+    "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43"
+  },
+  "main_merged": false,
+  "code_changed": false,
+  "game_connected": false,
+  "real_person_database_comparison": "NOT_PERFORMED; fictional casting and visual review, not an exhaustive likeness proof"
+}
