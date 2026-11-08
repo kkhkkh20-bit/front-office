@@ -75,6 +75,6 @@ function dataPage(){ if(fmOn()&&!UI._smk)return dataFM(); /* PC: FM식 데이터
       <div class="eyebrow" style="margin-top:8px">역할</div><div class="list">${Object.entries(AROLE).map(([k,r])=>`<div class="item" style="cursor:default"><span class="nm"><b>${r.l}</b> ${hiI(r.d)}</span></div>`).join('')}</div>`;
   if(UI._smk)return body; const rep=last?`<div class="eyebrow">${dsh(last.day)} 보고</div><p class="small" style="white-space:pre-line">${esc(last.body)}</p>`:'<p class="small muted">시즌 중 매달 말 보고가 옵니다.</p>';
   return csec('전력분석·데이터팀',body+smkLink('an','분석원 채용'),`<span class="small muted">연 ${money(anaSal())}</span>`)+csec('분석 보고',rep); }
-function scoutTeamPage(){ if(fmOn())return scoutFM(); /* PC: FM식 스카우팅 센터(34b_staff_fm.js) */ return csec('스카우트 팀',scoutBody(),`<span class="small muted">${G.scouts.length}/${scoutMax()}</span>`); }
+function scoutTeamPage(){ return scoutPage2(()=>fmOn()?scoutFM():csec('스카우트 팀',scoutBody(),`<span class="small muted">${G.scouts.length}/${scoutMax()}</span>`)); } /* PC: FM식 스카우팅 센터(34b_staff_fm.js), 옆 탭은 지역 정보망(33b_scout_map.js) */
 /* 예전 '스카우팅' 탭: 드래프트는 영입·계약, 스카우트 팀은 스태프, 해외 스카우트망은 외국인 화면으로 옮겼다 */
 function scoutView(){ return transferView(); }

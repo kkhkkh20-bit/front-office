@@ -25,7 +25,7 @@ function makeDraftClass(){
     const cur=clamp(T-(27-age)*rnd(2.2,3.4),20,60);
     const b=newPlayer({age,base:cur,pot:T,college}); b.prospect=true;
     if(T<56&&R()<.07){ const h=ri(6,12); b.pot=Math.min(78,b.pot+h); b.hidT=h; } /* 숨은 재능: 실제 잠재력이 겉보기보다 크다. 대부분의 스카우트는 놓치고, 능력 좋은 스카우트만 알아본다(유저 요청 11-07) */
-    b.school=pick(SCH_CITY[b.region])+(college?pick(SCH_UN):pick(SCH_HS)); b.schoolHue=Math.floor(u01('sh',b.school)*360);
+    setProspectArea(b); b.schoolHue=Math.floor(u01('sh',b.school)*360); /* 실제 권역·고교 이름(12_scout_area, 사용자 11-08) */
     b.ht=Math.round(clamp(N(b.isP?184:179,5),168,198)); b.wt=Math.round(clamp(b.ht-100+N(b.isP?-1:-3,6),62,112));
     if(b.isP)b.amVelo=veloOf(b)-(college?ri(1,3):ri(3,6)); else b.amRun=(+runOf(b)+.04).toFixed(2);
     if(b.inj>.22&&R()<.65)b.amInj=pick(b.isP?AM_INJ_P:AM_INJ_B);

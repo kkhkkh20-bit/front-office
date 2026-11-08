@@ -149,3 +149,16 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 /* 설정 한 페이지(사용자 11-08) */
 .setx{display:grid;gap:10px;align-content:start}.setx .setc{display:grid;gap:10px;align-content:start;min-width:0}.setx .setc>.card{margin:0}
 @media(min-width:1100px){.setx{grid-template-columns:repeat(3,minmax(0,1fr));height:100%;min-height:0;overflow-y:auto;scrollbar-width:thin}}
+/* 스카우트 지역 정보망 지도(사용자 11-08) */
+.scm{display:grid;gap:10px;align-content:start}.scm>.card{margin:0;min-width:0}
+.scm-map{display:grid;justify-items:center}.scm-svg{width:100%;max-width:440px;height:auto}
+.scm-a{cursor:pointer}.scm-a:hover path{fill-opacity:1}
+.scm-n{font:700 8px var(--f-ui);fill:#fff;text-anchor:middle;paint-order:stroke;stroke:#0b1014;stroke-width:2px;pointer-events:none}
+.scm-v{font:800 10px var(--f-num);fill:#fff;text-anchor:middle;paint-order:stroke;stroke:#0b1014;stroke-width:2.4px;pointer-events:none}
+.scm-key{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;justify-content:center;margin:4px 0}.scm-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:2px}
+.scm-tbl tr{cursor:pointer}.scm-tbl tr.on td{background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.scm-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:6px 0}.scm-bar i{display:block;height:100%}
+.scm-schs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.scm-sch{border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:grid;gap:2px}.scm-sch.none{opacity:.55}.scm-sch>div{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline}
+@media(min-width:1100px){.scm{grid-template-columns:minmax(340px,460px) minmax(0,1fr);height:100%;min-height:0;overflow-y:auto}.scm-r{overflow-y:auto}}
+.scm-n.sm{font-size:5.5px;stroke-width:1.4px}.scm-v.sm{font-size:7px;stroke-width:1.6px}
