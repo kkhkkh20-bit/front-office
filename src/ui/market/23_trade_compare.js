@@ -44,6 +44,7 @@ function quickActs(p){
     if(!p.foreign&&tradeOpen()){ b.push(`<button class="btn small" data-a="findMine" data-v="${p.id}">시장 가치</button>`); b.push(`<button class="btn small" data-a="toTradeGive" data-v="${p.id}">트레이드 협상에 넣기</button>`); }
     if(!p.foreign)b.push(p.listed?`<button class="btn small" data-a="blkOff" data-v="${p.id}">매물 목록에서 빼기</button>`:`<button class="btn small" data-a="blkOn" data-v="${p.id}">매물 목록에 올리기</button>`);
     if(canExtend(p))b.push(`<button class="btn small" data-a="jump" data-v="ext">연장 협상</button>`);
+    if(p.foreign==='용병'&&typeof fTmpErr==='function'&&!fTmpErr(G.user,p))b.push(`<button class="btn small primary" data-a="fTmpStart" data-v="${p.id}">부상 대체 외국인 고르기</button>`); /* 6주 이상 다친 외국인 화면에서 바로(카페 피드백 11-08) */
   } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){ if(tradeOpen()){ b.push(`<button class="btn small primary" data-a="findT" data-v="${p.id}">얻을 조건 보기</button>`); b.push(`<button class="btn small" data-a="toTrade" data-v="${p.id}">데려오기 협상</button>`); } b.push(`<button class="btn small" data-a="pwatch" data-v="${p.id}">${(G.pwatch||[]).includes(p.id)?'관심 해제':'관심 선수'}</button>`); }
   return b.length?`<div class="qacts">${b.join('')}</div>`:''; }
 
