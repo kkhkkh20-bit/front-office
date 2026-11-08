@@ -669,7 +669,8 @@ T('[주장] 선수단 투표로 뽑는 주장은 적어도 주전급(주전·선
 T('[연대기] 시설 완공과 주장 교체(사유·전임)가 구단 역사에 남는다',()=>{ fresh(); facInit(); const k=FACK.find(x=>G.fac.it[x]<3); G.fac.bld[k]={lv:G.fac.it[k]+1,done:G.day,c:100}; facDaily(); ok((G.chron||[]).some(c=>c.k==='fac'&&/완공/.test(c.t)),'시설 완공 기록');
   const t=team(G.user); const c0=electCaptain(G.user,'첫 투표'); const others=domestic(G.user).filter(p=>p.id!==c0.id); c0.injOut=30; const c1=electCaptain(G.user,'주장 부상'); const e=(G.chron||[]).filter(c=>c.k==='cap').pop(); if(c1&&c1.id!==c0.id)ok(/주장 부상/.test(e.t)&&/전임/.test(e.t),'교체 사유·전임: '+e.t); });
 T('[외국인 발굴] 우리만 아는 후보가 곧 알려질 때(3일 전)와 알려졌을 때 소식이 온다',()=>{ fresh(); const p=(G.fmarket||[]).map(id=>G.players[id]).find(q=>q&&q.team==null); ok(p,'준비 실패'); p.fsrc='scout'; p.fknow=[G.user]; p.fpub=G.day+3;
-  fPubDaily(); ok(G.mail.some(m=>/공개 임박/.test(m.subj)&&m.subj.includes(p.name)),'3일 전 알림'); G.day+=3; fPubDaily(); ok(G.mail.some(m=>/퍼졌습니다/.test(m.subj)&&m.subj.includes(p.name)),'공개 당일 알림'); });
+  const of=fScout; try{ fScout=()=>({mid:70}); /* 65 이하 후보는 알리지 않으므로 좋은 후보로 가정(11-08) */
+  fPubDaily(); ok(G.mail.some(m=>/공개 임박/.test(m.subj)&&m.subj.includes(p.name)),'3일 전 알림'); G.day+=3; fPubDaily(); ok(G.mail.some(m=>/퍼졌습니다/.test(m.subj)&&m.subj.includes(p.name)),'공개 당일 알림'); } finally{ fScout=of; } });
 T('[감독이 미는 선수] 함께 밀어주면 같은 자리 경쟁자의 기분이 내려간다(얻는 것과 포기하는 것)',()=>{ fresh(); const m=G.mgr[G.user]; const ps=playersOf(G.user).filter(p=>!p.ys&&!p.isP); const a=ps.find(p=>ps.some(q=>q!==p&&pSlot(q)===pSlot(p))); ok(a,'준비 실패'); const rival=ps.find(q=>q!==a&&pSlot(q)===pSlot(a)); rival.mor=60;
   G.mpick={y:G.year,mid:m.id,ids:[a.id]}; const e={data:{ids:[a.id]}}; EVH.mpick.pick(e,0); ok(rival.mor<60,'경쟁자 기분 '+rival.mor); });
 T('[영입 경로] 창단 드래프트 자동 지명은 경로(자동)와 지명 당시 우리 추정을 남긴다',()=>{ fresh(); const L=playersOf(G.user).filter(p=>p.acq&&p.acq.k==='fd'&&!p.acq.auto); ok(L.length,'준비 실패');
