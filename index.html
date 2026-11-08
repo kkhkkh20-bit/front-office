@@ -29165,7 +29165,7 @@ document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||
  5) 오류: js_error(메시지, 위치, 화면, 게임 날짜) */
 var TELE={ph:'',phHost:'https://us.i.posthog.com',replay:true,ga:'G-78C5MN0LHM',lib:'https://cdn.jsdelivr.net/npm/posthog-js@1.435.5/dist/array.full.js'};
 var TELE_GA=TELE.ga; /* 예전 이름 호환 */
-function teleOn(){ if(!TELE.ph&&!TELE.ga)return false; const m=meta(); return m.tele!==false; }
+function teleOn(){ if(!TELE.ph&&!TELE.ga)return false; try{ if(navigator.webdriver||/^(127\.|localhost$|0\.0\.0\.0$|\[::1\]$)/.test(location.hostname)||location.protocol==='file:')return false; }catch(e){} const m=meta(); return m.tele!==false; } /* 자동 점검·로컬 실행은 보내지 않는다(GA에 127.0.0.1 사용자 510명이 섞여 있었음, 11-08) */
 function teleUid(){ try{ let u=localStorage.getItem('dsj_uid'); if(!u){ u='u'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); localStorage.setItem('dsj_uid',u); } return u; }catch(e){ return 'anon'; } }
 var TS={q:[],ready:false,fail:false,t0:Date.now(),reads:0,adv:0,space:0,acts:0,err:0,scr:null,scrT:Date.now()};
 function teleBase(){ const b={ver:typeof GAME_VER!=='undefined'?GAME_VER:'',tab:UI&&UI.tab||'',sub:UI&&UI.tab&&UI.sub?UI.sub[UI.tab]||'':''};
