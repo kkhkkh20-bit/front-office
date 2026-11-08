@@ -20,7 +20,7 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
     <div class="fo-cmp small"><div class="row between"><span>경쟁</span><b>${Rv.length?`${Rv.length}개 구단 관심`:'관심 구단 없음'}</b></div>
       ${best?(known?`<div class="row between"><span>가장 강한 곳: ${badge(best.tid,16)} ${esc(tshort(best.tid))}</span><span>보장 ${usdT(best.g)} + ${usdT(best.i)} · 매력 ${pct(best.f)}</span></div>`:'<p class="muted">한 번 제안하면 에이전트가 경쟁 구단 조건을 알려 줍니다.</p>'):''}
       <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt?'good':'bad'}">${v>=tgt?'사인 가능':known||!best?'모자람':'경쟁 조건에 따라 다름'}</b></div>
-      ${N&&N.dl?`<p class="warn">${dmd(N.dl)}까지 기다려 준다고 했습니다. 그 뒤에는 ${esc(tshort(N.dlT))}로 갑니다.</p>`:''}${N?`<p class="muted">이번 주 제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
+      ${N&&N.dl?`<p class="warn">${dmd(N.dl)}까지 기다려 준다고 했습니다. ${best?`그 뒤에는 지금 가장 강한 ${esc(tshort(best.tid))}로 갈 가능성이 큽니다(그사이 경쟁 구단 사정이 바뀌면 달라집니다).`:'지금은 데려갈 구단이 없어 기한 뒤에도 시장에 남습니다.'}${mid?' 기한 중에도 미국·일본 구단과 계약하면 협상이 끝날 수 있습니다.':''}</p>`:''}${N?`<p class="muted">이번 주 제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
     <div class="fo-error">${err?`<div class="note bad">${esc(err)}</div>`:''}</div>
     <div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}" ${err?'disabled':''}>이 조건으로 제안</button></div>${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
 Object.assign(A,{ foRe(v){ UI.negWin={k:'fre',id:+v}; renderSheet(); }, /* 재계약 협상도 협상 창으로 */
@@ -31,7 +31,7 @@ Object.assign(A,{ foRe(v){ UI.negWin={k:'fre',id:+v}; renderSheet(); }, /* 재�
 /* 우리 외국인 재계약 협상(보류권: 경쟁 상대는 해외 제안뿐) */
 function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.fo&&UI.fo.id===p.id?UI.fo:null;
   if(!F){ F=UI.fo={id:p.id,g:Math.round(p.newSal*.85/USD)*USD,i:0,msg:'',re:true}; }
-  const O=foReOut(p); const f=foReComfort(p); const v=foVal(F.g,F.i)*f, tgt=foReFloor(p);
+  const O=foReOut(p); const f=foReComfort(p); const v=foVal(F.g,F.i)*f, tgt=foReFloor(p); const reOver=p.foreign==='아시아'&&F.g+F.i>asiaReCap(p); /* 실제 제안 검사와 같은 상한(검수 11-09b) */
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}">${l} 달러</button>`; const h=seasonTotal(p,C.y,'1군');
   return `<section class="card fo"><div class="row between"><h2 class="sec">재계약 협상</h2><span class="small muted">보류권 · 국내 경쟁 없음</span></div>
     <p class="small">지금 ${usdT(p.sal)} · 요구 ${usdT(p.newSal)}(${money(p.newSal)}) · 지난 시즌 ${h?statLine(h,p):'기록 없음'}${h?` · WAR ${warOf(h,p).toFixed(1)}`:''}</p>
@@ -42,7 +42,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
       <div><span class="muted small">인센티브(규정 출전 시)</span>${contractMoneyInput('fo','i','인센티브',F.i,true)}<div class="row">${step('i',-5,'-5만')}${step('i',5,'+5만')}</div></div>
     </div>
     <div class="fo-cmp small"><div class="row between"><span>남고 싶은 마음(적응·재계약 연차·충성)</span><b>${f>=1?'+':''}${Math.round((f-1)*100)}%</b></div>
-      <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt?'good':'bad'}">${v>=tgt?'합의 가능':'모자람'}</b></div>
+      <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt&&!reOver?'good':'bad'}">${reOver?'상한 초과':v>=tgt?'합의 가능':'모자람'}</b></div>
       ${N?`<p class="muted">제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
     ${N&&N.ok?`<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.${p.fMulti>C.y?` ${C.y+1}~${p.fMulti} 2년 계약입니다.`:''}</div>${p.fMulti>C.y||p.age>=35?'':`<button class="btn small" data-a="foMulti" data-v="${p.id}">2년 계약으로 바꾸기(연봉 +5%, 다음 겨울 협상 없음)</button>`}`:`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
 Object.assign(A,{
