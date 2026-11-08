@@ -8,7 +8,9 @@ const CAL_FIX=[[1,8,'연봉 미계약 점검','me'],[1,10,'연봉조정 신청 �
 /* 시상식: 엔진이 이 날 발표한다(07_daily.js KD(11,24)·KD(12,9)). 발표 뒤에는 그날을 눌러 시상식 화면으로 */
 const CAL_CER=[[11,24,'mvp',()=>`${ASSOC.s} 시상식(MVP·신인왕)`],[12,9,'gg',()=>'골든글러브 시상식']];
 function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
-  for(const [m,dd,l,k] of CAL_FIX)if(o.m===m&&o.d===dd)out.push({k,t:l});
+  const F=G.fa&&G.fa.y0===o.y&&(G.fa.annDay!=null||!G.fa.closed)?G.fa:null; /* 그해 FA 일정은 실제 날짜로: 결산이 늦어 공시·개장이 밀릴 수 있다(검수 11-08) */
+  for(const [m,dd,l,k] of CAL_FIX)if(o.m===m&&o.d===dd&&!(F&&m===11&&(dd===2||dd===6)))out.push({k,t:l});
+  if(F){ const ann=F.annDay??Math.max(dnum(o.y,11,2),G.day+1), op=F.open?F.openDay:Math.max(F.openDay,ann+1); if(d===ann)out.push({k:'lg',t:'FA 공시'}); if(d===op)out.push({k:'lg',t:'FA 협상 시작'}); }
   for(const [m,dd,ck,l] of CAL_CER)if(o.m===m&&o.d===dd)out.push({k:'lg',t:l(),cer:o.y+':'+ck});
   if(c&&c.y===o.y){ const L=[[c.camp,'스프링캠프 시작','lg'],[c.campEnd,'캠프 종료','lg'],[c.exh,'시범경기 시작','lg'],[c.open,'정규시즌 개막','lg'],[c.asg,'올스타전','lg'],[c.draft,'신인 드래프트','dl'],[c.end,'정규시즌 종료','lg']]; for(const [n,t,k] of L)if(n===d)out.push({k,t}); }
   /* 국가대표 소집: 최종 명단 전에는 '소집 예정', 발표 뒤에는 우리 선수 이탈 수 */
@@ -145,7 +147,7 @@ function gmPlanBox(d,g){ const pl=gmPlanAt(d); const T=gmTourn(d); const per=per
   const lab=pl?(pl.k==='attend'?`직관${pl.x==='owner'?' · 구단주 동행':pl.x==='ceo'?' · 사장 동행':''}`:pl.k==='scout'?`${pl.x} ${T||'고교 대회'} 출장`:'2군 방문'):'';
   if(g)B.push(`<div class="gpl-r"><span class="small">경기 직관</span>${[['solo','혼자'],['owner','구단주와'],['ceo','사장과']].map(([x,l])=>`<button class="btn small${pl&&pl.k==='attend'&&pl.x===x?' primary':''}" data-a="gmPlan" data-v="${d}:attend:${x}">${l}</button>`).join('')}</div>`);
   if(T)B.push(`<div class="gpl-r"><span class="small">${esc(T)} 출장</span>${REG.map(r=>`<button class="btn small${pl&&pl.k==='scout'&&pl.x===r?' primary':''}" data-a="gmPlan" data-v="${d}:scout:${r}">${r}</button>`).join('')}</div>`);
-  if(per==='season'||(dobj(d).m>=4&&dobj(d).m<=9))B.push(`<div class="gpl-r"><span class="small">2군 방문</span><button class="btn small${pl&&pl.k==='farm'?' primary':''}" data-a="gmPlan" data-v="${d}:farm:">2군 경기장</button></div>`);
+  if(dobj(d).m>=4&&dobj(d).m<=9)B.push(`<div class="gpl-r"><span class="small">2군 방문</span><button class="btn small${pl&&pl.k==='farm'?' primary':''}" data-a="gmPlan" data-v="${d}:farm:">2군 경기장</button></div>`);
   if(!B.length)return '';
   return `<div class="gpl"><div class="row between"><span class="eyebrow">단장 일정</span>${pl?`<span class="row"><span class="pill acc">${esc(lab)}</span><button class="btn small" data-a="gmPlan" data-v="${d}:">취소</button></span>`:'<span class="small muted">경기는 결과 보고로 받습니다. 볼 경기나 출장을 잡아 두세요.</span>'}</div>${B.join('')}</div>`; }
 /* PC 일정(FM '주요 일정'처럼): 위 한 주 띠(경기·마감·리그 일정), 아래 왼쪽 시즌 경기 목록(지난 경기 결과·선발, 앞으로 경기 D-day·예상 선발), 오른쪽 고른 날 상세 */

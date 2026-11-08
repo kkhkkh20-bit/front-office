@@ -44,8 +44,9 @@ const GUARD={
   retireGM(){ return G.unemp?{subj:'단장 경력 마치기',kind:'경력',lines:[`명성 ${G.rep} · 야인 ${Math.floor((G.day-(G.unemp.since??G.day))/30)}개월`],warn:'경력을 마치면 이 게임은 끝납니다. 새 게임은 시작 화면에서 할 수 있습니다.'}:null; },
   nsPick(v){ const o=NEWSTAD.find(x=>x.k===v); if(!o)return null; return {subj:`신구장 ${o.l}(${o.cap.toLocaleString('ko-KR')}석) 착공`,kind:'구장',lines:[`분담금 ${money(o.cost)}을 3년간 결산 때 나눠 냅니다(연 ${money(Math.round(o.cost/3))}, 그중 70%는 모기업 출자).`,'공사 3년 · 개장 후 시설 4단계 이상 · 개장 초 관중 크게 증가'],warn:'착공하면 되돌릴 수 없습니다.'}; },
   relNow(v){ const p=G.players[+v]; if(!p)return null; const rc=relCost(p), cost=rc.tot; return {subj:`${p.name} 방출`,kind:'선수',lines:[pnm(p.id),...(p.foreign&&period()==='season'?[G.day>foreignDL()?`대체 외국인 등록 마감(${dsh(foreignDL())})이 지나 올해는 대체 선수를 데려올 수 없습니다.`:fReplLeft(G.user,p.foreign)<=0?`이번 시즌 ${p.foreign==='아시아'?'아시아쿼터':'일반 외국인'} 교체 ${fReplMax(p.foreign)}회를 다 써서 대체 선수를 데려올 수 없습니다.`:`대체 외국인을 데려올 수 있습니다(남은 교체 ${fReplLeft(G.user,p.foreign)}회, ${dsh(foreignDL())}까지).`]:[]),...(p.foreign?['올해 연봉은 이미 지출로 잡혀 있어 돌려받지 못합니다.']:cost?[`현재 계약 정산금 ${money(rc.cur)}`,...(rc.next?[`다음 시즌 확정 계약 정산금 ${money(rc.next)}(${p.extNext.years}년 연 ${money(p.extNext.annual)}의 50%)`]:[]),`총 방출 비용 ${money(cost)}`]:['정산금 없음'])],warn:'방출하면 되돌릴 수 없습니다.'}; },
+  advTo(){ return pendDoc(); }, matchSim(v,el){ return el?pendDoc():null; }, watchNext(v,el){ return el?pendDoc():null; }, /* 달력 진행·결과만 보기·다음 경기 관전도 미결 결정을 확인(검수 11-08) */
   adv(v){ const pd=pendDoc(); if(pd)return pd; if(G.fOkY===G.year||period()!=='pre'||G.day<G.cal.open-35||blocker()||!G.mgr[G.user])return null; const f=foreignOf(G.user); const m=f.filter(p=>p.foreign==='용병').length, as=f.filter(p=>p.foreign==='아시아').length; if(m>=3&&as>=1)return null;
-    UI._advT=0; return {subj:'외국인 선수 자리가 비어 있습니다',kind:'외국인',lines:[`외국인 ${m}/3 · 아시아쿼터 ${as}/1`,'빈 자리는 시즌 중에도 채울 수 있지만, 좋은 후보는 다른 구단이 먼저 데려갑니다.','그대로 진행하려면 진행, 먼저 채우려면 취소 후 영입 → 외국인 시장으로 가세요.'],warn:'이번 시즌에는 다시 묻지 않습니다.'}; },
+    UI._advT=0; return {subj:'외국인 선수 자리가 비어 있습니다',kind:'외국인',lines:[`외국인 ${m}/3 · 아시아쿼터 ${as}/1`,'빈 자리는 시즌 중에도 채울 수 있지만, 좋은 후보는 다른 구단이 먼저 데려갑니다.','그대로 진행하려면 진행, 먼저 채우려면 취소 후 영입 → 외국인 시장으로 가세요.'],warn:'이번 시즌에는 다시 묻지 않습니다.',onOk:()=>{ G.fOkY=G.year; }}; }, /* 외국인 공석 확인만 이번 시즌 끄기(다른 진행 확인으로 꺼지지 않게, 검수 11-08) */
   fdAuto(){ const F=G.fd; if(!F||F.done)return null; const n=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length; if(n<2||fdManDone())return null;
     return {subj:`남은 ${n}번 지명을 자동으로`,kind:'드래프트',lines:[`우리 남은 지명 ${n}번을 스카우트 추천대로 뽑습니다.`,'관심 선수(★)가 남아 있으면 먼저 고릅니다.','끝나면 지명 결과를 소식함으로 보고합니다.'],warn:'자동 지명은 되돌릴 수 없습니다.'}; },
   fdPick(v){ const p=G.players[+v]; const M=fdMoney(); if(!p||!M||p.sal<=M.room-M.W)return null;
@@ -101,17 +102,17 @@ function advTargetTxt(v){ const per=period();
   if(G.unemp)return '제의가 오거나 1주일이 지날 때까지 진행합니다.';
   if(v==='event'&&(per==='off'||per==='pre')&&!nextGames(1).some(x=>x.d<=G.day+7))return `${dmd(G.day+7)}까지 최대 7일 진행합니다. 중요한 소식이나 결정이 생기면 그 전에 멈춥니다.`;
   if(v==='event'&&!G.unemp)return '최대 3경기를 자동 진행합니다. 휴식일은 경기 수에 포함하지 않으며 예약한 직관과 설정한 중단 조건에서 먼저 멈춥니다. 경기가 없는 비시즌에는 최대 7일 진행합니다.';
-  if(v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기만 관전하며 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
+  if(v==='week')return `${dmd(G.day+7)}까지 최대 1주일 자동 진행합니다. 직접 예약한 경기와 우리 팀 포스트시즌 경기는 중계로 보며 중요한 소식이나 결정이 생기면 먼저 멈춥니다.`;
   if(v==='day')return `${dmd(G.day+1)}(${WD[dobj(G.day+1).w]}) 하루를 진행합니다.`;
   const nl=nextLabel(); return `${nl?`다음 일정(${nl})까지`:'다음 소식이 올 때까지'} 진행합니다. 중요한 소식이 오면 그 전에 멈춥니다.${per==='off'||per==='pre'?` 비시즌·시즌 준비 기간에는 한 번에 최대 7일(${dmd(G.day+7)})까지 진행합니다.`:''}`; }
 function advAsk(v){ const L=[advTargetTxt(v),`지금: ${dstr(G.day)}`]; let P=[]; try{ P=pendItems(); for(const x of P)L.push(x.t); }catch(e){}
-  if(P.length)UI._pendAck=P.map(x=>x.id).join('|'); /* 여기서 보여 줬으니 진행 전 확인을 다시 묻지 않는다 */
-  UI.cfm={k:'advSpace',v,doc:{subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true}}; cfmRender(); }
+  const sig=P.map(x=>x.id).join('|');
+  UI.cfm={k:'advSpace',v,doc:{subj:'진행할까요?',head:'진행',kind:'진행',lines:L,ok:'진행 (Space)',no:'취소 (Esc)',noMail:true,onOk:()=>{ if(P.length)UI._pendAck=sig; }}}; cfmRender(); } /* 확인은 진행을 눌렀을 때만(취소하면 다음 진행 때 다시 묻는다, 검수 11-08) */
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
   const c=UI.cfm; if(!c){ el.innerHTML=''; return; } const d=c.doc;
   el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3>${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
-for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
+for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v,el); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
 A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
 A.cfmNo=function(){ const c=UI.cfm; UI.cfm=null; cfmRender(); if(c&&c.doc&&c.doc.noGo)c.doc.noGo(); };
 A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); if(c.doc.onOk)c.doc.onOk(); const n0=c.doc.chk?c.doc.chk():null; UI._cfmWhy=null; UI._cfmPass=true; const s0=G.mailSeq||0; try{ A[c.k](c.v); }finally{ UI._cfmPass=false; }

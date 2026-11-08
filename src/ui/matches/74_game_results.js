@@ -42,6 +42,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
   return `<div class="scrim" data-a="wkClose"><div class="sheet gut wkres" data-stop="1" role="dialog" aria-label="경기 결과">
     <div class="sheet-head"><div><div class="eyebrow">경기 결과 · ${dmd(gs[0].g.day)}${gs.length>1?` ~ ${dmd(gs[gs.length-1].g.day)}`:''} · ${gs.length}경기</div><h2 class="sec">${title} · ${w}승 ${l}패${t?` ${t}무`:''}</h2></div><button class="x" data-a="wkClose" aria-label="닫기">×</button></div>
     ${!post&&sr?`<div class="wk-sum">${stale?`<span class="muted">${dmd(G.day)} 현재 기준</span>`:''}<span>시즌 <b>${sr.w}승 ${sr.l}패${sr.t?` ${sr.t}무`:''}</b></span>${rkLine?`<span>순위 ${rkLine}</span>`:''}${rk>1?`<span>1위와 <b>${gb}</b>경기 차</span>`:rk===1&&st[1]?`<span>2위와 <b>${((me.w-st[1].w)+(st[1].l-me.l))/2}</b>경기 차</span>`:''}</div>`:''}
+    ${R.n>gs.length?`<p class="small muted">보관 기간(최근 경기)이 지나 ${R.n}경기 중 ${gs.length}경기만 남아 있습니다. 전체 결과는 리그 → 일정·결과에서 볼 수 있습니다.</p>`:''}
     <div class="wk-list">${gs.map(row).join('')}</div>
     ${hot.length?`<div class="eyebrow">이 기간 잘한 선수</div><div class="dg-ps">${hot.map(li).join('')}</div>`:''}
     ${cold.length?`<div class="eyebrow">이 기간 부진한 선수</div><div class="dg-ps">${cold.map(li).join('')}</div>`:''}
@@ -52,5 +53,5 @@ Object.assign(A,{
   wkClose(){ UI.wkres=null; renderSheet(); },
   wkStand(){ UI.wkres=null; A.go('league:stand'); },
   /* 소식함의 경기 정리 소식에서 다시 열기: v = "시작일:끝일" */
-  wkOpen(v){ const [f,t]=String(v).split(':').map(Number); if(!wkGames(f,t).length){ toast('그 기간 경기 기록이 더는 남아 있지 않습니다. 리그 → 일정·결과에서 볼 수 있습니다.'); return; } closeSheets(); UI.wkres={from:f,to:t,rk0:null}; renderSheet(); }
+  wkOpen(v){ const [f,t,n]=String(v).split(':').map(Number); if(!wkGames(f,t).length){ toast('그 기간 경기 기록이 더는 남아 있지 않습니다. 리그 → 일정·결과에서 볼 수 있습니다.'); return; } closeSheets(); UI.wkres={from:f,to:t,rk0:null,n:n||0}; renderSheet(); }
 });

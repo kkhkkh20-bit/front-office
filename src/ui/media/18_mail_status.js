@@ -7,6 +7,7 @@ function mailActionStatus(m,a){
   if(a.done)return mailEnd(a.done==='skip'?'다른 안을 선택해 처리했습니다.':a.res||'이미 처리했습니다.');
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
   if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd('이전 구단에서 받은 업무입니다. 현재 구단에서는 처리할 수 없습니다.',true);
+  if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
   if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');if(e.exp<G.day)return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 종료되었습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
   if(['faOpen','faMatch','faLL','agPitchOk'].includes(a.a)){

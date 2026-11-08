@@ -179,5 +179,5 @@ function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
   rows.sort((a,b)=>b.sc-a.sc); const hot=rows.filter(x=>x.sc>0).slice(0,3), cold=rows.filter(x=>x.sc<0).slice(-2).reverse();
   const A=digAnalysis(gs);
   const body=[`[진행 결과] ${gs.length}경기 ${w}승 ${l}패 · 지금 ${rk}위. ${A.core}`, A.act?`[검토할 행동] ${A.act}`:'', `[판단 근거] ${A.base}`, hot.length?`잘한 선수: ${hot.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', cold.length?`부진한 선수: ${cold.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:'', '[경기별 상세]',...L].filter(Boolean).join('\n');
-  const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
+  const m=mail('전력분석팀',`${dsh(D.from)}~${dsh(D.to)} 경기 정리: ${w}승 ${l}패 · 지금 ${rk}위`,body,{kind:'경기',acts:[{l:'경기 결과 보기',a:'wkOpen',v:`${D.from}:${D.to}:${gs.length}`},{l:'순위 보기',a:'go',v:'league:stand'}]});
   return m; }

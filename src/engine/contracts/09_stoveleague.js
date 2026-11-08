@@ -39,7 +39,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const mine=retired.filter(r=>r.team===G.user);
   stop('스토브리그',`스토브리그가 시작되었습니다. 은퇴 ${retired.length}명(우리 ${mine.length}명), FA 자격 ${pool.length}명(우리 ${declared.length}명). 11월 2일 FA 공시, 6일부터 협상, 12월 1일 연봉 협상이 시작됩니다.`);
 }
-function faAnnounce(){ if(!G.fa)return; G.fa.open=true; if(G.day>=G.fa.openDay)G.fa.openDay=G.day+1; /* 결산이 늦어 공시가 협상 시작일을 넘기면 다음 날부터: 우선 제안 기한·개장일 보고가 사라지지 않게(검수 11-08) */ try{ agYear(); agPitch(); }catch(e){} const mine=G.fa.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user).length;
+function faAnnounce(){ if(!G.fa)return; G.fa.open=true; G.fa.annDay=G.day; if(G.day>=G.fa.openDay)G.fa.openDay=G.day+1; /* 결산이 늦어 공시가 협상 시작일을 넘기면 다음 날부터: 우선 제안 기한·개장일 보고가 사라지지 않게(검수 11-08) */ try{ agYear(); agPitch(); }catch(e){} const mine=G.fa.pool.filter(id=>G.players[id]&&G.players[id].faFrom===G.user).length;
   stop('FA',`FA 승인 선수 ${G.fa.pool.length}명이 공시되었습니다. 우리 구단 ${mine}명. 다른 구단 FA는 구단마다 ${faCapN()}명까지 영입할 수 있습니다(${ASSOC.s} 규약 제173조). 11월 6일부터 모든 구단과 협상합니다. 영입·계약 → FA 시장에서 조건을 제시하세요.`); }
 /* FA 등록일수(실제는 시즌 145일 이상 1군 등록): 게임에서는 1군에서 시즌 대부분을 보낸 해를 인정(야수 85경기·260타석, 투수 40경기·90이닝·선발 16경기 중 하나). 팀당 한 해 16명 안팎이 채운다 */
 /* KBO 1군 등록일수: 정규시즌 동안 매일 센다. 1군 등록 중이면 1일, 등록 중 다쳐 빠졌으면 부상자 명단으로 시즌 30일까지, 국가대표 차출 기간도 등록으로 인정.

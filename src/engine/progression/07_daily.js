@@ -11,10 +11,11 @@ function blocker(){
   if(cp)return cp.stage==='protect'?`${cp.name} 영입 보상: 보호선수 명단을 먼저 제출하세요.`:`${cp.name} 이적 보상: 보상선수(또는 보상금)를 먼저 고르세요.`;
   const per=period();
   if(per==='pre'&&G.day>=G.cal.open-1&&!G.mgr[G.user])return '감독이 없습니다. 스태프·육성 → 감독에서 감독을 선임해야 개막할 수 있습니다.';
-  if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done&&(G.ps.seeds||[]).includes(G.user)&&!Object.values(G.ps.res||{}).some(r=>r&&r[1]===G.user))){ const n=rosterN(G.user); /* 포스트시즌은 아직 남은 경기가 있는 팀만(탈락한 팀 정원 때문에 한국시리즈가 막히지 않게, 검수 11-07) */ /* 포스트시즌도 같은 등록 규정 */
+  if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done&&((G.ps.seeds||[]).includes(G.user)||(G.ps.cur&&G.ps.cur.round==='tb'&&(G.ps.cur.hi===G.user||G.ps.cur.lo===G.user))||(G.ps.tbq||[]).some(q=>q[1]===G.user||q[2]===G.user))&&!Object.values(G.ps.res||{}).some(r=>r&&r[1]===G.user))){ const n=rosterN(G.user); /* 포스트시즌은 아직 남은 경기가 있는 팀만(탈락한 팀 정원 때문에 한국시리즈가 막히지 않게, 검수 11-07) */ /* 포스트시즌도 같은 등록 규정 */
     if(n>ROSTER_MAX){ const L=milReturns(7); return `로스터가 ${n}명입니다. ${ROSTER_MAX}명 이하로 줄여야 진행할 수 있습니다.${L.length?` 7일 안에 군 복귀 ${L.length}명(${milRetTxt(L)})이 더 있어, 복귀까지 고려하면 ${n+L.length-ROSTER_MAX}자리를 비워야 다시 막히지 않습니다.`:''}`; }
     if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다: 그동안 부상 회복·대표팀 복귀·말소 10일이 지나 부족이 풀린다(검수 11-06) */ const d=depth(G.user); const d1=G.day+1, rt=p=>(p.ntAway===d1&&p.ntFrom<=G.day)||(milServing(p)&&p.mil.until===d1); /* 내일 대표팀·군에서 돌아오는 선수(검수 11-07) */ const tmr=p=>!p.ys&&!(p.joinY>G.year)&&(rt(p)?!(p.injOut>1):!isAway(p)&&p.injOut===1)&&!(p.susp>G.day+1)&&!p.frehab&&!p.hold&&psOk(p)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10); /* 내일 복귀해 내일 등록할 수 있는 선수(말소 10일 규정 포함, 검수 11-07) */ const back=Object.values(G.players).filter(p=>p.team===G.user&&tmr(p));
-    if(d.start.length+back.filter(p=>!p.isP).length<9)return '건강한 야수가 9명이 안 됩니다.'; if(d.sp.length+d.pen.length+back.filter(p=>p.isP).length<8)return '건강한 투수가 부족합니다.'; } /* 내일 복귀하는 1군 투수는 내일 경기 인원에 넣는다(검수 11-07: 복귀일까지 갈 수 없었다) */
+    const can=Object.values(G.players).filter(p=>p.team===G.user&&!p.ys&&!(p.joinY>G.year)&&!p.frehab&&!p.hold&&psOk(p)&&(rt(p)?!(p.injOut>1):!isAway(p)&&!(p.injOut>1))&&!(p.susp>G.day+1)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10)); /* 내일 뛸 수 있는 선수 전체: 감독이 2군에서 올릴 선수, 내일 말소 10일·출장정지가 풀리는 선수까지(검수 11-08: 콜업 가능한 선수가 있어도 진행이 막힘) */
+    if(Math.max(d.start.length+back.filter(p=>!p.isP).length,can.filter(p=>!p.isP).length)<9)return '건강한 야수가 9명이 안 됩니다.'; if(Math.max(d.sp.length+d.pen.length+back.filter(p=>p.isP).length,can.filter(p=>p.isP).length)<8)return '건강한 투수가 부족합니다.'; } /* 내일 복귀하는 1군 투수는 내일 경기 인원에 넣는다(검수 11-07: 복귀일까지 갈 수 없었다) */
   return '';
 }
 function ourGameOn(day){return !G.unemp&&(!!(G.cal.sched[day]||[]).find(pair=>pair.includes(G.user))||psOursOn(day));}
@@ -35,13 +36,14 @@ function advance(mode,options={}){
     if(blocker())break;
     /* 포스트시즌: 다른 팀 경기를 넘기다가 우리 경기까지 한 번에 지나치지 않게, 우리 경기 전날에 멈춘다(바로 다음 날이 우리 경기면 그 경기를 진행) */
     if(days>0&&(!weekly||period()==='post')&&mode!=='day'&&mode!=='watch'&&psOursOn(G.day+1)){ if(G.ps.cur.gi===0)stop('포스트시즌',`내일 ${psOursTxt()}입니다. 라인업과 선발을 확인한 뒤 진행하세요.`); break; }
-    const planned=gmPlanAt(G.day+1);
-    if(!options.skipMatchStop&&mode!=='watch'&&ourGameOn(G.day+1)&&(G.watchPlanned?.day===G.day+1||(planned?.k==='attend'&&!planned.done)||(typeof document!=='undefined'&&!G.unemp&&psOursOn(G.day+1)))){G.matchAwait={day:G.day+1,mode,ps:psOursOn(G.day+1)};break;} /* 우리 가을야구 경기는 늘 중계로 본다. shortcut: 화면 없는 시뮬(점검 도구)에서는 멈추지 않게 document로 구분, 엔진에 화면 여부 플래그가 생기면 교체 */
+    const planned=gmPlanAt(G.day+1); if(G.simPlanned&&G.simPlanned.day<=G.day)G.simPlanned=null;
+    if(!options.skipMatchStop&&mode!=='watch'&&ourGameOn(G.day+1)&&(G.watchPlanned?.day===G.day+1||G.simPlanned?.day===G.day+1||(planned?.k==='attend'&&!planned.done)||(typeof document!=='undefined'&&!G.unemp&&psOursOn(G.day+1)))){G.matchAwait={day:G.day+1,mode,ps:psOursOn(G.day+1)};break;} /* 우리 가을야구 경기는 늘 중계로 본다. shortcut: 화면 없는 시뮬(점검 도구)에서는 멈추지 않게 document로 구분, 엔진에 화면 여부 플래그가 생기면 교체 */
+    if(mode!=='watch'&&evLastWarn())break; /* 날짜를 넘기기 전에: 경기일이 겹쳐도 핵심 결정 마감 전 재알림이 빠지지 않게(검수 11-08) */
     processDay(); days=G.day-start;
     if(G.unemp){ unempAuto(); G.res=null; G.stops=G.stops.filter(x=>x.kind==='경력'); }
     if(weekly){ const D=G.dig; D.to=G.day;
       if(G.res){ const g=G.games[G.res.i]; D.games.push(g?g.day:G.day); G.res=null; }
-      if(gameBatch&&D.games.length&&(period()==='post'||(G.ps&&G.ps.done&&G.ps.finDay>=G.day)||D.games.length>=4||seriesEnd(G.day)))break; /* 포스트시즌은 우리 경기마다 멈춘다(라인업·선발 확인). 정규시즌은 같은 상대와의 한 시리즈가 끝나면 멈춘다(검수 11-08: 다음 상대 경기까지 넘김) */
+      if(gameBatch&&D.games.length&&(period()==='post'||(G.ps&&G.ps.done&&G.ps.finDay>=G.day)||D.games.length>=3||seriesEnd(G.day)))break; /* 포스트시즌은 우리 경기마다 멈춘다(라인업·선발 확인). 정규시즌은 같은 상대와의 한 시리즈가 끝나면 멈춘다(검수 11-08: 다음 상대 경기까지 넘김) */
       if(G.stops.length||G.live||(G.draft&&!G.draft.done)||G.gameOver)break;
       { const op=(G.evs||[]).filter(e=>!e.done&&evStops(e)); if(op.some(e=>EV_KEY.has(e.k)&&e.day>start))break; /* 핵심 결정은 기한 하루 전에 한 번 더 멈춘다 */ if(evLastWarn())break; if(stopOn({kind:'트레이드'})&&(G.offers||[]).some(o=>o.day!=null?o.day>start:false))break; }
       if(D.games.length===0&&days>=7&&period()!=='season')break; /* 비시즌: 한 번에 최대 7일 */
@@ -224,4 +226,4 @@ const pctEq=(a,b)=>Math.abs(a.w/Math.max(1,a.w+a.l)-b.w/Math.max(1,b.w+b.l))<1e-
 
 
 /* 핵심 결정 기한 하루 전 한 번 더 알림: 알렸으면 true(진행을 멈춘다) */
-function evLastWarn(){ const last=(G.evs||[]).find(e=>!e.done&&evStops(e)&&EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(!last)return false; last.warn=true; const wt=`내일까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); return true; }
+function evLastWarn(){ const last=(G.evs||[]).find(e=>!e.done&&evStops(e)&&EV_KEY.has(e.k)&&!e.warn&&e.exp-G.day<=1); if(!last)return false; last.warn=true; const wt=`${last.exp<=G.day?'오늘':'내일'}까지 정하지 않으면 "${last.opts[last.def].l}"(으)로 처리됩니다.`; /* 마감 당일이면 '오늘'(검수 11-08) */ const em=G.mail.find(m=>m.id===last.mid)||G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(last.id))); if(em)mailBump(em,wt); else stop('결정',`${wt.slice(0,-1)}: ${last.title}`); return true; }
