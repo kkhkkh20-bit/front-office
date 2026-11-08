@@ -2504,6 +2504,26 @@ T('[검수 11-09e] 설계: 아마 성적은 투수·타자 표준점수, AI 지�
   const ai=G.teams.find(t=>t.id!==G.user&&teamArea(t.id)); const p=(G.draftClass||[]).map(id=>G.players[id]).find(q=>q&&q.prospect); const home=teamArea(ai.id), far=AREA.find(a=>a.reg!==areaDef(home).reg).k; p.area=home; const a=aiDraftScore(ai.id,p,{}); p.area=far; const b=aiDraftScore(ai.id,p,{}); ok(Math.abs(a-b)>1e-6,'권역을 바꿔도 AI 지명 점수가 같음 '+a);
   G.scouts=[]; const F={area:teamArea(G.user),list:[]}; const L=(G.draftClass||[]).map(id=>G.players[id]).filter(q=>q&&q.prospect&&!q.college&&q.school&&(!F.area||q.area===F.area)); if(L.length>1){ const est=q=>{ const r=scoutReport(q); return r.ofp??r.cur??0; }; const top=[...L].sort((x,y)=>est(y)-est(x))[0]; foundAward(F); ok(F.list[0].pid===top.id,'장학생이 우리 추정 1위가 아님'); }
   const sc=Object.assign(mkScout(3),{since:-999}); const H=(G.draftClass||[]).map(id=>G.players[id]).filter(q=>q&&q.prospect); const hk=teamArea(G.user)||'서울', fk=AREA.find(x=>x.reg!==(areaDef(hk)||{}).reg).k; let nh=0,nf=0; for(const q of H){ q.hidT=5; q.hidR=0; q.area=hk; if(hidPen(q,sc,false)===0)nh++; q.area=fk; if(hidPen(q,sc,false)===0)nf++; } ok(nh>nf,'정보망이 숨은 재능 발견에 안 들어감 '+nh+' '+nf); });
+T('[검수 11-09d] 드래프트 일괄 처리·감독 기조는 구단을 따르고(이직하면 새 구단에 쓰지 않음), 야인 기간 전 구단은 AI로 지명한다',()=>{ fresh(); ok(draftOrders(),'준비 실패: 지명 순서 없음'); startDraft(); const d=G.draft; const old=G.user;
+  ok((G.mail||[]).some(m=>/지명 순번은 [0-9]+개/.test(m.body||'')),'시작 안내가 순번 수를 확정 지명 인원처럼 말함');
+  draftRestSet('pass'); G.draftPol={y:G.year,k:'C',tid:old}; ok(draftRestOf()&&draftPolK()==='C','준비 실패: 설정 안 됨');
+  const to=G.teams.find(t=>t.id!==old).id; switchTeam(to); ok(!draftRestOf(),'이직 뒤에도 전 구단 일괄 건너뛰기가 남음'); ok(draftPolK()==null,'이직 뒤에도 전 감독 기조가 남음');
+  let g=0; while(g++<400&&!d.done&&d.picks[d.cur].tid!==G.user)amStep(); const pk=d.picks[d.cur]; ok(pk&&pk.tid===G.user,'준비 실패: 새 구단 차례 아님'); const c0=d.cur; ok(draftRestPick()===null&&d.cur===c0&&!pk.pass,'전 구단 일괄 건너뛰기가 새 구단 지명권을 소진');
+  const cand=d.cls.find(id=>G.players[id]&&G.players[id].prospect); const before=scoutReport(G.players[cand]).cur; ok(userPick(cand)==='','준비 실패: 지명 안 됨'); ok(G.players[cand].acq.e0===before,'영입 기록 추정이 지명 전 추정과 다름: '+G.players[cand].acq.e0+' / '+before);
+  switchTeam(old); ok(draftRestOf()&&draftRestOf().mode==='pass'&&draftPolK()==='C','원래 구단으로 돌아오면 그 구단 설정이 그대로여야 함');
+  G.unemp={y:G.year,since:G.day,from:old,k:'resign'}; g=0; while(g++<400&&!d.done&&d.picks[d.cur].tid!==old){ ok(amStep()!=='user','야인인데 우리 차례로 멈춤'); } const pk2=d.picks[d.cur];
+  if(pk2&&!d.done){ const r=amStep(); ok(r!=='user','야인 기간 전 구단 차례에서 플레이어 방식으로 멈춤'); ok(!pk2.auto&&!pk2.rule,'야인 기간 전 구단 지명이 플레이어 자동 지명으로 기록됨'); const q=pk2.pid>0&&G.players[pk2.pid]; ok(!q||!q.acq||!q.acq.how,'야인 기간 지명 기록에 단장 방식이 남음'); } });
+T('[검수 11-09d] AI는 기준을 넘는 다른 후보가 있으면 패스하지 않고, 모의 지명도 같은 패스 조건을 쓴다',()=>{ fresh(); ok(draftOrders(),'준비 실패'); startDraft(); const d=G.draft; const tid=G.teams.find(t=>t.id!==G.user).id; team(tid).scoutSd=0;
+  const [a,b]=d.cls.filter(id=>G.players[id]&&G.players[id].prospect); const ks=keepScore, as=aiDraftScore;
+  keepScore=p=>p.id===a?40:p.id===b?60:50; aiDraftScore=(t,p)=>p.id===a?100:p.id===b?50:0;
+  try{ ok(aiDraftChoose(tid,[a,b],3,ROSTER_MAX)===b,'1위가 기준 미달이면 기준을 넘는 2위를 뽑아야 함'); ok(aiDraftChoose(tid,[a],3,ROSTER_MAX)===-1,'기준을 넘는 후보가 없으면 패스해야 함'); ok(aiDraftChoose(tid,[a,b],2,ROSTER_MAX)===a,'1·2라운드는 패스 판단 없이 1위');
+    ok(mockPick(tid,new Set([a]),3,ROSTER_MAX)===-1,'모의 지명에 패스 조건이 없음'); ok(mockPick(tid,new Set([a,b]),3,ROSTER_MAX)===b,'모의 지명이 실제 AI와 다름'); }finally{ keepScore=ks; aiDraftScore=as; } });
+T('[검수 11-09d] 개막 전 전역자는 실제 다음 개막일까지 예상 인원에 들고, 창단 지명 평가는 지금 구단 것만 보인다',()=>{ fresh(); G.day=KD(9,14); const op=onOrAfter(G.year+1,3,25,6); const m=playersOf(G.user).find(p=>!p.foreign&&!p.ys); const n0=milBackBy(G.user);
+  m.mil={unit:'현역',from:G.day-300,until:op-1}; ok(milBackBy(G.user)===n0+1,'개막 직전(3월 22일 이후) 전역자가 예상 인원에서 빠짐'); m.mil.until=op+1; ok(milBackBy(G.user)===n0,'개막 뒤 전역자가 예상 인원에 들어감'); delete m.mil;
+  const old=G.user, to=G.teams.find(t=>t.id!==old).id; const pa=playersOf(old)[0], pb=playersOf(to)[0];
+  G.fd={done:true,y:G.year,picks:[{tid:old,pid:pa.id,rd:1,no:1},{tid:to,pid:pb.id,rd:1,no:2}],pool:[],all:[]}; G.fdEval={mid:{d:G.day,y:G.year,tid:old,rows:[{pid:pa.id}],tot:3,rk:1}};
+  ok(fdEvOf('mid'),'준비 실패: 전 구단 평가 안 보임'); switchTeam(to); ok(!fdEvOf('mid'),'이직 뒤 전 구단 창단 지명 평가가 새 구단 화면에 섞임');
+  delete G.fdEval.mid.tid; ok(!fdEvOf('mid'),'구단 표시 없는 예전 평가도 지금 구단 지명 선수가 아니면 숨겨야 함'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

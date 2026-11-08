@@ -60,11 +60,11 @@ function fdEvalRows(stage){ const F=G.fd; const y=F.y;
     return {pid:z.p.id,nm:z.p.name,pos:posLabel(z.p),rd:z.x.rd,no:z.x.no,n:z.n,auto:!!z.x.auto,w:Math.round(z.w*10)/10,ours:Math.round(ours*10)/10,med:Math.round(med*10)/10,pct:Math.round(pct*100),k,t,g0,gNow,role:z.x.role||fdRole(z.p,fdE0(z.p,z.x)),pa:Math.round(s.pa1),outs:Math.round(s.outs1),gone:z.p.team!==G.user}; }); }
 /* 다른 구단 포함 이 시점 최고 성과(5라운드 이후 스틸) */
 function fdEvalSteal(){ const F=G.fd; const L=F.picks.filter(x=>x.pid&&x.rd>=5&&fdP(x.pid)).map(x=>({x,p:fdP(x.pid),w:fdWarY(fdP(x.pid),F.y)})).sort((a,b)=>b.w-a.w); return L[0]&&L[0].w>=1?L[0]:null; }
-function fdEvalRun(stage){ const F=G.fd; if(!F||!F.done||!F.picks||G.unemp)return; G.fdEval=G.fdEval||{}; if(G.fdEval[stage])return;
+function fdEvalRun(stage){ const F=G.fd; if(!F||!F.done||!F.picks||G.unemp)return; G.fdEval=G.fdEval||{}; if(fdEvOf(stage))return; /* 이직했으면 지금 구단 평가를 새로 */
   const rows=fdEvalRows(stage).sort((a,b)=>a.n-b.n); if(!rows.length)return; const st=fdEvalSteal();
   const tot=rows.reduce((a,r)=>a+r.ours,0); const byT={}; for(const x of F.picks){ const p=x.pid&&fdP(x.pid); if(!p)continue; byT[x.tid]=(byT[x.tid]||0)+fdWarY(p,F.y,x.tid); }
   const rk=Object.entries(byT).sort((a,b)=>b[1]-a[1]).findIndex(e=>+e[0]===G.user)+1;
-  G.fdEval[stage]={d:G.day,y:F.y,rows,tot:Math.round(tot*10)/10,rk,steal:st?{pid:st.p.id,nm:st.p.name,tid:st.x.tid,rd:st.x.rd,no:st.x.no,w:Math.round(st.w*10)/10}:null};
+  G.fdEval[stage]={d:G.day,y:F.y,tid:G.user,rows,tot:Math.round(tot*10)/10,rk,steal:st?{pid:st.p.id,nm:st.p.name,tid:st.x.tid,rd:st.x.rd,no:st.x.no,w:Math.round(st.w*10)/10}:null};
   const good=rows.filter(r=>r.k==='good'), bad=rows.filter(r=>r.k==='bad'&&r.n<=60);
   const line=r=>`${r.rd}라운드 ${r.nm}(${r.pos}) WAR ${r.w.toFixed(1)} · 같은 순번대 중앙값 ${r.med.toFixed(1)} → ${r.t}${r.gone?' (지금은 다른 구단)':''}`;
   const m=stage==='mid';
@@ -74,4 +74,6 @@ function fdEvalRun(stage){ const F=G.fd; if(!F||!F.done||!F.picks||G.unemp)retur
     +(st?`다른 구단 포함 최고의 스틸: ${st.p.name}(${tshort(st.x.tid)} ${st.x.rd}라운드) WAR ${st.w.toFixed(1)}\n\n`:'')
     +`선수별 평가는 영입·계약 → 신인 드래프트 → 창단 지명 평가에 있습니다.${m?'':' 3시즌 뒤 다시 돌아봅니다.'}`;
   mail('스카우트팀장',m?'창단 드래프트 중간 평가':'창단 드래프트 첫해 평가',body,{kind:'업무',imp:!m,acts:[{l:'창단 지명 평가',a:'fdEvalGo'}]}); }
+/* 지금 구단의 평가만(검수 11-09d: 이직 뒤 전 구단 합계·순위와 새 구단 선수 목록이 섞임). 구단 표시가 없는 예전 저장은 우리 지명 선수 평가인지로 본다 */
+function fdEvOf(stage){ const e=G.fdEval&&G.fdEval[stage]; return e&&(e.tid!=null?e.tid===G.user:(e.rows||[]).some(r=>fdPickOf(r.pid)))?e:null; }
 function fdEvalDaily(){ const F=G.fd; if(!F||!F.done||G.year!==F.y||G.unemp)return; if(G.day===KD(7,1))fdEvalRun('mid'); else if(G.cal&&G.day===G.cal.end+1)fdEvalRun('end'); }
