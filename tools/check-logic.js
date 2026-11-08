@@ -2118,6 +2118,23 @@ T('[검수 11-08h] 경기 기록: 투수 실점(r)이 상대 득점과 맞고, �
     for(const x of g.pbp){ if(typeof x[1]!=='number')continue; if(x[16]){ nB++; ok(Array.isArray(x[14])&&x[14].some(m=>m.id===x[16]&&m.result==='out'),'번트 실패 포스아웃이 주자 이동에 없음'); } }
     const last=g.pbp.filter(x=>typeof x[1]==='number').pop(); if(last&&last[0]%2===1&&g.score.h>g.score.a&&last[3]!=='HR'&&last[6]>0){ nW++; const home=(last[14]||[]).filter(m=>m.to===4&&m.result==='safe').length; ok(home<=last[6],'끝내기: 홈 주루 기록 '+home+' > 득점 '+last[6]); } }
   ok(nB>0,'준비 실패: 번트 실패 없음'); ok(nW>0,'준비 실패: 끝내기 없음'); });
+T('[검수 11-08i] 스폰서: 정규시즌 뒤 맺은 다음 시즌 계약은 다음 해 가을야구 보너스를 받고, 첫해 비율 칸이 없어도 전망, 이력은 실제 받은 금액, 결산 뒤 해지는 다음 시즌 몫만',()=>{ fresh(); sponInit(); G.day=G.cal.end+2;
+  const o=sponMake('kit'); o.yrs=2; sponSign(o,true); const c=G.spon.c.kit; ok(!c.psNo,'정규시즌 뒤 계약에 진출 보너스 없음 표시'); ok(c.y0===G.year+1,'시작 연도 '+c.y0);
+  G.ps={seeds:[G.user],champ:null}; const r=sponSettle(G.year+1,{champ:null}); ok(r.bonus>0,'다음 해 가을야구 보너스 0');
+  delete c.first; ok(sponIncome(G.year+1)>0&&!isNaN(sponIncome(G.year+1)),'비율 칸 없는 계약 전망 '+sponIncome(G.year+1));
+  fresh(); sponInit(); G.day=G.cal.open+60; const o2=sponMake('kit'); o2.yrs=1; sponSign(o2,true); const c2=G.spon.c.kit; const f=c2.first; ok(f<1,'준비 실패'); sponSettle(G.year,{}); const h=G.spon.hist.find(x=>x.id===o2.id); ok(h&&Math.abs(h.amt-Math.round(o2.amt*f))<=1,'이력 금액 '+(h&&h.amt)+' 기대 '+Math.round(o2.amt*f));
+  fresh(); sponInit(); G.day=G.cal.open+10; const o3=sponMake('kit'); o3.yrs=3; sponSign(o3,true); G.last={y:G.year}; G.day=G.cal.end+40; const x=sponCancel('kit','시험'); ok(x.until===G.year+1&&x.cutF===0,'결산 뒤 해지가 올해 몫으로 잡힘: until '+x.until+' f '+x.cutF);
+  fresh(); sponInit(); G.day=G.cal.open+10; const o4=sponMake('kit'); G.spon.off.push(o4); o4.exp=G.day-1; ok(/기한/.test(sponCounter(o4.id,.2)),'만료 제안 가격 협상'); });
+T('[검수 11-08i] 시설·예산·팬 운영: 현금 공사비 기록, AI 증설 유지비 일할, 예산은 그 시즌 경제 지수·확정 목표·매점 0, 다음 시즌 감독 연봉 제외, 시구·테마는 남은 홈경기, 월초 단계 낮추기 회피 불가, 시즌 1회는 결산 시즌',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+5&&homeGames(G.user,G.day+1,G.day+1).length===0&&homeGames(G.user,G.day+2,G.day+7).length>0);
+  facInit(); const t=team(G.user); t.cash=99999; const k=FACK.find(x=>G.fac.it[x]<FAC_MAX&&!G.fac.bld[x]); const s0=G.spend.facB||0; buildFacItem(k); ok((G.spend.facB||0)>s0,'현금 공사비 누계 없음'); ok((G.fac.hist||[]).length>0&&G.fac.inv>0,'구단 시설 투자 이력 없음');
+  const B=G.teams.find(x=>x.id!==G.user); facInit(); if(!B.fi)B.fi={it:Object.fromEntries(FACK.map(x=>[x,1])),up0:0,dn:{}}; B.fi.up0=facUpOf(B.fi.it); B.fi.it.lab=(B.fi.it.lab||0)+1; (B.fi.dn=B.fi.dn||{}).lab=G.day-1; const full=Math.max(0,facUpOf(B.fi.it)-B.fi.up0); ok(aiFacUpExtra(B)<full,'막 완공한 증설 유지비 1년 치: '+aiFacUpExtra(B)+' / '+full);
+  ok(/내일 우리 홈경기/.test(fanEvent('pitch')),'홈경기 없는 날 시구'); G.fanOps.last={}; ok(/7일|테마 데이를 열었/.test(fanEvent('theme')),'테마');
+  fanSet('cheer',2); G.fanOps.mx={}; fanSet('cheer',0); const f0=G.spend.fan; fanMonthly(); fanSet('cheer',2); ok(G.spend.fan-f0>=FAN_OPS.cheer.m[2],'월초에 낮춰 비용 회피: '+(G.spend.fan-f0));
+  const b=budget(); const m=G.mgr[G.user]; ok(b.exp.some(x=>x[0]==='팬 마케팅·구단 이벤트'&&x[1]>f0),'응원단 월 운영비 전망 없음');
+  m.cs=G.year+1; ok(!budget().exp.some(x=>x[0]==='감독 연봉'&&x[1]>Math.round(G.spend.mgr||0)+1),'다음 시즌 감독 연봉이 올해 전망에'); m.cs=null;
+  G.goals={y:G.year,sup:.3}; const b2=budget(); ok(Math.abs(b2.goalFrac-.3)<1e-9,'예산 목표 비율이 확정 목표와 다름: '+b2.goalFrac);
+  G.last={y:G.year}; const L=budget(); ok(L.exp.find(x=>x[0]==='구단 운영비')[1]===Math.round(24000*ecoIdx(G.year+1))||t.indie,'다음 시즌 예산 운영비가 올해 지수'); ok(supportCap(t)>=Math.round(16000*ecoIdx(G.year+1)*(.5+t.trust/100))-((t.supCut&&t.supCut.y===sponSeason())?t.supCut.amt:0)-1,'지원 한도 지수');
+  G.fanOps.yr={}; ok(/레트로 유니폼을 냈/.test(fanEvent('retro')),'레트로 준비'); ok(G.fanOps.yr.retro===G.year+1,'결산 뒤 레트로가 다음 시즌으로 기록되지 않음'); G.year++; ok(/이미/.test(fanEvent('retro')),'같은 결산 시즌에 두 번'); G.year--; });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
@@ -2237,6 +2254,6 @@ T('[공통 점검] 구장: 공사 중 이직 뒤 AI가 같은 시설을 다시 �
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 let fail=0; const ONLY=process.env.ONLY; if(ONLY){ const L=results.filter(t=>t.name.includes(ONLY)); results.length=0; results.push(...L); if(!L.length){ console.log('실패  ONLY='+ONLY+' 에 해당하는 시나리오가 없습니다(0개 실행은 통과가 아님)'); process.exit(1); } } /* ONLY=문구: 이름에 그 문구가 든 시나리오만 */ const nameSeed=n=>{ let h=2166136261>>>0; for(let i=0;i<n.length;i++){ h^=n.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h|0; }; /* 시나리오마다 이름으로 난수 시작점을 정한다: 앞에 시나리오를 더해도 뒤 시나리오의 세계가 바뀌지 않게 */
-for(const t of results){ try{ globalThis.__seed(nameSeed(t.name)); t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+String(e.message).slice(0,300)); } }
+for(const t of results){ try{ globalThis.__seed(nameSeed(t.name)); t.fn(); console.log('통과  '+t.name); }catch(e){ fail++; console.log('실패  '+t.name+'\n      → '+(process.env.STK?String(e.stack).slice(0,600):'')+String(e.message).slice(0,300)); } }
 console.error=oe;
 console.log(fail?`규칙 점검: ${results.length}개 중 ${fail}개 실패`:`규칙 점검: ${results.length}개 모두 통과`); process.exit(fail?1:0);
