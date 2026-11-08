@@ -24,6 +24,7 @@ function scoutSlots(){ const draftSea=scoutDraftSea(); const S=[];
 function scoutPlan(){ const sc=[...(G.scouts||[])]; if(!sc.length)return []; const slots=scoutSlots().slice(0,sc.length); const used=new Set(); const out=[];
   for(const sl of slots){ let best=null,bs=-1e9; for(const s of sc){ if(used.has(s.id))continue; const here=(s.role||'am')===sl.role&&s.region===sl.key; const sp=sl.role==='am'&&s.spec?.2:0; const v=effSkill(s)+(here?1.5:0)+sp; if(v>bs){bs=v;best=s;} }
     if(!best)break; used.add(best.id); out.push({s:best,role:sl.role,key:sl.key,why:sl.why,move:!((best.role||'am')===sl.role&&best.region===sl.key)}); }
+  for(const s of sc)if(!used.has(s.id))out.push({s,role:s.role||'am',key:s.region,why:'지금 담당 유지',move:false}); /* 자리보다 사람이 많으면 남는 사람도 배치안에 넣는다(검수 11-09e #23) */
   return out; }
 function scoutSlotTxt(role,key){ return `${SROLE[role]} · ${role==='intl'?IREG[key].l:key}`; }
 function scoutPlanApply(quiet){ const P=scoutPlan().filter(x=>x.move); for(const x of P)assignScout(x.s.id,x.role,x.key);

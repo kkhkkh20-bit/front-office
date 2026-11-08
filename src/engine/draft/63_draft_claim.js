@@ -9,7 +9,7 @@ const DC_PET_ADD=4, DC_LIKE_SD=2.5;
 /* 관찰 횟수: 3월부터 담당 스카우트가 지역 대회를 돈다. 실력이 좋을수록 자주 보고, 단장이 직접 보면 2회 더 */
 function dcObs(p,sc){ const gm=p.gmSeen===G.year?2:0; if(!sc)return gm; const end=G.cal&&G.cal.draft?Math.min(G.day,G.cal.draft):G.day, st=Math.max(dnum(G.year,3,1),sc.since||0); /* 배치일부터 센다(검수 11-06: 오늘 배치했는데 9회) */
   if(end<=st)return gm; /* 배치 첫날·시작 전에는 관찰 0회(검수 11-07) */ const base=Math.max(0,(end-st)/30)*(.45+.15*(sc.skill||0)); return Math.max(1,Math.round(base+u01('dob'+sc.id+G.year,p.id)*1.5))+gm; }
-const DC_CONF=sd=>sd<=4.6?'높음':sd<=7?'보통':'낮음';
+const DC_CONF=sd=>sd<=4.5?'높음':sd<=7?'보통':'낮음';
 let _dcc=null; /* 저장하지 않는 계산 캐시 */
 function draftClaims(){ const live=G.draft&&!G.draft.done; const ids=(live?G.draft.cls:G.draftClass)||[];
   const pool=ids.map(id=>G.players[id]).filter(p=>p&&p.prospect); const key=G.day+':'+pool.length+':'+pool.map(p=>p.id).join('.')+':'+(G.scouts||[]).map(s=>s.id+'.'+s.skill+'.'+s.region+'.'+(s.role||'')+'.'+(s.since||0)).join(',') /* 담당 역할·배치일이 바뀌면 같은 날에도 다시 계산(검수 11-08) */+':'+pool.filter(p=>p&&p.gmSeen===G.year).map(p=>p.id).join('.'); /* 인원수가 아니라 누구를 봤는지(검수 11-06) */ /* 단장이 직접 본 후보 수도 키에(같은 날 출장 반영) */

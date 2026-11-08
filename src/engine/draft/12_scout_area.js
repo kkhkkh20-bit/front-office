@@ -33,7 +33,7 @@ function areaNet(tid,k){ const a=areaDef(k); if(!a)return 0; const home=teamArea
   if(tid===G.user){
     const sc=(G.scouts||[]).filter(s=>(s.role||'am')==='am'&&s.region===a.reg);
     for(const s of sc){ const mon=Math.max(0,Math.min(36,(G.day-(s.since??-999))/30)); const nA=AREA.filter(x=>x.reg===a.reg).length; v+=Math.min(22,(mon*.6+effSkill(s)*2.5)*(k===home?1:3/nA)); if(scHome(s)===k)v+=12; }
-    v+=Math.min(8,((G.areaVisit||{})[k]||0)*.5); /* 그 권역 대회를 직접 본 횟수(누적, 상한) */
+    v+=Math.min(8,(areaVisits(tid)[k]||0)*.5); /* 그 권역 대회를 직접 본 횟수(구단별, 해마다 절반, 상한) */
   } else v+=10; /* 다른 구단은 기본 배치를 둔 것으로 본다 */
   return Math.round(clamp(v,0,100)); }
 const netLbl=v=>v>=75?'촘촘함':v>=55?'좋음':v>=35?'보통':v>=20?'약함':'거의 없음';
@@ -44,5 +44,13 @@ function netSdM(p,tid){ if(!p||!p.prospect)return 1; const k=areaOf(p); if(!k)re
 /* 권역 요약(지도·목록): 올해 드래프트 후보 */
 function areaSummary(tid){ const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect);
   return AREA.map(a=>{ const L=C.filter(p=>areaOf(p)===a.k); return {k:a.k,reg:a.reg,net:areaNet(tid,a.k),n:L.length,home:teamArea(tid)===a.k,L}; }); }
+const areaVisits=tid=>(G.areaVisitT||{})[tid]||{}; /* 구단별 관전 횟수(검수 11-09e #17: 이직하면 새 구단은 0부터) */
 /* 단장 고교 대회 관전(53_gm_schedule gmScoutTrip): 후보가 가장 많은 권역을 다녀온 것으로 센다 */
-function areaVisitAdd(L){ const c={}; for(const p of L||[]){ const k=areaOf(p); if(k)c[k]=(c[k]||0)+1; } const k=Object.keys(c).sort((a,b)=>c[b]-c[a])[0]; if(k){ G.areaVisit=G.areaVisit||{}; G.areaVisit[k]=(G.areaVisit[k]||0)+1; } try{ const seen=new Set(); for(const p of L||[]){ const S=schOf(p); if(S&&!seen.has(S.n)){ seen.add(S.n); schAdd(S,3); } } }catch(e){} /* 대회장에서 감독들과 인사(친분 +3) */ return k; }
+function areaVisitAdd(L){ const c={}; for(const p of L||[]){ const k=areaOf(p); if(k)c[k]=(c[k]||0)+1; } const k=Object.keys(c).sort((a,b)=>c[b]-c[a])[0]; if(k){ G.areaVisitT=G.areaVisitT||{}; const V=G.areaVisitT[G.user]=G.areaVisitT[G.user]||{}; V[k]=(V[k]||0)+1; } try{ const seen=new Set(); for(const p of L||[]){ const S=schOf(p); if(S&&!seen.has(S.n)){ seen.add(S.n); schAdd(S,3); } } }catch(e){} /* 대회장에서 감독들과 인사(친분 +3) */ return k; }
+/* '아마 성적' 정렬(31_draft_board) 점수 */
+function amRaw(p){ const h=p.am; if(!h)return null; if(p.isP){ const r=pRate(h); return 10-r.era+(h.so/Math.max(1,h.outs/3))*.8; } return bRate(h).ops*10; }
+/* 투수와 타자는 점수 척도가 달라 올해 후보 안에서 각각 표준점수로 맞춘다(검수 11-09e #28) */
+let _amZ=null;
+function amScore(p){ const x=amRaw(p); if(x==null)return -99; const ids=G.draftClass||[], k=G.year+':'+ids.length+':'+ids[0];
+  if(!_amZ||_amZ.k!==k){ const z={k}; for(const P of [true,false]){ const v=ids.map(id=>G.players[id]).filter(q=>q&&!!q.isP===P).map(amRaw).filter(y=>y!=null); const m=v.length?sum(v)/v.length:0; z[P]={m,s:Math.sqrt(v.length?sum(v.map(y=>(y-m)**2))/v.length:1)||1}; } _amZ=z; }
+  const s=_amZ[!!p.isP]; return (x-s.m)/s.s; }
