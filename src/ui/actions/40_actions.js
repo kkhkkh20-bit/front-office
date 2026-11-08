@@ -392,6 +392,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   pitchArg(v){ const st=UI.pitch; if(!st)return; const i=st.args.indexOf(v); if(i>=0)st.args.splice(i,1); else { st.args.push(v); if(st.args.length>2)st.args.shift(); } renderSheet(); },
   pitchCmt(v){ const st=UI.pitch; if(!st)return; const i=st.cmts.indexOf(v); if(i>=0)st.cmts.splice(i,1); else st.cmts.push(v); renderSheet(); },
   pitchGo(v){ const st=UI.pitch; const r=ownerPitch(+v,st?st.args:[],st?st.cmts:[]); UI.pitchMsg={id:+v,t:r}; save(); renderSheet(); },
+  owWhy(v){ const S=UI.ow=UI.ow||{}; S.k=S.k===v?null:v; S.amt=null; S.pid=null; S.res=null; render(); }, owAmt(v){ UI.ow.amt=+v; UI.ow.res=null; render(); }, owPid(v){ UI.ow.pid=+v; UI.ow.res=null; render(); },
+  owGo(){ const S=UI.ow; if(!S||!S.k)return; const r=ownerAskWhy(S.k,S.amt,S.pid); S.res={ok:r.ok,said:r.said,msg:r.msg}; note('구단주',r.msg); save(); render(); }, /* 사유를 고르는 구단주 자금 요청 */
   ownAsk(v){ const [k,x]=v.split(':'); let r; if(k==='gen')r=ownerAsk(+x,null); else if(k==='fa'){ const p=G.players[+x]; r=ownerAsk(p.ask.annual,{k:'fa',pid:+x}); } else { const p=G.players[+x]; r=ownerAsk(round5(Math.max(500,p.sal*.6)),{k:'frep',pid:+x}); } UI.ownMsg=r; note('구단주',r); save(); render(); },
   featF(v){ UI.ftf=v; render(); },
   abf(v){ UI.abf=v; render(); },

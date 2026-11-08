@@ -702,3 +702,8 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 /* 창단 드래프트 직접 지명 마친 뒤(맡길 방침·맡기기·더 뽑기): 휴대폰 한 줄 고정이면 버튼 글자가 세로로 깨진다(사용자 제보 11-07). 이때는 줄바꿈 */
 .tk.m .tk1:has(>.fdpol){flex-wrap:wrap}.tk.m .tk1:has(>.fdpol)>b{white-space:normal;flex:1 1 100%}.tk.m .tk1:has(>.fdpol)>.btn{white-space:nowrap;flex:1 1 auto}.tk.m .tk1:has(>.fdpol)>.fdpol{flex:1 1 100%}
 #sheet .tw.twp thead th{position:static} /* 선수 상세 화면 기록 표: 상단 고정 머리글이 첫 줄을 덮던 문제(사용자 제보 11-07) */
+/* 구단주 자금 요청(사유 → 대상·금액 → 가능성): 휴대폰에서 버튼이 줄바꿈되게 */
+.ow-fund{display:flex;flex-direction:column;gap:6px;margin:6px 0 10px}.ow-fund .chips{flex-wrap:wrap;overflow:visible}
+.ow-box{background:var(--bg2,rgba(127,127,127,.08));border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.ow-odds{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin:0}.ow-odds b{font-size:16px}
+.ow-f{margin:0;padding-left:0;list-style:none}.ow-f li.good{color:var(--good)}.ow-f li.bad{color:var(--bad)}.ow-my{margin:0;font-style:italic}

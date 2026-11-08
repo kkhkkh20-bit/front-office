@@ -1,5 +1,5 @@
 /* ---------- 단장 프로필: 새 게임에서 이름·나이·출신·얼굴을 정하고, 사이드바 '단장 프로필'에서 본다 ---------- */
-function gpDefault(){ let n='김단장'; try{ n=genName(); }catch(e){} return {name:n,age:42,bg:'corp',female:false,face:'gm'+Math.floor(Math.random()*1e6)}; }
+function gpDefault(){ let n='김단장'; try{ n=genName(); }catch(e){} return {name:n,age:42,bg:'corp',voice:'bro',female:false,face:'gm'+Math.floor(Math.random()*1e6)}; }
 function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:(G&&G.gmP===P?meAge():null)||P.age||42,female:!!P.female,name:P.name||'단장',mod:P.mod||null,img:P.img||null}; }
 /* 얼굴 꾸미기: 후보 12개 중에서 고르고, 부위(머리·머리색·수염·안경·표정)를 하나씩 바꾼다 */
 const GP_PART={hair:{l:'머리',m:['short','short2','short3','crop','crop-fade','crop-fade2','short-fade','short-fade-2','middle-part','parted','messy','messy-short','spike','spike2','juice','high','tall-fade','faux-hawk','shortBangs','short-bald','curly','curly2','afro'],f:['female1','female2','female3','female4','female5','female6','female7','female8','female9','female10','female11','female12','longHair','shortBangs','middle-part','parted']},
@@ -16,7 +16,9 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
     <div class="small gp-age">나이 <button class="btn small" data-a="gpAge" data-v="-5">−5</button><button class="btn small" data-a="gpAge" data-v="-1">−1</button><b>${g.age}세</b><button class="btn small" data-a="gpAge" data-v="1">+1</button><button class="btn small" data-a="gpAge" data-v="5">+5</button></div>
     <div class="small">성별</div><div class="chips"><button data-a="gpSex" data-v="m" class="${g.female?'':'on'}">남</button><button data-a="gpSex" data-v="f" class="${g.female?'on':''}">여</button></div>
     <div class="small">출신</div><div class="chips">${Object.entries(GM_BG).map(([k,l])=>`<button data-a="gpBg" data-v="${k}" class="${g.bg===k?'on':''}">${l}</button>`).join('')}</div>
-    <p class="small">${esc(GM_BG[g.bg]||'')}: ${esc(GM_BGD[g.bg]||'')}.</p><p class="small muted">출신 효과는 처음 취임할 때 한 번 들어갑니다(나중에 출신을 고쳐도 다시 들어가지 않습니다). 이름과 출신은 기사와 경력에도 쓰입니다. 나이는 해마다 한 살씩 듭니다.</p>
+    <p class="small">${esc(GM_BG[g.bg]||'')}: ${esc(GM_BGD[g.bg]||'')}.</p>
+    <div class="small">말투</div><div class="chips gp-voice">${Object.entries(GMV).map(([k,V])=>`<button data-a="gpVoice" data-v="${k}" class="${g.voice===k?'on':''}">${V.l}</button>`).join('')}</div>
+    <p class="small">${GMV[g.voice]?`${esc(GMV[g.voice].d)} 예: "${esc(GMVL[g.voice].yes[0])}" · "${esc(GMVL[g.voice].ask)}"`:'말투를 고르면 인터뷰·구단주 요청·재계약 같은 단장 대사가 그 색으로 바뀝니다(효과 차이는 없습니다).'}</p><p class="small muted">출신 효과는 처음 취임할 때 한 번 들어갑니다(나중에 출신을 고쳐도 다시 들어가지 않습니다). 이름과 출신은 기사와 경력에도 쓰입니다. 나이는 해마다 한 살씩 듭니다.</p>
     ${UI.gpMsg?`<div class="note">${esc(UI.gpMsg)}</div>`:''}<button class="btn primary block" data-a="${go}">${goL}</button></div></div>
   ${typeof FACE7!=='undefined'?`<div class="gpg-h"><span class="small">얼굴: 마음에 드는 사진을 누르거나 위에서 내 사진을 넣으세요</span><button class="btn small" data-a="gpFace7">다른 사진</button></div><div class="gpg">${ph.map(c=>`<button class="gpg-c${g.face===c?' on':''}" data-a="gpPick" data-v="${c}">${avImg({persona:'staff',pid:c,age:g.age,female:g.female,name:g.name})}</button>`).join('')}</div>`:''}
 `; }
@@ -31,7 +33,7 @@ function meLastFin(C){ const st=(C&&C.stints||[]).find(x=>x.fin); if(!st)return 
 function meView(){ const P=G.gmP; let C=G.myC; try{ if(!G.unemp)C=myCInit(); }catch(e){} const nick=meNick(); const age=meAge();
   const head=UI.gpEdit||!P?`<section class="card"><h2 class="sec">${P?'단장 정보 고치기':'단장 정보를 정해 주세요'}</h2>${gpForm('gpSave',P?'저장':'정하기')}${P?'<button class="btn block" data-a="gpEdit" style="margin-top:6px">취소</button>':''}</section>`
     :`<section class="card mehead">${avImg(meAv(),true)}<div class="mehead-t"><div class="eyebrow">${G.unemp?'야인':`${esc(tname(G.user))} 단장`}${C&&C.y0&&!G.unemp?` · ${C.y0}년부터`:''}</div><h2 class="sec">${esc(P.name)} <span class="small muted">${age}세 · ${esc(GM_BG[P.bg]||'')}</span></h2>
-      <div class="chips"><span class="pill">명성 ${G.rep??50} · ${esc(repLabel(G.rep??50))}</span>${nick?`<span class="pill acc">별명: ${esc(nick)}</span>`:''}${!G.unemp&&G.user!=null?`<span class="pill">구단주 신뢰 ${team(G.user).trust}</span>`:''}</div></div><button class="btn small" data-a="gpEdit">고치기</button></section>`;
+      <div class="chips"><span class="pill">명성 ${G.rep??50} · ${esc(repLabel(G.rep??50))}</span>${nick?`<span class="pill acc">별명: ${esc(nick)}</span>`:''}${GMV[P.voice]?`<span class="pill">말투 · ${esc(GMV[P.voice].l)}</span>`:''}${!G.unemp&&G.user!=null?`<span class="pill">구단주 신뢰 ${team(G.user).trust}</span>`:''}</div></div><button class="btn small" data-a="gpEdit">고치기</button></section>`;
   const card=G.unemp?gmProfileView():gmCardView();
   const stints=G.unemp&&C&&C.stints&&C.stints.length?csec('지난 경력',C.stints.map(x=>`<div class="row between small"><span>${badge(x.tid,16)} ${esc(tshort(x.tid))} · ${x.y0}~${x.y1}</span><span class="muted">${esc(x.how)}</span></div>`).join(''))+meCareerSeasons(C)+meLastFin(C):'';
   const left=C&&C.tid!=null?Math.max(0,C.y1-G.year):0; const mid=period()==='season'||period()==='post'; const pen=(left>0?2:0)+(mid?3:0);
@@ -58,10 +60,11 @@ Object.assign(A,{
   gpSex(v){ const g=gpSync(); g.female=v==='f'; g.face='gm'+Math.floor(Math.random()*1e6); delete g.mod; UI.gpSeeds=null; render(); },
   gpAge(v){ const g=gpSync(); g.age=clamp((g.age||40)+(+v),30,65); render(); },
   gpBg(v){ const g=gpSync(); g.bg=v; render(); },
+  gpVoice(v){ const g=gpSync(); g.voice=g.voice===v?null:v; render(); },
   gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; if(!UI.newSlot&&!SLOT_IDS.some(n=>!meta().slots[n])){ UI.gpMsg=`저장 슬롯 ${SLOTS}개가 모두 찼습니다. 처음 화면 → 불러오기에서 덮어쓸 슬롯의 '덮어쓰고 새 게임'을 누르거나 슬롯 하나를 지운 뒤 다시 시작하세요. 정한 단장 정보는 그대로 남겨 둡니다.`; render(); return; } /* 슬롯이 없으면 얼굴·이름을 지우지 않고 알린다(전에는 조용히 멈추고 얼굴만 새로 뽑혔다) */
     UI.gp=null; const ok=A.startGo(UI.pickT); if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age}); }catch(e){} } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
-  gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,female:g.female,face:g.face,mod:g.mod||null,img:g.img||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
+  gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?g.age-(G.year-y0):g.age; const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,voice:GMV[g.voice]?g.voice:null,female:g.female,face:g.face,mod:g.mod||null,img:g.img||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
   gmSuccAsk(){ UI.gsucc=!UI.gsucc; UI.gp=UI.gsucc?gpDefault():null; UI.gpMsg=''; render(); },
   gmSuccGo(){ const g=gpSync(); const r=gmSucceed({...g}); if(r){ UI.gpMsg=r; render(); return; } UI.gsucc=false; UI.gp=null; save(); render(); toast(`${G.gmP.name} 단장이 취임했습니다.`); },
   resignAsk(){ UI.rsAsk=!UI.rsAsk; render(); },

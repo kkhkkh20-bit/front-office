@@ -329,7 +329,7 @@ function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.us
   try{ off.pot=offScoutNote(off); }catch(e){} try{ off.why=mgrFitWhy(t.id,tg.p); }catch(e){}
   G.offers=(G.offers||[]).concat(off);
   if(autoTradeOffer(off))return true; /* 업무 맡기기: 부단장이 거절. 맡기지 않았으면 진행을 멈추지 않는 소식으로 보낸다(할 일 목록·만료 임박 알림에 뜬다) */
-  note('트레이드',`${off.asst?off.asst+'\n':''}${off.why?`${off.why}을(를) 찾는다는 감독 요청을 받고 움직인 제안입니다.\n`:''}${tname(t.id)} 단장이 ${best.map(x=>x.p.name).join(', ')}을(를) 주고 ${tg.p.name}을(를) 원한다는 트레이드를 제안했습니다. ${off.exp<G.day+3?'트레이드 마감일까지':'3일 안에'} 답해야 합니다.${gmHeat(t.id)>=.4?' 성적 압박을 받는 단장이라 적극적입니다.':''}${off.pot?`\n\n[잠재력 추정 보고]\n${off.pot}`:''}`); if(G.mail[0]){ G.mail[0].oid=off.id; G.mail[0].auto=['tro']; } return true;
+  note('트레이드',`${off.asst?off.asst+'\n':''}${off.why?`${off.why}을(를) 찾는다는 감독 요청을 받고 움직인 제안입니다.\n`:''}${tname(t.id)} 단장이 ${best.map(x=>x.p.name).join(', ')}을(를) 주고 ${tg.p.name}을(를) 원한다는 트레이드를 제안했습니다. ${off.exp<G.day+3?'트레이드 마감일까지':'3일 안에'} 답해야 합니다.${gmHeat(t.id)>=.4?' 성적 압박을 받는 단장이라 적극적입니다.':''}${(()=>{ const x=aiSay(t.id,'pitch'); return x?`\n${gmOf(t.id).name} 단장: "${x}"`:''; })()}${off.pot?`\n\n[잠재력 추정 보고]\n${off.pot}`:''}`); if(G.mail[0]){ G.mail[0].oid=off.id; G.mail[0].auto=['tro']; } return true;
 }
 /* 받은 제안이 지금 성사될 수 있는지(거부권·소속·상대 정원·샐러리캡). 막히면 사유, 되면 null.
    수락할 때와 AI가 제안을 만들 때 같은 판정을 쓴다: 예전에는 만들 때 이 검사를 안 해 수락하면 샐러리캡으로 취소되는 제안이 잦았다 */

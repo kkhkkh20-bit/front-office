@@ -2284,6 +2284,37 @@ T('[피드백 11-08c] 우리 풀: 은퇴 물결 뒤 새로 채운 고교 감독�
   const n0=(G.wire||[]).length; for(const S of SL.slice(0,12))schSetCoach(S,schNewCoach(S,false)); const hs=SL.slice(0,12).map(S=>S.coach); ok(hs.filter(c=>c.ob).length>=9,'고교 감독 중 은퇴 선수 '+hs.filter(c=>c.ob).length+'/12');
   ok(SL[0].coach.alma&&SL[0].coach.name==='은퇴0'&&SL[0].coach.car.startsWith('전 '),'모교 복귀 안 됨: '+SL[0].coach.name); ok(schRel(SL[0])>=schRel0({area:'x',coach:null},G.user)+20,'우리 구단 출신 친분 보너스 없음'); ok((G.wire||[]).length>n0&&G.wire.some(w=>w.t.includes('모교')),'부임 소식 없음');
   let k=0; const roles=['pc','bc','dc','rc','bp','ab','cn','tc','fd','rs']; for(let i=0;i<10;i++){ const t=ai[i%ai.length]; const c=obAiCoach(t.id,roles[i])||mkCoach(roles[i]); if(c.ob)k++; } ok(k>=6,'AI 코치 빈자리 중 은퇴 선수 '+k+'/10'); });
+T('[피드백 11-08d] 다른 구단 단장도 연봉 계약이 있고(예전 저장은 같은 값으로 생성), 성적에 따라 재계약하며 단장대행은 계약이 없다',()=>{ fresh(); const ai=G.teams.filter(t=>t.id!==G.user);
+  for(const t of ai){ const c=gmCon(gmOf(t.id),t.id); ok(c&&c.sal>=150&&c.sal<=450,'AI 단장 연봉 범위 '+(c&&c.sal)); ok(c.y1>=G.year,'계약 끝 해 '+c.y1); }
+  const g=gmOf(ai[0].id); const c0={...g.c}; delete g.c; const c1=gmCon(g,ai[0].id); ok(c1.sal===c0.sal&&c1.y1===c0.y1,'예전 저장 이행값이 매번 다름');
+  g.c.y1=G.year; const s0=g.c.sal; gmConRenew(g,1,true); ok(g.c.sal>s0&&g.c.y1===G.year+3,'우승 단장 재계약 인상·3년: '+s0+'→'+g.c.sal+' '+g.c.y1);
+  const g2=gmOf(ai[1].id); gmCon(g2,ai[1].id).y1=G.year+1; const s2=g2.c.sal; gmConRenew(g2,1,true); ok(g2.c.sal===s2,'계약이 남았는데 재계약됨');
+  const iv=gmOf(ai[2].id); ai[2].gm={...iv,interim:true}; ok(gmCon(ai[2].gm,ai[2].id)===null,'단장대행에게 계약'); ai[2].gm=iv; });
+T('[피드백 11-08d] 내 단장 성과급: 우승 30%, 한 해 한 번, 개인 지갑으로. 6위는 없음',()=>{ fresh(); const C=myCInit(); const S=personalState(); const w0=S.cash, e0=C.earn;
+  const order=[{tid:G.user}]; const b=myCBonus({champ:G.user},order); ok(b===Math.round(C.sal*.3/10)*10&&b>0,'우승 성과급 '+b); ok(S.cash===w0+b&&C.earn===e0+b,'지갑·통산 연봉 반영');
+  ok(myCBonus({champ:G.user},order)===0,'같은 해 두 번 지급'); C.bonusY=null; ok(myCBonus({champ:-1,runner:-1},[{tid:-1},{tid:-2},{tid:-3},{tid:-4},{tid:-5},{tid:G.user}])===0,'6위인데 성과급'); });
+T('[피드백 11-08d] 구단주 자금 요청: 사유와 상황으로 가능성이 달라지고, 대답에 이유가 붙고, 목적 추적과 월 1회 한도는 그대로',()=>{ fresh(); const t=team(G.user); t.trust=55; G.day=G.cal.open+40; const u0=uRank;
+  try{ uRank=()=>1; const hi=ownWhy('push',2000); uRank=()=>9; const lo=ownWhy('push',2000); ok(hi.p>lo.p+.3,'1위 우승 보강 '+hi.p.toFixed(2)+' vs 9위 '+lo.p.toFixed(2)); ok(ownChance(hi.p)!==ownChance(lo.p),'가능성 표시가 같음');
+    ok(lo.lineNo.includes('9위'),'반려 대사에 순위 이유가 없음: '+lo.lineNo); ok(hi.pur&&hi.pur.k==='boost'&&hi.until===tradeDL(),'우승 보강 목적·기한');
+  }finally{ uRank=u0; }
+  const fa=ownWhy('fa',1000); ok(fa.p<.25&&!fa.pur,'시즌 중 FA 영입 자금이 쉬움 '+fa.p.toFixed(2));
+  t.cash=5000; const df=ownWhy('deficit',1000); ok(df.p<.2,'적자도 아닌데 적자 보전이 쉬움 '+df.p.toFixed(2));
+  t.cash=-3000; t.trust=30; const df2=ownWhy('deficit',1000); t.trust=70; const df3=ownWhy('deficit',1000); ok(df3.p>df2.p+.25,'신뢰 낮을 때 적자 보전이 더 어려워야 함 '+df2.p.toFixed(2)+' '+df3.p.toFixed(2));
+  G.day=KD(12,10); ok(!!ownWhy('frep',500).block,'비시즌 외국인 교체 자금이 열림');
+  G.day=G.cal.open+40; t.trust=60; t.cash=1000; const r=ownerAskWhy('dev',1000); ok(/^(승인|반려)/.test(r.msg)&&r.said&&r.said.length>5,'대답 없음: '+JSON.stringify(r.msg)); const g=grants()[0]; ok(g.why==='dev'&&g.by==='gm','사유 기록');
+  ok(/이미 요청/.test(ownerAskWhy('fac',1000).msg),'한 달 한 번 제한'); ok(/이미 요청/.test(ownerAsk(1000,null)),'예전 요청도 같은 한도');
+  G.grants.unshift({y:sponSeason(),mk:0,d:G.day-10,amt:1000,pur:{k:'boost'},ok:true,by:'gm',st:'fail',tid:G.user}); const pf=ownWhy('fac',1000); ok(pf.f.some(x=>x[0]<0&&x[1].includes('목적대로')),'지난 지원 실패가 반영 안 됨'); });
+T('[피드백 11-08d] 사비 쓰기: 회식·팬 이벤트·스카우트 출장비는 휴식 기간이 있고, 생활 등급은 잔액이 있어야 오른다',()=>{ fresh(); const S=personalState(); S.cash=1000; const p=playersOf(G.user)[0]; p.mor=50;
+  const m1=personalActivity('team'); ok(p.mor===52&&S.cash===992,'회식 효과·비용 '+p.mor+' '+S.cash+' '+m1); ok(/일 뒤/.test(personalActivity('team')),'회식 휴식 기간 없음');
+  prInit(); G.pr.fan=50; personalActivity('fan'); ok(G.pr.fan===52,'팬 여론 '+G.pr.fan);
+  const sc=G.scouts[0]; sc.loy=40; personalActivity('scout'); ok(sc.loy===43,'스카우트 충성도 '+sc.loy);
+  S.cash=10; ok(/부족/.test(personalLifeUp())&&!(S.life>0),'잔액 없이 생활 등급이 오름'); S.cash=1000; personalLifeUp(); ok(S.life===1&&S.cash===970,'생활 등급 비용'); });
+T('[피드백 11-08d] 단장 말투: 내 말투가 인터뷰·구단주 요청에 묻어나고, 다른 구단 단장도 자기 말투로 말한다(말투 없는 예전 저장은 그대로)',()=>{ fresh(); G.gmP={name:'점검',age:40,bg:'corp',y0:G.year};
+  const plain=ivBuild('preseason',{})[0].opts[0].t; ok(myVoice()===null,'말투 없는 예전 저장에 말투가 생김');
+  const seen={}; for(const v of Object.keys(GMV)){ G.gmP.voice=v; const t0=ivBuild('preseason',{})[0].opts[0].t; ok(t0!==plain&&t0.endsWith('"'),v+' 인터뷰 꼬리 없음: '+t0); seen[mySay('ask')]=1; ok(ownWhy('dev',500).my.startsWith(GMVL[v].ask),v+' 구단주 요청 첫마디'); }
+  ok(Object.keys(seen).length===5,'말투끼리 대사가 겹침');
+  const ai=G.teams.find(t=>t.id!==G.user); const g=gmOf(ai.id); const v=gmVoice(g); ok(GMV[v],'AI 말투'); delete g.v; ok(gmVoice(g)===v,'AI 말투가 저장 이행 때 바뀜'); ok(GMVL[v].yes.includes(aiSay(ai.id,'yes')),'AI 대사가 자기 말투가 아님');
+  const vs=new Set(G.teams.filter(t=>t.id!==G.user).map(t=>gmVoice(gmOf(t.id)))); ok(vs.size>=3,'AI 단장 말투가 너무 단조로움 '+vs.size); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

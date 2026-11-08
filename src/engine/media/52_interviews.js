@@ -107,7 +107,7 @@ function ivBuild(k,d){ const P=d.pid!=null?G.players[d.pid]:null; const nm=P?P.n
     if(!L.length)L.push([`${pv.outlet||'앞선'} 인터뷰 발언이 화제입니다. 진의가 무엇입니까?`,[
       ['해명','"말씀드린 그대로입니다. 다른 뜻은 없습니다."',ivFx(0,1)],['덧붙임','"조금 더 설명드리면, 팀이 가는 방향을 말한 겁니다."',ivFx(1,1)],['노코멘트','"더 드릴 말씀은 없습니다."',ivFx(0,-1)]]]);
     Q.follow=L.slice(0,2); }
-  return (Q[k]||Q.preseason).map(([q,opts])=>({q,opts:opts.map(([tone,t,fx])=>({tone,t,fx}))})); }
+  return (Q[k]||Q.preseason).map(([q,opts])=>({q,opts:opts.map(([tone,t,fx])=>({tone,t:mySayTail(t,tone),fx}))})); } /* 답변 끝에 단장 말투 한마디 */
 const IV_TOPIC={mediaday:'개막 미디어데이',ps_md:'포스트시즌 미디어데이',mgr_hire:'감독 선임',mgr_fire:'감독 경질',follow:'후속 질문',fa_sign:'FA 영입',fa_lost:'FA 이탈',trade:'트레이드',injury:'주축 부상',preseason:'미디어데이',deadline:'트레이드 마감',season_end:'시즌 결산',streak_win:'연승'};
 function ivRequest(k,d){ if(G.unemp)return; d=d||{}; const cur=G.iv; if(cur&&!cur.done&&cur.exp>=G.day)return; if(cur&&G.day-cur.day<8&&!['preseason','season_end','deadline','mgr_hire','mgr_fire','follow'].includes(k))return;
   const R0=repPick(); const outlet=R0.outlet, rep=R0.name; const qs=ivBuild(k,d); if(!qs.length||qs.some(q=>!q.opts.length))return; if(k!=='follow'){ const pq=ivPPQ(); if(pq)qs.push(pq); } /* 마지막 질문: 언론 플레이 기회 */
