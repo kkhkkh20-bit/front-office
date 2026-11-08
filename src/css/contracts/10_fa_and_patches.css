@@ -134,6 +134,7 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .fcm-h{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim)}.fcm-h b{color:#c9d1dc;font-size:12px}.fcm-h em{margin-left:auto;font-style:normal;color:#ff9b9b}
 .fbest{font-style:normal;font-size:11px;font-weight:700;background:#e0a100;color:#1a1300;border-radius:3px;padding:0 4px}
 .fcm p{margin:3px 0 0;font-size:14px;color:#eef2f6}
+.fcm.re{padding-left:22px;background:#0f151b}.fre{font-style:normal;color:var(--dim)}.fcm-h{flex-wrap:wrap;row-gap:2px}.fcm-h>*{white-space:nowrap}
 .ncm-b{all:unset;cursor:pointer;font-size:12px;color:var(--team-hi,#4fa3ff);margin-top:4px;display:inline-block}.ncm1{margin:3px 0 0;font-size:12px;color:#c9d1dc}.ncm1 b{color:var(--dim);font-weight:600;margin-right:4px}
 .fanl{display:grid;gap:3px;margin:8px 0;padding:8px 10px;background:#0b1014;border:1px solid var(--line);border-radius:4px}.fanl p{margin:0;font-size:13px;color:#e3e8ee}.fanl b{color:var(--dim);font-weight:600;margin-right:4px}.fanl em{font-style:normal;color:#ff9b9b;font-size:11px;margin-left:4px}
 .stamp .fanl{text-align:left;margin-top:10px;max-width:320px}.stamp .fanl b{font:600 12px/1.4 var(--f-ui);color:var(--dim);letter-spacing:0}.stamp .fanl span{text-align:left;max-width:none}.stamp .fanl em{font-size:11px}
