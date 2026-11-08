@@ -1,0 +1,179 @@
+{
+  "status": "REVIEW_ONLY_NOT_APPROVED",
+  "source_boards_inspected": [
+    "sources/v11_rebuild_1.png",
+    "sources/v11_rebuild_2.png",
+    "sources/v11_rebuild_3.png",
+    "sources/v11_rebuild_4.png",
+    "sources/v11_rebuild_5.png"
+  ],
+  "inspected_portrait_cells": 80,
+  "reviewer": "assistant visual inspection",
+  "accessories": "glasses and beard flags checked against source grids",
+  "pose_corrections": [
+    {
+      "id": "v11_people02_001",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_003",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_005",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_007",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_009",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_011",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_013",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_015",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_019",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_035",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_037",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_041",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_045",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_047",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_049",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_051",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_053",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_055",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_057",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_059",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_061",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_063",
+      "requested": "arms_crossed",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_065",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_069",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_073",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    },
+    {
+      "id": "v11_people02_077",
+      "requested": "hand_pocket",
+      "observed": "other",
+      "reason": "Tight upper-chest crop does not show a pocket hand or clearly crossed forearms; visible pose tagged other."
+    }
+  ],
+  "framing": "Requested tight head/shoulders/upper chest; retains complete head in most cells, some hair near top edge. Does not guarantee visible pocket hands.",
+  "known_issues": [
+    "Repeated facial anatomy, especially among Korean men and within role groups.",
+    "Raw ArcFace exceeds0.40 both internally and against previous versions; all80 held from game integration.",
+    "Some expected arms-crossed poses are below close crop; observed pose is other."
+  ],
+  "logos_and_text": "No readable branding noticed in the80 portrait cells; tiny non-letter necklace detail may be visible on a few portraits.",
+  "real_person_screening": "No exhaustive celebrity/real-person face database comparison performed; no real-person reference requested."
+}
