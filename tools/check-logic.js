@@ -2339,6 +2339,27 @@ T('[피드백 11-08e] 하루 진행으로 캠프 예약부터 개막까지(다�
 T('[피드백 11-08e] 특수 아카데미 제휴: 보낼 수 있는 인원·성과가 오르고 현금이 든다, 새 프로그램은 옛 연수 저장과 함께 돈다',()=>{ fresh(); const t=team(G.user); t.cash=5000; const o=OVS.us; const p=domestic(G.user).find(q=>q.age<=24&&!q.prospect); ok(p,'준비 실패');
   const f0=ovsForecast(p,o,50), l0=ovsLim(o); ok(acadUp()===''&&acadUp()===''&&acadLv()===2,'제휴 단계'); ok(t.cash===5000-1000,'현금 '+t.cash); ok(ovsLim(o)===l0+2,'인원'); const f1=ovsForecast(p,o,50); ok(f1.big>f0.big&&f1.inj<f0.inj,'성과·부상');
   ok(OVS.cnd&&OVS.kac,'새 프로그램'); G.ovsAi={y:G.year,fall:{},abl:{},us:{},jpl:{}}; ovsAbroad(p); G.day=dnum(G.year,1,20); tabDaily(G.day); const A=ovsAiPlan(); ok(A.cnd&&A.kac,'AI 계획 키'); });
+T('[피드백 11-09] 사비 쓰기 확장: 기자 접대 노출 확률이 쌓이고, 들키면 구설·구단주 신뢰 하락',()=>{ fresh(); const S=personalState(); S.cash=1000; prInit(); const t=team(G.user);
+  ok(Math.abs(pressRisk()-.08)<1e-9,'첫 접대 확률 '+pressRisk()); G.pr.press=50; const tr0=t.trust; const m=personalActivity('press'); ok(S.cash===997,'접대 비용 '+S.cash);
+  ok(G.pr.press>=55||(/구설/.test(m)&&t.trust===tr0-3),'접대 효과 없음 '+m); ok(/일 뒤/.test(personalActivity('press')),'접대 휴식 기간 없음'); ok(Math.abs(pressRisk()-.16)<1e-9,'두 번째 확률 '+pressRisk());
+  S.pressLog=[...Array(10)].map(()=>G.day); ok(pressRisk()===.6,'최대 60% '+pressRisk()); let hit=null; for(let i=0;i<40&&!hit;i++){ S.last.press=null; const tr=t.trust; const x=personalActivity('press'); if(/구설/.test(x))hit={x,d:tr-t.trust}; }
+  ok(hit&&hit.d===3,'60%로 40번에도 안 들키거나 신뢰 하락 없음 '+JSON.stringify(hit)); ok(G.news.some(n=>/구설/.test(n.t)),'구설 기사 없음'); });
+T('[피드백 11-09] 장학재단·프런트 견학·OB 후원',()=>{ fresh(); const S=personalState(); S.cash=1000; prInit(); const r0=G.rep;
+  ok(/스토브리그/.test(personalTour('mlb'))||period()==='off','시즌 중 견학이 열림'); G.day=G.cal.end+20; G.ps=null; ok(period()==='off','스토브리그 아님 '+period());
+  const s0=S.study||0, c0=S.cash; personalTour('npb'); ok(S.study===s0+1&&S.cash===c0-30,'견학 효과·비용 '+S.study+' '+S.cash); ok(/이미/.test(personalTour('mlb')),'1년 한 번 제한 없음'); ok(/출장/.test(personalActivity('chat',playersOf(G.user)[0].id)),'출장 중 활동 막힘 없음');
+  S.trip=null; const c1=S.cash; personalFound(); const F=S.found; ok(F&&S.cash===c1-30&&G.rep===r0+1,'재단 설립 비용·명성 '+S.cash+' '+G.rep); ok(F.list.length===1&&G.schools[F.list[0].school],'장학생 학교 없음 '+JSON.stringify(F.list));
+  const sc=G.schools[F.list[0].school]; ok(schRel(sc)>=schRel0(sc,G.user)+4,'학교 감독 친분 '+schRel(sc)); ok(G.news.some(n=>/장학재단/.test(n.t)),'설립 기사 없음'); ok(/이미/.test(personalFound()),'재단 두 번 설립');
+  F.paid=G.year-1; const c2=S.cash, f0=G.pr.fan; foundYear(S); ok(S.cash===c2-5&&F.list.length===2&&G.rep===r0+2&&G.pr.fan>f0,'연간 장학금 '+S.cash+' '+F.list.length+' '+G.rep); foundYear(S); ok(S.cash===c2-5,'같은 해 두 번 냄');
+  obInit(); const L=G.ob.filter(o=>o.team===G.user); ok(L.length>0,'우리 OB 없음'); const b0=L[0].bond; const rp=G.rep; const m=personalActivity('ob'); ok(L[0].bond===b0+5&&G.rep===rp+1,'OB 후원 효과 '+m);
+  const cand=obCands('coach').filter(o=>o.team===G.user); if(cand.length){ let got=false; for(let i=0;i<60&&!got;i++){ S.last.ob=null; S.cash=1000; personalActivity('ob'); got=(G.cmarket||[]).some(c=>c.res===G.user&&cand.some(o=>o.id===c.ob)); } ok(got,'레전드 코치 제안이 한 번도 안 옴'); } });
+T('[피드백 11-09] 재테크 수익·손실 기록과 야인 생활비·바닥 시 제의 연봉 하락',()=>{ fresh(); const S=personalState(); S.cash=300;
+  ok(/부족/.test(personalInvest('stock',1000)),'잔액보다 많이 넣음'); personalInvest('dep',100); personalInvest('stock',100); ok(S.cash===100&&S.inv.dep===100,'넣기 '+S.cash);
+  for(let i=0;i<12;i++)invMonth(S); ok(Math.abs(S.inv.dep-100*Math.pow(1.0025,12))<.2,'예금 이자 '+S.inv.dep); ok(S.inv.stock!==100&&S.invLog.length===12,'주식 변동·기록 '+S.inv.stock+' '+S.invLog.length);
+  const st=S.inv.stock; personalInvest('stock',0); ok(Math.abs(S.cash-(100+st))<1e-6&&S.inv.stock===0,'모두 찾기 '+S.cash);
+  S.found=null; S.inv={}; S.life=2; S.cash=10; G.day=dnum(G.year,5,1); personalMonth(); ok(S.cash===9,'현직 유지비 '+S.cash);
+  G.unemp={y:G.year,msg:'시험',since:G.day,from:G.user,k:'fired'}; S.life=1; S.cash=3; personalMonth(); ok(S.cash===1,'야인 생활비 '+S.cash); personalMonth(); ok(S.cash===0&&personalBroke(),'바닥에서 멈춤 '+S.cash);
+  ok(G.mail.some(x=>/생활비가 바닥/.test(x.subj)),'바닥 메일 없음'); const tid=G.teams.find(x=>x.id!==G.user).id; G.jobs=[]; jobOffer(tid,false,{sal:300,yrs:2}); ok(G.jobs[0].terms.broke&&G.jobs[0].terms.sal===270,'제의 연봉 '+JSON.stringify(G.jobs[0].terms));
+  S.cash=50; G.jobs=[]; jobOffer(tid,false,{sal:300,yrs:2}); ok(!G.jobs[0].terms.broke&&G.jobs[0].terms.sal===300,'잔액 있어도 낮춤'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

@@ -1,7 +1,7 @@
 /* 개인 지갑은 구단 재정과 분리한다. 월급 선지급은 결산 때 중복 지급하지 않는다. */
 const PERSONAL_ACT={chat:{l:'차 한잔·안부',cost:0,days:7,bond:1},meal:{l:'선수와 식사',cost:2,days:7,bond:4},rehab:{l:'재활 선수 방문',cost:1,days:7,bond:3},study:{l:'단장 실무 교육',cost:15,days:30},community:{l:'지역 야구 봉사·기부',cost:5,days:30},network:{l:'다른 단장과 식사',cost:4,days:14,bond:3},
   team:{l:'선수단 회식(사비)',cost:8,days:30},fan:{l:'팬 이벤트 사비 후원',cost:15,days:60},scout:{l:'스카우트 출장비 보태기',cost:5,days:30}};
-/* 생활 등급(집·차): 한 번 올리면 내려가지 않는다. 효과는 체면뿐(구단주와 친밀도 +1, 단장 카드 표시) */
+/* 생활 등급(집·차): 한 번 올리면 내려가지 않는다. 효과는 체면뿐(구단주와 친밀도 +1, 단장 카드 표시). 매달 유지비·야인 생활비는 LIVE_UP·LIVE_UNEMP(11-09) */
 const PERSONAL_LIFE=[{l:'원룸 · 대중교통'},{l:'전세 아파트 · 중형차',cost:30},{l:'신축 아파트 · 대형 세단',cost:100},{l:'한강뷰 아파트 · 수입차',cost:300}];
 function personalLifeUp(){ if(G.unemp)return '지금은 할 수 없습니다.'; const S=personalState(), lv=S.life||0, N=PERSONAL_LIFE[lv+1]; if(!N)return '이미 가장 높은 생활 등급입니다.'; if(S.cash<N.cost)return `개인 잔액이 부족합니다(${money(N.cost)} 필요). 구단 돈은 사용하지 않습니다.`;
   S.cash-=N.cost; S.spent+=N.cost; S.life=lv+1; if(!team(G.user).indie)cwRapAdd('own',1); const text=`생활 등급: ${N.l}. 구단주가 "단장이 체면은 서야지" 합니다(구단주 친밀도 +1).`; S.history.unshift({day:G.day,text,amount:-N.cost}); S.history.length=Math.min(S.history.length,40); return text; }
@@ -18,7 +18,10 @@ function personalAdvice(p,kind){const lv=G.personal?.study||0;if(!lv||p.team!==G
 function contactRecord(key){const S=personalState();return S.contacts[key]||(S.contacts[key]={bond:30,history:[],talk:{}});}
 function personalGMContact(tid){if(!team(tid)||tid===G.user)return null;const g=gmOf(tid);if(!g)return null;const S=personalState(),key='gm:'+tid,old=S.contacts[key];if(old&&(!old.person||old.person===g.id)){old.person=g.id;return old;}if(old?.person)S.contacts['gm-person:'+old.person]=old;const C=S.contacts['gm-person:'+g.id]||{bond:30,history:[],talk:{}};C.person=g.id;S.contacts[key]=C;return C;}
 function personalActivity(kind,target){const A=PERSONAL_ACT[kind];if(!A||G.unemp)return '지금 할 수 없는 활동입니다.';const S=personalState(),last=S.last[kind];if(last!=null&&G.day-last<A.days)return `${A.l}: ${A.days-(G.day-last)}일 뒤 다시 할 수 있습니다.`;if(S.cash<A.cost)return `개인 잔액이 부족합니다(${money(A.cost)} 필요). 구단 돈은 사용하지 않습니다.`;
+ if(S.trip&&G.day<S.trip.to)return `${S.trip.l} 출장 중입니다(${dmd(S.trip.to)} 귀국).`;
  if(kind==='study'&&(S.study||0)>=5)return '실무 교육을 모두 마쳤습니다.';let text='',contact=null,p=null;
+ if(kind==='press')text=pressDinner(S);
+ if(kind==='ob'){text=obSupport();if(!text)return '우리 구단 출신 OB가 아직 없습니다.';}
  if(['chat','meal','rehab'].includes(kind)){p=G.players[+target];if(!p||p.team!==G.user)return '우리 구단 선수를 골라 주세요.';if(kind==='rehab'&&!(p.injOut>0))return '현재 재활 중인 선수가 아닙니다.';contact=contactRecord('pl:'+p.id);contact.bond=clamp(contact.bond+A.bond,0,100);p.mor=clamp((p.mor??60)+(kind==='chat'?.5:1),0,100);text=`${p.name} · ${A.l}: ${friendshipLabel(p)}(친밀도 ${Math.round(contact.bond)}). 능력치·출전은 바꾸지 않습니다.`;}
  if(kind==='network'){const t=G.teams.find(t=>t.id===+target&&t.id!==G.user);if(!t)return '다른 구단 단장을 골라 주세요.';contact=personalGMContact(t.id);contact.bond=clamp(contact.bond+A.bond,0,100);t.rel=clamp((t.rel??50)+1,0,100);text=`${tname(t.id)} ${gmOf(t.id).name} 단장과 식사했습니다. 거래 관계 +1, 친밀도 ${Math.round(contact.bond)}.`;}
  if(kind==='study'){S.study=Math.min(5,(S.study||0)+1);text=`실무 교육 ${S.study}/5: 선수 정보의 관리(계약)·육성(연수) 탭에서 판단 참고를 확인할 수 있습니다.`;}
@@ -47,3 +50,50 @@ function gmPersonalReply(tid,topic){const t=team(tid);if(!t||tid===G.user)return
  const line=topic==='plan'?strategy+' '+need+' '+budget:topic==='trade'?need+' '+market+' '+budget+' '+(styles[m.trait]||styles.hard):(C.bond>=55?'편하게 이야기할 사이가 됐네요. ':'인사는 나눴지만 관계는 차근차근 쌓아갑시다. ')+`개인 친밀도는 ${Math.round(C.bond)}, 양 구단 관계는 ${Math.round(t.rel??50)}입니다. `+(styles[m.trait]||'');
  C.talk[topic]={day:G.day,key,line};if(!repeat){C.history.unshift({day:G.day,kind:'talk:'+topic,text:line});C.history.length=Math.min(C.history.length,12);}
  return `${m.name}: ${repeat?'오늘 말씀드린 기준은 같습니다. '+(topic==='plan'?strategy:topic==='trade'?need:'양 구단 관계와 개인 친분은 따로 쌓아가겠습니다.'):line}`;}
+/* ===== 사비 쓰기 2(사용자 11-09): 기자 접대·OB 후원·장학재단·해외 프런트 견학·재테크·야인 생활비. 모두 개인 지갑만 쓰고, 옛 저장은 필드가 없으면 처음 상태로 본다 ===== */
+PERSONAL_ACT.press={l:'기자 접대',cost:3,days:21}; PERSONAL_ACT.ob={l:'OB 후원',cost:10,days:90};
+const pmoney=v=>Math.abs(v)>=1?money(v):(v<0?'-':'')+Math.round(Math.abs(v)*100)+'만'; /* 재테크 수익은 100만 아래도 보이게 */
+function personalLog(S,text,amount){S.history.unshift({day:G.day,text,amount});S.history.length=Math.min(S.history.length,40);}
+/* 기자 접대: 1년 안에 접대한 횟수마다 들킬 확률이 8%p씩 오른다(첫 번째 8%, 최대 60%) */
+function pressRisk(){const L=G.personal?.pressLog||[];return Math.min(.6,.08+.08*L.filter(d=>G.day-d<365).length);}
+function pressDinner(S){prInit();const risk=pressRisk();(S.pressLog=S.pressLog||[]).unshift(G.day);S.pressLog.length=Math.min(S.pressLog.length,12);
+ if(R()<risk){const t=team(G.user),say=mySay('down','press');t.trust=clamp((t.trust??50)-3,0,100);G.pr.fan=clamp(G.pr.fan-2,0,100);
+  news('언론',`${meCall()}, 기자들과 사적 술자리 구설`,`${meCall()}이(가) 출입 기자들에게 사비로 식사를 대접했다는 이야기가 퍼졌습니다. "언론을 관리하려 한다"는 비판과 함께 팬들 사이에서도 말이 나옵니다.${say?` 단장은 "${say}"라고만 했습니다.`:''}`,-2,{fanW:1});
+  return `기자 접대가 새어 나갔습니다(이번 노출 확률 ${Math.round(risk*100)}%). 구설 기사: 언론 논조·팬 여론 하락, 구단주 신뢰 -3.`;}
+ G.pr.press=clamp(G.pr.press+5,0,100);
+ return `기자 접대: 언론 논조 +5(날마다 조금씩 원래대로 돌아갑니다). 다음 접대가 들킬 확률 ${Math.round(pressRisk()*100)}%.`;}
+/* OB 후원: 우리 구단 출신 OB 친분 +5, 명성 +1. 아직 자리가 없는 우리 레전드가 친분에 따라 코치로 돕겠다고 나선다(은퇴식 '구단에 남기기'와 같은 우선 협상·20% 할인) */
+function obSupport(){obInit();const L=G.ob.filter(o=>o.team===G.user);if(!L.length)return null;for(const o of L)o.bond=(o.bond||0)+5;G.rep=clamp((G.rep??50)+1,0,100);
+ const C=obCands('coach').filter(o=>o.team===G.user&&!(G.cmarket||[]).some(c=>c.ob===o.id&&c.res===G.user)).sort((a,b)=>b.fame-a.fame)[0];let extra='';
+ if(C&&R()<clamp(.15+C.bond/200,.15,.6)){const c=obCoach(C);c.sal=round5(c.sal*.8);c.res=G.user;G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==C.id);G.cmarket.unshift(c);extra=` ${C.name}: "단장님이 이렇게까지 챙기시는데 저도 돕겠습니다." 코치 후보 맨 앞에 올라왔습니다(${CROLE[c.role].l}, 연 ${money(c.sal)}, 20% 할인).`;}
+ return `OB회 후원: 우리 구단 출신 OB ${L.length}명 친분 +5, 단장 명성 +1.${extra}`;}
+/* 해외 프런트 견학: 스토브리그에 1년 한 번, 2주 출장. 실무 교육을 한 단계 올린다(이미 5단계면 명성 +2) */
+const TOUR={mlb:{l:'MLB 프런트 견학',cost:50,rep:1},npb:{l:'NPB 프런트 견학',cost:30,rep:0}};
+function personalTour(k){const T=TOUR[k];if(!T||G.unemp)return '지금은 갈 수 없습니다.';const S=personalState();if(period()!=='off')return '프런트 견학은 스토브리그(포스트시즌이 끝난 뒤)에만 갈 수 있습니다.';if(S.tourY===G.year)return '올해는 이미 견학을 다녀왔습니다(1년 한 번).';if(S.cash<T.cost)return `개인 잔액이 부족합니다(${money(T.cost)} 필요). 구단 돈은 사용하지 않습니다.`;
+ S.cash-=T.cost;S.spent+=T.cost;S.tourY=G.year;S.trip={to:G.day+14,l:T.l};S.tours=(S.tours||0)+1;let gain='';if((S.study||0)<5){S.study=(S.study||0)+1;gain=`실무 교육 ${S.study}/5`;}const rep=T.rep+(gain?0:2);if(rep)G.rep=clamp((G.rep??50)+rep,0,100);
+ const say=mySay('up','tour'),text=`${say?`"${say}" `:''}${T.l}: ${dmd(S.trip.to)}까지 출장. ${[gain,rep?`단장 명성 +${rep}`:''].filter(Boolean).join(', ')}(영구).`;personalLog(S,text,-T.cost);return text;}
+/* 개인 장학재단: 설립 3,000만 + 매년 1월 500만. 해마다 명성 +1·팬 여론 +1, 연고 지역 고교 유망주 한 명에게 장학금(그 학교 감독 친분 +4) */
+const FOUND={cost:30,year:5};
+function foundAward(F){const P=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.college&&p.school&&(!F.area||p.area===F.area)&&!F.list.some(x=>x.pid===p.id)).sort((a,b)=>(b.pot||0)-(a.pot||0));
+ const p=P[0];let sc=p?schOf(p):null;if(!sc){const L=Object.values(schList()).filter(s=>!F.area||s.area===F.area);sc=L.length?L[Math.floor(R()*L.length)]:null;}if(!sc)return '';schAdd(sc,4);
+ F.list.unshift({y:G.year,pid:p&&sc.n===p.school?p.id:null,name:p&&sc.n===p.school?p.name:null,school:sc.n});F.list.length=Math.min(F.list.length,10);return F.list[0].name?`${sc.n} ${F.list[0].name}`:`${sc.n} 야구부`;}
+function personalFound(){if(G.unemp)return '지금은 할 수 없습니다.';const S=personalState();if(S.found)return '이미 장학재단을 운영하고 있습니다.';if(S.cash<FOUND.cost)return `개인 잔액이 부족합니다(${money(FOUND.cost)} 필요). 구단 돈은 사용하지 않습니다.`;
+ S.cash-=FOUND.cost;S.spent+=FOUND.cost;const F=S.found={y:G.year,paid:G.year,area:teamArea(G.user),list:[]};const who=foundAward(F);G.rep=clamp((G.rep??50)+1,0,100);const say=mySay('up','found');
+ news('구단',`${meCall()}, 사비로 고교 야구 장학재단 설립`,`${meName()||'단장'} 장학재단이 문을 열었습니다. 연고 지역 고교 야구 선수들을 해마다 돕겠다고 합니다.${who?` 첫 장학생은 ${who}.`:''}${say?` "${say}"`:''}`,2,{fanW:1});
+ const text=`장학재단 설립${who?`: 첫 장학생 ${who}(그 학교 감독 친분 +4)`:''}. 단장 명성 +1. 매년 1월 ${money(FOUND.year)}이 나갑니다.`;personalLog(S,text,-FOUND.cost);return text;}
+function foundYear(S){const F=S.found;if(!F||F.paid>=G.year)return;F.paid=G.year;if(S.cash<FOUND.year){personalLog(S,'장학재단: 잔액이 부족해 올해 장학금을 내지 못했습니다.',0);return;}
+ S.cash-=FOUND.year;S.spent+=FOUND.year;const who=foundAward(F);G.rep=clamp((G.rep??50)+1,0,100);if(!G.unemp){prInit();G.pr.fan=clamp(G.pr.fan+1,0,100);news('구단',`${meName()||'단장'} 장학재단, ${G.year}년 장학금 전달`,`올해 장학생은 ${who||'연고 지역 고교 야구부'}입니다.`,1);}
+ personalLog(S,`장학재단 ${G.year}년 장학금${who?`: ${who}`:''}. 단장 명성 +1${G.unemp?'':', 팬 여론 +1'}.`,-FOUND.year);}
+/* 재테크: 매달 1일 수익률을 정한다. 예금은 손실이 없고, 주식은 한 달에 30%까지 잃을 수 있다. 구단과 무관 */
+const INV={dep:{l:'예금',mu:.0025,sd:0,d:'연 3% · 손실 없음'},fund:{l:'펀드',mu:.005,sd:.03,d:'월 ±3% 안팎'},stock:{l:'고위험 주식',mu:.006,sd:.1,d:'월 ±10% 안팎 · 큰 손실 가능'}};
+function personalInvest(k,amt){const I=INV[k];if(!I)return '없는 상품입니다.';const S=personalState();S.inv=S.inv||{};let text;
+ if(amt>0){if(S.cash<amt)return `개인 잔액이 부족합니다(${money(amt)} 필요).`;S.cash-=amt;S.inv[k]=(S.inv[k]||0)+amt;text=`${I.l}에 ${money(amt)} 넣었습니다.`;personalLog(S,text,-amt);return text;}
+ const v=S.inv[k]||0;if(v<=0)return `${I.l}에 찾을 돈이 없습니다.`;S.cash+=v;S.inv[k]=0;text=`${I.l} ${pmoney(v)}을(를) 모두 찾았습니다.`;personalLog(S,text,v);return text;}
+function invMonth(S){if(!S.inv)return;let tot=0;const r={};for(const k in INV){const v=S.inv[k]||0;if(v<=0)continue;const I=INV[k],x=I.sd?clamp(N(I.mu,I.sd),-.3,.3):I.mu,d=Math.round(v*x*100)/100;S.inv[k]=Math.max(0,v+d);tot+=d;r[k]=Math.round(x*1000)/10;}
+ if(!Object.keys(r).length)return;(S.invLog=S.invLog||[]).unshift({day:G.day,r,d:Math.round(tot*100)/100});S.invLog.length=Math.min(S.invLog.length,12);}
+/* 생활비: 야인이면 생활 등급별 월 생활비, 현직이면 등급 유지비(원룸은 0). 지갑이 바닥나면 0에서 멈추고(게임 오버 없음) 제의 연봉이 10% 낮게 들어온다 */
+const LIVE_UNEMP=[1,2,4,6],LIVE_UP=[0,1,1,2];
+const personalBroke=()=>!!G.unemp&&!!G.personal&&G.personal.cash<=0;
+function personalMonth(){const S=personalState(),o=dobj(G.day);invMonth(S);if(o.m===1)foundYear(S);
+ const c=(G.unemp?LIVE_UNEMP:LIVE_UP)[S.life||0]||0,pay=Math.min(c,Math.max(0,S.cash));if(c){S.cash-=pay;personalLog(S,(G.unemp?'야인 생활비':'생활 등급 유지비')+(pay<c?`(${money(c)} 중 잔액만큼만 냈습니다)`:''),-pay);}
+ if(personalBroke()&&!S.brokeMail){S.brokeMail=1;mail('야인','생활비가 바닥났습니다','개인 잔액이 0원입니다. 게임이 끝나지는 않지만, 구단들이 사정을 알고 단장직 제의 연봉을 10% 낮춰 부릅니다. 재테크에 넣어 둔 돈이 있으면 단장 프로필 > 개인 지갑에서 찾을 수 있습니다.',{kind:'경력'});}if(S.cash>0)S.brokeMail=0;}
