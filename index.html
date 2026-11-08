@@ -21463,14 +21463,14 @@ function radarSVG(ax,showFut,big){ const n=ax.length, cx=big?130:110, cy=big?122
     const pd=(i,d)=>{ const an=-Math.PI/2+i*2*Math.PI/n, r=R*clamp(d/100,0,1); return [cx+r*Math.cos(an),cy+r*Math.sin(an)]; };
     const rg=d=>ax.map((_,i)=>pd(i,d).map(x=>x.toFixed(1)).join(',')).join(' ');
     const pl=k=>ax.map((a,i)=>pd(i,dvRaw(a[k])).map(x=>x.toFixed(1)).join(',')).join(' ');
-    const band=[[100,'#1f5c2c'],[80,'#4e6d22'],[60,'#7a6820'],[40,'#7b4520'],[20,'#6c2522']].map(([d,c])=>`<polygon points="${rg(d)}" fill="${c}" stroke="#0b1014" stroke-opacity=".6"/>`).join('');
+    const band=[[100,'#2a8a3c'],[80,'#7aa630'],[60,'#c9a428'],[40,'#c96526'],[20,'#b3302a']].map(([d,c])=>`<polygon points="${rg(d)}" fill="${c}" stroke="#0b1014" stroke-opacity=".6"/>`).join('');
     const L=ax.map((a,i)=>{ const an=-Math.PI/2+i*2*Math.PI/n, x=cx+(R+24)*Math.cos(an), y=cy+(R+20)*Math.sin(an); return `<text x="${x.toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" class="rd-n">${a[0]}</text><text x="${x.toFixed(1)}" y="${(y+14).toFixed(1)}" text-anchor="middle" class="rd-v" fill="${rcol(Math.round(a[1]))}">${dv(a[1])}</text>`; }).join('');
     const dots=ax.map((a,i)=>{ const [x,y]=pd(i,dvRaw(a[1])); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="#fff" stroke="#0b1014" stroke-width="1"/>`; }).join('');
     return `<svg class="radar rd-big" viewBox="0 -6 260 262" role="img" aria-label="능력치 레이더(0~100)">${band}
     ${ax.map((_,i)=>{ const [x,y]=pd(i,100); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#0b1014" stroke-opacity=".45"/>`; }).join('')}
     <polygon points="${rg(63)}" fill="none" stroke="#e8edf2" stroke-opacity=".55" stroke-dasharray="3 3" stroke-width="1.2"/>
     ${showFut?`<polygon points="${pl(2)}" fill="none" stroke="#ffd85a" stroke-dasharray="5 3" stroke-width="1.8"/>`:''}
-    <polygon points="${pl(1)}" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>${dots}${L}</svg>`; }
+    <polygon points="${pl(1)}" fill="rgba(255,255,255,.3)" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>${dots}${L}</svg>`; }
   const lab=ax.map((a,i)=>{ const [x,y]=pt(i,92); const anc=Math.abs(x-cx)<8?'middle':x>cx?'start':'end'; return `<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="${anc}" class="rd-l">${a[0]} <tspan fill="${rcol(Math.round(a[1]))}" font-weight="800">${dv(a[1])}</tspan></text>`; }).join('');
   return `<svg class="radar" viewBox="-30 0 280 208" role="img" aria-label="능력치 레이더">
     ${[35,50,65,80].map(v=>`<polygon points="${ring(v)}" fill="none" stroke="${v===50?'#55606e':'#2a333e'}" stroke-dasharray="${v===50?'3 3':''}"/>`).join('')}
