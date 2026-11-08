@@ -34,11 +34,13 @@ function milAdvice(p){ if(!p||!milFree(p))return {k:'none',who:'',why:''}; const
   if(p.age>=23){ const room=Math.max(0,p.pot-o); const h1=seasonTotal(p,G.year,'1군'); const g1=h1?(h1.g||0):0; const tr=G.sea&&G.sea.rec&&G.sea.rec[p.team]; const tg=tr&&period()==='season'?tr.w+tr.l+(tr.t||0):0;
     /* 시즌 초 몇 경기로는 출전 비중을 말하지 않는다: 20경기 전에는 보직(기용 순서·주전), 그 뒤에는 팀 경기 수 대비 실제 출전 */
     const roleW=()=>{ if(p.isP){ const i=d.pen.findIndex(x=>x&&x.id===p.id); return i>=0?`불펜 기용 순서 ${i+1}번째로 앞에 ${i}명이 있어`:'선발·필승조 보직이 아니어서'; } const st=(d.start||[]).find(x=>x&&x.pos===p.pos); return st?`${POSS[p.pos]} 주전 ${st.name} 뒤의 백업 보직이어서`:'주전 보직이 아니어서'; };
-    const now=p.e1?(tg>=20?`지금 1군${p.isP?' 불펜(추격조)':' 백업'}이고 팀 ${tg}경기 중 ${g1}경기 ${p.isP?'등판':'출전'}으로 비중이 낮아 빠져도 대체할 선수가 있습니다. 상무에서 꾸준히 뛰는 편이 낫습니다.`:`지금 1군${p.isP?' 불펜':' 백업'}이지만 ${roleW()} 빠져도 대체할 선수가 있습니다(시즌 초라 출전 기록 대신 보직으로 판단). 상무에서 꾸준히 뛰는 편이 낫습니다.`):'1군 자리가 없어 2군에 머무는 것보다 상무에서 꾸준히 뛰는 편이 낫습니다.'; return {k:'go',who:'스카우트팀장',why:`${now}${room>=4?` 아직 클 여지가 있어(잠재력 차이 ${Math.round(room)}) 경기 경험이 중요합니다.`:''} 전역하면 ${p.age+2}세입니다.`}; }
+    const now=p.e1?(tg>=20?`지금 1군${p.isP?' 불펜(추격조)':' 백업'}이고 팀 ${tg}경기 중 ${g1}경기 ${p.isP?'등판':'출전'}으로 비중이 낮아 빠져도 대체할 선수가 있습니다. 상무에서 꾸준히 뛰는 편이 낫습니다.`:`지금 1군${p.isP?' 불펜':' 백업'}이지만 ${roleW()} 빠져도 대체할 선수가 있습니다(시즌 초라 출전 기록 대신 보직으로 판단). 상무에서 꾸준히 뛰는 편이 낫습니다.`):'1군 자리가 없어 2군에 머무는 것보다 상무에서 꾸준히 뛰는 편이 낫습니다.'; return {k:'go',who:'스카우트팀장',why:`${now}${room>=4?` 아직 클 여지가 있어(잠재력 차이 ${Math.round(room)}) 경기 경험이 중요합니다.`:''} 전역하면 ${milRetAge(p)}세입니다.`}; }
   return {k:'wait',who:'스카우트팀장',why:`${p.age}세로 아직 여유가 있습니다. 1~2년 더 키워 본 뒤 보내도 됩니다.`}; }
+/* 이번 지원 기간에 합격하면 전역할 때 나이: 다음 입대일(6월·12월 10일)+복무, 나이는 새해마다 한 살(검수 11-09g: 봄 지원도 두 살로 안내) */
+function milRetAge(p){ const d=G.day, f=d<KD(6,10)?KD(6,10):d<KD(12,10)?KD(12,10):dnum(G.year+1,6,10); return p.age+dobj(f+MIL_DAYS).y-G.year; }
 function milDaily(){ const d=G.day;
   if(d===KD(9,1)||d===KD(3,1)){ const w=d===KD(9,1)?'dec':'jun';
-    for(const p of Object.values(G.players)){ if(p.team==null||p.team===G.user||!milFree(p)||p.mil&&p.mil.app)continue; if(p.age>=24&&p.age<=27&&R()<(p.age>=26?.7:.25))p.mil={app:w}; }
+    for(const p of Object.values(G.players)){ if(p.team==null||p.team===ME()||!milFree(p)||p.mil&&p.mil.app)continue; /* 야인 기간에는 전 구단도 AI(검수 11-09g) */ if(p.age>=24&&p.age<=27&&R()<(p.age>=26?.7:.25))p.mil={app:w}; }
     const mine=domestic(G.user).filter(p=>milFree(p)&&p.age>=23&&p.age<=27);
     if(mine.length)mail('운영팀',`상무 지원 기간입니다 (${w==='dec'?'12월':'6월'} 입대)`,`상무(국군체육부대) 야구단 지원을 받습니다. 복무는 1년 6개월이고, 복무 중에도 퓨처스리그에서 뛰며 기량을 유지할 수 있습니다. 현역으로 가면 1년 6개월 동안 야구를 거의 못 해 기량이 떨어집니다.\n\n${milAdviceTxt(mine)}\n\n우리 구단 미필 선수: ${mine.map(p=>`${p.name}(${p.age}세)`).join(', ')}\n\n${p28(mine)}지원은 ${dmd((w==='dec'?KD(10,15):KD(4,15))-1)}까지입니다(다음 날 합격자 발표).`,{imp:true,kind:'병역',acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]}); }
   if(d===KD(10,15)||d===KD(4,15)){ const w=d===KD(10,15)?'dec':'jun'; const apps=Object.values(G.players).filter(p=>p.mil&&p.mil.app===w&&!(p.team==null&&(p.mil=null,true))); /* 방출돼 소속이 없는 지원자는 지원 무효(검수 11-07) */
@@ -57,8 +59,8 @@ function milReturns(days){ return awayOf(G.user).filter(p=>!p.ys&&p.mil&&p.mil.u
 function milRetTxt(L){ return L.map(p=>`${p.name}(${posLabel(p)}, ${dmd(p.mil.until)})`).join(', '); }
 /* 복귀 7일 전: 시즌 중 로스터가 넘칠 것 같으면 미리 알린다 */
 function milRetWarn(d){ if(G.unemp)return; const per=period(); if(!(per==='season'||per==='post'||(per==='pre'&&d>=G.cal.open-14)))return; /* 가을야구 중 전역도 미리 알림(검수 11-07) */ const L=milReturns(7); if(!L.some(p=>p.mil.until===d+7))return;
-  const n=rosterN(G.user), need=n+L.length-ROSTER_MAX; if(need<=0)return;
-  mail('운영팀',`군 복귀 예정 ${L.length}명 · 로스터 ${need}자리 부족`,`앞으로 7일 안에 ${milRetTxt(L)}이(가) 전역해 정식 로스터로 돌아옵니다.\n\n지금 ${n}명 + 복귀 ${L.length}명 = ${n+L.length}명(한도 ${ROSTER_MAX}명). 복귀까지 고려하면 ${need}자리를 비워야 합니다. 연봉 1억 원 이하 선수는 방출 대신 육성선수로 돌릴 수 있습니다.`,{imp:true,kind:'병역',acts:[{l:'로스터 정리',a:'tab',v:'roster'}]}); }
+  const n=rosterN(G.user), last=Math.max(...L.map(p=>p.mil.until)), go=ownedOf(G.user).filter(p=>!p.ys&&p.mil&&p.mil.until&&p.mil.from>d&&p.mil.from<=last).length, need=n-go+L.length-ROSTER_MAX; if(need<=0)return; /* 복귀 전에 입대하는 선수는 빼고(검수 11-09g) */
+  mail('운영팀',`군 복귀 예정 ${L.length}명 · 로스터 ${need}자리 부족`,`앞으로 7일 안에 ${milRetTxt(L)}이(가) 전역해 정식 로스터로 돌아옵니다.\n\n지금 ${n}명${go?` - 먼저 입대 ${go}명`:''} + 복귀 ${L.length}명 = ${n-go+L.length}명(한도 ${ROSTER_MAX}명). 복귀까지 고려하면 ${need}자리를 비워야 합니다. 연봉 1억 원 이하 선수는 방출 대신 육성선수로 돌릴 수 있습니다.`,{imp:true,kind:'병역',acts:[{l:'로스터 정리',a:'tab',v:'roster'}]}); }
 function milAdviceTxt(ms){ const A=ms.map(p=>({p,a:milAdvice(p)})); const sec=(k,t)=>{ const L=A.filter(x=>x.a.k===k); return L.length?`[${t}]\n${L.map(x=>`${x.p.name}(${posLabel(x.p)}, ${x.p.age}세) - ${x.a.who}: ${x.a.why}`).join('\n')}`:''; };
   return ['코치진·스카우트 추천', sec('last','마지막 기회'), sec('go','지원 추천'), sec('hold','보류 의견')].filter(Boolean).join('\n\n'); }
 function p28(ms){ const u=ms.filter(p=>p.age>=27); return u.length?`올해 안에 입대해야 하는 선수(27세 이상): ${u.map(p=>p.name).join(', ')}. 해를 넘기면 현역으로 입대합니다.\n\n`:''; }
