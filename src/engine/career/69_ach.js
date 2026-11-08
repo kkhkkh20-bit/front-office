@@ -25,7 +25,7 @@ function achMetaTeamsWon(){ const M=achMeta(); return Object.keys(M.champ).filte
 /* 과제 목록. c: 분류, r: 보상({rep,trust,cash,title}), p: 진행도(현재, 목표) */
 const ACH=[
   {id:'champ1',c:'우승',n:'첫 우승',d:'단장으로 한국시리즈 우승을 차지합니다.',r:{rep:2}},
-  {id:'firstYr',c:'우승',n:'부임 첫해 우승',d:'단장을 맡은 첫 시즌에 우승합니다.',r:{title:'첫해의 기적'}},
+  {id:'firstYr',c:'우승',n:'부임 첫해 우승',d:'구단을 맡은 첫 시즌에 우승합니다(이직한 구단도 인정, 정규시즌 뒤 부임하면 다음 시즌).',r:{title:'첫해의 기적'}},
   {id:'double',c:'우승',n:'통합 우승',d:'정규시즌 1위와 한국시리즈 우승을 같은 해에 해냅니다.',r:{trust:2}},
   {id:'dynasty',c:'우승',n:'왕조',d:'같은 구단으로 3년 연속 우승합니다.',r:{rep:3,title:'왕조 설계자'}},
   {id:'champ5',c:'우승',n:'우승 5회',d:'단장 통산 우승 5회.',r:{rep:3},p:T=>[achTitlesN(T),5]},
@@ -89,7 +89,7 @@ function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT();
     const inPs=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(U)); T.psRun=inPs?T.psRun+1:0; T.psBest=Math.max(T.psBest,T.psRun);
     const rec=L.order.find(o=>o.tid===U);
     if(ps.champ===U){ (T.titles[U]=T.titles[U]||[]).push(y); const M=achMeta(); M.champ[U]=(M.champ[U]||0)+1; achMetaSave();
-      achUnlock('champ1'); if(G.gmSince===y)achUnlock('firstYr'); if(ps.first===U)achUnlock('double');
+      achUnlock('champ1'); if((G.gmSinceD!=null&&G.gmSinceD>=dnum(G.gmSince,10,1)?G.gmSince+1:G.gmSince)===y)achUnlock('firstYr'); /* 정규시즌 뒤(10월~) 부임하면 다음 시즌이 첫 시즌(이직한 구단도 인정, 커뮤니티 피드백 11-08) */ if(ps.first===U)achUnlock('double');
       const ys=T.titles[U]; if(ys.includes(y-1)&&ys.includes(y-2))achUnlock('dynasty');
       const pr=G.proj?G.proj.indexOf(U)+1:0; if(pr>=8)achUnlock('under',`시즌 전 예상 ${pr}위.`);
       if(t.indie)achUnlock('indie'); if(!T.taxed)achUnlock('noTax'); }

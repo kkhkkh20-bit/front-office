@@ -50,15 +50,16 @@ function nonFaF(p,skip){ if(p.faC||p.ext)return 1; if(skip)return NONFA_F[3]; re
 function preCap(p){ return PRE_CAP[clamp(p.svc||0,0,PRE_CAP.length-1)]; }
 function faAsk(p){
   const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.7+ovr(p)*.3)+(p.foreign?0:pvShift(p));
-  const af=p.age<30?1.15:p.age<=31?1.05:p.age<=33?.9:p.age<=34?.8:.65;
+  const af=p.age<30?1.15:p.age<=30?1.05:p.age<=31?.97:p.age<=33?.9:p.age<=34?.8:.65; /* 31세는 전성기 끝 해라 30세보다 낮게(커뮤니티 피드백 11-08) */
+  const tier=base>=62?1:clamp(.7+(base-50)*.025,.7,1); /* 특급(화면 80 안팎) 아래 중간층 FA는 요구액을 덜 부풀린다: 화면 70대가 총액 100억을 넘지 않게(커뮤니티 피드백 11-08) */
   const years=p.age<=28&&base>=62?5:p.age<=31?4:p.age<=33?(base>=55?4:3):p.age<=35?(base>=55?3:2):1;
   /* 거품이 껴도 연평균은 30억(2026년 기준, 상한이 오르면 같이 오름) 안에서 멈춘다 */
-  return {annual:round5(Math.min(marketSal(base)*1.05*af*faMktNow(),3000*capOf(G.year)/14397)),years};
+  return {annual:round5(Math.min(marketSal(base)*1.05*af*tier*faMktNow(),3000*capOf(G.year)/14397)),years};
 }
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
 function faMktOf(y){ G.faMkt=G.faMkt||{}; if(G.faMkt[y]!=null)return G.faMkt[y]; const prev=G.faMkt[y-1]!=null?G.faMkt[y-1]:1.08;
   const rooms=G.teams.map(t=>Math.max(0,capOf(y)-capPay(t.id))/capOf(y)); const room=sum(rooms)/rooms.length;
-  return Math.round(clamp(1.08+(prev-1.08)*.35+((G.faMkR=G.faMkR||{})[y]??(G.faMkR[y]=clamp(N(0,1),-2.5,2.5)))*.045+clamp((room-.2)*.4,-.04,.04),.92,1.25)*1000)/1000; }
+  return Math.round(clamp(1.08+(prev-1.08)*.35+((G.faMkR=G.faMkR||{})[y]??(G.faMkR[y]=clamp(N(0,1),-2.5,2.5)))*.045+clamp((room-.2)*.4,-.04,.04),.92,1.18)*1000)/1000; } /* 과열 상한 1.25 → 1.18(커뮤니티 피드백 11-08) */
 function faMktNow(){ return G.fa&&!G.fa.closed&&G.fa.y0!=null?faMktOf(G.fa.y0):faMktOf(G.year); }
 function faMktFix(y){ G.faMkt=G.faMkt||{}; G.faMkt[y]=faMktOf(y); return G.faMkt[y]; }
 function faMktLabel(v){ return v>=1.15?'과열':v>=1.06?'뜨거움':v>.99?'보통':v>.95?'차가움':'냉각'; }

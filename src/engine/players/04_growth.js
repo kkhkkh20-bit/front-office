@@ -19,6 +19,7 @@ function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro;
 function hidReveal(p){ if(!p.hidT||p.hidR||p.prospect)return; const L=(p.hist||[]).filter(h=>h.lvl==='1군'); const pa=sum(L.map(h=>h.pa||0)), outs=sum(L.map(h=>h.outs||0)); if(pa<150&&outs<180)return; p.hidR=G.year;
   const d=p.draft; story(p,`${G.year} 스카우트가 놓친 재능이 1군에서 드러남${d?`(${d.y} ${d.rd}라운드 지명)`:''}`);
   if(p.team===G.user)mail('스카우트팀',`스카우트가 놓친 선수: ${p.name}`,`${p.name}(${posLabel(p)}, ${p.age}세)${d?`은(는) ${d.y}년 ${d.rd}라운드 ${d.no}순위로 뽑힌 선수입니다.`:'은(는)'} 1군 기록이 쌓이면서 처음 평가보다 잠재력이 크다는 것이 드러났습니다. 스카우트 평가를 고쳤습니다.`,{kind:'선수',ref:p.id}); }
+function declApply(){ for(const p of Object.values(G.players)){ const D=p.declP; if(!D)continue; for(const k in D)if(p.r[k]!=null)p.r[k]=clamp(p.r[k]+D[k],20,80); delete p.declP; roundR(p); } } /* 6월 1일: 미뤄 둔 노화 하락 나머지 */
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p); const age=p.age; const pg=p.foreign?1:persGrowF(p); const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
@@ -56,6 +57,7 @@ function develop(p){
     if(dk>0&&club)dk*=coachToolMult(p,k);
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k])dk-=tc[k];
+    if(dk<0&&age>=T.fall-1&&svc!=='현역'&&!p.foreign){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
   if(svc==='현역')for(const k in p.r)p.r[k]=clamp(p.r[k]-rnd(.5,2.2),20,80);

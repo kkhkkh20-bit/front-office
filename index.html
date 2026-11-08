@@ -10164,6 +10164,7 @@ function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro;
 function hidReveal(p){ if(!p.hidT||p.hidR||p.prospect)return; const L=(p.hist||[]).filter(h=>h.lvl==='1군'); const pa=sum(L.map(h=>h.pa||0)), outs=sum(L.map(h=>h.outs||0)); if(pa<150&&outs<180)return; p.hidR=G.year;
   const d=p.draft; story(p,`${G.year} 스카우트가 놓친 재능이 1군에서 드러남${d?`(${d.y} ${d.rd}라운드 지명)`:''}`);
   if(p.team===G.user)mail('스카우트팀',`스카우트가 놓친 선수: ${p.name}`,`${p.name}(${posLabel(p)}, ${p.age}세)${d?`은(는) ${d.y}년 ${d.rd}라운드 ${d.no}순위로 뽑힌 선수입니다.`:'은(는)'} 1군 기록이 쌓이면서 처음 평가보다 잠재력이 크다는 것이 드러났습니다. 스카우트 평가를 고쳤습니다.`,{kind:'선수',ref:p.id}); }
+function declApply(){ for(const p of Object.values(G.players)){ const D=p.declP; if(!D)continue; for(const k in D)if(p.r[k]!=null)p.r[k]=clamp(p.r[k]+D[k],20,80); delete p.declP; roundR(p); } } /* 6월 1일: 미뤄 둔 노화 하락 나머지 */
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p); const age=p.age; const pg=p.foreign?1:persGrowF(p); const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
@@ -10201,6 +10202,7 @@ function develop(p){
     if(dk>0&&club)dk*=coachToolMult(p,k);
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k])dk-=tc[k];
+    if(dk<0&&age>=T.fall-1&&svc!=='현역'&&!p.foreign){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
   if(svc==='현역')for(const k in p.r)p.r[k]=clamp(p.r[k]-rnd(.5,2.2),20,80);
@@ -10679,7 +10681,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(day===KD(7,24)||day===KD(7,28)){ try{ deadlineRumors(day===KD(7,28)); }catch(e){} }
   if(day===KD(7,24))stop('일정','트레이드 마감까지 7일 남았습니다. 7월 31일 이후 포스트시즌이 끝날 때까지 트레이드할 수 없습니다. 다른 구단 제안이 몰리는 시기입니다.');
   if(day===tradeDL())stop('일정','오늘 자정 트레이드가 마감됩니다. 남은 제안과 협상을 오늘 안에 정리하세요.');
-  if(day===KD(8,8)){ const n=foreignOf(G.user).filter(p=>p.foreign==='용병'&&healthy(p)).length; (n<3?stop:note)('일정',`외국인 선수 포스트시즌 등록 마감(8월 15일)까지 7일 남았습니다. 건강한 외국인 선수 ${n}명.`); }
+  if(day===KD(6,1))try{ declApply(); }catch(e){} if(day===KD(8,8)){ const n=foreignOf(G.user).filter(p=>p.foreign==='용병'&&healthy(p)).length; (n<3?stop:note)('일정',`외국인 선수 포스트시즌 등록 마감(8월 15일)까지 7일 남았습니다. 건강한 외국인 선수 ${n}명.`); }
   if(o.d===1&&o.m>=5&&o.m<=9&&period()==='season'){ try{ futuresReport(); }catch(e){} }
   if(o.d===1){ try{ personalMonthlyPay(); }catch(e){} try{ growSnap(); }catch(e){} }
   allStarDaily(); ggVotingDaily();
@@ -12111,15 +12113,16 @@ function nonFaF(p,skip){ if(p.faC||p.ext)return 1; if(skip)return NONFA_F[3]; re
 function preCap(p){ return PRE_CAP[clamp(p.svc||0,0,PRE_CAP.length-1)]; }
 function faAsk(p){
   const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.7+ovr(p)*.3)+(p.foreign?0:pvShift(p));
-  const af=p.age<30?1.15:p.age<=31?1.05:p.age<=33?.9:p.age<=34?.8:.65;
+  const af=p.age<30?1.15:p.age<=30?1.05:p.age<=31?.97:p.age<=33?.9:p.age<=34?.8:.65; /* 31세는 전성기 끝 해라 30세보다 낮게(커뮤니티 피드백 11-08) */
+  const tier=base>=62?1:clamp(.7+(base-50)*.025,.7,1); /* 특급(화면 80 안팎) 아래 중간층 FA는 요구액을 덜 부풀린다: 화면 70대가 총액 100억을 넘지 않게(커뮤니티 피드백 11-08) */
   const years=p.age<=28&&base>=62?5:p.age<=31?4:p.age<=33?(base>=55?4:3):p.age<=35?(base>=55?3:2):1;
   /* 거품이 껴도 연평균은 30억(2026년 기준, 상한이 오르면 같이 오름) 안에서 멈춘다 */
-  return {annual:round5(Math.min(marketSal(base)*1.05*af*faMktNow(),3000*capOf(G.year)/14397)),years};
+  return {annual:round5(Math.min(marketSal(base)*1.05*af*tier*faMktNow(),3000*capOf(G.year)/14397)),years};
 }
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
 function faMktOf(y){ G.faMkt=G.faMkt||{}; if(G.faMkt[y]!=null)return G.faMkt[y]; const prev=G.faMkt[y-1]!=null?G.faMkt[y-1]:1.08;
   const rooms=G.teams.map(t=>Math.max(0,capOf(y)-capPay(t.id))/capOf(y)); const room=sum(rooms)/rooms.length;
-  return Math.round(clamp(1.08+(prev-1.08)*.35+((G.faMkR=G.faMkR||{})[y]??(G.faMkR[y]=clamp(N(0,1),-2.5,2.5)))*.045+clamp((room-.2)*.4,-.04,.04),.92,1.25)*1000)/1000; }
+  return Math.round(clamp(1.08+(prev-1.08)*.35+((G.faMkR=G.faMkR||{})[y]??(G.faMkR[y]=clamp(N(0,1),-2.5,2.5)))*.045+clamp((room-.2)*.4,-.04,.04),.92,1.18)*1000)/1000; } /* 과열 상한 1.25 → 1.18(커뮤니티 피드백 11-08) */
 function faMktNow(){ return G.fa&&!G.fa.closed&&G.fa.y0!=null?faMktOf(G.fa.y0):faMktOf(G.year); }
 function faMktFix(y){ G.faMkt=G.faMkt||{}; G.faMkt[y]=faMktOf(y); return G.faMkt[y]; }
 function faMktLabel(v){ return v>=1.15?'과열':v>=1.06?'뜨거움':v>.99?'보통':v>.95?'차가움':'냉각'; }
@@ -14957,7 +14960,8 @@ function grantCheck(){ const t=team(G.user); for(const g of grants()){ if(g.st!=
     else if(fail){ g.st='fail'; t.trust=clamp(t.trust-(g.by==='own'?4:3),0,100); mail('구단주실','구단주: "지원한 목적이 이뤄지지 않았습니다"',`기한까지 지원 목적(${g.pur.k==='fa'?'FA 영입':g.pur.k==='frep'?'외국인 교체':'전력 보강'})을 이루지 못했습니다. 돈을 다른 데 쓴 것으로 보지는 않고, 약속한 보강이 없었던 점을 문제 삼습니다. 구단주 신뢰 -${g.by==='own'?4:3}.`,{kind:'구단주',imp:true}); } } }
 /* 구단주가 먼저: FA 기간 스타 영입 주문, 7월 우승 보강 자금 */
 function ownerPush(){ const t=team(G.user); if(t.indie||G.gameOver||G.unemp)return; const B=bossOf(G.user); const o=dobj(G.day); const mk=o.y*100+o.m; { const faOn=G.fa&&G.fa.open&&!G.fa.closed; if(grants().some(g=>g.by==='own'&&(g.tid==null||g.tid===G.user)&&(faOn?g.kind==='fa'&&g.until===grantFaEnd():g.kind==='boost'&&g.y===G.year)))return; } /* FA 주문은 그 FA 시장(마감일)마다 한 번, 보강 자금은 그 구단에서 한 해 한 번(검수 11-08: 새해에 같은 주문 반복·이직 뒤 막힘) */
-  if(G.fa&&G.fa.open&&!G.fa.closed&&t.trust>=35&&(t.owner==='pr'||t.owner==='win')&&R()<.5){ /* 데려올 수 있는 선수만: 외부 FA 영입 한도(2~3명)를 다 채웠으면 원 소속(우리) FA만 남는다 */ const room=faOutN(G.user)<faCapN(); const star=G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&ovr(p)>=60&&(room||p.faFrom===G.user)).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!star)return;
+  if(G.fa&&G.fa.open&&!G.fa.closed&&t.trust>=35&&(t.owner==='pr'||t.owner==='win')&&R()<.5){ /* 데려올 수 있는 선수만: 외부 FA 영입 한도(2~3명)를 다 채웠으면 원 소속(우리) FA만 남는다 */ const room=faOutN(G.user)<faCapN(); const ci=capInfo(G.user), capRoom=ci.cap-ci.pay; const d=depth(G.user); const need=p=>{ const o=ovr(p)-3; if(!p.isP){ const c=d.ln&&d.ln[p.pos]; return !c||ovr(c)<o; } const L=isSPr(p)?d.sp:d.pen; return !L||!L.length||Math.min(...L.map(ovr))<o; };
+    const star=G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.ask&&ovr(p)>=60&&(room||p.faFrom===G.user)&&p.ask.annual<=capRoom&&need(p)).sort((a,b)=>ovr(b)-ovr(a))[0]; if(!star)return; /* 샐러리캡 여유 안에서, 지금 주전보다 확실히 나은 포지션만 주문한다(커뮤니티 피드백 11-08) */
     const amt=round5(star.ask.annual*(t.owner==='pr'?1:.8)); const g={y:sponSeason(),mk,d:G.day,amt,pur:{k:'fa',pid:star.id},ok:true,by:'own',kind:'fa',st:'open',until:grantFaEnd()}; grantAdd(g); grantApply(amt);
     mail('구단주실',`구단주 주문: "${star.name}을(를) 잡으세요"`,`${B.own.name} 회장이 직접 연락했습니다. "${t.owner==='pr'?'팬들이 원하는 스타가 필요합니다':'우승하려면 저런 선수가 있어야 합니다'}. ${star.name} 영입 자금으로 ${money(amt)}을(를) 더 내겠습니다." 영입하면 구단주 신뢰 +4, 놓치면 -4.`,{imp:true,kind:'구단주',ref:star.id,acts:[{l:`${star.name} 협상실`,a:'faOpen',v:star.id}]}); return; }
   if(period()==='season'&&G.day>=KD(7,1)&&G.day<=KD(7,10)&&t.owner==='win'&&t.trust>=40&&uRank()<=4&&R()<.6){ const amt=1500; const g={y:G.year,mk,d:G.day,amt,pur:{k:'boost'},ok:true,by:'own',kind:'boost',st:'open',until:tradeDL()}; grantAdd(g); grantApply(amt);
@@ -17619,7 +17623,7 @@ function achMetaTeamsWon(){ const M=achMeta(); return Object.keys(M.champ).filte
 /* 과제 목록. c: 분류, r: 보상({rep,trust,cash,title}), p: 진행도(현재, 목표) */
 const ACH=[
   {id:'champ1',c:'우승',n:'첫 우승',d:'단장으로 한국시리즈 우승을 차지합니다.',r:{rep:2}},
-  {id:'firstYr',c:'우승',n:'부임 첫해 우승',d:'단장을 맡은 첫 시즌에 우승합니다.',r:{title:'첫해의 기적'}},
+  {id:'firstYr',c:'우승',n:'부임 첫해 우승',d:'구단을 맡은 첫 시즌에 우승합니다(이직한 구단도 인정, 정규시즌 뒤 부임하면 다음 시즌).',r:{title:'첫해의 기적'}},
   {id:'double',c:'우승',n:'통합 우승',d:'정규시즌 1위와 한국시리즈 우승을 같은 해에 해냅니다.',r:{trust:2}},
   {id:'dynasty',c:'우승',n:'왕조',d:'같은 구단으로 3년 연속 우승합니다.',r:{rep:3,title:'왕조 설계자'}},
   {id:'champ5',c:'우승',n:'우승 5회',d:'단장 통산 우승 5회.',r:{rep:3},p:T=>[achTitlesN(T),5]},
@@ -17683,7 +17687,7 @@ function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT();
     const inPs=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(U)); T.psRun=inPs?T.psRun+1:0; T.psBest=Math.max(T.psBest,T.psRun);
     const rec=L.order.find(o=>o.tid===U);
     if(ps.champ===U){ (T.titles[U]=T.titles[U]||[]).push(y); const M=achMeta(); M.champ[U]=(M.champ[U]||0)+1; achMetaSave();
-      achUnlock('champ1'); if(G.gmSince===y)achUnlock('firstYr'); if(ps.first===U)achUnlock('double');
+      achUnlock('champ1'); if((G.gmSinceD!=null&&G.gmSinceD>=dnum(G.gmSince,10,1)?G.gmSince+1:G.gmSince)===y)achUnlock('firstYr'); /* 정규시즌 뒤(10월~) 부임하면 다음 시즌이 첫 시즌(이직한 구단도 인정, 커뮤니티 피드백 11-08) */ if(ps.first===U)achUnlock('double');
       const ys=T.titles[U]; if(ys.includes(y-1)&&ys.includes(y-2))achUnlock('dynasty');
       const pr=G.proj?G.proj.indexOf(U)+1:0; if(pr>=8)achUnlock('under',`시즌 전 예상 ${pr}위.`);
       if(t.indie)achUnlock('indie'); if(!T.taxed)achUnlock('noTax'); }
