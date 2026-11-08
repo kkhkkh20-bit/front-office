@@ -2580,7 +2580,7 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 #app .helpbtn{width:26px;height:26px;min-height:26px!important;border-radius:50%;padding:0;display:inline-grid;place-items:center;font:800 13px/1 var(--f-num);color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);box-shadow:none}
 #app .helpbtn.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 @media(max-width:1000px){ #app .subhead.notitle{position:relative;height:0!important;min-height:0!important;padding:0!important;margin:0!important;overflow:visible;z-index:6}
- #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} #app .subhead.notitle>.meta>:not(.helpbtn){display:none} #app .shell:has(.subhead.notitle) main.content :is(.ibx-tabs,.ws-tab-row,.subtabs,.ibx-mback){padding-right:34px;box-sizing:border-box} }
+ #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} #app .subhead.notitle>.meta>:not(.helpbtn){display:none} #app .shell:has(.subhead.notitle) main.content :is(.ibx-tabs,.ws-tab-row,.subtabs,.ibx-mback){margin-right:34px;box-sizing:border-box} /* 떠 있는 ? 버튼이 탭 글자를 덮지 않게 탭 줄 폭 자체를 줄인다(11-08 검수) */ }
 /* 트럭 시위 기사 그림(LED 전광판 트럭) */
 .trk{position:relative;margin:6px 0 4px;height:132px;border-radius:8px;overflow:hidden;background:linear-gradient(#1b2433,#0e141d);border:1px solid var(--line)}
 .trk-bld{position:absolute;left:0;right:0;top:10px;height:70px;background:repeating-linear-gradient(90deg,#1f2b3b 0 26px,#18222f 26px 30px);opacity:.9}.trk-bld span{position:absolute;right:8px;top:6px;font-size:10px;color:#8fa1b6;letter-spacing:.04em}
@@ -4981,7 +4981,7 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
  .fmsh:has(.fmx-club) main.content>.fmx{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
  .fmsh:has(.fmx-club) main.content>:not(.fmx){flex:none}
  .fmsh:has(.fmx-club) .fx-b{flex:1 1 0}
- .fmsh:has(.fmx-club) main.content>.fmx.fmx-club{grid-template-rows:minmax(0,1fr) minmax(0,1.05fr) minmax(0,.62fr)}
+ .fmsh:has(.fmx-club) main.content>.fmx.fmx-club{grid-template-rows:minmax(0,1fr) minmax(0,1fr) minmax(0,.78fr)} /* 아래 줄(유니폼·명예의 전당·일정) 이름이 잘리지 않게(11-08 검수) */
 }
 
 /* PC FM식 리그 하위 화면(16_league.js scoreFm·recFm·wireFm, 37_league_tab.js 통계, 63_assoc.js, 76_national.js, 27_history.js): 상자 배치와 한 줄 목록 */
@@ -20534,7 +20534,7 @@ const FM_SIDE=[[['tab:home','홈','home'],['tab:inbox','소식함','mail'],['tab
   [['tab:trade','트레이드','swap'],['tab:transfer','영입·계약','brief'],['go:staff:scouts','스카우트','target']],
   [['go:staff:coach','스태프','clip',1],['go:staff:train','훈련·육성','act'],['go:staff:med','의료','med'],['go:staff:data','데이터 분석','chart']],
   [['tab:cal','일정','clock'],['tab:league','리그','trophy']],
-  [['go:club:owner','구단주·목표','flag'],['go:club:fin','재정','coin'],['go:club:fans','구단 정보','club'],['go:club:inv','시설','grid']]];
+  [['go:club:owner','구단주·목표','flag'],['go:club:fin','재정','coin'],['go:club:info','구단 정보','club'],['go:club:inv','시설','grid']]];
 const fmPlanOn=()=>UI.tab==='roster'&&UI.it&&UI.it.roster==='depth'&&UI.it.rdepth==='glance';
 function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t;
   if(a==='go'){ if(UI.tab!==t||!SUBS[t])return false; const cur=curSub(t); if(cur===s)return true; const items=FM_SIDE.flat().filter(([x])=>x.startsWith('go:'+t+':')),mine=items.map(([x])=>x.split(':')[2]),home=(items.find(x=>x[3])||items[0])[0].split(':')[2]; return !mine.includes(cur)&&home===s; } /* 네 번째 값 1 = 그 탭의 대표 항목 */ /* 왼쪽에 없는 하위 화면(감독·스태프 시장 등)은 그 탭의 첫 항목에 불을 켠다 */
@@ -20820,7 +20820,7 @@ const SUBS={
   staff:[['mgr','감독'],['coach','코치진'],['train','훈련·육성'],['scouts','스카우트'],['data','전력분석'],['anl','분석원 관리'],['smkt','스태프 시장'],['med','부상 관리']],
   cfg:[['set','게임 설정'],['auth','업무 권한']],
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['stat','통계'],['wire','리그 소식'],['assoc','협회'],['nt','국가대표'],['hist','역사']],
-  club:[['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기']]};
+  club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기']]};
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block']},staff:{train:['tc','camp','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
   league:{hist:['hist','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','news','media'],chron:['build','chron','result','ob','log']}};
@@ -25363,8 +25363,7 @@ function clubBody(s){
     result:()=>G.last?csec(`${G.last.y} 시즌 결산`,resultBody()):csec('시즌 결산','<p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p>'),
     mkt:()=>csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`),
     log:()=>csec('구단 일지',`<div class="log">${G.log.filter(l=>!/만료되었습니다|만료됐습니다/.test(l.t)).slice(0,60).map(l=>`<p><span class="ticker">${l.d!=null?`${String(l.y).slice(2)}년 ${dsh(l.d)}`:l.y}</span> ${lk(l.t)}</p>`).join('')||'<p class="small muted">기록이 없습니다.</p>'}</div>`),
-    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+advSetCard()+`<section class="card"><div class="row between"><div><h3 class="sec">질문·피드백</h3><p class="small muted">질문·의견·버그 제보는 공식 네이버 카페에 남겨 주세요. 버그는 아래 버튼으로 게임 정보(버전·게임 날짜·화면·기기)를 복사해 글에 붙여 넣으면 빨리 고칠 수 있습니다.</p></div><div class="row" style="gap:6px"><button class="btn small" data-a="fbInfo">제보용 정보 복사</button><a class="btn small primary" href="${FEEDBACK_URL}" target="_blank" rel="noopener">공식 카페</a></div></div></section>`+stopCard()+teamNameCard()+patchCard()+slotsCard(false)+exportCard()+teleCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`}; if(s==='fans'&&fmOn()){ const ks=MERGE.club.fans, it=inTabs('mg_club_fans',[['prof','구단 정보'],...ks.map(k=>[k,MLBL['club:'+k]||k])],'prof'); /* PC: 왼쪽 '구단 정보'는 FM식 구단 개요부터 */
-    return ks.map(k=>{ try{ return alertWhy('club',k); }catch(e){ return ''; } }).join('')+it.bar+(it.cur==='prof'?clubFm():H0[it.cur]()); }
+    set:()=>`<section class="card"><div class="row between"><span class="small muted">버전 ${GAME_VER} · 진행 상황은 자동 저장됩니다.</span><button class="btn small" data-a="toTitle">처음 화면으로</button></div></section>`+advSetCard()+`<section class="card"><div class="row between"><div><h3 class="sec">질문·피드백</h3><p class="small muted">질문·의견·버그 제보는 공식 네이버 카페에 남겨 주세요. 버그는 아래 버튼으로 게임 정보(버전·게임 날짜·화면·기기)를 복사해 글에 붙여 넣으면 빨리 고칠 수 있습니다.</p></div><div class="row" style="gap:6px"><button class="btn small" data-a="fbInfo">제보용 정보 복사</button><a class="btn small primary" href="${FEEDBACK_URL}" target="_blank" rel="noopener">공식 카페</a></div></div></section>`+stopCard()+teamNameCard()+patchCard()+slotsCard(false)+exportCard()+teleCard()+`<section class="card">${creditsLine()}</section>`+`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴할 때 영구결번을 지정할 수 있습니다. 이 게임의 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 리그 최상위급이어야 닿는 수치입니다.</p></section>`}; if(s==='info')return fmOn()?clubFm():prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
   const h=mergedBody('club',s,H0);
   return h;
 }

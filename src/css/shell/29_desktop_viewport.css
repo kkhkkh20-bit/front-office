@@ -200,7 +200,7 @@ html:has(.ws-frame),body:has(.ws-frame){height:100%;overflow:hidden;overscroll-b
  .fmsh:has(.fmx-club) main.content>.fmx{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
  .fmsh:has(.fmx-club) main.content>:not(.fmx){flex:none}
  .fmsh:has(.fmx-club) .fx-b{flex:1 1 0}
- .fmsh:has(.fmx-club) main.content>.fmx.fmx-club{grid-template-rows:minmax(0,1fr) minmax(0,1.05fr) minmax(0,.62fr)}
+ .fmsh:has(.fmx-club) main.content>.fmx.fmx-club{grid-template-rows:minmax(0,1fr) minmax(0,1fr) minmax(0,.78fr)} /* 아래 줄(유니폼·명예의 전당·일정) 이름이 잘리지 않게(11-08 검수) */
 }
 
 /* PC FM식 리그 하위 화면(16_league.js scoreFm·recFm·wireFm, 37_league_tab.js 통계, 63_assoc.js, 76_national.js, 27_history.js): 상자 배치와 한 줄 목록 */

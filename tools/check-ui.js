@@ -162,7 +162,7 @@ const QUICK=process.env.QUICK==='1';
     const r=await ev(()=>{ if(!(G.day>=KD(3,1)&&G.day<G.cal.draft)||G.unemp)return null; const h=[...G.history].reverse().find(x=>x.y<G.year); const n=[...h.order].reverse().findIndex(o=>o.tid===G.user)+1;
       closeSheets(); A.tab('home'); const tl=[...document.querySelectorAll('#app .dtl')].map(x=>x.innerText).find(t=>t.includes('신인 드래프트'))||'';
       UI.it=Object.assign(UI.it||{},{dr:'now'}); A.go('transfer:draft'); const hd=(document.querySelector('#app .dhead')||{}).innerText||''; return {n,tl,hd}; });
-    if(!r)return; if(!r.tl.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`홈 타일에 '1라운드 ${r.n}순위' 없음: ${r.tl.replace(/\n/g,' ')||'타일 없음'}`); if(!r.hd.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`드래프트 화면에 '1라운드 ${r.n}순위' 없음`); };
+    if(!r)return; if(r.tl&&!r.tl.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`홈 타일에 '1라운드 ${r.n}순위' 없음: ${r.tl.replace(/\n/g,' ')}`); /* PC 홈(구단 현황)에는 타일이 없다(11-06 개편): 타일이 있을 때만 본다 */if(!r.hd.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`드래프트 화면에 '1라운드 ${r.n}순위' 없음`); };
   /* FA 예정자: 시즌 중 FA 시장 화면에서 다른 구단의 올 시즌 뒤 FA 예정자를 미리 볼 수 있어야 한다(자금 준비) */
   const faUpCheck=async label=>{ where=`${label} · FA 예정자`; const r=await ev(()=>{ closeSheets(); A.go('transfer:fa'); const sec=[...document.querySelectorAll('#app section')].find(x=>x.innerText.includes('올 시즌 뒤 FA 예정자')); return sec?sec.querySelectorAll('.fur').length:-1; });
     if(r===-1)add('FA 예정자','FA 시장 화면에 올 시즌 뒤 FA 예정자 목록이 없음'); else if(r===0)add('FA 예정자','FA 예정자 목록이 비어 있음'); };
@@ -216,7 +216,7 @@ const QUICK=process.env.QUICK==='1';
     if(r)for(const m of r)add('일정·순위·기록',m); }
   /* 저장 안전(검수 11-06): 저장이 실패하면 현재 진행과 기존 슬롯이 보존되고, 다른 탭이 활성 슬롯을 바꿔도 각 탭은 자신이 연 슬롯에만 쓴다 */
   { where='저장 안전'; const r=await ev(()=>{ const bad=[]; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); } const g0=G, cur0=CUR_SLOT, LS=Storage.prototype, si=LS.setItem;
-    const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; CUR_SLOT=cur0; UI.title=false; closeSheets(); render(); };
+    const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; CUR_SLOT=cur0; try{ slotRevSync(CUR_SLOT); }catch(e){} UI.title=false; closeSheets(); render(); }; /* 저장소를 시험 전으로 되돌리면 다른 탭이 쓴 것처럼 보이므로 슬롯 판 번호도 맞춘다(11-07 다른 탭 보호 뒤) */
     try{ saveNow(); const me=curSlot(), other=me===1?2:1; const otherBody=localStorage.getItem(slotKey(other));
       { const m=meta(); m.active=other; setMeta(m); G.day+=0; saveNow(); if(localStorage.getItem(slotKey(other))!==otherBody)bad.push('다른 탭이 바꾼 활성 슬롯에 저장됨'); const m2=meta(); m2.active=me; setMeta(m2); }
       const mine0=localStorage.getItem(slotKey(me));
@@ -230,7 +230,7 @@ const QUICK=process.env.QUICK==='1';
     if(r)for(const m of r)add('저장 안전',m); }
   /* 슬롯 전환(검수 11-06): 현재 게임 저장과 활성 슬롯 변경이 모두 성공한 뒤에만 새 슬롯으로 전환한다. 기록 캐시는 세이브를 구분한다 */
   { where='슬롯 전환'; const r=await ev(()=>{  const bad=[]; const cur=meta().active||1, other=cur===1?2:1; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); }
-  const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; closeSheets(); UI.title=false; render(); };
+  const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; try{ slotRevSync(curSlot()); }catch(e){} closeSheets(); UI.title=false; render(); };
   try{ saveNow(); const snap=localStorage.getItem(slotKey(cur)); G.day+=0; const gB=JSON.parse(JSON.stringify(G)); gB.name='슬롯검사'; G=gB; G._slotMark='B'; si.call(localStorage,slotKey(other),packG()); G=g0; delete G._slotMark;
     /* 1) 활성 슬롯 변경만 실패 */ LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
     if(G!==g0)bad.push('활성 슬롯 변경에 실패했는데 다른 슬롯으로 전환함'); if((meta().active||1)!==cur)bad.push('활성 슬롯 번호가 바뀜'); saveNow(); const o2=unpack(localStorage.getItem(slotKey(other))); if(!o2||o2._slotMark!=='B')bad.push('다른 슬롯이 덮어써짐');
@@ -305,7 +305,7 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(!r.rec)add('훈련 방향','코치진 권장 표시가 점(·)뿐이라 선택처럼 보임'); if(!r.why)add('비서 처리','처리 경로(기한 만료 기본안 등)가 없음'); if(!r.rl)add('관계도','관계도 숫자에 신뢰·관계·기분 같은 이름이 없음'); } }
   /* 판단에 필요한 연결 정보(외부 리뷰 B): 부상 관리 첫머리에 지금 부상자, 받은 트레이드 제안에 거래 뒤 요약, 국가대표에 우리 팀 영향, 달력에 대표 소집 */
   { where='연결 정보'; const r=await ev(()=>{ const p=domestic(G.user).find(q=>!q.ys); const k0=p.injOut; p.injOut=11; const med=medBody(); p.injOut=k0; const inj=new RegExp(p.name+'[\\s\\S]*복귀까지 11일').test(med);
-      const t=G.teams.find(x=>x.id!==G.user); const o={id:'o_sum',from:t.id,give:[domestic(t.id)[0].id],get:[p.id],exp:G.day+3}; const sm=typeof offerSum==='function'?offerSum(o):''; const ofs=/거래 뒤/.test(sm)&&/연봉/.test(sm);
+      const t=G.teams.find(x=>x.id!==G.user); const o={id:'o_sum',from:t.id,give:[domestic(t.id)[0].id],get:[p.id],exp:G.day+3}; const sm=typeof offerSum==='function'?offerSum(o):''; const ofs=/받는 선수/.test(sm)&&/연봉/.test(sm); /* 제안 요약은 받는·보내는 선수 칸과 연봉·인원 칩(11-08 형식) */
       const nt=/우리 팀 영향/.test(ntView()); const x=ntUpcoming(4)[0]; const cal=x?calEvents(x.from).some(e=>/소집/.test(e.t)):true; return {inj,ofs,nt,cal}; });
     if(r){ if(!r.inj)add('부상 관리','부상 관리에 지금 부상자 목록이 없음'); if(!r.ofs)add('트레이드 제안','받은 제안에 거래 뒤 요약이 없음'); if(!r.nt)add('국가대표','국가대표 화면에 우리 팀 영향 요약이 없음'); if(!r.cal)add('국가대표','달력에 대표 소집이 없음'); } }
   /* 선수 찾기: 이름 일부로 찾고, 나이·연봉·병역 조건으로 좁힌다 */
@@ -520,10 +520,11 @@ const QUICK=process.env.QUICK==='1';
     if(r){ if(r.none)add('구단 로고','로고 바꾸기 기능이 없음'); else { if(!r.ed)add('구단 로고','로고 편집(상징·색·이미지·기본으로)이 없음'); if(!r.emb)add('구단 로고','상징을 바꿔도 배지가 그대로'); if(!r.code)add('구단 로고','글자 로고가 배지에 안 나옴'); if(!r.img)add('구단 로고','이미지 로고가 방패 모양으로 안 나옴'); if(!r.reset)add('구단 로고','기본으로 되돌려도 원래 배지가 아님'); } } }
   /* 구단 배지(assets/badges/v2): 10개 구단 이름으로 매핑, 게임 전(구단 선택)에도, 작은 표시는 64px·큰 표시는 128px, 별칭을 바꿔도 같은 배지, 직접 바꾼 로고가 우선, 깨진 이미지 없음 */
   { where='구단 배지'; const r=await ev(()=>{ if(typeof BADGE_IMG==='undefined')return {none:true}; const out={};
-      out.map=TEAM_DEF.every((d,i)=>BADGE_IMG[i]&&BADGE_IMG[i].n===d.city+' '+d.nick); out.all=G.teams.every(t=>/<img class="badge bimg" src="data:image\/png/.test(badge(t.id,24)));
-      out.size=badge(3,24).indexOf(BADGE_IMG[3].s)>=0&&badge(3,40).indexOf(BADGE_IMG[3].l)>=0&&/alt=""/.test(badge(3,24));
-      const g=G; let pre=''; try{ G=null; pre=badge(5,30); }finally{ G=g; } out.pre=pre.indexOf(BADGE_IMG[5].s)>=0;
-      const nk=G.teams[2].nick; G.teams[2].nick='테스트'; out.ren=badge(2,24).indexOf(BADGE_IMG[2].s)>=0; G.teams[2].nick=nk;
+      out.map=TEAM_DEF.every((d,i)=>BADGE_IMG[i]&&BADGE_IMG[i].n===d.city+' '+d.nick); out.all=G.teams.every(t=>/<img class="badge bimg[^"]*"[^>]*src="data:image\/png/.test(badge(t.id,24)));
+      const im=(i,big)=>BADGE_IMG[i].c||(big?BADGE_IMG[i].l:BADGE_IMG[i].s); /* v2 엠블럼(c)이 있으면 크기와 관계없이 그것(사용자 11-07) */
+      out.size=badge(3,24).indexOf(im(3))>=0&&badge(3,40).indexOf(im(3,1))>=0&&/alt=""/.test(badge(3,24));
+      const g=G; let pre=''; try{ G=null; pre=badge(5,30); }finally{ G=g; } out.pre=pre.indexOf(im(5))>=0;
+      const nk=G.teams[2].nick; G.teams[2].nick='테스트'; out.ren=badge(2,24).indexOf(im(2))>=0; G.teams[2].nick=nk;
       const keep=G.teams[1].logo; setTeamLogo(1,{emb:'별'}); out.cust=!/bimg/.test(badge(1,24)); if(keep)G.teams[1].logo=keep; else delete G.teams[1].logo;
       UI.tab='league'; render(); const I=[...document.querySelectorAll('img.bimg')]; out.n=I.length; out.broken=I.filter(x=>x.complete&&!x.naturalWidth).length; return out; });
     if(r){ if(r.none)add('구단 배지','배지 데이터가 없음'); else { if(!r.map)add('구단 배지','구단 이름과 배지가 맞지 않음'); if(!r.all)add('구단 배지','기본 배지가 이미지가 아닌 구단이 있음'); if(!r.size)add('구단 배지','표시 크기별 이미지(64/128)·빈 alt가 아님'); if(!r.pre)add('구단 배지','게임 전(구단 선택) 화면에 배지가 안 나옴'); if(!r.ren)add('구단 배지','별칭을 바꾸면 배지가 바뀜'); if(!r.cust)add('구단 배지','직접 바꾼 로고보다 기본 배지가 우선함'); if(!r.n||r.broken)add('구단 배지','화면에 배지 이미지가 없거나 깨짐('+r.n+'개 중 '+r.broken+'개)'); } } }
