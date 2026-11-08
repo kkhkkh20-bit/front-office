@@ -14,7 +14,7 @@ function pNmAny(id,g){ const p=G.players[id]; if(p)return p.name; const a=G.arch
 function pbpText(x){ const nm=id=>pNmAny(id);
   if(x[1]==='PC')return `투수 교체: ${nm(x[2])}`;
   if(x[1]==='SB')return `${nm(x[2])} 도루 성공`; if(x[1]==='CS')return `${nm(x[2])} 도루 실패`;
-  return `${nm(x[1])} ${OUTK[x[3]]||x[3]}${x[6]?` · ${x[6]}점`:''}${(x[14]||[]).map(m=>` · ${nm(m.id)} ${m.to===4?'홈':m.to+'루'} ${m.result==='out'?'아웃':'진루'}`).join('')}`; }
+  return `${nm(x[1])} ${x[3]==='OUT'&&(x[16]||x[9]&&x[5].includes(x[1]))?paK(x)[0]:OUTK[x[3]]||x[3]}${x[6]?` · ${x[6]}점`:''}${(x[14]||[]).map(m=>` · ${nm(m.id)} ${m.to===4?'홈':m.to+'루'} ${m.result==='out'?'아웃':'진루'}`).join('')}`; }
 function pbpView(gi){
   const g=G.games[gi]; if(!g||!g.pbp||!g.pbp.length)return '<p class="small muted">이 경기는 중계 기록이 없습니다(최근 8경기만 보관).</p>';
   const L=g.pbp; let k=UI.pbp&&UI.pbp.g===gi?UI.pbp.k:0; k=clamp(k,0,L.length-1);

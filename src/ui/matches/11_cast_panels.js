@@ -2,8 +2,9 @@
 const RE24={'000':[.48,.25,.10],'100':[.85,.50,.22],'010':[1.10,.65,.32],'001':[1.35,.95,.35],'110':[1.45,.90,.44],'101':[1.75,1.15,.48],'011':[1.95,1.35,.57],'111':[2.25,1.55,.75]};
 function cErf(x){ const t=1/(1+.3275911*Math.abs(x)); const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x); return x>=0?y:-y; }
 /* 홈팀 승리 확률: 점수 차 + 지금 주자·아웃으로 기대되는 득점 + 남은 이닝의 불확실성 */
-function wpHome(st){ const D0=st.sh-st.sa; const half=st.half; const outs=Math.min(2,st.outs); const key=st.bases.map(b=>b?1:0).join(''); const re=st.outs>=3?0:(RE24[key]||RE24['000'])[outs];
-  const bot=half%2===1; if(half>=17&&bot&&D0>0)return 1; let D=D0+(bot?re:.48-re); /* 초 공격 중이면 홈팀은 아직 말 공격이 남아 있음 */ const remHalf=Math.max(0,17-half)+(st.outs>=3?0:(3-outs)/3); const v=Math.max(.25,remHalf*.95);
+function wpMax(g){ return g&&/차전/.test(g.kind||'')?15:11; } /* 정규시즌 11회, 포스트시즌 15회까지 */
+function wpHome(st,mi=11){ const D0=st.sh-st.sa; const half=st.half; const outs=Math.min(2,st.outs); const key=st.bases.map(b=>b?1:0).join(''); const re=st.outs>=3?0:(RE24[key]||RE24['000'])[outs];
+  const bot=half%2===1; if(half>=17&&bot&&D0>0)return 1; let D=D0+(bot?re:.48-re); /* 초 공격 중이면 홈팀은 아직 말 공격이 남아 있음 */ const remHalf=Math.max(0,(half>=18?mi*2-1:17)-half)+(st.outs>=3?0:(3-outs)/3); const v=Math.max(.25,remHalf*.95);
   return clamp(.5+.5*cErf((D+.08)/Math.sqrt(2*v)),.005,.995); }
 function cOrderNo(g,half,id){ const s=g.box[half%2?'h':'a']; const i=s.bat.findIndex(b=>b.id===id); return i<0?null:(s.bat[i].o!=null?s.bat[i].o:i%9)+1; }
 /* 대기 타자: 그 타석 시점의 타순(경기 끝 타순이 아니라). 자리마다 그 타석 전까지 마지막으로 타석에 선 선수, 없으면 선발(검수 11-06) */
@@ -11,9 +12,10 @@ function cNext(g,half,id,k){ const s=g.box[half%2?'h':'a']; const slot=(b,i)=>b.
   const cur=[...Array(9)].map((_,sl)=>{ const C=s.bat.map((b,i)=>({b,i})).filter(z=>slot(z.b,z.i)===sl); let pick=C[0]&&C[0].b; for(const z of C)if(seen.has(z.b.id)||z.b.id===id)pick=z.b; return pick; });
   const me=s.bat.findIndex(b=>b.id===id); if(me<0)return []; const i=slot(s.bat[me],me); return [cur[(i+1)%9],cur[(i+2)%9]].filter(Boolean); }
 const PAK={'1B':['안타','h'],'2B':['2루타','h'],'3B':['3루타','h'],HR:['홈런','hr'],HBP:['사구','bb'],BB:['볼넷','bb'],K:['삼진','k'],OUT:['범타','o'],DP:['병살','o'],SAC:['희생번트','o']};
-function cChips(g,k,id){ const L=g.pbp; const out=[]; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[1]===id){ const r=PAK[x[3]]||['?','o']; out.push(`<i class="pk ${r[1]}">${cHalfTxt(x[0]).replace('회초','').replace('회말','')}${r[0]}</i>`); } } return out.join('')||'<i class="pk n">첫 타석</i>'; }
+function paK(x){ if(!x)return ['','']; if(x[3]==='OUT'&&x[16])return ['번트 실패','o']; if(x[3]==='OUT'&&x[9]&&Array.isArray(x[5])&&x[5].includes(x[1]))return ['실책 출루','h']; return PAK[x[3]]||['?','o']; } /* 실책 출루·번트 실패는 OUT 코드만으로 '범타'가 아니다(검수 11-08) */
+function cChips(g,k,id){ const L=g.pbp; const out=[]; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[1]===id){ const r=paK(x); out.push(`<i class="pk ${r[1]}">${cHalfTxt(x[0]).replace('회초','').replace('회말','')}${r[0]}</i>`); } } return out.join('')||'<i class="pk n">첫 타석</i>'; }
 function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const bid=k<L.length&&typeof x[1]==='number'?x[1]:null; const pid=cPit(g,Math.min(k,L.length-1));
-  const b=bid&&G.players[bid], p=pid&&G.players[pid]; if(!b||!p)return '';
+  const b=bid&&G.players[bid], p=pid&&G.players[pid]; if(!bid||!pid)return ''; if(!b||!p){ const B=mdPlayer(g,bid), Pp=mdPlayer(g,pid), r=batAt(g,k,bid); return `<div class="ab"><div class="ab-b"><span class="ab-t"><em>타자${B.bt?` · ${B.bt}타`:''}</em><b>${esc(B.name)}</b><span class="ab-s">${r?`타율 <strong>${fmt3(r.avg)}</strong> · ${r.hr}홈런 · OPS ${fmt3(r.ops)}`:'시즌 기록 없음'}</span></span></div><div class="ab-p"><span><em>투수 · ${Pp.th==='좌'?'좌완':'우완'}</em><b>${esc(Pp.name)}</b><span>ERA ${eraAt(g,k,pid)}</span></span></div></div>`; } /* 리그를 떠난 선수가 나온 옛 경기: 박스스코어 이름·손잡이로 대결 카드를 남긴다(검수 11-08) */
   const st=cBefore(g,k); const no=cOrderNo(g,x[0],bid); const r=batAt(g,k,bid); const h=r; const ov=scoutReport(b).cur, pv=scoutReport(p).cur;
   let pitch=''; try{ const d=detailOf(p,scoutReport(p)); const ars=d.groups.find(gx=>gx[0]==='구종'); const best=ars?[...ars[1]].sort((a,c)=>c[1]-a[1])[0]:null; pitch=`직구 평균 ${veloOf(p)}·최고 ${veloMax(p)}km${best?` · ${best[0].replace(' · 결정구','')}`:''}`; }catch(e){}
   const nx=cNext(g,x[0],bid,k).map(n=>{ const q=G.players[n.id]; return q?`${cOrderNo(g,x[0],n.id)}번 ${esc(fname(q))}`:''; }).filter(Boolean).join(' · ');
@@ -23,7 +25,7 @@ function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const b
     <button class="ab-p" data-a="castPlayer" data-v="${pid}">${avImg(p)}<span><em>투수 · ${p.th==='좌'?'좌완':'우완'} ${acqTag(p)}</em><b>${esc(fname(p))}</b><span>${rchip(pv)} ERA ${eraAt(g,k,pid)}</span><span>${esc(pitch)}</span><span>오늘 ${cToday(g,k,pid,true)}</span></span></button>
     ${nx?`<div class="ab-nx">대기 ${nx}</div>`:''}</div>`; }
 function cAbRes(t,cls){ const el=document.getElementById('cs-abr'); if(!el)return; el.className='ab-res'; void el.offsetWidth; el.textContent=t; el.className='ab-res on '+(cls||''); }
-function cWp(g,st,prev){ const bar=document.getElementById('cs-wpa'); const tx=document.getElementById('cs-wpt'); if(!bar)return; const w=wpHome(st); bar.style.width=(w*100).toFixed(1)+'%';
+function cWp(g,st,prev){ const bar=document.getElementById('cs-wpa'); const tx=document.getElementById('cs-wpt'); if(!bar)return; const w=wpHome(st,wpMax(g)); bar.style.width=(w*100).toFixed(1)+'%';
   const mine=g.home===G.user||g.away===G.user; const fav=mine?G.user:(w>=.5?g.home:g.away); const wf=fav===g.home?w:1-w; const pct=Math.round(wf*100); let d=''; if(prev!=null){ const dd=Math.round((w-prev)*100); if(Math.abs(dd)>=8){ const who=dd>0?g.home:g.away; d=` <b class="wpd">${esc(tshort(who))} +${Math.abs(dd)}%</b>`; } }
   tx.innerHTML=`${esc(tshort(fav))} 승리 확률 ${pct}%${d}`; return w; }
 /* 오늘의 선수: 승리 확률을 가장 많이 끌어올린 선수 */
@@ -40,13 +42,13 @@ const ACQC={'트레이드':'tr','보상선수':'tr','FA 영입':'fa','FA 잔류'
 function acqTag(p){ const a=acqOf(p); return a?`<i class="acq ${ACQC[a.k]||''}" title="${esc(a.t)}">${a.k==='지명'?`${String(a.y).slice(2)}년 지명`:`${a.k} ${String(a.y).slice(2)}`}</i>`:''; }
 /* 타석별 승리 확률 기여 */
 function wpaMap(g){ const L=g.pbp||[]; const S={}; for(let k=0;k<L.length;k++){ const x=L[k]; if(typeof x[1]!=='number')continue; const b=cBefore(g,k); const a={sa:x[7],sh:x[8],outs:x[4],bases:x[4]>=3?[0,0,0]:x[5],half:x[0]};
-    if(x[4]>=3){ a.half=x[0]+1; a.outs=0; a.bases=[0,0,0]; } let d=(k===L.length-1?(g.hs>g.as?1:g.hs<g.as?0:.5):wpHome(a))-wpHome(b); if(x[0]%2===0)d=-d; S[x[1]]=(S[x[1]]||0)+d; S[x[2]]=(S[x[2]]||0)-d; }
+    if(x[4]>=3){ a.half=x[0]+1; a.outs=0; a.bases=[0,0,0]; } let d=(k===L.length-1?(g.hs>g.as?1:g.hs<g.as?0:.5):wpHome(a,wpMax(g)))-wpHome(b,wpMax(g)); if(x[0]%2===0)d=-d; S[x[1]]=(S[x[1]]||0)+d; S[x[2]]=(S[x[2]]||0)-d; }
   return S; }
 function batToday(b){ return `${b.ab}타수 ${b.h}안타${b.hr?` ${b.hr}홈런`:''}${b.rbi?` ${b.rbi}타점`:''}${b.bb?` ${b.bb}볼넷`:''}${b.so?` ${b.so}삼진`:''}`; }
 function pitToday(q){ return `${Math.floor(q.outs/3)}${q.outs%3?'.'+q.outs%3:''}이닝 ${q.pc||0}구 ${q.er}자책${q.so?` ${q.so}K`:''}${q.d?` · ${q.d}`:''}`; }
 /* 경기 중: 우리 타선 띠 */
 function ourStrip(g,k){ const me=g.home===G.user?'h':g.away===G.user?'a':null; if(!me||!g.box)return ''; const L=g.pbp; const cur=k<L.length&&typeof L[k][1]==='number'?L[k][1]:null;
-  const R={}; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(typeof x[1]!=='number')continue; (R[x[1]]=R[x[1]]||[]).push((PAK[x[3]]||['','o'])[1]); }
+  const R={}; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(typeof x[1]!=='number')continue; (R[x[1]]=R[x[1]]||[]).push(paK(x)[1]); }
   const B=g.box[me].bat.slice(0,12); if(!B.length)return '';
   return `<div class="ostrip"><span class="ost-l">우리<br>타선</span>${B.map(b=>{ const p=G.players[b.id]; if(!p)return ''; const a=acqOf(p);
     return `<button class="ost${b.id===cur?' on':''}" data-a="castPlayer" data-v="${b.id}">${avImg(p)}${a?`<i class="ost-a ${ACQC[a.k]||''}"></i>`:''}<b>${esc(fname(p))}</b><span class="od">${(R[b.id]||[]).map(c=>`<i class="${c}"></i>`).join('')||'<em>-</em>'}</span></button>`; }).join('')}</div>`; }

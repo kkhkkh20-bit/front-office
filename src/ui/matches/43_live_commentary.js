@@ -1,6 +1,6 @@
 /* Short, original caster calls. Facts come from pregame snapshots and revealed plays. */
 function pcVoice(g,k,key,lines,all=false){let previous=-1;const type=row=>typeof row?.[1]==='number'?row[3]:row?.[1],wanted=type(g.pbp[k]);for(let i=0;i<=k;i++){if(all?typeof g.pbp[i]?.[1]!=='number':type(g.pbp[i])!==wanted)continue;let index=Math.floor(pcH(g,i,'voice:'+key)*lines.length);if(index===previous)index=(index+1)%lines.length;previous=index;}return lines[Math.max(0,previous)]||'';}
-function pcName(g,id){ if(G.players[id])return G.players[id].name; for(const sd of ['h','a'])for(const k of ['bat','pit']){ const q=(g.box?.[sd]?.[k]||[]).find(p=>p.id===id); if(q&&q.n)return q.n; } return (typeof pNmAny==='function'&&pNmAny(id))||'선수'; } /* 투수 목록·보관 기록까지(검수 11-06) */
+function pcName(g,id){ for(const sd of ['h','a'])for(const k of ['bat','pit']){ const q=(g.box?.[sd]?.[k]||[]).find(p=>p.id===id); if(q&&q.n)return q.n; } if(G.players[id])return G.players[id].name; return (typeof pNmAny==='function'&&pNmAny(id))||'선수'; } /* 투수 목록·보관 기록까지(검수 11-06) */
 function pcMoment(g,k){const x=g.pbp[k],pre=pcBefore(g,k),top=x[0]%2===0,before=top?pre.sa-pre.sh:pre.sh-pre.sa,after=top?x[7]-x[8]:x[8]-x[7],inn=Math.floor(x[0]/2)+1;return {x,pre,top,inn,before,after,runs:x[6]||0,risp:!!(pre.bases[1]||pre.bases[2]),loaded:pre.bases.every(Boolean),walkoff:!top&&inn>=9&&before<=0&&after>0,team:top?g.away:g.home};}
 function pcScoreFinish(g,k){const m=pcMoment(g,k);if(!m.runs)return '';if(m.walkoff)return ` 끝내기! ${tshort(m.team)}, 승부를 끝냅니다!`;if(m.before<0&&m.after>0)return ` 역전입니다! ${m.x[7]}:${m.x[8]}!`;if(m.before<0&&m.after===0)return ` 다시 동점! ${m.x[7]}:${m.x[8]}!`;return ` ${m.x[7]}:${m.x[8]}.`;}
 function pcKnownTotals(g,k,id,key,pitcher=false){
@@ -62,7 +62,7 @@ function pbpCall(g,k){
   case 'K':{const q=storedPitchSequence(x)?.at(-1);c=q?`${name}, ${q.t}에 ${q.res==='루킹 삼진'?'루킹':'헛스윙'} 삼진!`:`${name}, 삼진! 마운드가 웃습니다!`;break;}
   case 'DP':c=`아, 이게 뭔가요! ${name}, 병살타! ${x[4]===3?'이닝이 끝납니다!':'아웃 두 개를 내줍니다!'}`;break;
   case 'SAC':c=`${name}, 짧게 댔습니다! 희생번트로 주자를 보냅니다.`;break;
-  default:c=x[9]?`아, 이게 뭔가요! 수비 실책! ${name}, 살아 나갑니다!`:x[5].includes(x[1])?`${name}, 1루에서 살아남습니다!`:raw.c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
+  default:c=x[16]?`${name}, 번트 실패! 앞선 주자가 포스아웃됩니다!`:x[9]?`아, 이게 뭔가요! 수비 실책! ${name}, 살아 나갑니다!`:x[5].includes(x[1])?`${name}, 1루에서 살아남습니다!`:raw.c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
  }
  if(hit&&!today.h&&g.broadcast?.regular&&form?.hitless>=3)c=`${name}, ${form.hitless+1}경기 만의 안타! 긴 침묵을 깹니다!${o==='HR'?' 홈런이에요!':o==='2B'?' 2루타!':o==='3B'?' 3루타!':''}`;
  if(hit&&m.runs&&m.pre.outs===2&&o!=='HR')c+=` 2아웃 적시타!`;

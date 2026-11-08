@@ -12,7 +12,7 @@ function castLineup(g,side,k){
 function castSnapshot(g,k){
   const L=g.pbp||[],n=clamp(Math.floor(k),0,L.length),finished=n>=L.length;
   const init=side=>({lineup:castLineup(g,side,n),pitcher:g.box[side].pit[0]?.id??null,pitchers:g.box[side].pit[0]?[g.box[side].pit[0].id]:[],next:0,innings:[],hits:[],stats:{r:0,h:0,hr:0,bb:0,hbp:0,so:0,sb:0,cs:0,e:0}});
-  const teams={a:init('a'),h:init('h')},players={},events=[],history=[{i:0,half:0,sa:0,sh:0,wp:wpHome({sa:0,sh:0,outs:0,bases:[0,0,0],half:0})}];
+  const teams={a:init('a'),h:init('h')},players={},events=[],history=[{i:0,half:0,sa:0,sh:0,wp:wpHome({sa:0,sh:0,outs:0,bases:[0,0,0],half:0},wpMax(g))}];
   let half=-1,outs=0;
   const bat=id=>players[id]||(players[id]={ab:0,h:0,hr:0,bb:0,hbp:0,so:0,outs:0,sb:0,cs:0});
   for(let i=0;i<n;i++){
@@ -34,7 +34,7 @@ function castSnapshot(g,k){
     const slot=g.box[atk].bat.find(b=>b.id===x[1])?.o??T.lineup.findIndex(b=>b.id===x[1]);if(slot>=0)T.next=(slot+1)%9;
     if(x[6]||['HR','2B','3B','DP'].includes(x[3]))events.push({i,half,type:x[3],id:x[1],runs:x[6]||0});
     const st={sa:x[7],sh:x[8],half:x[4]>=3?x[0]+1:x[0],outs:x[4]>=3?0:x[4],bases:x[4]>=3?[0,0,0]:x[5]};
-    history.push({i:i+1,half:x[0],sa:x[7],sh:x[8],wp:wpHome(st)});
+    history.push({i:i+1,half:x[0],sa:x[7],sh:x[8],wp:wpHome(st,wpMax(g))});
   }
   const state=n?cBefore(g,n):{sa:0,sh:0,outs:0,bases:[0,0,0],half:L[0]?.[0]||0};
   if(finished){state.sa=g.as;state.sh=g.hs;state.bases=[0,0,0];history[history.length-1].wp=g.hs===g.as?.5:g.hs>g.as?1:0;}
@@ -43,7 +43,8 @@ function castSnapshot(g,k){
 }
 const mdColor=(g,side)=>side==='a'?'#75b5df':'#69c69b';
 function mdSet(id,html){const el=document.getElementById(id);if(el&&el._mdHtml!==html){el.innerHTML=html;el._mdHtml=html;}}
-function mdPlayer(g,id){return G.players[id]||{id,name:[...g.box.h.bat,...g.box.a.bat,...g.box.h.pit,...g.box.a.pit].find(p=>p.id===id)?.n||'기록 선수'};}
+function mdRow(g,id){ if(!g||!g.box)return null; for(const sd of ['h','a'])for(const k of ['bat','pit']){ const q=((g.box[sd]||{})[k]||[]).find(p=>p.id===id); if(q)return q; } return null; }
+function mdPlayer(g,id){ const p=G.players[id], q=mdRow(g,id); if(p)return q&&q.n&&q.n!==p.name?Object.assign(Object.create(p),{name:q.n}):p; return {id,name:q?.n||'기록 선수',th:q?.th,bt:q?.bt,isP:!!(q&&'outs' in q)}; } /* 경기 당시 이름·손잡이(박스스코어 기준): 이름을 바꾸거나 리그를 떠나도 한 경기 화면끼리 같게(검수 11-08) */
 function mdTeamPanel(g,side){const tid=side==='h'?g.home:g.away;return `<aside class="md-team-panel md-panel" style="--md-team:${cTeamCol(tid)}"><header>${badge(tid,20)}<b>${esc(tshort(tid))}</b><span id="md-role-${side}"></span></header><div class="md-mini-field" id="md-field-${side}"></div><div class="md-lineup" id="md-lineup-${side}"></div><div class="md-team-note" id="md-pitcher-${side}"></div></aside>`;}
 function mdMiniField(g,side,s){
   const T=s.teams[side],tid=side==='h'?g.home:g.away;

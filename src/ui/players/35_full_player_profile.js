@@ -36,7 +36,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const career=`<section class="card pf-fm-info pf-career"><h3>경력 <button class="tc-i" data-a="ptab" data-v="story">경력·수상 전체</button></h3>${stateRow('수상',aw.length?esc(aw.join(', ')):'없음')}${stateRow('부상 이력',inj.length?inj.length+'회 · 최근 '+inj[inj.length-1].y+'년 '+inj[inj.length-1].days+'일':'없음')}${rp.exact&&oh.length>1?stateRow('종합 추이',oh.map(x=>x.y%100+'년 '+dv(x.o)).join(' → ')):''}${p.use&&p.use.y===G.year&&p.use.g?stateRow('올해 기용',esc(useText(p))):''}${own?`<h3>성격</h3><p class="small keep">${esc(persText(p))}</p>`:''}</section>`;
   /* 빈 칸을 채우는 상자들(PC): 최근 경기(왼쪽), 감독 의견(보고서), 타구·투구 지표(오른쪽), 팀 내 위치(네 번째 열) */
   const GL=((p.gl&&p.gl.y===G.year&&p.gl.g)||[]).slice(-5).reverse();
-  const gameRow=g=>p.isP?`<div class="pf-gl"><span>${dsh(g[0])}</span><b>${ipStr(g[2])}이닝</b><i>${g[3]}K ${g[4]}BB ${g[7]}실점</i></div>`:`<div class="pf-gl"><span>${dsh(g[0])}</span><b>${g[2]}타수 ${g[3]}안타</b><i>${g[7]?g[7]+'홈런 ':''}${g[5]?g[5]+'볼넷 ':''}${g[6]?g[6]+'삼진':''}</i></div>`;
+  const gameRow=g=>p.isP?`<div class="pf-gl"><span>${dsh(g[0])}</span><b>${ipStr(g[2])}이닝</b><i>${g[3]}K ${g[4]}BB ${g[8]!=null?`${g[8]}실점${g[8]!==g[7]?`(${g[7]}자책)`:''}`:`${g[7]}자책`}</i></div>`:`<div class="pf-gl"><span>${dsh(g[0])}</span><b>${g[2]}타수 ${g[3]}안타</b><i>${g[7]?g[7]+'홈런 ':''}${g[5]?g[5]+'볼넷 ':''}${g[6]?g[6]+'삼진':''}</i></div>`;
   const recent0=`<section class="card pf-fm-box pf-recent"><h3>최근 경기</h3>${GL.length?GL.map(gameRow).join(''):'<p class="small muted keep">올해 1군 출장 기록이 아직 없습니다.</p>'}</section>`;
   /* 외국인 후보: 최근 경기 대신 스카우트 조사 상자(종합 추정 범위·조사 단계·요구 연봉·관찰 명단) */
   const recent=fsx?'':recent0; /* 외국인 후보는 최근 경기가 없어 칸을 비우고 스카우트 조사 칸이 그 자리까지 쓴다 */
