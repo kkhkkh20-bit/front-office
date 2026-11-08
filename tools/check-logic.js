@@ -2166,6 +2166,17 @@ T('[피드백 11-08] 새 도전과제: 포스팅·신구장·1000경기가 조�
   G.abroad=[{id:-1,name:'시험',from:U,how:'포스팅',club:'시험 구단',y:G.year,foreign:null}]; achFirstDaily(); ok(achHas('post1'),'포스팅 과제 안 열림');
   const S=stadOf(U); S.names=[{until:G.day,n:'옛 구장'}]; S.built=G.year; S.proj=null; achFirstDaily(); ok(achHas('stadNew'),'신구장 과제 안 열림');
   G.gmTen={tid:U,g:1000}; achCheck({}); ok(achHas('gm1000'),'1000경기 과제 안 열림'); });
+T('[피드백 11-08] 고교 MLB 직행: 7월 10일 제안, 1순위 구단은 설득 결정, 8월 20일 남지 않으면 드래프트에서 빠진다',()=>{ fresh(); globalThis.__seed=7; simTo(()=>G.day>=KD(7,9)); makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]); const top=C.filter(p=>!p.college).sort((a,b)=>b.pot-a.pot)[0]; top.pot=Math.max(top.pot,66);
+  const R0=R; let k=0; G.day=KD(7,10); hsUsDaily(); if(!top.usOff){ top.usOff={club:'뉴욕',bonus:200,y:G.year}; } ok(top.usOff&&top.usOff.bonus>0,'제안 없음');
+  const e={data:{pid:top.id}}; const cash0=team(G.user).cash; let msg=''; for(let i=0;i<30&&!top.usStay;i++){ top.usOff=top.usOff||{club:'뉴욕',bonus:200,y:G.year}; msg=EVH.usHs.pick(e,0); } ok(top.usStay,'최고 대우 설득 30번 모두 실패: '+msg); ok(team(G.user).cash<cash0,'설득 비용이 안 나감');
+  const other=C.filter(p=>!p.college&&p!==top)[0]; other.usOff={club:'LA',bonus:120,y:G.year}; let left=false; for(let i=0;i<20&&!left;i++){ other.usOff={club:'LA',bonus:120,y:G.year}; delete other.usStay; G.day=KD(8,20); if(!G.draftClass.includes(other.id))break; hsUsDaily(); left=!G.draftClass.includes(other.id); }
+  ok(left,'8월 20일에 떠나지 않음'); ok((G.abroad||[]).some(a=>a.id===other.id&&a.how==='고교 직행'),'해외 기록 없음'); });
+T('[피드백 11-08] 응원가: 응원단장이 있으면 시즌 중 제안, 만들면 선수 기분이 오르고 비용이 나간다',()=>{ fresh(); simTo(()=>period()==='season'&&dobj(G.day).m>=5); const c=crewMk('lead'); crewOf().lead=c; c.hype=18; c.star=18;
+  for(let i=0;i<30&&!(G.evs||[]).some(e=>!e.done&&e.k==='song');i++)crewSongAsk(); const e=G.evs.find(x=>!x.done&&x.k==='song'); ok(e,'응원가 제안 없음'); const p=G.players[e.data.pid]; const m0=p.mor??60, f0=G.spend.fan||0;
+  const r=EVH.song.pick(e,0); ok(p.songs&&p.songs[G.user],'응원가 기록 없음 '+r); ok((p.mor??60)>m0,'기분 안 오름'); ok((G.spend.fan||0)>f0,'비용 안 나감'); });
+T('[피드백 11-08] 포스팅 중간 보도와 MLB 스카우트 방문 보도',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10); const p=Object.values(G.players).filter(q=>q.team!=null&&q.team!==G.user&&!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; p.svc=7; p.age=27; p.mlb=70;
+  const w0=(G.wire||[]).length; for(let i=0;i<120&&!(G.ovsVisit&&Object.keys(G.ovsVisit).length);i++){ G.day++; ovsScoutVisit(); } ok(Object.keys(G.ovsVisit||{}).length,'스카우트 방문 보도 없음 '+period()+' '+Object.values(G.players).filter(q=>q.team!=null&&!q.foreign&&!q.prospect&&q.age<=31&&ovr(q)>=63).length+' '+ovr(p));
+  G.posting=[{pid:p.id,y:G.year,tid:p.team,day:G.day+5,done:false}]; ovsPostRumor(); ok(G.posting[0].rum,'중간 보도 안 됨'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

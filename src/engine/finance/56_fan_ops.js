@@ -66,7 +66,23 @@ function crewPay(){ if(G.unemp||!G.fanOps)return 0; return sum(Object.values(G.f
 function crewAtt(){ if(G.unemp||!G.fanOps)return 0; return sum(Object.values(G.fanOps.crew||{}).map(c=>(c.hype-10)*.003+(c.star-10)*.001)); } /* 응원단장 20/20이면 홈 관중 +4% 안팎 */
 function crewMonthly(){ const C=crewOf(), t=team(G.user); const L=Object.values(C); if(!L.length)return; const pay=crewPay(); G.spend.fan=(G.spend.fan||0)+pay;
   for(const c of L){ G.pr.fan=clamp(G.pr.fan+(c.infl-10)*.04,0,100); t.pop=clamp(t.pop+(c.star-11)*.0004,.4,1.6); const g=Math.max(0,Math.round((c.star-8)*.6)); if(g)G.spend.fanIn=(G.spend.fanIn||0)+g; }
+  try{ crewSongAsk(); }catch(e){}
   if(dobj(G.day).m!==1)return; const y=sponSeason();
   for(const j of Object.keys(C)){ const c=C[j]; c.age++; const end=c.y1<y; const poach=!end&&c.star>=15&&c.loy<=8&&R()<.25;
     if(end){ if(R()<.35+c.loy*.03){ const n=ri(1,2); c.y1=y+n-1; c.sal=Math.round(c.sal*1.06); mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 재계약`,`${c.name}이(가) ${n}년 더 남기로 했습니다(월 ${money(c.sal)}). 구단 충성도 ${c.loy}.`,{kind:'구단'}); } else { delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 계약 만료`,`${c.name}이(가) 재계약하지 않고 떠났습니다. 팬 마케팅에서 새 ${CREW_JOB[j].l}을(를) 영입할 수 있습니다.`,{kind:'구단',imp:true,acts:[{l:'팬 마케팅',a:'go',v:'club:fans'}]}); } }
     else if(poach){ delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name}, 다른 구단으로`,`스타성이 높은 ${c.name}에게 다른 구단이 더 좋은 조건을 냈고, 구단 충성도(${c.loy})가 낮아 옮겼습니다. 위약금은 그 구단이 냅니다.`,{kind:'구단',imp:true}); } } }
+
+/* 선수 응원가(사용자 11-08): 응원단장이 있으면 시즌 중 매달 한 번쯤 응원가가 없는 주축 선수의 응원가를 만들자고 한다.
+   만들면 비용이 들고, 응원단장 호응 유도·스타성이 높을수록 잘 만들어져 팬 여론·선수 기분·화제성이 오른다. 이적하면 응원가는 그 구단에 남는다 */
+function crewSongAsk(){ const c=crewOf().lead; if(!c||G.unemp)return; const m=dobj(G.day).m; if(m<4||m>9||R()>.55)return; if((G.evs||[]).some(e=>!e.done&&e.k==='song'))return;
+  const L=playersOf(G.user).filter(p=>p.e1&&!(p.songs&&p.songs[G.user])&&!p.ys).sort((a,b)=>(b.fr&&b.fr.tid===G.user)-(a.fr&&a.fr.tid===G.user)||ovr(b)-ovr(a)); const p=L[0]; if(!p)return;
+  const cost=Math.round(8+c.star*.6), q=Math.round(clamp((c.hype+c.star)/2+N(0,2.5),3,20));
+  evNew('song',`${p.name} 응원가 만들까요?`,`응원단장 ${c.name}: "${p.name} 선수 응원가가 아직 없습니다. ${p.fr&&p.fr.tid===G.user?'프랜차이즈 스타에게 어울리는 노래를 붙이고 싶습니다.':'팬들이 따라 부를 수 있는 노래를 만들어 보겠습니다.'}" (호응 유도 ${c.hype} · 스타성 ${c.star})`,
+    [{l:'만든다',fx:`제작비 ${money(cost)}(팬 마케팅 비용). 응원단장 능력만큼 반응이 갈립니다. 선수 기분이 오르고 팬 여론·화제성이 오를 수 있습니다.`},{l:'다음에',fx:'만들지 않습니다.'}],{ref:p.id,face:p.id,from:'마케팅팀',data:{pid:p.id,cost,q,cid:c.id},def:1,exp:10}); }
+EVH.song={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; if(i!==0)return '다음에 만들기로 했습니다.'; const {cost,q}=e.data; const c=crewOf().lead;
+  G.spend.fan=(G.spend.fan||0)+cost; (p.songs=p.songs||{})[G.user]={y:G.year,q,by:c?c.name:''}; const F=fanOps(); F.songs=(F.songs||0)+1;
+  p.mor=clamp((p.mor??60)+3+Math.round(q/5),0,100); const hit=q>=15, flop=q<=7; G.pr.fan=clamp(G.pr.fan+(hit?2:flop?0:1),0,100); if(hit)team(G.user).pop=clamp(team(G.user).pop+.004,.4,1.6);
+  story(p,`${tshort(G.user)} 응원가 생김${hit?' · 화제':''}`,'mile');
+  if(hit)news('구단',`${p.name} 새 응원가, 구장 떼창에 SNS 화제`,`응원단장 ${c?c.name:''}이(가) 만든 ${p.name} 응원가가 첫날부터 관중석 떼창을 불렀습니다. 영상 조회수가 빠르게 오르고 있습니다.`,2,{ref:p.id});
+  else if(flop)news('구단',`${p.name} 새 응원가, 팬 반응은 "글쎄"`,`가사가 입에 붙지 않는다는 반응이 많습니다. 몇 경기 더 불러 봐야 알 것 같다는 의견도 있습니다.`,0,{ref:p.id});
+  return `${p.name} 응원가를 만들었습니다(완성도 ${q}/20${hit?' · 화제':flop?' · 반응 미지근':''}). 선수 기분이 올랐습니다.`; } };

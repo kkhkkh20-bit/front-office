@@ -10762,7 +10762,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   if(o.d===15)try{ smNews(); }catch(e){} /* 스타 마케팅 캠페인 기사 */ /* 능력치 변화 표시(약 6개월 전과 비교) */
   if(o.d===1&&o.m>=6&&o.m<=9&&period()==='season')try{ titleRaceNews(); }catch(e){}
   if(day===KD(11,5))try{ fcampStart(); }catch(e){} if(day===KD(11,25))try{ fcampEnd(); }catch(e){}
-  try{ draftPressNews(day); }catch(e){}
+  try{ draftPressNews(day); }catch(e){} try{ ovsStoryDaily(); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
   if(o.w===1)try{ tbWeek(); }catch(e){} if(G.cal&&day===G.cal.end+1)try{ tbWeek(true); }catch(e){}
   try{ stDaily(); }catch(e){}
@@ -14899,6 +14899,7 @@ function ovsLeave(p,lg,club,yrs,amt,how,fee){ const from=p.team??p.faFrom; G.abr
   for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; if(G.fa&&G.fa.pool)G.fa.pool=G.fa.pool.filter(x=>x!==p.id); dropP(p.id);
   const t=`${p.name}, ${club} 구단(${lg})과 ${yrs}년 계약${how==='포스팅'?` · 포스팅 비용 ${money(fee)}`:''}`; wire(lg==='MLB'?'해외':'해외',t,{tid:from});
   try{ featAdd('ovs',null,`${p.name} ${how==='외국인'?'역수출':'해외 진출'} · ${club}(${lg}) ${yrs}년 ${amt*yrs}만 달러`,{tid:from,name:p.name,maj:lg==='MLB'}); }catch(e){}
+  if(from===G.user&&how==='포스팅'){ try{ story(p,`${club}(${lg}) 입단 · 포스팅`,'move'); G.pr.fan=clamp(G.pr.fan+1,0,100); news('선수',`${p.name} 고별 기자회견 "이 유니폼이 나를 키웠다"`,`${p.name}이(가) ${tshort(from)} 팬들에게 작별 인사를 했습니다. "언젠가 다시 이 구장에 서겠다"는 말에 박수가 쏟아졌습니다. 구단은 꿈을 응원한 구단으로 남습니다.`,2,{}); }catch(e){} }
   if(from===G.user){ news('선수',`${p.name}, ${lg} 진출 확정`,`${club} 구단과 ${yrs}년 총 ${amt*yrs}만 달러에 계약했습니다.${fee?` 구단은 포스팅 비용 ${money(fee)}을 받습니다.`:''}`,1,{fanW:.5}); }
   return `${p.name}이(가) ${club}(${lg})로 떠납니다.`; }
 /* 국내 선수의 메이저리그 꿈: 야망 + 활약 + 언론 */
@@ -14927,7 +14928,7 @@ EVH.post={ pick(e,i){ const p=G.players[e.data.pid]; if(!p)return ''; if(p.team!
     p.postAsk=(p.postAsk||0)+1; const d=e.data.promised?28:p.postAsk>=2?20:14; p.mor=clamp((p.mor??60)-d,0,100); G.pr.press=clamp(G.pr.press-(e.data.promised?5:2),0,100); G.pr.fan=clamp(G.pr.fan-(e.data.promised?3:0),0,100);
     news('언론',`${tshort(G.user)}, ${p.name} 포스팅 불허`,e.data.promised?'약속을 뒤집었다는 비판이 거셉니다.':'구단은 전력 유지를 택했습니다.',e.data.promised?-3:-1,{ref:p.id}); return `포스팅을 거절했습니다. 기분 -${d}.`; } };
 function postDay(){ return Math.max(G.day+20,KD(12,12)); } /* 결과 발표일: 안내 문구와 실제 처리일이 같은 계산 */
-function postStart(p,day){ G.posting=G.posting||[]; const x={pid:p.id,y:G.year,tid:p.team,day:day!=null&&day>G.day?day:postDay(), /* 요청 때 안내한 발표일(검수 11-07) */done:false}; G.posting.push(x); wire('해외',`${tname(p.team)} ${p.name}, 포스팅 신청`,{tid:p.team,ref:p.id}); delete p.postPromise; delete p.postPromiseT; return x; }
+function postStart(p,day){ G.posting=G.posting||[]; const x={pid:p.id,y:G.year,tid:p.team,day:day!=null&&day>G.day?day:postDay(), /* 요청 때 안내한 발표일(검수 11-07) */done:false}; G.posting.push(x); wire('해외',`${tname(p.team)} ${p.name}, 포스팅 신청`,{tid:p.team,ref:p.id}); if(p.team===G.user&&!G.unemp)news('선수',`${p.name}, 메이저리그 도전 공식화 · 포스팅 공시`,`${tname(p.team)}이(가) ${p.name}의 포스팅을 신청했습니다. 공시 뒤 협상 기간이 열리고 ${dmd(x.day)}에 결과가 나옵니다. 팬들은 아쉬움과 응원을 함께 보내고 있습니다.`,1,{ref:p.id}); delete p.postPromise; delete p.postPromiseT; return x; }
 /* 포스팅 결과: 능력이 높을수록 MLB 계약 가능성이 크다 */
 function postFee(amtTot){ const a=amtTot; const f=Math.min(a,2500)*.2+Math.max(0,Math.min(a,5000)-2500)*.175+Math.max(0,a-5000)*.15; return Math.round(f); }
 /* 해외 복귀 협상 정리: 우리 구단 몫이 아니거나(이직·야인) 결정할 이벤트가 없이 기한이 지난 선수는 원소속 구단(AI) 판단으로 끝낸다(예전에 꼬여 저장된 선수 복구 포함) */
@@ -15011,6 +15012,42 @@ function interestWhy(tid,p){ const w=[]; let weak=[]; try{ weak=teamNeeds(tid).w
 function postGMWhy(p){ if(!p||p.team!==G.user||G.unemp||p.foreign)return '우리 국내 선수만 신청할 수 있습니다.'; if(!(G.rolled===G.year&&dobj(G.day).m>=10))return '포스팅은 시즌 결산 뒤 12월까지 신청할 수 있습니다.'; if(milServing(p))return '군 복무 중에는 해외에 나갈 수 없습니다.'; if(p.ovsY!=null||p.retFrom!=null||(G.abroad||[]).some(a=>a.id===p.id))return '해외에 다녀온 선수는 포스팅 대상이 아닙니다.'; /* 서비스 7년이 지나면 FA 계약을 한 뒤에도 구단 동의로 포스팅할 수 있다(실제: 김광현 2019년 FA 계약 중 포스팅). 리빌딩용(사용자 11-08) */ if((p.svc||0)<7)return `서비스 7년이 지나야 포스팅할 수 있습니다(지금 ${p.svc||0}년).`; if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))return '이미 포스팅을 신청했습니다.'; return ''; }
 function postGM(id){ const p=G.players[id]; const why=postGMWhy(p); if(why)return why; if(mlbOf(p)<25){ return `${p.name}은(는) 지금 해외 진출을 원하지 않습니다(메이저리그 의지 ${p.mlb}).`; }
   const x=postStart(p); for(const e of (G.evs||[]))if(e.k==='post'&&!e.done&&e.data&&e.data.pid===p.id){ e.done=true; e.res='단장이 먼저 포스팅을 신청해 정리'; } /* 열려 있던 선수 요청은 닫는다(검수 11-08) */ story(p,`${G.year} 구단 주도 포스팅 신청`,'move'); return `${p.name} 포스팅을 신청했습니다. ${dmd(x.day)}에 MLB·NPB 구단 제안과 결과가 나옵니다.`; }
+
+/* ===== 해외 진출 이야기(사용자 11-08): MLB 스카우트 방문 보도 · 포스팅 중간 보도 · 고교 선수 MLB 직행과 1순위 구단의 설득 =====
+   실제 바탕: 해외 진출 후보 경기에는 메이저리그 스카우트가 몰려 보도되고, 포스팅은 공시 뒤 30일 협상 기간 동안 현지 보도가 이어진다.
+   고교 최대어가 드래프트 전에 미국 구단과 계약하는 일이 있다(2023 심준석 등). 지명 순번이 앞선 구단은 계약금·면담으로 설득을 시도한다 */
+function ovsStoryDaily(){ try{ ovsScoutVisit(); }catch(e){} try{ ovsPostRumor(); }catch(e){} try{ hsUsDaily(); }catch(e){} }
+/* MLB 스카우트 방문: 정규시즌 화요일마다, 해외 진출을 바라볼 만한 국내 정상급 선수 경기 */
+function ovsScoutVisit(){ if(period()!=='season'||dobj(G.day).w!==2||R()>.4)return;
+  const L=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!p.prospect&&p.age<=31&&!milServing(p)&&ovr(p)>=59&&((p.svc||0)>=5||mlbOf(p)>=55)&&p.ovsY==null&&p.retFrom==null).sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return;
+  const p=L[Math.floor(R()*Math.min(5,L.length))]; G.ovsVisit=G.ovsVisit||{}; if((G.ovsVisit[p.id]??-999)>=G.day-40)return; G.ovsVisit[p.id]=G.day;
+  const n=ovr(p)>=63?ri(5,9):ri(2,5); const clubs=[...MLBT].sort(()=>R()-.5).slice(0,Math.min(3,n)).join('·');
+  p.mlbSeen=(p.mlbSeen||0)+1; p.mlb=clamp(mlbOf(p)+2,0,100);
+  wire('해외',`${p.name}(${tshort(p.team)}) 경기에 MLB ${n}개 구단 스카우트 집결`,{tid:p.team,ref:p.id});
+  if(p.team===G.user&&!G.unemp)news('선수',`MLB 스카우트, ${p.name} 보러 왔다`,`${clubs} 등 메이저리그 ${n}개 구단 스카우트가 ${p.name}의 경기를 지켜봤습니다. ${p.isP?'백네트 뒤에 스피드건이 줄지어 섰습니다.':'타석마다 스카우트들의 메모가 바빴습니다.'} 선수의 해외 진출 의지가 조금 커졌습니다(올해 ${p.mlbSeen}번째 방문).`,1,{ref:p.id}); }
+/* 포스팅 중간 보도: 결과 8일 전 현지 보도(관심 구단 수는 실제 결과와 같은 기준으로 추정) */
+function ovsPostRumor(){ for(const x of G.posting||[]){ if(x.done||x.rum||x.void||G.day<x.day-8)continue; x.rum=true; const p=G.players[x.pid]; if(!p||p.team!==x.tid)continue; const o=ovr(p);
+    const n=o>=68?ri(4,8):o>=64?ri(2,4):o>=61?ri(0,2):ri(0,1); const cl=[...MLBT].sort(()=>R()-.5).slice(0,Math.min(3,n));
+    const t=n?`현지 보도 "${cl.join('·')} 등 ${n}개 구단 관심"`:'현지 반응 미지근, 관심 구단 확인 안 돼';
+    wire('해외',`${p.name} 포스팅 · ${t}`,{tid:x.tid,ref:p.id});
+    if(x.tid===G.user&&!G.unemp)news('선수',`${p.name} 포스팅 협상 막바지 · ${n?`${n}개 구단 관심`:'관심 구단 없어'}`,n?`미국 현지 기자들이 ${cl.join('·')} 등을 유력 행선지로 꼽고 있습니다. ${dmd(x.day)}에 결과가 나옵니다. ${n>=4?'몸값이 예상보다 오를 수 있다는 전망입니다.':''}`:`아직 적극적인 구단이 보이지 않습니다. 일본 구단 제안이나 잔류 가능성도 거론됩니다. 결과는 ${dmd(x.day)}.`,n?1:0,{ref:p.id}); } }
+/* 고교 선수 MLB 직행: 7월 10일 무렵 고교 최대어 일부에게 미국 구단 제안. 1라운드 1순위 구단이 우리면 설득을 시도할 수 있다. 8월 20일까지 남지 않으면 떠난다 */
+function hsUsDaily(){ const D=G.draftClass; if(!D||!D.length||G.unemp&&false)return; const C=D.map(id=>G.players[id]).filter(p=>p&&p.prospect);
+  if(G.day===KD(7,10)){ const top=C.filter(p=>!p.college&&p.pot>=60).sort((a,b)=>b.pot-a.pot).slice(0,3); let k=0;
+    for(const p of top){ if(k>=2||R()>.4)continue; k++; const bonus=Math.round(clamp((p.pot-56)*25+N(0,20),60,300)); p.usOff={club:pick(MLBT),bonus,y:G.year};
+      wire('드래프트',`고교 최대어 ${p.name}(${p.school}), MLB 직행 검토 · ${p.usOff.club} 계약금 ${bonus}만 달러 제시설`,{ref:p.id});
+      let first=null; try{ first=draftPickOrder()[0]; }catch(e){}
+      if(first&&first.tid===G.user&&!G.unemp){ const mv=mlbOf(p);
+        evNew('usHs',`${p.name}, 미국 직행이냐 우리 1순위냐`,`${p.school} ${posLabel(p)} ${p.name}에게 ${p.usOff.club} 구단이 계약금 ${bonus}만 달러를 제시했습니다. 우리 구단이 올해 1라운드 1순위입니다. 선수는 메이저리그 의지 ${mv}로 고민 중입니다.`,
+          [{l:'최고 대우로 설득',fx:`계약금 외 추가 ${money(Math.round(bonus*1.3))}을 약속합니다(지금 구단 현금에서 나감). 성공 가능성이 큽니다.`},{l:'단장이 직접 찾아가 설득',fx:'돈은 들지 않습니다. 선수와 부모를 만나 1군 기회와 육성 계획을 설명합니다. 성공은 반반 아래입니다.'},{l:'보내 준다',fx:'설득하지 않습니다. 다른 후보를 1순위로 준비합니다.'}],{ref:p.id,from:'스카우트팀장',data:{pid:p.id},def:2,exp:20}); } } }
+  if(G.day===KD(8,20))for(const p of C){ if(!p.usOff||p.usOff.y!==G.year||p.usStay)continue; if(R()<.3){ p.usStay=true; wire('드래프트',`${p.name}, 미국 대신 KBO 드래프트 참가 결정`,{ref:p.id}); continue; }
+    const club=p.usOff.club, bonus=p.usOff.bonus; G.draftClass=G.draftClass.filter(id=>id!==p.id); p.prospect=false; ovsLeave(p,'MLB',club,1,bonus,'고교 직행');
+    if(!G.unemp)news('드래프트',`${p.name}, ${club}과 계약 · 고교 졸업 뒤 미국 직행`,`드래프트를 앞두고 고교 최대어 한 명이 빠졌습니다. 계약금 ${bonus}만 달러. 드래프트 상위 지명 판도가 바뀝니다.`,0,{}); } }
+EVH.usHs={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.prospect||!p.usOff)return '이미 정리된 일입니다.'; const mv=mlbOf(p), b=p.usOff.bonus, t=team(G.user);
+  if(i===2){ return `${p.name}의 선택을 존중하기로 했습니다.`; }
+  const ch=i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90,.15,.7); const cost=i===0?Math.round(b*1.3):0;
+  if(R()<ch){ p.usStay=true; delete p.usOff; if(cost)t.cash-=cost; p.usKeepT=G.user; news('드래프트',`${p.name}, 미국 대신 KBO 행 · ${tshort(G.user)} 설득 통했다`,i===0?`${tshort(G.user)}이(가) 최고 대우를 약속했다는 후문입니다.`:`단장이 직접 집을 찾아가 육성 계획을 설명한 것이 마음을 돌렸다는 후문입니다.`,1,{ref:p.id}); return `설득에 성공했습니다. ${p.name}은(는) KBO 드래프트에 나옵니다${cost?`(추가 약속 ${money(cost)} 지출)`:''}. 1순위로 지명하세요.`; }
+  p.mlb=clamp(mv+5,0,100); return `설득에 실패했습니다. ${p.name}은(는) 미국행 쪽으로 기울었습니다. 8월 20일 전후로 결정합니다.`; } };
 /* ===== 감독이 먼저 하는 요청: 보강·정리·외국인 교체·FA·드래프트 ===== */
 const MREQK={fit:'원하는 선수 유형 요청',slot:'보강 요청',out:'정리 요청',frep:'외국인 교체 요청',fa:'FA 영입 요청',draft:'드래프트 기조 추천'};
 function mreqs(){ return G.mreq=G.mreq||[]; }
@@ -16829,10 +16866,26 @@ function crewPay(){ if(G.unemp||!G.fanOps)return 0; return sum(Object.values(G.f
 function crewAtt(){ if(G.unemp||!G.fanOps)return 0; return sum(Object.values(G.fanOps.crew||{}).map(c=>(c.hype-10)*.003+(c.star-10)*.001)); } /* 응원단장 20/20이면 홈 관중 +4% 안팎 */
 function crewMonthly(){ const C=crewOf(), t=team(G.user); const L=Object.values(C); if(!L.length)return; const pay=crewPay(); G.spend.fan=(G.spend.fan||0)+pay;
   for(const c of L){ G.pr.fan=clamp(G.pr.fan+(c.infl-10)*.04,0,100); t.pop=clamp(t.pop+(c.star-11)*.0004,.4,1.6); const g=Math.max(0,Math.round((c.star-8)*.6)); if(g)G.spend.fanIn=(G.spend.fanIn||0)+g; }
+  try{ crewSongAsk(); }catch(e){}
   if(dobj(G.day).m!==1)return; const y=sponSeason();
   for(const j of Object.keys(C)){ const c=C[j]; c.age++; const end=c.y1<y; const poach=!end&&c.star>=15&&c.loy<=8&&R()<.25;
     if(end){ if(R()<.35+c.loy*.03){ const n=ri(1,2); c.y1=y+n-1; c.sal=Math.round(c.sal*1.06); mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 재계약`,`${c.name}이(가) ${n}년 더 남기로 했습니다(월 ${money(c.sal)}). 구단 충성도 ${c.loy}.`,{kind:'구단'}); } else { delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 계약 만료`,`${c.name}이(가) 재계약하지 않고 떠났습니다. 팬 마케팅에서 새 ${CREW_JOB[j].l}을(를) 영입할 수 있습니다.`,{kind:'구단',imp:true,acts:[{l:'팬 마케팅',a:'go',v:'club:fans'}]}); } }
     else if(poach){ delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name}, 다른 구단으로`,`스타성이 높은 ${c.name}에게 다른 구단이 더 좋은 조건을 냈고, 구단 충성도(${c.loy})가 낮아 옮겼습니다. 위약금은 그 구단이 냅니다.`,{kind:'구단',imp:true}); } } }
+
+/* 선수 응원가(사용자 11-08): 응원단장이 있으면 시즌 중 매달 한 번쯤 응원가가 없는 주축 선수의 응원가를 만들자고 한다.
+   만들면 비용이 들고, 응원단장 호응 유도·스타성이 높을수록 잘 만들어져 팬 여론·선수 기분·화제성이 오른다. 이적하면 응원가는 그 구단에 남는다 */
+function crewSongAsk(){ const c=crewOf().lead; if(!c||G.unemp)return; const m=dobj(G.day).m; if(m<4||m>9||R()>.55)return; if((G.evs||[]).some(e=>!e.done&&e.k==='song'))return;
+  const L=playersOf(G.user).filter(p=>p.e1&&!(p.songs&&p.songs[G.user])&&!p.ys).sort((a,b)=>(b.fr&&b.fr.tid===G.user)-(a.fr&&a.fr.tid===G.user)||ovr(b)-ovr(a)); const p=L[0]; if(!p)return;
+  const cost=Math.round(8+c.star*.6), q=Math.round(clamp((c.hype+c.star)/2+N(0,2.5),3,20));
+  evNew('song',`${p.name} 응원가 만들까요?`,`응원단장 ${c.name}: "${p.name} 선수 응원가가 아직 없습니다. ${p.fr&&p.fr.tid===G.user?'프랜차이즈 스타에게 어울리는 노래를 붙이고 싶습니다.':'팬들이 따라 부를 수 있는 노래를 만들어 보겠습니다.'}" (호응 유도 ${c.hype} · 스타성 ${c.star})`,
+    [{l:'만든다',fx:`제작비 ${money(cost)}(팬 마케팅 비용). 응원단장 능력만큼 반응이 갈립니다. 선수 기분이 오르고 팬 여론·화제성이 오를 수 있습니다.`},{l:'다음에',fx:'만들지 않습니다.'}],{ref:p.id,face:p.id,from:'마케팅팀',data:{pid:p.id,cost,q,cid:c.id},def:1,exp:10}); }
+EVH.song={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; if(i!==0)return '다음에 만들기로 했습니다.'; const {cost,q}=e.data; const c=crewOf().lead;
+  G.spend.fan=(G.spend.fan||0)+cost; (p.songs=p.songs||{})[G.user]={y:G.year,q,by:c?c.name:''}; const F=fanOps(); F.songs=(F.songs||0)+1;
+  p.mor=clamp((p.mor??60)+3+Math.round(q/5),0,100); const hit=q>=15, flop=q<=7; G.pr.fan=clamp(G.pr.fan+(hit?2:flop?0:1),0,100); if(hit)team(G.user).pop=clamp(team(G.user).pop+.004,.4,1.6);
+  story(p,`${tshort(G.user)} 응원가 생김${hit?' · 화제':''}`,'mile');
+  if(hit)news('구단',`${p.name} 새 응원가, 구장 떼창에 SNS 화제`,`응원단장 ${c?c.name:''}이(가) 만든 ${p.name} 응원가가 첫날부터 관중석 떼창을 불렀습니다. 영상 조회수가 빠르게 오르고 있습니다.`,2,{ref:p.id});
+  else if(flop)news('구단',`${p.name} 새 응원가, 팬 반응은 "글쎄"`,`가사가 입에 붙지 않는다는 반응이 많습니다. 몇 경기 더 불러 봐야 알 것 같다는 의견도 있습니다.`,0,{ref:p.id});
+  return `${p.name} 응원가를 만들었습니다(완성도 ${q}/20${hit?' · 화제':flop?' · 반응 미지근':''}). 선수 기분이 올랐습니다.`; } };
 /* ===== 게임 시작 전 경력: 2023·2024 시즌 기록 =====
    2025 시즌은 실제 경기로 치르고, 그 앞 두 해는 같은 확률식으로 타석·이닝을 하나하나 시뮬해 만든다.
    해마다 컨디션(커리어 하이·부진)과 타구 운이 다르게 걸리므로, 한 해 기록만 보면 거품이나 저평가가 섞이고
@@ -27497,7 +27550,7 @@ function crewAt(c){ return `<div class="crew-at">${CREW_AT.map(([k,l])=>`<span><
 function crewView(){ const C=crewOf(); const L=crewMkt(); const y=sponSeason();
   const cur=Object.keys(CREW_JOB).map(j=>{ const c=C[j]; return `<div class="crew-c${c?'':' empty'}"><div class="crew-h">${c?crewAv(c):''}<div><span class="eyebrow">${CREW_JOB[j].l}</span><b>${c?esc(c.name):'비어 있음'}</b>${c?`<span class="small muted">${c.age}세 · 월 ${money(c.sal)} · ${c.y1<y?'올해 만료':c.y1+'년까지'}</span>`:'<span class="small muted">아래 후보에서 영입하세요</span>'}</div>${c?cimgBtns('P:cheer:'+c.id):''}</div>${c?crewAt(c)+`<button class="btn small" data-a="crewFire" data-v="${j}">계약 해지</button>`:''}</div>`; }).join('');
   const mk=L.slice().sort((a,b)=>a.job.localeCompare(b.job)||b.hype+b.infl+b.star-(a.hype+a.infl+a.star)).map(c=>`<div class="crew-c"><div class="crew-h">${crewAv(c)}<div><span class="eyebrow">${CREW_JOB[c.job].l} 후보</span><b>${esc(c.name)}</b><span class="small muted">${c.age}세 · 월 ${money(c.sal)}</span></div></div>${crewAt(c)}<div class="row" style="gap:4px">${[1,2,3].map(n=>`<button class="btn small" data-a="crewHire" data-v="${c.id}:${n}">${n}년</button>`).join('')}</div></div>`).join('');
-  return `<div class="fo-row crew"><div><b>응원단장 · 치어리더 팀장</b><p class="small muted">호응 유도는 홈 관중, 영향력은 팬 여론, 스타성은 화제성·상품 수입, 구단 충성도는 재계약과 다른 구단 제의를 버티는 힘입니다. 월급은 팬 마케팅 비용으로 나갑니다. 사진 버튼으로 갤러리 사진을 넣을 수 있습니다.</p><div class="crew-g">${cur}</div><details class="mfold"><summary class="small">영입 후보 ${L.length}명</summary><div class="crew-g">${mk}</div></details></div></div>`; }
+  return `<div class="fo-row crew"><div><b>응원단장 · 치어리더 팀장</b><p class="small muted">호응 유도는 홈 관중, 영향력은 팬 여론, 스타성은 화제성·상품 수입, 구단 충성도는 재계약과 다른 구단 제의를 버티는 힘입니다. 응원단장이 있으면 시즌 중 주축 선수의 응원가를 만들자는 제안이 옵니다(호응 유도·스타성이 높을수록 잘 만듭니다)${G.fanOps&&G.fanOps.songs?` · 지금까지 응원가 ${G.fanOps.songs}곡`:''}. 월급은 팬 마케팅 비용으로 나갑니다. 사진 버튼으로 갤러리 사진을 넣을 수 있습니다.</p><div class="crew-g">${cur}</div><details class="mfold"><summary class="small">영입 후보 ${L.length}명</summary><div class="crew-g">${mk}</div></details></div></div>`; }
 Object.assign(A,{ crewHire(v){ const [id,n]=String(v).split(':'); UI.fanMsg=crewHire(+id,+n); save(); render(); }, crewFire(v){ UI.fanMsg=crewFire(v); save(); render(); } });
 Object.assign(A,{ fanSet(v){ const [k,l]=String(v).split(':'); UI.fanMsg=fanSet(k,+l); save(); render(); }, fanEv(v){ UI.fanMsg=fanEvent(v); save(); render(); } });
 /* ---------- 이적시장 현황: 항상 볼 수 있는 요약과 전체 기록 ---------- */
@@ -29271,6 +29324,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-08k',d:'11월 8일',t:'선수 응원가 · 해외 진출 이야기 · 고교 MLB 직행',items:[
+    '응원단장이 있으면 시즌 중 주축 선수의 응원가를 만들자는 제안이 옵니다. 응원단장의 호응 유도·스타성이 높을수록 잘 만들어져 떼창 화제가 되고, 선수 기분과 팬 여론이 오릅니다.',
+    '정규시즌 중 해외 진출을 바라볼 만한 정상급 선수 경기에 MLB 스카우트가 몰렸다는 보도가 나옵니다. 우리 선수면 해외 진출 의지가 조금씩 커집니다.',
+    '우리 선수 포스팅은 공시 기사, 결과 8일 전 현지 보도(관심 구단 수), 결과 발표, 고별 기자회견까지 이어집니다.',
+    '고교 최대어가 드래프트 전에 미국 구단 제안을 받아 MLB로 직행할 수 있습니다. 우리 구단이 1라운드 1순위면 최고 대우나 단장 방문으로 설득해 볼 수 있습니다.'
+  ]},
   {id:'2026-11-08j',d:'11월 8일',t:'계약 화면 잠재력 표시 · 새 도전과제',items:[
     '연봉 협상·무적 선수·웨이버 공시·우리 FA 예정 선수 목록에서 이름 옆에 예상 잠재력(1군 자원·주전감·완성형 등)이 나옵니다. 무적 선수 계약 확인 창에도 나옵니다.',
     '도전과제 7개가 늘었습니다: 대기록의 해, 우리가 키운 주전, 해외로 보낸 꿈, 레전드의 귀환, 구원투수, 1000경기, 새 집.'
