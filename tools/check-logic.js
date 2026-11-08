@@ -2166,7 +2166,7 @@ T('[피드백 11-08] 새 도전과제: 포스팅·신구장·1000경기가 조�
   G.abroad=[{id:-1,name:'시험',from:U,how:'포스팅',club:'시험 구단',y:G.year,foreign:null}]; achFirstDaily(); ok(achHas('post1'),'포스팅 과제 안 열림');
   const S=stadOf(U); S.names=[{until:G.day,n:'옛 구장'}]; S.built=G.year; S.proj=null; achFirstDaily(); ok(achHas('stadNew'),'신구장 과제 안 열림');
   G.gmTen={tid:U,g:1000}; achCheck({}); ok(achHas('gm1000'),'1000경기 과제 안 열림'); });
-T('[피드백 11-08] 고교 MLB 직행: 7월 10일 제안, 1순위 구단은 설득 결정, 8월 20일 남지 않으면 드래프트에서 빠진다',()=>{ fresh(); globalThis.__seed=7; simTo(()=>G.day>=KD(7,9)); makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]); const top=C.filter(p=>!p.college).sort((a,b)=>b.pot-a.pot)[0]; top.pot=Math.max(top.pot,66);
+T('[피드백 11-08] 고교 MLB 직행: 7월 10일 제안, 1순위 구단은 설득 결정, 8월 20일 남지 않으면 드래프트에서 빠진다',()=>{ fresh(); simTo(()=>G.day>=KD(7,9)); makeDraftClass(); const C=G.draftClass.map(id=>G.players[id]); const top=C.filter(p=>!p.college).sort((a,b)=>b.pot-a.pot)[0]; top.pot=Math.max(top.pot,66);
   const R0=R; let k=0; G.day=KD(7,10); hsUsDaily(); if(!top.usOff){ top.usOff={club:'뉴욕',bonus:200,y:G.year}; } ok(top.usOff&&top.usOff.bonus>0,'제안 없음');
   const e={data:{pid:top.id}}; const cash0=team(G.user).cash; let msg=''; for(let i=0;i<30&&!top.usStay;i++){ top.usOff=top.usOff||{club:'뉴욕',bonus:200,y:G.year}; msg=EVH.usHs.pick(e,0); } ok(top.usStay,'최고 대우 설득 30번 모두 실패: '+msg); ok(team(G.user).cash<cash0,'설득 비용이 안 나감');
   const other=C.filter(p=>!p.college&&p!==top)[0]; other.usOff={club:'LA',bonus:120,y:G.year}; let left=false; for(let i=0;i<20&&!left;i++){ other.usOff={club:'LA',bonus:120,y:G.year}; delete other.usStay; G.day=KD(8,20); if(!G.draftClass.includes(other.id))break; hsUsDaily(); left=!G.draftClass.includes(other.id); }

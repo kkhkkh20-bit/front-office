@@ -112,7 +112,7 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .fmtop .goset>button.fm-busy::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85);animation:fmProg var(--fmdur,1200ms) linear forwards}
 @keyframes fmProg{to{width:100%}}
 .fmtop .goset>button.fm-busy .cl i{font-size:0}.fmtop .goset>button.fm-busy .cl i::after{content:'날짜 진행 중…';font-size:11px}
-@media (prefers-reduced-motion: reduce){.fmtop .fm-date.fm-flip b,.fmtop .goset>button.fm-busy::after{animation:none}}
+@media (prefers-reduced-motion: reduce){.fmtop .fm-date.fm-flip b{animation:none}} /* 진행 막대는 진행 상황이라 남긴다 */
 /* 진행하기 띠(FM식, 사용자 11-08): 다음 경기 요약 + 날짜 칸이 하루씩 왼쪽으로 지나간다 */
 #fmadv{position:fixed;left:var(--app-side-w,0px);right:0;top:var(--app-header-h,56px);z-index:130;background:var(--bg,#0e131a);border-bottom:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45);transform:translateY(-12px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
 #fmadv.on{opacity:1;transform:none;pointer-events:auto}

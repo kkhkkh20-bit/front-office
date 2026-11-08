@@ -3257,7 +3257,7 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .fmtop .goset>button.fm-busy::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85);animation:fmProg var(--fmdur,1200ms) linear forwards}
 @keyframes fmProg{to{width:100%}}
 .fmtop .goset>button.fm-busy .cl i{font-size:0}.fmtop .goset>button.fm-busy .cl i::after{content:'날짜 진행 중…';font-size:11px}
-@media (prefers-reduced-motion: reduce){.fmtop .fm-date.fm-flip b,.fmtop .goset>button.fm-busy::after{animation:none}}
+@media (prefers-reduced-motion: reduce){.fmtop .fm-date.fm-flip b{animation:none}} /* 진행 막대는 진행 상황이라 남긴다 */
 /* 진행하기 띠(FM식, 사용자 11-08): 다음 경기 요약 + 날짜 칸이 하루씩 왼쪽으로 지나간다 */
 #fmadv{position:fixed;left:var(--app-side-w,0px);right:0;top:var(--app-header-h,56px);z-index:130;background:var(--bg,#0e131a);border-bottom:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.45);transform:translateY(-12px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
 #fmadv.on{opacity:1;transform:none;pointer-events:auto}
@@ -24511,7 +24511,7 @@ function dayTick(d0){ const d1=G.day; if(!(d1>d0)){ tkDone(); return; } { const 
   (dayTick._steps||[]).forEach(clearTimeout);clearTimeout(dayTick._t);clearTimeout(dayTick._t2);
   /* '동작 줄이기'를 켠 기기(아이폰 설정 등)도 날짜가 넘어간 것은 보여 준다: 움직임 없이 지나간 날짜 띠를 잠깐 띄운다 */
   /* PC(FM처럼): 화면 가운데 띠 대신 오른쪽 위 날짜가 하루씩 넘어가고 '진행하기' 버튼에 진행 막대가 찬다. 경기한 날은 날짜 아래에 상대와 결과가 잠깐 */
-  if(fmOn()&&!still){ const de=document.querySelector('.fmtop .fm-date'), bt=document.querySelector('.fmtop .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child'); const L=[]; for(let d=d0+1;d<=d1;d++)L.push(d);
+  if(fmOn()){ /* 윈도우 '애니메이션 효과 끄기'(동작 줄이기)여도 PC는 FM식으로(사용자 11-08: 가운데 날짜 띠가 뜸) */ const de=document.querySelector('.fmtop .fm-date'), bt=document.querySelector('.fmtop .goset>button.continue')||document.querySelector('.fmtop .goset>button:last-child'); const L=[]; for(let d=d0+1;d<=d1;d++)L.push(d);
     const st=Math.max(180,Math.min(420,2400/L.length)), tot=st*L.length; /* 날짜 칸이 지나가는 게 보이게 하루 0.18~0.42초 */
     dayTick._until=Date.now()+tot; if(bt){ bt.classList.add('fm-busy'); bt.style.setProperty('--fmdur',tot+'ms'); }
     const put=d=>{ if(!de)return; const o=dobj(d), g=calGame(d); de.classList.remove('fm-flip'); void de.offsetWidth; de.classList.add('fm-flip'); const b=de.querySelector('b'); if(b)b.textContent=`${WD[o.w]} ${o.m}월 ${o.d}일`; let r=de.querySelector('.fm-dres'); if(!r){ r=document.createElement('i'); r.className='fm-dres'; de.appendChild(r); } r.innerHTML=g&&g.res?`${badge(g.op,14)} <em class="${g.res.r==='승'?'w':g.res.r==='패'?'l':''}">${g.res.r} ${g.res.my}:${g.res.op}</em>`:''; };
