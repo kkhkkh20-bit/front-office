@@ -8,7 +8,7 @@ function rivalAfterGame(day,h,a,g,post){
   const S=G.rivalries=G.rivalries||{pairs:{}},key=rivalPair(h,a);
   const named=key==='6:7'?'달빛대전':['0:6','0:8','6:8'].includes(key)?'엘롯기 맞대결':key==='0:1'?'서울 더비':'';
   const r=S.pairs[key]=S.pairs[key]||{a:Math.min(h,a),b:Math.max(h,a),label:named,games:0,close:0,post:0,seasons:[],wins:{},seen:[]};
-  const eid=g.rvId=g.rvId||day+':'+h+':'+a+':'+(post?'p':'r')+':'+(G.rvSeq=(G.rvSeq||0)+1);if(r.seen.includes(eid))return; /* 경기마다 번호: 같은 날 두 경기(더블헤더)도 따로 센다(검수 11-09zq) */
+  const eid=day+':'+h+':'+a+':'+(post?'p':'r')+':'+(g.rvN=g.rvN||(G.rvSeq=(G.rvSeq||0)+1));if(r.seen.includes(eid))return; /* 경기마다 번호: 같은 날 두 경기(더블헤더)도 따로 센다(검수 11-09zq) */
   r.seen.push(eid);if(r.seen.length>120)r.seen.shift();r.games++;
   if(!r.seasons.includes(G.year))r.seasons.push(G.year);
   const margin=g.score.h-g.score.a;if(Math.abs(margin)<=2)r.close++;
