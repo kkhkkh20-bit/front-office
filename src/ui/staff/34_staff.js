@@ -142,7 +142,7 @@ function stMineAside(k){ const st=n=>'★'.repeat(n)+'<i class="off">'+'★'.rep
 /* 코치 후보를 노리는 AI 구단(다음 달 1일에 데려갈 수 있다) */
 function cmRivTxt(c){ const R0=cmRivals(c); return R0.length?` · 노리는 구단 ${R0.map(x=>tshort(x.tid)).join('·')}`:''; }
 /* 스태프 시장 동향: 우리 코치에게 온 영입 제안(바로 답할 수 있게)과 최근 리그 스태프 이동 소식 */
-function smkPulse(k){ const raids=k==='coach'?(G.cmRaid||[]).map(r=>({r,c:cmMine(r)})).filter(x=>x.c):[];
+function smkPulse(k){ const raids=k==='coach'?(G.cmRaid||[]).filter(cmOurs).map(r=>({r,c:cmMine(r)})).filter(x=>x.c):[];
   const news=(G.wire||[]).filter(w=>w.k==='코치'||w.k==='스태프').slice(0,5);
   if(!raids.length&&!news.length)return '';
   const rv=raids.map(({r,c})=>`<div class="smk-raid"><b>${badge(r.tid,14)} ${esc(tshort(r.tid))} → 우리 ${esc(CROLE[r.role].l)} ${esc(c.name)}</b><span class="small muted">${r.to!==r.role?`${esc(CROLE[r.to].l)} 승격 · `:''}연 ${money(r.sal)}(현재 ${money(c.sal)}) · ${dmd(r.exp)}까지</span><div class="row"><button class="btn small primary" data-a="cmKeep" data-v="${c.id}:1:${r.exp}">연봉 맞춰 붙잡기</button><button class="btn small" data-a="cmKeep" data-v="${c.id}:0:${r.exp}">+10% 설득</button><button class="btn small" data-a="cmLet" data-v="${c.id}::${r.exp}">보내 주기</button></div></div>`).join('');
