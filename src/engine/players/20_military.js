@@ -13,14 +13,14 @@ function milInit(p){ if(p.mil!==undefined||p.foreign)return; const a=p.age; cons
   p.mil=a>=28?(u<.9?{done:true}:u<.95?{exempt:true}:null):a>=25?(u<.55?{done:true}:u<.6?{exempt:true}:null):a>=22?(u<.2?{done:true}:null):null; }
 function milText(p){ if(p.foreign)return '해당 없음'; const m=p.mil; if(!m)return `미필 · ${G.year+Math.max(0,27-p.age)}년까지 입대`; if(m.exempt)return '면제(체육요원)'; if(m.done)return '군필';
   if(m.until&&m.from<=G.day&&m.until>G.day)return `${m.unit} 복무 중 · ${dmd(m.until)} 전역`; if(m.until&&m.from>G.day)return `${m.unit} 입대 예정 · ${dmd(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
-function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ cn.milPrev={st:cn.st,ns:p.newSal,has:'newSal' in p}; cn.st='ok'; cn.mil=true; p.newSal=p.sal; } /* 복무 선수는 연봉 협상 없이 지금 연봉으로(복무 중 지급 없음). 예약을 취소하면 아래에서 협상 상태를 되돌린다 */ story(p,`${unit} 입대 (${dmd(from)})`,'mil'); if(from<=G.day)p.e1=false; /* 엔트리는 입대일에 뺀다(합격 발표 때 빼지 않는다) */ if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
+function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ p.mil.neg={st:cn.st,ns:p.newSal,has:'newSal' in p,v:cn.cur??cn.off,ask:cn.ask}; /* 예약 전 협상은 선수에게 남긴다: 단장이 떠났다 돌아와도 같은 결과(검수 11-09zx) */ cn.st='ok'; cn.mil=true; p.newSal=p.sal; } /* 복무 선수는 연봉 협상 없이 지금 연봉으로(복무 중 지급 없음). 예약을 취소하면 아래에서 협상 상태를 되돌린다 */ story(p,`${unit} 입대 (${dmd(from)})`,'mil'); if(from<=G.day)p.e1=false; /* 엔트리는 입대일에 뺀다(합격 발표 때 빼지 않는다) */ if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
 function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; if(p.mil&&p.mil.app)return '이미 지원했습니다.'; const w=sangmuWave(); if(!w)return '상무 지원 기간이 아닙니다(3~4월, 9~10월).'; if(p.age>27)return '상무 지원은 27세까지입니다(게임 규칙).';
   p.mil={app:w}; addLog(`${p.name}이(가) 상무에 지원했습니다.`); return ''; }
 function sangmuWave(){ const d=G.day; if(d>=KD(9,1)&&d<KD(10,15))return 'dec'; if(d>=KD(3,1)&&d<KD(4,15))return 'jun'; return null; }
 /* 단장이 예약한 현역 입대는 입대일 전까지 취소할 수 있다(28세 강제 입대·상무 합격은 제외) */
-function enlistCancel(id){ const p=G.players[id]; const m=p&&p.mil; if(!p||p.team!==G.user||!m||!m.until||!m.byGM||m.from<=G.day)return '취소할 수 있는 입대 예약이 없습니다.'; p.mil=m.app0&&sangmuWave()===m.app0?{app:m.app0}:null; /* 지원 기간 안이면 상무 지원을 되살린다(검수 11-07) */ milNegBack(p); story(p,'현역 입대 예약 취소','mil'); return ''; }
+function enlistCancel(id){ const p=G.players[id]; const m=p&&p.mil; if(!p||p.team!==G.user||!m||!m.until||!m.byGM||m.from<=G.day)return '취소할 수 있는 입대 예약이 없습니다.'; p.mil=m.app0&&sangmuWave()===m.app0?{app:m.app0}:null; /* 지원 기간 안이면 상무 지원을 되살린다(검수 11-07) */ milNegBack(p,m); story(p,'현역 입대 예약 취소','mil'); return ''; }
 /* 입대 확정으로 '합의'가 된 연봉 협상을 예약 전 상태로(예약 취소·병역 특례) */
-function milNegBack(p){ { const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.mil&&cn.milPrev){ const q=cn.milPrev; cn.st=q.st; delete cn.mil; delete cn.milPrev; if(q.has)p.newSal=q.ns; else delete p.newSal;
+function milNegBack(p,m){ { const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id], q=m&&m.neg||cn&&cn.milPrev; /* milPrev: 옛 저장 */ if(q&&!(cn&&cn.mil)){ if(p.newSal==null&&(q.st==='open'||q.st==='arb')){ if(q.ask>q.v*HOLD_GAP)holdStart(p,q.v,q.ask); else p.sal=Math.max(MIN_SAL,q.v); } return; } /* 협상 기록이 이미 인계로 닫혔으면 확정 때 결과(구단안 계약 또는 미계약)로. shortcut: 조정 신청 상태도 구단안 기준, 사례가 생기면 조정 판정 */ if(cn&&cn.mil&&q){ cn.st=q.st; delete cn.mil; delete cn.milPrev; if(q.has)p.newSal=q.ns; else delete p.newSal;
     if(G.contract.done&&cn.st==='arb'){ try{ salArbDecide(); }catch(e){} if(p.newSal!=null){ p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal; } } /* 확정이 끝난 뒤 취소하면 조정을 바로 판정(미결로 남지 않게, 검수 11-06) */
     if(G.contract.done&&cn.st==='open'){ const v=cn.cur??cn.off; delete p.newSal; if(cn.ask>v*HOLD_GAP){ holdStart(p,v,cn.ask); cn.st='hold'; } else { p.sal=Math.max(MIN_SAL,v); cn.st='ok'; } } } } /* 계약을 이미 확정한 뒤 취소하면 그때 확정했을 결과(구단안 계약 또는 미계약)로 */ /* 입대 예약이 연봉 합의가 되지 않게: 예약 전 협상 상태(구단안·선수안·진행 중)로 */ }
 function enlistNow(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; const app0=p.mil&&p.mil.app; enlist(p,'현역',G.day+14); p.mil.byGM=true; if(app0)p.mil.app0=app0; return ''; }
@@ -52,8 +52,9 @@ function milDaily(){ const d=G.day;
     if(mo.some(p=>ovr(p)>=52))news('선수',`${tshort(G.user)} 주축 ${mo.find(p=>ovr(p)>=52).name} 상무 합격`,`전력 공백은 불가피하지만 1년 6개월 뒤 돌아올 자원입니다.`,-1); }
   try{ milRetWarn(d); }catch(e){}
   for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.from===d){ p.e1=false; if(p.team===G.user)addLog(`${p.name} ${m.unit} 입대. 전역 예정 ${dmd(m.until)}.`); } }
-  for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until===d){ p.mil={done:true,unit:m.unit,pf:m.from,pu:m.until}; /* 지난 복무 기간: 그해 연봉 계산(payFrac)에 남긴다(검수 11-06) */ story(p,`${m.unit} 전역`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} 전역`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다. 정식 로스터 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
+  const back={}; for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until===d){ if(p.team!=null)(back[p.team]=back[p.team]||[]).push(p); p.mil={done:true,unit:m.unit,pf:m.from,pu:m.until}; /* 지난 복무 기간: 그해 연봉 계산(payFrac)에 남긴다(검수 11-06) */ story(p,`${m.unit} 전역`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} 전역`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다. 정식 로스터 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
   for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX)try{ trimRoster(t.id,ROSTER_MAX); }catch(e){} }
+  for(const tid in back)try{ entryUpgrade(+tid,back[tid],'전역'); }catch(e){} /* 전역한 주축은 당일 엔트리 교체를 검토한다(검수 11-09zx) */
   try{ ntDaily(d); }catch(e){ console.error(e); } } /* 국가대표(아시안게임·올림픽·WBC·프리미어12): 84_national.js */
 /* 곧 군에서 돌아오는 우리 선수(정식 로스터로 바로 복귀한다) */
 function milReturns(days){ return awayOf(G.user).filter(p=>!p.ys&&p.mil&&p.mil.until>G.day&&p.mil.until<=G.day+days).sort((a,b)=>a.mil.until-b.mil.until); }
@@ -66,20 +67,20 @@ function milAdviceTxt(ms){ const A=ms.map(p=>({p,a:milAdvice(p)})); const sec=(k
   return ['코치진·스카우트 추천', sec('last','마지막 기회'), sec('go','지원 추천'), sec('hold','보류 의견')].filter(Boolean).join('\n\n'); }
 function p28(ms){ const u=ms.filter(p=>p.age>=27); return u.length?`올해 안에 입대해야 하는 선수(27세 이상): ${u.map(p=>p.name).join(', ')}. 해를 넘기면 현역으로 입대합니다.\n\n`:''; }
 function milNewYear(){ // 해가 바뀌면 28세 이상 미필은 현역 입대
-  for(const p of Object.values(G.players)){ milInit(p); if(p.team==null||!milFree(p)||p.mil&&p.mil.app)continue; if(p.team!==G.user&&p.age>=20&&p.age<=24&&ovr(p)<40&&R()<.22){ enlist(p,'현역',dnum(G.year,1,20)); continue; } if(p.age>=28){ enlist(p,'현역',dnum(G.year,1,20)); if(p.team===G.user)mail('운영팀',`${p.name} 현역 입대 예정 · ${dmd(dnum(G.year,1,20))}`,`${p.name}이(가) 입대 연기 한도를 넘겨 ${dmd(dnum(G.year,1,20))}에 현역으로 입대합니다(게임 규칙: 28세). 1년 6개월 뒤 돌아오지만 기량이 떨어질 수 있습니다.`,{imp:true,kind:'병역',ref:p.id}); } } }
+  for(const p of Object.values(G.players)){ milInit(p); if(p.team==null||!milFree(p)||p.mil&&p.mil.app)continue; if(p.team!==ME()&&p.age>=20&&p.age<=24&&ovr(p)<40&&R()<.22){ enlist(p,'현역',dnum(G.year,1,20)); continue; } if(p.age>=28){ enlist(p,'현역',dnum(G.year,1,20)); if(p.team===G.user)mail('운영팀',`${p.name} 현역 입대 예정 · ${dmd(dnum(G.year,1,20))}`,`${p.name}이(가) 입대 연기 한도를 넘겨 ${dmd(dnum(G.year,1,20))}에 현역으로 입대합니다(게임 규칙: 28세). 1년 6개월 뒤 돌아오지만 기량이 떨어질 수 있습니다.`,{imp:true,kind:'병역',ref:p.id}); } } }
 /* 2군 월간 리포트: 5~9월 1일 육성팀 보고 */
-function futuresReport(){ if(G.unemp)return; const y=G.year; const ps=playersOf(G.user).filter(p=>!p.foreign&&!p.e1); if(!ps.length)return;
-  const B=ps.filter(p=>!p.isP).map(p=>({p,h:seasonTotalT(p,y,'퓨처스',G.user)})).filter(x=>x.h&&x.h.pa>=40).map(x=>({...x,v:bRate(x.h).ops})).sort((a,b)=>b.v-a.v).slice(0,3);
-  const P=ps.filter(p=>p.isP).map(p=>({p,h:seasonTotalT(p,y,'퓨처스',G.user)})).filter(x=>x.h&&x.h.outs>=45).map(x=>({...x,v:pRate(x.h).era})).sort((a,b)=>a.v-b.v).slice(0,3);
+function futuresReport(){ if(G.unemp)return; const y=G.year; const all=playersOf(G.user).filter(p=>!p.foreign), ps=all.filter(p=>!p.e1); /* 2군 성적은 보고 전에 콜업된 선수도 넣는다(검수 11-09zx) */
+  const B=all.filter(p=>!p.isP).map(p=>({p,h:seasonTotalT(p,y,'퓨처스',G.user)})).filter(x=>x.h&&x.h.pa>=40).map(x=>({...x,v:bRate(x.h).ops})).sort((a,b)=>b.v-a.v).slice(0,3);
+  const P=all.filter(p=>p.isP).map(p=>({p,h:seasonTotalT(p,y,'퓨처스',G.user)})).filter(x=>x.h&&x.h.outs>=45).map(x=>({...x,v:pRate(x.h).era})).sort((a,b)=>a.v-b.v).slice(0,3);
   const base=G.fut0&&G.fut0.y===y?G.fut0.m:{}; const up=ps.filter(p=>base[p.id]!=null).map(p=>({p,d:ovr(p)-base[p.id]})).filter(x=>x.d>=1).sort((a,b)=>b.d-a.d).slice(0,3);
   const rk=slotRanks(G.user); const call=ps.filter(canUp).map(p=>{ const k=pSlot(p); const sl=rk[k]; const worst=sl&&sl.ps&&sl.ps.length?Math.min(...sl.ps.map(q=>ovr(q))):0; return {p,k,gap:ovr(p)-worst}; }).filter(x=>x.gap>=-1).sort((a,b)=>b.gap-a.gap).slice(0,2);
-  if(!B.length&&!P.length&&!up.length)return;
-  const L=[]; if(B.length)L.push('2군 타격: '+B.map(x=>`${x.p.name}(${posLabel(x.p)}, OPS ${fmt3(x.v)}, ${x.h.pa}타석)`).join(', '));
-  if(P.length)L.push('2군 투구: '+P.map(x=>`${x.p.name}(${posLabel(x.p)}, ERA ${x.v.toFixed(2)}, ${ipStr(x.h.outs)}이닝)`).join(', '));
+  const L=[]; if(B.length)L.push('2군 타격: '+B.map(x=>`${x.p.name}(${posLabel(x.p)}, OPS ${fmt3(x.v)}, ${x.h.pa}타석${x.p.e1?', 1군 콜업':''})`).join(', '));
+  if(P.length)L.push('2군 투구: '+P.map(x=>`${x.p.name}(${posLabel(x.p)}, ERA ${x.v.toFixed(2)}, ${ipStr(x.h.outs)}이닝${x.p.e1?', 1군 콜업':''})`).join(', '));
   if(up.length)L.push('올해 눈에 띄게 성장: '+up.map(x=>`${x.p.name}(+${x.d.toFixed(1)})`).join(', '));
   { const cv=ps.filter(p=>p.pconv).map(p=>`${p.name}(${POSK[p.pconv.pos]} 숙련 ${Math.round(posExp(p,p.pconv.pos))}/90${p.fuse&&p.fuse.y===y&&p.fuse.pos[p.pconv.pos]?`, 2군에서 그 자리 ${p.fuse.pos[p.pconv.pos]}경기`:''})`); if(cv.length)L.push('포지션 전환 훈련: '+cv.join(', ')); }
   { const s2=ps.filter(p=>p.isP&&rpPlanOf(G.user,p)==='sp2').map(p=>{ const h=seasonTotal(p,y,'퓨처스'); return `${p.name}(${h?`${h.gs||0}선발 ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:'등판 전'})`; }); if(s2.length)L.push('2군 선발 수업: '+s2.join(', ')); }
   if(call.length)L.push('1군 콜업 후보: ' /* 실제 콜업과 같은 조건(재등록 대기·선발 수업·출장 정지 제외, 검수 11-09zi) */+call.map(x=>`${x.p.name}(${posLabel(x.p)}) — 1군 같은 자리 선수와 비슷하거나 낫습니다`).join(', '));
+  if(!L.length)return; /* 콜업 후보만 있는 달도 보낸다(검수 11-09zx) */
   mail('육성팀',`${dobj(G.day).m}월 2군 리포트`,`육성팀입니다. 이번 달 2군 현황을 보고드립니다.\n\n${L.join('\n\n')}\n\n1군 기용은 감독 권한입니다. 콜업 후보는 감독에게 건의하거나 출전 기회를 약속하는 면담으로 밀어줄 수 있습니다.`,{kind:'육성',acts:[{l:'선수 육성',a:'goWork',v:'2군연수'}]}); }
 /* 올해 시작 시점 능력(성장 표시용)과 매달 팀 성장 기록 */
 function ovrSnap(){ if(G.unemp)return; G.ovr0={y:G.year,m:Object.fromEntries(playersOf(G.user).concat(Object.values(G.players).filter(p=>p.team===G.user&&p.joinY>G.year)).map(p=>[p.id,ovr(p)]))}; }

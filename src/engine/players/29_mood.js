@@ -22,6 +22,7 @@ function squadRole(p){ if(!p||p.team==null||p.prospect)return ''; if(p.mil&&p.mi
 function keepWhy(p){ if(!p||p.team==null||p.prospect)return ''; const per=period(); if(!(per==='season'||per==='post'))return ''; const r=G.sea.rec[p.team]; if(!r||r.w+r.l<10)return ''; const h=seasonTotal(p,G.year,'1군'); if(h&&((h.pa||0)+(h.outs||0)))return '';
   if(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)return '군 복무 중입니다. 전역하면 다시 전력에 들어옵니다.';
   if(p.injOut>0)return `부상으로 빠져 있습니다(복귀까지 ${p.injOut}일).`;
+  if(p.hold)return '연봉 미계약으로 계약할 때까지 훈련·경기(퓨처스 포함)에 나설 수 없습니다.';
   if(p.age<=24&&(p.pot||0)-ovr(p)>=6)return '성장 여지가 커서 2군에서 출전 시간을 받으며 키우는 중입니다.';
   if(p.pos==='C'&&!p.isP)return '포수 부상에 대비한 셋째 포수입니다.';
   if(p.sal>=300)return `계약(연봉 ${money(p.sal)})이 남아 있어 쉽게 정리하기 어렵습니다. 반등을 기다리거나 트레이드를 검토할 수 있습니다.`;

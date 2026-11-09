@@ -65,7 +65,7 @@ function futPit(p,t){ const sp=isSPr(p);
   const days=sp?[G.day]:(p.downDay!=null&&p.downDay>G.day-2)?[G.day]:[G.day-2,G.day]; /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */
   const mv=(p.story||[]).filter(x=>x.k==='move'&&x.y===G.year&&/이적|입단|복귀/.test(x.t)).pop(), ih=(p.injHist||[]).slice(-1)[0];
   const okD=d=>d===G.day||(!(mv&&mv.d>d)&&!(p.ntFrom!=null&&p.ntFrom<=d&&p.ntAway>d)&&!(ih&&ih.d<=d&&(ih.bk??(p.injOut>0?Infinity:ih.d+ih.days))>d)&&!(p.susp>d)&&!(p.mil&&p.mil.unit!=='상무'&&p.mil.from<=d&&p.mil.until>d)); /* 작년 부상도 실제 복귀일까지, 출장 정지·현역 복무 중인 날도 빼고(검수 11-09t) */ /* 이적 전·대표팀 소집 중·부상 복귀 전 날짜에는 등판을 만들지 않는다(검수 11-08) */
-  const D=days.filter(d=>!had(d)&&okD(d)&&!(G.cal&&d<G.cal.open)); /* 개막 전 날짜에는 정규 등판을 만들지 않는다(검수 11-09) */ if(!D.length)return; /* 실제로 던질 날을 먼저 정하고 기록·재활을 그만큼만(검수 11-08: 중복 막고도 성적·재활 진척이 들어감, 1회 등판이 2경기로 기록) */
+  const D=days.filter(d=>!had(d)&&!(d===G.day&&futUpToday(p))&&okD(d)&&!(G.cal&&d<G.cal.open)); /* 개막 전 날짜에는 정규 등판을 만들지 않는다(검수 11-09) */ if(!D.length)return; /* 실제로 던질 날을 먼저 정하고 기록·재활을 그만큼만(검수 11-08: 중복 막고도 성적·재활 진척이 들어감, 1회 등판이 2경기로 기록) */
   let outs=sp?ri(12,18):ri(4,8); if(!sp)outs=Math.max(1,Math.round(outs*D.length/2)); let o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:D.length; o.gs=sp?1:0;
   /* 투구 수 = 상대 타자 수 × 타석당 3.9구(KBO 평균 수준). 예전 식(아웃당 5.4구 + 출루당 4구)은 출루를 두 번 세어 퓨처스 선발이 130~200구를 던진 것으로 잡혔다 */
   const pc=Math.min(sp?110:45,Math.round((outs+(o.h||0)+(o.bb||0)+(o.hbp||0))*3.9));
