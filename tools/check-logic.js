@@ -1644,7 +1644,7 @@ T('[검수 11-06e] 신구장 협상 결렬 뒤 재시도 연도 전에는 다시
 T('[검수 11-06f] 비시즌에는 출전 약속 기한이 지나도 위반으로 사기가 떨어지지 않는다',()=>{ fresh(); simTo(()=>G.cal&&G.day>G.cal.end+20&&period()!=='post'); const p=domestic(G.user).find(q=>!q.foreign&&!isRegular(q)); p.promise={until:G.day-1,b:{y:G.year,pa:0,outs:0,g:0}}; p.mor=68; moraleWeek();
   ok(p.promise,'약속이 비시즌에 평가돼 지워짐'); ok(p.mor>68-12+1,'사기 '+p.mor); });
 T('[검수 11-06f] 선수가 거절한 우리 FA 제안은 매주 요구액 인하를 막지 않는다',()=>{ fresh(); simTo(()=>G.fa&&!G.fa.closed&&G.day>=G.fa.openDay); const F=G.fa; const p=F.pool.map(id=>G.players[id]).find(q=>q&&q.team==null&&q.faFrom!==G.user); ok(p,'준비 실패');
-  p.ask0=p.ask.annual=5000; F.ai[p.id]={}; F.offers[p.id]={annual:1000,years:1,rej:true}; faDay(F.openDay+7); ok(p.team!=null||p.ask.annual<5000,'요구액 그대로 '+p.ask.annual); });
+  p.ask0=p.ask.annual=5000; F.ai[p.id]={}; F.offers[p.id]={annual:1000,years:1,rej:true}; faDay(F.openDay+7); ok(p.team!=null||p.ask.annual<5000,'요구액 그대로 '+(p.ask&&p.ask.annual)); });
 T('[검수 11-06f] 결산 뒤 예산의 연봉 하한은 다음 시즌 기준이다',()=>{ fresh(); simTo(()=>G.last&&G.last.y===G.year); ok(capInfo(G.user).floor===floorOf(G.year+1),'하한 '+capInfo(G.user).floor+' / 다음 시즌 '+floorOf(G.year+1)); });
 T('[검수 11-06f] 예산 전망 수입에 이미 생긴 2군 체류 연봉 감액이 들어간다',()=>{ fresh(); simTo(()=>period()==='season'); G.sea.cut=G.sea.cut||{}; G.sea.cut[G.user]=0; const a=sum(budget().inc.map(x=>x[1])); G.sea.cut[G.user]=96; const b=sum(budget().inc.map(x=>x[1])); ok(b-a===96,'변화 '+(b-a)); });
 T('[검수 11-06f] 같은 날 서로 다른 구단과 한 트레이드는 따로 센다',()=>{ fresh(); G.moves=[]; const mk=(to,n)=>({d:G.day,t:'트레이드',from:1,to,name:'x'+n,amt:0}); G.moves.push(mk(6,1),mk(6,2),mk(7,3),mk(7,4)); G.news=[]; mvWeekly(); ok((G.news||[]).some(n=>/트레이드 2건/.test(n.b+n.t)),'기사: '+((G.news||[])[0]||{}).b); });
@@ -2674,6 +2674,17 @@ T('[검수 11-09l] 선수 보관 전후 끝난 경기 팀 통계가 같고, BABI
   const F=pFeats(e); ok(F.some(x=>x.k==='era0')&&!F.some(x=>x.k==='era1'),'평균자책점 0.45 분류 '+F.map(x=>x.k).join(','));
   G.awards=G.awards||{}; G.awards[y]={pend:{mvp:true},mvp:null,roy:null,gg:{},cand:{mvp:[],roy:[],gg:{}}}; G.day+=3; awardCeremony('mvp'); ok(G.awards[y].cd&&G.awards[y].cd.mvp===G.day,'시상식 실제 날짜 저장 안 됨');
 });
+T('[피드백 11-09d] 고향·모교: FA 선호, 구단주 자금, 팬·구단주 명분, 선수 카드',()=>{ fresh(); const hk=teamArea(G.user); const oth=G.teams.find(t=>teamArea(t.id)&&teamArea(t.id)!==hk).id;
+  const p=Object.values(G.players).find(q=>!q.foreign&&!q.prospect&&q.team!=null&&q.team!==G.user&&!q.retired); ok(p&&hk,'준비 실패'); p.area=hk; p.age=28; delete p.draft;
+  const h=homeTie(p,G.user); ok(h&&h.v===.04&&!h.vet&&AREA.find(a=>a.k===hk).hs.includes(h.sch),'고향 연결 '+JSON.stringify(h)); ok(!homeTie(p,oth),'다른 권역 구단은 고향 아님');
+  const A=faAppeal(p,G.user); ok(A.parts.some(x=>/^고향 팀 · .+ 출신/.test(x[0])&&x[1]===.04),'협상 화면 이유 줄 '+JSON.stringify(A.parts));
+  p.age=35; p.draft={y:G.year-14,rd:1,no:3,tid:G.user}; const h2=homeTie(p,G.user); ok(h2.vet&&h2.first&&Math.abs(h2.v-.09)<1e-9&&/친정/.test(h2.l),'귀향 베테랑 가중 '+h2.v);
+  ok(faAppeal(Object.assign({},p,{area:teamArea(oth),draft:null}),oth).parts.some(x=>/^고향 팀/.test(x[0])),'AI 구단도 같은 선호'); ok(!homeTie(Object.assign({},p,{foreign:true}),G.user),'외국인 제외');
+  { const q=Object.assign({},p,{id:p.id}); const s1=faScore(q,{tid:G.user,annual:1000,years:1}), s0=faScore(Object.assign({},q,{area:AREA.find(a=>a.k!==hk&&a.reg!==team(G.user).region).k}),{tid:G.user,annual:1000,years:1}); ok(s1>s0,'고향 제안이 더 높게 '+s1+' '+s0); }
+  const t=team(G.user); const tr0=t.trust, fan0=G.pr.fan, n0=(G.news||[]).length; const r=homeReturn(p,G.user); ok(r&&t.trust===Math.min(100,tr0+2),'구단주 신뢰 +2 '+tr0+'->'+t.trust); ok(G.news.length>n0&&G.news[0].t==='고향 팀으로 돌아온 '+p.name,'기사'); ok(G.pr.fan>=fan0,'팬 여론');
+  const ot=team(oth), pop0=ot.pop; const q2=Object.assign({},p,{area:teamArea(oth),draft:null}); homeReturn(q2,oth); ok(ot.pop>pop0,'AI 구단 인기');
+  const F0=G.fa; p.team=null; p.ask={annual:800,years:1}; G.fa={open:true,closed:false,pool:[p.id]}; const w1=ownWhy('fa',0,p.id); p.area=AREA.find(a=>a.k!==hk).k; const w0=ownWhy('fa',0,p.id); G.fa=F0; ok(w1.p>w0.p&&w1.f.some(x=>/고향 선수/.test(x[1])),'구단주 자금 명분 '+w1.p+' '+w0.p);
+  ok(/·/.test(homeTxt(p)),'카드 고향 표기 '+homeTxt(p)); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
