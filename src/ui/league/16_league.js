@@ -40,7 +40,7 @@ function stbl(id,cols,rows,o){
   const sorted=[...rows].sort((a,b)=>{ const va=c.v(a), vb=c.v(b); if(va==null&&vb==null)return 0; if(va==null)return 1; if(vb==null)return -1; const d=typeof va==='string'?va.localeCompare(vb):va-vb; return st.dir*d; }).slice(0,o.limit||999);
   // 열별 상·하위 표시(팀 표 등 소규모일 때)
   const tier={}; if(o.rank){ for(const cc of cols){ if(cc.k==='tm'||cc.k==='name')continue; const s=[...rows].map(r=>cc.v(r)).filter(v=>v!=null).sort((a,b)=>cc.asc?a-b:b-a); tier[cc.k]=s; } }
-  const tcls=(cc,r)=>{ const s=tier[cc.k]; if(!s)return ''; const v=cc.v(r); const i=s.indexOf(v); return i<3?' t-hi':s.lastIndexOf(v)>=s.length-3?' t-lo':''; }; /* 공동 순위도 같이 칠한다(위·아래 같게) */
+  const tcls=(cc,r)=>{ const s=tier[cc.k]; if(!s)return ''; const v=cc.v(r); const i=s.indexOf(v); if(i<0)return ''; /* 값이 없는 칸(-)은 순위 색을 붙이지 않는다(검수 11-09zg) */ return i<3?' t-hi':s.lastIndexOf(v)>=s.length-3?' t-lo':''; }; /* 공동 순위도 같이 칠한다(위·아래 같게) */
   const th=cc=>`<th data-a="lsort" data-v="${id}:${cc.k}" class="sortable${cc.cls?' '+cc.cls:''}${cc.k===c.k?' on':''}">${cc.l}${cc.k===c.k?(st.dir<0?' ▼':' ▲'):''}</th>`;
   return `<div class="tw"><table class="sqt rt lst"><thead><tr>${o.num?'<th class="n">#</th>':''}${cols.map(th).join('')}</tr></thead><tbody>${sorted.map((r,i)=>`<tr class="${o.click?'click ':''}${o.me&&o.me(r)?'me':''}"${o.click?o.click(r):''}>${o.num?`<td class="n">${i+1}</td>`:''}${cols.map(cc=>`<td class="${cc.cls||''}${cc.k===c.k?' key':''}${tcls(cc,r)}">${cc.f?cc.f(r):cc.v(r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
