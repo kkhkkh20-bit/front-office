@@ -2848,6 +2848,27 @@ T('[검수 11-09w] 거래 성적표: 지명권·현금을 보여 주고, 받은 
   const W={}; W[r.id+':'+G.user]=3.82; W[a.id+':'+G.user]=0; W[a.id+':'+th]=5.38; const st=seasonTotalT, wo=warOf; seasonTotalT=(p,y,l,tid)=>W[p.id+':'+tid]!=null&&y===G.year?{w:W[p.id+':'+tid]}:null; warOf=h=>h.w;
   try{ const rep=tradeReport({y:G.year,d:G.day,with:t,gi:[a.id],go:[],snap:{},me:G.user,pkk:{y:G.year,get:['2:'+t],give:[]}}); ok(Math.abs(rep.got-3.82)<1e-9,'받은 쪽 WAR '+rep.got); } finally { seasonTotalT=st; warOf=wo; }
   const d=Math.max(G.cal.end+3,dnum(G.year,10,28)); G.day=d; G.ps={done:true,finDay:d}; G.last={y:G.year,d}; ok(period()==='off','준비 실패: '+period()); ok(mvWinStart()<=d,'결산 뒤 10월 거래가 스토브리그 집계에서 빠짐 '+dmd(mvWinStart())); });
+T('[검수 11-09v] 트레이드에 약정한 현금은 시설 공사 등 구단 현금 지출에 다시 쓸 수 없다',()=>{ fresh(); const oe=evalTrade, oo=tradeOwnerCheck; try{ evalTrade=(...a)=>{ const e=oe(...a); e.ok=true; e.theirPay=0; return e; }; tradeOwnerCheck=()=>null;
+  facInit(); G.fac.bld={}; const k=FACK.find(x=>G.fac.it[x]<FAC_MAX&&FACI[x].c[G.fac.it[x]+1]<=3000); ok(k,'준비 실패: 30억 이하 공사 없음'); const c=FACI[k].c[G.fac.it[k]+1];
+  G.spend.compIn=0; G.spend.comp=0; G.spend.trC=0; team(G.user).cash=3000; const op=G.teams.find(t=>t.id!==G.user).id; const g=domestic(G.user).find(q=>!q.foreign&&!hasNtc(q)), q=domestic(op).find(x=>!x.foreign&&!hasNtc(x));
+  const r=proposeTrade(op,[g.id],[q.id],3000); ok(r.ok,'준비 실패: 현금 거래 실패 '+r.msg); ok(sdCash(G.user)===0,'약정 뒤 쓸 수 있는 현금 '+sdCash(G.user));
+  const m=buildFacItem(k); ok(m&&m.includes('부족')&&!G.fac.bld[k],'약정한 현금으로 공사 시작('+money(c)+'): '+m); ok(acadLv()>=3||acadUp().includes('부족'),'아카데미 투자가 약정 현금을 씀');
+  } finally{ evalTrade=oe; tradeOwnerCheck=oo; } });
+T('[검수 11-09v] AI끼리 거래하면 양쪽 모두 이미 달성한 성과 옵션을 원소속 구단이 지급한다',()=>{ fresh(); const oo=optEarned, op=payOut; const paid=[]; try{ optEarned=p=>!!(p&&p.opt&&p.opt.tst); payOut=(tid,a,k)=>{ paid.push(tid); return op(tid,a,k); };
+  for(const p of Object.values(G.players))if(p.team!=null&&p.team!==G.user&&!p.foreign)p.opt={a:300,tst:1,until:G.year};
+  let tr=null; for(let i=0;i<40&&!tr;i++)for(const t of G.teams){ if(t.id===G.user)continue; G.lgTrades=[]; if(aiTradeTry(t.id)){ tr=G.lgTrades[0]; break; } }
+  ok(tr,'준비 실패: AI 거래가 생기지 않음'); ok(paid.filter(x=>x===tr.b).length===tr.ag.length,'보낸 구단(B) 옵션 지급 '+paid.filter(x=>x===tr.b).length+'/'+tr.ag.length); ok(paid.filter(x=>x===tr.a).length===tr.bg.length,'보낸 구단(A) 옵션 지급 '+paid.filter(x=>x===tr.a).length+'/'+tr.bg.length);
+  } finally{ optEarned=oo; payOut=op; } });
+T('[검수 11-09v] 거래 연봉 변화: 시즌 중 올해 몫은 남은 기간만, 겨울은 합의한 다음 시즌 연봉으로 보고 캡 비교 기준도 같다',()=>{ fresh(); const op=G.teams.find(t=>t.id!==G.user).id; const p=domestic(G.user).find(q=>!q.foreign&&!q.extNext&&!q.ntc), q=domestic(op).find(x=>!x.foreign&&!x.ntc&&!x.extNext);
+  const D0=G.day, L0=G.last; try{ G.day=G.cal.open+Math.round((G.cal.end-G.cal.open)*.65); q.sal=p.sal+1200; const s=tradeSalChg([p.id],[q.id]); ok(s.d===1200&&s.fr<.5&&s.yr===Math.round(1200*s.fr),'시즌 중 올해 몫 '+JSON.stringify(s));
+    G.day=D0; G.last={...(L0||{}),y:G.year}; ok(preSeason(sponSeason()),'준비 실패: 겨울 아님'); q.sal=300; p.sal=700; p.newSal=500; q.newSal=1100; const w=tradeSalChg([p.id],[q.id]); ok(w.nx&&w.d===600&&w.yr===600,'겨울 다음 시즌 연봉 변화 '+JSON.stringify(w));
+    ok(capInfo(G.user).pay===capPayAs(G.user,[],[]),'거래 전 캡 부담과 거래 후 계산 기준이 다름 '+capInfo(G.user).pay+' / '+capPayAs(G.user,[],[]));
+  } finally{ G.day=D0; G.last=L0; } });
+T('[검수 11-09v] 언론 평점은 현금 10억당 4점, 부단장 의견도 현금·지명권을 넣어 평가한다',()=>{ fresh(); const ot=tval; try{ tval=()=>5; const op=G.teams.find(t=>t.id!==G.user).id; const g=domestic(G.user).find(q=>!q.foreign), q=domestic(op).find(x=>!x.foreign);
+  ok(tradeGrade(op,[g.id],[q.id],0)==='C','준비 실패: 같은 값인데 '+tradeGrade(op,[g.id],[q.id],0)); ok(tradeGrade(op,[g.id],[q.id],1000)==='D','10억 얹어도 '+tradeGrade(op,[g.id],[q.id],1000)); ok(tradeGrade(op,[g.id],[q.id],3000)==='F','30억 얹어도 '+tradeGrade(op,[g.id],[q.id],3000));
+  ok(asstOpinion(op,[g.id],[q.id])[0].includes('공정'),'준비 실패: 선수만 '+asstOpinion(op,[g.id],[q.id])[0]); const k=pkHeld(G.user).find(x=>+x.split(':')[0]===1);
+  const o=asstOpinion(op,[g.id],[q.id],3000,{give:k?[k]:[]})[0]; ok(o.includes('많이 손해'),'현금 30억과 1라운드 지명권을 얹어도 '+o);
+  } finally{ tval=ot; } });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

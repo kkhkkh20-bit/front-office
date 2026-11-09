@@ -172,8 +172,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },
   liveDone(){ G.live=null; save(); render(); },
   openGame(v){ const sg=spoilG(); if(sg&&G.games[+v]===sg){ if(UI.cast&&G.games[UI.cast.g]===sg){ A.castView('data'); return; } toast('중계를 마친 뒤에 박스스코어를 볼 수 있습니다.'); return; } /* 중계 중에는 어느 화면에서도 최종 박스스코어를 열지 않는다(검수 11-06) */ UI.sheet=null; UI.posSheet=null; UI.game=+v; UI.gtab='box'; renderSheet(); },
-  offerYes(v){ offerMailDone(v); const r=answerOffer(v,true); if(!r.ok)UI._cfmWhy=r.msg; note('트레이드',r.msg); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
-  offerNo(v){ offerMailDone(v); answerOffer(v,false); G.stops=G.stops.filter(s=>s.kind!=='트레이드'); save(); render(); },
+  offerYes(v){ const r=answerOffer(v,true); if(!(G.offers||[]).some(x=>x.id===v))offerMailDone(v); /* 불발돼 받은 목록에 남은 제안은 메일도 그대로(검수 11-09v) */ if(!r.ok)UI._cfmWhy=r.msg; note('트레이드',r.msg); G.stops=G.stops.filter(s=>s.oid!==v); /* 이 제안 알림만 정리 */ save(); render(); },
+  offerNo(v){ offerMailDone(v); answerOffer(v,false); G.stops=G.stops.filter(s=>s.oid!==v); save(); render(); },
   buildFacItem(v){ UI.facMsg=buildFacItem(v)||null; save(); render(); },
   invSel(v){ UI.invSel=v; UI.facMsg=null; UI.stadMsg=null; render(); },
   campZoom(v){ campZoomTo(null); },
@@ -364,7 +364,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tradeReview(){UI.trade.stage='review';render();window.scrollTo(0,0);},
   tradePick(){UI.trade.stage='pick';render();window.scrollTo(0,0);},
   tradeGm(){const ts=G.teams.filter(t=>t.id!==G.user),i=ts.findIndex(t=>t.id===UI.trade.tid);UI.pg=UI.pg||{};UI.pg.gms=Math.max(0,Math.floor(i/(innerWidth<700?1:3)));A.go('trade:gms');},
-  tpartner(v){ if(UI.trade.tid===+v)return; UI.trade={tid:+v,give:UI.trade.give||[],get:[],msg:'',seg:UI.trade.seg||'bat',side:'get',sort:UI.trade.sort||'cur'};render();},
+  tpartner(v){ if(UI.trade.tid===+v)return; const o=UI.trade, P=pkNorm(o.pk), cs=(o.cash||0)>0?o.cash:0; const lost=(o.cash||0)<0||P.get.length; /* 우리 쪽 자산(선수·주는 현금·우리 지명권)은 그대로, 상대에게 받기로 한 현금·지명권만 뺀다(검수 11-09v) */
+    UI.trade={tid:+v,give:o.give||[],get:[],cash:cs,pk:P.give.length?{give:P.give,get:[],y:P.y}:null,msg:lost&&o.tid!=null?'상대 구단을 바꿔 받기로 한 현금·지명권은 뺐습니다. 보낼 선수·현금·지명권은 그대로입니다.':'',seg:o.seg||'bat',side:'get',sort:o.sort||'cur'};render();},
   tseg(v){UI.trade.seg=v;render();},
   tside(v){UI.trade.side=v;render();},
   tsideGo(v){ UI.trade.side=v;if(innerWidth<700)UI.trade.stage='pick'; render(); requestAnimationFrame(()=>{ const e=document.getElementById('tpick'); if(e)e.scrollIntoView({behavior:'smooth',block:'start'}); }); },
@@ -374,7 +375,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   treset(){UI.trade.give=[];UI.trade.get=[];UI.trade.pk=null;UI.trade.cash=0;UI.trade.counters=null; /* 현금·지난 역제안도 비운다(검수 11-08c) */UI.trade.msg='';UI.trade.want=null;render();},
   tcash(v){ UI.trade.cash=+v||0; render(); },
   tpropose(){const tr=UI.trade;const r=proposeTrade(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);tr.msg=r.msg;tr.ok=r.ok;tr.want=r.want||null;tr.counters=r.counters||null;if(r.ok){tr.give=[];tr.get=[];tr.cash=0;tr.pk=null;UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade};sfx('cheer_hit',.5);sfx('confirm',.7);G.tsug=null;} else sfx('mitt',.4); save();render();},
-  tcounter(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; tr.give=[...c.give]; tr.get=[...c.get]; if(c.cash!=null)tr.cash=c.cash; if(c.pk)tr.pk=c.pk; tr.counters=null; A.tpropose(); }, /* 상대가 낸 조건 그대로(현금·지명권 포함) */
+  tcounter(v){ const tr=UI.trade; const c=(tr.counters||[])[+v]; if(!c)return; const bk={give:[...tr.give],get:[...tr.get],cash:tr.cash,pk:tr.pk,counters:tr.counters,msg:tr.msg,ok:tr.ok,want:tr.want}; tr.give=[...c.give]; tr.get=[...c.get]; if(c.cash!=null)tr.cash=c.cash; if(c.pk)tr.pk=c.pk; tr.counters=null; A.tpropose();
+    if(UI.cfm&&UI.cfm.k==='tpropose')UI.cfm.doc.noGo=()=>{ Object.assign(UI.trade,bk); render(); }; }, /* 상대가 낸 조건 그대로(현금·지명권 포함). 결재를 취소하면 작성하던 안과 역제안 카드로 돌아간다(검수 11-09v) */
   stampOff(){ UI.stamp=null; render(); },
   faSel(v){ UI.faSel=UI.faSel===+v?null:+v; UI.offer=null; render(); if(UI.faSel){ const el=document.querySelector('.faroom'); if(el)el.scrollIntoView({block:'start'}); } },
   faPos(v){ UI.faPos=v; render(); },

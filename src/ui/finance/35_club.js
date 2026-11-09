@@ -129,13 +129,15 @@ function tradeView(){
     return `${gv0.length?`<section class="card"><div class="eyebrow">보낼 선수 · ${gv0.length}명</div>${gv0.map(p=>tmini(p,'give')).join('')}<p class="small muted">이제 아래에서 협상할 구단을 고르세요.</p></section>`:''}<section class="card"><div class="eyebrow">상대 구단</div>${pick()}<p class="small muted">상대 구단을 고르면 그 팀 선수 목록이 펼쳐집니다. 관계 숫자가 높을수록 상대 단장의 반응을 정확히 읽을 수 있습니다.</p></section>`; }
   const t=team(tr.tid);
   const ok=p=>p&&!p.foreign&&!(p.joinY>G.year);
-  tr.give=tr.give.filter(id=>ok(G.players[id])&&G.players[id].team===G.user);
-  tr.get=tr.get.filter(id=>ok(G.players[id])&&G.players[id].team===tr.tid);
+  const lostP=[...tr.give.filter(id=>!(ok(G.players[id])&&G.players[id].team===G.user)),...tr.get.filter(id=>!(ok(G.players[id])&&G.players[id].team===tr.tid))];
+  tr.give=tr.give.filter(id=>!lostP.includes(id)); tr.get=tr.get.filter(id=>!lostP.includes(id));
   const gv=tr.give.map(id=>G.players[id]), gt=tr.get.map(id=>G.players[id]);
-  const dPay=sum(gt.map(p=>p.sal))-sum(gv.map(p=>p.sal));
+  const dPay=tradeSalChg(tr.give,tr.get).d; /* 겨울엔 다음 시즌 연봉 기준(결재 문서와 같게) */
   const capAfter=capPayAs(G.user,tr.get||[],tr.give||[]), cap=capOf(sponSeason()); /* 엔진과 같이 상위 40명을 다시 고른다 */
   const myN=rosterN(G.user)-tr.give.filter(tradeCntN).length+tr.get.filter(tradeCntN).length, thN=rosterN(tr.tid)+tr.give.filter(tradeCntN).length-tr.get.filter(tradeCntN).length; /* 엔진·확인창과 같은 정식 선수 기준(육성·복무 제외, 검수 11-08c) */
-  { const P=pkNorm(tr.pk), hm=pkHeld(G.user), ht=pkHeld(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; } /* 지명권 보유가 바뀌었으면 뺀다 */
+  { const P=pkNorm(tr.pk), hm=pkHeld(G.user), ht=pkHeld(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; /* 지명권 보유가 바뀌었으면 뺀다 */
+    const lostK=P.give.length+P.get.length-tr.pk.give.length-tr.pk.get.length; /* 빠진 조건은 말없이 넘기지 않는다(검수 11-09v) */
+    if(lostP.length||lostK){ tr.msg=`거래안이 바뀌었습니다: ${[lostP.length?`${lostP.map(id=>G.players[id]?G.players[id].name:'선수').join(', ')}(소속·신분이 바뀌어 거래할 수 없음)`:'',lostK?(same?`보유 구단이 바뀐 지명권 ${lostK}장`:`${P.y} 드래프트 지명권 ${lostK}장(지금은 ${pkYear()} 드래프트 지명권만 주고받을 수 있음)`):''].filter(Boolean).join(', ')}을(를) 뺐습니다. 남은 조건을 다시 확인하고 제안하세요.`; tr.ok=false; tr.want=null; tr.counters=null; } }
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);
   const want=tr.want&&G.players[tr.want]&&G.players[tr.want].team===G.user&&!tr.give.includes(tr.want)?G.players[tr.want]:null;
   const board=`<section class="card tboard">
@@ -148,7 +150,8 @@ function tradeView(){
     <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
     ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><p class="small" style="margin:2px 0">${mood.s}</p><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${t.rel} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p></div>`:''}
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
-    ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>`<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}</span><button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button></div>`).join('')}</div>`:''}
+    ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>{ const nt=negTurn(tr.tid), d0=nt.ctr&&nt.ctr[tsig(c.give,c.get,c.cash||0)+pkSig(c.pk)], live=d0!=null&&G.day-d0<=7; const K=pkNorm(c.pk), cs=c.cash||0; /* 현금·지명권도 카드에서 보이게, 유효기간(엔진 isCtr와 같은 7일)이 지나면 수락 버튼을 내린다(검수 11-09v) */
+      return `<div class="ctr-o"><p>${esc(c.why)}</p><span class="small muted">보냄 ${c.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}${cs>0?` + 현금 ${money(cs)}`:''}${K.give.length?` + 지명권 ${K.give.map(pkName).join(', ')}`:''} · 받음 ${c.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')||'-'}${cs<0?` + 현금 ${money(-cs)}`:''}${K.get.length?` + 지명권 ${K.get.map(pkName).join(', ')}`:''}</span><span class="small ${live?'muted':'bad'}">${live?`${dsh(d0+7)}까지 유효`:'유효기간이 지났습니다. 다시 제안해야 합니다.'}</span>${live?`<button class="btn small primary" data-a="tcounter" data-v="${i}">이 조건 수락</button>`:''}</div>`; }).join('')}</div>`:''}
     <details class="trade-analysis"><summary>선수 비교·메디컬·검토 의견</summary>${tradeInsight(tr.tid,tr.give,tr.get)}</details>
     ${gt.length||gv.length?`<div class="tcash"><span class="small">현금</span><div class="chips">${[...(gv.length?[-3000,-1000,-500,-300,-100]:[]),0,...(gt.length?[100,300,500,1000,2000,3000]:[])].map(v=>`<button data-a="tcash" data-v="${v}" class="${(tr.cash||0)===v?'on':''}">${v>0?money(v)+' 주기':v<0?money(-v)+' 받기':'없음'}</button>`).join('')}</div><span class="small muted">실제 한국 프로야구도 선수와 현금을 섞은 트레이드가 있습니다. 돈을 중시하는 구단(독립구단·수익형 구단주·샐러리캡 초과·리빌딩)일수록 현금을 높게 치고, 내주기는 아까워합니다. 주는 현금은 예산 여유에서 빠지고, 받는 현금은 이번 시즌 결산 수입으로 잡히고, 보유 현금에는 결산 때 들어옵니다(상대 보유 현금 안에서). 그 전에는 시설 투자 같은 보유 현금 지출에 쓸 수 없습니다.</span></div>`:''}
     ${pkRow(tr)}

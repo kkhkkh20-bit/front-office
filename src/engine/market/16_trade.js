@@ -104,8 +104,10 @@ function tradeCool(tid,get){ if(get&&get.length&&get.every(id=>{ const q=G.playe
    허용 폭: 성적 우선 구단주 15억·인기 10억·수익 5억, 신뢰 70 이상이면 1.5배, 50 미만이면 절반. 승인하면 신뢰 -2 */
 /* 올해 결산에 잡히는 연봉 비율: 시즌 중이면 남은 정규시즌 기간만(payTeamFrac와 같은 기준) */
 function tradeYrFrac(){ const C=G.cal, per=period(); if(per!=='season'||!C)return per==='post'?0:1; return clamp((C.end+1-G.day)/(C.end+1-C.open),0,1); }
-function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)return null; const P=id=>G.players[id];
-  const fr=tradeYrFrac(); const nx=preSeason(sponSeason()), sv=id=>P(id)?(nx?salNext(P(id)):P(id).sal):0; /* 겨울·개막 전 예산은 합의한 다음 시즌 연봉 기준(capInfo와 같게, 검수 11-08b) */ const dSal=Math.round((sum(get.map(sv))-sum(give.map(sv)))*fr)+(cash||0); /* 시즌 중 트레이드는 남은 기간 연봉만(검수 11-06) */ if(dSal<=0)return null; let b; try{ b=budget(); }catch(e){ return null; }
+/* 거래로 바뀌는 연봉: 겨울·개막 전은 합의한 다음 시즌 연봉(capInfo와 같게, 검수 11-08b), yr은 올해 예산에 잡히는 몫(시즌 중이면 남은 기간만, 검수 11-06). 확인창·결재 문서·구단주 승인이 같은 값을 쓴다(검수 11-09v) */
+function tradeSalChg(give,get){ const P=id=>G.players[id]; const nx=preSeason(sponSeason()), sv=id=>P(id)?(nx?salNext(P(id)):P(id).sal):0; const fr=tradeYrFrac(); const d=sum(get.map(sv))-sum(give.map(sv)); return {d,yr:Math.round(d*fr),fr,nx}; }
+function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)return null;
+  const sc=tradeSalChg(give,get), fr=sc.fr; const dSal=sc.yr+(cash||0); if(dSal<=0)return null; let b; try{ b=budget(); }catch(e){ return null; }
   const room=after?b.roomGoal+dSal:b.roomGoal; const over=dSal-room; if(over<=0)return null; const t=team(G.user);
   const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
   if(over<=lim)return {ok:true,over,lim,dSal};

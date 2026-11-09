@@ -1,6 +1,9 @@
 /* ---------- 트레이드 제안 받았을 때: 감독·전력분석팀·스카우트(메디컬)에게 의견 묻기 ----------
    소식함에서 바로 묻고, 답이 제안 카드 아래에 쌓인다. 감독에게 먼저 물으면 존중받았다고 느껴 관계 +1(제안당 한 번) */
-function offerAdvise(o,who){ o.adv=o.adv||{}; if(o.adv[who])return; const give=o.get, get=o.give; /* 우리 기준: give=보내는 선수, get=받는 선수 */
+/* 받는 선수 메디컬 상태 요약: 검진 뒤 부상 등으로 바뀌면 다시 확인하게 한다(검수 11-09v) */
+function offerMedKey(o){ return (o.give||[]).map(id=>{ const p=G.players[id]; if(!p)return '-'; return durGrade(medInj(p))[0]+'/'+(p.injHist||[]).length+'/'+(p.injOut>0?1:0)+'/'+(p.ucl?1:0); }).join('|'); } /* 복귀까지 남은 날처럼 매일 바뀌는 값은 빼고 새 부상·등급 변화만 본다 */
+const offerMedStale=o=>!!(o.adv&&o.adv.sc&&o.advScK!=null&&o.advScK!==offerMedKey(o));
+function offerAdvise(o,who){ o.adv=o.adv||{}; if(o.adv[who]&&!(who==='sc'&&offerMedStale(o)))return; const give=o.get, get=o.give; /* 우리 기준: give=보내는 선수, get=받는 선수 */
   const P=id=>G.players[id]; const L=[];
   if(who==='mgr'){ const m=G.mgr[G.user]; if(!m||m.interim){ o.adv.mgr='감독이 없어 의견을 들을 수 없습니다.'; return; } const mv=mgrTradeView(o.from,give,get);
     let t=mv?mv.txt.replace(/^.*?감독:\s*/,''):'판단은 단장님께 맡기겠습니다.'; mgrAttr(m); const ty=mgrType(m).k;
@@ -20,7 +23,7 @@ function offerAdvise(o,who){ o.adv=o.adv||{}; if(o.adv[who])return; const give=o
     o.adv.ana=L.join('\n'); return; }
   if(who==='sc'){ for(const id of get){ const p=P(id); if(!p)continue; const rp=scoutReport(p); const md=medReport(p);
       L.push(`${p.name}: 현재 ${rp.cur!=null?dv(rp.cur):'?'}${rp.ofp!=null&&potTierP(rp,p)?` · 잠재력 추정: ${potTierP(rp,p).l}(확신 ${rp.conf})`:' · 잠재력 판단 불가(담당 스카우트 필요)'} · 몸 상태 ${md.g}${md.L.length?` (${md.L[0]})`:''}${md.sure?'':' · 검진 정확도 낮음'}`); }
-    o.adv.sc=L.join('\n')||'받는 선수가 없습니다.'; } }
-function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div class="oadv-r"><span class="pill">${l}</span><span class="small">${esc(A[k])}</span></div>`:`<button class="btn small" data-a="offerAsk" data-v="${o.id}:${k}">${who}</button>`;
+    o.adv.sc=L.join('\n')||'받는 선수가 없습니다.'; o.advScK=offerMedKey(o); } }
+function offerAdvBox(o){ const A=o.adv||{}; const row=(k,l,who)=>A[k]?`<div class="oadv-r"><span class="pill">${l}</span><span class="small">${esc(A[k])}</span>${k==='sc'&&offerMedStale(o)?`<span class="small bad">검진 뒤 몸 상태가 바뀌었습니다.</span><button class="btn small" data-a="offerAsk" data-v="${o.id}:sc">다시 검진</button>`:''}</div>`:`<button class="btn small" data-a="offerAsk" data-v="${o.id}:${k}">${who}</button>`;
   return `<div class="oadv">${(()=>{ let n=o.pot; if(n==null){ try{ n=o.pot=offScoutNote(o); }catch(e){ n=''; } } return n?`<div class="oadv-pot"><div class="eyebrow">스카우트 잠재력 추정 · 받는 선수</div><p class="small">${esc(n).replace(/\n/g,'<br>')}</p></div>`:''; })()}<div class="eyebrow">결정 전에 의견 듣기</div><div class="oadv-b">${row('mgr','감독','감독 의견 묻기')}${row('ana','전력분석팀','전력분석팀 분석')}${row('sc','스카우트·의무','스카우트·메디컬 확인')}</div>
     <button class="btn small" data-a="offerCounter" data-v="${o.id}">조건 바꿔 역제안하기</button></div>`; }
