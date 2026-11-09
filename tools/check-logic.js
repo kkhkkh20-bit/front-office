@@ -2042,7 +2042,7 @@ T('[검수 11-08b] 외국인·트레이드·부상·퓨처스: 전환 불가 결
   const ip=playersOf(G.user).find(p=>!p.foreign); ip.injHist=[{y:G.year,days:90,d:G.day-5,k:'x'}]; ok(injDays2(ip)===5,'남은 재활까지 결장 이력: '+injDays2(ip));
   const sp=playersOf(G.user).find(p=>p.isP&&isSPr(p)); const ld=x=>{ x.ld=[]; x.armw=0; delete x.lsS; delete x.lsD; }; ld(sp); pitchApp(sp,G.day-3,100,true); pitchApp(sp,G.day,100,true); const w1=sp.armw; ld(sp); pitchApp(sp,G.day,100,true); pitchApp(sp,G.day-3,100,true); ok(Math.abs(sp.armw-w1)<1,'기록 순서에 따라 부하가 다름 '+w1+' / '+sp.armw);
   const fp=playersOf(G.user).find(p=>p.isP&&!isSPr(p)); fp.ld=[[G.day,80]]; fp.downDay=G.day; const L0=JSON.stringify(lineFor(fp,G.year,G.user,'퓨처스')); futPit(fp,G.user); ok(JSON.stringify(lineFor(fp,G.year,G.user,'퓨처스'))===L0,'같은 날 던진 투수에게 퓨처스 기록');
-  fp.ld=[]; fp.downDay=G.day; const g0=(lineFor(fp,G.year,G.user,'퓨처스').g||0); futPit(fp,G.user); ok((lineFor(fp,G.year,G.user,'퓨처스').g||0)-g0===1,'오늘 말소 불펜 1회 등판이 2경기로');
+  fp.ld=[]; fp.downDay=G.day; const g0=(lineFor(fp,G.year,G.user,'퓨처스').g||0); futPit(fp,G.user); ok((lineFor(fp,G.year,G.user,'퓨처스').g||0)-g0===0,'오늘 말소 불펜이 퓨처스에 등판(야수와 같이 말소 당일은 1군 소속, 검수 11-09zx)');
 });
 T('[검수 11-08c] FA·포스팅: 전임 단장 AI 제안, 정원 찬 AI 제안, 결렬 뒤 맞추기, 이중 포스팅, 약속 연도, 라스트 룩 기한',()=>{ fresh(); G.day=KD(11,20);
   const op=G.teams.find(t=>t.id!==G.user).id; const p=Object.values(G.players).find(x=>x.team!=null&&x.team!==G.user&&!x.foreign&&ovr(x)>=55&&!x.prospect); p.faFrom=p.team; p.team=null; p.faGrade='B'; p.ask={annual:800,years:2}; const id=p.id; G.fa={pool:[id],offers:{},ai:{},open:true,openDay:G.day-5,closed:false,results:[],cap:2,outN:{},y0:G.year}; G.fa.ai[id]={[G.user]:{annual:1100,years:2}}; G.fa.offers={}; faPruneAi(id); ok(!G.fa.ai[id][G.user],'우리 구단 이름의 AI 제안이 남음');
