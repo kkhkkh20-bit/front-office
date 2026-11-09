@@ -3349,6 +3349,9 @@ T('[검수 11-09zh] 선발 예고와 투수 운용: 다음 선발·계투 전환
   /* 17: 가을야구 에이스 구원은 어제 구원 등판까지 쉰 날로 센다 */ { const P=depth(U).sp, ace=P[0], fs={tid:U,spAll:[ace],sp:P[1],used:new Set()}, d=G.day; ace.lastStart=d-5; ace.lastApp=d-1; ace.lastPc=4; ok(!psAceRelief(fs,8,1,d,{fin:true}),'어제 구원 등판한 에이스가 총력전 불펜 후보'); ace.lastApp=d-5; ok(psAceRelief(fs,8,1,d,{fin:true})===ace,'쉰 에이스가 후보가 아님'); }
   /* 18: 같은 날 두 경기 등판은 두 경기로 */ { const p=playersOf(U).find(q=>q.isP); p.ld=[]; loadLog(p,G.day,25,false); loadLog(p,G.day,30,false); ok(loadText(p).includes('최근 7일 2경기 55구'),loadText(p)); }
 });
+T('[검수 11-09zr] 복원: 후보가 빈 6월 저장을 같은 내용으로 두 번 열어도 외국인 후보가 같고, 채우기는 다음 날짜 진행에서 한다',()=>{ fresh(); G.day=KD(6,10); ok(foreignOpen(),'준비: 6월에 외국인 시장이 닫힘'); G.fmarket=[]; const s=JSON.stringify(G);
+  G=JSON.parse(s); migrateDraft(); const a=JSON.stringify(G.fmarket), na=Object.keys(G.players).length; G=JSON.parse(s); migrateDraft(); const b=JSON.stringify(G.fmarket);
+  ok(a===b,'두 번 연 후보가 다름: '+a+' / '+b); ok(Object.keys(G.players).length===na,'복원만으로 선수가 늘어남'); ok(!G.fmarket.length,'복원하자마자 후보를 채움'); refreshFMarket(0); ok(G.fmarket.length>0,'다음 진행에서 채울 후보가 없음'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
