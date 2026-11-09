@@ -13,7 +13,7 @@ function cerQuote(c,lab,k){ const p=G.players[c.id]; const mine=c.t===G.user; co
 function awP(id){ const a=G.arch&&G.arch[id]; return G.players[id]||(a?{...a,team:a.t}:null); }
 function cerFace(c){ const p=awP(c.id); return p?avImg(p,true):`<span class="av ini big">${esc(c.name.slice(0,1))}</span>`; }
 function cerCard(c){ const p=G.players[c.id];
-  return `<div class="cer-c${c.t===G.user?' me':''}">${cerFace(c)}<div class="cer-i"><b>${esc(c.name)}</b><span>${badge(c.t,18)} ${esc(tshort(c.t))}${p?` · ${esc(posLabel(p))}`:''}</span><em>${esc(c.line)}</em></div></div>`; }
+  return `<div class="cer-c${c.t===G.user?' me':''}">${cerFace(c)}<div class="cer-i"><b>${esc(c.name)}</b><span>${badge(c.t,18)} ${esc(tshort(c.t))}${c.pos||p?` · ${esc(c.pos||posLabel(p))}`:''}</span><em>${esc(c.line)}</em></div></div>`; }
 function cerRow(c,i,win,tot){ const pct=Math.round(c.v/tot*100);
   return `<div class="cer-r${win?' win':''}${c.t===G.user?' me':''}"><i>${i+1}</i>${cerFace(c)}<span class="cer-rn"><b>${esc(c.name)}</b><em>${badge(c.t,14)} ${esc(tshort(c.t))}</em></span><span class="cer-bar"><i style="--w:${pct}%"></i></span><b class="num">${c.v}표</b></div>`; }
 function cerStar(c,lab,k,tot,q){ const pct=Math.round(c.v/tot*100);

@@ -12,7 +12,7 @@ function leagueEventsView(){
 }
 function ggVotingView(A){
   if(!A||!A.ggVote||awShown(A,'gg'))return '';
-  const V=A.ggVote,start=dnum(A.y,11,25),end=dnum(A.y,12,5),stage=G.day<start?'투표 준비':G.day<end&&!(V&&V.news&&V.news.closed)?'기자단 투표 중':'투표 마감 · 발표 대기'; /* 마감 기사와 같은 날 마감 표시(검수 11-08) */
+  const V=A.ggVote,start=V.start??dnum(A.y,11,25),end=V.end??dnum(A.y,12,5), /* 후보 발표 때 정한 기간(검수 11-09zz) */stage=G.day<start?'투표 준비':G.day<end&&!(V&&V.news&&V.news.closed)?'기자단 투표 중':'투표 마감 · 발표 대기'; /* 마감 기사와 같은 날 마감 표시(검수 11-08) */
   return `<section class="card candidate-list"><div class="row between"><h2 class="sec">골든글러브 · ${stage}</h2><span class="small muted">${dmd(start)}~${dmd(end)}</span></div><p class="small muted">WAR·주요 기록·이정표·팀 성적을 함께 보는 가상 기자 ${V.voters}명의 투표입니다. 아래는 유력 후보 전망이며 비공개 득표나 확정 수상자가 아닙니다.</p><div class="tw"><table class="sqt candidate-table"><thead><tr><th>포지션</th><th>유력 후보 전망</th><th>발표 당시 기록</th></tr></thead><tbody>${ggPublicRace(A).map(x=>x.candidates.map(c=>`<tr><td>${x.pos==='P'?'투수':x.pos==='OF'?'외야수':POSS[x.pos]||x.pos}</td><td><button class="lnk" ${G.players[c.id]?`data-a="player" data-v="${c.id}"`:''}>${esc(c.name)}</button> <span class="small muted">${esc(tshort(c.t))}</span>${c.milestones.length?` <span class="pill warn">${esc(c.milestones.join(' · '))}</span>`:''}</td><td class="candidate-note">${esc(c.line)}</td></tr>`).join('')).join('')}</tbody></table></div></section>`;
 }
 Object.assign(A,{

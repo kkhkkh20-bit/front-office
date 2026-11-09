@@ -135,7 +135,7 @@ function achSetTitle(t){ const M=achMeta(); M.title=t&&achTitles().includes(t)?t
   /* 시상식(MVP·신인왕, 골든글러브) */
   wrap('awardCeremony',(r,args,pend)=>{ if(pend)achCheck({k:'award',a:args[0]}); },(k)=>{ const A=G.awards&&G.awards[G.year]; return !!(A&&A.pend&&A.pend[k]); });
   /* 영구결번 */
-  wrap('retireNumber',(r)=>{ if(typeof r==='string'&&r!=='대상이 아닙니다.')achCheck({k:'retNo'}); });
+  wrap('retireNumber',(r,a,n0)=>{ if((G.retNos||[]).length>n0)achCheck({k:'retNo'}); },()=>(G.retNos||[]).length); /* 실제로 결번이 늘었을 때만(거절 문구로는 열지 않는다, 검수 11-09zz) */
   /* 구단 이동: 옮기기 전에 기록한다(야인이었는지) */
   wrap('switchTeam',null,(tid)=>achCheck({k:'switch',to:tid,wasU:!!G.unemp}));
   /* 협회: 선거·상한 표결 결과 */
