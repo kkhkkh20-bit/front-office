@@ -65,13 +65,17 @@ function setEntry(tid){ for(const p of playersOf(tid))p.e1=false; const lean=tea
   entryManage(tid,false,true); }
 /* 엔트리 사유에 붙일 2군 기록 한 줄 */
 function futLn(p){ const h=seasonTotal(p,G.year,'퓨처스'); if(!h)return ''; return p.isP?(h.outs>=9?` · 2군 ERA ${pRate(h).era.toFixed(2)}`:''):(h.pa>=15?` · 2군 ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`:''); }
-const isC=p=>!p.isP&&p.pos==='C', cN=L=>L.filter(isC).length;
+const isC=p=>!p.isP&&p.pos==='C', cN=L=>L.filter(p=>isC(p)&&healthy(p)).length; /* 포수 보호는 뛸 수 있는 포수만 센다(검수 11-09zh) */
 /* 포수가 아닌 선수를 올리려고 1군 포수를 2명 아래로 내리지 않는다(자동 등록·단장 콜업 공통, 검수 11-09) */
 const cProt=(x,c,L)=>isC(x)&&!isC(c)&&cN(L)<=2;
 function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLimit(); const lean=teamLean(tid); const v=p=>entryVal(tid,p,lean); const moves=[];
   for(const p of playersOf(tid))if(p.e1&&(p.injOut>3||p.ys||p.hold||p.susp>G.day||(p.isP&&rpPlanOf(tid,p)==='sp2')||!psOk(p))){ p.e1=false; p.downDay=G.day; moves.push(`${p.name} 말소(${p.injOut>3?'부상':p.ys?'육성':p.hold?'연봉 미계약':p.susp>G.day?'출장 정지':!psOk(p)?'포스트시즌 등록 마감 뒤 영입':'2군 선발 수업'})`); } /* 미계약·출장 정지 선수가 1군 자리를 차지하지 않게(검수 11-07) */
   let ent=playersOf(tid).filter(p=>p.e1);
   if(ent.length>lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); ent.filter(p=>!core.has(p.id)&&!(isC(p)&&cN(ent)<=2)).sort((a,b)=>v(a)-v(b)).slice(0,ent.length-lim).forEach(p=>{p.e1=false;p.downDay=G.day;moves.push(`${p.name} 말소(엔트리 인원 초과 · 기용 순위 낮음)`);}); ent=playersOf(tid).filter(p=>p.e1); }
+  /* 건강한 야수가 9명이 안 되면 다친 야수를 2군의 건강한 야수로 바꾼다: 8인 타순 경기 방지(검수 11-09zh) */
+  for(let g=0;g<9&&ent.filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=playersOf(tid).filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
+    if(ent.length>=lim){ const d=depth(tid); const out=ent.filter(p=>!p.isP&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>p.isP&&!d.sp.includes(p)&&!d.pen.slice(0,4).includes(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; ent=ent.filter(p=>p!==out); moves.push(`${out.name} 말소(${healthy(out)?'야수 자리 확보':'부상'})`); }
+    c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(건강한 야수 9명 채우기${futLn(c)})`); }
   while(ent.length<lim){ const np=ent.filter(p=>p.isP).length; const needP=np<Math.round(lim*.5); const pool=playersOf(tid).filter(canUp);
     const c=pool.filter(p=>p.isP===needP).sort((a,b)=>v(b)-v(a))[0]||pool.sort((a,b)=>v(b)-v(a))[0]; if(!c)break; c.e1=true; c.upDay=G.day; ent.push(c); moves.push(`${c.name} 콜업(${c.isP?'투수':'야수'} 빈자리 보충${futLn(c)})`); }
   if(weekly){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
@@ -119,12 +123,13 @@ function depth(tid){
   const bat=by(act.filter(p=>!p.isP&&healthy(p)&&!startIds.has(p.id)),p=>ovr(p)+pb(p));
   const futB0=by(ps.filter(p=>!p.isP&&healthy(p)&&!actIds.has(p.id)),ovr), futP0=by(ps.filter(p=>p.isP&&healthy(p)&&!actIds.has(p.id)),ovr);
   const pit=act.filter(p=>p.isP&&healthy(p));
-  const spF=p=>spV(p)+roleBias(tid,p)+pb(p), sp=[...by(pit.filter(p=>rpPlanOf(tid,p)!=='rp'),spF),...by(pit.filter(p=>rpPlanOf(tid,p)==='rp'),spF)].slice(0,5); /* 계투로 정한 투수는 선발 자리가 남을 때만(검수 11-08: 계투 요청을 받아들였는데 선발 등판) */ for(const p of pit)p.role=sp.includes(p)?'SP':'RP';
+  const spF=p=>spV(p)+roleBias(tid,p)+pb(p), sp=[...by(pit.filter(p=>rpPlanOf(tid,p)!=='rp'),spF),...by(pit.filter(p=>rpPlanOf(tid,p)==='rp'),spF)].slice(0,5); /* 계투로 정한 투수는 선발 자리가 남을 때만(검수 11-08: 계투 요청을 받아들였는데 선발 등판) */ /* 보직 저장은 roleSync에서만: 화면 조회가 보직·부하 한도를 바꾸지 않게(검수 11-09zh) */
   const rest=by(pit.filter(p=>!sp.includes(p)),p=>penV(p)+pb(p)*.6);
   const start=ORDER.filter(k=>ln[k]).map(k=>ln[k]);
   const on=entryOn();
   return {ln,start,bench:on?bat:bat.slice(0,5),futB:on?futB0:bat.slice(5).concat(futB0),sp,pen:on?rest:rest.slice(0,7),futP:on?futP0:rest.slice(7).concat(futP0),inj:ps.filter(p=>!healthy(p))};
 }
+function roleSync(tid){ const d=depth(tid); for(const p of actOf(tid))if(p.isP&&healthy(p))p.role=d.sp.includes(p)?'SP':'RP'; return d; }
 function teamRating(tid){
   const d=depth(tid);
   const off=avg(d.start.map(offV))*(Math.min(9,d.start.length)/9);
