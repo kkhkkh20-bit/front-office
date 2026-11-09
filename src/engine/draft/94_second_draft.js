@@ -42,7 +42,7 @@ function sdStart(){ const S=G.sd2;
   S.pool={}; for(const t of G.teams)S.pool[t.id]=sdPool(t.id).map(q=>q.id); S.stage='pick'; sdRun(); }
 /* 지명할 수 없는 이유(정원·양도금 현금·다음 시즌 상한): AI 지명·우리 지명·지명 화면이 같은 판정(검수 11-09ze). pid 없으면 구단 전체 조건만 */
 function sdWhy(tid,rd,pid){ if(rosterN(tid)>=ROSTER_MAX)return {k:'정원 초과',t:`정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 한 명을 정리해야 지명할 수 있습니다.`};
-  if(spendable(tid)<sdFee(rd))return {k:'현금 부족',t:`양도금 ${money(sdFee(rd))}을(를) 낼 돈이 모자랍니다(쓸 수 있는 돈 ${money(Math.max(0,spendable(tid)))}).`}; /* 양도금을 낼 현금(검수 11-07·11-08) */
+  if(spendable(tid)<sdFee(rd))return {k:'현금 부족',t:`양도금 ${money(sdFee(rd))}을(를) 낼 돈이 모자랍니다(${tid===ME()?spendTxt():'보유 현금 '+money(Math.max(0,sdCash(tid)))}).`}; /* 양도금을 낼 현금(검수 11-07·11-08) */
   if(pid!=null){ const a=capPayAs(tid,[pid],[]), c=capOf(sponSeason())*aiCapMul(team(tid)); if(a>c)return {k:'상한 초과',t:`지명하면 다음 시즌 샐러리캡 반영액이 ${money(a)}(으)로 상한 ${money(c)}을(를) 넘습니다. 넘긴 만큼 경쟁균형세를 냅니다.`,soft:tid===G.user}; } return null; } /* 상한 초과는 실제 규정처럼 막지 않고 세금을 낸다(우리 구단은 경고만, AI는 상한 안에서만 지명) */
 function sdAiPick(tid,rd){ if(sdWhy(tid,rd))return null; const t=team(tid); let best=null,bv=-1e9; for(const q of sdCands(tid)){ if(sdWhy(tid,rd,q.id))continue; /* 다음 시즌 샐러리캡 안에서만 */ const v=aiVal(t,q); if(v>bv){ bv=v; best=q; } } return best&&bv>=sdFee(rd)/100?best.id:null; }
 function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.rd); const keep=q.ctT===from; delete q.capB; delete q.roleProm; q.team=s.tid; if(keep)q.ctT=s.tid; else termsClear(q); /* 계약은 이어진다: 성과 옵션·구단 옵션·옵트아웃·거부권도 승계(계약금 상한 반영·주전 약속은 원구단 몫) */ q.listed=false; if(from===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===pid)delete G.lineup[k];
