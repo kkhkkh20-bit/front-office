@@ -1,0 +1,572 @@
+{
+  "schema_version": "16.1",
+  "batch_id": "champ",
+  "path_base": "assets/v16/champ/",
+  "request": "docs/asset-requests/2026-11-09-codex-v16-championship.md",
+  "delivery_branch": "assets/v16-review",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "asset_count": 22,
+  "counts": {
+    "moment": 6,
+    "ceremony": 4,
+    "party": 3,
+    "parade": 3,
+    "trophy": 3,
+    "banner": 3
+  },
+  "moment_night_counts": {
+    "night": 4,
+    "day": 2
+  },
+  "edition": "required22base images, neutral white home uniform plus navy accent",
+  "optional_six_color_variants_produced": false,
+  "optional_color_note": "Six accent-color variants for A/B were optional. This delivery contains the required22base images in neutral white/navy.",
+  "assets": [
+    {
+      "id": "moment_01_final_out",
+      "group": "moment",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "moment/moment_01_final_out.webp",
+        "bytes": 548290,
+        "sha256": "6e46203a8d4c5a1d8a6bdad7448dbde3ee3e21e1c0013559c617a0d93392a1fb",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "moment_02_battery_hug",
+      "group": "moment",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "moment/moment_02_battery_hug.webp",
+        "bytes": 403406,
+        "sha256": "bb0f37f072949366b3e77e22c3993f5e1d3b710ef69318f5d2e362cec160e0e4",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "moment_03_dugout_rush",
+      "group": "moment",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "moment/moment_03_dugout_rush.webp",
+        "bytes": 506640,
+        "sha256": "572a286bbe2878315885da577b90e5016e65b7b7d77aee1dba838c5a52a7b8f2",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "moment_04_stands_confetti",
+      "group": "moment",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "moment/moment_04_stands_confetti.webp",
+        "bytes": 668814,
+        "sha256": "3c53bc26a1bcf72b2f85b4e0cc050bb5ecba6b45a9ef60b5bfd84c8d08dc4254",
+        "encoding": "lossy WebP",
+        "quality": 94,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "moment_05_day_mound",
+      "group": "moment",
+      "color": "navy",
+      "night": false,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "moment/moment_05_day_mound.webp",
+        "bytes": 596422,
+        "sha256": "157a642cda98be70f443a5747d941e262aeaabc5c8b82441610cfc1063839712",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "moment_06_day_dugout",
+      "group": "moment",
+      "color": "navy",
+      "night": false,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "moment/moment_06_day_dugout.webp",
+        "bytes": 547246,
+        "sha256": "35f7bf2959e7381ee1fff370cb2bb9b68e4de11286d927d3a35a32fef3b11ed9",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "ceremony_01_lift",
+      "group": "ceremony",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "ceremony/ceremony_01_lift.webp",
+        "bytes": 505582,
+        "sha256": "1810519506b00058efc1ee5b4a2b5fa22df78a0512f319b77e2c07a8d7c233a6",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "ceremony_02_captain_kiss",
+      "group": "ceremony",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "ceremony/ceremony_02_captain_kiss.webp",
+        "bytes": 336104,
+        "sha256": "528789805dc4f28423a9adacc61a1291a81c0e1b029a9de01024444b7654c132",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "ceremony_03_manager_toss",
+      "group": "ceremony",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "ceremony/ceremony_03_manager_toss.webp",
+        "bytes": 494254,
+        "sha256": "fe64b7d1a63c5ca0ea09f0ec00f7bdf477b6f474ecd25ed99970c0531d0b314d",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "ceremony_04_team_photo",
+      "group": "ceremony",
+      "color": "navy",
+      "night": false,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "ceremony/ceremony_04_team_photo.webp",
+        "bytes": 546646,
+        "sha256": "b58bace10283649805507460513e37aa40a60ced54fc99b937c0d9b7f60b93b5",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "party_01_champagne",
+      "group": "party",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "party/party_01_champagne.webp",
+        "bytes": 632384,
+        "sha256": "ac7d8ce70b9321eda6d7cab9ceb7c73b74ef87ca465373cd44cdf64e950e6ebe",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "party_02_goggles",
+      "group": "party",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "party/party_02_goggles.webp",
+        "bytes": 493022,
+        "sha256": "7622a23f31a21af54e5d163c5893171a47bc071c8be8940f3403cf2406e71f03",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "party_03_front_office",
+      "group": "party",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "party/party_03_front_office.webp",
+        "bytes": 250988,
+        "sha256": "9508998401253a1a37a2318fde742cc763d2ca5013638afa426638a642ae9afe",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "parade_01_open_bus",
+      "group": "parade",
+      "color": "navy",
+      "night": false,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "parade/parade_01_open_bus.webp",
+        "bytes": 631402,
+        "sha256": "4afd031da7bd02e37b3cea5f862dfa88e3f2d778fcfa3d36fcf4d135b75d1f32",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "parade_02_city_square",
+      "group": "parade",
+      "color": "navy",
+      "night": false,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "parade/parade_02_city_square.webp",
+        "bytes": 682624,
+        "sha256": "9941f18202c4d0e33fb1c9ce5730d59e066def57b125c75410501abc7dbbc568",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "parade_03_confetti",
+      "group": "parade",
+      "color": "navy",
+      "night": false,
+      "w": 1600,
+      "h": 900,
+      "file": {
+        "path": "parade/parade_03_confetti.webp",
+        "bytes": 618766,
+        "sha256": "31db9825c5c6f63a432f36a06c35aec650488677093e8778dc3cde767a6749d8",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB"
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "trophy_series",
+      "group": "trophy",
+      "color": null,
+      "night": false,
+      "w": 1024,
+      "h": 1024,
+      "file": {
+        "path": "trophy/trophy_series.webp",
+        "bytes": 411764,
+        "sha256": "f623acbfca059ebd65c08a85a997b464b6fbdd6d9a73c0fbf24bace2ed9349a0",
+        "transparent_png": {
+          "path": "trophy/png/trophy_series.png",
+          "bytes": 611703,
+          "sha256": "dc0380ee130dc05abe4595a293b39ada90e36abeefa122ba48efb01597568ad4",
+          "w": 1024,
+          "h": 1024,
+          "mode": "RGBA"
+        },
+        "small_versions": [
+          {
+            "path": "trophy/app/trophy_series_128.webp",
+            "bytes": 11756,
+            "sha256": "7ac089842be8b984a7eb71c6c315ad2803c8d7ffe7918168fc6499d1a69b9534",
+            "w": 128,
+            "h": 128,
+            "mode": "RGBA"
+          },
+          {
+            "path": "trophy/app/trophy_series_256.webp",
+            "bytes": 35008,
+            "sha256": "1761df9ffd9865d3da490036b7ccaf7261f42c4d38567b6a355fb7765bdafa1b",
+            "w": 256,
+            "h": 256,
+            "mode": "RGBA"
+          }
+        ],
+        "alpha": {
+          "minimum": 0,
+          "maximum": 255,
+          "transparent_pixels": 778598,
+          "nontransparent_bbox": [
+            0,
+            11,
+            1008,
+            1013
+          ]
+        },
+        "encoding": "lossless WebP",
+        "mode": "RGBA",
+        "transparent_rgb_preserved": true
+      },
+      "usage": "1024site/gallery; small128WebP app-inline option"
+    },
+    {
+      "id": "trophy_season",
+      "group": "trophy",
+      "color": null,
+      "night": false,
+      "w": 1024,
+      "h": 1024,
+      "file": {
+        "path": "trophy/trophy_season.webp",
+        "bytes": 874546,
+        "sha256": "4da797d3be1f5338e3c2ecd2bf58832da229db88f8299688b344db3857537e66",
+        "transparent_png": {
+          "path": "trophy/png/trophy_season.png",
+          "bytes": 1325817,
+          "sha256": "43c28ad50bbd3fb8de2cd6cd250f33bf53e2d6d18e18a4327e1d60002c84ce0f",
+          "w": 1024,
+          "h": 1024,
+          "mode": "RGBA"
+        },
+        "small_versions": [
+          {
+            "path": "trophy/app/trophy_season_128.webp",
+            "bytes": 17574,
+            "sha256": "68fdfcace15809f6808fb2b7939ace01f8e18cb04473c7540c9423ec823ec12e",
+            "w": 128,
+            "h": 128,
+            "mode": "RGBA"
+          },
+          {
+            "path": "trophy/app/trophy_season_256.webp",
+            "bytes": 57384,
+            "sha256": "e2ba4d0422e808fea5ce0dbffea566a5406e92f21da81cec9d3fe68f1d5ddf81",
+            "w": 256,
+            "h": 256,
+            "mode": "RGBA"
+          }
+        ],
+        "alpha": {
+          "minimum": 0,
+          "maximum": 255,
+          "transparent_pixels": 402936,
+          "nontransparent_bbox": [
+            0,
+            15,
+            991,
+            1011
+          ]
+        },
+        "encoding": "lossless WebP",
+        "mode": "RGBA",
+        "transparent_rgb_preserved": true
+      },
+      "usage": "1024site/gallery; small128WebP app-inline option"
+    },
+    {
+      "id": "trophy_ring",
+      "group": "trophy",
+      "color": null,
+      "night": false,
+      "w": 1024,
+      "h": 1024,
+      "file": {
+        "path": "trophy/trophy_ring.webp",
+        "bytes": 957398,
+        "sha256": "f019a06cc058aeea07194000e0332fb93cb5f905d2b531fa3c0d6886944f26a9",
+        "transparent_png": {
+          "path": "trophy/png/trophy_ring.png",
+          "bytes": 1427258,
+          "sha256": "8fb9e7bd5e06248bc0480beb3f40b5a413c708215816ccf15ae7899c72f2f4d9",
+          "w": 1024,
+          "h": 1024,
+          "mode": "RGBA"
+        },
+        "small_versions": [
+          {
+            "path": "trophy/app/trophy_ring_128.webp",
+            "bytes": 20058,
+            "sha256": "0b036cf2ac888214f98943a289dbab1e78be4e0869a84c6e0cf67806d36ba87e",
+            "w": 128,
+            "h": 128,
+            "mode": "RGBA"
+          },
+          {
+            "path": "trophy/app/trophy_ring_256.webp",
+            "bytes": 69440,
+            "sha256": "72f55714cbb22b74ff7f68eb158fea1ee8b634b8a13ef2d4996407cf7819bc23",
+            "w": 256,
+            "h": 256,
+            "mode": "RGBA"
+          }
+        ],
+        "alpha": {
+          "minimum": 0,
+          "maximum": 255,
+          "transparent_pixels": 484289,
+          "nontransparent_bbox": [
+            22,
+            11,
+            1004,
+            1011
+          ]
+        },
+        "encoding": "lossless WebP",
+        "mode": "RGBA",
+        "transparent_rgb_preserved": true
+      },
+      "usage": "1024site/gallery; small128WebP app-inline option"
+    },
+    {
+      "id": "banner_01",
+      "group": "banner",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 400,
+      "file": {
+        "path": "banner/banner_01.webp",
+        "bytes": 240564,
+        "sha256": "c2178889eee9c3bc95f685b5c7ae09df275df1a815265985659d35a77a210f61",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB",
+        "text_safe_rect": [
+          0,
+          0,
+          640,
+          400
+        ],
+        "left40_mean_luma": 25.120418353124997,
+        "right60_mean_luma": 78.12426959635418,
+        "text_baked_in": false
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "banner_02",
+      "group": "banner",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 400,
+      "file": {
+        "path": "banner/banner_02.webp",
+        "bytes": 200376,
+        "sha256": "9f9179e3b439c48ef8e67c7842042af765dd029bb18c6d2c5eef18405923141b",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB",
+        "text_safe_rect": [
+          0,
+          0,
+          640,
+          400
+        ],
+        "left40_mean_luma": 19.8628346140625,
+        "right60_mean_luma": 84.21475824114583,
+        "text_baked_in": false
+      },
+      "usage": "site-only standalone image"
+    },
+    {
+      "id": "banner_03",
+      "group": "banner",
+      "color": "navy",
+      "night": true,
+      "w": 1600,
+      "h": 400,
+      "file": {
+        "path": "banner/banner_03.webp",
+        "bytes": 197388,
+        "sha256": "84a914c3167673dfa524db9b13cb98cb6253f7fc4d07e8ef0fc6adcd0c510865",
+        "encoding": "lossy WebP",
+        "quality": 96,
+        "mode": "RGB",
+        "text_safe_rect": [
+          0,
+          0,
+          640,
+          400
+        ],
+        "left40_mean_luma": 17.884178835156252,
+        "right60_mean_luma": 87.89615188020832,
+        "text_baked_in": false
+      },
+      "usage": "site-only standalone image"
+    }
+  ],
+  "app_inline_files": [
+    "trophy/app/trophy_series_128.webp",
+    "trophy/app/trophy_season_128.webp",
+    "trophy/app/trophy_ring_128.webp"
+  ],
+  "site_files": [
+    "moment/moment_01_final_out.webp",
+    "moment/moment_02_battery_hug.webp",
+    "moment/moment_03_dugout_rush.webp",
+    "moment/moment_04_stands_confetti.webp",
+    "moment/moment_05_day_mound.webp",
+    "moment/moment_06_day_dugout.webp",
+    "ceremony/ceremony_01_lift.webp",
+    "ceremony/ceremony_02_captain_kiss.webp",
+    "ceremony/ceremony_03_manager_toss.webp",
+    "ceremony/ceremony_04_team_photo.webp",
+    "party/party_01_champagne.webp",
+    "party/party_02_goggles.webp",
+    "party/party_03_front_office.webp",
+    "parade/parade_01_open_bus.webp",
+    "parade/parade_02_city_square.webp",
+    "parade/parade_03_confetti.webp",
+    "trophy/trophy_series.webp",
+    "trophy/trophy_season.webp",
+    "trophy/trophy_ring.webp",
+    "banner/banner_01.webp",
+    "banner/banner_02.webp",
+    "banner/banner_03.webp"
+  ],
+  "validation": "validation.json",
+  "main_merged": false,
+  "code_changed": false,
+  "game_connected": false,
+  "asset_validation_passed": true
+}

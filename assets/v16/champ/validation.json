@@ -1,0 +1,301 @@
+{
+  "schema_version": "16.1",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "passed": true,
+  "core_asset_count": 22,
+  "group_counts": {
+    "moment": 6,
+    "ceremony": 4,
+    "party": 3,
+    "parade": 3,
+    "trophy": 3,
+    "banner": 3
+  },
+  "night_counts_moment": {
+    "night": 4,
+    "day": 2
+  },
+  "image_checks": [
+    {
+      "id": "moment_01_final_out",
+      "group": "moment",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 548290,
+      "passed": true
+    },
+    {
+      "id": "moment_02_battery_hug",
+      "group": "moment",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 403406,
+      "passed": true
+    },
+    {
+      "id": "moment_03_dugout_rush",
+      "group": "moment",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 506640,
+      "passed": true
+    },
+    {
+      "id": "moment_04_stands_confetti",
+      "group": "moment",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 668814,
+      "passed": true
+    },
+    {
+      "id": "moment_05_day_mound",
+      "group": "moment",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 596422,
+      "passed": true
+    },
+    {
+      "id": "moment_06_day_dugout",
+      "group": "moment",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 547246,
+      "passed": true
+    },
+    {
+      "id": "ceremony_01_lift",
+      "group": "ceremony",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 505582,
+      "passed": true
+    },
+    {
+      "id": "ceremony_02_captain_kiss",
+      "group": "ceremony",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 336104,
+      "passed": true
+    },
+    {
+      "id": "ceremony_03_manager_toss",
+      "group": "ceremony",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 494254,
+      "passed": true
+    },
+    {
+      "id": "ceremony_04_team_photo",
+      "group": "ceremony",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 546646,
+      "passed": true
+    },
+    {
+      "id": "party_01_champagne",
+      "group": "party",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 632384,
+      "passed": true
+    },
+    {
+      "id": "party_02_goggles",
+      "group": "party",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 493022,
+      "passed": true
+    },
+    {
+      "id": "party_03_front_office",
+      "group": "party",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 250988,
+      "passed": true
+    },
+    {
+      "id": "parade_01_open_bus",
+      "group": "parade",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 631402,
+      "passed": true
+    },
+    {
+      "id": "parade_02_city_square",
+      "group": "parade",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 682624,
+      "passed": true
+    },
+    {
+      "id": "parade_03_confetti",
+      "group": "parade",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "bytes": 618766,
+      "passed": true
+    },
+    {
+      "id": "trophy_series",
+      "group": "trophy",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bytes": 411764,
+      "passed": true,
+      "genuine_transparent_png_verified": true,
+      "png_webp_exact_pixel_match": true
+    },
+    {
+      "id": "trophy_season",
+      "group": "trophy",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bytes": 874546,
+      "passed": true,
+      "genuine_transparent_png_verified": true,
+      "png_webp_exact_pixel_match": true
+    },
+    {
+      "id": "trophy_ring",
+      "group": "trophy",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bytes": 957398,
+      "passed": true,
+      "genuine_transparent_png_verified": true,
+      "png_webp_exact_pixel_match": true
+    },
+    {
+      "id": "banner_01",
+      "group": "banner",
+      "dimensions": [
+        1600,
+        400
+      ],
+      "bytes": 240564,
+      "passed": true,
+      "left40_mean_luma": 25.120418353124997,
+      "right60_mean_luma": 78.12426959635418,
+      "text_safe_rect": [
+        0,
+        0,
+        640,
+        400
+      ]
+    },
+    {
+      "id": "banner_02",
+      "group": "banner",
+      "dimensions": [
+        1600,
+        400
+      ],
+      "bytes": 200376,
+      "passed": true,
+      "left40_mean_luma": 19.8628346140625,
+      "right60_mean_luma": 84.21475824114583,
+      "text_safe_rect": [
+        0,
+        0,
+        640,
+        400
+      ]
+    },
+    {
+      "id": "banner_03",
+      "group": "banner",
+      "dimensions": [
+        1600,
+        400
+      ],
+      "bytes": 197388,
+      "passed": true,
+      "left40_mean_luma": 17.884178835156252,
+      "right60_mean_luma": 87.89615188020832,
+      "text_safe_rect": [
+        0,
+        0,
+        640,
+        400
+      ]
+    }
+  ],
+  "visual_review": {
+    "passed": true,
+    "scope": "All22 delivered images inspected via decoded output comparison boards; key source views for trophy, banner source photographs and corrected executive office.",
+    "checks": {
+      "photorealistic_scene_tone": true,
+      "moment_night4_day2": true,
+      "plain_white_uniform_with_navy_accent": true,
+      "no_readable_actual_club_or_company_name_identified": true,
+      "no_recognized_real_person_likeness": true,
+      "faces_small_or_side_back": true,
+      "body_language_celebration": true,
+      "party03_suits_office_rear_views_corrected": true,
+      "goggles_and_unbranded_bottles_visible": true,
+      "trophy_shapes_original_and_complete": true,
+      "banners_left40_dark_empty_no_baked_text": true
+    },
+    "limits": "Manual visual check of generated fictional scenes, not exhaustive real-person or logo database search. Indistinct stitching/tiny non-readable uniform marks may remain per request.",
+    "optional_six_color_variants": false
+  },
+  "app_inline_files": [
+    "trophy/app/trophy_series_128.webp",
+    "trophy/app/trophy_season_128.webp",
+    "trophy/app/trophy_ring_128.webp"
+  ],
+  "app_inline_bytes": 49388,
+  "six_color_variants_produced": false,
+  "optional_color_scope": "Required22base edition: neutral white/navy uniform. A/Bsix-color variants were optional and are not included.",
+  "main_merged": false,
+  "code_changed": false,
+  "game_connected": false,
+  "real_person_database_comparison": "NOT_PERFORMED; distant fictional faces and manual visual review, not an exhaustive likeness proof"
+}
