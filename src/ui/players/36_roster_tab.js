@@ -14,7 +14,7 @@ function fposList(tid,pos){ if(!pos)return '';
   return `<div class="fdd ${up?'up':''}" style="${pos2};--cx:${(fx/360*100).toFixed(1)}%"><div class="fdd-h"><b>${title}</b><button class="x" data-a="fpos" data-v="" aria-label="닫기">×</button></div><div class="fdd-l">${L.map(p=>row(p,!p.isP&&pos!=='DH'?`<span class="small muted">수비 ${dv(defAt(p,pos))}</span>`:'')).join('')||'<p class="small muted">선수가 없습니다.</p>'}</div></div>`; }
 function fieldSVG(tid,interactive,inline){
   const d=depth(tid); const ps=playersOf(tid); const order=orderList(d.start,tid); const t=team(tid);
-  const next=d.sp.length?d.sp[(t.rot||0)%d.sp.length]:null;
+  const next=(projStarters(tid,1)[0]||{}).sp||null; /* 실제 선발 선택과 같은 예상(어제 던진 투수는 넘긴다, 검수 11-09zh) */
   const node=(pos)=>{ const [x,y]=FPOS[pos];
     let name='빈자리',stat='',cnt=0,face='',no=0,off=false,ov=null;
     if(pos==='P'){ const p=next; name=p?fname(p):'선발 미정'; face=p?faceSVG(p):''; ov=p?scoutReport(p).cur:null; const h0=p?seasonTotal(p,G.year,'1군'):null; const h=h0&&h0.outs?h0:p?seasonTotal(p,G.year-1,'1군'):null; stat=h&&h.outs?`${h===h0?'':String(G.year-1).slice(2)+'년 '}ERA ${pRate(h).era.toFixed(2)}`:'기록 없음'; }

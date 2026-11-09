@@ -1,14 +1,15 @@
 /* ===== 예고 선발 · 순위 기록 · 트레이드 비교 · 모의 지명 · 스태프 의견 ===== */
-function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; for(let d=from;d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(tid)); if(m)L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0]}); } return L; }
+function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)return L; if(from===G.day+1)for(const x of (G.makeup||[]))if(L.length<n&&x.y===G.year&&!(x.d>=from)&&(x.h===tid||x.a===tid))L.push({d:from,home:x.h===tid,op:x.h===tid?x.a:x.h,mk:true}); /* 미룬 보충 경기는 다음 경기일에 먼저(playDay와 같은 순서, 검수 11-09zh) */ for(let d=from;d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(tid)); if(m)L.push({d,home:m[0]===tid,op:m[0]===tid?m[1]:m[0]}); } return L; }
 let _spC={k:null};
 function projStarters(tid,n){ // 지금 로테이션 순번과 휴식일로 다음 경기 선발을 예상(부상·피로로 바뀔 수 있음)
-  const k=G.day+':'+G.games.length+':'+G.year; if(_spC.k!==k)_spC={k}; const ck=tid+':'+n; if(_spC[ck]&&_spC[ck].every(g=>!g.sp||(g.sp.team===tid&&healthy(g.sp)&&(!entryOn()||g.sp.e1)&&g.la===g.sp.lastApp&&rpPlanOf(tid,g.sp)!=='sp2')))return _spC[ck]; /* 같은 날 2군 선발 수업·부상으로 빠진 투수도 다시 계산(검수 11-08) */ /* 같은 날 방출·이적한 투수가 남아 있으면 다시 계산 */
-  const t=team(tid); const sp=depth(tid).sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[]; const fr=(p,d)=>!(p.lastApp!=null&&p.lastApp!==p.lastStart&&last[p.id]===p.lastStart&&d-p.lastApp<2); /* 실제 선발 선택처럼 어제·그제 구원 등판한 투수는 순번을 넘긴다(검수 11-08) */
+  const t=team(tid); const k=G.day+':'+G.games.length+':'+G.year+':'+(t.rot||0)+':'+JSON.stringify(G.makeup||[])+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.policy||null); if(_spC.k!==k||_spC.g!==G)_spC={k,g:G}; /* 세이브(G 객체)가 바뀌면 다시(검수 11-09zh) */
+  const pk=playersOf(tid).filter(p=>p.isP).map(p=>[p.id,p.name,p.e1?1:0,p.injOut||0,p.susp||0,rpPlanOf(tid,p)||'',p.lastApp,p.lastStart,p.role||''].join('|')).join(','), ck=tid+':'+n; if(_spC[ck]&&_spC[ck].pk===pk)return _spC[ck].v; /* 투수 이름·등록·부상·출장정지·보직 계획·마지막 등판이 바뀌면 다시 계산(검수 11-09zh) */
+  const dp=depth(tid), sp=dp.sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[]; const fr=(p,d)=>!(p.lastApp!=null&&p.lastApp!==p.lastStart&&last[p.id]===p.lastStart&&d-p.lastApp<2); /* 실제 선발 선택처럼 어제·그제 구원 등판한 투수는 순번을 넘긴다(검수 11-08) */
   for(const g of games){ let pick=null;
     if(sp.length){ for(let i0=0;i0<sp.length;i0++){ const i=(rot+i0)%sp.length; const p=sp[i]; if((last[p.id]==null||g.d-last[p.id]>=5)&&fr(p,g.d)){ rot=(i+1)%sp.length; pick=p; break; } }
-      if(!pick){ const pool=[...sp].sort((a,b)=>(last[a.id]||0)-(last[b.id]||0)); pick=pool.find(p=>fr(p,g.d))||pool[0]; } last[pick.id]=g.d; }
+      if(!pick){ const pool=[...sp].sort((a,b)=>(last[a.id]||0)-(last[b.id]||0)); pick=pool.find(p=>fr(p,g.d))||dp.pen.find(p=>!last[p.id]&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&g.d-p.lastApp<2))||pool[0]; } /* 선발 전원이 연투 제한이면 실제처럼 쉬어 온 불펜(검수 11-09zh) */ last[pick.id]=g.d; }
     out.push(Object.assign({},g,{sp:pick,la:pick?pick.lastApp:null})); }
-  _spC[ck]=out; return out; }
+  _spC[ck]={pk,v:out}; return out; }
 function rankSnap(day){ if(period()!=='season')return; const st=standingsNow(); const rk=G.teams.map(()=>0); st.forEach(o=>rk[o.tid]=tieRank(st,o.tid)); /* 그래프도 공동 순위(검수 11-08) */
   const S=G.sea; S.rh=S.rh||[]; if(S.rh.length&&S.rh[S.rh.length-1][0]===day)return; S.rh.push([day,rk,G.teams.map(t=>{ const r=S.rec[t.id]; return r.w-r.l; })]); }
 
