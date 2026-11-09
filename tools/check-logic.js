@@ -3781,6 +3781,17 @@ T('[피드백 11-09v] 자동 지명: 기준 미달 후보만 남으면 1라운�
 T('[피드백 11-09v] 엔트리 관리: 콜업 불가 사유는 콜업 건의(reqEntry)와 같은 문구다(말소 10일·육성선수)',()=>{ fresh(); G.entryY=G.year; G.day=G.cal.open+20; const p=domestic(G.user).find(q=>!q.e1&&healthy(q)&&!q.ys&&!isAway(q)); ok(p,'준비 실패'); delete p.susp; delete p.hold;
   p.downDay=G.day-3; ok(!canUp(p),'준비 실패: 올릴 수 있음'); const w=upWhy(p); ok(/10일/.test(w)&&w.includes(dmd(p.downDay+10)),'말소 10일 사유 '+w); ok(reqEntry(p.id,true)===w,'건의 결과와 화면 사유가 다름');
   p.downDay=null; p.ys=true; ok(/육성선수/.test(upWhy(p)),'육성선수 사유 '+upWhy(p)); p.ys=false; });
+T('[카페 11-09w] 역할 약속 위반 선수 기용 건의: 감독이 받아들이면 약속 보직에 들어가 지킨 것으로 보고, 거절하면 관계 -1과 기분 하락이 남으며 에이전트 양해는 하락을 절반으로',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10); const u=G.user, m=G.mgr[u]; mgrFix(m); m.ego=50; m.rel=60; m.disc=50; m.interim=false; delete m.pl; G.useNo={};
+  const d=depth(u); const pen=d.pen.filter(x=>!x.foreign&&healthy(x)&&!isAway(x)); const p=pen[0], q=pen[1]; ok(p&&q,'준비 실패: 불펜 투수 2명');
+  const mk=x=>{ x.ctT=u; x.faC=true; x.yrs=2; x.roleProm={k:0,t:'SP',until:G.year,l:'선발 로테이션 보장',from:'fa'}; };
+  mk(p); mk(q); const c0=useComp(p,'SP').c; ok(c0,'준비 실패: 5선발'); p.r={...c0.r}; p.arsenal=c0.arsenal; { const U=useCands(); ok(U.length&&rpLive(U[0])&&U.some(x=>x.id===p.id||x.id===q.id),'약속 위반 선수가 건의 후보 앞에 없음 '+U.map(x=>x.name+(x.roleProm?'*':'')).join(',')); }
+  ok(useScore(m,useComp(p,'SP').gap)>=0,'준비 실패: 능력 차 '+useComp(p,'SP').gap);
+  const r1=mgrUseAsk(p.id,'role'); ok(/^수락/.test(r1.sys),'비슷한 능력인데 거절: '+r1.sys+' / '+r1.a); ok(promKept(p,p.roleProm,depth(u)),'수락했는데 선발 로테이션에 없음'); p.mor=60; rolePromCheck(6); ok(p.mor===60,'수락 뒤에도 약속 위반 '+p.mor);
+  for(const k in q.r)if(typeof q.r[k]==='number')q.r[k]=15; m.ego=90; const rel0=m.rel; const r2=mgrUseAsk(q.id,'role'); ok(/거절/.test(r2.sys)&&m.rel===rel0-1,'능력 차가 큰데 받아들이거나 관계 변화 이상: '+r2.sys+' '+(m.rel-rel0)); ok(!promKept(q,q.roleProm,depth(u)),'거절했는데 선발에 들어감');
+  const r3=mgrUseAsk(q.id,'role'); ok(m.rel===rel0-1&&/다시 건의/.test(r3.sys),'7일 안 재건의 처리 이상: '+r3.sys);
+  q.mor=60; rolePromCheck(7); ok(q.mor===54,'거절 뒤 약속 위반 기분 하락 '+q.mor);
+  const t=agPardon(q.id); ok(q.roleProm.grace>G.day,'양해가 반영되지 않음: '+t); q.mor=60; rolePromCheck(8); ok(q.mor===57,'양해 뒤 하락이 절반이 아님 '+q.mor); ok(/이미/.test(agPardon(q.id)),'양해를 두 번 구할 수 있음');
+  const r4=mgrUseAsk(q.id,'respect'); ok(m.rel===rel0&&/그대로/.test(r4.sys),'존중 답변 처리 이상: '+r4.sys); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

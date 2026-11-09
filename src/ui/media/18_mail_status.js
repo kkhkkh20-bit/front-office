@@ -77,5 +77,5 @@ function mailStatus(m){
   const tasks=A.filter(a=>MAIL_TASK_ACTS.has(a.a)||a.done);if(tasks.length){const S=tasks.map(a=>mailActionStatus(m,a));if(S.every(Boolean))return S[0];}
   return null;
 }
-function mailButtonStatus(m,a){if(a.done)return mailActionStatus(m,a);const st=mailActionStatus(m,a);if(st)return st;return /^(player|fbOpen|cerOpen|wkOpen|leagueEvents|fdEvalGo)$/.test(a.a)?null:mailStatus(m);}
+function mailButtonStatus(m,a){if(a.done)return mailActionStatus(m,a);const st=mailActionStatus(m,a);if(st)return st;return /^(player|fbOpen|cerOpen|wkOpen|leagueEvents|fdEvalGo)$/.test(a.a)||/^mgr\|use:/.test(a.v)?null:mailStatus(m);} /* 선수 기용 건의는 양해를 구한 뒤에도 할 수 있다(11-09w) */
 function mailActionHTML(m,a,i){const st=mailButtonStatus(m,a);return `<span class="ibm-act${st?' ended':''}"><button class="btn${st?' ibm-act-done':i===0?' primary':''}" ${st?`disabled aria-disabled="true" title="${esc(st.text)}"`:`data-a="mailAct" data-v="${m.id}:${i}"`}>${esc(a.l)}</button>${st?`<span class="ibm-act-state">${esc(st.label)}</span>`:''}</span>`;}
