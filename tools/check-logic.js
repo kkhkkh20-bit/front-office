@@ -1829,7 +1829,7 @@ T('[공통 점검] 교체 타자도 타석에 섰으면 최근 경기 집계에 
 T('[공통 점검] 해외 연수: 출국 전 이직하면 예약은 낸 구단이 그대로 보내고, 이어받은 AI 예약은 동행 비용을 한 번만 낸다',()=>{ fresh(); const old=G.user; const p=domestic(old).find(q=>!q.foreign&&q.age<=25); G.day=dnum(G.year,11,1); G.ovs=[{pid:p.id,prog:'abl',go:false}]; const nt=G.teams.find(t=>t.id!==old).id; const q=domestic(nt).find(x=>!x.foreign&&x.age<=25);
   G.ovsAi={y:G.year,fall:{},abl:{[nt]:[q.id]},us:{},jpl:{}}; switchTeam(nt); ok((G.ovsAi.abl[old]||[]).includes(p.id),'옛 구단 예약이 사라짐'); const mine=G.ovs.find(x=>x.pid===q.id); ok(mine&&!mine.go&&mine.paid,'새 구단 예약이 출국 완료로 바뀜'); const d0=G.spend.dev||0; G.day=dnum(G.year,11,15); tabDaily(G.day); ok((G.spend.dev||0)===d0,'동행 비용 이중 청구'); });
 T('[검수 11-06] 구장·시설: 이직 뒤 증설 유지비·리무진 비용 유지, 홈경기 뒤 완공은 그해 수입에 없음, 개장 때 남은 분담금 유지, 다음 시즌 표값·구장 나이, 잔디 12단계 효과',()=>{ fresh(); const A0=G.user, B=otherT(); facInit(); const up0=G.fac.up0; ok(up0!=null,'기준 유지비 없음'); for(const k of FACK)G.fac.it[k]=Math.min(FAC_MAX,G.fac.it[k]+2); G.bus=2; switchTeam(B);
-  const T=team(A0); ok(aiFacUpExtra(T)===facUpOf(T.fi.it)-up0+(BUS[2].up-BUS[1].up),'증설분 '+aiFacUpExtra(T)+' / '+(facUpOf(T.fi.it)-up0)); ok(BUS[2].up>BUS[1].up,'준비');
+  const T=team(A0); delete T.fi.hoD; /* 이직한 날까지 유지비는 인계 장부 몫(검수 11-09zza): 여기서는 한 해 치 계산식만 본다 */ ok(aiFacUpExtra(T)===facUpOf(T.fi.it)-up0+(BUS[2].up-BUS[1].up),'증설분 '+aiFacUpExtra(T)+' / '+(facUpOf(T.fi.it)-up0)); ok(BUS[2].up>BUS[1].up,'준비');
   fresh(); const U=G.user; G.day=G.cal.open+30; const S=stadOf(U); S.lv.prem=3; G.sea.att={}; G.sea.hg={}; G.sea.hg[U]=2; const a=otherT(); stadGame(G.day,U,a); stadGame(G.day,U,a); S.lv.prem=4; ok(stadProj(U).prem===Math.round((stadPower(3)-2)*600),'홈경기 뒤 완공했는데 한 해 수입 '+stadProj(U).prem);
   S.proj={stage:'build',k:'mid',cap:21000,cost:9000,paid:6000,done:G.day}; newStadTeam(U); ok(!S.proj&&newStadDue(U)>0,'개장하자 남은 분담금 사라짐');
   fresh(); const S2=stadOf(G.user); G.day=dnum(G.year,11,15); const P=stadProj(G.user,true); ok(Math.abs(P.ticket-P.att*TICKET*ecoIdx(G.year+1)*PRICE[S2.price].m)<2,'다음 시즌 표값');
@@ -3532,7 +3532,7 @@ T('[피드백 11-09j] 모기업 구단은 현금이 적어도 구단주 지원 �
   const op=G.teams.find(x=>x.id!==G.user).id; const g=domestic(G.user).find(q=>!q.foreign&&!hasNtc(q)), q=domestic(op).find(x=>!x.foreign&&!hasNtc(x));
   const r=proposeTrade(op,[g.id],[q.id],1000); ok(r.ok,'현금 200으로 10억 현금 트레이드가 막힘: '+r.msg); const r1=budget().roomGoal; /* 선수 맞교환으로 연봉 합계도 바뀌므로 공사 전 여유를 다시 잰다 */
   facInit(); G.fac.bld={}; const k=FACK.find(x=>G.fac.it[x]<FAC_MAX&&FACI[x].c[G.fac.it[x]+1]>200&&FACI[x].c[G.fac.it[x]+1]<=spendable(G.user)); ok(k,'준비 실패: 맞는 공사 없음'); const c=FACI[k].c[G.fac.it[k]+1], e0=G.spend.etc||0;
-  ok(buildFacItem(k)===''&&G.fac.bld[k],'예산 여유로 공사를 못 함'); ok(t.cash===0&&(G.spend.etc||0)-e0===c-200,'현금 먼저, 모자란 몫은 결산 지출로: 현금 '+t.cash+' · 장부 '+((G.spend.etc||0)-e0)+'/'+(c-200));
+  ok(buildFacItem(k)===''&&G.fac.bld[k],'예산 여유로 공사를 못 함'); ok(t.cash===200&&(G.spend.etc||0)-e0===c,'현금 200은 10억 트레이드 약정에 묶여 공사비는 모두 결산 지출로(검수 11-09zza): 현금 '+t.cash+' · 장부 '+((G.spend.etc||0)-e0)+'/'+c);
   ok(r1<r0&&budget().roomGoal<r1-(c-200)+5,'지출이 예산 여유에서 빠지지 않음: '+budget().roomGoal+' / r0 '+r0+' r1 '+r1+' c '+c);
   const u=G.teams.find(x=>x.indie); if(u){ const iv=t.indie; t.indie=true; ok(spendable(G.user)===sdCash(G.user),'독립구단도 예산 여유를 씀'); t.indie=iv; }
   } finally{ evalTrade=oe; tradeOwnerCheck=oo; }
