@@ -66,6 +66,8 @@ function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); con
   return `<section class="card relstrip"><div class="row between"><h2 class="sec">관계</h2><button class="btn small" data-a="go" data-v="club:rel">관계도</button></div>
     <div class="rs">${L.map(x=>{ const [a,v]=relKey(x); return `<button data-a="${a}" data-v="${v}">${avImg(x.av)}<b>${esc(x.k==='own'?'구단주':x.k==='mgr'?'감독':x.k==='fan'?'팬':x.k==='press'?'언론':tshort(x.tid)+' 단장')}</b><span style="color:${relCol(x.rel)}">${x.rel}${dChip(x.k)}</span></button>`; }).join('')}</div></section>`; }
 /* 인물 카드 시트 */
+/* 같은 묶음(코치·스카우트·데이터팀, 선수단, 다른 구단 단장, 기자단 등) 안에서 이전·다음 사람으로 바로 넘긴다(카페 11-10) */
+function relNav(k,gs){ const L=(gs.find(([,L])=>L.some(y=>y.k===k))||[])[1]; if(!L||L.length<2)return ''; const i=L.findIndex(y=>y.k===k); const b=(d,l,t)=>{ const y=L[(i+d+L.length)%L.length]; return `<button class="btn small" style="min-width:36px;font-size:18px;line-height:1" data-a="relGo" data-v="${esc(y.k)}" title="${t}: ${esc(y.name)}" aria-label="${t}: ${esc(y.name)}">${l}</button>`; }; return `<div class="row ps-nav" style="flex-wrap:nowrap;gap:4px;margin-left:auto">${b(-1,'‹','이전 사람')}<span class="small muted" style="white-space:nowrap">${i+1}/${L.length}</span>${b(1,'›','다음 사람')}</div>`; }
 function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)x=personX(k); if(!x)return '';
   const t=team(G.user); const sec=(h,b)=>b?`<div class="ps-s"><div class="eyebrow">${h}</div>${b}</div>`:''; const li=a=>`<ul class="ps-l">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`;
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
@@ -122,7 +124,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('협상실','faOpen',id,1)]; }
   const d=relDelta(k);
   return `<div class="scrim" data-a="closeSheet"><div class="sheet gut ps" data-stop="1" role="dialog" aria-label="인물 정보">
-    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div><button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    <div class="sheet-head"><div class="row" style="flex-wrap:nowrap">${avImg(x.av,true)}${cimgBtns(cimgKey(x.av))}<div><div class="eyebrow">${esc(x.role)}</div><h2 class="sec">${esc(x.name)}</h2><span class="small muted">${esc(x.sub||'')}</span></div></div>${relNav(k,gs)}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
     ${x.rel!=null?`<div class="ps-rel"><b class="num" style="color:${relCol(x.rel)}">${x.rel}</b><div>${relBar(x.rel)}<span>${esc(x.rl)} · ${esc(x.lab)}${d?` · 최근 4주 ${d>0?'+':''}${d}`:''}</span></div></div>`:`<div class="ps-rel"><span class="rp-tag">${esc(x.lab)}</span></div>`}
     ${personTop(k)}${info}${sec('관계를 움직이는 것',moves.length?li(moves.map(esc)):'')}${sec('관계가 주는 영향',fx.length?li(fx.map(esc)):'')}${sec('최근',recent)}
     <div class="btns">${acts.join('')}</div>${UI.personMsg?`<p class="note">${esc(UI.personMsg)}</p>`:''}</div></div>`; }
