@@ -87,10 +87,10 @@ function faceSVG(o){ { const k=cimgKey(o); if(k&&typeof G!=='undefined'&&G&&G.ci
   FACEC.set(key,out); return out;
 }
 function offseasonMgr(){
-  try{ obYear(); }catch(e){}
+  try{ obYear(); }catch(e){} try{ obMinorPrune(); }catch(e){}
   if(G.coach){ coachYear(); try{ asstYear(); }catch(e){} /* 무직이어도 떠난 구단 보조 코치 계약은 흐른다(검수 11-09zv #3) */ } try{ schYear(); }catch(e){} /* 코치 시장을 새로 짠 뒤 고교 감독 후보를 올린다 */ try{ gmTurnover(); }catch(e){} try{ mgrFireOff(); }catch(e){}
   for(const t of G.teams){ const m=G.mgr[t.id]; if(!m)continue; if(m.age)m.age++; if(m.cs!=null&&m.cs>G.year)continue; /* 시즌이 끝난 뒤 맺은 계약은 다음 시즌부터 센다 */ m.yrs--;
-    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<70&&R()<.6)staffCt(m,2,G.year+1); else { const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrHire(t); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ staffCt(n,n.yrs||ri(2,3),G.year+1); G.mgr[t.id]=n; n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){ staffCt(c,n.yrs,G.year+1); G.coach[t.id][c.role]=c; } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
+    if(t.id!==ME()&&m.yrs<=0){ if((m.age||0)<70&&R()<.6)staffCt(m,2,G.year+1); else { try{ exMgrAdd(m,t.id); }catch(e){} const n=(()=>{ try{ return obAiMgr(t.id); }catch(e){ return null; } })()||(()=>{ try{ return aiMgrHire(t); }catch(e){ return mkMgr(); } })(); /* 선수단에 맞는 감독을 고른다(86_ai_plan) */ staffCt(n,n.yrs||ri(2,3),G.year+1); G.mgr[t.id]=n; n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[t.id])for(const c of n.clan){ staffCt(c,n.yrs,G.year+1); G.coach[t.id][c.role]=c; } wire('감독',`${tname(t.id)}이(가) ${n.name} 감독을 새로 선임했습니다.`,{tid:t.id,x:{mid:n.id,hire:1}}); try{ news('리그',`${tshort(t.id)}, 새 감독에 ${n.name}`,`${tname(t.id)}이(가) 계약이 끝난 감독 대신 ${n.name} 감독(${n.yrs}년)을 선임했습니다.`,0); }catch(e){} } } }
   refreshMgrMarket();
   const m=G.mgr[G.user];
   if(m&&!m.interim&&m.yrs<=0) mail('운영팀','감독 계약이 끝납니다',`${m.name} 감독의 계약이 올해로 끝납니다. 재계약하거나 새 감독을 선임해야 합니다. 연말까지 정하지 않으면 감독 자리가 비게 됩니다.`,{imp:true,kind:'감독',acts:[{l:'2년 재계약',a:'renewMgr',v:'2:'+G.user+':'+m.id},{l:'감독 후보 보기',a:'goWork',v:'감독'}]});

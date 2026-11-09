@@ -25,10 +25,10 @@ function obFromPlayer(p,rec){ if(!G.ob)obInit(); const c=careerOf(p); let war=re
   const fm=p.team===G.user&&G.fd?fdMine(p):undefined; if(fm!==undefined)ys=fm?fm.ys:0; /* 창단 게임: 창단 이후만 우리 구단 경력 */
   if(rec&&rec.mine&&p.team===G.user)ys=Math.max(ys,rec.mine.ys);
   const miss=Math.max(0,(p.svc||0)-seasons); if(miss){ seasons+=miss; war=+(war+miss*clamp((p.pot-45)/5,0,4.5)).toFixed(1); if(c.teams.size<=1&&fm===undefined)ys+=miss; } /* 기록이 남기 전(게임 시작 전) 경력은 연차와 잠재력으로 추정 */
-  if(seasons<5&&war<5&&!(p.team===G.user&&ys>=3))return null; initPers(p);
+  if(seasons<5&&war<5&&!(p.team===G.user&&ys>=3)&&!obMinorOk(p))return null; /* 짧은 경력도 일부는 야구계에 남는다(33b_ob_cycle) */ initPers(p);
   const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers},pr:{...p.r}});
   ob.mineWar=fm!==undefined?(fm?fm.war:0):rec&&rec.mine?rec.mine.war:p.team===G.user?+(war*(ys/Math.max(1,seasons))).toFixed(1):c.byTeam[G.user]?+c.byTeam[G.user].war.toFixed(1):0; ob.school=p.school||null; ob.area=p.area||null; /* 모교로 돌아가 고교 감독이 되기도 한다(11-08c) */ ob.no=rec&&rec.canRetNo?rec.no:jno(p); if(rec&&rec.canRetNo)ob.canRetNo='p'+p.id;
-  ob.tys={}; for(const t in c.byTeam)ob.tys[t]={ys:c.byTeam[t].ys.size,war:+c.byTeam[t].war.toFixed(1)}; if(ob.mine||ob.mineWar)ob.tys[G.user]={ys:ob.mine?ys:(ob.tys[G.user]||{}).ys||0,war:ob.mineWar}; /* 실제로 뛴 구단별 경력: 이직해도 '우리 구단 출신'이 맞게(검수 11-09zp) */ return ob; }
+  ob.tys={}; for(const t in c.byTeam)ob.tys[t]={ys:c.byTeam[t].ys.size,war:+c.byTeam[t].war.toFixed(1)}; if(ob.mine||ob.mineWar)ob.tys[G.user]={ys:ob.mine?ys:(ob.tys[G.user]||{}).ys||0,war:ob.mineWar}; /* 실제로 뛴 구단별 경력: 이직해도 '우리 구단 출신'이 맞게(검수 11-09zp) */ return obCycle(ob,p); }
 /* 지금 맡은 구단 출신인가·그 구단 경력: 뛴 구단 기록(tys)으로. 옛 저장은 은퇴 때 소속 */
 function obMine(o){ return o.tys?!!(o.tys[G.user]&&o.tys[G.user].ys):o.team===G.user; }
 function obMineC(o){ return o.tys?(o.tys[G.user]||{ys:0,war:0}):o.team===G.user?{ys:o.ys,war:o.mineWar||0}:{ys:0,war:0}; }
@@ -40,7 +40,7 @@ function obWhere(ob){ for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.ob==
   for(const tid in (G.lgStaff||{}))if((G.lgStaff[tid].sc||[]).some(s=>s.ob===ob.id))return {k:'scout',tid:+tid,t:`${tshort(+tid)} 스카우트`}; /* 다른 구단 스카우트도 재직으로 본다(검수 11-09e #15) */
   if(G.year<ob.readyY)return {k:'wait',t:ob.path==='media'?'해설위원':ob.path==='coach'?'지도자 연수 중':'휴식 중'};
   if(ob.alt)return {k:ob.alt.k,tid:ob.alt.tid,t:ob.alt.t};
-  return {k:'free',t:ob.path==='media'?'해설위원':`${OBPATH[ob.path]} 자리를 찾는 중`}; }
+  return {k:'free',t:ob.am||(ob.path==='media'?'해설위원':`${OBPATH[ob.path]} 자리를 찾는 중`)}; } /* am: 아마추어 지도자(프로 자리는 비어 있어 후보로 남는다) */
 function obRole(ob){ if(ob.isP)return ob.cy>=6?'hc':ob.cy<2&&R()<.5?'fp':'pc'; if(ob.pos==='포수')return 'cc'; const r=pick(['bc','bc','dc','rc','fb']); return ob.cy>=6&&R()<.4?'hc':r; }
 /* 은퇴 선수 코치의 세부 능력: 지도자 수준(ob.sk·dv, 경력으로 오름)에 선수 시절 강점의 모양을 얹는다. 제구가 좋던 투수는 제구 지도, 포수 출신은 포수 지도.
    소통은 충성심·성격(무던할수록), 데이터는 프로의식, 유망주 육성은 육성력 */
@@ -54,11 +54,11 @@ function obAb(ob,role){ const P=ob.pers||{pro:10,amb:10,loy:10,temp:10}; const h
   for(const k in a)a[k]=clamp(Math.round(a[k]),25,88); return a; }
 function obCoach(ob){ const role=obRole(ob); const c={id:'c'+ob.id,name:ob.name,age:ob.age,role,sk:ob.sk,dv:ob.dv,car:`${tshort(ob.team)} ${ob.hof?'명예의 전당 ':ob.fame>=70?'레전드 ':''}출신 · 통산 WAR ${ob.war}`,sal:round5(clamp(55+(Math.max(ob.sk,ob.dv)-50)*4.5+(ob.fame>=70?40:0),45,340)),yrs:0,clan:null,ob:ob.id,star:ob.fame>=70};
   c.ab=obAb(ob,role); coachSync(c); G.obFace[c.id]=ob.fid; return c; }
-function obCands(kind){ obInit(); return G.ob.filter(o=>{ const w=obWhere(o); return w.k==='free'&&o.age<=66&&(kind==='coach'?(o.path==='coach'||o.path==='media'&&o.my>=3):kind==='scout'?(o.path==='scout'||o.path==='front'&&o.fy<3):false); }); }
+function obCands(kind,minor){ obInit(); return G.ob.filter(o=>{ const w=obWhere(o); return w.k==='free'&&o.age<=66&&(kind==='coach'?(minor||!o.minor)&&(o.path==='coach'||o.path==='media'&&o.my>=3):kind==='scout'?(o.path==='scout'||o.path==='front'&&o.fy<3):false); }); }
 function obMgrCands(){ obInit(); return G.ob.filter(o=>{ const w=obWhere(o); if(w.k==='mgr'||w.k==='gm'||o.age>66||o.age<42)return false; return (o.cy>=5&&(o.sk>=58||o.aim==='mgr'))||(o.fame>=72&&(o.cy>=2||o.my>=4))||(obMine(o)&&obMineC(o).ys>=8&&o.cy>=3); }); } /* 우리 구단 레전드(8시즌 이상)는 지도자 3년이면 감독 후보(사용자 11-08) */
 function obMgr(ob){ const m=mkMgr(); m.name=ob.name; m.age=ob.age; m.fame=clamp(ob.fame+Math.min(10,ob.cy),20,95); m.tac=clamp(Math.round(ob.sk+N(0,4)),30,90); m.youth=clamp(Math.round(ob.dv+N(0,8)),15,88); m.ego=clamp(Math.round(ob.pers.temp*3.5+20+(ob.fame>=70?10:0)),20,95);
   m.career=`${tshort(ob.team)} ${ob.fame>=70?'레전드':''} 출신 · 지도자 경력 ${ob.cy}년${ob.my?` · 해설 ${ob.my}년`:''}`; m.ob=ob.id; m.id='g'+ob.id; G.obFace[m.id]=ob.fid; m.sal=round5(clamp(220+(m.tac-50)*9+Math.max(0,m.fame-55)*9,180,1200)); m.clan=[]; return m; }
-function obGMCands(){ obInit(); return G.ob.filter(o=>{ const w=obWhere(o); if(w.k==='gm'||w.k==='mgr'||o.age>64||o.age<40)return false; return (o.fy+o.sy>=6&&(o.aim==='gm'||o.pers.amb>=11))||(o.fy>=4&&o.fame>=70); }); }
+function obGMCands(){ obInit(); return G.ob.filter(o=>{ const w=obWhere(o); if(w.k==='gm'||w.k==='mgr'||o.age>64||o.age<40)return false; return (o.fy+o.sy>=(o.minor?10:6)&&(o.aim==='gm'||o.pers.amb>=11))||(o.fy>=4&&o.fame>=70); }); }
 function obGM(ob,tid){ const g=mkGM(tid); g.name=ob.name; g.age=ob.age; const P=ob.pers; g.trait=P.loy>=15?'loyal':P.temp>=15?'hard':P.pro>=15?'data':P.amb>=16?'gambler':ob.sy>=ob.fy?'prospect':g.trait;
   g.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.sy?`스카우트 ${ob.sy}년`:''}${ob.sy&&ob.fy?' · ':''}${ob.fy?`프런트 ${ob.fy}년`:''}`; g.ob=ob.id; g.id='m'+ob.id; G.obFace[g.id]=ob.fid; return g; }
 /* 겨울마다: 경력 연차가 쌓이고, 능력이 자라고, 일부는 자리를 옮긴다 */
@@ -74,7 +74,7 @@ function obYear(){ obInit(); for(const ob of G.ob)try{ if(ob.retY!==G.year)ob.ag
   const keep=ob=>{ if(ob.age>=75)return false; if(ob.age<66)return true; const w=obWhere(ob); if(w.k==='coach'||w.k==='mgr'||w.k==='scout')return true; if(obMine(ob)||ob.hof||ob.retNo)return true; return false; };
   G.ob=G.ob.filter(keep); }
 /* AI 구단이 OB를 쓰는 곳 */
-function obAiCoach(tid,role){ const L=obCands('coach').filter(o=>!(G.cmarket||[]).some(c=>c.ob===o.id&&(c.role!==role||c.res===G.user||(c.from===ME()&&c.fromY===G.year)))); /* 우리 우선 협상 후보는 데려가지 않는다(검수 11-09zw #22) */ /* 이번 겨울 우리와 계약이 끝난 코치는 단장이 먼저 볼 수 있게 AI가 같은 날 바로 데려가지 않는다 */ const own=L.filter(o=>o.team===tid&&o.ys>=5); const ob=own.length&&R()<.7?own.sort((a,b)=>b.fame-a.fame)[0]:L.length&&R()<.85?pick(L):null; /* 빈자리는 대부분 은퇴 선수로 채운다(사용자 11-08c: 우리 풀 안에서) */ if(!ob)return null; const c=obCoach(ob); /* 자기 구단 출신을 먼저 부른다(레전드의 친정 복귀, 사용자 11-08) */ c.role=role; try{ coachSync(c); }catch(e){} c.yrs=ri(1,3);
+function obAiCoach(tid,role){ const L=obCands('coach',CROLE[role].g===2) /* 짧은 경력 OB는 2군·잔류군 자리만 */.filter(o=>!(G.cmarket||[]).some(c=>c.ob===o.id&&(c.role!==role||c.res===G.user||(c.from===ME()&&c.fromY===G.year)))); /* 우리 우선 협상 후보는 데려가지 않는다(검수 11-09zw #22) */ /* 이번 겨울 우리와 계약이 끝난 코치는 단장이 먼저 볼 수 있게 AI가 같은 날 바로 데려가지 않는다 */ const own=L.filter(o=>o.team===tid&&o.ys>=5); const ob=own.length&&R()<.7?own.sort((a,b)=>b.fame-a.fame)[0]:L.length&&R()<.85?pick(L):null; /* 빈자리는 대부분 은퇴 선수로 채운다(사용자 11-08c: 우리 풀 안에서) */ if(!ob)return null; const c=obCoach(ob); /* 자기 구단 출신을 먼저 부른다(레전드의 친정 복귀, 사용자 11-08) */ c.role=role; try{ coachSync(c); }catch(e){} c.yrs=ri(1,3);
   if(obMine(ob))wire('코치',`${tshort(ob.team)} 출신 ${ob.name}, ${tshort(tid)} ${CROLE[role].l}로 합류`,{tid}); G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==ob.id); return c; }
 function obAiMgr(tid){ const L=obMgrCands(); if(!L.length||R()>.35)return null; const ob=L.sort((a,b)=>(b.team===tid)-(a.team===tid)||b.fame-a.fame)[0]; const m=obMgr(ob); m.yrs=ri(2,3); /* 친정 출신 우선 */ ob.log.push({y:G.year,t:`${tshort(tid)} 감독 취임`}); obTaken(ob.id,m);
   wire('감독',`${tshort(tid)}, ${tshort(ob.team)} 출신 ${ob.name} 감독 선임`,{tid}); if(obMine(ob))mail('홍보팀',`우리 구단 출신 ${ob.name}, ${tshort(tid)} 감독으로`,`${ob.name}이(가) ${tshort(tid)}의 새 감독이 됐습니다. ${ob.ys}시즌을 우리 유니폼을 입고 뛰었던 선수입니다.`,{kind:'OB'}); return m; }

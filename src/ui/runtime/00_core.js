@@ -125,6 +125,7 @@ function linkMap(){ const n=Object.keys(G.players).length; const k=G.year+':'+G.
   for(const t of G.teams){ const m=G.mgr[t.id]; if(m&&m.name)addP(m.name,t.id===G.user?'person':'lteam',t.id===G.user?'mgr':t.id);
     if(t.id!==G.user&&t.gm&&!t.gm.interim)addP(t.gm.name,'person','gm:'+t.id);
     const C=G.coach&&G.coach[t.id]; if(C)for(const r of CKEYS)if(C[r])addP(C[r].name,t.id===G.user?'person':'lteam',t.id===G.user?'c:'+r:t.id); }
+  for(const m of [...(G.mmarket||[]),...(G.exMgr||[])])addP(m.name,'person','xmgr:'+m.id); for(const a of G.abroad||[])if(!a.back)addP(a.name,'person','abr:'+a.id); for(const o of G.ob||[])addP(o.name,'person','ob:'+o.id); /* 떠난 사람도 소식 속 이름을 누르면 인물 창(현역 이름이 먼저) */
   const er=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); const tk=Object.keys(teams).sort((a,b)=>b.length-a.length).map(er); const pk=[...Object.keys(names),...Object.keys(ppl)].sort((a,b)=>b.length-a.length).map(er);
   const src=`(${tk.join('|')})|(?<![가-힣A-Za-z])(${pk.join('|')})`; _lk={k,names,teams,ppl,re:new RegExp(src,'g'),re1:new RegExp(src)}; return _lk; }
 function linkify(h){ if(!G||!h)return h; const L=linkMap(); return h.replace(L.re,(m,t,pn)=>{ if(t)return `<a class="tl" data-a="lteam" data-v="${L.teams[t]}">${t}</a>`; if(L.names[pn]!=null)return `<a class="pl" data-a="player" data-v="${L.names[pn]}">${pn}</a>`; const q=L.ppl[pn]; return q?`<a class="ml" data-a="${q.a}" data-v="${q.v}">${pn}</a>`:pn; }); }

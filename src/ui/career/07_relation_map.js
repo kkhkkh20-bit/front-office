@@ -69,7 +69,7 @@ function relStrip(){ if(G.gameOver||G.unemp)return ''; const gs=relPeople(); con
 function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)x=personX(k); if(!x)return '';
   const t=team(G.user); const sec=(h,b)=>b?`<div class="ps-s"><div class="eyebrow">${h}</div>${b}</div>`:''; const li=a=>`<ul class="ps-l">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`;
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
-  let info='', moves=[], fx=[], acts=[], recent='';
+  let info=x.info||'', moves=[], fx=[], acts=x.acts||[], recent=''; /* info·acts: 떠난 사람 카드(personGone) */
   if(k==='own'){ const B=bossOf(G.user); const s=goalStatus(); const w=OWNER[t.owner].w;
     info=`<p>${esc(OWNER[t.owner].msg)} ${esc(OWNTRAIT[t.owner])}</p><p class="small muted">평가 비중 · 순위 ${w[0]} · 재정 ${w[2]} · 여론 ${w[3]}</p>${s?`<p class="small">목표: ${s.rank.t}위 이내 ${s.rank.ok==null?'':s.rank.ok?'(달성 중)':'(미달)'} · 팬 여론 ${s.fan.t} 이상 ${s.fan.ok?'(달성 중)':'(미달)'}</p>`:''}<p class="small">친밀도 ${cwRap('own')}(${cwRapLbl(cwRap('own'))}) · 관심사 ${CW_SECL[cwSec()]} · 예산 요청·투자·감독 교체 승인 보정 ${cwRapMod()>=0?'+':''}${Math.round(cwRapMod()*100)}%p${cwOrdLine()?` · ${esc(cwOrdLine())}`:''}</p>`;
     moves=['매달 말 보고: 순위, 팬 여론, 언론 논조, 예상 적자 보전','시즌 결산: 목표 달성 여부와 언론 논조가 크게 반영','홈경기 동석 초대를 받아 함께 보면 친밀도가 오릅니다(신뢰와 별개)'];

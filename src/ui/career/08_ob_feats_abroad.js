@@ -1,8 +1,9 @@
 /* ---------- OB·레전드 ---------- */
 function obOf(id){ return id&&G.ob?G.ob.find(o=>o.id===id):null; }
 function obTag(id){ const o=obOf(id); if(!o)return ''; return obMine(o)?` <span class="pill good">우리 구단 출신</span>`:` <span class="pill">${esc(tshort(o.team))} 출신</span>`; }
-function obAv(ob,w,big){ const per=w.k==='mgr'?'mgr':w.k==='coach'?'coach':w.k==='gm'?'gm':w.k==='scout'||w.k==='front'?'staff':ob.path==='media'?'agent':'staff'; const pid='obv'+ob.id+per; G.obFace=G.obFace||{}; G.obFace[pid]=ob.fid;
-  return avImg({persona:per,pid,team:w.tid??null,age:ob.age,name:ob.name},big); }
+function obAv(ob,w,big){ return avImg(obAvO(ob,w),big); }
+function obAvO(ob,w){ const per=w.k==='mgr'?'mgr':w.k==='coach'?'coach':w.k==='gm'?'gm':w.k==='scout'||w.k==='front'?'staff':ob.path==='media'?'agent':'staff'; const pid='obv'+ob.id+per; G.obFace=G.obFace||{}; G.obFace[pid]=ob.fid;
+  return {persona:per,pid,team:w.tid??null,age:ob.age,name:ob.name}; }
 function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
   const wall=RN.length?`<div class="rnw">${RN.map(r=>`<div class="rn"><b>${r.no}</b><span>${esc(r.name)}</span><i>${r.y}년 지정</i></div>`).join('')}</div>`:`<p class="small muted">아직 영구결번이 없습니다. 우리 구단에서 ${retWarT()>=60?10:8}시즌 이상 뛰고 WAR ${retWarT()} 이상을 남긴 선수가 은퇴하면 지정할 수 있습니다.</p>`;
   const cand=retNoCands();
@@ -14,14 +15,14 @@ function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
       if(w.k==='free'&&o.path==='scout')return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:scout" ${G.scouts.length>=scoutMax()?'disabled':''}>스카우트로 영입</button>`;
       if(w.k==='free'&&o.path==='front')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">프런트로 채용</button>`; }
     if(w.k==='front'&&w.tid!==G.user&&o.path!=='media')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">우리 프런트로</button>`; return ''; };
-  const row=({o,w,m})=>`<div class="obc">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${o.retNo?` <span class="pill acc">${o.no||''}번 영구결번</span>`:''}${o.hof?' <span class="pill warn">명예의 전당</span>':''}</b>
+  const row=({o,w,m})=>`<div class="obc" data-a="person" data-v="ob:${o.id}" role="button" tabindex="0">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${o.retNo?` <span class="pill acc">${o.no||''}번 영구결번</span>`:''}${o.hof?' <span class="pill warn">명예의 전당</span>':''}</b>
       <i>${esc(o.pos)} · ${o.retY}년 은퇴 · ${o.age}세 · 우리 구단 ${m.ys}시즌${m.war?` · WAR ${m.war}`:''}</i>
       <span class="obc-w ${w.k}">${esc(w.t)}${w.k==='coach'||w.k==='mgr'?` · 지도자 ${o.cy}년차`:w.k==='scout'||w.k==='front'?` · ${o.sy+o.fy}년차`:''}</span>
       <em>${OBPATH[o.path]}의 길${o.aim?` · ${o.aim==='mgr'?'감독':'단장'}을 꿈꿈`:''}${o.bond>=20?' · 구단과 각별함':''}</em></div><div class="obc-a">${act(o,w)}</div></div>`;
   const league=G.ob.map(o=>({o,w:obWhere(o)})).filter(x=>(x.w.k==='mgr'||x.w.k==='gm'||x.w.k==='coach')&&x.w.tid!==G.user).sort((a,b)=>({gm:0,mgr:1,coach:2}[a.w.k]-{gm:0,mgr:1,coach:2}[b.w.k])||(obMine(b.o)?1:0)-(obMine(a.o)?1:0));
   return csec('영구결번',wall+candH)
     +csec(`${t.city} ${t.nick} 출신 OB ${mine.length}명`,(mine.length?`<div class="obg">${mine.map(row).join('')}</div>`:'<p class="small muted">아직 기록된 OB가 없습니다.</p>')+`<p class="small muted">은퇴한 선수는 지도자, 스카우트, 프런트, 해설위원의 길을 갑니다. 지도자 경력이 쌓이면 감독 후보가 되고, 프런트·스카우트 경력이 쌓이면 다른 구단 단장이 되기도 합니다. 우리 구단 출신이 다른 구단 단장이 되면 첫 친분이 높게 시작합니다. 은퇴식을 열어 주거나 구단에 남겨 둔 선수는 훗날 돌아올 가능성이 커집니다.</p>`)
-    +csec('리그의 OB 출신 지도자·단장',league.length?`<div class="obg">${league.slice(0,24).map(({o,w})=>`<div class="obc">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${obMine(o)?' <span class="pill good">우리 구단 출신</span>':''}</b><i>${esc(tshort(o.team))} ${esc(o.pos)} 출신 · 통산 WAR ${o.war}</i><span class="obc-w ${w.k}">${esc(w.t)}</span></div></div>`).join('')}</div>`:'<p class="small muted">아직 없습니다.</p>'); }
+    +csec('리그의 OB 출신 지도자·단장',league.length?`<div class="obg">${league.slice(0,24).map(({o,w})=>`<div class="obc" data-a="person" data-v="ob:${o.id}" role="button" tabindex="0">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${obMine(o)?' <span class="pill good">우리 구단 출신</span>':''}</b><i>${esc(tshort(o.team))} ${esc(o.pos)} 출신 · 통산 WAR ${o.war}</i><span class="obc-w ${w.k}">${esc(w.t)}</span></div></div>`).join('')}</div>`:'<p class="small muted">아직 없습니다.</p>'); }
 
 /* ---------- 진기록 ---------- */
 const FEATI={cyc:'◎',hr4:'4',hr3:'3',h6:'6',h5:'5',rbi8:'타',pg:'P',nh:'N',tnh:'N',k15:'K',cg0:'완',r20:'20',hs:'연',mile:'★',s3030:'30',s4040:'40',hr50:'50',h200:'200',avg400:'.4',tcB:'3',tcP:'3',w20:'20',sv40:'40',k200:'K',era0:'0',era1:'1',srec:'신',ovs:'해',hrc:'연',gs:'만',wohr:'끝',woh:'끝',hr40:'40',s330:'3'};
@@ -32,7 +33,7 @@ function featView(){ const F=G.feats||[]; const f=UI.ftf||'all'; const yr=UI.fy|
   const best=`<div class="sbbest">${sbl.filter(([k])=>SB[k]).map(([k,l,fm])=>{ const b=SB[k]; const p=G.players[b.pid]; return `<div class="sb"${p?` data-a="player" data-v="${b.pid}" role="button" tabindex="0"`:''}><i>시즌 최다 ${l}${k==='era'?'(최저)':k==='avg'?'(최고)':''}</i><b class="num">${fm(b.v)}</b><span>${b.tid!=null?badge(b.tid,13):''} ${esc(b.name)} · ${b.y}</span></div>`; }).join('')}</div>`;
   const cnt={}; for(const x of F.filter(x=>x.y===G.year))cnt[x.k]=(cnt[x.k]||0)+1;
   const row=x=>{ const p=x.pid!=null?G.players[x.pid]:null; const ob=!p&&x.pid!=null&&G.ob?G.ob.find(o=>o.fid===x.pid):null;
-    return `<div class="ft ${x.maj?'maj':''} ${x.tid===G.user?'me':''}"${p?` data-a="player" data-v="${x.pid}" role="button" tabindex="0"`:''}>${featIcon(x)}${p?avImg(p):x.tid!=null?badge(x.tid,30):''}<div><b>${esc(x.name)}${x.tid!=null&&p?` <span class="small muted">${esc(tshort(x.tid))}</span>`:''}${!p&&x.pid!=null?` <span class="small muted">${ob?'은퇴':'리그 떠남'}</span>`:''}</b><span><em class="pill ${x.maj?'acc':''}">${FEATK[x.k]}</em> ${esc(x.txt.startsWith(FEATK[x.k])?x.txt.slice(FEATK[x.k].length).trim():x.txt)}${x.n?` <span class="small muted">· 리그 ${x.n}번째</span>`:''}</span></div><i>${x.y}<br>${x.vs?esc(x.vs.split(' vs ')[0]):'시즌'}</i></div>`; };
+    return `<div class="ft ${x.maj?'maj':''} ${x.tid===G.user?'me':''}"${p?` data-a="player" data-v="${x.pid}" role="button" tabindex="0"`:goneAttr(x.pid,ob)}>${featIcon(x)}${p?avImg(p):x.tid!=null?badge(x.tid,30):''}<div><b>${esc(x.name)}${x.tid!=null&&p?` <span class="small muted">${esc(tshort(x.tid))}</span>`:''}${!p&&x.pid!=null?` <span class="small muted">${ob?'은퇴':'리그 떠남'}</span>`:''}</b><span><em class="pill ${x.maj?'acc':''}">${FEATK[x.k]}</em> ${esc(x.txt.startsWith(FEATK[x.k])?x.txt.slice(FEATK[x.k].length).trim():x.txt)}${x.n?` <span class="small muted">· 리그 ${x.n}번째</span>`:''}</span></div><i>${x.y}<br>${x.vs?esc(x.vs.split(' vs ')[0]):'시즌'}</i></div>`; };
   return csec('리그 단일 시즌 최고 기록',best+'<p class="small muted">2025시즌부터 이 리그에서 나온 기록입니다. 깨지면 "시즌 신기록"으로 남습니다.</p>')
    +csec(`대기록 연표 · ${F.length}건`,`<div class="chips">${[['all','전체'],['maj','대기록'],['mine','우리 팀'],['g','경기'],['s','시즌'],['m','통산 이정표']].map(([k,l])=>`<button data-a="featF" data-v="${k}" class="${f===k?'on':''}">${l}</button>`).join('')}</div>
       <div class="chips">${['all',...ys].map(y=>`<button data-a="featY" data-v="${y}" class="${String(yr)===String(y)?'on':''}">${y==='all'?'전 시즌':y}</button>`).join('')}</div>
@@ -53,7 +54,7 @@ function abroadView(){ const A=G.abroad||[]; const f=UI.abf||'all';
   const L=A.filter(a=>f==='all'||f==='mine'&&a.from===G.user||f==='kr'&&!a.foreign||f==='fo'&&a.foreign);
   const mine=domestic(G.user).map(p=>({p,m:mlbOf(p)})).filter(x=>x.p.age<=33&&ovr(x.p)>=56&&x.m>=35).sort((a,b)=>b.m-a.m).slice(0,8);
   const row=a=>{ const last=a.lines[a.lines.length-1]; const yrs=(a.back?a.backY:G.year)-(a.y1??a.y+1)+1; /* 첫 해외 시즌(y1)이 1년차: 1월에 떠나 그해 뛴 선수가 0년차로 보이던 문제(검수 11-08) */
-    return `<div class="abr">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?` · 외국인`:''}</span></b>
+    return `<div class="abr" data-a="person" data-v="abr:${a.id}" role="button" tabindex="0">${a.from!=null?badge(a.from,26):''}<div><b>${esc(a.name)} <span class="small muted">${esc(a.pos)}${a.foreign?` · 외국인`:''}</span></b>
       <span class="small">${a.y}년 ${a.how} → <b>${esc(a.club)}(${a.lg})</b> ${a.yrs}년 ${a.amt*a.yrs}만 달러${a.fee?` · 포스팅 비용 ${money(a.fee)}`:''}</span>
       ${a.lines.length?`<span class="small muted">${a.lines.slice(-3).map(l=>`${l.y} ${esc(l.lvl)}: ${lineTxt(l,a.isP)}`).join('<br>')}</span>`:''}</div>
       <span class="pill ${a.back?'good':a.foreign?'':'acc'}">${a.back?`${a.backY} 복귀`:a.foreign?'역수출':`해외 ${Math.max(0,yrs)}년차`}</span></div>`; };

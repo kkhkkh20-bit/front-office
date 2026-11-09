@@ -4,7 +4,7 @@
  (실제 리그에서도 성적 부진에 따른 시즌 중 감독 교체·자진 사퇴와 감독대행 체제는 드물지 않다) */
 function gmFireNews(t,old,rk,ten,age,succ){ const why=age>=64&&rk<6?`${age}세로 물러났습니다`:`지난 시즌 ${rk}위에 그친 책임을 물었습니다${ten>=4?`(재임 ${ten}년)`:''}`;
   news('리그',`${tshort(t.id)}, ${old} 단장 ${age>=64&&rk<6?'퇴임':'경질'}${succ?` · 후임 ${succ.name}`:''}`,`${tname(t.id)}이(가) ${old} 단장과 결별했습니다. ${why}. ${succ?`새 단장은 ${succ.name}(${succ.car||'프런트 출신'}, ${GMT[succ.trait]?GMT[succ.trait].l:''})입니다.`:'후임을 물색 중이며, 다른 구단 출신이나 야인 단장에게도 연락하고 있다는 이야기가 나옵니다.'}`,0); }
-function mgrNew(tid,act){ const n=(!act&&(()=>{ try{ return obAiMgr(tid)||aiMgrHire(team(tid)); }catch(e){ return null; } })())||mkMgr(); n.yrs=act?1:(n.yrs||ri(2,3)); if(act)n.act=true; G.mgr[tid]=n;
+function mgrNew(tid,act){ try{ exMgrAdd(G.mgr[tid],tid); }catch(e){} const n=(!act&&(()=>{ try{ return obAiMgr(tid)||aiMgrHire(team(tid)); }catch(e){ return null; } })())||mkMgr(); n.yrs=act?1:(n.yrs||ri(2,3)); if(act)n.act=true; G.mgr[tid]=n;
   if(!act){ n.clan=n.ob?[]:mkClan(n); if(G.coach&&G.coach[tid])for(const c of n.clan){ c.yrs=n.yrs; G.coach[tid][c.role]=c; } } return n; }
 /* 시즌 뒤: 성적이 나쁜 AI 구단 감독 경질(계약 기간이 남아 있어도) */
 function mgrFireOff(){ const st=G.last&&G.last.order; if(!st)return; for(const t of G.teams){ if(t.id===ME())continue; const m=G.mgr[t.id]; if(!m)continue; const rk=st.findIndex(o=>o.tid===t.id)+1;
