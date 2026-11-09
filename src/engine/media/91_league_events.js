@@ -96,7 +96,7 @@ function psSeedNews(){ const P=G.ps; if(!P||P.seedNews)return; P.seedNews=1; con
   else { const o5=P.order[4], gb=((o5.w-me.w)-(o5.l-me.l))/2; news('경기',`${nm}, ${rk}위로 시즌 마감… 가을야구 탈락 확정`,`${tname(G.user)}이(가) ${me.w}승 ${me.l}패로 5위 ${tshort(o5.tid)}에 ${gb}경기 뒤져 포스트시즌에 나가지 못합니다. ${lastPs!=null?`마지막 가을야구는 ${lastPs}년입니다.`:`${titleSince()}년 기록 이후 아직 가을야구가 없습니다.`}`,-2); } }
 /* 우리 구단이 한국시리즈 전 라운드에서 떨어질 때 */
 function psOutNews(round,res){ if(G.unemp||!res||res[1]!==G.user||round==='ks'||round==='tb')return; const nm=tshort(G.user);
-  news('경기',`${nm}, ${ROUNDK[round]}에서 탈락… 가을야구 마감`,`${tname(G.user)}이(가) ${tname(res[0])}에 시리즈 ${res[3]}승 ${res[2]}패로 밀려 시즌을 마쳤습니다. ${titleDrought(G.user)}.`,-1); }
+  news('경기',`${nm}, ${ROUNDK[round]}에서 탈락… 가을야구 마감`,`${tname(G.user)}이(가) ${round==='wc'&&res[2]<=res[3]?`${tname(res[0])}과(와) ${res[3]||res[2]?`${res[3]}승 ${res[2]}패로 맞섰지만`:'비겼지만'} 1승을 안고 시작한 4위 어드밴티지에 밀려`:`${tname(res[0])}에 시리즈 ${res[3]}승 ${res[2]}패로 밀려`} 시즌을 마쳤습니다. ${titleDrought(G.user)}.`,-1); }
 /* 한국시리즈가 끝났을 때: 다른 구단 우승, 우리 구단 준우승, 라이벌 구단 우승 */
 function titleNews(ch,ru){ const y=G.year, ks=G.ps&&G.ps.res&&G.ps.res.ks; if(!ks)return; const prev=titleYears(ch,'champ'), n=prev.length+1, last=prev.length?prev[prev.length-1]:null, run=titleRun(prev,y);
   const tag=run>=2?`${run}년 연속 우승`:last==null?`${titleSince()}년 기록 이후 첫 우승`:y-last>=10?`${y-last}년 만의 우승`:`통산 ${n}번째 우승`;
