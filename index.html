@@ -13722,7 +13722,7 @@ const EV_NAME={lead:'기강 문제',pt:'출전 기회 면담',call:'콜업 여�
 function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const e={id:'e'+(G.evSeq=(G.evSeq||0)+1),k,day:G.day,exp:G.day+(o.exp||5),title,sit,opts:opts.map(x=>({l:x.l,fx:x.fx})),def:o.def??opts.length-1,data:o.data||{},ref:o.ref??null,from:o.from||'운영팀',done:false};
   { const pid=e.data&&e.data.pid!=null?e.data.pid:null; const q=pid!=null?G.players[pid]:null; if(q&&q.team===G.user)e.pt=G.user; } /* 우리 선수에 대한 결정: 결정할 때도 그 선수가 우리 소속인지 다시 본다(evPick) */
-  G.evs.push(e); if(G.evs.length>40)G.evs.splice(0,G.evs.length-40); { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
+  G.evs.push(e); for(let i=0;G.evs.length>40&&i<G.evs.length;)if(G.evs[i].done)G.evs.splice(i,1); else i++; /* 한도는 끝난 결정부터 지운다. 미결 결정은 남긴다(검수 11-09za) */ { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
   e.mid=m.id; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
@@ -13737,11 +13737,11 @@ function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.don
   G.stops=(G.stops||[]).filter(x=>x.id!==e.mid);
   G.evlog.unshift({d:G.day,y:G.year,t:e.title,c:e.opts[i].l,r,k:e.k,id:e.id,auto:!!auto}); if(G.evlog.length>80)G.evlog.length=80;
   return r; }
-function evFollow(days,k,data){ evInit(); G.evf.push({day:G.day+days,k,data}); }
+function evFollow(days,k,data){ evInit(); G.evf.push({day:G.day+days,k,data,tid:G.user}); } /* tid: 결정한 구단(이직해도 구단 몫 후속은 그 구단에, 검수 11-09za) */
 function evResult(evId,txt){ const L=(G.evlog||[]).find(x=>x.id===evId); if(L)L.f=txt; }
 function evDaily(){ if(!G.evs)return;
   for(const e of G.evs)if(!e.done&&G.day>e.exp)evPick(e.id,e.def,true); /* 안내한 기한 날짜까지는 고를 수 있고, 다음 날 처리를 시작할 때 기본안(검수 11-06) */
-  const due=(G.evf||[]).filter(f=>f.day<=G.day); if(due.length){ G.evf=G.evf.filter(f=>f.day>G.day); for(const f of due){ try{ EVH[f.k]&&EVH[f.k].follow&&EVH[f.k].follow(f.data); }catch(err){} } } }
+  const due=(G.evf||[]).filter(f=>f.day<=G.day); if(due.length){ G.evf=G.evf.filter(f=>f.day>G.day); for(const f of due){ try{ EVH[f.k]&&EVH[f.k].follow&&EVH[f.k].follow(f.data,f.tid??G.user); }catch(err){} } } }
 function aiScandalWeek(){ if(period()!=='season'||R()>.025)return; const t=pick(G.teams.filter(x=>x.id!==G.user)); const L=playersOf(t.id).filter(p=>!(p.susp>G.day)); if(!L.length)return; const p=pick(L); const ty=wpick({gamble:.3,drink:.35,sns:.35}); const S=SCAND[ty];
   if(S.kbo)p.susp=G.day+gDays(S.kbo+(R()<.5?S.club:0)); story(p,`${S.t}로 징계`,'inj'); wire('징계',`${tshort(t.id)} ${p.name}, ${S.t}로 ${S.kbo?`출장정지 ${S.kbo}경기`:'제재금'} 징계`,{tid:t.id,ref:p.id}); }
 function evWeek(){ try{ aiScandalWeek(); }catch(err){} try{ aiTeamWeek(); }catch(err){} if(period()!=='season'||G.gameOver||!G.mgr[G.user])return; evInit(); if(evOpen().length)return; if(R()>.8)return;
@@ -13775,7 +13775,7 @@ const EVH={
       if(i===1){ p.susp=base+gDays(S.club); G.pr.fan=clamp(G.pr.fan-1,0,100); p.mor=clamp((p.mor??60)-8,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:1}); return `${p.name} 출장정지가 ${S.club}경기 늘었습니다. 선수 기분 -8.`; }
       if(i===2){ p.susp=Math.max(base,G.cal?G.cal.end+1:base+120); G.pr.fan=clamp(G.pr.fan+3,0,100); G.pr.press=clamp(G.pr.press+4,0,100); p.mor=clamp((p.mor??60)-20,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:2}); return `${p.name}은(는) 올 시즌 뛸 수 없습니다. 팬 여론 +3, 언론 논조 +4.`; }
       const nm=p.name; if(p.foreign)releaseForeign(p.id); else releasePlayer(p.id); G.pr.fan=clamp(G.pr.fan+4,0,100); G.pr.press=clamp(G.pr.press+5,0,100); evFollow(21,'scandal',{pid:null,ty:e.data.ty,c:3,nm}); return `${nm}을(를) 방출했습니다. 팬 여론 +4, 언론 논조 +5.`; },
-    follow(d){ const S=SCAND[d.ty]; if(d.c>=2){ const back=Math.round(S.sp*.5); G.spend.etc=Math.max(0,(G.spend.etc||0)-back); mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
+    follow(d,tid){ const S=SCAND[d.ty], here=!G.unemp&&tid===G.user; if(!here&&d.c<2)return; if(d.c>=2){ const back=Math.round(S.sp*.5), led=here?Math.min(back,(G.spend&&G.spend.etc)||0):0; if(led)G.spend.etc-=led; if(back>led){ team(tid).cash+=back-led; hoBook(tid,[['후원사 복귀',back-led]],[]); } /* 이직으로 손실이 옛 장부에서 구단 현금으로 넘어갔으면 만회도 구단 현금으로(검수 11-09za) */ if(here)mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
       else if(d.c===0){ G.pr.fan=clamp(G.pr.fan-2,0,100); mail('마케팅팀','징계 논란이 이어집니다',`"구단이 감싼다"는 비판이 계속되고 있습니다. 팬 여론이 조금 더 떨어졌습니다.`,{kind:'재정'}); } } },
   /* 출전 시간 불만: 시즌 100경기가 지난 뒤에만 생긴다. 선수는 먼저 감독에게 따지고, 그게 기사로 나오면 단장이 후속 조치를 정한다.
      감독이 스스로 수습하면(자존심이 낮을수록) 단장에게 올라오지 않고 '기회 약속' 기사로 끝난다 */
@@ -14205,7 +14205,7 @@ function leaveTeamState(old){
   for(const m of (G.mail||[]))if(m.acts)m.acts=m.acts.filter(a=>a.a!=='renewMgr'); /* 소속을 떠나면 옛 재계약 요청의 실행 권한도 끝난다 */
   if(G.fa){ G.fa.offers={}; G.fa.neg={}; G.fa.warned={}; } /* 옛 구단 이름으로 낸 FA 제안·협상 */
   G.faFund=null; for(const g of (G.grants||[]))if(g.st==='open'){ g.st='void'; } for(const r of (G.mreq||[]))if(r.st==='open'||r.st==='ask'){ r.st='void'; }
-  G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=[]; G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
+  G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=(G.evf||[]).filter(f=>f.k==='scandal'&&f.data&&f.data.c>=2); /* 후원사 복귀는 구단 몫이라 남긴다(검수 11-09za) */ G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
   G.trn={}; /* 훈련 지시는 그 구단 선수에게 내린 것 */
   for(const c of Object.values(G.gmc||{}))c.neg=0; if(G.fa&&G.fa.mk)for(const mk of Object.values(G.fa.mk))if(mk&&mk.ll){ delete mk.ll; mk.done=true; } /* 전 구단 라스트 룩은 새 구단에서 쓸 수 없다(검수 11-08) */ /* 월 협상 횟수는 구단끼리의 것: 새 구단 이름으로는 다시 센다(검수 11-08) */ for(const id of (G.fmarket||[])){ const q=G.players[id]; if(q&&q.team==null)delete q.fneg; } /* 전 구단의 외국인 협상 횟수·대기 기한·경쟁 보류도 끝(검수 11-08) */
   G.supPlan=null; if(G.fanOps){ (G.fanYrT=G.fanYrT||{})[old]=G.fanOps; } /* 팬 운영 상태 전체(응원단·채널·쿨다운·미청구 요금)를 그 구단에 남긴다(검수 11-09j) */ G.fanOps=null; /* 응원단·채널·이벤트는 그 구단 것 */ G.campInj=1; G.form=null; G.leadAdj=null; G.pact=null; G.mpick=null;
@@ -14307,7 +14307,7 @@ function stopCat(m){ if(m&&m.cat)return m.cat; const k=m&&m.kind, f=m&&m.from||'
   if(STOP_INFO.has(k))return 'info'; return 'must'; }
 function stopOn(m){ const c=stopCat(m); if(c==='must')return true; const S=(typeof G!=='undefined'&&G&&G.stopCfg)||{}; return S[c]!=null?!!S[c]:STOP_DEF[c]; }
 /* 결정(G.evs)이 진행을 멈추게 하는가: 그 결정을 알린 소식의 분류로 본다 */
-function evStops(e){ const m=e&&e.mid!=null&&G.mail?G.mail.find(x=>x.id===e.mid):null; return m?stopOn(m):true; }
+function evStops(e){ const m=e&&e.mid!=null&&G.mail?G.mail.find(x=>x.id===e.mid):null; return stopOn(m||{kind:'결정',from:e&&e.from}); } /* 소식이 지워져도 같은 분류로 본다(검수 11-09za) */
 /* 소식이 가리킨 구단·회차를 보존한다. 다음 제안/시즌의 상태로 옛 버튼이 살아나지 않게 한다. */
 function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>k.includes(a.a));
   if(has(['renewMgr','pactKeep','pactEnd'])){c.mid=G.mgr?.[G.user]?.id;c.pact=G.pact?.day;}
@@ -14315,19 +14315,26 @@ function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>
   if(has(['stKeep','stLet']))c.raid=(G.stRaid||[]).find(r=>r.id===String((acts||[]).find(a=>a.a==='stKeep'||a.a==='stLet').v).split(':')[0])?.exp;
   if(has(['scoutPlanGo']))c.scout=scoutPlan().filter(x=>x.move).map(x=>({id:x.s.id,role:x.role,key:x.key}));
   if(has(['cwOpen']))c.cw=G.cwS?.id;
-  if(/스폰서 제안/.test(subj))c.spon=(G.spon?.off||[]).map(x=>x.id);
+  if(/스폰서 제안/.test(subj))c.spon=(G.spon?.off||[]).filter(x=>x.day===G.day).map(x=>x.id); /* 이번 소식이 알린 오늘 제안만(검수 11-09za) */
   if(/보호선수|보상선수/.test(subj))c.comp=(G.comp||[]).find(x=>(x.stage==='protect'&&x.to===G.user)||(x.stage==='pick'&&x.from===G.user))?.id;
   if(/연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청/.test(subj))c.contract=G.contract?.y;
   if(has(['faOpen','faMatch','faLL','agPitchOk'])||/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/.test(subj))c.fa=G.fa?.y0;
   return c; }
 function mail(from,subj,body,o){ o=o||{}; if(G.unemp&&o.kind!=='경력'&&from!=='야인')return {read:true,acts:[]}; /* 야인일 때는 전 소속 구단 업무 메일을 받지 않는다 */
-  { const d=G.mail.slice(0,60).find(x=>!x.read&&x.subj===subj&&x.body===body&&G.day-x.day<=7); if(d)return d; } /* 같은 소식이 아직 안 읽힌 채 있으면 다시 보내지 않는다 */
+  { const d=G.mail.slice(0,60).find(x=>!x.read&&x.subj===subj&&x.body===body&&G.day-x.day<=7); if(d){ if(o.imp&&!d.imp){ d.imp=true; if(stopOn(d))G.stops.push(d); } return d; } } /* 같은 내용의 중요 경고는 기존 소식을 중요로 올린다(검수 11-09za). 같은 소식이 아직 안 읽힌 채 있으면 다시 보내지 않는다 */
   const m={id:'m'+(G.mailSeq=(G.mailSeq||0)+1),day:G.day,from,subj,body,read:false,imp:!!o.imp,acts:o.acts||[],ref:o.ref??null,kind:o.kind||'일반',face:o.face??null,ctx:mailContext(subj,o.acts)};
   if(o.cat)m.cat=o.cat; G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }
 /* 이미 보낸 소식을 다시 알릴 때: 새 소식을 만들지 않고 원래 소식을 오늘로 끌어올려 안 읽음으로 되돌린다 */
 function mailBump(m,warn){ const i=G.mail.indexOf(m); if(i<0)return null; G.mail.splice(i,1); G.mail.unshift(m); if(m.day0==null)m.day0=m.day; m.day=G.day; m.read=false; m.imp=true; m.warn=warn||m.warn||''; if(stopOn(m))G.stops.push(m); return m; }
 /* 소식함 한도: 160건을 넘으면 오래된 '읽은' 소식부터 지운다. 안 읽은 소식은 남기고, 그래도 240건을 넘을 때만 가장 오래된 것을 지운다 */
-function mailPrune(){ for(const m of G.mail)if(!m.read&&G.day-(m.day??G.day)>14&&!m.imp&&!m.oid&&!(m.acts||[]).length)m.read=true; /* 2주 지난 일반 보고는 읽은 것으로 접는다(사용자 피드백 11-05: 안 읽은 소식 200건 이상). 중요·답할 일은 남긴다 */ if(G.mail.length<=160)return; const live=new Set((G.evs||[]).filter(e=>!e.done&&e.mid!=null).map(e=>e.mid)), offs=new Set((G.offers||[]).map(o=>o.id)); const keep=m=>live.has(m.id)||(m.oid!=null&&offs.has(m.oid)); /* 아직 정하지 않은 결정·제안 소식은 읽었어도 지우지 않는다(검수 11-07) */ for(let i=G.mail.length-1;i>=0&&G.mail.length>160;i--)if(G.mail[i].read&&!keep(G.mail[i]))G.mail.splice(i,1); if(G.mail.length>240)G.mail.length=240; }
+function mailPrune(){ for(const m of G.mail)if(!m.read&&G.day-(m.day??G.day)>14&&!m.imp&&!m.oid&&!(m.acts||[]).length)m.read=true; /* 2주 지난 일반 보고는 읽은 것으로 접는다(사용자 피드백 11-05: 안 읽은 소식 200건 이상). 중요·답할 일은 남긴다 */ if(G.mail.length<=160)return; const live=new Set((G.evs||[]).filter(e=>!e.done&&e.mid!=null).map(e=>e.mid)), offs=new Set((G.offers||[]).map(o=>o.id)); const hard=m=>live.has(m.id)||(m.oid!=null&&offs.has(m.oid)), keep=m=>hard(m)||(m.acts||[]).some(a=>mailLiveAct(m,a)); /* 아직 정하지 않은 결정·제안(단장직 제의·직원 영입 제안 포함) 소식은 읽었어도 지우지 않는다(검수 11-07·11-09za) */ for(let i=G.mail.length-1;i>=0&&G.mail.length>160;i--)if(G.mail[i].read&&!keep(G.mail[i]))G.mail.splice(i,1);
+  for(const f of [keep,hard])for(let i=G.mail.length-1;i>=0&&G.mail.length>240;i--)if(!f(G.mail[i]))G.mail.splice(i,1); } /* 240건 한도도 오래된 일반 소식부터. 미결 결정·제안 소식은 지우지 않는다(검수 11-09za) */
+/* 답을 기다리는 직원·코치 영입 제안, 단장직 제의 버튼인가(엔진 판정, 소식함 보관용) */
+function mailLiveAct(m,a){ const c=m.ctx||{}, id=String(a.v??'').split(':')[0];
+  if(a.a==='stKeep'||a.a==='stLet')return (G.stRaid||[]).some(r=>r.id===id&&(c.raid==null||r.exp===c.raid));
+  if(a.a==='cmKeep'||a.a==='cmLet')return (G.cmRaid||[]).some(r=>r.id===id&&r.exp===+String(a.v).split(':')[2]);
+  if(a.a==='jobYes'||a.a==='jobNo')return (G.jobs||[]).some(j=>!j.done&&j.tid===+a.v&&(c.job==null||j.exp===c.job));
+  return false; }
 function headline(t){ const i=t.search(/[.!?](\s|$)/); return i>0&&i<46?t.slice(0,i):t.length>40?t.slice(0,38)+'…':t; }
 function kindActs(kind,ref){ const a=[]; if(ref!=null&&G.players[ref])a.push({l:'선수 보기',a:'player',v:ref}); if(GOTO[kind])a.push({l:'해당 화면으로',a:'goWork',v:GOTO[kind]}); return a; }
 function stop(kind,t,ref){ mail(FROM[kind]||'프런트',headline(t),t,{imp:true,ref,kind,acts:kindActs(kind,ref),face:ref!=null&&kind!=='부상'?ref:null}); }
@@ -18604,10 +18611,10 @@ function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sa
   if(autoOn('fre')&&fRePending().length&&C.freTry!==G.day)try{ autoFre(); }catch(e){} /* 외국인 위임: 실패한 선수는 다시 시도한 뒤에만 확정 */
   const pend=fRePending(); if(pend.length&&autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 협상 중 — 합의하거나 결별이 정해지면 확정합니다`}; return; } /* 협상이 끝나기 전에 기본 산정 연봉으로 확정하지 않는다(검수 11-07) */
   if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
-  const r=confirmContracts(); if(r){ C.autoWait={d:G.day,why:String(r)}; return; } delete C.autoWait; C.autoDone={d:G.day,n:C.ended.length,f:C.foreignEnd.filter(id=>!C.foreignDrop.includes(id)).length}; /* 결별한 선수는 빼고 센다(검수 11-07) */ autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
+  const r=confirmContracts(); if(r){ C.autoWait={d:G.day,why:String(r)}; return; } delete C.autoWait; C.autoDone={d:G.day,n:C.ended.filter(id=>{ const p=G.players[id]; return p&&p.team===G.user&&!p.hold; }).length,h:C.ended.filter(id=>G.players[id]&&G.players[id].hold).length,f:C.foreignEnd.filter(id=>!C.foreignDrop.includes(id)).length}; /* 결별한 선수는 빼고 센다(검수 11-07) */ autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
 /* 위임 업무 처리 상태(처리 예정·완료·대기와 이유). 지금은 연봉 계약 */
 function delegStatus(k){ if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
-  if(C.done)return C.autoDone?`처리 완료: ${dmd(C.autoDone.d)} 국내 ${C.autoDone.n}명·외국인 ${C.autoDone.f}명 계약 확정`:'처리 완료: 올해 연봉 계약 확정';
+  if(C.done)return C.autoDone?`처리 완료: ${dmd(C.autoDone.d)} 국내 ${C.autoDone.n}명·외국인 ${C.autoDone.f}명 계약 확정${C.autoDone.h?` · 미계약 ${C.autoDone.h}명`:''}`:'처리 완료: 올해 연봉 계약 확정';
   if(C.autoWait){ if(C.autoWait.f){ const pend=fRePending(); if(!pend.length||autoOn('fre'))return `처리 예정: 외국인 결정이 끝나 ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; return `대기: 외국인 ${pend.length}명(${pend.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}) 재계약 미결정 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`; } return `대기: ${C.autoWait.why}`; } /* 지난 사유가 아니라 지금 남은 사유 */ return `처리 예정: ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; } /* 12월에는 KD(1,5)가 지난 1월이라 '다음 날'로 나왔다(검수 11-06) */
 function autoDaily(day){ if(!G.auto||G.unemp)return;
   if(autoOn('fre')&&G.contract&&!G.contract.done&&!G.contract.freAuto&&G.contract.freTry!==day&&(day>=KD(12,3)||dobj(day).m<=2))try{ autoFre(); }catch(e){} /* 12월 3일이 지난 뒤 맡겨도 다음 날 처리한다(검수 11-06) */
@@ -18622,7 +18629,7 @@ function autoTradeOffer(off){ if(!autoOn('tro'))return false;
   if(G.auto.tro==='good'){ let df=-99; try{ df=troDiff(off); }catch(e){} if(df>=-1){ off.asst=`부단장 1차 검토: 우리 평가로 ${df>=0?'공정 이상':'공정에 가까운(손해 1 이내)'} 제안이라 직접 보시도록 올립니다.`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장이 올림','유망한 제안'); return false; } } G.offers=(G.offers||[]).filter(x=>x.id!==off.id); const d=`${off.give.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 주고 ${off.get.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}을(를) 원한 제안`; autoLogAdd(`${tshort(off.from)} 트레이드 제안`,'부단장 거절',d); if(!off.blk)mail('부단장',`${tshort(off.from)} 트레이드 제안: 부단장이 거절`,`${tname(off.from)}이(가) ${d}을 보냈고, 맡기신 대로 부단장이 정중히 거절했습니다. 직접 검토하려면 설정 · 권한에서 '받은 트레이드 제안'을 가져오세요.`,{kind:'트레이드'}); /* 매물 제안은 매일 올 수 있어 메일 없이 위임 기록만 */ return true; }
 /* 스태프 빼가기: 맡겼으면 바로 정한다 */
 function autoRaid(){ if(!autoOn('raid'))return; for(const r of [...(G.stRaid||[])]){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(!s)continue;
-    if(s.skill>=4&&r.sal>s.sal*1.5){ if(!r.ask){ r.ask=true; autoLogAdd(`${s.name} 영입 제안 대응`,'단장 승인 요청',`상대 제시 연 ${money(r.sal)}(지금 ${money(s.sal)}의 ${Math.round(r.sal/s.sal*100)}%)`); mail('운영팀',`${s.name} 붙잡기: 단장 승인이 필요합니다`,`${tshort(r.tid)}이(가) 연 ${money(r.sal)}을(를) 제시했습니다. 지금 연봉 ${money(s.sal)}의 1.5배를 넘어 운영팀이 바로 맞추지 않았습니다. 스태프 화면에서 붙잡을지 정해 주세요.`,{kind:'스태프',imp:true}); } continue; } /* 비용 한도를 넘는 인상은 단장 승인 */
+    if(s.skill>=4&&r.sal>s.sal*1.5){ if(!r.ask){ r.ask=true; autoLogAdd(`${s.name} 영입 제안 대응`,'단장 승인 요청',`상대 제시 연 ${money(r.sal)}(지금 ${money(s.sal)}의 ${Math.round(r.sal/s.sal*100)}%)`); mail('운영팀',`${s.name} 붙잡기: 단장 승인이 필요합니다`,`${tshort(r.tid)}이(가) 연 ${money(r.sal)}을(를) 제시했습니다. 지금 연봉 ${money(s.sal)}의 1.5배를 넘어 운영팀이 바로 맞추지 않았습니다. ${dmd(r.exp)}까지 정해 주세요.`,{kind:'스태프',imp:true,acts:[{l:`맞춰서 붙잡기(연 ${money(r.sal)})`,a:'stKeep',v:s.id+':1'},{l:'조금 올려 설득(+10%)',a:'stKeep',v:s.id+':0'},{l:'보내 주기',a:'stLet',v:s.id}]}); } /* 승인 요청에도 바로 답할 버튼과 기한(검수 11-09za) */ continue; } /* 비용 한도를 넘는 인상은 단장 승인 */
     const m=(s.skill>=4?stKeep(r.id,true):stLeave(r)); const still=(r.k==='sc'?G.scouts:anaList()).some(x=>x.id===r.id), open=(G.stRaid||[]).includes(r); const res=s.skill>=4?(still&&!open?'붙잡음':'붙잡기 실패'):(!still?'보내 줌':'보내기 실패'); /* 실제 결과로 기록(검수 11-07) */ autoLogAdd(`${s.name} 영입 제안 대응`,res,m); mail('운영팀',`${tshort(r.tid)}의 ${s.name} 영입 제안: 운영팀이 ${res}`,`${m}\n맡기신 대로 운영팀이 처리했습니다(별 4개 이상은 상대 조건에 맞춰 붙잡고 그 아래는 보냅니다. 지금 연봉의 1.5배를 넘으면 단장 승인).`,{kind:'스태프'}); } }
 
 /* ===== 비서에게 넘기기: 알림마다 '비서에게 넘기기' 버튼. 누르면 그 업무를 앞으로 비서·팀장이 맡고, 지금 걸린 일도 바로 처리한다.
@@ -24245,11 +24252,13 @@ function fdTrue(x){ const p=x&&G.players[x.pid]; if(!p)return x&&x.o!=null?fdEst
 const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
+/* 이전 구단 업무: 같은 구단으로 돌아오면 다시 열리므로 종료 상태로 저장하지 않는다(검수 11-09za) */
+const MAIL_CLUB_TXT='이전 구단에서 받은 업무입니다. 현재 구단에서는 처리할 수 없습니다.';
 const mailOldYear=m=>dobj(mailStamp(m)).y!==G.year;
 function mailActionStatus(m,a){
   if(a.done)return mailEnd(a.done==='skip'?'다른 안을 선택해 처리했습니다.':a.res||'이미 처리했습니다.');
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
-  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd('이전 구단에서 받은 업무입니다. 현재 구단에서는 처리할 수 없습니다.',true);
+  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
   if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
   if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');if(e.exp<G.day)return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 종료되었습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
@@ -24286,14 +24295,15 @@ function mailActionStatus(m,a){
   return null;
 }
 function mailStatus(m){
-  if(m.closed)return m.closed;
+  if(m.closed&&m.closed.text!==MAIL_CLUB_TXT)return m.closed;
   if(m.done)return mailEnd('이미 처리한 소식입니다.');
   const A=m.acts||[],s=m.subj||'',d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{},M=G.mgr[G.user],end=mailEnd;
   if(/^\[인터뷰 요청\]/.test(s)&&!A.some(a=>a.a==='ivOpen'||a.a==='ivSkip')){const v=G.iv;return !v||v.done||d<v.day?end('이미 끝난 인터뷰 요청입니다.'):G.day>v.exp?end('인터뷰 응답 기한이 지났습니다.',true):null;}
+  if(!A.length&&m.kind==='결정'&&/\n\[(결정|종료)\] /.test(m.body||'')){const e=(G.evs||[]).find(x=>x.mid===m.id);return end(e&&e.void?'적용하지 않고 끝난 결정입니다.':e&&e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');} /* 답한 결정은 버튼을 지우고 본문에 기록하므로 그 기록으로 완료를 본다(검수 11-09za) */
   if(m.oid){const o=(G.offers||[]).find(x=>x.id===m.oid);return !o?end('이미 답변했거나 종료된 트레이드 제안입니다.'):G.day>o.exp?end('트레이드 제안의 답변 기한이 지났습니다.',true):null;}
   /* 제목은 이전 저장의 업무에도 사용한다. 단순 보고/기록의 이동 링크는 끝난 업무로 보지 않는다. */
   const task=/감독 자리가 비어|감독 계약이 끝납니다|코치 자리가 비어|부상 방지 프로그램과 병원 제휴|훈련 방향과 해외 연수 안내|스카우트 담당 지역에 공백|감독이 정한 선수단 배치|개막 준비가 끝났습니다|외국인 선수를 구성|연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청|신인 드래프트가 열립니다|스프링캠프가 시작|스폰서 제안|상무 지원 기간|보호선수 명단|보상선수 지명|영입 보상: 보호선수|FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작|트레이드 마감|마감 보강안|내일 직관|개막합니다/.test(s);
-  if(task&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return end('이전 구단에서 받은 업무입니다. 현재 구단에서는 처리할 수 없습니다.',true);
+  if(task&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return end(MAIL_CLUB_TXT,true);
   if(/감독 자리가 비어/.test(s)){if(M&&!M.interim)return end('이미 감독을 선임했습니다.');if(old)return end('지난 시즌의 감독 선임 안내입니다.',true);}
   if(/감독 계약이 끝납니다/.test(s)){if(old||G.unemp||!M||M.interim||(c.mid&&M.id!==c.mid))return end('당시 감독의 재계약 요청은 종료되었습니다.',true);if(M.yrs>0)return end('이미 감독 재계약 또는 후임 선임을 마쳤습니다.');}
   if(/코치 자리가 비어/.test(s)&&G.coach&&!CKEYS.some(k=>!coachesOf(G.user)[k]))return end('이미 코치진을 모두 구성했습니다.');
@@ -24330,12 +24340,18 @@ const IB_CATN={squad:'선수단',move:'이적·계약',club:'구단 운영',medi
 /* 이미 처리된 일인가: 결정(이벤트)이 끝났거나, 소식이 알린 상황이 해결됐으면 '처리됨'. 안 읽음 표시는 그대로 두고 '확인할 소식'에서만 뺀다 */
 const mailDoneShow=m=>(m.imp||m.kind==='업무'||m.kind==='결정'||(m.acts&&m.acts.length>0)||!!m.oid)&&mailDone(m);
 /* 완료는 구단/시즌의 새 업무와 분리해 보존한다. 읽음 처리는 기존 인터뷰 규칙만 따른다. */
-function ibAutoRead(){ for(const m of (G.mail||[])){const st=mailStatus(m);if(st&&!m.closed)m.closed=st;if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&st)m.read=true;} }
+function ibAutoRead(){ for(const m of (G.mail||[])){const st=mailStatus(m);if(st&&!m.closed&&st.text!==MAIL_CLUB_TXT)m.closed=st;if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&st)m.read=true;} }
 function mailDone(m){return !!mailStatus(m);}
 /* 결정할 일: 읽었어도 수락·거절·선택하기 전까지 남는 일(트레이드 제안·결정 이벤트·인터뷰). 마감일 */
-const ibSpon=m=>/^스폰서 제안/.test(m.subj||'')?((G.spon&&G.spon.off)||[]).filter(x=>x.day===m.day&&x.exp>G.day):null; /* 기한 있는 기회(사용자 피드백 11-05): 3주 안에 답하지 않으면 사라지는 스폰서 제안 */
-function ibDecide(m){ if(mailDone(m))return false; { const sp=ibSpon(m); if(sp)return sp.length>0; } if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'); }
-function ibDue(m){ { const sp=ibSpon(m); if(sp&&sp.length)return Math.min(...sp.map(x=>x.exp)); } if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return null; }
+const ibSpon=m=>/^스폰서 제안/.test(m.subj||'')?((G.spon&&G.spon.off)||[]).filter(x=>(m.ctx&&m.ctx.spon?m.ctx.spon.includes(x.id):x.day===(m.day0??m.day))&&x.exp>=G.day):null; /* 마감일 당일까지 수락할 수 있다(sponAccept와 같은 기준, 검수 11-09za) */ /* 기한 있는 기회(사용자 피드백 11-05): 3주 안에 답하지 않으면 사라지는 스폰서 제안 */
+function ibDecide(m){ if(mailDone(m))return false; { const sp=ibSpon(m); if(sp)return sp.length>0; } if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'||(IB_ANS.has(a.a)&&!mailActionStatus(m,a))); }
+/* 읽어도 답할 때까지 남는 기한 있는 제안: 직원·코치 영입 제안, 단장직 제의(검수 11-09za) */
+const IB_ANS=new Set(['stKeep','stLet','cmKeep','cmLet','jobYes','jobNo']);
+function ibAnsDue(m){ const a=(m.acts||[]).find(x=>IB_ANS.has(x.a)); if(!a)return null; const id=String(a.v).split(':')[0], c=m.ctx||{};
+  if(a.a[0]==='s'){ const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid==null||x.exp===c.raid)); return r?r.exp:null; }
+  if(a.a[0]==='c')return +String(a.v).split(':')[2]||null;
+  const j=(G.jobs||[]).find(x=>!x.done&&x.tid===+a.v); return j?j.exp-1:null; } /* 단장직 제의는 기한 전날까지 답할 수 있다 */
+function ibDue(m){ { const sp=ibSpon(m); if(sp&&sp.length)return Math.min(...sp.map(x=>x.exp)); } if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return ibAnsDue(m); }
 function ibDecideList(){ return G.mail.filter(ibDecide).sort((a,b)=>(ibDue(a)??1e9)-(ibDue(b)??1e9)); } /* 마감 빠른 순 */
 function mailEvPick(m){ const a=(m.acts||[]).find(x=>x.a==='evPick'); const e=a&&(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e&&e.pick!=null&&e.opts[e.pick]?` · "${e.opts[e.pick].l}"${e.auto?'(기본안)':''}`:''; }
 /* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 일은 뺀다) */
@@ -24376,7 +24392,7 @@ const mailNeeds=m=>ibMust(m);
  - 저절로 소식을 골라 열지 않는다(고른 것만 읽음). 날짜가 바뀌어도 보던 위치를 지킨다.
  - 스페이스바(와 '계속' 버튼): 화면 위에서부터 안 읽은 소식을 연다(확인할 소식 먼저). 다 읽었으면 진행한다. */
 function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
-  list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
+  list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj+'|'+m.body; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
 /* 반드시 확인할 소식: 살아 있는 결정·제안·인터뷰와 중단 설정에 해당하는 중요 소식. 안내 버튼만 있는 소식은 넣지 않는다. */
@@ -24457,7 +24473,9 @@ function ibDash(need){ const N=ibNeedList().slice(0,6), D=ibDecideList().slice(0
     <section class="card ibs-box"><h3>최근 소식</h3>${latest.map(li).join('')}</section></div>`; }
 /* 화면에 보인 메일은 읽음으로. 다시 그리지 않고 표시만 바꾼다 */
 let _ibSave=null, _ibOn=false, _ibRaf=0;
-function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m||m.read)return; m.read=true; for(const d of ((UI._ibDup||{})[id]||[])){ const q=G.mail.find(x=>x.id===d); if(q)q.read=true; }
+/* 묶인 같은 소식도 함께 읽음으로(검수 11-09za: 줄을 열어도 숨은 소식이 안 읽음으로 남음) */
+function ibReadDup(id){ for(const d of ((UI._ibDup||{})[id]||[])){ const q=G.mail.find(x=>x.id===d); if(q)q.read=true; } }
+function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m)return; ibReadDup(id); if(m.read)return; m.read=true;
   document.querySelectorAll(`[data-mid="${id}"]`).forEach(el=>el.classList.remove('unread'));
   const n=G.mail.filter(x=>!x.read).length; const u=document.getElementById('ib-unread'); if(u)u.textContent=n;
   const nb=G.mail.filter(mailNeeds).length; const mb=document.querySelector('.mailbtn i'); if(mb){ if(nb)mb.textContent=nb>99?'99+':nb; else mb.remove(); }
@@ -28160,8 +28178,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   dealOpen(v){ UI.dealOpen=+v; render(); },
   stadPrice(v){ stadOf(G.user).price=+v; save(); render(); },
   stadBuild(v){ UI.stadMsg=stadStart(v); save(); render(); },
-  openMail(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; if(!mailFilter(UI.mf||'all').some(x=>x.id===v))UI.mf='all'; UI.mailFocus=v; UI.tab='inbox'; closeSheets(); save(); render(); },
-  mailJump(v){ if(!v)return;if(UI.cast)A.castClose(true); /* 중계 위에서 다른 화면·진행을 누르면 중계를 닫고 간다(사용자 제보 11-06: 경기 끝난 중계에서 '계속'을 눌러도 화면이 그대로) */  const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; UI.ibSel=v; UI._ibToCur=true; UI._ibDay=G.day; if(!wide()){ if(!UI.ibOpen)UI.ibY=window.scrollY; UI.ibOpen=v; } UI.tab='inbox'; save(); render(); if(!wide())window.scrollTo(0,0); },
+  openMail(v){ if(!v)return; const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; ibReadDup(v); if(!mailFilter(UI.mf||'all').some(x=>x.id===v))UI.mf='all'; UI.mailFocus=v; UI.tab='inbox'; closeSheets(); save(); render(); },
+  mailJump(v){ if(!v)return;if(UI.cast)A.castClose(true); /* 중계 위에서 다른 화면·진행을 누르면 중계를 닫고 간다(사용자 제보 11-06: 경기 끝난 중계에서 '계속'을 눌러도 화면이 그대로) */  const m=G.mail.find(x=>x.id===v); if(!m)return; m.read=true; ibReadDup(v); UI.ibSel=v; UI._ibToCur=true; UI._ibDay=G.day; if(!wide()){ if(!UI.ibOpen)UI.ibY=window.scrollY; UI.ibOpen=v; } UI.tab='inbox'; save(); render(); if(!wide())window.scrollTo(0,0); },
   ibBack(){ UI.ibOpen=null; render(); },
   ibMore(){ UI.ibN=(UI.ibN||80)+80; UI._ibLS=0; UI._ibEnd=false; render(); },
   ibDecideGo(){ const m=ibDecideList()[0]; if(!m)return toast('결정할 일이 없습니다.'); UI.mf='all'; const F=ibFolds(); if(F[m.day])delete F[m.day]; A.mailJump(m.id); },
@@ -28662,7 +28680,7 @@ function pendItems(){ const L=[]; const ev=pendEvents(); const key=ev.filter(e=>
 function pendDoc(){ if(G.unemp||blocker())return null; const L=pendItems(); if(!L.length)return null; const sig=L.map(x=>x.id).join('|'); if(UI._pendAck===sig)return null;
   UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ const id=pendMailId(); if(id){ UI.mf='all'; A.openMail(id); return; } UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); } /* 확인하러 가기: 그 소식을 소식함에서 연다 */,onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
 /* 확인할 일이 담긴 소식: 안 읽은 확인할 소식 → 끝나지 않은 결정 → 살아 있는 트레이드 제안 순 */
-function pendMailId(){ const n=ibNeedList(); if(n.length)return n[0].id;
+function pendMailId(){ const n=ibNeedList(); if(n.length)return (n.find(m=>!m.read)||n[0]).id; /* 안 읽은 확인할 소식 먼저(검수 11-09za) */
   const ev=pendEvents(); for(const e of ev){ const m=G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(e.id))&&!mailDone(m)); if(m)return m.id; }
   const of=pendOffers(); for(const o of of){ const m=G.mail.find(m=>m.oid===o.id&&!mailDone(m)); if(m)return m.id; } return null; }
 /* 스페이스바로 진행할 때 묻는 창: 어디까지 가는지 */

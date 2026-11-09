@@ -9,7 +9,7 @@ const EV_NAME={lead:'기강 문제',pt:'출전 기회 면담',call:'콜업 여�
 function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const e={id:'e'+(G.evSeq=(G.evSeq||0)+1),k,day:G.day,exp:G.day+(o.exp||5),title,sit,opts:opts.map(x=>({l:x.l,fx:x.fx})),def:o.def??opts.length-1,data:o.data||{},ref:o.ref??null,from:o.from||'운영팀',done:false};
   { const pid=e.data&&e.data.pid!=null?e.data.pid:null; const q=pid!=null?G.players[pid]:null; if(q&&q.team===G.user)e.pt=G.user; } /* 우리 선수에 대한 결정: 결정할 때도 그 선수가 우리 소속인지 다시 본다(evPick) */
-  G.evs.push(e); if(G.evs.length>40)G.evs.splice(0,G.evs.length-40); { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
+  G.evs.push(e); for(let i=0;G.evs.length>40&&i<G.evs.length;)if(G.evs[i].done)G.evs.splice(i,1); else i++; /* 한도는 끝난 결정부터 지운다. 미결 결정은 남긴다(검수 11-09za) */ { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
   e.mid=m.id; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
@@ -24,11 +24,11 @@ function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.don
   G.stops=(G.stops||[]).filter(x=>x.id!==e.mid);
   G.evlog.unshift({d:G.day,y:G.year,t:e.title,c:e.opts[i].l,r,k:e.k,id:e.id,auto:!!auto}); if(G.evlog.length>80)G.evlog.length=80;
   return r; }
-function evFollow(days,k,data){ evInit(); G.evf.push({day:G.day+days,k,data}); }
+function evFollow(days,k,data){ evInit(); G.evf.push({day:G.day+days,k,data,tid:G.user}); } /* tid: 결정한 구단(이직해도 구단 몫 후속은 그 구단에, 검수 11-09za) */
 function evResult(evId,txt){ const L=(G.evlog||[]).find(x=>x.id===evId); if(L)L.f=txt; }
 function evDaily(){ if(!G.evs)return;
   for(const e of G.evs)if(!e.done&&G.day>e.exp)evPick(e.id,e.def,true); /* 안내한 기한 날짜까지는 고를 수 있고, 다음 날 처리를 시작할 때 기본안(검수 11-06) */
-  const due=(G.evf||[]).filter(f=>f.day<=G.day); if(due.length){ G.evf=G.evf.filter(f=>f.day>G.day); for(const f of due){ try{ EVH[f.k]&&EVH[f.k].follow&&EVH[f.k].follow(f.data); }catch(err){} } } }
+  const due=(G.evf||[]).filter(f=>f.day<=G.day); if(due.length){ G.evf=G.evf.filter(f=>f.day>G.day); for(const f of due){ try{ EVH[f.k]&&EVH[f.k].follow&&EVH[f.k].follow(f.data,f.tid??G.user); }catch(err){} } } }
 function aiScandalWeek(){ if(period()!=='season'||R()>.025)return; const t=pick(G.teams.filter(x=>x.id!==G.user)); const L=playersOf(t.id).filter(p=>!(p.susp>G.day)); if(!L.length)return; const p=pick(L); const ty=wpick({gamble:.3,drink:.35,sns:.35}); const S=SCAND[ty];
   if(S.kbo)p.susp=G.day+gDays(S.kbo+(R()<.5?S.club:0)); story(p,`${S.t}로 징계`,'inj'); wire('징계',`${tshort(t.id)} ${p.name}, ${S.t}로 ${S.kbo?`출장정지 ${S.kbo}경기`:'제재금'} 징계`,{tid:t.id,ref:p.id}); }
 function evWeek(){ try{ aiScandalWeek(); }catch(err){} try{ aiTeamWeek(); }catch(err){} if(period()!=='season'||G.gameOver||!G.mgr[G.user])return; evInit(); if(evOpen().length)return; if(R()>.8)return;
@@ -62,7 +62,7 @@ const EVH={
       if(i===1){ p.susp=base+gDays(S.club); G.pr.fan=clamp(G.pr.fan-1,0,100); p.mor=clamp((p.mor??60)-8,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:1}); return `${p.name} 출장정지가 ${S.club}경기 늘었습니다. 선수 기분 -8.`; }
       if(i===2){ p.susp=Math.max(base,G.cal?G.cal.end+1:base+120); G.pr.fan=clamp(G.pr.fan+3,0,100); G.pr.press=clamp(G.pr.press+4,0,100); p.mor=clamp((p.mor??60)-20,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:2}); return `${p.name}은(는) 올 시즌 뛸 수 없습니다. 팬 여론 +3, 언론 논조 +4.`; }
       const nm=p.name; if(p.foreign)releaseForeign(p.id); else releasePlayer(p.id); G.pr.fan=clamp(G.pr.fan+4,0,100); G.pr.press=clamp(G.pr.press+5,0,100); evFollow(21,'scandal',{pid:null,ty:e.data.ty,c:3,nm}); return `${nm}을(를) 방출했습니다. 팬 여론 +4, 언론 논조 +5.`; },
-    follow(d){ const S=SCAND[d.ty]; if(d.c>=2){ const back=Math.round(S.sp*.5); G.spend.etc=Math.max(0,(G.spend.etc||0)-back); mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
+    follow(d,tid){ const S=SCAND[d.ty], here=!G.unemp&&tid===G.user; if(!here&&d.c<2)return; if(d.c>=2){ const back=Math.round(S.sp*.5), led=here?Math.min(back,(G.spend&&G.spend.etc)||0):0; if(led)G.spend.etc-=led; if(back>led){ team(tid).cash+=back-led; hoBook(tid,[['후원사 복귀',back-led]],[]); } /* 이직으로 손실이 옛 장부에서 구단 현금으로 넘어갔으면 만회도 구단 현금으로(검수 11-09za) */ if(here)mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
       else if(d.c===0){ G.pr.fan=clamp(G.pr.fan-2,0,100); mail('마케팅팀','징계 논란이 이어집니다',`"구단이 감싼다"는 비판이 계속되고 있습니다. 팬 여론이 조금 더 떨어졌습니다.`,{kind:'재정'}); } } },
   /* 출전 시간 불만: 시즌 100경기가 지난 뒤에만 생긴다. 선수는 먼저 감독에게 따지고, 그게 기사로 나오면 단장이 후속 조치를 정한다.
      감독이 스스로 수습하면(자존심이 낮을수록) 단장에게 올라오지 않고 '기회 약속' 기사로 끝난다 */

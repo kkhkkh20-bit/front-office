@@ -2,11 +2,13 @@
 const MAIL_TASK_ACTS=new Set(['evPick','ivOpen','ivSkip','faOpen','faMatch','faLL','agPitchOk','renewMgr','mdRep','posReqOk','posReqNo','posConv','proleSet','keepP','listP','fcampSet','stKeep','stLet','cmKeep','cmLet','jobYes','jobNo','pactKeep','pactEnd','scoutPlanGo','retNo','cwOpen','fdBegin','pmgmt']);
 const mailStamp=m=>m.day0??m.day;
 const mailEnd=(text,expired=false)=>({label:expired?'기한 종료':'처리 완료',text,expired});
+/* 이전 구단 업무: 같은 구단으로 돌아오면 다시 열리므로 종료 상태로 저장하지 않는다(검수 11-09za) */
+const MAIL_CLUB_TXT='이전 구단에서 받은 업무입니다. 현재 구단에서는 처리할 수 없습니다.';
 const mailOldYear=m=>dobj(mailStamp(m)).y!==G.year;
 function mailActionStatus(m,a){
   if(a.done)return mailEnd(a.done==='skip'?'다른 안을 선택해 처리했습니다.':a.res||'이미 처리했습니다.');
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
-  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd('이전 구단에서 받은 업무입니다. 현재 구단에서는 처리할 수 없습니다.',true);
+  if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
   if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
   if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');if(e.exp<G.day)return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 종료되었습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
@@ -43,14 +45,15 @@ function mailActionStatus(m,a){
   return null;
 }
 function mailStatus(m){
-  if(m.closed)return m.closed;
+  if(m.closed&&m.closed.text!==MAIL_CLUB_TXT)return m.closed;
   if(m.done)return mailEnd('이미 처리한 소식입니다.');
   const A=m.acts||[],s=m.subj||'',d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{},M=G.mgr[G.user],end=mailEnd;
   if(/^\[인터뷰 요청\]/.test(s)&&!A.some(a=>a.a==='ivOpen'||a.a==='ivSkip')){const v=G.iv;return !v||v.done||d<v.day?end('이미 끝난 인터뷰 요청입니다.'):G.day>v.exp?end('인터뷰 응답 기한이 지났습니다.',true):null;}
+  if(!A.length&&m.kind==='결정'&&/\n\[(결정|종료)\] /.test(m.body||'')){const e=(G.evs||[]).find(x=>x.mid===m.id);return end(e&&e.void?'적용하지 않고 끝난 결정입니다.':e&&e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');} /* 답한 결정은 버튼을 지우고 본문에 기록하므로 그 기록으로 완료를 본다(검수 11-09za) */
   if(m.oid){const o=(G.offers||[]).find(x=>x.id===m.oid);return !o?end('이미 답변했거나 종료된 트레이드 제안입니다.'):G.day>o.exp?end('트레이드 제안의 답변 기한이 지났습니다.',true):null;}
   /* 제목은 이전 저장의 업무에도 사용한다. 단순 보고/기록의 이동 링크는 끝난 업무로 보지 않는다. */
   const task=/감독 자리가 비어|감독 계약이 끝납니다|코치 자리가 비어|부상 방지 프로그램과 병원 제휴|훈련 방향과 해외 연수 안내|스카우트 담당 지역에 공백|감독이 정한 선수단 배치|개막 준비가 끝났습니다|외국인 선수를 구성|연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청|신인 드래프트가 열립니다|스프링캠프가 시작|스폰서 제안|상무 지원 기간|보호선수 명단|보상선수 지명|영입 보상: 보호선수|FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작|트레이드 마감|마감 보강안|내일 직관|개막합니다/.test(s);
-  if(task&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return end('이전 구단에서 받은 업무입니다. 현재 구단에서는 처리할 수 없습니다.',true);
+  if(task&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return end(MAIL_CLUB_TXT,true);
   if(/감독 자리가 비어/.test(s)){if(M&&!M.interim)return end('이미 감독을 선임했습니다.');if(old)return end('지난 시즌의 감독 선임 안내입니다.',true);}
   if(/감독 계약이 끝납니다/.test(s)){if(old||G.unemp||!M||M.interim||(c.mid&&M.id!==c.mid))return end('당시 감독의 재계약 요청은 종료되었습니다.',true);if(M.yrs>0)return end('이미 감독 재계약 또는 후임 선임을 마쳤습니다.');}
   if(/코치 자리가 비어/.test(s)&&G.coach&&!CKEYS.some(k=>!coachesOf(G.user)[k]))return end('이미 코치진을 모두 구성했습니다.');
