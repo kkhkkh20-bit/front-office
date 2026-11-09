@@ -73,21 +73,28 @@ function starPanel(){
 }
 /* ---------- FA 보상 절차: 보호선수 명단 · 보상선수 지명 ---------- */
 function compRuleTxt(){ return `A등급(3년 평균 연봉 구단 3위·리그 30위 이내): 보호선수 외 1명 + 직전 연봉 200%, 또는 선수 없이 300%. B등급(구단 10위·리그 60위 이내, 또는 두 번째 FA): 보호선수 외 1명 + 100%, 또는 200%. 보호선수는 A 20명, B 25명입니다(소속선수 한도 ${ROSTER_MAX}명).`+'  C등급(그 밖, 만 35세 이상, 세 번째 이상 FA): 선수 없이 150%. 외국인, 올해 신인, 군 복무 중인 선수, 이번 겨울 FA 계약 선수는 저절로 보호됩니다. FA 자격은 고졸 8시즌, 대졸 7시즌입니다.'; }
+/* 보호명단은 보상 건(카드)마다 따로 든다: 두 건을 함께 열어도 다른 카드 명단이 제출되지 않게(검수 11-09r) */
+function protOf(c){ const M=UI.prot&&!UI.prot.ids?UI.prot:(UI.prot={}); return M[c.id]||(M[c.id]=aiProtect(G.user,COMP[c.grade].prot)); }
+function protByOvr(c){ return compPool(G.user).sort((a,b)=>ovr(b)-ovr(a)).slice(0,COMP[c.grade].prot).map(q=>q.id); }
 function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.user); if(!L.length)return '';
   const open=L.filter(c=>c.stage!=='done'); const done=L.filter(c=>c.stage==='done').slice(0,6);
   const one=c=>{ const g=COMP[c.grade];
-    if(c.stage==='protect'&&c.to===G.user){ const pool=compPool(G.user).sort((a,b)=>ovr(b)-ovr(a)); UI.prot=UI.prot&&UI.prot.id===c.id?UI.prot:{id:c.id,ids:aiProtect(G.user,g.prot)}; const S=new Set(UI.prot.ids);
+    if(c.stage==='protect'&&c.to===G.user){ const pool=compPool(G.user).sort((a,b)=>ovr(b)-ovr(a)); const S=new Set(protOf(c));
       const auto=domestic(G.user).concat(awayOf(G.user)).filter(q=>!q.foreign&&autoProt(q)&&q.id!==c.pid);
       return `<section class="card cpbox"><div class="row between"><h2 class="sec">보호선수 명단 · ${esc(c.name)} 영입 보상</h2><span class="small muted">${dmd(c.exp)}까지</span></div>
         <p class="small">${tname(c.from)}에 보상해야 합니다(${c.grade}등급). 보호할 선수 <b>${S.size}/${g.prot}</b>명. 누르면 보호·해제됩니다. 명단 밖에서 상대가 1명을 데려가거나 돈으로 받습니다.</p>
-        <div class="prl">${pool.map(q=>`<button class="pr ${S.has(q.id)?'on':''}" data-a="protTog" data-v="${q.id}">${avImg(q)}<span><b>${esc(q.name)}</b><i>${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</i></span>${rchip(Math.round(ovr(q)))}<em>${S.has(q.id)?'보호':'노출'}</em></button>`).join('')}</div>
+        <div class="prl">${pool.map(q=>`<button class="pr ${S.has(q.id)?'on':''}" data-a="protTog" data-v="${c.id}:${q.id}">${avImg(q)}<span><b>${esc(q.name)}</b><i>${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</i></span>${rchip(Math.round(ovr(q)))}<em>${S.has(q.id)?'보호':'노출'}</em></button>`).join('')}</div>
         ${auto.length?`<p class="small muted">저절로 보호: ${auto.map(q=>esc(q.name)).join(', ')}</p>`:''}
-        <div class="btns"><button class="btn primary" data-a="protSubmit" data-v="${c.id}" ${S.size>g.prot?'disabled':''}>명단 제출 (${S.size}/${g.prot})</button><button class="btn" data-a="protAuto" data-v="${c.id}">능력 순으로 다시 채우기</button></div></section>`; }
-    if(c.stage==='pick'&&c.from===G.user){ const ft=team(G.user); const cand=compCands(c).sort((a,b)=>ovr(b)-ovr(a)).slice(0,24);
+        <div class="btns"><button class="btn primary" data-a="protSubmit" data-v="${c.id}" ${S.size>g.prot?'disabled':''}>명단 제출 (${S.size}/${g.prot})</button><button class="btn" data-a="protAuto" data-v="${c.id}">운영팀 추천 순으로 다시 채우기</button><button class="btn" data-a="protAuto" data-v="${c.id}:ovr">종합 능력 순으로 다시 채우기</button></div>
+        <p class="small muted">운영팀 추천은 능력에 나이·잠재력·연봉을 함께 따진 순서이고, 기한까지 내지 않으면 이 순서로 제출됩니다.</p></section>`; }
+    if(c.stage==='pick'&&c.from===G.user){ const ft=team(G.user); const sk=UI.cpS||'ovr', fk=UI.cpF||'all'; const RP=new Map(compCands(c).map(q=>[q.id,scoutReport(q)])); /* 후보는 모두 보여 주고 정렬·필터는 칩으로(검수 11-09r) */
+      const pv=q=>RP.get(q.id).ofp??RP.get(q.id).cur; const cand=compCands(c).filter(q=>fk==='all'||(fk==='P'?q.isP:!q.isP)).sort(sk==='pot'?(a,b)=>pv(b)-pv(a):sk==='sal'?(a,b)=>a.sal-b.sal:sk==='age'?(a,b)=>a.age-b.age:(a,b)=>ovr(b)-ovr(a));
+      const chips=(k,cur,L)=>`<div class="chips">${L.map(([v,l])=>`<button class="${cur===v?'on':''}" data-a="cpOpt" data-v="${k}:${v}">${l}</button>`).join('')}</div>`;
       return `<section class="card cpbox"><div class="row between"><h2 class="sec">보상선수 지명 · ${esc(c.name)} 이적 보상</h2><span class="small muted">${dmd(c.exp)}까지</span></div>
         <p class="small">${tname(c.to)} 보호명단 밖 선수입니다(${c.grade}등급, 보호 ${g.prot}명). 선수 1명 + 직전 연봉 ${g.withP*100}% <b>${money(c.prev*g.withP)}</b>, 또는 선수 없이 ${g.cash*100}% <b>${money(c.prev*g.cash)}</b>.</p>
         <div class="btns"><button class="btn" data-a="compPick" data-v="${c.id}:0">선수 없이 ${money(c.prev*g.cash)} 받기</button></div>
-        ${cand.length?'':'<p class="small muted">보호명단 밖에 데려올 만한 선수가 없습니다.</p>'}<div class="cp-list">${cand.map(q=>{ const rp=scoutReport(q); return `<div class="cp-r"><button class="lnk cp-n" data-a="player" data-v="${q.id}">${esc(q.name)}</button><span class="small muted">${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</span>${rchip(rp.cur)}${rp.ofp!=null?potChip(rp,q):'<span></span>'}<button class="btn small primary" data-a="compPick" data-v="${c.id}:${q.id}">지명</button></div>`; }).join('')}</div></section>`; }
+        ${RP.size?chips('S',sk,[['ovr','종합 능력'],['pot','잠재력'],['sal','연봉 낮은 순'],['age','나이 어린 순']])+chips('F',fk,[['all',`전체 ${RP.size}`],['P','투수'],['H','야수']]):''}
+        ${cand.length?'':`<p class="small muted">${RP.size?'이 조건에 맞는 후보가 없습니다.':'보호명단 밖에 데려올 만한 선수가 없습니다.'}</p>`}<div class="cp-list">${cand.map(q=>{ const rp=RP.get(q.id); return `<div class="cp-r"><button class="lnk cp-n" data-a="player" data-v="${q.id}">${esc(q.name)}</button><span class="small muted">${posLabel(q)} · ${q.age}세 · ${money(q.sal)}</span>${rchip(rp.cur)}${rp.ofp!=null?potChip(rp,q):'<span></span>'}<button class="btn small primary" data-a="compPick" data-v="${c.id}:${q.id}">지명</button></div>`; }).join('')}</div></section>`; }
     return ''; };
   return open.map(one).join('')+(done.length?`<details class="cp-done"><summary class="small">FA 보상 기록 ${done.length}건</summary><div class="rql">${done.slice(0,20).map(c=>`<div class="rq"><span class="pill ${c.from===G.user?'good':'warn'}">${c.from===G.user?'받음':'내줌'}</span><div><b>${esc(c.name)} (${c.grade}등급) ${c.from===G.user?`→ ${tshort(c.to)}`:`← ${tshort(c.from)}`}</b><span>${c.player?`보상선수 ${esc(c.player)} + `:'선수 없이 '}${money(c.cash||0)}</span><i>${dsh(c.done||c.day)}</i></div></div>`).join('')}</div></details>`:''); } /* 기록은 접어서: 펼친 채 화면을 차지해 FA 계약 칸이 아래로 밀리던 문제 */
 

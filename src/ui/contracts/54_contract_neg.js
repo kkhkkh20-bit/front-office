@@ -48,7 +48,7 @@ function ngtGap(N,D){ const p=G.players[N.id]; let r;
   const riv=N.k==='fa'&&Object.keys(G.fa.ai[p.id]||{}).length;
   return r>=1?['good',riv?'요구는 채웠습니다. 다른 구단 조건과도 비교합니다':'요구 조건을 채웠습니다']:r>=.9?['warn','조금 모자랍니다. 역제안이 올 수 있습니다']:r>=.75?['bad','차이가 큽니다. 분위기가 나빠집니다']:['bad','무리한 조건입니다. 협상이 깨질 수 있습니다']; }
 /* 제안 결과 줄: 말풍선과 따로, 합의·역제안·거절·검토 중·결렬과 다음에 할 수 있는 일을 한 줄로 못 박는다 */
-function ngtResOf(N){ const p=G.players[N.id]; if(N.res)return N.res;
+function ngtResOf(N){ const p=G.players[N.id]; if(N.res){ if(N.k==='fa'&&N.res.st==='wait'&&!(G.fa&&G.fa.offers&&G.fa.offers[N.id]))return null; /* 철회한 제안은 '검토 중'이 아니다(검수 11-09r) */ return N.res; }
   if(N.k==='ext'&&p.extLast&&G.day-p.extLast.d<=6){ const c=p.extCounter&&p.extCounter.until>=G.day; const nx=extNextDay(p); if(p.extLast.st==='counter'&&c)return {st:'counter'}; if(nx)return {st:p.extLast.st,next:nx}; }
   if(N.k==='fa'){ const n=G.fa&&G.fa.neg&&G.fa.neg[p.id]; if(n&&n.closed&&!faReopenOk(p.id))return {st:'closed'}; }
   return null; }
