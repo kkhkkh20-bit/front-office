@@ -23,11 +23,7 @@ function todoCard(limit,compact=false){
     :`<p class="small muted">급한 일이 없습니다. ${per==='season'?'오른쪽 위 <b>진행하기</b>는 다음 소식까지(최대 한 주), <b>1경기</b>는 한 경기씩 진행합니다.':per==='post'?'오른쪽 위 <b>다음 경기</b>는 우리 경기가 내일이면 그 경기를 치르고, 아니면 우리 경기 전날까지 다른 팀 경기를 넘깁니다.':'오른쪽 위 <b>계속</b>을 누르면 다음 일정까지 진행합니다.'}</p>`;
   return `<section class="card" id="todoCard"><div class="row between"><h2 class="sec">처리할 일${it.length?` <span class="cntb">${it.length}</span>`:''}</h2><button class="btn small" data-a="tab" data-v="inbox">소식함${unread?` ${unread}`:''}</button></div>${body}</section>`;
 }
-function nextGames(n){
-  const c=G.cal; const L=[]; { const d=G.day+1, x=(G.makeup||[]).find(x=>x.y===G.year&&(x.h===G.user||x.a===G.user)); if(x&&ourGameOn(d))L.push({d,home:x.h===G.user,op:x.h===G.user?x.a:x.h}); } /* 미룬 경기는 다음 경기일에 먼저 치른다(playDay와 같은 순서, 검수 11-09z) */ for(let d=G.day+(G.res?1:1);d<=c.end&&L.length<n;d++){ const gs=c.sched[d]; if(!gs)continue; const m=gs.find(x=>x.includes(G.user)); if(m)L.push({d,home:m[0]===G.user,op:m[0]===G.user?m[1]:m[0]}); }
-  if(G.ps&&G.ps.cur){ const s=G.ps.cur; if(s.hi===G.user||s.lo===G.user){ for(let i=s.gi;i<s.days.length;i++){ const d=s.days[i]; if(d>G.day&&!L.some(x=>x.d===d))L.push({d,home:(s.homes?s.homes[i]:s.hi)===G.user,op:s.hi===G.user?s.lo:s.hi,ps:`${ROUNDK[s.round]} ${i+1}차전`}); } L.sort((a,b)=>a.d-b.d); } } /* 시리즈 남은 일정 전부, 홈은 실제 일정(s.homes)대로(검수 11-07) */
-  return L.slice(0,n);
-}
+function nextGames(n){ return teamGames(G.user,G.day+1,n); } /* 엔진 일정과 같은 목록(미룬 경기 두 건·포스트시즌 차전 포함, 검수 11-09zo) */
 /* 지금 전력 예상 순위(홈 상단 타일과 오른쪽 전력 예상이 같은 값을 쓴다) */
 /* 개막일 G.proj(언더독 도전과제 기준)와 같은 식: 전력 + 그 시즌 고정 잡음 */
 function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G){ const y=preSeasonY()||G.year; UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)+hn('proj'+y,t.id)*.7})).sort((a,b)=>b.r-a.r)}; } return UI._trk.R; }
