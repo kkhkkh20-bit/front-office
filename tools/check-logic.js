@@ -2429,7 +2429,7 @@ T('[검수 11-09b] 외국인 목록 협상 버튼은 최소 제안 기준, 경�
   z.fday=G.day-200; refreshFMarket(0,30); ok((G.fmarket||[]).includes(z.id)&&G.players[z.id],'옛 구단 관찰 후보가 시장 정리로 삭제됨');
   switchTeam(old); ok(fwatchOn(z.id)&&(G.fwNo||[]).includes(z.id),'복귀하면 옛 구단 관찰·제외 기록이 돌아와야 함'); });
 T('[검수 11-09b] 기다려 주는 기한은 등록 마감을 넘지 않고, 그 기한에는 관찰 이벤트로 사라지지 않는다',()=>{ fresh(); G.day=foreignDL()-1; ok(period()==='season'&&foreignOpen(),'준비 실패: 시즌 등록 기간 아님 '+period());
-  const tid=G.teams.find(t=>t.id!==G.user).id; const w=foreignOf(tid).find(x=>x.foreign==='용병'); releaseForeign(w.id); const nd=fNeed(tid); ok(nd&&nd.kind==='용병','준비 실패: AI 수요');
+  const tid=G.teams.find(t=>t.id!==G.user&&foreignOf(t.id).some(x=>x.foreign==='용병')).id; const w=foreignOf(tid).find(x=>x.foreign==='용병'); releaseForeign(w.id); const nd=fNeed(tid); ok(nd&&nd.kind==='용병','준비 실패: AI 수요');
   const L=(G.fmarket||[]).map(i=>G.players[i]).filter(x=>x&&x.team==null&&x.foreign==='용병'&&(nd.isP==null||x.isP===nd.isP)); L.forEach(x=>x.fpub=0); const q=L.sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a))[0]; ok(q&&foRivals(q).length,'준비 실패: 경쟁 구단 없음');
   const m=foreignOf(G.user).find(x=>x.foreign==='용병'&&x.isP===q.isP); if(m)releaseForeign(m.id); G.sea.repl[G.user]=0;
   const r=foOffer(q.id,MIN_SAL,0); ok(!r.ok&&q.fneg&&q.fneg.dl,'준비 실패: '+r.msg); ok(q.fneg.dl<=foreignDL(),'등록 마감('+dmd(foreignDL())+') 뒤 '+dmd(q.fneg.dl)+'까지 기다린다고 함');
