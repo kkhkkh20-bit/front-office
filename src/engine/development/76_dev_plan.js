@@ -59,12 +59,52 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
   if(m&&f!==rec&&(m.ego??50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7), E=G.trnEgo=G.trnEgo||{}, ek=G.user+':'+(m.id??m.name); if(E[ek]!==wk){ E[ek]=wk; /* 한 주 한 번 제한은 구단·감독마다 따로(검수 11-09o) */ m.rel=clamp((m.rel??50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
+/* ===== 훈련 강도(카페 건의 11-09, 설계 수정: 선수별 강도는 코치진 영역) =====
+ FM은 선수마다 훈련 부하(Light/Average/Heavy)를 정하고, 부하가 높을수록 성장은 빠르지만 부상 위험·피로가 오른다. 부상 내성·체력이 위험 폭을 가른다.
+ 실제 구단에서 선수별 강도는 컨디셔닝·파트 코치가 정한다. 단장은 팀 '육성 방침'(회복 우선·균형·성장 우선) 하나만 정하고, 코치진이 그 안에서 내구성·나이·피로·최근 부상을 보고 선수마다 배분한다.
+ 특정 선수 강도는 단장이 코치에게 건의하는 예외(G.trnI)로만 둔다. AI 구단은 리그 균형을 위해 모두 보통.
+ KBO 현실: 시즌 중 개인 고강도 훈련은 드물다(경기 피로 관리가 우선). 그래서 균형 방침에서 아주 강하게는 나오지 않는다.
+ - 성장: 주간 집중 훈련 증가분 × g, 겨울 성장(잠재력 여지 몫)에 그 시즌 평균 g. 아주 강하게(×1.3) 한 시즌이면 겨울 순성장 약 +40%, 캠프 몫까지 합친 한 해 성장 약 +30~35%
+ - 부상: 경기·2군 부상 확률(injMult) × 위험 배수. 증가분은 내구성(투수는 체력)이 낮을수록, 32세·34세 이상일수록 크고, 컨디셔닝코치가 좋으면 조금 작다. 내구성 80이면 아주 강하게도 +6%, 35면 +55%(피로가 덜 풀려 경기 부상이 더 붙는다)
+ - 피로: 매일 피로 회복 속도(recoverAll)를 늦춘다. 1군 주전은 경기 피로가 덜 풀려 위험이 겹친다
+ - 회복 위주: 성장 -15%, 부상 -15%, 피로 회복 +15%. 회복 우선 방침이거나 단장이 건의했으면 재활 중 한 주에 하루씩 복귀가 당겨진다 */
+const TRNI=[{l:'회복 위주',s:'회복',g:.85,inj:-.15,fat:-.15},{l:'보통',s:'보통',g:1,inj:0,fat:0},{l:'강하게',s:'강하게',g:1.15,inj:.25,fat:.12},{l:'아주 강하게',s:'아주 강',g:1.3,inj:.55,fat:.25}];
+const TRNPOL={rec:{l:'회복 우선',o:-2,d:'부상·피로 관리가 먼저입니다. 성장은 조금 느립니다.'},bal:{l:'균형',o:0,d:'몸이 받쳐 주는 젊은 선수만 강하게, 약한 선수는 회복 위주로 코치진이 나눕니다.'},grow:{l:'성장 우선',o:2,d:'튼튼한 선수는 아주 강하게까지 올립니다. 성장이 빠르지만 부상이 늘어납니다.'}};
+const trnPol=()=>TRNPOL[G.trnPol]?G.trnPol:'bal'; /* 저장본에 없으면 균형 */
+const trnDur=p=>(p.isP?p.r.sta:p.r.vit)??50; /* 투수는 내구성 대신 체력 */
+function trnCn(tid){ try{ if(tid==null||!G.coach)return 55; const C=coachesOf(tid); return C.cn?effC(C.cn,tid,'sk'):C.cn===undefined?55:45; }catch(e){ return 55; } } /* 컨디셔닝코치 지도력(빈자리 45) */
+const trnInjN=p=>(p.injHist||[]).filter(h=>h.d!=null&&G.day-h.d<=365).length; /* 최근 1년 부상 */
+/* 코치진이 고르는 강도와 그 이유: 점수 = 내구성 + 젊음 + 컨디셔닝코치 - 나이 - 최근 부상 - 피로, 방침만큼 위아래로 */
+function trnIAuto(p){ const pol=trnPol(), o=TRNPOL[pol].o; if(p.injOut>0)return {i:pol==='rec'?0:1,w:'재활 중'};
+  const d=trnDur(p), n=trnInjN(p), f=p.fat||0; const W=[[(d-50)/10,d>=60?'내구성 높음':d<42?'내구성 낮음':''],[p.age<=24?1:0,'젊은 선수'],[-(p.age>=34?2:p.age>=31?1:0),'30대 체력 관리'],[-Math.min(3,n),'최근 부상'],[-(f>=60?2:f>=40?1:0),'피로 누적'],[(trnCn(p.team)-55)/20,'']];
+  const s=W.reduce((a,x)=>a+x[0],0)+o; let i=s>=3?3:s>=1.2?2:s>=-2.5?1:0; /* 균형 방침에서 보통이 대부분이 되게(리그 기본과 비슷) */ if(pol==='bal')i=Math.min(i,2); if(pol==='rec')i=Math.min(i,1);
+  const top=W.filter(x=>x[1]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0]))[0]; return {i,w:top&&Math.abs(top[0])>=.5?top[1]:'무난한 몸 상태'}; }
+function trnI(p){ if(p.team!==G.user)return 1; const v=G.trnI&&G.trnI[p.id]; return TRNI[v]?v:trnIAuto(p).i; }
+const trnIByGm=p=>p.team===G.user&&!!(G.trnI&&TRNI[G.trnI[p.id]]);
+function trnIF(p){ const vf=clamp((85-trnDur(p))/50,.1,1.3), af=p.age>=34?1.5:p.age>=32?1.2:1, cq=clamp(1.1-(trnCn(p.team)-55)/150,.9,1.2); return vf*af*cq; } /* 위험 증가분 배율 */
+function trnIRisk(p,i){ i=i??trnI(p); const T=TRNI[i]; return T.inj<=0?1+T.inj:1+T.inj*trnIF(p); }
+function trnIFat(p,i){ i=i??trnI(p); const T=TRNI[i]; return T.fat<=0?1-T.fat:1/(1+T.fat*trnIF(p)); } /* 피로 회복 속도 배수 */
+/* 팀 육성 방침(단장) */
+function trnPolSet(k){ if(!TRNPOL[k]||trnPol()===k)return ''; G.trnPol=k; return `육성 방침을 ${TRNPOL[k].l}(으)로 정했습니다. 코치진이 선수마다 강도를 다시 나눕니다. ${trnIMgr(k==='grow'?2:k==='rec'?0:1,domestic(G.user).filter(p=>trnI(p)>=2))}`; }
+/* 특정 선수 강도 건의(예외). 'coach'면 코치진 판단으로 돌린다 */
+function trnISet(pid,i){ const p=G.players[pid]; if(!p||p.team!==G.user)return '우리 선수만 건의할 수 있습니다.'; G.trnI=G.trnI||{};
+  if(i==='coach'){ if(!trnIByGm(p))return ''; delete G.trnI[pid]; const a=trnIAuto(p); return `${p.name}의 훈련 강도를 코치진 판단으로 돌렸습니다(${TRNI[a.i].l}, ${a.w}).`; }
+  i=+i; if(!TRNI[i])return ''; if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; if(trnIByGm(p)&&G.trnI[pid]===i)return '';
+  G.trnI[pid]=i; const r=trnIRisk(p,i); return `${p.name}: 코치진에 훈련 강도 ${TRNI[i].l}을(를) 건의했습니다(성장 ×${TRNI[i].g.toFixed(2)}, 부상 위험 ×${r.toFixed(2)}). ${trnIMgr(i,[p])}`; }
+/* 감독 반응: 메모만(관계 변화 없음). 규율형은 강훈련을 반기고 회복 위주를 못마땅해한다. 관리형(휴식 중시)은 강훈련을 걱정한다 */
+function trnIMgr(i,ps){ const m=G.mgr[G.user]; if(!m||m.interim)return '코치진이 그렇게 진행합니다.'; mgrAttr(m); const d=m.disc??45, rs=m.rest??50; const weak=ps.filter(p=>trnIRisk(p,i)>=1.45);
+  if(i>=2&&rs>=65)return `${m.name} 감독은 관리형이라 걱정합니다. "경기 뛰는 선수는 피로를 보면서 조절하겠습니다."${weak.length?` 특히 ${weak.slice(0,3).map(p=>p.name).join(', ')}은(는) 몸이 버틸지 모르겠다고 합니다.`:''}`;
+  if(i>=2&&d>=62)return `${m.name} 감독이 반깁니다. "땀은 거짓말을 안 합니다."${weak.length?` 다만 코치진은 ${weak.slice(0,3).map(p=>p.name).join(', ')}의 몸 상태를 걱정합니다.`:''}`;
+  if(i===0&&d>=62)return `${m.name} 감독은 썩 내켜하지 않습니다. "너무 풀어 주면 감이 떨어집니다." 그래도 그렇게 하겠답니다.`;
+  return weak.length?`코치진이 ${weak.slice(0,3).map(p=>p.name).join(', ')}의 부상 위험을 걱정하지만 그렇게 진행합니다.`:`${m.name} 감독과 코치진이 그렇게 진행합니다.`; }
 /* 매주: 모든 구단 국내 선수(부상·군 복무·대표팀·미계약·합류 전 제외) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
-  for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)||ovsAbroad(p))continue; /* 해외 연수 중이면 구단 훈련 없음 */
+  for(const p of Object.values(G.players)){ if(p.injOut>1&&trnI(p)===0&&!milServing(p))p.injOut--; /* 회복 위주(회복 우선 방침에서 재활 중이거나 단장 건의): 한 주에 하루씩 복귀가 당겨진다 */
+    if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)||ovsAbroad(p))continue; /* 해외 연수 중이면 구단 훈련 없음 */
+    const ti=trnI(p); if(p.team===G.user){ if(!p.trI||p.trI.y!==G.year)p.trI={y:G.year,s:0,n:0}; p.trI.s+=TRNI[ti].g; p.trI.n++; } /* 그 시즌 훈련한 주의 평균 강도 → 겨울 성장(develop). 우리 구단 선수만 */
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
-    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
+    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g; const got=addR(p,k,add);
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
 /* 겨울 기회비용: 집중 훈련으로 얻은 만큼(×1.1) 같은 묶음의 다른 항목 성장이 준다.
@@ -108,4 +148,4 @@ function trnYearNote(y0){ const y=y0??G.year-1; if(G.trnNoteY===y)return; G.trnN
     L.push(`${p.name}(${posLabel(p)}) ${D.l} ${o.w}주 · ${o.lv}${o.stat?` · ${o.stat}`:''}`); }
   if(!L.length)return; G.reviews=G.reviews||{}; const R=G.reviews[y]=G.reviews[y]||{tid:G.user,L:[]}; R.L=R.L.filter(x=>!/^\[훈련 방향\]/.test(x)); R.L.push('[훈련 방향] '+L.slice(0,12).join(' / ')+(L.length>12?` 외 ${L.length-12}명`:'')); }
 function trnNewYear(){ try{ trnYearNote(); }catch(e){} for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user){ delete G.trn[id]; continue; }
-  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={lv:1,a:{},b:{}}; T.since=G.day; T.aw=0; T.y=G.year; T.yrs=(T.yrs||0)+1; } }
+  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={lv:1,a:{},b:{}}; T.since=G.day; T.aw=0; T.y=G.year; T.yrs=(T.yrs||0)+1; } for(const id in (G.trnI||{})){ const p=G.players[id]; if(!p||p.team!==G.user)delete G.trnI[id]; } }
