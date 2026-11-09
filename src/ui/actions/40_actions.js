@@ -261,14 +261,14 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   cgSort(v){ UI.cgS=v; render(); }, splP(){ UI.splP=!UI.splP; renderSheet(); }, sprP(){ UI.sprP=!UI.sprP; renderSheet(); },
   dsPick(v){ const id=+v; UI.dsSel=UI.dsSel===id?null:id; render(); }, dsCmp(v){ const id=+v; const p=G.players[id]; UI.pcmp=(UI.pcmp||[]).filter(x=>G.players[x]&&!!G.players[x].isP===!!(p&&p.isP)); const i=UI.pcmp.indexOf(id); if(i>=0)UI.pcmp.splice(i,1); else { if(UI.pcmp.length>=3)UI.pcmp.shift(); UI.pcmp.push(id); } render(); },
   dsSave(v){ const els=document.querySelectorAll('#dsName'); const el=els[els.length-1]; const C=G.dsCharts=G.dsCharts||[]; const cfg=dsCfg();
-    if(v==='over'){ const c=C.find(x=>x.name===UI.dsOver); if(c){ Object.assign(c,cfg,{used:(G.dsSeq=(G.dsSeq||0)+1)}); UI.dsCur=c.id; toast(`'${c.name}' 차트를 덮어썼습니다.`); } UI.dsOver=null; UI.dsSaveOn=false; render(); return; }
+    if(v==='over'){ const c=C.find(x=>x.name===UI.dsOver); if(c){ Object.assign(c,cfg,{used:(G.dsSeq=(G.dsSeq||0)+1)}); UI.dsCur=c.id; UI.dsCurG=G; save(); toast(`'${c.name}' 차트를 덮어썼습니다.`); } UI.dsOver=null; UI.dsSaveOn=false; render(); return; }
     const nm=(el&&el.value||'').trim().slice(0,30); if(!nm){ toast('차트 이름을 적어 주세요.'); return; } if(C.some(x=>x.name===nm)){ UI.dsOver=nm; render(); return; }
-    if(C.length>=20){ toast('내 차트는 20개까지입니다. 하나를 지운 뒤 저장해 주세요.'); return; } const seq=(G.dsSeq=(G.dsSeq||0)+1); const c=Object.assign({v:1,id:'c'+seq,name:nm},cfg,{at:G.day,used:seq}); C.push(c); UI.dsCur=c.id; UI.dsOver=null; UI.dsSaveOn=false; toast(`'${nm}' 차트를 저장했습니다.`); render(); },
+    if(C.length>=20){ toast('내 차트는 20개까지입니다. 하나를 지운 뒤 저장해 주세요.'); return; } const seq=(G.dsSeq=(G.dsSeq||0)+1); const c=Object.assign({v:1,id:'c'+seq,name:nm},cfg,{at:G.day,used:seq}); C.push(c); UI.dsCur=c.id; UI.dsCurG=G; UI.dsOver=null; UI.dsSaveOn=false; save(); /* 안내 전에 실제 저장 예약: 예약이 있어야 탭 종료 때도 남는다(검수 11-09zg) */ toast(`'${nm}' 차트를 저장했습니다.`); render(); },
   dsOverNo(){ UI.dsOver=null; render(); },
-  dsLoad(v){ const c=(G.dsCharts||[]).find(x=>x.id===v); if(!c)return; const g=c.g==='P'?'P':'B'; UI.dsG=g; UI.dsAx=null; UI.dsSel=null; UI.dsCur=c.id; c.used=(G.dsSeq=(G.dsSeq||0)+1);
+  dsLoad(v){ const c=(G.dsCharts||[]).find(x=>x.id===v); if(!c)return; const g=c.g==='P'?'P':'B'; UI.dsG=g; UI.dsAx=null; UI.dsSel=null; UI.dsCur=c.id; UI.dsCurG=G; c.used=(G.dsSeq=(G.dsSeq||0)+1); UI.dsY=c.sea==='prev'?'prev':null;
     if(!DS_M[g].includes(c.x)||!DS_M[g].includes(c.y)||c.x===c.y){ UI.dsX=null; UI.dsYk=null; toast(`'${c.name}'에 지금 없는 지표가 있어 기본 차트로 엽니다.`); } else { UI.dsX=c.x; UI.dsYk=c.y; }
     UI.dsPos=c.pos||null; UI.dsMin=c.min!=null?+c.min:null; UI.dsLv=c.lv==='퓨처스'?'퓨처스':null; render(); },
-  dsDel(v){ G.dsCharts=(G.dsCharts||[]).filter(x=>x.id!==v); if(UI.dsCur===v)UI.dsCur=null; render(); },
+  dsDel(v){ G.dsCharts=(G.dsCharts||[]).filter(x=>x.id!==v); if(UI.dsCur===v)UI.dsCur=null; save(); render(); },
   dsAx(v){ UI.dsAx=v||null; UI.dsX=null; UI.dsYk=null; UI.dsSel=null; render(); },
   dsSaveOpen(){ UI.dsSaveOn=!UI.dsSaveOn; render(); if(UI.dsSaveOn){ const e=document.getElementById('dsName'); if(e)e.focus(); } },
   dsNamesTg(){ UI.dsNames=!UI.dsNames; render(); },

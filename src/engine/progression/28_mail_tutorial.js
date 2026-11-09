@@ -45,7 +45,7 @@ function mailLiveAct(m,a){ const c=m.ctx||{}, id=String(a.v??'').split(':')[0];
 function headline(t){ const i=t.search(/[.!?](\s|$)/); return i>0&&i<46?t.slice(0,i):t.length>40?t.slice(0,38)+'…':t; }
 function kindActs(kind,ref){ const a=[]; if(ref!=null&&G.players[ref])a.push({l:'선수 보기',a:'player',v:ref}); if(GOTO[kind])a.push({l:'해당 화면으로',a:'goWork',v:GOTO[kind]}); return a; }
 function stop(kind,t,ref){ mail(FROM[kind]||'프런트',headline(t),t,{imp:true,ref,kind,acts:kindActs(kind,ref),face:ref!=null&&kind!=='부상'?ref:null}); }
-function note(kind,t,ref){ mail(FROM[kind]||'프런트',headline(t),t,{ref,kind,acts:kindActs(kind,ref)}); }
+function note(kind,t,ref){ return mail(FROM[kind]||'프런트',headline(t),t,{ref,kind,acts:kindActs(kind,ref)}); }
 
 /* ===== 비서 업무 안내(튜토리얼) ===== */
 const TUT=[
