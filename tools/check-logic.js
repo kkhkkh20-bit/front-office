@@ -2666,7 +2666,7 @@ T('[검수 11-09n] 말소 직후 콜업 요청 보류, 같은 날 두 번 등판
   const p=playersOf(U).find(q=>q.isP); pitchApp(p,G.day,16,false); pitchApp(p,G.day,21,false); ok(p.lastPc===37,'같은 날 투구 수 합산 안 됨: '+p.lastPc);
   const B=G.teams.find(t=>t.id!==U).id; const sp=playersOf(U).find(q=>q.isP&&!q.foreign); G.prole={[sp.id]:{k:'sp2',d:G.day,tid:U}}; G.user=B; rpWeek(); G.user=U; ok(rpPlanOf(U,sp)==='sp2','이직 뒤 주간 처리로 A 구단 선발 수업 요청이 지워짐'); });
 T('[검수 11-09l] 선수 보관 전후 끝난 경기 팀 통계가 같고, BABIP·0점대 ERA·복귀 소속·시상 실제 날짜가 맞다',()=>{ fresh(); simTo(()=>G.day>=G.cal.open+6); const y=G.year;
-  const tot=()=>{ const T=G.teams.map(()=>({})); for(const z of y1Rows(y)){ const X=T[z.h.t]; if(!X)continue; const K=Object.keys(z.isP?ZP:ZB).concat(z.isP?['roe']:[]); for(const k of K){ const q=(z.isP?'p':'b')+k; X[q]=(X[q]||0)+(z.h[k]||0); } } return JSON.stringify(T); };
+  const tot=()=>{ const T=G.teams.map(()=>({})); for(const z of y1Rows(y)){ const X=T[z.h.t]; if(!X)continue; const K=Object.keys(z.isP?ZP:ZB).concat(z.isP?['roe']:[]); for(const k of K){ const q=(z.isP?'p':'b')+k; X[q]=(X[q]||0)+(z.h[k]||0); } } return JSON.stringify(T.map(X=>Object.keys(X).sort().map(k=>[k,X[k]]))); }; /* 키 순서는 보관 순서에 따라 달라지므로 정렬해 비교 */
   const pit=Object.values(G.players).find(p=>p.isP&&p.team!=null&&p.hist.some(h=>h.y===y&&h.lvl==='1군'&&h.outs>0)); ok(pit,'준비 실패: 등판한 투수 없음'); pit.hist.find(h=>h.y===y&&h.lvl==='1군'&&h.outs>0).roe=4;
   const bat=Object.values(G.players).find(p=>!p.isP&&p.team!=null&&p.hist.some(h=>h.y===y&&h.lvl==='1군'&&h.pa>0)); const w0=bat.hist.filter(h=>h.y===y&&h.lvl==='1군').reduce((a,h)=>a+warOf(h,bat),0);
   const before=tot(); dropP(pit.id); dropP(bat.id); ok(tot()===before,'보관 뒤 팀 통계가 달라짐');
