@@ -3349,6 +3349,19 @@ T('[검수 11-09zh] 선발 예고와 투수 운용: 다음 선발·계투 전환
   /* 17: 가을야구 에이스 구원은 어제 구원 등판까지 쉰 날로 센다 */ { const P=depth(U).sp, ace=P[0], fs={tid:U,spAll:[ace],sp:P[1],used:new Set()}, d=G.day; ace.lastStart=d-5; ace.lastApp=d-1; ace.lastPc=4; ok(!psAceRelief(fs,8,1,d,{fin:true}),'어제 구원 등판한 에이스가 총력전 불펜 후보'); ace.lastApp=d-5; ok(psAceRelief(fs,8,1,d,{fin:true})===ace,'쉰 에이스가 후보가 아님'); }
   /* 18: 같은 날 두 경기 등판은 두 경기로 */ { const p=playersOf(U).find(q=>q.isP); p.ld=[]; loadLog(p,G.day,25,false); loadLog(p,G.day,30,false); ok(loadText(p).includes('최근 7일 2경기 55구'),loadText(p)); }
 });
+T('[피드백 11-09j] 시설 탭: 아카데미 제휴 뒤 이직해도 옛 구단 시설 투자 이력을 읽을 수 있다(FACI에 없는 키로 화면 전체가 멈추던 문제)',()=>{ fresh(); team(G.user).cash=99999; ok(acadUp()==='','준비 실패: 아카데미 제휴'); const old=G.user, nt=G.teams.find(t=>t.id!==old&&!t.indie).id; switchTeam(nt);
+  let n=0; for(const t of G.teams){ const S=facSt(t.id); for(const h of ((S&&S.hist)||[])){ const l=facHistLbl(h); ok(typeof l==='string'&&l&&!l.includes('undefined'),'이력 이름 '+JSON.stringify(h)+' → '+l); if(h.k==='acad')n++; } } ok(n>0,'준비 실패: 옛 구단 이력에 아카데미 없음'); });
+T('[피드백 11-09j] 모기업 구단은 현금이 적어도 구단주 지원 여유 안에서 트레이드 현금·시설 공사를 쓰고, 결산 때 지원이 메워 현금이 음수가 되지 않는다(독립구단은 현금만)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5); const oe=evalTrade, oo=tradeOwnerCheck; try{ evalTrade=(...a)=>{ const e=oe(...a); e.ok=true; e.theirPay=0; return e; }; tradeOwnerCheck=()=>null;
+  const t=team(G.user); ok(!t.indie,'준비 실패: 독립구단'); budget(); const L=G.bLocks[G.user]; L.gf=1; t.cash=200; G.spend.trC=0; G.spend.comp=0; G.spend.compIn=0;
+  const r0=budget().roomGoal; ok(r0>=3000,'준비 실패: 예산 여유 '+r0); ok(spendable(G.user)===200+r0,'쓸 수 있는 돈 '+spendable(G.user)+' / 현금 200 + 여유 '+r0); ok(spendTxt().includes('구단주 지원 여유'),'안내에 구성이 없음: '+spendTxt());
+  const op=G.teams.find(x=>x.id!==G.user).id; const g=domestic(G.user).find(q=>!q.foreign&&!hasNtc(q)), q=domestic(op).find(x=>!x.foreign&&!hasNtc(x));
+  const r=proposeTrade(op,[g.id],[q.id],1000); ok(r.ok,'현금 200으로 10억 현금 트레이드가 막힘: '+r.msg);
+  facInit(); G.fac.bld={}; const k=FACK.find(x=>G.fac.it[x]<FAC_MAX&&FACI[x].c[G.fac.it[x]+1]>200&&FACI[x].c[G.fac.it[x]+1]<=spendable(G.user)); ok(k,'준비 실패: 맞는 공사 없음'); const c=FACI[k].c[G.fac.it[k]+1], e0=G.spend.etc||0;
+  ok(buildFacItem(k)===''&&G.fac.bld[k],'예산 여유로 공사를 못 함'); ok(t.cash===0&&(G.spend.etc||0)-e0===c-200,'현금 먼저, 모자란 몫은 결산 지출로: 현금 '+t.cash+' · 장부 '+((G.spend.etc||0)-e0)+'/'+(c-200));
+  ok(budget().roomGoal<r0-1000-(c-200)+5,'지출이 예산 여유에서 빠지지 않음');
+  const u=G.teams.find(x=>x.indie); if(u){ const iv=t.indie; t.indie=true; ok(spendable(G.user)===sdCash(G.user),'독립구단도 예산 여유를 씀'); t.indie=iv; }
+  } finally{ evalTrade=oe; tradeOwnerCheck=oo; }
+  simTo(()=>G.last&&G.last.y===G.year); ok(team(G.user).cash>=0,'결산 뒤 현금이 음수 '+team(G.user).cash); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
