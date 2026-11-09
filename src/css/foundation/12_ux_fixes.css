@@ -716,3 +716,16 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 @media(max-width:480px){.card.champ .ch-top .tro16{width:84px;height:84px}}
 .ptier[data-tip]{cursor:pointer}
 .pst{position:relative;display:inline-block;color:#4a5562;font-size:13px;letter-spacing:.5px;line-height:1;vertical-align:0;white-space:nowrap;font-style:normal}.pst i{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#ffc94d;font-style:normal}
+/* 단장 레거시(피드백 11-09p): 내 줄 강조, 연대기 한 장 */
+.item.lg-me{background:color-mix(in srgb,var(--acc,#3b82f6) 10%,transparent)!important}
+.lg-tm{margin-bottom:8px}
+.lgtl{max-width:620px;margin-left:auto;margin-right:auto}
+.lgtl-h{display:flex;gap:12px;align-items:center;margin-bottom:8px}.lgtl-h .av{flex:none}
+.lgtl .tiles{margin-bottom:10px}
+.lgtl-y{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.lgtl-y>b{font-size:14px;color:var(--muted)}
+.lgtl-y ul{margin:0;padding:0;list-style:none;min-width:0}
+.lgtl-y li{font-size:13px;line-height:1.5;overflow-wrap:anywhere;word-break:keep-all}
+.lgtl-y li i{font-style:normal;font-size:11px;padding:0 5px;margin-right:6px;border:1px solid var(--line);border-radius:3px;color:var(--muted)}
+.lgtl-y li.c i{border-color:var(--warn);color:var(--warn)}
+.lgtl-f{text-align:right;margin:8px 0 0}
