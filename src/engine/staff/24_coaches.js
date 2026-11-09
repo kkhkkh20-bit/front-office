@@ -95,6 +95,9 @@ function coachExtTerms(role,add){ const c=coachesOf(G.user)[role]; if(!c)return 
   return {c,add,sal,why}; }
 function extendCoach(role,add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!(+add===1||+add===2))return '연장은 1~2년입니다.'; const T=coachExtTerms(role,+add); if(!T)return '그 자리에 코치가 없습니다.'; if(T.why)return T.why; const c=T.c;
   staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
+/* 계약이 올해로 끝나는 코치를 한 번에 1년씩 연장(카페 11-09: 코치가 19명이라 하나씩 계약하기 번거롭다). 조건·연봉은 하나씩 할 때와 같다 */
+const coachBulkList=()=>G.unemp?[]:CKEYS.filter(k=>{ const c=coachesOf(G.user)[k]; if(!c||c.yrs>1)return false; const T=coachExtTerms(k,1); return T&&!T.why; });
+function extendCoachesAll(){ const L=coachBulkList(); let n=0; for(const k of L)if(!extendCoach(k,1))n++; return n; }
 /* 우리 코치 승격(PROMO): 2군 투수·타격코치는 1군 같은 자리로, 1군 코치·2군 감독은 수석코치로. 연봉 15% 인상.
    올라갈 자리에 코치가 있으면 그 코치는 비게 되는 자리로 옮긴다(보직 맞교환, 연봉 그대로). 그 코치가 감독 사단이면 감독 관계가 조금 떨어진다. 같은 해 두 번 승격하지 않는다 */
 function promoteTerms(role){ const C=coachesOf(G.user); const c=C[role]; const to=PROMO[role]; if(!c||!to)return null; return {c,to,sal:round5(c.sal*1.15),old:C[to]||null,why:c.prY===G.year?`${c.name} 코치는 올해 이미 승격했습니다.`:''}; }

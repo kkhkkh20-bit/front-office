@@ -3537,6 +3537,8 @@ T('[피드백 11-09j] 모기업 구단은 현금이 적어도 구단주 지원 �
   const u=G.teams.find(x=>x.indie); if(u){ const iv=t.indie; t.indie=true; ok(spendable(G.user)===sdCash(G.user),'독립구단도 예산 여유를 씀'); t.indie=iv; }
   } finally{ evalTrade=oe; tradeOwnerCheck=oo; }
   simTo(()=>G.last&&G.last.y===G.year); ok(team(G.user).cash>=0,'결산 뒤 현금이 음수 '+team(G.user).cash); });
+T('[카페 11-09] 계약 끝나는 코치 한꺼번에 1년 연장',()=>{ fresh(); const C=coachesOf(G.user); const K=CKEYS.filter(k=>C[k]&&C[k].age<64).slice(0,3); ok(K.length===3,'준비 실패: 코치'); K.forEach(k=>{ C[k].yrs=1; delete C[k].extY; }); const L=coachBulkList(); ok(K.every(k=>L.includes(k)),'대상에 빠짐'); const s0=K.map(k=>C[k].sal); ok(extendCoachesAll()>=3,'연장 수'); ok(K.every((k,i)=>C[k].yrs===2&&C[k].extY===G.year&&C[k].sal>=s0[i]),'1년 연장·올해 손봄 기록'); ok(!coachBulkList().some(k=>K.includes(k)),'연장한 코치가 다시 대상'); });
+
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

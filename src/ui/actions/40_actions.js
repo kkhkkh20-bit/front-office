@@ -225,6 +225,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
   wk(v){ UI.wk=v||null; render(); },
+  extCoachAll(){ const n=extendCoachesAll(); toast(n?`코치 ${n}명과 1년씩 연장했습니다.`:'연장할 코치가 없습니다.'); save(); render(); },
   extCoach(v){ const [k,a]=v.split(':'); const r=extendCoach(k,+a); toast(r||`${CROLE[k].l} 계약을 ${a}년 연장했습니다.`); save(); render(); },
   cpromAsk(v){ UI.cprom=v; render(); }, cpromCancel(){ UI.cprom=null; render(); },
   promoteCoach(v){ const r=promoteCoach(v); UI.cprom=null; UI.cMsg=typeof r==='string'?r:r.msg; toast(UI.cMsg); save(); render(); },

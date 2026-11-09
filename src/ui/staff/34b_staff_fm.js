@@ -19,7 +19,7 @@ function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mg
       :`<tr class="miss"><td>${CROLE[k].l}</td><td colspan="5">빈자리</td><td><button class="btn small" data-a="smkGo" data-v="coach">채용</button></td></tr>`; }).join('')}</tbody></table></div>`;
   const col1=`<div class="sf-c">${sfHead('코치진','코치 '+nC+'/'+CKEYS.length+'명',[[m?1:0,1,'감독'],[CKEYS.filter(k=>CROLE[k].g===1&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===1).length,'1군 코치'],[CKEYS.filter(k=>CROLE[k].g===2&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===2).length,'2군 코치'],[m?Object.values(C).filter(c=>c&&c.clan===m.id).length:0,nC,'감독 사단',1]],
       [m?'var(--team-hi,#4fa3ff)':null,...CKEYS.map(k=>C[k]?rcol(effC(C[k],G.user,'sk')):null)],`<button class="btn small" data-a="sfCards">보직 카드 보기</button>`,!m?'감독 자리가 비어 있습니다.':nC<CKEYS.length?`코치 보직 ${CKEYS.length-nC}곳이 비어 있습니다 ${hiI('빈 보직은 해당 분야 성장이 느려집니다.')}`:'모든 코치 보직이 차 있습니다.')}
-    ${sfChart('코치진 비교 · 리그 10개 구단',cRows,40,80)}<section class="sf-list"><h3>코치진 명단</h3>${coachT}</section></div>`;
+    ${sfChart('코치진 비교 · 리그 10개 구단',cRows,40,80)}<section class="sf-list"><h3>코치진 명단</h3>${(B=>B.length>=2?`<div class="row" style="margin:0 0 8px"><button class="btn small primary" data-a="extCoachAll">계약 끝나는 코치 ${B.length}명 모두 1년 연장</button></div>`:'')(coachBulkList())}${coachT}</section></div>`;
   /* 스카우트·전력분석 */
   const L=stInit(), scOf=t=>t===G.user?G.scouts:((L[t]||{}).sc||[]), anOf=t=>t===G.user?anaList():((L[t]||{}).an||[]);
   const sk=a=>a.length?avg(a.map(s=>s.skill||0)):0;

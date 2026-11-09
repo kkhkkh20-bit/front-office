@@ -13808,6 +13808,9 @@ function coachExtTerms(role,add){ const c=coachesOf(G.user)[role]; if(!c)return 
   return {c,add,sal,why}; }
 function extendCoach(role,add){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!(+add===1||+add===2))return '연장은 1~2년입니다.'; const T=coachExtTerms(role,+add); if(!T)return '그 자리에 코치가 없습니다.'; if(T.why)return T.why; const c=T.c;
   staffCtExtend(c,T.add); c.sal=T.sal; c.extY=G.year; addLog(`${CROLE[role].l} ${c.name}와(과) ${T.add}년 연장 계약했습니다(연 ${money(c.sal)}, 계약 ${c.yrs}년 남음).`); return ''; }
+/* 계약이 올해로 끝나는 코치를 한 번에 1년씩 연장(카페 11-09: 코치가 19명이라 하나씩 계약하기 번거롭다). 조건·연봉은 하나씩 할 때와 같다 */
+const coachBulkList=()=>G.unemp?[]:CKEYS.filter(k=>{ const c=coachesOf(G.user)[k]; if(!c||c.yrs>1)return false; const T=coachExtTerms(k,1); return T&&!T.why; });
+function extendCoachesAll(){ const L=coachBulkList(); let n=0; for(const k of L)if(!extendCoach(k,1))n++; return n; }
 /* 우리 코치 승격(PROMO): 2군 투수·타격코치는 1군 같은 자리로, 1군 코치·2군 감독은 수석코치로. 연봉 15% 인상.
    올라갈 자리에 코치가 있으면 그 코치는 비게 되는 자리로 옮긴다(보직 맞교환, 연봉 그대로). 그 코치가 감독 사단이면 감독 관계가 조금 떨어진다. 같은 해 두 번 승격하지 않는다 */
 function promoteTerms(role){ const C=coachesOf(G.user); const c=C[role]; const to=PROMO[role]; if(!c||!to)return null; return {c,to,sal:round5(c.sal*1.15),old:C[to]||null,why:c.prY===G.year?`${c.name} 코치는 올해 이미 승격했습니다.`:''}; }
@@ -26969,7 +26972,8 @@ function coachTable(){ const C=coachesOf(G.user); const slots=[...CKEYS.filter(k
     if(!c)return `<div class="st-r st-emp"><span class="st-n"><span class="av ini">-</span><span><b>${r.l}</b><i class="bad">빈자리</i></span></span><span class="st-act"><button class="btn small primary" data-a="coachFind" data-v="${k}">후보 보기</button></span><span class="st-abs small muted">${r.d}</span></div>`;
     return stRow({c,key:k,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user},sub:`${r.l} · ${c.age}세`,tag:'',cur:null,open:UI.cslotOpen===k,openA:'cslotOpen',yrs:Math.max(0,c.yrs),ct:ctLeftTxt(c),
       acts:`<button class="btn small" data-a="coachFind" data-v="${k}">교체</button>`,detail:()=>coachSlot(k)}); };
-  return `<div class="st-list">${stHead()}${slots.map(row).join('')}</div>`; }
+  const B=coachBulkList(); const bulk=B.length>=2?`<div class="row" style="margin:0 0 8px"><button class="btn small primary" data-a="extCoachAll">계약 끝나는 코치 ${B.length}명 모두 1년 연장<i class="pc-s">연봉 합계 ${money(sum(B.map(k=>coachExtTerms(k,1).sal)))}</i></button></div>`:'';
+  return `${bulk}<div class="st-list">${stHead()}${slots.map(row).join('')}</div>`; }
 function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* PC: FM식 스태프 개요(34b_staff_fm.js), '보직 카드 보기'로 아래 카드 화면 */ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=coachGrade(G.user); const cn=clanCount(G.user);
   const empty=CKEYS.filter(k=>!C[k]).length;
   const gc=(l,x)=>`<div class="cgg"><span>${l}</span><b class="g${x.l}">${x.l}</b></div>`;
@@ -27045,7 +27049,7 @@ function staffFM(){ const tids=G.teams.map(t=>t.id), C=coachesOf(G.user), m=G.mg
       :`<tr class="miss"><td>${CROLE[k].l}</td><td colspan="5">빈자리</td><td><button class="btn small" data-a="smkGo" data-v="coach">채용</button></td></tr>`; }).join('')}</tbody></table></div>`;
   const col1=`<div class="sf-c">${sfHead('코치진','코치 '+nC+'/'+CKEYS.length+'명',[[m?1:0,1,'감독'],[CKEYS.filter(k=>CROLE[k].g===1&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===1).length,'1군 코치'],[CKEYS.filter(k=>CROLE[k].g===2&&C[k]).length,CKEYS.filter(k=>CROLE[k].g===2).length,'2군 코치'],[m?Object.values(C).filter(c=>c&&c.clan===m.id).length:0,nC,'감독 사단',1]],
       [m?'var(--team-hi,#4fa3ff)':null,...CKEYS.map(k=>C[k]?rcol(effC(C[k],G.user,'sk')):null)],`<button class="btn small" data-a="sfCards">보직 카드 보기</button>`,!m?'감독 자리가 비어 있습니다.':nC<CKEYS.length?`코치 보직 ${CKEYS.length-nC}곳이 비어 있습니다 ${hiI('빈 보직은 해당 분야 성장이 느려집니다.')}`:'모든 코치 보직이 차 있습니다.')}
-    ${sfChart('코치진 비교 · 리그 10개 구단',cRows,40,80)}<section class="sf-list"><h3>코치진 명단</h3>${coachT}</section></div>`;
+    ${sfChart('코치진 비교 · 리그 10개 구단',cRows,40,80)}<section class="sf-list"><h3>코치진 명단</h3>${(B=>B.length>=2?`<div class="row" style="margin:0 0 8px"><button class="btn small primary" data-a="extCoachAll">계약 끝나는 코치 ${B.length}명 모두 1년 연장</button></div>`:'')(coachBulkList())}${coachT}</section></div>`;
   /* 스카우트·전력분석 */
   const L=stInit(), scOf=t=>t===G.user?G.scouts:((L[t]||{}).sc||[]), anOf=t=>t===G.user?anaList():((L[t]||{}).an||[]);
   const sk=a=>a.length?avg(a.map(s=>s.skill||0)):0;
@@ -28619,6 +28623,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   crole(v){ UI.crole=v; render(); },
   cfireAsk(v){ UI.cfire=v; render(); },
   wk(v){ UI.wk=v||null; render(); },
+  extCoachAll(){ const n=extendCoachesAll(); toast(n?`코치 ${n}명과 1년씩 연장했습니다.`:'연장할 코치가 없습니다.'); save(); render(); },
   extCoach(v){ const [k,a]=v.split(':'); const r=extendCoach(k,+a); toast(r||`${CROLE[k].l} 계약을 ${a}년 연장했습니다.`); save(); render(); },
   cpromAsk(v){ UI.cprom=v; render(); }, cpromCancel(){ UI.cprom=null; render(); },
   promoteCoach(v){ const r=promoteCoach(v); UI.cprom=null; UI.cMsg=typeof r==='string'?r:r.msg; toast(UI.cMsg); save(); render(); },
@@ -31292,6 +31297,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-09n',d:'11월 9일',t:'코치 한꺼번에 재계약',items:[
+    '코치진 화면에 \'계약 끝나는 코치 n명 모두 1년 연장\' 버튼이 생겼습니다. 올해로 계약이 끝나는 코치를 한 번에 1년씩 연장합니다. 연봉 인상과 조건은 하나씩 연장할 때와 같습니다.']},
   {id:'2026-11-09m',d:'11월 9일',t:'잠재력 등급을 스카우트 말로',items:[
     '잠재력을 별 다섯 개(반 칸 단위)로 보여 줍니다. 별을 누르면 스카우트 의견이 뜹니다. ★5 국가대표감 · ★4 간판감 · ★3 주전감 · ★2 1군 백업 · ★1.5 1.5군 · ★1 이하 2군. 불펜으로 보는 투수의 상위 등급은 마무리감입니다.',
     '예전 \'완성형\'은 없애고 지금 수준의 등급으로 보여 줍니다. 등급을 누르면 스카우트 의견과 등급표가 뜹니다.']},
