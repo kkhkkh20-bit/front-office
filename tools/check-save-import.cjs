@@ -10,7 +10,7 @@ const {chromium}=require('playwright');
   const same=w=>{ if(G!==g0)bad.push(w+': 진행 중 게임이 바뀜'); if(localStorage.getItem(slotKey(s1))!==body0)bad.push(w+': 슬롯 본문이 바뀜'); if(localStorage.getItem(META)!==meta0)bad.push(w+': 저장 목록이 바뀜'); if(G&&G.user!==g0.user)bad.push(w+': 사용자 구단이 바뀜'); };
   const mk=f=>{ const g=JSON.parse(txt); f(g); return JSON.stringify(g); };
   /* #19·#20: 필수 항목이 빠진 백업 */
-  for(const [w,f] of [['시즌 기록 없음',g=>{ delete g.sea; }],['없는 사용자 구단',g=>{ g.user=999; }],['선수 없음',g=>{ g.players={}; }],['구단 기록 없음',g=>{ g.sea.rec=[]; }]]){ importText(mk(f)); same(w); if(!/가져오지 않았습니다/.test(UI.impMsg||''))bad.push(w+': 거절 안내 없음'); }
+  for(const [w,f] of [['시즌 기록 없음',g=>{ delete g.sea; }],['없는 사용자 구단',g=>{ g.user=999; }],['선수 없음',g=>{ g.players={}; }],['구단 기록 없음',g=>{ g.sea.rec=[]; }],['구단 순서 뒤바뀜(검수 11-09zr #12)',g=>{ g.teams.reverse(); }],['일정표 없음(11-09zr #12)',g=>{ delete g.cal.sched; }],['상대 구단 전적 없음(11-09zr #12)',g=>{ g.sea.rec[(g.user+1)%g.sea.rec.length]=null; }]]){ importText(mk(f)); same(w); if(!/가져오지 않았습니다/.test(UI.impMsg||''))bad.push(w+': 거절 안내 없음'); }
   /* #21: 복원에 실패한 2027년 백업은 최저 연봉을 바꾸지 않는다 */
   importText(mk(g=>{ g.year=2027; delete g.scouts; })); same('복원 실패'); if(MIN_SAL!==ms0)bad.push(`복원 실패 뒤 최저 연봉이 ${ms0}에서 ${MIN_SAL}(으)로 남음`);
   /* #22: 파일을 고른 뒤 슬롯이 바뀌면 거절 */
@@ -38,6 +38,9 @@ const {chromium}=require('playwright');
   localStorage.clear(); const em='{"active":1,"slots":{}}'; localStorage.setItem(META,em); localStorage.setItem('danjang-pref','x'); block(k=>k===slotKey(2));
   if(ftMigrateAccept(ev({[META]:mt,[slotKey(1)]:B1,[slotKey(2)]:B1,'danjang-pref':'y'})))bad.push('itch: 쓰기 실패인데 성공'); unblock();
   if(localStorage.getItem(slotKey(1))!=null||localStorage.getItem(slotKey(2))!=null)bad.push('itch: 실패 뒤 옮기던 본문이 남음'); if(localStorage.getItem(META)!==em)bad.push('itch: 실패 뒤 기존 목록을 원래대로 돌리지 않음'); if(localStorage.getItem('danjang-pref')!=='x')bad.push('itch: 기존 항목을 덮어쓰거나 지움');
+  /* 검수 11-09zr #18: 목록에 빠진 정상 본문은 옮기고, 목록에 없는 손상 본문은 옮기지 않는다 */
+  localStorage.clear(); if(!ftMigrateAccept(ev({[META]:JSON.stringify({active:1,slots:{}}),[slotKey(3)]:B1})))bad.push('itch: 목록에 빠진 정상 본문을 거절'); else { const m=meta(); if(!m.slots[3]||m.active!==3||!unpack(localStorage.getItem(slotKey(3))))bad.push('itch: 목록에 빠진 본문 목록 정보 없음 '+JSON.stringify(m)); }
+  localStorage.clear(); if(!ftMigrateAccept(ev({[META]:mt,[slotKey(1)]:B1,[slotKey(4)]:'망가진 본문'})))bad.push('itch: 정상 슬롯과 손상 본문 함께 이전 실패'); else if(localStorage.getItem(slotKey(4))!=null||meta().slots[4])bad.push('itch: 손상 본문이 슬롯을 차지');
   localStorage.clear(); if(!ftMigrateAccept(ev({[META]:mt,[slotKey(1)]:B1})))bad.push('itch: 정상 이전 실패'); else { const m=meta(); if(Object.keys(m.slots).join()!=='1'||m.active!==1)bad.push('itch: 본문이 없는 슬롯이 목록에 남음 '+JSON.stringify(m)); }
   return bad; });
  const ok=!bad.length&&!errs.length; console.log(ok?'가져오기·슬롯 전환·itch 이전 점검 통과':'가져오기 점검 실패\n- '+bad.concat(errs).join('\n- ')); await b.close(); process.exit(ok?0:1); })();
