@@ -714,3 +714,4 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .card.champ.ch16 .ch-top .eyebrow{color:#ffd24d}.card.champ.ch16 .ch-tag{color:#dfe6ee}
 .card.champ .tro16{flex:none;filter:drop-shadow(0 6px 18px rgba(255,210,77,.45))}
 @media(max-width:480px){.card.champ .ch-top .tro16{width:84px;height:84px}}
+.ptier[data-tip]{cursor:pointer}

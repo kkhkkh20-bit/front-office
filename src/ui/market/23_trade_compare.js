@@ -120,7 +120,7 @@ function tipShow(el){ let b=document.getElementById('tipb'); if(!b){ b=document.
   const z=uiZ(); const r=el.getBoundingClientRect(); const W=Math.min(320,innerWidth/z-24); b.style.maxWidth=W+'px'; const bw=Math.min(W,b.offsetWidth)*z,bh=b.offsetHeight*z; let x=r.left+r.width/2-bw/2; x=Math.max(12,Math.min(innerWidth-bw-12,x)); const below=r.bottom+bh+16<innerHeight; /* 화면 좌표는 확대 배율로 나눠 스타일 px로 */
   b.style.left=(x+scrollX)/z+'px'; b.style.top=((below?r.bottom+8:r.top-bh-8)+scrollY)/z+'px'; b.classList.toggle('up',!below); b.style.setProperty('--ax',(r.left+r.width/2-x)/z+'px'); }
 function tipHide(){ const b=document.getElementById('tipb'); if(b){ b.classList.remove('on'); b._for=null; } }
-if(typeof document!=='undefined'){ document.addEventListener('click',e=>{ const t=e.target.closest&&e.target.closest('.hi-i,.fdt .ti'); if(t){ e.preventDefault(); e.stopPropagation(); tipShow(t); return; } if(!(e.target.closest&&e.target.closest('#tipb')))tipHide(); },true); addEventListener('scroll',()=>{ const b=document.getElementById('tipb'); if(b&&b.classList.contains('on')&&Math.abs(scrollY-(b._y||0))>40)tipHide(); },{passive:true}); }
+if(typeof document!=='undefined'){ document.addEventListener('click',e=>{ const t=e.target.closest&&e.target.closest('.hi-i,.fdt .ti,.ptier[data-tip]'); if(t){ e.preventDefault(); e.stopPropagation(); tipShow(t); return; } if(!(e.target.closest&&e.target.closest('#tipb')))tipHide(); },true); addEventListener('scroll',()=>{ const b=document.getElementById('tipb'); if(b&&b.classList.contains('on')&&Math.abs(scrollY-(b._y||0))>40)tipHide(); },{passive:true}); }
 
 /* ---------- 화면 안 탭 ---------- */
 function inTabs(key,tabs,def){ const cur=(UI.it||{})[key]||def||tabs[0][0]; const ok=tabs.some(t=>t[0]===cur)?cur:tabs[0][0];
