@@ -282,7 +282,8 @@
       "src/css/career/28_meeting_page.css",
       "src/css/shell/29_desktop_viewport.css",
       "src/css/foundation/30_design_system.css",
-      "src/css/shell/30_mobile_workspace.css"
+      "src/css/shell/30_mobile_workspace.css",
+      "src/css/career/31_personal_life.css"
     ],
     "graphics": [
       "src/gfx/matches/kart.js",
