@@ -188,17 +188,17 @@ function psBody(){
   return bgHero('city_night',`<div class="ps-head">${compMark('ps',40)}<div><b>${PY} 포스트시즌</b><span class="small">진출 ${(P.seeds||[]).length}개 구단 · ${P.done?'종료':P.cur?ROUNDK[P.cur.round]+' 진행 중':'대기'}</span></div></div>`,'ps-hero')+champ+seeds+`<div class="list">${rows.join('')}</div><p class="small muted">정규시즌 1~5위가 진출합니다. 4위는 와일드카드에서 1승만 하면 올라갑니다. 한국시리즈는 2-3-2 방식입니다.</p>`;
 }
 function resultBody(){ return champHero()+resultBody0(); }
-function champHero(){ const L=G.last; if(!L)return ''; const h=G.history.find(x=>x.y===L.y); if(!h||h.champ!==G.user)return ''; const n=G.history.filter(x=>x.champ===G.user&&x.y<=L.y).length;
-  return `<div class="champ-hero">${trophyImg(96)}<div><span class="eyebrow">${L.y} 한국시리즈</span><b>${esc(tname(G.user))} 우승</b><span>구단 통산 ${n}번째 우승</span></div></div>`; }
+function champHero(){ const L=G.last; if(!L)return ''; const me=L.tid??G.user; const h=G.history.find(x=>x.y===L.y); if(!h||h.champ!==me)return ''; const n=G.history.filter(x=>x.champ===me&&x.y<=L.y).length;
+  return `<div class="champ-hero">${trophyImg(96)}<div><span class="eyebrow">${L.y} 한국시리즈</span><b>${esc(tname(me))} 우승</b><span>구단 통산 ${n}번째 우승</span></div></div>`; }
 function resultBody0(){
-  const L=G.last; const ps=L.ps; const f=L.fins[G.user]; const uo=L.order.find(o=>o.tid===G.user);
-  const rank=L.order.findIndex(o=>o.tid===G.user)+1; const tr=L.trust;
+  const L=G.last; const me=L.tid??G.user; /* 결산 뒤 이직해도 성적·월별·신뢰·결산표 모두 결산한 구단 기준(검수 11-09h) */ const ps=L.ps; const f=L.fins[me]; const uo=L.order.find(o=>o.tid===me);
+  const rank=L.order.findIndex(o=>o.tid===me)+1; const tr=L.trust;
   const psRow=(label,s)=>s?`<div class="item" style="cursor:default"><span class="nm">${label}</span><span class="sub">${tname(s[0])} ${s[2]}-${s[3]} ${tname(s[1])}</span></div>`:'';
-  return `<p><b>${recStr(uo)} · ${rank}위</b> · ${ps.champ===G.user?'한국시리즈 우승':rank<=5?'가을야구 진출':'가을야구 탈락'}</p>
+  return `<p>${me!==G.user?`${esc(tname(me))} · `:''}<b>${recStr(uo)} · ${rank}위</b> · ${ps.champ===me?'한국시리즈 우승':rank<=5?'가을야구 진출':'가을야구 탈락'}</p>
     <div class="months">${(L.months||[]).map(x=>`<div><span>${x.m}</span><b>${x.w}-${x.l}${x.t?`-${x.t}`:''}</b></div>`).join('')}${(()=>{ const M=L.months||[]; if(!M.length)return ''; const w=sum(M.map(x=>x.w)), l=sum(M.map(x=>x.l)), t=sum(M.map(x=>x.t||0)); return `<div class="tot"><span>합계</span><b>${w}-${l}${t?`-${t}`:''}</b></div>`; })()}</div>
     <p class="small">구단주 신뢰 ${tr.before} → <b>${tr.after}</b> <span class="pill ${tr.delta>=0?'good':'bad'}">${tr.delta>=0?'+':''}${tr.delta}</span></p>
     ${L.notes.map(n=>`<div class="note bad">${esc(n)}</div>`).join('')}
-    ${L.awards&&awShown(L.awards,'mvp')?`<div class="eyebrow">시상</div><p class="small">MVP ${L.awards.mvp?esc(L.awards.mvp.name)+'('+tshort(L.awards.mvp.t)+')':'-'} · 신인왕 ${L.awards.roy?esc(L.awards.roy.name)+'('+tshort(L.awards.roy.t)+')':'-'} · 우리 골든글러브 ${!awShown(L.awards,'gg')?'12월 발표':Object.values(L.awards.gg).filter(x=>x.t===G.user).map(x=>esc(x.name)).join(', ')||'없음'}</p>`:''}
+    ${L.awards&&awShown(L.awards,'mvp')?`<div class="eyebrow">시상</div><p class="small">MVP ${L.awards.mvp?esc(L.awards.mvp.name)+'('+tshort(L.awards.mvp.t)+')':'-'} · 신인왕 ${L.awards.roy?esc(L.awards.roy.name)+'('+tshort(L.awards.roy.t)+')':'-'} · 우리 골든글러브 ${!awShown(L.awards,'gg')?'12월 발표':Object.values(L.awards.gg).filter(x=>x.t===me).map(x=>esc(x.name)).join(', ')||'없음'}</p>`:''}
     ${L.goals&&L.goals.length?`<div class="eyebrow">구단주 목표 평가</div><div class="list">${L.goals.map(g=>`<div class="item" style="cursor:default"><span class="nm">${esc(g)}</span></div>`).join('')}</div>`:''}${L.pr?`<p class="small">시즌 말 팬 여론 ${L.pr.fan} · 언론 논조 ${L.pr.press}</p>`:''}
     <div class="eyebrow">포스트시즌</div><div class="list">${psRow('와일드카드',ps.wc)}${psRow('준플레이오프',ps.spo)}${psRow('플레이오프',ps.po)}${psRow('한국시리즈',ps.ks)}</div>
     <p class="small muted">포스트시즌 입장 수입 ${money(L.gate)} 중 운영비를 뺀 ${money(L.pool)}을 배당. 정규시즌 1위 20%, 나머지는 우승 50%, 준우승 24%, 플레이오프 14%, 준플레이오프 9%, 와일드카드 3%.</p>

@@ -20,9 +20,9 @@ function myCEnd(how,y){ const C=G.myC; if(!C)return; if(C.tid!=null){ const per=
   let fin=null; try{ const L=G.last; if(L&&L.fins&&L.fins[C.tid]&&L.y>=C.y0){ const o=L.order&&L.order.find(x=>x.tid===C.tid); fin={y:L.y,f:JSON.parse(JSON.stringify(L.fins[C.tid])),rank:L.order?L.order.findIndex(x=>x.tid===C.tid)+1:null,w:o?o.w:null,l:o?o.l:null}; } }catch(e){} /* 퇴임 시점의 마지막 시즌 결산: 야인이 되어도 복기할 수 있게 경력에 남긴다 */
   const ye=Math.min(C.y1,y??G.year); C.stints.unshift({tid:C.tid,y0:Math.min(C.y0,ye),y1:ye, /* 다음 시즌부터인 계약을 시작 전에 끝내면 끝낸 해로 적는다 */sal:C.sal,how,fin}); C.stints.length=Math.min(C.stints.length,20); C.tid=null; }
 /* 결산 지출: 단장 연봉 */
-function myCPay(){ const C=myCInit(); if(!C||G.unemp)return 0; if(personalState().settled[fyNow()])return 0; /* 같은 회계연도 두 번째 정산: 지갑·경력 수입·구단 지출 모두 한 번만(검수 11-06) */C.earn+=C.sal;personalSettle(C.sal); return C.sal; }
+function myCPay(){ const C=myCInit(); if(!C||G.unemp||C.y0>fyNow())return 0; /* 한국시리즈 뒤 부임해 다음 시즌부터 시작하는 계약은 올해 결산에 연봉이 없다(검수 11-09h) */ if(personalState().settled[fyNow()])return 0; /* 같은 회계연도 두 번째 정산: 지갑·경력 수입·구단 지출 모두 한 번만(검수 11-06) */C.earn+=C.sal;personalSettle(C.sal); return C.sal; }
 /* 결산 지출: 단장 성과급(우승 30%·준우승 15%·가을야구 5%). 구단이 내고 개인 지갑으로 들어온다. 한 해 한 번 */
-function myCBonus(ps,order){ const C=myCInit(); if(!C||G.unemp||C.tid!==G.user||C.bonusY===G.year)return 0; const rk=(order||[]).findIndex(o=>o.tid===G.user)+1;
+function myCBonus(ps,order){ const C=myCInit(); if(!C||G.unemp||C.tid!==G.user||C.bonusY===G.year||C.y0>G.year)return 0; { const J=G.gmJoin; if(J&&J.y===G.year&&J.tid===G.user&&J.psDone)return 0; } /* 가을야구가 끝난 뒤 부임했으면 그해 성과는 전임 단장 몫(경력 기록과 같은 기준, 검수 11-09h) */ const rk=(order||[]).findIndex(o=>o.tid===G.user)+1;
   const k=ps&&ps.champ===G.user?'우승':ps&&ps.runner===G.user?'준우승':rk&&rk<=5?'가을야구':null; if(!k)return 0; const b=Math.round(C.sal*{우승:.3,준우승:.15,가을야구:.05}[k]/10)*10;
   C.bonusY=G.year; C.earn+=b; personalSalary(b,`${k} 성과급`); return b; }
 /* 시즌 기록(경질 판정 전에 남긴다) */

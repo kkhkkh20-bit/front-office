@@ -2571,6 +2571,21 @@ T('[검수 11-09g] 웨이버: 같은 날 마감되고 빈자리가 하나면 신
     const [x,y]=domestic(A).filter(q=>!q.ys&&!q.foreign).slice(0,2); toFree(x,'점검'); toFree(y,'점검'); x.wv.ok=y.wv.ok=true; wvClaim(y.id); wvClaim(x.id); ok(wvPri()[0]===y.id,'기본 순위가 신청 순서가 아님'); if(up)wvPriMove(x.id,-1); G.day=x.wv.end; try{ wvWants=()=>false; wvDaily(); } finally{ wvWants=ow; } return [x,y]; };
   { const [x,y]=run(false); ok(y.team===u&&x.team!==u,'먼저 신청한 선수가 아니라 내부 순서로 배정'); }
   { const [x,y]=run(true); ok(x.team===u&&y.team!==u,'위로 올린 선수가 배정되지 않음'); } });
+T('[검수 11-09h] 한국시리즈 뒤 부임해 다음 시즌부터 시작하는 단장 계약은 올해 연봉·우승 성과급을 받지 않는다',()=>{ fresh(); const C=myCInit(); C.y0=G.year+1; C.y1=G.year+3; C.tid=G.user; const e0=C.earn; ok(myCPay()===0,'계약 시작 전 연봉 지급'); ok(myCBonus({champ:G.user},[{tid:G.user}])===0,'계약 시작 전 우승 성과급'); ok(C.earn===e0,'경력 수입 증가'); ok(!budget().exp.some(x=>x[0]==='단장 연봉'&&x[1]>0),'예산에 시작 전 단장 연봉');
+  C.y0=G.year; G.gmJoin={y:G.year,tid:G.user,w:0,l:0,psDone:true}; ok(myCBonus({champ:G.user},[{tid:G.user}])===0,'가을야구가 끝난 뒤 부임했는데 우승 성과급'); G.gmJoin=null; });
+T('[검수 11-09h] 야인이면 마지막으로 맡았던 구단도 부실 구단 매각 심사 대상이다',()=>{ fresh(); const A=G.user, t=team(A); G.unemp={y:G.year,msg:'',since:G.day,from:A,k:'resign'}; let n=0; while(n++<40&&(n===1||t.cash<0)){ t.cash=-16000; t.debtY=5; clubRescue(G.year); } ok(t.cash>0,'전 소속 구단 현금 '+t.cash+'(매각·재창단 없음)'); G.unemp=null; });
+T('[검수 11-09h] 시즌 중 사임해도 그 구단 결산은 후임이 이어받은 스카우트 비용과 그해 마케팅 설정으로 계산한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+3); const A=G.user; G.marketing=4500; firedFlow(G.year,'테스트 사임','resign'); const L=G.lgStaff&&G.lgStaff[A]; ok(L&&L.sc.length>0,'준비: 인계된 스카우트 없음');
+  simTo(()=>G.last&&G.last.y===G.year); const f=G.last.fins[A], sc=f.exp.find(x=>x[0]==='스카우트 운영'), mk=f.exp.find(x=>x[0]==='마케팅'); ok(sc&&sc[1]>600,'스카우트 비용 '+(sc&&sc[1])+'(인계 명단 연봉 빠짐)'); ok(mk&&mk[1]===4500,'마케팅 '+(mk&&mk[1])+'(기대 4500)'); });
+T('[검수 11-09h] 공통 점검: A→B→A로 옮겨도 A의 확정 예산·이직 정산 항목이 유지되고, 결산표의 모든 지표가 같은 구단·시즌을 가리킨다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+3); const A=G.user, B=G.teams.find(t=>t.id!==A).id, C=G.teams.find(t=>t.id!==A&&t.id!==B).id;
+  budget(); const LK=G.bLocks&&G.bLocks[A]; ok(LK,'준비: 확정 예산 없음'); const I0=LK.I, d0=LK.d; G.marketing=4500; G.spend.fan=300; G.spend.fanIn=606;
+  switchTeam(B); simTo(()=>G.day>=d0+12); switchTeam(A); const b1=budget(); ok(G.bLocks[A].I===I0&&G.bLocks[A].d===d0&&b1.lockI===I0,'확정 수입 '+I0+' → '+b1.lockI+'(다시 잡힘)'); ok(G.marketing===4500,'돌아온 구단 마케팅 '+G.marketing);
+  const H=G.hoL&&G.hoL[fyNow()+':'+A]; ok(H&&H.inc['구단 이벤트·채널 수입']===606&&H.exp['팬 마케팅·구단 이벤트']===300,'이직 때 정산한 행사 매출·비용 장부 없음');
+  G.trades.push({me:A,y:G.year,d:G.day,with:C,diff:10,revealed:false,give:[],get:[],gi:[],go:[]}); switchTeam(B);
+  simTo(()=>G.last&&G.last.y===G.year); const L=G.last, fa=L.fins[A]; ok(L.tid===B,'결산 구단 '+L.tid);
+  const gi=fa.inc.find(x=>x[0]==='구단 이벤트·채널 수입'), ge=fa.exp.find(x=>x[0]==='팬 마케팅·구단 이벤트'), mk=fa.exp.find(x=>x[0]==='마케팅'); ok(gi&&gi[1]>=606&&ge&&ge[1]>=300,'전 구단 명세에 행사 매출·비용 없음'); ok(mk&&mk[1]===4500,'떠난 구단 마케팅 '+(mk&&mk[1]));
+  ok(!L.notes.some(n=>n.includes(tname(C))),'전 구단 거래가 새 구단 결산 평가에: '+L.notes.join(' / '));
+  const uo=L.order.find(o=>o.tid===L.tid), h=G.history.find(x=>x.y===L.y); ok(sum(L.months.map(x=>x.w))===uo.w&&sum(L.months.map(x=>x.l))===uo.l,'월별 합계 '+sum(L.months.map(x=>x.w))+'승 / 순위표 '+uo.w+'승'); ok(h&&h.user.w===uo.w&&h.user.trust===L.trust.after,'재임 기록과 결산 성적·신뢰 불일치'); ok(L.fins[L.tid]&&L.fins[L.tid].cash!=null,'결산표 구단 없음');
+  switchTeam(C); ok(G.last.tid===B,'결산 뒤 이직하면 결산 화면 구단이 바뀜'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
