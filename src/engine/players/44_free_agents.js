@@ -39,7 +39,14 @@ function signFree(id,tid){ tid=tid??G.user; const p=G.players[id]; if(!isFree(p)
 /* 소속 없이 해를 넘겨 새해 입대 검사(milNewYear)를 피한 28세 이상 미필: 새 구단에 들어가면 2주 뒤 현역(무적 계약·웨이버 양수) */
 function milLate(p,tid){ try{ milInit(p); if(milFree(p)&&p.age>=28&&!(p.mil&&p.mil.app)){ enlist(p,'현역',G.day+14); if(tid===G.user)mail('운영팀',`${p.name} 현역 입대 예정 · ${dmd(G.day+14)}`,`${p.name}은(는) 입대 연기 한도(28세)를 넘긴 미필 선수라 합류 2주 뒤 현역으로 입대합니다.`,{kind:'병역',ref:p.id}); } }catch(e){} }
 /* 새해: 2년 동안 계약하지 못한 선수, 38세 이상은 은퇴 */
-function freeYear(){ let n=0; for(const p of freeList()){ if(G.year-p.freeSince>=FREE_YEARS||p.age>=38||ovr(p)<26){ story(p,'무적 선수로 지내다 은퇴','move'); let rec=null; try{ rec=retireRecord(p); }catch(e){} try{ obFromPlayer(p,rec); }catch(e){} if(Array.isArray(G.retired))G.retired.push({name:p.name,team:null,age:p.age}); dropP(p.id); n++; /* 정상 은퇴와 같이 통산 기록·명예의 전당 심사를 거친다 */ } } return n; }
+function freeYear(){ let n=0; for(const p of freeList()){ if(G.year-p.freeSince>=FREE_YEARS||p.age>=38||ovr(p)<26){ story(p,'무적 선수로 지내다 은퇴','move'); let rec=null; try{ rec=retireRecord(p); }catch(e){} try{ obFromPlayer(p,rec); }catch(e){} if(Array.isArray(G.retired))G.retired.push({name:p.name,team:null,age:p.age}); dropP(p.id); n++; /* 정상 은퇴와 같이 통산 기록·명예의 전당 심사를 거친다 */ } } try{ freeIndie(); }catch(e){} return n; }
+/* 독립리그·입단 테스트 출신(카페 11-09e): KBO 구단은 방출 선수뿐 아니라 독립리그(경기도·스코어본 등)에서 뛰거나 입단 테스트를 보는 선수를 해마다 몇 명씩 데려간다.
+   장기 플레이에서 방출이 은퇴로 바로 이어지는 고참이 늘면 무적 시장이 20명대로 마르므로, 새해마다 최소 FREE_MIN명이 되게 채우고 그보다 많아도 FREE_NEW명은 새로 나온다.
+   나이 22~30세(지명받지 못했거나 방출된 뒤 독립리그에서 뛰는 연령대), 능력 38±5(28~52): 신인 보충(fillRoster 34 안팎)보다 조금 위, 리그 중간값(45 안팎)보다 아래라 대부분 백업 경쟁이고 가끔 1군 자원이 나온다.
+   못 데려가면 다른 무적 선수처럼 2년 뒤 은퇴하므로 시장이 끝없이 늘지 않는다 */
+const FREE_MIN=50, FREE_NEW=5;
+function freeIndie(){ const k=Math.max(FREE_NEW,FREE_MIN-freeList().length);
+  for(let i=0;i<k;i++){ const age=ri(22,30), b=clamp(N(38,5),28,52); const p=newPlayer({age,base:b,pot:b+ri(0,age<=25?10:4)}); p.freeSince=G.year; story(p,R()<.6?'독립리그에서 뛰며 프로 입단을 준비':'구단 입단 테스트 응시','move'); } }
 /* 매달 1일: 부상자가 많거나 자리가 빈 AI 구단은 쓸 만한 무적 선수를 데려간다 */
 function freeAiMonthly(){ if(!freeOpen())return; const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return;
   for(const t of G.teams){ if(t.id===ME())continue; const n=rosterN(t.id); if(n>=ROSTER_MAX-1)continue; const hurt=playersOf(t.id).filter(p=>p.injOut>14).length;
