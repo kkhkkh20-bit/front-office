@@ -11,6 +11,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
   const all=Object.values(G.players).filter(p=>p.team!=null&&!(p.joinY>G.year));
   /* FA 등록일수(실제는 시즌 145일 이상 1군 등록): 게임에서는 1군에서 시즌 대부분을 보낸 해를 인정(야수 85경기·260타석, 투수 40경기·90이닝·선발 16경기 중 하나). 팀당 한 해 16명 안팎이 채운다 */
   all.forEach(p=>{ svcCredit(p); delete p.extTried; delete p.extOk;});
+  for(const p of Object.values(G.players))if(isFree(p)&&regN(p)>0)svcCredit(p); /* 시즌 중 방출돼 무적으로 넘어가도 그해 등록일수는 FA 연차에 든다(KBO 등록일수 기준, 검수 11-09zz) */
   for(const p of all){ if(p.foreign)continue; p.salH=(p.salH||[]).filter(x=>x.y!==G.year); p.salH.push({y:G.year,s:p.sal}); if(p.salH.length>4)p.salH.shift(); }
   try{ aiExtensions(all); }catch(e){}
   /* FA 등급 순위는 처리 순서와 상관없이 같은 기준(모든 계약 연차를 한 해 줄인 상태, 아무도 아직 선언하지 않은 상태)으로 매긴다 */

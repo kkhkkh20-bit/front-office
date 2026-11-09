@@ -210,6 +210,7 @@ function settlement(){
 function tsArchive(y){ const T=G.teams.map(t=>({b:Object.assign({},ZB),p:Object.assign({},ZP)}));
   for(const p of Object.values(G.players)) for(const h of p.hist){ if(h.y!==y||h.lvl!=='1군'||h.t==null||!T[h.t])continue; const X=p.isP?T[h.t].p:T[h.t].b; for(const k in X)X[k]+=h[k]||0; }
   { const A=G.arch||{}; for(const id in A){ if(G.players[id])continue; const a=A[id]; for(const r of a.rows||[]){ if(r.y!==y||r.t==null||!T[r.t])continue; const X=a.isP?T[r.t].p:T[r.t].b; for(const k in X)X[k]+=r[k]||0; } } } /* 리그를 떠난 선수의 보관 기록도 그 구단 합계에 넣는다 */
+  for(const k in (G.archRest||{})){ const r=G.archRest[k]; if(r.y!==y||!T[r.t])continue; const X=r.isP?T[r.t].p:T[r.t].b; for(const x in X)X[x]+=r[x]||0; } /* 보관 한도로 합쳐 둔 몫도(검수 11-09zz) */
   const tl=(G.sea&&G.sea.tl)||[]; T.forEach((x,i)=>{ const L=tl[i]||[]; x.rs=sum(L.map(z=>z[1])); x.ra=sum(L.map(z=>z[2])); x.g=L.length; });
   G.tsArch=G.tsArch||{}; G.tsArch[y]=T; }
 /* ===== 부실 구단 정리(100년 플레이, 사용자 11-05) =====
