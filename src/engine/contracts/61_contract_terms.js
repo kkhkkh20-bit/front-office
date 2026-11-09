@@ -32,7 +32,9 @@ function termsLostTxt(p){ if(!p||!ctOn(p))return ''; const L=[]; if(p.capB)L.pus
 /* 계약의 현금 지급 연도: 계약금은 합의할 때 바로 나가 지금 결산 연도(sponSeason)에 잡히고, 연봉은 계약 적용 시즌마다. '계약 적용 시즌'과 '돈이 나가는 해'를 나눈다 */
 function ctCashYears(T,s0){ const py=sponSeason(), yrs=Math.max(1,T.years||1), s1=s0+yrs-1; const out=[]; for(let y=Math.min(py,s0);y<=s1;y++){ const sal=y>=s0?(T.annual||0):0, bon=y===py?(T.bonus||0):0; if(sal||bon)out.push({y,sal,bon,v:sal+bon}); } return out; }
 /* 트레이드로 옮길 때: 이미 달성한 성과 옵션은 원소속 구단이 지급하고 조항을 정리한다(방출 경로와 같게, 검수 11-06) */
-function tradeTerms(p){ try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ payOut(p.team,p.opt.a,'rel'); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} termsClear(p); }
+/* 시즌 중 방출·트레이드로 미리 준 옵션: 구단별로 모아 결산 '계약 옵션 지급'에 넣는다(우리 구단은 방출 정산금, AI는 명세 없이 현금에서 빠지던 것, 검수 11-09zzb) */
+function optPaid(tid,a){ const L=G.sea.optPd=G.sea.optPd||{}; L[tid]=(L[tid]||0)+a; }
+function tradeTerms(p){ try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} termsClear(p); }
 function termsClear(p){ delete p.capB; delete p.opt; delete p.ntc; delete p.roleProm; delete p.ctT; delete p.cOpt; delete p.pOut; delete p.ctB; delete p.cOptAdd; }
 /* 옵트아웃을 넣을 수 있는 해: 그 시즌을 마쳤을 때 FA 자격(등록 연수)이 생기는 해부터. 비FA 다년계약에서 자격 전 옵트아웃은 FA로 나갈 수 없어 막는다.
    st: 계약 첫 시즌(지금 시즌이면 0, 다음 시즌 시작이면 1을 더한다) */
@@ -58,7 +60,7 @@ function termsApply(p,t,from,sy,noPay){ termsClear(p); if(!t)return; const y=Mat
   if(t.role===0)p.roleProm={k:0,t:p.isP?(isSPr(p)?'SP':'RP'):'B',until:sy+Math.min(y,2)-1,l:roleSet(p)[0],from:from||'fa'}; else delete p.roleProm; }
 function capBOf(p){ return ctOn(p)&&p.capB&&p.capB.until>=G.year?p.capB.a:0; }
 /* 예산 전망용 옵션 예상액: 시즌 중엔 지금 페이스로, 개막 전·비시즌엔 주전이면 달성한다고 본다 */
-function optProj(tid,y){ let s=0; for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year||!ctOn(p)||!p.opt||p.opt.until<y)continue; if(isAway(p)){ if(y===G.year&&optEarned(p))s+=p.opt.a; continue; } const h=y===G.year?seasonTotal(p,G.year,'1군'):null; const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0;
+function optProj(tid,y){ let s=y===G.year&&G.sea&&G.sea.optPd?G.sea.optPd[tid]||0:0; /* 시즌 중 이미 준 옵션 */ for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; { const xo=y>G.year&&p.extNext&&p.extNext.terms&&p.extNext.terms.opt; if(xo){ if(isRegular(p))s+=xo; continue; } } /* 합의한 다음 시즌 계약의 옵션(검수 11-09zzb) */ if(!ctOn(p)||!p.opt||p.opt.until<y||p.opt.paidY===y)continue; /* 전 구단이 이미 준 옵션은 다시 잡지 않는다(검수 11-09zzb) */ if(milServing(p)){ /* 며칠 뒤 돌아오는 대표팀 차출은 페이스대로 본다(검수 11-09zzb) */ if(y===G.year&&optEarned(p))s+=p.opt.a; continue; } const h=y===G.year?seasonTotal(p,G.year,'1군'):null; const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0;
   const oc=OPT_CRIT[p.opt.c||optCrit(p)]; const ok=h&&g>=20?(h[oc[0]]||0)*144/g>=oc[1]:isRegular(p); if(ok)s+=p.opt.a; } return s; }
 /* 옵션 달성 기준: 타자 400타석, 선발 120이닝, 불펜 50이닝(규정 달성형 옵션을 단순화) */
 /* 옵션 기준: 계약 때 보직(b 타자 400타석 · sp 선발 120이닝 · rp 불펜 50이닝). 저장된 기준이 없으면(예전 계약) 지금 보직 */
