@@ -11713,6 +11713,7 @@ function makeDraftClass(){
     amHistory(b,lvl);
     cls.push(b.id);
   }
+  sonMake(cls); /* 옛 선수의 아들(2대 선수, 33_ob) */
   /* 즉시 전력 신인: 해마다 상위 재목 몇 명은 1년차부터 1군 주전급이다(실제 KBO도 매년 2~4명은 첫해부터 자리를 잡는다).
      잠재력 상위 5명 중 55%가 완성형이 되고, 35% 확률로 리그 정상급으로 클 특급이 하나 나온다 */
   { const top=cls.map(id=>G.players[id]).filter(p=>p.pot>=54).sort((a,b)=>b.pot-a.pot).slice(0,5);
@@ -11819,6 +11820,7 @@ function draftPressLine(p){ const h=p.am; if(!h)return ''; if(p.isP){ const r=pR
 function draftPressNews(day){ if(G.unemp||!G.draftClass||!G.draftClass.length||(G.draft&&!G.draft.done&&G.draft.y===G.year))return;
   const cls=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.press).sort((a,b)=>a.press-b.press);
   if(day===KD(6,15)&&cls.length){ const L=cls.slice(0,10).map((p,i)=>`${i+1}. ${p.name}(${p.school||p.region}, ${posLabel(p)}) ${draftPressLine(p)}`);
+    for(const p of cls){ const o=fatherOf(p); if(o&&(obMine(o)||o.retNo))news('드래프트',`${o.name}의 아들 ${p.name}, 올해 드래프트에 나온다`,`${obMine(o)?`${tname(G.user)}에서 ${obMineC(o).ys}시즌을 뛴`:`${tshort(o.team)} 출신`}${o.retNo?` 영구결번 ${o.no}번`:''} ${o.name}의 아들 ${p.name}(${p.school||p.region}, ${posLabel(p)})이(가) ${G.year} 신인 드래프트에 나옵니다. 스카우트팀은 '아버지 이름값과 별개로 지켜봐야 할 선수'라고 보고했습니다.`,0,{ref:p.id}); } /* 우리 구단 출신·영구결번 OB의 아들은 드래프트 전에 한 번 알린다(11-09r) */
     news('드래프트',`${G.year} 신인 드래프트 최대어 TOP 10`,`언론이 꼽은 올해 드래프트 상위 10명입니다. 고교·대학 기록과 구속·체격 같은 눈에 보이는 것으로 매긴 순위라, 프로에서 얼마나 클지는 구단 스카우트의 판단이 다를 수 있습니다.\n\n${L.join('\n')}`,0); }
   if(day===KD(8,25)&&cls.length){ const O=draftPickOrder(); const pool=[...cls]; const L=[]; for(const pk of O){ const p=pool.shift(); if(!p)break; L.push(`${pk.no}순위 ${tshort(pk.tid)}: ${p.name}(${p.school||p.region}, ${posLabel(p)})`); }
     const mine=O.find(x=>x.tid===G.user);
@@ -12050,6 +12052,7 @@ function doPick(pid){
   p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p),...(pk.from!=null?{from:pk.from}:{})}; /* from: 넘겨받은 지명권의 원래 구단(거래 성과 집계) */ acqStamp(p,'draft',pk.tid,Object.assign({rd:pk.rd,no:pk.no},mine?{how:pk.rule?'rule':pk.auto?'auto':'gm'}:{})); if(mine&&rp0)try{ p.acq.e0=rp0.cur; if(rp0.ofp!=null)p.acq.ep=rp0.ofp; }catch(e){} story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
   { G.sea.bonus=G.sea.bonus||{}; G.sea.bonus[pk.tid]=(G.sea.bonus[pk.tid]||0)+p.draft.bonus; } pk.pid=pid; d.cur++;
   if(pk.tid===G.user&&pk.rd<=2&&!G.unemp)chron('draft',`신인 ${pk.rd}라운드 ${pk.no}순위 ${p.name}(${posLabel(p)}) 지명`,p.id);
+  if(mine&&p.father)try{ sonDrafted(p); }catch(e){} /* 옛 선수의 아들(11-09r) */
   if(mine)addLog(`${pk.rd}라운드 ${pk.no}순위로 ${p.name}(${p.college?'대졸':'고졸'}·${posLabel(p)})을(를) 지명했습니다.`);
   if(pk.tid!==G.user&&(G.shortlist||[]).includes(pid)){ (d.lost=d.lost||[]).push({pid,tid:pk.tid,rd:pk.rd,no:pk.no,nm:p.name}); }
   G.shortlist=(G.shortlist||[]).filter(x=>x!==pid);
@@ -15168,6 +15171,7 @@ function obFromPlayer(p,rec){ if(!G.ob)obInit(); const c=careerOf(p); let war=re
   if(seasons<5&&war<5&&!(p.team===G.user&&ys>=3)&&!obMinorOk(p))return null; /* 짧은 경력도 일부는 야구계에 남는다(33b_ob_cycle) */ initPers(p);
   const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers},pr:{...p.r}});
   ob.mineWar=fm!==undefined?(fm?fm.war:0):rec&&rec.mine?rec.mine.war:p.team===G.user?+(war*(ys/Math.max(1,seasons))).toFixed(1):c.byTeam[G.user]?+c.byTeam[G.user].war.toFixed(1):0; ob.school=p.school||null; ob.area=p.area||null; /* 모교로 돌아가 고교 감독이 되기도 한다(11-08c) */ ob.no=rec&&rec.canRetNo?rec.no:jno(p); if(rec&&rec.canRetNo)ob.canRetNo='p'+p.id;
+  ob.hb=(p.th||'')+(p.bt||''); try{ bodyOf(p); ob.ht=p.ht; }catch(e){} /* 아들에게 물려줄 투타·키(2대 선수, 11-09r) */
   ob.tys={}; for(const t in c.byTeam)ob.tys[t]={ys:c.byTeam[t].ys.size,war:+c.byTeam[t].war.toFixed(1)}; if(ob.mine||ob.mineWar)ob.tys[G.user]={ys:ob.mine?ys:(ob.tys[G.user]||{}).ys||0,war:ob.mineWar}; /* 실제로 뛴 구단별 경력: 이직해도 '우리 구단 출신'이 맞게(검수 11-09zp) */ return obCycle(ob,p); }
 /* 지금 맡은 구단 출신인가·그 구단 경력: 뛴 구단 기록(tys)으로. 옛 저장은 은퇴 때 소속 */
 function obMine(o){ return o.tys?!!(o.tys[G.user]&&o.tys[G.user].ys):o.team===G.user; }
@@ -15239,6 +15243,30 @@ EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)retur
       ob.alt={k:'front',tid:G.user,t:`${t.city} ${t.nick} 프런트`}; return `${ob.name}이(가) 우리 프런트에서 일을 시작합니다.`; }
     return ''; } };
 function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec=ob.isP?'P':'B'; s.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.isP?'투수':'타자'}를 더 정확히 봄`; /* 선수 출신 스카우트: 자기 쪽(투수·타자)을 더 잘 본다 */ s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid;if(ob.age!=null)s.age=ob.age;return staffAttach(s,'scout'); }
+
+/* ===== 2대 선수(사용자 11-09r): 은퇴한 국내 선수(OB)의 아들이 커서 신인 드래프트에 나온다 =====
+ 실제 KBO 부자 선수(이종범-이정후, 정회열-정해영, 박철우-박세혁 등)는 40여 년에 수십 쌍 정도로 드물다. 정확한 비율 통계는 없어 추정:
+ 1군 5시즌 이상 또는 통산 WAR 8 이상인 OB 중 4%만 프로를 노리는 아들을 두고, 은퇴 15~25년 뒤(대부분 18~22년, 아들 고졸 18세·대졸 22세) 드래프트에 나온다. 한 해 최대 2명.
+ 아들에게는 아버지 OB id(p.father) 하나만 저장한다 */
+const SON_Z=-1.75; /* hn은 표준정규 해시라 이보다 작을 확률이 약 4%(u01은 고르지 않아 쓰지 않는다) */
+function sonDue(o){ return !o.minor&&(o.seasons>=5||o.war>=8)&&hn('son',o.id)<SON_Z&&o.retY+15+Math.floor(u01('sonY',o.id)*11)===G.year; }
+function fatherOf(p){ return p&&p.father&&(G.ob||[]).find(o=>o.id===p.father)||null; }
+/* 드래프트 풀에서 아버지와 같은 투수·야수(야수는 60%가 같은 포지션)인 신인 하나를 아들로 삼는다: 신인 생성(makeDraftClass)을 그대로 쓰고 성·투타·체격·잠재력만 손본다 */
+function sonMake(cls){ for(const o of (G.ob||[]).filter(sonDue).slice(0,2)){ const L=cls.map(id=>G.players[id]).filter(q=>q&&!q.father&&!!q.isP===!!o.isP); const same=L.filter(q=>posLabel(q)===o.pos); const b=pick(same.length&&R()<.6?same:L); if(!b)continue;
+    b.father=o.id; for(let i=0;i<40;i++){ const n=o.name[0]+pick(GN); if(n!==o.name&&!BLOCK.has(n)&&!nameBad(n)){ b.name=n; if(!nameTaken(n))break; } }
+    b.pot=clamp(b.pot+rnd(-1,5),20,80); /* 조금 위로 치우칠 뿐 보장하지 않는다(2세가 다 성공하지는 않는다) */
+    if(o.hb&&R()<.5&&(b.isP||!['C','2B','3B','SS'].includes(b.pos))){ b.th=o.hb[0]; b.bt=b.isP?b.th:o.hb[1]||b.bt; } /* 포수·내야는 우투만 */
+    if(o.ht){ const d=Math.round((o.ht-b.ht)/2+N(0,2)); b.ht=clamp(b.ht+d,168,198); b.wt=clamp(b.wt+d,62,112); } } }
+/* 우리가 아들을 지명했을 때: 기사·팬 여론, 업적, 아버지 등번호 */
+function sonDrafted(p){ const o=fatherOf(p); if(!o)return; const home=obMine(o); /* 팬 여론은 기사 논조로 소폭 오른다(우리 출신이면 조금 더) */
+  news('드래프트',`${o.name}의 아들 ${p.name}, ${tshort(G.user)} 지명`,`${home?`우리 유니폼을 입고 ${obMineC(o).ys}시즌을 뛴`:`${tshort(o.team)} 출신`} ${o.name}의 아들 ${p.name}(${posLabel(p)})이(가) ${p.draft.rd}라운드 ${p.draft.no}순위로 ${tname(G.user)}에 지명됐습니다. 팬들이 대를 잇는 인연을 반깁니다.`,home?2:1,{fanW:1,ref:p.id});
+  const fp=G.players[o.fid]||(G.arch&&G.arch[o.fid]&&archP(G.arch[o.fid])); if(fp&&fp.draft&&fp.draft.tid===G.user)achUnlock('gen2',`${o.name}${fp.draft.y!=null?`(${fp.draft.y}년 지명)`:''} → ${p.name}(${G.year}년 지명).`);
+  const n=o.no; if(n==null)return; const rn=(G.retNos||[]).find(r=>r.no===n); const own=!!rn&&(rn.ob===o.id||rn.name===o.name); if(rn&&!own)return; if(!rn&&teamNos(G.user,p).has(n))return; /* 다른 사람 결번이거나 지금 누가 쓰면 묻지 않는다 */
+  evNew('son2',`${p.name}, 아버지 등번호 ${n}번`,`${p.name}이(가) 아버지 ${o.name}의 ${n}번을 달고 싶어 합니다.${own?` ${n}번은 아버지의 영구결번이라 구단이 허락해야 쓸 수 있습니다.`:''}`,[{l:own?`아버지 결번 ${n}번 허락`:`${n}번 물려주기`,fx:own?'결번은 그대로 두고, 아들에게만 이 번호를 허락합니다. 팬 여론이 조금 오릅니다.':'아버지의 번호를 이어 답니다.'},{l:'새 번호로 시작',fx:'아들은 자기 번호로 시작합니다.'}],{data:{pid:p.id,no:n,rn:own},def:1,exp:7}); }
+EVH.son2={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||i!==0)return ''; const n=e.data.no;
+    if(!e.data.rn){ const r=setPlayerNo(p.id,n); return r||`${p.name}이(가) ${n}번을 답니다.`; }
+    jno(p); p.no=n; p.noT=p.team; /* 결번은 남기고 아들에게만 예외로 허락한다 */
+    news('구단',`${p.name}, 아버지의 영구결번 ${n}번 단다`,`구단이 영구결번 ${n}번을 아들 ${p.name}에게만 허락했습니다.`,1,{fanW:1,ref:p.id}); return `${p.name}이(가) 아버지의 결번 ${n}번을 답니다.`; } };
 
 function obHireBonus(obid,role){ if(!obid||!G.ob)return; const ob=G.ob.find(o=>o.id===obid); if(!ob)return; ob.log.push({y:G.year,t:`${tshort(G.user)} ${role}`}); if(!obMine(ob))return; prInit(); const f=ob.fame>=70?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
   news('팬',`${ob.name}, 친정 ${tshort(G.user)}로 돌아왔다`,`${role}로 합류합니다. 팬들이 반깁니다.`,2,{fanW:1}); }
@@ -18598,6 +18626,7 @@ const ACH=[
   {id:'champ10',c:'우승',n:'우승 10회',d:'단장 통산 우승 10회.',r:{rep:3},p:T=>[achTitlesN(T),10]},
   {id:'champ15',c:'우승',n:'우승 15회',d:'단장 통산 우승 15회.',r:{cash:500,title:'우승 제조기'},p:T=>[achTitlesN(T),15],big:true},
   {id:'pupilMgr',c:'선수',n:'제자가 감독으로',d:'우리가 지명한 선수가 은퇴 뒤 우리 구단 감독이 되어 우승합니다.',r:{title:'야구 가문의 어른'}},
+  {id:'gen2',c:'선수',n:'2대에 걸친 인연',d:'우리가 지명했던 선수의 아들을 우리가 지명합니다.',r:{rep:1}},
   {id:'retNo5',c:'선수',n:'결번의 벽',d:'우리 구단 영구결번 5개.',r:{trust:2},p:()=>[(G.retNos||[]).length,5]},
   {id:'hof10',c:'선수',n:'명예의 전당 사관학교',d:'우리가 지명했거나 우리 구단에서 뛴 명예의 전당 헌액자 10명.',r:{rep:2,title:'명예의 전당 사관학교장'},p:()=>[achHofMine(),10]},
   {id:'stad2',c:'재정',n:'두 번의 개장',d:'단장 재임 중 신구장을 두 번 엽니다(지금 맡은 구단).',r:{cash:500},p:()=>[achStadN(),2]},
@@ -26780,12 +26809,14 @@ function draftPool(){ const live=G.draft&&!G.draft.done; return ((live?G.draft.c
 function dclaimTag(p){ const c=draftClaim(p); if(!c)return ''; return `<b class="${c.k==='up'?'good':'warn'}" title="${esc(draftClaimTxt(c))}">${c.k==='up'?'강력 추천':'신중론'}(확신도 ${c.conf})</b> · `; }
 /* 잠재력은 한 숫자 대신 스카우트 추정 범위로 */
 function dpotChip(rp){ if(rp.ofp==null)return '<span class="small muted">?</span>'; const T=potTier(potVal(rp),rp.cur); const unsure=(rp.sd||6)>=7; return `<span class="ptier t${T.n}" data-tip="${esc(`스카우트 추정: ${T.l}${unsure?' · 관찰이 적어 오차가 큽니다':''}. 부상·출전 기회·훈련 환경에 따라 그렇게 크지 못할 수 있습니다.\n\n${POT_HELP}`)}">${potStars(T.st)}</span>`; }
+/* 2대 선수: 아버지 OB 프로필로 가는 'OO의 아들'(11-09r) */
+function sonTag(p){ const o=fatherOf(p); return o?`<button class="lnk" data-a="person" data-v="ob:${o.id}">${esc(o.name)}</button>의 아들`:''; }
 function drow(p,rp,rk,mine){ const star=(G.shortlist||[]).includes(p.id);
   const tag=dclaimTag(p); const fit=draftFit(p,draftPolK())?' · <b class="acc">감독 추천</b>':'';
-  return `<div class="drw${star?' star':''}"><span class="drw-k num">${rk}</span><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.college?'대졸':'고졸'}</small></b><i>${tag}${esc(p.school||'')} · ${p.region} · 언론 #${p.press||'-'}${fit}${rp.eta?` · 1군까지 약 ${rp.eta}년`:''}${p.amInj?' · <b class="bad">부상 이력</b>':''}</i></span></button><span class="trw-r">${rchip(rp.cur)}${dpotChip(rp)}</span><button class="tc-i drw-s${star?' on':''}" data-a="star" data-v="${p.id}" aria-pressed="${star}" aria-label="관심">${star?'★':'☆'}</button>${mine?`<button class="tc-i go drw-p" data-a="pick" data-v="${p.id}">지명</button>`:''}</div>`; }
+  return `<div class="drw${star?' star':''}"><span class="drw-k num">${rk}</span><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.college?'대졸':'고졸'}</small></b><i>${tag}${fatherOf(p)?`${esc(fatherOf(p).name)}의 아들 · `:''}${esc(p.school||'')} · ${p.region} · 언론 #${p.press||'-'}${fit}${rp.eta?` · 1군까지 약 ${rp.eta}년`:''}${p.amInj?' · <b class="bad">부상 이력</b>':''}</i></span></button><span class="trw-r">${rchip(rp.cur)}${dpotChip(rp)}</span><button class="tc-i drw-s${star?' on':''}" data-a="star" data-v="${p.id}" aria-pressed="${star}" aria-label="관심">${star?'★':'☆'}</button>${mine?`<button class="tc-i go drw-p" data-a="pick" data-v="${p.id}">지명</button>`:''}</div>`; }
 function draftCandidateTable(list,mine){
   if(!list.length)return '<p class="small muted">조건에 맞는 후보가 없습니다.</p>';
-  return `<div class="tw"><table class="sqt candidate-table"><thead><tr>${['선수','스카우트','언론','구분','학교','투타','아마 기록','잠재력 추정','위험도','행동'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>${list.map(({p,rp,rk})=>{const star=(G.shortlist||[]).includes(p.id);return `<tr><td><button class="candidate-name" data-a="player" data-v="${p.id}">${avImg(p)}<span>${esc(p.name)}<small>${posLabel(p)} · ${p.age}세</small></span></button></td><td>${rk}</td><td>${p.press||'-'}</td><td>${p.college?'대졸':'고졸'}</td><td>${esc(p.school||'-')}</td><td>${hand(p)}</td><td class="candidate-note">${esc(amShort(p))||'기록 없음'}</td><td>${dpotChip(rp)}</td><td><span class="${rp.risk==='높음'?'bad':''}">${esc(rp.risk||'미확인')}</span>${p.amInj?' · 부상 이력':''}</td><td><button class="tc-i${star?' on':''}" data-a="star" data-v="${p.id}">${star?'관심 중':'관심'}</button>${mine?`<button class="tc-i go" data-a="pick" data-v="${p.id}">지명</button>`:''}</td></tr>`;}).join('')}</tbody></table></div>`;
+  return `<div class="tw"><table class="sqt candidate-table"><thead><tr>${['선수','스카우트','언론','구분','학교','투타','아마 기록','잠재력 추정','위험도','행동'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>${list.map(({p,rp,rk})=>{const star=(G.shortlist||[]).includes(p.id);return `<tr><td><button class="candidate-name" data-a="player" data-v="${p.id}">${avImg(p)}<span>${esc(p.name)}<small>${posLabel(p)} · ${p.age}세${fatherOf(p)?` · ${esc(fatherOf(p).name)}의 아들`:''}</small></span></button></td><td>${rk}</td><td>${p.press||'-'}</td><td>${p.college?'대졸':'고졸'}</td><td>${esc(p.school||'-')}</td><td>${hand(p)}</td><td class="candidate-note">${esc(amShort(p))||'기록 없음'}</td><td>${dpotChip(rp)}</td><td><span class="${rp.risk==='높음'?'bad':''}">${esc(rp.risk||'미확인')}</span>${p.amInj?' · 부상 이력':''}</td><td><button class="tc-i${star?' on':''}" data-a="star" data-v="${p.id}">${star?'관심 중':'관심'}</button>${mine?`<button class="tc-i go" data-a="pick" data-v="${p.id}">지명</button>`:''}</td></tr>`;}).join('')}</tbody></table></div>`;
 }
 function dcard(p,rp,rk,mine){
   const star=(G.shortlist||[]).includes(p.id);
@@ -26794,7 +26825,7 @@ function dcard(p,rp,rk,mine){
   const sc=rp.sc?esc(rp.sc.name):'';
   const V=draftView(p,rp); const rw=riskWhy(p,rp);
   return `<div class="tcard dcard${star?' star':''}" data-a="player" data-v="${p.id}" role="button" tabindex="0">
-    <div class="tc-top">${avImg(p)}<div class="tc-id"><b>${esc(p.name)}</b><span>${esc(p.school||'')} · ${p.college?'대학 4년':'고교 3년'}</span><span>${posLabel(p)} · ${p.ht||'-'}cm ${p.wt||'-'}kg · ${hand(p)}</span></div>
+    <div class="tc-top">${avImg(p)}<div class="tc-id"><b>${esc(p.name)}</b><span>${esc(p.school||'')} · ${p.college?'대학 4년':'고교 3년'}</span><span>${posLabel(p)} · ${p.ht||'-'}cm ${p.wt||'-'}kg · ${hand(p)}</span>${p.father?`<span>${sonTag(p)}</span>`:''}</div>
 </div>
     <div class="tc-arch">${tags}</div>
     <div class="tc-arch">${posChips(p)}<span class="pill acc">${esc(rp.arch)}</span>${rp.role?`<span class="small muted">상한 전망 ${esc(rp.role)} · 확신 ${esc(V.conf)}</span>`:'<span class="small muted">잠재력 판단 불가</span>'}</div>
@@ -28193,7 +28224,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   /* FM 상황판처럼: 왼쪽 위 인물 상자(얼굴·등번호·포지션·종합·잠재력·연봉·올해 성적 3개), 오른쪽에 장점·약점 */
   const pot=rp.ofp==null?'미확인':potTierP(rp,p).s, cur=fsx&&fsx.mid!=null?`${fsx.mid}<small class="pf-rg-s">${fsx.lo}~${fsx.hi}</small>`:rp.cur==null?'?':rg(rp.cur);
   const ph=typeof face6Idx==='function'&&(face6Idx(p)!=null||face17Idx(p)!=null)&&!!face6Src(p); /* 실사 얼굴: 카드 위쪽을 사진으로 꽉 채우고 이름을 사진 위에(사용자 11-05 참고 이미지) */
-  const fmCard=`<section class="card pf-fmcard${ph?' ph':''}"><div class="pf-fm-face">${avImg(p,true)}${cimgBtns(cimgKey(p))}${ph?`<span class="pf-fm-ovn">${esc(p.name)}</span>`:''}${p.team!=null?`<span class="pf-fm-no">${jno(p)}</span>`:''}${p.team!=null?`<span class="pf-fm-team">${badge(p.team,22)}</span>`:''}</div><div class="pf-fm-name"><b>${esc(p.name)} <button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}</span></div><div class="pf-fm-key"><div><span>${fsx?'종합 추정':'현재 종합'}</span><b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b><small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></div><div><span>잠재력</span><b class="pf-fm-pot" title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></div></div><div class="pf-fm-stats">${(tiles||[]).slice(0,3).map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')||'<div><span>올해 성적</span><b>-</b></div>'}</div><div class="pf-fm-role"><b>${esc(rp.arch||posLabel(p))}</b>${rp.role?`<span>${p.foreign?'올해 역할':'장래 예상'} ${esc(rp.role)}</span>`:''}<span>${!p.foreign?(p.college?'대졸':'고졸')+' · ':''}${esc(milText(p))}${p.draft?' · '+p.draft.y+' '+p.draft.rd+'R '+p.draft.no+'순위':''}</span></div><div class="pf-fm-pay">${fsx?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b></span><small>외국인 1년 계약</small>`:`<span>연봉 <b>${money(p.sal||0)}</b></span><small>${esc(ctText(p))}</small>`}<button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}</div></section>`;
+  const fmCard=`<section class="card pf-fmcard${ph?' ph':''}"><div class="pf-fm-face">${avImg(p,true)}${cimgBtns(cimgKey(p))}${ph?`<span class="pf-fm-ovn">${esc(p.name)}</span>`:''}${p.team!=null?`<span class="pf-fm-no">${jno(p)}</span>`:''}${p.team!=null?`<span class="pf-fm-team">${badge(p.team,22)}</span>`:''}</div><div class="pf-fm-name"><b>${esc(p.name)} <button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></b><span>${esc(posLabel(p))} · ${p.age}세 · ${esc(hand(p))}${p.father?` · ${sonTag(p)}`:''}</span></div><div class="pf-fm-key"><div><span>${fsx?'종합 추정':'현재 종합'}</span><b style="color:${rp.cur!=null?rcol(rp.cur):'var(--muted)'}">${cur}</b><small>${rp.exact?'확인된 능력':'스카우트 추정'}</small></div><div><span>잠재력</span><b class="pf-fm-pot" title="${esc(pot)}">${rp.ofp!=null?potStars(potTierP(rp,p).st):esc(pot)}</b></div></div><div class="pf-fm-stats">${(tiles||[]).slice(0,3).map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')||'<div><span>올해 성적</span><b>-</b></div>'}</div><div class="pf-fm-role"><b>${esc(rp.arch||posLabel(p))}</b>${rp.role?`<span>${p.foreign?'올해 역할':'장래 예상'} ${esc(rp.role)}</span>`:''}<span>${!p.foreign?(p.college?'대졸':'고졸')+' · ':''}${esc(milText(p))}${p.draft?' · '+p.draft.y+' '+p.draft.rd+'R '+p.draft.no+'순위':''}</span></div><div class="pf-fm-pay">${fsx?`<span>요구 연봉 <b>${p.ask?Math.round(p.ask/USD)+'만 달러':'-'}</b></span><small>외국인 1년 계약</small>`:`<span>연봉 <b>${money(p.sal||0)}</b></span><small>${esc(ctText(p))}</small>`}<button class="tc-i${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':'비교에 담기'}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i" data-a="pcmpOpen">비교 보기</button>':''}</div></section>`;
   const good=tools.filter(t=>t.cur>=60).sort((a,b)=>b.cur-a.cur).slice(0,3), weak=tools.filter(t=>t.cur<45).sort((a,b)=>a.cur-b.cur).slice(0,3);
   const proCon=tools.length?`<section class="card pf-procon"><div class="pf-pro"><h3>장점</h3>${good.length?good.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 장점 없음</p>'}</div><div class="pf-con"><h3>약점</h3>${weak.length?weak.map(t=>`<p>${TOOLK[t.k]} <b style="color:${rcol(t.cur)}">${dv(t.cur)}</b></p>`).join(''):'<p class="muted">눈에 띄는 약점 없음</p>'}</div></section>`:'';
   /* FM처럼 남는 칸을 정보로: 계약·신분(왼쪽), 경력(오른쪽). PC에서만 보인다 */
@@ -28512,7 +28543,7 @@ function renderSheet0(){
    ${fullProfile?'<div class="pf-topnav">':''}
    ${fullProfile?playerFullscreenHeader(p,rp,where,isFA):`   <div class="sheet-head"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${avImg(p,true)}<div><div class="eyebrow">${where}${isFA?' · FA':''}${p.foreign&&p.team!=null?` · ${p.foreign==='아시아'?'아시아쿼터':'외국인'} · ${p.nat}`:''}</div>
     <h2 class="sec" style="font-size:24px">${p.team!=null?`<span class="pno" title="등번호">${jno(p)}</span>`:''}${esc(p.name)}${condChip(p)}<button class="pe-b" data-a="pEditOpen" data-v="${p.id}" title="이름·등번호 고치기">고치기</button></h2>${UI.pEdit===p.id?pEditBox(p):''}${p.aw&&p.aw.length?`<div class="row" style="gap:4px;margin:2px 0">${p.aw.slice(-6).map(a=>`<span class="awp">${awArt(a,18)}${esc(a)}</span>`).join('')}</div>`:''}
-    <p class="pinfo keep"><b class="pinfo-pos">${posLabel(p)}</b>${!p.isP&&typeof subsOf==='function'&&subsOf(p).length?`<span class="pinfo-sub">(${subsOf(p).map(k=>POSK[k]||k).join('·')} 가능)</span>`:''} · <b>${p.age}세</b> · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.rd}R ${p.draft.no}순위`:''}${p.dev?' · 육성선수 출신':''}</p></div></div><button class="tc-i pcmp-b${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}" title="같은 시즌·같은 군 기준으로 2~3명을 나란히 비교">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':`비교에 담기${(UI.pcmp||[]).length?` (${(UI.pcmp||[]).length}/3)`:''}`}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i go" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
+    <p class="pinfo keep"><b class="pinfo-pos">${posLabel(p)}</b>${!p.isP&&typeof subsOf==='function'&&subsOf(p).length?`<span class="pinfo-sub">(${subsOf(p).map(k=>POSK[k]||k).join('·')} 가능)</span>`:''} · <b>${p.age}세</b> · ${hand(p)}${p.foreign?'':` · ${p.college?'대졸':'고졸'} · ${esc(milText(p))}`}${p.draft?` · ${p.draft.y} ${p.draft.rd}R ${p.draft.no}순위`:''}${p.dev?' · 육성선수 출신':''}${p.father?` · ${sonTag(p)}`:''}</p></div></div><button class="tc-i pcmp-b${(UI.pcmp||[]).includes(p.id)?' on':''}" data-a="pcmpTg" data-v="${p.id}" title="같은 시즌·같은 군 기준으로 2~3명을 나란히 비교">${(UI.pcmp||[]).includes(p.id)?'비교에서 빼기':`비교에 담기${(UI.pcmp||[]).length?` (${(UI.pcmp||[]).length}/3)`:''}`}</button>${(UI.pcmp||[]).length>=2?'<button class="tc-i go" data-a="pcmpOpen">비교 보기</button>':''}<button class="x" data-a="closeSheet" aria-label="닫기">×</button></div>
    ${keyBar(p,rp,isFA,isFM)}${posValLine(p,rp)}${playerReadout(p,rp)}
    <div class="row">${p.fdPool||fdHideNow(p)?'':`<span class="pill acc">${esc(rp.arch)}</span>`}${rp.role&&!p.fdPool&&!fdHideNow(p)?`<span class="pill">${p.foreign?'올해 예상':'장래'} ${esc(rp.role)}</span>`:''}${status}</div>
    ${quickActs(p)}
@@ -29059,7 +29090,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(k==='scout'){ if(G.scouts.length>=scoutMax())return; const s=(G.scoutMarket||[]).find(x=>x.ob===id)||obScout(ob); G.scoutMarket=(G.scoutMarket||[]).filter(x=>x.ob!==id); s.since=G.day; G.scouts.push(s); obHireBonus(id,'스카우트'); addLog(`OB ${ob.name}을(를) 스카우트로 영입했습니다.`); save(); render(); return; }
     if(k==='front'){ ob.alt={k:'front',tid:G.user,t:`${tshort(G.user)} 프런트`}; ob.bond+=5; obHireBonus(id,'프런트'); addLog(`OB ${ob.name}이(가) 우리 프런트에 합류했습니다.`); save(); render(); } },
   reroll(){ UI.world=null; render(); },
-  person(v){ UI.person=v; UI.personMsg=null; renderSheet(); },
+  person(v){ UI.sheet=null; UI.person=v; UI.personMsg=null; renderSheet(); }, /* 선수 정보 안의 인물 링크(아버지 OB, 11-09r)도 열리게: 인물 창은 선수 창이 없을 때만 그려진다 */
   gmCall(v){ const r=gmContact(+v,'call'); UI.gmRes={t:+v,m:r.msg,ok:r.ok}; UI.personMsg=r.msg; if(r.ok)sfx('confirm',.5); save(); render(); },
   gmMeal(v){ const r=gmContact(+v,'meal'); UI.gmRes={t:+v,m:r.msg,ok:r.ok}; UI.personMsg=r.msg; if(r.ok)sfx('confirm',.5); save(); render(); },
   findT(v){ UI.findT=v===''?null:+v; UI.deskMsg=null; A.go('trade:find'); },
@@ -31625,6 +31656,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-09r',d:'11월 9일',t:'2대 선수: 옛 선수의 아들이 드래프트에',items:[
+    '오래 플레이하면 은퇴한 선수의 아들이 커서 신인 드래프트에 나옵니다. 1군 경력이 있는 은퇴 선수 일부만, 은퇴 15~25년 뒤에 나오고 한 해 많아야 두 명입니다. 성은 아버지와 같고 포지션·투타·체격을 조금 닮지만, 아버지만큼 크리라는 보장은 없습니다. 후보 카드와 선수 정보에 \'아버지 이름의 아들\'이 보이고, 아버지 이름을 누르면 은퇴 선수 프로필이 열립니다.',
+    '우리 구단 출신이나 영구결번 선수의 아들은 6월 중순에 기사로 미리 알려 줍니다. 아들을 지명하면 기사가 나고 팬 여론이 조금 오르며, 아버지 등번호를 물려줄지(영구결번이면 아들에게만 허락할지) 정할 수 있습니다. 우리가 지명했던 선수의 아들을 다시 지명하면 도전과제 \'2대에 걸친 인연\'이 열립니다.']},
   {id:'2026-11-09q',d:'11월 9일',t:'예산을 세 칸으로',items:[
     '홈과 재정 화면 예산 탭 맨 위에 예산 카드 세 장이 생겼습니다. 선수 영입 자금(트레이드 현금·FA 계약금·보상금·2차 드래프트 양도금처럼 한 번에 나가는 돈), 연봉 여유(경쟁균형세 상한까지 남은 금액·하한까지 부족분·구단주 지원 목표 안 여유), 운영 예산(스태프·의료·시설 유지·마케팅)을 이용 가능 금액, 이번 시즌 지출, 진행 막대로 따로 봅니다. 독립구단은 보유 현금만 쓴다는 점도 카드에 나옵니다.',
     '트레이드·FA·외국인·연봉 협상 화면의 예산 안내도 같은 말로 맞췄습니다. 카드의 숫자는 실제로 지출을 막는 판정과 같은 계산에서 나옵니다.']},
