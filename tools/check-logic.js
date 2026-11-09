@@ -3016,7 +3016,7 @@ T('[피드백 11-09f] 외국인 시장: 겨울 매주 새 후보 3~5명(상한 4
   G.fmarket=G.fmarket.filter(id=>!ag().includes(id)); const m0=G.mail.length; const n=fNewWeek(); const L=ag().map(id=>G.players[id]); ok(n>=3&&n<=5&&L.length===n,'새 후보 수 '+n+'/'+L.length);
   const hot=L.filter(fNewsOk); const ms=G.mail.slice(0,G.mail.length-m0).filter(m=>m.subj.startsWith('새 외국인 후보')); ok(hot.length?ms.length===1&&hot.every(q=>ms[0].body.includes(q.name)):ms.length===0,'소식 기준 어긋남: 좋은 후보 '+hot.length+' 소식 '+ms.length);
   for(let i=0;i<20;i++)fNewWeek(); ok(ag().length===48,'겨울 상한 48명 '+ag().length); ok(fNewWeek()===0,'상한에서도 추가됨');
-  const P=ag().map(id=>G.players[id]); ok(P.filter(fNewsOk).length<P.length*.3,'좋은 후보가 너무 많음 '+P.filter(fNewsOk).length+'/'+P.length); ok(P.filter(q=>ovr(q)<55).length>=P.length*.3,'중하위 후보가 적음'); });
+  const P=ag().map(id=>G.players[id]); ok(P.filter(q=>dv(ovr(q))>65).length<P.length*.5,'좋은 후보가 너무 많음 '+P.filter(q=>dv(ovr(q))>65).length+'/'+P.length); /* 실제 능력 기준(예상치는 조사 전 흐림이 있어 소식 수와 따로 본다) */ ok(P.filter(q=>ovr(q)<55).length>=P.length*.3,'중하위 후보가 적음'); });
 T('[피드백 11-09f] 조사 전 외국인 예상치는 흐리고(고정 착시·넓은 범위), 관찰·스카우트망이 쌓이면 좁혀진다',()=>{ fresh(); G.fwatch=[]; const P=[...Array(300)].map(()=>newForeign('용병',{market:true}));
   const F=P.map(p=>({p,f:fScout(p)})); const err=F.map(x=>Math.abs(x.f.mid-dv(ovr(x.p)))); const avg=a=>a.reduce((s,v)=>s+v,0)/a.length; const big=err.filter(e=>e>=10).length; const st=' 평균 '+avg(err).toFixed(2)+' · 10점 이상 '+big+'/'+P.length;
   ok(fScout(P[0]).mid===F[0].f.mid,'같은 선수 예상치가 흔들림'); ok(avg(err)>4,'조사 전 예상이 너무 정확'+st); ok(big>=3,'숨은 원석·과대평가가 전혀 없음'+st); ok(big<P.length*.2,'크게 빗나가는 후보가 너무 많음'+st);
