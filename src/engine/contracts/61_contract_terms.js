@@ -42,15 +42,15 @@ const ctOn=p=>p&&p.ctT!=null&&p.ctT===p.team;
 function pOutDecide(p){ return p.age<=33&&(p.svc||0)>=faSvc(p)&&marketSal(projO(p,1))>=p.sal*1.15; } /* FA 자격이 있어야 나간다 */
 function cOptAI(p){ return p.age<=36&&marketSal(projO(p,1))>=p.cOpt.a*.9; }
 /* 정규시즌이 끝나면 우리 선수의 구단 연장 옵션을 묻는다(스토브리그 계약 정리 전에 정한다) */
-function cOptAsk(){ if(G.unemp)return; for(const p of Object.values(G.players).filter(q=>q.team===G.user&&!(q.joinY>G.year))){ /* 계약 결정 대상은 '출전 가능한 선수'가 아니라 구단이 계약을 가진 선수 전부(군 복무 중 포함) */ if(!p.faC||(p.yrs||0)!==1||!ctOn(p)||!p.cOpt||p.cOpt.used||p.cOpt.dec!=null)continue; const v=marketSal(projO(p,1)); const rec=cOptAI(p);
-    evNew('copt',`${p.name} 구단 연장 옵션`,`${p.name}(${posLabel(p)}, ${p.age}세)의 보장 계약이 올 시즌으로 끝납니다. 계약에 구단 연장 옵션 ${p.cOpt.y}년(연 ${money(p.cOpt.a)})이 있습니다. 운영팀이 본 시장 가치는 연 ${money(v)} 안팎입니다.${milServing(p)?` 지금 군 복무 중이며 ${dmd(p.mil.until)} 전역 예정입니다.`:''}${(p.svc||0)<faSvc(p)?' FA 자격 전이라 옵션을 포기해도 FA가 아니라 보류 선수로 남아 연봉 협상을 합니다.':''}`,
-      [{l:`옵션 실행: ${p.cOpt.y}년 연 ${money(p.cOpt.a)} 연장`,fx:'같은 연봉으로 계약이 늘어납니다.'},{l:'옵션 포기',fx:copFA(p)?'시즌 뒤 FA 시장으로 나갑니다(FA 재자격 기간과 상관없이).':'FA 자격 전이라 보류 선수로 남아 연봉 협상을 합니다.'}],{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id},def:rec?0:1,exp:12}); } }
+function cOptAsk(){ if(G.unemp)return; for(const p of Object.values(G.players).filter(q=>q.team===G.user&&!(q.joinY>G.year))){ /* 계약 결정 대상은 '출전 가능한 선수'가 아니라 구단이 계약을 가진 선수 전부(군 복무 중 포함) */ if(!p.faC||(p.yrs||0)!==1||!ctOn(p)||!p.cOpt||p.cOpt.used||p.cOpt.dec!=null)continue; const v=marketSal(projO(p,1)); const rec=cOptAI(p); const fa=copFA(p); /* 본문과 버튼 안내를 같은 판정으로(검수 11-09s) */
+    evNew('copt',`${p.name} 구단 연장 옵션`,`${p.name}(${posLabel(p)}, ${p.age}세)의 보장 계약이 올 시즌으로 끝납니다. 계약에 구단 연장 옵션 ${p.cOpt.y}년(연 ${money(p.cOpt.a)})이 있습니다. 운영팀이 본 시장 가치는 연 ${money(v)} 안팎입니다.${milServing(p)?` 지금 군 복무 중이며 ${dmd(p.mil.until)} 전역 예정입니다.`:''}${!fa?' FA 자격 전이라 옵션을 포기해도 FA가 아니라 보류 선수로 남아 연봉 협상을 합니다.':''}`,
+      [{l:`옵션 실행: ${p.cOpt.y}년 연 ${money(p.cOpt.a)} 연장`,fx:'같은 연봉으로 계약이 늘어납니다.'},{l:'옵션 포기',fx:fa?'시즌 뒤 FA 시장으로 나갑니다(FA 재자격 기간과 상관없이).':'FA 자격 전이라 보류 선수로 남아 연봉 협상을 합니다.'}],{ref:p.id,face:p.id,from:'운영팀',data:{pid:p.id},def:rec?0:1,exp:12}); } }
 /* 옵션 포기 뒤 FA가 되는가: 스토브리그와 같이 올해 등록 연차(등록일수 145일 또는 누적)까지 더해서 본다 */
 function copFA(p){ let c=0; try{ c=faSvcOk(p)?1:0; }catch(e){} return (p.svc||0)+c>=faSvc(p); }
 EVH.copt={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.cOpt||p.team!==G.user)return ''; p.cOpt.dec=i===0; return i===0?`${p.name} 구단 옵션을 실행하기로 했습니다(스토브리그 때 반영).`:`${p.name} 구단 옵션을 포기하기로 했습니다. ${copFA(p)?'시즌 뒤 FA가 됩니다.':'FA 자격 전이라 보류 선수로 남아 연봉 협상을 합니다.'}`; } };
 function termsApply(p,t,from,sy,noPay){ termsClear(p); if(!t)return; const y=Math.max(1,t.years); sy=sy??ctSeason(); const end=sy+y-1; p.ctT=p.team;
   if(t.bonus>0){ if(!noPay){ G.spend=G.spend||{}; G.spend.faB=(G.spend.faB||0)+t.bonus; } p.capB={a:Math.round(t.bonus/y),until:end,b:t.bonus,pd:noPay?-1:finYearEnd()}; } /* b: 계약금 전액, pd: 지급한 회계연도(결산일). 미리 준 계약금(다음 시즌 시작 다년계약)은 -1 */
-  if(t.opt>0)p.opt={a:t.opt,until:end,c:optCrit(p)}; else delete p.opt; /* 달성 기준은 계약 때 보직으로 고정 */
+  if(t.opt>0)p.opt={a:t.opt,from:sy,until:end,c:optCrit(p)}; /* from: 계약 첫 시즌. 그 전 시즌 성적으로는 옵션을 주지 않는다(검수 11-09s) */ else delete p.opt; /* 달성 기준은 계약 때 보직으로 고정 */
   if(t.ntc)p.ntc=end; else delete p.ntc;
   if(t.cOpt>0)p.cOpt={y:t.cOpt,a:t.annual,at:end}; /* 구단 연장 옵션: 보장 마지막 시즌(at) 뒤 구단이 같은 연봉으로 y년 연장할지 정한다 */
   if(t.pOut>0&&t.pOut<y&&t.pOut>=pOutMin(p,sy))p.pOut={y:sy+t.pOut-1}; /* FA 자격이 생기는 해부터만 효력 */
@@ -64,7 +64,7 @@ function optProj(tid,y){ let s=0; for(const p of Object.values(G.players)){ if(p
 /* 옵션 기준: 계약 때 보직(b 타자 400타석 · sp 선발 120이닝 · rp 불펜 50이닝). 저장된 기준이 없으면(예전 계약) 지금 보직 */
 function optCrit(p){ return p.isP?(isSPr(p)?'sp':'rp'):'b'; }
 const OPT_CRIT={b:['pa',400,'400타석'],sp:['outs',360,'120이닝'],rp:['outs',150,'50이닝']};
-function optEarned(p){ if(!ctOn(p)||!p.opt||p.opt.until<G.year)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; const c=OPT_CRIT[p.opt.c||optCrit(p)]; return (h[c[0]]||0)>=c[1]; }
+function optEarned(p){ if(!ctOn(p)||!p.opt||p.opt.until<G.year||p.opt.from>G.year)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false; const c=OPT_CRIT[p.opt.c||optCrit(p)]; return (h[c[0]]||0)>=c[1]; }
 function optSettle(tid){ let tot=0; const L=[]; for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; /* 시즌 중 입대·대표팀으로 빠진 선수도 이미 달성한 옵션은 받는다 */ if(!ctOn(p)||!p.opt||p.opt.until<G.year||p.opt.paidY===G.year)continue; /* 방출 때 이미 준 옵션은 다시 주지 않는다 */ if(optEarned(p)){ tot+=p.opt.a; p.opt.paidY=G.year; /* 결산에서 준 옵션은 방출·트레이드 때 다시 주지 않는다(검수 11-08) */ L.push(`${p.name} ${money(p.opt.a)}`); story(p,`계약 옵션 달성 (${money(p.opt.a)})`,'move'); } }
   if(L.length&&tid===G.user)note('운영팀',`계약 옵션 지급: ${L.join(', ')}`); return tot; }
 /* 역할 약속 점검(6~9월 매달 1일): 주전 보장을 약속했는데 주전이 아니면 서운해한다 */

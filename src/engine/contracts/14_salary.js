@@ -86,6 +86,8 @@ function canExtend(p){ return p&&p.team===G.user&&!p.foreign&&!p.ys&&!p.extNext&
 function offerExtension(id,annual,years,acc,T){ const r=offerExtension0(id,annual,years,acc,T); const p=G.players[id];
   if(p&&r.st&&r.st!=='na'&&r.st!=='locked')p.extLast={d:G.day,st:r.st,t:r.msg.replace(/^[^:]+: /,''),next:r.st==='ok'||r.st==='counter'?null:(Math.floor(G.day/7)+1)*7};
   if(r.st==='locked'&&p)r.next=(Math.floor(G.day/7)+1)*7; return r; }
+/* 강경형·대형 에이전트가 요구하는 최소 기간(없으면 0). 협상 화면의 '요구 조건 충족' 표시도 같은 기준(검수 11-09s) */
+function extMinY(p){ const ag=hasAgent(p)?agentOf(p):null; return ag&&(ag.style==='hard'||ag.size==='big')?(p.age<=29?4:p.age<=32?3:2)-1:0; }
 const extNextDay=p=>p&&p.extTried===Math.floor(G.day/7)?(Math.floor(G.day/7)+1)*7:null; /* 이번 주에 이미 거절당했으면 다시 제안할 수 있는 날 */
 function offerExtension0(id,annual,years,acc,T){
   const p=G.players[id]; if(p&&p.ys)return {ok:false,st:'na',msg:'육성선수는 다년계약을 맺을 수 없습니다(연봉 1억 이하, FA·다년계약이 아닌 선수만 육성선수). 정식 선수로 등록한 뒤 제안하세요.'}; if(!canExtend(p))return {ok:false,st:'na',msg:'다년계약을 제안할 수 없는 선수입니다.'};
@@ -96,7 +98,7 @@ function offerExtension0(id,annual,years,acc,T){
   const d=round5(extDemand(p,years)*agExtMul(p));
   let D=null; if(T){ T={...T,years,role:null}; D=termsDemand(p,'ext',{annual:d,years}); annual=Math.round(termsVal(T,D)); }
   /* 강경형·대형 에이전트는 원하는 기간보다 짧으면 받지 않는다 */
-  const wantY=p.age<=29?4:p.age<=32?3:2; if(ag&&(ag.style==='hard'||ag.size==='big')&&years<wantY-1){ p.extTried=wk; return {ok:false,st:'no',msg:`${who}: ${years}년으로는 이야기가 안 됩니다. 최소 ${wantY-1}년은 보장해 주셔야 합니다.`}; }
+  if(years<extMinY(p)){ p.extTried=wk; return {ok:false,st:'no',msg:`${who}: ${years}년으로는 이야기가 안 됩니다. 최소 ${extMinY(p)}년은 보장해 주셔야 합니다.`}; }
   /* FA를 1년 앞둔 대어: 시장 평가를 받아 보겠다며 요구보다 확실히 높아야 움직인다 */
   const mkt=agExtTestMarket(p); if(mkt&&annual<d*1.08){ p.extTried=wk; if(annual<d*.85)agRelAdd(ag,-1,`${p.name} 다년계약 낮은 제안`); return {ok:false,st:'market',msg:`${who}: 선수가 FA 시장 평가를 받아 보고 싶어 합니다. 연 ${money(round5(d*1.08))} 이상이 아니면 시즌 뒤 시장에 나가겠습니다.`}; }
   /* 에이전트는 첫 제안을 그대로 받지 않는다: 요구에 가까우면 조금 올린 역제안을 낸다(그 자리에서 수락 가능) */

@@ -24,8 +24,8 @@ function teamArea(tid){ const t=(G&&G.teams&&G.teams[tid])||TEAM_DEF[tid]; const
 /* 후보의 권역: 새 후보는 만들 때 정하고, 예전 후보는 지역(3곳) 안에서 고정 해시로 고른다 */
 function areaOf(p){ if(!p)return null; if(p.area)return p.area; const L=AREA.filter(a=>a.reg===p.region); if(!L.length)return null; const tot=L.reduce((s,a)=>s+a.w,0); let x=u01('ar',p.id)*tot; for(const a of L){ x-=a.w; if(x<=0)return a.k; } return L[L.length-1].k; }
 /* ===== 고향·모교(사용자 11-09d): FA가 고향 팀을 조금 더 반기고, 구단은 팬·구단주 앞에 데려올 명분이 선다 =====
-   고향 권역은 areaOf(예전 선수는 3지역 안에서 고정 해시). 모교는 권역 고교 명단에 있는 p.school, 없으면(대졸·예전 선수) 권역 고교 중 고정 해시 */
-function homeSchool(p){ const a=areaDef(areaOf(p)); if(!a)return null; return a.hs.includes(p.school)?p.school:a.hs[Math.floor(u01('hs',p.id)*a.hs.length)]; }
+   고향 권역은 areaOf(예전 선수는 3지역 안에서 고정 해시). 모교는 기록된 p.school(대학이면 대학 그대로, 검수 11-09s), 기록이 없는 예전 선수만 권역 고교 중 고정 해시 */
+function homeSchool(p){ const a=areaDef(areaOf(p)); if(!a)return null; return p.school?p.school:a.hs[Math.floor(u01('hs',p.id)*a.hs.length)]; }
 const homeTxt=p=>{ const k=areaOf(p); return k?`${k} · ${homeSchool(p)}`:(p.region||'-'); };
 /* 고향 팀 연결: 국내 선수만. 기본 +4%, 처음 지명한 구단으로 돌아오면 +2%, 33세 이상 귀향은 1.5배(최대 +9%) */
 function homeTie(p,tid){ if(!p||p.foreign||tid==null)return null; const k=areaOf(p); if(!k||teamArea(tid)!==k)return null;
