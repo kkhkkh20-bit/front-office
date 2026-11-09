@@ -22,7 +22,7 @@ function dataLines(){ const me=teamRuns(G.user); if(me.g<10)return [];
   for(const p of playersOf(G.user)){ const h=seasonTotal(p,y,'1군'); if(!pctQual(!!p.isP,h))continue; const V=pctVals(p,h); for(const [k,l,,trk] of (p.isP?PCT_P:PCT_B)){ if(trk)continue; const pc=pctOf(p,k,V[k],y); if(pc==null)continue; if(pc>=90)hits.push({p,l,pc}); if(pc<=10)lows.push({p,l,pc}); } }
   hits.sort((a,b)=>b.pc-a.pc); lows.sort((a,b)=>a.pc-b.pc);
   return [`득실(정규시즌 ${me.g}경기): 경기당 득점 ${rs.toFixed(2)}(리그 ${rk(s=>s.rs/s.g,true)}위) · 실점 ${ra.toFixed(2)}(${rk(s=>s.ra/s.g,false)}위) · 득실차 ${me.rs-me.ra>0?'+':''}${me.rs-me.ra}`,
-    `피타고리안 기대 승수 ${me.exW.toFixed(1)}승, 실제 ${me.w}승(${d>=0?'+':''}${d.toFixed(1)}). ${Math.abs(d)<1.5?'득실점만큼 이기고 있습니다.':d>0?'득실점보다 더 이기고 있습니다. 접전 승패가 쏠린 결과로, 불펜·작전 영향과 함께 볼 필요가 있습니다. 시즌이 길어지면 득실차 쪽으로 가까워지는 경향이 있으나 확정할 수는 없습니다.':'득실점보다 덜 이기고 있습니다. 접전에서 진 경기가 많았습니다. 불펜·작전 영향과 함께 볼 필요가 있습니다.'}`,
+    `피타고리안 기대 승수 ${me.exW.toFixed(1)}승, 실제 ${me.w}승(${d>=0?'+':''}${d.toFixed(1)}). ${Math.abs(d)<1.5?'득실점만큼 이기고 있습니다.':d>0?'득실점보다 더 이기고 있습니다. 접전 승패가 한쪽으로 쏠렸습니다. 불펜·작전 영향과 함께 봐야 합니다. 시즌이 길어지면 득실차 쪽으로 돌아오는 경우가 많지만 확정할 수는 없습니다.':'득실점보다 덜 이기고 있습니다. 접전에서 진 경기가 많았습니다. 불펜·작전 영향과 함께 봐야 합니다.'}`,
     `최근 10경기 ${w10}승 ${l10}패${t10?` ${t10}무`:''}`,
     `리그 백분위 상위 10%: ${hits.length?hits.slice(0,5).map(x=>`${x.p.name} ${x.l} ${x.pc}`).join(', '):'없음'}`,
     `리그 백분위 하위 10%: ${lows.length?lows.slice(0,5).map(x=>`${x.p.name} ${x.l} ${x.pc}`).join(', '):'없음'} (1군 기준 이상 선수 중. 시즌 초에는 크게 움직입니다)`]; }

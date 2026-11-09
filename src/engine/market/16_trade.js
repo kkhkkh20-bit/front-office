@@ -161,7 +161,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드 대상에서 뺐습니다(게임 단순화).'};
   { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
   const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
-  { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)})에 대한 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
+  { const cd=tradeCool(tid,get); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)}) 뒤 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
   const oc0=tradeOwnerCheck(give,get,cash); if(oc0&&!oc0.ok)return {ok:false,owner:true,msg:oc0.msg};
   const isCtr=!!(nt.ctr&&nt.ctr[sig]!=null&&G.day-nt.ctr[sig]<=7); /* 상대가 직접 낸 역제안·보완안은 일주일 동안 횟수·중복 제한 없이 받는다 */
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};

@@ -137,7 +137,7 @@ function fdFinish(){ const F=G.fd; if(!F||F.done)return; /* 남은 선수 자동
   const mine=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean); const ci=capInfo(G.user);
   try{ G.proj=G.teams.map(x=>({id:x.id,r:teamRating(x.id)+hn('proj'+G.year,x.id)*.7})).sort((p,q)=>q.r-p.r).map(x=>x.id); const pr=G.proj.indexOf(G.user)+1;
     setGoals(`창단 드래프트로 선수단이 꾸려졌습니다. 전력분석팀은 외국인 선수 영입 전 기준으로 우리를 10개 구단 중 ${pr}위 전력으로 봅니다. 창단 첫해이니 구단주도 무리한 목표는 잡지 않았습니다.`,true); G.goals.fd=true;
-    news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`전문가들은 창단 드래프트를 마친 ${tname(G.user)}을(를) ${pr}위 전력으로 봅니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
+    news('분석',`창단 드래프트 평가: ${tshort(G.user)} ${pr}위 전력`,`창단 드래프트를 마친 ${tname(G.user)}의 전력은 ${pr}위로 꼽힙니다. 외국인 선수 영입이 남았습니다.`,0); }catch(err){}
   try{ const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]); const P=L.map(x=>G.players[x.pid]); const nP=domestic(G.user).filter(p=>p.isP).length, nB=domestic(G.user).length-nP;
     mail('스카우트팀장','창단 드래프트 결과: 우리 지명 선수',`창단 드래프트가 끝났습니다. 지명 ${L.length}명, 자동 배분을 합친 국내 선수는 투수 ${nP}명 · 야수 ${nB}명입니다.\n\n${L.map(x=>{ const p=G.players[x.pid]; const r=fdRange(p); return `${x.rd}라운드  ${p.name} (${posLabel(p)}, ${p.age}세) 현재 능력 ${fdRangeTxt(r)} · 지명 때 추정 ${dv(fdE0(p,x))} · ${x.role||fdRole(p,fdE0(p,x))}`; }).join('\n')}\n\n능력은 100점 기준으로 63이 1군 평균, 69가 주전급입니다. 현재 능력은 우리 선수라 정확하고, 잠재력은 추정입니다. 7월 1일 중간 평가와 정규시즌 뒤 첫해 평가에서 이 지명을 돌아봅니다.${(()=>{ const n=draftNo(G.user); return n&&G.cal&&G.cal.draft?`\n\n다음은 신인 드래프트입니다. ${dmd(G.cal.draft)}에 열리고, 지난 시즌(${n.y}) 성적 역순이라 우리는 1라운드 ${n.r1}순위입니다. 3월부터 스카우트가 고교·대학 선수를 관찰합니다.`:''; })()}`,{kind:'업무',acts:[{l:'선수단 보기',a:'go',v:'roster:field'}]}); }catch(err){}
   try{ if(G.tut&&!G.tut.done){ G.tut.step=0; sendTut(); } }catch(err){}
