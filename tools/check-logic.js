@@ -2390,11 +2390,11 @@ T('[피드백 11-09c] 치어리더 단원: 대행사·단원 수·순환·피로
   ok(cheerPay()>0&&fanMonthCost()>=cheerPay()+FAN_OPS.cheer.m[2],'대행사 수수료가 월 비용에 없음');
   const d=homeGames(G.user,G.cal.open,G.cal.open+20)[0][0]; G.day=d; ok(period()==='season','홈경기 날이 시즌이 아님');
   const m0=S.L[0]; cheerOn(m0.id); ok(!S.auto,'직접 정하기로 바뀌지 않음'); m0.on=false; ok(!cheerStage(S).some(x=>x.id===m0.id),'휴식 단원이 무대에 섬');
-  for(const m of S.L){ m.fat=0; m.inj=0; m.sl=0; m.app=0; } const up=new Set(cheerStage(S).map(m=>m.id)); cheerDaily();
+  for(const m of S.L){ m.fat=0; m.inj=0; m.sl=0; m.app=0; } const up=new Set(cheerStage(S).map(m=>m.id)); cheerGame(G.day,G.user);
   ok(S.L.every(m=>up.has(m.id)?m.fat>0&&m.app===1:m.fat===0&&m.app===0),'무대 단원만 피로·출연이 늘어야 함');
   for(const m of S.L){ m.fat=0; m.dance=20; m.svc=20; m.pop=20; } const hi=cheerAtt(); for(const m of S.L){ m.dance=3; m.svc=3; m.pop=3; } const lo=cheerAtt();
   ok(hi>0&&hi<=.03&&lo<0&&lo>=-.02,'무대 힘이 관중에 반영되지 않음 '+hi+' '+lo);
-  for(const m of S.L){ m.on=true; m.inj=0; m.sl=0; m.fat=98; m.dil=3; m.sta=3; } let hurt=0; for(let i=0;i<30;i++){ for(const m of S.L)if(!m.inj)m.fat=98; cheerDaily(); hurt+=S.L.filter(m=>m.inj||m.sl).length; } ok(hurt>0,'혹사해도 부상·슬럼프가 없음');
+  for(const m of S.L){ m.on=true; m.inj=0; m.sl=0; m.fat=98; m.dil=3; m.sta=3; } let hurt=0; for(let i=0;i<30;i++){ for(const m of S.L)if(!m.inj)m.fat=98; cheerGame(G.day,G.user); cheerDaily(); hurt+=S.L.filter(m=>m.inj||m.sl).length; } ok(hurt>0,'혹사해도 부상·슬럼프가 없음');
   for(const m of S.L){ m.inj=0; m.fat=10; } const pf=G.pr.fan; ok(!cheerMeetLeft(),'첫 사인회가 막힘'); const r=cheerMeet(); ok(S.ev===G.day&&G.pr.fan>pf&&S.L.filter(m=>m.fat===28).length===4,'팬 사인회 효과 없음: '+r); ok(cheerMeet().includes('일 뒤'),'14일 안에 다시 열림');
   ok(cheerAg('sky').includes('시즌 중'),'시즌 중 대행사 변경이 됨'); G.day=G.cal.open-5; ok(cheerAg('sky').includes('계약')&&S.ag==='sky'&&S.L.length===16,'비시즌 대행사 변경 실패');
   for(const m of S.L){ m.pop=20; m.dil=3; m.age=33; m.yrs=9; } cheerYear(S); ok(S.L.length===16&&S.L.some(m=>m.yrs===0),'연말 정리 뒤 인원이 다시 채워지지 않음 '+S.L.length);
@@ -2603,7 +2603,7 @@ T('[검수 11-09j] 팬 운영·응원단·구장·스타 마케팅: A→B→A �
   if(e){ const nx=crewMk('lead'); crewOf().lead=nx; EVH.song.pick(e,0); const p=G.players[e.data.pid]; ok(p.songs[A].by===ld.name,'응원가 제작자가 후임: '+p.songs[A].by); }
   let po=null; for(let i=0;i<60&&!po;i++){ const c=crewMk('lead'); c.star=20; c.loy=1; c.y1=sponSeason()+2; crewOf().lead=c; G.day=KD(1,10); const i0=G.spend.fanIn||0, buy=crewSettle(c); crewMonthly(); if(!crewOf().lead)po={d:(G.spend.fanIn||0)-i0,buy}; }
   ok(po&&po.buy>0&&po.d>=po.buy,'빼 간 구단 위약금이 안 들어옴 '+JSON.stringify(po));
-  { const S=G.fanOps.cs, d=homeGames(A,G.cal.open,G.cal.open+20)[0][0]; G.day=d; for(const m of S.L){ m.fat=55; m.inj=0; m.sl=0; m.dance=17; m.svc=17; m.pop=17; } const pre=cheerAtt(); cheerDaily(); ok(S.last&&S.last.d===d&&Math.abs(cheerAtt(d)-pre)<1e-9,'공연한 조와 다른 관중 효과: '+pre+' → '+cheerAtt(d)); }
+  { const S=G.fanOps.cs, d=homeGames(A,G.cal.open,G.cal.open+20)[0][0]; G.day=d; for(const m of S.L){ m.fat=55; m.inj=0; m.sl=0; m.dance=17; m.svc=17; m.pop=17; } const pre=cheerAtt(); cheerGame(d,A); ok(S.last&&S.last.d===d&&Math.abs(cheerAtt(d)-pre)<1e-9,'공연한 조와 다른 관중 효과: '+pre+' → '+cheerAtt(d)); }
   const S=stadOf(A), t=team(A); G.day=G.cal.end+20; S.build=[]; const P0=stadProj(A,true).prem, pl=S.lv.prem; S.build=[{k:'prem',lv:pl+1,done:dnum(G.year+1,1,26),c:0}]; const P1=stadProj(A,true).prem; ok(P1>P0&&S.lv.prem===pl,'개막 전 완공 공사가 다음 시즌 전망에 없음 '+P0+' → '+P1); S.build=[];
   G.day=KD(12,1); t.indie=true; S.proj={stage:'build',k:'mid',cap:21000,cost:9000,paid:0,done:dnum(G.year+3,3,1)}; const k=STAD_ITEMS.map(x=>x.k).find(x=>S.lv[x]<STAD_MAX), cst=STAD_COST[S.lv[k]+1]; t.cash=newStadDue(A)+cst-1; ok(/분담금/.test(stadStart(k)||''),'독립구단 분담금 현금으로 공사 승인'); t.cash+=1; ok(stadStart(k)==='','분담금 남기고도 공사 거절'); S.proj=null; S.build=[]; t.indie=false;
   G.day=KD(5,1); const p=playersOf(A).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; p.aw=[G.year+' MVP']; smStart(p.id,'m'); const ps0=G.ps; G.ps={...(G.ps||{}),finDay:p.smk.d+147}; const b1=smBonus(A); G.ps.finDay=p.smk.d+167; const b2=smBonus(A); G.ps=ps0; ok(b2>b1&&Math.abs(b2-Math.round(smEst(p,'m')*167/365))<=2,'결산이 미뤄져도 시작 일수로 고정: '+b1+' → '+b2); });

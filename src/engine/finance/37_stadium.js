@@ -42,7 +42,7 @@ const turfM=lv=>Math.max(.7,1-(stadPower(lv)-2)*.05); /* 하한 .7: 12단계(.72
 function stadTurfM(tid){ return turfM(stadOf(tid).lv.turf); }
 function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;
-  const fan=h===G.user&&G.pr?(.9+G.pr.fan/500):1; const late=o.m>=8&&wp<.44?.9:1;
+  const P=prOf(h), fan=P?(.9+P.fan/500):1; /* 떠난 구단도 그 구단 여론으로(검수 11-09zza) */ const late=o.m>=8&&wp<.44?.9:1;
   const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1)*fanAttM(day,h); /* 응원단·테마 데이·서포터즈 */
   if(noise===null){ /* 기대 관중: 3점 가우스-에르미트 근사로 매진 상한까지 반영 */ const z=1.732*.2; return Math.round(cap*(Math.min(1,f*Math.exp(-z))/6+Math.min(1,f)*2/3+Math.min(1,f*Math.exp(z))/6)); }
   const n=Math.exp(N(0,.2)); return Math.min(cap,Math.round(cap*f*n)); }
@@ -54,7 +54,7 @@ function stadGame(day,h,a){ const cap=stadCap(h); let att=attOf(h,a,day); const 
   A.n++; A.sum+=att; A.cap=(A.cap||0)+cap; /* 경기 당시 좌석 수 합(점유율은 이것으로) */ if(att>=cap)A.so++; if(att>A.best)A.best=att; return {att,so:att>=cap}; }
 function stadYr(S){ return {prem:(stadPower(S.lv.prem)-2)*600,ad:(stadPower(S.lv.vis)-2)*400+(S.dome?2500:0),up:sum(STAD_ITEMS.map(x=>STAD_UP[S.lv[x.k]]-STAD_UP[2]))}; }
 function stadHG(tid){ const c=G.cal, H=G.sea.hg=G.sea.hg||{}; if(H[tid]==null)H[tid]=c&&c.sched?Math.max(1,homeGames(tid,c.open,c.end).length):72; return H[tid]; }
-function homeGames(tid,from,to){ const L=[]; for(let d=from;d<=to;d++){ for(const [h,a] of dayGames(d))if(h===tid)L.push([d,a]); } return L; } /* 내일 치를 미룬 홈경기도 관중·입장권 전망에(검수 11-09zo) */
+function homeGames(tid,from,to){ const L=[], c=G.cal, n=G.day+1; if(!c||!c.sched)return L; for(let d=from;d<=to;d++){ if(d===n&&d>=c.open&&d<=c.end)for(const x of (G.makeup||[]))if(x.y===G.year&&x.h===tid&&!(x.d>=from))L.push([d,x.a]); for(const [h,a] of (c.sched[d]||[]))if(h===tid)L.push([d,a]); } return L; } /* 미룬 경기는 원래 날짜 일정에 이미 있다: 그 날짜가 범위 밖일 때만 내일 경기로 센다(검수 11-09zza: 한 경기가 두 번 셈) */ /* 내일 치를 미룬 홈경기도 관중·입장권 전망에(검수 11-09zo) */
 /* d날 경기 때 시설 단계: 그날까지 끝나는 공사는 완공 단계로(완공 전 경기는 지금 단계) */
 function stadLvAt(S,d,base){ const L={...(base||S.lv)}; for(const b of S.build||[])if(b.done<=d&&b.lv>(L[b.k]||0))L[b.k]=b.lv; return L; }
 /* 시즌 관중·구장 수입 전망: 지금까지 실제 + 남은 홈경기 예상 */
@@ -85,7 +85,7 @@ function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k==
   const c=STAD_COST[lv+1]; const t=team(G.user); if(spendable(G.user)<c)return `자금이 부족합니다(${spendTxt()}). 공사비 ${money(c)}이 필요합니다.`; /* 독립구단의 결산 때 낼 신구장 분담금은 spendable이 뺀다 */
   const k0=spendPay(c); S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c,sup:c-k0,ep:G.spEp}); G.spend.stad=(G.spend.stad||0)+k0; /* 구단주 지원 몫(sup)과 장부 회차: 취소 환급 때 현금이 아니라 장부로 되돌린다(검수 11-09zza) */
   addLog(`${stadName(G.user)} ${it.l} ${lv+1}단계 공사를 시작했습니다(공사비 ${money(c)}, ${STAD_DAYS[lv+1]}일).`); return ''; }
-function stadDaily(){ for(const t of G.teams){ const S=t.stad; if(!S||!S.build||!S.build.length)continue; S.build=S.build.filter(b=>{ if(G.day<b.done)return true; if((S.lv[b.k]||0)>=b.lv)return false; /* 이미 더 높은 단계(신구장 개장 등)면 낮추지 않는다 */ S.lv[b.k]=b.lv; if(t.id===G.user){ const it=STAD_ITEMS.find(x=>x.k===b.k); chron('stad',`${it.l} ${b.lv}단계 완공`); note('구장',`${it.l} ${b.lv}단계 공사가 끝났습니다.`); news('구단',`${t.city} ${t.nick}, ${it.l} 새단장`,`${stadName(t.id)}의 ${it.l}이(가) ${b.lv}단계로 바뀌었습니다. 팬들의 관람 환경이 좋아졌습니다.`,1); } return false; }); } }
+function stadDaily(){ for(const t of G.teams){ const S=t.stad; if(!S||!S.build||!S.build.length)continue; S.build=S.build.filter(b=>{ if(G.day<b.done)return true; if((S.lv[b.k]||0)>=b.lv)return false; /* 이미 더 높은 단계(신구장 개장 등)면 낮추지 않는다 */ S.lv[b.k]=b.lv; const it=STAD_ITEMS.find(x=>x.k===b.k); if(t.id!==ME()){ wire('구장',`${t.city} ${t.nick}, ${it.l} ${b.lv}단계 공사 완공`,{tid:t.id}); return false; } /* 떠난 구단·야인 기간 전 구단은 리그 소식으로만(검수 11-09zza) */ { chron('stad',`${it.l} ${b.lv}단계 완공`); note('구장',`${it.l} ${b.lv}단계 공사가 끝났습니다.`); news('구단',`${t.city} ${t.nick}, ${it.l} 새단장`,`${stadName(t.id)}의 ${it.l}이(가) ${b.lv}단계로 바뀌었습니다. 팬들의 관람 환경이 좋아졌습니다.`,1); } return false; }); } }
 function stadSeasonNote(){ const A=G.sea.att&&G.sea.att[G.user]; if(!A||!A.n)return; const cap=stadCap(G.user); const avg=Math.round(A.sum/A.n);
   const rk=G.teams.map(t=>{ const x=G.sea.att[t.id]; return {id:t.id,v:x&&x.n?x.sum/x.n:0}; }).sort((a,b)=>b.v-a.v).findIndex(x=>x.id===G.user)+1;
   mail('운영팀',`${G.year} 홈 관중 결산과 구장 공사`,`올해 ${stadName(G.user)} 홈 ${A.n}경기 관중은 ${A.sum.toLocaleString('ko-KR')}명, 경기당 ${avg.toLocaleString('ko-KR')}명(좌석 점유율 ${Math.min(100,Math.round(A.cap?A.sum/A.cap*100:avg/cap*100))}%, 리그 ${rk}위)입니다. 매진 ${A.so}회.\n\n구장 시설 공사는 지금부터 2월까지 시작할 수 있습니다. 관람석을 고치면 관중이, 매장과 프리미엄석을 늘리면 1인당 수입이 오릅니다.`,{kind:'구장',acts:[{l:'구장 관리',a:'go',v:'club:stad'}]}); }
