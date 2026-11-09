@@ -93,7 +93,7 @@ function coachTable(){ const C=coachesOf(G.user); const slots=[...CKEYS.filter(k
     if(!c)return `<div class="st-r st-emp"><span class="st-n"><span class="av ini">-</span><span><b>${r.l}</b><i class="bad">빈자리</i></span></span><span class="st-act"><button class="btn small primary" data-a="coachFind" data-v="${k}">후보 보기</button></span><span class="st-abs small muted">${r.d}</span></div>`;
     return stRow({c,key:k,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:G.user},sub:`${r.l} · ${c.age}세`,tag:'',cur:null,open:UI.cslotOpen===k,openA:'cslotOpen',yrs:Math.max(0,c.yrs),ct:ctLeftTxt(c),
       acts:`<button class="btn small" data-a="coachFind" data-v="${k}">교체</button>`,detail:()=>coachSlot(k)}); };
-  const B=coachBulkList(); const bulk=B.length>=2?`<div class="row" style="margin:0 0 8px"><button class="btn small primary" data-a="extCoachAll">계약 끝나는 코치 ${B.length}명 모두 1년 연장<i class="pc-s">연봉 합계 ${money(sum(B.map(k=>coachExtTerms(k,1).sal)))}</i></button></div>`:'';
+  const B=coachBulkList(); const bulk=B.length>=2?`<div class="row" style="margin:0 0 8px"><button class="btn small primary" data-a="extCoachAll">계약 끝나는 코치 ${B.length}명 모두 1년 연장 · 연봉 합계 ${money(sum(B.map(k=>coachExtTerms(k,1).sal)))}</button></div>`:'';
   return `${bulk}<div class="st-list">${stHead()}${slots.map(row).join('')}</div>`; }
 function coachView(){ if(fmOn()&&!UI.coachCards&&!UI._smk)return staffFM(); /* PC: FM식 스태프 개요(34b_staff_fm.js), '보직 카드 보기'로 아래 카드 화면 */ const C=coachesOf(G.user); const m=G.mgr[G.user]; const g=coachGrade(G.user); const cn=clanCount(G.user);
   const empty=CKEYS.filter(k=>!C[k]).length;
