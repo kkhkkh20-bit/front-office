@@ -14,8 +14,8 @@ function champAdopt(tid){ champEventsInit(); const r=Object.values(G.champEvents
   if(r.ringY!=null){ G.ringY=r.ringY; G.ringT=tid; G.ringDone=r.ringDone; } }
 function champSchedule(tid,y){ champEventsInit(); const r=champRecord(tid,y); if(!r.parade)r.parade={tid,y,d:G.day+3,done:false}; if(!r.sales)r.sales={tid,y,pop:team(tid).pop}; r.ringY=y+1; return r; }
 function champRing(tid){ champEventsInit(); return Object.values(G.champEvents||{}).find(r=>r.tid===tid&&r.ringY===G.year&&r.ringDone!==G.year); }
-function champSeriesMvp(y){ const R=(G.games||[]).filter(r=>r.kind&&r.kind.startsWith('한국시리즈')&&dobj(r.day).y===y&&(r.home===G.user||r.away===G.user)); const sc={};
-  for(const r of R){ const s=r.box[r.home===G.user?'h':'a'];
+function champSeriesMvp(y,tid){ tid=tid??G.user; const R=(G.games||[]).filter(r=>r.kind&&r.kind.startsWith('한국시리즈')&&dobj(r.day).y===y&&(r.home===tid||r.away===tid)); const sc={};
+  for(const r of R){ const s=r.box[r.home===tid?'h':'a'];
     for(const b of s.bat){ const v=(b.h||0)+(b.d||0)*.5+(b.hr||0)*2+(b.rbi||0)*.8+(b.bb||0)*.3; const o=sc[b.id]=sc[b.id]||{id:b.id,n:b.n,v:0,b:{ab:0,h:0,hr:0,rbi:0},p:null}; o.v+=v; o.b.ab+=b.ab||0; o.b.h+=b.h||0; o.b.hr+=b.hr||0; o.b.rbi+=b.rbi||0; }
     for(const x of s.pit){ const v=(x.outs||0)/3*.7-(x.er||0)*1.3+(x.so||0)*.2+(x.d==='승'?1.5:x.d==='세'?1:0); const o=sc[x.id]=sc[x.id]||{id:x.id,n:x.n,v:0,b:null,p:{outs:0,er:0,so:0,w:0,sv:0}}; o.v+=v; o.p=o.p||{outs:0,er:0,so:0,w:0,sv:0}; o.p.outs+=x.outs||0; o.p.er+=x.er||0; o.p.so+=x.so||0; if(x.d==='승')o.p.w++; if(x.d==='세')o.p.sv++; } }
   const best=Object.values(sc).sort((a,b)=>b.v-a.v)[0]; if(!best)return null;
@@ -23,6 +23,7 @@ function champSeriesMvp(y){ const R=(G.games||[]).filter(r=>r.kind&&r.kind.start
   return {id:best.id,n:best.n,line,games:R.length}; }
 function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.year; const record=champSchedule(P.champ,y);
   /* 우승 구단 효과(인기·선수단 기분·구단주 신뢰)는 플레이어가 맡았는지와 상관없이 같게(검수 11-09zo) */ if(!record.fx){ record.fx=1; const tc=team(P.champ); for(const p of playersOf(P.champ))p.mor=clamp((p.mor??60)+8,0,100); tc.pop=clamp(tc.pop+.1,.7,1.5); tc.trust=clamp(tc.trust+3,0,100); }
+  if(!record.mvpDone&&!record.news){ record.mvpDone=1; const m=champSeriesMvp(y,P.champ), q=m&&G.players[m.id]; if(q){ try{ addAward(q,`${y} 한국시리즈 최우수선수`,P.champ); }catch(e){} q.mor=clamp((q.mor??60)+5,0,100); } } /* AI 구단이 우승해도 시리즈 최우수선수를 뽑는다(검수 11-09zz). 정규시즌 MVP 집계와 섞이지 않게 'MVP' 글자를 쓰지 않는다 */
   if(G.unemp||P.champ!==G.user)return; if(record.news)return; const t=team(G.user);
   const prev=(G.history||[]).filter(h=>h.champ===G.user).map(h=>h.y); const last=prev.length?Math.max(...prev):null; const n=prev.length+1;
   const ks=P.res&&P.res.ks?P.res.ks:null; const mvp=champSeriesMvp(y);
@@ -30,7 +31,7 @@ function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.
   G.champNew=record.news={tid:G.user,y,n,tag,ks:ks?[ks[2],ks[3]]:null,opp:P.runner,mvp,seen:false};
   /* 신문 1면 */
   news('구단',`${tname(G.user)}, ${y} 한국시리즈 정상… ${tag}`,`${tname(G.user)}이(가) ${tname(P.runner)}을(를) ${ks?`${ks[2]}승 ${ks[3]}패로`:''} 꺾고 우승했습니다. 홈구장은 밤늦게까지 팬들의 함성으로 가득했습니다.`,5,{fanW:4});
-  if(mvp){ news('선수',`한국시리즈 MVP ${mvp.n}`,`${mvp.n}이(가) ${mvp.line}로 시리즈를 지배했습니다.`,3,{ref:mvp.id}); const p=G.players[mvp.id]; if(p){ try{ addAward(p,`${y} 한국시리즈 최우수선수`); /* 정규시즌 MVP 집계(명예의 전당)와 섞이지 않게 'MVP' 글자를 쓰지 않는다 */ }catch(e){} p.mor=clamp((p.mor??60)+5,0,100); } }
+  if(mvp){ news('선수',`한국시리즈 MVP ${mvp.n}`,`${mvp.n}이(가) ${mvp.line}로 시리즈를 지배했습니다.`,3,{ref:mvp.id}); }
   news('구단',`'우승 설계자' 단장, 부임 ${G.gmSince!=null?`${y-G.gmSince+1}년`:''} 만의 결실`,`선수 구성과 굵직한 결정이 결실을 맺었다는 평가입니다. 구단 안팎에서 단장의 판단이 옳았다는 말이 나옵니다.`,3);
   /* 선수단 · 팬 */
   G.champPop0=record.sales; /* 우승 효과: 다음 시즌 관중·유니폼·굿즈 판매가 늘어난다(인기는 해마다 조금씩 원래대로 돌아간다) */ prInit(); G.pr.fan=clamp(G.pr.fan+12,0,100); G.pr.press=clamp(G.pr.press+8,0,100);
