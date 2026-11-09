@@ -92,3 +92,4 @@
 /* 휴대폰: 목록 칸 전체가 옆으로 밀리지 않게(넓은 표는 열 묶음 넘기기·표 자체 가로 스크롤로 본다, 사용자 11-08 연봉 순위) */
 @media(max-width:699px){ #app main.ws-frame .ws-scroll{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:auto} /* 높이가 내용만큼인 안쪽 칸이 contain이면 바깥 main으로 스크롤이 안 넘어감(감독 후보 목록, 카페 11-09) */ #app main.ws-frame .ws-scroll .tw{overflow-x:auto;max-width:100%} }
 @media(max-width:699px){ #app main.ws-frame .ws-scroll table.sal-t{width:100%;min-width:0}#app main.ws-frame .ws-scroll table.sal-t td.small{white-space:normal}#app main.ws-frame .ws-scroll table.sal-t .candidate-name{min-width:0} }
+.fin-stack>.card+.card{margin-top:12px}
