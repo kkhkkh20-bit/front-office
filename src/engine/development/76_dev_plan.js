@@ -55,14 +55,14 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
   if(f==='coach'){ delete G.trn[pid]; try{ p.trnF=trnPlan(p); }catch(e){} /* 부상 배수도 바로 새 방향(검수 11-07) */ return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
   if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년 합류 예정이라 아직 구단 훈련 지시를 받지 않습니다.`; /* 복무 중에는 상무·군 일정대로 지낸다 */
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
-  p.trnF=f; G.trn[pid]={f,by:'gm',tid:G.user,since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p)};
+  p.trnF=f; G.trn[pid]={f,by:'gm',tid:G.user,since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p),aw:0};
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
-  if(m&&f!==rec&&(m.ego??50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel??50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
+  if(m&&f!==rec&&(m.ego??50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7), E=G.trnEgo=G.trnEgo||{}, ek=G.user+':'+(m.id??m.name); if(E[ek]!==wk){ E[ek]=wk; /* 한 주 한 번 제한은 구단·감독마다 따로(검수 11-09o) */ m.rel=clamp((m.rel??50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
 /* 매주: 모든 구단 국내 선수(부상·군 복무·대표팀·미계약·합류 전 제외) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
   for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)||ovsAbroad(p))continue; /* 해외 연수 중이면 구단 훈련 없음 */
-    const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
+    const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
     const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
@@ -96,7 +96,7 @@ function trnStatLine(p,f,snap,yy){ yy=yy??G.year; /* yy: 어느 시즌 기록으
 /* 코치 의견 */
 function trnOpinion(p){ const L=trnLearn(p); const lr=L>=1.15?' 배우는 속도가 빠른 선수입니다.':L<=.82?' 새로 익히는 데 시간이 걸리는 선수입니다.':''; return `"${trnAdvice(p).t}${lr}"`; }
 /* 관찰 보고: 능력 변화(코치 관찰, 정확한 숫자 대신 정도) */
-function trnObs(p,yy){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; const D=TRN[trnG(p)][T.f]; const k=D.k[0]; const d=p.r[k]-(T.base[k]??p.r[k]); const w=Math.floor((G.day-T.since)/7);
+function trnObs(p,yy){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; const D=TRN[trnG(p)][T.f]; const k=D.k[0]; const d=p.r[k]-(T.base[k]??p.r[k]); const w=T.aw??Math.floor((G.day-T.since)/7);
   const lv=d<=-.3?'오히려 조금 떨어졌습니다':d<.3?(w<4?'아직 판단하기 이릅니다':'변화가 거의 관찰되지 않습니다'):d<1?'작은 개선이 관찰됩니다':d<2?'눈에 띄게 좋아졌습니다':'확실히 달라졌습니다';
   const g0=dvGrade(T.base[k]??p.r[k]), g1=dvGrade(p.r[k]); const th=[40,50,60,70].find(x=>p.r[k]<x); const next=th==null?null:Math.max(0,th-p.r[k]); /* 등급은 훈련 목록과 같은 기준 */
   const prog=g1!==g0?(d>0?`${g0} → ${g1}로 한 단계 올랐습니다`:`${g0} → ${g1}로 한 단계 내려갔습니다`):d<=-.3?`${g1} 안에서 조금 떨어짐`:d<.3?`${g1} 그대로`:next!=null&&next<=1.5?`${g1} 안에서 개선 · 다음 등급에 근접`:`${g1} 안에서 소폭 개선`;
@@ -108,4 +108,4 @@ function trnYearNote(y0){ const y=y0??G.year-1; if(G.trnNoteY===y)return; G.trnN
     L.push(`${p.name}(${posLabel(p)}) ${D.l} ${o.w}주 · ${o.lv}${o.stat?` · ${o.stat}`:''}`); }
   if(!L.length)return; G.reviews=G.reviews||{}; const R=G.reviews[y]=G.reviews[y]||{tid:G.user,L:[]}; R.L=R.L.filter(x=>!/^\[훈련 방향\]/.test(x)); R.L.push('[훈련 방향] '+L.slice(0,12).join(' / ')+(L.length>12?` 외 ${L.length-12}명`:'')); }
 function trnNewYear(){ try{ trnYearNote(); }catch(e){} for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user){ delete G.trn[id]; continue; }
-  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={lv:1,a:{},b:{}}; T.since=G.day; T.y=G.year; T.yrs=(T.yrs||0)+1; } }
+  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={lv:1,a:{},b:{}}; T.since=G.day; T.aw=0; T.y=G.year; T.yrs=(T.yrs||0)+1; } }
