@@ -172,7 +172,7 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     }
     line[bk].push(runs); hits[bk].push(hh);
   }
-  const maxInn=ps?15:11; let inn=1;
+  const maxInn=ps?(ps.noTie?99:15):11; let inn=1; /* noTie: 무승부가 쌓인 포스트시즌 시리즈의 남은 경기는 승부가 날 때까지(검수 11-09zo) */
   while(true){
     half('a',inn);
     if(inn>=9&&score.h>score.a){ line.h.push('X'); break; }

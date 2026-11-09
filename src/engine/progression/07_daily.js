@@ -34,6 +34,7 @@ function advance(mode,options={}){
   /* 기본 계속은 3경기. 휴식일은 세지 않고, 경기 없는 비시즌과 명시한 1주일 진행은 7일이다. */
   if(weekly){ G.dig={from:start+1,to:start,games:[],snap:digSnap(),rk:userRank(),ev0:(G.evs||[]).filter(e=>!e.done).length}; target=start+(gameBatch?21:7); } else if(mode!=='watch')G.dig=null; /* 예약한 중계로 넘어갈 때는 앞 경기 진행 요약을 남긴다(검수 11-06) */
   while(G.day<target){
+    try{ psCatchUp(G.day+1); }catch(e){} /* 지난 포스트시즌 차전도 경기 전 확인·중계 대기를 거친다(검수 11-09zo) */
     if(G.unemp)unempAuto();
     if(/^건강한/.test(blocker()))try{ entryManage(G.user,false); }catch(e){} /* 부족하면 감독이 먼저 2군에서 채운다 */
     if(blocker())break;
