@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "reviewed_at_utc": "2026-11-09T08:08:59.933431+00:00",
+  "reviewer": "Codex visual inspection",
+  "reviewed_identity_count": 60,
+  "reviewed_sheet_sha256": {
+    "128": "45b9de0e95aac1606bdd048c725c49c283295986d4ebeaf7cb5fe60bd66d39f6",
+    "256": "bc2897139549ef9603c7c80db6a6a2557567068caf57d64c96953ca0e4d311ce"
+  },
+  "materials": [
+    "previews/group_A_256.jpg",
+    "previews/group_B_256.jpg",
+    "previews/group_C_256.jpg",
+    "previews/group_D_256.jpg",
+    "all occupied cells of actual decoded128 WebP, native128pixels"
+  ],
+  "checks": {
+    "full_hair_or_scalp_and_chin_visible": true,
+    "frontal_head_and_upper_chest": true,
+    "natural_continuous_head_neck_shoulders_clothing": true,
+    "dark_studio_background": true,
+    "neutral_gray_or_navy_training_top": true,
+    "no_hats": true,
+    "no_visible_logos_or_letters_in_portrait_rects": true,
+    "no_obvious_face_paste_or_anatomical_breaks": true,
+    "age_appropriate_adult_athletic_casting": true,
+    "varied_facial_shapes_hair_beards_and_builds": true,
+    "no_recognized_real_person_likeness_observed": true
+  },
+  "limitations": "Manual likeness screening only, not an exhaustive celebrity or real-person database comparison. Nationality, age and heritage are fictional character briefs. Game integration review is pending."
+}

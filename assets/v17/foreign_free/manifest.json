@@ -1,0 +1,3748 @@
+{
+  "schema_version": "17.1",
+  "batch_id": "foreign_free",
+  "path_base": "assets/v17/foreign_free/",
+  "request": "docs/asset-requests/2026-11-09-codex-v17-foreign-free.md",
+  "request_sha256": "c4571651715f749b3865e3885506858a8a37f63c4e8f1bca0452a2dd89f33285",
+  "delivery_branch": "assets/v17-review",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "asset_validation_passed": true,
+  "count": 60,
+  "identity_count": 60,
+  "group_counts": {
+    "A": 24,
+    "B": 18,
+    "C": 12,
+    "D": 6
+  },
+  "e_counts": {
+    "US White": 9,
+    "Canadian White": 3,
+    "US Black": 6,
+    "Canadian Black": 2,
+    "US Asian": 1,
+    "US Native American": 2,
+    "Canadian Mixed": 1,
+    "Dominican Latino": 5,
+    "Venezuelan Latino": 4,
+    "Cuban Latino": 3,
+    "Mexican Latino": 3,
+    "Puerto Rican Latino": 3,
+    "Japanese": 6,
+    "Taiwanese": 3,
+    "Australian White": 1,
+    "Australian Asian": 1,
+    "Filipino": 1,
+    "Curacao Dutch": 2,
+    "South African Black": 1,
+    "South African White": 1,
+    "German White": 1,
+    "Italian White": 1
+  },
+  "country_counts": {
+    "US": 18,
+    "CA": 6,
+    "DO": 5,
+    "VE": 4,
+    "CU": 3,
+    "MX": 3,
+    "PR": 3,
+    "JP": 6,
+    "TW": 3,
+    "AU": 2,
+    "PH": 1,
+    "NL-CW": 2,
+    "ZA": 2,
+    "DE": 1,
+    "IT": 1
+  },
+  "A_heritage_counts": {
+    "White": 12,
+    "Black": 8,
+    "Other": 4
+  },
+  "asia_count": 12,
+  "asia_countries": {
+    "JP": 6,
+    "TW": 3,
+    "AU": 2,
+    "PH": 1
+  },
+  "outfit_counts": {
+    "gray": 37,
+    "navy": 23
+  },
+  "grid": {
+    "rows": 10,
+    "columns": 10,
+    "padding": 8,
+    "pitch": {
+      "128": 144,
+      "256": 272
+    },
+    "occupied_cells": "0..59",
+    "unused_cells": "60..99 black RGB fill; ordinary lossy prediction residue possible"
+  },
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/foreign_free.webp",
+        "w": 1440,
+        "h": 1440,
+        "width": 1440,
+        "height": 1440,
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 80,
+        "method": 6,
+        "cell_size": 128,
+        "pitch": 144,
+        "padding": 8,
+        "rows": 10,
+        "columns": 10,
+        "count": 60,
+        "empty_cells": 40,
+        "bytes": 81868,
+        "sha256": "45b9de0e95aac1606bdd048c725c49c283295986d4ebeaf7cb5fe60bd66d39f6"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/foreign_free.webp",
+        "w": 2720,
+        "h": 2720,
+        "width": 2720,
+        "height": 2720,
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 80,
+        "method": 6,
+        "cell_size": 256,
+        "pitch": 272,
+        "padding": 8,
+        "rows": 10,
+        "columns": 10,
+        "count": 60,
+        "empty_cells": 40,
+        "bytes": 227368,
+        "sha256": "bc2897139549ef9603c7c80db6a6a2557567068caf57d64c96953ca0e4d311ce"
+      }
+    ]
+  },
+  "identities": [
+    {
+      "id": "v17_foreign_free_001",
+      "identity_id": "v17_foreign_free_001",
+      "a": 35,
+      "age": 35,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 0,
+      "page": 0,
+      "cell": 0,
+      "row": 0,
+      "column": 0,
+      "source_candidate": "v17_c001",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            8,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            8,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.30975428223609924,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_011",
+          "cosine": 0.29793286323547363,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_002",
+      "identity_id": "v17_foreign_free_002",
+      "a": 30,
+      "age": 30,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 1,
+      "page": 0,
+      "cell": 1,
+      "row": 0,
+      "column": 1,
+      "source_candidate": "v17_c002",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            152,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            280,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.33868467807769775,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.34453755617141724,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_003",
+      "identity_id": "v17_foreign_free_003",
+      "a": 30,
+      "age": 30,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 2,
+      "page": 0,
+      "cell": 2,
+      "row": 0,
+      "column": 2,
+      "source_candidate": "v17_c003",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            296,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            552,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_052",
+          "cosine": 0.3470812737941742,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_011",
+          "cosine": 0.33957934379577637,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_004",
+      "identity_id": "v17_foreign_free_004",
+      "a": 22,
+      "age": 22,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 3,
+      "page": 0,
+      "cell": 3,
+      "row": 0,
+      "column": 3,
+      "source_candidate": "v17_c009",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            440,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            824,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_058",
+          "cosine": 0.26455602049827576,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_035",
+          "cosine": 0.27130985260009766,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_005",
+      "identity_id": "v17_foreign_free_005",
+      "a": 36,
+      "age": 36,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 4,
+      "page": 0,
+      "cell": 4,
+      "row": 0,
+      "column": 4,
+      "source_candidate": "v17_c061",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            584,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1096,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_035",
+          "cosine": 0.2795450687408447,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_052",
+          "cosine": 0.30258578062057495,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_006",
+      "identity_id": "v17_foreign_free_006",
+      "a": 34,
+      "age": 34,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 5,
+      "page": 0,
+      "cell": 5,
+      "row": 0,
+      "column": 5,
+      "source_candidate": "v17_c063",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            728,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1368,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.34244048595428467,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.35725313425064087,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_007",
+      "identity_id": "v17_foreign_free_007",
+      "a": 35,
+      "age": 35,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 6,
+      "page": 0,
+      "cell": 6,
+      "row": 0,
+      "column": 6,
+      "source_candidate": "v17_c066",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            872,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1640,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_035",
+          "cosine": 0.3051060736179352,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_035",
+          "cosine": 0.33663448691368103,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_008",
+      "identity_id": "v17_foreign_free_008",
+      "a": 26,
+      "age": 26,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 7,
+      "page": 0,
+      "cell": 7,
+      "row": 0,
+      "column": 7,
+      "source_candidate": "v17_c068",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1016,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1912,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.2818125784397125,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.32148659229278564,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_009",
+      "identity_id": "v17_foreign_free_009",
+      "a": 34,
+      "age": 34,
+      "e": "US White",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 8,
+      "page": 0,
+      "cell": 8,
+      "row": 0,
+      "column": 8,
+      "source_candidate": "v17_c069",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1160,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2184,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_007",
+          "cosine": 0.2651224136352539,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_052",
+          "cosine": 0.2873860001564026,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_010",
+      "identity_id": "v17_foreign_free_010",
+      "a": 35,
+      "age": 35,
+      "e": "Canadian White",
+      "asia": false,
+      "group": "A",
+      "country": "CA",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 9,
+      "page": 0,
+      "cell": 9,
+      "row": 0,
+      "column": 9,
+      "source_candidate": "v17_c010",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1304,
+            8,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2456,
+            8,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_011",
+          "cosine": 0.39130449295043945,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_011",
+          "cosine": 0.3609055280685425,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_011",
+      "identity_id": "v17_foreign_free_011",
+      "a": 35,
+      "age": 35,
+      "e": "Canadian White",
+      "asia": false,
+      "group": "A",
+      "country": "CA",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 10,
+      "page": 0,
+      "cell": 10,
+      "row": 1,
+      "column": 0,
+      "source_candidate": "v17_c070",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            8,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            8,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.39130449295043945,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_010",
+          "cosine": 0.3609055280685425,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_012",
+      "identity_id": "v17_foreign_free_012",
+      "a": 32,
+      "age": 32,
+      "e": "Canadian White",
+      "asia": false,
+      "group": "A",
+      "country": "CA",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 11,
+      "page": 0,
+      "cell": 11,
+      "row": 1,
+      "column": 1,
+      "source_candidate": "v17_c072",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            152,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            280,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_003",
+          "cosine": 0.28311464190483093,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_005",
+          "cosine": 0.22350972890853882,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_013",
+      "identity_id": "v17_foreign_free_013",
+      "a": 32,
+      "age": 32,
+      "e": "US Black",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 12,
+      "page": 0,
+      "cell": 12,
+      "row": 1,
+      "column": 2,
+      "source_candidate": "v17_c014",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            296,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            552,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.2830086648464203,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.30752870440483093,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_014",
+      "identity_id": "v17_foreign_free_014",
+      "a": 30,
+      "age": 30,
+      "e": "US Black",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 13,
+      "page": 0,
+      "cell": 13,
+      "row": 1,
+      "column": 3,
+      "source_candidate": "v17_c015",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            440,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            824,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_057",
+          "cosine": 0.23032818734645844,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.29509907960891724,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_015",
+      "identity_id": "v17_foreign_free_015",
+      "a": 29,
+      "age": 29,
+      "e": "US Black",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 14,
+      "page": 0,
+      "cell": 14,
+      "row": 1,
+      "column": 4,
+      "source_candidate": "v17_c016",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            584,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1096,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.2384818196296692,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.25209468603134155,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_016",
+      "identity_id": "v17_foreign_free_016",
+      "a": 25,
+      "age": 25,
+      "e": "US Black",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 15,
+      "page": 0,
+      "cell": 15,
+      "row": 1,
+      "column": 5,
+      "source_candidate": "v17_c018",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            728,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1368,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_056",
+          "cosine": 0.29123345017433167,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_056",
+          "cosine": 0.3136369585990906,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_017",
+      "identity_id": "v17_foreign_free_017",
+      "a": 34,
+      "age": 34,
+      "e": "US Black",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 16,
+      "page": 0,
+      "cell": 16,
+      "row": 1,
+      "column": 6,
+      "source_candidate": "v17_c076",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            872,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1640,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_020",
+          "cosine": 0.22834192216396332,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_056",
+          "cosine": 0.3091273903846741,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_018",
+      "identity_id": "v17_foreign_free_018",
+      "a": 22,
+      "age": 22,
+      "e": "US Black",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 17,
+      "page": 0,
+      "cell": 17,
+      "row": 1,
+      "column": 7,
+      "source_candidate": "v17_c077",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1016,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1912,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.2267073392868042,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_019",
+          "cosine": 0.25227251648902893,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_019",
+      "identity_id": "v17_foreign_free_019",
+      "a": 35,
+      "age": 35,
+      "e": "Canadian Black",
+      "asia": false,
+      "group": "A",
+      "country": "CA",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 18,
+      "page": 0,
+      "cell": 18,
+      "row": 1,
+      "column": 8,
+      "source_candidate": "v17_c079",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1160,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2184,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_013",
+          "cosine": 0.2677718997001648,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_028",
+          "cosine": 0.3288412392139435,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_020",
+      "identity_id": "v17_foreign_free_020",
+      "a": 33,
+      "age": 33,
+      "e": "Canadian Black",
+      "asia": false,
+      "group": "A",
+      "country": "CA",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 19,
+      "page": 0,
+      "cell": 19,
+      "row": 1,
+      "column": 9,
+      "source_candidate": "v17_c080",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1304,
+            152,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2456,
+            280,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_019",
+          "cosine": 0.2415926307439804,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_056",
+          "cosine": 0.29638662934303284,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_021",
+      "identity_id": "v17_foreign_free_021",
+      "a": 30,
+      "age": 30,
+      "e": "US Asian",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Other",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 20,
+      "page": 0,
+      "cell": 20,
+      "row": 2,
+      "column": 0,
+      "source_candidate": "v17_c022",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            8,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            8,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_051",
+          "cosine": 0.32683852314949036,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_059",
+          "cosine": 0.34880301356315613,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_022",
+      "identity_id": "v17_foreign_free_022",
+      "a": 33,
+      "age": 33,
+      "e": "US Native American",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Other",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 21,
+      "page": 0,
+      "cell": 21,
+      "row": 2,
+      "column": 1,
+      "source_candidate": "v17_c023",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            152,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            280,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_023",
+          "cosine": 0.19781377911567688,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_037",
+          "cosine": 0.20216168463230133,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_023",
+      "identity_id": "v17_foreign_free_023",
+      "a": 29,
+      "age": 29,
+      "e": "US Native American",
+      "asia": false,
+      "group": "A",
+      "country": "US",
+      "heritage_group": "Other",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 22,
+      "page": 0,
+      "cell": 22,
+      "row": 2,
+      "column": 2,
+      "source_candidate": "v17_c083",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            296,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            552,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_028",
+          "cosine": 0.2738953232765198,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_028",
+          "cosine": 0.3088688552379608,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_024",
+      "identity_id": "v17_foreign_free_024",
+      "a": 27,
+      "age": 27,
+      "e": "Canadian Mixed",
+      "asia": false,
+      "group": "A",
+      "country": "CA",
+      "heritage_group": "Other",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 23,
+      "page": 0,
+      "cell": 23,
+      "row": 2,
+      "column": 3,
+      "source_candidate": "v17_c084",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            440,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            824,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_055",
+          "cosine": 0.3193374276161194,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_055",
+          "cosine": 0.2702876627445221,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_025",
+      "identity_id": "v17_foreign_free_025",
+      "a": 24,
+      "age": 24,
+      "e": "Dominican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "DO",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 24,
+      "page": 0,
+      "cell": 24,
+      "row": 2,
+      "column": 4,
+      "source_candidate": "v17_c025",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            584,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1096,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.32609981298446655,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.32659992575645447,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_026",
+      "identity_id": "v17_foreign_free_026",
+      "a": 22,
+      "age": 22,
+      "e": "Dominican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "DO",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 25,
+      "page": 0,
+      "cell": 25,
+      "row": 2,
+      "column": 5,
+      "source_candidate": "v17_c027",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            728,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1368,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_035",
+          "cosine": 0.3135707676410675,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_035",
+          "cosine": 0.31837135553359985,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_027",
+      "identity_id": "v17_foreign_free_027",
+      "a": 29,
+      "age": 29,
+      "e": "Dominican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "DO",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 26,
+      "page": 0,
+      "cell": 26,
+      "row": 2,
+      "column": 6,
+      "source_candidate": "v17_c085",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            872,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1640,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_058",
+          "cosine": 0.30757641792297363,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_055",
+          "cosine": 0.2817438542842865,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_028",
+      "identity_id": "v17_foreign_free_028",
+      "a": 32,
+      "age": 32,
+      "e": "Dominican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "DO",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 27,
+      "page": 0,
+      "cell": 27,
+      "row": 2,
+      "column": 7,
+      "source_candidate": "v17_c087",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1016,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1912,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.2819984257221222,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_019",
+          "cosine": 0.3288412392139435,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_029",
+      "identity_id": "v17_foreign_free_029",
+      "a": 30,
+      "age": 30,
+      "e": "Dominican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "DO",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 28,
+      "page": 0,
+      "cell": 28,
+      "row": 2,
+      "column": 8,
+      "source_candidate": "v17_c088",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1160,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2184,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.37380072474479675,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.36941444873809814,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_030",
+      "identity_id": "v17_foreign_free_030",
+      "a": 29,
+      "age": 29,
+      "e": "Venezuelan Latino",
+      "asia": false,
+      "group": "B",
+      "country": "VE",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 29,
+      "page": 0,
+      "cell": 29,
+      "row": 2,
+      "column": 9,
+      "source_candidate": "v17_c030",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1304,
+            296,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2456,
+            552,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_036",
+          "cosine": 0.3208022713661194,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.3169254958629608,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_031",
+      "identity_id": "v17_foreign_free_031",
+      "a": 30,
+      "age": 30,
+      "e": "Venezuelan Latino",
+      "asia": false,
+      "group": "B",
+      "country": "VE",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 30,
+      "page": 0,
+      "cell": 30,
+      "row": 3,
+      "column": 0,
+      "source_candidate": "v17_c031",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            8,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            8,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.27702340483665466,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.3149023950099945,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_032",
+      "identity_id": "v17_foreign_free_032",
+      "a": 23,
+      "age": 23,
+      "e": "Venezuelan Latino",
+      "asia": false,
+      "group": "B",
+      "country": "VE",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 31,
+      "page": 0,
+      "cell": 31,
+      "row": 3,
+      "column": 1,
+      "source_candidate": "v17_c092",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            152,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            280,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.3316088914871216,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_039",
+          "cosine": 0.3512575626373291,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_033",
+      "identity_id": "v17_foreign_free_033",
+      "a": 25,
+      "age": 25,
+      "e": "Venezuelan Latino",
+      "asia": false,
+      "group": "B",
+      "country": "VE",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 32,
+      "page": 0,
+      "cell": 32,
+      "row": 3,
+      "column": 2,
+      "source_candidate": "v17_c093",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            296,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            552,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_036",
+          "cosine": 0.32854557037353516,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_036",
+          "cosine": 0.3549116849899292,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_034",
+      "identity_id": "v17_foreign_free_034",
+      "a": 28,
+      "age": 28,
+      "e": "Cuban Latino",
+      "asia": false,
+      "group": "B",
+      "country": "CU",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 33,
+      "page": 0,
+      "cell": 33,
+      "row": 3,
+      "column": 3,
+      "source_candidate": "v17_c034",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            440,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            824,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.37380072474479675,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.36941444873809814,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_035",
+      "identity_id": "v17_foreign_free_035",
+      "a": 31,
+      "age": 31,
+      "e": "Cuban Latino",
+      "asia": false,
+      "group": "B",
+      "country": "CU",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 34,
+      "page": 0,
+      "cell": 34,
+      "row": 3,
+      "column": 4,
+      "source_candidate": "v17_c035",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            584,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1096,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_039",
+          "cosine": 0.32915908098220825,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_007",
+          "cosine": 0.33663448691368103,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_036",
+      "identity_id": "v17_foreign_free_036",
+      "a": 32,
+      "age": 32,
+      "e": "Cuban Latino",
+      "asia": false,
+      "group": "B",
+      "country": "CU",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 35,
+      "page": 0,
+      "cell": 35,
+      "row": 3,
+      "column": 5,
+      "source_candidate": "v17_c094",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            728,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1368,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_033",
+          "cosine": 0.32854557037353516,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_033",
+          "cosine": 0.3549116849899292,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_037",
+      "identity_id": "v17_foreign_free_037",
+      "a": 34,
+      "age": 34,
+      "e": "Mexican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "MX",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 36,
+      "page": 0,
+      "cell": 36,
+      "row": 3,
+      "column": 6,
+      "source_candidate": "v17_c039",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            872,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1640,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_038",
+          "cosine": 0.26007118821144104,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_038",
+          "cosine": 0.29353010654449463,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_038",
+      "identity_id": "v17_foreign_free_038",
+      "a": 34,
+      "age": 34,
+      "e": "Mexican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "MX",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 37,
+      "page": 0,
+      "cell": 37,
+      "row": 3,
+      "column": 7,
+      "source_candidate": "v17_c098",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1016,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1912,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.3178946077823639,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.343964159488678,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_039",
+      "identity_id": "v17_foreign_free_039",
+      "a": 25,
+      "age": 25,
+      "e": "Mexican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "MX",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 38,
+      "page": 0,
+      "cell": 38,
+      "row": 3,
+      "column": 8,
+      "source_candidate": "v17_c099",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1160,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2184,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_035",
+          "cosine": 0.32915908098220825,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_032",
+          "cosine": 0.3512575626373291,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_040",
+      "identity_id": "v17_foreign_free_040",
+      "a": 26,
+      "age": 26,
+      "e": "Puerto Rican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "PR",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 39,
+      "page": 0,
+      "cell": 39,
+      "row": 3,
+      "column": 9,
+      "source_candidate": "v17_c041",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1304,
+            440,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2456,
+            824,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_034",
+          "cosine": 0.30220910906791687,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.3373269736766815,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_041",
+      "identity_id": "v17_foreign_free_041",
+      "a": 24,
+      "age": 24,
+      "e": "Puerto Rican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "PR",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 40,
+      "page": 0,
+      "cell": 40,
+      "row": 4,
+      "column": 0,
+      "source_candidate": "v17_c100",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            8,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            8,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.3332153856754303,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_042",
+          "cosine": 0.3674285411834717,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_042",
+      "identity_id": "v17_foreign_free_042",
+      "a": 35,
+      "age": 35,
+      "e": "Puerto Rican Latino",
+      "asia": false,
+      "group": "B",
+      "country": "PR",
+      "heritage_group": "Latino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 41,
+      "page": 0,
+      "cell": 41,
+      "row": 4,
+      "column": 1,
+      "source_candidate": "v17_c101",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            152,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            280,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_029",
+          "cosine": 0.37335705757141113,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_041",
+          "cosine": 0.3674285411834717,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_043",
+      "identity_id": "v17_foreign_free_043",
+      "a": 26,
+      "age": 26,
+      "e": "Japanese",
+      "asia": true,
+      "group": "C",
+      "country": "JP",
+      "heritage_group": "Japanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 42,
+      "page": 0,
+      "cell": 42,
+      "row": 4,
+      "column": 2,
+      "source_candidate": "v17_c045",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            296,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            552,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_049",
+          "cosine": 0.3202727138996124,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_044",
+          "cosine": 0.3364202380180359,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_044",
+      "identity_id": "v17_foreign_free_044",
+      "a": 27,
+      "age": 27,
+      "e": "Japanese",
+      "asia": true,
+      "group": "C",
+      "country": "JP",
+      "heritage_group": "Japanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 43,
+      "page": 0,
+      "cell": 43,
+      "row": 4,
+      "column": 3,
+      "source_candidate": "v17_c047",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            440,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            824,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_045",
+          "cosine": 0.3655630052089691,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_050",
+          "cosine": 0.3570084273815155,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_045",
+      "identity_id": "v17_foreign_free_045",
+      "a": 26,
+      "age": 26,
+      "e": "Japanese",
+      "asia": true,
+      "group": "C",
+      "country": "JP",
+      "heritage_group": "Japanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 44,
+      "page": 0,
+      "cell": 44,
+      "row": 4,
+      "column": 4,
+      "source_candidate": "v17_c108",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            584,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1096,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_044",
+          "cosine": 0.3655630052089691,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_044",
+          "cosine": 0.3459390699863434,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_046",
+      "identity_id": "v17_foreign_free_046",
+      "a": 23,
+      "age": 23,
+      "e": "Japanese",
+      "asia": true,
+      "group": "C",
+      "country": "JP",
+      "heritage_group": "Japanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 45,
+      "page": 0,
+      "cell": 45,
+      "row": 4,
+      "column": 5,
+      "source_candidate": "v17_c123",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            728,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1368,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_043",
+          "cosine": 0.26648473739624023,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_043",
+          "cosine": 0.32169419527053833,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_047",
+      "identity_id": "v17_foreign_free_047",
+      "a": 27,
+      "age": 27,
+      "e": "Japanese",
+      "asia": true,
+      "group": "C",
+      "country": "JP",
+      "heritage_group": "Japanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 46,
+      "page": 0,
+      "cell": 46,
+      "row": 4,
+      "column": 6,
+      "source_candidate": "v17_c125",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            872,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1640,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_045",
+          "cosine": 0.26286792755126953,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_045",
+          "cosine": 0.303365021944046,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_048",
+      "identity_id": "v17_foreign_free_048",
+      "a": 30,
+      "age": 30,
+      "e": "Japanese",
+      "asia": true,
+      "group": "C",
+      "country": "JP",
+      "heritage_group": "Japanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 47,
+      "page": 0,
+      "cell": 47,
+      "row": 4,
+      "column": 7,
+      "source_candidate": "v17_c126",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1016,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1912,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_004",
+          "cosine": 0.2215263843536377,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_004",
+          "cosine": 0.2362890988588333,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_049",
+      "identity_id": "v17_foreign_free_049",
+      "a": 27,
+      "age": 27,
+      "e": "Taiwanese",
+      "asia": true,
+      "group": "C",
+      "country": "TW",
+      "heritage_group": "Taiwanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 48,
+      "page": 0,
+      "cell": 48,
+      "row": 4,
+      "column": 8,
+      "source_candidate": "v17_c051",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1160,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2184,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_043",
+          "cosine": 0.3202727138996124,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_043",
+          "cosine": 0.28782254457473755,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_050",
+      "identity_id": "v17_foreign_free_050",
+      "a": 31,
+      "age": 31,
+      "e": "Taiwanese",
+      "asia": true,
+      "group": "C",
+      "country": "TW",
+      "heritage_group": "Taiwanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 49,
+      "page": 0,
+      "cell": 49,
+      "row": 4,
+      "column": 9,
+      "source_candidate": "v17_c109",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1304,
+            584,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2456,
+            1096,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_051",
+          "cosine": 0.28292879462242126,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_044",
+          "cosine": 0.3570084273815155,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_051",
+      "identity_id": "v17_foreign_free_051",
+      "a": 26,
+      "age": 26,
+      "e": "Taiwanese",
+      "asia": true,
+      "group": "C",
+      "country": "TW",
+      "heritage_group": "Taiwanese",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 50,
+      "page": 0,
+      "cell": 50,
+      "row": 5,
+      "column": 0,
+      "source_candidate": "v17_c111",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            8,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            8,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_044",
+          "cosine": 0.3570786118507385,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_044",
+          "cosine": 0.3387864828109741,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_052",
+      "identity_id": "v17_foreign_free_052",
+      "a": 26,
+      "age": 26,
+      "e": "Australian White",
+      "asia": true,
+      "group": "C",
+      "country": "AU",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 51,
+      "page": 0,
+      "cell": 51,
+      "row": 5,
+      "column": 1,
+      "source_candidate": "v17_c052",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            152,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            280,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_003",
+          "cosine": 0.3470812737941742,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_006",
+          "cosine": 0.34439176321029663,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_053",
+      "identity_id": "v17_foreign_free_053",
+      "a": 25,
+      "age": 25,
+      "e": "Australian Asian",
+      "asia": true,
+      "group": "C",
+      "country": "AU",
+      "heritage_group": "Asian Australian",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 52,
+      "page": 0,
+      "cell": 52,
+      "row": 5,
+      "column": 2,
+      "source_candidate": "v17_c128",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            296,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            552,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_043",
+          "cosine": 0.31978410482406616,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_021",
+          "cosine": 0.30657675862312317,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_054",
+      "identity_id": "v17_foreign_free_054",
+      "a": 32,
+      "age": 32,
+      "e": "Filipino",
+      "asia": true,
+      "group": "C",
+      "country": "PH",
+      "heritage_group": "Filipino",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 53,
+      "page": 0,
+      "cell": 53,
+      "row": 5,
+      "column": 3,
+      "source_candidate": "v17_c114",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            440,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            824,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_050",
+          "cosine": 0.2773081958293915,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_051",
+          "cosine": 0.3247220516204834,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_055",
+      "identity_id": "v17_foreign_free_055",
+      "a": 28,
+      "age": 28,
+      "e": "Curacao Dutch",
+      "asia": false,
+      "group": "D",
+      "country": "NL-CW",
+      "heritage_group": "Afro-Caribbean Dutch",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 54,
+      "page": 0,
+      "cell": 54,
+      "row": 5,
+      "column": 4,
+      "source_candidate": "v17_c055",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            584,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1096,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_024",
+          "cosine": 0.3193374276161194,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_056",
+          "cosine": 0.3027457892894745,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_056",
+      "identity_id": "v17_foreign_free_056",
+      "a": 25,
+      "age": 25,
+      "e": "Curacao Dutch",
+      "asia": false,
+      "group": "D",
+      "country": "NL-CW",
+      "heritage_group": "Afro-Caribbean Dutch",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 55,
+      "page": 0,
+      "cell": 55,
+      "row": 5,
+      "column": 5,
+      "source_candidate": "v17_c116",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            728,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1368,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.29123345017433167,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_016",
+          "cosine": 0.3136369585990906,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_057",
+      "identity_id": "v17_foreign_free_057",
+      "a": 26,
+      "age": 26,
+      "e": "South African Black",
+      "asia": false,
+      "group": "D",
+      "country": "ZA",
+      "heritage_group": "Black",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 56,
+      "page": 0,
+      "cell": 56,
+      "row": 5,
+      "column": 6,
+      "source_candidate": "v17_c057",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            872,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1640,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_020",
+          "cosine": 0.23058858513832092,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_014",
+          "cosine": 0.2609584629535675,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_058",
+      "identity_id": "v17_foreign_free_058",
+      "a": 33,
+      "age": 33,
+      "e": "South African White",
+      "asia": false,
+      "group": "D",
+      "country": "ZA",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 57,
+      "page": 0,
+      "cell": 57,
+      "row": 5,
+      "column": 7,
+      "source_candidate": "v17_c058",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1016,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            1912,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_059",
+          "cosine": 0.33611419796943665,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_002",
+          "cosine": 0.2953336238861084,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_059",
+      "identity_id": "v17_foreign_free_059",
+      "a": 26,
+      "age": 26,
+      "e": "German White",
+      "asia": false,
+      "group": "D",
+      "country": "DE",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "gray",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 58,
+      "page": 0,
+      "cell": 58,
+      "row": 5,
+      "column": 8,
+      "source_candidate": "v17_c119",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1160,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2184,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_058",
+          "cosine": 0.33611419796943665,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_021",
+          "cosine": 0.34880301356315613,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v17_foreign_free_060",
+      "identity_id": "v17_foreign_free_060",
+      "a": 32,
+      "age": 32,
+      "e": "Italian White",
+      "asia": false,
+      "group": "D",
+      "country": "IT",
+      "heritage_group": "White",
+      "f": 1,
+      "foreign": true,
+      "sex": "male",
+      "r": "player",
+      "team": null,
+      "unaffiliated": true,
+      "outfit_color": "navy",
+      "hat": false,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "index": 59,
+      "page": 0,
+      "cell": 59,
+      "row": 5,
+      "column": 9,
+      "source_candidate": "v17_c060",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/foreign_free.webp",
+          "rect": [
+            1304,
+            728,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/foreign_free.webp",
+          "rect": [
+            2456,
+            1368,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v17_foreign_free_003",
+          "cosine": 0.33236801624298096,
+          "passed": true
+        },
+        "256": {
+          "id": "v17_foreign_free_003",
+          "cosine": 0.3147351145744324,
+          "passed": true
+        }
+      }
+    }
+  ],
+  "runtime_files": [
+    "sheets/128/foreign_free.webp",
+    "sheets/256/foreign_free.webp"
+  ],
+  "runtime_sheet_bytes": 309236,
+  "framing_reference": "assets/v6/batch01c/production100/manifest.json, same cell-size/pitch/padding; frontal upper-chest portrait, dark studio background. All new pictures no hats and neutral training clothing.",
+  "f_semantics": "Player portrait schema: f=1 means FOREIGN, not gender; sex=male is explicit.",
+  "asia_semantics": "Eligibility flag rather than ethnicity: Japanese/Taiwanese/Australian/Filipino12 true; all other nationality groups false.",
+  "casting_scope": "Fictional nationality/heritage and age generation briefs, not inferred real-person citizenship.",
+  "comparison": "previews/all60_256.jpg",
+  "validation": "validation.json",
+  "game_connected": false,
+  "code_changed": false,
+  "main_merged": false
+}
