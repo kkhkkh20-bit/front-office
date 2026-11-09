@@ -4,7 +4,7 @@ function poachOff(){ const per=period(); return per!=='season'&&per!=='post'; }
 function poachTerms(tid,role,toRole){ const c=G.coach&&G.coach[tid]&&G.coach[tid][role]; if(!c)return null; const promo=toRole!==role; const sal=round5(c.sal*(promo?1.15:1.35));
   const comp=poachOff()&&c.yrs<=1?0:Math.round(c.sal*Math.max(.5,c.yrs-(poachOff()?1:.5))*.5); const m=G.mgr[tid]; const clan=!!(c.clan&&m&&c.clan===m.id);
   let ch=.42+(promo?.25:0)-(clan?.35:0)-(c.yrs>=2&&!poachOff()?.08:0); const ur=uRank(); const st=standingsNow(); const tr=st.findIndex(x=>x.tid===tid)+1; if(period()==='season'&&tr>0)ch+=(tr-ur)*.015;
-  const um=G.mgr[G.user]; if(um&&!um.interim&&um.fame>=70)ch+=.06; const ob=c.ob&&G.ob?G.ob.find(o=>o.id===c.ob):null; if(ob&&ob.mine)ch+=.2+Math.min(.1,ob.bond/200);
+  const um=G.mgr[G.user]; if(um&&!um.interim&&um.fame>=70)ch+=.06; const ob=c.ob&&G.ob?G.ob.find(o=>o.id===c.ob):null; if(ob&&obMine(ob))ch+=.2+Math.min(.1,ob.bond/200);
   if(team(tid).rel<35)ch-=.1; stAttr(c); ch+=(clubPrestige(G.user)-clubPrestige(tid))*.004-((c.loy??20)-20)*.002; /* 구단 위상 차이와 충성도(11-08c) */
   const X=cmCtrOf(c); if(X&&X.tid===tid)return {c,sal:X.need,comp,promo,clan,chance:clan?.5:.97,toRole,ctr:true}; /* 역제안을 넘는 조건으로 다시 제의 */
   return {c,sal,comp,promo,clan,chance:clamp(ch,.05,.9),toRole}; }
