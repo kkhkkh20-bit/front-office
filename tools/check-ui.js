@@ -216,12 +216,12 @@ const QUICK=process.env.QUICK==='1';
     if(r)for(const m of r)add('일정·순위·기록',m); }
   /* 저장 안전(검수 11-06): 저장이 실패하면 현재 진행과 기존 슬롯이 보존되고, 다른 탭이 활성 슬롯을 바꿔도 각 탭은 자신이 연 슬롯에만 쓴다 */
   { where='저장 안전'; const r=await ev(()=>{ const bad=[]; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); } const g0=G, cur0=CUR_SLOT, LS=Storage.prototype, si=LS.setItem;
-    const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; CUR_SLOT=cur0; try{ slotRevSync(CUR_SLOT); }catch(e){} UI.title=false; closeSheets(); render(); }; /* 저장소를 시험 전으로 되돌리면 다른 탭이 쓴 것처럼 보이므로 슬롯 판 번호도 맞춘다(11-07 다른 탭 보호 뒤) */
+    const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; delete G._ck; CUR_SLOT=cur0; try{ slotRevSync(CUR_SLOT); }catch(e){} UI.title=false; closeSheets(); render(); }; /* 저장소를 시험 전으로 되돌리면 다른 탭이 쓴 것처럼 보이므로 슬롯 판 번호도 맞춘다(11-07 다른 탭 보호 뒤) */
     try{ saveNow(); const me=curSlot(), other=me===1?2:1; const otherBody=localStorage.getItem(slotKey(other));
       { const m=meta(); m.active=other; setMeta(m); G.day+=0; saveNow(); if(localStorage.getItem(slotKey(other))!==otherBody)bad.push('다른 탭이 바꾼 활성 슬롯에 저장됨'); const m2=meta(); m2.active=me; setMeta(m2); }
       const mine0=localStorage.getItem(slotKey(me));
-      LS.setItem=function(k,v){ if(k===slotKey(me))throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(me); if(G!==g0)bad.push('저장 실패 뒤 같은 슬롯을 다시 열어 진행이 사라짐'); A.newgame(); if(G!==g0)bad.push('저장 실패인데 새 구단 시작으로 현재 게임을 닫음'); LS.setItem=si;
-      LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; const ok=saveNow(); LS.setItem=si; if(ok)bad.push('목록 기록이 실패했는데 저장 성공');
+      G._ck=1; /* 바뀐 것이 없으면 저장을 건너뛰므로(검수 11-09 #7) 진행이 있는 상태로 만든다 */ LS.setItem=function(k,v){ if(k===slotKey(me))throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(me); if(G!==g0)bad.push('저장 실패 뒤 같은 슬롯을 다시 열어 진행이 사라짐'); A.newgame(); if(G!==g0)bad.push('저장 실패인데 새 구단 시작으로 현재 게임을 닫음'); LS.setItem=si;
+      G._ck=2; LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; const ok=saveNow(); LS.setItem=si; if(ok)bad.push('목록 기록이 실패했는데 저장 성공');
       { const m=meta(); const empty=SLOT_IDS.find(n=>!m.slots[n]); if(empty){ si.call(localStorage,slotKey(empty),'x'); A.slotCopy(); if(localStorage.getItem(slotKey(empty))!=='x')bad.push('목록에 빠진 세이브를 빈 슬롯으로 보고 덮어씀'); localStorage.removeItem(slotKey(empty)); } }
       { const before=localStorage.getItem(slotKey(me)); const txt=prepG(); UI.title=true; LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; importText(txt); LS.setItem=si; UI.title=false; G=g0; if(localStorage.getItem(slotKey(me))!==before)bad.push('새 슬롯 가져오기가 기존 세이브를 덮어씀'); }
       { const q=Object.values(G.players).find(p=>p.team!=null&&!p.isP); const t0=q.team; q.team=null; q.use={y:G.year,pos:{SS:81}}; q.l10=[1,2,3]; const J=JSON.parse(prepG()); if(!J.players[q.id].use||!J.players[q.id].l10)bad.push('무적 선수 기용 기록이 저장에서 빠짐'); q.team=t0; delete q.use; delete q.l10; }
@@ -230,11 +230,11 @@ const QUICK=process.env.QUICK==='1';
     if(r)for(const m of r)add('저장 안전',m); }
   /* 슬롯 전환(검수 11-06): 현재 게임 저장과 활성 슬롯 변경이 모두 성공한 뒤에만 새 슬롯으로 전환한다. 기록 캐시는 세이브를 구분한다 */
   { where='슬롯 전환'; const r=await ev(()=>{  const bad=[]; const cur=meta().active||1, other=cur===1?2:1; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); }
-  const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; try{ slotRevSync(curSlot()); }catch(e){} closeSheets(); UI.title=false; render(); };
+  const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; delete G._ck; try{ slotRevSync(curSlot()); }catch(e){} closeSheets(); UI.title=false; render(); };
   try{ saveNow(); const snap=localStorage.getItem(slotKey(cur)); G.day+=0; const gB=JSON.parse(JSON.stringify(G)); gB.name='슬롯검사'; G=gB; G._slotMark='B'; si.call(localStorage,slotKey(other),packG()); G=g0; delete G._slotMark;
     /* 1) 활성 슬롯 변경만 실패 */ LS.setItem=function(k,v){ if(k===META)throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
     if(G!==g0)bad.push('활성 슬롯 변경에 실패했는데 다른 슬롯으로 전환함'); if((meta().active||1)!==cur)bad.push('활성 슬롯 번호가 바뀜'); saveNow(); const o2=unpack(localStorage.getItem(slotKey(other))); if(!o2||o2._slotMark!=='B')bad.push('다른 슬롯이 덮어써짐');
-    /* 2) 현재 게임 저장 실패 */ LS.setItem=function(k,v){ if(k===slotKey(cur))throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
+    /* 2) 현재 게임 저장 실패 */ G._ck=3; LS.setItem=function(k,v){ if(k===slotKey(cur))throw new Error('quota'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
     if(G!==g0)bad.push('현재 게임 저장에 실패했는데 다른 슬롯으로 이동함');
     /* 3) 기록 캐시: 다른 세이브면 다시 센다 */ const r1=playerRows(G.year); const gC=unpack(packG()); const ids=Object.keys(gC.players); gC.players={[ids[0]]:gC.players[ids[0]]}; const gk=G; G=gC; const r2=playerRows(G.year); G=gk; if(r2===r1)bad.push('다른 세이브인데 직전 세이브 선수 기록 캐시를 씀');
   }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ restore(); } return bad;  }); if(r){ for(const m of r)add('슬롯 전환',m); } }

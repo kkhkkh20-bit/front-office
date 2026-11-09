@@ -10,7 +10,7 @@ const {chromium}=require('playwright');
  await start();
  r.b=await pg.evaluate(()=>({cur:curSlot(),act:meta().active,s1:unpack(localStorage.getItem(slotKey(1))).day,s2:!!localStorage.getItem(slotKey(2))}));
  // 다른 탭 저장 흉내
- r.c=await pg.evaluate(()=>{ const m=meta(); m.slots[curSlot()].rev=(m.slots[curSlot()].rev||0)+1; setMeta(m); const ok=saveNow(); return {ok,confl:SAVE_CONFL}; });
+ r.c=await pg.evaluate(()=>{ const m=meta(); m.slots[curSlot()].rev=(m.slots[curSlot()].rev||0)+1; setMeta(m); G._ck=1; /* 바뀐 것이 없으면 저장을 건너뛴다(검수 11-09 #7) */ const ok=saveNow(); return {ok,confl:SAVE_CONFL}; });
  // #10: 빈 슬롯 새 게임 누르고 돌아오기
  r.d=await pg.evaluate(()=>{ const a0=meta().active; A.slotNew(5); UI.title=true; UI.sstep='main'; render(); return {a0,a1:meta().active,cont:!!document.querySelector('[data-a="tsCont"]')}; });
  // #7: 구형 세이브 + 목록 비고 슬롯 본문 존재
