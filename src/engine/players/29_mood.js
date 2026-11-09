@@ -12,10 +12,10 @@ function isRegular(p){ if(p.team==null)return false; const d=depth(p.team); retu
 function playedReg(p){ if(p.team==null)return false; const r=G.sea&&G.sea.rec[p.team]; const g=r?r.w+r.l+(r.t||0):0; if(g<10)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false;
   return p.isP?((h.gs||0)>=g/7||(h.g||0)>=g/3):(h.pa||0)>=g*2.5; }
 /* 팀 안에서의 역할 한 줄: 감독 배치(depth)와 능력 성향으로 */
-function squadRole(p){ if(!p||p.team==null||p.prospect)return ''; if(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)return '군 복무 중'; if(p.injOut>0)return `부상 회복 중(${p.injOut}일)`;
+function squadRole(p){ if(!p||p.team==null||p.prospect)return ''; if(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)return '군 복무 중'; if(p.injOut>0)return `부상 회복 중(${p.injOut}일)`; if(isAway(p))return '국가대표 차출 중';
   let d=null; try{ d=depth(p.team); }catch(e){ return ''; } const has=L=>L.some(x=>x.id===p.id);
   if(p.isP){ const i=d.sp.findIndex(x=>x.id===p.id); if(i>=0)return `${i+1}선발`; const j=d.pen.findIndex(x=>x.id===p.id); if(j===0)return '마무리'; if(j>0&&j<=3)return '필승조'; if(j>3)return p.r.sta>=55?'롱릴리프':'추격조'; return p.age<=24?'2군 육성(투수)':'2군 대기(투수)'; }
-  if(has(d.start))return `주전 ${posLabel(p)}`;
+  if(has(d.start)){ const k=Object.keys(d.ln).find(k=>d.ln[k].id===p.id); return `주전 ${POSK[k]||posLabel(p)}`; } /* 실제 라인업 자리로(검수 11-09zi) */
   if(has(d.bench)){ if(p.pos==='C')return '백업 포수'; const r=p.r; const t=[[r.pow,'장타 대타 후보'],[r.con,'컨택 대타'],[r.spd,'대주자 요원'],[r.def,'수비 강화 요원']].sort((a,b)=>b[0]-a[0])[0]; return t[0]>=55?t[1]:`백업 ${posLabel(p)}`; }
   return p.age<=24?'2군 육성':'2군 대기'; }
 /* 올해 1군 출전이 없는 선수를 왜 데리고 있는지(시즌 10경기 이후) */
@@ -28,14 +28,15 @@ function keepWhy(p){ if(!p||p.team==null||p.prospect)return ''; const per=period
   return '1군 자리가 막혀 있습니다. 부상 대비 자원이지만, 트레이드·방출 후보로 검토할 수 있습니다.'; }
 /* 기분과 출전 기회 만족은 다르다: 기회 만족은 기대(주전급·나이)와 실제 기용으로만 본다 */
 function oppSat(p){ if(!p||p.team==null||p.prospect)return null; const per=period(); if(!(per==='season'||per==='post'))return null; const reg=isRegular(p)||playedReg(p); const star=ovr(p)>=55||p.sal>=500; const m=p.mor??60; let lv,why;
-  if(p.promise){ lv='기다리는 중'; why='약속한 출전 기회를 기다립니다'; } else if(!healthy(p)){ lv='보류'; why='부상·징계로 빠져 있어 기회를 따지지 않습니다'; } else if(star&&!reg){ lv='불만'; why='주전을 기대하는데 주전이 아닙니다'; } else if(!reg&&p.age>=27){ lv='아쉬움'; why='나이가 있어 1군 기회를 더 원합니다'; } else { lv='만족'; why=reg?'원하는 만큼 뛰고 있습니다':'지금 위치를 받아들이고 있습니다'; }
+  if(p.promise){ lv='기다리는 중'; why='약속한 출전 기회를 기다립니다'; } else if(!healthy(p)||isAway(p)){ lv='보류'; why=isAway(p)?'국가대표 차출로 빠져 있어 기회를 따지지 않습니다':'부상·징계로 빠져 있어 기회를 따지지 않습니다'; } else if(star&&!reg){ lv='불만'; why='주전을 기대하는데 주전이 아닙니다'; } else if(!reg&&p.age>=27){ lv='아쉬움'; why='나이가 있어 1군 기회를 더 원합니다'; } else { lv='만족'; why=reg?'원하는 만큼 뛰고 있습니다':'지금 위치를 받아들이고 있습니다'; }
   const gap=lv==='만족'&&m<45?'기분이 나쁜 이유는 출전 기회가 아닙니다(위 이유 참고).':(lv==='불만'||lv==='아쉬움')&&m>=65?'지금 기분은 좋지만 기회가 계속 없으면 떨어집니다.':''; return {lv,why,gap}; }
 function moraleWhy(p){
   const per=period(); const live=per==='season'||per==='post';
   const reg=!live||isRegular(p)||playedReg(p); const star=ovr(p)>=55||p.sal>=500;
   if(p.promise)return '건의해 주신 출전 기회를 기다리고 있습니다.';
-  if(star&&!reg&&healthy(p))return '주전으로 뛰지 못해 답답합니다.';
-  if(!reg&&p.age>=27&&healthy(p))return '나이가 있어서 더 많은 기회가 필요합니다.';
+  const ok=healthy(p)&&!isAway(p);
+  if(star&&!reg&&ok)return '주전으로 뛰지 못해 답답합니다.';
+  if(!reg&&p.age>=27&&ok)return '나이가 있어서 더 많은 기회가 필요합니다.';
   const r=G.sea.rec[p.team]; if(r&&r.w+r.l>20&&r.w/(r.w+r.l)<.44)return '팀 성적이 좋지 않아 분위기가 무겁습니다.';
   if(!p.foreign&&!p.faC&&p.svc>=faSvc(p)-1)return 'FA를 앞두고 미래가 신경 쓰입니다.';
   if(p.mor>=65)return '요즘 야구가 즐겁습니다.';
@@ -71,7 +72,7 @@ function moraleWeek(){
   }
 }
 /* 출전 시간 때문에 생긴 불만인가(주전에서 밀린 스타·고참) */
-function ptWhyP(p){ const per=period(); if(per!=='season'&&per!=='post')return false; if(p.promise)return false; const reg=isRegular(p)||playedReg(p); if(reg||!healthy(p))return false; return ovr(p)>=55||p.sal>=500||p.age>=27; }
+function ptWhyP(p){ const per=period(); if(per!=='season'&&per!=='post')return false; if(p.promise)return false; const reg=isRegular(p)||playedReg(p); if(reg||!healthy(p)||isAway(p))return false; return ovr(p)>=55||p.sal>=500||p.age>=27; }
 const teamGP=tid=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r.t||0):0; };
 function requestCheck(p){
   if(p.mor>=34||(p.reqDay!=null&&p.reqDay>G.day-45))return;

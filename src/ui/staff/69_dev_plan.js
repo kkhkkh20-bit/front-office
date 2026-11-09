@@ -112,13 +112,13 @@ function mplStanceBox(x){ const sel=UI.mplSel||[]; if(!sel.length)return ''; con
 Object.assign(A,{ mplSel(v){ const s=new Set(UI.mplSel||[]); s.has(v)?s.delete(v):s.add(v); UI.mplSel=[...s]; UI.mgrMsg=''; render(); } });
 /* 선수단 > 2군: 2군 선수단이 따로 돌아가는 모습 */
 function futSquadView(tid){ const own=tid===G.user; const d=depth(tid); const vis=p=>own||!scoutReport(p).unseen||publicP(p);
-  const FL=G.futLn&&G.futLn[tid]&&period()==='season'?G.futLn[tid]:null; const B=d.futB.filter(p=>!p.ys&&vis(p)), P=d.futP.filter(p=>!p.ys&&vis(p));
-  const ln=FL?Object.fromEntries(Object.entries(FL.ln).map(([k,id])=>[k,G.players[id]]).filter(([k,p])=>p&&p.team===tid&&!p.e1&&healthy(p))):futLineup(B);
+  const FL=futLnOf(tid); const B=d.futB.filter(p=>!p.ys&&vis(p)), P=d.futP.filter(p=>!p.ys&&vis(p));
+  const ln=FL?futLnPlayers(FL,tid):futLineup(B);
   const inLn=new Set(Object.values(ln).map(p=>p.id)); const R=(p,l)=>glanceRow(p,l,own,'2');
   const conv=p=>p.pconv?` ${POSS[p.pconv.pos]} 전환 중`:'';
   const lnRows=FGPOS.filter(k=>ln[k]).map(k=>R(ln[k],`${POSS[k]}${ln[k].pconv&&ln[k].pconv.pos===k?'*':''}`)).join('');
   const rest=B.filter(p=>!inLn.has(p.id)).map(p=>R(p,'대기')).join('');
-  const sp=P.filter(p=>isSPr(p)), rp=P.filter(p=>!isSPr(p));
+  const sp=P.filter(p=>FL&&FL.rot?FL.rot.includes(p.id):isSPr(p)), rp=P.filter(p=>!sp.includes(p)); /* 실제 2군 선발 배정(검수 11-09zi) */
   const spRows=sp.map(p=>R(p,rpPlanOf(tid,p)==='sp2'?'수업':'선발')).join(''), rpRows=rp.map(p=>R(p,'불펜')).join('');
   let rk=null; if(own)try{ rk=slotRanks(G.user); }catch(e){}
   const W=own?playersOf(tid).map(p=>({p,w:callWish(p,rk)})).filter(x=>x.w):[];
@@ -126,7 +126,7 @@ function futSquadView(tid){ const own=tid===G.user; const d=depth(tid); const vi
     ${W.length?W.map(({p,w})=>`<div class="item"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${esc(w.t)}${(p.wishW||0)>3?' · 기다림이 길어져 기분이 떨어지는 중':''}</span><button class="btn small" data-a="reqUp" data-v="${p.id}">감독에게 콜업 건의</button></div>`).join(''):'<p class="small muted">지금은 없습니다. 2군에서 잘하고 1군 같은 자리와 견줄 만한 선수 가운데 욕심이 있거나 나이가 찬 선수가 올려 달라고 합니다.</p>'}
     ${UI.entMsg?`<div class="note">${esc(UI.entMsg.t)}</div>`:''}<p class="small muted">감독이 건의를 자주 거절하면 관계가 떨어집니다. 영입 면담에서 '단장 건의 존중'을 약속받은 감독은 거의 받아들입니다. 끝내 맞지 않으면 경질할 수 있습니다.</p></section>`:'';
   const away=playersOf(tid).filter(p=>!healthy(p)&&!p.e1&&vis(p));
-  return `${wish}<section class="card"><div class="row between"><h2 class="sec">2군 야수 ${B.length}명</h2><span class="small muted">${FL?`${dmd(FL.d)} 2군 라인업`:'예상 라인업'}</span></div>
+  return `${wish}<section class="card"><div class="row between"><h2 class="sec">2군 야수 ${B.length}명</h2><span class="small muted">${FL?`${dobj(FL.d).y}년 ${dmd(FL.d)} 2군 라인업`:'예상 라인업'}</span></div>
     <div class="eyebrow">2군 라인업</div>${lnRows||'<p class="small muted">야수가 없습니다.</p>'}${rest?`<div class="eyebrow">대기 (한 주 1경기 정도)</div>${rest}`:''}
     <p class="small muted">자리 옆 *는 전환 훈련 중인 자리입니다. 라인업에 든 선수는 한 주 3경기에 나가고, 2군에서 뛴 자리는 숙련으로 쌓입니다. 2군 감독은 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다.</p></section>
   <section class="card"><h2 class="sec">2군 투수 ${P.length}명</h2><div class="eyebrow">선발${sp.some(p=>rpPlanOf(tid,p)==='sp2')?' (수업 = 2군 선발 수업)':''}</div>${spRows||'<p class="small muted">없습니다.</p>'}<div class="eyebrow">불펜</div>${rpRows||'<p class="small muted">없습니다.</p>'}</section>
