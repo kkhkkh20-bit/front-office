@@ -21,6 +21,7 @@ step "3경기 진행·중계 선택"; node tools/check-match-entry.cjs || fail=1
 step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
 step "선수 카드·모바일 읽기·검색 공간·파일 불러오기"; node tools/check-experience.cjs || fail=1
+step "백업 가져오기·슬롯 전환·itch 이전"; node tools/check-save-import.cjs || fail=1
 step "개인 활동 상대·검색·빠른 설정 변경"; node tools/check-career-review.cjs || fail=1
 step "긴 대화·관전 보고·읽기 위치"; node tools/check-reading-navigation.cjs || fail=1
 step "트레이드 제안 카드 레이아웃"; node tools/check-trade-layout.cjs || fail=1

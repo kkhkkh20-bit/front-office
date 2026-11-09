@@ -158,7 +158,7 @@ function selApply(el,e){ const a=el.dataset.a;
   if(a==='findTeam'){UI.findTeam=el.value;render();}
   if(a==='findSort'){UI.findSort=el.value;render();}
   if(a==='lrfT'){UI.lrf=Object.assign({q:true,t:'all'},UI.lrf,{t:el.value});render();}
-  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim());r.onerror=()=>{UI.impMsg='파일을 읽지 못했습니다. 다시 선택해 주세요.';render();};r.readAsText(f); } }
+  if(a==='impFile'){ const f=el.files&&el.files[0]; if(f){ const to={title:!!UI.title,slot:curSlot(),g:G}; /* 고른 시점의 대상(검수 11-09) */ const r=new FileReader(); r.onload=()=>importText(String(r.result).trim(),to);r.onerror=()=>{UI.impMsg='파일을 읽지 못했습니다. 다시 선택해 주세요.';render();};r.readAsText(f); } }
   if(a==='blkWant'){ const p=G.players[+el.dataset.v]; if(p){p.lw=el.value; save(); render();} }
   if(a==='sAssign'){ const [r,k]=el.value.split(':'); assignScout(el.dataset.v,r,k); save(); render(); }
   if(a==='rosterTeam'){UI.rosterTeam=+el.value;render();window.scrollTo(0,0);}
@@ -216,8 +216,12 @@ document.addEventListener('keydown',e=>{
    이 게임에 저장이 하나도 없을 때만 받아들인다(이미 여기서 하던 저장을 덮어쓰지 않는다) */
 function ftMigrateAccept(e){ try{ const d=e&&e.data; if(!d||d.type!=='ft-migrate'||!d.items)return false; if(e.source&&e.source!==window.parent)return false;
     if(!/(^|\.)itch\.(zone|io)$/.test(String(e.origin||'').replace(/^https?:\/\//,'')))return false;
-    const it=d.items; const m0=meta(); if(Object.keys(m0.slots||{}).length)return false; let mm=null; try{ mm=JSON.parse(it[META]||'null'); }catch(x){} if(!mm||!mm.slots||!Object.keys(mm.slots).length)return false;
-    { const ks=Object.keys(it).filter(k=>/^danjang-/.test(k)&&typeof it[k]==='string'&&k!==META), done=[]; try{ for(const k of ks){ localStorage.setItem(k,it[k]); if(localStorage.getItem(k)!==it[k])throw new Error('read-back'); done.push(k); } localStorage.setItem(META,it[META]); if(localStorage.getItem(META)!==it[META])throw new Error('meta'); }catch(x){ for(const k of done.concat([META]))try{ localStorage.removeItem(k); }catch(y){} try{ toast('itch 저장을 옮기다 저장 공간이 부족해 멈췄습니다. 옮기던 내용은 지웠습니다.'); }catch(y){} return false; } } /* 슬롯 본문을 모두 쓴 뒤 목록을 마지막에: 도중에 실패하면 되돌려 열 수 없는 슬롯이 목록에 남지 않게(검수 11-06) */
+    const it=d.items; const m0=meta(); if(Object.keys(m0.slots||{}).length||SLOT_IDS.some(slotHas)||localStorage.getItem(SAVE)!=null)return false; /* 목록 없이 본문만 있는 슬롯도 사용 중이다(검수 11-09: 비어 있다고 보고 덮어씀) */ let mm=null; try{ mm=JSON.parse(it[META]||'null'); }catch(x){} if(!mm||!mm.slots)return false;
+    const has=SLOT_IDS.filter(n=>mm.slots[n]&&typeof it[slotKey(n)]==='string'&&unpack(it[slotKey(n)])); if(!has.length)return false; /* 읽을 수 있는 슬롯 본문이 하나도 없으면 옮기지 않는다(검수 11-09: 목록만 와도 성공 처리) */
+    const mj=JSON.stringify(Object.assign({},mm,{slots:Object.fromEntries(has.map(n=>[n,mm.slots[n]])),active:has.includes(+mm.active)?+mm.active:has[0]})); /* 목록에는 본문이 온 슬롯만 */
+    { let meta0=null; try{ meta0=localStorage.getItem(META); }catch(x){} const ks=Object.keys(it).filter(k=>/^danjang-/.test(k)&&typeof it[k]==='string'&&k!==META&&localStorage.getItem(k)==null), done=[]; /* 이미 있는 항목은 덮어쓰지 않는다 */
+      try{ for(const k of ks){ localStorage.setItem(k,it[k]); done.push(k); if(localStorage.getItem(k)!==it[k])throw new Error('read-back'); } localStorage.setItem(META,mj); if(localStorage.getItem(META)!==mj)throw new Error('meta'); }
+      catch(x){ for(const k of done)try{ localStorage.removeItem(k); }catch(y){} try{ if(meta0==null)localStorage.removeItem(META); else localStorage.setItem(META,meta0); }catch(y){} try{ toast('itch 저장을 옮기다 저장 공간이 부족해 멈췄습니다. 이번에 옮기던 내용만 지웠습니다.'); }catch(y){} return false; } } /* 슬롯 본문을 모두 쓴 뒤 목록을 마지막에. 되돌릴 때는 이번에 새로 쓴 항목만 지우고 목록은 원래대로(검수 11-06, 11-09: 기존 본문까지 지움) */
     try{ window.parent.postMessage({type:'ft-migrated'},e.origin); }catch(x){}
     try{ toast('itch에서 하던 저장을 옮겨 왔습니다. 처음 화면에서 이어하기를 누르세요.'); }catch(x){} try{ if(!G)UI.title=true; render(); }catch(x){} return true; }catch(err){ return false; } }
 window.addEventListener('message',ftMigrateAccept);
