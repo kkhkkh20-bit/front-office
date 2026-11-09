@@ -4,12 +4,29 @@ function champHomeCard(){ const c=G.champNew; if(!c||c.seen||G.unemp||(c.tid!=nu
   const heads=(G.news||[]).filter(n=>n.d>=G.day-5&&(n.v||0)>=3).slice(0,3);
   const FAN=['평생 응원한 보람이 있다 오늘은 그냥 울자','단장님 그동안 욕해서 죄송합니다','퍼레이드 어디서 하냐 연차 쓴다','이 멤버 그대로 내년에도 가자','MVP 유니폼 품절이다 벌써'];
   const fans=FAN.map((x,i)=>[x,hn('cf'+c.y+i,G.user)]).sort((a,b)=>a[1]-b[1]).slice(0,3).map(x=>x[0]);
-  return `<section class="card champ"><div class="ch-top">${trophyImg(64)}<div><div class="eyebrow">${c.y} 한국시리즈</div><h2>${esc(tname(G.user))} 우승</h2><p class="ch-tag">${esc(c.tag)}${c.ks?` · ${esc(tshort(c.opp))}에 ${c.ks[0]}승 ${c.ks[1]}패`:''}</p></div></div>
+  sceneProbe(); const ban=SCENE_OK===true?champPic('banner',c.y):''; /* 배너·장면 사진은 사이트에서만(한 파일 앱은 예전 카드) */
+  return `<section class="card champ${ban?' ch16':''}"${ban?` style="--ban:url('${ban}')"`:''}><div class="ch-top">${trophyImg(112)}<div><div class="eyebrow">${c.y} 한국시리즈</div><h2>${esc(tname(G.user))} 우승</h2><p class="ch-tag">${esc(c.tag)}${c.ks?` · ${esc(tshort(c.opp))}에 ${c.ks[0]}승 ${c.ks[1]}패`:''}</p></div></div>
     ${c.mvp?`<button class="ch-mvp" data-a="player" data-v="${c.mvp.id}">${G.players[c.mvp.id]?avImg(G.players[c.mvp.id]):''}<span><i>시리즈 최우수선수</i><b>${esc(c.mvp.n)}</b><em>${esc(c.mvp.line)}</em></span></button>`:''}
     ${heads.length?`<div class="ch-news">${heads.map(n=>`<div><span class="pill">${esc(n.o||'')}</span> ${esc(n.t||'')}</div>`).join('')}</div>`:''}
     <div class="ch-fans"><span class="eyebrow">팬 커뮤니티</span>${fans.map(x=>`<p>"${esc(x)}"</p>`).join('')}</div>
     <p class="small">선수단 기분이 크게 올랐고(+8), 팬 여론 +12 · 언론 논조 +8 · 구단주 신뢰 +3. 구단 인기가 올라 다음 시즌 관중·유니폼·굿즈 판매가 늘고, 우승 기록은 몇 년 동안 구단 명성을 끌어올려 FA와 스태프가 우리 구단을 더 원하게 됩니다. 사흘 뒤 도심 퍼레이드, 다음 시즌 홈 개막전에는 우승 반지 수여식이 열립니다.</p>
-    <div class="btns">${ev?`<button class="btn primary" data-a="openMail" data-v="${ev.mid||''}">구단주 포상 고르기</button>`:''}<button class="btn" data-a="champSeen">확인</button></div></section>`; }
+    <div class="btns">${ev?`<button class="btn primary" data-a="openMail" data-v="${ev.mid||''}">구단주 포상 고르기</button>`:''}${ban?`<button class="btn" data-a="champMoment" data-v="${c.y}">우승 순간 다시 보기</button>`:''}<button class="btn" data-a="champSeen">확인</button></div></section>`; }
+/* ---------- 우승 순간(v16 사진, 11-09): A 마지막 아웃 → B 시상식 → C 라커룸 파티 → D 퍼레이드. 시즌마다 정해진 한 장씩.
+   사진은 사이트에서만 받는다(SCENE_OK). 한 파일 앱에서는 열지 않고, 사진 하나가 안 받아지면 그 자리만 숨긴다 ---------- */
+const CH16S={moment:['moment_01_final_out','moment_02_battery_hug','moment_03_dugout_rush','moment_04_stands_confetti','moment_05_day_mound','moment_06_day_dugout'],
+  ceremony:['ceremony_01_lift','ceremony_02_captain_kiss','ceremony_03_manager_toss','ceremony_04_team_photo'],party:['party_01_champagne','party_02_goggles','party_03_front_office'],
+  parade:['parade_01_open_bus','parade_02_city_square','parade_03_confetti'],banner:['banner_01','banner_02','banner_03']};
+const champPic=(g,y)=>{ const L=CH16S[g]; return `assets/v16/champ/${g}/${L[Math.abs(y|0)%L.length]}.webp`; };
+const CM_STEP=[['moment','마지막 아웃','마지막 아웃이 잡히자 선수들이 마운드로 달려 나왔습니다.'],['ceremony','시상식','우승 트로피를 높이 들어 올렸습니다.'],
+  ['party','라커룸','라커룸이 샴페인과 함성으로 가득 찼습니다.'],['parade','우승 퍼레이드','도심을 가득 메운 팬들과 함께 우승을 축하했습니다.']];
+function champMomentDraw(){ document.getElementById('champMoment')?.remove(); const M=UI.cm; if(!M)return; const [g,h,cap]=CM_STEP[M.i], last=M.i===CM_STEP.length-1;
+  const el=document.createElement('div'); el.id='champMoment'; el.className='champ-moment'; el.setAttribute('role','dialog'); el.setAttribute('aria-label','우승 순간');
+  el.innerHTML=`<div class="cm-box"><span class="cm-eye">${M.y} 한국시리즈 우승 · ${esc(tname(G.user))}</span><img src="${champPic(g,M.y)}" width="1600" height="900" alt="${esc(h)}" decoding="async">
+    <div class="cm-cap"><b>${esc(h)}</b><p>${esc(cap)}</p></div><div class="cm-nav"><span class="cm-dots">${CM_STEP.map((_,i)=>`<i class="${i===M.i?'on':''}"></i>`).join('')}</span>
+    <button class="btn" data-a="champMomClose">닫기</button><button class="btn primary" data-a="champMomNext">${last?'마치기':'다음'}</button></div></div>`;
+  el.querySelector('img').onerror=function(){ this.style.display='none'; }; document.body.appendChild(el); }
+Object.assign(A,{ champMoment(v){ sceneProbe(); if(SCENE_OK!==true)return; UI.cm={y:+v||G.year,i:0}; champMomentDraw(); },
+  champMomNext(){ if(UI.cm&&++UI.cm.i>=CM_STEP.length)UI.cm=null; champMomentDraw(); }, champMomClose(){ UI.cm=null; champMomentDraw(); } });
 /* 구단 명성 카드(구단·재정 → 구단주 탭 맨 위) */
 function prestigeCard(){ const v=clubPrestige(G.user); const L=G.teams.map(t=>({t:t.id,v:clubPrestige(t.id)})).sort((a,b)=>b.v-a.v); const i=L.findIndex(x=>x.t===G.user); const P=clubPrestigeParts(G.user).filter(x=>x[0]!=='기본'&&Math.abs(x[1])>=.5);
   return `<section class="card"><div class="row between"><h2 class="sec">구단 명성</h2><span class="stars-t big">${starTxt(prestigeStars(v))}</span></div>

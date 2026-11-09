@@ -16,11 +16,13 @@ function v3Img(id,sz,cls,alt,txt,slot){ const S=v4('img'), u=S&&S[id]; if(!u)ret
   const [x,y,w,h,f,c,vb,sk]=r, k=sz/vb, t=String(txt), em=[...t].reduce((a,ch)=>a+(/[가-힣]/.test(ch)?1:.6),0), fs=Math.min(f*k,h*k*.95,w*k/Math.max(1,em));
   if(fs<5)return img;
   return `<span class="v3w" style="width:${sz}px;height:${sz}px">${img}<b class="v3t" style="left:${x/vb*100}%;top:${y/vb*100}%;width:${w/vb*100}%;height:${h/vb*100}%;font-size:${fs.toFixed(1)}px;color:${c}${sk?`;transform:skewY(${sk}deg);transform-origin:0 0`:''}">${esc(t)}</b></span>`; }
-function trophyImg(sz){ return v3Img('championship_trophy',sz,'trophy-img','우승 트로피')||(hasAsset()?`<img class="trophy-img" src="${ASSET.comp.trophy}" width="${sz}" height="${sz}" alt="우승 트로피" decoding="async">`:trophySvg()); }
+/* v16 트로피(11-09): 우승 series·정규 1위 season·우승 반지 ring. 128px은 한 파일 앱에도 들어 있고(TRO16), 큰 자리는 사이트에서 256px을 받는다 */
+function tro16(k,sz,alt){ if(typeof TRO16==='undefined'||!TRO16[k])return ''; sceneProbe(); const src=sz>100&&SCENE_OK===true?`assets/v16/champ/trophy/app/trophy_${k}_256.webp`:TRO16[k]; return `<img class="trophy-img tro16" src="${src}" width="${sz}" height="${sz}" alt="${alt||''}" decoding="async">`; }
+function trophyImg(sz){ return tro16('series',sz,'우승 트로피')||v3Img('championship_trophy',sz,'trophy-img','우승 트로피')||(hasAsset()?`<img class="trophy-img" src="${ASSET.comp.trophy}" width="${sz}" height="${sz}" alt="우승 트로피" decoding="async">`:trophySvg()); }
 const champTrophyImg=trophyImg;
 function ggTrophyImg(sz){ return v3Img('golden_glove',sz,'gg-tro-img')||ART.glove(sz); }
-/* 진열장 트로피: c 한국시리즈 우승 · r 준우승 · f 정규시즌 1위(페넌트). 없으면 예전 그림 */
-function cupImg(k,sz){ return k==='c'?trophyImg(sz):v3Img(k==='r'?'runner_up_trophy':'regular_season_pennant',sz,'trophy-img',k==='r'?'준우승 트로피':'정규시즌 1위 페넌트')||ART.trophy(sz); }
+/* 진열장 트로피: c 한국시리즈 우승 · r 준우승 · f 정규시즌 1위(v16 정규시즌 트로피). 없으면 예전 그림 */
+function cupImg(k,sz){ return k==='c'?trophyImg(sz):(k==='f'&&tro16('season',sz,'정규시즌 1위 트로피'))||v3Img(k==='r'?'runner_up_trophy':'regular_season_pennant',sz,'trophy-img',k==='r'?'준우승 트로피':'정규시즌 1위 페넌트')||ART.trophy(sz); }
 /* 수상 이름 → v3 트로피 ID와 상패 글자(부문). 선수 수상(p.aw)·우승 반지·명예의 전당 문구 기준 */
 function awV3(l){ const t=typeof TITLES!=='undefined'&&TITLES.find(t=>l===t[0]);
   if(t)return [t[2]?'pitching_title_blank':'batting_title_blank',t[0]];
