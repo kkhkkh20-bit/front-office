@@ -124,7 +124,7 @@ function offerExtension0(id,annual,years,acc,T){
 function keepScore(p){ return ovr(p)+Math.max(0,p.pot-ovr(p))*(p.age<=22?.4:p.age<=24?.28:.1)+(p.faC?3:0)+(p.age>=26&&p.age<=33?1.2:0); }
 /* 방출 후보 풀: 육성선수·연봉 협상 중(미계약) 선수는 빼고, 남길 가치가 낮은 순 */
 function trimPool(){ return domestic(G.user).filter(p=>!p.ys&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id))).sort((a,b)=>keepScore(a)-keepScore(b)); }
-function trimCands(n){ return trimPool().slice(0,n); }
+function trimCands(n){ return n>0?trimPool().slice(0,n):[]; } /* 한도 이하(음수)면 아무도 고르지 않는다: slice(0,-k)는 거의 전원을 돌려준다 */
 /* 일괄 방출(카페 피드백 11-09v): 후보 풀 안의 선수만, 한 명씩 방출과 같은 releasePlayer로(정산금·웨이버 그대로) */
 function relPick(ids){ const S=new Set((ids||[]).map(Number)); return trimPool().filter(p=>S.has(p.id)); }
 function releaseMany(ids){ const L=relPick(ids), cost=L.reduce((s,p)=>s+relCost(p).tot,0); L.forEach(p=>releasePlayer(p.id)); return {n:L.length,cost}; }
