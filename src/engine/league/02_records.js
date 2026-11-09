@@ -68,16 +68,19 @@ function warKey(h){ return h.y+':'+(h.lvl||'')+':'+(h.t??'')+':'+(h.pa||0); }
 /* 포지션별 타석(pp)에서 가장 많이 뛴 자리 */
 function ppTop(pp){ let k=null,v=-1; for(const x in pp||{})if(pp[x]>v){ v=pp[x]; k=x; } return k; }
 function ppMerge(a,b){ if(!a&&!b)return undefined; const o=Object.assign({},a||{}); for(const k in b||{})o[k]=(o[k]||0)+b[k]; return o; }
-function warOf(h,p){ if(!h||!p)return 0; if(p.arch&&h.war!=null)return h.war; /* 보관 선수는 보관할 때 저장한 WAR(기본 능력으로 다시 계산하지 않는다, 검수 11-07) */ if(p.isP||!h.pa||h.y==null||h.y2)return warRaw(h,p);
+function warOf(h,p){ if(!h||!p)return 0; if(p.arch&&h.war!=null)return h.war; /* 보관 선수는 보관할 때 저장한 WAR(기본 능력으로 다시 계산하지 않는다, 검수 11-07) */ if(h.parts)return sum(h.parts.map(x=>warOf(x,p))); if(p.isP||!h.pa||h.y==null||h.y2)return warRaw(h,p);
   const pre=h.y<(G.startY??-1); if(!pre&&h.y>=G.year&&G.warFz!==h.y)return warRaw(h,p); /* 정규시즌이 끝나 고정한 해는 고정값(마무리캠프로 바뀌지 않게, 검수 11-08) */
   p.pw=p.pw||{}; const k=warKey(h); if(p.pw[k]==null){ const old=pre?p.pw[h.y+':'+(h.lvl||'')]:null; /* 이전 저장 형식 */ p.pw[k]=old!=null?old:Math.round((pre?fdWar(p,h):warRaw(h,p))*100)/100; } return p.pw[k]; }
 function warFreeze(y){ G.warFz=y; for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; const L=p.hist.filter(h=>h.y===y&&!h.y2&&h.pa); if(!L.length)continue; p.pw=p.pw||{};
   const lv=[...new Set(L.map(h=>h.lvl))]; for(const h of L.concat(lv.map(l=>seasonTotal(p,y,l)).filter(Boolean))){ const k=warKey(h); if(p.pw[k]==null)p.pw[k]=Math.round(warRaw(h,p)*100)/100; } } }
+function warBat(h,lg){ return h.pa?(bRate(h).ops/lg.ops-1)*h.pa*.016:0; } /* 타자 WAR 중 리그 평균에 따라 바뀌는 몫 */
+/* 보관 선수 올해 WAR: 리그 평균이 바뀔 때 현역과 같은 기준으로 다시 계산(투수는 기록만으로, 타자는 보관 때 남긴 수비·자리 몫 wn에 타격 몫을 더해, 검수 11-09zf) */
+function archWarSync(y){ const A=G.arch||{}, lg=lgOf(y); for(const id in A){ const a=A[id], R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const q=a.isP?archP(a):null; for(const r of R){ if(q)r.war=warRaw(Object.assign(archFull(r),{lvl:'1군'}),q); else if(r.wn!=null)r.war=r.wn+warBat(archFull(r),lg); } } }
 function warRaw(h,p){
   if(!h)return 0; const lg=lgOf(h.y);
-  if(p.isP){ if(!h.outs)return 0; const ip=h.outs/3; const era=h.er*27/h.outs; const svS=(h.y!=null&&!h.y2&&p.hist)?p.hist.reduce((s,r)=>r.y===h.y&&!r.y2&&r.lvl===h.lvl?s+(r.sv||0):s,0):0; const lev=Math.max(h.sv||0,svS)>5?1.3:1; /* 마무리 보정은 그 선수의 시즌 전체 세이브로 정하고 구단별 기록에도 같은 배수를 쓴다(구단별 합 = 시즌 전체) */ return ((lg.era+.9)-era)*ip/9/10*lev; }
-  if(!h.pa)return 0; const ops=bRate(h).ops; const pos=h.pos||p.pos;
-  const bat=(ops/lg.ops-1)*h.pa*.16, rep=20*h.pa/600; const dOf=k=>k==='DH'||!DWR[k]?0:(defAt(p,k)-DAVG[k])*DWR[k];
+  if(p.isP){ const ip=(h.outs||0)/3; const svS=(h.y!=null&&!h.y2&&p.hist)?p.hist.reduce((s,r)=>r.y===h.y&&!r.y2&&r.lvl===h.lvl?s+(r.sv||0):s,0):0; const lev=Math.max(h.sv||0,svS)>5?1.3:1; /* 마무리 보정은 그 선수의 시즌 전체 세이브로 정하고 구단별 기록에도 같은 배수를 쓴다(구단별 합 = 시즌 전체) */ return ((lg.era+.9)*ip/9-(h.er||0))/10*lev; } /* 아웃 없이 낸 자책도 깎는다(검수 11-09zf) */
+  if(!h.pa)return 0; const pos=h.pos||p.pos;
+  const bat=warBat(h,lg)*10, rep=20*h.pa/600; const dOf=k=>k==='DH'||!DWR[k]?0:(defAt(p,k)-DAVG[k])*DWR[k];
   let adj=(POS_ADJ[pos]||0)*h.pa/600, def=dOf(pos)*h.pa/600; { const pp=h.pp, tot=pp?Object.values(pp).reduce((s,v)=>s+v,0):0; if(tot>0){ adj=0; def=0; for(const k in pp){ const w=pp[k]/tot*h.pa/600; adj+=(POS_ADJ[k]||0)*w; def+=dOf(k)*w; } } } /* 여러 자리를 뛰었으면 자리별 타석 비율로(마지막 출전 자리 하나로 시즌 전체를 보지 않는다) */ /* 그 자리 수비가 실제로 막은 실점(유격이 1루의 약 3배) */
   return (bat+rep+adj+def)/10;
 }
@@ -88,7 +91,7 @@ function warRaw(h,p){
 function wobaOf(h){ const ab=h.ab||0, bb=h.bb||0, sf=h.sf||0,hbp=h.hbp||0, den=ab+bb+hbp+sf; if(!den)return null; const s1=(h.h||0)-(h.d||0)-(h.tr||0)-(h.hr||0); return (.69*bb+.72*hbp+.89*s1+1.27*(h.d||0)+1.62*(h.tr||0)+2.10*(h.hr||0))/den; }
 let _lgbC={k:'',m:{}};
 function lgBat(y,lvl){ lvl=lvl||'1군'; const L0=G.lg&&G.lg[y]; if(lvl==='1군'&&L0&&L0.woba&&y<G.year)return L0; const k=G.year+':'+G.day+':'+(G.games?G.games.length:0); if(_lgbC.k!==k||_lgbC.g!==G)_lgbC={k,m:{},g:G}; /* 세이브가 바뀌면 다시 계산(검수 11-07) */ const ck=y+':'+lvl; if(_lgbC.m[ck])return _lgbC.m[ck];
-  let ab=0,bb=0,hbp=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; const add=x=>{ ab+=x.ab||0; bb+=x.bb||0;hbp+=x.hbp||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; }; if(lvl==='1군'){ for(const z of y1Rows(y))if(!z.isP)add(z.h); } else for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!==lvl||x.y2)continue; add(x); } }
+  let ab=0,bb=0,hbp=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; const add=x=>{ ab+=x.ab||0; bb+=x.bb||0;hbp+=x.hbp||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; }; if(lvl==='1군'){ for(const z of y1Rows(y))if(!z.isP)add(z.h); } else { for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!==lvl||x.y2)continue; add(x); } } const g=lvl==='퓨처스'&&G.futGone&&G.futGone[y]; if(g)add(g); } /* 떠난 선수의 퓨처스 기록도 리그 합계에 남긴다(검수 11-09zf) */
   const T={ab,bb,hbp,sf,h,d,tr,hr}; const pa=ab+bb+hbp+sf; const woba=pa?wobaOf(T):.32, obp=pa?(h+bb+hbp)/pa:.33; const o={woba,scale:Math.max(.8,woba/Math.max(.2,obp)),rpa:pa?r/pa:.12}; /* 표본이 없을 때만 기본값, 실제 0은 0(검수 11-07) */ _lgbC.m[ck]=o; return o; }
 function wrcPlus(h,y){ if(!h||!h.pa)return null; const yy=y??h.y; if(typeof yy!=='number')return null; const w=wobaOf(h); if(w==null)return null; const L=lgBat(yy,h.lvl==='퓨처스'?'퓨처스':'1군'); if(!(L.rpa>0))return null; return Math.round(100*((w-L.woba)/L.scale+L.rpa)/L.rpa); } /* 퓨처스 기록은 퓨처스 리그 기준 */
 /* 여러 시즌 wRC+: 시즌별 값을 타석으로 가중 평균(통산·최근 3년 합계용) */
@@ -102,6 +105,6 @@ function updateLg(y){
   const ab=s(bl,'ab'),H=s(bl,'h'),bb=s(bl,'bb'),hbp=s(bl,'hbp'),pa=ab+bb+hbp+s(bl,'sf'),tb=s(bl,'h')+s(bl,'d')+2*s(bl,'tr')+3*s(bl,'hr');
   const outs=s(pl,'outs'),er=s(pl,'er');
   if(!G.lg)G.lg={};
-  G.lg[y]={ops:pa&&ab?(H+bb+hbp)/pa+tb/ab:.72, era:outs?er*27/outs:4.5}; try{ _lgbC={k:'',m:{}}; const W=lgBat(y); Object.assign(G.lg[y],{woba:W.woba,scale:W.scale,rpa:W.rpa}); }catch(e){} /* wRC+ 기준(시즌이 끝나면 고정) */
+  G.lg[y]={ops:pa&&ab?(H+bb+hbp)/pa+tb/ab:.72, era:outs?er*27/outs:4.5}; try{ _lgbC={k:'',m:{}}; const W=lgBat(y); Object.assign(G.lg[y],{woba:W.woba,scale:W.scale,rpa:W.rpa}); }catch(e){} /* wRC+ 기준(시즌이 끝나면 고정) */ try{ archWarSync(y); }catch(e){}
 }
 
