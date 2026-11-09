@@ -20,6 +20,14 @@ function achBackfill(T){ const C=G.chron||[]; const J=C.filter(c=>c.k==='join');
   T.fired=C.some(c=>c.k==='fired'&&/^단장 경질/.test(c.t||'')); /* 사임·고사·만료는 경질이 아니다 */ const y0=J.length?Math.min(...J.map(c=>c.y)):G.year; T.seasons=Math.max(0,(G.history||[]).filter(h=>h.user&&h.y>=y0).length-C.filter(c=>c.k==='fired').length); }
 function achTitlesN(T){ return sum(Object.values(T.titles).map(a=>a.length)); }
 function achTeamsWon(T){ return Object.keys(T.titles).filter(k=>T.titles[k].length).map(Number); }
+/* 단장 통산 정규시즌 승수(지금 단장): 개인 시즌 기록, 없는 옛 저장은 부임 뒤 재임 기록 */
+function achWins(){ let w=0; try{ const S=myCStats(); w=S?S.w:0; }catch(e){} if(!w&&!((G.myC&&G.myC.seas)||[]).length)w=sum((G.history||[]).filter(h=>h.user&&h.y>=(G.gmSince??9999)).map(h=>h.user.w||0)); return w; }
+/* 우리 구단에서 뛰었거나 우리가 지명한 명예의 전당 헌액자 */
+function achHofMine(){ const U=G.user; if(U==null)return 0; let L=[]; try{ L=hofList(); }catch(e){}
+  return L.filter(r=>{ if((r.teams||[]).includes(U)||(r.tid===U&&r.mine&&r.mine.ys))return true; const id=r.pid??r.id; const p=G.players[id]||(G.arch&&G.arch[id]&&archP(G.arch[id])); return !!(p&&p.draft&&p.draft.tid===U); }).length; }
+/* 지금 맡은 구단에서 재임 중 연 신구장 수. shortcut: 구단을 옮기면 새로 센다(여러 구단 합산이 필요하면 achT에 쌓을 것) */
+function achStadN(){ const S=G.user!=null&&G.teams[G.user]&&G.teams[G.user].stad; if(!S)return 0; const d0=G.gmSinceD??dnum(G.gmSince??G.year,1,1);
+  const n=(S.names||[]).filter(x=>x.until>=d0).length; return Math.max(n,S.built>=(G.gmSince??9999)&&!S.proj?1:0); }
 function achMetaTeamsWon(){ const M=achMeta(); return Object.keys(M.champ).filter(k=>(M.champ[k]||0)>0).map(Number); }
 
 /* 과제 목록. c: 분류, r: 보상({rep,trust,cash,title}), p: 진행도(현재, 목표) */
@@ -61,6 +69,19 @@ const ACH=[
   {id:'steal',c:'트레이드',n:'도둑 트레이드',d:'트레이드 뒤 받은 선수의 WAR이 준 선수보다 8 이상 많습니다.',r:{rep:2}},
   {id:'asWin',c:'협회',n:'킹메이커',d:'지지를 밝힌 후보가 협회장에 당선됩니다.',r:null},
   {id:'cmtWin',c:'협회',n:'내 안대로',d:'상한 표결에서 우리 구단이 던진 안이 최종안이 됩니다.',r:null},
+  /* 장기 플레이(40~60시즌) 보상(피드백 11-09p) */
+  {id:'s40',c:'경력',n:'40시즌',d:'단장으로 40시즌을 보냅니다.',r:{trust:2},p:T=>[T.seasons,40]},
+  {id:'s50',c:'경력',n:'50시즌',d:'단장으로 50시즌을 보냅니다.',r:{rep:2},p:T=>[T.seasons,50]},
+  {id:'s60',c:'경력',n:'60시즌',d:'단장으로 60시즌을 보냅니다.',r:{rep:3,title:'야구계의 큰어른'},p:T=>[T.seasons,60],big:true},
+  {id:'w1000',c:'경력',n:'1,000승',d:'단장 통산 정규시즌 1,000승.',r:{rep:2},p:()=>[achWins(),1000]},
+  {id:'w2000',c:'경력',n:'2,000승',d:'단장 통산 정규시즌 2,000승.',r:{title:'2,000승 단장'},p:()=>[achWins(),2000]},
+  {id:'gm3000',c:'경력',n:'3000경기',d:'한 구단에서 단장으로 3000경기를 치릅니다.',r:{trust:2,title:'구단의 얼굴'},p:()=>[G.gmTen&&G.gmTen.tid===G.user?G.gmTen.g:0,3000]},
+  {id:'champ10',c:'우승',n:'우승 10회',d:'단장 통산 우승 10회.',r:{rep:3},p:T=>[achTitlesN(T),10]},
+  {id:'champ15',c:'우승',n:'우승 15회',d:'단장 통산 우승 15회.',r:{cash:500,title:'우승 제조기'},p:T=>[achTitlesN(T),15],big:true},
+  {id:'pupilMgr',c:'선수',n:'제자가 감독으로',d:'우리가 지명한 선수가 은퇴 뒤 우리 구단 감독이 되어 우승합니다.',r:{title:'야구 가문의 어른'}},
+  {id:'retNo5',c:'선수',n:'결번의 벽',d:'우리 구단 영구결번 5개.',r:{trust:2},p:()=>[(G.retNos||[]).length,5]},
+  {id:'hof10',c:'선수',n:'명예의 전당 사관학교',d:'우리가 지명했거나 우리 구단에서 뛴 명예의 전당 헌액자 10명.',r:{rep:2,title:'명예의 전당 사관학교장'},p:()=>[achHofMine(),10]},
+  {id:'stad2',c:'재정',n:'두 번의 개장',d:'단장 재임 중 신구장을 두 번 엽니다(지금 맡은 구단).',r:{cash:500},p:()=>[achStadN(),2]},
   {id:'fWin',c:'첫걸음',n:'첫 승',d:'단장으로 맡은 구단이 정규시즌 첫 승을 거둡니다.',r:null},
   {id:'fDebut',c:'첫걸음',n:'첫 데뷔',d:'1군 기록이 없던 선수가 우리 유니폼을 입고 1군 경기에 나섭니다.',r:null},
   {id:'fLead',c:'첫걸음',n:'첫 선두',d:'정규시즌 10경기 이상 치른 뒤 1위로 하루를 마칩니다.',r:null},
@@ -101,7 +122,8 @@ function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT();
       achUnlock('champ1'); if((G.gmSinceD!=null&&G.gmSinceD>=dnum(G.gmSince,10,1)?G.gmSince+1:G.gmSince)===y)achUnlock('firstYr'); /* 정규시즌 뒤(10월~) 부임하면 다음 시즌이 첫 시즌(이직한 구단도 인정, 커뮤니티 피드백 11-08) */ if(ps.first===U)achUnlock('double');
       const ys=T.titles[U]; if(ys.includes(y-1)&&ys.includes(y-2))achUnlock('dynasty');
       const pr=G.proj?G.proj.indexOf(U)+1:0; if(pr>=8)achUnlock('under',`시즌 전 예상 ${pr}위.`);
-      if(t.indie)achUnlock('indie'); if(!T.taxed)achUnlock('noTax'); }
+      if(t.indie)achUnlock('indie'); if(!T.taxed)achUnlock('noTax');
+      { const m=G.mgr[U], ob=m&&m.ob&&(G.ob||[]).find(o=>o.id===m.ob), id=ob&&ob.fid, p=id!=null&&(G.players[id]||(G.arch&&G.arch[id]&&archP(G.arch[id]))); if(p&&p.draft&&p.draft.tid===U)achUnlock('pupilMgr',`${m.name} 감독${p.draft.y!=null?`(${p.draft.y}년 지명)`:''}.`); } }
     if(rec&&rec.w>=90)achUnlock('w90',`${rec.w}승.`);
     { const big=playersOf(U).find(p=>p.sct&&p.sct.y===y&&(p.sct.hr>=50||p.sct.h>=200||p.sct.w>=20||p.sct.sv>=40)); if(big)achUnlock('sea50',`${y} ${big.name}`); }
     { let d=null; try{ d=depth(U); }catch(e){} const n=d?d.start.filter(p=>p.draft&&p.draft.tid===U).length:0; if(n>=5)achUnlock('youth5',`${y} 주전 ${n}명이 우리 지명 선수.`); }
