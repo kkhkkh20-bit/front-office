@@ -14,7 +14,7 @@ function stopCat(m){ if(m&&m.cat)return m.cat; const k=m&&m.kind, f=m&&m.from||'
   if(STOP_INFO.has(k))return 'info'; return 'must'; }
 function stopOn(m){ const c=stopCat(m); if(c==='must')return true; const S=(typeof G!=='undefined'&&G&&G.stopCfg)||{}; return S[c]!=null?!!S[c]:STOP_DEF[c]; }
 /* 결정(G.evs)이 진행을 멈추게 하는가: 그 결정을 알린 소식의 분류로 본다 */
-function evStops(e){ const m=e&&e.mid!=null&&G.mail?G.mail.find(x=>x.id===e.mid):null; return stopOn(m||{kind:'결정',from:e&&e.from}); } /* 소식이 지워져도 같은 분류로 본다(검수 11-09za) */
+function evStops(e){ if(e&&EV_GM.has(e.k))return true; const m=e&&e.mid!=null&&G.mail?G.mail.find(x=>x.id===e.mid):null; return stopOn(m||{kind:'결정',from:e&&e.from}); } /* 소식이 지워져도 같은 분류로 본다(검수 11-09za) */
 /* 소식이 가리킨 구단·회차를 보존한다. 다음 제안/시즌의 상태로 옛 버튼이 살아나지 않게 한다. */
 function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>k.includes(a.a));
   if(has(['renewMgr','pactKeep','pactEnd'])){c.mid=G.mgr?.[G.user]?.id;c.pact=G.pact?.day;}

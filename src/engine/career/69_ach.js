@@ -93,7 +93,7 @@ function achFirstDaily(){ if(!G||G.user==null||G.unemp)return; const U=G.user; c
 function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT(); const U=G.user;
   if(ctx.k==='switch'){ if(G.unemp&&(G.unemp.k||'fired')==='fired')T.fired=true; /* 자진 사임·재계약 고사·계약 만료는 경질이 아니다(검수 11-06) */ if(ctx.to!=null&&!T.teams.includes(ctx.to))T.teams.push(ctx.to); if(T.teams.length>=3)achUnlock('teams3'); if(T.fired&&G.unemp)achUnlock('comeback'); return; }
   if(G.unemp)return;
-  if(ctx.k==='season'){ const L=G.last; if(!L||!L.ps)return; const y=L.y; const ps=L.ps; const t=team(U); const fin=L.fins&&L.fins[U];
+  if(ctx.k==='season'){ const L=G.last; if(!L||!L.ps)return; const y=L.y; { const J=G.gmJoin; if(J&&J.y===y&&J.tid===U&&J.psDone)return; } /* 시즌이 끝난 뒤 부임: 그해 업적은 전임 몫(검수 11-09zb) */ const ps=L.ps; const t=team(U); const fin=L.fins&&L.fins[U];
     T.seasons++; if(fin&&fin.net>0)T.profit++; if(fin&&fin.tax>0)T.taxed=true;
     const inPs=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(U)); T.psRun=inPs?T.psRun+1:0; T.psBest=Math.max(T.psBest,T.psRun);
     const rec=L.order.find(o=>o.tid===U);

@@ -1571,7 +1571,7 @@ T('[난이도] 1위 견제: 우리가 선두를 달리면 경쟁 구단은 같�
   ok(a>b+.1,'선두일 때 요구 '+a.toFixed(2)+' · 아닐 때 '+b.toFixed(2)); });
 T('[100년] 단장 세대 교체: 시즌 밖에서 후임에게 넘기면 구단·선수단은 그대로, 전임은 계보에 남고, 78세가 되는 해에는 자동으로 넘어간다',()=>{ fresh(); G.gmP={name:'원조단장',age:60,bg:'corp',female:false,face:'gm1',y0:G.year,bgDone:true};
   simTo(()=>period()==='season'); ok(gmSucceed({name:'둘째단장',age:41})!=='','시즌 중에 넘어감');
-  simTo(()=>period()!=='season'&&period()!=='post'&&G.year>=G.gmP.y0); const n0=domestic(G.user).length, tid=G.user; let adv=0; try{ const S=personalState(); adv=S.settled[fyNow()]?0:(S.advance[fyNow()+':'+G.user]||0); }catch(e){} const cash=team(G.user).cash-adv; /* 전임이 이미 받은 월급은 구단 현금에서 정산(검수 11-08) */
+  simTo(()=>period()!=='season'&&period()!=='post'&&!myCOver()&&G.year>=G.gmP.y0); /* 한국시리즈 뒤 결산 전 교체는 전임 연봉·성과급을 바로 닫는다: 검수 11-09zb 시나리오 */ const n0=domestic(G.user).length, tid=G.user; let adv=0; try{ const S=personalState(); adv=S.settled[fyNow()]?0:(S.advance[fyNow()+':'+G.user]||0); }catch(e){} const cash=team(G.user).cash-adv; /* 전임이 이미 받은 월급은 구단 현금에서 정산(검수 11-08) */
   ok(gmSucceed({name:'둘째단장',age:41,bg:'data'})==='','넘기기 실패'); ok(G.gmP.name==='둘째단장'&&meAge()===41,'후임 '+G.gmP.name+' '+meAge());
   ok(G.user===tid&&domestic(G.user).length===n0&&team(G.user).cash===cash,'구단이 바뀜'); ok((G.gmLine||[]).length===1&&G.gmLine[0].name==='원조단장','계보 '+JSON.stringify(G.gmLine));
   ok(G.myC&&G.myC.tid===G.user&&G.myC.y1>=G.year,'계약 없음'); ok(G.rep>=30&&G.rep<=55,'명성 '+G.rep);
@@ -2903,6 +2903,29 @@ T('[검수 11-09za] 자동 연봉 확정은 미계약으로 남은 선수를 계
   autoConfirm(); ok(G.contract.done,'확정되지 않음: '+delegStatus('sal')); ok(p.hold,'준비: 미계약이 아님'); const t=delegStatus('sal'); ok(t.includes('국내 0명')&&t.includes('미계약 1명'),'미계약 선수를 계약 확정으로 셈: '+t); });
 T('[검수 11-09za] 징계 뒤 후원사 복귀는 이직했다 같은 구단에 돌아와도 구단 현금으로 만회된다',()=>{ fresh(); evInit(); const me=G.user; G.spend.etc=0; evFollow(21,'scandal',{pid:null,ty:'gamble',c:2}); leaveTeamState(me); ok(G.evf.length===1,'이직하면서 후원 회복 일정이 지워짐');
   G.day+=21; const c0=team(me).cash; evDaily(); ok(team(me).cash===c0+Math.round(SCAND.gamble.sp*.5),'후원 회복이 구단 현금에 반영되지 않음: '+(team(me).cash-c0)); ok(!G.evf.length,'처리한 일정이 남음'); });
+T('[검수 11-09zb] 한국시리즈 뒤 결산 전 이직·세대 교체: 그해 승패·연봉·성과급은 떠나는 단장, 새 단장은 그해 성적·명성·업적을 받지 않는다',()=>{ fresh(); { const C=myCInit(); C.y1=G.year+3; } team(G.user).trust=80; G.gmP=G.gmP||{name:'전임자',age:50,y0:G.year};
+  simTo(()=>G.ps&&G.ps.done); const A0=G.user, P=G.ps, y=G.year; if(P.champ!==A0){ const c=P.champ; P.champ=A0; if(P.runner===A0)P.runner=c; } const r=G.sea.rec[A0]; r.t=3; ok(myCOver()&&period()==='off','준비 실패: '+period());
+  const s0=JSON.stringify(G); const B=G.teams.find(t=>t.id!==A0).id;
+  { const C=G.myC, S=personalState(), fy=fyNow(), adv=S.advance[fy+':'+A0]??S.advance[fy]??0, c0=S.cash, e0=C.earn, sal=C.sal, b=Math.round(sal*.3/10)*10;
+    jobOffer(B,false); jobAnswer(B,true); ok(G.user===B,'이직 실패');
+    const s=G.myC.seas.find(x=>x.y===y&&x.tid===A0); ok(s&&s.w===r.w&&s.l===r.l&&s.t===3&&s.ch===1&&!s.part,'떠난 구단 시즌 '+JSON.stringify(s));
+    ok(G.myC.earn-e0===sal+b,'경력 수입 '+(G.myC.earn-e0)+' 기대 '+(sal+b)); ok(personalState().cash-c0===sal-adv+b,'지갑 '+(personalState().cash-c0)+' 기대 '+(sal-adv+b));
+    simTo(()=>G.last&&G.last.y===y); ok(!G.myC.seas.some(x=>x.y===y&&x.tid===B),'새 구단 0승 0패 기록 '+JSON.stringify(G.myC.seas)); const St=myCStats(); ok(St.ch===1&&St.ps===1&&St.w===r.w,'통산 '+JSON.stringify(St));
+    ok(G.last.rep===0,'새 단장이 전임 성적으로 명성 '+G.last.rep); ok(!((G.achT.titles||{})[B]||[]).includes(y),'새 구단 우승 업적 등록'); }
+  G=JSON.parse(s0); { const w0=G.sea.rec[A0].w; ok(gmSucceed({name:'후임자',age:44})==='','세대 교체 실패'); const L=G.gmLine[G.gmLine.length-1]; ok(L.w===w0&&L.champ===1&&L.seas===1,'계보 전임 '+JSON.stringify(L));
+    simTo(()=>G.last&&G.last.y===y); const St=myCStats(); ok(St.n===0&&St.w===0&&St.ch===0,'후임이 전임 시즌을 받음 '+JSON.stringify(St)); ok(G.last.rep===0,'후임 명성 '+G.last.rep); } });
+T('[검수 11-09zb] 세대 교체: 후임은 재임 경기 수를 새로 세고, 전임 재계약 제안을 수락할 수 없다',()=>{ fresh(); G.day=KD(12,1); G.gmP=G.gmP||{name:'전임자',age:50,y0:G.year}; const C=myCInit(); C.y1=G.year; team(G.user).trust=90; G.rep=50; myCSeasonEnd(G.year,{champ:null}); const e=G.evs.find(x=>x.k==='gmRenew'&&!x.done); ok(e&&C.offer,'준비 실패');
+  G.gmTen={tid:G.user,g:499}; ok(gmSucceed({name:'후임자',age:44})==='','교체 실패'); const sal1=G.myC.sal; ok(e.done,'전임 재계약 제안이 살아 있음'); evPick(e.id,0); ok(G.myC.sal===sal1,'후임 연봉 바뀜'); const m=G.mail.find(x=>x.id===e.mid); ok(!m||!(m.acts||[]).length,'재계약 버튼이 남음');
+  gmTenTick(); ok(G.gmTen.g===1,'재임 경기 수 이어받음 '+G.gmTen.g); });
+T('[검수 11-09zb] 재계약 연봉: 7억 위 연봉도 깎지 않고, 인상 요구가 받아들여지면 실제로 오른다',()=>{ fresh(); G.day=KD(12,1); const C=myCInit(); C.sal=910; C.y1=G.year; team(G.user).trust=95; G.rep=50; myCSeasonEnd(G.year,{champ:G.user}); ok(C.offer&&C.offer.sal>=910,'재계약 제안 '+(C.offer&&C.offer.sal));
+  let got=false; for(let i=0;i<30&&!got;i++){ C.sal=910; C.offer={y:G.year,sal:700,yrs:4}; team(G.user).trust=95; const r=EVH.gmRenew.pick(null,1); if(r.includes('받아들였'))got=true; ok(r.includes('받아들였')?C.sal>=800:C.sal===700,'인상 결과 '+C.sal+' '+r); } ok(got,'인상 요구가 한 번도 받아들여지지 않음'); });
+T('[검수 11-09zb] 단장 재계약은 비서에게 넘길 수 없고, 구단주 멈춤을 꺼도 진행을 멈춘다',()=>{ fresh(); G.day=KD(12,1); const C=myCInit(); C.y1=G.year; team(G.user).trust=80; G.rep=50; myCSeasonEnd(G.year,{champ:null}); const e=G.evs.find(x=>x.k==='gmRenew'&&!x.done); ok(e,'준비 실패');
+  const r=handOffEv(e.id); ok(!e.done&&r.includes('직접'),'비서가 처리 '+r); G.stopCfg={owner:false}; ok(evStops(e),'구단주 멈춤을 끄면 재계약이 진행을 막지 않음'); ok(stopOn(G.mail.find(x=>x.id===e.mid)),'소식함 분류가 멈춤 아님'); });
+T('[검수 11-09zb] 시작 전인 재계약을 두고 이직하면 근무한 계약이 떠난 계약으로 남는다',()=>{ fresh(); G.day=KD(11,10); G.ps={done:true,finDay:KD(10,30),res:{}}; G.last=Object.assign({},G.last||{},{y:G.year}); const A0=G.user, C=myCInit(); C.y0=G.year-2; C.y1=G.year; C.offer={y:G.year,sal:C.sal,yrs:4}; EVH.gmRenew.pick(null,0); ok(C.y0===G.year+1,'재계약 실패');
+  const B=G.teams.find(t=>t.id!==A0).id; jobOffer(B,false); jobAnswer(B,true); ok(G.user===B,'이직 실패'); const st=G.myC.stints.filter(s=>s.tid===A0); ok(st.length===1&&st[0].how==='이직'&&st[0].y0===G.year-2&&st[0].y1===G.year,'계약 기록 '+JSON.stringify(st)); });
+T('[검수 11-09zb] 만료된 계약은 다음 회계연도 월급이 없다',()=>{ fresh(); const C=myCInit(); C.y0=G.year-1; C.y1=G.year; G.last=Object.assign({},G.last||{},{y:G.year}); G.day=KD(11,1); const S=personalState(), c0=S.cash; personalMonthlyPay(); ok(S.cash===c0,'만료 뒤 월급 '+(S.cash-c0)); C.y1=G.year+2; G.day=KD(12,1); personalMonthlyPay(); ok(S.cash>c0,'계약 중인데 월급 없음'); });
+T('[검수 11-09zb] 옛 저장(연도 키) 선지급 월급은 떠나는 구단이 내고 새 구단 연봉에서 빠지지 않는다',()=>{ fresh(); G.day=KD(5,1); const A0=G.user, S=personalState(), fy=fyNow(); for(const k in S.advance)delete S.advance[k]; S.advance[fy]=30; const e0=myCInit().earn; const B=G.teams.find(t=>t.id!==A0).id; jobOffer(B,false); jobAnswer(B,true); ok(G.user===B,'이직 실패');
+  ok(S.advance[fy]==null&&G.myC.earn-e0===30,'옛 선지급 정산 '+JSON.stringify(S.advance)+' '+(G.myC.earn-e0)); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
