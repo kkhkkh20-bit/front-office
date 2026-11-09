@@ -167,3 +167,4 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 .crew-at{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.crew-at span{display:grid;justify-items:center;font-size:11px;color:var(--muted)}.crew-at i{font-style:normal}.crew-at b{font:700 16px var(--f-num,inherit)}
 /* 치어리더 카드: 작은 원 대신 카드 폭 사진(사용자 11-09: 얼굴이 안 보임) */
 .chm .crew-h{display:grid;grid-template-columns:1fr;gap:6px}.chm .crew-av{width:100%;height:auto;aspect-ratio:1/1;border-radius:6px}.chm .crew-av img{object-position:50% 20%}
+.cimg-b{display:inline-flex;gap:4px;flex:none}.cimg-b .btn,.cimg-b label.btn{white-space:nowrap;writing-mode:horizontal-tb;min-width:max-content}

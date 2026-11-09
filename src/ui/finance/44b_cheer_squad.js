@@ -1,7 +1,9 @@
 /* ===== 치어리더 단원 카드(구단·재정 > 팬·언론 > 응원단, 엔진 56b_cheer_squad.js) =====
    사진: v14 치어리더 단원 12명 + v12 치어리더 팀장 사진(팀장 자리에 쓰인 사진은 빼고). 단원 수가 더 많으면 겹쳐 쓴다(같은 단원은 늘 같은 사진) */
 const shash=s=>[...String(s)].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7)>>>0;
-const F8R=(r,f)=>typeof FACE8==='undefined'?[]:FACE8.ids.map((x,i)=>x.r===r&&(f==null||x.f===f)?i:-1).filter(i=>i>=0);
+/* 한국 구단 응원단이라 외국인처럼 보이는 사진은 뺀다(사용자 11-09). 각 묶음 안 순번: v14 단원 0, v12 치어리더 팀장 0·1·6 */
+const F8_SKIP={cheer:[0],ccap:[0,1,6]};
+const F8R=(r,f)=>{ if(typeof FACE8==='undefined')return []; const L=FACE8.ids.map((x,i)=>x.r===r&&(f==null||x.f===f)?i:-1).filter(i=>i>=0); const sk=F8_SKIP[r]; return sk&&f==null?L.filter((_,j)=>!sk.includes(j)):L; };
 /* 응원단장·치어리더 팀장 사진(v12): 팀장은 여성 팀장 사진, 응원단장은 남성 응원단장 사진에서 이름·번호로 고정. 갤러리 사진(G.cimg)이 있으면 그쪽이 먼저 */
 function crewPh(c){ const P=c.job==='cap'?F8R('ccap'):F8R('clead',0); /* 응원단장 이름은 남성 이름(genName)이라 남성 사진 */ return P.length?P[shash('cr'+c.id+c.name)%P.length]:null; }
 /* 단원 사진: 처음 볼 때 정해 저장(m.ph = FACE8 번호). shortcut: FACE8 앞쪽에 새 묶음을 끼워 넣으면 번호가 밀린다, 그때는 m.ph를 지우고 다시 배정 */
