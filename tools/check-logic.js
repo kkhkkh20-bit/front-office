@@ -3736,6 +3736,9 @@ T('[피드백 11-09r] 2대 선수: 우리가 지명했던 선수의 아들을 �
   const e2=G.evs.find(x=>x.k==='son2'&&x.data.pid===p2.id&&!x.done); ok(e2&&e2.opts[0].l.includes('결번'),'결번 허락 선택지가 없음'); evPick(e2.id,0); ok(jno(p2)===97,'결번 허락 뒤 번호가 다름 '+jno(p2));
   ok(G.retNos.some(r=>r.no===97),'결번 기록이 사라짐'); const r=setPlayerNo(q.id,97); ok(r.includes('영구결번'),'다른 선수도 결번 번호를 쓸 수 있게 됨');
 });
+T('[카페 11-09e] 새해마다 독립리그·입단 테스트 출신이 무적 시장에 나와 하한 50명을 지킨다',()=>{ fresh(); const n0=Object.keys(G.players).length; freeYear(); const L=freeList(); ok(L.length>=FREE_MIN,'무적 선수 '+L.length+'명');
+  const nw=Object.values(G.players).filter(p=>p.id>=n0&&isFree(p)&&p.freeSince===G.year); ok(nw.length>=FREE_NEW,'새로 나온 선수 '+nw.length+'명'); ok(nw.every(p=>p.age>=22&&p.age<=30&&ovr(p)>=26&&ovr(p)<=56),'나이·능력 범위 밖');
+  const m=freeList().length; freeYear(); ok(freeList().length>=m+FREE_NEW-1,'하한을 넘어도 해마다 몇 명은 새로 나와야 함 '+m+' -> '+freeList().length); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
