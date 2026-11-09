@@ -60,7 +60,7 @@ function cmCounter(tid,c,T){ const t=team(tid), P=stAiPlan(t); stAttr(c); if(T.c
   return `${tshort(tid)}이(가) ${c.name} 코치에게 연 ${money(keep)}로 역제안해 붙잡으려 합니다. ${dmd(G.day+5)}까지 연 ${money(need)}로 다시 제의하면 우리 쪽으로 옵니다.`; }
 function cmCtrOf(c){ const X=G.poachCtr&&c&&G.poachCtr[c.id]; return X&&X.exp>=G.day?X:null; }
 /* 매일: 코치 시장 경쟁 */
-function cmDaily(){ try{ mgrReqDaily(); }catch(e){} try{ schDaily(); }catch(e){} if(!G.coach)return; const o=dobj(G.day);
+function cmDaily(){ try{ mgrReqDaily(); }catch(e){} try{ ownReqDaily(); }catch(e){} try{ schDaily(); }catch(e){} if(!G.coach)return; const o=dobj(G.day);
   if(o.d===1)try{ cmAiMonthly(); }catch(e){}
   if((o.m===11||o.m===12)&&o.d===20)try{ cmRaid(); }catch(e){}
   if(G.unemp){ G.cmRaid=[]; return; }

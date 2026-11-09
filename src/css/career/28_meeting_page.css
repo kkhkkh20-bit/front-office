@@ -19,3 +19,6 @@
  .meet-page .mt-opts{display:flex;flex-direction:column;min-height:0;max-height:none;padding:6px;border-top:0;border-left:1px solid var(--line2)}
  .meet-page .mt-o{padding:5px 7px}
 }
+/* 주고받는 대화(11-09e): 장면 중 단장 대답은 내 말풍선처럼 오른쪽 색을 쓰고, 휴대폰에서는 한 줄에 하나씩 크게 */
+.meet-page .mt-opts.scene .mt-o{border-color:color-mix(in srgb,var(--team-hi) 55%,var(--line));background:color-mix(in srgb,var(--team-hi) 9%,var(--panel))}
+@media(max-width:600px){.meet-page .mt-opts.scene{grid-template-columns:1fr}.meet-page .mt-opts.scene .mt-o b{font-size:12px}}
