@@ -50,7 +50,7 @@ function splAdd(b,p,o,f){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o
   row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side); }
 /* 우리 선수 경기별 기록(이동 구간 추세용, 이번 시즌만): 타자 [날짜, 타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런], 투수 [날짜, 상대 타자, 아웃, 삼진, 볼넷, 피안타, 피홈런, 자책] */
 function glAdd(p,day,x){ const y=G.year; if(!p.gl||p.gl.y!==y)p.gl={y,g:[]}; p.gl.g.push(p.isP?[day,x.bf||0,x.outs||0,x.so||0,x.bb||0,x.h||0,x.hr||0,x.er||0,x.r??null]:[day,x.pa||0,x.ab||0,x.h||0,(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0),x.bb||0,x.so||0,x.hr||0,x.hbp||0]); } /* 타자 끝 칸: 사구 */
-function lineFor(p,y,t,lvl){ let h=p.hist.find(x=>x.y===y&&x.t===t&&x.lvl===lvl); if(!h){ h=Object.assign({y,t,lvl},p.isP?ZP:ZB); p.hist.push(h); if(!p.salYr)p.salYr={}; if(p.salYr[y]==null)p.salYr[y]=p.sal||0; } return h; }
+function lineFor(p,y,t,lvl){ let h=p.hist.find(x=>x.y===y&&x.t===t&&x.lvl===lvl); const j=p.hist.indexOf(h); if(h&&p.hist.some((x,i)=>i>j&&x.y===y&&x.lvl===lvl)){ p.hist.splice(j,1); p.hist.push(h); } /* A→B→A로 돌아와 뛰면 그 줄을 맨 뒤로: 시즌 합계 소속은 마지막으로 뛴 팀(검수 11-09l) */ if(!h){ h=Object.assign({y,t,lvl},p.isP?ZP:ZB); p.hist.push(h); if(!p.salYr)p.salYr={}; if(p.salYr[y]==null)p.salYr[y]=p.sal||0; } return h; }
 /* 그 시즌 연봉: 그해 첫 기록이 생길 때 남긴 값. 기록이 없는 해는 비운다(지금 연봉을 지난 성적에 붙이지 않는다). 기록 전인 이번 시즌만 지금 연봉 */
 function salOfY(p,y){ if(!p)return null; const v=p.salYr?p.salYr[y]:null; if(v!=null)return v; const o=Array.isArray(p.salH)?p.salH.find(x=>x.y===y):null; if(o)return o.s; /* 스토브리그 연봉 기록(국내 선수, 4년) */ return y===G.year?(p.sal||0):null; }
 function addTo(h,o){ for(const k in o) if(k!=='y'&&k!=='t'&&typeof o[k]==='number') h[k]=(h[k]||0)+o[k]; }
