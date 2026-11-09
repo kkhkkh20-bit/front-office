@@ -2685,6 +2685,27 @@ T('[피드백 11-09d] 고향·모교: FA 선호, 구단주 자금, 팬·구단�
   const ot=team(oth), pop0=ot.pop; const q2=Object.assign({},p,{area:teamArea(oth),draft:null}); homeReturn(q2,oth); ok(ot.pop>pop0,'AI 구단 인기');
   const F0=G.fa; p.team=null; p.ask={annual:800,years:1}; G.fa={open:true,closed:false,pool:[p.id]}; const w1=ownWhy('fa',0,p.id); p.area=AREA.find(a=>a.k!==hk).k; const w0=ownWhy('fa',0,p.id); G.fa=F0; ok(w1.p>w0.p&&w1.f.some(x=>/고향 선수/.test(x[1])),'구단주 자금 명분 '+w1.p+' '+w0.p);
   ok(/·/.test(homeTxt(p)),'카드 고향 표기 '+homeTxt(p)); });
+T('[검수 11-09m] 감독 지시와 약속: 같은 요청 거절 중복 없음, 지시 당일 반영, 재논의 기준, 전임 감독 요청·추천·제안 종료, 기한 판정, 대행 갱신, 혹사 금지 대체 투수',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); let m=G.mgr[G.user]; mgrAttr(m); const oP=mplPress;
+  try{ mplPress=()=>true; m.pl={listen:true}; m.plv=[]; let a=null; for(let i=0;i<60&&!a;i++)a=mplBreakListen('홍길동 콜업'); const b=mplBreakListen('홍길동 콜업'); ok(a&&b,'압박 중 거절이 안 됨'); ok(m.plv.length===1,'같은 날 같은 요청 거절이 위반 '+m.plv.length+'회');
+    m.sal=300; m.yrs=2; const v=m.plv[0]; m.plv=[v,Object.assign({},v)]; const sp=mgrSevPay(m); ok(!sp.brk&&sp.n===1,'중복 위반이 위약금 절반에 반영됨');
+    m.plv=[v,Object.assign({},v,{t:'다른 건의'})]; ok(mgrSevPay(m).brk,'서로 다른 위반 2회는 절반이어야 함');
+    m.plv=[]; G.mgrDir={}; m.arm=90; m.ego=20; m.rel=100; G._push=null; const v0=mgrPush(G.user); for(let i=0;i<30&&!(G.mgrDir.arm&&G.mgrDir.arm.ok);i++){ G.mgrDir={}; G.dirFr=null; setMgrDir('arm',true); } ok(G.mgrDir.arm.ok,'준비 실패: 지시 거절'); ok(mgrPush(G.user)<v0,'지시 당일 투수 운용 '+v0+' -> '+mgrPush(G.user));
+    m.pl={arm:true}; m.plv=[]; m.rel=60; for(let i=0;i<60&&!(G.mgrDir.arm&&G.mgrDir.arm.brk);i++){ G.mgrDir.arm={ok:true,mid:m.id,day:G.day}; mplMonth(); } ok(!G.mgrDir.arm.ok,'준비 실패: 위반 안 됨'); const w0=mgrDirWait('arm'); m.rel=clamp(m.rel+6,0,100); const w1=mgrDirWait('arm'); ok(w1==null||w1===w0,'관계를 올리자 재논의 기준도 올라감: '+w0+' / '+w1);
+  }finally{ mplPress=oP; }
+  const ot=G.teams.find(t=>t.id!==G.user).id, om=G.mgr[ot]; G.mgrDir={arm:{ok:true,mid:om.id,day:G.day}}; ok(armDirOn(ot)&&mgrArmEff(om)===Math.min(om.arm,35),'다른 구단 감독의 혹사 금지 약속이 일부만 적용');
+  G.mgrDir={}; const dom=domestic(G.user).filter(p=>!p.isP); const pOut=dom[0]; const r6=mreqAdd('out',{pid:pOut.id},G.day+30); r6.st='open';
+  G.draftPol={y:G.year,k:'P',tid:G.user,mid:m.id}; ok(draftPolK()==='P','준비 실패: 드래프트 기조');
+  G.mpick={y:G.year,mid:m.id,ids:[dom[1].id],back:null,day:G.day}; const eOld={data:{ids:[dom[1].id],mid:m.id}};
+  const oldId=m.id; hireMgr(G.mmarket[0].id,2); m=G.mgr[G.user]; ok(m.id!==oldId,'준비 실패: 감독 교체');
+  ok(r6.st==='void','전임 감독 정리 요청이 진행 중으로 남음: '+r6.st); ok(draftPolK()==null,'전임 감독 드래프트 추천이 남음');
+  G.mpick={y:G.year,mid:m.id,ids:[dom[2].id],back:null,day:G.day}; const rel0=m.rel; EVH.mpick.pick(eOld,0); ok(m.rel===rel0&&!G.mpick.back,'전임 감독 제안 수락이 후임 관계를 올림');
+  const q=Object.values(G.players).find(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&p.isP), d0=G.day;
+  const r7=mreqAdd('slot',{sk:'SP',rank:9,v:99,target:q.id},G.day+5); r7.st='open'; G.day=r7.until+1; q.team=G.user; q.acq={tid:G.user,k:'트레이드',d:G.day}; let rl=m.rel; mreqCheck(); ok(r7.st==='fail'&&m.rel<=rl,'기한 뒤 영입으로 보강 약속 성공: '+r7.st);
+  G.day=d0; const f=Object.values(G.players).find(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&p!==q); const r8=mreqAdd('fa',{pid:f.id},G.day+21); r8.st='open'; G.day=r8.until+4; f.team=G.user; f.acq={tid:G.user,k:'FA',d:G.day}; rl=m.rel; mreqCheck(); ok(r8.st==='fail'&&m.rel<=rl,'기한 뒤 FA 계약이 요청 완료: '+r8.st); G.day=d0;
+  fireMgr(); const im=G.mgr[G.user]; ok(im.interim&&im.cid,'준비 실패: 코치 대행 아님'); const C=G.coach[G.user]; const role=Object.keys(C).find(k=>C[k]&&C[k].id===im.cid); const c=(G.cmarket||[]).find(x=>!x.ax&&x.id!==im.cid); ok(c,'준비 실패: 코치 후보 없음'); c.role=role; hireCoach(c.id,1); ok(G.mgr[G.user].cid===c.id,'시장에서 바꾼 전임 코치가 감독대행으로 남음');
+  hireMgr(G.mmarket[0].id,2); m=G.mgr[G.user]; G.mgrDir={arm:{ok:true,mid:m.id,day:G.day}}; G._push=null; const op=G.teams.find(t=>t.id!==G.user).id; let mx=0;
+  for(let i=0;i<3;i++){ const day=G.day+1+i; for(const p of depth(G.user).pen)p.lastApp=day; const gg=simGame(day,G.user,op,false); const x=gg.S.h.box.get(gg.S.h.sp.id); mx=Math.max(mx,x.pc||0); }
+  ok(mx<=95,'불펜이 모두 등판한 날 혹사 금지 선발 '+mx+'구'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

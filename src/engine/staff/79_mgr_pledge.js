@@ -13,7 +13,7 @@ const MPL_ST={ok:'수용',pay:'연봉 10% 더 주면 수용',no:'거절'};
 function mplOn(k){ const m=G.mgr&&G.mgr[G.user]; return !!(m&&!m.interim&&m.pl&&m.pl[k]); }
 function mplApply(m,ks){ ks=(ks||[]).filter(k=>MPL[k]); if(!ks.length)return ''; const bad=ks.filter(k=>mplStance(m,k)==='no'); if(bad.length)return `${m.name} 감독은 '${bad.map(k=>MPL[k].l).join("', '")}' 약속을 받아들이지 않습니다.`;
   const pay=ks.filter(k=>mplStance(m,k)==='pay').length; if(pay)m.sal=round5(m.sal*(1+.1*pay)); m.pl={}; for(const k of ks)m.pl[k]=true;
-  const d=mgrDir(); for(const k of ks)if(k==='arm'||k==='rest')d[k]={ok:true,mid:m.id,day:G.day}; return ''; }
+  const d=mgrDir(); for(const k of ks)if(k==='arm'||k==='rest')d[k]={ok:true,mid:m.id,day:G.day}; G._push=null; return ''; }
 /* 1군에 올려 달라는 2군 선수: 2군에서 잘 치거나 잘 던지고, 1군 같은 자리와 비교해 해볼 만하며, 욕심이 있거나 나이가 찬 선수 */
 function callWish(p,rk){ if(!entryOn()||p.team!==G.user||p.e1||p.ys||!healthy(p)||p.foreign||(p.joinY>G.year))return null; if(p.isP&&rpPlanOf(G.user,p)==='sp2')return null; if(p.downDay!=null&&G.day-p.downDay<10)return null; /* 재등록 가능일 전에는 요청하지 않는다(검수 11-09) */
   const h=seasonTotal(p,G.year,'퓨처스'); if(!h)return null; initPers(p);
@@ -30,12 +30,14 @@ function callWishWeek(){ if(period()!=='season'||G.unemp)return; let rk=null; tr
  위반은 기록되고 단장에게 보고된다. 위반이 2번 이상이면 경질할 때 계약 위반 조항으로 잔여 연봉을 절반만 주고, 선수단도 동요하지 않는다. */
 function mplPress(){ const t=G.sea&&G.sea.rec&&G.sea.rec[G.user]; if(!t||period()!=='season')return false; const n=t.w+t.l; if(n>=30&&t.w/Math.max(1,n)<.42)return true;
   const L=(G.sea.tl&&G.sea.tl[G.user]||[]).slice(-10); return L.length>=10&&L.filter(x=>x[0]>0).length<=3; }
-function mplViol(k,t){ const m=G.mgr[G.user]; if(!m||m.interim)return; (m.plv=m.plv||[]).push({d:G.day,k,t}); if(m.plv.length>12)m.plv.shift();
+function mplViol(k,t){ const m=G.mgr[G.user]; if(!m||m.interim)return; if((m.plv||[]).some(x=>x.y===G.year&&x.d===G.day&&x.k===k&&x.t===t))return; /* 같은 날 같은 건은 한 번만(검수 11-09m: 같은 콜업 요청 두 번 거절이 위반 2회가 되어 위약금 절반) */ (m.plv=m.plv||[]).push({y:G.year,d:G.day,k,t}); if(m.plv.length>12)m.plv.shift();
   mail('운영팀',`${m.name} 감독 약속 위반: ${MPL[k].l}`,`${t}\n\n영입 면담에서 받은 '${MPL[k].l}' 약속과 다릅니다. 지금까지 위반 ${m.plv.length}회.${m.plv.length>=2?' 위반이 2회 이상이라 경질하면 계약 위반 조항으로 잔여 연봉을 절반만 지급하고, 선수단도 동요하지 않습니다.':''}`,{kind:'감독'}); }
 /* 건의를 받을 때: 약속이 있어도 압박 중이면 가끔 거절 */
-function mplBreakListen(what){ if(!mplOn('listen')||!mplPress()||R()>=.35)return null; const m=G.mgr[G.user]; mplViol('listen',`${m.name} 감독이 성적 압박을 이유로 ${what} 건의를 거절했습니다.`); return `${m.name} 감독: "약속은 압니다. 그런데 지금은 성적이 급합니다. 이번만큼은 제 판단대로 하겠습니다." (약속 위반으로 기록)`; }
-function mplMonth(){ const m=G.mgr[G.user]; if(!m||m.interim||!m.pl||G.unemp||period()!=='season')return; const P=mplPress(); const d=mgrDir();
+function mplBreakListen(what){ if(!mplOn('listen')||!mplPress())return null; const m=G.mgr[G.user]; const t=`${m.name} 감독이 성적 압박을 이유로 ${what} 건의를 거절했습니다.`;
+  const dup=(m.plv||[]).some(x=>x.y===G.year&&x.d===G.day&&x.k==='listen'&&x.t===t); /* 오늘 이미 거절한 같은 건의: 같은 답, 위반은 새로 세지 않는다 */ if(!dup){ if(R()>=.35)return null; mplViol('listen',t); }
+  return `${m.name} 감독: "약속은 압니다. 그런데 지금은 성적이 급합니다. 이번만큼은 제 판단대로 하겠습니다." ${dup?'(오늘 같은 건의로 이미 위반 기록됨)':'(약속 위반으로 기록)'}`; }
+function mplMonth(){ const m=G.mgr[G.user]; if(!m||m.interim||!m.pl||G.unemp||period()!=='season')return; const P=mplPress(); const d=mgrDir(); G._push=null; /* 지시 상태가 바뀌면 그날 투수 운용 값도 다시 계산 */
   for(const k of ['arm','rest']){ if(!m.pl[k])continue; const x=d[k];
     if(x&&x.brk&&!P){ x.ok=true; delete x.brk; note('감독',`${m.name} 감독이 다시 '${MPL[k].l}' 약속대로 운영합니다.`); }
-    else if(P&&x&&x.ok&&R()<.3){ x.ok=false; x.brk=G.day; mplViol(k,`${m.name} 감독이 성적 압박 속에 이번 달은 ${k==='arm'?'투수를 본래 방식대로 몰아 쓰겠다':'주전을 쉬게 하지 않겠다'}고 합니다.`); } }
+    else if(P&&x&&x.ok&&R()<.3){ x.ok=false; x.brk=G.day; x.rel0=m.rel; /* 재논의 기준은 위반 시점 관계(검수 11-09m) */ mplViol(k,`${m.name} 감독이 성적 압박 속에 이번 달은 ${k==='arm'?'투수를 본래 방식대로 몰아 쓰겠다':'주전을 쉬게 하지 않겠다'}고 합니다.`); } }
   if(m.pl.youth&&P){ const L=playersOf(G.user).filter(p=>p.age<=24&&(p.wishW||0)>=4&&!p.e1&&!(p.injOut>0)&&!p.ys&&!milServing(p)&&!isAway(p)&&!p.hold&&!(p.susp>G.day)&&!p.frehab&&psOk(p)&&(p.downDay==null||G.day-p.downDay>=10)); /* 미계약·정지·등록 불가 선수도 감독 탓이 아니다(검수 11-07) */ /* 콜업할 수 있는 선수만(부상·복무·차출·육성선수는 감독 탓이 아니다, 검수 11-06) */ const ym=G.year*100+dobj(G.day).m; if(L.length&&m.plvY!==ym){ m.plvY=ym; /* 같은 달 중복만 막는다: 연도까지 비교 */ mplViol('youth',`${L.slice(0,3).map(p=>p.name).join(', ')}이(가) 2군에서 잘하며 올려 달라고 한 지 한 달이 넘었지만, ${m.name} 감독은 성적 압박 속에 경험 많은 선수를 씁니다.`); } } }
