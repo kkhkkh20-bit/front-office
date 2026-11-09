@@ -23,14 +23,22 @@ function foAppeal(q,tid,o){ o=o||{}; const t=team(tid); const P=[]; let C=null; 
   if(o.rel)P.push(['보류권 해제 조항',.025*(pf==='free'?2.2:1)]);
   let f=1+sum(P.map(x=>x[1])); if(pf==='money')f=1+(f-1)*.5; /* 돈을 중시하는 선수는 구단 매력을 덜 본다 */
   f=clamp(f,.85,1.25); return {f,parts:P.filter(x=>Math.abs(x[1])>=.003),pref:pf}; }
-function foRivalTeams(q){ const L=[]; for(const t of G.teams){ if(t.id===G.user)continue; const nd=fNeed(t.id); if(!nd||!fKnows(t.id,q)||nd.kind!==q.foreign||(nd.isP!=null&&nd.isP!==q.isP)||(nd.up?ovr(q)<nd.upO+6||foreignCheck(t.id,q,nd.up):foreignCheck(t.id,q)))continue; /* 교체 구단도 기존 선수를 뺀 총액 한도로 본다(AI 영입 후보와 같은 기준, 검수 11-09b) */
-    const top=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&fKnows(t.id,x)&&x.foreign===nd.kind&&(nd.isP==null||x.isP===nd.isP)).sort((a,b)=>fScoreBy(t.id,b)-fScoreBy(t.id,a)).slice(0,3); if(top.includes(q))L.push(t.id); } return L; }
+/* 이 후보를 노리는 다른 구단: AI 영입 후보 상위 3명(fTop3, 계약할 수 있는 후보만)에 든 구단과, 관찰 명단 끼어들기를 일으킨 구단(foCutIn, 검수 11-09zl) */
+function foRivalTeams(q){ const c=q.fneg&&q.fneg.cut; const L=[]; for(const t of G.teams){ if(t.id===G.user||!fKnows(t.id,q))continue;
+    if(c&&c.tid===t.id){ if(!foreignCheck(t.id,q,foUp(t.id,q)))L.push(t.id); continue; }
+    const nd=fNeed(t.id); if(!nd||nd.kind!==q.foreign||(nd.isP!=null&&nd.isP!==q.isP)||(nd.up&&ovr(q)<nd.upO+6))continue; if(fTop3(t.id,nd,q).includes(q))L.push(t.id); } return L; }
+/* 이 구단이 계약하면서 내보낼 선수: 끼어들기를 일으킨 교체 대상, 아니면 겨울 교체 대상 */
+function foUp(tid,q){ const c=q&&q.fneg&&q.fneg.cut; if(c&&c.tid===tid)return c.up!=null&&G.players[c.up]&&G.players[c.up].team===tid?c.up:undefined; const nd=fNeed(tid); return nd&&nd.up?nd.up:undefined; }
 function foVal(g,i){ return g+i*FO_INC_W; }
 /* 목록의 협상 버튼: 요구액이 아니라 가장 낮은 제안(최소 보장)으로도 막히는지 본다. 낮춰 부르면 풀리는 총액 한도로는 협상 자체를 막지 않는다(검수 11-09b) */
 function foListErr(q){ const a0=q.ask; q.ask=MIN_SAL; const e=foreignCheck(G.user,q); q.ask=a0; return e; }
 /* 경쟁 구단 제안(가장 강한 순) */
 /* 경쟁 구단 제시액: 관심 구단이 많을수록 값이 오른다(실제 KBO: S급 신규 외국인은 대부분 상한 100만 달러 근처). 우리가 관찰 중이면 한 곳 더 붙은 것으로 본다 */
-function foRivals(q){ const cap=foCap(q); const T=foRivalTeams(q); const n=T.length+(fwatchOn(q.id)?1:0); const up=1+.07*Math.max(0,n-1); return T.map(tid=>{ const tot=Math.min(cap,Math.round(q.ask*up*(1+.03*hn('fr'+tid,q.id)))); { const nd=fNeed(tid), a0=q.ask; q.ask=tot; const e=foreignCheck(tid,q,nd&&nd.up); q.ask=a0; if(e)return null; } /* 제시 총액으로 계약할 수 없는 구단은 경쟁자가 아니다(검수 11-09b) */ const g=Math.round(tot*.85/USD)*USD, i=Math.max(0,tot-g); const A=foAppeal(q,tid); return {tid,g,i,f:A.f,parts:A.parts,v:foVal(g,i)*A.f}; }).filter(Boolean).sort((a,b)=>b.v-a.v); }
+function foRivals(q){ const cap=foCap(q); let T=foRivalTeams(q), R=[];
+  for(let g=0;g<10;g++){ const n=T.length+(fwatchOn(q.id)?1:0); const up=1+.07*Math.max(0,n-1);
+    R=T.map(tid=>{ const tot=Math.min(cap,Math.round(q.ask*up*(1+.03*hn('fr'+tid,q.id)))); { const a0=q.ask; q.ask=tot; const e=foreignCheck(tid,q,foUp(tid,q)); q.ask=a0; if(e)return null; } /* 제시 총액으로 계약할 수 없는 구단은 경쟁자가 아니다(검수 11-09b) */ const g=Math.round(tot*.85/USD)*USD, i=Math.max(0,tot-g); const A=foAppeal(q,tid); return {tid,g,i,f:A.f,parts:A.parts,v:foVal(g,i)*A.f}; }).filter(Boolean);
+    if(R.length===T.length)break; T=R.map(r=>r.tid); } /* 감당 못 해 빠진 구단은 다른 구단 제시액도 올리지 않는다: 남은 구단 수로 다시 계산(검수 11-09zl) */
+  return R.sort((a,b)=>b.v-a.v); }
 /* 선수가 받아들이는 기준: 요구액을 보통 구단에서 보장 85% + 인센티브 15%로 받는 정도 */
 function foFloor(q){ return foVal(q.ask*.85,q.ask*.15)*.98; }
 function foNeg(q){ q.fneg=q.fneg||{n:0,mood:70,since:G.day,wk:G.day}; if(G.day-q.fneg.wk>=7){ q.fneg.wk=G.day; q.fneg.n=0; } return q.fneg; }
@@ -40,13 +48,13 @@ function foOffer(id,g,i,rel){ rel=!!rel; const q=G.players[id]; if(!q||q.team!=n
   g=Math.round(g); i=Math.round(Math.max(0,i)); const cap=foCap(q); if(g+i>cap)return {ok:false,msg:`신규 계약은 보장과 인센티브를 합쳐 ${Math.round(cap/USD)}만 달러(${money(cap)})까지입니다.`};
   const ask0=q.ask; q.ask=g+i; const err=foreignCheck(G.user,q); q.ask=ask0; if(err)return {ok:false,msg:err};
   const N=foNeg(q); if(N.cool>G.day)return {ok:false,msg:`${q.name} 측이 ${dmd(N.cool)}까지 협상을 쉬자고 합니다.`}; if(N.n>=3)return {ok:false,msg:`이번 주 제안은 세 번까지입니다. ${dmd(N.wk+7)}에 다시 제안할 수 있습니다.`};
-  N.n++; const me=foAppeal(q,G.user,{rel}); const v=foVal(g,i)*me.f; const R0=foRivals(q); const best=R0[0]; const floor=foFloor(q); const target=Math.max(floor,best?best.v*1.01:0);
+  N.n++; N.last=G.day; const me=foAppeal(q,G.user,{rel}); const v=foVal(g,i)*me.f; const R0=foRivals(q); const best=R0[0]; const floor=foFloor(q); const target=Math.max(floor,best?best.v*1.01:0);
   const riv=best?`${R0.length}개 구단이 관심을 보이고 있고, 가장 적극적인 곳은 ${tshort(best.tid)}(보장 ${usdT(best.g)} + 인센티브 ${usdT(best.i)}, 구단 매력 ${Math.round((best.f-1)*100)>=0?'+':''}${Math.round((best.f-1)*100)}%)입니다.`:'아직 다른 구단 제안은 없습니다.';
   if(v>=target){ const err=signForeignT(G.user,id,g,i); if(err)return {ok:false,msg:err}; delete q.fneg; if(rel){ q.fRel=true; story(q,'계약 조항: 재계약하지 않으면 보류권 해제(국내 다른 구단과 계약 가능)','move'); } try{ agRelAdd(agentOf(q),2,`외국인 ${q.name} 계약`); }catch(e){} return {ok:true,msg:`${q.name} 측이 사인했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}.${best?` ${tshort(best.tid)}도 노렸지만 우리를 택했습니다.`:''}`}; }
   /* 낮게 부르면 분위기가 나빠진다 */
   const r=v/target; if(r<.85){ N.mood-=12; } else if(r<.95)N.mood-=4;
-  if(N.mood<40){ N.cool=G.day+7; N.mood=55; return {ok:false,msg:`${q.name} 측: "조건 차이가 너무 큽니다. 일주일 뒤에 다시 이야기하시죠." ${riv}`}; }
-  if(best&&!N.dl){ N.dl=period()==='season'?Math.min(G.day+3,foreignDL()):G.day+3; N.dlT=best.tid; } /* 등록 마감 뒤로 약속하지 않는다(검수 11-09b) */
+  if(N.mood<40){ N.cool=N.dl>G.day?Math.min(G.day+7,N.dl):G.day+7; /* 기다려 주는 기한 안에 한 번은 답할 수 있게(검수 11-09zl) */ N.mood=55; return {ok:false,msg:`${q.name} 측: "조건 차이가 너무 큽니다. 일주일 뒤에 다시 이야기하시죠." ${riv}`}; }
+  if(best&&!N.dl&&foDL()>G.day){ N.dl=foDL(); N.dlT=best.tid; } /* 등록 마감 뒤로 약속하지 않는다(검수 11-09b) */
   const okT=(g,ii)=>{ if(g==null)return null; const a0=q.ask; q.ask=g+ii; const e=foreignCheck(G.user,q); q.ask=a0; return e?null:g; }; /* 구단 외국인 총액 한도로 다시 막히는 금액은 안내하지 않는다(검수 11-09s) */
   const ng=okT(foNeedG(q,i,target,me.f),i), ng0=i>0?okT(foNeedG(q,0,target,me.f),0):null;
   const why=best&&best.v>floor?`${tshort(best.tid)} 조건이 더 좋습니다`:'요구 조건에 못 미칩니다';
@@ -60,15 +68,17 @@ function signForeignT(tid,id,g,i){ const p=G.players[id]; if(!p)return '외국�
   if(tid===G.user)story(p,`계약 조건: 보장 ${money(g)}${i?` + 인센티브 ${money(i)}(규정 출전 시)`:''}`,'move'); return ''; }
 /* 기다려 준 기한이 지나면 가장 강한 경쟁 구단으로 간다 */
 function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]; if(!q||q.team!=null||!q.fneg||!q.fneg.dl||q.fneg.dl>=G.day)continue; const dl=q.fneg.dl; delete q.fneg.dl;
-    const R0=foRivals(q); if(!R0.length||!foreignOpen())continue; let b=null; for(const r of R0){ aiForeignSign(r.tid,q,'',r); if(q.team===r.tid){ b=r; break; } } if(!b)continue; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다 */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${q.fcut!=null&&!q.fneg.n?`${dmd(dl)}까지 끼어들 기회가 있었지만 우리는 제안하지 않았습니다.`:`${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`}`); } }
+    const R0=foRivals(q); let b=null; if(foreignOpen())for(const r of R0){ aiForeignSign(r.tid,q,'',r); if(q.team===r.tid){ b=r; break; } } if(q.fneg)delete q.fneg.cut; if(!b)continue; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다. 경쟁 소식 전에 낸 제안은 답으로 세지 않는다(검수 11-09zl) */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${q.fcut!=null&&!(q.fneg.last>=q.fcut)?`${dmd(dl)}까지 끼어들 기회가 있었지만 우리는 제안하지 않았습니다.`:`${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`}`); } }
 /* 우리 관찰 명단 후보를 AI 구단이 데려가려 하면 바로 끝내지 않고 사흘 끼어들 기한을 준다(사용자 피드백 11-09f: '하이재킹 당했습니다'로 끝나 허무함).
    기한에는 다른 구단도 못 데려가고(foHeld), 기한이 지나면 foDaily가 기존 점수로 가장 강한 구단에 보낸다. 관찰 명단만, 한 선수당 한 번만 */
-function foCutIn(tid,q){ if(G.unemp||!q||q.team!=null||q.fcut!=null||!fwatchOn(q.id)||foHeld(q))return false; const dl=period()==='season'?Math.min(G.day+3,foreignDL()):G.day+3; if(dl<=G.day)return false;
-  q.fcut=G.day; const N=foNeg(q); N.dl=dl; N.dlT=tid; const r=foRivals(q).find(x=>x.tid===tid); const tot=r?r.g+r.i:Math.min(foCap(q),q.ask);
+function foCutIn(tid,q,up){ if(G.unemp||!q||q.team!=null||q.fcut!=null||!fwatchOn(q.id)||foHeld(q))return false; const dl=foDL(); if(dl<=G.day)return false;
+  q.fcut=G.day; const N=foNeg(q); N.dl=dl; N.dlT=tid; N.cut={tid,up:up??(fNeed(tid)||{}).up}; delete N.cool; /* 영입을 추진한 구단(교체 대상 포함)은 경쟁자로 남고, 새 기한 동안 협상 휴식은 풀린다(검수 11-09zl) */ const r=foRivals(q).find(x=>x.tid===tid); const tot=r?r.g+r.i:Math.min(foCap(q),q.ask);
   mail('스카우트팀장',`${tshort(tid)}, 관찰 후보 ${q.name}와(과) 협상 중`,`${tname(tid)}이(가) 관찰 명단의 ${q.name}(${posLabel(q)}, ${q.age}세)과(와) 계약을 앞두고 있습니다. 제시액은 약 ${Math.round(tot/USD/5)*5}만 달러 수준으로 들립니다. 관심 있으면 ${dmd(dl)}까지 제안하세요. 선수가 두 구단 조건을 비교해 고릅니다.`,{imp:true,kind:'외국인',ref:q.id,acts:[{l:`${q.name} 보고 제안`,a:'player',v:q.id},{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
   return true; }
 /* AI 구단은 우리와 협상 중인(기다려 주는) 선수를 그 기간에는 데려가지 않는다 */
 function foHeld(q){ return q&&q.fneg&&q.fneg.dl&&q.fneg.dl>=G.day; }
+/* 기다려 주는 기한: 사흘 뒤, 시즌 중에는 등록 마감 전날까지(그다음 날 처리가 마감일 안에 돌게, 검수 11-09zl: 8월 15일 기한이 16일에 처리돼 아무도 계약 못 함) */
+function foDL(){ return period()==='season'?Math.min(G.day+3,foreignDL()-1):G.day+3; }
 const usdT=v=>`${(v/USD).toFixed(2).replace(/\.?0+$/,'')}만 달러`;
 
 /* ===== 우리 외국인 선수 재계약과 보류권 =====
@@ -85,10 +95,11 @@ function foReComfort(p){ initPers(p); return clamp(1+((p.adapt||50)-50)/500+(p.r
 function foReFloor(p){ initPers(p); const O=foReOut(p); const stay=p.newSal*clamp(.9-((p.pers.loy||10)-10)*.01-((p.adapt||50)-50)/1000,.78,.95); return Math.max(stay,O&&!O.none?O.v*.97:0); }
 function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.done||!p||!C.foreignEnd.includes(id))return {ok:false,msg:'재계약 기간이 아닙니다.'};
   if(C.foreignDrop.includes(id))return {ok:false,msg:'이미 결별하기로 한 선수입니다.'}; C.fre=C.fre||{}; const N=C.fre[id]=C.fre[id]||{n:0,mood:70};
-  if(N.ok)return {ok:false,msg:'이미 합의했습니다.'}; if(N.n>=3)return {ok:false,msg:'재계약 제안은 세 번까지입니다.'};
-  g=Math.round(g); i=Math.round(Math.max(0,i)); if(p.foreign==='아시아'&&g+i>asiaReCap(p))return {ok:false,msg:`아시아쿼터 재계약은 보장·인센티브 합계 ${usdT(asiaReCap(p))}(${money(asiaReCap(p))})까지입니다(직전 연봉 ${usdT(p.sal)} + 10만 달러, 신규 상한 20만 달러 중 큰 쪽).`}; /* 화면 안내 상한과 같게(검수 11-06) */ N.n++; const f=foReComfort(p); const v=foVal(g,i)*f; const target=foReFloor(p); const O=foReOut(p);
+  const re=!!N.ok; if(re){ const fc=fReCapInfo(); if(p.foreign!=='용병'||!(fc&&fc.over>0))return {ok:false,msg:'이미 합의했습니다.'}; } else if(N.n>=3)return {ok:false,msg:'재계약 제안은 세 번까지입니다.'}; /* 합의 뒤 총액 한도를 넘으면 낮춘 조건으로 다시 제안할 수 있다(횟수 제한 없음, 검수 11-09zl) */
+  g=Math.round(g); i=Math.round(Math.max(0,i)); if(p.foreign==='아시아'&&g+i>asiaReCap(p))return {ok:false,msg:`아시아쿼터 재계약은 보장·인센티브 합계 ${usdT(asiaReCap(p))}(${money(asiaReCap(p))})까지입니다(직전 연봉 ${usdT(p.sal)} + 10만 달러, 신규 상한 20만 달러 중 큰 쪽).`}; /* 화면 안내 상한과 같게(검수 11-06) */ if(!re)N.n++; const f=foReComfort(p); const v=foVal(g,i)*f; const target=foReFloor(p); const O=foReOut(p);
   const out=O&&!O.none?`${O.k} 구단이 ${usdT(O.v)} 수준을 제시했다고 합니다.`:'해외 제안은 없다고 합니다. 국내 다른 구단은 보류권 때문에 접촉할 수 없습니다.';
-  if(v>=target){ N.ok=true; p.newSal=g; if(i>0)p.fInc=i; else delete p.fInc; return {ok:true,msg:`${p.name} 측이 재계약에 합의했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}. ${O&&!O.none?out:''}`}; }
+  if(v>=target){ N.ok=true; p.newSal=g; if(i>0)p.fInc=i; else delete p.fInc; if(p.fMulti>C.y)delete p.fMulti; /* 새 조건은 1년 계약으로 */ return {ok:true,msg:`${p.name} 측이 재계약에 합의했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}. ${O&&!O.none?out:''}`}; }
+  if(re){ const need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD; return {ok:false,need,msg:`${p.name} 측: 보장 ${usdT(need)}(${money(need)})${i?` + 인센티브 ${usdT(i)}`:''} 이상이어야 조건을 바꾸겠다고 합니다. 기존 합의(보장 ${usdT(p.newSal)}${p.fInc?` + 인센티브 ${usdT(p.fInc)}`:''})는 그대로입니다.`}; }
   const r=v/target; N.mood-=r<.85?15:r<.95?6:2;
   if(N.mood<40||N.n>=3){ C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return {ok:false,msg:`${p.name} 측이 재계약을 거절했습니다. ${out} ${(C.fFree||[]).includes(id)||p.fRel?'계약에 보류권 해제 조항이 있어 국내 다른 구단과도 계약할 수 있는 자유계약 선수가 됩니다.':`보류권은 우리에게 있으니 5년 동안 국내 다른 구단에는 갈 수 없고, ${O&&!O.none?O.k+'으로':'해외로'} 떠납니다.`}`}; } /* 해제 조항이 있으면 실제 처리(자유계약)와 같은 안내(검수 11-08) */
   let need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD, ii=i; if(p.foreign==='아시아'&&need+i>asiaReCap(p)){ const n0=Math.ceil(target/f/USD)*USD; if(n0>asiaReCap(p))return {ok:false,msg:`${p.name} 측: 아시아쿼터 재계약 상한 ${usdT(asiaReCap(p))} 안에서는 사인할 조건이 없다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; need=n0; ii=0; } /* 상한을 넘는 금액은 조건으로 내놓지 않는다(검수 11-09s) */

@@ -31,7 +31,7 @@ Object.assign(A,{ foRe(v){ UI.negWin={k:'fre',id:+v}; renderSheet(); }, /* 재�
 /* 우리 외국인 재계약 협상(보류권: 경쟁 상대는 해외 제안뿐) */
 function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.fo&&UI.fo.id===p.id?UI.fo:null;
   if(!F){ F=UI.fo={id:p.id,g:Math.round(p.newSal*.85/USD)*USD,i:0,msg:'',re:true}; }
-  const O=foReOut(p); const f=foReComfort(p); const v=foVal(F.g,F.i)*f, tgt=foReFloor(p); const reOver=p.foreign==='아시아'&&F.g+F.i>asiaReCap(p); /* 실제 제안 검사와 같은 상한(검수 11-09b) */
+  const O=foReOut(p); const f=foReComfort(p); const v=foVal(F.g,F.i)*f, tgt=foReFloor(p); const reOver=p.foreign==='아시아'&&F.g+F.i>asiaReCap(p); const reCap=p.foreign==='용병'?fReCapInfo():null; /* 실제 제안 검사와 같은 상한(검수 11-09b) */
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}">${l} 달러</button>`; const h=seasonTotal(p,C.y,'1군');
   return `<section class="card fo"><div class="row between"><h2 class="sec">재계약 협상</h2><span class="small muted">보류권 · 국내 경쟁 없음</span></div>
     <p class="small">지금 ${usdT(p.sal)} · 요구 ${usdT(p.newSal)}(${money(p.newSal)}) · 지난 시즌 ${h?statLine(h,p):'기록 없음'}${h?` · WAR ${warOf(h,p).toFixed(1)}`:''}</p>
@@ -44,6 +44,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
     <div class="fo-cmp small"><div class="row between"><span>남고 싶은 마음(적응·재계약 연차·충성)</span><b>${f>=1?'+':''}${Math.round((f-1)*100)}%</b></div>
       <div class="row between"><span>지금 조건으로</span><b class="${v>=tgt&&!reOver?'good':'bad'}">${reOver?'상한 초과':v>=tgt?'합의 가능':'모자람'}</b></div>
       ${N?`<p class="muted">제안 ${N.n}/3 · 분위기 ${N.mood}</p>`:''}</div>
+    ${N&&N.ok&&reCap&&reCap.over>0?`<div class="note">외국인 3명 연봉 총액이 한도를 ${money(reCap.over)} 넘습니다. 낮춘 조건으로 다시 제안해 합의를 바꿀 수 있습니다(거절돼도 기존 합의는 남습니다).</div><button class="btn primary block" data-a="foGo" data-v="${p.id}">낮춘 조건으로 다시 제안</button>`:''}
     ${N&&N.ok?`<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.${p.fMulti>C.y?` ${C.y+1}~${p.fMulti} 2년 계약입니다.`:''}</div>${p.fMulti>C.y||p.age>=35?'':`<button class="btn small" data-a="foMulti" data-v="${p.id}">2년 계약으로 바꾸기(연봉 +5%, 다음 겨울 협상 없음)</button>`}`:`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
 Object.assign(A,{
   foMulti(v){ const m=fReMulti(+v); if(UI.fo)UI.fo.msg=m; toast(m); save(); render(); },
