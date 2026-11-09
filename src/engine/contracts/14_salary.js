@@ -106,7 +106,7 @@ function offerExtension0(id,annual,years,acc,T){
   if(annual>=d*.98||acc){ delete p.extCounter; const now=(G.rolled===G.year&&G.day>=KD(11,1))||period()==='pre'; /* 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 */
     if(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id)){ G.contract.ended=G.contract.ended.filter(x=>x!==p.id); if(G.contract.neg)delete G.contract.neg[p.id]; delete p.newSal; }
     const pay=T?T.annual:annual; const tx=T?termsTxt(T,false):`${years}년 연 ${money(annual)}(총 ${money(annual*years)})`;
-    if(now){ p.sal=pay; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; { const C=G.contract; if(C&&C.neg)delete C.neg[p.id]; if(C&&C.ended)C.ended=C.ended.filter(x=>x!==p.id); delete p.newSal; delete p.hold; } } /* 다년계약을 맺었으면 연봉 미계약 협상은 끝(개막 직전 자동 합의가 덮어쓰지 않게) */ else p.extNext={annual:pay,years,...(T?{terms:T}:{})};
+    if(now){ p.sal=pay; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; { const C=G.contract; if(C&&C.neg)delete C.neg[p.id]; if(C&&C.ended)C.ended=C.ended.filter(x=>x!==p.id); delete p.newSal; delete p.hold; } } /* 다년계약을 맺었으면 연봉 미계약 협상은 끝(개막 직전 자동 합의가 덮어쓰지 않게) */ else p.extNext={annual:pay,years,...(T?{terms:T.opt>0?{...T,optC:optCrit(p)}:T}:{})};
     if(T&&now)termsApply(p,T,'ext',ctSeason()); else if(T&&T.bonus>0){ G.spend=G.spend||{}; G.spend.faB=(G.spend.faB||0)+T.bonus; } /* 다음 시즌 계약: 계약금만 지금 주고 나머지 조건은 새 계약이 시작될 때 반영 */
     if(now&&!T)termsClear(p); story(p,`비FA 다년계약 ${T?termsTxt(T,true):`${years}년 연 ${money(annual)}`}`,'move');
     addLog(`${p.name}와(과) 비FA 다년계약에 합의했습니다. ${tx}.`);
@@ -120,7 +120,7 @@ function offerExtension0(id,annual,years,acc,T){
 function keepScore(p){ return ovr(p)+Math.max(0,p.pot-ovr(p))*(p.age<=22?.4:p.age<=24?.28:.1)+(p.faC?3:0)+(p.age>=26&&p.age<=33?1.2:0); }
 function trimCands(n){ return domestic(G.user).filter(p=>!p.ys&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id))).sort((a,b)=>keepScore(a)-keepScore(b)).slice(0,n); }
 /* 방출 정산금: 확정된 보장액의 50%. 지금 다년·FA 계약의 남은 해 + 이미 합의한 다음 시즌 시작 다년계약(extNext). 해마다 협상하는 연봉은 보장이 아니라 0 */
-function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,tot:0}; const cur=p.faC?Math.round(p.sal*Math.max(1,p.yrs||1)*.5):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*.5):0; return {cur,next,tot:cur+next}; }
+function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,tot:0}; const gone=G.last&&G.last.y>=G.year&&G.rolled!==G.year?1:0; /* 결산을 마친 올해 연봉은 이미 지급했다(스토브리그 전까지 yrs에 남아 있다, 검수 11-09zzb) */ const cur=p.faC?Math.round(p.sal*Math.max(gone?0:1,(p.yrs||1)-gone)*.5):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*.5):0; return {cur,next,tot:cur+next}; }
 function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;
   if(p.foreign){ releaseForeign(id); return; }
