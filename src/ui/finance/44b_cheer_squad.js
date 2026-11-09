@@ -1,14 +1,15 @@
 /* ===== 치어리더 단원 카드(구단·재정 > 팬·언론 > 응원단, 엔진 56b_cheer_squad.js) =====
-   사진: v14 치어리더 단원 12명 + v12 치어리더 팀장 사진(팀장 자리에 쓰인 사진은 빼고). 단원 수가 더 많으면 겹쳐 쓴다(같은 단원은 늘 같은 사진) */
+   사진: v15 젊은 치어리더 단원 40명(단원 수가 더 많으면 겹쳐 쓴다, 같은 단원은 늘 같은 사진). 팀장은 v12 치어리더 팀장 사진 */
 const shash=s=>[...String(s)].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7)>>>0;
-/* 한국 구단 응원단이라 외국인처럼 보이는 사진은 뺀다(사용자 11-09). 각 묶음 안 순번: v14 단원 0, v12 치어리더 팀장 0·1·6 */
-const F8_SKIP={cheer:[0],ccap:[0,1,6]};
+/* 한국 구단 응원단이라 외국인처럼 보이는 사진은 뺀다(사용자 11-09). 묶음 안 순번: v12 치어리더 팀장 0·1·6 */
+const F8_SKIP={ccap:[0,1,6]};
 const F8R=(r,f)=>{ if(typeof FACE8==='undefined')return []; const L=FACE8.ids.map((x,i)=>x.r===r&&(f==null||x.f===f)?i:-1).filter(i=>i>=0); const sk=F8_SKIP[r]; return sk&&f==null?L.filter((_,j)=>!sk.includes(j)):L; };
 /* 응원단장·치어리더 팀장 사진(v12): 팀장은 여성 팀장 사진, 응원단장은 남성 응원단장 사진에서 이름·번호로 고정. 갤러리 사진(G.cimg)이 있으면 그쪽이 먼저 */
 function crewPh(c){ const P=c.job==='cap'?F8R('ccap'):F8R('clead',0); /* 응원단장 이름은 남성 이름(genName)이라 남성 사진 */ return P.length?P[shash('cr'+c.id+c.name)%P.length]:null; }
-/* 단원 사진: 처음 볼 때 정해 저장(m.ph = FACE8 번호). shortcut: FACE8 앞쪽에 새 묶음을 끼워 넣으면 번호가 밀린다, 그때는 m.ph를 지우고 다시 배정 */
-function cheerPh(S,m){ const P=[...F8R('cheer'),...F8R('ccap')], cap=(G.fanOps.crew||{}).cap, cp=cap?crewPh(cap):null, Q=P.filter(i=>i!==cp); if(!Q.length)return null;
-  if(m.ph!=null&&Q.includes(m.ph))return m.ph; const used=new Set(S.L.map(x=>x.ph)), free=Q.filter(i=>!used.has(i)), L=free.length?free:Q; m.ph=L[shash(m.id+':'+m.name)%L.length]; return m.ph; }
+/* 단원 사진(v15 젊은 단원 40명, 11-09): 처음 볼 때 정해 저장(m.ph15 = FACE8 번호). 옛 저장의 m.ph(v14·v12 사진 번호)는 쓰지 않고 새로 배정. 팀장은 v12 팀장 사진 그대로(crewPh)
+   shortcut: FACE8 앞쪽에 새 묶음을 끼워 넣으면 번호가 밀린다, 그때는 저장 키를 m.ph16처럼 바꿔 다시 배정 */
+function cheerPh(S,m){ const Q=F8R('cheer15'); if(!Q.length)return null;
+  if(m.ph15!=null&&Q.includes(m.ph15))return m.ph15; delete m.ph; const used=new Set(S.L.map(x=>x.ph15)), free=Q.filter(i=>!used.has(i)), L=free.length?free:Q; m.ph15=L[shash(m.id+':'+m.name)%L.length]; return m.ph15; }
 function phImg(c,alt){ const u=c!=null&&typeof face8Src==='function'?face8Src(c):null; return u?`<img src="${u}" alt="${esc(alt||'')}">`:''; }
 const fatCol=v=>v>=80?'var(--bad)':v>=60?'var(--warn)':'var(--good)';
 function cheerCard(S,m,up){ const st=m.inj?`<span class="pill bad">부상 ${m.inj}일</span>`:m.sl?`<span class="pill warn">슬럼프 ${m.sl}일</span>`:up?'<span class="pill good">다음 무대</span>':'<span class="pill">대기</span>';
