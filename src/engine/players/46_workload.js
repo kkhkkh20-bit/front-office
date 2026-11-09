@@ -48,7 +48,7 @@ function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user)
 const MED_SD={none:.07,c:.05,b:.035,a:0};
 function medInj(p){ const v=p.inj*injStam(p); /* 체력까지 반영한 실제 부상 위험(사용자 11-08) */ if(p.team===G.user)return v; const sd=MED_SD[G.med&&G.med.hosp]??.07; return clamp(v+hn('med'+G.year,p.id)*sd,.02,.45); }
 function durGrade(v){ return v<.08?['강철 몸','good']:v<.12?['튼튼함','good']:v<.18?['보통','']:v<.26?['잔부상 주의','warn']:['부상 병동','bad']; }
-function injDays2(p){ return sum((p.injHist||[]).filter(h=>h.y>=G.year-1).map(h=>h.d!=null?Math.max(0,Math.min(h.days,G.day-h.d)):h.days)); } /* 이미 빠진 날만(앞으로 남은 재활은 아직 결장 이력이 아님, 검수 11-08) */
+function injDays2(p){ const H=p.injHist||[], last=H[H.length-1]; return sum(H.filter(h=>h.y>=G.year-1).map(h=>{ if(h.d==null)return h.days; const e=h.bk??(h===last&&p.injOut>0?G.day:h.d+h.days); return Math.max(0,Math.min(e,G.day)-h.d); })); } /* 실제 복귀일(bk)·지금 재활 중이면 오늘까지로 센다: 진단 일수와 다른 조기 복귀·재활 연장(검수 11-09t) */ /* 이미 빠진 날만(앞으로 남은 재활은 아직 결장 이력이 아님, 검수 11-08) */
 function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
   const H=(p.injHist||[]).filter(h=>h.y>=G.year-2); if(H.length)L.push(`최근 부상: ${H.slice(-4).map(h=>`${h.y}년 ${h.k?injName(h.k):'부상'} ${h.days}일`).join(', ')}`);
   if(p.injOut>0)L.push(`현재 ${injNow(p)}, 복귀까지 약 ${p.injOut}일`);

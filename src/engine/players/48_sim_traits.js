@@ -56,21 +56,21 @@ function dpF(b,p,fs){ return clamp(1+(50-b.r.spd)*.012+gbT(p)*.18+((fs.ifD??IF0)
 function fieldV(p,pos){ return defAt(p,pos)+(trt(p,'rng')+trt(p,'fld'))*.5; }
 /* ===== 퓨처스(2군) 주간 경기: 같은 확률식에 부상·투구 부하·후유증 회복까지 적용 ===== */
 function futBoost(p){ try{ return boostOf(p)*.6; }catch(e){ return 0; } }
-function futBat(p,t,pos,games){ games=games||3; const pa=games>=3?ri(9,14):ri(3,6); const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
+function futBat(p,t,pos,games){ games=games||3; if(p.downDay===G.day||(p.gl&&p.gl.y===G.year&&p.gl.g.some(x=>x[0]===G.day)))return; /* 오늘 1군에서 뛰었거나 오늘 말소된 선수는 이번 주 1군에 있었다(검수 11-09t) */ const pa=games>=3?ri(9,14):ri(3,6); const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
   if(p.injFx)injRecover(p,pa);
   if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
 function futPit(p,t){ const sp=isSPr(p);
   const had=d=>(p.ld||[]).some(x=>x[0]===d); /* 그날 이미(1군 등) 던졌으면 퓨처스 등판을 겹쳐 넣지 않는다(검수 11-07) */
   const days=sp?[G.day]:(p.downDay!=null&&p.downDay>G.day-2)?[G.day]:[G.day-2,G.day]; /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */
   const mv=(p.story||[]).filter(x=>x.k==='move'&&x.y===G.year&&/이적|입단|복귀/.test(x.t)).pop(), ih=(p.injHist||[]).slice(-1)[0];
-  const okD=d=>d===G.day||(!(mv&&mv.d>d)&&!(p.ntFrom!=null&&p.ntFrom<=d&&p.ntAway>d)&&!(ih&&ih.y===G.year&&ih.d<=d&&(ih.bk==null||ih.bk>d))); /* 이적 전·대표팀 소집 중·부상 복귀 전 날짜에는 등판을 만들지 않는다(검수 11-08) */
+  const okD=d=>d===G.day||(!(mv&&mv.d>d)&&!(p.ntFrom!=null&&p.ntFrom<=d&&p.ntAway>d)&&!(ih&&ih.d<=d&&(ih.bk??(p.injOut>0?Infinity:ih.d+ih.days))>d)&&!(p.susp>d)&&!(p.mil&&p.mil.unit!=='상무'&&p.mil.from<=d&&p.mil.until>d)); /* 작년 부상도 실제 복귀일까지, 출장 정지·현역 복무 중인 날도 빼고(검수 11-09t) */ /* 이적 전·대표팀 소집 중·부상 복귀 전 날짜에는 등판을 만들지 않는다(검수 11-08) */
   const D=days.filter(d=>!had(d)&&okD(d)&&!(G.cal&&d<G.cal.open)); /* 개막 전 날짜에는 정규 등판을 만들지 않는다(검수 11-09) */ if(!D.length)return; /* 실제로 던질 날을 먼저 정하고 기록·재활을 그만큼만(검수 11-08: 중복 막고도 성적·재활 진척이 들어감, 1회 등판이 2경기로 기록) */
   let outs=sp?ri(12,18):ri(4,8); if(!sp)outs=Math.max(1,Math.round(outs*D.length/2)); let o=simPit(p,outs,7+futBoost(p)); o.g=sp?1:D.length; o.gs=sp?1:0;
   /* 투구 수 = 상대 타자 수 × 타석당 3.9구(KBO 평균 수준). 예전 식(아웃당 5.4구 + 출루당 4구)은 출루를 두 번 세어 퓨처스 선발이 130~200구를 던진 것으로 잡혔다 */
   const pc=Math.min(sp?110:45,Math.round((outs+(o.h||0)+(o.bb||0)+(o.hbp||0))*3.9));
   if(sp){ injRecover(p,outs); addTo(lineFor(p,G.year,t,'퓨처스'),o); const cd=pitchApp(p,G.day,pc,true); p.fat=clamp((p.fat||0)+pitFatGain(p,pc,true),0,100); if(R()<p.inj*.075*pc/95*injMult(p)*loadMult(p,cd,G.day)/LOAD_NORM)injure(p,G.day,{sp:true,pc,farm:1}); return; }
   const parts=D.length===2?[[D[0],Math.round(pc/2)],[D[1],pc-Math.round(pc/2)]]:[[D[0],pc]];
-  let k=0; for(const [d,q] of parts){ k++; injRecover(p,parts.length===2?(k===1?Math.round(outs/2):outs-Math.round(outs/2)):outs); /* 재활 진척은 실제로 던진 경기만(검수 11-09) */ const cd=pitchApp(p,d,q,false); p.fat=clamp((p.fat||0)+pitFatGain(p,q,false)*(d===G.day?1:.5),0,100); /* 이틀 전 등판 피로도 절반 남는다(검수 11-07) */ if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,G.day,{pc:q,farm:1}); break; } }
+  let k=0; for(const [d,q] of parts){ k++; injRecover(p,parts.length===2?(k===1?Math.round(outs/2):outs-Math.round(outs/2)):outs); /* 재활 진척은 실제로 던진 경기만(검수 11-09) */ const cd=pitchApp(p,d,q,false); p.fat=clamp((p.fat||0)+pitFatGain(p,q,false)*(d===G.day?1:.5),0,100); /* 이틀 전 등판 피로도 절반 남는다(검수 11-07) */ if(!(p.injOut>0)&&R()<p.inj*.026*q/17*injMult(p)*loadMult(p,cd,d)/LOAD_NORM){ injure(p,d,{pc:q,farm:1}); break; } }
   if(k<parts.length){ o=simPit(p,Math.max(1,Math.round(outs*k/parts.length)),7+futBoost(p)); o.g=k; o.gs=0; } /* 첫 등판에 다치면 그 한 경기만 기록(검수 11-08) */ addTo(lineFor(p,G.year,t,'퓨처스'),o); }
 const arsenal_=arsenal;
 
