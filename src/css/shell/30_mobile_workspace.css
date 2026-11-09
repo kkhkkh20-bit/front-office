@@ -73,6 +73,8 @@
  #app main.ws-up .ws-panel>:has(~:is(.ws-scroll,.ws-own)):not(.roster-tools,.twpg,.ws-filter-controls[open]),#app main.ws-up .ws-panel>.ws-scroll~:not(.pgr,.twpg){display:none!important}
  #app main.ws-up .ws-panels>.card{padding-block:4px}#app main.ws-up .ws-panel>.pgr{margin:2px 0 0}#app main.ws-up .ws-panel>.pgr .btn{min-height:32px!important;padding-block:4px} /* 접힌 동안 패널 위아래 여백·페이지 넘김 줄을 줄여 목록 몫을 늘린다 */
 }
+/* 휴대폰 선수 명단 첫 묶음에 종합·포지션·나이·잠재력이 함께 들어가게: 칸 여백을 줄이고 부포지션은 아랫줄로(카페 11-09b) */
+@media(max-width:600px){#app .roster-list .rt :is(td,th):not(:first-child){padding-inline:5px}#app .roster-list .rt td.rtpos i.f{display:block}#app .roster-list .rt .pst{font-size:11px;letter-spacing:0}#app .roster-list .rt .ptier{padding:0 3px}#app .roster-list .rt .pn .av{width:30px;height:30px}}
 /* 협상 상대 구단 카드: PC는 칸 높이를 채우고 주요 선수, 휴대폰은 촘촘히 */
 .tp-st{display:grid;gap:3px;font-size:12px}.tp-st>span{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px;align-items:center}.tp-st i{font-style:normal;color:var(--muted)}.tp-st>i{font-size:11px}
 @media(min-width:1100px){.ws-scroll:has(>.tp-grid){display:flex;flex-direction:column}}
