@@ -21,7 +21,12 @@ const FAN_EV={
 };
 function fanOps(){ if(!G.fanOps){ const T=G.fanYrT||{}, Y=T[G.user]||{}; if(Y.log){ G.fanOps=Y; delete T[G.user]; return Y; } /* 돌아온 구단: 단계·구독자·응원단·쿨다운·미청구 월 요금을 그대로 이어받는다(검수 11-09j) */ G.fanOps={cheer:0,yt:0,sub:Math.round(30000*team(G.user).pop),last:{},yr:{...(Y.yr||{})},boost:null,sup:Y.sup??null,log:[],crew:Y.crew||{}}; } return G.fanOps; } /* 시즌 1회 행사·서포터즈 기록은 구단에 남는다: 떠났다 돌아와도 같은 시즌에 다시 열 수 없다(검수 11-08) */
 /* 홈 관중 배율(우리 구단 홈경기): 응원단·테마 데이·서포터즈 */
-function fanAttM(day){ if(G.unemp||!G.fanOps)return 1; const F=G.fanOps; const nx=typeof _stY!=='undefined'&&_stY!=null; /* 다음 시즌 전망: 지난 테마 데이는 빼고 그 시즌 서포터즈만(검수 11-08) */ return (1+FAN_OPS.cheer.att[F.cheer||0]+crewAtt()+cheerAtt(day))*(!nx&&F.boost&&day>=(F.boost.from??0)&&day<=F.boost.until?1.08:1)*(F.sup===(nx?_stY:G.year)?1.03:1); }
+/* 떠난 구단(야인이면 전 구단) 팬 운영: 그 구단 상태로 잠깐 바꿔 같은 계산을 돌린다. book이면 지출·수입은 그 구단 현금·장부로, 팬 여론은 그 구단에 남긴 여론으로. 메일·기사·결정은 내지 않는다(검수 11-09zs) */
+function fanAway(tid,fn,book){ const F=(G.fanYrT||{})[tid]; if(!F||!F.log||(tid===G.user&&!G.unemp))return null; const P=(G.clubT||{})[tid], s=[G.user,G.unemp,G.fanOps,G.spend,G.pr,G._away];
+  G.user=tid; G.unemp=null; G.fanOps=F; G.spend={}; G.pr=P&&P.pr||{fan:55,press:50,hist:[]}; G._away=1;
+  try{ return fn(); }catch(e){ return null; } finally{ const S=G.spend; [G.user,G.unemp,G.fanOps,G.spend,G.pr]=s; if(s[5])G._away=s[5]; else delete G._away; if(book){ team(tid).cash+=Math.round((S.fanIn||0)-(S.fan||0)); hoBook(tid,[['구단 이벤트·채널 수입',S.fanIn]],[['팬 마케팅·구단 이벤트',S.fan]]); } } }
+function fanAwayMonthly(){ for(const k of Object.keys(G.fanYrT||{}))fanAway(+k,fanMonthly,true); } /* 떠난 구단도 매달 유튜브 성장·응원단 청구, 1월엔 응원단장 나이·계약이 흐른다 */
+function fanAttM(day,tid){ if(tid!=null&&(tid!==G.user||G.unemp))return fanAway(tid,()=>fanAttM(day))??1; /* 서포터즈·테마 데이는 그 구단에 남아 계속 효과(검수 11-09zs) */ if(G.unemp||!G.fanOps)return 1; const F=G.fanOps; const nx=typeof _stY!=='undefined'&&_stY!=null; /* 다음 시즌 전망: 지난 테마 데이는 빼고 그 시즌 서포터즈만(검수 11-08) */ return (1+FAN_OPS.cheer.att[F.cheer||0]+crewAtt()+cheerAtt(day))*(!nx&&F.boost&&day>=(F.boost.from??0)&&day<=F.boost.until?1.08:1)*(F.sup===(nx?_stY:G.year)?1.03:1); }
 function fanLog(t){ const F=fanOps(); F.log.unshift({d:G.day,t}); F.log.length=Math.min(F.log.length,12); }
 function fanSet(k,lv){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const O=FAN_OPS[k]; lv=+lv; if(!O||!(lv>=0&&lv<O.lv.length))return '고를 수 없는 단계입니다.'; const F=fanOps(); if(F[k]===lv)return `이미 ${O.lv[lv]}입니다.`;
   F.mx=F.mx||{}; F.mx[k]=Math.max(F.mx[k]||0,F[k]||0,lv); F[k]=lv; if(k==='cheer'&&F.cs)cheerFill(F.cs); /* 단원 수를 새 단계에 맞춘다 */ fanLog(`${O.l}: ${O.lv[lv]}`); return `${O.l}을(를) '${O.lv[lv]}'(으)로 바꿨습니다.${O.m[lv]?` 매달 ${money(O.m[lv])}이 듭니다.`:' 추가 비용은 없습니다.'}`; }
@@ -78,7 +83,7 @@ function crewMonthly(){ const C=crewOf(), t=team(G.user); const L=Object.values(
 
 /* 선수 응원가(사용자 11-08): 응원단장이 있으면 시즌 중 매달 한 번쯤 응원가가 없는 주축 선수의 응원가를 만들자고 한다.
    만들면 비용이 들고, 응원단장 호응 유도·스타성이 높을수록 잘 만들어져 팬 여론·선수 기분·화제성이 오른다. 이적하면 응원가는 그 구단에 남는다 */
-function crewSongAsk(){ const c=crewOf().lead; if(!c||G.unemp)return; const m=dobj(G.day).m; if(m<4||m>9||R()>.55)return; if((G.evs||[]).some(e=>!e.done&&e.k==='song'))return;
+function crewSongAsk(){ const c=crewOf().lead; if(!c||G.unemp||G._away)return; const m=dobj(G.day).m; if(m<4||m>9||R()>.55)return; if((G.evs||[]).some(e=>!e.done&&e.k==='song'))return;
   const L=playersOf(G.user).filter(p=>p.e1&&!(p.songs&&p.songs[G.user])&&!p.ys).sort((a,b)=>(b.fr&&b.fr.tid===G.user)-(a.fr&&a.fr.tid===G.user)||ovr(b)-ovr(a)); const p=L[0]; if(!p)return;
   const cost=Math.round(8+c.star*.6), q=Math.round(clamp((c.hype+c.star)/2+N(0,2.5),3,20));
   evNew('song',`${p.name} 응원가 만들까요?`,`응원단장 ${c.name}: "${p.name} 선수 응원가가 아직 없습니다. ${p.fr&&p.fr.tid===G.user?'프랜차이즈 스타에게 어울리는 노래를 붙이고 싶습니다.':'팬들이 따라 부를 수 있는 노래를 만들어 보겠습니다.'}" (호응 유도 ${c.hype} · 스타성 ${c.star})`,
