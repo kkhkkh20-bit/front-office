@@ -13036,7 +13036,7 @@ function foundReserve(tid){ tid=tid??G.user; const C=G.coach&&G.coach[tid]; let 
   if(!G.mgr[tid]||G.mgr[tid].interim){ const L=(G.mmarket||[]).map(m=>m.sal).sort((a,b)=>a-b); vac+=L.length?L[Math.floor(L.length/2)]:300; }
   const rem=Math.max(0,finYearEnd()-G.day)/365; const cap=supportCap(team(tid)); const cush=Math.max(1500,Math.round(cap*.08));
   return {vac:Math.round(vac*rem),cush,tot:Math.round(vac*rem)+cush}; } /* vac: 감독·코치 빈자리 채용비 */
-function planSup(){ delete G.supPlan; delete G.bLock; if(G.bLocks)delete G.bLocks[G.user]; try{ const b=budget(); let gf=b.goalFrac; if(G.startY===G.year&&b.cap){ const want=(b.gap+foundReserve().tot)/b.cap; gf=Math.round(clamp(Math.max(gf,want),.2,1)*100)/100; } G.supPlan={y:G.year,gf}; delete G.bLock; }catch(e){} } /* 창단 첫해는 드래프트 직후 예산 여유가 마이너스로 시작하지 않게 지원 목표에 여유분을 둔다 */
+function planSup(){ delete G.supPlan; delete G.bLock; if(G.bLocks)delete G.bLocks[G.user]; try{ const b=budget(); let gf=b.goalFrac; if(b.cap){ const want=(b.gap+foundReserve().tot)/b.cap; gf=Math.round(clamp(Math.max(gf,want),.2,1)*100)/100; } G.supPlan={y:G.year,gf}; delete G.bLock; if(G.bLocks)delete G.bLocks[G.user]; /* 위 budget()이 계획 전 목표율로 확정해 둔 기준을 지운다(안 지우면 개막 목표 전까지 계획이 무시됨) */ }catch(e){} } /* 해마다 지원 목표에 단장 재량 여유분(빈 스태프 자리 + 15억 또는 한도의 8%)을 둔다. 창단 첫해에만 두면 목표가 '예상 적자 + 한도의 5%'라 2년차부터 예산 여유가 늘 1억 안팎에 묶였다(피드백 11-09i) */
 function projSupport(){ const b=budget(); if(b.indie||!b.cap)return 0; return clamp((b.gap-(b.selfC||0))/b.cap,0,2); }
 /* 코치진 정기 보고: 단장이 처리할 일을 골라 버튼과 함께 보낸다 */
 function staffReport(when){ if(G.unemp||!G.mgr[G.user])return; const tid=G.user; const ps=playersOf(tid); const items=[], acts=[];
