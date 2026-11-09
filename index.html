@@ -9906,8 +9906,8 @@ function floorOf(y){ return Math.round(6065*capOf(y)/capOf(2027)); } /* KBO 하�
 let MIN_SAL=30;              // 최저 연봉 3,000만원(금액 단위: 백만원). 2027년부터 3,300만원(2026년 1월 KBO 이사회)
 function syncMinSal(){ MIN_SAL=(typeof G!=='undefined'&&G&&G.year>=2027)?33:30; }
 const ROSTER_MAX=68, ROSTER_MIN=45; // KBO 소속선수 한도: 2025년까지 65명, 2026년 68명으로 확대
-/* 1군 엔트리(KBO 2026: 29명, 8월 25일부터 4명 확대, 말소 후 10일 뒤 재등록)와 육성선수 */
-const ENTRY_BASE=29, ENTRY_EXP=4, YS_MAX=15;
+/* 1군 엔트리(KBO 2026: 29명, 9월 1일부터 5명 확대(아시안게임 해는 후반기 30명 + 8월 25일부터 4명), 말소 후 10일 뒤 재등록)와 육성선수 */
+const ENTRY_BASE=29, ENTRY_EXP=5, YS_MAX=15;
 const rosterN=(tid,d)=>ownedOf(tid,d).filter(p=>!p.ys&&!(p.frehab&&p.frehab!=='hold')).length; /* 부상 대체 외국인을 둔 재활 선수 명단 원선수는 빼고 센다(대체 선수가 자리를 쓴다, 검수 11-09t) */ /* 국가대표 차출 선수도 구단 선수 수에 들어간다(군 복무는 빠짐) */
 const ysN=tid=>Object.values(G.players).filter(p=>p.team===tid&&p.ys&&!(p.joinY>G.year)).length; /* 차출·복무 중인 육성선수도 한도에 센다: 돌아오면 다시 육성선수다(검수 11-09zx) */
 const FA_SVC=8; // 고졸 8시즌, 대졸 7시즌 (2022시즌 종료 후 적용)
@@ -10260,7 +10260,7 @@ function makeLineup(tid,pool){
     if(!better)break; }
   return ln;
 }
-function entryLimit(){ const per=period(); if(per==='post')return ENTRY_BASE+1; if(per!=='season')return ENTRY_BASE; const ag=G.cal&&G.cal.asg&&G.day>G.cal.asg&&typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year)?1:0; return ENTRY_BASE+ag+(G.day>=KD(8,25)?ENTRY_EXP:0); } /* 포스트시즌 30명(KBO 2026), AG 해 후반기 30명이면 확대 뒤 34명 */ /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
+function entryLimit(){ const per=period(); if(per==='post')return ENTRY_BASE+1; if(per!=='season')return ENTRY_BASE; const agY=typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year), ag=agY&&G.cal&&G.cal.asg&&G.day>G.cal.asg?1:0; return ENTRY_BASE+ag+(G.day>=(agY?KD(8,25):KD(9,1))?ENTRY_EXP-ag:0); } /* 확대 엔트리: 평년 9월 1일 5명, 아시안게임 해는 8월 25일 4명(최대 34명, KBO 2026 제3차 실행위원회) */ /* 포스트시즌 30명(KBO 2026), AG 해 후반기 30명이면 확대 뒤 34명 */ /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid).filter(p=>psOk(p)); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); } /* 포스트시즌 자격 없는 선수는 라인업·마운드에 오르지 않는다(검수 11-07) */
 /* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */
@@ -11205,13 +11205,13 @@ function settlement(){
   const top=(arr,f,flt,asc)=>arr.filter(flt).sort((a,b)=>asc?f(a)-f(b):f(b)-f(a))[0];
   const leaders=[
     ['타자 WAR',top(bats,x=>warOf(x.h,x.p),()=>true),x=>warOf(x.h,x.p).toFixed(1)],
-    ['OPS',top(bats,x=>bRate(x.h).ops,x=>x.h.pa>=446),x=>fmt3(bRate(x.h).ops)],
-    ['타율',top(bats,x=>bRate(x.h).avg,x=>x.h.pa>=446),x=>fmt3(bRate(x.h).avg)],
+    ['OPS',top(bats,x=>bRate(x.h).ops,x=>qualPA(x.p,x.h,y)),x=>fmt3(bRate(x.h).ops)],
+    ['타율',top(bats,x=>bRate(x.h).avg,x=>qualPA(x.p,x.h,y)),x=>fmt3(bRate(x.h).avg)],
     ['홈런',top(bats,x=>x.h.hr,()=>true),x=>x.h.hr+'개'],
     ['타점',top(bats,x=>x.h.rbi,()=>true),x=>x.h.rbi+'개'],
     ['도루',top(bats,x=>x.h.sb,()=>true),x=>x.h.sb+'개'],
     ['투수 WAR',top(pits,x=>warOf(x.h,x.p),()=>true),x=>warOf(x.h,x.p).toFixed(1)],
-    ['평균자책점',top(pits,x=>pRate(x.h).era,x=>x.h.outs>=432,true),x=>pRate(x.h).era.toFixed(2)],
+    ['평균자책점',top(pits,x=>pRate(x.h).era,x=>qualIP(x.p,x.h,y),true),x=>pRate(x.h).era.toFixed(2)],
     ['다승',top(pits,x=>x.h.w,()=>true),x=>x.h.w+'승'],
     ['탈삼진',top(pits,x=>x.h.so,()=>true),x=>x.h.so+'개'],
     ['세이브',top(pits,x=>x.h.sv,()=>true),x=>x.h.sv+'개'],
@@ -13429,9 +13429,11 @@ function awVote(cands,voters,seed){ if(!cands.length)return []; const sc=cands.m
   cands.forEach((c,i)=>c.v=fl[i]); return cands.sort((p,q)=>q.v-p.v); }
 /* 시상 소속: 그해 가장 많이 뛴 구단(이적 뒤 안 뛴 구단으로 가지 않게, 현역·보관 기록 같은 결과, 검수 11-08) */
 function awTeamOf(p,h,y){ const yy=y??h.y; let R=(p.hist||[]).filter(r=>r.y===yy&&!r.y2&&r.lvl==='1군'); if(!R.length&&p.arch&&p.arch.rows)R=p.arch.rows.filter(r=>r.y===yy&&r.t!=null); if(!R.length)return h.t??p.team; const by={}; for(const r of R)by[r.t]=(by[r.t]||0)+(r.pa||0)+(r.outs||0); let b=R[R.length-1].t, n=-1; for(const k in by)if(by[k]>n){ n=by[k]; b=+k; } return b; }
+/* 시상 표기 소속: KBO 관행은 수상 당시 소속(2016 최형우 KIA, 2022 양의지 두산). 소속이 없으면(방출·은퇴) 그해 가장 많이 뛴 구단(2025 데이비슨 골든글러브 후보 롯데) */
+function awClub(p,h,y){ return p.team!=null&&!p.arch?p.team:awTeamOf(p,h,y); }
 function awCand(x,extra){ const tt=awTeamOf(x.p,x.h); /* 성적을 낸 구단(검수 11-07: 지금 소속으로 팀 성적 가산) */ const rk=(()=>{ try{ return G.ps.order.findIndex(o=>o.tid===tt); }catch(e){ return 5; } })();
   const big=x.p.isP?(x.h.w||0)*.06+(x.h.sv||0)*.03+(x.h.so||0)*.002:(x.h.hr||0)*.045+(x.h.rbi||0)*.008+(x.h.sb||0)*.005;
-  return {id:x.p.id,name:x.p.name,t:tt,line:statLine(x.h,x.p),w:+x.w.toFixed(1),s:x.w+big+(rk>=0&&rk<=2?.35:0)+N(0,.45)+(extra||0)}; }
+  return {id:x.p.id,name:x.p.name,t:awClub(x.p,x.h),line:statLine(x.h,x.p),w:+x.w.toFixed(1),s:x.w+big+(rk>=0&&rk<=2?.35:0)+N(0,.45)+(extra||0)}; }
 function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(h)rows.push({p,h,w:warOf(h,p)}); }
   for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const q=archP(a); const h=seasonTotal(q,y,'1군'); if(!h)continue; q.team=h.t;
     rows.push({p:q,h,w:sum(R.map(r=>r.war||0))}); } /* 이전 시즌 보관 기록도 이력으로 읽어 신인 자격을 현역과 같게 판정하고, 수비 포지션도 넘긴다(검수 11-06) */ /* 시즌 중 리그를 떠난 선수도 같은 성적이면 같은 후보(타이틀과 같은 기준) */
@@ -15232,11 +15234,11 @@ function featBat(p,x,vs){ const sg=(x.h||0)-(x.d||0)-(x.tr||0)-(x.hr||0);
 const SBK={hr:['홈런',1],rbi:['타점',1],h:['안타',1],sb:['도루',1],w:['승',1],sv:['세이브',1],so:['탈삼진',1]};
 function featSeason(y){ const B=[], P=[]; G._fsT={}; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(!h)continue; if(p.team==null){ const L=(p.hist||[]).filter(r=>r.y===y&&r.lvl==='1군'&&r.t!=null); if(L.length)G._fsT[p.id]=L[L.length-1].t; } (p.isP?P:B).push({p,h}); }
   for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const h={}; for(const r of R)for(const k of ARCH_K)h[k]=(h[k]||0)+(r[k]||0); (a.isP?P:B).push({p:{id:a.id,name:a.name,isP:a.isP,team:R[R.length-1].t,arch:a,hist:[],r:new Proxy({},{get:()=>50})},h}); } /* 시즌 중 리그를 떠난 선수 기록도 진기록·최고 기록에 넣는다(타이틀과 같은 기준) */
-  const qPA=x=>(x.h.pa||0)>=Math.round((tgp(awTeamOf(x.p,x.h,y))||144)*3.1), qB=B.filter(qPA), qP=P.filter(x=>x.h.outs>=432); /* 규정타석은 타격왕과 같은 팀 경기 수 기준(검수 11-09zq) */
+  const qPA=x=>qualPA(x.p,x.h,y), qB=B.filter(qPA), qP=P.filter(x=>qualIP(x.p,x.h,y)); /* 규정타석은 타격왕과 같은 팀 경기 수 기준(검수 11-09zq) */
   for(const x of B){ const {p,h}=x, r=bRate(h); if(h.hr>=40&&h.sb>=40)featAdd('s4040',p,`40-40 (${h.hr}홈런 ${h.sb}도루)`); else if(h.hr>=30&&h.sb>=30)featAdd('s3030',p,`30-30 (${h.hr}홈런 ${h.sb}도루)`);
     if(h.hr>=50)featAdd('hr50',p,`시즌 ${h.hr}홈런`); else if(h.hr>=40)featAdd('hr40',p,`시즌 ${h.hr}홈런`); if(qPA(x)&&r.avg>=.3&&h.hr>=30&&h.rbi>=100)featAdd('s330',p,`타율 ${fmt3(r.avg)} · ${h.hr}홈런 · ${h.rbi}타점`); if(h.h>=200)featAdd('h200',p,`시즌 ${h.h}안타`); if(qPA(x)&&r.avg>=.4)featAdd('avg400',p,`시즌 타율 ${fmt3(r.avg)}`); }
   if(qB.length){ const ma=Math.max(...qB.map(x=>bRate(x.h).avg)), mh=Math.max(...B.map(x=>x.h.hr)), mr=Math.max(...B.map(x=>x.h.rbi)); for(const {p,h} of qB)if(bRate(h).avg===ma&&h.hr===mh&&h.rbi===mr)featAdd('tcB',p,`타격 3관왕 (타율 ${fmt3(ma)} · ${mh}홈런 · ${mr}타점)`); }
-  for(const {p,h} of P){ if(h.w>=20)featAdd('w20',p,`시즌 ${h.w}승`); if(h.sv>=40)featAdd('sv40',p,`시즌 ${h.sv}세이브`); if(h.so>=200)featAdd('k200',p,`시즌 ${h.so}탈삼진`); if(h.outs>=432&&pRate(h).era<1)featAdd('era0',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); else if(h.outs>=432&&pRate(h).era<2)featAdd('era1',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); }
+  for(const {p,h} of P){ const qi=qualIP(p,h,y); if(h.w>=20)featAdd('w20',p,`시즌 ${h.w}승`); if(h.sv>=40)featAdd('sv40',p,`시즌 ${h.sv}세이브`); if(h.so>=200)featAdd('k200',p,`시즌 ${h.so}탈삼진`); if(qi&&pRate(h).era<1)featAdd('era0',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); else if(qi&&pRate(h).era<2)featAdd('era1',p,`평균자책점 ${pRate(h).era.toFixed(2)}`); }
   if(qP.length){ const me=Math.min(...qP.map(x=>pRate(x.h).era)), mw=Math.max(...P.map(x=>x.h.w)), mk=Math.max(...P.map(x=>x.h.so)); for(const {p,h} of qP)if(pRate(h).era===me&&h.w===mw&&h.so===mk)featAdd('tcP',p,`투수 3관왕 (${mw}승 · 평균자책점 ${me.toFixed(2)} · ${mk}탈삼진)`); }
   // 리그 단일 시즌 최고 기록 갱신
   G.sbest=G.sbest||{}; const first=!Object.keys(G.sbest).length;
@@ -15387,8 +15389,8 @@ function interestWhy(tid,p){ const w=[]; let weak=[]; try{ weak=teamNeeds(tid).w
   if(tr==='prospect'&&p.age<=24)w.push('유망주 선호'); if(tr==='miser'&&p.sal<=150)w.push('싼 연봉'); if(tr==='gambler'&&ovr(p)>=60)w.push('즉시 전력'); if(teamCtx(team(tid)).contend&&ovr(p)>=55)w.push('우승 경쟁용'); if(!teamCtx(team(tid)).contend&&p.age<=25)w.push('리빌딩 자원'); return w.slice(0,2).join(' · ')||'전력 보강'; }
 
 
-/* 단장이 먼저 포스팅 신청(카페 문의 11-07): 시즌 결산 뒤 12월까지, 서비스 7년 이상 보류 선수. 선수가 해외 진출을 원하지 않으면 거절한다 */
-function postGMWhy(p){ if(!p||p.team!==G.user||G.unemp||p.foreign)return '우리 국내 선수만 신청할 수 있습니다.'; if(!(G.rolled===G.year&&dobj(G.day).m>=10))return '포스팅은 시즌 결산 뒤 12월까지 신청할 수 있습니다.'; if(milServing(p))return '군 복무 중에는 해외에 나갈 수 없습니다.'; if(ovsBeen(p))return '해외에 다녀온 선수는 포스팅 대상이 아닙니다.'; /* 서비스 7년이 지나면 FA 계약을 한 뒤에도 구단 동의로 포스팅할 수 있다(실제: 김광현 2019년 FA 계약 중 포스팅). 리빌딩용(사용자 11-08) */ if((p.svc||0)<7)return `서비스 7년이 지나야 포스팅할 수 있습니다(지금 ${p.svc||0}년).`; if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))return '이미 포스팅을 신청했습니다.'; return ''; }
+/* 단장이 먼저 포스팅 신청(카페 문의 11-07): 11월 1일~12월 5일(KBO 포스팅 신청 기간), 서비스 7년 이상 보류 선수. 선수가 해외 진출을 원하지 않으면 거절한다 */
+function postGMWhy(p){ if(!p||p.team!==G.user||G.unemp||p.foreign)return '우리 국내 선수만 신청할 수 있습니다.'; if(!(G.rolled===G.year&&G.day>=KD(11,1)&&G.day<=KD(12,5)))return '포스팅은 11월 1일부터 12월 5일까지 신청할 수 있습니다(KBO 규약).'; if(milServing(p))return '군 복무 중에는 해외에 나갈 수 없습니다.'; if(ovsBeen(p))return '해외에 다녀온 선수는 포스팅 대상이 아닙니다.'; /* 서비스 7년이 지나면 FA 계약을 한 뒤에도 구단 동의로 포스팅할 수 있다(실제: 김광현 2019년 FA 계약 중 포스팅). 리빌딩용(사용자 11-08) */ if((p.svc||0)<7)return `서비스 7년이 지나야 포스팅할 수 있습니다(지금 ${p.svc||0}년).`; if((G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))return '이미 포스팅을 신청했습니다.'; return ''; }
 function postGM(id){ const p=G.players[id]; const why=postGMWhy(p); if(why)return why; if(mlbOf(p)<25){ return `${p.name}은(는) 지금 해외 진출을 원하지 않습니다(메이저리그 의지 ${p.mlb}).`; }
   const x=postStart(p); for(const e of (G.evs||[]))if(e.k==='post'&&!e.done&&e.data&&e.data.pid===p.id){ e.done=true; e.res='단장이 먼저 포스팅을 신청해 정리'; } /* 열려 있던 선수 요청은 닫는다(검수 11-08) */ story(p,`${G.year} 구단 주도 포스팅 신청`,'move'); return `${p.name} 포스팅을 신청했습니다. ${dmd(x.day)}에 MLB·NPB 구단 제안과 결과가 나옵니다.`; }
 
@@ -19911,6 +19913,9 @@ function rDelta(p){ const ref=rRef(p); if(!ref||ref.d===G.day)return null; const
 /* 개인 타이틀 8개: [이름, 기록, 투수 여부, 낮을수록 좋은가] */
 const TITLES=[['홈런왕','hr',0],['타점왕','rbi',0],['도루왕','sb',0],['타격왕','avg',0],['득점왕','r',0],['최다안타','h',0],['출루율왕','obp',0],['장타율왕','slg',0],['다승왕','w',1],['탈삼진왕','so',1],['세이브왕','sv',1],['평균자책점왕','era',1,1],['승률왕','wpct',1],['홀드왕','hld',1]]; /* KBO 개인 타이틀 14개 부문 */
 function tgp(tid){ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r.t||0):0; } /* 소속 팀 경기 수: 규정 타석(×3.1)·규정 이닝(×1) */
+/* KBO 규정타석(팀 경기 수×3.1, 반올림)·규정이닝(팀 경기 수×1): 그해 가장 많이 뛴 구단 경기 수 기준(시즌이 짧아지거나 늘어도 맞게) */
+function qualPA(p,h,y){ return (h.pa||0)>=Math.round((tgp(awTeamOf(p,h,y))||144)*3.1); }
+function qualIP(p,h,y){ return (h.outs||0)>=(tgp(awTeamOf(p,h,y))||144)*3; }
 function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; if(k==='obp'){ const d=(h.ab||0)+(h.bb||0)+(h.hbp||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0)+(h.hbp||0))/d:0; } if(k==='slg')return h.ab?((h.h||0)+(h.d||0)+2*(h.tr||0)+3*(h.hr||0))/h.ab:0; if(k==='wpct'){ const n=(h.w||0)+(h.l||0); return n?(h.w||0)/n:0; } return h[k]||0; }
 function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
 /* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
@@ -19919,7 +19924,7 @@ function archP(a){ const pos0=a.isP?'P':a.pos; return {id:a.id,name:a.name,isP:!
 function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.war=sum(R.map(r=>r.war||0)); /* 보관 WAR(능력값 없이 다시 계산하면 NaN, 검수 11-09zf) */ h.t=R[R.length-1].t; return h; }
 function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
   for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const t=awTeamOf(p,h,y), g=tgp(t); /* 소속·규정 기준 팀: MVP·골든글러브와 같은 '가장 많이 뛴 구단'(검수 11-09zq) */
-    if(['avg','obp','slg'].includes(k)&&(h.pa||0)<Math.round(g*3.1))continue; if(k==='era'&&(h.outs||0)<g*3)continue; if(k==='wpct'&&(h.w||0)<10)continue; /* 규정타석 144경기 446(반올림), 승률왕은 10승 이상 */ const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t}); }
+    if(['avg','obp','slg'].includes(k)&&(h.pa||0)<Math.round(g*3.1))continue; if(k==='era'&&(h.outs||0)<g*3)continue; if(k==='wpct'&&(h.w||0)<10)continue; /* 규정타석 144경기 446(반올림), 승률왕은 10승 이상 */ const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t:awClub(p,h,y)}); } /* 규정 기준 팀 경기 수는 뛴 구단, 표기 소속은 수상 당시 구단 */
   return L.sort((a,b)=>low?a.v-b.v:b.v-a.v); }
 function seasonTitles(y){ const out=[];
   for(const [lab,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(!B.length)continue; const top=B[0].v; const W=B.filter(x=>Math.abs(x.v-top)<1e-9); /* 같으면 공동 수상 */
@@ -20778,8 +20783,8 @@ function trpSnap(d,tid){ if(tid==null)tid=G.user; const tl=(G.sea&&G.sea.tl)||[]
 function dataLines(){ const me=teamRuns(G.user); if(me.g<10)return [];
   const T=G.teams.map(t=>({t:t.id,s:teamRuns(t.id)})); const rk=(f,desc)=>[...T].sort((a,b)=>desc?f(b.s)-f(a.s):f(a.s)-f(b.s)).findIndex(x=>x.t===G.user)+1;
   const rs=me.rs/me.g, ra=me.ra/me.g, d=me.w-me.exW; const L10=me.L.slice(-10); const w10=L10.filter(x=>x[0]>0).length, l10=L10.filter(x=>x[0]<0).length, t10=L10.length-w10-l10;
-  const cg=me.L.filter(x=>Math.abs(x[1]-x[2])<=2), cw=cg.filter(x=>x[0]>0).length, cL=cg.filter(x=>x[0]<0).length; /* 접전 원인은 실제 점수 차(2점 차 이내)로만 말한다(검수 11-09zg) */
-  const cl=`2점 차 이내 접전 ${cw}승 ${cL}패.`+((d>0?cw>cL:cL>cw)?` 접전 승패가 ${d>0?'우리 쪽':'상대 쪽'}으로 쏠렸습니다. 불펜·작전 영향과 함께 봐야 합니다.`:` 접전 성적만으로는 설명되지 않습니다. 점수 차가 큰 경기에서 ${d>0?'크게 진 경기가 득실차를 끌어내렸을':'크게 이긴 경기가 득실차를 끌어올렸을'} 수 있습니다.`)+(d>0?' 시즌이 길어지면 득실차 쪽으로 돌아오는 경우가 많지만 확정할 수는 없습니다.':'');
+  const cg=me.L.filter(x=>Math.abs(x[1]-x[2])===1), cw=cg.filter(x=>x[0]>0).length, cL=cg.filter(x=>x[0]<0).length; /* 접전 원인은 1점 차 경기 승패로 본다(득실 대비 승률 차이를 설명하는 통상 기준, 검수 11-09zg) */
+  const cl=`1점 차 접전 ${cw}승 ${cL}패.`+((d>0?cw>cL:cL>cw)?` 접전 승패가 ${d>0?'우리 쪽':'상대 쪽'}으로 쏠렸습니다. 불펜·작전 영향과 함께 봐야 합니다.`:` 접전 성적만으로는 설명되지 않습니다. 점수 차가 큰 경기에서 ${d>0?'크게 진 경기가 득실차를 끌어내렸을':'크게 이긴 경기가 득실차를 끌어올렸을'} 수 있습니다.`)+(d>0?' 시즌이 길어지면 득실차 쪽으로 돌아오는 경우가 많지만 확정할 수는 없습니다.':'');
   const y=G.year; const hits=[], lows=[];
   for(const p of playersOf(G.user)){ const h=seasonTotal(p,y,'1군'); if(!pctQual(!!p.isP,h))continue; const V=pctVals(p,h); for(const [k,l,,trk] of (p.isP?PCT_P:PCT_B)){ if(trk)continue; const pc=pctOf(p,k,V[k],y); if(pc==null)continue; if(pc>=90)hits.push({p,l,pc}); if(pc<=10)lows.push({p,l,pc}); } }
   hits.sort((a,b)=>b.pc-a.pc); lows.sort((a,b)=>a.pc-b.pc);
@@ -20960,7 +20965,7 @@ function ggCandidate(x,pos){
   else{mark((h.h||0)>=200,'200안타',1.5);mark((h.hr||0)>=40,'40홈런',.8);mark((h.hr||0)>=30&&(h.sb||0)>=30,'30홈런·30도루',1.1);}
   const tt=awTeamOf(p,h); /* 성적을 낸 구단: MVP 후보(awCand)와 같은 기준(검수 11-08) */ let rank=5;try{rank=G.ps.order.findIndex(t=>t.tid===tt);}catch(e){}
   const merit={war:x.w,record,milestone,domestic:p.foreign?0:.25,team:rank>=0&&rank<3?.2:0};
-  return {id:p.id,name:p.name,t:tt,line:statLine(h,p),w:+x.w.toFixed(1),s:x.w*.65+record+milestone+merit.domestic+merit.team,merit,milestones,pos,v:0};
+  return {id:p.id,name:p.name,t:awClub(p,h),line:statLine(h,p),w:+x.w.toFixed(1),s:x.w*.65+record+milestone+merit.domestic+merit.team,merit,milestones,pos,v:0};
 }
 function ggReporterVote(cands,voters,seats,y){
   cands.forEach(c=>c.v=0);const ballots=[];
@@ -21144,7 +21149,7 @@ const SD_PROT=35, SD_RD=3, SD_XRD=2, SD_LOSS=4, SD_FEE=[400,300,200,100], SD_REG
 const sdYear=y=>y>=2023&&y%2===1;
 const sdFee=rd=>SD_FEE[Math.min(rd,4)-1];
 /* shortcut: 게임 시작 때 만든 선수는 지명 기록이 없어 만 21세 이하를 입단 3년 차 이내로 본다. 시작 선수가 다 지명 기록을 갖게 되면 지운다 */
-function sdExempt(p){ const y=G.year; return !!(p.foreign||p.ys||p.prospect||p.joinY>y||(p.draft?p.draft.y>=y-3:p.age<=21)||milServing(p)||(p.lastFA!=null&&p.lastFA>=y)); }
+function sdExempt(p){ const y=G.year; return !!(p.foreign||p.ys||p.prospect||p.joinY>y||(p.draft?p.draft.y>=y-3||(p.draft.y===y-4&&p.mil&&p.mil.pf!=null):p.age<=21)||milServing(p)||(p.lastFA!=null&&p.lastFA>=y)); }
 function sdPool(tid){ return Object.values(G.players).filter(p=>p.team===tid&&!sdExempt(p)); }
 function sdProtAI(tid){ return sdPool(tid).sort((a,b)=>keepScore(b)-keepScore(a)).slice(0,SD_PROT).map(p=>p.id); } /* 보호는 전력 순(연봉 비용을 빼지 않는다): 비싼 주전이 명단 밖으로 나오지 않게(카페 11-08) */
 function sdSeq(order){ const s=[]; for(let rd=1;rd<=SD_RD+SD_XRD;rd++)(rd<=SD_RD?order:order.slice(0,3)).forEach(tid=>s.push({rd,tid})); return s; }
@@ -21160,7 +21165,7 @@ function sdOpen(){ if(G.sd2&&G.sd2.y!==G.year){ const o=G.sd2; (G.sd2h=G.sd2h||{
   G.sd2={y:G.year,stage:'protect',exp:Math.max(dnum(G.year,...SD_DAY),G.day+5),order,prot,seq:sdSeq(order),cur:0};
   wire('2차 드래프트',`${G.year} KBO 2차 드래프트: 구단별 보호선수 ${SD_PROT}명 명단 제출`,{});
   if(G.unemp)return; const my=order.indexOf(G.user)+1;
-  mail('운영팀',`${G.year} 2차 드래프트: 보호선수 ${SD_PROT}명을 정하세요`,`격년으로 열리는 2차 드래프트입니다. ${dmd(G.sd2.exp-1)}까지 보호선수 ${SD_PROT}명을 내면, 다른 구단이 명단 밖 선수를 지명해 데려갑니다(우리 구단에서는 최대 ${SD_LOSS}명).\n\n저절로 빠지는 선수: 외국인, 입단 1~3년 차, 육성선수, 군 보류, 이번 겨울 FA 계약.\n지명 순서는 지난 시즌 성적 역순이고 우리는 ${my}번째입니다${my<=3?'(하위 3개 구단이라 4·5라운드까지 최대 5명)':''}. 양도금은 1라운드 4억, 2라운드 3억, 3라운드 2억, 4라운드 이하 1억입니다.`,{imp:true,kind:'드래프트',acts:[{l:'보호명단 정하기',a:'go',v:'transfer:kbo'}]});
+  mail('운영팀',`${G.year} 2차 드래프트: 보호선수 ${SD_PROT}명을 정하세요`,`격년으로 열리는 2차 드래프트입니다. ${dmd(G.sd2.exp-1)}까지 보호선수 ${SD_PROT}명을 내면, 다른 구단이 명단 밖 선수를 지명해 데려갑니다(우리 구단에서는 최대 ${SD_LOSS}명).\n\n저절로 빠지는 선수: 외국인, 입단 1~3년 차(군 복무를 다녀온 4년 차 포함), 육성선수, 군 보류, 이번 겨울 FA 계약.\n지명 순서는 지난 시즌 성적 역순이고 우리는 ${my}번째입니다${my<=3?'(하위 3개 구단이라 4·5라운드까지 최대 5명)':''}. 양도금은 1라운드 4억, 2라운드 3억, 3라운드 2억, 4라운드 이하 1억입니다.`,{imp:true,kind:'드래프트',acts:[{l:'보호명단 정하기',a:'go',v:'transfer:kbo'}]});
   mail(FROM['드래프트']||'프런트',`2차 드래프트 보호선수 ${SD_PROT}명을 정하세요`,`2차 드래프트 보호선수 ${SD_PROT}명을 정하세요. ${dmd(G.sd2.exp)}에 지명이 시작되며, 그 전날까지 고칠 수 있습니다.`,{imp:true,kind:'드래프트',acts:[{l:'보호명단 정하기',a:'go',v:'transfer:kbo'}]}); } /* 요약 알림도 웨이버·2차 드래프트 화면으로(검수 11-07: 신인 드래프트로 감) */
 function sdSubmit(ids){ const S=G.sd2; if(!S||S.stage!=='protect'||G.unemp)return '보호선수 명단을 낼 때가 아닙니다.'; const pool=new Set(sdPool(G.user).map(q=>q.id));
   const L=[...new Set(ids)].filter(x=>pool.has(x)).slice(0,SD_PROT); if(!L.length&&pool.size)return `보호선수를 한 명 이상 고르세요. 내지 않으면 ${dmd(S.exp)}에 운영팀이 대신 정합니다.`; /* 빈 명단은 제출로 보지 않는다(검수 11-06) */ S.prot[G.user]=L; S.sub=G.user; (S.subs=S.subs||{})[G.user]=1; /* 제출한 구단: 이직하면 새 구단에는 따라가지 않는다(검수 11-08d) */ return `보호선수 ${S.prot[G.user].length}명 명단을 냈습니다. ${dmd(S.exp)}에 지명이 시작됩니다. 그 전까지는 고칠 수 있습니다.`; }

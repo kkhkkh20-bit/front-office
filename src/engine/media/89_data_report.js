@@ -26,8 +26,8 @@ function trpSnap(d,tid){ if(tid==null)tid=G.user; const tl=(G.sea&&G.sea.tl)||[]
 function dataLines(){ const me=teamRuns(G.user); if(me.g<10)return [];
   const T=G.teams.map(t=>({t:t.id,s:teamRuns(t.id)})); const rk=(f,desc)=>[...T].sort((a,b)=>desc?f(b.s)-f(a.s):f(a.s)-f(b.s)).findIndex(x=>x.t===G.user)+1;
   const rs=me.rs/me.g, ra=me.ra/me.g, d=me.w-me.exW; const L10=me.L.slice(-10); const w10=L10.filter(x=>x[0]>0).length, l10=L10.filter(x=>x[0]<0).length, t10=L10.length-w10-l10;
-  const cg=me.L.filter(x=>Math.abs(x[1]-x[2])<=2), cw=cg.filter(x=>x[0]>0).length, cL=cg.filter(x=>x[0]<0).length; /* 접전 원인은 실제 점수 차(2점 차 이내)로만 말한다(검수 11-09zg) */
-  const cl=`2점 차 이내 접전 ${cw}승 ${cL}패.`+((d>0?cw>cL:cL>cw)?` 접전 승패가 ${d>0?'우리 쪽':'상대 쪽'}으로 쏠렸습니다. 불펜·작전 영향과 함께 봐야 합니다.`:` 접전 성적만으로는 설명되지 않습니다. 점수 차가 큰 경기에서 ${d>0?'크게 진 경기가 득실차를 끌어내렸을':'크게 이긴 경기가 득실차를 끌어올렸을'} 수 있습니다.`)+(d>0?' 시즌이 길어지면 득실차 쪽으로 돌아오는 경우가 많지만 확정할 수는 없습니다.':'');
+  const cg=me.L.filter(x=>Math.abs(x[1]-x[2])===1), cw=cg.filter(x=>x[0]>0).length, cL=cg.filter(x=>x[0]<0).length; /* 접전 원인은 1점 차 경기 승패로 본다(득실 대비 승률 차이를 설명하는 통상 기준, 검수 11-09zg) */
+  const cl=`1점 차 접전 ${cw}승 ${cL}패.`+((d>0?cw>cL:cL>cw)?` 접전 승패가 ${d>0?'우리 쪽':'상대 쪽'}으로 쏠렸습니다. 불펜·작전 영향과 함께 봐야 합니다.`:` 접전 성적만으로는 설명되지 않습니다. 점수 차가 큰 경기에서 ${d>0?'크게 진 경기가 득실차를 끌어내렸을':'크게 이긴 경기가 득실차를 끌어올렸을'} 수 있습니다.`)+(d>0?' 시즌이 길어지면 득실차 쪽으로 돌아오는 경우가 많지만 확정할 수는 없습니다.':'');
   const y=G.year; const hits=[], lows=[];
   for(const p of playersOf(G.user)){ const h=seasonTotal(p,y,'1군'); if(!pctQual(!!p.isP,h))continue; const V=pctVals(p,h); for(const [k,l,,trk] of (p.isP?PCT_P:PCT_B)){ if(trk)continue; const pc=pctOf(p,k,V[k],y); if(pc==null)continue; if(pc>=90)hits.push({p,l,pc}); if(pc<=10)lows.push({p,l,pc}); } }
   hits.sort((a,b)=>b.pc-a.pc); lows.sort((a,b)=>a.pc-b.pc);

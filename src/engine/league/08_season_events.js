@@ -176,13 +176,13 @@ function settlement(){
   const top=(arr,f,flt,asc)=>arr.filter(flt).sort((a,b)=>asc?f(a)-f(b):f(b)-f(a))[0];
   const leaders=[
     ['타자 WAR',top(bats,x=>warOf(x.h,x.p),()=>true),x=>warOf(x.h,x.p).toFixed(1)],
-    ['OPS',top(bats,x=>bRate(x.h).ops,x=>x.h.pa>=446),x=>fmt3(bRate(x.h).ops)],
-    ['타율',top(bats,x=>bRate(x.h).avg,x=>x.h.pa>=446),x=>fmt3(bRate(x.h).avg)],
+    ['OPS',top(bats,x=>bRate(x.h).ops,x=>qualPA(x.p,x.h,y)),x=>fmt3(bRate(x.h).ops)],
+    ['타율',top(bats,x=>bRate(x.h).avg,x=>qualPA(x.p,x.h,y)),x=>fmt3(bRate(x.h).avg)],
     ['홈런',top(bats,x=>x.h.hr,()=>true),x=>x.h.hr+'개'],
     ['타점',top(bats,x=>x.h.rbi,()=>true),x=>x.h.rbi+'개'],
     ['도루',top(bats,x=>x.h.sb,()=>true),x=>x.h.sb+'개'],
     ['투수 WAR',top(pits,x=>warOf(x.h,x.p),()=>true),x=>warOf(x.h,x.p).toFixed(1)],
-    ['평균자책점',top(pits,x=>pRate(x.h).era,x=>x.h.outs>=432,true),x=>pRate(x.h).era.toFixed(2)],
+    ['평균자책점',top(pits,x=>pRate(x.h).era,x=>qualIP(x.p,x.h,y),true),x=>pRate(x.h).era.toFixed(2)],
     ['다승',top(pits,x=>x.h.w,()=>true),x=>x.h.w+'승'],
     ['탈삼진',top(pits,x=>x.h.so,()=>true),x=>x.h.so+'개'],
     ['세이브',top(pits,x=>x.h.sv,()=>true),x=>x.h.sv+'개'],
