@@ -10,20 +10,20 @@ function pbpState(g,k){ // k번째 기록까지 반영한 상태
   if(outs>=3)bases=[0,0,0];
   return {sa,sh,outs,bases,half,cur}; }
 /* 지난 경기 기록 속 이름: 지금 선수 목록에 없으면 보관 기록·그 경기 박스스코어에서 찾는다(검수 11-06) */
-function pNmAny(id,g){ const p=G.players[id]; if(p)return p.name; const a=G.arch&&G.arch[id]; if(a&&a.name)return a.name; const B=g&&g.box; if(B)for(const s of ['h','a'])for(const k of ['bat','pit']){ const x=((B[s]||{})[k]||[]).find(r=>r.id===id); if(x&&x.n)return x.n; } return '?'; }
-function pbpText(x){ const nm=id=>pNmAny(id);
+function pNmAny(id,g){ const B=g&&g.box; if(B)for(const s of ['h','a'])for(const k of ['bat','pit']){ const x=((B[s]||{})[k]||[]).find(r=>r.id===id); if(x&&x.n)return x.n; } /* 경기를 주면 그 경기 당시 이름 먼저: 개명해도 옛 경기 해설이 필드 카드와 같게(검수 11-09zu) */ const p=G.players[id]; if(p)return p.name; const a=G.arch&&G.arch[id]; if(a&&a.name)return a.name; return '?'; }
+function pbpText(x,g){ const nm=id=>pNmAny(id,g);
   if(x[1]==='PC')return `투수 교체: ${nm(x[2])}`;
   if(x[1]==='SB')return `${nm(x[2])} 도루 성공`; if(x[1]==='CS')return `${nm(x[2])} 도루 실패`;
-  return `${nm(x[1])} ${x[3]==='OUT'&&(x[16]||x[9]&&x[5].includes(x[1]))?paK(x)[0]:OUTK[x[3]]||x[3]}${x[6]?` · ${x[6]}점`:''}${(x[14]||[]).map(m=>` · ${nm(m.id)} ${m.to===4?'홈':m.to+'루'} ${m.result==='out'?'아웃':'진루'}`).join('')}`; }
+  return `${nm(x[1])} ${x[3]==='OUT'?paK(x)[0]:OUTK[x[3]]||x[3]}${x[6]?` · ${x[6]}점`:''}${(x[14]||[]).map(m=>` · ${nm(m.id)} ${m.to===4?'홈':m.to+'루'} ${m.result==='out'?'아웃':'진루'}`).join('')}`; }
 function pbpView(gi){
   const g=G.games[gi]; if(!g||!g.pbp||!g.pbp.length)return '<p class="small muted">이 경기는 중계 기록이 없습니다(최근 8경기만 보관).</p>';
   const L=g.pbp; let k=UI.pbp&&UI.pbp.g===gi?UI.pbp.k:0; k=clamp(k,0,L.length-1);
   const x=L[k]; const s=pbpState(g,k); const half=x[0]; const inn=Math.floor(half/2)+1, top=half%2===0;
   const defK=top?'h':'a', atK=top?'a':'h'; const def=g.box[defK];
   const pid=x[1]==='PC'?x[2]:(typeof x[1]==='number'?x[2]:s.cur[defK]);
-  const fielders=def.bat.filter(b=>PBPOS[b.pos]).map(b=>({pos:b.pos,n:b.n}));
-  const pn=G.players[pid]; if(pn)fielders.push({pos:'P',n:pn.name});
-  const runner=i=>{ const id=s.bases[i]; const p=G.players[id]; return p?p.name:''; };
+  const fielders=castLineup(g,defK,k).filter(b=>PBPOS[b.pos]).map(b=>({pos:b.pos,n:b.n||pNmAny(b.id,g)})); /* 그 시점 수비 배치(경기 끝 배치가 아니라, 검수 11-09zu) */
+  const pn=G.players[pid]; if(pid)fielders.push({pos:'P',n:pNmAny(pid,g)});
+  const runner=i=>{ const id=s.bases[i]; return id?pNmAny(id,g):''; };
   const bpos=[[64,71],[50,57],[36,71]];
   const svg=`<svg class="pbpf" viewBox="0 0 100 100" role="img" aria-label="수비 위치와 주자">
     <path d="M50 96 L4 50 Q50 -4 96 50 Z" class="grass"/><path d="M50 88 L68 70 L50 52 L32 70 Z" class="dirt"/>
@@ -38,12 +38,12 @@ function pbpView(gi){
     <div class="pbp-top"><span class="pill ${top?'':'acc'}">${inn}회${top?'초':'말'}</span><span class="num pbp-sc">${tshort(g.away)} ${s.sa} : ${s.sh} ${tshort(g.home)}</span><span class="outs">${[0,1,2].map(i=>`<i class="${i<s.outs?'on':''}"></i>`).join('')} ${s.outs}아웃</span></div>
     <div class="pbp-main">${svg}<div class="pbp-side">
       ${(()=>{ const cl=pbpCall(g,k); return `<div class="pbp-now ${x[6]?'run':''}"><span class="pc-who">캐스터</span><b>${esc(cl.c)}</b></div>`; })()}
-      ${bat?`<div class="pbp-vs"><button data-a="player" data-v="${bat.id}">${avImg(bat)}<span><i>타자 · ${tshort(g[atK==='h'?'home':'away'])}</i><b>${esc(bat.name)}</b><em>${avgOpsAt(g,k,bat.id)}</em></span></button>${pn?`<button data-a="player" data-v="${pn.id}">${avImg(pn)}<span><i>투수 · ${tshort(g[defK==='h'?'home':'away'])}</i><b>${esc(pn.name)}</b><em>시즌 ERA ${eraAt(g,k,pn.id)}</em></span></button>`:''}</div>`:''}
+      ${bat?`<div class="pbp-vs"><button data-a="player" data-v="${bat.id}">${avImg(bat)}<span><i>타자 · ${tshort(g[atK==='h'?'home':'away'])}</i><b>${esc(pNmAny(bat.id,g))}</b><em>${avgOpsAt(g,k,bat.id)}</em></span></button>${pn?`<button data-a="player" data-v="${pn.id}">${avImg(pn)}<span><i>투수 · ${tshort(g[defK==='h'?'home':'away'])}</i><b>${esc(pNmAny(pn.id,g))}</b><em>시즌 ERA ${eraAt(g,k,pn.id)}</em></span></button>`:''}</div>`:''}
       <div class="log">${recent.map((y,i)=>`<p class="${i===0?'cur':''}"><span class="ticker">${Math.floor(y[0]/2)+1}${y[0]%2?'말':'초'}</span> ${esc(pbpCall(g,k-i).c)}</p>`).join('')}</div>
     </div></div>
     ${(()=>{ const sc=top?s.sa:s.sh; const prev=L.slice(0,k+1).reverse().find(y=>y[0]<half&&typeof y[7]==='number'); const before=prev?(top?prev[7]:prev[8]):0; const hh=L.slice(0,k+1).filter(y=>y[0]===half&&['1B','2B','3B','HR'].includes(y[3])).length; return lineScore(g,half,{half,r:sc-before,h:hh}); })()}
     <div class="pbp-ctl"><button class="btn" data-a="pbpGo" data-v="${gi}:0">처음</button><button class="btn" data-a="pbpGo" data-v="${gi}:${k-1}" ${k<=0?'disabled':''}>◀ 이전</button><button class="btn primary" data-a="pbpGo" data-v="${gi}:${k+1}" ${k>=L.length-1?'disabled':''}>다음 타석 ▶</button><button class="btn" data-a="pbpGo" data-v="${gi}:${nxtInn<0?L.length-1:nxtInn}" ${k>=L.length-1?'disabled':''}>다음 이닝</button><button class="btn" data-a="pbpGo" data-v="${gi}:${L.length-1}">끝</button></div>
-    <p class="small muted">${k+1} / ${L.length} · 수비 위치는 선발 라인업 기준입니다.</p>
+    <p class="small muted">${k+1} / ${L.length} · 수비 위치는 그 시점 라인업 기준입니다.</p>
   </div>`;
 }
 function gameSheet(i){

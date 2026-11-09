@@ -58,7 +58,7 @@ function pbpCall(g,k){
   case '3B':c=pick('triple',[`멈추지 않아요! ${name}, 3루타!`,`${name}, 달리고 또 달립니다! 3루타!`,`2루를 돌아 3루까지! ${name}, 3루타!`,`발까지 뜨겁습니다! ${name}의 3루타!`]);break;
   case '1B':c=pick('single',[`${name}, 안타! 방망이가 답합니다!`,`${name}, 안타를 만들어 냅니다!`,`살아 나갑니다! ${name}의 안타!`,`${name}, 공격을 잇는 안타!`,`좋아요, 안타입니다! ${name}!`,`${name}, 안타! 기회가 이어집니다!`]);break;
   case 'HBP':c=m.loaded?`아, 몸에 맞았어요! ${name}, 밀어내기 사구!`:`아, 몸에 맞았습니다! ${name}, 사구로 1루에 나갑니다.`;break;
-  case 'BB':c=m.loaded?`${name}, 밀어내기 볼넷! 공 네 개로 한 점!`:`${name}, 볼넷! 기다림 끝에 1루를 얻습니다.`;break;
+  case 'BB':c=m.loaded?`${name}, 밀어내기 볼넷! ${storedPitchSequence(x)?.length===4?'공 네 개로 한 점!':'한 점을 거저 얻습니다!'}`:`${name}, 볼넷! 기다림 끝에 1루를 얻습니다.`;break;
   case 'K':{const q=storedPitchSequence(x)?.at(-1);c=q?`${name}, ${q.t}에 ${q.res==='루킹 삼진'?'루킹':'헛스윙'} 삼진!`:`${name}, 삼진! 마운드가 웃습니다!`;break;}
   case 'DP':c=`아, 이게 뭔가요! ${name}, 병살타! ${x[4]===3?'이닝이 끝납니다!':'아웃 두 개를 내줍니다!'}`;break;
   case 'SAC':c=`${name}, 짧게 댔습니다! 희생번트로 주자를 보냅니다.`;break;

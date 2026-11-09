@@ -8,7 +8,7 @@ function cwWho(S){ const B=bossOf(G.user); const t=team(G.user);
 function cwKeys(g){ const L=g.pbp||[]; const myTop=g.away===G.user; const K=[];
   L.forEach((x,i)=>{ if(typeof x[1]!=='number')return; const runs=x[6]||0; if(!(runs>0||x[3]==='HR'))return; const mine=(x[0]%2===0)===myTop; K.push({i,h:x[0],mine,w:(mine?2:1)*(runs+(x[3]==='HR'?1:0))}); });
   const pick=K.slice().sort((a,b)=>b.w-a.w).slice(0,5).sort((a,b)=>a.i-b.i);
-  return pick.map(k=>{ let t=''; try{ t=pbpCall(g,k.i).c; }catch(e){ t=pbpText(L[k.i]); } return {h:k.h,mine:k.mine,t}; }); }
+  return pick.map(k=>{ let t=''; try{ t=pbpCall(g,k.i).c; }catch(e){ t=pbpText(L[k.i],g); } return {h:k.h,mine:k.mine,t}; }); }
 function cwBubble(w,t,av){ return w==='sys'?`<div class="mt-sys">${esc(t)}</div>`:`<div class="mt-l ${w}">${w==='them'?`<span class="mt-av">${av}</span>`:''}<p>${esc(t)}</p></div>`; }
 function cwSheet(){ const S=G.cwS; if(!S)return ''; const g=cwGame(S); const W=cwWho(S); const t=team(G.user);
   const F=[]; const res=S.res==='승'?'승리':S.res==='패'?'패배':'무승부';

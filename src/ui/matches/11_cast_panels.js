@@ -7,12 +7,10 @@ function wpHome(st,mi=11){ const D0=st.sh-st.sa; const half=st.half; const outs=
   const bot=half%2===1; if(half>=17&&bot&&D0>0)return 1; let D=D0+(bot?re:.48-re); /* 초 공격 중이면 홈팀은 아직 말 공격이 남아 있음 */ const remHalf=Math.max(0,(half>=18?mi*2-1:17)-half)+(st.outs>=3?0:(3-outs)/3); const v=Math.max(.25,remHalf*.95);
   return clamp(.5+.5*cErf((D+.08)/Math.sqrt(2*v)),.005,.995); }
 function cOrderNo(g,half,id){ const s=g.box[half%2?'h':'a']; const i=s.bat.findIndex(b=>b.id===id); return i<0?null:(s.bat[i].o!=null?s.bat[i].o:i%9)+1; }
-/* 대기 타자: 그 타석 시점의 타순(경기 끝 타순이 아니라). 자리마다 그 타석 전까지 마지막으로 타석에 선 선수, 없으면 선발(검수 11-06) */
-function cNext(g,half,id,k){ const s=g.box[half%2?'h':'a']; const slot=(b,i)=>b.o!=null?b.o:i%9; const L=g.pbp||[], seen=new Set(); for(let i=0;i<Math.min(k??L.length,L.length);i++){ const x=L[i]; if(typeof x[1]==='number'&&x[0]%2===half%2)seen.add(x[1]); }
-  const cur=[...Array(9)].map((_,sl)=>{ const C=s.bat.map((b,i)=>({b,i})).filter(z=>slot(z.b,z.i)===sl); let pick=C[0]&&C[0].b; for(const z of C)if(seen.has(z.b.id)||z.b.id===id)pick=z.b; return pick; });
-  const me=s.bat.findIndex(b=>b.id===id); if(me<0)return []; const i=slot(s.bat[me],me); return [cur[(i+1)%9],cur[(i+2)%9]].filter(Boolean); }
+/* 대기 타자: 그 타석 시점의 타순(경기 끝 타순이 아니라). 선발 라인업에 그 시점까지의 교체를 반영한 타순(검수 11-06, 수비 교체 뒤 빠진 선수가 남던 문제 11-09zu) */
+function cNext(g,half,id,k){ const cur=castLineup(g,half%2?'h':'a',k??(g.pbp||[]).length); const i=cur.findIndex(b=>b.id===id); if(i<0)return []; return [cur[(i+1)%cur.length],cur[(i+2)%cur.length]].filter(Boolean); }
 const PAK={'1B':['안타','h'],'2B':['2루타','h'],'3B':['3루타','h'],HR:['홈런','hr'],HBP:['사구','bb'],BB:['볼넷','bb'],K:['삼진','k'],OUT:['범타','o'],DP:['병살','o'],SAC:['희생번트','o']};
-function paK(x){ if(!x)return ['','']; if(x[3]==='OUT'&&x[16])return ['번트 실패','o']; if(x[3]==='OUT'&&x[9]&&Array.isArray(x[5])&&x[5].includes(x[1]))return ['실책 출루','h']; return PAK[x[3]]||['?','o']; } /* 실책 출루·번트 실패는 OUT 코드만으로 '범타'가 아니다(검수 11-08) */
+function paK(x){ if(!x)return ['','']; if(x[3]==='OUT'&&x[16])return ['번트 실패','o']; if(x[3]==='OUT'&&x[13])return ['희생플라이','o']; if(x[3]==='OUT'&&x[9]&&Array.isArray(x[5])&&x[5].includes(x[1]))return ['실책 출루','h']; return PAK[x[3]]||['?','o']; } /* 실책 출루·번트 실패는 OUT 코드만으로 '범타'가 아니다(검수 11-08) */
 function cChips(g,k,id){ const L=g.pbp; const out=[]; for(let i=0;i<k&&i<L.length;i++){ const x=L[i]; if(x[1]===id){ const r=paK(x); out.push(`<i class="pk ${r[1]}">${cHalfTxt(x[0]).replace('회초','').replace('회말','')}${r[0]}</i>`); } } return out.join('')||'<i class="pk n">첫 타석</i>'; }
 function abPanel(g,k){ const L=g.pbp; const x=L[Math.min(k,L.length-1)]; const bid=k<L.length&&typeof x[1]==='number'?x[1]:null; const pid=cPit(g,Math.min(k,L.length-1));
   const b=bid&&G.players[bid], p=pid&&G.players[pid]; if(!bid||!pid)return ''; if(!b||!p){ const B=mdPlayer(g,bid), Pp=mdPlayer(g,pid), r=batAt(g,k,bid); return `<div class="ab"><div class="ab-b"><span class="ab-t"><em>타자${B.bt?` · ${B.bt}타`:''}</em><b>${esc(B.name)}</b><span class="ab-s">${r?`타율 <strong>${fmt3(r.avg)}</strong> · ${r.hr}홈런 · OPS ${fmt3(r.ops)}`:'시즌 기록 없음'}</span></span></div><div class="ab-p"><span><em>투수 · ${Pp.th==='좌'?'좌완':'우완'}</em><b>${esc(Pp.name)}</b><span>ERA ${eraAt(g,k,pid)}</span></span></div></div>`; } /* 리그를 떠난 선수가 나온 옛 경기: 박스스코어 이름·손잡이로 대결 카드를 남긴다(검수 11-08) */
@@ -29,7 +27,7 @@ function cWp(g,st,prev){ const bar=document.getElementById('cs-wpa'); const tx=d
   const mine=g.home===G.user||g.away===G.user; const fav=mine?G.user:(w>=.5?g.home:g.away); const wf=fav===g.home?w:1-w; const pct=Math.round(wf*100); let d=''; if(prev!=null){ const dd=Math.round((w-prev)*100); if(Math.abs(dd)>=8){ const who=dd>0?g.home:g.away; d=` <b class="wpd">${esc(tshort(who))} +${Math.abs(dd)}%</b>`; } }
   tx.innerHTML=`${esc(tshort(fav))} 승리 확률 ${pct}%${d}`; return w; }
 /* 오늘의 선수: 승리 확률을 가장 많이 끌어올린 선수 */
-function gameMvp(g){ const S=wpaMap(g); if(g.hs===g.as)return null; const win=g.hs>g.as?g.home:g.away; const pool=Object.entries(S).map(([id,v])=>({p:G.players[+id],v})).filter(o=>o.p&&o.p.team===win).sort((a,b)=>b.v-a.v); return pool[0]||null; }
+function gameMvp(g){ const S=wpaMap(g); if(g.hs===g.as)return null; const B=g.box[g.hs>g.as?'h':'a']; const ids=new Set([...B.bat,...B.pit].map(x=>x.id)); /* 이긴 쪽은 그 경기 박스스코어로: 이적·은퇴 뒤에도 같은 선수(검수 11-09zu) */ const pool=Object.entries(S).filter(([id])=>ids.has(+id)).map(([id,v])=>({p:mdPlayer(g,+id),v})).sort((a,b)=>b.v-a.v); return pool[0]||null; }
 
 /* ---------- 중계 3: 단장의 눈 — 내가 짠 선수단이 어떻게 굴러가는지 ---------- */
 /* 영입 경로 꼬리표: 우리 구단으로 들어온 최근(4시즌 안) 결정만 */
@@ -41,8 +39,8 @@ function acqOf(p){ if(!p||p.team!==G.user)return null; const nm=tname(G.user); c
 const ACQC={'트레이드':'tr','보상선수':'tr','FA 영입':'fa','FA 잔류':'fa','외국인':'fo','지명':'dr','복귀':'fa'};
 function acqTag(p){ const a=acqOf(p); return a?`<i class="acq ${ACQC[a.k]||''}" title="${esc(a.t)}">${a.k==='지명'?`${String(a.y).slice(2)}년 지명`:`${a.k} ${String(a.y).slice(2)}`}</i>`:''; }
 /* 타석별 승리 확률 기여 */
-function wpaMap(g){ const L=g.pbp||[]; const S={}; for(let k=0;k<L.length;k++){ const x=L[k]; if(typeof x[1]!=='number')continue; const b=cBefore(g,k); const a={sa:x[7],sh:x[8],outs:x[4],bases:x[4]>=3?[0,0,0]:x[5],half:x[0]};
-    if(x[4]>=3){ a.half=x[0]+1; a.outs=0; a.bases=[0,0,0]; } let d=(k===L.length-1?(g.hs>g.as?1:g.hs<g.as?0:.5):wpHome(a,wpMax(g)))-wpHome(b,wpMax(g)); if(x[0]%2===0)d=-d; S[x[1]]=(S[x[1]]||0)+d; S[x[2]]=(S[x[2]]||0)-d; }
+function wpaMap(g){ const L=g.pbp||[]; const S={}; for(let k=0;k<L.length;k++){ const x=L[k]; const run=x[1]==='SB'||x[1]==='CS'; if(typeof x[1]!=='number'&&!run)continue; const b=cBefore(g,k); const o=run?x[3]:x[4], a={sa:run?b.sa:x[7],sh:run?b.sh:x[8],outs:o,bases:o>=3?[0,0,0]:run?x[4]:x[5],half:x[0]}; /* 도루·도루 실패도 주자와 투수 기여에(검수 11-09zu) */
+    if(o>=3){ a.half=x[0]+1; a.outs=0; a.bases=[0,0,0]; } let d=(k===L.length-1?(g.hs>g.as?1:g.hs<g.as?0:.5):wpHome(a,wpMax(g)))-wpHome(b,wpMax(g)); if(x[0]%2===0)d=-d; const bi=run?x[2]:x[1], pi=run?cPit(g,k):x[2]; S[bi]=(S[bi]||0)+d; if(pi!=null)S[pi]=(S[pi]||0)-d; }
   return S; }
 function batToday(b){ return `${b.ab}타수 ${b.h}안타${b.hr?` ${b.hr}홈런`:''}${b.rbi?` ${b.rbi}타점`:''}${b.bb?` ${b.bb}볼넷`:''}${b.so?` ${b.so}삼진`:''}`; }
 function pitToday(q){ return `${Math.floor(q.outs/3)}${q.outs%3?'.'+q.outs%3:''}이닝 ${q.pc||0}구 ${q.er}자책${q.so?` ${q.so}K`:''}${q.d?` · ${q.d}`:''}`; }
