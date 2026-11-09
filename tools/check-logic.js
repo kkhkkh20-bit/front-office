@@ -212,8 +212,8 @@ T('상무 합격: 입대일 전까지는 선수단에 남아 뛴다(f507415 리�
 
 T('해외 복귀: 복귀한 해에 나이·능력 변화가 한 번만 적용된다(f507415 리뷰)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.foreign&&!q.isP); p.age=34; p.svc=Math.max(p.svc||0,9);
   ovsLeave(p,'NPB','테스트',1,100,'해외 FA'); const a=(G.abroad||[]).find(x=>x.id===p.id); ok(a&&!G.players[p.id],'준비 실패: 해외 이적 안 됨'); a.y=G.year-1; /* 계약 1년이 끝난 시점 */
-  abroadYear(); const q=G.players[p.id]; ok(a.back&&q,'준비 실패: 복귀하지 않음'); ok(q.age===35,'복귀하면서 나이가 '+q.age+'세(기대 35세)'); const r0=JSON.stringify(q.r);
-  newYear(); const q2=G.players[p.id]; ok(q2,'준비 실패: 새해 뒤 선수가 사라짐'); ok(q2.age===35,'복귀 직후 새해에 한 살 더 먹음: '+q2.age+'세'); ok(JSON.stringify(q2.r)===r0,'복귀 직후 새해에 능력 변화가 한 번 더 적용됨'); });
+  abroadYear(); const q=G.players[p.id]; ok(a.back&&q,'준비 실패: 복귀하지 않음'); ok(q.age===34,'가을 해외 시즌 처리에서 나이가 바뀜: '+q.age+'세(나이는 새해에, 카페 11-09c)');
+  newYear(); const q2=G.players[p.id]; ok(q2,'준비 실패: 새해 뒤 선수가 사라짐'); ok(q2.age===35,'복귀 뒤 새해 나이 '+q2.age+'세(기대 35세, 한 번만)'); });
 
 T('훈련 회고: 새해 회고에 지난 시즌 경기 기록이 남는다(f507415 리뷰)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.isP&&!q.foreign); trnSet(p.id,'pow'); ok(G.trn&&G.trn[p.id]&&G.trn[p.id].f==='pow','준비 실패: 훈련 방향 설정'); const y=G.year;
   p.hist=p.hist.filter(h=>h.y!==y); p.hist.push({y,lvl:'1군',t:G.user,pos:p.pos,g:100,pa:400,ab:350,h:95,d:20,tr:1,hr:16,bb:40,so:70,rbi:60,r:55,sb:3,cs:1,hbp:5,sf:5,e:4});
@@ -959,7 +959,7 @@ T('[리뷰 11-02e] 병원을 바꾸면 재활 중인 선수(남은 14일 이상)
 T('[리뷰 11-02f] 해외 진출: 가을·겨울에 떠난 선수는 그해 해외 기록이 생기지 않고(첫 해외 시즌은 다음 해), 같은 시즌 기록을 두 번 만들지 않는다',()=>{ fresh(); const p=domestic(otherT()).find(q=>!q.isP&&ovr(q)>=55)||domestic(otherT())[0]; G.day=KD(11,1); const id=p.id; ovsLeave(p,'NPB','테스트',2,200,'해외 FA');
   const a=G.abroad.find(x=>x.id===id); abroadYear(); ok(!a.lines.length,'떠난 해에 해외 기록 '+a.lines.map(l=>l.y+' '+(l.pa||l.outs)).join(',')); G.year++; abroadYear(); ok(a.lines.length===1&&a.lines[0].y===G.year,'첫 해외 시즌 기록 '+a.lines.map(l=>l.y).join(',')); if(!a.back){ abroadYear(); ok(a.lines.filter(l=>l.y===G.year).length===1,'같은 시즌 기록이 두 번'); } G.year--; });
 T('[리뷰 11-02f] 해외에서 성장할 때 옛 국내 구단의 시설·감독·코치를 쓰지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.age<=26)||domestic(G.user)[0]; let seen=[]; const d0=develop; develop=function(q){ seen.push(q.team); return d0.apply(this,arguments); };
-  try{ G.day=KD(11,1); const id=p.id; ovsLeave(p,'NPB','테스트',3,200,'포스팅',0); G.year++; abroadYear(); G.year--; }finally{ develop=d0; } ok(seen.length>=1&&seen.every(t=>t==null),'해외 성장 중 소속 '+JSON.stringify(seen)); });
+  try{ G.day=KD(11,1); const id=p.id; ovsLeave(p,'NPB','테스트',3,200,'포스팅',0); abroadDev(); /* 해외 성장은 새해 처리(카페 11-09c) */ }finally{ develop=d0; } ok(seen.length>=1&&seen.every(t=>t==null),'해외 성장 중 소속 '+JSON.stringify(seen)); });
 T('[리뷰 11-02f] 해외 복귀는 원소속 구단 우선협상: 계약을 고르기 전에는 등록·연봉이 확정되지 않고, 거절하면 자유계약 선수가 된다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP&&ovr(q)>=50); const id=p.id; G.day=KD(11,1); ovsLeave(p,'NPB','테스트',1,200,'해외 FA'); const a=G.abroad.find(x=>x.id===id); { const pj=JSON.parse(a.pj); pj.age=33; a.pj=JSON.stringify(pj); } /* 33세 이상은 계약이 끝나면 돌아온다 */
   const n0=rosterN(G.user); G.year++; abroadYear(); const q=G.players[id]; ok(a.back&&q,'준비 실패: 복귀 안 함'); ok(q.team==null&&q.retAsk&&q.retFrom===G.user,'협상 전에 등록됨 team='+q.team); ok(rosterN(G.user)===n0,'선수 수가 바로 늘어남');
   const e=(G.evs||[]).find(x=>x.k==='ovsback'&&!x.done); ok(e,'우선협상 결정이 없음'); evPick(e.id,1,true); ok(q.team==null&&q.freeSince!=null&&!q.retAsk,'거절했는데 자유계약 선수가 아님'); G.year--; });
