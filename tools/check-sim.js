@@ -68,7 +68,7 @@ const step=()=>{ G.live=null; G.res=null; G.stops=[];
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(e){ errs.push('comp '+e.message); } });
   if(G.contract&&!G.contract.done&&G.day>=KD(12,10))try{ confirmContracts(); }catch(e){ errs.push('contract '+e.message); }
   /* 단장이 직접 해야 하는 정리(로스터 초과)는 사람이 하듯 처리 */
-  try{ if(rosterN(G.user)>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX); }catch(e){ errs.push('trim '+e.message); }
+  try{ const n=rosterN(G.user), up=Math.max(0,rosterN(G.user,G.day+1)-n); if(n+up>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX-up); }catch(e){ errs.push('trim '+e.message); } /* 내일 전역해 돌아오는 선수 자리도 미리 비운다(blocker의 전역일 검사와 같은 기준, 실제 게임은 7일 전 경고 메일) */
   try{ if(!G.unemp&&!G.mgr[G.user]){ if(!G.mmarket||!G.mmarket.length)refreshMgrMarket(); hireMgr(G.mmarket[0].id,2); } }catch(e){ errs.push('mgr '+e.message); }
   try{ advance('day'); }catch(e){ errs.push('advance '+dstr(G.day)+' '+e.message); G.day++; } try{ invDay(); }catch(e){ INV('검사 오류',e.message); } };
 let g=0; const T0=Date.now(); let lastD=G.day, same=0;
