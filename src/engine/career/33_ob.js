@@ -28,6 +28,7 @@ function obFromPlayer(p,rec){ if(!G.ob)obInit(); const c=careerOf(p); let war=re
   if(seasons<5&&war<5&&!(p.team===G.user&&ys>=3)&&!obMinorOk(p))return null; /* 짧은 경력도 일부는 야구계에 남는다(33b_ob_cycle) */ initPers(p);
   const ob=obMake({fid:p.id,name:p.name,isP:p.isP,pos:posLabel(p),team:p.team,ys,war,seasons,age:p.age,retY:G.year,awards:(p.aw||[]).length,hof:rec&&rec.hof,cat:!p.isP&&p.pos==='C',pers:{...p.pers},pr:{...p.r}});
   ob.mineWar=fm!==undefined?(fm?fm.war:0):rec&&rec.mine?rec.mine.war:p.team===G.user?+(war*(ys/Math.max(1,seasons))).toFixed(1):c.byTeam[G.user]?+c.byTeam[G.user].war.toFixed(1):0; ob.school=p.school||null; ob.area=p.area||null; /* 모교로 돌아가 고교 감독이 되기도 한다(11-08c) */ ob.no=rec&&rec.canRetNo?rec.no:jno(p); if(rec&&rec.canRetNo)ob.canRetNo='p'+p.id;
+  ob.hb=(p.th||'')+(p.bt||''); try{ bodyOf(p); ob.ht=p.ht; }catch(e){} /* 아들에게 물려줄 투타·키(2대 선수, 11-09r) */
   ob.tys={}; for(const t in c.byTeam)ob.tys[t]={ys:c.byTeam[t].ys.size,war:+c.byTeam[t].war.toFixed(1)}; if(ob.mine||ob.mineWar)ob.tys[G.user]={ys:ob.mine?ys:(ob.tys[G.user]||{}).ys||0,war:ob.mineWar}; /* 실제로 뛴 구단별 경력: 이직해도 '우리 구단 출신'이 맞게(검수 11-09zp) */ return obCycle(ob,p); }
 /* 지금 맡은 구단 출신인가·그 구단 경력: 뛴 구단 기록(tys)으로. 옛 저장은 은퇴 때 소속 */
 function obMine(o){ return o.tys?!!(o.tys[G.user]&&o.tys[G.user].ys):o.team===G.user; }
@@ -99,6 +100,31 @@ EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)retur
       ob.alt={k:'front',tid:G.user,t:`${t.city} ${t.nick} 프런트`}; return `${ob.name}이(가) 우리 프런트에서 일을 시작합니다.`; }
     return ''; } };
 function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec=ob.isP?'P':'B'; s.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.isP?'투수':'타자'}를 더 정확히 봄`; /* 선수 출신 스카우트: 자기 쪽(투수·타자)을 더 잘 본다 */ s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid;if(ob.age!=null)s.age=ob.age;return staffAttach(s,'scout'); }
+
+/* ===== 2대 선수(사용자 11-09r): 은퇴한 국내 선수(OB)의 아들이 커서 신인 드래프트에 나온다 =====
+ 실제 KBO 부자 선수(이종범-이정후, 정회열-정해영, 박철우-박세혁 등)는 40여 년에 수십 쌍 정도로 드물다. 정확한 비율 통계는 없어 추정:
+ 1군 5시즌 이상 또는 통산 WAR 8 이상인 OB 중 4%만 프로를 노리는 아들을 두고, 은퇴 15~25년 뒤(아들 고졸 18세·대졸 22세) 드래프트에 나온다. 한 해 최대 2명.
+ 아들에게는 아버지 OB id(p.father) 하나만 저장한다 */
+const SON_RATE=.04;
+function sonDue(o){ return !o.minor&&(o.seasons>=5||o.war>=8)&&u01('son',o.id)<SON_RATE&&o.retY+15+Math.floor(u01('sonY',o.id)*11)===G.year; }
+function fatherOf(p){ return p&&p.father&&(G.ob||[]).find(o=>o.id===p.father)||null; }
+function sonTag(p){ const o=fatherOf(p); return o?`<button class="lnk" data-a="person" data-v="ob:${o.id}">${esc(o.name)}</button>의 아들`:''; }
+/* 드래프트 풀에서 아버지와 같은 투수·야수(야수는 60%가 같은 포지션)인 신인 하나를 아들로 삼는다: 신인 생성(makeDraftClass)을 그대로 쓰고 성·투타·체격·잠재력만 손본다 */
+function sonMake(cls){ for(const o of (G.ob||[]).filter(sonDue).slice(0,2)){ const L=cls.map(id=>G.players[id]).filter(q=>q&&!q.father&&!!q.isP===!!o.isP); const same=L.filter(q=>posLabel(q)===o.pos); const b=pick(same.length&&R()<.6?same:L); if(!b)continue;
+    b.father=o.id; for(let i=0;i<40;i++){ const n=o.name[0]+pick(GN); if(n!==o.name&&!BLOCK.has(n)&&!nameBad(n)){ b.name=n; if(!nameTaken(n))break; } }
+    b.pot=clamp(b.pot+rnd(-1,5),20,80); /* 조금 위로 치우칠 뿐 보장하지 않는다(2세가 다 성공하지는 않는다) */
+    if(o.hb&&R()<.5&&(b.isP||!['C','2B','3B','SS'].includes(b.pos))){ b.th=o.hb[0]; b.bt=b.isP?b.th:o.hb[1]||b.bt; } /* 포수·내야는 우투만 */
+    if(o.ht){ const d=Math.round((o.ht-b.ht)/2+N(0,2)); b.ht=clamp(b.ht+d,168,198); b.wt=clamp(b.wt+d,62,112); } } }
+/* 우리가 아들을 지명했을 때: 기사·팬 여론, 업적, 아버지 등번호 */
+function sonDrafted(p){ const o=fatherOf(p); if(!o)return; const home=obMine(o); /* 팬 여론은 기사 논조로 소폭 오른다(우리 출신이면 조금 더) */
+  news('드래프트',`${o.name}의 아들 ${p.name}, ${tshort(G.user)} 지명`,`${home?`우리 유니폼을 입고 ${obMineC(o).ys}시즌을 뛴`:`${tshort(o.team)} 출신`} ${o.name}의 아들 ${p.name}(${posLabel(p)})이(가) ${p.draft.rd}라운드 ${p.draft.no}순위로 ${tname(G.user)}에 지명됐습니다. 팬들이 대를 잇는 인연을 반깁니다.`,home?2:1,{fanW:1,ref:p.id});
+  const fp=G.players[o.fid]||(G.arch&&G.arch[o.fid]&&archP(G.arch[o.fid])); if(fp&&fp.draft&&fp.draft.tid===G.user)achUnlock('gen2',`${o.name}${fp.draft.y!=null?`(${fp.draft.y}년 지명)`:''} → ${p.name}(${G.year}년 지명).`);
+  const n=o.no; if(n==null)return; const rn=(G.retNos||[]).find(r=>r.no===n); const own=!!rn&&(rn.ob===o.id||rn.name===o.name); if(rn&&!own)return; if(!rn&&teamNos(G.user,p).has(n))return; /* 다른 사람 결번이거나 지금 누가 쓰면 묻지 않는다 */
+  evNew('son2',`${p.name}, 아버지 등번호 ${n}번`,`${p.name}이(가) 아버지 ${o.name}의 ${n}번을 달고 싶어 합니다.${own?` ${n}번은 아버지의 영구결번이라 구단이 허락해야 쓸 수 있습니다.`:''}`,[{l:own?`아버지 결번 ${n}번 허락`:`${n}번 물려주기`,fx:own?'결번은 그대로 두고, 아들에게만 이 번호를 허락합니다. 팬 여론이 조금 오릅니다.':'아버지의 번호를 이어 답니다.'},{l:'새 번호로 시작',fx:'아들은 자기 번호로 시작합니다.'}],{data:{pid:p.id,no:n,rn:own},def:1,exp:7}); }
+EVH.son2={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||i!==0)return ''; const n=e.data.no;
+    if(!e.data.rn){ const r=setPlayerNo(p.id,n); return r||`${p.name}이(가) ${n}번을 답니다.`; }
+    jno(p); p.no=n; p.noT=p.team; /* 결번은 남기고 아들에게만 예외로 허락한다 */
+    news('구단',`${p.name}, 아버지의 영구결번 ${n}번 단다`,`구단이 영구결번 ${n}번을 아들 ${p.name}에게만 허락했습니다.`,1,{fanW:1,ref:p.id}); return `${p.name}이(가) 아버지의 결번 ${n}번을 답니다.`; } };
 
 function obHireBonus(obid,role){ if(!obid||!G.ob)return; const ob=G.ob.find(o=>o.id===obid); if(!ob)return; ob.log.push({y:G.year,t:`${tshort(G.user)} ${role}`}); if(!obMine(ob))return; prInit(); const f=ob.fame>=70?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
   news('팬',`${ob.name}, 친정 ${tshort(G.user)}로 돌아왔다`,`${role}로 합류합니다. 팬들이 반깁니다.`,2,{fanW:1}); }

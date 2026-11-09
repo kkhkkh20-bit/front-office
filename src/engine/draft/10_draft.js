@@ -33,6 +33,7 @@ function makeDraftClass(){
     amHistory(b,lvl);
     cls.push(b.id);
   }
+  sonMake(cls); /* 옛 선수의 아들(2대 선수, 33_ob) */
   /* 즉시 전력 신인: 해마다 상위 재목 몇 명은 1년차부터 1군 주전급이다(실제 KBO도 매년 2~4명은 첫해부터 자리를 잡는다).
      잠재력 상위 5명 중 55%가 완성형이 되고, 35% 확률로 리그 정상급으로 클 특급이 하나 나온다 */
   { const top=cls.map(id=>G.players[id]).filter(p=>p.pot>=54).sort((a,b)=>b.pot-a.pot).slice(0,5);
@@ -139,6 +140,7 @@ function draftPressLine(p){ const h=p.am; if(!h)return ''; if(p.isP){ const r=pR
 function draftPressNews(day){ if(G.unemp||!G.draftClass||!G.draftClass.length||(G.draft&&!G.draft.done&&G.draft.y===G.year))return;
   const cls=G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.press).sort((a,b)=>a.press-b.press);
   if(day===KD(6,15)&&cls.length){ const L=cls.slice(0,10).map((p,i)=>`${i+1}. ${p.name}(${p.school||p.region}, ${posLabel(p)}) ${draftPressLine(p)}`);
+    for(const p of cls){ const o=fatherOf(p); if(o&&(obMine(o)||o.retNo))news('드래프트',`${o.name}의 아들 ${p.name}, 올해 드래프트에 나온다`,`${obMine(o)?`${tname(G.user)}에서 ${obMineC(o).ys}시즌을 뛴`:`${tshort(o.team)} 출신`}${o.retNo?` 영구결번 ${o.no}번`:''} ${o.name}의 아들 ${p.name}(${p.school||p.region}, ${posLabel(p)})이(가) ${G.year} 신인 드래프트에 나옵니다. 스카우트팀은 '아버지 이름값과 별개로 지켜봐야 할 선수'라고 보고했습니다.`,0,{ref:p.id}); } /* 우리 구단 출신·영구결번 OB의 아들은 드래프트 전에 한 번 알린다(11-09r) */
     news('드래프트',`${G.year} 신인 드래프트 최대어 TOP 10`,`언론이 꼽은 올해 드래프트 상위 10명입니다. 고교·대학 기록과 구속·체격 같은 눈에 보이는 것으로 매긴 순위라, 프로에서 얼마나 클지는 구단 스카우트의 판단이 다를 수 있습니다.\n\n${L.join('\n')}`,0); }
   if(day===KD(8,25)&&cls.length){ const O=draftPickOrder(); const pool=[...cls]; const L=[]; for(const pk of O){ const p=pool.shift(); if(!p)break; L.push(`${pk.no}순위 ${tshort(pk.tid)}: ${p.name}(${p.school||p.region}, ${posLabel(p)})`); }
     const mine=O.find(x=>x.tid===G.user);
