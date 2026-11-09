@@ -31,17 +31,17 @@ function revView(){ const R=UI.rev; if(!R)return ''; const p=G.players[R.pid]; i
 /* 창단 지명 평가: 우리 지명 선수별 지명 때 추정 → 지금 코치진 평가 범위, 올해 기록, 중간·첫해 평가 */
 function fdEvalView(){ const F=G.fd; if(!F||!F.done)return csec('창단 지명 평가','<p class="small muted">창단 드래프트가 끝나면 볼 수 있습니다.</p>');
   const ev=fdEvOf('end')||fdEvOf('mid'); const isEnd=!!ev&&ev===fdEvOf('end'); const Rm=new Map(ev?ev.rows.map(r=>[r.pid,r]):[]);
-  const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&G.players[x.pid]).map(x=>({x,p:G.players[x.pid]}));
+  const L=F.picks.filter(x=>x.tid===G.user&&x.pid&&fdP(x.pid)).map(x=>({x,p:fdP(x.pid)})); /* 은퇴한 지명자도 보관 기록으로(평가 합계와 같은 명단, 검수 11-09zd) */
   const w0=fdEsd()*1.15+.8;
   const head=ev?`${isEnd?`${ev.y} 정규시즌 뒤 첫해 평가`:`${ev.y} 7월 1일 중간 평가`} 기준입니다. 같은 순번대(앞뒤 8순번) 지명자들이 그해 1군에서 낸 WAR과 비교했습니다.${isEnd?'':' 첫해 평가는 정규시즌이 끝난 다음 날 나옵니다.'}`
     :`아직 평가 전입니다. 중간 평가는 ${F.y}년 7월 1일, 첫해 평가는 정규시즌이 끝난 다음 날 나옵니다. 지명 때 스카우트 추정과 지금 현재 능력을 비교해 보세요.`;
   const sum=ev?`<dl class="tsum"><div><dt>우리 지명 WAR 합</dt><dd class="num">${ev.tot.toFixed(1)}</dd></div><div><dt>10개 구단 중</dt><dd class="num">${ev.rk||'-'}위</dd></div><div><dt>기대 이상</dt><dd class="num">${ev.rows.filter(r=>r.k==='good').length}명</dd></div><div><dt>기대 이하</dt><dd class="num">${ev.rows.filter(r=>r.k==='bad').length}명</dd></div></dl>`:'';
-  const row=({x,p})=>{ const e0=fdE0(p,x); const r=fdRange(p); const ev1=Rm.get(p.id); const s=fdSample(p); const w=fdWarY(p,F.y,G.user);
+  const row=({x,p})=>{ const e0=fdE0(p,x); const r=p.arch?null:fdRange(p); const ev1=Rm.get(p.id); const s=fdSample(p); const w=fdWarY(p,F.y,G.user);
     const play=p.isP?(s.outs1?`${ipStr(Math.round(s.outs1))}이닝`:'1군 등판 없음'):(s.pa1?`${Math.round(s.pa1)}타석`:'1군 출전 없음');
     const v=ev1?`<span class="pill ${ev1.k==='good'?'good':ev1.k==='bad'?'bad':''}">${ev1.k==='good'?'기대 이상':ev1.k==='bad'?'기대 이하':'순번만큼'}</span>`:'<span class="pill">평가 전</span>';
-    return `<div class="fde-r"><div class="fde-m"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button> <span class="small muted">${x.rd}라운드 ${x.no}번째 · ${posLabel(p)}${x.auto?' · 스카우트 맡김':''}${p.team!==G.user?` · 지금 ${esc(tshort(p.team))}`:''}</span>
+    return `<div class="fde-r"><div class="fde-m"><button class="lnk" data-a="player" data-v="${p.id}"><b>${esc(p.name)}</b></button> <span class="small muted">${x.rd}라운드 ${x.no}번째 · ${posLabel(p)}${x.auto?' · 스카우트 맡김':''}${p.arch?' · 은퇴':p.team!==G.user?` · 지금 ${esc(tshort(p.team))}`:''}</span>
       <span class="small">지명 때 추정 ${dv(e0-w0)}~${dv(e0+w0)} · ${esc(x.role||fdRole(p,e0))}</span>
-      <span class="small">현재 능력 <b>${fdRangeTxt(r)}</b></span>
+      ${p.arch?'':`<span class="small">현재 능력 <b>${fdRangeTxt(r)}</b></span>`}
       <span class="small muted">${F.y} 1군 ${play} · 우리 팀 WAR ${w.toFixed(1)}${ev1?` · 같은 순번대 중앙값 ${ev1.med.toFixed(1)}`:''}</span>${ev1?`<span class="small ${ev1.k==='good'?'good':ev1.k==='bad'?'bad':''}">${esc(ev1.t)}</span>`:''}</div>${v}</div>`; };
   const st=ev&&ev.steal?`<p class="small muted">다른 구단 포함 최고의 스틸: <button class="lnk" data-a="player" data-v="${ev.steal.pid}">${esc(ev.steal.nm)}</button>(${esc(tshort(ev.steal.tid))} ${ev.steal.rd}라운드) WAR ${ev.steal.w.toFixed(1)}</p>`:'';
   return csec('창단 지명 평가',`<p class="small sdesc">${head}</p>${sum}${st}<div class="fde-l">${L.map(row).join('')}</div>`); }
