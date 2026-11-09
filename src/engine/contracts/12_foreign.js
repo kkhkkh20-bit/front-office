@@ -92,13 +92,15 @@ function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0
   const r=origOf(p), lv=intlLv(r), isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r), k=fwatchK(p.id), mine=fMineFind(p);
   const bf=(lv>=3?.6:1)*(1-k/100*.6)*(mine?.6:1); const ss=Math.sqrt((sd*.55)**2+(3.2*bf)**2+2.2), sc=rp.cur, rc=fRecEst(p);
   let m=null, ms=null; if(sc!=null&&rc){ const ws=1/ss**2, wr=1/rc.sd**2; m=(sc*ws+rc.m*wr)/(ws+wr); ms=1/Math.sqrt(ws+wr); } else if(sc!=null){ m=sc; ms=ss; } else if(rc){ m=rc.m; ms=rc.sd; }
+  /* 조사 전 흐림(사용자 피드백 11-09f: 처음부터 예상이 거의 정확해 하위 후보를 안 봄): 선수마다 고정된 착시를 얹고 범위도 넓힌다. 관찰 파악도·스카우트망·파견 스카우트 능력·직접 발굴로 줄어든다. 드물게 '예상 60인데 실제 70'(또는 그 반대)이 나온다 */
+  const m0=m, fog=3.5*(1-k/100*.8)*(lv>=3?.5:lv>=2?.75:1)*(isc?1-(isc.skill||0)*.08:1)*(mine?.6:1); if(m!=null&&fog>.3){ m+=clamp(hn('fblur',p.id),-2.5,2.5)*fog; ms=Math.sqrt(ms**2+fog**2); }
   const mid=m==null?null:dv(m), band=m==null?null:dvSd(m,ms*1.3);
   const h=p.prev, rec=h?(p.isP?`${p.prevLvl} ${ipStr(h.outs||0)}이닝`:`${p.prevLvl} ${h.pa||0}타석`):'';
   const why=[]; if(rec)why.push(`기록: ${rec}(리그 기록 ${fRelL(p.prevLvl)})`); if(p.mlbG)why.push(`MLB 통산 ${p.mlbG}경기`);
   why.push(`스카우트: ${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 파견`:''}${fwatchOn(p.id)?` · 관찰 파악도 ${k}%`:''}${mine?' · 직접 발굴':''}`);
   let tip=''; if(n<3){ if(!fwatchOn(p.id))tip='관찰 명단에 올리면 매주 보고가 쌓여 범위가 좁아집니다.'; else if(k<100)tip=`관찰 중입니다. 파악도가 오를수록 범위가 좁아집니다(이 지역은 주당 약 ${3+lv*3+(isc?isc.skill*2:0)}%).`; if(lv<3)tip+=(tip?' ':'')+`${IREG[r].l} 스카우트망을 넓히거나 스카우트를 파견해도 정확해집니다.`; }
   return {n,l:S.l,cls:S.cls,d:S.d,mid,lo:mid==null?null:Math.max(20,mid-band),hi:mid==null?null:Math.min(100,mid+band),band,why,tip,
-    sc:sc==null?null:dv(sc),rec:rc?dv(rc.m):null,raw:m,ms,score:m==null?-99:m}; }
+    sc:sc==null?null:dv(sc),rec:rc?dv(rc.m):null,raw:m,m0,ms,score:m==null?-99:m}; }
 /* 외국인 후보 목록 정렬: {p,rp,fs} 목록에 쓴다. 예상 능력순(rk)은 종합 추정만 본다 */
 function fSortBy(k){ const st=p=>{ const h=p.prev; if(!h)return -9; return p.isP?(h.outs?1.6-(h.er*27/h.outs)/5:-9):bRate(h).ops; };
   return ({stat:(a,b)=>st(b.p)-st(a.p),ask:(a,b)=>a.p.ask-b.p.ask,age:(a,b)=>a.p.age-b.p.age})[k]||((a,b)=>b.fs.score-a.fs.score); }
@@ -119,7 +121,7 @@ function fFindNote(p,rp){ if(!fMineFind(p))return ''; const T=(rp&&rp.tools||[])
 function fKnows(tid,p){ return !p||p.fsrc!=='scout'||G.day>=(p.fpub||0)||(p.fknow||[]).includes(tid); }
 function fScoutLv(tid){ if(tid===G.user)return null; const sd=team(tid).scoutSd||6; return clamp((9-sd)/1.6,0,3); }
 /* 매주 스카우트 발굴: 우리는 스카우트망 지역에서, 다른 구단은 스카우트 수준에 따라 */
-function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===10||o.m===11))return; G.fmarket=G.fmarket||[]; if(G.fmarket.length>=46)return; const found=[];
+function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===10||o.m===11))return; G.fmarket=G.fmarket||[]; if(G.fmarket.length>=70)return; const found=[];
   if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r}); G.fmarket.push(q.id); found.push(q); } } try{ sisLeadWeek(found); }catch(e){} }
   for(const t of G.teams){ if(t.id===G.user)continue; const lv=fScoutLv(t.id); if(R()<.12+lv*.05){ const q=newForeign(R()<.25?'아시아':'용병',{src:'scout',finder:t.id,flv:lv}); G.fmarket.push(q.id); } }
   void silent; /* 발굴 소식은 보내지 않는다: 외국인 시장에서 '우리 스카우트 발굴'로 표시하고 관찰 메모를 자세히 보여 준다 */
@@ -131,7 +133,7 @@ function refreshFMarket(n,drop){
   const ag=()=>G.fmarket.map(id=>G.players[id]).filter(q=>q&&q.fsrc!=='scout');
   for(let i=0;i<(drop||0);i++){ const old=ag().filter(q=>!W.has(q.id)).sort((a,b)=>a.fday-b.fday)[0]; if(!old)break; G.fmarket=G.fmarket.filter(x=>x!==old.id); dropP(old.id); }
   /* 비시즌에는 후보가 넉넉해야 고르는 재미가 있다. 창단 첫해 겨울은 10개 구단이 한꺼번에 찾으므로 더 많이 */
-  const fd0=G.startY===G.year&&period()!=='season'; const min=period()==='season'?9:fd0?42:22; let g=0;
+  const fd0=G.startY===G.year&&period()!=='season'; const min=period()==='season'?12:fd0?54:32; /* 풀을 넉넉히(사용자 피드백 11-09f) */ let g=0;
   while(ag().length<min&&g++<40){ const ps=ag(); const asiaN=ps.filter(p=>p.foreign==='아시아').length; const yb=ps.filter(p=>p.foreign==='용병'); const batN=yb.filter(p=>!p.isP).length, pitN=yb.filter(p=>p.isP).length;
     const aMin=Math.round(min*.2), bMin=Math.round(min*.3), pMin=Math.round(min*.42);
     if(asiaN<aMin)G.fmarket.push(newForeign('아시아',{market:true}).id); else if(pitN<pMin)G.fmarket.push(newForeign('용병',{isP:true,market:true}).id); else if(batN<bMin)G.fmarket.push(newForeign('용병',{isP:false,market:true}).id); else G.fmarket.push(newForeign('용병',{market:true}).id); }
@@ -188,8 +190,13 @@ function fInterest(q){ if(!q||q.team!=null)return 0; let n=0; for(const t of G.t
 function aiForeignSign(tid,q,why,T){ const nd=fNeed(tid); if(nd&&nd.up&&G.players[nd.up]&&ovr(q)>=nd.upO+6){ const w=G.players[nd.up]; { const a0=q.ask; if(T)q.ask=T.g+T.i; const e=foreignCheck(tid,q,w.id); q.ask=a0; if(e)return e; } /* 교체 계약이 성립하는지(총액 한도 등) 먼저 보고 나서 기존 선수를 내보낸다(검수 11-06) */ releaseForeign(w.id); wire('외국인',`${tshort(tid)}, 외국인 ${w.name} 대신 ${q.name} 영입 추진`,{tid,ref:q.id}); } const err=T?signForeignT(tid,q.id,T.g,T.i):signForeign(tid,q.id); /* T: 경쟁 구단이 실제로 제시한 보장·인센티브(검수 11-05: 협상을 압박한 조건과 실제 계약이 달랐다) */ if(err)return err; if(fwatchOn(q.id))mail('스카우트팀장',`관찰 후보 ${q.name}, ${tshort(tid)}와(과) 계약`,`관찰 명단에 있던 ${q.name}(${posLabel(q)})을(를) ${tname(tid)}이(가) ${T?`보장 ${money(T.g)}${T.i?` + 인센티브 ${money(T.i)}`:''}`:`연 ${money(q.sal)}`}에 먼저 데려갔습니다.${why||''}`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); else if(ovr(q)>=60)wire('외국인',`${tshort(tid)}, 외국인 ${posLabel(q)} ${q.name} 영입 (${money(q.sal)})`,{tid,ref:q.id}); }
 /* 스토브리그·캠프 기간: 구단들이 하루하루 시장에서 데려간다. 인기 선수는 몸값이 오른다 */
 function aiForeignDaily(){ if(!foreignOpen()||period()==='season')return; const o=dobj(G.day); const pr=G.startY===G.year&&o.m===1?.45:o.m===1||o.m===2?.12:.06; /* 창단 첫 1월: 모든 구단이 외국인 선수단을 새로 꾸리므로 각 구단이 자기 판단으로 바로 움직인다(순번 없이). 평소 겨울은 띄엄띄엄 */
-  for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr*(fwatchOn(q.id)?1.8:1))aiForeignSign(t.id,q); } } /* 우리가 관찰 중인 후보를 노리는 구단은 서두른다 */
-function fBidWeek(){ try{ scoutFindWeek(); }catch(err){} if(!foreignOpen())return; { const n=R()<.5?1:R()<.5?2:0; for(let i=0;i<n;i++){ const q=newForeign(R()<.22?'아시아':'용병',{market:true}); G.fmarket.push(q.id); } } for(const id of (G.fmarket||[])){ const q=G.players[id]; if(!q||q.team!=null)continue; const n=fInterest(q); q.fint=n; if(q.ask0==null)q.ask0=q.ask; if(q.ask>foCap(q))q.ask=foCap(q); /* 요구액도 지금 제안 상한 안에서: 우리는 막히고 AI는 상한액으로 잘려 계약하던 차이(검수 11-08) */ if((n>=2||(n>=1&&fwatchOn(id)))&&q.ask<q.ask0*1.3)q.ask=round5(Math.min(q.ask*1.04,foCap(q))); /* 시즌 중 줄어든 신규 상한까지만(검수 11-08) */ } }
+  for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr*(fwatchOn(q.id)?1.8:1)&&!foCutIn(t.id,q))aiForeignSign(t.id,q); } } /* 우리가 관찰 중인 후보를 노리는 구단은 서두른다 */
+/* 매주 한국행에 새로 관심을 보인 후보가 시장에 들어온다(사용자 피드백 11-09f: 첫 주에 안 잡으면 남은 선수만 고르게 됨). 겨울 주 3~5명·시즌 중 2~3명, 에이전트 공용 후보는 겨울 48명·시즌 중 18명까지. 좋은 후보(예상 65 초과)만 소식 */
+function fNewWeek(){ G.fmarket=G.fmarket||[]; const ag=G.fmarket.filter(id=>{ const q=G.players[id]; return q&&q.team==null&&q.fsrc!=='scout'; }).length; const n=Math.min(Math.max(0,(period()==='season'?18:48)-ag),period()==='season'?ri(2,3):ri(3,5)); const hot=[];
+  for(let i=0;i<n;i++){ const q=newForeign(R()<.22?'아시아':'용병',{market:true}); G.fmarket.push(q.id); if(fNewsOk(q))hot.push(q); }
+  if(hot.length&&!G.unemp)mail('스카우트팀',`새 외국인 후보: ${hot.map(q=>q.name).join(', ')}`,`이번 주 한국행에 관심을 보인 선수가 시장에 나왔습니다.\n${hot.map(q=>`${q.name}(${posLabel(q)}, ${q.nat||''}, ${q.age}세 · ${q.prevLvl} · 요구 ${Math.round(q.ask/USD)}만 달러)`).join('\n')}`,{kind:'외국인',acts:[...hot.slice(0,2).map(q=>({l:`${q.name} 보기`,a:'player',v:q.id})),{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
+  return n; }
+function fBidWeek(){ try{ scoutFindWeek(); }catch(err){} if(!foreignOpen())return; fNewWeek(); for(const id of (G.fmarket||[])){ const q=G.players[id]; if(!q||q.team!=null)continue; const n=fInterest(q); q.fint=n; if(q.ask0==null)q.ask0=q.ask; if(q.ask>foCap(q))q.ask=foCap(q); /* 요구액도 지금 제안 상한 안에서: 우리는 막히고 AI는 상한액으로 잘려 계약하던 차이(검수 11-08) */ if((n>=2||(n>=1&&fwatchOn(id)))&&q.ask<q.ask0*1.3)q.ask=round5(Math.min(q.ask*1.04,foCap(q))); /* 시즌 중 줄어든 신규 상한까지만(검수 11-08) */ } }
 function aiForeignFill(tid){
   { const q=aiForeignPick(tid); if(q){ aiForeignSign(tid,q); return; } }
   const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병');
@@ -203,14 +210,14 @@ function aiForeignReview(tid){
   try{ if(aiForeignTemp(tid))return; }catch(e){} /* 시즌 안에 돌아올 부상은 교체 횟수를 쓰지 않는 부상 대체로 */
   { const a=foreignOf(tid).find(x=>x.foreign==='아시아'&&x.injOut>45); /* 아시아쿼터 장기 부상도 별도 교체권으로 바꾼다(검수 11-09c: 일반 외국인만 검토) */
     const q=a&&fReplLeft(tid,'아시아')>0?(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&x.foreign==='아시아'&&fKnows(tid,x)&&!foHeld(x)&&!foreignCheck(tid,x,a.id)).sort((x,y)=>fScoreBy(tid,y)-fScoreBy(tid,x))[0]:null;
-    if(q){ const nm=a.name; releaseForeign(a.id); if(!signForeign(tid,q.id)){ wire('외국인',`${tname(tid)}이(가) 부상 중인 아시아쿼터 ${nm}을(를) ${q.name}(으)로 교체했습니다.`,{tid,ref:q.id}); return; } } }
+    if(q){ if(foCutIn(tid,q))return; const nm=a.name; releaseForeign(a.id); if(!signForeign(tid,q.id)){ wire('외국인',`${tname(tid)}이(가) 부상 중인 아시아쿼터 ${nm}을(를) ${q.name}(으)로 교체했습니다.`,{tid,ref:q.id}); return; } } }
   if((G.sea.repl[tid]||0)>=F_REPL_MAX)return;
   for(const p of foreignOf(tid).filter(x=>x.foreign==='용병')){
     const h=seasonTotal(p,G.year,'1군');
     const bad=p.injOut>45||(G.day>G.cal.open+40&&h&&(p.isP?(h.outs>=120&&pRate(h).era>4.9):(h.pa>=160&&bRate(h).ops<.730)));
     /* 기록이 아직 나쁘지 않아도 시장에 확실히 나은 후보가 있으면 바꾼다(교체 한도 안에서) */
     const q=G.day>G.cal.open+30?(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&x.foreign==='용병'&&x.isP===p.isP&&fKnows(tid,x)&&!foHeld(x)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a))[0]:null; const up=!bad&&q&&fScoreBy(tid,q)>ovr(p)+6;
-    if((bad&&R()<.7)||(up&&R()<.1)){ const nm=p.name; const qOk=q&&!foreignCheck(tid,Object.assign({},q,{ask:Math.min(q.ask,fNewCap())}),p.id); if(!qOk&&!bad)continue; if(!qOk&&fReplLeft(tid)<=0)continue; /* 새 선수를 데려올 수 있는지 먼저 본다(검수 11-06: 보류권 후보 때문에 기존 선수만 잃음) */
+    if((bad&&R()<.7)||(up&&R()<.1)){ const nm=p.name; const qOk=q&&!foreignCheck(tid,Object.assign({},q,{ask:Math.min(q.ask,fNewCap())}),p.id); if(!qOk&&!bad)continue; if(!qOk&&fReplLeft(tid)<=0)continue; if(qOk&&foCutIn(tid,q))return; /* 우리 관찰 후보면 바로 데려가지 않고 끼어들 기한부터 */ /* 새 선수를 데려올 수 있는지 먼저 본다(검수 11-06: 보류권 후보 때문에 기존 선수만 잃음) */
       const n0=foreignOf(tid).filter(x=>x.foreign==='용병').length; releaseForeign(p.id); if(!qOk||signForeign(tid,q.id))aiForeignFill(tid); const n1=foreignOf(tid).filter(x=>x.foreign==='용병').length; wire('외국인',n1>=n0?`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 교체했습니다.`:`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 방출했습니다.`,{tid}); return; }
   }
 }
