@@ -82,8 +82,8 @@ function stadWindow(){ const per=period(); if(per==='season'||per==='post')retur
 function stadStart(k){ const S=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=S.lv[k];
   if(lv>=STAD_MAX)return '이미 최고 단계입니다.'; if((S.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
   if(!stadWindow())return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
-  const c=STAD_COST[lv+1]; const t=team(G.user); const rsv=t.indie?newStadDue(G.user):0; /* 독립구단: 결산 때 낼 신구장 분담금은 쓸 수 없는 돈(검수 11-09j) */ if(sdCash(G.user)-rsv<c)return `자금이 부족합니다. 공사비 ${money(c)}이 필요합니다.${rsv?` (결산 때 낼 신구장 분담금 ${money(rsv)}은 따로 남겨 둡니다)`:''}`;
-  t.cash-=c; S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c}); G.spend.stad=(G.spend.stad||0)+c;
+  const c=STAD_COST[lv+1]; const t=team(G.user); const rsv=t.indie?newStadDue(G.user):0; /* 독립구단: 결산 때 낼 신구장 분담금은 쓸 수 없는 돈(검수 11-09j) */ if(spendable(G.user)-rsv<c)return `자금이 부족합니다(${spendTxt()}). 공사비 ${money(c)}이 필요합니다.${rsv?` (결산 때 낼 신구장 분담금 ${money(rsv)}은 따로 남겨 둡니다)`:''}`;
+  S.build=(S.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c}); G.spend.stad=(G.spend.stad||0)+spendPay(c);
   addLog(`${stadName(G.user)} ${it.l} ${lv+1}단계 공사를 시작했습니다(공사비 ${money(c)}, ${STAD_DAYS[lv+1]}일).`); return ''; }
 function stadDaily(){ for(const t of G.teams){ const S=t.stad; if(!S||!S.build||!S.build.length)continue; S.build=S.build.filter(b=>{ if(G.day<b.done)return true; if((S.lv[b.k]||0)>=b.lv)return false; /* 이미 더 높은 단계(신구장 개장 등)면 낮추지 않는다 */ S.lv[b.k]=b.lv; if(t.id===G.user){ const it=STAD_ITEMS.find(x=>x.k===b.k); chron('stad',`${it.l} ${b.lv}단계 완공`); note('구장',`${it.l} ${b.lv}단계 공사가 끝났습니다.`); news('구단',`${t.city} ${t.nick}, ${it.l} 새단장`,`${stadName(t.id)}의 ${it.l}이(가) ${b.lv}단계로 바뀌었습니다. 팬들의 관람 환경이 좋아졌습니다.`,1); } return false; }); } }
 function stadSeasonNote(){ const A=G.sea.att&&G.sea.att[G.user]; if(!A||!A.n)return; const cap=stadCap(G.user); const avg=Math.round(A.sum/A.n);

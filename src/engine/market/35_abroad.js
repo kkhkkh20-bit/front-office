@@ -175,9 +175,9 @@ function hsUsDaily(){ const D=G.draftClass; if(!D||!D.length||G.unemp&&false)ret
     if(!G.unemp)news('드래프트',`${p.name}, ${club}과 계약 · 고교 졸업 뒤 미국 직행`,`드래프트를 앞두고 고교 최대어 한 명이 빠졌습니다. 계약금 ${bonus}만 달러. 드래프트 상위 지명 판도가 바뀝니다.`,0,{}); } }
 /* 설득 자격·비용: 지금도 1순위를 쥐고 있고(검수 11-09c: 지명권을 넘긴 뒤에도 설득), 최고 대우는 보유 현금 안에서만(현금 0원에서 결제) */
 function usHsWhy(e,i){ const p=G.players[e.data.pid]; if(i===2||!p||!p.usOff)return ''; let first=null; try{ first=draftPickOrder()[0]; }catch(x){} if(!first||first.tid!==G.user||G.unemp)return '1라운드 1순위 지명권이 이제 우리 구단에 없어 설득할 수 없습니다.';
-  const cost=Math.round(p.usOff.bonus*1.3); if(i===0&&sdCash(G.user)<cost)return `보유 현금(트레이드 약정분 제외) ${money(Math.max(0,sdCash(G.user)))}으로는 추가 약속 ${money(cost)}을 낼 수 없습니다.`; return ''; }
+  const cost=Math.round(p.usOff.bonus*1.3); if(i===0&&spendable(G.user)<cost)return `쓸 수 있는 돈(${spendTxt()})으로는 추가 약속 ${money(cost)}을 낼 수 없습니다.`; return ''; }
 EVH.usHs={ can:usHsWhy, pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.prospect||!p.usOff)return '이미 정리된 일입니다.'; const mv=mlbOf(p), b=p.usOff.bonus, t=team(G.user);
   if(i===2){ return `${p.name}의 선택을 존중하기로 했습니다.`; } { const why=usHsWhy(e,i); if(why){ e.pick=2; return why+' 설득하지 않았습니다.'; } } /* 자동 처리로 와도 같은 조건 */
   const ch=i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90,.15,.7); const cost=i===0?Math.round(b*1.3):0;
-  if(R()<ch){ p.usStay=true; delete p.usOff; if(cost)t.cash-=cost; p.usKeepT=G.user; news('드래프트',`${p.name}, 미국 대신 KBO 행 · ${tshort(G.user)} 설득 통했다`,i===0?`${tshort(G.user)}이(가) 최고 대우를 약속했다는 후문입니다.`:`단장이 직접 집을 찾아가 육성 계획을 설명한 것이 마음을 돌렸다는 후문입니다.`,1,{ref:p.id}); return `설득에 성공했습니다. ${p.name}은(는) KBO 드래프트에 나옵니다${cost?`(추가 약속 ${money(cost)} 지출)`:''}. 1순위로 지명하세요.`; }
+  if(R()<ch){ p.usStay=true; delete p.usOff; if(cost)spendPay(cost); p.usKeepT=G.user; news('드래프트',`${p.name}, 미국 대신 KBO 행 · ${tshort(G.user)} 설득 통했다`,i===0?`${tshort(G.user)}이(가) 최고 대우를 약속했다는 후문입니다.`:`단장이 직접 집을 찾아가 육성 계획을 설명한 것이 마음을 돌렸다는 후문입니다.`,1,{ref:p.id}); return `설득에 성공했습니다. ${p.name}은(는) KBO 드래프트에 나옵니다${cost?`(추가 약속 ${money(cost)} 지출)`:''}. 1순위로 지명하세요.`; }
   p.mlb=clamp(mv+5,0,100); return `설득에 실패했습니다. ${p.name}은(는) 미국행 쪽으로 기울었습니다. 8월 20일 전후로 결정합니다.`; } };

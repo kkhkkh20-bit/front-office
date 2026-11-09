@@ -156,5 +156,5 @@ function exhEnd(){ const E=G.exh; E.done=true; const st=exhStand(); const top=st
 const ACAD=[{l:'제휴 없음',c:0,d:'프로그램마다 정해진 인원만 보냅니다.'},{l:'연구소 단기 제휴',c:300,d:'프로그램마다 1명 더 보내고, 현지 측정 자료를 받아 크게 늘 가능성이 조금 오릅니다.'},{l:'아카데미 연간 제휴',c:700,d:'프로그램마다 2명 더, 우리 코치가 현지 과정을 함께 받아 부상 위험이 줄어듭니다.'},{l:'R&D 공동 연구 협약',c:1200,d:'프로그램마다 3명 더, 선수별 맞춤 과정을 짜 성과가 가장 좋습니다.'}];
 const acadLv=()=>Math.min(3,(G.acad&&G.acad.lv)||0);
 const ovsLim=o=>o.lim+acadLv();
-function acadUp(){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const lv=acadLv(); if(lv>=3)return '이미 최고 단계입니다.'; const n=ACAD[lv+1], t=team(G.user); if(sdCash(G.user)<n.c)return `보유 현금이 부족합니다(${money(n.c)} 필요).`;
-  t.cash-=n.c; G.spend.facB=(G.spend.facB||0)+n.c; facInit(); G.fac.inv=(G.fac.inv||0)+n.c; (G.fac.hist=G.fac.hist||[]).push({d:G.day,k:'acad',lv:lv+1,c:n.c,src:'cash'}); G.acad={lv:lv+1,d:G.day}; addLog(`특수 아카데미 제휴: ${n.l}(${money(n.c)}).`); return ''; }
+function acadUp(){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const lv=acadLv(); if(lv>=3)return '이미 최고 단계입니다.'; const n=ACAD[lv+1], t=team(G.user); if(spendable(G.user)<n.c)return `쓸 수 있는 돈이 부족합니다(${money(n.c)} 필요, ${spendTxt()}).`;
+  G.spend.facB=(G.spend.facB||0)+spendPay(n.c); facInit(); G.fac.inv=(G.fac.inv||0)+n.c; (G.fac.hist=G.fac.hist||[]).push({d:G.day,k:'acad',lv:lv+1,c:n.c,src:'cash'}); G.acad={lv:lv+1,d:G.day}; addLog(`특수 아카데미 제휴: ${n.l}(${money(n.c)}).`); return ''; }
