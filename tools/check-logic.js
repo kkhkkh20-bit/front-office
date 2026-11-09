@@ -1468,8 +1468,9 @@ T('[예산] 시즌 예산은 개막 때 정한 금액이다: 시즌 중 구단�
   t.pop=(t.pop||1)*1.5; const b2=budget(); ok(Math.abs(b2.roomGoal-b0.roomGoal)<=1,'수입 증가에 예산 여유가 늘어남 '+money(b0.roomGoal)+' -> '+money(b2.roomGoal)); ok(b2.extra>0,'예상보다 늘어난 수입이 따로 표시되지 않음');
   t.trust=40; const o0=(()=>{ const L=G.bLocks[G.user], k=L.I; L.I=budget().I; const v=ownOdds(1000,null); L.I=k; return v; })(); const o1=ownOdds(1000,null); /* 같은 상태에서 '예상보다 더 들어온 수입'만 0으로 바꿔 비교 */ /* 신뢰가 높으면 승인 가능성이 상한(0.92)에 붙어 차이가 안 보인다 */ ok(o1>o0,'늘어난 수입이 구단주 요청 근거가 되지 않음 '+o0.toFixed(2)+' / '+o1.toFixed(2)); });
 T('[트레이드] AI 단장은 능력과 함께 최근 성적도 본다: 운 좋게 성적이 능력보다 좋은 선수는 비싸게, 운 나쁘게 부진한 선수는 싸게 본다(우리 평가는 그대로)',()=>{ fresh(); const A=G.teams.filter(x=>x.id!==G.user); const t=A[0], b=A[1];
-  const p=A.slice(1).flatMap(x=>domestic(x.id)).filter(q=>!q.isP&&!q.foreign&&q.age>=25&&q.age<=31&&ovr(q)>=48&&ovr(q)<=60)[0]; ok(p,'준비 실패'); /* 나이 곡선을 바꿔도 대상이 있게 여러 구단에서 찾는다 */
-  const rs=()=>{ try{ _lkC={k:'',m:new Map()}; }catch(e){} try{ _tcC={k:'',m:{}}; }catch(e){} }; rs(); const v0=tval(t,p,'in'), u0=tval(team(G.user),p,'in');
+  const rs=()=>{ try{ _lkC={k:'',m:new Map()}; }catch(e){} try{ _tcC={k:'',m:{}}; }catch(e){} }; rs();
+  const p=A.slice(1).flatMap(x=>domestic(x.id)).filter(q=>!q.isP&&!q.foreign&&q.age>=25&&q.age<=31&&ovr(q)>=48&&ovr(q)<=60).find(q=>tval(t,q,'in')>=1); ok(p,'준비 실패'); /* 나이 곡선을 바꿔도 대상이 있게 여러 구단에서 찾는다. 비율(×1.08·×0.92)로 보므로 평가가 양수인 선수(0 이하면 비율이 거꾸로) */
+  rs(); const v0=tval(t,p,'in'), u0=tval(team(G.user),p,'in');
   const h=lineFor(p,G.year,p.team,'1군'); const keep=Object.assign({},h); addTo(h,{g:100,pa:420,ab:370,h:132,d:28,tr:2,hr:22,bb:45,hbp:3,sf:2,so:60}); rs(); const v1=tval(t,p,'in'), u1=tval(team(G.user),p,'in');
   for(const k in h)if(typeof h[k]==='number')h[k]=keep[k]??0; addTo(h,{g:100,pa:420,ab:375,h:70,d:10,tr:0,hr:2,bb:38,hbp:2,sf:5,so:110}); rs(); const v2=tval(t,p,'in');
   for(const k in h)if(typeof h[k]==='number')h[k]=keep[k]??0; rs();
