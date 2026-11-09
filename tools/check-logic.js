@@ -2571,6 +2571,19 @@ T('[검수 11-09g] 웨이버: 같은 날 마감되고 빈자리가 하나면 신
     const [x,y]=domestic(A).filter(q=>!q.ys&&!q.foreign).slice(0,2); toFree(x,'점검'); toFree(y,'점검'); x.wv.ok=y.wv.ok=true; wvClaim(y.id); wvClaim(x.id); ok(wvPri()[0]===y.id,'기본 순위가 신청 순서가 아님'); if(up)wvPriMove(x.id,-1); G.day=x.wv.end; try{ wvWants=()=>false; wvDaily(); } finally{ wvWants=ow; } return [x,y]; };
   { const [x,y]=run(false); ok(y.team===u&&x.team!==u,'먼저 신청한 선수가 아니라 내부 순서로 배정'); }
   { const [x,y]=run(true); ok(x.team===u&&y.team!==u,'위로 올린 선수가 배정되지 않음'); } });
+T('[검수 11-09l] 선수 보관 전후 끝난 경기 팀 통계가 같고, BABIP·0점대 ERA·복귀 소속·시상 실제 날짜가 맞다',()=>{ fresh(); simTo(()=>G.day>=G.cal.open+6); const y=G.year;
+  const tot=()=>{ const T=G.teams.map(()=>({})); for(const z of y1Rows(y)){ const X=T[z.h.t]; if(!X)continue; const K=Object.keys(z.isP?ZP:ZB).concat(z.isP?['roe']:[]); for(const k of K){ const q=(z.isP?'p':'b')+k; X[q]=(X[q]||0)+(z.h[k]||0); } } return JSON.stringify(T); };
+  const pit=Object.values(G.players).find(p=>p.isP&&p.team!=null&&p.hist.some(h=>h.y===y&&h.lvl==='1군'&&h.outs>0)); ok(pit,'준비 실패: 등판한 투수 없음'); pit.hist.find(h=>h.y===y&&h.lvl==='1군'&&h.outs>0).roe=4;
+  const bat=Object.values(G.players).find(p=>!p.isP&&p.team!=null&&p.hist.some(h=>h.y===y&&h.lvl==='1군'&&h.pa>0)); const w0=bat.hist.filter(h=>h.y===y&&h.lvl==='1군').reduce((a,h)=>a+warOf(h,bat),0);
+  const before=tot(); dropP(pit.id); dropP(bat.id); ok(tot()===before,'보관 뒤 팀 통계가 달라짐');
+  const w1=G.arch[bat.id].rows.filter(r=>r.y===y).reduce((a,r)=>a+(r.war||0),0); ok(Math.abs(w1-w0)<1e-9,'보관 WAR 반올림 '+w0+' → '+w1);
+  ok(Math.abs(babipOf({ab:10,h:4,hr:1,so:2,sf:2})-1/3)<1e-9,'BABIP 희생플라이 '+babipOf({ab:10,h:4,hr:1,so:2,sf:2}));
+  const q=Object.values(G.players).find(p=>p.isP&&p.team!=null); const A=G.teams.find(t=>t.id!==q.team).id, B=G.teams.find(t=>t.id!==q.team&&t.id!==A).id;
+  lineFor(q,y,A,'1군').pa=1; lineFor(q,y,B,'1군').pa=1; lineFor(q,y,A,'1군'); ok(seasonTotal(q,y,'1군').t===A,'A→B→A 복귀 소속 '+seasonTotal(q,y,'1군').t);
+  const e=Object.values(G.players).find(p=>p.isP&&p.team!=null&&p.id!==q.id); e.hist=e.hist.filter(h=>h.y!==y); e.hist.push(Object.assign({y,t:e.team,lvl:'1군'},ZP,{outs:540,er:9,g:30})); G.feats=[]; featSeason(y);
+  const F=pFeats(e); ok(F.some(x=>x.k==='era0')&&!F.some(x=>x.k==='era1'),'평균자책점 0.45 분류 '+F.map(x=>x.k).join(','));
+  G.awards=G.awards||{}; G.awards[y]={pend:{mvp:true},mvp:null,roy:null,gg:{},cand:{mvp:[],roy:[],gg:{}}}; G.day+=3; awardCeremony('mvp'); ok(G.awards[y].cd&&G.awards[y].cd.mvp===G.day,'시상식 실제 날짜 저장 안 됨');
+});
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

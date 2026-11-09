@@ -24,7 +24,7 @@ function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
     +csec('리그의 OB 출신 지도자·단장',league.length?`<div class="obg">${league.slice(0,24).map(({o,w})=>`<div class="obc">${obAv(o,w)}<div class="obc-t"><b>${esc(o.name)}${o.mine?' <span class="pill good">우리 구단 출신</span>':''}</b><i>${esc(tshort(o.team))} ${esc(o.pos)} 출신 · 통산 WAR ${o.war}</i><span class="obc-w ${w.k}">${esc(w.t)}</span></div></div>`).join('')}</div>`:'<p class="small muted">아직 없습니다.</p>'); }
 
 /* ---------- 진기록 ---------- */
-const FEATI={cyc:'◎',hr4:'4',hr3:'3',h6:'6',h5:'5',rbi8:'타',pg:'P',nh:'N',tnh:'N',k15:'K',cg0:'완',r20:'20',hs:'연',mile:'★',s3030:'30',s4040:'40',hr50:'50',h200:'200',avg400:'.4',tcB:'3',tcP:'3',w20:'20',sv40:'40',k200:'K',era1:'1',srec:'신',ovs:'해',hrc:'연',gs:'만',wohr:'끝',woh:'끝',hr40:'40',s330:'3'};
+const FEATI={cyc:'◎',hr4:'4',hr3:'3',h6:'6',h5:'5',rbi8:'타',pg:'P',nh:'N',tnh:'N',k15:'K',cg0:'완',r20:'20',hs:'연',mile:'★',s3030:'30',s4040:'40',hr50:'50',h200:'200',avg400:'.4',tcB:'3',tcP:'3',w20:'20',sv40:'40',k200:'K',era0:'0',era1:'1',srec:'신',ovs:'해',hrc:'연',gs:'만',wohr:'끝',woh:'끝',hr40:'40',s330:'3'};
 function featView(){ const F=G.feats||[]; const f=UI.ftf||'all'; const yr=UI.fy||'all';
   const ys=[...new Set(F.map(x=>x.y))].sort((a,b)=>b-a);
   const L=F.filter(x=>(yr==='all'||x.y===+yr)&&(f==='all'||f==='mine'&&x.tid===G.user||f==='maj'&&x.maj||f==='g'&&FEATG[x.k]==='g'||f==='s'&&!FEATG[x.k]||f==='m'&&x.k==='mile'));

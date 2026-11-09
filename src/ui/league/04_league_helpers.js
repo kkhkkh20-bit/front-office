@@ -8,6 +8,8 @@ function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
 const pctStr=o=>o.w+o.l?fmt3(o.w/(o.w+o.l)):'-';
 function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order:standingsNow()}; }
+/* 화면 순위: 승률이 같으면 공동이지만, 순위 결정전으로 갈린 두 팀은 결정전 결과 순서(검수 11-09l) */
+function stRank(order,tid){ const T=(G.ps&&G.ps.tbRes)||[], id=o=>o.tid??o, i=order.findIndex(o=>id(o)===tid); if(i<0)return 0; let j=i; while(j>0&&tieOf(order[j-1],order[i])&&!T.some(x=>[x.w,x.l].includes(id(order[j-1]))&&[x.w,x.l].includes(tid)))j--; return j+1; }
 const gbOf=(top,o)=>((top.w-o.w)-(top.l-o.l))/2;
 const gbStr=v=>v<=0?'-':v.toFixed(1);
 function strkPill(tid){ const s=streakOf(tid); if(!s)return ''; return `<span class="strk ${s.includes('승')?'w':s.includes('패')?'l':''}" data-a="go" data-v="league:stand">${s}</span>`; }

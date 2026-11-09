@@ -118,7 +118,7 @@ function awPendFor(p){ const y=G.year, A=G.awards&&G.awards[y]; if(!A||!A.pend)r
 /* 해외에 나가 있는 국내 선수의 보관 정보(pj)에 수상 이력을 더한다. 돌아오면 그 정보로 선수가 되살아나 이력이 이어진다 */
 function awAbroad(id,label){ const a=(G.abroad||[]).find(r=>r.id===id&&!r.back&&r.pj); if(!a)return false; let q; try{ q=JSON.parse(a.pj); }catch(e){ return false; }
   (q.aw=q.aw||[]).includes(label)||q.aw.push(label); try{ story(q,label,'award'); }catch(e){} a.pj=JSON.stringify(q); (a.aw=a.aw||[]).includes(label)||a.aw.push(label); { const ar=G.arch&&G.arch[id]; if(ar){ (ar.aw=ar.aw||[]).includes(label)||ar.aw.push(label); } } /* 시상 화면에서 여는 보관 선수 카드에도(검수 11-08) */ if(a.from===G.user&&!G.unemp)chron('award',`${a.name} ${label}`,id); return true; }
-function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A||!A.pend||!A.pend[k])return; A.pend[k]=false;
+function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A||!A.pend||!A.pend[k])return; A.pend[k]=false; (A.cd=A.cd||{})[k]=G.day; /* 실제로 연 날(달력, 검수 11-09l) */
   const lst=k==='mvp'?[['MVP',A.mvp,A.cand.mvp],['신인왕',A.roy,A.cand.roy]]:Object.entries(A.gg).map(([pos,x])=>[`골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x,pos.startsWith('OF')?A.cand.gg.OF:A.cand.gg[pos]]);
   const mine=[];
   for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; if(p){ addAward(p,`${y} ${lab}`); if((x.t??p.team)===G.user){ /* 성적을 낸 구단 기준(시상 전 이적해도, 검수 11-08) */ p.mor=clamp((p.mor??60)+6,0,100); mine.push(x.name+' '+lab); } }

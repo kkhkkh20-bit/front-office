@@ -15,9 +15,10 @@ function gmKey(g){ const W=g.hs>g.as?'h':g.as>g.hs?'a':null; const all=[...g.box
     sp:sp?{id:sp.id,t:`선발 ${sp.n} ${ipStr(sp.outs)}이닝 ${sp.er}자책${sp.so?` ${sp.so}삼진`:''}`}:null}; }
 /* 기간 안의 우리 경기(최근 기록에 남은 것) */
 function wkGames(from,to){ const L=[]; G.games.forEach((g,i)=>{ if(g.day>=from&&g.day<=to&&(g.home===G.user||g.away===G.user))L.push({g,i}); }); return L.sort((a,b)=>a.g.day-b.g.day); }
-/* 잘한·부진한 선수: 진행 직전 기록(G.dig.snap)과 비교. 그 기간 정리가 아직 남아 있을 때만 */
-function wkPlayers(D){ if(!D||!D.snap)return {hot:[],cold:[]}; const rows=[];
-  for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-(a[i]||0));
+/* 잘한·부진한 선수: 그 기간 우리 경기 박스스코어만 합친다(다시 열어도 뒤 경기가 섞이지 않게, 검수 11-09l) */
+function wkPlayers(gs){ const rows=[], S={};
+  for(const {g} of gs){ const ms=g.box[g.home===G.user?'h':'a']; for(const [L,isP] of [[ms.bat,false],[ms.pit,true]])for(const x of L){ const d=S[x.id+(isP?'p':'b')]=S[x.id+(isP?'p':'b')]||{id:x.id,isP}; for(const k of ['pa','ab','h','d','tr','hr','rbi','bb','hbp','sf','outs','er'])d[k]=(d[k]||0)+(x[k]||0); if(isP){ d.w=(d.w||0)+(x.d==='승'); d.l=(d.l||0)+(x.d==='패'); d.sv=(d.sv||0)+(x.d==='세'); d.hld=(d.hld||0)+(x.d==='홀'); } } }
+  for(const d of Object.values(S)){ const p=G.players[d.id]; if(!p||!!p.isP!==d.isP)continue;
     if(p.isP){ if(d.outs<3)continue; const era=d.er*27/d.outs; rows.push({p,isP:true,sc:(d.outs/3)*(4.5-era)/9+d.w*.3+d.sv*.3+d.hld*.15,t:`${ipStr(d.outs)}이닝 ${d.er}자책${d.w?` ${d.w}승`:''}${d.l?` ${d.l}패`:''}${d.sv?` ${d.sv}세이브`:''}${d.hld?` ${d.hld}홀드`:''}`}); }
     else { if(d.pa<4)continue; const ops=obpOf(d)+(d.ab?(d.h+d.d+2*d.tr+3*d.hr)/d.ab:0); /* 타수 0(볼넷만)이어도 출루율은 OPS에 들어간다 */ rows.push({p,isP:false,sc:(ops-.72)*d.pa/10+d.hr*.2,t:`${d.pa}타석 ${d.h}안타${d.hr?` ${d.hr}홈런`:''} ${d.rbi}타점 · OPS ${fmt3(ops)}`}); } }
   rows.sort((a,b)=>b.sc-a.sc); const B=rows.filter(x=>!x.isP), P=rows.filter(x=>x.isP);
@@ -26,8 +27,8 @@ function wkPlayers(D){ if(!D||!D.snap)return {hot:[],cold:[]}; const rows=[];
 function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.length){ UI.wkres=null; return ''; }
   const w=gs.filter(x=>x.g.res==='승').length, l=gs.filter(x=>x.g.res==='패').length, t=gs.length-w-l;
   const st=(()=>{ try{ return standingsNow(); }catch(e){ return []; } })(); const ri=st.findIndex(x=>x.tid===G.user), rk=tieRank(st,G.user); const me=st[ri], top=st[0];
-  const gb=me&&top&&rk>1?((top.w-me.w)+(me.l-top.l))/2:0; const post=gs.some(x=>/차전/.test(x.g.kind||''));
-  const D=G.dig&&G.dig.from===R.from&&G.dig.to===R.to?G.dig:null; const {hot,cold}=wkPlayers(D);
+  const gb=me&&top&&rk>1?Math.max(0,((top.w-me.w)+(me.l-top.l))/2):0; /* 경기 수 차이로 순위와 경기 차가 엇갈려도 음수로 쓰지 않는다(검수 11-09l) */ const o2=st[ri?0:1]; const post=gs.some(x=>/차전/.test(x.g.kind||''));
+  const {hot,cold}=wkPlayers(gs);
   const rkLine=post?'':R.rk0&&rk?(rk<R.rk0?`${R.rk0}위 → <b class="good">${rk}위</b>`:rk>R.rk0?`${R.rk0}위 → <b class="bad">${rk}위</b>`:`${rk}위 유지`):rk?`${rk}위`:'';
   const title=gs.length===1?(w?'승리':l?'패배':'무승부'):w>l?'좋은 흐름':w<l?'아쉬운 결과':'반타작';
   const row=({g,i})=>{ const home=g.home===G.user; const op=home?g.away:g.home; const ms=home?g.hs:g.as, os=home?g.as:g.hs; const k=gmKey(g);
@@ -41,7 +42,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
   const sr=G.sea&&G.sea.rec&&G.sea.rec[G.user]; const stale=gs[gs.length-1].g.day<G.day-1; /* 다시 연 지난 요약: 순위·부상은 오늘 기준임을 밝힌다(검수 11-07) */
   return `<div class="scrim" data-a="wkClose"><div class="sheet gut wkres" data-stop="1" role="dialog" aria-label="경기 결과">
     <div class="sheet-head"><div><div class="eyebrow">경기 결과 · ${dmd(gs[0].g.day)}${gs.length>1?` ~ ${dmd(gs[gs.length-1].g.day)}`:''} · ${gs.length}경기</div><h2 class="sec">${title} · ${w}승 ${l}패${t?` ${t}무`:''}</h2></div><button class="x" data-a="wkClose" aria-label="닫기">×</button></div>
-    ${!post&&sr?`<div class="wk-sum">${stale?`<span class="muted">${dmd(G.day)} 현재 기준</span>`:''}<span>시즌 <b>${sr.w}승 ${sr.l}패${sr.t?` ${sr.t}무`:''}</b></span>${rkLine?`<span>순위 ${rkLine}</span>`:''}${rk>1?`<span>1위와 <b>${gb}</b>경기 차</span>`:rk===1&&st[1]?`<span>2위와 <b>${((me.w-st[1].w)+(st[1].l-me.l))/2}</b>경기 차</span>`:''}</div>`:''}
+    ${!post&&sr?`<div class="wk-sum">${stale?`<span class="muted">${dmd(G.day)} 현재 기준</span>`:''}<span>시즌 <b>${sr.w}승 ${sr.l}패${sr.t?` ${sr.t}무`:''}</b></span>${rkLine?`<span>순위 ${rkLine}</span>`:''}${rk>1?`<span>1위와 <b>${gb}</b>경기 차</span>`:rk===1&&o2?(tieOf(me,o2)?'<span><b>공동 1위</b></span>':`<span>2위와 <b>${Math.max(0,((me.w-o2.w)+(o2.l-me.l))/2)}</b>경기 차</span>`):''}</div>`:''}
     ${R.n>gs.length?`<p class="small muted">보관 기간(최근 경기)이 지나 ${R.n}경기 중 ${gs.length}경기만 남아 있습니다. 전체 결과는 리그 → 일정·결과에서 볼 수 있습니다.</p>`:''}
     <div class="wk-list">${gs.map(row).join('')}</div>
     ${hot.length?`<div class="eyebrow">이 기간 잘한 선수</div><div class="dg-ps">${hot.map(li).join('')}</div>`:''}
