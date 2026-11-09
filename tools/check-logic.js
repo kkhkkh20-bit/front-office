@@ -3025,7 +3025,7 @@ T('[피드백 11-09f] 조사 전 외국인 예상치는 흐리고(고정 착시�
   ok(avg(e2)<avg(err.slice(0,60))*.8,'조사해도 안 좁혀짐 '+st+' / '+avg(e2).toFixed(2)+' / '+avg(err.slice(0,60)).toFixed(2)); ok(avg(b2)<avg(F.slice(0,60).map(x=>x.f.band)),'범위가 안 좁아짐'); });
 T('[피드백 11-09f] 관찰 명단 후보만 AI 계약 전에 사흘 끼어들 기한(한 번만), 우리 제안으로 가로챌 수 있다',()=>{ fresh(); ok(foreignOpen()&&period()!=='season','준비 실패: 겨울 아님');
   const t=G.teams.find(x=>x.id!==G.user); for(const p of foreignOf(t.id))dropP(p.id); for(const p of foreignOf(G.user).filter(x=>x.foreign==='용병'))dropP(p.id); t.cash=5000;
-  const q=newForeign('용병',{isP:true,market:true}); q.ask=70*USD; G.fmarket.push(q.id); const q2=newForeign('용병',{isP:true,market:true}); q2.ask=70*USD; G.fmarket.push(q2.id);
+  const q=newForeign('용병',{isP:true,market:true}); q.ask=50*USD; G.fmarket.push(q.id); /* 경쟁 구단 제시액이 상한에 붙지 않게(상한 제안으로 가로챌 수 있는지 보는 시나리오) */ const q2=newForeign('용병',{isP:true,market:true}); q2.ask=70*USD; G.fmarket.push(q2.id);
   G.fwatch=[]; fwatchToggle(q.id); ok(!foCutIn(t.id,q2),'관찰 안 한 후보에도 기한이 생김');
   ok(foCutIn(t.id,q)&&q.team==null&&foHeld(q)&&q.fneg.dl===G.day+3,'기한이 안 생김'); const m=G.mail.find(x=>x.subj.includes(q.name)&&x.subj.includes('협상 중')); ok(m&&m.imp&&m.body.includes(dmd(G.day+3))&&m.body.includes('만 달러')&&m.acts.some(a=>a.a==='player'&&a.v===q.id),'소식 없음/내용 부족');
   { const pk=aiForeignPick(t.id); ok(!pk||pk.id!==q.id,'기한 중 AI가 그 후보를 고름'); } ok(!foCutIn(t.id,q),'같은 선수에 두 번 기한');
