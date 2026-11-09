@@ -168,10 +168,23 @@ function inFrame(){ try{ return window.self!==window.top; }catch(e){ return true
 function needBackup(){ try{ if(!G||!inFrame())return false; if(G.bkAt==null){ G.bkAt=G.day; return false; } return G.day-G.bkAt>=60; }catch(e){ return false; } }
 /* 아이폰·아이패드(새 아이패드는 Mac으로 표시되므로 터치 여부로 구분) */
 function isIOS(){ try{ const u=navigator.userAgent||''; return /iPhone|iPad|iPod/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1); }catch(e){ return false; } }
-function creditsLine(){ return `<details class="credits"><summary class="small muted">크레딧·라이선스</summary><p class="small muted keep" style="text-align:center;margin-top:6px">크레딧: 선수 얼굴 faces.js (ZenGM, Apache License 2.0) · 경기장 선수 그림 Kenney Sports Pack (CC0) · 저장 압축 lz-string (MIT) · 글꼴 Noto Sans KR, Black Han Sans, Barlow Condensed (SIL OFL) · 구단·선수·인물은 모두 가상입니다.</p></details>`; }
+const NOT_AFFIL='이 게임은 가상의 프로야구 단장 시뮬레이션입니다. KBO(한국야구위원회)와 KBO 리그 구단, 실제 선수·스폰서와 관련이 없으며 승인이나 후원을 받지 않았습니다. 구단·선수·인물은 모두 가상입니다.';
+/* 서드파티 고지. 전문은 docs/licenses/*.txt — 단일 HTML은 빌드가 #lic-text 템플릿으로 싣고, 사이트판은 licenses/ 파일로 올린다(tools/build.cjs·build-site.cjs) */
+const CREDITS=[['faces.js (ZenGM)','Apache License 2.0, 이 게임에 맞게 수정한 사본','선수 얼굴'],['lz-string (pieroxy)','MIT','저장 압축'],['fflate (Arjun Barrett)','MIT','저장 압축'],
+  ['three.js','MIT','3D 중계'],['Claudeball (Taylor Beeston)','MIT','3D 선수·구장 모델과 애니메이션. 인체 메시·머리카락·피부 텍스처는 MakeHuman/MPFB2 에셋(CC0), 재질은 ambientCG(CC0), 애니메이션은 원작 자체 제작'],
+  ['meshoptimizer (Arseny Kapoulkine)','MIT','3D 모델 압축 해제'],['Basis Universal (Binomial LLC)','Apache License 2.0','3D 텍스처 변환'],['Kenney Sports Pack','CC0','카드 중계 선수 그림'],['Lucide','ISC','아이콘'],
+  ['지도','통계청(KOSTAT) 행정구역경계, Natural Earth, 미국 인구조사국(공공 영역)','권역·해외 지도'],['Noto Sans KR, Black Han Sans, Barlow Condensed, Alfa Slab One','SIL Open Font License 1.1','글꼴·배지 글자'],['DejaVu Sans Condensed Bold','Bitstream Vera 라이선스','배지 글자 외곽선']];
+const LIC_FILES=['data-sources.txt','facesjs.txt','fflate.txt','fonts.txt','lucide.txt','lz-string.txt','match3d.txt'];
+function licBody(){ const t=document.getElementById('lic-text'), s=t&&t.content?t.content.textContent:'';
+  return s.trim()?`<pre class="lic-pre">${esc(s)}</pre>`:`<p class="small">${LIC_FILES.map(f=>`<a href="licenses/${f}" target="_blank" rel="noopener">${f}</a>`).join(' · ')}</p>`; }
+function creditsLine(noNote){ /* noNote: 바로 위에 비제휴 고지가 이미 보이는 곳(처음 화면 설정) */ return `<details class="credits"${UI.licOpen?' open':''}><summary class="small muted">크레딧·라이선스·개인정보</summary><div class="small muted cr-body">
+  ${noNote?'':`<p>${NOT_AFFIL}</p>`}<ul class="cr-list">${CREDITS.map(([n,l,u])=>`<li><b>${n}</b> · ${l}${u?` — ${u}`:''}</li>`).join('')}</ul>
+  <p>그 밖의 그림과 게임 코드는 이 게임을 위해 만들었습니다. 선수·스태프·팬 얼굴, 유니폼, 관중석 등 인물 그림은 이미지 생성 도구로 만든 가상 인물입니다.</p>
+  ${TELE.ga||TELE.ph?`<p><b>개인정보</b> · ${telePrivacyTxt()}</p>`:''}
+  <button class="lnk" data-a="licShow">${UI.licOpen?'라이선스 전문 닫기':'라이선스 전문 보기'}</button>${UI.licOpen?licBody():''}</div></details>`; }
 function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
-  const foot=`<p class="small muted" style="margin-top:14px">구단과 선수는 모두 가상입니다. 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
+  const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
   const back=(v,l)=>`<button class="lnk tsback" data-a="tsGo" data-v="${v}">← ${l}</button>`;
   if(st==='main'){ const tn=act&&act.tid!=null&&TEAM_DEF[act.tid]?`${TEAM_DEF[act.tid].city} ${TEAM_DEF[act.tid].nick}`:(act&&act.name)||'';
     return `<main class="fb-title" aria-label="프런트야구 시작 화면"><div class="fb-title-content">
@@ -183,8 +196,8 @@ function startScreen(){ const st=UI.sstep||'main'; const m=meta(); const live=G&
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}
       ${inFrame()&&isIOS()?`<p class="small ts-warn">Safari에서는 가끔 설정의 파일로 내보내기로 저장을 백업하세요. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a></p>`:''}
-      </div><footer class="fb-footer"><span>프런트야구 <i>v${GAME_VER}</i></span><button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button><a class="lnk" href="${FEEDBACK_URL}" target="_blank" rel="noopener">공식 카페 · 질문·피드백</a></footer></main>`; }
-  if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면에서 기능 설명을 펼쳐 보일지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine()}</section></div></div>`;
+      </div><div><footer class="fb-footer"><span>프런트야구 <i>v${GAME_VER}</i></span><button class="lnk" data-a="tsGo" data-v="patch">패치 노트</button><a class="lnk" href="${FEEDBACK_URL}" target="_blank" rel="noopener">공식 카페 · 질문·피드백</a></footer><p class="fb-legal">가상의 리그를 다룬 게임으로, KBO 및 실제 구단·선수와 관련이 없습니다.</p></div></main>`; }
+  if(st==='settings')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}<h2 class="ts-h">설정</h2><section class="card"><div class="row between"><h3 class="sec">화면 설명</h3><button class="btn" data-a="help">${helpOn()?'설명 접기':'설명 펼치기'}</button></div><p class="small muted">화면에서 기능 설명을 펼쳐 보일지 정합니다. 진행 방식과 구단 설정은 게임 안의 설정에서 바꿀 수 있습니다.</p></section>${teleCard()}${achStartLine()}<section class="card">${foot}${creditsLine(true)}</section></div></div>`;
   if(st==='patch')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${patchCard()}</div></div>`;
   if(st==='slots')return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}${slotsCard(true)}${exportCard()}</div></div>`;
   if(st==='mode'){ ensureWorld();
@@ -251,7 +264,7 @@ function champSceneShow(){ const C=G&&G.champScene; let el=document.getElementBy
   sceneProbe(); const t=team(G.user), m=G.mgr&&G.mgr[G.user], pal=tpal(t); const top=playersOf(G.user).filter(p=>!p.prospect).map(p=>({p,w:(()=>{ const h=seasonTotal(p,C.y,'1군'); return h?warOf(h,p):0; })()})).sort((a,b)=>b.w-a.w||ovr(b.p)-ovr(a.p)).slice(0,5);
   el=document.createElement('div'); el.id='champScene'; el.className='champ-scene'; el.style.setProperty('--c1',pal[0]); el.style.setProperty('--c2',pal[3]||pal[1]);
   el.innerHTML=`<div class="cs-bg"></div><div class="cs-conf">${Array.from({length:60},(_,i)=>`<i style="left:${(i*37)%100}%;animation-delay:${(i%12)*.25}s;animation-duration:${3+(i%5)*.6}s;background:${['#ffd24d',pal[0],'#fff',pal[3]||'#e8ecf2'][i%4]}"></i>`).join('')}</div>
-    <div class="cs-card" role="dialog" aria-label="한국시리즈 우승"><span class="cs-eyebrow">${C.y} KBO 한국시리즈</span><h1>우승</h1>
+    <div class="cs-card" role="dialog" aria-label="한국시리즈 우승"><span class="cs-eyebrow">${C.y} 한국시리즈</span><h1>우승</h1>
       <div class="cs-trophy">${trophyImg(220)}</div><div class="cs-team">${badge(G.user,72)}<b>${esc(tname(G.user))}</b></div>
       <p class="cs-sub">${esc(tname(C.op))}에 ${C.w}승 ${C.l}패${m&&!m.interim?` · ${esc(m.name)} 감독`:''}${meName()?` · ${esc(meName())} 단장`:''}</p>
       <div class="cs-team-photo">${top.map(x=>`<figure>${avImg(x.p,true)}<figcaption>${esc(x.p.name)}${x.w?`<i>WAR ${x.w.toFixed(1)}</i>`:''}</figcaption></figure>`).join('')}</div>

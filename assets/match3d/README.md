@@ -4,6 +4,8 @@
 
 원작 README는 자체 코드·모델·애니메이션을 MIT 라이선스로 명시한다. [저작권 및 MIT 전문](LICENSE.txt)을 유지한다. 외부 HDRI와 음원은 가져오지 않았다.
 
+출처 확인(2026-11-09, 같은 커밋의 `assets/CREDITS.md`, `assets/README.md`, `assets/src/*.py`): 애니메이션 클립은 원작자가 Blender 파이썬 스크립트(`assets/src/player_anim.py`, `player_clips.py`)로 직접 키프레임을 만든 것이고 Mixamo 애니메이션이 아니다. 골격 이름 `mixamorig:*`는 이름 규칙만 따른 것이다. 기본 인체 메시·머리카락·눈·피부 텍스처는 MakeHuman/MPFB2 에셋(CC0 1.0), 재질 텍스처는 ambientCG(CC0 1.0)다.
+
 | 로컬 | 원본 |
 | --- | --- |
 | field.glb | assets/optimized/field.glb |

@@ -102,7 +102,7 @@ EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)retur
 function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec=ob.isP?'P':'B'; s.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.isP?'투수':'타자'}를 더 정확히 봄`; /* 선수 출신 스카우트: 자기 쪽(투수·타자)을 더 잘 본다 */ s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid;if(ob.age!=null)s.age=ob.age;return staffAttach(s,'scout'); }
 
 /* ===== 2대 선수(사용자 11-09r): 은퇴한 국내 선수(OB)의 아들이 커서 신인 드래프트에 나온다 =====
- 실제 KBO 부자 선수(이종범-이정후, 정회열-정해영, 박철우-박세혁 등)는 40여 년에 수십 쌍 정도로 드물다. 정확한 비율 통계는 없어 추정:
+ 실제 KBO 부자 선수는 40여 년에 수십 쌍 정도로 드물다. 정확한 비율 통계는 없어 추정:
  1군 5시즌 이상 또는 통산 WAR 8 이상인 OB 중 4%만 프로를 노리는 아들을 두고, 은퇴 15~25년 뒤(대부분 18~22년, 아들 고졸 18세·대졸 22세) 드래프트에 나온다. 한 해 최대 2명.
  아들에게는 아버지 OB id(p.father) 하나만 저장한다 */
 const SON_Z=-1.75; /* hn은 표준정규 해시라 이보다 작을 확률이 약 4%(u01은 고르지 않아 쓰지 않는다) */

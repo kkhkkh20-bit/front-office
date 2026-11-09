@@ -65,8 +65,10 @@ GitHub에 올리면 `.github/workflows/check.yml`이 빠른 점검을 자동으�
 - **Cloudflare**: `wrangler.jsonc`의 build.command가 `tools/build-site.cjs`를 실행하고 `site/`를 배포합니다. 사이트 HTML은 약 7.1 MB이며, 경기장·선수 모델은 파일당 25 MiB 이하의 별도 파일로 제공합니다. 모델은 경기 화면에서 불러오고 주소에는 내용 해시를 붙입니다. `index.html`만 복사하면 단독 다운로드용 34 MB 파일이 Cloudflare 파일 한도를 넘으므로 이 빌드 단계를 생략하면 안 됩니다. 배포 버전은 `/release.json`으로 확인합니다. `node tools/check-site.cjs`가 실제 배포 구성을 브라우저에서 검사합니다.
 
 - **itch.io**: `index.html`을 zip으로 묶어 올리고(Kind of project: HTML) "This file will be played in the browser"를 켭니다. 화면 1280×800, Mobile friendly, Fullscreen button. 화면이 800px보다 길어서 **Enable scrollbars를 반드시 켭니다**(끄면 아래가 잘리고 스크롤이 안 됨). 저장은 플레이어 브라우저의 localStorage(`danjang-*`)에 남아 파일을 다시 올려도 이어집니다.
-- **플레이 기록(선택)**: `src/ui/runtime/72_telemetry.js`의 `TELE`에 분석 서비스 키를 넣으면 익명 플레이 기록(시작 퍼널, 몇 년 차까지 했는지, 기능 사용, 화면 이동, 오류)을 보냅니다. 비어 있으면 아무것도 보내지 않습니다. 이름·얼굴·저장 내용은 보내지 않고, 플레이어는 설정에서 끌 수 있습니다.
+- **플레이 기록(기본으로 켜짐)**: `src/ui/runtime/72_telemetry.js`의 `TELE.ga`에 GA4 측정 ID(`G-78C5MN0LHM`)가 들어 있어, 웹 배포판(Cloudflare, itch 등)에서는 플레이어가 끄기 전까지 Google Analytics로 플레이 기록을 보냅니다. 보내는 것: 기기마다 무작위로 만든 번호(`dsj_uid`, GA `user_id`), 시작 퍼널과 몇 년 차까지 했는지, 화면 이동과 머문 시간, 기능 사용(트레이드·FA 금액 같은 게임 수치 포함), 게임 날짜·구단 번호, 오류 메시지 앞 200자와 위치, 세션 길이. GA 스크립트는 `_ga` 쿠키와 IP·브라우저 정보를 Google로 보냅니다. 이름·얼굴·저장 내용은 보내지 않습니다. `file://`, localhost, 자동화 브라우저에서는 보내지 않습니다. 플레이어는 처음 화면 설정과 게임 설정의 '플레이 기록' 카드에서 끌 수 있습니다. `TELE.ph`(PostHog 키)는 비어 있어 PostHog는 쓰지 않습니다. 넣으면 화면 녹화가 기본으로 켜지니 따로 고지와 동의를 정해야 합니다. 개인정보 처리방침 초안: [docs/privacy.md](docs/privacy.md).
 
 ## 크레딧
 
-외부 자료와 라이선스는 [CREDITS.md](CREDITS.md)에 정리했습니다.
+외부 자료와 라이선스는 [CREDITS.md](CREDITS.md)에 정리했습니다. 라이선스 전문은 [docs/licenses/](docs/licenses/)에 있고, 빌드할 때 `index.html`에 함께 실려 게임 크레딧의 '라이선스 전문 보기'로 열 수 있습니다(사이트판은 `licenses/*.txt`).
+
+이 게임은 가상의 프로야구 단장 시뮬레이션입니다. KBO(한국야구위원회)와 KBO 리그 구단, 실제 선수·스폰서와 관련이 없으며 승인이나 후원을 받지 않았습니다.

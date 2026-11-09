@@ -1,6 +1,6 @@
 /* ===== 신인 지명권 트레이드 (KBO 2020 시즌부터) =====
    출처: 엑스포츠뉴스 2020.4.30(2020 시즌부터 다음 연도 신인 지명권을 선수와 맞바꿀 수 있게 됨),
-         노컷뉴스 2022.9.8(넘겨받은 지명권을 원래 구단 순번에 행사: 키움 2라운드 12번(KIA), 삼성 3라운드 23번(롯데), LG 5라운드 50번(KT)).
+         노컷뉴스 2022.9.8(넘겨받은 지명권을 원래 구단 순번에 행사: 예: 다른 구단의 2라운드 12번을 받으면 그 순번에 지명).
    - 주고받을 수 있는 것은 다음에 열릴 신인 드래프트의 지명권뿐이다(드래프트가 끝나면 그다음 해 지명권).
    - 지명권만 따로 사고팔 수는 없고 선수와 맞바꿔야 한다.
    - 넘겨받은 지명권은 원래 구단의 순번에 쓴다.
@@ -24,7 +24,7 @@ function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.le
   const mine=pkHeld(G.user), their=pkHeld(tid); if(pk.give.some(k=>!mine.includes(k))||pk.get.some(k=>!their.includes(k)))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
   if(mine.filter(k=>+k.split(':')[0]===1).length-pk.give.filter(k=>+k.split(':')[0]===1).length+pk.get.filter(k=>+k.split(':')[0]===1).length>PK_R1_MAX)return `한 드래프트에서 1라운드 지명권은 ${PK_R1_MAX}장까지 가질 수 있습니다(게임 규정: 지명권 독점 방지).`;
   { const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; if(r1(their)-r1(pk.get)+r1(pk.give)>PK_R1_MAX)return `${tshort(tid)}은(는) 이 거래로 1라운드 지명권이 ${PK_R1_MAX}장을 넘습니다(게임 규정: 지명권 독점 방지).`; } /* 상대 구단도 같은 한도(검수 11-08) */
-  if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return 'KBO 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
+  if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return '리그 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
   return ''; }
 function pkMove(pk,tid){ pk=pkNorm(pk); const y=pkYear(); G.pkOwn=G.pkOwn||{};
   const mv=(k,to)=>{ const [rd,o]=k.split(':').map(Number); if(to===o)delete G.pkOwn[y+':'+rd+':'+o]; else G.pkOwn[y+':'+rd+':'+o]=to; };

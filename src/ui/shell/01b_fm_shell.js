@@ -82,7 +82,7 @@ function fmHotkey(e){ if(!G||UI.title||!fmOn())return false; if((G.fd&&!G.fd.don
   if(nm==='Backspace'||nm==='Alt+←')act='back'; else if(nm==='Alt+→')act='fwd'; else { const r=FM_KEYS.find(x=>x[0]===nm); act=r&&r[2]; }
   if(!act)return false; e.preventDefault(); if(e.repeat)return true; return fmRun(act); }
 function fmKeysSheet(){ if(!UI.fmKeys)return ''; return `<div class="scrim" data-a="fmKeysX"><div class="sheet gut fmkeys" data-stop="1" role="dialog" aria-label="단축키"><div class="sheet-head"><h2 class="sec">단축키(FM 기본 배치)</h2><button class="x" data-a="fmKeysX" aria-label="닫기">×</button></div>
-  <p class="small muted">Football Manager의 기본 단축키를 이 게임 화면에 맞췄습니다. 글자를 입력하는 칸에서는 동작하지 않고, 브라우저가 쓰는 키(F11 전체 화면·F12·Ctrl+W 등)는 그대로 둡니다.</p>
+  <p class="small muted">PC 스포츠 단장 게임에서 흔히 쓰는 단축키를 이 게임 화면에 맞췄습니다. 글자를 입력하는 칸에서는 동작하지 않고, 브라우저가 쓰는 키(F11 전체 화면·F12·Ctrl+W 등)는 그대로 둡니다.</p>
   <div class="fmk-l">${FM_KEYS.map(([k,l])=>`<div class="fmk"><kbd>${esc(k)}</kbd><span>${esc(l)}</span></div>`).join('')}</div></div></div>`; }
 /* 마우스 뒤로·앞으로 버튼(FM처럼 화면 기록 이동) */
 if(typeof document!=='undefined')document.addEventListener('mouseup',e=>{ try{ if(!G||UI.title||!fmOn())return; if(e.button===3){ e.preventDefault(); fmBack(); } else if(e.button===4){ e.preventDefault(); fmFwd(); } }catch(x){} });

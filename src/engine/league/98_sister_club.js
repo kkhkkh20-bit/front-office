@@ -107,7 +107,7 @@ function sisYear(){ const S=sisInit(); const L=[];
     const fee=sisFee(c); if(x.tid===G.user&&!G.unemp){ G.spend.etc=(G.spend.etc||0)+fee; mail(c.n,`${c.n} 자매결연 갱신`,`올해도 결연을 이어 갑니다. 연회비 ${money(fee)}. 지금 관계 ${rel}.${rel<45?' 관계가 많이 식었습니다. 30 아래면 상대가 결연을 끝낼 수 있습니다.':''}`,{kind:'캠프'}); } else { const t=team(x.tid); if(t)t.cash-=fee; } }
   for(const t of G.teams){ if(t.id===G.user&&!G.unemp)continue; for(const cn of ['jp','us']){ if(sisMine(t.id,cn)||R()>=.5)continue; const b=OCL.filter(c=>c.c===cn&&sisPtn(c.id)==null).map(c=>({c,r:sisRel(t.id,c.id)})).filter(x=>x.r>=50).sort((a,b)=>b.r-a.r)[0];
     if(b){ S.p[b.c.id]={tid:t.id,y:G.year}; t.cash-=sisFee(b.c); L.push(`${tshort(t.id)}-${b.c.n}`); } } }
-  if(L.length)news('리그','KBO 구단 해외 자매결연 소식',`새로 맺은 자매결연: ${L.join(', ')}.`,0); }
+  if(L.length)news('리그','국내 구단 해외 자매결연 소식',`새로 맺은 자매결연: ${L.join(', ')}.`,0); }
 function sisDaily(day){ const o=dobj(day); sisInit();
   if(o.d===1){ const S=G.sis; for(const k in S.r)if(S.r[k]>15)S.r[k]--; } /* 매달 1씩 식는다 */
   if(o.m===11&&o.d===1)sisYear();
