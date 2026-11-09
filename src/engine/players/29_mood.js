@@ -168,11 +168,11 @@ function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)
 function treqLowPT(p,y,gp){ const h=seasonTotal(p,y,'1군')||{}; return p.isP?(h.outs||0)<gp*.6:(h.pa||0)<gp*1.1; }
 function treqCands(){ if(G.unemp||!G.mgr[G.user])return []; const per=period(), live=per==='season', y=per==='off'||live?G.year:G.year-1; const gp=live?teamGP(G.user):144; if(live&&gp<20)return [];
   const d=depth(G.user); const rv=p=>(p.isP?[d.sp[4],d.pen[3]]:[d.ln[p.pos]]).filter(Boolean);
-  return playersOf(G.user).filter(p=>{ initPers(p); if(p.foreign||p.ys||!healthy(p)||isAway(p)||p.listed||p.promise||(p.treq&&!p.treq.done)||p.joinY>G.year||p.age<23||p.age>33||p.pers.amb<10||(p.mor??60)>=70)return false;
+  return playersOf(G.user).filter(p=>{ initPers(p); if(p.foreign||p.ys||!healthy(p)||isAway(p)||p.listed||p.promise||(p.treq&&(!p.treq.done||G.day-p.treq.day<120))||p.joinY>G.year||p.age<23||p.age>33||p.pers.amb<10||(p.mor??60)>=70)return false;
     if((p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
     const f=seasonTotal(p,y,'퓨처스'); const farm=f&&(p.isP?f.outs>=60&&f.er*27/f.outs<=3.6:f.pa>=60&&bRate(f).ops>=.8);
     return farm||rv(p).some(q=>q.id!==p.id&&ovr(p)>=ovr(q)-3); }); }
-function treqWeek(){ const per=period(); if(per==='season'||per==='post'||G.gameOver||evOpen().some(e=>e.k==='treq')||R()>.3)return; const p=EVH.treq.check(); if(p)EVH.treq.make(p); }
+function treqWeek(){ const per=period(), L=(G.treqLog||{}).last; if(per==='season'||per==='post'||G.gameOver||(L!=null&&G.day-L<90)||evOpen().some(e=>e.k==='treq')||R()>.3)return; /* 시즌 밖은 석 달에 한 번까지(같은 해 시즌 몫을 캠프 때 다 쓰지 않게) */ const p=EVH.treq.check(); if(p)EVH.treq.make(p); }
 EVH.treq={ w:.7, check(){ const T=G.treqLog||{}; if(T.last!=null&&G.day-T.last<30)return null; if(T.y===G.year&&T.n>=3)return null;
     const L=treqCands(); if(!L.length)return null; const w=L.map(p=>(p.pers.amb-6)*(p.pers.temp>=14?1.4:1)*(p.age>=26&&p.age<=31?1.5:1)*(p.pers.loy>=15?.5:1)); let x=R()*sum(w); for(let i=0;i<L.length;i++){ x-=w[i]; if(x<=0)return L[i]; } return L[0]; },
   make(p,hard){ const T=G.treqLog=G.treqLog||{}; if(T.y!==G.year){ T.y=G.year; T.n=0; } T.n++; T.last=G.day; p.treq={day:G.day,ev:1}; p.treqN=(p.treqN||0)+1;
