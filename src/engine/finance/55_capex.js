@@ -14,7 +14,7 @@ function capexAsk(kind,k){ const S=capexState(); const key=kind; if(S.last[key]!
     t.trust=clamp(t.trust-1,0,100); mail('구단주실',`모기업 투자 보류: ${F.l}`,`"지금은 그 돈을 쓸 때가 아닙니다." 승인 가능성은 ${Math.round(p*100)}%였습니다. 구단주 신뢰 -1. 60일 뒤 다시 요청할 수 있고, 급하면 구단 보유 현금으로 지을 수 있습니다.`,{kind:'구단주'}); return `모기업 투자가 보류됐습니다(가능성 ${Math.round(p*100)}%였음, 신뢰 -1).`; }
   const St=stadOf(G.user); const it=STAD_ITEMS.find(x=>x.k===k); if(!it)return '없는 시설입니다.'; const lv=St.lv[k]; if(lv>=STAD_MAX)return '이미 최고 단계입니다.'; if((St.build||[]).some(b=>b.k===k))return '이미 공사 중입니다.';
   if(!stadWindow())return '구장 공사는 시즌이 끝난 뒤(10월~2월)에만 시작할 수 있습니다.';
-  const c=STAD_COST[lv+1], half=Math.round(c/2); if(t.cash<half)return `구단 부담분 ${money(half)}이 필요합니다(보유 ${money(t.cash)}).`; const p=capexOdds('stad',c); S.last[key]=G.day;
+  const c=STAD_COST[lv+1], half=Math.round(c/2), rsv=t.indie?newStadDue(G.user):0; /* 독립구단: 결산 때 낼 신구장 분담금은 쓸 수 없는 돈(일반 공사와 같게, 검수 11-09x) */ if(t.cash-rsv<half)return `구단 부담분 ${money(half)}이 필요합니다(보유 ${money(t.cash)}${rsv?`, 이 중 신구장 분담금 ${money(rsv)}은 결산 때 낼 돈`:''}).`; const p=capexOdds('stad',c); S.last[key]=G.day;
   if(R()<p){ t.cash-=half; St.build=(St.build||[]).concat({k,lv:lv+1,done:G.day+STAD_DAYS[lv+1],c:half}); G.spend.stad=(G.spend.stad||0)+half; addLog(`${t.city}시와 비용을 나눠 ${stadName(G.user)} ${it.l} ${lv+1}단계 공사를 시작했습니다(구단 ${money(half)} · 지자체 ${money(c-half)}).`);
     mail('운영팀',`지자체 분담 합의: ${it.l}`,`${t.city}시가 공사비의 절반(${money(c-half)})을 내기로 했습니다. 구단은 ${money(half)}을(를) 냈습니다.`,{kind:'시설'}); return ''; }
   return `${t.city}시가 이번에는 예산 반영이 어렵다고 합니다(가능성 ${Math.round(p*100)}%였음). 60일 뒤 다시 협의할 수 있습니다. 구단 인기와 팬 여론이 오르면 잘 됩니다.`; }
