@@ -2952,7 +2952,7 @@ T('[검수 11-09zb] 한국시리즈 뒤 결산 전 이직·세대 교체: 그해
     jobOffer(B,false); jobAnswer(B,true); ok(G.user===B,'이직 실패');
     const s=G.myC.seas.find(x=>x.y===y&&x.tid===A0); ok(s&&s.w===r.w&&s.l===r.l&&s.t===3&&s.ch===1&&!s.part,'떠난 구단 시즌 '+JSON.stringify(s));
     ok(G.myC.earn-e0===sal+b,'경력 수입 '+(G.myC.earn-e0)+' 기대 '+(sal+b)); ok(personalState().cash-c0===sal-adv+b,'지갑 '+(personalState().cash-c0)+' 기대 '+(sal-adv+b));
-    simTo(()=>G.last&&G.last.y===y); ok(!G.myC.seas.some(x=>x.y===y&&x.tid===B),'새 구단 0승 0패 기록 '+JSON.stringify(G.myC.seas)); const St=myCStats(); ok(St.ch===1&&St.ps===1&&St.w===r.w,'통산 '+JSON.stringify(St));
+    simTo(()=>G.last&&G.last.y===y); ok(!G.myC.seas.some(x=>x.y===y&&x.tid===B),'새 구단 0승 0패 기록 '+JSON.stringify(G.myC.seas)); const St=myCStats(); const rk=(G.myC.seas.find(x=>x.y===y&&x.tid===A0)||{}).rank; ok(St.ch===1&&St.ps===(rk!=null&&rk<=5?1:0)&&St.w===r.w,'통산 '+JSON.stringify(St)); /* 우승은 준비에서 강제하므로 가을야구 진출 수는 실제 순위대로(세계에 따라 5위 밖일 수 있다) */
     ok(G.last.rep===0,'새 단장이 전임 성적으로 명성 '+G.last.rep); ok(!((G.achT.titles||{})[B]||[]).includes(y),'새 구단 우승 업적 등록'); }
   G=JSON.parse(s0); { const w0=G.sea.rec[A0].w; ok(gmSucceed({name:'후임자',age:44})==='','세대 교체 실패'); const L=G.gmLine[G.gmLine.length-1]; ok(L.w===w0&&L.champ===1&&L.seas===1,'계보 전임 '+JSON.stringify(L));
     simTo(()=>G.last&&G.last.y===y); const St=myCStats(); ok(St.n===0&&St.w===0&&St.ch===0,'후임이 전임 시즌을 받음 '+JSON.stringify(St)); ok(G.last.rep===0,'후임 명성 '+G.last.rep); } });
