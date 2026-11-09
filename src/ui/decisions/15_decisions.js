@@ -29,13 +29,14 @@ function nextGames(n){
   return L.slice(0,n);
 }
 /* 지금 전력 예상 순위(홈 상단 타일과 오른쪽 전력 예상이 같은 값을 쓴다) */
-function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G)UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r)}; return UI._trk.R; }
+/* 개막일 G.proj(언더독 도전과제 기준)와 같은 식: 전력 + 그 시즌 고정 잡음 */
+function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G){ const y=preSeasonY()||G.year; UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)+hn('proj'+y,t.id)*.7})).sort((a,b)=>b.r-a.r)}; } return UI._trk.R; }
 /* 승률이 같은 팀: 동률 표시(순서는 상대 전적 등 동률 기준) */
 function miniStand(){
   const {order,live,y}=standOrder(); if(!order||!order.length)return '';
-  if(!live&&G.startY===G.year){ /* 창단 첫해 개막 전: 지난 시즌 순위는 의미가 없으니 전문가 전력 평가를 보여 준다 */
+  const py=!live&&preSeasonY(); if(py){ /* 결산 뒤·개막 전: 지난 시즌 순위 대신 새 시즌 0승 0패와 전력 예상 순위(사용자 11-09) */
     const R=projNow();
-    return `<section class="card"><div class="row between"><h2 class="sec">${ctSeason()} 전력 예상</h2><span class="small muted">현재 전력 기준 · 영입·성장에 따라 바뀜</span></div><div class="tw"><table class="mst"><tbody>${R.map((x,i)=>`<tr class="${x.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${i+1}</td><td>${badge(x.tid,16)} ${esc(tshort(x.tid))}</td></tr>`).join('')}</tbody></table></div></section>`; }
+    return `<section class="card"><div class="row between"><h2 class="sec">${py} 시즌 예상 순위</h2><span class="small muted">현재 전력 기준 · 영입·성장에 따라 바뀜</span></div><div class="tw"><table class="mst"><thead><tr><th></th><th>구단</th><th>승-패-무</th></tr></thead><tbody>${R.map((x,i)=>`<tr class="${x.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${i+1}</td><td>${badge(x.tid,16)} ${esc(tshort(x.tid))}</td><td class="num">0-0-0</td></tr>`).join('')}</tbody></table></div><p class="small muted">개막일 예상 순위가 8위 이하인 해에 우승하면 도전과제 '언더독'을 얻습니다.</p></section>`; }
   const top=order[0]; const hasTl=tlOf(G.user).length>0&&live; const od=live?playoffOdds():null; const nar=!wide()&&!!od;
   const rkS=[]; order.forEach((o,i)=>rkS.push(live&&i&&tieOf(order[i-1],o)?rkS[i-1]:i+1)); /* 승패가 같으면 같은 순위(표의 순서는 상대 전적 등 동률 기준) */
   const nTop=live?order.filter(o=>tieOf(order[0],o)).length:1;

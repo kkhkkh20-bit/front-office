@@ -110,7 +110,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
      |           |                    |        | 지표/구속  |           |
      | 현재 상태 | 시즌 통계(넓게)              | 장점·약점  | 팀 내 위치 |
      | 최근 경기 |                              | 수비 위치  | 경력·이력  |  */
-@media(min-width:1100px) and (min-height:860px){
+@media(min-width:1100px){
   #sheet .pf-overview{display:grid;grid-template-columns:260px minmax(0,1.55fr) minmax(0,1fr) 270px 250px;grid-template-rows:minmax(0,1.6fr) minmax(0,1.6fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}
   #sheet .pf-overview :is(.pf-sidebar,.pf-main,.pf-main-top,.pf-insights,.pf-extra){display:contents!important}
   #sheet .pf-overview>*>*,#sheet .pf-main-top>*{margin:0!important;min-height:0!important;min-width:0;overflow:auto;scrollbar-width:thin;box-sizing:border-box}
@@ -139,10 +139,10 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-season-table .tw{flex:1;min-height:0;max-height:none}
   #sheet .pf-season-table>.pf-more{margin-top:8px}
 }
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-radar .pf-core-compact{display:none}#sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;justify-content:center}}
+@media(min-width:1100px){#sheet .pf-overview .pf-radar .pf-core-compact{display:none}#sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;justify-content:center}}
 @media(min-width:1100px){.fm-ptabs .pf-screen .pf-topnav:not(:has(.pe-box)){display:none}}
 /* 1100~1599 폭: 다섯 열은 좁아지므로 네 열로 다시 나눈다(계약·신분과 경력은 시즌 통계 옆 칸으로, 팀 내 위치는 생략) */
-@media(min-width:1100px) and (max-width:1599px) and (min-height:860px){
+@media(min-width:1100px) and (max-width:1599px){
   #sheet .pf-overview{grid-template-columns:240px minmax(0,1.45fr) minmax(0,1fr) 240px}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:4/3/6/4}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:6/3/7/4}
@@ -155,11 +155,11 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-field .pfd-v{font:700 11px var(--f-num);fill:#071014}.pf-field .pfd-l{font:500 9px var(--f-ui);fill:#c7d1da}.pf-field .pfd.main .pfd-l{fill:#fff;font-weight:700}
 .pf-posfield>p{margin:0;font-size:11px}
 .pf-field .pfd-v{font-size:14px}.pf-field .pfd-l{font-size:11px}
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-posfield>p{display:none}#sheet .pf-overview .pf-posfield{overflow:hidden}.pf-field{height:100%}}
+@media(min-width:1100px){#sheet .pf-overview .pf-posfield>p{display:none}#sheet .pf-overview .pf-posfield{overflow:hidden}.pf-field{height:100%}}
 .pf-field .pfd-v{font:700 10.5px var(--f-num);fill:#071014}.pf-field .pfd.main .pfd-v{font-size:12px}
 .pf-field .pfd-l{font:600 9px var(--f-ui);fill:#f2f5f7;paint-order:stroke;stroke:#0b1014;stroke-width:2.4px;stroke-linejoin:round}.pf-field .pfd:not(.main):not(.ok) .pfd-l{fill:#9fb0bd}
 .pf-posfield .pf-field{display:block;margin:0 auto;aspect-ratio:300/222;max-width:100%}
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-posfield .pf-field{width:100%;height:auto;max-height:100%;flex:1 1 0;min-height:0}}
+@media(min-width:1100px){#sheet .pf-overview .pf-posfield .pf-field{width:100%;height:auto;max-height:100%;flex:1 1 0;min-height:0}}
 .pf-rg-s{display:block;font-size:12px;font-weight:600;opacity:.85}
 /* 경력·수상 탭: PC는 위 요약 띠 + 세 열(수상 연표 · 대기록 · 이정표·소속), 휴대폰은 한 줄 */
 .ch-grid{display:grid;gap:10px;margin-bottom:10px}.ch-grid .card{margin:0;min-width:0}.ch-grid h3{margin:0 0 8px;font-size:14px}.ch-grid h3+*{margin-top:0}.ch-side h3:not(:first-child){margin-top:14px}
@@ -191,8 +191,8 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .cimg-b .btn{min-height:22px;padding:2px 8px;font-size:11px}
 .sheet-head .cimg-b{display:flex;flex-direction:column;gap:3px;margin-left:6px}
 /* 선수 상황판(PC): 상자 안에 스크롤바(드래그)가 생기지 않게 한다. 상자는 내용만큼 커지고, 줄 높이는 같은 줄 상자끼리 맞춘다.
-   화면이 넉넉하면 남는 높이를 줄끼리 나누고, 모자라면 화면 전체가 한 번에 내려간다(사용자 11-08) */
-@media(min-width:1100px) and (min-height:1300px){
+   화면이 넉넉하면 남는 높이를 줄끼리 나누고, 모자라면 화면 전체가 한 번에 내려간다(사용자 11-08). 창 높이와 상관없이 PC 전체에 적용(상자마다 스크롤하던 보통 높이 배치는 없앰, 사용자 11-09) */
+@media(min-width:1100px){
   #sheet .sheet.pf-screen:has(.pf-overview){overflow-y:auto!important;overflow-x:hidden!important}
   #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 0 auto}
   #sheet .pf-overview{height:auto;min-height:100%;grid-template-rows:repeat(6,auto);align-content:stretch}
@@ -201,14 +201,14 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-season-table .tw{overflow-x:auto;overflow-y:visible;flex:none} /* 아주 좁은 화면에서만 표가 옆으로 남는다 */
   #sheet .pf-season-table table{width:100%}
 }
-@media(min-width:1100px) and (max-width:1599px) and (min-height:1300px){
+@media(min-width:1100px) and (max-width:1599px){
   #sheet .pf-overview{grid-template-rows:repeat(8,auto)}
   #sheet .pf-overview .pf-season-table{grid-area:4/2/7/4}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:7/2/9/3}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:7/3/9/4}
 }
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:1/1;height:auto;object-fit:contain} /* 사진을 자르지 않고 통째로(사용자 11-08) */}
-@media(min-width:1100px) and (max-width:1919px) and (min-height:860px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
+@media(min-width:1100px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:1/1;height:auto;object-fit:contain} /* 사진을 자르지 않고 통째로(사용자 11-08) */}
+@media(min-width:1100px) and (max-width:1919px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
 /* 능력 변화 표시(사용자 11-08) */
 .pf-attribute-row:has(>.pf-ar){grid-template-columns:minmax(0,1fr) 14px auto}
 .pf-ar{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;font-style:normal;vertical-align:middle;cursor:help}
@@ -223,30 +223,13 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-spark{display:block}
 .ovc .pf-dl{margin-left:2px}
 
-/* 선수 상황판(PC, 보통 높이): 화면 한 장에 꽉 차게 맞춘다. 상자는 줄 비율대로 나누고, 넘치는 내용은 상자 안에서 휠로만 내려간다(스크롤바·화면 끌기 없음, 사용자 11-08) */
-@media(min-width:1100px) and (min-height:860px) and (max-height:1299px){
-  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{scrollbar-width:none}
-  #sheet .pf-overview>*>*::-webkit-scrollbar,#sheet .pf-main-top>*::-webkit-scrollbar{display:none}
-  #sheet .pf-attributes .pf-trend{display:none} /* 핵심 능력 추이 선은 높이가 넉넉할 때만 */
-  #sheet .pf-overview{grid-template-rows:minmax(0,2.4fr) minmax(0,2.4fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr)}
-  #sheet .pf-overview .pf-fmcard{gap:3px;align-content:start;overflow-y:auto!important;scrollbar-width:none} /* 인물 카드: 연봉·비교 버튼까지 칸 안에 */
-  #sheet .pf-fmcard .pf-fm-pay{padding-bottom:6px}
-  #sheet .pf-overview .pf-fmcard.ph{position:relative;container-type:inline-size}#sheet .pf-fmcard.ph .pf-fm-name b{position:absolute;right:6px;top:calc(100cqw - 30px);z-index:3} /* 이름 고치기 버튼은 사진 오른쪽 아래(사진 버튼 맞은편)로 */
-  #sheet .pf-fmcard .pf-fm-key>*{padding-block:5px}#sheet .pf-fmcard .pf-fm-stats>*{padding-block:4px}
-  #sheet .pf-screen .pf-attribute-row,#sheet .pf-attribute-row{min-height:22px;padding-block:1px;font-size:12px}
-  #sheet .pf-attribute-row .pf-score{font-size:15px}
-  #sheet .pf-attribute-group{margin-bottom:6px}#sheet .pf-attribute-group h3{padding-bottom:4px;font-size:12px}
-  #sheet .pf-cmp{margin-bottom:4px}
-  #sheet .pf-overview{padding-bottom:12px!important} /* 아래 빈 띠를 줄여 아래 줄 상자에 */
-}
-
 /* 선수 상황판 배치(사용자 11-08 3차): 7줄 격자. 환산 참고값·장점/약점 없음.
      | 인물 카드 | 세부 능력 | 보고서 | 현재 상태  | 계약·신분 |
      |           |           |        | 능력 차트  |           |
      |           |           |        |            | 경력      |
      |-----------| 시즌 통계          | 수비 위치  |           |
      | 팀 내 위치|                    |            | 최근 경기 |  */
-@media(min-width:1100px) and (min-height:860px){
+@media(min-width:1100px){
   #sheet .pf-overview :is(.pf-track,.pf-procon){display:none!important}
   #sheet .pf-overview .pf-fmcard{grid-area:1/1/6/2}
   #sheet .pf-overview .pf-teampos{display:block!important;grid-area:6/1/8/2}
@@ -266,9 +249,8 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-radar>h3{margin-bottom:0}
   #sheet .pf-overview .pf-radar .radar{flex:1 1 0;min-height:0;width:100%;height:100%;max-height:none}
 }
-@media(min-width:1100px) and (min-height:860px) and (max-height:1299px){#sheet .pf-overview{grid-template-rows:minmax(0,1.65fr) minmax(0,2.6fr) minmax(0,1.6fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}}
-@media(min-width:1100px) and (min-height:1300px){#sheet .pf-overview{grid-template-rows:repeat(7,auto)}}
-@media(min-width:1100px) and (max-width:1599px) and (min-height:860px){
+@media(min-width:1100px){#sheet .pf-overview{grid-template-rows:repeat(7,auto)}}
+@media(min-width:1100px) and (max-width:1599px){
   #sheet .pf-overview .pf-season-table{grid-area:5/2/8/3}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:5/3/7/4}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career,#sheet .pf-overview:not(:has(.pf-recent)) .pf-career{grid-area:7/3/8/4}

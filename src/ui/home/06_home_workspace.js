@@ -7,6 +7,9 @@ function homePsPanel(){ const D=bkData(psYearOf(G.ps)); const nm={wc:'와일드�
 /* 노트북 홈: 오늘 할 일·기사·순위·다음 경기를 고정된 본문 안에 배치한다. */
 function homeStandingPanel(){
   if(G.ps&&!G.ps.done&&typeof bkData==='function')try{ return homePsPanel(); }catch(e){} /* 가을야구 중에는 순위 대신 대진(사용자 11-08) */
+  { const py=preSeasonY(); if(py){ /* 결산 뒤·개막 전: 새 시즌 0승 0패와 예상 순위(사용자 11-09) */
+    const rows=projNow().map((x,i)=>`<tr class="${x.tid===G.user?'own':''}${i===4?' cut':''}"><td>${i+1}</td><td><button data-a="lteamGo" data-v="${x.tid}">${badge(x.tid,17)}<b>${esc(team(x.tid).nick)}</b></button></td><td>0-0</td></tr>`).join('');
+    return `<section class="hw-panel hw-stand"><header><h2>${py} 시즌 <small class="muted">예상 순위 · 현재 전력 기준</small></h2><button class="tc-i" data-a="go" data-v="league:stand">전체</button></header><table><thead><tr><th>예상</th><th style="text-align:left">구단</th><th>승-패</th></tr></thead><tbody>${rows}</tbody></table></section>`; } }
   /* 리그 순위 + 팀 지표(득실·최근 5경기). 시즌 중엔 올해, 비시즌엔 지난 시즌 최종(사용자 11-06: 리그 팀 지표를 홈으로) */
   let {order,live,y}=standOrder(); if(!live&&!(order&&order.length)){ order=standingsNow(); live=true; } const ranks=[], L=order.map((x,i)=>{ ranks[i]=live&&i&&tieOf(order[i-1],x)?ranks[i-1]:i+1; return {...x,rank:ranks[i]}; });
   const rows=L.map((x,i)=>{ const sp=live?splitOf(x.tid):null, d=sp?sp.rs-sp.ra:null; return `<tr class="${x.tid===G.user?'own':''}${i===4?' cut':''}"><td>${x.rank}</td><td><button data-a="lteamGo" data-v="${x.tid}">${badge(x.tid,17)}<b>${esc(team(x.tid).nick)}</b></button></td><td>${x.w}-${x.l}${x.t?'-'+x.t:''}</td><td>${i?gbStr(gbOf(L[0],x)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${sp&&sp.n?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(x.tid).slice(-5)):''}</td></tr>`; }).join('');

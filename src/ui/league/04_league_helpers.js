@@ -8,6 +8,8 @@ function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
 const pctStr=o=>o.w+o.l?fmt3(o.w/(o.w+o.l)):'-';
 function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order:standingsNow()}; }
+/* 결산이 끝난 뒤(다음 시즌)와 개막 전에는 지난 시즌 대신 새 시즌 0승 0패와 예상 순위를 보인다(사용자 11-09). 그 시즌 연도, 아니면 0 */
+function preSeasonY(){ const per=period(); if(per==='pre')return G.year; if(per==='off'&&!preSettle()&&G.last&&G.last.y>=G.year)return G.year+1; return 0; }
 /* 화면 순위: 승률이 같으면 공동이지만, 순위 결정전으로 갈린 두 팀은 결정전 결과 순서(검수 11-09l) */
 function stRank(order,tid){ const T=(G.ps&&G.ps.tbRes)||[], id=o=>o.tid??o, i=order.findIndex(o=>id(o)===tid); if(i<0)return 0; let j=i; while(j>0&&tieOf(order[j-1],order[i])&&!T.some(x=>[x.w,x.l].includes(id(order[j-1]))&&[x.w,x.l].includes(tid)))j--; return j+1; }
 const gbOf=(top,o)=>((top.w-o.w)-(top.l-o.l))/2;
