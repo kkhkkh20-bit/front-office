@@ -2299,7 +2299,7 @@ T('[피드백 11-08d] 구단주 자금 요청: 사유와 상황으로 가능성�
   try{ uRank=()=>1; const hi=ownWhy('push',2000); uRank=()=>9; const lo=ownWhy('push',2000); ok(hi.p>lo.p+.3,'1위 우승 보강 '+hi.p.toFixed(2)+' vs 9위 '+lo.p.toFixed(2)); ok(ownChance(hi.p)!==ownChance(lo.p),'가능성 표시가 같음');
     ok(lo.lineNo.includes('9위'),'반려 대사에 순위 이유가 없음: '+lo.lineNo); ok(hi.pur&&hi.pur.k==='boost'&&hi.until===tradeDL(),'우승 보강 목적·기한');
   }finally{ uRank=u0; }
-  const fa=ownWhy('fa',1000); ok(fa.p<.25&&!fa.pur,'시즌 중 FA 영입 자금이 쉬움 '+fa.p.toFixed(2));
+  const fa=ownWhy('fa',1000); ok(fa.block&&!fa.pur,'시즌 중 FA 영입 자금 요청이 열림 '+fa.p.toFixed(2)); /* 검수 11-09zzd: 낮은 확률이 아니라 요청 자체를 막는다 */
   t.cash=5000; const df=ownWhy('deficit',1000); ok(df.p<.2,'적자도 아닌데 적자 보전이 쉬움 '+df.p.toFixed(2));
   t.cash=-3000; t.trust=30; const df2=ownWhy('deficit',1000); t.trust=70; const df3=ownWhy('deficit',1000); ok(df3.p>df2.p+.25,'신뢰 낮을 때 적자 보전이 더 어려워야 함 '+df2.p.toFixed(2)+' '+df3.p.toFixed(2));
   G.day=KD(12,10); ok(!!ownWhy('frep',500).block,'비시즌 외국인 교체 자금이 열림');
@@ -3604,6 +3604,13 @@ T('[검수 11-09zza] 응원단: 무대는 실제로 열린 홈경기마다, 동�
   const c={id:9999,job:'lead',name:'검수',age:30,hype:10,infl:10,loy:10,star:10,sal:10,y1:G.year}; G.day=KD(1,3); const a=crewSettle(c); G.day=KD(9,30); const b=crewSettle(c); ok(a>=33&&b<=10&&b>0,'정산금이 만료가 가까워도 그대로 '+a+' '+b);
   crewOf().lead={...c,y1:sponSeason()}; crewFire('lead'); ok(crewMkt().some(x=>x.id===9999),'해고한 응원단장이 시장에서 사라짐');
   const o=otherT(); G.clubT={}; const p=fanAwayPr(o,undefined); p.fan=20; ok(fanAwayPr(o,G.clubT[o])===p&&G.clubT[o].pr.fan===20,'떠난 구단 팬 여론이 남지 않음'); });
+T('[검수 11-09zzd] 구단주 지시는 기한 당일 경기를 치른 뒤 판정한다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+10&&dayGames(G.day+1).some(x=>x.includes(G.user))&&!(G.makeup||[]).length); const d=G.day+1; const O={k:'win',t:'테스트',crit:'',until:d,base:{},d0:G.day,who:'own',st:'open'}; G.ownOrder=O; simTo(()=>G.day>=d); ok(O.st!=='open','기한이 지났는데 판정 안 함'); const L=cwUlog().filter(u=>u.d===d); ok(L.length,'준비 실패: 기한 당일 우리 경기 기록 없음'); ok(O.txt!=='0승 0패','기한 당일 경기 전에 판정함('+O.txt+')'); });
+T('[검수 11-09zzd] FA 지원금은 FA 계약 기록으로 판정하고, 대상 없는 FA 자금은 요청할 수 없다',()=>{ fresh(); const me=G.user, other=G.teams.find(t=>t.id!==me).id; const mk=pid=>{ const g={y:sponSeason(),d:G.day,amt:1000,pur:{k:'fa',pid},ok:true,by:'gm',st:'open',until:G.day+30}; grantAdd(g); return g; };
+  const a=domestic(other)[0]; const g1=mk(a.id); mvLog('FA',a,null,other,'테스트'); mvLog('트레이드',a,other,me,'테스트'); a.team=me; grantCheck(); ok(g1.st==='fail','다른 팀과 FA 계약한 뒤 트레이드로 데려왔는데 지원 목적 달성('+g1.st+')');
+  const b=domestic(other)[1]; const g2=mk(b.id); mvLog('FA',b,null,me,'테스트'); mvLog('트레이드',b,me,other,'테스트'); b.team=other; grantCheck(); ok(g2.st==='done','FA 계약 뒤 트레이드했다고 지원 목적 미달('+g2.st+')');
+  const c=domestic(other)[2]; const g3=mk(c.id); switchTeam(other); ok(g3.st==='void','준비 실패: 이직 때 멈추지 않음'); switchTeam(me); ok(g3.st==='open','같은 시즌 복귀했는데 지원금 점검이 닫힌 채('+g3.st+')');
+  if(G.fa)G.fa.closed=true; const w=ownWhy('fa',1000,null); ok(w.block,'FA 시장이 닫혔는데 FA 자금 요청이 열림'); ok(/^지금 계약할 수 있는 FA가 아니라/.test(ownerAsk(1000,{k:'fa',pid:a.id})),'계약할 수 없는 FA 자금 요청이 접수됨'); });
+T('[검수 11-09zzd] 실행위원회가 열리지 않으면 상한은 매년 물가 연동 3% 인상',()=>{ fresh(); G.year=2030; const A=asInit(); A.cmt=[{y:2030,held:false,fin:.03,idx:true}]; A.cur={y:2031,near:[],on:false}; G.capY={}; const c0=capOf(2030); capCouncil(); ok(G.capY[2031]===Math.round(c0*1.03),'미개최 해 동결 '+G.capY[2031]+' / '+c0); ok(A.cmt[0].idx,'기록에 물가 연동 표시 없음'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
