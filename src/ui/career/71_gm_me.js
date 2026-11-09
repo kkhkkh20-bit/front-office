@@ -1,5 +1,5 @@
 /* ---------- 단장 프로필: 새 게임에서 이름·나이·출신·얼굴을 정하고, 사이드바 '단장 프로필'에서 본다 ---------- */
-function gpDefault(){ let n='김단장'; try{ n=genName(); }catch(e){} return {name:n,age:42,bg:'corp',voice:'bro',female:false,face:'gm'+Math.floor(Math.random()*1e6)}; }
+function gpDefault(){ let n='김단장'; try{ n=genName(); }catch(e){} return {name:n,age:38,bg:'corp',voice:null,female:false,face:'gm'+Math.floor(Math.random()*1e6)}; }
 function meAv(){ const P=(G&&G.gmP)||UI.gp||{}; return {persona:'staff',pid:P.face||'gm0',age:(G&&G.gmP===P?meAge():null)||P.age||42,female:!!P.female,name:P.name||'단장',mod:P.mod||null,img:P.img||null}; }
 /* 얼굴 꾸미기: 후보 12개 중에서 고르고, 부위(머리·머리색·수염·안경·표정)를 하나씩 바꾼다 */
 const GP_PART={hair:{l:'머리',m:['short','short2','short3','crop','crop-fade','crop-fade2','short-fade','short-fade-2','middle-part','parted','messy','messy-short','spike','spike2','juice','high','tall-fade','faux-hawk','shortBangs','short-bald','curly','curly2','afro'],f:['female1','female2','female3','female4','female5','female6','female7','female8','female9','female10','female11','female12','longHair','shortBangs','middle-part','parted']},
@@ -17,8 +17,8 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
     <div class="small">성별</div><div class="chips"><button data-a="gpSex" data-v="m" class="${g.female?'':'on'}">남</button><button data-a="gpSex" data-v="f" class="${g.female?'on':''}">여</button></div>
     <div class="small">출신</div><div class="chips">${Object.entries(GM_BG).map(([k,l])=>`<button data-a="gpBg" data-v="${k}" class="${g.bg===k?'on':''}">${l}</button>`).join('')}</div>
     <p class="small">${esc(GM_BG[g.bg]||'')}: ${esc(GM_BGD[g.bg]||'')}.</p>
-    <div class="small">말투</div><div class="chips gp-voice">${Object.entries(GMV).map(([k,V])=>`<button data-a="gpVoice" data-v="${k}" class="${g.voice===k?'on':''}">${V.l}</button>`).join('')}</div>
-    <p class="small">${GMV[g.voice]?`${esc(GMV[g.voice].d)} 예: "${esc(GMVL[g.voice].yes[0])}" · "${esc(GMVL[g.voice].ask)}"`:'말투를 고르면 인터뷰·구단주 요청·재계약 같은 단장 대사가 그 색으로 바뀝니다(효과 차이는 없습니다).'}</p><p class="small muted">출신 효과는 처음 취임할 때 한 번 들어갑니다(나중에 출신을 고쳐도 다시 들어가지 않습니다). 이름과 출신은 기사와 경력에도 쓰입니다. 나이는 해마다 한 살씩 듭니다.</p>
+    ${go==='gpStart'?'':`<div class="small">말투</div><div class="chips gp-voice">${Object.entries(GMV).map(([k,V])=>`<button data-a="gpVoice" data-v="${k}" class="${g.voice===k?'on':''}">${V.l}</button>`).join('')}</div>
+    <p class="small">${GMV[g.voice]?`${esc(GMV[g.voice].d)} 예: "${esc(GMVL[g.voice].yes[0])}" · "${esc(GMVL[g.voice].ask)}"`:'말투를 고르면 인터뷰·구단주 요청·재계약 같은 단장 대사가 그 색으로 바뀝니다(효과 차이는 없습니다).'}</p>`}<p class="small muted">출신 효과는 처음 취임할 때 한 번 들어갑니다(나중에 출신을 고쳐도 다시 들어가지 않습니다). 이름과 출신은 기사와 경력에도 쓰입니다. 나이는 해마다 한 살씩 듭니다.</p>
     ${UI.gpMsg?`<div class="note">${esc(UI.gpMsg)}</div>`:''}<button class="btn primary block" data-a="${go}">${goL}</button></div></div>
   ${typeof FACE7!=='undefined'?`<div class="gpg-h"><span class="small">얼굴: 마음에 드는 사진을 누르거나 위에서 내 사진을 넣으세요</span><button class="btn small" data-a="gpFace7">다른 사진</button></div><div class="gpg">${ph.map(c=>`<button class="gpg-c${g.face===c?' on':''}" data-a="gpPick" data-v="${c}">${avImg({persona:'staff',pid:c,age:g.age,female:g.female,name:g.name})}</button>`).join('')}</div>`:''}
 `; }
