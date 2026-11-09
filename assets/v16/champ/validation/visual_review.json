@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "scope": "All22 delivered images inspected via decoded output comparison boards; key source views for trophy, banner source photographs and corrected executive office.",
+  "checks": {
+    "photorealistic_scene_tone": true,
+    "moment_night4_day2": true,
+    "plain_white_uniform_with_navy_accent": true,
+    "no_readable_actual_club_or_company_name_identified": true,
+    "no_recognized_real_person_likeness": true,
+    "faces_small_or_side_back": true,
+    "body_language_celebration": true,
+    "party03_suits_office_rear_views_corrected": true,
+    "goggles_and_unbranded_bottles_visible": true,
+    "trophy_shapes_original_and_complete": true,
+    "banners_left40_dark_empty_no_baked_text": true
+  },
+  "limits": "Manual visual check of generated fictional scenes, not exhaustive real-person or logo database search. Indistinct stitching/tiny non-readable uniform marks may remain per request.",
+  "optional_six_color_variants": false
+}

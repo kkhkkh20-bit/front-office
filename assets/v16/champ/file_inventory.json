@@ -1,0 +1,220 @@
+{
+  "files": [
+    {
+      "path": "CLAUDE_HANDOFF.md",
+      "bytes": 3576,
+      "sha256": "af9b1a4c879cf8258837ed28b68441ef3adf9e80585e3b4df9b3fb43ca415870"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4509,
+      "sha256": "554cdb1fc204e8b11f44f871e890c167b4678fbdff105dd93b58483b63a99af3"
+    },
+    {
+      "path": "banner/banner_01.webp",
+      "bytes": 240564,
+      "sha256": "c2178889eee9c3bc95f685b5c7ae09df275df1a815265985659d35a77a210f61"
+    },
+    {
+      "path": "banner/banner_02.webp",
+      "bytes": 200376,
+      "sha256": "9f9179e3b439c48ef8e67c7842042af765dd029bb18c6d2c5eef18405923141b"
+    },
+    {
+      "path": "banner/banner_03.webp",
+      "bytes": 197388,
+      "sha256": "84a914c3167673dfa524db9b13cb98cb6253f7fc4d07e8ef0fc6adcd0c510865"
+    },
+    {
+      "path": "ceremony/ceremony_01_lift.webp",
+      "bytes": 505582,
+      "sha256": "1810519506b00058efc1ee5b4a2b5fa22df78a0512f319b77e2c07a8d7c233a6"
+    },
+    {
+      "path": "ceremony/ceremony_02_captain_kiss.webp",
+      "bytes": 336104,
+      "sha256": "528789805dc4f28423a9adacc61a1291a81c0e1b029a9de01024444b7654c132"
+    },
+    {
+      "path": "ceremony/ceremony_03_manager_toss.webp",
+      "bytes": 494254,
+      "sha256": "fe64b7d1a63c5ca0ea09f0ec00f7bdf477b6f474ecd25ed99970c0531d0b314d"
+    },
+    {
+      "path": "ceremony/ceremony_04_team_photo.webp",
+      "bytes": 546646,
+      "sha256": "b58bace10283649805507460513e37aa40a60ced54fc99b937c0d9b7f60b93b5"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 16042,
+      "sha256": "553ad1167177be7b4c59de979bb1d84b2bda29ef1578ea9575b332d63d0e6de0"
+    },
+    {
+      "path": "moment/moment_01_final_out.webp",
+      "bytes": 548290,
+      "sha256": "6e46203a8d4c5a1d8a6bdad7448dbde3ee3e21e1c0013559c617a0d93392a1fb"
+    },
+    {
+      "path": "moment/moment_02_battery_hug.webp",
+      "bytes": 403406,
+      "sha256": "bb0f37f072949366b3e77e22c3993f5e1d3b710ef69318f5d2e362cec160e0e4"
+    },
+    {
+      "path": "moment/moment_03_dugout_rush.webp",
+      "bytes": 506640,
+      "sha256": "572a286bbe2878315885da577b90e5016e65b7b7d77aee1dba838c5a52a7b8f2"
+    },
+    {
+      "path": "moment/moment_04_stands_confetti.webp",
+      "bytes": 668814,
+      "sha256": "3c53bc26a1bcf72b2f85b4e0cc050bb5ecba6b45a9ef60b5bfd84c8d08dc4254"
+    },
+    {
+      "path": "moment/moment_05_day_mound.webp",
+      "bytes": 596422,
+      "sha256": "157a642cda98be70f443a5747d941e262aeaabc5c8b82441610cfc1063839712"
+    },
+    {
+      "path": "moment/moment_06_day_dugout.webp",
+      "bytes": 547246,
+      "sha256": "35f7bf2959e7381ee1fff370cb2bb9b68e4de11286d927d3a35a32fef3b11ed9"
+    },
+    {
+      "path": "parade/parade_01_open_bus.webp",
+      "bytes": 631402,
+      "sha256": "4afd031da7bd02e37b3cea5f862dfa88e3f2d778fcfa3d36fcf4d135b75d1f32"
+    },
+    {
+      "path": "parade/parade_02_city_square.webp",
+      "bytes": 682624,
+      "sha256": "9941f18202c4d0e33fb1c9ce5730d59e066def57b125c75410501abc7dbbc568"
+    },
+    {
+      "path": "parade/parade_03_confetti.webp",
+      "bytes": 618766,
+      "sha256": "31db9825c5c6f63a432f36a06c35aec650488677093e8778dc3cde767a6749d8"
+    },
+    {
+      "path": "party/party_01_champagne.webp",
+      "bytes": 632384,
+      "sha256": "ac7d8ce70b9321eda6d7cab9ceb7c73b74ef87ca465373cd44cdf64e950e6ebe"
+    },
+    {
+      "path": "party/party_02_goggles.webp",
+      "bytes": 493022,
+      "sha256": "7622a23f31a21af54e5d163c5893171a47bc071c8be8940f3403cf2406e71f03"
+    },
+    {
+      "path": "party/party_03_front_office.webp",
+      "bytes": 250988,
+      "sha256": "9508998401253a1a37a2318fde742cc763d2ca5013638afa426638a642ae9afe"
+    },
+    {
+      "path": "previews/banner_overview.jpg",
+      "bytes": 181464,
+      "sha256": "1cc1bdbf905674782cb768dac9e667b111f7248f4762037f17ea23e22eebfc19"
+    },
+    {
+      "path": "previews/ceremony_overview.jpg",
+      "bytes": 672661,
+      "sha256": "39d34a61d4e983dbd24ed5f977836c66216903697cd753f5d65097d346e0727b"
+    },
+    {
+      "path": "previews/moment_overview.jpg",
+      "bytes": 1005902,
+      "sha256": "f780e021b54a7613d2e86d432add4bf67f21471bb02be098ab45f3870657f5aa"
+    },
+    {
+      "path": "previews/parade_overview.jpg",
+      "bytes": 640446,
+      "sha256": "610ee98332b00794606d67ca99f5d1518a5b89bc15affebeadf6489a52b0f1d9"
+    },
+    {
+      "path": "previews/party_overview.jpg",
+      "bytes": 403750,
+      "sha256": "c476455e4481847059f7fc2d86c9e0ace94025cbfe5f130c4bbd68a9317410c7"
+    },
+    {
+      "path": "previews/trophy_alpha_overview.jpg",
+      "bytes": 275806,
+      "sha256": "8e52110de39afdcf5028c1482a68796e066fb91948d477034d4edc7cd93e7540"
+    },
+    {
+      "path": "trophy/app/trophy_ring_128.webp",
+      "bytes": 20058,
+      "sha256": "0b036cf2ac888214f98943a289dbab1e78be4e0869a84c6e0cf67806d36ba87e"
+    },
+    {
+      "path": "trophy/app/trophy_ring_256.webp",
+      "bytes": 69440,
+      "sha256": "72f55714cbb22b74ff7f68eb158fea1ee8b634b8a13ef2d4996407cf7819bc23"
+    },
+    {
+      "path": "trophy/app/trophy_season_128.webp",
+      "bytes": 17574,
+      "sha256": "68fdfcace15809f6808fb2b7939ace01f8e18cb04473c7540c9423ec823ec12e"
+    },
+    {
+      "path": "trophy/app/trophy_season_256.webp",
+      "bytes": 57384,
+      "sha256": "e2ba4d0422e808fea5ce0dbffea566a5406e92f21da81cec9d3fe68f1d5ddf81"
+    },
+    {
+      "path": "trophy/app/trophy_series_128.webp",
+      "bytes": 11756,
+      "sha256": "7ac089842be8b984a7eb71c6c315ad2803c8d7ffe7918168fc6499d1a69b9534"
+    },
+    {
+      "path": "trophy/app/trophy_series_256.webp",
+      "bytes": 35008,
+      "sha256": "1761df9ffd9865d3da490036b7ccaf7261f42c4d38567b6a355fb7765bdafa1b"
+    },
+    {
+      "path": "trophy/png/trophy_ring.png",
+      "bytes": 1427258,
+      "sha256": "8fb9e7bd5e06248bc0480beb3f40b5a413c708215816ccf15ae7899c72f2f4d9"
+    },
+    {
+      "path": "trophy/png/trophy_season.png",
+      "bytes": 1325817,
+      "sha256": "43c28ad50bbd3fb8de2cd6cd250f33bf53e2d6d18e18a4327e1d60002c84ce0f"
+    },
+    {
+      "path": "trophy/png/trophy_series.png",
+      "bytes": 611703,
+      "sha256": "dc0380ee130dc05abe4595a293b39ada90e36abeefa122ba48efb01597568ad4"
+    },
+    {
+      "path": "trophy/trophy_ring.webp",
+      "bytes": 957398,
+      "sha256": "f019a06cc058aeea07194000e0332fb93cb5f905d2b531fa3c0d6886944f26a9"
+    },
+    {
+      "path": "trophy/trophy_season.webp",
+      "bytes": 874546,
+      "sha256": "4da797d3be1f5338e3c2ecd2bf58832da229db88f8299688b344db3857537e66"
+    },
+    {
+      "path": "trophy/trophy_series.webp",
+      "bytes": 411764,
+      "sha256": "f623acbfca059ebd65c08a85a997b464b6fbdd6d9a73c0fbf24bace2ed9349a0"
+    },
+    {
+      "path": "validation/source_provenance.json",
+      "bytes": 57885,
+      "sha256": "4b791cbb87b8ceaef9cf7099ab7679e185dec80b04857afc6a187cdd518ba4a3"
+    },
+    {
+      "path": "validation/visual_review.json",
+      "bytes": 964,
+      "sha256": "ecc1331eee444e091a7a035c57083437572cc667ce042d1c92a4c93e278e85c9"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 6532,
+      "sha256": "48ca5b2c1a71ac265eea79f914b8297c3c2fbab731a2826a47e12c9819ebb68c"
+    }
+  ],
+  "total_bytes": 18190161
+}
