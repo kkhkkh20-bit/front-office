@@ -2586,6 +2586,26 @@ T('[검수 11-09h] 공통 점검: A→B→A로 옮겨도 A의 확정 예산·이
   ok(!L.notes.some(n=>n.includes(tname(C))),'전 구단 거래가 새 구단 결산 평가에: '+L.notes.join(' / '));
   const uo=L.order.find(o=>o.tid===L.tid), h=G.history.find(x=>x.y===L.y); ok(sum(L.months.map(x=>x.w))===uo.w&&sum(L.months.map(x=>x.l))===uo.l,'월별 합계 '+sum(L.months.map(x=>x.w))+'승 / 순위표 '+uo.w+'승'); ok(h&&h.user.w===uo.w&&h.user.trust===L.trust.after,'재임 기록과 결산 성적·신뢰 불일치'); ok(L.fins[L.tid]&&L.fins[L.tid].cash!=null,'결산표 구단 없음');
   switchTeam(C); ok(G.last.tid===B,'결산 뒤 이직하면 결산 화면 구단이 바뀜'); });
+T('[검수 11-09j] 팬 운영·응원단·구장·스타 마케팅: A→B→A 이직에도 A의 미청구 요금·운영 상태 유지, 내린 요금제 예산, 단장 교체 정산·위약금·응원가 제작자, 응원단은 계약할 때만, 공연 조 관중 효과, 개막 전 완공 전망, 독립구단 분담금 예약, 결산 지연 스타 마케팅',()=>{ fresh(); const A=G.user;
+  fanOps(); fanSet('yt',1); cheerDaily(); cheerMonthly(); ok(!G.fanOps.cs&&cheerPay()===0&&cheerAtt()===0,'유튜브만 켰는데 응원단이 생김');
+  ok(/계약/.test(cheerAg('sky'))&&G.fanOps.cs&&G.fanOps.cs.ag==='sky','대행사 계약으로 응원단이 생기지 않음');
+  fanSet('cheer',2); fanSet('yt',2); fanSet('yt',0); ok(fanPeakExtra()===FAN_OPS.yt.m[2],'내린 요금제의 이달 청구 예정액 '+fanPeakExtra());
+  { const it=budget().exp.find(x=>x[0]==='팬 마케팅·구단 이벤트'); ok(it&&it[1]>=(G.spend.fan||0)+FAN_OPS.yt.m[2],'예산에서 확정 채널 요금이 빠짐 '+(it&&it[1])); }
+  G.fanOps.sub=210000; G.fanOps.last.meet=G.day; const ids=G.fanOps.cs.L.map(m=>m.id).join(',');
+  const B=G.teams.find(t=>t.id!==A).id; jobOffer(B,false); jobAnswer(B,true); ok(G.user===B&&!(G.fanOps&&G.fanOps.cs),'B 구단에 A 응원단이 넘어옴');
+  jobOffer(A,false); jobAnswer(A,true); const F=G.fanOps; ok(G.user===A&&F,'A 복귀 뒤 팬 운영 없음');
+  ok(F&&F.sub===210000&&F.cheer===2&&F.yt===0&&F.cs&&F.cs.L.map(m=>m.id).join(',')===ids,'A 운영 상태 초기화: 구독자 '+(F&&F.sub)+' 단계 '+(F&&F.cheer));
+  ok(/뒤 다시/.test(fanEvLeft('meet')),'같은 날 팬 사인회를 다시 열 수 있음'); ok(fanPeakExtra()===FAN_OPS.yt.m[2],'A의 미청구 채널 요금이 사라짐 '+fanPeakExtra());
+  { const f0=G.spend.fan||0; fanMonthly(); ok((G.spend.fan||0)-f0>=FAN_OPS.yt.m[2]+FAN_OPS.cheer.m[2],'복귀 뒤 월초 청구에 이미 쓴 요금이 없음 '+((G.spend.fan||0)-f0)); }
+  const L=crewMkt(); const c1=L.find(x=>x.job==='lead'); crewHire(c1.id,3); const c2=crewMkt().find(x=>x.job==='lead'&&x.id!==c1.id); const due=crewSettle(crewOf().lead), f1=G.spend.fan||0; const r=crewHire(c2.id,1); ok(due>0&&(G.spend.fan||0)-f1>=due+0&&/정산금/.test(r),'바로 교체에 전임 정산 없음: '+r);
+  G.day=KD(6,1); playersOf(A).slice(0,3).forEach(q=>{ q.e1=true; }); const ld=crewOf().lead; ld.hype=18; ld.star=18; for(let i=0;i<40&&!(G.evs||[]).some(e=>!e.done&&e.k==='song');i++)crewSongAsk(); const e=G.evs.find(x=>!x.done&&x.k==='song'); ok(e,'응원가 제안 없음');
+  if(e){ const nx=crewMk('lead'); crewOf().lead=nx; EVH.song.pick(e,0); const p=G.players[e.data.pid]; ok(p.songs[A].by===ld.name,'응원가 제작자가 후임: '+p.songs[A].by); }
+  let po=null; for(let i=0;i<60&&!po;i++){ const c=crewMk('lead'); c.star=20; c.loy=1; c.y1=sponSeason()+2; crewOf().lead=c; G.day=KD(1,10); const i0=G.spend.fanIn||0, buy=crewSettle(c); crewMonthly(); if(!crewOf().lead)po={d:(G.spend.fanIn||0)-i0,buy}; }
+  ok(po&&po.buy>0&&po.d>=po.buy,'빼 간 구단 위약금이 안 들어옴 '+JSON.stringify(po));
+  { const S=G.fanOps.cs, d=homeGames(A,G.cal.open,G.cal.open+20)[0][0]; G.day=d; for(const m of S.L){ m.fat=55; m.inj=0; m.sl=0; m.dance=17; m.svc=17; m.pop=17; } const pre=cheerAtt(); cheerDaily(); ok(S.last&&S.last.d===d&&Math.abs(cheerAtt(d)-pre)<1e-9,'공연한 조와 다른 관중 효과: '+pre+' → '+cheerAtt(d)); }
+  const S=stadOf(A), t=team(A); G.day=G.cal.end+20; S.build=[]; const P0=stadProj(A,true).prem, pl=S.lv.prem; S.build=[{k:'prem',lv:pl+1,done:dnum(G.year+1,1,26),c:0}]; const P1=stadProj(A,true).prem; ok(P1>P0&&S.lv.prem===pl,'개막 전 완공 공사가 다음 시즌 전망에 없음 '+P0+' → '+P1); S.build=[];
+  G.day=KD(12,1); t.indie=true; S.proj={stage:'build',k:'mid',cap:21000,cost:9000,paid:0,done:dnum(G.year+3,3,1)}; const k=STAD_ITEMS.map(x=>x.k).find(x=>S.lv[x]<STAD_MAX), cst=STAD_COST[S.lv[k]+1]; t.cash=newStadDue(A)+cst-1; ok(/분담금/.test(stadStart(k)||''),'독립구단 분담금 현금으로 공사 승인'); t.cash+=1; ok(stadStart(k)==='','분담금 남기고도 공사 거절'); S.proj=null; S.build=[]; t.indie=false;
+  G.day=KD(5,1); const p=playersOf(A).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; p.aw=[G.year+' MVP']; smStart(p.id,'m'); const ps0=G.ps; G.ps={...(G.ps||{}),finDay:p.smk.d+147}; const b1=smBonus(A); G.ps.finDay=p.smk.d+167; const b2=smBonus(A); G.ps=ps0; ok(b2>b1&&Math.abs(b2-Math.round(smEst(p,'m')*167/365))<=2,'결산이 미뤄져도 시작 일수로 고정: '+b1+' → '+b2); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

@@ -50,7 +50,7 @@ function smCheck(){ const fy=fyNow(); G.smkL=(G.smkL||[]).filter(e=>e.fy===fy); 
     if(p&&p.smk&&p.smk.d===e.d&&smActive(p)&&!milServing(p)&&G.user===e.tid){ e.a=smEst(p,e.k); continue; }
     e.end=G.day; if(p&&p.smk&&p.smk.d===e.d)delete p.smk; /* 입대도 이탈로 정산하고, 끝난 캠페인은 복귀해도 되살아나지 않게 */ const amt=Math.round((e.a||0)*Math.max(0,G.day-e.d)/365); if(e.tid===G.user&&!G.unemp)note('마케팅',`${e.name} 스타 마케팅이 선수 이탈로 끝났습니다. 진행한 ${G.day-e.d}일 몫 수입 ${money(amt)}은 이번 결산에 들어갑니다(이후 예상 수입은 빠짐).`); } }
 function smBonus(tid){ if(tid!==G.user||G.unemp)return 0; const fy=fyNow(); const done=sum((G.smkL||[]).filter(e=>e.fy===fy&&e.end!=null&&e.tid===tid).map(e=>Math.round((e.a||0)*Math.max(0,e.end-e.d)/365)));
-  return done+sum(playersOf(G.user).filter(smActive).map(p=>Math.round(smEst(p,p.smk.k)*(p.smk.f??1)))); }
+  return done+sum(playersOf(G.user).filter(smActive).map(p=>Math.round(smEst(p,p.smk.k)*clamp((finYearEnd()-p.smk.d)/365,0,1)))); } /* 진행 중 캠페인은 실제 결산일까지의 일수로(결산이 미뤄지면 늘어난다, 검수 11-09j) */
 function smStart(pid,k){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; const p=G.players[pid]; const T=SMK.find(x=>x.k===k); if(!p||p.team!==G.user||!T)return '우리 선수를 고르세요.';
   if(smActive(p))return `${p.name}은(는) 이미 스타 마케팅 중입니다(${dmd(p.smk.until)}까지).`;
   const until=finYearEnd(); const f=clamp((until-G.day)/365,0,1); const est=Math.round(smEst(p,k)*f); prInit(); G.spend.etc=(G.spend.etc||0)+T.c; p.smk={k,d:G.day,until,f,fy:fyNow()}; (G.smkL=G.smkL||[]).push({pid:p.id,name:p.name,k,d:G.day,fy:fyNow(),a:smEst(p,k),tid:G.user}); G.pr.fan=clamp(G.pr.fan+T.fan,0,100); p.mor=clamp((p.mor??60)+2,0,100);

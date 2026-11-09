@@ -197,7 +197,7 @@ function leaveTeamState(old){
   G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=[]; G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
   G.trn={}; /* 훈련 지시는 그 구단 선수에게 내린 것 */
   for(const c of Object.values(G.gmc||{}))c.neg=0; if(G.fa&&G.fa.mk)for(const mk of Object.values(G.fa.mk))if(mk&&mk.ll){ delete mk.ll; mk.done=true; } /* 전 구단 라스트 룩은 새 구단에서 쓸 수 없다(검수 11-08) */ /* 월 협상 횟수는 구단끼리의 것: 새 구단 이름으로는 다시 센다(검수 11-08) */ for(const id of (G.fmarket||[])){ const q=G.players[id]; if(q&&q.team==null)delete q.fneg; } /* 전 구단의 외국인 협상 횟수·대기 기한·경쟁 보류도 끝(검수 11-08) */
-  G.supPlan=null; if(G.fanOps){ (G.fanYrT=G.fanYrT||{})[old]={yr:{...(G.fanOps.yr||{})},sup:G.fanOps.sup,crew:G.fanOps.crew||{}}; } /* 응원단장도 그 구단 사람 */ G.fanOps=null; /* 응원단·채널·이벤트는 그 구단 것 */ G.campInj=1; G.form=null; G.leadAdj=null; G.pact=null; G.mpick=null;
+  G.supPlan=null; if(G.fanOps){ (G.fanYrT=G.fanYrT||{})[old]=G.fanOps; } /* 팬 운영 상태 전체(응원단·채널·쿨다운·미청구 요금)를 그 구단에 남긴다(검수 11-09j) */ G.fanOps=null; /* 응원단·채널·이벤트는 그 구단 것 */ G.campInj=1; G.form=null; G.leadAdj=null; G.pact=null; G.mpick=null;
   for(const p of Object.values(G.players)){ if(p.team!==old)continue; delete p.listed; delete p.urgent; delete p.promise; delete p.treq; delete p.pconv; } }
 /* 떠난 구단이 걸려 있는 FA 보상 절차는 그 구단(이제 AI)이 마무리한다 */
 function compHandOff(old){ for(const c of (G.comp||[])){ if(c.stage==='done')continue; if(c.to!==old&&c.from!==old)continue;
@@ -274,7 +274,7 @@ function switchTeam(tid){ champEventsInit(); const old=G.user; G.unemp0=!!G.unem
   /* 옛 구단에 묶인 계약·약속·진행 중인 일은 넘어오지 않는다 */
   { const O=G.sponT=G.sponT||{}; /* shortcut: 떠날 때 언론 지수로 이미지 조항 판단(AI 구단엔 언론 지수가 없음) */ O[old]=G.spon||null; G.spon=O[tid]||null; delete O[tid]; } /* 스폰서 계약도 구단 것: 떠나도 금액·기간·만료일 그대로 두고, 돌아오면 이어받는다 */
   G.capex=G._capexN||null; delete G._capexN; G.ivProm=[]; G.iv=null; G.stRaid=[]; G.stPo=null; G.gmPlan={}; if(G.fa&&G.fa.pitch)G.fa.pitch={}; /* 전 구단에 온 FA 우선 제안은 이직하면 끝 */
-  try{ leaveTeamState(old); compHandOff(old); }catch(e){} /* 인터뷰 기사 대기열·동석 관람 건의 기회·공개 약속도 옛 구단 몫이다 */
+  try{ leaveTeamState(old); compHandOff(old); }catch(e){} if((G.fanYrT||{})[tid])try{ fanOps(); }catch(e){} /* 돌아온 구단 팬 운영은 바로 이어서 청구·효과(검수 11-09j) */ /* 인터뷰 기사 대기열·동석 관람 건의 기회·공개 약속도 옛 구단 몫이다 */
   { const keep=G.bLocks&&G.bLocks[tid]; try{ if(period()!=='off')setGoals(); }catch(e){} if(keep&&keep.fy===sponSeason())G.bLocks[tid]=keep; } /* 같은 시즌 같은 구단에 돌아오면 그때 확정한 예산 기준 그대로(검수 11-09h) */
   try{ userLogRebuild(tid); }catch(e){} try{ tbTakeSnap(); }catch(e){}
   addLog(`${tname(old)}을(를) 떠나 ${tname(tid)} 단장으로 취임했습니다.`); chron('join',`새 단장 취임`,null,tid); try{ G.tgrow=[]; ovrSnap(); growSnap(); }catch(e){}
