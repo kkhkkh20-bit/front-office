@@ -3681,6 +3681,17 @@ T('[검수 11-09zzb] 26 사임하면 이미 합의한 연봉은 후임이 바로
 T('[검수 11-09zzb] 29·30 주전 보장 위반은 이직 뒤에도 이어지고, AI가 재계약하지 않은 외국인도 보류권이 남는다',()=>{ fresh(); simTo(()=>period()==='season'); const u=G.user, B=G.teams.find(t=>t.id!==u).id; const d=depth(u); const p=domestic(u).find(z=>!z.isP&&!z.prospect&&!z.ys&&healthy(z)&&!isAway(z)&&!(z.injOut>0)&&!d.start.some(x=>x&&x.id===z.id)); ok(p,'준비 실패: 벤치 선수');
   p.ctT=u; p.faC=true; p.yrs=2; p.roleProm={k:0,t:'B',until:G.year,l:'주전 보장',from:'fa'}; switchTeam(B); p.mor=60; rolePromCheck(6); ok(p.mor===54,'이직 뒤 약속 위반 효과가 멈춤 '+p.mor);
   const f=Object.values(G.players).find(z=>z.foreign&&z.team!=null&&z.team!==G.user&&!z.fRel); f.age=36; delete f.fy; delete f.fMulti; delete f.joinY; contractStart(); ok(!G.players[f.id]||G.players[f.id].team==null,'준비 실패: 결별 안 됨'); ok((G.fRes||[]).some(x=>(x.pid!=null?x.pid===f.id:x.name===f.name)&&x.tid!=null),'AI가 놓은 외국인 보류권 기록 없음'); });
+T('[피드백 11-09q] 예산 세 칸: 선수 영입 자금은 spendable, 연봉 여유는 capInfo·예산 여유, 세 칸의 올해 지출 합은 예상 지출과 같다(이중 계산 없음)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5); const t=team(G.user); ok(!t.indie,'준비 실패: 독립구단');
+  const chk=w=>{ const s=budgetSplit(), b=budget(), ci=capInfo(G.user);
+    ok(s.buy.avail===Math.max(0,Math.round(spendable(G.user))),w+' 영입 자금 '+s.buy.avail+' / spendable '+spendable(G.user));
+    ok(s.pay.room===Math.round(b.roomGoal)&&s.pay.capLeft===ci.cap-ci.pay,w+' 연봉 여유 '+s.pay.room+'/'+b.roomGoal+' 상한까지 '+s.pay.capLeft);
+    ok(s.pay.floorGap===Math.max(0,ci.floor-ci.pay),w+' 하한 부족분');
+    ok(Math.abs(s.buy.yr+s.pay.yr+s.ops.yr-b.E)<=5,w+' 세 칸 합 '+(s.buy.yr+s.pay.yr+s.ops.yr)+' / 예상 지출 '+Math.round(b.E));
+    ok(s.ops.left===s.ops.budget-s.ops.spent,w+' 운영 남은 예산'); return s; };
+  const s0=chk('처음'); G.spend.trC=(G.spend.trC||0)+500; G.spend.etc=(G.spend.etc||0)+500; G.spend.comp=(G.spend.comp||0)+300; G.spend.faB=(G.spend.faB||0)+200;
+  const s1=chk('영입 지출 뒤'); ok(s1.buy.spent-s0.buy.spent===1000,'영입 지출이 트레이드 현금·보상금·계약금 합으로 늘지 않음: '+(s1.buy.spent-s0.buy.spent));
+  ok(s1.ops.spent===s0.ops.spent&&s1.ops.yr===s0.ops.yr,'트레이드 현금이 운영 예산에도 잡힘(이중 계산)'); ok(s1.pay.yr===s0.pay.yr,'보상금·계약금이 연봉 칸에도 잡힘(이중 계산)');
+  const iv=t.indie; try{ t.indie=true; const s=budgetSplit(); ok(s.indie&&s.buy.room===0&&s.buy.avail===Math.max(0,Math.round(sdCash(G.user)-newStadDue(G.user))),'독립구단 영입 자금은 현금만: '+s.buy.avail); } finally{ t.indie=iv; } });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

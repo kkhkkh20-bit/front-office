@@ -168,3 +168,15 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 /* 치어리더 카드: 작은 원 대신 카드 폭 사진(사용자 11-09: 얼굴이 안 보임) */
 .chm .crew-h{display:grid;grid-template-columns:1fr;gap:6px}.chm .crew-av{width:100%;height:auto;aspect-ratio:1/1;border-radius:6px}.chm .crew-av img{object-position:50% 20%}
 .cimg-b{display:inline-flex;gap:4px;flex:none}.cimg-b .btn,.cimg-b label.btn{white-space:nowrap;writing-mode:horizontal-tb;min-width:max-content}
+/* 예산 세 칸(피드백 11-09q): 선수 영입 자금 · 연봉 여유 · 운영 예산 */
+.bsp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;min-width:0}
+.bsp-c{display:flex;flex-direction:column;gap:5px;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.bsp-h{font-size:12px;color:var(--muted);font-weight:600}
+.bsp-big{font:700 22px var(--f-num);line-height:1.15;overflow-wrap:anywhere}.bsp-big.bad{color:var(--bad)}
+.bsp-bar{position:relative;display:block;height:6px;background:var(--line);border-radius:3px;overflow:hidden}.bsp-bar em{display:block;height:100%;background:var(--good)}.bsp-bar em.bad{background:var(--bad)}.bsp-bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--warn)}
+.bsp-rs{display:grid;gap:2px}.bsp-r{display:flex;justify-content:space-between;gap:8px;font-size:12px;min-width:0}.bsp-r span{color:var(--muted);white-space:nowrap}.bsp-r{flex-wrap:wrap}.bsp-r b{font-family:var(--f-num);text-align:right;white-space:nowrap;margin-left:auto}
+.bsp-c>p{margin:2px 0 0;line-height:1.5}.bsp-n{margin:6px 0 0}
+.bsp-home{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 10px 0}.bsp-home .bsp-c{padding:7px 8px;gap:4px}.bsp-home .bsp-big{font-size:17px}.bsp-home .bsp-r{font-size:11px}
+.bsp-home+.bsp-n{padding:0 10px;font-size:11px}
+@media(max-width:699px){.bsp-home{grid-template-columns:1fr}.bsp-home .bsp-c{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px}.bsp-home .bsp-big{text-align:right}.bsp-home .bsp-bar,.bsp-home .bsp-rs{grid-column:1/-1}}
+.hw-fx{margin:0;padding:6px 10px;color:var(--muted)}

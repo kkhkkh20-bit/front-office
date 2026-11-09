@@ -1156,6 +1156,18 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
 /* 치어리더 카드: 작은 원 대신 카드 폭 사진(사용자 11-09: 얼굴이 안 보임) */
 .chm .crew-h{display:grid;grid-template-columns:1fr;gap:6px}.chm .crew-av{width:100%;height:auto;aspect-ratio:1/1;border-radius:6px}.chm .crew-av img{object-position:50% 20%}
 .cimg-b{display:inline-flex;gap:4px;flex:none}.cimg-b .btn,.cimg-b label.btn{white-space:nowrap;writing-mode:horizontal-tb;min-width:max-content}
+/* 예산 세 칸(피드백 11-09q): 선수 영입 자금 · 연봉 여유 · 운영 예산 */
+.bsp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;min-width:0}
+.bsp-c{display:flex;flex-direction:column;gap:5px;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.bsp-h{font-size:12px;color:var(--muted);font-weight:600}
+.bsp-big{font:700 22px var(--f-num);line-height:1.15;overflow-wrap:anywhere}.bsp-big.bad{color:var(--bad)}
+.bsp-bar{position:relative;display:block;height:6px;background:var(--line);border-radius:3px;overflow:hidden}.bsp-bar em{display:block;height:100%;background:var(--good)}.bsp-bar em.bad{background:var(--bad)}.bsp-bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--warn)}
+.bsp-rs{display:grid;gap:2px}.bsp-r{display:flex;justify-content:space-between;gap:8px;font-size:12px;min-width:0}.bsp-r span{color:var(--muted);white-space:nowrap}.bsp-r{flex-wrap:wrap}.bsp-r b{font-family:var(--f-num);text-align:right;white-space:nowrap;margin-left:auto}
+.bsp-c>p{margin:2px 0 0;line-height:1.5}.bsp-n{margin:6px 0 0}
+.bsp-home{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 10px 0}.bsp-home .bsp-c{padding:7px 8px;gap:4px}.bsp-home .bsp-big{font-size:17px}.bsp-home .bsp-r{font-size:11px}
+.bsp-home+.bsp-n{padding:0 10px;font-size:11px}
+@media(max-width:699px){.bsp-home{grid-template-columns:1fr}.bsp-home .bsp-c{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px}.bsp-home .bsp-big{text-align:right}.bsp-home .bsp-bar,.bsp-home .bsp-rs{grid-column:1/-1}}
+.hw-fx{margin:0;padding:6px 10px;color:var(--muted)}
 /* FA 센터 */
 .fahero{display:grid;gap:3px;padding:14px 16px;border-radius:6px;margin-bottom:10px;background:linear-gradient(120deg,#1e2a3a,#141b22);border:1px solid var(--line2)}.fahero b{font:400 24px 'Black Han Sans',var(--f-ui)}.fahero span{font-size:13px;color:var(--muted)}
 @media(max-width:699px){.fahero{padding:8px 12px;margin-bottom:8px}.fahero b{font-size:18px}.fahero span{font-size:12px}}
@@ -12822,7 +12834,7 @@ function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)re
   const room=after?b.roomGoal+dSal:b.roomGoal; const over=dSal-room; if(over<=0)return null; const t=team(G.user);
   const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
   if(over<=lim)return {ok:true,over,lim,dSal};
-  return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(선수 연봉 ${money(dSal-(cash||0))}${fr<1?`(남은 시즌 ${Math.round(fr*100)}% 몫)`:''}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 올해 예산(지원 목표)을 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
+  return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(선수 연봉 ${money(dSal-(cash||0))}${fr<1?`(남은 시즌 ${Math.round(fr*100)}% 몫)`:''}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 연봉 여유(예산 기준, 구단주 지원 목표 안)를 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
 function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 -2.`,{kind:'구단주'}); }catch(e){} }
 /* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
 function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }
@@ -12872,7 +12884,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(cash<0&&!give.length)return {ok:false,msg:'선수를 보내지 않고 현금만 받는 거래는 할 수 없습니다.'};
   if(cash<0&&(t.cash||0)<-cash)return {ok:false,msg:`${tname(tid)}은(는) 그만한 현금 여유가 없습니다(보유 ${money(Math.max(0,t.cash||0))}).`};
   if(cash>0&&!get.length)return {ok:false,msg:'현금만 주고 선수를 받지 않는 거래는 할 수 없습니다.'};
-  const myC=spendable(G.user); /* 앞선 거래에서 약정한 현금은 이미 쓴 돈(검수 11-08b), 모기업 구단은 구단주 지원 여유까지(피드백 11-09j) */ if(cash>0&&myC<cash)return {ok:false,msg:`우리 구단이 쓸 수 있는 돈(${team(G.user).indie?'보유 현금, 앞선 거래 약정분 제외':'보유 현금 + 구단주 지원 여유'} ${money(Math.max(0,myC))})이 얹을 현금 ${money(cash)}보다 적습니다.`}; /* 상대 쪽과 같은 보유 현금 검사(검수 11-08) */
+  const myC=spendable(G.user); /* 앞선 거래에서 약정한 현금은 이미 쓴 돈(검수 11-08b), 모기업 구단은 구단주 지원 여유까지(피드백 11-09j) */ if(cash>0&&myC<cash)return {ok:false,msg:`우리 구단 선수 영입 자금(${team(G.user).indie?'독립구단이라 보유 현금만, 앞선 거래 약정분 제외':'보유 현금 + 구단주 지원 여유'} ${money(Math.max(0,myC))})이 얹을 현금 ${money(cash)}보다 적습니다.`}; /* 상대 쪽과 같은 보유 현금 검사(검수 11-08) */
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드 대상에서 뺐습니다(게임 단순화).'};
   { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
   const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
@@ -13186,6 +13198,16 @@ function goalYearEnd(rank,fin){ const s=goalStatus(); if(!s)return {d:0,lines:[]
 
 /* 예상보다 더 들어온 수입(시즌 예산을 정한 뒤 늘어난 입장·광고·스폰서 수입). 쓸 수 있는 돈이 아니라 구단주에게 추가 지원을 요청할 근거 */
 function budgetExtra(){ try{ return Math.max(0,budget().extra||0); }catch(e){ return 0; } }
+/* 예산 세 칸(FM의 이적 예산·급료 예산처럼, 피드백 11-09q). 새 계산 없이 판정 함수(spendable·budget·capInfo)의 값을 그대로 나눠 보인다.
+   올해 예상 지출(b.E)은 세 칸에 한 번씩만 들어간다: 영입(트레이드 현금·보상금·양도금·계약금) + 연봉('pay'·'for' 항목에서 영입분을 뺀 몫) + 운영(나머지, 단장 결정 지출 안의 트레이드 현금은 뺀다) */
+function budgetSplit(){ const b=budget(), t=team(G.user), ci=b.ci, S=G.spend||{}, P=k=>Math.round(S[k]||0), tag=k=>sum(b.exp.filter(x=>x[2]===k).map(x=>x[1]));
+  const trC=Math.min(P('trC'),P('etc')), bSp=trC+P('comp')+P('faB'); /* 영입 지출: 이미 낸 일시금(장부) */
+  const pY=tag('pay')+tag('for')-P('comp')-P('faB'), oY=tag('ops')+tag('mgr')-trC;
+  const oSp=Math.round(['mgr','coach','med','hosp','intl','data','fac','dev','fan'].reduce((a,k)=>a+(S[k]||0),0)+scoutSpent()+Math.max(0,(S.etc||0)-trC)); /* 운영 지출: 지금까지 쌓인 장부 */
+  return {indie:b.indie,E:b.E,
+    buy:{avail:Math.max(0,Math.round(spendable(G.user))),cash:Math.max(0,Math.round(t.cash||0)),room:Math.round(spendRoom()),spent:bSp,yr:bSp},
+    pay:{capLeft:ci.cap-ci.pay,floorGap:Math.max(0,ci.floor-ci.pay),pay:ci.pay,cap:ci.cap,floor:ci.floor,room:Math.round(b.roomGoal),fRoom:Math.round(b.fRoom||0),spent:Math.round(pY),yr:Math.round(pY)},
+    ops:{budget:Math.round(oY),spent:oSp,left:Math.round(oY)-oSp,yr:Math.round(oY)}}; }
 /* ===== 병역: 상무·현역 입대, 올림픽 특례 =====
  KBO 실제: 상무(국군체육부대) 복무 1년 6개월, 복무 중 퓨처스리그 출전 가능. 올림픽 동메달 이상은 체육요원 편입.
  게임 규칙: 만 28세가 되는 해까지 입대하지 않으면 현역으로 입대한다. 상무 지원은 9~10월(12월 입대)과 3~4월(6월 입대) 두 번. 올림픽은 2028 LA 이후 4년마다 열린다고 가정. */
@@ -15497,7 +15519,7 @@ function hsUsDaily(){ const D=G.draftClass; if(!D||!D.length||G.unemp&&false)ret
     if(!G.unemp)news('드래프트',`${p.name}, ${club}과 계약 · 고교 졸업 뒤 미국 직행`,`드래프트를 앞두고 고교 최대어 한 명이 빠졌습니다. 계약금 ${bonus}만 달러. 드래프트 상위 지명 판도가 바뀝니다.`,0,{}); } }
 /* 설득 자격·비용: 지금도 1순위를 쥐고 있고(검수 11-09c: 지명권을 넘긴 뒤에도 설득), 최고 대우는 보유 현금 안에서만(현금 0원에서 결제) */
 function usHsWhy(e,i){ const p=G.players[e.data.pid]; if(i===2||!p||!p.usOff)return ''; let first=null; try{ first=draftPickOrder()[0]; }catch(x){} if(!first||first.tid!==G.user||G.unemp)return '1라운드 1순위 지명권이 이제 우리 구단에 없어 설득할 수 없습니다.';
-  const cost=Math.round(p.usOff.bonus*1.3); if(i===0&&spendable(G.user)<cost)return `쓸 수 있는 돈(${spendTxt()})으로는 추가 약속 ${money(cost)}을 낼 수 없습니다.`; return ''; }
+  const cost=Math.round(p.usOff.bonus*1.3); if(i===0&&spendable(G.user)<cost)return `추가 약속 ${money(cost)}을 낼 수 없습니다(${spendTxt()}).`; return ''; }
 EVH.usHs={ can:usHsWhy, pick(e,i){ const p=G.players[e.data.pid]; if(!p||!p.prospect||!p.usOff)return '이미 정리된 일입니다.'; const mv=mlbOf(p), b=p.usOff.bonus, t=team(G.user);
   if(i===2){ return `${p.name}의 선택을 존중하기로 했습니다.`; } { const why=usHsWhy(e,i); if(why){ e.pick=2; return why+' 설득하지 않았습니다.'; } } /* 자동 처리로 와도 같은 조건 */
   const ch=i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90,.15,.7); const cost=i===0?Math.round(b*1.3):0;
@@ -21369,7 +21391,7 @@ function sdCash(tid){ let c=team(tid).cash||0; if(tid===ME()){ const P=G.spend||
 function spendable(tid){ const t=team(tid); if(tid!==ME()||t.indie)return sdCash(tid)-(t.indie?newStadDue(tid):0); /* 독립구단은 결산 때 낼 신구장 분담금도 쓸 수 없는 돈(AI 포함, 검수 11-09zza) */ const b=budget(); return (t.cash||0)+Math.max(0,b.roomGoal)+Math.min(0,b.roomCap); }
 function spendRoom(){ const t=team(G.user); return t.indie?0:Math.max(0,spendable(G.user)-(t.cash||0)); } /* 그중 구단주 지원 여유(화면 안내용) */
 /* 지출: 보유 현금에서 먼저, 모자란 몫은 단장 결정 지출로 장부에 올려 결산 때 구단주 지원(적자 보전)이 메운다 */
-function spendTxt(){ const t=team(G.user), a=Math.max(0,spendable(G.user)); return t.indie?`쓸 수 있는 현금 ${money(a)}, 트레이드 약정분${newStadDue(G.user)?'·결산 때 낼 신구장 분담금':''} 제외`:`쓸 수 있는 돈 ${money(a)} = 보유 현금 ${money(Math.max(0,t.cash||0))} + 구단주 지원 여유 ${money(spendRoom())}`; }
+function spendTxt(){ const t=team(G.user), a=Math.max(0,spendable(G.user)); return t.indie?`선수 영입 자금(보유 현금만) ${money(a)}, 트레이드 약정분${newStadDue(G.user)?'·결산 때 낼 신구장 분담금':''} 제외`:`선수 영입 자금 ${money(a)} = 보유 현금 ${money(Math.max(0,t.cash||0))} + 구단주 지원 여유 ${money(spendRoom())}`; }
 function spendPay(c){ const t=team(G.user), k=t.indie?c:clamp(Math.min(t.cash||0,sdCash(G.user)),0,c); t.cash-=k; if(c>k)G.spend.etc=(G.spend.etc||0)+c-k; return k; } /* 돌려주는 값: 현금에서 낸 몫. 트레이드 약정 현금·양도금처럼 이미 장부에 잡힌 돈은 현금에서 다시 쓰지 않는다(검수 11-09zza) */
 const sdSubd=tid=>{ const S=G.sd2; return !!S&&(!!(S.subs&&S.subs[tid])||S.sub===tid); }; /* 구단별 제출 여부: 이직해도 전 구단 제출 명단이 남는다(검수 11-09f) */
 const sdBackAI=(p,o)=>rosterN(o.from)<ROSTER_MAX&&aiVal(team(o.from),p)>=0;
@@ -23210,10 +23232,9 @@ function homeNewsPanel(){
   const N=(G.news||[]).filter(n=>!n.oth).slice(0,4),n=N.find(n=>n.id===UI.homeNews)||N[0],p=n?.ref!=null?G.players[n.ref]:null;
   return `<section class="hw-panel hw-news"><header><h2>구단 뉴스</h2><button class="tc-i" data-a="go" data-v="club:news">전체</button></header>${n?`<article><div class="hw-news-art">${p?avImg(p,true):badge(G.user,60)}<span><b>${esc(n.o)}</b><small>${n.by?esc(n.by)+' 기자 · ':''}${dsh(n.d)}</small></span></div><span class="hw-kicker">${esc(n.k||'구단 소식')}</span><h3>${esc(n.t)}</h3><p>${esc(n.b||'')}</p><button class="btn small" data-a="go" data-v="club:news">기사 전체 읽기</button></article><div class="hw-news-list">${N.filter(x=>x.id!==n.id).slice(0,2).map(x=>`<button data-a="homeNews" data-v="${x.id}"><span>${esc(x.k||'소식')} · ${dsh(x.d)}</span><b>${esc(x.t)}</b></button>`).join('')}</div>`:'<p class="hw-hint">구단 소식이 들어오면 여기에 표시합니다.</p>'}</section>`;
 }
-function homeFinancePanel(){const b=budget(),t=team(G.user),capRoom=capOf(sponSeason())-capPay(G.user); const top=[...b.exp].filter(x=>x[1]>0).sort((x,y)=>y[1]-x[1]).slice(0,4), mx=Math.max(1,b.E,b.I);
-  const bar=(l,v,c)=>`<div class="hw-fb"><span>${esc(l)}</span><i><u style="width:${Math.max(2,Math.round(v/mx*100))}%;background:${c}"></u></i><b>${money(Math.round(v))}</b></div>`;
-  return `<section class="hw-panel hw-finance"><header><h2>구단 운영</h2><button class="tc-i" data-a="go" data-v="club:fin">재정</button></header><dl><div><dt>예산 여유</dt><dd class="${b.roomGoal<0?'bad':''}">${money(b.roomGoal)}</dd></div><div><dt>상한 잔여</dt><dd class="${capRoom<0?'bad':''}">${money(capRoom)}</dd></div><div><dt>보유 자금</dt><dd>${money(t.cash)}</dd></div><div><dt>연말 예상 자금</dt><dd class="${b.endCash<0?'bad':''}">${money(Math.round(b.endCash))}</dd></div><div><dt>구단주 신뢰</dt><dd>${Math.round(t.trust)} <small>/ 100</small></dd></div></dl>
-  <div class="hw-fchart"><p class="hw-kicker">올해 예상 수입·지출</p>${bar('수입',b.I,'#3fb871')}${bar('지출',b.E,'#e5534b')}${b.support?bar('모기업 지원',b.support,'#4fa3ff'):''}<p class="hw-kicker">지출 상위</p>${top.map(x=>bar(x[0],x[1],'#c0784a')).join('')}</div></section>`;}
+/* FM 홈처럼 예산 카드 세 장(이용 가능 금액·이번 시즌 지출·진행 막대, 피드백 11-09q). 수입·지출 그래프는 재정 화면에 */
+function homeFinancePanel(){const b=budget(),t=team(G.user);
+  return `<section class="hw-panel hw-finance"><header><h2>예산</h2><button class="tc-i" data-a="go" data-v="club:fin">재정</button></header>${bspCards(true)}<p class="small hw-fx">보유 자금 ${money(t.cash)} · 연말 예상 <span class="${b.endCash<0?'bad':''}">${money(Math.round(b.endCash))}</span> · 구단주 신뢰 ${Math.round(t.trust)}</p></section>`;}
 /* 경기가 없는 기간(시즌 끝): 다음 경기 칸에 올 시즌 결산과 구단 연대기 최근 일 */
 function homeSeasonEnd(){ const C=(G.chron||[]).filter(c=>c.tid===G.user&&c.y===G.year), se=C.filter(c=>c.k==='season').pop(), rec=C.filter(c=>c.k!=='season').slice(-4).reverse();
   return `<div class="hw-season"><span class="hw-kicker">${G.year} 시즌 결산</span><b>${esc(se?se.t:(r=>`${r.w}승 ${r.l}패${r.t?' '+r.t+'무':''}`)(G.sea.rec[G.user]))}</b>${rec.length?`<ul>${rec.map(c=>`<li><i>${dsh(c.d)}</i> ${esc(c.t)}</li>`).join('')}</ul>`:''}<p class="hw-hint">다음 시즌을 준비하고 있습니다.</p></div>`; }
@@ -23285,7 +23306,7 @@ function faRoom(p){ const ag=agentOf(p); const n=G.fa.neg&&G.fa.neg[p.id]; const
     ${mk&&mk.ll&&(mk.ll.tid==null||mk.ll.tid===G.user)&&G.day<=mk.ll.until?`<div class="row"><button class="btn primary" data-a="faLL" data-v="${p.id}">라스트 룩 맞추기 (${mk.ll.years}년 연 ${money(mk.ll.annual)})</button></div>`:''}
     ${G.fa.pitch&&G.fa.pitch[p.id]&&G.day<=G.fa.pitch[p.id].until?`<div class="row"><button class="btn primary" data-a="agPitchOk" data-v="${p.id}">우선 제안 수락 (${G.fa.pitch[p.id].years}년 연 ${money(G.fa.pitch[p.id].annual)})</button></div>`:''}
     ${(()=>{ if(UI.faMsg&&UI.faMsg.d==null)UI.faMsg.d=G.day; return UI.faMsg&&UI.faMsg.id===p.id&&UI.faMsg.d===G.day?`<div class="note">${esc(UI.faMsg.t)}</div>`:''; })()}
-    <div class="row">${budgetTag(Math.round(((UI.offer&&UI.offer.id===p.id?UI.offer:(G.fa.offers[p.id]||p.ask)).annual)*b.rem))}<span class="small muted">예산 여유 ${money(b.roomGoal)}</span></div>
+    <div class="row">${budgetTag(Math.round(((UI.offer&&UI.offer.id===p.id?UI.offer:(G.fa.offers[p.id]||p.ask)).annual)*b.rem))}<span class="small muted">연봉 여유 상한까지 ${money(b.ci.cap-b.ci.pay)} · 예산 기준 ${money(b.roomGoal)}</span></div>
     ${ngtDoor('fa',p)}${negPanel(p)}</section>`; }
 function faCelebrate(){ const F=G.fa; if(!F||!F.results)return; G.faCel=G.faCel||[]; const r=F.results.find(x=>x.to===G.user&&x.from!==G.user&&!G.faCel.includes(x.id+':'+x.day)); if(!r)return;
   G.faCel.push(r.id+':'+r.day); if(G.faCel.length>40)G.faCel.splice(0,10); UI.stamp={title:'FA 영입',msg:`${r.name} · ${esc(ctRecShort(r))}${r.compPlayer?` · 보상선수 ${r.compPlayer} 이탈`:''}`}; sfx('cheer_big',.7); }
@@ -26899,7 +26920,7 @@ function foreignView(){
   const summary=`<section class="card">${rule}
     <p class="small muted">${mid?`${asia?'아시아쿼터':'일반 외국인'} 시즌 중 교체 ${used}/${max}회, 영입하면 남은 경기 비율만큼 연봉을 냅니다. `:''}${open?'후보는 매달 1일 일부 바뀝니다. 8월 15일 이후에는 영입할 수 없습니다.':'<b>지금은 영입 기간이 아닙니다.</b> (12월~8월 15일)'}</p>
     <div class="netrow">${regs.map(netPill).join('')}<button class="tc-i" data-a="itab" data-v="fview${asia?'a':''}:net">해외 스카우트망 관리</button></div>
-    ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(fStayOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)} <button type="button" class="hi-i" data-tip="${esc('배정 예산 안에서 영입하면 홈의 예산 여유는 그대로이고, 넘는 만큼만 줄어듭니다.\n'+(G.gmSince===G.year?'첫 시즌: 규정 한도만큼 구단주가 미리 배정했습니다.':'지난 시즌 리그 평균 외국인 지출 기준입니다.'))}">i</button></p>`; })()}
+    ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(fStayOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)} <button type="button" class="hi-i" data-tip="${esc('외국인 계약금·연봉은 이 배정 예산에서 먼저 씁니다. 배정 안에서 영입하면 연봉 여유(예산 기준)는 그대로이고, 넘는 만큼만 줄어듭니다.\n'+(G.gmSince===G.year?'첫 시즌: 규정 한도만큼 구단주가 미리 배정했습니다.':'지난 시즌 리그 평균 외국인 지출 기준입니다.'))}">i</button></p>`; })()}
     ${UI.fmsg2?`<div class="note bad">${esc(UI.fmsg2)}</div>`:''}</section>`;
   const mine=(asia?as:yb).map(p=>pcard(p,{sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)}`,tags:p.fy===G.year||p.fy===G.year+1?'<span class="pill">리그 첫 시즌</span>':'',foot:`<b class="num">${money(p.sal)}</b><span>${Math.round(p.sal/USD)}만 달러 · ${p.rsy?`재계약 ${p.rsy}년차`:'첫 계약'}</span><button class="tc-i" data-a="player" data-v="${p.id}">상세</button><button class="tc-i" data-a="relNow" data-v="${p.id}">방출</button>`})).join('');
   const cards=market.map(({p,rp,fs})=>{ const est=fs.mid!=null?{v:fs.mid,raw:fs.raw,lo:fs.lo,hi:fs.hi}:null; const err=open?foListErr(p):'영입 기간이 아닙니다.'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const pay=mid?Math.round(p.ask*remainFrac()):p.ask;
@@ -27544,7 +27565,7 @@ function tradeView(){
       <div><div class="eyebrow">보냄 · ${gv.length}명</div>${gv.map(p=>tmini(p,'give')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="give">우리 선수에서 고르기</button>'}</div>
       <div><div class="eyebrow">받음 · ${gt.length}명</div>${gt.map(p=>tmini(p,'get')).join('')||'<button class="btn small tempty" data-a="tsideGo" data-v="get">상대 선수에서 고르기</button>'}</div>
     </div>
-    <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
+    <dl class="tsum"><div><dt>연봉 변화</dt><dd class="num" style="color:${dPay>0?'var(--warn)':dPay<0?'var(--good)':'inherit'}">${dPay>=0?'+':''}${money(dPay)}</dd></div><div><dt>트레이드 후 캡</dt><dd class="num" style="color:${capAfter>cap?'var(--bad)':'inherit'}">${money(capAfter)} / ${money(cap)}</dd></div><div><dt>선수 영입 자금</dt><dd class="num">${money(Math.max(0,spendable(G.user)))}</dd></div><div><dt>로스터</dt><dd class="num">우리 ${myN} · 상대 ${thN}</dd></div></dl>
     ${mood?`<div class="tmood"><div class="row between"><span class="small muted">상대 단장 반응 예상</span><b style="color:${mood.c}">${mood.l}</b></div><p class="small" style="margin:2px 0">${mood.s}</p><div class="tbarm"><span style="width:${mood.w}%;background:${mood.c}"></span><i></i></div><p class="small muted">관계 ${t.rel} 기준 예측입니다. ${mood.sd>3.5?'관계가 낮아 오차가 큽니다.':'비교적 정확합니다.'}</p></div>`:''}
     ${tr.msg?`<div class="note ${tr.ok?'good':''}">${esc(tr.msg)}${want?` <button class="btn small" data-a="tpick" data-v="give:${want.id}">${esc(want.name)} 얹기</button>`:''}</div>`:''}
     ${tr.counters&&tr.counters.length?`<div class="ctr"><span class="eyebrow">역제안</span>${tr.counters.map((c,i)=>{ const nt=negTurn(tr.tid), d0=nt.ctr&&nt.ctr[tsig(c.give,c.get,c.cash||0)+pkSig(c.pk)], live=d0!=null&&G.day-d0<=7; const K=pkNorm(c.pk), cs=c.cash||0; /* 현금·지명권도 카드에서 보이게, 유효기간(엔진 isCtr와 같은 7일)이 지나면 수락 버튼을 내린다(검수 11-09v) */
@@ -28001,11 +28022,23 @@ function moneyView(){
   const lme=G.last?(G.last.tid??G.user):G.user; /* 시즌 결산 화면과 같은 구단(결산한 구단, 검수 11-09y) */ const f=G.last&&G.last.fins?G.last.fins[lme]:null; const hs=G.history.filter(h=>h.user);
   const it=inTabs('fin',[['bud','올해 예산'],['flow','수입·지출'],['lim','한도·캡'],['last','지난 결산'],...(fmOn()?[['star','선수 홍보']]:[])]); /* PC 구단주 화면은 FM식 한 화면이라 선수 홍보 카드는 재정 쪽 탭으로 */
   if(it.cur==='star')return it.bar+starPanel();
-  if(it.cur==='bud'&&fmOn())return it.bar+finDash();
+  const bsp=`<section class="card bsp-sec"><h2 class="sec">예산 한눈에</h2>${bspCards()}</section>`; /* 세 칸 요약을 맨 위에(피드백 11-09q) */
+  if(it.cur==='bud'&&fmOn())return it.bar+bsp+finDash();
   if(it.cur==='flow'||it.cur==='lim'){ const parts=budgetCards().split('<section class="card'); const pick=it.cur==='flow'?parts.find(x=>x.includes('어디에 쓰고 어디서 버나')):parts.find(x=>x.includes('용도별 한도')); return it.bar+(pick?'<section class="card'+pick:'')+(it.cur==='lim'?capCard(ci):''); }
   if(it.cur==='last')return it.bar+(f?`<section class="card"><h2 class="sec">${G.last.y} 결산${lme!==G.user?` · ${esc(tname(lme))}`:''}</h2>${finTable(f)}</section>`:'<section class="card"><p class="small muted">첫 시즌을 마치면 결산이 올라옵니다.</p></section>')+`<section class="card"><h2 class="sec">재임 기록</h2>${hs.length?`<div class="tw"><table><thead><tr><th>시즌</th><th>성적</th><th>순위</th><th>순이익</th><th>신뢰</th></tr></thead><tbody>${hs.map(h=>`<tr><td>${h.y}</td><td>${h.user.w}-${h.user.l}${h.user.t?'-'+h.user.t:''}</td><td>${h.user.rank}</td><td>${money(h.user.net)}</td><td>${h.user.trust}</td></tr>`).join('')}</tbody></table></div>`:'<p class="small muted">첫 시즌을 마치면 기록이 쌓입니다.</p>'}</section>`;
-  { const parts=budgetCards().split('<section class="card'); return it.bar+'<div class="fin-stack">'+finMonthCard()+parts.filter(x=>x&&!x.includes('어디에 쓰고 어디서 버나')&&!x.includes('용도별 한도')).map(x=>'<section class="card'+x).join('')+csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 마케팅 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`)+'</div>'; } /* 휴대폰: 카드마다 칩으로 나누지 않고 한 화면에 이어서 스크롤(사용자 요청 11-09) */
+  { const parts=budgetCards().split('<section class="card'); return it.bar+'<div class="fin-stack">'+bsp+finMonthCard()+parts.filter(x=>x&&!x.includes('어디에 쓰고 어디서 버나')&&!x.includes('용도별 한도')).map(x=>'<section class="card'+x).join('')+csec('마케팅 예산',period()==='pre'?marketingBody():`<p>올 시즌 마케팅 예산 <b class="num">${money(G.marketing)}</b></p><p class="small muted">마케팅 예산은 개막 전(스프링캠프 기간)에만 바꿀 수 있습니다.</p>`)+'</div>'; } /* 휴대폰: 카드마다 칩으로 나누지 않고 한 화면에 이어서 스크롤(사용자 요청 11-09) */
 }
+/* 예산 세 칸(피드백 11-09q): 홈과 재정 화면이 같이 쓴다. 숫자는 budgetSplit()에서만 */
+function bspCards(home){ const s=budgetSplit(), B=s.buy, P=s.pay, O=s.ops;
+  const bar=(v,mx,bad,mk)=>`<i class="bsp-bar"><em class="${bad?'bad':''}" style="width:${clamp(v/Math.max(1,mx)*100,0,100).toFixed(1)}%"></em>${mk!=null?`<u style="left:${clamp(mk/Math.max(1,mx)*100,0,100).toFixed(1)}%"></u>`:''}</i>`;
+  const card=(h,big,bad,rows,b,note)=>`<div class="bsp-c"><span class="bsp-h">${h}</span><b class="bsp-big ${bad?'bad':''}">${big}</b>${b}<div class="bsp-rs">${rows.slice(0,home?1:9).map(([k,v])=>`<div class="bsp-r"><span>${k}</span><b>${v}</b></div>`).join('')}</div>${home||!note?'':`<p class="small muted">${note}</p>`}</div>`;
+  const c1=card('선수 영입 자금',money(B.avail),false,[['이번 시즌 지출',money(B.spent)],...(s.indie?[['자금원','보유 현금만']]:[['보유 현금',money(B.cash)],['구단주 지원 여유',money(B.room)]])],bar(B.spent,B.spent+B.avail),
+    `트레이드 현금, FA 계약금·보상금, 2차 드래프트 양도금처럼 한 번에 나가는 돈입니다. ${s.indie?'독립구단은 모기업 지원이 없어 보유 현금만 씁니다(트레이드 약정분·결산 때 낼 신구장 분담금 제외).':'모기업 구단은 보유 현금에 구단주 지원 목표 안의 여유를 더합니다.'} 시설 공사·구단 버스도 이 돈에서 나갑니다.`);
+  const c2=card('연봉 여유',P.capLeft>=0?money(P.capLeft):`상한 초과 ${money(-P.capLeft)}`,P.capLeft<0,[['이번 시즌 연봉 지출',money(P.spent)],['예산 기준 여유',`<span class="${P.room<0?'bad':''}">${money(P.room)}</span>`],...(P.floor?[['하한까지 부족',P.floorGap?`<span class="bad">${money(P.floorGap)}</span>`:'없음']]:[]),['외국인 배정 남음',money(P.fRoom)]],bar(P.pay,P.cap,P.capLeft<0,P.floor||null),
+    `큰 숫자는 국내 선수 연봉 총액(상위 40명) ${money(P.pay)}이 경쟁균형세 상한 ${money(P.cap)}까지 남은 금액입니다${P.floor?`. 하한 ${money(P.floor)}에 못 미치면 발전기금을 냅니다`:''}. 예산 기준 여유는 ${s.indie?'적자 없이 더 쓸 수 있는 연봉입니다(독립구단은 연봉도 보유 현금에서 나갑니다)':'구단주 지원 목표 안에서 더 쓸 수 있는 연봉입니다'}. 외국인 계약금·연봉은 외국인 배정 예산에서 먼저 씁니다.`);
+  const c3=card('운영 예산',money(O.left),O.left<0,[['이번 시즌 지출',money(O.spent)],['올해 예산',money(O.budget)]],bar(O.spent,O.budget,O.spent>O.budget),
+    '감독·코치·스카우트·의료·시설 유지·마케팅·팬 이벤트 같은 운영비입니다. 이미 올해 예상 지출에 들어 있어 따로 더 쓸 수 있는 돈은 아닙니다.');
+  return `<div class="bsp ${home?'bsp-home':''}">${c1}${c2}${c3}</div><p class="small muted bsp-n ${home?'':'keep'}">${s.indie?'선수 영입 자금과 예산 기준 연봉 여유는 같은 보유 현금에서 나옵니다. 한쪽에 쓰면 다른 쪽도 줄어듭니다.':'예산 기준 연봉 여유와 선수 영입 자금의 구단주 지원 여유는 같은 돈입니다. 계약금·트레이드 현금으로 쓰면 연봉 여유도 줄어듭니다.'}</p>`; }
 function finMonthCard(){ const L=(G.finLog||[]).filter(x=>x.y===G.year&&(x.tid??G.user)===G.user); const x=L[L.length-1]; const p=G.finSnap; const now=p&&p.y===G.year&&(p.tid??G.user)===G.user&&p.st===!!(G.last&&G.last.y>=G.year)?finSnapNow():null; /* 결산을 사이에 두면 다른 시즌 예산이라 비교하지 않는다(월간 메일과 같게, 검수 11-09y) */ /* 이직하면 전 구단 월간 기록은 쓰지 않는다(검수 11-09h) */ const dr=now?now.room-p.room:null;
   const lk=!!(G.bLocks&&G.bLocks[G.user]&&G.bLocks[G.user].fy===sponSeason()); /* 확정 예산: 수입 전망이 늘어도 예산 여유는 그대로(검수 11-08) */
   const row=z=>{ const neu=lk&&z.kind==='수입'; return `<div class="tsb-r"><span>${z.kind} · ${esc(z.l)}${neu?' <i class="muted">(전망만, 예산 여유와 무관)</i>':''}</span><span>${money(z.v0)} → ${money(z.v1)} <b class="${neu?'muted':z.eff>=0?'good':'bad'}">${z.eff>=0?'+':''}${money(z.eff)}</b></span></div>`; };
@@ -28077,7 +28110,7 @@ function finDash(){ const b=budget(), t=team(G.user), ci=b.ci, L=(G.finLog||[]).
     ${fmBox('fmd-inc','올해 예상 수입',money(b.I),[],`<div class="fmd-l">${li(b.inc,'--good')}</div><p class="fmd-note">${dmd(finYearEnd())} 결산까지 연간 예상 · 포스트시즌 배당 ${b.inc.some(x=>/포스트시즌 배당/.test(x[0]))?'포함':'제외'}</p>`)}
     ${fmBox('fmd-exp','올해 예상 지출',money(b.E),[],`<div class="fmd-l">${li([...b.exp].sort((x,y)=>y[1]-x[1]),'--warn')}</div>`)}
     ${bud}<section class="card fmd-rule"><h3 class="fmd-h">규정 준수</h3><div class="fmd-rl">${R.map(([l,ok,d])=>`<div class="${ok?'ok':'ng'}"><b>${l} <span class="pill ${ok?'good':'bad'}">${ok?'준수':/하한/.test(l)?'미달':'초과'}</span></b><p>${d}</p></div>`).join('')}</div></section></div>`; }
-function fBudgetTag(cost){ const b=budget(); if(cost<=b.fRoom)return '<span class="pill good" title="보장액(계약금+연봉)은 외국인 배정 예산(시즌 전에 따로 떼어 둔 돈) 안에서 씁니다. 인센티브는 달성할 것으로 보고 일반 예산의 계약 옵션(예상) 항목에 잡혀서, 계약하면 홈의 예산 여유가 그만큼 줄어듭니다">보장액은 배정 예산 안 · 인센티브는 일반 예산</span>'; const ex=cost-b.fRoom; return b.roomGoal>=ex?`<span class="pill warn" title="외국인 배정 예산을 넘는 ${money(ex)}은 일반 예산에서 씁니다">배정 예산 초과 ${money(ex)} · 일반 예산 사용</span>`:b.roomMax>=ex?`<span class="pill warn">예산 초과 ${money(ex)}</span>`:'<span class="pill bad">자금 부족</span>'; }
+function fBudgetTag(cost){ const b=budget(); if(cost<=b.fRoom)return '<span class="pill good" title="보장액(계약금+연봉)은 외국인 배정 예산(시즌 전에 따로 떼어 둔 돈) 안에서 씁니다. 인센티브는 달성할 것으로 보고 일반 예산의 계약 옵션(예상) 항목에 잡혀서, 계약하면 연봉 여유(예산 기준)가 그만큼 줄어듭니다">보장액은 배정 예산 안 · 인센티브는 일반 예산</span>'; const ex=cost-b.fRoom; return b.roomGoal>=ex?`<span class="pill warn" title="외국인 배정 예산을 넘는 ${money(ex)}은 연봉 여유(예산 기준)에서 씁니다">배정 예산 초과 ${money(ex)} · 연봉 여유 사용</span>`:b.roomMax>=ex?`<span class="pill warn">예산 초과 ${money(ex)}</span>`:'<span class="pill bad">자금 부족</span>'; }
 function budgetTag(cost){ const b=budget(); if(b.roomGoal>=cost)return `<span class="pill good">올해 부담 ${money(cost)} · 예산 안</span>`; if(b.roomCap>=cost||b.roomMax>=cost)return `<span class="pill warn">올해 부담 ${money(cost)} · 구단주 목표 초과</span>`; return `<span class="pill bad">올해 부담 ${money(cost)} · 자금 부족</span>`; }
 
 /* 분석 화면: 관측·모형 추정·미집계 항목의 근거를 구분한다. */
@@ -30384,13 +30417,13 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
     ${ngtMil(N)}${p.postPromise&&p.team===G.user?`<div class="ng-mil small"><b>포스팅 약속</b> ${p.postPromise}년 포스팅 허락을 약속했습니다. 이 계약을 맺어도 약속은 남고, 그해 포스팅 요청 때 지키거나 어겨야 합니다.</div>`:''}
     <div class="ng-rows">${ngtRows(N,D)}</div>
     ${N.k==='ext'&&N.kept?`<div class="note warn small">기간을 바꿨지만 직접 정한 금액은 그대로 두었습니다. ${T.years}년 기준 요구는 ${esc(termsTxt(D,true))}입니다.</div>`:''}
-    ${N.k==='sal'?(()=>{ const sb=salBasis(p); const d=T.annual-p.sal; return `<div class="ng-sum"><div><i>직전 시즌</i><b>${sb.h?`WAR ${sb.war.toFixed(1)}`:'1군 기록 없음'}</b><em>${esc(sb.band)} · 구단 산정안 인상 기준 +${sb.cap}%(협상 한도 아님)</em></div><div><i>인상률</i><b class="num ${d>0?'warn':''}">${d>=0?'+':''}${p.sal?Math.round(d/p.sal*100):0}%</b><em>${money(p.sal)} → ${money(T.annual)}</em></div><div><i>올해 예산 여유</i><b class="num">${money(b.roomGoal)}</b><em>${dobj(G.day).m<=3&&G.day>KD(1,10)?'1월 31일 마감 · 미합의면 구단 마지막 제시액으로 확정':(p.svc||0)>=ARB_SVC?'1월 10일까지 안 되면 연봉조정 신청 가능':'연봉조정 신청 대상 아님'}</em></div><div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div></div>`; })():`<div class="ng-sum">
+    ${N.k==='sal'?(()=>{ const sb=salBasis(p); const d=T.annual-p.sal; return `<div class="ng-sum"><div><i>직전 시즌</i><b>${sb.h?`WAR ${sb.war.toFixed(1)}`:'1군 기록 없음'}</b><em>${esc(sb.band)} · 구단 산정안 인상 기준 +${sb.cap}%(협상 한도 아님)</em></div><div><i>인상률</i><b class="num ${d>0?'warn':''}">${d>=0?'+':''}${p.sal?Math.round(d/p.sal*100):0}%</b><em>${money(p.sal)} → ${money(T.annual)}</em></div><div><i>연봉 여유(예산 기준)</i><b class="num">${money(b.roomGoal)}</b><em>${dobj(G.day).m<=3&&G.day>KD(1,10)?'1월 31일 마감 · 미합의면 구단 마지막 제시액으로 확정':(p.svc||0)>=ARB_SVC?'1월 10일까지 안 되면 연봉조정 신청 가능':'연봉조정 신청 대상 아님'}</em></div><div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div></div>`; })():`<div class="ng-sum">
       <div><i>적용 시즌</i><b class="num">${ngtSeasons(N).join('~')}</b><em>${N.k==='ext'?(period()==='season'||period()==='post'?'시즌 중 합의는 다음 시즌부터':'개막 전 합의는 다가오는 시즌부터'):'다가오는 시즌부터'}</em></div>
       <div><i>보장 총액</i><b class="num">${money(tot)}</b>${T.opt?`<em>옵션 포함 최대 ${money(tot+T.opt*T.years)}</em>`:''}${(()=>{ if(N.k!=='ext')return ''; const dt=(D.bonus||0)+D.annual*(D.years||T.years); const over=tot-dt; return over>Math.max(50,dt*.03)?`<em class="warn">요구(${money(dt)})보다 ${money(over)} 더 주는 조건</em>`:''; })()}</div>
       ${N.k==='ext'?(()=>{ const [s0]=ngtSeasons(N); const ys=Array.from({length:T.years||1},(_,i)=>s0+i); const cy=ctCashYears(T,s0); return `<div><i>연도별 현금 지출</i><b class="num small">${cy.map(x=>`${x.y} ${money(x.v)}${x.bon?`(계약금${x.sal?' 포함':''})`:''}`).join(' · ')}</b><em>${T.bonus?`계약금 ${money(T.bonus)}은 합의 때 바로 지급(${sponSeason()} 결산) · 연봉은 ${s0}시즌부터`:'계약금 없음'}${T.opt?` · 옵션 달성 시 해마다 최대 +${money(T.opt)}`:''}</em></div>`; })():''}
       ${(()=>{ const [s0]=ngtSeasons(N); const W=capPayWith(G.user,p.id,p.foreign?null:capAvg,s0); const over=W.tot-W.cap; const d=W.tot-capPayWith(G.user,null,null,s0).tot; return `<div><i>${W.s}시즌 예상 상한 합계(계약 후)</i><b class="num ${over>0?'bad':''}">${money(W.tot)}</b><em>${W.s}시즌 상한 ${money(W.cap)}${over>0?` · ${money(over)} 초과(경쟁균형세 대상)`:` · 여유 ${money(-over)}`} · 상위 40명 다시 계산(${d>=0?'+':''}${money(d)})</em></div>${over>0?(()=>{ const X=capTaxEst(over); return `<div><i>넘겨도 계약할 수 있습니다</i><b class="num warn">제재금 약 ${money(X.tax)}</b><em>시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(X.n)*100)}%를 야구발전기금으로 냅니다(${X.n}회 연속${X.pen?' · 다음 해 1라운드 지명 순서 9단계 하락':''}). 트레이드·방출로 시즌 중에 줄이면 내지 않습니다.</em></div>`; })():''}`; })()}
-      <div><i>상한 반영(연평균)</i><b class="num">${money(capAvg)}</b><em class="${capAvg>capRoom?'bad':''}">상한 여유 ${money(capRoom)}</em></div>
-      <div><i>올해 예산 여유</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
+      <div><i>상한 반영(연평균)</i><b class="num">${money(capAvg)}</b><em class="${capAvg>capRoom?'bad':''}">연봉 여유(상한까지) ${money(capRoom)}</em></div>
+      <div><i>연봉 여유(예산 기준)</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
       <div class="ng-gap ${gc}"><i>요구 대비</i><b>${gt}</b></div>
     </div>`}
     <div class="ng-acts">
@@ -31579,6 +31612,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-09q',d:'11월 9일',t:'예산을 세 칸으로',items:[
+    '홈과 재정 화면 예산 탭 맨 위에 예산 카드 세 장이 생겼습니다. 선수 영입 자금(트레이드 현금·FA 계약금·보상금·2차 드래프트 양도금처럼 한 번에 나가는 돈), 연봉 여유(경쟁균형세 상한까지 남은 금액·하한까지 부족분·구단주 지원 목표 안 여유), 운영 예산(스태프·의료·시설 유지·마케팅)을 이용 가능 금액, 이번 시즌 지출, 진행 막대로 따로 봅니다. 독립구단은 보유 현금만 쓴다는 점도 카드에 나옵니다.',
+    '트레이드·FA·외국인·연봉 협상 화면의 예산 안내도 같은 말로 맞췄습니다. 카드의 숫자는 실제로 지출을 막는 판정과 같은 계산에서 나옵니다.']},
   {id:'2026-11-09p',d:'11월 9일',t:'60시즌 단장을 위한 기록 · 단장 레거시',items:[
     '오래 한 단장을 위한 도전과제가 생겼습니다. 40·50·60시즌, 통산 1,000승·2,000승, 한 구단 3000경기, 우승 10회·15회, 우리가 지명한 선수가 감독이 되어 우승, 영구결번 5개, 명예의 전당 헌액자 10명, 신구장 두 번 개장. 이미 조건을 채운 저장은 다음 결산 때 열립니다.',
     '구단 > 연대기에 \'단장 레거시\' 탭이 생겼습니다. 구단의 역대 단장과 재임 성적, 리그 역대 단장 가운데 내 순위(단장 명예의 전당), 내 최고 5년과 리그 역대 왕조 비교, 경력 전체를 한 장에 담은 연표를 볼 수 있습니다.',
