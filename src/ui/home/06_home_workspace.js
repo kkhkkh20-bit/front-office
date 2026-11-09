@@ -35,7 +35,7 @@ function homeNewsPanel(){
 }
 /* FM 홈처럼 예산 카드 세 장(이용 가능 금액·이번 시즌 지출·진행 막대, 피드백 11-09q). 수입·지출 그래프는 재정 화면에 */
 function homeFinancePanel(){const b=budget(),t=team(G.user);
-  return `<section class="hw-panel hw-finance"><header><h2>예산</h2><button class="tc-i" data-a="go" data-v="club:fin">재정</button></header>${bspCards(true)}<p class="hw-kicker hw-fx">보유 자금 ${money(t.cash)} · 연말 예상 <span class="${b.endCash<0?'bad':''}">${money(Math.round(b.endCash))}</span> · 구단주 신뢰 ${Math.round(t.trust)}</p></section>`;}
+  return `<section class="hw-panel hw-finance"><header><h2>예산</h2><button class="tc-i" data-a="go" data-v="club:fin">재정</button></header>${bspCards(true)}<p class="small hw-fx">보유 자금 ${money(t.cash)} · 연말 예상 <span class="${b.endCash<0?'bad':''}">${money(Math.round(b.endCash))}</span> · 구단주 신뢰 ${Math.round(t.trust)}</p></section>`;}
 /* 경기가 없는 기간(시즌 끝): 다음 경기 칸에 올 시즌 결산과 구단 연대기 최근 일 */
 function homeSeasonEnd(){ const C=(G.chron||[]).filter(c=>c.tid===G.user&&c.y===G.year), se=C.filter(c=>c.k==='season').pop(), rec=C.filter(c=>c.k!=='season').slice(-4).reverse();
   return `<div class="hw-season"><span class="hw-kicker">${G.year} 시즌 결산</span><b>${esc(se?se.t:(r=>`${r.w}승 ${r.l}패${r.t?' '+r.t+'무':''}`)(G.sea.rec[G.user]))}</b>${rec.length?`<ul>${rec.map(c=>`<li><i>${dsh(c.d)}</i> ${esc(c.t)}</li>`).join('')}</ul>`:''}<p class="hw-hint">다음 시즌을 준비하고 있습니다.</p></div>`; }
