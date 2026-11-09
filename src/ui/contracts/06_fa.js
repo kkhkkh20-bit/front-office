@@ -28,7 +28,7 @@ function faRoom(p){ const ag=agentOf(p); const n=G.fa.neg&&G.fa.neg[p.id]; const
     ${mk&&mk.ll&&(mk.ll.tid==null||mk.ll.tid===G.user)&&G.day<=mk.ll.until?`<div class="row"><button class="btn primary" data-a="faLL" data-v="${p.id}">라스트 룩 맞추기 (${mk.ll.years}년 연 ${money(mk.ll.annual)})</button></div>`:''}
     ${G.fa.pitch&&G.fa.pitch[p.id]&&G.day<=G.fa.pitch[p.id].until?`<div class="row"><button class="btn primary" data-a="agPitchOk" data-v="${p.id}">우선 제안 수락 (${G.fa.pitch[p.id].years}년 연 ${money(G.fa.pitch[p.id].annual)})</button></div>`:''}
     ${(()=>{ if(UI.faMsg&&UI.faMsg.d==null)UI.faMsg.d=G.day; return UI.faMsg&&UI.faMsg.id===p.id&&UI.faMsg.d===G.day?`<div class="note">${esc(UI.faMsg.t)}</div>`:''; })()}
-    <div class="row">${budgetTag(Math.round(((UI.offer&&UI.offer.id===p.id?UI.offer:(G.fa.offers[p.id]||p.ask)).annual)*b.rem))}<span class="small muted">연봉 여유 상한까지 ${money(b.ci.cap-b.ci.pay)} · 예산 기준 ${money(b.roomGoal)}</span></div>
+    <div class="row">${budgetTag(Math.round(((UI.offer&&UI.offer.id===p.id?UI.offer:(G.fa.offers[p.id]||p.ask)).annual)*b.rem))}<span class="small muted">연봉 상한까지 ${money(b.ci.cap-b.ci.pay)} · 예산 여유 ${money(b.roomGoal)}</span></div>
     ${ngtDoor('fa',p)}${negPanel(p)}</section>`; }
 function faCelebrate(){ const F=G.fa; if(!F||!F.results)return; G.faCel=G.faCel||[]; const r=F.results.find(x=>x.to===G.user&&x.from!==G.user&&!G.faCel.includes(x.id+':'+x.day)); if(!r)return;
   G.faCel.push(r.id+':'+r.day); if(G.faCel.length>40)G.faCel.splice(0,10); UI.stamp={title:'FA 영입',msg:`${r.name} · ${esc(ctRecShort(r))}${r.compPlayer?` · 보상선수 ${r.compPlayer} 이탈`:''}`}; sfx('cheer_big',.7); }
