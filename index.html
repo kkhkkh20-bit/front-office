@@ -10890,7 +10890,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){}
   try{ assocDaily(day); }catch(e){} try{ tabDaily(day); }catch(e){} try{ ppDaily(); }catch(e){} { const od=dobj(day); if(od.d===1&&od.m>=6&&od.m<=8)try{ mgrMidSeason(); }catch(e){} if(od.d===1)try{ unempStaff(); }catch(e){} if(od.d===1)try{ mplMonth(); }catch(e){} } try{ autoDaily(day); }catch(e){} /* 업무 맡기기 */ /* 협회: 협회장 선거 후보 발표(11/10)·실행위원회 소집(12/3)·이사회 선거(12/15) */
   if(day===KD(12,15)){ try{ milWarn(); }catch(e){} }
   if(day===KD(1,31)||day===G.cal.open-2)aiCapAll();
-  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
+  if(o.w===0){ for(const t of G.teams){ if(t.id!==ME()&&rosterN(t.id)>ROSTER_MAX-3)trimRoster(t.id,ROSTER_MAX-3); } /* AI는 군 제대·부상 대체 자리를 남기려고 한도보다 3명 적게 운영한다 */ for(const m of G.mail){ if(m.imp&&m.kind==='일정'&&G.day-m.day>=3)m.imp=false; } /* 날짜가 지난 일정 안내는 '중요'만 내린다. 소식을 저절로 읽음 처리하지 않는다(단장이 읽거나 '모두 읽음'을 눌러야 읽음) */ futuresWeek(); aiWeekly(); moraleWeek(); try{roleWeek();}catch(e){} try{ rpWeek(); }catch(e){} try{ posWeek(); }catch(e){} try{ callWishWeek(); }catch(e){} try{relSnap();}catch(e){} if(G.coach)try{coachMarketMonth();}catch(e){} try{evWeek();}catch(e){} try{treqWeek();}catch(e){} devWeek(); try{ trnBase(); }catch(e){} try{ trnWeek(); }catch(e){} if(period()==='season')updateLg(G.year); }
   tutTick();
   const nx=dobj(day+1); if(nx.d===1&&day>=c.open&&day<=c.end+1)monthReport(o.m); if(nx.d===1){ try{ finMonth(o.m); }catch(e){} }
   if(day===c.end){ const S=G.sea, r=S.rec[G.user], mk=S.mark||{w:0,l:0,t:0}; if(r&&r.w+r.l+(r.t||0)>mk.w+mk.l+(mk.t||0)){ S.months.push({m:dobj(c.end).m+'월',w:r.w-mk.w,l:r.l-mk.l,t:(r.t||0)-(mk.t||0)}); S.mark={w:r.w,l:r.l,t:r.t}; } } /* 정규시즌 마지막 날 남은 달을 바로 마감 */
@@ -14462,7 +14462,7 @@ function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의
 /* 출전 약속: 약속한 날의 출전량(타석·아웃·경기)을 기준으로 저장하고, 그 뒤 늘어난 만큼으로 판정한다(약속 전 기록은 세지 않는다) */
 function playPromNow(p){ const h=seasonTotal(p,G.year,'1군')||{}; return {y:G.year,pa:h.pa||0,outs:h.outs||0,g:h.g||0}; }
 function mkPromise(p,days){ return {until:G.day+(days||30),b:playPromNow(p)}; }
-function playPromKept(p){ const P=p.promise; if(!P)return false; if(!P.b)return isRegular(p); const n=playPromNow(p); const b=P.b.y===G.year?P.b:{pa:0,outs:0,g:0};
+function playPromKept(p,P=p.promise){ if(!P)return false; if(!P.b)return isRegular(p); const n=playPromNow(p); const b=P.b.y===G.year?P.b:{pa:0,outs:0,g:0};
   return p.isP?((n.outs-b.outs)>=15||(n.g-b.g)>=4):(n.pa-b.pa)>=25; } /* 약속 뒤 타자 25타석, 투수 5이닝 또는 4경기 이상 */
 function isRegular(p){ if(p.team==null)return false; const d=depth(p.team); return [...d.start,...d.sp,...d.pen.slice(0,4)].some(x=>x.id===p.id); }
 function playedReg(p){ if(p.team==null)return false; const r=G.sea&&G.sea.rec[p.team]; const g=r?r.w+r.l+(r.t||0):0; if(g<10)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false;
@@ -14619,6 +14619,42 @@ function talk(id,kind){
 }
 function listPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; p.listed=true; const req=p.treq&&!p.treq.done; if(req){ p.treq.done=true; p.mor=clamp(p.mor+6,0,100); } /* 기분은 트레이드 요청에 응했을 때 한 번만 */ note('면담',`${p.name}을(를) 트레이드 명단에 올렸습니다. 다른 구단이 관심을 보이면 제안이 올 수 있습니다.`,id); }
 function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)return; if(!(p.treq&&!p.treq.done)){ note('면담',`${p.name}: "이미 말씀 나눴습니다."`,id); return; } p.treq.done=true; const ok=p.pers.loy>=11||R()<.35; p.mor=clamp(p.mor+(ok?8:-6),0,100); note('면담',ok?`${p.name}: "단장님 말씀을 믿고 한 번 더 해 보겠습니다."`:`${p.name}: "생각은 달라지지 않았습니다."`,id); }
+/* 후보 선수의 트레이드 요청(피드백 11-09k): 실력은 주전과 비슷한데 출전이 적은 백업이 단장실을 찾아온다. 구단 전체로 30일에 한 번, 한 해 3번까지.
+   시즌 중에는 evWeek가 check()로 고르고, 시즌 밖(스토브리그·캠프)에는 treqWeek가 따로 본다 */
+function treqLowPT(p,y,gp){ const h=seasonTotal(p,y,'1군')||{}; return p.isP?(h.outs||0)<gp*.6:(h.pa||0)<gp*1.1; }
+function treqCands(){ if(G.unemp||!G.mgr[G.user])return []; const per=period(), live=per==='season', y=per==='off'||live?G.year:G.year-1; const gp=live?teamGP(G.user):144; if(live&&gp<20)return [];
+  const d=depth(G.user); const rv=p=>(p.isP?[d.sp[4],d.pen[3]]:[d.ln[p.pos]]).filter(Boolean);
+  return playersOf(G.user).filter(p=>{ initPers(p); if(p.foreign||p.ys||!healthy(p)||isAway(p)||p.listed||p.promise||(p.treq&&(!p.treq.done||G.day-p.treq.day<120))||p.joinY>G.year||p.age<23||p.age>33||p.pers.amb<10||(p.mor??60)>=70)return false;
+    if((p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
+    const f=seasonTotal(p,y,'퓨처스'); const farm=f&&(p.isP?f.outs>=60&&f.er*27/f.outs<=3.6:f.pa>=60&&bRate(f).ops>=.8);
+    return farm||rv(p).some(q=>q.id!==p.id&&ovr(p)>=ovr(q)-3); }); }
+function treqWeek(){ const per=period(), L=(G.treqLog||{}).last; if(per==='season'||per==='post'||G.gameOver||(L!=null&&G.day-L<90)||evOpen().some(e=>e.k==='treq')||R()>.3)return; /* 시즌 밖은 석 달에 한 번까지(같은 해 시즌 몫을 캠프 때 다 쓰지 않게) */ const p=EVH.treq.check(); if(p)EVH.treq.make(p); }
+EVH.treq={ w:.7, check(){ const T=G.treqLog||{}; if(T.last!=null&&G.day-T.last<30)return null; if(T.y===G.year&&T.n>=3)return null;
+    const L=treqCands(); if(!L.length)return null; const w=L.map(p=>(p.pers.amb-6)*(p.pers.temp>=14?1.4:1)*(p.age>=26&&p.age<=31?1.5:1)*(p.pers.loy>=15?.5:1)); let x=R()*sum(w); for(let i=0;i<L.length;i++){ x-=w[i]; if(x<=0)return L[i]; } return L[0]; },
+  make(p,hard){ const T=G.treqLog=G.treqLog||{}; if(T.y!==G.year){ T.y=G.year; T.n=0; } T.n++; T.last=G.day; p.treq={day:G.day,ev:1}; p.treqN=(p.treqN||0)+1;
+    const per=period(), live=per==='season', young=live&&p.age<=24; const h=seasonTotal(p,live||per==='off'?G.year:G.year-1,'1군')||{}; const pt=p.isP?`${ipStr(h.outs||0)}이닝`:`${h.pa||0}타석`;
+    const say=hard?'지난번에 감독님께 말씀해 주신다고 해서 기다렸습니다. 그런데 달라진 게 없었습니다. 이번에는 정말 부탁드립니다. 저를 보내 주십시오.'
+      :live?`바쁘신데 시간 내 주셔서 감사합니다. 돌려 말하지 않겠습니다. 올해 1군에서 ${pt}밖에 못 나갔습니다. 몸은 준비돼 있는데 벤치에만 있으니 감이 자꾸 떨어집니다. 저를 쓰려는 팀이 있으면 거기서 뛰고 싶습니다. 트레이드를 생각해 주셨으면 합니다.`
+      :`쉬는 기간에 찾아와서 죄송합니다. 지난 시즌 1군에서 ${pt}밖에 못 나갔습니다. 내년에도 같은 자리라면 제 나이에 시간이 아깝습니다. 저를 원하는 팀이 있으면 보내 주셨으면 합니다.`;
+    const O=[['list','트레이드 매물로 올려 주겠다',`기분이 오르고 다른 구단이 매물로 봅니다.${tradeOpen()?'':' 거래는 트레이드 기간이 열리면 시작됩니다.'}`],
+      ['promise','감독에게 기회를 더 주라고 말하겠다',`기분이 조금 오르고 감독 관계가 조금 내려갑니다. ${live?'한 달':'개막 뒤 한 달'} 안에 출전이 늘지 않으면 더 강하게 다시 요청합니다.`],
+      ...(young?[['farm','2군에서 꾸준히 뛰게 해 주겠다','기분이 조금 오릅니다. 한 달 뒤 2군 출전을 확인하고, 거의 못 뛰었으면 실망합니다.']]:[]),
+      ['wait','지금은 팀에 필요하다, 기다려 달라','기분이 내려갑니다. 불만이 바깥으로 새어 나갈 수 있고, 거듭 거절하면 다른 후보 선수들도 동요합니다.']];
+    evNew('treq',`${p.name}${hard?'의 두 번째 트레이드 요청':' 트레이드 요청 면담'}`,`${p.name}(${posLabel(p)}, ${p.age}세, ${squadRole(p)||'후보'})이(가) 단장실을 찾아왔습니다.\n\n"${say}"\n\n${live?'올해':'최근'} 기록: ${evLine(p)}`,O.map(o=>({l:o[1],fx:o[2]})),{ref:p.id,face:p.id,from:p.name,data:{pid:p.id,ks:O.map(o=>o[0]),hard:!!hard},def:O.length-1,exp:5}); },
+  pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '이미 팀을 떠난 선수입니다.'; initPers(p); const k=e.data.ks[i]; const m=G.mgr[G.user];
+    if(k==='list'){ listPlayer(p.id); return `${p.name}: "들어주셔서 감사합니다. 가기 전까지는 여기서 최선을 다하겠습니다." (기분 +6, 트레이드 명단 등록)`; }
+    if(p.treq)p.treq.done=true;
+    if(k==='promise'){ p.promise=mkPromise(p,30); p.mor=clamp(p.mor+4,0,100); if(m)m.rel=clamp(m.rel-1,0,100); evFollow(32,'treq',{pid:p.id,ev:e.id,c:k,b:p.promise.b}); return `${p.name}: "한 번만 더 믿어 보겠습니다." (기분 +4, 감독 관계 -1)`; }
+    if(k==='farm'){ const f=seasonTotal(p,G.year,'퓨처스')||{}; p.mor=clamp(p.mor+3,0,100); evFollow(30,'treq',{pid:p.id,ev:e.id,c:k,g:f.g||0}); return `${p.name}: "알겠습니다. 2군에서라도 매일 뛰면서 보여 드리겠습니다." (기분 +3)`; }
+    const dn=(p.pers.temp>=14?8:5)+(e.data.hard?4:0); p.mor=clamp(p.mor-dn,0,100); p.treqNo=(p.treqNo||0)+1; let x='';
+    if(p.treqNo>=2){ let n=0; for(const q of playersOf(G.user))if(q!==p&&!isRegular(q)&&q.pers&&q.pers.amb>=13){ q.mor=clamp((q.mor??60)-2,0,100); n++; } if(n)x=` 거듭된 거절 소식에 후보 선수 ${n}명도 동요합니다(기분 -2).`; }
+    evFollow(21,'treq',{pid:p.id,ev:e.id,c:k,hard:!!e.data.hard}); return `${p.name}: "...알겠습니다." (기분 -${dn})${x}`; },
+  follow(d,tid){ if(G.unemp||tid!==G.user)return; const p=evP(d.pid); if(!p||p.team!==G.user)return;
+    if(d.c==='promise'){ if(p.promise){ evFollow(7,'treq',d); return; } /* 약속 판정(moraleWeek)이 끝난 뒤에 본다 */
+      if(playPromKept(p,{b:d.b}))evResult(d.ev,`${p.name}은(는) 약속대로 출전 기회를 얻었습니다.`); else { evResult(d.ev,`${p.name}은(는) 기회를 얻지 못해 다시 트레이드를 요청했습니다.`); if(!p.listed&&healthy(p))EVH.treq.make(p,true); } return; }
+    if(d.c==='farm'){ const g=(seasonTotal(p,G.year,'퓨처스')||{}).g||0; if(g-d.g>=8||period()!=='season'){ evResult(d.ev,`${p.name}은(는) 2군에서 꾸준히 뛰고 있습니다.`); return; } p.mor=clamp(p.mor-5,0,100); const t=`${p.name}: "2군에서도 못 뛰면 저는 어디서 뛰어야 합니까." (2군 ${g-d.g}경기 출전, 기분 -5)`; evResult(d.ev,t); note('면담',t,p.id); return; }
+    if(p.listed||(p.mor??60)>=45){ evResult(d.ev,`${p.name}은(는) 묵묵히 훈련하고 있습니다.`); return; }
+    if(R()<(d.hard||p.pers.temp>=13?.6:.35)){ prLeak('p',p); evResult(d.ev,`${p.name}의 불만이 기사로 새어 나갔습니다.`); } else evResult(d.ev,`${p.name}은(는) 아직 불만이 있지만 말을 아끼고 있습니다.`); } };
 
 /* ===== 감독 ===== */
 const MCAR=['투수코치','타격코치','수비코치','작전·주루코치','배터리코치','수석코치','2군 감독'];
@@ -31146,6 +31182,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-09k',d:'11월 9일',t:'후보 선수의 트레이드 요청 면담',items:[
+    '실력은 주전과 비슷하거나 2군에서 잘하는데 1군 출전이 적은 후보 선수가 가끔 단장실을 찾아와 트레이드를 요청합니다. 구단 전체로 한 달에 한 번, 한 해 몇 번 정도이고, 시즌 중과 스토브리그·캠프 때 하는 말이 다릅니다.',
+    '매물로 올리기, 감독에게 기회 건의, 2군에서 꾸준히 뛰게 하기(24세 이하), 기다려 달라고 하기 중에서 고릅니다. 기회를 약속했는데 한 달 동안 출전이 늘지 않으면 더 강하게 다시 요청하고, 거절하면 불만이 기사로 새어 나가거나 다른 후보 선수들도 흔들릴 수 있습니다.']},
   {id:'2026-11-09i',d:'11월 9일',t:'치어리더 단원 사진 교체 · 우승 장면과 트로피',items:[
     '치어리더 단원 카드 사진을 20대 초중반 단원 40명의 새 사진으로 바꿨습니다. 이미 있던 단원도 새 사진으로 다시 정해집니다. 응원단장·치어리더 팀장 사진은 그대로입니다.',
     '한국시리즈에서 우승하면 우승 장면을 닫은 뒤 마지막 아웃, 시상식, 라커룸 파티, 우승 퍼레이드 사진을 차례로 보여 줍니다. 홈 화면 우승 카드에서 다시 볼 수 있습니다(웹사이트에서만).',
