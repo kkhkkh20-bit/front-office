@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "scope": "All40 final delivered q80WebP photographs inspected at256px via four10-person boards; individual s072 also inspected.",
+  "reviewed_sheet_sha256": {
+    "128": "e87cc31f638ad4185970a8c21c04f354f8b0f764579938979df2aa9ddb1c0020",
+    "256": "9b21efd933633c020ec913f30101a84aa76a0c9971a4bd7a0da8eaff65ba3ab9"
+  },
+  "checks": {
+    "all_fictional_Korean_women_cast": true,
+    "visually_young_adult20to26": true,
+    "no_obviously_mature30plus_or_child_appearance": true,
+    "full_hair_crown_and_chin": true,
+    "own_continuous_head_neck_shoulders_shirt": true,
+    "short_sleeve_opaque_crew_uniforms": true,
+    "no_sleeveless_crop_cleavage_or_body_emphasis": true,
+    "all4hair_types_and8uniform_colors_present": true,
+    "broad24_soft16_observed": true,
+    "day21_night19_observed": true,
+    "natural_relaxed_three_quarter_poses": true,
+    "stadium_bokeh_unidentifiable_distant_crowd": true,
+    "no_readable_logo_or_text": true,
+    "no_recognized_real_person_likeness": true
+  },
+  "hair_counts": {
+    "wave": 11,
+    "pony": 6,
+    "straight": 11,
+    "bob": 12
+  },
+  "uniform_color_counts": {
+    "red": 7,
+    "black": 6,
+    "sky": 7,
+    "orange": 5,
+    "blue": 3,
+    "green": 5,
+    "white": 4,
+    "navy": 3
+  },
+  "notes": "Full crown means complete main hair silhouette; a few tiny flyaways may approach frame edge. Natural individual faces and makeup retained. Current photo age is separate from original fictional casting reference age. Source references explicitly record prior-delivered identities where used.",
+  "limits": "Fictional casting specification and manual likeness review, not an exhaustive real-person database comparison."
+}

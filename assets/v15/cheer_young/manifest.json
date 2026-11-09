@@ -1,0 +1,2482 @@
+{
+  "schema_version": "15.1",
+  "batch_id": "cheer_young",
+  "path_base": "assets/v15/cheer_young/",
+  "request": "docs/asset-requests/2026-11-09-codex-v15-cheerleaders-young.md",
+  "request_sha256": "62c2c3a63291d9390e529a9ffd9d4498f0e506985c2b7180441086b010f9fe7b",
+  "delivery_branch": "assets/v15-review",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "game_connected": false,
+  "count": 40,
+  "identity_count": 40,
+  "r": "cheer",
+  "gender_counts": {
+    "female": 40
+  },
+  "ethnicity_counts": {
+    "Korean": 40
+  },
+  "age_range": [
+    20,
+    26
+  ],
+  "counts": {
+    "hair": {
+      "wave": 11,
+      "pony": 6,
+      "straight": 11,
+      "bob": 12
+    },
+    "smile": {
+      "soft": 16,
+      "broad": 24
+    },
+    "bg": {
+      "night": 19,
+      "day": 21
+    },
+    "color": {
+      "red": 7,
+      "black": 6,
+      "sky": 7,
+      "orange": 5,
+      "blue": 3,
+      "green": 5,
+      "white": 4,
+      "navy": 3
+    }
+  },
+  "layout": {
+    "rows": 10,
+    "columns": 10,
+    "pitch_equals_cell_size": true,
+    "padding": 0,
+    "occupied": 40,
+    "unused_cells": "40..99 black RGB fill with ordinary lossy edge ringing"
+  },
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/cheer_young.webp",
+        "w": 1280,
+        "h": 1280,
+        "width": 1280,
+        "height": 1280,
+        "cell_size": 128,
+        "pitch": 128,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "count": 40,
+        "empty_cells": 60,
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 80,
+        "method": 0,
+        "segments": 1,
+        "sns_strength": 0,
+        "quantization": "uniform across all portrait cells, no spatial noise shaping",
+        "bytes": 180696,
+        "sha256": "e87cc31f638ad4185970a8c21c04f354f8b0f764579938979df2aa9ddb1c0020"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/cheer_young.webp",
+        "w": 2560,
+        "h": 2560,
+        "width": 2560,
+        "height": 2560,
+        "cell_size": 256,
+        "pitch": 256,
+        "padding": 0,
+        "rows": 10,
+        "columns": 10,
+        "count": 40,
+        "empty_cells": 60,
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 80,
+        "method": 0,
+        "segments": 1,
+        "sns_strength": 0,
+        "quantization": "uniform across all portrait cells, no spatial noise shaping",
+        "bytes": 495350,
+        "sha256": "9b21efd933633c020ec913f30101a84aa76a0c9971a4bd7a0da8eaff65ba3ab9"
+      }
+    ]
+  },
+  "runtime_files": [
+    "sheets/128/cheer_young.webp",
+    "sheets/256/cheer_young.webp"
+  ],
+  "runtime_sheet_bytes": 676046,
+  "identities": [
+    {
+      "id": "v15_cheer_young_001",
+      "identity_id": "v15_cheer_young_001",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long loose black waves with center part",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "red",
+      "uniform_color_hex": "#D72B3F",
+      "pose": "gentle three-quarter shoulders left, eyes toward lens",
+      "index": 0,
+      "page": 0,
+      "cell": 0,
+      "row": 0,
+      "column": 0,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_c014",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            0,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_015",
+          "cosine": 0.35164061188697815,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_020",
+          "cosine": 0.39660418033599854,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_002",
+      "identity_id": "v15_cheer_young_002",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "pony",
+      "hair_description": "high black ponytail with a small plain white ribbon",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "black",
+      "uniform_color_hex": "#24272C",
+      "pose": "relaxed_natural_shoulders",
+      "index": 1,
+      "page": 0,
+      "cell": 1,
+      "row": 0,
+      "column": 1,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_g014",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            128,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            256,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_013",
+          "cosine": 0.38837891817092896,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_007",
+          "cosine": 0.3973957300186157,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_003",
+      "identity_id": "v15_cheer_young_003",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long straight dark hair, completely loose",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "red",
+      "uniform_color_hex": "#C93438",
+      "pose": "relaxed natural three-quarter head25degrees, shoulders35degrees",
+      "index": 2,
+      "page": 0,
+      "cell": 2,
+      "row": 0,
+      "column": 2,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_t009",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            256,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            512,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_008",
+          "cosine": 0.3824683129787445,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_027",
+          "cosine": 0.3837392330169678,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_004",
+      "identity_id": "v15_cheer_young_004",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long sleek straight black hair, soft side part",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "red",
+      "uniform_color_hex": "#D72B3F",
+      "pose": "natural_head_three_quarter",
+      "index": 3,
+      "page": 0,
+      "cell": 3,
+      "row": 0,
+      "column": 3,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x001",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            384,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            768,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_009",
+          "cosine": 0.3953283429145813,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_009",
+          "cosine": 0.39439067244529724,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_005",
+      "identity_id": "v15_cheer_young_005",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "chin-length black bob, softly shaped",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "sky",
+      "uniform_color_hex": "#79C5E8",
+      "pose": "three-quarter head turned 20 degrees to her LEFT, shoulders turned30degrees, eyes gently back toward camera",
+      "index": 4,
+      "page": 0,
+      "cell": 4,
+      "row": 0,
+      "column": 4,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_r019_1",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            512,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1024,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_033",
+          "cosine": 0.3597426414489746,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_031",
+          "cosine": 0.38324132561683655,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_006",
+      "identity_id": "v15_cheer_young_006",
+      "r": "cheer",
+      "a": 23,
+      "age": 23,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "sleek softly rounded chin-length black bob",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "sky",
+      "uniform_color_hex": "#79C5E8",
+      "pose": "relaxed_natural_shoulders",
+      "index": 5,
+      "page": 0,
+      "cell": 5,
+      "row": 0,
+      "column": 5,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_g004",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            640,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1280,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_016",
+          "cosine": 0.3523971438407898,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_016",
+          "cosine": 0.3892589509487152,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_007",
+      "identity_id": "v15_cheer_young_007",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long straight dark-brown hair, soft side part",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "red",
+      "uniform_color_hex": "#D72B3F",
+      "pose": "relaxed_natural_shoulders",
+      "index": 6,
+      "page": 0,
+      "cell": 6,
+      "row": 0,
+      "column": 6,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_g005",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            768,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1536,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_010",
+          "cosine": 0.3629184067249298,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_010",
+          "cosine": 0.3989478647708893,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_008",
+      "identity_id": "v15_cheer_young_008",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long sleek straight dark-brown hair with a soft side part",
+      "smile": "soft",
+      "bg": "day",
+      "uniform_color": "orange",
+      "uniform_color_hex": "#EF8133",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 7,
+      "page": 0,
+      "cell": 7,
+      "row": 0,
+      "column": 7,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s045",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            896,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1792,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_032",
+          "cosine": 0.3862546980381012,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_038",
+          "cosine": 0.39663323760032654,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_009",
+      "identity_id": "v15_cheer_young_009",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "pony",
+      "hair_description": "high ponytail with neat white ribbon",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "blue",
+      "uniform_color_hex": "#215CBE",
+      "pose": "head turned35degrees to her LEFT, shoulders turned45degrees, both eyes still visible, naturally looking near camera",
+      "index": 8,
+      "page": 0,
+      "cell": 8,
+      "row": 0,
+      "column": 8,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_r003_3",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1024,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2048,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_020",
+          "cosine": 0.39958620071411133,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_015",
+          "cosine": 0.39534991979599,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_010",
+      "identity_id": "v15_cheer_young_010",
+      "r": "cheer",
+      "a": 20,
+      "age": 20,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "pony",
+      "hair_description": "high ponytail, small neat white ribbon",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "blue",
+      "uniform_color_hex": "#215CBE",
+      "pose": "three-quarter head turned 20 degrees to her LEFT, shoulders turned30degrees, eyes gently back toward camera",
+      "index": 9,
+      "page": 0,
+      "cell": 9,
+      "row": 0,
+      "column": 9,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_r006_1",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1152,
+            0,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2304,
+            0,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_002",
+          "cosine": 0.37111589312553406,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_007",
+          "cosine": 0.3989478647708893,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_011",
+      "identity_id": "v15_cheer_young_011",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "fresh softly rounded chin-length black bob, adult styling",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "sky",
+      "uniform_color_hex": "#79C5E8",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 10,
+      "page": 0,
+      "cell": 10,
+      "row": 1,
+      "column": 0,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s056",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            0,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            0,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_009",
+          "cosine": 0.35247206687927246,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_009",
+          "cosine": 0.358293354511261,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_012",
+      "identity_id": "v15_cheer_young_012",
+      "r": "cheer",
+      "a": 20,
+      "age": 20,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "pony",
+      "hair_description": "high ponytail, small neat white ribbon",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "orange",
+      "uniform_color_hex": "#ED782C",
+      "pose": "head turned35degrees to her LEFT, shoulders turned45degrees, both eyes still visible, naturally looking near camera",
+      "index": 11,
+      "page": 0,
+      "cell": 11,
+      "row": 1,
+      "column": 1,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_r012_3",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            128,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            256,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_010",
+          "cosine": 0.35889172554016113,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_039",
+          "cosine": 0.3694337010383606,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_013",
+      "identity_id": "v15_cheer_young_013",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "pony",
+      "hair_description": "high ponytail, small neat white ribbon",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "green",
+      "uniform_color_hex": "#287750",
+      "pose": "three-quarter head turned30degrees to her RIGHT, shoulders turned40degrees, eyes back toward camera",
+      "index": 12,
+      "page": 0,
+      "cell": 12,
+      "row": 1,
+      "column": 2,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_r013_2",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            256,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            512,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_036",
+          "cosine": 0.3947295546531677,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_036",
+          "cosine": 0.39691975712776184,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_014",
+      "identity_id": "v15_cheer_young_014",
+      "r": "cheer",
+      "a": 23,
+      "age": 23,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "fresh softly rounded chin-length black bob, adult styling",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "white",
+      "uniform_color_hex": "#F5F3EF",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 13,
+      "page": 0,
+      "cell": 13,
+      "row": 1,
+      "column": 3,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s004",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            384,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            768,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_035",
+          "cosine": 0.36340972781181335,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_015",
+          "cosine": 0.37675249576568604,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_015",
+      "identity_id": "v15_cheer_young_015",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long black straight hair with airy fringe",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "orange",
+      "uniform_color_hex": "#EF8133",
+      "pose": "shoulders turned15degrees right, face near front",
+      "index": 14,
+      "page": 0,
+      "cell": 14,
+      "row": 1,
+      "column": 4,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_c057",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            512,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1024,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_004",
+          "cosine": 0.3649919927120209,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_009",
+          "cosine": 0.39534991979599,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_016",
+      "identity_id": "v15_cheer_young_016",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long dark-brown loose waves, naturally styled",
+      "smile": "soft",
+      "bg": "day",
+      "uniform_color": "black",
+      "uniform_color_hex": "#24272C",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 15,
+      "page": 0,
+      "cell": 15,
+      "row": 1,
+      "column": 5,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s019",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            640,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1280,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_006",
+          "cosine": 0.3523971438407898,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_006",
+          "cosine": 0.3892589509487152,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_017",
+      "identity_id": "v15_cheer_young_017",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long dark-brown loose waves, naturally styled",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "black",
+      "uniform_color_hex": "#24272C",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 16,
+      "page": 0,
+      "cell": 16,
+      "row": 1,
+      "column": 6,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s027",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            768,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1536,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_011",
+          "cosine": 0.33036094903945923,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_028",
+          "cosine": 0.37881460785865784,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_018",
+      "identity_id": "v15_cheer_young_018",
+      "r": "cheer",
+      "a": 23,
+      "age": 23,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long dark-brown loose waves, naturally styled",
+      "smile": "soft",
+      "bg": "day",
+      "uniform_color": "navy",
+      "uniform_color_hex": "#142E53",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 17,
+      "page": 0,
+      "cell": 17,
+      "row": 1,
+      "column": 7,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s039",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            896,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1792,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_026",
+          "cosine": 0.346009224653244,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_013",
+          "cosine": 0.3730095624923706,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_019",
+      "identity_id": "v15_cheer_young_019",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long dark-brown loose waves, naturally styled",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "navy",
+      "uniform_color_hex": "#142E53",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 18,
+      "page": 0,
+      "cell": 18,
+      "row": 1,
+      "column": 8,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s063",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1024,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2048,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_034",
+          "cosine": 0.3569270670413971,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_037",
+          "cosine": 0.39319878816604614,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_020",
+      "identity_id": "v15_cheer_young_020",
+      "r": "cheer",
+      "a": 21,
+      "age": 21,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "chin-length softly rounded black bob, side part",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "sky",
+      "uniform_color_hex": "#79C5E8",
+      "pose": "relaxed upright shoulders, head subtly tilted5degrees",
+      "index": 19,
+      "page": 0,
+      "cell": 19,
+      "row": 1,
+      "column": 9,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_c133",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1152,
+            128,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2304,
+            256,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_009",
+          "cosine": 0.39958620071411133,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_001",
+          "cosine": 0.39660418033599854,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_021",
+      "identity_id": "v15_cheer_young_021",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long sleek straight dark-brown hair with a soft side part",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "orange",
+      "uniform_color_hex": "#EF8133",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 20,
+      "page": 0,
+      "cell": 20,
+      "row": 2,
+      "column": 0,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s013",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            0,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            0,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_013",
+          "cosine": 0.3759137690067291,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_040",
+          "cosine": 0.38125520944595337,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_022",
+      "identity_id": "v15_cheer_young_022",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long loose dark-brown waves",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "black",
+      "uniform_color_hex": "#24272C",
+      "pose": "natural_head_three_quarter",
+      "index": 21,
+      "page": 0,
+      "cell": 21,
+      "row": 2,
+      "column": 1,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x003",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            128,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            256,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_039",
+          "cosine": 0.35054290294647217,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_028",
+          "cosine": 0.3636479675769806,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_023",
+      "identity_id": "v15_cheer_young_023",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "fresh softly rounded chin-length black bob",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "white",
+      "uniform_color_hex": "#F5F3EF",
+      "pose": "natural_head_three_quarter",
+      "index": 22,
+      "page": 0,
+      "cell": 22,
+      "row": 2,
+      "column": 2,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x004",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            256,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            512,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_018",
+          "cosine": 0.3289061188697815,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_022",
+          "cosine": 0.3478134572505951,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_024",
+      "identity_id": "v15_cheer_young_024",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long sleek straight black hair, soft side part",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "orange",
+      "uniform_color_hex": "#EF8133",
+      "pose": "natural_head_three_quarter",
+      "index": 23,
+      "page": 0,
+      "cell": 23,
+      "row": 2,
+      "column": 3,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x005",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            384,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            768,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_027",
+          "cosine": 0.34291723370552063,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_039",
+          "cosine": 0.38380447030067444,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_025",
+      "identity_id": "v15_cheer_young_025",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "fresh softly rounded chin-length black bob",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "sky",
+      "uniform_color_hex": "#79C5E8",
+      "pose": "natural_head_three_quarter",
+      "index": 24,
+      "page": 0,
+      "cell": 24,
+      "row": 2,
+      "column": 4,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x008",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            512,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1024,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_031",
+          "cosine": 0.35547786951065063,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_031",
+          "cosine": 0.3677079677581787,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_026",
+      "identity_id": "v15_cheer_young_026",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long sleek straight black hair, soft side part",
+      "smile": "soft",
+      "bg": "day",
+      "uniform_color": "red",
+      "uniform_color_hex": "#D72B3F",
+      "pose": "natural_head_three_quarter",
+      "index": 25,
+      "page": 0,
+      "cell": 25,
+      "row": 2,
+      "column": 5,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x009",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            640,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1280,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_027",
+          "cosine": 0.3616245687007904,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_027",
+          "cosine": 0.3916390538215637,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_027",
+      "identity_id": "v15_cheer_young_027",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long loose dark-brown waves",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "black",
+      "uniform_color_hex": "#24272C",
+      "pose": "natural_head_three_quarter",
+      "index": 26,
+      "page": 0,
+      "cell": 26,
+      "row": 2,
+      "column": 6,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x011",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            768,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1536,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_031",
+          "cosine": 0.36824291944503784,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_026",
+          "cosine": 0.3916390538215637,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_028",
+      "identity_id": "v15_cheer_young_028",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long loose dark-brown waves",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "navy",
+      "uniform_color_hex": "#142E53",
+      "pose": "natural_head_three_quarter",
+      "index": 27,
+      "page": 0,
+      "cell": 27,
+      "row": 2,
+      "column": 7,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x015",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            896,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1792,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_026",
+          "cosine": 0.3250454068183899,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_029",
+          "cosine": 0.3988587260246277,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_029",
+      "identity_id": "v15_cheer_young_029",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "fresh softly rounded chin-length black bob",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "sky",
+      "uniform_color_hex": "#79C5E8",
+      "pose": "natural_head_three_quarter",
+      "index": 28,
+      "page": 0,
+      "cell": 28,
+      "row": 2,
+      "column": 8,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x016",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1024,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2048,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_032",
+          "cosine": 0.3306489884853363,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_028",
+          "cosine": 0.3988587260246277,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_030",
+      "identity_id": "v15_cheer_young_030",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "chin-length softly shaped dark bob",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "green",
+      "uniform_color_hex": "#287750",
+      "pose": "relaxed natural three-quarter head25degrees, shoulders35degrees",
+      "index": 29,
+      "page": 0,
+      "cell": 29,
+      "row": 2,
+      "column": 9,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_t012",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1152,
+            256,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2304,
+            512,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_033",
+          "cosine": 0.33748286962509155,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_033",
+          "cosine": 0.34984642267227173,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_031",
+      "identity_id": "v15_cheer_young_031",
+      "r": "cheer",
+      "a": 26,
+      "age": 26,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "long loose dark-brown waves",
+      "smile": "broad",
+      "bg": "day",
+      "uniform_color": "black",
+      "uniform_color_hex": "#24272C",
+      "pose": "natural_head_three_quarter",
+      "index": 30,
+      "page": 0,
+      "cell": 30,
+      "row": 3,
+      "column": 0,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_x027",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            0,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            0,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_027",
+          "cosine": 0.36824291944503784,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_005",
+          "cosine": 0.38324132561683655,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_032",
+      "identity_id": "v15_cheer_young_032",
+      "r": "cheer",
+      "a": 21,
+      "age": 21,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "fresh softly rounded chin-length black bob, adult styling",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "sky",
+      "uniform_color_hex": "#79C5E8",
+      "pose": "relaxed_three_quarter_shoulders",
+      "index": 31,
+      "page": 0,
+      "cell": 31,
+      "row": 3,
+      "column": 1,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_s072",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            128,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            256,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_013",
+          "cosine": 0.3932359516620636,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_008",
+          "cosine": 0.38097667694091797,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_033",
+      "identity_id": "v15_cheer_young_033",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long straight black hair, no ponytail",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "green",
+      "uniform_color_hex": "#287750",
+      "pose": "natural three-quarter head30degrees, shoulders40degrees",
+      "index": 32,
+      "page": 0,
+      "cell": 32,
+      "row": 3,
+      "column": 2,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_y005",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            256,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            512,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_005",
+          "cosine": 0.3597426414489746,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_026",
+          "cosine": 0.35946840047836304,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_034",
+      "identity_id": "v15_cheer_young_034",
+      "r": "cheer",
+      "a": 21,
+      "age": 21,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "chin-length softly shaped black bob",
+      "smile": "soft",
+      "bg": "day",
+      "uniform_color": "green",
+      "uniform_color_hex": "#287750",
+      "pose": "head turned30degrees left, shoulders35degrees, a small friendly head tilt",
+      "index": 33,
+      "page": 0,
+      "cell": 33,
+      "row": 3,
+      "column": 3,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_z001_3",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            384,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            768,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_019",
+          "cosine": 0.3569270670413971,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_039",
+          "cosine": 0.3852778673171997,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_035",
+      "identity_id": "v15_cheer_young_035",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "loose shoulder-length dark waves",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "white",
+      "uniform_color_hex": "#F4F3EC",
+      "pose": "head turned45degrees left, shoulders50degrees, looking off-camera toward a teammate",
+      "index": 34,
+      "page": 0,
+      "cell": 34,
+      "row": 3,
+      "column": 4,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_z002_1",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            512,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1024,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_014",
+          "cosine": 0.36340972781181335,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_038",
+          "cosine": 0.37265753746032715,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_036",
+      "identity_id": "v15_cheer_young_036",
+      "r": "cheer",
+      "a": 23,
+      "age": 23,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "wave",
+      "hair_description": "loose shoulder-length dark waves",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "white",
+      "uniform_color_hex": "#F4F3EC",
+      "pose": "relaxed natural three-quarter head25degrees, shoulders35degrees",
+      "index": 35,
+      "page": 0,
+      "cell": 35,
+      "row": 3,
+      "column": 5,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_t003",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            640,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1280,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_013",
+          "cosine": 0.3947295546531677,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_013",
+          "cosine": 0.39691975712776184,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_037",
+      "identity_id": "v15_cheer_young_037",
+      "r": "cheer",
+      "a": 24,
+      "age": 24,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long straight black hair, NO ponytail",
+      "smile": "broad",
+      "bg": "night",
+      "uniform_color": "red",
+      "uniform_color_hex": "#C93438",
+      "pose": "head turned40degrees right, shoulders45degrees, eyes gently back near lens",
+      "index": 36,
+      "page": 0,
+      "cell": 36,
+      "row": 3,
+      "column": 6,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_z004_2",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            768,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1536,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_013",
+          "cosine": 0.37266963720321655,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_020",
+          "cosine": 0.3951079845428467,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_038",
+      "identity_id": "v15_cheer_young_038",
+      "r": "cheer",
+      "a": 25,
+      "age": 25,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "bob",
+      "hair_description": "chin-length softly shaped black bob",
+      "smile": "soft",
+      "bg": "day",
+      "uniform_color": "green",
+      "uniform_color_hex": "#287750",
+      "pose": "head turned45degrees left, shoulders50degrees, looking off-camera toward a teammate",
+      "index": 37,
+      "page": 0,
+      "cell": 37,
+      "row": 3,
+      "column": 7,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_z005_1",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            896,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            1792,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_008",
+          "cosine": 0.3690560758113861,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_008",
+          "cosine": 0.39663323760032654,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_039",
+      "identity_id": "v15_cheer_young_039",
+      "r": "cheer",
+      "a": 21,
+      "age": 21,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "pony",
+      "hair_description": "neat high ponytail with a small white ribbon",
+      "smile": "soft",
+      "bg": "day",
+      "uniform_color": "blue",
+      "uniform_color_hex": "#215CBE",
+      "pose": "head turned30degrees left, shoulders35degrees, a small friendly head tilt",
+      "index": 38,
+      "page": 0,
+      "cell": 38,
+      "row": 3,
+      "column": 8,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_z007_3",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1024,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2048,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_022",
+          "cosine": 0.35054290294647217,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_034",
+          "cosine": 0.3852778673171997,
+          "passed": true
+        }
+      }
+    },
+    {
+      "id": "v15_cheer_young_040",
+      "identity_id": "v15_cheer_young_040",
+      "r": "cheer",
+      "a": 22,
+      "age": 22,
+      "f": 1,
+      "sex": "female",
+      "ethnicity": "Korean",
+      "casting": "fictional Korean woman, explicit generation specification; not inferred real-person nationality",
+      "hair": "straight",
+      "hair_description": "long straight black hair, NO ponytail",
+      "smile": "soft",
+      "bg": "night",
+      "uniform_color": "red",
+      "uniform_color_hex": "#C93438",
+      "pose": "head turned45degrees left, shoulders50degrees, looking off-camera toward a teammate",
+      "index": 39,
+      "page": 0,
+      "cell": 39,
+      "row": 3,
+      "column": 9,
+      "fictional": true,
+      "natural_continuous_upper_body": true,
+      "local_face_body_paste": false,
+      "source_candidate": "v15_z008_1",
+      "sheets": {
+        "128": {
+          "path": "sheets/128/cheer_young.webp",
+          "rect": [
+            1152,
+            384,
+            128,
+            128
+          ]
+        },
+        "256": {
+          "path": "sheets/256/cheer_young.webp",
+          "rect": [
+            2304,
+            768,
+            256,
+            256
+          ]
+        }
+      },
+      "arcface": {
+        "128": {
+          "id": "v15_cheer_young_004",
+          "cosine": 0.36856165528297424,
+          "passed": true
+        },
+        "256": {
+          "id": "v15_cheer_young_021",
+          "cosine": 0.38125520944595337,
+          "passed": true
+        }
+      }
+    }
+  ],
+  "framing": "Latest user: enlarged complete head, neck, shoulders and upper chest, natural relaxed poses. Full hair crown and chin visible; short sleeves, no cropped/sleeveless clothing. Stadium cheer-platform bokeh, day/night.",
+  "validation": "validation.json",
+  "comparison": "previews/all40_256.jpg",
+  "main_merged": false,
+  "code_changed": false,
+  "asset_validation_passed": true
+}
