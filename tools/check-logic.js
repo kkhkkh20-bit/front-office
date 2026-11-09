@@ -2617,6 +2617,35 @@ T('[검수 11-09i] 스폰서: 해지 뒤 대체 계약은 같은 자리 지급 �
   fresh(); sponInit(); G.day=G.cal.end+5; G.spon.c={}; G.spon.off=[Object.assign(sponMake('kit'),{yrs:2})]; ok(sponFirstTerms().y0===G.year+1,'제안 카드 시작 시즌 '+sponFirstTerms().y0);
   sponAccept(G.spon.off[0].id); G.pr.fan=10; let n=0; while(G.spon.c.kit&&n++<500)sponMonthly(); const m=G.mail.find(q=>/계약 해지/.test(q.subj||'')); ok(m&&String(m.body).includes((G.year+1)+'~'+(G.year+2)+'시즌'),'해지 메일에 사라진 시즌 없음: '+(m&&m.body));
 });
+T('[검수 11-09k] 연기 경기: 최종일에 미룬 경기를 치르기 전에는 순위·시드를 확정하지 않고, 휴식일 우리 연기 경기도 경기 전 검사',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); const E=G.cal.end; G.day=E-1; G.res=null; G.stops=[];
+  const pr=G.cal.sched[E].find(m=>!m.includes(G.user)), a=pr[0]; const H=playersOf(a).filter(q=>!q.isP); H.forEach(q=>q.injOut=30); const gp=()=>{ const r=G.sea.rec[a]; return r.w+r.l+(r.t||0); }; const g0=gp();
+  processDay(); ok(G.day===E&&(G.makeup||[]).some(x=>x.h===pr[0]&&x.a===pr[1]),'최종일 오류 경기가 미뤄지지 않음'); ok(!G.ps&&period()==='season','연기 경기가 남았는데 정규시즌이 끝남: '+period());
+  H.forEach(q=>q.injOut=0); G.res=null; G.stops=[]; processDay(); ok(!(G.makeup||[]).length&&gp()===g0+1,'미룬 최종일 경기를 치르지 않음: '+JSON.stringify(G.makeup)); ok(!G.ps,'미룬 경기를 치른 날 시드를 정함');
+  G.res=null; G.stops=[]; processDay(); ok(G.ps&&G.ps.seeds&&G.ps.seeds.length===5&&!(G.makeup||[]).length,'연기 경기를 치른 뒤 포스트시즌이 열리지 않음');
+  fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); let d=G.day; while((G.cal.sched[d+1]||[]).length)d++; G.day=d; G.res=null; G.stops=[]; const op=G.teams.find(t=>t.id!==G.user).id; G.makeup=[{y:G.year,h:G.user,a:op,d:d-1}];
+  ok(ourGameOn(G.day+1),'휴식일 우리 연기 경기를 경기일로 보지 않음'); playersOf(G.user).filter(q=>!q.isP).forEach(q=>q.injOut=30); ok(/야수/.test(blocker()),'휴식일 연기 경기 전 선수단 검사를 건너뜀: '+blocker()); });
+T('[검수 11-09k] 가을야구 확률: 남은 연기 경기로 5위가 바뀔 수 있으면 100%가 아니다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); G.day=G.cal.end; const o=G.teams.map(t=>t.id); const S=G.sea.rec;
+  o.forEach((t,i)=>{ S[t].w=i<4?90-i*3:50; S[t].l=i<4?50+i*3:90; S[t].t=0; }); S[o[4]].w=70; S[o[4]].l=70; S[o[5]].w=70; S[o[5]].l=71; G.makeup=[{y:G.year,h:o[4],a:o[5],d:G.day}];
+  const v=playoffOdds(); const x=v&&v.find(z=>z.tid===o[4]); ok(x&&x.ps<1&&x.ps>0,'연기 경기가 남았는데 5위 확률 '+(x&&x.ps)); G.makeup=[]; const y=playoffOdds().find(z=>z.tid===o[4]); ok(y.ps===1,'연기 경기가 없으면 확정이어야 함 '+y.ps); });
+T('[검수 11-09k] 포스트시즌: 한 경기 오류는 시리즈를 멈추지 않고 하루 미뤄 치르며, 지나간 차전 날짜도 다시 잡는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); G.day=G.cal.end; G.res=null; G.stops=[]; processDay(); ok(G.ps&&G.ps.cur,'포스트시즌 준비 실패');
+  let n=0; while(G.ps.cur.days[G.ps.cur.gi]!==G.day+1&&n++<9){ G.res=null; G.stops=[]; processDay(); } const s=G.ps.cur, gi0=s.gi, r0=s.round, d1=G.day+1;
+  const sg=simGame; simGame=function(){ throw new Error('주입 오류'); }; try{ G.res=null; G.stops=[]; processDay(); } finally { simGame=sg; }
+  ok(G.day===d1&&G.ps.cur===s&&s.gi===gi0&&s.days[gi0]===G.day+1,'오류 난 차전이 다음 날로 다시 잡히지 않음: '+JSON.stringify(s.days)+' gi '+s.gi);
+  G.res=null; G.stops=[]; processDay(); ok(G.ps.cur!==s||s.gi===gi0+1||G.ps.round!==r0,'미룬 차전을 치르지 않음');
+  const c=G.ps.cur; if(c&&!G.ps.done){ c.days[c.gi]=G.day-1; G.res=null; G.stops=[]; const g1=c.gi; processDay(); ok(G.ps.cur!==c||c.gi===g1+1,'지나간 차전 날짜에서 시리즈가 멈춤'); } });
+T('[검수 11-09k] 더블헤더: 두 경기의 상대·점수·박스스코어·요약 경기 수와 홍보팀 연승이 각각 같은 경기를 가리킨다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3&&ourGameOn(G.day+1)); G.res=null; G.stops=[];
+  const d=G.day+1, m=G.cal.sched[d].find(x=>x.includes(G.user)), op1=m[0]===G.user?m[1]:m[0], op2=G.teams.find(t=>t.id!==G.user&&t.id!==op1).id; G.makeup=[{y:G.year,h:op2,a:G.user,d:G.day-1}]; G.sea.streak=4;
+  advance('event'); const D=G.dig; ok(G.day>=d,'진행 실패: '+blocker());
+  const L=G.sea.ulog.filter(x=>x.d===d); ok(L.length===2,'같은 날 두 경기가 기록되지 않음: '+L.length); ok(D&&D.games.filter(x=>x===d).length===2,'요약 경기 수가 2가 아님: '+JSON.stringify(D&&D.games));
+  for(const x of L){ const g=G.games.find(z=>z.gid===x.gid); ok(g&&g.home===x.h&&g.away===x.a&&g.hs===x.hs&&g.as===x.as&&g.res===x.res,'경기 기록과 박스스코어가 다른 경기: '+JSON.stringify(x)); const me=g.home===G.user?'h':'a'; ok(g.box[me].tid===G.user&&g.box[me==='h'?'a':'h'].tid===(x.h===G.user?x.a:x.h),'박스스코어 상대가 다름'); }
+  ok(L[0].h===op2&&L[1].h!==op2&&L[1].a!==op2,'연기 경기가 먼저 열리지 않음'); const R=L.map(x=>x.res); const st=R[1]==='승'?(R[0]==='승'?6:1):R[1]==='패'?(R[0]==='패'?-2:-1):0; ok(G.sea.streak===st,'더블헤더 연승 계산 '+G.sea.streak+' 기대 '+st+' ('+R+')'); });
+T('[검수 11-09k] 끝내기 안타: 타자 루타는 결승 주자가 전진한 베이스까지, 결승점 뒤 추가 아웃·진루 없음(KBO·MLB 기록규칙)',()=>{ fresh(); G.day=G.cal.open; for(const t of G.teams)setEntry(t.id); const T2=G.teams.map(t=>t.id); let nW=0, nX=0;
+  for(let i=0;i<500;i++){ const h=T2[i%10], a=T2[(i+3)%10]; const g=simGame(G.day,h,a,false); if(!(g.score.h>g.score.a))continue; const P=g.pbp; if(P.length>=1000)continue; const li=P.length-1, w=P[li]; if(!w||typeof w[1]!=='number'||w[0]%2!==1||w[0]<16||w[3]==='HR')continue;
+    let pb=[0,0,0], po=0; for(let j=li-1;j>=0;j--){ const r=P[j]; if(r[0]!==w[0])break; if(typeof r[1]==='number'){ pb=r[5]; po=r[4]; break; } if(r[1]==='SB'||r[1]==='CS'){ pb=r[4]; po=r[3]; break; } }
+    const n=w[6]; if(!n)continue; nW++; ok(w[8]-w[7]===1,'끝내기 점수 차가 1이 아님'); const need=w[7]-(w[8]-n)+1; const lead=[2,1,0].filter(k=>pb[k]); const wi=lead[need-1]; const adv=3-wi; const hb={'1B':1,'2B':2,'3B':3}[w[3]];
+    if(hb){ ok(hb<=adv,'끝내기 '+w[3]+': 결승 주자는 '+(wi+1)+'루에서 '+adv+'루 전진'); if(adv<3)nX++; ok(w[4]===po,'끝내기 안타 뒤 아웃이 늘어남: '+po+' → '+w[4]); ok(!(w[14]||[]).some(m=>m.result==='out'),'결승점 뒤 주자 아웃 기록');
+      const bx=g.S.h.box.get(w[1]); const cnt=k=>P.filter(r=>typeof r[1]==='number'&&r[1]===w[1]&&r[3]===k).length; ok((bx.d||0)===cnt('2B')&&(bx.tr||0)===cnt('3B'),'타자 박스 2루타·3루타가 중계 기록과 다름'); } }
+  ok(nW>5,'준비 실패: 끝내기 '+nW+'번'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

@@ -46,10 +46,10 @@ function fullBox(g,openOpp){
 }
 function schedView(){
   const c=G.cal; const ms=[3,4,5,6,7,8,9,10]; const cm=UI.smon||Math.min(10,Math.max(3,dobj(G.day).m));
-  const log=new Map((G.sea.ulog||[]).filter(x=>!/차전/.test(x.k)).map(x=>[x.d,x]));
-  const days=Object.keys(c.sched).map(Number).filter(d=>dobj(d).m===cm&&c.sched[d].some(m=>m.includes(G.user))).sort((a,b)=>a-b);
   const played=(G.sea.ulog||[]).filter(x=>!/차전/.test(x.k)); const w=played.filter(x=>x.res==='승').length,l=played.filter(x=>x.res==='패').length;
-  const rows=days.map(d=>{ const m=c.sched[d].find(x=>x.includes(G.user)); const home=m[0]===G.user; const op=home?m[1]:m[0]; const r=log.get(d); const gi=G.games.findIndex(g=>g.day===d);
+  const days=Object.keys(c.sched).map(Number).filter(d=>dobj(d).m===cm&&c.sched[d].some(m=>m.includes(G.user))&&!played.some(x=>x.d===d)).sort((a,b)=>a-b);
+  const its=[...played.filter(x=>dobj(x.d).m===cm).map(x=>({d:x.d,m:[x.h,x.a],r:x})),...days.map(d=>({d,m:c.sched[d].find(x=>x.includes(G.user))}))].sort((a,b)=>a.d-b.d); /* 치른 경기는 경기 기록마다 한 줄: 더블헤더·휴식일 연기 경기도 빠지지 않게(검수 11-09k) */
+  const rows=its.map(({d,m,r})=>{ const home=m[0]===G.user; const op=home?m[1]:m[0]; const gi=r?G.games.findIndex(g=>r.gid!=null?g.gid===r.gid:g.day===d&&g.home===r.h&&g.away===r.a):-1;
     const o=dobj(d); return `<div class="srow${d===G.day?' today':''}${r?'':' up'}" ${gi>=0?`data-a="openGame" data-v="${gi}" role="button" tabindex="0"`:''}><span class="sd">${o.m}/${o.d} <i>${WD[o.w]}</i></span><span class="so">${home?'vs':'@'} ${badge(op,20)} ${esc(tshort(op))}</span>${r?`<span class="sr"><span class="pill ${r.res==='승'?'good':r.res==='패'?'bad':''}">${r.res}</span> <b class="num">${home?r.hs:r.as}:${home?r.as:r.hs}</b></span>`:`<span class="sr muted">${d<G.day?'-':home?'홈':'원정'}</span>`}</div>`; }).join('');
   return csec(`${G.year} 정규시즌 일정`,`<p class="small">정규시즌 144경기 중 <b>${played.length}</b>경기 · ${w}승 ${l}패${played.length-w-l?` ${played.length-w-l}무`:''} · 남은 경기 ${144-played.length}</p>
     <div class="chips">${ms.map(m=>`<button data-a="smon" data-v="${m}" class="${cm===m?'on':''}">${m}월</button>`).join('')}</div>
