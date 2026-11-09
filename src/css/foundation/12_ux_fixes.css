@@ -709,7 +709,8 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 .ow-f{margin:0;padding-left:0;list-style:none}.ow-f li.good{color:var(--good)}.ow-f li.bad{color:var(--bad)}.ow-my{margin:0;font-style:italic}
 .mko-act{gap:8px;flex-wrap:nowrap;margin-top:6px}.mko-act>.btn{flex:1;min-width:0;white-space:nowrap}
 /* 우승 카드 v16(11-09): 배너 사진 위 왼쪽 어두운 자리에 글자, 큰 우승 트로피 */
-.card.champ.ch16 .ch-top{background:linear-gradient(90deg,rgba(6,9,14,.9),rgba(6,9,14,.6) 45%,rgba(6,9,14,0) 78%),var(--ban) right center/cover no-repeat;border-radius:6px;padding:14px 16px;min-height:150px;color:#fff}
+.card.champ .ch-top{display:flex}/* 선수 경력 화면의 .ch-top(grid)과 이름이 겹친다 */
+.card.champ.ch16 .ch-top{background-position:right center;background-size:cover;background-repeat:no-repeat;border-radius:6px;padding:14px 16px;min-height:150px;color:#fff}
 .card.champ.ch16 .ch-top .eyebrow{color:#ffd24d}.card.champ.ch16 .ch-tag{color:#dfe6ee}
 .card.champ .tro16{flex:none;filter:drop-shadow(0 6px 18px rgba(255,210,77,.45))}
 @media(max-width:480px){.card.champ .ch-top .tro16{width:84px;height:84px}}
