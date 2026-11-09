@@ -6,7 +6,7 @@ function perfOf(h,isP){
 }
 /* 한 구단에서 낸 기록만(이적 전후를 나눈다) */
 function seasonTotalT(p,y,lvl,tid){ const hs=p.hist.filter(h=>h.y===y&&!h.y2&&(!lvl||h.lvl===lvl)&&h.t===tid); if(!hs.length)return null; const tot=Object.assign({},hs[0]); for(const h of hs.slice(1))addTo(tot,h); tot.pp=hs.reduce((o,h)=>ppMerge(o,h.pp),undefined); tot.pos=tot.pp?ppTop(tot.pp):hs[hs.length-1].pos; tot.t=tid; return tot; }
-function seasonTotal(p,y,lvl){ const hs=p.hist.filter(h=>h.y===y&&!h.y2&&(!lvl||h.lvl===lvl)); if(!hs.length)return null; const tot=Object.assign({},hs[0]); for(const h of hs.slice(1))addTo(tot,h); tot.pp=hs.reduce((o,h)=>ppMerge(o,h.pp),undefined); tot.pos=tot.pp?ppTop(tot.pp):hs[hs.length-1].pos; tot.t=hs[hs.length-1].t; return tot; }
+function seasonTotal(p,y,lvl){ const hs=p.hist.filter(h=>h.y===y&&!h.y2&&(!lvl||h.lvl===lvl)); if(!hs.length)return null; const tot=Object.assign({},hs[0]); for(const h of hs.slice(1))addTo(tot,h); tot.pp=hs.reduce((o,h)=>ppMerge(o,h.pp),undefined); tot.pos=tot.pp?ppTop(tot.pp):hs[hs.length-1].pos; tot.t=hs[hs.length-1].t; if(lvl&&hs.length>1)Object.defineProperty(tot,'parts',{value:hs}); /* 구단별 줄: 시즌 WAR = 구단별 WAR 합(통산과 같게, 검수 11-09zf) */ return tot; }
 function perfOvr(p,n){
   const ys=[...new Set(p.hist.filter(h=>h.lvl==='1군').map(h=>h.y))].slice(-n);
   /* 표본이 적은 시즌은 능력치 쪽으로 당긴다: 투수 이닝/(이닝+60), 타자 타석/(타석+250) */

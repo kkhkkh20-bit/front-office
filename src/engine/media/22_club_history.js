@@ -3,7 +3,7 @@ function careerOf(p){ const c={seasons:new Set(),teams:new Set(),pa:0,h:0,hr:0,r
   for(const h of p.hist){ if(h.lvl!=='1군')continue; c.seasons.add(h.y); c.teams.add(h.t); const w=warOf(h,p); c.war+=w; c.byTeam[h.t]=c.byTeam[h.t]||{war:0,ys:new Set()}; c.byTeam[h.t].war+=w; c.byTeam[h.t].ys.add(h.y);
     if(p.isP){ c.outs+=h.outs||0; c.w+=h.w||0; c.sv+=h.sv||0; c.hld+=h.hld||0; c.so+=h.so||0; } else { c.pa+=h.pa||0; c.h+=h.h||0; c.hr+=h.hr||0; c.rbi+=h.rbi||0; c.sb+=h.sb||0; } }
   return c; }
-function addAward(p,label){ (p.aw=p.aw||[]).push(label); story(p,label,'award'); if(p.team===G.user&&!G.unemp)chron('award',`${p.name} ${label}`,p.id); }
+function addAward(p,label,tid){ (p.aw=p.aw||[]).push(label); story(p,label,'award'); if((tid===undefined?p.team:tid)===G.user&&!G.unemp)chron('award',`${p.name} ${label}`,p.id); } /* tid: 그 시즌 성적을 낸 구단(시상 전 이적해도 그 구단 연혁에, 검수 11-09zf) */
 /* ===== 구단 연대기: 구단마다 해마다 일어난 일을 쌓는다 ===== */
 function chron(k,t,ref,tid){ tid=tid??G.user; if(tid==null)return; G.chron=G.chron||[]; G.chron.push({y:G.year,d:G.day,tid,k,t,ref:ref??null,gm:G.unemp?0:1}); if(G.chron.length>900){ const KEEP=new Set(['found','champ','join','fired','season']); let n=0; G.chron=G.chron.filter(x=>{ if(n>=100||KEEP.has(x.k))return true; n++; return false; }); } } /* 창단·우승·취임·경질 같은 핵심 기록은 남긴다 */
 /* ===== 프랜차이즈 스타: 한 구단에서 5시즌 이상 1군을 뛰고 그 구단 통산 WAR 12 이상(또는 7시즌·WAR 8) ===== */
@@ -93,7 +93,7 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
     A.cand.mvp=awVote(pick(rows.filter(qP),8).concat(pick(rows.filter(qB),10)).map(x=>awCand(x)),125); }
   /* 신인상(KBO 표창규정 제7조): 그해 입단 또는 최근 5년 이내 입단, 이전 시즌까지 1군 누적 투수 30이닝·타자 60타석 이하, 해외 프로리그 소속 경험 없음(외국인 제외) */
   const joinY=p=>p.draft&&p.draft.y!=null?p.draft.y+1:Math.min(...p.hist.map(h=>h.y).concat([y,y-Math.max(0,(p.svc||0)-1)])); /* 기록은 최근 3년치만 있어 등록 연차로도 입단 연도를 잡는다 */
-  A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&(x.h.pa>=150||x.h.outs>=150)&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
+  A.cand.roy=awVote(rows.filter(x=>!x.p.foreign&&!x.p.ovsExp&&!(G.abroad||[]).some(a=>a.id===x.p.id)&&joinY(x.p)>=y-5&&((x.h.pa||0)+(x.h.outs||0))>0&&(()=>{ const H=x.p.hist.filter(h=>h.lvl==='1군'&&h.y<y&&!h.y2); return sum(H.map(h=>h.pa||0))<=60&&sum(H.map(h=>h.outs||0))<=90; })()).sort((a,b)=>b.w-a.w).slice(0,8).map(x=>awCand(x)),125);
   const gpos=x=>{ const u=x.p.use; if(u&&u.y===y&&u.pos){ const P={}; for(const k in u.pos){ const kk=['LF','CF','RF'].includes(k)?'OF':k; P[kk]=(P[kk]||0)+u.pos[k]; } let b=null,n=-1; for(const k in P)if(P[k]>n){ n=P[k]; b=k; } if(b)return b; } return ['LF','CF','RF'].includes(x.h.pos)?'OF':x.h.pos; }; /* 외야 세 자리는 합쳐서 비교 */ /* 마지막 경기 포지션이 아니라 가장 많이 선 자리 */
   const ggQ=(x,pos)=>{ if(tit.has(x.p.id))return true; if(pos==='DH')return ((x.h.pp&&x.h.pp.DH)||0)>=Math.floor(Math.round(tg(x)*3.1)*2/3); /* 규정타석 446의 2/3 = 297 */ const u=x.p.use; const gAt=u&&u.y===y&&u.pos?(pos==='OF'?['LF','CF','RF'].reduce((s2,k)=>s2+(u.pos[k]||0),0):(u.pos[pos]||0)):((['LF','CF','RF'].includes(x.h.pos)?'OF':x.h.pos)===pos?(x.h.g||0):0); return gAt>=Math.round(tg(x)*5/9); }; /* 포지션별 출장 정보가 없으면 그 시즌 주 포지션만 전체 출장 수로 본다(지명타자가 포수 후보가 되지 않게, 검수 11-06) */ /* KBO: 그 포지션 수비 720이닝(팀 경기 수×5이닝) 이상 = 9이닝 경기로 80경기 */
   const gposQ=x=>{ const g=gpos(x); if(ggQ(x,g))return g; const u=x.p.use, n=k=>!u||u.y!==y||!u.pos?0:k==='OF'?['LF','CF','RF'].reduce((s2,q)=>s2+(u.pos[q]||0),0):(u.pos[k]||0); return ['C','1B','2B','3B','SS','DH','OF'].filter(k=>ggQ(x,k)).sort((a,b)=>n(b)-n(a))[0]||null; }; /* 가장 많이 선 자리가 기준 미달이면 기준을 채운 다른 자리로(한 선수 한 자리) */
@@ -107,8 +107,8 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   for(const k of ['C','1B','2B','3B','SS','DH','P'])if(A.cand.gg[k])A.gg[k]=pick(A.cand.gg[k]);
   if(A.cand.gg.OF)A.cand.gg.OF.slice(0,3).forEach((c,i)=>{ A.gg['OF'+i]={id:c.id,name:c.name,t:c.t,line:c.line,v:c.v}; });
   (G.awards=G.awards||{})[y]=A;
-  const mineC=[...(A.cand.mvp||[]).slice(0,5),...(A.cand.roy||[]).slice(0,3)].filter(c=>c.t===G.user);
-  mail('홍보팀',`${y} ${ASSOC.s} 시상식 후보 발표`,`MVP 후보: ${[...(A.cand.mvp||[]).slice(0,5)].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n신인왕 후보: ${[...(A.cand.roy||[]).slice(0,3)].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'} (이름순)\n\nMVP·신인왕은 ${dmd(KD(11,24))} ${ASSOC.s} 시상식, 골든글러브는 ${dmd(KD(12,9))}에 발표됩니다.${mineC.length?`\n우리 구단 후보: ${mineC.map(c=>c.name).join(', ')}`:''}`,{kind:'기록'});
+  const mineC=[...(A.cand.mvp||[]),...(A.cand.roy||[])].filter(c=>c.t===G.user); /* 후보 전원: 득표 상위만 고르면 발표 전 결과가 드러난다(검수 11-09zf) */
+  mail('홍보팀',`${y} ${ASSOC.s} 시상식 후보 발표`,`MVP 후보 ${(A.cand.mvp||[]).length}명: ${[...(A.cand.mvp||[])].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n신인왕 후보 ${(A.cand.roy||[]).length}명: ${[...(A.cand.roy||[])].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'} (이름순)\n\nMVP·신인왕은 ${dmd(KD(11,24))} ${ASSOC.s} 시상식, 골든글러브는 ${dmd(KD(12,9))}에 발표됩니다.${mineC.length?`\n우리 구단 후보: ${[...new Set(mineC.map(c=>c.name))].join(', ')}`:''}`,{kind:'기록'});
   return A; }
 /* 발표 시점에만 수상자를 공개한다 */
 function awShown(A,k){ return A&&!(A.pend&&A.pend[k]); }
@@ -116,14 +116,14 @@ function awShown(A,k){ return A&&!(A.pend&&A.pend[k]); }
 function awLabels(A,k,y){ if(!A)return []; return k==='mvp'?[['MVP',A.mvp],['신인왕',A.roy]].filter(x=>x[1]).map(([l,x])=>[`${y} ${l}`,x]):Object.entries(A.gg||{}).filter(x=>x[1]).map(([pos,x])=>[`${y} 골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x]); }
 function awPendFor(p){ const y=G.year, A=G.awards&&G.awards[y]; if(!A||!A.pend)return []; const L=[]; for(const k of ['mvp','gg'])if(A.pend[k])for(const [l,x] of awLabels(A,k,y))if(x.id===p.id)L.push(l); return L; }
 /* 해외에 나가 있는 국내 선수의 보관 정보(pj)에 수상 이력을 더한다. 돌아오면 그 정보로 선수가 되살아나 이력이 이어진다 */
-function awAbroad(id,label){ const a=(G.abroad||[]).find(r=>r.id===id&&!r.back&&r.pj); if(!a)return false; let q; try{ q=JSON.parse(a.pj); }catch(e){ return false; }
-  (q.aw=q.aw||[]).includes(label)||q.aw.push(label); try{ story(q,label,'award'); }catch(e){} a.pj=JSON.stringify(q); (a.aw=a.aw||[]).includes(label)||a.aw.push(label); { const ar=G.arch&&G.arch[id]; if(ar){ (ar.aw=ar.aw||[]).includes(label)||ar.aw.push(label); } } /* 시상 화면에서 여는 보관 선수 카드에도(검수 11-08) */ if(a.from===G.user&&!G.unemp)chron('award',`${a.name} ${label}`,id); return true; }
+function awAbroad(id,label,tid){ const a=(G.abroad||[]).find(r=>r.id===id&&!r.back&&r.pj); if(!a)return false; let q; try{ q=JSON.parse(a.pj); }catch(e){ return false; }
+  (q.aw=q.aw||[]).includes(label)||q.aw.push(label); try{ story(q,label,'award'); }catch(e){} a.pj=JSON.stringify(q); (a.aw=a.aw||[]).includes(label)||a.aw.push(label); { const ar=G.arch&&G.arch[id]; if(ar){ (ar.aw=ar.aw||[]).includes(label)||ar.aw.push(label); } } /* 시상 화면에서 여는 보관 선수 카드에도(검수 11-08) */ if((tid===undefined?a.from:tid)===G.user&&!G.unemp)chron('award',`${a.name} ${label}`,id); return true; }
 function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A||!A.pend||!A.pend[k])return; A.pend[k]=false; (A.cd=A.cd||{})[k]=G.day; /* 실제로 연 날(달력, 검수 11-09l) */
   const lst=k==='mvp'?[['MVP',A.mvp,A.cand.mvp],['신인왕',A.roy,A.cand.roy]]:Object.entries(A.gg).map(([pos,x])=>[`골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x,pos.startsWith('OF')?A.cand.gg.OF:A.cand.gg[pos]]);
   const mine=[];
-  for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; if(p){ addAward(p,`${y} ${lab}`); if((x.t??p.team)===G.user){ /* 성적을 낸 구단 기준(시상 전 이적해도, 검수 11-08) */ p.mor=clamp((p.mor??60)+6,0,100); mine.push(x.name+' '+lab); } }
-    else if(awAbroad(x.id,`${y} ${lab}`)){} /* 시상식 전에 해외로 떠난 선수: 해외 보관 정보(복귀 때 되살아나는 선수 정보)에 넣는다 */
-    else { const ar=G.arch&&G.arch[x.id]; if(ar){ (ar.aw=ar.aw||[]).includes(`${y} ${lab}`)||ar.aw.push(`${y} ${lab}`); } /* 시상식 전에 방출·은퇴로 지워진 선수: 보관 기록에 */
+  for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; const tt=x.t??(p?p.team:null); if(tt===G.user)mine.push(x.name+' '+lab); /* 성적을 낸 구단 기준: 시상 전 이적·해외·은퇴해도(검수 11-08, 11-09zf) */ if(p){ addAward(p,`${y} ${lab}`,tt); if(tt===G.user)p.mor=clamp((p.mor??60)+6,0,100); }
+    else if(awAbroad(x.id,`${y} ${lab}`,tt)){} /* 시상식 전에 해외로 떠난 선수: 해외 보관 정보(복귀 때 되살아나는 선수 정보)에 넣는다 */
+    else { const ar=G.arch&&G.arch[x.id]; if(ar){ (ar.aw=ar.aw||[]).includes(`${y} ${lab}`)||ar.aw.push(`${y} ${lab}`); } /* 시상식 전에 방출·은퇴로 지워진 선수: 보관 기록에 */ if(tt===G.user&&!G.unemp)chron('award',`${x.name} ${y} ${lab}`,x.id);
       const r=(G.legends||[]).find(r=>r.id===x.id&&r.awP&&r.awP.includes(`${y} ${lab}`)); if(r){ r.awP=r.awP.filter(l=>l!==`${y} ${lab}`); r.aw.push(`${y} ${lab}`); if(lab==='MVP')r.mvp++; if(lab.includes('골든'))r.gg++; { const o=(G.ob||[]).find(o=>o.fid===x.id||o.pid===x.id); if(o){ o.awards=(o.awards||0)+1; } }
       if(!r.hof&&(r.war>=38||r.mvp>=2||r.gg>=6||(r.war>=30&&r.mvp>=1))){ r.hof=true; (G.hof=G.hof||[]).push(r); { const o=(G.ob||[]).find(o=>o.fid===x.id||o.pid===x.id); if(o)o.hof=true; } /* OB 카드도 헌액·수상 반영(검수 11-08) */ news('기록',`${r.name}, 명예의 전당 헌액`,`은퇴한 ${r.name}이(가) 마지막 시즌 ${lab} 수상으로 명예의 전당 기준을 채웠습니다.`,0); } } }
     /* WAR 1위가 표에서 졌으면 논란 기사 */
@@ -159,5 +159,6 @@ function retireNumber(i){ const L=G.legends||[]; const r=typeof i==='string'&&i[
  30시즌 시뮬에서 시상 기록이 한 해 약 30KB씩 늘었고 대부분이 골든글러브 후보 전원의 세부 점수였다. 수상자·상위 후보·한 줄 기록은 그대로 */
 function awardsCompact(){ const A=G.awards; if(!A)return; for(const y in A){ if(+y>G.year-3)continue; const a=A[y]; if(!a||a.cmp||!a.cand)continue;
   const slim=(L,n)=>(L||[]).slice(0,n).map(c=>{ const o={id:c.id,name:c.name,t:c.t,line:c.line,w:c.w,v:c.v}; if(c.pos)o.pos=c.pos; return o; });
+  a.cn={mvp:(a.cand.mvp||[]).length,roy:(a.cand.roy||[]).length,gg:{}}; for(const k in (a.cand.gg||{}))a.cn.gg[k]=a.cand.gg[k].length; /* 정리 전 후보 수: 생략한 후보를 화면에 밝힌다(검수 11-09zf) */
   a.cand.mvp=slim(a.cand.mvp,5); a.cand.roy=slim(a.cand.roy,3); for(const k in (a.cand.gg||{}))a.cand.gg[k]=slim(a.cand.gg[k],k==='OF'?5:3);
   if(a.ggVote){ delete a.ggVote.ballots; delete a.ggVote.news; } a.cmp=1; } }

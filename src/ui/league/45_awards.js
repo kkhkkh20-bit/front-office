@@ -1,7 +1,9 @@
 /* ---------- 시상식 연출: 후보 소개 → 수상자 발표(득표 막대) → 소감 → 전체 결과 ---------- */
-function cerStages(A,k){ if(k==='mvp')return [['MVP',A.cand.mvp||[],1],['신인왕',A.cand.roy||[],1]].filter(s=>s[1].length);
+function cerStages(A,k){ if(k==='mvp')return [['MVP',A.cand.mvp||[],1,'mvp'],['신인왕',A.cand.roy||[],1,'roy']].filter(s=>s[1].length);
   const P=[['투수','P'],['포수','C'],['1루수','1B'],['2루수','2B'],['3루수','3B'],['유격수','SS'],['외야수','OF'],['지명타자','DH']];
-  return P.filter(([,c])=>A.cand.gg[c]&&A.cand.gg[c].length).map(([l,c])=>[l,A.cand.gg[c],c==='OF'?3:1]); }
+  return P.filter(([,c])=>A.cand.gg[c]&&A.cand.gg[c].length).map(([l,c])=>[l,A.cand.gg[c],c==='OF'?3:1,c]); }
+/* 3년 지난 시상은 상위 후보만 보관한다: 생략한 후보 수·표를 밝힌다(검수 11-09zf) */
+function cerCut(A,k,st,tot){ if(!A.cmp)return ''; const cn=A.cn&&(k==='mvp'?A.cn[st[3]]:(A.cn.gg||{})[st[3]]), om=cn?cn-st[1].length:0, miss=st[2]===1?tot-sum(st[1].map(c=>c.v||0)):0; return om>0||miss>0?`<p class="small muted">기록 보관 정리로 하위 후보${om>0?` ${om}명`:''}${miss>0?`(${miss}표)`:''}은(는) 표시하지 않습니다.</p>`:''; }
 function cerQuote(c,lab,k){ const p=G.players[c.id]; const mine=c.t===G.user; const m=mgrOf(c.t);
   const L=[`"${lab}은(는) 혼자 받는 상이 아닙니다. 함께 뛴 동료들 덕분입니다."`,`"${m&&!m.interim?m.name+' 감독님이 믿고 기회를 주셨습니다. ':''}더 잘하라는 뜻으로 알겠습니다."`,`"응원해 주신 ${tshort(c.t)} 팬들께 이 상을 바칩니다."`];
   if(mine&&!G.unemp)L.push(`"단장님과 프런트가 뒤에서 많이 챙겨 주셨습니다. 감사합니다."`); if(p&&p.age<=23)L.push('"어릴 때 꿈꾸던 무대입니다. 아직 실감이 안 납니다."'); if(p&&p.age>=33)L.push('"이 나이에 이 상을 받을 줄 몰랐습니다. 후배들에게 길을 보여 주고 싶습니다."');
@@ -25,7 +27,7 @@ function cerSheet(){ const C=UI.cer; const A=G.awards&&G.awards[C.y]; if(!A)retu
       <div class="cer-ft"><span></span><button class="btn primary" data-a="closeSheet">닫기</button></div></div>`; }
   else { const st=S[C.i], tot=totOf(st), rev=!!C.rev, n=st[1].length;
     const L=[...st[1]].sort((a,b)=>a.name.localeCompare(b.name)), W=st[1].slice(0,st[2]);
-    const mid=rev?`<div class="cer-rv"><div class="cer-stars">${W.map((w,i)=>cerStar(w,st[0],C.k,tot,i===0)).join('')}</div><div class="cer-rank"><h4>투표 결과 · 기자 ${tot}명${st[2]>1?` · 1인 최대 ${st[2]}명 선택`:''}</h4>${st[1].map((c,i)=>cerRow(c,i,i<st[2],tot)).join('')}</div></div>`
+    const mid=rev?`<div class="cer-rv"><div class="cer-stars">${W.map((w,i)=>cerStar(w,st[0],C.k,tot,i===0)).join('')}</div><div class="cer-rank"><h4>투표 결과 · 기자 ${tot}명${st[2]>1?` · 1인 최대 ${st[2]}명 선택`:''}</h4>${st[1].map((c,i)=>cerRow(c,i,i<st[2],tot)).join('')}${cerCut(A,C.k,st,tot)}</div></div>`
       :`<div class="cer-grid${n>12?' many':''}" style="--cols:${n<=4?n:n<=6?3:n<=8?4:n<=12?4:6}">${L.map(cerCard).join('')}</div>`;
     body=`<div class="cer-stage"><div class="cer-lab"><span class="eyebrow">${C.i+1} / ${S.length} 부문</span><h3 class="cer-ttl">${st[0]}${st[2]>1?` <small>${st[2]}명</small>`:''}</h3><span class="muted">${rev?'수상자 발표':`후보 ${n}명 · 이름순`}</span></div>${mid}
       <div class="cer-ft"><button class="btn" data-a="cerAll">결과 한눈에</button>${rev?`<button class="btn primary" data-a="cerNext">${C.i+1<S.length?'다음 부문':'전체 결과'}</button>`:`<button class="btn primary cer-go" data-a="cerRev">수상자 발표</button>`}</div></div>`; }
