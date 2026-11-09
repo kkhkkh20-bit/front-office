@@ -39,5 +39,5 @@ function playerRows(y,all){ const key=y+':'+G.day+':'+G.games.length+(all?':a':'
 /* 한 구단 기록만(이적 전 성적을 새 구단에 넘기지 않는다, 검수 11-08): 그해 그 구단에서 뛴 줄만 합친다 */
 function playerRowsT(y,tid,all){ const out=[]; for(const x of playerRows(y,all)){ const p=x.p; let h=null; if(p.hist&&p.hist.some(r=>r.y===y))h=seasonTotalT(p,y,'1군',tid); else if(p.arch&&p.arch.rows){ const R=p.arch.rows.filter(r=>r.y===y&&r.t===tid); if(R.length){ h={y,lvl:'1군',t:tid}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); } } if(!h)continue; if(!(p.isP?(h.outs||(all&&(h.bf||h.er||h.g))):(h.pa||(all&&(h.r||h.sb||h.cs||h.g)))))continue; out.push({p,h,w:p.arch?sum((p.arch.rows||[]).filter(r=>r.y===y&&r.t===tid).map(r=>r.war||0)):wOf(h,p),r:p.isP?(h.outs?pRate(h):{ip:0,era:null,whip:null,k9:null,bb9:null}):bRate(h)}); } return out; }
 function qualOf(tid){ const r=G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0; return g; }
-function isQual(x,y){ const live=y===G.year&&(period()==='season'||period()==='post'); const g=live?qualOf(x.h.t??x.p.team):144; return x.p.isP?x.h.outs>=Math.max(3,g*3):x.h.pa>=Math.max(3,Math.round(g*3.1)); } /* 규정타석은 반올림(144경기 446), 시상·타이틀과 같은 기준(검수 11-06) */
+function isQual(x,y){ return x.p.isP?(x.h.outs||0)>=3&&qualIP(x.p,x.h,y):(x.h.pa||0)>=3&&qualPA(x.p,x.h,y); } /* 시상·타이틀과 같은 도우미: 가장 많이 뛴 구단, 그 시즌 실제 팀 경기 수(검수 11-09zz) */
 

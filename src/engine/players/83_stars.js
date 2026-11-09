@@ -11,10 +11,10 @@ function rDelta(p){ const ref=rRef(p); if(!ref||ref.d===G.day)return null; const
 
 /* 개인 타이틀 8개: [이름, 기록, 투수 여부, 낮을수록 좋은가] */
 const TITLES=[['홈런왕','hr',0],['타점왕','rbi',0],['도루왕','sb',0],['타격왕','avg',0],['득점왕','r',0],['최다안타','h',0],['출루율왕','obp',0],['장타율왕','slg',0],['다승왕','w',1],['탈삼진왕','so',1],['세이브왕','sv',1],['평균자책점왕','era',1,1],['승률왕','wpct',1],['홀드왕','hld',1]]; /* KBO 개인 타이틀 14개 부문 */
-function tgp(tid){ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r.t||0):0; } /* 소속 팀 경기 수: 규정 타석(×3.1)·규정 이닝(×1) */
+function tgp(tid,y){ if(y!=null&&y!==G.year){ const a=G.tsArch&&G.tsArch[y]&&G.tsArch[y][tid]; return a&&a.g||0; } /* 지난 시즌은 그해 보관한 팀 경기 수(검수 11-09zz) */ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(r.t||0):0; } /* 소속 팀 경기 수: 규정 타석(×3.1)·규정 이닝(×1) */
 /* KBO 규정타석(팀 경기 수×3.1, 반올림)·규정이닝(팀 경기 수×1): 그해 가장 많이 뛴 구단 경기 수 기준(시즌이 짧아지거나 늘어도 맞게) */
-function qualPA(p,h,y){ return (h.pa||0)>=Math.round((tgp(awTeamOf(p,h,y))||144)*3.1); }
-function qualIP(p,h,y){ return (h.outs||0)>=(tgp(awTeamOf(p,h,y))||144)*3; }
+function qualPA(p,h,y){ return (h.pa||0)>=Math.round((tgp(awTeamOf(p,h,y),y)||144)*3.1); }
+function qualIP(p,h,y){ return (h.outs||0)>=(tgp(awTeamOf(p,h,y),y)||144)*3; }
 function ttVal(h,k){ if(k==='avg')return h.ab?h.h/h.ab:0; if(k==='era')return h.outs?h.er*27/h.outs:99; if(k==='obp'){ const d=(h.ab||0)+(h.bb||0)+(h.hbp||0)+(h.sf||0); return d?((h.h||0)+(h.bb||0)+(h.hbp||0))/d:0; } if(k==='slg')return h.ab?((h.h||0)+(h.d||0)+2*(h.tr||0)+3*(h.hr||0))/h.ab:0; if(k==='wpct'){ const n=(h.w||0)+(h.l||0); return n?(h.w||0)/n:0; } return h[k]||0; }
 function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k==='era'?v.toFixed(2):String(v); }
 /* 리그를 떠난 선수(방출·은퇴·해외)의 보관 기록도 그해 타이틀 경쟁에 넣는다(이미 낸 성적의 자격은 남는다). 현역 목록에 있는 선수는 보관 기록을 다시 세지 않는다 */
@@ -22,7 +22,7 @@ function tfmt(k,v){ return k==='avg'||k==='obp'||k==='slg'||k==='wpct'?fmt3(v):k
 function archP(a){ const pos0=a.isP?'P':a.pos; return {id:a.id,name:a.name,isP:!!a.isP,team:null,pos:pos0,role:a.pos==='선발'?'SP':'RP',foreign:a.foreign||null,age:a.age,...(a.dy!=null?{draft:{y:a.dy,...(a.dt!=null?{tid:a.dt}:{})}}:{}),svc:a.svc||0,arch:a,...(()=>{ const u=(a.rows||[]).filter(r=>r.up).pop(); return u?{use:{y:u.y,pos:Object.assign({},u.up)}}:{}; })(),hist:(a.fy!=null&&!(a.rows||[]).some(r=>r.y<=a.fy)?[{y:a.fy,lvl:'2군',pa:0}]:[]).concat((a.rows||[]).map(r=>Object.assign({lvl:'1군',pos:pos0},archFull(r)))) /* 저장 때 뺀 0인 칸을 되살린다(검수 11-09zf) */,r:new Proxy({},{get:()=>50})}; }
 function archSeason(a,y){ const R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)return null; const h={y,lvl:'1군'}; for(const k of ARCH_K)h[k]=sum(R.map(r=>r[k]||0)); h.war=sum(R.map(r=>r.war||0)); /* 보관 WAR(능력값 없이 다시 계산하면 NaN, 검수 11-09zf) */ h.t=R[R.length-1].t; return h; }
 function titleBoard(y,k,isP,low){ const L=[]; const src=Object.values(G.players).map(p=>[p,null]); for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id]; if(!a||!!a.isP!==!!isP)continue; const h=archSeason(a,y); if(h)src.push([{id:a.id,name:a.name,isP:a.isP,team:null,arch:a},h]); }
-  for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const t=awTeamOf(p,h,y), g=tgp(t); /* 소속·규정 기준 팀: MVP·골든글러브와 같은 '가장 많이 뛴 구단'(검수 11-09zq) */
+  for(const [p,h0] of src){ if(!!p.isP!==!!isP)continue; const h=h0||seasonTotal(p,y,'1군'); if(!h)continue; const t=awTeamOf(p,h,y), g=tgp(t,y); /* 소속·규정 기준 팀: MVP·골든글러브와 같은 '가장 많이 뛴 구단'(검수 11-09zq) */
     if(['avg','obp','slg'].includes(k)&&(h.pa||0)<Math.round(g*3.1))continue; if(k==='era'&&(h.outs||0)<g*3)continue; if(k==='wpct'&&(h.w||0)<10)continue; /* 규정타석 144경기 446(반올림), 승률왕은 10승 이상 */ const v=ttVal(h,k); if(!low&&!(v>0))continue; L.push({p,v,t:awClub(p,h,y)}); } /* 규정 기준 팀 경기 수는 뛴 구단, 표기 소속은 수상 당시 구단 */
   return L.sort((a,b)=>low?a.v-b.v:b.v-a.v); }
 function seasonTitles(y){ const out=[];
