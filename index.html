@@ -3520,7 +3520,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
      |           |                    |        | 지표/구속  |           |
      | 현재 상태 | 시즌 통계(넓게)              | 장점·약점  | 팀 내 위치 |
      | 최근 경기 |                              | 수비 위치  | 경력·이력  |  */
-@media(min-width:1100px) and (min-height:860px){
+@media(min-width:1100px){
   #sheet .pf-overview{display:grid;grid-template-columns:260px minmax(0,1.55fr) minmax(0,1fr) 270px 250px;grid-template-rows:minmax(0,1.6fr) minmax(0,1.6fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}
   #sheet .pf-overview :is(.pf-sidebar,.pf-main,.pf-main-top,.pf-insights,.pf-extra){display:contents!important}
   #sheet .pf-overview>*>*,#sheet .pf-main-top>*{margin:0!important;min-height:0!important;min-width:0;overflow:auto;scrollbar-width:thin;box-sizing:border-box}
@@ -3549,10 +3549,10 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-season-table .tw{flex:1;min-height:0;max-height:none}
   #sheet .pf-season-table>.pf-more{margin-top:8px}
 }
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-radar .pf-core-compact{display:none}#sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;justify-content:center}}
+@media(min-width:1100px){#sheet .pf-overview .pf-radar .pf-core-compact{display:none}#sheet .pf-overview .pf-radar{display:flex!important;flex-direction:column;justify-content:center}}
 @media(min-width:1100px){.fm-ptabs .pf-screen .pf-topnav:not(:has(.pe-box)){display:none}}
 /* 1100~1599 폭: 다섯 열은 좁아지므로 네 열로 다시 나눈다(계약·신분과 경력은 시즌 통계 옆 칸으로, 팀 내 위치는 생략) */
-@media(min-width:1100px) and (max-width:1599px) and (min-height:860px){
+@media(min-width:1100px) and (max-width:1599px){
   #sheet .pf-overview{grid-template-columns:240px minmax(0,1.45fr) minmax(0,1fr) 240px}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:4/3/6/4}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:6/3/7/4}
@@ -3565,11 +3565,11 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-field .pfd-v{font:700 11px var(--f-num);fill:#071014}.pf-field .pfd-l{font:500 9px var(--f-ui);fill:#c7d1da}.pf-field .pfd.main .pfd-l{fill:#fff;font-weight:700}
 .pf-posfield>p{margin:0;font-size:11px}
 .pf-field .pfd-v{font-size:14px}.pf-field .pfd-l{font-size:11px}
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-posfield>p{display:none}#sheet .pf-overview .pf-posfield{overflow:hidden}.pf-field{height:100%}}
+@media(min-width:1100px){#sheet .pf-overview .pf-posfield>p{display:none}#sheet .pf-overview .pf-posfield{overflow:hidden}.pf-field{height:100%}}
 .pf-field .pfd-v{font:700 10.5px var(--f-num);fill:#071014}.pf-field .pfd.main .pfd-v{font-size:12px}
 .pf-field .pfd-l{font:600 9px var(--f-ui);fill:#f2f5f7;paint-order:stroke;stroke:#0b1014;stroke-width:2.4px;stroke-linejoin:round}.pf-field .pfd:not(.main):not(.ok) .pfd-l{fill:#9fb0bd}
 .pf-posfield .pf-field{display:block;margin:0 auto;aspect-ratio:300/222;max-width:100%}
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-overview .pf-posfield .pf-field{width:100%;height:auto;max-height:100%;flex:1 1 0;min-height:0}}
+@media(min-width:1100px){#sheet .pf-overview .pf-posfield .pf-field{width:100%;height:auto;max-height:100%;flex:1 1 0;min-height:0}}
 .pf-rg-s{display:block;font-size:12px;font-weight:600;opacity:.85}
 /* 경력·수상 탭: PC는 위 요약 띠 + 세 열(수상 연표 · 대기록 · 이정표·소속), 휴대폰은 한 줄 */
 .ch-grid{display:grid;gap:10px;margin-bottom:10px}.ch-grid .card{margin:0;min-width:0}.ch-grid h3{margin:0 0 8px;font-size:14px}.ch-grid h3+*{margin-top:0}.ch-side h3:not(:first-child){margin-top:14px}
@@ -3601,8 +3601,8 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .cimg-b .btn{min-height:22px;padding:2px 8px;font-size:11px}
 .sheet-head .cimg-b{display:flex;flex-direction:column;gap:3px;margin-left:6px}
 /* 선수 상황판(PC): 상자 안에 스크롤바(드래그)가 생기지 않게 한다. 상자는 내용만큼 커지고, 줄 높이는 같은 줄 상자끼리 맞춘다.
-   화면이 넉넉하면 남는 높이를 줄끼리 나누고, 모자라면 화면 전체가 한 번에 내려간다(사용자 11-08) */
-@media(min-width:1100px) and (min-height:1300px){
+   화면이 넉넉하면 남는 높이를 줄끼리 나누고, 모자라면 화면 전체가 한 번에 내려간다(사용자 11-08). 창 높이와 상관없이 PC 전체에 적용(상자마다 스크롤하던 보통 높이 배치는 없앰, 사용자 11-09) */
+@media(min-width:1100px){
   #sheet .sheet.pf-screen:has(.pf-overview){overflow-y:auto!important;overflow-x:hidden!important}
   #sheet .sheet.pf-screen:has(.pf-overview)>.pf-overview,#sheet .sheet.pf-screen:has(.pf-overview)>:has(>.pf-overview){flex:1 0 auto}
   #sheet .pf-overview{height:auto;min-height:100%;grid-template-rows:repeat(6,auto);align-content:stretch}
@@ -3611,14 +3611,14 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-season-table .tw{overflow-x:auto;overflow-y:visible;flex:none} /* 아주 좁은 화면에서만 표가 옆으로 남는다 */
   #sheet .pf-season-table table{width:100%}
 }
-@media(min-width:1100px) and (max-width:1599px) and (min-height:1300px){
+@media(min-width:1100px) and (max-width:1599px){
   #sheet .pf-overview{grid-template-rows:repeat(8,auto)}
   #sheet .pf-overview .pf-season-table{grid-area:4/2/7/4}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:7/2/9/3}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career{grid-area:7/3/9/4}
 }
-@media(min-width:1100px) and (min-height:860px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:1/1;height:auto;object-fit:contain} /* 사진을 자르지 않고 통째로(사용자 11-08) */}
-@media(min-width:1100px) and (max-width:1919px) and (min-height:860px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
+@media(min-width:1100px){#sheet .pf-fmcard.ph .pf-fm-face>.av{aspect-ratio:1/1;height:auto;object-fit:contain} /* 사진을 자르지 않고 통째로(사용자 11-08) */}
+@media(min-width:1100px) and (max-width:1919px){#sheet .pf-season-table table{font-size:10.5px}#sheet .pf-season-table :is(th,td){padding:3px 3px;white-space:nowrap}}
 /* 능력 변화 표시(사용자 11-08) */
 .pf-attribute-row:has(>.pf-ar){grid-template-columns:minmax(0,1fr) 14px auto}
 .pf-ar{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;font-style:normal;vertical-align:middle;cursor:help}
@@ -3633,30 +3633,13 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 .pf-spark{display:block}
 .ovc .pf-dl{margin-left:2px}
 
-/* 선수 상황판(PC, 보통 높이): 화면 한 장에 꽉 차게 맞춘다. 상자는 줄 비율대로 나누고, 넘치는 내용은 상자 안에서 휠로만 내려간다(스크롤바·화면 끌기 없음, 사용자 11-08) */
-@media(min-width:1100px) and (min-height:860px) and (max-height:1299px){
-  #sheet .pf-overview>*>*,#sheet .pf-main-top>*{scrollbar-width:none}
-  #sheet .pf-overview>*>*::-webkit-scrollbar,#sheet .pf-main-top>*::-webkit-scrollbar{display:none}
-  #sheet .pf-attributes .pf-trend{display:none} /* 핵심 능력 추이 선은 높이가 넉넉할 때만 */
-  #sheet .pf-overview{grid-template-rows:minmax(0,2.4fr) minmax(0,2.4fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr)}
-  #sheet .pf-overview .pf-fmcard{gap:3px;align-content:start;overflow-y:auto!important;scrollbar-width:none} /* 인물 카드: 연봉·비교 버튼까지 칸 안에 */
-  #sheet .pf-fmcard .pf-fm-pay{padding-bottom:6px}
-  #sheet .pf-overview .pf-fmcard.ph{position:relative;container-type:inline-size}#sheet .pf-fmcard.ph .pf-fm-name b{position:absolute;right:6px;top:calc(100cqw - 30px);z-index:3} /* 이름 고치기 버튼은 사진 오른쪽 아래(사진 버튼 맞은편)로 */
-  #sheet .pf-fmcard .pf-fm-key>*{padding-block:5px}#sheet .pf-fmcard .pf-fm-stats>*{padding-block:4px}
-  #sheet .pf-screen .pf-attribute-row,#sheet .pf-attribute-row{min-height:22px;padding-block:1px;font-size:12px}
-  #sheet .pf-attribute-row .pf-score{font-size:15px}
-  #sheet .pf-attribute-group{margin-bottom:6px}#sheet .pf-attribute-group h3{padding-bottom:4px;font-size:12px}
-  #sheet .pf-cmp{margin-bottom:4px}
-  #sheet .pf-overview{padding-bottom:12px!important} /* 아래 빈 띠를 줄여 아래 줄 상자에 */
-}
-
 /* 선수 상황판 배치(사용자 11-08 3차): 7줄 격자. 환산 참고값·장점/약점 없음.
      | 인물 카드 | 세부 능력 | 보고서 | 현재 상태  | 계약·신분 |
      |           |           |        | 능력 차트  |           |
      |           |           |        |            | 경력      |
      |-----------| 시즌 통계          | 수비 위치  |           |
      | 팀 내 위치|                    |            | 최근 경기 |  */
-@media(min-width:1100px) and (min-height:860px){
+@media(min-width:1100px){
   #sheet .pf-overview :is(.pf-track,.pf-procon){display:none!important}
   #sheet .pf-overview .pf-fmcard{grid-area:1/1/6/2}
   #sheet .pf-overview .pf-teampos{display:block!important;grid-area:6/1/8/2}
@@ -3676,9 +3659,8 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-radar>h3{margin-bottom:0}
   #sheet .pf-overview .pf-radar .radar{flex:1 1 0;min-height:0;width:100%;height:100%;max-height:none}
 }
-@media(min-width:1100px) and (min-height:860px) and (max-height:1299px){#sheet .pf-overview{grid-template-rows:minmax(0,1.65fr) minmax(0,2.6fr) minmax(0,1.6fr) minmax(0,auto) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}}
-@media(min-width:1100px) and (min-height:1300px){#sheet .pf-overview{grid-template-rows:repeat(7,auto)}}
-@media(min-width:1100px) and (max-width:1599px) and (min-height:860px){
+@media(min-width:1100px){#sheet .pf-overview{grid-template-rows:repeat(7,auto)}}
+@media(min-width:1100px) and (max-width:1599px){
   #sheet .pf-overview .pf-season-table{grid-area:5/2/8/3}
   #sheet .pf-overview .pf-fm-info:not(.pf-career){grid-area:5/3/7/4}
   #sheet .pf-overview .pf-career,#sheet .pf-overview:not(:has(.pf-teampos)) .pf-career,#sheet .pf-overview:not(:has(.pf-recent)) .pf-career{grid-area:7/3/8/4}
@@ -9926,8 +9908,8 @@ const SUR='김이박최정강조윤장임한오서신권황안송류홍전고문
 /* 성씨 비중(%): 통계청 2015 인구주택총조사 근사. 고르게 뽑으면 희성이 너무 많이 나온다(사용자 피드백 11-06) */
 const SUR_W=[21.6,14.8,8.5,4.7,4.4,2.4,2.1,2.1,2.0,1.7,1.5,1.5,1.5,1.5,1.4,1.4,1.4,1.3,0.3,1.1,1.1,0.9,0.9,0.9,0.9,0.8,0.8,0.6,0.5,0.5,0.5,0.5,0.4,0.4,0.4,0.4,0.4,0.4,0.3,1.4,0.3,0.3,0.3,0.3,0.3,0.3,0.2,0.2,0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.06,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.03,0.03,0.03,0.03,0.03]; const SUR_C=(()=>{ let a=0; const t=SUR_W.reduce((x,y)=>x+y,0); return SUR_W.map(v=>(a+=v)/t); })();
 function surAt(u){ const i=SUR_C.findIndex(c=>u<c); return SUR[i<0?SUR.length-1:i]; }
-const G1='민서준도현우지성태재승동진영상형규호원석한세윤건시유은하주경범정희용인수기종'.split('');
-const G2='호준우민혁수현진훈석빈원성규찬결율환섭철영욱범완택열균식겸후언'.split(''); /* '기'로 끝나는 이름(지기·경기·성기·종기…)은 낱말처럼 읽혀 뺐다 */
+/* 이름(성 뒤 두 글자): 1990~2000년대생 남자 선수에게 흔한 실제 이름. 음절을 따로 붙이면 어색하고 비슷한 이름이 몰려 목록으로 바꿨다(사용자 11-09) */
+const GN='민준 서준 도윤 예준 시우 하준 주원 지호 지후 준우 준서 건우 현우 도현 지훈 우진 선우 서진 민재 현준 연우 유준 정우 승우 승현 시윤 준혁 은우 지환 승민 유찬 윤우 민성 준영 시후 진우 지원 수호 재윤 동현 수현 태윤 민규 민우 재민 은찬 윤호 이준 민찬 시온 성민 준호 승준 성현 재현 하율 지한 우현 태민 은호 태현 민호 성준 지성 동하 준수 정민 상민 태호 준희 동욱 상현 재훈 성훈 진호 영민 현석 상훈 종현 동훈 진혁 민석 재혁 현호 성우 태훈 승훈 영훈 경민 대현 용준 정훈 형준 재성 현진 동민 우석 상우 종민 진영 태영 성진 민수 현수 재영 준형 영준 대호 성호 영호 승호 재호 원준 세진 세훈 세준 건희 동건 인호 재웅 태웅 경훈 광민 범준 병준 창민 철민 한솔 형민 주환 주형 주현 진수 진성 찬호 찬우 찬영 태준 태경 태양 해성 현성 현규 효준 희준 규민 규현 근우 다훈 도경 도훈 동규 동빈 명준 무진 민혁 병훈 상진 상혁 석진 석현 선호 성빈 성재 성환 세윤 수빈 수혁 승윤 승재 승환 시훈 영재 영빈 용현 우성 원석 원희 유성 윤성 윤재 은성 인성 인혁 재경 재우 재준 재희 정현 정환 종훈 주성 주호 준성 지웅 지혁 진욱 진환 찬희 창훈 태성 태환 한빈 현빈 현욱 형석 형우 호준 효민 경수 강민 강현 건호 광현 규호 대희 동주 동혁 두현 명수 문성 상욱 상빈 선재 성욱 승빈 시헌 영우 우빈 원빈 윤석 은혁 의진 재범 정빈 정혁 종우 준표 지석 진석 창현 태율 한결 현태 형진 혜성 희성 건영 건욱 경태 관우 광수 광훈 교현 규성 규태 기훈 기연 기웅 남훈 대성 대영 대훈 대한 덕현 도건 도성 도영 도형 동석 동수 동연 동윤 동준 동철 동환 두호 명진 명훈 무성 문수 문혁 민관 민국 민형 민환 범석 범진 병민 병우 병현 보현 봉준 상규 상수 상윤 상철 상호 서원 석민 석훈 선빈 선웅 성규 성수 성연 성용 성일 성주 성철 성태 성필 세현 세형 수민 수용 수철 승규 승원 승주 승철 승태 시혁 신우 영광 영규 영석 영수 영웅 영진 영찬 영태 영환 예찬 완수 용민 용석 용우 용재 용진 용훈 우람 우영 우준 우혁 원재 원태 유빈 유석 유진 윤수 윤찬 은석 은재 은표 의현 이현 인규 인석 인우 일권 장현 재광 재근 재덕 재학 재홍 재환 정근 정연 정욱 정웅 정태 정한 종건 종석 종수 종진 종혁 종호 주영 주완 주찬 주한 준엽 준용 준철 준태 준하 중현 지민 지범 지상 지수 지완 지용 지운 지찬 지형 진만 진형 찬규 찬민 찬성 찬수 찬혁 창용 창진 창호 철우 철호 충현 태건 태규 태빈 태섭 태수 태우 태원 태일 태하 태한 태형 택근 택현 하성 하진 한수 한울 해민 해준 현도 현민 현섭 현승 현식 현오 현웅 현일 현종 현찬 현철 형규 형근 형래 형철 형태 호석 호연 호영 홍근 홍민 홍준 효상 효섭 효원 효종 효진 희동 희수 희재 희찬'.split(' ');
 /* 낱말처럼 읽히는 이름(성 뒤 두 글자): 야구·구단 용어와 헷갈리거나 어색한 것 */
 const GBAD=new Set(['시민','주민','도민','주식','지식','인식','한식','정식','시식','종식','수식','하수','호수','승수','인수','기준','기수','기원','기성','기우','수준','정수','정원','인원','동원','경영','경호','주석','재석','성원','재원','세수','정석','시원','용수']);
 const nameBad=n=>typeof n==='string'&&n.length===3&&(GBAD.has(n.slice(1))||n[2]==='기');
@@ -9954,7 +9936,8 @@ const intlLv=r=>Math.min(3,((G.intl&&G.intl[r])||0)+(G&&G.scouts&&G.scouts.some(
 /* 국내 이름: 현역·은퇴 선수(OB) 이름과 겹치지 않게(하루 단위로 이름 목록을 모아 둔다) */
 let _nmSet=null, _nmDay=null;
 function nameTaken(n){ if(typeof G==='undefined'||!G||!G.players)return false; if(_nmDay!==G.day||!_nmSet){ _nmSet=new Set(Object.values(G.players).map(p=>p.name)); for(const o of (G.ob||[]))_nmSet.add(o.name); _nmDay=G.day; } return _nmSet.has(n); }
-function genName(){ for(let i=0;i<60;i++){ const n=surAt(R())+pick(G1)+pick(G2); if(!BLOCK.has(n)&&!nameBad(n)&&n[1]!==n[2]&&!nameTaken(n)){ if(_nmSet)_nmSet.add(n); return n; } } return surAt(R())+'도윤'; }
+/* 성은 한 번만 뽑고 이름만 다시 뽑는다: 겹칠 때 성까지 다시 뽑으면 흔한 성이 차면서 희성이 점점 늘었다(사용자 11-09) */
+function genName(){ const s=surAt(R()); let n=s+'도윤'; for(let i=0;i<60;i++){ const m=s+pick(GN); if(BLOCK.has(m)||nameBad(m))continue; n=m; if(!nameTaken(m))break; } if(_nmSet)_nmSet.add(n); return n; }
 function genFName(k){ const d=FN[k]; for(let i=0;i<30;i++){ const n=d.rev?pick(d.l)+' '+pick(d.f):pick(d.f)+' '+pick(d.l); if(!BLOCK.has(n)&&!Object.values(G.players).some(p=>p.name===n))return n; } return pick(d.f)+' '+pick(d.l); }
 /* 종합 능력: 타자는 컨택·파워·선구·주력·수비가 득점에 기여하는 비중(+10 실험과 일치).
    투수는 선발 275명(8개 세계) WAR 회귀 비중 구위 .47·제구 .46·체력 .07에 맞춰 구위 .44·제구 .44·체력 .12(체력은 선발을 맡을 수 있는지가 더 크다). 리그 평균 종합 능력은 그대로 */
@@ -14879,7 +14862,7 @@ function extendMgr(add){ if(G.unemp)return '구단을 맡고 있지 않습니다
 function renewMgr(y,tid,mid){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const m=G.mgr[G.user]; if(!m||m.interim)return; if((tid!=null&&+tid!==G.user)||(mid!=null&&mid!==m.id))return '이 재계약 요청은 현재 구단·감독의 요청이 아닙니다.'; if(m.yrs>0)return `${m.name} 감독과는 이미 계약 기간이 남아 있습니다(${m.yrs}년).`; if(![1,2,3].includes(+y))return '재계약은 1~3년입니다.'; /* 이미 처리한 재계약 제안을 다시 눌러도 연봉이 또 오르지 않게 */ staffCt(m,+y); m.sal=round5(m.sal*1.1); addLog(`${m.name} 감독과 ${y}년 재계약했습니다(연 ${money(m.sal)}).`); }
 
 /* ===== 인물 관계도: 구단주·사장·감독·코치·선수·타 구단 단장·팬·언론 ===== */
-function nameH(k){ for(let i=0;i<9;i++){ const a=u01(k+'s'+i,7),b=u01(k+'a'+i,11),c=u01(k+'b'+i,13); const n=surAt(a)+G1[Math.floor(b*G1.length)]+G2[Math.floor(c*G2.length)]; if(!BLOCK.has(n)&&n[1]!==n[2])return n; } return SUR[0]+'도윤'; }
+function nameH(k){ for(let i=0;i<9;i++){ const a=u01(k+'s'+i,7),b=u01(k+'a'+i,11),c=u01(k+'b'+i,13); const n=surAt(a)+GN[Math.floor(b*GN.length)]; if(!BLOCK.has(n)&&!nameBad(n))return n; } return SUR[0]+'도윤'; }
 const OWNTRAIT={win:'우승 트로피를 직접 들고 싶어 합니다. 성적이 나면 지갑을 엽니다.',profit:'숫자에 밝습니다. 적자 보고서를 가장 먼저 펼쳐 봅니다.',pr:'그룹 이미지와 관중석을 봅니다. 화제가 되는 구단을 원합니다.'};
 function bossOf(tid){ G.boss=G.boss||{}; const k=tid??G.user; if(!G.boss[k]){ const s='boss'+k+':'+(team(k).code||k)+(team(k).bseed?':'+team(k).bseed:'');
     G.boss[k]={own:{name:nameH(s+'o'),age:58+Math.floor(u01(s,'oa')*18),id:'own'+k},ceo:{name:nameH(s+'c'),age:52+Math.floor(u01(s,'ca')*12),id:'ceo'+k,car:['그룹 전략실 출신','재무 담당 임원 출신','마케팅 임원 출신','계열사 대표 출신'][Math.floor(u01(s,'cc')*4)]}}; }
@@ -22523,6 +22506,8 @@ function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
 const pctStr=o=>o.w+o.l?fmt3(o.w/(o.w+o.l)):'-';
 function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order:standingsNow()}; }
+/* 결산이 끝난 뒤(다음 시즌)와 개막 전에는 지난 시즌 대신 새 시즌 0승 0패와 예상 순위를 보인다(사용자 11-09). 그 시즌 연도, 아니면 0 */
+function preSeasonY(){ const per=period(); if(per==='pre')return G.year; if(per==='off'&&!preSettle()&&G.last&&G.last.y>=G.year)return G.year+1; return 0; }
 /* 화면 순위: 승률이 같으면 공동이지만, 순위 결정전으로 갈린 두 팀은 결정전 결과 순서(검수 11-09l) */
 function stRank(order,tid){ const T=(G.ps&&G.ps.tbRes)||[], id=o=>o.tid??o, i=order.findIndex(o=>id(o)===tid); if(i<0)return 0; let j=i; while(j>0&&tieOf(order[j-1],order[i])&&!T.some(x=>[x.w,x.l].includes(id(order[j-1]))&&[x.w,x.l].includes(tid)))j--; return j+1; }
 const gbOf=(top,o)=>((top.w-o.w)-(top.l-o.l))/2;
@@ -22700,6 +22685,9 @@ function homePsPanel(){ const D=bkData(psYearOf(G.ps)); const nm={wc:'와일드�
 /* 노트북 홈: 오늘 할 일·기사·순위·다음 경기를 고정된 본문 안에 배치한다. */
 function homeStandingPanel(){
   if(G.ps&&!G.ps.done&&typeof bkData==='function')try{ return homePsPanel(); }catch(e){} /* 가을야구 중에는 순위 대신 대진(사용자 11-08) */
+  { const py=preSeasonY(); if(py){ /* 결산 뒤·개막 전: 새 시즌 0승 0패와 예상 순위(사용자 11-09) */
+    const rows=projNow().map((x,i)=>`<tr class="${x.tid===G.user?'own':''}${i===4?' cut':''}"><td>${i+1}</td><td><button data-a="lteamGo" data-v="${x.tid}">${badge(x.tid,17)}<b>${esc(team(x.tid).nick)}</b></button></td><td>0-0</td></tr>`).join('');
+    return `<section class="hw-panel hw-stand"><header><h2>${py} 시즌 <small class="muted">예상 순위 · 현재 전력 기준</small></h2><button class="tc-i" data-a="go" data-v="league:stand">전체</button></header><table><thead><tr><th>예상</th><th style="text-align:left">구단</th><th>승-패</th></tr></thead><tbody>${rows}</tbody></table></section>`; } }
   /* 리그 순위 + 팀 지표(득실·최근 5경기). 시즌 중엔 올해, 비시즌엔 지난 시즌 최종(사용자 11-06: 리그 팀 지표를 홈으로) */
   let {order,live,y}=standOrder(); if(!live&&!(order&&order.length)){ order=standingsNow(); live=true; } const ranks=[], L=order.map((x,i)=>{ ranks[i]=live&&i&&tieOf(order[i-1],x)?ranks[i-1]:i+1; return {...x,rank:ranks[i]}; });
   const rows=L.map((x,i)=>{ const sp=live?splitOf(x.tid):null, d=sp?sp.rs-sp.ra:null; return `<tr class="${x.tid===G.user?'own':''}${i===4?' cut':''}"><td>${x.rank}</td><td><button data-a="lteamGo" data-v="${x.tid}">${badge(x.tid,17)}<b>${esc(team(x.tid).nick)}</b></button></td><td>${x.w}-${x.l}${x.t?'-'+x.t:''}</td><td>${i?gbStr(gbOf(L[0],x)):'-'}</td><td class="${d>0?'pos':d<0?'neg':''}">${sp&&sp.n?(d>0?'+':'')+d:'-'}</td><td>${live?fxForm(tlOf(x.tid).slice(-5)):''}</td></tr>`; }).join('');
@@ -23600,13 +23588,14 @@ function nextGames(n){
   return L.slice(0,n);
 }
 /* 지금 전력 예상 순위(홈 상단 타일과 오른쪽 전력 예상이 같은 값을 쓴다) */
-function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G)UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)})).sort((a,b)=>b.r-a.r)}; return UI._trk.R; }
+/* 개막일 G.proj(언더독 도전과제 기준)와 같은 식: 전력 + 그 시즌 고정 잡음 */
+function projNow(){ if(!UI._trk||UI._trk.k!==G.day+':'+G.user||UI._trk.g!==G){ const y=preSeasonY()||G.year; UI._trk={k:G.day+':'+G.user,g:G,R:G.teams.map(t=>({tid:t.id,r:teamRating(t.id)+hn('proj'+y,t.id)*.7})).sort((a,b)=>b.r-a.r)}; } return UI._trk.R; }
 /* 승률이 같은 팀: 동률 표시(순서는 상대 전적 등 동률 기준) */
 function miniStand(){
   const {order,live,y}=standOrder(); if(!order||!order.length)return '';
-  if(!live&&G.startY===G.year){ /* 창단 첫해 개막 전: 지난 시즌 순위는 의미가 없으니 전문가 전력 평가를 보여 준다 */
+  const py=!live&&preSeasonY(); if(py){ /* 결산 뒤·개막 전: 지난 시즌 순위 대신 새 시즌 0승 0패와 전력 예상 순위(사용자 11-09) */
     const R=projNow();
-    return `<section class="card"><div class="row between"><h2 class="sec">${ctSeason()} 전력 예상</h2><span class="small muted">현재 전력 기준 · 영입·성장에 따라 바뀜</span></div><div class="tw"><table class="mst"><tbody>${R.map((x,i)=>`<tr class="${x.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${i+1}</td><td>${badge(x.tid,16)} ${esc(tshort(x.tid))}</td></tr>`).join('')}</tbody></table></div></section>`; }
+    return `<section class="card"><div class="row between"><h2 class="sec">${py} 시즌 예상 순위</h2><span class="small muted">현재 전력 기준 · 영입·성장에 따라 바뀜</span></div><div class="tw"><table class="mst"><thead><tr><th></th><th>구단</th><th>승-패-무</th></tr></thead><tbody>${R.map((x,i)=>`<tr class="${x.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${i+1}</td><td>${badge(x.tid,16)} ${esc(tshort(x.tid))}</td><td class="num">0-0-0</td></tr>`).join('')}</tbody></table></div><p class="small muted">개막일 예상 순위가 8위 이하인 해에 우승하면 도전과제 '언더독'을 얻습니다.</p></section>`; }
   const top=order[0]; const hasTl=tlOf(G.user).length>0&&live; const od=live?playoffOdds():null; const nar=!wide()&&!!od;
   const rkS=[]; order.forEach((o,i)=>rkS.push(live&&i&&tieOf(order[i-1],o)?rkS[i-1]:i+1)); /* 승패가 같으면 같은 순위(표의 순서는 상대 전적 등 동률 기준) */
   const nTop=live?order.filter(o=>tieOf(order[0],o)).length:1;
@@ -29280,7 +29269,7 @@ function asgField(side,L){
 function dashTiles(){ if(G.unemp||G.gameOver)return ''; const T=[]; const t=team(G.user); const per=period();
   const tile=(lab,val,sub,go,cls,meter,urg)=>`<button class="dtl ${cls||''}${urg?' urg':''}"${urg?` data-urg="${urg}"`:''} data-a="go" data-v="${go}"><span class="dtl-l">${lab}</span><b class="dtl-v num">${val}</b>${meter!=null?`<span class="dtl-m"><i style="width:${clamp(meter,0,100)}%"></i></span>`:''}<span class="dtl-s">${sub}</span></button>`;
   { const {order,live}=standOrder(); const i=order.findIndex(o=>o.tid===G.user); const o=order[i];
-    if(o&&(live||G.startY!==G.year||(G.history.length&&G.history[G.history.length-1].y>=G.year))){ const gb=i>0?gbOf(order[0],o):0, g5=order[4]?gbOf(order[4],o):0; T.push(tile(live?'순위':'지난 시즌',`${i+1}위`,`${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''}${live?(i===0?(tieOf(o,order[1])?' · 동률 선두':' · 선두'):` · 1위와 ${gb.toFixed(1)}`)+(i>=5?` · 5위와 ${g5.toFixed(1)}`:''):''}`,'league:stand',i<5?'good':i>=8?'bad':'')); }
+    if(o&&!preSeasonY()&&(live||G.startY!==G.year||(G.history.length&&G.history[G.history.length-1].y>=G.year))){ const gb=i>0?gbOf(order[0],o):0, g5=order[4]?gbOf(order[4],o):0; T.push(tile(live?'순위':'지난 시즌',`${i+1}위`,`${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''}${live?(i===0?(tieOf(o,order[1])?' · 동률 선두':' · 선두'):` · 1위와 ${gb.toFixed(1)}`)+(i>=5?` · 5위와 ${g5.toFixed(1)}`:''):''}`,'league:stand',i<5?'good':i>=8?'bad':'')); }
     else { const pr=projNow().findIndex(x=>x.tid===G.user); T.push(tile('전력 예상',pr>=0?`예상 ${pr+1}위`:'-','현재 전력 기준','league:stand')); } }
   { let nx=null; try{ const L=nextGames(1); if(L&&L[0])nx=L[0]; }catch(e){}
     if(nx&&(per==='season'||per==='post'||per==='pre')){ const op=nx.op, home=nx.home; if(!wide())T.push(tile("다음 경기",`${home?"vs":"@"} ${esc(team(op).nick)}`,`${dsh(nx.d)} ${WD[dobj(nx.d).w]} · ${home?'홈':'원정'}`,'cal')); }
@@ -30955,6 +30944,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-09h',d:'11월 9일',t:'새 시즌 예상 순위 · 선수 화면 전체 스크롤 · 선수 이름',items:[
+    '결산이 끝나면 리그 순위 패널이 지난 시즌 기록 대신 다음 시즌 0승 0패와 예상 순위를 보여 줍니다(개막 전까지). 개막일 예상 순위가 도전과제 "언더독"(예상 8위 이하에서 우승) 기준입니다.',
+    'PC 선수 화면은 상자마다 따로 스크롤하지 않고, 모든 상자를 내용만큼 펼친 뒤 화면 전체를 한 번에 내립니다.',
+    '새로 만들어지는 국내 선수 이름이 1990~2000년대생에게 흔한 실제 이름에서 나오고, 리그 안에서 같은 이름이 겹치지 않습니다. 이름이 겹쳐 다시 뽑을 때 희귀 성씨가 늘던 문제도 고쳤습니다.'
+  ]},
   {id:'2026-11-09e',d:'11월 9일',t:'감독·구단주와 주고받는 대화',items:[
     '감독과 이야기 나누기가 3~5마디로 길어졌습니다. 감독이 단장에게 되묻습니다. "그 친구 계약은 언제 얘기할 겁니까?", "단장님은 지금 순위 어떻게 보십니까?", "이대로 가면 저 자르실 겁니까?"',
     '질문은 지금 상황에서 나옵니다. 곧 FA가 되는 주전, 순위, 연패, 부상자, 최근 데려온 선수, 예산 여유, 비시즌 목표를 묻습니다.',
