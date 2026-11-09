@@ -28,7 +28,9 @@ function termsTxt(t,short){ const L=[`${t.years}년${t.cOpt?`+구단 옵션 ${t.
 /* 확정 잔여 보장액: 지금 계약의 남은 해(다년·FA 계약) + 이미 합의한 다음 시즌 시작 계약(extNext). 해마다 협상하는 연봉은 넣지 않는다 */
 function guarLeft(p){ if(!p||p.foreign)return 0; return (p.faC?p.sal*Math.max(1,p.yrs||1):0)+(p.extNext?p.extNext.annual*p.extNext.years:0); }
 /* 이적하면 없어지는 계약 조건(화면 안내용) */
-function termsLostTxt(p){ if(!p||!ctOn(p))return ''; const L=[]; if(p.capB)L.push(`계약금 상한 반영(연 ${money(p.capB.a)})`); if(p.opt)L.push(`성과 옵션(연 최대 ${money(p.opt.a)})`); if(p.ntc)L.push('트레이드 거부권'); if(p.roleProm)L.push('역할 약속'); if(p.cOpt&&!p.cOpt.used)L.push(`구단 연장 옵션 ${p.cOpt.y}년`); if(p.pOut&&!p.pOut.used)L.push('선수 옵트아웃'); return L.join(' · '); }
+function termsLostTxt(p){ if(!p)return ''; const L=[]; if(ctOn(p)){ if(p.capB)L.push(`계약금 상한 반영(연 ${money(p.capB.a)})`); if(p.opt)L.push(`성과 옵션(연 최대 ${money(p.opt.a)})`); if(p.ntc)L.push('트레이드 거부권'); if(p.roleProm)L.push('역할 약속'); if(p.cOpt&&!p.cOpt.used)L.push(`구단 연장 옵션 ${p.cOpt.y}년`); if(p.pOut&&!p.pOut.used)L.push('선수 옵트아웃'); }
+  { const X=p.extNext&&p.extNext.terms, N=[]; if(X){ if(X.bonus>0)N.push(`계약금 상한 반영(연 ${money(Math.round(X.bonus/Math.max(1,X.years||1)))})`); if(X.opt>0)N.push(`성과 옵션(연 최대 ${money(X.opt)})`); if(X.ntc)N.push('트레이드 거부권'); if(X.role===0)N.push('역할 약속'); if(X.cOpt>0)N.push(`구단 연장 옵션 ${X.cOpt}년`); if(X.pOut>0)N.push('선수 옵트아웃'); } if(N.length)L.push(`다음 시즌 계약의 ${N.join('·')}`); } /* 트레이드하면 미리 맺은 다음 시즌 계약의 구단 한정 조항도 끝난다(mvLog, 검수 11-09zzb) */
+  return L.join(' · '); }
 /* 계약의 현금 지급 연도: 계약금은 합의할 때 바로 나가 지금 결산 연도(sponSeason)에 잡히고, 연봉은 계약 적용 시즌마다. '계약 적용 시즌'과 '돈이 나가는 해'를 나눈다 */
 function ctCashYears(T,s0){ const py=sponSeason(), yrs=Math.max(1,T.years||1), s1=s0+yrs-1; const out=[]; for(let y=Math.min(py,s0);y<=s1;y++){ const sal=y>=s0?(T.annual||0):0, bon=y===py?(T.bonus||0):0; if(sal||bon)out.push({y,sal,bon,v:sal+bon}); } return out; }
 /* 트레이드로 옮길 때: 이미 달성한 성과 옵션은 원소속 구단이 지급하고 조항을 정리한다(방출 경로와 같게, 검수 11-06) */
