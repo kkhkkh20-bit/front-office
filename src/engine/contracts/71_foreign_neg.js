@@ -60,7 +60,13 @@ function signForeignT(tid,id,g,i){ const p=G.players[id]; if(!p)return '외국�
   if(tid===G.user)story(p,`계약 조건: 보장 ${money(g)}${i?` + 인센티브 ${money(i)}(규정 출전 시)`:''}`,'move'); return ''; }
 /* 기다려 준 기한이 지나면 가장 강한 경쟁 구단으로 간다 */
 function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]; if(!q||q.team!=null||!q.fneg||!q.fneg.dl||q.fneg.dl>=G.day)continue; const dl=q.fneg.dl; delete q.fneg.dl;
-    const R0=foRivals(q); if(!R0.length||!foreignOpen())continue; let b=null; for(const r of R0){ aiForeignSign(r.tid,q,'',r); if(q.team===r.tid){ b=r; break; } } if(!b)continue; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다 */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`); } }
+    const R0=foRivals(q); if(!R0.length||!foreignOpen())continue; let b=null; for(const r of R0){ aiForeignSign(r.tid,q,'',r); if(q.team===r.tid){ b=r; break; } } if(!b)continue; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다 */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${q.fcut!=null&&!q.fneg.n?`${dmd(dl)}까지 끼어들 기회가 있었지만 우리는 제안하지 않았습니다.`:`${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`}`); } }
+/* 우리 관찰 명단 후보를 AI 구단이 데려가려 하면 바로 끝내지 않고 사흘 끼어들 기한을 준다(사용자 피드백 11-09f: '하이재킹 당했습니다'로 끝나 허무함).
+   기한에는 다른 구단도 못 데려가고(foHeld), 기한이 지나면 foDaily가 기존 점수로 가장 강한 구단에 보낸다. 관찰 명단만, 한 선수당 한 번만 */
+function foCutIn(tid,q){ if(G.unemp||!q||q.team!=null||q.fcut!=null||!fwatchOn(q.id)||foHeld(q))return false; const dl=period()==='season'?Math.min(G.day+3,foreignDL()):G.day+3; if(dl<=G.day)return false;
+  q.fcut=G.day; const N=foNeg(q); N.dl=dl; N.dlT=tid; const r=foRivals(q).find(x=>x.tid===tid); const tot=r?r.g+r.i:Math.min(foCap(q),q.ask);
+  mail('스카우트팀장',`${tshort(tid)}, 관찰 후보 ${q.name}와(과) 협상 중`,`${tname(tid)}이(가) 관찰 명단의 ${q.name}(${posLabel(q)}, ${q.age}세)과(와) 계약을 앞두고 있습니다. 제시액은 약 ${Math.round(tot/USD/5)*5}만 달러 수준으로 들립니다. 관심 있으면 ${dmd(dl)}까지 제안하세요. 선수가 두 구단 조건을 비교해 고릅니다.`,{imp:true,kind:'외국인',ref:q.id,acts:[{l:`${q.name} 보고 제안`,a:'player',v:q.id},{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
+  return true; }
 /* AI 구단은 우리와 협상 중인(기다려 주는) 선수를 그 기간에는 데려가지 않는다 */
 function foHeld(q){ return q&&q.fneg&&q.fneg.dl&&q.fneg.dl>=G.day; }
 const usdT=v=>`${(v/USD).toFixed(2).replace(/\.?0+$/,'')}만 달러`;
