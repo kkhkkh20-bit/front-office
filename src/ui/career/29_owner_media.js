@@ -23,7 +23,7 @@ function ownerView(){
     :'<p class="small muted">시즌 목표는 개막일에 구단주가 정합니다.</p>';
   const log=(G.ownerLog||[]).map(x=>`<div class="olog"><span class="pill ${x.mood==='만족'?'good':x.mood==='관망'?'':'bad'}">${x.m}월 ${x.mood}</span><p class="small">${esc(x.txt)}</p><span class="small muted">신뢰 ${x.trust} (${x.delta>=0?'+':''}${x.delta})</span></div>`).join('');
   return csec('구단주와 시즌 목표',`<div class="row between"><div><b>구단주 성향: ${ow.label}</b><p class="small muted">${ow.msg}</p></div><div class="trustbox"><span class="small muted">구단주 신뢰</span><b class="num">${t.trust}</b>${gauge(t.trust,25,60)}</div></div>
-    ${t.trust<25?'<div class="note bad">신뢰가 매우 낮습니다. 시즌이 끝날 때 12 아래로 떨어지면 경질됩니다.</div>':''}
+    ${t.trust<25?'<div class="note bad">구단주 신뢰가 바닥입니다. 시즌이 끝날 때 12 아래로 떨어지면 경질됩니다.</div>':''}
     <div class="goals">${goals}</div>
     <p class="small muted">구단주는 매달 말 보고를 받고 순위·여론·언론·재정을 함께 봅니다. 시즌이 끝나면 목표 달성 여부와 언론 논조가 신뢰에 크게 반영됩니다. 성향에 따라 무엇을 더 중시하는지가 다릅니다.</p>`)
    +(log?csec('월간 보고 기록',`<div class="ologs">${log}</div>`):'');

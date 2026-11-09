@@ -61,7 +61,7 @@ function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있�
   if(cur&&!cur.interim){ try{ meInc('mgrFire'); }catch(e){} chron('mgr',`${cur.name} 감독 경질`); /* 새 감독을 바로 앉혀도 경질로 센다(검수 11-07) */ const {pay,brk,n}=mgrSevPay(cur); G.spend.mgr+=pay; G.spend.sev=(G.spend.sev||0)+pay; addLog(`${cur.name} 감독을 경질했습니다. 잔여 연봉 ${money(pay)}${brk?`(약속 위반 ${n}회로 계약 위반 조항 적용, 절반)`:''}.`); }
   delete m.pl; if(pl&&pl.length)mplApply(m,pl);
   staffCt(m,years); m.hD=G.day; /* 부임일: 선수를 얼마나 봤는지 */ G.mgr[G.user]=m; G.mmarket=G.mmarket.filter(x=>x.id!==id); try{ obTaken(m.ob,m); }catch(e){} try{ mreqCloseOld(); }catch(e){}
-  if(G.coach&&withClan&&m.clan&&m.clan.length){ const got=hireClan(m,years); if(got.length)note('감독',`${m.name} 감독 사단이 함께 왔습니다: ${got.join(', ')}. 감독과 손발이 맞아 제 실력보다 더 잘 해낼 것입니다.`); }
+  if(G.coach&&withClan&&m.clan&&m.clan.length){ const got=hireClan(m,years); if(got.length)note('감독',`${m.name} 감독 사단 코치 ${got.join(', ')}이(가) 함께 왔습니다. 같은 사단 코치는 감독과 손발이 맞아 지도 능력이 조금 더 나옵니다.`); }
   addLog(`${m.name} 감독과 ${years}년 연 ${money(m.sal)}에 계약했습니다.`); chron('mgr',`${m.name} 감독 선임 (${years}년)`);
   mail('운영팀',`${m.name} 감독 선임`,`${m.name} 감독과 ${years}년 연 ${money(m.sal)}에 계약했습니다. ${mgrStyle(m)} 성향입니다.${m.pl?`\n영입 면담에서 받은 약속: ${Object.keys(m.pl).map(k=>MPL[k].l).join(', ')}.`:''}`,{kind:'감독'});
   wire('감독',`${tname(G.user)}, ${m.name} 감독 선임`,{tid:G.user,x:{mid:m.id,hire:1}});
