@@ -63,7 +63,7 @@ function freeCard(){ const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); const f=UI.f
     ${V.length?`<div class="fl">${V.map(p=>{ const left=FREE_YEARS-(G.year-p.freeSince); return `<div class="flr">${pMini(p)}${potChipP(p)}<span class="small">${left<=1?'<span class="pill warn">올해가 마지막</span> ':''}요구 연 ${money(freeAsk(p))}</span><button class="tc-i go" data-a="signFree" data-v="${p.id}" ${open&&!full?'':'disabled'}>계약</button></div>`; }).join('')}</div>`:'<p class="small muted">지금은 무적 선수가 없습니다.</p>'}</section>`; }
 
 /* 올 시즌 뒤 FA 예정자(다른 구단): 자금을 미리 모으고 노릴 선수를 정할 수 있게. 능력은 스카우트 평가로만 보이고, 연봉·등급·기록은 공개 정보 */
-function faUpSt(x){ if(x.why==='end')return 'FA 계약 만료'; if(x.why==='re')return '자격 보유(지난번 미신청)'; if(x.sure)return '등록일수 충족'; const h=seasonTotal(x.p,G.year,'1군')||{};
+function faUpSt(x){ if(x.why==='end')return 'FA 계약 만료'; if(x.why==='out')return '옵트아웃 예상'; if(x.why==='re')return '자격 보유(지난번 미신청)'; if(x.sure)return '등록일수 충족'; const h=seasonTotal(x.p,G.year,'1군')||{};
   return `등록일수 필요(${x.p.isP?`${h.g||0}/40경기 또는 ${ipStr(h.outs||0)}/90이닝`:`${h.g||0}/85경기 또는 ${h.pa||0}/260타석`} · 하나만 채우면 됨)`; }
 function faUpDl(x){ return x.dp>=.8?['신청 유력','good']:x.dp>=.34?['반반','warn']:['잔류 유력','muted']; }
 function faUpcomingCard(U){ const all=Object.values(G.players).filter(q=>q.team!=null); const L=U.filter(x=>x.p.team!==G.user);
