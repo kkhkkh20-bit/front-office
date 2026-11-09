@@ -9,7 +9,7 @@ function stateAudit(){ const out=[]; const bad=(k,t)=>out.push(`[${k}] ${t}`); c
   if(G.unemp)return out;
   /* 1) 이동 정리 */
   for(const [pos,id] of Object.entries(G.lineup||{})){ const p=P(id); if(!p||p.team!==U)bad('이동',`라인업 ${pos}에 우리 선수가 아닌 ${nm(id)}`); }
-  for(const id of Object.keys(G.prole||{})){ const p=P(id); if(p&&p.team!==U&&G.day>(G.prole[id].d??0))bad('이동',`투수 기용 계획에 떠난 선수 ${nm(id)}`); }
+  for(const id of Object.keys(G.prole||{})){ const p=P(id); if(p&&p.team!==(G.prole[id].tid??U)&&G.day>(G.prole[id].d??0))bad('이동',`투수 기용 계획에 떠난 선수 ${nm(id)}`); }
   for(const p of Object.values(G.players)){
     if(p.team!==U&&p.promise&&p.promise.until>=G.day&&(p.promise.tid??U)===U)bad('이동',`떠난 선수 ${nm(p.id)}에게 우리 구단의 출전 약속이 남음`);
     if(p.team!==U&&p.listed)bad('이동',`떠난 선수 ${nm(p.id)}가 우리 트레이드 명단에 남음`);
