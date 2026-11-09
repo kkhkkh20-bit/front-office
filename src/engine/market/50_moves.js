@@ -8,7 +8,7 @@ function mvLog(type,p,from,to,note,amt,tr){ if(!p)return; G.mvN=(G.mvN||0)+1; if
 const mvTr=()=>G.trSeq=(G.trSeq||0)+1;
 const mvTrN=W=>new Set(W.filter(m=>m.t==='트레이드').map(m=>m.tr??m.d+':'+Math.min(m.from,m.to)+':'+Math.max(m.from,m.to))).size; /* 번호 없는 옛 기록은 날짜·두 구단으로 */
 /* 지금 이적시장 구간의 시작일: 시즌 중이면 개막일, 아니면 11월 1일. 포스트시즌이 끝난 뒤 11월 전에도 올해 스토브리그(검수 11-08d: 지난겨울로 돌아가 여름 거래까지 셈) */
-function mvWinStart(){ const per=period(); if(per==='season'||per==='post')return G.cal.open; return per==='off'||G.day>=KD(11,1)?KD(11,1):dnum(G.year-1,11,1); }
+function mvWinStart(){ const per=period(); if(per==='season'||per==='post')return G.cal.open; const y=per==='off'||G.day>=KD(11,1)?G.year:G.year-1, n1=dnum(y,11,1); return G.last&&G.last.y===y&&G.last.d!=null?Math.min(G.last.d,n1):n1; } /* 결산(한국시리즈 이틀 뒤)에 시장이 열리면 그날부터 스토브리그(10월 거래 누락, 검수 11-09w) */
 function mvWindow(){ const s=mvWinStart(); return (G.moves||[]).filter(m=>m.d>=s); }
 function mvWinLabel(){ const per=period(); return per==='season'?`${G.year} 시즌 중`:per==='post'?`${G.year} 포스트시즌`:`${per==='off'||G.day>=KD(11,1)?G.year:G.year-1}~${per==='off'||G.day>=KD(11,1)?G.year+1:G.year} 스토브리그`; }
 /* 매주 월요일: 지난 7일 이동이 많으면 주간 정리 기사 */

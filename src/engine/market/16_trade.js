@@ -99,7 +99,7 @@ const TRADE_MAX_SAME=2;
 function tradeCool(tid,get){ if(get&&get.length&&get.every(id=>{ const q=G.players[id]; return q&&q.aiListed&&q.aiUrg; }))return null;
   const h2h=seriesOpp()===tid; const cap=TRADE_MAX_SAME+(h2h?1:0);
   const Y=(G.trades||[]).filter(x=>x.with===tid&&x.y===G.year&&(x.me==null||x.me===G.user)); if(Y.length>=cap){ const d=Math.max(...Y.map(x=>x.d??G.day)); return {d,until:dnum(G.year+1,1,1),cap:true,n:Y.length,max:cap}; }
-  if(h2h)return null; const L=Y.filter(x=>x.d!=null&&G.day-x.d<TRADE_COOL&&G.day>=x.d); if(!L.length)return null; const d=Math.max(...L.map(x=>x.d)); return {d,until:d+TRADE_COOL}; }
+  if(h2h)return null; const L=(G.trades||[]).filter(x=>x.with===tid&&(x.me==null||x.me===G.user)&&x.d!=null&&G.day-x.d<TRADE_COOL&&G.day>=x.d); /* 30일 간격은 해를 넘겨도 잇는다(12월 말 거래, 검수 11-09w) */ if(!L.length)return null; const d=Math.max(...L.map(x=>x.d)); return {d,until:d+TRADE_COOL}; }
 /* 예산을 넘겨 연봉을 떠안는 트레이드는 구단주 승인이 필요하다. 연봉은 한 해 치로 이번 결산에 잡힌다(budget의 국내 선수 연봉).
    허용 폭: 성적 우선 구단주 15억·인기 10억·수익 5억, 신뢰 70 이상이면 1.5배, 50 미만이면 절반. 승인하면 신뢰 -2 */
 /* 올해 결산에 잡히는 연봉 비율: 시즌 중이면 남은 정규시즌 기간만(payTeamFrac와 같은 기준) */
@@ -116,6 +116,8 @@ function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)
 /* 우리 쪽 정원: 상대 쪽 초과는 막지만 우리 쪽은 넘어도 성사되고, 넘은 만큼 정리해야 진행된다. 확인창·받은 제안에 미리 보여 준다 */
 function tradeRosterTxt(give,get){ const n=rosterN(G.user)-give.filter(tradeCntN).length+get.filter(tradeCntN).length, over=n-ROSTER_MAX;
   return `트레이드 후 정식 ${n}/${ROSTER_MAX}명${over>0?` · ${over}명 정리 필요(${period()==='season'||period()==='post'?'정리해야 진행할 수 있습니다':'개막 전까지'})`:''}`; }
+/* 거래 한쪽에 오간 선수·지명권·현금(지명권만 준 거래가 '보냄 -'으로 보이지 않게, 검수 11-09w) */
+function trSide(t,k){ const c=k==='get'?-(t.cash||0):(t.cash||0); return [...t[k],...((t.pk&&t.pk[k])||[]).map(x=>'지명권 '+x),...(c>0?['현금 '+money(c)]:[])].join(', ')||'-'; }
 /* 우리 구단 독주 정도: 시즌 중(20경기 이후) 1위일 때 2위와 승차(5경기당 1, 최대 2), 시즌 밖에는 지난 시즌 우승이면 1. 아니면 0 */
 function leaderGap(){ try{ if(period()==='season'){ const S=standingsNow(); if(!S.length||S[0].tid!==G.user)return 0; const r=G.sea.rec[G.user]; if(r.w+r.l<20)return 0; const a=S[0], b=S[1]; const gb=((a.w-b.w)+(b.l-a.l))/2; return Math.max(.5,Math.min(2,gb/5)); }
   const H=(G.history||[]).find(h=>h.y===G.year-1); return H&&H.champ===G.user?1:0; }catch(e){ return 0; } }
@@ -180,7 +182,7 @@ function proposeTrade(tid,give,get,cash,pk){
     G.trades.push({y:G.year,d:G.day,with:tid,gw:(team(tid).gm||{}).id,give:give.map(id=>G.players[id].name),get:get.map(id=>G.players[id].name),diff,revealed:false,gi:[...get],go:[...give],snap,grade,me:G.user,...(cash?{cash}:{})}); /* me: 거래한 우리 구단(이직 뒤 시즌 평가 구분) */
     t.rel=clamp(t.rel+2,0,100); prTrade(give,get,tid); const tr=mvTr(); give.forEach(id=>mvLog('트레이드',G.players[id],G.user,tid,'',0,tr)); try{ if(give.some(id=>ovr(G.players[id])>=55))ivRequest('trade',{}); }catch(e){} get.forEach(id=>mvLog('트레이드',G.players[id],tid,G.user,'',0,tr));
     if(cash>0){ payOut(G.user,cash,'etc'); payIn(tid,cash); G.spend.trC=(G.spend.trC||0)+cash; } else if(cash<0){ payOut(tid,-cash,'etc'); payIn(G.user,-cash,'tradeIn'); } /* 트레이드로 받은 현금은 보상금·양도금과 따로(검수 11-08d) */
-    const pkT=(L,s)=>L.length?`${s}${L.map(pkName).join(', ')}`:''; const pkG=pkT(pk.give,' + 지명권 '), pkR=pkT(pk.get,' + 지명권 '); pkMove(pk,tid); if(pkG||pkR){ const T=G.trades[G.trades.length-1]; T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)}; wire('트레이드',`${tshort(G.user)}·${tshort(tid)} 트레이드로 신인 지명권 이동: ${[...pk.give.map(k=>pkName(k)+' → '+tshort(tid)),...pk.get.map(k=>pkName(k)+' → '+tshort(G.user))].join(', ')}`,{tid}); }
+    const pkT=(L,s)=>L.length?`${s}${L.map(pkName).join(', ')}`:''; const pkG=pkT(pk.give,' + 지명권 '), pkR=pkT(pk.get,' + 지명권 '); pkMove(pk,tid); if(pkG||pkR){ const T=G.trades[G.trades.length-1]; T.pk={give:pk.give.map(pkName),get:pk.get.map(pkName)}; T.pkk={y:pk.y,give:[...pk.give],get:[...pk.get]}; /* 실제 지명 선수를 찾는 열쇠(검수 11-09w) */ wire('트레이드',`${tshort(G.user)}·${tshort(tid)} 트레이드로 신인 지명권 이동: ${[...pk.give.map(k=>pkName(k)+' → '+tshort(tid)),...pk.get.map(k=>pkName(k)+' → '+tshort(G.user))].join(', ')}`,{tid}); }
     addLog(`${tname(tid)}와(과) 트레이드: ${give.map(id=>G.players[id].name).join(', ')||'없음'}${cash>0?` + 현금 ${money(cash)}`:''}${pkG} ↔ ${get.map(id=>G.players[id].name).join(', ')||'없음'}${cash<0?` + 현금 ${money(-cash)}`:''}${pkR}`);
     if(oc0&&oc0.ok&&oc0.over>0)tradeOwnerOk(oc0); /* 승인 판정은 거래 전 한 번으로(검수 11-06: 거래 뒤 다시 계산하면 승인 대상이 사라져 신뢰 차감이 빠짐) */
     offerDropMoved([...give,...get]); /* 직접 거래로 옮긴 선수가 걸린 받은 제안·메일은 닫는다(검수 11-08c) */ mgrTradeApply(mv); churnCheck(); mpickTraded(give); return {ok:true,grade,msg:`${gmn}이 제안을 받아들였습니다.${aiQ(tid,'yes')}${mv&&mv.r?` ${mv.r>0?'감독은 반깁니다':'감독은 못마땅해합니다'}(관계 ${mv.r>0?'+':''}${mv.r}).`:''}`};
