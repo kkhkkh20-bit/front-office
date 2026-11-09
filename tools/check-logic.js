@@ -2646,6 +2646,21 @@ T('[검수 11-09k] 끝내기 안타: 타자 루타는 결승 주자가 전진한
     if(hb){ ok(hb<=adv,'끝내기 '+w[3]+': 결승 주자는 '+(wi+1)+'루에서 '+adv+'루 전진'); if(adv<3)nX++; ok(w[4]===po,'끝내기 안타 뒤 아웃이 늘어남: '+po+' → '+w[4]); ok(!(w[14]||[]).some(m=>m.result==='out'),'결승점 뒤 주자 아웃 기록');
       const bx=g.S.h.box.get(w[1]); const cnt=k=>P.filter(r=>typeof r[1]==='number'&&r[1]===w[1]&&r[3]===k).length; ok((bx.d||0)===cnt('2B')&&(bx.tr||0)===cnt('3B'),'타자 박스 2루타·3루타가 중계 기록과 다름'); } }
   ok(nW>5,'준비 실패: 끝내기 '+nW+'번'); });
+T('[검수 11-09n] 공통 점검: 복귀 선수 자동 등록과 단장 콜업 모두 1군 포수 최소 인원을 지킨다',()=>{ fresh(); G.day=G.cal.open+20; G.entryY=G.year; const U=G.user; setEntry(U); const lim=entryLimit(); const e1=()=>playersOf(U).filter(p=>p.e1);
+  const low=p=>{ for(const k in p.r)p.r[k]=25; }, high=p=>{ for(const k in p.r)p.r[k]=80; };
+  const setC=n=>{ const cs=playersOf(U).filter(isC); ok(cs.length>n,'준비 실패: 포수 '+cs.length+'명'); cs.forEach((c,i)=>{ if(i<n){ c.e1=true; c.downDay=null; } else { c.e1=false; c.downDay=G.day; } }); /* 나머지 포수는 재등록 대기 */
+    let L=e1(); while(L.length>lim){ const x=L.find(p=>!p.isP&&!isC(p)); x.e1=false; x.downDay=G.day; L=e1(); } entryManage(U,false,true); ok(e1().length===lim&&cN(e1())===n,'준비 실패: 엔트리 '+e1().length+'/'+lim+' 포수 '+cN(e1())); return cs.slice(0,n); };
+  const up=()=>playersOf(U).filter(p=>!p.isP&&!isC(p)&&canUp(p));
+  const [c1]=setC(1); low(c1); const r=up()[0]; ok(r,'준비 실패: 올릴 야수 없음'); high(r); entryUpgrade(U,[r],'점검');
+  ok(r.e1&&cN(e1())===1,'복귀 선수 등록이 하나뿐인 포수를 말소: 포수 '+cN(e1())+' 등록 '+r.e1);
+  const cs2=setC(2); cs2.forEach(low); const m=G.mgr[U]; m.ego=20; m.rel=95; m.pl={listen:true}; let msg='', x=null; for(const q of up()){ high(q); msg=reqEntry(q.id,true); if(q.e1){ x=q; break; } }
+  ok(x,'준비 실패: 콜업 요청이 받아들여지지 않음 '+msg); ok(cN(e1())===2,'단장 콜업이 백업 포수를 말소: 포수 '+cN(e1()));
+  const s=playersOf(U).find(p=>!p.e1&&!p.isP&&!isC(p)&&p.downDay==null); s.injOut=0; s.susp=G.day+5; ok(reqEntry(s.id,true).includes('출장 정지'),'출장 정지 사유가 아님'); s.susp=0; s.hold=true; ok(reqEntry(s.id,true).includes('미계약'),'미계약 사유가 아님'); s.hold=false; });
+T('[검수 11-09n] 말소 직후 콜업 요청 보류, 같은 날 두 번 등판 합산, 이직 뒤에도 구단별 2군 선발 수업 유지',()=>{ fresh(); G.day=G.cal.open+20; G.entryY=G.year; const U=G.user;
+  const b=playersOf(U).find(p=>!p.isP&&!p.e1&&!p.foreign&&!p.ys); b.injOut=0; b.downDay=G.day-1; b.age=30; addTo(lineFor(b,G.year,U,'퓨처스'),{g:20,pa:80,ab:70,h:30,d:8,hr:5,bb:10}); const wish=()=>{ try{ return callWish(b); }catch(e){ return null; } };
+  ok(!wish(),'재등록 전인데 콜업 요청'); b.downDay=G.day-10;
+  const p=playersOf(U).find(q=>q.isP); pitchApp(p,G.day,16,false); pitchApp(p,G.day,21,false); ok(p.lastPc===37,'같은 날 투구 수 합산 안 됨: '+p.lastPc);
+  const B=G.teams.find(t=>t.id!==U).id; const sp=playersOf(U).find(q=>q.isP&&!q.foreign); G.prole={[sp.id]:{k:'sp2',d:G.day,tid:U}}; G.user=B; rpWeek(); G.user=U; ok(rpPlanOf(U,sp)==='sp2','이직 뒤 주간 처리로 A 구단 선발 수업 요청이 지워짐'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
