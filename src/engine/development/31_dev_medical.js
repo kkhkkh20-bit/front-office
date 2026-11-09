@@ -125,12 +125,14 @@ function injStam(p){ const s=(p.isP?p.r&&p.r.sta:p.r&&p.r.vit)??50; return clamp
 /* 병원 효과 기준: 병원 배수를 빼낸 '기준 재활 일수'(소수)를 선수에게 보관하고, 병원을 바꿀 때마다 그 기준에서 다시 계산한다.
    그래서 A→B→A로 돌아오면 원래 남은 기간으로 돌아온다(반올림·14일 문턱 때문에 단축이 남던 문제). 기준 이후 다른 일로 남은 기간이 바뀌었으면 지금 값에서 기준을 새로 잡는다 */
 const hospF=(k,p)=>{ const f=1-HOSP[k].rec; const I=INJ[p.injK]; return I&&I.d[0]>=240?Math.sqrt(f):f; };
-function hospBase(p,o){ const b=p.injB; if(b&&b.h===o&&p.injOut===b.o-(G.day-b.d))return Math.max(0,b.n-(G.day-b.d)/hospF(o,p)); return p.injOut/hospF(o,p); }
+/* 지금 남은 재활에 우리 병원 할인이 들어 있는가: 마지막으로 재활 기간을 정한 구단(병원 변경 c, 부상 당시 injC, 옛 저장은 부상 기록 t)이 지금 구단일 때만(검수 11-09zy: 이적 전 병원 몫까지 되돌림) */
+function hospOwn(p){ const b=p.injB, h=(p.injHist||[]).slice(-1)[0]; const c=b&&b.c!==undefined?b.c:p.injC!==undefined?p.injC:h&&h.t!==undefined?h.t:G.user; return c===G.user; }
+function hospBase(p,o){ if(!hospOwn(p))return p.injOut; const b=p.injB; if(b&&b.h===o&&p.injOut===b.o-(G.day-b.d))return Math.max(0,b.n-(G.day-b.d)/hospF(o,p)); return p.injOut/hospF(o,p); }
 function setHospital(k){ if(!HOSP[k])return ''; const o=G.med.hosp||'none'; if(o===k){ G.medSet=true; return ''; } const L=[];
-  for(const p of ownedOf(G.user)){ if(!(p.injOut>0))continue; const kept=p.injB&&p.injB.h===o&&p.injOut===p.injB.o-(G.day-p.injB.d); if(!kept&&p.injOut<14){ delete p.injB; continue; } /* 짧은 부상은 그대로(병원을 거쳐 바뀐 기간은 기준에서 되돌린다) */
-    const n0=hospBase(p,o); const n=Math.max(1,Math.round(n0*hospF(k,p))); p.injB={n:n0,h:k,o:n,d:G.day}; if(n!==p.injOut){ L.push(`${p.name} ${p.injOut}일 → ${n}일`); p.injOut=n; } }
+  for(const p of ownedOf(G.user)){ if(!(p.injOut>0))continue; const kept=hospOwn(p)&&p.injB&&p.injB.h===o&&p.injOut===p.injB.o-(G.day-p.injB.d); if(!kept&&p.injOut<14){ delete p.injB; continue; } /* 짧은 부상은 그대로(병원을 거쳐 바뀐 기간은 기준에서 되돌린다) */
+    const n0=hospBase(p,o); const n=Math.max(1,Math.round(n0*hospF(k,p))); p.injB={n:n0,h:k,o:n,d:G.day,c:G.user}; if(n!==p.injOut){ L.push(`${p.name} ${p.injOut}일 → ${n}일`); p.injOut=n; for(const e of evOpen())if(e.k==='inj'&&e.data.pid===p.id)e.sit=e.sit.replace(/부상으로 약 \d+일/,`부상으로 약 ${n}일`); /* 조기 복귀 결정 문구도 바뀐 재활 기간으로(검수 11-09zy) */ } }
   G.med.hosp=k; G.medSet=true; addLog(`제휴 병원을 ${HOSP[k].name}(으)로 바꿨습니다.${L.length?` 재활 중인 선수 남은 기간: ${L.join(', ')}.`:''}`); return L; }
-function recMult(p){ return p.team===G.user?(1-HOSP[G.med.hosp].rec)*(1-facImpact(facOf('rehab'))*.07):facAiRec(p.team); }
+function recMult(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 병원·재활 시설을 쓰지 않는다(검수 11-09zy) */ return tm!=null&&tm===G.user?(1-HOSP[G.med.hosp].rec)*(1-facImpact(facOf('rehab'))*.07):facAiRec(tm); }
 function facWeek(){ const dl=facImpact(facOf('dorm')); if(!dl||G.unemp)return; for(const p of domestic(G.user))if(p.age<=23&&(p.mor??60)<75)p.mor=clamp((p.mor??60)+dl*.3,0,75); }
 /* 스카우트 연봉: 재직한 날만큼 쌓는다(결산 직전 해고해도 그해 일한 몫은 비용으로 남고, 막판 채용은 남은 기간만). 기록이 없는 예전 저장은 이번 회계연도 경과분을 지금 인원 기준으로 잡는다 */
 function scoutSpent(){ const S=G.spend||{}; if(S.scout!=null)return S.scout; const el=clamp(G.day-(finYearEnd()-365),0,365)/365; return sum((G.scouts||[]).map(s=>s.sal||0))*el; }
