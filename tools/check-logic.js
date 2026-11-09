@@ -2810,6 +2810,7 @@ T('[검수 11-09t] 부상·엔트리·퓨처스: 주전 부상 조기 복귀 결
     L=run(()=>{}); ok(L.includes(G.day-2),'준비 실패: 이틀 전 등판이 원래 없음');
     try{ injMult=()=>1e6; run(()=>{ p.inj=.2; }); }finally{ injMult=oM; } const h=p.injHist[p.injHist.length-1]; ok(h&&h.d===G.day-2&&p.injOut===Math.max(1,h.days-2),'퓨처스 부상일 '+(h&&h.d-G.day)+' 재활 '+p.injOut+'/'+(h&&h.days));
     p.injOut=0; Object.assign(p,{inj:sv.inj,role:sv.role,injHist:sv.ih,susp:sv.susp,mil:sv.mil}); }
+});
 T('[검수 11-09s] 계약·연봉: 다음 시즌 옵션은 지난 성적으로 안 줌, 아시아쿼터 2년 전환·역제안 상한, 헐값 반복 요구 하한, 이직 뒤 미계약 중간액, 예비 FA 등급, 프랜차이즈 예외 미리보기, 모교, 지원금 후보',()=>{ fresh(); const U=G.user; const D=domestic(U).filter(q=>!q.foreign&&!q.prospect&&!isRookie(q));
   { const p=D.find(q=>!q.isP); termsApply(p,{years:2,annual:500,bonus:0,opt:220},'fa',G.year+1,true); const keep=p.hist; p.hist=[Object.assign({y:G.year,t:U,lvl:'1군'},ZB,{pa:420,g:120})]; ok(!optEarned(p),'다음 시즌 시작 계약의 옵션이 올해 420타석으로 달성됨'); const r0=G.spend.rel||0; p.opt.from=G.year; ok(optEarned(p),'계약 시즌 안 기록은 옵션 달성'); p.opt.from=G.year+1; toFree(p,'테스트',0,true); ok((G.spend.rel||0)===r0,'방출 때 다음 시즌 옵션 지급 '+((G.spend.rel||0)-r0)); p.hist=keep; }
   { const f=foreignOf(U)[0]; if(f){ const fo=f.foreign, a0=f.age; f.foreign='아시아'; f.age=30; const cap=asiaReCap(f); G.contract={y:G.year,tid:U,ended:[],foreignEnd:[f.id],foreignDrop:[],released:[],done:false,fre:{[f.id]:{ok:true}}}; f.newSal=round5(cap*.9); f.fInc=cap-f.newSal; const m=fReMulti(f.id); ok(!(f.fMulti>G.year)&&f.newSal+f.fInc<=cap,'2년 전환으로 보장+인센티브 합계가 상한 초과: '+m);
