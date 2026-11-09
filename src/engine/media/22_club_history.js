@@ -102,7 +102,7 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
      MVP 후보는 타이틀 홀더와 성적 상위로 투수 8명·야수 10명(실제 2025년 18명) */
   const tg=x=>tgp(awTeamOf(x.p,x.h,y),y)||144; /* 규정 기준 팀 경기 수도 수상 소속 구단으로(검수 11-09zq) */ const tit=new Set(); try{ for(const [,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(B[0])B.filter(z=>Math.abs(z.v-B[0].v)<1e-9).forEach(z=>tit.add(z.p.id)); /* 1위는 떠난 선수까지 포함한 실제 순위, 혜택도 그 1위(공동)만 */ } }catch(e){}
   const qB=x=>!x.p.isP&&((x.h.pa||0)>=Math.round(tg(x)*3.1)||tit.has(x.p.id)), qP=x=>x.p.isP&&((x.h.outs||0)>=tg(x)*3||(x.h.w||0)>=10||(x.h.sv||0)>=30||(x.h.hld||0)>=30||tit.has(x.p.id));
-  const A={y,gg:{},cand:{gg:{}},pend:{mvp:true,gg:true},ggVote:{voters:288,start:dnum(y,11,25),end:dnum(y,12,5),ballots:{},news:{}}};
+  const A={y,gg:{},cand:{gg:{}},pend:{mvp:true,gg:true},ggVote:{voters:288,start:Math.max(dnum(y,11,25),G.day),end:Math.max(dnum(y,12,5),G.day+1),ballots:{},news:{}}}; /* 결산이 늦어 후보 발표가 밀리면 투표도 발표일부터(검수 11-09zz) */
   { const pick=(L,n)=>{ const t=L.filter(x=>tit.has(x.p.id)); const rest=L.filter(x=>!tit.has(x.p.id)).sort((a,b)=>b.w-a.w); return t.concat(rest).slice(0,Math.max(n,t.length)); };
     A.cand.mvp=awVote(pick(rows.filter(qP),8).concat(pick(rows.filter(qB),10)).map(x=>awCand(x)),125); }
   /* 신인상(KBO 표창규정 제7조): 그해 입단 또는 최근 5년 이내 입단, 이전 시즌까지 1군 누적 투수 30이닝·타자 60타석 이하, 해외 프로리그 소속 경험 없음(외국인 제외) */
