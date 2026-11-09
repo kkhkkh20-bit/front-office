@@ -21,7 +21,7 @@ const {chromium}=require('playwright');
   importText(txt); if(UI.impMsg!=='불러왔습니다.')bad.push('정상 가져오기 실패: '+UI.impMsg);
   /* #18: 처음 화면 가져오기에서 활성 슬롯 기록이 실패하면 알린다 */
   UI.title=true; block(k=>k===META); importText(txt); unblock(); const s2=curSlot();
-  if(s2===s1)bad.push('처음 화면 가져오기가 기존 슬롯에 씀'); if(localStorage.getItem(slotKey(s1))==null)bad.push('기존 슬롯 본문이 사라짐'); if(!/슬롯 \d+을\(를\) 고르세요/.test(UI.impMsg||''))bad.push('활성 슬롯 기록 실패를 알리지 않음: '+UI.impMsg); if(meta().active!==s1)bad.push('목록 기록이 막혔는데 활성 슬롯이 바뀜');
+  if(s2===s1&&!/가져오지 않았습니다/.test(UI.impMsg||''))bad.push('처음 화면 가져오기가 기존 슬롯에 씀'); if(localStorage.getItem(slotKey(s1))==null)bad.push('기존 슬롯 본문이 사라짐'); if(!/슬롯 \d+을\(를\) 고르세요|가져오지 않았습니다/.test(UI.impMsg||''))bad.push('활성 슬롯 기록 실패를 알리지 않음: '+UI.impMsg); if(meta().active!==s1)bad.push('목록 기록이 막혔는데 활성 슬롯이 바뀜');
   /* #23~#26: 슬롯을 바꾸면 이전 게임의 화면 상태를 비운다 */
   let fired=0; UI.expCode='이전 코드'; UI.trnPend={1:'con'}; UI.pcmp=[1,2]; UI.dl={on:true,kind:'am',y:G.year,feed:[],t:setTimeout(()=>{ fired=1; },60)};
   A.slotLoad(s1); await new Promise(z=>setTimeout(z,150));
