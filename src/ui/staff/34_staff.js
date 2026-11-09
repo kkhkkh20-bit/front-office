@@ -75,7 +75,7 @@ function coachMarket(){ const role=UI.crole||'all'; const C=coachesOf(G.user); c
   const vw=`<div class="seg smk-vw"><button data-a="cmkView" data-v="t" class="${UI.cmkView!=='c'?'on':''}">비교 표</button><button data-a="cmkView" data-v="c" class="${UI.cmkView==='c'?'on':''}">카드</button></div>`;
   if(UI.cmkView==='c'){ const P=pager('cmk'+role+srt,L,cardPageSize()); return modeBar+chips+vw+cmkCmp(role,`<div class="cgrid" data-pg="${'cmk'+role+srt}">${P.items.map(card).join('')}</div>${P.bar}`); }
   /* 비교 목록: 한 줄에 후보·지도·육성·연봉·계약 버튼, 아래 줄에 이 자리 핵심 능력. 이름을 누르면 그 줄 아래에 상세 카드 */
-  const rows=L.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}${cmRivTxt(c)}`,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:String(UI.cmkOpen)===String(c.id),openA:'cmkOpen',
+  const rows=L.map(c=>stRow({c,face:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:c.from!=null&&c.from!==G.user?c.from:null},sub:`${c.ob?obTag(c.ob).trim()+' ':''}${CROLE[c.role].l} · ${c.age}세${c.star?' · 스타':''}${cmRivTxt(c)}` /* 은퇴 선수 출신은 이름이 잘리지 않게 둘째 줄 앞에(카페 11-09c) */,tag:C[c.role]?'':'<span class="pill bad">빈자리</span>',cur:C[c.role],open:String(UI.cmkOpen)===String(c.id),openA:'cmkOpen',
     acts:`<button class="btn small primary" data-a="hireCoach" data-v="${c.id}:1">1년 계약</button><button class="btn small" data-a="hireCoach" data-v="${c.id}:2">2년</button>`,detail:()=>card(c)})).join('');
   return modeBar+chips+vw+cmkCmp(role,`<div class="st-list">${stHead()}${rows}</div>`)+`${role==='all'?'<p class="small muted">보직을 고르면 지금 우리 코치 카드가 왼쪽에 고정돼 후보와 바로 비교할 수 있습니다.</p>':''}<p class="small muted">지도·육성 옆 숫자는 지금 그 자리 코치와의 차이(우리 팀에서 일할 때 기준). 이름을 누르면 능력 카드가 열립니다.</p>`; }
 /* 스태프 한 줄(시장·우리 코치진 공용) */
@@ -122,7 +122,7 @@ function clanBox(x){ const L=x.clan||[]; if(!L.length)return '<p class="small mu
 
 /* 보조 코치: 시설 4단계 이상 하나마다 1자리(최대 3) */
 function axSec(){ const n=axSlots(), X=G.coachX||[]; const rows=X.map(c=>`<div class="item row between"><span><b>${esc(c.name)}</b> <span class="small muted">보조 ${axP(c)?'투수':'타격'}코치 · 육성 ${c.dv} · ${c.yrs}년 · 연 ${money(c.sal)}</span></span><button class="btn small" data-a="fireAsst" data-v="${c.id}">내보내기</button></div>`).join('');
-  const cand=X.length<n?(G.cmarket||[]).filter(c=>AX_ROLES.includes(c.role)).sort((a,b)=>b.dv-a.dv).slice(0,5).map(c=>`<div class="item row between"><span>${esc(c.name)} <span class="small muted">${CROLE[c.role].l} 출신 · 육성 ${c.dv} · 연 ${money(c.sal)}</span></span><button class="btn small primary" data-a="hireAsst" data-v="${c.id}:2">2년 영입</button></div>`).join(''):'';
+  const cand=X.length<n?(G.cmarket||[]).filter(c=>AX_ROLES.includes(c.role)).sort((a,b)=>b.dv-a.dv).slice(0,5).map(c=>`<div class="item row between"><span>${esc(c.name)}${obTag(c.ob)} <span class="small muted">${CROLE[c.role].l} 출신 · 육성 ${c.dv} · 연 ${money(c.sal)}</span></span><button class="btn small primary" data-a="hireAsst" data-v="${c.id}:2">2년 영입</button></div>`).join(''):'';
   return csec('보조 코치',`<p class="small muted">세부 훈련 시설이 4단계 이상인 곳마다 보조 코치 1자리(최대 3)가 열립니다. 보조 코치는 투수 또는 타자 성장에 1명당 최대 +2.5%를 보탭니다.</p>${rows||(n?'':'<p class="small muted">아직 열린 자리가 없습니다.</p>')}${cand?`<div class="eyebrow">후보</div>${cand}`:''}`,`<span class="small muted">${X.length}/${n}자리</span>`); }
 
 /* 코치 시장: 보직을 고르면 지금 우리 코치 카드를 옆(휴대폰은 위)에 붙여 후보와 나란히 비교(카페 11-08) */

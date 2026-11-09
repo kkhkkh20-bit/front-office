@@ -212,8 +212,8 @@ T('상무 합격: 입대일 전까지는 선수단에 남아 뛴다(f507415 리�
 
 T('해외 복귀: 복귀한 해에 나이·능력 변화가 한 번만 적용된다(f507415 리뷰)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.foreign&&!q.isP); p.age=34; p.svc=Math.max(p.svc||0,9);
   ovsLeave(p,'NPB','테스트',1,100,'해외 FA'); const a=(G.abroad||[]).find(x=>x.id===p.id); ok(a&&!G.players[p.id],'준비 실패: 해외 이적 안 됨'); a.y=G.year-1; /* 계약 1년이 끝난 시점 */
-  abroadYear(); const q=G.players[p.id]; ok(a.back&&q,'준비 실패: 복귀하지 않음'); ok(q.age===35,'복귀하면서 나이가 '+q.age+'세(기대 35세)'); const r0=JSON.stringify(q.r);
-  newYear(); const q2=G.players[p.id]; ok(q2,'준비 실패: 새해 뒤 선수가 사라짐'); ok(q2.age===35,'복귀 직후 새해에 한 살 더 먹음: '+q2.age+'세'); ok(JSON.stringify(q2.r)===r0,'복귀 직후 새해에 능력 변화가 한 번 더 적용됨'); });
+  abroadYear(); const q=G.players[p.id]; ok(a.back&&q,'준비 실패: 복귀하지 않음'); ok(q.age===34,'가을 해외 시즌 처리에서 나이가 바뀜: '+q.age+'세(나이는 새해에, 카페 11-09c)');
+  newYear(); const q2=G.players[p.id]; ok(q2,'준비 실패: 새해 뒤 선수가 사라짐'); ok(q2.age===35,'복귀 뒤 새해 나이 '+q2.age+'세(기대 35세, 한 번만)'); });
 
 T('훈련 회고: 새해 회고에 지난 시즌 경기 기록이 남는다(f507415 리뷰)',()=>{ fresh(); const p=playersOf(G.user).find(q=>!q.isP&&!q.foreign); trnSet(p.id,'pow'); ok(G.trn&&G.trn[p.id]&&G.trn[p.id].f==='pow','준비 실패: 훈련 방향 설정'); const y=G.year;
   p.hist=p.hist.filter(h=>h.y!==y); p.hist.push({y,lvl:'1군',t:G.user,pos:p.pos,g:100,pa:400,ab:350,h:95,d:20,tr:1,hr:16,bb:40,so:70,rbi:60,r:55,sb:3,cs:1,hbp:5,sf:5,e:4});
@@ -959,7 +959,7 @@ T('[리뷰 11-02e] 병원을 바꾸면 재활 중인 선수(남은 14일 이상)
 T('[리뷰 11-02f] 해외 진출: 가을·겨울에 떠난 선수는 그해 해외 기록이 생기지 않고(첫 해외 시즌은 다음 해), 같은 시즌 기록을 두 번 만들지 않는다',()=>{ fresh(); const p=domestic(otherT()).find(q=>!q.isP&&ovr(q)>=55)||domestic(otherT())[0]; G.day=KD(11,1); const id=p.id; ovsLeave(p,'NPB','테스트',2,200,'해외 FA');
   const a=G.abroad.find(x=>x.id===id); abroadYear(); ok(!a.lines.length,'떠난 해에 해외 기록 '+a.lines.map(l=>l.y+' '+(l.pa||l.outs)).join(',')); G.year++; abroadYear(); ok(a.lines.length===1&&a.lines[0].y===G.year,'첫 해외 시즌 기록 '+a.lines.map(l=>l.y).join(',')); if(!a.back){ abroadYear(); ok(a.lines.filter(l=>l.y===G.year).length===1,'같은 시즌 기록이 두 번'); } G.year--; });
 T('[리뷰 11-02f] 해외에서 성장할 때 옛 국내 구단의 시설·감독·코치를 쓰지 않는다',()=>{ fresh(); const p=domestic(G.user).find(q=>q.age<=26)||domestic(G.user)[0]; let seen=[]; const d0=develop; develop=function(q){ seen.push(q.team); return d0.apply(this,arguments); };
-  try{ G.day=KD(11,1); const id=p.id; ovsLeave(p,'NPB','테스트',3,200,'포스팅',0); G.year++; abroadYear(); G.year--; }finally{ develop=d0; } ok(seen.length>=1&&seen.every(t=>t==null),'해외 성장 중 소속 '+JSON.stringify(seen)); });
+  try{ G.day=KD(11,1); const id=p.id; ovsLeave(p,'NPB','테스트',3,200,'포스팅',0); abroadDev(); /* 해외 성장은 새해 처리(카페 11-09c) */ }finally{ develop=d0; } ok(seen.length>=1&&seen.every(t=>t==null),'해외 성장 중 소속 '+JSON.stringify(seen)); });
 T('[리뷰 11-02f] 해외 복귀는 원소속 구단 우선협상: 계약을 고르기 전에는 등록·연봉이 확정되지 않고, 거절하면 자유계약 선수가 된다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.isP&&ovr(q)>=50); const id=p.id; G.day=KD(11,1); ovsLeave(p,'NPB','테스트',1,200,'해외 FA'); const a=G.abroad.find(x=>x.id===id); { const pj=JSON.parse(a.pj); pj.age=33; a.pj=JSON.stringify(pj); } /* 33세 이상은 계약이 끝나면 돌아온다 */
   const n0=rosterN(G.user); G.year++; abroadYear(); const q=G.players[id]; ok(a.back&&q,'준비 실패: 복귀 안 함'); ok(q.team==null&&q.retAsk&&q.retFrom===G.user,'협상 전에 등록됨 team='+q.team); ok(rosterN(G.user)===n0,'선수 수가 바로 늘어남');
   const e=(G.evs||[]).find(x=>x.k==='ovsback'&&!x.done); ok(e,'우선협상 결정이 없음'); evPick(e.id,1,true); ok(q.team==null&&q.freeSince!=null&&!q.retAsk,'거절했는데 자유계약 선수가 아님'); G.year--; });
@@ -3739,6 +3739,22 @@ T('[피드백 11-09r] 2대 선수: 우리가 지명했던 선수의 아들을 �
 T('[카페 11-09e] 새해마다 독립리그·입단 테스트 출신이 무적 시장에 나와 하한 50명을 지킨다',()=>{ fresh(); const n0=Object.keys(G.players).length; freeYear(); const L=freeList(); ok(L.length>=FREE_MIN,'무적 선수 '+L.length+'명');
   const nw=Object.values(G.players).filter(p=>p.id>=n0&&isFree(p)&&p.freeSince===G.year); ok(nw.length>=FREE_NEW,'새로 나온 선수 '+nw.length+'명'); ok(nw.every(p=>p.age>=22&&p.age<=30&&ovr(p)>=26&&ovr(p)<=56),'나이·능력 범위 밖');
   const m=freeList().length; freeYear(); ok(freeList().length>=m+FREE_NEW-1,'하한을 넘어도 해마다 몇 명은 새로 나와야 함 '+m+' -> '+freeList().length); });
+T('[카페 11-09c] 연봉: FA 계약이 끝난 고액 선수는 첫 연봉을 시장가로 다시 매기고, 요구·위임도 그 기준',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&!q.ys&&!q.prospect); Object.assign(p,{faC:false,ext:false,sal:3000,age:36,svc:12,lastFA:G.year-3,ctEnd:G.year}); setOvr(p,52); G.contract=null;
+  const ns=newSalary(p); ok(ns<=faAsk(p).annual&&ns<1500,'계약 끝난 30억 선수 첫 연봉 '+ns+' 시장가 '+faAsk(p).annual);
+  p.ctEnd=G.year-1; ok(newSalary(p)>=1500,'계약 끝난 다음 해부터는 보통 삭감 한도(최대 50%) '+newSalary(p)); p.ctEnd=G.year;
+  p.newSal=ns; G.contract={y:G.year,tid:G.user,ended:[p.id],foreignEnd:[],foreignDrop:[],released:[],done:false}; salTalkInit(); const n=G.contract.neg[p.id]; ok(n&&n.ask<ns*1.5&&n.ask<2000,'요구액이 옛 계약 연봉 기준 '+(n&&n.ask));
+  autoSalRound(true); ok((p.newSal??n.cur)<2000,'위임 1차 제시가 옛 연봉 근처 '+(p.newSal??n.cur));
+  const q=domestic(G.user).find(x=>x!==p&&!x.foreign&&!x.ys&&!x.prospect); Object.assign(q,{faC:true,ext:false,yrs:1,sal:2000}); delete q.ctEnd; offseason(); ok(!G.players[q.id]||q.ctEnd===G.year,'계약이 끝났는데 표시가 없음'); });
+T('[카페 11-09c] 포스팅: 나이 들수록 짧고 싸게, 37세 넘으면 응찰이 없다',()=>{ fresh(); G.posting=[]; const L=Object.values(G.players).filter(q=>q.team!=null&&!q.foreign&&!q.ys&&!q.prospect).slice(0,60);
+  const run=(age,o,n,from)=>L.slice(from,from+n).map(p=>{ p.age=age; setOvr(p,o); const x={pid:p.id,y:G.year,tid:p.team,day:G.day,done:false}; G.posting.push(x); ovsDaily(); return x; });
+  const old=run(38,80,15,0); ok(old.every(x=>!(x.offs||[]).length),'38세 응찰 '+JSON.stringify(old.map(x=>x.offs)));
+  const v=run(34,78,20,15); const offs=v.flatMap(x=>x.offs||[]); ok(offs.every(f=>f.yrs===1),'34세 다년 계약 '+JSON.stringify(offs)); ok(v.filter(x=>!(x.offs||[]).length).length>=3,'34세가 대부분 응찰을 받음');
+  const y=run(25,80,15,35).flatMap(x=>x.offs||[]).filter(f=>f.lg==='MLB'); ok(y.some(f=>f.yrs>=4),'25세 특급도 다년 계약이 없음'); ok(ovsAgeT(38).m===0&&ovsAgeT(33).y===2,'나이표'); });
+T('[카페 11-09c] 해외파 나이: 해외에 있는 동안에도 새해마다 한 살, 돌아와도 또래와 같다',()=>{ fresh(); const D=domestic(G.user).filter(q=>!q.foreign&&!q.ys&&!q.prospect); const p=D[0], peer=D[1]; p.age=31; peer.age=31; G.day=KD(11,20);
+  ovsLeave(p,'MLB','뉴욕',1,300,'포스팅',0); const r=G.abroad.find(z=>z.id===p.id); ok(r&&!G.players[p.id],'해외 진출 실패');
+  const Y=G.year; G.rolled=G.year; newYear(); ok(G.year===Y+1,'새해 처리');
+  let pj=JSON.parse(r.pj); ok(pj.age===32&&r.age===32,'해외에 있는 동안 나이가 그대로 '+pj.age+'/'+r.age);
+  const s=JSON.parse(r.pj); setOvr(s,40); r.pj=JSON.stringify(s); abroadYear(); const b=G.players[p.id]; ok(r.back&&b,'복귀 안 함'); ok(b.age===peer.age,'복귀 선수 나이 '+b.age+' 또래 '+peer.age); newYear(); ok(b.age===peer.age&&b.age===33,'복귀 뒤 새해 나이 '+b.age+' 또래 '+peer.age); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

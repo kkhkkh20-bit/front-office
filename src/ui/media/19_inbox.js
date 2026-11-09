@@ -129,6 +129,7 @@ function ibAtt(m){ const pid=ibPid(m), p=pid!=null?G.players[pid]:null, row=(l,v
     if(p.isP&&(p.ld||[]).length){ const L=(p.ld||[]).slice(-7).reverse(); const mx=Math.max(...L.map(x=>x[1]),1);
       S.push(sec('최근 등판',`<div class="ibd-bars">${L.map(x=>`<div><span>${dmd(x[0])}</span><i style="width:${Math.round(x[1]/mx*100)}%"></i><b>${x[1]}구</b></div>`).join('')}</div>${row('연속 등판',consecDays(p,G.day)+'일')}`)); }
     S.push(sec('기록·계약',`${row('올해 1군',esc(statLine(h,p)))}${l10Text(p)?row('최근 폼',l10Text(p)):''}${row('연봉',money(p.sal||0))}${row('계약',esc(ctText(p)))}${row('병역',esc(milText(p)))}<button class="btn small" data-a="player" data-v="${p.id}">선수 정보 보기 ›</button>`)); }
+  else if(m.ref!=null&&pAttr(m.ref))S.push(sec('선수',`<p class="small muted">${esc((abrOf(m.ref)||{}).name||'')} 리그를 떠난 선수입니다.</p><button class="btn small"${pAttr(m.ref)}>선수 정보 보기 ›</button>`)); /* 포스팅 등으로 떠난 선수도 연다(카페 11-09c) */
   try{ S.push(...ibKindAtt(m,pid)); }catch(e){ console.warn('소식 자료',e); }
   const same=G.mail.filter(x=>x.from===m.from&&x.id!==m.id).slice(0,S.length>3?3:5), cat=G.mail.filter(x=>x.id!==m.id&&x.from!==m.from&&ibCat(x)===ibCat(m)).slice(0,5);
   const li=x=>`<button class="ibs-li" data-a="mailJump" data-v="${x.id}"><span>${dmd(x.day)}${x.from!==m.from?' · '+esc(x.from):''}</span><b>${esc(x.subj)}</b></button>`;

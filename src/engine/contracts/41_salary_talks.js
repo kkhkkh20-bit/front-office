@@ -10,7 +10,7 @@ function salBasis(p){ const yh=G.contract&&G.contract.y!=null?G.contract.y:(dobj
   return {h:hh,war,enough,band,cap,ref:round5(marketSal(ovr(p)+pvShift(p))*nonFaF(p,false))}; }
 /* 선수 요구액: 깎는 안이면 동결 쪽을, 잘했으면 산정안보다 조금 더(야망이 클수록 더) 원한다 */
 function salAsk(p,off){ const b=salBasis(p); initPers(p); const amb=p.pers.amb;
-  if(off<p.sal)return round5(Math.max(off,p.sal*(b.war>=.5?1:.94)));
+  if(off<p.sal&&!salReset(p))return round5(Math.max(off,p.sal*(b.war>=.5?1:.94))); /* 계약이 끝난 선수는 옛 계약 연봉이 아니라 산정안에서 요구한다 */
   const want=b.enough&&b.war>=1?.03+b.war*.045+(amb-12)*.007:(amb-12)*.003;
   /* 예비 FA는 시장을 알고 있어 조금 더 부른다 */
   const pf=preFA(p)&&b.war>=1?.05:0;
