@@ -94,7 +94,7 @@ function pendItems(){ const L=[]; const ev=pendEvents(); const key=ev.filter(e=>
 function pendDoc(){ if(G.unemp||blocker())return null; const L=pendItems(); if(!L.length)return null; const sig=L.map(x=>x.id).join('|'); if(UI._pendAck===sig)return null;
   UI._advT=0; return {subj:'확인하지 않은 일이 있습니다',kind:'진행',head:'진행 전 확인',lines:[...L.map(x=>x.t),'그대로 진행하면 기한이 지난 결정은 기본안으로 처리됩니다.'],ok:'그대로 진행',no:'확인하러 가기',noGo:()=>{ const id=pendMailId(); if(id){ UI.mf='all'; A.openMail(id); return; } UI.pendGo=1; UI.tab='home'; UI.mail=null; render(); setTimeout(()=>{ const el=document.getElementById('todoCard'); if(el)el.scrollIntoView({block:'start'}); },60); } /* 확인하러 가기: 그 소식을 소식함에서 연다 */,onOk:()=>{ UI._pendAck=sig; },noMail:true}; }
 /* 확인할 일이 담긴 소식: 안 읽은 확인할 소식 → 끝나지 않은 결정 → 살아 있는 트레이드 제안 순 */
-function pendMailId(){ const n=ibNeedList(); if(n.length)return n[0].id;
+function pendMailId(){ const n=ibNeedList(); if(n.length)return (n.find(m=>!m.read)||n[0]).id; /* 안 읽은 확인할 소식 먼저(검수 11-09za) */
   const ev=pendEvents(); for(const e of ev){ const m=G.mail.find(m=>(m.acts||[]).some(a=>a.a==='evPick'&&String(a.v).split(':')[0]===String(e.id))&&!mailDone(m)); if(m)return m.id; }
   const of=pendOffers(); for(const o of of){ const m=G.mail.find(m=>m.oid===o.id&&!mailDone(m)); if(m)return m.id; } return null; }
 /* 스페이스바로 진행할 때 묻는 창: 어디까지 가는지 */

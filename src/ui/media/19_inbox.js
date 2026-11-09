@@ -9,12 +9,18 @@ const IB_CATN={squad:'선수단',move:'이적·계약',club:'구단 운영',medi
 /* 이미 처리된 일인가: 결정(이벤트)이 끝났거나, 소식이 알린 상황이 해결됐으면 '처리됨'. 안 읽음 표시는 그대로 두고 '확인할 소식'에서만 뺀다 */
 const mailDoneShow=m=>(m.imp||m.kind==='업무'||m.kind==='결정'||(m.acts&&m.acts.length>0)||!!m.oid)&&mailDone(m);
 /* 완료는 구단/시즌의 새 업무와 분리해 보존한다. 읽음 처리는 기존 인터뷰 규칙만 따른다. */
-function ibAutoRead(){ for(const m of (G.mail||[])){const st=mailStatus(m);if(st&&!m.closed)m.closed=st;if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&st)m.read=true;} }
+function ibAutoRead(){ for(const m of (G.mail||[])){const st=mailStatus(m);if(st&&!m.closed&&st.text!==MAIL_CLUB_TXT)m.closed=st;if(!m.read&&/^\[인터뷰 요청\]/.test(m.subj)&&st)m.read=true;} }
 function mailDone(m){return !!mailStatus(m);}
 /* 결정할 일: 읽었어도 수락·거절·선택하기 전까지 남는 일(트레이드 제안·결정 이벤트·인터뷰). 마감일 */
-const ibSpon=m=>/^스폰서 제안/.test(m.subj||'')?((G.spon&&G.spon.off)||[]).filter(x=>x.day===m.day&&x.exp>G.day):null; /* 기한 있는 기회(사용자 피드백 11-05): 3주 안에 답하지 않으면 사라지는 스폰서 제안 */
-function ibDecide(m){ if(mailDone(m))return false; { const sp=ibSpon(m); if(sp)return sp.length>0; } if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'); }
-function ibDue(m){ { const sp=ibSpon(m); if(sp&&sp.length)return Math.min(...sp.map(x=>x.exp)); } if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return null; }
+const ibSpon=m=>/^스폰서 제안/.test(m.subj||'')?((G.spon&&G.spon.off)||[]).filter(x=>(m.ctx&&m.ctx.spon?m.ctx.spon.includes(x.id):x.day===(m.day0??m.day))&&x.exp>=G.day):null; /* 마감일 당일까지 수락할 수 있다(sponAccept와 같은 기준, 검수 11-09za) */ /* 기한 있는 기회(사용자 피드백 11-05): 3주 안에 답하지 않으면 사라지는 스폰서 제안 */
+function ibDecide(m){ if(mailDone(m))return false; { const sp=ibSpon(m); if(sp)return sp.length>0; } if(m.oid)return (G.offers||[]).some(o=>o.id===m.oid); if(/^\[인터뷰 요청\]/.test(m.subj))return !!(G.iv&&!G.iv.done&&m.day>=G.iv.day); return (m.acts||[]).some(a=>a.a==='evPick'||(IB_ANS.has(a.a)&&!mailActionStatus(m,a))); }
+/* 읽어도 답할 때까지 남는 기한 있는 제안: 직원·코치 영입 제안, 단장직 제의(검수 11-09za) */
+const IB_ANS=new Set(['stKeep','stLet','cmKeep','cmLet','jobYes','jobNo']);
+function ibAnsDue(m){ const a=(m.acts||[]).find(x=>IB_ANS.has(x.a)); if(!a)return null; const id=String(a.v).split(':')[0], c=m.ctx||{};
+  if(a.a[0]==='s'){ const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid==null||x.exp===c.raid)); return r?r.exp:null; }
+  if(a.a[0]==='c')return +String(a.v).split(':')[2]||null;
+  const j=(G.jobs||[]).find(x=>!x.done&&x.tid===+a.v); return j?j.exp-1:null; } /* 단장직 제의는 기한 전날까지 답할 수 있다 */
+function ibDue(m){ { const sp=ibSpon(m); if(sp&&sp.length)return Math.min(...sp.map(x=>x.exp)); } if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return ibAnsDue(m); }
 function ibDecideList(){ return G.mail.filter(ibDecide).sort((a,b)=>(ibDue(a)??1e9)-(ibDue(b)??1e9)); } /* 마감 빠른 순 */
 function mailEvPick(m){ const a=(m.acts||[]).find(x=>x.a==='evPick'); const e=a&&(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e&&e.pick!=null&&e.opts[e.pick]?` · "${e.opts[e.pick].l}"${e.auto?'(기본안)':''}`:''; }
 /* 처리할 일: 결재·제안처럼 답이 필요한 소식(이미 끝난 일은 뺀다) */
@@ -55,7 +61,7 @@ const mailNeeds=m=>ibMust(m);
  - 저절로 소식을 골라 열지 않는다(고른 것만 읽음). 날짜가 바뀌어도 보던 위치를 지킨다.
  - 스페이스바(와 '계속' 버튼): 화면 위에서부터 안 읽은 소식을 연다(확인할 소식 먼저). 다 읽었으면 진행한다. */
 function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
-  list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
+  list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj+'|'+m.body; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
 /* 반드시 확인할 소식: 살아 있는 결정·제안·인터뷰와 중단 설정에 해당하는 중요 소식. 안내 버튼만 있는 소식은 넣지 않는다. */
@@ -136,7 +142,9 @@ function ibDash(need){ const N=ibNeedList().slice(0,6), D=ibDecideList().slice(0
     <section class="card ibs-box"><h3>최근 소식</h3>${latest.map(li).join('')}</section></div>`; }
 /* 화면에 보인 메일은 읽음으로. 다시 그리지 않고 표시만 바꾼다 */
 let _ibSave=null, _ibOn=false, _ibRaf=0;
-function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m||m.read)return; m.read=true; for(const d of ((UI._ibDup||{})[id]||[])){ const q=G.mail.find(x=>x.id===d); if(q)q.read=true; }
+/* 묶인 같은 소식도 함께 읽음으로(검수 11-09za: 줄을 열어도 숨은 소식이 안 읽음으로 남음) */
+function ibReadDup(id){ for(const d of ((UI._ibDup||{})[id]||[])){ const q=G.mail.find(x=>x.id===d); if(q)q.read=true; } }
+function ibMark(id){ const m=G.mail.find(x=>x.id===id); if(!m)return; ibReadDup(id); if(m.read)return; m.read=true;
   document.querySelectorAll(`[data-mid="${id}"]`).forEach(el=>el.classList.remove('unread'));
   const n=G.mail.filter(x=>!x.read).length; const u=document.getElementById('ib-unread'); if(u)u.textContent=n;
   const nb=G.mail.filter(mailNeeds).length; const mb=document.querySelector('.mailbtn i'); if(mb){ if(nb)mb.textContent=nb>99?'99+':nb; else mb.remove(); }
