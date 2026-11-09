@@ -103,12 +103,11 @@ function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec
 
 /* ===== 2대 선수(사용자 11-09r): 은퇴한 국내 선수(OB)의 아들이 커서 신인 드래프트에 나온다 =====
  실제 KBO 부자 선수(이종범-이정후, 정회열-정해영, 박철우-박세혁 등)는 40여 년에 수십 쌍 정도로 드물다. 정확한 비율 통계는 없어 추정:
- 1군 5시즌 이상 또는 통산 WAR 8 이상인 OB 중 4%만 프로를 노리는 아들을 두고, 은퇴 15~25년 뒤(아들 고졸 18세·대졸 22세) 드래프트에 나온다. 한 해 최대 2명.
+ 1군 5시즌 이상 또는 통산 WAR 8 이상인 OB 중 4%만 프로를 노리는 아들을 두고, 은퇴 15~25년 뒤(대부분 18~22년, 아들 고졸 18세·대졸 22세) 드래프트에 나온다. 한 해 최대 2명.
  아들에게는 아버지 OB id(p.father) 하나만 저장한다 */
-const SON_RATE=.04;
-function sonDue(o){ return !o.minor&&(o.seasons>=5||o.war>=8)&&u01('son',o.id)<SON_RATE&&o.retY+15+Math.floor(u01('sonY',o.id)*11)===G.year; }
+const SON_Z=-1.75; /* hn은 표준정규 해시라 이보다 작을 확률이 약 4%(u01은 고르지 않아 쓰지 않는다) */
+function sonDue(o){ return !o.minor&&(o.seasons>=5||o.war>=8)&&hn('son',o.id)<SON_Z&&o.retY+15+Math.floor(u01('sonY',o.id)*11)===G.year; }
 function fatherOf(p){ return p&&p.father&&(G.ob||[]).find(o=>o.id===p.father)||null; }
-function sonTag(p){ const o=fatherOf(p); return o?`<button class="lnk" data-a="person" data-v="ob:${o.id}">${esc(o.name)}</button>의 아들`:''; }
 /* 드래프트 풀에서 아버지와 같은 투수·야수(야수는 60%가 같은 포지션)인 신인 하나를 아들로 삼는다: 신인 생성(makeDraftClass)을 그대로 쓰고 성·투타·체격·잠재력만 손본다 */
 function sonMake(cls){ for(const o of (G.ob||[]).filter(sonDue).slice(0,2)){ const L=cls.map(id=>G.players[id]).filter(q=>q&&!q.father&&!!q.isP===!!o.isP); const same=L.filter(q=>posLabel(q)===o.pos); const b=pick(same.length&&R()<.6?same:L); if(!b)continue;
     b.father=o.id; for(let i=0;i<40;i++){ const n=o.name[0]+pick(GN); if(n!==o.name&&!BLOCK.has(n)&&!nameBad(n)){ b.name=n; if(!nameTaken(n))break; } }

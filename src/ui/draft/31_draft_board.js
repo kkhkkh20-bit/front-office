@@ -7,6 +7,8 @@ function draftPool(){ const live=G.draft&&!G.draft.done; return ((live?G.draft.c
 function dclaimTag(p){ const c=draftClaim(p); if(!c)return ''; return `<b class="${c.k==='up'?'good':'warn'}" title="${esc(draftClaimTxt(c))}">${c.k==='up'?'강력 추천':'신중론'}(확신도 ${c.conf})</b> · `; }
 /* 잠재력은 한 숫자 대신 스카우트 추정 범위로 */
 function dpotChip(rp){ if(rp.ofp==null)return '<span class="small muted">?</span>'; const T=potTier(potVal(rp),rp.cur); const unsure=(rp.sd||6)>=7; return `<span class="ptier t${T.n}" data-tip="${esc(`스카우트 추정: ${T.l}${unsure?' · 관찰이 적어 오차가 큽니다':''}. 부상·출전 기회·훈련 환경에 따라 그렇게 크지 못할 수 있습니다.\n\n${POT_HELP}`)}">${potStars(T.st)}</span>`; }
+/* 2대 선수: 아버지 OB 프로필로 가는 'OO의 아들'(11-09r) */
+function sonTag(p){ const o=fatherOf(p); return o?`<button class="lnk" data-a="person" data-v="ob:${o.id}">${esc(o.name)}</button>의 아들`:''; }
 function drow(p,rp,rk,mine){ const star=(G.shortlist||[]).includes(p.id);
   const tag=dclaimTag(p); const fit=draftFit(p,draftPolK())?' · <b class="acc">감독 추천</b>':'';
   return `<div class="drw${star?' star':''}"><span class="drw-k num">${rk}</span><button class="mr-p" data-a="player" data-v="${p.id}">${avImg(p)}<span><b>${esc(p.name)} <small>${posLabel(p)} · ${p.college?'대졸':'고졸'}</small></b><i>${tag}${fatherOf(p)?`${esc(fatherOf(p).name)}의 아들 · `:''}${esc(p.school||'')} · ${p.region} · 언론 #${p.press||'-'}${fit}${rp.eta?` · 1군까지 약 ${rp.eta}년`:''}${p.amInj?' · <b class="bad">부상 이력</b>':''}</i></span></button><span class="trw-r">${rchip(rp.cur)}${dpotChip(rp)}</span><button class="tc-i drw-s${star?' on':''}" data-a="star" data-v="${p.id}" aria-pressed="${star}" aria-label="관심">${star?'★':'☆'}</button>${mine?`<button class="tc-i go drw-p" data-a="pick" data-v="${p.id}">지명</button>`:''}</div>`; }
