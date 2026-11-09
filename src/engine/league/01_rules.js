@@ -11,7 +11,7 @@ const ROSTER_MAX=68, ROSTER_MIN=45; // KBO 소속선수 한도: 2025년까지 65
 /* 1군 엔트리(KBO 2026: 29명, 9월 1일부터 5명 확대(아시안게임 해는 후반기 30명 + 8월 25일부터 4명), 말소 후 10일 뒤 재등록)와 육성선수 */
 const ENTRY_BASE=29, ENTRY_EXP=5, YS_MAX=15;
 const rosterN=(tid,d)=>ownedOf(tid,d).filter(p=>!p.ys&&!(p.frehab&&p.frehab!=='hold')).length; /* 부상 대체 외국인을 둔 재활 선수 명단 원선수는 빼고 센다(대체 선수가 자리를 쓴다, 검수 11-09t) */ /* 국가대표 차출 선수도 구단 선수 수에 들어간다(군 복무는 빠짐) */
-const ysN=tid=>Object.values(G.players).filter(p=>p.team===tid&&p.ys&&!(p.joinY>G.year)).length; /* 차출·복무 중인 육성선수도 한도에 센다: 돌아오면 다시 육성선수다(검수 11-09zx) */
+const ysN=tid=>Object.values(G.players).filter(p=>p.team===tid&&p.ys&&!(p.joinY>G.year)&&!milServing(p)).length; /* KBO처럼 군 복무 중(군보류)은 빼고, 대표팀 차출 중은 센다(사용자 11-09) */
 const FA_SVC=8; // 고졸 8시즌, 대졸 7시즌 (2022시즌 종료 후 적용)
 const faSvc=p=>p&&p.college?7:FA_SVC;
 const DRAFT_ROUNDS=11, DRAFT_POOL=140;

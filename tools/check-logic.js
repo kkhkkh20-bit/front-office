@@ -3394,19 +3394,19 @@ T('[검수 11-09zw] 스태프 시장: AI 예산은 월초 두 번째 처리·경
   const s3=scoutMkt().find(x=>x!==s&&x!==s2); delete s3._im; delete s3.int; const q={id:'zwq'}; const r0=__rngState(); stInterest(s3); stInterest(s3); stAttr(q); ok(__rngState()===r0,'관심 구단 조회가 난수를 씀'); ok(s3.int==null&&s3._im==null,'조회 결과가 후보 데이터에 저장됨');
   const sc=G.scouts[0]; sc.skill=5; G.wire=G.wire||[]; stLeave({k:'sc',id:sc.id,tid:t.id,sal:sc.sal}); ok(L.sc.includes(sc),'준비: 이적'); ok(G.wire.filter(w=>String(w.t).includes(sc.name)).length===1,'이적 소식 줄 수 '+G.wire.filter(w=>String(w.t).includes(sc.name)).length); });
 T('[검수 11-09zw] 새 감독대행은 이전 대행의 직원 관계를 물려받지 않는다',()=>{ fresh(); fireMgr(); const s=G.scouts[0]; staffRelAdd(s,'scout',G.user,'mgr',3); ok(staffRel(s,G.user,'mgr')===53,'준비: 관계 상승'); const a=G.mgr[G.user]; G.coach[G.user].hc=null; G.day++; G.mgr[G.user]=mkInterim(); ok(G.mgr[G.user].id!==a.id&&staffRel(s,G.user,'mgr')===50,'새 대행이 관계 53을 물려받음'); });
-T('[검수 11-09zx] 로스터와 연봉: AI 정리는 rosterN 기준·육성 한도는 차출·복무 포함·입대 취소 연봉은 이직과 무관·야인에게 협상 없음·육성 전환은 미계약 종료·복무 중 전환은 정원 검사 제외',()=>{ fresh();
-  const op=G.teams.find(t=>t.id!==G.user).id; const f=playersOf(op).find(p=>p.foreign); ok(f,'준비 실패: 외국인 없음'); f.frehab=-1;
+T('[검수 11-09zx] 로스터와 연봉: AI 정리는 rosterN 기준·육성 한도는 차출 포함·군보류 제외·입대 취소 연봉은 이직과 무관·야인에게 협상 없음·육성 전환은 미계약 종료·복무 중 전환은 정원 검사 제외',()=>{ fresh();
+  const op=G.teams.find(t=>t.id!==G.user&&playersOf(t.id).some(p=>p.foreign)).id; const f=playersOf(op).find(p=>p.foreign); ok(f,'준비 실패: 외국인 없음'); f.frehab=-1;
   while(rosterN(op)<ROSTER_MAX)newPlayer({age:22,isP:false,base:35,pot:40,team:op}); while(rosterN(op)>ROSTER_MAX){ const q=domestic(op).find(p=>!p.ys); q.team=null; }
   const out=trimRoster(op,ROSTER_MAX); ok(out.length===0&&rosterN(op)===ROSTER_MAX,'정원 68명인데 정리함: '+out.length+'명, '+rosterN(op)); delete f.frehab;
   const D=domestic(G.user).filter(p=>!p.ys&&!p.mil); ok(D.length>YS_MAX+4,'준비: 국내 선수'); D.slice(0,YS_MAX).forEach(p=>{ p.ys=true; }); const a=D[0]; a.mil={unit:'상무',from:G.day-1,until:G.day+100}; const b=D[1]; b.ntFrom=G.day-1; b.ntAway=G.day+10;
-  ok(ysN(G.user)===YS_MAX,'복무·차출 중 육성선수를 빼고 셈: '+ysN(G.user)); const c=D[YS_MAX]; c.sal=50; c.faC=false; c.ext=false; delete c.extNext; ok(toYS(c.id).includes('까지'),'한도 15명을 넘겨 전환됨'); ok(!c.ys,'전환됨');
+  ok(ysN(G.user)===YS_MAX-1,'군보류는 빼고 차출은 세야 함: '+ysN(G.user)); const c=D[YS_MAX]; c.sal=50; c.faC=false; c.ext=false; delete c.extNext; toYS(c.id); ok(c.ys&&ysN(G.user)===YS_MAX,'군보류 빈자리로 전환 안 됨'); const c2=D[YS_MAX+1]; c2.sal=50; c2.faC=false; c2.ext=false; delete c2.extNext; ok(toYS(c2.id).includes('까지'),'한도 15명을 넘겨 전환됨'); ok(!c2.ys,'전환됨');
   b.ntAway=0; while(rosterN(G.user)<ROSTER_MAX)newPlayer({age:22,isP:false,base:35,pot:40,team:G.user}); ok(period()!=='season'||G.day>=KD(5,1),'준비: 기간'); const r6=fromYS(a.id); ok(r6===''&&!a.ys,'복무 중 육성선수가 정원 때문에 전환 거절: '+r6);
   const mk=()=>{ const p=D.find(q=>!q.ys&&!q.mil&&!q.faC&&q!==c&&!q._t); p._t=1; p.mil=null; p.sal=80; p.newSal=100; return p; };
   const p1=mk(), p2=mk(); G.contract={y:G.year,tid:G.user,done:false,ended:[p1.id,p2.id],foreignEnd:[],foreignDrop:[],released:[],neg:{[p1.id]:{off:80,ask:85,cur:100,st:'open',wk:-1},[p2.id]:{off:80,ask:85,cur:100,st:'open',wk:-1}}};
   ok(enlistNow(p1.id)===''&&enlistNow(p2.id)==='','입대 예약 실패'); ok(p1.mil.neg&&p1.mil.neg.v===100,'예약 전 협상이 선수에게 없음');
   const C=G.contract; p1.sal=p1.newSal; delete p1.newSal; C.done=true; ok(enlistCancel(p1.id)===''&&p1.sal===100,'바로 취소한 연봉: '+p1.sal);
   C.done=false; contractHandOff(G.user); ok(G.contract.done&&!G.contract.neg,'인계로 협상 기록이 닫히지 않음'); ok(enlistCancel(p2.id)===''&&p2.sal===p1.sal,'이직 뒤 취소한 연봉이 다름: '+p2.sal+' vs '+p1.sal);
-  const h=D.find(q=>!q.ys&&!q.faC&&!q.ext&&!q.extNext&&!q._t&&q!==c); h.sal=100; holdStart(h,100,150); ok(toYS(h.id)===''&&!h.hold,'육성 전환 뒤 미계약이 남음'); ok(holdPay(h.id).includes('아닙니다')&&h.sal<=MIN_SAL,'육성 전환 뒤 요구액 계약: '+h.sal);
+  c.ys=false; const h=D.find(q=>!q.ys&&!q.faC&&!q.ext&&!q.extNext&&!q._t&&q!==c); h.sal=100; holdStart(h,100,150); ok(toYS(h.id)===''&&!h.hold,'육성 전환 뒤 미계약이 남음'); ok(holdPay(h.id).includes('아닙니다')&&h.sal<=MIN_SAL,'육성 전환 뒤 요구액 계약: '+h.sal);
   G.contract=null; G.unemp={y:G.year,since:G.day,from:G.user,k:'resign'}; contractStart(); ok(G.contract.ended.length===0&&G.contract.foreignEnd.length===0,'야인에게 전 구단 협상이 열림'); ok(domestic(G.user).every(p=>p.newSal==null),'전 구단 선수가 협상 중으로 남음');
   const L=domestic(G.user).filter(p=>!p.ys).slice(0,40); L.forEach(p=>{ p.age=22; p.mil=null; setOvr(p,35); }); milNewYear(); ok(L.some(p=>p.mil&&p.mil.unit==='현역'),'야인 기간에 전 구단만 자동 입대를 건너뜀'); G.unemp=null;
   const s=domestic(G.user).find(p=>!p.ys&&!p.mil&&p.age<=27); ok(s,'준비 실패: 미필'); s.mil={app:'jun'}; toFree(s,'방출',0,true); ok(!(s.mil&&s.mil.app),'방출 뒤에도 상무 지원이 남음'); });
