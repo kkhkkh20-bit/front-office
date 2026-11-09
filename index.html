@@ -10745,7 +10745,7 @@ function blocker(){
   if(per==='season'||(per==='pre'&&G.day>=G.cal.open-1)||(per==='post'&&G.ps&&!G.ps.done&&((G.ps.seeds||[]).includes(G.user)||(G.ps.cur&&G.ps.cur.round==='tb'&&(G.ps.cur.hi===G.user||G.ps.cur.lo===G.user))||(G.ps.tbq||[]).some(q=>q[1]===G.user||q[2]===G.user))&&!Object.values(G.ps.res||{}).some(r=>r&&r[1]===G.user))){ const n=rosterN(G.user); /* 포스트시즌은 아직 남은 경기가 있는 팀만(탈락한 팀 정원 때문에 한국시리즈가 막히지 않게, 검수 11-07) */ /* 포스트시즌도 같은 등록 규정 */
     if(n>ROSTER_MAX){ const L=milReturns(7); return `로스터가 ${n}명입니다. ${ROSTER_MAX}명 이하로 줄여야 진행할 수 있습니다.${L.length?` 7일 안에 군 복귀 ${L.length}명(${milRetTxt(L)})이 더 있어, 복귀까지 고려하면 ${n+L.length-ROSTER_MAX}자리를 비워야 다시 막히지 않습니다.`:''}`; }
     if(ourGameOn(G.day+1)){ const L1=milReturns(1); if(L1.length&&n+L1.length>ROSTER_MAX)return `내일 ${milRetTxt(L1)}이(가) 전역해 로스터가 ${n+L1.length}명이 됩니다. 경기 전에 ${ROSTER_MAX}명 이하로 맞춰야 진행할 수 있습니다.`; } /* 전역일 경기도 등록 규정 안에서(검수 11-08) */
-    if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다: 그동안 부상 회복·대표팀 복귀·말소 10일이 지나 부족이 풀린다(검수 11-06) */ const d1=G.day+1, NT=G.nt&&G.nt.y===G.year&&NT_EV[G.nt.k]&&KD(...NT_EV[G.nt.k].from)===d1?new Set(G.nt.ids||[]):null, lv=p=>(p.mil&&p.mil.from===d1)||!!(NT&&NT.has(p.id)); /* 내일 입대·대표 소집으로 빠지는 선수(검수 11-08) */ const d0=depth(G.user), d={start:d0.start.filter(p=>!lv(p)),sp:d0.sp.filter(p=>!lv(p)),pen:d0.pen.filter(p=>!lv(p))}, rt=p=>(p.ntAway===d1&&p.ntFrom<=G.day)||(milServing(p)&&p.mil.until===d1); /* 내일 대표팀·군에서 돌아오는 선수(검수 11-07) */ const tmr=p=>!p.ys&&!(p.joinY>G.year)&&(rt(p)?!(p.injOut>1):!isAway(p)&&p.injOut===1)&&!(p.susp>G.day+1)&&!p.frehab&&!p.hold&&psOk(p)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10); /* 내일 복귀해 내일 등록할 수 있는 선수(말소 10일 규정 포함, 검수 11-07) */ const back=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&tmr(p));
+    if(!ourGameOn(G.day+1))return ''; /* 내일 우리 경기가 없으면 날짜는 넘긴다: 그동안 부상 회복·대표팀 복귀·말소 10일이 지나 부족이 풀린다(검수 11-06) */ const d1=G.day+1, NT=G.nt&&G.nt.y===G.year&&NT_EV[G.nt.k]&&KD(...NT_EV[G.nt.k].from)===d1?ntCallIds(G.nt,d1):null /* 소집일 검사(의료 제외·대체 발탁·구단당 최대 3명)를 그대로 적용한 예측(검수 11-09u) */, lv=p=>(p.mil&&p.mil.from===d1)||!!(NT&&NT.has(p.id)); /* 내일 입대·대표 소집으로 빠지는 선수(검수 11-08) */ const d0=depth(G.user), d={start:d0.start.filter(p=>!lv(p)),sp:d0.sp.filter(p=>!lv(p)),pen:d0.pen.filter(p=>!lv(p))}, rt=p=>(p.ntAway===d1&&p.ntFrom<=G.day)||(milServing(p)&&p.mil.until===d1); /* 내일 대표팀·군에서 돌아오는 선수(검수 11-07) */ const tmr=p=>!p.ys&&!(p.joinY>G.year)&&(rt(p)?!(p.injOut>1):!isAway(p)&&p.injOut===1)&&!(p.susp>G.day+1)&&!p.frehab&&!p.hold&&psOk(p)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10); /* 내일 복귀해 내일 등록할 수 있는 선수(말소 10일 규정 포함, 검수 11-07) */ const back=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&tmr(p));
     const can=Object.values(G.players).filter(p=>p.team===G.user&&!lv(p)&&!p.ys&&!(p.joinY>G.year)&&!p.frehab&&!p.hold&&psOk(p)&&(rt(p)?!(p.injOut>1):!isAway(p)&&!(p.injOut>1))&&!(p.susp>G.day+1)&&(!entryOn()||p.e1||p.downDay==null||G.day+1-p.downDay>=10)); /* 내일 뛸 수 있는 선수 전체: 감독이 2군에서 올릴 선수, 내일 말소 10일·출장정지가 풀리는 선수까지(검수 11-08: 콜업 가능한 선수가 있어도 진행이 막힘) */
     if(Math.max(d.start.length+back.filter(p=>!p.isP).length,can.filter(p=>!p.isP).length)<9)return '건강한 야수가 9명이 안 됩니다.'; if(Math.max(d.sp.length+d.pen.length+back.filter(p=>p.isP).length,can.filter(p=>p.isP).length)<8)return '건강한 투수가 부족합니다.'; } /* 내일 복귀하는 1군 투수는 내일 경기 인원에 넣는다(검수 11-07: 복귀일까지 갈 수 없었다) */
   return '';
@@ -19729,8 +19729,8 @@ const NT_EV={
 };
 const NT_SLOTS={P:11,C:2,IF:7,OF:4}, NT_WILD=3, NT_WILD_AGE=29;
 const ntBucket=p=>p.isP?'P':p.pos==='C'?'C':['LF','CF','RF'].includes(p.pos)?'OF':'IF';
-const ntProY=p=>p.draft&&p.draft.y?Math.max(1,G.year-p.draft.y):Math.max(1,p.age-19); /* 프로 몇 년 차(지명 이듬해가 1년 차) */
-const ntU25=p=>p.age<=25||ntProY(p)<=4; /* 아시안게임 자격: 둘 중 하나만 맞으면 된다(2026: 2001년 이후 출생 또는 2023년 이후 입단) */
+const ntProY=(p,y)=>{ y=y||G.year; return p.draft&&p.draft.y?Math.max(1,y-p.draft.y):Math.max(1,p.age+y-G.year-19); }; /* 프로 몇 년 차(지명 이듬해가 1년 차). y: 대회 연도(미래 대회 예상은 그해 기준, 검수 11-09u) */
+const ntU25=(p,y)=>p.age+(y||G.year)-G.year<=25||ntProY(p,y)<=4; /* 아시안게임 자격: 둘 중 하나만 맞으면 된다(2026: 2001년 이후 출생 또는 2023년 이후 입단) */
 function ntMgr(){ if(!G.ntMgr)G.ntMgr={name:genName(),since:G.year}; return G.ntMgr; }
 /* 다음 대회들(올해부터 몇 년 안) */
 function ntUpcoming(n){ const L=[]; for(let y=G.year;y<=G.year+4&&L.length<(n||4);y++)for(const k of ['wbc','oly','ag','p12']){ const e=NT_EV[k]; if(!e.yr(y))continue; const end=dnum(y,e.to[0],e.to[1]); if(y===G.year&&end<G.day)continue; L.push({k,y,n:e.n,from:dnum(y,e.from[0],e.from[1]),to:end}); } return L.slice(0,n||4); }
@@ -19738,26 +19738,28 @@ function ntPool(){ return Object.values(G.players).filter(p=>p.team!=null&&!p.fo
 /* 대표 명단: 감독 눈(능력 + 감독마다 다른 선호 약간). 아시안게임은 나이 제한·와일드카드·구단당 3명 */
 /* 병역 특례가 걸린 대회(올림픽·아시안게임)는 같은 실력이면 미필 선수를 먼저 뽑는다: 미필 중심에 군필 몇 명이 섞이는 실제 구성 */
 function ntMilB(k){ const e=NT_EV[k]; return e&&e.ex?(k==='ag'?8:7):0; }
-function ntSquad(k,excl,o){ o=o||{}; const e=NT_EV[k]; const M=ntMgr(); const ex=new Set(excl||[]); const mb=ntMilB(k); const rec=ntRecIds(k); const v=p=>ovr(p)+hn('nt'+M.name+G.year+k,p.id)*2.5+(mb&&milFree(p)&&p.age<=30?mb:0)+(rec.has(p.id)&&p.team===G.user?5:0); /* 구단 추천 +5(커뮤니티 요청 11-07) */ const mul=o.mul||1, cap=e.cap?e.cap*mul:0, only=o.only?new Set(o.only):null;
-  const base=ntPool().filter(p=>!ex.has(p.id)).map(p=>({p,v:v(p),b:ntBucket(p),ok:!e.u25||ntU25(p)})).sort((a,b)=>b.v-a.v);
+/* 감독 평가 점수: 최초 선발과 대체 발탁이 같이 쓴다(검수 11-09u: 대체 발탁에 미필 가산이 빠짐). dy: 대회까지 남은 해 */
+function ntVal(k,dy){ const M=ntMgr(), mb=ntMilB(k), rec=ntRecIds(k); dy=dy||0; return p=>ovr(p)+hn('nt'+M.name+G.year+k,p.id)*2.5+(mb&&milFree(p)&&p.age+dy<=30?mb:0)+(rec.has(p.id)&&p.team===G.user?5:0); } /* 구단 추천 +5(커뮤니티 요청 11-07) */
+function ntSquad(k,excl,o){ o=o||{}; const e=NT_EV[k]; const ex=new Set(excl||[]); const Y=o.y||G.year, dy=Y-G.year; const v=ntVal(k,dy); const mul=o.mul||1, cap=e.cap?e.cap*mul:0, only=o.only?new Set(o.only):null;
+  const base=ntPool().filter(p=>!ex.has(p.id)).map(p=>({p,v:v(p),b:ntBucket(p),ok:!e.u25||ntU25(p,Y)})).sort((a,b)=>b.v-a.v);
   const pool=only?base.filter(x=>only.has(x.p.id)).concat(base.filter(x=>!only.has(x.p.id))):base; /* 최종 명단은 예비 명단 안에서 먼저 뽑고, 모자라면 밖에서 채운다 */
   const per={}, cnt={P:0,C:0,IF:0,OF:0}, S=[]; const capOk=x=>!cap||(per[x.p.team]||0)<cap; const put=x=>{ S.push(x); cnt[x.b]++; per[x.p.team]=(per[x.p.team]||0)+1; }; const drop=x=>{ S.splice(S.indexOf(x),1); cnt[x.b]--; per[x.p.team]--; };
   for(const x of pool){ if(!x.ok||cnt[x.b]>=NT_SLOTS[x.b]*mul||!capOk(x))continue; put(x); }
-  if(e.u25){ let w=0; for(const x of pool){ if(w>=NT_WILD*mul)break; if(x.ok||S.includes(x)||x.p.age>NT_WILD_AGE)continue; const out=S.filter(s=>s.b===x.b&&!s.wild).sort((a,b)=>a.v-b.v)[0]; if(!out||x.v<=out.v+1)continue;
-      drop(out); if(!capOk(x)){ put(out); continue; } x.wild=true; put(x); w++; } }
+  if(e.u25){ let w=0; for(const x of pool){ if(w>=NT_WILD*mul)break; if(x.ok||S.includes(x)||x.p.age+dy>NT_WILD_AGE)continue; const outs=S.filter(s=>s.b===x.b&&!s.wild).sort((a,b)=>a.v-b.v);
+      const out=capOk(x)?outs[0]:outs.find(s=>s.p.team===x.p.team); /* 구단 인원이 찼으면 같은 구단 선수와 바꾼다(검수 11-09u) */ if(!out||x.v<=out.v+1)continue; drop(out); x.wild=true; put(x); w++; } }
   /* 구단당 제한 때문에 빈 포지션: 그 구단에서 다른 묶음으로 뽑힌 선수를 다른 구단 선수로 바꾸고 자리를 채운다(검수 11-06: 포수 6명이 있어도 0명으로 확정) */
   for(let g=0;g<30;g++){ const short=Object.keys(NT_SLOTS).find(b=>cnt[b]<NT_SLOTS[b]*mul&&pool.some(x=>x.b===b&&x.ok&&!S.includes(x))); if(!short)break; let done=false;
     for(const c of pool){ if(c.b!==short||!c.ok||S.includes(c))continue; if(capOk(c)){ put(c); done=true; break; }
       const outs=S.filter(s=>s.p.team===c.p.team&&s.b!==short&&!s.wild).sort((a,b)=>a.v-b.v); for(const s of outs){ const r=pool.find(x=>x.b===s.b&&x.ok&&!S.includes(x)&&x!==c&&x.p.team!==c.p.team&&capOk(x)); if(!r)continue; drop(s); put(c); put(r); done=true; break; } if(done)break; }
     if(!done)break; }
-  if(e.u25){ let w=S.filter(x=>x.wild).length; for(const x of pool){ if(w>=NT_WILD*mul)break; if(x.ok||S.includes(x)||x.p.age>NT_WILD_AGE||cnt[x.b]>=NT_SLOTS[x.b]*mul||!capOk(x))continue; x.wild=true; put(x); w++; } } /* 일반 자격자로 못 채운 자리는 와일드카드로 */
+  if(e.u25){ let w=S.filter(x=>x.wild).length; for(const x of pool){ if(w>=NT_WILD*mul)break; if(x.ok||S.includes(x)||x.p.age+dy>NT_WILD_AGE||cnt[x.b]>=NT_SLOTS[x.b]*mul||!capOk(x))continue; x.wild=true; put(x); w++; } } /* 일반 자격자로 못 채운 자리는 와일드카드로 */
   /* 구단당 최소 인원: 한 명도 없는 구단은 그 구단 최고 선수를 넣고, 여러 명 뽑힌 구단의 같은 묶음 하위 선수를 뺀다 */
   if(e.min&&mul===1)for(const t of G.teams){ if((per[t.id]||0)>=e.min)continue; const c=pool.find(x=>x.p.team===t.id&&x.ok&&!S.includes(x)&&S.some(s=>s.b===x.b&&!s.wild&&(per[s.p.team]||0)>e.min)); if(!c)continue;
     const out=S.filter(s=>s.b===c.b&&!s.wild&&(per[s.p.team]||0)>e.min).sort((a,b)=>a.v-b.v)[0]; drop(out); put(c); }
   return S.map(x=>({id:x.p.id,wild:!!x.wild})); }
 /* 거부한 자리 채우기: 같은 포지션 묶음에서 규정에 맞는 다음 선수 */
-function ntFill(N,b,tid){ const e=NT_EV[N.k]; const M=ntMgr(); const have=new Set(N.ids.concat(N.ref||[])); const per={}; for(const id of N.ids){ const q=G.players[id]; if(q)per[q.team]=(per[q.team]||0)+1; }
-  const wild=(N.wild||[]).length; const v=p=>ovr(p)+hn('nt'+M.name+G.year+N.k,p.id)*2.5;
+function ntFill(N,b,tid){ const e=NT_EV[N.k]; const have=new Set(N.ids.concat(N.ref||[])); const per={}; for(const id of N.ids){ const q=G.players[id]; if(q)per[q.team]=(per[q.team]||0)+1; }
+  const wild=(N.wild||[]).length; const v=ntVal(N.k);
   const c=ntPool().filter(p=>!have.has(p.id)&&ntBucket(p)===b&&(!e.cap||(per[p.team]||0)<e.cap)&&(!e.u25||ntU25(p)||(wild<NT_WILD&&p.age<=NT_WILD_AGE))).sort((a,b2)=>v(b2)-v(a)); if(e.min&&tid!=null&&(per[tid]||0)<e.min){ const m=c.find(p=>p.team===tid); if(m)return m; } /* 구단당 최소 인원: 빠진 선수 구단에서 먼저 */ return c[0]||null; }
 /* 사전 등록(예비) 명단: 최종 인원의 두 배쯤. 여기서 빠지면 최종 명단에 들기 어렵다 */
 function ntPreAnnounce(k){ const e=NT_EV[k]; const M=ntMgr(); const S=ntSquad(k,null,{mul:2}); G.ntPre={k,y:G.year,ids:S.map(x=>x.id)};
@@ -19771,7 +19773,8 @@ function ntDaily(d){ ntState(); for(const k of Object.keys(NT_EV)){ const e=NT_E
     if(e.pre&&d===D(e.pre))ntPreAnnounce(k);
     if(d===D(e.ann))ntAnnounce(k);
     const N=G.nt; if(!N||N.k!==k||N.y!==G.year)continue;
-    if(d===D(e.from)){ try{ ntMedCheck(N); }catch(err){} try{ const dp=depth(G.user); N.role={}; for(const id of N.ids){ const p=G.players[id]; if(p&&p.team===G.user)N.role[id]=dp.sp.some(x=>x.id===id)?'sp':p.isP?'pen':dp.start.some(x=>x.id===id)?'start':'bench'; } }catch(err){} /* 소집 직전 역할(대표팀 화면 영향 표시용) */ for(const id of N.ids){ const p=G.players[id]; if(p){ p.ntFrom=d; p.ntAway=D(e.to); p.e1=false; } } const mine=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
+    if(d===D(e.from)){ let mo=[]; try{ mo=ntMedCheck(N); }catch(err){} try{ const dp=depth(G.user); N.role={}; for(const id of N.ids){ const p=G.players[id]; if(p&&p.team===G.user)N.role[id]=dp.sp.some(x=>x.id===id)?'sp':p.isP?'pen':dp.start.some(x=>x.id===id)?'start':'bench'; } }catch(err){} /* 소집 직전 역할(대표팀 화면 영향 표시용) */ for(const id of N.ids){ const p=G.players[id]; if(p){ p.ntFrom=d; p.ntAway=D(e.to); p.e1=false; } } const mine=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
+      if(mo.some(x=>x.r&&x.r.team===G.user))try{ ntShortGuard(d); }catch(err){}
       if(mine.length)addLog(`${e.n} 대표 소집: ${mine.map(p=>p.name).join(', ')} (${dmd(D(e.to))} 복귀)`); }
     if(d===D(e.res)&&!N.res)ntResult(k);
     if(d===D(e.to)){ const back=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user); for(const t of G.teams){ try{ entryUpgrade(t.id,N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===t.id),'대표팀 복귀'); }catch(err){} }
@@ -19786,23 +19789,31 @@ function ntAnnounce(k){ const e=NT_EV[k]; const M=ntMgr(); const pre=G.ntPre&&G.
    구단의 차출 거부(ntRefuse)와 달리 여론·선수 사기 불이익은 없다. 대회 성과·특례는 최종 명단(N.ids)만 받는다 */
 /* 기록이 지워진 선수의 자리: 발표 때 저장한 묶음, 없으면(예전 저장) 정원보다 가장 모자란 묶음 */
 function ntGoneB(N,id){ if(N.bk&&N.bk[id])return N.bk[id]; const c={P:0,C:0,IF:0,OF:0}; for(const x of N.ids){ const q=G.players[x]; if(q)c[ntBucket(q)]++; } return Object.keys(c).sort((a,b)=>(c[a]-NT_SLOTS[a])-(c[b]-NT_SLOTS[b]))[0]; }
-function ntMedCheck(N){ const e=NT_EV[N.k]; const out=[];
+function ntMedCheck(N,quiet){ const e=NT_EV[N.k]; const out=[]; const st=quiet?()=>{}:story; /* 예측(ntCallIds)은 이력을 남기지 않는다 */
   for(const id of N.ids.slice()){ const p=G.players[id]; const gone=!p||p.team==null||(milServing(p)&&p.mil.unit!=='상무'); const hurt=!gone&&!healthy(p)&&!(p.injOut===1&&!(p.susp>G.day)&&!p.frehab&&!p.hold); /* 재활이 하루 남은 선수는 오늘 회복하므로 남긴다(검수 11-07) */ if(!gone&&!hurt)continue;
     N.ids=N.ids.filter(x=>x!==id); N.wild=(N.wild||[]).filter(x=>x!==id); (N.ref=N.ref||[]).push(id); const why=hurt?(p.injOut>0?`부상(재활 ${p.injOut}일)`:p.hold?'연봉 미계약':p.frehab?'재활 명단':'출장 정지'):'리그 이탈';
     (N.med=N.med||[]).push({id,why,d:G.day}); const r=ntFill(N,(N.bk&&N.bk[id])||(p?ntBucket(p):ntGoneB(N,id)),p?p.team:null); /* 뽑힌 때의 자리로 대체(포지션이 바뀌었어도) */ if(r){ N.ids.push(r.id); if(N.bk)N.bk[r.id]=ntBucket(r); if(e.u25&&!ntU25(r))N.wild.push(r.id); N.med[N.med.length-1].rep=r.id; }
-    if(p)story(p,`${N.y} ${e.n} 대표 제외(${hurt&&p.injOut>0?'의료 사유':'사유'}: ${why})`,'mil'); out.push({p,why,r}); }
+    if(p)st(p,`${N.y} ${e.n} 대표 제외(${hurt&&p.injOut>0?'의료 사유':'사유'}: ${why})`,'mil'); out.push({p,why,r}); }
   /* 구단당 인원 제한 재검사: 발표 뒤 트레이드로 한 구단에 몰리면 능력 낮은 선수부터 빼고 다른 구단에서 채운다(검수 11-07) */
   if(e.cap){ const per={}; for(const id of N.ids){ const q=G.players[id]; if(q)(per[q.team]=per[q.team]||[]).push(q); }
     for(const L of Object.values(per)){ if(L.length<=e.cap)continue; for(const p of L.sort((a,b)=>ovr(a)-ovr(b)).slice(0,L.length-e.cap)){ const id=p.id; N.ids=N.ids.filter(x=>x!==id); N.wild=(N.wild||[]).filter(x=>x!==id); (N.ref=N.ref||[]).push(id); const why='구단당 인원 초과(이적)';
-      (N.med=N.med||[]).push({id,why,d:G.day}); const r=ntFill(N,(N.bk&&N.bk[id])||ntBucket(p),null); if(r){ N.ids.push(r.id); if(N.bk)N.bk[r.id]=ntBucket(r); if(e.u25&&!ntU25(r))N.wild.push(r.id); N.med[N.med.length-1].rep=r.id; } story(p,`${N.y} ${e.n} 대표 제외(사유: ${why})`,'mil'); out.push({p,why,r}); } } }
+      (N.med=N.med||[]).push({id,why,d:G.day}); const r=ntFill(N,(N.bk&&N.bk[id])||ntBucket(p),null); if(r){ N.ids.push(r.id); if(N.bk)N.bk[r.id]=ntBucket(r); if(e.u25&&!ntU25(r))N.wild.push(r.id); N.med[N.med.length-1].rep=r.id; } st(p,`${N.y} ${e.n} 대표 제외(사유: ${why})`,'mil'); out.push({p,why,r}); } } }
   /* 구단당 최소 인원 재검사: 대체 발탁으로 0명이 된 구단은 그 구단 선수를 넣고, 여러 명 뽑힌 구단의 같은 묶음 하위 선수를 뺀다(검수 11-08) */
   if(e.min){ const cntT=tid=>N.ids.filter(id=>G.players[id]&&G.players[id].team===tid).length; const have=new Set(N.ids.concat(N.ref||[]));
     for(const t of G.teams){ if(cntT(t.id)>=e.min)continue; const c=ntPool().filter(p=>p.team===t.id&&!have.has(p.id)&&(!e.u25||ntU25(p))).sort((a,b)=>ovr(b)-ovr(a)).find(c=>N.ids.some(id=>{ const q=G.players[id]; return q&&ntBucket(q)===ntBucket(c)&&cntT(q.team)>e.min&&!(N.wild||[]).includes(id); })); if(!c)continue;
-      const o=N.ids.map(id=>G.players[id]).filter(q=>q&&ntBucket(q)===ntBucket(c)&&cntT(q.team)>e.min&&!(N.wild||[]).includes(q.id)).sort((a,b)=>ovr(a)-ovr(b))[0]; N.ids=N.ids.filter(x=>x!==o.id); (N.ref=N.ref||[]).push(o.id); N.ids.push(c.id); have.add(c.id); if(N.bk)N.bk[c.id]=ntBucket(c); (N.med=N.med||[]).push({id:o.id,why:'구단당 최소 인원 조정',d:G.day,rep:c.id}); story(o,`${N.y} ${e.n} 대표 제외(사유: 구단당 최소 인원 조정)`,'mil'); out.push({p:o,why:'구단당 최소 인원 조정',r:c}); } }
-  const mine=out.filter(x=>x.p&&x.p.team===G.user), rIn=out.filter(x=>x.r&&x.r.team===G.user);
+      const o=N.ids.map(id=>G.players[id]).filter(q=>q&&ntBucket(q)===ntBucket(c)&&cntT(q.team)>e.min&&!(N.wild||[]).includes(q.id)).sort((a,b)=>ovr(a)-ovr(b))[0]; N.ids=N.ids.filter(x=>x!==o.id); (N.ref=N.ref||[]).push(o.id); N.ids.push(c.id); have.add(c.id); if(N.bk)N.bk[c.id]=ntBucket(c); (N.med=N.med||[]).push({id:o.id,why:'구단당 최소 인원 조정',d:G.day,rep:c.id}); st(o,`${N.y} ${e.n} 대표 제외(사유: 구단당 최소 인원 조정)`,'mil'); out.push({p:o,why:'구단당 최소 인원 조정',r:c}); } }
+  if(quiet)return out; const mine=out.filter(x=>x.p&&x.p.team===G.user), rIn=out.filter(x=>x.r&&x.r.team===G.user);
   if(mine.length||rIn.length)mail('운영팀',`${e.n} 대표 명단 변경(소집일 검사)`,`${mine.length?`소집일 검사에서 우리 선수 ${mine.map(x=>`${x.p.name}(${x.why})`).join(', ')}이(가) 대표팀에서 빠졌습니다. 구단의 차출 거부가 아니라서 여론·선수 사기 불이익은 없고, 대회 성적·병역 특례도 받지 않습니다.`:''}${rIn.length?`${mine.length?'\n\n':''}대체 발탁: ${rIn.map(x=>x.r.name).join(', ')}(${dmd(KD(e.to[0],e.to[1]))}까지 차출).`:''}`,{kind:'선수'});
   if(out.length)addLog(`${e.n} 대표 소집일 검사: ${out.map(x=>`${x.p?x.p.name:'?'} 제외(${x.why})${x.r?` → ${x.r.name}`:''}`).join(', ')}`);
   return out; }
+/* 소집일(d)에 실제로 빠질 선수: 소집일 검사(의료 제외·대체 발탁·구단당 1~3명)를 사본에 그대로 돌린 결과. 전날 진행 검사가 같은 규칙을 쓰게(검수 11-09u) */
+function ntCallIds(N,d){ const C=JSON.parse(JSON.stringify(N)), d0=G.day; G.day=d; /* 소집일 처리(processDay)와 같은 날짜로 판정 */ try{ ntMedCheck(C,true); }catch(e){} finally{ G.day=d0; } return new Set(C.ids); }
+/* 소집일 재검사: 예측 못 한 대체 발탁으로 오늘 우리 경기 인원이 모자라면 경기를 미루고 멈춘다(8명 출전 방지, 검수 11-09u). 다음 경기 전날 진행 검사가 다시 막는다 */
+function ntShortGuard(d){ if(G.unemp||period()!=='season'||!(G.cal.sched[d]||[]).some(x=>x.includes(G.user)))return;
+  const can=Object.values(G.players).filter(p=>p.team===G.user&&!p.ys&&!(p.joinY>G.year)&&!isAway(p)&&!(p.injOut>1)&&!(p.susp>d)&&!p.frehab&&!p.hold&&psOk(p)&&(!entryOn()||p.e1||p.downDay==null||d-p.downDay>=10)); /* 진행 검사(blocker)의 '뛸 수 있는 선수'와 같은 기준 */
+  const nb=can.filter(p=>!p.isP).length, np=can.length-nb; if(nb>=9&&np>=8)return;
+  const L=G.cal.sched[d].filter(x=>x.includes(G.user)); G.cal.sched[d]=G.cal.sched[d].filter(x=>!x.includes(G.user)); for(const [h,a] of L)(G.makeup=G.makeup||[]).push({y:G.year,h,a,d});
+  stop('대표팀',`대표 소집일 대체 발탁으로 오늘 경기에 낼 ${nb<9?`야수가 ${nb}명`:`투수가 ${np}명`}뿐이라 오늘 경기를 다음 경기일로 미뤘습니다. 선수를 영입하거나 육성선수를 등록해 인원을 채운 뒤 진행하세요.`); }
 /* 차출 거부: 소집 전까지 가능. 다음 선수로 채우고, 여론과 선수 마음이 나빠진다 */
 function ntRefuse(id){ if(G.unemp)return '단장직이 없어 차출을 거부할 수 없습니다.'; const N=ntState(); const p=G.players[id]; if(!N||N.res||!p||p.team!==G.user||!N.ids.includes(id))return '대상이 아닙니다.'; const e=NT_EV[N.k]; if(G.day>=KD(e.from[0],e.from[1]))return '이미 소집됐습니다.';
   N.ids=N.ids.filter(x=>x!==id); N.wild=(N.wild||[]).filter(x=>x!==id); (N.ref=N.ref||[]).push(id); const r=ntFill(N,(N.bk&&N.bk[id])||ntBucket(p),p.team); if(r){ N.ids.push(r.id); if(N.bk)N.bk[r.id]=ntBucket(r); if(NT_EV[N.k].u25&&!ntU25(r))N.wild.push(r.id); }
@@ -19839,10 +19850,17 @@ const NT_REC_MAX=3;
 function ntRecIds(k){ const R=G.ntRec; return new Set(R&&R.y===G.year&&R.k===k?R.ids.filter(id=>G.players[id]&&G.players[id].team===G.user):[]); } /* 팀을 떠난 선수는 추천에서 빠진다(검수 11-07) */
 function ntRecToggle(k,id){ const e=NT_EV[k]; if(!e||!e.ex)return '병역 특례가 걸린 대회(아시안게임·올림픽)만 구단 추천을 받습니다.'; if(G.unemp)return '구단을 맡고 있지 않습니다.'; const p=G.players[id]; if(!p||p.team!==G.user||p.foreign)return '우리 국내 선수만 추천할 수 있습니다.';
   if(G.nt&&G.nt.k===k&&G.nt.y===G.year)return '이미 최종 명단이 발표됐습니다.'; if(e.u25&&!ntU25(p))return `${p.name}은(는) 이 대회 나이 제한(만 25세 이하·입단 4년 차 이하)에 걸립니다. 와일드카드는 감독이 직접 고릅니다.`;
-  const R=G.ntRec=G.ntRec&&G.ntRec.y===G.year&&G.ntRec.k===k?G.ntRec:{k,y:G.year,ids:[]}; R.ids=[...ntRecIds(k)]; if(R.ids.includes(id)){ R.ids=R.ids.filter(x=>x!==id); return `${p.name} 추천을 거뒀습니다.`; } if(R.ids.length>=NT_REC_MAX)return `구단 추천은 ${NT_REC_MAX}명까지입니다.`; R.ids.push(id); return `${p.name}을(를) 대표팀에 추천했습니다${milFree(p)?'(미필)':''}.`; }
+  const R=G.ntRec=G.ntRec&&G.ntRec.y===G.year&&G.ntRec.k===k?G.ntRec:{k,y:G.year,ids:[]}; R.ids=[...ntRecIds(k)]; if(R.ids.includes(id)){ R.ids=R.ids.filter(x=>x!==id); return `${p.name} 추천을 거뒀습니다.`; }
+  const why=ntRecBlock(k,p); if(why)return why; if(R.ids.length>=NT_REC_MAX)return `구단 추천은 ${NT_REC_MAX}명까지입니다.`; R.ids.push(id); return `${p.name}을(를) 대표팀에 추천했습니다${milFree(p)?'(미필)':''}.`; }
 
+/* 추천해도 뽑힐 수 없는 선수: 최종 발표일 후보군(ntPool)은 그날 건강한 선수만 본다(검수 11-09u: 재활 300일 선수에 추천 자리를 씀) */
+function ntRecBlock(k,p){ const e=NT_EV[k], ann=KD(e.ann[0],e.ann[1]);
+  if(milServing(p)&&p.mil.unit!=='상무')return `${p.name}은(는) 현역 복무 중이라 대표팀에 뽑힐 수 없습니다.`;
+  if(p.injOut>0&&G.day+p.injOut>=ann)return `${p.name}은(는) 재활 ${p.injOut}일이 남아 최종 발표(${dmd(ann)}) 전에 회복하지 못합니다.`;
+  if(p.susp>ann)return `${p.name}은(는) 최종 발표(${dmd(ann)}) 뒤까지 출장 정지입니다.`;
+  return ''; }
 /* 해외파 차출(커뮤니티 요청 11-07): 해외에서 뛰는 국내 선수 중 능력 상위 최대 3명이 대표팀에 합류해 전력에 더해진다(소속 구단 허락을 받은 것으로 본다). 국내 명단 24명과 별도 */
-function ntAbroad(){ const out=[]; for(const a of G.abroad||[]){ if(a.back||a.foreign||!a.pj||!(G.year>=(a.y1??a.y+1)))continue; let o=null; try{ const q=JSON.parse(a.pj); q.age=(a.age||q.age)+(G.year-a.y); o=Math.max(0,(q.injOut||0)-(a.d!=null&&!(a.lines||[]).length?G.day-a.d:0))>0?null:ovr(q); /* 재활 중인 해외파는 뽑지 않는다(검수 11-08) */ }catch(e){} if(o!=null&&o>=55)out.push({id:a.id,name:a.name,club:a.club,lg:a.lg,pos:a.pos,o}); } return out.sort((x,y)=>y.o-x.o).slice(0,3); }
+function ntAbroad(){ const out=[]; for(const a of G.abroad||[]){ if(a.back||a.foreign||!a.pj||!(G.year>=(a.y1??a.y+1)))continue; let o=null; try{ const q=JSON.parse(a.pj); q.age=(a.age||q.age)+(G.year-a.y); o=Math.max(0,(q.injOut||0)-(a.d!=null&&!(a.lines||[]).length?G.day-a.d:0))>0?null:ovr(q); /* 재활 중인 해외파는 뽑지 않는다(검수 11-08) */ }catch(e){} if(o!=null&&o>=55)out.push({id:a.id,name:a.name,club:a.club,lg:a.lg,pos:a.pos,isP:!!a.isP,o}); } return out.sort((x,y)=>y.o-x.o).slice(0,3); }
 /* ===== 감독이 추구하는 야구 → 원하는 역할 → 기용·요청·영입 판단을 같은 기준으로 =====
  감독 유형(mgrType)마다 원하는 선수 역할이 있다(뛰는 야구: 발 빠른 타자·출루형 테이블세터, 빅볼: 장타형 중심 타자, 수비 중시: 센터라인 수비수,
  불펜 총력: 구위형 필승조, 선발 관리: 긴 이닝 선발).
@@ -20585,7 +20603,7 @@ function rivalAfterGame(day,h,a,g,post){
 function allStarPool(y){
   const L=[];
   for(const p of Object.values(G.players)){
-    if(p.team==null||p.prospect||p.joinY>y||p.injOut>0||p.susp>G.day||isAway(p)||p.frehab)continue; /* 재활 명단(부상 대체 복귀 대기)도 출전 불가(검수 11-08) */
+    if(p.team==null||p.prospect||p.ys||p.joinY>y||p.injOut>0||p.susp>G.day||isAway(p)||p.frehab)continue; /* 재활 명단(부상 대체 복귀 대기)도 출전 불가(검수 11-08) */ /* 육성선수는 1군 등록이 안 돼 올스타에 못 나간다(검수 11-09u) */
     const h=seasonTotal(p,y,'1군');if(!h||(p.isP?(h.outs||0)<30:(h.pa||0)<50))continue;
     const w=warOf(h,p),rate=p.isP?pRate(h):bRate(h);
     const stats=p.isP?w*.8+(h.w||0)*.04+(h.sv||0)*.025+clamp(5-rate.era,-2,3)*.15:w*.8+(h.hr||0)*.035+(h.h||0)*.005+(h.sb||0)*.01;
@@ -20628,7 +20646,7 @@ function allStarDaily(){
     const pool=allStarPool(G.year);
     for(const side of ['나눔','드림'])for(let i=0;i<A.teams[side].length;i++){
       const old=A.teams[side][i],p=G.players[old.id];
-      if(p&&p.team!=null&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p)&&!p.frehab){ if(old.t!==p.team)A.teams[side][i]={...old,t:p.team}; continue; } /* 같은 진영 안 이적: 자격은 그대로, 소속은 지금 구단으로(검수 11-06) */
+      if(p&&p.team!=null&&!p.ys&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p)&&!p.frehab){ if(old.t!==p.team)A.teams[side][i]={...old,t:p.team}; continue; } /* 같은 진영 안 이적: 자격은 그대로, 소속은 지금 구단으로(검수 11-06) */
       const used=new Set(Object.values(A.teams).flat().map(x=>x.id));
       const x=pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&x.slot===old.slot)||pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&!!x.p.isP===old.isP);
       if(!x){ A.withdrawn.push({...old,replacement:null,day:G.day}); A.teams[side].splice(i,1); i--; continue; } /* 대체 후보가 없어도 출전 불가 선수는 확정 명단에서 뺀다(검수 11-06) */
@@ -31918,11 +31936,11 @@ function patchPop(){ if(!G||UI.title||!PATCH.length)return ''; if(navigator.webd
 function patchCard(){ const all=!!UI.patchAll; const L=all?PATCH:PATCH.slice(0,1); return `<section class="card pn-card"><div class="row between"><h2 class="sec">패치 노트</h2>${PATCH.length>1?`<button class="btn small" data-a="patchAll">${all?'접기':'지난 패치도 보기'}</button>`:''}</div>${L.map((x,i)=>patchBlock(x,all&&i>=3)).join('')}</section>`; }
 Object.assign(A,{ patchOk(){ patchMark(); UI.patchClosed=true; render(); }, patchAll(){ UI.patchAll=!UI.patchAll; render(); }, patchShow(){ UI.patchClosed=false; try{ localStorage.removeItem(PATCH_KEY); }catch(e){ UI.patchSeenMem=''; } render(); } });
 /* ---------- 리그 > 국가대표: 다가오는 대회 · 예비/최종 명단 · 상비군(지금 뽑는다면) · 차출 거부 · 지난 대회 ---------- */
-function ntProj(k){ const key=G.day+':'+k+':'+G.year; if(UI._ntP&&UI._ntP.key===key&&UI._ntP.g===G)return UI._ntP.L; const L=ntSquad(k); UI._ntP={key,g:G,L}; return L; }
+function ntProj(k,y){ y=y||G.year; const key=G.day+':'+k+':'+G.year+':'+y; if(UI._ntP&&UI._ntP.key===key&&UI._ntP.g===G)return UI._ntP.L; const L=ntSquad(k,null,{y}); /* 대회 연도 나이로 자격·와일드카드(검수 11-09u) */ UI._ntP={key,g:G,L}; return L; }
 function ntRows(ids,o){ o=o||{}; const N=o.N; const BO={P:0,C:1,IF:2,OF:3}, BL={P:'투수',C:'포수',IF:'내야',OF:'외야'};
   const L=ids.map(id=>G.players[id]).filter(Boolean).sort((a,b)=>BO[ntBucket(a)]-BO[ntBucket(b)]||ovr(b)-ovr(a));
   const wild=new Set((N&&N.wild)||o.wild||[]);
-  return `<div class="tw"><table class="sqt rt lst"><thead><tr><th>구분</th><th>선수</th><th>소속</th><th class="n">나이</th><th class="n">능력</th><th>비고</th>${o.act?'<th></th>':''}</tr></thead><tbody>${L.map(p=>`<tr class="click${p.team===G.user?' me':''}" data-a="player" data-v="${p.id}"><td>${BL[ntBucket(p)]}</td><td>${esc(p.name)} <span class="small muted">${posLabel(p)}</span></td><td>${esc(tshort(p.team))}</td><td class="n">${p.age}</td><td class="n">${dvo(p)}</td><td class="small">${[wild.has(p.id)?'와일드카드':'',milFree(p)?'미필':''].filter(Boolean).join(' · ')}</td>${o.act?`<td>${o.act(p)}</td>`:''}</tr>`).join('')}</tbody></table></div>`; }
+  return `<div class="tw"><table class="sqt rt lst"><thead><tr><th>구분</th><th>선수</th><th>소속</th><th class="n">나이</th><th class="n">능력</th><th>비고</th>${o.act?'<th></th>':''}</tr></thead><tbody>${L.map(p=>`<tr class="click${p.team===G.user?' me':''}" data-a="player" data-v="${p.id}"><td>${BL[ntBucket(p)]}</td><td>${esc(p.name)} <span class="small muted">${posLabel(p)}</span></td><td>${esc(tshort(p.team))}</td><td class="n">${p.age+(o.dy||0)}</td><td class="n">${dvo(p)}</td><td class="small">${[wild.has(p.id)?'와일드카드':'',milFree(p)?'미필':''].filter(Boolean).join(' · ')}</td>${o.act?`<td>${o.act(p)}</td>`:''}</tr>`).join('')}${((N&&N.ovs)||[]).map(x=>`<tr><td>해외</td><td>${esc(x.name)} <span class="small muted">${esc(x.pos||'')}</span></td><td>${esc(`${x.lg||''} ${x.club||''}`.trim())}</td><td class="n">-</td><td class="n">${x.o}</td><td class="small">해외파</td>${o.act?'<td></td>':''}</tr>`).join('')}</tbody></table></div>`; } /* WBC 해외파도 최종 명단에(검수 11-09u) */
 /* 우리 팀 영향: 뽑힌(뽑힐) 우리 선수 수 · 역할별 공백 · 미필 */
 function ntImpact(ids,k){ const L=ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user); if(!L.length)return '<p class="small"><b>우리 팀 영향</b> 없음</p>'; let d=null; try{ d=depth(G.user); }catch(e){} const RS=G.nt&&G.nt.k===k&&G.nt.role||{}; /* 소집 뒤에는 소집 직전 역할(검수 11-07: 빠진 라인업으로 다시 판단해 주전이 백업으로) */
   const role=p=>RS[p.id]?({sp:'선발투수',pen:'불펜',start:`주전 ${posLabel(p)}`,bench:`백업 ${posLabel(p)}`})[RS[p.id]]:!d?posLabel(p):d.sp.some(x=>x.id===p.id)?'선발투수':p.isP?'불펜':d.start.some(x=>x.id===p.id)?`주전 ${posLabel(p)}`:`백업 ${posLabel(p)}`; const by={}; L.forEach(p=>{ const r=role(p); by[r]=(by[r]||0)+1; });
@@ -31930,26 +31948,26 @@ function ntImpact(ids,k){ const L=ids.map(id=>G.players[id]).filter(p=>p&&p.team
   return `<p class="small"><b>우리 팀 영향</b> ${L.length}명 · ${Object.entries(by).map(([r,n])=>`${r} ${n}명`).join(' · ')}${mf?e.ex?` · 병역 특례 가능 ${mf}명(${M.map(p=>esc(p.name)).join(', ')}: ${e.ex==='gold'?'금메달':'3위 이내'}이면 특례, 입대 예정·복무 중 포함)`:` · 미필 ${mf}명`:''}</p>`; }
 function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); const nx=up[0];
   const exL=k=>NT_EV[k].ex==='gold'?'금메달':NT_EV[k].ex==='top3'?'3위 이내':'없음';
-  const live=N&&N.y===G.year&&!N.res?N:null; const e=live&&NT_EV[live.k]; const canRef=live&&G.day<KD(e.from[0],e.from[1]);
+  const live=N&&N.y===G.year&&(!N.res||G.day<KD(...NT_EV[N.k].to))?N:null; /* 결과가 나와도 복귀일까지는 최종 명단(검수 11-09u) */ const medH=live&&(live.med||[]).length?`<p class="small">소집일 제외: ${live.med.map(x=>{ const p=G.players[x.id], r=x.rep!=null?G.players[x.rep]:null; return `${esc(p?p.name:'?')}(${esc(x.why)})${r?` → ${esc(r.name)}`:''}`; }).join(', ')}</p>`:''; const e=live&&NT_EV[live.k]; const canRef=live&&G.day<KD(e.from[0],e.from[1]);
   const pre=!live&&G.ntPre&&G.ntPre.y===G.year&&nx&&G.ntPre.k===nx.k&&nx.y===G.year?G.ntPre:null;
   let h=csec('국가대표',`${natHead()}<dl class="tsum"><div><dt>감독</dt><dd>${esc(M.name)}</dd></div><div><dt>다음 대회</dt><dd>${nx?`${nx.y} ${nx.n}`:'없음'}</dd></div></dl>
     ${UI.ntMsg?`<div class="note">${esc(UI.ntMsg)}</div>`:''}
     <div class="tw"><table class="sqt rt lst"><thead><tr><th>대회</th><th>소집 기간</th><th>병역 특례</th></tr></thead><tbody>${up.map(x=>`<tr><td>${x.y} ${x.n}</td><td>${dmd(x.from)} ~ ${dmd(x.to)}</td><td>${exL(x.k)}</td></tr>`).join('')}</tbody></table></div>`);
   if(live){ const mine=live.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
-    h+=csec(`${ntTxt(live)} 최종 명단`,`${ntImpact(live.ids,live.k)}<p class="small muted">${canRef?`소집 전까지 차출을 거부할 수 있습니다(여론 악화). 소집일(${dmd(KD(e.from[0],e.from[1]))})에 다쳐 있거나 출장 정지인 선수는 의료 사유로 빠지고 대체 선수가 뽑힙니다(여론 불이익 없음, 성적·특례 없음).`:''}</p>${(live.med||[]).length?`<p class="small">소집일 제외: ${live.med.map(x=>{ const p=G.players[x.id], r=x.rep!=null?G.players[x.rep]:null; return `${esc(p?p.name:'?')}(${esc(x.why)})${r?` → ${esc(r.name)}`:''}`; }).join(', ')}</p>`:''}${ntRows(live.ids,{N:live,act:canRef?p=>p.team===G.user?`<button class="btn small" data-a="ntRefuse" data-v="${p.id}">거부</button>`:'':null})}`); }
+    h+=csec(`${ntTxt(live)} 최종 명단`,`${ntImpact(live.ids,live.k)}<p class="small muted">${canRef?`소집 전까지 차출을 거부할 수 있습니다(여론 악화). 소집일(${dmd(KD(e.from[0],e.from[1]))})에 다쳐 있거나 출장 정지인 선수는 의료 사유로 빠지고 대체 선수가 뽑힙니다(여론 불이익 없음, 성적·특례 없음).`:''}</p>${medH}${ntRows(live.ids,{N:live,act:canRef?p=>p.team===G.user?`<button class="btn small" data-a="ntRefuse" data-v="${p.id}">거부</button>`:'':null})}`); }
   else if(pre){ const mine=pre.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
     h+=csec(`${G.year} ${NT_EV[pre.k].n} 예비 명단 · ${pre.ids.length}명`,`<p class="small muted">최종 발표 ${dmd(KD(NT_EV[pre.k].ann[0],NT_EV[pre.k].ann[1]))}</p>${ntImpact(pre.ids,pre.k)}${ntRows(pre.ids)}`); }
-  else if(nx){ const S=ntProj(nx.k); h+=csec(`상비군 · ${nx.y} ${nx.n} 지금 뽑는다면`,ntImpact(S.map(x=>x.id),nx.k)+ntRows(S.map(x=>x.id),{wild:S.filter(x=>x.wild).map(x=>x.id)})); }
+  else if(nx){ const S=ntProj(nx.k,nx.y); h+=csec(`상비군 · ${nx.y} ${nx.n} 지금 뽑는다면`,ntImpact(S.map(x=>x.id),nx.k)+ntRows(S.map(x=>x.id),{wild:S.filter(x=>x.wild).map(x=>x.id),dy:nx.y-G.year})); }
   { const rx=up.find(x=>NT_EV[x.k].ex&&x.y===G.year); const rb=rx?ntRecBox(rx):''; if(rb)h+=csec(`구단 추천 · ${rx.y} ${rx.n}`,rb); }
   const H=(G.ntHist||[]).slice().reverse();
   if(fmOn()){ /* PC(FM식): 대표팀·대회 | 명단(한 줄 표) | 우리 선수(얼굴)·구단별 선발 인원, 지난 대회 */
-    const sq=live?{t:`${ntTxt(live)} 최종 명단`,ids:live.ids,k:live.k,o:{N:live,act:canRef?p=>p.team===G.user?`<button class="btn small" data-a="ntRefuse" data-v="${p.id}">거부</button>`:'':null},s:canRef?`소집 전까지 차출 거부 가능(여론 악화) · 소집일 ${dmd(KD(e.from[0],e.from[1]))}`:'확정 명단'}
+    const sq=live?{t:`${ntTxt(live)} 최종 명단`,ids:live.ids,k:live.k,o:{N:live,act:canRef?p=>p.team===G.user?`<button class="btn small" data-a="ntRefuse" data-v="${p.id}">거부</button>`:'':null},s:canRef?`소집 전까지 차출 거부 가능(여론 악화) · 소집일 ${dmd(KD(e.from[0],e.from[1]))}`:live.res?`${live.res} · ${dmd(KD(...e.to))} 복귀`:'확정 명단'}
       :pre?{t:`${G.year} ${NT_EV[pre.k].n} 예비 명단 · ${pre.ids.length}명`,ids:pre.ids,k:pre.k,o:{},s:`최종 발표 ${dmd(KD(NT_EV[pre.k].ann[0],NT_EV[pre.k].ann[1]))}`}
-      :nx?(()=>{ const S=ntProj(nx.k); return {t:`상비군 · ${nx.y} ${nx.n} 지금 뽑는다면`,ids:S.map(x=>x.id),k:nx.k,o:{wild:S.filter(x=>x.wild).map(x=>x.id)},s:'지금 능력·성적 기준 예상'}; })():null;
+      :nx?(()=>{ const S=ntProj(nx.k,nx.y); return {t:`상비군 · ${nx.y} ${nx.n} 지금 뽑는다면`,ids:S.map(x=>x.id),k:nx.k,o:{wild:S.filter(x=>x.wild).map(x=>x.id),dy:nx.y-G.year},s:'지금 능력·성적 기준 예상'}; })():null;
     const P=sq?sq.ids.map(id=>G.players[id]).filter(Boolean):[], mine=P.filter(p=>p.team===G.user), cnt=G.teams.map(t=>({t,n:P.filter(p=>p.team===t.id).length})).sort((a,b)=>b.n-a.n), mx=Math.max(1,...cnt.map(x=>x.n));
     const info=fxBox('fxn-in',fxHead('국가대표',`감독 ${esc(M.name)} · 다음 대회 ${nx?`${nx.y} ${nx.n}`:'없음'}`),`${natHead()}${UI.ntMsg?`<div class="note">${esc(UI.ntMsg)}</div>`:''}<h4>다가오는 대회</h4><table class="fx-t fx-ntt"><thead><tr><th>대회</th><th>소집 기간</th><th>병역 특례</th></tr></thead><tbody>${up.map(x=>`<tr><td>${x.y} ${x.n}</td><td>${dmd(x.from)} ~ ${dmd(x.to)}</td><td>${exL(x.k)}</td></tr>`).join('')}</tbody></table>`);
     const past=fxBox('fxn-ps',fxHead('지난 대회',H.length?H.length+'회':'기록 없음'),H.length?`<table class="fx-t fx-ntt"><thead><tr><th>대회</th><th>성적</th><th>대표팀 영웅</th></tr></thead><tbody>${H.map(x=>{ const q=x.hero&&G.players[x.hero], p=x.hn?{name:x.hn,team:x.ht}:q; /* 대회 당시 이름·구단(검수 11-07) */ return `<tr><td>${x.y} ${NT_EV[x.k]?NT_EV[x.k].n:x.k}</td><td>${v3Img(awV3(`${NT_EV[x.k]?NT_EV[x.k].n:x.k} ${x.res}`)[0]||'',20,'nt-md')}${esc(x.res)}</td><td>${p?`${esc(p.name)}${p.team!=null?` <i>${esc(tshort(p.team))}</i>`:''}`:'-'}</td></tr>`; }).join('')}</tbody></table>`:'<p class="fx-none">이 리그에서 치른 국제대회가 아직 없습니다.</p>');
-    const list=fxBox('fxn-sq',fxHead(sq?sq.t:'명단 없음',sq?sq.s:''),sq?`<div class="fx-scr">${ntRows(sq.ids,sq.o)}</div>`:'<p class="fx-none">다가오는 대회가 없습니다.</p>');
+    const list=fxBox('fxn-sq',fxHead(sq?sq.t:'명단 없음',sq?sq.s:''),sq?`<div class="fx-scr">${live?medH:''}${ntRows(sq.ids,sq.o)}</div>`:'<p class="fx-none">다가오는 대회가 없습니다.</p>');
     const me=fxBox('fxn-me',fxHead(`우리 선수 ${mine.length}명`,sq?NT_EV[sq.k].n:''),sq?ntImpact(sq.ids,sq.k)+(mine.length?`<div class="fx-pls fx-pl1">${mine.map(p=>`<button class="fx-pl" data-a="player" data-v="${p.id}">${avImg(p)}<span><i>${esc(posLabel(p))} · ${p.age}세${milFree(p)?' · 미필':''}</i><b>${esc(p.name)}</b><em>능력 ${dvo(p)}</em></span></button>`).join('')}</div>`:''):'<p class="fx-none">명단이 없습니다.</p>');
     const tm=fxBox('fxn-tm',fxHead('구단별 선발 인원',sq?`${P.length}명`:''),cnt.map((x,i)=>`<div class="fx-odd${x.t.id===G.user?' me':''}"><span>${i+1}</span>${badge(x.t.id,16)}<b>${esc(x.t.nick)}</b><p class="fx-bar"><i style="width:${Math.max(2,x.n/mx*100)}%"></i></p><em>${x.n}명</em></div>`).join(''));
     const rx=up.find(x=>NT_EV[x.k].ex&&x.y===G.year); const rb=rx?ntRecBox(rx):''; return `<div class="fmx fmx-fit fmx-nt nolink ws-own">${info}${list}${me}${rb?fxBox('fxn-rc',fxHead('구단 추천',`${rx.y} ${rx.n}`),rb):''}${past}${tm}</div>`; }
@@ -31957,8 +31975,8 @@ function ntView(){ const M=ntMgr(); const N=ntState(); const up=ntUpcoming(4); c
   return h; }
 Object.assign(A,{ ntRefuse(v){ UI.ntMsg=ntRefuse(+v); save(); render(); }, ntRec(v){ const [k,id]=v.split(':'); UI.ntMsg=ntRecToggle(k,+id); UI._ntP=null; save(); render(); } });
 /* 구단 추천 칸: 다음 특례 대회 최종 발표 전 */
-function ntRecBox(nx){ if(!nx||!NT_EV[nx.k].ex||nx.y!==G.year||(G.nt&&G.nt.k===nx.k&&G.nt.y===G.year))return ''; const e=NT_EV[nx.k]; const rec=ntRecIds(nx.k); const L=domestic(G.user).filter(p=>!p.prospect&&(!e.u25||ntU25(p))).sort((a,b)=>(rec.has(b.id)-rec.has(a.id))||(milFree(b)-milFree(a))||ovr(b)-ovr(a)).slice(0,8);
-  return `<p class="small muted">구단 추천 ${rec.size}/${NT_REC_MAX}명 · 최종 발표 전까지 대표팀 감독에게 추천합니다(평가 +5). 미필 선수가 위에 있습니다.</p>${L.map(p=>`<div class="item row between"><span>${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세 · 능력 ${dvo(p)}${milFree(p)?' · 미필':''}</span></span><button class="btn small${rec.has(p.id)?' primary':''}" data-a="ntRec" data-v="${nx.k}:${p.id}">${rec.has(p.id)?'추천 취소':'추천'}</button></div>`).join('')}`; }
+function ntRecBox(nx){ if(!nx||!NT_EV[nx.k].ex||nx.y!==G.year||(G.nt&&G.nt.k===nx.k&&G.nt.y===G.year))return ''; const e=NT_EV[nx.k]; const rec=ntRecIds(nx.k); const L=Object.values(G.players).filter(p=>p.team===G.user&&!p.foreign&&!p.prospect&&!(p.joinY>G.year)&&!(milServing(p)&&p.mil.unit!=='상무')&&(!e.u25||ntU25(p))) /* 상무 복무 선수도 뽑힐 수 있어 후보에 넣는다(검수 11-09u) */.sort((a,b)=>(rec.has(b.id)-rec.has(a.id))||(milFree(b)-milFree(a))||ovr(b)-ovr(a)).slice(0,8);
+  return `<p class="small muted">구단 추천 ${rec.size}/${NT_REC_MAX}명 · 최종 발표 전까지 대표팀 감독에게 추천합니다(평가 +5). 미필 선수가 위에 있습니다.</p>${L.map(p=>`<div class="item row between"><span>${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세 · 능력 ${dvo(p)}${milFree(p)?' · 미필':''}${milServing(p)?' · 상무':''}</span>${!rec.has(p.id)&&ntRecBlock(nx.k,p)?`<span class="small muted"> 추천 불가: ${esc(ntRecBlock(nx.k,p))}</span>`:''}</span><button class="btn small${rec.has(p.id)?' primary':''}" data-a="ntRec" data-v="${nx.k}:${p.id}">${rec.has(p.id)?'추천 취소':'추천'}</button></div>`).join('')}`; }
 /* ===== 에셋 패키지 v2.1·v3 화면 연결(00b_assets_data.js의 ASSET) =====
  - 유니폼·모자(v3, 번호 없는 앞면): 구단 소개(구단 선택 자세히·구단 연대기)·국가대표 화면에만. 선수 얼굴 위에 합성하지 않는다(기존 얼굴 그대로)
  - 대회 마크·트로피: 포스트시즌·한국시리즈·우승 화면에만. 리그 이름(가칭 '프런트리그')과 리그 마크는 쓰지 않는다(기존 이름 유지)

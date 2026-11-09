@@ -26,7 +26,7 @@ function rivalAfterGame(day,h,a,g,post){
 function allStarPool(y){
   const L=[];
   for(const p of Object.values(G.players)){
-    if(p.team==null||p.prospect||p.joinY>y||p.injOut>0||p.susp>G.day||isAway(p)||p.frehab)continue; /* 재활 명단(부상 대체 복귀 대기)도 출전 불가(검수 11-08) */
+    if(p.team==null||p.prospect||p.ys||p.joinY>y||p.injOut>0||p.susp>G.day||isAway(p)||p.frehab)continue; /* 재활 명단(부상 대체 복귀 대기)도 출전 불가(검수 11-08) */ /* 육성선수는 1군 등록이 안 돼 올스타에 못 나간다(검수 11-09u) */
     const h=seasonTotal(p,y,'1군');if(!h||(p.isP?(h.outs||0)<30:(h.pa||0)<50))continue;
     const w=warOf(h,p),rate=p.isP?pRate(h):bRate(h);
     const stats=p.isP?w*.8+(h.w||0)*.04+(h.sv||0)*.025+clamp(5-rate.era,-2,3)*.15:w*.8+(h.hr||0)*.035+(h.h||0)*.005+(h.sb||0)*.01;
@@ -69,7 +69,7 @@ function allStarDaily(){
     const pool=allStarPool(G.year);
     for(const side of ['나눔','드림'])for(let i=0;i<A.teams[side].length;i++){
       const old=A.teams[side][i],p=G.players[old.id];
-      if(p&&p.team!=null&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p)&&!p.frehab){ if(old.t!==p.team)A.teams[side][i]={...old,t:p.team}; continue; } /* 같은 진영 안 이적: 자격은 그대로, 소속은 지금 구단으로(검수 11-06) */
+      if(p&&p.team!=null&&!p.ys&&allStarSide(p.team)===side&&!(p.injOut>0)&&!(p.susp>G.day)&&!isAway(p)&&!p.frehab){ if(old.t!==p.team)A.teams[side][i]={...old,t:p.team}; continue; } /* 같은 진영 안 이적: 자격은 그대로, 소속은 지금 구단으로(검수 11-06) */
       const used=new Set(Object.values(A.teams).flat().map(x=>x.id));
       const x=pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&x.slot===old.slot)||pool.find(x=>allStarSide(x.p.team)===side&&!used.has(x.p.id)&&!!x.p.isP===old.isP);
       if(!x){ A.withdrawn.push({...old,replacement:null,day:G.day}); A.teams[side].splice(i,1); i--; continue; } /* 대체 후보가 없어도 출전 불가 선수는 확정 명단에서 뺀다(검수 11-06) */
