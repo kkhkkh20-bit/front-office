@@ -43,4 +43,30 @@ const {chromium}=require('playwright');
   localStorage.clear(); if(!ftMigrateAccept(ev({[META]:mt,[slotKey(1)]:B1,[slotKey(4)]:'망가진 본문'})))bad.push('itch: 정상 슬롯과 손상 본문 함께 이전 실패'); else if(localStorage.getItem(slotKey(4))!=null||meta().slots[4])bad.push('itch: 손상 본문이 슬롯을 차지');
   localStorage.clear(); if(!ftMigrateAccept(ev({[META]:mt,[slotKey(1)]:B1})))bad.push('itch: 정상 이전 실패'); else { const m=meta(); if(Object.keys(m.slots).join()!=='1'||m.active!==1)bad.push('itch: 본문이 없는 슬롯이 목록에 남음 '+JSON.stringify(m)); }
   return bad; });
+ /* 검수 11-09zzc: 중계 재개 상태, 가져오기·슬롯 전환 때 이전 게임 화면 상태, 결과가 든 당일 소식, 정지 알림 원본 연결, 만료 결정 */
+ bad.push(...await pg.evaluate(async()=>{ const bad=[]; localStorage.clear(); CUR_SLOT=1; slotRevSync(1); SAVE_CONFL=false; if(!saveNow())bad.push('zzc 준비: 저장 실패');
+  if(!G.games.some(g=>g.pbp&&g.pbp.length>20)){ try{ for(const t of G.teams)setEntry(t.id); const op=G.teams.find(t=>t.id!==G.user).id, x=simGame(G.day,G.user,op,false); keepGame(gameRecord(G.day,G.user,op,x,null)); }catch(e){ bad.push('zzc 준비: 경기 생성 실패 '+e.message); } }
+  const gi=G.games.findIndex(g=>g.pbp&&g.pbp.length>20); if(gi<0)return ['zzc 준비: 중계 기록이 있는 경기가 없음']; const g=G.games[gi]; if(g.gid==null)g.gid=9e6;
+  const body=()=>unpack(localStorage.getItem(slotKey(curSlot())));
+  /* #1: 다른 게임에서 16번째 장면을 보던 중 2번째 장면 백업을 가져온다 */
+  const b2=JSON.parse(prepG()); b2.castHold={g:gi,gid:g.gid,k:2}; const b0=JSON.parse(prepG()); delete b0.castHold;
+  UI.cast={g:gi,k:16,play:true,pre:0,spd:1,mode:'hl',hold:1}; importText(JSON.stringify(b2)); if(!G.castHold||G.castHold.k!==2)bad.push('#1 가져온 중계 위치가 바뀜: '+JSON.stringify(G.castHold)); if((body().castHold||{}).k!==2)bad.push('#1 디스크의 중계 위치가 바뀜'); if(UI.cast&&UI.cast.k!==2)bad.push('#1 가져온 경기가 '+UI.cast.k+'번째 장면에서 열림');
+  UI.cast={g:gi,k:16,play:true,pre:0,spd:1,mode:'hl',hold:1}; importText(JSON.stringify(b0)); if(G.castHold||body().castHold)bad.push('#1 중계 정보 없는 백업에 이전 중계 위치가 생김'); if(UI.cast)bad.push('#1 중계 정보 없는 백업에서 중계가 열림');
+  /* #6·#7·#8·#9: 재개 상태 */
+  UI.cast=null; G.castHold={g:gi,gid:g.gid,k:7,play:false,spd:3,mode:'all',pre:1,pi:2}; spoilG(); const c=UI.cast; if(!c||c.k!==7||c.play||c.spd!==3||c.mode!=='all'||!c.pre||!c.pitch||c.pitch.shown!==2)bad.push('#6~#8 재개 상태가 초기화됨: '+JSON.stringify(c));
+  UI.cast=null; G.castHold={g:gi,gid:g.gid,k:-15}; if(spoilG()||UI.cast||G.castHold)bad.push('#9 잘못된 장면 번호를 받아들임');
+  /* #4·#5: 자동 재생으로 지나간 장면, 경기 끝 */
+  UI.cast={g:gi,k:1,play:true,pre:0,spd:1,mode:'hl',hold:1}; saveNow(); UI.cast.k=17; saveFlush(); if((body().castHold||{}).k!==17)bad.push('#4 탭을 숨길 때 지나간 장면을 저장하지 않음');
+  UI.cast.k=g.pbp.length; saveFlush(); if(body().castHold)bad.push('#5 끝까지 본 중계가 미완료로 남음'); UI.cast=null; delete G.castHold;
+  /* #11·#12: 결과가 든 당일 소식 */
+  UI.cast={g:gi,k:3,play:false,pre:0,spd:1,mode:'hl',hold:1}; G.news=G.news||[]; G.news.unshift({id:9e8,d:g.day,t:'a'}); spoilNews(); G.news.unshift({id:9e8+1,d:g.day,t:'b'}); const cm=mail('구단주실','구단주와 함께 본 경기: 패배','본문'); cm.sgid=g.gid; spoilNews();
+  if(G.news.some(n=>n.d>=g.day))bad.push('#12 숨긴 뒤 새 당일 기사가 공개됨'); if(G.mail.includes(cm))bad.push('#11 동석 보고 결과가 소식함에 남음'); UI.cast=null; spoilNews(); if(!G.mail.includes(cm)||!G.news.some(n=>n.id===9e8+1))bad.push('#11·#12 중계를 마친 뒤 소식이 돌아오지 않음');
+  /* #2·#20·#21·#25·#27~#30: 세이브가 바뀌면 */
+  UI.wkres={from:G.day-3,to:G.day,rk0:1}; const sm=mail('운영팀','정지 시험','본문',{imp:true}); G.stops=[sm,{id:'m999999',subj:'지운 알림'}]; const j=prepG(); const nx=JSON.parse(j); if(!nx.wkHold)bad.push('#20 확인 전 경기 요약을 저장하지 않음');
+  SPOIL_SNAP={day:G.day,y:G.year,P:{}}; UI.fromMail='m1'; UI._ibJumpSig='x'; UI.cwAuto='cw1'; UI.wkres={from:1,to:2,rk0:9}; G=nx; uiSaveSync();
+  if(SPOIL_SNAP)bad.push('#2 이전 슬롯의 경기 전 사본이 남음'); if(UI.fromMail||UI._ibJumpSig||UI.cwAuto)bad.push('#28~#30 이전 슬롯의 소식함·확인·동석 상태가 남음'); if(!UI.wkres||UI.wkres.rk0!==1)bad.push('#20·#21 경기 요약이 새 세이브 것이 아님: '+JSON.stringify(UI.wkres));
+  if(G.stops.length!==1||G.stops[0]!==G.mail.find(m=>m.id===sm.id))bad.push('#25·#27 정지 알림이 원본 소식과 분리되거나 지운 알림이 남음'); UI.wkres=null;
+  /* #26: 기한 지난 결정은 홈 카드에서도 실행 버튼이 없다 */
+  const ev=evNew('cwInv','시험 결정','본문',[{l:'가',fx:''},{l:'나',fx:''}],{exp:1,def:1,data:{d:G.day+9,who:'own',why:'self'}}); G.day+=2; if(decisionCard().includes(ev.id+':'))bad.push('#26 만료 결정이 홈 결정 카드에서 실행 가능'); G.day-=2;
+  return bad; }));
  const ok=!bad.length&&!errs.length; console.log(ok?'가져오기·슬롯 전환·itch 이전 점검 통과':'가져오기 점검 실패\n- '+bad.concat(errs).join('\n- ')); await b.close(); process.exit(ok?0:1); })();
