@@ -1,0 +1,10 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "issue": "Essential overseas-training navigation is nested in closed details.ws-filter-controls titled search/filter settings",
+  "selector": "[data-a=\"itab\"][data-v=\"devv:ovs\"]",
+  "required_action": "expand search/filter details before selecting overseas tab",
+  "expected": "keep primary view tabs outside optional filters"
+}

@@ -1,0 +1,245 @@
+{
+  "files": [
+    {
+      "path": "CLAUDE_HANDOFF.md",
+      "bytes": 3316,
+      "sha256": "4fba63fbeb046ea394b8a4ee5e31575e9f434340cfcb2c8d8e7dbccb43fa8887"
+    },
+    {
+      "path": "DESIGN_PROPOSAL.md",
+      "bytes": 6755,
+      "sha256": "c56e933846d04b91984099d7e16e2e0620d029f96e96284badd78285af8fe765"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1969,
+      "sha256": "c033c6f38172a9d3cc2d35573396790caf2fd8e6fabf15a7da90c84074dcfcb9"
+    },
+    {
+      "path": "content_spec.json",
+      "bytes": 12148,
+      "sha256": "dc10bf1604080d140e281dd4231ec7cdf854caa381d6a8cae81d6c2635b30376"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 26525,
+      "sha256": "a65681578a2b3696eed92e5de63eed6f5dbbd624e274bce458cdcb9959fd662f"
+    },
+    {
+      "path": "photos/480/med_rehab.webp",
+      "bytes": 16044,
+      "sha256": "be535b3292377e88c6829b2c7f598ea899e4e0b6af1b377877e1782cf5791c9f"
+    },
+    {
+      "path": "photos/480/med_return_bullpen.webp",
+      "bytes": 21442,
+      "sha256": "96ce02d839ed7a707b1619b8420a42f8cb349661263e056149f0ac156471816a"
+    },
+    {
+      "path": "photos/480/med_screening.webp",
+      "bytes": 18840,
+      "sha256": "70973390416bd7a69f2dca6ffaf2ef0f3c321ffbc7ff78df792a54c94dc258ff"
+    },
+    {
+      "path": "photos/480/ovs_abl_game.webp",
+      "bytes": 41512,
+      "sha256": "f2bb83fc1f9c516af0fe2f15ba4b578e27b7589aa35c1d25e5bd9685b3a25a98"
+    },
+    {
+      "path": "photos/480/ovs_cnd_performance.webp",
+      "bytes": 22008,
+      "sha256": "6c675551ec920874cc65c71b828930c18885226376645cc78b6aa988c9613551"
+    },
+    {
+      "path": "photos/480/ovs_jpl_mechanics.webp",
+      "bytes": 25800,
+      "sha256": "e8a25d415f685c15730881e17308b547272f210c7755c29ee924575488e158c9"
+    },
+    {
+      "path": "photos/480/ovs_kac_academy.webp",
+      "bytes": 25450,
+      "sha256": "c716a423f8fe3cf4fb5d2bd81a643f12d2f3b199fe1d44541d9cb0539a3e647e"
+    },
+    {
+      "path": "photos/480/ovs_us_lab.webp",
+      "bytes": 30504,
+      "sha256": "c9a98fa9ce3e63e79a306696741adfaa593e8ae8292d824fd014244613f350a4"
+    },
+    {
+      "path": "photos/960/med_rehab.webp",
+      "bytes": 38918,
+      "sha256": "c46aac7f473a135ceef3f288002fddddf12b736a9ecc0f73ba56e889ca160d43"
+    },
+    {
+      "path": "photos/960/med_return_bullpen.webp",
+      "bytes": 58664,
+      "sha256": "b5707ed8d6b80d1f89208930f1e221a4e0927415fd942e0bb7ca7d35bc35328a"
+    },
+    {
+      "path": "photos/960/med_screening.webp",
+      "bytes": 45238,
+      "sha256": "e393c6cc773865a4702378218e4dad5518eead74c7a96bea7d7372d645215d00"
+    },
+    {
+      "path": "photos/960/ovs_abl_game.webp",
+      "bytes": 138272,
+      "sha256": "0b76f5d573dcea1789ce604b13ad90416fb8f67246a68f35843244c76c2f2405"
+    },
+    {
+      "path": "photos/960/ovs_cnd_performance.webp",
+      "bytes": 58078,
+      "sha256": "5f0b4cf8330ec0b8666ed08ee6c07c3143c3903a8b3fa9254d9c4146dcd94c41"
+    },
+    {
+      "path": "photos/960/ovs_jpl_mechanics.webp",
+      "bytes": 80120,
+      "sha256": "885e611aaba63501f773db548a6d20e416959fbb5f3d47576d76a6bd84467bba"
+    },
+    {
+      "path": "photos/960/ovs_kac_academy.webp",
+      "bytes": 88110,
+      "sha256": "c705d3f20517f359f818e9770f550fb8a7e15cb377fc8e56f35baf87cfa4265e"
+    },
+    {
+      "path": "photos/960/ovs_us_lab.webp",
+      "bytes": 89960,
+      "sha256": "04e2e427487cb1912f2a93a1d877d92597490d91faa53219a406858c8a5b2693"
+    },
+    {
+      "path": "preview.html",
+      "bytes": 17352,
+      "sha256": "9f49037f026966a8579c69a10982545239003f81af3f0c704358bd97b683d94b"
+    },
+    {
+      "path": "previews/contact_8.jpg",
+      "bytes": 691969,
+      "sha256": "6b0e65f198b235e1210894aa8b5680c2346ae69e98aaf70f118d63c99a1d262d"
+    },
+    {
+      "path": "previews/mock-desktop-medical.webp",
+      "bytes": 75476,
+      "sha256": "bcaac8385547ee2514a93142b0f8a309a90bdf8206e9c748130d70dc6bdec92e"
+    },
+    {
+      "path": "previews/mock-desktop-training.webp",
+      "bytes": 106650,
+      "sha256": "e07b38032386a84f6c58f65d25683bbb1a87c78d18d7b1439af03e7ce33b077f"
+    },
+    {
+      "path": "previews/mock-mobile-detail.webp",
+      "bytes": 52760,
+      "sha256": "decb1412358b4c3073650f51170f4c5e9c8ee6a49e439e16ec6d7b130e948987"
+    },
+    {
+      "path": "previews/mock-mobile-list.webp",
+      "bytes": 31348,
+      "sha256": "bfce3f29f0448d5c2aba507b48979b2aef7a127923f5171f17fe564df947d820"
+    },
+    {
+      "path": "previews/mock-tablet-training.webp",
+      "bytes": 86668,
+      "sha256": "4823c1870e067a907157271addbd880d810ceefa7b5fac3ae566c4b149a416c4"
+    },
+    {
+      "path": "review/evidence/desktop-foreign-market.webp",
+      "bytes": 92882,
+      "sha256": "0c89fb0156948d6227666ec3848b1ee82fff6de20ac8473569fa04449c406188"
+    },
+    {
+      "path": "review/evidence/desktop-home.webp",
+      "bytes": 91450,
+      "sha256": "9f29fc19c10911ba316ea62de9769bbb53e0784768cd6cecb784f3ac42eaf9cd"
+    },
+    {
+      "path": "review/evidence/desktop-medical-before.webp",
+      "bytes": 74580,
+      "sha256": "0360b609bdd59f1b9e606df5458de39dbd0ce3f59dff1f48e8b3cbc077ce446d"
+    },
+    {
+      "path": "review/evidence/desktop-overseas-before.webp",
+      "bytes": 74806,
+      "sha256": "e5c9b6d5d7289cd3a2a36814a913d42866617c30c1645147de231a25ec14b3b7"
+    },
+    {
+      "path": "review/evidence/desktop-title.webp",
+      "bytes": 94462,
+      "sha256": "51ca272bd95aa67119e3ac808d14e569c6ba780d9fd4d46581f26ee6cc528f83"
+    },
+    {
+      "path": "review/evidence/mobile-overseas-after-filter-open.webp",
+      "bytes": 42420,
+      "sha256": "7e05452b8293cc72e3b37d14f07187d6b27e4911aeb59c0145f51a93f09f9326"
+    },
+    {
+      "path": "review/evidence/mobile-reading-expanded-after-swipe.webp",
+      "bytes": 33610,
+      "sha256": "7cd4928ca3e7aaf07ff8938d989218dbb2a7ed820a49e1019848a73321690a72"
+    },
+    {
+      "path": "review/evidence/mobile-title.webp",
+      "bytes": 23162,
+      "sha256": "468f14940eead1c2adeb4c6275164084183b7d1b33307dbb36db7b703be05d7a"
+    },
+    {
+      "path": "review/evidence/mobile-trade.webp",
+      "bytes": 29240,
+      "sha256": "0cff9217c67fd451a51d77be0c5e9075f3c334cf1eff264c47215b51018fc2dc"
+    },
+    {
+      "path": "review/evidence/mobile-training-hidden-navigation.webp",
+      "bytes": 31864,
+      "sha256": "86c3616276ba318141068fd592023f129b058ed0aad66b06d7f7b87dc9ac980e"
+    },
+    {
+      "path": "review/evidence/tablet-home.webp",
+      "bytes": 54796,
+      "sha256": "362b0046516798066ca748ec81bbed4b0ca4aa946581d68f8c1122cc5cc2ec71"
+    },
+    {
+      "path": "review/evidence/tablet-match-paused.webp",
+      "bytes": 68996,
+      "sha256": "09d265dbcb0997b4fdded6b5daa8b998651c70f30e6e8d7a2af78fce817a5a89"
+    },
+    {
+      "path": "review/evidence/tablet-match3d.webp",
+      "bytes": 67326,
+      "sha256": "982608d6abb11b1c85f6618c4ce14f3808339ee034cca7ace845918374d884ba"
+    },
+    {
+      "path": "review/evidence/tablet-opening-result.webp",
+      "bytes": 31126,
+      "sha256": "e828a8c3097a4dcacac2abac1730ad7e1251fc2589ca117450f30edcbb6ccb68"
+    },
+    {
+      "path": "review/gameplay_review.json",
+      "bytes": 3294,
+      "sha256": "c248321571520f32dbceef30a858de484e7e05aea88f59f97ca6b27461416c6d"
+    },
+    {
+      "path": "review/mobile-overseas-navigation.json",
+      "bytes": 374,
+      "sha256": "bdde9ec877ba86f013a660701ccac0c38889b0e949be39ec7a63f063ff285464"
+    },
+    {
+      "path": "review/mobile-reading-check.json",
+      "bytes": 321,
+      "sha256": "32acf6f7936d233d9f6a766963e21bb1fc52459489c92a3edd756ee9b62f312a"
+    },
+    {
+      "path": "review/progress-review.json",
+      "bytes": 1524,
+      "sha256": "9a9f9f2f636e499b55a8a12f8ebccc5beebc68eaab7fbfb6dd53cce7491c01d1"
+    },
+    {
+      "path": "review/prototype-browser-check.json",
+      "bytes": 1729,
+      "sha256": "bc921cf58893c685869ef36aa21507e16adbfb0a1232d5e80ef2b9002c0332dd"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 8217,
+      "sha256": "c9f7b6fd4c2e4c9a23787a447d8daeb5d04f8cc2099acfb9268c91884b3e4abf"
+    }
+  ],
+  "total_bytes": 2738075
+}

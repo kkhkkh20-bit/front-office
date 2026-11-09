@@ -1,0 +1,8 @@
+{
+  "viewport": "390x844",
+  "browser": "Chromium mobile emulation with touch",
+  "expanded_content_before_and_after_identical": true,
+  "open_details_after_swipe": 1,
+  "gesture": "touchStart12touchMove steps touchEnd",
+  "scope": "one trade-request message, one swipe; intermittent issue not proven universally fixed"
+}

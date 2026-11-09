@@ -1,0 +1,71 @@
+{
+  "baseline_commit": "8b4b902",
+  "played_build": "unchanged main index.html served with full local assets",
+  "execution": "local Chromium; external network requests disabled; fresh isolated save",
+  "devices": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "type": "desktop"
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "type": "mobile emulation with touch"
+    },
+    {
+      "viewport": [
+        1024,
+        768
+      ],
+      "type": "tablet emulation with touch"
+    }
+  ],
+  "started_game_date": "2026-01-02",
+  "last_observed_game_date": "2026-03-29",
+  "team": "서울 하운즈",
+  "actions": [
+    "new game, manager appointment and profile",
+    "medical prevention setup confirmation",
+    "김승호 manager hire, two-year contract with approval",
+    "foreign prospect watchlist",
+    "호세 산체스 negotiation, counter conditions, recommendation and signed contract",
+    "home, training allocation, campus, development, overseas programs, medical risk and return screens",
+    "mobile trade navigation",
+    "mobile expanded inbox details plus touch swipe",
+    "actual event progress through spring camp, preseason and opening day",
+    "opening result1:1 versus 광주 블레이즈",
+    "selected 3D broadcast for March29, viewed and paused then exited"
+  ],
+  "game_page_errors_observed": [],
+  "missing_local_resource_responses_observed": [],
+  "primary_design_finding": "Essential overseas-training tab is hidden in collapsed search/filter controls on mobile. Open details.ws-filter-controls before choosing overseas to reproduce.",
+  "scope_limitations": [
+    "Not a full-season balance evaluation.",
+    "Many event decisions were advanced using explicit default-decision confirmations.",
+    "Not physical iOS Safari / iPadOS validation.",
+    "Expanded-reading touch check used one message and one swipe; does not prove intermittent issue eliminated.",
+    "No game code was changed. New asset placements are standalone mockups, not implemented game screens."
+  ],
+  "evidence": {
+    "01-title": "review/evidence/desktop-title.webp",
+    "06-home": "review/evidence/desktop-home.webp",
+    "10-overseas": "review/evidence/desktop-overseas-before.webp",
+    "11-medical": "review/evidence/desktop-medical-before.webp",
+    "15-foreign": "review/evidence/desktop-foreign-market.webp",
+    "21-mobile-title": "review/evidence/mobile-title.webp",
+    "23-mobile-trade": "review/evidence/mobile-trade.webp",
+    "26-mobile-reading-scrolled": "review/evidence/mobile-reading-expanded-after-swipe.webp",
+    "27-mobile-dev-current": "review/evidence/mobile-training-hidden-navigation.webp",
+    "30-mobile-overseas-open": "review/evidence/mobile-overseas-after-filter-open.webp",
+    "29-tablet-home": "review/evidence/tablet-home.webp",
+    "34-tablet-opening": "review/evidence/tablet-opening-result.webp",
+    "36-tablet-match3d": "review/evidence/tablet-match3d.webp",
+    "37-tablet-match-paused": "review/evidence/tablet-match-paused.webp"
+  },
+  "error_observation_scope": "Pageerror and response observers were attached to the initial desktop game page. Mobile/tablet were inspected through visible interaction and screenshots, not exhaustive pageerror/network instrumentation on every secondary page."
+}

@@ -1,0 +1,316 @@
+{
+  "passed": true,
+  "status": "ASSET_AND_STANDALONE_PREVIEW_VALIDATED_GAME_INTEGRATION_PENDING",
+  "new_photographs": 8,
+  "variants": 16,
+  "image_checks": [
+    {
+      "id": "ovs_abl_game",
+      "size": "480",
+      "path": "photos/480/ovs_abl_game.webp",
+      "bytes": 41512,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "ovs_abl_game",
+      "size": "960",
+      "path": "photos/960/ovs_abl_game.webp",
+      "bytes": 138272,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    },
+    {
+      "id": "ovs_us_lab",
+      "size": "480",
+      "path": "photos/480/ovs_us_lab.webp",
+      "bytes": 30504,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "ovs_us_lab",
+      "size": "960",
+      "path": "photos/960/ovs_us_lab.webp",
+      "bytes": 89960,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    },
+    {
+      "id": "ovs_jpl_mechanics",
+      "size": "480",
+      "path": "photos/480/ovs_jpl_mechanics.webp",
+      "bytes": 25800,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "ovs_jpl_mechanics",
+      "size": "960",
+      "path": "photos/960/ovs_jpl_mechanics.webp",
+      "bytes": 80120,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    },
+    {
+      "id": "ovs_cnd_performance",
+      "size": "480",
+      "path": "photos/480/ovs_cnd_performance.webp",
+      "bytes": 22008,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "ovs_cnd_performance",
+      "size": "960",
+      "path": "photos/960/ovs_cnd_performance.webp",
+      "bytes": 58078,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    },
+    {
+      "id": "ovs_kac_academy",
+      "size": "480",
+      "path": "photos/480/ovs_kac_academy.webp",
+      "bytes": 25450,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "ovs_kac_academy",
+      "size": "960",
+      "path": "photos/960/ovs_kac_academy.webp",
+      "bytes": 88110,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    },
+    {
+      "id": "med_screening",
+      "size": "480",
+      "path": "photos/480/med_screening.webp",
+      "bytes": 18840,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "med_screening",
+      "size": "960",
+      "path": "photos/960/med_screening.webp",
+      "bytes": 45238,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    },
+    {
+      "id": "med_rehab",
+      "size": "480",
+      "path": "photos/480/med_rehab.webp",
+      "bytes": 16044,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "med_rehab",
+      "size": "960",
+      "path": "photos/960/med_rehab.webp",
+      "bytes": 38918,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    },
+    {
+      "id": "med_return_bullpen",
+      "size": "480",
+      "path": "photos/480/med_return_bullpen.webp",
+      "bytes": 21442,
+      "mode": "RGB",
+      "w": 480,
+      "h": 270,
+      "passed": true
+    },
+    {
+      "id": "med_return_bullpen",
+      "size": "960",
+      "path": "photos/960/med_return_bullpen.webp",
+      "bytes": 58664,
+      "mode": "RGB",
+      "w": 960,
+      "h": 540,
+      "passed": true
+    }
+  ],
+  "visual_review": {
+    "passed": true,
+    "scope": "Eight generated sports photographs reviewed at source contact sheet and actual 960/480 derived-photo views plus responsive placement previews",
+    "checks": [
+      "distinct training activity in five overseas/local programs",
+      "three distinguishable assessment/rehabilitation/return-to-throwing contexts",
+      "fictional adults, no intended celebrity likeness",
+      "no prominent logos or legible writing in photos",
+      "coherent anatomy and actual athletic equipment",
+      "neutral gray/navy training clothes",
+      "natural photographic material and lighting",
+      "no face/body paste or local creative image repaint"
+    ],
+    "reviewed_sha256": {
+      "ovs_abl_game": {
+        "480": "f2bb83fc1f9c516af0fe2f15ba4b578e27b7589aa35c1d25e5bd9685b3a25a98",
+        "960": "0b76f5d573dcea1789ce604b13ad90416fb8f67246a68f35843244c76c2f2405"
+      },
+      "ovs_us_lab": {
+        "480": "c9a98fa9ce3e63e79a306696741adfaa593e8ae8292d824fd014244613f350a4",
+        "960": "04e2e427487cb1912f2a93a1d877d92597490d91faa53219a406858c8a5b2693"
+      },
+      "ovs_jpl_mechanics": {
+        "480": "e8a25d415f685c15730881e17308b547272f210c7755c29ee924575488e158c9",
+        "960": "885e611aaba63501f773db548a6d20e416959fbb5f3d47576d76a6bd84467bba"
+      },
+      "ovs_cnd_performance": {
+        "480": "6c675551ec920874cc65c71b828930c18885226376645cc78b6aa988c9613551",
+        "960": "5f0b4cf8330ec0b8666ed08ee6c07c3143c3903a8b3fa9254d9c4146dcd94c41"
+      },
+      "ovs_kac_academy": {
+        "480": "c716a423f8fe3cf4fb5d2bd81a643f12d2f3b199fe1d44541d9cb0539a3e647e",
+        "960": "c705d3f20517f359f818e9770f550fb8a7e15cb377fc8e56f35baf87cfa4265e"
+      },
+      "med_screening": {
+        "480": "70973390416bd7a69f2dca6ffaf2ef0f3c321ffbc7ff78df792a54c94dc258ff",
+        "960": "e393c6cc773865a4702378218e4dad5518eead74c7a96bea7d7372d645215d00"
+      },
+      "med_rehab": {
+        "480": "be535b3292377e88c6829b2c7f598ea899e4e0b6af1b377877e1782cf5791c9f",
+        "960": "c46aac7f473a135ceef3f288002fddddf12b736a9ecc0f73ba56e889ca160d43"
+      },
+      "med_return_bullpen": {
+        "480": "96ce02d839ed7a707b1619b8420a42f8cb349661263e056149f0ac156471816a",
+        "960": "b5707ed8d6b80d1f89208930f1e221a4e0927415fd942e0bb7ca7d35bc35328a"
+      }
+    },
+    "not_a_portrait_pool": true,
+    "arcface_identity_screening": "not applicable to requested contextual scene assets; not performed"
+  },
+  "prototype_browser_checks": {
+    "passed": true,
+    "checks": [
+      {
+        "device": "desktop1440x900",
+        "viewport": [
+          1440,
+          900
+        ],
+        "document": [
+          1440,
+          900
+        ],
+        "horizontalOverflow": false,
+        "outerVerticalOverflow": false,
+        "loaded": true
+      },
+      {
+        "device": "mobile390x844",
+        "viewport": [
+          390,
+          844
+        ],
+        "document": [
+          390,
+          844
+        ],
+        "horizontalOverflow": false,
+        "outerVerticalOverflow": false,
+        "loaded": true
+      },
+      {
+        "device": "tablet1024x768",
+        "viewport": [
+          1024,
+          768
+        ],
+        "document": [
+          1024,
+          768
+        ],
+        "horizontalOverflow": false,
+        "outerVerticalOverflow": false,
+        "loaded": true
+      },
+      {
+        "device": "responsive360x800",
+        "viewport": [
+          360,
+          800
+        ],
+        "document": [
+          360,
+          800
+        ],
+        "horizontalOverflow": false,
+        "outerVerticalOverflow": false,
+        "loaded": true
+      },
+      {
+        "device": "responsive768x1024",
+        "viewport": [
+          768,
+          1024
+        ],
+        "document": [
+          768,
+          1024
+        ],
+        "horizontalOverflow": false,
+        "outerVerticalOverflow": false,
+        "loaded": true
+      },
+      {
+        "device": "responsive844x390",
+        "viewport": [
+          844,
+          390
+        ],
+        "document": [
+          844,
+          390
+        ],
+        "horizontalOverflow": false,
+        "outerVerticalOverflow": false,
+        "loaded": true
+      }
+    ],
+    "selectionFlowsPerMainDevice": 8,
+    "additionalResponsiveViewports": 3,
+    "pageErrors": [],
+    "browser": "Chromium; mobile/tablet emulation, not physical Safari/iPad validation"
+  },
+  "runtime_bytes": 798960,
+  "game_connected": false,
+  "game_code_changed": false,
+  "main_merged": false,
+  "scope": "Image/package/standalone preview verification. Existing game was explored as recorded in review/gameplay_review.json; no broad unit/build or full-season verification performed."
+}

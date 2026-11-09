@@ -1,0 +1,442 @@
+{
+  "schema_version": "design-review.1",
+  "batch_id": "operations_training_medical_2026_11_10",
+  "created_client_date": "2026-11-10",
+  "baseline_commit": "8b4b902",
+  "delivery_branch": "assets/gameplay-design-review",
+  "path_base": "assets/design-review/2026-11-10/",
+  "status": "ASSET_AND_STANDALONE_PREVIEW_VALIDATED_GAME_INTEGRATION_PENDING",
+  "new_photographs": 8,
+  "runtime_variants": 16,
+  "sizes": [
+    [
+      960,
+      540
+    ],
+    [
+      480,
+      270
+    ]
+  ],
+  "codec": "RGB lossy WebP q84 method6",
+  "total_runtime_bytes": 798960,
+  "no_game_code_changes": true,
+  "game_connected": false,
+  "main_merged": false,
+  "assets": [
+    {
+      "id": "ovs_abl_game",
+      "title": "호주리그 실전 파견",
+      "bind_key": "ovs.abl",
+      "category": "training",
+      "usage": "game_repetitions",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/ovs_abl_game.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 41512,
+          "sha256": "f2bb83fc1f9c516af0fe2f15ba4b578e27b7589aa35c1d25e5bd9685b3a25a98"
+        },
+        "960": {
+          "path": "photos/960/ovs_abl_game.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 138272,
+          "sha256": "0b76f5d573dcea1789ce604b13ad90416fb8f67246a68f35843244c76c2f2405"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-81392616-166c-4c4b-8081-65c6ed190674.png",
+        "sha256": "db4a7cabde989fad591cc19c9a97e537fff2e54be1d008b9fca99eaacb458325",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A fictional Australian summer baseball development league ground with eucalyptus trees far beyond the outfield and warm late-afternoon sunlight. A Korean adult male baseball hitter age24 in blank charcoal practice jersey, plain gray baseball pants and unbranded dark batting helmet viewed from behind and a little to the side, bat resting upright naturally near shoulder. Catcher and umpire at a respectful distant position, modest baseball stands, reddish infield dirt and rich green turf. Photograph just before a pitch, no frozen impossible ball flight. Medium-wide grounded realistic professional baseball action, not a huge stadium or travel postcard. Emphasize playing competitive games, not sightseeing."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    },
+    {
+      "id": "ovs_us_lab",
+      "title": "미국 피칭·타격 랩",
+      "bind_key": "ovs.us",
+      "category": "training",
+      "usage": "tracked_pitching",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/ovs_us_lab.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 30504,
+          "sha256": "c9a98fa9ce3e63e79a306696741adfaa593e8ae8292d824fd014244613f350a4"
+        },
+        "960": {
+          "path": "photos/960/ovs_us_lab.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 89960,
+          "sha256": "04e2e427487cb1912f2a93a1d877d92597490d91faa53219a406858c8a5b2693"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-4501b544-ad9f-404d-8c70-4967ce549d00.png",
+        "sha256": "d6264de9735f59e61610bfeb8b352a9d11666cebdf736e8aa9fa25f21e302b20",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A premium American indoor baseball biomechanics laboratory. Korean adult male pitcher age25 wearing blank navy training top and gray practice pants, seen from behind at45degrees on a small clean pitching mound, holding a baseball low naturally in one hand while discussing feedback with an adult sports scientist standing beside a laptop trolley. Motion-capture cameras, high-speed video camera on tripod, tracking radar, black pitching net. Screens show only softly out-of-focus generic colored points and curves, absolutely no readable numbers/letters. Real plausible uncluttered sports science equipment, dark steel architecture with soft neutral daylight. Emphasize technique and data-driven pitching, no science fiction holograms."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    },
+    {
+      "id": "ovs_jpl_mechanics",
+      "title": "일본 대학·연구소 메커니즘",
+      "bind_key": "ovs.jpl",
+      "category": "training",
+      "usage": "mechanics_review",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/ovs_jpl_mechanics.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 25800,
+          "sha256": "e8a25d415f685c15730881e17308b547272f210c7755c29ee924575488e158c9"
+        },
+        "960": {
+          "path": "photos/960/ovs_jpl_mechanics.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 80120,
+          "sha256": "885e611aaba63501f773db548a6d20e416959fbb5f3d47576d76a6bd84467bba"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-35e34fcb-9168-4ef0-8d1e-1e6a1e58d867.png",
+        "sha256": "c4fb537c2d5bda304808c3da423f1e23e1344d7e7b102276d096d4917427fdf4",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A restrained Japanese university sports science indoor baseball training hall, pale wood wall slats and neat dark-green net lane. Korean adult male hitter age24 in plain gray top and dark navy training pants, rear three-quarter view, feet planted naturally, holding a simple unbranded wood bat at a relaxed low ready position. An adult coach stands a step away indicating a tripod video camera and a small unbranded tablet, side face not prominent. A batting tee with a single baseball in front of the athlete. Quiet careful mechanics review, no hard exertion. Generic university space, no letters, flags, institutional crest or brands."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    },
+    {
+      "id": "ovs_cnd_performance",
+      "title": "미국 컨디셔닝 센터",
+      "bind_key": "ovs.cnd",
+      "category": "training",
+      "usage": "strength_rotation",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/ovs_cnd_performance.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 22008,
+          "sha256": "6c675551ec920874cc65c71b828930c18885226376645cc78b6aa988c9613551"
+        },
+        "960": {
+          "path": "photos/960/ovs_cnd_performance.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 58078,
+          "sha256": "5f0b4cf8330ec0b8666ed08ee6c07c3143c3903a8b3fa9254d9c4146dcd94c41"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-938d5787-ea96-487a-8784-ebcf9d395071.png",
+        "sha256": "e7cb86717419079fac495d934b779e3ca3ab9e4bc36c3aa5e5d2273e0bd4d0c8",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A real premium American baseball performance training center. A Korean adult male baseball athlete age25, navy crew-neck training shirt and dark gray athletic shorts, seen rear three-quarter while preparing a rotational medicine-ball drill, holding ONE modest gray rubber medicine ball with both hands at hip level. Both feet planted on rubber gym floor, natural knees and elbows, no action blur, exactly two arms and two legs. Strength coach a few meters away observing. Rubber flooring, a short strip of indoor turf, squat rack in soft-focus background, restrained neutral daylight. Emphasize strength conditioning and rotation, no changing throwing technique, no exercise-machine fantasy."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    },
+    {
+      "id": "ovs_kac_academy",
+      "title": "국내 피칭·타격 아카데미",
+      "bind_key": "ovs.kac",
+      "category": "training",
+      "usage": "local_video_training",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/ovs_kac_academy.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 25450,
+          "sha256": "c716a423f8fe3cf4fb5d2bd81a643f12d2f3b199fe1d44541d9cb0539a3e647e"
+        },
+        "960": {
+          "path": "photos/960/ovs_kac_academy.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 88110,
+          "sha256": "c705d3f20517f359f818e9770f550fb8a7e15cb377fc8e56f35baf87cfa4265e"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-03079927-d6cf-401e-9f96-7fddccffa1ac.png",
+        "sha256": "afac54d430907fecd70abd658ed26ce4bcb15b5792f78ff99e24fc0cd9f8010b",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A modest high-quality privately run Korean indoor baseball academy, realistic narrow green-turf batting lane, protective net curtains, ordinary low ceiling, no luxury architecture. Korean adult male batter age23 in plain light-gray crew-neck shirt and navy training pants viewed from rear three-quarter, relaxed feet around a batting tee, wooden bat held safely low before the repetition. An adult instructor stands behind a tripod smartphone camera recording the swing, no visible phone text. Ordinary ball bucket, small video trolley, soft practical ceiling lighting. Emphasize affordable local video-assisted practice with familiar scale. No children."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    },
+    {
+      "id": "med_screening",
+      "title": "상태 평가·부하 점검",
+      "bind_key": "medical.assessment",
+      "category": "medical",
+      "usage": "clinical_assessment",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/med_screening.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 18840,
+          "sha256": "70973390416bd7a69f2dca6ffaf2ef0f3c321ffbc7ff78df792a54c94dc258ff"
+        },
+        "960": {
+          "path": "photos/960/med_screening.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 45238,
+          "sha256": "e393c6cc773865a4702378218e4dad5518eead74c7a96bea7d7372d645215d00"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-03ec482e-f2a6-4249-81bc-63c7e2d8aa53.png",
+        "sha256": "1066cf28a50600089a168838c1c902917c96155314e7ec936935dff54296116d",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A clean calm professional Korean baseball sports medicine consultation room. A Korean adult male athlete age27 in plain navy training shirt sits upright on the edge of a padded examination bench, viewed from side and rear, relaxed arms in lap. An adult clinician in an unbranded pale-gray clinical polo stands beside an examination monitor, explaining a generic blurred shoulder motion diagram, no readable text or numbers. Small equipment cart, daylight, no surgical scene, no needles, no blood, no diagnosis text. Emphasize evaluating fatigue and planning, not an emergency injury."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    },
+    {
+      "id": "med_rehab",
+      "title": "재활·회복 훈련",
+      "bind_key": "medical.rehabilitation",
+      "category": "medical",
+      "usage": "supervised_rehab",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/med_rehab.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 16044,
+          "sha256": "be535b3292377e88c6829b2c7f598ea899e4e0b6af1b377877e1782cf5791c9f"
+        },
+        "960": {
+          "path": "photos/960/med_rehab.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 38918,
+          "sha256": "c46aac7f473a135ceef3f288002fddddf12b736a9ecc0f73ba56e889ca160d43"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-fc90ab9c-a629-4f6f-af22-33a9d635d2ac.png",
+        "sha256": "e41c2336bbd8a90c8087e27e57b66cce3bea6302db87d97c0a9c3eed4c4d0c2f",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A professional Korean baseball rehabilitation room, warm neutral daylight and clean navy-gray palette. Korean adult male baseball athlete age26 in plain gray training top, side-rear view, performing a gentle standing shoulder external-rotation exercise with ONE thin elastic resistance band anchored to a simple wall attachment at waist height. Elbow naturally tucked near ribs, forearm modestly rotated outward, physically plausible elastic direction. A sports physiotherapist in plain navy polo observes from an arm length away, not grabbing or overlapping hands. Natural human joints, uncluttered matte room, no readable text or brand. Low-intensity careful rehabilitation, no pain theatrics or surgical imagery."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    },
+    {
+      "id": "med_return_bullpen",
+      "title": "복귀 전 실전 점검",
+      "bind_key": "medical.return_readiness",
+      "category": "medical",
+      "usage": "return_to_throwing",
+      "focal_point": [
+        0.5,
+        0.5
+      ],
+      "object_position": "50% 50%",
+      "embedded_text": false,
+      "variants": {
+        "480": {
+          "path": "photos/480/med_return_bullpen.webp",
+          "w": 480,
+          "h": 270,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 21442,
+          "sha256": "96ce02d839ed7a707b1619b8420a42f8cb349661263e056149f0ac156471816a"
+        },
+        "960": {
+          "path": "photos/960/med_return_bullpen.webp",
+          "w": 960,
+          "h": 540,
+          "mode": "RGB",
+          "quality": 84,
+          "method": 6,
+          "bytes": 58664,
+          "sha256": "b5707ed8d6b80d1f89208930f1e221a4e0927415fd942e0bb7ca7d35bc35328a"
+        }
+      },
+      "source": {
+        "local_path": "/workspace/generated_images/exec-844e9fd1-5fef-44ac-b469-17350da5b029.png",
+        "sha256": "e2471db61a7abe7d15bbf215b5b09ba866bad74a7ca0727c3b314860cfb37369",
+        "size": [
+          1672,
+          941
+        ],
+        "crop_rect": [
+          0,
+          0,
+          1672,
+          940
+        ],
+        "prompt": "Create ONE finished landscape16:9 PHOTOREALISTIC editorial sports photograph, at least1536pixels wide. This is a fictional professional baseball management game contextual asset, not a poster, illustration, videogame screenshot or 3D-render. Realistic fabric, subtle natural creases, real skin and equipment materials, physically believable anatomy. Restrained sophisticated pro baseball documentary look: deep navy, graphite gray, muted green, warm natural highlights, neutral whites, no oversaturated neon, no cartoon style. Clean coherent single photo. No borders, collage, lettering, labels, watermark, sponsor, logos, flags, insignia, real team/league identity or recognizable real person. All people adults, no featured celebrity face; rear or three-quarter rear views and distant incidental faces, no isolated portrait. Keep key training action in the central60percent of width and central70percent of height so it survives small thumbnails; leave a little environmental breathing room. Do not obscure the athletes with artificial UI gradients. A professional Korean baseball practice bullpen in mild overcast daylight. A Korean adult male pitcher age27 in blank navy training jersey and gray baseball pants, plain navy cap without symbol, rear three-quarter view, after a relaxed low-intensity warmup throw with both feet back on the clay and glove resting naturally at waist. Coach in plain gray track jacket and athletic trainer in plain navy polo stand behind the protective bullpen fence watching; distant catcher in unbranded neutral protective gear is small and out of focus. No readable clipboard marks. Real dirt, net fence and green windscreen, quiet controlled return-to-throwing check, no celebration or claim of medical clearance."
+      },
+      "person_identity_scope": "Context photograph only; not an identity portrait pool. Fictional adults, no intended real-person likeness."
+    }
+  ],
+  "preview": "preview.html",
+  "contact_sheet": "previews/contact_8.jpg",
+  "proposal": "DESIGN_PROPOSAL.md",
+  "handoff": "CLAUDE_HANDOFF.md",
+  "asset_validation_passed": true,
+  "validation": "validation.json"
+}

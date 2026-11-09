@@ -1,0 +1,93 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "device": "desktop1440x900",
+      "viewport": [
+        1440,
+        900
+      ],
+      "document": [
+        1440,
+        900
+      ],
+      "horizontalOverflow": false,
+      "outerVerticalOverflow": false,
+      "loaded": true
+    },
+    {
+      "device": "mobile390x844",
+      "viewport": [
+        390,
+        844
+      ],
+      "document": [
+        390,
+        844
+      ],
+      "horizontalOverflow": false,
+      "outerVerticalOverflow": false,
+      "loaded": true
+    },
+    {
+      "device": "tablet1024x768",
+      "viewport": [
+        1024,
+        768
+      ],
+      "document": [
+        1024,
+        768
+      ],
+      "horizontalOverflow": false,
+      "outerVerticalOverflow": false,
+      "loaded": true
+    },
+    {
+      "device": "responsive360x800",
+      "viewport": [
+        360,
+        800
+      ],
+      "document": [
+        360,
+        800
+      ],
+      "horizontalOverflow": false,
+      "outerVerticalOverflow": false,
+      "loaded": true
+    },
+    {
+      "device": "responsive768x1024",
+      "viewport": [
+        768,
+        1024
+      ],
+      "document": [
+        768,
+        1024
+      ],
+      "horizontalOverflow": false,
+      "outerVerticalOverflow": false,
+      "loaded": true
+    },
+    {
+      "device": "responsive844x390",
+      "viewport": [
+        844,
+        390
+      ],
+      "document": [
+        844,
+        390
+      ],
+      "horizontalOverflow": false,
+      "outerVerticalOverflow": false,
+      "loaded": true
+    }
+  ],
+  "selectionFlowsPerMainDevice": 8,
+  "additionalResponsiveViewports": 3,
+  "pageErrors": [],
+  "browser": "Chromium; mobile/tablet emulation, not physical Safari/iPad validation"
+}
