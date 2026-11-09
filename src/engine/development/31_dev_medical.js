@@ -119,7 +119,7 @@ const PREV=[{l:'없음',c:0,m:1},{l:'기본',c:500,m:.9},{l:'강화',c:1200,m:.8
 const HOSP={none:{name:'제휴 없음',c:0,rec:0,dx:false,d:'부상 때마다 외부 병원을 이용합니다.'},c:{name:'다온재활병원',c:400,rec:.08,dx:false,d:'재활 위주. 재활 기간이 조금 줄어듭니다.'},b:{name:'청명정형외과',c:700,rec:.12,dx:false,d:'정형외과 전문. 재활 기간이 줄어듭니다.'},a:{name:'새봄스포츠의학센터',c:1500,rec:.25,dx:true,d:'종합 스포츠의학. 재활 기간이 크게 줄고, 정밀 검진으로 선수의 부상 체질을 알려 줍니다.'}};
 /* 리그 전체 부상 빈도 보정: 1군·퓨처스를 합쳐 구단당 한 해 10~12건(그중 1군 이탈 7~10건)에 맞춘다. 부상 종류·체질 차이는 그대로 둔다 */
 const INJ_RATE=.58;
-function injMult(p){ const sv=milServing(p), tm=sv?null:p.team; /* 상무 복무 중에는 원소속 구단 부상 방지·시설·코치·훈련 지시를 받지 않는다(검수 11-09zk) */ return INJ_RATE*(tm!=null&&tm===G.user?(G.campInj||1)*PREV[G.med.prev].m*(1-facImpact(facOf('weight'))*.05):facAiInj(tm))*(p.rush&&G.day<=p.rush?3:1)*(p.reInj&&p.reInj.left>0?p.reInj.m:1)*(sv?1:p.trnF==='sta'?.92:p.trnF==='stf'?1.05:1)*injStam(p)*coachCondMult(tm); }
+function injMult(p){ const sv=milServing(p), tm=sv?null:p.team; /* 상무 복무 중에는 원소속 구단 부상 방지·시설·코치·훈련 지시를 받지 않는다(검수 11-09zk) */ return INJ_RATE*(tm!=null&&tm===G.user?(G.campInj||1)*PREV[G.med.prev].m*(1-facImpact(facOf('weight'))*.05):facAiInj(tm))*(p.rush&&G.day<=p.rush?3:1)*(p.reInj&&p.reInj.left>0?p.reInj.m:1)*(sv?1:p.trnF==='sta'?.92:p.trnF==='stf'?1.05:1)*injStam(p)*coachCondMult(tm)*(sv?1:trnIRisk(p)); } /* 선수별 훈련 강도(76_dev_plan) */
 function injStam(p){ const s=(p.isP?p.r&&p.r.sta:p.r&&p.r.vit)??50; return clamp(1-(s-50)*.012,.7,1.3); } /* 체력이 높으면 부상이 덜 난다(체력 75 기준 약 30% 적게, 사용자 11-08) */ /* 훈련 방향: 체력 집중은 부상이 조금 줄고, 구위 집중은 조금 는다 */
 /* 제휴 병원 바꾸기: 새 부상의 재활 기간뿐 아니라, 지금 재활 중인 선수(남은 14일 이상)의 남은 기간에도 그날부터 새 병원 재활 효과를 적용한다(일괄 할인이 아니라 남은 재활 비율만큼). 짧은 부상(14일 미만)은 그대로 */
 /* 병원 효과 기준: 병원 배수를 빼낸 '기준 재활 일수'(소수)를 선수에게 보관하고, 병원을 바꿀 때마다 그 기준에서 다시 계산한다.
