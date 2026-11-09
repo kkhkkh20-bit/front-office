@@ -45,6 +45,8 @@ function seasonEnd(){
   if(G.ps.round==='wc')try{ psSeedNews(); }catch(e){ console.error(e); }
   for(const t of G.teams)try{ entryManage(t.id,false,true); }catch(e){} /* 포스트시즌에 들어가는 날 바로 엔트리를 기본 한도로 */
 }
+/* 순위 결정전이 남아 있으면 그 자리 시드는 아직 비운다(잠정 순위 팀을 진출팀처럼 보이지 않게, 검수 11-09l. 스폰서 전망·구단 화면도 같은 기준, 11-09zn) */
+function psSeedsNow(P){ const c=P.cur&&P.cur.round==='tb'?[P.tbPos,...(P.tbq||[]).map(q=>q[0])]:[]; return (P.seeds||[]).map((t,i)=>c.some(k=>i===k||i===k+1)?null:t); }
 function mkSeries(round,hi,lo,start){
   const off={tb:[0],wc:[0,1],spo:[0,1,3,4,6],po:[0,1,3,4,6],ks:[0,1,3,4,5,7,8]}[round];
   const homes={tb:[hi],wc:[hi,hi],spo:[hi,hi,lo,lo,hi],po:[hi,hi,lo,lo,hi],ks:[hi,hi,lo,lo,lo,hi,hi]}[round];
@@ -60,7 +62,7 @@ function psDay(day){
   const P=G.ps, s=P.cur; if(s&&s.days[s.gi]<day){ const sh=day-s.days[s.gi]; s.days=s.days.map((d,i)=>i>=s.gi?d+sh:d); } /* 오류로 지나간 차전은 오늘부터 다시(검수 11-09k) */ if(!s||s.days[s.gi]!==day)return;
   const h=s.homes[s.gi], a=h===s.hi?s.lo:s.hi;
   const hiL=s.need[0]-s.wh, loL=s.need[1]-s.wl; /* 남은 승수: 한쪽이 1승만 남으면 다른 쪽은 탈락 위기, 둘 다 1승이면 최종전 */
-  const gx={elim:hiL===1||loL===1,fin:hiL===1&&loL===1,elimT:[...(hiL===1?[s.lo]:[]),...(loL===1?[s.hi]:[])]}; /* 탈락 위기는 팀마다(검수 11-07) */ let g; try{ g=simGame(day,h,a,gx); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,gx); }catch(e2){ s.days=s.days.map((d,i)=>i>=s.gi?d+1:d); console.error('포스트시즌 경기 처리 실패, 하루 미룸',dmd(day),h,a,e2); if(h===G.user||a===G.user)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 사정으로 하루 미뤄져 ${dmd(s.days[s.gi])}에 열립니다.`); return; } } /* 한 경기 오류로 시리즈가 멈추지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 남은 차전을 하루씩 미룬다(검수 11-09k) */ applyGame(day,h,a,g,true); rivalAfterGame(day,h,a,g,true);
+  const gx={elim:hiL===1||loL===1,fin:hiL===1&&loL===1,elimT:[...(hiL===1?[s.lo]:[]),...(loL===1?[s.hi]:[])]}; /* 탈락 위기는 팀마다(검수 11-07) */ let g; try{ g=simGame(day,h,a,gx); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,gx); }catch(e2){ s.days=s.days.map((d,i)=>i>=s.gi?d+1:d); console.error('포스트시즌 경기 처리 실패, 하루 미룸',dmd(day),h,a,e2); if(h===G.user||a===G.user)note('포스트시즌',`${ROUNDK[s.round]} ${s.gi+1}차전이 사정으로 하루 미뤄져 ${dmd(s.days[s.gi])}에 열립니다.`); return; } } /* 한 경기 오류로 시리즈가 멈추지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 남은 차전을 하루씩 미룬다(검수 11-09k) */ { const back=boxSnap(g); try{ applyGame(day,h,a,g,true); }catch(e){ back(); s.days=s.days.map((d,i)=>i>=s.gi?d+1:d); console.error('포스트시즌 경기 반영 실패, 되돌리고 하루 미룸',dmd(day),h,a,e); return; } } try{ rivalAfterGame(day,h,a,g,true); }catch(e){ console.error(e); } /* 반영 실패: 등판 부하를 되돌린 뒤 다음 날 같은 차전을 다시(검수 11-09zn) */
   let win=g.score.h>g.score.a?h:g.score.a>g.score.h?a:null;
   if(win===s.hi)s.wh++; else if(win===s.lo)s.wl++;
   if(!s.gi)s.pts=[]; if(s.pts)s.pts.push([g.score.h,g.score.a]); /* 차전별 점수(홈:원정, 대진표). 1차전부터 센 시리즈만 남겨 옛 저장과 어긋나지 않게 */

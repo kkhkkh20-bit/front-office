@@ -81,6 +81,10 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
   for(let g=0;g<3&&(ent=playersOf(tid).filter(p=>p.e1)).filter(p=>isC(p)&&healthy(p)).length<2;g++){ /* 다친 포수는 세지 않는다(검수 11-09t) */ const c=playersOf(tid).filter(p=>canUp(p)&&isC(p)).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
     if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!isC(p)&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!core.has(p.id)&&!isC(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(백업 포수 자리)`); }
     c.e1=true; c.upDay=G.day; moves.push(`${c.name} 콜업(1군 포수 2명 유지${futLn(c)})`); }
+  /* AI 구단은 건강한 1군 야수 9명 유지: 단기 부상 야수가 자리를 차지해 8명 타순으로 치르지 않게 2군에서 올린다(검수 11-09zn) */
+  if(tid!==G.user)for(let g=0;g<9&&(ent=playersOf(tid).filter(p=>p.e1)).filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=playersOf(tid).filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
+    if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>p.isP&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; }
+    c.e1=true; c.upDay=G.day; }
   if(tid===G.user&&moves.length&&!quiet)note('엔트리',`감독이 1군 엔트리를 조정했습니다: ${moves.join(', ')}.`); }
 /* 돌아온 주축을 다시 1군에(사용자 피드백 11-05: 대표팀에서 돌아온 핵심 3명이 한국시리즈 1차전까지 2군에 남음).
  후보마다 같은 투수·야수 중 기용 순위가 가장 낮은 1군 선수보다 확실히 나으면 바꾼다. 자리가 비면 그냥 올린다 */
