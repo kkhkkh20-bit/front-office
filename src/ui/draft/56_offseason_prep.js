@@ -5,7 +5,7 @@ function offPrepOn(){ if(!G||G.unemp||G.demoEnd||G.gameOver||(G.fd&&!G.fd.done)|
 function opzSponNext(){ const per=period(); const y=G.year; const L=per==='off'?[KD(11,10),KD(12,1),dnum(y+1,1,10),dnum(y+1,2,1),dnum(y+1,3,1)]:[KD(1,10),KD(2,1),KD(3,1)]; return L.find(d=>d>G.day)??null; }
 function opzSpon(){ const S=sponInit(); const t=team(G.user); const y=sponSeason();
   const ks=Object.keys(SPON_SLOT).filter(k=>!(SPON_SLOT[k].indie&&!t.indie));
-  const open=ks.filter(k=>sponOpen(k)); const prev=Math.round(sum(Object.values(S.c).filter(c=>c.y0<=y-1&&c.until>=y-1).map(c=>c.amt)));
+  const open=ks.filter(k=>sponOpen(k)); const prev=S.paid&&S.paid.y===y-1?S.paid.v:Math.round(sum(Object.values(S.c).filter(c=>c.y0<=y-1&&c.until>=y-1).map(c=>c.amt))); /* 결산에서 실제 받은 금액(해지 전 몫 포함, 검수 11-09i). 옛 저장은 계약서로 */
   const lost=Math.round(sum(open.map(k=>S.c[k]&&S.c[k].until===y-1?S.c[k].amt:0))); const inc=sponIncome(y); const off=(S.off||[]).filter(x=>x.exp>=G.day).length; const nx=opzSponNext();
   const d=[`${y}시즌 확정 ${money(inc)}`,prev?`지난 시즌 ${money(prev)}`:'',open.length?`빈자리 ${open.length}곳${lost?`(만료로 연 ${money(lost)} 빠짐)`:''}`:'모든 자리 계약',off?`받은 제안 ${off}건`:open.length&&nx?`다음 제안 ${dmd(nx)}`:''].filter(Boolean);
   return {k:'spon',l:'스폰서',st:open.length?(off?'act':'warn'):'ok',d:d.join(' · '),sub:open.length?open.map(k=>SPON_SLOT[k].l).join(', '):'',b:[['go','club:spon','스폰서']]}; }

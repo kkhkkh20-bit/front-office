@@ -46,8 +46,7 @@ function sponCancel(k,why){ const S=G.spon; const c=S&&S.c[k]; if(!c)return null
   (S.cutL=S.cutL||[]).push(x); delete S.c[k]; return x; }
 function sponOpen(k){ const c=G.spon.c[k]; const y=sponSeason(); return !c||c.until<y; }
 /* 제안: 11월 10일·12월 1일·1월 10일, 시즌 중에는 매달 1일 빈자리에 가끔 */
-function sponDaily(){ try{ sponPitchOld(); }catch(e){} /* 무직 중에도 떠난 구단 영업 결과는 예정일에 낸다(검수 11-07) */ if(G.unemp)return; const S=sponInit(); const o=dobj(G.day); const t=team(G.user); try{ sponPitchDaily(); }catch(e){}
-  S.off=S.off.filter(x=>x.exp>=G.day);
+function sponDaily(){ try{ sponPitchOld(); }catch(e){} /* 무직 중에도 떠난 구단 영업 결과는 예정일에 낸다(검수 11-07) */ if(G.unemp)return; const S=sponInit(); const o=dobj(G.day); const t=team(G.user); S.off=S.off.filter(x=>x.exp>=G.day); /* 영업 결과보다 먼저: 만료된 제안이 새 제안을 중복으로 막지 않게(검수 11-09i) */ try{ sponPitchDaily(); }catch(e){}
   const off=(o.m===11&&o.d===10)||(o.m===12&&o.d===1)||(o.m===1&&o.d===10)||(o.m===2&&o.d===1)||(o.m===3&&o.d===1); const sea=o.d===1&&period()==='season'&&R()<.35;
   if(!off&&!sea)return; const made=[];
   for(const k of Object.keys(SPON_SLOT)){ if(SPON_SLOT[k].indie&&!t.indie)continue; if(!sponOpen(k))continue; const have=S.off.filter(x=>x.slot===k).length; const n=off?ri(1,2):(R()<.5?1:0);
@@ -57,7 +56,7 @@ function sponAccept(id){ const S=G.spon; const o=S.off.find(x=>x.id===id); if(!o
 function sponReject(id){ const S=G.spon; S.off=S.off.filter(x=>x.id!==id); return '제안을 거절했습니다.'; }
 /* 조건 상향 요청: 구단 가치가 높을수록, 기업이 적극적일수록 받아들인다 */
 function sponCounter(id,pct){ const S=G.spon; const o=S.off.find(x=>x.id===id); if(!o)return '제안이 없습니다.'; if(o.exp<G.day){ S.off=S.off.filter(x=>x.id!==id); return '기한이 지난 제안입니다.'; } /* 검수 11-08 */ if(o.cnt>=1)return `${o.co}: 더 이상은 어렵습니다.`;
-  o.cnt++; const v=sponVal(); const comp=new Set(S.off.filter(x=>x.slot===o.slot).map(x=>x.co)).size; /* 같은 기업 제안은 한 곳으로 */ const p=clamp(.62+(v-1)*.6+(comp-1)*.12-(pct-.1)*2.2+(o.renew?.1:0),.08,.92);
+  o.cnt++; const v=sponVal(); const comp=new Set(S.off.filter(x=>x.slot===o.slot&&x.exp>=G.day).map(x=>x.co)).size; /* 만료 제안은 경쟁으로 치지 않는다(검수 11-09i) */ /* 같은 기업 제안은 한 곳으로 */ const p=clamp(.62+(v-1)*.6+(comp-1)*.12-(pct-.1)*2.2+(o.renew?.1:0),.08,.92);
   if(R()<p){ o.amt=round5(o.amt*(1+pct)); o.ps=round5(o.ps*(1+pct*.5)); return `${o.co}: 요청하신 조건을 받아들이겠습니다. 연 ${money(o.amt)}.`; }
   if(R()<.45){ S.off=S.off.filter(x=>x.id!==id); return `${o.co}: 그 금액은 어렵습니다. 이번 제안은 철회하겠습니다.`; }
   return `${o.co}: 조건 상향은 어렵습니다. 처음 제안 그대로라면 계약하겠습니다.`; }
@@ -67,13 +66,13 @@ function sponSettle(y,ps,tid,S0){ tid=tid??G.user; const S=S0||G.spon; /* tid·S
     const bf=c.y0===y&&c.bf!=null?c.bf:1; const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(tid)); if(inPS&&c.ps&&!(c.psNo&&c.y0===y)){ const v=Math.round(c.ps*bf); bonus+=v; if(v)L.push(`${c.co} 가을야구 보너스 ${money(v)}${bf<1?' (계약 기간 비율)':''}`); } if(ps&&ps.champ===tid&&c.champ){ const v=Math.round(c.champ*bf); bonus+=v; if(v)L.push(`${c.co} 우승 보너스 ${money(v)}${bf<1?' (계약 기간 비율)':''}`); }
     if(c.base0==null)c.base0=c.amt; c.amt=c.base0; const press=tid===G.user&&!S0?(G.pr?G.pr.press:50):(S.press??50); if(c.img&&press<30&&c.until>y){ c.amt=round5(c.base0*.8); L.push(`${c.co}: 이미지 조항으로 다음 해 금액 20% 감액`); } } /* 감액은 그다음 한 해만(원래 금액 기준으로 해마다 다시 판단). 이직 뒤 남은 계약서도 같은 판단(검수 11-07) */
   for(const c of (S.cutL||[]))if(c.until===y){ const v=c.amt*(c.cutF||0); base+=v; if(v>0)L.push(`${c.co}: 해지(${dsh(c.cut.d)}) 전까지 몫 ${money(Math.round(v))}`); }
-  for(const k in S.c){ if(S.c[k].until===y){ S.hist.push(Object.assign({slot:k},S.c[k],{amt:S.c[k].paidY??S.c[k].amt})); } } /* 이력에는 마지막 해 실제로 받은 금액(검수 11-07) */
+  for(const k in S.c){ if(S.c[k].until===y){ S.hist.push(Object.assign({slot:k},S.c[k])); } } /* 이력의 amt는 연 계약금, 마지막 해 실제로 받은 금액은 paidY(검수 11-07·11-09i) */
   if(S.cutL&&S.cutL.length){ for(const c of S.cutL)if(c.until<=y)S.hist.push(c); S.cutL=S.cutL.filter(c=>c.until>y); }
-  if(S.hist.length>40)S.hist=S.hist.slice(-40);
+  if(S.hist.length>40)S.hist=S.hist.slice(-40); S.paid={y,v:Math.round(base)}; /* 비시즌 준비표의 지난 시즌 수입은 실제 결산액(해지 전 몫 포함, 검수 11-09i) */
   if(tid===G.user&&!S0){ const exp=Object.keys(S.c).filter(k=>S.c[k].until===y); mail('마케팅팀',`${y} 스폰서 결산: ${money(Math.round(base+bonus))}`,`기본 계약 ${money(Math.round(base))}${bonus?`, 성과 보너스 ${money(Math.round(bonus))}`:''}.${L.length?'\n'+L.join('\n'):''}${exp.length?`\n\n이번 시즌으로 끝나는 계약: ${exp.map(k=>`${S.c[k].co}(${SPON_SLOT[k].l})`).join(', ')}. 11월 중순부터 재계약·신규 제안이 들어옵니다.`:''}`,{kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }
   return {base:Math.round(base),bonus:Math.round(bonus),L}; }
 /* 팬 여론이 바닥이면 드물게 계약 해지 */
-function sponMonthly(){ const S=G.spon; if(!S||!G.pr||G.pr.fan>=25)return; for(const k in S.c){ const c=S.c[k]; if(c.until<sponSeason()||R()>=.06)continue; /* 결산까지 끝난 계약은 해지 대상 아님 */ const x=sponCancel(k,'팬 여론 악화'); const kept=Math.round(x.amt*x.cutF), done=sponSeason()>G.year; mail('마케팅팀',`${c.co} 스폰서 계약 해지`,`팬 여론 악화로 ${c.co}이(가) ${SPON_SLOT[k].l} 계약을 해지했습니다. ${done?`${G.year}시즌 몫은 이미 결산에 들어왔고, 다음 시즌부터 금액은 들어오지 않습니다.`:`해지 전까지 지난 기간 몫 ${money(kept)}은 올해 결산에 들어오고, 남은 기간 금액은 들어오지 않습니다.`} 이 자리에는 새 스폰서와 계약할 수 있습니다.`,{kind:'스폰서',imp:true}); news('구단',`${c.co}, ${tshort(G.user)} 스폰서 철수`,'성난 팬심이 기업 이미지에도 부담이 된다는 판단입니다.',-2); break; } }
+function sponMonthly(){ const S=G.spon; if(!S||!G.pr||G.pr.fan>=25)return; for(const k in S.c){ const c=S.c[k]; if(c.until<sponSeason()||R()>=.06)continue; /* 결산까지 끝난 계약은 해지 대상 아님 */ const x=sponCancel(k,'팬 여론 악화'); const kept=Math.round(x.amt*x.cutF), done=sponSeason()>G.year, s0=Math.max(c.y0??x.until,x.until); /* 사라진 시즌을 앞세운다(시작 전 계약이면 시작 연도부터, 검수 11-09i) */ mail('마케팅팀',`${c.co} 스폰서 계약 해지`,`팬 여론 악화로 ${c.co}이(가) ${SPON_SLOT[k].l} 계약을 해지했습니다. 사라진 계약: ${s0<c.until?`${s0}~${c.until}`:s0}시즌 몫 ${money(x.cut.lost)}. ${done?`${G.year}시즌 몫은 이미 결산에 들어왔습니다.`:kept>0?`해지 전까지 지난 기간 몫 ${money(kept)}은 올해 결산에 들어옵니다.`:''} 이 자리에는 새 스폰서와 계약할 수 있습니다.`,{kind:'스폰서',imp:true}); news('구단',`${c.co}, ${tshort(G.user)} 스폰서 철수`,'성난 팬심이 기업 이미지에도 부담이 된다는 판단입니다.',-2); break; } }
 /* AI 구단 스폰서 수입(결산용) */
 function sponAI(tid){ return Math.round(sum(Object.keys(SPON_SLOT).filter(k=>!SPON_SLOT[k].indie).map(k=>SPON_SLOT[k].b))*ecoIdx()*sponVal(tid)*.85); }
 /* 영업 활동: 단장이 마케팅팀에 빈자리 영업을 지시한다. 영업비 3천만 원, 1~2주 뒤 결과.
@@ -88,10 +87,10 @@ function sponPitchDaily(){ const S=G.spon; if(!S||!S.pitch)return; for(const x o
     else mail('마케팅팀',`영업 결과: ${SPON_SLOT[x.slot].l} 관심 기업 없음`,`여러 기업을 만났지만 지금 구단 가치(지수 ${Math.round(sponVal()*100)})로는 조건이 맞지 않았습니다. 성적과 팬 여론이 오르면 다시 시도해 보세요.`,{kind:'스폰서'}); }
   S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); }
 /* 단장이 떠난 구단의 영업(돈은 이미 냈다)도 예정일에 결과를 낸다: 제안은 그 구단 계약서에 남아 돌아오면 볼 수 있다(검수 11-06) */
-function sponPitchOld(){ const L=Object.assign({},G.sponT||{}); if(G.unemp&&G.spon&&G.unemp.from!=null)L[G.unemp.from]=G.spon; /* 무직 중엔 G.spon이 떠난 구단 것 */ for(const tid in L){ const S=L[tid]; if(!S||!S.pitch)continue; for(const x of S.pitch){ if(x.done||x.due>G.day)continue; x.done=true; const c=S.c&&S.c[x.slot]; if(c&&c.until>=sponSeason())continue; const p=clamp(.45+(sponVal(+tid)-1)*.8,.15,.9); if(R()<p){ const o=sponMake(x.slot,{tid:+tid,S}); o.amt=round5(o.amt*rnd(.92,1.02)); if(!(S.off||[]).some(z=>z.slot===x.slot&&z.co===o.co))(S.off=S.off||[]).push(o); } /* 같은 자리 같은 기업 중복 없음(이직 뒤에도, 검수 11-08) */ } S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); } }
+function sponPitchOld(){ const L=Object.assign({},G.sponT||{}); if(G.unemp&&G.spon&&G.unemp.from!=null)L[G.unemp.from]=G.spon; /* 무직 중엔 G.spon이 떠난 구단 것 */ for(const tid in L){ const S=L[tid]; if(!S||!S.pitch)continue; for(const x of S.pitch){ if(x.done||x.due>G.day)continue; x.done=true; const c=S.c&&S.c[x.slot]; if(c&&c.until>=sponSeason())continue; S.off=(S.off||[]).filter(z=>z.exp>=G.day); /* 만료 제안은 중복 판정에서 뺀다(검수 11-09i) */ const p=clamp(.45+(sponVal(+tid)-1)*.8,.15,.9); if(R()<p){ const o=sponMake(x.slot,{tid:+tid,S}); o.amt=round5(o.amt*rnd(.92,1.02)); if(!(S.off||[]).some(z=>z.slot===x.slot&&z.co===o.co))(S.off=S.off||[]).push(o); } /* 같은 자리 같은 기업 중복 없음(이직 뒤에도, 검수 11-08) */ } S.pitch=S.pitch.filter(x=>!x.done||G.day-x.day<30); } }
 /* 가을야구 확정(수학적): 우리 승수 이상을 아직 낼 수 있는 구단이 4곳 이하면 5위 안이 확정. 무승부·동률 결정전은 보수적으로 동률도 위협으로 센다 */
 function psClinched(tid){ const R=G.sea&&G.sea.rec; if(!R||!R[tid])return false; const gp=r=>r.w+r.l+(r.t||0), N=144; const me=R[tid];
   return G.teams.filter(t=>t.id!==tid&&R[t.id]&&R[t.id].w+(N-gp(R[t.id]))>=me.w).length<=4; }
 
 /* 결산 전 예상: 가을야구·우승 성과 보너스(결산 sponSettle과 같은 기준, 상태는 바꾸지 않는다) */
-function sponBonusEst(y,champ){ const S=G.spon; if(!S)return 0; const inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)); let b=0; for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; if(!(eff>0))continue; const bf=c.y0===y&&c.bf!=null?c.bf:1; if(inPS&&c.ps&&!(c.psNo&&c.y0===y))b+=Math.round(c.ps*bf); if(champ===G.user&&c.champ)b+=Math.round(c.champ*bf); } return b; }
+function sponBonusEst(y,champ){ const S=G.spon; if(!S)return 0; let inPS=!!(G.ps&&G.ps.seeds&&G.ps.seeds.includes(G.user)); if(!(G.ps&&G.ps.seeds)&&y===G.year)try{ inPS=psClinched(G.user); }catch(e){} /* 정규시즌 중 가을야구를 확정하면 진출 보너스를 바로 전망에(검수 11-09i) */ let b=0; for(const k in S.c){ const c=S.c[k]; if(!(c.y0<=y&&c.until>=y))continue; const eff=c.y0===y?(c.first??1):1; if(!(eff>0))continue; const bf=c.y0===y&&c.bf!=null?c.bf:1; if(inPS&&c.ps&&!(c.psNo&&c.y0===y))b+=Math.round(c.ps*bf); if(champ===G.user&&c.champ)b+=Math.round(c.champ*bf); } return b; }
