@@ -7,7 +7,7 @@ function lgStars(){ const L=[], seen=new Set(), hof=new Set(); try{ for(const r 
   for(const id in (G.arch||{})){ const a=G.arch[id]; if(a&&a.dy!=null&&a.dt!=null)add({id:a.id,name:a.name,draft:{y:a.dy,tid:a.dt}},a.aw,false); }
   return L; }
 const lgStarsOf=(S,x)=>S.filter(s=>s.t===x.t&&s.y>=x.y0&&s.y<=x.y1);
-function legacyView(){ const it=inTabs('lgv',[['club','역대 단장'],['hof','단장 명예의 전당'],['dyn','왕조 비교'],['tl','연대기 한 장']],'club');
+function legacyView(){ const it=inTabs('lgv',[['club','역대 단장'],['hof','단장 전당'],['dyn','왕조 비교'],['tl','연대기 한 장']],'club');
   const body=it.cur==='hof'?lgHofView():it.cur==='dyn'?lgDynView():it.cur==='tl'?lgTimeline():lgClubView(); return it.bar+body; }
 function lgClubView(){ const tid=UI.lgT!=null&&team(UI.lgT)?UI.lgT:(G.user??0); const D=legRec(), S=lgStars(); const L=D.L.filter(x=>x.t===tid).sort((a,b)=>b.y0-a.y0);
   const pick=`<div class="chips lg-tm">${G.teams.map(t=>`<button data-a="lgT" data-v="${t.id}" class="${t.id===tid?'on':''}">${esc(t.nick)}</button>`).join('')}</div>`;
@@ -42,11 +42,11 @@ function lgTimeline(){ const C=G.myC||{}, S=(C.seas||[]).slice().sort((a,b)=>a.y
   for(const c of (G.chron||[]))if(c.k==='gm'&&/공로자|제안을/.test(c.t))add(c.y,'레거시',c.t);
   for(const a of ACH)if(a.r&&a.r.title&&G.ach&&G.ach[a.id])add(G.ach[a.id].y,'칭호',`도전과제 '${a.n}' · 칭호 ${a.r.title}`);
   const ys=Object.keys(ev).map(Number).sort((a,b)=>a-b); let st=null; try{ st=myCStats(); }catch(e){} const P=legPeople(), rk=P.findIndex(p=>p.u&&p.k===legMeK());
-  const head=`<div class="lgtl-h">${typeof avImg==='function'&&typeof meAv==='function'?avImg(meAv(),true):''}<div><div class="eyebrow">단장 연대기</div><h2 class="sec">${esc(legMeName())}</h2><p class="small muted">${S.length?`${S[0].y}~${S[S.length-1].y}`:G.year} · ${G.unemp?'야인':esc(tname(G.user))+' 단장'}${achTitle()?` · ${esc(achTitle())}`:''}</p></div></div>
-    <div class="tiles"><div class="tile"><span class="g">${st?st.n:0}</span><span class="l">시즌</span></div><div class="tile"><span class="g">${st?st.w:0}</span><span class="l">승</span></div><div class="tile"><span class="g">${st?lgPct(st):'-'}</span><span class="l">승률</span></div><div class="tile"><span class="g">${st?st.ch:0}</span><span class="l">우승</span></div><div class="tile"><span class="g">${rk>=0?rk+1+'위':'-'}</span><span class="l">단장 명예의 전당</span></div></div>`;
+  const head=`<div class="lgtl-h">${typeof avImg==='function'&&typeof meAv==='function'?avImg(meAv(),true):''}<div><div class="eyebrow">단장 연대기</div><h2 class="sec">${esc(legMeName())}</h2><p class="small muted keep">${S.length?`${S[0].y}~${S[S.length-1].y}`:G.year} · ${G.unemp?'야인':esc(tname(G.user))+' 단장'}${achTitle()?` · ${esc(achTitle())}`:''}${rk>=0?` · 단장 명예의 전당 ${rk+1}위`:''}</p></div></div>
+    <div class="tiles"><div class="tile"><span class="g">${st?st.n:0}</span><span class="l">시즌</span></div><div class="tile"><span class="g">${st?st.w:0}</span><span class="l">승</span></div><div class="tile"><span class="g">${st?lgPct(st):'-'}</span><span class="l">승률</span></div><div class="tile"><span class="g">${st?st.ch:0}</span><span class="l">우승</span></div></div>`;
   return `<section class="card lgtl">${head}${ys.length?ys.map(y=>`<div class="lgtl-y"><b class="num">${y}</b><ul>${ev[y].map(e=>`<li class="${e.k==='우승'?'c':''}"><i>${e.k}</i>${esc(e.t)}</li>`).join('')}</ul></div>`).join(''):'<p class="small muted">첫 시즌을 마치면 연표가 쌓입니다.</p>'}<p class="small muted lgtl-f">프런트타임 · ${G.year}년 기준</p></section>`; }
 Object.assign(A,{ lgT(v){ UI.lgT=+v; render(); }, legPres(v){ const r=legPresAns(v==='1'); if(r){ toast(r); return; } save(); render(); toast(v==='1'?'제안을 수락했습니다. 단장 업무는 그대로 이어집니다.':'제안을 사양했습니다.'); } });
 try{ if(!MERGE.club.chron.includes('legacy'))MERGE.club.chron.push('legacy'); ALIAS.club.legacy='chron'; MLBL['club:legacy']='단장 레거시'; CHK.gm=CHK.gm||'단장'; }catch(e){}
 /* 단장 프로필 카드: 레거시 요약과 바로 가기 */
 function lgMeCard(){ let P=[]; try{ P=legPeople(); }catch(e){ return ''; } const i=P.findIndex(p=>p.u&&p.k===legMeK()); const H=(G.gmLeg&&G.gmLeg.hon)||[];
-  return `<section class="card"><div class="row between"><div><h2 class="sec">단장 레거시</h2><p class="small muted">단장 명예의 전당 ${i>=0?`${i+1}위 / ${P.length}명`:'순위 없음'}${H.length?` · 구단 공로자 ${H.length}곳`:''}. 역대 단장, 왕조 비교, 연대기 한 장</p></div><button class="btn small primary" data-a="go" data-v="club:legacy">보기</button></div></section>`; }
+  return `<section class="card"><div class="row between"><div><h2 class="sec">단장 레거시</h2><p class="small muted keep">단장 명예의 전당 ${i>=0?`${i+1}위 / ${P.length}명`:'순위 없음'}${H.length?` · 구단 공로자 ${H.length}곳`:''}. 역대 단장, 왕조 비교, 연대기 한 장</p></div><button class="btn small primary" data-a="go" data-v="club:legacy">보기</button></div></section>`; }
