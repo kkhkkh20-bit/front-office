@@ -5,7 +5,9 @@ const {splitWebsite}=require('./lib/site-runtime.cjs');
 const {build}=require('./build.cjs'),{modelFiles}=require('./match3d-assets.cjs');
 const MAX_ASSET_BYTES=25*1024*1024;
 /* v14 장면 사진(응원 무대·행사·스카우트 출장): HTML에 넣지 않고 같은 경로로 따로 올린다. 화면은 받아지면 그리고 못 받으면 생략(77_assets_ui.js sceneImg) */
-function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return [...M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})),...champFiles(root)]; }
+function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return [...M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})),...champFiles(root),...v13Faces(root)]; }
+/* v13 선수 얼굴 60명 256px 시트(구단 ID.webp, 납품 f6bce76 무손실본을 WebP q85로 줄임). 앱 HTML에는 128px만 넣고 사이트에서만 받는다(77_assets_ui.js face6Src2) */
+function v13Faces(root){ const b='assets/v13/face256/'; return fs.readdirSync(path.join(root,b)).filter(f=>f.endsWith('.webp')).map(f=>({filename:b+f,data:fs.readFileSync(path.join(root,b,f))})); }
 /* v16 우승 장면·배너·256px 트로피(52_champion.js champPic, 77_assets_ui.js tro16). 1024 트로피·투명 PNG·검수 자료는 올리지 않는다 */
 function champFiles(root){ const b='assets/v16/champ/', M=JSON.parse(fs.readFileSync(path.join(root,b,'manifest.json'),'utf8'));
  const L=[...M.assets.filter(x=>x.group!=='trophy').map(x=>x.file.path),...['series','season','ring'].map(k=>`trophy/app/trophy_${k}_256.webp`)];
