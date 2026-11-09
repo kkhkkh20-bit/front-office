@@ -122,7 +122,12 @@ function offerExtension0(id,annual,years,acc,T){
   return {ok:false,st:'no',msg:`${who}: ${T?`${years}년이면 ${termsTxt(termsDemand(p,'ext',{annual:hint,years}),true)}${D&&D.ntc?' · 트레이드 거부권':''} 안팎`:`${years}년이면 연 ${money(hint)} 안팎`}은 되어야 생각해 보겠습니다.${ag&&ag.style==='hard'?' 그 아래로는 내려가지 않습니다.':''}`};
 }
 function keepScore(p){ return ovr(p)+Math.max(0,p.pot-ovr(p))*(p.age<=22?.4:p.age<=24?.28:.1)+(p.faC?3:0)+(p.age>=26&&p.age<=33?1.2:0); }
-function trimCands(n){ return domestic(G.user).filter(p=>!p.ys&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id))).sort((a,b)=>keepScore(a)-keepScore(b)).slice(0,n); }
+/* 방출 후보 풀: 육성선수·연봉 협상 중(미계약) 선수는 빼고, 남길 가치가 낮은 순 */
+function trimPool(){ return domestic(G.user).filter(p=>!p.ys&&!(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id))).sort((a,b)=>keepScore(a)-keepScore(b)); }
+function trimCands(n){ return trimPool().slice(0,n); }
+/* 일괄 방출(카페 피드백 11-09v): 후보 풀 안의 선수만, 한 명씩 방출과 같은 releasePlayer로(정산금·웨이버 그대로) */
+function relPick(ids){ const S=new Set((ids||[]).map(Number)); return trimPool().filter(p=>S.has(p.id)); }
+function releaseMany(ids){ const L=relPick(ids), cost=L.reduce((s,p)=>s+relCost(p).tot,0); L.forEach(p=>releasePlayer(p.id)); return {n:L.length,cost}; }
 /* 방출 정산금: 확정된 보장액의 50%. 지금 다년·FA 계약의 남은 해 + 이미 합의한 다음 시즌 시작 다년계약(extNext). 해마다 협상하는 연봉은 보장이 아니라 0 */
 function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,tot:0}; const gone=G.last&&G.last.y>=G.year&&G.rolled!==G.year?1:0; /* 결산을 마친 올해 연봉은 이미 지급했다(스토브리그 전까지 yrs에 남아 있다, 검수 11-09zzb) */ const cur=p.faC?Math.round(p.sal*Math.max(gone?0:1,(p.yrs||1)-gone)*.5):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*.5):0; return {cur,next,tot:cur+next}; }
 function releasePlayer(id){
