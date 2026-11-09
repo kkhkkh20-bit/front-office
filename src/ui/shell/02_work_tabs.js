@@ -161,7 +161,7 @@ function capCard(ci){
   return `<section class="card">
     <div class="row between"><h2 class="sec">샐러리캡</h2><span class="pill ${ci.over?'bad':'good'}">${ci.over?'초과 '+money(ci.over):'여유 '+money(ci.cap-ci.pay)}</span></div>
     <div class="bar"><i class="${ci.over?'over':''}" style="width:${pct}%"></i>${ci.floor?`<b style="left:${fl}%"></b>`:''}</div>
-    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)}${ci.floor?` · 하한 ${money(ci.floor)}(세로선)`:' · 하한은 2027년부터 적용'}. 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다.${(y=>y>2028&&!(G.capY&&G.capY[y])?` ${y}년 상한은 아직 이사회가 정하지 않아 연 3% 인상으로 가정했습니다.`:'')(sponSeason())}</p>
+    <p class="small muted">외국인과 신인을 뺀 연봉 상위 40명 합계 ${money(ci.pay)} · 상한 ${money(ci.cap)}${ci.floor?` · 하한 ${money(ci.floor)}(세로선)`:' · 하한은 2027년부터 적용'}. 넘기면 초과분의 30%, 2년 연속이면 50%를 야구발전기금으로 냅니다. 3년 연속이면 초과분 전액을 내고 다음 해 1라운드 지명 순서가 9단계 내려갑니다.${(y=>y>2028&&!(G.capY&&G.capY[y])?` ${y}년 상한은 아직 이사회가 정하지 않아 연 3% 인상으로 가정했습니다.`:'')(sponSeason())}</p>
   </section>`;
 }
 function scoutBody(){
