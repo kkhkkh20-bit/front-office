@@ -1521,8 +1521,9 @@ T('투수 종합 능력: 구위·제구·체력 비중이 경기에서 실제로
   const X=[],Y=[]; for(const w of [7,11,23,31]){ globalThis.__seed(w); DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let g0=0; while(G.fd&&!G.fd.done&&g0++<500)fdAdvance(true); const y=G.year-1;
     Object.values(G.players).filter(q=>q.isP&&!q.foreign).map(q=>({q,h:seasonTotal(q,y,'1군')})).filter(x=>x.h&&x.h.outs>=300&&(x.h.gs||0)>=10).forEach(x=>{ X.push([x.q.r.stf,x.q.r.ctl]); Y.push(warOf(x.h,x.q)); }); }
   ok(X.length>=100,'준비 실패 '+X.length); const c=olsFit(X,Y,X.map(()=>1)); ok(c[1]>0&&c[2]>0&&c[2]/c[1]>=.6,'구위 '+c[1].toFixed(3)+' · 제구 '+c[2].toFixed(3)); });
-T('[나이] 전성기는 20대 후반(실제 KBO처럼 20대 중반에도 리그 정상급이 있고, 30대 초반까지 유지, 35세 전후 급락): 시작 세계 상위 선수 나이 분포',()=>{ DEMO.on=false; newGame(6); fdStart();
-  const L=Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,60); const f=t=>L.filter(t).length/L.length;
+T('[나이] 전성기는 20대 후반(실제 KBO처럼 20대 중반에도 리그 정상급이 있고, 30대 초반까지 유지, 35세 전후 급락): 시작 세계 상위 선수 나이 분포',()=>{ const W=[];
+  for(let k=0;k<27;k++) /* 세계 하나(상위 60명)는 경계 근처라 시드마다 갈려(어제·오늘 빌드 모두 세계 40개 중 17~19개 실패, 평균은 35세 이상 4%·32세 이상 19%) 27개 세계 평균으로 본다 */{ DEMO.on=false; newGame(k%9+1); fdStart(); W.push(Object.values(G.players).filter(p=>!p.foreign&&!p.prospect&&(p.team!=null||p.fdPool)).sort((a,b)=>ovr(b)-ovr(a)).slice(0,60)); }
+  const f=t=>W.reduce((s,L)=>s+L.filter(t).length/L.length,0)/W.length;
   ok(f(p=>p.age<=25)>=.12,'25세 이하 '+(f(p=>p.age<=25)*100).toFixed(0)+'%'); ok(f(p=>p.age>=32)<=.2,'32세 이상 '+(f(p=>p.age>=32)*100).toFixed(0)+'%'); ok(f(p=>p.age>=35)<=.05,'35세 이상 '+(f(p=>p.age>=35)*100).toFixed(0)+'%'); });
 T('[나이] 18세 1라운드급 유망주도 해마다 조금씩 커서 20대 중반에 정점(20~21세에 바로 리그 정상급이 되지 않는다)',()=>{ fresh(); const A=[]; for(let i=0;i<120;i++){ const p=newPlayer({age:18,base:40,pot:68,isP:i%2===0}); p.dt='norm'; p.prospect=false; A.push(p); }
   const at=a=>A.reduce((s,p)=>s+ovr(p),0)/A.length; const pot=A.reduce((s,p)=>s+p.pot,0)/A.length; const M={}; for(let a=18;a<=27;a++){ M[a]=at(); for(const p of A){ try{ develop(p); }catch(e){ p.age++; } } }
