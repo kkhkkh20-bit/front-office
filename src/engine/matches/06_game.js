@@ -102,7 +102,7 @@ function simGame(day,hid,aid,ps,options){ PARK=hid; SIMDAY=day; for(const tid of
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
     { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<1000)pbp.push([half,'PC',ace.id]); return; } }
-    let av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day,ps)); if(!av.length&&fs.curIsSP){ const x0=fs.box.get(fs.cur.id); if(armDirOn(fs.tid)||(x0&&x0.pc>=lim(fs)+25))av=fs.pen.filter(p=>!fs.used.has(p.id)&&healthy(p)&&p.lastApp!==day); } if(!av.length)return; /* 쉴 불펜이 없어도 혹사 금지·한계를 크게 넘긴 선발은 지친 불펜으로라도 바꾼다(검수 11-08) */
+    let av=fs.pen.filter(p=>!fs.used.has(p.id)&&relAvail(p,day,ps)); if(!av.length&&fs.curIsSP){ const x0=fs.box.get(fs.cur.id); if(armDirOn(fs.tid)||(x0&&x0.pc>=lim(fs)+25))av=fs.pen.filter(p=>!fs.used.has(p.id)&&healthy(p)&&p.lastApp!==day); if(!av.length&&armDirOn(fs.tid))av=[...fs.pen,...(fs.spAll||[])].filter(p=>p!==fs.sp&&!fs.used.has(p.id)&&healthy(p)); } /* 혹사 금지: 오늘 이미 던진 불펜·다른 선발이라도 넣어 95구를 지킨다(검수 11-09m: 192구) */ if(!av.length)return; /* 쉴 불펜이 없어도 혹사 금지·한계를 크게 넘긴 선발은 지친 불펜으로라도 바꾼다(검수 11-08) */
     const closer=fs.pen[0], setup=fs.pen.slice(1,4), mid=fs.pen.slice(4);
     let nxt=null;
     if(inn>=9&&lead>=1&&lead<=3) nxt=av.find(p=>p===closer);
