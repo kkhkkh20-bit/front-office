@@ -1,5 +1,5 @@
 /* ---------- 단장 결정 카드 ---------- */
-function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done); const last=(G.evlog||[]).filter(x=>x.d>=G.day-2&&x.y===G.year).slice(0,2);
+function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done&&!evExpired(e)); /* 기한이 지난 결정은 소식함과 같이 실행하지 않는다(검수 11-09zzc #26) */ const last=(G.evlog||[]).filter(x=>x.d>=G.day-2&&x.y===G.year).slice(0,2);
   if(!open.length&&!last.length)return '';
   const one=e=>{ const p=e.ref!=null?G.players[e.ref]:null; const pz=p?null:personaOf(e.from);
     return `<div class="dec"><div class="dec-t">${p?avImg(p):pz?avImg(pz):'<span class="tdi">!</span>'}<div><span class="eyebrow dec-k">${evIcon(e.k)} ${EV_KEY.has(e.k)?'단장 결정':'일상 결정'} · ${dmd(e.exp)}까지${e.exp-G.day<=1?' <b class="bad">내일 자동 처리</b>':''}</span><b>${esc(e.title)}</b>${(()=>{ const L=e.sit.split('\n').filter(Boolean); return L.length>2?`<p>${lk(L[0])}</p><details class="mfold"><summary>자세히</summary><p>${L.slice(1).map(lk).join('<br>')}</p></details>`:`<p>${lk(e.sit).replace(/\n/g,'<br>')}</p>`; })()}</div></div>
