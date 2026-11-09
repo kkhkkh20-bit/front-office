@@ -23,7 +23,7 @@ function posWeek(){ const per=period(); const y=G.year; const done=[];
     if(u&&u.y===y&&u.pos){ const seen=p.useSeen&&p.useSeen.y===y?p.useSeen.pos:{}; for(const k in u.pos){ const n=u.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*posLearnRate(p)); } p.useSeen={y,pos:Object.assign({},u.pos)}; }
     const f=p.fuse; if(f&&f.y===y&&f.pos){ const seen=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen.pos:{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*.75*posLearnRate(p)*(p.team!=null?posCoachF(p.team):1)); } p.fuseSeen={y,pos:Object.assign({},f.pos)}; }
     const C=p.pconv; if(!C)continue; if(p.joinY>G.year){ delete p.pconv; continue; } /* 합류 전 신인은 구단 훈련으로 포지션이 바뀌지 않는다(검수 11-06) */
-    if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold)) /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
+    if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold||ovsAbroad(p))) /* 해외 연수 중에도 구단 전환 훈련은 없다(검수 11-09o) */ /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
     posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 전환 완료 검사는 비시즌에도 한다: 마무리캠프에서 기준을 넘길 수 있다(검수 11-06) */ /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
     if(posExp(p,C.pos)>=90){ const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
   if(done.length){ const m=G.mgr[G.user]; mail('감독실',`포지션 전환 완료 (${done.length}명)`,`${m?m.name+' 감독':'코치진'}: 전환 훈련을 마쳐 주 포지션을 바꿉니다.\n\n${done.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
@@ -37,7 +37,7 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
   p.pconv={pos,d:G.day}; let tail='';
   if(m&&!m.interim&&m.ego>=70&&!mplOn('listen')&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다(관계 -1).`; }
   let wk=posEtaW(p,pos,p.e1,p.team);
-  return `${p.name}: ${POSK[pos]} 전환 훈련을 시작합니다. ${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가면 그 자리로 경기에도 나갑니다.':'2군에서 그 자리로 경기에도 나갑니다.'} 지금 속도면 약 ${wk}주 뒤 주 포지션으로 바꿀 수 있습니다.${tail}`; }
+  return `${p.name}: ${POSK[pos]} 전환 훈련을 시작합니다. ${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가면 그 자리로 경기에도 나갑니다.':'2군에서 그 자리로 경기에도 나갑니다.'} ${wk?`지금 속도면 약 ${wk}주 뒤 주 포지션으로 바꿀 수 있습니다.`:'다만 현재 훈련량으로는 도달 어려움: 숙련이 전환 기준(90)까지 오르지 않습니다.'}${tail}`; }
 function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
 /* 자리 정착: 지난 시즌 1군 선발의 6할 이상을 다른 자리에서 뛰었고(50경기 이상) 그 자리 숙련이 75를 넘으면, 감독이 그 자리를 주 포지션으로 바꾼다.
    유격↔2루, 3루→1루, 코너 외야 거포→1루, 우익→중견처럼 성적을 내려고 옮긴 자리가 그대로 굳는다. 포수는 바뀌지 않는다 */
@@ -69,7 +69,7 @@ function posChallenge(p,ln){ if(!p||p.isP||p.foreign||p.pos==='C'||p.pconv||p.ag
   let best=null; for(const q of POS_F){ if(q===p.pos||q==='C'||posExp(p,q)>=90||versOf(p)<POS_NEED[q])continue; const s=ln[q]; const v=posValLearn(p,q), sv=s?posValAt(s,q):-99; const g=v-sv; if(g>=1&&(!best||g>best.g))best={q,g,s}; }
   return best; }
 /* 전환 예상 주: posGain처럼 숙련도가 높을수록 한 주 효과가 줄고, 2군에서는 코치진 육성력이 붙는다. 요청 단계와 승인 직후가 같은 식(검수 11-06) */
-function posEtaW(p,q,e1,tid){ let e=posExp(p,q), wk=0; const g=(1.5+(e1?0:2))*posLearnRate(p)*(e1||tid==null?1:posCoachF(tid)); while(e<90&&wk<200){ e=Math.min(100,+(e+g*(1-e/120)).toFixed(1)); wk++; } return Math.max(1,wk); }
+function posEtaW(p,q,e1,tid){ let e=posExp(p,q), wk=0; const g=(1.5+(e1?0:2))*posLearnRate(p)*(e1||tid==null?1:posCoachF(tid)); while(e<90&&wk<200){ e=Math.min(100,+(e+g*(1-e/120)).toFixed(1)); wk++; } return e<90?null:Math.max(1,wk); } /* 200주 안에 못 닿으면 null: '현재 훈련량으로는 도달 어려움'(검수 11-09o) */
 function posReqWeeks(p,q,tid){ return posEtaW(p,q,false,tid); }
 function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
   for(const t of G.teams){ const ln=makeLineup(t.id);
@@ -79,7 +79,7 @@ function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
       p.posReq={q:c.q,d:G.day,open:true,wk,ok2};
       if(me){ mine++; const C=coachesOf(t.id), fm=C.fm, mg=G.mgr[t.id]; const s=c.s;
         const mOp=mg?(c.g>=3?`${mg.name} 감독: "${POSK[c.q]}를 익히면 ${s?s.name+' 대신 ':''}주전으로 쓰겠습니다."`:`${mg.name} 감독: "익히면 ${s?s.name+'와(과) ':''}경쟁은 해 볼 만합니다. 지금 당장 쓸 자리는 아닙니다."`):'';
-        const fOp=`${fm?fm.name+' 2군 감독':'2군 코치진'}: ${ok2?`"해 볼 만합니다. 2군에서 그 자리로 뛰면 약 ${wk}주면 맡길 수 있습니다."`:`"몸놀림을 보면 쉽지 않습니다. 해 보더라도 ${wk}주 넘게 걸리고 결과는 장담 못 합니다."`}`;
+        const fOp=`${fm?fm.name+' 2군 감독':'2군 코치진'}: ${ok2?`"해 볼 만합니다. 2군에서 그 자리로 뛰면 ${wk?`약 ${wk}주면 맡길 수 있습니다.`:'다만 현재 훈련량으로는 도달 어렵습니다.'}"`:`"몸놀림을 보면 쉽지 않습니다. ${wk?`해 보더라도 ${wk}주 넘게 걸리고`:'현재 훈련량으로는 도달 어려워'} 결과는 장담 못 합니다."`}`;
         mail(p.name,`자리 도전 요청: ${POSK[p.pos]} → ${POSK[c.q]}`,`"${POSK[p.pos]}에서는 ${(ln[p.pos]&&ln[p.pos].name)||'주전'}에게 밀려 1군에서 뛸 기회가 없습니다. ${POSK[c.q]}를 익혀서 기회를 잡고 싶습니다."\n\n${fOp}\n${mOp}\n\n허락하면 전환 훈련을 시작합니다(2군에 있으면 그 자리로 경기도 나갑니다). 기다리라고 하면 선수가 실망합니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'허락: 전환 훈련',a:'posReqOk',v:String(p.id)},{l:'지금 자리에서 기다려 달라',a:'posReqNo',v:String(p.id)}]}); continue; }
       if(ok2||R()<.3){ p.pconv={pos:c.q,d:G.day}; p.posReq.open=false; story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[c.q]} 전환 도전`); } else p.posReq.open=false; } } }
 /* 단장의 답 */
@@ -94,7 +94,8 @@ function posYear(){ const y=G.year-1; try{ posSettle(y); }catch(e){} for(const p
 const FGPOS=['C','SS','2B','CF','3B','RF','LF','1B','DH'];
 function futLineupE(tid,list){ const used=new Set(), ln={};
   const realC=list.some(q=>q.pos==='C'&&!q.pconv);
-  for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos)&&!ln[c.pos]){ if(c.pos==='C'&&realC&&posExp(p,'C')<40&&(G.day+p.id)%3)continue; /* 포수는 숙련이 필요하다: 전문 포수가 있으면 전환 훈련생은 사흘에 한 번만 마스크를 쓴다 */ ln[c.pos]=p; used.add(p.id); } }
+  const tr={}; for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos))(tr[c.pos]=tr[c.pos]||[]).push(p); } const wi=Math.floor(G.day/7);
+  for(const q in tr){ const L=tr[q].sort((a,b)=>a.id-b.id); const p=L[wi%L.length], c=p.pconv; if(!ln[c.pos]){ /* 같은 자리 전환생이 여럿이면 주마다 돌아가며 그 자리에 선다(검수 11-09o) */ if(c.pos==='C'&&realC&&posExp(p,'C')<40&&(G.day+p.id)%3)continue; /* 포수는 숙련이 필요하다: 전문 포수가 있으면 전환 훈련생은 사흘에 한 번만 마스크를 쓴다 */ ln[c.pos]=p; used.add(p.id); } }
   const nz=new Map(list.map(p=>[p.id,N(0,2.5)]));
   for(const k of FGPOS){ if(ln[k])continue; const free=list.filter(p=>!used.has(p.id)); if(!free.length)break;
     const sc=p=>(k==='DH'?offV(p):posScore(p,k))+(p.age<=24?3:0)-(k!=='DH'&&k!==p.pos&&posExp(p,k)<50?6:0)-(k==='C'&&p.pos!=='C'&&posExp(p,'C')<40?30:0)+nz.get(p.id); /* 포수 경험이 거의 없는 선수는 전문 포수를 제치지 못한다 */

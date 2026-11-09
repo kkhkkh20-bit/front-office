@@ -1,8 +1,9 @@
 /* ===== 훈련 방향(선수 화면 육성 탭, 스태프·육성 > 훈련·육성 > 훈련 방향) ===== */
 const TRN_L={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
 function trnCoachOf(p,f){ const c=trnCoach(p.team,f==='bal'?(p.isP?'stf':'con'):f); return c; }
-function trnCard(p){ if(p.team!==G.user||p.foreign||p.prospect||(p.joinY>G.year))return '';
-  if(p.age>33)return `<section class="card"><span class="eyebrow">훈련 방향</span><p class="small muted">34세 이상은 코치진이 몸 관리 위주로 운영합니다.</p></section>`;
+function trnCard(p){ if(p.team!==G.user||p.prospect||(p.joinY>G.year))return ''; /* 외국인도 엔진에서 집중 훈련을 한다: 카드를 보여 준다(검수 11-09o) */
+  if(p.age>33){ const T=G.trn&&G.trn[p.id], on=T&&T.by==='gm'&&T.f!=='bal'&&TRN[trnG(p)][T.f], o=on?trnObs(p):null; /* 33세에 내린 집중 지시는 34세에도 이어진다: 보여 주고 풀 수 있게(검수 11-09o) */
+    return `<section class="card"><span class="eyebrow">훈련 방향</span><p class="small muted">34세 이상은 코치진이 몸 관리 위주로 운영합니다.</p>${on?`<p class="small">단장 요청 <b>${TRN[trnG(p)][T.f].l}</b> 집중이 이어지고 있습니다${o?` (${o.w}주 · 코치 평가: ${esc(o.lv)})`:''}. 나이 때문에 효과는 작습니다.</p><div class="talk"><button class="btn small" data-a="trnSet" data-v="${p.id}:coach">코치진 계획으로</button></div>`:''}${UI.trnMsg&&UI.trnMsg.id===p.id?`<div class="note">${esc(UI.trnMsg.t)}</div>`:''}</section>`; }
   const T=G.trn&&G.trn[p.id]; const mine=T&&T.by==='gm'; const rec=trnCoachPick(p); const f=mine?T.f:rec; const D=TRN[trnG(p)];
   const chips=Object.entries(D).map(([k,v])=>`<button class="btn small ${f===k?'on':''}" data-a="trnSet" data-v="${p.id}:${k}">${v.l}${k===rec?'<i class="trn-rec">코치안</i>':''}</button>`).join('');
   const o=trnObs(p);
@@ -11,7 +12,7 @@ function trnCard(p){ if(p.team!==G.user||p.foreign||p.prospect||(p.joinY>G.year)
   <p class="small">${(()=>{const k=(D[f]&&D[f].k[0])||(p.isP?'stf':'con'),group=p.isP?(k==='ctl'?'투수·배터리코치진':'투수코치진'):k==='def'?(p.pos==='C'?'배터리·수비코치진':'수비코치진'):k==='spd'?'주루·작전코치진':'타격코치진';return `<b>${group}</b> · ${TRN_L[k]||k} 지도 수준 ${rchip(coachToolV(p,k))} <span class="muted">(1·2군 출전 비중, 세부 지도·유망주 육성·소통·멘탈·협업 반영)</span>`;})()}</p>
   <div class="mop"><b>코치 의견</b><span>${esc(trnOpinion(p))}</span>${!mine&&rec!=='bal'?`<span class="small muted">따로 요청하지 않으면 감독·코치진 계획(${D[rec].l} 집중)대로 갑니다.</span>`:''}</div>
   ${o?`<div class="trn-rep"><b>최근 보고</b><div class="small">${D[T.f].l} 집중 ${o.w}주(${dmd(o.since)}부터) · 코치 평가: ${esc(o.lv)} · ${TOOLK[o.k]||''} 시작 당시 ${o.g0} → 지금 ${esc(o.prog)}</div><div class="small">실전 확인: ${esc(o.real)}</div>${o.stat?`<div class="small muted">경기 기록: ${esc(o.stat)}</div>`:''}<div class="small muted">능력 변화는 코치 관찰이고, 경기 기록은 운과 상대에 따라 따로 움직입니다.</div></div>`:''}
-  ${p.age<=28?trnEnvBox(p):''}
+  ${p.age<=28&&!p.foreign?trnEnvBox(p):''}
   <p class="small muted">한 항목에 집중하면 몇 주~몇 달에 걸쳐 그 항목이 오르고, 겨울 성장 때 다른 항목의 오름폭이 그만큼 줄어듭니다. 항목마다 늘 수 있는 여력이 달라 약점 보완이 늘 정답은 아닙니다.${p.isP?' 체력 집중은 부상 위험을 조금 낮추고, 구위 집중은 조금 높입니다.':' 수비 집중은 포지션 전환과 별개입니다.'}</p>
   ${UI.trnMsg&&UI.trnMsg.id===p.id?`<div class="note">${esc(UI.trnMsg.t)}</div>`:''}</section>`; }
 /* 운영 > 육성: 우리 선수 훈련 방향 한눈에. 줄마다 버튼으로 바로 고르고, 바꾼 것을 모아 한 번에 감독에게 제안한다 */

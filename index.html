@@ -14230,10 +14230,10 @@ function switchTeam(tid){ champEventsInit(); const old=G.user; G.unemp0=!!G.unem
   if(!G.unemp||!ot.gm||ot.gm.interim){ ot.gm=mkGM(old); ot.rel=60; } /* 야인이던 때 전 구단은 이미 후임이 있다(검수 11-07) */ try{ stRaidSettle(); }catch(e){} /* 다른 구단이 낸 우리 스태프 영입 제안은 아직 옛 구단 단장일 때 정리: 그 구단으로 이직해도 스태프가 시장으로 새지 않게(검수 11-08) */ nt.gm=null; G.user=tid; try{ rmSnap(true); }catch(e){} /* 새 구단 선수 능력치 기록 시작 */ champAdopt(tid); nt.trust=55; nt.rel=50;
   G.goals=null; G.policy=null; G.devProg=[]; try{ ovsHandOff(old,tid); }catch(e){ G.ovs=[]; } G.lineup={}; G.offers=[]; G.offerContact={}; /* 제안 연락 제한도 전 구단 것(검수 11-08c) */ G.shortlist=[]; G.tsug=null; G.mentor=null;
   /* 캠프: 옛 구단 훈련 방향·시작 기록은 두고, 새 구단 캠프를 합류 시점 기준으로 이어받는다(방향은 기본 '균형', 결산 비교는 합류일부터) */
-  G.camp=G.camp&&!G.camp.done?{focus:'balance',done:false,snap:campSnap(),join:G.day,byT:Object.assign({},G.camp.byT||{},G.camp.focus?{[old]:G.camp.focus}:{})}:null;
+  G.camp=G.camp&&!G.camp.done?(B=>{ const f=B[tid]||'balance'; delete B[tid]; return {focus:f,done:false,snap:campSnap(),join:G.day,byT:B}; })(Object.assign({},G.camp.byT||{},G.camp.focus?{[old]:G.camp.focus}:{})):null; /* 같은 캠프 중 돌아온 구단은 그 구단에 남긴 방향을 되살린다(검수 11-09o) */
   /* 마무리캠프도 같은 방식: 옛 구단은 정해 둔 방향으로 캠프를 마치고(byT), 새 구단은 기본 방향·합류일 기준 시작 기록으로 이어받는다 */
-  if(G.fcamp&&!G.fcamp.done&&G.fcamp.y===G.year){ const F=G.fcamp; G.fcamp={y:F.y,focus:'skill',done:false,snap:campSnap(),join:G.day,byT:Object.assign({},F.byT||{},{[old]:F.focus})};
-    mail('코칭스태프',`마무리캠프 합류 (${dmd(KD(11,25))}까지)`,`${tname(tid)} 마무리캠프는 이미 진행 중입니다. 훈련 방향은 기본(기술 훈련)으로 이어지며, 성장 결산은 오늘(${dmd(G.day)}) 기준으로 비교합니다. 방향을 바꾸려면 아래에서 고르세요.`,{kind:'캠프',acts:Object.entries(FCAMP).map(([k,l])=>({l,a:'fcampSet',v:k}))}); }
+  if(G.fcamp&&!G.fcamp.done&&G.fcamp.y===G.year){ const F=G.fcamp; const B=Object.assign({},F.byT||{},{[old]:F.focus}), fk=FCAMP[B[tid]]?B[tid]:'skill'; delete B[tid]; G.fcamp={y:F.y,focus:fk,done:false,snap:campSnap(),join:G.day,byT:B};
+    mail('코칭스태프',`마무리캠프 합류 (${dmd(KD(11,25))}까지)`,`${tname(tid)} 마무리캠프는 이미 진행 중입니다. 훈련 방향은 ${fk==='skill'?'기본(기술 훈련)으로':`전에 정해 둔 ${FCAMP[fk]}(으)로`} 이어지며, 성장 결산은 오늘(${dmd(G.day)}) 기준으로 비교합니다. 방향을 바꾸려면 아래에서 고르세요.`,{kind:'캠프',acts:Object.entries(FCAMP).map(([k,l])=>({l,a:'fcampSet',v:k}))}); }
   for(const e of (G.evs||[]))if(!e.done){ if(e.k==='ovsback'){ const q=G.players[e.data&&e.data.pid]; if(q&&q.retAsk)try{ ovsBackAI(q); }catch(x){} } if(e.k==='sd2back'){ const q=G.players[e.data&&e.data.pid], o=e.data&&e.data.o; if(q&&o&&q.team===o.to)try{ sdBackDo(q,o,rosterN(o.from)<ROSTER_MAX&&aiVal(team(o.from),q)>=0); }catch(x){} } /* 2차 드래프트 복귀 결정 대기 중 이직: 옛 구단(이제 AI)이 한 번 정한다(검수 11-06) */ e.done=true; } /* 미결 해외 복귀 협상은 옛 구단(이제 AI)이 계약하거나 거절하고 닫는다 */ { const MK=G.mktT=G.mktT||{}, open=!(G.last&&G.last.y>=G.year); if(!G.unemp&&open)MK[old]={fy:G.year,v:G.marketing}; const n=MK[tid]; G.marketing=n&&open&&n.fy===G.year?n.v:2000; delete MK[tid]; } /* 마케팅 예산도 그 구단 그해 설정: 떠난 구단 결산에 남고, 같은 해 돌아오면 이어받는다(검수 11-09h) */ G.pr={fan:55,press:50,hist:[]};
   for(const p of Object.values(G.players)){ if(p.team===old){ delete p.listed; delete p.promise; } }
   G.unemp=null; G.gameOver=null; G.stops=[]; if(G.contract&&G.contract.done)G.contract.tid=tid;
@@ -14613,7 +14613,7 @@ const TB_YCAP=2, TB_K=.0035; /* 시즌 중 훈련은 몸을 유지하는 정도.
 function tbFactors(p,regSet){ const room=Math.max(0,p.pot-ovr(p)); initPers(p); const m=p.team!=null?mgrOf(p.team):null;
   return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:persGrowF(p), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
 function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
-  for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.joinY>G.year||p.hold||isAway(p)||p.age>28||p.injOut>0|| /* 대표팀 차출 중에는 구단 기본 훈련도 없다 */ /* 내년 합류·연봉 미계약 선수는 훈련하지 않는다(검수 11-05) */(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
+  for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.joinY>G.year||p.hold||isAway(p)||p.age>28||p.injOut>0||ovsAbroad(p)|| /* 해외 연수 중에는 국내 기본 훈련도 없다(검수 11-09o) */ /* 대표팀 차출 중에는 구단 기본 훈련도 없다 */ /* 내년 합류·연봉 미계약 선수는 훈련하지 않는다(검수 11-05) */(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
     if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
     if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;
     const f=tbFactors(p,regs[p.team]); const amt=TB_K*f.play*f.room*f.will*f.fac*f.coach*f.mgr*f.age*rnd(.6,1.4); const ks=TRN_TOOLS[trnG(p)]; const cap=Math.max(p.pot,ovr(p))+2;
@@ -14651,9 +14651,11 @@ function ovsHandOff(old,tid){ const A=G.ovsAi=G.ovsAi||{y:G.year,fall:{}}; for(c
   G.ovsOwe=G.ovsOwe||{}; for(const k of fx)G.ovsOwe[k+':'+old]=1; /* 동행 비용은 출국일에 실제로 누가 떠날 때만 옛 구단이 낸다(검수 11-08: 아무도 안 떠나도 청구) */
   { const H=G.ovsHold=G.ovsHold&&G.ovsHold.y===G.year?G.ovsHold:{y:G.year}; for(const k of OVSK)H[k]=H[k]||{}; for(const x of (G.ovs||[]))if(H[x.prog]&&!x.go)(H[x.prog][old]=H[x.prog][old]||[]).push(x.pid); } /* 10월 11일 AI 계획이 덮어쓰지 않게 예약을 따로 둔다(검수 11-08) */
   if(G.fall&&G.fall.y===G.year&&G.fall.k){ (G.fallT=G.fallT||{})[old]={y:G.year,k:G.fall.k}; delete G.fall; } /* 교육리그 신청은 낸 구단이 참가 */
-  const N=[]; for(const k of OVSK){ const L=A[k][tid]||[]; for(const id of L)if(G.players[id]&&G.players[id].team===tid)N.push({pid:id,prog:k,go:ovsGone(k),inh:1,paid:1}); delete A[k][tid]; } G.ovs=N; const FT=G.fallT&&G.fallT[tid]; if(FT&&FT.y===G.year){ G.fall={y:FT.y,k:FT.k,paid:1}; delete G.fallT[tid]; } else if(A.fall&&A.fall[tid]&&!(G.fall&&G.fall.y===G.year)){ G.fall={y:G.year,k:A.fall[tid],paid:1}; } if(A.fall)delete A.fall[tid]; } /* 이 구단이 낸 교육리그 신청(옛 단장 때 포함)을 이어받는다: 한 건만 유효(검수 11-06) */ /* 새 구단 AI가 낸 예약: 출국 전이면 아직 취소할 수 있고, 비용은 이미 냈다(paid) */
+  const N=[]; for(const k of OVSK){ const L=A[k][tid]||[]; for(const id of L)if(G.players[id]&&G.players[id].team===tid)N.push({pid:id,prog:k,go:ovsGone(k),inh:1,paid:G.ovsOwe&&G.ovsOwe[k+':'+tid]?0:1}); delete A[k][tid]; if(G.ovsOwe)delete G.ovsOwe[k+':'+tid]; if(G.ovsHold&&G.ovsHold[k])delete G.ovsHold[k][tid]; } /* 같은 구단으로 돌아오면 보류 명단에 남은 같은 예약이 AI 명단으로 또 복원되지 않게, 아직 안 낸 동행비는 출국일에 우리가 낸다(검수 11-09o) */ G.ovs=N; const FT=G.fallT&&G.fallT[tid]; if(FT&&FT.y===G.year){ G.fall={y:FT.y,k:FT.k,paid:1}; delete G.fallT[tid]; } else if(A.fall&&A.fall[tid]&&!(G.fall&&G.fall.y===G.year)){ G.fall={y:G.year,k:A.fall[tid],paid:1}; } if(A.fall)delete A.fall[tid]; } /* 이 구단이 낸 교육리그 신청(옛 단장 때 포함)을 이어받는다: 한 건만 유효(검수 11-06) */ /* 새 구단 AI가 낸 예약: 출국 전이면 아직 취소할 수 있고, 비용은 이미 냈다(paid) */
 /* 출발일 재확인: 여전히 우리 소속이고 복무·부상으로 못 가는 상황이 아닌 선수만 떠난다. 못 가는 선수는 예약을 풀고 참가비를 돌려받으며, 남은 선수가 없으면 동행 비용도 없다 */
-function ovsGoCheck(k){ const L=(G.ovs||[]).filter(x=>x.prog===k&&!x.go); const out=[]; for(const x of L){ const p=G.players[x.pid]; const enl=p&&p.mil&&p.mil.from!=null&&p.mil.until>G.day&&!p.mil.done&&!p.mil.exempt&&p.mil.from<=ovsEndD(k); const why=!p?'리그를 떠남':p.team!==G.user?`${tshort(p.team)}(으)로 이적`:isAway(p)?'군 복무·대표팀':p.joinY>G.year?'합류 전 신인':p.hold?'연봉 미계약':enl?`연수 기간 중 입대(${dmd(p.mil.from)})`:(p.injOut||0)>14?'부상':null; if(why){ out.push(`${p?p.name:'선수'}: ${why}`); ovsRefund(x); G.ovs=G.ovs.filter(y=>y!==x); } } /* 프로그램 끝나는 날까지의 입대 일정도 본다 */
+/* 출국 자격: 우리 구단과 AI 구단이 같은 기준(검수 11-09o: AI 후임은 미계약 선수도 보냄) */
+function ovsWhy(p,k,tid){ const enl=p&&p.mil&&p.mil.from!=null&&p.mil.until>G.day&&!p.mil.done&&!p.mil.exempt&&p.mil.from<=ovsEndD(k); return !p?'리그를 떠남':p.team!==tid?`${tshort(p.team)}(으)로 이적`:isAway(p)||milServing(p)?'군 복무·대표팀':p.joinY>G.year?'합류 전 신인':p.hold?'연봉 미계약':enl?`연수 기간 중 입대(${dmd(p.mil.from)})`:(p.injOut||0)>14?'부상':null; }
+function ovsGoCheck(k){ const L=(G.ovs||[]).filter(x=>x.prog===k&&!x.go); const out=[]; for(const x of L){ const p=G.players[x.pid]; const why=ovsWhy(p,k,G.user); if(why){ out.push(`${p?p.name:'선수'}: ${why}`); ovsRefund(x); G.ovs=G.ovs.filter(y=>y!==x); } } /* 프로그램 끝나는 날까지의 입대 일정도 본다 */
   if(out.length&&!G.unemp)mail('육성팀',`${OVS[k].l} 출발 전 확인: ${out.length}명 취소`,`${out.join('\n')}\n\n참가할 수 없어 예약을 취소하고 1인 참가비를 돌려받았습니다.`,{kind:'연수'}); return out; }
 function ovsFin(k){ const y=G.year; const out=[]; const C=G.coach&&G.coach[G.user]; const cd=C?(k==='abl'?(C.fm||C.fp||{}).dv:(C.pc||{}).dv):50;
   for(const x of (G.ovs||[]).filter(x=>x.prog===k)){ const p=G.players[x.pid]; if(!p||p.team!==G.user)continue; if(milServing(p)||isAway(p)){ out.push(`${p.name}: 연수 도중 입대·차출로 귀국해 결과 없음`); continue; } /* 결과 때도 실제로 참가 중인지 다시 본다 */ const r=ovsRoll(p,OVS[k],cd); out.push(`${p.name}: ${r.txt}`); }
@@ -14665,7 +14667,7 @@ function ovsFin(k){ const y=G.year; const out=[]; const C=G.coach&&G.coach[G.use
   if(hot.length)news('리그',`${OVS[k].l}에서 돌아온 선수들`,hot.slice(0,5).join('\n'),0); }
 /* 날짜: 10/11 교육리그 개막 · 11/15 교육리그 결과·호주 출국 · 12/1 미국·일본 연수 출발 · 1/5 미국·일본 결과 · 2/1 호주 결과 */
 function tabDaily(day){ const d=dobj(day); const y=G.year;
-  if(md(d,[10,11])){ G.ovsAi=ovsAiPlan(); G.ovsAi.y=y; { const H=G.ovsHold; if(H&&H.y===y){ for(const k of OVSK)for(const t in (H[k]||{}))G.ovsAi[k][t]=[...new Set([...(G.ovsAi[k][t]||[]),...H[k][t]])]; } G.ovsHold=null; } /* 이직 전에 결제한 예약은 그대로 */ const f=G.ovsAi.fall; const jp=Object.keys(f).filter(t=>f[t]==='jp').map(t=>tshort(+t)), ul=Object.keys(f).filter(t=>f[t]==='ul').map(t=>tshort(+t));
+  if(md(d,[10,11])){ G.ovsAi=ovsAiPlan(); G.ovsAi.y=y; { const H=G.ovsHold; if(H&&H.y===y){ for(const k of OVSK)for(const t in (H[k]||{})){ if((G.ovsAi[k][t]||[]).length&&G.ovsOwe)delete G.ovsOwe[k+':'+t]; /* AI 계획이 동행비를 이미 냈다 */ G.ovsAi[k][t]=[...new Set([...(G.ovsAi[k][t]||[]),...H[k][t]])]; } } G.ovsHold=null; } /* 이직 전에 결제한 예약은 그대로 */ const f=G.ovsAi.fall; const jp=Object.keys(f).filter(t=>f[t]==='jp').map(t=>tshort(+t)), ul=Object.keys(f).filter(t=>f[t]==='ul').map(t=>tshort(+t));
     const me=!G.unemp&&G.fall&&G.fall.y===y&&G.fall.k; if(me==='jp')jp.push(tshort(G.user)); if(me==='ul')ul.push(tshort(G.user)); const rest=G.teams.length-jp.length-ul.length;
     news('리그','가을 교육리그 개막',[jp.length?`일본 미야자키 피닉스 교육리그: ${jp.join(', ')}.`:'',ul.length?`국내 울산 교육리그: ${ul.join(', ')}.`:'',rest>0?`나머지 ${rest}개 구단은 자체 마무리 훈련을 합니다.`:''].filter(Boolean).join(' '),0); }
   if(md(d,[11,15])){ try{ ovsGoCheck('abl'); }catch(e){} /* 출국 자격 확인 뒤 기사 */ const A=G.ovsAi&&G.ovsAi.y===y?G.ovsAi:null;
@@ -14675,7 +14677,7 @@ function tabDaily(day){ const d=dobj(day); const y=G.year;
     const L=A?Object.entries(A.abl).map(([t,ids])=>`${tshort(+t)} ${ids.length}명`):[]; const mine=(G.ovs||[]).filter(x=>x.prog==='abl'); if(mine.length)L.push(`${tshort(G.user)} ${mine.length}명`);
     if(L.length)news('리그','호주리그 파견 선수단 출국',`${L.join(', ')}이(가) 호주 프로리그로 떠났습니다. 약 10주 동안 실전을 치르고 돌아옵니다.`,0); }
   for(const k in OVS)if(md(d,OVS[k].go)){ try{ ovsGoCheck(k); }catch(e){} const mine=(G.ovs||[]).filter(x=>x.prog===k); const feeDone=mine.some(x=>x.paid); mine.forEach(x=>x.go=true); if(mine.length&&!feeDone)G.spend.dev=(G.spend.dev||0)+OVS[k].fix; /* 같은 프로그램 동행 비용은 한 번만: 이어받은 예약이 이미 냈으면 새로 더한 선수가 있어도 다시 내지 않는다(검수 11-06) */ /* 이어받은 AI 예약은 동행 비용을 이미 냈다 */
-    const A=G.ovsAi; if(A&&A[k])for(const t in A[k]){ const T=team(+t); A[k][t]=A[k][t].filter(id=>{ const p=G.players[id]; const enl=p&&p.mil&&p.mil.from!=null&&p.mil.until>G.day&&!p.mil.done&&!p.mil.exempt&&p.mil.from<=ovsEndD(k); const ok=p&&p.team===+t&&!milServing(p)&&!isAway(p)&&!enl&&!(p.injOut>14); /* 우리 구단과 같은 기준: 연수 기간 중 입대도 뺀다 */ if(!ok&&T)T.cash+=OVS[k].c; return ok; }); if(G.ovsOwe&&G.ovsOwe[k+':'+t]){ if(A[k][t].length&&T)T.cash-=OVS[k].fix; delete G.ovsOwe[k+':'+t]; } } } /* AI도 출국일에 부상·복무·이적 선수는 빼고 참가비를 돌려받는다 */
+    const A=G.ovsAi; if(A&&A[k])for(const t in A[k]){ const T=team(+t); A[k][t]=A[k][t].filter(id=>{ const p=G.players[id]; const ok=!ovsWhy(p,k,+t); /* 우리 구단과 같은 기준: 연수 기간 중 입대도 뺀다 */ if(!ok&&T)T.cash+=OVS[k].c; return ok; }); if(G.ovsOwe&&G.ovsOwe[k+':'+t]){ if(A[k][t].length&&T)T.cash-=OVS[k].fix; delete G.ovsOwe[k+':'+t]; } } } /* AI도 출국일에 부상·복무·이적 선수는 빼고 참가비를 돌려받는다 */
   for(const k of OVSK)if(md(d,OVS[k].end))ovsFin(k); }
 
 /* ===== 부상 방지와 병원 ===== */
@@ -18852,14 +18854,14 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
   if(f==='coach'){ delete G.trn[pid]; try{ p.trnF=trnPlan(p); }catch(e){} /* 부상 배수도 바로 새 방향(검수 11-07) */ return `${p.name}의 훈련 방향을 감독·코치진 계획으로 돌렸습니다(${TRN[trnG(p)][trnCoachPick(p)].l}).`; }
   if(milServing(p))return `${p.name}은(는) 군 복무 중이라 구단 훈련 지시를 받지 않습니다.`; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년 합류 예정이라 아직 구단 훈련 지시를 받지 않습니다.`; /* 복무 중에는 상무·군 일정대로 지낸다 */
   if(!TRN[trnG(p)][f])return ''; const D=TRN[trnG(p)][f]; const old=G.trn[pid]; if(old&&old.f===f&&old.by==='gm')return '';
-  p.trnF=f; G.trn[pid]={f,by:'gm',tid:G.user,since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p)};
+  p.trnF=f; G.trn[pid]={f,by:'gm',tid:G.user,since:G.day,y:G.year,base:Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])),snap:trnSnap(p),aw:0};
   const m=G.mgr[G.user]; const rec=trnCoachPick(p); let tail=m?`${m.name} 감독과 코치진이 그렇게 진행합니다.`:'코치진이 그렇게 진행합니다.';
-  if(m&&f!==rec&&(m.ego??50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7); if(G.trnEgoWk!==wk){ G.trnEgoWk=wk; m.rel=clamp((m.rel??50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
+  if(m&&f!==rec&&(m.ego??50)>=70&&!mplOn('listen')){ const wk=Math.floor(G.day/7), E=G.trnEgo=G.trnEgo||{}, ek=G.user+':'+(m.id??m.name); if(E[ek]!==wk){ E[ek]=wk; /* 한 주 한 번 제한은 구단·감독마다 따로(검수 11-09o) */ m.rel=clamp((m.rel??50)-1,0,100); } tail=`${m.name} 감독은 코치진 계획(${TRN[trnG(p)][rec].l})과 달라 썩 내켜하지 않지만 요청대로 진행합니다.`; }
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
 /* 매주: 모든 구단 국내 선수(부상·군 복무·대표팀·미계약·합류 전 제외) */
 function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
   for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year||p.hold||isAway(p)|| /* 외국인도 구단 집중 훈련을 한다(지시를 받아 놓고 빠지지 않게, 검수 11-06) */ /* 내년 합류 신인·대표팀 차출 중인 선수는 구단 집중 훈련을 받지 않는다(검수 11-06) */p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)||ovsAbroad(p))continue; /* 해외 연수 중이면 구단 훈련 없음 */
-    const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
+    const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
     const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4); const got=addR(p,k,add);
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
@@ -18893,7 +18895,7 @@ function trnStatLine(p,f,snap,yy){ yy=yy??G.year; /* yy: 어느 시즌 기록으
 /* 코치 의견 */
 function trnOpinion(p){ const L=trnLearn(p); const lr=L>=1.15?' 배우는 속도가 빠른 선수입니다.':L<=.82?' 새로 익히는 데 시간이 걸리는 선수입니다.':''; return `"${trnAdvice(p).t}${lr}"`; }
 /* 관찰 보고: 능력 변화(코치 관찰, 정확한 숫자 대신 정도) */
-function trnObs(p,yy){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; const D=TRN[trnG(p)][T.f]; const k=D.k[0]; const d=p.r[k]-(T.base[k]??p.r[k]); const w=Math.floor((G.day-T.since)/7);
+function trnObs(p,yy){ const T=G.trn&&G.trn[p.id]; if(!T||T.f==='bal')return null; const D=TRN[trnG(p)][T.f]; const k=D.k[0]; const d=p.r[k]-(T.base[k]??p.r[k]); const w=T.aw??Math.floor((G.day-T.since)/7);
   const lv=d<=-.3?'오히려 조금 떨어졌습니다':d<.3?(w<4?'아직 판단하기 이릅니다':'변화가 거의 관찰되지 않습니다'):d<1?'작은 개선이 관찰됩니다':d<2?'눈에 띄게 좋아졌습니다':'확실히 달라졌습니다';
   const g0=dvGrade(T.base[k]??p.r[k]), g1=dvGrade(p.r[k]); const th=[40,50,60,70].find(x=>p.r[k]<x); const next=th==null?null:Math.max(0,th-p.r[k]); /* 등급은 훈련 목록과 같은 기준 */
   const prog=g1!==g0?(d>0?`${g0} → ${g1}로 한 단계 올랐습니다`:`${g0} → ${g1}로 한 단계 내려갔습니다`):d<=-.3?`${g1} 안에서 조금 떨어짐`:d<.3?`${g1} 그대로`:next!=null&&next<=1.5?`${g1} 안에서 개선 · 다음 등급에 근접`:`${g1} 안에서 소폭 개선`;
@@ -18905,7 +18907,7 @@ function trnYearNote(y0){ const y=y0??G.year-1; if(G.trnNoteY===y)return; G.trnN
     L.push(`${p.name}(${posLabel(p)}) ${D.l} ${o.w}주 · ${o.lv}${o.stat?` · ${o.stat}`:''}`); }
   if(!L.length)return; G.reviews=G.reviews||{}; const R=G.reviews[y]=G.reviews[y]||{tid:G.user,L:[]}; R.L=R.L.filter(x=>!/^\[훈련 방향\]/.test(x)); R.L.push('[훈련 방향] '+L.slice(0,12).join(' / ')+(L.length>12?` 외 ${L.length-12}명`:'')); }
 function trnNewYear(){ try{ trnYearNote(); }catch(e){} for(const id in (G.trn||{})){ const p=G.players[id], T=G.trn[id]; if(!p||p.team!==G.user){ delete G.trn[id]; continue; }
-  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={lv:1,a:{},b:{}}; T.since=G.day; T.y=G.year; T.yrs=(T.yrs||0)+1; } }
+  T.base=Object.fromEntries(TRN_TOOLS[trnG(p)].map(k=>[k,p.r[k]])); T.snap={lv:1,a:{},b:{}}; T.since=G.day; T.aw=0; T.y=G.year; T.yrs=(T.yrs||0)+1; } }
 /* ===== 투수 보직: 선발과 계투는 나누되 언제든 바뀐다 =====
  - 기본은 감독이 정한다. 선발로 쓸 체력 기준은 감독 성향에 따라 다르다:
    불펜 의존(pen)이 높을수록 기준이 높고, 스몰볼(small) 감독은 짧게 끊어 가는 운영이라 체력이 낮아도 선발을 맡긴다.
@@ -18993,7 +18995,7 @@ function posWeek(){ const per=period(); const y=G.year; const done=[];
     if(u&&u.y===y&&u.pos){ const seen=p.useSeen&&p.useSeen.y===y?p.useSeen.pos:{}; for(const k in u.pos){ const n=u.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*posLearnRate(p)); } p.useSeen={y,pos:Object.assign({},u.pos)}; }
     const f=p.fuse; if(f&&f.y===y&&f.pos){ const seen=p.fuseSeen&&p.fuseSeen.y===y?p.fuseSeen.pos:{}; for(const k in f.pos){ const n=f.pos[k]-(seen[k]||0); if(n>0&&k!==p.pos)posGain(p,k,n*.9*.75*posLearnRate(p)*(p.team!=null?posCoachF(p.team):1)); } p.fuseSeen={y,pos:Object.assign({},f.pos)}; }
     const C=p.pconv; if(!C)continue; if(p.joinY>G.year){ delete p.pconv; continue; } /* 합류 전 신인은 구단 훈련으로 포지션이 바뀌지 않는다(검수 11-06) */
-    if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold)) /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
+    if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold||ovsAbroad(p))) /* 해외 연수 중에도 구단 전환 훈련은 없다(검수 11-09o) */ /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
     posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 전환 완료 검사는 비시즌에도 한다: 마무리캠프에서 기준을 넘길 수 있다(검수 11-06) */ /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
     if(posExp(p,C.pos)>=90){ const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
   if(done.length){ const m=G.mgr[G.user]; mail('감독실',`포지션 전환 완료 (${done.length}명)`,`${m?m.name+' 감독':'코치진'}: 전환 훈련을 마쳐 주 포지션을 바꿉니다.\n\n${done.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
@@ -19007,7 +19009,7 @@ function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP
   p.pconv={pos,d:G.day}; let tail='';
   if(m&&!m.interim&&m.ego>=70&&!mplOn('listen')&&isRegular(p)){ m.rel=clamp(m.rel-1,0,100); tail=` ${who}이 주전을 흔드는 게 썩 내키지 않아 합니다(관계 -1).`; }
   let wk=posEtaW(p,pos,p.e1,p.team);
-  return `${p.name}: ${POSK[pos]} 전환 훈련을 시작합니다. ${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가면 그 자리로 경기에도 나갑니다.':'2군에서 그 자리로 경기에도 나갑니다.'} 지금 속도면 약 ${wk}주 뒤 주 포지션으로 바꿀 수 있습니다.${tail}`; }
+  return `${p.name}: ${POSK[pos]} 전환 훈련을 시작합니다. ${p.e1?'1군에 있는 동안은 훈련 위주이고, 2군에 내려가면 그 자리로 경기에도 나갑니다.':'2군에서 그 자리로 경기에도 나갑니다.'} ${wk?`지금 속도면 약 ${wk}주 뒤 주 포지션으로 바꿀 수 있습니다.`:'다만 현재 훈련량으로는 도달 어려움: 숙련이 전환 기준(90)까지 오르지 않습니다.'}${tail}`; }
 function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
 /* 자리 정착: 지난 시즌 1군 선발의 6할 이상을 다른 자리에서 뛰었고(50경기 이상) 그 자리 숙련이 75를 넘으면, 감독이 그 자리를 주 포지션으로 바꾼다.
    유격↔2루, 3루→1루, 코너 외야 거포→1루, 우익→중견처럼 성적을 내려고 옮긴 자리가 그대로 굳는다. 포수는 바뀌지 않는다 */
@@ -19039,7 +19041,7 @@ function posChallenge(p,ln){ if(!p||p.isP||p.foreign||p.pos==='C'||p.pconv||p.ag
   let best=null; for(const q of POS_F){ if(q===p.pos||q==='C'||posExp(p,q)>=90||versOf(p)<POS_NEED[q])continue; const s=ln[q]; const v=posValLearn(p,q), sv=s?posValAt(s,q):-99; const g=v-sv; if(g>=1&&(!best||g>best.g))best={q,g,s}; }
   return best; }
 /* 전환 예상 주: posGain처럼 숙련도가 높을수록 한 주 효과가 줄고, 2군에서는 코치진 육성력이 붙는다. 요청 단계와 승인 직후가 같은 식(검수 11-06) */
-function posEtaW(p,q,e1,tid){ let e=posExp(p,q), wk=0; const g=(1.5+(e1?0:2))*posLearnRate(p)*(e1||tid==null?1:posCoachF(tid)); while(e<90&&wk<200){ e=Math.min(100,+(e+g*(1-e/120)).toFixed(1)); wk++; } return Math.max(1,wk); }
+function posEtaW(p,q,e1,tid){ let e=posExp(p,q), wk=0; const g=(1.5+(e1?0:2))*posLearnRate(p)*(e1||tid==null?1:posCoachF(tid)); while(e<90&&wk<200){ e=Math.min(100,+(e+g*(1-e/120)).toFixed(1)); wk++; } return e<90?null:Math.max(1,wk); } /* 200주 안에 못 닿으면 null: '현재 훈련량으로는 도달 어려움'(검수 11-09o) */
 function posReqWeeks(p,q,tid){ return posEtaW(p,q,false,tid); }
 function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
   for(const t of G.teams){ const ln=makeLineup(t.id);
@@ -19049,7 +19051,7 @@ function posReqMonth(){ const m=dobj(G.day).m; if(m<3||m>8)return; let mine=0;
       p.posReq={q:c.q,d:G.day,open:true,wk,ok2};
       if(me){ mine++; const C=coachesOf(t.id), fm=C.fm, mg=G.mgr[t.id]; const s=c.s;
         const mOp=mg?(c.g>=3?`${mg.name} 감독: "${POSK[c.q]}를 익히면 ${s?s.name+' 대신 ':''}주전으로 쓰겠습니다."`:`${mg.name} 감독: "익히면 ${s?s.name+'와(과) ':''}경쟁은 해 볼 만합니다. 지금 당장 쓸 자리는 아닙니다."`):'';
-        const fOp=`${fm?fm.name+' 2군 감독':'2군 코치진'}: ${ok2?`"해 볼 만합니다. 2군에서 그 자리로 뛰면 약 ${wk}주면 맡길 수 있습니다."`:`"몸놀림을 보면 쉽지 않습니다. 해 보더라도 ${wk}주 넘게 걸리고 결과는 장담 못 합니다."`}`;
+        const fOp=`${fm?fm.name+' 2군 감독':'2군 코치진'}: ${ok2?`"해 볼 만합니다. 2군에서 그 자리로 뛰면 ${wk?`약 ${wk}주면 맡길 수 있습니다.`:'다만 현재 훈련량으로는 도달 어렵습니다.'}"`:`"몸놀림을 보면 쉽지 않습니다. ${wk?`해 보더라도 ${wk}주 넘게 걸리고`:'현재 훈련량으로는 도달 어려워'} 결과는 장담 못 합니다."`}`;
         mail(p.name,`자리 도전 요청: ${POSK[p.pos]} → ${POSK[c.q]}`,`"${POSK[p.pos]}에서는 ${(ln[p.pos]&&ln[p.pos].name)||'주전'}에게 밀려 1군에서 뛸 기회가 없습니다. ${POSK[c.q]}를 익혀서 기회를 잡고 싶습니다."\n\n${fOp}\n${mOp}\n\n허락하면 전환 훈련을 시작합니다(2군에 있으면 그 자리로 경기도 나갑니다). 기다리라고 하면 선수가 실망합니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'허락: 전환 훈련',a:'posReqOk',v:String(p.id)},{l:'지금 자리에서 기다려 달라',a:'posReqNo',v:String(p.id)}]}); continue; }
       if(ok2||R()<.3){ p.pconv={pos:c.q,d:G.day}; p.posReq.open=false; story(p,`${G.year} 1군 기회를 찾아 ${POSK[p.pos]}에서 ${POSK[c.q]} 전환 도전`); } else p.posReq.open=false; } } }
 /* 단장의 답 */
@@ -19064,7 +19066,8 @@ function posYear(){ const y=G.year-1; try{ posSettle(y); }catch(e){} for(const p
 const FGPOS=['C','SS','2B','CF','3B','RF','LF','1B','DH'];
 function futLineupE(tid,list){ const used=new Set(), ln={};
   const realC=list.some(q=>q.pos==='C'&&!q.pconv);
-  for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos)&&!ln[c.pos]){ if(c.pos==='C'&&realC&&posExp(p,'C')<40&&(G.day+p.id)%3)continue; /* 포수는 숙련이 필요하다: 전문 포수가 있으면 전환 훈련생은 사흘에 한 번만 마스크를 쓴다 */ ln[c.pos]=p; used.add(p.id); } }
+  const tr={}; for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos))(tr[c.pos]=tr[c.pos]||[]).push(p); } const wi=Math.floor(G.day/7);
+  for(const q in tr){ const L=tr[q].sort((a,b)=>a.id-b.id); const p=L[wi%L.length], c=p.pconv; if(!ln[c.pos]){ /* 같은 자리 전환생이 여럿이면 주마다 돌아가며 그 자리에 선다(검수 11-09o) */ if(c.pos==='C'&&realC&&posExp(p,'C')<40&&(G.day+p.id)%3)continue; /* 포수는 숙련이 필요하다: 전문 포수가 있으면 전환 훈련생은 사흘에 한 번만 마스크를 쓴다 */ ln[c.pos]=p; used.add(p.id); } }
   const nz=new Map(list.map(p=>[p.id,N(0,2.5)]));
   for(const k of FGPOS){ if(ln[k])continue; const free=list.filter(p=>!used.has(p.id)); if(!free.length)break;
     const sc=p=>(k==='DH'?offV(p):posScore(p,k))+(p.age<=24?3:0)-(k!=='DH'&&k!==p.pos&&posExp(p,k)<50?6:0)-(k==='C'&&p.pos!=='C'&&posExp(p,'C')<40?30:0)+nz.get(p.id); /* 포수 경험이 거의 없는 선수는 전문 포수를 제치지 못한다 */
@@ -30129,8 +30132,9 @@ Object.assign(A,{ repScoop(v){ toast(repScoop(v)); save(); render(); },
 /* ===== 훈련 방향(선수 화면 육성 탭, 스태프·육성 > 훈련·육성 > 훈련 방향) ===== */
 const TRN_L={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
 function trnCoachOf(p,f){ const c=trnCoach(p.team,f==='bal'?(p.isP?'stf':'con'):f); return c; }
-function trnCard(p){ if(p.team!==G.user||p.foreign||p.prospect||(p.joinY>G.year))return '';
-  if(p.age>33)return `<section class="card"><span class="eyebrow">훈련 방향</span><p class="small muted">34세 이상은 코치진이 몸 관리 위주로 운영합니다.</p></section>`;
+function trnCard(p){ if(p.team!==G.user||p.prospect||(p.joinY>G.year))return ''; /* 외국인도 엔진에서 집중 훈련을 한다: 카드를 보여 준다(검수 11-09o) */
+  if(p.age>33){ const T=G.trn&&G.trn[p.id], on=T&&T.by==='gm'&&T.f!=='bal'&&TRN[trnG(p)][T.f], o=on?trnObs(p):null; /* 33세에 내린 집중 지시는 34세에도 이어진다: 보여 주고 풀 수 있게(검수 11-09o) */
+    return `<section class="card"><span class="eyebrow">훈련 방향</span><p class="small muted">34세 이상은 코치진이 몸 관리 위주로 운영합니다.</p>${on?`<p class="small">단장 요청 <b>${TRN[trnG(p)][T.f].l}</b> 집중이 이어지고 있습니다${o?` (${o.w}주 · 코치 평가: ${esc(o.lv)})`:''}. 나이 때문에 효과는 작습니다.</p><div class="talk"><button class="btn small" data-a="trnSet" data-v="${p.id}:coach">코치진 계획으로</button></div>`:''}${UI.trnMsg&&UI.trnMsg.id===p.id?`<div class="note">${esc(UI.trnMsg.t)}</div>`:''}</section>`; }
   const T=G.trn&&G.trn[p.id]; const mine=T&&T.by==='gm'; const rec=trnCoachPick(p); const f=mine?T.f:rec; const D=TRN[trnG(p)];
   const chips=Object.entries(D).map(([k,v])=>`<button class="btn small ${f===k?'on':''}" data-a="trnSet" data-v="${p.id}:${k}">${v.l}${k===rec?'<i class="trn-rec">코치안</i>':''}</button>`).join('');
   const o=trnObs(p);
@@ -30139,7 +30143,7 @@ function trnCard(p){ if(p.team!==G.user||p.foreign||p.prospect||(p.joinY>G.year)
   <p class="small">${(()=>{const k=(D[f]&&D[f].k[0])||(p.isP?'stf':'con'),group=p.isP?(k==='ctl'?'투수·배터리코치진':'투수코치진'):k==='def'?(p.pos==='C'?'배터리·수비코치진':'수비코치진'):k==='spd'?'주루·작전코치진':'타격코치진';return `<b>${group}</b> · ${TRN_L[k]||k} 지도 수준 ${rchip(coachToolV(p,k))} <span class="muted">(1·2군 출전 비중, 세부 지도·유망주 육성·소통·멘탈·협업 반영)</span>`;})()}</p>
   <div class="mop"><b>코치 의견</b><span>${esc(trnOpinion(p))}</span>${!mine&&rec!=='bal'?`<span class="small muted">따로 요청하지 않으면 감독·코치진 계획(${D[rec].l} 집중)대로 갑니다.</span>`:''}</div>
   ${o?`<div class="trn-rep"><b>최근 보고</b><div class="small">${D[T.f].l} 집중 ${o.w}주(${dmd(o.since)}부터) · 코치 평가: ${esc(o.lv)} · ${TOOLK[o.k]||''} 시작 당시 ${o.g0} → 지금 ${esc(o.prog)}</div><div class="small">실전 확인: ${esc(o.real)}</div>${o.stat?`<div class="small muted">경기 기록: ${esc(o.stat)}</div>`:''}<div class="small muted">능력 변화는 코치 관찰이고, 경기 기록은 운과 상대에 따라 따로 움직입니다.</div></div>`:''}
-  ${p.age<=28?trnEnvBox(p):''}
+  ${p.age<=28&&!p.foreign?trnEnvBox(p):''}
   <p class="small muted">한 항목에 집중하면 몇 주~몇 달에 걸쳐 그 항목이 오르고, 겨울 성장 때 다른 항목의 오름폭이 그만큼 줄어듭니다. 항목마다 늘 수 있는 여력이 달라 약점 보완이 늘 정답은 아닙니다.${p.isP?' 체력 집중은 부상 위험을 조금 낮추고, 구위 집중은 조금 높입니다.':' 수비 집중은 포지션 전환과 별개입니다.'}</p>
   ${UI.trnMsg&&UI.trnMsg.id===p.id?`<div class="note">${esc(UI.trnMsg.t)}</div>`:''}</section>`; }
 /* 운영 > 육성: 우리 선수 훈련 방향 한눈에. 줄마다 버튼으로 바로 고르고, 바꾼 것을 모아 한 번에 감독에게 제안한다 */
