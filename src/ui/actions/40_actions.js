@@ -45,14 +45,14 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   fdHide(){ UI.fdHide=!(UI.fdHide==null?true:UI.fdHide); UI.fdMore=60; render(); },
   dlSpdC(){ const o=['slow','norm','fast']; const i=o.indexOf(UI.dspeed||'norm'); A.dlSpd(o[(i+1)%3]); },
   fdTab(v){ UI.fdTab=v; render(); window.scrollTo(0,0); },
-  fdSlot(v){ UI.fdTab='list'; if(v==='P'){ UI.fdG='P'; UI.fdF='all'; } else { UI.fdG='B'; UI.fdF=v==='DH'?'all':v; } UI.fdMore=60; UI.fdS=''; UI.fdAb=[]; render(); const el=document.querySelector('.fdt-w'); if(el)el.closest('.card').scrollIntoView({behavior:'smooth',block:'start'}); },
+  fdSlot(v){ UI.fdTab='list'; if(v==='P'){ UI.fdG='P'; UI.fdF='all'; } else { UI.fdG='B'; UI.fdF=v==='DH'?'all':v; } UI.fdSub=1; UI.fdMore=60; UI.fdS=''; UI.fdAb=[]; render(); const el=document.querySelector('.fdt-w'); if(el)el.closest('.card').scrollIntoView({behavior:'smooth',block:'start'}); },
   revOpen(){ if(UI.rev){ UI.rev.open=true; render(); } },
   revClose(){ UI.fdJust=UI.rev?UI.rev.pid:null; UI.rev=null; render(); if(G.fd&&!G.fd.done&&G.fd.picks[G.fd.cur]&&G.fd.picks[G.fd.cur].tid!==G.user)setTimeout(()=>dliveStart('fd'),250); },
   fdRec(){ const p=fdUserRec(1)[0]; if(p)A.fdPick(p.id); },
   fdAdv(){ dliveStart('fd'); },
   fdListMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
-  fdAuto(){ fdAdvance(false); save(); render(); window.scrollTo(0,0); },
+  fdAuto(){ fdAdvance(false,true); save(); render(); window.scrollTo(0,0); },
   fdV(v){ UI.fdV=v; render(); }, fdY3(v){ UI.fdY3=v==='1'; render(); }, /* 성적 탭: 지난 시즌 ↔ 최근 3년(1군 합산) */ /* 탭은 보이는 열만 바꾼다. 정렬·필터·선수 순서는 그대로 */
   meetOpen(v){ const [h,ask]=String(v).split('|'); const [k,id]=h.split(':'); meetOpen(k,id!=null?+id:null,{ask}); },
   meetDo(v){ if(UI.meet){UI.meet.optsY=document.querySelector('.mt-opts')?.scrollTop||0;UI.meet.topic=v;}meetDo(v);render(); },
@@ -78,10 +78,11 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   planPick(v){ const [k,p]=String(v).split(':'); if(k!=='')UI.planK=+k; if(p)UI.planPos=p; render(); },
   evDeleg(v){ const e=(G.evs||[]).find(x=>x.id===v); if(!e||EV_KEY.has(e.k))return; G.deleg=G.deleg||{}; G.deleg[e.k]=true; e.deleg=true; evPick(e.id,e.def,true); save(); render(); try{ toast(`${EV_NAME[e.k]||'이 일'}은(는) 이제 비서가 기본안으로 처리하고 보고합니다.`); }catch(err){} },
   evDelegOff(){ G.deleg={}; save(); render(); try{ toast('일상 결정도 다시 직접 정합니다.'); }catch(err){} },
-  fdAutoN(v){ const F=G.fd; if(!F||F.done)return; let n=+v||5, g=0; while(!F.done&&g++<500){ const pk=F.picks[F.cur]; if(!pk)break; if(pk.tid!==G.user){ fdAdvance(true); continue; } if(n<=0)break; const id=fdBest(G.user,true); if(id==null){ fdFinish(); break; } pk.auto=true; fdPick(id); n--; }
-    UI.rev=null; save(); render(); try{ toast(F.done?'창단 드래프트가 끝났습니다.':'자동 지명을 마쳤습니다. 다시 우리 차례입니다.'); }catch(e){} },
-  fdF(v){ UI.fdF=v; UI.fdMore=60; render(); }, fdPos(v){ const [g,k]=String(v).split(':'); if(UI.fdG!==g){ UI.fdG=g; UI.fdS=''; UI.fdD=0; UI.fdAb=[]; } UI.fdF=k; UI.fdMore=60; render(); }, fdAb(v){ const a=new Set(UI.fdAb||[]); a.has(v)?a.delete(v):a.add(v); UI.fdAb=[...a]; UI.fdMore=60; render(); }, fdS(v){ if(UI.fdS===v&&v!=='rec')UI.fdD=UI.fdD?0:1; else { UI.fdS=v; UI.fdD=0; } UI.fdMore=60; render(); },
-  fdG(v){ UI.fdG=v; UI.fdF='all'; UI.fdS=''; UI.fdAb=[]; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdLog(){ UI.fdLog=!UI.fdLog; render(); }, fdLogT(v,el){ UI.fdLogT=el&&el.value!=null?el.value:v; render(); }, fdFilt(){ UI.fdFiltOpen=!UI.fdFiltOpen; render(); }, fdTop(){ UI.fdTop=!UI.fdTop; render(); }, fdNeed(){ UI.fdNeed=!UI.fdNeed; render(); }, fdQ(){ UI.fdQ=!UI.fdQ; UI.fdMore=60; render(); }, fdPol(v){ G.fdPol=v; save(); render(); }, fdPolB(v){ A.fdPol(v); }, fdAgeR(v){ const [x,y]=String(v).split('-').map(Number); UI.fdA0=x; UI.fdA1=y; UI.fdMore=60; render(); }, fdLogTB(v){ UI.fdLogT=v; render(); }, drdB(v){ const [id,r]=String(v).split(':').map(Number); dmemoOf(id).rd=r; save(); render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
+  fdAutoN(v){ const F=G.fd; if(!F||F.done)return; const c0=fdAutoRun(+v||5); if(c0==null)return;
+    for(const x of F.picks.slice(c0,F.cur))if(x.pid)dlFeedAdd('fd',x,x.pid); /* 상황판 최근 지명도 맡긴 지명까지(검수 11-09zd) */
+    UI.rev=null; save(); render(); const M=F.done?null:fdMoney(); try{ toast(F.done?'창단 드래프트가 끝났습니다.':fdManDone()?`${F.man}라운드 직접 지명을 마쳤습니다. 나머지를 맡기거나 더 뽑을지 고르세요.`:`자동 지명을 마쳤습니다. 다시 우리 차례입니다.${M&&M.room<0?` 연봉 한도를 ${money(-M.room)} 넘었습니다.`:''}`); }catch(e){} },
+  fdF(v){ UI.fdF=v; UI.fdSub=0; UI.fdMore=60; render(); }, fdPos(v){ const [g,k]=String(v).split(':'); UI.fdSub=0; if(UI.fdG!==g){ UI.fdG=g; UI.fdS=''; UI.fdD=0; UI.fdAb=[]; } UI.fdF=k; UI.fdMore=60; render(); }, fdAb(v){ const a=new Set(UI.fdAb||[]); a.has(v)?a.delete(v):a.add(v); UI.fdAb=[...a]; UI.fdMore=60; render(); }, fdS(v){ if(UI.fdS===v&&v!=='rec')UI.fdD=UI.fdD?0:1; else { UI.fdS=v; UI.fdD=0; } UI.fdMore=60; render(); },
+  fdG(v){ UI.fdG=v; UI.fdF='all'; UI.fdSub=0; UI.fdS=''; UI.fdAb=[]; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdLog(){ UI.fdLog=!UI.fdLog; render(); }, fdLogT(v,el){ UI.fdLogT=el&&el.value!=null?el.value:v; render(); }, fdFilt(){ UI.fdFiltOpen=!UI.fdFiltOpen; render(); }, fdTop(){ UI.fdTop=!UI.fdTop; render(); }, fdNeed(){ UI.fdNeed=!UI.fdNeed; render(); }, fdQ(){ UI.fdQ=!UI.fdQ; UI.fdMore=60; render(); }, fdPol(v){ G.fdPol=v; save(); render(); }, fdPolB(v){ A.fdPol(v); }, fdAgeR(v){ const [x,y]=String(v).split('-').map(Number); UI.fdA0=x; UI.fdA1=y; UI.fdMore=60; render(); }, fdLogTB(v){ UI.fdLogT=v; render(); }, drdB(v){ const [id,r]=String(v).split(':').map(Number); dmemoOf(id).rd=r; save(); render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   nsTalk(){ UI.stadMsg=newStadTalk(); save(); render(); },
   nsPick(v){ UI.stadMsg=newStadPick(v); save(); render(); },
   retireGM(){ retireGM(); save(); render(); },

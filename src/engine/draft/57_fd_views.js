@@ -49,7 +49,7 @@ function fdScoutLine(p){ const S=fdScoutTools(p); const good=S.L.filter(t=>FD_GL
 function fdDataAll(){ const F=G.fd; if(!F)return {}; const k=F.y+':'+F.pool.length; if(F._dv&&F._dv.k===k)return F._dv.m; const y=F.y-1; const m={};
   const P=(F.all||F.pool).map(id=>G.players[id]).filter(Boolean); const G2={};
   for(const p of P){ let t=fdThree(p,y), lv=1; if(!t||(p.isP?t.outs<45:t.pa<120)){ const h=seasonTotal(p,y,'퓨처스'); if(h&&(p.isP?h.outs>=45:h.pa>=120)){ t=h; lv=2; } } if(!t)continue; const gk=(p.isP?'P':'B')+lv; (G2[gk]=G2[gk]||[]).push({p,t,lv}); }
-  const pct=(A,f,hi)=>{ const v=A.map(f).sort((a,b)=>a-b); return x=>{ const z=f(x); let i=0; while(i<v.length&&v[i]<z)i++; const q=i/Math.max(1,v.length-1); return Math.round((hi?q:1-q)*100); }; };
+  const pct=(A,f,hi)=>{ const v=A.map(f); return x=>{ const z=f(x); let lt=0,eq=0; for(const w of v){ if(w<z)lt++; else if(w===z)eq++; } const q=(lt+Math.max(0,eq-1)/2)/Math.max(1,v.length-1); return Math.round((hi?q:1-q)*100); }; }; /* 동률은 가운데 순위(검수 11-09zd: 같은 기록 둘이 양 끝 0·100) */
   for(const gk in G2){ const A=G2[gk]; const isP=gk[0]==='P';
     if(isP){ const bf=x=>x.t.bf||(x.t.outs+x.t.h+x.t.bb+(x.t.hbp||0)); const fk=pct(A,x=>x.t.so/bf(x),1), fb=pct(A,x=>x.t.bb/bf(x),0), fh=pct(A,x=>(x.t.hr||0)*27/x.t.outs,0), ff=pct(A,x=>(13*(x.t.hr||0)+3*((x.t.bb||0)+(x.t.hbp||0))-2*x.t.so)/(x.t.outs/3),0);
       A.forEach(x=>{ const n=x.t.outs/3; m[x.p.id]={isP,lv:x.lv,n,ys:x.t.ys||1,small:n<60,it:[['탈삼진',fk(x)],['볼넷 억제',fb(x)],['피홈런 억제',fh(x)],['실점 억제(FIP)',ff(x)]]}; }); }
@@ -72,7 +72,7 @@ function fdPosBoard(){ const F=G.fd; if(!F)return []; const RK=fdRisk(); const o
   return out; }
 
 /* 데이터팀 세부 지표: 최근 3년 1군 합산(부족하면 지난해 1·2군), 지난해 운 */
-function fdDetail(p,y){ let t=fdThree(p,y); if(!t||(p.isP?t.outs<30:t.pa<60)){ const h=seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); if(h&&(p.isP?h.outs>=15:h.pa>=30))t=Object.assign({ys:1},h); else return null; }
+function fdDetail(p,y){ let t=fdThree(p,y); if(!t||(p.isP?t.outs<30:t.pa<60)){ const h=[seasonTotal(p,y,'1군'),seasonTotal(p,y,'퓨처스')].find(h=>h&&(p.isP?h.outs>=15:h.pa>=30)); /* 1군 몇 타석이 있어도 퓨처스 표본을 읽는다(백분위와 같게, 검수 11-09zd) */ if(h)t=Object.assign({ys:1},h); else return null; }
   const L=fdStatLine(p,y);
   if(p.isP){ const bf=t.bf||(t.outs+t.h+t.bb+(t.hbp||0)), ip=t.outs/3; return {k:t.so/bf*100,bb:t.bb/bf*100,hr9:(t.hr||0)*9/ip,fip:(13*(t.hr||0)+3*((t.bb||0)+(t.hbp||0))-2*t.so)/ip+3.2,gap:L&&L.n>=15?L.era-L.fip:null,n:ip,ys:t.ys||1}; }
   const r=bRate(t); return {k:t.so/t.pa*100,bb:t.bb/t.pa*100,iso:r.slg-r.avg,babip:L&&L.n>=60?L.babip:null,n:t.pa,ys:t.ys||1}; }

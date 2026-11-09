@@ -11,7 +11,7 @@ function fdBoard(myPicks,ci,justId){ const bats=myPicks.filter(p=>!p.isP), pits=
     return p?`<button class="fbs on${p.id===justId?' just':''}" style="${st}" data-a="player" data-v="${p.id}"><i>${SLK[k]}</i><b>${esc(p.name)}</b>${fdChip(p)}</button>`
       :`<button class="fbs empty" style="${st}" data-a="fdSlot" data-v="${k}"><i>${SLK[k]}</i><b>빈자리</b><em>찾기</em></button>`; };
   const P=[...pits].sort((a,b)=>(spV(b)+roleBias(G.user,b))-(spV(a)+roleBias(G.user,a)));
-  const pc=(p,i)=>`<button class="fpp${p.id===justId?' just':''}" data-a="player" data-v="${p.id}"><i>${i<5?'선발형':'불펜형'}</i><b>${esc(p.name)}</b>${fdChip(p)}</button>`;
+  const pc=(p,i)=>`<button class="fpp${p.id===justId?' just':''}" data-a="player" data-v="${p.id}"><i>${isSPr(p)?'선발형':'불펜형'}</i><b>${esc(p.name)}</b>${fdChip(p)}</button>`;
   const empties=Math.max(0,FD_TGT.P-pits.length);
   const miss=['C','1B','2B','3B','SS','LF','CF','RF'].filter(k=>!ln[k]).map(k=>SLK[k]);
   const pitN=pits.length;
@@ -34,12 +34,12 @@ function fdWaitView(){ const t=team(G.user); const B=bossOf(G.user); const f=fdF
   <section class="card"><h2 class="sec">다음 단계: 창단 드래프트</h2><p class="small">리그 국내 선수 전원을 10개 구단이 ${FD_ROUNDS}라운드에 걸쳐 나눕니다. 단장은 주전급을 뽑는 앞 ${FD_MAN}라운드를 직접 지명합니다. 그다음 나머지를 스카우트에게 맡길지, ${FD_MORE}라운드 더 뽑을지 고릅니다. 시작하면 먼저 후보를 둘러볼 시간이 있고, 준비되면 1라운드를 엽니다.</p>
     <button class="btn primary block" data-a="fdBegin">창단 드래프트 열기</button></section>`; }
 /* ---------- 창단 드래프트 화면 ---------- */
-function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===false; const mine=!pre&&pk&&pk.tid===G.user;
+function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===false; const mine=!pre&&pk&&pk.tid===G.user&&!fdManDone(); /* 직접 지명 라운드가 끝나면 연장을 고르기 전까지 지명 버튼을 숨긴다(검수 11-09zd) */
   const myPicks=F.picks.filter(x=>x.tid===G.user&&x.pid).map(x=>G.players[x.pid]).filter(Boolean);
   const ci=capInfo(G.user); const sl=new Set(G.shortlist||[]);
   const TK=new Map(F.picks.filter(x=>x.pid).map(x=>[x.pid,x]));
   const gk=UI.fdG||'B', f=UI.fdF||'all', so=UI.fdS||'', dir=UI.fdD||0, young=!!UI.fdY, a0=+(UI.fdA0||0), a1=+(UI.fdA1||0), onlyS=!!UI.fdO, qual=!!UI.fdQ, hide=UI.fdHide==null?true:!!UI.fdHide; const X=fdCtx(G.user); const ly=(F.y||G.year)-1;
-  const posOk=p=>gk==='P'?p.isP&&(f==='SP'?isSPr(p):f==='RP'?!isSPr(p):true):!p.isP&&(f==='all'||p.pos===f||(f==='OF'&&['LF','CF','RF'].includes(p.pos)));
+  const posOk=p=>gk==='P'?p.isP&&(f==='SP'?isSPr(p):f==='RP'?!isSPr(p):true):!p.isP&&(f==='all'||p.pos===f||(UI.fdSub&&(subsOf(p)||[]).includes(f))||(f==='OF'&&['LF','CF','RF'].includes(p.pos))); /* 빈자리 찾기는 보조 포지션도(팀 배치와 같게, 검수 11-09zd) */
   /* 지명된 선수도 목록에서 빠지지 않고 제자리에 회색으로 남는다 */
   const ALL=(F.all||Object.keys(F.est||{}).map(Number)).map(id=>G.players[id]).filter(p=>p&&(p.fdPool||TK.has(p.id)));
   const left=ALL.filter(p=>p.fdPool);
@@ -62,7 +62,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   let COL, CR, CS, CD;
   { /* 성적: 2025 세부 + 2024·2023 핵심 + 3년 합계 */
     CR=isP?[
-      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
+      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),UI.fdY3?`${ly-2}~${ly} 1군 WAR 합계`:`${ly} 1군 WAR`),
       c('era','ERA',x=>sOK(x)?-x.s.era:-99,x=>td(sOK(x)?n2(x.s.era):'-')),
       c('ip','이닝',x=>x.s?x.s.n:0,x=>td(x.s?ipStr(Math.round(x.s.n*3)):'-')),
       c('g','경기',x=>x.s?x.s.g:0,x=>td(x.s?`${x.s.g}${x.s.gs?`<i class="sm">(${x.s.gs})</i>`:''}`:'-'),'괄호는 선발 등판'),
@@ -72,7 +72,7 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
       c('w','승-패',x=>x.s?(x.s.h.w||0):0,x=>td(x.s?`${x.s.h.w||0}-${x.s.h.l||0}${x.s.h.sv?`<i class="sm"> ${x.s.h.sv}세</i>`:x.s.h.hld?`<i class="sm"> ${x.s.h.hld}홀</i>`:''}`:'-')),
 ]
     :[
-      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),`${ly} 1군 WAR`),
+      c('war','WAR',x=>sOK(x)&&x.s.lvl===1?x.s.war:-99,x=>td(sOK(x)&&x.s.lvl===1?x.s.war.toFixed(1):'-',sOK(x)&&x.s.lvl===1&&x.s.war>=3*(x.s.y3||1)?'hi':''),UI.fdY3?`${ly-2}~${ly} 1군 WAR 합계`:`${ly} 1군 WAR`),
       c('ops','OPS',x=>sOK(x)?x.s.ops:-99,x=>td(sOK(x)?`<b>${f3(x.s.ops)}</b>`:'-')),
       c('wrc','wRC+',x=>sOK(x)&&x.s.wrc!=null?x.s.wrc:-999,x=>td(sOK(x)&&x.s.wrc!=null?x.s.wrc:'-',sOK(x)&&x.s.wrc>=140?'hi':''),'조정 득점 창출력(리그 평균 100, 퓨처스 기록은 퓨처스 기준)'),
       c('hr','홈런',x=>x.s?x.s.hr:-1,x=>td(x.s?x.s.hr:'-')),
@@ -139,13 +139,6 @@ function fdView(){ const F=G.fd; const pk=F.picks[F.cur]; const pre=F.open===fal
   <div class="fdlay t-${tab}"><div class="fdl-side">${fdBoard(myPicks,ci,pre?null:(UI.fdJust||null))}</div><div class="fdl-main">${listPane}</div></div>${revView()}`; }
 /* 창단 드래프트 화면 배치: 접힌 상황판 한 줄 · 야수/투수 · 보기 버튼 줄(선수 목록을 넓게). PC도 같은 배치(위 칸이 선수 목록을 가리던 피드백). 예전 넓은 배치로 돌리려면 false */
 function fdCompact(){ return true; }
-/* 창단 드래프트 연봉 계산: 지금까지 쓴 돈, 쓸 수 있는 한도, 남은 지명과 자동 배분까지 감안한 1명당 여유 */
-function fdMoney(){ const F=G.fd; if(!F)return null; const key=G.day+':'+G.user; if(!UI._fdf||UI._fdf.k!==key){ try{ UI._fdf={k:key,f:fdFin()}; }catch(e){ return null; } } const f=UI._fdf.f;
-  const mine=Object.values(G.players).filter(p=>p.team===G.user&&!p.foreign); const spent=sum(mine.map(p=>p.sal));
-  const lim=Math.min(f.cap,Math.max(0,f.avail)); const left=F.picks.slice(F.cur).filter(x=>x.tid===G.user).length;
-  const pool=F.pool.map(id=>G.players[id]).filter(p=>p&&p.fdPool).map(p=>p.sal).sort((a,b)=>a-b); const cheap=pool.slice(0,Math.max(1,Math.round(pool.length*.4))); const avgC=cheap.length?sum(cheap)/cheap.length:MIN_SAL;
-  const autoN=Math.max(0,52-mine.length-left); const W=Math.round(autoN*avgC); const room=lim-spent; const per=left?Math.max(0,(room-W)/left):0;
-  const fr=(f.otherRows||[]).find(x=>/외국인/.test(x[0])); return {spent,lim,room,left,autoN,W,per,capBound:f.avail>=f.cap,fres:fr?fr[1]:0,res:f.res}; }
 function fdMoneyLine(){ const M=fdMoney(); if(!M)return ''; const c=M.room-M.W<0?'bad':M.room-M.W<M.lim*.1?'warn':'good';
   const tip=`국내 연봉 ${money(M.spent)}을 썼고 한도는 ${money(M.lim)}입니다(${M.capBound?'리그 상한 기준: 재정 여력이 상한보다 큼':'재정 여력 기준: 상한보다 재정이 먼저 막힘'}). 지명이 끝나면 남은 선수 ${M.autoN}명이 자동 배분되고 약 ${money(M.W)}이 듭니다. 지명당 권장액은 남은 한도에서 이 자동 배분분을 빼고 남은 지명 수로 나눈 값입니다. 외국인 4명 예산 ${money(M.fres)}은 따로 잡아 두었습니다.${M.res?` 감독·코치 빈자리 채용비 ${money(M.res.vac)}과 운영 여유분 ${money(M.res.cush)}도 한도에서 미리 뺐습니다.`:''}`;
   return `<div class="fdm1">한도 <b class="${c}">${money(M.room)}</b> · 남은 <b>${M.left}번</b> · 권장 <b>${M.left?money(M.per):'-'}</b> <button type="button" class="hi-i" data-tip="${esc(tip)}">i</button></div><div class="fdm3 tk0m"><div><span>남은 연봉 한도</span><b class="${c}">${money(M.room)}</b><i>${M.capBound?'리그 상한 기준':'재정 기준'}</i></div><div><span>남은 지명</span><b>${M.left}번</b><i>자동 배분 ${M.autoN}명 별도</i></div><div><span>지명당 권장</span><b>${M.left?money(M.per):'-'}</b><i>계산 근거 <button type="button" class="hi-i" data-tip="${esc(tip)}">i</button></i></div></div>`; }
