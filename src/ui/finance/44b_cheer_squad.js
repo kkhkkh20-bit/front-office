@@ -15,7 +15,7 @@ function cheerCard(S,m,up){ const st=m.inj?`<span class="pill bad">부상 ${m.in
     <div class="crew-at chm-at">${CHEER_AT.map(([k,l])=>`<span><i>${l}</i><b style="color:${m[k]>=15?'var(--good)':m[k]<=7?'var(--bad)':'var(--ink)'}">${m[k]}</b></span>`).join('')}</div>
     <div class="chm-f"><span class="small">피로 <b style="color:${fatCol(m.fat)}">${m.fat}</b></span><i><u style="width:${m.fat}%;background:${fatCol(m.fat)}"></u></i>${st}</div>
     <div class="row" style="gap:4px"><button class="btn small${!S.auto&&m.on?' primary':''}" data-a="cheerOn" data-v="${m.id}"${m.inj?' disabled':''}>${S.auto?(up?'휴식 주기':'선발로'):m.on?'선발':'휴식'}</button><span class="small muted">출연 ${m.app}회</span></div></div>`; }
-function cheerView(){ if(G.unemp)return ''; const S=cheerSq(), F=G.fanOps, lv=F.cheer||0, up=new Set(cheerStage(S).map(m=>m.id)), pw=cheerPower(S), att=cheerAtt();
+function cheerView(){ if(G.unemp)return ''; if(!(G.fanOps&&G.fanOps.cs))return `<p class="small muted">아직 응원단 대행사와 계약하지 않았습니다. 대행사를 고르면 단원 ${CHEER_N[(G.fanOps&&G.fanOps.cheer)||0]}명이 오고, 그때부터 월 수수료가 나가고 홈 관중 효과가 생깁니다.</p><div class="chips">${Object.entries(CHEER_AG).map(([k,a])=>`<button data-a="cheerAg" data-v="${k}">${esc(a.l)} · 수수료 ${Math.round(a.fee*100)}%</button>`).join('')}</div>${UI.cheerMsg?`<div class="note">${esc(UI.cheerMsg)}</div>`:''}`; /* 보기만 해서는 응원단을 만들지 않는다(검수 11-09j) */ const S=G.fanOps.cs, F=G.fanOps, lv=F.cheer||0, up=new Set(cheerStage(S).map(m=>m.id)), pw=cheerPower(S), att=cheerAtt();
   const ag=Object.entries(CHEER_AG).map(([k,a])=>`<button data-a="cheerAg" data-v="${k}" class="${S.ag===k?'on':''}">${esc(a.l)} · 수수료 ${Math.round(a.fee*100)}%</button>`).join('');
   const L=[...S.L].sort((a,b)=>up.has(b.id)-up.has(a.id)||b.pop-a.pop);
   const ml=cheerMeetLeft();
