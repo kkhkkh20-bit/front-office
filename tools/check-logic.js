@@ -1118,11 +1118,11 @@ T('[연봉 미계약] 요구와 15% 넘게 차이 나면 마감에 사인하지 
 T('[단장 이직] 현직 단장에게 오는 다른 구단 제의는 지금 연봉보다 높고, 수락하면 그 구단으로 옮긴다',()=>{ fresh(); myCInit(); const C=G.myC; ok(C&&C.tid!=null,'준비 실패: 단장 계약 없음'); C.sal=50000;
   const tid=G.teams.find(t=>t.id!==G.user).id; for(let i=0;i<20;i++){ const o=myCOffer(tid,false); ok(o.sal>C.sal,'제의 연봉이 지금 연봉보다 높지 않음: '+o.sal+' / '+C.sal); }
   G.jobs=G.jobs||[]; jobOffer(tid,false); const j=G.jobs.find(x=>x.tid===tid&&!x.done); ok(j&&j.terms.sal>C.sal,'제의가 만들어지지 않음'); const sal=j.terms.sal; jobAnswer(tid,true); ok(G.user===tid&&G.myC.tid===tid&&G.myC.sal===sal,'수락했는데 새 구단·새 연봉으로 옮기지 않음'); });
-T('[드래프트] 신인 드래프트 일괄 처리(주전감 이상만 지명)는 1라운드 우리 첫 지명부터 적용되고, 1·2라운드에 기준 미달이면 건너뛰지 않고 멈춘다',()=>{ fresh(); ok(draftOrders(),'준비 실패: 지명 순서 없음'); startDraft(); const d=G.draft;
+T('[드래프트] 신인 드래프트 일괄 처리(주전감 이상만 지명)는 1라운드 우리 첫 지명부터 적용되고, 1·2라운드도 기준 미달이면 건너뛴다(KBO 지명권 패스는 라운드 제한 없음)',()=>{ fresh(); ok(draftOrders(),'준비 실패: 지명 순서 없음'); startDraft(); const d=G.draft;
   draftRestSet('cond',4); let g=0; while(g++<40&&d.picks[d.cur].tid!==G.user)amStep(); const pk=d.picks[d.cur]; ok(pk.tid===G.user&&pk.rd===1,'준비 실패: 1라운드 우리 차례 아님');
   const tp=potTierP; let r; potTierP=()=>({n:4}); try{ r=draftRestPick(); }finally{ potTierP=tp; } ok(r&&r.me&&pk.pid>0&&pk.rule,'1라운드에서 주전감 이상 방침으로 지명하지 않음');
   g=0; while(g++<40&&!(d.picks[d.cur].tid===G.user&&d.picks[d.cur].rd===2))amStep(); const pk2=d.picks[d.cur]; ok(pk2.rd===2&&pk2.tid===G.user,'준비 실패: 2라운드 우리 차례 아님'); const c1=d.cur;
-  potTierP=()=>({n:3}); try{ r=draftRestPick(); }finally{ potTierP=tp; } ok(!r&&d.cur===c1&&!pk2.pass,'2라운드 기준 미달 후보를 건너뛰거나 지명함'); });
+  potTierP=()=>({n:3}); try{ r=draftRestPick(); }finally{ potTierP=tp; } ok(r&&r.pass&&d.cur===c1+1&&pk2.pass&&!(pk2.pid>0),'2라운드 기준 미달인데 건너뛰지 않음'); });
 T('[공통 점검] 정원: 정식 인원은 선수 신분·합류일로 센다(육성선수를 보내면 상대 정식 인원은 그대로)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5); const op=G.teams.find(t=>t.id!==G.user).id; let y=playersOf(G.user).find(q=>q.ys); if(!y){ const q=playersOf(G.user).find(x=>!x.foreign&&!x.faC&&x.sal<=100&&!x.e1); ok(q,'준비 실패'); ok(toYS(q.id)==='','준비 실패: 육성 전환'); y=q; }
   const n0=rosterN(op); const ev=evalTrade(op,[y.id],[],0); G.offers=[{id:'oY',from:op,give:[],get:[y.id],exp:G.day+7,day:G.day}]; const r=answerOffer('oY',true); ok(r&&r.ok,'준비 실패: 트레이드 '+(r&&r.msg)); ok(rosterN(op)===n0,'육성선수를 받았는데 상대 정식 인원이 '+n0+'→'+rosterN(op)); ok(ev.theirN===rosterN(op),'예상 정식 인원 '+ev.theirN+' / 실제 '+rosterN(op)); });
 T('[공통 점검] 보직: 코치 승격·맞교환 뒤 지도력·육성력은 새 보직의 세부 능력으로 계산된 값이다',()=>{ fresh(); const C=G.coach[G.user]; /* 초기 감독 사단에 빈자리가 있어도 승격/맞교환 시나리오를 명시적으로 준비한다. */ if(!C.pc)C.pc=mkCoach('pc');if(!C.hc)C.hc=mkCoach('hc');const role=Object.keys(PROMO).find(k=>C[k]&&C[PROMO[k]]&&JSON.stringify(CDOM[k])!==JSON.stringify(CDOM[PROMO[k]])); /* 담당 분야가 다른 자리로 올라가는 경우 */ ok(role,'준비 실패: 승격할 자리 없음'); const c=C[role], old=C[PROMO[role]]; const r=promoteCoach(role); ok(c.role===PROMO[role],'준비 실패: 승격 안 됨 '+r);
@@ -3767,6 +3767,20 @@ T('[피드백 11-09t] 기념 유니폼: 우리 선수 대기록이면 제작 결
   ok(G.spend.goods<=Math.round(1e4*MEMO_U*ecoIdx()),'1만 벌 판매 수입이 상한을 넘음 '+G.spend.goods); const B=budget(); const row=B.inc.find(x=>x[0]==='기념 유니폼 판매'); ok(row&&row[1]===Math.round(G.spend.goods),'수입 명세에 기념 유니폼 판매 없음');
   ok(row[1]<sum(B.inc.map(x=>x[1]))*.03,'시즌 수입 대비 너무 큼 '+row[1]); ok((G.memoL||[]).length===1,'판매 기록 없음');
   const q=playersOf(G.user).find(x=>!x.isP&&x!==p); G.unemp=true; featAdd('h200',q,'시즌 200안타'); G.unemp=false; ok(!G.evs.some(x=>!x.done&&x.k==='memo'),'야인 기간에도 결정이 옴'); });
+T('[피드백 11-09v] 일괄 방출: 고른 선수만 방출하고 정산금 합계·로스터 수가 한 명씩 방출한 것과 같다(육성·외국인은 제외)',()=>{ fresh(); const L=trimCands(3); ok(L.length===3,'준비 실패: 후보 부족');
+  L[0].faC=true; L[0].yrs=2; L[0].sal=300; const exp=L.reduce((s,p)=>s+relCost(p).tot,0); ok(exp>0,'준비 실패: 정산금 0'); const ys=playersOf(G.user).find(p=>p.ys), fo=playersOf(G.user).find(p=>p.foreign);
+  const n0=rosterN(G.user); const ids=L.map(p=>p.id).concat(ys?[ys.id]:[],fo?[fo.id]:[]); ok(relPick(ids).length===3,'후보 풀 밖 선수(육성·외국인)가 골라짐');
+  const r=releaseMany(ids); ok(r.n===3&&r.cost===exp,'정산금 합계 '+r.cost+' (기대 '+exp+')'); ok(rosterN(G.user)===n0-3,'로스터 '+rosterN(G.user)+' (기대 '+(n0-3)+')'); ok(L.every(p=>p.team!==G.user),'방출 안 된 선수 있음');
+  ok(!ys||ys.team===G.user,'육성선수가 함께 방출됨'); ok(!fo||fo.team===G.user,'외국인이 함께 방출됨'); ok(releaseMany([]).n===0,'빈 선택'); });
+T('[피드백 11-09v] 자동 지명: 기준 미달 후보만 남으면 1라운드여도 건너뛰고, 드래프트 전에 정한 기준은 드래프트가 열리면 이어진다',()=>{ fresh(); ok(draftOrders(),'준비 실패'); G.draft=null;
+  draftRestSet('cond',4); ok(draftRestPre()&&draftRestPre().min===4,'드래프트 전 기준이 저장되지 않음'); startDraft(); const d=G.draft; ok(draftRestOf()&&draftRestOf().min===4&&!G.drestPre,'드래프트 시작 때 기준이 이어지지 않음');
+  let g=0; while(g++<40&&d.picks[d.cur].tid!==G.user)amStep(); const pk=d.picks[d.cur]; ok(pk.tid===G.user&&pk.rd===1,'준비 실패: 1라운드 우리 차례 아님'); const c0=d.cur, n0=draftedBy(G.user);
+  const tp=potTierP; let r; potTierP=()=>({n:3}); try{ r=draftRestPick(); }finally{ potTierP=tp; } ok(r&&r.pass&&pk.pass&&d.cur===c0+1&&draftedBy(G.user)===n0,'1라운드 기준 미달 후보를 지명하거나 멈춤');
+  g=0; while(g++<40&&d.picks[d.cur].tid!==G.user)amStep(); const pk2=d.picks[d.cur]; potTierP=(rp,p)=>({n:4}); try{ r=draftRestPick(); }finally{ potTierP=tp; } ok(r&&r.me&&pk2.pid>0,'기준을 넘는 후보를 지명하지 않음');
+  draftRestSet(null); g=0; while(g++<40&&d.picks[d.cur].tid!==G.user)amStep(); const pk3=d.picks[d.cur]; passPick(); ok(pk3.pass,'직접 건너뛰기가 '+pk3.rd+'라운드에서 막힘'); });
+T('[피드백 11-09v] 엔트리 관리: 콜업 불가 사유는 콜업 건의(reqEntry)와 같은 문구다(말소 10일·육성선수)',()=>{ fresh(); G.entryY=G.year; G.day=G.cal.open+20; const p=domestic(G.user).find(q=>!q.e1&&healthy(q)&&!q.ys&&!isAway(q)); ok(p,'준비 실패'); delete p.susp; delete p.hold;
+  p.downDay=G.day-3; ok(!canUp(p),'준비 실패: 올릴 수 있음'); const w=upWhy(p); ok(/10일/.test(w)&&w.includes(dmd(p.downDay+10)),'말소 10일 사유 '+w); ok(reqEntry(p.id,true)===w,'건의 결과와 화면 사유가 다름');
+  p.downDay=null; p.ys=true; ok(/육성선수/.test(upWhy(p)),'육성선수 사유 '+upWhy(p)); p.ys=false; });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

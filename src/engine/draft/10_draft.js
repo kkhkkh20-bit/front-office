@@ -109,8 +109,8 @@ function startDraft(){
   const D=draftOrders(); const order=D.r2, o1=D.r1;
   if(D.pen.includes(G.user)){ const a=D.r2.indexOf(G.user)+1, b=D.r1.indexOf(G.user)+1; if(b!==a)note('드래프트',`경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 ${a}순위에서 ${b}순위로 내려갔습니다.`); } /* 실제로 바뀐 만큼만(검수 11-07) */
   pkClean(); const picks=draftPlan(); void order; void o1; /* 트레이드로 넘겨받은 지명권은 원래 구단 순번에 쓴다 */
-  G.draft={cls:G.draftClass||[],picks,cur:0,done:false,y:G.year};
-  stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명, ${DRAFT_ROUNDS}라운드 지명 순번은 ${picks.length}개입니다(3라운드부터는 구단이 건너뛸 수 있어 실제 지명 인원은 이보다 적을 수 있습니다). 순서는 지난 시즌 성적의 역순이고, ${(()=>{ const f=picks.find(k=>k.tid===G.user); return f?`우리 첫 지명은 ${f.rd}라운드 ${f.no}순위입니다.`:'우리 구단은 이번 드래프트 지명권이 없습니다.'; })()}`);
+  G.draft={cls:G.draftClass||[],picks,cur:0,done:false,y:G.year}; { const P=draftRestPre(); if(P)G.draft.rest={mode:P.mode,min:P.min,tid:P.tid}; delete G.drestPre; } /* 준비 화면에서 정해 둔 자동 지명 기준 */
+  stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명, ${DRAFT_ROUNDS}라운드 지명 순번은 ${picks.length}개입니다(구단은 어느 라운드든 지명을 건너뛸 수 있어 실제 지명 인원은 이보다 적을 수 있습니다). 순서는 지난 시즌 성적의 역순이고, ${(()=>{ const f=picks.find(k=>k.tid===G.user); return f?`우리 첫 지명은 ${f.rd}라운드 ${f.no}순위입니다.`:'우리 구단은 이번 드래프트 지명권이 없습니다.'; })()}`);
 }
 /* 드래프트 성적표: 한 해 지명자 전체의 현재 모습 */
 function draftTidOf(p){ const st=(p.story||[]).find(x=>x.k==='draft'); if(!st)return null; const t=G.teams.find(t=>st.t.includes(tname(t.id))); return t?t.id:null; }

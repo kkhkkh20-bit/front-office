@@ -231,7 +231,7 @@ function doPick(pid){
   G.shortlist=(G.shortlist||[]).filter(x=>x!==pid);
   if(d.cur>=d.picks.length)finishDraft(); return true;
 }
-function passPick(){ const d=G.draft; const pk=d.picks[d.cur]; if(!pk||pk.tid!==G.user||pk.rd<3)return; passCurrent(); }
+function passPick(){ const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return; passCurrent(); } /* KBO는 어느 라운드든 지명권을 패스할 수 있다(카페 피드백 11-09v) */
 function finishDraft(){ const d=G.draft; d.done=true; G.dlog=G.dlog||{}; G.dlog[d.y]=d.picks.filter(x=>x.pid>0).map(x=>{ const p=G.players[x.pid]; return {id:x.pid,nm:p?p.name:'',t:x.tid,rd:x.rd,no:x.no,pos:p?posLabel(p):'',pr:p?p.press||null:null}; }); for(const id of d.cls){ const p=G.players[id]; if(G.dmemo)delete G.dmemo[id]; /* 후보 메모·고려 라운드도 함께 정리(검수 11-09ze) */ if(!p||!p.prospect)continue; if(p.ovsRet){ p.prospect=false; toFree(p,`${d.y} 신인 드래프트 미지명 · 자유계약 선수`); continue; } /* 해외파 복귀자는 지우지 않고 자유계약으로(검수 11-09ze) */ delete G.players[id]; } G.draftClass=[]; const cls=new Set(d.cls);
   const mine=d.picks.filter(x=>x.tid===G.user&&x.pid>0).map(x=>G.players[x.pid]).filter(Boolean); G.shortlist=(G.shortlist||[]).filter(id=>!cls.has(id)&&G.players[id]); /* 신인 후보만 정리하고 현역 관심 선수는 남긴다(검수 11-06) */
   note('드래프트',`드래프트를 마쳤습니다. 우리 구단 지명: ${mine.map(p=>p.name).join(', ')}. 내년 1월에 합류합니다.`); }
@@ -241,14 +241,16 @@ function advanceDraft(stopAtUser){
 }
 /* 남은 우리 지명 일괄 처리. pass: 모두 건너뛴다
    cond: 스카우트 추천 후보의 잠재력 추정 등급이 기준(min) 이상일 때만 지명하고, 아니면 건너뛴다. 로스터가 한도에 차면 더 뽑지 않는다.
-   1·2라운드는 건너뛸 수 없어서 기준을 넘는 후보는 그대로 지명하고, 못 넘거나 건너뛰기 방침이면 멈춰 단장에게 맡긴다 */
-function draftRestSet(mode,min){ const d=G.draft; if(!d||d.done)return; d.rest=mode?{mode,min:min||3,tid:G.user}:null; }
+   KBO 규약상 지명권 패스는 라운드 제한이 없어 1·2라운드도 기준 미달이면 건너뛴다(카페 피드백 11-09v).
+   드래프트가 열리기 전에 정하면 drestPre에 두었다가 startDraft가 이어 받는다 */
+function draftRestSet(mode,min){ const d=G.draft; const r=mode?{mode,min:min||3,tid:G.user}:null; if(!d||d.done){ G.drestPre=r&&Object.assign({y:G.year},r); return; } d.rest=r; }
+function draftRestPre(){ const P=G.drestPre; return P&&P.y===G.year&&P.tid===G.user&&!G.unemp?P:null; }
 /* 일괄 처리는 설정한 구단에만: 이직하면 새 구단 지명에 쓰지 않는다(검수 11-09d) */
 function draftRestOf(){ const d=G.draft; return d&&!d.done&&d.rest&&d.rest.tid===G.user&&!G.unemp?d.rest:null; }
 function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
   const cond=R0.mode==='cond'; const fit=p=>{ const T=potTierP(scoutReport(p),p); return !!T&&T.n>=R0.min; }; const id=cond&&rosterProj(G.user)<ROSTER_MAX?userAutoPick(fit):null; const ok=!!id; /* 기준을 채운 후보 중 추천 1위(종합 1위가 미달이어도 2위 이하에서 찾는다) */
   if(ok){ pk.rule=true; doPick(id); return {pk,pid:id,me:true}; }
-  if(pk.rd>=3){ passCurrent(); return {pk,pass:true}; } return null; }
+  passCurrent(); return {pk,pass:true}; }
 function userAutoPick(ok){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect&&(!ok||ok(G.players[id]))); let best=null,bs=-1; /* ok: 조건(등급 등)을 채운 후보 중에서만 */ const pol=draftPolK();
   for(const id of av){ const rp=scoutReport(G.players[id]); const v=draftVal(rp)+(pol&&draftFit(G.players[id],pol)?4:0); if(v>bs){bs=v;best=id;} } return best; }
 

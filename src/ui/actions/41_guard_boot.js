@@ -60,6 +60,8 @@ const GUARD={
   setHosp(v){ const n=HOSP[v], o=HOSP[G.med.hosp]; if(!n||v===G.med.hosp)return null; return {subj:`제휴 병원: ${n.name}`,kind:'의무',lines:[`연 비용 ${money(o?o.c:0)} → ${money(n.c)}`,n.d],warn:'바꾼 비용은 올해 예산에 바로 반영됩니다.'}; },
   fireScout(v){ const s=(G.scouts||[]).find(x=>x.id===v); if(!s)return null; return {subj:`스카우트 ${s.name} 계약 해지`,kind:'스카우트',lines:[`${s.region} 담당 · 능력 ${s.skill}`],warn:'해지하면 그 지역 정보가 줄어듭니다.'}; },
   anaFire(v){ const a=anaList().find(x=>x.id===v); if(!a)return null; return {subj:`분석원 ${a.name} 계약 해지`,kind:'전력분석',lines:[`${AROLE[a.role].l} · 능력 ${a.skill}`],warn:'해지하면 되돌릴 수 없습니다.'}; },
+  relBatch(){ const L=relPick(UI.trimSel||[]); if(!L.length)return null; const cost=L.reduce((s,p)=>s+relCost(p).tot,0), n=rosterN(G.user);
+    return {subj:`선수 ${L.length}명 방출`,kind:'선수',lines:[...L.slice(0,12).map(p=>pnm(p.id)+(relCost(p).tot?` · 정산 ${money(relCost(p).tot)}`:'')),L.length>12?`외 ${L.length-12}명`:'',`방출 정산금 합계 ${money(cost)}${cost?'(FA·다년 계약의 남은 보장액 50%)':''}`,`정식 로스터 ${n}명 → ${n-L.length}명`],warn:'방출하면 되돌릴 수 없습니다. 웨이버 공시 기간에 다른 구단이 데려가면 남은 계약을 이어받습니다.'}; },
   autoTrim(){ const n=rosterN(G.user)-ROSTER_MAX; if(n<=0)return null; const L=trimCands(n); return {subj:`로스터 정리 ${L.length}명`,kind:'선수',lines:L.slice(0,12).map(p=>pnm(p.id)),warn:'정리 대상은 방출되거나 육성선수로 돌아갑니다. 되돌릴 수 없습니다.'}; },
 };
 /* 영입 발표: 새로 온 선수가 왜 필요한지, 무엇을 맡고, 무엇을 감수하는지 한 장으로 */

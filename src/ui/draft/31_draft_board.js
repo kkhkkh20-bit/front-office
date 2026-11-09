@@ -38,6 +38,9 @@ function dcard(p,rp,rk,mine){
       <button class="tc-i${star?' on':''}" data-a="star" data-v="${p.id}" aria-pressed="${star}">${star?'★ 관심':'☆ 관심'}</button>${mine?`<button class="tc-i go" data-a="pick" data-v="${p.id}">지명</button>`:''}</div>
   </div>`;
 }
+/* 스카우트 추천 자동 지명 기준(카페 피드백 11-09v: 접혀 있어 못 찾았다). pre: 드래프트 전 미리 정한 기준(있으면 표시) */
+function drestBox(pre,sub){ const on=(m,n)=>pre&&pre.mode===m&&(m==='pass'||pre.min===n)?' primary':'';
+  return `<div class="drest drest-v"><div class="row between"><b>스카우트 추천으로 자동 지명</b><span class="small muted">${sub}</span></div><div class="row"><button class="btn small${on('cond',3)}" data-a="draftRest" data-v="cond:3">★2(1군 백업) 이상만</button><button class="btn small${on('cond',4)}" data-a="draftRest" data-v="cond:4">★3(주전감) 이상만</button><button class="btn small${on('pass')}" data-a="draftRest" data-v="pass:0">남은 지명 건너뛰기</button>${pre?'<button class="btn small" data-a="draftRest" data-v="off">해제</button>':''}</div><p class="small muted">${pre?`드래프트가 열리면 '${pre.mode==='pass'?'남은 지명 건너뛰기':pre.min>=4?'★3 이상만':'★2 이상만'}' 기준으로 우리 지명을 자동 처리합니다. `:''}스카우트 추천 순서대로 뽑되, 잠재력 추정이 기준에 못 미치는 선수는 뽑지 않고 그 지명을 건너뜁니다. KBO 규약상 지명권 패스는 라운드 제한이 없어 1·2라운드도 같은 기준입니다. 로스터가 한도(${ROSTER_MAX}명)에 차면 더 뽑지 않습니다. 진행 중에 '그만두고 직접 고르기'로 멈출 수 있습니다.</p></div>`; }
 /* 내 드래프트 보드: 관심 목록 순서가 곧 내 순위. 메모·고려 라운드·확인할 것을 남긴다 */
 const DCHK=['타격','제구','구위','수비','주루','건강','성격'];
 function dmemoOf(id){ G.dmemo=G.dmemo||{}; return G.dmemo[id]||(G.dmemo[id]={t:'',rd:0,chk:[]}); }
@@ -65,14 +68,14 @@ function draftBoard(){
     const firstStar=(G.shortlist||[]).map(id=>G.players[id]).find(p=>p&&p.prospect);
     const proj=rosterProj(G.user); const cut=trimCands(1)[0]; const crp=cut?scoutReport(cut):null;
     const capLine=`<div class="cap-line"><span>정식 로스터 ${rosterN(G.user)}명 + 이번 지명 ${draftedBy(G.user)}명${milBackBy(G.user)?` + 개막 전 전역 ${milBackBy(G.user)}명`:''} = <b style="color:${proj>=ROSTER_MAX?'var(--bad)':proj>=ROSTER_MAX-3?'var(--warn)':'var(--good)'}">${proj}</b> / ${ROSTER_MAX}</span>${proj>=ROSTER_MAX&&cut?`<span class="small">더 뽑으면 개막 전 방출이 필요합니다. 1순위 정리 후보: <button class="lnk" data-a="player" data-v="${cut.id}">${esc(cut.name)}</button> (${posLabel(cut)} · ${cut.age}세 · 현재 ${dv(crp.cur)} / ${crp.ofp!=null?potTier(potVal(crp),crp.cur).s:'잠재력 ?'})</span>`:''}</div>`;
-    const restBox=`${rest?'':(myLeft>1?`<details class="drest"><summary class="small">남은 우리 지명 ${myLeft}번 한꺼번에 처리</summary><div class="row"><button class="btn small" data-a="draftRest" data-v="pass:0">남은 지명 모두 건너뛰기</button><button class="btn small" data-a="draftRest" data-v="cond:3">'1군 백업(★2)' 이상만 추천 지명</button><button class="btn small" data-a="draftRest" data-v="cond:4">'주전감(★3)' 이상만 추천 지명</button></div><p class="small muted">1라운드부터 적용됩니다. 1·2라운드는 건너뛸 수 없어 기준에 못 미치면 멈추고 직접 고르게 합니다. 등급은 우리 스카우트의 잠재력 추정입니다. 로스터가 한도(${ROSTER_MAX}명)에 차면 더 뽑지 않습니다.</p></details>`:'')}`;
+    const restBox=rest||!myLeft?'':drestBox(null,`남은 우리 지명 ${myLeft}번`);
     const feed=`${dliveBox('am')}${recent.length&&!(dlSame('am')&&UI.dl.feed&&UI.dl.feed.length)?`<div class="dlog">${recent.map(x=>{const q=G.players[x.pid]; return `<span>${badge(x.tid,18)}<i>${x.rd}-${x.no}</i>${x.pass?'<em>건너뜀</em>':q?`<b>${esc(q.name)}</b> <em>${posLabel(q)}</em>`:''}</span>`}).join('')}</div>`:''}`;
     /* 휴대폰·태블릿: 순위·우리 차례·추천 지명은 상단 바(draftTop)로 옮기고, 여기에는 일괄 처리 중 안내와 다른 구단 지명 소식만. 나머지는 상단 바 드래프트 정보를 누르면 펼친다 */
     const fold=!wide(), more=fold&&!!UI.open?.draftMore;
-    const btns=`${mine?`${firstStar?`<button class="btn primary" data-a="pick" data-v="${firstStar.id}" title="관심 1순위 지명">관심 1순위 ${esc(firstStar.name)} 지명</button>`:''}${fold?'':'<button class="btn" data-a="autoPick">스카우트 추천 지명</button>'}${pk.rd>=3?'<button class="btn" data-a="passPick">이번 지명 건너뛰기</button>':''}`:fold?'':`<button class="btn primary" data-a="advDraft" ${UI.dl&&UI.dl.on?'disabled':''}>${UI.dl&&UI.dl.on?'다른 구단 지명 중…':'다른 구단 지명 보기'}</button>`}`;
+    const btns=`${mine?`${firstStar?`<button class="btn primary" data-a="pick" data-v="${firstStar.id}" title="관심 1순위 지명">관심 1순위 ${esc(firstStar.name)} 지명</button>`:''}${fold?'':'<button class="btn" data-a="autoPick">스카우트 추천 지명</button>'}<button class="btn" data-a="passPick">이번 지명 건너뛰기</button>`:fold?'':`<button class="btn primary" data-a="advDraft" ${UI.dl&&UI.dl.on?'disabled':''}>${UI.dl&&UI.dl.on?'다른 구단 지명 중…':'다른 구단 지명 보기'}</button>`}`;
     const eyeRow=`<span class="eyebrow">${d.y||G.year} 신인 드래프트 · ${DRAFT_ROUNDS}라운드 순번 ${d.picks.length}개 · 지명 ${d.picks.filter(x=>x.pid>0).length}명</span><span class="small muted">우리 남은 지명 ${myLeft}번</span>`;
     const restOn=rest?`<p class="small drest-on">일괄 처리 중: ${rest.mode==='pass'?'남은 지명 건너뛰기':`'${rest.min>=4?'주전감(★3)':'1군 백업(★2)'}' 이상만 추천 지명`} <button class="btn small" data-a="draftRest" data-v="off">그만두고 직접 고르기</button></p>`:'';
-    head=fold?(more||!mine||rest?`<section class="dhead dhead-pop${more?' card':''}">${more?`${btns?`<div class="row">${btns}</div>`:''}<div class="row between">${eyeRow}</div>${capLine}${restBox}`:''}${restOn}${more||!mine?feed:''}</section>`:'')
+    head=fold?(more||!mine||rest||restBox?`<section class="dhead dhead-pop${more?' card':''}">${more?`${btns?`<div class="row">${btns}</div>`:''}<div class="row between">${eyeRow}</div>${capLine}`:''}${mine?restBox:''}${restOn}${more||!mine?feed:''}</section>`:'')
       :`<section class="card hero dhead"><div class="row between">${eyeRow}</div>${capLine}
       <div class="row">${badge(pk.tid,40)}<div><div class="dnow">${pk.rd}라운드 ${pk.no}순위</div><div class="small ${mine?'':'muted'}">${mine?'<b>우리 차례입니다.</b> 후보 옆 지명 버튼으로 고르세요.':tname(pk.tid)+' 차례'}</div></div></div>
       <div class="row">${btns}</div>
@@ -82,8 +85,9 @@ function draftBoard(){
     const left=Math.max(0,G.cal.draft-G.day);
     const dn=draftNo(G.user);
     head=`<section class="card hero dhead"><div class="row between"><span class="eyebrow">${G.year} 신인 드래프트 · ${dmd(G.cal.draft)}</span><span class="pill">D-${left}</span></div>
-      <p class="dpre-no">${dn?`우리 첫 지명은 <b>${draftFirstTxt(dn)}</b>${dn.first&&(dn.first.rd!==1||dn.first.no!==dn.r1)?` (원래 1라운드 ${dn.r1}순위 · 지명권 거래 반영)`:dn.r2!==dn.r1?`, 2라운드부터 ${dn.r2}순위`:''}`:`참가 ${pool.length}명`} ${hiI(`참가 선수 ${pool.length}명 중 ${DRAFT_ROUNDS}라운드 순번 ${DRAFT_ROUNDS*10}개만큼 지명합니다. 3라운드부터는 구단이 건너뛸 수 있어 실제 지명 인원은 더 적을 수 있습니다. 지명 순서는 지난 시즌 성적의 역순입니다.`)}</p>
-      <details class="frule"><summary class="small">로스터·순위 안내</summary><p class="small">지금 정식 로스터는 ${rosterN(G.user)}/${ROSTER_MAX}명입니다. 지명한 신인은 내년 1월에 합류하므로, 그만큼 기존 선수를 방출해야 합니다. 3라운드부터는 지명을 건너뛸 수 있고, 다른 구단도 로스터가 차면 건너뜁니다.</p>
+      <p class="dpre-no">${dn?`우리 첫 지명은 <b>${draftFirstTxt(dn)}</b>${dn.first&&(dn.first.rd!==1||dn.first.no!==dn.r1)?` (원래 1라운드 ${dn.r1}순위 · 지명권 거래 반영)`:dn.r2!==dn.r1?`, 2라운드부터 ${dn.r2}순위`:''}`:`참가 ${pool.length}명`} ${hiI(`참가 선수 ${pool.length}명 중 ${DRAFT_ROUNDS}라운드 순번 ${DRAFT_ROUNDS*10}개만큼 지명합니다. 구단은 어느 라운드든 지명을 건너뛸(패스) 수 있어 실제 지명 인원은 더 적을 수 있습니다. 지명 순서는 지난 시즌 성적의 역순입니다.`)}</p>
+      ${dn?drestBox(draftRestPre(),'드래프트 전에 미리 정해 두기'):''}
+      <details class="frule"><summary class="small">로스터·순위 안내</summary><p class="small">지금 정식 로스터는 ${rosterN(G.user)}/${ROSTER_MAX}명입니다. 지명한 신인은 내년 1월에 합류하므로, 그만큼 기존 선수를 방출해야 합니다. 지명은 어느 라운드든 건너뛸 수 있고, 다른 구단도 로스터가 차면 건너뜁니다.</p>
       <p class="small muted">언론 순위는 성적과 체격만 본 평가이고, 우리 순위는 스카우트가 직접 보고 매긴 평가입니다. 스카우트도 틀립니다. 관찰이 쌓일수록 정확해지지만, 스카우트마다 좋아하는 유형이 있어 그 버릇은 남습니다. '강력 추천'은 언론보다 훨씬 높게 보는 후보에 대한 스카우트의 주장입니다.${noScout.length?` <b>${noScout.join(', ')}</b> 지역은 담당 스카우트가 없어 잠재력이 ?로 나옵니다${noScout.some(gmN)?`(단장이 직접 본 후보 ${noScout.map(gmN).reduce((a,b)=>a+b,0)}명은 평가됨)`:''}.`:''} 관심 표시한 선수는 지명 때 바로 고를 수 있습니다.</p>
       </details>
     </section>`;
