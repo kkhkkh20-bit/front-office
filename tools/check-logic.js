@@ -3697,6 +3697,21 @@ T('[피드백 11-09q] 예산 세 칸: 선수 영입 자금은 spendable, 연봉 
   const iv=t.indie; try{ t.indie=true; const s=budgetSplit(); ok(s.indie&&s.buy.room===0&&s.buy.avail===Math.max(0,Math.round(sdCash(G.user)-newStadDue(G.user))),'독립구단 영입 자금은 현금만: '+s.buy.avail); } finally{ t.indie=iv; } });
 T('[카페 11-09] 보상선수 등으로 떠난 우리 선수는 2년 동안 우리 팀 시절 자료로 평가가 보인다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.ys&&!q.foreign); const o=G.teams.find(t=>t.id!==G.user).id; const r0=scoutReport(p); mvLog('보상선수',p,G.user,o,'',0); p.team=o; const r=scoutReport(p); ok(r.cur!=null&&!r.unseen,'떠난 우리 선수 평가 없음: '+r.who); ok(/우리 팀 시절/.test(r.who),'출처 안내 '+r.who); G.day+=800; const r2=scoutReport0(p); ok(!/우리 팀 시절/.test(r2.who||''),'2년 넘게 지나도 옛 자료'); });
 
+T('[검수 11-09zzd] 구단주 지시: 경기 당시 좌석, 우리 팀 타석, 트레이드한 연장 선수, 개선액, 기간 중 적자',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5); const me=G.user, other=G.teams.find(t=>t.id!==me).id;
+  G.games.unshift({day:G.day+1,home:me,away:other,att:17900,cap:20000}); const A={k:'att',d0:G.day,until:G.day+9,base:{tg:.9}}; const e=cwOrdEval(A); ok(!e.ok&&e.txt.includes('89.5%'),'경기 당시 좌석 기준이 아님 '+e.txt);
+  const p=playersOf(me).find(x=>!x.isP); const Y={k:'young',d0:G.day,until:G.day+9,base:{snap:{[p.id]:[0,0]}}}; const n0=p.hist.length; p.hist.push({y:G.year,lvl:'1군',t:other,pa:30}); ok(!cwOrdEval(Y).ok,'다른 구단 타석으로 육성 지시 달성'); p.hist.length=n0;
+  const q=playersOf(me)[1]; const X={k:'ext',d0:G.day,until:G.day+9,base:{pid:q.id}}; q.extNext={yrs:3}; q.team=other; ok(!cwOrdEval(X).ok,'트레이드한 선수인데 붙잡기 달성'); q.team=me;
+  const b0=budget; try{ budget=()=>({roomGoal:0}); ok(!cwOrdEval({k:'cut',base:{room:-200},until:G.day+9}).ok,'2억 개선인데 3억 개선 달성');
+    const K={k:'keep',base:{room:0},until:G.day+9}; budget=()=>({roomGoal:-500}); cwOrdEval(K); budget=()=>({roomGoal:0}); ok(!cwOrdEval(K).ok,'기간 중 적자였는데 유지 달성'); } finally{ budget=b0; } });
+T('[검수 11-09zzd] 시즌 목표: 정규시즌 뒤에는 결산과 같은 공식 순위, 첫해 표시 저장, 평가 보류면 신뢰 그대로, 은퇴 보관 선수도 육성 달성',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+2); const t=team(G.user);
+  const tr0=t.trust; ownerMonth(4,1); ok(t.trust===tr0,'평가 보류인데 신뢰 변화 '+tr0+'→'+t.trust);
+  setGoals('',true); ok(G.goals.fd,'첫해 표시 없음');
+  G.goals.youth=1; G.arch=G.arch||{}; G.arch[987654]={id:987654,name:'보관',isP:false,age:24,y:G.year,rows:[{y:G.year,t:G.user,pa:230}]}; ok(goalStatus().youth.cur>=1,'은퇴 보관 선수 육성 목표 빠짐'); delete G.arch[987654];
+  const T=G.teams.map(x=>x.id), r=G.sea.rec; T.forEach((id,i)=>{ r[id]={w:80-i*3,l:64+i*3,t:0}; }); r[T[7]]={w:r[T[6]].w,l:r[T[6]].l,t:0}; const st=standingsNow(); ok(tieRank(st,st[7].tid)===7,'준비 실패: 공동 7위 아님'); G.ps={order:st,res:{},round:'wc',done:false}; ok(st.every((x,i)=>rankOf(x.tid)===i+1),'정규시즌 뒤 공동 7위가 결산 순서(상대 전적 등)와 다름'); G.ps=null; });
+T('[검수 11-09zzd] 협회: 취임 뒤에도 표결·지지 안내, 협회장 나이, 비율 내림 표시',()=>{ fresh(); const A=asInit(); const a0=A.head.age; A.ay=G.year-3; asInit(); ok(A.head.age===a0+3,'나이가 그대로 '+A.head.age);
+  ok(cmtPct(.89999)==='89%'&&cmtPct(.9)==='90%','비율 표시 '+cmtPct(.89999));
+  G.day=KD(12,5); A.cur={y:G.year+1,near:[],on:true}; cmtAsk(); ok((G.evs||[]).some(e=>e.k==='cmt'&&!e.done),'소집 뒤 취임한 단장에게 표결 안내 없음'); A.cur=null;
+  G.day=KD(11,20); A.el={y:G.year,c:[asMk(G.year,'tight'),asMk(G.year,'bal')],uv:undefined}; asElAsk(); ok((G.evs||[]).some(e=>e.k==='asEl'&&!e.done),'후보 발표 뒤 취임한 단장에게 지지 안내 없음'); A.el=null; });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

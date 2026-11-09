@@ -22,7 +22,7 @@ function cwSt(){ const c=G.cw||(G.cw={}); if(c.y!==G.year){ c.y=G.year; c.n=0; c
 function cwOn(){ return !!(G&&!G.unemp&&!G.gameOver&&G.user!=null&&!team(G.user).indie); }
 function cwNm(who){ const B=bossOf(G.user); return who==='ceo'?`${B.ceo.name} 사장`:`${B.own.name} 회장`; }
 function cwFrom(who){ return who==='ceo'?'사장실':'구단주실'; }
-const cwPct=x=>Math.round(x*100)+'%';
+const cwPct=x=>Math.floor(x*1000+1e-6)/10+'%'; /* 반올림하면 89.5%가 90%로 보여 목표를 넘은 것처럼 보인다(검수 11-09zzd) */
 
 /* ---------- 친밀도 ---------- */
 function cwRapP(who){ const B=bossOf(G.user); const x=who==='ceo'?B.ceo:B.own; if(x.rap==null){ x.rap=30; x.rapD=G.day; } return x; }
@@ -180,7 +180,7 @@ function cwGame(S){ S=S||G.cwS; if(!S)return null; return (G.games||[]).find(g=>
 /* ---------- (b) 구단주 지시: 짧은 목표 하나, 기한 뒤 실제 기록으로 판정 ----------
    시즌 목표(G.goals: 순위·지원·여론·유망주 출전)와 같은 방식으로, 기간을 3~4주로 줄인 판정. 달성: 신뢰 +2·친밀도 +3, 미달: 신뢰 -1 */
 function cwOrd(){ const o=G.ownOrder; return o&&o.st==='open'?o:null; }
-function cwOrdCands(){ const t=team(G.user); const sec=cwSec(); const C=G.cal; const end=Math.min(G.day+21,C.end); const L=[]; const left=homeGames(G.user,G.day+1,end).length; const games=(()=>{ let n=0; for(let d=G.day+1;d<=end;d++){ const gs=C.sched[d]; if(gs&&gs.some(m=>m.includes(G.user)))n++; } return n; })();
+function cwOrdCands(){ const t=team(G.user); const sec=cwSec(); const C=G.cal; const end=Math.min(G.day+21,C.end); const L=[]; const left=homeGames(G.user,G.day+1,end).length; const games=(()=>{ let n=0; for(let d=G.day+1;d<=end;d++)n+=dayGames(d).filter(m=>m.includes(G.user)).length; return n; })(); /* 경기 수: 같은 날 두 경기·보충 경기도 센다(검수 11-09zzd) */
   if(period()!=='season')return L;
   if(games>=10)L.push({k:'win',w:t.owner==='win'?3:1,t:'앞으로 3주 5할 이상',crit:`${dmd(end)}까지 우리 경기 승률 5할 이상(무승부 제외)`,until:end,base:{}});
   if(left>=5){ const A=cwHomeAtt(); const full=A.ratio>=.97; const tg=full?.95:Math.min(1,A.ratio+.03); L.push({k:'att',w:(t.owner==='pr'?3:.8)*(sec==='crowd'?2:1),t:full?'매진 행진 이어 가게':'홈 관중 늘려 보게',crit:`${dmd(end)}까지 홈경기 평균 좌석 점유율 ${cwPct(tg)} 이상${full?' 유지':''}(지금까지 ${cwPct(A.ratio)})`,until:end,base:{ratio:A.ratio,tg}}); } /* 이미 꽉 찬 구장에 '더 늘리라'는 목표는 이룰 수 없다 */
@@ -190,17 +190,17 @@ function cwOrdCands(){ const t=team(G.user); const sec=cwSec(); const C=G.cal; c
   const st=playersOf(G.user).filter(p=>!p.foreign&&canExtend(p)&&!p.extNext&&(p.faC?p.yrs<=1:Math.max(0,faSvc(p)-(p.svc||0))<=1)).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&warOf(h,p)>=1.5; }).sort((a,b)=>ovr(b)-ovr(a))[0];
   if(st)L.push({k:'ext',w:(sec==='star'?3:.6)*(t.owner==='pr'?1.3:1),t:`${st.name} 붙잡게`,crit:`${dmd(Math.min(G.day+28,C.end+30))}까지 ${st.name}와(과) 다년계약 합의`,until:Math.min(G.day+28,C.end+30),base:{pid:st.id}});
   return L; }
-function cwYoungSnap(){ const o={}; for(const p of playersOf(G.user)){ if(p.foreign||p.age>23)continue; const h=seasonTotal(p,G.year,'1군'); o[p.id]=[(h&&h.pa)||0,(h&&h.outs)||0]; } return o; }
+function cwYoungSnap(){ const o={}; for(const p of playersOf(G.user)){ if(p.foreign||p.age>23)continue; const h=seasonTotalT(p,G.year,'1군',G.user); o[p.id]=[(h&&h.pa)||0,(h&&h.outs)||0]; } return o; }
 function cwOrdIssue(who){ if(cwOrd())return null; const L=cwOrdCands(); if(!L.length)return null; let x=R()*sum(L.map(c=>c.w)); let c=L[0]; for(const y of L){ x-=y.w; if(x<=0){ c=y; break; } }
   const O={k:c.k,t:c.t,crit:c.crit,until:c.until,base:c.base,d0:G.day,who,st:'open',say:cwOrdSay(c.k)}; G.ownOrder=O; return O; }
 function cwOrdSay(k){ const ow=team(G.user).owner; return {win:ow==='win'?'이기는 게 먼저요. 앞으로 3주는 5할 밑으로 떨어지지 마시오.':'성적도 좀 챙기시오. 3주 동안 5할은 하시오.',att:'관중석이 차야 그룹 체면이 서오. 홈 관중을 늘려 보게.',cut:'적자는 줄이시오. 한 달 뒤에 숫자로 봅시다.',keep:'지금처럼 예산 안에서 운영하시오. 적자는 안 되오.',young:'젊은 선수 하나쯤은 1군에서 크는 걸 보고 싶소. 한 명 써 보게.',ext:'저런 선수는 놓치면 안 되오. 계약을 매듭지으시오.'}[k]||''; }
 function cwOrdEval(O){ const end=G.day>=O.until; const C=G.cal;
   if(O.k==='win'){ const L=cwUlog().filter(u=>u.d>O.d0&&u.d<=O.until&&u.res!=='무'); const w=L.filter(u=>u.res==='승').length; const ok=L.length?w/L.length>=.5:false; return {done:end,ok,txt:`${w}승 ${L.length-w}패`}; }
-  if(O.k==='att'){ const H=(G.games||[]).filter(g=>g.day>O.d0&&g.home===G.user&&g.att); const r=H.length?avg(H.map(g=>g.att))/stadCap(G.user):0; const tg=O.base.tg??Math.min(1,O.base.ratio+.03); return {done:end,ok:H.length>0&&r>=tg,txt:H.length?`홈 ${H.length}경기 점유율 ${cwPct(r)}(목표 ${cwPct(tg)})`:'아직 홈경기 없음'}; }
-  if(O.k==='cut'||O.k==='keep'){ let b=null; try{ b=budget(); }catch(e){} const v=b?b.roomGoal:O.base.room; const ok=O.k==='cut'?(v>=O.base.room+300||v>=0):v>=0; return {done:end||(O.k==='cut'&&ok),ok,txt:`예산 여유 ${money(v)}`}; }
-  if(O.k==='young'){ let best=null; for(const p of playersOf(G.user)){ const s=O.base.snap[p.id]; if(!s)continue; /* 지시 때 23세 이하였던 선수만 */ const h=seasonTotal(p,G.year,'1군'); const pa=((h&&h.pa)||0)-s[0], ou=((h&&h.outs)||0)-s[1]; const sc=Math.max(pa/30,ou/24); if(!best||sc>best.sc)best={p,pa,ou,sc}; }
+  if(O.k==='att'){ const H=(G.games||[]).filter(g=>g.day>O.d0&&g.home===G.user&&g.att); const r=H.length?sum(H.map(g=>g.att))/sum(H.map(g=>g.cap||stadCap(G.user))):0; /* 경기 당시 좌석 수 기준 */ const tg=O.base.tg??Math.min(1,O.base.ratio+.03); return {done:end,ok:H.length>0&&r>=tg,txt:H.length?`홈 ${H.length}경기 점유율 ${cwPct(r)}(목표 ${cwPct(tg)})`:'아직 홈경기 없음'}; }
+  if(O.k==='cut'||O.k==='keep'){ let b=null; try{ b=budget(); }catch(e){} const v=b?b.roomGoal:O.base.room; if(O.k==='keep')O.lo=Math.min(O.lo??O.base.room,v); const ok=O.k==='cut'?v>=O.base.room+300:O.lo>=0; return {done:end||(O.k==='cut'&&ok),ok,txt:`예산 여유 ${money(v)}${O.k==='keep'&&O.lo<v?`(기간 중 최저 ${money(O.lo)})`:''}`}; } /* 개선 지시는 말한 3억 그대로, 유지 지시는 기간 중 한 번이라도 적자면 미달(검수 11-09zzd) */
+  if(O.k==='young'){ let best=null; for(const id in O.base.snap){ const p=G.players[id]; const s=O.base.snap[id]; if(!p)continue; /* 지시 때 23세 이하였던 선수만. 대표팀 소집 중이어도 센다 */ const h=seasonTotalT(p,G.year,'1군',G.user); /* 우리 팀에서 쌓은 기록만(검수 11-09zzd) */ const pa=((h&&h.pa)||0)-s[0], ou=((h&&h.outs)||0)-s[1]; const sc=Math.max(pa/30,ou/24); if(!best||sc>best.sc)best={p,pa,ou,sc}; }
     const ok=!!best&&best.sc>=1; return {done:ok||end,ok,txt:best&&best.sc>0?`${best.p.name} ${best.p.isP&&best.ou>=best.pa?`${ipStr(best.ou)}이닝`:`${best.pa}타석`}`:'아직 없음'}; }
-  if(O.k==='ext'){ const p=G.players[O.base.pid]; const ok=!!(p&&p.extNext); const gone=!p||p.team!==G.user; return {done:ok||end||gone,ok,txt:ok?'다년계약 합의':gone?'팀을 떠났습니다':'아직 합의 전'}; }
+  if(O.k==='ext'){ const p=G.players[O.base.pid]; const gone=!p||p.team!==G.user; const ok=!!(p&&p.extNext)&&!gone; /* 합의 뒤 트레이드로 보냈으면 붙잡은 게 아니다(검수 11-09zzd) */ return {done:ok||end||gone,ok,txt:ok?'다년계약 합의':gone?'팀을 떠났습니다':'아직 합의 전'}; }
   void C; return {done:true,ok:false,txt:''}; }
 function cwOrdDaily(){ const O=cwOrd(); if(!O)return; const e=cwOrdEval(O); if(!e.done)return; const t=team(G.user); O.st=e.ok?'ok':'fail'; O.end=G.day; O.txt=e.txt;
   if(e.ok){ t.trust=clamp(t.trust+2,0,100); cwRapAdd('own',3); mail('구단주실',`구단주 지시 달성: ${O.t}`,`${cwNm('own')}: "말한 대로 해냈군. 그런 단장이 좋소."\n\n${e.txt}. 구단주 신뢰 +2 · 구단주 친밀도 +3.`,{kind:'구단주'}); }

@@ -63,7 +63,7 @@ function ownerMonth(m,rk){ const t=team(G.user); const g=G.goals; if(!g)return; 
   let s=0; s+=(g.rank-rk)*.6*w[0]*rkW; s+=(G.pr.press-50)/14*(w[3]*.6+.4); s+=(G.pr.fan-g.fan)/12*(w[3]*.7+.3); const ps=projSupport(); s+=(g.sup-ps)*4*w[2];
   if(early)s=clamp(s,-1,1);
   const fy=g.fd&&G.year===G.startY; if(fy&&s<0)s*=.6; /* 창단 첫해: 구단주도 참을성이 있다 */
-  const d=clamp(Math.round(s),early?0:fy?-2:-4,early?1:3); t.trust=clamp(t.trust+d,0,100);
+  const d=gp<10?0:clamp(Math.round(s),early?0:fy?-2:-4,early?1:3); /* 평가 보류면 신뢰도 그대로(검수 11-09zzd) */ t.trust=clamp(t.trust+d,0,100);
   const mood=s>=2?'만족':s>=-1?'관망':s>=-4?'불만':'격노';
   const demands=[]; if(!early&&rkW>=.5&&rk>g.rank+1)demands.push(`순위를 ${g.rank}위 안으로 끌어올리라`); if(ps>g.sup+.15)demands.push('적자 폭을 줄이라'); if(G.pr.press<38)demands.push('언론 보도를 관리하라'); if(G.pr.fan<g.fan-8)demands.push('팬심을 돌려 놓으라');
   const txt=mood==='만족'?`구단주께서 ${m}월 보고를 받고 만족해하셨습니다. 지금 방향을 유지하라는 말씀입니다.`:mood==='관망'?(early?`구단주께서 ${m}월 보고를 받으셨습니다. 아직 ${gp}경기라 성적은 더 지켜보겠다고 하셨습니다.`:`구단주께서 ${m}월 보고를 받으셨습니다. 아직 판단을 미루고 지켜보겠다고 하셨습니다.`):`구단주께서 ${m}월 보고에 ${mood==='격노'?'크게 화를 내셨습니다':'불만을 표하셨습니다'}. ${demands.length?demands.join(', ')+'고 하셨습니다.':''}${t.trust<25?' 단장 교체 이야기가 그룹 안에서 나오고 있습니다.':''}`;

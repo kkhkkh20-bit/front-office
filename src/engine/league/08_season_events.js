@@ -163,12 +163,12 @@ function settlement(){
   const w=OWNER[u.owner].w; const fin=fins[G.user];
   const finScore=clamp(fin.net/2500,-8,5)-(fin.supCap?(fin.support/fin.supCap-.5)*4:0);
   /* 공개된 순위 목표를 달성했으면 기대 승률 대비 평가로 깎지 않는다. 창단 첫해는 폭을 줄인다 */
-  const rkNow=order.findIndex(x=>x.tid===G.user)+1; let perf=(wp-u.expW)*150*w[0]; if(G.goals&&G.goals.y===y&&rkNow<=G.goals.rank)perf=Math.max(perf,0); if(G.startY===y)perf=clamp(perf,-3,6);
+  const rkNow=rankOf(G.user); /* 목표 화면(goalStatus)과 같은 순위 함수(검수 11-09zzd) */ let perf=(wp-u.expW)*150*w[0]; if(G.goals&&G.goals.y===y&&rkNow<=G.goals.rank)perf=Math.max(perf,0); if(G.startY===y)perf=clamp(perf,-3,6);
   const why=[['성적(기대 승률 대비)',perf],['포스트시즌',psPart*w[1]],['수지(순이익·모기업 지원)',finScore*w[2]],['인기 변화',(u.pop-prePop[G.user])*40*w[3]]];
   let delta=sum(why.map(x=>x[1]));
   if(u.cash<0){ delta-=5; why.push(['자금 마이너스',-5]); }
   { const pen=capOverOwner(u,y); if(pen){ delta+=pen; why.push([`샐러리캡 초과(${Math.round(capInfo(G.user).over/capInfo(G.user).cap*100)}%)`,pen]); } }
-  const gy=goalYearEnd(order.findIndex(x=>x.tid===G.user)+1,fin); delta+=gy.d; why.push(['구단주 목표(순위·재정·여론)',gy.d]); const pz=(G.pr?(G.pr.press-50)/10:0); delta+=pz; why.push(['언론 논조',pz]);
+  const gy=goalYearEnd(rkNow,fin); delta+=gy.d; why.push(['구단주 목표(순위·재정·여론)',gy.d]); const pz=(G.pr?(G.pr.press-50)/10:0); delta+=pz; why.push(['언론 논조',pz]);
   delta=Math.round(delta); const before=u.trust; u.trust=clamp(u.trust+delta,0,100);
   const notes=[];
   for(const tr of G.trades.filter(x=>x.y===y&&!x.revealed)){ tr.revealed=true; if(tr.diff>7&&(tr.me??G.user)===ME()){ /* 전 구단에서 한 거래는 지금 구단 관계·결산에 넣지 않는다(검수 11-09h) */ const t=team(tr.with); t.rel=clamp(t.rel-6,0,100); notes.push(`${tname(tr.with)} 단장이 지난 트레이드에서 손해를 봤다고 판단해 관계가 나빠졌습니다.`);} }
