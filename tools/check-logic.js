@@ -3755,6 +3755,18 @@ T('[카페 11-09c] 해외파 나이: 해외에 있는 동안에도 새해마다 
   const Y=G.year; G.rolled=G.year; newYear(); ok(G.year===Y+1,'새해 처리');
   let pj=JSON.parse(r.pj); ok(pj.age===32&&r.age===32,'해외에 있는 동안 나이가 그대로 '+pj.age+'/'+r.age);
   const s=JSON.parse(r.pj); setOvr(s,40); r.pj=JSON.stringify(s); abroadYear(); const b=G.players[p.id]; ok(r.back&&b,'복귀 안 함'); ok(b.age===peer.age,'복귀 선수 나이 '+b.age+' 또래 '+peer.age); newYear(); ok(b.age===peer.age&&b.age===33,'복귀 뒤 새해 나이 '+b.age+' 또래 '+peer.age); });
+T('[피드백 11-09t] 스타 효과: 스타와 대기록 도전 선수가 있으면 홈 관중 수요가 늘어난다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+20);
+  const o=G.teams.filter(t=>t.id!==G.user).sort((x,y)=>x.market-y.market)[0].id, a=G.teams.find(t=>t.id!==o).id; let d=G.day+1; while(dobj(d).w===0||dobj(d).w>=5)d++; /* 평일(매진 상한에 덜 걸리게) */
+  for(const q of playersOf(o)){ q.aw=[]; q.hype=null; q.hstk=0; } _saC.k=null; const m0=starAttM(o), lo=attOf(o,a,d,null);
+  const p=playersOf(o).find(q=>!q.isP); p.aw=[G.year+' MVP']; p.hstk=30; _saC.k=null; const m1=starAttM(o), hi=attOf(o,a,d,null);
+  ok(m1>=m0*1.08&&m1<=1.14,'스타 효과 배수 '+m0+' '+m1); ok(hi>lo,'스타 효과로 관중이 늘지 않음 '+lo+' '+hi); });
+T('[피드백 11-09t] 기념 유니폼: 우리 선수 대기록이면 제작 결정이 오고, 만들면 결산 수입 항목에 기념 유니폼 판매가 잡힌다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>G.cal.open+20);
+  const p=playersOf(G.user).find(q=>!q.isP); p.aw=[G.year+' MVP']; G.pr.fan=80; featAdd('hr50',p,'시즌 50홈런'); const e=(G.evs||[]).find(x=>!x.done&&x.k==='memo'); ok(e,'기념 유니폼 결정 없음');
+  ok(/예상 판매 약/.test(e.sit),'예상 판매가 안 보임'); featAdd('hr4',p,'한 경기 4홈런'); ok(G.evs.filter(x=>!x.done&&x.k==='memo').length===1,'결정이 겹쳐 옴');
+  const f0=G.spend.fan||0, i0=G.spend.fanIn||0; const r=evPick(e.id,0); ok((G.spend.fan||0)>f0,'제작비가 안 나감 '+r); ok((G.spend.goods||0)>0&&(G.spend.fanIn||0)-i0===G.spend.goods,'판매 수입 기록 안 됨 '+r);
+  ok(G.spend.goods<=Math.round(1e4*MEMO_U*ecoIdx()),'1만 벌 판매 수입이 상한을 넘음 '+G.spend.goods); const B=budget(); const row=B.inc.find(x=>x[0]==='기념 유니폼 판매'); ok(row&&row[1]===Math.round(G.spend.goods),'수입 명세에 기념 유니폼 판매 없음');
+  ok(row[1]<sum(B.inc.map(x=>x[1]))*.03,'시즌 수입 대비 너무 큼 '+row[1]); ok((G.memoL||[]).length===1,'판매 기록 없음');
+  const q=playersOf(G.user).find(x=>!x.isP&&x!==p); G.unemp=true; featAdd('h200',q,'시즌 200안타'); G.unemp=false; ok(!G.evs.some(x=>!x.done&&x.k==='memo'),'야인 기간에도 결정이 옴'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);

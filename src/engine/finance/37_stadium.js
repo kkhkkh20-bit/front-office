@@ -43,9 +43,15 @@ function stadTurfM(tid){ return turfM(stadOf(tid).lv.turf); }
 function attOf(h,a,day,noise){ const t=team(h), S=stadOf(h), cap=stadCap(h); const r=G.sea&&G.sea.rec&&G.sea.rec[h]; const g=r?r.w+r.l:0; const wp=g>=10?r.w/g:.5;
   const o=dobj(day); const dow=o.w===6||o.w===0?1.28:o.w===5?1.08:.88; const opp=1+(team(a).market-1)*.35;
   const P=prOf(h), fan=P?(.9+P.fan/500):1; /* 떠난 구단도 그 구단 여론으로(검수 11-09zza) */ const late=o.m>=8&&wp<.44?.9:1;
-  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1)*fanAttM(day,h); /* 응원단·테마 데이·서포터즈 */
+  const f=.84*Math.pow(t.market,.5)*(.82+.3*t.pop)*(.9+(wp-.5)*1.3)*fan*dow*opp*late*PRICE[S.price].dem*(1+(stadPower(S.lv.seat)-2)*.04)*(1+(stadPower(S.lv.vis)-2)*.015)*stadAgeF(h)*(S.dome?1.06:1)*fanAttM(day,h)*starAttM(h); /* 응원단·테마 데이·서포터즈·스타 선수 */
   if(noise===null){ /* 기대 관중: 3점 가우스-에르미트 근사로 매진 상한까지 반영 */ const z=1.732*.2; return Math.round(cap*(Math.min(1,f*Math.exp(-z))/6+Math.min(1,f)*2/3+Math.min(1,f*Math.exp(z))/6)); }
   const n=Math.exp(N(0,.2)); return Math.min(cap,Math.round(cap*f*n)); }
+/* 스타 효과(사용자 11-09: 스타가 관중을 부른다): 구단 상위 3명 스타 파워 합이 클수록 수요 최대 +5%, 정규시즌 중 대기록 도전(시즌 42홈런·180안타 이상, 25경기 연속 안타 이상)이면 +8% 더.
+   근거: 실제 리그에서 스타 신드롬과 우승이 겹친 구단이 구단 최다 관중을 기록한 해가 있지만 리그 전체도 역대 최다(1천만 명대)라 스타 몫만 떼어 낼 수 없다. 그래서 수치는 보수적 게임 설정(실측 근거 없음). 하루 한 번만 계산한다 */
+let _saC={k:null,v:{}};
+function starAttM(h){ const k=G.year+':'+G.day; if(_saC.k!==k||_saC.g!==G)_saC={k,g:G,v:{}}; /* 새 게임·불러오기면 다시 */ if(_saC.v[h]!=null)return _saC.v[h]; let m=1+Math.min(.05,teamStar(h).v/2000); const c=G.cal;
+  if(c&&G.day>=c.open&&G.day<=c.end&&playersOf(h).some(p=>{ if((p.hstk||0)>=25)return true; const x=seasonTotal(p,G.year,'1군'); return !!x&&((x.hr||0)>=42||(x.h||0)>=180); }))m*=1.08;
+  return _saC.v[h]=m; }
 function stadGame(day,h,a){ const cap=stadCap(h); let att=attOf(h,a,day); const ring=champRing(h);
   if(ring){ ring.ringDone=G.year; if(G.ringT===h)G.ringDone=G.year; att=cap; /* 우승 반지 수여식: 우승 구단 홈 개막전 매진(단장이 이직해도 우승 구단에서 연다) */ for(const p of playersOf(h))p.mor=clamp((p.mor??60)+3,0,100);
     if(h!==G.user||G.unemp)wire('구단',`${tshort(h)} 우승 반지 수여식, 홈 개막전 ${cap.toLocaleString('ko-KR')}석 매진`,{tid:h}); else news('구단',`${tshort(G.user)} 우승 반지 수여식…홈 개막전 ${cap.toLocaleString('ko-KR')}석 매진`,`경기 전 지난 시즌 우승 멤버들이 반지를 받았습니다. 전광판에는 우승 순간이 다시 흘렀고, 관중석은 빈자리 없이 들어찼습니다.`,2,{fanW:2}); } G.sea.att=G.sea.att||{}; const A=G.sea.att[h]||(G.sea.att[h]={n:0,sum:0,so:0,best:0});

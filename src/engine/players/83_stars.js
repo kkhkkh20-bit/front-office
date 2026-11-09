@@ -66,3 +66,24 @@ function smNews(){ if(G.unemp)return; prInit(); for(const p of playersOf(G.user)
 function starCheck(){ if(G.unemp||G.user==null)return; for(const p of playersOf(G.user)){ if(p.starY===G.year)continue; const s=starPower(p); if(s<25)continue; p.starY=G.year;
   news('선수',`'대세' ${p.name}…${tshort(G.user)}의 새 얼굴`,`활약과 화제성이 쌓인 ${p.name}(${posLabel(p)}, ${p.age}세)을(를) 찾는 팬과 광고주가 늘고 있습니다.`,1,{ref:p.id,fanW:1});
   if(!smActive(p))mail('마케팅팀',`${p.name}, 스타로 떠올랐습니다`,`${p.name}의 스타 파워가 ${s}입니다. 지금 스타 마케팅을 하면 이번 결산까지 추가 수입이 이 정도로 예상됩니다.\n${SMK.map(T=>`${T.l}(비용 ${money(T.c)}): 약 ${money(Math.round(smEst(p,T.k)*clamp((finYearEnd()-G.day)/365,0,1)))}`).join('\n')}\n\n아래 '스타 마케팅 보기'를 누르면 바로 정할 수 있습니다(PC는 구단 → 재정 → 선수 홍보, 휴대폰은 구단주 화면).`,{kind:'구단',ref:p.id,acts:[{l:'스타 마케팅 보기',a:'goStar',v:''}]}); } }
+
+/* ===== 기념 유니폼(사용자 11-09: "50홈런 유니폼을 만들었더니 품절 대란") =====
+   우리 선수가 대기록(시즌 50홈런·200안타·20승·40세이브, 큰 통산 이정표, 사이클링 히트 같은 리그 주요 기록)을 세우면 마케팅팀이 기념 유니폼 제작을 묻는다.
+   근거: 실제 리그에서 스타 선수의 대기록 기념 유니폼이 출시 첫날 접속이 몰리고 예약만 수만 벌이 팔렸다는 보도가 있다(2024년 8~9월 언론 보도).
+   게임 수치는 그보다 훨씬 보수적으로 잡은 설정값이다(실측 근거 없음): 구단 몫 한 벌 6만 원, 제작비 한 벌 4만 원 + 디자인·라이선스 2천만 원.
+   다 팔아도 1만 벌이면 약 1.8억, 3만 벌이면 약 5.8억 남고(시즌 수입의 1~2% 안팎), 덜 팔리면 재고만큼 손해다.
+   판매 수요는 선수 스타 파워·팬 여론·시장 규모로 정하고 운이 섞인다. 수입은 결산 '기념 유니폼 판매'(구단 이벤트 수입 G.spend.fanIn 안에서 G.spend.goods로 따로 보임), 제작비는 '팬 마케팅·구단 이벤트' */
+const MEMO_Q=[1e4,3e4], MEMO_U=.06, MEMO_C=.04, MEMO_FIX=20;
+function memoDemand(p){ return Math.round((2000+starPower(p)*250)*Math.sqrt(team(G.user).market)*(.6+(G.pr.fan||50)/125)/100)*100; } /* 중앙값(벌) */
+function memoAsk(f,p){ if(G.unemp||p.team!==G.user||!(f.maj||['w20','sv40'].includes(f.k))||f.k==='tnh')return; if((G.evs||[]).some(e=>!e.done&&e.k==='memo'))return; const R0=G.evRecent&&G.evRecent['memo:'+p.id]; if(R0!=null&&G.day-R0<120)return; /* 한 선수는 넉 달에 한 번, 열린 결정은 하나만 */
+  const D=memoDemand(p), e=ecoIdx(); const nm=`${p.name} ${f.k==='mile'?f.txt:FEATK[f.k]||'대기록'}`;
+  evNew('memo',`${nm} 기념 유니폼 만들까요?`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${f.txt} 기록을 세웠습니다. 마케팅팀은 기념 유니폼을 내자고 합니다.\n스타 파워 ${starPower(p)} · 팬 여론 ${Math.round(G.pr.fan)} 기준 예상 판매 약 ${D.toLocaleString('ko-KR')}벌(운에 따라 절반~1.5배). 다 팔리면 구단 몫 한 벌 ${Math.round(MEMO_U*e*100)}만 원, 남은 재고는 손해입니다.`,
+    MEMO_Q.map(q=>{ const c=Math.round((MEMO_FIX+q*MEMO_C)*e), s=Math.min(q,D); return {l:`${(q/1e4)}만 벌 제작`,fx:`제작비 ${money(c)}. 예상대로 팔리면 판매 수입 ${money(Math.round(s*MEMO_U*e))}(손익 ${money(Math.round(s*MEMO_U*e)-c)}).`}; }).concat([{l:'만들지 않는다',fx:'비용도 수입도 없습니다.'}]),{ref:p.id,face:p.id,from:'마케팅팀',data:{pid:p.id,nm},def:2,exp:7}); }
+EVH.memo={ pick(e,i){ if(i>=MEMO_Q.length)return '기념 유니폼은 만들지 않았습니다.'; const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.';
+  const q=MEMO_Q[i], ec=ecoIdx(), cost=Math.round((MEMO_FIX+q*MEMO_C)*ec), D=Math.round(memoDemand(p)*Math.exp(N(0,.35))), sold=Math.min(q,D), inc=Math.round(sold*MEMO_U*ec); const S=G.spend;
+  S.fan=(S.fan||0)+cost; S.fanIn=(S.fanIn||0)+inc; S.goods=(S.goods||0)+inc; const L=G.memoL=G.memoL||[]; L.unshift({y:G.year,d:G.day,pid:p.id,name:p.name,nm:e.data.nm,q,sold,inc,cost}); if(L.length>20)L.length=20;
+  const boom=D>=q*1.2, flop=sold<q*.6;
+  if(boom){ G.pr.fan=clamp(G.pr.fan+3,0,100); team(G.user).pop=clamp(team(G.user).pop+.003,.4,1.6); p.mor=clamp((p.mor??60)+3,0,100); news('구단',`${e.data.nm} 기념 유니폼 품절 대란`,`출시 첫날 구단 온라인몰 접속이 몰렸고 ${q.toLocaleString('ko-KR')}벌이 금세 동났습니다. 추가 제작 요청이 이어집니다.`,2,{ref:p.id,fanW:2}); }
+  else if(flop)news('구단',`${e.data.nm} 기념 유니폼, 재고 남아`,`관심에 비해 판매가 더뎌 ${(q-sold).toLocaleString('ko-KR')}벌이 남았습니다.`,0,{ref:p.id});
+  else { G.pr.fan=clamp(G.pr.fan+1,0,100); news('구단',`${e.data.nm} 기념 유니폼 출시`,`기념 유니폼 ${sold.toLocaleString('ko-KR')}벌이 팔렸습니다.`,1,{ref:p.id,fanW:1}); }
+  return `${q.toLocaleString('ko-KR')}벌을 만들어 ${sold.toLocaleString('ko-KR')}벌 팔았습니다${boom?'(품절 대란, 팬 여론 +3)':''}. 판매 수입 ${money(inc)}, 제작비 ${money(cost)}, 손익 ${money(inc-cost)}.`; } };
