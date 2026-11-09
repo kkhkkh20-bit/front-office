@@ -79,3 +79,13 @@ function goalYearEnd(rank,fin){ const s=goalStatus(); if(!s)return {d:0,lines:[]
 
 /* 예상보다 더 들어온 수입(시즌 예산을 정한 뒤 늘어난 입장·광고·스폰서 수입). 쓸 수 있는 돈이 아니라 구단주에게 추가 지원을 요청할 근거 */
 function budgetExtra(){ try{ return Math.max(0,budget().extra||0); }catch(e){ return 0; } }
+/* 예산 세 칸(FM의 이적 예산·급료 예산처럼, 피드백 11-09q). 새 계산 없이 판정 함수(spendable·budget·capInfo)의 값을 그대로 나눠 보인다.
+   올해 예상 지출(b.E)은 세 칸에 한 번씩만 들어간다: 영입(트레이드 현금·보상금·양도금·계약금) + 연봉('pay'·'for' 항목에서 영입분을 뺀 몫) + 운영(나머지, 단장 결정 지출 안의 트레이드 현금은 뺀다) */
+function budgetSplit(){ const b=budget(), t=team(G.user), ci=b.ci, S=G.spend||{}, P=k=>Math.round(S[k]||0), tag=k=>sum(b.exp.filter(x=>x[2]===k).map(x=>x[1]));
+  const trC=Math.min(P('trC'),P('etc')), bSp=trC+P('comp')+P('faB'); /* 영입 지출: 이미 낸 일시금(장부) */
+  const pY=tag('pay')+tag('for')-P('comp')-P('faB'), oY=tag('ops')+tag('mgr')-trC;
+  const oSp=Math.round(['mgr','coach','med','hosp','intl','data','fac','dev','fan'].reduce((a,k)=>a+(S[k]||0),0)+scoutSpent()+Math.max(0,(S.etc||0)-trC)); /* 운영 지출: 지금까지 쌓인 장부 */
+  return {indie:b.indie,E:b.E,
+    buy:{avail:Math.max(0,Math.round(spendable(G.user))),cash:Math.max(0,Math.round(t.cash||0)),room:Math.round(spendRoom()),spent:bSp,yr:bSp},
+    pay:{capLeft:ci.cap-ci.pay,floorGap:Math.max(0,ci.floor-ci.pay),pay:ci.pay,cap:ci.cap,floor:ci.floor,room:Math.round(b.roomGoal),fRoom:Math.round(b.fRoom||0),spent:Math.round(pY),yr:Math.round(pY)},
+    ops:{budget:Math.round(oY),spent:oSp,left:Math.round(oY)-oSp,yr:Math.round(oY)}}; }

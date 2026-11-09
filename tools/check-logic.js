@@ -3635,6 +3635,17 @@ T('[피드백 11-09p] 장기 플레이 도전과제와 단장 레거시(역대 �
   /* 명예의 전당 순위와 저장 상한 */ for(let i=0;i<300;i++)legRec().L.push({k:'mx'+i,n:'가상'+i,t:oth,y0:1990,y1:1991,s:1,w:60,l:80,c:0}); legTrim(legRec()); ok(legRec().L.length<=LEG_MAX&&legRec().L.some(x=>x.u),'상한 넘음 또는 내 기록이 지워짐'); const PP=legPeople(); ok(PP[0].k===me.k,'우승·시즌 많은 내가 1위가 아님 '+PP[0].n);
   /* 왕조 비교: 5시즌 이어 치른 구간 */ G.myC=G.myC||{tid:U,seas:[],stints:[]}; G.myC.seas=[0,1,2,3,4].map(i=>({y:G.year-5+i,tid:U,rank:1,w:85,l:55,t:4,ch:i<3?1:0})); const W=legWins5(); ok(W.me&&W.me.c===3&&W.me.w===425,'내 최고 5년 '+JSON.stringify(W.me));
   /* 옛 저장: gmRec 없이도 내 시즌 기록·지금 단장으로 되살린다 */ delete G.gmRec; const D=legRec(); ok(D.L.some(x=>x.u&&x.t===U&&x.s===5&&x.c===3),'옛 저장 내 기록 복원 실패'); ok(JSON.stringify(D).length<40000,'역대 단장 기록이 큼'); });
+T('[피드백 11-09q] 예산 세 칸: 선수 영입 자금은 spendable, 연봉 여유는 capInfo·예산 여유, 세 칸의 올해 지출 합은 예상 지출과 같다(이중 계산 없음)',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+5); const t=team(G.user); ok(!t.indie,'준비 실패: 독립구단');
+  const chk=w=>{ const s=budgetSplit(), b=budget(), ci=capInfo(G.user);
+    ok(s.buy.avail===Math.max(0,Math.round(spendable(G.user))),w+' 영입 자금 '+s.buy.avail+' / spendable '+spendable(G.user));
+    ok(s.pay.room===Math.round(b.roomGoal)&&s.pay.capLeft===ci.cap-ci.pay,w+' 연봉 여유 '+s.pay.room+'/'+b.roomGoal+' 상한까지 '+s.pay.capLeft);
+    ok(s.pay.floorGap===Math.max(0,ci.floor-ci.pay),w+' 하한 부족분');
+    ok(Math.abs(s.buy.yr+s.pay.yr+s.ops.yr-b.E)<=5,w+' 세 칸 합 '+(s.buy.yr+s.pay.yr+s.ops.yr)+' / 예상 지출 '+Math.round(b.E));
+    ok(s.ops.left===s.ops.budget-s.ops.spent,w+' 운영 남은 예산'); return s; };
+  const s0=chk('처음'); G.spend.trC=(G.spend.trC||0)+500; G.spend.etc=(G.spend.etc||0)+500; G.spend.comp=(G.spend.comp||0)+300; G.spend.faB=(G.spend.faB||0)+200;
+  const s1=chk('영입 지출 뒤'); ok(s1.buy.spent-s0.buy.spent===1000,'영입 지출이 트레이드 현금·보상금·계약금 합으로 늘지 않음: '+(s1.buy.spent-s0.buy.spent));
+  ok(s1.ops.spent===s0.ops.spent&&s1.ops.yr===s0.ops.yr,'트레이드 현금이 운영 예산에도 잡힘(이중 계산)'); ok(s1.pay.yr===s0.pay.yr,'보상금·계약금이 연봉 칸에도 잡힘(이중 계산)');
+  const iv=t.indie; try{ t.indie=true; const s=budgetSplit(); ok(s.indie&&s.buy.room===0&&s.buy.avail===Math.max(0,Math.round(sdCash(G.user)-newStadDue(G.user))),'독립구단 영입 자금은 현금만: '+s.buy.avail); } finally{ t.indie=iv; } });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
