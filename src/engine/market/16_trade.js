@@ -161,7 +161,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(cash<0&&!give.length)return {ok:false,msg:'선수를 보내지 않고 현금만 받는 거래는 할 수 없습니다.'};
   if(cash<0&&(t.cash||0)<-cash)return {ok:false,msg:`${tname(tid)}은(는) 그만한 현금 여유가 없습니다(보유 ${money(Math.max(0,t.cash||0))}).`};
   if(cash>0&&!get.length)return {ok:false,msg:'현금만 주고 선수를 받지 않는 거래는 할 수 없습니다.'};
-  const myC=(team(G.user).cash||0)-((G.spend&&G.spend.trC)||0); /* 앞선 거래에서 약정한 현금(결산 때 빠진다)은 이미 쓴 돈(검수 11-08b) */ if(cash>0&&myC<cash)return {ok:false,msg:`우리 구단 보유 현금(앞선 거래 약정분 뺀 ${money(Math.max(0,myC))})이 얹을 현금 ${money(cash)}보다 적습니다.`}; /* 상대 쪽과 같은 보유 현금 검사(검수 11-08) */
+  const myC=spendable(G.user); /* 앞선 거래에서 약정한 현금은 이미 쓴 돈(검수 11-08b), 모기업 구단은 구단주 지원 여유까지(피드백 11-09j) */ if(cash>0&&myC<cash)return {ok:false,msg:`우리 구단이 쓸 수 있는 돈(${team(G.user).indie?'보유 현금, 앞선 거래 약정분 제외':'보유 현금 + 구단주 지원 여유'} ${money(Math.max(0,myC))})이 얹을 현금 ${money(cash)}보다 적습니다.`}; /* 상대 쪽과 같은 보유 현금 검사(검수 11-08) */
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드 대상에서 뺐습니다(게임 단순화).'};
   { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
   const gmn=`${t.city} ${t.nick} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);

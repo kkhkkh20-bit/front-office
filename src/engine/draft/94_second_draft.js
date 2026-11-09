@@ -18,6 +18,12 @@ function sdLost(tid){ return G.sd2.seq.filter(s=>s.pid&&s.from===tid).length; }
 function sdCands(tid){ const S=G.sd2; const taken=new Set(S.seq.map(s=>s.pid).filter(Boolean)); /* 지명이 시작되면 보호명단은 확정: 후보 조회가 명단을 다시 짜지 않는다(검수 11-06). AI 명단은 지명 시작 때(sdStart) 한 번 새로 짠다 */
   return G.teams.filter(t=>t.id!==tid&&sdLost(t.id)<SD_LOSS).flatMap(t=>sdPool(t.id).filter(q=>!taken.has(q.id)&&!(S.prot[t.id]||[]).includes(q.id)&&(!S.pool||(S.pool[t.id]||[]).includes(q.id)))); } /* 지명 시작 뒤 영입한 선수는 새 구단이 보호할 기회가 없었다: 시작 때 명단 대상만(검수 11-08) */
 function sdCash(tid){ let c=team(tid).cash||0; if(tid===ME()){ const P=G.spend||{}; c+=(P.compIn||0)-(P.comp||0)-(P.trC||0); } return c; } /* 우리 양도금·보상금은 결산 장부에 쌓이고 트레이드 약정 현금도 이미 쓴 돈이다. 이직 때 장부는 옛 구단 현금으로 정산되므로 장부만 보면 이중 계산이 없다(검수 11-09f) */
+/* 쓸 수 있는 돈: 모기업 구단은 보유 현금 + 구단주 지원 목표 안의 예산 여유(실제 KBO처럼 모기업이 예산 안에서 대 준다). 약정 현금·양도금 장부는 이미 예산 여유에 들어 있다. 독립구단은 현금만(피드백 11-09j) */
+function spendable(tid){ const t=team(tid); if(tid!==ME()||t.indie)return sdCash(tid); const b=budget(); return (t.cash||0)+Math.max(0,b.roomGoal)+Math.min(0,b.roomCap); }
+function spendRoom(){ const t=team(G.user); return t.indie?0:Math.max(0,spendable(G.user)-(t.cash||0)); } /* 그중 구단주 지원 여유(화면 안내용) */
+/* 지출: 보유 현금에서 먼저, 모자란 몫은 단장 결정 지출로 장부에 올려 결산 때 구단주 지원(적자 보전)이 메운다 */
+function spendTxt(){ const t=team(G.user), a=Math.max(0,spendable(G.user)); return t.indie?`쓸 수 있는 현금 ${money(a)}, 트레이드 약정분 제외`:`쓸 수 있는 돈 ${money(a)} = 보유 현금 ${money(Math.max(0,t.cash||0))} + 구단주 지원 여유 ${money(spendRoom())}`; }
+function spendPay(c){ const t=team(G.user), r=t.indie?0:clamp(c-Math.max(0,t.cash||0),0,c); t.cash-=c-r; if(r)G.spend.etc=(G.spend.etc||0)+r; return c-r; }
 const sdSubd=tid=>{ const S=G.sd2; return !!S&&(!!(S.subs&&S.subs[tid])||S.sub===tid); }; /* 구단별 제출 여부: 이직해도 전 구단 제출 명단이 남는다(검수 11-09f) */
 const sdBackAI=(p,o)=>rosterN(o.from)<ROSTER_MAX&&aiVal(team(o.from),p)>=0;
 function sdOpen(){ if(G.sd2&&G.sd2.y!==G.year){ const o=G.sd2; (G.sd2h=G.sd2h||{})[o.y]={y:o.y,stage:'done',done:o.done,seq:o.seq.filter(s=>s.pid)}; } /* 지난 회차는 지명 결과만 보관 */ const order=((G.last&&G.last.y===G.year&&G.last.order)||standingsNow()).map(x=>x.tid).reverse();
@@ -36,7 +42,7 @@ function sdStart(){ const S=G.sd2;
   S.pool={}; for(const t of G.teams)S.pool[t.id]=sdPool(t.id).map(q=>q.id); S.stage='pick'; sdRun(); }
 /* 지명할 수 없는 이유(정원·양도금 현금·다음 시즌 상한): AI 지명·우리 지명·지명 화면이 같은 판정(검수 11-09ze). pid 없으면 구단 전체 조건만 */
 function sdWhy(tid,rd,pid){ if(rosterN(tid)>=ROSTER_MAX)return {k:'정원 초과',t:`정식 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 한 명을 정리해야 지명할 수 있습니다.`};
-  if(sdCash(tid)<sdFee(rd))return {k:'현금 부족',t:`양도금 ${money(sdFee(rd))}을(를) 낼 보유 현금이 모자랍니다(가용 ${money(Math.max(0,sdCash(tid)))}).`}; /* 양도금을 낼 현금(검수 11-07·11-08) */
+  if(spendable(tid)<sdFee(rd))return {k:'현금 부족',t:`양도금 ${money(sdFee(rd))}을(를) 낼 돈이 모자랍니다(${tid===ME()?spendTxt():'보유 현금 '+money(Math.max(0,sdCash(tid)))}).`}; /* 양도금을 낼 현금(검수 11-07·11-08) */
   if(pid!=null){ const a=capPayAs(tid,[pid],[]), c=capOf(sponSeason())*aiCapMul(team(tid)); if(a>c)return {k:'상한 초과',t:`지명하면 다음 시즌 샐러리캡 반영액이 ${money(a)}(으)로 상한 ${money(c)}을(를) 넘습니다. 넘긴 만큼 경쟁균형세를 냅니다.`,soft:tid===G.user}; } return null; } /* 상한 초과는 실제 규정처럼 막지 않고 세금을 낸다(우리 구단은 경고만, AI는 상한 안에서만 지명) */
 function sdAiPick(tid,rd){ if(sdWhy(tid,rd))return null; const t=team(tid); let best=null,bv=-1e9; for(const q of sdCands(tid)){ if(sdWhy(tid,rd,q.id))continue; /* 다음 시즌 샐러리캡 안에서만 */ const v=aiVal(t,q); if(v>bv){ bv=v; best=q; } } return best&&bv>=sdFee(rd)/100?best.id:null; }
 function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.rd); const keep=q.ctT===from; delete q.capB; delete q.roleProm; q.team=s.tid; if(keep)q.ctT=s.tid; else termsClear(q); /* 계약은 이어진다: 성과 옵션·구단 옵션·옵트아웃·거부권도 승계(계약금 상한 반영·주전 약속은 원구단 몫) */ q.listed=false; if(from===G.user&&G.lineup)for(const k in G.lineup)if(G.lineup[k]===pid)delete G.lineup[k];
@@ -48,7 +54,7 @@ function sdTake(s,pid){ const q=G.players[pid]; const from=q.team, fee=sdFee(s.r
 /* 우리 차례에서 멈춘다. quiet: 화면에서 지명한 직후라 따로 알리지 않는다 */
 function sdRun(quiet){ const S=G.sd2; if(!S||S.stage!=='pick')return;
   while(S.cur<S.seq.length){ const s=S.seq[S.cur];
-    if(s.tid===ME()){ const can=rosterN(s.tid)<ROSTER_MAX&&sdCands(s.tid).length; if(can&&sdCash(s.tid)<sdFee(s.rd))note('드래프트',`2차 드래프트 ${s.rd}라운드: 양도금 ${money(sdFee(s.rd))}을(를) 낼 현금이 없어 건너뛰었습니다.`); /* 아무도 지명할 수 없으면 멈추지 않는다(검수 11-09f) */
+    if(s.tid===ME()){ const can=rosterN(s.tid)<ROSTER_MAX&&sdCands(s.tid).length; if(can&&spendable(s.tid)<sdFee(s.rd))note('드래프트',`2차 드래프트 ${s.rd}라운드: 양도금 ${money(sdFee(s.rd))}을(를) 낼 현금이 없어 건너뛰었습니다.`); /* 아무도 지명할 수 없으면 멈추지 않는다(검수 11-09f) */
       else if(can){ if(S.wait!==S.cur){ S.wait=S.cur; S.exp=G.day+1; if(!quiet)stop('드래프트',`2차 드래프트 ${s.rd}라운드, 우리 차례입니다. 지명하거나 건너뛰세요(내일까지 정하지 않으면 건너뜁니다).`); } return; } }
     else { const id=sdAiPick(s.tid,s.rd); if(id)sdTake(s,id); }
     if(!s.pid)s.pass=true; S.cur++; }

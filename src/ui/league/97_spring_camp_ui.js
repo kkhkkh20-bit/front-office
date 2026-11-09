@@ -40,11 +40,11 @@ function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small m
 function acadCard(){ if(G.unemp)return ''; const lv=acadLv(), nx=ACAD[lv+1], t=team(G.user);
   return `<section class="card"><div class="row between"><span class="eyebrow">특수 아카데미 제휴 · ${lv}/3단계</span><span class="small muted">${esc(ACAD[lv].l)}</span></div>
     <p class="small">미국 피칭 랩·컨디셔닝 센터·국내 아카데미 같은 곳에 구단 돈으로 선수를 보내는 인프라입니다. ${esc(ACAD[lv].d)}</p>
-    ${nx?`<div class="row between"><span class="small">다음: <b>${esc(nx.l)}</b> · ${esc(nx.d)}</span><button class="btn small primary" data-a="acadUp" data-v="${lv+1}" ${t.cash<nx.c?'disabled':''}>구단 현금으로 · ${money(nx.c)}</button></div>`:'<span class="pill good">최고 단계</span>'}
+    ${nx?`<div class="row between"><span class="small">다음: <b>${esc(nx.l)}</b> · ${esc(nx.d)}</span><button class="btn small primary" data-a="acadUp" data-v="${lv+1}" ${spendable(G.user)<nx.c?'disabled':''}>구단 자금으로 · ${money(nx.c)}</button></div>`:'<span class="pill good">최고 단계</span>'}
     ${UI.acadMsg?`<div class="note bad">${esc(UI.acadMsg)}</div>`:''}</section>`; }
 Object.assign(A,{
   sprcBook(v){ const [l,k]=String(v).split(':'); const r=sprcBook(+l,k); UI.sprcMsg=r||null; if(!r)toast(`${l}차 캠프 예약: ${(+l===1?SPRC1:SPRC2)[k].l}`); save(); render(); },
   sprcInt(v){ UI.sprcMsg=sprcSetInt(v)||null; save(); render(); },
   sprcPg(v){ const [n,lv]=String(v).split(':'); UI.sprcMsg=sprcSetPg(n===''?null:+n,lv||null)||null; save(); render(); },
   acadUp(){ UI.acadMsg=acadUp()||null; save(); render(); } });
-Object.assign(GUARD,{ acadUp(v){ const n=ACAD[+v]; if(!n||+v!==acadLv()+1)return null; const t=team(G.user); return {subj:`특수 아카데미 제휴: ${n.l}`,kind:'시설',lines:[`비용 ${money(n.c)} (보유 현금 ${money(t.cash)} → ${money(t.cash-n.c)})`,n.d],warn:'비용은 현금에서 바로 나가고 되돌릴 수 없습니다.'}; } });
+Object.assign(GUARD,{ acadUp(v){ const n=ACAD[+v]; if(!n||+v!==acadLv()+1)return null; const t=team(G.user); return {subj:`특수 아카데미 제휴: ${n.l}`,kind:'시설',lines:[`비용 ${money(n.c)} · ${spendTxt()}`,n.d],warn:'비용은 현금에서 바로 나가고 되돌릴 수 없습니다.'}; } });
