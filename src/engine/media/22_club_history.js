@@ -86,7 +86,7 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   /* 후보 자격은 KBO 규정대로(2025 KBO 표창규정·골든글러브 기준):
      투수 = 규정이닝(팀 경기 수×1이닝) 또는 10승·30세이브·30홀드 중 하나 / 야수 = 규정타석(팀 경기 수×3.1) / 각 부문 1위(타이틀 홀더)는 자동 후보.
      MVP 후보는 타이틀 홀더와 성적 상위로 투수 8명·야수 10명(실제 2025년 18명) */
-  const tg=x=>tgp(x.h.t??x.p.team)||144; const tit=new Set(); try{ for(const [,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(B[0])B.filter(z=>Math.abs(z.v-B[0].v)<1e-9).forEach(z=>tit.add(z.p.id)); /* 1위는 떠난 선수까지 포함한 실제 순위, 혜택도 그 1위(공동)만 */ } }catch(e){}
+  const tg=x=>tgp(awTeamOf(x.p,x.h,y))||144; /* 규정 기준 팀 경기 수도 수상 소속 구단으로(검수 11-09zq) */ const tit=new Set(); try{ for(const [,k,isP,low] of TITLES){ const B=titleBoard(y,k,isP,low); if(B[0])B.filter(z=>Math.abs(z.v-B[0].v)<1e-9).forEach(z=>tit.add(z.p.id)); /* 1위는 떠난 선수까지 포함한 실제 순위, 혜택도 그 1위(공동)만 */ } }catch(e){}
   const qB=x=>!x.p.isP&&((x.h.pa||0)>=Math.round(tg(x)*3.1)||tit.has(x.p.id)), qP=x=>x.p.isP&&((x.h.outs||0)>=tg(x)*3||(x.h.w||0)>=10||(x.h.sv||0)>=30||(x.h.hld||0)>=30||tit.has(x.p.id));
   const A={y,gg:{},cand:{gg:{}},pend:{mvp:true,gg:true},ggVote:{voters:288,start:dnum(y,11,25),end:dnum(y,12,5),ballots:{},news:{}}};
   { const pick=(L,n)=>{ const t=L.filter(x=>tit.has(x.p.id)); const rest=L.filter(x=>!tit.has(x.p.id)).sort((a,b)=>b.w-a.w); return t.concat(rest).slice(0,Math.max(n,t.length)); };
@@ -108,8 +108,10 @@ function seasonAwards(y){ const rows=[]; for(const p of Object.values(G.players)
   if(A.cand.gg.OF)A.cand.gg.OF.slice(0,3).forEach((c,i)=>{ A.gg['OF'+i]={id:c.id,name:c.name,t:c.t,line:c.line,v:c.v}; });
   (G.awards=G.awards||{})[y]=A;
   const mineC=[...(A.cand.mvp||[]),...(A.cand.roy||[])].filter(c=>c.t===G.user); /* 후보 전원: 득표 상위만 고르면 발표 전 결과가 드러난다(검수 11-09zf) */
-  mail('홍보팀',`${y} ${ASSOC.s} 시상식 후보 발표`,`MVP 후보 ${(A.cand.mvp||[]).length}명: ${[...(A.cand.mvp||[])].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n신인왕 후보 ${(A.cand.roy||[]).length}명: ${[...(A.cand.roy||[])].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'} (이름순)\n\nMVP·신인왕은 ${dmd(KD(11,24))} ${ASSOC.s} 시상식, 골든글러브는 ${dmd(KD(12,9))}에 발표됩니다.${mineC.length?`\n우리 구단 후보: ${[...new Set(mineC.map(c=>c.name))].join(', ')}`:''}`,{kind:'기록'});
+  mail('홍보팀',`${y} ${ASSOC.s} 시상식 후보 발표`,`MVP 후보 ${(A.cand.mvp||[]).length}명: ${[...(A.cand.mvp||[])].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'}\n신인왕 후보 ${(A.cand.roy||[]).length}명: ${[...(A.cand.roy||[])].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(c=>`${c.name}(${tshort(c.t)})`).join(', ')||'-'} (이름순)\n\nMVP·신인왕은 ${cerDay(KD(11,24))} ${ASSOC.s} 시상식, 골든글러브는 ${cerDay(KD(12,9))}에 발표됩니다.${mineC.length?`\n우리 구단 후보: ${[...new Set(mineC.map(c=>c.name))].join(', ')}`:''}`,{kind:'기록'});
   return A; }
+/* 실제 시상일: 결산이 늦으면 다음 날(07_daily 시상은 결산보다 먼저 돈다), 연말을 넘기면 미정(검수 11-09zq) */
+function cerDay(b){ const d=G.day<b?b:G.day+1; return d<=KD(12,31)?dmd(d):'추후 정해지는 날'; }
 /* 발표 시점에만 수상자를 공개한다 */
 function awShown(A,k){ return A&&!(A.pend&&A.pend[k]); }
 /* 시상식 전에 은퇴한 선수의 아직 발표되지 않은 수상(은퇴 기록에 넣어 두었다가 시상식 때 반영) */
@@ -121,7 +123,7 @@ function awAbroad(id,label,tid){ const a=(G.abroad||[]).find(r=>r.id===id&&!r.ba
 function awardCeremony(k){ const y=G.year; const A=G.awards&&G.awards[y]; if(!A||!A.pend||!A.pend[k])return; A.pend[k]=false; (A.cd=A.cd||{})[k]=G.day; /* 실제로 연 날(달력, 검수 11-09l) */
   const lst=k==='mvp'?[['MVP',A.mvp,A.cand.mvp],['신인왕',A.roy,A.cand.roy]]:Object.entries(A.gg).map(([pos,x])=>[`골든글러브(${pos.startsWith('OF')?'외야수':pos==='P'?'투수':POSS[pos]})`,x,pos.startsWith('OF')?A.cand.gg.OF:A.cand.gg[pos]]);
   const mine=[];
-  for(const [lab,x,C] of lst){ if(!x)continue; const p=G.players[x.id]; const tt=x.t??(p?p.team:null); if(tt===G.user)mine.push(x.name+' '+lab); /* 성적을 낸 구단 기준: 시상 전 이적·해외·은퇴해도(검수 11-08, 11-09zf) */ if(p){ addAward(p,`${y} ${lab}`,tt); if(tt===G.user)p.mor=clamp((p.mor??60)+6,0,100); }
+  for(const [lab,x,C] of lst){ if(!x)continue; for(const c of (C||[]).slice(0,3))if(c.mg===undefined){ const m=mgrOf(c.t); c.mg=m&&!m.interim?m.name:''; } /* 소감 속 감독은 시상 당시(검수 11-09zq) */ const p=G.players[x.id]; const tt=x.t??(p?p.team:null); if(tt===G.user)mine.push(x.name+' '+lab); /* 성적을 낸 구단 기준: 시상 전 이적·해외·은퇴해도(검수 11-08, 11-09zf) */ if(p){ addAward(p,`${y} ${lab}`,tt); if(tt===G.user)p.mor=clamp((p.mor??60)+6,0,100); }
     else if(awAbroad(x.id,`${y} ${lab}`,tt)){} /* 시상식 전에 해외로 떠난 선수: 해외 보관 정보(복귀 때 되살아나는 선수 정보)에 넣는다 */
     else { const ar=G.arch&&G.arch[x.id]; if(ar){ (ar.aw=ar.aw||[]).includes(`${y} ${lab}`)||ar.aw.push(`${y} ${lab}`); } /* 시상식 전에 방출·은퇴로 지워진 선수: 보관 기록에 */ if(tt===G.user&&!G.unemp)chron('award',`${x.name} ${y} ${lab}`,x.id);
       const r=(G.legends||[]).find(r=>r.id===x.id&&r.awP&&r.awP.includes(`${y} ${lab}`)); if(r){ r.awP=r.awP.filter(l=>l!==`${y} ${lab}`); r.aw.push(`${y} ${lab}`); if(lab==='MVP')r.mvp++; if(lab.includes('골든'))r.gg++; { const o=(G.ob||[]).find(o=>o.fid===x.id||o.pid===x.id); if(o){ o.awards=(o.awards||0)+1; } }
@@ -158,7 +160,7 @@ function retireNumber(i){ const L=G.legends||[]; const r=typeof i==='string'&&i[
 /* 100년 저장 크기(사용자 11-05 "100년은 즐기기 좋게"): 3년 지난 시상은 후보 명단을 상위권만 남긴다.
  30시즌 시뮬에서 시상 기록이 한 해 약 30KB씩 늘었고 대부분이 골든글러브 후보 전원의 세부 점수였다. 수상자·상위 후보·한 줄 기록은 그대로 */
 function awardsCompact(){ const A=G.awards; if(!A)return; for(const y in A){ if(+y>G.year-3)continue; const a=A[y]; if(!a||a.cmp||!a.cand)continue;
-  const slim=(L,n)=>(L||[]).slice(0,n).map(c=>{ const o={id:c.id,name:c.name,t:c.t,line:c.line,w:c.w,v:c.v}; if(c.pos)o.pos=c.pos; return o; });
+  const slim=(L,n)=>(L||[]).slice(0,n).map(c=>{ const o={id:c.id,name:c.name,t:c.t,line:c.line,w:c.w,v:c.v}; if(c.pos)o.pos=c.pos; if(c.mg!=null)o.mg=c.mg; return o; });
   a.cn={mvp:(a.cand.mvp||[]).length,roy:(a.cand.roy||[]).length,gg:{}}; for(const k in (a.cand.gg||{}))a.cn.gg[k]=a.cand.gg[k].length; /* 정리 전 후보 수: 생략한 후보를 화면에 밝힌다(검수 11-09zf) */
   a.cand.mvp=slim(a.cand.mvp,5); a.cand.roy=slim(a.cand.roy,3); for(const k in (a.cand.gg||{}))a.cand.gg[k]=slim(a.cand.gg[k],k==='OF'?5:3);
   if(a.ggVote){ delete a.ggVote.ballots; delete a.ggVote.news; } a.cmp=1; } }

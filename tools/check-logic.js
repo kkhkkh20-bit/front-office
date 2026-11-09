@@ -3214,6 +3214,38 @@ T('[KBO 규정] 포스트시즌 무승부 재경기: 최종전 뒤 같은 구장
     const sg=simGame, ag=applyGame, gb=boxSnap; simGame=()=>({score:{h:3,a:3}}); applyGame=()=>{}; boxSnap=()=>()=>{}; try{ psDay(G.day); } finally { simGame=sg; applyGame=ag; boxSnap=gb; } return {sv:G.ps.cur,h7}; };
   let r=run(1); ok(r.sv.days.length===8&&r.sv.days[7]===r.sv.days[6]+1,'무승부 1경기: 다음 날 연전이 아님 '+JSON.stringify(r.sv.days)); ok(r.sv.homes[7]===r.h7,'재경기가 최종전 구장이 아님');
   r=run(2); ok(r.sv.days[7]===r.sv.days[6]+2,'무승부 2경기: 하루 쉬고 연전이 아님 '+JSON.stringify(r.sv.days)); });
+T('[검수 11-09zq] 올스타: 한 해 선정 한 번, 행사 당일 복귀 선수 유지, 구단 대표 유지, 베스트12 투수 역할, 대체 기록 기준일, 같은 진영 이적 다음 날 소속',()=>{ fresh(); const y=G.year; G.day=G.cal.asg-14;
+  for(const p of Object.values(G.players)){ if(p.team!=null)Object.assign(lineFor(p,y,p.team,'1군'),p.isP?{g:20,gs:8,outs:180,er:20,so:60,w:6}:{g:60,pa:240,ab:200,h:65,hr:10}); }
+  const E=(p,slot)=>({p,h:seasonTotal(p,y,'1군'),w:1,slot,score:1}); const pp=allStarPool;
+  try{
+    const N=G.teams.filter(t=>allStarSide(t.id)==='나눔').map(t=>t.id); const pit=Object.values(G.players).filter(p=>p.isP&&N.includes(p.team)&&!p.ys).slice(0,3);
+    allStarPool=()=>[E(pit[0],'SP'),E(pit[1],'CP'),E(pit[2],'SP')]; const S=allStarSelect().teams['나눔'].filter(x=>x.starter); delete G.allStars[y];
+    ok(S.map(x=>x.slot).join(',')==='SP,MR,CP'&&S[2].id===pit[1].id,'베스트12 투수 역할: '+S.map(x=>x.slot+':'+x.id).join(','));
+    allStarPool=pp; const A=allStarSelect(); const L=A.teams['나눔'];
+    const mv=L.find(x=>!x.starter&&G.players[x.id]); const q=G.players[mv.id]; const nt=N.find(t=>t!==q.team); q.team=nt; G.day++; allStarDaily(); ok(L.find(x=>x.id===q.id).t===nt,'같은 진영 이적 다음 날에도 옛 구단');
+    G.day=G.cal.asg-1; const r1=G.players[L.find(x=>x.id!==q.id&&G.players[x.id]).id]; r1.injOut=1; allStarDaily(); ok(L.some(x=>x.id===r1.id),'행사 당일 복귀 선수가 전날 교체됨'); r1.injOut=0;
+    const D=A.teams['드림'], dx=D.find(x=>!x.starter&&G.players[x.id]), dp=G.players[dx.id]; const T0=dx.t; for(let i=D.length-1;i>=0;i--)if(D[i].t===T0&&D[i]!==dx)D.splice(i,1); dp.injOut=30;
+    const other=Object.values(G.players).find(p=>p.team!=null&&allStarSide(p.team)==='드림'&&p.team!==T0&&!!p.isP===!!dx.isP&&!D.some(x=>x.id===p.id)), same=Object.values(G.players).find(p=>p.team===T0&&p.id!==dp.id&&!D.some(x=>x.id===p.id));
+    allStarPool=()=>[E(other,dx.slot),E(same,'MR')]; allStarDaily(); const nx=D.find(x=>x.id===same.id); ok(nx&&nx.t===T0,'구단 대표가 다른 구단으로 넘어감'); ok(nx.d===G.day,'대체 선수 기록 기준일 없음');
+    const sel=L.find(x=>G.players[x.id]&&x.id!==q.id&&x.id!==r1.id), sp=G.players[sel.id]; sp.team=D[0].t; const inj=G.players[D.find(x=>x.id!==same.id&&G.players[x.id]).id]; inj.injOut=30;
+    allStarPool=()=>[E(sp,'MR')]; allStarDaily(); ok(!D.some(x=>x.id===sp.id),'나눔에서 빠진 선수가 드림 대체로 다시 선정'); ok((sp.aw||[]).filter(l=>l.startsWith(y+' 올스타(')).length===1,'한 해 올스타 이력 두 개: '+(sp.aw||[]).join('/'));
+    ok(A.withdrawn.some(x=>x.id===inj.id&&x.replacement==null),'대체 없음 이력');
+  }finally{ allStarPool=pp; }
+});
+T('[검수 11-09zq] 라이벌: 같은 날 같은 구장 두 경기(더블헤더)는 두 경기로 센다',()=>{ fresh(); rivalAfterGame(G.day,0,1,{score:{h:3,a:2}},false); rivalAfterGame(G.day,0,1,{score:{h:1,a:5}},false); const r=G.rivalries.pairs['0:1']; ok(r.games===2,'더블헤더 두 번째 경기 누락: '+r.games); const g={score:{h:2,a:2}}; rivalAfterGame(G.day,0,1,g,false); rivalAfterGame(G.day,0,1,g,false); ok(r.games===3,'같은 경기 중복 집계'); });
+T('[검수 11-09zq] 시상: MVP·타이틀·골든글러브 소속과 규정 기준이 같은 구단, 4할 진기록·시즌 최고 타율, 당시 감독 소감, 늦은 결산 시상일',()=>{ fresh(); const y=G.year; const [A0,B0,C0]=G.teams.map(t=>t.id).filter(t=>t!==G.user).slice(0,3);
+  for(const t of G.teams)G.sea.rec[t.id]={w:72,l:72,t:0}; G.sea.rec[A0]={w:70,l:71,t:0}; G.sea.rec[C0]={w:71,l:72,t:0};
+  const b=Object.values(G.players).find(p=>!p.isP&&p.team===A0&&!p.foreign); Object.assign(lineFor(b,y,A0,'1군'),{g:139,pa:600,ab:520,h:160,hr:50,rbi:120}); Object.assign(lineFor(b,y,B0,'1군'),{g:2,pa:5,ab:5}); b.team=B0;
+  const q=Object.values(G.players).find(p=>p.isP&&p.team===A0); Object.assign(lineFor(q,y,A0,'1군'),{g:30,gs:28,outs:425,er:40,so:150,w:9}); Object.assign(lineFor(q,y,B0,'1군'),{g:1,outs:1}); q.team=B0;
+  const r=Object.values(G.players).find(p=>!p.isP&&p.team===C0&&!p.foreign); Object.assign(lineFor(r,y,C0,'1군'),{g:140,pa:444,ab:400,h:162,hr:5});
+  const T=seasonTitles(y).find(t=>t.k==='홈런왕'); ok(T&&T.ids.includes(b.id)&&T.tids[0]===A0,'홈런왕 소속: '+JSON.stringify(T&&T.tids));
+  G.day=KD(12,11); const W=seasonAwards(y); const mc=W.cand.mvp.find(c=>c.id===b.id); ok(mc&&mc.t===A0,'MVP 후보 소속이 홈런왕과 다름');
+  ok((W.cand.gg.P||[]).some(c=>c.id===q.id&&c.t===A0),'이적 뒤 아웃 하나 더 잡은 투수가 골든글러브 후보에서 빠짐');
+  const m=G.mail.find(x=>String(x.subj).includes('시상식 후보 발표')); const tx=String(m.body||m.text||''); ok(tx.includes(dmd(KD(12,12)))&&!tx.includes(dmd(KD(12,9)))&&!tx.includes(dmd(KD(11,24))),'후보 메일 시상일: '+tx.slice(-80));
+  G.day=KD(12,31); ok(cerDay(KD(12,9))==='추후 정해지는 날','연말 넘긴 시상일 표시');
+  featSeason(y); ok((G.feats||[]).some(f=>f.k==='avg400'&&f.pid===r.id),'143경기 팀 444타석 4할 진기록 누락'); ok(G.sbest.avg&&G.sbest.avg.pid===r.id,'시즌 최고 타율 누락');
+  G.day=KD(12,12); const w=W.mvp; const mg0=mgrOf(w.t); awardCeremony('mvp'); const c0=W.cand.mvp[0]; ok(c0.mg===(mg0&&!mg0.interim?mg0.name:''),'시상 당시 감독 저장 안 됨'); G.mgr[w.t]={...(G.mgr[w.t]||{}),name:'후임감독'}; ok(c0.mg!=='후임감독','후임 감독으로 바뀜');
+});
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
