@@ -179,7 +179,7 @@ function digAnalysis(gs){ let so=0,se=0,ro=0,re=0,rs=0; const by={}; for(const g
   return {core,act,base}; }
 const digWin=gs=>gs.filter(g=>g.res==='승').length>gs.length/2;
 function digestMail(){ const D=G.dig; if(!D||!D.games||!D.games.length)return;
-  const gs=D.games.map(d=>G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user))).filter(Boolean);
+  const gs=[...new Set(D.games)].flatMap(d=>G.games.filter(g=>g.day===d&&(g.home===G.user||g.away===G.user)).reverse()); /* 더블헤더는 두 경기 모두(검수 11-09k) */
   const w=gs.filter(g=>g.res==='승').length, l=gs.filter(g=>g.res==='패').length; const rk=userRank();
   const L=gs.map(g=>{ const home=g.home===G.user; const ms=home?g.hs:g.as, os=home?g.as:g.hs; let k=null; try{ k=gmKey(g); }catch(e){} return `${dsh(g.day)} ${home?'vs':'@'} ${tshort(home?g.away:g.home)} ${g.res} ${ms}:${os}${k&&k.gw?` · 결승 ${k.gw}`:''}${k&&k.dec?` · ${k.dec}`:''}`; });
   const rows=[]; for(const p of playersOf(G.user)){ const h=seasonTotal(p,G.year,'1군'); if(!h)continue; const a=D.snap[p.id]||DIGK.map(()=>0); const d={}; DIGK.forEach((k,i)=>d[k]=(h[k]||0)-(a[i]||0));

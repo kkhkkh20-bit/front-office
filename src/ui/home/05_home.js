@@ -1,7 +1,7 @@
 /* ---------- 홈 ---------- */
 /* 다음 일까지 진행한 동안의 요약 */
 function digestCard(){ const D=G.dig; if(!D||!D.games||!D.games.length||G.res)return '';
-  const gs=D.games.map(d=>{ const i=G.games.findIndex(g=>g.day===d&&(g.home===G.user||g.away===G.user)); return i>=0?{i,g:G.games[i]}:null; }).filter(Boolean);
+  const gs=[...new Set(D.games)].flatMap(d=>G.games.map((g,i)=>({i,g})).filter(x=>x.g.day===d&&(x.g.home===G.user||x.g.away===G.user)).reverse()); /* 더블헤더는 두 경기 모두(검수 11-09k) */
   const w=gs.filter(x=>x.g.res==='승').length, l=gs.filter(x=>x.g.res==='패').length; const rk=userRank();
   const chips=gs.map(x=>{ const g=x.g; const home=g.home===G.user; const ms=home?g.hs:g.as, os=home?g.as:g.hs; const op=home?g.away:g.home;
     return `<button class="dg-g ${g.res==='승'?'w':g.res==='패'?'l':''}" data-a="openGame" data-v="${x.i}"><i>${dsh(g.day)}</i><b>${g.res}</b><span>${ms}:${os}</span><em>${home?'vs':'@'} ${esc(team(op).nick)}</em></button>`; }).join('');
