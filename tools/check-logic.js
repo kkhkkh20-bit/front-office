@@ -1416,10 +1416,10 @@ T('[드래프트] 첫 시즌부터 신인 드래프트 지명 순서(지난 시�
   simTo(()=>G.day>=KD(3,1)); const m=G.mail.slice(0,40).find(x=>x.subj.includes('신인 드래프트')&&x.subj.includes('순위')); ok(m&&m.subj.includes(n+'순위'),'3월 1일 드래프트 시즌 안내 메일 없음 또는 순위 틀림');
   simTo(()=>G.draft); ok(G.draft.picks.slice(0,G.teams.length).map(x=>x.tid).join()===o.r1.join(),'미리 알린 순서와 실제 1라운드 순서가 다름'); });
 T('[스태프] 영입 경쟁은 소식함에 쌓지 않고 후보 카드에서 다시 제안하며, 결과(영입 완료·무산)만 소식함에 남는다',()=>{ fresh(); stInit(); while(G.scouts.length>=SCOUT_MAX)G.scouts.pop(); const M=scoutMkt(); const s=M[0], s2=M[1]; const rv=G.teams.find(t=>t.id!==G.user).id;
-  s._im=s2._im=G.year*100+dobj(G.day).m; s.int=[rv]; s2.int=[]; const old=stScore; stScore=(x,tid,sal)=>tid===G.user?sal/100:1e9;
+  const oi=stInterest; stInterest=x=>x===s?[rv]:[]; /* 관심 구단은 저장하지 않고 계산한다(검수 11-09zw #28) */ const old=stScore; stScore=(x,tid,sal)=>tid===G.user?sal/100:1e9;
   const r=stOffer('sc',s.id,0); ok(r.bid,'경쟁 상황을 만들지 못함'); ok(!G.mail.slice(0,8).some(m=>m.subj.includes('영입 경쟁')),'영입 경쟁 메일이 소식함에 쌓임');
   G.day+=4; stBidExpire(); stScore=old; ok(G.mail.slice(0,8).some(m=>m.subj.includes(s.name)&&m.subj.includes('무산')),'경쟁에서 진 결과(무산)가 소식함에 없음');
-  const r2=stOffer('sc',s2.id,0); ok(r2.ok,'경쟁 없는 영입 실패'); ok(G.mail.slice(0,8).some(m=>m.subj.includes(s2.name)&&m.subj.includes('영입 완료')),'영입 완료가 소식함에 없음'); });
+  const r2=stOffer('sc',s2.id,0); ok(r2.ok,'경쟁 없는 영입 실패'); stInterest=oi; ok(G.mail.slice(0,8).some(m=>m.subj.includes(s2.name)&&m.subj.includes('영입 완료')),'영입 완료가 소식함에 없음'); });
 T('[투수] 혹사 금지 지시를 하면 선발 투구 수가 실제로 줄어든다(선발을 오래 끄는 감독이어도 평균 100구 이하), 리그 선발 평균은 KBO 수준(85~95구)',()=>{ fresh(); const m=G.mgr[G.user]; mgrAttr(m); m.pen=15; G.mgrDir={arm:{ok:true,mid:m.id}};
   const U=[], A=[]; const _ll=loadLog; loadLog=(p,d,pc,isS)=>{ if(isS&&p.e1&&period()==='season')(p.team===G.user?U:A).push(pc); return _ll(p,d,pc,isS); };
   simTo(()=>period()==='season'&&G.day>=G.cal.open+40); loadLog=_ll; const av=a=>a.reduce((x,y)=>x+y,0)/Math.max(1,a.length);
