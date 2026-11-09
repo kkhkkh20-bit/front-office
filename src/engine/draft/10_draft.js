@@ -40,7 +40,8 @@ function makeDraftClass(){
     if(top[0]&&R()<.35){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
     for(const p of top.filter(q=>q.ready)){ amHistory(p,rnd(14.5,19.5)); if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
   /* 해외파 신인: 해외에서 돌아와 2년 유예를 마친 선수(KBO 규약 107조)는 이해 신인 드래프트에 나온다. 트라이아웃 기록 대신 해외 마지막 시즌 수준으로 아마 기록을 만든다 */
-  for(const p of Object.values(G.players)){ if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; p.prospect=true; p.ovsRet=true; p.college=true; p.school=`해외파(${p.school||'고교 직행'})`; try{ amHistory(p,17.5); }catch(e){} if(!cls.includes(p.id))cls.push(p.id);
+  for(const p of Object.values(G.players)){ if(p.ovsRet&&p.prospect&&p.team==null&&!p.retired){ if(!cls.includes(p.id))cls.push(p.id); continue; } /* 불러오기 보정으로 명단을 다시 만들 때 이미 참가한 복귀자(검수 11-09ze) */
+    if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; if(!p.am)try{ amHistory(p,17.5); }catch(e){} /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
     try{ wire('드래프트',`해외파 ${p.name}(${p.age}세), ${G.year} 신인 드래프트 참가`,{ref:p.id}); }catch(e){} }
   // 언론 평가: 눈에 보이는 성적과 체격·구속만으로 매긴 순위
   /* 투수와 타자는 척도가 달라 각자 안에서 표준점수로 바꾼 뒤 합친다(그래야 언론 상위권에 투수와 타자가 섞인다) */
@@ -78,8 +79,9 @@ function migrateDraft(){ worldReset(); try{ syncMinSal(); }catch(e){} /* 불러�
   if(G.formY!==G.year&&G.day>=G.cal.camp)rollForm();
   for(const p of Object.values(G.players)) if(p.foreign){ if(!p.orig)p.orig=origOf(p); if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80)); }
   if(foreignOpen())refreshFMarket(0); /* 매주 최소 후보 수를 채운다 */
+  if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 지워진 후보의 메모(검수 11-09ze) */
   if(!(G.draft&&!G.draft.done)&&!(G.draft&&G.draft.done&&G.draft.y===G.year)&&(!G.draftClass||G.draftClass.length<DRAFT_POOL-10||G.draftClass.some(id=>G.players[id]&&!G.players[id].school))){
-    for(const id of (G.draftClass||[])){ const p=G.players[id]; if(p&&p.prospect)delete G.players[id]; }
+    for(const id of (G.draftClass||[])){ const p=G.players[id]; if(p&&p.prospect&&!p.ovsRet)delete G.players[id]; } /* 해외파 복귀자는 남겨 새 명단에 다시 넣는다(검수 11-09ze) */
     if(G.draft&&G.draft.done&&G.draft.cls)G.draft.cls=[]; makeDraftClass(); }
 }
 /* 그해 신인 드래프트 지명 순서: 지난 시즌 순위의 역순(r2: 2라운드부터). 경쟁균형세 3회 연속 초과 구단은 1라운드(r1)에서 9단계 내려간다.

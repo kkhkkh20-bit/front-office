@@ -18,8 +18,9 @@ function draftClaims(){ const live=G.draft&&!G.draft.done; const ids=(live?G.dra
   [...L].sort((a,b)=>(a.p.press||999)-(b.p.press||999)).forEach((x,i)=>x.prk=i+1); /* 남은 후보 안에서 언론 순위 */
   const reason=x=>{ const T=x.rp.tools.filter(t=>t.k!=='vit'&&(x.p.isP?['stf','ctl','sta'].includes(t.k):!['stf','ctl','sta'].includes(t.k))); const pet=scoutPet(x.rp.sc,x.p.isP); const tp=T.find(t=>t.k===pet&&t.fut>=55); const best=tp||[...T].sort((a,b)=>b.fut-a.fut)[0]; return best?{k:best.k,g:FD_G(best.fut)}:null; };
   /* 강력 추천: 언론보다 25계단 이상 높게 보는 후보 중 스카우트가 가장 높게 보는 4명 */
-  const up=L.filter(x=>x.rp.ofp!=null&&x.rp.ofp>=50&&x.rk<=45&&x.prk-x.rk>=25).sort((a,b)=>(b.rp.ofp+(b.prk-b.rk)*.1)-(a.rp.ofp+(a.prk-a.rk)*.1)).slice(0,4);
-  const dn=L.filter(x=>x.rp.ofp!=null&&x.prk<=25&&x.rk-x.prk>=25).sort((a,b)=>(b.rk-b.prk)-(a.rk-a.prk)).slice(0,4);
+  const seen=x=>dcObs(x.p,x.rp.sc)>0; /* 한 번도 못 본 후보는 주장하지 않는다(검수 11-09ze: 배치 첫날 관찰 0회 강력 추천) */
+  const up=L.filter(x=>seen(x)&&x.rp.ofp!=null&&x.rp.ofp>=50&&x.rk<=45&&x.prk-x.rk>=25).sort((a,b)=>(b.rp.ofp+(b.prk-b.rk)*.1)-(a.rp.ofp+(a.prk-a.rk)*.1)).slice(0,4);
+  const dn=L.filter(x=>seen(x)&&x.rp.ofp!=null&&x.prk<=25&&x.rk-x.prk>=25).sort((a,b)=>(b.rk-b.prk)-(a.rk-a.prk)).slice(0,4);
   for(const [k,A] of [['up',up],['down',dn]])for(const x of A){ const sc=x.rp.sc; m[x.p.id]={k,rk:x.rk,prk:x.prk,obs:dcObs(x.p,sc),conf:DC_CONF(x.rp.sd||9),tool:reason(x),who:sc?sc.name:'단장'}; }
   _dcc={k:key,m}; return m; }
 function draftClaim(p){ return p&&p.prospect?draftClaims()[p.id]||null:null; }
