@@ -27,7 +27,7 @@ function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>
   if(/연봉 협상이 시작|연봉 미계약|연봉 계약 마감|연봉조정 신청/.test(subj))c.contract=G.contract?.y;
   if(has(['faOpen','faMatch','faLL','agPitchOk'])||/FA 승인 선수|FA 협상이 열립니다|스토브리그가 시작/.test(subj))c.fa=G.fa?.y0;
   return c; }
-function mail(from,subj,body,o){ o=o||{}; if(G.unemp&&o.kind!=='경력'&&from!=='야인')return {read:true,acts:[]}; /* 야인일 때는 전 소속 구단 업무 메일을 받지 않는다 */
+function mail(from,subj,body,o){ o=o||{}; if(G._away)return {read:true,acts:[]}; /* 떠난 구단 대리 처리 중(fanAway) */ if(G.unemp&&o.kind!=='경력'&&from!=='야인')return {read:true,acts:[]}; /* 야인일 때는 전 소속 구단 업무 메일을 받지 않는다 */
   { const d=G.mail.slice(0,60).find(x=>!x.read&&x.subj===subj&&x.body===body&&G.day-x.day<=7&&JSON.stringify(x.acts||[])===JSON.stringify(o.acts||[])); if(d){ if(o.imp&&!d.imp){ d.imp=true; if(stopOn(d))G.stops.push(d); } return d; } } /* 같은 소식이 안 읽힌 채 있으면 다시 보내지 않고, 중요 경고면 기존 소식을 중요로 올린다(검수 11-09za). 버튼이 다른(다른 결정) 소식은 따로(검수 11-09z) */
   const m={id:'m'+(G.mailSeq=(G.mailSeq||0)+1),day:G.day,from,subj,body,read:false,imp:!!o.imp,acts:o.acts||[],ref:o.ref??null,kind:o.kind||'일반',face:o.face??null,ctx:mailContext(subj,o.acts)};
   if(o.cat)m.cat=o.cat; G.mail.unshift(m); mailPrune(); if(m.imp&&stopOn(m))G.stops.push(m); return m; }

@@ -2,7 +2,7 @@
  팬 여론(fan)과 언론 논조(press)는 0~100. 기사 하나하나가 두 지수를 움직이고, 지수는 관중·광고 수입과 구단주 평가로 이어진다. */
 const OUTLETS=['스포츠한빛','데일리 베이스볼','야구일보','더그아웃 매거진','팬 커뮤니티'];
 function prInit(){ if(!G.pr)G.pr={fan:55,press:50,hist:[]}; if(!G.news)G.news=[]; if(!G.ownerLog)G.ownerLog=[]; }
-function news(kind,title,body,tone,o){ prInit(); o=o||{};
+function news(kind,title,body,tone,o){ if(G._away)return null; /* 떠난 구단 대리 처리 중(fanAway) */ prInit(); o=o||{};
   const outlet=o.outlet||(kind==='팬'?'팬 커뮤니티':outletPick(title)); /* 영향력이 큰 매체가 더 자주 쓴다 */
   if((G.news||[]).some(x=>x.t===title&&G.day-x.d<30))return null; /* 같은 제목 기사는 한 달 안에 다시 내지 않는다 */
   const it={d:G.day,o:outlet,t:title,b:body,v:tone,k:kind,ref:o.ref??null,id:(G.newsSeq=(G.newsSeq||0)+1)};
