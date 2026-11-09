@@ -83,7 +83,7 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
     <div class="cfm-b"><button class="btn" data-a="annPlayer" data-v="${p.id}">선수 보기</button><button class="btn primary" data-a="annClose">확인${UI.annQ.length>1?` (${UI.annQ.length-1}명 더)`:''}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
 /* 계속을 누를 때 아직 보지 않은 결정·중요 소식·트레이드 제안이 있으면 한 번 알려 준다(같은 목록이면 다시 묻지 않는다) */
-function pendEvents(){return (G.evs||[]).filter(e=>!e.done&&evStops(e)&&(e.exp==null||e.exp>=G.day)&&!G.mail.some(m=>m.id===e.mid&&mailDone(m)));}
+function pendEvents(){return (G.evs||[]).filter(e=>!e.done&&evStops(e)&&!evExpired(e)&&!G.mail.some(m=>m.id===e.mid&&mailDone(m)));}
 function pendOffers(){return stopOn({kind:'트레이드'})?(G.offers||[]).filter(o=>!o.blk&&(o.exp==null||o.exp>=G.day)):[];}
 function pendItems(){ const L=[]; const ev=pendEvents(); const key=ev.filter(e=>EV_KEY.has(e.k)), oth=ev.filter(e=>!EV_KEY.has(e.k));
   if(key.length)L.push({id:'k'+key.map(e=>e.id).join(','),t:`핵심 결정 ${key.length}건: ${key.slice(0,2).map(e=>`${e.title}(~${dmd(e.exp)})`).join(', ')}${key.length>2?' 외':''}`});

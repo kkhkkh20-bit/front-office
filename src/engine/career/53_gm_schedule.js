@@ -12,7 +12,7 @@ function gmPlanAt(d){ return gmPlans()[d]||null; }
 function gmOpsOn(d){ const L=dayGames(d).filter(m=>m.includes(G.user)).map(m=>m[0]===G.user?m[1]:m[0]); const q=psOursAt(d); if(q)L.push(q.op); return L; }
 /* 직관 예약은 잡은 경기(상대)에 붙는다: 그 상대 경기가 그날 열려야 유효(옛 저장은 상대 없이 그날 경기만, 검수 11-09zo) */
 function gmPlanLive(d,q){ const L=gmOpsOn(+d); return q.op==null?L.length>0:L.includes(q.op); }
-function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); const drop=()=>{ const o=P[d]; if(o&&o.mid)G.mail=G.mail.filter(m=>m.id!==o.mid); }; /* 같은 날 일정을 바꾸거나 지우면 옛 '내일 직관' 알림은 지운다. 변경이 거절되면 그대로 둔다(검수 11-06) */ if(!k){ drop(); delete P[d]; return '일정을 지웠습니다.'; }
+function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); const drop=()=>{ const o=P[d]; if(o&&o.mid){ G.mail=G.mail.filter(m=>m.id!==o.mid); G.stops=(G.stops||[]).filter(m=>m.id!==o.mid); } }; /* 정지 목록의 알림도 함께(검수 11-09zzc #25) */ /* 같은 날 일정을 바꾸거나 지우면 옛 '내일 직관' 알림은 지운다. 변경이 거절되면 그대로 둔다(검수 11-06) */ if(!k){ drop(); delete P[d]; return '일정을 지웠습니다.'; }
   const ops=gmOpsOn(d);
   if(k==='attend'&&!ops.length)return '그날은 우리 경기가 없습니다.';
   if(k==='scout'&&!gmTourn(d))return '그날은 고교 대회가 없습니다.';
@@ -37,7 +37,7 @@ function gmPlanDaily(){ if(G.unemp)return; const P=gmPlans(); const tm=P[G.day+1
 function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||p.done)return; if(p.op!=null&&p.op!==(rec.home===G.user?rec.away:rec.home))return; /* 다른 상대 경기로 예약을 쓰지 않는다(검수 11-09zo) */ if((p.x==='owner'||p.x==='ceo')&&cwStart(rec,p))return; /* 구단주·사장 동석: 동석 관람 대화로 */ p.done=true; const t=team(G.user); const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs; const L=[];
   const m=G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+1,0,100); L.push('감독 관계 +1'); } for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+1,0,100); L.push('1군 선수단 기분 +1');
   if(p.x==='owner'){ const d=ms>0?1.5:ms<=-5?-1.5:0; t.trust=clamp(t.trust+d,0,100); L.push(d?`구단주 신뢰 ${d>0?'+':''}${d}`:'구단주 신뢰 변화 없음');
-    const B=bossOf(G.user); mail('구단주실',`구단주와 함께 본 경기: ${ms>0?'승리':ms<0?'패배':'무승부'}`,`${ms>0?'"오늘 같은 경기를 자주 보고 싶군요. 수고했습니다."':ms<=-5?'"이런 경기를 보여 주려고 날 부른 겁니까?"':'"쉽지 않은 경기였군요. 계속 지켜보겠습니다."'}\n\n${L.join(' · ')}`,{kind:'구단주'}); void B; }
+    const B=bossOf(G.user); const cm=mail('구단주실',`구단주와 함께 본 경기: ${ms>0?'승리':ms<0?'패배':'무승부'}`,`${ms>0?'"오늘 같은 경기를 자주 보고 싶군요. 수고했습니다."':ms<=-5?'"이런 경기를 보여 주려고 날 부른 겁니까?"':'"쉽지 않은 경기였군요. 계속 지켜보겠습니다."'}\n\n${L.join(' · ')}`,{kind:'구단주'}); if(cm&&cm.id)cm.sgid=rec.gid; void B; } /* 중계를 마칠 때까지 감출 소식(검수 11-09zzc #11) */
   else if(p.x==='ceo'){ L.push('사장과 예산 이야기를 나눴습니다'); const b=budget(); if(b.roomGoal<0&&R()<.5){ t.trust=clamp(t.trust+.5,0,100); L.push('사장이 구단주에게 현장 사정을 잘 전해 주기로 했습니다(신뢰 +0.5)'); } mail('사장실','사장과 함께 본 경기',L.join(' · '),{kind:'구단주'}); }
   else note('일정',`직관을 마쳤습니다. ${L.join(' · ')}.`); }
 function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.region===reg&&!p.college);

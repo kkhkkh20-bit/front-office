@@ -51,7 +51,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
     <div class="wk-acts"><button class="btn primary" data-a="wkClose">확인 (Space)</button><button class="btn" data-a="wkStand">순위 보기</button></div>
   </div></div>`; }
 Object.assign(A,{
-  wkClose(){ UI.wkres=null; renderSheet(); },
+  wkClose(){ UI.wkres=null; save(); renderSheet(); }, /* 닫은 요약은 다시 열리지 않게 저장(검수 11-09zzc #20) */
   wkStand(){ UI.wkres=null; A.go('league:stand'); },
   /* 소식함의 경기 정리 소식에서 다시 열기: v = "시작일:끝일" */
   wkOpen(v){ const [f,t,n]=String(v).split(':').map(Number); if(!wkGames(f,t).length){ toast('그 기간 경기 기록이 더는 남아 있지 않습니다. 리그 → 일정·결과에서 볼 수 있습니다.'); return; } closeSheets(); UI.wkres={from:f,to:t,rk0:null,n:n||0}; renderSheet(); }

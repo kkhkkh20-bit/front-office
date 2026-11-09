@@ -10946,14 +10946,15 @@ function specialKind(day,hid,aid){
   return null;
 }
 /* 중계로 볼 우리 경기 직전 선수 기록(저장하지 않는 메모리 사본): 중계 중 선수 화면에서 그 경기 결과(투구 수·세이브·좌우·타구 분포)가 먼저 보이지 않게(검수 11-08) */
-let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','fat','l10','hist'];
+let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','fat','l10','hist','injOut','injK','injB','injC','injHist','inj','ucl','reInj']; /* 당일 부상도 경기 전 상태로(검수 11-09zzc #13) */
+const spoilLite=k=>!['gl','hist','spl','spr','l10'].includes(k); /* 저장본에 남기는 가벼운 항목(새로고침 뒤 중계 재개용, 검수 11-09zzc #3). 기록·경기 로그는 박스스코어로 빼 준다 */
 function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of playersOf(t)){ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
 /* 경기 반영(applyGame) 도중 오류가 나면 그 경기에 나온 선수 상태(투구 부하·기록·피로)를 경기 전으로 되돌린다: 다시 치를 때 부하가 두 번 쌓이지 않게(검수 11-09zn) */
 function boxSnap(g){ const L=[]; for(const k of ['h','a'])for(const id of g.S[k].box.keys()){ const p=G.players[id]; if(p)L.push([p,JSON.stringify(p)]); } return ()=>{ for(const [p,j] of L){ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(j)); } }; }
 function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
   let userRec=null; const mk=(G.makeup||[]).filter(x=>x.y===G.year&&!(x.d>=day)); G.makeup=(G.makeup||[]).filter(x=>x.y===G.year&&x.d>=day); /* 오늘 미룬 경기(소집일 인원 부족)는 오늘 다시 치르지 않고 다음 경기일에(검수 11-09zj) */
   for(const [h,a] of [...mk.map(x=>[x.h,x.a]),...(G.cal.sched[day]||[])]){
-    const kind=specialKind(day,h,a); if(h===G.user||a===G.user)try{ spoilSnapTake(day,[h,a]); }catch(e){}
+    const kind=specialKind(day,h,a); if((h===G.user||a===G.user)&&!(SPOIL_SNAP&&SPOIL_SNAP.day===day&&SPOIL_SNAP.y===G.year))try{ spoilSnapTake(day,[h,a]); }catch(e){} /* 같은 날 두 경기: 관전하는 첫 경기 직전 사본을 지킨다(검수 11-09zzc #14) */
     const later=e=>{ G.makeup.push({y:G.year,h,a,d:day}); if(G.cal.end0==null)G.cal.end0=G.cal.end; if(day>=G.cal.end)G.cal.end=day+1; /* 마지막 날 미룬 경기: 정규시즌을 하루씩 늘려 다 치른 뒤 순위·시드를 정한다. 미처리 경기를 남긴 채 시즌을 닫지 않는다(검수 11-09k, 11-09zn) */ try{ console.error('경기 처리 실패, 다음 경기일로 미룸',dmd(day),h,a,e); }catch(x){} };
     const short=()=>[h,a].some(t=>t!==G.user&&actOf(t).filter(p=>!p.isP&&healthy(p)).length<9); /* AI 구단 건강한 야수 9명 미만이면 2군에서 채우고, 그래도 안 되면 미룬다(검수 11-09zn) */
     if(short()){ for(const t of [h,a])if(t!==G.user)try{ entryManage(t,false,true); }catch(e){} if(short()){ later('야수 9명 미만'); continue; } }
@@ -11092,7 +11093,8 @@ function psOursAt(d){ const P=G.ps; const s=P&&!P.done&&P.cur; if(!s||!(s.hi===G
 function psOursTxt(){ const s=G.ps&&G.ps.cur; if(!s)return '우리 경기'; const op=s.hi===G.user?s.lo:s.hi; return `${ROUNDK[s.round]} ${s.gi+1}차전(${tshort(op)}전)`; }
 const ROUNDK={tb:'순위 결정전',wc:'와일드카드 결정전',spo:'준플레이오프',po:'플레이오프',ks:'한국시리즈'};
 /* 오류·저장 상태로 지나간 차전은 다음 진행일부터 다시 잡는다(검수 11-09k). 진행 전에 미리 옮겨 두어 경기 전 확인·중계 대기·일정 화면이 그 날짜를 본다(검수 11-09zo) */
-function psCatchUp(day){ const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.days&&s.days[s.gi]<day){ const sh=day-s.days[s.gi]; s.days=s.days.map((d,i)=>i>=s.gi?d+sh:d); } }
+function psCatchUp(day){ const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.days&&s.days[s.gi]<day){ const sh=day-s.days[s.gi], old=s.days.slice(s.gi); s.days=s.days.map((d,i)=>i>=s.gi?d+sh:d);
+  /* 옮긴 차전의 직관·관전 예약도 새 날짜로(검수 11-09zzc #19) */ const P=G.gmPlan||{}, mv=old.filter(d=>P[d]&&!P[d].done&&P[d].k==='attend').map(d=>[d+sh,P[d]]); for(const [d] of mv)delete P[d-sh]; for(const [d,q] of mv)P[d]=q; for(const k of ['watchPlanned','simPlanned'])if(G[k]&&old.includes(G[k].day))G[k]={...G[k],day:G[k].day+sh}; } }
 function psDay(day){
   psCatchUp(day); const P=G.ps, s=P.cur; if(!s||s.days[s.gi]!==day)return;
   const h=s.homes[s.gi], a=h===s.hi?s.lo:s.hi;
@@ -13872,7 +13874,9 @@ function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',cat:o.cat,ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
   e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if((!EV_KEY.has(k)&&G.deleg&&G.deleg[k])||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); } return e; }
-function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.';
+/* 답변 기한이 지난 미결 결정: 소식함·홈 결정 카드·직접 선택이 같은 판정을 쓴다(다음 날 처리 때 기본안으로, 검수 11-09zzc #26) */
+function evExpired(e){ return !!e&&!e.done&&e.exp!=null&&G.day>e.exp; }
+function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(!auto&&evExpired(e))return '결정 답변 기한이 지났습니다. 다음 날 기본안으로 처리됩니다.';
   if(!Number.isInteger(i)||i<0||i>=e.opts.length)return '선택할 수 없는 항목입니다.';
   if(e.pt!=null){ const q=G.players[e.data.pid]; if(!q||q.team!==e.pt||G.user!==e.pt){ e.done=true; e.void=true; e.res='선수가 우리 구단을 떠나 결정이 끝났습니다.'; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[종료] ${q?q.name:'선수'}이(가) 우리 구단을 떠나 이 결정은 적용하지 않았습니다.`; } return e.res; } } /* 실행 시점 소속 재검사: 떠난 선수에게 옛 결정(징계·면담 등)을 적용하지 않는다 */
   if(!auto&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why)return why; } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다(검수 11-06) */
@@ -17226,7 +17230,7 @@ function gmPlanAt(d){ return gmPlans()[d]||null; }
 function gmOpsOn(d){ const L=dayGames(d).filter(m=>m.includes(G.user)).map(m=>m[0]===G.user?m[1]:m[0]); const q=psOursAt(d); if(q)L.push(q.op); return L; }
 /* 직관 예약은 잡은 경기(상대)에 붙는다: 그 상대 경기가 그날 열려야 유효(옛 저장은 상대 없이 그날 경기만, 검수 11-09zo) */
 function gmPlanLive(d,q){ const L=gmOpsOn(+d); return q.op==null?L.length>0:L.includes(q.op); }
-function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); const drop=()=>{ const o=P[d]; if(o&&o.mid)G.mail=G.mail.filter(m=>m.id!==o.mid); }; /* 같은 날 일정을 바꾸거나 지우면 옛 '내일 직관' 알림은 지운다. 변경이 거절되면 그대로 둔다(검수 11-06) */ if(!k){ drop(); delete P[d]; return '일정을 지웠습니다.'; }
+function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); const drop=()=>{ const o=P[d]; if(o&&o.mid){ G.mail=G.mail.filter(m=>m.id!==o.mid); G.stops=(G.stops||[]).filter(m=>m.id!==o.mid); } }; /* 정지 목록의 알림도 함께(검수 11-09zzc #25) */ /* 같은 날 일정을 바꾸거나 지우면 옛 '내일 직관' 알림은 지운다. 변경이 거절되면 그대로 둔다(검수 11-06) */ if(!k){ drop(); delete P[d]; return '일정을 지웠습니다.'; }
   const ops=gmOpsOn(d);
   if(k==='attend'&&!ops.length)return '그날은 우리 경기가 없습니다.';
   if(k==='scout'&&!gmTourn(d))return '그날은 고교 대회가 없습니다.';
@@ -17251,7 +17255,7 @@ function gmPlanDaily(){ if(G.unemp)return; const P=gmPlans(); const tm=P[G.day+1
 function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||p.done)return; if(p.op!=null&&p.op!==(rec.home===G.user?rec.away:rec.home))return; /* 다른 상대 경기로 예약을 쓰지 않는다(검수 11-09zo) */ if((p.x==='owner'||p.x==='ceo')&&cwStart(rec,p))return; /* 구단주·사장 동석: 동석 관람 대화로 */ p.done=true; const t=team(G.user); const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs; const L=[];
   const m=G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+1,0,100); L.push('감독 관계 +1'); } for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+1,0,100); L.push('1군 선수단 기분 +1');
   if(p.x==='owner'){ const d=ms>0?1.5:ms<=-5?-1.5:0; t.trust=clamp(t.trust+d,0,100); L.push(d?`구단주 신뢰 ${d>0?'+':''}${d}`:'구단주 신뢰 변화 없음');
-    const B=bossOf(G.user); mail('구단주실',`구단주와 함께 본 경기: ${ms>0?'승리':ms<0?'패배':'무승부'}`,`${ms>0?'"오늘 같은 경기를 자주 보고 싶군요. 수고했습니다."':ms<=-5?'"이런 경기를 보여 주려고 날 부른 겁니까?"':'"쉽지 않은 경기였군요. 계속 지켜보겠습니다."'}\n\n${L.join(' · ')}`,{kind:'구단주'}); void B; }
+    const B=bossOf(G.user); const cm=mail('구단주실',`구단주와 함께 본 경기: ${ms>0?'승리':ms<0?'패배':'무승부'}`,`${ms>0?'"오늘 같은 경기를 자주 보고 싶군요. 수고했습니다."':ms<=-5?'"이런 경기를 보여 주려고 날 부른 겁니까?"':'"쉽지 않은 경기였군요. 계속 지켜보겠습니다."'}\n\n${L.join(' · ')}`,{kind:'구단주'}); if(cm&&cm.id)cm.sgid=rec.gid; void B; } /* 중계를 마칠 때까지 감출 소식(검수 11-09zzc #11) */
   else if(p.x==='ceo'){ L.push('사장과 예산 이야기를 나눴습니다'); const b=budget(); if(b.roomGoal<0&&R()<.5){ t.trust=clamp(t.trust+.5,0,100); L.push('사장이 구단주에게 현장 사정을 잘 전해 주기로 했습니다(신뢰 +0.5)'); } mail('사장실','사장과 함께 본 경기',L.join(' · '),{kind:'구단주'}); }
   else note('일정',`직관을 마쳤습니다. ${L.join(' · ')}.`); }
 function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.region===reg&&!p.college);
@@ -18200,7 +18204,7 @@ EVH.cwInv={ pick(e,i){ const d=e.data; if(i!==0)return `${d.who==='ceo'?'사장'
 function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=plan.x==='ceo'?'ceo':'own'; const why=plan.cw||'self'; plan.done=true;
   const t=team(G.user); const me=rec.home===G.user?'h':'a'; const ms=me==='h'?rec.hs-rec.as:rec.as-rec.hs; const tr0=t.trust;
   const L=cwUlog(); const tags=cwTags(rec,me,ms,cwStreak(L.slice(0,-1)));
-  const S={tid:G.user,id:'cw'+rec.day+':'+rec.home+':'+rec.away,day:rec.day,gk:{d:rec.day,h:rec.home,a:rec.away},who,why,ms,res:rec.res,tags,tr0,until:G.day+3,done:false,sugg:null,gift:null};
+  const S={tid:G.user,id:'cw'+rec.day+':'+rec.home+':'+rec.away,day:rec.day,gk:{d:rec.day,h:rec.home,a:rec.away,gid:rec.gid},who,why,ms,res:rec.res,tags,tr0,until:G.day+3,done:false,sugg:null,gift:null};
   S.lines=cwRemarks(rec,me,who,ms,tags); try{ S.live=cwLive(rec,who); }catch(e){ S.live=[]; }
   /* 결과에 따른 신뢰 소폭 변화: 이기면 +1(5점 차 이상 +1.5), 5점 차 이상 지면 -1. 사장과 보면 절반이 구단주에게 전해진다 */
   const d0=ms>=5?1.5:ms>0?1:ms<=-5?-1:0; const dv=who==='ceo'?d0/2:d0; t.trust=clamp(Math.round((t.trust+dv)*10)/10,0,100); S.trD=Math.round((t.trust-tr0)*10)/10;
@@ -18209,7 +18213,7 @@ function cwStart(rec,plan){ if(!cwOn()||!rec||!rec.box)return false; const who=p
   if(ms>0)S.gift=cwGift(tags);
   S.ord=cwOrdIssue(who); /* 구단주 지시(이미 진행 중이면 새로 내리지 않는다) */
   G.cwS=S; const c=cwSt(); c.hist.push({d:S.day,y:G.year,why,who,res:rec.res,ms,trD:S.trD,rapD:S.rapD,gift:S.gift?S.gift.k:null,tags,ord:S.ord?S.ord.k:null}); if(c.hist.length>40)c.hist.splice(0,c.hist.length-40);
-  const O=cwOrd(); mail(cwFrom(who),`${who==='ceo'?'사장과':'구단주와'} 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} ${me==='h'?'홈경기':'원정경기'}를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>=0?'+':''}${S.trD} · ${who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD}(${cwRap(who)})${S.gift?`\n${S.gift.t}`:''}\n감독 관계 +1 · 1군 선수단 기분 +1(단장 직관)${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]});
+  const O=cwOrd(); const cm=mail(cwFrom(who),`${who==='ceo'?'사장과':'구단주와'} 함께 본 경기: ${rec.res==='승'?'승리':rec.res==='패'?'패배':'무승부'}${S.gift?' · 구단주 선물':''}`,`${cwNm(who)}와(과) ${dmd(rec.day)} ${me==='h'?'홈경기':'원정경기'}를 함께 봤습니다(${CW_WHY[why]}).\n\n${S.lines.map(x=>'"'+x+'"').join('\n')}\n\n구단주 신뢰 ${S.trD>=0?'+':''}${S.trD} · ${who==='ceo'?'사장':'구단주'} 친밀도 +${S.rapD}(${cwRap(who)})${S.gift?`\n${S.gift.t}`:''}\n감독 관계 +1 · 1군 선수단 기분 +1(단장 직관)${O?`\n\n구단주 지시: ${O.t} (${dmd(O.until)}까지, ${O.crit})`:''}\n\n${dmd(S.until)}까지 경기 보고 화면에서 한 가지를 건의할 수 있습니다.`,{kind:'구단주',acts:[{l:'경기 보고 · 건의',a:'cwOpen'}]}); if(cm&&cm.id)cm.sgid=rec.gid; /* 결과가 든 소식: 그 경기 중계를 마칠 때까지 소식함에서 감춘다(검수 11-09zzc #11) */
   return true; }
 /* 함께 본 경기 중 반응: 리드를 잡거나 빼앗긴 순간, 동점, 우리 홈런, 한 번에 3점 이상 내준 순간. 최대 4번, 구단주 성향별 말투(사장은 수익 쪽) */
 const CW_LIVE={
@@ -18294,7 +18298,7 @@ function cwSuggest(v){ const S=G.cwS; if(!S||S.done||S.sugg||(S.tid!=null&&S.tid
   const ow=t.owner; const say=S.who==='ceo'?(ok?'회장님 결재가 났습니다. 쓰임새는 분명히 해 주세요.':'이번에는 어렵다고 하십니다.'):ok?(ow==='win'?'좋소. 대신 결과로 보여 주시오.':ow==='profit'?'...이번만이오. 돈 쓴 만큼 해내시오.':'알겠소. 팬들을 실망시키지 마시오.'):(ow==='profit'?'지금은 돈을 더 쓸 때가 아니오.':ow==='win'?'성적으로 먼저 증명하시오.':'지금은 때가 아니오.');
   S.sugg={k:v,l:o[1],ok,txt,say,dT:Math.round((t.trust-tr0)*10)/10,mod}; S.done=true; const h=cwSt().hist.find(z=>z.d===S.day); if(h)h.sugg={k,ok}; return ''; }
 function cwSkipSugg(){ const S=G.cwS; if(S&&!S.done){ S.done=true; S.sugg={k:'none'}; } }
-function cwGame(S){ S=S||G.cwS; if(!S)return null; return (G.games||[]).find(g=>g.day===S.gk.d&&g.home===S.gk.h&&g.away===S.gk.a)||null; }
+function cwGame(S){ S=S||G.cwS; if(!S)return null; return (G.games||[]).find(g=>S.gk.gid!=null?g.gid===S.gk.gid:g.day===S.gk.d&&g.home===S.gk.h&&g.away===S.gk.a)||null; } /* 같은 상대 더블헤더는 경기 id로(검수 11-09zzc #15) */
 
 /* ---------- (b) 구단주 지시: 짧은 목표 하나, 기한 뒤 실제 기록으로 판정 ----------
    시즌 목표(G.goals: 순위·지원·여론·유망주 출전)와 같은 방식으로, 기간을 3~4주로 줄인 판정. 달성: 신뢰 +2·친밀도 +3, 미달: 신뢰 -1 */
@@ -22055,8 +22059,13 @@ function unz15(s){ const n=((s.charCodeAt(1)-32)<<15)|(s.charCodeAt(2)-32), u=ne
   for(let i=3;i<s.length&&k<n;i++){ acc=(acc<<15)|(s.charCodeAt(i)-32); bits+=15; while(bits>=8&&k<n){ bits-=8; u[k++]=(acc>>>bits)&255; } acc&=(1<<bits)-1; } return u; }
 let ZERR=''; const ZOK=typeof fflate!=='undefined'&&typeof TextEncoder!=='undefined';
 /* 저장본에서만 무적 선수의 최근 경기·기용 기록을 뺀다(지금 플레이 중인 데이터는 그대로: 검수 11-06) */
-function castHoldSync(){ const c=UI.cast||UI.castRet; if(G&&c&&c.hold&&!c.fin&&G.games[c.g])G.castHold={g:c.g,k:c.k||0}; } /* 결과를 숨긴 채 보던 중계 위치(로컬 저장·내보내기 공용) */
-function prepG(){ castHoldSync(); return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
+/* 결과를 숨긴 채 보던 중계 상태(로컬 저장·내보내기 공용): 장면·투구·재생/일시정지·배속·모드·경기 전 화면·동석 연결, 경기 전 선수 상태(가벼운 항목)까지(검수 11-09zzc #3~#8·#10) */
+function castHoldSync(){ const c=UI.cast||UI.castRet, g=G&&c&&c.hold&&G.games[c.g]; if(!g)return; if(c.fin||(c.k||0)>=(g.pbp||[]).length){ delete G.castHold; return; }
+  const H0=G.castHold, S=typeof SPOIL_SNAP!=='undefined'&&SPOIL_SNAP, ids=['h','a'].flatMap(sd=>['bat','pit'].flatMap(k=>((g.box&&g.box[sd]&&g.box[sd][k])||[]).map(x=>x.id)));
+  const ps=S&&S.day===g.day&&S.y===dobj(g.day).y?Object.fromEntries(ids.filter(id=>S.P[id]).map(id=>[id,Object.fromEntries(SPOIL_K.filter(spoilLite).map(k=>[k,S.P[id][k]]))])):H0&&H0.gid===g.gid&&H0.ps||null;
+  G.castHold={g:c.g,gid:g.gid,k:c.k||0,play:UI.cast===c?!!c.play:!!c.wasPlay,pre:c.pre?1:0,spd:c.spd||1,mode:c.mode==='all'?'all':'hl',...(c.pitch&&c.pitch.k===c.k&&c.pitch.shown>0?{pi:c.pitch.shown}:{}),...(UI.cwAfter?{cw:UI.cwAfter}:{}),...(ps?{ps}:{})}; }
+/* 저장 전 화면 상태가 이 세이브(G) 것인지 먼저 맞춘다(검수 11-09zzc #1: 가져온 백업에 이전 게임의 중계 위치가 저장됨) */
+function prepG(){ try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
 function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:6})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
 async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
 function packG(){ return packJ(prepG()); }
@@ -22068,7 +22077,7 @@ let SAVE_ERR='';
 let _svT=null;
 function save(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(!G)return; if(_svT)clearTimeout(_svT); _svT=setTimeout(()=>{ _svT=null; saveStoreAsync(); },700); }
 function saveNow(){ if(G){ G.stops=G.stops||[]; tutTick(); } if(_svT){ clearTimeout(_svT); _svT=null; } return saveStore(); } /* 저장 성공 여부를 돌려준다 */
-function saveFlush(){ if(_svT||_svBusy||_svFail){ if(_svT)clearTimeout(_svT); _svT=null; saveStore(); } } /* 몰아 저장이 압축 중이어도 탭을 닫을 땐 바로 저장한다. 실패한 저장은 다음 마감 때 다시 시도한다(검수 11-09zr #8) */
+function saveFlush(){ const h0=G&&JSON.stringify(G.castHold||null); try{ castHoldSync(); }catch(e){} if(_svT||_svBusy||_svFail||(G&&JSON.stringify(G.castHold||null)!==h0)){ /* 자동 재생으로 지나간 중계 장면도 탭을 숨길 때 저장(검수 11-09zzc #4·#5) */ if(_svT)clearTimeout(_svT); _svT=null; saveStore(); } } /* 몰아 저장이 압축 중이어도 탭을 닫을 땐 바로 저장한다. 실패한 저장은 다음 마감 때 다시 시도한다(검수 11-09zr #8) */
 try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')saveFlush(); }); window.addEventListener('beforeunload',saveFlush); }catch(e){}
 /* 저장 순번: 늦게 끝난 몰아 저장(비동기)이 그사이 바로 저장한 더 새 상태를 덮지 않게 한다 */
 let _svSeq=0, _svBusy=false, _svFail=false;
@@ -22114,21 +22123,27 @@ const hand=p=>p.isP?`${p.th}투`:`${p.th}투${p.bt}타`;
 const recStr=r=>`${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''}`;
 /* 결과를 먼저 계산해 둔 우리 경기: 실시간 진행 중이거나 중계를 끝까지 보기(또는 닫기) 전에는 그 경기를 돌려준다. 결과(전적·순위·날짜 띠 점수)는 그동안 감춘다 */
 function spoilG(){ if(!G)return null; if(G.live){ const g=G.games[G.live.i]; return g&&G.live.upto<g.line.a.length+g.line.h.length?g:null; }
-  if(!UI.cast&&!UI.castRet&&G.castHold&&!UI.title){ const H=G.castHold; if(G.games[H.g]){ UI.cast={g:H.g,k:H.k||0,play:true,pre:0,spd:1, /* 다시 열어도 바로 재생(사용자 피드백 11-06) */mode:UI.castMode==='all'?'all':'hl',hold:1}; setTimeout(()=>{ try{ render(); }catch(e){} },0); } else delete G.castHold; } /* 새로고침해도 보던 중계를 그 장면에서 다시 열어 결과를 숨긴다(검수 11-06) */
-  const c=UI.cast||UI.castRet||(G.castHold&&UI.title?{g:G.castHold.g,k:G.castHold.k||0,hold:1}:null), g=c&&G.games[c.g]; if(!g||!c.hold||c.fin)return null; if(c.k>=(g.pbp||[]).length){ c.fin=true; delete G.castHold; return null; } return g; } /* 끝 장면에 한 번 닿으면 되감아도 공개 상태 */
+  if(G.castHold&&castHoldIdx(G.castHold)<0)delete G.castHold; /* 잘못된 중계 위치(음수·없는 경기)는 버린다(검수 11-09zzc #9) */
+  if(!UI.cast&&!UI.castRet&&G.castHold&&!UI.title){ const H=G.castHold; UI.cast={g:castHoldIdx(H),k:H.k,play:H.play!==false,pre:H.pre?1:0,spd:[1,1.5,2,3].includes(H.spd)?H.spd:1,mode:H.mode==='all'||H.mode==='hl'?H.mode:UI.castMode==='all'?'all':'hl',hold:1,...(H.pi>0?{pitch:{k:H.k,shown:H.pi}}:{})}; if(H.cw&&G.cwS&&G.cwS.id===H.cw)UI.cwAfter=H.cw; setTimeout(()=>{ try{ render(); }catch(e){} },0); } /* 새로고침해도 보던 중계를 그 장면·재생 상태 그대로 다시 열어 결과를 숨긴다(검수 11-06, 11-09zzc #6·#7·#8·#10) */
+  const c=UI.cast||UI.castRet||(G.castHold&&UI.title?{g:castHoldIdx(G.castHold),k:G.castHold.k,hold:1}:null), g=c&&G.games[c.g]; if(!g||!c.hold||c.fin)return null; if(c.k>=(g.pbp||[]).length){ c.fin=true; delete G.castHold; return null; } return g; } /* 끝 장면에 한 번 닿으면 되감아도 공개 상태 */
+/* 저장된 중계 위치의 경기 번호: 경기 id(gid)로 찾는다(같은 날 두 경기). 장면 번호가 범위 밖이면 -1 */
+function castHoldIdx(H){ const i=H&&H.gid!=null?(G.games||[]).findIndex(x=>x.gid===H.gid):H?H.g:-1, g=G.games&&G.games[i]; return g&&Number.isInteger(H.k)&&H.k>=0&&H.k<=(g.pbp||[]).length?i:-1; }
 function liveHidden(){ return !!spoilG(); }
 /* 중계로 볼 경기 날 기사(맞대결·기록·팬 글)는 중계를 마칠 때까지 따로 두었다가(G._nh, 저장에도 남는다) 끝나면 제자리로. render마다 확인 */
 function spoilNews(){ if(!G||!G.news)return; const sg=spoilG();
-  if(sg&&!G._nh){ const h=G.news.filter(n=>n.d>=sg.day); if(h.length){ G._nh=h; G.news=G.news.filter(n=>n.d<sg.day); } }
-  else if(!sg&&G._nh){ G.news=[...G._nh,...G.news].sort((a,b)=>(b.id||0)-(a.id||0)); G._nh=null; } }
+  if(sg){ const h=G.news.filter(n=>n.d>=sg.day); if(h.length){ G._nh=[...(G._nh||[]),...h]; G.news=G.news.filter(n=>n.d<sg.day); } } /* 숨긴 뒤 새로 생긴 당일 기사도(검수 11-09zzc #12) */
+  else if(!sg&&G._nh){ G.news=[...G._nh,...G.news].sort((a,b)=>(b.id||0)-(a.id||0)); G._nh=null; }
+  /* 결과가 든 소식(동석 보고 등, sgid)도 같은 방식으로 따로 둔다(검수 11-09zzc #11) */
+  if(sg&&G.mail){ const h=G.mail.filter(m=>m.sgid!=null&&m.sgid===sg.gid); if(h.length){ G._mh=[...(G._mh||[]),...h]; G.mail=G.mail.filter(m=>!h.includes(m)); } }
+  else if(!sg&&G._mh){ G.mail=[...G._mh,...G.mail]; G._mh=null; } }
 function myRec(){ const r=Object.assign({},G.sea.rec[G.user]); const g=spoilG(); if(g){ if(!/차전/.test(g.kind||'')){ if(g.res==='승')r.w--; else if(g.res==='패')r.l--; else r.t--; } } return r; }
 function myRank(){ return liveHidden()?'-':userRank(); } /* 결정전 결과 반영(검수 11-09zn) */
 /* 중계로 볼 정규시즌 경기는 순위표·일정표에서도 중계를 마칠 때까지 빼고 그린다(달력과 같게, 검수 11-09l). 그리는 동안만 전적·경기 목록을 바꿔 끼운다 */
 function spoilStand(fn){ const g=spoilG(), S=G&&G.sea; if(!g||/차전/.test(g.kind||'')||!S||!S.rec||!S.rec[g.home]||!S.rec[g.away])return fn();
   const o={rec:S.rec,tl:S.tl,rh:S.rh,ulog:S.ulog}, h=g.home, a=g.away, sg=Math.sign(g.hs-g.as), cut=(L,f)=>{ let i=-1; L.forEach((x,j)=>{ if(f(x))i=j; }); return i<0?L:L.filter((_,j)=>j!==i); };
   S.rec=o.rec.map(x=>Object.assign({},x)); if(sg>0){ S.rec[h].w--; S.rec[a].l--; } else if(sg<0){ S.rec[a].w--; S.rec[h].l--; } else { S.rec[h].t--; S.rec[a].t--; }
-  if(o.tl)S.tl=o.tl.map((L,t)=>t===h||t===a?cut(L||[],x=>x[5]===g.day&&x[4]===(t===h?a:h)):L);
-  if(o.rh)S.rh=o.rh.filter(s=>s[0]<g.day); if(o.ulog)S.ulog=cut(o.ulog,x=>x.d===g.day&&x.h===h&&x.a===a);
+  if(o.tl)S.tl=o.tl.map((L,t)=>t===h||t===a?cut(L||[],x=>x[5]===g.day&&x[4]===(t===h?a:h)&&x[1]===(t===h?g.hs:g.as)&&x[2]===(t===h?g.as:g.hs)):L);
+  if(o.rh)S.rh=o.rh.filter(s=>s[0]<g.day); if(o.ulog)S.ulog=cut(o.ulog,x=>x.gid!=null&&g.gid!=null?x.gid===g.gid:x.d===g.day&&x.h===h&&x.a===a); /* 같은 날 두 경기는 경기 id로(검수 11-09zzc #17) */
   try{ return fn(); } finally{ for(const k in o)if(o[k]!==undefined)S[k]=o[k]; } }
 const ICO={full:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',cal:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',mail:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>',brief:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12h.01"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M22 13a18.15 18.15 0 0 1-20 0"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>',users:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>',trophy:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg>',wallet:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>',ff:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>'};
 const wide=()=>typeof matchMedia!=='undefined'&&matchMedia('(min-width:980px)').matches;
@@ -22346,7 +22361,11 @@ function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   if(g.games!=null&&!Array.isArray(g.games))return '경기 기록';
   return ''; }
 /* 세이브가 바뀌면(G 객체가 달라지면) 이전 게임에서 하던 화면 상태를 비운다(검수 11-09: 백업 코드·훈련 대기·드래프트 타이머·비교 목록이 다른 세이브에 남음) */
-let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0; }
+/* 슬롯 전환·백업 가져오기·새로고침의 공통 지점(render·저장 직전 prepG가 부른다): 중계 위치·경기 전 사본·경기 요약·소식함 돌아가기·확인 절차·동석 자동 열기도 이전 게임 것을 버린다(검수 11-09zzc #1·#2·#21·#28·#29·#30) */
+let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0;
+  if(UI.cast||UI.castRet){ try{ CT.tok++; CT.run=false; }catch(e){} } UI.cast=null; UI.castRet=null; UI._castHold=0; UI.cwAfter=null; UI.cwAuto=null; UI.cw=null; UI.game=null; UI.sheet=null; UI.posSheet=null; UI.fromMail=null; UI._ibJumpSig=null; UI._spoilD=null; try{ SPOIL_SNAP=null; }catch(e){}
+  UI.wkres=G&&G.wkHold?Object.assign({},G.wkHold):null; /* 확인 전의 경기 요약 창은 그 세이브 것으로 다시 연다(검수 11-09zzc #20) */
+  if(G&&Array.isArray(G.stops)&&Array.isArray(G.mail)){ const M=[...G.mail,...(G._mh||[])]; G.stops=G.stops.filter(x=>!(x&&/^m\d+$/.test(x.id||''))||M.some(m=>m.id===x.id)).map(x=>x&&x.id&&M.find(m=>m.id===x.id)||x); } } /* 저장하면 정지 알림이 원본 소식의 복사본이 된다: 원본으로 다시 잇고, 지워진 소식은 뺀다(검수 11-09zzc #25·#27) */
 /* to: 파일을 고른 시점의 대상({title,slot,g}). 읽는 사이 슬롯이 바뀌면 가져오지 않는다(검수 11-09: 다른 슬롯에 덮어씀) */
 function importText(t,to){
  let g=null;t=String(t||'').trim().replace(/^\uFEFF/,'');
@@ -22361,7 +22380,7 @@ function importText(t,to){
  if(G){ try{ saveFlush(); }catch(e){} } /* 기다리던 저장을 먼저 끝낸다: 가져오기를 되돌릴 때 그 진행이 사라지지 않게 */
  const old=G, cur0=CUR_SLOT, rev0=SLOT_REV, cf0=SAVE_CONFL, nw0=SLOT_NEW, err0=SAVE_ERR; /* 저장을 끝낸 뒤의 판번호를 기억한다(검수 11-09zr #3: 먼저 기억하면 되돌릴 때 이 탭 저장을 다른 탭 충돌로 오인) */
  const back=()=>{ G=old; CUR_SLOT=cur0; SLOT_REV=rev0; SAVE_CONFL=cf0; SLOT_NEW=nw0; if(!fromTitle)SAVE_ERR=err0; try{ worldReset(); syncMinSal(); }catch(e){} }; /* 기존 게임은 다시 고치지 않고 그대로 돌려놓고, 연도별 기준(최저 연봉)·캐시만 다시 맞춘다(검수 11-09) */
- try{ G=g; migrateDraft(); slotInfo(); }catch(e){ back(); UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.'; render(); return; } /* 복원과 저장 정보 생성까지 확인한 뒤에만 저장한다 */
+ try{ G=g; migrateDraft(); uiSaveSync(); slotInfo(); }catch(e){ back(); UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.'; render(); return; } /* 복원과 저장 정보 생성까지 확인한 뒤에만 저장한다 */
  CUR_SLOT=slot; if(fromTitle)slotRevSync(slot,m); SLOT_NEW=true; /* 가져온 게임은 새 슬롯에만 쓴다. 활성 슬롯은 저장이 성공한 뒤에만 바꾼다(검수 11-07: 실패하면 빈 슬롯이 활성으로 남아 이어하기가 사라짐) */
  let ok=false; try{ ok=saveNow(); }catch(e){ ok=false; }
  const confl=!ok&&SAVE_CONFL, body=!ok&&!confl&&(()=>{ try{ const h=unpack(localStorage.getItem(slotKey(slot))); return !!h&&JSON.stringify(h)===prepG(); }catch(e){ return false; } })(); /* 본문은 쓰이고 목록만 실패한 경우: 다시 읽은 내용 전체가 같을 때만(검수 11-09: 같은 구단·날짜의 기존 본문을 새 본문으로 착각) */
@@ -23919,7 +23938,7 @@ function findTable(L){ const st=p=>{ const h=curLine(p); return !h?'<span class=
   return `<div class="tw fnd-w"><table class="fnd-t"><thead><tr><th>선수</th><th>소속</th><th>포지션</th><th>나이</th><th>종합</th><th>잠재력</th><th>기록</th><th>연봉</th><th>계약</th><th>병역</th><th></th></tr></thead><tbody>${L.map(p=>{ const rp=scoutReport(p), pot=rp.ofp==null?'?':esc(potTierP(rp,p).s);
     return `<tr><td><button class="pm-n" data-a="player" data-v="${p.id}">${avImg(p)}<b>${esc(p.name)}</b></button></td><td>${badge(p.team,16)} ${esc(team(p.team).nick)}</td><td>${esc(posLabel(p))}</td><td>${p.age}</td><td>${rchip(rp.cur)}</td><td class="small">${pot}</td><td class="small">${st(p)}</td><td>${money(p.sal)}</td><td class="small">${esc(tContract(p))}</td><td class="small">${esc(milState(p).l)}</td><td><button class="tc-i go" data-a="toTrade" data-v="${p.id}">협상 시작</button></td></tr>`; }).join('')}</tbody></table></div>`; }
 /* ---------- 단장 결정 카드 ---------- */
-function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done); const last=(G.evlog||[]).filter(x=>x.d>=G.day-2&&x.y===G.year).slice(0,2);
+function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done&&!evExpired(e)); /* 기한이 지난 결정은 소식함과 같이 실행하지 않는다(검수 11-09zzc #26) */ const last=(G.evlog||[]).filter(x=>x.d>=G.day-2&&x.y===G.year).slice(0,2);
   if(!open.length&&!last.length)return '';
   const one=e=>{ const p=e.ref!=null?G.players[e.ref]:null; const pz=p?null:personaOf(e.from);
     return `<div class="dec"><div class="dec-t">${p?avImg(p):pz?avImg(pz):'<span class="tdi">!</span>'}<div><span class="eyebrow dec-k">${evIcon(e.k)} ${EV_KEY.has(e.k)?'단장 결정':'일상 결정'} · ${dmd(e.exp)}까지${e.exp-G.day<=1?' <b class="bad">내일 자동 처리</b>':''}</span><b>${esc(e.title)}</b>${(()=>{ const L=e.sit.split('\n').filter(Boolean); return L.length>2?`<p>${lk(L[0])}</p><details class="mfold"><summary>자세히</summary><p>${L.slice(1).map(lk).join('<br>')}</p></details>`:`<p>${lk(e.sit).replace(/\n/g,'<br>')}</p>`; })()}</div></div>
@@ -24619,7 +24638,7 @@ function mailActionStatus(m,a){
   const id=String(a.v??'').split(':')[0],p=G.players[+id],d=mailStamp(m),old=mailOldYear(m),c=m.ctx||{};
   if(MAIL_TASK_ACTS.has(a.a)&&!['jobYes','jobNo'].includes(a.a)&&(G.unemp||(c.tid!=null&&c.tid!==G.user)))return mailEnd(MAIL_CLUB_TXT,true);
   if(a.a==='watchPlan'){const d=+a.v,P=gmPlanAt(d),nx=nextGames(1)[0];if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d)return mailEnd('열리지 않거나 이미 지난 경기입니다.',true);return null;} /* 시리즈가 끝나 열리지 않는 경기의 직관 버튼(검수 11-08) */
-  if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');if(e.exp<G.day)return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
+  if(a.a==='evPick'){const e=(G.evs||[]).find(x=>String(x.id)===id);if(!e)return mailEnd('이미 처리되었거나 종료된 결정입니다.');if(e.done)return mailEnd(e.auto?'답변 기한이 지나 기본안으로 처리했습니다.':'이미 결정을 마쳤습니다.');if(evExpired(e))return mailEnd('결정 답변 기한이 지났습니다.',true);return null;}
   if(a.a==='ivOpen'||a.a==='ivSkip'){const v=G.iv;if(!v||String(v.id)!==String(a.v))return mailEnd('이 인터뷰 요청은 종료되었습니다.',true);if(v.done)return mailEnd(v.ans?.length?'이미 인터뷰를 마쳤습니다.':'이미 인터뷰를 거절했습니다.');return G.day>v.exp?mailEnd('인터뷰 응답 기한이 지났습니다.',true):null;}
   if(['faOpen','faMatch','faLL','agPitchOk'].includes(a.a)){
     if(p?.team!=null)return mailEnd(p.team===G.user?'이미 우리 구단과 계약한 선수입니다.':'이미 다른 구단과 계약한 선수입니다.');
@@ -26250,7 +26269,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
 function calGame(d){ const c=G.cal; let m=null, kind='';
   if(c&&c.sched)m=dayGames(d).find(x=>x.includes(G.user))||null; /* 내일 미룬 경기도(엔진과 같은 목록, 검수 11-09zo) */
   let log=(G.sea&&G.sea.ulog||[]).filter(x=>x.d===d).pop(); /* 같은 날 두 경기면 마지막 경기 하나로 상대·점수·박스스코어를 맞춘다(검수 11-09k) */
-  if(!log&&!m){ const r=[...G.games].reverse().find(g=>g.day===d&&(g.home===G.user||g.away===G.user)); if(r)log={d,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||''}; } /* 새해에 경기 로그가 비어도 박스스코어가 남은 지난 경기는 그 기록으로(검수 11-09l) */
+  if(!log&&!m){ const r=G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user)); if(r)log={gid:r.gid,d,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||''}; } /* 경기 로그와 같게 그날 마지막 경기(G.games는 최신부터), 박스스코어도 같은 경기 id로(검수 11-09zzc #18) */ /* 새해에 경기 로그가 비어도 박스스코어가 남은 지난 경기는 그 기록으로(검수 11-09l) */
   if(log){ kind=log.k||''; m=[log.h,log.a]; } /* 정규시즌 일정이 있어도 경기 기록의 표시(노히트 도전 등)는 살린다(검수 11-06) */
   if(!m){ const q=typeof psOursAt==='function'?psOursAt(d):null; if(q){ m=q.home?[G.user,q.op]:[q.op,G.user]; kind=`${ROUNDK[q.round]||'포스트시즌'} ${q.n}차전`; } } /* 앞으로 열릴 포스트시즌 경기 */
   if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
@@ -28259,9 +28278,10 @@ function detailPageSync(el){
 /* 단장 실무 교육(개인 생활)에서 얻은 판단 참고: 관리 탭은 계약, 육성 탭은 훈련·연수 */
 function personalAdviceBox(p,kind){const L=personalAdvice(p,kind);return L.length?`<section class="card note"><h3 class="sec">실무 교육 · 판단 참고</h3>${L.map(x=>`<p class="small">${esc(x)}</p>`).join('')}</section>`:'';}
 /* 결과를 숨긴 중계 경기: 그 경기에 나온 선수의 상세 화면은 그 경기 기록을 뺀 시즌 기록으로 그린다(검수 11-07: 1회인데 그 경기 뒤 타석 홈런이 합계에 보임) */
-function spoilMask(){ const g=UI.sheet!=null&&spoilG(), p=g&&G.players[UI.sheet]; if(!p||!g.box)return ()=>{}; { const S=typeof SPOIL_SNAP!=='undefined'&&SPOIL_SNAP, o=S&&S.day===g.day&&S.y===dobj(g.day).y&&S.P[p.id]; if(o){ const cur={}; for(const k of SPOIL_K){ cur[k]=p[k]; p[k]=o[k]; } return ()=>{ for(const k of SPOIL_K)p[k]=cur[k]; }; } } /* 경기 직전 사본이 있으면 통째로 그 시점(세이브·선발·상대 타자·좌우·타구 분포·최근 등판까지, 검수 11-08) */ if(/차전/.test(g.kind||''))return ()=>{}; const q=['h','a'].map(sd=>g.box[sd]&&(g.box[sd][p.isP?'pit':'bat']||[]).find(x=>x.id===p.id)).find(Boolean); if(!q)return ()=>{};
+function spoilMask(){ const g=UI.sheet!=null&&spoilG(), p=g&&G.players[UI.sheet]; if(!p||!g.box)return ()=>{}; { const S=typeof SPOIL_SNAP!=='undefined'&&SPOIL_SNAP, o=S&&S.day===g.day&&S.y===dobj(g.day).y&&S.P[p.id]; if(o){ const cur={}; for(const k of SPOIL_K){ cur[k]=p[k]; p[k]=o[k]; } return ()=>{ for(const k of SPOIL_K)p[k]=cur[k]; }; } } { const H=G.castHold, o=H&&H.ps&&H.gid===g.gid&&H.ps[p.id]; if(o){ const cur={}, L=SPOIL_K.filter(spoilLite); for(const k of L){ cur[k]=p[k]; p[k]=o[k]; } const un=spoilMask0(g,p); return ()=>{ un(); for(const k of L)p[k]=cur[k]; }; } } /* 새로고침 뒤: 저장한 경기 전 등판·부하·부상 상태(검수 11-09zzc #3) */ return spoilMask0(g,p); }
+function spoilMask0(g,p){ /* 경기 직전 사본이 있으면 통째로 그 시점(세이브·선발·상대 타자·좌우·타구 분포·최근 등판까지, 검수 11-08) */ if(/차전/.test(g.kind||''))return ()=>{}; const q=['h','a'].map(sd=>g.box[sd]&&(g.box[sd][p.isP?'pit':'bat']||[]).find(x=>x.id===p.id)).find(Boolean); if(!q)return ()=>{};
   const y=dobj(g.day).y, i=p.hist.map((h,j)=>[h,j]).filter(([h])=>h.y===y&&h.lvl==='1군'&&!h.y2).map(x=>x[1]).pop(); const H0=p.hist, GL0=p.gl; if(i!=null){ const h=Object.assign({},H0[i]); for(const k in q)if(k!=='id'&&typeof q[k]==='number'&&typeof h[k]==='number')h[k]=Math.max(0,h[k]-q[k]); if(typeof h.g==='number')h.g=Math.max(0,h.g-1); if(p.isP&&typeof h.w==='number'&&q.d==='승')h.w--; if(p.isP&&typeof h.l==='number'&&q.d==='패')h.l--; if(p.isP){ if(h.sv&&q.d==='세')h.sv--; if(h.hld&&q.d==='홀')h.hld--; if(h.gs&&['h','a'].some(sd=>g.box[sd]&&g.box[sd].pit&&g.box[sd].pit[0]&&g.box[sd].pit[0].id===p.id))h.gs--; } p.hist=H0.slice(); p.hist[i]=h; }
-  if(GL0&&GL0.g&&GL0.y===y)p.gl={y,g:GL0.g.filter(r=>r[0]!==g.day)}; return ()=>{ p.hist=H0; p.gl=GL0; }; }
+  if(GL0&&GL0.g&&GL0.y===y){ const has=x=>['h','a'].some(sd=>x.box&&x.box[sd]&&(x.box[sd][p.isP?'pit':'bat']||[]).some(z=>z.id===p.id)), pre=(G.games||[]).filter(x=>x!==g&&x.day===g.day&&(x.gid||0)<(g.gid||0)&&has(x)).length; let n=-1; p.gl={y,g:GL0.g.filter(r=>r[0]!==g.day||++n!==pre)}; } /* 같은 날 두 경기: 숨길 경기의 로그 한 줄만 뺀다(검수 11-09zzc #16) */ return ()=>{ p.hist=H0; p.gl=GL0; }; }
 function renderSheet(){ const el=$('#sheet');rememberReading(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ twPager(); workspaceFit(); workspaceDetail(); }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} }
 function renderSheet0(){
   const el=$('#sheet');
@@ -28621,15 +28641,15 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   advTo(v){ const T=+v; if(!(T>G.day))return; if(G.res&&!G.live)G.res=null; const d0=G.day; const rk0=userRank(); let g=0; const ev0=(G.evs||[]).filter(e=>!e.done&&evStops(e)).length;
     while(G.day<T&&g++<200){ if(blocker())break; advance('day'); if(G.matchAwait||G.stops.length||(G.evs||[]).filter(e=>!e.done&&evStops(e)).length>ev0||G.live)break; if(G.res)G.res=null; }
     if(G.matchAwait){A.awaitGo();return;}
-    if(G.day<T&&!G.live&&G.stops.length){ closeSheets(); stopsOpen(); } /* 멈춘 이유가 된 소식을 연다(검수 11-09z) */
-    if(!G.live&&wkGames(d0+1,G.day).length){ G.res=null; closeSheets(); UI.wkres={from:d0+1,to:G.day,rk0}; } /* 이 날까지 진행한 동안의 경기도 한 장으로 */
-    save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ toast(`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} },
+    const stp=!G.live&&G.stops.length>0; if(stp){ closeSheets(); stopsOpen(); } /* 멈춘 이유가 된 소식을 연다(검수 11-09z). 목표 날짜 당일에 생긴 소식도(검수 11-09zzc #23) */
+    if(!G.live&&!stp&&wkGames(d0+1,G.day).length){ G.res=null; closeSheets(); UI.wkres={from:d0+1,to:G.day,rk0}; } /* 이 날까지 진행한 동안의 경기도 한 장으로. 중요 소식에서 멈췄으면 그 소식을 가리지 않는다(검수 11-09zzc #22) */
+    save(); render(); setTimeout(()=>dayTick(d0),30); if(G.day<T)try{ const b=blocker(); toast(g>200?`한 번에 200일까지 진행합니다. ${dmd(G.day)}에 멈췄습니다. 한 번 더 누르면 이어서 진행합니다.`:b?`${dmd(G.day)}에 멈췄습니다. ${b}`:`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`); }catch(e){} }, /* 200일 한도·진행 차단은 소식으로 안내하지 않는다(검수 11-09zzc #24) */
   /* 경기 직전 멈춤: 직관·직접 관전 예약이 없고 '결과만 보기'를 고른 경기면 포스트시즌이어도 결과만(검수 11-08) */
   awaitGo(){ const d=G.matchAwait.day, P=gmPlanAt(d); closeSheets(); UI.tab='home'; if(G.simPlanned?.day===d&&G.watchPlanned?.day!==d&&!(P&&P.k==='attend'&&!P.done)){ A.matchSim(); return; } A.watchNext(); },
   resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
   watchPlan(v){ const d=+v, P=gmPlanAt(d), nx=nextGames(1)[0]; if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d){ toast('이 직관 일정은 취소됐거나 이미 지난 경기입니다.'); render(); return; } A.watchNext(); }, /* 직관 알림 버튼: 그 예약이 아직 유효하고 다음 경기가 그 날일 때만(검수 11-06) */
-  watchNext(){ const next=nextGames(1)[0]; if(!next){ toast('남은 우리 경기가 없습니다.'); G.matchAwait=null; G.watchPlanned=null; render(); return; } G.simPlanned=null; /* 탈락 뒤 버튼: 다른 팀 경기를 끝까지 넘기지 않는다(검수 11-08) */if(next)G.watchPlanned={day:next.d};UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); if(G.res&&G.games[G.res.i]?.pbp?.length)UI._castHold=1; /* 아래 render가 중계를 열기 전에 우승 장면을 먼저 띄우지 않게(사용자 11-09) */ if(!G.res&&!G.live&&G.stops.length){ closeSheets(); stopsOpen(); save(); render(); return; } /* 경기 전에 핵심 결정 마감 재알림으로 멈춤(검수 11-09z) */ { const g0=G.res&&G.games[G.res.i]; if(G.cwS&&!G.cwS.done&&g0&&G.cwS.day===g0.day&&g0.pbp&&g0.pbp.length)UI.cwAuto=G.cwS.id; } /* 함께 본 경기: 중계를 먼저 보고, 닫을 때 동석 결과(사용자 피드백 11-05: 결과가 중계보다 먼저 떴다) */ setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; UI._castHold=1; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length){ UI._castHold=1; A.cast(G.res.i); } }, /* hold: 방금 계산한 우리 경기라 중계를 마칠 때까지 결과를 감춘다(spoilG) */
+  watchNext(){ const next=nextGames(1)[0]; if(!next){ toast('남은 우리 경기가 없습니다.'); G.matchAwait=null; G.watchPlanned=null; render(); return; } G.simPlanned=null; /* 탈락 뒤 버튼: 다른 팀 경기를 끝까지 넘기지 않는다(검수 11-08) */if(next)G.watchPlanned={day:next.d};UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); { const L=G.res?G.games.map((x,i)=>[x,i]).filter(([x])=>x.day===next.d&&x.gid!=null&&(x.home===G.user&&x.away===next.op||x.away===G.user&&x.home===next.op)):[]; if(L.length)G.res={i:L.reduce((a,b)=>b[0].gid<a[0].gid?b:a)[1]}; } /* 같은 날 두 경기(순연·더블헤더): 고른 경기(그날 그 상대 첫 경기)를 경기 id로 연다(검수 11-09zzc #14) */ if(G.res&&G.games[G.res.i]?.pbp?.length)UI._castHold=1; /* 아래 render가 중계를 열기 전에 우승 장면을 먼저 띄우지 않게(사용자 11-09) */ if(!G.res&&!G.live&&G.stops.length){ closeSheets(); stopsOpen(); save(); render(); return; } /* 경기 전에 핵심 결정 마감 재알림으로 멈춤(검수 11-09z) */ { const g0=G.res&&G.games[G.res.i]; if(G.cwS&&!G.cwS.done&&g0&&G.cwS.day===g0.day&&g0.pbp&&g0.pbp.length)UI.cwAuto=G.cwS.id; } /* 함께 본 경기: 중계를 먼저 보고, 닫을 때 동석 결과(사용자 피드백 11-05: 결과가 중계보다 먼저 떴다) */ setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; UI._castHold=1; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length){ UI._castHold=1; A.cast(G.res.i); } }, /* hold: 방금 계산한 우리 경기라 중계를 마칠 때까지 결과를 감춘다(spoilG) */
   smon(v){ UI.smon=+v; render(); },
   liveNext(){ if(!G.live)return; G.live.upto+=2; save(); render(); },
   liveEnd(){ if(!G.live)return; G.live.upto=999; save(); render(); },
@@ -28915,7 +28935,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   newgame(){ if(G&&!saveOK()){ toast(`지금 게임(${dstr(G.day)})을 저장하지 못해 새 구단을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim()); return; } if(!confDrop('new'))return; /* 저장 실패면 현재 게임을 닫지 않는다(검수 11-06) */ G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
   slotLoad(v){ if(G&&!saveOK()){ UI.slotMsg=`지금 게임(${dstr(G.day)})을 저장하지 못해 ${+v===curSlot()?'다시 열지':`슬롯 ${v}(으)로 옮기지`} 않았습니다. 그대로 열면 마지막 저장 이후 진행이 사라집니다. ${SAVE_ERR||''}`.trim(); render(); return; } /* 같은 슬롯을 다시 열 때도 저장이 먼저 성공해야(검수 11-06) */
     if(G&&SAVE_CONFL&&UI.confLoad!==+v){ UI.confLoad=+v; UI.slotMsg=`이 탭의 진행(${dstr(G.day)})은 다른 탭과 겹쳐 저장되지 않았습니다. 열면 이 진행은 사라집니다. 남기려면 먼저 "빈 슬롯에 따로 저장"을 누르세요. 그래도 열려면 한 번 더 누르세요.`; render(); return; } UI.confLoad=null; /* 검수 11-09 #6: 충돌 상태에서 다른 슬롯을 열면 미저장 진행이 말없이 사라짐 */
-    const m=meta(); /* 본문보다 먼저 읽은 판번호를 기억한다: 그사이 다른 탭이 저장하면 이 탭의 다음 저장이 충돌로 막힌다(검수 11-09 #4) */ const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){ SLOT_BAD[+v]='저장 본문을 읽을 수 없습니다'; UI.slotMsg=`슬롯 ${v}을(를) 불러오지 못했습니다. 저장 본문이 비었거나 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } const g0=G; G=g; try{migrateDraft();}catch(e){ G=g0; try{ migrateDraft(); }catch(x){} SLOT_BAD[+v]='복원 오류'; UI.slotMsg=`슬롯 ${v}의 데이터를 복원하다 오류가 나 열지 않았습니다(${String(e&&e.message||e).slice(0,60)}). 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } if(!setActive(+v)){ G=g0; try{ if(G)migrateDraft(); }catch(e){} UI.slotMsg=`슬롯 ${v}(으)로 바꾸는 기록을 저장하지 못해 열지 않았습니다. 지금 게임은 그대로입니다.`; render(); return; } CUR_SLOT=+v; slotRevSync(+v,m); delete SLOT_BAD[+v]; svMark(); /* 복원과 활성 슬롯 변경이 모두 끝난 뒤에만 전환한다(검수 11-06: 변경이 실패하면 다음 저장이 옛 슬롯을 덮어썼다) */ UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; closeSheets(); render(); window.scrollTo(0,0); },
+    const m=meta(); /* 본문보다 먼저 읽은 판번호를 기억한다: 그사이 다른 탭이 저장하면 이 탭의 다음 저장이 충돌로 막힌다(검수 11-09 #4) */ const g=unpack(localStorage.getItem(slotKey(+v))); if(!g){ SLOT_BAD[+v]='저장 본문을 읽을 수 없습니다'; UI.slotMsg=`슬롯 ${v}을(를) 불러오지 못했습니다. 저장 본문이 비었거나 손상됐습니다. 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } closeSheets(); /* 이전 게임 창은 바꾸기 전에 닫는다: 새 슬롯의 대기 중 경기 요약은 남게(검수 11-09zzc #20·#21) */ const g0=G; G=g; try{migrateDraft();}catch(e){ G=g0; try{ migrateDraft(); }catch(x){} SLOT_BAD[+v]='복원 오류'; UI.slotMsg=`슬롯 ${v}의 데이터를 복원하다 오류가 나 열지 않았습니다(${String(e&&e.message||e).slice(0,60)}). 내보내기 백업이 있으면 그걸로 가져오세요.`; render(); return; } if(!setActive(+v)){ G=g0; try{ if(G)migrateDraft(); }catch(e){} UI.slotMsg=`슬롯 ${v}(으)로 바꾸는 기록을 저장하지 못해 열지 않았습니다. 지금 게임은 그대로입니다.`; render(); return; } CUR_SLOT=+v; slotRevSync(+v,m); delete SLOT_BAD[+v]; svMark(); /* 복원과 활성 슬롯 변경이 모두 끝난 뒤에만 전환한다(검수 11-06: 변경이 실패하면 다음 저장이 옛 슬롯을 덮어썼다) */ UI.tab='inbox'; UI._ibFirst=true; UI.slotMsg=''; UI.title=false; UI.sstep='main'; render(); window.scrollTo(0,0); },
   slotNew(v){ if(G&&!saveOK()){ UI.slotMsg=`지금 게임을 저장하지 못해 새 게임을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim(); render(); return; } if(!confDrop('new'+v))return; UI.newSlot=+v; UI.newSlotRev=(meta().slots[+v]||{}).rev||0; UI.newSlotUsed=slotUsed(+v,meta()); /* 고른 뒤 다른 탭이 이 슬롯에 저장하면 시작 때 알린다(검수 11-08) */ /* 활성 슬롯·저장 대상은 구단을 골라 시작할 때 바꾼다(검수 11-07: 고르기 전에 돌아오면 이어하기가 사라짐) */ G=null; UI.slotMsg=''; UI.title=true; UI.sstep='mode'; render(); window.scrollTo(0,0); },
   slotDel(v){ v=+v; if(G&&v===curSlot()){ UI.slotMsg=`슬롯 ${v}은(는) 이 탭에서 진행 중이라 지울 수 없습니다.`; render(); return; } const body=()=>{ try{ return localStorage.getItem(slotKey(v)); }catch(e){ return undefined; } };
     if(!UI.delAsk||UI.delAsk.n!==v){ UI.delAsk={n:v,rev:revOf(meta(),v),body:body()}; UI.slotMsg=`슬롯 ${v}을(를) 지우려면 삭제를 한 번 더 누르세요.`; render(); return; }
@@ -29067,7 +29087,7 @@ function annRender(){ let el=document.getElementById('ann'); if(!el){ el=documen
     <div class="cfm-b"><button class="btn" data-a="annPlayer" data-v="${p.id}">선수 보기</button><button class="btn primary" data-a="annClose">확인${UI.annQ.length>1?` (${UI.annQ.length-1}명 더)`:''}</button></div></div></div>`;
   try{ josaFix(el); }catch(e){} }
 /* 계속을 누를 때 아직 보지 않은 결정·중요 소식·트레이드 제안이 있으면 한 번 알려 준다(같은 목록이면 다시 묻지 않는다) */
-function pendEvents(){return (G.evs||[]).filter(e=>!e.done&&evStops(e)&&(e.exp==null||e.exp>=G.day)&&!G.mail.some(m=>m.id===e.mid&&mailDone(m)));}
+function pendEvents(){return (G.evs||[]).filter(e=>!e.done&&evStops(e)&&!evExpired(e)&&!G.mail.some(m=>m.id===e.mid&&mailDone(m)));}
 function pendOffers(){return stopOn({kind:'트레이드'})?(G.offers||[]).filter(o=>!o.blk&&(o.exp==null||o.exp>=G.day)):[];}
 function pendItems(){ const L=[]; const ev=pendEvents(); const key=ev.filter(e=>EV_KEY.has(e.k)), oth=ev.filter(e=>!EV_KEY.has(e.k));
   if(key.length)L.push({id:'k'+key.map(e=>e.id).join(','),t:`핵심 결정 ${key.length}건: ${key.slice(0,2).map(e=>`${e.title}(~${dmd(e.exp)})`).join(', ')}${key.length>2?' 외':''}`});
@@ -31378,7 +31398,7 @@ function wkResSheet(){ const R=UI.wkres; const gs=wkGames(R.from,R.to); if(!gs.l
     <div class="wk-acts"><button class="btn primary" data-a="wkClose">확인 (Space)</button><button class="btn" data-a="wkStand">순위 보기</button></div>
   </div></div>`; }
 Object.assign(A,{
-  wkClose(){ UI.wkres=null; renderSheet(); },
+  wkClose(){ UI.wkres=null; save(); renderSheet(); }, /* 닫은 요약은 다시 열리지 않게 저장(검수 11-09zzc #20) */
   wkStand(){ UI.wkres=null; A.go('league:stand'); },
   /* 소식함의 경기 정리 소식에서 다시 열기: v = "시작일:끝일" */
   wkOpen(v){ const [f,t,n]=String(v).split(':').map(Number); if(!wkGames(f,t).length){ toast('그 기간 경기 기록이 더는 남아 있지 않습니다. 리그 → 일정·결과에서 볼 수 있습니다.'); return; } closeSheets(); UI.wkres={from:f,to:t,rk0:null,n:n||0}; renderSheet(); }

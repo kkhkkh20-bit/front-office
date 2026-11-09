@@ -60,7 +60,8 @@ function psOursAt(d){ const P=G.ps; const s=P&&!P.done&&P.cur; if(!s||!(s.hi===G
 function psOursTxt(){ const s=G.ps&&G.ps.cur; if(!s)return '우리 경기'; const op=s.hi===G.user?s.lo:s.hi; return `${ROUNDK[s.round]} ${s.gi+1}차전(${tshort(op)}전)`; }
 const ROUNDK={tb:'순위 결정전',wc:'와일드카드 결정전',spo:'준플레이오프',po:'플레이오프',ks:'한국시리즈'};
 /* 오류·저장 상태로 지나간 차전은 다음 진행일부터 다시 잡는다(검수 11-09k). 진행 전에 미리 옮겨 두어 경기 전 확인·중계 대기·일정 화면이 그 날짜를 본다(검수 11-09zo) */
-function psCatchUp(day){ const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.days&&s.days[s.gi]<day){ const sh=day-s.days[s.gi]; s.days=s.days.map((d,i)=>i>=s.gi?d+sh:d); } }
+function psCatchUp(day){ const s=G.ps&&!G.ps.done&&G.ps.cur; if(s&&s.days&&s.days[s.gi]<day){ const sh=day-s.days[s.gi], old=s.days.slice(s.gi); s.days=s.days.map((d,i)=>i>=s.gi?d+sh:d);
+  /* 옮긴 차전의 직관·관전 예약도 새 날짜로(검수 11-09zzc #19) */ const P=G.gmPlan||{}, mv=old.filter(d=>P[d]&&!P[d].done&&P[d].k==='attend').map(d=>[d+sh,P[d]]); for(const [d] of mv)delete P[d-sh]; for(const [d,q] of mv)P[d]=q; for(const k of ['watchPlanned','simPlanned'])if(G[k]&&old.includes(G[k].day))G[k]={...G[k],day:G[k].day+sh}; } }
 function psDay(day){
   psCatchUp(day); const P=G.ps, s=P.cur; if(!s||s.days[s.gi]!==day)return;
   const h=s.homes[s.gi], a=h===s.hi?s.lo:s.hi;

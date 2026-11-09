@@ -34,7 +34,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
 function calGame(d){ const c=G.cal; let m=null, kind='';
   if(c&&c.sched)m=dayGames(d).find(x=>x.includes(G.user))||null; /* 내일 미룬 경기도(엔진과 같은 목록, 검수 11-09zo) */
   let log=(G.sea&&G.sea.ulog||[]).filter(x=>x.d===d).pop(); /* 같은 날 두 경기면 마지막 경기 하나로 상대·점수·박스스코어를 맞춘다(검수 11-09k) */
-  if(!log&&!m){ const r=[...G.games].reverse().find(g=>g.day===d&&(g.home===G.user||g.away===G.user)); if(r)log={d,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||''}; } /* 새해에 경기 로그가 비어도 박스스코어가 남은 지난 경기는 그 기록으로(검수 11-09l) */
+  if(!log&&!m){ const r=G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user)); if(r)log={gid:r.gid,d,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||''}; } /* 경기 로그와 같게 그날 마지막 경기(G.games는 최신부터), 박스스코어도 같은 경기 id로(검수 11-09zzc #18) */ /* 새해에 경기 로그가 비어도 박스스코어가 남은 지난 경기는 그 기록으로(검수 11-09l) */
   if(log){ kind=log.k||''; m=[log.h,log.a]; } /* 정규시즌 일정이 있어도 경기 기록의 표시(노히트 도전 등)는 살린다(검수 11-06) */
   if(!m){ const q=typeof psOursAt==='function'?psOursAt(d):null; if(q){ m=q.home?[G.user,q.op]:[q.op,G.user]; kind=`${ROUNDK[q.round]||'포스트시즌'} ${q.n}차전`; } } /* 앞으로 열릴 포스트시즌 경기 */
   if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
