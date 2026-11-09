@@ -298,7 +298,7 @@ T('무승부를 패배로 보도하지 않는다(e4305cc 리뷰)',()=>{ fresh();
   ok(made,'준비 실패: 무승부 뒤 감독 기사가 나오지 않음'); ok(!(G.news||[]).some(x=>(x.b||'').includes('패배(3:3)')),'무승부 경기를 "패배(3:3)"로 보도함'); });
 
 T('한국시리즈: 3승 3패에서 무승부가 나오면 4승을 할 때까지 경기를 더 한다(4213e4e 리뷰)',()=>{ fresh(); const [A,B]=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); const sv=mkSeries('ks',A,B,G.day); sv.wh=3; sv.wl=3; sv.gi=6; sv.days[6]=G.day;
-  G.ps={cur:sv,res:{},seeds:[A,B,0,0,0],round:'ks',done:false}; const sg=simGame, ag=applyGame; simGame=()=>({score:{h:3,a:3}}); applyGame=()=>{}; try{ psDay(G.day); } finally { simGame=sg; applyGame=ag; }
+  G.ps={cur:sv,res:{},seeds:[A,B,0,0,0],round:'ks',done:false}; const sg=simGame, ag=applyGame, gb=boxSnap; simGame=()=>({score:{h:3,a:3}}); applyGame=()=>{}; boxSnap=()=>()=>{}; try{ psDay(G.day); } finally { simGame=sg; applyGame=ag; boxSnap=gb; }
   ok(!G.ps.done,'3승 3패 무승부로 시리즈가 끝남: 우승 '+(G.ps.champ!=null?tname(G.ps.champ):'-')+' '+JSON.stringify(G.ps.res.ks||null)); ok(G.ps.cur&&G.ps.cur.days.length>7,'추가 경기 일정이 없음'); });
 
 T('트레이드 샐러리캡: 상위 40명을 다시 골라 계산한다(4213e4e 리뷰)',()=>{ fresh(); const tid=G.teams.find(t=>t.id!==G.user).id; const D=()=>domestic(tid).filter(p=>!isRookie(p)).sort((a,b)=>b.sal-a.sal);
@@ -3209,6 +3209,11 @@ T('[검수 11-09zo] 우승 포상: 시설 투자 제한은 구단 기록, 시설
   for(const k of FACK)G.fac.it[k]=FAC_MAX; ok(!champGiftOpts(o,G.year+5).some(x=>/시설/.test(x.l)),'시설이 모두 최고인데 시설 포상');
   const fx=tid=>{ const tc=team(tid); tc.pop=1; tc.trust=50; playersOf(tid).forEach(p=>p.mor=50); G.champEvents={}; G.ps={done:true,champ:tid,runner:tid===o.id?G.user:o.id,res:{ks:[tid,0,4,1]}}; champCelebrate(); return [Math.round(tc.pop*100)/100,tc.trust,playersOf(tid)[0].mor]; };
   const a=fx(G.user), b=fx(o.id); ok(JSON.stringify(a)===JSON.stringify(b)&&a[0]===1.1&&a[1]===53&&a[2]===58,'우승 효과가 플레이어 구단 여부에 따라 다름: '+JSON.stringify([a,b])); });
+T('[KBO 규정] 포스트시즌 무승부 재경기: 최종전 뒤 같은 구장에서 연전, 무승부 2경기 이상이면 하루 쉬고',()=>{ fresh(); const [A,B]=G.teams.filter(t=>t.id!==G.user).map(t=>t.id);
+  const run=(ties)=>{ const sv=mkSeries('ks',A,B,G.day); sv.wh=3-(ties>=2?1:0); sv.wl=3-(ties>=2?1:0); sv.gi=6; sv.days[6]=G.day; const h7=sv.homes[6]; G.ps={cur:sv,res:{},seeds:[A,B,0,0,0],round:'ks',done:false};
+    const sg=simGame, ag=applyGame, gb=boxSnap; simGame=()=>({score:{h:3,a:3}}); applyGame=()=>{}; boxSnap=()=>()=>{}; try{ psDay(G.day); } finally { simGame=sg; applyGame=ag; boxSnap=gb; } return {sv:G.ps.cur,h7}; };
+  let r=run(1); ok(r.sv.days.length===8&&r.sv.days[7]===r.sv.days[6]+1,'무승부 1경기: 다음 날 연전이 아님 '+JSON.stringify(r.sv.days)); ok(r.sv.homes[7]===r.h7,'재경기가 최종전 구장이 아님');
+  r=run(2); ok(r.sv.days[7]===r.sv.days[6]+2,'무승부 2경기: 하루 쉬고 연전이 아님 '+JSON.stringify(r.sv.days)); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
