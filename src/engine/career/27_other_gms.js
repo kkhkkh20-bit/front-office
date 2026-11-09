@@ -199,7 +199,7 @@ function jobAnswer(tid,yes,auto){ const j=(G.jobs||[]).find(x=>x.tid===tid&&!x.d
 function leaveTeamState(old){
   for(const m of (G.mail||[]))if(m.acts)m.acts=m.acts.filter(a=>a.a!=='renewMgr'); /* 소속을 떠나면 옛 재계약 요청의 실행 권한도 끝난다 */
   if(G.fa){ G.fa.offers={}; G.fa.neg={}; G.fa.warned={}; } /* 옛 구단 이름으로 낸 FA 제안·협상 */
-  G.faFund=null; for(const g of (G.grants||[]))if(g.st==='open'){ g.st='void'; } for(const r of (G.mreq||[]))if(r.st==='open'||r.st==='ask'){ r.st='void'; }
+  if(G.faFund&&!G.faFund.done)G.faFund.tid=G.faFund.tid??old; else G.faFund=null; /* 우승 FA 특별자금 상환 의무는 구단에 남는다(검수 11-09zn) */ for(const g of (G.grants||[]))if(g.st==='open'){ g.st='void'; } for(const r of (G.mreq||[]))if(r.st==='open'||r.st==='ask'){ r.st='void'; }
   G.ownOrder=null; G.watchPlanned=null; G.simPlanned=null; G.matchAwait=null; G.pitchCommit=[]; G.ivNewsQ=[]; G.ivFollowQ=[]; G.evf=(G.evf||[]).filter(f=>f.k==='scandal'&&f.data&&f.data.c>=2); /* 후원사 복귀는 구단 몫이라 남긴다(검수 11-09za) */ G.cwS=null; for(const g of (G.pledges||[]))if(!g.done){ g.done=true; g.void=true; }
   G.trn={}; /* 훈련 지시는 그 구단 선수에게 내린 것 */
   for(const c of Object.values(G.gmc||{}))c.neg=0; if(G.fa&&G.fa.mk)for(const mk of Object.values(G.fa.mk))if(mk&&mk.ll){ delete mk.ll; mk.done=true; } /* 전 구단 라스트 룩은 새 구단에서 쓸 수 없다(검수 11-08) */ /* 월 협상 횟수는 구단끼리의 것: 새 구단 이름으로는 다시 센다(검수 11-08) */ for(const id of (G.fmarket||[])){ const q=G.players[id]; if(q&&q.team==null)delete q.fneg; } /* 전 구단의 외국인 협상 횟수·대기 기한·경쟁 보류도 끝(검수 11-08) */

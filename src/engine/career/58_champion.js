@@ -50,10 +50,10 @@ function champGiftOpts(t,y){ const fac=!t.indie&&!(G.champFacY!=null&&y-G.champF
     {l:'FA 영입 특별 자금 30억',fx:'구단 현금 +30억. 단, 이번 겨울 FA를 한 명도 데려오지 않으면 2월 1일에 절반을 돌려받습니다'},
     fac?{l:'훈련 시설 투자',fx:'가장 뒤처진 훈련 시설 두 곳을 모기업 돈으로 바로 한 단계 올려 줍니다(3년에 한 번)'}:null].filter(Boolean); }
 EVH.champGift={ pick(e,i){ const t=team(G.user); const y=G.year;
-  if(t.indie&&i===0)t.cash-=500; if(t.indie&&i===1){ t.cash+=1000; return '투자사가 운영 자금 10억을 보냈습니다.'; } if(t.indie&&i===2){ t.cash+=3000; G.faFund={y,amt:3000,used:false,due:dnum(y+1,2,1)}; return 'FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다.'; } if(t.indie&&i>2)return '';
+  if(t.indie&&i===0)t.cash-=500; if(t.indie&&i===1){ t.cash+=1000; return '투자사가 운영 자금 10억을 보냈습니다.'; } if(t.indie&&i===2){ t.cash+=3000; G.faFund={y,amt:3000,used:false,due:dnum(y+1,2,1),tid:t.id}; return 'FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다.'; } if(t.indie&&i>2)return '';
   if(i===0){ for(const p of playersOf(G.user)){ p.mor=clamp((p.mor??60)+6,0,100); initPers(p); if(!p.foreign&&R()<.35)p.pers.loy=Math.min(20,p.pers.loy+1); } return (t.indie?'구단이':'모기업이')+' 선수단에 우승 보너스를 지급했습니다. 선수 전원 기분 +6, 일부 선수는 구단에 더 애착을 갖습니다.'; }
   if(i===1){ t.cash+=2000; return '운영 자금 20억이 입금되었습니다.'; }
-  if(i===2){ t.cash+=3000; G.faFund={y,amt:3000,used:false,due:dnum(y+1,2,1)}; return 'FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다.'; }
+  if(i===2){ t.cash+=3000; G.faFund={y,amt:3000,used:false,due:dnum(y+1,2,1),tid:t.id}; return 'FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다.'; }
   if(G.champFacY!=null&&y-G.champFacY<3)return '시설 투자 포상은 3년에 한 번입니다.'; G.champFacY=y; facInit(); const L=FACK.filter(k=>G.fac.it[k]<FAC_MAX).sort((a,b)=>(G.fac.bld[a]?1:0)-(G.fac.bld[b]?1:0)||G.fac.it[a]-G.fac.it[b]).slice(0,2); /* 공사 중인 시설은 뒤로: 낸 공사비가 헛되지 않게 */ for(const k of L){ const b=G.fac.bld[k]; G.fac.it[k]=Math.min(FAC_MAX,Math.max(G.fac.it[k]+1,b?b.lv:0)); delete G.fac.bld[k]; G.fac.dn[k]=G.day; } facRecalc();
   return L.length?`${L.map(k=>`${FACI[k].l}: ${FACI[k].lv[G.fac.it[k]]}`).join(', ')}(으)로 바로 올렸습니다.`:'훈련 시설이 이미 모두 최고 단계라 운영 자금 20억으로 대신 받았습니다.'+(t.cash+=2000,''); } };
 /* FA 특별 자금: 2월 1일까지 FA를 한 명도 데려오지 않으면 절반 회수 */
@@ -72,7 +72,7 @@ function champSalesNote(){ champAdopt(G.user); const c=G.champPop0; if(!c||c.y!=
   const att=Math.round(((.82+.3*t.pop)/(.82+.3*c.pop)-1)*100), mer=Math.round((t.pop/c.pop-1)*100);
   news('구단',`'디펜딩 챔피언' ${tshort(G.user)}, 시즌권 판매 호조`,`우승 효과로 시즌권과 유니폼 판매가 크게 늘었습니다.`,1,{fanW:1});
   mail('마케팅팀',`우승 효과: 올 시즌 판매 전망`,`지난 시즌 우승으로 구단 인기가 올랐습니다. 우승 전과 비교하면 관중은 약 ${att}%, 유니폼·굿즈 판매는 약 ${mer}% 늘 것으로 봅니다. 인기는 성적이 따라 주지 않으면 해마다 조금씩 원래대로 돌아갑니다.`,{kind:'구단',acts:[{l:'구단 재정',a:'go',v:'club:fin'}]}); }
-function champDaily(){ try{ champParade(); }catch(e){} { const o=dobj(G.day); if(o.m===2&&o.d===1)try{ champSalesNote(); }catch(e){} } const f=G.faFund; if(!f||f.done||G.day<f.due)return; f.done=true; if(!f.used){ const t=team(G.user); t.cash-=Math.round(f.amt/2); t.trust=clamp(t.trust-2,0,100); mail('구단주실','FA 특별 자금 회수',`"FA 데려오라고 준 돈인데 한 명도 안 데려왔군요." 특별 자금의 절반 ${money(Math.round(f.amt/2))}을(를) 모기업이 돌려받았습니다. 구단주 신뢰 -2.`,{kind:'구단주'}); } }
+function champDaily(){ try{ champParade(); }catch(e){} { const o=dobj(G.day); if(o.m===2&&o.d===1)try{ champSalesNote(); }catch(e){} } const f=G.faFund; if(!f||f.done||G.day<f.due)return; f.done=true; if(!f.used){ const t=team(f.tid??G.user); t.cash-=Math.round(f.amt/2); if(t.id!==G.user||G.unemp)return; /* 상환 의무는 구단 몫: 단장이 떠나도 옛 구단에서 회수한다(검수 11-09zn) */ t.trust=clamp(t.trust-2,0,100); mail('구단주실','FA 특별 자금 회수',`"FA 데려오라고 준 돈인데 한 명도 안 데려왔군요." 특별 자금의 절반 ${money(Math.round(f.amt/2))}을(를) 모기업이 돌려받았습니다. 구단주 신뢰 -2.`,{kind:'구단주'}); } }
 /* ===== FA가 보는 구단 매력: 돈이 가장 크고, 그 위에 명성·우승 가능성·출전 기회·연고를 얹는다 =====
    비슷한 금액이면 명성 높고 이길 수 있고 주전으로 뛸 수 있고 고향 팀인 구단이 이긴다(대략 ±20% 범위) */
 let _faCtx=null;

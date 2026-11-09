@@ -64,7 +64,9 @@ function digSnap(){ const o={}; for(const p of playersOf(G.user)){ const h=seaso
 /* 오늘 치른 우리 경기가 이 상대와의 시리즈 마지막인가: 다음 우리 경기 상대가 다르거나(휴식일 넘어도) 시즌이 끝나면 */
 function seriesEnd(d){ const S=G.cal&&G.cal.sched; if(!S)return true; const op=x=>x?(x[0]===G.user?x[1]:x[0]):null; let cur=null; for(let k=d;k>=d-1&&cur==null;k--)cur=op((S[k]||[]).find(x=>x.includes(G.user))); if(cur==null)return true;
   for(let k=d+1;k<=d+5;k++){ const m=(S[k]||[]).find(x=>x.includes(G.user)); if(m)return op(m)!==cur; } return true; }
-function userRank(){ try{ return tieRank(standingsNow(),G.user); }catch(e){ return 0; } } /* 공동 순위 기준(검수 11-08: 같은 순위인데 3위 → 1위로 보임) */
+function userRank(){ try{ return rankOf(G.user); }catch(e){ return 0; } }
+/* 공식 순위: 공동 순위, 순위 결정전을 치른 뒤에는 그 결과(결정전 전에는 공동 그대로, 검수 11-09zn) */
+function rankOf(tid){ const st=standingsNow(); let r=tieRank(st,tid); for(const x of (G.ps&&G.ps.tbRes)||[]){ if(x.w===tid)r=x.pos; else if(x.l===tid)r=x.pos+1; } return r; } /* 공동 순위 기준(검수 11-08: 같은 순위인데 3위 → 1위로 보임) */
 /* 시즌 제한(현재 꺼 둠): 켜면 첫 시즌을 마치고 스토브리그 직전에서 멈춘다 */
 const GAME_VER='0.9'; const DEMO={on:false,seasons:1}; /* 무료 정식 공개: 시즌 제한 없음 */
 function demoOver(){ return DEMO.on&&G.year>=(G.startY||2026)+DEMO.seasons-1&&!G.unemp; }
@@ -157,12 +159,19 @@ function specialKind(day,hid,aid){
 /* 중계로 볼 우리 경기 직전 선수 기록(저장하지 않는 메모리 사본): 중계 중 선수 화면에서 그 경기 결과(투구 수·세이브·좌우·타구 분포)가 먼저 보이지 않게(검수 11-08) */
 let SPOIL_SNAP=null; const SPOIL_K=['gl','ld','lastApp','lastPc','lastStart','prevApp','lsD','lsS','spl','spr','fat','l10','hist'];
 function spoilSnapTake(day,tids){ const P={}; for(const t of tids)for(const p of playersOf(t)){ const o={}; for(const k of SPOIL_K)o[k]=p[k]===undefined?undefined:JSON.parse(JSON.stringify(p[k])); P[p.id]=o; } SPOIL_SNAP={day,y:G.year,P}; }
+/* 경기 반영(applyGame) 도중 오류가 나면 그 경기에 나온 선수 상태(투구 부하·기록·피로)를 경기 전으로 되돌린다: 다시 치를 때 부하가 두 번 쌓이지 않게(검수 11-09zn) */
+function boxSnap(g){ const L=[]; for(const k of ['h','a'])for(const id of g.S[k].box.keys()){ const p=G.players[id]; if(p)L.push([p,JSON.stringify(p)]); } return ()=>{ for(const [p,j] of L){ for(const k of Object.keys(p))delete p[k]; Object.assign(p,JSON.parse(j)); } }; }
 function playDay(day){ if(!G.cal.sched[day]&&!(G.makeup||[]).length)return;
   let userRec=null; const mk=(G.makeup||[]).filter(x=>x.y===G.year&&!(x.d>=day)); G.makeup=(G.makeup||[]).filter(x=>x.y===G.year&&x.d>=day); /* 오늘 미룬 경기(소집일 인원 부족)는 오늘 다시 치르지 않고 다음 경기일에(검수 11-09zj) */
   for(const [h,a] of [...mk.map(x=>[x.h,x.a]),...(G.cal.sched[day]||[])]){
     const kind=specialKind(day,h,a); if(h===G.user||a===G.user)try{ spoilSnapTake(day,[h,a]); }catch(e){}
-    let g; try{ g=simGame(day,h,a,false); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,false); }catch(e2){ G.makeup.push({y:G.year,h,a,d:day}); if(G.cal.end0==null)G.cal.end0=G.cal.end; if(day>=G.cal.end&&day<G.cal.end0+14)G.cal.end=day+1; /* 마지막 날 미룬 경기: 정규시즌을 하루 늘려 치른 뒤 순위·시드를 정한다(검수 11-09k). shortcut: 2주 넘게 실패하면 포기, 반복 오류가 생기면 원인부터 고칠 것 */ try{ console.error('경기 처리 실패, 다음 경기일로 미룸',dmd(day),h,a,e2); }catch(x){} continue; } } /* 한 경기 오류로 같은 날 다른 경기·날짜만 반영되고 이 경기가 사라지지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 다음 경기일에 치른다(검수 11-08) */ applyGame(day,h,a,g,false); try{ gtAdd(gameMin(g)); }catch(e){} rivalAfterGame(day,h,a,g,false); let st=null; try{ st=stadGame(day,h,a); }catch(e){}
-    if(h===G.user||a===G.user){ if(userRec){ keepGame(userRec); ulog(userRec); try{ prAfterGame(userRec); }catch(e){} } /* 미룬 경기와 같은 날: 앞 경기도 기록 */ userRec=gameRecord(day,h,a,g,kind); try{ gmTenTick(); }catch(e){} if(st){ userRec.att=st.att; userRec.so=st.so; } milestones(g,h===G.user?'h':'a'); }
+    const later=e=>{ G.makeup.push({y:G.year,h,a,d:day}); if(G.cal.end0==null)G.cal.end0=G.cal.end; if(day>=G.cal.end)G.cal.end=day+1; /* 마지막 날 미룬 경기: 정규시즌을 하루씩 늘려 다 치른 뒤 순위·시드를 정한다. 미처리 경기를 남긴 채 시즌을 닫지 않는다(검수 11-09k, 11-09zn) */ try{ console.error('경기 처리 실패, 다음 경기일로 미룸',dmd(day),h,a,e); }catch(x){} };
+    const short=()=>[h,a].some(t=>t!==G.user&&actOf(t).filter(p=>!p.isP&&healthy(p)).length<9); /* AI 구단 건강한 야수 9명 미만이면 2군에서 채우고, 그래도 안 되면 미룬다(검수 11-09zn) */
+    if(short()){ for(const t of [h,a])if(t!==G.user)try{ entryManage(t,false,true); }catch(e){} if(short()){ later('야수 9명 미만'); continue; } }
+    let g; try{ g=simGame(day,h,a,false); }catch(e){ try{ for(const t of [h,a])entryManage(t,false); g=simGame(day,h,a,false); }catch(e2){ later(e2); continue; } } /* 한 경기 오류로 같은 날 다른 경기·날짜만 반영되고 이 경기가 사라지지 않게: 등록을 다시 맞춰 한 번 더, 그래도 안 되면 다음 경기일에 치른다(검수 11-08) */
+    { const r=G.sea.rec, n0=r[h].w+r[h].l+(r[h].t||0), back=boxSnap(g); try{ applyGame(day,h,a,g,false); }catch(e){ if(r[h].w+r[h].l+(r[h].t||0)===n0){ back(); later(e); continue; } console.error(e); } } /* 반영 도중 오류: 승패 전이면 선수 상태를 되돌려 미루고, 같은 날 남은 경기는 그대로 치른다(검수 11-09zn) */
+    try{ gtAdd(gameMin(g)); }catch(e){} try{ rivalAfterGame(day,h,a,g,false); }catch(e){ console.error(e); } let st=null; try{ st=stadGame(day,h,a); }catch(e){}
+    if(h===G.user||a===G.user)try{ if(userRec){ keepGame(userRec); ulog(userRec); try{ prAfterGame(userRec); }catch(e){} } /* 미룬 경기와 같은 날: 앞 경기도 기록 */ userRec=gameRecord(day,h,a,g,kind); try{ gmTenTick(); }catch(e){} if(st){ userRec.att=st.att; userRec.so=st.so; } milestones(g,h===G.user?'h':'a'); }catch(e){ console.error(e); } /* 우리 경기 기록 오류도 같은 날 남은 경기를 막지 않는다(검수 11-09zn) */
   }
   if(userRec){
     const me=userRec.home===G.user?'h':'a', op=me==='h'?'a':'h';
@@ -211,7 +220,7 @@ function monthReport(m){
   prMonth(m);
   try{ const mg=G.mgr[G.user]; if(mg&&!mg.interim&&!G.unemp){ const w0=G.mgrTalkW; G.mgrTalkW=Math.floor(G.day/7); const a1=mgrTalk('now').a, a2=mgrTalk('need').a; G.mgrTalkW=w0;
     mail(`${mg.name} 감독`,`${m}월 감독 면담`,`${a1.replace(/^.*?감독: /,'')}\n\n급한 자리: ${a2.replace(/^.*?감독: /,'')}`,{kind:'감독',acts:[{l:'감독실로',a:'goWork',v:'감독'}]}); } }catch(e){}
-  const nm=note('월간',`${m}월 ${mw}승 ${ml}패. 시즌 ${r.w}승 ${r.l}패 ${standingsNow().findIndex(x=>x.tid===G.user)+1}위.${best?` 팀 내 WAR 1위 ${best.p.name}.`:''}`); if(nm&&nm.id&&!nm.rep)try{ nm.rep=trpSnap(nm.day); }catch(e){}
+  const mt=(r.t||0)-(prev.t||0), st=standingsNow(), rk=tieRank(st,G.user), co=st.some(x=>x.tid!==G.user&&tieRank(st,x.tid)===rk); /* 공동 순위·무승부 포함(검수 11-09zn) */ const nm=note('월간',`${m}월 ${mw}승 ${ml}패${mt?` ${mt}무`:''}. 시즌 ${r.w}승 ${r.l}패${r.t?` ${r.t}무`:''} ${co?'공동 ':''}${rk}위.${best?` 팀 내 WAR 1위 ${best.p.name}.`:''}`); if(nm&&nm.id&&!nm.rep)try{ nm.rep=trpSnap(nm.day); }catch(e){}
 }
 /* 순위(KBO): 승률(무승부 제외) → 같으면 상대 전적 → 다득점 → 전년도 순위. 1위·5위 동률은 시즌 뒤 결정전(seasonEnd) */
 function h2hPct(a,b){ const L=((G.sea&&G.sea.tl)||[])[a]||[]; let w=0,l=0; for(const x of L)if(x[4]===b){ if(x[0]>0)w++; else if(x[0]<0)l++; } return w+l?w/(w+l):.5; }

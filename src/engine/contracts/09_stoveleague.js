@@ -164,7 +164,7 @@ function faSign(p,offers){
   for(const o of offers){ if(o.tid===G.user&&ng&&ng.closed)continue; const sc=faScore(p,o)*(shop?1:rnd(.96,1.04)); if(sc>bs){bs=sc;best=o;} } /* 대어는 시장 보고 결과대로 결정한다 */
   if(!best)best=offers.find(o=>o.tid!==G.user); if(!best)return; /* 우리와 협상을 접은 선수는 우리 제안만 남아 있어도 사인하지 않는다 */
   try{ agDealAdd(p,best.tid); const ag=agentOf(p); if(best.tid===G.user)agRelAdd(ag,5,`${p.name} 계약`); else if(G.fa.offers[p.id])agRelAdd(ag,1,`${p.name} 끝까지 경쟁`); }catch(e){}
-  if(best.tid===G.user&&p.faFrom!==G.user&&G.faFund&&!G.faFund.done)G.faFund.used=true;
+  if(G.faFund&&!G.faFund.done&&best.tid===(G.faFund.tid??G.user)&&p.faFrom!==best.tid)G.faFund.used=true; /* 받은 구단 기준(이직 뒤에도, 검수 11-09zn) */
   let ht=null; try{ ht=homeTie(p,best.tid); }catch(e){} const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.lastFA=stoveY(); /* 같은 겨울 계약은 1월에 해도 그 시즌 회차 */ p.faN=(p.faN||0)+1; p.faPrevGrade=p.faGrade;
   termsClear(p); const BT=best.tid===G.user&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); }
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:BT?BT.annual+Math.round((BT.bonus||0)/best.years):best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null,...(BT?{terms:BT}:{})};

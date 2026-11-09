@@ -145,10 +145,10 @@ function playoffOdds(){
   const str0=G.teams.map(t=>{ const r=rec[t.id]; return (r.w+(t.expW||.5)*60)/(r.w+r.l+60); });
   const rem=(G.makeup||[]).filter(x=>x.y===G.year).map(x=>[x.h,x.a]); for(const d in G.cal.sched){ if(+d>G.day)for(const m of G.cal.sched[d])rem.push(m); } /* 연기 경기도 남은 경기(검수 11-09k) */
   const n=G.teams.length, N=400, top5=new Array(n).fill(0), first=new Array(n).fill(0), rnd=mulberry(G.day*7919+G.year);
-  const w0=G.teams.map(t=>rec[t.id].w), l0=G.teams.map(t=>rec[t.id].l); const bi=[]; standingsNow().forEach((o,i)=>bi[o.tid]=i);
-  for(let s=0;s<N;s++){ const w=w0.slice(), l=l0.slice(); const str=str0.map(x=>clamp(x+(rnd()+rnd()+rnd()-1.5)*.06,.25,.75)); /* 팀 실력 자체의 불확실성 */
-    for(const [h,a] of rem){ const ph=str[h], pa=str[a]; const p=ph*(1-pa)/(ph*(1-pa)+pa*(1-ph))+.015; if(rnd()<p){w[h]++;l[a]++;} else {w[a]++;l[h]++;} }
-    const pc=i=>w[i]+l[i]?w[i]/(w[i]+l[i]):.5; const ord=[...Array(n).keys()].sort((x,y)=>pc(y)-pc(x)||bi[x]-bi[y]); /* 동률은 실제 순위 규정(상대 전적·맞대결 득점)으로 정한 지금 순서대로(검수 11-08: 탈락 확정 팀이 가장 높게 나옴) */
+  const w0=G.teams.map(t=>rec[t.id].w), l0=G.teams.map(t=>rec[t.id].l); const bi=[]; standingsNow().forEach((o,i)=>bi[o.tid]=i); const H0=G.teams.map(()=>new Array(n).fill(0)); G.teams.forEach(t=>{ for(const x of ((G.sea.tl||[])[t.id]||[]))if(x[0]>0)H0[t.id][x[4]]++; }); /* 맞대결 승수: 동률 묶음 순위를 남은 경기 결과까지 넣어 다시 정한다(실제 순위 standingsNow와 같은 기준, 검수 11-09zn) */
+  for(let s=0;s<N;s++){ const w=w0.slice(), l=l0.slice(), H=H0.map(r=>r.slice()); const str=str0.map(x=>clamp(x+(rnd()+rnd()+rnd()-1.5)*.06,.25,.75)); /* 팀 실력 자체의 불확실성 */
+    for(const [h,a] of rem){ const ph=str[h], pa=str[a]; const p=ph*(1-pa)/(ph*(1-pa)+pa*(1-ph))+.015; if(rnd()<p){w[h]++;l[a]++;H[h][a]++;} else {w[a]++;l[h]++;H[a][h]++;} }
+    const pc=i=>w[i]+l[i]?w[i]/(w[i]+l[i]):.5; const ord=[...Array(n).keys()].sort((x,y)=>pc(y)-pc(x)||bi[x]-bi[y]); for(let i=0;i<n;){ let j=i; while(j<n&&Math.abs(pc(ord[j])-pc(ord[i]))<1e-12)j++; if(j-i>1){ const g=ord.slice(i,j), gp=x=>{ let a=0,b=0; for(const y of g)if(y!==x){ a+=H[x][y]; b+=H[y][x]; } return a+b?a/(a+b):.5; }; g.sort((x,y)=>gp(y)-gp(x)||bi[x]-bi[y]); ord.splice(i,j-i,...g); } i=j; } /* 동률은 실제 순위 규정(상대 전적·맞대결 득점)으로 정한 지금 순서대로(검수 11-08: 탈락 확정 팀이 가장 높게 나옴) */
     const eq=(a,b)=>a!=null&&b!=null&&Math.abs(pc(a)-pc(b))<1e-12; for(const i of [0,4])if(eq(ord[i],ord[i+1])&&!eq(ord[i-1],ord[i])&&!eq(ord[i+1],ord[i+2])&&rnd()<.5)[ord[i],ord[i+1]]=[ord[i+1],ord[i]]; /* 두 팀 동률은 결정전 한 경기 */ /* 동률은 팀마다 한 번 뽑은 값으로 가른다(정렬 중 난수 비교는 한쪽으로 치우쳤다, 검수 11-06) */
     for(let i=0;i<5;i++)top5[ord[i]]++; first[ord[0]]++; }
   const v=G.teams.map(t=>({tid:t.id,ps:top5[t.id]/N,first:first[t.id]/N,str:str0[t.id]})); _poC={k,v,g:G}; return v; } /* g: 다른 세이브의 확률을 쓰지 않게(검수 11-08) */

@@ -97,7 +97,7 @@ function spoilNews(){ if(!G||!G.news)return; const sg=spoilG();
   if(sg&&!G._nh){ const h=G.news.filter(n=>n.d>=sg.day); if(h.length){ G._nh=h; G.news=G.news.filter(n=>n.d<sg.day); } }
   else if(!sg&&G._nh){ G.news=[...G._nh,...G.news].sort((a,b)=>(b.id||0)-(a.id||0)); G._nh=null; } }
 function myRec(){ const r=Object.assign({},G.sea.rec[G.user]); const g=spoilG(); if(g){ if(!/차전/.test(g.kind||'')){ if(g.res==='승')r.w--; else if(g.res==='패')r.l--; else r.t--; } } return r; }
-function myRank(){ return liveHidden()?'-':tieRank(standingsNow(),G.user); }
+function myRank(){ return liveHidden()?'-':userRank(); } /* 결정전 결과 반영(검수 11-09zn) */
 /* 중계로 볼 정규시즌 경기는 순위표·일정표에서도 중계를 마칠 때까지 빼고 그린다(달력과 같게, 검수 11-09l). 그리는 동안만 전적·경기 목록을 바꿔 끼운다 */
 function spoilStand(fn){ const g=spoilG(), S=G&&G.sea; if(!g||/차전/.test(g.kind||'')||!S||!S.rec||!S.rec[g.home]||!S.rec[g.away])return fn();
   const o={rec:S.rec,tl:S.tl,rh:S.rh,ulog:S.ulog}, h=g.home, a=g.away, sg=Math.sign(g.hs-g.as), cut=(L,f)=>{ let i=-1; L.forEach((x,j)=>{ if(f(x))i=j; }); return i<0?L:L.filter((_,j)=>j!==i); };

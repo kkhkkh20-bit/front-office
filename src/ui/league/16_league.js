@@ -116,8 +116,6 @@ const BK_S={wc:'와일드카드',spo:'준플레이오프',po:'플레이오프'};
 const BK_X=[1,20.8,40.6,60.4,80.2], BK_Y=[51,35,19,3], BK_W=16, BK_H=20, BK_SY=86;
 function psYearOf(P){ const d=Object.values(P.resD||{})[0]; return d!=null?dobj(d).y:(P.cur&&P.cur.days?dobj(P.cur.days[0]).y:G.year); }
 function bkYears(){ const S=new Set(G.history.filter(h=>h.ps&&h.ps.ks).map(h=>h.y)); if(G.last&&G.last.ps&&G.last.ps.ks)S.add(G.last.y); if(G.ps)S.add(psYearOf(G.ps)); return [...S].sort((a,b)=>a-b); }
-/* 순위 결정전이 남아 있으면 그 자리 시드는 아직 비운다(잠정 순위 팀을 진출팀처럼 보이지 않게, 검수 11-09l) */
-function psSeedsNow(P){ const c=P.cur&&P.cur.round==='tb'?[P.tbPos,...(P.tbq||[]).map(q=>q[0])]:[]; return (P.seeds||[]).map((t,i)=>c.some(k=>i===k||i===k+1)?null:t); }
 function bkData(y){ const P=G.ps;
   if(P&&psYearOf(P)===y)return {y,seeds:psSeedsNow(P),order:P.order,res:P.res,cur:P.done?null:P.cur,resD:P.resD||{},days:P.days||{},now:true};
   const h=G.history.find(x=>x.y===y&&x.ps&&x.ps.ks)||(G.last&&G.last.y===y&&G.last.ps&&G.last.ps.ks?{order:G.last.order,ps:G.last.ps}:null);
