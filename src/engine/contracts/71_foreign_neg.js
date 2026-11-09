@@ -47,15 +47,16 @@ function foOffer(id,g,i,rel){ rel=!!rel; const q=G.players[id]; if(!q||q.team!=n
   const r=v/target; if(r<.85){ N.mood-=12; } else if(r<.95)N.mood-=4;
   if(N.mood<40){ N.cool=G.day+7; N.mood=55; return {ok:false,msg:`${q.name} 측: "조건 차이가 너무 큽니다. 일주일 뒤에 다시 이야기하시죠." ${riv}`}; }
   if(best&&!N.dl){ N.dl=period()==='season'?Math.min(G.day+3,foreignDL()):G.day+3; N.dlT=best.tid; } /* 등록 마감 뒤로 약속하지 않는다(검수 11-09b) */
-  const ng=foNeedG(q,i,target,me.f), ng0=i>0?foNeedG(q,0,target,me.f):null;
+  const okT=(g,ii)=>{ if(g==null)return null; const a0=q.ask; q.ask=g+ii; const e=foreignCheck(G.user,q); q.ask=a0; return e?null:g; }; /* 구단 외국인 총액 한도로 다시 막히는 금액은 안내하지 않는다(검수 11-09s) */
+  const ng=okT(foNeedG(q,i,target,me.f),i), ng0=i>0?okT(foNeedG(q,0,target,me.f),0):null;
   const why=best&&best.v>floor?`${tshort(best.tid)} 조건이 더 좋습니다`:'요구 조건에 못 미칩니다';
   const pfT=`${q.name}은(는) ${FO_PREF[me.pref]}합니다.`;
-  const how=ng!=null?`${i>0?'인센티브를 그대로 두면 ':''}보장 ${usdT(ng)}(${money(ng)}) 이상이면 사인하겠다고 합니다.${ng0!=null&&ng0<ng+i?` 인센티브를 빼면 보장 ${usdT(ng0)}로도 됩니다.`:''}`:ng0!=null?`보장을 늘리고 인센티브를 줄여야 합니다. 인센티브 없이 보장 ${usdT(ng0)}면 사인합니다.`:`상한 ${Math.round(cap/USD)}만 달러 안에서는 ${best?tshort(best.tid)+' 조건을':'요구 조건을'} 넘기 어렵습니다. 우리 구단 매력이 부족합니다.`;
+  const how=ng!=null?`${i>0?'인센티브를 그대로 두면 ':''}보장 ${usdT(ng)}(${money(ng)}) 이상이면 사인하겠다고 합니다.${ng0!=null&&ng0<ng+i?` 인센티브를 빼면 보장 ${usdT(ng0)}로도 됩니다.`:''}`:ng0!=null?`보장을 늘리고 인센티브를 줄여야 합니다. 인센티브 없이 보장 ${usdT(ng0)}면 사인합니다.`:`상한 ${Math.round(cap/USD)}만 달러와 남은 외국인 총액 한도 안에서는 ${best?tshort(best.tid)+' 조건을':'요구 조건을'} 넘기 어렵습니다. 우리 구단 매력이 부족합니다.`;
   return {ok:false,need:ng,msg:`${q.name} 측: ${why}. ${how} ${riv} ${pfT}${N.dl?` ${dmd(N.dl)}까지 답을 기다려 준다고 합니다.`:''}`}; }
 /* 계약 반영: 보장은 연봉, 인센티브는 계약 옵션(규정 출전을 채우면 시즌 결산에 지급) */
 function signForeignT(tid,id,g,i){ const p=G.players[id]; if(!p)return '외국인 계약 대상이 아닙니다.';
   const a0=p.ask; p.ask=g+i; const check=foreignCheck(tid,p); p.ask=a0; if(check)return check;
-  p.ask=g; const err=signForeign(tid,id); p.ask=a0; if(err)return err; p.sal=g; if(i>0){ const fr=period()==='season'?remainFrac():1; p.ctT=p.team; p.opt={a:Math.round(i*fr),until:p.fy,c:optCrit(p)}; /* 시즌 중 계약은 인센티브도 남은 기간분(안내와 같게, 검수 11-06) */ /* 달성 기준은 계약 때 보직으로 고정(검수 11-05) */ }
+  p.ask=g; const err=signForeign(tid,id); p.ask=a0; if(err)return err; p.sal=g; if(i>0){ const fr=period()==='season'?remainFrac():1; p.ctT=p.team; p.opt={a:Math.round(i*fr),from:p.fy,until:p.fy,c:optCrit(p)}; /* 시즌 중 계약은 인센티브도 남은 기간분(안내와 같게, 검수 11-06) */ /* 달성 기준은 계약 때 보직으로 고정(검수 11-05) */ }
   if(tid===G.user)story(p,`계약 조건: 보장 ${money(g)}${i?` + 인센티브 ${money(i)}(규정 출전 시)`:''}`,'move'); return ''; }
 /* 기다려 준 기한이 지나면 가장 강한 경쟁 구단으로 간다 */
 function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]; if(!q||q.team!=null||!q.fneg||!q.fneg.dl||q.fneg.dl>=G.day)continue; const dl=q.fneg.dl; delete q.fneg.dl;
@@ -84,7 +85,8 @@ function foReOffer(id,g,i){ const C=G.contract; const p=G.players[id]; if(!C||C.
   if(v>=target){ N.ok=true; p.newSal=g; if(i>0)p.fInc=i; else delete p.fInc; return {ok:true,msg:`${p.name} 측이 재계약에 합의했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}. ${O&&!O.none?out:''}`}; }
   const r=v/target; N.mood-=r<.85?15:r<.95?6:2;
   if(N.mood<40||N.n>=3){ C.foreignDrop.includes(id)||C.foreignDrop.push(id); p.fleft=true; return {ok:false,msg:`${p.name} 측이 재계약을 거절했습니다. ${out} ${(C.fFree||[]).includes(id)||p.fRel?'계약에 보류권 해제 조항이 있어 국내 다른 구단과도 계약할 수 있는 자유계약 선수가 됩니다.':`보류권은 우리에게 있으니 5년 동안 국내 다른 구단에는 갈 수 없고, ${O&&!O.none?O.k+'으로':'해외로'} 떠납니다.`}`}; } /* 해제 조항이 있으면 실제 처리(자유계약)와 같은 안내(검수 11-08) */
-  const need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD; return {ok:false,need,msg:`${p.name} 측: 보장 ${usdT(need)}(${money(need)})${i?` + 인센티브 ${usdT(i)}`:''} 이상이면 사인하겠다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; }
+  let need=Math.ceil((target/f-i*FO_INC_W)/USD)*USD, ii=i; if(p.foreign==='아시아'&&need+i>asiaReCap(p)){ const n0=Math.ceil(target/f/USD)*USD; if(n0>asiaReCap(p))return {ok:false,msg:`${p.name} 측: 아시아쿼터 재계약 상한 ${usdT(asiaReCap(p))} 안에서는 사인할 조건이 없다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; need=n0; ii=0; } /* 상한을 넘는 금액은 조건으로 내놓지 않는다(검수 11-09s) */
+  return {ok:false,need,msg:`${p.name} 측: 보장 ${usdT(need)}(${money(need)})${ii?` + 인센티브 ${usdT(ii)}`:i?'(인센티브 없이)':''} 이상이면 사인하겠다고 합니다. ${out} 남은 제안 ${3-N.n}번.`}; }
 /* 보류 명단: 보류권을 쥐고 결별한 외국인(5년간 국내 다른 구단 입단 불가) */
 function foResFor(p){ if(!p)return null; return (G.fRes||[]).find(x=>x.until>=G.year&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat))||null; }
 function foResAdd(p,tid){ G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year); if(G.fRes.some(x=>x.tid===tid&&(x.pid!=null?x.pid===p.id:x.name===p.name&&x.nat===p.nat)))return;
@@ -92,5 +94,5 @@ function foResAdd(p,tid){ G.fRes=(G.fRes||[]).filter(x=>x.until>=G.year); if(G.f
 
 /* 외국인 2년 계약(커뮤니티 요청 11-07, KBO도 재계약 외국인 다년 계약을 허용): 재계약에 합의한 뒤 2년으로 묶으면 연봉 5%를 더 주고, 다음 겨울 재계약 협상 없이 같은 연봉으로 한 해 더 뛴다 */
 function fReMulti(id){ const C=G.contract; const p=G.players[id]; if(!C||C.done||!p||p.team!==G.user||!C.foreignEnd.includes(id))return '재계약 기간이 아닙니다.'; const N=(C.fre||{})[id]; if(!(N&&N.ok))return '먼저 1년 재계약에 합의해야 합니다.'; if(p.fMulti>C.y)return '이미 2년 계약입니다.'; if(p.age>=35)return `${p.age}세라 다년 계약은 하지 않습니다.`;
-  const s0=p.newSal; p.newSal=round5(s0*1.05); if(p.foreign==='아시아'&&p.newSal>asiaReCap(p)){ p.newSal=s0; return `아시아쿼터 재계약 상한 ${money(asiaReCap(p))}을(를) 넘어 2년 계약(5% 인상)으로 바꿀 수 없습니다.`; } /* 검수 11-08 */ p.fMulti=C.y+2; const f=fReCapInfo(); if(f&&f.over>0){ p.newSal=s0; delete p.fMulti; return `외국인 3명 연봉 총액 한도를 ${money(f.over)} 넘어 2년 계약으로 바꿀 수 없습니다.`; }
+  const s0=p.newSal; p.newSal=round5(s0*1.05); if(p.foreign==='아시아'&&p.newSal+(p.fInc||0)>asiaReCap(p)){ /* 보장·인센티브 합계로 본다(검수 11-09s) */ p.newSal=s0; return `아시아쿼터 재계약 상한 ${money(asiaReCap(p))}을(를) 넘어 2년 계약(5% 인상)으로 바꿀 수 없습니다.`; } /* 검수 11-08 */ p.fMulti=C.y+2; const f=fReCapInfo(); if(f&&f.over>0){ p.newSal=s0; delete p.fMulti; return `외국인 3명 연봉 총액 한도를 ${money(f.over)} 넘어 2년 계약으로 바꿀 수 없습니다.`; }
   story(p,`${C.y+1}~${C.y+2} 2년 계약 (연 ${money(p.newSal)})`,'move'); return `${p.name}과(와) ${C.y+1}~${C.y+2} 2년 계약으로 바꿨습니다. 연봉 ${money(s0)} → ${money(p.newSal)}, 다음 겨울에는 재계약 협상 없이 같은 연봉입니다.`; }
