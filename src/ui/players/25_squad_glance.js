@@ -163,8 +163,13 @@ function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; cons
 function glancePitch(tid){ const own=tid===G.user; const d=depth(tid); const R=(p,lab)=>glanceRow(p,lab,own,'1'); const roles=['마무리','필승조','필승조','추격조','추격조','롱릴리프','롱릴리프'];
   const order=orderList(d.start,tid), posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k; /* 1군 야수도 목록으로(사용자 피드백 11-07: 전력 구성에 1군 야수가 안 보임) */
   return `<div class="eyebrow">1군 타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`)).join('')}<div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`)).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜')).join('')}${d.bench.length?`<div class="eyebrow">벤치</div><div class="gl-chips">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}`; }
+/* 빠진 선수: 부상·징계와 대표팀 차출(playersOf는 차출 선수를 빼므로 따로 더한다, 검수 11-09zi) */
+const outList=tid=>playersOf(tid).filter(p=>!healthy(p)).concat(awayOf(tid).filter(p=>!milServing(p)));
+/* 2군 화면이 읽는 실제 2군 라인업: 올해 것만, 지금 1군·부상·차출·이적 선수는 뺀다(검수 11-09zi) */
+const futLnOf=tid=>{ const F=G.futLn&&G.futLn[tid]; return F&&period()==='season'&&dobj(F.d).y===G.year?F:null; };
+const futLnPlayers=(FL,tid)=>Object.fromEntries(Object.entries(FL.ln).map(([k,id])=>[k,G.players[id]]).filter(([k,p])=>p&&p.team===tid&&!p.e1&&healthy(p)&&!isAway(p)));
 /* 우리 팀 현황(선수단 → 현황): 팀 상태 · 빠진 선수 · 올해 성장 */
-function teamStatusView(){ if(!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const away=playersOf(G.user).filter(p=>!healthy(p)||isAway(p)); const awayT=away.length?`<p class="small">${away.map(p=>`${esc(p.name)}(${outTxt(p)})`).join(', ')}</p>`:'';
+function teamStatusView(){ if(!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const away=outList(G.user); const awayT=away.length?`<p class="small">${away.map(p=>`${esc(p.name)}(${outTxt(p)})`).join(', ')}</p>`:'';
   return `<section class="card"><h2 class="sec">우리 팀 현황</h2>${teamStatusBox()}</section>`+(awayT?csec('빠진 선수',awayT):'')+teamGrowCard(); }
 function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap(); growSnap(); }catch(e){} const d=depth(tid); const order=orderList(d.start,tid); const posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k;
   const R=(p,lab,l)=>glanceRow(p,lab,own,l);
@@ -172,16 +177,16 @@ function glanceView(tid){ const own=tid===G.user; if(own&&!G.ovr0)try{ ovrSnap()
   const one=`<div class="gl-g"><div><div class="eyebrow">타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`,'1')).join('')}</div>
     <div><div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`,'1')).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜','1')).join('')}</div></div>
     ${d.bench.length?`<div class="eyebrow">벤치</div><div class="gl-chips">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}`;
-  const fb=d.futB.filter(p=>!p.ys||own), fp=d.futP; const FL=G.futLn&&G.futLn[tid]&&period()==='season'?G.futLn[tid]:null; const fl=FL?Object.fromEntries(Object.entries(FL.ln).map(([k,id])=>[k,G.players[id]]).filter(([k,p])=>p&&p.team===tid&&!p.e1)):futLineup(fb); const fstart=GPOS.filter(k=>fl[k]).map(k=>fl[k]); const forder=orderList(fstart); const fpo={}; for(const k in fl)fpo[fl[k].id]=k;
-  const fsp=[...fp].sort((a,b)=>(spV(b)+roleBias(G.user,b))-(spV(a)+roleBias(G.user,a))).slice(0,5); const fpen=fp.filter(p=>!fsp.includes(p)).sort((a,b)=>penV(b)-penV(a)).slice(0,5);
+  const fb=d.futB.filter(p=>!p.ys||own), fp=d.futP; const FL=futLnOf(tid); const fl=FL?futLnPlayers(FL,tid):futLineup(fb); const fstart=GPOS.filter(k=>fl[k]).map(k=>fl[k]); const forder=orderList(fstart); const fpo={}; for(const k in fl)fpo[fl[k].id]=k;
+  const fsp=FL&&FL.rot?fp.filter(p=>FL.rot.includes(p.id)):[...fp].sort((a,b)=>(spV(b)+roleBias(G.user,b))-(spV(a)+roleBias(G.user,a))).slice(0,5); /* 정규시즌에는 실제 2군 선발 배정(검수 11-09zi) */ const fpen=fp.filter(p=>!fsp.includes(p)).sort((a,b)=>penV(b)-penV(a)).slice(0,5);
   const two=`<div class="gl-g"><div><div class="eyebrow">2군 타순</div>${forder.map((p,i)=>R(p,`${i+1} ${SLK[fpo[p.id]]||''}`,'2')).join('')||'<p class="small muted">야수가 없습니다.</p>'}</div>
     <div><div class="eyebrow">2군 선발</div>${fsp.map((p,i)=>R(p,`${i+1}선발`,'2')).join('')}<div class="eyebrow">2군 불펜</div>${fpen.map(p=>R(p,'불펜','2')).join('')}</div></div>`;
-  const away=playersOf(tid).filter(p=>!healthy(p)||isAway(p)); const awayT=away.length?`<p class="small">${away.map(p=>`${esc(p.name)}(${outTxt(p)})`).join(', ')}</p>`:'';
+  const away=outList(tid); const awayT=away.length?`<p class="small">${away.map(p=>`${esc(p.name)}(${outTxt(p)})`).join(', ')}</p>`:'';
   const gN=own?playersOf(tid).filter(p=>(growDelta(p)||0)>=1).length:0;
   const glt=inTabs('gl'+(own?'':'o'),[...(own?[['st','현황']]:[]),['one','1군'],['two','2군'],...(own?[['plan','선수단 계획']]:[])],own?'st':'one');
   if(own&&glt.cur==='st')return glt.bar+`<section class="card"><h2 class="sec">우리 팀 현황</h2>${teamStatusBox()}</section>`+(awayT?csec('빠진 선수',awayT):'')+teamGrowCard();
   if(own&&glt.cur==='plan')return glt.bar+plannerCard();
-  if(glt.cur==='two')return glt.bar+csec('2군',two+`<p class="small sdesc">${FL?`${dmd(FL.d)} 2군 라인업입니다. 2군 감독이 매주 짭니다: 전환 훈련 중인 선수는 그 자리에 먼저 넣고, 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다. 라인업에 든 선수는 한 주 3경기, 나머지는 1경기 정도 나갑니다.`:'2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다(정규시즌에는 실제 2군 라인업).'}</p>`);
+  if(glt.cur==='two')return glt.bar+csec('2군',two+`<p class="small sdesc">${FL?`${dobj(FL.d).y}년 ${dmd(FL.d)} 2군 라인업입니다. 2군 감독이 매주 짭니다: 전환 훈련 중인 선수는 그 자리에 먼저 넣고, 24세 이하에게 기회를 더 주며 조금씩 돌려 씁니다. 라인업에 든 선수는 한 주 3경기, 나머지는 1경기 정도 나갑니다.`:'2군 라인업은 1군에 없는 선수 중 자리별로 가장 나은 선수로 짠 예상입니다(정규시즌에는 실제 2군 라인업).'}</p>`);
   return glt.bar+csec(`1군 ${own?'감독 라인업':'예상 라인업'} <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독 · ':''}${entryOn()?playersOf(tid).filter(p=>p.e1).length+'명':''}</span>`,one,own?`<span class="small muted">왼쪽 ▲▼: 올해 들어 능력 변화</span>`:''); }
 /* 팀 성장 추이: 매달 1군 전력과 유망주 잠재를 기록 */
 function teamGrowCard(){ const T=(G.tgrow||[]).slice(-24); if(T.length<2)return '';

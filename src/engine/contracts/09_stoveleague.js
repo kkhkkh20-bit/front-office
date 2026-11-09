@@ -296,7 +296,7 @@ function newYear(){
   for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)) develop(p); } /* 소속 없는 FA·무적 선수도 나이를 먹는다 */
   if(G.draftClass)for(const id of G.draftClass){ const p=G.players[id]; if(p&&p.prospect)dropP(id); }
   G.year++; try{ trnNewYear(); }catch(e){} try{ posYear(); }catch(e){} syncMinSal(); for(const p of Object.values(G.players))if(!p.foreign&&p.sal>0&&p.sal<MIN_SAL)p.sal=MIN_SAL; /* 군 복무·해외 등 소속이 잠시 비어 있는 선수도 함께 올린다 */
-  milNewYear();
+  milNewYear(); delete G.futLn; /* 지난 시즌 2군 라인업을 새 시즌에 보여 주지 않는다(검수 11-09zi) */
   for(const p of Object.values(G.players)){ if(!(p.injOut>0))delete p.injK; delete p.lastStart; delete p.lastApp; delete p.prevApp; } /* 남은 재활 기간은 새해로 그대로 넘긴다(매일 줄어 0이 되면 평소처럼 복귀·재발 위험 처리). 예전에는 45일 이하를 1월 1일에 한꺼번에 지웠다 */
   for(const t of G.teams){ if(t.id!==ME()){ try{ aiYsPrune(t.id); }catch(e){} trimRoster(t.id,61); fillRoster(t.id,56);} t.rot=0; }
   const added=fillRoster(G.user,ROSTER_MIN); if(added.length)addLog(`정식 선수 최소 인원(${ROSTER_MIN}명)을 맞추려고 선수 ${added.length}명을 등록했습니다.`);

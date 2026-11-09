@@ -97,7 +97,7 @@ function futLineupE(tid,list){ const used=new Set(), ln={};
   const tr={}; for(const p of list){ const c=p.pconv; if(c&&POS_F.includes(c.pos))(tr[c.pos]=tr[c.pos]||[]).push(p); } const wi=Math.floor(G.day/7);
   for(const q in tr){ const L=tr[q].sort((a,b)=>a.id-b.id); const p=L[wi%L.length], c=p.pconv; if(!ln[c.pos]){ /* 같은 자리 전환생이 여럿이면 주마다 돌아가며 그 자리에 선다(검수 11-09o) */ if(c.pos==='C'&&realC&&posExp(p,'C')<40&&(G.day+p.id)%3)continue; /* 포수는 숙련이 필요하다: 전문 포수가 있으면 전환 훈련생은 사흘에 한 번만 마스크를 쓴다 */ ln[c.pos]=p; used.add(p.id); } }
   const nz=new Map(list.map(p=>[p.id,N(0,2.5)]));
-  for(const k of FGPOS){ if(ln[k])continue; const free=list.filter(p=>!used.has(p.id)); if(!free.length)break;
+  for(const k of FGPOS){ if(ln[k])continue; const free=list.filter(p=>!used.has(p.id)&&!(k==='C'&&realC&&p.pconv&&p.pconv.pos==='C'&&posExp(p,'C')<40)); /* 쉬는 순번의 포수 전환생은 빈자리 채우기에서도 포수로 고르지 않는다(검수 11-09zi) */ if(!free.length)continue;
     const sc=p=>(k==='DH'?offV(p):posScore(p,k))+(p.age<=24?3:0)-(k!=='DH'&&k!==p.pos&&posExp(p,k)<50?6:0)-(k==='C'&&p.pos!=='C'&&posExp(p,'C')<40?30:0)+nz.get(p.id); /* 포수 경험이 거의 없는 선수는 전문 포수를 제치지 못한다 */
     const c=free.sort((a,b)=>sc(b)-sc(a))[0]; ln[k]=c; used.add(c.id); }
   return ln; }
