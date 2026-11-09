@@ -5,7 +5,11 @@ const {splitWebsite}=require('./lib/site-runtime.cjs');
 const {build}=require('./build.cjs'),{modelFiles}=require('./match3d-assets.cjs');
 const MAX_ASSET_BYTES=25*1024*1024;
 /* v14 장면 사진(응원 무대·행사·스카우트 출장): HTML에 넣지 않고 같은 경로로 따로 올린다. 화면은 받아지면 그리고 못 받으면 생략(77_assets_ui.js sceneImg) */
-function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})); }
+function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return [...M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})),...champFiles(root)]; }
+/* v16 우승 장면·배너·256px 트로피(52_champion.js champPic, 77_assets_ui.js tro16). 1024 트로피·투명 PNG·검수 자료는 올리지 않는다 */
+function champFiles(root){ const b='assets/v16/champ/', M=JSON.parse(fs.readFileSync(path.join(root,b,'manifest.json'),'utf8'));
+ const L=[...M.assets.filter(x=>x.group!=='trophy').map(x=>x.file.path),...['series','season','ring'].map(k=>`trophy/app/trophy_${k}_256.webp`)];
+ return L.map(p=>({filename:b+p,data:fs.readFileSync(path.join(root,b,p))})); }
 function buildSite({root=path.resolve(__dirname,'..'),out=path.join(root,'site')}={}){
  const {html}=build({root,write:false,embedded3d:false}),web=splitWebsite(html);const buildId=crypto.createHash('sha256').update(web.document).digest('hex').slice(0,16),staging=out+'.tmp-'+process.pid;
  const document=web.document.replace('</head>',`<meta name="fronttime-build" content="${buildId}">\n</head>`),models=modelFiles(root);

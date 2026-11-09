@@ -330,7 +330,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castInn(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; const h=L[Math.min(c.k,L.length-1)][0]; const i=L.findIndex((y,j)=>j>c.k&&y[0]!==h); castJump(i<0?L.length:i); },
   cmkFold(v,el){ const d=el&&el.closest('details'); UI.cmkFoldOpen=d?!d.open:!UI.cmkFoldOpen; render(); document.querySelectorAll(".cmk-det").forEach(x=>x.open=UI.cmkFoldOpen); }, /* 휴대폰에서 펼친 상태를 다시 그려도 유지 */
   attrCmp(v){ UI.attrCmp=v; render(); },
-  champSceneClose(){ if(G.champScene){ G.champScene.seen=true; save(); } document.getElementById('champScene')?.remove(); },
+  champSceneClose(){ const C=G.champScene; if(C){ C.seen=true; save(); } document.getElementById('champScene')?.remove(); if(C)A.champMoment(C.y); }, /* 우승 장면을 닫으면 우승 순간 사진(사이트에서만) */
   psOpen(){ UI.it=UI.it||{}; UI.it.stand='ps'; A.go('league:stand'); },
   castSnd(){ const on=!sndPref(); try{ localStorage.setItem('fo_snd',on?'1':'0'); }catch(e){} if(!on)sndStopAll(); else { sndInit(); if(UI.cast&&UI.cast.play)sndLoop('amb','amb',.4,1.2); } const b=document.getElementById('cs-snd'); if(b){ b.textContent=on?'소리 켬':'소리 끔'; b.setAttribute('aria-pressed',on); } },
   castSpd(){ const c=UI.cast; if(!c)return; const L=[1,1.5,2,3]; c.spd=L[(L.indexOf(c.spd)+1)%L.length]; UI.castSpd=c.spd; const b=document.getElementById('cs-spd'); if(b)b.textContent=c.spd+'배속'; if(c.play)castRestart(); },

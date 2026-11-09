@@ -50,4 +50,4 @@ function trophyCase(tid,compact){ const T=trophyOf(tid), last=T.c.length?T.c[T.c
 function trophyYears(tid){ const H=(G.history||[]).filter(h=>h.order).slice(-8).reverse(); if(!H.length)return '';
   return `<div class="trc-y">${H.map(h=>{ const i=h.order.findIndex(o=>o.tid===tid), r=h.champ===tid?'우승':h.runner===tid?'준우승':i>=0&&i<5?'가을야구':''; return `<span class="${h.champ===tid?'c':r?'p':''}"><i>${h.y}</i><b>${i+1}위</b><em>${r||'-'}</em></span>`; }).join('')}</div>`; }
 function trophyRoom(){ const L=G.teams.map(t=>({t,T:trophyOf(t.id)})).sort((a,b)=>(b.t.id===G.user)-(a.t.id===G.user)||b.T.c.length-a.T.c.length||b.T.r.length-a.T.r.length||b.T.f.length-a.T.f.length);
-  return `<div class="trc-page ws-own"><p class="small muted">이 리그에서 치른 시즌만 집계합니다. 금색 컵은 한국시리즈 우승, 은색 트로피는 준우승, 페넌트는 정규시즌 1위입니다.</p><div class="trc-room">${L.map(x=>trophyCase(x.t.id)).join('')}</div></div>`; }
+  return `<div class="trc-page ws-own"><p class="small muted">이 리그에서 치른 시즌만 집계합니다. 금색 트로피는 한국시리즈 우승, 은색 트로피는 준우승, 야구공 방패 트로피는 정규시즌 1위입니다.</p><div class="trc-room">${L.map(x=>trophyCase(x.t.id)).join('')}</div></div>`; }

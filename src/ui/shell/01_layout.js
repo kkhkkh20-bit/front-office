@@ -242,12 +242,12 @@ function fdNoBounce(el){ let x0=0,y0=0,ax=null;
 
 /* 우승 장면: 한국시리즈 우승을 확정하면 한 번, 트로피를 든 기념 장면을 띄운다(중계로 볼 마지막 경기는 중계를 마친 뒤, 사용자 11-08) */
 function champSceneShow(){ const C=G&&G.champScene; let el=document.getElementById('champScene'); if(!C||C.seen||UI.cast||UI.castRet||UI._castHold||UI.wkres||(typeof spoilG==='function'&&spoilG())){ if(el)el.remove(); return; } if(el)return; /* 마지막 경기 중계·결과 창을 보는 동안은 걷어 두고, 닫으면 다시 띄운다(사용자 11-09: 우승 화면이 경기보다 먼저 뜸) */
-  const t=team(G.user), m=G.mgr&&G.mgr[G.user], pal=tpal(t); const top=playersOf(G.user).filter(p=>!p.prospect).map(p=>({p,w:(()=>{ const h=seasonTotal(p,C.y,'1군'); return h?warOf(h,p):0; })()})).sort((a,b)=>b.w-a.w||ovr(b.p)-ovr(a.p)).slice(0,5);
+  sceneProbe(); const t=team(G.user), m=G.mgr&&G.mgr[G.user], pal=tpal(t); const top=playersOf(G.user).filter(p=>!p.prospect).map(p=>({p,w:(()=>{ const h=seasonTotal(p,C.y,'1군'); return h?warOf(h,p):0; })()})).sort((a,b)=>b.w-a.w||ovr(b.p)-ovr(a.p)).slice(0,5);
   el=document.createElement('div'); el.id='champScene'; el.className='champ-scene'; el.style.setProperty('--c1',pal[0]); el.style.setProperty('--c2',pal[3]||pal[1]);
   el.innerHTML=`<div class="cs-bg"></div><div class="cs-conf">${Array.from({length:60},(_,i)=>`<i style="left:${(i*37)%100}%;animation-delay:${(i%12)*.25}s;animation-duration:${3+(i%5)*.6}s;background:${['#ffd24d',pal[0],'#fff',pal[3]||'#e8ecf2'][i%4]}"></i>`).join('')}</div>
     <div class="cs-card" role="dialog" aria-label="한국시리즈 우승"><span class="cs-eyebrow">${C.y} KBO 한국시리즈</span><h1>우승</h1>
       <div class="cs-trophy">${trophyImg(220)}</div><div class="cs-team">${badge(G.user,72)}<b>${esc(tname(G.user))}</b></div>
       <p class="cs-sub">${esc(tname(C.op))}에 ${C.w}승 ${C.l}패${m&&!m.interim?` · ${esc(m.name)} 감독`:''}${meName()?` · ${esc(meName())} 단장`:''}</p>
       <div class="cs-team-photo">${top.map(x=>`<figure>${avImg(x.p,true)}<figcaption>${esc(x.p.name)}${x.w?`<i>WAR ${x.w.toFixed(1)}</i>`:''}</figcaption></figure>`).join('')}</div>
-      <button class="btn primary" data-a="champSceneClose">기념 장면 닫기</button></div>`;
+      <button class="btn primary" data-a="champSceneClose">${SCENE_OK===true?'우승 순간 보기':'기념 장면 닫기'}</button></div>`;
   document.body.appendChild(el); try{ sfx('cheer_big',.9); }catch(e){} }

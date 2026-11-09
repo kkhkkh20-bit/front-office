@@ -200,3 +200,10 @@ body.fm .tgrid.mgrg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .top .goset>button.fm-busy{position:relative;overflow:hidden}
 .top .goset>button.fm-busy::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85);animation:fmProg var(--fmdur,1200ms) linear forwards}
 .top .tbar .club>div>span>b{font:inherit;color:inherit}
+/* 우승 순간 사진(v16, 11-09): 마지막 아웃 → 시상식 → 라커룸 → 퍼레이드 */
+.champ-moment{position:fixed;inset:0;z-index:410;display:grid;place-items:center;background:rgba(3,5,8,.97);padding:12px;animation:csIn .4s ease-out}
+.champ-moment .cm-box{width:min(960px,100%);max-height:100%;overflow:auto;display:grid;gap:10px;color:#fff}
+.champ-moment .cm-eye{letter-spacing:.1em;font-size:12px;color:#ffd24d}
+.champ-moment img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#111}
+.champ-moment .cm-cap b{font-size:20px}.champ-moment .cm-cap p{margin:4px 0 0;color:#dfe6ee;font-size:14px}
+.champ-moment .cm-nav{display:flex;align-items:center;gap:8px}.champ-moment .cm-dots{display:flex;gap:6px;margin-right:auto}.champ-moment .cm-dots i{width:8px;height:8px;border-radius:50%;background:#ffffff44}.champ-moment .cm-dots i.on{background:#ffd24d}
