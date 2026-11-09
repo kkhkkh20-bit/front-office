@@ -2648,7 +2648,7 @@ T('[검수 11-09k] 끝내기 안타: 타자 루타는 결승 주자가 전진한
   ok(nW>5,'준비 실패: 끝내기 '+nW+'번'); });
 T('[검수 11-09n] 공통 점검: 복귀 선수 자동 등록과 단장 콜업 모두 1군 포수 최소 인원을 지킨다',()=>{ fresh(); G.day=G.cal.open+20; G.entryY=G.year; const U=G.user; setEntry(U); const lim=entryLimit(); const e1=()=>playersOf(U).filter(p=>p.e1);
   const low=p=>{ for(const k in p.r)p.r[k]=25; }, high=p=>{ for(const k in p.r)p.r[k]=80; };
-  const setC=n=>{ const cs=playersOf(U).filter(isC); ok(cs.length>n,'준비 실패: 포수 '+cs.length+'명'); cs.forEach((c,i)=>{ if(i<n){ c.e1=true; c.downDay=null; } else { c.e1=false; c.downDay=G.day; } }); /* 나머지 포수는 재등록 대기 */
+  const setC=n=>{ let cs=playersOf(U).filter(isC); while(cs.length<=n){ const x=playersOf(U).find(p=>!p.isP&&!isC(p)&&!p.e1&&!p.foreign); if(!x)break; x.pos='C'; cs=playersOf(U).filter(isC); } /* 생성 난수에 따라 포수가 2명뿐인 구단도 있어 필요한 만큼 만든다 */ ok(cs.length>n,'준비 실패: 포수 '+cs.length+'명'); cs.forEach((c,i)=>{ if(i<n){ c.e1=true; c.downDay=null; } else { c.e1=false; c.downDay=G.day; } }); /* 나머지 포수는 재등록 대기 */
     let L=e1(); while(L.length>lim){ const x=L.find(p=>!p.isP&&!isC(p)); x.e1=false; x.downDay=G.day; L=e1(); } entryManage(U,false,true); ok(e1().length===lim&&cN(e1())===n,'준비 실패: 엔트리 '+e1().length+'/'+lim+' 포수 '+cN(e1())); return cs.slice(0,n); };
   const up=()=>playersOf(U).filter(p=>!p.isP&&!isC(p)&&canUp(p));
   const [c1]=setC(1); low(c1); const r=up()[0]; ok(r,'준비 실패: 올릴 야수 없음'); high(r); entryUpgrade(U,[r],'점검');
