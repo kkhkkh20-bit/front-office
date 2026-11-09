@@ -1,7 +1,7 @@
 /* ===== 트레이드 매물과 FA 에이전트 협상 ===== */
 const WANT={any:'가장 좋은 제안',prospect:'유망주',p:'투수',b:'야수',sal:'연봉 절감'};
-function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; p.listed=true; p.lw=want||p.lw||'any'; }
-function blockRemove(id){ const p=G.players[id]; if(!p)return; delete p.listed; delete p.lw; G.offers=(G.offers||[]).filter(o=>!(o.blk&&o.get.includes(id))); }
+function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; if(!p.listed)delete p.urgent; /* 새로 올리면 일반 매물(지난 급매 설정이 남지 않게, 검수 11-09w) */ p.listed=true; p.lw=want||p.lw||'any'; }
+function blockRemove(id){ const p=G.players[id]; if(!p)return; delete p.listed; delete p.lw; delete p.urgent; G.offers=(G.offers||[]).filter(o=>!(o.blk&&o.get.includes(id))); }
 function corePool(tid){ const t=team(tid); const ds=domestic(tid).filter(p=>!p.ys&&!hasNtc(p)); /* 거부권 선수는 트레이드 카드로 내놓지 않는다 */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
 function pickPackage(tid,budget,want,exclude){ const t=team(tid); exclude=exclude||[];
   let pool=corePool(tid).filter(p=>!exclude.includes(p.id)&&healthy(p)).map(p=>({p,v:tval(t,p,'out')*(p.aiListed?.85:1),u:tval(team(G.user),p,'in')})).filter(x=>x.v>0.3&&x.u>0.3);
@@ -14,7 +14,7 @@ function blockDaily(){ if(!tradeOpen())return; const got=[];
     for(const t of G.teams){ if(t.id===G.user||(G.offers||[]).some(o=>o.from===t.id&&o.get.includes(p.id))||tradeCool(t.id)||R()>(p.urgent?.5:.3))continue; /* 거래 간격 중인 구단은 수락할 수 없는 제안을 보내지 않는다(검수 11-08c) */
       const v=tval(t,p,'in'), need=tradeNeed(t,v*.6); const budget=(v-need)*(p.urgent?.82:1); if(budget<1)continue;
       const give=pickPackage(t.id,budget,p.lw||'any'); if(!give)continue;
-      { const bo={id:'o'+Math.floor(R()*1e9),from:t.id,give,get:[p.id],exp:period()==='season'?Math.min(G.day+7,tradeDL()):G.day+7,blk:true,day:G.day}; if(offerBlockMsg(bo))continue; /* 수락 때 막힐 제안(상대 정원·샐러리캡)은 보내지 않는다 */ try{ bo.pot=offScoutNote(bo); }catch(e){} G.offers=(G.offers||[]).concat(bo); } got.push(`${t.city} ${t.nick} → ${p.name}`); break; } }
+      { const bo={id:'o'+Math.floor(R()*1e9),from:t.id,give,get:[p.id],exp:period()==='season'?Math.min(G.day+7,tradeDL()):G.day+7,blk:true,day:G.day}; if(offerBlockMsg(bo))continue; /* 수락 때 막힐 제안(상대 정원·샐러리캡)은 보내지 않는다 */ try{ bo.pot=offScoutNote(bo); }catch(e){} G.offers=(G.offers||[]).concat(bo); if(autoTradeOffer(bo))break; } /* 받은 제안을 부단장에게 맡겼으면 매물 제안도 같은 기준으로(검수 11-09w) */ got.push(`${t.city} ${t.nick} → ${p.name}`); break; } }
   if(got.length)note('트레이드',`트레이드 매물에 새 제안이 왔습니다: ${got.join(', ')}. 트레이드 → 트레이드 매물에서 확인하세요.`); }
 function offerMore(id){ const o=(G.offers||[]).find(x=>x.id===id); if(!o)return '제안이 없습니다.'; const t=team(o.from); if(o.more)return `${t.city} ${t.nick} 단장: 이미 한 번 올렸습니다. 이게 마지막입니다.`;
   o.more=true; const x=R(); if(x<.33+(t.rel-50)/100){ const p=G.players[o.get[0]]; const add=pickPackage(t.id,Math.max(1.5,tval(t,p,'in')*.35),'any',o.give); const ng=add&&o.give.concat(add.slice(0,1)); if(add&&!offerBlockMsg({...o,give:ng})){ o.give=ng; delete o.adv; delete o.pot; /* 정원 등으로 막히는 조건이면 얹지 않고 원래 제안을 둔다. 받는 선수가 바뀌었으니 의견·메디컬은 다시 받는다(검수 11-08c) */ o.exp=period()==="season"?Math.min(G.day+3,tradeDL()):G.day+3; /* 거래 마감을 넘기지 않는다(검수 11-05) */ return `${t.city} ${t.nick} 단장: 좋습니다. ${G.players[add[0]].name}을(를) 더 얹겠습니다.`; } }

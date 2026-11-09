@@ -35,13 +35,13 @@ function buildPackage(t,p,core){ if(hasNtc(p))return null; /* 거부권 선수�
   let best=null,bo=1e9; for(let i=0;i<pool.length;i++){ if(pool[i].v>=target&&pool[i].v-target<bo){ bo=pool[i].v-target; best=[pool[i].q.id]; } for(let j=i+1;j<pool.length;j++){ const sm=Math.max(pool[i].v,pool[j].v)+.72*Math.min(pool[i].v,pool[j].v); if(sm>=target&&sm-target<bo-.6){ bo=sm-target+.6; best=[pool[i].q.id,pool[j].q.id]; } } }
   if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.theirPay>capOf(G.year)&&e.theirPay>capPay(t.id))return null;
   if(rosterN(G.user)-best.length+1>ROSTER_MAX)return null; return best; }
-function tsugValid(s){ const p=G.players[s.id]; if(!(p&&p.team===s.tid&&s.give.every(id=>G.players[id]&&G.players[id].team===G.user)))return false; return evalTrade(s.tid,s.give,[s.id]).ok; }
+function tsugValid(s){ const p=G.players[s.id]; if(!(p&&p.team===s.tid&&s.give.every(id=>G.players[id]&&G.players[id].team===G.user)))return false; if(ntcOf([s.id,...s.give])||tradeCool(s.tid,[s.id]))return false; /* 제출 때 막힐 거부권·거래 간격(검수 11-09w) */ return evalTrade(s.tid,s.give,[s.id]).ok; }
 /* 조건부 영입 요청: 자리·유형·나이·연봉 조건으로 스카우트가 후보를 추린다. 능력 순이 아니라 조건과 팀 사정으로 설명한다 */
 const RTYPE={now:'즉시 전력',cheap:'저비용',grow:'성장형'};
 function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=depth(G.user); const core=myCoreIds();
   const base=k==='SP'?(d.sp.slice(0,5).length<5?30:Math.min(...d.sp.slice(0,5).map(spV))):k==='RP'?(d.pen.slice(0,4).length<4?30:Math.min(...d.pen.slice(0,4).map(penV))):rk.v;
   const fits=p=>k==='SP'?p.isP&&isSPr(p):k==='RP'?p.isP:!p.isP&&(p.pos===k||subsOf(p).includes(k));
-  const scan=(base,ref)=>{ const C=[]; for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.ys||(p.joinY>G.year)||!fits(p))continue; if(c.age&&p.age>c.age)continue; if(c.sal&&p.sal>c.sal)continue;
+  const scan=(base,ref)=>{ const C=[]; for(const t of G.teams){ if(t.id===G.user)continue; for(const p of domestic(t.id)){ if(p.ys||(p.joinY>G.year)||!fits(p)||(c.type!=='grow'&&!healthy(p)))continue; /* 다친 선수는 즉시 전력·저비용 후보가 아니다(검수 11-09w) */ if(c.age&&p.age>c.age)continue; if(c.sal&&p.sal>c.sal)continue;
       const now=slotGain(k,p)-base; const rp=scoutReport(p); const fut=(rp.ofp??rp.cur)-ref;
       let sc=c.type==='now'?now:c.type==='cheap'?now-p.sal/150:(p.age<=25?fut*1.2+(25-p.age)*.6:-99);
       if(c.type!=='grow'&&now<1)continue; if(c.type==='grow'&&(p.age>25||fut<2))continue; C.push({p,t,now,fut,rp,sc}); } } return C; };
@@ -88,15 +88,15 @@ function tradeSuggest(force,only){ if(!tradeOpen())return [];
   out=out.filter(s=>{ const q=G.players[s.id]; return q&&!badRecent(q); });
   G.tsug={day:G.day,key,list:out}; return out; }
 /* 잦은 트레이드는 선수단을 흔든다 */
-function churnCheck(){ const n=(G.trades||[]).filter(t=>t.y===G.year&&t.d!=null&&t.d>G.day-30&&(t.me==null||t.me===G.user)) /* 지금 구단이 한 거래만(검수 11-08c) */.length; if(n<3)return;
+function churnCheck(){ const n=(G.trades||[]).filter(t=>t.d!=null&&t.d>G.day-30&&(t.me==null||t.me===G.user)) /* 지금 구단이 한 거래만(검수 11-08c) */.length; if(n<3)return;
   G.form={until:G.day+14,b:-.5}; const m=G.mgr[G.user]; if(m)m.rel=clamp(m.rel-3,0,100); for(const p of playersOf(G.user))p.mor=clamp((p.mor??60)-2,0,100);
   news('선수',`${tshort(G.user)}, 한 달 새 트레이드 ${n}건… 선수단 어수선`,`잇단 트레이드로 선수들 사이에 "다음은 누구냐"는 말이 나옵니다.`,-1);
   stop('감독',`한 달 사이 트레이드가 ${n}건입니다. 선수단이 어수선해 2주간 팀 분위기가 떨어지고, 감독 관계 -3, 선수 기분 -2입니다.`); }
 function findPackages(pid){ const p=G.players[pid]; if(!p||p.team==null||p.team===G.user)return []; const t=team(p.team); const out=[]; const used=new Set(); let core=myCoreIds();
   for(let i=0;i<4&&out.length<3;i++){ const ex=new Set([...core,...used]); const pk=buildPackage(t,p,ex); if(!pk){ if(core.size){ core=new Set(); continue; } break; } out.push(pk); pk.forEach(id=>used.add(id)); }
   return out; }
-function marketFor(pid){ const p=G.players[pid]; if(!p)return []; const out=[]; const U=team(G.user);
-  for(const T of G.teams){ if(T.id===G.user)continue; const v=tval(T,p,'in'); const budget=v-tradeNeed(T,v*.6); if(budget<1)continue; const give=pickPackage(T.id,budget,'any'); if(!give)continue; if(!evalTrade(T.id,[pid],give).ok)continue;
+function marketFor(pid){ const p=G.players[pid]; if(!p||hasNtc(p))return []; /* 거부권 선수는 보낼 수 없다(검수 11-09w) */ const out=[]; const U=team(G.user);
+  for(const T of G.teams){ if(T.id===G.user)continue; const v=tval(T,p,'in'); const budget=v-tradeNeed(T,v*.6); if(budget<1)continue; const give=pickPackage(T.id,budget,'any'); if(!give||tradeCool(T.id,give))continue; if(!evalTrade(T.id,[pid],give).ok)continue;
     out.push({tid:T.id,give,u:stackIn(give.map(id=>tval(U,G.players[id],'in')))}); }
   return out.sort((a,b)=>b.u-a.u).slice(0,4); }
 function sellSuggest(){ const core=myCoreIds(); const cont=G.teams.filter(t=>t.id!==G.user);
