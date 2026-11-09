@@ -1,0 +1,894 @@
+{
+  "schema_version": "17.1",
+  "status": "ASSET_VALIDATION_PASSED_GAME_REVIEW_PENDING",
+  "passed": true,
+  "identity_count": 60,
+  "comparisons": {
+    "128": {
+      "pair_count": 1770,
+      "maximum_raw_cosine": 0.39130449295043945,
+      "nearest_pair": [
+        "v17_foreign_free_010",
+        "v17_foreign_free_011"
+      ],
+      "passed": true
+    },
+    "256": {
+      "pair_count": 1770,
+      "maximum_raw_cosine": 0.36941444873809814,
+      "nearest_pair": [
+        "v17_foreign_free_029",
+        "v17_foreign_free_034"
+      ],
+      "passed": true
+    }
+  },
+  "threshold": 0.4,
+  "pass_rule": "All1770 different-person pairs raw cosine STRICTLY below0.40 at BOTH ACTUAL decoded final128 and256 q80WebP atlases; no rescaling/calibration/whitening.",
+  "protocol": "SCRFD640score>.55, five-landmarkLMEDS112, w600k_r50 RGB[-1,1]512D L2 raw dot, identical prior assets pipeline.",
+  "detector_sha256": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91",
+  "recognizer_sha256": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+  "group_counts": {
+    "A": 24,
+    "B": 18,
+    "C": 12,
+    "D": 6
+  },
+  "e_counts": {
+    "US White": 9,
+    "Canadian White": 3,
+    "US Black": 6,
+    "Canadian Black": 2,
+    "US Asian": 1,
+    "US Native American": 2,
+    "Canadian Mixed": 1,
+    "Dominican Latino": 5,
+    "Venezuelan Latino": 4,
+    "Cuban Latino": 3,
+    "Mexican Latino": 3,
+    "Puerto Rican Latino": 3,
+    "Japanese": 6,
+    "Taiwanese": 3,
+    "Australian White": 1,
+    "Australian Asian": 1,
+    "Filipino": 1,
+    "Curacao Dutch": 2,
+    "South African Black": 1,
+    "South African White": 1,
+    "German White": 1,
+    "Italian White": 1
+  },
+  "A_heritage_counts": {
+    "White": 12,
+    "Black": 8,
+    "Other": 4
+  },
+  "asia_count": 12,
+  "asia_countries": {
+    "JP": 6,
+    "TW": 3,
+    "AU": 2,
+    "PH": 1
+  },
+  "grid_matches_v6c": true,
+  "age_ranges_passed": true,
+  "all_rgb_lossy_q80": true,
+  "rects_passed": true,
+  "sheets": {
+    "128": [
+      {
+        "path": "sheets/128/foreign_free.webp",
+        "w": 1440,
+        "h": 1440,
+        "width": 1440,
+        "height": 1440,
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 80,
+        "method": 6,
+        "cell_size": 128,
+        "pitch": 144,
+        "padding": 8,
+        "rows": 10,
+        "columns": 10,
+        "count": 60,
+        "empty_cells": 40,
+        "bytes": 81868,
+        "sha256": "45b9de0e95aac1606bdd048c725c49c283295986d4ebeaf7cb5fe60bd66d39f6"
+      }
+    ],
+    "256": [
+      {
+        "path": "sheets/256/foreign_free.webp",
+        "w": 2720,
+        "h": 2720,
+        "width": 2720,
+        "height": 2720,
+        "mode": "RGB",
+        "encoding": "lossy WebP",
+        "quality": 80,
+        "method": 6,
+        "cell_size": 256,
+        "pitch": 272,
+        "padding": 8,
+        "rows": 10,
+        "columns": 10,
+        "count": 60,
+        "empty_cells": 40,
+        "bytes": 227368,
+        "sha256": "bc2897139549ef9603c7c80db6a6a2557567068caf57d64c96953ca0e4d311ce"
+      }
+    ]
+  },
+  "unused_black_fill_decoded_statistics": {
+    "128": {
+      "intended_fill": "RGB black in unused40cells",
+      "mean_rgb_value": 0.0,
+      "maximum_rgb_value": 0
+    },
+    "256": {
+      "intended_fill": "RGB black in unused40cells",
+      "mean_rgb_value": 0.0,
+      "maximum_rgb_value": 0
+    }
+  },
+  "visual_review": {
+    "passed": true,
+    "reviewed_at_utc": "2026-11-09T08:08:59.933431+00:00",
+    "reviewer": "Codex visual inspection",
+    "reviewed_identity_count": 60,
+    "reviewed_sheet_sha256": {
+      "128": "45b9de0e95aac1606bdd048c725c49c283295986d4ebeaf7cb5fe60bd66d39f6",
+      "256": "bc2897139549ef9603c7c80db6a6a2557567068caf57d64c96953ca0e4d311ce"
+    },
+    "materials": [
+      "previews/group_A_256.jpg",
+      "previews/group_B_256.jpg",
+      "previews/group_C_256.jpg",
+      "previews/group_D_256.jpg",
+      "all occupied cells of actual decoded128 WebP, native128pixels"
+    ],
+    "checks": {
+      "full_hair_or_scalp_and_chin_visible": true,
+      "frontal_head_and_upper_chest": true,
+      "natural_continuous_head_neck_shoulders_clothing": true,
+      "dark_studio_background": true,
+      "neutral_gray_or_navy_training_top": true,
+      "no_hats": true,
+      "no_visible_logos_or_letters_in_portrait_rects": true,
+      "no_obvious_face_paste_or_anatomical_breaks": true,
+      "age_appropriate_adult_athletic_casting": true,
+      "varied_facial_shapes_hair_beards_and_builds": true,
+      "no_recognized_real_person_likeness_observed": true
+    },
+    "limitations": "Manual likeness screening only, not an exhaustive celebrity or real-person database comparison. Nationality, age and heritage are fictional character briefs. Game integration review is pending."
+  },
+  "visual_review_matches_current_sheet_hashes": true,
+  "nearest": {
+    "v17_foreign_free_001": {
+      "128": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.30975428223609924,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_011",
+        "cosine": 0.29793286323547363,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_002": {
+      "128": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.33868467807769775,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.34453755617141724,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_003": {
+      "128": {
+        "id": "v17_foreign_free_052",
+        "cosine": 0.3470812737941742,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_011",
+        "cosine": 0.33957934379577637,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_004": {
+      "128": {
+        "id": "v17_foreign_free_058",
+        "cosine": 0.26455602049827576,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_035",
+        "cosine": 0.27130985260009766,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_005": {
+      "128": {
+        "id": "v17_foreign_free_035",
+        "cosine": 0.2795450687408447,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_052",
+        "cosine": 0.30258578062057495,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_006": {
+      "128": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.34244048595428467,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.35725313425064087,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_007": {
+      "128": {
+        "id": "v17_foreign_free_035",
+        "cosine": 0.3051060736179352,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_035",
+        "cosine": 0.33663448691368103,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_008": {
+      "128": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.2818125784397125,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.32148659229278564,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_009": {
+      "128": {
+        "id": "v17_foreign_free_007",
+        "cosine": 0.2651224136352539,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_052",
+        "cosine": 0.2873860001564026,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_010": {
+      "128": {
+        "id": "v17_foreign_free_011",
+        "cosine": 0.39130449295043945,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_011",
+        "cosine": 0.3609055280685425,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_011": {
+      "128": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.39130449295043945,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_010",
+        "cosine": 0.3609055280685425,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_012": {
+      "128": {
+        "id": "v17_foreign_free_003",
+        "cosine": 0.28311464190483093,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_005",
+        "cosine": 0.22350972890853882,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_013": {
+      "128": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.2830086648464203,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.30752870440483093,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_014": {
+      "128": {
+        "id": "v17_foreign_free_057",
+        "cosine": 0.23032818734645844,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.29509907960891724,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_015": {
+      "128": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.2384818196296692,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.25209468603134155,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_016": {
+      "128": {
+        "id": "v17_foreign_free_056",
+        "cosine": 0.29123345017433167,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_056",
+        "cosine": 0.3136369585990906,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_017": {
+      "128": {
+        "id": "v17_foreign_free_020",
+        "cosine": 0.22834192216396332,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_056",
+        "cosine": 0.3091273903846741,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_018": {
+      "128": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.2267073392868042,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_019",
+        "cosine": 0.25227251648902893,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_019": {
+      "128": {
+        "id": "v17_foreign_free_013",
+        "cosine": 0.2677718997001648,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_028",
+        "cosine": 0.3288412392139435,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_020": {
+      "128": {
+        "id": "v17_foreign_free_019",
+        "cosine": 0.2415926307439804,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_056",
+        "cosine": 0.29638662934303284,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_021": {
+      "128": {
+        "id": "v17_foreign_free_051",
+        "cosine": 0.32683852314949036,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_059",
+        "cosine": 0.34880301356315613,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_022": {
+      "128": {
+        "id": "v17_foreign_free_023",
+        "cosine": 0.19781377911567688,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_037",
+        "cosine": 0.20216168463230133,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_023": {
+      "128": {
+        "id": "v17_foreign_free_028",
+        "cosine": 0.2738953232765198,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_028",
+        "cosine": 0.3088688552379608,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_024": {
+      "128": {
+        "id": "v17_foreign_free_055",
+        "cosine": 0.3193374276161194,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_055",
+        "cosine": 0.2702876627445221,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_025": {
+      "128": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.32609981298446655,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.32659992575645447,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_026": {
+      "128": {
+        "id": "v17_foreign_free_035",
+        "cosine": 0.3135707676410675,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_035",
+        "cosine": 0.31837135553359985,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_027": {
+      "128": {
+        "id": "v17_foreign_free_058",
+        "cosine": 0.30757641792297363,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_055",
+        "cosine": 0.2817438542842865,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_028": {
+      "128": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.2819984257221222,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_019",
+        "cosine": 0.3288412392139435,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_029": {
+      "128": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.37380072474479675,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.36941444873809814,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_030": {
+      "128": {
+        "id": "v17_foreign_free_036",
+        "cosine": 0.3208022713661194,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.3169254958629608,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_031": {
+      "128": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.27702340483665466,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.3149023950099945,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_032": {
+      "128": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.3316088914871216,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_039",
+        "cosine": 0.3512575626373291,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_033": {
+      "128": {
+        "id": "v17_foreign_free_036",
+        "cosine": 0.32854557037353516,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_036",
+        "cosine": 0.3549116849899292,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_034": {
+      "128": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.37380072474479675,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.36941444873809814,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_035": {
+      "128": {
+        "id": "v17_foreign_free_039",
+        "cosine": 0.32915908098220825,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_007",
+        "cosine": 0.33663448691368103,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_036": {
+      "128": {
+        "id": "v17_foreign_free_033",
+        "cosine": 0.32854557037353516,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_033",
+        "cosine": 0.3549116849899292,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_037": {
+      "128": {
+        "id": "v17_foreign_free_038",
+        "cosine": 0.26007118821144104,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_038",
+        "cosine": 0.29353010654449463,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_038": {
+      "128": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.3178946077823639,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.343964159488678,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_039": {
+      "128": {
+        "id": "v17_foreign_free_035",
+        "cosine": 0.32915908098220825,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_032",
+        "cosine": 0.3512575626373291,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_040": {
+      "128": {
+        "id": "v17_foreign_free_034",
+        "cosine": 0.30220910906791687,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.3373269736766815,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_041": {
+      "128": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.3332153856754303,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_042",
+        "cosine": 0.3674285411834717,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_042": {
+      "128": {
+        "id": "v17_foreign_free_029",
+        "cosine": 0.37335705757141113,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_041",
+        "cosine": 0.3674285411834717,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_043": {
+      "128": {
+        "id": "v17_foreign_free_049",
+        "cosine": 0.3202727138996124,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_044",
+        "cosine": 0.3364202380180359,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_044": {
+      "128": {
+        "id": "v17_foreign_free_045",
+        "cosine": 0.3655630052089691,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_050",
+        "cosine": 0.3570084273815155,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_045": {
+      "128": {
+        "id": "v17_foreign_free_044",
+        "cosine": 0.3655630052089691,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_044",
+        "cosine": 0.3459390699863434,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_046": {
+      "128": {
+        "id": "v17_foreign_free_043",
+        "cosine": 0.26648473739624023,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_043",
+        "cosine": 0.32169419527053833,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_047": {
+      "128": {
+        "id": "v17_foreign_free_045",
+        "cosine": 0.26286792755126953,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_045",
+        "cosine": 0.303365021944046,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_048": {
+      "128": {
+        "id": "v17_foreign_free_004",
+        "cosine": 0.2215263843536377,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_004",
+        "cosine": 0.2362890988588333,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_049": {
+      "128": {
+        "id": "v17_foreign_free_043",
+        "cosine": 0.3202727138996124,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_043",
+        "cosine": 0.28782254457473755,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_050": {
+      "128": {
+        "id": "v17_foreign_free_051",
+        "cosine": 0.28292879462242126,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_044",
+        "cosine": 0.3570084273815155,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_051": {
+      "128": {
+        "id": "v17_foreign_free_044",
+        "cosine": 0.3570786118507385,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_044",
+        "cosine": 0.3387864828109741,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_052": {
+      "128": {
+        "id": "v17_foreign_free_003",
+        "cosine": 0.3470812737941742,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_006",
+        "cosine": 0.34439176321029663,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_053": {
+      "128": {
+        "id": "v17_foreign_free_043",
+        "cosine": 0.31978410482406616,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_021",
+        "cosine": 0.30657675862312317,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_054": {
+      "128": {
+        "id": "v17_foreign_free_050",
+        "cosine": 0.2773081958293915,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_051",
+        "cosine": 0.3247220516204834,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_055": {
+      "128": {
+        "id": "v17_foreign_free_024",
+        "cosine": 0.3193374276161194,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_056",
+        "cosine": 0.3027457892894745,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_056": {
+      "128": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.29123345017433167,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_016",
+        "cosine": 0.3136369585990906,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_057": {
+      "128": {
+        "id": "v17_foreign_free_020",
+        "cosine": 0.23058858513832092,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_014",
+        "cosine": 0.2609584629535675,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_058": {
+      "128": {
+        "id": "v17_foreign_free_059",
+        "cosine": 0.33611419796943665,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_002",
+        "cosine": 0.2953336238861084,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_059": {
+      "128": {
+        "id": "v17_foreign_free_058",
+        "cosine": 0.33611419796943665,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_021",
+        "cosine": 0.34880301356315613,
+        "passed": true
+      }
+    },
+    "v17_foreign_free_060": {
+      "128": {
+        "id": "v17_foreign_free_003",
+        "cosine": 0.33236801624298096,
+        "passed": true
+      },
+      "256": {
+        "id": "v17_foreign_free_003",
+        "cosine": 0.3147351145744324,
+        "passed": true
+      }
+    }
+  },
+  "scope": "Within the new60-person batch, as requested. No cross-prior-version or exhaustive real-person database nonmatch claim.",
+  "real_person_database_comparison": "NOT_PERFORMED; fictional casting and manual likeness review",
+  "main_merged": false,
+  "code_changed": false,
+  "game_connected": false
+}

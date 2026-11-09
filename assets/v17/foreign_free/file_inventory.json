@@ -1,0 +1,95 @@
+{
+  "files": [
+    {
+      "path": "CLAUDE_HANDOFF.md",
+      "bytes": 2255,
+      "sha256": "0320cafb9ab25f5b7dce8f3c483ada662c8f9296a7deafa32c5e6f83e1f1fc93"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4318,
+      "sha256": "613e670cf3802bbbb2c9f151caab83d817f69ab2499677c0fd07b1d6da7611ad"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 83944,
+      "sha256": "ee0b7205ee3884b9a6821a955ac807fc2452e293872dd237ab32d0f46defd59d"
+    },
+    {
+      "path": "previews/all60_256.jpg",
+      "bytes": 1221657,
+      "sha256": "b487c32486137f2f8945a372e29fb8da1555c8113f0fb3c06ed098add25326a2"
+    },
+    {
+      "path": "previews/group_A_256.jpg",
+      "bytes": 481236,
+      "sha256": "46088bf26f7ab1e131e406e6af6d6ead7510e174111fc2f60100fefc3120520b"
+    },
+    {
+      "path": "previews/group_B_256.jpg",
+      "bytes": 378971,
+      "sha256": "1132898c1860bf32c7d5523f3cd6fef7c92f56bf97612b55d5e57030731d8772"
+    },
+    {
+      "path": "previews/group_C_256.jpg",
+      "bytes": 247516,
+      "sha256": "f93cf84b46fb0e74fe163649a5fd904abb371abef050637fd8cf38aaf2ed6c7e"
+    },
+    {
+      "path": "previews/group_D_256.jpg",
+      "bytes": 111825,
+      "sha256": "2281183860a85307ed6e69b8f082cf61c25444b244b55c73d591b9b13bc43bf2"
+    },
+    {
+      "path": "sheets/128/foreign_free.webp",
+      "bytes": 81868,
+      "sha256": "45b9de0e95aac1606bdd048c725c49c283295986d4ebeaf7cb5fe60bd66d39f6"
+    },
+    {
+      "path": "sheets/256/foreign_free.webp",
+      "bytes": 227368,
+      "sha256": "bc2897139549ef9603c7c80db6a6a2557567068caf57d64c96953ca0e4d311ce"
+    },
+    {
+      "path": "validation/arcface_embeddings.npz",
+      "bytes": 228606,
+      "sha256": "8f9a118cdc0e0170be75d8d7d20ec6b39234f2f28db547967991204d5ae6b982"
+    },
+    {
+      "path": "validation/arcface_scores_128.npz",
+      "bytes": 10558,
+      "sha256": "6b2aa1f3993c630f4fa4393f7e90825f99358fb04a66af0d1add9d6269f0e60b"
+    },
+    {
+      "path": "validation/arcface_scores_256.npz",
+      "bytes": 10544,
+      "sha256": "4307ff9edd22adc2c4adb20c149fdcc43a3b962de6613e3e0c7267abd1ab7b3b"
+    },
+    {
+      "path": "validation/detections.json",
+      "bytes": 118287,
+      "sha256": "92ad8b08349357f19964ac63af2ad8dfcbb59c8fbecea5860d9c9550a42bec29"
+    },
+    {
+      "path": "validation/selection.json",
+      "bytes": 2629,
+      "sha256": "7cfdc5b034d587362224658b5d7c211288246b42291ea3333f83eb806342a932"
+    },
+    {
+      "path": "validation/source_provenance.json",
+      "bytes": 482973,
+      "sha256": "0436d32ecb4a3c87c0417336b5974078b4ff46895f3643b4a6556c95fea2088d"
+    },
+    {
+      "path": "validation/visual_review.json",
+      "bytes": 1330,
+      "sha256": "d1ab8b2503e70f3837ed4aad010fb81da453507e1ea83a79205e9d8746d89749"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 22175,
+      "sha256": "2c1eb802751ae28c231efb52a2eb7b4a73eff43831ed0ef6199a98abc0b34d9d"
+    }
+  ],
+  "total_bytes": 3718060
+}
