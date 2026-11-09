@@ -86,10 +86,11 @@ function sisFlRun(){ const S=sisInit(), F=S.fl; if(!F||F.y!==G.year||!F.go)retur
 /* 코치 연수: 11월 1일~12월 15일에 1년 한 명, 6주. 그동안 코치 자리는 비운 셈(지도력 45) */
 function sisCoachSend(cid,role){ const c=OCL_BY[cid]; if(!c||sisPtn(cid)!==G.user)return '자매구단에만 보낼 수 있습니다.'; const o=dobj(G.day); if(!(o.m===11||(o.m===12&&o.d<=15)))return '코치 연수는 11월 1일~12월 15일에 보냅니다.';
   const S=sisInit(); if(S.ct&&S.ct.y===o.y&&S.ct.tid===G.user)return '올해는 이미 코치 한 명을 연수 보냈습니다.'; const k=(G.coach&&G.coach[G.user]||{})[role]; if(!k)return '그 자리에 코치가 없습니다.';
-  S.ct={y:o.y,tid:G.user,cid,role,id:k.id,to:G.day+SIS_CTD}; k.sisAway=S.ct.to; G.spend.etc=(G.spend.etc||0)+SIS_CT[c.c]; addLog(`${k.name} ${CROLE[role].l}를 ${c.n}에 ${SIS_CTD/7}주 연수 보냈습니다(${money(SIS_CT[c.c])}).`); return ''; }
-function sisCoachBack(){ const S=sisInit(), T=S.ct; if(!T||T.done||G.day<T.to)return; T.done=1; const c=OCL_BY[T.cid]; const k=Object.values((G.coach&&G.coach[T.tid])||{}).find(x=>x&&x.id===T.id); if(!k)return; delete k.sisAway;
+  if(S.ct&&!S.ct.done)(S.ctq=S.ctq||[]).push(S.ct); /* 이직 전 구단에서 보낸 연수는 따로 남겨 귀국 처리한다(검수 11-09zw #17) */ S.ct={y:o.y,tid:G.user,cid,role,id:k.id,to:G.day+SIS_CTD}; k.sisAway=S.ct.to; G.spend.etc=(G.spend.etc||0)+SIS_CT[c.c]; addLog(`${k.name} ${CROLE[role].l}를 ${c.n}에 ${SIS_CTD/7}주 연수 보냈습니다(${money(SIS_CT[c.c])}).`); return ''; }
+function sisCoachBack(){ const S=sisInit(); for(const T of [S.ct,...(S.ctq||[])])sisCtBack(T); if(S.ctq)S.ctq=S.ctq.filter(T=>!T.done); }
+function sisCtBack(T){ if(!T||T.done||G.day<T.to)return; T.done=1; const c=OCL_BY[T.cid]; /* 연수 중 이적·계약 만료로 옮겨 가도 그 사람을 찾는다(검수 11-09zw #18) */ const k=[...Object.values(G.coach||{}).flatMap(C=>Object.values(C||{})),...(G.coachX||[]),...(G.cmarket||[])].find(x=>x&&x.id===T.id); if(!k)return; delete k.sisAway;
   const d=ri(1,3); cGrow(k,d); if(!String(k.car||'').includes('자매구단 연수'))k.car=(k.car||'')+` · ${OCN[c.c]} 자매구단 연수`; sisAdd(T.tid,T.cid,4);
-  if(T.tid===G.user&&!G.unemp)mail(`${k.name} 코치`,`${c.n} 연수를 마치고 돌아왔습니다`,`${c.n}에서 ${SIS_CTD/7}주 동안 훈련 방식과 육성 체계를 배우고 왔습니다. 지도·육성 능력 +${d}. (관계 +4)`,{kind:'코치'}); }
+  if(T.tid===G.user&&!G.unemp&&Object.values(G.coach[G.user]||{}).includes(k))mail(`${k.name} 코치`,`${c.n} 연수를 마치고 돌아왔습니다`,`${c.n}에서 ${SIS_CTD/7}주 동안 훈련 방식과 육성 체계를 배우고 왔습니다. 지도·육성 능력 +${d}. (관계 +4)`,{kind:'코치'}); }
 /* 선수 정보 교환: 관계 50 이상 자매구단이 외국인 후보를 귀띔한다(12_foreign.js scoutFindWeek에서 매주). 우리 스카우트가 찾은 후보로 들어가고 평가 오차가 더 작다 */
 function sisLeadWeek(found){ if(G.unemp||(G.fmarket||[]).length>=46)return; for(const c of ['jp','us']){ const cid=sisMine(G.user,c); if(!cid)continue; const rel=sisRel(G.user,cid); if(rel<50||R()>=.05+(rel-50)/500)continue;
     const q=newForeign(c==='jp'?'아시아':'용병',{src:'scout',finder:G.user,flv:3,reg:c}); q.fsis=cid; G.fmarket.push(q.id); if(found)found.push(q);

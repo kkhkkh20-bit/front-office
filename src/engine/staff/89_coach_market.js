@@ -11,12 +11,12 @@ const cmVal=c=>c?(c.sk||45)+(c.dv||45):80;
 function cmScore(c,tid,sal,role,cur){ stAttr(c); return stScore(c,tid,sal,cur)+((CM_TIER[role]||2)-(CM_TIER[c.role]||2))*14; }
 /* AI 구단이 이 코치를 원할까: 그 자리 현직보다 확실히 낫고, 연봉을 감당할 수 있어야 한다 */
 function cmCanPay(t,c,cur){ const P=stAiPlan(t); return (c.sal||0)<=Math.max(140,170+P.rich*90+(cur?cur.sal*.5:0)); }
-function cmRivals(c){ if(!c||c.res===G.user)return []; const out=[]; for(const t of G.teams){ if(t.id===G.user||t.id===ME())continue; const C=G.coach&&G.coach[t.id]; if(!C)continue; const cur=C[c.role];
+function cmRivals(c){ if(!c||c.res===G.user||c.age>=66)return []; const out=[]; for(const t of G.teams){ if(t.id===ME()||(c.from===t.id&&c.fromY===G.year))continue; const C=G.coach&&G.coach[t.id]; if(!C)continue; const cur=C[c.role]; /* 월간 AI 영입(cmAiMonthly)이 실제로 데려갈 수 있는 구단만(검수 11-09zw #23) */
     if(cmVal(c)<cmVal(cur)+8||!cmCanPay(t,c,cur))continue; out.push({tid:t.id,v:cmScore(c,t.id,c.sal,c.role,false)}); }
   return out.sort((a,b)=>b.v-a.v).slice(0,3); }
 /* 매달 1일: AI 구단 코치 영입. 비시즌에 활발하고, 리그 전체에서 한 달에 스타급(지도+육성 128 이상)은 두 명까지만 */
 function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m, off=m>=11||m<=2; const moved=[]; let top=0;
-  const ids=G.teams.map(t=>t.id).filter(id=>id!==G.user&&id!==ME()).sort(()=>R()-.5);
+  const ids=G.teams.map(t=>t.id).filter(id=>id!==ME()).sort(()=>R()-.5); /* 사임했으면 전 구단도 후임 단장이 채용(검수 11-09zw #20) */
   for(const tid of ids){ const t=team(tid), C=G.coach[tid]; if(!C||R()>(off?.55:.12))continue;
     let best=null; for(const c of G.cmarket){ if(c.res===G.user||c.age>=66||(c.from===tid&&c.fromY===G.year)||(c.bid&&c.bid.exp>=G.day))continue; const cur=C[c.role]; const gain=cmVal(c)-cmVal(cur);
       if(gain<8||!cmCanPay(t,c,cur)||(top>=2&&cmVal(c)>=128))continue; const sc=gain*2+cmScore(c,tid,c.sal,c.role,false)*.3; if(!best||sc>best.sc)best={c,cur,sc}; }
