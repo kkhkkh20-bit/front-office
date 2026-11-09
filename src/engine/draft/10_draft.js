@@ -78,7 +78,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   for(const p of Object.values(G.players)){ if(!p.dt)p.dt=rollDT(); if(!p.isP&&p.r.vit==null)p.r.vit=Math.round(clamp(N(55-(p.inj-.14)*90,8),25,80)); if(p.fat==null)p.fat=0; }
   if(G.formY!==G.year&&G.day>=G.cal.camp)rollForm();
   for(const p of Object.values(G.players)) if(p.foreign){ if(!p.orig)p.orig=origOf(p); if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80)); }
-  if(foreignOpen())refreshFMarket(0); /* 매주 최소 후보 수를 채운다 */
+  /* 외국인 후보 채우기는 다음 날짜 진행(07_daily)에 맡긴다: 같은 저장을 두 번 열면 후보가 달라졌다(검수 11-09zr #13) */
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 지워진 후보의 메모(검수 11-09ze) */
   if(!(G.draft&&!G.draft.done)&&!(G.draft&&G.draft.done&&G.draft.y===G.year)&&(!G.draftClass||G.draftClass.length<DRAFT_POOL-10||G.draftClass.some(id=>G.players[id]&&!G.players[id].school))){
     for(const id of (G.draftClass||[])){ const p=G.players[id]; if(p&&p.prospect&&!p.ovsRet)delete G.players[id]; } /* 해외파 복귀자는 남겨 새 명단에 다시 넣는다(검수 11-09ze) */
