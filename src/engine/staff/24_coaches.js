@@ -47,7 +47,7 @@ function coachInit(){ G.coach=G.coach||{}; G.cmarket=G.cmarket||[];
   if(!G.cmarket.length)refreshCoachMarket(); }
 /* 코치 후보: 자리마다 4~5명. 스타 코치(드묾·비쌈), 베테랑, 보통, 젊은 지도자(싸지만 낮음)가 섞인다 */
 function mkCandCoach(k){ const x=R(); const c=x<.1?mkCoach(k,{boost:ri(9,15)}):x<.32?mkCoach(k,{boost:ri(3,7)}):x<.78?mkCoach(k):mkCoach(k,{boost:-ri(2,6)});
-  if(x>=.78){ c.age=ri(33,41); c.car=pick(['은퇴 2년 차 젊은 지도자','전력분석원 출신','2군 코치 경력 3년','해외 코치 연수 막 마침']); c.sal=round5(Math.max(40,c.sal*.7)); }
+  if(x>=.78){ const o=obYoungCoach(k); if(o)return o; /* 자리를 찾는 은퇴 선수가 있으면 그 사람이 젊은 지도자로 */ c.age=ri(33,41); c.car=pick(['은퇴 2년 차 젊은 지도자','전력분석원 출신','2군 코치 경력 3년','해외 코치 연수 막 마침']); c.sal=round5(Math.max(40,c.sal*.7)); }
   if(x<.1){ c.car=pick(['우승 코치진 출신','국가대표 코치 경력','레전드 선수 출신','타 구단 수석코치 출신']); c.star=true; } return c; }
 function refreshCoachMarket(){ const L=[]; for(const k of CKEYS){ const n=ri(2,4); /* 자리가 늘어 자리당 무작위 후보는 줄이고, 은퇴 선수(OB)·계약 끝난 코치가 시장을 채운다(사용자 11-08c: 우리 풀 안에서) */ for(let i=0;i<n;i++)L.push(mkCandCoach(k)); } const res=(G.cmarket||[]).filter(c=>c.res===G.user);
   let obc=[]; try{ obc=G.ob?obCands('coach').filter(o=>!res.some(c=>c.ob===o.id)).map(obCoach):[]; }catch(e){} G.cmarket=[...res,...obc,...L]; }

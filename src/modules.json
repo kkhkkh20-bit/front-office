@@ -42,6 +42,7 @@
       "src/engine/development/31_dev_medical.js",
       "src/engine/career/32_people.js",
       "src/engine/career/33_ob.js",
+      "src/engine/career/33b_ob_cycle.js",
       "src/engine/players/34_feats.js",
       "src/engine/market/35_abroad.js",
       "src/engine/staff/36_relations.js",

@@ -3539,6 +3539,17 @@ T('[피드백 11-09j] 모기업 구단은 현금이 적어도 구단주 지원 �
   simTo(()=>G.last&&G.last.y===G.year); ok(team(G.user).cash>=0,'결산 뒤 현금이 음수 '+team(G.user).cash); });
 T('[카페 11-09] 계약 끝나는 코치 한꺼번에 1년 연장',()=>{ fresh(); const C=coachesOf(G.user); const K=CKEYS.filter(k=>C[k]&&C[k].age<64).slice(0,3); ok(K.length===3,'준비 실패: 코치'); K.forEach(k=>{ C[k].yrs=1; delete C[k].extY; }); const L=coachBulkList(); ok(K.every(k=>L.includes(k)),'대상에 빠짐'); const s0=K.map(k=>C[k].sal); ok(extendCoachesAll()>=3,'연장 수'); ok(K.every((k,i)=>C[k].yrs===2&&C[k].extY===G.year&&C[k].sal>=s0[i]),'1년 연장·올해 손봄 기록'); ok(!coachBulkList().some(k=>K.includes(k)),'연장한 코치가 다시 대상'); });
 
+T('[피드백 11-09o] 짧게 뛴 은퇴 선수도 일부는 아마 지도자·2군 코치·스카우트·전력분석원으로 남고, 물러난 감독은 쉬었다 시장에 다시 나온다',()=>{ fresh(); obInit(); const op=G.teams.find(t=>t.id!==G.user).id;
+  const L=playersOf(op).filter(q=>!q.foreign).slice(0,40); ok(L.length>=30,'준비 실패');
+  const M=[]; for(const p of L){ p.age=29; p.hist=p.hist.filter(h=>h.lvl!=='1군'); lineFor(p,G.year-1,op,'2군').pa=50; p.svc=0; const ob=obFromPlayer(p,null); if(ob)M.push(ob); }
+  ok(M.length>=4&&M.length<=24,'짧은 경력 OB 비율이 보수적이지 않음: '+M.length+'/'+L.length); ok(M.every(o=>o.minor&&o.team===op&&['coach','scout','front'].includes(o.path)),'짧은 경력 OB 길');
+  ok(M.every(o=>obWhere(o).t&&!obWhere(o).t.includes('- ')),'지금 하는 일 문구'); ok(M.filter(o=>o.path==='front').every(o=>o.alt&&(o.alt.t.includes('전력분석원')||o.alt.t.includes('운영팀'))),'프런트 OB 자리'); ok(M.filter(o=>o.path==='coach').every(o=>o.am),'아마 지도자 자리');
+  const mc=M.find(o=>o.path==='coach'); if(mc){ mc.readyY=G.year; ok(!obCands('coach').includes(mc)&&obCands('coach',true).includes(mc),'짧은 경력 OB가 1군 코치 후보에 섞임'); mc.age=31; G.cmarket=[]; const c=obYoungCoach('fp'); ok(c&&c.ob&&c.role==='fp'&&c.car.includes('출신'),'젊은 지도자 자리에 OB를 먼저 쓰지 않음');
+    for(let i=0;i<20;i++){ G.cmarket=[]; const x=obAiCoach(op,'pc'); ok(!x||!G.ob.find(o=>o.id===x.ob).minor,'짧은 경력 OB가 1군 투수코치로'); } }
+  const fr=playersOf(op).find(q=>!q.foreign&&!M.some(o=>o.fid===q.id)); fr.relT=op; fr.team=null; for(let k=1;k<=6;k++)lineFor(fr,G.year-k,op,'1군').pa=300; const ob2=obFromPlayer(fr,null); ok(ob2&&ob2.team===op,'무적 선수로 은퇴하면 소속이 비는 문제');
+  for(const o of M)o.retY=G.year-6; const n0=G.ob.length; obMinorPrune(); ok(G.ob.length<n0&&!G.ob.some(o=>M.includes(o)&&obWhere(o).k==='free'),'오래 쉰 짧은 경력 OB가 남음');
+  const m=G.mgr[op]; mgrNew(op,false); ok((G.exMgr||[]).includes(m)&&m.career.includes('감독'),'물러난 감독 기록'); refreshMgrMarket(); ok(!G.mmarket.includes(m),'바로 시장에 나옴'); m.exY=G.year-1; refreshMgrMarket(); ok(G.mmarket.includes(m)&&!m.yrs,'쉬었던 감독이 시장에 다시 나오지 않음');
+  for(let i=0;i<20;i++){ m.exY=G.year-7; exMgrMarket(); } ok(!G.exMgr.includes(m),'오래된 전 감독 기록이 남음'); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
