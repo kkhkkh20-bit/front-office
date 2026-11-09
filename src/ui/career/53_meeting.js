@@ -14,11 +14,13 @@ function meetGreet(M){ const t=team(G.user);
 function meetOpen(k,id,o){ o=o||{}; const M={k,id:id??null,log:[],first:!!o.first,visit:!!o.visit,returnY:document.documentElement.classList.contains('detail-page-open')?sheetScrollY():scrollY,returnDetail:document.documentElement.classList.contains('detail-page-open'),mid:k==='mgr'?G.mgr[G.user]?.id:null}; const W=meetWho(M); if(!W){ toast(k==='mgr'?'감독이 없습니다.':'면담할 수 없습니다.'); return; }
   if(k==='pl'){ const p=G.players[M.id]; const TL=(p&&p.talkLog)||[]; if(TL.length)M.log.push({w:'sys',t:`최근 면담 · ${TL.slice(0,3).map(x=>`${dmd(x.d)} ${TALK[x.k]||x.k}: "${x.a}"`).join(' / ')}`}); if(p&&p.promise)M.log.push({w:'sys',t:`약속: 출전 기회 건의 · ${dmd(p.promise.until)}까지 감독이 기회를 주는지 확인`}); }
   M.log.push({w:'them',t:meetGreet(M)}); UI.meet=M; if(o.ask)meetDo(o.ask); render(); }
+/* 장면 대답 한 번: 내 말 → 상대 반응 → 결과 한 줄 → 상대의 다음 말(질문) 순서로 남긴다(11-09e) */
+function meetScn(M,r){ if(r.me)M.log.push({w:'me',t:r.me}); if(r.say[0])M.log.push({w:'them',t:r.say[0]}); if(r.sys.length)M.log.push({w:'sys',t:r.sys.join(' · ')}); r.say.slice(1).forEach(t=>M.log.push({w:'them',t})); M.sc=r.st; }
 function meetBadF(){ return foreignOf(G.user).filter(p=>{ const h=seasonTotal(p,G.year,'1군'); return h&&(p.isP?(h.outs>=60&&pRate(h).era>5):(h.pa>=100&&bRate(h).ops<.700)); }); }
 function frepAmt(p){ return round5(Math.max(500,p.sal*.6)); }
 /* 꺼낼 수 있는 이야기 */
 function meetTopics(M){ const t=team(G.user);
-  if(M.k==='own'){ if(t.indie)return [['rep','근황 보고']]; const left=ownAskLeft(); const L=[['rep','근황 보고']];
+  if(M.k==='own'){ if(t.indie)return [['rep','근황 보고']]; if(M.sc)return talkChoices(M.sc).map((l,i)=>['sc:'+i,l]); const left=ownAskLeft(), od=G.day-ownScnMem().d<7; const L=[['talk','회장님과 이야기 나누기',od?'이번 주에는 이미 나눴습니다':`${OWNER[t.owner].label} · 일주일에 한 번`],['rep','근황 보고']]; /* 주고받는 대화(11-09e) */
     for(const a of [1000,2000,3000])L.push([`gen:${a}`,`운영비 ${money(a)} 증액 요청`,oddsTxt(ownOdds(a,null)),!left]);
     const faL=G.fa&&G.fa.open&&!G.fa.closed?G.fa.pool.map(id=>G.players[id]).filter(p=>p&&p.team==null).sort((a,c)=>ovr(c)-ovr(a)).slice(0,3):[]; for(const p of faL)L.push([`fa:${p.id}`,`FA ${p.name} 영입 자금 요청`,`${money(p.ask.annual)} · ${oddsTxt(ownOdds(p.ask.annual,{k:'fa',pid:p.id}))}`,!left]);
     for(const p of meetBadF())L.push([`frep:${p.id}`,`외국인 ${p.name} 교체 자금 요청`,`${money(frepAmt(p))} · ${oddsTxt(ownOdds(frepAmt(p),{k:'frep',pid:p.id}))}`,!left]);
@@ -29,15 +31,17 @@ function meetTopics(M){ const t=team(G.user);
   const p=G.players[M.id]; return Object.entries(TALK).map(([k,l])=>[k,l,k==='ask'?'언제든 물어볼 수 있습니다':talkUsed(p,k)?'이번 주에는 했습니다':null,talkUsed(p,k)]); }
 function meetDo(v){ const M=UI.meet; if(!M)return; const t=team(G.user); const say=(w,x)=>M.log.push({w,t:x});
   if(M.k==='gm'){say('me',meetTopics(M).find(x=>x[0]===v)?.[1]||'근황이 어떻습니까?');say('them',gmPersonalReply(M.id,v));save();return;}
-  if(M.k==='own'){ if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',ownerPersonalReport()); return; }
+  if(M.k==='own'){ if(v==='talk'){ say('me','회장님, 잠깐 말씀 나누시죠.'); const r=ownTalkStart(); r.say.forEach(x=>say('them',x)); M.sc=r.st; save(); return; }
+    if(v.startsWith('sc:')){ const r=ownTalkPick(M.sc,+v.slice(3)); meetScn(M,r); save(); return; }
+    if(v==='rep'){ const g=goalStatus(); say('me','회장님, 요즘 상황을 보고드리러 왔습니다.'); say('them',ownerPersonalReport()); return; }
     const [k,x]=v.split(':'); const p=k==='gen'?null:G.players[+x]; const amt=k==='gen'?+x:k==='fa'?p.ask.annual:frepAmt(p); const tr0=t.trust;
-    say('me',k==='gen'?`회장님, 운영비 ${money(amt)} 증액을 요청드립니다. 전력 보강과 운영에 꼭 필요합니다.`:k==='fa'?`FA ${p.name} 선수를 잡으려면 ${money(amt)}이(가) 필요합니다. 도와주십시오.`:`외국인 ${p.name}이(가) 기대에 못 미칩니다. 교체할 선수를 데려오려면 ${money(amt)}이(가) 필요합니다.`);
+    say('me',k==='gen'?`회장님, 운영비를 ${money(amt)} 더 받고 싶습니다. 보강할 자리가 있습니다.`:k==='fa'?`FA ${p.name} 선수를 잡으려면 ${money(amt)}이(가) 더 듭니다. 도와주십시오.`:`외국인 ${p.name}을(를) 바꿔야겠습니다. 새 선수를 데려오려면 ${money(amt)}이(가) 듭니다.`);
     const r=k==='gen'?ownerAsk(amt,null):ownerAsk(amt,{k,pid:+x}); if(!/^(승인|반려)/.test(r)){ say('sys',r); return; } const ok=/^승인/.test(r);
-    say('them',ok?(t.owner==='win'?'좋소. 대신 결과로 보여 주시오.':t.owner==='profit'?'...이번만이오. 돈 쓴 만큼 벌어 오시오.':'알겠소. 팬들을 실망시키지 마시오.'):(t.owner==='profit'?'지금 적자부터 줄이세요.':t.owner==='win'?'성적으로 먼저 증명하시오.':'지금은 때가 아니오.'));
+    say('them',ok?(t.owner==='win'?'좋소. 대신 결과로 보여 주시오.':t.owner==='profit'?'...이번만이오. 돈 쓴 만큼 벌어 오시오.':'알겠소. 팬들을 실망시키지 마시오.'):(t.owner==='profit'?'적자부터 줄이시오.':t.owner==='win'?'성적부터 내 오시오.':'지금은 때가 아니오.'));
     say('sys',ok?`승인: ${money(amt)} 지원${k==='fa'?' (목적대로 쓰지 않으면 신뢰가 깎입니다)':''}`:`반려 · 구단주 신뢰 ${Math.round(t.trust-tr0)}`); save(); return; }
   if(M.k==='mgr'){const mm0=G.mgr[G.user];if(!meetWho(M)){say('sys','면담 상대가 자리를 떠났습니다.');return;}
     if(v==='talk'){ say('me','감독님, 잠깐 이야기 좀 하시죠.'); const r=mgrTalkStart(mm0); r.say.forEach(x=>say('them',x)); M.sc=r.st; save(); return; } /* 스타일 대화(11-08c) */
-    if(v.startsWith('sc:')){ const r=mgrTalkPick(mm0,M.sc,+v.slice(3)); if(r.me)say('me',r.me); r.say.forEach(x=>say('them',x)); if(r.sys.length)say('sys',r.sys.join(' · ')); M.sc=r.st; save(); return; }const last=(M.answers||{})[v],key=mvDialogueKey(mm0,v);if(last&&last.d===G.day&&last.key===key){const q0=meetTopics(M).find(x=>x[0]===v);say('me',q0?q0[1]:'같은 선수에 대한 의견은 어떻습니까?');say('them',mvRepeat(mm0));return;}(M.answers=M.answers||{})[v]={d:G.day,key}; const q=meetTopics(M).find(x=>x[0]===v); if(v.startsWith('fp:')){ const p=G.players[+v.slice(3)]; say('me',`${p?p.name:'이 선수'} 어떻게 보세요?`); say('them',mgrOnForeign(p)); save(); return; }
+    if(v.startsWith('sc:')){ const r=mgrTalkPick(mm0,M.sc,+v.slice(3)); meetScn(M,r); save(); return; }const last=(M.answers||{})[v],key=mvDialogueKey(mm0,v);if(last&&last.d===G.day&&last.key===key){const q0=meetTopics(M).find(x=>x[0]===v);say('me',q0?q0[1]:'같은 선수에 대한 의견은 어떻습니까?');say('them',mvRepeat(mm0));return;}(M.answers=M.answers||{})[v]={d:G.day,key}; const q=meetTopics(M).find(x=>x[0]===v); if(v.startsWith('fp:')){ const p=G.players[+v.slice(3)]; say('me',`${p?p.name:'이 선수'} 어떻게 보세요?`); say('them',mgrOnForeign(p)); save(); return; }
     say('me',q?q[1]:'');
     if(v==='cand'){ const W=mgrWantForeign(); const mm=G.mgr[G.user]; const sc=x=>mgrEst(mm,x)+(mgrFitF(x,W)?4:0); /* 감독 눈(보고서 + 자기 판단)과 원하는 유형 */
       const M0=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign==='용병'&&fKnows(G.user,p)).sort((a,b)=>sc(b)-sc(a)); const fit=M0.filter(p=>mgrFitF(p,W)); const L=W&&W.want?[...fit.slice(0,2),...M0.filter(p=>!fit.slice(0,2).includes(p))].slice(0,3):M0.slice(0,3); /* 원하는 유형을 먼저, 그다음 눈에 띄는 다른 선수 */
@@ -49,12 +53,12 @@ function meetPage(){ const M=UI.meet,W=meetWho(M); if(!W)return `<section class=
   const log=M.log.map(x=>x.w==='sys'?`<div class="mt-sys">${esc(x.t)}</div>`:`<div class="mt-l ${x.w}">${x.w==='them'?`<span class="mt-av">${W.av}</span>`:''}<div><small>${x.w==='them'?esc(W.name):'단장'}</small><p>${esc(x.t)}</p></div></div>`).join('');
   return `<section class="meet-page" aria-label="${esc(W.place)} 면담"><header class="meet-heading"><div class="mt-h">${W.av}<div><span class="eyebrow">${esc(W.place)} · 면담</span><h2 class="sec">${esc(W.name)}</h2><span class="small muted">${esc(W.role)} · ${esc(W.rel)}</span></div></div><button class="btn small" data-a="meetClose">면담 마치기</button></header>
   <div class="meet-workspace"><div class="meet-conversation"><div class="meet-log-label">대화 기록<span>${dmd(G.day)}</span></div><div class="mt-log" id="mt-log" role="log" aria-live="polite">${log}</div></div>
-  <aside class="mt-opts" aria-label="면담 화제"><span class="eyebrow">${M.sc?'대답 고르기':'꺼낼 이야기'}${own&&!left?' · 이번 달 지원 요청 완료':''}${M.k==='pl'&&T.some(x=>x[3])?' · 이번 주 면담 제한 적용':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o${M.topic===k?' selected':''}" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}</aside></div></section>`; }
+  <aside class="mt-opts${M.sc?' scene':''}" aria-label="${M.sc?'단장 대답':'면담 화제'}"><span class="eyebrow">${M.sc?`대답 고르기 · ${M.sc.beat+1}번째`:'꺼낼 이야기'}${own&&!left?' · 이번 달 지원 요청 완료':''}${M.k==='pl'&&T.some(x=>x[3])?' · 이번 주 면담 제한 적용':''}</span>${T.map(([k,l,sub,dis])=>`<button class="mt-o${M.topic===k?' selected':''}" data-a="meetDo" data-v="${k}" ${dis?'disabled':''}><b>${esc(l)}</b>${sub?`<i>${esc(sub)}</i>`:''}</button>`).join('')}</aside></div></section>`; }
 function meetWire(){const box=document.querySelector('.meet-page'),M=UI.meet;if(!box||!M)return;document.querySelector('#app main.content')?.classList.add('ws-frame','meeting-workspace');const nav=document.querySelector('.bnav'),nr=nav?.getBoundingClientRect(),bottom=nr&&nr.height&&getComputedStyle(nav).display!=='none'?Math.max(0,innerHeight-nr.top):0;box.style.height=Math.max(100,(innerHeight-box.getBoundingClientRect().top-bottom-12)/uiZ())+'px';
  const log=box.querySelector('.mt-log');if(log){const fresh=M.logCount!==M.log.length,bound=log.dataset.meetBound==='1';if(fresh)log.scrollTop=log.scrollHeight;else if(!bound)log.scrollTop=M.logY||0;M.logCount=M.log.length;M.logY=log.scrollTop;if(!bound){log.dataset.meetBound='1';log.addEventListener('scroll',()=>{if(UI.meet===M)M.logY=log.scrollTop;},{passive:true});}}
  const opts=box.querySelector('.mt-opts');if(opts&&!opts.dataset.meetBound){opts.scrollTop=M.optsY||0;opts.dataset.meetBound='1';opts.addEventListener('scroll',()=>{if(UI.meet===M)M.optsY=opts.scrollTop;},{passive:true});}}
 
 /* 면담 입구: 상대 얼굴 + 들어가기 */
 function meetDoor(k){ const W=meetWho({k}); if(!W)return ''; const t=team(G.user);
-  const sub=k==='own'?(ownAskLeft()?'운영비 증액 · FA 영입 자금 · 외국인 교체 자금 · 근황 보고':'이번 달 지원 요청은 이미 했습니다 · 근황 보고는 가능'):'감독 스타일 대화 · 팀 상황 · 원하는 외국인 · 외국인 후보 의견 · 급한 자리 · 젊은 선수';
+  const sub=k==='own'?(ownAskLeft()?'회장님과 이야기 · 운영비 증액 · FA 영입 자금 · 외국인 교체 자금 · 근황 보고':'이번 달 지원 요청은 이미 했습니다 · 이야기와 근황 보고는 가능'):'감독 스타일 대화 · 팀 상황 · 원하는 외국인 · 외국인 후보 의견 · 급한 자리 · 젊은 선수';
   return `<button class="mt-door" data-a="meetOpen" data-v="${k}">${W.av}<span><b>${k==='own'?'구단주 집무실로 가기':'감독실 들어가기'}</b><i>${esc(W.name)} · ${esc(W.rel)}</i><i>${sub}</i></span><em>›</em></button>`; }

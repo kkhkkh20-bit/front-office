@@ -2661,6 +2661,14 @@ T('[검수 11-09n] 말소 직후 콜업 요청 보류, 같은 날 두 번 등판
   ok(!wish(),'재등록 전인데 콜업 요청'); b.downDay=G.day-10;
   const p=playersOf(U).find(q=>q.isP); pitchApp(p,G.day,16,false); pitchApp(p,G.day,21,false); ok(p.lastPc===37,'같은 날 투구 수 합산 안 됨: '+p.lastPc);
   const B=G.teams.find(t=>t.id!==U).id; const sp=playersOf(U).find(q=>q.isP&&!q.foreign); G.prole={[sp.id]:{k:'sp2',d:G.day,tid:U}}; G.user=B; rpWeek(); G.user=U; ok(rpPlanOf(U,sp)==='sp2','이직 뒤 주간 처리로 A 구단 선발 수업 요청이 지워짐'); });
+T('[피드백 11-09e] 감독·구단주 대화 티키타카: 장면마다 3마디 이상, 상대가 단장에게 묻고, 대답 글이 단장 말투마다 다르며, 결과가 실제로 남는다',()=>{ fresh(); G.gmP=G.gmP||{};
+  const walk=(start,pick)=>{ let r=start(), st=r.st, beats=0, asks=0, sys=[], said=[]; let n=0; while(st&&n++<8){ const i=(n+beats)%st.node.c.length; const x=pick(st,i); beats++; said.push(...x.say.slice(1)); sys=sys.concat(x.sys); st=x.st; } asks=said.filter(t=>/[?？]/.test(t)).length; return {beats,asks,sys,open:r.say[0]}; };
+  const m=G.mgr[G.user]; let askN=0; for(const s of Object.keys(MTSTY)){ m.sty=s; m.scn=null; m.dialogue=null; m.rel=50; const w=walk(()=>mgrTalkStart(m),(st,i)=>mgrTalkPick(m,st,i)); ok(w.beats>=3&&w.beats<=5,s+' 감독 마디 '+w.beats); ok(w.sys.length>0,s+' 결과 없음'); if(w.asks)askN++; }
+  ok(askN>=5,'감독이 단장에게 묻는 장면이 적음 '+askN);
+  const t=team(G.user); const B=bossOf(G.user); for(const o of ['win','profit','pr']){ t.owner=o; B.own.scn=null; B.own.dialogue=null; t.trust=50; const w=walk(()=>ownTalkStart(),(st,i)=>ownTalkPick(st,i)); ok(w.beats>=3&&w.beats<=5,o+' 구단주 마디 '+w.beats); ok(w.sys.length>0,o+' 구단주 결과 없음'); ok(w.asks>0,o+' 구단주가 묻지 않음'); }
+  ok(!ownTalkStart().st,'구단주 대화가 일주일에 두 번 열림'); B.own.scn.d=G.day-7; ok(ownTalkStart().st,'일주일 뒤에 다시 열리지 않음');
+  const q=MSQ.find(x=>x.id==='life'); const lab=v=>{ G.gmP.voice=v; return gvL(q.a({})[0].l); }; ok(new Set(['ana','bro','gam','fox','blunt',null].map(lab)).size===6,'단장 말투마다 대답 글이 같음'); G.gmP.voice=null;
+  delete G.ownReq; t.trust=50; const out=ownScnFx({oreq:'fan'},ownScnCtx()); ok(G.ownReq&&out.some(x=>x.includes('구단주 주문')),'구단주 주문이 생기지 않음'); G.pr.fan=G.ownReq.f0+3; G.day=G.ownReq.until+1; ownReqDaily(); ok(!G.ownReq&&t.trust===53,'주문을 지켰는데 신뢰 '+t.trust); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
