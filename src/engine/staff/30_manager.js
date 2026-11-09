@@ -39,7 +39,7 @@ function setPolicy(k){
   if(G.policy&&G.day-G.policy.day<14)return {msg:`운영 기조는 2주에 한 번만 바꿀 수 있습니다. (${dmd(G.policy.day+14)}부터)`};
   mgrFix(m); const diff=Math.abs(POL[k].lean-mgrLean(m));
   let s=1-diff*.32-(m.ego-50)/55-(m.fame-50)/110+(m.rel-60)/90+(G.policy?-.05:0);
-  const follow=clamp(s,.12,1); G.policy={k,day:G.day,follow};
+  const follow=clamp(s,.12,1); G.policy={k,day:G.day,follow}; G._push=null; /* 그날 캐시된 투수 운용 값도 새 기조로(검수 11-09zh) */
   let msg;
   if(follow>=.8){ msg=`${m.name} 감독: 알겠습니다. ${POL[k].l} 기조로 운영하겠습니다.`; m.rel=clamp(m.rel+2,0,100); }
   else if(follow>=.5){ msg=`${m.name} 감독: 취지는 이해합니다. 다만 현장 상황을 보면서 일부만 반영하겠습니다.`; }

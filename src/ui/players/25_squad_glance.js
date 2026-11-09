@@ -207,7 +207,7 @@ function lineupCard(tid){
     <p class="small muted">타순과 수비 위치는 감독이 타격·수비 적합도로 정합니다. 노란 위치는 본래 포지션이 아닌 자리입니다. 출장 기록은 이번 시즌 실제 선발 기록입니다.</p></section>`;
 }
 function staffCard(tid){
-  const d=depth(tid); const t=team(tid); const next=d.sp.length?d.sp[(t.rot||0)%d.sp.length]:null;
+  const d=depth(tid); const t=team(tid); const next=(projStarters(tid,1)[0]||{}).sp||null; /* 실제 선발 선택과 같은 예상(검수 11-09zh) */
   const row=(p,label,hl)=>`<div class="lu${hl?' nx':''}" data-a="player" data-v="${p.id}" role="button" tabindex="0"><span class="lu-n sm">${label}</span>${avImg(p)}<div class="lu-m"><b>${esc(p.name)}${condChip(p)}</b><span class="lu-p"><i>${p.th}투</i> <i>${p.age}세</i>${hl?' <span class="pp main">다음 선발</span>':''}</span><span class="lu-s">${pLine(p)}</span>${l10Text(p)?`<span class="lu-u">${l10Text(p)}</span>`:''}</div>${tid===G.user?fatBar(p):(()=>{const r=scoutReport(p); return r.cur!=null?rchip(r.cur):'<span></span>';})()}</div>`;
   return `<section class="card"><div class="row between"><h2 class="sec">감독의 투수 운용</h2><span class="small muted">선발은 5일 간격</span></div>
     <div class="eyebrow">선발 로테이션</div><div class="lus">${d.sp.map((p,i)=>row(p,(i+1)+'선발',next&&p.id===next.id)).join('')}</div>

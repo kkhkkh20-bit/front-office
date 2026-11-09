@@ -19,7 +19,7 @@ function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 기록: applyGame에서 투수마다 호출 */
 /* 등판 하나를 1군·퓨처스 공통으로 남긴다: 부하 기록(날짜순) + 마지막 등판일·선발일·투구 수. 선발 선택·불펜 가용 판단이 어느 리그 등판이든 같은 이력을 본다 */
 function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastPc=day===p.lastApp?(p.lastPc||0)+pc:pc; p.lastApp=day; } /* 같은 날 두 번 던지면 합친다: 다음 날 불펜 가용 판정이 그날 전체 투구 수를 보게(검수 11-09) */ else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
-function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; { const same=L.find(x=>x[0]===day); if(same)same[1]+=pc; else { L.push([day,pc]); L.sort((a,b)=>a[0]-b[0]); } } if(L.length>10)L.shift(); /* 날짜순 유지·같은 날은 합친다(퓨처스 주간 기록이 1군 기록 뒤에 들어와도 연투 계산이 맞게) */
+function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day); const L=p.ld=p.ld||[]; { const same=L.find(x=>x[0]===day); if(same){ same[1]+=pc; same[2]=(same[2]||1)+1; } else { L.push([day,pc]); L.sort((a,b)=>a[0]-b[0]); } } if(L.length>10)L.shift(); /* 날짜순 유지·같은 날은 합친다(퓨처스 주간 기록이 1군 기록 뒤에 들어와도 연투 계산이 맞게) */
   const prevS=p.lsS; let add=pc*(cd>=2?1.8:cd>=1?1.3:1);
   if(isStart){ const past=prevS!=null&&day<prevS; /* 늦게 들어온 과거 선발 기록: 짧은 휴식 가산·마지막 선발일을 거꾸로 바꾸지 않는다(검수 11-07) */ if(pc>105)add+=(pc-105)*3; const SD=p.lsD=(p.lsD||[]).filter(d=>d!==day); const nb=SD.filter(d=>Math.abs(d-day)<5).length; if(nb)add+=pc*.4; SD.push(day); SD.sort((a,b)=>a-b); if(SD.length>6)SD.shift(); if(!past)p.lsS=day; } /* 짧은 휴식은 앞뒤 선발과 비교: 기록이 늦게 들어와도 같은 부하(검수 11-08) */
   if(!isStart&&pc>=35)add+=(pc-35)*1.5; /* 불펜 멀티이닝 */
@@ -34,7 +34,7 @@ function loadMult(p,cd,day){ const sp=isSPr(p); const w7=pc7(p,day);
 const LOAD_NORM=.76;
 function loadDaily(){ for(const p of Object.values(G.players)){ if(p.armw){ p.armw*=.985; if(p.armw<5)delete p.armw; } } }
 function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDays(p,day); const r=armRatio(p);
-  const n7=(p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).length;
+  const n7=sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[2]||1)); /* 같은 날 두 경기 등판은 두 경기로(ld 3번째 칸, 검수 11-09zh) */
   return `최근 7일 ${n7}경기 ${pc7(p,day)}구${cd?` · ${cd}일 연속 등판`:''} · 팔 부하 ${Math.round(r*100)}%${r>=1.3?' (위험)':r>=1.1?' (높음)':''}`; }
 /* 매주 월요일: 우리 팀 부하 보고 */
 function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
