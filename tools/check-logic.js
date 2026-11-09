@@ -3116,6 +3116,38 @@ T('[검수 11-09zj] 소집 직전 역할은 그때 포지션을 함께 저장한
   ok(N.role&&N.role[q.id],'준비 실패: 역할 없음'); const lab=N.rpos[q.id]; ok(lab,'소집 당시 포지션 없음'); q.pos='1B'; ok(N.rpos[q.id]===lab,'포지션 변경을 따라 바뀜'); });
 T('[검수 11-09zj] 대표팀 차출 중인 선수는 구단 생활 사건을 받지 않는다',()=>{ fresh(); G.day=G.cal.open+10; const L=domestic(G.user).filter(p=>!p.prospect&&!p.injOut&&!milServing(p)&&!(p.joinY>G.year)); const a=L[0], b=L[1]; for(const p of domestic(G.user)){ initPers(p); p.pers.pro=1; } for(const p of [a,b]){ p.mor=60; p.story=[]; }
   a.ntFrom=G.day-1; a.ntAway=G.day+5; for(let i=0;i<300;i++)misbehaveMonth(); ok(!a.story.length,'차출 중 생활 사건'); ok(b.story.length>0,'준비 실패: 대조 선수 사건 없음 '+effPro(b)); });
+T('[검수 11-09zo] 연기 경기: 내일 미룬 두 경기가 다음 경기·예고 선발·직관·관중 전망에 엔진 순서대로 잡히고 실제로 둘 다 치른다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3); let d=G.day; while((G.cal.sched[d+1]||[]).length)d++; G.day=d; G.res=null; G.stops=[]; const O=G.teams.filter(t=>t.id!==G.user).map(t=>t.id), d1=G.day+1;
+  G.makeup=[{y:G.year,h:G.user,a:O[0],d:d-1},{y:G.year,h:O[1],a:G.user,d:d-1}];
+  const L=teamGames(G.user,d1,4); ok(L.length>=2&&L[0].d===d1&&L[1].d===d1&&L[0].op===O[0]&&L[0].home&&L[1].op===O[1]&&!L[1].home,'다음 경기 목록이 미룬 두 경기를 순서대로 보이지 않음: '+JSON.stringify(L.slice(0,2)));
+  const S=projStarters(G.user,4); ok(S[0].d===d1&&S[0].op===O[0]&&S[1].op===O[1]&&S[0].sp&&S[1].sp&&S[0].sp!==S[1].sp,'예고 선발이 미룬 경기 상대를 따라가지 않음');
+  ok(homeGames(G.user,d1,d1).length===1,'미룬 홈경기가 관중 전망에서 빠짐');
+  const m=gmPlanSet(d1,'attend','solo'); ok(gmPlanAt(d1)&&gmPlanAt(d1).op===O[0],'미룬 경기 직관 예약이 거절됨: '+m);
+  for(const t of [G.user,...O.slice(0,2)])playersOf(t).forEach(q=>{ q.injOut=0; q.fat=0; }); processDay(); const U=G.sea.ulog.filter(x=>x.d===d1); ok(U.length===2&&U[0].h===G.user&&U[0].a===O[0]&&U[1].h===O[1],'엔진이 미룬 두 경기를 같은 순서로 치르지 않음: '+JSON.stringify(U.map(x=>[x.h,x.a])));
+  ok(gmPlanAt(d1).done,'잡은 상대 경기를 직관하지 않음'); });
+T('[검수 11-09zo] 직관 예약은 잡은 상대 경기에 붙고, 상대가 바뀌거나 열리지 않을 차전 예약은 취소되어 구단주 동행 한도를 차지하지 않는다',()=>{ fresh(); simTo(()=>period()==='season'&&G.day>=G.cal.open+3&&(G.cal.sched[G.day+2]||[]).some(m=>m.includes(G.user))); const d2=G.day+2, m=G.cal.sched[d2].find(x=>x.includes(G.user)), op=m[0]===G.user?m[1]:m[0], op2=G.teams.find(t=>t.id!==G.user&&t.id!==op).id;
+  gmPlanSet(d2,'attend','solo'); ok(gmPlanAt(d2).op===op,'예약에 상대가 없음'); const rec={day:d2,home:op2,away:G.user,hs:1,as:2}; gmAttendResult(rec); ok(!gmPlanAt(d2).done,'다른 상대 경기로 직관 처리됨');
+  G.cal.sched[d2]=G.cal.sched[d2].filter(x=>!x.includes(G.user)); G.makeup=[{y:G.year,h:op2,a:G.user,d:G.day}]; G.day++; gmPlanDaily(); const q=gmPlanAt(d2); ok(q.done&&q.miss,'상대가 바뀌었는데 예약이 남음'); G.makeup=[];
+  fresh(); G.day=G.cal.end+3; const O=G.teams.filter(t=>t.id!==G.user).map(t=>t.id); G.ps={done:false,res:{},seeds:[],order:[],round:'po',cur:mkSeries('po',G.user,O[0],G.day+1)}; const s=G.ps.cur;
+  ok(teamGames(G.user,G.day+1,9).filter(x=>x.ps).length===5,'포스트시즌 차전이 다음 경기에 없음'); ok(projStarters(G.user,5).length===5&&projStarters(G.user,5).every(x=>x.sp),'포스트시즌 예고 선발이 비어 있음');
+  gmPlanSet(s.days[3],'attend','owner'); gmPlanSet(s.days[4],'attend','owner'); ok(gmPlanAt(s.days[4])&&gmPlanAt(s.days[4]).x==='owner','준비 실패: 4·5차전 예약');
+  G.ps.cur=mkSeries('ks',O[1],G.user,G.day+3); const r=gmPlanSet(G.day+3,'attend','owner'); ok(gmPlanAt(G.day+3)&&gmPlanAt(G.day+3).x==='owner','열리지 않을 플레이오프 예약이 한국시리즈 동행을 막음: '+r);
+  gmPlanDaily(); ok(gmPlanAt(s.days[3]).miss&&gmPlanAt(s.days[4]).miss,'열리지 않을 차전 예약이 취소되지 않음'); ok(!gmPlanAt(G.day+3).done,'유효한 한국시리즈 예약까지 취소됨'); });
+T('[검수 11-09zo] 포스트시즌: 지난 차전은 다음 진행일로 다시 잡고 경기 전에 멈추며, 우리 경기 직전 선수 사본을 남긴다',()=>{ fresh(); G.day=G.cal.end+3; const op=G.teams.find(t=>t.id!==G.user).id; G.ps={done:false,res:{},seeds:[],order:[],round:'ks',cur:mkSeries('ks',G.user,op,G.day-2)}; G.res=null; G.stops=[];
+  const hadDoc=typeof globalThis.document!=='undefined'; if(!hadDoc)globalThis.document={}; try{ advance('next'); }finally{ if(!hadDoc)delete globalThis.document; }
+  ok(G.matchAwait&&G.matchAwait.day===G.day+1&&G.matchAwait.ps,'지난 차전을 경기 전 확인 없이 진행: '+JSON.stringify(G.matchAwait)+' gi '+G.ps.cur.gi); ok(G.ps.cur.gi===0&&G.ps.cur.days[0]===G.day+1,'지난 차전 날짜가 다음 진행일로 옮겨지지 않음');
+  for(const t of [G.user,op])entryManage(t,false); const d=G.day+1; G.day=d; psDay(d); ok(SPOIL_SNAP&&SPOIL_SNAP.day===d,'포스트시즌 우리 경기 직전 선수 사본이 없음'); });
+T('[검수 11-09zo] 와일드카드 어드밴티지 탈락 기사, 무승부 누적 시리즈는 40경기 안에서 필요한 승수로만 끝난다',()=>{ fresh(); const op=G.teams.find(t=>t.id!==G.user).id; psOutNews('wc',[op,G.user,0,0]); ok(G.news[0].b.includes('어드밴티지')&&!G.news[0].b.includes('0승 0패'),'비겨 탈락한 기사가 0승 0패로 씀: '+G.news[0].b);
+  G.news=[]; psOutNews('wc',[op,G.user,0,1]); ok(G.news[0].b.includes('어드밴티지'),'1승 뒤 비겨 탈락한 기사에 어드밴티지 없음');
+  G.day=G.cal.end+3; const o2=G.teams.find(t=>t.id!==G.user&&t.id!==op).id; const s=mkSeries('ks',op,o2,G.day+1); G.ps={done:false,res:{},seeds:[],order:[],round:'ks',cur:s}; const cap=[]; const sg=simGame; simGame=function(d,h,a,ps){ cap.push(!!(ps&&ps.noTie)); throw new Error('주입'); };
+  try{ s.days=Array.from({length:40},(_,i)=>G.day+1+i); s.homes=s.days.map((_,i)=>i%2?o2:op); s.gi=32; psDay(s.days[32]); s.gi=33; psDay(s.days[33]); }finally{ simGame=sg; }
+  ok(cap.length>=4&&!cap[0]&&cap[cap.length-1],'40경기 경계에서 무승부 없는 경기로 바뀌지 않음: '+JSON.stringify(cap));
+  for(const t of [op,o2])entryManage(t,false); let tie=0; for(let i=0;i<12;i++){ const g=simGame(G.day,op,o2,{noTie:true}); if(g.score.h===g.score.a)tie++; } ok(!tie,'무승부 없는 경기에서 무승부 '+tie); });
+T('[검수 11-09zo] 우승 포상: 시설 투자 제한은 구단 기록, 시설이 모두 최고면 시설 포상 없음, 우승 효과는 AI 구단도 같다',()=>{ fresh(); const t=team(G.user), o=G.teams.find(x=>x.id!==G.user); t.indie=false; o.indie=false; facInit();
+  ok(champGiftOpts(t,G.year).some(x=>/시설/.test(x.l)),'준비 실패: 시설 포상 없음'); EVH.champGift.pick({},3); ok(t.champFacY===G.year&&G.champFacY==null,'시설 투자 제한이 구단에 남지 않음');
+  ok(!champGiftOpts(t,G.year+1).some(x=>/시설/.test(x.l)),'같은 구단 3년 제한이 없음'); ok(champGiftOpts(o,G.year+1).some(x=>/시설/.test(x.l)),'시설 포상을 받은 적 없는 구단에 시설 포상이 빠짐');
+  for(const k of FACK)G.fac.it[k]=FAC_MAX; ok(!champGiftOpts(o,G.year+5).some(x=>/시설/.test(x.l)),'시설이 모두 최고인데 시설 포상');
+  const fx=tid=>{ const tc=team(tid); tc.pop=1; tc.trust=50; playersOf(tid).forEach(p=>p.mor=50); G.champEvents={}; G.ps={done:true,champ:tid,runner:tid===o.id?G.user:o.id,res:{ks:[tid,0,4,1]}}; champCelebrate(); return [Math.round(tc.pop*100)/100,tc.trust,playersOf(tid)[0].mor]; };
+  const a=fx(G.user), b=fx(o.id); ok(JSON.stringify(a)===JSON.stringify(b)&&a[0]===1.1&&a[1]===53&&a[2]===58,'우승 효과가 플레이어 구단 여부에 따라 다름: '+JSON.stringify([a,b])); });
 T('[피드백 11-06] 흔한 성씨(김·이·박)가 실제처럼 많이 나온다',()=>{ fresh(); const L=[...Array(3000)].map(()=>genName()[0]); const n=c=>L.filter(x=>x===c).length/L.length; ok(n('김')>.15&&n('이')>.1&&n('박')>.05,'김 '+n('김').toFixed(3)+' 이 '+n('이').toFixed(3)+' 박 '+n('박').toFixed(3)); ok(n('맹')<.01,'희성 비중 '+n('맹')); });
 T('[공통 점검] 공동 순위와 구단주 목표 판정이 같다',()=>{ fresh(); G.day=G.cal.open+40; const B=otherT(); for(const t of G.teams)G.sea.rec[t.id]={w:5,l:10,t:0}; G.sea.rec[G.user]={w:10,l:5,t:0}; G.sea.rec[B]={w:10,l:5,t:0}; G.goals={y:G.year,rank:1,sup:2,fan:0};
   const st=standingsNow(); ok(tieRank(st,G.user)===1&&tieRank(st,B)===1,'공동 선두 순위 '+tieRank(st,G.user)+'/'+tieRank(st,B)); const s=goalStatus(); ok(s.rank.cur===1&&s.rank.ok,'공동 1위가 목표 미달: '+s.rank.cur);
